@@ -59,18 +59,18 @@ class UIGeometricData
 
 public:
     UIGeometricData()
+        : scale(1.0f, 1.0f)
+        , cosA(1.0f)
+        , sinA(0.0f)
+        , angle(0.0f)
     {
-        cosA = 1.0f;
-        sinA = 0;
-        oldAngle = 0;
-        angle = 0;
     }
     Vector2 position;
     Vector2 size;
 
     Vector2 pivotPoint;
-    Vector2	scale;
-    float32	angle;
+    Vector2 scale;
+    float32 angle;
 
     float32 cosA;
     float32 sinA;
@@ -87,10 +87,10 @@ public:
         }
         scale.x *= data.scale.x;
         scale.y *= data.scale.y;
+        float32 oldAngle = angle;
         angle += data.angle;
         if(angle != oldAngle)
         {
-            oldAngle = angle;
             if(angle != data.angle)
             {
                 cosA = cosf(angle);
@@ -147,7 +147,6 @@ public:
     }
 
     Rect unrotatedRect;
-    float32 oldAngle;
 };
 
 
@@ -266,7 +265,7 @@ public:
         You can call this function directly for the controlBackgound.
      \returns Sprite frame used for draw.
      */
-    virtual int32 GetFrame() const;
+    int32 GetFrame() const;
     /**
      \brief Returns draw type used for draw in the current UIControlBackground object.
         You can call this function directly for the controlBackgound.
@@ -444,34 +443,65 @@ public:
      \brief Returns untransformed control rect.
         To get control metrics that applies all control transformation you need to use
         geometric data received with GetGeometricData().
-        Warning, rectInAbsoluteCoordinates isn't properly works for now!
      \returns control rect.
      */
-    virtual const Rect & GetRect(bool absoluteCoordinates = false);
+    Rect GetRect() const;
+
+    /**
+     \brief Returns absolute untransformed control rect.
+        To get control metrics that applies all control transformation you need to use
+        geometric data received with GetGeometricData().
+     \returns control rect.
+     */
+    Rect GetAbsoluteRect();
+
+    DAVA_DEPRECATED(Rect GetRect(bool absoluteCoordinates));
 
     /**
      \brief Sets the untransformed control rect.
-        Warning, rectInAbsoluteCoordinates isn't properly works for now!
      \param[in] rect new control rect.
      */
-    virtual void SetRect(const Rect &rect, bool rectInAbsoluteCoordinates = false);
+    virtual void SetRect(const Rect &rect);
 
+    /**
+     \brief Sets the untransformed control absolute rect.
+     \param[in] rect new control absolute rect.
+     */
+    void SetAbsoluteRect(const Rect &rect);
+
+    DAVA_DEPRECATED(virtual void SetRect(const Rect &rect, bool rectInAbsoluteCoordinates));
 
     /**
      \brief Returns untransformed control position.
         To get control metrics that applies all control transformation you need to use
         geometric data received with GetGeometricData().
-        Warning, rectInAbsoluteCoordinates isn't properly works for now!
      \returns control position.
      */
-    virtual const Vector2 &GetPosition(bool absoluteCoordinates = false);
+    inline const Vector2 &GetPosition() const;
+
+    /**
+     \brief Returns untransformed control position.
+        To get control metrics that applies all control transformation you need to use
+        geometric data received with GetGeometricData().
+     \returns control absolute position.
+     */
+    Vector2 GetAbsolutePosition();
+
+    DAVA_DEPRECATED(Vector2 GetPosition(bool absoluteCoordinates));
 
     /**
      \brief Sets the untransformed control position.
-        Warning, rectInAbsoluteCoordinates isn't properly works for now!
      \param[in] position new control position.
      */
-    virtual void SetPosition(const Vector2 &position, bool positionInAbsoluteCoordinates = false);
+    virtual void SetPosition(const Vector2 &position);
+
+    /**
+     \brief Sets the untransformed control absolute position.
+     \param[in] position new control absolute position.
+     */
+    void SetAbsolutePosition(const Vector2 &position);
+
+    DAVA_DEPRECATED(virtual void SetPosition(const Vector2 &position, bool positionInAbsoluteCoordinates));
 
     /**
      \brief Returns untransformed control size.
@@ -479,7 +509,7 @@ public:
         geometric data received with GetGeometricData().
      \returns control size.
      */
-    virtual const Vector2 &GetSize() const;
+    inline const Vector2 &GetSize() const;
 
     /**
      \brief Sets the untransformed control size.
@@ -488,10 +518,26 @@ public:
     virtual void SetSize(const Vector2 &newSize);
 
     /**
+     \brief Returns control pivot point.
+     \returns control pivot point.
+     */
+    inline const Vector2 &GetPivotPoint() const;
+
+    /**
+     \brief Sets the control pivot point.
+     \param[in] newPivot new control pivot point.
+     */
+    inline void SetPivotPoint(const Vector2 &newPivot);
+
+    /**
      \brief Returns actual control transformation and metrics.
      \returns control geometric data.
      */
-    virtual const UIGeometricData &GetGeometricData();
+    const UIGeometricData &GetGeometricData();
+
+    UIGeometricData GetAbsoluteGeometricData() const;
+
+    UIGeometricData GetLocalGeometricData() const;
 
     /**
      \brief Sets the scaled control rect.
@@ -505,7 +551,7 @@ public:
      \brief Returns control rotation angle in radians.
      \returns control angle in radians.
      */
-    virtual float32 GetAngle() const;
+    inline float32 GetAngle() const;
     
     /**
      \brief Returns control's parents total rotation angle in radians.
@@ -547,7 +593,7 @@ public:
         Also for invisible controls didn't calls Draw() and DrawAfterChilds() methods.
      \returns control visibility.
      */
-    virtual bool GetRecursiveVisible() const;
+    bool GetRecursiveVisible() const;
 
     /**
      \brief Sets contol recursive visibility.
@@ -562,7 +608,7 @@ public:
         Be ware! Base control processing inputs by default.
      \returns true if control pocessing inputs.
      */
-    virtual bool GetInputEnabled() const;
+    bool GetInputEnabled() const;
 
     /**
      \brief Sets contol input processing ability.
@@ -580,7 +626,7 @@ public:
      Be ware! Base control can be focused by default.
      \returns true if control can be focused.
      */
-    virtual bool GetFocusEnabled() const;
+    bool GetFocusEnabled() const;
 
     /**
      \brief Sets contol focusing ability.
@@ -598,7 +644,7 @@ public:
         All controls is enabled by default.
      \returns true if control is disabled.
      */
-    virtual bool GetDisabled() const;
+    bool GetDisabled() const;
 
     /**
      \brief Sets the contol enabling/disabling.
@@ -615,7 +661,7 @@ public:
      \brief Returns control selection state.
      \returns is control selected.
      */
-    virtual bool GetSelected() const;
+    bool GetSelected() const;
 
     /**
      \brief Sets contol selection state.
@@ -630,7 +676,7 @@ public:
         Clip contents is disabled by default.
      \returns true if control rect clips draw and input areas of his children.
      */
-    virtual bool GetClipContents() const;
+    bool GetClipContents() const;
     /**
      \brief Sets clip contents state.
         If clip contents is enabled all incoming inputs for the control children processed only
@@ -645,7 +691,7 @@ public:
         Only controlsa what processed inputs may be hovered.
      \returns control hover state is true if mouse placed over the control rect and no mous buttons is pressed.
      */
-    virtual bool GetHover() const;
+    bool GetHover() const;
 
     /**
      \brief Is exclusive input enabled.
@@ -655,7 +701,7 @@ public:
         Exclusive input is disabled by default.
      \returns true if control supports exclusive input.
      */
-    virtual bool GetExclusiveInput() const;
+    bool GetExclusiveInput() const;
     /**
      \brief Enables or disables control exclusive input.
         If control have exlusive input enabled and this control starts to process
@@ -673,7 +719,7 @@ public:
         Multiply input is disabled by default.
      \returns true if control supports multyple inputs.
      */
-    virtual bool GetMultiInput() const;
+    bool GetMultiInput() const;
     /**
      \brief Sets contol multi input processing.
         If multiple input is enabled control can process all incoming inputs (Two or
@@ -733,7 +779,7 @@ public:
      \brief Returns control parent.
      \returns if contorl hasn't parent returns NULL.
      */
-    UIControl *GetParent();
+    UIControl *GetParent() const;
 
     /**
      \brief Returns list of control children.
@@ -1238,7 +1284,7 @@ public:
     void ApplyAlignSettingsForChildren();
 
     // Access to Custom Control Type.
-    String GetCustomControlType() const;
+    const String &GetCustomControlType() const;
     void SetCustomControlType(const String& value);
     void ResetCustomControlType();
 
@@ -1270,8 +1316,6 @@ public:
 protected:
 
 //	void SystemClearHoverState();//<! Internal method used by ControlSystem
-
-    Vector2 absolutePosition;
 
     UIControl *parent;
     List<UIControl*> childs;
@@ -1317,12 +1361,9 @@ protected:
     int32 vcenterAlign;
     int32 bottomAlign;
 
-    Rect returnedRect;
     UIGeometricData tempGeometricData;
 
     EventDispatcher *eventDispatcher;
-
-    bool needToRecalcFromAbsoluteCoordinates;
 
     Color debugDrawColor;
 
@@ -1341,10 +1382,6 @@ protected:
     // Set the preferred node type. Needed for saving controls to Yaml while taking
     // custom controls into account.
     void SetPreferredNodeType(YamlNode* node, const String& nodeTypeName);
-#ifdef ENABLE_CONTROL_EDIT
-    Vector2	__touchStart;
-    Vector2		__oldPosition;
-#endif
 
     void RegisterInputProcessor();
     void RegisterInputProcessors(int32 processorsCount);
@@ -1376,6 +1413,31 @@ private:
     float32 GetRelativeY(UIControl *parent, int32 align);
     float32 GetRelativeY(UIControl *parent, int32 align, UIControl* child, bool useHalfParentSize = false);
 };
+
+const Vector2 & UIControl::GetPivotPoint() const
+{
+    return pivotPoint;
+}
+
+void UIControl::SetPivotPoint(const Vector2 &newPivot)
+{
+    pivotPoint = newPivot;
+}
+
+const Vector2 &UIControl::GetSize() const
+{
+    return size;
+}
+
+const Vector2 &UIControl::GetPosition() const
+{
+    return relativePosition;
+}
+
+float32 UIControl::GetAngle() const
+{
+    return angle;
+}
 };
 
 #endif
