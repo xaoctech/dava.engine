@@ -41,6 +41,48 @@ namespace DAVA
 #define DF_FONT_CACHE_SIZE 1000	//text cache size
 #define DF_FONT_INDEX_BUFFER_SIZE ((DF_FONT_CACHE_SIZE) * 6)
 	
+class DFFont;
+class DFFontInternalData : public BaseObject
+{
+public:
+    static DFFontInternalData * Create(const FilePath & path);
+    
+protected:
+    DFFontInternalData();
+    ~DFFontInternalData();
+    
+    bool InitFromConfig(const FilePath & path);
+    
+    struct CharDescription
+    {
+        float32 height;
+        float32 width;
+        Map<int32, float32> kerning;
+        float32 xOffset;
+        float32 yOffset;
+        float32 xAdvance;
+        float32 u;
+        float32 u2;
+        float32 v;
+        float32 v2;
+    };
+    typedef Map<char16, CharDescription> CharsMap;
+    CharsMap chars;
+    float32 baseSize;
+    float32 paddingLeft;
+    float32 paddingRight;
+    float32 paddingTop;
+    float32 paddingBottom;
+    float32 lineHeight;
+    float32 spread;
+    
+    FilePath configPath;
+    
+    static Mutex dfFontDataMapMutex;
+    
+friend class DFFont;
+};
+    
 class DFFont: public Font
 {
 public:
@@ -109,8 +151,6 @@ public:
     //We need to return font path
     const FilePath & GetFontPath() const;
     
-    FilePath GetTexturePath() const;
-    
     Size2i DrawStringToBuffer(const WideString & str,
                               int32 xOffset,
                               int32 yOffset,
@@ -125,36 +165,11 @@ protected:
     // Get the raw hash string (identical for identical fonts).
     virtual String GetRawHashString();
     
-private:		
-    bool LoadTexture(const FilePath& path);
-    bool LoadConfig(const FilePath& path);
+private:
+    bool LoadTexture(const FilePath & path);
     float32 GetSizeScale() const;
     
-private:
-    struct CharDescription
-    {
-        float32 height;
-        float32 width;
-        Map<int32, float32> kerning;
-        float32 xOffset;
-        float32 yOffset;
-        float32 xAdvance;
-        float32 u;
-        float32 u2;
-        float32 v;
-        float32 v2;
-    };
-    typedef Map<char16, CharDescription> CharsMap;
-    CharsMap chars;
-    float32 baseSize;
-    float32 paddingLeft;
-    float32 paddingRight;
-    float32 paddingTop;
-    float32 paddingBottom;
-    float32 lineHeight;
-    float32 spread;
-    
-    FilePath configPath;
+    DFFontInternalData * fontInternal;
 
     Texture* fontTexture;
     UniqueHandle fontTextureHandler;
