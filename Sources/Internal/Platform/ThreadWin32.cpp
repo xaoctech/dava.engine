@@ -81,20 +81,19 @@ DWORD WINAPI ThreadFunc(void* param)
 	t->msg(t);
 
 	t->state = Thread::STATE_ENDED;
-
-    t->Release();
+	t->Release();
 	
 	return 0;
 }
 
 void Thread::YieldThread()
 {
-    Yield();
+    SwitchToThread();
 }
 
 Thread::Id Thread::GetCurrentThreadId()
 {
-    return ::GetCurrentThreadId();
+    return Id(::GetCurrentThreadId());
 }
 
 void Thread::Join()
@@ -105,7 +104,7 @@ void Thread::Join()
 
 void Thread::Kill()
 {
-    if(state != STATE_ENDED && state != STATE_KILLED)
+    if (STATE_ENDED != state && STATE_KILLED != state)
     {
         TerminateThread(threadHandle, 0);
         state = STATE_KILLED;

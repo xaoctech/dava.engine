@@ -108,15 +108,10 @@ Thread::Thread(const Message& _msg)
 
 Thread::~Thread()
 {
+    Shutdown();
     threadListMutex.Lock();
     threadList.erase(this);
     threadListMutex.Unlock();
-}
-
-void Thread::Start()
-{
-
-
 }
 
 Thread::eThreadState Thread::GetState()
@@ -165,12 +160,12 @@ void Thread::Broadcast(ConditionalVariable * cv)
 
 void Thread::SetThreadId(const Id & _id)
 {
-	id = _id;
+    id = _id;
 }
 
 Thread::Id Thread::GetId()
 {
-	return id;
+    return id;
 }
 
 Thread::Id::Id()
@@ -179,11 +174,11 @@ Thread::Id::Id()
 }
 
 Thread::Id::Id(const NativeId & _nativeId) 
-:   nativeId(_nativeId)
+    : nativeId(_nativeId)
 {}
 
 Thread::Id::Id(const Id & other)
-:   nativeId(other.nativeId)
+    : nativeId(other.nativeId)
 {}
 
 const Thread::Id::NativeId & Thread::Id::GetNativeId()

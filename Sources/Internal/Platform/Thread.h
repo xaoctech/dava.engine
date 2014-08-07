@@ -113,16 +113,14 @@ public:
 		\brief static function to detect if current thread is main thread of application
 		\returns true if now main thread executes
 	*/
-	static	bool IsMainThread();
+	static bool IsMainThread();
 
 	/**
 		\brief static function to create instance of thread object based on Message.
 		This function create thread based on message. It do not start the thread until Start function called.
 		\returns ptr to thread object 
 	*/
-	static Thread * Create(const Message& msg);
-
-    static void KillAll();
+	static Thread *Create(const Message& msg);
 
 	/**
 		\brief Start execution of the thread
@@ -143,6 +141,7 @@ public:
     /** Kill thread
     */
     void Kill();
+    static void KillAll();
 
     /**
         Wrapp pthread wait, signal and broadcast
@@ -170,6 +169,7 @@ public:
     static void	InitMainThread();
 
 private:
+    virtual ~Thread();
 	Thread(const Message& msg);
     void Init();
     void Shutdown();
@@ -190,7 +190,7 @@ private:
 		CGLContextObj npAPIGLContext;
 	#endif // #if defined (__DAVAENGINE_NPAPI__)
 
-#if defined(DAVAENGINE_PTHREAD)
+#elif defined(DAVAENGINE_PTHREAD)
     bool joined;
 	friend void	* PthreadMain(void * param);
 #elif defined (__DAVAENGINE_WIN32__)
