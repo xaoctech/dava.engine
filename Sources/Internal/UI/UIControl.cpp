@@ -61,7 +61,6 @@ namespace DAVA
         focusEnabled = true;
 
         background = new UIControlBackground();
-        needToRecalcFromAbsoluteCoordinates = false;
         eventDispatcher = NULL;
         clipContents = false;
 
@@ -74,7 +73,6 @@ namespace DAVA
 //		absoluteRect = Rect(0,0,0,0);
         debugDrawEnabled = false;
         debugDrawColor = Color(1.0f, 0.0f, 0.0f, 1.0f);
-        absolutePosition = Vector2(0, 0);
 
         drawPivotPointMode = DRAW_NEVER;
 
@@ -107,10 +105,6 @@ namespace DAVA
 
         SetRect(rect, rectInAbsoluteCoordinates);
 
-#ifdef ENABLE_CONTROL_EDIT
-        __touchStart = Vector2(0.f, 0.f);
-        __oldRect = relativeRect;
-#endif
         initialState = STATE_NORMAL;
     }
 
@@ -129,17 +123,12 @@ namespace DAVA
             parent->UnregisterInputProcessors(inputProcessorsCount);
         }
         parent = newParent;
-        if(parent && needToRecalcFromAbsoluteCoordinates)
-        {
-            relativePosition = absolutePosition - parent->GetGeometricData().position;
-            needToRecalcFromAbsoluteCoordinates = false;
-        }
         if (parent)
         {
             parent->RegisterInputProcessors(inputProcessorsCount);
         }
     }
-    UIControl *UIControl::GetParent()
+    UIControl *UIControl::GetParent() const
     {
         return parent;
     }
@@ -785,50 +774,73 @@ namespace DAVA
         return tempGeometricData;
     }
 
-    const Vector2 &UIControl::GetPosition(bool absoluteCoordinates/* = false*/)
+
+    UIGeometricData UIControl::GetAbsoluteGeometricData() const
     {
-        if(!absoluteCoordinates)
-        {
-            return relativePosition;
-        }
-        if(parent)
-        {
-            absolutePosition = GetGeometricData().position;
-            return absolutePosition;
-        }
-        if(!needToRecalcFromAbsoluteCoordinates)
-        {
-            return relativePosition;
-        }
-        return absolutePosition;
+        UIGeometricData absoluteGeomData = GetLocalGeometricData();
+
+        const UIGeometricData &parentGeomData = parent ? parent->GetAbsoluteGeometricData() : UIControlSystem::Instance()->GetBaseGeometricData();
+        absoluteGeomData.AddToGeometricData(parentGeomData);
+        return absoluteGeomData;
     }
 
-    void UIControl::SetPosition(const Vector2 &position, bool positionInAbsoluteCoordinates/* = false*/)
+    UIGeometricData UIControl::GetLocalGeometricData() const
+    {
+        UIGeometricData drawData;
+        drawData.position = relativePosition;
+        drawData.size = size;
+        drawData.pivotPoint = pivotPoint;
+        drawData.scale = scale;
+        if (angle!=0.0f)
+        {
+            drawData.angle = angle;
+            drawData.cosA = cosf(angle);
+            drawData.sinA = sinf(angle);
+        }
+
+        return drawData;
+    }
+
+    Vector2 UIControl::GetPosition(bool absoluteCoordinates)
+    {
+        if(!absoluteCoordinates || !parent)
+        {
+            return GetPosition();
+        }
+
+        return GetAbsolutePosition();
+    }
+
+    DAVA::Vector2 UIControl::GetAbsolutePosition()
+    {
+        return GetGeometricData().position;
+    }
+
+    void UIControl::SetPosition(const Vector2 &position)
+    {
+        relativePosition = position;
+    }
+
+    void UIControl::SetPosition(const Vector2 &position, bool positionInAbsoluteCoordinates)
     {
         if(!positionInAbsoluteCoordinates)
         {
-            relativePosition = position;
-            needToRecalcFromAbsoluteCoordinates = false;
+            SetPosition(position);
         }
         else
         {
-            if(parent)
-            {
-                relativePosition = position - parent->GetGeometricData().position;
-                needToRecalcFromAbsoluteCoordinates = false;
-            }
-            else
-            {
-                needToRecalcFromAbsoluteCoordinates = true;
-                relativePosition = absolutePosition = position;
-            }
+            SetAbsolutePosition(position);
         }
     }
 
-    const Vector2 &UIControl::GetSize() const
+    void UIControl::SetAbsolutePosition(const Vector2 &position)
     {
-        return size;
+        if(parent)
+            SetPosition(position - parent->GetGeometricData().position);
+        else
+            SetPosition(position);
     }
+
     void UIControl::SetSize(const Vector2 &newSize)
     {
         size = newSize;
@@ -836,11 +848,6 @@ namespace DAVA
         RecalculateChildsSize();
     }
 
-    float32 UIControl::GetAngle() const
-    {
-        return angle;
-    }
-    
     float32 UIControl::GetParentsTotalAngle(bool includeOwn)
     {
         float32 angle = 0;
@@ -860,63 +867,58 @@ namespace DAVA
         angle = angleInRad;
     }
 
-    const Rect &UIControl::GetRect(bool absoluteCoordinates/* = FALSE*/)
+    Rect UIControl::GetRect() const
     {
-        Vector2 pos = GetPosition(absoluteCoordinates) - pivotPoint;
-        returnedRect = Rect(pos.x, pos.y, size.x, size.y);
-        return returnedRect;
+        return Rect(GetPosition() - pivotPoint, size);
     }
 
-    void UIControl::SetRect(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*/)
+    Rect UIControl::GetRect(bool absoluteCoordinates)
+    {
+        if(!absoluteCoordinates)
+            return GetRect();
+
+        return GetAbsoluteRect();
+        Vector2 pos = GetPosition(absoluteCoordinates) - pivotPoint;
+        return Rect(pos.x, pos.y, size.x, size.y);
+    }
+
+    Rect UIControl::GetAbsoluteRect()
+    {
+        return Rect(GetAbsolutePosition() - pivotPoint, size);
+    }
+
+    void UIControl::SetRect(const Rect &rect)
     {
         RecalculatePivotPoint(rect);
 
-        Vector2 t(rect.dx, rect.dy);
-        SetSize(t);
-        t.x = rect.x;
-        t.y = rect.y;
-        t += pivotPoint;
-        SetPosition(t, rectInAbsoluteCoordinates);
+        SetSize(rect.GetSize());
+        SetPosition(rect.GetPosition() + pivotPoint);
 
         // Update aligns if control was resized manually
         RecalculateAlignProperties();
+    }
 
-        //childControlSize.x = abs(round(newSize.dx / 2) - hcenter - childLeftAlign - childRightAlign;
-        /*
-        scale.x = 1.0;
-        scale.y = 1.0;
-        if(parent && scaleInParent)
+    void UIControl::SetAbsoluteRect(const Rect &rect)
+    {
+        RecalculatePivotPoint(rect);
+
+        SetSize(rect.GetSize());
+        SetAbsolutePosition(rect.GetPosition() + pivotPoint);
+
+        // Update aligns if control was resized manually
+        RecalculateAlignProperties();
+    }
+
+    void UIControl::SetRect(const Rect &rect, bool rectInAbsoluteCoordinates/* = false*/)
+    {
+        if (rectInAbsoluteCoordinates)
         {
-            realScale.x = scale.x * parent->GetRealScale().x;
-            realScale.y = scale.y * parent->GetRealScale().y;
+            SetRect(rect);
         }
         else
         {
-            realScale = scale;
+            SetAbsoluteRect(rect);
         }
-
-        if(!rectInAbsoluteCoordinates)
-        {
-            relativeRect = rect;
-            RecalcScaledRect();
-            needToRecalcFromAbsoluteCoordinates = false;
-        }
-        else
-        {
-            if(parent)
-            {
-                relativeRect = rect - parent->GetRect(TRUE).GetPosition();
-                RecalcScaledRect();
-                needToRecalcFromAbsoluteCoordinates = false;
-            }
-            else
-            {
-                needToRecalcFromAbsoluteCoordinates = true;
-                relativeRect = absoluteRect = rect;
-                RecalcScaledRect();
-            }
-        }
-         */
     }
 
     void UIControl::SetScaledRect(const Rect &rect, bool rectInAbsoluteCoordinates/* = false*/)
@@ -1370,16 +1372,8 @@ namespace DAVA
         vcenterAlignEnabled = srcControl->vcenterAlignEnabled;
         bottomAlignEnabled = srcControl->bottomAlignEnabled;
 
-        if (background && srcControl->background)
-        {
-            background->SetLeftRightStretchCap(srcControl->background->GetLeftRightStretchCap());
-            background->SetTopBottomStretchCap(srcControl->background->GetTopBottomStretchCap());
-        }
-
         tag = srcControl->GetTag();
         name = srcControl->name;
-
-        needToRecalcFromAbsoluteCoordinates = srcControl->needToRecalcFromAbsoluteCoordinates;
 
         controlState = srcControl->controlState;
         recursiveVisible = srcControl->recursiveVisible;
@@ -1623,12 +1617,7 @@ namespace DAVA
             return;
 
         UIControlSystem::Instance()->drawCounter++;
-        UIGeometricData drawData;
-        drawData.position = relativePosition;
-        drawData.size = size;
-        drawData.pivotPoint = pivotPoint;
-        drawData.scale = scale;
-        drawData.angle = angle;
+        UIGeometricData drawData = GetLocalGeometricData();
         drawData.AddToGeometricData(geometricData);
 
         const Color &parentColor = parent ? parent->GetBackground()->GetDrawColor() : Color::White;
@@ -1648,12 +1637,6 @@ namespace DAVA
             Draw(drawData);
         }
 
-        if (debugDrawEnabled && !clipContents)
-        {	//TODO: Add debug draw for rotated controls
-            DrawDebugRect(drawData, false);
-        }
-        DrawPivotPoint(unrotatedRect);
-
         isIteratorCorrupted = false;
         List<UIControl*>::iterator it = childs.begin();
         List<UIControl*>::iterator itEnd = childs.end();
@@ -1667,16 +1650,16 @@ namespace DAVA
         {
             DrawAfterChilds(drawData);
         }
+
         if(clipContents)
         {
             RenderManager::Instance()->ClipPop();
-
-            if(debugDrawEnabled)
-            { //TODO: Add debug draw for rotated controls
-                DrawDebugRect(drawData, false);
-            }
         }
 
+        if(debugDrawEnabled)
+        {
+            DrawDebugRect(drawData, false);
+        }
         DrawPivotPoint(unrotatedRect);
 
         if(debugDrawEnabled && NULL != parent && parent->GetClipContents())
@@ -1834,11 +1817,6 @@ namespace DAVA
             {
                 if (!currentInput->touchLocker && IsPointInside(currentInput->point))
                 {
-#ifdef ENABLE_CONTROL_EDIT
-                    __touchStart = currentInput->point;
-                    __oldRect = relativeRect;
-#endif
-
                     if(multiInput || !currentInputID)
                     {
 
@@ -1883,9 +1861,6 @@ namespace DAVA
                     {
                         if(controlState & STATE_PRESSED_INSIDE || controlState & STATE_PRESSED_OUTSIDE)
                         {
-#ifdef ENABLE_CONTROL_EDIT
-                            relativePosition = __oldPosition + currentInput->point - __touchStart;
-#endif
                             if (IsPointInside(currentInput->point, true))
                             {
                                 if(currentInput->controlState == UIEvent::CONTROL_STATE_OUTSIDE)
@@ -1951,12 +1926,6 @@ namespace DAVA
 
                             if(totalTouches == 0)
                             {
-#ifdef ENABLE_CONTROL_EDIT
-                                relativePosition = __oldPosition + currentInput->point - __touchStart;
-                                __oldPosition = relativePosition;
-                                __touchStart = Vector2(0.f, 0.f);
-                                Logger::FrameworkDebug("DEBUG_CONTROL_COORDINATE: Vector2(%.1f, %.1f)", relativeRect.x, relativeRect.y);
-#endif
                                 if (IsPointInside(currentInput->point, true))
                                 {
                                     if (UIControlSystem::Instance()->GetFocusedControl() != this && focusEnabled)
@@ -2968,7 +2937,7 @@ namespace DAVA
         RecalculateChildsSize();
     }
 
-    String UIControl::GetCustomControlType() const
+    const String &UIControl::GetCustomControlType() const
     {
         return customControlType;
     }
