@@ -118,6 +118,10 @@
 #include "DebugTools/VersionInfoWidget/VersionInfoWidget.h"
 #include "Classes/Qt/RunActionEventWidget/RunActionEventWidget.h"
 
+#include "Classes/Commands2/PaintHeightDeltaAction.h"
+
+#include "Tools/HeightDeltaTool/HeightDeltaTool.h"
+
 
 QtMainWindow::QtMainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -445,12 +449,10 @@ void QtMainWindow::SetupToolBars()
 {
 	QAction *actionMainToolBar = ui->mainToolBar->toggleViewAction();
 	QAction *actionModifToolBar = ui->modificationToolBar->toggleViewAction();
-	QAction *actionViewModeToolBar = ui->viewModeToolBar->toggleViewAction();
 	QAction *actionLandscapeToolbar = ui->landscapeToolBar->toggleViewAction();
 
 	ui->menuToolbars->addAction(actionMainToolBar);
 	ui->menuToolbars->addAction(actionModifToolBar);
-	ui->menuToolbars->addAction(actionViewModeToolBar);
 	ui->menuToolbars->addAction(actionLandscapeToolbar);
 	ui->menuToolbars->addAction(ui->sceneToolBar->toggleViewAction());
     ui->menuToolbars->addAction(ui->testingToolBar->toggleViewAction());
@@ -557,6 +559,12 @@ void QtMainWindow::SetupStatusBar()
 	onSceneSelectStatusBtn->setMaximumSize(QSize(16, 16));
 	ui->statusBar->insertPermanentWidget(0, onSceneSelectStatusBtn);
 
+    QToolButton *staticOcclusionStatusBtn = new QToolButton();
+    staticOcclusionStatusBtn->setDefaultAction(ui->actionShowStaticOcclusion);
+    staticOcclusionStatusBtn->setAutoRaise(true);
+    staticOcclusionStatusBtn->setMaximumSize(QSize(16, 16));
+    ui->statusBar->insertPermanentWidget(0, staticOcclusionStatusBtn);
+
 	QObject::connect(ui->sceneTabWidget->GetDavaWidget(), SIGNAL(Resized(int, int)), ui->statusBar, SLOT(OnSceneGeometryChaged(int, int)));
 }
 
@@ -630,6 +638,7 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionShowEditorGizmo, SIGNAL(toggled(bool)), this, SLOT(OnEditorGizmoToggle(bool)));
     QObject::connect(ui->actionLightmapCanvas, SIGNAL(toggled(bool)), this, SLOT(OnViewLightmapCanvas(bool)));
 	QObject::connect(ui->actionOnSceneSelection, SIGNAL(toggled(bool)), this, SLOT(OnAllowOnSceneSelectionToggle(bool)));
+    QObject::connect(ui->actionShowStaticOcclusion, SIGNAL(toggled(bool)), this, SLOT(OnShowStaticOcclusionToggle(bool)));
 
 	// scene undo/redo
 	QObject::connect(ui->actionUndo, SIGNAL(triggered()), this, SLOT(OnUndo()));
@@ -707,6 +716,8 @@ void QtMainWindow::SetupActions()
     QObject::connect(ui->actionBuildStaticOcclusion, SIGNAL(triggered()), this, SLOT(OnBuildStaticOcclusion()));
     QObject::connect(ui->actionRebuildCurrentOcclusionCell, SIGNAL(triggered()), this, SLOT(OnRebuildCurrentOcclusionCell()));
     QObject::connect(ui->actionInvalidateStaticOcclusion, SIGNAL(triggered()), this, SLOT(OnInavalidateStaticOcclusion()));
+    
+    connect(ui->actionHeightmap_Delta_Tool, SIGNAL(triggered()), this, SLOT(OnGenerateHeightDelta()));
     
 	//Help
     QObject::connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(OnOpenHelp()));
@@ -1247,6 +1258,11 @@ void QtMainWindow::OnAllowOnSceneSelectionToggle(bool allow)
 	{
 		scene->selectionSystem->SetSelectionAllowed(allow);
 	}
+}
+
+void QtMainWindow::OnShowStaticOcclusionToggle(bool show)
+{
+    RenderManager::Instance()->GetOptions()->SetOption(RenderOptions::DEBUG_DRAW_STATIC_OCCLUSION, show);
 }
 
 void QtMainWindow::OnReloadTextures()
@@ -2921,4 +2937,14 @@ void QtMainWindow::DebugVersionInfo()
     }
 
     versionInfoWidget->show();
+}
+
+void QtMainWindow::OnGenerateHeightDelta()
+{
+    HeightDeltaTool *w = new HeightDeltaTool( this );
+    w->setWindowFlags( Qt::Window );
+    w->setAttribute( Qt::WA_DeleteOnClose );
+    w->SetOutputTemplate( "h_", QString() );
+    
+    w->show();
 }
