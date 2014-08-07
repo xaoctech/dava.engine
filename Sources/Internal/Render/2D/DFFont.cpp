@@ -38,44 +38,170 @@
 
 namespace DAVA {
 
-	Map<FilePath, DFFont*> dfFontsMap;
+Mutex DFFontInternalData::dfFontDataMapMutex;
+Map<FilePath, DFFontInternalData*> dfFontDataMap;
 
-DFFont::DFFont()
-:   fontTexture(NULL)
+DFFontInternalData::DFFontInternalData()
 {
-    fontType = TYPE_DISTANCE;
     baseSize = 0;
     paddingLeft = paddingRight = paddingTop = paddingBottom = 0;
     lineHeight = 0;
     spread = 1.f;
 }
+    
+DFFontInternalData::~DFFontInternalData()
+{
+    dfFontDataMapMutex.Lock();
+    dfFontDataMap.erase(configPath);
+    dfFontDataMapMutex.Unlock();
+}
+    
+DFFontInternalData * DFFontInternalData::Create(const FilePath & path)
+{
+    DFFontInternalData * fontData = NULL;
+    dfFontDataMapMutex.Lock();
+    
+    Map<FilePath, DFFontInternalData*>::iterator iter = dfFontDataMap.find(path);
+    if (iter != dfFontDataMap.end())
+        fontData = SafeRetain(iter->second);
+    
+    if(!fontData)
+    {
+        fontData = new DFFontInternalData();
+        if(!fontData->InitFromConfig(path))
+        {
+            fontData->Release();
+            fontData = NULL;
+        }
+    }
+    
+    if(fontData)
+        dfFontDataMap[path] = fontData;
+    
+    dfFontDataMapMutex.Unlock();
+    
+    return fontData;
+}
+    
+bool DFFontInternalData::InitFromConfig(const DAVA::FilePath &path)
+{
+    YamlParser* parser = YamlParser::Create(path.GetAbsolutePathname());
+    if (!parser)
+        return false;
+    
+    configPath = path;
+    
+    YamlNode* rootNode = parser->GetRootNode();
+    const YamlNode* configNode = rootNode->Get("font");
+    if (!configNode)
+    {
+        SafeRelease(parser);
+        return false;
+    }
+    const YamlNode* charsNode = configNode->Get("chars");
+    if (!charsNode)
+    {
+        SafeRelease(parser);
+        return false;
+    }
+        
+    baseSize = configNode->Get("size")->AsFloat();
+    const YamlNode* paddingTop = configNode->Get("padding_top");
+    if (paddingTop)
+        this->paddingTop = paddingTop->AsFloat();
+    const YamlNode* paddingLeft = configNode->Get("padding_left");
+    if (paddingLeft)
+        this->paddingLeft = paddingLeft->AsFloat();
+    const YamlNode* paddingBottom = configNode->Get("padding_bottop");
+    if (paddingBottom)
+        this->paddingBottom = paddingBottom->AsFloat();
+    const YamlNode* paddingRight = configNode->Get("padding_right");
+    if (paddingRight)
+        this->paddingRight = paddingRight->AsFloat();
+    const YamlNode* lineHeight = configNode->Get("lineHeight");
+    if (lineHeight)
+        this->lineHeight = lineHeight->AsFloat();
+    const YamlNode* spread = configNode->Get("spread");
+    if (spread)
+        this->spread = spread->AsFloat();
+        
+    const MultiMap<String, YamlNode*> charsMap = charsNode->AsMap();
+    MultiMap<String, YamlNode*>::const_iterator charsMapEnd = charsMap.end();
+    for (MultiMap<String, YamlNode*>::const_iterator iter = charsMap.begin(); iter != charsMapEnd; ++iter)
+    {
+        char16 charId = atoi(iter->first.c_str());
+        CharDescription charDescription;
+        charDescription.height = iter->second->Get("height")->AsFloat();
+        charDescription.width = iter->second->Get("width")->AsFloat();
+        charDescription.xOffset = iter->second->Get("xoffset")->AsFloat();
+        charDescription.yOffset = iter->second->Get("yoffset")->AsFloat();
+        charDescription.xAdvance = iter->second->Get("xadvance")->AsFloat();
+        charDescription.u = iter->second->Get("u")->AsFloat();
+        charDescription.u2 = iter->second->Get("u2")->AsFloat();
+        charDescription.v = iter->second->Get("v")->AsFloat();
+        charDescription.v2 = iter->second->Get("v2")->AsFloat();
+        
+        chars[charId] = charDescription;
+    }
+        
+    const YamlNode* kerningNode = configNode->Get("kerning");
+    if (kerningNode)
+    {
+        const MultiMap<String, YamlNode*> kerningMap = kerningNode->AsMap();
+        MultiMap<String, YamlNode*>::const_iterator kerningMapEnd = kerningMap.end();
+        for (MultiMap<String, YamlNode*>::const_iterator iter = kerningMap.begin(); iter != kerningMapEnd; ++iter)
+        {
+            int32 charId = atoi(iter->first.c_str());
+            CharsMap::iterator charIter = chars.find(charId);
+            if (charIter == chars.end())
+                continue;
+            
+            const MultiMap<String, YamlNode*> charKerningMap = iter->second->AsMap();
+            MultiMap<String, YamlNode*>::const_iterator charKerningMapEnd = charKerningMap.end();
+            for (MultiMap<String, YamlNode*>::const_iterator iter = charKerningMap.begin(); iter != charKerningMapEnd; ++iter)
+            {
+                int32 secondCharId = atoi(iter->first.c_str());
+                float32 kerning = iter->second->AsFloat();
+                charIter->second.kerning[secondCharId] = kerning;
+            }
+        }
+    }
+    
+    SafeRelease(parser);
+    return true;
+}
+    
+DFFont::DFFont() :
+    fontInternal(NULL),
+    fontTexture(NULL)
+{
+    fontType = TYPE_DISTANCE;
+}
 
 DFFont::~DFFont()
 {
-    RenderManager::Instance()->ReleaseTextureState(fontTextureHandler);
-    SafeRelease(fontTexture);
+    SafeRelease(fontInternal);
+    if(fontTexture)
+    {
+        fontTexture->Release();
+        RenderManager::Instance()->ReleaseTextureState(fontTextureHandler);
+    }
 }
 
 DFFont* DFFont::Create(const FilePath & path)
 {
-    Map<FilePath, DFFont*>::iterator iter = dfFontsMap.find(path);
-    if (iter != dfFontsMap.end())
-    {
-        return static_cast<DFFont*>(iter->second->Clone());
-    }
-
     DFFont* font = new DFFont();
     
-    if (!font->LoadConfig(path) || !font->LoadTexture(font->GetTexturePath()))
+    font->fontInternal = DFFontInternalData::Create(path);
+    if(!font->fontInternal || !font->LoadTexture(FilePath::CreateWithNewExtension(path, ".tex")))
     {
         SafeRelease(font);
         return NULL;
     }
-    
-    dfFontsMap[path] = font;
+
     return font;
 }
-
+    
 Size2i DFFont::GetStringSize(const WideString & str, Vector<float32> *charSizes/* = 0*/) const
 { 
     int32 charDrawed = 0;
@@ -84,31 +210,23 @@ Size2i DFFont::GetStringSize(const WideString & str, Vector<float32> *charSizes/
 
 bool DFFont::IsCharAvaliable(char16 ch) const
 {
-    CharsMap::const_iterator iter = chars.find(ch);
-    return iter != chars.end();
+    DFFontInternalData::CharsMap::const_iterator iter = fontInternal->chars.find(ch);
+    return iter != fontInternal->chars.end();
 }
 
 uint32 DFFont::GetFontHeight() const
 {
-    return (uint32)((lineHeight) * GetSizeScale());
+    return (uint32)((fontInternal->lineHeight) * GetSizeScale());
 }
 
 Font * DFFont::Clone() const
 {
     DFFont* dfFont = new DFFont();
-    dfFont->chars = chars;
-    dfFont->baseSize = baseSize;
-    dfFont->paddingLeft = paddingLeft;
-    dfFont->paddingRight = paddingRight;
-    dfFont->paddingTop = paddingTop;
-    dfFont->paddingBottom = paddingBottom;
-    dfFont->lineHeight = lineHeight;
-    dfFont->spread = spread;
-    dfFont->configPath = configPath;
+    dfFont->fontInternal = SafeRetain(fontInternal);
     dfFont->fontTexture = SafeRetain(fontTexture);
-    dfFont->fontTextureHandler = fontTextureHandler;
     dfFont->size = size;
     dfFont->renderSize = renderSize;
+    dfFont->fontTextureHandler = fontTextureHandler;
     RenderManager::Instance()->RetainTextureState(fontTextureHandler);
 
     return dfFont;
@@ -120,7 +238,7 @@ bool DFFont::IsEqual(const Font *font) const
         return false;
     
     DFFont* dfFont = (DFFont*) font;
-    if (dfFont->configPath != configPath)
+    if (dfFont->fontInternal->configPath != fontInternal->configPath)
         return false;
     
     return true;
@@ -160,15 +278,15 @@ Size2i DFFont::DrawStringToBuffer(const WideString & str,
     float32 lastY = 0;
     float32 sizeScale = GetSizeScale();
 
-    CharsMap::const_iterator notDef = chars.find(NOT_DEF_CHAR);
-    bool notDefExists = (notDef != chars.end());
+    DFFontInternalData::CharsMap::const_iterator notDef = fontInternal->chars.find(NOT_DEF_CHAR);
+    bool notDefExists = (notDef != fontInternal->chars.end());
 
     
     for (uint32 charPos = 0; charPos < strLength; ++charPos)
     {
         char16 charId = str.at(charPos);
-        CharsMap::const_iterator iter = chars.find(charId);
-        if (iter == chars.end())
+        DFFontInternalData::CharsMap::const_iterator iter = fontInternal->chars.find(charId);
+        if (iter == fontInternal->chars.end())
         {
             if (notDefExists)
             {
@@ -191,7 +309,7 @@ Size2i DFFont::DrawStringToBuffer(const WideString & str,
             }
         }
         
-        const CharDescription& charDescription = iter->second;
+        const DFFontInternalData::CharDescription& charDescription = iter->second;
 
         float32 width = charDescription.width * sizeScale;
         float32 startX = lastX + charDescription.xOffset * sizeScale;
@@ -253,117 +371,29 @@ Size2i DFFont::DrawStringToBuffer(const WideString & str,
 
 float32 DFFont::GetSpread() const
 {
-    return 0.25f / (spread * GetSizeScale());
+    return 0.25f / (fontInternal->spread * GetSizeScale());
 }
 
 float32 DFFont::GetSizeScale() const
 {
-    return renderSize / baseSize;
+    return renderSize / fontInternal->baseSize;
 }
-
-bool DFFont::LoadTexture(const FilePath& path)
+    
+bool DFFont::LoadTexture(const FilePath & path)
 {
     DVASSERT(fontTexture == NULL);
 
     fontTexture = Texture::CreateFromFile(path);
+    if(!fontTexture)
+    {
+        return false;
+    }
+    
     TextureStateData textureData;
     textureData.SetTexture(0, fontTexture);
     fontTextureHandler = RenderManager::Instance()->CreateTextureState(textureData);
 
     return true;
-}
-
-bool DFFont::LoadConfig(const DAVA::FilePath &path)
-{
-    YamlParser* parser = YamlParser::Create(path.GetAbsolutePathname());
-    if (!parser)
-        return false;
-    
-    configPath = path;
-    
-    YamlNode* rootNode = parser->GetRootNode();
-    const YamlNode* configNode = rootNode->Get("font");
-    if (!configNode)
-    {
-        SafeRelease(parser);
-        return false;
-    }
-    const YamlNode* charsNode = configNode->Get("chars");
-    if (!charsNode)
-    {
-        SafeRelease(parser);
-        return false;
-    }
-    
-    baseSize = configNode->Get("size")->AsFloat();
-    const YamlNode* paddingTop = configNode->Get("padding_top");
-    if (paddingTop)
-        this->paddingTop = paddingTop->AsFloat();
-    const YamlNode* paddingLeft = configNode->Get("padding_left");
-    if (paddingLeft)
-        this->paddingLeft = paddingLeft->AsFloat();
-    const YamlNode* paddingBottom = configNode->Get("padding_bottop");
-    if (paddingBottom)
-        this->paddingBottom = paddingBottom->AsFloat();
-    const YamlNode* paddingRight = configNode->Get("padding_right");
-    if (paddingRight)
-        this->paddingRight = paddingRight->AsFloat();
-    const YamlNode* lineHeight = configNode->Get("lineHeight");
-    if (lineHeight)
-        this->lineHeight = lineHeight->AsFloat();
-    const YamlNode* spread = configNode->Get("spread");
-    if (spread)
-        this->spread = spread->AsFloat();
-    
-    const MultiMap<String, YamlNode*> charsMap = charsNode->AsMap();
-    MultiMap<String, YamlNode*>::const_iterator charsMapEnd = charsMap.end();
-    for (MultiMap<String, YamlNode*>::const_iterator iter = charsMap.begin(); iter != charsMapEnd; ++iter)
-    {
-        char16 charId = atoi(iter->first.c_str());
-        CharDescription charDescription;
-        charDescription.height = iter->second->Get("height")->AsFloat();
-        charDescription.width = iter->second->Get("width")->AsFloat();
-        charDescription.xOffset = iter->second->Get("xoffset")->AsFloat();
-        charDescription.yOffset = iter->second->Get("yoffset")->AsFloat();
-        charDescription.xAdvance = iter->second->Get("xadvance")->AsFloat();
-        charDescription.u = iter->second->Get("u")->AsFloat();
-        charDescription.u2 = iter->second->Get("u2")->AsFloat();
-        charDescription.v = iter->second->Get("v")->AsFloat();
-        charDescription.v2 = iter->second->Get("v2")->AsFloat();
-        
-        chars[charId] = charDescription;
-    }
-    
-    const YamlNode* kerningNode = configNode->Get("kerning");
-    if (kerningNode)
-    {
-        const MultiMap<String, YamlNode*> kerningMap = kerningNode->AsMap();
-        MultiMap<String, YamlNode*>::const_iterator kerningMapEnd = kerningMap.end();
-        for (MultiMap<String, YamlNode*>::const_iterator iter = kerningMap.begin(); iter != kerningMapEnd; ++iter)
-        {
-            int32 charId = atoi(iter->first.c_str());
-            CharsMap::iterator charIter = chars.find(charId);
-            if (charIter == chars.end())
-                continue;
-            
-            const MultiMap<String, YamlNode*> charKerningMap = iter->second->AsMap();
-            MultiMap<String, YamlNode*>::const_iterator charKerningMapEnd = charKerningMap.end();
-            for (MultiMap<String, YamlNode*>::const_iterator iter = charKerningMap.begin(); iter != charKerningMapEnd; ++iter)
-            {
-                int32 secondCharId = atoi(iter->first.c_str());
-                float32 kerning = iter->second->AsFloat();
-                charIter->second.kerning[secondCharId] = kerning;
-            }
-        }
-    }
-
-    SafeRelease(parser);
-    return true;
-}
-
-FilePath DFFont::GetTexturePath() const
-{
-    return FilePath::CreateWithNewExtension(configPath, ".tex");
 }
     
 YamlNode * DFFont::SaveToYamlNode() const
@@ -372,7 +402,7 @@ YamlNode * DFFont::SaveToYamlNode() const
     //Type
     node->Set("type", "DFFont");
     
-    String pathname = configPath.GetFrameworkPath();
+    String pathname = fontInternal->configPath.GetFrameworkPath();
     node->Set("name", pathname);
     
     return node;
@@ -380,12 +410,12 @@ YamlNode * DFFont::SaveToYamlNode() const
 
 const FilePath & DFFont::GetFontPath() const
 {
-    return configPath;
+    return fontInternal->configPath;
 }
 
 String DFFont::GetRawHashString()
 {
-    return configPath.GetFrameworkPath() + "_" + Font::GetRawHashString();
+    return fontInternal->configPath.GetFrameworkPath() + "_" + Font::GetRawHashString();
 }
 
 }
