@@ -238,9 +238,7 @@ DefinitionFile * ResourcePacker2D::ProcessPSD(const FilePath & processDirectoryP
 			FilePath outputFile = FramePathHelper::GetFramePathRelative(psdNameWithoutExtension, k - 1);
 
 			Magick::Image & currentLayer = layers[k];
-			const Magick::Geometry croppedGeometry(width,height, 0, 0);
-			currentLayer.crop(croppedGeometry);
-			currentLayer.page(croppedGeometry);
+			currentLayer.crop(Magick::Geometry(width,height, 0, 0));
 			currentLayer.magick("PNG");
 			currentLayer.write(outputFile.GetAbsolutePathname());
 		}
