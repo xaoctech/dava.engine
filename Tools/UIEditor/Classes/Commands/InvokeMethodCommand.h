@@ -37,7 +37,7 @@ public:
     InvokeMethodCommand(BaseMetadata* metadata, const String& methodName);
 	virtual ~InvokeMethodCommand();
     
-    virtual void Execute();
+    virtual eExecuteResult Execute();
 	virtual void Rollback();
     
 	virtual bool IsUndoRedoSupported() {return false;};
