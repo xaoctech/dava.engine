@@ -103,7 +103,7 @@ ChangeFontPropertyCommand::~ChangeFontPropertyCommand()
 {
 }
 
-void ChangeFontPropertyCommand::Execute()
+BaseCommand::eExecuteResult ChangeFontPropertyCommand::Execute()
 {
     //TODO: save data to be able to revert changes
     Logger::FrameworkDebug("ChangeFontPropertyCommand::Execute SetLocalizedFont %s %p %s default", data.fontPresetOriginalName.c_str(), data.font, data.fontPresetName.c_str());
@@ -128,7 +128,7 @@ void ChangeFontPropertyCommand::Execute()
     }
     
     // apply current font change
-    ChangePropertyCommand<Font *>::Execute();
+    return ChangePropertyCommand<Font *>::Execute();
 }
 
 void ChangeFontPropertyCommand::Rollback()

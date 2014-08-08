@@ -26,26 +26,29 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __INVOKEMETHODCOMMAND__H__
-#define __INVOKEMETHODCOMMAND__H__
+#include "AdjustablePointDoubleSpinbox.h"
+#include "Base/BaseMath.h"
+#include "Math/MathHelpers.h"
 
-#include "BaseCommand.h"
-
-class InvokeMethodCommand : public BaseCommand
+AdjustablePointDoubleSpinBox::AdjustablePointDoubleSpinBox(QWidget* parent) :
+    QDoubleSpinBox(parent)
 {
-public:
-    InvokeMethodCommand(BaseMetadata* metadata, const String& methodName);
-	virtual ~InvokeMethodCommand();
-    
-    virtual eExecuteResult Execute();
-	virtual void Rollback();
-    
-	virtual bool IsUndoRedoSupported() {return false;};
-    
-protected:
-    BaseMetadata* commandMetadata;
-    String commandMethodName;
-};
+}
 
+void AdjustablePointDoubleSpinBox::SetValueAndAdjustPoint(double value)
+{
+    double fracPart = fmodf(value, 1.0f);
 
-#endif /* defined(__UIEditor__InvokeMethodCommand__) */
+    static const double roundingMultiplier = 1000.0f; // 4 digits.
+    static const int minDecimalPlaces = 1;
+
+    double rounded = DAVA::Round(fracPart * roundingMultiplier) / roundingMultiplier;
+
+    char buf[8] = {0};
+    sprintf(buf, "%.4g", rounded);
+
+    int curDecimalPlaces = strlen(buf) - 2; // 2 means size of leading "0."
+
+    setDecimals(qMax(curDecimalPlaces, minDecimalPlaces));
+    setValue(value);
+}
