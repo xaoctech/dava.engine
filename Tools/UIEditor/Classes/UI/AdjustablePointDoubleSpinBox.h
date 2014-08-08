@@ -26,26 +26,22 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __INVOKEMETHODCOMMAND__H__
-#define __INVOKEMETHODCOMMAND__H__
 
-#include "BaseCommand.h"
+#ifndef __QT_ADJUSTABLE_POINT_DOUBLE_SPINBOX_H__
+#define __QT_ADJUSTABLE_POINT_DOUBLE_SPINBOX_H__
 
-class InvokeMethodCommand : public BaseCommand
+#include <QWidget>
+#include <QDoubleSpinbox>
+
+class AdjustablePointDoubleSpinBox : public QDoubleSpinBox
 {
+	Q_OBJECT
+    
 public:
-    InvokeMethodCommand(BaseMetadata* metadata, const String& methodName);
-	virtual ~InvokeMethodCommand();
-    
-    virtual eExecuteResult Execute();
-	virtual void Rollback();
-    
-	virtual bool IsUndoRedoSupported() {return false;};
-    
-protected:
-    BaseMetadata* commandMetadata;
-    String commandMethodName;
+	AdjustablePointDoubleSpinBox(QWidget * parent);
+
+    // Set the value and adjust the decimal point position according to the frac part value.
+    void SetValueAndAdjustPoint(double value);
 };
 
-
-#endif /* defined(__UIEditor__InvokeMethodCommand__) */
+#endif //__QT_ADJUSTABLE_POINT_DOUBLE_SPINBOX_H__
