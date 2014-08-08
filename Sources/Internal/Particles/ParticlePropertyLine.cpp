@@ -44,7 +44,7 @@ template <> RefPtr<PropertyLine<float32> > PropertyLineYamlReader::CreatePropert
 	{
 		RefPtr<PropertyLineKeyframes<float32> > keyframes(new PropertyLineKeyframes<float32>());
 
-		for (int k = 0; k < node->GetCount() / 2; ++k)
+		for (uint32 k = 0; k < node->GetCount() / 2; ++k)
 		{
 			const YamlNode * time = node->Get(k * 2);
 			const YamlNode * value = node->Get(k * 2 + 1);
@@ -78,7 +78,7 @@ template <> RefPtr<PropertyLine<Vector2> > PropertyLineYamlReader::CreatePropert
 
 		RefPtr< PropertyLineKeyframes<Vector2> > keyframes (new PropertyLineKeyframes<Vector2>());
 
-		for (int k = 0; k < node->GetCount() / 2; ++k)
+		for (uint32 k = 0; k < node->GetCount() / 2; ++k)
 		{
 			const YamlNode * time = node->Get(k * 2);
 			const YamlNode * value = node->Get(k * 2 + 1);
@@ -127,7 +127,7 @@ template <> RefPtr<PropertyLine<Vector3> > PropertyLineYamlReader::CreatePropert
             
         RefPtr< PropertyLineKeyframes<Vector3> > keyframes (new PropertyLineKeyframes<Vector3>());
             
-        for (int k = 0; k < node->GetCount() / 2; ++k)
+        for (uint32 k = 0; k < node->GetCount() / 2; ++k)
         {
             const YamlNode * time = node->Get(k * 2);
             const YamlNode * value = node->Get(k * 2 + 1);

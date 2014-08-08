@@ -105,7 +105,7 @@ public:
     VariantType     AsVariantType() const;
 
     //These functions work only if type of node is array or map
-    int32           GetCount() const;
+    uint32          GetCount() const;
     const YamlNode *Get(int32 index) const;
 
     //These functions work only if type of node is map
