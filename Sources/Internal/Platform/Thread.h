@@ -170,11 +170,11 @@ public:
 
 private:
     virtual ~Thread();
-	Thread(const Message& msg);
+	Thread(const Message &msg);
     void Init();
     void Shutdown();
 
-    void SetThreadId(const Id & threadId);
+    void SetId(const Id &threadId);
 	
 	Message	msg;
 	eThreadState state;
@@ -185,25 +185,15 @@ private:
     static Set<Thread *> threadList;
     static Mutex threadListMutex;
 	
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
-	#if defined (__DAVAENGINE_NPAPI__)
-		CGLContextObj npAPIGLContext;
-	#endif // #if defined (__DAVAENGINE_NPAPI__)
-
-#elif defined(DAVAENGINE_PTHREAD)
+#if defined(DAVAENGINE_PTHREAD)
+    typedef pthread_t *ThreadHandle;
     bool joined;
-	friend void	* PthreadMain(void * param);
-#elif defined (__DAVAENGINE_WIN32__)
-    HANDLE threadHandle;
-
+	friend void	*PthreadMain(void *param);
+#elif defined(__DAVAENGINE_WIN32__)
+    typedef HANDLE ThreadHandle;
 	friend DWORD WINAPI ThreadFunc(void* param);
-#elif defined(__DAVAENGINE_ANDROID__)
-private:
-	static ThreadId glThreadId;
-
-public:
-	static void	InitGLThread();
-#endif //PLATFORMS	
+#endif //PLATFORMS
+    ThreadHandle threadHandle;
 };
 
 };

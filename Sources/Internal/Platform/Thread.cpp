@@ -119,18 +119,6 @@ Thread::eThreadState Thread::GetState()
 	return state;
 }
 
-
-#ifndef __DAVAENGINE_WIN32__
-void Thread::Kill()
-{
-    if(state != STATE_ENDED && state != STATE_KILLED)
-    {
-        pthread_kill(GetThreadId().internalTid, SIGKILL);
-        state = STATE_KILLED;
-    }
-}
-#endif
-
 void Thread::Wait(ConditionalVariable * cv)
 {
     int32 ret = 0;
@@ -158,9 +146,9 @@ void Thread::Broadcast(ConditionalVariable * cv)
         Logger::FrameworkDebug("[Thread::Broadcast]: pthread_cond_broadcast error code %d", ret);
 }
 
-void Thread::SetThreadId(const Id & _id)
+void Thread::SetId(const Id &threadId)
 {
-    id = _id;
+    id = threadId;
 }
 
 Thread::Id Thread::GetId()
