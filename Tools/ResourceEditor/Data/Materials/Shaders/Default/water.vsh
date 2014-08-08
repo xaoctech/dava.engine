@@ -175,14 +175,16 @@ void main()
         #else
             vec3 viewPointInWorldSpace = vec3(worldMatrix * inPosition);
         #endif
-        vec3 viewDirectionInWorldSpace = viewPointInWorldSpace - cameraPosition;
+        #if !defined(VERTEX_LIT)
+            vec3 viewDirectionInWorldSpace = viewPointInWorldSpace - cameraPosition;
+        #endif
     #endif
     
     // calculating fog color
     #if defined(FOG_ATMOSPHERE_MAP)
         float fogAtmosphereAttenuation = clamp(fogDistance / fogAtmosphereDistance, 0.0, 1.0);
         vec3 viewDirection = normalize(vec3(worldMatrix * inPosition) - cameraPosition);
-        lowp vec4 atmosphereColor = textureCubeLod(atmospheremap, viewDirection, 0);
+        lowp vec4 atmosphereColor = textureCubeLod(atmospheremap, viewDirection, 0.0);
         varFogColor = mix(fogColor, atmosphereColor.rgb, fogAtmosphereAttenuation);
     #else
         varFogColor = fogColor;

@@ -608,7 +608,7 @@ void main()
         float fogAtmosphereAttenuation = clamp(fogDistance / fogAtmosphereDistance, 0.0, 1.0);
         vec3 viewDirection = normalize(vec3(worldMatrix * inPosition) - cameraPosition);
         viewDirection.z = clamp(viewDirection.z, 0.01, 1.0);
-        lowp vec4 cubemapColor = textureCubeLod(fogGlowCubemap, viewDirection, 0.0);
+        lowp vec4 atmosphereColor = textureCubeLod(atmospheremap, viewDirection, 0.0);
         varFogColor = mix(fogColor, atmosphereColor.rgb, fogAtmosphereAttenuation);
     #else
         varFogColor = fogColor;
