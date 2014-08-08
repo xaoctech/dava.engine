@@ -90,7 +90,7 @@ public:
                           Type value);
 	virtual ~ChangePropertyCommand();
 
-    virtual void Execute();
+    virtual eExecuteResult Execute();
 	virtual void Rollback();
 
 	virtual bool IsUndoRedoSupported() {return true;};
@@ -238,7 +238,7 @@ template<typename Type>
 }
 
 template<typename Type>
-    void ChangePropertyCommand<Type>::Execute()
+    BaseCommand::eExecuteResult ChangePropertyCommand<Type>::Execute()
 {
 	QString propertyName = GetPropertyName();
     for (COMMANDDATAVECTITER iter = this->commandData.begin(); iter != commandData.end(); iter ++)
@@ -255,6 +255,8 @@ template<typename Type>
             CommandsController::Instance()->EmitChangePropertyFailed(propertyName);
         }
     }
+    
+    return BaseCommand::Success;
 }
 
 template<typename Type>

@@ -54,7 +54,9 @@ void PartilceEmitterLoadProxy::Load(KeyedArchive *archive, SerializationContext 
 		emitterFilename = archive->GetString("pe.configpath");
 }
 
-ParticleEmitter::ParticleEmitter() : requireDeepClone(true)
+ParticleEmitter::ParticleEmitter() 
+    : requireDeepClone(true)
+    , shortEffect(false)
 {        
 	Cleanup(false);
 }
