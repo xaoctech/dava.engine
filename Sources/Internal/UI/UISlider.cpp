@@ -165,66 +165,7 @@ void UISlider::SetThumbSprite(const FilePath & spriteName, int32 frame)
 	thumbButton->SetSprite(spriteName, frame);
 	InitInactiveParts(thumbButton->GetBackground()->GetSprite());
 }
-
-void UISlider::SetMinSprite(Sprite * sprite, int32 frame)
-{
-	InitMinBackground();
-	minBackground->SetSprite(sprite, frame);
-}
-void UISlider::SetMinSprite(const FilePath & spriteName, int32 frame)
-{
-	InitMinBackground();
-	minBackground->SetSprite(spriteName, frame);
-}
 	
-void UISlider::SetMinDrawType(UIControlBackground::eDrawType drawType)
-{
-	InitMinBackground();
-    minBackground->SetDrawType(drawType);
-}
-    
-void UISlider::SetMinLeftRightStretchCap(float32 stretchCap)
-{
-	InitMinBackground();
-    minBackground->SetLeftRightStretchCap(stretchCap);
-}
-
-void UISlider::SetMinTopBottomStretchCap(float32 stretchCap)
-{
-    InitMinBackground();
-    minBackground->SetTopBottomStretchCap(stretchCap);
-}
-
-void UISlider::SetMaxSprite(Sprite * sprite, int32 frame)
-{
-	InitMaxBackground();
-	maxBackground->SetSprite(sprite, frame);
-}
-	
-void UISlider::SetMaxSprite(const FilePath & spriteName, int32 frame)
-{
-	InitMaxBackground();
-	maxBackground->SetSprite(spriteName, frame);
-}
-    
-void UISlider::SetMaxDrawType(UIControlBackground::eDrawType drawType)
-{
-	InitMaxBackground();
-    maxBackground->SetDrawType(drawType);
-}
-
-void UISlider::SetMaxLeftRightStretchCap(float32 stretchCap)
-{
-	InitMaxBackground();
-    maxBackground->SetLeftRightStretchCap(stretchCap);
-}
-
-void UISlider::SetMaxTopBottomStretchCap(float32 stretchCap)
-{
-    InitMaxBackground();
-    maxBackground->SetTopBottomStretchCap(stretchCap);
-}
-
 void UISlider::RecalcButtonPos()
 {
 	if (thumbButton)
@@ -347,6 +288,8 @@ void UISlider::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 	UIControl::LoadFromYamlNode(node, loader);
 	
 	ReleaseAllSubcontrols();
+    InitMinBackground();
+    InitMaxBackground();
 	const YamlNode * thumbSpriteNode = node->Get("thumbSprite");
 
 	if (thumbSpriteNode)
@@ -369,13 +312,12 @@ void UISlider::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 	{
 		// Yuri Coder, 2012/04/24. This is old configuration version without the subcontrols.
 		// Need to create min background subcontrol.
-		InitMinBackground();
 		const YamlNode * spriteNode = minSpriteNode->Get(0);
 		const YamlNode * frameNode = minSpriteNode->Get(1);
 		
 		if (spriteNode)
 		{
-			SetMinSprite(spriteNode->AsString(), frameNode->AsInt32());
+			minBackground->SetSprite(spriteNode->AsString(), frameNode->AsInt32());
 		}
 	}
 	
@@ -385,13 +327,12 @@ void UISlider::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 	{
 		// Yuri Coder, 2012/04/24. This is old configuration version without the subcontrols.
 		// Need to create max background subcontrol.
-		InitMaxBackground();
 		const YamlNode * spriteNode = maxSpriteNode->Get(0);
 		const YamlNode * frameNode = maxSpriteNode->Get(1);
 		
 		if (spriteNode)
 		{
-			SetMaxSprite(spriteNode->AsString(), frameNode->AsInt32());
+			maxBackground->SetSprite(spriteNode->AsString(), frameNode->AsInt32());
 		}
 	}
 	
@@ -731,60 +672,6 @@ void UISlider::CopyBackgroundAndRemoveControl(UIControl* from, UIControlBackgrou
 
     *to = from->GetBackground()->Clone();
     RemoveControl(from);
-}
-
-void UISlider::SetMinSpriteFrame(int32 frame)
-{
-    InitMinBackground();
-    if (minBackground->GetSprite())
-    {
-        minBackground->SetFrame(frame);
-    }
-}
-
-void UISlider::SetMaxSpriteFrame(int32 frame)
-{
-    InitMaxBackground();
-    if (maxBackground->GetSprite())
-    {
-        maxBackground->SetFrame(frame);
-    }
-}
-
-void UISlider::SetMinSpriteModification(int32 value)
-{
-    InitMinBackground();
-    minBackground->SetModification(value);
-}
-
-void UISlider::SetMaxSpriteModification(int32 value)
-{
-    InitMaxBackground();
-    maxBackground->SetModification(value);
-}
-
-void UISlider::SetMinColorInheritType(UIControlBackground::eColorInheritType inheritType)
-{
-    InitMinBackground();
-    minBackground->SetColorInheritType(inheritType);
-}
-
-void UISlider::SetMaxColorInheritType(UIControlBackground::eColorInheritType inheritType)
-{
-    InitMaxBackground();
-    maxBackground->SetColorInheritType(inheritType);
-}
-
-void UISlider::SetMinAlign(int32 value)
-{
-    InitMinBackground();
-    minBackground->SetAlign(value);
-}
-
-void UISlider::SetMaxAlign(int32 value)
-{
-    InitMaxBackground();
-    maxBackground->SetAlign(value);
 }
 	
 } // ns

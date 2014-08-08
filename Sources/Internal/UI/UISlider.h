@@ -49,29 +49,6 @@ public:
 
 	virtual void SetThumbSprite(Sprite * sprite, int32 frame);
 	virtual void SetThumbSprite(const FilePath & spriteName, int32 frame);
-	
-	virtual void SetMinSprite(Sprite * sprite, int32 frame);
-	virtual void SetMinSprite(const FilePath & spriteName, int32 frame);
-    virtual void SetMinSpriteFrame(int32 frame);
-    virtual void SetMinSpriteModification(int32 value);
-    virtual void SetMinDrawType(UIControlBackground::eDrawType drawType);
-    virtual void SetMinColorInheritType(UIControlBackground::eColorInheritType inheritType);
-    
-    virtual void SetMinAlign(int32 value);
-    virtual void SetMinLeftRightStretchCap(float32 stretchCap);
-
-    virtual void SetMinTopBottomStretchCap(float32 stretchCap);
-    
-	virtual void SetMaxSprite(Sprite * sprite, int32 frame);
-	virtual void SetMaxSprite(const FilePath & spriteName, int32 frame);
-    virtual void SetMaxSpriteFrame(int32 frame);
-    virtual void SetMaxSpriteModification(int32 value);
-    virtual void SetMaxDrawType(UIControlBackground::eDrawType drawType);
-    virtual void SetMaxColorInheritType(UIControlBackground::eColorInheritType inheritType);
-
-    virtual void SetMaxAlign(int32 value);
-    virtual void SetMaxLeftRightStretchCap(float32 stretchCap);
-    virtual void SetMaxTopBottomStretchCap(float32 stretchCap);
 
     virtual void SetSize(const DAVA::Vector2 &newSize);
 
