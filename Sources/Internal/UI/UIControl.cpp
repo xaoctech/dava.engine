@@ -133,11 +133,6 @@ namespace DAVA
         return parent;
     }
 
-    bool UIControl::GetExclusiveInput() const
-    {
-        return exclusiveInput;
-    }
-
     void UIControl::SetExclusiveInput(bool isExclusiveInput, bool hierarchic/* = true*/)
     {
         exclusiveInput = isExclusiveInput;
@@ -150,11 +145,6 @@ namespace DAVA
                 (*it)->SetExclusiveInput(isExclusiveInput, hierarchic);
             }
         }
-    }
-
-    bool UIControl::GetMultiInput() const
-    {
-        return multiInput;
     }
 
     void UIControl::SetMultiInput(bool isMultiInput, bool hierarchic/* = true*/)
@@ -308,13 +298,6 @@ namespace DAVA
             }
         }
         return 0;
-    }
-
-
-
-    DAVA::int32 UIControl::GetState() const
-    {
-        return controlState;
     }
 
     void UIControl::SetState(int32 state)
@@ -786,7 +769,7 @@ namespace DAVA
         return GetAbsolutePosition();
     }
 
-    DAVA::Vector2 UIControl::GetAbsolutePosition()
+    Vector2 UIControl::GetAbsolutePosition()
     {
         return GetGeometricData().position;
     }
@@ -933,11 +916,6 @@ namespace DAVA
         }
     }
 
-    bool UIControl::GetRecursiveVisible() const
-    {
-        return recursiveVisible;
-    }
-
     void UIControl::SetRecursiveVisible(bool isVisible)
     {
         if (recursiveVisible == isVisible)
@@ -967,11 +945,6 @@ namespace DAVA
         }
     }
 
-    bool UIControl::GetInputEnabled() const
-    {
-        return inputEnabled;
-    }
-
     void UIControl::SetInputEnabled(bool isEnabled, bool hierarchic/* = true*/)
     {
         if (isEnabled != inputEnabled)
@@ -996,16 +969,10 @@ namespace DAVA
         }
     }
 
-    bool UIControl::GetFocusEnabled() const
-    {
-        return focusEnabled;
-    }
-
     void UIControl::SetFocusEnabled(bool isEnabled)
     {
         focusEnabled = isEnabled;
     }
-
 
     bool UIControl::GetDisabled() const
     {
@@ -1062,11 +1029,6 @@ namespace DAVA
         }
     }
 
-
-    bool UIControl::GetClipContents() const
-    {
-        return clipContents;
-    }
     void UIControl::SetClipContents(bool isNeedToClipContents)
     {
         clipContents = isNeedToClipContents;

@@ -537,6 +537,10 @@ public:
      */
     const UIGeometricData &GetGeometricData();
 
+    /**
+     \brief Returns actual control local transformation and metrics.
+     \returns control geometric data.
+     */
     UIGeometricData GetLocalGeometricData() const;
 
     /**
@@ -593,7 +597,7 @@ public:
         Also for invisible controls didn't calls Draw() and DrawAfterChilds() methods.
      \returns control visibility.
      */
-    bool GetRecursiveVisible() const;
+    inline bool GetRecursiveVisible() const;
 
     /**
      \brief Sets contol recursive visibility.
@@ -608,7 +612,7 @@ public:
         Be ware! Base control processing inputs by default.
      \returns true if control pocessing inputs.
      */
-    bool GetInputEnabled() const;
+    inline bool GetInputEnabled() const;
 
     /**
      \brief Sets contol input processing ability.
@@ -626,7 +630,7 @@ public:
      Be ware! Base control can be focused by default.
      \returns true if control can be focused.
      */
-    bool GetFocusEnabled() const;
+    inline bool GetFocusEnabled() const;
 
     /**
      \brief Sets contol focusing ability.
@@ -676,7 +680,7 @@ public:
         Clip contents is disabled by default.
      \returns true if control rect clips draw and input areas of his children.
      */
-    bool GetClipContents() const;
+    inline bool GetClipContents() const;
     /**
      \brief Sets clip contents state.
         If clip contents is enabled all incoming inputs for the control children processed only
@@ -701,7 +705,7 @@ public:
         Exclusive input is disabled by default.
      \returns true if control supports exclusive input.
      */
-    bool GetExclusiveInput() const;
+    inline bool GetExclusiveInput() const;
     /**
      \brief Enables or disables control exclusive input.
         If control have exlusive input enabled and this control starts to process
@@ -719,7 +723,7 @@ public:
         Multiply input is disabled by default.
      \returns true if control supports multyple inputs.
      */
-    bool GetMultiInput() const;
+    inline bool GetMultiInput() const;
     /**
      \brief Sets contol multi input processing.
         If multiple input is enabled control can process all incoming inputs (Two or
@@ -767,7 +771,7 @@ public:
      \brief Returns control state bit mask.
      \returns control state.
      */
-    int32 GetState() const;
+    inline int32 GetState() const;
     /**
      \brief Sets control state bit mask.
         Try to not use this method manually.
@@ -1448,6 +1452,41 @@ int32 UIControl::GetTag() const
 Rect UIControl::GetRect() const
 {
     return Rect(relativePosition - pivotPoint, size);
+}
+
+bool UIControl::GetRecursiveVisible() const
+{
+    return recursiveVisible;
+}
+
+bool UIControl::GetInputEnabled() const
+{
+    return inputEnabled;
+}
+
+bool UIControl::GetFocusEnabled() const
+{
+    return focusEnabled;
+}
+
+bool UIControl::GetClipContents() const
+{
+    return clipContents;
+}
+
+bool UIControl::GetExclusiveInput() const
+{
+    return exclusiveInput;
+}
+
+bool UIControl::GetMultiInput() const
+{
+    return multiInput;
+}
+
+int32 UIControl::GetState() const
+{
+    return controlState;
 }
 };
 

@@ -136,7 +136,7 @@ void ScreenControl::DrawAfterChilds(const UIGeometricData & /*geometricData*/)
             DrawSelectionFrame(parentGd, GREY_COLOR);
         }
 
-        UIGeometricData controlGd = control->GetAbsoluteGeometricData();
+        UIGeometricData controlGd = control->GetGeometricData();
         controlGd.AddToGeometricData(screenGd);
         DrawSelectionFrame(controlGd, RED_COLOR);
 
