@@ -76,7 +76,7 @@ class CreatePlatformCommand: public UndoableHierarchyTreeNodeCommand
 public:
 	CreatePlatformCommand(const QString& name, const Vector2& size);
     
-	virtual void Execute();
+	virtual eExecuteResult Execute();
 	virtual void Rollback();
 
 	virtual bool IsUndoRedoSupported() {return true;};
@@ -94,7 +94,7 @@ class CreateScreenCommand: public UndoableHierarchyTreeNodeCommand
 public:
 	CreateScreenCommand(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platformId);
 	
-	virtual void Execute();
+	virtual eExecuteResult Execute();
 	virtual void Rollback();
 
 	virtual bool IsUndoRedoSupported() {return true;};
@@ -111,7 +111,7 @@ class CreateAggregatorCommand: public UndoableHierarchyTreeNodeCommand
 public:
 	CreateAggregatorCommand(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platformId, const Rect& rect);
 	
-	virtual void Execute();
+	virtual eExecuteResult Execute();
 	virtual void Rollback();
 	
 	virtual bool IsUndoRedoSupported() {return true;};
@@ -127,10 +127,10 @@ private:
 class CreateControlCommand: public BaseCommand
 {
 public:
-	CreateControlCommand(const QString& type, const QPoint& pos);
-	CreateControlCommand(const QString& type, HierarchyTreeNode* parent, HierarchyTreeNode* insertAfter = NULL);
+	CreateControlCommand(HierarchyTreeNode::HIERARCHYTREENODEID typeId, const QPoint& pos);
+	CreateControlCommand(HierarchyTreeNode::HIERARCHYTREENODEID typeId, HierarchyTreeNode* parent, HierarchyTreeNode* insertAfter = NULL);
 
-	virtual void Execute();
+	virtual eExecuteResult Execute();
 	void Rollback();
 	virtual bool IsUndoRedoSupported() {return true;};
 
@@ -145,7 +145,8 @@ protected:
 private:
 	QString type;
 	QPoint pos;
-
+    
+	HierarchyTreeNode::HIERARCHYTREENODEID typeId;
 	HierarchyTreeNode::HIERARCHYTREENODEID createdControlID;
 	
 	// Prepare the information needed for Redo.
@@ -169,8 +170,8 @@ class DeleteSelectedNodeCommand: public UndoableHierarchyTreeNodeCommand
 public:
 	DeleteSelectedNodeCommand(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes, bool needDeleteFiles = false);
 	
-	virtual void Execute();
-	void Rollback();
+	virtual eExecuteResult Execute();
+	virtual void Rollback();
 	virtual bool IsUndoRedoSupported() {return true;};
 
 	virtual void IncrementUnsavedChanges();
@@ -200,7 +201,7 @@ class ChangeNodeHeirarchy: public UndoableHierarchyTreeNodeCommand
 public:
 	ChangeNodeHeirarchy(HierarchyTreeNode::HIERARCHYTREENODEID targetNodeID, HierarchyTreeNode::HIERARCHYTREENODEID afterNodeID, HierarchyTreeNode::HIERARCHYTREENODESIDLIST items);
 
-	virtual void Execute();
+	virtual eExecuteResult Execute();
 	virtual void Rollback();
 	virtual bool IsUndoRedoSupported() {return true;};
 

@@ -89,7 +89,7 @@ CreatePlatformCommand::CreatePlatformCommand(const QString& name, const Vector2&
 	this->size = size;
 }
 
-void CreatePlatformCommand::Execute()
+BaseCommand::eExecuteResult CreatePlatformCommand::Execute()
 {
 	if (this->redoNode == NULL)
 	{
@@ -100,6 +100,8 @@ void CreatePlatformCommand::Execute()
 	{
 		ReturnRedoNodeToScene();
 	}
+    
+    return BaseCommand::Success;
 }
 
 void CreatePlatformCommand::Rollback()
@@ -132,7 +134,7 @@ CreateScreenCommand::CreateScreenCommand(const QString& name, HierarchyTreeNode:
 	this->platformId = platformId;
 }
 
-void CreateScreenCommand::Execute()
+BaseCommand::eExecuteResult CreateScreenCommand::Execute()
 {
 	if (this->redoNode == NULL)
 	{
@@ -143,6 +145,8 @@ void CreateScreenCommand::Execute()
 	{
 		ReturnRedoNodeToScene();
 	}
+
+    return BaseCommand::Success;
 }
 
 void CreateScreenCommand::Rollback()
@@ -176,7 +180,7 @@ UndoableHierarchyTreeNodeCommand()
 	this->rect = rect;
 }
 
-void CreateAggregatorCommand::Execute()
+BaseCommand::eExecuteResult CreateAggregatorCommand::Execute()
 {
 	if (this->redoNode == NULL)
 	{
@@ -187,6 +191,8 @@ void CreateAggregatorCommand::Execute()
 	{
 		ReturnRedoNodeToScene();
 	}
+
+    return BaseCommand::Success;
 }
 
 void CreateAggregatorCommand::Rollback()
@@ -212,9 +218,9 @@ void CreateAggregatorCommand::DecrementUnsavedChanges()
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CreateControlCommand::CreateControlCommand(const QString& type, const QPoint& pos)
+CreateControlCommand::CreateControlCommand(HierarchyTreeNode::HIERARCHYTREENODEID typeId, const QPoint& pos)
 {
-	this->type = type;
+    this->typeId = typeId;
 	this->pos = pos;
 	this->createdControlID = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
 
@@ -224,9 +230,9 @@ CreateControlCommand::CreateControlCommand(const QString& type, const QPoint& po
     this->insertAfterNode = NULL;
 }
 
-CreateControlCommand::CreateControlCommand(const QString& type, HierarchyTreeNode* parent, HierarchyTreeNode* insertAfter/*=NULL*/)
+CreateControlCommand::CreateControlCommand(HierarchyTreeNode::HIERARCHYTREENODEID typeId, HierarchyTreeNode* parent, HierarchyTreeNode* insertAfter/*=NULL*/)
 {
-	this->type = type;
+    this->typeId = typeId;
 	this->pos = pos;
 	this->createdControlID = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
 	
@@ -236,15 +242,14 @@ CreateControlCommand::CreateControlCommand(const QString& type, HierarchyTreeNod
     this->insertAfterNode = insertAfter;
 }
 
-void CreateControlCommand::Execute()
+BaseCommand::eExecuteResult CreateControlCommand::Execute()
 {
 	if (this->redoNode)
 	{
 		// Need to recover the node previously deleted.
 		HierarchyTreeController::Instance()->ReturnNodeToScene(redoNode);
-		return;
+		return BaseCommand::Success;
 	}
-
 	
 	// The command is executed for the first time; create the node.
 	HierarchyTreeNode::HIERARCHYTREENODEID newControlID = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
@@ -253,7 +258,7 @@ void CreateControlCommand::Execute()
 		case CREATE_FROM_POINT:
 		{
 			// Use the point passed.
-			newControlID = HierarchyTreeController::Instance()->CreateNewControl(type, pos);
+			newControlID = HierarchyTreeController::Instance()->CreateNewControl(typeId, pos);
 			break;
 		}
 
@@ -261,7 +266,7 @@ void CreateControlCommand::Execute()
 		{
 			static const Vector2 NEW_CONTROL_OFFSET = Vector2(10, 10);
 			DVASSERT(parentNode);
-			newControlID = HierarchyTreeController::Instance()->CreateNewControl(type, NEW_CONTROL_OFFSET, this->parentNode);
+			newControlID = HierarchyTreeController::Instance()->CreateNewControl(typeId, NEW_CONTROL_OFFSET, this->parentNode);
 			break;
 		}
 
@@ -274,7 +279,7 @@ void CreateControlCommand::Execute()
 	if (newControlID == HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY)
 	{
 		// The control wasn't created.
-		return;
+		return BaseCommand::Failed;
 	}
 	
     if(insertAfterNode)
@@ -283,7 +288,9 @@ void CreateControlCommand::Execute()
         node->SetParent(parentNode, insertAfterNode);
         HierarchyTreeController::Instance()->EmitHierarchyTreeUpdated();
     }
+
 	this->createdControlID = newControlID;
+    return BaseCommand::Success;
 }
 
 void CreateControlCommand::Rollback()
@@ -336,7 +343,7 @@ DeleteSelectedNodeCommand::DeleteSelectedNodeCommand(const HierarchyTreeNode::HI
 	parentId = itemNode->GetParent()->GetId();
 }
 
-void DeleteSelectedNodeCommand::Execute()
+BaseCommand::eExecuteResult DeleteSelectedNodeCommand::Execute()
 {
 	if (this->redoNodes.size() == 0)
 	{
@@ -346,6 +353,7 @@ void DeleteSelectedNodeCommand::Execute()
 
 	// Delete the node from scene, but keep in memory.
 	HierarchyTreeController::Instance()->DeleteNodes(this->nodes, false, true, this->deleteFiles);
+    return BaseCommand::Success;
 }
 
 void DeleteSelectedNodeCommand::StoreParentsOfRemovingAggregatorControls(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes)
@@ -504,70 +512,72 @@ void ChangeNodeHeirarchy::StorePreviousParents()
 	}
 }
 
-void ChangeNodeHeirarchy::Execute()
+BaseCommand::eExecuteResult ChangeNodeHeirarchy::Execute()
 {
 	HierarchyTreeNode* targetNode = HierarchyTreeController::Instance()->GetTree().GetNode(targetNodeID);
 	HierarchyTreeNode* insertAfterNode = HierarchyTreeController::Instance()->GetTree().GetNode(afterNodeID);
 	if (!targetNode)
 	{
 		// Possible in Redo case if some changes in tree were made.
-		return;
+		return BaseCommand::Success;
 	}
 
-	
+    bool isHierarchyChanged = false;
 	for (HierarchyTreeNode::HIERARCHYTREENODESIDLIST::iterator iter = items.begin();
 		 iter != items.end();
 		 ++iter)
 	{
 		HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode((*iter));
-		if (node)
-		{
-			if (dynamic_cast<HierarchyTreeScreenNode*>(node))
-			{
-				HierarchyTreeNode* sourceNode = node->GetParent();
+        if (!node || node == targetNode)
+        {
+            // node == targetNode case happens in MacOS when Escape is pressed while a user is dropping
+            // a new control to the screen.
+            // This is Qt defect https://bugreports.qt-project.org/browse/QTBUG-4075
+            continue;
+        }
 
-				if (sourceNode != targetNode)
-				{
-					HierarchyTreeNode::HIERARCHYTREENODESLIST screens;
-					screens.push_back(node);
-					HierarchyTreeController::Instance()->DeleteNodesFiles(screens);
-					
-					// If we insert aggregators or screens into platform - check inserted items name. We should not
-					// insert items with existing names.
-					HierarchyTreePlatformNode* targetPlatform = dynamic_cast<HierarchyTreePlatformNode*>(targetNode);
-					if (targetPlatform)
-					{
-						if (targetPlatform->IsAggregatorOrScreenNamePresent(node->GetName()))
-						{
-							QString newName = CopyPasteHelper::FormatCopyName(node->GetName(), targetNode);
-							node->SetName(newName);
-						}
-					}
-				}
-			}
+        if (dynamic_cast<HierarchyTreeScreenNode*>(node))
+        {
+            HierarchyTreeNode* sourceNode = node->GetParent();
+            if (sourceNode != targetNode)
+            {
+                HierarchyTreeNode::HIERARCHYTREENODESLIST screens;
+                screens.push_back(node);
+                HierarchyTreeController::Instance()->DeleteNodesFiles(screens);
 
-			//YZ backlight parent rect
-			bool isNodeSelected = false;
-			HierarchyTreeControlNode* controlNode = dynamic_cast<HierarchyTreeControlNode*>(node);
-			if (controlNode)
-			{
-				isNodeSelected = HierarchyTreeController::Instance()->IsControlSelected(controlNode);
-				HierarchyTreeController::Instance()->UnselectControl(controlNode);
-                CopyPasteHelper::UpdateAggregators(controlNode, targetNode);
-			}
+                // If we insert aggregators or screens into platform - check inserted items name.
+                // We should not insert items with existing names.
+                HierarchyTreePlatformNode* targetPlatform = dynamic_cast<HierarchyTreePlatformNode*>(targetNode);
+                if (targetPlatform && targetPlatform->IsAggregatorOrScreenNamePresent(node->GetName()))
+                {
+                    QString newName = CopyPasteHelper::FormatCopyName(node->GetName(), targetNode);
+                    node->SetName(newName);
+                }
+            }
+        }
+        
+        //YZ backlight parent rect
+        bool isNodeSelected = false;
+        HierarchyTreeControlNode* controlNode = dynamic_cast<HierarchyTreeControlNode*>(node);
+        if (controlNode)
+        {
+            isNodeSelected = HierarchyTreeController::Instance()->IsControlSelected(controlNode);
+            HierarchyTreeController::Instance()->UnselectControl(controlNode);
+            CopyPasteHelper::UpdateAggregators(controlNode, targetNode);
+        }
 
-			node->SetParent(targetNode, insertAfterNode);
-			//insertAfterNode = node;
-			
-			if (isNodeSelected)
-			{
-				HierarchyTreeController::Instance()->SelectControl(controlNode);
-			}
-		}
+        isHierarchyChanged = true;
+        node->SetParent(targetNode, insertAfterNode);
+        if (isNodeSelected)
+        {
+            HierarchyTreeController::Instance()->SelectControl(controlNode);
+        }
 	}
 	
 	HierarchyTreeController::Instance()->EmitHierarchyTreeUpdated(false);
 	HierarchyTreeController::Instance()->ResetSelectedControl();
+    
+    return isHierarchyChanged ? BaseCommand::Success : BaseCommand::Cancelled;
 }
 
 void ChangeNodeHeirarchy::Rollback()

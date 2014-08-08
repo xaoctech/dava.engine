@@ -68,6 +68,9 @@ FontManagerDialog::FontManagerDialog(bool okButtonEnable,  const QString& graphi
 		resPacker->InitFolders(inDir, outDir);
 		resPacker->PackResources(GPU_PNG);
 	}
+
+    ui->setDefaultButton->setVisible(false);
+    
     // Initialize dialog
     ConnectToSignals();
     InitializeTableView();
@@ -95,7 +98,6 @@ void FontManagerDialog::ConnectToSignals()
     //Connect signal and slots
     connect(ui->okButton, SIGNAL(clicked()), this, SLOT(OkButtonClicked()));
     connect(ui->closeButton, SIGNAL(clicked()), this, SLOT(close()));
-	connect(ui->setDefaultButton, SIGNAL(clicked()), this, SLOT(SetDefaultButtonClicked()));
 }
 
 void FontManagerDialog::UpdateDialogInformation()

@@ -65,7 +65,9 @@
 // enabled the assertion message will be displayed even in release builds.
 #if defined(__DAVAENGINE_DEBUG__)   //always enable full DVASSERT service for debug configurations
     #define ENABLE_ASSERT_LOGGING
+#ifndef __DAVAENGINE_AUTOTESTING__
     #define ENABLE_ASSERT_MESSAGE
+#endif
     #define ENABLE_ASSERT_BREAK
 #else //not defined __DAVAENGINE_DEBUG__    // can disable or select any dvassert service
     #define ENABLE_ASSERT_LOGGING

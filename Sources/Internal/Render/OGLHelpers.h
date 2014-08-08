@@ -175,6 +175,8 @@ namespace DAVA
 #endif //#if defined (__DAVAENGINE_IPHONE__)
     
     
+int32 GetHalfFloatID();
+    
 };
 #endif // #if defined(__DAVAENGINE_OPENGL__)
 #endif // __DAVAENGINE_OGLHELPERS_H__
