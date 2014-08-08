@@ -128,7 +128,7 @@ bool RenderTechniqueSingleton::LoadRenderTechniqueFromYamlNode(const YamlNode * 
         }
 	}
     
-    for (int32 k = 0; k < stateNode->GetCount(); ++k)
+    for (uint32 k = 0; k < stateNode->GetCount(); ++k)
     {
         if (stateNode->GetItemKeyName(k) == "RenderPass")
         {

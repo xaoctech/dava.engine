@@ -119,12 +119,12 @@ YamlNode::~YamlNode()
     }
 }
 
-int32 YamlNode::GetCount() const
+uint32 YamlNode::GetCount() const
 {
     switch (GetType())
     {
-        case TYPE_MAP: return (int32)objectMap->unordered.size();
-        case TYPE_ARRAY: return (int32)objectArray->array.size();
+        case TYPE_MAP: return objectMap->unordered.size();
+        case TYPE_ARRAY: return objectArray->array.size();
         default: break;
     }
     return 0;//string nodes does not contain content
