@@ -36,8 +36,7 @@
 #include "FileSystem/DynamicMemoryFile.h"
 #include "FileSystem/ResourceArchive.h"
 #include "Platform/Mutex.h"
-
-#include <android/asset_manager.h>
+#include "Thread/LockGuard.h"
 
 namespace DAVA
 {
@@ -57,7 +56,7 @@ APKFile::~APKFile()
 
 File * APKFile::CreateFromAssets(const FilePath &filePath, uint32 attributes)
 {
-	mutex.Lock();
+    LockGuard<Mutex> guard(mutex);
 
     FileSystem * fileSystem = FileSystem::Instance();
 	for (List<FileSystem::ResourceArchiveItem>::iterator ai = fileSystem->resourceArchiveList.begin();
@@ -74,7 +73,6 @@ File * APKFile::CreateFromAssets(const FilePath &filePath, uint32 attributes)
 			int32 size = item.archive->LoadResource(relfilename, 0);
 			if ( size == -1 )
 			{
-				mutex.Unlock();
 				return 0;
 			}
             
@@ -83,7 +81,6 @@ File * APKFile::CreateFromAssets(const FilePath &filePath, uint32 attributes)
 
             APKFile *fileInstance = CreateFromData(relfilename, buffer, size, attributes);
             SafeDeleteArray(buffer);
-            mutex.Unlock();
 			return fileInstance;
 		}
 	}
@@ -92,7 +89,6 @@ File * APKFile::CreateFromAssets(const FilePath &filePath, uint32 attributes)
     if(isDirectory)
     {
         Logger::Error("[APKFile::CreateFromAssets] Can't create file because of it is directory (%s)", filePath.GetAbsolutePathname().c_str());
-        mutex.Unlock();
         return NULL;
     }
     
@@ -104,7 +100,6 @@ File * APKFile::CreateFromAssets(const FilePath &filePath, uint32 attributes)
     if (package == NULL)
     {
         DVASSERT_MSG(false, "[APKFile::CreateFromAssets] Package file should be initialized.");
-        mutex.Unlock();
         return NULL;
     }
 
@@ -115,7 +110,6 @@ File * APKFile::CreateFromAssets(const FilePath &filePath, uint32 attributes)
     if (index == -1)
     {
         Logger::Error("[APKFile::CreateFromAssets] Can't locate file in the archive: %s", assetFileStr.c_str());
-        mutex.Unlock();
         return NULL;
     }
 
@@ -125,7 +119,6 @@ File * APKFile::CreateFromAssets(const FilePath &filePath, uint32 attributes)
     if (error == -1)
     {
         Logger::Error("[APKFile::CreateFromAssets] Can't get file info: %s", assetFileStr.c_str());
-        mutex.Unlock();
         return NULL;
     }
 
@@ -133,7 +126,6 @@ File * APKFile::CreateFromAssets(const FilePath &filePath, uint32 attributes)
     if (file == NULL)
     {
         Logger::Error("[APKFile::CreateFromAssets] Can't open file in the archive: %s", assetFileStr.c_str());
-        mutex.Unlock();
         return NULL;
     }
 
@@ -145,7 +137,6 @@ File * APKFile::CreateFromAssets(const FilePath &filePath, uint32 attributes)
         Logger::Error("[APKFile::CreateFromAssets] Error reading file: %s", assetFileStr.c_str());
         SafeDeleteArray(data);
         zip_fclose(file);
-        mutex.Unlock();
         return NULL;
     }
 
@@ -156,7 +147,6 @@ File * APKFile::CreateFromAssets(const FilePath &filePath, uint32 attributes)
 
     zip_fclose(file);
     SafeDeleteArray(data);
-    mutex.Unlock();
     return fileInstance;
 }
     
