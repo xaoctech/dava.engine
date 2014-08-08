@@ -326,7 +326,7 @@ ImportScreensCommand::ImportScreensCommand(HierarchyTreeNode::HIERARCHYTREENODEI
 	this->platformId = platformId;
 }
 
-void ImportScreensCommand::Execute()
+BaseCommand::eExecuteResult ImportScreensCommand::Execute()
 {
 	// importedNodes could be empty only for first executing of command
 	if (importedNodes.empty())
@@ -340,7 +340,7 @@ void ImportScreensCommand::Execute()
 		{
 			ShowErrorMessage("Import error!");
 			Cleanup();
-			return;
+			return BaseCommand::Failed;
 		}
 
 		SetParents();
@@ -355,6 +355,8 @@ void ImportScreensCommand::Execute()
 	{
 		ReturnNodesToScene();
 	}
+    
+    return BaseCommand::Success;
 }
 
 void ImportScreensCommand::Rollback()
@@ -418,7 +420,7 @@ ImportPlatformCommand::ImportPlatformCommand(const QString& platformPath,
 	this->platformSize = platformSize;
 }
 
-void ImportPlatformCommand::Execute()
+BaseCommand::eExecuteResult ImportPlatformCommand::Execute()
 {
 	if (!redoNode)
 	{
@@ -436,7 +438,7 @@ void ImportPlatformCommand::Execute()
 		{
 			ShowErrorMessage("Error importing " + platformName + "!");
 			Cleanup();
-			return;
+			return BaseCommand::Failed;
 		}
 
 		HierarchyTreeNode::HIERARCHYTREENODESITER it;
@@ -460,6 +462,8 @@ void ImportPlatformCommand::Execute()
 	{
 		ReturnRedoNodeToScene();
 	}
+    
+    return BaseCommand::Success;
 }
 
 void ImportPlatformCommand::Rollback()
