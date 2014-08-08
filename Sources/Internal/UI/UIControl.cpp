@@ -287,19 +287,9 @@ namespace DAVA
         name = _name;
     }
 
-    const String & UIControl::GetName() const
-    {
-        return name;
-    }
-
     void UIControl::SetTag(int32 _tag)
     {
         tag = _tag;
-    }
-
-    DAVA::int32 UIControl::GetTag() const
-    {
-        return tag;
     }
 
     // return first control with given name
@@ -791,12 +781,7 @@ namespace DAVA
         drawData.size = size;
         drawData.pivotPoint = pivotPoint;
         drawData.scale = scale;
-        if (angle!=0.0f)
-        {
-            drawData.angle = angle;
-            drawData.cosA = cosf(angle);
-            drawData.sinA = sinf(angle);
-        }
+        drawData.angle = angle;
 
         return drawData;
     }
@@ -900,18 +885,19 @@ namespace DAVA
 
     void UIControl::SetAbsoluteRect(const Rect &rect)
     {
-        RecalculatePivotPoint(rect);
+        if (!parent)
+        {
+            SetRect(rect);
+        }
 
-        SetSize(rect.GetSize());
-        SetAbsolutePosition(rect.GetPosition() + pivotPoint);
-
-        // Update aligns if control was resized manually
-        RecalculateAlignProperties();
+        Rect localRect = rect;
+        localRect.SetPosition( rect.GetPosition() - parent->GetGeometricData().position);
+        SetRect(localRect);
     }
 
     void UIControl::SetRect(const Rect &rect, bool rectInAbsoluteCoordinates/* = false*/)
     {
-        if (rectInAbsoluteCoordinates)
+        if (!rectInAbsoluteCoordinates)
         {
             SetRect(rect);
         }
@@ -1658,15 +1644,10 @@ namespace DAVA
 
         if(debugDrawEnabled)
         {
-            DrawDebugRect(drawData, false);
-        }
-        DrawPivotPoint(unrotatedRect);
-
-        if(debugDrawEnabled && NULL != parent && parent->GetClipContents())
-        {
             RenderManager::Instance()->ClipPush();
             RenderManager::Instance()->ClipRect(Rect(0, 0, -1, -1));
-            DrawDebugRect(drawData, true);
+            DrawDebugRect(drawData, false);
+            DrawPivotPoint(unrotatedRect);
             RenderManager::Instance()->ClipPop();
         }
     }
