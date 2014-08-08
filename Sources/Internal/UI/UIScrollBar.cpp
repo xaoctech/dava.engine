@@ -154,7 +154,7 @@ void UIScrollBar::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 			DVASSERT(0 && "Orientation constant is wrong");
 		}
 	}
-    const YamlNode * delegateNode = node->Get("linkedScrollBar");
+    const YamlNode * delegateNode = node->Get("linkedScrollBarDelegate");
     if (delegateNode)
     {
         String delegatePath = delegateNode->AsString();
@@ -190,7 +190,7 @@ YamlNode * UIScrollBar::SaveToYamlNode(UIYamlLoader * loader)
     if (delegate)
     {
         UIControl* delegateControl = dynamic_cast<UIControl*>(delegate);
-        node->Set("linkedScrollBar", UIYamlLoader::GetControlPath(delegateControl));
+        node->Set("linkedScrollBarDelegate", UIYamlLoader::GetControlPath(delegateControl));
     }
     
     
