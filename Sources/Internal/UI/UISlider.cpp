@@ -116,6 +116,8 @@ void UISlider::InitMaxBackground()
 void UISlider::ReleaseAllSubcontrols()
 {
     RemoveAndReleaseControl(thumbButton);
+    SafeRelease(minBackground);
+    SafeRelease(maxBackground);
 }
 
 void UISlider::InitInactiveParts(Sprite* spr)
@@ -340,69 +342,6 @@ void UISlider::Draw(const UIGeometricData &geometricData)
 	}
 }
 
-void UISlider::SystemDraw(const UIGeometricData &geometricData)
-{
-	UIGeometricData drawData;
-	drawData.position = relativePosition;
-	drawData.size = size;
-	drawData.pivotPoint = pivotPoint;
-	drawData.scale = scale;
-	drawData.angle = angle;
-	drawData.AddToGeometricData(geometricData);
-	
-	if(parent)
-	{
-		GetBackground()->SetParentColor(parent->GetBackground()->GetDrawColor());
-	}
-	else
-	{
-		GetBackground()->SetParentColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
-	}
-	
-	if(clipContents)
-	{
-		RenderManager::Instance()->ClipPush();
-		RenderManager::Instance()->ClipRect(drawData.GetUnrotatedRect());
-	}
-
-	// Draw us.
-	if(visible)
-	{
-		Draw(drawData);
-	}
-	
-	// Draw all the child controls BUT the backgrounds.
-	List<UIControl*>::iterator it = childs.begin();
-	List<UIControl*>::iterator itEnd = childs.end();
-	for(; it != itEnd; ++it)
-	{
-		if ((*it) == bgMin || (*it) == bgMax)
-		{
-			continue;
-		}
-		
-		(*it)->SystemDraw(drawData);
-	}
-	
-	if(visible)
-	{
-		DrawAfterChilds(drawData);
-	}
-	if(clipContents)
-	{
-		RenderManager::Instance()->ClipPop();
-	}
-
-	if (debugDrawEnabled)
-	{
-		Color oldColor = RenderManager::Instance()->GetColor();
-		RenderManager::Instance()->SetColor(debugDrawColor);
-		DrawDebugRect(drawData, false);
-        DrawPivotPoint(drawData.GetUnrotatedRect());
-		RenderManager::Instance()->SetColor(oldColor);
-	}
-}
-
 void UISlider::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
 	UIControl::LoadFromYamlNode(node, loader);
@@ -488,12 +427,6 @@ void UISlider::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 		this->maxDrawType= (UIControlBackground::eDrawType)loader->GetDrawTypeFromNode(maxDrawTypeNode);
         this->needSetMaxDrawType = true;
 	}
-    
-    const YamlNode * pivotNode = node->Get("pivot");
-    if (pivotNode)
-    {
-        pivotPoint = pivotNode->AsPoint();
-    }
 
     const YamlNode* spritesEmbeddedNode = node->Get("spritesEmbedded");
     if (spritesEmbeddedNode)
@@ -558,12 +491,6 @@ YamlNode * UISlider::SaveToYamlNode(UIYamlLoader * loader)
 	// Sprite max value
 	value = this->GetMaxValue();
 	node->Set("maxValue", value);
-
-    VariantType *nodeValue = new VariantType();
-    nodeValue->SetVector2(this->pivotPoint);
-    node->Set("pivot", nodeValue);
-    SafeDelete(nodeValue);
-    
 
     // Min/max background sprites.
     SaveBackground("min", minBackground, node, loader);
@@ -728,8 +655,8 @@ void UISlider::SaveBackground(const char* prefix, UIControlBackground* backgroun
         return;
     }
 
-    UIControlBackground *baseBackground = new UIControlBackground();
-    
+    ScopedPtr<UIControlBackground> baseBackground(new UIControlBackground());
+
     // Color.
     Color color = background->GetColor();
     if (baseBackground->GetColor() != color)

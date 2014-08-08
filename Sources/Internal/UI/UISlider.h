@@ -80,7 +80,6 @@ public:
 	void SetMinMaxValue(float32 _minValue, float32 _maxValue);
 	
 	virtual void Draw(const UIGeometricData &geometricData);
-	virtual void SystemDraw(const UIGeometricData &geometricData);
 	
 	inline bool IsEventsContinuos();
 	inline void SetEventsContinuos(bool isEventsContinuos);
@@ -130,8 +129,6 @@ protected:
     UIControlBackground* minBackground;
     UIControlBackground* maxBackground;
 	UIControl * thumbButton;
-	UIControl * bgMin;
-	UIControl * bgMax;
 
 	Vector2 relTouchPoint;
 

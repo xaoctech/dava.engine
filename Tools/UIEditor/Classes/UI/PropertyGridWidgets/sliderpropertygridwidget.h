@@ -32,12 +32,12 @@
 
 #include <QWidget>
 #include "basepropertygridwidget.h"
-#include "backgroundpropertygridwidget.h"
 
 namespace Ui {
 class SliderPropertyGridWidget;
 }
 
+class BackgroundPropertyGridWidget;
 class SliderPropertyGridWidget : public BasePropertyGridWidget
 {
     Q_OBJECT

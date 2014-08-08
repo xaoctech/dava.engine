@@ -29,6 +29,7 @@
 
 #include "sliderpropertygridwidget.h"
 #include "ui_sliderpropertygridwidget.h"
+#include "backgroundpropertygridwidget.h"
 
 #include "PropertyNames.h"
 #include "BackgroundGridWidgetHelper.h"
