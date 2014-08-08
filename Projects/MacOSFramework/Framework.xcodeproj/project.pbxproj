@@ -507,7 +507,6 @@
 		176DEAA3174B5561007A983B /* NSFullScreenWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = E8989C0916BD24E400732C04 /* NSFullScreenWindow.m */; };
 		176DEAA4174B5561007A983B /* OpenGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8989C0B16BD24E400732C04 /* OpenGLView.mm */; };
 		176DEAA5174B5561007A983B /* Thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C1016BD24E400732C04 /* Thread.cpp */; };
-		176DEAA6174B5561007A983B /* ThreadMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8989C1316BD24E400732C04 /* ThreadMacOS.mm */; };
 		176DEAA7174B5561007A983B /* Font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C1716BD24E400732C04 /* Font.cpp */; };
 		176DEAA8174B5561007A983B /* FontManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C1916BD24E400732C04 /* FontManager.cpp */; };
 		176DEAA9174B5561007A983B /* FTFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C1B16BD24E400732C04 /* FTFont.cpp */; };
@@ -1254,6 +1253,9 @@
 		CCC7A4FC17579C6D0061EA5D /* EnumMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FA5CDBE1757AF430040CC6E /* EnumMap.h */; };
 		CCC7A4FD17579C700061EA5D /* EnumMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FA5CDBD1757AF430040CC6E /* EnumMap.cpp */; };
 		D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
+		D7FEF1BD1993BA0100B2C7AF /* ThreadPosix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7FEF1BC1993BA0100B2C7AF /* ThreadPosix.cpp */; };
+		D7FEF1BE1994A32A00B2C7AF /* ThreadPosix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7FEF1BC1993BA0100B2C7AF /* ThreadPosix.cpp */; };
+		D7FEF1BF1994A32D00B2C7AF /* ThreadPosix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7FEF1BC1993BA0100B2C7AF /* ThreadPosix.cpp */; };
 		E82366CE16148EF9007B40D0 /* libPVRTexLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E82366CD16148EF9007B40D0 /* libPVRTexLib.a */; };
 		E83F10A116D6721D00C6ED39 /* DVAssertMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C151B17416D3747E00E09BAF /* DVAssertMessage.cpp */; };
 		E83F10A216D6721D00C6ED39 /* DVAssertMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = C151B17516D3747E00E09BAF /* DVAssertMessage.h */; };
@@ -1491,7 +1493,6 @@
 		E8989ED016BD24E500732C04 /* OpenGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8989C0B16BD24E400732C04 /* OpenGLView.mm */; };
 		E8989ED416BD24E500732C04 /* Thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C1016BD24E400732C04 /* Thread.cpp */; };
 		E8989ED516BD24E500732C04 /* Thread.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C1116BD24E400732C04 /* Thread.h */; };
-		E8989ED716BD24E500732C04 /* ThreadMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8989C1316BD24E400732C04 /* ThreadMacOS.mm */; };
 		E8989ED916BD24E500732C04 /* Font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C1716BD24E400732C04 /* Font.cpp */; };
 		E8989EDA16BD24E500732C04 /* Font.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C1816BD24E400732C04 /* Font.h */; };
 		E8989EDB16BD24E500732C04 /* FontManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C1916BD24E400732C04 /* FontManager.cpp */; };
@@ -2098,7 +2099,6 @@
 		E898A1FE16BD265400732C04 /* QtLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BEB16BD24E400732C04 /* QtLayer.cpp */; };
 		E898A1FF16BD265400732C04 /* SystemTimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BF316BD24E400732C04 /* SystemTimer.cpp */; };
 		E898A20516BD265400732C04 /* Thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C1016BD24E400732C04 /* Thread.cpp */; };
-		E898A20616BD265400732C04 /* ThreadMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8989C1316BD24E400732C04 /* ThreadMacOS.mm */; };
 		E898A20716BD265400732C04 /* Font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C1716BD24E400732C04 /* Font.cpp */; };
 		E898A20816BD265400732C04 /* FontManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C1916BD24E400732C04 /* FontManager.cpp */; };
 		E898A20916BD265400732C04 /* FTFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C1B16BD24E400732C04 /* FTFont.cpp */; };
@@ -2679,6 +2679,7 @@
 		CCE2CA18197950A600D8086F /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
+		D7FEF1BC1993BA0100B2C7AF /* ThreadPosix.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = ThreadPosix.cpp; sourceTree = "<group>"; };
 		E82366CD16148EF9007B40D0 /* libPVRTexLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPVRTexLib.a; path = ../../Libs/libs/libPVRTexLib.a; sourceTree = "<group>"; };
 		E845D4E01732B5DF000DA8E7 /* FilePathObjective.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FilePathObjective.mm; sourceTree = "<group>"; };
 		E879E2451988EF8D0026191D /* OGLHelpers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OGLHelpers.cpp; sourceTree = "<group>"; };
@@ -2913,7 +2914,6 @@
 		E8989C0B16BD24E400732C04 /* OpenGLView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenGLView.mm; sourceTree = "<group>"; };
 		E8989C1016BD24E400732C04 /* Thread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Thread.cpp; sourceTree = "<group>"; };
 		E8989C1116BD24E400732C04 /* Thread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Thread.h; sourceTree = "<group>"; };
-		E8989C1316BD24E400732C04 /* ThreadMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ThreadMacOS.mm; sourceTree = "<group>"; };
 		E8989C1716BD24E400732C04 /* Font.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Font.cpp; sourceTree = "<group>"; };
 		E8989C1816BD24E400732C04 /* Font.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Font.h; sourceTree = "<group>"; };
 		E8989C1916BD24E400732C04 /* FontManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FontManager.cpp; sourceTree = "<group>"; };
@@ -3846,7 +3846,7 @@
 				E8989C0116BD24E400732C04 /* TemplateMacOS */,
 				E8989C1016BD24E400732C04 /* Thread.cpp */,
 				E8989C1116BD24E400732C04 /* Thread.h */,
-				E8989C1316BD24E400732C04 /* ThreadMacOS.mm */,
+				D7FEF1BC1993BA0100B2C7AF /* ThreadPosix.cpp */,
 			);
 			path = Platform;
 			sourceTree = "<group>";
@@ -5939,7 +5939,6 @@
 				176DEAA5174B5561007A983B /* Thread.cpp in Sources */,
 				50ED334C1858B5A200A917D5 /* StaticOcclusionComponent.cpp in Sources */,
 				644C86F319476A7100964F91 /* VegetationRenderData.cpp in Sources */,
-				176DEAA6174B5561007A983B /* ThreadMacOS.mm in Sources */,
 				176DEAA7174B5561007A983B /* Font.cpp in Sources */,
 				176DEAA8174B5561007A983B /* FontManager.cpp in Sources */,
 				176DEAA9174B5561007A983B /* FTFont.cpp in Sources */,
@@ -6127,6 +6126,7 @@
 				176DEB43174B5561007A983B /* Mesh.cpp in Sources */,
 				EAADA02918A26525001E1AA2 /* UIParticles.cpp in Sources */,
 				176DEB45174B5561007A983B /* RenderBatch.cpp in Sources */,
+				D7FEF1BE1994A32A00B2C7AF /* ThreadPosix.cpp in Sources */,
 				176DEB46174B5561007A983B /* RenderLayer.cpp in Sources */,
 				176DEB47174B5561007A983B /* RenderObject.cpp in Sources */,
 				176DEB48174B5561007A983B /* RenderPass.cpp in Sources */,
@@ -6295,7 +6295,6 @@
 				E8989ECE16BD24E500732C04 /* NSFullScreenWindow.m in Sources */,
 				E8989ED016BD24E500732C04 /* OpenGLView.mm in Sources */,
 				E8989ED416BD24E500732C04 /* Thread.cpp in Sources */,
-				E8989ED716BD24E500732C04 /* ThreadMacOS.mm in Sources */,
 				EAADA0001892A458001E1AA2 /* UIParticles.cpp in Sources */,
 				644C86DC19476A7100964F91 /* VegetationFixedGeometry.cpp in Sources */,
 				E8989ED916BD24E500732C04 /* Font.cpp in Sources */,
@@ -6342,6 +6341,7 @@
 				E8989F6216BD24E500732C04 /* Texture.cpp in Sources */,
 				E8989F6416BD24E500732C04 /* TextureDescriptor.cpp in Sources */,
 				E8989F6716BD24E500732C04 /* UberShader.cpp in Sources */,
+				D7FEF1BD1993BA0100B2C7AF /* ThreadPosix.cpp in Sources */,
 				E8989F6A16BD24E500732C04 /* Box2DDebugDraw.cpp in Sources */,
 				644C86F119476A7100964F91 /* VegetationRenderData.cpp in Sources */,
 				E8989F6C16BD24E500732C04 /* Box2DGameObject.cpp in Sources */,
@@ -6672,7 +6672,6 @@
 				E898A1FE16BD265400732C04 /* QtLayer.cpp in Sources */,
 				E898A1FF16BD265400732C04 /* SystemTimer.cpp in Sources */,
 				E898A20516BD265400732C04 /* Thread.cpp in Sources */,
-				E898A20616BD265400732C04 /* ThreadMacOS.mm in Sources */,
 				E898A20716BD265400732C04 /* Font.cpp in Sources */,
 				E898A20816BD265400732C04 /* FontManager.cpp in Sources */,
 				E898A20916BD265400732C04 /* FTFont.cpp in Sources */,
@@ -6759,6 +6758,7 @@
 				02A2FC3318D2E7460039E66A /* TreeToAnimatedTreeConverter.cpp in Sources */,
 				E898A26116BD265400732C04 /* MeshInstance.cpp in Sources */,
 				E898A26216BD265400732C04 /* MeshInstanceNode.cpp in Sources */,
+				D7FEF1BF1994A32D00B2C7AF /* ThreadPosix.cpp in Sources */,
 				E898A26316BD265400732C04 /* ParticleEffectNode.cpp in Sources */,
 				E898A26416BD265400732C04 /* ParticleEmitterNode.cpp in Sources */,
 				E898A26516BD265400732C04 /* PathManip.cpp in Sources */,
