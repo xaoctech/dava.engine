@@ -87,6 +87,7 @@ const FastName NMaterial::PARAM_UV_SCALE("uvScale");
 const FastName NMaterial::PARAM_LIGHTMAP_SIZE("lightmapSize");
 const FastName NMaterial::PARAM_SHADOW_COLOR("shadowColor");
 const FastName NMaterial::PARAM_DECAL_TILE_SCALE("decalTileCoordScale");
+const FastName NMaterial::PARAM_DECAL_TILE_COLOR("decalTileColor");
 const FastName NMaterial::PARAM_RCP_SCREEN_SIZE("rcpScreenSize");
 const FastName NMaterial::PARAM_SCREEN_OFFSET("screenOffset");
 
@@ -98,7 +99,7 @@ const FastName NMaterial::FLAG_TEXTURESHIFT = FastName("TEXTURE0_SHIFT_ENABLED")
 const FastName NMaterial::FLAG_TEXTURE0_ANIMATION_SHIFT = FastName("TEXTURE0_ANIMATION_SHIFT");
 const FastName NMaterial::FLAG_WAVE_ANIMATION = FastName("WAVE_ANIMATION");
 const FastName NMaterial::FLAG_FAST_NORMALIZATION = FastName("FAST_NORMALIZATION");
-
+const FastName NMaterial::FLAG_TILED_DECAL = FastName("TILED_DECAL");
 const FastName NMaterial::FLAG_FLATCOLOR = FastName("FLATCOLOR");
 const FastName NMaterial::FLAG_DISTANCEATTENUATION = FastName("DISTANCE_ATTENUATION");
 const FastName NMaterial::FLAG_SPECULAR = FastName("SPECULAR");
@@ -1553,11 +1554,11 @@ void NMaterial::Draw(PolygonGroup * polygonGroup)
 	// TODO: rethink this code
 	if(polygonGroup->renderDataObject->GetIndexBufferID() != 0)
 	{
-		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, polygonGroup->indexCount, polygonGroup->renderDataObject->GetIndexFormat(), 0);
+		RenderManager::Instance()->HWDrawElements(polygonGroup->primitiveType, polygonGroup->indexCount, polygonGroup->renderDataObject->GetIndexFormat(), 0);
 	}
 	else
 	{
-		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, polygonGroup->indexCount, polygonGroup->renderDataObject->GetIndexFormat(), polygonGroup->indexArray);
+		RenderManager::Instance()->HWDrawElements(polygonGroup->primitiveType, polygonGroup->indexCount, polygonGroup->renderDataObject->GetIndexFormat(), polygonGroup->indexArray);
 	}
 }
 

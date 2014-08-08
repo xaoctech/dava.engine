@@ -39,11 +39,11 @@ InvokeMethodCommand::~InvokeMethodCommand()
 {
 }
 
-void InvokeMethodCommand::Execute()
+BaseCommand::eExecuteResult InvokeMethodCommand::Execute()
 {
     if (commandMetadata == NULL)
     {
-        return;
+        return BaseCommand::Failed;
     }
     
     // Set the same property for all Params inside the metadata.
@@ -52,6 +52,8 @@ void InvokeMethodCommand::Execute()
     {
         QMetaObject::invokeMethod(commandMetadata, commandMethodName.c_str());
     }
+    
+    return BaseCommand::Success;
 }
 
 void InvokeMethodCommand::Rollback()
