@@ -60,9 +60,10 @@ class UIGeometricData
 public:
     UIGeometricData()
         : scale(1.0f, 1.0f)
+        , angle(0.0f)
         , cosA(1.0f)
         , sinA(0.0f)
-        , angle(0.0f)
+        , calculatedAngle(0.0f)
     {
     }
     Vector2 position;
@@ -87,9 +88,8 @@ public:
         }
         scale.x *= data.scale.x;
         scale.y *= data.scale.y;
-        float32 oldAngle = angle;
         angle += data.angle;
-        if(angle != oldAngle)
+        if(angle != calculatedAngle)
         {
             if(angle != data.angle)
             {
@@ -101,7 +101,7 @@ public:
                 cosA = data.cosA;
                 sinA = data.sinA;
             }
-
+            calculatedAngle = angle;
         }
 
         unrotatedRect.x = position.x - pivotPoint.x * scale.x;
@@ -146,6 +146,8 @@ public:
         return unrotatedRect;
     }
 
+private:
+    float32 calculatedAngle;
     Rect unrotatedRect;
 };
 
@@ -741,7 +743,7 @@ public:
      \brief Returns current name of the control.
      \returns control name.
      */
-    const String & GetName() const;
+    inline const String & GetName() const;
 
     /**
      \brief Sets the contol tag.
@@ -753,7 +755,7 @@ public:
      \brief Returns current control tag.
      \returns control tag.
      */
-    int32 GetTag() const;
+    inline int32 GetTag() const;
 
     /**
      \brief Returns control with given name.
@@ -1437,6 +1439,16 @@ const Vector2 &UIControl::GetPosition() const
 float32 UIControl::GetAngle() const
 {
     return angle;
+}
+
+const String & UIControl::GetName() const
+{
+    return name;
+}
+
+int32 UIControl::GetTag() const
+{
+    return tag;
 }
 };
 
