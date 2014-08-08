@@ -108,6 +108,8 @@ protected:
 	UIScrollViewContainer *scrollContainer;
 	ScrollHelper *scrollHorizontal;
 	ScrollHelper *scrollVertical;
+    
+    const String GetDelegateControlPath();
 
 private:
 	void FindRequiredControls();

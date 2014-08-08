@@ -57,15 +57,15 @@ void UIScrollBar::SetDelegate(UIScrollBarDelegate *newDelegate)
     delegate = newDelegate;
 }
 
-const String UIScrollBar::GetDelegateName() const
+const String UIScrollBar::GetDelegatePath() const
 {
-    String delegateName = "";
-    UIControl* delegateControl = dynamic_cast<UIControl*>(delegate);
     if (delegate)
     {
-        delegateName = UIYamlLoader::GetControlPath(delegateControl);
+        return delegate->GetDelegateControlPath();
+    } else
+    {
+        return "";
     }
-    return delegateName;
 }
     
 
@@ -288,6 +288,7 @@ void UIScrollBar::Draw(const UIGeometricData &geometricData)
         float32 visibleArea = delegate->VisibleAreaSize(this);
         float32 totalSize = delegate->TotalAreaSize(this);
         float32 viewPos = -delegate->ViewPosition(this);
+        float32 diff = totalSize - visibleArea;
         switch (orientation) 
         {
             case ORIENTATION_VERTICAL:
@@ -306,7 +307,7 @@ void UIScrollBar::Draw(const UIGeometricData &geometricData)
                     }
                 }
                     //TODO: optimize
-                slider->relativePosition.y = (size.y - slider->size.y) * (viewPos / (totalSize - visibleArea));
+                slider->relativePosition.y = (size.y - slider->size.y) * (viewPos / (diff!=0?diff:1));
                 if (slider->relativePosition.y < 0) 
                 {
                     slider->size.y += slider->relativePosition.y;
@@ -339,7 +340,7 @@ void UIScrollBar::Draw(const UIGeometricData &geometricData)
                         slider->SetVisible(true, true);
                     }
                 }
-                slider->relativePosition.x = (size.x - slider->size.x) * (viewPos / (totalSize - visibleArea));
+                slider->relativePosition.x = (size.x - slider->size.x) * (viewPos / (diff!=0?diff:1));
                 if (slider->relativePosition.x < 0) 
                 {
                     slider->size.x += slider->relativePosition.x;

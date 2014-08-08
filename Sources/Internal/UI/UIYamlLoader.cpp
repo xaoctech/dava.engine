@@ -474,18 +474,7 @@ void UIYamlLoader::SetScrollBarDelegates(UIControl * rootControl)
     Map<UIScrollBar*,String>::iterator it = scrollsToLink.begin();
     for (; it!=scrollsToLink.end(); ++it)
     {
-        Vector<String> controlsPath;
-        Split(it->second, "/", controlsPath);
-        Vector<String>::iterator it_name = controlsPath.begin();
-        UIControl * control = rootControl;
-        for (; it_name!=controlsPath.end(); ++it_name)
-        {
-            control = control->FindByName(*it_name,false);
-            if (NULL == control)
-            {
-                break;
-            }
-        }
+        UIControl * control = GetControlByPath(it->second, rootControl);
         it->first->SetDelegate( dynamic_cast<UIScrollBarDelegate*>(control));
     }
     scrollsToLink.clear();
@@ -775,7 +764,7 @@ UIControl* UIYamlLoader::GetControlByPath(const String& controlPath, UIControl* 
     Vector<String>::const_iterator it_name = controlNames.begin();
     if (rootControl->GetName() != *it_name)
     {
-        Logger::Error("[UIYamlLoader::GetControlByPath] wrong root control");
+        Logger::Error("[UIYamlLoader::GetControlByPath] wrong root control |%s| |%s|",rootControl->GetName().c_str(),(*it_name).c_str());
         return NULL;
     } else
     {

@@ -81,7 +81,7 @@ QString UIScrollBarMetadata::GetUIScrollBarDelegateName()
         return "";
     }
     
-    return QString::fromStdString(GetActiveUIScrollBar()->GetDelegateName());
+    return QString::fromStdString(GetActiveUIScrollBar()->GetDelegatePath());
 }
 
 void UIScrollBarMetadata::SetUIScrollBarDelegateName(const QString& value)

@@ -273,6 +273,7 @@ protected:
 
 	Map<String,Vector<UIListCell*>*> cellStore;
 
+    const String GetDelegateControlPath();
 };
 };
 #endif
