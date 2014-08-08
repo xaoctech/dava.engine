@@ -70,6 +70,7 @@ namespace DAVA
 
 	CorePlatformAndroid::CorePlatformAndroid()
 	: Core()
+	, applicationPackage(NULL)
 	{
 		wasCreated = false;
 		renderIsActive = false;
@@ -98,6 +99,11 @@ namespace DAVA
 
 	void CorePlatformAndroid::Quit()
 	{
+	    if (applicationPackage)
+	    {
+	        zip_close(applicationPackage);
+	    }
+
 		Logger::Debug("[CorePlatformAndroid::Quit]");
 		QuitAction();
 		Core::Quit();
@@ -158,12 +164,25 @@ namespace DAVA
 		Logger::Debug("[CorePlatformAndroid::UpdateScreenMode] done");
 	}
 
+	void CorePlatformAndroid::InitApplicationPackage()
+	{
+		applicationPackage = zip_open(packageName.c_str(), 0, NULL);
+		if (applicationPackage == NULL)
+		{
+			DVASSERT_MSG(false, "[CorePlatformAndroid::InitApplicationPackage] Could not initialize application package.");
+			applicationPackage = NULL;
+		}
+	}
+
 	void CorePlatformAndroid::CreateAndroidWindow(const char8 *docPath, const char8 *assets, const char8 *logTag, AndroidSystemDelegate * sysDelegate)
 	{
 		androidDelegate = sysDelegate;
 		externalStorage = docPath;
+		packageName = assets;
 
 		Core::CreateSingletons();
+
+		InitApplicationPackage();
 
 		Logger::SetTag(logTag);
 	}
