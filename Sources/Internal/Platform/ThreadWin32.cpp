@@ -97,13 +97,9 @@ void Thread::Join()
         DAVA::Logger::Error("Thread::Join() failed in WaitForSingleObject");
 }
 
-void Thread::Kill()
+void Thread::KillNative()
 {
-    if (STATE_ENDED != state && STATE_KILLED != state)
-    {
-        TerminateThread(handle, 0);
-        state = STATE_KILLED;
-    }
+    TerminateThread(handle, 0);
 }
 
 Thread::Handle Thread::GetCurrentHandle()

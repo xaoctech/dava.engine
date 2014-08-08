@@ -44,7 +44,6 @@ namespace DAVA
 {
 void Thread::Init()
 {
-    Handle = 0;
 }
 
 void Thread::Shutdown()
@@ -52,13 +51,9 @@ void Thread::Shutdown()
     
 }
 
-void Thread::Kill()
+void Thread::KillNative(Handle _handle)
 {
-    if(state != STATE_ENDED && state != STATE_KILLED)
-    {
-        pthread_kill(*Handle, SIGKILL);
-        state = STATE_KILLED;
-    }
+    pthread_kill(_handle, SIGKILL);
 }
 
 void Thread::SleepThread(uint32 timeMS)
@@ -80,6 +75,7 @@ void *PthreadMain(void *param)
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 #endif
     Thread * t = (Thread *)param;
+    t->Retain();
     t->SetId(Thread::GetCurrentThreadId());
     
     
@@ -96,7 +92,7 @@ void *PthreadMain(void *param)
 
 void Thread::Start()
 {
-    pthread_create(Handle, 0, PthreadMain, (void *)this);
+    pthread_create(&handle, 0, PthreadMain, (void *)this);
 }
 
 void Thread::YieldThread()

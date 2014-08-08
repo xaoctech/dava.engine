@@ -81,33 +81,12 @@ private:
 #elif defined(__DAVAENGINE_WIN32__)
     typedef HANDLE Handle;
     friend DWORD WINAPI ThreadFunc(void *param);
-#endif 
+#endif
 
 public:
-    class Id
-    {
-        typedef uint64 NativeId;
-    public:
-        Id();
-        Id(const Handle &_handle);
-        Id(const Id &other);
-        const NativeId &GetNativeId();
-
-        bool operator==(const Id &other) const;
-        bool operator!=(const Id &other) const;
-        bool operator<(const Id &other) const;
-        bool operator>(const Id &other) const;
-        bool operator<=(const Id &other) const;
-        bool operator>=(const Id &other) const;
-
-    private:
-        NativeId nativeId;
-        Handle handle;
-
-        friend class Thread;
-    };
-
-	enum eThreadState
+    typedef uint32 Id;
+	
+    enum eThreadState
 	{
 		STATE_CREATED = 0,
 		STATE_RUNNING,
@@ -181,9 +160,11 @@ private:
     void Shutdown();
 
     void SetId(const Id &threadId);
-	
     static Handle GetCurrentHandle();
-
+    
+    static void KillNative(Handle handle);
+    static void Kill(Handle handle);
+    
     Handle handle;
 	Message	msg;
 	eThreadState state;
@@ -193,7 +174,8 @@ private:
 
     static Set<Thread *> threadList;
     static Mutex threadListMutex;
-    static Map<Handle, Id *> threadIdList;
+    static Map<Handle, Id> threadIdList;
+    static Mutex threadIdListMutex;
 };
 
 };

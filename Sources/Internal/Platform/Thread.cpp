@@ -39,6 +39,8 @@ namespace DAVA
 
 Set<Thread *> Thread::threadList;
 Mutex Thread::threadListMutex;
+Map<Thread::Handle, Thread::Id> Thread::threadIdList;
+Mutex Thread::threadIdListMutex;
 
 Thread::Id Thread::mainThreadId = 0;
 
@@ -79,9 +81,23 @@ bool Thread::IsMainThread()
 Thread::Id Thread::GetCurrentThreadId()
 {
     // try to find in map
-
     // if not found - create new id
-    return Id();
+    Id retId;
+    
+    threadIdListMutex.Lock();
+    Map<Handle, Id>::iterator it = threadIdList.find(GetCurrentHandle());
+    if (it == threadIdList.end())
+    {
+        Handle newHandle = GetCurrentHandle();
+        static Id newId = 0;
+        threadIdList[newHandle] = newId;
+        retId = newId++;
+    }
+    else
+        retId = it->second;
+    threadIdListMutex.Unlock();
+    
+    return retId;
 }
 
 Thread * Thread::Create(const Message& msg)
@@ -90,6 +106,18 @@ Thread * Thread::Create(const Message& msg)
 	t->state = STATE_CREATED;
 	
 	return t;
+}
+
+void Thread::Kill()
+{
+    if(state != STATE_ENDED && state != STATE_KILLED)
+    {
+        threadIdListMutex.Lock();
+        threadIdList.erase(threadIdList.find(handle));
+        threadIdListMutex.Unlock();
+        KillNative(handle);
+        state = STATE_KILLED;
+    }
 }
 
 void Thread::KillAll()
@@ -105,7 +133,7 @@ void Thread::KillAll()
 }
 
 Thread::Thread(const Message& _msg)
-:   msg(_msg)
+    : msg(_msg)
 {
     threadListMutex.Lock();
     threadList.insert(this);
@@ -117,6 +145,9 @@ Thread::Thread(const Message& _msg)
 Thread::~Thread()
 {
     Shutdown();
+    threadIdListMutex.Lock();
+    threadIdList.erase(handle);
+    threadIdListMutex.Unlock();
     threadListMutex.Lock();
     threadList.erase(this);
     threadListMutex.Unlock();
@@ -163,57 +194,5 @@ Thread::Id Thread::GetId()
 {
     return id;
 }
-
-Thread::Id::Id()
-    : handle(NULL)
-    , nativeId(0)
-{}
-
-Thread::Id::Id(const Handle &_threadHandle)
-    : handle(_threadHandle)
-{
-    static NativeId lastId = 0;
-    nativeId = lastId++;
-}
-
-Thread::Id::Id(const Id & other)
-    : handle(other.handle)
-    , nativeId(other.nativeId)
-{}
-
-const Thread::Id::NativeId & Thread::Id::GetNativeId()
-{
-    return nativeId;
-}
-
-bool Thread::Id::operator==(const Id & other) const
-{
-    return nativeId == other.nativeId;
-}
-
-bool Thread::Id::operator!=(const Id & other) const
-{
-    return nativeId != other.nativeId;
-}
-
-bool Thread::Id::operator<(const Id & other) const
-{
-    return nativeId < other.nativeId;
-}
-
-bool Thread::Id::operator>(const Id & other) const
-{
-    return nativeId > other.nativeId;
-}
-
-bool Thread::Id::operator<=(const Id & other) const
-{
-    return !(nativeId > other.nativeId);
-}
-
-bool Thread::Id::operator>=(const Id & other) const
-{
-    return !(nativeId < other.nativeId);
-}
-
+    
 };
