@@ -764,16 +764,6 @@ namespace DAVA
         return tempGeometricData;
     }
 
-
-    UIGeometricData UIControl::GetAbsoluteGeometricData() const
-    {
-        UIGeometricData absoluteGeomData = GetLocalGeometricData();
-
-        const UIGeometricData &parentGeomData = parent ? parent->GetAbsoluteGeometricData() : UIControlSystem::Instance()->GetBaseGeometricData();
-        absoluteGeomData.AddToGeometricData(parentGeomData);
-        return absoluteGeomData;
-    }
-
     UIGeometricData UIControl::GetLocalGeometricData() const
     {
         UIGeometricData drawData;
@@ -850,11 +840,6 @@ namespace DAVA
     void UIControl::SetAngle(float32 angleInRad)
     {
         angle = angleInRad;
-    }
-
-    Rect UIControl::GetRect() const
-    {
-        return Rect(GetPosition() - pivotPoint, size);
     }
 
     Rect UIControl::GetRect(bool absoluteCoordinates)
@@ -1091,16 +1076,6 @@ namespace DAVA
     {
         return (controlState & STATE_HOVER) != 0;
     }
-
-//	void UIControl::SystemClearHoverState()
-//	{
-//		controlState &= ~STATE_HOVER;
-//		List<UIControl*>::iterator it = childs.begin();
-//		for(; it != childs.end(); ++it)
-//		{
-//			(*it)->SystemClearHoverState();
-//		}
-//	}
 
     void UIControl::AddControl(UIControl *control)
     {

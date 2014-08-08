@@ -447,7 +447,7 @@ public:
         geometric data received with GetGeometricData().
      \returns control rect.
      */
-    Rect GetRect() const;
+    inline Rect GetRect() const;
 
     /**
      \brief Returns absolute untransformed control rect.
@@ -536,8 +536,6 @@ public:
      \returns control geometric data.
      */
     const UIGeometricData &GetGeometricData();
-
-    UIGeometricData GetAbsoluteGeometricData() const;
 
     UIGeometricData GetLocalGeometricData() const;
 
@@ -1307,24 +1305,20 @@ public:
     void DumpInputs(int32 depthLevel);
 
 public:
-
+    //TODO: store geometric data in UIGeometricData
     Vector2 relativePosition;//!<position in the parent control.
     Vector2 size;//!<control size.
 
     Vector2 pivotPoint;//!<control pivot point. Top left control corner by default.
-    Vector2	scale;//!<control scale. Scale relative to pivot point.
-    float32	angle;//!<control rotation angle. Rotation around pivot point.
+    Vector2 scale;//!<control scale. Scale relative to pivot point.
+    float32 angle;//!<control rotation angle. Rotation around pivot point.
 
 protected:
-
-//	void SystemClearHoverState();//<! Internal method used by ControlSystem
-
     UIControl *parent;
     List<UIControl*> childs;
     List<UIControl*> realChilds;
 
     UIControlBackground *background;
-//	Rect absoluteRect;
     int32 controlState;
 
     // boolean flags are grouped here to pack them together (see please DF-2149).
@@ -1449,6 +1443,11 @@ const String & UIControl::GetName() const
 int32 UIControl::GetTag() const
 {
     return tag;
+}
+
+Rect UIControl::GetRect() const
+{
+    return Rect(relativePosition - pivotPoint, size);
 }
 };
 
