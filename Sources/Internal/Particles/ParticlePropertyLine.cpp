@@ -191,7 +191,7 @@ template <> RefPtr<PropertyLine<Color> > PropertyLineYamlReader::CreatePropertyL
 	if (node->GetType() == YamlNode::TYPE_ARRAY)
 	{
 		bool allString = true;
-		for (int k = 0; k < node->GetCount(); ++k)
+		for (uint32 k = 0; k < node->GetCount(); ++k)
 			if (node->Get(k)->GetType() != YamlNode::TYPE_STRING)
 				allString = false;
 
@@ -202,7 +202,7 @@ template <> RefPtr<PropertyLine<Color> > PropertyLineYamlReader::CreatePropertyL
 		{
 			RefPtr< PropertyLineKeyframes<Color> > keyframes (new PropertyLineKeyframes<Color>());
 
-			for (int k = 0; k < node->GetCount() / 2; ++k)
+			for (uint32 k = 0; k < node->GetCount() / 2; ++k)
 			{
 				const YamlNode * time = node->Get(k * 2);
 				const YamlNode * value = node->Get(k * 2 + 1);

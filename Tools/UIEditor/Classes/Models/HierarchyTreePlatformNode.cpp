@@ -200,7 +200,7 @@ bool HierarchyTreePlatformNode::Load(const YamlNode* platform, List<QString>& fi
 	const YamlNode* screens = platform->Get(SCREENS_NODE);
 	if (screens)
 	{
-		for (int i = 0; i < screens->GetCount(); i++)
+		for (uint32 i = 0; i < screens->GetCount(); i++)
 		{
 			const YamlNode* screen = screens->Get(i);
 			if (!screen)
@@ -222,7 +222,7 @@ bool HierarchyTreePlatformNode::Load(const YamlNode* platform, List<QString>& fi
 	const YamlNode* aggregators = platform->Get(AGGREGATORS_NODE);
 	if (aggregators)
 	{
-		for (int i = 0; i < aggregators->GetCount(); i++)
+		for (uint32 i = 0; i < aggregators->GetCount(); i++)
 		{
 			String aggregatorName = aggregators->GetItemKeyName(i);
             if (aggregatorName.empty())
@@ -288,7 +288,7 @@ bool HierarchyTreePlatformNode::LoadLocalization(const YamlNode* platform)
 
 bool HierarchyTreePlatformNode::Save(YamlNode* node, bool saveAll, List<QString>& fileNames)
 {
-	YamlNode* platform = YamlNode::CreateMapNode();
+	YamlNode* platform = YamlNode::CreateMapNode(false);
 	platform->Set(WIDTH_NODE, GetWidth());
 	platform->Set(HEIGHT_NODE, GetHeight());
 
@@ -322,7 +322,7 @@ bool HierarchyTreePlatformNode::Save(YamlNode* node, bool saveAll, List<QString>
 		QString path = GetScreenPath(node->GetName());
 		fileNames.push_back(path);
 		
-		YamlNode* aggregator = YamlNode::CreateMapNode(false);
+		YamlNode* aggregator = YamlNode::CreateMapNode();
 		result &= node->Save(aggregator, path, saveAll);
 		aggregators->SetNodeToMap(node->GetName().toStdString(), aggregator);
 	}
