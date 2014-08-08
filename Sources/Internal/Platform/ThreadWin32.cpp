@@ -36,14 +36,14 @@ namespace DAVA
 
 void Thread::Init()
 {
-    threadHandle = 0;
+    handle = 0;
 }
 
 void Thread::Shutdown()
 {
-    if(threadHandle)
+    if (handle)
     {
-        CloseHandle(threadHandle);
+        CloseHandle(handle);
     }
 }
 
@@ -51,7 +51,7 @@ void Thread::Start()
 {
     Retain();
 
-    threadHandle = CreateThread 
+    handle = CreateThread 
         (
         0, // Security attributes
         0, // Stack size
@@ -60,11 +60,11 @@ void Thread::Start()
         CREATE_SUSPENDED,
         0);
 
-    if(!SetThreadPriority(threadHandle, THREAD_PRIORITY_ABOVE_NORMAL))
+    if(!SetThreadPriority(handle, THREAD_PRIORITY_ABOVE_NORMAL))
     {
         Logger::Error("Thread::StartWin32 error %d", (int32)GetLastError());
     }
-    ResumeThread(threadHandle);
+    ResumeThread(handle);
 }
 
 void Thread::SleepThread(uint32 timeMS)
@@ -74,8 +74,8 @@ void Thread::SleepThread(uint32 timeMS)
 
 DWORD WINAPI ThreadFunc(void* param)
 {	
-	Thread * t = (Thread*)param;
-	t->SetThreadId(Thread::GetCurrentThreadId());
+	Thread *t = (Thread *)param;
+    t->SetId(Thread::GetCurrentHandle());
 
 	t->state = Thread::STATE_RUNNING;
 	t->msg(t);
@@ -91,14 +91,9 @@ void Thread::YieldThread()
     SwitchToThread();
 }
 
-Thread::Id Thread::GetCurrentThreadId()
-{
-    return Id(::GetCurrentThreadId());
-}
-
 void Thread::Join()
 {
-    if (WaitForSingleObject(threadHandle, INFINITE) != WAIT_OBJECT_0)
+    if (WaitForSingleObject(handle, INFINITE) != WAIT_OBJECT_0)
         DAVA::Logger::Error("Thread::Join() failed in WaitForSingleObject");
 }
 
@@ -106,9 +101,14 @@ void Thread::Kill()
 {
     if (STATE_ENDED != state && STATE_KILLED != state)
     {
-        TerminateThread(threadHandle, 0);
+        TerminateThread(handle, 0);
         state = STATE_KILLED;
     }
+}
+
+Thread::Handle Thread::GetCurrentHandle()
+{
+    return ::GetCurrentThread();
 }
 
 #endif 

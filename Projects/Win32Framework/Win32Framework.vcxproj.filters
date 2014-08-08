@@ -2725,5 +2725,7 @@
     <ClCompile Include="..\..\Sources\Internal\Render\OGLHelpers.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Platform\ThreadAndroid.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Platform\ThreadPosix.cpp" />
   </ItemGroup>
 </Project>

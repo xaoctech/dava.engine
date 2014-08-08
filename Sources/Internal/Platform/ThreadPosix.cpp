@@ -44,7 +44,7 @@ namespace DAVA
 {
 void Thread::Init()
 {
-    threadHandle = 0;
+    Handle = 0;
 }
 
 void Thread::Shutdown()
@@ -56,7 +56,7 @@ void Thread::Kill()
 {
     if(state != STATE_ENDED && state != STATE_KILLED)
     {
-        pthread_kill(*threadHandle, SIGKILL);
+        pthread_kill(*Handle, SIGKILL);
         state = STATE_KILLED;
     }
 }
@@ -96,7 +96,7 @@ void *PthreadMain(void *param)
 
 void Thread::Start()
 {
-    pthread_create(threadHandle, 0, PthreadMain, (void *)this);
+    pthread_create(Handle, 0, PthreadMain, (void *)this);
 }
 
 void Thread::YieldThread()
@@ -105,7 +105,7 @@ void Thread::YieldThread()
 }
 
 
-Thread::Id Thread::GetCurrentThreadId()
+Thread::Handle Thread::GetCurrentHandle()
 {
     return pthread_self();
 }

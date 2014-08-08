@@ -73,30 +73,36 @@ private:
 
 class Thread : public BaseObject
 {
+private:
+#if defined(DAVAENGINE_PTHREAD)
+    typedef pthread_t Handle;
+    bool joined;
+    friend void	*PthreadMain(void *param);
+#elif defined(__DAVAENGINE_WIN32__)
+    typedef HANDLE Handle;
+    friend DWORD WINAPI ThreadFunc(void *param);
+#endif 
+
 public:
     class Id
     {
-#if defined(DAVAENGINE_PTHREAD)
-        typedef pthread_t NativeId;
-#elif defined(__DAVAENGINE_WIN32__)
-        typedef DWORD NativeId;
-#endif 
-
+        typedef uint64 NativeId;
     public:
         Id();
-        Id(const NativeId & _nativeId);
-        Id(const Id & other);
-        const NativeId & GetNativeId();
+        Id(const Handle &_handle);
+        Id(const Id &other);
+        const NativeId &GetNativeId();
 
-        bool operator==(const Id & other) const;
-        bool operator!=(const Id & other) const;
-        bool operator<(const Id & other) const;
-        bool operator>(const Id & other) const;
-        bool operator<=(const Id & other) const;
-        bool operator>=(const Id & other) const;
+        bool operator==(const Id &other) const;
+        bool operator!=(const Id &other) const;
+        bool operator<(const Id &other) const;
+        bool operator>(const Id &other) const;
+        bool operator<=(const Id &other) const;
+        bool operator>=(const Id &other) const;
 
     private:
         NativeId nativeId;
+        Handle handle;
 
         friend class Thread;
     };
@@ -176,6 +182,9 @@ private:
 
     void SetId(const Id &threadId);
 	
+    static Handle GetCurrentHandle();
+
+    Handle handle;
 	Message	msg;
 	eThreadState state;
 
@@ -184,16 +193,7 @@ private:
 
     static Set<Thread *> threadList;
     static Mutex threadListMutex;
-	
-#if defined(DAVAENGINE_PTHREAD)
-    typedef pthread_t *ThreadHandle;
-    bool joined;
-	friend void	*PthreadMain(void *param);
-#elif defined(__DAVAENGINE_WIN32__)
-    typedef HANDLE ThreadHandle;
-	friend DWORD WINAPI ThreadFunc(void* param);
-#endif //PLATFORMS
-    ThreadHandle threadHandle;
+    static Map<Handle, Id *> threadIdList;
 };
 
 };

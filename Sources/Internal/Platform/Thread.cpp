@@ -76,6 +76,14 @@ bool Thread::IsMainThread()
     return (mainThreadId == GetCurrentThreadId());
 }
 
+Thread::Id Thread::GetCurrentThreadId()
+{
+    // try to find in map
+
+    // if not found - create new id
+    return Id();
+}
+
 Thread * Thread::Create(const Message& msg)
 {
 	Thread * t = new Thread(msg);
@@ -157,16 +165,20 @@ Thread::Id Thread::GetId()
 }
 
 Thread::Id::Id()
-{
-    nativeId = 0;
-}
-
-Thread::Id::Id(const NativeId & _nativeId) 
-    : nativeId(_nativeId)
+    : handle(NULL)
+    , nativeId(0)
 {}
 
+Thread::Id::Id(const Handle &_threadHandle)
+    : handle(_threadHandle)
+{
+    static NativeId lastId = 0;
+    nativeId = lastId++;
+}
+
 Thread::Id::Id(const Id & other)
-    : nativeId(other.nativeId)
+    : handle(other.handle)
+    , nativeId(other.nativeId)
 {}
 
 const Thread::Id::NativeId & Thread::Id::GetNativeId()
