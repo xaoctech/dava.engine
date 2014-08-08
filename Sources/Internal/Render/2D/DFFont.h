@@ -49,7 +49,7 @@ public:
     
 protected:
     DFFontInternalData();
-    ~DFFontInternalData();
+    virtual ~DFFontInternalData();
     
     bool InitFromConfig(const FilePath & path);
     

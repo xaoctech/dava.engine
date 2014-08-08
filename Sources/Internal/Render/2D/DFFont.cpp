@@ -63,23 +63,22 @@ DFFontInternalData * DFFontInternalData::Create(const FilePath & path)
     
     Map<FilePath, DFFontInternalData*>::iterator iter = dfFontDataMap.find(path);
     if (iter != dfFontDataMap.end())
-        fontData = SafeRetain(iter->second);
-    
-    if(!fontData)
     {
-        fontData = new DFFontInternalData();
-        if(!fontData->InitFromConfig(path))
-        {
-            fontData->Release();
-            fontData = NULL;
-        }
+        fontData = SafeRetain(iter->second);
+        dfFontDataMapMutex.Unlock();
+        return fontData;
     }
     
-    if(fontData)
-        dfFontDataMap[path] = fontData;
+    fontData = new DFFontInternalData();
+    if(!fontData->InitFromConfig(path))
+    {
+        fontData->Release();
+        dfFontDataMapMutex.Unlock();
+        return NULL;
+    }
     
+    dfFontDataMap[path] = fontData;    
     dfFontDataMapMutex.Unlock();
-    
     return fontData;
 }
     
