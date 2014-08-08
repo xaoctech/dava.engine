@@ -51,13 +51,14 @@ CommandsController::CommandsController(QObject* parent/* = NULL*/) :
 void CommandsController::ExecuteCommand(BaseCommand* command)
 {
 	SafeRetain(command);
-    command->Execute();
+    if (command->Execute() == BaseCommand::Success)
+    {
+        undoRedoController.AddCommandToUndoStack(command);
+        undoRedoController.IncrementUnsavedChanges(true);
 
-	undoRedoController.AddCommandToUndoStack(command);
-	undoRedoController.IncrementUnsavedChanges(true);
-
-	emit UndoRedoAvailabilityChanged();
-	emit UnsavedChangesNumberChanged();
+        emit UndoRedoAvailabilityChanged();
+        emit UnsavedChangesNumberChanged();
+    }
 
 	SafeRelease(command);
 }
