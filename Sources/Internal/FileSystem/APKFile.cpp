@@ -58,8 +58,7 @@ APKFile::~APKFile()
 File * APKFile::CreateFromAssets(const FilePath &filePath, uint32 attributes)
 {
 	mutex.Lock();
-//	Logger::Debug("[APKFile::CreateFromAssets] wan't to create file %s", filePath.c_str());
-//
+
     FileSystem * fileSystem = FileSystem::Instance();
 	for (List<FileSystem::ResourceArchiveItem>::iterator ai = fileSystem->resourceArchiveList.begin();
          ai != fileSystem->resourceArchiveList.end(); ++ai)
@@ -99,54 +98,63 @@ File * APKFile::CreateFromAssets(const FilePath &filePath, uint32 attributes)
     
     
     CorePlatformAndroid *core = (CorePlatformAndroid *)Core::Instance();
-    DVASSERT_MSG(core, "Need create core before loading of files");
-    
-    
-    AAssetManager *assetManager = core->GetAssetManager();
-    DVASSERT_MSG(assetManager, "Need setup assetManager on core creation");
-    
-    AAsset * asset = AAssetManager_open(assetManager, filePath.GetAbsolutePathname().c_str(), AASSET_MODE_UNKNOWN);
-    if(!asset)
+    DVASSERT_MSG(core, "[APKFile::CreateFromAssets] Need to create core before loading files");
+
+    zip* package = core->GetApplicationPackage();
+    if (package == NULL)
     {
-        Logger::Error("[APKFile::CreateFromAssets] Can't load asset for path %s", filePath.GetAbsolutePathname().c_str());
+        DVASSERT_MSG(false, "[APKFile::CreateFromAssets] Package file should be initialized.");
         mutex.Unlock();
         return NULL;
     }
-    
 
-    int32 dataSize = AAsset_getLength(asset);
-//    Logger::Debug("[APKFile::CreateFromAssets] fileSize is %d (%s)", dataSize, filePath.c_str());
+    FilePath assetFile = FilePath("assets/") + filePath.GetAbsolutePathname();
+    String assetFileStr = assetFile.GetAbsolutePathname();
 
-    uint8 *data = new uint8[dataSize];
-    
-    int32 readSize = AAsset_read(asset, data, dataSize * sizeof(uint8));
-    AAsset_close(asset);
-
-    if (readSize != dataSize)
+    int index = zip_name_locate(package, assetFileStr.c_str(), 0);
+    if (index == -1)
     {
-    	Logger::Error("IsMaiThread:%d, readSize:%d, dataSize:%d",
-    		Thread::IsMainThread() ? 1 : 0,
-    		readSize,
-    		dataSize);
+        Logger::Error("[APKFile::CreateFromAssets] Can't locate file in the archive: %s", assetFileStr.c_str());
+        mutex.Unlock();
+        return NULL;
+    }
+
+    struct zip_stat stat;
+
+    int32 error = zip_stat_index(package, index, 0, &stat);
+    if (error == -1)
+    {
+        Logger::Error("[APKFile::CreateFromAssets] Can't get file info: %s", assetFileStr.c_str());
+        mutex.Unlock();
+        return NULL;
+    }
+
+    zip_file* file = zip_fopen_index(package, index, 0);
+    if (file == NULL)
+    {
+        Logger::Error("[APKFile::CreateFromAssets] Can't open file in the archive: %s", assetFileStr.c_str());
+        mutex.Unlock();
+        return NULL;
+    }
+
+    uint8 *data = new uint8[stat.size];
+
+    int32 bytesRead = zip_fread(file, data, stat.size);
+    if (bytesRead == -1)
+    {
+        Logger::Error("[APKFile::CreateFromAssets] Error reading file: %s", assetFileStr.c_str());
+        SafeDeleteArray(data);
+        zip_fclose(file);
+        mutex.Unlock();
+        return NULL;
     }
 
     APKFile *fileInstance = NULL;
+    fileInstance = CreateFromData(filePath, data, stat.size, attributes);
 
-    if (readSize < 0)
-    {
-    	Logger::Error("Error reading %s.", filePath.GetAbsolutePathname().c_str());
-    	Logger::Error("This seems to be a known Android issue with resources packing.");
-    	Logger::Error("In the case when there are many repetitive values in the file, Android unpacker can't determine the end of the packed file.");
-    	Logger::Error("For more information: https://code.google.com/p/android/issues/detail?id=39041 https://android-review.googlesource.com/#/c/51757/");
-    	Logger::Error("This issue is fixed in the later versions of Android.");
-    	Logger::Error("The workaround is to fill the file with data to avoid the big amount of repetitive values at the end of compressed file.");
-    }
-    else
-    {
-    	fileInstance = CreateFromData(filePath, data, readSize, attributes);
-    	DVASSERT_MSG(fileInstance, "Can't create dynamic file from memory");
-    }
+    DVASSERT_MSG(fileInstance, "[APKFile::CreateFromAssets] Can't create dynamic file from memory");
 
+    zip_fclose(file);
     SafeDeleteArray(data);
     mutex.Unlock();
     return fileInstance;

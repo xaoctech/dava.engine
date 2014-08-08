@@ -38,6 +38,8 @@
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 
+#include "zip/zip.h"
+
 namespace DAVA
 {
 
@@ -95,7 +97,10 @@ public:
 	void SetAssetManager(AAssetManager * mngr);
 
 	const String& GetExternalStoragePathname() const {return externalStorage;};
-	
+	const String& GetPackageName() const {return packageName;};
+
+	zip* GetApplicationPackage() const {return applicationPackage;};
+
 	AndroidSystemDelegate* GetAndroidSystemDelegate() const;
 
 private:
@@ -107,7 +112,7 @@ private:
 
     void ResizeView(int32 w, int32 h);
 
-    
+    void InitApplicationPackage();
 
 private:
 	int32 width;
@@ -126,6 +131,9 @@ private:
 	AAssetManager * assetMngr;
 
 	String externalStorage;
+	String packageName;
+
+	zip* applicationPackage;
 };
 };
 #endif // #if defined(__DAVAENGINE_ANDROID__)
