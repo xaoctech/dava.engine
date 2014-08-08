@@ -33,6 +33,7 @@
 #include "Render/Shader.h"
 #include "FileSystem/YamlParser.h"
 #include "FileSystem/YamlNode.h"
+#include "Thread/LockGuard.h"
 
 #define NOT_DEF_CHAR 0xffff
 
@@ -51,34 +52,26 @@ DFFontInternalData::DFFontInternalData()
     
 DFFontInternalData::~DFFontInternalData()
 {
-    dfFontDataMapMutex.Lock();
+    LockGuard<Mutex> guard(dfFontDataMapMutex);
     dfFontDataMap.erase(configPath);
-    dfFontDataMapMutex.Unlock();
 }
     
 DFFontInternalData * DFFontInternalData::Create(const FilePath & path)
 {
-    DFFontInternalData * fontData = NULL;
-    dfFontDataMapMutex.Lock();
+    LockGuard<Mutex> guard(dfFontDataMapMutex);
     
     Map<FilePath, DFFontInternalData*>::iterator iter = dfFontDataMap.find(path);
     if (iter != dfFontDataMap.end())
-    {
-        fontData = SafeRetain(iter->second);
-        dfFontDataMapMutex.Unlock();
-        return fontData;
-    }
+        return SafeRetain(iter->second);
     
-    fontData = new DFFontInternalData();
+    DFFontInternalData * fontData = new DFFontInternalData();
     if(!fontData->InitFromConfig(path))
     {
         fontData->Release();
-        dfFontDataMapMutex.Unlock();
         return NULL;
     }
     
     dfFontDataMap[path] = fontData;    
-    dfFontDataMapMutex.Unlock();
     return fontData;
 }
     
