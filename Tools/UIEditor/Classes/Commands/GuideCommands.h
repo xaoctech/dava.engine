@@ -52,7 +52,7 @@ class AddNewGuideCommand : public BaseGuideCommand
 public:
 	AddNewGuideCommand(const HierarchyTreeScreenNode* screenNode);
 
-	virtual void Execute();
+	virtual eExecuteResult Execute();
 	virtual void Rollback();
     
 	virtual bool IsUndoRedoSupported() {return true;};
@@ -71,7 +71,7 @@ class MoveGuideByMouseCommand : public BaseGuideCommand
 public:
     MoveGuideByMouseCommand(const HierarchyTreeScreenNode* screenNode);
     
-    virtual void Execute();
+    virtual eExecuteResult Execute();
     virtual void Rollback();
 
    	virtual bool IsUndoRedoSupported() {return true;};
@@ -91,7 +91,7 @@ class MoveGuideCommand : public BaseGuideCommand
 public:
     MoveGuideCommand(const HierarchyTreeScreenNode* screenNode, const Vector2& delta);
 
-    virtual void Execute();
+    virtual eExecuteResult Execute();
     virtual void Rollback();
     
    	virtual bool IsUndoRedoSupported() {return true;};
@@ -108,7 +108,7 @@ class DeleteSingleGuideCommand : public BaseGuideCommand
 public:
     DeleteSingleGuideCommand(const HierarchyTreeScreenNode* screenNode, const GuideData& guideData);
 
-    virtual void Execute();
+    virtual eExecuteResult Execute();
     virtual void Rollback();
 
     virtual bool IsUndoRedoSupported() {return true;};
@@ -124,7 +124,7 @@ class DeleteGuidesCommand : public BaseGuideCommand
 public:
     DeleteGuidesCommand(const HierarchyTreeScreenNode* screenNode);
 
-    virtual void Execute();
+    virtual eExecuteResult Execute();
     virtual void Rollback();
 
     virtual bool IsUndoRedoSupported() {return true;};

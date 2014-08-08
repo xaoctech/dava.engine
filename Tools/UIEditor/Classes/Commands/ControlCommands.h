@@ -43,7 +43,7 @@ class ControlsMoveCommand: public BaseCommand
 {
 public:
 	ControlsMoveCommand(const HierarchyTreeController::SELECTEDCONTROLNODES& controls, const Vector2& delta);
-	virtual void Execute();
+	virtual eExecuteResult Execute();
 	virtual void Rollback();
 
 	virtual bool IsUndoRedoSupported() {return true;};
@@ -62,7 +62,7 @@ class ControlResizeCommand: public BaseCommand
 public:
 	ControlResizeCommand(HierarchyTreeNode::HIERARCHYTREENODEID nodeId, const Rect& originalRect, const Rect& newRect);
 	
-	virtual void Execute();
+	virtual eExecuteResult Execute();
 	virtual void Rollback();
 	
 	virtual bool IsUndoRedoSupported() {return true;};
@@ -83,7 +83,7 @@ class ControlsAdjustSizeCommand: public BaseCommand
 public:
 	ControlsAdjustSizeCommand(const HierarchyTreeController::SELECTEDCONTROLNODES& controls);
 	
-	virtual void Execute();
+	virtual eExecuteResult Execute();
 	virtual void Rollback();
 	
 	virtual bool IsUndoRedoSupported() {return true;};
@@ -107,7 +107,7 @@ public:
 	ControlsAlignDistributeCommand(const HierarchyTreeController::SELECTEDCONTROLNODES& controls, eAlignControlsType alignType);
 	ControlsAlignDistributeCommand(const HierarchyTreeController::SELECTEDCONTROLNODES& controls, eDistributeControlsType distributeType);
 
-	virtual void Execute();
+	virtual eExecuteResult Execute();
 	virtual void Rollback();
 
 	virtual bool IsUndoRedoSupported() {return true;};
@@ -136,7 +136,7 @@ class ControlRenameCommand : public BaseCommand
 public:
 	ControlRenameCommand(HierarchyTreeNode::HIERARCHYTREENODEID nodeId, const QString& originalName, const QString& newName);
 	
-	virtual void Execute();
+	virtual eExecuteResult Execute();
 	virtual void Rollback();
 	
 	virtual bool IsUndoRedoSupported() {return true;};
