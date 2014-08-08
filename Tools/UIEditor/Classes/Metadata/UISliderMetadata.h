@@ -83,7 +83,11 @@ protected:
     virtual QString GetUIControlClassName() const { return "UISlider"; };
 	// Override Resize function
 	virtual void ApplyResize(const Rect& originalRect, const Rect& newRect);
-		
+	
+	// Helper sanity check functions to avoid code duplication.
+    bool VerifyActiveParamIDAndMinBackground() const;
+    bool VerifyActiveParamIDAndMaxBackground() const;
+    
     // Helper to access active UI Slider.
     UISlider* GetActiveUISlider() const;
 	
