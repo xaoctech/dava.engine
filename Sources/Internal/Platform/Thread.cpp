@@ -89,7 +89,7 @@ Thread::Id Thread::GetCurrentThreadId()
     if (it == threadIdList.end())
     {
         Handle newHandle = GetCurrentHandle();
-        static Id newId = 0;
+        static Id newId = 1;
         threadIdList[newHandle] = newId;
         retId = newId++;
     }
@@ -110,13 +110,42 @@ Thread * Thread::Create(const Message& msg)
 
 void Thread::Kill()
 {
-    if(state != STATE_ENDED && state != STATE_KILLED)
+    // it is possible to kill thread just after creating or starting and the problem is - thred changes state
+    // to STATE_RUNNING insite threaded function - so that could not happens in that case. Need some time.
+    
+    // Important - DO NOT try to wait RUNNING state because that state wll not appear if thread is not started!!!
+    // You can wait RUNNING state, but not from thred which should call Start() for created Thread.
+    DVASSERT(STATE_CREATED != state);
+    
+    if(STATE_ENDED != state && STATE_KILLED != state && STATE_CANCELLED != state)
     {
-        threadIdListMutex.Lock();
-        threadIdList.erase(threadIdList.find(handle));
-        threadIdListMutex.Unlock();
-        KillNative(handle);
-        state = STATE_KILLED;
+        /* 
+            we could use native killing - thread system will send event to the thread
+            and then we we should to catch it and determine what we need.
+            
+            pros:
+                native
+                common
+            negs:
+                more covers to support crossplatform
+                pthread_join doesn't works correctly and don't waits even when thread function is infinity loop.
+                sigabort comes and brakes application.
+            
+         
+            instead of that i use state of the thread
+            pros:
+                simple
+                crossplatform
+                fast
+                no crashes
+                covers are not needed
+            negs;
+                not a common
+                maybee it is a good idea to write something like IsKilling() and IsCancelling() methods to simplify state handling for end user.
+        */
+        //KillNative(handle);
+        //state = STATE_KILLED;
+        state = STATE_KILLING;
     }
 }
 
@@ -134,6 +163,7 @@ void Thread::KillAll()
 
 Thread::Thread(const Message& _msg)
     : msg(_msg)
+    , id(0)
 {
     threadListMutex.Lock();
     threadList.insert(this);
@@ -177,7 +207,7 @@ void Thread::Signal(ConditionalVariable * cv)
     if(ret)
         Logger::FrameworkDebug("[Thread::Signal]: pthread_cond_signal error code %d", ret);
 }
-
+    
 void Thread::Broadcast(ConditionalVariable * cv)
 {
     int32 ret = pthread_cond_broadcast(&cv->cv);
@@ -193,6 +223,41 @@ void Thread::SetId(const Id &threadId)
 Thread::Id Thread::GetId()
 {
     return id;
+}
+    
+void Thread::ThreadFunction(void *param)
+{
+    Thread * t = (Thread *)param;
+    t->Retain();
+    t->SetId(GetCurrentThreadId());
+    
+    if (STATE_CREATED == t->state
+        ||STATE_KILLED == t->state
+        || STATE_CANCELLED == t->state
+        || STATE_ENDED == t->state)
+    {
+        t->state = STATE_RUNNING;
+        t->msg(t);
+    }
+
+    switch(t->state)
+    {
+    case STATE_KILLING:
+        t->state = STATE_KILLED;
+        break;
+    case STATE_CANCELLING:
+        t->state = STATE_CANCELLED;
+        break;
+    default:
+        t->state = STATE_ENDED;
+    }
+    
+    // thread is finishing so we need to unregister it
+    threadIdListMutex.Lock();
+    threadIdList.erase(t->handle);
+    threadIdListMutex.Unlock();
+    
+    t->Release();
 }
     
 };

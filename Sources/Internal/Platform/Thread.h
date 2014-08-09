@@ -90,10 +90,13 @@ public:
 	{
 		STATE_CREATED = 0,
 		STATE_RUNNING,
-		STATE_ENDED,
+        STATE_ENDED,
+        STATE_CANCELLING,
+		STATE_CANCELLED,
+        STATE_KILLING,
         STATE_KILLED
 	};
-	
+    
 	/**
 		\brief static function to detect if current thread is main thread of application
 		\returns true if now main thread executes
@@ -147,10 +150,20 @@ public:
      */
     static void SleepThread(uint32 timeMS);
 
+    /**
+     \brief registers id for current thread if not registered before and returns it from map.
+     \returns id as sequensial number of registered in this application thread
+    */
 	static Id GetCurrentThreadId();
 
+    /**
+     \returns returns Id of current Thread Object.
+     */
 	Id GetId();
 
+    /**
+     \brief register current native thread handle and remember it's Id as Id of MainThread.
+     */
     static void	InitMainThread();
 
 private:
@@ -162,9 +175,12 @@ private:
     void SetId(const Id &threadId);
     static Handle GetCurrentHandle();
     
+    void StartNative();
     static void KillNative(Handle handle);
     static void Kill(Handle handle);
     
+    static void ThreadFunction(void *param);
+
     Handle handle;
 	Message	msg;
 	eThreadState state;
@@ -176,6 +192,9 @@ private:
     static Mutex threadListMutex;
     static Map<Handle, Id> threadIdList;
     static Mutex threadIdListMutex;
+    
+    ConditionalVariable killEvent;
+    ConditionalVariable cancelEvent;
 };
 
 };

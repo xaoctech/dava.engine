@@ -74,15 +74,7 @@ void Thread::SleepThread(uint32 timeMS)
 
 DWORD WINAPI ThreadFunc(void* param)
 {	
-	Thread *t = (Thread *)param;
-    t->SetId(Thread::GetCurrentHandle());
-
-	t->state = Thread::STATE_RUNNING;
-	t->msg(t);
-
-	t->state = Thread::STATE_ENDED;
-	t->Release();
-	
+    Thread::ThreadFunction(param);
 	return 0;
 }
 

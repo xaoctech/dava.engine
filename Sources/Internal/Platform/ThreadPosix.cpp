@@ -74,16 +74,9 @@ void *PthreadMain(void *param)
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 #endif
-    Thread * t = (Thread *)param;
-    t->Retain();
-    t->SetId(Thread::GetCurrentThreadId());
     
-    
-    t->state = Thread::STATE_RUNNING;
-    t->msg(t);
-    
-    t->state = Thread::STATE_ENDED;
-    t->Release();
+    Thread::ThreadFunction(param);
+
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
     [pool release];
 #endif
@@ -100,6 +93,10 @@ void Thread::YieldThread()
     pthread_yield_np();
 }
 
+void Thread::Join()
+{
+    pthread_join(handle, NULL);
+}
 
 Thread::Handle Thread::GetCurrentHandle()
 {
