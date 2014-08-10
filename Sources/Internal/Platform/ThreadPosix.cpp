@@ -1,4 +1,4 @@
-/*==================================================================================
+                             /*==================================================================================
  Copyright (c) 2008, binaryzebra
  All rights reserved.
  
@@ -53,7 +53,7 @@ void Thread::Shutdown()
 
 void Thread::KillNative(Handle _handle)
 {
-    pthread_kill(_handle, SIGKILL);
+    pthread_cancel(_handle);
 }
 
 void Thread::SleepThread(uint32 timeMS)
