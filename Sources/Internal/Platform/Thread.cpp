@@ -119,33 +119,8 @@ void Thread::Kill()
     
     if(STATE_ENDED != state && STATE_KILLED != state && STATE_CANCELLED != state)
     {
-        /* 
-            we could use native killing - thread system will send event to the thread
-            and then we we should to catch it and determine what we need.
-            
-            pros:
-                native
-                common
-            negs:
-                more covers to support crossplatform
-                pthread_join doesn't works correctly and don't waits even when thread function is infinity loop.
-                sigabort comes and brakes application.
-            
-         
-            instead of that i use state of the thread
-            pros:
-                simple
-                crossplatform
-                fast
-                no crashes
-                covers are not needed
-            negs;
-                not a common
-                maybee it is a good idea to write something like IsKilling() and IsCancelling() methods to simplify state handling for end user.
-        */
-        //KillNative(handle);
-        //state = STATE_KILLED;
-        state = STATE_KILLING;
+        KillNative(handle);
+        state = STATE_KILLED;
     }
 }
 
@@ -160,6 +135,34 @@ void Thread::KillAll()
     }
     threadListMutex.Unlock();
 }
+
+void Thread::Cancel()
+{
+    // it is possible to cancel thread just after creating or starting and the problem is - thred changes state
+    // to STATE_RUNNING insite threaded function - so that could not happens in that case. Need some time.
+    
+    // Important - DO NOT try to wait RUNNING state because that state wll not appear if thread is not started!!!
+    // You can wait RUNNING state, but not from thred which should call Start() for created Thread.
+    DVASSERT(STATE_CREATED != state);
+    
+    if(STATE_ENDED != state && STATE_KILLED != state && STATE_CANCELLED != state)
+    {
+        state = STATE_CANCELLING;
+    }
+}
+
+void Thread::CancelAll()
+{
+    threadListMutex.Lock();
+    Set<Thread *>::iterator i = threadList.begin();
+    Set<Thread *>::iterator end = threadList.end();
+    for(; i != end; ++i)
+    {
+        (*i)->Cancel();
+    }
+    threadListMutex.Unlock();
+}
+
 
 Thread::Thread(const Message& _msg)
     : msg(_msg)
@@ -242,9 +245,6 @@ void Thread::ThreadFunction(void *param)
 
     switch(t->state)
     {
-    case STATE_KILLING:
-        t->state = STATE_KILLED;
-        break;
     case STATE_CANCELLING:
         t->state = STATE_CANCELLED;
         break;

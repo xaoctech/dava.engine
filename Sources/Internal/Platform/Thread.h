@@ -93,7 +93,6 @@ public:
         STATE_ENDED,
         STATE_CANCELLING,
 		STATE_CANCELLED,
-        STATE_KILLING,
         STATE_KILLED
 	};
     
@@ -126,11 +125,15 @@ public:
     */
     void Join();
 
-    /** Kill thread
+    /** Kill thread by OS. No signals will be sent.
     */
     void Kill();
     static void KillAll();
 
+    /** Ask to cancel thred. User should to check state variable
+    */
+    void Cancel();
+    static void CancelAll();
     /**
         Wrapp pthread wait, signal and broadcast
 	*/
@@ -177,7 +180,6 @@ private:
     
     void StartNative();
     static void KillNative(Handle handle);
-    static void Kill(Handle handle);
     
     static void ThreadFunction(void *param);
 

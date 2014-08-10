@@ -87,7 +87,7 @@ void ThreadSyncTest::ShortThreadFunction(BaseObject * caller, void * callerData,
     while(thread && i-- > 0)
     {
         Thread::SleepThread(1);
-        if (Thread::STATE_KILLING == thread->GetState())
+        if (Thread::STATE_CANCELLING == thread->GetState())
             break;
     }
     
@@ -108,9 +108,9 @@ void ThreadSyncTest::TestThread(PerfFuncData * data)
     }
     TEST_VERIFY(timeout > 0);
 
-    infiniteThread->Kill();
+    infiniteThread->Cancel();
     infiniteThread->Join();
-    TEST_VERIFY(Thread::STATE_KILLED == infiniteThread->GetState());
+    TEST_VERIFY(Thread::STATE_CANCELLED == infiniteThread->GetState());
 
     Thread *shortThread = Thread::Create(Message(this, &ThreadSyncTest::ShortThreadFunction));
     shortThread->Start();
