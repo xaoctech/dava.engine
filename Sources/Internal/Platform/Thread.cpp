@@ -43,6 +43,7 @@ Map<Thread::Handle, Thread::Id> Thread::threadIdList;
 Mutex Thread::threadIdListMutex;
 
 Thread::Id Thread::mainThreadId = 0;
+Thread::Id Thread::glThreadId = 0;
 
 ConditionalVariable::ConditionalVariable()
 {
@@ -69,13 +70,21 @@ void Thread::InitMainThread()
     mainThreadId = GetCurrentThreadId();
 }
 
+void Thread::InitGLThread()
+{
+	glThreadId = GetCurrentThreadId();
+}
+
 bool Thread::IsMainThread()
 {
     if (mainThreadId == 0)
     {
         Logger::Error("Main thread not initialized");
     }
-    return (mainThreadId == GetCurrentThreadId());
+
+    Id currentId = GetCurrentThreadId();
+
+    return currentId == mainThreadId || currentId == glThreadId;
 }
 
 Thread::Id Thread::GetCurrentThreadId()

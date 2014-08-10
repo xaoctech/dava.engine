@@ -155,7 +155,7 @@ public:
 
     /**
      \brief registers id for current thread if not registered before and returns it from map.
-     \returns id as sequensial number of registered in this application thread
+     \returns id as sequential number of registered in this application thread
     */
 	static Id GetCurrentThreadId();
 
@@ -168,6 +168,7 @@ public:
      \brief register current native thread handle and remember it's Id as Id of MainThread.
      */
     static void	InitMainThread();
+    static void InitGLThread();
 
 private:
     virtual ~Thread();
@@ -183,12 +184,17 @@ private:
     
     static void ThreadFunction(void *param);
 
+#if defined (__DAVAENGINE_ANDROID__)
+    static void thread_exit_handler(int sig);
+#endif
+
     Handle handle;
 	Message	msg;
 	eThreadState state;
 
 	Id id;
 	static Id mainThreadId;
+	static Id glThreadId;
 
     static Set<Thread *> threadList;
     static Mutex threadListMutex;
