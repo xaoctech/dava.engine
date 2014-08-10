@@ -556,7 +556,6 @@
 		02FD80F41924997C007762C0 /* ES2Renderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C8E116B9326D002BD35F /* ES2Renderer.mm */; };
 		02FD80F51924997C007762C0 /* HelperAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C8E416B9326D002BD35F /* HelperAppDelegate.mm */; };
 		02FD80F61924997C007762C0 /* Thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C8F416B9326D002BD35F /* Thread.cpp */; };
-		02FD80F71924997C007762C0 /* ThreadMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C8F716B9326D002BD35F /* ThreadMacOS.mm */; };
 		02FD80F81924997C007762C0 /* Font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C8FB16B9326D002BD35F /* Font.cpp */; };
 		02FD80F91924997C007762C0 /* FontManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C8FD16B9326D002BD35F /* FontManager.cpp */; };
 		02FD80FA1924997C007762C0 /* FTFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C8FF16B9326D002BD35F /* FTFont.cpp */; };
@@ -1067,6 +1066,8 @@
 		CCEB543D1886FF0C0018491F /* LodToLod2Converter.h in Headers */ = {isa = PBXBuildFile; fileRef = CCEB54391886FF0C0018491F /* LodToLod2Converter.h */; };
 		CCEB543E1886FF0C0018491F /* SwitchToRenerObjectConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCEB543A1886FF0C0018491F /* SwitchToRenerObjectConverter.cpp */; };
 		CCEB543F1886FF0C0018491F /* SwitchToRenerObjectConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = CCEB543B1886FF0C0018491F /* SwitchToRenerObjectConverter.h */; };
+		D76737081996EC9B00E9913C /* ThreadPosix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D76737071996EC9B00E9913C /* ThreadPosix.cpp */; };
+		D76737091996EC9B00E9913C /* ThreadPosix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D76737071996EC9B00E9913C /* ThreadPosix.cpp */; };
 		E81F2B0516BFF65700C4545E /* libcurl_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E81F2B0416BFF65700C4545E /* libcurl_ios.a */; };
 		E8373BD817268CD9001A9770 /* UIAggregatorControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8373BD617268CD9001A9770 /* UIAggregatorControl.cpp */; };
 		E8373BD917268CD9001A9770 /* UIAggregatorControl.h in Headers */ = {isa = PBXBuildFile; fileRef = E8373BD717268CD9001A9770 /* UIAggregatorControl.h */; };
@@ -1311,7 +1312,6 @@
 		E8B3CBAA16B9326E002BD35F /* HelperAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C8E416B9326D002BD35F /* HelperAppDelegate.mm */; };
 		E8B3CBB816B9326E002BD35F /* Thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C8F416B9326D002BD35F /* Thread.cpp */; };
 		E8B3CBB916B9326E002BD35F /* Thread.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C8F516B9326D002BD35F /* Thread.h */; };
-		E8B3CBBB16B9326E002BD35F /* ThreadMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C8F716B9326D002BD35F /* ThreadMacOS.mm */; };
 		E8B3CBBD16B9326E002BD35F /* Font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C8FB16B9326D002BD35F /* Font.cpp */; };
 		E8B3CBBE16B9326E002BD35F /* Font.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C8FC16B9326D002BD35F /* Font.h */; };
 		E8B3CBBF16B9326E002BD35F /* FontManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C8FD16B9326D002BD35F /* FontManager.cpp */; };
@@ -1916,6 +1916,7 @@
 		CCEB543A1886FF0C0018491F /* SwitchToRenerObjectConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SwitchToRenerObjectConverter.cpp; sourceTree = "<group>"; };
 		CCEB543B1886FF0C0018491F /* SwitchToRenerObjectConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchToRenerObjectConverter.h; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D76737071996EC9B00E9913C /* ThreadPosix.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp.preprocessed; fileEncoding = 4; path = ThreadPosix.cpp; sourceTree = "<group>"; };
 		E80D2FB2164D51A100C13D70 /* libbz2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = usr/lib/libbz2.dylib; sourceTree = SDKROOT; };
 		E81F2B0416BFF65700C4545E /* libcurl_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl_ios.a; path = ../../Libs/libs/libcurl_ios.a; sourceTree = "<group>"; };
 		E8373BD617268CD9001A9770 /* UIAggregatorControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIAggregatorControl.cpp; sourceTree = "<group>"; };
@@ -2163,7 +2164,6 @@
 		E8B3C8E416B9326D002BD35F /* HelperAppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HelperAppDelegate.mm; sourceTree = "<group>"; };
 		E8B3C8F416B9326D002BD35F /* Thread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Thread.cpp; sourceTree = "<group>"; };
 		E8B3C8F516B9326D002BD35F /* Thread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Thread.h; sourceTree = "<group>"; };
-		E8B3C8F716B9326D002BD35F /* ThreadMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ThreadMacOS.mm; sourceTree = "<group>"; };
 		E8B3C8FB16B9326D002BD35F /* Font.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Font.cpp; sourceTree = "<group>"; };
 		E8B3C8FC16B9326D002BD35F /* Font.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Font.h; sourceTree = "<group>"; };
 		E8B3C8FD16B9326D002BD35F /* FontManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FontManager.cpp; sourceTree = "<group>"; };
@@ -3103,6 +3103,7 @@
 		E8B3C8BB16B9326D002BD35F /* Platform */ = {
 			isa = PBXGroup;
 			children = (
+				D76737071996EC9B00E9913C /* ThreadPosix.cpp */,
 				6280BAA418D6F7DC007809B7 /* DateTimeApple.mm */,
 				624C87F018C6160F00E1049D /* DateTime.cpp */,
 				624C87F118C6160F00E1049D /* DateTime.h */,
@@ -3118,7 +3119,6 @@
 				E8B3C8D916B9326D002BD35F /* TemplateiOS */,
 				E8B3C8F416B9326D002BD35F /* Thread.cpp */,
 				E8B3C8F516B9326D002BD35F /* Thread.h */,
-				E8B3C8F716B9326D002BD35F /* ThreadMacOS.mm */,
 			);
 			path = Platform;
 			sourceTree = "<group>";
@@ -4816,7 +4816,6 @@
 				02FD80F41924997C007762C0 /* ES2Renderer.mm in Sources */,
 				02FD80F51924997C007762C0 /* HelperAppDelegate.mm in Sources */,
 				02FD80F61924997C007762C0 /* Thread.cpp in Sources */,
-				02FD80F71924997C007762C0 /* ThreadMacOS.mm in Sources */,
 				02FD80F81924997C007762C0 /* Font.cpp in Sources */,
 				02FD80F91924997C007762C0 /* FontManager.cpp in Sources */,
 				02FD80FA1924997C007762C0 /* FTFont.cpp in Sources */,
@@ -5056,6 +5055,7 @@
 				02FD81D51924997C007762C0 /* CustomPropertiesComponent.cpp in Sources */,
 				02FD81D61924997C007762C0 /* ActionUpdateSystem.cpp in Sources */,
 				02FD81D71924997C007762C0 /* CRC32.cpp in Sources */,
+				D76737091996EC9B00E9913C /* ThreadPosix.cpp in Sources */,
 				02FD81D81924997C007762C0 /* MaterialOptimazer.cpp in Sources */,
 				02FD81D91924997C007762C0 /* SkyboxSystem.cpp in Sources */,
 				02FD81DA1924997C007762C0 /* AllocatorFactory.cpp in Sources */,
@@ -5104,6 +5104,7 @@
 				E8B3CA9A16B9326E002BD35F /* BaseObject.cpp in Sources */,
 				E8B3CA9C16B9326E002BD35F /* BaseObjectChecker.cpp in Sources */,
 				E8B3CA9F16B9326E002BD35F /* Data.cpp in Sources */,
+				D76737081996EC9B00E9913C /* ThreadPosix.cpp in Sources */,
 				EAAC98BC1937354800549BAD /* MeshUtils.cpp in Sources */,
 				E8B3CAA116B9326E002BD35F /* DynamicObjectCache.cpp in Sources */,
 				84D18C0819201BEF009E3E90 /* LibPVRHelper.cpp in Sources */,
@@ -5192,7 +5193,6 @@
 				E8B3CBA716B9326E002BD35F /* ES2Renderer.mm in Sources */,
 				E8B3CBAA16B9326E002BD35F /* HelperAppDelegate.mm in Sources */,
 				E8B3CBB816B9326E002BD35F /* Thread.cpp in Sources */,
-				E8B3CBBB16B9326E002BD35F /* ThreadMacOS.mm in Sources */,
 				E8B3CBBD16B9326E002BD35F /* Font.cpp in Sources */,
 				E8B3CBBF16B9326E002BD35F /* FontManager.cpp in Sources */,
 				E8B3CBC116B9326E002BD35F /* FTFont.cpp in Sources */,
