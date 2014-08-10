@@ -34,16 +34,35 @@
 #include <time.h>
 #include <errno.h>
 
-
 #if defined (__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
 #import <QuartzCore/QuartzCore.h>
 #import <Foundation/NSAutoreleasePool.h>
+#elif defined (__DAVAENGINE_ANDROID__)
+#include <pthread.h>
 #endif
 
 namespace DAVA
 {
+// becouse android have no way to kill a thread, we will use signal to determine
+// if we need to end thread
+#if defined (__DAVAENGINE_ANDROID__)
+void Thread::thread_exit_handler(int sig)
+{
+	if (SIGKILL == sig)
+		pthread_exit(0);
+}
+#endif
+
 void Thread::Init()
 {
+#if defined (__DAVAENGINE_ANDROID__)
+	struct sigaction cancelThreadAction;
+	memset(&cancelThreadAction, 0, sizeof(cancelThreadAction));
+	sigemptyset(&cancelThreadAction.sa_mask);
+	cancelThreadAction.sa_flags = 0;
+	cancelThreadAction.sa_handler = thread_exit_handler;
+	sigaction(SIGKILL, &cancelThreadAction, NULL);
+#endif
 }
 
 void Thread::Shutdown()
@@ -53,7 +72,15 @@ void Thread::Shutdown()
 
 void Thread::KillNative(Handle _handle)
 {
-    pthread_cancel(_handle);
+	uint32 ret = 0;
+#if defined (__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
+    ret = pthread_cancel(_handle);
+#endif
+#if defined (__DAVAENGINE_ANDROID__)
+    ret = pthread_kill(_handle, SIGKILL);
+#endif
+    if (0 != ret)
+    	Logger::FrameworkDebug("[Thread::Cancel] for android: id = %d, error = %d", Thread::GetCurrentThreadId(), ret);
 }
 
 void Thread::SleepThread(uint32 timeMS)
@@ -90,7 +117,11 @@ void Thread::Start()
 
 void Thread::YieldThread()
 {
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
     pthread_yield_np();
+#elif defined(__DAVAEBGINE_ANDROID__)
+    sched_yield();
+#endif
 }
 
 void Thread::Join()
