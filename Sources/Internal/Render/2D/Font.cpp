@@ -523,18 +523,18 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
                                 DVASSERT(0);
                             }
                         }
+                    }
 
-					    if (IsSpace(t) || IsLineEnd(t)) state = SKIP; // if cur char is space go to skip
-					    else if (t == 0) state = FINISH;
-                        else if(wasSeparator && !isSeparator)
-                        {
-                            // good char after separator
-					        separator.lastWordStart = pos;
-					        separator.lastWordEnd = pos;
-					        if (!separator.IsLineInitialized()) separator.currentLineStart = pos;
-                        }
-                        wasSeparator = isSeparator;
-				    }
+					if (IsSpace(t) || IsLineEnd(t)) state = SKIP; // if cur char is space go to skip
+					else if (t == 0) state = FINISH;
+                    else if(wasSeparator && !isSeparator)
+                    {
+                        // good char after separator
+					    separator.lastWordStart = pos;
+					    separator.lastWordEnd = pos;
+					    if (!separator.IsLineInitialized()) separator.currentLineStart = pos;
+                    }
+                    wasSeparator = isSeparator;
                 }
 				break;
 			case FINISH:
