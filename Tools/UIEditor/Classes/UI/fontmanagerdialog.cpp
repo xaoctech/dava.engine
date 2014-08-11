@@ -216,8 +216,8 @@ void FontManagerDialog::ValidateFont(const Font* font) const
         {
             const DFFont* distanceFont = static_cast<const DFFont*>(font);
             DistanceFontValidator validator;
-
-            QString texPath = QString::fromStdString(distanceFont->GetTexturePath().GetAbsolutePathname());
+ 
+            QString texPath = QString::fromStdString(distanceFont->GetTexture()->GetPathname().GetAbsolutePathname());
             QVariant val = QVariant(texPath);
             validator.Validate(val);
 
