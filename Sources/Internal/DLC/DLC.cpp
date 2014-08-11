@@ -69,10 +69,12 @@ DLC::DLC(const String &url, const FilePath &sourceDir, const FilePath &destinati
     dlcContext.remoteVerDownloadId = 0;
     dlcContext.remoteFullSizeDownloadId = 0;
     dlcContext.remoteLiteSizeDownloadId = 0;
+    dlcContext.remoteMetaDownloadId = 0;
     dlcContext.remoteVerStotePath = workingDir + "RemoteVersion.info";
     dlcContext.remotePatchDownloadId = 0;
     dlcContext.remotePatchSize = 0;
     dlcContext.remotePatchStorePath = workingDir + "Remote.patch";
+    dlcContext.remoteMetaStorePath = workingDir + "Remote.meta";
 
     dlcContext.patchingOk = true;
     dlcContext.patchCount = 0;
@@ -133,6 +135,11 @@ DLC::DLCState DLC::GetState() const
 DLC::DLCError DLC::GetError() const
 {
     return dlcError;
+}
+
+FilePath DLC::GetMetaStorePath() const
+{
+    return dlcContext.remoteMetaStorePath;
 }
     
 void DLC::PostEvent(DLCEvent event)
@@ -213,6 +220,25 @@ void DLC::FSM(DLCEvent event)
             switch(event)
             {
                 case EVENT_CHECK_OK:
+                    dlcState = DS_CHECKING_META;
+                    break;
+                case EVENT_CHECK_ERROR:
+                    dlcError = DE_CHECK_ERROR;
+                    dlcState = DS_DONE;
+                    break;
+                case EVENT_CANCEL:
+                    dlcState = DS_CANCELLING;
+                    break;
+                default:
+                    eventHandled = false;
+                    break;
+            }
+            break;
+
+        case DS_CHECKING_META:
+            switch(event)
+            {
+                case EVENT_CHECK_OK:
                     // automatically start download after check?
                     if(fsmAutoReady)
                     {
@@ -222,10 +248,6 @@ void DLC::FSM(DLCEvent event)
                     {
                         dlcState = DS_READY;
                     }
-                    break;
-                case EVENT_CHECK_ERROR:
-                    dlcError = DE_CHECK_ERROR;
-                    dlcState = DS_DONE;
                     break;
                 case EVENT_CANCEL:
                     dlcState = DS_CANCELLING;
@@ -352,6 +374,9 @@ void DLC::FSM(DLCEvent event)
                 break;
             case DS_CHECKING_PATCH:
                 StepCheckPatchBegin();
+                break;
+            case DS_CHECKING_META:
+                StepCheckMetaBegin();
                 break;
             case DS_READY:
                 break;
@@ -494,6 +519,31 @@ void DLC::StepCheckPatchCancel()
 {
     DownloadManager::Instance()->Cancel(dlcContext.remoteFullSizeDownloadId);
     DownloadManager::Instance()->Cancel(dlcContext.remoteLiteSizeDownloadId);
+}
+
+void DLC::StepCheckMetaBegin()
+{
+    dlcContext.remoteMetaUrl = dlcContext.remotePatchUrl + ".meta";
+
+    FileSystem::Instance()->DeleteFile(dlcContext.remoteMetaStorePath);
+    DownloadManager::Instance()->SetNotificationCallback(DownloadManager::NotifyFunctor(this, &DLC::StepCheckMetaFinish));
+    dlcContext.remoteMetaDownloadId = DownloadManager::Instance()->Download(dlcContext.remoteMetaUrl, dlcContext.remoteMetaStorePath, FULL);
+}
+
+void DLC::StepCheckMetaFinish(const uint32 &id, const DownloadStatus &status)
+{
+    if(id == dlcContext.remoteMetaDownloadId)
+    {
+        if(DL_FINISHED == status)
+        {
+            PostEvent(EVENT_CHECK_OK);
+        }
+    }
+}
+
+void DLC::StepCheckMetaCancel()
+{
+    DownloadManager::Instance()->Cancel(dlcContext.remoteMetaDownloadId);
 }
 
 // download patch file
@@ -661,6 +711,7 @@ void DLC::PatchingThread(BaseObject *caller, void *callerData, void *userData)
 void DLC::StepClean()
 {
     FileSystem::Instance()->DeleteFile(dlcContext.downloadInfoStorePath);
+    FileSystem::Instance()->DeleteFile(dlcContext.remoteMetaStorePath);
     FileSystem::Instance()->DeleteFile(dlcContext.remotePatchStorePath);
 
     PostEvent(EVENT_CLEAN_OK);

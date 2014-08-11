@@ -56,6 +56,7 @@ public:
         DS_INIT,
         DS_CHECKING_INFO,
         DS_CHECKING_PATCH,
+        DS_CHECKING_META,
         DS_READY,
         DS_DOWNLOADING,
         DS_PATCHING,
@@ -108,6 +109,11 @@ public:
         \brief Returns DLC state machine error.
     */
     DLCError GetError() const;
+
+    /**
+        \brief Returns path to appropriate meta-file that was downloaded from DLC server.
+    */
+    FilePath GetMetaStorePath() const;
     
 protected:
     enum DLCEvent
@@ -144,10 +150,13 @@ protected:
         uint32 remoteVerDownloadId;
         uint32 remoteFullSizeDownloadId;
         uint32 remoteLiteSizeDownloadId;
+        uint32 remoteMetaDownloadId;
         FilePath remoteVerStotePath;
+        FilePath remoteMetaStorePath;
 
         String remotePatchFullUrl;
         String remotePatchLiteUrl;
+        String remoteMetaUrl;
 
         String remotePatchUrl;
         uint64 remotePatchSize;
@@ -183,6 +192,10 @@ protected:
     void StepCheckPatchBegin();
     void StepCheckPatchFinish(const uint32 &id, const DownloadStatus &status);
     void StepCheckPatchCancel();
+
+    void StepCheckMetaBegin();
+    void StepCheckMetaFinish(const uint32 &id, const DownloadStatus &status);
+    void StepCheckMetaCancel();
 
     void StepDownloadPatchBegin();
     void StepDownloadPatchFinish(const uint32 &id, const DownloadStatus &status);
