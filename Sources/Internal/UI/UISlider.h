@@ -45,11 +45,6 @@ protected:
 public:
 	UISlider(const Rect & rect = Rect());
 
-	virtual void AddControl(DAVA::UIControl *control);
-
-	virtual void SetThumbSprite(Sprite * sprite, int32 frame);
-	virtual void SetThumbSprite(const FilePath & spriteName, int32 frame);
-
     virtual void SetSize(const DAVA::Vector2 &newSize);
 
 	inline float32 GetMinValue();
@@ -109,29 +104,16 @@ protected:
 
 	Vector2 relTouchPoint;
 
-	UIControlBackground::eDrawType minDrawType;
-	UIControlBackground::eDrawType maxDrawType;
-
-    bool needSetMinDrawType;
-    bool needSetMaxDrawType;
-
 	void InitThumb();
-	void InitMinBackground();
-	void InitMaxBackground();
 	
-	void InitSubcontrols();
 	void AttachToSubcontrols();
-	void ReleaseAllSubcontrols();
 	void InitInactiveParts(Sprite* spr);
-
-	void PostInitBackground(UIControl* backgroundControl);
-    void RemoveAndReleaseControl(UIControl* &control);
 
     // Load/save the background.
     void LoadBackgound(const char* prefix, UIControlBackground* background, const YamlNode* rootNodem, UIYamlLoader* loader);
     void SaveBackground(const char* prefix, UIControlBackground* background, YamlNode* rootNode, UIYamlLoader * loader);
 
-    void CopyBackgroundAndRemoveControl(UIControl* from, UIControlBackground** to);
+    void CopyBackgroundAndRemoveControl(UIControl* from, UIControlBackground*& to);
 
 private:
     // Whether the sprites are embedded into control YAML (new storage format)?
