@@ -845,6 +845,7 @@
     </ClCompile>
     <ClCompile Include="Classes\TextureDescriptorUtils.cpp">
       <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\Helpers\CopyPasteHelper.cpp">
       <Filter>Sources\Helpers</Filter>
     </ClCompile>
@@ -1377,6 +1378,7 @@
     </ClInclude>
     <ClInclude Include="Classes\TextureDescriptorUtils.h">
       <Filter>Sources</Filter>
+    </ClInclude>
     <ClInclude Include="Classes\Helpers\CopyPasteHelper.h">
       <Filter>Sources\Helpers</Filter>
     </ClInclude>
@@ -1385,7 +1387,7 @@
     </ClInclude>
     <ClInclude Include="Classes\UI\PropertyGridWidgets\UIListCellPropertyGridWidget.h">
       <Filter>Sources\UI\PropertyGridWidgets</Filter>
-    </ClInclude>
+   	 </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_UIListCellPropertyGridWidget.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
