@@ -44,7 +44,6 @@
 #include "Platform/TemplateWin32/pThreadWin32.h"
 #elif defined(DAVAENGINE_PTHREAD)
 #include <pthread.h>
-#include <signal.h>
 #endif
 
 namespace DAVA
@@ -82,7 +81,10 @@ private:
     typedef HANDLE Handle;
     friend DWORD WINAPI ThreadFunc(void *param);
 #endif
-
+#if defined(__DAVAENGINE_ANDROID__)
+    static void thread_exit_handler(int sig);
+#endif
+    
 public:
     typedef uint32 Id;
 	
@@ -183,10 +185,6 @@ private:
     static void KillNative(Handle handle);
     
     static void ThreadFunction(void *param);
-
-#if defined (__DAVAENGINE_ANDROID__)
-    static void thread_exit_handler(int sig);
-#endif
 
     Handle handle;
 	Message	msg;

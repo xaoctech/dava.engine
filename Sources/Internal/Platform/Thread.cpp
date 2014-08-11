@@ -130,6 +130,9 @@ void Thread::Kill()
     {
         KillNative(handle);
         state = STATE_KILLED;
+        threadIdListMutex.Lock();
+        threadIdList.erase(handle);
+        threadIdListMutex.Unlock();
     }
 }
 
@@ -257,7 +260,7 @@ void Thread::ThreadFunction(void *param)
     case STATE_CANCELLING:
         t->state = STATE_CANCELLED;
         break;
-    default:
+    case STATE_RUNNING:
         t->state = STATE_ENDED;
     }
     

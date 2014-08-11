@@ -35,10 +35,7 @@
 #include <errno.h>
 
 #if defined (__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
-#import <QuartzCore/QuartzCore.h>
 #import <Foundation/NSAutoreleasePool.h>
-#elif defined (__DAVAENGINE_ANDROID__)
-#include <pthread.h>
 #endif
 
 namespace DAVA
@@ -48,8 +45,11 @@ namespace DAVA
 #if defined (__DAVAENGINE_ANDROID__)
 void Thread::thread_exit_handler(int sig)
 {
-	if (SIGKILL == sig)
+	if (SIGUSR1 == sig)
+	{
+		Logger::Debug("sigusr came");
 		pthread_exit(0);
+	}
 }
 #endif
 
@@ -61,7 +61,7 @@ void Thread::Init()
 	sigemptyset(&cancelThreadAction.sa_mask);
 	cancelThreadAction.sa_flags = 0;
 	cancelThreadAction.sa_handler = thread_exit_handler;
-	sigaction(SIGKILL, &cancelThreadAction, NULL);
+	sigaction(SIGUSR1, &cancelThreadAction, NULL);
 #endif
 }
 
@@ -77,7 +77,7 @@ void Thread::KillNative(Handle _handle)
     ret = pthread_cancel(_handle);
 #endif
 #if defined (__DAVAENGINE_ANDROID__)
-    ret = pthread_kill(_handle, SIGKILL);
+    ret = pthread_kill(_handle, SIGUSR1);
 #endif
     if (0 != ret)
     	Logger::FrameworkDebug("[Thread::Cancel] for android: id = %d, error = %d", Thread::GetCurrentThreadId(), ret);
