@@ -51,10 +51,6 @@ UISlider::UISlider(const Rect & rect)
 ,	minBackground(NULL)
 ,	maxBackground(NULL)
 ,	thumbButton(NULL)
-,	minDrawType(UIControlBackground::DRAW_ALIGNED)
-,	maxDrawType(UIControlBackground::DRAW_ALIGNED)
-,   needSetMinDrawType(false)
-,   needSetMaxDrawType(false)
 ,   spritesEmbedded(false)
 {
     SetInputEnabled(true, false);
@@ -66,58 +62,22 @@ UISlider::UISlider(const Rect & rect)
 	maxValue = 1.0f;
 	currentValue = 0.5f;
 
-	InitSubcontrols();
+    minBackground = new UIControlBackground();
+    maxBackground = new UIControlBackground();
+    InitThumb();
 }
 	
 void UISlider::InitThumb()
 {
-	if (!thumbButton)
-	{
-		thumbButton = new UIControl(Rect(0, 0, 40.f, 40.f));
-		thumbButton->SetName(UISLIDER_THUMB_SPRITE_CONTROL_NAME);
-		UIControl::AddControl(thumbButton);
-	}
-	
+    thumbButton = new UIControl(Rect(0, 0, 40.f, 40.f));
+    thumbButton->SetName(UISLIDER_THUMB_SPRITE_CONTROL_NAME);
+    AddControl(thumbButton);
+
 	thumbButton->SetInputEnabled(false);
 	thumbButton->relativePosition.y = size.y * 0.5f;
     thumbButton->pivotPoint = thumbButton->size*0.5f;
 	
 	SetValue(currentValue);
-}
-
-void UISlider::AddControl(DAVA::UIControl *control)
-{
-	// Synchronize the pointers to the buttons each time new control is added.
-	UIControl::AddControl(control);
-
-	if (control->GetName() == UISLIDER_THUMB_SPRITE_CONTROL_NAME && control != thumbButton)
-	{
-        RemoveAndReleaseControl(thumbButton);
-		thumbButton = SafeRetain(control);
-	}
-}
-		
-void UISlider::InitMinBackground()
-{
-	if (!minBackground)
-	{
-        minBackground = new UIControlBackground();
-	}
-}
-
-void UISlider::InitMaxBackground()
-{
-	if (!maxBackground)
-	{
-		maxBackground = new UIControlBackground();
-	}
-}
-
-void UISlider::ReleaseAllSubcontrols()
-{
-    RemoveAndReleaseControl(thumbButton);
-    SafeRelease(minBackground);
-    SafeRelease(maxBackground);
 }
 
 void UISlider::InitInactiveParts(Sprite* spr)
@@ -132,7 +92,13 @@ void UISlider::InitInactiveParts(Sprite* spr)
 
 void UISlider::SetThumb(UIControl *newThumb)
 {
-    RemoveAndReleaseControl(thumbButton);
+    if (thumbButton == newThumb)
+    {
+        return;
+    }
+
+    RemoveControl(thumbButton);
+    SafeRelease(thumbButton);
 
     thumbButton = SafeRetain(newThumb);
 	thumbButton->SetName(UISLIDER_THUMB_SPRITE_CONTROL_NAME);
@@ -152,18 +118,6 @@ UISlider::~UISlider()
 	SafeRelease(minBackground);
 	SafeRelease(maxBackground);
 	SafeRelease(thumbButton);
-}
-
-void UISlider::SetThumbSprite(Sprite * sprite, int32 frame)
-{
-	thumbButton->SetSprite(sprite, frame);
-	InitInactiveParts(sprite);
-}
-
-void UISlider::SetThumbSprite(const FilePath & spriteName, int32 frame)
-{
-	thumbButton->SetSprite(spriteName, frame);
-	InitInactiveParts(thumbButton->GetBackground()->GetSprite());
 }
 	
 void UISlider::RecalcButtonPos()
@@ -285,57 +239,11 @@ void UISlider::Draw(const UIGeometricData &geometricData)
 
 void UISlider::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
-	UIControl::LoadFromYamlNode(node, loader);
-	
-	ReleaseAllSubcontrols();
-    InitMinBackground();
-    InitMaxBackground();
-	const YamlNode * thumbSpriteNode = node->Get("thumbSprite");
+    RemoveControl(thumbButton);
+    SafeRelease(thumbButton);
 
-	if (thumbSpriteNode)
-	{
-		// Yuri Coder, 2012/04/24. This is old configuration version without the subcontrols.
-		// Need to create sprite subcontrol.
-		InitThumb();
-		const YamlNode * spriteNode = thumbSpriteNode->Get(0);
-		const YamlNode * frameNode = thumbSpriteNode->Get(1);
-		
-		if (spriteNode)
-		{
-			SetThumbSprite(spriteNode->AsString(), frameNode->AsInt32());
-		}
-	}
-	
-	const YamlNode * minSpriteNode = node->Get("minSprite");
-	
-	if (minSpriteNode)
-	{
-		// Yuri Coder, 2012/04/24. This is old configuration version without the subcontrols.
-		// Need to create min background subcontrol.
-		const YamlNode * spriteNode = minSpriteNode->Get(0);
-		const YamlNode * frameNode = minSpriteNode->Get(1);
-		
-		if (spriteNode)
-		{
-			minBackground->SetSprite(spriteNode->AsString(), frameNode->AsInt32());
-		}
-	}
-	
-	const YamlNode * maxSpriteNode = node->Get("maxSprite");
-	
-	if (maxSpriteNode)
-	{
-		// Yuri Coder, 2012/04/24. This is old configuration version without the subcontrols.
-		// Need to create max background subcontrol.
-		const YamlNode * spriteNode = maxSpriteNode->Get(0);
-		const YamlNode * frameNode = maxSpriteNode->Get(1);
-		
-		if (spriteNode)
-		{
-			maxBackground->SetSprite(spriteNode->AsString(), frameNode->AsInt32());
-		}
-	}
-	
+	UIControl::LoadFromYamlNode(node, loader);
+
 	// Values
 	const YamlNode * valueNode = node->Get("value");
 	
@@ -351,23 +259,6 @@ void UISlider::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 	
 	if (maxValueNode)
 		SetMaxValue(maxValueNode->AsFloat());
-	
-	
-	// Load the Min/Max draw types to apply them when the loading will be completed.
-	const YamlNode * minDrawTypeNode = node->Get("minDrawType");
-
-	if(minDrawTypeNode)
-	{
-		this->minDrawType =(UIControlBackground::eDrawType)loader->GetDrawTypeFromNode(minDrawTypeNode);
-        this->needSetMinDrawType = true;
-	}
-	
-	const YamlNode * maxDrawTypeNode = node->Get("maxDrawType");
-	if(maxDrawTypeNode)
-	{
-		this->maxDrawType= (UIControlBackground::eDrawType)loader->GetDrawTypeFromNode(maxDrawTypeNode);
-        this->needSetMaxDrawType = true;
-	}
 
     const YamlNode* spritesEmbeddedNode = node->Get("spritesEmbedded");
     if (spritesEmbeddedNode)
@@ -396,20 +287,10 @@ void UISlider::LoadFromYamlNodeCompleted()
     {
         // Old Yaml format is used - have to take their data and remove subcontrols.
         UIControl* minBgControl = FindByName(UISLIDER_MIN_SPRITE_CONTROL_NAME, false);
-        CopyBackgroundAndRemoveControl(minBgControl, &minBackground);
+        CopyBackgroundAndRemoveControl(minBgControl, minBackground);
         
         UIControl* maxBgControl = FindByName(UISLIDER_MAX_SPRITE_CONTROL_NAME, false);
-        CopyBackgroundAndRemoveControl(maxBgControl, &maxBackground);
-    }
-    
-    if (this->needSetMinDrawType)
-    {
-        minBackground->SetDrawType(minDrawType);
-    }
-
-    if (needSetMaxDrawType)
-    {
-        maxBackground->SetDrawType(maxDrawType);
+        CopyBackgroundAndRemoveControl(maxBgControl, maxBackground);
     }
 
     SyncThumbWithSprite();
@@ -452,6 +333,9 @@ UIControl* UISlider::Clone()
 	
 void UISlider::CopyDataFrom(UIControl *srcControl)
 {
+    RemoveControl(thumbButton);
+    SafeRelease(thumbButton);
+
 	UIControl::CopyDataFrom(srcControl);
 	UISlider* t = (UISlider*) srcControl;
 
@@ -465,30 +349,25 @@ void UISlider::CopyDataFrom(UIControl *srcControl)
 	
 	currentValue = t->currentValue;
 
-    ReleaseAllSubcontrols();
 	if (t->thumbButton)
 	{
-		UIControl *c = t->thumbButton->Clone();
-		AddControl(c);
-		c->Release();
+		thumbButton = t->thumbButton->Clone();
+		AddControl(thumbButton);
 	}
+    
+    SafeRelease(minBackground);
 	if (t->minBackground)
 	{
         minBackground = t->minBackground->Clone();
 	}
+
+    SafeRelease(maxBackground);
 	if (t->maxBackground)
 	{
         maxBackground = t->maxBackground->Clone();
 	}
 	
 	relTouchPoint = t->relTouchPoint;
-}
-
-void UISlider::InitSubcontrols()
-{
-	InitThumb();
-	InitMinBackground();
-	InitMaxBackground();
 }
 	
 void UISlider::AttachToSubcontrols()
@@ -509,17 +388,6 @@ List<UIControl*> UISlider::GetSubcontrols()
 	AddControlToList(subControls, UISLIDER_THUMB_SPRITE_CONTROL_NAME);
 
 	return subControls;
-}
-
-void UISlider::RemoveAndReleaseControl(UIControl* &control)
-{
-    if (!control)
-    {
-        return;
-    }
-    
-    RemoveControl(control);
-    SafeRelease(control);
 }
 
 void UISlider::SetVisibleForUIEditor(bool value, bool hierarchic/* = true*/)
@@ -658,19 +526,19 @@ void UISlider::SaveBackground(const char* prefix, UIControlBackground* backgroun
     }
 }
 
-void UISlider::CopyBackgroundAndRemoveControl(UIControl* from, UIControlBackground** to)
+void UISlider::CopyBackgroundAndRemoveControl(UIControl* from, UIControlBackground*& to)
 {
     if (!from)
     {
         return;
     }
     
-    if (*to)
+    if (to)
     {
-        SafeRelease(*to);
+        SafeRelease(to);
     }
 
-    *to = from->GetBackground()->Clone();
+    to = from->GetBackground()->Clone();
     RemoveControl(from);
 }
 	
