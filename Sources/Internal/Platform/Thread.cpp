@@ -82,7 +82,7 @@ bool Thread::IsMainThread()
         Logger::Error("Main thread not initialized");
     }
 
-     Not an any thread which calls IsMainThread is DAVA::Thread, so it sould not contain nativeId
+    //Not an any thread which calls IsMainThread is DAVA::Thread, so it sould not contain nativeId
     Id currentId = GetCurrentThreadId();
 
     return currentId == mainThreadId || currentId == glThreadId;
