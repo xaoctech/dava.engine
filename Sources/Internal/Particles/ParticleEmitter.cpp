@@ -446,7 +446,7 @@ void ParticleEmitter::SaveToYaml(const FilePath & filename)
         this->layers[i]->SaveToYamlNode(configPath, rootYamlNode, i);
     }
 
-    YamlEmitter::SaveToYamlFile(filename, rootYamlNode, true);
+    YamlEmitter::SaveToYamlFile(filename, rootYamlNode);
 }
 
 void ParticleEmitter::GetModifableLines(List<ModifiablePropertyLineBase *> &modifiables)
