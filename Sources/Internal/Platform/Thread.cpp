@@ -39,7 +39,7 @@ namespace DAVA
 
 Set<Thread *> Thread::threadList;
 Mutex Thread::threadListMutex;
-Map<Thread::Handle, Thread::Id> Thread::threadIdList;
+Map<Thread::NativeThreadIdentifier, Thread::Id> Thread::threadIdList;
 Mutex Thread::threadIdListMutex;
 
 Thread::Id Thread::mainThreadId = 0;
@@ -82,6 +82,7 @@ bool Thread::IsMainThread()
         Logger::Error("Main thread not initialized");
     }
 
+     Not an any thread which calls IsMainThread is DAVA::Thread, so it sould not contain nativeId
     Id currentId = GetCurrentThreadId();
 
     return currentId == mainThreadId || currentId == glThreadId;
@@ -94,12 +95,12 @@ Thread::Id Thread::GetCurrentThreadId()
     Id retId;
     
     threadIdListMutex.Lock();
-    Map<Handle, Id>::iterator it = threadIdList.find(GetCurrentHandle());
+    Map<NativeThreadIdentifier, Id>::iterator it = threadIdList.find(GetCurrentIdentifier());
     if (it == threadIdList.end())
     {
-        Handle newHandle = GetCurrentHandle();
+        NativeThreadIdentifier threadIdentifier = GetCurrentIdentifier();
         static Id newId = 1;
-        threadIdList[newHandle] = newId;
+        threadIdList[threadIdentifier] = newId;
         retId = newId++;
     }
     else
@@ -112,9 +113,9 @@ Thread::Id Thread::GetCurrentThreadId()
 Thread * Thread::Create(const Message& msg)
 {
 	Thread * t = new Thread(msg);
-	t->state = STATE_CREATED;
-	
-	return t;
+    t->state = STATE_CREATED;
+
+    return t;
 }
 
 void Thread::Kill()
@@ -131,7 +132,7 @@ void Thread::Kill()
         KillNative(handle);
         state = STATE_KILLED;
         threadIdListMutex.Lock();
-        threadIdList.erase(handle);
+        threadIdList.erase(nativeId);
         threadIdListMutex.Unlock();
     }
 }
@@ -191,7 +192,7 @@ Thread::~Thread()
 {
     Shutdown();
     threadIdListMutex.Lock();
-    threadIdList.erase(handle);
+    threadIdList.erase(nativeId);
     threadIdListMutex.Unlock();
     threadListMutex.Lock();
     threadList.erase(this);
@@ -266,7 +267,7 @@ void Thread::ThreadFunction(void *param)
     
     // thread is finishing so we need to unregister it
     threadIdListMutex.Lock();
-    threadIdList.erase(t->handle);
+    threadIdList.erase(GetCurrentIdentifier());
     threadIdListMutex.Unlock();
     
     t->Release();

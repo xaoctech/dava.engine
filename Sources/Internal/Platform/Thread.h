@@ -75,10 +75,12 @@ class Thread : public BaseObject
 private:
 #if defined(DAVAENGINE_PTHREAD)
     typedef pthread_t Handle;
+    typedef pthread_t NativeThreadIdentifier;
     bool joined;
     friend void	*PthreadMain(void *param);
 #elif defined(__DAVAENGINE_WIN32__)
     typedef HANDLE Handle;
+    typedef DWORD NativeThreadIdentifier;
     friend DWORD WINAPI ThreadFunc(void *param);
 #endif
 #if defined(__DAVAENGINE_ANDROID__)
@@ -179,7 +181,7 @@ private:
     void Shutdown();
 
     void SetId(const Id &threadId);
-    static Handle GetCurrentHandle();
+    static NativeThreadIdentifier GetCurrentIdentifier();
     
     void StartNative();
     static void KillNative(Handle handle);
@@ -187,16 +189,19 @@ private:
     static void ThreadFunction(void *param);
 
     Handle handle;
+
 	Message	msg;
 	eThreadState state;
 
 	Id id;
+    NativeThreadIdentifier nativeId;
+
 	static Id mainThreadId;
 	static Id glThreadId;
 
     static Set<Thread *> threadList;
     static Mutex threadListMutex;
-    static Map<Handle, Id> threadIdList;
+    static Map<NativeThreadIdentifier, Id> threadIdList;
     static Mutex threadIdListMutex;
     
     ConditionalVariable killEvent;
