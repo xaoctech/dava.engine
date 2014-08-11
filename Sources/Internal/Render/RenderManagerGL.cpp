@@ -694,6 +694,29 @@ void RenderManager::DiscardFramebufferHW(uint32 attachments)
 #endif
 }
     
+void RenderManager::HWglDeleteBuffers(GLsizei count, const GLuint * buffers)
+{
+    // TODO: this is, probably, temporary fix.
+    for(uint32 n = 0; n < (uint32)count; ++n)
+    {
+        if(bufferBindingId[0] == buffers[n])
+        {
+            RENDER_VERIFY(glBindBuffer(GL_ARRAY_BUFFER, 0));
+            bufferBindingId[0] = 0;
+        }
+        else if (bufferBindingId[1] == buffers[n])
+        {
+            RENDER_VERIFY(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+            bufferBindingId[1] = 0;
+        }
+    }
+#if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
+    RENDER_VERIFY(glDeleteBuffersARB(count, buffers));
+#else
+    RENDER_VERIFY(glDeleteBuffers(count, buffers));
+#endif
+}
+    
 void RenderManager::HWglBindBuffer(GLenum target, GLuint buffer)
 {
     DVASSERT(target - GL_ARRAY_BUFFER <= 1);
