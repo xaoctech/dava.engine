@@ -34,31 +34,33 @@
 
 using namespace DAVA;
 
-ControlsMoveCommand::ControlsMoveCommand(const HierarchyTreeController::SELECTEDCONTROLNODES& controls, const Vector2& delta)
+ControlsMoveCommand::ControlsMoveCommand(const HierarchyTreeController::SELECTEDCONTROLNODES& controls, const Vector2& delta, bool alignControlsToIntegerPos)
 {
 	this->controls = controls;
 	this->delta = delta;
+    this->alignControlsToIntegerPos = alignControlsToIntegerPos;
 }
 
-void ControlsMoveCommand::Execute()
+BaseCommand::eExecuteResult ControlsMoveCommand::Execute()
 {
-	ApplyMove(this->delta);
+	ApplyMove(this->delta, this->alignControlsToIntegerPos);
     
     // Notify the Grid some properties were changed.
     CommandsController::Instance()->EmitUpdatePropertyValues();
+    return BaseCommand::Success;
 }
 
 void ControlsMoveCommand::Rollback()
 {
 	// Return the controls to the previous positions.
 	Vector2 prevDelta = -1 * delta;
-	ApplyMove(prevDelta);
+	ApplyMove(prevDelta, false);
 
     // Notify the Grid some properties were changed.
     CommandsController::Instance()->EmitUpdatePropertyValues();
 }
 
-void ControlsMoveCommand::ApplyMove(const Vector2& moveDelta)
+void ControlsMoveCommand::ApplyMove(const Vector2& moveDelta, bool applyAlign)
 {
 	for (HierarchyTreeController::SELECTEDCONTROLNODES::iterator iter = this->controls.begin();
          iter != this->controls.end(); iter ++)
@@ -67,7 +69,7 @@ void ControlsMoveCommand::ApplyMove(const Vector2& moveDelta)
 		
         // This command is NOT state-aware and contains one and only param.
         baseMetadata->SetActiveParamID(0);
-        baseMetadata->ApplyMove(moveDelta);
+        baseMetadata->ApplyMove(moveDelta, applyAlign);
 		
         SAFE_DELETE(baseMetadata);
     }
@@ -80,12 +82,13 @@ ControlResizeCommand::ControlResizeCommand(HierarchyTreeNode::HIERARCHYTREENODEI
 	this->newRect = newRect;
 }
 
-void ControlResizeCommand::Execute()
+BaseCommand::eExecuteResult ControlResizeCommand::Execute()
 {
 	ApplyResize(originalRect, newRect);
 	
 	// Notify the Grid some properties were changed.
     CommandsController::Instance()->EmitUpdatePropertyValues();
+    return BaseCommand::Success;
 }
 
 void ControlResizeCommand::Rollback()
@@ -114,12 +117,13 @@ ControlsAdjustSizeCommand::ControlsAdjustSizeCommand(const HierarchyTreeControll
 	this->selectedControls = controls;
 }
 
-void ControlsAdjustSizeCommand::Execute()
+BaseCommand::eExecuteResult ControlsAdjustSizeCommand::Execute()
 {
 	// Apply resize and save previous size data for possible undo action
 	this->prevSizeData = ApplyAjustedSize(selectedControls);
 
     CommandsController::Instance()->EmitUpdatePropertyValues();
+    return BaseCommand::Success;
 }
 
 void ControlsAdjustSizeCommand::Rollback()
@@ -197,7 +201,7 @@ ControlsAlignDistributeCommand::ControlsAlignDistributeCommand(const HierarchyTr
 	this->commandMode = MODE_DISTRIBUTE;
 }
 
-void ControlsAlignDistributeCommand::Execute()
+BaseCommand::eExecuteResult ControlsAlignDistributeCommand::Execute()
 {
 	List<UIControl*> selectedUIControls;
 	for (HierarchyTreeController::SELECTEDCONTROLNODES::iterator iter = selectedControls.begin(); iter != selectedControls.end(); ++iter)
@@ -230,6 +234,8 @@ void ControlsAlignDistributeCommand::Execute()
 			break;
 		}
 	}
+    
+    return BaseCommand::Success;
 }
 
 void ControlsAlignDistributeCommand::Rollback()
@@ -244,12 +250,13 @@ ControlRenameCommand::ControlRenameCommand(HierarchyTreeNode::HIERARCHYTREENODEI
 	this->newName = newName;
 }
 
-void ControlRenameCommand::Execute()
+BaseCommand::eExecuteResult ControlRenameCommand::Execute()
 {
 	ApplyRename(originalName, newName);
 	
 	// Notify the Grid some properties were changed.
     CommandsController::Instance()->EmitUpdatePropertyValues();
+    return BaseCommand::Success;
 }
 
 void ControlRenameCommand::Rollback()
