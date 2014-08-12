@@ -57,7 +57,7 @@ class FTInternalFont : public BaseObject
 {
 	friend class FTFont;
 	FilePath fontPath;
-	uint8 * memoryFont;
+	FT_StreamRec * streamFont;
 	uint32 memoryFontSize;
 private:
 	FTInternalFont(const FilePath & path);
@@ -230,12 +230,24 @@ YamlNode * FTFont::SaveToYamlNode() const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+unsigned long StreamLoad(FT_Stream stream, unsigned long offset, uint8* buffer, unsigned long count)
+{
+	File* is = reinterpret_cast<File*>(stream->descriptor.pointer);
+	if (count == 0) return 0;
+	is->Seek((int32)offset, File::SEEK_FROM_START);
+	return is->Read(buffer, (uint32)count);
+}
 
+void StreamClose(FT_Stream stream)
+{
+	File* is = reinterpret_cast<File*>(stream->descriptor.pointer);
+	SafeRelease(is);
+}
 	
 FTInternalFont::FTInternalFont(const FilePath & path)
 :	face(NULL),
 	fontPath(path),
-    memoryFont(NULL),
+    streamFont(NULL),
     memoryFontSize(0)
 {
     FilePath pathName(path);
@@ -253,11 +265,21 @@ FTInternalFont::FTInternalFont(const FilePath & path)
     }
 
 	memoryFontSize = fp->GetSize();
-	memoryFont = new uint8[memoryFontSize];
-	fp->Read(memoryFont, memoryFontSize);
-	SafeRelease(fp);
+	streamFont = new FT_StreamRec;
+	memset(streamFont, 0, sizeof(FT_StreamRec));
+	streamFont->descriptor.pointer = (void*)fp;
+	streamFont->base = 0;
+	streamFont->pos = 0;
+	streamFont->size = memoryFontSize;
+	streamFont->read = &StreamLoad;
+	streamFont->close = &StreamClose;
 	
-	FT_Error error = FT_New_Memory_Face(FontManager::Instance()->GetFTLibrary(), memoryFont, memoryFontSize, 0, &face);
+	FT_Open_Args args;
+	memset(&args, 0, sizeof(FT_Open_Args));
+	args.flags = FT_OPEN_STREAM;
+	args.stream = streamFont;
+	
+	FT_Error error = FT_Open_Face(FontManager::Instance()->GetFTLibrary(), &args, 0, &face);if(error == FT_Err_Unknown_File_Format)
 	if(error == FT_Err_Unknown_File_Format)
 	{
 		Logger::Error("FTInternalFont::FTInternalFont FT_Err_Unknown_File_Format");
@@ -273,7 +295,7 @@ FTInternalFont::~FTInternalFont()
 	ClearString();
 
 	FT_Done_Face(face);
-	SafeDeleteArray(memoryFont);
+	SafeDelete(streamFont);
 }
 
 
