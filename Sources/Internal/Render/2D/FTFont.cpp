@@ -267,11 +267,11 @@ FTInternalFont::FTInternalFont(const FilePath & path)
 	FT_Error error = FT_Open_Face(FontManager::Instance()->GetFTLibrary(), &args, 0, &face);
 	if(error == FT_Err_Unknown_File_Format)
 	{
-		Logger::Error("FTInternalFont::FTInternalFont FT_Err_Unknown_File_Format");
+		Logger::Error("FTInternalFont::FTInternalFont FT_Err_Unknown_File_Format: %s", fp->GetFilename().GetAbsolutePathname().c_str());
 	}
 	else if(error)
 	{
-		Logger::Error("FTInternalFont::FTInternalFont cannot create font(no file?)");
+		Logger::Error("FTInternalFont::FTInternalFont cannot create font(no file?): %s", fp->GetFilename().GetAbsolutePathname().c_str());
 	}
 }
 	
