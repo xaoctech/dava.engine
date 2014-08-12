@@ -519,7 +519,6 @@ void FTInternalFont::SetFTCharSize(float32 size) const
 void FTInternalFont::Prepare(FT_Vector * advances)
 {
 	FT_Vector	* prevAdvance = 0;
-	FT_Vector	extent = {0, 0};
 	FT_UInt		prevIndex   = 0;
 	const bool		useKerning = (FT_HAS_KERNING(face) > 0);
 	const int32		size = glyphs.size();
@@ -554,31 +553,11 @@ void FTInternalFont::Prepare(FT_Vector * advances)
 			//	prevAdvance->x = Round(prevAdvance->x);
 			//	prevAdvance->y = Round(prevAdvance->y);
 			//}
-
-			extent.x += prevAdvance->x;
-			extent.y += prevAdvance->y;
 		}
 
 		prevIndex   = glyph.index;
 		prevAdvance = &advances[i];
 	}
-
-	if(prevAdvance)
-	{
-		//if(handle->hinted)
-		//{
-		//	prevAdvance->x = Round(prevAdvance->x);
-		//	prevAdvance->y = Round(prevAdvance->y);
-		//}
-
-		extent.x += prevAdvance->x;
-		extent.y += prevAdvance->y;
-	}
-
-//	if(size > 0)
-//	{
-//		advances[size-1] = extent;
-//	}
 }
 
 void FTInternalFont::ClearString()
