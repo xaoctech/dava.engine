@@ -58,6 +58,7 @@ class FTInternalFont : public BaseObject
 	friend class FTFont;
 	FilePath fontPath;
 	FT_StreamRec * streamFont;
+	File * fontFile;
 
 private:
 	FTInternalFont(const FilePath & path);
@@ -237,26 +238,27 @@ YamlNode * FTFont::SaveToYamlNode() const
 FTInternalFont::FTInternalFont(const FilePath & path)
 :	face(NULL),
 	fontPath(path),
-    streamFont(NULL)
+    streamFont(NULL),
+	fontFile(NULL)
 {
     FilePath pathName(path);
     pathName.ReplaceDirectory(path.GetDirectory() + (LocalizationSystem::Instance()->GetCurrentLocale() + "/"));
     
-    File * fp = File::Create(pathName, File::READ|File::OPEN);
-    if (!fp)
+    fontFile = File::Create(pathName, File::READ|File::OPEN);
+    if (!fontFile)
     {    
-        fp = File::Create(path, File::READ|File::OPEN);
-        if (!fp)
+        fontFile = File::Create(path, File::READ|File::OPEN);
+        if (!fontFile)
         {
-            Logger::Error("Failed to open font: %s", path.GetAbsolutePathname().c_str());
+            Logger::Error("Failed to open font: %s", path.GetStringValue().c_str());
             return;
         }
     }
 
 	streamFont = new FT_StreamRec;
 	Memset(streamFont, 0, sizeof(FT_StreamRec));
-	streamFont->descriptor.pointer = (void*)fp;
-	streamFont->size = fp->GetSize();
+	streamFont->descriptor.pointer = (void*)fontFile;
+	streamFont->size = fontFile->GetSize();
 	streamFont->read = &StreamLoad;
 	streamFont->close = &StreamClose;
 	
@@ -267,11 +269,11 @@ FTInternalFont::FTInternalFont(const FilePath & path)
 	FT_Error error = FT_Open_Face(FontManager::Instance()->GetFTLibrary(), &args, 0, &face);
 	if(error == FT_Err_Unknown_File_Format)
 	{
-		Logger::Error("FTInternalFont::FTInternalFont FT_Err_Unknown_File_Format: %s", fp->GetFilename().GetAbsolutePathname().c_str());
+		Logger::Error("FTInternalFont::FTInternalFont FT_Err_Unknown_File_Format: %s", fontFile->GetFilename().GetStringValue().c_str());
 	}
 	else if(error)
 	{
-		Logger::Error("FTInternalFont::FTInternalFont cannot create font(no file?): %s", fp->GetFilename().GetAbsolutePathname().c_str());
+		Logger::Error("FTInternalFont::FTInternalFont cannot create font(no file?): %s", fontFile->GetFilename().GetStringValue().c_str());
 	}
 }
 	
@@ -281,6 +283,7 @@ FTInternalFont::~FTInternalFont()
 
 	FT_Done_Face(face);
 	SafeDelete(streamFont);
+	SafeRelease(fontFile);
 }
 
 
@@ -677,8 +680,7 @@ unsigned long FTInternalFont::StreamLoad(FT_Stream stream, unsigned long offset,
 
 void FTInternalFont::StreamClose(FT_Stream stream)
 {
-	File* is = reinterpret_cast<File*>(stream->descriptor.pointer);
-	SafeRelease(is);
+	// Close file stream in destructor
 }
 	
 };
