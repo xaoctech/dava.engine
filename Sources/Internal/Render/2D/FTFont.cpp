@@ -58,7 +58,7 @@ class FTInternalFont : public BaseObject
 	friend class FTFont;
 	FilePath fontPath;
 	FT_StreamRec * streamFont;
-	uint32 memoryFontSize;
+
 private:
 	FTInternalFont(const FilePath & path);
 	virtual ~FTInternalFont();
@@ -102,6 +102,9 @@ private:
 	void Prepare(FT_Vector * advances);
 
 	inline FT_Pos Round(FT_Pos val);
+	
+	static unsigned long StreamLoad(FT_Stream stream, unsigned long offset, uint8* buffer, unsigned long count);
+	static void StreamClose(FT_Stream stream);
 };
 
 FTFont::FTFont(FTInternalFont* _internalFont)
@@ -230,25 +233,11 @@ YamlNode * FTFont::SaveToYamlNode() const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-unsigned long StreamLoad(FT_Stream stream, unsigned long offset, uint8* buffer, unsigned long count)
-{
-	File* is = reinterpret_cast<File*>(stream->descriptor.pointer);
-	if (count == 0) return 0;
-	is->Seek((int32)offset, File::SEEK_FROM_START);
-	return is->Read(buffer, (uint32)count);
-}
-
-void StreamClose(FT_Stream stream)
-{
-	File* is = reinterpret_cast<File*>(stream->descriptor.pointer);
-	SafeRelease(is);
-}
 	
 FTInternalFont::FTInternalFont(const FilePath & path)
 :	face(NULL),
 	fontPath(path),
-    streamFont(NULL),
-    memoryFontSize(0)
+    streamFont(NULL)
 {
     FilePath pathName(path);
     pathName.ReplaceDirectory(path.GetDirectory() + (LocalizationSystem::Instance()->GetCurrentLocale() + "/"));
@@ -264,13 +253,10 @@ FTInternalFont::FTInternalFont(const FilePath & path)
         }
     }
 
-	memoryFontSize = fp->GetSize();
 	streamFont = new FT_StreamRec;
-	memset(streamFont, 0, sizeof(FT_StreamRec));
+	Memset(streamFont, 0, sizeof(FT_StreamRec));
 	streamFont->descriptor.pointer = (void*)fp;
-	streamFont->base = 0;
-	streamFont->pos = 0;
-	streamFont->size = memoryFontSize;
+	streamFont->size = fp->GetSize();
 	streamFont->read = &StreamLoad;
 	streamFont->close = &StreamClose;
 	
@@ -279,7 +265,7 @@ FTInternalFont::FTInternalFont(const FilePath & path)
 	args.flags = FT_OPEN_STREAM;
 	args.stream = streamFont;
 	
-	FT_Error error = FT_Open_Face(FontManager::Instance()->GetFTLibrary(), &args, 0, &face);if(error == FT_Err_Unknown_File_Format)
+	FT_Error error = FT_Open_Face(FontManager::Instance()->GetFTLibrary(), &args, 0, &face);
 	if(error == FT_Err_Unknown_File_Format)
 	{
 		Logger::Error("FTInternalFont::FTInternalFont FT_Err_Unknown_File_Format");
@@ -682,5 +668,18 @@ FT_Pos FTInternalFont::Round(FT_Pos val)
 	return (((val) + 32) & -64);
 }
 
+unsigned long FTInternalFont::StreamLoad(FT_Stream stream, unsigned long offset, uint8* buffer, unsigned long count)
+{
+	File* is = reinterpret_cast<File*>(stream->descriptor.pointer);
+	if (count == 0) return 0;
+	is->Seek((int32)offset, File::SEEK_FROM_START);
+	return is->Read(buffer, (uint32)count);
+}
+
+void FTInternalFont::StreamClose(FT_Stream stream)
+{
+	File* is = reinterpret_cast<File*>(stream->descriptor.pointer);
+	SafeRelease(is);
+}
 	
 };
