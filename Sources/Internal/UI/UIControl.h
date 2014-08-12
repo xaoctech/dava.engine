@@ -260,7 +260,7 @@ public:
         You can call this function directly for the controlBackgound.
      \returns Sprite used for draw.
      */
-    virtual Sprite* GetSprite();
+    virtual Sprite* GetSprite() const;
     /**
      \brief Returns Sprite frame used for draw in the current UIControlBackground object.
         You can call this function directly for the controlBackgound.
@@ -1244,9 +1244,6 @@ public:
 
     // Find the control by name and add it to the list, if found.
     bool AddControlToList(List<UIControl*>& controlsList, const String& controlName, bool isRecursive = false);
-
-    // Get the framework path for sprite, don't process it if it is empty.
-    static String GetSpriteFrameworkPath( const Sprite* sprite);
 
     // Get/set the Initial State.
     int32 GetInitialState() const;
