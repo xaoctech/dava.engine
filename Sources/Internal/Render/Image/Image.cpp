@@ -31,7 +31,6 @@
 #include "Render/Image/ImageConvert.h"
 #include "Render/Image/ImageSystem.h"
 #include "Render/PixelFormatDescriptor.h"
-#include "Utils/Utils.h"
 
 namespace DAVA 
 {
