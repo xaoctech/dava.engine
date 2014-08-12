@@ -260,8 +260,7 @@ FTInternalFont::FTInternalFont(const FilePath & path)
 	streamFont->read = &StreamLoad;
 	streamFont->close = &StreamClose;
 	
-	FT_Open_Args args;
-	memset(&args, 0, sizeof(FT_Open_Args));
+	FT_Open_Args args = {0};
 	args.flags = FT_OPEN_STREAM;
 	args.stream = streamFont;
 	
