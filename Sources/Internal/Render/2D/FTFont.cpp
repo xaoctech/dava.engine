@@ -57,7 +57,7 @@ class FTInternalFont : public BaseObject
 {
 	friend class FTFont;
 	FilePath fontPath;
-	FT_StreamRec * streamFont;
+	FT_StreamRec streamFont;
 	File * fontFile;
 
 private:
@@ -238,7 +238,7 @@ YamlNode * FTFont::SaveToYamlNode() const
 FTInternalFont::FTInternalFont(const FilePath & path)
 :	face(NULL),
 	fontPath(path),
-    streamFont(NULL),
+    streamFont(),
 	fontFile(NULL)
 {
     FilePath pathName(path);
@@ -255,16 +255,15 @@ FTInternalFont::FTInternalFont(const FilePath & path)
         }
     }
 
-	streamFont = new FT_StreamRec;
-	Memset(streamFont, 0, sizeof(FT_StreamRec));
-	streamFont->descriptor.pointer = (void*)fontFile;
-	streamFont->size = fontFile->GetSize();
-	streamFont->read = &StreamLoad;
-	streamFont->close = &StreamClose;
+	Memset(&streamFont, 0, sizeof(FT_StreamRec));
+	streamFont.descriptor.pointer = (void*)fontFile;
+	streamFont.size = fontFile->GetSize();
+	streamFont.read = &StreamLoad;
+	streamFont.close = &StreamClose;
 	
 	FT_Open_Args args = {0};
 	args.flags = FT_OPEN_STREAM;
-	args.stream = streamFont;
+	args.stream = &streamFont;
 	
 	FT_Error error = FT_Open_Face(FontManager::Instance()->GetFTLibrary(), &args, 0, &face);
 	if(error == FT_Err_Unknown_File_Format)
@@ -282,7 +281,6 @@ FTInternalFont::~FTInternalFont()
 	ClearString();
 
 	FT_Done_Face(face);
-	SafeDelete(streamFont);
 	SafeRelease(fontFile);
 }
 
