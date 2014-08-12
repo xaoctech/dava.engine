@@ -60,6 +60,7 @@
 #include "UIScrollViewTest.h"
 #include "ThreadSyncTest.h"
 #include "UIMovieTest.h"
+#include "DFFontTest.h"
 #include "ComponentsTest.h"
 #include "RectSpriteTest.h"
 #include "OpenGLES30FormatTest.h"

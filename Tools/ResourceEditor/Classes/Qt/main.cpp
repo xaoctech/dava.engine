@@ -203,3 +203,4 @@ void UnpackHelpDoc()
 	}
 	SettingsManager::SetValue(Settings::Internal_EditorVersion, VariantType(String(RESOURCE_EDITOR_VERSION)));
 }
+

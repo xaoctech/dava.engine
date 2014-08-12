@@ -163,7 +163,7 @@ template <class R, class V>
 struct P2MTraits<R V::*>
 {
     enum{result = true };
-};    
+};
 
 template <typename T>
 class TypeTraits
@@ -172,7 +172,6 @@ public:
     enum {isPointer = PointerTraits<T>::result };    
     enum {isReference = ReferenceTraits<T>::result };   
     enum {isPointerToMemberFunction = P2MTraits<T>::result };
-    
 	typedef typename Select<isPointer || isReference, T, const T&>::Result ParamType;
 	typedef typename Select<isReference, typename ReferenceTraits<T>::ReferenceType, T>::Result NonRefType;
 };
@@ -259,7 +258,27 @@ namespace TL
 	};
 };
 
-    
+template<bool>
+struct IsEnumImpl
+{ };
+
+template<>
+struct IsEnumImpl<true>
+{
+    enum { result = true };
+};
+
+template<>
+struct IsEnumImpl<false>
+{
+    enum { result = false };
+};
+
+template <class T>
+struct IsEnum : public IsEnumImpl<__is_enum(T)>
+{ };
+
+
     /**
      \brief Works like dynamic_cast for Debug and like a static_cast for release.
      */
