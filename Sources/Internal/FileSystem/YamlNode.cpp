@@ -483,7 +483,7 @@ const MultiMap<String, YamlNode*> & YamlNode::AsMap() const
     return EMPTY_MAP;
 }
 
-const YamlNode * YamlNode::Get(int32 index) const
+const YamlNode * YamlNode::Get(uint32 index) const
 {
     if (GetType() == TYPE_ARRAY)
     {
@@ -496,7 +496,7 @@ const YamlNode * YamlNode::Get(int32 index) const
     return NULL;
 }
 
-const String &	YamlNode::GetItemKeyName(int32 index) const
+const String &	YamlNode::GetItemKeyName(uint32 index) const
 {
     DVASSERT(GetType() == TYPE_MAP);
     if (GetType() == TYPE_MAP)

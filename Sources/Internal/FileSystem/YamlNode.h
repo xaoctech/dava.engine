@@ -106,11 +106,11 @@ public:
 
     //These functions work only if type of node is array or map
     uint32          GetCount() const;
-    const YamlNode *Get(int32 index) const;
+    const YamlNode *Get(uint32 index) const;
 
     //These functions work only if type of node is map
     const YamlNode *Get(const String & name) const;
-    const String   &GetItemKeyName(int32 index) const;
+    const String   &GetItemKeyName(uint32 index) const;
 
     // "Setters". These methods set data in string node.
     inline void     Set(bool value);
