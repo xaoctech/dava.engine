@@ -31,6 +31,7 @@
 #include <QMenu>
 #include <QContextMenuEvent>
 #include <QHeaderView>
+#include <QScrollBar>
 
 #include "Classes/UI/hierarchytreecontrol.h"
 
@@ -143,6 +144,19 @@ HierarchyTreeControl::~HierarchyTreeControl()
 void HierarchyTreeControl::contextMenuEvent(QContextMenuEvent * event)
 {
 	emit ShowCustomMenu(event->globalPos());
+}
+
+void HierarchyTreeControl::scrollTo(const QModelIndex &index, ScrollHint hint)
+{
+    if (!horizontalScrollBar())
+    {
+        QTreeWidget::scrollTo(index, hint);
+        return;
+    }
+
+    int32 horzScrollPos = horizontalScrollBar()->value();
+    QTreeWidget::scrollTo(index, hint);
+    horizontalScrollBar()->setValue(horzScrollPos);
 }
 
 Vector<int32> HierarchyTreeControl::GetPositionKey(QTreeWidgetItem* item) const
@@ -474,6 +488,13 @@ void HierarchyTreeControl::HandleDragMoveHierarchyMimeData(QDragMoveEvent *event
 
 	if (mimeData->IsDropEnable(node))
 	{
+        QTreeWidgetItem* item = itemAt(event->pos());
+        if (item)
+        {
+            scrollTo(indexAt(event->pos()));
+            StartExpandTimer(item, true);
+        }
+
 		event->accept();
 	}
 }
