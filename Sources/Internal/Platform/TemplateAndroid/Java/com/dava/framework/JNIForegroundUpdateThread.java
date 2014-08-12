@@ -20,7 +20,7 @@ public class JNIForegroundUpdateThread {
 						e.printStackTrace();
 					}
 					JNIDownloadManager.UpdateDownloadManager();
-					JNINotification.UpdateNotification();
+					//JNINotification.UpdateNotification();
 				}
 				UnRegisterForegroundThread();
 				
