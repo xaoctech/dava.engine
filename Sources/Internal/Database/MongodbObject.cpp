@@ -167,17 +167,6 @@ void MongodbObject::SetUniqueObjectName()
 
     SetObjectName(tmp);
 }
-    
-void MongodbObject::SetUniqueObjectName()
-{
-	char tmp[128];
-	bson_oid_t oid;
-
-	bson_oid_gen(&oid);
-	bson_oid_to_string(&oid, tmp);
-
-	SetObjectName(tmp);
-}
 
 void MongodbObject::SetObjectName(const String &objectname)
 {
