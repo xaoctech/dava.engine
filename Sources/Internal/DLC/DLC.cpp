@@ -364,6 +364,8 @@ void DLC::FSM(DLCEvent event)
     // what should we do, when state changed
     if(oldState != dlcState)
     {
+        Logger::Info("DLC: Changing state %d->%d", oldState, dlcState);
+
         switch(dlcState)
         {
             case DS_INIT:
@@ -431,6 +433,8 @@ void DLC::StepCheckInfoBegin()
         dlcContext.localVer = ReadUint32(dlcContext.localVerStorePath);
     }
 
+    Logger::Info("DLC: Downloading game-info\n\tfrom: %s\n\tto: %s", dlcContext.remoteVerUrl.c_str(), dlcContext.remoteVerStotePath.GetAbsolutePathname().c_str());
+
     DownloadManager::Instance()->SetNotificationCallback(DownloadManager::NotifyFunctor(this, &DLC::StepCheckInfoFinish));
     dlcContext.remoteVerDownloadId = DownloadManager::Instance()->Download(dlcContext.remoteVerUrl, dlcContext.remoteVerStotePath.GetAbsolutePathname(), FULL);   
 }
@@ -467,6 +471,9 @@ void DLC::StepCheckPatchBegin()
 {
     dlcContext.remotePatchFullUrl = dlcContext.remoteUrl + MakePatchUrl(0, dlcContext.remoteVer);
     dlcContext.remotePatchLiteUrl = dlcContext.remoteUrl + MakePatchUrl(dlcContext.localVer, dlcContext.remoteVer);
+
+    Logger::Info("DLC: Retrieving full-patch size from: %s", dlcContext.remotePatchLiteUrl.c_str());
+    Logger::Info("DLC: Retrieving lite-patch size from: %s", dlcContext.remotePatchFullUrl.c_str());
 
     DownloadManager::Instance()->SetNotificationCallback(DownloadManager::NotifyFunctor(this, &DLC::StepCheckPatchFinish));
     dlcContext.remoteFullSizeDownloadId = DownloadManager::Instance()->Download(dlcContext.remotePatchFullUrl, dlcContext.remotePatchStorePath, GET_SIZE); // full size should be first
@@ -525,6 +532,8 @@ void DLC::StepCheckMetaBegin()
 {
     dlcContext.remoteMetaUrl = dlcContext.remotePatchUrl + ".meta";
 
+    Logger::Info("DLC: Downloading game-meta\n\tfrom: %s\n\tto :%s", dlcContext.remoteMetaUrl.c_str(), dlcContext.remoteMetaStorePath.GetAbsolutePathname().c_str());
+
     FileSystem::Instance()->DeleteFile(dlcContext.remoteMetaStorePath);
     DownloadManager::Instance()->SetNotificationCallback(DownloadManager::NotifyFunctor(this, &DLC::StepCheckMetaFinish));
     dlcContext.remoteMetaDownloadId = DownloadManager::Instance()->Download(dlcContext.remoteMetaUrl, dlcContext.remoteMetaStorePath, FULL);
@@ -552,7 +561,9 @@ void DLC::StepDownloadPatchBegin()
     // last state was 'Patching'?
     if(dlcContext.prevState == DS_PATCHING && dlcContext.remotePatchStorePath.Exists())
     {
-        // we should without downloading
+        Logger::Info("DLC: Patch-file already exists\n\tfrom: %s\n\tto: %s", dlcContext.remotePatchUrl.c_str(), dlcContext.remotePatchStorePath.GetAbsolutePathname().c_str());
+
+        // we should patch without downloading
         PostEvent(EVENT_DOWNLOAD_OK);
     }
     else
@@ -593,6 +604,8 @@ void DLC::StepDownloadPatchBegin()
             downloadInfoFile->WriteString(dlcContext.remotePatchUrl);
             SafeRelease(downloadInfoFile);
         }
+
+        Logger::Info("DLC: Downloading patch-file\n\tfrom: %s\n\tto: %s", dlcContext.remotePatchUrl.c_str(), dlcContext.remotePatchStorePath.GetAbsolutePathname().c_str());
 
         // start download and notify about download status into StepDownloadPatchFinish
         DownloadManager::Instance()->SetNotificationCallback(DownloadManager::NotifyFunctor(this, &DLC::StepDownloadPatchFinish));
@@ -642,6 +655,8 @@ void DLC::StepPatchBegin()
         }
         while(patchReader.ReadNext());
     }
+
+    Logger::Info("DLC: Patching, %d files to patch", dlcContext.patchCount);
 
     patchingThread = Thread::Create(Message(this, &DLC::PatchingThread));
     patchingThread->Start();
@@ -710,6 +725,8 @@ void DLC::PatchingThread(BaseObject *caller, void *callerData, void *userData)
 
 void DLC::StepClean()
 {
+    Logger::Info("DLC: Cleaning");
+
     FileSystem::Instance()->DeleteFile(dlcContext.downloadInfoStorePath);
     FileSystem::Instance()->DeleteFile(dlcContext.remoteMetaStorePath);
     FileSystem::Instance()->DeleteFile(dlcContext.remotePatchStorePath);
@@ -725,6 +742,8 @@ void DLC::StepDone()
     {
         FileSystem::Instance()->DeleteFile(dlcContext.stateInfoStorePath);
     }
+
+    Logger::Info("DLC: Done!");
 }
 
 uint32 DLC::ReadUint32(const FilePath &path)
