@@ -53,10 +53,6 @@
 #include "DLC/Downloader/DownloadManager.h"
 #include "DLC/Downloader/CurlDownloader.h"
 
-#if defined(__DAVAENGINE_ANDROID__)
-#include "Platform/Notification.h"
-#endif
-
 #if defined(__DAVAENGINE_IPHONE__)
 #include "Input/AccelerometeriPhone.h"
 #elif defined(__DAVAENGINE_ANDROID__)
@@ -169,12 +165,7 @@ void Core::CreateSingletons()
     new DownloadManager();
     DownloadManager::Instance()->SetDownloader(new CurlDownloader());
     
-#if defined(__DAVAENGINE_ANDROID__)
-    new Notification();
-#endif
-    
     RegisterDAVAClasses();
-    
     CheckDataTypeSizes();
 }
 

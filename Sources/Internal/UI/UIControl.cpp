@@ -2958,8 +2958,8 @@ namespace DAVA
             float32 xMultiup = pivotPoint.x / oldRect.dx;
             float32 yMultiup = pivotPoint.y / oldRect.dy;
 
-            pivotPoint.x = Round(xMultiup * newRect.dx);
-            pivotPoint.y = Round(yMultiup * newRect.dy);
+            pivotPoint.x = xMultiup * newRect.dx;
+            pivotPoint.y = yMultiup * newRect.dy;
         }
     }
 

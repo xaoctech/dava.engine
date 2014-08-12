@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="DebugQt|Win32">
@@ -433,6 +433,11 @@
     <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\WebViewControlWin32.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\WindowsSpecifics.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\Thread.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\2D\DFFont.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\2D\TextBlockDistanceRender.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\2D\TextBlockGraphicsRender.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\2D\TextBlockRender.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\2D\TextBlockSoftwareRender.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\3D\EdgeAdjacency.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\3D\MeshUtils.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Cursor.h" />
@@ -776,7 +781,10 @@
     <ClCompile Include="..\..\Sources\Internal\Core\CoreMacOS_OpenGL.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Debug\Backtrace.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Debug\DVAssertMessage.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Debug\DVAssertMessageWin.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Debug\DVAssertMessageWin.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Debug\MemoryManager.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Debug\Replay.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Debug\Stats.cpp" />
@@ -873,6 +881,11 @@
     <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\DPIHelperWin32.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\Thread.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\ThreadWin32.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\2D\DFFont.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\2D\TextBlockDistanceRender.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\2D\TextBlockGraphicsRender.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\2D\TextBlockRender.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\2D\TextBlockSoftwareRender.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\3D\EdgeAdjacency.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\3D\MeshUtils.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\CursorWin32.cpp" />
@@ -944,6 +957,7 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Material\RenderTechnique.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\MipmapReplacer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\OcclusionQuery.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\OGLHelpers.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderBase.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderDataObject.cpp" />
