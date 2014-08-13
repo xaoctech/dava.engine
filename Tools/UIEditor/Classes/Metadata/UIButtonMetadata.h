@@ -32,6 +32,8 @@
 #ifndef __UIEditor__ButtonNodeMetadata__
 #define __UIEditor__ButtonNodeMetadata__
 
+#include <QRectF>
+
 #include "UITextControlMetadata.h"
 #include "UI/UIButton.h"
 
@@ -44,6 +46,12 @@ class UIButtonMetadata : public UITextControlMetadata
 
 public:
     UIButtonMetadata(QObject* parent = 0);    
+
+    Q_PROPERTY(float UIMarginLeft READ GetLeftTextMargin WRITE SetLeftTextMargin);
+	Q_PROPERTY(float UIMarginTop READ GetTopTextMargin WRITE SetTopTextMargin);
+	Q_PROPERTY(float UIMarginRight READ GetRightTextMargin WRITE SetRightTextMargin);
+	Q_PROPERTY(float UIMarginBottom READ GetBottomTextMargin WRITE SetBottomTextMargin);
+    Q_PROPERTY(QRectF UIMargins READ GetTextMargins WRITE SetTextMargins);
 
 protected:
     virtual bool GetInitialInputEnabled() const {return true;};
@@ -178,6 +186,22 @@ protected:
 
     float GetTopBottomStretchCapForState(UIControl::eControlState state) const;
     void UpdatePropertyDirtyFlagForTopBottomStretchCap();
+    
+    // Text Margins.
+    QRectF GetTextMargins();
+    void SetTextMargins(const QRectF& marginsRect);
+
+    float GetLeftTextMargin() const;
+    void SetLeftTextMargin(float value);
+
+    float GetTopTextMargin() const;
+    void SetTopTextMargin(float value);
+
+    float GetRightTextMargin() const;
+    void SetRightTextMargin(float value);
+
+    float GetBottomTextMargin() const;
+    void SetBottomTextMargin(float value);
 
     // Recover dirty flags.
     void RecoverPropertyDirtyFlags();

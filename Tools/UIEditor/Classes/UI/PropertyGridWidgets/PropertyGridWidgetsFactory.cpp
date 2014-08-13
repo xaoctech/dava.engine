@@ -119,6 +119,9 @@ PropertyGridWidgetsFactory::PropertyGridWidgetsFactory()
 
     guideWidget = new GuidePropertyGridWidget();
     registeredWidgets.push_back(guideWidget);
+    
+    marginsWidget = new UIMarginsPropertyGridWidget();
+    registeredWidgets.push_back(marginsWidget);
 }
 
 PropertyGridWidgetsFactory::~PropertyGridWidgetsFactory()
@@ -192,6 +195,10 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
     {
         resultList.push_back(controlWidget);
         resultList.push_back(rectWidget);
+        if (uiButtonMetadata)
+        {
+            resultList.push_back(marginsWidget);
+        }
         resultList.push_back(alignWidget);
         if(uiButtonMetadata)
         {

@@ -40,6 +40,17 @@
 
 namespace DAVA
 {
+    inline bool UIButton::UIMargins::operator == (const UIButton::UIMargins& value) const
+    {
+        return FLOAT_EQUAL(left, value.left) && FLOAT_EQUAL(top, value.top) &&
+        FLOAT_EQUAL(right, value.right) && FLOAT_EQUAL(bottom, value.bottom);
+    }
+
+    inline bool UIButton::UIMargins::operator != (const UIButton::UIMargins& value) const
+    {
+        return !UIButton::UIMargins::operator == (value);
+    }
+
 static const UIControl::eControlState stateArray[] = {UIControl::STATE_NORMAL, UIControl::STATE_PRESSED_INSIDE, UIControl::STATE_PRESSED_OUTSIDE, UIControl::STATE_DISABLED, UIControl::STATE_SELECTED, UIControl::STATE_HOVER};
 static const String statePostfix[] = {"Normal", "PressedInside", "PressedOutside", "Disabled", "Selected", "Hover"};
 
@@ -393,7 +404,14 @@ void UIButton::Draw(const UIGeometricData &geometricData)
     if (selectedBackground)
         selectedBackground->Draw(geometricData);
     if (selectedTextBlock)
-        selectedTextBlock->Draw(geometricData);
+    {
+        UIGeometricData textGeometricData = geometricData;
+        textGeometricData.position.x += textMargins.left;
+        textGeometricData.position.y += textMargins.top;
+        textGeometricData.size.x -= textMargins.right;
+        textGeometricData.size.y -= textMargins.bottom;
+        selectedTextBlock->Draw(textGeometricData);
+    }
 }
 
 void UIButton::SetParentColor( const Color &parentColor )
@@ -509,6 +527,17 @@ UIButton::eButtonDrawState UIButton::GetActualTextBlockState(eButtonDrawState dr
 void UIButton::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
     UIControl::LoadFromYamlNode(node, loader);
+
+    // Some properties are not state-aware.
+    const YamlNode * textMarginsNode = node->Get("textMargins");
+    if (textMarginsNode)
+    {
+        const Vector4& textMarginsVect = textMarginsNode->AsVector4();
+        textMargins.left = textMarginsVect.x;
+        textMargins.top = textMarginsVect.y;
+        textMargins.right = textMarginsVect.z;
+        textMargins.bottom = textMarginsVect.w;
+    }
 
     for (int32 i = 0; i < STATE_COUNT; ++i)
     {
@@ -666,6 +695,16 @@ YamlNode * UIButton::SaveToYamlNode(UIYamlLoader * loader)
     node->RemoveNodeFromMap("spriteModification");
 
     ScopedPtr<UIButton> baseControl( new UIButton() );
+
+    // Some properties are not state-aware.
+    const UIMargins& margins = GetTextMargins();
+    if (baseControl->GetTextMargins() != margins)
+    {
+        Vector4 textMarginsVect(margins.left, margins.top, margins.right, margins.bottom);
+        VariantType textMarginsVariant(textMarginsVect);
+        node->Set("textMargins", &textMarginsVariant);
+    }
+
     //States cycle for values
     for (int32 i = 0; i < STATE_COUNT; ++i)
     {
@@ -826,4 +865,15 @@ void UIButton::UpdateStateTextControlSize()
         }
     }
 }
+    
+void UIButton::SetTextMargins(const UIMargins& margins)
+{
+    textMargins = margins;
+}
+    
+const UIButton::UIMargins& UIButton::GetTextMargins() const
+{
+    return textMargins;
+}
+
 };

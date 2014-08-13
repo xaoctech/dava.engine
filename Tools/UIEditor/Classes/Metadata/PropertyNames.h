@@ -139,6 +139,13 @@ public:
     // UI Web View properties.
     static const char* WEBVIEW_DATA_DETECTOR_TYPES_PROPERTY_NAME;
 
+    // UI Margins properties.
+    static const char* UIMARGINS_PROPERTY_NAME;
+    static const char* UIMARGIN_LEFT_PROPERTY_NAME;
+    static const char* UIMARGIN_TOP_PROPERTY_NAME;
+    static const char* UIMARGIN_RIGHT_PROPERTY_NAME;
+    static const char* UIMARGIN_BOTTOM_PROPERTY_NAME;
+
 	// Custom Control properties.
 	static const char* CUSTOM_CONTROL_NAME;
 };

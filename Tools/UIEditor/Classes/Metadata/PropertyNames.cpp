@@ -133,6 +133,13 @@ const char* PropertyNames::JOYPAD_DIGITAL_SENSE_PROPERTY_NAME = "DigitalSense";
 // UI Web View properties.
 const char* PropertyNames::WEBVIEW_DATA_DETECTOR_TYPES_PROPERTY_NAME = "DataDetectorTypes";
 
+// UI Margin properties.
+const char* PropertyNames::UIMARGINS_PROPERTY_NAME = "UIMargins";
+const char* PropertyNames::UIMARGIN_LEFT_PROPERTY_NAME = "UIMarginLeft";
+const char* PropertyNames::UIMARGIN_TOP_PROPERTY_NAME = "UIMarginTop";
+const char* PropertyNames::UIMARGIN_RIGHT_PROPERTY_NAME = "UIMarginRight";
+const char* PropertyNames::UIMARGIN_BOTTOM_PROPERTY_NAME = "UIMarginBottom";
+
 // Custom Control properties.
 const char* PropertyNames::CUSTOM_CONTROL_NAME = "CustomControlName";
 
