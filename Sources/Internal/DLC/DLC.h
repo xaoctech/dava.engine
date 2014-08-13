@@ -47,6 +47,7 @@ public:
         DE_INIT_ERROR,
         DE_CHECK_ERROR,
         DE_DOWNLOAD_ERROR,
+        DE_CONNECT_ERROR,
         DE_PATCH_ERROR_LITE,
         DE_PATCH_ERROR_FULL
     };
@@ -119,6 +120,7 @@ protected:
     enum DLCEvent
     {
         EVENT_CANCEL,
+        EVENT_CONNECT_ERROR,
         EVENT_CHECK_START,
         EVENT_CHECK_ONLY,
         EVENT_CHECK_OK,
@@ -218,6 +220,7 @@ protected:
     
 private:
     void PostEventJob(BaseObject *caller, void *callerData, void *userData);
+    bool IsConnectError(DownloadError err) const;
 };
 
 }

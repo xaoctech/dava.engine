@@ -207,6 +207,10 @@ void DLC::FSM(DLCEvent event)
                     dlcError = DE_CHECK_ERROR;
                     dlcState = DS_DONE;
                     break;
+                case EVENT_CONNECT_ERROR:
+                    dlcError = DE_CONNECT_ERROR;
+                    dlcState = DS_DONE;
+                    break;
                 case EVENT_CANCEL:
                     dlcState = DS_CANCELLING;
                     break;
@@ -224,6 +228,10 @@ void DLC::FSM(DLCEvent event)
                     break;
                 case EVENT_CHECK_ERROR:
                     dlcError = DE_CHECK_ERROR;
+                    dlcState = DS_DONE;
+                    break;
+                case EVENT_CONNECT_ERROR:
+                    dlcError = DE_CONNECT_ERROR;
                     dlcState = DS_DONE;
                     break;
                 case EVENT_CANCEL:
@@ -248,6 +256,10 @@ void DLC::FSM(DLCEvent event)
                     {
                         dlcState = DS_READY;
                     }
+                    break;
+                case EVENT_CONNECT_ERROR:
+                    dlcError = DE_CONNECT_ERROR;
+                    dlcState = DS_DONE;
                     break;
                 case EVENT_CANCEL:
                     dlcState = DS_CANCELLING;
@@ -282,6 +294,10 @@ void DLC::FSM(DLCEvent event)
                     break;
                 case EVENT_DOWNLOAD_ERROR:
                     dlcError = DE_DOWNLOAD_ERROR;
+                    dlcState = DS_DONE;
+                    break;
+                case EVENT_CONNECT_ERROR:
+                    dlcError = DE_CONNECT_ERROR;
                     dlcState = DS_DONE;
                     break;
                 case EVENT_CANCEL:
@@ -322,6 +338,7 @@ void DLC::FSM(DLCEvent event)
             {
                 case EVENT_CHECK_OK:
                 case EVENT_CHECK_ERROR:
+                case EVENT_CONNECT_ERROR:
                 case EVENT_DOWNLOAD_OK:
                 case EVENT_DOWNLOAD_ERROR:
                 case EVENT_PATCH_OK:
@@ -456,7 +473,15 @@ void DLC::StepCheckInfoFinish(const uint32 &id, const DownloadStatus &status)
             }
             else
             {
-                PostEvent(EVENT_CHECK_ERROR);
+               // check for connection error
+                if(IsConnectError(downloadError))
+                {
+                    PostEvent(EVENT_CONNECT_ERROR);
+                }
+                else
+                {
+                    PostEvent(EVENT_CHECK_ERROR);
+                }
             }
         }
     }
@@ -515,7 +540,15 @@ void DLC::StepCheckPatchFinish(const uint32 &id, const DownloadStatus &status)
                 }
                 else
                 {
-                    PostEvent(EVENT_CHECK_ERROR);
+                   // check for connection error
+                    if(IsConnectError(downloadErrorFull))
+                    {
+                        PostEvent(EVENT_CONNECT_ERROR);
+                    }
+                    else
+                    {
+                        PostEvent(EVENT_CHECK_ERROR);
+                    }
                 }
             }
         }
@@ -545,7 +578,19 @@ void DLC::StepCheckMetaFinish(const uint32 &id, const DownloadStatus &status)
     {
         if(DL_FINISHED == status)
         {
-            PostEvent(EVENT_CHECK_OK);
+            DownloadError downloadError;
+            DownloadManager::Instance()->GetError(dlcContext.remoteMetaDownloadId, downloadError);
+
+            // check for connection error
+            if(IsConnectError(downloadError))
+            {
+                PostEvent(EVENT_CONNECT_ERROR);
+            }
+            else
+            {
+                // any other status should be thread as OK-status, when for retrieving meta-info file
+                PostEvent(EVENT_CHECK_OK);
+            }
         }
     }
 }
@@ -628,7 +673,15 @@ void DLC::StepDownloadPatchFinish(const uint32 &id, const DownloadStatus &status
             }
             else
             {
-                PostEvent(EVENT_DOWNLOAD_ERROR);
+                // check for connection error
+                if(IsConnectError(downloadError))
+                {
+                    PostEvent(EVENT_CONNECT_ERROR);
+                }
+                else
+                {
+                    PostEvent(EVENT_DOWNLOAD_ERROR);
+                }
             }
         }
     }
@@ -744,6 +797,11 @@ void DLC::StepDone()
     }
 
     Logger::Info("DLC: Done!");
+}
+
+bool DLC::IsConnectError(DownloadError err) const
+{
+    return (err == DLE_COULDNT_RESOLVE_HOST || err == DLE_CANNOT_CONNECT);
 }
 
 uint32 DLC::ReadUint32(const FilePath &path)
