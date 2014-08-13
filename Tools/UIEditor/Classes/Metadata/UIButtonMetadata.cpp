@@ -978,6 +978,127 @@ void UIButtonMetadata::UpdatePropertyDirtyFlagForTopBottomStretchCap()
     }
 }
 
+// Text Margins.
+QRectF UIButtonMetadata::GetTextMargins()
+{
+    if (!VerifyActiveParamID())
+    {
+        return QRectF();
+    }
+
+    const UIButton::UIMargins& margins = GetActiveUIButton()->GetTextMargins();
+    return QRectF(margins.left, margins.top, margins.right - margins.left,
+                      margins.bottom - margins.top);
+}
+
+void UIButtonMetadata::SetTextMargins(const QRectF& marginsRect)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+    
+    UIButton::UIMargins margins;
+    margins.left = marginsRect.left();
+    margins.top = marginsRect.top();
+    margins.right = marginsRect.right();
+    margins.bottom = marginsRect.bottom();
+
+    GetActiveUIButton()->SetTextMargins(margins);
+}
+
+float UIButtonMetadata::GetLeftTextMargin() const
+{
+    if (!VerifyActiveParamID())
+    {
+        return 0.0f;
+    }
+    
+    const UIButton::UIMargins& margins = GetActiveUIButton()->GetTextMargins();
+    return margins.left;
+}
+
+void UIButtonMetadata::SetLeftTextMargin(float value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+    
+    UIButton::UIMargins margins = GetActiveUIButton()->GetTextMargins();
+    margins.left = value;
+    GetActiveUIButton()->SetTextMargins(margins);
+}
+
+float UIButtonMetadata::GetTopTextMargin() const
+{
+    if (!VerifyActiveParamID())
+    {
+        return 0.0f;
+    }
+    
+    const UIButton::UIMargins& margins = GetActiveUIButton()->GetTextMargins();
+    return margins.top;
+}
+
+void UIButtonMetadata::SetTopTextMargin(float value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+    
+    UIButton::UIMargins margins = GetActiveUIButton()->GetTextMargins();
+    margins.top = value;
+    GetActiveUIButton()->SetTextMargins(margins);
+}
+
+float UIButtonMetadata::GetRightTextMargin() const
+{
+    if (!VerifyActiveParamID())
+    {
+        return 0.0f;
+    }
+    
+    const UIButton::UIMargins& margins = GetActiveUIButton()->GetTextMargins();
+    return margins.right;
+}
+
+void UIButtonMetadata::SetRightTextMargin(float value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+    
+    UIButton::UIMargins margins = GetActiveUIButton()->GetTextMargins();
+    margins.right = value;
+    GetActiveUIButton()->SetTextMargins(margins);
+}
+
+float UIButtonMetadata::GetBottomTextMargin() const
+{
+    if (!VerifyActiveParamID())
+    {
+        return 0.0f;
+    }
+    
+    const UIButton::UIMargins& margins = GetActiveUIButton()->GetTextMargins();
+    return margins.bottom;
+}
+
+void UIButtonMetadata::SetBottomTextMargin(float value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+    
+    UIButton::UIMargins margins = GetActiveUIButton()->GetTextMargins();
+    margins.bottom = value;
+    GetActiveUIButton()->SetTextMargins(margins);
+}
+
 void UIButtonMetadata::RecoverPropertyDirtyFlags()
 {
     UpdatePropertyDirtyFlagForLocalizedText();

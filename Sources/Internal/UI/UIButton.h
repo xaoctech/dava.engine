@@ -54,6 +54,22 @@ class UIButton : public UIControl
 {
 
 public:
+    struct UIMargins
+    {
+        UIMargins() :
+            left(0.0f), top(0.0f), right(0.0f), bottom(0.0f)
+        {
+        }
+
+        inline bool operator == (const UIMargins & value) const;
+        inline bool operator != (const UIMargins & value) const;
+
+        float32 left;
+        float32 top;
+        float32 right;
+        float32 bottom;
+    };
+
     /**
      \brief Creates button with requested size and position.
      \param[in] rect Size and coordinates of control you want.
@@ -254,6 +270,17 @@ public:
      */
     virtual void CreateBackgroundForState(int32 state);
 
+    /**
+     \brief Sets the text margins for the UIButton's text.
+     \param[in] state state bit mask to set value for.
+     */
+    void SetTextMargins(const UIMargins& margins);
+
+    /**
+     \brief Returns the text margins for the UIButton's text.
+     */
+    const UIMargins& GetTextMargins() const;
+
 protected:
     virtual ~UIButton();
 
@@ -298,6 +325,8 @@ private:
     void SetTextBlock(eButtonDrawState drawState, UIStaticText * newTextBlock);
 
     void UpdateStateTextControlSize();
+    
+    UIMargins textMargins;
 };
 };
 
