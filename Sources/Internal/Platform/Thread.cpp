@@ -39,7 +39,7 @@ namespace DAVA
 
 Set<Thread *> Thread::threadList;
 Mutex Thread::threadListMutex;
-Map<Thread::NativeThreadIdentifier, Thread::Id> Thread::threadIdList;
+Map<Thread::NativeId, Thread::Id> Thread::threadIdList;
 Mutex Thread::threadIdListMutex;
 
 Thread::Id Thread::mainThreadId = 0;
@@ -95,10 +95,10 @@ Thread::Id Thread::GetCurrentThreadId()
     Id retId;
     
     threadIdListMutex.Lock();
-    Map<NativeThreadIdentifier, Id>::iterator it = threadIdList.find(GetCurrentIdentifier());
+    Map<NativeId, Id>::iterator it = threadIdList.find(GetCurrentIdentifier());
     if (it == threadIdList.end())
     {
-        NativeThreadIdentifier threadIdentifier = GetCurrentIdentifier();
+        NativeId threadIdentifier = GetCurrentIdentifier();
         static Id newId = 1;
         threadIdList[threadIdentifier] = newId;
         retId = newId++;

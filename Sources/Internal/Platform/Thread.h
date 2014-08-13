@@ -75,12 +75,12 @@ class Thread : public BaseObject
 private:
 #if defined(DAVAENGINE_PTHREAD)
     typedef pthread_t Handle;
-    typedef pthread_t NativeThreadIdentifier;
+    typedef pthread_t NativeId;
     bool joined;
     friend void	*PthreadMain(void *param);
 #elif defined(__DAVAENGINE_WIN32__)
     typedef HANDLE Handle;
-    typedef DWORD NativeThreadIdentifier;
+    typedef DWORD NativeId;
     friend DWORD WINAPI ThreadFunc(void *param);
 #endif
 #if defined(__DAVAENGINE_ANDROID__)
@@ -179,33 +179,58 @@ private:
 	Thread(const Message &msg);
     void Init();
     void Shutdown();
-
     void SetId(const Id &threadId);
-    static NativeThreadIdentifier GetCurrentIdentifier();
-    
-    void StartNative();
-    static void KillNative(Handle handle);
-    
-    static void ThreadFunction(void *param);
 
-    Handle handle;
+    /**
+    \brief Get unique native identifier of the thread which calls this method.
+    */
+    static NativeId GetCurrentIdentifier();
+    
+    /**
+    \brief Start thread native inplementation (contains no Thread logic)
+    */
+    void StartNative();
+    /**
+    \brief Kill thread native inplementation (contains no Thread logic)
+    */
+    void KillNative(Handle handle);
+    
+    /**
+    \brief Function which processes in separate thread. Used to launch user defined code and handle state.
+    */
+    static void ThreadFunction(void *param);
 
 	Message	msg;
 	eThreadState state;
 
+    /**
+    \brief Native thread handle - variable which used to thread manipulations
+    */
+    Handle handle;
+    /**
+    \brief ingeter sequence number of created DAVA::Thread. Need to differentiate therads.
+    */
 	Id id;
-    NativeThreadIdentifier nativeId;
-
 	static Id mainThreadId;
 	static Id glThreadId;
 
+    /**
+    \brief Some value which is unique for any thread in current OS. Could be used only for equals comparision.
+    */
+    NativeId nativeId;
+
+    /**
+    \brief Full list of created DAVA::Thread's. Main thread is not DAVA::Thread, so it is not there.
+    */
     static Set<Thread *> threadList;
     static Mutex threadListMutex;
-    static Map<NativeThreadIdentifier, Id> threadIdList;
+
+    /**
+    \brief Map of registered threads. Any thread could be registered, even it is not DAVA::Thread. 
+    Used to compare threads Id's predictable and repeatable.
+    */
+    static Map<NativeId, Id> threadIdList;
     static Mutex threadIdListMutex;
-    
-    ConditionalVariable killEvent;
-    ConditionalVariable cancelEvent;
 };
 
 };
