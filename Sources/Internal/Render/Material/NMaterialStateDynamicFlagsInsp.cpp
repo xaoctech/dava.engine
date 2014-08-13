@@ -45,9 +45,9 @@ Vector<FastName> NMaterialStateDynamicFlagsInsp::MembersList(void *object) const
         
         ret.push_back(NMaterial::FLAG_VERTEXFOG);
         ret.push_back(NMaterial::FLAG_FOG_LINEAR);
-        ret.push_back(NMaterial::FLAG_FOG_GLOW);
         ret.push_back(NMaterial::FLAG_FOG_HALFSPACE);
         ret.push_back(NMaterial::FLAG_FOG_HALFSPACE_LINEAR);
+        ret.push_back(NMaterial::FLAG_FOG_ATMOSPHERE);
         ret.push_back(NMaterial::FLAG_FOG_ATMOSPHERE_MAP);
 
         ret.push_back(NMaterial::FLAG_FLATCOLOR);
