@@ -39,6 +39,7 @@ extern void FrameworkWillTerminate();
 #include "Platform/Thread.h"
 #include "Input/InputSystem.h"
 #include "FileSystem/FileSystem.h"
+#include "Scene3D/SceneCache.h"
 
 namespace DAVA
 {
@@ -186,6 +187,8 @@ namespace DAVA
 
 			RenderManager::Instance()->Invalidate();
 			RenderResource::InvalidateAllResources();
+			
+			SceneCache::Instance()->InvalidateSceneMaterials();
 		}
 		else
 		{
