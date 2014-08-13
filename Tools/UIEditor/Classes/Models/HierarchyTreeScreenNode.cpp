@@ -53,9 +53,9 @@ HierarchyTreeScreenNode::HierarchyTreeScreenNode(HierarchyTreePlatformNode* pare
 	posY = POSITION_UNDEFINED;
 }
 
-HierarchyTreeScreenNode::HierarchyTreeScreenNode(HierarchyTreePlatformNode* parent, const HierarchyTreeScreenNode* base):
+HierarchyTreeScreenNode::HierarchyTreeScreenNode(HierarchyTreePlatformNode* parent, const HierarchyTreeScreenNode* base, bool needLoad/* = true*/):
 	HierarchyTreeNode(base),
-    loaded(false)
+    loaded(!needLoad)
 {
 	this->parent = parent;
 	this->screen = new ScreenControl();
@@ -68,16 +68,20 @@ HierarchyTreeScreenNode::HierarchyTreeScreenNode(HierarchyTreePlatformNode* pare
 
 	unsavedChangesCounter = 0;
 
-	const HierarchyTreeNode::HIERARCHYTREENODESLIST& chilren = base->GetChildNodes();
-	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = chilren.begin();
-		 iter != chilren.end();
+	const HierarchyTreeNode::HIERARCHYTREENODESLIST& children = base->GetChildNodes();
+	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = children.begin();
+		 iter != children.end();
 		 ++iter)
 	{
 		const HierarchyTreeControlNode* baseControl = dynamic_cast<const HierarchyTreeControlNode* >((*iter));
 		if (!baseControl)
 			continue;
 		
-		HierarchyTreeControlNode* control = new HierarchyTreeControlNode(this, baseControl);
+		HierarchyTreeControlNode* control = NULL;
+		if (dynamic_cast<UIAggregatorControl*>(baseControl->GetUIObject()))
+			control = new HierarchyTreeAggregatorControlNode(this, dynamic_cast<const HierarchyTreeAggregatorControlNode* >(baseControl));
+		else
+        	 control = new HierarchyTreeControlNode(this, baseControl);
 		AddTreeNode(control);
 	}
 }
