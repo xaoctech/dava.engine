@@ -79,9 +79,14 @@ HierarchyTreeScreenNode::HierarchyTreeScreenNode(HierarchyTreePlatformNode* pare
 		
 		HierarchyTreeControlNode* control = NULL;
 		if (dynamic_cast<UIAggregatorControl*>(baseControl->GetUIObject()))
-			control = new HierarchyTreeAggregatorControlNode(this, dynamic_cast<const HierarchyTreeAggregatorControlNode* >(baseControl));
+        {
+        	const HierarchyTreeControlNode* aggregatorBaseControl = static_cast<const HierarchyTreeAggregatorControlNode*>(baseControl);
+			control = new HierarchyTreeAggregatorControlNode(this, aggregatorBaseControl);
+        }
 		else
+        {
         	 control = new HierarchyTreeControlNode(this, baseControl);
+        }
 		AddTreeNode(control);
 	}
 }
