@@ -162,7 +162,7 @@ void SceneExporter::ExportTextureFolder(const String &folderName, Set<String> &e
             if(!fileList->IsNavigationDirectory(i))
             {
                 String workingPathname = pathname.GetRelativePathname(sceneUtils.dataSourceFolder);
-                ExportSceneFolder(workingPathname, errorLog);
+                ExportTextureFolder(workingPathname, errorLog);
             }
         }
         else
