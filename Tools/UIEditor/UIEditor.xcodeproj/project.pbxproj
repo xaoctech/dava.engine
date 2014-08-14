@@ -206,9 +206,12 @@
 		17FF15E216400160001B130F /* fontmanagerdialog.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 17FF15DF16400160001B130F /* fontmanagerdialog.ui */; };
 		17FF15F91640069E001B130F /* localizationeditordialog.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 17FF15F81640069E001B130F /* localizationeditordialog.ui */; };
 		17FF160016400A75001B130F /* localizationeditordialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17FF15FE16400A75001B130F /* localizationeditordialog.cpp */; };
+		49220EEF196552C4006E88C5 /* TextureDescriptorUtils.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49220EED196552C4006E88C5 /* TextureDescriptorUtils.cpp */; };
 		497774C0170DB808004CE2FB /* importdialogfilewidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 497774BF170DB808004CE2FB /* importdialogfilewidget_moc.cpp */; };
 		497774C2170DB80F004CE2FB /* importdialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 497774C1170DB80F004CE2FB /* importdialog_moc.cpp */; };
 		498B61FD16F76E2C009D4417 /* IconHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498B61FB16F76E2C009D4417 /* IconHelper.cpp */; };
+		498FEAF019643D84007E1660 /* BaseValidator.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498FEAEB19643D84007E1660 /* BaseValidator.cpp */; };
+		498FEAF419644C61007E1660 /* DistanceFontValidator.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498FEAF219644C61007E1660 /* DistanceFontValidator.cpp */; };
 		49B0263F1709D6B5001E28CC /* importdialog.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 49B0263E1709D6B5001E28CC /* importdialog.ui */; };
 		49B026421709D6BD001E28CC /* importdialogfilewidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 49B026411709D6BD001E28CC /* importdialogfilewidget.ui */; };
 		49B0264C1709DA7D001E28CC /* importdialogfilewidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49B0264A1709DA7D001E28CC /* importdialogfilewidget.cpp */; };
@@ -695,12 +698,18 @@
 		2A689518AF9C22C7AA97C9EF /* ogg_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ogg_macos; path = ../dava.framework/Libs/libs/libogg_macos.a; sourceTree = "<group>"; };
 		336CB11D929F5E35FA69020F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		419FFB6CDDEB353FF0A4F469 /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = ../../../../QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework; sourceTree = "<group>"; };
+		49220EED196552C4006E88C5 /* TextureDescriptorUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureDescriptorUtils.cpp; sourceTree = "<group>"; };
+		49220EEE196552C4006E88C5 /* TextureDescriptorUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureDescriptorUtils.h; sourceTree = "<group>"; };
 		497774BD170DB7F2004CE2FB /* ui_importdialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_importdialog.h; sourceTree = "<group>"; };
 		497774BE170DB7F2004CE2FB /* ui_importdialogfilewidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_importdialogfilewidget.h; sourceTree = "<group>"; };
 		497774BF170DB808004CE2FB /* importdialogfilewidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = importdialogfilewidget_moc.cpp; sourceTree = "<group>"; };
 		497774C1170DB80F004CE2FB /* importdialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = importdialog_moc.cpp; sourceTree = "<group>"; };
 		498B61FB16F76E2C009D4417 /* IconHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IconHelper.cpp; sourceTree = "<group>"; };
 		498B61FC16F76E2C009D4417 /* IconHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IconHelper.h; sourceTree = "<group>"; };
+		498FEAEB19643D84007E1660 /* BaseValidator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BaseValidator.cpp; path = Validators/BaseValidator.cpp; sourceTree = "<group>"; };
+		498FEAEC19643D84007E1660 /* BaseValidator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BaseValidator.h; path = Validators/BaseValidator.h; sourceTree = "<group>"; };
+		498FEAF219644C61007E1660 /* DistanceFontValidator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DistanceFontValidator.cpp; path = Validators/DistanceFontValidator.cpp; sourceTree = "<group>"; };
+		498FEAF319644C61007E1660 /* DistanceFontValidator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DistanceFontValidator.h; path = Validators/DistanceFontValidator.h; sourceTree = "<group>"; };
 		49B0263E1709D6B5001E28CC /* importdialog.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = importdialog.ui; sourceTree = "<group>"; };
 		49B026411709D6BD001E28CC /* importdialogfilewidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = importdialogfilewidget.ui; sourceTree = "<group>"; };
 		49B0264A1709DA7D001E28CC /* importdialogfilewidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = importdialogfilewidget.cpp; sourceTree = "<group>"; };
@@ -1523,6 +1532,17 @@
 			name = CustomContols;
 			sourceTree = "<group>";
 		};
+		498FEAE319643D51007E1660 /* Validators */ = {
+			isa = PBXGroup;
+			children = (
+				498FEAEB19643D84007E1660 /* BaseValidator.cpp */,
+				498FEAEC19643D84007E1660 /* BaseValidator.h */,
+				498FEAF219644C61007E1660 /* DistanceFontValidator.cpp */,
+				498FEAF319644C61007E1660 /* DistanceFontValidator.h */,
+			);
+			name = Validators;
+			sourceTree = "<group>";
+		};
 		5C190C9615AEC58B005731F8 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1635,6 +1655,7 @@
 		C15C2FDF162AD6E400818631 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				498FEAE319643D51007E1660 /* Validators */,
 				176B4ED418682ADE0020798C /* Grid */,
 				17660BB4186B1D8D00CF7A14 /* Ruler */,
 				171FA7EC17C4A3EA00C7F7F2 /* AlignDistribute */,
@@ -1660,6 +1681,8 @@
 				C1C62A23162C33FC000C1B32 /* ScreenWrapper.h */,
 				1719682017CE4BD400053905 /* ScaleSlider.cpp */,
 				1719682117CE4BD400053905 /* ScaleSlider.h */,
+				49220EED196552C4006E88C5 /* TextureDescriptorUtils.cpp */,
+				49220EEE196552C4006E88C5 /* TextureDescriptorUtils.h */,
 				17F2EF2916355E1000DEE054 /* Commands */,
 				176D3951162C38FF0099AACF /* Controllers */,
 				17112B5616392E880017E713 /* Helpers */,
@@ -2059,6 +2082,7 @@
 				02D69CA516F08CEE00F3803F /* PropertiesGridController_moc.cpp in Build Sources */,
 				17A6305218AA2B3500957C77 /* GuidesManager_moc.cpp in Build Sources */,
 				02D69CA616F08CEE00F3803F /* UndoRedoController_moc.cpp in Build Sources */,
+				498FEAF019643D84007E1660 /* BaseValidator.cpp in Build Sources */,
 				02D69CA716F08CEE00F3803F /* DefaultScreen_moc.cpp in Build Sources */,
 				02D69CA816F08CEE00F3803F /* EditorFontManager_moc.cpp in Build Sources */,
 				02D69CA916F08CEE00F3803F /* EditorSettings_moc.cpp in Build Sources */,
@@ -2102,6 +2126,7 @@
 				02D69CCF16F08CEE00F3803F /* ScreenControl_moc.cpp in Build Sources */,
 				02D69CD016F08CEE00F3803F /* ScreenManager_moc.cpp in Build Sources */,
 				02D69CD116F08CEE00F3803F /* ScreenWrapper_moc.cpp in Build Sources */,
+				49220EEF196552C4006E88C5 /* TextureDescriptorUtils.cpp in Build Sources */,
 				02D69CD216F08CEE00F3803F /* StringUtils_moc.cpp in Build Sources */,
 				74CD181C18D84AE3004615A5 /* rootpropertygridwidget.cpp in Build Sources */,
 				02D69CD316F08CEE00F3803F /* controllist_moc.cpp in Build Sources */,
@@ -2178,6 +2203,7 @@
 				17716B5818A90DC3005BA215 /* GuideData_moc.cpp in Build Sources */,
 				748A997D1726D7A700C6411B /* UIScrollViewMetadata.cpp in Build Sources */,
 				17A1226618F4499300780837 /* guidepropertygridwidget.cpp in Build Sources */,
+				498FEAF419644C61007E1660 /* DistanceFontValidator.cpp in Build Sources */,
 				748A997F1726DAB300C6411B /* UIScrollViewMetadata_moc.cpp in Build Sources */,
 				74AD4BD11727DBA50082EFB3 /* scrollviewpropertygridwidget.cpp in Build Sources */,
 				17C5A56D18C86D4E00064AFF /* UIWebViewMetadata.cpp in Build Sources */,
