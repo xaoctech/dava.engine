@@ -470,6 +470,8 @@
     <ClCompile Include="Classes\Qt\Project\ProjectManager.cpp" />
     <ClCompile Include="Classes\Qt\QualitySwitcher\QualitySwitcher.cpp" />
     <ClCompile Include="Classes\Qt\RunActionEventWidget\RunActionEventWidget.cpp" />
+    <ClCompile Include="Classes\Qt\SceneProcessor\EntityProcessors.cpp" />
+    <ClCompile Include="Classes\Qt\SceneProcessor\SceneProcessor.cpp" />
     <ClCompile Include="Classes\Qt\Scene\EntityGroup.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneEditor2.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneHelper.cpp" />
@@ -1123,6 +1125,8 @@
     <ClInclude Include="Classes\Qt\Project\ProjectManager.h" />
     <ClInclude Include="Classes\Qt\QualitySwitcher\QualitySwitcher.h" />
     <ClInclude Include="Classes\Qt\RunActionEventWidget\RunActionEventWidget.h" />
+    <ClInclude Include="Classes\Qt\SceneProcessor\EntityProcessors.h" />
+    <ClInclude Include="Classes\Qt\SceneProcessor\SceneProcessor.h" />
     <ClInclude Include="Classes\Qt\Scene\EntityGroup.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneEditor2.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneHelper.h" />
