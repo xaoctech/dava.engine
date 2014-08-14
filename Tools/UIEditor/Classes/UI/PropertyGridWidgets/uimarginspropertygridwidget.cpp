@@ -36,7 +36,7 @@ void UIMarginsPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     RegisterDoubleSpinBoxWidgetForProperty(propertiesMap, PropertyNames::UIMARGIN_BOTTOM_PROPERTY_NAME, ui->bottomDoubleSpinBox);
 
     connect(ui->resetMarginsButton, SIGNAL(clicked()), this, SLOT(OnResetUIMarginsClicked()));
-    UpdateResetMarginsButtonVisible();
+    UpdateUI();
 }
 
 void UIMarginsPropertyGridWidget::Cleanup()
@@ -62,7 +62,7 @@ void UIMarginsPropertyGridWidget::UpdateDoubleSpinBoxWidgetWithPropertyValue(QDo
                                                                           curProperty.name());
     WidgetSignalsBlocker blocker(spinBoxWidget);
     spinBoxWidget->setValue(propertyValue);
-    UpdateResetMarginsButtonVisible();
+    UpdateUI();
 }
 
 void UIMarginsPropertyGridWidget::ProcessDoubleSpinBoxValueChanged(QDoubleSpinBox* /*doubleSpinBox*/,
@@ -83,13 +83,35 @@ void UIMarginsPropertyGridWidget::ProcessDoubleSpinBoxValueChanged(QDoubleSpinBo
 void UIMarginsPropertyGridWidget::HandleChangePropertySucceeded(const QString& propertyName)
 {
     BasePropertyGridWidget::HandleChangePropertySucceeded(propertyName);
-    UpdateResetMarginsButtonVisible();
+    UpdateUI();
 }
 
 void UIMarginsPropertyGridWidget::HandleChangePropertyFailed(const QString& propertyName)
 {
     BasePropertyGridWidget::HandleChangePropertyFailed(propertyName);
+    UpdateUI();
+}
+
+void UIMarginsPropertyGridWidget::UpdateUI()
+{
+    if (!activeMetadata)
+    {
+        return;
+    }
+
+    UpdateMaxMarginValues();
     UpdateResetMarginsButtonVisible();
+}
+
+void UIMarginsPropertyGridWidget::UpdateMaxMarginValues()
+{
+    float sizeX = PropertiesHelper::GetAllPropertyValues<float>(activeMetadata, PropertyNames::SIZE_X);
+    ui->rightDoubleSpinBox->setMaximum(sizeX - ui->leftDoubleSpinBox->value());
+    ui->leftDoubleSpinBox->setMaximum(sizeX - ui->rightDoubleSpinBox->value());
+
+    float sizeY = PropertiesHelper::GetAllPropertyValues<float>(activeMetadata, PropertyNames::SIZE_Y);
+    ui->bottomDoubleSpinBox->setMaximum(sizeY - ui->topDoubleSpinBox->value());
+    ui->topDoubleSpinBox->setMaximum(sizeY - ui->bottomDoubleSpinBox->value());
 }
 
 void UIMarginsPropertyGridWidget::UpdateResetMarginsButtonVisible()
