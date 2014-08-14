@@ -43,7 +43,7 @@ namespace DAVA
 
 Thread::ThreadId Thread::mainThreadId = 0;
 Thread::ThreadId Thread::glThreadId = 0;
-Thread::ThreadId Thread::foregroundUpdateThreadId = 0;
+Thread::ThreadId Thread::backgroundUpdateThreadId = 0;
 
 void * PthreadMain (void * param)
 {
@@ -68,7 +68,7 @@ void Thread::StartAndroid()
 bool Thread::IsMainThread()
 {
 	ThreadId threadId = pthread_self();
-	return (mainThreadId == threadId || glThreadId == threadId || foregroundUpdateThreadId == threadId);
+	return (mainThreadId == threadId || glThreadId == threadId || backgroundUpdateThreadId == threadId);
 }
 
 void Thread::InitMainThread()
@@ -94,15 +94,15 @@ Thread::ThreadId Thread::GetCurrentThreadId()
 	return ret;
 }
 
-void Thread::RegisterForegroundThread()
+void Thread::RegisterBackgroundThread()
 {
-	DVASSERT(foregroundUpdateThreadId == 0);
-	foregroundUpdateThreadId = GetCurrentThreadId();
+	DVASSERT(backgroundUpdateThreadId == 0);
+	backgroundUpdateThreadId = GetCurrentThreadId();
 }
 
-void Thread::UnRegisterForegroundThread()
+void Thread::UnRegisterBackgroundThread()
 {
-	foregroundUpdateThreadId = 0;
+	backgroundUpdateThreadId = 0;
 }
 
 };

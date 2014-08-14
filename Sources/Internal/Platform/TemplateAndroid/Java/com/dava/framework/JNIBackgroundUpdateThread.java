@@ -1,17 +1,20 @@
 package com.dava.framework;
 
-public class JNIForegroundUpdateThread {
-	private Object needExit = null;
-	private Thread thread = null;
+public class JNIBackgroundUpdateThread {
+	private static Object needExit = null;
+	private static Thread thread = null;
 	
 	
 	protected void StartBackgroundDownloadThread() {
+		if (null != thread)
+			return;
+		
 		needExit = null;
 		thread = new Thread(new Runnable() {
 			
 			@Override
 			public void run() {
-				RegisterForegroundThread();
+				RegisterBackgroundThread();
 				while (needExit == null)
 				{
 					try {
@@ -22,7 +25,7 @@ public class JNIForegroundUpdateThread {
 					JNIDownloadManager.UpdateDownloadManager();
 					//JNINotification.UpdateNotification();
 				}
-				UnRegisterForegroundThread();
+				UnRegisterBackgroundThread();
 				
 				Thread.yield();
 				synchronized (needExit) {
@@ -47,6 +50,6 @@ public class JNIForegroundUpdateThread {
 		}
 	}
 	
-	native void RegisterForegroundThread();
-	native void UnRegisterForegroundThread();
+	native void RegisterBackgroundThread();
+	native void UnRegisterBackgroundThread();
 }

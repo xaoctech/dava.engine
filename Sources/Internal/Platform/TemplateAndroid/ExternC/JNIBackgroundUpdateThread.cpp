@@ -33,13 +33,13 @@
 
 extern "C"
 {
-	void Java_com_dava_framework_JNIForegroundUpdateThread_RegisterForegroundThread(JNIEnv * env, jobject classthis)
+	void Java_com_dava_framework_JNIBackgroundUpdateThread_RegisterBackgroundThread(JNIEnv * env, jobject classthis)
 	{
-		DAVA::Thread::RegisterForegroundThread();
+		DAVA::Thread::RegisterBackgroundThread();
 	}
 
-	void Java_com_dava_framework_JNIForegroundUpdateThread_UnRegisterForegroundThread(JNIEnv * env, jobject classthis)
+	void Java_com_dava_framework_JNIBackgroundUpdateThread_UnRegisterBackgroundThread(JNIEnv * env, jobject classthis)
 	{
-		DAVA::Thread::UnRegisterForegroundThread();
+		DAVA::Thread::UnRegisterBackgroundThread();
 	}
 };
