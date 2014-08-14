@@ -23,10 +23,12 @@ public class JNIRenderer implements GLSurfaceView.Renderer {
 	private int height = 0;
 	
 	private boolean isRenderRecreated = false;
-	private JNIForegroundUpdateThread foregroundUpdateThread = new JNIForegroundUpdateThread();
+	private static JNIBackgroundUpdateThread backgroundUpdateThread = null;
 	
 	public JNIRenderer()
 	{
+		if (null == backgroundUpdateThread)
+			backgroundUpdateThread = new JNIBackgroundUpdateThread();
 	}
 
 	@Override
@@ -87,13 +89,15 @@ public class JNIRenderer implements GLSurfaceView.Renderer {
 	{
 		PowerManager pm = (PowerManager) JNIApplication.GetApplication().getSystemService(Context.POWER_SERVICE);
 		nativeOnPauseView(!pm.isScreenOn());
-		foregroundUpdateThread.StartBackgroundDownloadThread();
+		if (null != backgroundUpdateThread)
+			backgroundUpdateThread.StartBackgroundDownloadThread();
 	}
 	
 	public void OnResume()
 	{
 		nativeOnResumeView();
-		foregroundUpdateThread.WaitExitDownloadTread();
+		if (null != backgroundUpdateThread)
+			backgroundUpdateThread.WaitExitDownloadTread();
 	}
 	
 }
