@@ -142,6 +142,7 @@
 #include "Render/2D/FTFont.h"
 #include "Render/2D/FontManager.h"
 #include "Render/2D/TextBlock.h"
+#include "Render/2D/DFFont.h"
 
 // UI
 #include "UI/UIControl.h"
