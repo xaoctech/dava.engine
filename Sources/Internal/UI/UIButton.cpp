@@ -597,7 +597,7 @@ void UIButton::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
             
             if (perPixelAccuracyNode)
             {
-                UIControlBackground::ePerPixelAccuracyType type = (UIControlBackground::ePerPixelAccuracyType)loader->GetPerPixelAccuracyTypeFromNode(colorInheritNode);
+                UIControlBackground::ePerPixelAccuracyType type = (UIControlBackground::ePerPixelAccuracyType)loader->GetPerPixelAccuracyTypeFromNode(perPixelAccuracyNode);
                 stateBackground->SetPerPixelAccuracyType(type);
             }
 
