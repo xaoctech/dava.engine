@@ -56,6 +56,7 @@ public:
     
     static const char* DRAW_TYPE_PROPERTY_NAME;
     static const char* COLOR_INHERIT_TYPE_PROPERTY_NAME;
+    static const char* PER_PIXEL_ACCURACY_TYPE_PROPERTY_NAME;
     static const char* ALIGN_PROPERTY_NAME;
     
     static const char* TEXT_PROPERTY_NAME;
@@ -81,6 +82,8 @@ public:
     
     static const char* FONT_COLOR_INHERIT_TYPE_PROPERTY_NAME;
     static const char* SHADOW_COLOR_INHERIT_TYPE_PROPERTY_NAME;
+    static const char* FONT_PER_PIXEL_ACCURACY_TYPE_PROPERTY_NAME;
+    static const char* SHADOW_PER_PIXEL_ACCURACY_TYPE_PROPERTY_NAME;
 
 	// Slider properties
 	static const char* SLIDER_VALUE_PROPERTY_NAME;

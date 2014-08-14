@@ -389,3 +389,43 @@ void UIStaticTextMetadata::SetShadowColorInheritType(int value)
     GetActiveStaticText()->GetShadowBackground()->SetColorInheritType((UIControlBackground::eColorInheritType)value);
 
 }
+
+int UIStaticTextMetadata::GetFontPerPixelAccuracyType() const
+{
+    if (!VerifyActiveParamID() || !GetActiveStaticText()->GetTextBackground())
+    {
+        return UIControlBackground::PER_PIXEL_ACCURACY_DISABLED;
+    }
+    
+    return GetActiveStaticText()->GetTextBackground()->GetPerPixelAccuracyType();
+}
+
+int UIStaticTextMetadata::GetShadowPerPixelAccuracyType() const
+{
+    if (!VerifyActiveParamID() || !GetActiveStaticText()->GetShadowBackground())
+    {
+        return UIControlBackground::PER_PIXEL_ACCURACY_DISABLED;
+    }
+    
+    return GetActiveStaticText()->GetShadowBackground()->GetPerPixelAccuracyType();
+}
+
+void UIStaticTextMetadata::SetFontPerPixelAccuracyType(int value)
+{
+    if (!VerifyActiveParamID() || !GetActiveStaticText()->GetTextBackground())
+    {
+        return;
+    }
+    
+    GetActiveStaticText()->GetTextBackground()->SetPerPixelAccuracyType((UIControlBackground::ePerPixelAccuracyType)value);
+}
+
+void UIStaticTextMetadata::SetShadowPerPixelAccuracyType(int value)
+{
+    if (!VerifyActiveParamID() || !GetActiveStaticText()->GetShadowBackground())
+    {
+        return;
+    }
+    
+    GetActiveStaticText()->GetShadowBackground()->SetPerPixelAccuracyType((UIControlBackground::ePerPixelAccuracyType)value);
+}
