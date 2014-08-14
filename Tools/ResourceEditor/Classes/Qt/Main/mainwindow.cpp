@@ -122,6 +122,7 @@
 
 #include "Tools/HeightDeltaTool/HeightDeltaTool.h"
 
+#include "SceneProcessor/EntityProcessors.h"
 
 QtMainWindow::QtMainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -764,6 +765,8 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionHangingObjects, SIGNAL(triggered()), this, SLOT(OnHangingObjects()));
 	QObject::connect(ui->actionReloadShader, SIGNAL(triggered()), this, SLOT(OnReloadShaders()));
     QObject::connect(ui->actionSwitchesWithDifferentLODs, SIGNAL(triggered(bool)), this, SLOT(OnSwitchWithDifferentLODs(bool)));
+    
+    QObject::connect(ui->actionBatchProcess, SIGNAL(triggered(bool)), this, SLOT(OnBatchProcessScene()));
 }
 
 void QtMainWindow::SetupShortCuts()
@@ -2950,4 +2953,15 @@ void QtMainWindow::OnGenerateHeightDelta()
     w->SetOutputTemplate( "h_", QString() );
     
     w->show();
+}
+
+void QtMainWindow::OnBatchProcessScene()
+{
+    SceneProcessor sceneProcessor;
+
+    sceneProcessor.SetEntityProcessor(new DestructibleSoundAdder());
+
+    SceneEditor2* sceneEditor = GetCurrentScene();
+    sceneProcessor.Execute(sceneEditor);
+    SaveScene(sceneEditor);
 }
