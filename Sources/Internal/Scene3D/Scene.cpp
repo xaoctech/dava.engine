@@ -346,6 +346,8 @@ void Scene::CreateSystems()
 
 Scene::~Scene()
 {
+    SceneCache::Instance()->RemoveScene(this);
+    
 	for (Vector<AnimatedMesh*>::iterator t = animatedMeshes.begin(); t != animatedMeshes.end(); ++t)
 	{
 		AnimatedMesh * obj = *t;
@@ -403,7 +405,6 @@ Scene::~Scene()
 
 	SafeDelete(eventSystem);
 	SafeDelete(renderSystem);
-    SceneCache::Instance()->RemoveScene(this);
 }
     
 void Scene::RegisterEntity(Entity * entity)
