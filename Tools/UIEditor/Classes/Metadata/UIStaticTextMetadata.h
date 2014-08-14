@@ -48,6 +48,9 @@ class UIStaticTextMetadata : public UITextControlMetadata
     // Font color/shadow color inherit types.
     Q_PROPERTY(int FontColorInheritType READ GetFontColorInheritType WRITE SetFontColorInheritType);
     Q_PROPERTY(int ShadowColorInheritType READ GetShadowColorInheritType WRITE SetShadowColorInheritType);
+    // Font/Shadow per pixel accuracy types
+    Q_PROPERTY(int FontPerPixelAccuracyType READ GetFontPerPixelAccuracyType WRITE SetFontPerPixelAccuracyType);
+    Q_PROPERTY(int ShadowPerPixelAccuracyType READ GetShadowPerPixelAccuracyType WRITE SetShadowPerPixelAccuracyType);
 
 public:
     UIStaticTextMetadata(QObject* parent = 0);
@@ -106,6 +109,12 @@ protected:
 
     virtual int GetShadowColorInheritType() const;
     virtual void SetShadowColorInheritType(int value);
+    
+    virtual int GetFontPerPixelAccuracyType() const;
+    virtual void SetFontPerPixelAccuracyType(int value);
+
+    virtual int GetShadowPerPixelAccuracyType() const;
+    virtual void SetShadowPerPixelAccuracyType(int value);
 };
 
 };

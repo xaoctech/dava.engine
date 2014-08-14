@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>300</width>
-    <height>233</height>
+    <height>272</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>300</width>
-    <height>233</height>
+    <height>272</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -25,7 +25,7 @@
      <x>1</x>
      <y>1</y>
      <width>299</width>
-     <height>231</height>
+     <height>271</height>
     </rect>
    </property>
    <property name="title">
@@ -101,7 +101,7 @@ inherit:</string>
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>174</y>
+      <y>180</y>
       <width>62</width>
       <height>16</height>
      </rect>
@@ -217,8 +217,8 @@ inherit:</string>
    <widget class="QLabel" name="lrStretchLabel">
     <property name="geometry">
      <rect>
-      <x>9</x>
-      <y>204</y>
+      <x>10</x>
+      <y>240</y>
       <width>81</width>
       <height>16</height>
      </rect>
@@ -230,8 +230,8 @@ inherit:</string>
    <widget class="QLabel" name="tbStretchLabel">
     <property name="geometry">
      <rect>
-      <x>154</x>
-      <y>204</y>
+      <x>155</x>
+      <y>240</y>
       <width>81</width>
       <height>16</height>
      </rect>
@@ -243,8 +243,8 @@ inherit:</string>
    <widget class="QSpinBox" name="lrSpinBox">
     <property name="geometry">
      <rect>
-      <x>90</x>
-      <y>199</y>
+      <x>91</x>
+      <y>235</y>
       <width>46</width>
       <height>25</height>
      </rect>
@@ -259,8 +259,8 @@ inherit:</string>
    <widget class="QSpinBox" name="tbSpinBox">
     <property name="geometry">
      <rect>
-      <x>241</x>
-      <y>199</y>
+      <x>242</x>
+      <y>235</y>
       <width>46</width>
       <height>25</height>
      </rect>
@@ -293,6 +293,30 @@ inherit:</string>
       <width>95</width>
       <height>26</height>
      </rect>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="pixelAccuracyComboBox">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>198</y>
+      <width>209</width>
+      <height>26</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="pixelAccuracyLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>195</y>
+      <width>71</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Per pixel
+accuracy:</string>
     </property>
    </widget>
   </widget>

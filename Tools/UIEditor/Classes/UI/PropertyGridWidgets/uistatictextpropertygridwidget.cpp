@@ -70,6 +70,10 @@ void UIStaticTextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     RegisterColorWidgetForProperty(propertiesMap, PropertyNames::FONT_COLOR_PROPERTY_NAME, ui->textColorWidget, false, true);
     RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::FONT_COLOR_INHERIT_TYPE_PROPERTY_NAME, ui->fontColorInheritTypeCombobox, false, true);
     RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::SHADOW_COLOR_INHERIT_TYPE_PROPERTY_NAME, ui->shadowColorInheritTypeCombobox, false, true);
+    RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::FONT_PER_PIXEL_ACCURACY_TYPE_PROPERTY_NAME,
+    													ui->fontPerPixelAccuracyTypeCombobox, false, true);
+    RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::SHADOW_PER_PIXEL_ACCURACY_TYPE_PROPERTY_NAME,
+    													ui->shadowPerPixelAccuracyTypeCombobox, false, true);
 
     // Localized Text Key is handled through generic Property mechanism, but we need to update the
     // Localization Value widget each time Localization Key is changes.
@@ -143,6 +147,10 @@ void UIStaticTextPropertyGridWidget::Cleanup()
     }
     
     UnregisterComboBoxWidget(ui->fittingTypeComboBox);
+    UnregisterComboBoxWidget(ui->fontColorInheritTypeCombobox);
+	UnregisterComboBoxWidget(ui->shadowColorInheritTypeCombobox);
+    UnregisterComboBoxWidget(ui->fontPerPixelAccuracyTypeCombobox);
+	UnregisterComboBoxWidget(ui->shadowPerPixelAccuracyTypeCombobox);
     
     TextPropertyGridWidget::Cleanup();
 }
@@ -241,6 +249,16 @@ void UIStaticTextPropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue(QComb
         return SetComboboxSelectedItem(comboBoxWidget,
             BackgroundGridWidgetHelper::GetColorInheritTypeDescByType((UIControlBackground::eColorInheritType)propertyValue));
     }
+    
+    if (comboBoxWidget == ui->fontPerPixelAccuracyTypeCombobox ||
+        comboBoxWidget == ui->shadowPerPixelAccuracyTypeCombobox)
+    {
+        int propertyValue = PropertiesHelper::GetPropertyValue<int>(this->activeMetadata, propertyName, isPropertyValueDiffers);
+
+        UpdateWidgetPalette(comboBoxWidget, propertyName);
+        return SetComboboxSelectedItem(comboBoxWidget,
+            BackgroundGridWidgetHelper::GetPerPixelAccuracyTypeDescByType((UIControlBackground::ePerPixelAccuracyType)propertyValue));
+    }
 
     return TextPropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue(comboBoxWidget, curProperty);
 }
@@ -277,6 +295,12 @@ void UIStaticTextPropertyGridWidget::ProcessComboboxValueChanged(QComboBox* send
         int selectedIndex = senderWidget->currentIndex();
         return CustomProcessComboboxValueChanged(iter, BackgroundGridWidgetHelper::GetColorInheritType(selectedIndex));
     }
+    
+    if (senderWidget == ui->fontPerPixelAccuracyTypeCombobox || senderWidget == ui->shadowPerPixelAccuracyTypeCombobox)
+    {
+        int selectedIndex = senderWidget->currentIndex();
+        return CustomProcessComboboxValueChanged(iter, BackgroundGridWidgetHelper::GetPerPixelAccuracyType(selectedIndex));
+    }
 
     // No postprocessing was applied - use the generic process.
     TextPropertyGridWidget::ProcessComboboxValueChanged(senderWidget, iter, value);
@@ -288,14 +312,25 @@ void UIStaticTextPropertyGridWidget::FillComboboxes()
 
     WidgetSignalsBlocker fontColorInheritTypeBlocker(ui->fontColorInheritTypeCombobox);
     WidgetSignalsBlocker shadowColorInheritTypeBlocker(ui->shadowColorInheritTypeCombobox);
+    WidgetSignalsBlocker fontPerPixelAccuracyTypeBlocker(ui->fontPerPixelAccuracyTypeCombobox);
+    WidgetSignalsBlocker shadowPerPixelAccuracyTypeBlocker(ui->shadowPerPixelAccuracyTypeCombobox);
     
     ui->fontColorInheritTypeCombobox->clear();
     ui->shadowColorInheritTypeCombobox->clear();
+    ui->fontPerPixelAccuracyTypeCombobox->clear();
+    ui->shadowPerPixelAccuracyTypeCombobox->clear();
 
     int32 itemsCount = BackgroundGridWidgetHelper::GetColorInheritTypesCount();
     for (int i = 0; i < itemsCount; i ++)
     {
         ui->fontColorInheritTypeCombobox->addItem(BackgroundGridWidgetHelper::GetColorInheritTypeDesc(i));
         ui->shadowColorInheritTypeCombobox->addItem(BackgroundGridWidgetHelper::GetColorInheritTypeDesc(i));
+    }
+    
+    itemsCount = BackgroundGridWidgetHelper::GetPerPixelAccuracyTypesCount();
+    for (int i = 0; i < itemsCount; i ++)
+    {
+        ui->fontPerPixelAccuracyTypeCombobox->addItem(BackgroundGridWidgetHelper::GetPerPixelAccuracyTypeDesc(i));
+        ui->shadowPerPixelAccuracyTypeCombobox->addItem(BackgroundGridWidgetHelper::GetPerPixelAccuracyTypeDesc(i));
     }
 }

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>357</width>
-    <height>847</height>
+    <height>913</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -347,6 +347,26 @@ Inherit Type:</string>
        </widget>
       </item>
       <item>
+       <widget class="QWidget" name="fontPerPixelAccuracyTypeWidget" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout_19">
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="fontPerPixelAccuracyLabel">
+           <property name="text">
+            <string>Font
+Per Pixel Accuracy Type:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="fontPerPixelAccuracyTypeCombobox"/>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
        <widget class="QWidget" name="shadowOffsetWidget" native="true">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
@@ -477,6 +497,26 @@ Inherit Type:</string>
          </item>
          <item>
           <widget class="QComboBox" name="shadowColorInheritTypeCombobox"/>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="shadowColorInheritWidget_2" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout_20">
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="shadowPerPixelAccuracyLabel">
+           <property name="text">
+            <string>Shadow
+Per Pixel Accuracy Type:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="shadowPerPixelAccuracyTypeCombobox"/>
          </item>
         </layout>
        </widget>

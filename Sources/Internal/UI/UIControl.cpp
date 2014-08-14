@@ -2295,6 +2295,14 @@ namespace DAVA
         {
             node->Set("colorInherit", loader->GetColorInheritTypeNodeValue(colorInheritType));
         }
+        
+        // Per pixel accuracy
+        UIControlBackground::ePerPixelAccuracyType perPixelAccuracyType =  this->GetBackground()->GetPerPixelAccuracyType();
+        if (baseControl->GetBackground()->GetPerPixelAccuracyType() != perPixelAccuracyType)
+        {
+            node->Set("perPixelAccuracy", loader->GetPerPixelAccuracyTypeNodeValue(perPixelAccuracyType));
+        }
+        
         // Draw type, obligatory for UI controls.
         UIControlBackground::eDrawType drawType =  this->GetBackground()->GetDrawType();
         node->Set("drawType", loader->GetDrawTypeNodeValue(drawType));
@@ -2355,6 +2363,7 @@ namespace DAVA
         const YamlNode * bottomAlignNode = node->Get("bottomAlign");
         const YamlNode * pivotNode = node->Get("pivot");
         const YamlNode * colorInheritNode = node->Get("colorInherit");
+        const YamlNode * perPixelAccuracyTypeNode = node->Get("perPixelAccuracy");
 
         const YamlNode * drawTypeNode = node->Get("drawType");
         const YamlNode * leftRightStretchCapNode = node->Get("leftRightStretchCap");
@@ -2493,6 +2502,12 @@ namespace DAVA
         {
             UIControlBackground::eColorInheritType type = (UIControlBackground::eColorInheritType)loader->GetColorInheritTypeFromNode(colorInheritNode);
             GetBackground()->SetColorInheritType(type);
+        }
+        
+        if(perPixelAccuracyTypeNode)
+        {
+            UIControlBackground::ePerPixelAccuracyType type = (UIControlBackground::ePerPixelAccuracyType)loader->GetPerPixelAccuracyTypeFromNode(perPixelAccuracyTypeNode);
+            GetBackground()->SetPerPixelAccuracyType(type);
         }
 
         if(drawTypeNode)
