@@ -44,7 +44,7 @@ RenderDataStream::RenderDataStream()
     stride = 0;
     pointer = 0;
     
-#if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+#if defined (__DAVAENGINE_ANDROID__)
     savedPointerData = NULL;
 #endif //#if defined (__DAVAENGINE_ANDROID__)
 }
@@ -60,7 +60,7 @@ void RenderDataStream::Set(eVertexDataType _type, int32 _size, int32 _stride, co
     stride = _stride;
     pointer = _pointer;
     
-#if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+#if defined (__DAVAENGINE_ANDROID__)
     savedPointerData = pointer;
 #endif //#if defined (__DAVAENGINE_ANDROID__)
 
@@ -73,7 +73,7 @@ RenderDataObject::RenderDataObject()
     vboBuffer = 0;
     vertexAttachmentActive = false;
     
-#if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+#if defined (__DAVAENGINE_ANDROID__)
     savedVertexCount = 0;
     savedIndices = NULL;
     isLost = false;
@@ -223,9 +223,9 @@ void RenderDataObject::BuildVertexBufferInternal(BaseObject * caller, void * par
     RENDER_VERIFY(RenderManager::Instance()->HWglBindBuffer(GL_ARRAY_BUFFER, vboBuffer));
 
 	int32 vertexCount = (int32)((int64)param);
-#if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+#if defined (__DAVAENGINE_ANDROID__)
     savedVertexCount = vertexCount;
-#endif
+#endif //#if defined (__DAVAENGINE_ANDROID__)
     RENDER_VERIFY(glBufferData(GL_ARRAY_BUFFER, vertexCount * stride, streamArray[0]->pointer, GL_STATIC_DRAW));
 
     streamArray[0]->pointer = 0;
@@ -245,7 +245,7 @@ void RenderDataObject::SetIndices(eIndexFormat _format, uint8 * _indices, int32 
     indexCount = _count;
     indices = _indices;
     
-#if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+#if defined (__DAVAENGINE_ANDROID__)
     savedIndices = indices;
 #endif //#if defined (__DAVAENGINE_ANDROID__)
 }
@@ -267,7 +267,7 @@ void RenderDataObject::BuildIndexBufferInternal(BaseObject * caller, void * para
 #if defined (__DAVAENGINE_OPENGL__)
     
     
-#if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+#if defined (__DAVAENGINE_ANDROID__)
     buildIndexBuffer = true;
 #endif
     
@@ -344,7 +344,7 @@ void RenderDataObject::DetachVertices()
     vertexAttachmentActive = false;
 }
 
-#if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+#if defined (__DAVAENGINE_ANDROID__)
 void RenderDataObject::SaveToSystemMemory()
 {
 }
