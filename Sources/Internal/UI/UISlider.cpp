@@ -507,13 +507,14 @@ void UISlider::SaveBackground(const char* prefix, UIControlBackground* backgroun
     rootNode->Set(Format("%sdrawType", prefix), loader->GetDrawTypeNodeValue(drawType));
 
     // Stretch Cap.
-    int32 leftRightStretchCap = background->GetLeftRightStretchCap();
-    if (baseBackground->GetLeftRightStretchCap() != leftRightStretchCap)
+    float32 leftRightStretchCap = background->GetLeftRightStretchCap();
+    if (!FLOAT_EQUAL(baseBackground->GetLeftRightStretchCap(), leftRightStretchCap))
     {
         rootNode->Set(Format("%sleftRightStretchCap", prefix), leftRightStretchCap);
-        }
-    int32 topBottomStretchCap = background->GetTopBottomStretchCap();
-    if (baseBackground->GetTopBottomStretchCap() != topBottomStretchCap)
+    }
+
+    float32 topBottomStretchCap = background->GetTopBottomStretchCap();
+    if (!FLOAT_EQUAL(baseBackground->GetTopBottomStretchCap(), topBottomStretchCap))
     {
         rootNode->Set(Format("%stopBottomStretchCap", prefix), topBottomStretchCap);
     }
