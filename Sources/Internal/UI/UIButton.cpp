@@ -405,12 +405,15 @@ void UIButton::Draw(const UIGeometricData &geometricData)
         selectedBackground->Draw(geometricData);
     if (selectedTextBlock)
     {
-        UIGeometricData textGeometricData = geometricData;
-        textGeometricData.position.x += textMargins.left;
-        textGeometricData.position.y += textMargins.top;
-        textGeometricData.size.x -= textMargins.right;
-        textGeometricData.size.y -= textMargins.bottom;
-        selectedTextBlock->Draw(textGeometricData);
+        UIGeometricData drawData;
+        drawData.position = Vector2(textMargins.left, textMargins.top);
+        drawData.size = geometricData.size + Vector2(-(textMargins.right + textMargins.left), -(textMargins.bottom + textMargins.top));
+        drawData.pivotPoint = geometricData.pivotPoint;
+        drawData.scale = geometricData.scale;
+        drawData.angle = geometricData.angle;
+        drawData.AddToGeometricData(geometricData);
+    
+        selectedTextBlock->Draw(drawData);
     }
 }
 
@@ -868,6 +871,10 @@ void UIButton::UpdateStateTextControlSize()
     
 void UIButton::SetTextMargins(const UIMargins& margins)
 {
+    const Rect& rect = GetRect();
+    DVASSERT(margins.left + margins.right <= rect.dx);
+    DVASSERT(margins.top + margins.bottom <= rect.dy);
+
     textMargins = margins;
 }
     

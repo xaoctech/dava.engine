@@ -57,6 +57,12 @@ protected:
                                                   const PROPERTYGRIDWIDGETSITER &iter,
                                                   const double value);
     
+    // Update the UI.
+    void UpdateUI();
+    
+    // Update the maximum margin values depending on current ones and size.
+    void UpdateMaxMarginValues();
+
     // The "Reset Margins" button is visible only if at least one of the
     // margins is not zero.
     void UpdateResetMarginsButtonVisible();
