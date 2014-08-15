@@ -297,31 +297,33 @@ int DoPatch(DAVA::PatchFileReader *reader, const DAVA::FilePath &origBase, const
 {
     int ret = 0;
 
-    DAVA::PatchFileReader::PatchError patchError = reader->Apply(origBase, origPath, newBase, newPath);
-    if(patchError != DAVA::PatchFileReader::ERROR_NO)
+    if(!reader->Apply(origBase, origPath, newBase, newPath))
     {
+        DAVA::PatchFileReader::PatchError patchError = reader->GetLastError();
         ret = 1;
 
         switch(patchError)
         {
-            case DAVA::PatchFileReader::ERROR_PATCHED:
-                ret = 0; // not an error
-                printf("%s is already patched.\n", reader->GetCurInfo()->newPath.c_str());
-                break;
             case DAVA::PatchFileReader::ERROR_EMPTY_PATCH: 
                 printf("ERROR_EMPTY_PATCH"); 
                 break;
-            case DAVA::PatchFileReader::ERROR_ORIG_PATH: 
+            case DAVA::PatchFileReader::ERROR_ORIG_READ: 
                 printf("ERROR_ORIG_PATH"); 
                 break;
             case DAVA::PatchFileReader::ERROR_ORIG_CRC: 
                 printf("ERROR_ORIG_CRC"); 
                 break;
-            case DAVA::PatchFileReader::ERROR_NEW_PATH: 
+            case DAVA::PatchFileReader::ERROR_NEW_WRITE: 
                 printf("ERROR_NEW_PATH"); 
                 break;
             case DAVA::PatchFileReader::ERROR_NEW_CRC: 
                 printf("ERROR_NEW_CRC"); 
+                break;
+            case DAVA::PatchFileReader::ERROR_CANT_READ:
+                printf("ERROR_CANT_READ"); 
+                break;
+            case DAVA::PatchFileReader::ERROR_CORRUPTED:
+                printf("ERROR_CORRUPTED"); 
                 break;
             case DAVA::PatchFileReader::ERROR_UNKNOWN: 
             default:
