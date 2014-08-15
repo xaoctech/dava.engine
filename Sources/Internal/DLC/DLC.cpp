@@ -463,7 +463,7 @@ void DLC::StepCheckInfoFinish(const uint32 &id, const DownloadStatus &status)
                     // connection problem
                     PostError(DE_CONNECT_ERROR);
                 }
-                else if(downloadError = DLE_FILE_ERROR)
+                else if(downloadError == DLE_FILE_ERROR)
                 {
                     // writing file problem
                     PostError(DE_WRITE_ERROR);
@@ -536,7 +536,7 @@ void DLC::StepCheckPatchFinish(const uint32 &id, const DownloadStatus &status)
                         // connection problem
                         PostError(DE_CONNECT_ERROR);
                     }
-                    else if(downloadErrorFull = DLE_FILE_ERROR)
+                    else if(downloadErrorFull == DLE_FILE_ERROR)
                     {
                         // writing file problem
                         PostError(DE_WRITE_ERROR);
@@ -680,7 +680,7 @@ void DLC::StepDownloadPatchFinish(const uint32 &id, const DownloadStatus &status
                     // connection problem
                     PostError(DE_CONNECT_ERROR);
                 }
-                else if(downloadError = DLE_FILE_ERROR)
+                else if(downloadError == DLE_FILE_ERROR)
                 {
                     // writing file problem
                     PostError(DE_WRITE_ERROR);
