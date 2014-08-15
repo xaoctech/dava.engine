@@ -29,11 +29,12 @@ void SceneProcessor::SetEntityProcessor(EntityProcessorBase *_entityProcessor)
     entityProcessor = _entityProcessor;
 }
 
-void SceneProcessor::Execute(DAVA::Scene *currentScene)
+bool SceneProcessor::Execute(DAVA::Scene *currentScene)
 {
     if (!entityProcessor)
     {
-        return;
+        Logger::Warning("%s need to set EntityProcessor", __FUNCTION__);
+        return false;
     }
 
     entityProcessor->Init();
@@ -43,20 +44,22 @@ void SceneProcessor::Execute(DAVA::Scene *currentScene)
     StringSet refToOwnerSet;
 
     const bool needProcessExternal = entityProcessor->NeedProcessExternal();
+    bool sceneModified = false;
 
     for (int32 index = 0; index < childrenCount; index++)
     {
         Entity *currentEntity = currentScene->GetChild(index);
 
         bool entityModified = entityProcessor->ProcessEntity(currentEntity, currentEntity->GetName(), false);
-       
+        sceneModified = sceneModified || entityModified;
         if (entityModified && needProcessExternal)
         {
             CustomPropertiesComponent *customProperties = static_cast<CustomPropertiesComponent*>(currentEntity->GetComponent(Component::CUSTOM_PROPERTIES_COMPONENT));
             KeyedArchive *props = customProperties->GetArchive();
             if (!props->IsKeyExists("editor.referenceToOwner"))
             {
-                return;
+                Logger::Error("%s editor.referenceToOwner not found for %s", __FUNCTION__, currentEntity->GetName().c_str());
+                continue;
             }
 
             const String referenceToOwner = props->GetString("editor.referenceToOwner");
@@ -79,4 +82,5 @@ void SceneProcessor::Execute(DAVA::Scene *currentScene)
     }
 
     entityProcessor->Finalize();
+    return sceneModified;
 }
