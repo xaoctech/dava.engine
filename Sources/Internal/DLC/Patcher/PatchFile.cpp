@@ -467,7 +467,7 @@ bool PatchFileReader::ReadNext()
     return ret;
 }
 
-const PatchInfo* PatchFileReader::GetCurInfo()
+const PatchInfo* PatchFileReader::GetCurInfo() const
 {
     const PatchInfo* ret = NULL;
 
@@ -479,9 +479,16 @@ const PatchInfo* PatchFileReader::GetCurInfo()
     return ret;
 }
 
+PatchFileReader::PatchError PatchFileReader::GetLastError() const
+{
+    return lastError;
+}
+
 bool PatchFileReader::DoRead()
 {
     bool ret = false;
+    lastError = ERROR_NO;
+
     char8 signature[sizeof(davaPatchSignature) - 1];
 
     signature[0] = 0;
@@ -491,30 +498,43 @@ bool PatchFileReader::DoRead()
     // seek to next patch
     patchFile->Seek(curInfoPos + curPatchSize, File::SEEK_FROM_START);
 
-    patchFile->Read(signature, sizeof(davaPatchSignature) - 1);
-    if(0 == memcmp(signature, davaPatchSignature, sizeof(davaPatchSignature) -1))
+    uint32 signatureSize = sizeof(davaPatchSignature) - 1;
+    uint32 readSize = patchFile->Read(signature, signatureSize);
+    if(signatureSize == readSize)
     {
-        patchFile->Read(&curPatchSize);
-
-        if(curPatchSize > 0)
+        if(0 == memcmp(signature, davaPatchSignature, signatureSize))
         {
-            curInfoPos = patchFile->GetPos();
-
-            // read header
-            if(curInfo.Read(patchFile))
+            if( sizeof(curPatchSize) == patchFile->Read(&curPatchSize) &&
+                curPatchSize > 0)
             {
-                curDiffPos = patchFile->GetPos();
-                ret = true;
+                curInfoPos = patchFile->GetPos();
+
+                // read header
+                if(curInfo.Read(patchFile))
+                {
+                    curDiffPos = patchFile->GetPos();
+                    ret = true;
+                }
             }
+        }
+    }
+
+    if(!ret)
+    {
+        // if something was read, but not parsed - this is corrupted patch file.
+        if(readSize != 0)
+        {
+            lastError = ERROR_CORRUPTED;
         }
     }
 
     return ret;
 }
 
-PatchFileReader::PatchError PatchFileReader::Apply(const FilePath &_origBase, const FilePath &_origPath, const FilePath &_newBase, const FilePath &_newPath)
+bool PatchFileReader::Apply(const FilePath &_origBase, const FilePath &_origPath, const FilePath &_newBase, const FilePath &_newPath)
 {
-    PatchError ret = ERROR_NO;
+    bool ret = true;
+    lastError = ERROR_NO;
 
     FilePath origBase = _origBase;
     FilePath newBase = _newBase;
@@ -531,7 +551,8 @@ PatchFileReader::PatchError PatchFileReader::Apply(const FilePath &_origBase, co
 
     if(0 == curDiffPos)
     {
-        return ERROR_EMPTY_PATCH;
+        lastError = ERROR_EMPTY_PATCH;
+        return false;
     }
 
     if(verbose)
@@ -570,7 +591,12 @@ PatchFileReader::PatchError PatchFileReader::Apply(const FilePath &_origBase, co
                     // file exists, so check it size and CRC
                     if(checkSize == curInfo.newSize && checkCRC == curInfo.newCRC)
                     {
-                        return ERROR_PATCHED;
+                        if(origPath != newPath)
+                        {
+                            FileSystem::Instance()->CopyFile(origPath, newPath, true);
+                        }
+
+                        return true;
                     }
                 }
             }
@@ -581,25 +607,36 @@ PatchFileReader::PatchError PatchFileReader::Apply(const FilePath &_origBase, co
                 File* origFile = File::Create(origPath, File::OPEN | File::READ);
                 if(NULL == origFile)
                 {
-                    ret = ERROR_ORIG_PATH;
+                    lastError = ERROR_ORIG_READ;
                 }
                 else
                 {
                     uint32 origSize = origFile->GetSize();
                     origData = new char8[origSize];
-                    origFile->Read(origData, origSize);
-                    origFile->Release();
-                    uint32 origCRC = CRC32::ForBuffer(origData, origSize);
 
-                    if(origSize != curInfo.origSize || origCRC != curInfo.origCRC)
+                    if(origSize != origFile->Read(origData, origSize))
                     {
-                        // source crc differ for expected
-                        ret = ERROR_ORIG_CRC;
+                        lastError = ERROR_ORIG_READ;
+                        ret = false;
+                    }
+
+                    origFile->Release();
+
+                    // if there was no errors when reading patch file, check for read data CRC
+                    if(ret)
+                    {
+                        uint32 origCRC = CRC32::ForBuffer(origData, origSize);
+                        if(origSize != curInfo.origSize || origCRC != curInfo.origCRC)
+                        {
+                            // source crc differ for expected
+                            lastError = ERROR_ORIG_CRC;
+                            ret = false;
+                        }
                     }
                 }
             }
 
-            if(ret == ERROR_NO)
+            if(ret)
             {
                 // is this patch for directory creation?
                 if(newPath.IsDirectoryPathname() && curInfo.newSize == 0 && curInfo.newCRC == 0)
@@ -618,7 +655,8 @@ PatchFileReader::PatchError PatchFileReader::Apply(const FilePath &_origBase, co
                     File* newFile = File::Create(tmpNewPath, File::CREATE | File::WRITE);
                     if(NULL == newFile)
                     {
-                        ret = ERROR_NEW_PATH;
+                        lastError = ERROR_NEW_WRITE;
+                        ret = false;
                     }
                     else
                     {
@@ -627,21 +665,35 @@ PatchFileReader::PatchError PatchFileReader::Apply(const FilePath &_origBase, co
                             newData = new char8[curInfo.newSize];
                             if(BSDiff::Patch(origData, curInfo.origSize, newData, curInfo.newSize, patchFile))
                             {
-                                newFile->Write(newData, curInfo.newSize);
+                                if(curInfo.newSize != newFile->Write(newData, curInfo.newSize))
+                                {
+                                    lastError = ERROR_NEW_WRITE;
+                                    ret = false;
+                                }
                             }
                         }
                         newFile->Release();
 
-                        if(curInfo.newCRC != CRC32::ForFile(tmpNewPath))
+                        // if no errors - check for new file CRC
+                        if(ret)
                         {
-                            ret = ERROR_NEW_CRC;
+                            if(curInfo.newCRC != CRC32::ForFile(tmpNewPath))
+                            {
+                                lastError = ERROR_NEW_CRC;
+                                ret = false;
+                            }
                         }
-                        else
+
+                        // if no errors - move tmp file into destination path
+                        if(ret)
                         {
                             // this operation should be atomic
                             if(!FileSystem::Instance()->MoveFile(tmpNewPath, newPath, true))
                             {
-                                ret = ERROR_APPLY;
+                                lastError = ERROR_APPLY;
+                                ret = false;
+
+                                FileSystem::Instance()->DeleteFile(tmpNewPath);
                             }
                         }
                     }
@@ -661,11 +713,12 @@ PatchFileReader::PatchError PatchFileReader::Apply(const FilePath &_origBase, co
                 uint32 origCRC = CRC32::ForFile(origPath);
                 if(origCRC != curInfo.origCRC)
                 {
-                    ret = ERROR_ORIG_CRC;
+                    lastError = ERROR_ORIG_CRC;
+                    ret = false;
                 }
             }
 
-            if(ret == ERROR_NO)
+            if(ret)
             {
                 // check if file exists in new basePath
                 FilePath newPathToDelete = newPath;
@@ -679,14 +732,16 @@ PatchFileReader::PatchError PatchFileReader::Apply(const FilePath &_origBase, co
                     // delete only empty directory
                     if(!FileSystem::Instance()->DeleteDirectory(newPathToDelete))
                     {
-                        ret = ERROR_APPLY;
+                        lastError = ERROR_APPLY;
+                        ret = false;
                     }
                 }
                 else
                 {
                     if(!FileSystem::Instance()->DeleteFile(newPathToDelete))
                     {
-                        ret = ERROR_APPLY;
+                        lastError = ERROR_APPLY;
+                        ret = false;
                     }
                 }
             }

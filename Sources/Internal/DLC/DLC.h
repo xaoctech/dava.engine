@@ -32,6 +32,7 @@
 #include "Base/BaseTypes.h"
 #include "Platform/Thread.h"
 #include "Downloader/DownloaderCommon.h"
+#include "Patcher/PatchFile.h"
 
 namespace DAVA
 {
@@ -46,8 +47,10 @@ public:
         DE_WAS_CANCELED,
         DE_INIT_ERROR,
         DE_CHECK_ERROR,
-        DE_DOWNLOAD_ERROR,
+        DE_READ_ERROR,
+        DE_WRITE_ERROR,
         DE_CONNECT_ERROR,
+        DE_DOWNLOAD_ERROR,
         DE_PATCH_ERROR_LITE,
         DE_PATCH_ERROR_FULL
     };
@@ -119,21 +122,16 @@ public:
 protected:
     enum DLCEvent
     {
+        EVENT_ERROR,
         EVENT_CANCEL,
-        EVENT_CONNECT_ERROR,
         EVENT_CHECK_START,
         EVENT_CHECK_ONLY,
         EVENT_CHECK_OK,
-        EVENT_CHECK_ERROR,
         EVENT_DOWNLOAD_START,
         EVENT_DOWNLOAD_OK,
-        EVENT_DOWNLOAD_ERROR,
         EVENT_PATCH_START,
         EVENT_PATCH_OK,
-        EVENT_PATCH_ERROR_LITE,
-        EVENT_PATCH_ERROR_FULL,
-        EVENT_CLEAN_OK,
-        EVENT_CANCEL_OK
+        EVENT_CLEAN_OK
     };
     
     struct DLCContext
@@ -167,7 +165,8 @@ protected:
 
         uint32 patchCount;
         uint32 patchIndex;
-        bool patchingOk;
+        bool patchInProgress;
+        PatchFileReader::PatchError patchingError;
 
         FilePath stateInfoStorePath;
         FilePath downloadInfoStorePath;
@@ -185,6 +184,8 @@ protected:
     Thread *patchingThread;
 
     void PostEvent(DLCEvent event);
+    void PostError(DLCError error);
+
     void FSM(DLCEvent event);
 
     void StepCheckInfoBegin();
@@ -220,7 +221,6 @@ protected:
     
 private:
     void PostEventJob(BaseObject *caller, void *callerData, void *userData);
-    bool IsConnectError(DownloadError err) const;
 };
 
 }
