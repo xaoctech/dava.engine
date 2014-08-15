@@ -5,7 +5,7 @@ using namespace DAVA;
 namespace
 {
 
-    typedef std::set<String> StringSet;
+typedef std::set<String> StringSet;
 
 }
 
