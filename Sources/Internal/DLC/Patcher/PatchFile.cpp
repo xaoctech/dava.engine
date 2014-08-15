@@ -502,7 +502,7 @@ bool PatchFileReader::DoRead()
     uint32 readSize = patchFile->Read(signature, signatureSize);
     if(signatureSize == readSize)
     {
-        if(0 == memcmp(signature, davaPatchSignature, signatureSize))
+        if(0 == Memcmp(signature, davaPatchSignature, signatureSize))
         {
             if( sizeof(curPatchSize) == patchFile->Read(&curPatchSize) &&
                 curPatchSize > 0)
@@ -522,7 +522,7 @@ bool PatchFileReader::DoRead()
     if(!ret)
     {
         // if something was read, but not parsed - this is corrupted patch file.
-        if(readSize != 0)
+        if(0 != readSize)
         {
             lastError = ERROR_CORRUPTED;
         }
@@ -591,11 +591,6 @@ bool PatchFileReader::Apply(const FilePath &_origBase, const FilePath &_origPath
                     // file exists, so check it size and CRC
                     if(checkSize == curInfo.newSize && checkCRC == curInfo.newCRC)
                     {
-                        if(origPath != newPath)
-                        {
-                            FileSystem::Instance()->CopyFile(origPath, newPath, true);
-                        }
-
                         return true;
                     }
                 }
