@@ -46,11 +46,9 @@ class UIStaticTextMetadata : public UITextControlMetadata
     Q_PROPERTY(bool MultilineBySymbol READ GetMultilineBySymbol WRITE SetMultilineBySymbol);
 
     // Font color/shadow color inherit types.
-    Q_PROPERTY(int FontColorInheritType READ GetFontColorInheritType WRITE SetFontColorInheritType);
-    Q_PROPERTY(int ShadowColorInheritType READ GetShadowColorInheritType WRITE SetShadowColorInheritType);
+    Q_PROPERTY(int TextColorInheritType READ GetTextColorInheritType WRITE SetTextColorInheritType);
     // Font/Shadow per pixel accuracy types
-    Q_PROPERTY(int FontPerPixelAccuracyType READ GetFontPerPixelAccuracyType WRITE SetFontPerPixelAccuracyType);
-    Q_PROPERTY(int ShadowPerPixelAccuracyType READ GetShadowPerPixelAccuracyType WRITE SetShadowPerPixelAccuracyType);
+    Q_PROPERTY(int TextPerPixelAccuracyType READ GetTextPerPixelAccuracyType WRITE SetTextPerPixelAccuracyType);
 
 public:
     UIStaticTextMetadata(QObject* parent = 0);
@@ -104,17 +102,12 @@ protected:
     virtual int GetFittingType() const;
     virtual void SetFittingType(int value);
     
-    virtual int GetFontColorInheritType() const;
-    virtual void SetFontColorInheritType(int value);
-
-    virtual int GetShadowColorInheritType() const;
-    virtual void SetShadowColorInheritType(int value);
+    virtual int GetTextColorInheritType() const;
+    virtual void SetTextColorInheritType(int value);
     
-    virtual int GetFontPerPixelAccuracyType() const;
-    virtual void SetFontPerPixelAccuracyType(int value);
+    virtual int GetTextPerPixelAccuracyType() const;
+    virtual void SetTextPerPixelAccuracyType(int value);
 
-    virtual int GetShadowPerPixelAccuracyType() const;
-    virtual void SetShadowPerPixelAccuracyType(int value);
 };
 
 };
