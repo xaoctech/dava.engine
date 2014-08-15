@@ -102,11 +102,12 @@ public:
     enum PatchError
     {
         ERROR_NO = 0,
-        ERROR_PATCHED,      // destination file is already patched
+        ERROR_CANT_READ,    // path file can't be read
+        ERROR_CORRUPTED,    // path file is corrupted
         ERROR_EMPTY_PATCH,  // no data to apply patch
-        ERROR_ORIG_PATH,    // file on origPath can't be opened for reading
+        ERROR_ORIG_READ,    // file on origPath can't be opened for reading
         ERROR_ORIG_CRC,     // file on origPath has wrong crc to apply patch
-        ERROR_NEW_PATH,     // file on newPath can't be opened for writing
+        ERROR_NEW_WRITE,    // file on newPath can't be opened for writing
         ERROR_NEW_CRC,      // file on newPath has wrong crc after applied patch
         ERROR_APPLY,        // patch can't be applied
         ERROR_UNKNOWN
@@ -118,15 +119,15 @@ public:
     bool ReadFirst();
     bool ReadNext();
 
-    const PatchInfo* GetCurInfo();
+    const PatchInfo* GetCurInfo() const;
+    PatchError GetLastError() const;
 
-    // TODO:
-    // description
-    PatchError Apply(const FilePath &origBase, const FilePath &origPath, const FilePath &newBase, const FilePath &newPath);
+    bool Apply(const FilePath &origBase, const FilePath &origPath, const FilePath &newBase, const FilePath &newPath);
 
 protected:
     File *patchFile;
     PatchInfo curInfo;
+    PatchError lastError;
     uint32 curInfoPos;
     uint32 curDiffPos;
     uint32 curPatchSize;

@@ -76,7 +76,7 @@ DLC::DLC(const String &url, const FilePath &sourceDir, const FilePath &destinati
     dlcContext.remotePatchStorePath = workingDir + "Remote.patch";
     dlcContext.remoteMetaStorePath = workingDir + "Remote.meta";
 
-    dlcContext.patchingOk = true;
+    dlcContext.patchInProgress = true;
     dlcContext.patchCount = 0;
     dlcContext.patchIndex = 0;
 
@@ -146,6 +146,12 @@ void DLC::PostEvent(DLCEvent event)
 {
     JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &DLC::PostEventJob, reinterpret_cast<void*>(event)));
 }
+
+void DLC::PostError(DLCError error)
+{
+    dlcError = error;
+    PostEvent(EVENT_ERROR);
+}
     
 void DLC::PostEventJob(BaseObject *caller, void *callerData, void *userData)
 {
@@ -203,12 +209,7 @@ void DLC::FSM(DLCEvent event)
                         dlcState = DS_CLEANING;
                     }
                     break;
-                case EVENT_CHECK_ERROR:
-                    dlcError = DE_CHECK_ERROR;
-                    dlcState = DS_DONE;
-                    break;
-                case EVENT_CONNECT_ERROR:
-                    dlcError = DE_CONNECT_ERROR;
+                case EVENT_ERROR:
                     dlcState = DS_DONE;
                     break;
                 case EVENT_CANCEL:
@@ -226,12 +227,7 @@ void DLC::FSM(DLCEvent event)
                 case EVENT_CHECK_OK:
                     dlcState = DS_CHECKING_META;
                     break;
-                case EVENT_CHECK_ERROR:
-                    dlcError = DE_CHECK_ERROR;
-                    dlcState = DS_DONE;
-                    break;
-                case EVENT_CONNECT_ERROR:
-                    dlcError = DE_CONNECT_ERROR;
+                case EVENT_ERROR:
                     dlcState = DS_DONE;
                     break;
                 case EVENT_CANCEL:
@@ -257,8 +253,7 @@ void DLC::FSM(DLCEvent event)
                         dlcState = DS_READY;
                     }
                     break;
-                case EVENT_CONNECT_ERROR:
-                    dlcError = DE_CONNECT_ERROR;
+                case EVENT_ERROR:
                     dlcState = DS_DONE;
                     break;
                 case EVENT_CANCEL:
@@ -292,12 +287,7 @@ void DLC::FSM(DLCEvent event)
                 case EVENT_DOWNLOAD_OK:
                     dlcState = DS_PATCHING;
                     break;
-                case EVENT_DOWNLOAD_ERROR:
-                    dlcError = DE_DOWNLOAD_ERROR;
-                    dlcState = DS_DONE;
-                    break;
-                case EVENT_CONNECT_ERROR:
-                    dlcError = DE_CONNECT_ERROR;
+                case EVENT_ERROR:
                     dlcState = DS_DONE;
                     break;
                 case EVENT_CANCEL:
@@ -317,12 +307,7 @@ void DLC::FSM(DLCEvent event)
                     fsmAutoReady = true;
                     dlcState = DS_CHECKING_INFO;
                     break;
-                case EVENT_PATCH_ERROR_LITE:
-                    dlcError = DE_PATCH_ERROR_LITE;
-                    dlcState = DS_DONE;
-                    break;
-                case EVENT_PATCH_ERROR_FULL:
-                    dlcError = DE_PATCH_ERROR_FULL;
+                case EVENT_ERROR:
                     dlcState = DS_DONE;
                     break;
                 case EVENT_CANCEL:
@@ -337,14 +322,9 @@ void DLC::FSM(DLCEvent event)
             switch(event)
             {
                 case EVENT_CHECK_OK:
-                case EVENT_CHECK_ERROR:
-                case EVENT_CONNECT_ERROR:
                 case EVENT_DOWNLOAD_OK:
-                case EVENT_DOWNLOAD_ERROR:
                 case EVENT_PATCH_OK:
-                case EVENT_PATCH_ERROR_LITE:
-                case EVENT_PATCH_ERROR_FULL:
-                case EVENT_CANCEL_OK:
+                case EVENT_ERROR:
                     dlcError = DE_WAS_CANCELED;
                     dlcState = DS_DONE;
                     break;
@@ -370,6 +350,11 @@ void DLC::FSM(DLCEvent event)
             break;
         default:
             break;
+    }
+
+    if(event == EVENT_ERROR)
+    {
+        DVASSERT(dlcError != DE_NO_ERROR && "Unhandled error, dlcError is set to NO_ERROR");
     }
 
     if(!eventHandled)
@@ -473,14 +458,20 @@ void DLC::StepCheckInfoFinish(const uint32 &id, const DownloadStatus &status)
             }
             else
             {
-               // check for connection error
-                if(IsConnectError(downloadError))
+                if(downloadError == DLE_COULDNT_RESOLVE_HOST || downloadError == DLE_CANNOT_CONNECT)
                 {
-                    PostEvent(EVENT_CONNECT_ERROR);
+                    // connection problem
+                    PostError(DE_CONNECT_ERROR);
+                }
+                else if(downloadError = DLE_FILE_ERROR)
+                {
+                    // writing file problem
+                    PostError(DE_WRITE_ERROR);
                 }
                 else
                 {
-                    PostEvent(EVENT_CHECK_ERROR);
+                    // some other unexpected error during download process
+                    PostError(DE_DOWNLOAD_ERROR);
                 }
             }
         }
@@ -540,14 +531,20 @@ void DLC::StepCheckPatchFinish(const uint32 &id, const DownloadStatus &status)
                 }
                 else
                 {
-                   // check for connection error
-                    if(IsConnectError(downloadErrorFull))
+                    if(downloadErrorFull == DLE_COULDNT_RESOLVE_HOST || downloadErrorFull == DLE_CANNOT_CONNECT)
                     {
-                        PostEvent(EVENT_CONNECT_ERROR);
+                        // connection problem
+                        PostError(DE_CONNECT_ERROR);
+                    }
+                    else if(downloadErrorFull = DLE_FILE_ERROR)
+                    {
+                        // writing file problem
+                        PostError(DE_WRITE_ERROR);
                     }
                     else
                     {
-                        PostEvent(EVENT_CHECK_ERROR);
+                        // some other unexpected error during download process
+                        PostError(DE_DOWNLOAD_ERROR);
                     }
                 }
             }
@@ -581,14 +578,19 @@ void DLC::StepCheckMetaFinish(const uint32 &id, const DownloadStatus &status)
             DownloadError downloadError;
             DownloadManager::Instance()->GetError(dlcContext.remoteMetaDownloadId, downloadError);
 
-            // check for connection error
-            if(IsConnectError(downloadError))
+            if(downloadError == DLE_COULDNT_RESOLVE_HOST || downloadError == DLE_CANNOT_CONNECT)
             {
-                PostEvent(EVENT_CONNECT_ERROR);
+                // connection problem
+                PostError(DE_CONNECT_ERROR);
+            }
+            else if(downloadError == DLE_FILE_ERROR)
+            {
+                // writing file problem
+                PostError(DE_WRITE_ERROR);
             }
             else
             {
-                // any other status should be thread as OK-status, when for retrieving meta-info file
+                // any other error should be thread as OK-status, when retrieving meta-info file
                 PostEvent(EVENT_CHECK_OK);
             }
         }
@@ -673,14 +675,20 @@ void DLC::StepDownloadPatchFinish(const uint32 &id, const DownloadStatus &status
             }
             else
             {
-                // check for connection error
-                if(IsConnectError(downloadError))
+                if(downloadError == DLE_COULDNT_RESOLVE_HOST || downloadError == DLE_CANNOT_CONNECT)
                 {
-                    PostEvent(EVENT_CONNECT_ERROR);
+                    // connection problem
+                    PostError(DE_CONNECT_ERROR);
+                }
+                else if(downloadError = DLE_FILE_ERROR)
+                {
+                    // writing file problem
+                    PostError(DE_WRITE_ERROR);
                 }
                 else
                 {
-                    PostEvent(EVENT_DOWNLOAD_ERROR);
+                    // some other unexpected error during download process
+                    PostError(DE_DOWNLOAD_ERROR);
                 }
             }
         }
@@ -694,7 +702,8 @@ void DLC::StepDownloadPatchCancel()
 
 void DLC::StepPatchBegin()
 {
-    dlcContext.patchingOk = true;
+    dlcContext.patchingError = PatchFileReader::ERROR_NO;
+    dlcContext.patchInProgress = true;
     dlcContext.patchIndex = 0;
     dlcContext.patchCount = 0;
 
@@ -710,7 +719,6 @@ void DLC::StepPatchBegin()
     }
 
     Logger::Info("DLC: Patching, %d files to patch", dlcContext.patchCount);
-
     patchingThread = Thread::Create(Message(this, &DLC::PatchingThread));
     patchingThread->Start();
 }
@@ -723,26 +731,33 @@ void DLC::StepPatchFinish(BaseObject *caller, void *callerData, void *userData)
     dlcContext.prevState = 0;
     dlcContext.localVer = -1;
 
-    if(dlcContext.patchingOk)
+    if(dlcContext.patchingError == PatchFileReader::ERROR_NO)
     {
         PostEvent(EVENT_PATCH_OK);
     }
     else
     {
-        if(dlcContext.remotePatchUrl == dlcContext.remotePatchFullUrl)
+        if(dlcContext.patchingError == PatchFileReader::ERROR_CANT_READ)
         {
-            PostEvent(EVENT_PATCH_ERROR_FULL);
+            PostError(DE_READ_ERROR);
         }
         else
         {
-            PostEvent(EVENT_PATCH_ERROR_LITE);
+            if(dlcContext.remotePatchUrl == dlcContext.remotePatchFullUrl)
+            {
+                PostError(DE_PATCH_ERROR_FULL);
+            }
+            else
+            {
+                PostError(DE_PATCH_ERROR_LITE);
+            }
         }
     }
 }
 
 void DLC::StepPatchCancel()
 {
-    dlcContext.patchingOk = false;
+    dlcContext.patchInProgress = false;
 }
 
 void DLC::PatchingThread(BaseObject *caller, void *callerData, void *userData)
@@ -752,17 +767,19 @@ void DLC::PatchingThread(BaseObject *caller, void *callerData, void *userData)
     {
         do
         {
-            PatchFileReader::PatchError patchError = patchReader.Apply(dlcContext.localSourceDir, FilePath(), dlcContext.localDestinationDir, FilePath());
-            if(PatchFileReader::ERROR_NO != patchError && PatchFileReader::ERROR_PATCHED != patchError)
+            if(!patchReader.Apply(dlcContext.localSourceDir, FilePath(), dlcContext.localDestinationDir, FilePath()))
             {
-                dlcContext.patchingOk = false;
+                // stop patching process 
+                dlcContext.patchInProgress = false;
             }
 
             dlcContext.patchIndex++;
         }
-        while(dlcContext.patchingOk && patchReader.ReadNext());
+        while(dlcContext.patchInProgress && patchReader.ReadNext());
 
-        if(dlcContext.patchingOk)
+        // check if no errors occurred during patching
+        dlcContext.patchingError = patchReader.GetLastError();
+        if(dlcContext.patchingError == PatchFileReader::ERROR_NO)
         {
             // update local version
             WriteUint32(dlcContext.localVerStorePath, dlcContext.remoteVer);
@@ -770,7 +787,7 @@ void DLC::PatchingThread(BaseObject *caller, void *callerData, void *userData)
     }
     else
     {
-        dlcContext.patchingOk = false;
+        dlcContext.patchInProgress = false;
     }
 
     JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &DLC::StepPatchFinish));
@@ -797,11 +814,6 @@ void DLC::StepDone()
     }
 
     Logger::Info("DLC: Done!");
-}
-
-bool DLC::IsConnectError(DownloadError err) const
-{
-    return (err == DLE_COULDNT_RESOLVE_HOST || err == DLE_CANNOT_CONNECT);
 }
 
 uint32 DLC::ReadUint32(const FilePath &path)
