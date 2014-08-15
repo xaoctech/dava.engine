@@ -23,7 +23,7 @@ public:
     ~SceneProcessor();
 
     void SetEntityProcessor(EntityProcessorBase *_processEntityItem);
-    void Execute(DAVA::Scene *currentScene);
+    bool Execute(DAVA::Scene *currentScene);
 private:
     EntityProcessorBase *entityProcessor;
 };

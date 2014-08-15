@@ -122,7 +122,7 @@
 
 #include "Tools/HeightDeltaTool/HeightDeltaTool.h"
 
-#include "SceneProcessor/EntityProcessors.h"
+#include "SceneProcessing/SceneProcessor.h"
 
 QtMainWindow::QtMainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -2959,9 +2959,12 @@ void QtMainWindow::OnBatchProcessScene()
 {
     SceneProcessor sceneProcessor;
 
-    sceneProcessor.SetEntityProcessor(new DestructibleSoundAdder());
+    // For client developers: need to set entity processor derived from EntityProcessorBase
+    //sceneProcessor.SetEntityProcessor(new DestructibleSoundAdder());
 
     SceneEditor2* sceneEditor = GetCurrentScene();
-    sceneProcessor.Execute(sceneEditor);
-    SaveScene(sceneEditor);
+    if (sceneProcessor.Execute(sceneEditor))
+    {
+        SaveScene(sceneEditor);
+    }
 }
