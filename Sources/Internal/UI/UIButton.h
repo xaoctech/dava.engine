@@ -64,6 +64,12 @@ public:
         inline bool operator == (const UIMargins & value) const;
         inline bool operator != (const UIMargins & value) const;
 
+        inline bool empty() const
+        {
+            return FLOAT_EQUAL(left, 0.0f)  && FLOAT_EQUAL(top, 0.0f) &&
+                   FLOAT_EQUAL(right, 0.0f) && FLOAT_EQUAL(bottom, 0.0f);
+        }
+
         float32 left;
         float32 top;
         float32 right;
@@ -272,14 +278,14 @@ public:
 
     /**
      \brief Sets the text margins for the UIButton's text.
-     \param[in] state state bit mask to set value for.
+     \param[in] state state bit mask to set value for. Can be NULL to disable text margins.
      */
-    void SetTextMargins(const UIMargins& margins);
+    void SetTextMargins(UIMargins* margins);
 
     /**
-     \brief Returns the text margins for the UIButton's text.
+     \brief Returns the text margins for the UIButton's text. Can be NULL.
      */
-    const UIMargins& GetTextMargins() const;
+    UIMargins* GetTextMargins() const;
 
 protected:
     virtual ~UIButton();
@@ -326,7 +332,7 @@ private:
 
     void UpdateStateTextControlSize();
     
-    UIMargins textMargins;
+    UIMargins* textMargins;
 };
 };
 
