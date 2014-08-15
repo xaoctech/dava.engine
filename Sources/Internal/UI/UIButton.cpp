@@ -59,6 +59,7 @@ UIButton::UIButton(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*/)
     , selectedBackground(NULL)
     , selectedTextBlock(NULL)
     , oldControlState(0)
+    , textMargins(NULL)
 {
     for(int32 i = 0; i < DRAW_STATE_COUNT; i++)
     {
@@ -83,6 +84,8 @@ UIButton::~UIButton()
         SafeRelease(stateBacks[i]);
         SafeRelease(stateTexts[i]);
     }
+    
+    SafeDelete(textMargins);
 }
 
 UIButton *UIButton::Clone()
@@ -403,11 +406,21 @@ void UIButton::Draw(const UIGeometricData &geometricData)
 {
     if (selectedBackground)
         selectedBackground->Draw(geometricData);
-    if (selectedTextBlock)
+    
+    if (!selectedTextBlock)
+    {
+        return;
+    }
+
+    if (!textMargins)
+    {
+        selectedTextBlock->Draw(geometricData);
+    }
+    else
     {
         UIGeometricData drawData;
-        drawData.position = Vector2(textMargins.left, textMargins.top);
-        drawData.size = geometricData.size + Vector2(-(textMargins.right + textMargins.left), -(textMargins.bottom + textMargins.top));
+        drawData.position = Vector2(textMargins->left, textMargins->top);
+        drawData.size = geometricData.size + Vector2(-(textMargins->right + textMargins->left), -(textMargins->bottom + textMargins->top));
         drawData.pivotPoint = geometricData.pivotPoint;
         drawData.scale = geometricData.scale;
         drawData.angle = geometricData.angle;
@@ -536,10 +549,13 @@ void UIButton::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
     if (textMarginsNode)
     {
         const Vector4& textMarginsVect = textMarginsNode->AsVector4();
-        textMargins.left = textMarginsVect.x;
-        textMargins.top = textMarginsVect.y;
-        textMargins.right = textMarginsVect.z;
-        textMargins.bottom = textMarginsVect.w;
+        UIButton::UIMargins margins;
+        margins.left = textMarginsVect.x;
+        margins.top = textMarginsVect.y;
+        margins.right = textMarginsVect.z;
+        margins.bottom = textMarginsVect.w;
+        
+        SetTextMargins(&margins);
     }
 
     for (int32 i = 0; i < STATE_COUNT; ++i)
@@ -700,10 +716,11 @@ YamlNode * UIButton::SaveToYamlNode(UIYamlLoader * loader)
     ScopedPtr<UIButton> baseControl( new UIButton() );
 
     // Some properties are not state-aware.
-    const UIMargins& margins = GetTextMargins();
-    if (baseControl->GetTextMargins() != margins)
+    UIMargins* margins = GetTextMargins();
+    if (margins)
     {
-        Vector4 textMarginsVect(margins.left, margins.top, margins.right, margins.bottom);
+        // No need to compare with base control, since UIMargins are NULL by default.
+        Vector4 textMarginsVect(margins->left, margins->top, margins->right, margins->bottom);
         VariantType textMarginsVariant(textMarginsVect);
         node->Set("textMargins", &textMarginsVariant);
     }
@@ -869,16 +886,30 @@ void UIButton::UpdateStateTextControlSize()
     }
 }
     
-void UIButton::SetTextMargins(const UIMargins& margins)
+void UIButton::SetTextMargins(UIMargins* margins)
 {
-    const Rect& rect = GetRect();
-    DVASSERT(margins.left + margins.right <= rect.dx);
-    DVASSERT(margins.top + margins.bottom <= rect.dy);
+    if (!margins ||margins->empty())
+    {
+        SafeDelete(textMargins);
+        return;
+    }
 
-    textMargins = margins;
+    if (!textMargins)
+    {
+        textMargins = new UIButton::UIMargins();
+    }
+
+    const Rect& rect = GetRect();
+    DVASSERT(margins->left + margins->right <= rect.dx);
+    DVASSERT(margins->top + margins->bottom <= rect.dy);
+   
+    textMargins->left = margins->left;
+    textMargins->top = margins->top;
+    textMargins->right = margins->right;
+    textMargins->bottom = margins->bottom;
 }
     
-const UIButton::UIMargins& UIButton::GetTextMargins() const
+UIButton::UIMargins* UIButton::GetTextMargins() const
 {
     return textMargins;
 }

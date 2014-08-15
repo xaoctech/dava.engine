@@ -47,11 +47,12 @@ class UIButtonMetadata : public UITextControlMetadata
 public:
     UIButtonMetadata(QObject* parent = 0);    
 
+    Q_PROPERTY(bool MarginsEnabled READ GetMarginsEnabled WRITE SetMarginsEnabled);
+    Q_PROPERTY(QRectF UIMargins READ GetTextMargins WRITE SetTextMargins);
     Q_PROPERTY(float UIMarginLeft READ GetLeftTextMargin WRITE SetLeftTextMargin);
 	Q_PROPERTY(float UIMarginTop READ GetTopTextMargin WRITE SetTopTextMargin);
 	Q_PROPERTY(float UIMarginRight READ GetRightTextMargin WRITE SetRightTextMargin);
 	Q_PROPERTY(float UIMarginBottom READ GetBottomTextMargin WRITE SetBottomTextMargin);
-    Q_PROPERTY(QRectF UIMargins READ GetTextMargins WRITE SetTextMargins);
 
 protected:
     virtual bool GetInitialInputEnabled() const {return true;};
@@ -188,6 +189,9 @@ protected:
     void UpdatePropertyDirtyFlagForTopBottomStretchCap();
     
     // Text Margins.
+    bool GetMarginsEnabled() const;
+    void SetMarginsEnabled(bool value);
+
     QRectF GetTextMargins();
     void SetTextMargins(const QRectF& marginsRect);
 
@@ -202,6 +206,9 @@ protected:
 
     float GetBottomTextMargin() const;
     void SetBottomTextMargin(float value);
+
+    // Get the margins from the button for updating.
+    UIButton::UIMargins GetTextMarginsToUpdate();
 
     // Recover dirty flags.
     void RecoverPropertyDirtyFlags();

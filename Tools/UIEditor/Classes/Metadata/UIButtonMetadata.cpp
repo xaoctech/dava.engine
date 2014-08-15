@@ -979,6 +979,34 @@ void UIButtonMetadata::UpdatePropertyDirtyFlagForTopBottomStretchCap()
 }
 
 // Text Margins.
+bool UIButtonMetadata::GetMarginsEnabled() const
+{
+    if (!VerifyActiveParamID())
+    {
+        return false;
+    }
+    
+    return (GetActiveUIButton()->GetTextMargins() != NULL);
+}
+
+void UIButtonMetadata::SetMarginsEnabled(bool value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+
+    if (value)
+    {
+        UIButton::UIMargins emptyMargins;
+        GetActiveUIButton()->SetTextMargins(&emptyMargins);
+    }
+    else
+    {
+        GetActiveUIButton()->SetTextMargins(NULL);
+    }
+}
+
 QRectF UIButtonMetadata::GetTextMargins()
 {
     if (!VerifyActiveParamID())
@@ -986,9 +1014,14 @@ QRectF UIButtonMetadata::GetTextMargins()
         return QRectF();
     }
 
-    const UIButton::UIMargins& margins = GetActiveUIButton()->GetTextMargins();
-    return QRectF(margins.left, margins.top, margins.right - margins.left,
-                      margins.bottom - margins.top);
+    UIButton::UIMargins* margins = GetActiveUIButton()->GetTextMargins();
+    if (!margins)
+    {
+        return QRectF();
+    }
+
+    return QRectF(margins->left, margins->top, margins->right - margins->left,
+                      margins->bottom - margins->top);
 }
 
 void UIButtonMetadata::SetTextMargins(const QRectF& marginsRect)
@@ -1004,7 +1037,7 @@ void UIButtonMetadata::SetTextMargins(const QRectF& marginsRect)
     margins.right = marginsRect.right();
     margins.bottom = marginsRect.bottom();
 
-    GetActiveUIButton()->SetTextMargins(margins);
+    GetActiveUIButton()->SetTextMargins(&margins);
 }
 
 float UIButtonMetadata::GetLeftTextMargin() const
@@ -1014,8 +1047,8 @@ float UIButtonMetadata::GetLeftTextMargin() const
         return 0.0f;
     }
     
-    const UIButton::UIMargins& margins = GetActiveUIButton()->GetTextMargins();
-    return margins.left;
+    UIButton::UIMargins* margins = GetActiveUIButton()->GetTextMargins();
+    return margins ? margins->left : 0.0f;
 }
 
 void UIButtonMetadata::SetLeftTextMargin(float value)
@@ -1025,9 +1058,9 @@ void UIButtonMetadata::SetLeftTextMargin(float value)
         return;
     }
     
-    UIButton::UIMargins margins = GetActiveUIButton()->GetTextMargins();
+    UIButton::UIMargins margins = GetTextMarginsToUpdate();
     margins.left = value;
-    GetActiveUIButton()->SetTextMargins(margins);
+    GetActiveUIButton()->SetTextMargins(&margins);
 }
 
 float UIButtonMetadata::GetTopTextMargin() const
@@ -1037,8 +1070,8 @@ float UIButtonMetadata::GetTopTextMargin() const
         return 0.0f;
     }
     
-    const UIButton::UIMargins& margins = GetActiveUIButton()->GetTextMargins();
-    return margins.top;
+    UIButton::UIMargins* margins = GetActiveUIButton()->GetTextMargins();
+    return margins ? margins->top : 0.0f;
 }
 
 void UIButtonMetadata::SetTopTextMargin(float value)
@@ -1048,9 +1081,9 @@ void UIButtonMetadata::SetTopTextMargin(float value)
         return;
     }
     
-    UIButton::UIMargins margins = GetActiveUIButton()->GetTextMargins();
+    UIButton::UIMargins margins = GetTextMarginsToUpdate();
     margins.top = value;
-    GetActiveUIButton()->SetTextMargins(margins);
+    GetActiveUIButton()->SetTextMargins(&margins);
 }
 
 float UIButtonMetadata::GetRightTextMargin() const
@@ -1060,8 +1093,8 @@ float UIButtonMetadata::GetRightTextMargin() const
         return 0.0f;
     }
     
-    const UIButton::UIMargins& margins = GetActiveUIButton()->GetTextMargins();
-    return margins.right;
+    UIButton::UIMargins* margins = GetActiveUIButton()->GetTextMargins();
+    return margins ? margins->right : 0.0f;
 }
 
 void UIButtonMetadata::SetRightTextMargin(float value)
@@ -1071,9 +1104,9 @@ void UIButtonMetadata::SetRightTextMargin(float value)
         return;
     }
     
-    UIButton::UIMargins margins = GetActiveUIButton()->GetTextMargins();
+    UIButton::UIMargins margins = GetTextMarginsToUpdate();
     margins.right = value;
-    GetActiveUIButton()->SetTextMargins(margins);
+    GetActiveUIButton()->SetTextMargins(&margins);
 }
 
 float UIButtonMetadata::GetBottomTextMargin() const
@@ -1083,8 +1116,8 @@ float UIButtonMetadata::GetBottomTextMargin() const
         return 0.0f;
     }
     
-    const UIButton::UIMargins& margins = GetActiveUIButton()->GetTextMargins();
-    return margins.bottom;
+    UIButton::UIMargins* margins = GetActiveUIButton()->GetTextMargins();
+    return margins ? margins->bottom : 0.0f;
 }
 
 void UIButtonMetadata::SetBottomTextMargin(float value)
@@ -1094,9 +1127,9 @@ void UIButtonMetadata::SetBottomTextMargin(float value)
         return;
     }
     
-    UIButton::UIMargins margins = GetActiveUIButton()->GetTextMargins();
+    UIButton::UIMargins margins = GetTextMarginsToUpdate();
     margins.bottom = value;
-    GetActiveUIButton()->SetTextMargins(margins);
+    GetActiveUIButton()->SetTextMargins(&margins);
 }
 
 void UIButtonMetadata::RecoverPropertyDirtyFlags()
@@ -1118,3 +1151,20 @@ void UIButtonMetadata::RecoverPropertyDirtyFlags()
     UpdatePropertyDirtyFlagForLeftRightStretchCap();
     UpdatePropertyDirtyFlagForTopBottomStretchCap();
 }
+
+UIButton::UIMargins UIButtonMetadata::GetTextMarginsToUpdate()
+{
+    if (!VerifyActiveParamID())
+    {
+        return UIButton::UIMargins();
+    }
+
+    UIButton::UIMargins* textMargins = GetActiveUIButton()->GetTextMargins();
+    if (!textMargins)
+    {
+        return UIButton::UIMargins();
+    }
+    
+    return *textMargins;
+}
+
