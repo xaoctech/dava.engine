@@ -342,8 +342,8 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					./../../Projects/MacOSFramework,
-					/Users/smile4u/Projects/dava.framework/Libs/fmod/lib/macos,
-					/Users/smile4u/Projects/dava.framework/Libs/libs,
+					./../../Libs/fmod/lib/macos,
+					./../../dava.framework/Libs/libs,
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -363,8 +363,8 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					./../../Projects/MacOSFramework,
-					/Users/smile4u/Projects/dava.framework/Libs/fmod/lib/macos,
-					/Users/smile4u/Projects/dava.framework/Libs/libs,
+					./../../Libs/fmod/lib/macos,
+					./../../dava.framework/Libs/libs,
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
