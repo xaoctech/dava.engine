@@ -1570,6 +1570,9 @@
     <ClInclude Include="..\..\Sources\Internal\Platform\Notification.h">
       <Filter>Internal\Platform</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\YamlEmitter.h">
+      <Filter>Internal\FileSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2793,6 +2796,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\DLC\Downloader\DownloadManager.cpp">
       <Filter>Internal\DLC\Downloader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\YamlEmitter.cpp">
+      <Filter>Internal\FileSystem</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\OGLHelpers.cpp">
       <Filter>Internal\Render</Filter>

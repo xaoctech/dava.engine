@@ -2075,7 +2075,7 @@ namespace DAVA
         String stringValue;
         VariantType *nodeValue = new VariantType();
         // Return node
-        YamlNode *node = new YamlNode(YamlNode::TYPE_MAP);
+        YamlNode *node = YamlNode::CreateMapNode(false);
         // Model UIControl to be used in comparing
         UIControl *baseControl = new UIControl();
 

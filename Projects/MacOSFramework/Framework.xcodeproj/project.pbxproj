@@ -104,6 +104,12 @@
 		155D77DB197DD22E006AEBCD /* YamlNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 155D77D7197DD22E006AEBCD /* YamlNode.h */; };
 		155D77DC197DD22E006AEBCD /* YamlNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 155D77D7197DD22E006AEBCD /* YamlNode.h */; };
 		155D77DD197DD22E006AEBCD /* YamlNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 155D77D7197DD22E006AEBCD /* YamlNode.h */; };
+		15D31180198285C800919AAA /* YamlEmitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15D3117E198285C800919AAA /* YamlEmitter.cpp */; };
+		15D31181198285C800919AAA /* YamlEmitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15D3117E198285C800919AAA /* YamlEmitter.cpp */; };
+		15D31182198285C800919AAA /* YamlEmitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15D3117E198285C800919AAA /* YamlEmitter.cpp */; };
+		15D31183198285C800919AAA /* YamlEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 15D3117F198285C800919AAA /* YamlEmitter.h */; };
+		15D31184198285C800919AAA /* YamlEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 15D3117F198285C800919AAA /* YamlEmitter.h */; };
+		15D31185198285C800919AAA /* YamlEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 15D3117F198285C800919AAA /* YamlEmitter.h */; };
 		171F938516CE6F28007038AB /* UIWebView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 171F938316CE6F28007038AB /* UIWebView.cpp */; };
 		171F938616CE6F28007038AB /* UIWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 171F938416CE6F28007038AB /* UIWebView.h */; };
 		1723D46F16CCF1C00039CCC2 /* ParticleForce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1799E52416CCEC030058061F /* ParticleForce.cpp */; };
@@ -2478,6 +2484,8 @@
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		155D77D6197DD22E006AEBCD /* YamlNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YamlNode.cpp; sourceTree = "<group>"; };
 		155D77D7197DD22E006AEBCD /* YamlNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YamlNode.h; sourceTree = "<group>"; };
+		15D3117E198285C800919AAA /* YamlEmitter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YamlEmitter.cpp; sourceTree = "<group>"; };
+		15D3117F198285C800919AAA /* YamlEmitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YamlEmitter.h; sourceTree = "<group>"; };
 		171F938316CE6F28007038AB /* UIWebView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIWebView.cpp; sourceTree = "<group>"; };
 		171F938416CE6F28007038AB /* UIWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIWebView.h; sourceTree = "<group>"; };
 		176DEB77174B5561007A983B /* libFrameworkNPAPI.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFrameworkNPAPI.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -3799,6 +3807,8 @@
 		E8989B5816BD24E400732C04 /* FileSystem */ = {
 			isa = PBXGroup;
 			children = (
+				15D3117E198285C800919AAA /* YamlEmitter.cpp */,
+				15D3117F198285C800919AAA /* YamlEmitter.h */,
 				155D77D6197DD22E006AEBCD /* YamlNode.cpp */,
 				155D77D7197DD22E006AEBCD /* YamlNode.h */,
 				E8989B5B16BD24E400732C04 /* Bitstream.cpp */,
@@ -4722,6 +4732,7 @@
 				176DE943174B5561007A983B /* FilePath.h in Headers */,
 				176DE944174B5561007A983B /* FileSystem.h in Headers */,
 				176DE945174B5561007A983B /* KeyedArchive.h in Headers */,
+				15D31185198285C800919AAA /* YamlEmitter.h in Headers */,
 				176DE946174B5561007A983B /* KeyedArchiver.h in Headers */,
 				EAAC988F1937333E00549BAD /* MeshUtils.h in Headers */,
 				176DE947174B5561007A983B /* KeyedUnarchiver.h in Headers */,
@@ -5346,6 +5357,7 @@
 				E898A02816BD24E500732C04 /* UIMoveInTransition.h in Headers */,
 				E898A02A16BD24E500732C04 /* UIPopup.h in Headers */,
 				E898A02C16BD24E500732C04 /* UIScreen.h in Headers */,
+				15D31183198285C800919AAA /* YamlEmitter.h in Headers */,
 				E898A02D16BD24E500732C04 /* UIScreenManager.h in Headers */,
 				C172EC1118C9F1E9004309CF /* TextBlockRender.h in Headers */,
 				E898A03516BD24E500732C04 /* UIScreenManagerMacOS.h in Headers */,
@@ -5484,6 +5496,7 @@
 				E898A06016BD265400732C04 /* Config.h in Headers */,
 				E898A06116BD265400732C04 /* MongodbUpdateObject.h in Headers */,
 				E898A06316BD265400732C04 /* BaseMath.h in Headers */,
+				15D31184198285C800919AAA /* YamlEmitter.h in Headers */,
 				E898A06416BD265400732C04 /* BaseObject.h in Headers */,
 				E898A06516BD265400732C04 /* BaseObjectChecker.h in Headers */,
 				E898A06616BD265400732C04 /* BaseTypes.h in Headers */,
@@ -6093,6 +6106,7 @@
 				176DEAA9174B5561007A983B /* FTFont.cpp in Sources */,
 				176DEAAA174B5561007A983B /* GraphicsFont.cpp in Sources */,
 				176DEAAB174B5561007A983B /* Sprite.cpp in Sources */,
+				15D31182198285C800919AAA /* YamlEmitter.cpp in Sources */,
 				176DEAAC174B5561007A983B /* TextBlock.cpp in Sources */,
 				176DEAAD174B5561007A983B /* AnimatedMesh.cpp in Sources */,
 				7A169342180EE619005F1FBC /* KeyedArchiveSwig.cpp in Sources */,
@@ -6453,6 +6467,7 @@
 				EAADA0001892A458001E1AA2 /* UIParticles.cpp in Sources */,
 				D7E6C5B1198255C000B96D1A /* bs_diff.c in Sources */,
 				644C86DC19476A7100964F91 /* VegetationFixedGeometry.cpp in Sources */,
+				15D31180198285C800919AAA /* YamlEmitter.cpp in Sources */,
 				E8989ED916BD24E500732C04 /* Font.cpp in Sources */,
 				D7E6C5B7198255C000B96D1A /* ZLibStream.cpp in Sources */,
 				E8989EDB16BD24E500732C04 /* FontManager.cpp in Sources */,
@@ -6897,6 +6912,7 @@
 				02FD7EDA19237D96007762C0 /* WindSystem.cpp in Sources */,
 				E898A24816BD265400732C04 /* Box2DTileCollider.cpp in Sources */,
 				E898A24916BD265400732C04 /* GameObject.cpp in Sources */,
+				15D31181198285C800919AAA /* YamlEmitter.cpp in Sources */,
 				647EFC5A195EEF2A0073B3CB /* NMaterialHelper.cpp in Sources */,
 				E898A24A16BD265400732C04 /* GameObjectAnimations.cpp in Sources */,
 				E898A24B16BD265400732C04 /* GameObjectManager.cpp in Sources */,
