@@ -54,6 +54,10 @@
 #include "FileSystem/LocalizationAndroid.h"
 #include "Platform/TemplateAndroid/FileListAndroid.h"
 
+#if defined(__DAVAENGINE_PROFILE__)
+#include "prof.h"
+#endif //#if defined(__DAVAENGINE_PROFILE__)
+
 extern "C"
 {
 	jint JNI_OnLoad(JavaVM *vm, void *reserved);
@@ -265,6 +269,16 @@ void Java_com_dava_framework_JNIActivity_nativeOnStart(JNIEnv * env, jobject cla
 
 	if(core)
 	{
+#if defined(__DAVAENGINE_PROFILE__)
+
+#define STR_EXPAND(tok) #tok
+#define STR(tok) STR_EXPAND(tok)
+        
+        const char *moduleName = STR(__DAVAENGINE_MODULE_NAME__);
+		LOGI("____MODULE___ ___ %s", moduleName);
+        monstartup(moduleName);
+#endif //#if defined(__DAVAENGINE_PROFILE__)
+        
 		core->StartVisible();
 	}
 }
@@ -276,6 +290,10 @@ void Java_com_dava_framework_JNIActivity_nativeOnStop(JNIEnv * env, jobject clas
 	if(core)
 	{
 		core->StopVisible();
+        
+#if defined(__DAVAENGINE_PROFILE__)
+        moncleanup();
+#endif //#if defined(__DAVAENGINE_PROFILE__)
 	}
 }
 
