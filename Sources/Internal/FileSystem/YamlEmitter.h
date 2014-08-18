@@ -26,41 +26,49 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __DAVAENGINE_YAML_EMITTER_H__
+#define __DAVAENGINE_YAML_EMITTER_H__
+#include "Base/BaseObject.h"
+#include "Base/BaseTypes.h"
+#include "FileSystem/File.h"
 
+typedef struct yaml_emitter_s yaml_emitter_t;
 
-#ifndef __PARSE_TEXT_TEST_H__
-#define __PARSE_TEXT_TEST_H__
-
-#include "DAVAEngine.h"
-
-using namespace DAVA;
-
-#include "UITestTemplate.h"
-#include "Render/RenderManager.h"
-
-class ParseTextTest : public UITestTemplate<ParseTextTest>
+namespace DAVA
 {
-protected:
-    ~ParseTextTest();
+class YamlNode;
+    /** 
+     \ingroup yaml
+     \brief this class is yaml saver and it used if you want to save data to yaml file
+     */
+class YamlEmitter: public BaseObject
+{
+    virtual ~YamlEmitter();
+    YamlEmitter();
 public:
-	ParseTextTest(Font::eFontType fontType);
-    
-	virtual void LoadResources();
-	virtual void UnloadResources();
+    /**
+     \brief Store content of node to file
+     \returns true if success.
+     */
+    static bool SaveToYamlFile(const FilePath &outFileName, const YamlNode *node, uint32 attr = File::CREATE | File::WRITE);
+protected:
+    bool Emit(const YamlNode * node, const FilePath & outFileName, uint32 attr);
+    bool Emit(const YamlNode * node, File *outFile);
 
 private:
-    
-    void ParseTestFunction(PerfFuncData * testData);
-    
-    UIStaticText *CreateTextControl(const Rect &rect, const WideString & text, bool wrapBySymbol, const Vector2 &requestedSize = Vector2(0, 0));
-
-    UIStaticText *wrapBySymbolShort;
-    UIStaticText *wrapByWordShort;
-
-    UIStaticText *wrapBySymbolLong;
-    UIStaticText *wrapByWordLong;
-
-	Font::eFontType requestedFontType;
+    bool EmitStreamStart  (yaml_emitter_t * emitter);
+    bool EmitStreamEnd    (yaml_emitter_t * emitter);
+    bool EmitDocumentStart(yaml_emitter_t * emitter);
+    bool EmitDocumentEnd  (yaml_emitter_t * emitter);
+    bool EmitSequenceStart(yaml_emitter_t * emitter, int32 sequenceStyle/*yaml_sequence_style_t*/);
+    bool EmitSequenceEnd  (yaml_emitter_t * emitter);
+    bool EmitMappingStart (yaml_emitter_t * emitter, int32 mappingStyle/*yaml_mapping_style_t*/);
+    bool EmitMappingEnd   (yaml_emitter_t * emitter);
+    bool EmitScalar       (yaml_emitter_t * emitter, const String &value, int32 scalarStyle/*yaml_scalar_style_t*/);
+    bool EmitYamlNode     (yaml_emitter_t * emitter, const YamlNode * node);
+    bool EmitUnorderedMap (yaml_emitter_t * emitter, const YamlNode * mapNode);
+    bool EmitOrderedMap   (yaml_emitter_t * emitter, const YamlNode * mapNode);
 };
 
-#endif /* defined(__PARSE_TEXT_TEST_H__) */
+};
+#endif // __DAVAENGINE_YAML_EMITTER_H__
