@@ -26,53 +26,49 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __DAVAENGINE_YAML_EMITTER_H__
+#define __DAVAENGINE_YAML_EMITTER_H__
+#include "Base/BaseObject.h"
+#include "Base/BaseTypes.h"
+#include "FileSystem/File.h"
 
-#ifndef SLIDERPROPERTYGRIDWIDGET_H
-#define SLIDERPROPERTYGRIDWIDGET_H
+typedef struct yaml_emitter_s yaml_emitter_t;
 
-#include <QWidget>
-#include "basepropertygridwidget.h"
-
-namespace Ui {
-class SliderPropertyGridWidget;
-}
-
-class BackgroundPropertyGridWidget;
-class SliderPropertyGridWidget : public BasePropertyGridWidget
+namespace DAVA
 {
-    Q_OBJECT
-
+class YamlNode;
+    /** 
+     \ingroup yaml
+     \brief this class is yaml saver and it used if you want to save data to yaml file
+     */
+class YamlEmitter: public BaseObject
+{
+    virtual ~YamlEmitter();
+    YamlEmitter();
 public:
-    explicit SliderPropertyGridWidget(QWidget *parent = 0);
-    ~SliderPropertyGridWidget();
-
-    virtual void Initialize(BaseMetadata* activeMetadata);
-    virtual void Cleanup();
-
-private:
-    Ui::SliderPropertyGridWidget *ui;
-	
-	QString GetSpritePathForButton(QWidget *senderWidget);
-	
+    /**
+     \brief Store content of node to file
+     \returns true if success.
+     */
+    static bool SaveToYamlFile(const FilePath &outFileName, const YamlNode *node, uint32 attr = File::CREATE | File::WRITE);
 protected:
-    // Connect/disconnect to the signals.
-    void ConnectToSignals();
+    bool Emit(const YamlNode * node, const FilePath & outFileName, uint32 attr);
+    bool Emit(const YamlNode * node, File *outFile);
 
-    // Change value of double spin box
-    virtual void ProcessDoubleSpinBoxValueChanged(QDoubleSpinBox *doubleSpinBoxWidget, const PROPERTYGRIDWIDGETSITER &iter,
-                                                                const double value);
-    // Update of internal propeperties
-    virtual void UpdateDoubleSpinBoxWidgetWithPropertyValue(QDoubleSpinBox *doubleSpinBoxWidget,
-                                                                const QMetaProperty& curProperty);
-	virtual void OnPropertiesChangedFromExternalSource() {};
-
-private slots:
-    // Use this slot to update value on Value Spin according to slider position
-    void OnSliderValueChanged(int);
-    
 private:
-    BackgroundPropertyGridWidget* minBgControl;
-    BackgroundPropertyGridWidget* maxBgControl;
+    bool EmitStreamStart  (yaml_emitter_t * emitter);
+    bool EmitStreamEnd    (yaml_emitter_t * emitter);
+    bool EmitDocumentStart(yaml_emitter_t * emitter);
+    bool EmitDocumentEnd  (yaml_emitter_t * emitter);
+    bool EmitSequenceStart(yaml_emitter_t * emitter, int32 sequenceStyle/*yaml_sequence_style_t*/);
+    bool EmitSequenceEnd  (yaml_emitter_t * emitter);
+    bool EmitMappingStart (yaml_emitter_t * emitter, int32 mappingStyle/*yaml_mapping_style_t*/);
+    bool EmitMappingEnd   (yaml_emitter_t * emitter);
+    bool EmitScalar       (yaml_emitter_t * emitter, const String &value, int32 scalarStyle/*yaml_scalar_style_t*/);
+    bool EmitYamlNode     (yaml_emitter_t * emitter, const YamlNode * node);
+    bool EmitUnorderedMap (yaml_emitter_t * emitter, const YamlNode * mapNode);
+    bool EmitOrderedMap   (yaml_emitter_t * emitter, const YamlNode * mapNode);
 };
 
-#endif // SLIDERPROPERTYGRIDWIDGET_H
+};
+#endif // __DAVAENGINE_YAML_EMITTER_H__
