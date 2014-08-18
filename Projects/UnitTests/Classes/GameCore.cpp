@@ -61,6 +61,7 @@
 #include "UIScrollViewTest.h"
 #include "ThreadSyncTest.h"
 #include "UIMovieTest.h"
+#include "DFFontTest.h"
 #include "ComponentsTest.h"
 #include "RectSpriteTest.h"
 #include "OpenGLES30FormatTest.h"
@@ -104,7 +105,8 @@ void GameCore::OnAppStarted()
  	new DXTTest();
     new JPEGTest();
 
-    new ParseTextTest();
+    new ParseTextTest(Font::TYPE_FT);
+    new ParseTextTest(Font::TYPE_GRAPHICAL);
     new OpenGLES30FormatTest();
     new SaveImageTest();
     
