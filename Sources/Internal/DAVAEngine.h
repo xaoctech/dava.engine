@@ -102,6 +102,7 @@
 #include "FileSystem/XMLParser.h"
 #include "FileSystem/YamlNode.h"
 #include "FileSystem/YamlParser.h"
+#include "FileSystem/YamlEmitter.h"
 #include "FileSystem/Parser.h"
 #include "FileSystem/FilePath.h"
 
