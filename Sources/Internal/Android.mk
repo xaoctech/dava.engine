@@ -97,6 +97,14 @@ LOCAL_CFLAGS += -frtti -DGL_GLEXT_PROTOTYPES=1 -Wno-psabi
 LOCAL_CFLAGS += -Wno-invalid-offsetof
 LOCAL_CFLAGS += -DDAVA_FMOD
 
+
+ifeq ($(DAVA_PROFILE), true)
+ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
+LOCAL_CFLAGS += -pg
+LOCAL_CFLAGS += -D__DAVAENGINE_PROFILE__
+endif
+endif
+
 # set exported build flags
 LOCAL_EXPORT_CFLAGS := $(LOCAL_CFLAGS)
 
@@ -133,6 +141,14 @@ LOCAL_EXPORT_LDLIBS := $(LOCAL_LDLIBS)
 
 # set included libraries
 LOCAL_STATIC_LIBRARIES := libbox2d
+
+ifeq ($(DAVA_PROFILE), true)
+ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
+LOCAL_STATIC_LIBRARIES += android-ndk-profiler
+endif
+endif
+
+
 LOCAL_SHARED_LIBRARIES += iconv_android-prebuilt
 LOCAL_SHARED_LIBRARIES += fmodex-prebuild
 LOCAL_SHARED_LIBRARIES += fmodevent-prebuild
@@ -144,5 +160,13 @@ $(call import-add-path,$(DAVA_ROOT)/..)
 $(call import-add-path,$(DAVA_ROOT)/../External)
 $(call import-add-path,$(DAVA_ROOT)/../External/Box2D)
 $(call import-add-path,$(DAVA_ROOT))
+
+ifeq ($(DAVA_PROFILE), true)
+ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
+$(call import-add-path,$(DAVA_ROOT)/../../Libs)
+$(call import-module,android-ndk-profiler)
+endif
+endif
+
 
 $(call import-module,box2d)
