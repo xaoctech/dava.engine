@@ -26,81 +26,49 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-#ifndef __DAVAENGINE_YAML_DOM_PARSER_H__
-#define __DAVAENGINE_YAML_DOM_PARSER_H__
-
-#include "Base/BaseTypes.h"
+#ifndef __DAVAENGINE_YAML_EMITTER_H__
+#define __DAVAENGINE_YAML_EMITTER_H__
 #include "Base/BaseObject.h"
-#include "FileSystem/FilePath.h"
+#include "Base/BaseTypes.h"
+#include "FileSystem/File.h"
 
-namespace DAVA 
+typedef struct yaml_emitter_s yaml_emitter_t;
+
+namespace DAVA
 {
 class YamlNode;
-/**
-	\defgroup yaml Yaml configs
- */
-
-
-/** 
-	\ingroup yaml
-	\brief this class is yaml parser and it used if you want to parse yaml file
- */
-class YamlParser : public BaseObject
+    /** 
+     \ingroup yaml
+     \brief this class is yaml saver and it used if you want to save data to yaml file
+     */
+class YamlEmitter: public BaseObject
 {
-protected:
-	YamlParser();
-	virtual ~YamlParser();
-
+    virtual ~YamlEmitter();
+    YamlEmitter();
 public:
-    // This method creates the parser and parses the input file.
-    static YamlParser * Create(const FilePath & fileName)
-    {
-        return YamlParser::CreateAndParse(fileName);
-    }
-
-    // This method creates the parser and parses the data string.
-    static YamlParser * CreateAndParseString(const String & data)
-    {
-        return YamlParser::CreateAndParse(data);
-    }
-
-	// Get the root node.
-	YamlNode * GetRootNode() const;
-	
-	struct YamlDataHolder
-	{
-		uint32 fileSize;
-		uint32 dataOffset;
-		uint8 * data;
-	};
-
+    /**
+     \brief Store content of node to file
+     \returns true if success.
+     */
+    static bool SaveToYamlFile(const FilePath &outFileName, const YamlNode *node, uint32 attr = File::CREATE | File::WRITE);
 protected:
-    template<typename T> static YamlParser * CreateAndParse(const T & data)
-    {
-        YamlParser * parser = new YamlParser();
-        if (parser)
-        {
-            bool parseResult = parser->Parse(data);
-            if(!parseResult)
-            {
-                SafeRelease(parser);
-                return 0;
-            }
-        }
-        return parser;
-    }
-
-    bool Parse(const String & fileName);
-    bool Parse(const FilePath & fileName);
-    bool Parse(YamlDataHolder * dataHolder);
+    bool Emit(const YamlNode * node, const FilePath & outFileName, uint32 attr);
+    bool Emit(const YamlNode * node, File *outFile);
 
 private:
-	YamlNode			* rootObject;
-	
-	Stack<YamlNode *> objectStack;
+    bool EmitStreamStart  (yaml_emitter_t * emitter);
+    bool EmitStreamEnd    (yaml_emitter_t * emitter);
+    bool EmitDocumentStart(yaml_emitter_t * emitter);
+    bool EmitDocumentEnd  (yaml_emitter_t * emitter);
+    bool EmitSequenceStart(yaml_emitter_t * emitter, int32 sequenceStyle/*yaml_sequence_style_t*/);
+    bool EmitSequenceEnd  (yaml_emitter_t * emitter);
+    bool EmitMappingStart (yaml_emitter_t * emitter, int32 mappingStyle/*yaml_mapping_style_t*/);
+    bool EmitMappingEnd   (yaml_emitter_t * emitter);
+    bool EmitScalar       (yaml_emitter_t * emitter, const String &value, int32 scalarStyle/*yaml_scalar_style_t*/);
+    bool EmitYamlNode     (yaml_emitter_t * emitter, const YamlNode * node);
+    bool EmitUnorderedMap (yaml_emitter_t * emitter, const YamlNode * mapNode);
+    bool EmitOrderedMap   (yaml_emitter_t * emitter, const YamlNode * mapNode);
 };
 
 };
-
-#endif // __DAVAENGINE_JSON_PARSER_H__
+#endif // __DAVAENGINE_YAML_EMITTER_H__
