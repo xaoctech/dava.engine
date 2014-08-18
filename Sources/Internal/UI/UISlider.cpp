@@ -159,6 +159,17 @@ void UISlider::SetMinMaxValue(float32 _minValue, float32 _maxValue)
 	SetValue((minValue + maxValue) / 2.0f);
 }
 
+void UISlider::AddControl(UIControl *control)
+{
+    // Synchronize the pointers to the thumb each time new control is added.
+    UIControl::AddControl(control);
+
+    if (control->GetName() == UISLIDER_THUMB_SPRITE_CONTROL_NAME)
+    {
+        thumbButton = control;
+    }
+}
+
 void UISlider::Input(UIEvent *currentInput)
 {
 #if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)                                        
@@ -349,10 +360,11 @@ void UISlider::CopyDataFrom(UIControl *srcControl)
 	
 	currentValue = t->currentValue;
 
-	if (t->thumbButton)
+    // thumbButton will be set inside overloaded AddControl() method.
+	if (thumbButton)
 	{
-		thumbButton = t->thumbButton->Clone();
-		AddControl(thumbButton);
+		thumbButton->Retain();
+		InitInactiveParts(thumbButton->GetBackground()->GetSprite());
 	}
     
     SafeRelease(minBackground);
