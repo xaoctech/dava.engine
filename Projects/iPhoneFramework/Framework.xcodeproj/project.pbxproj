@@ -827,6 +827,10 @@
 		155D77E9197DD265006AEBCD /* YamlNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 155D77E6197DD265006AEBCD /* YamlNode.cpp */; };
 		155D77EA197DD265006AEBCD /* YamlNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 155D77E7197DD265006AEBCD /* YamlNode.h */; };
 		155D77EB197DD265006AEBCD /* YamlNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 155D77E7197DD265006AEBCD /* YamlNode.h */; };
+		15D311901982861500919AAA /* YamlEmitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15D3118E1982861500919AAA /* YamlEmitter.cpp */; };
+		15D311911982861500919AAA /* YamlEmitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15D3118E1982861500919AAA /* YamlEmitter.cpp */; };
+		15D311921982861500919AAA /* YamlEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 15D3118F1982861500919AAA /* YamlEmitter.h */; };
+		15D311931982861500919AAA /* YamlEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 15D3118F1982861500919AAA /* YamlEmitter.h */; };
 		17675C1A19472C1400054F8F /* CRCAdditionInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 6272153D192265C7007B7DE9 /* CRCAdditionInterface.h */; };
 		17675C1B19472C1400054F8F /* Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84D18BEC19201BEF009E3E90 /* Image.cpp */; };
 		17675C1C19472C1400054F8F /* Image.h in Headers */ = {isa = PBXBuildFile; fileRef = 84D18BED19201BEF009E3E90 /* Image.h */; };
@@ -1023,6 +1027,16 @@
 		A6E4FDFB1761D83100B48E41 /* ActionUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6E4FDF91761D83100B48E41 /* ActionUpdateSystem.cpp */; };
 		A6E4FDFC1761D83100B48E41 /* ActionUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A6E4FDFA1761D83100B48E41 /* ActionUpdateSystem.h */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
+		C13E6DB8186861FA00D1B2CE /* DFFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C13E6DB6186861FA00D1B2CE /* DFFont.cpp */; };
+		C13E6DB9186861FA00D1B2CE /* DFFont.h in Headers */ = {isa = PBXBuildFile; fileRef = C13E6DB7186861FA00D1B2CE /* DFFont.h */; };
+		C172EC2A18C9F9D4004309CF /* TextBlockDistanceRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C172EC2218C9F9D4004309CF /* TextBlockDistanceRender.cpp */; };
+		C172EC2B18C9F9D4004309CF /* TextBlockDistanceRender.h in Headers */ = {isa = PBXBuildFile; fileRef = C172EC2318C9F9D4004309CF /* TextBlockDistanceRender.h */; };
+		C172EC2C18C9F9D4004309CF /* TextBlockGraphicsRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C172EC2418C9F9D4004309CF /* TextBlockGraphicsRender.cpp */; };
+		C172EC2D18C9F9D4004309CF /* TextBlockGraphicsRender.h in Headers */ = {isa = PBXBuildFile; fileRef = C172EC2518C9F9D4004309CF /* TextBlockGraphicsRender.h */; };
+		C172EC2E18C9F9D4004309CF /* TextBlockRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C172EC2618C9F9D4004309CF /* TextBlockRender.cpp */; };
+		C172EC2F18C9F9D4004309CF /* TextBlockRender.h in Headers */ = {isa = PBXBuildFile; fileRef = C172EC2718C9F9D4004309CF /* TextBlockRender.h */; };
+		C172EC3018C9F9D4004309CF /* TextBlockSoftwareRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C172EC2818C9F9D4004309CF /* TextBlockSoftwareRender.cpp */; };
+		C172EC3118C9F9D4004309CF /* TextBlockSoftwareRender.h in Headers */ = {isa = PBXBuildFile; fileRef = C172EC2918C9F9D4004309CF /* TextBlockSoftwareRender.h */; };
 		C1DC1F081717FD3C001C5EC3 /* libTextureConverter_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C1DC1F071717FD3C001C5EC3 /* libTextureConverter_macos.a */; };
 		C70B565B1753CB5E008966FA /* KeyedArchiveSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C70B56591753CB5E008966FA /* KeyedArchiveSwig.cpp */; };
 		C7E76D3116DF69370041ED9A /* AutotestingSystemLua.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2116DF69370041ED9A /* AutotestingSystemLua.cpp */; };
@@ -1721,6 +1735,8 @@
 		02FD820C1924997C007762C0 /* libFrameworkTesting.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFrameworkTesting.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		155D77E6197DD265006AEBCD /* YamlNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YamlNode.cpp; sourceTree = "<group>"; };
 		155D77E7197DD265006AEBCD /* YamlNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YamlNode.h; sourceTree = "<group>"; };
+		15D3118E1982861500919AAA /* YamlEmitter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YamlEmitter.cpp; sourceTree = "<group>"; };
+		15D3118F1982861500919AAA /* YamlEmitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YamlEmitter.h; sourceTree = "<group>"; };
 		17816B7E17B2748900B067E1 /* AllocatorFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AllocatorFactory.cpp; sourceTree = "<group>"; };
 		17816B7F17B2748900B067E1 /* AllocatorFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AllocatorFactory.h; sourceTree = "<group>"; };
 		1799E51816CCEBDA0058061F /* ParticleForce.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleForce.cpp; sourceTree = "<group>"; };
@@ -1872,6 +1888,16 @@
 		A6E4FDF91761D83100B48E41 /* ActionUpdateSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActionUpdateSystem.cpp; sourceTree = "<group>"; };
 		A6E4FDFA1761D83100B48E41 /* ActionUpdateSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionUpdateSystem.h; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
+		C13E6DB6186861FA00D1B2CE /* DFFont.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DFFont.cpp; sourceTree = "<group>"; };
+		C13E6DB7186861FA00D1B2CE /* DFFont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DFFont.h; sourceTree = "<group>"; };
+		C172EC2218C9F9D4004309CF /* TextBlockDistanceRender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextBlockDistanceRender.cpp; sourceTree = "<group>"; };
+		C172EC2318C9F9D4004309CF /* TextBlockDistanceRender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextBlockDistanceRender.h; sourceTree = "<group>"; };
+		C172EC2418C9F9D4004309CF /* TextBlockGraphicsRender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextBlockGraphicsRender.cpp; sourceTree = "<group>"; };
+		C172EC2518C9F9D4004309CF /* TextBlockGraphicsRender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextBlockGraphicsRender.h; sourceTree = "<group>"; };
+		C172EC2618C9F9D4004309CF /* TextBlockRender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextBlockRender.cpp; sourceTree = "<group>"; };
+		C172EC2718C9F9D4004309CF /* TextBlockRender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextBlockRender.h; sourceTree = "<group>"; };
+		C172EC2818C9F9D4004309CF /* TextBlockSoftwareRender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextBlockSoftwareRender.cpp; sourceTree = "<group>"; };
+		C172EC2918C9F9D4004309CF /* TextBlockSoftwareRender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextBlockSoftwareRender.h; sourceTree = "<group>"; };
 		C1DC1F071717FD3C001C5EC3 /* libTextureConverter_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libTextureConverter_macos.a; path = ../../Libs/libs/libTextureConverter_macos.a; sourceTree = "<group>"; };
 		C70B56591753CB5E008966FA /* KeyedArchiveSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyedArchiveSwig.cpp; sourceTree = "<group>"; };
 		C7E76D2116DF69370041ED9A /* AutotestingSystemLua.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemLua.cpp; sourceTree = "<group>"; };
@@ -2937,6 +2963,8 @@
 		E8B3C83C16B9326D002BD35F /* FileSystem */ = {
 			isa = PBXGroup;
 			children = (
+				15D3118E1982861500919AAA /* YamlEmitter.cpp */,
+				15D3118F1982861500919AAA /* YamlEmitter.h */,
 				155D77E6197DD265006AEBCD /* YamlNode.cpp */,
 				155D77E7197DD265006AEBCD /* YamlNode.h */,
 				E8B3C83F16B9326D002BD35F /* Bitstream.cpp */,
@@ -3225,6 +3253,16 @@
 		E8B3C8FA16B9326D002BD35F /* 2D */ = {
 			isa = PBXGroup;
 			children = (
+				C172EC2218C9F9D4004309CF /* TextBlockDistanceRender.cpp */,
+				C172EC2318C9F9D4004309CF /* TextBlockDistanceRender.h */,
+				C172EC2418C9F9D4004309CF /* TextBlockGraphicsRender.cpp */,
+				C172EC2518C9F9D4004309CF /* TextBlockGraphicsRender.h */,
+				C172EC2618C9F9D4004309CF /* TextBlockRender.cpp */,
+				C172EC2718C9F9D4004309CF /* TextBlockRender.h */,
+				C172EC2818C9F9D4004309CF /* TextBlockSoftwareRender.cpp */,
+				C172EC2918C9F9D4004309CF /* TextBlockSoftwareRender.h */,
+				C13E6DB6186861FA00D1B2CE /* DFFont.cpp */,
+				C13E6DB7186861FA00D1B2CE /* DFFont.h */,
 				E8B3C8FB16B9326D002BD35F /* Font.cpp */,
 				E8B3C8FC16B9326D002BD35F /* Font.h */,
 				E8B3C8FD16B9326D002BD35F /* FontManager.cpp */,
@@ -3901,6 +3939,7 @@
 				02FD7F871924997C007762C0 /* Vector.h in Headers */,
 				02FD7F881924997C007762C0 /* BaseNetworkConnection.h in Headers */,
 				02FD7F891924997C007762C0 /* BTNetworkConnection.h in Headers */,
+				15D311931982861500919AAA /* YamlEmitter.h in Headers */,
 				02FD7F8A1924997C007762C0 /* NetworkConnection.h in Headers */,
 				02FD7F8B1924997C007762C0 /* NetworkConnectionIPhone.h in Headers */,
 				02FD7F8C1924997C007762C0 /* NetworkDelegate.h in Headers */,
@@ -4195,6 +4234,7 @@
 				84D18BFC19201BEF009E3E90 /* Image.h in Headers */,
 				AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */,
 				E8B3CA7F16B9326E002BD35F /* AnimatedObject.h in Headers */,
+				C172EC2B18C9F9D4004309CF /* TextBlockDistanceRender.h in Headers */,
 				E8B3CA8116B9326E002BD35F /* Animation.h in Headers */,
 				E8B3CA8316B9326E002BD35F /* AnimationManager.h in Headers */,
 				E8B3CA8516B9326E002BD35F /* BezierSplineAnimation.h in Headers */,
@@ -4283,6 +4323,7 @@
 				E8B3CB2216B9326E002BD35F /* KeyedUnarchiver.h in Headers */,
 				E8B3CB2316B9326E002BD35F /* LocalizationIPhone.h in Headers */,
 				E8B3CB2616B9326E002BD35F /* LocalizationSystem.h in Headers */,
+				C172EC3118C9F9D4004309CF /* TextBlockSoftwareRender.h in Headers */,
 				E8B3CB2816B9326E002BD35F /* Logger.h in Headers */,
 				E8B3CB2E16B9326E002BD35F /* ResourceArchive.h in Headers */,
 				E8B3CB3016B9326E002BD35F /* VariantType.h in Headers */,
@@ -4339,6 +4380,7 @@
 				E8B3CB7116B9326E002BD35F /* TCPServer.h in Headers */,
 				A61171481860C24D00E18F8C /* StaticOcclusion.h in Headers */,
 				E8B3CB7316B9326E002BD35F /* WFNetworkConnection.h in Headers */,
+				C13E6DB9186861FA00D1B2CE /* DFFont.h in Headers */,
 				E8B3CB7616B9326E002BD35F /* Particle.h in Headers */,
 				E8B3CB7816B9326E002BD35F /* ParticleEmitter.h in Headers */,
 				E8B3CB7E16B9326E002BD35F /* ParticleLayer.h in Headers */,
@@ -4390,6 +4432,7 @@
 				E8B3CC0416B9326E002BD35F /* ShadowRect.h in Headers */,
 				E8B3CC0616B9326E002BD35F /* ShadowVolume.h in Headers */,
 				E8B3CC0816B9326E002BD35F /* ShadowVolumeRenderPass.h in Headers */,
+				C172EC2D18C9F9D4004309CF /* TextBlockGraphicsRender.h in Headers */,
 				E8B3CC0F16B9326E002BD35F /* IndexBuffer.h in Headers */,
 				EAAC98BE1937354800549BAD /* MeshUtils.h in Headers */,
 				E8B3CC1716B9326E002BD35F /* MaterialCompiler.h in Headers */,
@@ -4433,6 +4476,7 @@
 				E89C58F418B24832002C25FE /* Atomic.h in Headers */,
 				E8B3CC5B16B9326E002BD35F /* GameObjectAnimations.h in Headers */,
 				E8B3CC5D16B9326E002BD35F /* GameObjectManager.h in Headers */,
+				C172EC2F18C9F9D4004309CF /* TextBlockRender.h in Headers */,
 				E8B3CC5F16B9326E002BD35F /* TextGameObject.h in Headers */,
 				02AD131819767DFB00567AD2 /* VersionInfo.h in Headers */,
 				E8B3CC6116B9326E002BD35F /* BillboardNode.h in Headers */,
@@ -4469,6 +4513,7 @@
 				E8B3CCAA16B9326E002BD35F /* SceneNodeAnimation.h in Headers */,
 				E8B3CCAC16B9326E002BD35F /* SceneNodeAnimationKey.h in Headers */,
 				E8B3CCAE16B9326E002BD35F /* SceneNodeAnimationList.h in Headers */,
+				15D311921982861500919AAA /* YamlEmitter.h in Headers */,
 				E8B3CCB016B9326E002BD35F /* ShadowVolumeNode.h in Headers */,
 				E8B3CCB216B9326E002BD35F /* SkeletonNode.h in Headers */,
 				E8B3CCB416B9326E002BD35F /* SpriteNode.h in Headers */,
@@ -4941,6 +4986,7 @@
 				02FD81681924997C007762C0 /* SceneNodeAnimation.cpp in Sources */,
 				02FD81691924997C007762C0 /* SceneNodeAnimationKey.cpp in Sources */,
 				02FD816A1924997C007762C0 /* SceneNodeAnimationList.cpp in Sources */,
+				15D311911982861500919AAA /* YamlEmitter.cpp in Sources */,
 				02FD816B1924997C007762C0 /* ShadowVolumeNode.cpp in Sources */,
 				02FD816C1924997C007762C0 /* SkeletonNode.cpp in Sources */,
 				02FD816D1924997C007762C0 /* SpriteNode.cpp in Sources */,
@@ -5123,6 +5169,7 @@
 				EAADA0051892A48E001E1AA2 /* UIParticles.cpp in Sources */,
 				E8B3CAD816B9326E002BD35F /* DAVAEngine.cpp in Sources */,
 				E8B3CADA16B9326E002BD35F /* Backtrace.cpp in Sources */,
+				C13E6DB8186861FA00D1B2CE /* DFFont.cpp in Sources */,
 				E8B3CADF16B9326E002BD35F /* MemoryManager.cpp in Sources */,
 				E8B3CAE116B9326E002BD35F /* Replay.cpp in Sources */,
 				E8B3CAE316B9326E002BD35F /* Stats.cpp in Sources */,
@@ -5191,6 +5238,7 @@
 				E8B3CBA516B9326E002BD35F /* ES1Renderer.mm in Sources */,
 				E8B3CBA716B9326E002BD35F /* ES2Renderer.mm in Sources */,
 				E8B3CBAA16B9326E002BD35F /* HelperAppDelegate.mm in Sources */,
+				C172EC2E18C9F9D4004309CF /* TextBlockRender.cpp in Sources */,
 				E8B3CBB816B9326E002BD35F /* Thread.cpp in Sources */,
 				E8B3CBBB16B9326E002BD35F /* ThreadMacOS.mm in Sources */,
 				E8B3CBBD16B9326E002BD35F /* Font.cpp in Sources */,
@@ -5230,10 +5278,12 @@
 				02FD7EC319237D43007762C0 /* SpeedTreeUpdateSystem.cpp in Sources */,
 				E8B3CC0516B9326E002BD35F /* ShadowVolume.cpp in Sources */,
 				E8B3CC0716B9326E002BD35F /* ShadowVolumeRenderPass.cpp in Sources */,
+				C172EC2C18C9F9D4004309CF /* TextBlockGraphicsRender.cpp in Sources */,
 				E8B3CC1616B9326E002BD35F /* MaterialCompiler.cpp in Sources */,
 				E8B3CC1816B9326E002BD35F /* MaterialGraph.cpp in Sources */,
 				CC84B04218211BCE00934482 /* JobQueue.cpp in Sources */,
 				E8B3CC1A16B9326E002BD35F /* MaterialGraphNode.cpp in Sources */,
+				C172EC2A18C9F9D4004309CF /* TextBlockDistanceRender.cpp in Sources */,
 				E8B3CC1C16B9326E002BD35F /* NMaterial.cpp in Sources */,
 				E8B3CC1F16B9326E002BD35F /* Material.cpp in Sources */,
 				E8B3CC2316B9326E002BD35F /* RenderBase.cpp in Sources */,
@@ -5268,9 +5318,11 @@
 				E8B3CC5616B9326E002BD35F /* Box2DTileCollider.cpp in Sources */,
 				E8B3CC5816B9326E002BD35F /* GameObject.cpp in Sources */,
 				E8B3CC5A16B9326E002BD35F /* GameObjectAnimations.cpp in Sources */,
+				C172EC3018C9F9D4004309CF /* TextBlockSoftwareRender.cpp in Sources */,
 				E8B3CC5C16B9326E002BD35F /* GameObjectManager.cpp in Sources */,
 				E8B3CC5E16B9326E002BD35F /* TextGameObject.cpp in Sources */,
 				E8B3CC6016B9326E002BD35F /* BillboardNode.cpp in Sources */,
+				15D311901982861500919AAA /* YamlEmitter.cpp in Sources */,
 				E8B3CC6216B9326E002BD35F /* BoneNode.cpp in Sources */,
 				E8B3CC6816B9326E002BD35F /* BulletComponent.cpp in Sources */,
 				E8B3CC6A16B9326E002BD35F /* CameraComponent.cpp in Sources */,

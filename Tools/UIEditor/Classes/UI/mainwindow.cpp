@@ -186,9 +186,9 @@ MainWindow::MainWindow(QWidget *parent) :
 			SLOT(OnSelectedScreenChanged()));
 	
     connect(HierarchyTreeController::Instance(),
-			SIGNAL(SelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES &)),
+			SIGNAL(SelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES &, HierarchyTreeController::eExpandControlType)),
 			this,
-			SLOT(OnSelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES &)));
+			SLOT(OnSelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES &,HierarchyTreeController::eExpandControlType)));
 
 	connect(ui->hierarchyDockWidget->widget(),
 			SIGNAL(CreateNewScreen()),
@@ -634,7 +634,7 @@ void MainWindow::OnSelectedScreenChanged()
     OnUndoRedoAvailabilityChanged();
 }
 
-void MainWindow::OnSelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES& selectedNodes)
+void MainWindow::OnSelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES& selectedNodes, HierarchyTreeController::eExpandControlType expandType)
 {
     int nodesCount = selectedNodes.size();
 
@@ -812,7 +812,9 @@ void MainWindow::SetupViewMenu()
 
     ui->menuView->addSeparator();
     ui->menuView->addAction(ui->mainToolbar->toggleViewAction());
-
+    ui->menuView->addAction(ui->previewToolBar->toggleViewAction());
+    ui->menuView->addAction(ui->findToolBar->toggleViewAction());
+    
     // Setup the Background Color menu.
     QMenu* setBackgroundColorMenu = new QMenu("Background Color");
     ui->menuView->addSeparator();
@@ -1804,26 +1806,39 @@ void MainWindow::UpdateSaveButtons()
 void MainWindow::OnSearchPressed()
 {
     QString partOfName = findField->text();
+    if (partOfName.isEmpty())
+    	return;
+    
     QList<HierarchyTreeControlNode*> foundNodes;
+    QList<HierarchyTreeScreenNode*> foundScreens;
     HierarchyTreeScreenNode* activeScreen = HierarchyTreeController::Instance()->GetActiveScreen();
+    
+    HierarchyTreeController::Instance()->ResetSelectedControl();
+    
     if (NULL == activeScreen)
     {
         HierarchyTreePlatformNode* activePlatform = HierarchyTreeController::Instance()->GetActivePlatform();
         if (activePlatform)
         {
-            foundNodes = SearchScreenByName(activePlatform->GetChildNodes(),partOfName,ui->actionIgnoreCase->isChecked());
+            foundScreens = SearchScreenByName(activePlatform->GetChildNodes(),partOfName,ui->actionIgnoreCase->isChecked());
+        }
+        
+        if (!foundScreens.empty())
+        {
+        	this->ui->hierarchyDockWidgetContents->ScrollTo(foundScreens.at(0));
         }
     }
     else
     {
         SearchControlsByName(foundNodes,activeScreen->GetChildNodes(),partOfName,ui->actionIgnoreCase->isChecked());
+        if (!foundNodes.empty())
+        {
+        	// Multiple selection, or control selected
+        	HierarchyTreeController::Instance()->SynchronizeSelection(foundNodes);
+        	// Scroll to first one in the list
+        	this->ui->hierarchyDockWidgetContents->ScrollTo(foundNodes.at(0));
+        }
     }
-    HierarchyTreeController::Instance()->ResetSelectedControl();
-    if (!foundNodes.empty())
-    {
-        HierarchyTreeController::Instance()->SynchronizeSelection(foundNodes);
-    }
-    
 }
 
 void MainWindow::SearchControlsByName(QList<HierarchyTreeControlNode*>& foundNodes,const HierarchyTreeNode::HIERARCHYTREENODESLIST nodes, const  QString partOfName,bool ignoreCase) const
@@ -1842,9 +1857,9 @@ void MainWindow::SearchControlsByName(QList<HierarchyTreeControlNode*>& foundNod
     }
 }
 
-QList<HierarchyTreeControlNode*> MainWindow::SearchScreenByName(const HierarchyTreeNode::HIERARCHYTREENODESLIST nodes, const  QString partOfName,bool ignoreCase) const
+QList<HierarchyTreeScreenNode*> MainWindow::SearchScreenByName(const HierarchyTreeNode::HIERARCHYTREENODESLIST nodes, const  QString partOfName,bool ignoreCase) const
 {
-    QList<HierarchyTreeControlNode*> foundNodes;
+    QList<HierarchyTreeScreenNode*> foundNodes;
     HierarchyTreeNode::HIERARCHYTREENODESCONSTITER it = nodes.begin();
     for (; it!=nodes.end(); ++it)
     {
@@ -1853,7 +1868,7 @@ QList<HierarchyTreeControlNode*> MainWindow::SearchScreenByName(const HierarchyT
         Qt::CaseSensitivity cs = ignoreCase?Qt::CaseInsensitive:Qt::CaseSensitive;
         if (name.contains(partOfName,cs))
         {
-            foundNodes.push_back(static_cast<HierarchyTreeControlNode *>(*it));
+            foundNodes.push_back(screenNode);
         }
     }
     return foundNodes;
