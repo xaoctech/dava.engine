@@ -164,10 +164,21 @@ void UISlider::AddControl(UIControl *control)
     // Synchronize the pointers to the thumb each time new control is added.
     UIControl::AddControl(control);
 
-    if (control->GetName() == UISLIDER_THUMB_SPRITE_CONTROL_NAME)
+    if (control->GetName() == UISLIDER_THUMB_SPRITE_CONTROL_NAME && thumbButton != control)
     {
-        thumbButton = control;
+        SafeRelease(thumbButton);
+        thumbButton = SafeRetain(control);
     }
+}
+
+void UISlider::RemoveControl(UIControl *control)
+{
+    if (control == thumbButton)
+    {
+        SafeRelease(thumbButton);
+    }
+    
+    UIControl::RemoveControl(control);
 }
 
 void UISlider::Input(UIEvent *currentInput)
@@ -359,13 +370,6 @@ void UISlider::CopyDataFrom(UIControl *srcControl)
 	maxValue = t->maxValue;
 	
 	currentValue = t->currentValue;
-
-    // thumbButton will be set inside overloaded AddControl() method.
-	if (thumbButton)
-	{
-		thumbButton->Retain();
-		InitInactiveParts(thumbButton->GetBackground()->GetSprite());
-	}
     
     SafeRelease(minBackground);
 	if (t->minBackground)
