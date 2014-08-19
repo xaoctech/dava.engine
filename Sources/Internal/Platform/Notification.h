@@ -33,34 +33,55 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/Singleton.h"
-#include "Base/Function.h"
+#include "Platform/NotificationAndroid.h"
 
-namespace DAVA {
+namespace DAVA
+{
 
-class Notification : public Singleton<Notification>
+class Notification
+#if defined(__DAVAENGINE_ANDROID__)
+		: public JniNotification
+#endif
 {
 public:
-    typedef Function<void (void)> ForegroundUpdateCallback;
+	enum Type
+	{
+		DOWNLOAD_PROGRESS = 1,
+	};
 
+
+public:
     Notification();
     virtual ~Notification();
-    
-    // Callback function for update progress and status in hide state
-    void SetForegroundUpdateCallback(ForegroundUpdateCallback callback);
-    ForegroundUpdateCallback GetForegroundUpdateCallback() const;
-    
-    static void ShowNotifitaion(uint32 id,
-			const WideString& title,
-			const WideString& text);
-    static void ShowNotifitaionWithProgress(uint32 id,
-			const WideString& title,
-			const WideString& text,
-			int32 maxValue,
-			int32 value);
-    static void HideNotification(uint32 id);
-    
+	void SetTitle(const String &title);
+	void SetText(const String &text);
+    virtual void Hide(uint32 id);
+
+protected:
+    uint32 id;
+    String text;
+    String title;
+};
+
+class NotificationProgress : public Notification
+{
+public:
+	NotificationProgress();
+
+	void SetProgressCurrent(uint32 _currentProgress);
+	void SetProgressTotal(uint32 _total);
+
 private:
-    ForegroundUpdateCallback foregroundUpdateCallback;
+	uint32 total;
+	uint32 progress;
+};
+
+class NotificationController : public Singleton<NotificationController>
+{
+public:
+	NotificationProgress *CreateNotificationProgress(const String &title = "", const String &text = "", uint32 max = 0, uint32 current = 0);
+
+	List<Notification *> notificationsList;
 };
 
 }
