@@ -28,15 +28,34 @@
 
 
 
-#include "AndroidLayer.h"
-#include "Platform/Notification.h"
+#ifndef __NOTIFICATION_ANDROID_H__
+#define __NOTIFICATION_ANDROID_H__
 
-extern "C"
+#include "Base/BaseTypes.h"
+#ifdef __DAVAENGINE_ANDROID__
+#include "JniExtensions.h"
+namespace DAVA
 {
-	void Java_com_dava_framework_JNINotification_UpdateNotification(JNIEnv * env, jobject classthis)
-	{
-		DAVA::Notification::ForegroundUpdateCallback callback = DAVA::Notification::Instance()->GetForegroundUpdateCallback();
-		if (callback != DAVA::Notification::ForegroundUpdateCallback(NULL))
-			callback();
-	}
+
+class JniNotification: public JniExtension
+{
+public:
+	virtual void ShowNotifitaionWithProgress(uint32 id,
+			const String& title,
+			const String& text,
+			int32 maxValue,
+			int32 value);
+
+
+protected:
+	virtual jclass GetJavaClass() const;
+	virtual const char* GetJavaClassName() const;
+
+public:
+	static jclass gJavaClass;
+	static const char* gJavaClassName;
 };
+}
+#endif //__DAVAENGINE_ANDROID__
+
+#endif // __NOTIFICATION_ANDROID_H__

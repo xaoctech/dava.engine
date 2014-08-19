@@ -29,12 +29,18 @@
 
 
 #include "Notification.h"
+#include "Base/BaseTypes.h"
 
 namespace DAVA
 {
 
 Notification::Notification()
-    : foregroundUpdateCallback(NULL)
+#if defined(__DAVAENGINE_ANDROID__)
+    : JniNotification()
+#endif
+	, id(0)
+	, text("")
+	, title("")
 {
 }
     
@@ -42,39 +48,5 @@ Notification::~Notification()
 {
 }
 
-void Notification::SetForegroundUpdateCallback(ForegroundUpdateCallback callback)
-{
-    foregroundUpdateCallback = callback;
 }
 
-Notification::ForegroundUpdateCallback Notification::GetForegroundUpdateCallback() const
-{
-	return foregroundUpdateCallback;
-}
-
-#ifndef __DAVAENGINE_ANDROID__
-
-void Notification::ShowNotifitaion(uint32 id,
-			const WideString& title,
-			const WideString& text)
-{
-
-}
-
-void Notification::ShowNotifitaionWithProgress(uint32 id,
-			const WideString& title,
-			const WideString& text,
-			int32 maxValue,
-			int32 value)
-{
-
-}
-
-void Notification::HideNotification(uint32 id)
-{
-
-}
-
-#endif
-
-}
