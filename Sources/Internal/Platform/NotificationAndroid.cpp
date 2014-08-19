@@ -126,14 +126,6 @@ void Notification::SetText(const String &text)
 	}
 }
 
-NotificationProgress::NotificationProgress()
-	: Notification()
-	, total(0)
-	, progress(0)
-{
-	id = DOWNLOAD_PROGRESS;
-}
-
 void NotificationProgress::SetProgressCurrent(uint32 _currentProgress)
 {
 	jmethodID mid = GetMethodID("SetNotificationProgress", "(III)V");
@@ -164,19 +156,9 @@ void NotificationProgress::SetProgressTotal(uint32 _total)
 	}
 }
 
-NotificationProgress *NotificationController::CreateNotificationProgress(const String &title, const String &text, uint32 maximum, uint32 current)
+void NotificationProgress::CreateNative()
 {
-	NotificationProgress *note = new NotificationProgress();
-
-	note->ShowNotifitaionWithProgress(Notification::DOWNLOAD_PROGRESS,
-			title,
-			text,
-			current,
-			maximum);
-
-	notificationsList.push_back(note);
-
-	return note;
+    ShowNotifitaionWithProgress(id, title, text, total, progress);
 }
 
 }
