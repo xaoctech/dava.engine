@@ -5,12 +5,12 @@ using namespace DAVA;
 namespace
 {
 
-typedef std::set<String> StringSet;
+typedef DAVA::Set<String> StringSet;
 
 }
 
 SceneProcessor::SceneProcessor(EntityProcessorBase *_entityProcessor /*= NULL*/)
-    : entityProcessor(_entityProcessor)
+    : entityProcessor(SafeRetain(_entityProcessor))
 {
 }
 
@@ -21,12 +21,9 @@ SceneProcessor::~SceneProcessor()
 
 void SceneProcessor::SetEntityProcessor(EntityProcessorBase *_entityProcessor)
 {
-    if (entityProcessor)
-    {
-        SafeRelease(entityProcessor);
-    }
+    SafeRelease(entityProcessor);
 
-    entityProcessor = _entityProcessor;
+    entityProcessor = SafeRetain(_entityProcessor);
 }
 
 bool SceneProcessor::Execute(DAVA::Scene *currentScene)
@@ -54,8 +51,14 @@ bool SceneProcessor::Execute(DAVA::Scene *currentScene)
         sceneModified = sceneModified || entityModified;
         if (entityModified && needProcessExternal)
         {
-            CustomPropertiesComponent *customProperties = static_cast<CustomPropertiesComponent*>(currentEntity->GetComponent(Component::CUSTOM_PROPERTIES_COMPONENT));
-            KeyedArchive *props = customProperties->GetArchive();
+            KeyedArchive *props = GetCustomPropertiesArchieve(currentEntity);
+            
+            if (!props)
+            {
+                Logger::Warning("%s %s custom properties not found", __FUNCTION__, currentEntity->GetName().c_str());
+                continue;
+            }
+            
             if (!props->IsKeyExists("editor.referenceToOwner"))
             {
                 Logger::Error("%s editor.referenceToOwner not found for %s", __FUNCTION__, currentEntity->GetName().c_str());
@@ -69,12 +72,9 @@ bool SceneProcessor::Execute(DAVA::Scene *currentScene)
             {
                 Scene *newScene = new Scene();
                 Entity *root = newScene->GetRootNode(referenceToOwner);
-                if (root && root->GetChildrenCount() == 1)
-                {
-                    root = root->GetChild(0);
-                }
                 newScene->AddNode(root);
-                entityProcessor->ProcessEntity(root, currentEntity->GetName(), true);
+                DVASSERT(root->GetChildrenCount() == 1);
+                entityProcessor->ProcessEntity(root->GetChild(0), currentEntity->GetName(), true);
                 newScene->Save(referenceToOwner);
                 SafeRelease(newScene);
             }

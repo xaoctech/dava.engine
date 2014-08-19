@@ -1,3 +1,6 @@
+#ifndef __SCENE_PROCESSOR_H__
+#define __SCENE_PROCESSOR_H__
+
 #include "DAVAEngine.h"
 
 class EntityProcessorBase : public DAVA::BaseObject
@@ -27,3 +30,5 @@ public:
 private:
     EntityProcessorBase *entityProcessor;
 };
+
+#endif
