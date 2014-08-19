@@ -2960,7 +2960,9 @@ void QtMainWindow::OnBatchProcessScene()
     SceneProcessor sceneProcessor;
 
     // For client developers: need to set entity processor derived from EntityProcessorBase
-    //sceneProcessor.SetEntityProcessor(new DestructibleSoundAdder());
+    //DestructibleSoundAdder *entityProcessor = new DestructibleSoundAdder();
+    //sceneProcessor.SetEntityProcessor(entityProcessor);
+    //SafeRelease(entityProcessor);
 
     SceneEditor2* sceneEditor = GetCurrentScene();
     if (sceneProcessor.Execute(sceneEditor))
