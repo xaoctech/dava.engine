@@ -312,6 +312,22 @@ void HierarchyTreeControl::HandleDropHierarchyMimeData(QDropEvent *event, const 
 	else //Otherwise move item(s)
 	{
 		HierarchyTreeNode::HIERARCHYTREENODESIDLIST items = mimeData->GetItems();
+        
+        // Perform the validation - in case at least one item coincides with insertInto
+        // or insertAfter items, block the move. This may happen under MacOS
+        // because of Qt defect https://bugreports.qt-project.org/browse/QTBUG-4075
+        for (HierarchyTreeNode::HIERARCHYTREENODESIDLIST::iterator iter = items.begin();
+             iter != items.end(); iter ++)
+        {
+            if ((*iter) == insertInTo || (*iter) == insertAfter)
+            {
+                // No way to move.
+                HierarchyTreeController::Instance()->ResetSelectedControl();
+                event->ignore();
+                return;
+            }
+        }
+
 		ChangeNodeHeirarchy* cmd = new ChangeNodeHeirarchy(insertInTo, insertAfter, items);
 		CommandsController::Instance()->ExecuteCommand(cmd);
 		SafeRelease(cmd);
@@ -344,7 +360,7 @@ void HierarchyTreeControl::dragEnterEvent(QDragEnterEvent *event)
 	event->ignore();
 }
 
-void HierarchyTreeControl::dragLeaveEvent(QDragLeaveEvent */*event*/)
+void HierarchyTreeControl::dragLeaveEvent(QDragLeaveEvent * /*event*/)
 {
     StopExpandTimer();
 }
