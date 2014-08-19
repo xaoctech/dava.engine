@@ -34,6 +34,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/Singleton.h"
 #include "Platform/NotificationAndroid.h"
+#include "Platform/NotificationNotImplemented.h"
 
 namespace DAVA
 {
@@ -41,32 +42,32 @@ namespace DAVA
 class Notification
 #if defined(__DAVAENGINE_ANDROID__)
 		: public JniNotification
+#elif defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
+        : public NotificationNotImplemented
 #endif
 {
 public:
-	enum Type
-	{
-		DOWNLOAD_PROGRESS = 1,
-	};
-
-
-public:
     Notification();
     virtual ~Notification();
+    
+    virtual void CreateNative() = 0;
+
 	void SetTitle(const String &title);
 	void SetText(const String &text);
     virtual void Hide(uint32 id);
 
 protected:
     uint32 id;
-    String text;
     String title;
+    String text;
 };
 
 class NotificationProgress : public Notification
 {
 public:
 	NotificationProgress();
+    
+    virtual void CreateNative();
 
 	void SetProgressCurrent(uint32 _currentProgress);
 	void SetProgressTotal(uint32 _total);
@@ -79,8 +80,10 @@ private:
 class NotificationController : public Singleton<NotificationController>
 {
 public:
+    virtual ~NotificationController();
 	NotificationProgress *CreateNotificationProgress(const String &title = "", const String &text = "", uint32 max = 0, uint32 current = 0);
-
+    
+private:
 	List<Notification *> notificationsList;
 };
 

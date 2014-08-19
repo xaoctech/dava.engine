@@ -37,15 +37,58 @@ namespace DAVA
 Notification::Notification()
 #if defined(__DAVAENGINE_ANDROID__)
     : JniNotification()
+#elif defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
+    : NotificationNotImplemented()
 #endif
-	, id(0)
-	, text("")
 	, title("")
+	, text("")
 {
+    static uint32 lastId = 0;
+    id = ++lastId;
 }
     
 Notification::~Notification()
 {
+}
+    
+NotificationProgress::NotificationProgress()
+    : Notification()
+    , total(0)
+    , progress(0)
+{
+
+}
+    
+NotificationController::~NotificationController()
+{
+    if (!notificationsList.empty())
+    {
+        for (List<Notification *>::iterator it = notificationsList.begin(); it != notificationsList.end();)
+        {
+            Notification *notification = (*it);
+            SafeDelete(notification);
+            it = notificationsList.erase(it);
+        }
+    }
+}
+
+NotificationProgress *NotificationController::CreateNotificationProgress(const String &title, const String &text, uint32 maximum, uint32 current)
+{
+    NotificationProgress *note = new NotificationProgress();
+    
+    if (NULL != note)
+    {
+        note->SetText(text);
+        note->SetTitle(title);
+        note->SetProgressCurrent(0);
+        note->SetProgressTotal(0);
+        
+        note->CreateNative();
+        
+        notificationsList.push_back(note);
+    }
+    
+    return note;
 }
 
 }
