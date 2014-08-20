@@ -65,7 +65,7 @@ private:
 
 public:
 	FT_Face face;
-	Size2i DrawString(const WideString& str, void * buffer, int32 bufWidth, int32 bufHeight, 
+	Font::StringMetrics DrawString(const WideString& str, void * buffer, int32 bufWidth, int32 bufHeight, 
 		uint8 r, uint8 g, uint8 b, uint8 a, 
 		float32 size, bool realDraw, 
 		int32 offsetX, int32 offsetY,
@@ -188,12 +188,12 @@ String FTFont::GetRawHashString()
 	return fontPath.GetFrameworkPath() + "_" + Font::GetRawHashString();
 }
 
-Size2i FTFont::DrawStringToBuffer(void * buffer, int32 bufWidth, int32 bufHeight, int32 offsetX, int32 offsetY, int32 justifyWidth, int32 spaceAddon, const WideString& str, bool contentScaleIncluded )
+Font::StringMetrics FTFont::DrawStringToBuffer(void * buffer, int32 bufWidth, int32 bufHeight, int32 offsetX, int32 offsetY, int32 justifyWidth, int32 spaceAddon, const WideString& str, bool contentScaleIncluded )
 {
 	return internalFont->DrawString(str, buffer, bufWidth, bufHeight, 255, 255, 255, 255, renderSize, true, offsetX, offsetY, justifyWidth, spaceAddon, NULL, contentScaleIncluded );
 }
 
-Size2i FTFont::GetStringSize(const WideString& str, Vector<float32> *charSizes) const
+Font::StringMetrics FTFont::GetStringMetrics(const WideString& str, Vector<float32> *charSizes) const
 {
 	return internalFont->DrawString(str, 0, 0, 0, 0, 0, 0, 0, renderSize, false, 0, 0, 0, 0, charSizes);
 }
@@ -289,7 +289,7 @@ int32 FTInternalFont::Release()
 
 Mutex FTInternalFont::drawStringMutex;
 
-Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bufWidth, int32 bufHeight, 
+Font::StringMetrics FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bufWidth, int32 bufHeight, 
 					uint8 r, uint8 g, uint8 b, uint8 a,  
 					float32 size, bool realDraw, 
 					int32 offsetX, int32 offsetY,
@@ -318,6 +318,7 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 
 	int32 faceBboxYMin = FT_MulFix(face->bbox.yMin, face->size->metrics.y_scale);
 	int32 faceBboxYMax = FT_MulFix(face->bbox.yMax, face->size->metrics.y_scale);
+	int32 faceBboxXMin = FT_MulFix(face->bbox.xMin, face->size->metrics.y_scale);
 	
 	if(!contentScaleIncluded) 
 	{
@@ -327,13 +328,12 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 		offsetX = (int32)(virtualToPhysicalFactor * offsetX);
 	}
 
-
 	FT_Vector pen;
 	pen.x = offsetX<<6;
+	//pen.x -= (FT_Pos)(virtualToPhysicalFactor*faceBboxXMin);
 	pen.y = offsetY<<6;
 	pen.y -= (FT_Pos)(virtualToPhysicalFactor*faceBboxYMin);//bring baseline up
-
-
+	
 
 	uint8 * resultBuf = (uint8*)buffer;
 
@@ -342,34 +342,44 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 	FT_Vector * advances = new FT_Vector[strLen];
 	Prepare(advances);
 
-    const int spaceWidth = (face->glyph->metrics.width >> 6) >> 1;
-    
+    float32 bboxSize = ceilf(((float32)(faceBboxYMax-faceBboxYMin))/64.f);
+	int32 baseSize = (int32)ceilf(bboxSize * virtualToPhysicalFactor); 
+	int32 multilineOffsetY = baseSize + offsetY*2;
+
 	int32 lastRight = 0; //charSizes helper
     int32 justifyOffset = 0;
     int32 fixJustifyOffset = 0;
     if (countSpace > 0 && justifyWidth > 0 && spaceAddon > 0)
     {
         int32 diff= justifyWidth - spaceAddon;
-        justifyOffset =  diff / countSpace;
+        justifyOffset = diff / countSpace;
         fixJustifyOffset = diff - justifyOffset*countSpace;
-        
     }
-	int32 maxWidth = 0;
-	
+
+	Font::StringMetrics metrics;
+
+	metrics.baseline =  (int32)ceilf((float32)faceBboxYMax / 64.f * virtualToPhysicalFactor);
+	metrics.height = baseSize;
+	metrics.drawRect = Rect2i(0x7fffffff, 0x7fffffff, 0, baseSize);
+	int32 layoutWidth = 0; // width in FT points
+		
 	for(int32 i = 0; i < strLen; ++i)
 	{
-        if ( i > 0 && justifyOffset > 0 )
-        {
-            if(str[i-1] == L' ')
-            {
-                pen.x += justifyOffset<<6;
-            }
-            if (fixJustifyOffset>0)
-            {
-                fixJustifyOffset--;
-                pen.x += 1<<6;
-            }
-        }
+		if ( i > 0 && (justifyOffset > 0 || fixJustifyOffset > 0))
+		{
+			if(str[i-1] == L' ')
+			{
+				pen.x += justifyOffset << 6;
+				layoutWidth += justifyOffset << 6;
+			}
+			if (fixJustifyOffset > 0)
+			{
+				fixJustifyOffset--;
+				pen.x += 1 << 6;
+				layoutWidth += 1 << 6;
+			}
+		}
+		
 		Glyph		& glyph = glyphs[i];
 		FT_Glyph	image;
 		FT_BBox		bbox;
@@ -390,97 +400,108 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 			continue;
 		}
 
+		FT_Glyph_Get_CBox(image, FT_GLYPH_BBOX_PIXELS, &bbox);
+
 		pen.x += advances[i].x;
 		pen.y += advances[i].y;
 
-		FT_Glyph_Get_CBox(image, FT_GLYPH_BBOX_PIXELS, &bbox);
-
-		float32 bboxSize = ceilf(((float32)(faceBboxYMax-faceBboxYMin))/64.f);
-		int32 baseSize = (int32)ceilf(bboxSize*virtualToPhysicalFactor); 
-		int32 multilineOffsetY = baseSize+offsetY*2;
-		if(!realDraw || (bbox.xMax>0 && bbox.yMax>0 && bbox.xMin<bufWidth && bbox.yMin < bufHeight))
+ 		error = FT_Glyph_To_Bitmap(&image, FT_RENDER_MODE_NORMAL, 0, 1);
+		if(!error)
 		{
- 			error = FT_Glyph_To_Bitmap(&image, FT_RENDER_MODE_NORMAL, 0, 1);
-			if(!error)
+			FT_BitmapGlyph  bit = (FT_BitmapGlyph)image;
+			FT_Bitmap * bitmap = &bit->bitmap;
+
+			int32 left = bit->left;
+			int32 top = multilineOffsetY - bit->top;
+			int32 width = bitmap->width;
+			int32 height = bitmap->rows;
+
+			if(charSizes)
 			{
-				FT_BitmapGlyph  bit = (FT_BitmapGlyph)image;
-				FT_Bitmap * bitmap = &bit->bitmap;
-
-				int32 left = bit->left;
-				int32 top = multilineOffsetY-bit->top;
-				int32 width = bitmap->width;
-				//int32 height = bitmap->rows;
-
-				if(charSizes)
+				if(0 == width)
 				{
-					if(0 == width)
-					{
-                        if(str[i] == ' ')
-                        {
-                            charSizes->push_back((float32)spaceWidth);
-                            lastRight += spaceWidth;
-                        }
-                        else
-                        {
-                            charSizes->push_back(0);
-                        }
-					}
-					else if(charSizes->empty())
-					{
-						charSizes->push_back((float32)width);
-						lastRight = width;
-					}
-					else
-					{
-						int32 value = left+width-lastRight;
-						lastRight += value;
-						charSizes->push_back((float32)value);
-					}
+                    if(str[i] == ' ')
+                    {
+						int32 spaceWidth = advances[i].x >> 6;
+                        charSizes->push_back((float32)spaceWidth);
+                        lastRight += spaceWidth;
+                    }
+                    else
+                    {
+                        charSizes->push_back(0);
+                    }
 				}
-
-				maxWidth = Max(maxWidth, left+width);
-
-				if(realDraw)
+				else if(charSizes->empty())
 				{
-					int32 realH = Min((int32)bitmap->rows, (int32)(bufHeight - top));
-					int32 realW = Min((int32)bitmap->width, (int32)(bufWidth - left));
-					int32 ind = top*bufWidth + left;
-					DVASSERT(ind >= 0);
-					uint8 * writeBuf = resultBuf + ind;
-					uint8 * readBuf = bitmap->buffer;
+					charSizes->push_back((float32)width);
+					lastRight = width;
+				}
+				else
+				{
+					int32 value = left + width - lastRight;
+					lastRight += value;
+					charSizes->push_back((float32)value);
+				}
+			}
+
+			layoutWidth += advances[i].x;
+
+			metrics.drawRect.x = Min(metrics.drawRect.x, left);
+			metrics.drawRect.y = Min(metrics.drawRect.y, top);
+			metrics.drawRect.dx = Max(metrics.drawRect.dx, left + width);
+			metrics.drawRect.dy = Max(metrics.drawRect.dy, top + height);
+
+			if(realDraw && bbox.xMin < bufWidth && bbox.yMin < bufHeight && top >= 0)
+			{
+				int32 realH = Min((int32)bitmap->rows, (int32)(bufHeight - top));
+				int32 realW = Min((int32)bitmap->width, (int32)(bufWidth - left));
+				int32 ind = top*bufWidth + left;
+				DVASSERT(ind >= 0);
+				uint8 * writeBuf = resultBuf + ind;
+				uint8 * readBuf = bitmap->buffer;
                     
-					for(int32 h = 0; h < realH; h++)
+				for(int32 h = 0; h < realH; h++)
+				{
+					for(int32 w = 0; w < realW; w++)
 					{
-						for(int32 w = 0; w < realW; w++)
-						{
-							*writeBuf++ = *readBuf++;
-						}
-						writeBuf += bufWidth-realW;
-						// DF-1827 - Increment read buffer with proper value
-						readBuf += (int32)bitmap->width-realW;
+						*writeBuf++ += *readBuf++;
 					}
-					if(writeBuf > resultBuf + ind)
-					{
-						DVASSERT((writeBuf-resultBuf-(bufWidth-realW)) <= (bufWidth*bufHeight));
-					}
+					writeBuf += bufWidth-realW;
+					// DF-1827 - Increment read buffer with proper value
+					readBuf += (int32)bitmap->width-realW;
+				}
+				if(writeBuf > resultBuf + ind)
+				{
+					DVASSERT((writeBuf-resultBuf-(bufWidth-realW)) <= (bufWidth*bufHeight));
 				}
 			}
 		}
-
+		
 		FT_Done_Glyph(image);
 	}
 
 	SafeDeleteArray(advances);
 	drawStringMutex.Unlock();
-	
-	if(contentScaleIncluded) 
+
+	// Transform right/bottom edges into width/height
+	metrics.drawRect.dx -= metrics.drawRect.x;
+	metrics.drawRect.dy -= metrics.drawRect.y;
+
+	// Transform width from FT points to pixels
+	metrics.width = layoutWidth >> 6;
+
+	if(!contentScaleIncluded) 
 	{
-		return Size2i(maxWidth, GetFontHeight(size));
+		float32 physicalToVirtualFactor = Core::GetPhysicalToVirtualFactor();
+		metrics.drawRect.x = (int32)ceilf(metrics.drawRect.x * physicalToVirtualFactor);
+		metrics.drawRect.y = (int32)ceilf(metrics.drawRect.y * physicalToVirtualFactor);
+		metrics.drawRect.dx = (int32)ceilf(metrics.drawRect.dx * physicalToVirtualFactor);
+		metrics.drawRect.dy = (int32)ceilf(metrics.drawRect.dy * physicalToVirtualFactor);
+		metrics.baseline = (int32)ceilf(metrics.baseline * physicalToVirtualFactor);
+		metrics.width = (int32)ceilf(metrics.width * physicalToVirtualFactor);
+		metrics.height = (int32)ceilf(metrics.height * physicalToVirtualFactor);
 	}
-	else
-	{
-		return Size2i((int32)ceilf(Core::GetPhysicalToVirtualFactor()*(maxWidth)), GetFontHeight(size));
-	}
+	return metrics;
 }
 
 
@@ -496,7 +517,7 @@ uint32 FTInternalFont::GetFontHeight(float32 size) const
 
 	SetFTCharSize(size);
 	uint32 height = (uint32)ceilf((float32)((FT_MulFix(face->bbox.yMax-face->bbox.yMin, face->size->metrics.y_scale)))/64.f);
-    
+	
     drawStringMutex.Unlock();
 
     return height;
@@ -515,7 +536,6 @@ void FTInternalFont::SetFTCharSize(float32 size) const
 void FTInternalFont::Prepare(FT_Vector * advances)
 {
 	FT_Vector	* prevAdvance = 0;
-	FT_Vector	extent = {0, 0};
 	FT_UInt		prevIndex   = 0;
 	const bool		useKerning = (FT_HAS_KERNING(face) > 0);
 	const int32		size = glyphs.size();
@@ -550,30 +570,10 @@ void FTInternalFont::Prepare(FT_Vector * advances)
 			//	prevAdvance->x = Round(prevAdvance->x);
 			//	prevAdvance->y = Round(prevAdvance->y);
 			//}
-
-			extent.x += prevAdvance->x;
-			extent.y += prevAdvance->y;
 		}
 
 		prevIndex   = glyph.index;
 		prevAdvance = &advances[i];
-	}
-
-	if(prevAdvance)
-	{
-		//if(handle->hinted)
-		//{
-		//	prevAdvance->x = Round(prevAdvance->x);
-		//	prevAdvance->y = Round(prevAdvance->y);
-		//}
-
-		extent.x += prevAdvance->x;
-		extent.y += prevAdvance->y;
-	}
-
-	if(size > 0)
-	{
-		advances[size-1] = extent;
 	}
 }
 
@@ -626,7 +626,6 @@ int32 FTInternalFont::LoadString(const WideString& str)
 			!(getGlyphError = FT_Get_Glyph(face->glyph, &glyph.image)))
 		{
 			//FT_Glyph_Metrics*  metrics = &face->glyph->metrics;
-
 			if(prevRsbDelta - face->glyph->lsb_delta >= 32 )
 				glyph.delta = -1 << 6;
 			else if(prevRsbDelta - face->glyph->lsb_delta < -32)
