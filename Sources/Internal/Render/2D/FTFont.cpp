@@ -422,7 +422,7 @@ Font::StringMetrics FTInternalFont::DrawString(const WideString& str, void * buf
 				{
                     if(str[i] == ' ')
                     {
-						int32 spaceWidth = advances[i].x >> 6;
+						int32 spaceWidth = (int32)advances[i].x >> 6;
                         charSizes->push_back((float32)spaceWidth);
                         lastRight += spaceWidth;
                     }
@@ -493,8 +493,8 @@ Font::StringMetrics FTInternalFont::DrawString(const WideString& str, void * buf
 	if(!contentScaleIncluded) 
 	{
 		float32 physicalToVirtualFactor = Core::GetPhysicalToVirtualFactor();
-		metrics.drawRect.x = (int32)ceilf(metrics.drawRect.x * physicalToVirtualFactor);
-		metrics.drawRect.y = (int32)ceilf(metrics.drawRect.y * physicalToVirtualFactor);
+		metrics.drawRect.x = (int32)floorf(metrics.drawRect.x * physicalToVirtualFactor);
+		metrics.drawRect.y = (int32)floorf(metrics.drawRect.y * physicalToVirtualFactor);
 		metrics.drawRect.dx = (int32)ceilf(metrics.drawRect.dx * physicalToVirtualFactor);
 		metrics.drawRect.dy = (int32)ceilf(metrics.drawRect.dy * physicalToVirtualFactor);
 		metrics.baseline = (int32)ceilf(metrics.baseline * physicalToVirtualFactor);

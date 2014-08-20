@@ -697,12 +697,12 @@ void TextBlock::CalculateCacheParams()
 			}
 			else if(align & ALIGN_VCENTER)
 			{
-				int startIndex = (oldLines.size() - needLines + 1) / 2;
+				int startIndex = ((int)oldLines.size() - needLines + 1) / 2;
 				multilineStrings.assign(oldLines.begin() + startIndex, oldLines.begin() + startIndex + needLines);
 			}
 			else //if(ALIGN_BOTTOM)
 			{
-				int startIndex = oldLines.size() - needLines;
+				int startIndex = (int)oldLines.size() - needLines;
 				multilineStrings.assign(oldLines.begin() + startIndex, oldLines.end());
 			}
 			textSize.height = textSize.drawRect.dy = fontHeight * (int32)multilineStrings.size() - yOffset;	
@@ -733,10 +733,11 @@ void TextBlock::CalculateCacheParams()
 	}
 		
 	//calc texture size
-	int32 dx = (int32)ceilf(Core::GetVirtualToPhysicalFactor() * textSize.drawRect.dx);
-	int32 dy = (int32)ceilf(Core::GetVirtualToPhysicalFactor() * textSize.drawRect.dy);
-	int32 ox = (int32)ceilf(Core::GetVirtualToPhysicalFactor() * textSize.drawRect.x);
-	int32 oy = (int32)ceilf(Core::GetVirtualToPhysicalFactor() * textSize.drawRect.y);
+	float32 virt2phys = Core::GetVirtualToPhysicalFactor();
+	int32 dx = (int32)ceilf(virt2phys * textSize.drawRect.dx);
+	int32 dy = (int32)ceilf(virt2phys * textSize.drawRect.dy);
+	int32 ox = (int32)floorf(virt2phys * textSize.drawRect.x);
+	int32 oy = (int32)floorf(virt2phys * textSize.drawRect.y);
 
 	cacheUseJustify = useJustify;
 	cacheDx = dx;
