@@ -39,6 +39,7 @@ extern void FrameworkWillTerminate();
 #include "Platform/Thread.h"
 #include "Input/InputSystem.h"
 #include "FileSystem/FileSystem.h"
+#include "Platform/TemplateAndroid/AssetsManagerAndroid.h"
 
 namespace DAVA
 {
@@ -70,7 +71,6 @@ namespace DAVA
 
 	CorePlatformAndroid::CorePlatformAndroid()
 	: Core()
-	, applicationPackage(NULL)
 	{
 		wasCreated = false;
 		renderIsActive = false;
@@ -99,11 +99,6 @@ namespace DAVA
 
 	void CorePlatformAndroid::Quit()
 	{
-	    if (applicationPackage)
-	    {
-	        zip_close(applicationPackage);
-	    }
-
 		Logger::Debug("[CorePlatformAndroid::Quit]");
 		QuitAction();
 		Core::Quit();
@@ -164,25 +159,14 @@ namespace DAVA
 		Logger::Debug("[CorePlatformAndroid::UpdateScreenMode] done");
 	}
 
-	void CorePlatformAndroid::InitApplicationPackage()
-	{
-		applicationPackage = zip_open(packageName.c_str(), 0, NULL);
-		if (applicationPackage == NULL)
-		{
-			DVASSERT_MSG(false, "[CorePlatformAndroid::InitApplicationPackage] Could not initialize application package.");
-			applicationPackage = NULL;
-		}
-	}
-
 	void CorePlatformAndroid::CreateAndroidWindow(const char8 *docPath, const char8 *assets, const char8 *logTag, AndroidSystemDelegate * sysDelegate)
 	{
 		androidDelegate = sysDelegate;
 		externalStorage = docPath;
-		packageName = assets;
 
 		Core::CreateSingletons();
 
-		InitApplicationPackage();
+		AssetsManager::Instance()->Init(assets);
 
 		Logger::SetTag(logTag);
 	}
@@ -362,16 +346,6 @@ namespace DAVA
 		newEvent.timestamp = time;
 
 		return newEvent;
-	}
-
-	AAssetManager * CorePlatformAndroid::GetAssetManager()
-	{
-		return assetMngr;
-	}
-
-	void CorePlatformAndroid::SetAssetManager(AAssetManager * mngr)
-	{
-		assetMngr = mngr;
 	}
 
 	void CorePlatformAndroid::OnInput(int32 action, int32 id, float32 x, float32 y, float64 time, int32 source, int32 tapCount)

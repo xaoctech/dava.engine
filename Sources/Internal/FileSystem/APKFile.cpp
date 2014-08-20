@@ -31,11 +31,11 @@
 
 #if defined(__DAVAENGINE_ANDROID__)
 
-#include "Platform/TemplateAndroid/CorePlatformAndroid.h"
 #include "FileSystem/FileSystem.h"
 #include "FileSystem/DynamicMemoryFile.h"
 #include "FileSystem/ResourceArchive.h"
 #include "Platform/Mutex.h"
+#include "Platform/TemplateAndroid/AssetsManagerAndroid.h"
 #include "Thread/LockGuard.h"
 
 namespace DAVA
@@ -67,11 +67,11 @@ File * APKFile::CreateFromAssets(const FilePath &filePath, uint32 attributes)
 		String filenamecpp = filePath.GetAbsolutePathname();
         
 		String::size_type pos = filenamecpp.find(item.attachPath);
-		if (pos == 0)
+		if (0 == pos)
 		{
 			String relfilename = filenamecpp.substr(item.attachPath.length());
 			int32 size = item.archive->LoadResource(relfilename, 0);
-			if ( size == -1 )
+			if (-1 == size)
 			{
 				return 0;
 			}
@@ -92,22 +92,20 @@ File * APKFile::CreateFromAssets(const FilePath &filePath, uint32 attributes)
         return NULL;
     }
     
-    
-    CorePlatformAndroid *core = (CorePlatformAndroid *)Core::Instance();
-    DVASSERT_MSG(core, "[APKFile::CreateFromAssets] Need to create core before loading files");
+    AssetsManager* assetsManager = AssetsManager::Instance();
+    DVASSERT_MSG(assetsManager, "[APKFile::CreateFromAssets] Need to create AssetsManager before loading files");
 
-    zip* package = core->GetApplicationPackage();
-    if (package == NULL)
+    zip* package = assetsManager->GetApplicationPackage();
+    if (NULL == package)
     {
         DVASSERT_MSG(false, "[APKFile::CreateFromAssets] Package file should be initialized.");
         return NULL;
     }
 
-    FilePath assetFile = FilePath("assets/") + filePath.GetAbsolutePathname();
-    String assetFileStr = assetFile.GetAbsolutePathname();
+    String assetFileStr = filePath.GetAbsolutePathname();
 
     int index = zip_name_locate(package, assetFileStr.c_str(), 0);
-    if (index == -1)
+    if (-1 == index)
     {
         Logger::Error("[APKFile::CreateFromAssets] Can't locate file in the archive: %s", assetFileStr.c_str());
         return NULL;
@@ -116,23 +114,23 @@ File * APKFile::CreateFromAssets(const FilePath &filePath, uint32 attributes)
     struct zip_stat stat;
 
     int32 error = zip_stat_index(package, index, 0, &stat);
-    if (error == -1)
+    if (-1 == error)
     {
         Logger::Error("[APKFile::CreateFromAssets] Can't get file info: %s", assetFileStr.c_str());
         return NULL;
     }
 
     zip_file* file = zip_fopen_index(package, index, 0);
-    if (file == NULL)
+    if (NULL == file)
     {
         Logger::Error("[APKFile::CreateFromAssets] Can't open file in the archive: %s", assetFileStr.c_str());
         return NULL;
     }
 
+    DVASSERT(stat.size >= 0);
     uint8 *data = new uint8[stat.size];
 
-    int32 bytesRead = zip_fread(file, data, stat.size);
-    if (bytesRead == -1)
+    if (zip_fread(file, data, stat.size) != stat.size)
     {
         Logger::Error("[APKFile::CreateFromAssets] Error reading file: %s", assetFileStr.c_str());
         SafeDeleteArray(data);
@@ -140,13 +138,11 @@ File * APKFile::CreateFromAssets(const FilePath &filePath, uint32 attributes)
         return NULL;
     }
 
-    APKFile *fileInstance = NULL;
-    fileInstance = CreateFromData(filePath, data, stat.size, attributes);
-
+    APKFile *fileInstance = CreateFromData(filePath, data, stat.size, attributes);
     DVASSERT_MSG(fileInstance, "[APKFile::CreateFromAssets] Can't create dynamic file from memory");
 
-    zip_fclose(file);
     SafeDeleteArray(data);
+    zip_fclose(file);
     return fileInstance;
 }
     

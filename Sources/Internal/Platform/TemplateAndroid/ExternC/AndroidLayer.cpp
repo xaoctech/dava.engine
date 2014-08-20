@@ -388,10 +388,6 @@ void Java_com_dava_framework_JNIRenderer_nativeRenderRecreated(JNIEnv * env, job
 		}
 	}
 }
-void Java_com_dava_framework_JNIApplication_SetAssetManager(JNIEnv * env, jobject classthis, jobject assetManager)
-{
-	core->SetAssetManager(AAssetManager_fromJava(env, assetManager));
-}
 
 //END OF activity
 

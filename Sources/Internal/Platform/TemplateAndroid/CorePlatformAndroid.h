@@ -38,8 +38,6 @@
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 
-#include "zip/zip.h"
-
 namespace DAVA
 {
 
@@ -93,13 +91,7 @@ public:
 
 	bool DownloadHttpFile(const String & url, const String & documentsPathname);
 
-	AAssetManager * GetAssetManager();
-	void SetAssetManager(AAssetManager * mngr);
-
 	const String& GetExternalStoragePathname() const {return externalStorage;};
-	const String& GetPackageName() const {return packageName;};
-
-	zip* GetApplicationPackage() const {return applicationPackage;};
 
 	AndroidSystemDelegate* GetAndroidSystemDelegate() const;
 
@@ -111,8 +103,6 @@ private:
 	void UpdateScreenMode();
 
     void ResizeView(int32 w, int32 h);
-
-    void InitApplicationPackage();
 
 private:
 	int32 width;
@@ -128,12 +118,8 @@ private:
 	Vector<DAVA::UIEvent> totalTouches;
 
 	AndroidSystemDelegate *androidDelegate;
-	AAssetManager * assetMngr;
 
 	String externalStorage;
-	String packageName;
-
-	zip* applicationPackage;
 };
 };
 #endif // #if defined(__DAVAENGINE_ANDROID__)
