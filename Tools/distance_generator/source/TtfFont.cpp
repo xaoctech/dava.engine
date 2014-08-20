@@ -106,6 +106,11 @@ float TtfFont::GetLineHeight()
     return FT_MulFix(face->bbox.yMax - face->bbox.yMin, face->size->metrics.y_scale) / 64.f;
 }
 
+float TtfFont::GetBaseline()
+{
+	return FT_MulFix(face->bbox.yMax, face->size->metrics.y_scale) / 64.f;
+}
+
 bool TtfFont::SetCharMap(int charmap)
 {
     if (charmap >= 0 && charmap < face->num_charmaps)

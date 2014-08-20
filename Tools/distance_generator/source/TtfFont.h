@@ -40,6 +40,7 @@ public:
     int GetCharMap();
 
     float GetLineHeight();
+	float GetBaseline();
 
     FT_Face& GetFace();
 protected:

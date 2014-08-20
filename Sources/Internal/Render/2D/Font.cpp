@@ -129,7 +129,11 @@ int32 Font::GetVerticalSpacing() const
 	return verticalSpacing;
 }
 
-    
+Size2i Font::GetStringSize(const WideString &str, Vector<float32> *charSizes)
+{
+	Font::StringMetrics metrics = GetStringMetrics(str, charSizes);
+	return Size2i(metrics.width, metrics.height);
+}
     
 void Font::SplitTextBySymbolsToStrings(const WideString & text, const Vector2 & targetRectSize, Vector<WideString> & resultVector)
 {
@@ -567,7 +571,16 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 void Font::AddCurrentLine(const WideString & text, const int32 pos, SeparatorPositions & separatorPosition, Vector<WideString> & resultVector) const
 {
     WideString currentLine = text.substr(separatorPosition.currentLineStart, pos - separatorPosition.currentLineStart);
-    resultVector.push_back(currentLine);
+	//Trim whitespace at begin/end line
+	while(currentLine.size() > 1 && L' ' == currentLine.front())
+	{
+		currentLine.erase(currentLine.begin());
+	}
+	while(currentLine.size() > 1 && L' ' == currentLine.back())
+	{
+		currentLine.erase(currentLine.end() - 1);
+	}
+	resultVector.push_back(currentLine);
     
     separatorPosition.Reset();
 }
