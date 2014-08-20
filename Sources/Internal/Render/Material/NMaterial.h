@@ -179,7 +179,6 @@ public:
 	static const FastName TEXTURE_DECAL;
 	static const FastName TEXTURE_CUBEMAP;
     static const FastName TEXTURE_HEIGHTMAP;
-    static const FastName TEXTURE_ATMOSPHEREMAP;
     static const FastName TEXTURE_DECALMASK;
     static const FastName TEXTURE_DECALTEXTURE;
     
@@ -225,7 +224,6 @@ public:
     static const FastName FLAG_FOG_HALFSPACE;
     static const FastName FLAG_FOG_HALFSPACE_LINEAR;
 	static const FastName FLAG_FOG_ATMOSPHERE;
-    static const FastName FLAG_FOG_ATMOSPHERE_MAP;
 	static const FastName FLAG_TEXTURESHIFT;
 	static const FastName FLAG_TEXTURE0_ANIMATION_SHIFT;
 	static const FastName FLAG_WAVE_ANIMATION;

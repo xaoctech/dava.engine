@@ -208,7 +208,6 @@ void Scene::InitGlobalMaterial()
     if(sceneGlobalMaterial->GetTexturePath(NMaterial::TEXTURE_LIGHTMAP).IsEmpty()) sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_LIGHTMAP, stubTexture2dLightmap);
     if(sceneGlobalMaterial->GetTexturePath(NMaterial::TEXTURE_DECAL).IsEmpty()) sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_DECAL, stubTexture2d);
     if(sceneGlobalMaterial->GetTexturePath(NMaterial::TEXTURE_CUBEMAP).IsEmpty()) sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_CUBEMAP, stubTextureCube);
-    if(sceneGlobalMaterial->GetTexturePath(NMaterial::TEXTURE_ATMOSPHEREMAP).IsEmpty()) sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_ATMOSPHEREMAP, stubTextureCube);
     if(sceneGlobalMaterial->GetTexturePath(NMaterial::TEXTURE_DECALMASK).IsEmpty()) sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_DECALMASK, stubTexture2d);
     if(sceneGlobalMaterial->GetTexturePath(NMaterial::TEXTURE_DECALTEXTURE).IsEmpty()) sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_DECALTEXTURE, stubTexture2d);
 
