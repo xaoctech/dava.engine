@@ -2,7 +2,6 @@ package com.dava.framework;
 
 import android.app.Application;
 import android.content.pm.ApplicationInfo;
-import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.util.Log;
 
@@ -14,7 +13,6 @@ public class JNIApplication extends Application
 	private native void OnConfigurationChanged(); 
 	private native void OnLowMemory(); 
 	private native void OnTerminate(); 
-	private native void SetAssetManager(AssetManager mngr);
 	
 	private String documentsDir;
 	
@@ -32,8 +30,6 @@ public class JNIApplication extends Application
 		
 		Log.w(JNIConst.LOG_TAG, String.format("[Application::onCreate] apkFilePath is %s", info.publicSourceDir)); 
 		OnCreateApplication(documentsDir, info.publicSourceDir, JNIConst.LOG_TAG, info.packageName);
-		
-		SetAssetManager(getAssets());
 
 		Log.i(JNIConst.LOG_TAG, "[Application::onCreate] finish"); 
 	}
