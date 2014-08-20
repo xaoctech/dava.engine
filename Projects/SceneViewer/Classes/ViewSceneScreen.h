@@ -47,19 +47,32 @@ public:
     virtual void Draw(const UIGeometricData &geometricData);
     virtual void Update(float32 timeElapsed);
 
-    
+    virtual void DidAppear();
+
 protected:
   
     void OnBack(BaseObject *caller, void *param, void *callerData);
+    
+    void UpdateCamera(float32 timeElapsed);
+    void UpdateInfo(float32 timeElapsed);
     
     Camera *camera;
     
     UIJoypad *moveJoyPAD;
     UIJoypad *viewJoyPAD;
     
+    UIStaticText *info;
+    
     Matrix4 aimUser;
     float32 viewXAngle, viewYAngle;
     Vector3 targetPosition;
+    
+    float32 framesTime;
+    uint32 frameCounter;
+    
+    
+    uint64 drawTime;
+    uint64 updateTime;
 };
 
 #endif //__VIEW_SCENE_SCREEN_H__

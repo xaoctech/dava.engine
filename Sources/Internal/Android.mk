@@ -103,6 +103,10 @@ LOCAL_CFLAGS += -DDAVA_FMOD
 
 ifeq ($(DAVA_PROFILE), true)
 ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
+$(info ==============)
+$(info profiling enabled!)
+$(info ==============)
+
 LOCAL_CFLAGS += -pg
 LOCAL_CFLAGS += -D__DAVAENGINE_PROFILE__
 endif

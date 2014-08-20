@@ -33,6 +33,11 @@
 ViewSceneScreen::ViewSceneScreen()
     : BaseScreen()
     , camera(NULL)
+    , info(NULL)
+    , frameCounter(0)
+    , framesTime(0.f)
+    , drawTime(0)
+    , updateTime(0)
 {
 }
 
@@ -56,6 +61,13 @@ void ViewSceneScreen::LoadResources()
 	camera->SetUp(Vector3(0, 0, 1.f));
     camera->SetTarget(Vector3(0, 0, 0));
     camera->SetPosition(Vector3(0, 0, 100));
+
+
+    //TODO: debug
+    camera->SetPosition(Vector3(18.7855f, 111.0697f, 57.0635f));
+    camera->SetDirection(Vector3(-1.2904f, 9.0496f, -4.0545f));
+    //ENDOFTODO
+
     
     scene->AddCamera(camera);
     scene->SetCurrentCamera(camera);
@@ -87,10 +99,20 @@ void ViewSceneScreen::LoadResources()
     
     viewXAngle = 0;
     viewYAngle = 0;
+    
+    DVASSERT(info == NULL);
+    info = new UIStaticText(Rect(0, 0, screenRect.dx, 30.f));
+    info->SetFont(font);
+    info->SetTextColor(Color::White);
+    info->SetTextAlign(ALIGN_VCENTER | ALIGN_RIGHT);
+    
+    AddControl(info);
 }
 
 void ViewSceneScreen::UnloadResources()
 {
+    SafeRelease(info);
+    
     SafeRelease(viewJoyPAD);
     SafeRelease(moveJoyPAD);
     
@@ -106,17 +128,32 @@ void ViewSceneScreen::OnBack(BaseObject *caller, void *param, void *callerData)
 
 void ViewSceneScreen::Draw(const DAVA::UIGeometricData &geometricData)
 {
+    uint64 startTime = SystemTimer::Instance()->GetAbsoluteNano();
+    
     RenderManager::Instance()->ClearDepthBuffer();
 
     BaseScreen::Draw(geometricData);
+
+    drawTime += (SystemTimer::Instance()->GetAbsoluteNano() - startTime);
 }
+
 
 
 void ViewSceneScreen::Update(float32 timeElapsed)
 {
+    uint64 startTime = SystemTimer::Instance()->GetAbsoluteNano();
+
     BaseScreen::Update(timeElapsed);
     
-    
+    updateTime += (SystemTimer::Instance()->GetAbsoluteNano() - startTime);
+
+//    UpdateCamera(timeElapsed);
+    UpdateInfo(timeElapsed);
+}
+
+
+void ViewSceneScreen::UpdateCamera(float32 timeElapsed)
+{
     Vector2 angleJoypadPos = viewJoyPAD->GetDigitalPosition();
     viewXAngle += angleJoypadPos.x * timeElapsed * 25.0f;
     viewYAngle += angleJoypadPos.y * timeElapsed * 25.0f;
@@ -140,5 +177,33 @@ void ViewSceneScreen::Update(float32 timeElapsed)
     
     camera->SetPosition(pos);
     camera->SetDirection(dir);
+}
+
+static const float32 INFO_UPDATE_TIME = 1.0f;
+void ViewSceneScreen::UpdateInfo(float32 timeElapsed)
+{
+    ++frameCounter;
+    framesTime += timeElapsed;
+    
+    if(framesTime > INFO_UPDATE_TIME)
+    {
+        int32 fps = frameCounter / framesTime;
+        info->SetText(Format(L"FPS: %d  Draw: %ldns  Update: %ldns", fps, drawTime / frameCounter, updateTime / frameCounter));
+        
+        framesTime -= INFO_UPDATE_TIME;
+        frameCounter = 0;
+        
+        drawTime = updateTime = 0;
+    }
+}
+
+void ViewSceneScreen::DidAppear()
+{
+    framesTime = 0.f;
+    frameCounter = 0;
+    
+    drawTime = updateTime = 0;
+    
+    info->SetText(L"");
 }
 
