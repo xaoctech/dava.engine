@@ -28,63 +28,53 @@
 
 
 
-#ifndef __SCENE_EXPORTER_H__
-#define __SCENE_EXPORTER_H__
+#ifndef __LANDSCAPE_EDITOR_SYSTEM__
+#define __LANDSCAPE_EDITOR_SYSTEM__
 
 #include "DAVAEngine.h"
-#include "CommandLine/SceneUtils/SceneUtils.h"
-#include "TextureCompression/TextureConverter.h"
+#include "LandscapeEditorDrawSystem.h"
 
-using namespace DAVA;
+class SceneCollisionSystem;
+class SceneSelectionSystem;
+class EntityModificationSystem;
 
-class SceneExporter
+
+class LandscapeEditorSystem: public DAVA::SceneSystem
 {
 public:
+	LandscapeEditorSystem(DAVA::Scene* scene, const DAVA::FilePath & cursorPathname);
+	virtual ~LandscapeEditorSystem();
+	
+    bool IsLandscapeEditingEnabled() const;
 
-	SceneExporter();
-	virtual ~SceneExporter();
-    
-    void SetGPUForExporting(const String &newGPU);
-    void SetGPUForExporting(const eGPUFamily newGPU);
-    
-	void SetCompressionQuality(TextureConverter::eConvertQuality quality);
-
-    void SetInFolder(const FilePath &folderPathname);
-    void SetOutFolder(const FilePath &folderPathname);
-    
-	void EnableOptimizations( bool enable );
-
-    void ExportSceneFile(const String &fileName, Set<String> &errorLog);
-    void ExportTextureFile(const String &fileName, Set<String> &errorLog);
-    
-    void ExportSceneFolder(const String &folderName, Set<String> &errorLog);
-    void ExportTextureFolder(const String &folderName, Set<String> &errorLog);
-    
-    void ExportScene(Scene *scene, const FilePath &fileName, Set<String> &errorLog);
-    
 protected:
     
-    void RemoveEditorNodes(Entity *rootNode);
-    void RemoveEditorCustomProperties(Entity *rootNode);
-    
-    bool ExportDescriptors(DAVA::Scene *scene, Set<String> &errorLog);
-    bool ExportTextureDescriptor(const FilePath &pathname, Set<String> &errorLog);
-    bool ExportTexture(const TextureDescriptor * descriptor, Set<String> &errorLog);
-    void CompressTextureIfNeed(const TextureDescriptor * descriptor, Set<String> &errorLog);
+    LandscapeEditorDrawSystem::eErrorType IsCanBeEnabled() const;
 
-    bool ExportLandscape(Scene *scene, Set<String> &errorLog);
-    bool ExportVegetation(Scene *scene, Set<String> &errorLog);
+    void UpdateCursorPosition();
+
+    
     
 protected:
+
+	bool enabled;
+
     
-    SceneUtils sceneUtils;
+	SceneCollisionSystem *collisionSystem;
+	SceneSelectionSystem *selectionSystem;
+	EntityModificationSystem *modifSystem;
+    LandscapeEditorDrawSystem *drawSystem;
+    
+    
+    DAVA::Texture* cursorTexture;
+    DAVA::uint32 cursorSize;
+	Vector2 cursorPosition;
+    Vector2 prevCursorPos;
 
-    eGPUFamily exportForGPU;
-	bool optimizeOnExport;
 
-	TextureConverter::eConvertQuality quality;
+    bool isIntersectsLandscape;
+    
+    int32 landscapeSize;
 };
 
-
-
-#endif // __SCENE_EXPORTER_H__
+#endif //__LANDSCAPE_EDITOR_SYSTEM__
