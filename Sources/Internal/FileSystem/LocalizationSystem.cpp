@@ -102,7 +102,7 @@ const char * LocalizationSystem::GetDeviceLocale()
 #if defined(__DAVAENGINE_IPHONE__)
 	return LocalizationIPhone::GetDeviceLang();
 #elif defined(__DAVAENGINE_ANDROID__)
-    return LocalizationAndroid::GetDeviceLang();
+    return LocalizationAndroid::GetDeviceLang().c_str();
 #else
     return "ru";
 #endif
