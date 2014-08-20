@@ -187,7 +187,7 @@ void ViewSceneScreen::UpdateInfo(float32 timeElapsed)
     
     if(framesTime > INFO_UPDATE_TIME)
     {
-        int32 fps = frameCounter / framesTime;
+        int32 fps = (int32)(frameCounter / framesTime);
         info->SetText(Format(L"FPS: %d  Draw: %ldns  Update: %ldns", fps, drawTime / frameCounter, updateTime / frameCounter));
         
         framesTime -= INFO_UPDATE_TIME;
