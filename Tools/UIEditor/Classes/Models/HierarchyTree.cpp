@@ -162,7 +162,7 @@ bool HierarchyTree::Load(const QString& projectPath)
     EditorFontManager::Instance()->LoadLocalizedFonts();
     
 	const YamlNode* platforms = projectRoot->Get(PLATFORMS_NODE);
-	for (int32 i = 0; i < platforms->GetCount(); i++)
+	for (uint32 i = 0; i < platforms->GetCount(); i++)
 	{
 		const String &platformName = platforms->GetItemKeyName(i);
         if (platformName.empty())
@@ -531,8 +531,11 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
 		HierarchyTreePlatformNode* platformNode = dynamic_cast<HierarchyTreePlatformNode*>(*iter);
 		if (!platformNode)
 			continue;
-		// In case platform is changed - we should always perform "Save All" sequence
-		bool res = platformNode->Save(platforms, (platformNode->IsNeedSave() || saveAll), fileNames);
+		// In case we have new platform (copy or newly created) - we should force save for screens sequence
+        FilePath platformFolder = platformNode->GetPlatformFolder();
+		bool forceSave = !QDir(QString::fromStdString(platformFolder.GetAbsolutePathname())).exists();
+        
+		bool res = platformNode->Save(platforms, (forceSave || saveAll), fileNames);
 		if (res)
 		{
 			platformNode->ResetUnsavedChanges();
