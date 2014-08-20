@@ -135,8 +135,8 @@ varying float varPerPixelAttenuation;
 #endif
 
 #if defined(VERTEX_FOG)
-varying float varFogAmoung;
-varying vec3 varFogColor;
+varying lowp float varFogAmoung;
+varying lowp vec3 varFogColor;
 #endif
 
 #if defined(SETUP_LIGHTMAP)

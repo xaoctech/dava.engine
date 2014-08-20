@@ -61,7 +61,6 @@ const FastName NMaterial::TEXTURE_LIGHTMAP("lightmap");
 const FastName NMaterial::TEXTURE_DECAL("decal");
 const FastName NMaterial::TEXTURE_CUBEMAP("cubemap");
 const FastName NMaterial::TEXTURE_HEIGHTMAP("heightmap");
-const FastName NMaterial::TEXTURE_ATMOSPHEREMAP("atmospheremap");
 const FastName NMaterial::TEXTURE_DECALMASK("decalmask");
 const FastName NMaterial::TEXTURE_DECALTEXTURE("decaltexture");
 
@@ -107,7 +106,6 @@ const FastName NMaterial::FLAG_FOG_LINEAR = FastName("FOG_LINEAR");
 const FastName NMaterial::FLAG_FOG_HALFSPACE = FastName("FOG_HALFSPACE");
 const FastName NMaterial::FLAG_FOG_HALFSPACE_LINEAR = FastName("FOG_HALFSPACE_LINEAR");
 const FastName NMaterial::FLAG_FOG_ATMOSPHERE = FastName("FOG_ATMOSPHERE");
-const FastName NMaterial::FLAG_FOG_ATMOSPHERE_MAP = FastName("FOG_ATMOSPHERE_MAP");
 const FastName NMaterial::FLAG_TEXTURESHIFT = FastName("TEXTURE0_SHIFT_ENABLED");
 const FastName NMaterial::FLAG_TEXTURE0_ANIMATION_SHIFT = FastName("TEXTURE0_ANIMATION_SHIFT");
 const FastName NMaterial::FLAG_WAVE_ANIMATION = FastName("WAVE_ANIMATION");
@@ -803,7 +801,7 @@ void NMaterial::SetTexture(const FastName& textureFastName,
 		bucket->SetTexture(NULL); //VI: texture WILL NOT BE RELOADED if it's not active in the current quality
 		bucket->SetPath(texturePath);
 		
-		if(IsTextureActive(textureFastName) || materialType == MATERIALTYPE_GLOBAL)
+		if(IsTextureActive(textureFastName))
 		{
 			Texture* tx = Texture::CreateFromFile(texturePath, textureFastName);
 			bucket->SetTexture(tx);
