@@ -572,11 +572,11 @@ void Font::AddCurrentLine(const WideString & text, const int32 pos, SeparatorPos
 {
     WideString currentLine = text.substr(separatorPosition.currentLineStart, pos - separatorPosition.currentLineStart);
 	//Trim whitespace at begin/end line
-	while(currentLine.size() > 1 && L' ' == currentLine.front())
+	while(currentLine.size() > 1 && L' ' == currentLine[0])
 	{
 		currentLine.erase(currentLine.begin());
 	}
-	while(currentLine.size() > 1 && L' ' == currentLine.back())
+	while(currentLine.size() > 1 && L' ' == currentLine[currentLine.size() - 1])
 	{
 		currentLine.erase(currentLine.end() - 1);
 	}
