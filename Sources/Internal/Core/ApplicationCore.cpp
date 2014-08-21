@@ -33,6 +33,8 @@
 #include "Render/RenderManager.h"
 #include "Sound/SoundSystem.h"
 #include "Debug/Stats.h"
+#include "Platform/SystemTimer.h"
+#include "DLC/Downloader/DownloadManager.h"
 
 
 #ifdef __DAVAENGINE_AUTOTESTING__
@@ -44,6 +46,9 @@ namespace DAVA
 
 ApplicationCore::ApplicationCore()
 	: BaseObject()
+#if defined(__DAVAENGINE_ANDROID__)
+	, backgroundTicker(NULL)
+#endif
 {
 
 }
@@ -86,14 +91,53 @@ void ApplicationCore::OnSuspend()
 {
 	SoundSystem::Instance()->Suspend();
 	Core::Instance()->SetIsActive(false);
+
+#if defined(__DAVAENGINE_ANDROID__)
+	if (NULL == backgroundTicker)
+	{
+		Logger::Debug("[ApplicationCore: OnSuspend] Background tick Thread Create Start");
+		backgroundTicker = Thread::Create(Message(this, &ApplicationCore::BackgroundTickerHandler));
+		backgroundTickerFinishing = false;
+		if (backgroundTicker)
+			backgroundTicker->Start();
+		Logger::Debug("[ApplicationCore: OnSuspend] Background tick  Thread Create End");
+	}
+#endif
 }
 
 void ApplicationCore::OnResume()
 {
+#if defined(__DAVAENGINE_ANDROID__)
+	if (NULL != backgroundTicker)
+	{
+		Logger::Debug("[ApplicationCore: OnResume] Background tick Thread Finish start");
+		backgroundTickerFinishing = true;
+		backgroundTicker->Join();
+		SafeRelease(backgroundTicker);
+		Logger::Debug("[ApplicationCore: OnResume] Background tick Thread Finish end");
+	}
+#endif
+    
 	Core::Instance()->SetIsActive(true);
 	SoundSystem::Instance()->Resume();
 }
 
+#if defined(__DAVAENGINE_ANDROID__)
+void ApplicationCore::BackgroundTickerHandler(BaseObject * caller, void * callerData, void * userData)
+{
+	while(!backgroundTickerFinishing)
+	{
+		Thread::SleepThread(250);
+		OnBackgroundTick();
+	}
+}
+#endif
+    
+void ApplicationCore::OnBackgroundTick()
+{
+	DownloadManager::Instance()->Update();
+}
+    
 bool ApplicationCore::OnQuit()
 {
 	return false;

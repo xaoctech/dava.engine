@@ -32,8 +32,9 @@
 #include "Platform/Notification.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
-
+#include "Platform/TemplateAndroid/CorePlatformAndroid.h"
 #include "Platform/TemplateAndroid/ExternC/AndroidLayer.h"
+#include "Mutex.h"
 
 namespace DAVA
 {
@@ -51,114 +52,78 @@ const char* JniNotification::GetJavaClassName() const
 	return gJavaClassName;
 }
 
-void JniNotification::ShowNotifitaionWithProgress(uint32 id,
+void Notification::Hide()
+{
+	javaCallMutex.Lock();
+
+	GetEnvironment()->CallStaticVoidMethod(
+					GetJavaClass(),
+					GetMethodID("HideNotification", "(I)V"),
+					id);
+	javaCallMutex.Unlock();
+
+	text = "";
+	title = "";
+}
+    
+void Notification::Update()
+{
+}
+
+void Notification::SetTitle(const String &_title)
+{
+	title = _title;
+}
+
+void Notification::SetText(const String &_text)
+{
+	text = _text;
+}
+
+void NotificationProgress::ShowNotifitaionWithProgress(uint32 id,
 			const String& title,
 			const String& text,
 			int32 maxValue,
 			int32 value)
 {
-	jmethodID mid = GetMethodID("NotifyProgress", "(ILjava/lang/String;Ljava/lang/String;II)V");
-	if (mid)
-	{
-		WideString wsText(text.begin(), text.end());
-		WideString wsTitle(title.begin(), title.end());
+	javaCallMutex.Lock();
 
-		jstring jStrTitle = CreateJString(GetEnvironment(), wsTitle);
-	  	jstring jStrText = CreateJString(GetEnvironment(), wsText);
-		GetEnvironment()->CallStaticVoidMethod(
-						GetJavaClass(),
-						mid,
-						id,
-						jStrTitle,
-						jStrText,
-						maxValue,
-						value);
-		GetEnvironment()->DeleteLocalRef(jStrTitle);
-		GetEnvironment()->DeleteLocalRef(jStrText);
-	}
-}
+	JNIEnv *env = GetEnvironment();
 
-void Notification::Hide(uint32 id)
-{
-	jmethodID mid = GetMethodID("HideNotification", "(I)V");
-	if (mid)
-	{
-		GetEnvironment()->CallStaticVoidMethod(
-						GetJavaClass(),
-						mid,
-						id);
-	}
-}
+	WideString wsText(text.begin(), text.end());
+	WideString wsTitle(title.begin(), title.end());
 
-void Notification::SetTitle(const String &title)
-{
-	jmethodID mid = GetMethodID("SetNotificationTitle", "(ILjava/lang/String;)V");
-	if (mid)
-	{
-		WideString wsTitle(title.begin(), title.end());
-	  	jstring jStrTitle = CreateJString(GetEnvironment(), wsTitle);
+	jstring jStrTitle = CreateJString(env, wsTitle);
+	jstring jStrText = CreateJString(env, wsText);
 
-		GetEnvironment()->CallStaticVoidMethod(
-						GetJavaClass(),
-						mid,
-						id,
-						jStrTitle);
+	env->CallStaticVoidMethod(
+					GetJavaClass(),
+					GetMethodID("NotifyProgress", "(ILjava/lang/String;Ljava/lang/String;II)V"),
+					id,
+					jStrTitle,
+					jStrText,
+					maxValue,
+					value);
 
-		GetEnvironment()->DeleteLocalRef(jStrTitle);
-	}
-}
+	env->DeleteLocalRef(jStrTitle);
+	env->DeleteLocalRef(jStrText);
 
-void Notification::SetText(const String &text)
-{
-	jmethodID mid = GetMethodID("SetNotificationText", "(ILjava/lang/String;)V");
-	if (mid)
-	{
-		WideString wsText(text.begin(), text.end());
-	  	jstring jStrText = CreateJString(GetEnvironment(), wsText);
-
-		GetEnvironment()->CallStaticVoidMethod(
-						GetJavaClass(),
-						mid,
-						id,
-						jStrText);
-
-		GetEnvironment()->DeleteLocalRef(jStrText);
-	}
+	javaCallMutex.Unlock();
 }
 
 void NotificationProgress::SetProgressCurrent(uint32 _currentProgress)
 {
-	jmethodID mid = GetMethodID("SetNotificationProgress", "(III)V");
-	if (mid)
-	{
-		GetEnvironment()->CallStaticVoidMethod(
-						GetJavaClass(),
-						mid,
-						id,
-						total,
-						_currentProgress);
-		progress = _currentProgress;
-	}
+	progress = _currentProgress;
 }
 
 void NotificationProgress::SetProgressTotal(uint32 _total)
 {
-	jmethodID mid = GetMethodID("SetNotificationProgress", "(III)V");
-	if (mid)
-	{
-		GetEnvironment()->CallStaticVoidMethod(
-						GetJavaClass(),
-						mid,
-						id,
-						_total,
-						progress);
-		total = _total;
-	}
+	total = _total;
 }
 
-void NotificationProgress::CreateNative()
+void NotificationProgress::Update()
 {
-    ShowNotifitaionWithProgress(id, title, text, total, progress);
+	ShowNotifitaionWithProgress(id, title, text, total, progress);
 }
 
 }

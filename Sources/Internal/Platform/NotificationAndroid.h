@@ -34,19 +34,13 @@
 #include "Base/BaseTypes.h"
 #ifdef __DAVAENGINE_ANDROID__
 #include "JniExtensions.h"
+#include "Mutex.h"
+
 namespace DAVA
 {
 
 class JniNotification: public JniExtension
 {
-public:
-	virtual void ShowNotifitaionWithProgress(uint32 id,
-			const String& title,
-			const String& text,
-			int32 maxValue,
-			int32 value);
-
-
 protected:
 	virtual jclass GetJavaClass() const;
 	virtual const char* GetJavaClassName() const;
@@ -54,6 +48,9 @@ protected:
 public:
 	static jclass gJavaClass;
 	static const char* gJavaClassName;
+
+protected:
+	Mutex javaCallMutex;
 };
 }
 #endif //__DAVAENGINE_ANDROID__

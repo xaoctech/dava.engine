@@ -10,11 +10,11 @@ import android.os.Handler;
 import android.support.v4.app.NotificationCompat.Builder;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import com.dava.framework.JNINotificationProvider;
 
 import org.fmod.FMODAudioDevice;
 
 import com.bda.controller.Controller;
-import com.dava.framework.JNINotificationProvider;
 
 public abstract class JNIActivity extends Activity implements JNIAccelerometer.JNIAccelerometerListener
 {
@@ -52,6 +52,8 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
     	activity = this;
         super.onCreate(savedInstanceState);
         
+        JNINotificationProvider.AttachToActivity();
+        
         if(null != savedInstanceState)
         {
         	isFirstRun = savedInstanceState.getBoolean("isFirstRun");
@@ -78,9 +80,6 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         	mController.init();
         	mController.setListener(glView.mogaListener, new Handler());
         }
-
-        new JNINotificationProvider(this.getApplicationContext());
-        JNINotificationProvider.Init();
         
         Log.i(JNIConst.LOG_TAG, "[Activity::onCreate] isFirstRun is " + isFirstRun); 
         nativeOnCreate(isFirstRun);

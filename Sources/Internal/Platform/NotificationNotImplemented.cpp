@@ -37,6 +37,10 @@ namespace DAVA
 NotificationNotImplemented::~NotificationNotImplemented()
 {
 }
+    
+void Notification::Hide()
+{
+}
 
 void Notification::SetTitle(const String &title)
 {
@@ -46,16 +50,10 @@ void Notification::SetText(const String &text)
 {
 }
 
-void Notification::Hide(uint32 id)
+void Notification::Update()
 {
-    
 }
     
-void NotificationProgress::CreateNative()
-{
-    
-}
-
 void NotificationProgress::SetProgressCurrent(uint32 _currentProgress)
 {
     progress = _currentProgress;
@@ -65,5 +63,17 @@ void NotificationProgress::SetProgressTotal(uint32 _total)
     total = _total;
 }
 
+void NotificationProgress::ShowNotifitaionWithProgress(uint32 id,
+			const String& title,
+			const String& text,
+			int32 maxValue,
+			int32 value)
+{
+}
+
+void NotificationProgress::Update()
+{
+}
+    
 }
 #endif

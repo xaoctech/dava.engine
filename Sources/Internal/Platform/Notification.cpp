@@ -59,6 +59,13 @@ NotificationProgress::NotificationProgress()
 
 }
     
+void NotificationProgress::Hide()
+{
+    Notification::Hide();
+    total = 0;
+    progress = 0;
+}
+
 NotificationController::~NotificationController()
 {
     if (!notificationsList.empty())
@@ -81,9 +88,9 @@ NotificationProgress *NotificationController::CreateNotificationProgress(const S
         note->SetText(text);
         note->SetTitle(title);
         note->SetProgressCurrent(0);
-        note->SetProgressTotal(0);
-        
-        note->CreateNative();
+        note->SetProgressTotal(100);
+
+        note->Update();
         
         notificationsList.push_back(note);
     }
