@@ -37,31 +37,9 @@ namespace DAVA
 
 JniExtension::JniExtension()
 {
-	// construcrot should be removed at all and i don't know why application crashes without it
-
 	CorePlatformAndroid *core = (CorePlatformAndroid *)Core::Instance();
 	AndroidSystemDelegate* delegate = core->GetAndroidSystemDelegate();
 	vm = delegate->GetVM();
-
-	jint res = JNI_OK;
-
-	JNIEnv *env;
-	res = vm->GetEnv((void **)&env,JNI_VERSION_1_6);
-
-	if (env == NULL && !Thread::IsMainThread())
-	{
-		res = vm->AttachCurrentThread(&env, NULL);
-		if (res != JNI_OK)
-		{
-			Logger::Error("Failed to AttachCurrentThread: res:%d", res);
-		}
-	}
-
-	if (res != JNI_OK)
-	{
-		Logger::Error("Failed to get the environment using GetEnv()");
-
-	}
 }
 
 JniExtension::~JniExtension()
