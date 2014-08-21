@@ -43,8 +43,8 @@ UIControlBackground::UIControlBackground()
 ,	frame(0)
 ,	align(ALIGN_HCENTER|ALIGN_VCENTER)
 ,	type(DRAW_ALIGNED)
-,	color(1.0f, 1.0f, 1.0f, 1.0f)
-,	drawColor(1.0f, 1.0f, 1.0f, 1.0f)
+,	color(Color::White)
+,	drawColor(Color::White)
 ,	leftStretchCap(0)
 ,	topStretchCap(0)
 ,	spriteModification(0)
@@ -74,7 +74,7 @@ void UIControlBackground::CopyDataFrom(UIControlBackground *srcBackground)
     align = srcBackground->align;
 
     SafeRelease(rdoObject);
-    SetDrawType((eDrawType)srcBackground->type);
+    SetDrawType(srcBackground->type);
 
     color = srcBackground->color;
     spriteModification = srcBackground->spriteModification;
@@ -121,7 +121,7 @@ UIControlBackground::eColorInheritType UIControlBackground::GetColorInheritType(
 
 UIControlBackground::eDrawType	UIControlBackground::GetDrawType() const
 {
-    return (UIControlBackground::eDrawType)type;
+    return type;
 }
 
 
