@@ -58,7 +58,7 @@ void main()
 #endif
 	
 #ifdef SPECULAR
-	float glossiness = pow(5000.0, inGlossiness * color0.a);
+	float glossiness = pow(5000.0, inGlossiness * lightMask.a);
     float specularNorm = (glossiness + 2.0) / 8.0;
     color += varSpecularColor * pow(varNdotH, glossiness) * specularNorm;
 #endif
