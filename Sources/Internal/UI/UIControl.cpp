@@ -794,9 +794,14 @@ namespace DAVA
     void UIControl::SetAbsolutePosition(const Vector2 &position)
     {
         if(parent)
-            SetPosition(position - parent->GetGeometricData().position);
+        {
+            const UIGeometricData &parentGD = parent->GetGeometricData();
+            SetPosition(position - parentGD.position + parentGD.pivotPoint);
+        }
         else
+        {
             SetPosition(position);
+        }
     }
 
     void UIControl::SetSize(const Vector2 &newSize)
@@ -831,8 +836,6 @@ namespace DAVA
             return GetRect();
 
         return GetAbsoluteRect();
-        Vector2 pos = GetPosition(absoluteCoordinates) - pivotPoint;
-        return Rect(pos.x, pos.y, size.x, size.y);
     }
 
     Rect UIControl::GetAbsoluteRect()
@@ -859,7 +862,8 @@ namespace DAVA
         }
 
         Rect localRect = rect;
-        localRect.SetPosition( rect.GetPosition() - parent->GetGeometricData().position);
+        const UIGeometricData &parentGD = parent->GetGeometricData();
+        localRect.SetPosition(rect.GetPosition() - parentGD.position + parentGD.pivotPoint);
         SetRect(localRect);
     }
 
