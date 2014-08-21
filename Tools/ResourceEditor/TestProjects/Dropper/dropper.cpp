@@ -1,5 +1,13 @@
 #include "dropper.h"
 
+#include <QApplication>
+#include <QDesktopWidget>
+#include <QPixmap>
+#include <QCursor>
+#include <QDateTime>
+#include <QDebug>
+
+
 #include "ColorPicker/ColorPicker.h"
 
 
@@ -23,6 +31,7 @@ Dropper::Dropper(QWidget *parent)
     ui.test_4->SetColorNew( QColor( 255, 255, 100, 50 ) );
 
     connect( ui.btn, SIGNAL( clicked() ), SLOT( showCP() ) );
+    connect( ui.pick, SIGNAL( clicked() ), SLOT( testGrab() ) );
 }
 
 Dropper::~Dropper()
@@ -39,4 +48,27 @@ void Dropper::showCP()
     cp->show();
 
     cp->SetColor( QColor( 90, 150, 230, 120 ) );
+}
+
+void Dropper::testGrab()
+{
+    const int n = QApplication::desktop()->screenCount();
+    QRect screenRc;
+
+    for ( int i = 0; i < n; i++ )
+    {
+        const QRect rc = QApplication::desktop()->screenGeometry( i );
+        screenRc = screenRc.united( rc );
+        qDebug() << rc;
+    }
+
+    const QPixmap pix = QPixmap::grabWindow( QApplication::desktop()->winId(), screenRc.left(), screenRc.top(), screenRc.width(), screenRc.height() );
+    const QDateTime now = QDateTime::currentDateTime();
+    const QPoint pos = QCursor::pos();
+    const QString path = QString( "%1/test_%2-%3_%4x%5.png" )
+        .arg( QApplication::applicationDirPath() )
+        .arg( now.time().hour() ).arg( now.time().minute() )
+        .arg( pos.x() ).arg( pos.y() );
+
+    pix.save( path, "PNG", 100 );
 }
