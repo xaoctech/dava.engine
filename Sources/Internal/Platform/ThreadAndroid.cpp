@@ -55,6 +55,11 @@ void * PthreadMain (void * param)
 	t->state = Thread::STATE_ENDED;
 	t->Release();
 
+	if(0 < t->attachedToJVMCount)
+	{
+		t->attachedToJVMCount = 1;
+		Thread::DetachFromJVM();
+	}
 	pthread_exit(0);
 }
 
@@ -100,7 +105,7 @@ void Thread::AttachToJVM()
 
 	if (!threadList.empty())
 	{
-		for (Set<Thread *>::iterator it = threadList.begin(); it != threadList.end();)
+		for (Set<Thread *>::iterator it = threadList.begin(); it != threadList.end(); ++it)
 		{
 			Thread *t = (*it);
 			if (Thread::GetCurrentThreadId() == t->GetThreadId())
@@ -117,6 +122,7 @@ void Thread::AttachToJVM()
 					else
 						t->attachedToJVMCount++;
 				}
+				break;
 			}
 		}
 	}
@@ -129,7 +135,7 @@ void Thread::DetachFromJVM()
 
 	if (!threadList.empty())
 	{
-		for (Set<Thread *>::iterator it = threadList.begin(); it != threadList.end();)
+		for (Set<Thread *>::iterator it = threadList.begin(); it != threadList.end(); ++it)
 		{
 			Thread *t = (*it);
 			if (Thread::GetCurrentThreadId() == t->GetThreadId())
@@ -153,6 +159,7 @@ void Thread::DetachFromJVM()
 						}
 					}
 				}
+				break;
 			}
 		}
 	}
