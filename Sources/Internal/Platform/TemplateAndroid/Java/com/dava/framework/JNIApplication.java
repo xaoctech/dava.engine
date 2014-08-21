@@ -5,6 +5,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.util.Log;
+import com.dava.framework.JNINotificationProvider;
 
 public class JNIApplication extends Application
 {
@@ -20,10 +21,12 @@ public class JNIApplication extends Application
 	
 	@Override
 	public void onCreate()
-	{
+	{        
 		app = this;
 		super.onCreate();
 	
+        JNINotificationProvider.Init();
+        
 		ApplicationInfo info = getApplicationInfo();
 		
 		Log.i(JNIConst.LOG_TAG, "[Application::onCreate] start"); 

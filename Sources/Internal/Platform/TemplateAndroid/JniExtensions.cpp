@@ -29,30 +29,29 @@
 
 
 #include "JniExtensions.h"
+#include "Platform/Thread.h"
 #include "Platform/TemplateAndroid/CorePlatformAndroid.h"
 
 namespace DAVA
 {
 
-JniExtension::JniExtension() :
-	isAttached(false)
+JniExtension::JniExtension()
 {
+	// construcrot should be removed at all and i don't know why application crashes without it
+
 	CorePlatformAndroid *core = (CorePlatformAndroid *)Core::Instance();
 	AndroidSystemDelegate* delegate = core->GetAndroidSystemDelegate();
 	vm = delegate->GetVM();
 
 	jint res = JNI_OK;
 
+	JNIEnv *env;
 	res = vm->GetEnv((void **)&env,JNI_VERSION_1_6);
 
 	if (env == NULL && !Thread::IsMainThread())
 	{
 		res = vm->AttachCurrentThread(&env, NULL);
-		if (res == JNI_OK)
-		{
-			isAttached = true;
-		}
-		else
+		if (res != JNI_OK)
 		{
 			Logger::Error("Failed to AttachCurrentThread: res:%d", res);
 		}
@@ -61,18 +60,13 @@ JniExtension::JniExtension() :
 	if (res != JNI_OK)
 	{
 		Logger::Error("Failed to get the environment using GetEnv()");
-		env = NULL;
+
 	}
 }
 
 JniExtension::~JniExtension()
 {
-	if (isAttached && !Thread::IsMainThread())
-	{
-		jint res = vm->DetachCurrentThread();
-		if (res != JNI_OK)
-			Logger::Error("Failed to DetachCurrentThread: res:%d", res);
-	}
+	Thread::DetachFromJVM();
 }
 
 void JniExtension::SetJavaClass(JNIEnv* env, const char* className, jclass* gJavaClass, const char** gJavaClassName)
@@ -89,7 +83,7 @@ jmethodID JniExtension::GetMethodID(const char *methodName, const char *paramCod
 	if (!javaClass)
 		return 0;
 
-	jmethodID mid = env->GetStaticMethodID(javaClass, methodName, paramCode);
+	jmethodID mid = GetEnvironment()->GetStaticMethodID(javaClass, methodName, paramCode);
 
 	if (!mid)
 	{
@@ -98,6 +92,19 @@ jmethodID JniExtension::GetMethodID(const char *methodName, const char *paramCod
 
 	return mid;
 }
+
+JNIEnv *JniExtension::GetEnvironment() const
+{
+	// right way to take JNIEnv
+	// JNIEnv is valid only for the thread where it was gotten.
+	// we shouldn't store JNIEnv.
+
+	Thread::AttachToJVM();
+
+	JNIEnv *env;
+	vm->GetEnv((void**)&env, JNI_VERSION_1_6);
+	return env;
+};
 
 Rect JniExtension::V2P(const Rect& srcRect) const
 {

@@ -49,12 +49,11 @@ class Notification
 public:
     Notification();
     virtual ~Notification();
-    
-    virtual void CreateNative() = 0;
 
-	void SetTitle(const String &title);
-	void SetText(const String &text);
-    virtual void Hide(uint32 id);
+	void SetTitle(const String &_title);
+	void SetText(const String &_text);
+    virtual void Hide();
+    virtual void Update();
 
 protected:
     uint32 id;
@@ -66,11 +65,20 @@ class NotificationProgress : public Notification
 {
 public:
 	NotificationProgress();
-    
-    virtual void CreateNative();
 
 	void SetProgressCurrent(uint32 _currentProgress);
 	void SetProgressTotal(uint32 _total);
+
+	void Update();
+
+	virtual void Hide();
+
+private:
+	void ShowNotifitaionWithProgress(uint32 id,
+			const String& title,
+			const String& text,
+			int32 maxValue,
+			int32 value);
 
 private:
 	uint32 total;

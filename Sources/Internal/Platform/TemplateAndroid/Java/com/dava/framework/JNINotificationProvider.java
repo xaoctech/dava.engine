@@ -17,18 +17,18 @@ public class JNINotificationProvider {
 	private static AssetManager assetsManager = null;
 	private static boolean isInited = false;
 	
-	JNINotificationProvider(Context context) {
-		
-		assetsManager = context.getAssets();
-	}
-	
-	static void Init() {
+    static void Init() {
 		Context context = JNIApplication.GetApplication();
+		assetsManager = context.getAssets();
 		notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 		builder = new NotificationCompat.Builder(context);
-		JNIActivity.GetActivity().InitNotification(builder);
-		
+
 		isInited = null != builder && null != notificationManager && null != assetsManager;
+	}
+	
+	static void AttachToActivity()
+	{
+		JNIActivity.GetActivity().InitNotification(builder);
 	}
 	
     static void NotifyProgress(
