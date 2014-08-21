@@ -173,6 +173,9 @@ void UIControlBackground::SetDrawType(UIControlBackground::eDrawType drawType)
                 //rdoObject->SetStream()
             }
         }
+        break;
+    default:
+        break;
     }
     ReleaseDrawData();
 }
@@ -496,6 +499,8 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
         case DRAW_TILED:
             DrawTiled(geometricData, drawState.GetRenderState());
         break;
+        default:
+            break;
     }
 
     RenderManager::Instance()->ResetColor();
@@ -633,6 +638,7 @@ void UIControlBackground::DrawStretched(const Rect &drawRect, UniqueHandle rende
             texCoords[25] = texCoords[27] = texCoords[29] = texCoords[31] = (texY + texDy) / textureHeight;
         }
         break;
+        default: break;
     }
 
 //	if (Core::GetContentScaleFactor() != 1.0 && RenderManager::IsRenderTarget())
