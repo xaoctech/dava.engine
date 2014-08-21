@@ -14,6 +14,7 @@ public:
 
 private slots:
     void showCP();
+    void testGrab();
 
 private:
     Ui::DropperClass ui;
