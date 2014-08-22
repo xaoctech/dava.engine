@@ -4,92 +4,119 @@
 #include <QCursor>
 #include <QDesktopWidget>
 #include <QMouseEvent>
+#include <QPainter>
 #include <QDebug>
 
 #include "../Helpers/MouseHelper.h"
 
 
-EyeDropper::EyeDropper(QObject *parent)
-    : QObject(parent)
+EyeDropper::EyeDropper(QWidget *parent)
+    : QWidget( parent, Qt::Popup | Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint )
+    , mouse(new MouseHelper(this))
+    , cursorSize(69, 69)
 {
+    setAttribute( Qt::WA_DeleteOnClose );
+    setFocusPolicy( Qt::WheelFocus );
+    setMouseTracking(true);
+    setCursor(QCursor());
+
+    connect( mouse, SIGNAL( mouseMove( const QPoint& ) ), SLOT( OnMouseMove( const QPoint& ) ) );
+    connect( mouse, SIGNAL( mouseRelease( const QPoint& ) ), SLOT( OnClicked( const QPoint& ) ) );
 }
 
 EyeDropper::~EyeDropper()
 {
-    delete shade;
 }
 
 void EyeDropper::Exec()
 {
     CreateShade();
+    show();
+    setFocus();
+    update();
 }
 
-void EyeDropper::OnMouseMove()
+void EyeDropper::OnMouseMove( const QPoint& pos )
 {
-    emit moved(GetPixel());
+    const int sx = cursorSize.width() / 2;
+    const int sy = cursorSize.height() / 2;
+    QRect rcOld( QPoint( cursorPos.x() - sx, cursorPos.y() - sy ), cursorSize );
+    rcOld.adjust( -1, -1, 2, 2 );
+    QRect rcNew( QPoint( pos.x() - sx, pos.y() - sy ), cursorSize );
+    rcNew.adjust( -1, -1, 2, 2 );
+    const QRect rc = rcOld.united( rcNew );
+
+    cursorPos = pos;
+    repaint(rc);
+
+    emit moved(GetPixel(pos));
 }
 
-void EyeDropper::OnClicked()
+void EyeDropper::OnClicked( const QPoint& pos )
 {
-    emit clicked(GetPixel());
+    emit picked(GetPixel(pos));
+    close();
+}
+
+void EyeDropper::paintEvent(QPaintEvent* e)
+{
+    Q_UNUSED( e );
+
+    QPainter p(this);
+    p.drawImage( 0, 0, cache );
+    DrawCursor( cursorPos, &p );
+}
+
+void EyeDropper::DrawCursor(const QPoint& pos, QPainter *p)
+{
+    const int sx = cursorSize.width() / 2 - 1;
+    const int sy = cursorSize.height() / 2 - 1;
+    const QColor c = GetPixel(pos);
+
+    QRect rc( QPoint( pos.x() - sx, pos.y() - sy ), QPoint( pos.x() + sx, pos.y() + sy ) );
+
+    const int fc = 4;
+    QRect rcZoom( QPoint( pos.x() - sx / fc, pos.y() - sy / fc ), QPoint( pos.x() + sx / fc, pos.y() + sy / fc ) );
+    const QImage& zoomed = cache.copy( rcZoom ).scaled( rc.size(), Qt::KeepAspectRatio, Qt::FastTransformation );
+
+    //p->fillRect( rc, c );
+    p->drawImage( rc, zoomed );
+    p->setPen( QPen( Qt::black, 1.0 ) );
+
+    const int midX = ( rc.left() + rc.right() ) / 2;
+    const int midY = ( rc.bottom() + rc.top() ) / 2;
+
+    p->drawLine( rc.left(), midY, rc.right(), midY );
+    p->drawLine( midX, rc.top(), midX, rc.bottom() );
+    p->fillRect( pos.x() - 1, pos.y() - 1, 3, 3, c );
+
+    p->setPen( QPen( c, 3.0 ) );
+    p->drawRect( rc );
+    rc.adjust( -1, -1, 1, 1 );
+    p->setPen( Qt::black );
+    p->drawRect( rc );
 }
 
 void EyeDropper::CreateShade()
 {
     QDesktopWidget *desktop = QApplication::desktop();
-
     const int n = desktop->screenCount();
-    QRect screenRc;
+    QRect rc;
+
     for (int i = 0; i < n; i++)
     {
-        const QRect rc = desktop->screenGeometry(i);
-        screenRc = screenRc.united(rc);
+        const QRect screenRect = desktop->screenGeometry(i);
+        rc = rc.united( screenRect );
     }
 
-    shade = new QWidget( NULL, Qt::Window | Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint );
-
-    shade->setAttribute(Qt::WA_TranslucentBackground);
-    shade->setAttribute(Qt::WA_DeleteOnClose);
-    shade->setFocusPolicy( Qt::WheelFocus );
-    shade->resize(screenRc.size());
-    shade->move(screenRc.topLeft());
-    shade->setMouseTracking( true );
-    shade->installEventFilter( this );
-
-    shade->show();
-    shade->setFocus();
-    shade->grabMouse(); // Beware!
+    cache = QPixmap::grabWindow( QApplication::desktop()->winId(), rc.left(), rc.top(), rc.width(), rc.height() ).toImage();
+    resize(rc.size());
+    move(rc.topLeft());
+    cursorPos = mapFromGlobal( QCursor::pos() );
 }
 
-QColor EyeDropper::GetPixel() const
+QColor EyeDropper::GetPixel( const QPoint& pos ) const
 {
-    const QPoint pos = QCursor::pos();
-    const QImage img = QPixmap::grabWindow( QApplication::desktop()->winId(), pos.x(), pos.y(), 1, 1 ).toImage();
-    const QColor c = img.pixel( 0, 0 );
+    const QColor c = cache.pixel( pos );
     return c;
-}
-
-bool EyeDropper::eventFilter( QObject* obj, QEvent* e )
-{
-    if ( obj == shade )
-    {
-        switch ( e->type() )
-        {
-        case QEvent::MouseMove:
-            qDebug() << "MouseMove";
-            //OnMouseMove();
-            break;
-
-        case QEvent::MouseButtonRelease:
-            OnClicked();
-            qDebug() << "MouseButtonRelease";
-            return true;
-
-        default:
-            qDebug() << "Event: " << e->type();
-            break;
-        }
-    }
-
-    return QObject::eventFilter( obj, e );
 }

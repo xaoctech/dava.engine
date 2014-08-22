@@ -1,42 +1,44 @@
 #ifndef EYEDROPPER_H
 #define EYEDROPPER_H
 
-#include <QObject>
 #include <QWidget>
 #include <QPointer>
+#include <QPixmap>
 
 
 class MouseHelper;
 
 class EyeDropper
-    : public QObject
+    : public QWidget
 {
     Q_OBJECT
 
-    typedef QList< QPointer< QWidget > > ShadesList;
-
 signals:
-    void clicked( const QColor& color );
+    void picked( const QColor& color );
     void moved( const QColor& color );
 
 public:
-    explicit EyeDropper(QObject *parent = NULL);
+    explicit EyeDropper( QWidget *parent = NULL );
     ~EyeDropper();
 
 public slots:
     void Exec();
 
 private slots:
-    void OnMouseMove();
-    void OnClicked();
+    void OnMouseMove( const QPoint& pos );
+    void OnClicked( const QPoint& pos );
 
 private:
-    bool eventFilter( QObject* obj, QEvent* e );
+    void paintEvent(QPaintEvent *e);
+    void DrawCursor(const QPoint& pos, QPainter *p);
     void CreateShade();
-    QColor GetPixel() const;
+    QColor GetPixel( const QPoint& pos ) const;
 
     QPointer<QWidget> shade;
     QPointer<MouseHelper> mouse;
+    QImage cache;
+    QSize cursorSize;
+    QPoint cursorPos;
 };
 
 
