@@ -170,6 +170,15 @@
     <ClCompile Include="ColorPicker\EyeDropper.cpp">
       <Filter>ColorPicker</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_DropperShade.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_DropperShade.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorPicker\DropperShade.cpp">
+      <Filter>ColorPicker</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="dropper.h">
@@ -218,6 +227,9 @@
       <Filter>ColorPicker</Filter>
     </CustomBuild>
     <CustomBuild Include="ColorPicker\EyeDropper.h">
+      <Filter>ColorPicker</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ColorPicker\DropperShade.h">
       <Filter>ColorPicker</Filter>
     </CustomBuild>
   </ItemGroup>

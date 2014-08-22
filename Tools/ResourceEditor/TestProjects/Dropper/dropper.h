@@ -9,12 +9,13 @@ class Dropper : public QWidget
     Q_OBJECT
 
 public:
-    Dropper(QWidget *parent = 0);
+    explicit Dropper(QWidget *parent = 0);
     ~Dropper();
 
 private slots:
     void showCP();
     void testGrab();
+    void testGrab2();
 
 private:
     Ui::DropperClass ui;
