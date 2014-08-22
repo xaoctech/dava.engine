@@ -77,5 +77,5 @@ void Dropper::testGrab()
 void Dropper::testGrab2()
 {
     EyeDropper *dropper = new EyeDropper( this );
-    dropper->CreateShade();
+    dropper->Exec();
 }

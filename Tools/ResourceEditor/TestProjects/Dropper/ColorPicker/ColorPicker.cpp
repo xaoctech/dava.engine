@@ -5,11 +5,13 @@
 #include "ColorPickerHSV.h"
 #include "ColorPickerRGBAM.h"
 #include "ColorPreview.h"
+#include "EyeDropper.h"
 
 
 ColorPicker::ColorPicker(QWidget *parent)
     : AbstractColorPicker( parent )
     , ui( new Ui::ColorPicker() )
+    , dropper( new EyeDropper() )
 {
     ui->setupUi( this );
 
@@ -24,6 +26,11 @@ ColorPicker::ColorPicker(QWidget *parent)
     // Preview
     connect( this, SIGNAL( changing( const QColor& ) ), ui->preview, SLOT( SetColorNew( const QColor& ) ) );
     connect( this, SIGNAL( changed( const QColor& ) ), ui->preview, SLOT( SetColorNew( const QColor& ) ) );
+
+    // Dropper
+    connect( ui->dropper, SIGNAL( clicked() ), dropper.data(), SLOT( Exec() ) );
+    connect( dropper.data(), SIGNAL( moved( const QColor& ) ), SLOT( OnChanging( const QColor& ) ) );
+    connect( dropper.data(), SIGNAL( clicked( const QColor& ) ), SLOT( OnChanged( const QColor& ) ) );
 }
 
 ColorPicker::~ColorPicker()

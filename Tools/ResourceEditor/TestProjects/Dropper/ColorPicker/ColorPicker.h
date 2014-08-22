@@ -11,6 +11,8 @@ namespace Ui {class ColorPicker;};
 #include "AbstractColorPicker.h"
 
 
+class EyeDropper;
+
 class ColorPicker
     : public AbstractColorPicker
 {
@@ -38,6 +40,7 @@ private:
     void ConnectPicker( AbstractColorPicker *picker );
 
     QScopedPointer<Ui::ColorPicker> ui;
+    QScopedPointer<EyeDropper> dropper;
     PickerMap pickers;
     PickerMap colorSpaces;
 };
