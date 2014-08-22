@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QScopedPointer>
 #include <QMap>
+#include <QEventLoop>
 #include <QPointer>
 
 namespace Ui {class ColorPicker;};
@@ -25,6 +26,8 @@ public:
     explicit ColorPicker(QWidget *parent = 0);
     ~ColorPicker();
 
+    void exec();
+
 protected:
     void RegisterPicker( const QString& key, AbstractColorPicker *picker );
     void RegisterColorSpace( const QString& key, AbstractColorPicker *picker );
@@ -41,11 +44,13 @@ private slots:
 private:
     void UpdateControls( const QColor& c, AbstractColorPicker *source = NULL );
     void ConnectPicker( AbstractColorPicker *picker );
+    void closeEvent( QCloseEvent * e );
 
     QScopedPointer<Ui::ColorPicker> ui;
     QPointer<EyeDropper> dropper;
     PickerMap pickers;
     PickerMap colorSpaces;
+    QEventLoop modalLoop;
 };
 
 #endif // COLORPICKER_H

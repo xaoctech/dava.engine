@@ -24,7 +24,7 @@ public:
     ~AbstractSlider();
 
     QPointF PosF() const;
-    void SetPostF( const QPointF& posF );
+    void SetPosF( const QPointF& posF );
 
 protected:
     void paintEvent( QPaintEvent* e ) override;
@@ -44,9 +44,9 @@ private slots:
     void OnMouseRelease( const QPoint& pos );
 
 private:
-
     QPoint pos;
     QPoint pressPos;
+    QSize lastSize;     //  остыль, т.к. Qt присылает неверный oldSize в первый resizeEvent
     QPointer< MouseHelper > mouse;
 };
 

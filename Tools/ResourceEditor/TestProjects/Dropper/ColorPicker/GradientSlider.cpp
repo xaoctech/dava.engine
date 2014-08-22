@@ -62,10 +62,10 @@ void GradientSlider::SetValue( double val )
     switch ( orientation  )
     {
     case Qt::Horizontal:
-        SetPostF( QPointF( val, PosF().y() ) );
+        SetPosF( QPointF( val, PosF().y() ) );
         break;
     case Qt::Vertical:
-        SetPostF( QPointF( PosF().x(), val ) );
+        SetPosF( QPointF( PosF().x(), val ) );
         break;
     }
 }

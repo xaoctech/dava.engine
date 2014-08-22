@@ -30,6 +30,7 @@ private slots:
 
 private:
     void paintEvent(QPaintEvent *e);
+    void keyPressEvent(QKeyEvent * e);
     void DrawCursor(const QPoint& pos, QPainter *p);
     void CreateShade();
     QColor GetPixel( const QPoint& pos ) const;

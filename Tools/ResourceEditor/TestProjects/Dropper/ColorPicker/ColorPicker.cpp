@@ -34,6 +34,20 @@ ColorPicker::~ColorPicker()
 {
 }
 
+void ColorPicker::exec()
+{
+    const Qt::WindowFlags f = windowFlags();
+    const Qt::WindowModality m = windowModality();
+    setWindowFlags( f | Qt::Dialog );
+    setWindowModality( Qt::WindowModal );
+
+    show();
+    modalLoop.exec();
+
+    setWindowFlags( f );
+    setWindowModality(m);
+}
+
 void ColorPicker::RegisterPicker( QString const& key, AbstractColorPicker* picker )
 {
     delete pickers[key];
@@ -116,4 +130,14 @@ void ColorPicker::ConnectPicker( AbstractColorPicker* picker )
     connect( picker, SIGNAL( changing( const QColor& ) ), SLOT( OnChanging( const QColor& ) ) );
     connect( picker, SIGNAL( changed( const QColor& ) ), SLOT( OnChanged( const QColor& ) ) );
     connect( picker, SIGNAL( canceled() ), SIGNAL( canceled() ) );
+}
+
+void ColorPicker::closeEvent( QCloseEvent* e )
+{
+    if (modalLoop.isRunning())
+    {
+        modalLoop.quit();
+    }
+
+    QWidget::closeEvent(e);
 }

@@ -26,7 +26,7 @@ Dropper::Dropper(QWidget *parent)
     ui.test_2->SetOrientation( Qt::Vertical );
     ui.test_2->SetOffsets( 5, 20, 5, 0 );
 
-    ui.test_3->setColor( Qt::yellow );
+    ui.test_3->SetColor( Qt::yellow );
 
     ui.test_4->SetColorOld( QColor( 255, 0, 255, 100 ) );
     ui.test_4->SetColorNew( QColor( 255, 255, 100, 50 ) );
@@ -37,7 +37,6 @@ Dropper::Dropper(QWidget *parent)
 
 Dropper::~Dropper()
 {
-
 }
 
 void Dropper::showCP()
@@ -46,9 +45,8 @@ void Dropper::showCP()
     cp->setWindowFlags( Qt::Window );
     cp->setAttribute( Qt::WA_DeleteOnClose, true );
 
-    cp->show();
-
     cp->SetColor( QColor( 90, 150, 230, 120 ) );
+    cp->exec();
 }
 
 void Dropper::testGrab()
