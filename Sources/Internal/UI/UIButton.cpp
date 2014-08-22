@@ -520,9 +520,11 @@ void UIButton::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
         const YamlNode * stateAlignNode = node->Get(Format("stateAlign%s", statePostfix.c_str()));
         const YamlNode * colorInheritNode = node->Get(Format("stateColorInherit%s", statePostfix.c_str()));
         const YamlNode * colorNode = node->Get(Format("stateColor%s", statePostfix.c_str()));
+        const YamlNode * leftRightStretchCapNode = node->Get(Format("leftRightStretchCap%s", statePostfix.c_str()));
+        const YamlNode * topBottomStretchCapNode = node->Get(Format("topBottomStretchCap%s", statePostfix.c_str()));
 
         if (stateSpriteNode || stateDrawTypeNode || stateAlignNode ||
-            colorInheritNode || colorNode)
+            colorInheritNode || colorNode || leftRightStretchCapNode || topBottomStretchCapNode)
         {
             RefPtr<UIControlBackground> stateBackground;
             if (drawState == DRAW_STATE_UNPRESSED)
@@ -563,21 +565,18 @@ void UIButton::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
             {
                 UIControlBackground::eDrawType type = (UIControlBackground::eDrawType)loader->GetDrawTypeFromNode(stateDrawTypeNode);
                 stateBackground->SetDrawType(type);
+            }
 
-                const YamlNode * leftRightStretchCapNode = node->Get(Format("leftRightStretchCap%s", statePostfix.c_str()));
-                const YamlNode * topBottomStretchCapNode = node->Get(Format("topBottomStretchCap%s", statePostfix.c_str()));
+            if(leftRightStretchCapNode)
+            {
+                float32 leftStretchCap = leftRightStretchCapNode->AsFloat();
+                stateBackground->SetLeftRightStretchCap(leftStretchCap);
+            }
 
-                if(leftRightStretchCapNode)
-                {
-                    float32 leftStretchCap = leftRightStretchCapNode->AsFloat();
-                    stateBackground->SetLeftRightStretchCap(leftStretchCap);
-                }
-
-                if(topBottomStretchCapNode)
-                {
-                    float32 topStretchCap = topBottomStretchCapNode->AsFloat();
-                    stateBackground->SetTopBottomStretchCap(topStretchCap);
-                }
+            if(topBottomStretchCapNode)
+            {
+                float32 topStretchCap = topBottomStretchCapNode->AsFloat();
+                stateBackground->SetTopBottomStretchCap(topStretchCap);
             }
 
             if (stateAlignNode)
