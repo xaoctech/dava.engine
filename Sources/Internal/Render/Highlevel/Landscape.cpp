@@ -1670,7 +1670,7 @@ Texture * Landscape::CreateLandscapeTexture()
     RenderManager::Instance()->SetViewport(Rect(0.f, 0.f, (float32)fullTiled->GetWidth(), (float32)fullTiled->GetHeight()), true);
 
 
-	RenderManager::Instance()->ClearWithColor(1.f, 1.f, 1.f, 1.f);
+	RenderManager::Instance()->ClearWithColor(1.f, 0.f, 1.f, 1.f);
  
     RenderManager::SetDynamicParam(PARAM_WORLD, &Matrix4::IDENTITY, (pointer_size)&Matrix4::IDENTITY);
     Matrix4 projection;
@@ -1682,25 +1682,15 @@ Texture * Landscape::CreateLandscapeTexture()
     
     prevLodLayer = -1;
 
-    int32 fogFlag = tileMaskMaterial->GetFlagValue(NMaterial::FLAG_VERTEXFOG);
-    tileMaskMaterial->SetFlag(NMaterial::FLAG_VERTEXFOG, NMaterial::FlagOff);
-
-	BindMaterial(0, NULL);
+    NMaterial* tmpLandscapeParent = NMaterial::CreateMaterial(FastName("Landscape_Tilemask_Material_TMP"), FastName("~res:/Materials/TileMask.material"), NMaterial::DEFAULT_QUALITY_NAME);
+    NMaterial* tmpTileMaskMaterial = tileMaskMaterial->Clone();
+    tmpTileMaskMaterial->SetFlag(NMaterial::FLAG_VERTEXFOG, NMaterial::FlagOff);
+    tmpTileMaskMaterial->SetParent(tmpLandscapeParent);
+    tmpTileMaskMaterial->BindMaterialTechnique(TECHNIQUE_TILEMASK_NAME, NULL);
 
 	RenderManager::Instance()->SetRenderData(ftRenderData);
 	RenderManager::Instance()->AttachRenderData();
-
 	RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
-    UnbindMaterial();
-
-    if(fogFlag & NMaterial::FlagInherited)
-    {
-        tileMaskMaterial->ResetFlag(NMaterial::FLAG_VERTEXFOG);
-    }
-    else
-    {
-        tileMaskMaterial->SetFlag(NMaterial::FLAG_VERTEXFOG, (NMaterial::eFlagValue) (fogFlag & NMaterial::FlagOn));
-    }
 
 #ifdef __DAVAENGINE_OPENGL__
 	RenderManager::Instance()->HWglBindFBO(RenderManager::Instance()->GetFBOViewFramebuffer());
@@ -1709,6 +1699,9 @@ Texture * Landscape::CreateLandscapeTexture()
     RenderManager::SetDynamicParam(PARAM_PROJ, &oldProjection, UPDATE_SEMANTIC_ALWAYS);
 	RenderManager::Instance()->SetViewport(oldViewport, true);
     SafeRelease(ftRenderData);
+
+    SafeRelease(tmpTileMaskMaterial);
+    SafeRelease(tmpLandscapeParent);
     
     return fullTiled;
 }
