@@ -17,7 +17,7 @@ public:
     int GetSat() const;
 
     void SetColor( int hue, int sat );
-    void setColor( const QColor& c );
+    void SetColor( const QColor& c );
 
 protected:
     void DrawBackground( QPainter *p ) const override;

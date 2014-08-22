@@ -5,20 +5,21 @@
 #include <QDesktopWidget>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QKeyEvent>
 #include <QDebug>
 
 #include "../Helpers/MouseHelper.h"
 
 
 EyeDropper::EyeDropper(QWidget *parent)
-    : QWidget( parent, Qt::Popup | Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint )
+    : QWidget( parent, Qt::Popup | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint )
     , mouse(new MouseHelper(this))
     , cursorSize(69, 69)
 {
     setAttribute( Qt::WA_DeleteOnClose );
-    setFocusPolicy( Qt::WheelFocus );
+    setFocusPolicy( Qt::StrongFocus );
     setMouseTracking(true);
-    setCursor(QCursor());
+    setCursor(Qt::BlankCursor);
 
     connect( mouse, SIGNAL( mouseMove( const QPoint& ) ), SLOT( OnMouseMove( const QPoint& ) ) );
     connect( mouse, SIGNAL( mouseRelease( const QPoint& ) ), SLOT( OnClicked( const QPoint& ) ) );
@@ -63,8 +64,19 @@ void EyeDropper::paintEvent(QPaintEvent* e)
     Q_UNUSED( e );
 
     QPainter p(this);
+    p.setRenderHints( QPainter::Antialiasing | QPainter::TextAntialiasing, false );
     p.drawImage( 0, 0, cache );
     DrawCursor( cursorPos, &p );
+}
+
+void EyeDropper::keyPressEvent(QKeyEvent* e)
+{
+    if (e->key() == Qt::Key_Escape)
+    {
+        close();
+    }
+
+    QWidget::keyPressEvent(e);
 }
 
 void EyeDropper::DrawCursor(const QPoint& pos, QPainter *p)
@@ -79,7 +91,6 @@ void EyeDropper::DrawCursor(const QPoint& pos, QPainter *p)
     QRect rcZoom( QPoint( pos.x() - sx / fc, pos.y() - sy / fc ), QPoint( pos.x() + sx / fc, pos.y() + sy / fc ) );
     const QImage& zoomed = cache.copy( rcZoom ).scaled( rc.size(), Qt::KeepAspectRatio, Qt::FastTransformation );
 
-    //p->fillRect( rc, c );
     p->drawImage( rc, zoomed );
     p->setPen( QPen( Qt::black, 1.0 ) );
 
@@ -90,7 +101,7 @@ void EyeDropper::DrawCursor(const QPoint& pos, QPainter *p)
     p->drawLine( midX, rc.top(), midX, rc.bottom() );
     p->fillRect( pos.x() - 1, pos.y() - 1, 3, 3, c );
 
-    p->setPen( QPen( c, 3.0 ) );
+    p->setPen( Qt::white );
     p->drawRect( rc );
     rc.adjust( -1, -1, 1, 1 );
     p->setPen( Qt::black );

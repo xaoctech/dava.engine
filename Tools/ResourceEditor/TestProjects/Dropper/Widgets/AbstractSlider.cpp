@@ -5,6 +5,8 @@
 
 #include "../Helpers/MouseHelper.h"
 
+#include "../ColorPicker/PaletteHSV.h"
+
 
 AbstractSlider::AbstractSlider(QWidget *parent)
     : QWidget(parent)
@@ -31,7 +33,7 @@ QPointF AbstractSlider::PosF() const
     return QPointF( x, y );
 }
 
-void AbstractSlider::SetPostF( const QPointF& posF )
+void AbstractSlider::SetPosF( const QPointF& posF )
 {
     const QRect& rc = PosArea();
     const int x = int( rc.width() * posF.x() );
@@ -58,9 +60,10 @@ void AbstractSlider::paintEvent( QPaintEvent* e )
 
 void AbstractSlider::resizeEvent( QResizeEvent* e )
 {
-    QPoint oldPos = pos;
-    const int oldW = e->oldSize().width();
-    const int oldH = e->oldSize().height();
+    const QPoint oldPos = pos;
+    const int oldW = lastSize.width();
+    const int oldH = lastSize.height();
+    lastSize = size();
 
     // Skip resize during initialization
     if ( oldW < 0 || oldH < 0 )
@@ -69,8 +72,8 @@ void AbstractSlider::resizeEvent( QResizeEvent* e )
     const qreal xScale = oldW ? double( e->size().width() ) / double( oldW ) : 0;
     const qreal yScale = oldH ? double( e->size().height() ) / double( oldH ) : 0;
 
-    pos.setX( int( oldPos.x() * xScale ) );
-    pos.setY( int( oldPos.y() * yScale ) );
+    const QPoint newPos( int( oldPos.x() * xScale ), int( oldPos.y() * yScale ) );
+    SetPos( newPos );
 
     update();
 }
@@ -133,6 +136,7 @@ void AbstractSlider::SetPos(const QPoint& _pos)
 {
     const QRect &rc = PosArea();
     QPoint pt = _pos;
+    lastSize = size();
 
     if ( !rc.contains( pt ) )
     {

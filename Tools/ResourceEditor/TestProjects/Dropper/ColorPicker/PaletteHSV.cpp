@@ -1,6 +1,7 @@
 #include "PaletteHSV.h"
 
 #include <QPainter>
+#include <QDebug>
 
 #include "../Helpers/PaintingHelper.h"
 
@@ -30,12 +31,14 @@ int PaletteHSV::GetSat() const
 void PaletteHSV::SetColor( int hue, int sat )
 {
     QColor c;
+
     c.setHsv( hue, sat, PaintingHelper::ValRC( Pos(), size() ) );
     const QPoint pt = PaintingHelper::GetHSVColorPoint( c, size() );
+    qDebug() << "Size: " << size();
     SetPos( pt );
 }
 
-void PaletteHSV::setColor( const QColor& c )
+void PaletteHSV::SetColor( const QColor& c )
 {
     SetColor( c.hue(), c.saturation() );
 }
@@ -54,6 +57,9 @@ void PaletteHSV::DrawBackground( QPainter* p ) const
 void PaletteHSV::DrawForeground( QPainter* p ) const
 {
     DrawCursor( p );
+
+    const QString text = QString( "Pos: %1x%2 Size: %3x%4" ).arg( Pos().x() ).arg( Pos().y() ).arg( size().width() ).arg( size().height() );
+    p->drawText( 20, 20, text );
 }
 
 void PaletteHSV::resizeEvent( QResizeEvent* e )

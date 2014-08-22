@@ -149,7 +149,7 @@ int PaintingHelper::ValRC( QPoint const& pt, QSize const& size )
     Q_UNUSED( pt );
     Q_UNUSED( size );
 
-    return 240;
+    return 220;
 }
 
 QColor PaintingHelper::MinColorComponent( QColor const& color, char component )
