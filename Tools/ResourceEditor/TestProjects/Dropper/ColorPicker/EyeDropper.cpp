@@ -3,7 +3,8 @@
 #include <QApplication>
 #include <QCursor>
 #include <QDesktopWidget>
-#include <QFrame>
+#include <QMouseEvent>
+#include <QDebug>
 
 #include "../Helpers/MouseHelper.h"
 
@@ -15,6 +16,22 @@ EyeDropper::EyeDropper(QObject *parent)
 
 EyeDropper::~EyeDropper()
 {
+    delete shade;
+}
+
+void EyeDropper::Exec()
+{
+    CreateShade();
+}
+
+void EyeDropper::OnMouseMove()
+{
+    emit moved(GetPixel());
+}
+
+void EyeDropper::OnClicked()
+{
+    emit clicked(GetPixel());
 }
 
 void EyeDropper::CreateShade()
@@ -29,36 +46,50 @@ void EyeDropper::CreateShade()
         screenRc = screenRc.united(rc);
     }
 
-    shade = new QWidget( desktop, Qt::Window | Qt::FramelessWindowHint | Qt::CustomizeWindowHint | Qt::WindowStaysOnTopHint );
+    shade = new QWidget( NULL, Qt::Window | Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint );
 
     shade->setAttribute(Qt::WA_TranslucentBackground);
-    shade->setAttribute( Qt::WA_DeleteOnClose );
-    shade->resize( screenRc.size() );
-    shade->move( screenRc.topLeft() );
-    //shade->resize( 200, 200 );
-    //shade->move( 100, 100 );
-    //shade->setWindowOpacity( 0.004 );
-
-    //shade->setBackgroundRole( QPalette::NoRole );
-    //shade->setAutoFillBackground( false );
-    
-    //QFrame *innerFrame = new QFrame(shade);
-    //QPalette framePal( shade->palette() );
-    //framePal.setBrush( QPalette::Background, Qt::NoBrush );
-    //framePal.setColor( QPalette::Background, Qt::transparent );
-    //innerFrame->setPalette( framePal );
-    ////innerFrame->setStyleSheet( "border: 1px solid red;background: transparent;" );
-    //innerFrame->move( 0, 0 );
-    //innerFrame->resize( shade->size() );
-
-    //QPalette pal(shade->palette());
-    //pal.setBrush( QPalette::Background, Qt::NoBrush );
-    //pal.setColor( QPalette::Background, Qt::transparent );
-    //shade->setPalette( pal );
-
-    mouse = new MouseHelper( shade );
-    connect( mouse, SIGNAL( clicked() ), shade, SLOT( close() ) );
+    shade->setAttribute(Qt::WA_DeleteOnClose);
+    shade->setFocusPolicy( Qt::WheelFocus );
+    shade->resize(screenRc.size());
+    shade->move(screenRc.topLeft());
+    shade->setMouseTracking( true );
+    shade->installEventFilter( this );
 
     shade->show();
-    shade->grabMouse();
+    shade->setFocus();
+    shade->grabMouse(); // Beware!
+}
+
+QColor EyeDropper::GetPixel() const
+{
+    const QPoint pos = QCursor::pos();
+    const QImage img = QPixmap::grabWindow( QApplication::desktop()->winId(), pos.x(), pos.y(), 1, 1 ).toImage();
+    const QColor c = img.pixel( 0, 0 );
+    return c;
+}
+
+bool EyeDropper::eventFilter( QObject* obj, QEvent* e )
+{
+    if ( obj == shade )
+    {
+        switch ( e->type() )
+        {
+        case QEvent::MouseMove:
+            qDebug() << "MouseMove";
+            //OnMouseMove();
+            break;
+
+        case QEvent::MouseButtonRelease:
+            OnClicked();
+            qDebug() << "MouseButtonRelease";
+            return true;
+
+        default:
+            qDebug() << "Event: " << e->type();
+            break;
+        }
+    }
+
+    return QObject::eventFilter( obj, e );
 }

@@ -15,13 +15,26 @@ class EyeDropper
 
     typedef QList< QPointer< QWidget > > ShadesList;
 
+signals:
+    void clicked( const QColor& color );
+    void moved( const QColor& color );
+
 public:
     explicit EyeDropper(QObject *parent = NULL);
     ~EyeDropper();
 
-    void CreateShade();
+public slots:
+    void Exec();
+
+private slots:
+    void OnMouseMove();
+    void OnClicked();
 
 private:
+    bool eventFilter( QObject* obj, QEvent* e );
+    void CreateShade();
+    QColor GetPixel() const;
+
     QPointer<QWidget> shade;
     QPointer<MouseHelper> mouse;
 };
