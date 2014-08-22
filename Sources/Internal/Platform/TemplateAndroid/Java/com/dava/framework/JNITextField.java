@@ -494,6 +494,7 @@ public class JNITextField {
 				inputFlags &= ~(InputType.TYPE_CLASS_NUMBER |
 						InputType.TYPE_CLASS_TEXT |
 						InputType.TYPE_TEXT_VARIATION_URI |
+						InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS |
 						EditorInfo.TYPE_CLASS_TEXT);
 				
 				switch (keyboardType) {
