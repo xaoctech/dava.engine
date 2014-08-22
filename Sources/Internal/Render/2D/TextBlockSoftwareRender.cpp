@@ -34,6 +34,52 @@
 namespace DAVA 
 {
     
+TextBlockSoftwareTexInvalidater::TextBlockSoftwareTexInvalidater(TextBlock *textBlock) :
+  textBlock(textBlock)
+{
+}
+    
+TextBlockSoftwareTexInvalidater::~TextBlockSoftwareTexInvalidater()
+{
+    Set<Texture*>::iterator it = textureSet.begin();
+    for(; it != textureSet.end(); ++it)
+    {
+        (*it)->SetInvalidater(NULL);
+    }
+    textureSet.clear();
+}
+    
+void TextBlockSoftwareTexInvalidater::InvalidateTexture(DAVA::Texture *texture)
+{
+    textBlock->ForcePrepare(texture);
+}
+
+void TextBlockSoftwareTexInvalidater::RemoveTexture(Texture *tex)
+{
+    Set<Texture*>::iterator it = textureSet.find(tex);
+    if(it != textureSet.end())
+    {
+        textureSet.erase(it);
+    }
+    else
+    {
+        Logger::Error("[TextBlockSoftwareTexInvalidater::RemoveTexToSet] trying to remove texture not in set");
+    }
+}
+    
+void TextBlockSoftwareTexInvalidater::AddTexture(Texture *tex)
+{
+    Set<Texture*>::iterator it = textureSet.find(tex);
+    if(it == textureSet.end())
+    {
+        textureSet.insert(tex);
+    }
+    else
+    {
+        Logger::Error("[TextBlockSoftwareTexInvalidater::AddTexToSet] trying to add texture already in set");
+    }
+}
+    
 TextBlockSoftwareRender::TextBlockSoftwareRender(TextBlock* textBlock) :
 	TextBlockRender(textBlock)
 {
@@ -41,9 +87,13 @@ TextBlockSoftwareRender::TextBlockSoftwareRender(TextBlock* textBlock) :
 	ftFont = (FTFont*)textBlock->font;
 }
 	
-void TextBlockSoftwareRender::Prepare()
+void TextBlockSoftwareRender::Prepare(Texture *texture /*=NULL*/)
 {
-	TextBlockRender::Prepare();
+    // Prevent releasing sprite when texture is invalidated
+    if(!texture)
+    {
+        TextBlockRender::Prepare(NULL);
+    }
 	
 	int bsz = textBlock->cacheDx * textBlock->cacheDy;
 	buf = new int16[bsz];
@@ -67,8 +117,24 @@ void TextBlockSoftwareRender::Prepare()
 		}
 	}
 	
-	Texture *tex = Texture::CreateTextFromData(FORMAT_A8, (uint8*)buf, textBlock->cacheDx, textBlock->cacheDy, false, addInfo.c_str());
-    sprite = Sprite::CreateFromTexture(tex, 0, 0, textBlock->cacheFinalSize.dx, textBlock->cacheFinalSize.dy);
+    Texture *tex = NULL;
+    if(!texture)
+    {
+        tex = Texture::CreateTextFromData(FORMAT_A8, (uint8*)buf, textBlock->cacheDx, textBlock->cacheDy, false, addInfo.c_str());
+        if(textBlock->textureInvalidater)
+        {
+            tex->SetInvalidater(textBlock->textureInvalidater);
+        }
+    }
+    else
+    {
+        texture->ReloadFromData(FORMAT_A8, (uint8*)buf, textBlock->cacheDx, textBlock->cacheDy);
+    }
+    
+    if(!texture)
+    {
+        sprite = Sprite::CreateFromTexture(tex, 0, 0, textBlock->cacheFinalSize.dx, textBlock->cacheFinalSize.dy);
+    }
     
 	SafeDeleteArray(buf);
 	SafeRelease(tex);
