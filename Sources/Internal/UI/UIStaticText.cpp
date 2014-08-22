@@ -52,11 +52,9 @@ UIStaticText::UIStaticText(const Rect &rect, bool rectInAbsoluteCoordinates/* = 
 
     textBg = new UIControlBackground();
     textBg->SetDrawType(UIControlBackground::DRAW_ALIGNED);
-    textBg->SetColorInheritType(UIControlBackground::COLOR_MULTIPLY_ON_PARENT);
 
     shadowBg = new UIControlBackground();
     shadowBg->SetDrawType(UIControlBackground::DRAW_ALIGNED);
-    shadowBg->SetColorInheritType(UIControlBackground::COLOR_MULTIPLY_ON_PARENT);
 
     SetTextColor(Color::White);
     SetShadowColor(Color::Black);
