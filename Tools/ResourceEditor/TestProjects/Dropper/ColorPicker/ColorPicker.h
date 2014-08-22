@@ -34,13 +34,16 @@ protected:
 private slots:
     void OnChanging( const QColor& c );
     void OnChanged( const QColor& c );
+    void OnDropperChanged( const QColor& c );
+
+    void OnDropper();
 
 private:
     void UpdateControls( const QColor& c, AbstractColorPicker *source = NULL );
     void ConnectPicker( AbstractColorPicker *picker );
 
     QScopedPointer<Ui::ColorPicker> ui;
-    QScopedPointer<EyeDropper> dropper;
+    QPointer<EyeDropper> dropper;
     PickerMap pickers;
     PickerMap colorSpaces;
 };

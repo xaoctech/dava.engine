@@ -11,7 +11,6 @@
 ColorPicker::ColorPicker(QWidget *parent)
     : AbstractColorPicker( parent )
     , ui( new Ui::ColorPicker() )
-    , dropper( new EyeDropper() )
 {
     ui->setupUi( this );
 
@@ -28,9 +27,7 @@ ColorPicker::ColorPicker(QWidget *parent)
     connect( this, SIGNAL( changed( const QColor& ) ), ui->preview, SLOT( SetColorNew( const QColor& ) ) );
 
     // Dropper
-    connect( ui->dropper, SIGNAL( clicked() ), dropper.data(), SLOT( Exec() ) );
-    connect( dropper.data(), SIGNAL( moved( const QColor& ) ), SLOT( OnChanging( const QColor& ) ) );
-    connect( dropper.data(), SIGNAL( clicked( const QColor& ) ), SLOT( OnChanged( const QColor& ) ) );
+    connect( ui->dropper, SIGNAL( clicked() ), SLOT( OnDropper() ) );
 }
 
 ColorPicker::~ColorPicker()
@@ -76,6 +73,21 @@ void ColorPicker::OnChanged( const QColor& c )
     AbstractColorPicker *source = qobject_cast<AbstractColorPicker *>( sender() );
     UpdateControls( c, source );
     emit changed( c );
+}
+
+void ColorPicker::OnDropperChanged( const QColor& c )
+{
+    QColor normalized( c );
+    normalized.setAlphaF( GetColor().alphaF() );
+    UpdateControls(normalized);
+    ui->preview->SetColorNew(normalized);
+}
+
+void ColorPicker::OnDropper()
+{
+    dropper = new EyeDropper( this );
+    connect( dropper, SIGNAL( picked( const QColor& ) ), SLOT( OnDropperChanged( const QColor& ) ) );
+    dropper->Exec();
 }
 
 void ColorPicker::UpdateControls( const QColor& c, AbstractColorPicker* source )
