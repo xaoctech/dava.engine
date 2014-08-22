@@ -41,12 +41,14 @@ TextBlockSoftwareTexInvalidater::TextBlockSoftwareTexInvalidater(TextBlock *text
     
 TextBlockSoftwareTexInvalidater::~TextBlockSoftwareTexInvalidater()
 {
-    Set<Texture*>::iterator it = textureSet.begin();
-    for(; it != textureSet.end(); ++it)
+    // Create a copy of textureSet here, as textureSet will be cleaned by texture itself inside the SetInvalidater call.
+    Set<Texture*> setCopy = textureSet;
+    Set<Texture*>::iterator it = setCopy.begin();
+    for(; it != setCopy.end(); ++it)
     {
         (*it)->SetInvalidater(NULL);
     }
-    textureSet.clear();
+    DVASSERT(textureSet.size() == 0);
 }
     
 void TextBlockSoftwareTexInvalidater::InvalidateTexture(DAVA::Texture *texture)
@@ -95,7 +97,7 @@ void TextBlockSoftwareRender::Prepare(Texture *texture /*=NULL*/)
         TextBlockRender::Prepare(NULL);
     }
 	
-	int bsz = textBlock->cacheDx * textBlock->cacheDy;
+	int32 bsz = textBlock->cacheDx * textBlock->cacheDy;
 	buf = new int16[bsz];
     memset(buf, 0, bsz * sizeof(int16));
 	
@@ -117,27 +119,22 @@ void TextBlockSoftwareRender::Prepare(Texture *texture /*=NULL*/)
 		}
 	}
 	
-    Texture *tex = NULL;
     if(!texture)
     {
-        tex = Texture::CreateTextFromData(FORMAT_A8, (uint8*)buf, textBlock->cacheDx, textBlock->cacheDy, false, addInfo.c_str());
+        Texture *tex = Texture::CreateTextFromData(FORMAT_A8, (uint8*)buf, textBlock->cacheDx, textBlock->cacheDy, false, addInfo.c_str());
         if(textBlock->textureInvalidater)
         {
             tex->SetInvalidater(textBlock->textureInvalidater);
         }
+        sprite = Sprite::CreateFromTexture(tex, 0, 0, textBlock->cacheFinalSize.dx, textBlock->cacheFinalSize.dy);
+        SafeRelease(tex);
     }
     else
     {
         texture->ReloadFromData(FORMAT_A8, (uint8*)buf, textBlock->cacheDx, textBlock->cacheDy);
     }
     
-    if(!texture)
-    {
-        sprite = Sprite::CreateFromTexture(tex, 0, 0, textBlock->cacheFinalSize.dx, textBlock->cacheFinalSize.dy);
-    }
-    
 	SafeDeleteArray(buf);
-	SafeRelease(tex);
 }
 	
 Size2i TextBlockSoftwareRender::DrawTextSL(const WideString& drawText, int32 x, int32 y, int32 w)
