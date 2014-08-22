@@ -254,24 +254,6 @@ namespace DAVA
         return false;
     }
 
-    String UIControl::GetSpriteFrameworkPath( const Sprite* sprite)
-    {
-        if (!sprite)
-        {
-            return "";
-        }
-
-        FilePath path(sprite->GetRelativePathname());
-        String pathName = "";
-        if (!path.IsEmpty())
-        {
-            path.TruncateExtension();
-            pathName = path.GetFrameworkPath();
-        }
-
-        return pathName;
-    }
-
     void UIControl::SetName(const String & _name)
     {
         name = _name;
@@ -305,7 +287,7 @@ namespace DAVA
         controlState = state;
     }
 
-    Sprite* UIControl::GetSprite()
+    Sprite* UIControl::GetSprite() const
     {
         return background->GetSprite();
     }
@@ -794,9 +776,14 @@ namespace DAVA
     void UIControl::SetAbsolutePosition(const Vector2 &position)
     {
         if(parent)
-            SetPosition(position - parent->GetGeometricData().position);
+        {
+            const UIGeometricData &parentGD = parent->GetGeometricData();
+            SetPosition(position - parentGD.position + parentGD.pivotPoint);
+        }
         else
+        {
             SetPosition(position);
+        }
     }
 
     void UIControl::SetSize(const Vector2 &newSize)
@@ -831,8 +818,6 @@ namespace DAVA
             return GetRect();
 
         return GetAbsoluteRect();
-        Vector2 pos = GetPosition(absoluteCoordinates) - pivotPoint;
-        return Rect(pos.x, pos.y, size.x, size.y);
     }
 
     Rect UIControl::GetAbsoluteRect()
@@ -856,10 +841,12 @@ namespace DAVA
         if (!parent)
         {
             SetRect(rect);
+            return;
         }
 
         Rect localRect = rect;
-        localRect.SetPosition( rect.GetPosition() - parent->GetGeometricData().position);
+        const UIGeometricData &parentGD = parent->GetGeometricData();
+        localRect.SetPosition(rect.GetPosition() - parentGD.position + parentGD.pivotPoint);
         SetRect(localRect);
     }
 
@@ -2110,7 +2097,7 @@ namespace DAVA
         Sprite *sprite =  this->GetSprite();
         if (sprite)
         {
-            node->Set("sprite", GetSpriteFrameworkPath(sprite));
+            node->Set("sprite", Sprite::GetPathString(sprite));
         }
 
         // Color
