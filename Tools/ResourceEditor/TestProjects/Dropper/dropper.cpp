@@ -9,6 +9,7 @@
 
 
 #include "ColorPicker/ColorPicker.h"
+#include "ColorPicker/EyeDropper.h"
 
 
 Dropper::Dropper(QWidget *parent)
@@ -31,7 +32,7 @@ Dropper::Dropper(QWidget *parent)
     ui.test_4->SetColorNew( QColor( 255, 255, 100, 50 ) );
 
     connect( ui.btn, SIGNAL( clicked() ), SLOT( showCP() ) );
-    connect( ui.pick, SIGNAL( clicked() ), SLOT( testGrab() ) );
+    connect( ui.pick, SIGNAL( clicked() ), SLOT( testGrab2() ) );
 }
 
 Dropper::~Dropper()
@@ -71,4 +72,10 @@ void Dropper::testGrab()
         .arg( pos.x() ).arg( pos.y() );
 
     pix.save( path, "PNG", 100 );
+}
+
+void Dropper::testGrab2()
+{
+    EyeDropper *dropper = new EyeDropper( this );
+    dropper->CreateShade();
 }

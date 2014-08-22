@@ -6,6 +6,8 @@
 #include <QPointer>
 
 
+class MouseHelper;
+
 class EyeDropper
     : public QObject
 {
@@ -17,11 +19,12 @@ public:
     explicit EyeDropper(QObject *parent = NULL);
     ~EyeDropper();
 
-private:
-    void CreateShades();
-    QWidget * CreateShade( int screen ) const;
+    void CreateShade();
 
-    ShadesList shades;
+private:
+    QPointer<QWidget> shade;
+    QPointer<MouseHelper> mouse;
 };
+
 
 #endif // EYEDROPPER_H
