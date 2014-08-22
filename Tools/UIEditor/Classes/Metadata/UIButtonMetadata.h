@@ -87,7 +87,7 @@ protected:
 
     // Sprite getter/setter.
     virtual void SetSprite(const QString& value);
-    virtual QString GetSprite();
+    virtual QString GetSprite() const;
     
     virtual void SetSpriteFrame(int value);
     virtual int GetSpriteFrame();
@@ -181,6 +181,9 @@ protected:
 
     // Recover dirty flags.
     void RecoverPropertyDirtyFlags();
+
+    // Update the localization key.
+    void UpdateExtraDataLocalizationKey();
 };
 
 };
