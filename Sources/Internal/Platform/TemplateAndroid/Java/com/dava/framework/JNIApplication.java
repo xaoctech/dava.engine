@@ -29,7 +29,7 @@ public class JNIApplication extends Application
 		
 		Log.i(JNIConst.LOG_TAG, "[Application::onCreate] start"); 
 		
-		externalDocumentsDir = this.getExternalFilesDir(STORAGE_SERVICE).getAbsolutePath();
+		externalDocumentsDir = this.getExternalFilesDir(null).getAbsolutePath();
 		internalExternalDocumentsDir = this.getFilesDir().getAbsolutePath();
 		
 		Log.w(JNIConst.LOG_TAG, String.format("[Application::onCreate] apkFilePath is %s", info.publicSourceDir)); 
