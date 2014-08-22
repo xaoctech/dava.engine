@@ -1245,6 +1245,10 @@ eGPUFamily Texture::GetGPUForLoading(const eGPUFamily requestedGPU, const Textur
 
 void Texture::SetInvalidater(TextureInvalidater* invalidater)
 {
+    if(this->invalidater)
+    {
+        this->invalidater->RemoveTexture(this);
+    }
 	this->invalidater = invalidater;
     if(invalidater != NULL)
     {

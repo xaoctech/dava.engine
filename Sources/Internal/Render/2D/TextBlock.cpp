@@ -348,14 +348,13 @@ bool TextBlock::IsSpriteReady()
 void TextBlock::Prepare(Texture *texture /*=NULL*/)
 {
 	Retain();
-    PrepareInternalData *data = new PrepareInternalData();
-    data->texture = texture;
-	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &TextBlock::PrepareInternal, data));
+	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &TextBlock::PrepareInternal,
+                                                                                            SafeRetain(texture)));
 }
 
 void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerData)
 {
-    PrepareInternalData * data = (PrepareInternalData *)param;
+    Texture * texture = (Texture *)param;
 	if(!font)
 	{
         Release();
@@ -369,15 +368,15 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 
         if (textBlockRender)
         {
-			textBlockRender->Prepare(data->texture);
+			textBlockRender->Prepare(texture);
         }
 
         needRedraw = false;
     }
     
     mutex.Unlock();
+    SafeRelease(texture);
 	Release();
-    SafeDelete(data);
 }
 
 void TextBlock::CalculateCacheParams()

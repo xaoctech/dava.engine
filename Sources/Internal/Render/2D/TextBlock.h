@@ -110,11 +110,6 @@ protected:
 	void Prepare(Texture *texture = NULL);
 	void PrepareInternal(BaseObject * caller, void * param, void *callerData);
     
-    struct PrepareInternalData
-    {
-        Texture *texture;
-    };
-    
 	void CalculateCacheParams();
 
 	void DrawToBuffer(Font *font, uint8 *buf);
