@@ -43,8 +43,8 @@
 #include "musicios.h"
 #endif
 
-#define MAX_SOUND_CHANNELS 32
-#define MAX_SOUND_VIRTUAL_CHANNELS 128
+#define MAX_SOUND_CHANNELS 48
+#define MAX_SOUND_VIRTUAL_CHANNELS 64
 
 namespace DAVA
 {
@@ -57,6 +57,8 @@ FMOD_RESULT F_CALLBACK DAVA_FMOD_FILE_CLOSECALLBACK(void * handle, void * userda
 static const FastName SEREALIZE_EVENTTYPE_EVENTFILE("eventFromFile");
 static const FastName SEREALIZE_EVENTTYPE_EVENTSYSTEM("eventFromSystem");
 
+Mutex SoundSystem::soundGroupsMutex;
+    
 SoundSystem::SoundSystem()
 {
     DVASSERT(sizeof(FMOD_VECTOR) == sizeof(Vector3));
@@ -521,6 +523,7 @@ void SoundSystem::ReleaseAllEventWaveData()
     
 void SoundSystem::SetGroupVolume(const FastName & groupName, float32 volume)
 {
+    soundGroupsMutex.Lock();
     for(size_t i = 0; i < soundGroups.size(); ++i)
     {
         SoundGroup & group = soundGroups[i];
@@ -535,21 +538,30 @@ void SoundSystem::SetGroupVolume(const FastName & groupName, float32 volume)
             break;
         }
     }
+    soundGroupsMutex.Unlock();
 }
 
 float32 SoundSystem::GetGroupVolume(const FastName & groupName)
 {
+    soundGroupsMutex.Lock();
+    float32 ret = -1.f;
     for(size_t i = 0; i < soundGroups.size(); ++i)
     {
         SoundGroup & group = soundGroups[i];
         if(group.name == groupName)
-            return group.volume;
+        {
+            ret = group.volume;
+            break;
+        }
     }
-    return -1.f;
+    soundGroupsMutex.Unlock();
+    return ret;
 }
 
 void SoundSystem::AddSoundEventToGroup(const FastName & groupName, SoundEvent * event)
 {
+    soundGroupsMutex.Lock();
+    
     for(size_t i = 0; i < soundGroups.size(); ++i)
     {
         SoundGroup & group = soundGroups[i];
@@ -557,6 +569,8 @@ void SoundSystem::AddSoundEventToGroup(const FastName & groupName, SoundEvent * 
         {
             event->SetVolume(group.volume);
             group.events.push_back(event);
+            
+            soundGroupsMutex.Unlock();
             return;
         }
     }
@@ -567,31 +581,30 @@ void SoundSystem::AddSoundEventToGroup(const FastName & groupName, SoundEvent * 
     group.events.push_back(event);
 
     soundGroups.push_back(group);
+    
+    soundGroupsMutex.Unlock();
 }
     
 void SoundSystem::RemoveSoundEventFromGroups(SoundEvent * event)
 {
-    Vector<SoundGroup>::iterator it = soundGroups.begin();
-    while(it != soundGroups.end())
+    for(uint32 i = 0; i < (uint32)soundGroups.size(); ++i)
     {
-        Vector<SoundEvent *> & events = it->events;
-        Vector<SoundEvent *>::iterator itEv = events.begin();
-        Vector<SoundEvent *>::const_iterator itEvEnd = events.end();
-        while(itEv != itEvEnd)
+        Vector<SoundEvent *> & events = soundGroups[i].events;
+        uint32 eventsCount = events.size();
+        for(uint32 k = 0; k < eventsCount; k++)
         {
-            if((*itEv) == event)
+            if(events[k] == event)
             {
-                it->events.erase(itEv);
+                RemoveExchangingWithLast(events, k);
                 break;
             }
-
-            ++itEv;
         }
 
         if(!events.size())
-            it = soundGroups.erase(it);
-        else
-            ++it;
+        {
+            RemoveExchangingWithLast(soundGroups, i);
+            --i;
+        }
     }
 }
     

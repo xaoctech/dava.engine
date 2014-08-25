@@ -88,7 +88,7 @@ protected slots:
 private:
     
 	virtual void Quit();
-    virtual void ShowAssertMessage(const char * message);
+    DAVA_DEPRECATED(virtual void ShowAssertMessage(const char * message));
 
 private:
     
