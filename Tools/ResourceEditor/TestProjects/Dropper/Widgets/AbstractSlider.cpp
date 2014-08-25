@@ -25,23 +25,13 @@ AbstractSlider::~AbstractSlider()
 
 QPointF AbstractSlider::PosF() const
 {
-    const QRect& rc = PosArea();
-    const QPoint pt = Pos() - rc.topLeft();
-    const qreal x = double( pt.x() ) / double( rc.width() - 1 );
-    const qreal y = double( pt.y() ) / double( rc.height() - 1 );
-
-    return QPointF( x, y );
+    return posF;
 }
 
-void AbstractSlider::SetPosF( const QPointF& posF )
+void AbstractSlider::SetPosF( const QPointF& _posF )
 {
-    const QRect& rc = PosArea();
-    const int x = int( rc.width() * posF.x() );
-    const int y = int( rc.height() * posF.y() );
-    QPoint newPos( x, y );
-
-    newPos += rc.topLeft();
-    SetPos( newPos );
+    posF = _posF;
+    update();
 }
 
 void AbstractSlider::paintEvent( QPaintEvent* e )
@@ -60,21 +50,6 @@ void AbstractSlider::paintEvent( QPaintEvent* e )
 
 void AbstractSlider::resizeEvent( QResizeEvent* e )
 {
-    const QPoint oldPos = pos;
-    const int oldW = lastSize.width();
-    const int oldH = lastSize.height();
-    lastSize = size();
-
-    // Skip resize during initialization
-    if ( oldW < 0 || oldH < 0 )
-        return;
-
-    const qreal xScale = oldW ? double( e->size().width() ) / double( oldW ) : 0;
-    const qreal yScale = oldH ? double( e->size().height() ) / double( oldH ) : 0;
-
-    const QPoint newPos( int( oldPos.x() * xScale ), int( oldPos.y() * yScale ) );
-    SetPos( newPos );
-
     update();
 }
 
@@ -90,11 +65,16 @@ void AbstractSlider::DrawForeground( QPainter *p ) const
 
 QRect AbstractSlider::PosArea() const
 {
-    return QRect( 0, 0, width() - 1, height() - 1 );
+    return QRect( 0, 0, width(), height() );
 }
 
 QPoint AbstractSlider::Pos() const
 {
+    const QRect& rc = PosArea();
+    const int x = rc.width() * posF.x();
+    const int y = rc.height() * posF.y();
+    const QPoint pos = QPoint( x, y ) + rc.topLeft();
+
     return pos;
 }
 
@@ -106,7 +86,7 @@ MouseHelper* AbstractSlider::Mouse() const
 void AbstractSlider::OnMousePress( const QPoint & _pos )
 {
     SetPos( _pos );
-    pressPos = pos;
+    pressPos = Pos();
     emit started( PosF() );
 }
 
@@ -122,7 +102,7 @@ void AbstractSlider::OnMouseMove( const QPoint & _pos )
 void AbstractSlider::OnMouseRelease( const QPoint & _pos )
 {
     SetPos( _pos );
-    if ( pressPos != pos )
+    if ( pressPos != _pos )
     {
         emit changed( PosF() );
     }
@@ -134,30 +114,35 @@ void AbstractSlider::OnMouseRelease( const QPoint & _pos )
 
 void AbstractSlider::SetPos(const QPoint& _pos)
 {
-    const QRect &rc = PosArea();
-    QPoint pt = _pos;
-    lastSize = size();
+    const QRect& area = PosArea();
+    const QRect &rc = area.adjusted( 0, 0, 1, 1 );
+    QPoint pos = _pos;
 
-    if ( !rc.contains( pt ) )
+    if ( !rc.contains( pos ) )
     {
-        if ( pt.x() < rc.left() )
+        if ( pos.x() < rc.left() )
         {
-            pt.setX( rc.left() );
+            pos.setX( rc.left() );
         }
-        if ( pt.x() > rc.right() )
+        if ( pos.x() > rc.right() )
         {
-            pt.setX( rc.right() );
+            pos.setX( rc.right() );
         }
-        if ( pt.y() < rc.top() )
+        if ( pos.y() < rc.top() )
         {
-            pt.setY( rc.top() );
+            pos.setY( rc.top() );
         }
-        if ( pt.y() > rc.bottom() )
+        if ( pos.y() > rc.bottom() )
         {
-            pt.setY( rc.bottom() );
+            pos.setY( rc.bottom() );
         }
     }
 
-    pos = pt;
-    repaint();
+    pos -= rc.topLeft();
+
+    const qreal xF = double( pos.x() ) / double( area.width() );
+    const qreal yF = double( pos.y() ) / double( area.height() );
+    posF = QPointF( xF, yF );
+
+    update();
 }

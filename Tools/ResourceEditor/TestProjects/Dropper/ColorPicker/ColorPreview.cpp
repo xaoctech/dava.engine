@@ -8,7 +8,7 @@
 
 ColorPreview::ColorPreview(QWidget *parent)
     : QWidget(parent)
-    , bgBrush( PaintingHelper::BuildGridBrush( QSize( 7, 7 ) ) )
+    , bgBrush( PaintingHelper::DrawGridBrush( QSize( 7, 7 ) ) )
 {
 }
 

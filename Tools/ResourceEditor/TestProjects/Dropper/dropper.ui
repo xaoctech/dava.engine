@@ -6,68 +6,28 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>916</width>
-    <height>667</height>
+    <width>490</width>
+    <height>575</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dropper</string>
   </property>
-  <widget class="GradientSlider" name="test_1" native="true">
+  <widget class="GradientSlider" name="test_2" native="true">
    <property name="geometry">
     <rect>
      <x>20</x>
      <y>20</y>
-     <width>301</width>
-     <height>31</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="GradientSlider" name="test_2" native="true">
-   <property name="geometry">
-    <rect>
-     <x>40</x>
-     <y>70</y>
-     <width>31</width>
-     <height>241</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="PaletteHSV" name="test_3" native="true">
-   <property name="geometry">
-    <rect>
-     <x>120</x>
-     <y>70</y>
-     <width>301</width>
-     <height>211</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="ColorPreview" name="test_4" native="true">
-   <property name="geometry">
-    <rect>
-     <x>470</x>
-     <y>30</y>
-     <width>91</width>
-     <height>81</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="ValueSlider" name="test_5" native="true">
-   <property name="geometry">
-    <rect>
-     <x>150</x>
-     <y>360</y>
-     <width>251</width>
-     <height>31</height>
+     <width>81</width>
+     <height>471</height>
     </rect>
    </property>
   </widget>
   <widget class="QPushButton" name="btn">
    <property name="geometry">
     <rect>
-     <x>460</x>
-     <y>130</y>
+     <x>150</x>
+     <y>40</y>
      <width>75</width>
      <height>23</height>
     </rect>
@@ -76,17 +36,14 @@
     <string>PushButton</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pick">
+  <widget class="QLineEdit" name="edit">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>430</y>
-     <width>161</width>
-     <height>41</height>
+     <x>150</x>
+     <y>90</y>
+     <width>191</width>
+     <height>31</height>
     </rect>
-   </property>
-   <property name="text">
-    <string>Пипетко</string>
    </property>
   </widget>
  </widget>
@@ -96,24 +53,6 @@
    <class>GradientSlider</class>
    <extends>QWidget</extends>
    <header>ColorPicker/GradientSlider.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>PaletteHSV</class>
-   <extends>QWidget</extends>
-   <header>ColorPicker/PaletteHSV.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ColorPreview</class>
-   <extends>QWidget</extends>
-   <header>ColorPicker/ColorPreview.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ValueSlider</class>
-   <extends>QWidget</extends>
-   <header>Widgets/ValueSlider.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

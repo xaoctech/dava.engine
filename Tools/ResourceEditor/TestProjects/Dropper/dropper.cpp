@@ -17,22 +17,16 @@ Dropper::Dropper(QWidget *parent)
 {
     ui.setupUi(this);
 
-    ui.test_1->SetColors( QColor( 255, 255, 0 ), QColor( 255, 0, 0 ) );
-    ui.test_1->SetDimensions( Qt::BottomEdge );
-    ui.test_1->SetOrientation( Qt::Horizontal );
-
-    ui.test_2->SetColors( QColor( 255, 255, 128, 10 ), QColor( 0, 255, 128, 10 ) );
+    ui.test_2->SetColors( QColor( 0, 255, 0 ), QColor( 0, 0, 255 ) );
     ui.test_2->SetDimensions( Qt::LeftEdge | Qt::RightEdge );
     ui.test_2->SetOrientation( Qt::Vertical );
-    ui.test_2->SetOffsets( 5, 20, 5, 0 );
+    ui.test_2->SetOffsets( 10, 10, 10, 10 );
 
-    ui.test_3->SetColor( Qt::yellow );
-
-    ui.test_4->SetColorOld( QColor( 255, 0, 255, 100 ) );
-    ui.test_4->SetColorNew( QColor( 255, 255, 100, 50 ) );
+    connect( ui.test_2, SIGNAL( started( const QPointF& ) ), SLOT( OnStarted( const QPointF& ) ) );
+    connect( ui.test_2, SIGNAL( changing( const QPointF& ) ), SLOT( OnChanging( const QPointF& ) ) );
+    connect( ui.test_2, SIGNAL( changed( const QPointF& ) ), SLOT( OnChanged( const QPointF& ) ) );
 
     connect( ui.btn, SIGNAL( clicked() ), SLOT( showCP() ) );
-    connect( ui.pick, SIGNAL( clicked() ), SLOT( testGrab2() ) );
 }
 
 Dropper::~Dropper()
@@ -49,31 +43,23 @@ void Dropper::showCP()
     cp->exec();
 }
 
-void Dropper::testGrab()
+void Dropper::OnStarted( const QPointF& posF )
 {
-    const int n = QApplication::desktop()->screenCount();
-    QRect screenRc;
-
-    for ( int i = 0; i < n; i++ )
-    {
-        const QRect rc = QApplication::desktop()->screenGeometry( i );
-        screenRc = screenRc.united( rc );
-        qDebug() << rc;
-    }
-
-    const QPixmap pix = QPixmap::grabWindow( QApplication::desktop()->winId(), screenRc.left(), screenRc.top(), screenRc.width(), screenRc.height() );
-    const QDateTime now = QDateTime::currentDateTime();
-    const QPoint pos = QCursor::pos();
-    const QString path = QString( "%1/test_%2-%3_%4x%5.png" )
-        .arg( QApplication::applicationDirPath() )
-        .arg( now.time().hour() ).arg( now.time().minute() )
-        .arg( pos.x() ).arg( pos.y() );
-
-    pix.save( path, "PNG", 100 );
+    OnOn( posF );
 }
 
-void Dropper::testGrab2()
+void Dropper::OnChanging( const QPointF& posF )
 {
-    EyeDropper *dropper = new EyeDropper( this );
-    dropper->Exec();
+    OnOn( posF );
+}
+
+void Dropper::OnChanged( const QPointF& posF )
+{
+    OnOn( posF );
+}
+
+void Dropper::OnOn( const QPointF& posF )
+{
+    const QString text = QString::number( posF.y() );
+    ui.edit->setText( text );
 }
