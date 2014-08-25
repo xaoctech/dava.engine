@@ -80,27 +80,4 @@ public class JNINotificationProvider {
    			notificationManager.notify(id, notificationToSet);
     	}
     }
-    
-	static void Notify()
-	{
-		if (isInited)
-		{		
-			   // Bitmap bmp=BitmapFactory.decodeStream(assetsManager.open("Data/1.jpg"));
-
-			    Notification noti = builder
-		         .setContentTitle("Title")
-		         .setContentText("text \n next line dlgfkj ;sdlkfgj ;dkfjg; lsdjfg;lksdj f;gls d")
-		         //.setSubText("SubText")
-		         .setTicker("New BlitzNotification")
-		         .setSmallIcon(R.drawable.btn_star_big_on)
-		       //  .setLargeIcon(bmp)
-		         .setProgress(100, 50, false)
-		         .build();
-			    
-			    notificationManager.notify(1, noti);
-
-			
-			
-		}
-	}
 }

@@ -50,12 +50,16 @@ public:
     Notification();
     virtual ~Notification();
 
+    bool IsChanged();
+
 	void SetTitle(const String &_title);
 	void SetText(const String &_text);
     virtual void Hide();
     virtual void Update();
 
 protected:
+    bool isChanged;
+
     uint32 id;
     String title;
     String text;
@@ -91,7 +95,10 @@ public:
     virtual ~NotificationController();
 	NotificationProgress *CreateNotificationProgress(const String &title = "", const String &text = "", uint32 max = 0, uint32 current = 0);
     
+	void Update();
+
 private:
+	Mutex notificationsListMutex;
 	List<Notification *> notificationsList;
 };
 

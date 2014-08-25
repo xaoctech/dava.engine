@@ -44,7 +44,6 @@ JniExtension::JniExtension()
 
 JniExtension::~JniExtension()
 {
-	Thread::DetachFromJVM();
 }
 
 void JniExtension::SetJavaClass(JNIEnv* env, const char* className, jclass* gJavaClass, const char** gJavaClassName)
@@ -77,10 +76,11 @@ JNIEnv *JniExtension::GetEnvironment() const
 	// JNIEnv is valid only for the thread where it was gotten.
 	// we shouldn't store JNIEnv.
 
-	Thread::AttachToJVM();
-
 	JNIEnv *env;
-	vm->GetEnv((void**)&env, JNI_VERSION_1_6);
+	if (JNI_EDETACHED == vm->GetEnv((void**)&env, JNI_VERSION_1_6))
+	{
+		Logger::Error("runtime_error(Thread is not attached to JNI)");
+	}
 	return env;
 };
 

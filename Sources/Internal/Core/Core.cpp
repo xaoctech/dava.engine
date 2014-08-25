@@ -700,6 +700,7 @@ void Core::SystemProcessFrame()
 			}
 		}
 		
+		NotificationController::Instance()->Update();
         DownloadManager::Instance()->Update();
 		JobManager::Instance()->Update();
 		core->Update(frameDelta);

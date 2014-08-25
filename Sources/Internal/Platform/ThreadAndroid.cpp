@@ -46,6 +46,8 @@ Thread::ThreadId Thread::glThreadId = 0;
 
 void * PthreadMain (void * param)
 {
+	Thread::AttachToJVM();
+
 	Thread * t = (Thread*)param;
 	t->SetThreadId(Thread::GetCurrentThreadId());
 	
@@ -55,11 +57,7 @@ void * PthreadMain (void * param)
 	t->state = Thread::STATE_ENDED;
 	t->Release();
 
-	if(0 < t->attachedToJVMCount)
-	{
-		t->attachedToJVMCount = 1;
-		Thread::DetachFromJVM();
-	}
+	Thread::DetachFromJVM();
 	pthread_exit(0);
 }
 
@@ -103,28 +101,15 @@ void Thread::AttachToJVM()
 	if (true == IsMainThread())
 		return;
 
-	if (!threadList.empty())
+	DAVA::CorePlatformAndroid *core = (DAVA::CorePlatformAndroid *)DAVA::Core::Instance();
+	DAVA::AndroidSystemDelegate* delegate = core->GetAndroidSystemDelegate();
+	JavaVM *vm = delegate->GetVM();
+	JNIEnv *env;
+
+	if (JNI_EDETACHED == vm->GetEnv((void**)&env, JNI_VERSION_1_6))
 	{
-		for (Set<Thread *>::iterator it = threadList.begin(); it != threadList.end(); ++it)
-		{
-			Thread *t = (*it);
-			if (Thread::GetCurrentThreadId() == t->GetThreadId())
-			{
-				DAVA::CorePlatformAndroid *core = (DAVA::CorePlatformAndroid *)DAVA::Core::Instance();
-				DAVA::AndroidSystemDelegate* delegate = core->GetAndroidSystemDelegate();
-				JavaVM* vm;
-				JNIEnv* env;
-				vm = delegate->GetVM();
-				if (JNI_EDETACHED == vm->GetEnv((void**)&env, JNI_VERSION_1_6))
-				{
-					if (vm->AttachCurrentThread(&env, NULL)!=0)
-						Logger::Error("runtime_error(Could not attach current thread to JNI)");
-					else
-						t->attachedToJVMCount++;
-				}
-				break;
-			}
-		}
+		if (vm->AttachCurrentThread(&env, NULL)!=0)
+			Logger::Error("runtime_error(Could not attach current thread to JNI)");
 	}
 }
 
@@ -133,35 +118,15 @@ void Thread::DetachFromJVM()
 	if (true == IsMainThread())
 		return;
 
-	if (!threadList.empty())
-	{
-		for (Set<Thread *>::iterator it = threadList.begin(); it != threadList.end(); ++it)
-		{
-			Thread *t = (*it);
-			if (Thread::GetCurrentThreadId() == t->GetThreadId())
-			{
-				if (0 < t->attachedToJVMCount)
-				{
-					t->attachedToJVMCount--;
+	DAVA::CorePlatformAndroid *core = (DAVA::CorePlatformAndroid *)DAVA::Core::Instance();
+	DAVA::AndroidSystemDelegate* delegate = core->GetAndroidSystemDelegate();
+	JavaVM *vm = delegate->GetVM();
+	JNIEnv *env;
 
-					// we should detach from thread once when no one uses it for JNI calls.
-					if (0 == t->attachedToJVMCount)
-					{
-						DAVA::CorePlatformAndroid *core = (DAVA::CorePlatformAndroid *)DAVA::Core::Instance();
-						DAVA::AndroidSystemDelegate* delegate = core->GetAndroidSystemDelegate();
-						JavaVM* vm;
-						JNIEnv* env;
-						vm = delegate->GetVM();
-						if (JNI_OK == vm->GetEnv((void**)&env, JNI_VERSION_1_6))
-						{
-							if (0 != vm->DetachCurrentThread())
-								Logger::Error("runtime_error(Could not detach current thread from JNI)");
-						}
-					}
-				}
-				break;
-			}
-		}
+	if (JNI_OK == vm->GetEnv((void**)&env, JNI_VERSION_1_6))
+	{
+		if (0 != vm->DetachCurrentThread())
+			Logger::Error("runtime_error(Could not detach current thread from JNI)");
 	}
 }
 
