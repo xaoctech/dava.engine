@@ -330,7 +330,7 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 function IsVisible(element, background)
     Yield()
-    local control = GetControl(element)
+    local control = autotestingSystem:FindControl(element)
     return not not (control and control:GetVisible() and control:IsOnScreen() and IsOnScreen(control, background))
 end
 
