@@ -121,6 +121,7 @@
 #include "Classes/Commands2/PaintHeightDeltaAction.h"
 
 #include "Tools/HeightDeltaTool/HeightDeltaTool.h"
+#include "Tools/ColorPicker/ColorPicker.h"
 
 
 QtMainWindow::QtMainWindow(QWidget *parent)
@@ -740,6 +741,11 @@ void QtMainWindow::SetupActions()
         QAction *act = ui->menuDebug_Functions->addAction("Edit version tags");
         connect(act, SIGNAL(triggered()), SLOT(DebugVersionInfo()));
 #endif
+	}
+    // Debug colorpicker
+	{
+        QAction *act = ui->menuDebug_Functions->addAction("Color picker");
+        connect(act, SIGNAL(triggered()), SLOT(DebugColorPicker()));
 	}
     
  	//Collision Box Types
@@ -2940,6 +2946,13 @@ void QtMainWindow::DebugVersionInfo()
     }
 
     versionInfoWidget->show();
+}
+
+void QtMainWindow::DebugColorPicker()
+{
+    ColorPicker *cp = new ColorPicker(this);
+
+    cp->exec();
 }
 
 void QtMainWindow::OnGenerateHeightDelta()
