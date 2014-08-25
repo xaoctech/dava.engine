@@ -58,8 +58,7 @@ APKFile::~APKFile()
 File * APKFile::CreateFromAssets(const FilePath &filePath, uint32 attributes)
 {
 	mutex.Lock();
-//	Logger::Debug("[APKFile::CreateFromAssets] wan't to create file %s", filePath.c_str());
-//
+
     FileSystem * fileSystem = FileSystem::Instance();
 	for (List<FileSystem::ResourceArchiveItem>::iterator ai = fileSystem->resourceArchiveList.begin();
          ai != fileSystem->resourceArchiveList.end(); ++ai)
@@ -108,18 +107,17 @@ File * APKFile::CreateFromAssets(const FilePath &filePath, uint32 attributes)
     AAsset * asset = AAssetManager_open(assetManager, filePath.GetAbsolutePathname().c_str(), AASSET_MODE_UNKNOWN);
     if(!asset)
     {
-        Logger::Error("[APKFile::CreateFromAssets] Can't load asset for path %s", filePath.GetAbsolutePathname().c_str());
+//        Logger::Error("[APKFile::CreateFromAssets] Can't load asset for path %s", filePath.GetAbsolutePathname().c_str());
         mutex.Unlock();
         return NULL;
     }
     
 
-    uint32 dataSize = AAsset_getLength(asset);
-//    Logger::Debug("[APKFile::CreateFromAssets] fileSize is %d (%s)", dataSize, filePath.c_str());
+    int32 dataSize = AAsset_getLength(asset);
 
     uint8 *data = new uint8[dataSize];
     
-    uint32 readSize = AAsset_read(asset, data, dataSize * sizeof(uint8));
+    int32 readSize = AAsset_read(asset, data, dataSize * sizeof(uint8));
     AAsset_close(asset);
 
     if (readSize != dataSize)
@@ -129,10 +127,24 @@ File * APKFile::CreateFromAssets(const FilePath &filePath, uint32 attributes)
     		readSize,
     		dataSize);
     }
-    DVASSERT_MSG(readSize == dataSize * sizeof(uint8), "Can't read full file");
 
-    APKFile *fileInstance = CreateFromData(filePath, data, readSize, attributes);
-    DVASSERT_MSG(fileInstance, "Can't create dynamic file from memory");
+    APKFile *fileInstance = NULL;
+
+    if (readSize < 0)
+    {
+    	Logger::Error("Error reading %s.", filePath.GetAbsolutePathname().c_str());
+    	Logger::Error("This seems to be a known Android issue with resources packing.");
+    	Logger::Error("In the case when there are many repetitive values in the file, Android unpacker can't determine the end of the packed file.");
+    	Logger::Error("For more information: https://code.google.com/p/android/issues/detail?id=39041 https://android-review.googlesource.com/#/c/51757/");
+    	Logger::Error("This issue is fixed in the later versions of Android.");
+    	Logger::Error("The workaround is to fill the file with data to avoid the big amount of repetitive values at the end of compressed file.");
+    }
+    else
+    {
+    	fileInstance = CreateFromData(filePath, data, readSize, attributes);
+    	DVASSERT_MSG(fileInstance, "Can't create dynamic file from memory");
+    }
+
     SafeDeleteArray(data);
     mutex.Unlock();
     return fileInstance;
@@ -145,8 +157,6 @@ APKFile * APKFile::CreateFromData(const FilePath &filePath, const uint8 * data, 
 	fl->Write(data, dataSize);
 	fl->fileAttributes = attributes;
 	fl->currentPtr = 0;
-
-//	Logger::Debug("[APKFile::CreateFromData] fileSize is %d (%s) (%p) ", dataSize, filePath.c_str(), fl);
     
     return fl;
 }

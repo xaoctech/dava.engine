@@ -73,9 +73,9 @@ void TextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     RegisterPushButtonWidgetForProperty(propertiesMap, PropertyNames::FONT_PROPERTY_NAME, ui->fontPresetEditButton, false, true);
     
     RegisterLineEditWidgetForProperty(propertiesMap, PropertyNames::TEXT_PROPERTY_NAME, ui->textLineEdit);
-    RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::SHADOW_OFFSET_X, ui->shadowOffsetXSpinBox);
-    RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::SHADOW_OFFSET_Y, ui->shadowOffsetYSpinBox);
-    RegisterColorWidgetForProperty(propertiesMap, PropertyNames::SHADOW_COLOR, ui->shadowColorWidget);
+    RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::SHADOW_OFFSET_X, ui->shadowOffsetXSpinBox, false, true);
+    RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::SHADOW_OFFSET_Y, ui->shadowOffsetYSpinBox, false, true);
+    RegisterColorWidgetForProperty(propertiesMap, PropertyNames::SHADOW_COLOR, ui->shadowColorWidget, false, true);
     
 	RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::TEXT_ALIGN_PROPERTY_NAME, ui->alignComboBox, false, true);
     
@@ -366,6 +366,13 @@ void TextPropertyGridWidget::UpdatePushButtonWidgetWithFont(QPushButton *pushBut
                 QString fontSpriteName =QString::fromStdString(fontSprite->GetRelativePathname().GetFrameworkPath());
                 //Set push button widget text - for grapics font it contains font definition and sprite names
                 buttonText = QString("%1\n%2").arg(fontDefinitionName, fontSpriteName);
+                break;
+            }
+            case Font::TYPE_DISTANCE:
+            {
+                DFFont *dfFont = static_cast<DFFont*>(font);
+                //Set pushbutton widget text
+				buttonText = QString::fromStdString(dfFont->GetFontPath().GetFrameworkPath());
                 break;
             }
             default:

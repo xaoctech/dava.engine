@@ -132,6 +132,15 @@ Vector2 UITextControlMetadata::GetOffsetY(const Vector2& currentOffset, float of
 	return offset;
 }
 
+int UITextControlMetadata::GetFontShadowColorInheritType() const
+{
+    return UIControlBackground::COLOR_IGNORE_PARENT;
+}
+
+void UITextControlMetadata::SetFontShadowColorInheritType(int /*value*/)
+{
+}
+
 int UITextControlMetadata::GetFittingType() const
 {
     return TextBlock::FITTING_DISABLED;
@@ -139,14 +148,4 @@ int UITextControlMetadata::GetFittingType() const
 
 void UITextControlMetadata::SetFittingType(int /*value*/)
 {
-}
-
-void UITextControlMetadata::CloneFont(UIStaticText* staticText)
-{
-    if (staticText && staticText->GetFont())
-    {
-		Font* newFont = staticText->GetFont()->Clone();
-		staticText->SetFont(newFont);
-		newFont->Release();
-    }
 }
