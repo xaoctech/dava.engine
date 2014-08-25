@@ -30,6 +30,7 @@
 
 #include "Notification.h"
 #include "Base/BaseTypes.h"
+#include "Thread/LockGuard.h"
 
 namespace DAVA
 {
@@ -40,6 +41,7 @@ Notification::Notification()
 #elif defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
     : NotificationNotImplemented()
 #endif
+	, isChanged(false)
 	, title("")
 	, text("")
 {
@@ -50,7 +52,36 @@ Notification::Notification()
 Notification::~Notification()
 {
 }
-    
+
+bool Notification::IsChanged()
+{
+	return isChanged;
+}
+
+void Notification::SetTitle(const String &_title)
+{
+	if (_title != title)
+	{
+		isChanged = true;
+		title = _title;
+	}
+}
+
+void Notification::SetText(const String &_text)
+{
+	if (_text != text)
+	{
+		isChanged = true;
+		text = _text;
+	}
+}
+
+
+void Notification::Update()
+{
+	isChanged = false;
+}
+
 NotificationProgress::NotificationProgress()
     : Notification()
     , total(0)
@@ -66,8 +97,35 @@ void NotificationProgress::Hide()
     progress = 0;
 }
 
+void NotificationProgress::SetProgressCurrent(uint32 _currentProgress)
+{
+	if (progress != _currentProgress)
+	{
+		isChanged = true;
+		progress = _currentProgress;
+	}
+}
+
+void NotificationProgress::SetProgressTotal(uint32 _total)
+{
+	if (total != _total)
+	{
+		isChanged = true;
+		total = _total;
+	}
+}
+
+void NotificationProgress::Update()
+{
+	if (true == isChanged)
+		ShowNotifitaionWithProgress(id, title, text, total, progress);
+
+	Notification::Update();
+}
+
 NotificationController::~NotificationController()
 {
+	LockGuard<Mutex> guard(notificationsListMutex);
     if (!notificationsList.empty())
     {
         for (List<Notification *>::iterator it = notificationsList.begin(); it != notificationsList.end();)
@@ -89,14 +147,30 @@ NotificationProgress *NotificationController::CreateNotificationProgress(const S
         note->SetTitle(title);
         note->SetProgressCurrent(0);
         note->SetProgressTotal(100);
-
-        note->Update();
         
+        LockGuard<Mutex> guard(notificationsListMutex);
         notificationsList.push_back(note);
     }
-    
+
     return note;
 }
+
+void NotificationController::Update()
+{
+	LockGuard<Mutex> guard(notificationsListMutex);
+
+    if (!notificationsList.empty())
+    {
+        for (List<Notification *>::iterator it = notificationsList.begin(); it != notificationsList.end(); ++it)
+        {
+            Notification *notification = (*it);
+
+            notification->Update();
+        }
+    }
+}
+
+
 
 }
 

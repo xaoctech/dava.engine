@@ -91,10 +91,6 @@ Thread::Thread(const Message& _msg)
     threadListMutex.Unlock();
 
     msg = _msg;
-
-#if defined(__DAVAENGINE_ANDROID__)
-    attachedToJVMCount = 0;
-#endif
 }
 
 Thread::~Thread()

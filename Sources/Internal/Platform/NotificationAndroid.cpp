@@ -35,6 +35,7 @@
 #include "Platform/TemplateAndroid/CorePlatformAndroid.h"
 #include "Platform/TemplateAndroid/ExternC/AndroidLayer.h"
 #include "Mutex.h"
+#include "Thread/LockGuard.h"
 
 namespace DAVA
 {
@@ -54,30 +55,17 @@ const char* JniNotification::GetJavaClassName() const
 
 void Notification::Hide()
 {
-	javaCallMutex.Lock();
+	LockGuard<Mutex> mutexGuard(javaCallMutex);
 
 	GetEnvironment()->CallStaticVoidMethod(
 					GetJavaClass(),
 					GetMethodID("HideNotification", "(I)V"),
 					id);
-	javaCallMutex.Unlock();
 
 	text = "";
 	title = "";
-}
-    
-void Notification::Update()
-{
-}
 
-void Notification::SetTitle(const String &_title)
-{
-	title = _title;
-}
-
-void Notification::SetText(const String &_text)
-{
-	text = _text;
+	isChanged = false;
 }
 
 void NotificationProgress::ShowNotifitaionWithProgress(uint32 id,
@@ -86,7 +74,7 @@ void NotificationProgress::ShowNotifitaionWithProgress(uint32 id,
 			int32 maxValue,
 			int32 value)
 {
-	javaCallMutex.Lock();
+	LockGuard<Mutex> mutexGuard(javaCallMutex);
 
 	JNIEnv *env = GetEnvironment();
 
@@ -107,23 +95,6 @@ void NotificationProgress::ShowNotifitaionWithProgress(uint32 id,
 
 	env->DeleteLocalRef(jStrTitle);
 	env->DeleteLocalRef(jStrText);
-
-	javaCallMutex.Unlock();
-}
-
-void NotificationProgress::SetProgressCurrent(uint32 _currentProgress)
-{
-	progress = _currentProgress;
-}
-
-void NotificationProgress::SetProgressTotal(uint32 _total)
-{
-	total = _total;
-}
-
-void NotificationProgress::Update()
-{
-	ShowNotifitaionWithProgress(id, title, text, total, progress);
 }
 
 }
