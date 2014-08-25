@@ -15,6 +15,7 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.Spanned;
 import android.text.method.PasswordTransformationMethod;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -111,6 +112,14 @@ public class JNITextField {
 		}
 	}
 
+	private static float GetScaledDensity()
+	{
+		DisplayMetrics dm = new DisplayMetrics();
+		JNIActivity.GetActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
+
+		return Math.min(2.0f, dm.scaledDensity);
+	}
+
 	public static void Create(final int id, final float x, final float y,
 			final float dx, final float dy) {
 		if (controls.containsKey(id)) {
@@ -139,7 +148,7 @@ public class JNITextField {
 				params.gravity = Gravity.LEFT | Gravity.TOP;
 				text.setPadding(0, 0, 0, 0);
 				text.setSingleLine(true);
-				int fontSize = (int) (20);
+				int fontSize = (int) (20 * GetScaledDensity());
 				text.setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSize);
 				text.setBackgroundColor(Color.TRANSPARENT);
 				text.setTextColor(Color.WHITE);
@@ -281,7 +290,7 @@ public class JNITextField {
 		InternalTask<Void> task = new InternalTask<Void>(text, new Callable<Void>() {
 			@Override
 			public Void call() throws Exception {
-				text.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
+				text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size * GetScaledDensity()));
 				return null;
 			}
 		});
@@ -485,6 +494,7 @@ public class JNITextField {
 				inputFlags &= ~(InputType.TYPE_CLASS_NUMBER |
 						InputType.TYPE_CLASS_TEXT |
 						InputType.TYPE_TEXT_VARIATION_URI |
+						InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS |
 						EditorInfo.TYPE_CLASS_TEXT);
 				
 				switch (keyboardType) {
@@ -497,10 +507,13 @@ public class JNITextField {
 					break;
 
 				case 3: // KEYBOARD_TYPE_URL
-				case 7: // KEYBOARD_TYPE_EMAIL_ADDRESS
 				case 9: // KEYBOARD_TYPE_TWITTER
 					inputFlags |= InputType.TYPE_CLASS_TEXT
 							| InputType.TYPE_TEXT_VARIATION_URI;
+					break;
+
+				case 7: // KEYBOARD_TYPE_EMAIL_ADDRESS
+					inputFlags |= InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
 					break;
 
 				case 0: // KEYBOARD_TYPE_DEFAULT
