@@ -182,6 +182,7 @@ void Core::CreateRenderManager()
         
 void Core::ReleaseSingletons()
 {
+	NotificationController::Instance()->Release();
     DownloadManager::Instance()->Release();
 	PerformanceSettings::Instance()->Release();
 	RenderHelper::Instance()->Release();
