@@ -5,8 +5,6 @@
 
 #include "../Helpers/MouseHelper.h"
 
-#include "../ColorPicker/PaletteHSV.h"
-
 
 AbstractSlider::AbstractSlider(QWidget *parent)
     : QWidget(parent)

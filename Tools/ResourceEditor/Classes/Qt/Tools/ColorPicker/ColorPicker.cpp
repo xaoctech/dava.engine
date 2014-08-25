@@ -143,6 +143,8 @@ void ColorPicker::UpdateControls( const QColor& c, AbstractColorPicker* source )
             recv->SetColor( c );
         }
     }
+
+    color = c;
 }
 
 void ColorPicker::ConnectPicker( AbstractColorPicker* picker )

@@ -15,7 +15,7 @@ QColor AbstractColorPicker::GetColor() const
     return color;
 }
 
-void AbstractColorPicker::SetColor( QColor const& c )
+void AbstractColorPicker::SetColor( const QColor& c )
 {
     color = c;
     SetColorInternal( c );
