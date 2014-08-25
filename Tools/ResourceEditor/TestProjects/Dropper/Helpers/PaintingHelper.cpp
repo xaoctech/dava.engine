@@ -5,7 +5,7 @@
 
 
 
-QImage PaintingHelper::BuildHSVImage( QSize const& size )
+QImage PaintingHelper::DrawHSVImage( QSize const& size )
 {
     QImage img( size.width(), size.height(), QImage::Format_RGB32 );
 
@@ -47,7 +47,25 @@ QPoint PaintingHelper::GetHSVColorPoint( const QColor& c, const QSize& size )
     return QPoint( x, y );
 }
 
-QImage PaintingHelper::BuildGradient( const QSize& size, const QColor& c1, const QColor& c2, Qt::Orientation orientation )
+int PaintingHelper::HueRC( QPoint const& pt, QSize const& size )
+{
+    return 360 - pt.x() * 360 / ( size.width() - 1 );
+}
+
+int PaintingHelper::SatRC( QPoint const& pt, QSize const& size )
+{
+    return 255 - pt.y() * 255 / ( size.height() - 1 );
+}
+
+int PaintingHelper::ValRC( QPoint const& pt, QSize const& size )
+{
+    Q_UNUSED( pt );
+    Q_UNUSED( size );
+
+    return 220;
+}
+
+QImage PaintingHelper::DrawGradient( const QSize& size, const QColor& c1, const QColor& c2, Qt::Orientation orientation )
 {
     QImage img( size, QImage::Format_ARGB32 );
     img.fill( Qt::transparent );
@@ -67,7 +85,7 @@ QImage PaintingHelper::BuildGradient( const QSize& size, const QColor& c1, const
     return img;
 }
 
-QBrush PaintingHelper::BuildGridBrush( QSize const& size )
+QBrush PaintingHelper::DrawGridBrush( QSize const& size )
 {
     QImage img( size.width() * 2, size.height() * 2, QImage::Format_ARGB32 );
     img.fill( Qt::white );
@@ -79,7 +97,7 @@ QBrush PaintingHelper::BuildGridBrush( QSize const& size )
     return QBrush( img );
 }
 
-QImage PaintingHelper::BuildArrowIcon( QSize const& size, Qt::Edge dimension, const QColor& bgColor, const QColor& brdColor )
+QImage PaintingHelper::DrawArrowIcon( QSize const& size, Qt::Edge dimension, const QColor& bgColor, const QColor& brdColor )
 {
     QImage img( size, QImage::Format_ARGB32 );
     img.fill( Qt::transparent );
@@ -132,24 +150,6 @@ QImage PaintingHelper::BuildArrowIcon( QSize const& size, Qt::Edge dimension, co
     p.drawPath( path );
 
     return img;
-}
-
-int PaintingHelper::HueRC( QPoint const& pt, QSize const& size )
-{
-    return 360 - pt.x() * 360 / ( size.width() - 1 );
-}
-
-int PaintingHelper::SatRC( QPoint const& pt, QSize const& size )
-{
-    return 255 - pt.y() * 255 / ( size.height() - 1 );
-}
-
-int PaintingHelper::ValRC( QPoint const& pt, QSize const& size )
-{
-    Q_UNUSED( pt );
-    Q_UNUSED( size );
-
-    return 220;
 }
 
 QColor PaintingHelper::MinColorComponent( QColor const& color, char component )

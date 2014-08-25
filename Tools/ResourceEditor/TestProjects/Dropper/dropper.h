@@ -14,8 +14,11 @@ public:
 
 private slots:
     void showCP();
-    void testGrab();
-    void testGrab2();
+
+    void OnStarted( const QPointF& );
+    void OnChanging( const QPointF& );
+    void OnChanged( const QPointF& );
+    void OnOn( const QPointF& );
 
 private:
     Ui::DropperClass ui;

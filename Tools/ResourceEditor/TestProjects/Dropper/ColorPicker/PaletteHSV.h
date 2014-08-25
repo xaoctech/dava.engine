@@ -22,6 +22,7 @@ public:
 protected:
     void DrawBackground( QPainter *p ) const override;
     void DrawForeground( QPainter *p ) const override;
+    QRect PosArea() const override;
 
     void resizeEvent( QResizeEvent* e ) override;
 

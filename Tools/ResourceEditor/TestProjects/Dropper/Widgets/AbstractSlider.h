@@ -44,7 +44,7 @@ private slots:
     void OnMouseRelease( const QPoint& pos );
 
 private:
-    QPoint pos;
+    QPointF posF;
     QPoint pressPos;
     QSize lastSize;     //  остыль, т.к. Qt присылает неверный oldSize в первый resizeEvent
     QPointer< MouseHelper > mouse;

@@ -9,7 +9,7 @@ GradientSlider::GradientSlider(QWidget *parent)
     : AbstractSlider(parent)
     , arrowSize( 9, 9 )
     , orientation( Qt::Horizontal )
-    , bgBrush( PaintingHelper::BuildGridBrush( QSize( 5, 5 ) ) )
+    , bgBrush( PaintingHelper::DrawGridBrush( QSize( 5, 5 ) ) )
     , ofsL( 0 )
     , ofsR( 0 )
     , ofsT( 0 )
@@ -48,8 +48,7 @@ void GradientSlider::SetOffsets( int l, int t, int r, int b )
     ofsT = t;
     ofsR = r;
     ofsB = b;
-    SetPos( Pos() );    // validate
-    update();
+    SetPosF( PosF() );    // recalculate cursor coordinates
 }
 
 double GradientSlider::GetValue() const
@@ -76,7 +75,7 @@ void GradientSlider::DrawBackground( QPainter* p ) const
 
     if ( bgCache.isNull() )
     {
-        const QImage& bg = PaintingHelper::BuildGradient( rc.size(), c1, c2, orientation );
+        const QImage& bg = PaintingHelper::DrawGradient( rc.size(), c1, c2, orientation );
         bgCache = QPixmap::fromImage( bg );
     }
 
@@ -115,7 +114,7 @@ void GradientSlider::DrawForeground( QPainter* p ) const
 
 QRect GradientSlider::PosArea() const
 {
-    return rect().adjusted( ofsL, ofsT, -ofsR, -ofsB );
+    return rect().adjusted( ofsL, ofsT, -ofsR - 1, -ofsB - 1 );
 }
 
 void GradientSlider::resizeEvent( QResizeEvent* e )
@@ -129,7 +128,7 @@ void GradientSlider::drawArrow( Qt::Edge arrow, QPainter *p ) const
     const auto it = arrowCache.constFind( arrow );
     if ( it == arrowCache.constEnd() )
     {
-        arrowCache[arrow] = QPixmap::fromImage( PaintingHelper::BuildArrowIcon( arrowSize, arrow, Qt::black ) );
+        arrowCache[arrow] = QPixmap::fromImage( PaintingHelper::DrawArrowIcon( arrowSize, arrow, Qt::black ) );
     }
 
     const QPoint& currentPos = Pos();

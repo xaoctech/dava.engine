@@ -104,8 +104,8 @@ void ValueSlider::DrawForeground( QPainter* p ) const
         {
             const int div = 3;
             const QSize arrowSize( clip.height() / div + 1, clip.height() / div + 1 );
-            const QImage& left = PaintingHelper::BuildArrowIcon( arrowSize, Qt::RightEdge );
-            const QImage& right = PaintingHelper::BuildArrowIcon( arrowSize, Qt::LeftEdge );
+            const QImage& left = PaintingHelper::DrawArrowIcon( arrowSize, Qt::RightEdge );
+            const QImage& right = PaintingHelper::DrawArrowIcon( arrowSize, Qt::LeftEdge );
 
             arrows = QPixmap( arrowSize.width() * 2, arrowSize.height() );
             arrows.fill( Qt::transparent );
