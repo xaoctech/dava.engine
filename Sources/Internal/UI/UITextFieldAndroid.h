@@ -63,6 +63,7 @@ public:
 	void SetEnableReturnKeyAutomatically(bool value);
 	void ShowField();
 	void HideField();
+	void SetVisible(bool isVisible);
 	void OpenKeyboard();
 	void CloseKeyboard();
 	uint32 GetCursorPos();

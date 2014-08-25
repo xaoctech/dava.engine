@@ -294,6 +294,19 @@ void JniTextField::ShowField()
 	}
 }
 
+void JniTextField::SetVisible(bool isVisible)
+{
+	jmethodID mid = GetMethodID("SetVisible", "(IZ)V");
+	if (mid)
+	{
+		GetEnvironment()->CallStaticVoidMethod(
+				GetJavaClass(),
+				mid,
+				id,
+				isVisible);
+	}
+}
+
 void JniTextField::OpenKeyboard()
 {
 	jmethodID mid = GetMethodID("OpenKeyboard", "(I)V");
@@ -433,10 +446,8 @@ void UITextFieldAndroid::HideField()
 
 void UITextFieldAndroid::SetVisible(bool isVisible)
 {
-	if (isVisible)
-		ShowField();
-	else
-		HideField();
+	JniTextField jniTextField(id);
+	jniTextField.SetVisible(isVisible);
 }
 
 void UITextFieldAndroid::SetIsPassword(bool isPassword)
