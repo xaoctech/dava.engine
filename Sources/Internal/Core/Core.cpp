@@ -216,6 +216,10 @@ void Core::ReleaseSingletons()
 	AllocatorFactory::Instance()->Release();
 	Logger::Instance()->Release();
     ImageSystem::Instance()->Release();
+
+#if defined(__DAVAENGINE_ANDROID__)
+    AssetsManager::Instance()->Release();
+#endif
 }
 
 void Core::SetOptions(KeyedArchive * archiveOfOptions)
