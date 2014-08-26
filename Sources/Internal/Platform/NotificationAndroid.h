@@ -39,7 +39,7 @@
 namespace DAVA
 {
 
-class JniNotification: public JniExtension
+class JniLocalNotification: public JniExtension
 {
 protected:
 	virtual jclass GetJavaClass() const;

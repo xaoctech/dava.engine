@@ -34,11 +34,11 @@
 namespace DAVA
 {
     
-NotificationNotImplemented::~NotificationNotImplemented()
+LocalNotificationNotImplemented::~LocalNotificationNotImplemented()
 {
 }
 
-void NotificationProgress::ShowNotifitaionWithProgress(uint32 id,
+void LocalNotificationProgress::ShowNotifitaionWithProgress(uint32 id,
 			const String& title,
 			const String& text,
 			int32 maxValue,

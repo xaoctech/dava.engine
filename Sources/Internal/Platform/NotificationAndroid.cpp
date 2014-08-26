@@ -40,20 +40,20 @@
 namespace DAVA
 {
 
-jclass JniNotification::gJavaClass = NULL;
-const char* JniNotification::gJavaClassName = NULL;
+jclass JniLocalNotification::gJavaClass = NULL;
+const char* JniLocalNotification::gJavaClassName = NULL;
 
-jclass JniNotification::GetJavaClass() const
+jclass JniLocalNotification::GetJavaClass() const
 {
 	return gJavaClass;
 }
 
-const char* JniNotification::GetJavaClassName() const
+const char* JniLocalNotification::GetJavaClassName() const
 {
 	return gJavaClassName;
 }
 
-void Notification::Hide()
+void LocalNotification::Hide()
 {
 	LockGuard<Mutex> mutexGuard(javaCallMutex);
 
@@ -68,7 +68,7 @@ void Notification::Hide()
 	isChanged = false;
 }
 
-void NotificationProgress::ShowNotifitaionWithProgress(uint32 id,
+void LocalNotificationProgress::ShowNotifitaionWithProgress(uint32 id,
 			const String& title,
 			const String& text,
 			int32 maxValue,

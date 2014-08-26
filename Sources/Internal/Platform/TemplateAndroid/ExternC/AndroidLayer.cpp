@@ -127,7 +127,7 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved)
 	DAVA::JniExtension::SetJavaClass(env, "com/dava/framework/JNILocalization", &DAVA::JniLocalization::gJavaClass, &DAVA::JniLocalization::gJavaClassName);
 	DAVA::JniExtension::SetJavaClass(env, "com/dava/framework/JNIFileList", &DAVA::JniFileList::gJavaClass, &DAVA::JniFileList::gJavaClassName);
 	DAVA::JniExtension::SetJavaClass(env, "com/dava/framework/JNIDateTime", &DAVA::JniDateTime::gJavaClass, &DAVA::JniDateTime::gJavaClassName);
-	DAVA::JniExtension::SetJavaClass(env, "com/dava/framework/JNINotificationProvider", &DAVA::JniNotification::gJavaClass, &DAVA::JniNotification::gJavaClassName);
+	DAVA::JniExtension::SetJavaClass(env, "com/dava/framework/JNILocalNotificationProvider", &DAVA::JniLocalNotification::gJavaClass, &DAVA::JniLocalNotification::gJavaClassName);
 	DAVA::Thread::InitMainThread();
 
 

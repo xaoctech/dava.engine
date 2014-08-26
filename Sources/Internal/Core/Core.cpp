@@ -166,7 +166,7 @@ void Core::CreateSingletons()
     new DownloadManager();
     DownloadManager::Instance()->SetDownloader(new CurlDownloader());
 
-    new NotificationController();
+    new LocalNotificationController();
     
     RegisterDAVAClasses();
     CheckDataTypeSizes();
@@ -182,7 +182,7 @@ void Core::CreateRenderManager()
         
 void Core::ReleaseSingletons()
 {
-	NotificationController::Instance()->Release();
+	LocalNotificationController::Instance()->Release();
     DownloadManager::Instance()->Release();
 	PerformanceSettings::Instance()->Release();
 	RenderHelper::Instance()->Release();
@@ -700,7 +700,7 @@ void Core::SystemProcessFrame()
 			}
 		}
 		
-		NotificationController::Instance()->Update();
+		LocalNotificationController::Instance()->Update();
         DownloadManager::Instance()->Update();
 		JobManager::Instance()->Update();
 		core->Update(frameDelta);

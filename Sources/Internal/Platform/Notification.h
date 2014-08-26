@@ -39,16 +39,16 @@
 namespace DAVA
 {
 
-class Notification
+class LocalNotification
 #if defined(__DAVAENGINE_ANDROID__)
-		: public JniNotification
+		: public JniLocalNotification
 #elif defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
-        : public NotificationNotImplemented
+        : public LocalNotificationNotImplemented
 #endif
 {
 public:
-    Notification();
-    virtual ~Notification();
+	LocalNotification();
+    virtual ~LocalNotification();
 
     bool IsChanged();
 
@@ -65,10 +65,10 @@ protected:
     String text;
 };
 
-class NotificationProgress : public Notification
+class LocalNotificationProgress : public LocalNotification
 {
 public:
-	NotificationProgress();
+	LocalNotificationProgress();
 
 	void SetProgressCurrent(uint32 _currentProgress);
 	void SetProgressTotal(uint32 _total);
@@ -89,17 +89,17 @@ private:
 	uint32 progress;
 };
 
-class NotificationController : public Singleton<NotificationController>
+class LocalNotificationController : public Singleton<LocalNotificationController>
 {
 public:
-    virtual ~NotificationController();
-	NotificationProgress *CreateNotificationProgress(const String &title = "", const String &text = "", uint32 max = 0, uint32 current = 0);
+    virtual ~LocalNotificationController();
+	LocalNotificationProgress *CreateNotificationProgress(const String &title = "", const String &text = "", uint32 max = 0, uint32 current = 0);
     
 	void Update();
 
 private:
 	Mutex notificationsListMutex;
-	List<Notification *> notificationsList;
+	List<LocalNotification *> notificationsList;
 };
 
 }

@@ -35,11 +35,11 @@
 namespace DAVA
 {
 
-Notification::Notification()
+LocalNotification::LocalNotification()
 #if defined(__DAVAENGINE_ANDROID__)
-    : JniNotification()
+    : JniLocalNotification()
 #elif defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
-    : NotificationNotImplemented()
+    : LocalNotificationNotImplemented()
 #endif
 	, isChanged(false)
 	, title("")
@@ -49,16 +49,16 @@ Notification::Notification()
     id = ++lastId;
 }
     
-Notification::~Notification()
+LocalNotification::~LocalNotification()
 {
 }
 
-bool Notification::IsChanged()
+bool LocalNotification::IsChanged()
 {
 	return isChanged;
 }
 
-void Notification::SetTitle(const String &_title)
+void LocalNotification::SetTitle(const String &_title)
 {
 	if (_title != title)
 	{
@@ -67,7 +67,7 @@ void Notification::SetTitle(const String &_title)
 	}
 }
 
-void Notification::SetText(const String &_text)
+void LocalNotification::SetText(const String &_text)
 {
 	if (_text != text)
 	{
@@ -77,27 +77,27 @@ void Notification::SetText(const String &_text)
 }
 
 
-void Notification::Update()
+void LocalNotification::Update()
 {
 	isChanged = false;
 }
 
-NotificationProgress::NotificationProgress()
-    : Notification()
+LocalNotificationProgress::LocalNotificationProgress()
+    : LocalNotification()
     , total(0)
     , progress(0)
 {
 
 }
     
-void NotificationProgress::Hide()
+void LocalNotificationProgress::Hide()
 {
-    Notification::Hide();
+    LocalNotification::Hide();
     total = 0;
     progress = 0;
 }
 
-void NotificationProgress::SetProgressCurrent(uint32 _currentProgress)
+void LocalNotificationProgress::SetProgressCurrent(uint32 _currentProgress)
 {
 	if (progress != _currentProgress)
 	{
@@ -106,7 +106,7 @@ void NotificationProgress::SetProgressCurrent(uint32 _currentProgress)
 	}
 }
 
-void NotificationProgress::SetProgressTotal(uint32 _total)
+void LocalNotificationProgress::SetProgressTotal(uint32 _total)
 {
 	if (total != _total)
 	{
@@ -115,31 +115,31 @@ void NotificationProgress::SetProgressTotal(uint32 _total)
 	}
 }
 
-void NotificationProgress::Update()
+void LocalNotificationProgress::Update()
 {
 	if (true == isChanged)
 		ShowNotifitaionWithProgress(id, title, text, total, progress);
 
-	Notification::Update();
+	LocalNotification::Update();
 }
 
-NotificationController::~NotificationController()
+LocalNotificationController::~LocalNotificationController()
 {
 	LockGuard<Mutex> guard(notificationsListMutex);
     if (!notificationsList.empty())
     {
-        for (List<Notification *>::iterator it = notificationsList.begin(); it != notificationsList.end();)
+        for (List<LocalNotification *>::iterator it = notificationsList.begin(); it != notificationsList.end();)
         {
-            Notification *notification = (*it);
+        	LocalNotification *notification = (*it);
             SafeDelete(notification);
             it = notificationsList.erase(it);
         }
     }
 }
 
-NotificationProgress *NotificationController::CreateNotificationProgress(const String &title, const String &text, uint32 maximum, uint32 current)
+LocalNotificationProgress *LocalNotificationController::CreateNotificationProgress(const String &title, const String &text, uint32 maximum, uint32 current)
 {
-    NotificationProgress *note = new NotificationProgress();
+	LocalNotificationProgress *note = new LocalNotificationProgress();
     
     if (NULL != note)
     {
@@ -155,15 +155,15 @@ NotificationProgress *NotificationController::CreateNotificationProgress(const S
     return note;
 }
 
-void NotificationController::Update()
+void LocalNotificationController::Update()
 {
 	LockGuard<Mutex> guard(notificationsListMutex);
 
     if (!notificationsList.empty())
     {
-        for (List<Notification *>::iterator it = notificationsList.begin(); it != notificationsList.end(); ++it)
+        for (List<LocalNotification *>::iterator it = notificationsList.begin(); it != notificationsList.end(); ++it)
         {
-            Notification *notification = (*it);
+            LocalNotification *notification = (*it);
 
             notification->Update();
         }
