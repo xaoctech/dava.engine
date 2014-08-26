@@ -7,7 +7,10 @@
 #include <QEventLoop>
 #include <QPointer>
 
-namespace Ui {class ColorPicker;};
+namespace Ui
+{
+    class ColorPicker;
+};
 
 #include "AbstractColorPicker.h"
 
@@ -21,34 +24,34 @@ class ColorPicker
     Q_OBJECT
 
 private:
-    typedef QMap< QString, QPointer<AbstractColorPicker> > PickerMap;
+    typedef QMap<QString, QPointer<AbstractColorPicker>> PickerMap;
 
 public:
-    explicit ColorPicker(QWidget *parent = 0);
+    explicit ColorPicker(QWidget* parent = 0);
     ~ColorPicker();
 
     void exec();
 
     double GetMultiplierValue() const;
-    void SetMultiplierValue( double val );
+    void SetMultiplierValue(double val);
 
 protected:
-    void RegisterPicker( const QString& key, AbstractColorPicker *picker );
-    void RegisterColorSpace( const QString& key, AbstractColorPicker *picker );
+    void RegisterPicker(const QString& key, AbstractColorPicker* picker);
+    void RegisterColorSpace(const QString& key, AbstractColorPicker* picker);
 
-    void SetColorInternal( const QColor& c ) override;
+    void SetColorInternal(const QColor& c) override;
 
 private slots:
-    void OnChanging( const QColor& c );
-    void OnChanged( const QColor& c );
-    void OnDropperChanged( const QColor& c );
+    void OnChanging(const QColor& c);
+    void OnChanged(const QColor& c);
+    void OnDropperChanged(const QColor& c);
 
     void OnDropper();
 
 private:
-    void UpdateControls( const QColor& c, AbstractColorPicker *source = NULL );
-    void ConnectPicker( AbstractColorPicker *picker );
-    void closeEvent( QCloseEvent * e );
+    void UpdateControls(const QColor& c, AbstractColorPicker* source = NULL);
+    void ConnectPicker(AbstractColorPicker* picker);
+    void closeEvent(QCloseEvent* e);
 
     QScopedPointer<Ui::ColorPicker> ui;
     QPointer<EyeDropper> dropper;
