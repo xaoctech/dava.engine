@@ -269,11 +269,10 @@ void HierarchyTreeScreenNode::CombineRectWithChild(Rect& rect) const
 	for (HIERARCHYTREENODESLIST::const_iterator iter = childs.begin(); iter != childs.end(); ++iter)
 	{
 		const HierarchyTreeControlNode* control = dynamic_cast<const HierarchyTreeControlNode*>(*iter);
-		if (!control)
+		if (!control || !control->GetUIObject())
 			continue;
 		
-		Rect controlRect = control->GetRect(true);
-		
+		Rect controlRect = control->GetUIObject()->GetGeometricData().GetAABBox();
 		rect = rect.Combine(controlRect);
 	}
 }
