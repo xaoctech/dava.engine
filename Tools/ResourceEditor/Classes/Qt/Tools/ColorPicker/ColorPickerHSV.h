@@ -15,11 +15,11 @@ class ColorPickerHSV
     Q_OBJECT
 
 public:
-    explicit ColorPickerHSV(QWidget *parent = NULL);
+    explicit ColorPickerHSV(QWidget* parent = NULL);
     ~ColorPickerHSV();
 
 protected:
-    void SetColorInternal( const QColor& c ) override;
+    void SetColorInternal(const QColor& c) override;
 
 private slots:
     void OnChanging();

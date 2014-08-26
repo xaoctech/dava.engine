@@ -14,18 +14,18 @@ class ColorComponentSlider
 {
     Q_OBJECT
 
-signals:
-    void started( double );
-    void changing( double );
-    void changed( double );
+    signals:
+    void started(double);
+    void changing(double);
+    void changed(double);
     void canceled();
 
 public:
-    explicit ColorComponentSlider(QWidget *parent = NULL);
+    explicit ColorComponentSlider(QWidget* parent = NULL);
     ~ColorComponentSlider();
 
-    void SetColorRange( const QColor& c1, const QColor& c2 );
-    void SetValue( double val );
+    void SetColorRange(const QColor& c1, const QColor& c2);
+    void SetValue(double val);
     double GetValue() const;
 
 private:

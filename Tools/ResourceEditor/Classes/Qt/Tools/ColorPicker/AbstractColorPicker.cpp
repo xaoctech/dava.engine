@@ -1,7 +1,7 @@
 #include "AbstractColorPicker.h"
 
 
-AbstractColorPicker::AbstractColorPicker(QWidget *parent)
+AbstractColorPicker::AbstractColorPicker(QWidget* parent)
     : QWidget(parent)
 {
 }
@@ -15,8 +15,8 @@ QColor AbstractColorPicker::GetColor() const
     return color;
 }
 
-void AbstractColorPicker::SetColor( const QColor& c )
+void AbstractColorPicker::SetColor(const QColor& c)
 {
     color = c;
-    SetColorInternal( c );
+    SetColorInternal(c);
 }
