@@ -153,8 +153,6 @@ APKFile * APKFile::CreateFromData(const FilePath &filePath, const uint8 * data, 
 	fl->Write(data, dataSize);
 	fl->fileAttributes = attributes;
 	fl->currentPtr = 0;
-
-//	Logger::Debug("[APKFile::CreateFromData] fileSize is %d (%s) (%p) ", dataSize, filePath.c_str(), fl);
     
     return fl;
 }
