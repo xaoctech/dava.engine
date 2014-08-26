@@ -34,11 +34,10 @@
 namespace DAVA
 {
     
-class NotificationNotImplemented
+class LocalNotificationNotImplemented
     {
 public:
-    virtual ~NotificationNotImplemented();
-    
+    virtual ~LocalNotificationNotImplemented();
 };
 
 }

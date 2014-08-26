@@ -261,6 +261,16 @@ protected:
 	virtual void EndFrame();
 	
 #if defined(__DAVAENGINE_ANDROID__)
+protected:
+	/**
+		\brief Should be started only when Main thread is stopped
+	 */
+	void StartBackbroundTicker(uint32 tickPeriod = 250);
+	/**
+		\brief Should be stopped before Main thread start
+	 */
+	void StopBackgroundTicker();
+
 private:
 	void BackgroundTickerHandler(BaseObject * caller, void * callerData, void * userData);
 #endif
@@ -269,8 +279,10 @@ private:
 	friend class Core;
 
 #if defined(__DAVAENGINE_ANDROID__)
+private:
 	Thread *backgroundTicker;
 	bool backgroundTickerFinishing;
+	uint32 backgroundTickTimeMs;
 #endif
 };
 	

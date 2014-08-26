@@ -38,6 +38,10 @@ LocalNotificationNotImplemented::~LocalNotificationNotImplemented()
 {
 }
 
+void LocalNotification::Hide()
+{
+}
+
 void LocalNotificationProgress::ShowNotifitaionWithProgress(uint32 id,
 			const String& title,
 			const String& text,
