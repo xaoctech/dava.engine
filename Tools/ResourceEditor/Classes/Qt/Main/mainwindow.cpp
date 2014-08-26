@@ -2952,7 +2952,7 @@ void QtMainWindow::DebugColorPicker()
 {
     ColorPicker *cp = new ColorPicker(this);
 
-    cp->exec();
+    cp->Exec();
 }
 
 void QtMainWindow::OnGenerateHeightDelta()
