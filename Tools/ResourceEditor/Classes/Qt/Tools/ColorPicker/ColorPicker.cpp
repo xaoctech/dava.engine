@@ -7,12 +7,16 @@
 #include "ColorPreview.h"
 #include "EyeDropper.h"
 
+#include "Tools/QtPosSaver/QtPosSaver.h"
+
 
 ColorPicker::ColorPicker(QWidget* parent)
     : AbstractColorPicker(parent)
-      , ui(new Ui::ColorPicker())
+    , ui(new Ui::ColorPicker())
+    , posSaver(new QtPosSaver())
 {
     ui->setupUi(this);
+    // posSaver->Attach(this); // Bugs with multiply monitores
 
     setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
     setFocusPolicy(Qt::ClickFocus);
@@ -37,7 +41,7 @@ ColorPicker::~ColorPicker()
 {
 }
 
-void ColorPicker::exec()
+void ColorPicker::Exec()
 {
     const Qt::WindowFlags f = windowFlags();
     const Qt::WindowModality m = windowModality();

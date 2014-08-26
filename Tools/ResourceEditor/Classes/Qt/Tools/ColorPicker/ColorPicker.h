@@ -17,6 +17,7 @@ namespace Ui
 
 class EyeDropper;
 class ColorPickerRGBAM;
+class QtPosSaver;
 
 class ColorPicker
     : public AbstractColorPicker
@@ -30,7 +31,7 @@ public:
     explicit ColorPicker(QWidget* parent = 0);
     ~ColorPicker();
 
-    void exec();
+    void Exec();
 
     double GetMultiplierValue() const;
     void SetMultiplierValue(double val);
@@ -59,6 +60,7 @@ private:
     PickerMap pickers;
     PickerMap colorSpaces;
     QEventLoop modalLoop;
+    QScopedPointer<QtPosSaver> posSaver;
 };
 
 #endif // COLORPICKER_H
