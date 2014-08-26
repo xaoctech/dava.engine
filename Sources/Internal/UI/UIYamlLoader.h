@@ -52,16 +52,21 @@ class UIYamlLoader : public BaseObject
 {
 protected:
     ~UIYamlLoader(){}
+    UIYamlLoader();
 public:
-	UIYamlLoader();
-    
     /**
      \brief	This is main function in UIYamlLoader and it loads fonts from yamlPathname file.
      
      \param[in] yamlPathName						we get config file using this pathname
+     */
+    static void LoadFonts(const FilePath & yamlPathname);
+    /**
+     \brief	This function saves fonts to the YAML file passed.
+     
+     \param[in]			yamlPathName	path to store fonts to
+     \return            true if the save was successful
 	 */
-	static void LoadFonts(const FilePath & yamlPathname);
-    
+	static bool SaveFonts(const FilePath & yamlPathname);
 	/**
 		\brief	This is main function in UIYamlLoader and it loads control hierarchy from yamlPathname file and add it to 
 				rootControl.
@@ -73,31 +78,22 @@ public:
 	 */
 	static void Load(UIControl * rootControl, const FilePath & yamlPathname, bool assertIfCustomControlNotFound = false);
 
-	//Internal functions that do actual loading and saving.
-	void ProcessLoad(UIControl * rootControl, const FilePath & yamlPathname);
-    YamlNode *CreateRootNode(const FilePath & yamlPathname);
-    void LoadFontsFromNode(const YamlNode * node);
-	void LoadFromNode(UIControl * rootControl, const YamlNode * node, bool needParentCallback);
-    
-    
     /**
-     \brief	This function saves fonts to the YAML file passed.
-     
-     \param[in]			yamlPathName	path to store fonts to
-     \return            true if the save was successful
-	 */
-	static bool SaveFonts(const FilePath & yamlPathname);
-    
-	/**
      \brief	This function saves the UIControl's hierarchy to the YAML file passed.
      rootControl.
      
      \param[in, out]	rootControl		is used to take the configuration from
      \param[in]			yamlPathName	path to store hierarchy to
      \return            true if the save was successful
-	 */
-	static bool Save(UIControl * rootControl, const FilePath & yamlPathname, bool skipRootNode);
-	
+     */
+    static bool Save(UIControl * rootControl, const FilePath & yamlPathname, bool skipRootNode);
+
+	//Internal functions that do actual loading and saving.
+	void ProcessLoad(UIControl * rootControl, const FilePath & yamlPathname);
+    YamlNode *CreateRootNode(const FilePath & yamlPathname);
+    void LoadFontsFromNode(const YamlNode * node);
+	void LoadFromNode(UIControl * rootControl, const YamlNode * node, bool needParentCallback);
+
     YamlNode* SaveToNode(UIControl * parentControl, YamlNode * rootNode);
     void SaveChildren(UIControl* parentControl, YamlNode * parentNode);
 
@@ -116,8 +112,6 @@ public:
     String GetDrawTypeNodeValue(int32 drawType);
 	YamlNode * GetAlignNodeValue(int32 align);
     YamlNode * GetFittingOptionNodeValue(int32 fitting) const;
-	
-	//Map<String, Font*> fontMap;
 
 	// Set the "ASSERT if custom control is not found during loading" flag.
 	void SetAssertIfCustomControlNotFound(bool value);

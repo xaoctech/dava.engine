@@ -327,14 +327,6 @@ Color UIYamlLoader::GetColorFromYamlNode(const YamlNode * node)
 Font * UIYamlLoader::GetFontByName(const String & fontName)
 {
     return FontManager::Instance()->GetFont(fontName);
-    
-//	Map<String, Font*>::iterator it = fontMap.find(fontName);
-//	if (it != fontMap.end())
-//	{
-//		Font * font = it->second;
-//		return font;
-//	}
-//	return 0;
 }
     
 void UIYamlLoader::LoadFonts(const FilePath & yamlPathname)
