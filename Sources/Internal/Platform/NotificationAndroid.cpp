@@ -97,6 +97,32 @@ void LocalNotificationProgress::ShowNotifitaionWithProgress(uint32 id,
 	env->DeleteLocalRef(jStrText);
 }
 
+
+void LocalNotificationText::ShowNotificationWithText(uint32 id,
+		const String& title,
+		const String& text)
+{
+	LockGuard<Mutex> mutexGuard(javaCallMutex);
+
+	JNIEnv *env = GetEnvironment();
+
+	WideString wsText(text.begin(), text.end());
+	WideString wsTitle(title.begin(), title.end());
+
+	jstring jStrTitle = CreateJString(env, wsTitle);
+	jstring jStrText = CreateJString(env, wsText);
+
+	env->CallStaticVoidMethod(
+					GetJavaClass(),
+					GetMethodID("NotifyText", "(ILjava/lang/String;Ljava/lang/String;)V"),
+					id,
+					jStrTitle,
+					jStrText);
+
+	env->DeleteLocalRef(jStrTitle);
+	env->DeleteLocalRef(jStrText);
+}
+
 }
 
 #endif

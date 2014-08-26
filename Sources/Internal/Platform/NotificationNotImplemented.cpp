@@ -49,6 +49,12 @@ void LocalNotificationProgress::ShowNotifitaionWithProgress(uint32 id,
 			int32 value)
 {
 }
-    
+
+void LocalNotificationText::ShowNotificationWithText(uint32 id,
+		const String& title,
+		const String& text)
+{
+}
+
 }
 #endif

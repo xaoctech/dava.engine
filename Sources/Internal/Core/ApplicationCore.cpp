@@ -35,6 +35,7 @@
 #include "Debug/Stats.h"
 #include "Platform/SystemTimer.h"
 #include "DLC/Downloader/DownloadManager.h"
+#include "Platform/Notification.h"
 
 
 #ifdef __DAVAENGINE_AUTOTESTING__
@@ -152,6 +153,7 @@ void ApplicationCore::BackgroundTickerHandler(BaseObject * caller, void * caller
 void ApplicationCore::OnBackgroundTick()
 {
 	DownloadManager::Instance()->Update();
+	LocalNotificationController::Instance()->Update();
 }
     
 bool ApplicationCore::OnQuit()

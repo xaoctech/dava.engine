@@ -51,6 +51,7 @@ LocalNotification::LocalNotification()
     
 LocalNotification::~LocalNotification()
 {
+	LocalNotificationController::Instance()->Remove(this);
 }
 
 bool LocalNotification::IsChanged()
@@ -90,6 +91,11 @@ LocalNotificationProgress::LocalNotificationProgress()
 
 }
     
+LocalNotificationProgress::~LocalNotificationProgress()
+{
+	Hide();
+}
+
 void LocalNotificationProgress::Hide()
 {
     LocalNotification::Hide();
@@ -123,6 +129,16 @@ void LocalNotificationProgress::Update()
 	LocalNotification::Update();
 }
 
+void LocalNotificationText::Update()
+{
+	if (true == isChanged)
+		ShowNotificationWithText(id, title, text);
+
+	LocalNotification::Update();
+}
+
+
+
 LocalNotificationController::~LocalNotificationController()
 {
 	LockGuard<Mutex> guard(notificationsListMutex);
@@ -147,7 +163,23 @@ LocalNotificationProgress *LocalNotificationController::CreateNotificationProgre
         note->SetTitle(title);
         note->SetProgressCurrent(0);
         note->SetProgressTotal(100);
-        
+
+        LockGuard<Mutex> guard(notificationsListMutex);
+        notificationsList.push_back(note);
+    }
+
+    return note;
+}
+
+LocalNotificationText *LocalNotificationController::CreateNotificationText(const String &title, const String &text)
+{
+	LocalNotificationText *note = new LocalNotificationText();
+
+    if (NULL != note)
+    {
+        note->SetText(text);
+        note->SetTitle(title);
+
         LockGuard<Mutex> guard(notificationsListMutex);
         notificationsList.push_back(note);
     }
@@ -170,7 +202,23 @@ void LocalNotificationController::Update()
     }
 }
 
+bool LocalNotificationController::Remove(LocalNotification *notification)
+{
+	LockGuard<Mutex> guard(notificationsListMutex);
+    if (!notificationsList.empty())
+    {
+        for (List<LocalNotification *>::iterator it = notificationsList.begin(); it != notificationsList.end();)
+        {
+        	if (notification == (*it))
+        	{
+        		it = notificationsList.erase(it);
+        		return true;
+        	}
+        }
+    }
 
+    return false;
+}
 
 }
 
