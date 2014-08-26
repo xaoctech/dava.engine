@@ -302,7 +302,7 @@ void LandscapeEditorDrawSystem::Process(DAVA::float32 timeElapsed)
 		heightmapProxy->ResetHeightmapChanged();
 	}
 	
-	if (customColorsProxy &&  customColorsProxy->IsSpriteChanged())
+	if (customColorsProxy && customColorsProxy->IsSpriteChanged())
 	{
 		if (landscapeProxy)
 		{
@@ -633,10 +633,11 @@ void LandscapeEditorDrawSystem::ResetTileMaskTexture()
 	}
 
 	FilePath filePath = baseLandscape->GetTextureName(Landscape::TEXTURE_TILE_MASK);
+	baseLandscape->SetTexture(Landscape::TEXTURE_TILE_MASK, "");
 	baseLandscape->SetTexture(Landscape::TEXTURE_TILE_MASK, filePath);
 }
 
-LandscapeEditorDrawSystem::eErrorType LandscapeEditorDrawSystem::VerifyLandscape()
+LandscapeEditorDrawSystem::eErrorType LandscapeEditorDrawSystem::VerifyLandscape() const
 {
 	//landscape initialization should be handled by AddEntity/RemoveEntity methods
 	if (!landscapeNode || !baseLandscape || !landscapeProxy)

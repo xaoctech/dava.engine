@@ -34,7 +34,9 @@
 #include "Platform/Thread.h"
 #include "Utils/Utils.h"
 #include "FileSystem/YamlParser.h"
+#include "FileSystem/YamlNode.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
+#include "FileSystem/YamlEmitter.h"
 
 namespace DAVA
 {
@@ -813,13 +815,8 @@ void RenderState::LoadFromYamlNode(const YamlNode * rootNode)
 
 bool RenderState::SaveToYamlFile(const FilePath & filePath)
 {
-	YamlParser * parser = YamlParser::Create();
-	DVASSERT(parser);
-
 	YamlNode* resultNode = SaveToYamlNode();
-	parser->SaveToYamlFile(filePath, resultNode, true);
-
-	SafeRelease(parser);
+	YamlEmitter::SaveToYamlFile(filePath, resultNode);
 
 	return true;
 }

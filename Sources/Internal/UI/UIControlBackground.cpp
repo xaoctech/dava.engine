@@ -66,8 +66,8 @@ UIControlBackground::UIControlBackground()
 ,	frame(0)
 ,	align(ALIGN_HCENTER|ALIGN_VCENTER)
 ,	type(DRAW_ALIGNED)
-,	color(1.0f, 1.0f, 1.0f, 1.0f)
-,	drawColor(1.0f, 1.0f, 1.0f, 1.0f)
+,	color(Color::White)
+,	drawColor(Color::White)
 ,	leftStretchCap(0)
 ,	topStretchCap(0)
 ,	spriteModification(0)
@@ -98,7 +98,7 @@ void UIControlBackground::CopyDataFrom(UIControlBackground *srcBackground)
     align = srcBackground->align;
 
     SafeRelease(rdoObject);
-    SetDrawType((eDrawType)srcBackground->type);
+    SetDrawType(srcBackground->type);
 
     color = srcBackground->color;
     spriteModification = srcBackground->spriteModification;
@@ -119,7 +119,7 @@ UIControlBackground::~UIControlBackground()
     ReleaseDrawData();
 }
 
-Sprite*	UIControlBackground::GetSprite()
+Sprite*	UIControlBackground::GetSprite() const
 {
     return spr;
 }
@@ -145,7 +145,7 @@ UIControlBackground::eColorInheritType UIControlBackground::GetColorInheritType(
 
 UIControlBackground::eDrawType	UIControlBackground::GetDrawType() const
 {
-    return (UIControlBackground::eDrawType)type;
+    return type;
 }
 
 
@@ -197,6 +197,9 @@ void UIControlBackground::SetDrawType(UIControlBackground::eDrawType drawType)
                 //rdoObject->SetStream()
             }
         }
+        break;
+    default:
+        break;
     }
     ReleaseDrawData();
 }
@@ -520,6 +523,8 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
         case DRAW_TILED:
             DrawTiled(geometricData, drawState.GetRenderState());
         break;
+        default:
+            break;
     }
 
     RenderManager::Instance()->ResetColor();

@@ -53,7 +53,7 @@ namespace DAVA
 {
 
 RenderSystem::RenderSystem()
-    :   renderPassManager(this)
+    :   renderPassManager()
     ,   mainCamera(0)
     ,   drawCamera(0)
     ,   forceUpdateLights(false)
@@ -258,8 +258,7 @@ void RenderSystem::FindNearestLights(RenderObject * renderObject)
     {
         RenderBatch * batch = renderObject->GetRenderBatch(k);
         NMaterial * material = batch->GetMaterial();
-        uint8 bindFlags = material->GetDynamicBindFlags();
-        if (material && (bindFlags & NMaterial::DYNAMIC_BIND_LIGHT))
+        if (material)
         {
 			needUpdate = true;
 			break;

@@ -548,6 +548,7 @@ public:
 #if defined(__DAVAENGINE_OPENGL__)
     void HWglBindBuffer(GLenum target, GLuint  	buffer);
     GLuint bufferBindingId[2];
+    void HWglDeleteBuffers(GLsizei count, const GLuint * buffers);
     
     int32 HWglGetLastTextureID(int textureType);
 	void HWglBindTexture(int32 tId, uint32 textureType = Texture::TEXTURE_2D);
@@ -968,7 +969,7 @@ inline const void RenderManager::GetRenderStateData(UniqueHandle handle, RenderS
 {
     LockRenderState();
     const RenderStateData& parentState = RenderManager::Instance()->GetRenderStateData(handle);
-    memcpy(&target, &parentState, sizeof(target));
+    target = parentState;
     UnlockRenderState();
 }
 
@@ -983,8 +984,7 @@ inline UniqueHandle RenderManager::SubclassRenderState(UniqueHandle parentStateH
 {
     LockRenderState();
     const RenderStateData& parentState = RenderManager::Instance()->GetRenderStateData(parentStateHandle);
-    RenderStateData derivedState;
-    memcpy(&derivedState, &parentState, sizeof(derivedState));
+    RenderStateData derivedState(parentState);
     UnlockRenderState();
     
     derivedState.state = renderStateFlags;
