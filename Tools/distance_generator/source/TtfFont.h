@@ -34,13 +34,13 @@ public:
     void DeInit();
 
     void SetSize(int size);
-    int GetSize();
+    int GetSize() const;
 
     bool SetCharMap(int charmap);
-    int GetCharMap();
+    int GetCharMap() const;
 
     float GetLineHeight();
-	float GetBaseline();
+	float GetBaseline() const;
 
     FT_Face& GetFace();
 protected:

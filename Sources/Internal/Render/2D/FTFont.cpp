@@ -43,7 +43,6 @@
 #include <freetype/ftglyph.h>
 #include FT_FREETYPE_H
 
-
 namespace DAVA
 {
 #ifdef USE_FILEPATH_IN_MAP
@@ -106,7 +105,13 @@ private:
 	
 	static unsigned long StreamLoad(FT_Stream stream, unsigned long offset, uint8* buffer, unsigned long count);
 	static void StreamClose(FT_Stream stream);
+
+    static const int32 ftToPixelShift; // Int value for shift to convert FT point to pixel
+    static const float32 ftToPixelScale; // Float value to convert FT point to pixel
 };
+
+const int32 FTInternalFont::ftToPixelShift = 6;
+const float32 FTInternalFont::ftToPixelScale = 64.f;
 
 FTFont::FTFont(FTInternalFont* _internalFont)
 {
@@ -337,9 +342,8 @@ Font::StringMetrics FTInternalFont::DrawString(const WideString& str, void * buf
 	}
 
 	FT_Vector pen;
-	pen.x = offsetX<<6;
-	//pen.x -= (FT_Pos)(virtualToPhysicalFactor*faceBboxXMin);
-	pen.y = offsetY<<6;
+	pen.x = offsetX << ftToPixelShift;
+	pen.y = offsetY << ftToPixelShift;
 	pen.y -= (FT_Pos)(virtualToPhysicalFactor*faceBboxYMin);//bring baseline up
 	
 
@@ -350,7 +354,7 @@ Font::StringMetrics FTInternalFont::DrawString(const WideString& str, void * buf
 	FT_Vector * advances = new FT_Vector[strLen];
 	Prepare(advances);
 
-    float32 bboxSize = ceilf(((float32)(faceBboxYMax-faceBboxYMin))/64.f);
+    float32 bboxSize = ceilf(((float32)(faceBboxYMax-faceBboxYMin)) / ftToPixelScale);
 	int32 baseSize = (int32)ceilf(bboxSize * virtualToPhysicalFactor); 
 	int32 multilineOffsetY = baseSize + offsetY*2;
 
@@ -366,9 +370,9 @@ Font::StringMetrics FTInternalFont::DrawString(const WideString& str, void * buf
 
 	Font::StringMetrics metrics;
 
-	metrics.baseline =  (int32)ceilf((float32)faceBboxYMax / 64.f * virtualToPhysicalFactor);
+	metrics.baseline =  (int32)ceilf((float32)faceBboxYMax / ftToPixelScale * virtualToPhysicalFactor);
 	metrics.height = baseSize;
-	metrics.drawRect = Rect2i(0x7fffffff, 0x7fffffff, 0, baseSize);
+    metrics.drawRect = Rect2i(0x7fffffff, 0x7fffffff, 0, baseSize); // Setup rect with maximum int32 value for x/y, and zero width/height
 	int32 layoutWidth = 0; // width in FT points
 		
 	for(int32 i = 0; i < strLen; ++i)
@@ -377,14 +381,14 @@ Font::StringMetrics FTInternalFont::DrawString(const WideString& str, void * buf
 		{
 			if(str[i-1] == L' ')
 			{
-				pen.x += justifyOffset << 6;
-				layoutWidth += justifyOffset << 6;
+				pen.x += justifyOffset << ftToPixelShift;
+				layoutWidth += justifyOffset << ftToPixelShift;
 			}
 			if (fixJustifyOffset > 0)
 			{
 				fixJustifyOffset--;
-				pen.x += 1 << 6;
-				layoutWidth += 1 << 6;
+				pen.x += 1 << ftToPixelShift;
+				layoutWidth += 1 << ftToPixelShift;
 			}
 		}
 		
@@ -430,7 +434,7 @@ Font::StringMetrics FTInternalFont::DrawString(const WideString& str, void * buf
 				{
                     if(str[i] == ' ')
                     {
-						int32 spaceWidth = (int32)advances[i].x >> 6;
+						int32 spaceWidth = (int32)advances[i].x >> ftToPixelShift;
                         charSizes->push_back((float32)spaceWidth);
                         lastRight += spaceWidth;
                     }
@@ -496,7 +500,7 @@ Font::StringMetrics FTInternalFont::DrawString(const WideString& str, void * buf
 	metrics.drawRect.dy -= metrics.drawRect.y;
 
 	// Transform width from FT points to pixels
-	metrics.width = layoutWidth >> 6;
+	metrics.width = layoutWidth >> ftToPixelShift;
 
 	if(!contentScaleIncluded) 
 	{
@@ -524,7 +528,7 @@ uint32 FTInternalFont::GetFontHeight(float32 size) const
     drawStringMutex.Lock();
 
 	SetFTCharSize(size);
-	uint32 height = (uint32)ceilf((float32)((FT_MulFix(face->bbox.yMax-face->bbox.yMin, face->size->metrics.y_scale)))/64.f);
+	uint32 height = (uint32)ceilf((float32)((FT_MulFix(face->bbox.yMax-face->bbox.yMin, face->size->metrics.y_scale))) / ftToPixelScale);
 	
     drawStringMutex.Unlock();
 
@@ -533,7 +537,7 @@ uint32 FTInternalFont::GetFontHeight(float32 size) const
 	
 void FTInternalFont::SetFTCharSize(float32 size) const
 {
-	FT_Error error = FT_Set_Char_Size(face, 0, (int32)(size * 64), 0, (FT_UInt)Font::GetDPI()); 
+	FT_Error error = FT_Set_Char_Size(face, 0, (int32)(size * ftToPixelScale), 0, (FT_UInt)Font::GetDPI()); 
 	
 	if(error) 
 	{
