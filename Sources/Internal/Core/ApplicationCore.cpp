@@ -48,6 +48,8 @@ ApplicationCore::ApplicationCore()
 	: BaseObject()
 #if defined(__DAVAENGINE_ANDROID__)
 	, backgroundTicker(NULL)
+	, backgroundTickerFinishing(false)
+	, backgroundTickTimeMs(250)
 #endif
 {
 
@@ -93,21 +95,40 @@ void ApplicationCore::OnSuspend()
 	Core::Instance()->SetIsActive(false);
 
 #if defined(__DAVAENGINE_ANDROID__)
-	if (NULL == backgroundTicker)
-	{
-		Logger::Debug("[ApplicationCore: OnSuspend] Background tick Thread Create Start");
-		backgroundTicker = Thread::Create(Message(this, &ApplicationCore::BackgroundTickerHandler));
-		backgroundTickerFinishing = false;
-		if (backgroundTicker)
-			backgroundTicker->Start();
-		Logger::Debug("[ApplicationCore: OnSuspend] Background tick  Thread Create End");
-	}
+	StartBackbroundTicker();
 #endif
 }
 
 void ApplicationCore::OnResume()
 {
 #if defined(__DAVAENGINE_ANDROID__)
+	StopBackgroundTicker();
+#endif
+
+	Core::Instance()->SetIsActive(true);
+	SoundSystem::Instance()->Resume();
+}
+
+#if defined(__DAVAENGINE_ANDROID__)
+
+void ApplicationCore::StartBackbroundTicker(uint32 tickPeriod)
+{
+	if (NULL == backgroundTicker)
+	{
+		Logger::Debug("[ApplicationCore: OnSuspend] Background tick Thread Create Start");
+		backgroundTicker = Thread::Create(Message(this, &ApplicationCore::BackgroundTickerHandler));
+		backgroundTickerFinishing = false;
+		if (backgroundTicker)
+		{
+			backgroundTickTimeMs = tickPeriod;
+			backgroundTicker->Start();
+		}
+		Logger::Debug("[ApplicationCore: OnSuspend] Background tick  Thread Create End");
+	}
+}
+
+void ApplicationCore::StopBackgroundTicker()
+{
 	if (NULL != backgroundTicker)
 	{
 		Logger::Debug("[ApplicationCore: OnResume] Background tick Thread Finish start");
@@ -116,18 +137,13 @@ void ApplicationCore::OnResume()
 		SafeRelease(backgroundTicker);
 		Logger::Debug("[ApplicationCore: OnResume] Background tick Thread Finish end");
 	}
-#endif
-    
-	Core::Instance()->SetIsActive(true);
-	SoundSystem::Instance()->Resume();
 }
 
-#if defined(__DAVAENGINE_ANDROID__)
 void ApplicationCore::BackgroundTickerHandler(BaseObject * caller, void * callerData, void * userData)
 {
 	while(!backgroundTickerFinishing)
 	{
-		Thread::SleepThread(250);
+		Thread::SleepThread(backgroundTickTimeMs);
 		OnBackgroundTick();
 	}
 }

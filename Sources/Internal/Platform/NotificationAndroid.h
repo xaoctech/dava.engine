@@ -32,9 +32,10 @@
 #define __NOTIFICATION_ANDROID_H__
 
 #include "Base/BaseTypes.h"
+#include "Mutex.h"
+
 #ifdef __DAVAENGINE_ANDROID__
 #include "JniExtensions.h"
-#include "Mutex.h"
 
 namespace DAVA
 {
