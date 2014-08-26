@@ -592,12 +592,6 @@ public class JNITextField {
 			}
 		});
 	}
-
-	public static void ShowField(int id) {
-	}
-	
-	public static void HideField(int id) {
-	}
 	
 	public static void OpenKeyboard(final int id) {
 		final EditText text = GetEditText(id);
