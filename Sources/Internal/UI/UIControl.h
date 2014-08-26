@@ -56,21 +56,23 @@ namespace DAVA
 
 class UIGeometricData
 {
+    friend class UIControl;
 
 public:
     UIGeometricData()
+        : scale(1.0f, 1.0f)
+        , angle(0.0f)
+        , cosA(1.0f)
+        , sinA(0.0f)
+        , calculatedAngle(0.0f)
     {
-        cosA = 1.0f;
-        sinA = 0;
-        oldAngle = 0;
-        angle = 0;
     }
     Vector2 position;
     Vector2 size;
 
     Vector2 pivotPoint;
-    Vector2	scale;
-    float32	angle;
+    Vector2 scale;
+    float32 angle;
 
     float32 cosA;
     float32 sinA;
@@ -88,9 +90,8 @@ public:
         scale.x *= data.scale.x;
         scale.y *= data.scale.y;
         angle += data.angle;
-        if(angle != oldAngle)
+        if(angle != calculatedAngle)
         {
-            oldAngle = angle;
             if(angle != data.angle)
             {
                 cosA = cosf(angle);
@@ -101,7 +102,7 @@ public:
                 cosA = data.cosA;
                 sinA = data.sinA;
             }
-
+            calculatedAngle = angle;
         }
 
         unrotatedRect.x = position.x - pivotPoint.x * scale.x;
@@ -160,8 +161,9 @@ public:
         return bboxRect;
     }
 
+private:
+    float32 calculatedAngle;
     Rect unrotatedRect;
-    float32 oldAngle;
 };
 
 
@@ -216,6 +218,7 @@ public:
 class UIControl : public AnimatedObject
 {
     friend class UIControlSystem;
+    friend class UIScreenTransition;
 public:
     /**
      \enum Control state bits.
@@ -223,8 +226,8 @@ public:
     enum eControlState
     {
         STATE_NORMAL			= 1 << 0,//!<Control isn't under influence of any activities.
-        STATE_PRESSED_INSIDE	= 1 << 1,//!<Mouse or touch comes into control.
-        STATE_PRESSED_OUTSIDE	= 1 << 2,//!<Mouse or touch comes into control but dragged outside of control.
+        STATE_PRESSED_OUTSIDE	= 1 << 1,//!<Mouse or touch comes into control but dragged outside of control.
+        STATE_PRESSED_INSIDE	= 1 << 2,//!<Mouse or touch comes into control.
         STATE_DISABLED			= 1 << 3,//!<Control is disabled (don't process any input). Use this state only if you want change graphical representation of the control. Don't use this state for the disabling inputs for parts of the controls hierarchy!.
         STATE_SELECTED			= 1 << 4,//!<Just a state for base control, nothing more.
         STATE_HOVER				= 1 << 5,//!<This bit is rise then mouse is over the control.
@@ -273,13 +276,13 @@ public:
         You can call this function directly for the controlBackgound.
      \returns Sprite used for draw.
      */
-    virtual Sprite* GetSprite();
+    virtual Sprite* GetSprite() const;
     /**
      \brief Returns Sprite frame used for draw in the current UIControlBackground object.
         You can call this function directly for the controlBackgound.
      \returns Sprite frame used for draw.
      */
-    virtual int32 GetFrame() const;
+    int32 GetFrame() const;
     /**
      \brief Returns draw type used for draw in the current UIControlBackground object.
         You can call this function directly for the controlBackgound.
@@ -457,34 +460,65 @@ public:
      \brief Returns untransformed control rect.
         To get control metrics that applies all control transformation you need to use
         geometric data received with GetGeometricData().
-        Warning, rectInAbsoluteCoordinates isn't properly works for now!
      \returns control rect.
      */
-    virtual const Rect & GetRect(bool absoluteCoordinates = false);
+    inline Rect GetRect() const;
+
+    /**
+     \brief Returns absolute untransformed control rect.
+        To get control metrics that applies all control transformation you need to use
+        geometric data received with GetGeometricData().
+     \returns control rect.
+     */
+    Rect GetAbsoluteRect();
+
+    DAVA_DEPRECATED(Rect GetRect(bool absoluteCoordinates));
 
     /**
      \brief Sets the untransformed control rect.
-        Warning, rectInAbsoluteCoordinates isn't properly works for now!
      \param[in] rect new control rect.
      */
-    virtual void SetRect(const Rect &rect, bool rectInAbsoluteCoordinates = false);
+    virtual void SetRect(const Rect &rect);
 
+    /**
+     \brief Sets the untransformed control absolute rect.
+     \param[in] rect new control absolute rect.
+     */
+    void SetAbsoluteRect(const Rect &rect);
+
+    DAVA_DEPRECATED(virtual void SetRect(const Rect &rect, bool rectInAbsoluteCoordinates));
 
     /**
      \brief Returns untransformed control position.
         To get control metrics that applies all control transformation you need to use
         geometric data received with GetGeometricData().
-        Warning, rectInAbsoluteCoordinates isn't properly works for now!
      \returns control position.
      */
-    virtual const Vector2 &GetPosition(bool absoluteCoordinates = false);
+    inline const Vector2 &GetPosition() const;
+
+    /**
+     \brief Returns untransformed control position.
+        To get control metrics that applies all control transformation you need to use
+        geometric data received with GetGeometricData().
+     \returns control absolute position.
+     */
+    Vector2 GetAbsolutePosition();
+
+    DAVA_DEPRECATED(Vector2 GetPosition(bool absoluteCoordinates));
 
     /**
      \brief Sets the untransformed control position.
-        Warning, rectInAbsoluteCoordinates isn't properly works for now!
      \param[in] position new control position.
      */
-    virtual void SetPosition(const Vector2 &position, bool positionInAbsoluteCoordinates = false);
+    virtual void SetPosition(const Vector2 &position);
+
+    /**
+     \brief Sets the untransformed control absolute position.
+     \param[in] position new control absolute position.
+     */
+    void SetAbsolutePosition(const Vector2 &position);
+
+    DAVA_DEPRECATED(virtual void SetPosition(const Vector2 &position, bool positionInAbsoluteCoordinates));
 
     /**
      \brief Returns untransformed control size.
@@ -492,7 +526,7 @@ public:
         geometric data received with GetGeometricData().
      \returns control size.
      */
-    virtual const Vector2 &GetSize() const;
+    inline const Vector2 &GetSize() const;
 
     /**
      \brief Sets the untransformed control size.
@@ -501,10 +535,28 @@ public:
     virtual void SetSize(const Vector2 &newSize);
 
     /**
+     \brief Returns control pivot point.
+     \returns control pivot point.
+     */
+    inline const Vector2 &GetPivotPoint() const;
+
+    /**
+     \brief Sets the control pivot point.
+     \param[in] newPivot new control pivot point.
+     */
+    inline void SetPivotPoint(const Vector2 &newPivot);
+
+    /**
      \brief Returns actual control transformation and metrics.
      \returns control geometric data.
      */
     virtual const UIGeometricData &GetGeometricData(bool absoluteCoordinates = true);
+
+    /**
+     \brief Returns actual control local transformation and metrics.
+     \returns control geometric data.
+     */
+    UIGeometricData GetLocalGeometricData() const;
 
     /**
      \brief Sets the scaled control rect.
@@ -518,8 +570,14 @@ public:
      \brief Returns control rotation angle in radians.
      \returns control angle in radians.
      */
-    virtual float32 GetAngle() const;
+    inline float32 GetAngle() const;
     
+    /**
+     \brief Returns control's parents total rotation angle in radians.
+     \returns control's parents total angle in radians.
+     */
+    virtual float32 GetParentsTotalAngle(bool includeOwn);
+
     /**
      \brief Sets contol rotation angle in radians.
         Control rotates around the pivot point.
@@ -534,7 +592,7 @@ public:
         But this methods calls for their children.
      \returns control visibility.
      */
-    DAVA_DEPRECATED(virtual bool GetVisible() const);
+    DAVA_DEPRECATED(virtual bool GetVisible() const);// use GetRecursiveVisible instead
 
     /**
      \brief Sets contol visibility.
@@ -546,7 +604,7 @@ public:
      \param[in] isVisible new control visibility.
      \param[in] hierarchic use true if you want to all control children change visiblity.
      */
-    DAVA_DEPRECATED(virtual void SetVisible(bool isVisible, bool hierarchic = true));
+    DAVA_DEPRECATED(virtual void SetVisible(bool isVisible, bool hierarchic = true));// use SetRecursiveVisible instead;
 
     /**
      \brief Returns control visibility.
@@ -554,7 +612,7 @@ public:
         Also for invisible controls didn't calls Draw() and DrawAfterChilds() methods.
      \returns control visibility.
      */
-    virtual bool GetRecursiveVisible() const;
+    inline bool GetRecursiveVisible() const;
 
     /**
      \brief Sets contol recursive visibility.
@@ -569,7 +627,7 @@ public:
         Be ware! Base control processing inputs by default.
      \returns true if control pocessing inputs.
      */
-    virtual bool GetInputEnabled() const;
+    inline bool GetInputEnabled() const;
 
     /**
      \brief Sets contol input processing ability.
@@ -587,7 +645,7 @@ public:
      Be ware! Base control can be focused by default.
      \returns true if control can be focused.
      */
-    virtual bool GetFocusEnabled() const;
+    inline bool GetFocusEnabled() const;
 
     /**
      \brief Sets contol focusing ability.
@@ -605,7 +663,7 @@ public:
         All controls is enabled by default.
      \returns true if control is disabled.
      */
-    virtual bool GetDisabled() const;
+    bool GetDisabled() const;
 
     /**
      \brief Sets the contol enabling/disabling.
@@ -622,7 +680,7 @@ public:
      \brief Returns control selection state.
      \returns is control selected.
      */
-    virtual bool GetSelected() const;
+    bool GetSelected() const;
 
     /**
      \brief Sets contol selection state.
@@ -637,7 +695,7 @@ public:
         Clip contents is disabled by default.
      \returns true if control rect clips draw and input areas of his children.
      */
-    virtual bool GetClipContents() const;
+    inline bool GetClipContents() const;
     /**
      \brief Sets clip contents state.
         If clip contents is enabled all incoming inputs for the control children processed only
@@ -652,7 +710,7 @@ public:
         Only controlsa what processed inputs may be hovered.
      \returns control hover state is true if mouse placed over the control rect and no mous buttons is pressed.
      */
-    virtual bool GetHover() const;
+    bool GetHover() const;
 
     /**
      \brief Is exclusive input enabled.
@@ -662,7 +720,7 @@ public:
         Exclusive input is disabled by default.
      \returns true if control supports exclusive input.
      */
-    virtual bool GetExclusiveInput() const;
+    inline bool GetExclusiveInput() const;
     /**
      \brief Enables or disables control exclusive input.
         If control have exlusive input enabled and this control starts to process
@@ -680,7 +738,7 @@ public:
         Multiply input is disabled by default.
      \returns true if control supports multyple inputs.
      */
-    virtual bool GetMultiInput() const;
+    inline bool GetMultiInput() const;
     /**
      \brief Sets contol multi input processing.
         If multiple input is enabled control can process all incoming inputs (Two or
@@ -702,7 +760,7 @@ public:
      \brief Returns current name of the control.
      \returns control name.
      */
-    const String & GetName() const;
+    inline const String & GetName() const;
 
     /**
      \brief Sets the contol tag.
@@ -714,7 +772,7 @@ public:
      \brief Returns current control tag.
      \returns control tag.
      */
-    int32 GetTag() const;
+    inline int32 GetTag() const;
 
     /**
      \brief Returns control with given name.
@@ -728,7 +786,7 @@ public:
      \brief Returns control state bit mask.
      \returns control state.
      */
-    int32 GetState() const;
+    inline int32 GetState() const;
     /**
      \brief Sets control state bit mask.
         Try to not use this method manually.
@@ -740,7 +798,7 @@ public:
      \brief Returns control parent.
      \returns if contorl hasn't parent returns NULL.
      */
-    UIControl *GetParent();
+    UIControl *GetParent() const;
 
     /**
      \brief Returns list of control children.
@@ -1098,6 +1156,13 @@ public:
      \param[in] geometricData Parent geometric data.
      */
     virtual void SystemDraw(const UIGeometricData &geometricData);// Internal method used by ControlSystem
+
+    /**
+     \brief set parent draw color into control
+     \param[in] parentColor draw color of parent background.
+     */
+    virtual void SetParentColor(const Color &parentColor);
+
     /**
      \brief Calls on every input event. Calls SystemInput() for all control children.
         If no one of the children is processed input. Calls ProcessInput() for the current control.
@@ -1180,6 +1245,15 @@ public:
      */
     virtual void DrawAfterChilds(const UIGeometricData &geometricData);
 
+protected:
+    virtual void SystemWillBecomeVisible();
+    virtual void SystemWillBecomeInvisible();
+
+    virtual void WillBecomeVisible();
+    virtual void WillBecomeInvisible();
+
+public:
+
         //TODO: Борода напиши дескрипшн.
     virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
     /**
@@ -1194,8 +1268,14 @@ public:
 
 
     /**
-     \brief Returns control on screen status.
+     \brief Returns control in hierarchy status.
      \returns True if control in view hierarchy for now.
+     */
+    bool InViewHierarchy() const;
+
+    /**
+     \brief Returns control on screen status.
+     \returns True if control visible now.
      */
     bool IsOnScreen() const;
     /**
@@ -1223,15 +1303,12 @@ public:
     void ApplyAlignSettingsForChildren();
 
     // Access to Custom Control Type.
-    String GetCustomControlType() const;
+    const String &GetCustomControlType() const;
     void SetCustomControlType(const String& value);
     void ResetCustomControlType();
 
     // Find the control by name and add it to the list, if found.
     bool AddControlToList(List<UIControl*>& controlsList, const String& controlName, bool isRecursive = false);
-
-    // Get the framework path for sprite, don't process it if it is empty.
-    static String GetSpriteFrameworkPath( const Sprite* sprite);
 
     // Get/set the Initial State.
     int32 GetInitialState() const;
@@ -1244,26 +1321,20 @@ public:
     void DumpInputs(int32 depthLevel);
 
 public:
-
+    //TODO: store geometric data in UIGeometricData
     Vector2 relativePosition;//!<position in the parent control.
     Vector2 size;//!<control size.
 
     Vector2 pivotPoint;//!<control pivot point. Top left control corner by default.
-    Vector2	scale;//!<control scale. Scale relative to pivot point.
-    float32	angle;//!<control rotation angle. Rotation around pivot point.
+    Vector2 scale;//!<control scale. Scale relative to pivot point.
+    float32 angle;//!<control rotation angle. Rotation around pivot point.
 
 protected:
-
-//	void SystemClearHoverState();//<! Internal method used by ControlSystem
-
-    Vector2 absolutePosition;
-
     UIControl *parent;
     List<UIControl*> childs;
     List<UIControl*> realChilds;
 
     UIControlBackground *background;
-//	Rect absoluteRect;
     int32 controlState;
 
     // boolean flags are grouped here to pack them together (see please DF-2149).
@@ -1302,12 +1373,9 @@ protected:
     int32 vcenterAlign;
     int32 bottomAlign;
 
-    Rect returnedRect;
     UIGeometricData tempGeometricData;
 
     EventDispatcher *eventDispatcher;
-
-    bool needToRecalcFromAbsoluteCoordinates;
 
     Color debugDrawColor;
 
@@ -1326,10 +1394,6 @@ protected:
     // Set the preferred node type. Needed for saving controls to Yaml while taking
     // custom controls into account.
     void SetPreferredNodeType(YamlNode* node, const String& nodeTypeName);
-#ifdef ENABLE_CONTROL_EDIT
-    Vector2	__touchStart;
-    Vector2		__oldPosition;
-#endif
 
     void RegisterInputProcessor();
     void RegisterInputProcessors(int32 processorsCount);
@@ -1361,6 +1425,81 @@ private:
     float32 GetRelativeY(UIControl *parent, int32 align);
     float32 GetRelativeY(UIControl *parent, int32 align, UIControl* child, bool useHalfParentSize = false);
 };
+
+const Vector2 & UIControl::GetPivotPoint() const
+{
+    return pivotPoint;
+}
+
+void UIControl::SetPivotPoint(const Vector2 &newPivot)
+{
+    pivotPoint = newPivot;
+}
+
+const Vector2 &UIControl::GetSize() const
+{
+    return size;
+}
+
+const Vector2 &UIControl::GetPosition() const
+{
+    return relativePosition;
+}
+
+float32 UIControl::GetAngle() const
+{
+    return angle;
+}
+
+const String & UIControl::GetName() const
+{
+    return name;
+}
+
+int32 UIControl::GetTag() const
+{
+    return tag;
+}
+
+Rect UIControl::GetRect() const
+{
+    return Rect(relativePosition - pivotPoint, size);
+}
+
+bool UIControl::GetRecursiveVisible() const
+{
+    return recursiveVisible;
+}
+
+bool UIControl::GetInputEnabled() const
+{
+    return inputEnabled;
+}
+
+bool UIControl::GetFocusEnabled() const
+{
+    return focusEnabled;
+}
+
+bool UIControl::GetClipContents() const
+{
+    return clipContents;
+}
+
+bool UIControl::GetExclusiveInput() const
+{
+    return exclusiveInput;
+}
+
+bool UIControl::GetMultiInput() const
+{
+    return multiInput;
+}
+
+int32 UIControl::GetState() const
+{
+    return controlState;
+}
 };
 
 #endif

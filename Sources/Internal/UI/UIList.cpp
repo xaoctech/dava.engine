@@ -33,6 +33,7 @@
 #include "Platform/SystemTimer.h"
 #include "UI/UIControlSystem.h"
 #include "Base/ObjectFactory.h"
+#include "FileSystem/YamlNode.h"
 
 namespace DAVA 
 {
@@ -129,7 +130,7 @@ void UIList::ScrollTo(float delta)
 	scroll->Impulse(delta * -4.8f);
 }
 
-void UIList::SetRect(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*/)
+void UIList::SetRect(const Rect &rect)
 {
     if(orientation == ORIENTATION_HORIZONTAL)
     {
@@ -140,7 +141,7 @@ void UIList::SetRect(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*
         scroll->SetViewSize(rect.dy);
     }
 
-	UIControl::SetRect(rect, rectInAbsoluteCoordinates);
+	UIControl::SetRect(rect);
 }
 
 void UIList::SetDelegate(UIListDelegate *newDelegate)

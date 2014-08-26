@@ -31,6 +31,7 @@
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Scene.h"
 #include "FileSystem/YamlParser.h"
+#include "FileSystem/YamlNode.h"
 
 namespace DAVA
 {
@@ -66,7 +67,7 @@ void QualitySettingsSystem::Load(const FilePath &path)
             const YamlNode *materialGroupsNode = rootNode->Get("materials");
             if(NULL != materialGroupsNode)
             {
-                for(int i = 0; i < materialGroupsNode->GetCount(); ++i)
+                for(uint32 i = 0; i < materialGroupsNode->GetCount(); ++i)
                 {
                     const YamlNode *groupNode = materialGroupsNode->Get(i);
                     const YamlNode *name = groupNode->Get("group");
@@ -127,7 +128,7 @@ void QualitySettingsSystem::Load(const FilePath &path)
                     }
 
                     textureQualities.reserve(qualitiesNode->GetCount());
-                    for(int i = 0; i < qualitiesNode->GetCount(); ++i)
+                    for(uint32 i = 0; i < qualitiesNode->GetCount(); ++i)
                     {
                         const YamlNode *qualityNode = qualitiesNode->Get(i);
                         const YamlNode *name = qualityNode->Get("quality");
@@ -176,7 +177,7 @@ void QualitySettingsSystem::Load(const FilePath &path)
                     }
 
                     soundQualities.reserve(qualitiesNode->GetCount());
-                    for(int i = 0; i < qualitiesNode->GetCount(); ++i)
+                    for(uint32 i = 0; i < qualitiesNode->GetCount(); ++i)
                     {
                         const YamlNode *qualityNode = qualitiesNode->Get(i);
                         const YamlNode *name = qualityNode->Get("quality");

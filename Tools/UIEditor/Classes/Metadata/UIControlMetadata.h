@@ -110,7 +110,7 @@ public:
     UIControlMetadata(QObject* parent = 0);
     
     // Apply move/resize for all controls.
-    virtual void ApplyMove(const Vector2& moveDelta);
+    virtual void ApplyMove(const Vector2& moveDelta, bool alignControlsToIntegerPos);
     virtual void ApplyResize(const Rect& originalRect, const Rect& newRect);
 
 protected:
@@ -178,7 +178,7 @@ protected:
     // Sprite getter/setter. Also virtual one - its implementation is different
     // for different control types.
     virtual void SetSprite(const QString& value);
-    virtual QString GetSprite();
+    virtual QString GetSprite() const;
 
     virtual void SetSpriteFrame(int value);
     virtual int GetSpriteFrame();
@@ -244,7 +244,7 @@ protected:
 	int GetInitialState() const;
 	void SetInitialState(int value);
 
-	virtual void SetActiveControlRect(const Rect& rect, bool restoreAlign);
+	virtual void SetActiveControlRect(const Rect& rect, bool restoreAlign, bool alignToIntegerPos = false);
 
 	// Refresh the align params.
 	void RefreshAlign();

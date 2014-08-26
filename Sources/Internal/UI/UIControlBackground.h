@@ -103,7 +103,7 @@ public:
      \brief Returns Sprite used for draw.
      \returns Sprite used for draw.
      */
-    virtual Sprite*	GetSprite();
+    virtual Sprite*	GetSprite() const;
     /**
      \brief Returns Sprite frame used for draw.
      \returns Sprite frame used for draw.
@@ -267,7 +267,7 @@ protected:
 
     Sprite *spr;
     int32 align;
-    int32 type;
+    eDrawType type;
     int32 spriteModification;
     float32 leftStretchCap;
     float32 topStretchCap;

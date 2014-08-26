@@ -36,6 +36,7 @@
 #include "Core/Core.h"
 #include "FileSystem/LocalizationSystem.h"
 #include "FileSystem/YamlParser.h"
+#include "FileSystem/YamlNode.h"
 #include "FileSystem/FilePath.h"
 
 #include <ft2build.h>
@@ -56,8 +57,9 @@ class FTInternalFont : public BaseObject
 {
 	friend class FTFont;
 	FilePath fontPath;
-	uint8 * memoryFont;
-	uint32 memoryFontSize;
+	FT_StreamRec streamFont;
+	File * fontFile;
+
 private:
 	FTInternalFont(const FilePath & path);
 	virtual ~FTInternalFont();
@@ -69,7 +71,7 @@ public:
 		float32 size, bool realDraw, 
 		int32 offsetX, int32 offsetY,
 		int32 justifyWidth, int32 spaceAddon,
-		Vector<int32> *charSizes = NULL,
+		Vector<float32> *charSizes = NULL,
 		bool contentScaleIncluded = false);
 	uint32 GetFontHeight(float32 size) const;
 
@@ -101,6 +103,9 @@ private:
 	void Prepare(FT_Vector * advances);
 
 	inline FT_Pos Round(FT_Pos val);
+	
+	static unsigned long StreamLoad(FT_Stream stream, unsigned long offset, uint8* buffer, unsigned long count);
+	static void StreamClose(FT_Stream stream);
 };
 
 FTFont::FTFont(FTInternalFont* _internalFont)
@@ -192,7 +197,7 @@ Size2i FTFont::DrawStringToBuffer(void * buffer, int32 bufWidth, int32 bufHeight
 	return internalFont->DrawString(str, buffer, bufWidth, bufHeight, 255, 255, 255, 255, renderSize, true, offsetX, offsetY, justifyWidth, spaceAddon, NULL, contentScaleIncluded );
 }
 
-Size2i FTFont::GetStringSize(const WideString& str, Vector<int32> *charSizes) const
+Size2i FTFont::GetStringSize(const WideString& str, Vector<float32> *charSizes) const
 {
 	return internalFont->DrawString(str, 0, 0, 0, 0, 0, 0, 0, renderSize, false, 0, 0, 0, 0, charSizes);
 }
@@ -229,41 +234,45 @@ YamlNode * FTFont::SaveToYamlNode() const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
 	
 FTInternalFont::FTInternalFont(const FilePath & path)
 :	face(NULL),
 	fontPath(path),
-    memoryFont(NULL),
-    memoryFontSize(0)
+    streamFont(),
+	fontFile(NULL)
 {
     FilePath pathName(path);
     pathName.ReplaceDirectory(path.GetDirectory() + (LocalizationSystem::Instance()->GetCurrentLocale() + "/"));
     
-    File * fp = File::Create(pathName, File::READ|File::OPEN);
-    if (!fp)
+    fontFile = File::Create(pathName, File::READ|File::OPEN);
+    if (!fontFile)
     {    
-        fp = File::Create(path, File::READ|File::OPEN);
-        if (!fp)
+        fontFile = File::Create(path, File::READ|File::OPEN);
+        if (!fontFile)
         {
-            Logger::Error("Failed to open font: %s", path.GetAbsolutePathname().c_str());
+            Logger::Error("Failed to open font: %s", path.GetStringValue().c_str());
             return;
         }
     }
 
-	memoryFontSize = fp->GetSize();
-	memoryFont = new uint8[memoryFontSize];
-	fp->Read(memoryFont, memoryFontSize);
-	SafeRelease(fp);
+	Memset(&streamFont, 0, sizeof(FT_StreamRec));
+	streamFont.descriptor.pointer = (void*)fontFile;
+	streamFont.size = fontFile->GetSize();
+	streamFont.read = &StreamLoad;
+	streamFont.close = &StreamClose;
 	
-	FT_Error error = FT_New_Memory_Face(FontManager::Instance()->GetFTLibrary(), memoryFont, memoryFontSize, 0, &face);
+	FT_Open_Args args = {0};
+	args.flags = FT_OPEN_STREAM;
+	args.stream = &streamFont;
+	
+	FT_Error error = FT_Open_Face(FontManager::Instance()->GetFTLibrary(), &args, 0, &face);
 	if(error == FT_Err_Unknown_File_Format)
 	{
-		Logger::Error("FTInternalFont::FTInternalFont FT_Err_Unknown_File_Format");
+		Logger::Error("FTInternalFont::FTInternalFont FT_Err_Unknown_File_Format: %s", fontFile->GetFilename().GetStringValue().c_str());
 	}
 	else if(error)
 	{
-		Logger::Error("FTInternalFont::FTInternalFont cannot create font(no file?)");
+		Logger::Error("FTInternalFont::FTInternalFont cannot create font(no file?): %s", fontFile->GetFilename().GetStringValue().c_str());
 	}
 }
 	
@@ -272,7 +281,7 @@ FTInternalFont::~FTInternalFont()
 	ClearString();
 
 	FT_Done_Face(face);
-	SafeDeleteArray(memoryFont);
+	SafeRelease(fontFile);
 }
 
 
@@ -293,7 +302,7 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 					float32 size, bool realDraw, 
 					int32 offsetX, int32 offsetY,
 					int32 justifyWidth, int32 spaceAddon,
-					Vector<int32> *charSizes,
+					Vector<float32> *charSizes,
 					bool contentScaleIncluded )
 {
 	drawStringMutex.Lock();
@@ -336,7 +345,7 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 
 	uint8 * resultBuf = (uint8*)buffer;
 
-	LoadString(str);
+	int32 countSpace = LoadString(str);
 	int32 strLen = str.length();
 	FT_Vector * advances = new FT_Vector[strLen];
 	Prepare(advances);
@@ -344,11 +353,31 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
     const int spaceWidth = (face->glyph->metrics.width >> 6) >> 1;
     
 	int32 lastRight = 0; //charSizes helper
-	//int32 justifyOffset = 0;
+    int32 justifyOffset = 0;
+    int32 fixJustifyOffset = 0;
+    if (countSpace > 0 && justifyWidth > 0 && spaceAddon > 0)
+    {
+        int32 diff= justifyWidth - spaceAddon;
+        justifyOffset =  diff / countSpace;
+        fixJustifyOffset = diff - justifyOffset*countSpace;
+        
+    }
 	int32 maxWidth = 0;
 	
 	for(int32 i = 0; i < strLen; ++i)
 	{
+        if ( i > 0 && justifyOffset > 0 )
+        {
+            if(str[i-1] == L' ')
+            {
+                pen.x += justifyOffset<<6;
+            }
+            if (fixJustifyOffset>0)
+            {
+                fixJustifyOffset--;
+                pen.x += 1<<6;
+            }
+        }
 		Glyph		& glyph = glyphs[i];
 		FT_Glyph	image;
 		FT_BBox		bbox;
@@ -396,7 +425,7 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 					{
                         if(str[i] == ' ')
                         {
-                            charSizes->push_back(spaceWidth);
+                            charSizes->push_back((float32)spaceWidth);
                             lastRight += spaceWidth;
                         }
                         else
@@ -406,14 +435,14 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 					}
 					else if(charSizes->empty())
 					{
-						charSizes->push_back(width);
+						charSizes->push_back((float32)width);
 						lastRight = width;
 					}
 					else
 					{
 						int32 value = left+width-lastRight;
 						lastRight += value;
-						charSizes->push_back(value);
+						charSizes->push_back((float32)value);
 					}
 				}
 
@@ -422,7 +451,7 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 				if(realDraw)
 				{
 					int32 realH = Min((int32)bitmap->rows, (int32)(bufHeight - top));
-					int32 realW = Min((int32)bitmap->width, (int32)(bufWidth - left)); 
+					int32 realW = Min((int32)bitmap->width, (int32)(bufWidth - left));
 					int32 ind = top*bufWidth + left;
 					DVASSERT(ind >= 0);
 					uint8 * writeBuf = resultBuf + ind;
@@ -639,5 +668,17 @@ FT_Pos FTInternalFont::Round(FT_Pos val)
 	return (((val) + 32) & -64);
 }
 
+unsigned long FTInternalFont::StreamLoad(FT_Stream stream, unsigned long offset, uint8* buffer, unsigned long count)
+{
+	File* is = reinterpret_cast<File*>(stream->descriptor.pointer);
+	if (count == 0) return 0;
+	is->Seek((int32)offset, File::SEEK_FROM_START);
+	return is->Read(buffer, (uint32)count);
+}
+
+void FTInternalFont::StreamClose(FT_Stream stream)
+{
+	// Close file stream in destructor
+}
 	
 };

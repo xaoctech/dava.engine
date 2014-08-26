@@ -77,7 +77,7 @@ void ResourcePacker2D::PackResources(eGPUFamily forGPU)
                   outputGfxDirectory.GetAbsolutePathname().c_str(),
                   excludeDirectory.GetAbsolutePathname().c_str());
 
-    Logger::FrameworkDebug("For GPU: %s", (GPU_UNKNOWN != forGPU) ? GPUFamilyDescriptor::GetGPUName(forGPU).c_str() : "Unknown");
+    Logger::FrameworkDebug("For GPU: %s", (GPU_INVALID != forGPU) ? GPUFamilyDescriptor::GetGPUName(forGPU).c_str() : "Unknown");
 
     
 	requestedGPUFamily = forGPU;
@@ -238,7 +238,16 @@ DefinitionFile * ResourcePacker2D::ProcessPSD(const FilePath & processDirectoryP
 			FilePath outputFile = FramePathHelper::GetFramePathRelative(psdNameWithoutExtension, k - 1);
 
 			Magick::Image & currentLayer = layers[k];
-			currentLayer.crop(Magick::Geometry(width,height, 0, 0));
+
+			const Magick::Geometry bbox = currentLayer.page();
+			const Magick::Geometry croppedGeometry(width,height, 0, 0);
+			currentLayer.crop(croppedGeometry);
+//TODO: disabled for future investigation of correct cropping in different situations
+// 			if(bbox.width() > (size_t)width || bbox.height() > (size_t)height)
+// 			{
+// 				currentLayer.page(croppedGeometry);
+// 			}
+
 			currentLayer.magick("PNG");
 			currentLayer.write(outputFile.GetAbsolutePathname());
 		}

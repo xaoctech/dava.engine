@@ -49,6 +49,7 @@
 #include "UIJoypadMetadata.h"
 #include "UIWebViewMetadata.h"
 #include "UI3DViewMetadata.h"
+#include "UIListCellMetadata.h"
 
 #include "Metadata/Custom/GuideMetadata.h"
 
@@ -86,7 +87,8 @@ PropertyGridWidgetsFactory::PropertyGridWidgetsFactory()
     uiTextFieldWidget = new UITextFieldPropertyGridWidget();
     registeredWidgets.push_back(uiTextFieldWidget);
 
-    backgroundWidget = new BackGroundPropertyGridWidget();
+    backgroundWidget = new BackgroundPropertyGridWidget("Background", "");
+    backgroundWidget->ForceExpand(true);
     registeredWidgets.push_back(backgroundWidget);
 	    
     flagsWidget = new FlagsPropertyGridWidget();
@@ -112,7 +114,10 @@ PropertyGridWidgetsFactory::PropertyGridWidgetsFactory()
     
     webViewWidget = new WebViewPropertyGridWidget();
     registeredWidgets.push_back(webViewWidget);
-    
+
+    listCellWidget = new UIListCellPropertyGridWidget();
+    registeredWidgets.push_back(listCellWidget);
+
     guideWidget = new GuidePropertyGridWidget();
     registeredWidgets.push_back(guideWidget);
 }
@@ -165,6 +170,21 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
 		resultList.push_back(aggregatorWidget);
 		return resultList;
 	}
+
+    const UIListCellMetadata* listCellMetadata = dynamic_cast<const UIListCellMetadata*>(metaData);
+    if (listCellMetadata)
+    {
+        resultList.push_back(controlWidget);
+        resultList.push_back(listCellWidget);
+        resultList.push_back(rectWidget);
+        resultList.push_back(alignWidget);
+        resultList.push_back(stateWidget);
+        resultList.push_back(textWidget);
+        resultList.push_back(backgroundWidget);
+        resultList.push_back(flagsWidget);
+
+        return resultList;
+    }
 
     // UI Button/Static Text Nodes - they require the same widgets.
     const UIButtonMetadata* uiButtonMetadata = dynamic_cast<const UIButtonMetadata*>(metaData);
