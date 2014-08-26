@@ -31,12 +31,7 @@ public class JNINotificationProvider {
 		JNIActivity.GetActivity().InitNotification(builder);
 	}
 	
-    static void NotifyProgress(
-			int id,
-			String title, 
-			String text, 
-			int maxValue, 
-			int value) {
+    static void NotifyProgress(int id, String title, String text, int maxValue, int value) {
 		if (isInited) {
 			builder.setContentTitle(title)
 				.setContentText(text)
@@ -45,39 +40,19 @@ public class JNINotificationProvider {
 		}
 	}
 	
+    static void NotifyText(int id, String title, String text) {
+
+		if (isInited) {
+			builder.setContentTitle(title)
+					.setContentText(text);
+			notificationManager.notify(id, builder.build());
+		}
+	}
+    
     static void HideNotification(int id) {
 		if (isInited)
 			notificationManager.cancel(id);
 	}
     
-    static void SetNotificationTitle(int id, String title) {
-    	if (isInited) {
-    		Notification notificationToSet = builder
-   		         .setContentTitle(title)
-   		         .build();
-   			    
-   			notificationManager.notify(id, notificationToSet);
-    	}
-    }
-    
-    static void SetNotificationText(int id, String text) {
-    	if (isInited) {
-    		Notification notificationToSet = builder
-   		         .setContentText(text)
-   		         .build();
-   			    
-   			notificationManager.notify(id, notificationToSet);
-    	}
-    }
-	
-    static void SetNotificationProgress(int id, int total, int current)
-    {
-    	if (isInited) {
-    		Notification notificationToSet = builder
-   		         .setProgress(total, current, false)
-   		         .build();
-   			    
-   			notificationManager.notify(id, notificationToSet);
-    	}
-    }
+
 }
