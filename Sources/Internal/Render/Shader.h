@@ -342,6 +342,8 @@ private:
     uint8 * fragmentShaderDataStart;
     uint32 vertexShaderDataSize;
     uint32 fragmentShaderDataSize;
+    
+    bool allowInvalidation;
 };
 
 //
