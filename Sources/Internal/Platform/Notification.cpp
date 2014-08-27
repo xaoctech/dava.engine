@@ -42,8 +42,8 @@ LocalNotification::LocalNotification()
     : LocalNotificationNotImplemented()
 #endif
 	, isChanged(false)
-	, title("")
-	, text("")
+	, title(L"")
+	, text(L"")
 {
     static uint32 lastId = 0;
     id = ++lastId;
@@ -59,7 +59,7 @@ bool LocalNotification::IsChanged()
 	return isChanged;
 }
 
-void LocalNotification::SetTitle(const String &_title)
+void LocalNotification::SetTitle(const WideString &_title)
 {
 	if (_title != title)
 	{
@@ -68,7 +68,7 @@ void LocalNotification::SetTitle(const String &_title)
 	}
 }
 
-void LocalNotification::SetText(const String &_text)
+void LocalNotification::SetText(const WideString &_text)
 {
 	if (_text != text)
 	{
@@ -153,7 +153,7 @@ LocalNotificationController::~LocalNotificationController()
     }
 }
 
-LocalNotificationProgress *LocalNotificationController::CreateNotificationProgress(const String &title, const String &text, uint32 maximum, uint32 current)
+LocalNotificationProgress *LocalNotificationController::CreateNotificationProgress(const WideString &title, const WideString &text, uint32 maximum, uint32 current)
 {
 	LocalNotificationProgress *note = new LocalNotificationProgress();
     
@@ -171,7 +171,7 @@ LocalNotificationProgress *LocalNotificationController::CreateNotificationProgre
     return note;
 }
 
-LocalNotificationText *LocalNotificationController::CreateNotificationText(const String &title, const String &text)
+LocalNotificationText *LocalNotificationController::CreateNotificationText(const WideString &title, const WideString &text)
 {
 	LocalNotificationText *note = new LocalNotificationText();
 
