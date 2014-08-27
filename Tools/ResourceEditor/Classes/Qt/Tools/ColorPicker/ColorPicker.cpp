@@ -35,6 +35,8 @@ ColorPicker::ColorPicker(QWidget* parent)
 
     // Dropper
     connect(ui->dropper, SIGNAL( clicked() ), SLOT( OnDropper() ));
+
+    SetColor(Qt::white);
 }
 
 ColorPicker::~ColorPicker()

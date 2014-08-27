@@ -18,6 +18,7 @@ ColorComponentSlider::ColorComponentSlider(QWidget* parent)
     value = new ValueSlider();
     value->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     value->setMinimumSize(0, 20);
+    value->SetDigitsAfterDot(4);
     l->addWidget(value);
 
     gradient = new GradientSlider();

@@ -26,9 +26,11 @@ ColorPickerRGBAM::ColorPickerRGBAM(QWidget* parent)
 
     for (int i = 0; i < sizeof( sliders ) / sizeof( *sliders ); i++)
     {
-        l->addLayout(CreateSlider(labels[i], sliders[i]));
+        ColorComponentSlider *slider = sliders[i];
+        l->addLayout(CreateSlider(labels[i], slider));
 
-        connect(sliders[i], SIGNAL( changing( double ) ), SLOT( OnChanging( double ) ));
+        connect(slider, SIGNAL( changing( double ) ), SLOT( OnChanging( double ) ));
+        connect(slider, SIGNAL( changed( double ) ), SLOT( OnChanged( double ) ));
     }
     l->addStretch(1);
 
@@ -55,6 +57,14 @@ void ColorPickerRGBAM::OnChanging(double val)
     ColorComponentSlider* source = qobject_cast<ColorComponentSlider *>(sender());
     UpdateColorInternal(source);
     emit changing(GetColor());
+}
+
+void ColorPickerRGBAM::OnChanged(double val)
+{
+    Q_UNUSED( val );
+    ColorComponentSlider* source = qobject_cast<ColorComponentSlider *>(sender());
+    UpdateColorInternal(source);
+    emit changed(GetColor());
 }
 
 void ColorPickerRGBAM::SetColorInternal(const QColor& c)
