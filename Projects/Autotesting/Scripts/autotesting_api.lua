@@ -591,16 +591,16 @@ function GetNewPosition(list, vertical, invert)
     else
         new_position.y = position.y
     end
-    return new_position
+    return position, new_position
 end
 
 function VerticalScroll(list, invert)
-    GetNewPosition(list, true, invert)
+    local position, new_position = GetNewPosition(list, true, invert)
     TouchMove(position, new_position)
 end
 
 function HorizontalScroll(list, invert)
-    GetNewPosition(list, false, invert)
+    local position, new_position = GetNewPosition(list, false, invert)
     TouchMove(position, new_position)
 end
 
