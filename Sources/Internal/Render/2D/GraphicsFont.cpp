@@ -459,6 +459,7 @@ Font::StringMetrics GraphicsFont::DrawString(float32 x, float32 y, const WideStr
 
 	Font::StringMetrics metrics;
 	metrics.drawRect = Rect2i(0, 0, (int32)(ceilf(currentX + sizeFix - x)), GetFontHeight());
+    metrics.width = metrics.drawRect.dx;
 	metrics.height = metrics.drawRect.dy;
 	metrics.baseline = 0;
 	return metrics;
