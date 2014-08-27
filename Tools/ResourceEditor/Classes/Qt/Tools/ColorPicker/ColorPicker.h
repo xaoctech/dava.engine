@@ -25,7 +25,7 @@ class ColorPicker
     Q_OBJECT
 
 private:
-    typedef QMap<QString, QPointer<AbstractColorPicker>> PickerMap;
+    typedef QMap< QString, QPointer<AbstractColorPicker> > PickerMap;
 
 public:
     explicit ColorPicker(QWidget* parent = 0);
