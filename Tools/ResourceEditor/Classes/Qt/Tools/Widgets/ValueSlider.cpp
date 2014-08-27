@@ -97,7 +97,7 @@ void ValueSlider::DrawForeground(QPainter* p) const
     {
         QStyleOptionFrameV2 panel;
         panel.initFrom(this);
-        style()->drawItemText(p, clip.adjusted(3, 0, 0, 0), (Qt::AlignLeft | Qt::AlignVCenter), palette(), true, QString::number(val, 'f', digitsAfterDot), QPalette::WindowText);
+        style()->drawItemText(p, clip.adjusted(3, 1, 0, 0), (Qt::AlignLeft | Qt::AlignVCenter), palette(), true, QString::number(val, 'f', digitsAfterDot), QPalette::WindowText);
 
         if (arrows.isNull())
         {
@@ -229,7 +229,7 @@ void ValueSlider::OnMouseClick()
     if (editor)
         delete editor;
 
-    QRegExpValidator* validator = new QRegExpValidator(QRegExp("\\s*-? \\d*[, \\.] ? \\d*\\s*"));
+    QRegExpValidator* validator = new QRegExpValidator(QRegExp("\\s*-?\\d*[,\\.]?\\d*\\s*"));
 
     editor = new QLineEdit(this);
     editor->installEventFilter(this);
@@ -250,10 +250,12 @@ void ValueSlider::normalize()
     if (val < minVal)
     {
         val = minVal;
+        update();
     }
     if (val > maxVal)
     {
         val = maxVal;
+        update();
     }
 }
 
@@ -277,9 +279,10 @@ void ValueSlider::acceptEditing()
         {
             val = newVal;
             normalize();
+            emit changed(val);
         }
 
         editor->deleteLater();
-        repaint();
+        update();
     }
 }

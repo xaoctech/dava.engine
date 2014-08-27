@@ -22,6 +22,7 @@ public:
 
 private slots:
     void OnChanging(double val);
+    void OnChanged(double val);
 
 private:
     void SetColorInternal(QColor const& c) override;
