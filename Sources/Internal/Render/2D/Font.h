@@ -65,13 +65,14 @@ public:
 		\brief Structure with sizes of string
 		Contents draw rect (buffer, sprite bounds), height, baseline, width.
 	*/
-	typedef struct 
+	struct StringMetrics
 	{
+        inline StringMetrics(): drawRect(), height(0), width(0), baseline(0) {}
 		Rect2i drawRect;
 		int32 height;
 		int32 width;
 		int32 baseline;
-	} StringMetrics;
+	};
 protected:
 	virtual ~Font();
 public:

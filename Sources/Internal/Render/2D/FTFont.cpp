@@ -432,7 +432,7 @@ Font::StringMetrics FTInternalFont::DrawString(const WideString& str, void * buf
 			{
 				if(0 == width)
 				{
-                    if(str[i] == ' ')
+                    if(str[i] == L' ')
                     {
 						int32 spaceWidth = (int32)advances[i].x >> ftToPixelShift;
                         charSizes->push_back((float32)spaceWidth);
