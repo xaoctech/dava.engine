@@ -47,8 +47,8 @@ void ColorPicker::Exec()
 {
     const Qt::WindowFlags f = windowFlags();
     const Qt::WindowModality m = windowModality();
-    setWindowFlags(f | Qt::Window);
-    setWindowModality(Qt::WindowModal);
+    setWindowFlags(f | Qt::Dialog);
+    setWindowModality(Qt::ApplicationModal);
 
     show();
     modalLoop.exec();

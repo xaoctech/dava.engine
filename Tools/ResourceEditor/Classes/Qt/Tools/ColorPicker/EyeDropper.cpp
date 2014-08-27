@@ -23,6 +23,8 @@ EyeDropper::EyeDropper(QWidget* parent)
     setFocusPolicy(Qt::StrongFocus);
     setMouseTracking(true);
     setCursor(Qt::BlankCursor);
+    
+    //qApp->setAttribute(Qt::AA_UseHighDpiPixmaps);
 
     connect(mouse, SIGNAL( mouseMove( const QPoint& ) ), SLOT( OnMouseMove( const QPoint& ) ));
     connect(mouse, SIGNAL( mouseRelease( const QPoint& ) ), SLOT( OnClicked( const QPoint& ) ));
@@ -67,7 +69,7 @@ void EyeDropper::paintEvent(QPaintEvent* e)
     Q_UNUSED( e );
 
     QPainter p(this);
-    p.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing, false);
+    //p.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing, false);
     p.drawImage(0, 0, cache);
     DrawCursor(cursorPos, &p);
 }
@@ -127,6 +129,8 @@ void EyeDropper::CreateShade()
     resize(rc.size());
     move(rc.topLeft());
     cursorPos = mapFromGlobal(QCursor::pos());
+    qDebug() << "Rect: " << rc;
+    qDebug() << "Size: " << size();
 }
 
 QColor EyeDropper::GetPixel(const QPoint& pos) const
