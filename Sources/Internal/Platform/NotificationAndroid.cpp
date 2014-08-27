@@ -62,15 +62,15 @@ void LocalNotification::Hide()
 					GetMethodID("HideNotification", "(I)V"),
 					id);
 
-	text = "";
-	title = "";
+	text = L"";
+	title = L"";
 
 	isChanged = false;
 }
 
 void LocalNotificationProgress::ShowNotifitaionWithProgress(uint32 id,
-			const String& title,
-			const String& text,
+			const WideString& title,
+			const WideString& text,
 			int32 maxValue,
 			int32 value)
 {
@@ -78,11 +78,8 @@ void LocalNotificationProgress::ShowNotifitaionWithProgress(uint32 id,
 
 	JNIEnv *env = GetEnvironment();
 
-	WideString wsText(text.begin(), text.end());
-	WideString wsTitle(title.begin(), title.end());
-
-	jstring jStrTitle = CreateJString(env, wsTitle);
-	jstring jStrText = CreateJString(env, wsText);
+	jstring jStrTitle = CreateJString(env, title);
+	jstring jStrText = CreateJString(env, text);
 
 	env->CallStaticVoidMethod(
 					GetJavaClass(),
@@ -99,18 +96,15 @@ void LocalNotificationProgress::ShowNotifitaionWithProgress(uint32 id,
 
 
 void LocalNotificationText::ShowNotificationWithText(uint32 id,
-		const String& title,
-		const String& text)
+		const WideString& title,
+		const WideString& text)
 {
 	LockGuard<Mutex> mutexGuard(javaCallMutex);
 
 	JNIEnv *env = GetEnvironment();
 
-	WideString wsText(text.begin(), text.end());
-	WideString wsTitle(title.begin(), title.end());
-
-	jstring jStrTitle = CreateJString(env, wsTitle);
-	jstring jStrText = CreateJString(env, wsText);
+	jstring jStrTitle = CreateJString(env, title);
+	jstring jStrText = CreateJString(env, text);
 
 	env->CallStaticVoidMethod(
 					GetJavaClass(),

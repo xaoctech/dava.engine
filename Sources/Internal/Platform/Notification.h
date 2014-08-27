@@ -53,8 +53,8 @@ public:
 
     bool IsChanged();
 
-	void SetTitle(const String &_title);
-	void SetText(const String &_text);
+	void SetTitle(const WideString &_title);
+	void SetText(const WideString &_text);
     virtual void Hide();
     virtual void Update();
 
@@ -62,8 +62,8 @@ protected:
     bool isChanged;
 
     uint32 id;
-    String title;
-    String text;
+    WideString title;
+    WideString text;
 };
 
 class LocalNotificationProgress : public LocalNotification
@@ -81,8 +81,8 @@ public:
 
 private:
 	void ShowNotifitaionWithProgress(uint32 id,
-			const String& title,
-			const String& text,
+			const WideString& title,
+			const WideString& text,
 			int32 maxValue,
 			int32 value);
 
@@ -98,8 +98,8 @@ public:
 
 private:
 	void ShowNotificationWithText(uint32 id,
-			const String& title,
-			const String& text);
+			const WideString& title,
+			const WideString& text);
 };
 
 class LocalNotificationController : public Singleton<LocalNotificationController>
@@ -107,8 +107,8 @@ class LocalNotificationController : public Singleton<LocalNotificationController
 	friend class LocalNotification;
 public:
     virtual ~LocalNotificationController();
-	LocalNotificationProgress *CreateNotificationProgress(const String &title = "", const String &text = "", uint32 max = 0, uint32 current = 0);
-    LocalNotificationText *CreateNotificationText(const String &title = "", const String &text = "");
+	LocalNotificationProgress *CreateNotificationProgress(const WideString &title = L"", const WideString &text = L"", uint32 max = 0, uint32 current = 0);
+    LocalNotificationText *CreateNotificationText(const WideString &title = L"", const WideString &text = L"");
 	void Update();
 
 protected:

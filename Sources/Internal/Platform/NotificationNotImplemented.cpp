@@ -43,16 +43,16 @@ void LocalNotification::Hide()
 }
 
 void LocalNotificationProgress::ShowNotifitaionWithProgress(uint32 id,
-			const String& title,
-			const String& text,
+			const WideString& title,
+			const WideString& text,
 			int32 maxValue,
 			int32 value)
 {
 }
 
 void LocalNotificationText::ShowNotificationWithText(uint32 id,
-		const String& title,
-		const String& text)
+		const WideString& title,
+		const WideString& text)
 {
 }
 
