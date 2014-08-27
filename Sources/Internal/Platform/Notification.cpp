@@ -146,9 +146,9 @@ LocalNotificationController::~LocalNotificationController()
     {
         for (List<LocalNotification *>::iterator it = notificationsList.begin(); it != notificationsList.end();)
         {
-        	LocalNotification *notification = (*it);
-            SafeDelete(notification);
+            LocalNotification *notification = (*it);
             it = notificationsList.erase(it);
+            SafeRelease(notification);
         }
     }
 }
