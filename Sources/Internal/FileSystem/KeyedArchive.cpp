@@ -256,10 +256,7 @@ void KeyedArchive::SetFastName(const String & key, const FastName & value)
 
 void KeyedArchive::SetByteArray(const String & key, const uint8 * value, int32 arraySize)
 {
-	const uint8 * curValue = GetByteArray(key);
-	DVASSERT(curValue != value);
-
-	if(curValue != value)
+	if(GetByteArray(key) != value)
 	{
 		DeleteKey(key);
 		VariantType *variantValue = new VariantType();
@@ -286,10 +283,7 @@ void KeyedArchive::SetByteArrayFromArchive(const String & key, KeyedArchive * ar
 
 void KeyedArchive::SetArchive(const String & key, KeyedArchive * archive)
 {
-	const KeyedArchive *currArchive = GetArchive(key);
-	DVASSERT(archive != currArchive);
-
-	if(archive != currArchive)
+	if(GetArchive(key) != archive)
 	{
 		DeleteKey(key);
 		VariantType *variantValue = new VariantType();
