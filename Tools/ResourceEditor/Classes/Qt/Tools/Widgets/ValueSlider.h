@@ -37,10 +37,10 @@ protected:
     virtual void DrawForeground(QPainter* p) const;
     virtual QRect PosArea() const;
 
-    void paintEvent(QPaintEvent* e) override;
-    void resizeEvent(QResizeEvent* e) override;
+    void paintEvent(QPaintEvent* e);
+    void resizeEvent(QResizeEvent* e);
 
-    bool eventFilter(QObject* obj, QEvent* e) override;
+    bool eventFilter(QObject* obj, QEvent* e);
 
     bool IsEditorMode() const;
 

@@ -1059,12 +1059,17 @@ bool QtPropertyDataDavaVariant::EditorDoneInternal(QWidget *editor)
 void QtPropertyDataDavaVariant::ColorOWPressed()
 {
     const QColor oldColor = ColorToQColor(curVariantValue.AsColor());
+
+#ifdef Q_OS_WIN
     ColorPicker cp(GetOWViewport());
     cp.SetColor(oldColor);
     cp.Exec();
-
     const QColor newColor = cp.GetColor();
-	if(newColor!=oldColor)
+#else
+    const QColor newColor = QColorDialog::getColor(ColorToQColor(curVariantValue.AsColor()), GetOWViewport(), "Select color", QColorDialog::ShowAlphaChannel);
+#endif
+
+    if(newColor!=oldColor)
 	{
         QString str;
         str.sprintf(FLOAT_PRINTF_FORMAT4, newColor.redF(), newColor.greenF(), newColor.blueF(), newColor.alphaF());

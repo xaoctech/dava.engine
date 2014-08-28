@@ -27,8 +27,8 @@ public:
     void SetPosF(const QPointF& posF);
 
 protected:
-    void paintEvent(QPaintEvent* e) override;
-    void resizeEvent(QResizeEvent* e) override;
+    void paintEvent(QPaintEvent* e);
+    void resizeEvent(QResizeEvent* e);
 
     virtual void DrawBackground(QPainter* p) const;
     virtual void DrawForeground(QPainter* p) const;

@@ -40,7 +40,7 @@ protected:
     void RegisterPicker(const QString& key, AbstractColorPicker* picker);
     void RegisterColorSpace(const QString& key, AbstractColorPicker* picker);
 
-    void SetColorInternal(const QColor& c) override;
+    void SetColorInternal(const QColor& c);
 
 private slots:
     void OnChanging(const QColor& c);

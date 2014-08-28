@@ -69,7 +69,6 @@ void EyeDropper::paintEvent(QPaintEvent* e)
     Q_UNUSED( e );
 
     QPainter p(this);
-    //p.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing, false);
     p.drawImage(0, 0, cache);
     DrawCursor(cursorPos, &p);
 }
@@ -129,8 +128,6 @@ void EyeDropper::CreateShade()
     resize(rc.size());
     move(rc.topLeft());
     cursorPos = mapFromGlobal(QCursor::pos());
-    qDebug() << "Rect: " << rc;
-    qDebug() << "Size: " << size();
 }
 
 QColor EyeDropper::GetPixel(const QPoint& pos) const
