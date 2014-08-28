@@ -134,6 +134,8 @@ void Thread::Kill()
         threadIdListMutex.Lock();
         threadIdList.erase(nativeId);
         threadIdListMutex.Unlock();
+
+        Release();
     }
 }
 
