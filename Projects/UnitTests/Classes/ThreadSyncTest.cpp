@@ -95,6 +95,7 @@ void ThreadSyncTest::ShortThreadFunction(BaseObject * caller, void * callerData,
 
 void ThreadSyncTest::TestThread(PerfFuncData * data)
 {
+	Logger::Debug("[ThreadSyncTest] testing threads logic");
     Thread *infiniteThread = Thread::Create(Message(this, &ThreadSyncTest::InfiniteThreadFunction));
     
     TEST_VERIFY(Thread::STATE_CREATED == infiniteThread->GetState());
@@ -132,6 +133,8 @@ void ThreadSyncTest::TestThread(PerfFuncData * data)
     
     SafeRelease(infiniteThread);
     SafeRelease(shortThread);
+
+	Logger::Debug("[ThreadSyncTest] Done.");
 }
 
 

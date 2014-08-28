@@ -263,6 +263,9 @@ void Thread::ThreadFunction(void *param)
         break;
     case STATE_RUNNING:
         t->state = STATE_ENDED;
+        break;
+    default:
+        break;
     }
     
     // thread is finishing so we need to unregister it
