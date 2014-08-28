@@ -20,11 +20,11 @@ public:
     void SetColor(const QColor& c);
 
 protected:
-    void DrawBackground(QPainter* p) const override;
-    void DrawForeground(QPainter* p) const override;
-    QRect PosArea() const override;
+    void DrawBackground(QPainter* p) const;
+    void DrawForeground(QPainter* p) const;
+    QRect PosArea() const;
 
-    void resizeEvent(QResizeEvent* e) override;
+    void resizeEvent(QResizeEvent* e);
 
 private:
     void DrawCursor(QPainter* p) const;

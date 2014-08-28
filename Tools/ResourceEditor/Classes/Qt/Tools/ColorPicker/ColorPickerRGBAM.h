@@ -25,7 +25,7 @@ private slots:
     void OnChanged(double val);
 
 private:
-    void SetColorInternal(QColor const& c) override;
+    void SetColorInternal(QColor const& c);
     void UpdateColorInternal(ColorComponentSlider* source = NULL);
 
     QLayout* CreateSlider(const QString& text, ColorComponentSlider* w) const;

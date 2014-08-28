@@ -23,7 +23,7 @@ public:
     bool IsPressed() const;
 
 private:
-    bool eventFilter(QObject* obj, QEvent* e) override;
+    bool eventFilter(QObject* obj, QEvent* e);
 
     void enterEvent(QEvent* event);
     void leaveEvent(QEvent* event);

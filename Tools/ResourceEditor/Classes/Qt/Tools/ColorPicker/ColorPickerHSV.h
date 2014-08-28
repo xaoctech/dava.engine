@@ -19,7 +19,7 @@ public:
     ~ColorPickerHSV();
 
 protected:
-    void SetColorInternal(const QColor& c) override;
+    void SetColorInternal(const QColor& c);
 
 private slots:
     void OnChanging();

@@ -16,7 +16,7 @@ public slots:
     void SetColorNew(const QColor& c);
 
 private:
-    void paintEvent(QPaintEvent* e) override;
+    void paintEvent(QPaintEvent* e);
 
     QColor cOld;
     QColor cNew;
