@@ -3748,5 +3748,8 @@
     <None Include="DataQt\ColorPicker.ui">
       <Filter>QtData</Filter>
     </None>
+    <None Include="DataQt\QtIcons.qrc">
+      <Filter>QtData</Filter>
+    </None>
   </ItemGroup>
 </Project>

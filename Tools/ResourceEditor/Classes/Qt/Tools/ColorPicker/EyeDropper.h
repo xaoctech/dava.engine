@@ -27,6 +27,7 @@ public slots:
 private slots:
     void OnMouseMove(const QPoint& pos);
     void OnClicked(const QPoint& pos);
+    void OnMouseWheel(int delta);
 
 private:
     void paintEvent(QPaintEvent* e);
@@ -40,6 +41,7 @@ private:
     QImage cache;
     QSize cursorSize;
     QPoint cursorPos;
+    int zoomFactor;
 };
 
 

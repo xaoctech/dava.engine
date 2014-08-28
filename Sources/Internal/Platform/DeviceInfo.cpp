@@ -76,6 +76,28 @@ List<DeviceInfo::StorageInfo> DeviceInfo::GetStoragesList()
     List<DeviceInfo::StorageInfo> l;
     return l;
 }
-    
 #endif
+
+double DeviceInfo::GetDpiScaleFactor()
+{
+#if defined(__DAVAENGINE_MACOS__)
+
+    if (   [[UIScreen mainScreen] respondsToSelector:@selector(scale)]
+        && [[UIScreen mainScreen] scale] > 1.0)
+    {
+        // Retina
+        return [[UIScreen mainScreen] scale];
+    }
+    else
+    {
+        return 1.0;
+    }
+
+#elif defined(__DAVAENGINE_WIN32__)
+    return 1.0;
+#endif
+
+    return 1.0;
+}
+
 }

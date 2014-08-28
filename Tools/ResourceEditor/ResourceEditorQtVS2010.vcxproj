@@ -1321,6 +1321,7 @@
     </None>
     <None Include="DataQt\ModificationWidget.ui" />
     <None Include="DataQt\ParticleProperty.ui" />
+    <None Include="DataQt\QtIcons.qrc" />
     <None Include="DataQt\RunActionEventWidget.ui" />
     <None Include="DataQt\soundbrowser.ui" />
     <None Include="DataQt\soundcomponenteditor.ui" />
