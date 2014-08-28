@@ -708,7 +708,7 @@ namespace DAVA
         background = newBg->Clone();
     }
 
-    UIControlBackground *UIControl::GetBackground()
+    UIControlBackground *UIControl::GetBackground() const
     {
         return background;
     }
@@ -2104,15 +2104,15 @@ namespace DAVA
             node->Set("noInput", !GetInputEnabled());
         }
         // Sprite
-        Sprite *sprite =  GetSprite();
-        if (sprite)
+        String spritePath = Sprite::GetPathString(GetBackground()->GetSprite());
+        if (Sprite::GetPathString(baseControl->GetBackground()->GetSprite()) != spritePath)
         {
-            node->Set("sprite", Sprite::GetPathString(sprite));
+            node->Set("sprite", spritePath);
         }
 
         // Color
         const Color &color =  GetBackground()->GetColor();
-        if (baseControl->GetBackground()->color != color)
+        if (baseControl->GetBackground()->GetColor() != color)
         {
             node->Set("color", VariantType(color));
         }
@@ -2122,8 +2122,8 @@ namespace DAVA
             node->Set("frame", GetFrame());
         }
         // Align
-        int32 align = GetSpriteAlign();
-        if (baseControl->GetSpriteAlign() != align)
+        int32 align = GetBackground()->GetAlign();
+        if (baseControl->GetBackground()->GetAlign() != align)
         {
             node->AddNodeToMap("align", loader->GetAlignNodeValue(align));
         }
