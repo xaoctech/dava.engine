@@ -53,13 +53,12 @@
 #include "Platform/TemplateAndroid/MovieViewControlAndroid.h"
 #include "FileSystem/LocalizationAndroid.h"
 #include "Platform/TemplateAndroid/FileListAndroid.h"
-#include "Platform/TemplateAndroid/NotificationAndroid.h"
-
 #include "Utils/UTF8Utils.h"
+#include "Platform/NotificationAndroid.h"
 
-#if defined(__DAVAENGINE_PROFILE__)
-#include "prof.h"
-#endif //#if defined(__DAVAENGINE_PROFILE__)
+//#if defined(__DAVAENGINE_PROFILE__)
+//#include "prof.h"
+//#endif //#if defined(__DAVAENGINE_PROFILE__)
 
 extern "C"
 {
@@ -128,7 +127,7 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved)
 	DAVA::JniExtension::SetJavaClass(env, "com/dava/framework/JNILocalization", &DAVA::JniLocalization::gJavaClass, &DAVA::JniLocalization::gJavaClassName);
 	DAVA::JniExtension::SetJavaClass(env, "com/dava/framework/JNIFileList", &DAVA::JniFileList::gJavaClass, &DAVA::JniFileList::gJavaClassName);
 	DAVA::JniExtension::SetJavaClass(env, "com/dava/framework/JNIDateTime", &DAVA::JniDateTime::gJavaClass, &DAVA::JniDateTime::gJavaClassName);
-	DAVA::JniExtension::SetJavaClass(env, "com/dava/framework/JNINotification", &DAVA::JniNotification::gJavaClass, &DAVA::JniNotification::gJavaClassName);
+	DAVA::JniExtension::SetJavaClass(env, "com/dava/framework/JNINotificationProvider", &DAVA::JniLocalNotification::gJavaClass, &DAVA::JniLocalNotification::gJavaClassName);
 	DAVA::Thread::InitMainThread();
 
 
@@ -280,15 +279,15 @@ void Java_com_dava_framework_JNIActivity_nativeOnStart(JNIEnv * env, jobject cla
 
 	if(core)
 	{
-#if defined(__DAVAENGINE_PROFILE__)
-
-#define STR_EXPAND(tok) #tok
-#define STR(tok) STR_EXPAND(tok)
-        
-        const char *moduleName = STR(__DAVAENGINE_MODULE_NAME__);
-		LOGI("____MODULE___ ___ %s", moduleName);
-        monstartup(moduleName);
-#endif //#if defined(__DAVAENGINE_PROFILE__)
+//#if defined(__DAVAENGINE_PROFILE__)
+//
+//#define STR_EXPAND(tok) #tok
+//#define STR(tok) STR_EXPAND(tok)
+//        
+//        const char *moduleName = STR(__DAVAENGINE_MODULE_NAME__);
+//		LOGI("____MODULE___ ___ %s", moduleName);
+//        monstartup(moduleName);
+//#endif //#if defined(__DAVAENGINE_PROFILE__)
         
 		core->StartVisible();
 	}
@@ -302,9 +301,9 @@ void Java_com_dava_framework_JNIActivity_nativeOnStop(JNIEnv * env, jobject clas
 	{
 		core->StopVisible();
         
-#if defined(__DAVAENGINE_PROFILE__)
-        moncleanup();
-#endif //#if defined(__DAVAENGINE_PROFILE__)
+//#if defined(__DAVAENGINE_PROFILE__)
+//        moncleanup();
+//#endif //#if defined(__DAVAENGINE_PROFILE__)
 	}
 }
 
@@ -407,10 +406,6 @@ void Java_com_dava_framework_JNIRenderer_nativeRenderRecreated(JNIEnv * env, job
 			androidDelegate->SetBuffers(0, 0);
 		}
 	}
-}
-void Java_com_dava_framework_JNIApplication_SetAssetManager(JNIEnv * env, jobject classthis, jobject assetManager)
-{
-	core->SetAssetManager(AAssetManager_fromJava(env, assetManager));
 }
 
 //END OF activity
