@@ -15,12 +15,13 @@
 
 
 EyeDropper::EyeDropper(QWidget* parent)
-    : QWidget(parent, Qt::Popup | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint)
+    : QWidget(parent, Qt::Popup | Qt::FramelessWindowHint/* | Qt::WindowStaysOnTopHint*/)
       , mouse(new MouseHelper(this))
-      , cursorSize(69, 69)
+      , cursorSize(99, 99)
+      , zoomFactor(3)
 {
     setAttribute(Qt::WA_DeleteOnClose);
-    setFocusPolicy(Qt::StrongFocus);
+    setFocusPolicy(Qt::WheelFocus);
     setMouseTracking(true);
     setCursor(Qt::BlankCursor);
     
@@ -28,6 +29,7 @@ EyeDropper::EyeDropper(QWidget* parent)
 
     connect(mouse, SIGNAL( mouseMove( const QPoint& ) ), SLOT( OnMouseMove( const QPoint& ) ));
     connect(mouse, SIGNAL( mouseRelease( const QPoint& ) ), SLOT( OnClicked( const QPoint& ) ));
+    connect(mouse, SIGNAL( mouseWheel( int ) ), SLOT( OnMouseWheel( int ) ));
 }
 
 EyeDropper::~EyeDropper()
@@ -64,6 +66,26 @@ void EyeDropper::OnClicked(const QPoint& pos)
     close();
 }
 
+void EyeDropper::OnMouseWheel(int delta)
+{
+    const int old = zoomFactor;
+
+    const int max = qMin(cursorSize.width(), cursorSize.height());
+    const int sign = delta > 0 ? 1 : -1;
+    const double step = (zoomFactor - 1) / 2.0;
+
+    zoomFactor += sign * qMax( int(step), 1 );
+    if (zoomFactor < 1)
+        zoomFactor = 1;
+    if (zoomFactor > max )
+        zoomFactor = max;
+
+    if (old != zoomFactor)
+    {
+        update();
+    }
+}
+
 void EyeDropper::paintEvent(QPaintEvent* e)
 {
     Q_UNUSED( e );
@@ -91,7 +113,7 @@ void EyeDropper::DrawCursor(const QPoint& pos, QPainter* p)
 
     QRect rc(QPoint(pos.x() - sx, pos.y() - sy), QPoint(pos.x() + sx, pos.y() + sy));
 
-    const int fc = 4;
+    const int fc = zoomFactor;
     QRect rcZoom(QPoint(pos.x() - sx / fc, pos.y() - sy / fc), QPoint(pos.x() + sx / fc, pos.y() + sy / fc));
     const QImage& zoomed = cache.copy(rcZoom).scaled(rc.size(), Qt::KeepAspectRatio, Qt::FastTransformation);
 

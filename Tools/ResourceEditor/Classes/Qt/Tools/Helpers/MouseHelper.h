@@ -10,11 +10,13 @@ class MouseHelper
 {
     Q_OBJECT
 
-    signals:
+signals:
     void mousePress(const QPoint& pos);
     void mouseMove(const QPoint& pos);
     void mouseRelease(const QPoint& pos);
     void clicked();
+
+    void mouseWheel(int delta);
 
 public:
     explicit MouseHelper(QWidget* w);
@@ -30,6 +32,7 @@ private:
     void mouseMoveEvent(QMouseEvent* event);
     void mousePressEvent(QMouseEvent* event);
     void mouseReleaseEvent(QMouseEvent* event);
+    void mouseWheelEvent(QWheelEvent* event);
 
     QPointer<QWidget> w;
     QPoint pos;

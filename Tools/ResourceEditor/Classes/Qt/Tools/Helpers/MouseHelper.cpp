@@ -45,6 +45,9 @@ bool MouseHelper::eventFilter(QObject* obj, QEvent* e)
         case QEvent::MouseButtonRelease:
             mouseReleaseEvent(static_cast<QMouseEvent *>(e));
             break;
+        case QEvent::Wheel:
+            mouseWheelEvent(static_cast<QWheelEvent *>(e));
+            break;
 
         default:
             break;
@@ -98,4 +101,9 @@ void MouseHelper::mouseReleaseEvent(QMouseEvent* event)
     {
         emit clicked();
     }
+}
+
+void MouseHelper::mouseWheelEvent(QWheelEvent* event)
+{
+    emit mouseWheel(event->delta());
 }
