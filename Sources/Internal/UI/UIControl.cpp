@@ -2074,7 +2074,7 @@ namespace DAVA
         }
         // Size
         const Vector2 &size = GetSize();
-        if (baseControl->GetPosition() != size)
+        if (baseControl->GetSize() != size)
         {
             node->Set("size", size);
         }
