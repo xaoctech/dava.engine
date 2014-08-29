@@ -4,16 +4,20 @@
 #include <QWidget>
 #include <QPointer>
 #include <QPixmap>
+#include <QList>
 
 
-class MouseHelper;
+class DropperShade;
 
 class EyeDropper
-    : public QWidget
+    : public QObject
 {
     Q_OBJECT
 
-    signals:
+private:
+    typedef QVector< QPointer<DropperShade> > Shades;
+
+signals:
     void picked(const QColor& color);
     void moved(const QColor& color);
 
@@ -24,24 +28,11 @@ public:
 public slots:
     void Exec();
 
-private slots:
-    void OnMouseMove(const QPoint& pos);
-    void OnClicked(const QPoint& pos);
-    void OnMouseWheel(int delta);
-
 private:
-    void paintEvent(QPaintEvent* e);
-    void keyPressEvent(QKeyEvent* e);
-    void DrawCursor(const QPoint& pos, QPainter* p);
-    void CreateShade();
-    QColor GetPixel(const QPoint& pos) const;
+    void InitShades();
 
-    QPointer<QWidget> shade;
-    QPointer<MouseHelper> mouse;
-    QImage cache;
-    QSize cursorSize;
-    QPoint cursorPos;
-    int zoomFactor;
+    QPointer<QWidget> parentWidget;
+    Shades shades;
 };
 
 

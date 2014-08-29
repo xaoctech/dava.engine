@@ -79,11 +79,4 @@ List<DeviceInfo::StorageInfo> DeviceInfo::GetStoragesList()
 }
 #endif
 
-#if !defined(__DAVAENGINE_MACOS__)
-double DeviceInfo::GetDpiScaleFactor(int screedId)
-{
-    return 1.0;
-}
-#endif
-
 }
