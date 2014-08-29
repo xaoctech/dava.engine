@@ -1575,6 +1575,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Platform\NotificationAndroid.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\NotificationNotImplemented.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SkeletonComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SkeletonSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2825,5 +2831,11 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Platform\NotificationAndroid.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\NotificationNotImplemented.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SkeletonComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SkeletonSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
