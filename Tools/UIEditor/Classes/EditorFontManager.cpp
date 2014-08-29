@@ -37,7 +37,6 @@
 
 static const String DEFAULT_FONT_PRESET = "Font_default";
 
-static const String DEFAULT_FONT_NAME = "MyriadPro-Regular.otf";
 static const String DEFAULT_FONT_PATH = "~res:/Fonts/MyriadPro-Regular.otf";
 
 EditorFontManager::EditorFontManager()
@@ -55,7 +54,9 @@ EditorFontManager::~EditorFontManager()
 
 void EditorFontManager::Init()
 {
-	baseFont = CreateDefaultFont(DEFAULT_FONT_PATH, DEFAULT_FONT_NAME);
+    Font* font = CreateDefaultFont(DEFAULT_FONT_PATH, DEFAULT_FONT_PRESET);
+    SafeRelease(baseFont);
+    baseFont = font;
 }
 
 void LogRegisteredFonts(Map<Font*, String> &registeredFonts, const String &message)
@@ -210,6 +211,9 @@ void EditorFontManager::LoadLocalizedFonts()
             Logger::FrameworkDebug("EditorFontManager::LoadLocalizedFonts defaultRegisteredFonts[%p] = %s", it->first, it->second.c_str());
         }
     }
+    
+    //if font DEFAULT_FONT_PRESET exists in saved fonts, replace default font by saved one
+    Init();
 }
 
 void EditorFontManager::SaveLocalizedFonts()
@@ -368,6 +372,12 @@ void EditorFontManager::ResetDefaultFont()
 	SafeRelease(defaultFont);
 }
 
+void EditorFontManager::SetProjectDataPath(const FilePath& path)
+{
+    Logger::FrameworkDebug("EditorFontManager::SetProjectDataPath %s", path.GetAbsolutePathname().c_str());
+    projectDataPath = path;
+}
+
 void EditorFontManager::SetDefaultFontsPath(const FilePath& path)
 {
     Logger::FrameworkDebug("EditorFontManager::SetDefaultFontsPath %s", path.GetAbsolutePathname().c_str());
@@ -377,6 +387,11 @@ void EditorFontManager::SetDefaultFontsPath(const FilePath& path)
 const FilePath& EditorFontManager::GetDefaultFontsPath()
 {
     return defaultFontsPath;
+}
+
+String EditorFontManager::GetDefaultFontsFrameworkPath()
+{
+    return "~res:/" + defaultFontsPath.GetRelativePathname(projectDataPath);
 }
 
 FilePath EditorFontManager::GetLocalizedFontsPath(const String &locale)
@@ -645,12 +660,7 @@ EditorFontManager::DefaultFontPath EditorFontManager::GetDefaultFontPath()
             {
                 FTFont *ftFont = static_cast<FTFont*>(defaultFont);
 				FilePath ftFontPath = ftFont->GetFontPath();
-				// Don't save standart default font
-				if (ftFontPath.GetAbsolutePathname().find(DEFAULT_FONT_NAME) == String::npos)
-				{
-					// Set font path
-					defFontPath = ftFontPath;
-				}
+                defFontPath = ftFontPath;
                 break;
             }
             case Font::TYPE_GRAPHICAL:

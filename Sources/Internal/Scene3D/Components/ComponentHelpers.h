@@ -52,17 +52,21 @@ class SwitchComponent;
 class QualitySettingsComponent;
 class TransformComponent;
 class RenderComponent;
-
-class TransformComponent;
 class VegetationRenderObject;
+class CustomPropertiesComponent;
+class KeyedArchive;
+class SpeedTreeComponent;
+class WindComponent;
+class WaveComponent;
+class SpeedTreeObject;
 
-TransformComponent * GetTransformComponent(Entity * fromEntity);
 ParticleEffectComponent * GetEffectComponent(Entity * fromEntity);
 TransformComponent * GetTransformComponent(Entity * fromEntity);
 RenderComponent * GetRenderComponent(const Entity *fromEntity);
 RenderObject * GetRenderObject(const Entity * fromEntity);
 SkyboxRenderObject * GetSkybox(const Entity * fromEntity);
 VegetationRenderObject * GetVegetation(const Entity * fromEntity);
+SpeedTreeObject * GetSpeedTreeObject(const Entity * fromEntity);
 
 Light *GetLight(Entity * fromEntity);
 LightComponent *GetLightComponent(Entity * fromEntity);
@@ -87,9 +91,16 @@ Landscape * FindLandscape(Entity * rootEntity);
 Entity * FindVegetationEntity(Entity * rootEntity);
 VegetationRenderObject* FindVegetation(Entity * rootEntity);
 
+SpeedTreeComponent * GetSpeedTreeComponent(Entity * fromEntity);
+WindComponent * GetWindComponent(Entity * fromEntity);
+WaveComponent * GetWaveComponent(Entity * fromEntity);
 
 QualitySettingsComponent * GetQualitySettingsComponent(const Entity *fromEntity);
     
+CustomPropertiesComponent * GetCustomProperties(const Entity *fromEntity);
+CustomPropertiesComponent * GetOrCreateCustomProperties(Entity *fromEntity);
+KeyedArchive * GetCustomPropertiesArchieve(const Entity *fromEntity);
+
 }
 
 #endif //__DAVAENGINE_COMPONENT_HELPERS_H__

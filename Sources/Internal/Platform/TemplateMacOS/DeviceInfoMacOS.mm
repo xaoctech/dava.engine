@@ -87,6 +87,22 @@ WideString DeviceInfo::GetName()
     return WideString ( (wchar_t*) [ pSData bytes ], [ pSData length] / sizeof ( wchar_t ) );
 }
 
+eGPUFamily DeviceInfo::GetGPUFamily()
+{
+    return GPU_INVALID;
+}
+
+DeviceInfo::NetworkInfo DeviceInfo::GetNetworkInfo()
+{
+    // For now return default network info for MacOS.
+    return NetworkInfo();
+}
+
+int32 DeviceInfo::GetCpuCount()
+{
+    return (int32)[[NSProcessInfo processInfo] processorCount];
+}
+
 }
 
 #endif

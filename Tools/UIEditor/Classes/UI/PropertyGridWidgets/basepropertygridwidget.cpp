@@ -44,6 +44,8 @@
 #include "ChangePropertyCommand.h"
 #include "InvokeMethodCommand.h"
 
+const QString BasePropertyGridWidget::MULTIPLE_VALUE = "multiple";
+
 BasePropertyGridWidget::BasePropertyGridWidget(QWidget *parent) :
     QWidget(parent),
     activeMetadata(NULL),
@@ -673,12 +675,14 @@ void BasePropertyGridWidget::UpdateLineEditWidgetWithPropertyValue(QLineEdit* li
         WidgetSignalsBlocker blocker(lineEditWidget);
         if (isPropertyValueDiffers)
         {
-            lineEditWidget->setText("<multiple>"); // TODO! TO CONST!!!
+            lineEditWidget->setText(BasePropertyGridWidget::MULTIPLE_VALUE);
+            lineEditWidget->setStyleSheet("font:bold;");
         }
         else
         {
             // Get the current value.
             lineEditWidget->setText(propertyValue);
+            lineEditWidget->setStyleSheet("font:normal;");
         }
     }
 
@@ -896,7 +900,7 @@ bool BasePropertyGridWidget::IsActiveStatePropertyDirty(const QString& propertyN
 
 	bool res = false;
 
-	Vector<UIControl::eControlState> states = activeMetadata->GetUIControlStates();
+	const Vector<UIControl::eControlState> &states = activeMetadata->GetUIControlStates();
 	for (uint32 i = 0; i < activeMetadata->GetStatesCount(); ++i)
 	{
 		UIControl::eControlState state = states[i];

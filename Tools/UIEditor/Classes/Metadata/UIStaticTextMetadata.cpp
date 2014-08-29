@@ -335,10 +335,7 @@ void UIStaticTextMetadata::SetFittingType(int value)
         return;
     }
 
-    // Changing Fitting Option affects the font which might be reused
-    // by other controls, so clone the existing one.
     UIStaticText* staticText = GetActiveStaticText();
-    CloneFont(staticText);
     staticText->SetFittingOption(value);
 }
 
@@ -350,4 +347,26 @@ int UIStaticTextMetadata::GetFittingType() const
     }
     
     return GetActiveStaticText()->GetFittingOption();
+}
+
+int UIStaticTextMetadata::GetFontShadowColorInheritType() const
+{
+    if (!VerifyActiveParamID() || !GetActiveStaticText()->GetTextBackground())
+    {
+        return UIControlBackground::COLOR_MULTIPLY_ON_PARENT;
+    }
+
+    // Text Color is the base one.
+    return GetActiveStaticText()->GetTextBackground()->GetColorInheritType();
+}
+
+void UIStaticTextMetadata::SetFontShadowColorInheritType(int value)
+{
+    if (!VerifyActiveParamID() || !GetActiveStaticText()->GetTextBackground())
+    {
+        return;
+    }
+
+    GetActiveStaticText()->GetTextBackground()->SetColorInheritType((UIControlBackground::eColorInheritType)value);
+    GetActiveStaticText()->GetShadowBackground()->SetColorInheritType((UIControlBackground::eColorInheritType)value);
 }

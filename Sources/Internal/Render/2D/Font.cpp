@@ -30,6 +30,7 @@
 #include "Render/2D/Font.h"
 #include "Core/Core.h"
 #include "FileSystem/YamlParser.h"
+#include "FileSystem/YamlNode.h"
 #include "FontManager.h"
 
 #include "Utils/StringFormat.h"
@@ -141,7 +142,7 @@ void Font::SplitTextBySymbolsToStrings(const WideString & text, const Vector2 & 
     
 	resultVector.clear();
     
-    Vector<int32> sizes;
+    Vector<float32> sizes;
 	GetStringSize(text, &sizes);
 	if(sizes.size() == 0)
 	{
@@ -189,7 +190,7 @@ void Font::SplitTextBySymbolsToStrings(const WideString & text, const Vector2 & 
         }
         else
         {
-            currentLineDx += sizes[pos];
+            currentLineDx += (int32)sizes[pos];
         }
     }
     
@@ -300,6 +301,75 @@ bool Font::IsWordSeparator(char16 t) const
         case 12290:
         case 46:
             return true;
+        // chinese simplified and traditional
+        case 37:
+        case 62:
+        case 125: 
+        case 162: 
+        case 168: 
+        case 176:
+        case 711: 
+        case 713: 
+        case 8213: 
+        case 8214:
+        case 8222: 
+        case 8223: 
+        case 8224: 
+        case 8225: 
+        case 8250: 
+        case 8451: 
+        case 8758:
+        case 12291: 
+        case 12294: 
+        case 12296: 
+        case 12298:
+        case 12300:
+        case 12302:
+        case 12318:
+        case 65077:
+        case 65081:
+        case 65085:
+        case 65087:
+        case 65091:
+        case 65112:
+        case 65114:
+        case 65116:
+        case 65281:
+        case 65282:
+        case 65285:
+        case 65287:
+        case 65289:
+        case 65292:
+        case 65294:
+        case 65306:
+        case 65307:
+        case 65311:
+        case 65341:
+        case 65344:
+        case 65372:
+        case 65374:
+        case 8212:
+        case 8226:
+        case 8229:
+        case 8231:
+        case 9588:
+        case 65072:
+        case 65073:
+        case 65074:
+        case 65075:
+        case 65079:
+        case 65083:
+        case 65089:
+        case 65103:
+        case 65104:
+        case 65105:
+        case 65106:
+        case 65107:
+        case 65108:
+        case 65109:
+        case 65110:
+        case 65380:
+            return true;
     }
     
     return false;
@@ -327,7 +397,7 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 	int state = SKIP;
 	int totalSize = (int)text.length();
 	
-	Vector<int32> sizes;
+	Vector<float32> sizes;
 	GetStringSize(text, &sizes);
     if(sizes.size() == 0)
     {
@@ -348,7 +418,6 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 			case SKIP:
 				if (t == 0){ state = FINISH; break; } // if end of string process FINISH state and exit
 				else if (IsSpace(t))break; // if space continue with the same state
-                //else if (IsWordSeparator(t)) { state = SEPARATOR; break; } // if word separator - continue with the same state
                 else if(IsLineEnd(t))
 				{
 					// this block is copied from case NEXTLINE: if(t == 'n')
@@ -379,7 +448,7 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 				    {
                     
                         //calculate current line width
-					    int currentLineWidth = 0;
+					    float32 currentLineWidth = 0;
 
 					    int32 startPos = (separator.IsLineInitialized()) ? separator.currentLineStart : 0;
 					    for (int i = startPos; i < pos ; i++)
@@ -413,7 +482,22 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
                             
                                 pos = separator.currentLineEnd;
                                 AddCurrentLine(text, pos, separator, resultVector);
-							    state = SKIP;
+                                t = 0;
+                                if(pos + 1 < totalSize)
+		                        {
+			                        t = text[pos + 1];
+		                        }
+                                if(IsSpace(t) || IsLineEnd(t) || t == 0)
+                                {
+							        state = SKIP;
+                                }
+                                else
+                                {
+                                    state = GOODCHAR;
+					                separator.lastWordStart = pos;
+					                separator.lastWordEnd = pos;
+					                if (!separator.IsLineInitialized()) separator.currentLineStart = pos;
+                                }
 							    break;
                             }
                             else if(pos)
@@ -454,18 +538,18 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
                                 DVASSERT(0);
                             }
                         }
+                    }
 
-					    if (IsSpace(t) || IsLineEnd(t)) state = SKIP; // if cur char is space go to skip
-					    else if (t == 0) state = FINISH;
-                        else if(wasSeparator && !isSeparator)
-                        {
-                            // good char after separator
-					        separator.lastWordStart = pos;
-					        separator.lastWordEnd = pos;
-					        if (!separator.IsLineInitialized()) separator.currentLineStart = pos;
-                        }
-                        wasSeparator = isSeparator;
-				    }
+					if (IsSpace(t) || IsLineEnd(t)) state = SKIP; // if cur char is space go to skip
+					else if (t == 0) state = FINISH;
+                    else if(wasSeparator && !isSeparator)
+                    {
+                        // good char after separator
+					    separator.lastWordStart = pos;
+					    separator.lastWordEnd = pos;
+					    if (!separator.IsLineInitialized()) separator.currentLineStart = pos;
+                    }
+                    wasSeparator = isSeparator;
                 }
 				break;
 			case FINISH:
@@ -509,16 +593,6 @@ YamlNode * Font::SaveToYamlNode() const
     SafeDelete(nodeValue);
     
     return node;
-}
-
-Size2i Font::DrawString(float32 /*offsetX*/, float32 /*offsetY*/, const WideString & /*str*/, int32 /*justifyWidth*/)
-{
-	return Size2i(0, 0);
-}
-
-Size2i Font::DrawStringToBuffer(void * /*buffer*/, int32 /*bufWidth*/, int32 /*bufHeight*/, int32 /*offsetX*/, int32 /*offsetY*/, int32 /*justifyWidth*/, int32 /*spaceAddon*/, const WideString & /*str*/, bool /*contentScaleIncluded*/)
-{
-	return  Size2i(0, 0);
 }
 
 };

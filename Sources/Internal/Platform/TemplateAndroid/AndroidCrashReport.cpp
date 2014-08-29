@@ -95,7 +95,7 @@ void JniCrashReporter::ThrowJavaExpetion(const Vector<CrashStep>& chashSteps)
 		}
 		GetEnvironment()->SetIntArrayRegion(jFileLineArray, 0, chashSteps.size(), fileLines);
 
-		env->CallStaticVoidMethod(GetJavaClass(), mid, jModuleArray, jFunctionArray, jFileLineArray);
+		GetEnvironment()->CallStaticVoidMethod(GetJavaClass(), mid, jModuleArray, jFunctionArray, jFileLineArray);
 
 		delete [] fileLines;
 	}
@@ -216,6 +216,18 @@ void AndroidCrashReport::SignalHandler(int signal, struct siginfo *siginfo, void
 		step.module = "There is no cpp stack";
 		crashSteps.push_back(step);
 	}
+
+	JniCrashReporter crashReport;
+	crashReport.ThrowJavaExpetion(crashSteps);
+}
+
+void AndroidCrashReport::ThrowExeption(const String& message)
+{
+	Vector<JniCrashReporter::CrashStep> crashSteps;
+
+	JniCrashReporter::CrashStep step;
+	step.module = message;
+	crashSteps.push_back(step);
 
 	JniCrashReporter crashReport;
 	crashReport.ThrowJavaExpetion(crashSteps);

@@ -53,7 +53,7 @@ namespace DAVA
 {
 
 RenderSystem::RenderSystem()
-    :   renderPassManager(this)
+    :   renderPassManager()
     ,   mainCamera(0)
     ,   drawCamera(0)
     ,   forceUpdateLights(false)
@@ -258,7 +258,7 @@ void RenderSystem::FindNearestLights(RenderObject * renderObject)
     {
         RenderBatch * batch = renderObject->GetRenderBatch(k);
         NMaterial * material = batch->GetMaterial();
-        if (material && material->IsDynamicLit())
+        if (material)
         {
 			needUpdate = true;
 			break;
@@ -291,7 +291,7 @@ void RenderSystem::FindNearestLights(RenderObject * renderObject)
 			const Vector3 & lightPosition = light->GetPosition();
 			
 			float32 squareDistanceToLight = (position - lightPosition).SquareLength();
-			if (squareDistanceToLight < squareMinDistance)
+			if ((!nearestLight) || (squareDistanceToLight < squareMinDistance))
 			{
 				squareMinDistance = squareDistanceToLight;
 				nearestLight = light;
@@ -387,12 +387,12 @@ void RenderSystem::DebugDrawHierarchy(const Matrix4& cameraMatrix)
 		renderHierarchy->DebugDraw(cameraMatrix);
 }
 
-void RenderSystem::Render()
+void RenderSystem::Render(uint32 clearBuffers)
 {
     TIME_PROFILE("RenderSystem::Render");
 
     
-    mainRenderPass->Draw(this);
+    mainRenderPass->Draw(this, clearBuffers);
     
     
     //Logger::FrameworkDebug("OccludedRenderBatchCount: %d", RenderManager::Instance()->GetStats().occludedRenderBatchCount);
