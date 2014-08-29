@@ -371,7 +371,7 @@ HierarchyTreeNode::HIERARCHYTREENODEID HierarchyTreeController::CreateNewControl
 		HierarchyTreeControlNode* parentControlNode = (*activeControlNodes.begin());
 		parentNode = parentControlNode;
 		parentDelta = parentControlNode->GetParentDelta();
-        float32 angle = parentControlNode->GetUIObject()->GetParentsTotalAngle(true);
+        float32 angle = parentControlNode->GetUIObject()->GetGeometricData().angle;
         if (!FLOAT_EQUAL(angle, 0.0f))
         {
             rotationMatrix.BuildRotation(-angle);

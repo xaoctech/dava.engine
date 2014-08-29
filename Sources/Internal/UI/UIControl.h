@@ -573,12 +573,6 @@ public:
     inline float32 GetAngle() const;
     
     /**
-     \brief Returns control's parents total rotation angle in radians.
-     \returns control's parents total angle in radians.
-     */
-    virtual float32 GetParentsTotalAngle(bool includeOwn);
-
-    /**
      \brief Sets contol rotation angle in radians.
         Control rotates around the pivot point.
      \param[in] angleInRad new control angle in radians.
