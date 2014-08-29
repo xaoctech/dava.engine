@@ -153,7 +153,7 @@ public:
         GetPolygon(polygon);
 
         AABBox2 aabbox;
-        for(uint32 i = 0; i < polygon.GetPointCount(); ++i)
+        for(int32 i = 0; i < polygon.GetPointCount(); ++i)
         {
             aabbox.AddPoint(polygon.GetPoints()[i]);
         }
