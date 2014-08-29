@@ -801,20 +801,6 @@ namespace DAVA
         RecalculateChildsSize();
     }
 
-    float32 UIControl::GetParentsTotalAngle(bool includeOwn)
-    {
-        float32 angle = 0;
-        if(includeOwn)
-        {
-            angle += this->angle;
-        }
-        if(this->GetParent())
-        {
-            angle += parent->GetParentsTotalAngle(true);
-        }
-        return angle;
-    }
-
     void UIControl::SetAngle(float32 angleInRad)
     {
         angle = angleInRad;
