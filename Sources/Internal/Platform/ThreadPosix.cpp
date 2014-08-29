@@ -112,6 +112,7 @@ void *PthreadMain(void *param)
 
 void Thread::Start()
 {
+    DVASSERT(STATE_CREATED == state);
     pthread_create(&handle, 0, PthreadMain, (void *)this);
 }
 
