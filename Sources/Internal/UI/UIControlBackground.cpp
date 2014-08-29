@@ -98,7 +98,7 @@ UIControlBackground::~UIControlBackground()
 bool UIControlBackground::IsEqualTo( const UIControlBackground *back ) const
 {
     if (GetDrawType() != back->GetDrawType() ||
-        GetSprite() != back->GetSprite() ||
+        Sprite::GetPathString(GetSprite()) != Sprite::GetPathString(back->GetSprite()) ||
         GetFrame() != back->GetFrame() ||
         GetAlign() != back->GetAlign() ||
         GetColor() != back->GetColor() ||
