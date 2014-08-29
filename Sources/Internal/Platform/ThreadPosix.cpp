@@ -124,7 +124,7 @@ void Thread::YieldThread()
 #endif
 }
 
-void Thread::Join()
+void Thread::Join() const
 {
     pthread_join(handle, NULL);
 }
