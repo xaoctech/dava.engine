@@ -49,8 +49,6 @@ void Thread::Shutdown()
 
 void Thread::Start()
 {
-    Retain();
-
     handle = CreateThread 
         (
         0, // Security attributes
@@ -83,7 +81,7 @@ void Thread::YieldThread()
     SwitchToThread();
 }
 
-void Thread::Join()
+void Thread::Join() const
 {
     if (WaitForSingleObject(handle, INFINITE) != WAIT_OBJECT_0)
         DAVA::Logger::Error("Thread::Join() failed in WaitForSingleObject");

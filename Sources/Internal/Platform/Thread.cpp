@@ -201,7 +201,7 @@ Thread::~Thread()
     threadListMutex.Unlock();
 }
 
-Thread::eThreadState Thread::GetState()
+Thread::eThreadState Thread::GetState() const
 {
 	return state;
 }
@@ -238,7 +238,7 @@ void Thread::SetId(const Id &threadId)
     id = threadId;
 }
 
-Thread::Id Thread::GetId()
+Thread::Id Thread::GetId() const
 {
     return id;
 }

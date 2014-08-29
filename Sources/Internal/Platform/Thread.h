@@ -104,7 +104,7 @@ public:
 		\brief static function to detect if current thread is main thread of application
 		\returns true if now main thread executes
 	*/
-	static bool IsMainThread();
+    static bool IsMainThread();
 
 	/**
 		\brief static function to create instance of thread object based on Message.
@@ -123,11 +123,11 @@ public:
 
 		This function return state of the thread. It can be STATE_CREATED, STATE_RUNNING, STATE_ENDED.
 	*/
-	eThreadState GetState();
+    eThreadState GetState() const;
 
     /** Wait until thread's finished.
     */
-    void Join();
+    void Join() const;
 
     /** Kill thread by OS. No signals will be sent.
     */
@@ -161,12 +161,12 @@ public:
      \brief registers id for current thread if not registered before and returns it from map.
      \returns id as sequential number of registered in this application thread
     */
-	static Id GetCurrentThreadId();
+    static Id GetCurrentThreadId();
 
     /**
      \returns returns Id of current Thread Object.
      */
-	Id GetId();
+    Id GetId() const;
 
     /**
      \brief register current native thread handle and remember it's Id as Id of MainThread.
