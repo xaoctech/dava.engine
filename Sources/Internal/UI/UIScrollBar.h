@@ -48,7 +48,7 @@ public:
     virtual float32 TotalAreaSize(UIScrollBar *forScrollBar) = 0;
     virtual float32 ViewPosition(UIScrollBar *forScrollBar) = 0;
     virtual void OnViewPositionChanged(UIScrollBar *byScrollBar, float32 newPosition) = 0;
-    virtual const String GetDelegateControlPath() = 0;
+    virtual const String GetDelegateControlPath() const = 0;
 };
 
 

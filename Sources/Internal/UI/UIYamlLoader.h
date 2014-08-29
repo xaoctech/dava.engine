@@ -119,7 +119,7 @@ public:
 
 	const FilePath & GetCurrentPath() const;
     void AddScrollBarToLink(UIScrollBar* scroll,const String& delegatePath);
-    static String GetControlPath(UIControl* conrol);
+    static String GetControlPath(const UIControl* conrol);
     static UIControl* GetControlByPath(const String& controlPath, UIControl* rootControl);
 protected:
 	// Create the control by its type or base type.

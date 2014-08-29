@@ -717,7 +717,7 @@ void UIYamlLoader::AddScrollBarToLink(UIScrollBar* scroll, const String& delegat
     scrollsToLink.insert(std::pair<UIScrollBar*,String>(scroll,delegatePath));
 }
     
-String UIYamlLoader::GetControlPath(UIControl* control)
+String UIYamlLoader::GetControlPath(const UIControl* control)
 {
     String controlPath = "";
     if (control)

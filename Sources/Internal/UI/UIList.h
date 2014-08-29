@@ -229,6 +229,8 @@ public:
     virtual UIControl *Clone();
     virtual void CopyDataFrom(UIControl *srcControl);
 
+    virtual const String GetDelegateControlPath() const;
+
 protected:
     void InitAfterYaml();
     virtual ~UIList();
@@ -271,8 +273,6 @@ protected:
     FilePath aggregatorPath;
 
     Map<String,Vector<UIListCell*>*> cellStore;
-
-    const String GetDelegateControlPath();
 };
 };
 #endif

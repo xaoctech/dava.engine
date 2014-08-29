@@ -499,7 +499,7 @@ void UIScrollView::ScrollToPosition( const Vector2& pos, float32 timeSec )
     scrollVertical->ScrollToPosition(pos.y, timeSec);
 }
     
-const String UIScrollView::GetDelegateControlPath()
+const String UIScrollView::GetDelegateControlPath() const
 {
     return UIYamlLoader::GetControlPath(this);
 }
