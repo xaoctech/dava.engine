@@ -118,6 +118,12 @@ void ThreadSyncTest::TestThread(PerfFuncData * data)
     shortThread->Join();
     TEST_VERIFY(Thread::STATE_ENDED == shortThread->GetState());
     
+    SafeRelease(infiniteThread);
+    SafeRelease(shortThread);
+
+    infiniteThread = Thread::Create(Message(this, &ThreadSyncTest::InfiniteThreadFunction));
+    shortThread = Thread::Create(Message(this, &ThreadSyncTest::ShortThreadFunction));
+
     infiniteThread->Start();
     shortThread->Start();
 

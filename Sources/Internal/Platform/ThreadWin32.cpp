@@ -36,7 +36,7 @@ namespace DAVA
 
 void Thread::Init()
 {
-    handle = 0;
+    handle = NULL;
 }
 
 void Thread::Shutdown()
@@ -44,11 +44,13 @@ void Thread::Shutdown()
     if (handle)
     {
         CloseHandle(handle);
+        handle = NULL;
     }
 }
 
 void Thread::Start()
 {
+    DVASSERT(STATE_CREATED == state);
     handle = CreateThread 
         (
         0, // Security attributes
