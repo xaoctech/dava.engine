@@ -12,10 +12,11 @@
 
 
 #include "../Helpers/MouseHelper.h"
+#include "Platform/DpiHelper.h"
 
 
 EyeDropper::EyeDropper(QWidget* parent)
-    : QWidget(parent, Qt::Popup | Qt::FramelessWindowHint/* | Qt::WindowStaysOnTopHint*/)
+    : QWidget(NULL, Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint)
       , mouse(new MouseHelper(this))
       , cursorSize(99, 99)
       , zoomFactor(3)
@@ -93,6 +94,9 @@ void EyeDropper::paintEvent(QPaintEvent* e)
     QPainter p(this);
     p.drawImage(0, 0, cache);
     DrawCursor(cursorPos, &p);
+    
+    p.setPen(Qt::red);
+    p.drawRect(0, 0, width(), height());
 }
 
 void EyeDropper::keyPressEvent(QKeyEvent* e)
@@ -138,18 +142,38 @@ void EyeDropper::CreateShade()
 {
     QDesktopWidget* desktop = QApplication::desktop();
     const int n = desktop->screenCount();
-    QRect rc;
+    QRect rcReal;
+    QRect rcVirtual;
 
     for (int i = 0; i < n; i++)
     {
         const QRect screenRect = desktop->screenGeometry(i);
-        rc = rc.united(screenRect);
+        const double scale = DAVA::DPIHelper::GetDpiScaleFactor(i);
+        rcVirtual = rcVirtual.unite(screenRect);
+        
+        QRect rc = screenRect;
+        if (scale > 1.0)
+        {
+            rc.setWidth( int(scale * screenRect.width()) );
+            rc.setHeight( int(scale * screenRect.height()) );
+        }
+        
+        rcReal = rcReal.united(rc);
+        qDebug() << "Screen: " << i << "; Real: " << rc << "; Virtual: " << screenRect;
     }
-
-    cache = QPixmap::grabWindow(QApplication::desktop()->winId(), rc.left(), rc.top(), rc.width(), rc.height()).toImage();
-    resize(rc.size());
-    move(rc.topLeft());
+    
+    qDebug() << "Done! Real: " << rcReal << "; Virtual: " << rcVirtual;
+    
+    const QImage img = QPixmap::grabWindow(QApplication::desktop()->winId(), rcReal.left(), rcReal.top(), rcReal.width(), rcReal.height()).toImage();
+    cache = (rcReal != rcVirtual) ? img.scaled(rcVirtual.width(), rcVirtual.height()) : img;
+    resize(rcVirtual.size());
+    move(rcVirtual.topLeft());
     cursorPos = mapFromGlobal(QCursor::pos());
+    
+    const QString p = qApp->applicationDirPath();
+    
+    img.save(p + "/original.png", "PNG", 100);
+    cache.save(p + "/scaled.png", "PNG", 100);
 }
 
 QColor EyeDropper::GetPixel(const QPoint& pos) const

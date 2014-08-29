@@ -40,6 +40,7 @@ namespace DAVA
 		public:
 
 		static uint32 GetScreenDPI();
+        static double GetDpiScaleFactor(int screenId);
 	};
 };
 #endif // __DPIHELPER_H__

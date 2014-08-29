@@ -19,7 +19,7 @@
 
 #include <AppKit/NSScreen.h>
 #include <ApplicationServices/ApplicationServices.h>
-#include <Foundation/NSDictionary.h>
+#import <Foundation/Foundation.h>
 
 namespace DAVA
 {
@@ -39,4 +39,13 @@ namespace DAVA
         return  (displayPixelSize.width / displayPhysicalSize.width) * 25.4f;
     }
 	
+    double DPIHelper::GetDpiScaleFactor(int screenId)
+    {
+        NSArray *screens = [NSScreen screens];
+        NSScreen *screen = [screens objectAtIndex: screenId];
+        const double scale = [screen backingScaleFactor];
+        
+        return scale;
+    }
+    
 }
