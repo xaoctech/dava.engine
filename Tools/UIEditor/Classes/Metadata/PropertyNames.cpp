@@ -73,6 +73,8 @@ const char* PropertyNames::SHADOW_OFFSET_X = "ShadowOffsetX";
 const char* PropertyNames::SHADOW_OFFSET_Y = "ShadowOffsetY";
 const char* PropertyNames::SHADOW_COLOR = "ShadowColor";
 
+const char* PropertyNames::FONT_SHADOW_COLOR_INHERIT_TYPE_PROPERTY_NAME = "FontShadowColorInheritType";
+
 // Slider properties
 const char* PropertyNames::SLIDER_VALUE_PROPERTY_NAME = "SliderValue";
 const char* PropertyNames::SLIDER_MIN_VALUE_PROPERTY_NAME = "SliderMinValue";

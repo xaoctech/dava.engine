@@ -10,10 +10,12 @@ import java.util.concurrent.FutureTask;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Looper;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.Spanned;
 import android.text.method.PasswordTransformationMethod;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -33,6 +35,9 @@ public class JNITextField {
 		public int id;
 	}
 	static Map<Integer, NativeEditText> controls = new HashMap<Integer, NativeEditText>();
+	
+	static final int NoActiveTextField = -1;
+	static int activeTextField = NoActiveTextField; 
 
 	final static String TAG = "JNITextField";
 	
@@ -107,6 +112,14 @@ public class JNITextField {
 		}
 	}
 
+	private static float GetScaledDensity()
+	{
+		DisplayMetrics dm = new DisplayMetrics();
+		JNIActivity.GetActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
+
+		return Math.min(2.0f, dm.scaledDensity);
+	}
+
 	public static void Create(final int id, final float x, final float y,
 			final float dx, final float dy) {
 		if (controls.containsKey(id)) {
@@ -135,7 +148,7 @@ public class JNITextField {
 				params.gravity = Gravity.LEFT | Gravity.TOP;
 				text.setPadding(0, 0, 0, 0);
 				text.setSingleLine(true);
-				int fontSize = (int) (20);
+				int fontSize = (int) (20 * GetScaledDensity());
 				text.setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSize);
 				text.setBackgroundColor(Color.TRANSPARENT);
 				text.setTextColor(Color.WHITE);
@@ -212,7 +225,7 @@ public class JNITextField {
 				return null;
 			}
 		});
-		task.Run();
+		task.AsyncRun();
 	}
 
 	public static void UpdateRect(final int id, final float x, final float y,
@@ -234,7 +247,7 @@ public class JNITextField {
 				return null;
 			}
 		});
-		task.Run();
+		task.AsyncRun();
 	}
 
 	public static void SetText(int id, final String string) {
@@ -277,11 +290,11 @@ public class JNITextField {
 		InternalTask<Void> task = new InternalTask<Void>(text, new Callable<Void>() {
 			@Override
 			public Void call() throws Exception {
-				text.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
+				text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size * GetScaledDensity()));
 				return null;
 			}
 		});
-		task.Run();
+		task.AsyncRun();
 	}
 
 	public static void SetIsPassword(int id, final boolean isPassword) {
@@ -333,7 +346,7 @@ public class JNITextField {
 				return null;
 			}
 		});
-		task.Run();
+		task.AsyncRun();
 	}
 
 	public static void SetTextAlign(int id, final int align) {
@@ -364,7 +377,7 @@ public class JNITextField {
 				return null;
 			}
 		});
-		task.Run();
+		task.AsyncRun();
 	}
 
 	public static void SetInputEnabled(int id, final boolean value) {
@@ -379,7 +392,7 @@ public class JNITextField {
 				return null;
 			}
 		});
-		task.Run();
+		task.AsyncRun();
 	}
 	
 	public static void SetAutoCapitalizationType(int id, final int autoCapitalizationType) {
@@ -413,7 +426,7 @@ public class JNITextField {
 				return null;
 			}
 		});
-		task.Run();
+		task.AsyncRun();
 	}
 	
 	public static void SetAutoCorrectionType(int id, final int autoCorrectionType) {
@@ -439,7 +452,7 @@ public class JNITextField {
 				return null;
 			}
 		});
-		task.Run();
+		task.AsyncRun();
 	}
 	
 	public static void SetSpellCheckingType(int id, final int spellCheckingType) {
@@ -465,7 +478,7 @@ public class JNITextField {
 				return null;
 			}
 		});
-		task.Run();
+		task.AsyncRun();
 	}
 		
 	public static void SetKeyboardType(int id, final int keyboardType) {
@@ -481,6 +494,7 @@ public class JNITextField {
 				inputFlags &= ~(InputType.TYPE_CLASS_NUMBER |
 						InputType.TYPE_CLASS_TEXT |
 						InputType.TYPE_TEXT_VARIATION_URI |
+						InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS |
 						EditorInfo.TYPE_CLASS_TEXT);
 				
 				switch (keyboardType) {
@@ -493,10 +507,13 @@ public class JNITextField {
 					break;
 
 				case 3: // KEYBOARD_TYPE_URL
-				case 7: // KEYBOARD_TYPE_EMAIL_ADDRESS
 				case 9: // KEYBOARD_TYPE_TWITTER
 					inputFlags |= InputType.TYPE_CLASS_TEXT
 							| InputType.TYPE_TEXT_VARIATION_URI;
+					break;
+
+				case 7: // KEYBOARD_TYPE_EMAIL_ADDRESS
+					inputFlags |= InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
 					break;
 
 				case 0: // KEYBOARD_TYPE_DEFAULT
@@ -509,7 +526,7 @@ public class JNITextField {
 				return null;
 			}
 		});
-		task.Run();
+		task.AsyncRun();
 	}
 	
 	public static void SetReturnKeyType(int id, final int returnKeyType) {
@@ -550,53 +567,58 @@ public class JNITextField {
 				return null;
 			}
 		});
-		task.Run();
+		task.AsyncRun();
 	}
 	
-	public static void ShowField(int id) {
+	public static void SetVisible(int id, boolean isVisible)
+	{
+		final EditText text = GetEditText(id);
+		final boolean visible = isVisible;
+		if (text == null)
+			return;
+		
+		JNIActivity.GetActivity().PostEventToGL(new Runnable() {
+			
+			@Override
+			public void run() {
+				InternalTask<Void> task = new InternalTask<Void>(text, new Callable<Void>() {
+					@Override
+					public Void call() throws Exception {
+						text.setVisibility(visible ? View.VISIBLE : View.GONE);
+						return null;
+					}
+				});
+				task.AsyncRun();
+			}
+		});
+	}
+	
+	public static void OpenKeyboard(final int id) {
 		final EditText text = GetEditText(id);
 		if (text == null)
 			return;
 		
-		InternalTask<Void> task = new InternalTask<Void>(text, new Callable<Void>() {
+		JNIActivity.GetActivity().PostEventToGL(new Runnable() {
+			
 			@Override
-			public Void call() throws Exception {
-				text.setVisibility(View.VISIBLE);
-				return null;
+			public void run() {
+				InternalTask<Void> task = new InternalTask<Void>(text, new Callable<Void>() {
+					@Override
+					public Void call() throws Exception {
+						text.setVisibility(EditText.VISIBLE);
+						text.requestFocus();
+						
+						InputMethodManager imm = (InputMethodManager) JNIActivity.GetActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+						imm.showSoftInput(text, InputMethodManager.SHOW_FORCED);
+						
+						activeTextField = id;
+						
+						return null;
+					}
+				});
+				task.AsyncRun();
 			}
 		});
-		task.Run();
-	}
-	
-	public static void HideField(int id) {
-		final EditText text = GetEditText(id);
-		if (text == null)
-			return;
-		
-		InternalTask<Void> task = new InternalTask<Void>(text, new Callable<Void>() {
-			@Override
-			public Void call() throws Exception {
-				text.setVisibility(View.GONE);
-				return null;
-			}
-		});
-		task.Run();
-	}
-	
-	public static void OpenKeyboard(int id) {
-		final EditText text = GetEditText(id);
-		if (text == null)
-			return;
-		
-		InternalTask<Void> task = new InternalTask<Void>(text, new Callable<Void>() {
-			@Override
-			public Void call() throws Exception {
-				InputMethodManager imm = (InputMethodManager) JNIActivity.GetActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-				imm.showSoftInput(text, InputMethodManager.SHOW_IMPLICIT);
-				return null;
-			}
-		});
-		task.Run();
 	}
 	
 	public static void CloseKeyboard(int id) {
@@ -604,16 +626,30 @@ public class JNITextField {
 		if (text == null)
 			return;
 		
-		InternalTask<Void> task = new InternalTask<Void>(text, new Callable<Void>() {
+		final Runnable runnable = new Runnable() {
+			
 			@Override
-			public Void call() throws Exception {
+			public void run() {
 				InputMethodManager imm = (InputMethodManager) JNIActivity.GetActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 				imm.hideSoftInputFromWindow(text.getWindowToken(), 0);
 				text.clearFocus();
-				return null;
+				activeTextField = NoActiveTextField;
 			}
-		});
-		task.Run();
+		};
+		
+		if (Thread.currentThread() == Looper.getMainLooper().getThread())
+			runnable.run();
+		else
+		{
+			InternalTask<Void> task = new InternalTask<Void>(text, new Callable<Void>() {
+				@Override
+				public Void call() throws Exception {
+					runnable.run();
+					return null;
+				}
+			});
+			task.AsyncRun();
+		}
 	}
 	
 	public static void SetEnableReturnKeyAutomatically(int id, boolean value) {

@@ -35,8 +35,8 @@
 #include "TextureBrowser/TextureCache.h"
 #include "Main/QtUtils.h"
 #include "Main/mainwindow.h"
-#include "Render/LibPVRHelper.h"
-#include "Render/LibDxtHelper.h"
+#include "Render/Image/LibPVRHelper.h"
+#include "Render/Image/LibDdsHelper.h"
 #include "Qt/Settings/SettingsManager.h"
 #include "Scene/SceneHelper.h"
 #include "CubemapEditor/CubemapUtils.h"
@@ -606,7 +606,7 @@ void TextureBrowser::reloadTextureToScene(DAVA::Texture *texture, const DAVA::Te
 
 		// reload only when editor view format is the same as given texture format
 		// or if given texture format if not a file (will happened if some common texture params changed - mipmap/filtering etc.)
-		if(DAVA::GPU_UNKNOWN == gpu || gpu == curEditorImageGPUForTextures)
+		if(!GPUFamilyDescriptor::IsGPUForDevice(gpu) || gpu == curEditorImageGPUForTextures)
 		{
 			descriptor->Save(); //TODO: it's kostil for broken logic. We need to remove this code during refactoring of texture browser
 			texture->ReloadAs(curEditorImageGPUForTextures);
@@ -694,7 +694,7 @@ void TextureBrowser::texturePropertyChanged(int type)
 	else
 	{
 		// new texture can be applied to scene immediately
-		reloadTextureToScene(curTexture, ui->textureProperties->getTextureDescriptor(), DAVA::GPU_UNKNOWN);
+		reloadTextureToScene(curTexture, ui->textureProperties->getTextureDescriptor(), DAVA::GPU_PNG);
 	}
 
 	// update warning message

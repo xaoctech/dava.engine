@@ -450,7 +450,7 @@ void DefaultScreen::GetSelectedControl(HierarchyTreeNode::HIERARCHYTREENODESLIST
 
 HierarchyTreeController::SELECTEDCONTROLNODES DefaultScreen::GetActiveMoveControls() const
 {
-	HierarchyTreeController::SELECTEDCONTROLNODES list = HierarchyTreeController::Instance()->GetActiveControlNodes();
+	const HierarchyTreeController::SELECTEDCONTROLNODES &list = HierarchyTreeController::Instance()->GetActiveControlNodes();
 	
 	//YZ we need apply only for parent object
 	HierarchyTreeController::SELECTEDCONTROLNODES selectedList;
@@ -493,8 +493,18 @@ void DefaultScreen::ApplyMoveDelta(const Vector2& delta)
 		UIControl* control = controlNode->GetUIObject();
 		if (control)
 		{
-			
-			control->SetPosition(startControlPos[control] + delta);
+            float32 parentsTotalAngle = control->GetParentsTotalAngle(false);
+            if(parentsTotalAngle != 0)
+            {
+                Matrix3 tmp;
+                tmp.BuildRotation(-parentsTotalAngle);
+                Vector2 rotatedVec = delta * tmp;
+                control->SetPosition(startControlPos[control] + rotatedVec);
+            }
+            else
+            {
+                control->SetPosition(startControlPos[control] + delta);
+            }
 		}
 	}
 }
@@ -573,7 +583,7 @@ void DefaultScreen::DoKeyboardMove(eKeyboardMoveDirection moveDirection)
     }
     else
     {
-        MoveControl(delta);
+        MoveControl(delta, true);
     }
 }
 
@@ -650,9 +660,9 @@ void DefaultScreen::MoveGuides(eKeyboardMoveDirection moveDirection, const Vecto
     SafeRelease(cmd);
 }
 
-void DefaultScreen::MoveControl(const Vector2& delta)
+void DefaultScreen::MoveControl(const Vector2& delta, bool alignControlToIntegerPos)
 {
-	ControlsMoveCommand* cmd = new ControlsMoveCommand(GetActiveMoveControls(), delta);
+	ControlsMoveCommand* cmd = new ControlsMoveCommand(GetActiveMoveControls(), delta, alignControlToIntegerPos);
 	CommandsController::Instance()->ExecuteCommand(cmd);
 	SafeRelease(cmd);
 }
@@ -697,6 +707,12 @@ void DefaultScreen::DeleteSelectedControls()
 
 void DefaultScreen::MoveGuide(HierarchyTreeScreenNode* screenNode)
 {
+    if (!screenNode->GetMoveGuide())
+    {
+        // Nothing to move.
+        return;
+    }
+
     MoveGuideByMouseCommand* command = new MoveGuideByMouseCommand(screenNode);
     CommandsController::Instance()->ExecuteCommand(command);
     SafeRelease(command);
@@ -707,6 +723,8 @@ void DefaultScreen::DeleteSelectedGuides(HierarchyTreeScreenNode* screenNode)
     DeleteGuidesCommand* command = new DeleteGuidesCommand(screenNode);
     CommandsController::Instance()->ExecuteCommand(command);
     SafeRelease(command);
+    
+    HierarchyTreeController::Instance()->ResetSelectedControl();
 }
 
 Qt::CursorShape DefaultScreen::GetCursor(const Vector2& point)
@@ -1108,7 +1126,7 @@ void DefaultScreen::MouseInputDrag(const DAVA::UIEvent* event)
         return;
     }
 
-	Vector2 delta = GetInputDelta(event->point);
+	Vector2 delta = GetInputDelta(event->point).delta;
 	
 	if (inputState == InputStateSelection)
 	{
@@ -1158,9 +1176,9 @@ void DefaultScreen::MouseInputEnd(const DAVA::UIEvent* event)
 
 	if (inputState == InputStateDrag)
 	{
-		Vector2 delta = GetInputDelta(event->point);
+        DefaultScreen::InputDelta inputDelta = GetInputDelta(event->point);
 		ResetMoveDelta();
-		MoveControl(delta);
+		MoveControl(inputDelta.delta, !(inputDelta.isStickedToX | inputDelta.isStickedToY));
 		startControlPos.clear();
 	}
 	
@@ -1331,8 +1349,8 @@ void DefaultScreen::KeyboardInput(const DAVA::UIEvent* event)
 		{
 			if (InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_CTRL))
 			{
-                HierarchyTreeController::SELECTEDCONTROLNODES selectedList = HierarchyTreeController::Instance()->GetActiveControlNodes();                
-                if (selectedList.size() == 0)
+                const HierarchyTreeController::SELECTEDCONTROLNODES &selectedList = HierarchyTreeController::Instance()->GetActiveControlNodes();                
+                if (selectedList.empty())
                 {
                     // No controls selected - paste to screen.
                     HierarchyTreeScreenNode* activeScreenNode = HierarchyTreeController::Instance()->GetActiveScreen();
@@ -1364,9 +1382,9 @@ void DefaultScreen::KeyboardInput(const DAVA::UIEvent* event)
 	
 }
 
-Vector2 DefaultScreen::GetInputDelta(const Vector2& point, bool applyScale)
+DefaultScreen::InputDelta DefaultScreen::GetInputDelta(const Vector2& point, bool applyScale)
 {
-    Vector2 delta = AlignToNearestScale(point - inputPos);
+    Vector2 delta = point - inputPos;
     HierarchyTreeScreenNode* screenNode = HierarchyTreeController::Instance()->GetActiveScreen();
 
     // Sticking to guides is supported  both for Drag and Size modes.
@@ -1403,9 +1421,6 @@ Vector2 DefaultScreen::GetInputDelta(const Vector2& point, bool applyScale)
             isStickedToY = false;
         }
 
-        // Align to the zoom level to avoid fraction parts in coords.
-        stickDelta = AlignToNearestScale(stickDelta);
-    
         // Calculate the final delta, depending on what axes we are sticked to.
         delta.x = isStickedToX ? stickDelta.x : delta.x;
         delta.y = isStickedToY ? stickDelta.y : delta.y;
@@ -1418,7 +1433,8 @@ Vector2 DefaultScreen::GetInputDelta(const Vector2& point, bool applyScale)
 	}
 
     prevDragPoint = point;
-	return delta;
+    
+    return InputDelta(delta, isStickedToX, isStickedToY);
 }
 
 int32 DefaultScreen::CalculateStickToGuides(Vector2& offset) const
@@ -1447,14 +1463,37 @@ int32 DefaultScreen::CalculateStickToGuidesDrag(Vector2& offset) const
     }
 
     // Build the list of selected controls' rects and send it to the alignment.
-    HierarchyTreeController::SELECTEDCONTROLNODES selectedList = HierarchyTreeController::Instance()->GetActiveControlNodes();
+    const HierarchyTreeController::SELECTEDCONTROLNODES &selectedList = HierarchyTreeController::Instance()->GetActiveControlNodes();
     List<Rect> controlRects;
     for (HierarchyTreeController::SELECTEDCONTROLNODES::const_iterator iter = selectedList.begin(); iter != selectedList.end(); ++iter)
     {
         HierarchyTreeControlNode* controlNode = (*iter);
         if (controlNode && controlNode->GetUIObject())
         {
-            controlRects.push_back(controlNode->GetUIObject()->GetRect(true));
+            Rect rectControl = controlNode->GetUIObject()->GetRect(true);
+            Rect rectFinal = rectControl;
+            float32 fAngle = controlNode->GetUIObject()->GetAngle();
+            if(fAngle != 0)
+            {
+                // Complex case - angle is not 0. Particular fix for 90, 180 and 270 degrees goes here
+                if(FLOAT_EQUAL_EPS(fAngle, PI_05, 1e-4f))
+                {
+                    // 90
+                    rectFinal = Rect(rectControl.x - rectControl.dy, rectControl.y, rectControl.dy, rectControl.dx);
+                }
+                else if(FLOAT_EQUAL_EPS(fAngle, PI, 1e-4f))
+                {
+                    // 180
+                    rectFinal = Rect(rectControl.x - rectControl.dx, rectControl.y - rectControl.dy, rectControl.dx, rectControl.dy);
+                }
+                else if(FLOAT_EQUAL_EPS(fAngle, (PI+PI_05), 1e-4f))
+                {
+                    // 270
+                    rectFinal = Rect(rectControl.x, rectControl.y - rectControl.dx, rectControl.dy, rectControl.dx);
+                }
+                
+            }
+            controlRects.push_back(rectFinal);
         }
     }
     
@@ -1604,8 +1643,8 @@ bool DefaultScreen::NeedCalculateStickMode(HierarchyTreeScreenNode* screenNode) 
         return false;
     }
     
-    HierarchyTreeController::SELECTEDCONTROLNODES selectedList = HierarchyTreeController::Instance()->GetActiveControlNodes();
-    if (selectedList.size() == 0)
+    const HierarchyTreeController::SELECTEDCONTROLNODES &selectedList = HierarchyTreeController::Instance()->GetActiveControlNodes();
+    if (selectedList.empty())
     {
         return false;
     }
@@ -1634,7 +1673,7 @@ void DefaultScreen::BacklightControl(const Vector2& position)
 		if (!HierarchyTreeController::Instance()->IsControlSelected(newSelectedNode))
 		{
 			HierarchyTreeController::Instance()->ResetSelectedControl();
-			HierarchyTreeController::Instance()->SelectControl(newSelectedNode);
+			HierarchyTreeController::Instance()->SelectControl(newSelectedNode, HierarchyTreeController::DeferredExpand);
 		}
 	}
 	else if (HierarchyTreeController::Instance()->GetActiveControlNodes().size())
@@ -1739,7 +1778,7 @@ void DefaultScreen::HandleScreenMove(const DAVA::UIEvent* event)
 		}
 
 		// In this particular case don't take Scale into account.
-		Vector2 delta = GetInputDelta(pos, false);
+		Vector2 delta = GetInputDelta(pos, false).delta;
 		ScreenWrapper::Instance()->RequestViewMove(-delta);
 		inputPos = pos;
 	}
@@ -1878,16 +1917,6 @@ void DefaultScreen::DrawGuides()
 
     RenderManager::Instance()->SetColor(oldColor);
     RenderManager::Instance()->ClipPop();
-}
-
-Vector2 DefaultScreen::AlignToNearestScale(const Vector2& value) const
-{
-    Vector2 result;
-    
-    result.x = Round(value.x / scale.x) * scale.x;
-    result.y = Round(value.y / scale.y) * scale.y;
-    
-    return result;
 }
 
 // Screen scale/position is changed.

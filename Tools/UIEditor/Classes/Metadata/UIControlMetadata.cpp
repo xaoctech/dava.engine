@@ -408,15 +408,26 @@ void UIControlMetadata::SetClipContents(const bool value)
     GetActiveUIControl()->SetClipContents(value);
 }
 
-void UIControlMetadata::ApplyMove(const Vector2& moveDelta)
+void UIControlMetadata::ApplyMove(const Vector2& moveDelta, bool alignControlsToIntegerPos)
 {
     if (!VerifyActiveParamID())
     {
         return;
     }
-
+    
+    float32 parentsTotalAngle = GetActiveUIControl()->GetParentsTotalAngle(false);
     Vector2 controlPosition = GetActiveUIControl()->GetPosition();
-    controlPosition += moveDelta;
+    if(parentsTotalAngle != 0)
+    {
+        Matrix3 tmp;
+        tmp.BuildRotation(-parentsTotalAngle);
+        Vector2 rotatedVec = moveDelta * tmp;
+        controlPosition += rotatedVec;
+    }
+    else
+    {
+        controlPosition += moveDelta;
+    }
 	
 	Rect rect = GetActiveUIControl()->GetRect();
 	rect.x = controlPosition.x;
@@ -426,8 +437,8 @@ void UIControlMetadata::ApplyMove(const Vector2& moveDelta)
 	Vector2 pivotPoint = GetActiveUIControl()->pivotPoint;
 	rect.x -= pivotPoint.x;
 	rect.y -= pivotPoint.y;
-	
-	SetActiveControlRect(rect, false);
+
+	SetActiveControlRect(rect, false, alignControlsToIntegerPos);
 }
 
 void UIControlMetadata::ApplyResize(const Rect& /*originalRect*/, const Rect& newRect)
@@ -568,7 +579,7 @@ void UIControlMetadata::SetSprite(const QString& value)
     }
     
     //If empty string value is used - remove sprite
-    if (value.isEmpty())
+    if (value.isEmpty() || value == StringConstants::NO_SPRITE_IS_SET)
     {
         GetActiveUIControl()->GetBackground()->SetSprite(NULL, 0); 
     }
@@ -599,7 +610,7 @@ void UIControlMetadata::UpdateThumbSizeForUIControlThumb()
     }
 }
     
-QString UIControlMetadata::GetSprite()
+QString UIControlMetadata::GetSprite() const
 {
     if (!VerifyActiveParamID())
     {
@@ -924,7 +935,7 @@ void UIControlMetadata::SetBottomAlignEnabled(const bool value)
 	GetActiveUIControl()->SetBottomAlignEnabled(value);
 }
 
-void UIControlMetadata::SetActiveControlRect(const Rect& rect, bool restoreAlign)
+void UIControlMetadata::SetActiveControlRect(const Rect& rect, bool restoreAlign, bool alignToIntegerPos)
 {
 	// Save/restore Align Data before changing the Control Rect, if requested.
 	UIControl* activeControl = GetActiveUIControl();
@@ -936,6 +947,14 @@ void UIControlMetadata::SetActiveControlRect(const Rect& rect, bool restoreAlign
 	}
 
 	activeControl->SetRect(rect);
+    
+    if (alignToIntegerPos)
+    {
+        Vector2 controlPos = activeControl->GetPosition();
+        controlPos.x = Round(controlPos.x);
+        controlPos.y = Round(controlPos.y);
+        activeControl->SetPosition(controlPos);
+    }
 
 	if (restoreAlign)
 	{

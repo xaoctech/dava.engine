@@ -131,6 +131,8 @@ void ProjectManager::ProjectOpen(const FilePath & incomePath)
 
             LoadProjectSettings();
             LoadMaterialsSettings();
+            DAVA::QualitySettingsSystem::Instance()->Load("~res:/quality.yaml");
+            DAVA::SoundSystem::Instance()->InitFromQualitySettings();
 
             emit ProjectOpened(curProjectPath.GetAbsolutePathname().c_str());
         }
@@ -154,6 +156,7 @@ void ProjectManager::ProjectClose()
         curProjectPath = "";
         curProjectPathDataSource = "";
         curProjectPathParticles = "";
+        SettingsManager::ResetPerProjectSettings();
         emit ProjectClosed();
 	}
 }
@@ -209,7 +212,4 @@ void ProjectManager::LoadMaterialsSettings()
 
         parser->Release();
     }
-
-    // parse available material qualities
-    DAVA::QualitySettingsSystem::Instance()->Load("~res:/quality.yaml");
 }

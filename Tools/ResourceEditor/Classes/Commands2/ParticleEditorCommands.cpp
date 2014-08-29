@@ -75,6 +75,8 @@ CommandUpdateEmitter::CommandUpdateEmitter(ParticleEmitter* emitter):
 								RefPtr<PropertyLine<float32> > emissionRange,
 								RefPtr<PropertyLine<Vector3> > emissionVector,
 								RefPtr<PropertyLine<float32> > radius,
+                                RefPtr<PropertyLine<float32> > emissionAngle,
+                                RefPtr<PropertyLine<float32> > emissionAngleVariation,
 								RefPtr<PropertyLine<Color> > colorOverLife,
 								RefPtr<PropertyLine<Vector3> > size,
 								float32 life,
@@ -85,6 +87,8 @@ CommandUpdateEmitter::CommandUpdateEmitter(ParticleEmitter* emitter):
 	this->emissionRange = emissionRange;
 	this->emissionVector = emissionVector;
 	this->radius = radius;
+    this->emissionAngle = emissionAngle;
+    this->emissionAngleVariation = emissionAngleVariation;
 	this->colorOverLife = colorOverLife;
 	this->size = size;
 	this->life = life;	
@@ -101,6 +105,8 @@ void CommandUpdateEmitter::Redo()
 	PropertyLineHelper::SetValueLine(emitter->radius, radius);
 	PropertyLineHelper::SetValueLine(emitter->colorOverLife, colorOverLife);
 	PropertyLineHelper::SetValueLine(emitter->size, size);	
+    PropertyLineHelper::SetValueLine(emitter->emissionAngle, emissionAngle);	
+    PropertyLineHelper::SetValueLine(emitter->emissionAngleVariation, emissionAngleVariation);	
 	emitter->shortEffect = isShortEffect;
 }
 
@@ -597,7 +603,7 @@ CommandSaveParticleEmitterToYaml::CommandSaveParticleEmitterToYaml(ParticleEmitt
 	CommandAction(CMDID_PARTICLE_EMITTER_SAVE_TO_YAML)
 {
 	this->selectedEmitter = emitter;
-	this->filePath = path;
+	this->filePath = path;    
 }
 
 void CommandSaveParticleEmitterToYaml::Redo()

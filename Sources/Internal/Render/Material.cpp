@@ -33,7 +33,7 @@
 #include "FileSystem/KeyedArchive.h"
 #include "Utils/StringFormat.h"
 #include "Render/Shader.h"
-#include "Render/Image.h"
+#include "Render/Image/Image.h"
 #include "Render/3D/PolygonGroup.h"
 #include "Scene3D/DataNode.h"
 #include "Scene3D/Scene.h"
@@ -1204,11 +1204,11 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
     // TODO: rethink this code
     if (group->renderDataObject->GetIndexBufferID() != 0)
     {
-        RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, 0);
+        RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, group->renderDataObject->GetIndexFormat(), 0);
     }
     else
     {
-        RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, group->indexArray);
+        RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, group->renderDataObject->GetIndexFormat(), group->indexArray);
     }
 
     

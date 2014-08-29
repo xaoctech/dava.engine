@@ -23,7 +23,7 @@ public class JNIRenderer implements GLSurfaceView.Renderer {
 	private int height = 0;
 	
 	private boolean isRenderRecreated = false;
-	
+
 	public JNIRenderer()
 	{
 	}
@@ -31,6 +31,8 @@ public class JNIRenderer implements GLSurfaceView.Renderer {
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		Log.w(JNIConst.LOG_TAG, "_________onSurfaceCreated_____!!!!_____");
+		
+		JNIDeviceInfo.SetGPUFamily(gl);
 
 		isRenderRecreated = true;
 		nativeRenderRecreated();
@@ -90,4 +92,5 @@ public class JNIRenderer implements GLSurfaceView.Renderer {
 	{
 		nativeOnResumeView();
 	}
+	
 }

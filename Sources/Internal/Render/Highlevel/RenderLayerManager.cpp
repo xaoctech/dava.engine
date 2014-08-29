@@ -38,6 +38,7 @@ HashMap<FastName, RenderLayerID> RenderLayerManager::layerIDmap(16);
     
 RenderLayerID RenderLayerManager::GetLayerIDByName(const FastName & fastname)
 {
+    DVASSERT((layerIDmap.find(fastname)!=layerIDmap.end())&&"Unknown material layer");
     return layerIDmap[fastname];
 }
 
@@ -103,6 +104,14 @@ RenderLayerManager::RenderLayerManager()
                                                             0,
                                                             RENDER_LAYER_SHADOW_VOLUME_ID);
     InsertLayer(renderLayerShadowVolume);
+    
+    RenderLayer * renderLayerVegetation = new RenderLayer(LAYER_VEGETATION,
+                                                          0,
+                                                          RENDER_LAYER_VEGETATION_ID);
+    InsertLayer(renderLayerVegetation);
+
+    RenderLayer * renderLayerDebugDraw = new RenderLayer(LAYER_DEBUG_DRAW, 0, RENDER_LAYER_DEBUG_DRAW_ID);
+    InsertLayer(renderLayerDebugDraw);
     
 }
 
