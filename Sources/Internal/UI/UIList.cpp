@@ -791,7 +791,7 @@ void UIList::ScrollToPosition( float32 position, float32 timeSec /*= 0.3f*/ )
     scroll->ScrollToPosition(-position);
 }
 
-const String UIList::GetDelegateControlPath()
+const String UIList::GetDelegateControlPath() const
 {
     return UIYamlLoader::GetControlPath(this);
 }
