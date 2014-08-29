@@ -542,6 +542,7 @@
     <ClCompile Include="Classes\Qt\Tools\ColorPicker\ColorPickerHSV.cpp" />
     <ClCompile Include="Classes\Qt\Tools\ColorPicker\ColorPickerRGBAM.cpp" />
     <ClCompile Include="Classes\Qt\Tools\ColorPicker\ColorPreview.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\ColorPicker\DropperShade.cpp" />
     <ClCompile Include="Classes\Qt\Tools\ColorPicker\EyeDropper.cpp" />
     <ClCompile Include="Classes\Qt\Tools\ColorPicker\GradientSlider.cpp" />
     <ClCompile Include="Classes\Qt\Tools\ColorPicker\PaletteHSV.cpp" />
@@ -733,6 +734,7 @@
     <ClCompile Include="_GeneratedQt\Tools\ColorPicker\ColorPickerRGBAM_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\ColorPicker\ColorPicker_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\ColorPicker\ColorPreview_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Tools\ColorPicker\DropperShade_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\ColorPicker\EyeDropper_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\ColorPicker\GradientSlider_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\ColorPicker\PaletteHSV_moc.cpp" />
@@ -1226,6 +1228,7 @@
     <ClInclude Include="Classes\Qt\Tools\ColorPicker\ColorPickerHSV.h" />
     <ClInclude Include="Classes\Qt\Tools\ColorPicker\ColorPickerRGBAM.h" />
     <ClInclude Include="Classes\Qt\Tools\ColorPicker\ColorPreview.h" />
+    <ClInclude Include="Classes\Qt\Tools\ColorPicker\DropperShade.h" />
     <ClInclude Include="Classes\Qt\Tools\ColorPicker\EyeDropper.h" />
     <ClInclude Include="Classes\Qt\Tools\ColorPicker\GradientSlider.h" />
     <ClInclude Include="Classes\Qt\Tools\ColorPicker\PaletteHSV.h" />
