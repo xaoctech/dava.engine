@@ -25,6 +25,16 @@ public class JNINotificationProvider {
 
 		isInited = null != builder && null != notificationManager && null != assetsManager;
 	}
+    
+    static void CleanBuilder()
+    {
+    	if (null != builder)
+    	{
+    		builder.setContentTitle("")
+    			.setContentText("")
+    			.setProgress(0, 0, false);
+    	}
+    }
 	
 	static void AttachToActivity()
 	{
@@ -33,6 +43,7 @@ public class JNINotificationProvider {
 	
     static void NotifyProgress(int id, String title, String text, int maxValue, int value) {
 		if (isInited) {
+			CleanBuilder();
 			builder.setContentTitle(title)
 				.setContentText(text)
 				.setProgress(maxValue, value, false);
@@ -43,6 +54,7 @@ public class JNINotificationProvider {
     static void NotifyText(int id, String title, String text) {
 
 		if (isInited) {
+			CleanBuilder();
 			builder.setContentTitle(title)
 					.setContentText(text);
 			notificationManager.notify(id, builder.build());
@@ -50,8 +62,10 @@ public class JNINotificationProvider {
 	}
     
     static void HideNotification(int id) {
-		if (isInited)
+		if (isInited){
+			CleanBuilder();
 			notificationManager.cancel(id);
+		}
 	}
     
 

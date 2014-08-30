@@ -42,6 +42,7 @@ LocalNotification::LocalNotification()
     : LocalNotificationNotImplemented()
 #endif
 	, isChanged(false)
+	, isVisible(true)
 	, title(L"")
 	, text(L"")
 {
@@ -54,7 +55,7 @@ LocalNotification::~LocalNotification()
 	LocalNotificationController::Instance()->Remove(this);
 }
 
-bool LocalNotification::IsChanged()
+bool LocalNotification::IsChanged() const
 {
 	return isChanged;
 }
@@ -77,9 +78,28 @@ void LocalNotification::SetText(const WideString &_text)
 	}
 }
 
+void LocalNotification::Show()
+{
+	isVisible = true;
+	isChanged = true;
+}
+
+void LocalNotification::Hide()
+{
+	isVisible = false;
+	isChanged = true;
+}
 
 void LocalNotification::Update()
 {
+	if (false == isChanged)
+		return;
+
+	if (true == isVisible)
+		NativeShow();
+	else
+		NativeHide();
+
 	isChanged = false;
 }
 
@@ -93,14 +113,7 @@ LocalNotificationProgress::LocalNotificationProgress()
     
 LocalNotificationProgress::~LocalNotificationProgress()
 {
-	Hide();
-}
-
-void LocalNotificationProgress::Hide()
-{
-    LocalNotification::Hide();
-    total = 0;
-    progress = 0;
+	NativeHide();
 }
 
 void LocalNotificationProgress::SetProgressCurrent(uint32 _currentProgress)
@@ -120,24 +133,6 @@ void LocalNotificationProgress::SetProgressTotal(uint32 _total)
 		total = _total;
 	}
 }
-
-void LocalNotificationProgress::Update()
-{
-	if (true == isChanged)
-		ShowNotifitaionWithProgress(id, title, text, total, progress);
-
-	LocalNotification::Update();
-}
-
-void LocalNotificationText::Update()
-{
-	if (true == isChanged)
-		ShowNotificationWithText(id, title, text);
-
-	LocalNotification::Update();
-}
-
-
 
 LocalNotificationController::~LocalNotificationController()
 {

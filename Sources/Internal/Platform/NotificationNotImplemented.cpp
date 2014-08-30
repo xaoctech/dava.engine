@@ -38,22 +38,20 @@ LocalNotificationNotImplemented::~LocalNotificationNotImplemented()
 {
 }
 
-void LocalNotification::Hide()
+    
+void LocalNotification::NativeHide()
 {
+    
+}
+    
+void LocalNotificationProgress::NativeShow()
+{
+    
 }
 
-void LocalNotificationProgress::ShowNotifitaionWithProgress(uint32 id,
-			const WideString& title,
-			const WideString& text,
-			int32 maxValue,
-			int32 value)
+void LocalNotificationText::NativeShow()
 {
-}
-
-void LocalNotificationText::ShowNotificationWithText(uint32 id,
-		const WideString& title,
-		const WideString& text)
-{
+    
 }
 
 }
