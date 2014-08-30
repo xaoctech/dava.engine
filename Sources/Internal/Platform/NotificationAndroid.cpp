@@ -53,7 +53,7 @@ const char* JniLocalNotification::GetJavaClassName() const
 	return gJavaClassName;
 }
 
-void LocalNotification::Hide()
+void LocalNotification::NativeHide()
 {
 	LockGuard<Mutex> mutexGuard(javaCallMutex);
 
@@ -61,18 +61,9 @@ void LocalNotification::Hide()
 					GetJavaClass(),
 					GetMethodID("HideNotification", "(I)V"),
 					id);
-
-	text = L"";
-	title = L"";
-
-	isChanged = false;
 }
 
-void LocalNotificationProgress::ShowNotifitaionWithProgress(uint32 id,
-			const WideString& title,
-			const WideString& text,
-			int32 maxValue,
-			int32 value)
+void LocalNotificationProgress::NativeShow()
 {
 	LockGuard<Mutex> mutexGuard(javaCallMutex);
 
@@ -87,17 +78,15 @@ void LocalNotificationProgress::ShowNotifitaionWithProgress(uint32 id,
 					id,
 					jStrTitle,
 					jStrText,
-					maxValue,
-					value);
+					total,
+					progress);
 
 	env->DeleteLocalRef(jStrTitle);
 	env->DeleteLocalRef(jStrText);
 }
 
 
-void LocalNotificationText::ShowNotificationWithText(uint32 id,
-		const WideString& title,
-		const WideString& text)
+void LocalNotificationText::NativeShow()
 {
 	LockGuard<Mutex> mutexGuard(javaCallMutex);
 

@@ -51,15 +51,21 @@ public:
 	LocalNotification();
     virtual ~LocalNotification();
 
-    bool IsChanged();
+    bool IsChanged() const;
 
 	void SetTitle(const WideString &_title);
 	void SetText(const WideString &_text);
-    virtual void Hide();
-    virtual void Update();
+	void Show();
+    void Hide();
+    void Update();
+
+protected:
+    virtual void NativeShow() = 0;
+    virtual void NativeHide();
 
 protected:
     bool isChanged;
+    bool isVisible;
 
     uint32 id;
     WideString title;
@@ -75,16 +81,8 @@ public:
 	void SetProgressCurrent(uint32 _currentProgress);
 	void SetProgressTotal(uint32 _total);
 
-	void Update();
-
-	virtual void Hide();
-
-private:
-	void ShowNotifitaionWithProgress(uint32 id,
-			const WideString& title,
-			const WideString& text,
-			int32 maxValue,
-			int32 value);
+protected:
+	virtual void NativeShow();
 
 private:
 	uint32 total;
@@ -93,13 +91,8 @@ private:
 
 class LocalNotificationText : public LocalNotification
 {
-public:
-	virtual void Update();
-
-private:
-	void ShowNotificationWithText(uint32 id,
-			const WideString& title,
-			const WideString& text);
+protected:
+	virtual void NativeShow();
 };
 
 class LocalNotificationController : public Singleton<LocalNotificationController>
@@ -109,10 +102,10 @@ public:
     virtual ~LocalNotificationController();
 	LocalNotificationProgress *CreateNotificationProgress(const WideString &title = L"", const WideString &text = L"", uint32 max = 0, uint32 current = 0);
     LocalNotificationText *CreateNotificationText(const WideString &title = L"", const WideString &text = L"");
-	void Update();
+    void Update();
 
-protected:
-	bool Remove(LocalNotification *notification);
+private:
+    bool Remove(LocalNotification *notification);
 
 private:
 	Mutex notificationsListMutex;
