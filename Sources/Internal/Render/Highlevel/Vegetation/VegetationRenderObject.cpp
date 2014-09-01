@@ -1495,9 +1495,14 @@ void VegetationRenderObject::GenerateDensityMapFromTransparencyMask(FilePath lig
                 {
                     for(uint32 x = 0; x < DENSITY_MAP_SIZE; ++x)
                     {
-                        float32 meanAlpha = GetMeanAlpha(x, y,
-                                                             ratio, stride,
-                                                             lightmapImage);
+                        //VI: flip Y in order to match landscape and vegetation light mask
+                        uint32 flippedY = DENSITY_MAP_SIZE - y - 1;
+
+                        float32 meanAlpha = GetMeanAlpha(x,
+                                                         flippedY,
+                                                         ratio,
+                                                         stride,
+                                                         lightmapImage);
                         
                         
                         uint32 bitIndex = x + y * DENSITY_MAP_SIZE;
