@@ -47,28 +47,33 @@ void EyeDropper::InitShades()
 {
     QDesktopWidget* desktop = QApplication::desktop();
     const int n = desktop->screenCount();
-    QRect rcReal;
-    QRect rcVirtual;
 
     shades.resize(n);
-
     for (int i = 0; i < n; i++)
     {
         QWidget *s = desktop->screen(i);
         const QRect screenRect = desktop->screenGeometry(i);
         const double scale = DAVA::DPIHelper::GetDpiScaleFactor(i);
-        rcVirtual = rcVirtual.unite(screenRect);
         
         QRect rc = screenRect;
-        if (scale > 1.0)
+        const bool scaled = scale > 1.0;
+        if (scaled)
         {
             rc.setWidth( int(scale * screenRect.width()) );
             rc.setHeight( int(scale * screenRect.height()) );
         }
-        
-        rcReal = rcReal.united(rc);
 
-        const QImage img = QPixmap::grabWindow( s->winId(), rc.left(), rc.top(), rc.width(), rc.height() ).toImage();
+        QPixmap pix;
+        if (scaled)
+        {
+            pix = QPixmap::grabWindow(s->winId(), rc.left(), rc.top(), rc.width(), rc.height() ).scaled(screenRect.size());
+        }
+        else
+        {
+            pix = QPixmap::grabWindow(s->winId(), rc.left(), rc.top(), rc.width(), rc.height());
+        }
+        const QImage img = pix.toImage();
+        
         DropperShade *shade = new DropperShade( img, screenRect );
         shades[i] = shade;
         shade->show();
