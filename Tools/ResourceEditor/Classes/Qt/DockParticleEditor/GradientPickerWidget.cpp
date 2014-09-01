@@ -248,10 +248,10 @@ void GradientPickerWidget::mouseDoubleClickEvent(QMouseEvent *event)
         ColorPicker cp(this);
         cp.setWindowTitle("Marker color");
         cp.SetColor(oldColor);
-        cp.Exec();
+        const bool result = cp.Exec();
         const QColor newColor = cp.GetColor();
 
-        if(newColor.isValid() && newColor != oldColor)
+        if(result && newColor.isValid() && newColor != oldColor)
 		{
 			SetCurrentPointColor(QColorToColor(newColor));
 			update();

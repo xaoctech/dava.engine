@@ -14,9 +14,10 @@ ColorPicker::ColorPicker(QWidget* parent)
     : AbstractColorPicker(parent)
     , ui(new Ui::ColorPicker())
     , posSaver(new QtPosSaver())
+    , confirmed(false)
 {
     ui->setupUi(this);
-    // posSaver->Attach(this); // Bugs with multiply monitores
+    // posSaver->Attach(this); // Bugs with multiply monitors
 
     setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
     setFocusPolicy(Qt::ClickFocus);
@@ -36,6 +37,10 @@ ColorPicker::ColorPicker(QWidget* parent)
     // Dropper
     connect(ui->dropper, SIGNAL( clicked() ), SLOT( OnDropper() ));
 
+    // Color picker
+    connect(ui->ok, SIGNAL( clicked() ), SLOT( OnOk() ));
+    connect(ui->cancel, SIGNAL( clicked() ), SLOT( close() ));
+
     SetColor(Qt::white);
 }
 
@@ -43,12 +48,12 @@ ColorPicker::~ColorPicker()
 {
 }
 
-void ColorPicker::Exec(const QString& title)
+bool ColorPicker::Exec(const QString& title)
 {
     const Qt::WindowFlags f = windowFlags();
     const Qt::WindowModality m = windowModality();
     setWindowFlags(f | Qt::Dialog);
-    setWindowModality(Qt::ApplicationModal);
+    setWindowModality(Qt::WindowModal);
     if (!title.isEmpty())
     {
         setWindowTitle(title);
@@ -59,6 +64,8 @@ void ColorPicker::Exec(const QString& title)
 
     setWindowFlags(f);
     setWindowModality(m);
+
+    return confirmed;
 }
 
 double ColorPicker::GetMultiplierValue() const
@@ -102,6 +109,7 @@ void ColorPicker::RegisterColorSpace(const QString& key, AbstractColorPicker* pi
 void ColorPicker::SetColorInternal(const QColor& c)
 {
     UpdateControls(c);
+    oldColor = c;
     ui->preview->SetColorOld(c);
     ui->preview->SetColorNew(c);
 }
@@ -138,6 +146,13 @@ void ColorPicker::OnDropper()
     hide();
     dropper->Exec();
     setWindowOpacity(opacity);
+}
+
+void ColorPicker::OnOk()
+{
+    confirmed = true;
+    emit changed(GetColor());
+    close();
 }
 
 void ColorPicker::UpdateControls(const QColor& c, AbstractColorPicker* source)
