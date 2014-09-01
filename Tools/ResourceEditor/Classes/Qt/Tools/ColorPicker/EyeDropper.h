@@ -15,7 +15,13 @@ class EyeDropper
     Q_OBJECT
 
 private:
+    struct ScreenData
+    {
+        int id;
+        QRect rc;
+    };
     typedef QVector< QPointer<DropperShade> > Shades;
+    typedef QVector< ScreenData > ScreenArray;
 
 signals:
     void canceled();
@@ -37,6 +43,9 @@ private:
 
     QPointer<QWidget> parentWidget;
     Shades shades;
+
+private:
+    static void FindExtraOfs(const ScreenArray& screens, int id, int& l, int &t, int& r, int& b);  // QTBUG-30284 workaround
 };
 
 

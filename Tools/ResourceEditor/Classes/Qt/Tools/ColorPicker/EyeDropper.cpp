@@ -48,25 +48,37 @@ void EyeDropper::InitShades()
     QDesktopWidget* desktop = QApplication::desktop();
     const int n = desktop->screenCount();
 
+    ScreenArray screens;
+    screens.reserve(n);
+    for (int i = 0; i < n; i++)
+    {
+        const QRect& screenRect = desktop->screenGeometry(i);
+        ScreenData data = { i, screenRect };
+        screens.push_back(data);
+    }
+
     shades.resize(n);
     for (int i = 0; i < n; i++)
     {
         QWidget *s = desktop->screen(i);
-        const QRect screenRect = desktop->screenGeometry(i);
         const double scale = DAVA::DPIHelper::GetDpiScaleFactor(i);
         
-        QRect rc = screenRect;
+        QRect rc = screens[i].rc;
         const bool scaled = scale > 1.0;
         if (scaled)
         {
-            rc.setWidth( int(scale * screenRect.width()) );
-            rc.setHeight( int(scale * screenRect.height()) );
+            rc.setWidth( int(scale * screens[i].rc.width()) );
+            rc.setHeight( int(scale * screens[i].rc.height()) );
         }
+
+        int l, t, r, b;
+        FindExtraOfs(screens, i, l, t, r, b);
+        rc.adjust(l, t, r, b);
 
         QPixmap pix;
         if (scaled)
         {
-            pix = QPixmap::grabWindow(s->winId(), rc.left(), rc.top(), rc.width(), rc.height() ).scaled(screenRect.size());
+            pix = QPixmap::grabWindow(s->winId(), rc.left(), rc.top(), rc.width(), rc.height() ).scaled(screens[i].rc.size());
         }
         else
         {
@@ -74,7 +86,7 @@ void EyeDropper::InitShades()
         }
         const QImage img = pix.toImage();
         
-        DropperShade *shade = new DropperShade( img, screenRect );
+        DropperShade *shade = new DropperShade( img, screens[i].rc );
         shades[i] = shade;
         shade->show();
 
@@ -84,10 +96,35 @@ void EyeDropper::InitShades()
 
         connect( shade, SIGNAL( canceled() ), SLOT( OnDone() ) );
         connect( shade, SIGNAL( picked(const QColor&) ), SLOT( OnDone() ) );
-
-        //const QString path = QString( "%1/%2_%3.png" ).arg( QApplication::applicationDirPath() ).arg( "shade" ).arg( i );
-        //img.save( path, "PNG", 100 );
     }
-    
-    //const QImage img = QPixmap::grabWindow(QApplication::desktop()->winId(), rcReal.left(), rcReal.top(), rcReal.width(), rcReal.height()).toImage();
+
+}
+
+void EyeDropper::FindExtraOfs(const ScreenArray& screens, int id, int& l, int& t, int& r, int& b)
+{
+    l = 0;
+    t = 0;
+    r = 0;
+    b = 0;
+
+#ifdef Q_OS_MAC
+    const ScreenData& scr = screens[id];
+    const QRect& rc = scr.rc.adjusted(-1, -1, 1, 1);
+
+    for (int i = 0; i < screens.size(); i++)
+    {
+        if (i == id)
+            continue;
+        const QRect& sRc = screens[i].rc;
+
+        if ( rc.left() >= sRc.left() && rc.left() < sRc.right() )
+            l = -1;
+        if ( rc.right() >= sRc.left() && rc.right() < sRc.right() )
+            r = 1;
+        if ( rc.top() >= sRc.top() && rc.top() < sRc.bottom() )
+            t = -1;
+        if ( rc.bottom() >= sRc.top() && rc.bottom() < sRc.bottom() )
+            b = 1;
+    }
+#endif
 }

@@ -9,7 +9,7 @@
 DropperShade::DropperShade( const QImage& src, const QRect& rect )
     : QWidget(NULL, Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint)
     , cache( src )
-    , cursorSize(99, 99)
+    , cursorSize(151, 151)
     , zoomFactor(3)
     , mouse(new MouseHelper(this))
     , drawCursor(false)
@@ -87,10 +87,10 @@ void DropperShade::OnMouseMove(const QPoint& pos)
     rcOld.adjust(-1, -1, 2, 2);
     QRect rcNew(QPoint(pos.x() - sx, pos.y() - sy), cursorSize);
     rcNew.adjust(-1, -1, 2, 2);
-    const QRect rc = rcOld.united(rcNew);
 
     cursorPos = pos;
-    repaint(rc);    // Do not use update(); here
+    update(rcOld);
+    update(rcNew);
 
     emit moved(GetPixel(pos));
 }
