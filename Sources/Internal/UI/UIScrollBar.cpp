@@ -290,13 +290,15 @@ void UIScrollBar::Draw(const UIGeometricData &geometricData)
         float32 totalSize = delegate->TotalAreaSize(this);
         float32 viewPos = -delegate->ViewPosition(this);
         float32 diff = totalSize - visibleArea;
-        switch (orientation) 
+        diff = FLOAT_EQUAL(diff, 0.0f) ? 1.0f : diff;
+    
+        switch (orientation)
         {
             case ORIENTATION_VERTICAL:
             {
                 if (resizeSliderProportionally)
                 {
-                    slider->size.y = size.y * (visibleArea / totalSize);
+                    slider->size.y = FLOAT_EQUAL(totalSize, 0.0f) ? 0.0f : size.y * (visibleArea / totalSize);
 					slider->size.y = GetValidSliderSize(slider->size.y);
                     if (slider->size.y >= size.y) 
                     {
@@ -308,7 +310,7 @@ void UIScrollBar::Draw(const UIGeometricData &geometricData)
                     }
                 }
                     //TODO: optimize
-                slider->relativePosition.y = (size.y - slider->size.y) * (viewPos / (diff!=0?diff:1));
+                slider->relativePosition.y = (size.y - slider->size.y) * (viewPos / diff);
                 if (slider->relativePosition.y < 0) 
                 {
                     slider->size.y += slider->relativePosition.y;
@@ -330,7 +332,7 @@ void UIScrollBar::Draw(const UIGeometricData &geometricData)
             {
                 if (resizeSliderProportionally)
                 {
-                    slider->size.x = size.x * (visibleArea / totalSize);
+                    slider->size.x = FLOAT_EQUAL(totalSize, 0.0f) ? 0.0f : size.x * (visibleArea / totalSize);
 					slider->size.x = GetValidSliderSize(slider->size.x);
                     if (slider->size.x >= size.x) 
                     {
@@ -341,7 +343,7 @@ void UIScrollBar::Draw(const UIGeometricData &geometricData)
                         slider->SetVisible(true, true);
                     }
                 }
-                slider->relativePosition.x = (size.x - slider->size.x) * (viewPos / (diff!=0?diff:1));
+                slider->relativePosition.x = (size.x - slider->size.x) * (viewPos / diff);
                 if (slider->relativePosition.x < 0) 
                 {
                     slider->size.x += slider->relativePosition.x;
