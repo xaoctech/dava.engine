@@ -58,6 +58,8 @@
 		76A098A818E1970E00D442EB /* LicenceDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76A098A618E1970E00D442EB /* LicenceDialog.cpp */; };
 		76BA73DB195839710029DC61 /* RunActionEventWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76BA73D9195839710029DC61 /* RunActionEventWidget.cpp */; };
 		76BA73E419583B840029DC61 /* RunActionEventWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76BA73E319583B840029DC61 /* RunActionEventWidget_moc.cpp */; };
+		76C985B419B4818900C4792C /* DropperShade.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76C985B219B4818900C4792C /* DropperShade.cpp */; };
+		76C985BD19B481A600C4792C /* DropperShade_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76C985BC19B481A600C4792C /* DropperShade_moc.cpp */; };
 		76E5FFC719ADE80D004AC39F /* AbstractColorPicker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76E5FFAB19ADE80D004AC39F /* AbstractColorPicker.cpp */; };
 		76E5FFC819ADE80D004AC39F /* ColorComponentSlider.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76E5FFAD19ADE80D004AC39F /* ColorComponentSlider.cpp */; };
 		76E5FFC919ADE80D004AC39F /* ColorPicker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76E5FFAF19ADE80D004AC39F /* ColorPicker.cpp */; };
@@ -775,6 +777,9 @@
 		76BA73D9195839710029DC61 /* RunActionEventWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RunActionEventWidget.cpp; path = RunActionEventWidget/RunActionEventWidget.cpp; sourceTree = "<group>"; };
 		76BA73DA195839710029DC61 /* RunActionEventWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RunActionEventWidget.h; path = RunActionEventWidget/RunActionEventWidget.h; sourceTree = "<group>"; };
 		76BA73E319583B840029DC61 /* RunActionEventWidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RunActionEventWidget_moc.cpp; path = _GeneratedQt/RunActionEventWidget/RunActionEventWidget_moc.cpp; sourceTree = "<group>"; };
+		76C985B219B4818900C4792C /* DropperShade.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DropperShade.cpp; sourceTree = "<group>"; };
+		76C985B319B4818900C4792C /* DropperShade.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DropperShade.h; sourceTree = "<group>"; };
+		76C985BC19B481A600C4792C /* DropperShade_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DropperShade_moc.cpp; sourceTree = "<group>"; };
 		76E5FFAB19ADE80D004AC39F /* AbstractColorPicker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AbstractColorPicker.cpp; sourceTree = "<group>"; };
 		76E5FFAC19ADE80D004AC39F /* AbstractColorPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AbstractColorPicker.h; sourceTree = "<group>"; };
 		76E5FFAD19ADE80D004AC39F /* ColorComponentSlider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ColorComponentSlider.cpp; sourceTree = "<group>"; };
@@ -2002,6 +2007,8 @@
 		76E5FFAA19ADE80D004AC39F /* ColorPicker */ = {
 			isa = PBXGroup;
 			children = (
+				76C985B219B4818900C4792C /* DropperShade.cpp */,
+				76C985B319B4818900C4792C /* DropperShade.h */,
 				76E5FFAB19ADE80D004AC39F /* AbstractColorPicker.cpp */,
 				76E5FFAC19ADE80D004AC39F /* AbstractColorPicker.h */,
 				76E5FFAD19ADE80D004AC39F /* ColorComponentSlider.cpp */,
@@ -2049,6 +2056,7 @@
 		76E5FFDB19ADE9AB004AC39F /* ColorPicker */ = {
 			isa = PBXGroup;
 			children = (
+				76C985BC19B481A600C4792C /* DropperShade_moc.cpp */,
 				76E5FFDC19ADE9AB004AC39F /* AbstractColorPicker_moc.cpp */,
 				76E5FFDD19ADE9AB004AC39F /* ColorComponentSlider_moc.cpp */,
 				76E5FFDE19ADE9AB004AC39F /* ColorPicker_moc.cpp */,
@@ -4616,6 +4624,7 @@
 				E8C9922F184CD0EC00AFBF3F /* btTriangleMeshShape.cpp in Build Sources */,
 				84B3D11F18985EF20039A9C0 /* PathValidator.cpp in Build Sources */,
 				0282B86618BC71BC006F1EE4 /* FMODSoundBrowser.cpp in Build Sources */,
+				76C985BD19B481A600C4792C /* DropperShade_moc.cpp in Build Sources */,
 				E8C99280184CD0EC00AFBF3F /* BeastAction.cpp in Build Sources */,
 				E8BAD7021859F50300C98C8D /* CustomLandscape_moc.cpp in Build Sources */,
 				E8C992AE184CD0EC00AFBF3F /* FrameworkMain.cpp in Build Sources */,
@@ -4885,6 +4894,7 @@
 				E8BAD7191859F50300C98C8D /* TextureList_moc.cpp in Build Sources */,
 				62C1B999188E913300CD3005 /* MaterialFilterModel.cpp in Build Sources */,
 				E8C992E9184CD0EC00AFBF3F /* mainwindow.cpp in Build Sources */,
+				76C985B419B4818900C4792C /* DropperShade.cpp in Build Sources */,
 				E8BAD6FC1859F50300C98C8D /* MoveHood_moc.cpp in Build Sources */,
 				E8C99222184CD0EC00AFBF3F /* btOptimizedBvh.cpp in Build Sources */,
 				E8C992FE184CD0EC00AFBF3F /* DebugDrawSystem.cpp in Build Sources */,
