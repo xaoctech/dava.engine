@@ -34,7 +34,6 @@
 #include "TargetConditionals.h"
 #endif
 
-
 namespace DAVA
 {
 
@@ -77,6 +76,16 @@ List<DeviceInfo::StorageInfo> DeviceInfo::GetStoragesList()
     List<DeviceInfo::StorageInfo> l;
     return l;
 }
+    
+#endif
+
+#ifdef __DAVAENGINE_WIN32__
+
+int32 DeviceInfo::GetCpuCount()
+{
+    return -1;
+}
+
 #endif
 
 }
