@@ -12,6 +12,7 @@ DropperShade::DropperShade( const QImage& src, const QRect& rect )
     , cursorSize(99, 99)
     , zoomFactor(3)
     , mouse(new MouseHelper(this))
+    , drawCursor(false)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     setFocusPolicy(Qt::WheelFocus);
@@ -23,6 +24,8 @@ DropperShade::DropperShade( const QImage& src, const QRect& rect )
     connect(mouse, SIGNAL( mouseMove( const QPoint& ) ), SLOT( OnMouseMove( const QPoint& ) ));
     connect(mouse, SIGNAL( mouseRelease( const QPoint& ) ), SLOT( OnClicked( const QPoint& ) ));
     connect(mouse, SIGNAL( mouseWheel( int ) ), SLOT( OnMouseWheel( int ) ));
+    connect(mouse, SIGNAL( mouseEntered() ), SLOT( OnMouseEnter() ));
+    connect(mouse, SIGNAL( mouseLeaved() ), SLOT( OnMouseLeave() ));
 }
 
 DropperShade::~DropperShade()
@@ -35,7 +38,10 @@ void DropperShade::paintEvent(QPaintEvent* e)
 
     QPainter p(this);
     p.drawImage(0, 0, cache);
-    DrawCursor(cursorPos, &p);
+    if (drawCursor)
+    {
+        DrawCursor(cursorPos, &p);
+    }
 }
 
 void DropperShade::DrawCursor(const QPoint& pos, QPainter* p)
@@ -84,7 +90,7 @@ void DropperShade::OnMouseMove(const QPoint& pos)
     const QRect rc = rcOld.united(rcNew);
 
     cursorPos = pos;
-    repaint(rc);
+    repaint(rc);    // Do not use update(); here
 
     emit moved(GetPixel(pos));
 }
@@ -92,7 +98,6 @@ void DropperShade::OnMouseMove(const QPoint& pos)
 void DropperShade::OnClicked(const QPoint& pos)
 {
     emit picked(GetPixel(pos));
-    close();
 }
 
 void DropperShade::OnMouseWheel(int delta)
@@ -113,6 +118,19 @@ void DropperShade::OnMouseWheel(int delta)
     {
         update();
     }
+}
+
+void DropperShade::OnMouseEnter()
+{
+    drawCursor = true;
+    setFocus();
+    update();
+}
+
+void DropperShade::OnMouseLeave()
+{
+    drawCursor = false;
+    update();
 }
 
 void DropperShade::keyPressEvent(QKeyEvent* e)
