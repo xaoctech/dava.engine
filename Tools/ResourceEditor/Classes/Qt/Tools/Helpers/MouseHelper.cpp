@@ -59,12 +59,16 @@ bool MouseHelper::eventFilter(QObject* obj, QEvent* e)
 
 void MouseHelper::enterEvent(QEvent* event)
 {
+    Q_UNUSED(event);
     isHover = true;
+    emit mouseEntered();
 }
 
 void MouseHelper::leaveEvent(QEvent* event)
 {
+    Q_UNUSED(event);
     isHover = false;
+    emit mouseLeaved();
 }
 
 void MouseHelper::mouseMoveEvent(QMouseEvent* event)

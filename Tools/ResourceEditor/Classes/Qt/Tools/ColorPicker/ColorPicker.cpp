@@ -43,12 +43,16 @@ ColorPicker::~ColorPicker()
 {
 }
 
-void ColorPicker::Exec()
+void ColorPicker::Exec(const QString& title)
 {
     const Qt::WindowFlags f = windowFlags();
     const Qt::WindowModality m = windowModality();
     setWindowFlags(f | Qt::Dialog);
     setWindowModality(Qt::ApplicationModal);
+    if (!title.isEmpty())
+    {
+        setWindowTitle(title);
+    }
 
     show();
     modalLoop.exec();

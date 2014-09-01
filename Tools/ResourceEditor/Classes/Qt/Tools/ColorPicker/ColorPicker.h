@@ -31,7 +31,7 @@ public:
     explicit ColorPicker(QWidget* parent = 0);
     ~ColorPicker();
 
-    void Exec();
+    void Exec(const QString& title = QString());
 
     double GetMultiplierValue() const;
     void SetMultiplierValue(double val);

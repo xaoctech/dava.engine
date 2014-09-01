@@ -31,6 +31,18 @@ void EyeDropper::Exec()
     InitShades();
 }
 
+void EyeDropper::OnDone()
+{
+    for ( int i = 0; i < shades.size(); i++ )
+    {
+        DropperShade *shade = shades[i];
+        if (shade)
+        {
+            shades[i]->deleteLater();
+        }
+    }
+}
+
 void EyeDropper::InitShades()
 {
     QDesktopWidget* desktop = QApplication::desktop();
@@ -59,9 +71,17 @@ void EyeDropper::InitShades()
         const QImage img = QPixmap::grabWindow( s->winId(), rc.left(), rc.top(), rc.width(), rc.height() ).toImage();
         DropperShade *shade = new DropperShade( img, screenRect );
         shades[i] = shade;
+        shade->show();
 
-        const QString path = QString( "%1/%2_%3.png" ).arg( QApplication::applicationDirPath() ).arg( "shade" ).arg( i );
-        img.save( path, "PNG", 100 );
+        connect( shade, SIGNAL( canceled() ), SIGNAL( canceled() ) );
+        connect( shade, SIGNAL( picked(const QColor&) ), SIGNAL( picked(const QColor&) ) );
+        connect( shade, SIGNAL( moved(const QColor&) ), SIGNAL( moved(const QColor&) ) );
+
+        connect( shade, SIGNAL( canceled() ), SLOT( OnDone() ) );
+        connect( shade, SIGNAL( picked(const QColor&) ), SLOT( OnDone() ) );
+
+        //const QString path = QString( "%1/%2_%3.png" ).arg( QApplication::applicationDirPath() ).arg( "shade" ).arg( i );
+        //img.save( path, "PNG", 100 );
     }
     
     //const QImage img = QPixmap::grabWindow(QApplication::desktop()->winId(), rcReal.left(), rcReal.top(), rcReal.width(), rcReal.height()).toImage();

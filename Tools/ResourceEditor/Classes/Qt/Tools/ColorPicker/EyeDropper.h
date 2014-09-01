@@ -18,6 +18,7 @@ private:
     typedef QVector< QPointer<DropperShade> > Shades;
 
 signals:
+    void canceled();
     void picked(const QColor& color);
     void moved(const QColor& color);
 
@@ -27,6 +28,9 @@ public:
 
 public slots:
     void Exec();
+
+private slots:
+    void OnDone();
 
 private:
     void InitShades();

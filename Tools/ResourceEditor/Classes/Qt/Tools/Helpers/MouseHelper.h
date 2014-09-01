@@ -15,6 +15,8 @@ signals:
     void mouseMove(const QPoint& pos);
     void mouseRelease(const QPoint& pos);
     void clicked();
+    void mouseEntered();
+    void mouseLeaved();
 
     void mouseWheel(int delta);
 

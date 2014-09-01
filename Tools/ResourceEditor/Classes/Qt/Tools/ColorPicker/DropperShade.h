@@ -26,6 +26,8 @@ private slots:
     void OnMouseMove(const QPoint& pos);
     void OnClicked(const QPoint& pos);
     void OnMouseWheel(int delta);
+    void OnMouseEnter();
+    void OnMouseLeave();
 
 private:
     void paintEvent(QPaintEvent* e);
@@ -38,6 +40,7 @@ private:
     QPoint cursorPos;
     int zoomFactor;
     QPointer<MouseHelper> mouse;
+    bool drawCursor;
 };
 
 
