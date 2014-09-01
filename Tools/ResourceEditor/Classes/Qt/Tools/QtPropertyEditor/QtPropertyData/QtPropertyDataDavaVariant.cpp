@@ -1060,10 +1060,10 @@ void QtPropertyDataDavaVariant::ColorOWPressed()
     const QColor oldColor = ColorToQColor(curVariantValue.AsColor());
     ColorPicker cp(GetOWViewport());
     cp.SetColor(oldColor);
-    cp.Exec();
+    const bool result = cp.Exec();
 
     const QColor newColor = cp.GetColor();
-    if (newColor!=oldColor)
+    if (result && newColor!=oldColor)
 	{
         QString str;
         str.sprintf(FLOAT_PRINTF_FORMAT4, newColor.redF(), newColor.greenF(), newColor.blueF(), newColor.alphaF());

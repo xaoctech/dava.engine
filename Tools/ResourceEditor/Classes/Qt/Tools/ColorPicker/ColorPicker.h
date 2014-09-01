@@ -31,7 +31,7 @@ public:
     explicit ColorPicker(QWidget* parent = 0);
     ~ColorPicker();
 
-    void Exec(const QString& title = QString());
+    bool Exec(const QString& title = QString());
 
     double GetMultiplierValue() const;
     void SetMultiplierValue(double val);
@@ -48,6 +48,7 @@ private slots:
     void OnDropperChanged(const QColor& c);
 
     void OnDropper();
+    void OnOk();
 
 private:
     void UpdateControls(const QColor& c, AbstractColorPicker* source = NULL);
@@ -61,6 +62,8 @@ private:
     PickerMap colorSpaces;
     QEventLoop modalLoop;
     QScopedPointer<QtPosSaver> posSaver;
+    QColor oldColor;
+    bool confirmed;
 };
 
 #endif // COLORPICKER_H
