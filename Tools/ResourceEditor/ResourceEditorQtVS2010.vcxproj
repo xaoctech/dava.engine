@@ -591,6 +591,7 @@
     <ClCompile Include="Classes\Qt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidget.cpp" />
     <ClCompile Include="Classes\Qt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidgetItemDelegate.cpp" />
     <ClCompile Include="Classes\Qt\Tools\ToolButtonWithWidget\ToolButtonWithWidget.cpp" />
+    <ClCompile Include="Classes\SceneProcessing\SceneProcessor.cpp" />
     <ClCompile Include="Classes\Qt\Tools\Widgets\AbstractSlider.cpp" />
     <ClCompile Include="Classes\Qt\Tools\Widgets\ValueSlider.cpp" />
     <ClCompile Include="Classes\SpritesPacker.cpp" />
@@ -1280,6 +1281,7 @@
     <ClInclude Include="Classes\Qt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidget.h" />
     <ClInclude Include="Classes\Qt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidgetItemDelegate.h" />
     <ClInclude Include="Classes\Qt\Tools\ToolButtonWithWidget\ToolButtonWithWidget.h" />
+    <ClInclude Include="Classes\SceneProcessing\SceneProcessor.h" />
     <ClInclude Include="Classes\Qt\Tools\Widgets\AbstractSlider.h" />
     <ClInclude Include="Classes\Qt\Tools\Widgets\ValueSlider.h" />
     <ClInclude Include="Classes\SpritesPacker.h" />
