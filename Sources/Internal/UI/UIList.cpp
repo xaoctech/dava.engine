@@ -453,15 +453,6 @@ void UIList::Update(float32 timeElapsed)
 
 }
 
-void UIList::Draw(const UIGeometricData &geometricData)
-{
-    if(needRefresh)
-    {
-        FullRefresh();
-    }
-    UIControl::Draw(geometricData);
-}
-
 void UIList::Input(UIEvent *currentInput)
 {
     if (lockTouch && currentInput->tid != mainTouch)

@@ -2027,6 +2027,15 @@ void QtMainWindow::OnConvertModifiedTextures()
 		{
 
 			DAVA::TextureConverter::ConvertTexture(*descriptor, gpu, true, (TextureConverter::eConvertQuality)quality.AsInt32());
+
+            DAVA::TexturesMap texturesMap = Texture::GetTextureMap();
+            DAVA::TexturesMap::iterator found = texturesMap.find(FILEPATH_MAP_KEY(descriptor->pathname));
+            if(found != texturesMap.end())
+            {
+                DAVA::Texture *tex = found->second;
+                tex->Reload();
+            }
+            
 			WaitSetValue(++convretedNumber);
 		}
 	}
