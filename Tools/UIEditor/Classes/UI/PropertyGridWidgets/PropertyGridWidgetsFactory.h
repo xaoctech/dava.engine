@@ -94,7 +94,7 @@ private:
     StatePropertyGridWidget* stateWidget;
     TextPropertyGridWidget* textWidget;
     UITextFieldPropertyGridWidget* uiTextFieldWidget;
-    BackGroundPropertyGridWidget* backgroundWidget;
+    BackgroundPropertyGridWidget* backgroundWidget;
 	SliderPropertyGridWidget* sliderWidget;
 	AlignsPropertyGridWidget* alignWidget;
 	SpinnerPropertyGridWidget* spinnerWidget;
