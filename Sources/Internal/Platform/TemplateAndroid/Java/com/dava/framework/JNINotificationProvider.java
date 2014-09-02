@@ -1,14 +1,10 @@
 package com.dava.framework;
 
-import android.R;
-import android.app.Notification;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.content.res.AssetManager;
-
-
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.content.res.AssetManager;
 import android.support.v4.app.NotificationCompat;
 
 public class JNINotificationProvider {
@@ -17,6 +13,8 @@ public class JNINotificationProvider {
 	private static AssetManager assetsManager = null;
 	private static boolean isInited = false;
 	
+	private native static void onNotificationPressed(int id);
+
     static void Init() {
 		Context context = JNIApplication.GetApplication();
 		assetsManager = context.getAssets();
@@ -35,28 +33,45 @@ public class JNINotificationProvider {
     			.setProgress(0, 0, false);
     	}
     }
-	
-	static void AttachToActivity()
-	{
-		JNIActivity.GetActivity().InitNotification(builder);
+
+    static void EnableTapAction(int id) {
+		if (isInited) {
+			CleanBuilder();
+			JNIActivity activity = JNIActivity.GetActivity();
+			
+			Intent intent = new Intent(activity, activity.getClass());
+			intent.putExtra("ID", id);
+			PendingIntent pIntent = PendingIntent.getActivity(activity, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+			builder.setContentIntent(pIntent);
+			
+			notificationManager.notify(id, builder.build());
+		}
 	}
 	
-    static void NotifyProgress(int id, String title, String text, int maxValue, int value) {
+    static void NotificationPressed(int id)
+    {
+    	if (isInited) {
+    		onNotificationPressed(id);
+    	}
+    }
+    
+	static void NotifyProgress(int id, String title, String text, int maxValue, int value) {
 		if (isInited) {
 			CleanBuilder();
 			builder.setContentTitle(title)
 				.setContentText(text)
 				.setProgress(maxValue, value, false);
+			
 			notificationManager.notify(id, builder.build());
 		}
 	}
 	
     static void NotifyText(int id, String title, String text) {
-
 		if (isInited) {
 			CleanBuilder();
 			builder.setContentTitle(title)
 					.setContentText(text);
+
 			notificationManager.notify(id, builder.build());
 		}
 	}
@@ -65,6 +80,12 @@ public class JNINotificationProvider {
 		if (isInited){
 			CleanBuilder();
 			notificationManager.cancel(id);
+		}
+	}
+
+	public static void AttachToActivity(JNIActivity activity) {
+		if (isInited) {
+			activity.SetNotificationIcon(builder);
 		}
 	}
     
