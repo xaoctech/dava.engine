@@ -189,23 +189,7 @@
         </layout>
        </item>
        <item>
-        <widget class="QLabel" name="label_5">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="frameShape">
-          <enum>QFrame::Box</enum>
-         </property>
-         <property name="text">
-          <string>Тут будет палитра</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
+        <widget class="CustomPalette" name="customPalette" native="true"/>
        </item>
       </layout>
      </item>
@@ -253,6 +237,12 @@
    <class>ColorPreview</class>
    <extends>QWidget</extends>
    <header>Classes/Qt/Tools/ColorPicker/ColorPreview.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CustomPalette</class>
+   <extends>QWidget</extends>
+   <header>Classes/Qt/Tools/ColorPicker/CustomPalette.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
