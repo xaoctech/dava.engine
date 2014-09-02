@@ -43,22 +43,24 @@ void CustomPalette::SetCellCount(int w, int h)
     nRows = h;
 }
 
+CustomPalette::Colors CustomPalette::GetColors() const
+{
+    Colors cs;
+    cs.reserve(controls.size());
+    for (int i = 0; i < controls.size(); i++)
+    {
+        if (controls[i])
+        {
+            cs.push_back(controls[i]->GetColor());
+        }
+    }
+
+    return cs;
+}
+
 void CustomPalette::SetColors(const Colors& _colors)
 {
     colors = _colors;
-}
-
-void CustomPalette::paintEvent(QPaintEvent* e)
-{
-    QPainter p(this);
-
-    //if (BORDER > 0)
-    //{
-    //    p.setPen(QPen(Qt::black, BORDER));
-    //    p.drawRect(rect().adjusted(0, 0, -BORDER, -BORDER));
-    //}
-
-    QWidget::paintEvent(e);
 }
 
 void CustomPalette::resizeEvent(QResizeEvent* e)

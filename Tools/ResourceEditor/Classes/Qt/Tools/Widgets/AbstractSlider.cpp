@@ -21,7 +21,7 @@ AbstractSlider::~AbstractSlider()
 {
 }
 
-QPointF AbstractSlider::PosF() const
+const QPointF& AbstractSlider::PosF() const
 {
     return posF;
 }

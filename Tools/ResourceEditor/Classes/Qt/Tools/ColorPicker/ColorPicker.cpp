@@ -8,6 +8,7 @@
 #include "EyeDropper.h"
 
 #include "Tools/QtPosSaver/QtPosSaver.h"
+#include "Settings/SettingsManager.h"
 
 
 ColorPicker::ColorPicker(QWidget* parent)

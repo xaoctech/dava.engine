@@ -111,6 +111,5 @@ void ColorCell::dropEvent(QDropEvent* e)
         const QColor& c = qvariant_cast<QColor>(mime->colorData());
         SetColor(c);
         e->acceptProposedAction();
-    
     }
 }

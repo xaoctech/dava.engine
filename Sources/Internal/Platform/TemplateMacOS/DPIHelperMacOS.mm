@@ -39,7 +39,7 @@ namespace DAVA
         return  (displayPixelSize.width / displayPhysicalSize.width) * 25.4f;
     }
 	
-    double DPIHelper::GetDpiScaleFactor(int screenId)
+    float64 DPIHelper::GetDpiScaleFactor(int32 screenId)
     {
         NSArray *screens = [NSScreen screens];
         NSScreen *screen = [screens objectAtIndex: screenId];

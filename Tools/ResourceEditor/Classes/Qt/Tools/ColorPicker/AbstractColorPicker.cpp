@@ -10,7 +10,7 @@ AbstractColorPicker::~AbstractColorPicker()
 {
 }
 
-QColor AbstractColorPicker::GetColor() const
+const QColor& AbstractColorPicker::GetColor() const
 {
     return color;
 }

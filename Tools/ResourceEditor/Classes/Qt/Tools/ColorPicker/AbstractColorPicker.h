@@ -19,7 +19,7 @@ public:
     explicit AbstractColorPicker(QWidget* parent);
     ~AbstractColorPicker();
 
-    QColor GetColor() const;
+    const QColor& GetColor() const;
 
 public slots:
     void SetColor(const QColor& c);

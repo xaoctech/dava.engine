@@ -23,7 +23,7 @@ public:
     explicit AbstractSlider(QWidget* parent);
     ~AbstractSlider();
 
-    QPointF PosF() const;
+    const QPointF& PosF() const;
     void SetPosF(const QPointF& posF);
 
 protected:
@@ -46,7 +46,6 @@ private slots:
 private:
     QPointF posF;
     QPoint pressPos;
-    QSize lastSize; //  остыль, т.к. Qt присылает неверный oldSize в первый resizeEvent
     QPointer<MouseHelper> mouse;
 };
 
