@@ -60,6 +60,11 @@ bool LocalNotification::IsChanged() const
 	return isChanged;
 }
 
+bool LocalNotification::IsVisible() const
+{
+	return isVisible;
+}
+
 void LocalNotification::SetTitle(const WideString &_title)
 {
 	if (_title != title)
@@ -156,8 +161,9 @@ LocalNotificationProgress *LocalNotificationController::CreateNotificationProgre
     {
         note->SetText(text);
         note->SetTitle(title);
-        note->SetProgressCurrent(0);
-        note->SetProgressTotal(100);
+        note->SetProgressCurrent(current);
+        note->SetProgressTotal(maximum);
+        note->SetAction(Message());
 
         LockGuard<Mutex> guard(notificationsListMutex);
         notificationsList.push_back(note);
@@ -174,6 +180,7 @@ LocalNotificationText *LocalNotificationController::CreateNotificationText(const
     {
         note->SetText(text);
         note->SetTitle(title);
+        note->SetAction(Message());
 
         LockGuard<Mutex> guard(notificationsListMutex);
         notificationsList.push_back(note);
@@ -195,6 +202,32 @@ void LocalNotificationController::Update()
             notification->Update();
         }
     }
+}
+
+LocalNotification *LocalNotificationController::GetNotificationById(uint32 id)
+{
+	LockGuard<Mutex> guard(notificationsListMutex);
+    if (!notificationsList.empty())
+    {
+        for (List<LocalNotification *>::iterator it = notificationsList.begin(); it != notificationsList.end();)
+        {
+        	if (id == (*it)->GetId())
+        	{
+        		return (*it);
+        	}
+        }
+    }
+
+    return NULL;
+}
+
+void LocalNotificationController::OnNotificationPressed(uint32 id)
+{
+	LocalNotification *notification = GetNotificationById(id);
+	if (NULL != notification)
+	{
+		notification->RunAction();
+	}
 }
 
 bool LocalNotificationController::Remove(LocalNotification *notification)

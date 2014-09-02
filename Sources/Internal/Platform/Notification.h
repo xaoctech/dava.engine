@@ -33,8 +33,10 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/Singleton.h"
+#include "Base/Message.h"
 #include "Platform/NotificationAndroid.h"
 #include "Platform/NotificationNotImplemented.h"
+
 
 namespace DAVA
 {
@@ -52,11 +54,16 @@ public:
     virtual ~LocalNotification();
 
     bool IsChanged() const;
+    bool IsVisible() const;
+
+    void SetAction(const Message& msg);
+    void RunAction() {action(this);}
 
 	void SetTitle(const WideString &_title);
 	void SetText(const WideString &_text);
 	void Show();
     void Hide();
+    inline uint32 GetId() {return id;}
     void Update();
 
 protected:
@@ -66,6 +73,8 @@ protected:
 protected:
     bool isChanged;
     bool isVisible;
+
+    Message action;
 
     uint32 id;
     WideString title;
@@ -103,6 +112,9 @@ public:
 	LocalNotificationProgress *CreateNotificationProgress(const WideString &title = L"", const WideString &text = L"", uint32 max = 0, uint32 current = 0);
     LocalNotificationText *CreateNotificationText(const WideString &title = L"", const WideString &text = L"");
     void Update();
+
+    LocalNotification *GetNotificationById(uint32 id);
+    void OnNotificationPressed(uint32 id);
 
 private:
     bool Remove(LocalNotification *notification);

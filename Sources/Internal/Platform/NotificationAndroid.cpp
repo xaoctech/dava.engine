@@ -53,6 +53,18 @@ const char* JniLocalNotification::GetJavaClassName() const
 	return gJavaClassName;
 }
 
+void LocalNotification::SetAction(const Message &msg)
+{
+	LockGuard<Mutex> mutexGuard(javaCallMutex);
+
+	GetEnvironment()->CallStaticVoidMethod(
+					GetJavaClass(),
+					GetMethodID("EnableTapAction", "(I)V"),
+					id);
+
+	action = msg;
+}
+
 void LocalNotification::NativeHide()
 {
 	LockGuard<Mutex> mutexGuard(javaCallMutex);
@@ -106,6 +118,15 @@ void LocalNotificationText::NativeShow()
 	env->DeleteLocalRef(jStrText);
 }
 
+}
+
+extern "C"
+{
+
+	void Java_com_dava_framework_JNINotificationProvider_onNotificationPressed(JNIEnv* env, jobject classthis, uint32_t id)
+	{
+		DAVA::LocalNotificationController::Instance()->OnNotificationPressed(id);
+	}
 }
 
 #endif

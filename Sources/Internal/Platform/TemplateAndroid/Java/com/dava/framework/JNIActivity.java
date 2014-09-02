@@ -1,7 +1,10 @@
 package com.dava.framework;
 
+import org.fmod.FMODAudioDevice;
+
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -10,9 +13,6 @@ import android.os.Handler;
 import android.support.v4.app.NotificationCompat.Builder;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import com.dava.framework.JNINotificationProvider;
-
-import org.fmod.FMODAudioDevice;
 
 import com.bda.controller.Controller;
 
@@ -51,8 +51,6 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
     {
     	activity = this;
         super.onCreate(savedInstanceState);
-        
-        JNINotificationProvider.AttachToActivity();
         
         if(null != savedInstanceState)
         {
@@ -98,6 +96,16 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
             }
 		} catch (Exception e) {
 			Log.d("", "no singalStrengthListner");
+		}
+        
+        JNINotificationProvider.AttachToActivity(this);
+        
+		Intent intent = getIntent();
+		if (null != intent) {
+			int id = intent.getIntExtra("ID", 0);
+			if (0 != id) {
+				JNINotificationProvider.NotificationPressed(id);
+			}
 		}
     }
     
@@ -260,8 +268,9 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 	public void PostEventToGL(Runnable event) {
 		glView.queueEvent(event);
 	}
-	
-	public void InitNotification(Builder builder) {
-		Log.e("JNIActivity", "Need to implement InitNotification");
+
+	// reimplement this methid to set application icon by builder.setSmallIcon;
+	public void SetNotificationIcon(Builder builder) {
+
 	}
 }
