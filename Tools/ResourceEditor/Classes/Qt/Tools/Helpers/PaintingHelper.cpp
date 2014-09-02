@@ -18,16 +18,13 @@ QImage PaintingHelper::DrawHSVImage(QSize const& size)
     {
         for (int y = 0; y < size.height(); y++)
         {
-            const uint* end = p + size.width();
-            int x = 0;
-            while (p < end)
+            for (int x = 0; x < size.width(); x++)
             {
                 const QPoint pt(x, y);
                 QColor c;
                 c.setHsv(HueRC(pt, size), SatRC(pt, size), ValRC(pt, size));
                 *p = c.rgb();
                 p++;
-                x++;
             }
         }
     }
@@ -185,26 +182,19 @@ QColor PaintingHelper::MaxColorComponent(QColor const& color, char component)
     int r = color.red();
     int g = color.green();
     int b = color.blue();
-    int a = color.alpha();
 
     switch (component)
     {
     case 'r':
         r = 255;
-        a = 255;
         break;
     case 'g':
         g = 255;
-        a = 255;
         break;
     case 'b':
         b = 255;
-        a = 255;
-        break;
-    case 'a':
-        a = 255;
         break;
     }
 
-    return QColor(r, g, b, a);
+    return QColor(r, g, b, 255);
 }

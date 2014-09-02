@@ -24,12 +24,11 @@ public:
     ~CustomPalette();
 
     void SetColors(const Colors& colors);
-    void SetDragPreviewSize(const QSize& size);
     void SetCellSize(const QSize& size);
     void SetCellCount(int w, int h);
+    Colors GetColors() const;
 
 private:
-    void paintEvent(QPaintEvent* e);
     void resizeEvent(QResizeEvent* e);
 
     void CreateControls();
@@ -41,6 +40,8 @@ private:
     Colors colors;
     QList< QPointer<ColorCell> > controls;
     QSize cellSize;
+
+public:
 };
 
 

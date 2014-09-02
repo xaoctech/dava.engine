@@ -244,12 +244,12 @@ void GradientPickerWidget::mouseDoubleClickEvent(QMouseEvent *event)
 
 	if(pointId != -1 && event->button() == Qt::LeftButton)
 	{
-        const QColor oldColor = ColorToQColor(points[pointId].second);
+        const QColor& oldColor = ColorToQColor(points[pointId].second);
         ColorPicker cp(this);
         cp.setWindowTitle("Marker color");
         cp.SetColor(oldColor);
         const bool result = cp.Exec();
-        const QColor newColor = cp.GetColor();
+        const QColor& newColor = cp.GetColor();
 
         if(result && newColor.isValid() && newColor != oldColor)
 		{
