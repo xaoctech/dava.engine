@@ -41,6 +41,9 @@ ColorPicker::ColorPicker(QWidget* parent)
     connect(ui->ok, SIGNAL( clicked() ), SLOT( OnOk() ));
     connect(ui->cancel, SIGNAL( clicked() ), SLOT( close() ));
 
+    // Custom palette
+    connect(ui->customPalette, SIGNAL( selected(const QColor&) ), SLOT( OnChanged(const QColor&) ));
+
     SetColor(Qt::white);
 }
 
@@ -174,6 +177,7 @@ void ColorPicker::UpdateControls(const QColor& c, AbstractColorPicker* source)
         }
     }
 
+    ui->preview->SetColorNew(c);
     color = c;
 }
 
