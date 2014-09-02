@@ -415,10 +415,17 @@ void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *s
             }
         }
         
-        if(densityBits.size() > 0)
+        if(densityBits.size() == 0)
         {
-            SetDensityMap(densityBits);
+            densityBits.resize(DENSITY_MAP_SIZE * DENSITY_MAP_SIZE);
+            uint32 bitCount = densityBits.size();
+            for(size_t bitIndex = 0; bitIndex < bitCount; ++bitIndex)
+            {
+                densityBits[bitIndex] = true;
+            }
         }
+
+        SetDensityMap(densityBits);
         
         if(archive->IsKeyExists("vro.layersAnimationDrug"))
         {
