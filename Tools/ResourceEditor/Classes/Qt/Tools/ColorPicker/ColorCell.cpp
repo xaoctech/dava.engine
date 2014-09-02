@@ -70,9 +70,12 @@ void ColorCell::paintEvent(QPaintEvent* e)
     p.fillRect(rect(), bgBrush);
     p.fillRect(rect(), GetColor());
 
-    const int pw = isHovered ? 3 : 0;
-    p.setPen(QPen(Qt::black, pw));
+    p.setPen(Qt::black);
     p.drawRect(rect().adjusted(0, 0, -1, -1));
+    if (isHovered)
+    {
+        p.drawRect(rect().adjusted(1, 1, -2, -2 ));
+    }
 }
 
 void ColorCell::dragEnterEvent(QDragEnterEvent* e)
@@ -107,5 +110,7 @@ void ColorCell::dropEvent(QDropEvent* e)
     {
         const QColor& c = qvariant_cast<QColor>(mime->colorData());
         SetColor(c);
+        e->acceptProposedAction();
+    
     }
 }

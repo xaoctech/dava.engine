@@ -87,6 +87,10 @@
 		76E5FFF519ADE9AB004AC39F /* PaintingHelper_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76E5FFE719ADE9AB004AC39F /* PaintingHelper_moc.cpp */; };
 		76E5FFF619ADE9AB004AC39F /* AbstractSlider_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76E5FFE919ADE9AB004AC39F /* AbstractSlider_moc.cpp */; };
 		76E5FFF719ADE9AB004AC39F /* ValueSlider_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76E5FFEA19ADE9AB004AC39F /* ValueSlider_moc.cpp */; };
+		76F04BC719B5FAFD0012A485 /* ColorCell.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76F04BC319B5FAFD0012A485 /* ColorCell.cpp */; };
+		76F04BC819B5FAFD0012A485 /* CustomPalette.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76F04BC519B5FAFD0012A485 /* CustomPalette.cpp */; };
+		76F04BD219B5FB930012A485 /* ColorCell_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76F04BD019B5FB930012A485 /* ColorCell_moc.cpp */; };
+		76F04BD319B5FB930012A485 /* CustomPalette_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76F04BD119B5FB930012A485 /* CustomPalette_moc.cpp */; };
 		77BDEC8E56A833D3814BC614 /* QtNetwork.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 82153068A36B6EA46DD82A06 /* QtNetwork.framework */; };
 		77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 336CB11D929F5E35FA69020F /* Cocoa.framework */; };
 		8406D38718BA583100AFF8E3 /* ImageArea.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8406D38518BA583100AFF8E3 /* ImageArea.cpp */; };
@@ -822,6 +826,12 @@
 		76E5FFE719ADE9AB004AC39F /* PaintingHelper_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PaintingHelper_moc.cpp; sourceTree = "<group>"; };
 		76E5FFE919ADE9AB004AC39F /* AbstractSlider_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AbstractSlider_moc.cpp; sourceTree = "<group>"; };
 		76E5FFEA19ADE9AB004AC39F /* ValueSlider_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ValueSlider_moc.cpp; sourceTree = "<group>"; };
+		76F04BC319B5FAFD0012A485 /* ColorCell.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ColorCell.cpp; sourceTree = "<group>"; };
+		76F04BC419B5FAFD0012A485 /* ColorCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorCell.h; sourceTree = "<group>"; };
+		76F04BC519B5FAFD0012A485 /* CustomPalette.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CustomPalette.cpp; sourceTree = "<group>"; };
+		76F04BC619B5FAFD0012A485 /* CustomPalette.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomPalette.h; sourceTree = "<group>"; };
+		76F04BD019B5FB930012A485 /* ColorCell_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ColorCell_moc.cpp; sourceTree = "<group>"; };
+		76F04BD119B5FB930012A485 /* CustomPalette_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CustomPalette_moc.cpp; sourceTree = "<group>"; };
 		8157E7438190A1EEF4A4D363 /* mongodb_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mongodb_macos; path = ../../Libs/libs/libmongodb_macos.a; sourceTree = "<group>"; };
 		8159B90213E2E13CB65C75B4 /* vorbis_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbis_macos; path = ../../Libs/oggvorbis/lib/libvorbis_macos.a; sourceTree = "<group>"; };
 		81BBDA0F1849B4A35FAB7D00 /* freetype_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = freetype_macos; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
@@ -2019,6 +2029,10 @@
 		76E5FFAA19ADE80D004AC39F /* ColorPicker */ = {
 			isa = PBXGroup;
 			children = (
+				76F04BC319B5FAFD0012A485 /* ColorCell.cpp */,
+				76F04BC419B5FAFD0012A485 /* ColorCell.h */,
+				76F04BC519B5FAFD0012A485 /* CustomPalette.cpp */,
+				76F04BC619B5FAFD0012A485 /* CustomPalette.h */,
 				76C985B219B4818900C4792C /* DropperShade.cpp */,
 				76C985B319B4818900C4792C /* DropperShade.h */,
 				76E5FFAB19ADE80D004AC39F /* AbstractColorPicker.cpp */,
@@ -2068,6 +2082,8 @@
 		76E5FFDB19ADE9AB004AC39F /* ColorPicker */ = {
 			isa = PBXGroup;
 			children = (
+				76F04BD019B5FB930012A485 /* ColorCell_moc.cpp */,
+				76F04BD119B5FB930012A485 /* CustomPalette_moc.cpp */,
 				76C985BC19B481A600C4792C /* DropperShade_moc.cpp */,
 				76E5FFDC19ADE9AB004AC39F /* AbstractColorPicker_moc.cpp */,
 				76E5FFDD19ADE9AB004AC39F /* ColorComponentSlider_moc.cpp */,
@@ -4590,6 +4606,7 @@
 				E8C99326184CD0EC00AFBF3F /* TextureScrollArea.cpp in Build Sources */,
 				A6D827AB187717EA0006A5DD /* CreatePlaneLODCommand.cpp in Build Sources */,
 				E8BAD6EB1859F50300C98C8D /* SceneTypes_moc.cpp in Build Sources */,
+				76F04BC819B5FAFD0012A485 /* CustomPalette.cpp in Build Sources */,
 				E8C992F0184CD0EC00AFBF3F /* ProjectManager.cpp in Build Sources */,
 				E8C99253184CD0EC00AFBF3F /* btTypedConstraint.cpp in Build Sources */,
 				E8C9933B184CD0EC00AFBF3F /* QtPropertyDataMetaObject.cpp in Build Sources */,
@@ -4598,6 +4615,7 @@
 				E8C9926F184CD0EC00AFBF3F /* ColladaSceneNodeAnimation.cpp in Build Sources */,
 				E8BAD7341859F50300C98C8D /* QtPropertyDataMetaObject_moc.cpp in Build Sources */,
 				E8C99229184CD0EC00AFBF3F /* btTetrahedronShape.cpp in Build Sources */,
+				76F04BC719B5FAFD0012A485 /* ColorCell.cpp in Build Sources */,
 				E8BAD7181859F50300C98C8D /* TextureConvertorWork_moc.cpp in Build Sources */,
 				E8C992D5184CD0EC00AFBF3F /* ParticleEditorWidget.cpp in Build Sources */,
 				E8B1577B19010E1100E966EA /* FlagSelectorCombo_moc.cpp in Build Sources */,
@@ -4754,6 +4772,7 @@
 				E8C992E0184CD0EC00AFBF3F /* SceneInfo.cpp in Build Sources */,
 				E8C9929F184CD0EC00AFBF3F /* TransformCommand.cpp in Build Sources */,
 				E8BAD7221859F50300C98C8D /* EventFilterDoubleSpinBox_moc.cpp in Build Sources */,
+				76F04BD219B5FB930012A485 /* ColorCell_moc.cpp in Build Sources */,
 				A6CCB64A18990C3000F5DA38 /* QualitySwitcher.cpp in Build Sources */,
 				E8C992A8184CD0EC00AFBF3F /* LandscapeRenderer.cpp in Build Sources */,
 				E8BAD7131859F50300C98C8D /* SpeedTreeImportDialog_moc.cpp in Build Sources */,
@@ -4870,6 +4889,7 @@
 				E8BAD7331859F50300C98C8D /* QtPropertyDataKeyedArchiveMember_moc.cpp in Build Sources */,
 				0282B86718BC71BC006F1EE4 /* SoundComponentEditor.cpp in Build Sources */,
 				E8C992E1184CD0EC00AFBF3F /* SceneTree.cpp in Build Sources */,
+				76F04BD319B5FB930012A485 /* CustomPalette_moc.cpp in Build Sources */,
 				E8C992D6184CD0EC00AFBF3F /* ParticleEffectPropertiesWidget.cpp in Build Sources */,
 				E8C99212184CD0EC00AFBF3F /* btCompoundShape.cpp in Build Sources */,
 				76741C8818A3BDE20044A0BF /* CacheRequest.cpp in Build Sources */,
