@@ -209,8 +209,6 @@ public class JNITextField {
 					@Override
 					public void onFocusChange(View v, boolean hasFocus) {
 						final boolean _hasFocus = hasFocus;
-						Log.i(JNIConst.LOG_TAG, "[TextEdit::onFocusChange] has focus flag" + _hasFocus);
-						Log.i(JNIConst.LOG_TAG, "[TextEdit::onFocusChange] has focus" + v.hasFocus());
 						JNIActivity.GetActivity().PostEventToGL(new Runnable() {
 							@Override
 							public void run() {
@@ -222,7 +220,6 @@ public class JNITextField {
 				text.setOnLongClickListener(new View.OnLongClickListener() {
 					@Override
 					public boolean onLongClick(View v) {
-						Log.i(JNIConst.LOG_TAG, "[TextEdit::onLongClick] has focus" + v.hasFocus()); 
 						return !v.hasFocus();
 					}
 				});
