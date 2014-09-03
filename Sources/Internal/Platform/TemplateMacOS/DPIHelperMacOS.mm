@@ -43,7 +43,7 @@ namespace DAVA
     {
         NSArray *screens = [NSScreen screens];
         NSScreen *screen = [screens objectAtIndex: screenId];
-        const double scale = [screen backingScaleFactor];
+        const float64 scale = [screen backingScaleFactor];
         
         return scale;
     }
