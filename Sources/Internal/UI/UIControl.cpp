@@ -2064,7 +2064,6 @@ namespace DAVA
         UIControl *baseControl = new UIControl();
 
         // Control name
-        //node->Set("name", this->GetName());
         SetPreferredNodeType(node, GetClassName());
 
         // Transform data
