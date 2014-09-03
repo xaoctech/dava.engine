@@ -629,7 +629,7 @@ void UIControlMetadata::UpdateThumbSizeForUIControlThumb()
     }
 }
     
-QString UIControlMetadata::GetSprite()
+QString UIControlMetadata::GetSprite() const
 {
     if (!VerifyActiveParamID())
     {

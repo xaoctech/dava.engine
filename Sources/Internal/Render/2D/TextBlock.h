@@ -101,13 +101,17 @@ public:
 
 	const Vector<int32> & GetStringSizes() const;
     
+    void ForcePrepare(Texture *texture);
+    
 protected:
 	TextBlock();
 	~TextBlock();
 	
-	void Prepare();
+	void Prepare(Texture *texture = NULL);
 	void PrepareInternal(BaseObject * caller, void * param, void *callerData);
-	
+    
+	void CalculateCacheParams();
+
 	void DrawToBuffer(Font *font, uint8 *buf);
 
 	void ProcessAlign();
@@ -149,6 +153,7 @@ protected:
 	friend class TextBlockGraphicsRender;
 	friend class TextBlockDistanceRender;
 	TextBlockRender* textBlockRender;
+    TextureInvalidater *textureInvalidater;
 };
 
 }; //end of namespace

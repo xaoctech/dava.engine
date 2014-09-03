@@ -356,6 +356,7 @@ int UIStaticTextMetadata::GetTextColorInheritType() const
         return UIControlBackground::COLOR_MULTIPLY_ON_PARENT;
     }
 
+    // Text Color is the base one.
     return GetActiveStaticText()->GetTextBackground()->GetColorInheritType();
 }
 
