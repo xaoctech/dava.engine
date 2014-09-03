@@ -61,6 +61,8 @@ CustomPalette::Colors CustomPalette::GetColors() const
 void CustomPalette::SetColors(const Colors& _colors)
 {
     colors = _colors;
+    CreateControls();
+    AdjustControls();
 }
 
 void CustomPalette::resizeEvent(QResizeEvent* e)
