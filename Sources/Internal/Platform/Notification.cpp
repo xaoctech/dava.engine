@@ -228,7 +228,7 @@ LocalNotification *LocalNotificationController::GetNotificationById(uint32 id)
 	LockGuard<Mutex> guard(notificationsListMutex);
     if (!notificationsList.empty())
     {
-        for (List<LocalNotification *>::iterator it = notificationsList.begin(); it != notificationsList.end();)
+        for (List<LocalNotification *>::iterator it = notificationsList.begin(); it != notificationsList.end(); ++it)
         {
         	DVASSERT(NULL != (*it));
         	if (id == (*it)->GetId())
