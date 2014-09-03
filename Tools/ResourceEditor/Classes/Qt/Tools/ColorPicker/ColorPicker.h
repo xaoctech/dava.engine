@@ -55,6 +55,9 @@ private:
     void ConnectPicker(AbstractColorPicker* picker);
     void closeEvent(QCloseEvent* e);
 
+    void LoadCustomPalette();
+    void SaveCustomPalette();
+
     QScopedPointer<Ui::ColorPicker> ui;
     QPointer<EyeDropper> dropper;
     QPointer<ColorPickerRGBAM> rgbam;

@@ -43,6 +43,7 @@ ColorPicker::ColorPicker(QWidget* parent)
     connect(ui->cancel, SIGNAL( clicked() ), SLOT( close() ));
 
     // Custom palette
+    LoadCustomPalette();
     connect(ui->customPalette, SIGNAL( selected(const QColor&) ), SLOT( OnChanged(const QColor&) ));
 
     SetColor(Qt::white);
@@ -196,6 +197,37 @@ void ColorPicker::closeEvent(QCloseEvent* e)
     {
         modalLoop.quit();
     }
+    SaveCustomPalette();
 
     QWidget::closeEvent(e);
+}
+
+void ColorPicker::LoadCustomPalette()
+{
+    DAVA::VariantType v = SettingsManager::Instance()->GetValue(Settings::Internal_CustomPalette);
+    const DAVA::int32 vSize = v.AsByteArraySize();
+    const DAVA::int32 n = vSize / sizeof(DAVA::int32);
+    const DAVA::uint32 *a = (DAVA::uint32 *)v.AsByteArray();
+
+    CustomPalette::Colors colors(n);
+    for (int i = 0; i < n; i++)
+    {
+        colors[i] = a[i];
+    }
+
+    ui->customPalette->SetColors(colors);
+}
+
+void ColorPicker::SaveCustomPalette()
+{
+    const CustomPalette::Colors& colors = ui->customPalette->GetColors();
+    const DAVA::int32 n = colors.size();
+    QVector<DAVA::uint32> a(n);
+    for (int i = 0; i < n; i++)
+    {
+        a[i] = colors[i].rgba();
+    }
+
+    DAVA::VariantType v((DAVA::uint8 *)a.data(), n*sizeof(DAVA::uint32));
+    SettingsManager::Instance()->SetValue(Settings::Internal_CustomPalette, v);
 }

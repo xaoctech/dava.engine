@@ -40,8 +40,6 @@ private:
     Colors colors;
     QList< QPointer<ColorCell> > controls;
     QSize cellSize;
-
-public:
 };
 
 
