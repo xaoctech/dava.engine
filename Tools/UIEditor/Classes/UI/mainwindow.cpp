@@ -1827,7 +1827,7 @@ void MainWindow::OnSearchPressed()
         {
         	// Select first found screen/aggregator
         	this->ui->hierarchyDockWidgetContents->ScrollTo(foundScreens.at(0));
-            if (foundNodes.size() > 1)
+            if (foundScreens.size() > 1)
             {	// and highlight other found screens/aggregators
             	this->ui->hierarchyDockWidgetContents->HighlightScreenNodes(foundScreens);
             }
