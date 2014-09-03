@@ -44,6 +44,11 @@ void LocalNotification::NativeHide()
     
 }
     
+void LocalNotification::SetAction(const DAVA::Message &msg)
+{
+    action = msg;
+}
+    
 void LocalNotificationProgress::NativeShow()
 {
     
