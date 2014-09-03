@@ -1572,6 +1572,7 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\FileSystem\YamlEmitter.h">
       <Filter>Internal\FileSystem</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneCache.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
