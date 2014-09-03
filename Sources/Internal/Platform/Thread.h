@@ -36,13 +36,13 @@
 #include "Mutex.h"
 
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_ANDROID__)
-    #define DAVAENGINE_PTHREAD
+    #define __DAVAENGINE_PTHREAD__
 #endif
 
 
 #if defined (__DAVAENGINE_WIN32__)
 #include "Platform/TemplateWin32/pThreadWin32.h"
-#elif defined(DAVAENGINE_PTHREAD)
+#elif defined(__DAVAENGINE_PTHREAD__)
 #include <pthread.h>
 #endif
 
@@ -73,10 +73,9 @@ private:
 class Thread : public BaseObject
 {
 private:
-#if defined(DAVAENGINE_PTHREAD)
+#if defined(__DAVAENGINE_PTHREAD__)
     typedef pthread_t Handle;
     typedef pthread_t NativeId;
-    bool joined;
     friend void	*PthreadMain(void *param);
 #elif defined(__DAVAENGINE_WIN32__)
     typedef HANDLE Handle;
@@ -150,18 +149,18 @@ public:
      willing to release its processor to other threads of the same or higher
      priority.
      */
-    static void YieldThread();
+    static void Yield();
 
     /**
      \brief suspends the execution of the current thread until the time-out interval elapses
      */
-    static void SleepThread(uint32 timeMS);
+    static void Sleep(uint32 timeMS);
 
     /**
      \brief registers id for current thread if not registered before and returns it from map.
      \returns id as sequential number of registered in this application thread
     */
-    static Id GetCurrentThreadId();
+    static Id GetCurrentId();
 
     /**
      \returns returns Id of current Thread Object.
@@ -172,7 +171,6 @@ public:
      \brief register current native thread handle and remember it's Id as Id of MainThread.
      */
     static void	InitMainThread();
-    static void InitGLThread();
 
 private:
     virtual ~Thread();
@@ -187,11 +185,7 @@ private:
     static NativeId GetCurrentIdentifier();
     
     /**
-    \brief Start thread native inplementation (contains no Thread logic)
-    */
-    void StartNative();
-    /**
-    \brief Kill thread native inplementation (contains no Thread logic)
+    \brief Kill thread native implementation (contains no Thread logic)
     */
     void KillNative(Handle handle);
     
@@ -212,7 +206,6 @@ private:
     */
 	Id id;
 	static Id mainThreadId;
-	static Id glThreadId;
 
     /**
     \brief Some value which is unique for any thread in current OS. Could be used only for equals comparision.

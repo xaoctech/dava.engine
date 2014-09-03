@@ -34,6 +34,8 @@
 #include <errno.h>
 #endif
 
+#include "Thread/LockGuard.h"
+
 namespace DAVA
 {
 
@@ -43,36 +45,40 @@ Map<Thread::NativeId, Thread::Id> Thread::threadIdList;
 Mutex Thread::threadIdListMutex;
 
 Thread::Id Thread::mainThreadId = 0;
-Thread::Id Thread::glThreadId = 0;
 
 ConditionalVariable::ConditionalVariable()
 {
     int32 ret = pthread_cond_init(&cv, 0);
-    if(ret)
+    if (ret)
+    {
         Logger::FrameworkDebug("[ConditionalVariable::ConditionalVariable()]: pthread_cond_init error code %d", ret);
+    }
+
     ret = pthread_mutex_init(&exMutex, 0);
-    if(ret)
+
+    if (ret)
+    {
         Logger::FrameworkDebug("[ConditionalVariable::ConditionalVariable()]: pthread_mutex_init error code %d", ret);
+    }
 }
 
 ConditionalVariable::~ConditionalVariable()
 {
     int32 ret = pthread_cond_destroy(&cv);
-    if(ret)
+    if (ret)
+    {
         Logger::FrameworkDebug("[ConditionalVariable::~ConditionalVariable()]: pthread_cond_destroy error code %d", ret);
+    }
     ret = pthread_mutex_destroy(&exMutex);
-    if(ret)
+    if (ret)
+    {
         Logger::FrameworkDebug("[ConditionalVariable::~ConditionalVariable()]: pthread_mutex_destroy error code %d", ret);
+    }
 }
 
 void Thread::InitMainThread()
 {
     mainThreadId = GetCurrentThreadId();
-}
-
-void Thread::InitGLThread()
-{
-	glThreadId = GetCurrentThreadId();
 }
 
 bool Thread::IsMainThread()
@@ -85,16 +91,16 @@ bool Thread::IsMainThread()
     //Not an any thread which calls IsMainThread is DAVA::Thread, so it sould not contain nativeId
     Id currentId = GetCurrentThreadId();
 
-    return currentId == mainThreadId || currentId == glThreadId;
+    return currentId == mainThreadId;
 }
 
-Thread::Id Thread::GetCurrentThreadId()
+Thread::Id Thread::GetCurrentId()
 {
     // try to find in map
     // if not found - create new id
     Id retId;
     
-    threadIdListMutex.Lock();
+    LockGuard<Mutex> locker(threadIdListMutex);
     Map<NativeId, Id>::iterator it = threadIdList.find(GetCurrentIdentifier());
     if (it == threadIdList.end())
     {
@@ -104,9 +110,10 @@ Thread::Id Thread::GetCurrentThreadId()
         retId = newId++;
     }
     else
+    {
         retId = it->second;
-    threadIdListMutex.Unlock();
-    
+    }
+
     return retId;
 }
 
@@ -141,14 +148,14 @@ void Thread::Kill()
 
 void Thread::KillAll()
 {
-    threadListMutex.Lock();
+    LockGuard<Mutex> locker(threadListMutex);
+
     Set<Thread *>::iterator i = threadList.begin();
     Set<Thread *>::iterator end = threadList.end();
     for(; i != end; ++i)
     {
         (*i)->Kill();
     }
-    threadListMutex.Unlock();
 }
 
 void Thread::Cancel()
@@ -210,28 +217,38 @@ Thread::eThreadState Thread::GetState() const
 void Thread::Wait(ConditionalVariable * cv)
 {
     int32 ret = 0;
-    if((ret = pthread_mutex_lock(&cv->exMutex)))
+    if ((ret = pthread_mutex_lock(&cv->exMutex)))
+    {
         Logger::FrameworkDebug("[Thread::Wait]: pthread_mutex_lock error code %d", ret);
-    
-    if((ret = pthread_cond_wait(&cv->cv, &cv->exMutex)))
-        Logger::FrameworkDebug("[Thread::Wait]: pthread_cond_wait error code %d", ret);
+    }
 
-    if((ret = pthread_mutex_unlock(&cv->exMutex)))
+    if ((ret = pthread_cond_wait(&cv->cv, &cv->exMutex)))
+    {
+        Logger::FrameworkDebug("[Thread::Wait]: pthread_cond_wait error code %d", ret);
+    }
+
+    if ((ret = pthread_mutex_unlock(&cv->exMutex)))
+    {
         Logger::FrameworkDebug("[Thread::Wait]: pthread_mutex_unlock error code %d", ret);
+    }
 }
 
 void Thread::Signal(ConditionalVariable * cv)
 {
     int32 ret = pthread_cond_signal(&cv->cv);
-    if(ret)
+    if (ret)
+    {
         Logger::FrameworkDebug("[Thread::Signal]: pthread_cond_signal error code %d", ret);
+    }
 }
     
 void Thread::Broadcast(ConditionalVariable * cv)
 {
     int32 ret = pthread_cond_broadcast(&cv->cv);
-    if(ret)
+    if (ret)
+    {
         Logger::FrameworkDebug("[Thread::Broadcast]: pthread_cond_broadcast error code %d", ret);
+    }
 }
 
 void Thread::SetId(const Id &threadId)
@@ -273,7 +290,7 @@ void Thread::ThreadFunction(void *param)
     
     // thread is finishing so we need to unregister it
     threadIdListMutex.Lock();
-    threadIdList.erase(GetCurrentIdentifier());
+    threadIdList.erase(t->GetId());
     threadIdListMutex.Unlock();
     
     t->Release();

@@ -57,7 +57,7 @@ void ThreadSyncTest::SomeThreadFunc(BaseObject * caller, void * callerData, void
 void ThreadSyncTest::ThreadSleepTestFunction(PerfFuncData * data)
 {
     uint64 time = SystemTimer::Instance()->AbsoluteMS();
-    Thread::SleepThread(300);
+    Thread::Sleep(300);
     uint64 elapsedTime = SystemTimer::Instance()->AbsoluteMS() - time;
     TEST_VERIFY(elapsedTime >= 300);
 }
@@ -75,7 +75,7 @@ void ThreadSyncTest::InfiniteThreadFunction(BaseObject * caller, void * callerDa
     Thread *thread = static_cast<Thread *>(caller);
     while(thread && Thread::STATE_RUNNING == thread->GetState())
     {
-        Thread::SleepThread(200);
+        Thread::Sleep(200);
     }
     
 }
@@ -86,7 +86,7 @@ void ThreadSyncTest::ShortThreadFunction(BaseObject * caller, void * callerData,
     Thread *thread = static_cast<Thread *>(caller);
     while(thread && i-- > 0)
     {
-        Thread::SleepThread(1);
+        Thread::Sleep(1);
         if (Thread::STATE_CANCELLING == thread->GetState())
             break;
     }
@@ -105,7 +105,7 @@ void ThreadSyncTest::TestThread(PerfFuncData * data)
     uint32 timeout = 3000;
     while (timeout-- > 0 && Thread::STATE_RUNNING != infiniteThread->GetState())
     {
-        Thread::SleepThread(1);
+        Thread::Sleep(1);
     }
     TEST_VERIFY(timeout > 0);
 
@@ -127,7 +127,7 @@ void ThreadSyncTest::TestThread(PerfFuncData * data)
     infiniteThread->Start();
     shortThread->Start();
 
-    Thread::SleepThread(50);
+    Thread::Sleep(50);
     Thread::KillAll();
     
     shortThread->Join();

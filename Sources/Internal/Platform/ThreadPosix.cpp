@@ -29,7 +29,7 @@
 
 #include "Platform/Thread.h"
 
-#if defined(DAVAENGINE_PTHREAD)
+#if defined(__DAVAENGINE_PTHREAD__)
 
 #include <time.h>
 #include <errno.h>
@@ -47,7 +47,6 @@ void Thread::thread_exit_handler(int sig)
 {
 	if (SIGUSR1 == sig)
 	{
-		Logger::Debug("sigusr came");
 		pthread_exit(0);
 	}
 }
@@ -57,7 +56,7 @@ void Thread::Init()
 {
 #if defined (__DAVAENGINE_ANDROID__)
 	struct sigaction cancelThreadAction;
-	memset(&cancelThreadAction, 0, sizeof(cancelThreadAction));
+	Memset(&cancelThreadAction, 0, sizeof(cancelThreadAction));
 	sigemptyset(&cancelThreadAction.sa_mask);
 	cancelThreadAction.sa_flags = 0;
 	cancelThreadAction.sa_handler = thread_exit_handler;
@@ -67,7 +66,8 @@ void Thread::Init()
 
 void Thread::Shutdown()
 {
-    
+    DVASSERT(STATE_ENDED == state || STATE_CANCELLED == state || STATE_KILLED == state);
+    Join();
 }
 
 void Thread::KillNative(Handle _handle)
@@ -80,10 +80,12 @@ void Thread::KillNative(Handle _handle)
     ret = pthread_kill(_handle, SIGUSR1);
 #endif
     if (0 != ret)
-    	Logger::FrameworkDebug("[Thread::Cancel] for android: id = %d, error = %d", Thread::GetCurrentThreadId(), ret);
+    {
+        Logger::FrameworkDebug("[Thread::Cancel] for android: id = %d, error = %d", Thread::GetCurrentThreadId(), ret);
+    }
 }
 
-void Thread::SleepThread(uint32 timeMS)
+void Thread::Sleep(uint32 timeMS)
 {
     timespec req, rem;
     req.tv_sec = timeMS / 1000;
@@ -116,7 +118,7 @@ void Thread::Start()
     pthread_create(&handle, 0, PthreadMain, (void *)this);
 }
 
-void Thread::YieldThread()
+void Thread::Yield()
 {
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
     pthread_yield_np();

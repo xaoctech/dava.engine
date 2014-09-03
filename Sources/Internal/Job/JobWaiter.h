@@ -40,11 +40,11 @@ class Job;
 class ThreadIdJobWaiter
 {
 public:
-	ThreadIdJobWaiter(Thread::Id threadId = Thread::GetCurrentThreadId());
+	ThreadIdJobWaiter(Thread::Id threadId = Thread::GetCurrentId());
 	~ThreadIdJobWaiter();
 	void Wait();
 
-	Thread::Id & GetThreadId();
+	const Thread::Id & GetThreadId() const;
 	ConditionalVariable * GetConditionalVariable();
 
 private:

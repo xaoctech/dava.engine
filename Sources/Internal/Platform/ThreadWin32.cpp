@@ -41,6 +41,7 @@ void Thread::Init()
 
 void Thread::Shutdown()
 {
+    DVASSERT(STATE_ENDED == state || STATE_CANCELLED == state || STATE_KILLED == state);
     if (handle)
     {
         CloseHandle(handle);
@@ -67,9 +68,9 @@ void Thread::Start()
     ResumeThread(handle);
 }
 
-void Thread::SleepThread(uint32 timeMS)
+void Thread::Sleep(uint32 timeMS)
 {
-    Sleep(timeMS);
+    ::Sleep(timeMS);
 }
 
 DWORD WINAPI ThreadFunc(void* param)
@@ -78,15 +79,17 @@ DWORD WINAPI ThreadFunc(void* param)
 	return 0;
 }
 
-void Thread::YieldThread()
+void Thread::Yield()
 {
-    SwitchToThread();
+    ::SwitchToThread();
 }
 
 void Thread::Join() const
 {
     if (WaitForSingleObject(handle, INFINITE) != WAIT_OBJECT_0)
+    {
         DAVA::Logger::Error("Thread::Join() failed in WaitForSingleObject");
+    }
 }
 
 void Thread::KillNative(Handle _handle)

@@ -59,7 +59,7 @@ void JobManager::UpdateMainQueue()
 
 ScopedPtr<Job> JobManager::CreateJob(eThreadType threadType, const Message & message, uint32 flags)
 {
-	const Thread::Id & creatorThreadId = Thread::GetCurrentThreadId();
+	const Thread::Id & creatorThreadId = Thread::GetCurrentId();
 	ScopedPtr<Job> job(new Job(message, creatorThreadId, flags));
 
 	if(THREAD_MAIN == threadType)
