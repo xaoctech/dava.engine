@@ -41,6 +41,8 @@
 namespace DAVA
 {
 
+class LocalNotificationController;
+
 class LocalNotification
 		: public BaseObject
 #if defined(__DAVAENGINE_ANDROID__)
@@ -49,15 +51,17 @@ class LocalNotification
         , public LocalNotificationNotImplemented
 #endif
 {
-public:
+	friend class LocalNotificationController;
+protected:
 	LocalNotification();
     virtual ~LocalNotification();
 
+public:
     bool IsChanged() const;
     bool IsVisible() const;
 
     void SetAction(const Message& msg);
-    void RunAction() {action(this);}
+    inline void RunAction() {action(this);}
 
 	void SetTitle(const WideString &_title);
 	void SetText(const WideString &_text);
@@ -83,10 +87,13 @@ protected:
 
 class LocalNotificationProgress : public LocalNotification
 {
-public:
+	friend class LocalNotificationController;
+
+protected:
 	LocalNotificationProgress();
 	virtual ~LocalNotificationProgress();
 
+public:
 	void SetProgressCurrent(uint32 _currentProgress);
 	void SetProgressTotal(uint32 _total);
 
@@ -100,6 +107,8 @@ private:
 
 class LocalNotificationText : public LocalNotification
 {
+	friend class LocalNotificationController;
+
 protected:
 	virtual void NativeShow();
 };
@@ -111,13 +120,11 @@ public:
     virtual ~LocalNotificationController();
 	LocalNotificationProgress *CreateNotificationProgress(const WideString &title = L"", const WideString &text = L"", uint32 max = 0, uint32 current = 0);
     LocalNotificationText *CreateNotificationText(const WideString &title = L"", const WideString &text = L"");
+    bool Remove(LocalNotification *notification);
     void Update();
 
     LocalNotification *GetNotificationById(uint32 id);
     void OnNotificationPressed(uint32 id);
-
-private:
-    bool Remove(LocalNotification *notification);
 
 private:
 	Mutex notificationsListMutex;

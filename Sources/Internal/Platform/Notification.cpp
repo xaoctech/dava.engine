@@ -52,7 +52,7 @@ LocalNotification::LocalNotification()
     
 LocalNotification::~LocalNotification()
 {
-	LocalNotificationController::Instance()->Remove(this);
+
 }
 
 bool LocalNotification::IsChanged() const
@@ -189,6 +189,25 @@ LocalNotificationText *LocalNotificationController::CreateNotificationText(const
     return note;
 }
 
+bool LocalNotificationController::Remove(LocalNotification *notification)
+{
+	LockGuard<Mutex> guard(notificationsListMutex);
+    if (!notificationsList.empty())
+    {
+        for (List<LocalNotification *>::iterator it = notificationsList.begin(); it != notificationsList.end();)
+        {
+        	if (notification == (*it))
+        	{
+        		it = notificationsList.erase(it);
+        		SafeRelease(notification);
+        		return true;
+        	}
+        }
+    }
+
+    return false;
+}
+
 void LocalNotificationController::Update()
 {
 	LockGuard<Mutex> guard(notificationsListMutex);
@@ -211,6 +230,7 @@ LocalNotification *LocalNotificationController::GetNotificationById(uint32 id)
     {
         for (List<LocalNotification *>::iterator it = notificationsList.begin(); it != notificationsList.end();)
         {
+        	DVASSERT(NULL != (*it));
         	if (id == (*it)->GetId())
         	{
         		return (*it);
@@ -228,24 +248,6 @@ void LocalNotificationController::OnNotificationPressed(uint32 id)
 	{
 		notification->RunAction();
 	}
-}
-
-bool LocalNotificationController::Remove(LocalNotification *notification)
-{
-	LockGuard<Mutex> guard(notificationsListMutex);
-    if (!notificationsList.empty())
-    {
-        for (List<LocalNotification *>::iterator it = notificationsList.begin(); it != notificationsList.end();)
-        {
-        	if (notification == (*it))
-        	{
-        		it = notificationsList.erase(it);
-        		return true;
-        	}
-        }
-    }
-
-    return false;
 }
 
 }
