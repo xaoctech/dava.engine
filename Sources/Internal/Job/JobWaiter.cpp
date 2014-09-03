@@ -32,7 +32,7 @@
 namespace DAVA
 {
 
-ThreadIdJobWaiter::ThreadIdJobWaiter(Thread::Id _threadId/* = Thread::GetCurrentThreadId()*/)
+ThreadIdJobWaiter::ThreadIdJobWaiter(Thread::Id _threadId/* = Thread::GetCurrentId()*/)
 :	threadId(_threadId)
 {
 	
@@ -52,7 +52,7 @@ void ThreadIdJobWaiter::Wait()
 	}
 }
 
-Thread::Id & ThreadIdJobWaiter::GetThreadId()
+const Thread::Id & ThreadIdJobWaiter::GetThreadId() const
 {
 	return threadId;
 }
