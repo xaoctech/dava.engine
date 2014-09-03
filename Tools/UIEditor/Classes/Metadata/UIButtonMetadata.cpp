@@ -1103,7 +1103,7 @@ void UIButtonMetadata::UpdatePropertyDirtyFlagForFontShadowColorInheritType()
         
         bool curStateDirty = (GetFontShadowColorInheritTypeForState(curState) !=
                               GetFontShadowColorInheritTypeForState(GetReferenceState()));
-        SetStateDirtyForProperty(curState, PropertyNames::FONT_SHADOW_COLOR_INHERIT_TYPE_PROPERTY_NAME, curStateDirty);
+        SetStateDirtyForProperty(curState, PropertyNames::TEXT_COLOR_INHERIT_TYPE_PROPERTY_NAME, curStateDirty);
     }
 }
 
