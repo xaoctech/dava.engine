@@ -45,11 +45,6 @@ class UIStaticTextMetadata : public UITextControlMetadata
     Q_PROPERTY(bool Multiline READ GetMultiline WRITE SetMultiline);
     Q_PROPERTY(bool MultilineBySymbol READ GetMultilineBySymbol WRITE SetMultilineBySymbol);
 
-    // Font color/shadow color inherit types.
-    Q_PROPERTY(int TextColorInheritType READ GetTextColorInheritType WRITE SetTextColorInheritType);
-    // Font/Shadow per pixel accuracy types
-    Q_PROPERTY(int TextPerPixelAccuracyType READ GetTextPerPixelAccuracyType WRITE SetTextPerPixelAccuracyType);
-
 public:
     UIStaticTextMetadata(QObject* parent = 0);
 
