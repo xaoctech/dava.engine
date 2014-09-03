@@ -212,7 +212,7 @@ void ColorPicker::LoadCustomPalette()
     CustomPalette::Colors colors(n);
     for (int i = 0; i < n; i++)
     {
-        colors[i] = a[i];
+        colors[i] = QColor::fromRgba(a[i]);
     }
 
     ui->customPalette->SetColors(colors);
@@ -228,6 +228,6 @@ void ColorPicker::SaveCustomPalette()
         a[i] = colors[i].rgba();
     }
 
-    DAVA::VariantType v((DAVA::uint8 *)a.data(), n*sizeof(DAVA::uint32));
+    const DAVA::VariantType v((DAVA::uint8 *)a.data(), n*sizeof(DAVA::uint32));
     SettingsManager::Instance()->SetValue(Settings::Internal_CustomPalette, v);
 }
