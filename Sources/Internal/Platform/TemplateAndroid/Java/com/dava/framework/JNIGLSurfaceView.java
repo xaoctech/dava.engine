@@ -15,6 +15,8 @@ import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.ViewGroup.LayoutParams;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
 
 public class JNIGLSurfaceView extends GLSurfaceView
 {
@@ -81,6 +83,13 @@ public class JNIGLSurfaceView extends GLSurfaceView
 		
 		doubleTapDetector = new GestureDetector(JNIActivity.GetActivity(), new DoubleTapListener(this));
 	}
+	
+    @Override
+    public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
+        outAttrs.imeOptions |= JNITextField.STABLE_IME_OPTIONS;
+        return super.onCreateInputConnection(outAttrs);
+    }
+    
 	
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {

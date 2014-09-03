@@ -10,7 +10,8 @@ import java.util.concurrent.FutureTask;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Looper;
+import android.graphics.Rect;
+import android.os.Handler;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.Spanned;
@@ -18,16 +19,22 @@ import android.text.method.PasswordTransformationMethod;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.ActionMode;
+import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
+import com.dava.framework.SoftKeyboardStateHelper.SoftKeyboardStateListener;
 
 public class JNITextField {
 	static class NativeEditText {
@@ -37,10 +44,16 @@ public class JNITextField {
 	static Map<Integer, NativeEditText> controls = new HashMap<Integer, NativeEditText>();
 	
 	static final int NoActiveTextField = -1;
-	static int activeTextField = NoActiveTextField; 
+	static volatile int activeTextField = NoActiveTextField; 
+	static private volatile int lastClosedTextField = NoActiveTextField;
+	static private SoftKeyboardStateHelper keyboardHelper = null;
+	static private volatile boolean readyToClose = false;
+	static private Handler handler = new Handler();
 
 	final static String TAG = "JNITextField";
-	
+	public static final int STABLE_IME_OPTIONS = EditorInfo.IME_FLAG_NO_FULLSCREEN;
+	private static final int CLOSE_KEYBOARD_DELAY = 30;
+    
 	private static NativeEditText GetNativeEditText(int id) {
 		if (!controls.containsKey(id)) {
 			Log.d(TAG, String.format("Unknown control id:%d", id));
@@ -120,6 +133,54 @@ public class JNITextField {
 		return Math.min(2.0f, dm.scaledDensity);
 	}
 
+	public static void InitializeKeyboardHelper(View layout) {
+	    keyboardHelper = new SoftKeyboardStateHelper(layout);
+	    keyboardHelper.addSoftKeyboardStateListener(new SoftKeyboardStateListener()
+        {
+            @Override
+            public void onSoftKeyboardOpened(final Rect keyboardRect)
+            {
+                // Send open event to native
+                JNIActivity.GetActivity().PostEventToGL(new Runnable()
+                {
+                    final int localId = activeTextField;
+                    @Override
+                    public void run()
+                    {
+                        KeyboardOpened(localId, keyboardRect);
+                    }
+                });
+            }
+            
+            @Override
+            public void onSoftKeyboardClosed()
+            {
+                // Workaround: if keyboard was closed by BACK button, we clear focus
+                if(activeTextField != NoActiveTextField)
+                {
+                    EditText text = GetEditText(activeTextField);
+                    if(text != null)
+                    {
+                        text.clearFocus();
+                    }
+                }
+                // Send close event to native
+                JNIActivity.GetActivity().PostEventToGL(new Runnable()
+                {
+                    final int localId = lastClosedTextField;
+                    @Override
+                    public void run()
+                    {
+                        KeyboardClosed(localId);
+                    }
+                });
+                // Clear IDs of active fields on real close keyboard 
+                activeTextField = NoActiveTextField;
+                lastClosedTextField = NoActiveTextField;
+            }
+        });
+	}
+	
 	public static void Create(final int id, final float x, final float y,
 			final float dx, final float dy) {
 		if (controls.containsKey(id)) {
@@ -131,15 +192,7 @@ public class JNITextField {
 			@Override
 			public Void call() throws Exception {
 				JNIActivity activity = JNIActivity.GetActivity();
-				EditText text = new EditText(activity) {
-					@Override
-					public boolean onTouchEvent(MotionEvent event) {
-						MotionEvent newEvent = MotionEvent.obtain(event);
-						newEvent.setLocation(getLeft() + event.getX(), getTop() + event.getY());
-						JNIActivity.GetActivity().glView.dispatchTouchEvent(newEvent);
-						return super.onTouchEvent(event);
-					}
-				};
+				final EditText text = new EditText(activity);
 				
 				FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
 						Math.round(dx), Math.round(dy));
@@ -153,8 +206,58 @@ public class JNITextField {
 				text.setBackgroundColor(Color.TRANSPARENT);
 				text.setTextColor(Color.WHITE);
 				text.setVisibility(View.GONE);
-
-				activity.addContentView(text, params);
+				text.setImeOptions(STABLE_IME_OPTIONS);
+				
+				
+				text.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener()
+                {
+                    @Override
+                    public void onCreateContextMenu(ContextMenu menu, View v,
+                            ContextMenuInfo menuInfo)
+                    {
+                        int i = 0;
+                        Log.w(TAG, "onCreateContextMenu");
+                    }
+                });
+				text.setCustomSelectionActionModeCallback(new ActionMode.Callback()
+                {
+                    
+                    @Override
+                    public boolean onPrepareActionMode(ActionMode mode, Menu menu)
+                    {
+                        // TODO Auto-generated method stub
+                        Log.w(TAG, "onPrepareActionMode");
+                        return false;
+                    }
+                    
+                    @Override
+                    public void onDestroyActionMode(ActionMode mode)
+                    {
+                        // TODO Auto-generated method stub
+                        int i = 0;
+                        Log.w(TAG, "onDestroyActionMode");
+                    }
+                    
+                    @Override
+                    public boolean onCreateActionMode(ActionMode mode, Menu menu)
+                    {
+                        // TODO Auto-generated method stub
+                        Log.w(TAG, "onCreateActionMode");
+                        return false;
+                    }
+                    
+                    @Override
+                    public boolean onActionItemClicked(ActionMode mode, MenuItem item)
+                    {
+                        // TODO Auto-generated method stub
+                        Log.w(TAG, "onActionItemClicked");
+                        return false;
+                    }
+                });
+				
+				text.setBackgroundColor(Color.BLUE);
+				activity.GetFrontLayout().addView(text, params);
+				
 				NativeEditText nativeEditText = new NativeEditText();
 				nativeEditText.editText = text;
 				nativeEditText.id = id;
@@ -203,26 +306,82 @@ public class JNITextField {
 					}
 				});
 
-				text.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-					private final int _id = id;
-
-					@Override
-					public void onFocusChange(View v, boolean hasFocus) {
-						final boolean _hasFocus = hasFocus;
-						JNIActivity.GetActivity().PostEventToGL(new Runnable() {
-							@Override
-							public void run() {
-								JNITextField.TextFieldFocusChanged(_id, _hasFocus);
-							}
-						});
-					}
-				});
-				text.setOnLongClickListener(new View.OnLongClickListener() {
-					@Override
-					public boolean onLongClick(View v) {
-						return !v.hasFocus();
-					}
-				});
+//				text.setOnLongClickListener(new View.OnLongClickListener() {
+//					@Override
+//					public boolean onLongClick(View v) {
+//						return v.hasFocus();
+//					}
+//				});
+				
+				text.setOnFocusChangeListener(new View.OnFocusChangeListener()
+                {
+                    @Override
+                    public void onFocusChange(View v, final boolean hasFocus)
+                    {
+                        // Select UITextField when native filed selected (like iOS)
+                        JNIActivity.GetActivity().PostEventToGL(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                JNITextField.TextFieldFocusChanged(id, hasFocus);
+                            }
+                        });
+                        
+                        // Control keyboard state by changing focus state
+                        if(hasFocus)
+                        {
+                            activeTextField = id;
+                            if(readyToClose) // Another text field lose a focus
+                            {
+                                // Check that keyboard already shown
+                                if(keyboardHelper != null && keyboardHelper.isSoftKeyboardOpened())
+                                {
+                                    JNIActivity.GetActivity().PostEventToGL(new Runnable()
+                                    {
+                                        final int localActiveId = activeTextField;
+                                        final int localLastCloseId = lastClosedTextField;
+                                        final Rect localRect = keyboardHelper.getLastSoftKeyboardBounds();
+                                        @Override
+                                        public void run()
+                                        {
+                                            // Send close/open events with cached data for simulate iOS behavior
+                                            KeyboardClosed(localLastCloseId);
+                                            KeyboardOpened(localActiveId, localRect);
+                                        }
+                                    });
+                                }
+                                // Cancel physical closing keyboard
+                                readyToClose = false;
+                            }
+                            else // No any focused text fields -> show keyboard physically
+                            {
+                                InputMethodManager imm = (InputMethodManager) JNIActivity.GetActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                                imm.showSoftInput(text, InputMethodManager.SHOW_IMPLICIT);
+                            }
+                        } else {
+                            lastClosedTextField = id;
+                            
+                            // Run close keyboard method with delay for cancel it 
+                            // if another text field will be selected
+                            readyToClose = true;
+                            handler.postDelayed(new Runnable()
+                            {
+                                @Override
+                                public void run()
+                                {
+                                    if(readyToClose) // Closing keyboard didn't aborted
+                                    {
+                                        InputMethodManager imm = (InputMethodManager) JNIActivity.GetActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                                        imm.hideSoftInputFromWindow(text.getWindowToken(), 0);
+                                        activeTextField = NoActiveTextField;
+                                        readyToClose = false;
+                                    }
+                                }
+                            }, CLOSE_KEYBOARD_DELAY);
+                        }
+                    }
+                });
 				
 				controls.put(id, nativeEditText);
 				return null;
@@ -585,7 +744,7 @@ public class JNITextField {
 					break;
 				}
 
-				text.setImeOptions(imeOptions);
+				text.setImeOptions(STABLE_IME_OPTIONS | imeOptions);
 				return null;
 			}
 		});
@@ -620,58 +779,30 @@ public class JNITextField {
 		if (text == null)
 			return;
 		
-		JNIActivity.GetActivity().PostEventToGL(new Runnable() {
-			
-			@Override
-			public void run() {
-				InternalTask<Void> task = new InternalTask<Void>(text, new Callable<Void>() {
-					@Override
-					public Void call() throws Exception {
-						text.setVisibility(EditText.VISIBLE);
-						text.requestFocus();
-						
-						InputMethodManager imm = (InputMethodManager) JNIActivity.GetActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-						imm.showSoftInput(text, InputMethodManager.SHOW_FORCED);
-						
-						activeTextField = id;
-						
-						return null;
-					}
-				});
-				task.AsyncRun();
-			}
-		});
+		InternalTask<Void> task = new InternalTask<Void>(text, new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                text.setVisibility(EditText.VISIBLE);
+                text.requestFocus();
+                return null;
+            }
+        });
+        task.AsyncRun();
 	}
 	
-	public static void CloseKeyboard(int id) {
+	public static void CloseKeyboard(final int id) {
 		final EditText text = GetEditText(id);
 		if (text == null)
 			return;
 		
-		final Runnable runnable = new Runnable() {
-			
-			@Override
-			public void run() {
-				InputMethodManager imm = (InputMethodManager) JNIActivity.GetActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-				imm.hideSoftInputFromWindow(text.getWindowToken(), 0);
-				text.clearFocus();
-				activeTextField = NoActiveTextField;
-			}
-		};
-		
-		if (Thread.currentThread() == Looper.getMainLooper().getThread())
-			runnable.run();
-		else
-		{
-			InternalTask<Void> task = new InternalTask<Void>(text, new Callable<Void>() {
-				@Override
-				public Void call() throws Exception {
-					runnable.run();
-					return null;
-				}
-			});
-			task.AsyncRun();
-		}
+		InternalTask<Void> task = new InternalTask<Void>(text, new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                text.clearFocus();
+                return null;
+            }
+        });
+        task.AsyncRun();
 	}
 	
 	public static void SetEnableReturnKeyAutomatically(int id, boolean value) {
@@ -742,6 +873,22 @@ public class JNITextField {
 			}
 		}, 200);
 	}
+	
+    public static void KeyboardOpened(int id, Rect keyboardRect)
+    {
+        if (id != NoActiveTextField)
+        {
+            TextFieldKeyboardShown(id, keyboardRect.left, keyboardRect.top, keyboardRect.width(), keyboardRect.height());
+        }
+    }
+
+    public static void KeyboardClosed(int id)
+    {
+        if (id != NoActiveTextField)
+        {
+              TextFieldKeyboardHidden(id);
+        }
+	}
 
 	public static native void TextFieldShouldReturn(int id);
 	public static native boolean TextFieldKeyPressed(
@@ -749,5 +896,7 @@ public class JNITextField {
 			int replacementLocation,
 			int replacementLength,
 			byte[] byteArray);
+	public static native void TextFieldKeyboardShown(int id, int x, int y, int dx, int dy);
+	public static native void TextFieldKeyboardHidden(int id);
 	public static native void TextFieldFocusChanged(int id, final boolean hasFocus);
 }
