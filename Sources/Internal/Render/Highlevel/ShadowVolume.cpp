@@ -69,7 +69,7 @@ ShadowVolume::~ShadowVolume()
 
 void ShadowVolume::Draw(const FastName & ownerRenderPass, Camera * camera)
 {
-	Light * light = GetLight(0);
+	Light * light = renderObject->GetLight(0);
 	if((!light) || (!(light->GetFlags() & Light::CAST_SHADOW)))
 	{
 		return;

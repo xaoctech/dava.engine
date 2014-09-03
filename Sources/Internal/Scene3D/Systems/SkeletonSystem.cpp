@@ -36,14 +36,19 @@
 namespace DAVA
 {
 
+SkeletonSystem::SkeletonSystem(Scene * scene):SceneSystem(scene)
+{
+
+}
+
 void SkeletonSystem::Process(float32 timeElapsed)
 {
     /*for each active component*/
     {
-        SkeletonComponent *component;
+       // SkeletonComponent *component;
         /*for each bone*/        
         /*if bone [marked for update]  or parent [was updated]*/
-        /*  recalculate world transform (wt=lt * parent.wt)*/
+        /*  recalculate object space transform*/
         /*  add [was updated]*/
         /*  remove [marked for update]*/
         /*else*/
