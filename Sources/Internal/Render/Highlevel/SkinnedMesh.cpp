@@ -27,48 +27,19 @@
 =====================================================================================*/
 
 
-#include "Render/Highlevel/LandscapeChunk.h"
-#include "Render/Highlevel/Landscape.h"
-#include "Render/Highlevel/RenderFastNames.h"
-#include "Scene3D/SceneFileV2.h"
+#include "Render/Highlevel/SkinnedMesh.h"
+#include "Render/Highlevel/RenderBatch.h"
+#include "Render/3D/PolygonGroup.h"
+#include "Render/Highlevel/ShadowVolume.h"
+#include "Render/Material/NMaterial.h"
 
 namespace DAVA
 {
 
-LandscapeChunk::LandscapeChunk(Landscape * _landscape)
-    : landscape(_landscape)
+
+SkinnedMesh::SkinnedMesh()
 {
-    //SetOwnerLayerName(LAYER_OPAQUE);
-}
-    
-LandscapeChunk::~LandscapeChunk()
-{
-    
-}
-    
-void LandscapeChunk::Draw(const FastName & ownerPassName, Camera * camera)
-{
-	if(NULL != landscape)
-	{
-        landscape->BindDynamicParameters(camera);
-		landscape->Draw(camera);
-	}
+    type = TYPE_SKINNED_MESH;
 }
 
-void LandscapeChunk::Save(KeyedArchive *archive, SerializationContext *serializationContext)
-{
-    RenderBatch::Save(archive, serializationContext);
 }
- 
-void LandscapeChunk::Load(KeyedArchive *archive, SerializationContext *serializationContext)
-{
-    RenderBatch::Load(archive, serializationContext);
-}
-
-ShadowVolume * LandscapeChunk::CreateShadow()
-{
-	return NULL;
-}
-
-
-};

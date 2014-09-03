@@ -99,10 +99,7 @@ public:
     inline uint32 GetRenderLayerIDsBitmask() const;
     
 	void SetRenderObject(RenderObject * renderObject);
-	inline RenderObject * GetRenderObject() const;
-
-    void SetSortingTransformPtr(Matrix4* worldTransformPtr);
-    inline Matrix4 * GetSortingTransformPtr() const;
+	inline RenderObject * GetRenderObject() const;        
     
     inline void SetStartIndex(uint32 _startIndex);
     inline void SetIndexCount(uint32 _indexCount);
@@ -126,12 +123,8 @@ public:
     /*sorting offset allowed in 0..31 range, 15 default, more - closer to camera*/
     void SetSortingOffset(uint32 offset);
     inline uint32 GetSortingOffset();
-
-	void SetVisibilityCriteria(uint32 criteria);
-    //bool GetVisible() const;
-    
-    inline void SetLight(uint32 index, Light * light);
-    inline Light * GetLight(uint32 index);
+	
+    //bool GetVisible() const;       
     
 	virtual void UpdateAABBoxFromSource();
 	
@@ -139,9 +132,7 @@ public:
 
 	virtual ShadowVolume * CreateShadow();
 
-protected:
-    void BindDynamicParameters(Camera * camera);
-    
+protected:        
     
     uint32 renderLayerIDsBitmaskFromMaterial;
     PolygonGroup * dataSource;
@@ -155,11 +146,7 @@ protected:
     
 //    ePrimitiveType type; //TODO: waiting for enums at introspection
     uint32 type;
-    uint32 sortingKey; //oooookkkk -where o is offset, k is key
-    uint32 visiblityCriteria;
-
-    static const uint32 MAX_LIGHT_COUNT = 2;
-    Light * lights[MAX_LIGHT_COUNT];
+    uint32 sortingKey; //oooookkkk -where o is offset, k is key        
     
     
 	AABBox3 aabbox;
@@ -216,11 +203,6 @@ inline RenderObject * RenderBatch::GetRenderObject() const
 	return renderObject;
 }
 
-inline Matrix4 * RenderBatch::GetSortingTransformPtr() const
-{
-    return sortingTransformPtr;
-}
-
 inline void RenderBatch::SetStartIndex(uint32 _startIndex)
 {
     startIndex = _startIndex;
@@ -239,18 +221,6 @@ inline uint32 RenderBatch::GetSortingKey() const
 inline uint32 RenderBatch::GetSortingOffset()
 {
     return ((sortingKey>>4)&0x1f);
-}
-
-inline void RenderBatch::SetLight(uint32 index, Light * light)
-{
-    DVASSERT(index < MAX_LIGHT_COUNT)
-    lights[index] = light;
-}
-
-inline Light * RenderBatch::GetLight(uint32 index)
-{
-    DVASSERT(index < MAX_LIGHT_COUNT)
-    return lights[index];
 }
 
     

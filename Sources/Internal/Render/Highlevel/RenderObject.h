@@ -121,9 +121,7 @@ public:
     void RemoveRenderBatch(uint32 batchIndex);
 
     void SetRenderBatchLODIndex(uint32 batchIndex, int32 newLodIndex);
-    void SetRenderBatchSwitchIndex(uint32 batchIndex, int32 newSwitchIndex);
-
-    void UpdateBatchesSortingTransforms();
+    void SetRenderBatchSwitchIndex(uint32 batchIndex, int32 newSwitchIndex);    
 
     virtual void RecalcBoundingBox();
     
@@ -172,6 +170,8 @@ public:
 	virtual void BakeGeometry(const Matrix4 & transform);
 
 	virtual void RecalculateWorldBoundingBox();
+
+    virtual void BindDynamicParameters(Camera * camera);
     
     inline uint16 GetStaticOcclusionIndex() const;
     inline void SetStaticOcclusionIndex(uint16 index);
@@ -193,6 +193,9 @@ public:
     inline void SetRefractionVisible(bool visible);
     
     virtual void GetDataNodes(Set<DataNode*> & dataNodes);
+
+    inline void SetLight(uint32 index, Light * light);
+    inline Light * GetLight(uint32 index);
     
 protected:
 //    eType type; //TODO: waiting for enums at introspection
@@ -211,6 +214,9 @@ protected:
     FastName ownerDebugInfo;
 	int32 lodIndex;
 	int32 switchIndex;
+
+    static const uint32 MAX_LIGHT_COUNT = 2;
+    Light * lights[MAX_LIGHT_COUNT];    
 
 //    Sphere bsphere;
     
@@ -258,6 +264,18 @@ public:
     );
 };
 
+inline void RenderObject::SetLight(uint32 index, Light * light)
+{
+    DVASSERT(index < MAX_LIGHT_COUNT)
+    lights[index] = light;
+}
+
+inline Light * RenderObject::GetLight(uint32 index)
+{
+    DVASSERT(index < MAX_LIGHT_COUNT)
+     return lights[index];
+}
+
 inline uint32 RenderObject::GetRemoveIndex()
 {
     return removeIndex;
@@ -302,8 +320,7 @@ inline void RenderObject::SetWorldTransformPtr(Matrix4 * _worldTransform)
     if (worldTransform == _worldTransform)
         return;
     worldTransform = _worldTransform;
-    flags |= TRANSFORM_UPDATED;
-    UpdateBatchesSortingTransforms();
+    flags |= TRANSFORM_UPDATED;    
 }
     
 inline Matrix4 * RenderObject::GetWorldTransformPtr() const

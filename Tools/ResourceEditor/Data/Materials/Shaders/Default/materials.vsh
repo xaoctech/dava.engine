@@ -11,6 +11,9 @@ precision highp float;
 #define mediump
 #endif
 
+
+#define MAX_JOINTS 32
+
 // INPUT ATTRIBUTES
 attribute vec4 inPosition;
 
@@ -39,6 +42,12 @@ attribute vec4 inColor;
 attribute vec3 inTangent;
 attribute vec3 inBinormal;
 #endif
+
+#if defined (SKINNING)
+attribute vec4 jointIndex;
+attribute vec4 jointWeight;
+#endif
+
 
 #if defined(SPEED_TREE_LEAF)
 attribute vec3 inPivot;
@@ -74,6 +83,11 @@ uniform float inSpecularity;
 uniform float inGlossiness;
 uniform float physicalFresnelReflectance;
 uniform vec3 metalFresnelReflectance;
+#endif
+
+#if defined (SKINNING)
+    uniform vec4 jointPositions[MAX_JOINTS]; // (x, y, z, scale)
+    uniform vec4 jointQuaternions[MAX_JOINTS];
 #endif
 
 #if defined(VERTEX_FOG)

@@ -52,6 +52,8 @@ RenderObject::RenderObject()
 	,	lodIndex(-1)
 	,	switchIndex(-1)
 {
+    lights[0] = NULL;
+    lights[1] = NULL;
 }
     
 RenderObject::~RenderObject()
@@ -72,8 +74,7 @@ void RenderObject::AddRenderBatch(RenderBatch * batch, int32 _lodIndex, int32 _s
 {    
 	batch->Retain();
     DVASSERT((batch->GetRenderObject() == 0) || (batch->GetRenderObject() == this));
-	batch->SetRenderObject(this);
-    batch->SetSortingTransformPtr(worldTransform);
+	batch->SetRenderObject(this);    
 	
 	IndexedRenderBatch ind;
 	ind.lodIndex = _lodIndex;
@@ -90,12 +91,6 @@ void RenderObject::AddRenderBatch(RenderBatch * batch, int32 _lodIndex, int32 _s
         renderSystem->RegisterBatch(batch);
             
     RecalcBoundingBox();
-}
-
-void RenderObject::UpdateBatchesSortingTransforms()
-{
-    for (int32 i=0, batchCount = renderBatchArray.size(); i<batchCount; ++i)
-        renderBatchArray[i].renderBatch->SetSortingTransformPtr(worldTransform); 
 }
 
 void RenderObject::RemoveRenderBatch(RenderBatch * batch)
@@ -293,6 +288,24 @@ void RenderObject::Load(KeyedArchive * archive, SerializationContext *serializat
 		}
 
 	AnimatedObject::Load(archive);
+}
+
+void RenderObject::BindDynamicParameters(Camera * camera)
+{    
+    DVASSERT(worldTransform != 0);
+    RenderManager::SetDynamicParam(PARAM_WORLD, worldTransform, (pointer_size)worldTransform);
+    if(camera)
+    {
+        if(lights[0])
+        {
+            const Vector4 & lightPositionDirection0InCameraSpace = lights[0]->CalculatePositionDirectionBindVector(camera);
+            RenderManager::SetDynamicParam(PARAM_LIGHT0_POSITION, &lightPositionDirection0InCameraSpace, (pointer_size)&lightPositionDirection0InCameraSpace);
+            RenderManager::SetDynamicParam(PARAM_LIGHT0_COLOR, &lights[0]->GetDiffuseColor(), (pointer_size)lights[0]);
+            RenderManager::SetDynamicParam(PARAM_LIGHT0_AMBIENT_COLOR, &lights[0]->GetAmbientColor(), (pointer_size)lights[0]);
+        }        
+        //if(material->GetDynamicBindFlags() & NMaterial::DYNAMIC_BIND_OBJECT_CENTER)                
+        RenderManager::SetDynamicParam(PARAM_LOCAL_BOUNDING_BOX, &bbox, (pointer_size)&bbox);        
+    }    
 }
 
 void RenderObject::SetRenderSystem(RenderSystem * _renderSystem)

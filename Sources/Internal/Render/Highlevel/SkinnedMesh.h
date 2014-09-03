@@ -27,63 +27,41 @@
 =====================================================================================*/
 
 
-
-#ifndef __DAVAENGINE_SKELETON_COMPONENT_H__
-#define __DAVAENGINE_SKELETON_COMPONENT_H__
+#ifndef __DAVAENGINE_SKINNED_MESH_H__
+#define	__DAVAENGINE_SKINNED_MESH_H__
 
 #include "Base/BaseTypes.h"
-#include "Entity/Component.h"
-#include "Debug/DVAssert.h"
+#include "Animation/AnimatedObject.h"
+#include "Base/BaseMath.h"
+#include "Render/Highlevel/RenderSystem.h"
+#include "Render/Highlevel/RenderObject.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
 
-namespace DAVA
+namespace DAVA    
 {
 
-class Entity;
-class SkeletonComponent : public Component
+class PolygonGroup;
+class RenderBatch;
+class ShadowVolume;
+class NMaterial;
+
+class SkinnedMesh : public RenderObject
 {
-    friend class SkeletonSystem;
+
 public:
-    IMPLEMENT_COMPONENT_TYPE(SKELETON_COMPONENT);
-
-    const static uint16 INVALID_BONE_INDEX = -1;
-
-    struct Joint
-    {
-        enum {BF_UPDATED_THIS_FRAME = 1<<0 ,
-              BS_MARKED_FOR_UPDATE  = 1<<1
-        };
-        int16 flags;
-        int16 parent;
-
-        Quaternion q;
-        Vector3 position;
-        float32 scale;
-    };
+    SkinnedMesh();
+    /*virtual ~SkinnedMesh();
     
+    virtual RenderObject * Clone(RenderObject *newObject);
 
-    virtual Component * Clone(Entity * toEntity);
-    virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
-    virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
+    virtual void Save(KeyedArchive *archive, SerializationContext *serializationContext);
+    virtual void Load(KeyedArchive *archive, SerializationContext *serializationContext);
 
-    void SetJointPosition(int32 jointId, const Vector3 &position);
-    void SetJointOrientation(int32 jointId, const Quaternion &orientation);
-    void SetJointScale(int32 jointId, float32 scale);
-    
-    int32 GetJointId(const FastName& name);
-
-    SkeletonComponent();
-    ~SkeletonComponent();
-
-private:
-
-    Vector<Joint> joints;
-    Map<FastName, int32> jointMap;
-        
-    uint16 startBone; //first bone in the list that was updated this frame
+    virtual void RecalcBoundingBox();*/
+protected:
 
 };
 
-} //ns
+}//ns
 
 #endif

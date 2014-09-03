@@ -1581,6 +1581,9 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SkeletonSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\SkinnedMesh.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2836,6 +2839,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SkeletonSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\SkinnedMesh.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

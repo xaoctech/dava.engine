@@ -476,6 +476,7 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ShadowRect.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ShadowVolume.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ShadowVolumeRenderPass.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\SkinnedMesh.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\SkyboxRenderObject.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\SpatialTree.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\SpeedTreeObject.h" />
@@ -928,6 +929,7 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ShadowRect.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ShadowVolume.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ShadowVolumeRenderPass.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\SkinnedMesh.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\SkyboxRenderObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\SpatialTree.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\SpeedTreeObject.cpp" />

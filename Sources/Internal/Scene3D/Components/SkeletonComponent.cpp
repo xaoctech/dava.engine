@@ -38,5 +38,28 @@ namespace DAVA
 REGISTER_CLASS(SkeletonComponent)
 
 
+SkeletonComponent::SkeletonComponent()
+{
+
+}
+
+SkeletonComponent::~SkeletonComponent()
+{
+
+}
+Component * SkeletonComponent::Clone(Entity * toEntity)
+{
+    SkeletonComponent * newComponent = new SkeletonComponent();    
+
+    return newComponent;
+}
+void SkeletonComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+    Component::Serialize(archive, serializationContext);
+}
+void SkeletonComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+    Component::Deserialize(archive, serializationContext);
+}
 
 }
