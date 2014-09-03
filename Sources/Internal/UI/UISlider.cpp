@@ -393,9 +393,9 @@ void UISlider::AttachToSubcontrols()
 		thumbButton = FindByName(UISLIDER_THUMB_SPRITE_CONTROL_NAME);
 		DVASSERT(thumbButton);
         thumbButton->Retain();
-        
-		InitInactiveParts(thumbButton->GetBackground()->GetSprite());
 	}
+
+    InitInactiveParts(thumbButton->GetBackground()->GetSprite());
 }
 
 List<UIControl*> UISlider::GetSubcontrols()
@@ -496,7 +496,7 @@ void UISlider::SaveBackground(const char* prefix, UIControlBackground* backgroun
     Sprite *sprite = background->GetSprite();
     if (sprite)
     {
-        rootNode->Set(Format("%ssprite", prefix), GetSpriteFrameworkPath(sprite));
+        rootNode->Set(Format("%ssprite", prefix), Sprite::GetPathString(sprite));
     }
     int32 frame = background->GetFrame();
     if (baseBackground->GetFrame() != frame)
