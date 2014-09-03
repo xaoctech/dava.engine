@@ -91,6 +91,34 @@ HierarchyTreeWidget::~HierarchyTreeWidget()
     delete ui;
 }
 
+void HierarchyTreeWidget::ScrollTo(HierarchyTreeNode *node)
+{
+    TREEITEMS items = GetAllItems();
+	TREEITEMS::iterator itemIter = items.find(node->GetId());
+    if(itemIter != items.end())
+    {
+        QTreeWidgetItem *item = itemIter->second;
+        ui->treeWidget->setCurrentItem(item);
+		HandleItemSelectionChanged();
+    }
+}
+
+void HierarchyTreeWidget::HighlightScreenNodes(const QList<HierarchyTreeScreenNode*>& foundNodesList)
+{
+	TREEITEMS items = GetAllItems();
+    // Highlight screen nodes
+    WidgetSignalsBlocker blocker(ui->treeWidget);
+  	foreach(HierarchyTreeScreenNode* foundNode, foundNodesList)
+  	{
+		TREEITEMS::iterator itemIter = items.find(foundNode->GetId());
+    	if(itemIter != items.end())
+    	{
+        	QTreeWidgetItem *item = itemIter->second;
+            item->setSelected(true);
+    	}
+	}
+}
+
 void HierarchyTreeWidget::InitializeTreeWidgetActions()
 {
 	QAction* deleteNodeAction = new QAction(MENU_ITEM_DELETE, ui->treeWidget);
@@ -306,6 +334,11 @@ void HierarchyTreeWidget::Decorate(QTreeWidgetItem *item, DAVA::UIControl *uiCon
 }
 
 void HierarchyTreeWidget::on_treeWidget_itemSelectionChanged()
+{
+	HandleItemSelectionChanged();
+}
+
+void HierarchyTreeWidget::HandleItemSelectionChanged()
 {
 	QTreeWidgetItem* selectedItem = ui->treeWidget->currentItem();
 	if (!selectedItem)
