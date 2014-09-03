@@ -107,7 +107,6 @@ protected:
     
     virtual int GetTextPerPixelAccuracyType() const;
     virtual void SetTextPerPixelAccuracyType(int value);
-
 };
 
 };
