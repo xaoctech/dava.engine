@@ -2192,6 +2192,12 @@ namespace DAVA
             {
                 node->Set("colorInherit", loader->GetColorInheritTypeNodeValue(colorInheritType));
             }
+        	// Per pixel accuracy
+        	UIControlBackground::ePerPixelAccuracyType perPixelAccuracyType = GetBackground()->GetPerPixelAccuracyType();
+       		if (baseBackground->GetPerPixelAccuracyType() != perPixelAccuracyType)
+        	{
+            	node->Set("perPixelAccuracy", loader->GetPerPixelAccuracyTypeNodeValue(perPixelAccuracyType));
+        	}
             // Align
             int32 align = GetBackground()->GetAlign();
             if (baseBackground->GetAlign() != align)
@@ -2366,6 +2372,12 @@ namespace DAVA
         if (colorNode)
         {
             GetBackground()->SetColor(loader->GetColorFromYamlNode(colorNode));
+        }
+
+        const YamlNode * perPixelAccuracyTypeNode = node->Get("perPixelAccuracy");
+        if(perPixelAccuracyTypeNode)
+        {
+            GetBackground()->SetPerPixelAccuracyType((UIControlBackground::ePerPixelAccuracyType)loader->GetPerPixelAccuracyTypeFromNode(perPixelAccuracyTypeNode));
         }
 
         const YamlNode * colorInheritNode = node->Get("colorInherit");
