@@ -1,5 +1,6 @@
 package com.dava.framework;
 
+import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
@@ -10,8 +11,10 @@ import java.util.concurrent.FutureTask;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.os.Handler;
+import android.os.IBinder;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.Spanned;
@@ -19,15 +22,11 @@ import android.text.method.PasswordTransformationMethod;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.ActionMode;
-import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ContextMenu.ContextMenuInfo;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -133,6 +132,38 @@ public class JNITextField {
 		return Math.min(2.0f, dm.scaledDensity);
 	}
 
+	public static void InitializeKeyboardLayout(WindowManager manager, IBinder windowToken)
+	{
+	    if(manager == null)
+	    {
+	        throw new InvalidParameterException("WindowManager must be specified");
+	    }
+	    if(windowToken == null)
+	    {
+	        throw new InvalidParameterException("WindowToken must be specified");
+	    }
+	    
+	    // Add new layout to other window with special parameters
+        WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+                  WindowManager.LayoutParams.WRAP_CONTENT,
+                  WindowManager.LayoutParams.MATCH_PARENT,
+                  WindowManager.LayoutParams.TYPE_APPLICATION_PANEL,
+                  WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE | 
+                      WindowManager.LayoutParams.FLAG_FULLSCREEN | 
+                      WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN |
+                      WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                  PixelFormat.TRANSPARENT);
+        params.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE;
+        params.gravity = Gravity.LEFT | Gravity.TOP;
+        params.token = windowToken;
+        
+        FrameLayout keyboardLayout = new FrameLayout(JNIActivity.GetActivity());
+        manager.addView(keyboardLayout, params);
+        
+        // Initialize detecting keyboard height listener
+        JNITextField.InitializeKeyboardHelper(keyboardLayout);
+	}
+	
 	public static void InitializeKeyboardHelper(View layout) {
 	    keyboardHelper = new SoftKeyboardStateHelper(layout);
 	    keyboardHelper.addSoftKeyboardStateListener(new SoftKeyboardStateListener()
@@ -208,55 +239,7 @@ public class JNITextField {
 				text.setVisibility(View.GONE);
 				text.setImeOptions(STABLE_IME_OPTIONS);
 				
-				
-				text.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener()
-                {
-                    @Override
-                    public void onCreateContextMenu(ContextMenu menu, View v,
-                            ContextMenuInfo menuInfo)
-                    {
-                        int i = 0;
-                        Log.w(TAG, "onCreateContextMenu");
-                    }
-                });
-				text.setCustomSelectionActionModeCallback(new ActionMode.Callback()
-                {
-                    
-                    @Override
-                    public boolean onPrepareActionMode(ActionMode mode, Menu menu)
-                    {
-                        // TODO Auto-generated method stub
-                        Log.w(TAG, "onPrepareActionMode");
-                        return false;
-                    }
-                    
-                    @Override
-                    public void onDestroyActionMode(ActionMode mode)
-                    {
-                        // TODO Auto-generated method stub
-                        int i = 0;
-                        Log.w(TAG, "onDestroyActionMode");
-                    }
-                    
-                    @Override
-                    public boolean onCreateActionMode(ActionMode mode, Menu menu)
-                    {
-                        // TODO Auto-generated method stub
-                        Log.w(TAG, "onCreateActionMode");
-                        return false;
-                    }
-                    
-                    @Override
-                    public boolean onActionItemClicked(ActionMode mode, MenuItem item)
-                    {
-                        // TODO Auto-generated method stub
-                        Log.w(TAG, "onActionItemClicked");
-                        return false;
-                    }
-                });
-				
-				text.setBackgroundColor(Color.BLUE);
-				activity.GetFrontLayout().addView(text, params);
+				activity.addContentView(text, params);
 				
 				NativeEditText nativeEditText = new NativeEditText();
 				nativeEditText.editText = text;
@@ -306,12 +289,12 @@ public class JNITextField {
 					}
 				});
 
-//				text.setOnLongClickListener(new View.OnLongClickListener() {
-//					@Override
-//					public boolean onLongClick(View v) {
-//						return v.hasFocus();
-//					}
-//				});
+				text.setOnLongClickListener(new View.OnLongClickListener() {
+					@Override
+					public boolean onLongClick(View v) {
+						return !v.hasFocus();
+					}
+				});
 				
 				text.setOnFocusChangeListener(new View.OnFocusChangeListener()
                 {

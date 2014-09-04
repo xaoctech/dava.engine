@@ -38,10 +38,10 @@ public class SoftKeyboardStateHelper implements ViewTreeObserver.OnGlobalLayoutL
         
         Log.d("SoftKeyboardStateHelper", "Height diff: " + heightDiff);
         
-        if (/*!isSoftKeyboardOpened && */heightDiff > KEYBOARD_DETECTION_HEIGHT) {
+        if (!isSoftKeyboardOpened && heightDiff > KEYBOARD_DETECTION_HEIGHT) {
             isSoftKeyboardOpened = true;
             notifyOnSoftKeyboardOpened(new Rect(r.left, r.bottom, r.right, r.bottom + heightDiff));
-        } else if (/*isSoftKeyboardOpened && */heightDiff < KEYBOARD_DETECTION_HEIGHT) {
+        } else if (isSoftKeyboardOpened && heightDiff < KEYBOARD_DETECTION_HEIGHT) {
             isSoftKeyboardOpened = false;
             notifyOnSoftKeyboardClosed();
         }
@@ -53,18 +53,6 @@ public class SoftKeyboardStateHelper implements ViewTreeObserver.OnGlobalLayoutL
 
     public boolean isSoftKeyboardOpened() {
         return isSoftKeyboardOpened;
-    }
-    
-    public void notifyWithLastState()
-    {
-        if(isSoftKeyboardOpened)
-        {
-            notifyOnSoftKeyboardOpened(lastSoftKeyboardBounds);
-        }
-        else
-        {
-            notifyOnSoftKeyboardClosed();
-        }
     }
 
     /**

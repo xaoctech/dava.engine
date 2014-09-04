@@ -4,7 +4,6 @@ import org.fmod.FMODAudioDevice;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.PixelFormat;
 import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -13,7 +12,8 @@ import android.os.Handler;
 import android.support.v4.app.NotificationCompat.Builder;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.view.Gravity;
+import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
@@ -30,8 +30,7 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 	private JNIAccelerometer accelerometer = null;
 	protected JNIGLSurfaceView glView = null;
 	protected FrameLayout frontLayout = null;
-	protected FrameLayout backLayout = null;
-
+	
 	private FMODAudioDevice fmodDevice = new FMODAudioDevice();
 	
 	private Controller mController;
@@ -54,15 +53,6 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 	}
     
     /**
-     * Returns instance of {@link FrameLayout} that created for detecting 
-     * change layout size (showing keyboard).
-     * @return instance of {@link FrameLayout} or <code>null</code>.
-     */
-    public FrameLayout GetBackLayout() {
-        return backLayout;
-    }
-    
-    /**
      * Returns instance of {@link FrameLayout} that created for displaying
      * controls and {@link JNIGLSurfaceView}.
      * @return instance of {@link FrameLayout} or <code>null</code>.
@@ -70,6 +60,8 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
     public FrameLayout GetFrontLayout() {
         return frontLayout;
     }
+    
+    public abstract JNIGLSurfaceView GetSurfaceView();
     
     @Override
     public void onCreate(Bundle savedInstanceState) 
@@ -91,35 +83,33 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         SensorManager sensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
         accelerometer = new JNIAccelerometer(this, sensorManager);
 
-        // Create two layouts and put its to different windows. It's need for detecting keyboard height and 
-        // ignoring layout moving up if edit field has been under keyboard 
-        backLayout = new MeasureLayout(this);
-        setContentView(backLayout, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-        
-        // Initialize detecting keyboard height listener
-        JNITextField.InitializeKeyboardHelper(backLayout);
-        
-        // Add new layout to other window with special parameters
-        frontLayout = new FrameLayout(this);
-        WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.FIRST_APPLICATION_WINDOW,
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN | WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                PixelFormat.TRANSLUCENT);
-        params.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING;
-        params.gravity = Gravity.LEFT | Gravity.TOP;
-        getWindowManager().addView(frontLayout, params);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN | WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().requestFeature(Window.FEATURE_ACTION_MODE_OVERLAY);
+        getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         
         // initialize GL VIEW
-        glView = new JNIGLSurfaceView(this);
-        frontLayout.addView(glView, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        glView = GetSurfaceView();
+        assert(glView != null);
         glView.setFocusableInTouchMode(true);
         glView.setClickable(true);
         glView.setFocusable(true);
         glView.requestFocus();
-
+        
+        glView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener()
+        {
+            @Override
+            public void onViewDetachedFromWindow(View v)
+            {
+            }
+            
+            @Override
+            public void onViewAttachedToWindow(View v)
+            {
+                JNITextField.InitializeKeyboardLayout(getWindowManager(), glView.getWindowToken());
+            }
+        });
+        
         mController = Controller.getInstance(this);
         if(mController != null)
         {
