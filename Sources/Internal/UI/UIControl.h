@@ -44,7 +44,7 @@ class UIEvent;
 class UIControlBackground;
 class Message;
 
-#define CONTROL_TOUCH_AREA		15
+#define CONTROL_TOUCH_AREA  15
     /**
      \ingroup controlsystem
      \brief Compound of geometric transformations used to draw control in the screen space.
@@ -211,36 +211,36 @@ public:
      */
     enum eControlState
     {
-        STATE_NORMAL			= 1 << 0,//!<Control isn't under influence of any activities.
-        STATE_PRESSED_OUTSIDE	= 1 << 1,//!<Mouse or touch comes into control but dragged outside of control.
-        STATE_PRESSED_INSIDE	= 1 << 2,//!<Mouse or touch comes into control.
-        STATE_DISABLED			= 1 << 3,//!<Control is disabled (don't process any input). Use this state only if you want change graphical representation of the control. Don't use this state for the disabling inputs for parts of the controls hierarchy!.
-        STATE_SELECTED			= 1 << 4,//!<Just a state for base control, nothing more.
-        STATE_HOVER				= 1 << 5,//!<This bit is rise then mouse is over the control.
+        STATE_NORMAL            = 1 << 0,//!<Control isn't under influence of any activities.
+        STATE_PRESSED_OUTSIDE   = 1 << 1,//!<Mouse or touch comes into control but dragged outside of control.
+        STATE_PRESSED_INSIDE    = 1 << 2,//!<Mouse or touch comes into control.
+        STATE_DISABLED          = 1 << 3,//!<Control is disabled (don't process any input). Use this state only if you want change graphical representation of the control. Don't use this state for the disabling inputs for parts of the controls hierarchy!.
+        STATE_SELECTED          = 1 << 4,//!<Just a state for base control, nothing more.
+        STATE_HOVER             = 1 << 5,//!<This bit is rise then mouse is over the control.
 
-        STATE_COUNT				=	6
+        STATE_COUNT             = 6
     };
     /**
      \enum Control events supported by default.
      */
     enum eEventType
     {
-        EVENT_TOUCH_DOWN			= 1,//!<Trigger when mouse button or touch comes down inside the control.
-        EVENT_TOUCH_UP_INSIDE		= 2,//!<Trigger when mouse pressure or touch processed by the control is released.
-        EVENT_VALUE_CHANGED			= 3,//!<Used only with sliders for now. Trigger when value of the slider is changed.
+        EVENT_TOUCH_DOWN            = 1,//!<Trigger when mouse button or touch comes down inside the control.
+        EVENT_TOUCH_UP_INSIDE       = 2,//!<Trigger when mouse pressure or touch processed by the control is released.
+        EVENT_VALUE_CHANGED         = 3,//!<Used only with sliders for now. Trigger when value of the slider is changed.
         EVENT_HOVERED_SET           = 4,//!<
         EVENT_HOVERED_REMOVED       = 5,//!<
         EVENT_FOCUS_SET             = 6,//!<Trigger when control becomes focused
         EVENT_FOCUS_LOST            = 7,//!<Trigger when control losts focus
-        EVENT_TOUCH_UP_OUTSIDE		= 8,//!<Trigger when mouse pressure or touch processed by the control is released outside of the control.
+        EVENT_TOUCH_UP_OUTSIDE      = 8,//!<Trigger when mouse pressure or touch processed by the control is released outside of the control.
         EVENTS_COUNT
     };
 
     enum eDebugDrawPivotMode
     {
-        DRAW_NEVER					= 1, //!<Never draw the Pivot Point.
-        DRAW_ONLY_IF_NONZERO,			 //!<Draw the Pivot Point only if it is defined (nonzero).
-        DRAW_ALWAYS						 //!<Always draw the Pivot Point mark.
+        DRAW_NEVER          = 1, //!<Never draw the Pivot Point.
+        DRAW_ONLY_IF_NONZERO,    //!<Draw the Pivot Point only if it is defined (nonzero).
+        DRAW_ALWAYS              //!<Always draw the Pivot Point mark.
     };
 
     friend class ControlSystem;
@@ -947,7 +947,7 @@ public:
      \param[in] track animation track. 0 by default.
      \returns Animation object
      */
-    Animation *		WaitAnimation(float32 time, int32 track = 0);
+    Animation *     WaitAnimation(float32 time, int32 track = 0);
     /**
      \brief Starts move and size animation for the control.
      \param[in] rect New control position and size.
@@ -956,7 +956,7 @@ public:
      \param[in] track animation track. 0 by default.
      \returns Animation object
      */
-    Animation *		MoveAnimation(const Rect & rect, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
+    Animation *     MoveAnimation(const Rect & rect, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
     /**
      \brief Starts move and scale animation for the control. Changing scale instead of size.
      \param[in] rect New control position and size.
@@ -965,7 +965,7 @@ public:
      \param[in] track animation track. 0 by default.
      \returns Animation object
      */
-    Animation *		ScaledRectAnimation(const Rect & rect, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
+    Animation *     ScaledRectAnimation(const Rect & rect, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
     /**
      \brief Starts scale animation for the control. Changing scale instead of size.
      \param[in] newSize New control size.
@@ -974,7 +974,7 @@ public:
      \param[in] track animation track. 0 by default.
      \returns Animation object
      */
-    Animation *		ScaledSizeAnimation(const Vector2 & newSize, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
+    Animation *     ScaledSizeAnimation(const Vector2 & newSize, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
     /**
      \brief Starts control position animation.
      \param[in] _position New control position.
@@ -983,7 +983,7 @@ public:
      \param[in] track animation track. 0 by default.
      \returns Animation object
      */
-    Animation *		PositionAnimation(const Vector2 & _position, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
+    Animation *     PositionAnimation(const Vector2 & _position, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
     /**
      \brief Starts control size animation.
      \param[in] _size New control size.
@@ -992,7 +992,7 @@ public:
      \param[in] track animation track. 0 by default.
      \returns Animation object
      */
-    Animation *		SizeAnimation(const Vector2 & _size, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
+    Animation *     SizeAnimation(const Vector2 & _size, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
     /**
      \brief Starts control scale animation.
      \param[in] newScale New control scale.
@@ -1001,7 +1001,7 @@ public:
      \param[in] track animation track. 0 by default.
      \returns Animation object
      */
-    Animation *		ScaleAnimation(const Vector2 & newScale, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
+    Animation *     ScaleAnimation(const Vector2 & newScale, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
     /**
      \brief Starts control rotation angle animation.
      \param[in] newAngle New control rotation angle.
@@ -1010,7 +1010,7 @@ public:
      \param[in] track animation track. 0 by default.
      \returns Animation object
      */
-    Animation *		AngleAnimation(float32 newAngle, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
+    Animation *     AngleAnimation(float32 newAngle, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
     /**
      \brief Starts input enabling switching animation. This animation changing control
         input enabling state on the next frame after the animation start.
@@ -1019,7 +1019,7 @@ public:
      \param[in] track animation track. 0 by default.
      \returns Animation object
      */
-    Animation *		TouchableAnimation(bool touchable, bool hierarhic = true, int32 track = 0);
+    Animation *     TouchableAnimation(bool touchable, bool hierarhic = true, int32 track = 0);
     /**
      \brief Starts control disabling animation. This animation changing control
         disable state on the next frame after the animation start.
@@ -1028,7 +1028,7 @@ public:
      \param[in] track animation track. 0 by default.
      \returns Animation object
      */
-    Animation *		DisabledAnimation(bool disabled, bool hierarhic = true, int32 track = 0);
+    Animation *     DisabledAnimation(bool disabled, bool hierarhic = true, int32 track = 0);
     /**
      \brief Starts control visible animation. This animation changing control visibility
         on the next frame after the animation start.
@@ -1037,7 +1037,7 @@ public:
      \param[in] track animation track. 0 by default.
      \returns Animation object
      */
-    Animation *		VisibleAnimation(bool visible, bool hierarhic = true, int32 track = 0);
+    Animation *     VisibleAnimation(bool visible, bool hierarhic = true, int32 track = 0);
     /**
      \brief Starts control recursive visible animation. This animation changing control visibility
         on the next frame after the animation start.
@@ -1045,14 +1045,14 @@ public:
      \param[in] track animation track. 0 by default.
      \returns Animation object
      */
-    Animation *		RecursiveVisibleAnimation(bool visible, int32 track = 0);
+    Animation *     RecursiveVisibleAnimation(bool visible, int32 track = 0);
     /**
      \brief Starts control removation animation. This animation removes control from the parent
      on the next frame  after the animation start.
      \param[in] track animation track. 0 by default.
      \returns Animation object
      */
-    Animation *		RemoveControlAnimation(int32 track = 0);
+    Animation *     RemoveControlAnimation(int32 track = 0);
     /**
      \brief Starts control color animation.
      \param[in] New control color.
@@ -1061,7 +1061,7 @@ public:
      \param[in] track animation track. 0 by default.
      \returns Animation object
      */
-    virtual Animation *	ColorAnimation(const Color & finalColor, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
+    Animation * ColorAnimation(const Color & finalColor, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
 
 protected:
     void TouchableAnimationCallback(BaseObject * caller, void * param, void *callerData);
@@ -1077,9 +1077,9 @@ public:
      \param[in] _debugDrawEnabled New debug draw value.
      \param[in] hierarchic Is value need to be changed in all coltrol children.
      */
-    void	SetDebugDraw(bool _debugDrawEnabled, bool hierarchic = false);
-    void	SetDebugDrawColor(const Color& color);
-    const Color	&GetDebugDrawColor() const;
+    void    SetDebugDraw(bool _debugDrawEnabled, bool hierarchic = false);
+    void    SetDebugDrawColor(const Color& color);
+    const Color &GetDebugDrawColor() const;
 
     /**
      \brief Set the draw pivot point mode for the control.
@@ -1370,7 +1370,6 @@ protected:
 
     int32 inputProcessorsCount;
 
-
     int32 currentInputID;
     int32 touchesInside;
     int32 totalTouches;
@@ -1414,8 +1413,8 @@ protected:
     void DrawPivotPoint(const Rect &drawRect);
 
 private:
-    String	name;
-    int32	tag;
+    String  name;
+    int32   tag;
     bool inputEnabled : 1;
     bool focusEnabled : 1;
 
