@@ -41,7 +41,6 @@
 #include "Scene3D/Systems/MaterialSystem.h"
 #include "Render/OcclusionQuery.h"
 #include "Debug/Stats.h"
-#include "Render/Highlevel/ShadowVolume.h"
 
 namespace DAVA
 {
@@ -360,13 +359,7 @@ void RenderBatch::Load(KeyedArchive * archive, SerializationContext *serializati
 			int64 matKey = archive->GetUInt64("rb.nmatname");
 			
 			newMaterial = static_cast<NMaterial*>(serializationContext->GetDataBlock(matKey));
-		
-#if defined(__DAVAENGINE_DEBUG__)
-			if(NULL == GetMaterial())
-			{
-				DVASSERT(newMaterial);
-			}
-#endif
+
 			SafeRetain(newMaterial); //VI: material refCount should be >1 at this point
 		}
 
@@ -374,10 +367,7 @@ void RenderBatch::Load(KeyedArchive * archive, SerializationContext *serializati
         {
             SafeRelease(dataSource);
             dataSource = SafeRetain(pg);
-        }		
-        
-		if(GetMaterial() == NULL)
-			DVASSERT(newMaterial);
+        }
 
 		if(newMaterial)
 		{
@@ -408,20 +398,5 @@ void RenderBatch::UpdateAABBoxFromSource()
 			aabbox.min.z != AABBOX_INFINITY);
 	}
 }
-    
-//bool RenderBatch::GetVisible() const
-//{
-//    uint32 flags = renderObject->GetFlags();
-//    return ((flags & visiblityCriteria) == visiblityCriteria);
-//}
-
-ShadowVolume * RenderBatch::CreateShadow()
-{
-	ShadowVolume * newShadowVolume = new ShadowVolume();
-	newShadowVolume->MakeShadowVolumeFromPolygonGroup(dataSource);
-
-	return newShadowVolume;
-}
-
 
 };
