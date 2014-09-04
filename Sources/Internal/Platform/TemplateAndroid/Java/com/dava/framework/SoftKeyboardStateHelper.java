@@ -3,7 +3,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import android.graphics.Rect;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
@@ -36,8 +35,6 @@ public class SoftKeyboardStateHelper implements ViewTreeObserver.OnGlobalLayoutL
         activityRootView.getWindowVisibleDisplayFrame(r);
         final int heightDiff = activityRootView.getRootView().getHeight() - (r.bottom - r.top);
         
-        Log.d("SoftKeyboardStateHelper", "Height diff: " + heightDiff);
-        
         if (!isSoftKeyboardOpened && heightDiff > KEYBOARD_DETECTION_HEIGHT) {
             isSoftKeyboardOpened = true;
             notifyOnSoftKeyboardOpened(new Rect(r.left, r.bottom, r.right, r.bottom + heightDiff));
@@ -55,10 +52,6 @@ public class SoftKeyboardStateHelper implements ViewTreeObserver.OnGlobalLayoutL
         return isSoftKeyboardOpened;
     }
 
-    /**
-     * Default value is zero
-     * @return last saved keyboard bounds in px
-     */
     public Rect getLastSoftKeyboardBounds() {
         return lastSoftKeyboardBounds;
     }
@@ -73,7 +66,6 @@ public class SoftKeyboardStateHelper implements ViewTreeObserver.OnGlobalLayoutL
 
     private void notifyOnSoftKeyboardOpened(Rect rect) {
         this.lastSoftKeyboardBounds = rect;
-        Log.d("SoftKeyboardStateHelper", "Keyboard shown: " + rect.toShortString());
         for (SoftKeyboardStateListener listener : listeners) {
             if (listener != null) {
                 listener.onSoftKeyboardOpened(rect);
@@ -82,7 +74,6 @@ public class SoftKeyboardStateHelper implements ViewTreeObserver.OnGlobalLayoutL
     }
 
     private void notifyOnSoftKeyboardClosed() {
-        Log.d("SoftKeyboardStateHelper", "Keyboard hidden");
         for (SoftKeyboardStateListener listener : listeners) {
             if (listener != null) {
                 listener.onSoftKeyboardClosed();
