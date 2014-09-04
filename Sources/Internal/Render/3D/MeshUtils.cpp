@@ -27,6 +27,12 @@
 =====================================================================================*/
 
 #include "MeshUtils.h"
+#include "EdgeAdjacency.h"
+
+#include "Scene3D/Components/ComponentHelpers.h"
+#include "Render/Highlevel/RenderBatch.h"
+#include "Render/Material/NMaterial.h"
+#include "Render/Highlevel/ShadowVolume.h"
 
 namespace DAVA
 {
@@ -279,6 +285,97 @@ void RebuildMeshTangentSpace(PolygonGroup *group, bool precomputeBinormal/*=true
         group->SetIndex(i, verticesFull[i].refIndex);
 
     group->BuildBuffers();
+}
+
+RenderObject * CreateSkinnedMesh(Entity * entity)
+{
+    Map<SkinnedMeshWorkKey, Vector<SkinnedMeshWork>> collapseDataMap;
+
+    Vector<Entity *> oldNodes;
+    oldNodes.push_back(entity);
+    entity->GetChildNodes(oldNodes);
+    for(int32 nodeIndex = 0; nodeIndex < (int32)oldNodes.size(); ++nodeIndex)
+    {
+        RenderObject * ro = GetRenderObject(oldNodes[nodeIndex]);
+        if(ro)
+        {
+            int32 batchesCount = ro->GetRenderBatchCount();
+            for(int32 batchIndex = 0; batchIndex < batchesCount; ++batchIndex)
+            {
+                int32 lodIndex, switchIndex;
+                RenderBatch * rb = ro->GetRenderBatch(batchIndex, lodIndex, switchIndex);
+                SkinnedMeshWorkKey dataKey(lodIndex, switchIndex, rb->GetMaterial()->GetParent());
+                collapseDataMap[dataKey].push_back(SkinnedMeshWork(rb, nodeIndex));
+            }
+        }
+    }
+
+    RenderObject * newRenderObject = new RenderObject();
+
+    Map<SkinnedMeshWorkKey, Vector<SkinnedMeshWork>>::iterator it = collapseDataMap.begin();
+    Map<SkinnedMeshWorkKey, Vector<SkinnedMeshWork>>::iterator itEnd = collapseDataMap.end();
+    for(;it != itEnd; ++it)
+    {
+        const SkinnedMeshWorkKey & key = it->first;
+        Vector<SkinnedMeshWork> & data = it->second;
+
+        int32 vxCount = 0;
+        int32 indCount = 0;
+        int32 meshFormat = data.front().batch->GetPolygonGroup()->GetFormat();
+        for(int32 dataIndex = 0; dataIndex < (int32)data.size(); ++dataIndex)
+        {
+            vxCount += data[dataIndex].batch->GetPolygonGroup()->GetVertexCount();
+            indCount += data[dataIndex].batch->GetPolygonGroup()->GetIndexCount();
+            
+            DVASSERT(meshFormat == data[dataIndex].batch->GetPolygonGroup()->GetFormat());
+        }
+
+        PolygonGroup * polygonGroup = new PolygonGroup();
+        polygonGroup->AllocateData(meshFormat | EVF_JOINTWEIGHT, vxCount, indCount);
+
+        int32 vertexOffset = 0;
+        int32 indexOffset = 0;
+        for(int32 dataIndex = 0; dataIndex < (int32)data.size(); ++dataIndex)
+        {
+            PolygonGroup * currentGroup = data[dataIndex].batch->GetPolygonGroup();
+            int32 currentBatchVxCount = currentGroup->GetVertexCount();
+            for(int32 currentBatchVxIndex = 0; currentBatchVxIndex < currentBatchVxCount; ++currentBatchVxIndex)
+            {
+                int32 newBatchVxIndex = vertexOffset + currentBatchVxIndex;
+                CopyVertex(currentGroup, currentBatchVxIndex, polygonGroup, newBatchVxIndex);
+                polygonGroup->SetWeight(newBatchVxIndex, 0, 1.f);
+                polygonGroup->SetJointIndex(newBatchVxIndex, 0, data[dataIndex].jointIndex);
+                polygonGroup->SetJointCount(newBatchVxIndex, 1);
+            }
+
+            int32 currentBatchIndexCount = currentGroup->GetIndexCount();
+            for(int32 currentBatchIdxIndex = 0; currentBatchIdxIndex < currentBatchIndexCount; ++currentBatchIdxIndex)
+            {
+                int32 index;
+                currentGroup->GetIndex(currentBatchIdxIndex, index);
+                polygonGroup->SetIndex(indexOffset + currentBatchIdxIndex, (int16)(vertexOffset + index));
+            }
+
+            vertexOffset += currentBatchVxCount;
+            indexOffset += currentBatchIndexCount;
+        }
+
+        NMaterial * material = NMaterial::CreateMaterialInstance();
+        material->SetParent(key.materialParent);
+
+        RenderBatch * newBatch = new RenderBatch();
+        polygonGroup->RecalcAABBox();
+        newBatch->SetPolygonGroup(polygonGroup);
+        newBatch->SetMaterial(material);
+
+        newRenderObject->AddRenderBatch(newBatch, key.lodIndex, key.switchIndex);
+
+        material->Release();
+        polygonGroup->Release();
+        newBatch->Release();
+    }
+
+    return newRenderObject;
 }
 
 };
