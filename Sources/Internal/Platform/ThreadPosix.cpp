@@ -55,12 +55,17 @@ void Thread::thread_exit_handler(int sig)
 void Thread::Init()
 {
 #if defined (__DAVAENGINE_ANDROID__)
+    handle = 0;
 	struct sigaction cancelThreadAction;
 	Memset(&cancelThreadAction, 0, sizeof(cancelThreadAction));
 	sigemptyset(&cancelThreadAction.sa_mask);
 	cancelThreadAction.sa_flags = 0;
 	cancelThreadAction.sa_handler = thread_exit_handler;
 	sigaction(SIGRTMIN, &cancelThreadAction, NULL);
+#endif
+
+#if defined (__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
+    handle = NULL;
 #endif
 }
 
