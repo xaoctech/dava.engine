@@ -36,7 +36,7 @@ namespace DAVA
 
 void Thread::Init()
 {
-    handle = NULL;
+
 }
 
 void Thread::Shutdown()
@@ -84,7 +84,7 @@ void Thread::Yield()
     ::SwitchToThread();
 }
 
-void Thread::Join() const
+void Thread::Join()
 {
     if (WaitForSingleObject(handle, INFINITE) != WAIT_OBJECT_0)
     {

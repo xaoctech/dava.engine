@@ -136,12 +136,12 @@ void Thread::Kill()
 {
     // it is possible to kill thread just after creating or starting and the problem is - thred changes state
     // to STATE_RUNNING insite threaded function - so that could not happens in that case. Need some time.
-    
+    DVASSERT(STATE_CREATED != state);
+
     // Important - DO NOT try to wait RUNNING state because that state wll not appear if thread is not started!!!
     // You can wait RUNNING state, but not from thred which should call Start() for created Thread.
-    DVASSERT(STATE_CREATED != state);
-    
-    if(STATE_ENDED != state && STATE_KILLED != state && STATE_CANCELLED != state)
+    LockGuard<Mutex> locker(releaseKillMutex);
+    if (STATE_RUNNING == state)
     {
         KillNative();
         state = STATE_KILLED;
@@ -166,12 +166,11 @@ void Thread::Cancel()
 {
     // it is possible to cancel thread just after creating or starting and the problem is - thred changes state
     // to STATE_RUNNING insite threaded function - so that could not happens in that case. Need some time.
-    
+    DVASSERT(STATE_CREATED != state);
+
     // Important - DO NOT try to wait RUNNING state because that state wll not appear if thread is not started!!!
     // You can wait RUNNING state, but not from thred which should call Start() for created Thread.
-    DVASSERT(STATE_CREATED != state);
-    
-    if(STATE_ENDED != state && STATE_KILLED != state && STATE_CANCELLED != state)
+    if (STATE_RUNNING == state)
     {
         state = STATE_CANCELLING;
     }
@@ -196,6 +195,8 @@ Thread::Thread(const Message& _msg)
     threadListMutex.Lock();
     threadList.insert(this);
     threadListMutex.Unlock();
+
+    Init();
 }
 
 Thread::~Thread()
@@ -262,12 +263,8 @@ void Thread::ThreadFunction(void *param)
     Thread * t = (Thread *)param;
     t->Retain();
     t->SetId(GetCurrentId());
-    t->Init();
-    
-    if (STATE_CREATED == t->state
-        ||STATE_KILLED == t->state
-        || STATE_CANCELLED == t->state
-        || STATE_ENDED == t->state)
+
+    if (STATE_CREATED == t->state)
     {
         t->state = STATE_RUNNING;
         t->msg(t);
@@ -284,13 +281,17 @@ void Thread::ThreadFunction(void *param)
     default:
         break;
     }
-    
+
     // thread is finishing so we need to unregister it
     threadIdListMutex.Lock();
     threadIdList.erase(t->nativeId);
     threadIdListMutex.Unlock();
 
+    // kill could be called around this place. It will produce 2 Release instead of 1.
+    // So we use mutex to avoid that.
+    t->releaseKillMutex.Lock();
     t->Release();
+    t->releaseKillMutex.Unlock();
 }
     
 };

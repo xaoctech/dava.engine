@@ -132,7 +132,7 @@ void ThreadSyncTest::TestThread(PerfFuncData * data)
     infiniteThread->Start();
     shortThread->Start();
 
-    Thread::Sleep(100);
+    Thread::Sleep(50);
     Thread::KillAll();
     
     shortThread->Join();
