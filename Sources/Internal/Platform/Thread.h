@@ -165,7 +165,7 @@ public:
     /**
      \returns returns Id of current Thread Object.
      */
-    Id GetId() const;
+    inline Id GetId() const { return id; }
 
     /**
      \brief register current native thread handle and remember it's Id as Id of MainThread.

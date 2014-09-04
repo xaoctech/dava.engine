@@ -252,11 +252,6 @@ void Thread::SetId(const Id &threadId)
     id = threadId;
     nativeId = GetCurrentIdentifier();
 }
-
-Thread::Id Thread::GetId() const
-{
-    return id;
-}
     
 void Thread::ThreadFunction(void *param)
 {
