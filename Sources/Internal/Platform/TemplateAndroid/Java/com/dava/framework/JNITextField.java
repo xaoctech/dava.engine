@@ -48,7 +48,9 @@ public class JNITextField {
 	static private SoftKeyboardStateHelper keyboardHelper = null;
 	static private volatile boolean readyToClose = false;
 	static private Handler handler = new Handler();
-
+	private static int lastSelectedImeMode = 0;
+    private static int lastSelectedInputType = 0;
+    
 	final static String TAG = "JNITextField";
 	public static final int STABLE_IME_OPTIONS = EditorInfo.IME_FLAG_NO_FULLSCREEN;
 	private static final int CLOSE_KEYBOARD_DELAY = 30;
@@ -186,15 +188,6 @@ public class JNITextField {
             @Override
             public void onSoftKeyboardClosed()
             {
-                // Workaround: if keyboard was closed by BACK button, we clear focus
-                if(activeTextField != NoActiveTextField)
-                {
-                    EditText text = GetEditText(activeTextField);
-                    if(text != null)
-                    {
-                        text.clearFocus();
-                    }
-                }
                 // Send close event to native
                 JNIActivity.GetActivity().PostEventToGL(new Runnable()
                 {
@@ -205,11 +198,27 @@ public class JNITextField {
                         KeyboardClosed(localId);
                     }
                 });
+                // Workaround: if keyboard was closed by other IME type we restore focus
+                if(activeTextField != NoActiveTextField)
+                {
+                    EditText text = GetEditText(activeTextField);
+                    if(text != null)
+                    {
+                        text.requestFocus();
+                    }
+                }
                 // Clear IDs of active fields on real close keyboard 
-                activeTextField = NoActiveTextField;
                 lastClosedTextField = NoActiveTextField;
             }
         });
+	}
+	
+	public static int GetLastKeyboardIMEOptions() {
+	    return lastSelectedImeMode;
+	}
+	
+	public static int GetLastKeyboardInputType() {
+	    return lastSelectedInputType;
 	}
 	
 	public static void Create(final int id, final float x, final float y,
@@ -223,7 +232,20 @@ public class JNITextField {
 			@Override
 			public Void call() throws Exception {
 				JNIActivity activity = JNIActivity.GetActivity();
-				final EditText text = new EditText(activity);
+				final EditText text = new EditText(activity) {
+				    // Workaround for BACK press when keyboard opened
+				    @Override
+				    public boolean onKeyPreIme(int keyCode, KeyEvent event)
+				    {
+				        // Clear focus on BACK key, DON'T close keyboard itself
+				        if(keyCode == KeyEvent.KEYCODE_BACK)
+				        {
+				            clearFocus();
+				            return true;
+				        }
+				        return super.onKeyPreIme(keyCode, event);
+				    }
+				};
 				
 				FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
 						Math.round(dx), Math.round(dy));
@@ -314,6 +336,9 @@ public class JNITextField {
                         // Control keyboard state by changing focus state
                         if(hasFocus)
                         {
+                            lastSelectedImeMode = text.getImeOptions();
+                            lastSelectedInputType = text.getInputType();
+                            
                             activeTextField = id;
                             if(readyToClose) // Another text field lose a focus
                             {
@@ -773,7 +798,7 @@ public class JNITextField {
         task.AsyncRun();
 	}
 	
-	public static void CloseKeyboard(final int id) {
+	public static void CloseKeyboard(int id) {
 		final EditText text = GetEditText(id);
 		if (text == null)
 			return;

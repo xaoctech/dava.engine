@@ -15,21 +15,15 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 
 import com.bda.controller.Controller;
 
-/**
- * @author m_polubisok
- *
- */
 public abstract class JNIActivity extends Activity implements JNIAccelerometer.JNIAccelerometerListener
 {
 	private static int errorState = 0;
 
 	private JNIAccelerometer accelerometer = null;
 	protected JNIGLSurfaceView glView = null;
-	protected FrameLayout frontLayout = null;
 	
 	private FMODAudioDevice fmodDevice = new FMODAudioDevice();
 	
@@ -44,6 +38,8 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
     
     private boolean isFirstRun = true;
     
+    public abstract JNIGLSurfaceView GetSurfaceView();
+    
     private static JNIActivity activity = null;
     protected static SingalStrengthListner singalStrengthListner = null;
     
@@ -51,17 +47,6 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 	{
 		return activity;
 	}
-    
-    /**
-     * Returns instance of {@link FrameLayout} that created for displaying
-     * controls and {@link JNIGLSurfaceView}.
-     * @return instance of {@link FrameLayout} or <code>null</code>.
-     */
-    public FrameLayout GetFrontLayout() {
-        return frontLayout;
-    }
-    
-    public abstract JNIGLSurfaceView GetSurfaceView();
     
     @Override
     public void onCreate(Bundle savedInstanceState) 
@@ -83,7 +68,7 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         SensorManager sensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
         accelerometer = new JNIAccelerometer(this, sensorManager);
 
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN | WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().requestFeature(Window.FEATURE_ACTION_MODE_OVERLAY);
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
