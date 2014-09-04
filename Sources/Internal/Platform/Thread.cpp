@@ -45,6 +45,7 @@ Map<Thread::NativeId, Thread::Id> Thread::threadIdList;
 Mutex Thread::threadIdListMutex;
 
 Thread::Id Thread::mainThreadId = 0;
+Thread::Id Thread::glThreadId = 0;
 
 ConditionalVariable::ConditionalVariable()
 {
@@ -78,7 +79,12 @@ ConditionalVariable::~ConditionalVariable()
 
 void Thread::InitMainThread()
 {
-    mainThreadId = GetCurrentThreadId();
+    mainThreadId = GetCurrentId();
+}
+
+void Thread::InitGLThread()
+{
+	glThreadId = GetCurrentId();
 }
 
 bool Thread::IsMainThread()
@@ -89,9 +95,9 @@ bool Thread::IsMainThread()
     }
 
     //Not an any thread which calls IsMainThread is DAVA::Thread, so it sould not contain nativeId
-    Id currentId = GetCurrentThreadId();
+    Id currentId = GetCurrentId();
 
-    return currentId == mainThreadId;
+    return currentId == mainThreadId || currentId == glThreadId;
 }
 
 Thread::Id Thread::GetCurrentId()
@@ -101,7 +107,8 @@ Thread::Id Thread::GetCurrentId()
     Id retId;
     
     LockGuard<Mutex> locker(threadIdListMutex);
-    Map<NativeId, Id>::iterator it = threadIdList.find(GetCurrentIdentifier());
+    NativeId nid = GetCurrentIdentifier();
+    Map<NativeId, Id>::iterator it = threadIdList.find(nid);
     if (it == threadIdList.end())
     {
         NativeId threadIdentifier = GetCurrentIdentifier();
@@ -136,7 +143,7 @@ void Thread::Kill()
     
     if(STATE_ENDED != state && STATE_KILLED != state && STATE_CANCELLED != state)
     {
-        KillNative(handle);
+        KillNative();
         state = STATE_KILLED;
         threadIdListMutex.Lock();
         threadIdList.erase(nativeId);
@@ -149,10 +156,7 @@ void Thread::Kill()
 void Thread::KillAll()
 {
     LockGuard<Mutex> locker(threadListMutex);
-
-    Set<Thread *>::iterator i = threadList.begin();
-    Set<Thread *>::iterator end = threadList.end();
-    for(; i != end; ++i)
+    for(Set<Thread *>::iterator i = threadList.begin(); i != threadList.end(); ++i)
     {
         (*i)->Kill();
     }
@@ -175,14 +179,11 @@ void Thread::Cancel()
 
 void Thread::CancelAll()
 {
-    threadListMutex.Lock();
-    Set<Thread *>::iterator i = threadList.begin();
-    Set<Thread *>::iterator end = threadList.end();
-    for(; i != end; ++i)
+	LockGuard<Mutex> locker(threadListMutex);
+    for(Set<Thread *>::iterator i = threadList.begin(); i != threadList.end(); ++i)
     {
         (*i)->Cancel();
     }
-    threadListMutex.Unlock();
 }
 
 
@@ -190,12 +191,11 @@ Thread::Thread(const Message& _msg)
     : msg(_msg)
     , state(STATE_CREATED)
     , id(0)
+	, nativeId(0)
 {
     threadListMutex.Lock();
     threadList.insert(this);
     threadListMutex.Unlock();
-
-    Init();
 }
 
 Thread::~Thread()
@@ -207,11 +207,6 @@ Thread::~Thread()
     threadListMutex.Lock();
     threadList.erase(this);
     threadListMutex.Unlock();
-}
-
-Thread::eThreadState Thread::GetState() const
-{
-	return state;
 }
 
 void Thread::Wait(ConditionalVariable * cv)
@@ -254,6 +249,7 @@ void Thread::Broadcast(ConditionalVariable * cv)
 void Thread::SetId(const Id &threadId)
 {
     id = threadId;
+    nativeId = GetCurrentIdentifier();
 }
 
 Thread::Id Thread::GetId() const
@@ -265,7 +261,8 @@ void Thread::ThreadFunction(void *param)
 {
     Thread * t = (Thread *)param;
     t->Retain();
-    t->SetId(GetCurrentThreadId());
+    t->SetId(GetCurrentId());
+    t->Init();
     
     if (STATE_CREATED == t->state
         ||STATE_KILLED == t->state
@@ -290,9 +287,9 @@ void Thread::ThreadFunction(void *param)
     
     // thread is finishing so we need to unregister it
     threadIdListMutex.Lock();
-    threadIdList.erase(t->GetId());
+    threadIdList.erase(t->nativeId);
     threadIdListMutex.Unlock();
-    
+
     t->Release();
 }
     

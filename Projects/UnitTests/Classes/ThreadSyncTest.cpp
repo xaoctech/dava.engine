@@ -40,12 +40,12 @@ ThreadSyncTest::ThreadSyncTest()
 
 void ThreadSyncTest::LoadResources()
 {
-    someThread = Thread::Create(Message(this, &ThreadSyncTest::SomeThreadFunc));
+
 }
 
 void ThreadSyncTest::UnloadResources()
 {
-    SafeRelease(someThread);
+
 }
 
 void ThreadSyncTest::SomeThreadFunc(BaseObject * caller, void * callerData, void * userData)
@@ -64,16 +64,20 @@ void ThreadSyncTest::ThreadSleepTestFunction(PerfFuncData * data)
 
 void ThreadSyncTest::ThreadSyncTestFunction(PerfFuncData * data)
 {
+	someThread = Thread::Create(Message(this, &ThreadSyncTest::SomeThreadFunc));
     someValue = -1;
     someThread->Start();
     Thread::Wait(&cv);
     TEST_VERIFY(someValue == 0);
+    someThread->Join();
+    TEST_VERIFY(0 == someThread->Release());
+    someThread = NULL;
 }
 
 void ThreadSyncTest::InfiniteThreadFunction(BaseObject * caller, void * callerData, void * userData)
 {
     Thread *thread = static_cast<Thread *>(caller);
-    while(thread && Thread::STATE_RUNNING == thread->GetState())
+    while(thread && Thread::STATE_CANCELLING != thread->GetState())
     {
         Thread::Sleep(200);
     }
@@ -82,7 +86,7 @@ void ThreadSyncTest::InfiniteThreadFunction(BaseObject * caller, void * callerDa
 
 void ThreadSyncTest::ShortThreadFunction(BaseObject * caller, void * callerData, void * userData)
 {
-    uint32 i = 100;
+    uint32 i = 200;
     Thread *thread = static_cast<Thread *>(caller);
     while(thread && i-- > 0)
     {
@@ -90,7 +94,6 @@ void ThreadSyncTest::ShortThreadFunction(BaseObject * caller, void * callerData,
         if (Thread::STATE_CANCELLING == thread->GetState())
             break;
     }
-    
 }
 
 void ThreadSyncTest::TestThread(PerfFuncData * data)
@@ -118,8 +121,10 @@ void ThreadSyncTest::TestThread(PerfFuncData * data)
     shortThread->Join();
     TEST_VERIFY(Thread::STATE_ENDED == shortThread->GetState());
     
-    SafeRelease(infiniteThread);
-    SafeRelease(shortThread);
+    TEST_VERIFY(0 == shortThread->Release());
+	shortThread = NULL;
+	TEST_VERIFY(0 == infiniteThread->Release());
+	infiniteThread = NULL;
 
     infiniteThread = Thread::Create(Message(this, &ThreadSyncTest::InfiniteThreadFunction));
     shortThread = Thread::Create(Message(this, &ThreadSyncTest::ShortThreadFunction));
@@ -127,18 +132,21 @@ void ThreadSyncTest::TestThread(PerfFuncData * data)
     infiniteThread->Start();
     shortThread->Start();
 
-    Thread::Sleep(50);
+    Thread::Sleep(100);
     Thread::KillAll();
     
     shortThread->Join();
     TEST_VERIFY(Thread::STATE_KILLED == shortThread->GetState());
-    
+
     infiniteThread->Join();
     TEST_VERIFY(Thread::STATE_KILLED == infiniteThread->GetState());
-    
-    
-    SafeRelease(infiniteThread);
-    SafeRelease(shortThread);
+
+    TEST_VERIFY(0 != shortThread);
+    TEST_VERIFY(0 == shortThread->Release());
+    shortThread = NULL;
+
+    TEST_VERIFY(0 == infiniteThread->Release());
+    infiniteThread = NULL;
 
 	Logger::Debug("[ThreadSyncTest] Done.");
 }

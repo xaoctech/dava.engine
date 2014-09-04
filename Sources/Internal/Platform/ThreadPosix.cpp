@@ -45,7 +45,7 @@ namespace DAVA
 #if defined (__DAVAENGINE_ANDROID__)
 void Thread::thread_exit_handler(int sig)
 {
-	if (SIGUSR1 == sig)
+	if (SIGRTMIN == sig)
 	{
 		pthread_exit(0);
 	}
@@ -60,7 +60,7 @@ void Thread::Init()
 	sigemptyset(&cancelThreadAction.sa_mask);
 	cancelThreadAction.sa_flags = 0;
 	cancelThreadAction.sa_handler = thread_exit_handler;
-	sigaction(SIGUSR1, &cancelThreadAction, NULL);
+	sigaction(SIGRTMIN, &cancelThreadAction, NULL);
 #endif
 }
 
@@ -70,18 +70,18 @@ void Thread::Shutdown()
     Join();
 }
 
-void Thread::KillNative(Handle _handle)
+void Thread::KillNative()
 {
 	uint32 ret = 0;
 #if defined (__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
-    ret = pthread_cancel(_handle);
+    ret = pthread_cancel(handle);
 #endif
 #if defined (__DAVAENGINE_ANDROID__)
-    ret = pthread_kill(_handle, SIGUSR1);
+    ret = pthread_kill(handle, SIGRTMIN);
 #endif
     if (0 != ret)
     {
-        Logger::FrameworkDebug("[Thread::Cancel] for android: id = %d, error = %d", Thread::GetCurrentThreadId(), ret);
+        Logger::FrameworkDebug("[Thread::Cancel] for android: id = %d, error = %d", Thread::GetCurrentId(), ret);
     }
 }
 
@@ -122,12 +122,12 @@ void Thread::Yield()
 {
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
     pthread_yield_np();
-#elif defined(__DAVAEBGINE_ANDROID__)
+#elif defined(__DAVAENGINE_ANDROID__)
     sched_yield();
 #endif
 }
 
-void Thread::Join() const
+void Thread::Join()
 {
     pthread_join(handle, NULL);
 }

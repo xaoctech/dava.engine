@@ -122,11 +122,11 @@ public:
 
 		This function return state of the thread. It can be STATE_CREATED, STATE_RUNNING, STATE_ENDED.
 	*/
-    eThreadState GetState() const;
+    eThreadState GetState() const {return state;}
 
     /** Wait until thread's finished.
     */
-    void Join() const;
+    void Join();
 
     /** Kill thread by OS. No signals will be sent.
     */
@@ -171,6 +171,7 @@ public:
      \brief register current native thread handle and remember it's Id as Id of MainThread.
      */
     static void	InitMainThread();
+    static void InitGLThread();
 
 private:
     virtual ~Thread();
@@ -187,7 +188,7 @@ private:
     /**
     \brief Kill thread native implementation (contains no Thread logic)
     */
-    void KillNative(Handle handle);
+    void KillNative();
     
     /**
     \brief Function which processes in separate thread. Used to launch user defined code and handle state.
@@ -206,6 +207,7 @@ private:
     */
 	Id id;
 	static Id mainThreadId;
+	static Id glThreadId;
 
     /**
     \brief Some value which is unique for any thread in current OS. Could be used only for equals comparision.

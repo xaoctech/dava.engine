@@ -92,9 +92,9 @@ void Thread::Join() const
     }
 }
 
-void Thread::KillNative(Handle _handle)
+void Thread::KillNative()
 {
-    TerminateThread(_handle, 0);
+    TerminateThread(handle, 0);
 }
 
 Thread::NativeId Thread::GetCurrentIdentifier()
