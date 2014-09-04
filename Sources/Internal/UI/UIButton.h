@@ -27,9 +27,6 @@
 =====================================================================================*/
 
 
-
-
-
 #ifndef __DAVAENGINE_UI_BUTTON_H__
 #define __DAVAENGINE_UI_BUTTON_H__
 
@@ -49,6 +46,7 @@ namespace DAVA
         you should use GetStateBackground() and GetStateTextControl().
      */
 class UIStaticText;
+class Font;
 
 class UIButton : public UIControl
 {

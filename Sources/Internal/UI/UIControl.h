@@ -27,27 +27,23 @@
 =====================================================================================*/
 
 
-
 #ifndef __DAVAENGINE_UI_CONTROL_H__
 #define __DAVAENGINE_UI_CONTROL_H__
 
 #include "Base/BaseTypes.h"
-#include "Base/BaseMath.h"
-#include "Base/Message.h"
-#include "Base/BaseObject.h"
-#include "Base/EventDispatcher.h"
-
 #include "UI/UIControlBackground.h"
-#include "UI/UIEvent.h"
 #include "Animation/AnimatedObject.h"
-#include "Animation/Animation.h"
 #include "Animation/Interpolation.h"
-#include "FileSystem/YamlParser.h"
-#include "UI/UIYamlLoader.h"
-#include "DAVAConfig.h"
 
 namespace DAVA
 {
+class UIYamlLoader;
+class Animation;
+class EventDispatcher;
+class UIEvent;
+class UIControlBackground;
+class Message;
+
 #define CONTROL_TOUCH_AREA		15
     /**
      \ingroup controlsystem
@@ -76,7 +72,7 @@ public:
     float32 cosA;
     float32 sinA;
 
-    void AddToGeometricData(const UIGeometricData &data)
+    void AddGeometricData(const UIGeometricData &data)
     {
         position.x = data.position.x - data.pivotPoint.x * data.scale.x + position.x * data.scale.x;
         position.y = data.position.y - data.pivotPoint.y * data.scale.y + position.y * data.scale.y;
@@ -108,6 +104,11 @@ public:
         unrotatedRect.y = position.y - pivotPoint.y * scale.y;
         unrotatedRect.dx = size.x * scale.x;
         unrotatedRect.dy = size.y * scale.y;
+    }
+
+    DAVA_DEPRECATED(void AddToGeometricData(const UIGeometricData &data))
+    {
+        AddGeometricData(data);
     }
 
     void BuildTransformMatrix( Matrix3 &transformMatr ) const
@@ -530,6 +531,30 @@ public:
      \param[in] newPivot new control pivot point.
      */
     inline void SetPivotPoint(const Vector2 &newPivot);
+
+    /**
+     \brief Returns control pivot.
+     \returns control pivot.
+     */
+    inline Vector2 GetPivot() const;
+
+    /**
+     \brief Sets the control pivot.
+     \param[in] newPivot new control pivot.
+     */
+    inline void SetPivot(const Vector2 &newPivot);
+
+    /**
+     \brief Returns control scale.
+     \returns control scale.
+     */
+    inline const Vector2 &GetScale() const;
+
+    /**
+     \brief Sets the control scale.
+     \param[in] newScale new control scale.
+     */
+    inline void SetScale(const Vector2 &newScale);
 
     /**
      \brief Returns actual control transformation and metrics.
@@ -1419,6 +1444,29 @@ const Vector2 & UIControl::GetPivotPoint() const
 void UIControl::SetPivotPoint(const Vector2 &newPivot)
 {
     pivotPoint = newPivot;
+}
+
+Vector2 UIControl::GetPivot() const
+{
+    Vector2 pivot;
+    pivot.x = (size.x == 0.0f) ? 0.0f : (pivotPoint.x/size.x);
+    pivot.y = (size.y == 0.0f) ? 0.0f : (pivotPoint.y/size.y);
+    return pivot;
+}
+
+void UIControl::SetPivot(const Vector2 &newPivot)
+{
+    SetPivotPoint(size*newPivot);
+}
+
+const Vector2 & UIControl::GetScale() const
+{
+    return scale;
+}
+
+void UIControl::SetScale( const Vector2 &newScale )
+{
+    scale = newScale;
 }
 
 const Vector2 &UIControl::GetSize() const

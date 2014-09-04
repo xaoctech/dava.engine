@@ -31,6 +31,7 @@
 #include "UI/UIButton.h"
 #include "UI/UIStaticText.h"
 #include "UI/UIYamlLoader.h"
+#include "UI/UIEvent.h"
 #include "Utils/StringFormat.h"
 #include "Utils/Utils.h"
 #include "FileSystem/LocalizationSystem.h"

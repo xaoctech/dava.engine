@@ -722,10 +722,10 @@ namespace DAVA
         tempGeometricData.angle = angle;
         if(!parent)
         {
-            tempGeometricData.AddToGeometricData(UIControlSystem::Instance()->GetBaseGeometricData());
+            tempGeometricData.AddGeometricData(UIControlSystem::Instance()->GetBaseGeometricData());
             return tempGeometricData;
         }
-        tempGeometricData.AddToGeometricData(parent->GetGeometricData());
+        tempGeometricData.AddGeometricData(parent->GetGeometricData());
         return tempGeometricData;
     }
 
@@ -1528,7 +1528,7 @@ namespace DAVA
 
         UIControlSystem::Instance()->drawCounter++;
         UIGeometricData drawData = GetLocalGeometricData();
-        drawData.AddToGeometricData(geometricData);
+        drawData.AddGeometricData(geometricData);
 
         const Color &parentColor = parent ? parent->GetBackground()->GetDrawColor() : Color::White;
 
