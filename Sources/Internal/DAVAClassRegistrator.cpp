@@ -29,6 +29,7 @@
 #include "DAVAEngine.h"
 #include "DAVAClassRegistrator.h"
 #include "Render/Highlevel/SpriteRenderBatch.h"
+#include "Render/Highlevel/ShadowVolume.h"
 
 using namespace DAVA;
 

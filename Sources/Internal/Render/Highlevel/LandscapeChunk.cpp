@@ -65,10 +65,4 @@ void LandscapeChunk::Load(KeyedArchive *archive, SerializationContext *serializa
     RenderBatch::Load(archive, serializationContext);
 }
 
-ShadowVolume * LandscapeChunk::CreateShadow()
-{
-	return NULL;
-}
-
-
 };
