@@ -58,9 +58,23 @@ public:
     virtual void Load(KeyedArchive *archive, SerializationContext *serializationContext);
 
     virtual void RecalcBoundingBox();*/
-protected:
 
+    virtual void BindDynamicParameters(Camera * camera);
+    
+    inline void SetJointsPtr(Vector4 *positionPtr, Vector4 *quaternoinPtr, int32 count);
+protected:
+    Vector4 *positionArray;
+    Vector4 *quaternionArray;
+    int32 jointsCount;
 };
+
+
+inline void SkinnedMesh::SetJointsPtr(Vector4 *positionPtr, Vector4 *quaternoinPtr, int32 count)
+{
+    positionArray = positionPtr;
+    quaternionArray = quaternoinPtr;
+    jointsCount = count;
+}
 
 }//ns
 
