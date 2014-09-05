@@ -36,6 +36,8 @@
 #include "Base/ObjectFactory.h"
 #include "Utils/Utils.h"
 #include "Core/Core.h"
+#include "UI/UIEvent.h"
+#include "UI/UIYamlLoader.h"
 
 namespace DAVA 
 {
@@ -393,9 +395,9 @@ void UISlider::AttachToSubcontrols()
 		thumbButton = FindByName(UISLIDER_THUMB_SPRITE_CONTROL_NAME);
 		DVASSERT(thumbButton);
         thumbButton->Retain();
-        
-		InitInactiveParts(thumbButton->GetBackground()->GetSprite());
 	}
+
+    InitInactiveParts(thumbButton->GetBackground()->GetSprite());
 }
 
 List<UIControl*> UISlider::GetSubcontrols()
