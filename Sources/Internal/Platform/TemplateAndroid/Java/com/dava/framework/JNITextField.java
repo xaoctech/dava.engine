@@ -15,6 +15,7 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.Spanned;
 import android.text.method.PasswordTransformationMethod;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -111,6 +112,14 @@ public class JNITextField {
 		}
 	}
 
+	private static float GetScaledDensity()
+	{
+		DisplayMetrics dm = new DisplayMetrics();
+		JNIActivity.GetActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
+
+		return Math.min(2.0f, dm.scaledDensity);
+	}
+
 	public static void Create(final int id, final float x, final float y,
 			final float dx, final float dy) {
 		if (controls.containsKey(id)) {
@@ -139,7 +148,7 @@ public class JNITextField {
 				params.gravity = Gravity.LEFT | Gravity.TOP;
 				text.setPadding(0, 0, 0, 0);
 				text.setSingleLine(true);
-				int fontSize = (int) (20);
+				int fontSize = (int) (20 * GetScaledDensity());
 				text.setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSize);
 				text.setBackgroundColor(Color.TRANSPARENT);
 				text.setTextColor(Color.WHITE);
@@ -191,6 +200,27 @@ public class JNITextField {
 							}
 						});
 						return true;
+					}
+				});
+
+				text.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+					private final int _id = id;
+
+					@Override
+					public void onFocusChange(View v, boolean hasFocus) {
+						final boolean _hasFocus = hasFocus;
+						JNIActivity.GetActivity().PostEventToGL(new Runnable() {
+							@Override
+							public void run() {
+								JNITextField.TextFieldFocusChanged(_id, _hasFocus);
+							}
+						});
+					}
+				});
+				text.setOnLongClickListener(new View.OnLongClickListener() {
+					@Override
+					public boolean onLongClick(View v) {
+						return !v.hasFocus();
 					}
 				});
 				
@@ -249,7 +279,8 @@ public class JNITextField {
 		InternalTask<Void> task = new InternalTask<Void>(text, new Callable<Void>() {
 			@Override
 			public Void call() throws Exception {
-				text.setText(string);
+				text.setText("");
+				text.append(string);
 				return null;
 			}
 		});
@@ -281,7 +312,7 @@ public class JNITextField {
 		InternalTask<Void> task = new InternalTask<Void>(text, new Callable<Void>() {
 			@Override
 			public Void call() throws Exception {
-				text.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
+				text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size * GetScaledDensity()));
 				return null;
 			}
 		});
@@ -485,6 +516,7 @@ public class JNITextField {
 				inputFlags &= ~(InputType.TYPE_CLASS_NUMBER |
 						InputType.TYPE_CLASS_TEXT |
 						InputType.TYPE_TEXT_VARIATION_URI |
+						InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS |
 						EditorInfo.TYPE_CLASS_TEXT);
 				
 				switch (keyboardType) {
@@ -497,10 +529,13 @@ public class JNITextField {
 					break;
 
 				case 3: // KEYBOARD_TYPE_URL
-				case 7: // KEYBOARD_TYPE_EMAIL_ADDRESS
 				case 9: // KEYBOARD_TYPE_TWITTER
 					inputFlags |= InputType.TYPE_CLASS_TEXT
 							| InputType.TYPE_TEXT_VARIATION_URI;
+					break;
+
+				case 7: // KEYBOARD_TYPE_EMAIL_ADDRESS
+					inputFlags |= InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
 					break;
 
 				case 0: // KEYBOARD_TYPE_DEFAULT
@@ -557,8 +592,10 @@ public class JNITextField {
 		task.AsyncRun();
 	}
 	
-	public static void ShowField(int id) {
+	public static void SetVisible(int id, boolean isVisible)
+	{
 		final EditText text = GetEditText(id);
+		final boolean visible = isVisible;
 		if (text == null)
 			return;
 		
@@ -569,31 +606,7 @@ public class JNITextField {
 				InternalTask<Void> task = new InternalTask<Void>(text, new Callable<Void>() {
 					@Override
 					public Void call() throws Exception {
-						text.setVisibility(View.VISIBLE);
-						return null;
-					}
-				});
-				task.AsyncRun();
-			}
-		});
-	}
-	
-	public static void HideField(int id) {
-		final EditText text = GetEditText(id);
-		if (text == null)
-			return;
-		
-		if (id == activeTextField)
-			CloseKeyboard(id);
-		
-		JNIActivity.GetActivity().PostEventToGL(new Runnable() {
-			
-			@Override
-			public void run() {
-				InternalTask<Void> task = new InternalTask<Void>(text, new Callable<Void>() {
-					@Override
-					public Void call() throws Exception {
-						text.setVisibility(View.GONE);
+						text.setVisibility(visible ? View.VISIBLE : View.GONE);
 						return null;
 					}
 				});
@@ -736,4 +749,5 @@ public class JNITextField {
 			int replacementLocation,
 			int replacementLength,
 			byte[] byteArray);
+	public static native void TextFieldFocusChanged(int id, final boolean hasFocus);
 }

@@ -98,7 +98,7 @@ public:
         \returns pathname value
 	 */
     const String GetAbsolutePathname() const;
-    
+
 	/**
         \brief Function to retrieve filename from pathname. Filename for path "/Users/Folder/image.png" is "image.png".
         \returns filename value

@@ -51,6 +51,7 @@ void Thread::Shutdown()
 
 void Thread::Start()
 {
+    Retain();
     DVASSERT(STATE_CREATED == state);
     handle = CreateThread 
         (

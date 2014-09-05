@@ -219,6 +219,7 @@ RenderObject* VegetationRenderObject::Clone(RenderObject *newObject)
     
     vegetationRenderObject->densityMap.clear();
     
+    vegetationRenderObject->SetVisibilityDistance(GetVisibilityDistance()); //VI: must be copied before lod ranges
     vegetationRenderObject->SetHeightmap(GetHeightmap());
     vegetationRenderObject->SetTextureSheet(GetTextureSheetPath());
     vegetationRenderObject->SetLayerClusterLimit(GetLayerClusterLimit());
@@ -234,6 +235,7 @@ RenderObject* VegetationRenderObject::Clone(RenderObject *newObject)
     vegetationRenderObject->SetLayersAnimationSpring(GetLayersAnimationSpring());
     vegetationRenderObject->SetDensityMap(densityMap);
     vegetationRenderObject->SetLayerAnimationDragCoefficient(GetLayerAnimationDragCoefficient());
+    vegetationRenderObject->SetLodRange(GetLodRange());
     
     vegetationRenderObject->AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);
     vegetationRenderObject->AddFlag(RenderObject::CUSTOM_PREPARE_TO_RENDER);
@@ -289,11 +291,17 @@ void VegetationRenderObject::Save(KeyedArchive *archive, SerializationContext *s
     archive->SetVector4("vro.layersAnimationDrug", GetLayerAnimationDragCoefficient());
     
     uint32 bitCount = densityMap.size();
-    archive->SetUInt32("vro.densityBitCount", bitCount);
+    archive->SetUInt32("vro.flippedDensityBitCount", bitCount);
     for(uint32 i = 0; i < bitCount; ++i)
     {
-        archive->SetBool(Format("vro.densityBit.%d", i), densityMap[i]);
+        archive->SetBool(Format("vro.flippedDensityBit.%d", i), densityMap[i]);
     }
+    
+    const Vector3& savingLodRanges = GetLodRange();
+    archive->SetVector3("vro.lodRanges", savingLodRanges);
+    
+    const Vector2& savingVisibilityDistance = GetVisibilityDistance();
+    archive->SetVector2("vro.visibilityDistance", savingVisibilityDistance);
 }
     
 void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *serializationContext)
@@ -302,6 +310,19 @@ void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *s
     
     if(IsDataLoadNeeded())
     {
+        //VI: must be loaded before lod ranges
+        if(archive->IsKeyExists("vro.visibilityDistance"))
+        {
+            Vector2 savedVisibilityDistance = archive->GetVector2("vro.visibilityDistance");
+            SetVisibilityDistance(savedVisibilityDistance);
+        }
+    
+        if(archive->IsKeyExists("vro.lodRanges"))
+        {
+            Vector3 savedLodRanges = archive->GetVector3("vro.lodRanges");
+            SetLodRange(savedLodRanges);
+        }
+
         if(archive->IsKeyExists("vro.geometryData"))
         {
             KeyedArchive* customGeometryArchive = archive->GetArchive("vro.geometryData");
@@ -377,13 +398,13 @@ void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *s
         SetLayersAnimationSpring(archive->GetVector4("vro.layersAnimationSpring", GetLayersAnimationSpring()));
         
         Vector<bool> densityBits;
-        if(archive->IsKeyExists("vro.densityBitCount"))
+        if(archive->IsKeyExists("vro.flippedDensityBitCount"))
         {
-            uint32 bitCount = archive->GetUInt32("vro.densityBitCount");
+            uint32 bitCount = archive->GetUInt32("vro.flippedDensityBitCount");
             densityBits.resize(bitCount);
             for(uint32 i = 0; i < bitCount; ++i)
             {
-                densityBits[i] = archive->GetBool(Format("vro.densityBit.%d", i));
+                densityBits[i] = archive->GetBool(Format("vro.flippedDensityBit.%d", i));
             }
         }
         else
@@ -394,10 +415,17 @@ void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *s
             }
         }
         
-        if(densityBits.size() > 0)
+        if(densityBits.size() == 0)
         {
-            SetDensityMap(densityBits);
+            densityBits.resize(DENSITY_MAP_SIZE * DENSITY_MAP_SIZE);
+            uint32 bitCount = densityBits.size();
+            for(size_t bitIndex = 0; bitIndex < bitCount; ++bitIndex)
+            {
+                densityBits[bitIndex] = true;
+            }
         }
+
+        SetDensityMap(densityBits);
         
         if(archive->IsKeyExists("vro.layersAnimationDrug"))
         {
@@ -494,9 +522,9 @@ void VegetationRenderObject::PrepareToRenderMultipleMaterials(Camera *camera)
             
             float32 distanceScale = 1.0f;
             
-            if(treeNode->data.cameraDistance > MAX_VISIBLE_SCALING_DISTANCE)
+            if(treeNode->data.cameraDistance > visibleClippingDistances.y)
             {
-                distanceScale = Clamp(1.0f - ((treeNode->data.cameraDistance - MAX_VISIBLE_SCALING_DISTANCE) / (MAX_VISIBLE_CLIPPING_DISTANCE - MAX_VISIBLE_SCALING_DISTANCE)), 0.0f, 1.0f);
+                distanceScale = Clamp(1.0f - ((treeNode->data.cameraDistance - visibleClippingDistances.y) / (visibleClippingDistances.x - visibleClippingDistances.y)), 0.0f, 1.0f);
             }
             
             posScale.x = treeNode->data.bbox.min.x - unitWorldSize[resolutionIndex].x * (indexBufferIndex % RESOLUTION_TILES_PER_ROW[resolutionIndex]);
@@ -598,9 +626,9 @@ void VegetationRenderObject::PrepareToRenderSingleMaterial(Camera *camera)
         
         float32 distanceScale = 1.0f;
         
-        if(treeNode->data.cameraDistance > MAX_VISIBLE_SCALING_DISTANCE)
+        if(treeNode->data.cameraDistance > visibleClippingDistances.y)
         {
-            distanceScale = Clamp(1.0f - ((treeNode->data.cameraDistance - MAX_VISIBLE_SCALING_DISTANCE) / (MAX_VISIBLE_CLIPPING_DISTANCE - MAX_VISIBLE_SCALING_DISTANCE)), 0.0f, 1.0f);
+            distanceScale = Clamp(1.0f - ((treeNode->data.cameraDistance - visibleClippingDistances.y) / (visibleClippingDistances.x - visibleClippingDistances.y)), 0.0f, 1.0f);
         }
         
         posScale.x = treeNode->data.bbox.min.x - unitWorldSize[resolutionIndex].x * (indexBufferIndex % RESOLUTION_TILES_PER_ROW[resolutionIndex]);
@@ -801,7 +829,7 @@ void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint,
                 if(node->IsTerminalLeaf() ||
                    RESOLUTION_CELL_SQUARE[resolutionId] >= (uint32)node->data.GetResolutionId())
                 {
-                    AddVisibleCell(node, MAX_VISIBLE_CLIPPING_DISTANCE,
+                    AddVisibleCell(node, visibleClippingDistances.x,
                                    cellList);
                 }
                 else if(!node->IsTerminalLeaf())
@@ -974,7 +1002,7 @@ void VegetationRenderObject::InitLodRanges()
     resolutionRanges[1].y = lodRanges.z * smallestUnitSize.x;
 
     resolutionRanges[2].x = lodRanges.z * smallestUnitSize.x;
-    resolutionRanges[2].y = MAX_VISIBLE_CLIPPING_DISTANCE;//RESOLUTION_RANGES[2].x * 1000.0f;
+    resolutionRanges[2].y = visibleClippingDistances.x;//RESOLUTION_RANGES[2].x * 1000.0f;
 
     size_t resolutionCount = resolutionRanges.size();
     for(size_t i = 0; i < resolutionCount; ++i)
@@ -1474,9 +1502,14 @@ void VegetationRenderObject::GenerateDensityMapFromTransparencyMask(FilePath lig
                 {
                     for(uint32 x = 0; x < DENSITY_MAP_SIZE; ++x)
                     {
-                        float32 meanAlpha = GetMeanAlpha(x, y,
-                                                             ratio, stride,
-                                                             lightmapImage);
+                        //VI: flip Y in order to match landscape and vegetation light mask
+                        uint32 flippedY = DENSITY_MAP_SIZE - y - 1;
+
+                        float32 meanAlpha = GetMeanAlpha(x,
+                                                         flippedY,
+                                                         ratio,
+                                                         stride,
+                                                         lightmapImage);
                         
                         
                         uint32 bitIndex = x + y * DENSITY_MAP_SIZE;

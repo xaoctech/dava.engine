@@ -441,6 +441,7 @@ bool FileSystem::IsDirectory(const FilePath & pathToCheck)
 	return (stats != -1) && (0 != (stats & FILE_ATTRIBUTE_DIRECTORY));
 #else //defined (__DAVAENGINE_WIN32__)
 #if defined(__DAVAENGINE_ANDROID__)
+    
 	String path = pathToCheck.GetAbsolutePathname();
 	if (path.length() &&
 		path.at(path.length() - 1) == '/')
@@ -606,7 +607,7 @@ const FilePath FileSystem::GetPublicDocumentsPath()
 const FilePath FileSystem::GetUserDocumentsPath()
 {
     CorePlatformAndroid *core = (CorePlatformAndroid *)Core::Instance();
-    return core->GetExternalStoragePathname() + String("/");
+    return core->GetInternalStoragePathname() + String("/");
 }
 
 const FilePath FileSystem::GetPublicDocumentsPath()

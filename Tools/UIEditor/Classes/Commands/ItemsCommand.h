@@ -171,7 +171,7 @@ public:
 	DeleteSelectedNodeCommand(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes, bool needDeleteFiles = false);
 	
 	virtual void Execute();
-	void Rollback();
+	virtual void Rollback();
 	virtual bool IsUndoRedoSupported() {return true;};
 
 	virtual void IncrementUnsavedChanges();
@@ -199,7 +199,7 @@ private:
 class ChangeNodeHeirarchy: public UndoableHierarchyTreeNodeCommand
 {
 public:
-	ChangeNodeHeirarchy(HierarchyTreeNode::HIERARCHYTREENODEID targetNodeID, HierarchyTreeNode::HIERARCHYTREENODEID afterNodeID, HierarchyTreeNode::HIERARCHYTREENODESIDLIST items);
+	ChangeNodeHeirarchy(HierarchyTreeNode::HIERARCHYTREENODEID targetNodeID, HierarchyTreeNode::HIERARCHYTREENODEID afterNodeID, const HierarchyTreeNode::HIERARCHYTREENODESIDLIST &items);
 
 	virtual void Execute();
 	virtual void Rollback();
