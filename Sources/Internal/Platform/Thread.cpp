@@ -149,7 +149,7 @@ void Thread::Kill()
         threadIdList.erase(nativeId);
         threadIdListMutex.Unlock();
 
-        DVASSERT(0 != Release());
+        Release();
     }
 }
 
@@ -287,7 +287,7 @@ void Thread::ThreadFunction(void *param)
     // kill could be called around this place. It will produce 2 Release instead of 1.
     // So we use mutex to avoid that.
     t->releaseKillMutex.Lock();
-    DVASSERT(0 != t->Release());
+    t->Release();
     t->releaseKillMutex.Unlock();
 }
     
