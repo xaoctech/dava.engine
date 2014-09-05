@@ -34,6 +34,7 @@
 #include "UI/UIControlSystem.h"
 #include "Base/ObjectFactory.h"
 #include "FileSystem/YamlNode.h"
+#include "UIYamlLoader.h"
 
 namespace DAVA
 {
@@ -451,15 +452,6 @@ void UIList::Update(float32 timeElapsed)
 
 
 
-}
-
-void UIList::Draw(const UIGeometricData &geometricData)
-{
-    if(needRefresh)
-    {
-        FullRefresh();
-    }
-    UIControl::Draw(geometricData);
 }
 
 void UIList::Input(UIEvent *currentInput)

@@ -244,8 +244,6 @@ protected:
 
     virtual void SetRect(const Rect &rect);
 
-    virtual void Draw(const UIGeometricData &geometricData);
-
     Vector<UIListCell*> *GetStoreVector(const String &cellIdentifier);
     void AddCellAtPos(UIListCell *cell, float32 pos, float32 size, int32 index);
 

@@ -32,7 +32,7 @@
 #define __DAVAENGINE_YAML_LOADER_H__
 
 #include "Base/BaseTypes.h"
-#include "Render/2D/FTFont.h"
+#include "Base/BaseObject.h"
 #include "FileSystem/FilePath.h"
 
 namespace DAVA
@@ -49,6 +49,8 @@ namespace DAVA
 class UIControl;
 class UIScrollBar;
 class YamlNode;
+class Font;
+
 class UIYamlLoader : public BaseObject
 {
 protected:
@@ -89,6 +91,22 @@ public:
      */
     static bool Save(UIControl * rootControl, const FilePath & yamlPathname, bool skipRootNode);
 
+    Font * GetFontByName(const String & fontName) const;
+
+    int32 GetDrawTypeFromNode(const YamlNode * drawTypeNode);
+    int32 GetColorInheritTypeFromNode(const YamlNode * colorInheritNode);
+    int32 GetPerPixelAccuracyTypeFromNode(const YamlNode * perPixelAccuracyNode);
+    int32 GetAlignFromYamlNode(const YamlNode * align);
+    int32 GetFittingOptionFromYamlNode(const YamlNode * fittingNode) const;
+    bool GetBoolFromYamlNode(const YamlNode * node, bool defaultValue);
+    Color GetColorFromYamlNode(const YamlNode * node);
+
+    String GetColorInheritTypeNodeValue(int32 colorInheritType);
+    String GetPerPixelAccuracyTypeNodeValue(int32 perPixelAccuracyType);
+    String GetDrawTypeNodeValue(int32 drawType);
+    YamlNode * GetAlignNodeValue(int32 align);
+    YamlNode * GetFittingOptionNodeValue(int32 fitting) const;
+
     //Internal functions that do actual loading and saving.
     void ProcessLoad(UIControl * rootControl, const FilePath & yamlPathname);
     YamlNode *CreateRootNode(const FilePath & yamlPathname);
@@ -100,20 +118,6 @@ public:
 
     bool ProcessSave(UIControl * rootControl, const FilePath & yamlPathname, bool skipRootNode);
 
-    Font * GetFontByName(const String & fontName);
-
-    int32 GetDrawTypeFromNode(const YamlNode * drawTypeNode);
-    int32 GetColorInheritTypeFromNode(const YamlNode * colorInheritNode);
-    int32 GetAlignFromYamlNode(const YamlNode * align);
-    int32 GetFittingOptionFromYamlNode(const YamlNode * fittingNode) const;
-    bool GetBoolFromYamlNode(const YamlNode * node, bool defaultValue);
-    Color GetColorFromYamlNode(const YamlNode * node);
-
-    String GetColorInheritTypeNodeValue(int32 colorInheritType);
-    String GetDrawTypeNodeValue(int32 drawType);
-    YamlNode * GetAlignNodeValue(int32 align);
-    YamlNode * GetFittingOptionNodeValue(int32 fitting) const;
-
     // Set the "ASSERT if custom control is not found during loading" flag.
     void SetAssertIfCustomControlNotFound(bool value);
 
@@ -121,6 +125,7 @@ public:
     void AddScrollBarToLink(UIScrollBar* scroll,const String& delegatePath);
     static String GetControlPath(const UIControl* conrol);
     static UIControl* GetControlByPath(const String& controlPath, UIControl* rootControl);
+    
 protected:
 	// Create the control by its type or base type.
 	UIControl* CreateControl(const String& type, const String& baseType);

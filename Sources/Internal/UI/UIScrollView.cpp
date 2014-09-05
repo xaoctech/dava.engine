@@ -33,6 +33,8 @@
 #include "UI/UIScrollViewContainer.h"
 #include "UI/ScrollHelper.h"
 
+#include "UIYamlLoader.h"
+
 namespace DAVA 
 {
 	
