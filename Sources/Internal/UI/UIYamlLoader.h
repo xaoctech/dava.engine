@@ -47,6 +47,7 @@ namespace DAVA
 */
 
 class UIControl;
+class UIScrollBar;
 class YamlNode;
 class Font;
 
@@ -106,6 +107,10 @@ public:
     YamlNode * GetAlignNodeValue(int32 align);
     YamlNode * GetFittingOptionNodeValue(int32 fitting) const;
 
+    void AddScrollBarToLink(UIScrollBar* scroll,const String& delegatePath);
+    static String GetControlPath(const UIControl* conrol);
+    static UIControl* GetControlByPath(const String& controlPath, UIControl* rootControl);
+
 protected:
     //Internal functions that do actual loading and saving.
     void ProcessLoad(UIControl * rootControl, const FilePath & yamlPathname);
@@ -124,13 +129,19 @@ protected:
     const FilePath & GetCurrentPath() const;
 
 protected:
-    // Create the control by its type or base type.
-    UIControl* CreateControl(const String& type, const String& baseType);
+	// Create the control by its type or base type.
+	UIControl* CreateControl(const String& type, const String& baseType);
+
+    //Called after loading
+    void PostLoad(UIControl * rootControl);
+    void SetScrollBarDelegates(UIControl * rootControl);
 
     // ASSERTion flag for "Custom Control not found" state.
     bool assertIfCustomControlNotFound;
 
-    FilePath currentPath;
+	FilePath currentPath;
+
+    Map<UIScrollBar*,String> scrollsToLink;    
 };
 };
 
