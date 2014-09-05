@@ -31,6 +31,7 @@
 #include "Base/ObjectFactory.h"
 #include "Platform/SystemTimer.h"
 #include "UI/UIControl.h"
+#include "UI/UIScrollBar.h"
 #include "FileSystem/YamlNode.h"
 #include "FileSystem/YamlEmitter.h"
 #include "FileSystem/YamlParser.h"
@@ -39,6 +40,7 @@
 #include "Render/2D/DFFont.h"
 #include "Render/2D/FontManager.h"
 #include "Render/2D/TextBlock.h"
+#include "Utils/Utils.h"
 #include "Render/2D/FTFont.h"
 
 namespace DAVA
@@ -464,13 +466,32 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const FilePath & yamlPat
     LoadFromNode(rootControl, childrenNode, false);
 
     SafeRelease(rootNode);
+	
+	// After the scene is fully loaded, apply the align settings
+	// to position child controls correctly.
+	rootControl->ApplyAlignSettingsForChildren();
+    
+    PostLoad(rootControl);
+    
+	uint64 t2 = SystemTimer::Instance()->AbsoluteMS();
+	Logger::FrameworkDebug("Load of %s time: %lld", yamlPathname.GetAbsolutePathname().c_str(), t2 - t1);    
+}
 
-    // After the scene is fully loaded, apply the align settings
-    // to position child controls correctly.
-    rootControl->ApplyAlignSettingsForChildren();
+void UIYamlLoader::PostLoad(UIControl * rootControl)
+{
+    //Find ScrollBars and set delegates
+    SetScrollBarDelegates(rootControl);
+}
 
-    uint64 t2 = SystemTimer::Instance()->AbsoluteMS();
-    Logger::FrameworkDebug("Load of %s time: %lld", yamlPathname.GetAbsolutePathname().c_str(), t2 - t1);
+void UIYamlLoader::SetScrollBarDelegates(UIControl * rootControl)
+{
+    Map<UIScrollBar*,String>::iterator it = scrollsToLink.begin();
+    for (; it!=scrollsToLink.end(); ++it)
+    {
+        UIControl * control = GetControlByPath(it->second, rootControl);
+        it->first->SetDelegate( dynamic_cast<UIScrollBarDelegate*>(control));
+    }
+    scrollsToLink.clear();
 }
 
 bool UIYamlLoader::ProcessSave(UIControl * rootControl, const FilePath & yamlPathname, bool skipRootNode)
@@ -724,4 +745,56 @@ const FilePath & UIYamlLoader::GetCurrentPath() const
     return currentPath;
 }
 
+void UIYamlLoader::AddScrollBarToLink(UIScrollBar* scroll, const String& delegatePath)
+{
+    scrollsToLink.insert(std::pair<UIScrollBar*,String>(scroll,delegatePath));
+}
+    
+String UIYamlLoader::GetControlPath(const UIControl* control)
+{
+    String controlPath = "";
+    if (control)
+    {
+        controlPath = control->GetName();
+        UIControl * parent = control->GetParent();
+        while (parent)
+        {
+            String parentName = parent->GetName();
+            parent=parent->GetParent();
+            if (parent)
+            {
+                parentName += "/";
+                controlPath = parentName += controlPath;
+            }
+            
+        }
+    }
+    return controlPath;
+}
+    
+UIControl* UIYamlLoader::GetControlByPath(const String& controlPath, UIControl* rootControl)
+{
+    UIControl* control = rootControl;
+    Vector<String> controlNames;
+    Split(controlPath, "/", controlNames, false, true);
+    Vector<String>::const_iterator it_name = controlNames.begin();
+    if (rootControl->GetName() != *it_name)
+    {
+        Logger::Error("[UIYamlLoader::GetControlByPath] wrong root control |%s| |%s|",rootControl->GetName().c_str(),(*it_name).c_str());
+        return NULL;
+    } else
+    {
+        ++it_name;
+    }
+    for (; it_name!=controlNames.end(); ++it_name)
+    {
+        control = control->FindByName(*it_name,false);
+        if (NULL == control)
+        {
+            break;
+        }
+    }
+    return control;
+}
+	
 }
