@@ -40,17 +40,6 @@
 
 namespace DAVA
 {
-    inline bool UIButton::UIMargins::operator == (const UIButton::UIMargins& value) const
-    {
-        return FLOAT_EQUAL(left, value.left) && FLOAT_EQUAL(top, value.top) &&
-        FLOAT_EQUAL(right, value.right) && FLOAT_EQUAL(bottom, value.bottom);
-    }
-
-    inline bool UIButton::UIMargins::operator != (const UIButton::UIMargins& value) const
-    {
-        return !UIButton::UIMargins::operator == (value);
-    }
-
 static const UIControl::eControlState stateArray[] = {UIControl::STATE_NORMAL, UIControl::STATE_PRESSED_OUTSIDE, UIControl::STATE_PRESSED_INSIDE, UIControl::STATE_DISABLED, UIControl::STATE_SELECTED, UIControl::STATE_HOVER};
 static const String statePostfix[] = {"Normal", "PressedOutside", "PressedInside", "Disabled", "Selected", "Hover"};
 
@@ -59,7 +48,6 @@ UIButton::UIButton(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*/)
     , selectedBackground(NULL)
     , selectedTextBlock(NULL)
     , oldControlState(0)
-    , textMargins(NULL)
 {
     for(int32 i = 0; i < DRAW_STATE_COUNT; i++)
     {
@@ -84,8 +72,6 @@ UIButton::~UIButton()
         SafeRelease(stateBacks[i]);
         SafeRelease(stateTexts[i]);
     }
-    
-    SafeDelete(textMargins);
 }
 
 UIButton *UIButton::Clone()
@@ -372,6 +358,30 @@ void UIButton::SetStateTextAlign(int32 state, int32 align)
     }
 }
 
+void UIButton::SetStateMargins(int32 state, const UIControlBackground::UIMargins* margins)
+{
+    for(int i = 0; i < DRAW_STATE_COUNT && state; i++)
+    {
+        if(state & 0x01)
+        {
+            GetOrCreateBackground((eButtonDrawState)i)->SetMargins(margins);
+        }
+        state >>= 1;
+    }
+}
+
+void UIButton::SetStateTextMargins(int32 state, const UIControlBackground::UIMargins* margins)
+{
+    for(int i = 0; i < DRAW_STATE_COUNT && state; i++)
+    {
+        if(state & 0x01)
+        {
+            GetOrCreateTextBlock((eButtonDrawState)i)->SetMargins(margins);
+        }
+        state >>= 1;
+    }
+}
+
 void UIButton::SetStateTextControl(int32 state, UIStaticText *textControl)
 {
     for(int i = 0; i < DRAW_STATE_COUNT && state; i++)
@@ -422,26 +432,9 @@ void UIButton::Draw(const UIGeometricData &geometricData)
     DVASSERT(selectedBackground);
     selectedBackground->Draw(geometricData);
     
-    if (!selectedTextBlock)
-    {
-        return;
-    }
-
-    if (!textMargins)
+    if (selectedTextBlock)
     {
         selectedTextBlock->Draw(geometricData);
-    }
-    else
-    {
-        UIGeometricData drawData;
-        drawData.position = Vector2(textMargins->left, textMargins->top);
-        drawData.size = geometricData.size + Vector2(-(textMargins->right + textMargins->left), -(textMargins->bottom + textMargins->top));
-        drawData.pivotPoint = geometricData.pivotPoint;
-        drawData.scale = geometricData.scale;
-        drawData.angle = geometricData.angle;
-        drawData.AddToGeometricData(geometricData);
-    
-        selectedTextBlock->Draw(drawData);
     }
 }
 
@@ -561,20 +554,6 @@ void UIButton::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
     UIControl::LoadFromYamlNode(node, loader);
 
-    // Some properties are not state-aware.
-    const YamlNode * textMarginsNode = node->Get("textMargins");
-    if (textMarginsNode)
-    {
-        const Vector4& textMarginsVect = textMarginsNode->AsVector4();
-        UIButton::UIMargins margins;
-        margins.left = textMarginsVect.x;
-        margins.top = textMarginsVect.y;
-        margins.right = textMarginsVect.z;
-        margins.bottom = textMarginsVect.w;
-        
-        SetTextMargins(&margins);
-    }
-
     for (int32 i = 0; i < STATE_COUNT; ++i)
     {
         eButtonDrawState drawState = (eButtonDrawState)i;
@@ -587,9 +566,11 @@ void UIButton::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
         const YamlNode * colorNode = node->Get(Format("stateColor%s", statePostfix.c_str()));
         const YamlNode * leftRightStretchCapNode = node->Get(Format("leftRightStretchCap%s", statePostfix.c_str()));
         const YamlNode * topBottomStretchCapNode = node->Get(Format("topBottomStretchCap%s", statePostfix.c_str()));
+        const YamlNode* marginsNode = node->Get(Format("stateMargins%s", statePostfix.c_str()));
 
         if (stateSpriteNode || stateDrawTypeNode || stateAlignNode ||
-            colorInheritNode || colorNode || leftRightStretchCapNode || topBottomStretchCapNode)
+            colorInheritNode || colorNode || leftRightStretchCapNode ||
+            topBottomStretchCapNode || marginsNode)
         {
             RefPtr<UIControlBackground> stateBackground;
             if (drawState == DRAW_STATE_UNPRESSED)
@@ -661,6 +642,12 @@ void UIButton::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
                 Color color = loader->GetColorFromYamlNode(colorNode);
                 stateBackground->SetColor(color);
             }
+            
+            if (marginsNode)
+            {
+                UIControlBackground::UIMargins margins = Vector4ToUIMargins(marginsNode->AsVector4());
+                stateBackground->SetMargins(&margins);
+            }
         }
 
         const YamlNode * stateFontNode = node->Get(Format("stateFont%s", statePostfix.c_str()));
@@ -673,10 +660,12 @@ void UIButton::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
         const YamlNode * multilineNode = node->Get(Format("stateMultiline%s", statePostfix.c_str()));
         const YamlNode * multilineBySymbolNode = node->Get(Format("stateMultilineBySymbol%s", statePostfix.c_str()));
         const YamlNode * textColorInheritTypeNode = node->Get(Format("stateTextColorInheritType%s", statePostfix.c_str()));
-                                                   
+        const YamlNode * stateTextMarginsNode = node->Get(Format("stateTextMargins%s", statePostfix.c_str()));
+
         if (stateFontNode || stateTextAlignNode || stateTextColorNode ||
             stateShadowColorNode || stateShadowOffsetNode || stateFittingOptionNode ||
-            stateTextNode || multilineNode || multilineBySymbolNode || textColorInheritTypeNode)
+            stateTextNode || multilineNode || multilineBySymbolNode || textColorInheritTypeNode ||
+            stateTextMarginsNode)
         {
             RefPtr<UIStaticText> stateTextBlock;
             if (drawState == DRAW_STATE_UNPRESSED)
@@ -733,6 +722,12 @@ void UIButton::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
                 stateTextBlock->GetShadowBackground()->SetColorInheritType(type);
             }
 
+            if (stateTextMarginsNode)
+            {
+                UIControlBackground::UIMargins textMargins = Vector4ToUIMargins(stateTextMarginsNode->AsVector4());
+                stateTextBlock->SetMargins(&textMargins);
+            }
+
             bool multiline = loader->GetBoolFromYamlNode(multilineNode, false);
             bool multilineBySymbol = loader->GetBoolFromYamlNode(multilineBySymbolNode, false);
             stateTextBlock->SetMultiline(multiline, multilineBySymbol);
@@ -755,18 +750,10 @@ YamlNode * UIButton::SaveToYamlNode(UIYamlLoader * loader)
     node->RemoveNodeFromMap("leftRightStretchCap");
     node->RemoveNodeFromMap("topBottomStretchCap");
     node->RemoveNodeFromMap("spriteModification");
-
+    node->RemoveNodeFromMap("margins");
+    node->RemoveNodeFromMap("textMargins");
+    
     ScopedPtr<UIButton> baseControl( new UIButton() );
-
-    // Some properties are not state-aware.
-    UIMargins* margins = GetTextMargins();
-    if (margins)
-    {
-        // No need to compare with base control, since UIMargins are NULL by default.
-        Vector4 textMarginsVect(margins->left, margins->top, margins->right, margins->bottom);
-        VariantType textMarginsVariant(textMarginsVect);
-        node->Set("textMargins", &textMarginsVariant);
-    }
 
     //States cycle for values
     for (int32 i = 0; i < STATE_COUNT; ++i)
@@ -833,6 +820,13 @@ YamlNode * UIButton::SaveToYamlNode(UIYamlLoader * loader)
             if (baseStateBackground->GetColorInheritType() != colorInheritType)
             {
                 node->Set(Format("stateColorInherit%s", statePostfix.c_str()), loader->GetColorInheritTypeNodeValue(colorInheritType));
+            }
+            
+            // State margins.
+            const UIControlBackground::UIMargins* margins = stateBackground->GetMargins();
+            if (margins)
+            {
+                node->Set(Format("stateMargins%s", statePostfix.c_str()), UIMarginsToVector4(*margins));
             }
         }
 
@@ -908,6 +902,13 @@ YamlNode * UIButton::SaveToYamlNode(UIYamlLoader * loader)
             {
                 node->Set(Format("stateTextColorInheritType%s", statePostfix.c_str()), loader->GetColorInheritTypeNodeValue(colorInheritType));
             }
+
+            // State text margins.
+            const UIControlBackground::UIMargins* textMargins = stateTextBlock->GetMargins();
+            if (textMargins)
+            {
+                node->Set(Format("stateTextMargins%s", statePostfix.c_str()), UIMarginsToVector4(*textMargins));
+            }
         }
     }
 
@@ -951,34 +952,6 @@ void UIButton::UpdateStateTextControlSize()
 UIStaticText * UIButton::CreateDefaultTextBlock() const
 {
     return new UIStaticText(Rect(Vector2(), GetSize()));
-}
-    
-void UIButton::SetTextMargins(UIMargins* margins)
-{
-    if (!margins ||margins->empty())
-    {
-        SafeDelete(textMargins);
-        return;
-    }
-
-    if (!textMargins)
-    {
-        textMargins = new UIButton::UIMargins();
-    }
-
-    const Rect& rect = GetRect();
-    DVASSERT(margins->left + margins->right <= rect.dx);
-    DVASSERT(margins->top + margins->bottom <= rect.dy);
-   
-    textMargins->left = margins->left;
-    textMargins->top = margins->top;
-    textMargins->right = margins->right;
-    textMargins->bottom = margins->bottom;
-}
-    
-UIButton::UIMargins* UIButton::GetTextMargins() const
-{
-    return textMargins;
 }
 
 };

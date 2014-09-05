@@ -149,3 +149,48 @@ int UITextControlMetadata::GetFittingType() const
 void UITextControlMetadata::SetFittingType(int /*value*/)
 {
 }
+
+QRectF UITextControlMetadata::GetTextMargins() const
+{
+    return QRectF();
+}
+
+void UITextControlMetadata::SetTextMargins(const QRectF& /* value */)
+{
+}
+
+float UITextControlMetadata::GetTextLeftMargin() const
+{
+    return 0.0f;
+}
+
+void UITextControlMetadata::SetTextLeftMargin(float /* value */)
+{
+}
+
+float UITextControlMetadata::GetTextTopMargin() const
+{
+    return 0.0f;
+}
+
+void UITextControlMetadata::SetTextTopMargin(float /* value */)
+{
+}
+
+float UITextControlMetadata::GetTextRightMargin() const
+{
+    return 0.0f;
+}
+
+void UITextControlMetadata::SetTextRightMargin(float /* value */)
+{
+}
+
+float UITextControlMetadata::GetTextBottomMargin() const
+{
+    return 0.0f;
+}
+
+void UITextControlMetadata::SetTextBottomMargin(float /* value */)
+{
+}

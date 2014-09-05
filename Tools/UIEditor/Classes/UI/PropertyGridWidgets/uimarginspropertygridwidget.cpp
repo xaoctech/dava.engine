@@ -6,16 +6,19 @@
 #include "ChangePropertyCommand.h"
 #include "CommandsController.h"
 
-static const QString MARGINS_PROPERTY_BLOCK_NAME = "Text Margins";
-
 UIMarginsPropertyGridWidget::UIMarginsPropertyGridWidget(QWidget *parent) :
     BasePropertyGridWidget(parent),
     ui(new Ui::UIMarginsPropertyGridWidget)
 {
     ui->setupUi(this);
-    SetPropertyBlockName(MARGINS_PROPERTY_BLOCK_NAME);
+    SetPropertyBlockName("");
 	BasePropertyGridWidget::InstallEventFiltersForWidgets(this);
 
+}
+
+void UIMarginsPropertyGridWidget::SetPropertyPrefix(const String& prefix)
+{
+    propertyPrefix = prefix;
 }
 
 UIMarginsPropertyGridWidget::~UIMarginsPropertyGridWidget()
@@ -23,31 +26,44 @@ UIMarginsPropertyGridWidget::~UIMarginsPropertyGridWidget()
     delete ui;
 }
 
-
 void UIMarginsPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
 {
     BasePropertyGridWidget::Initialize(activeMetadata);
+    RegisterGridWidgetAsStateAware();
 
     PROPERTIESMAP propertiesMap = BuildMetadataPropertiesMap();
 
-    RegisterDoubleSpinBoxWidgetForProperty(propertiesMap, PropertyNames::UIMARGIN_LEFT_PROPERTY_NAME, ui->leftDoubleSpinBox);
-    RegisterDoubleSpinBoxWidgetForProperty(propertiesMap, PropertyNames::UIMARGIN_TOP_PROPERTY_NAME, ui->topDoubleSpinBox);
-    RegisterDoubleSpinBoxWidgetForProperty(propertiesMap, PropertyNames::UIMARGIN_RIGHT_PROPERTY_NAME, ui->rightDoubleSpinBox);
-    RegisterDoubleSpinBoxWidgetForProperty(propertiesMap, PropertyNames::UIMARGIN_BOTTOM_PROPERTY_NAME, ui->bottomDoubleSpinBox);
+    RegisterDoubleSpinBoxWidgetForProperty(propertiesMap, GetPrefixedPropertyName(PropertyNames::LEFT_MARGIN_PROPERTY_NAME).c_str(), ui->leftDoubleSpinBox, false, true);
+    RegisterDoubleSpinBoxWidgetForProperty(propertiesMap, GetPrefixedPropertyName(PropertyNames::TOP_MARGIN_PROPERTY_NAME).c_str(), ui->topDoubleSpinBox, false, true);
+    RegisterDoubleSpinBoxWidgetForProperty(propertiesMap, GetPrefixedPropertyName(PropertyNames::RIGHT_MARGIN_PROPERTY_NAME).c_str(), ui->rightDoubleSpinBox, false, true);
+    RegisterDoubleSpinBoxWidgetForProperty(propertiesMap, GetPrefixedPropertyName(PropertyNames::BOTTOM_MARGIN_PROPERTY_NAME).c_str(), ui->bottomDoubleSpinBox, false, true);
 
     connect(ui->resetMarginsButton, SIGNAL(clicked()), this, SLOT(OnResetUIMarginsClicked()));
-    UpdateUI();
+//  UpdateUI();
 }
 
 void UIMarginsPropertyGridWidget::Cleanup()
 {
-    BasePropertyGridWidget::Cleanup();
+    UnregisterGridWidgetAsStateAware();
+
     disconnect(ui->resetMarginsButton, SIGNAL(clicked()), this, SLOT(OnResetUIMarginsClicked()));
   
     UnregisterDoubleSpinBoxWidget(ui->leftDoubleSpinBox);
     UnregisterDoubleSpinBoxWidget(ui->topDoubleSpinBox);
     UnregisterDoubleSpinBoxWidget(ui->rightDoubleSpinBox);
     UnregisterDoubleSpinBoxWidget(ui->bottomDoubleSpinBox);
+    
+    BasePropertyGridWidget::Cleanup();
+}
+
+String UIMarginsPropertyGridWidget::GetPrefixedPropertyName(const char* propertyName)
+{
+    if (propertyPrefix.empty())
+    {
+        return propertyName;
+    }
+    
+    return Format("%s%s", propertyPrefix.c_str(), propertyName);
 }
 
 void UIMarginsPropertyGridWidget::UpdateDoubleSpinBoxWidgetWithPropertyValue(QDoubleSpinBox *spinBoxWidget,
@@ -62,6 +78,8 @@ void UIMarginsPropertyGridWidget::UpdateDoubleSpinBoxWidgetWithPropertyValue(QDo
                                                                           curProperty.name());
     WidgetSignalsBlocker blocker(spinBoxWidget);
     spinBoxWidget->setValue(propertyValue);
+
+    UpdateWidgetPalette(spinBoxWidget, curProperty.name());
     UpdateUI();
 }
 
@@ -109,7 +127,7 @@ void UIMarginsPropertyGridWidget::UpdateMaxMarginValues()
     ui->rightDoubleSpinBox->setMaximum(sizeX - ui->leftDoubleSpinBox->value());
     ui->leftDoubleSpinBox->setMaximum(sizeX - ui->rightDoubleSpinBox->value());
 
-    float sizeY = PropertiesHelper::GetAllPropertyValues<float>(activeMetadata, PropertyNames::SIZE_Y);
+   float sizeY = PropertiesHelper::GetAllPropertyValues<float>(activeMetadata, PropertyNames::SIZE_Y);
     ui->bottomDoubleSpinBox->setMaximum(sizeY - ui->topDoubleSpinBox->value());
     ui->topDoubleSpinBox->setMaximum(sizeY - ui->bottomDoubleSpinBox->value());
 }
@@ -131,7 +149,7 @@ void UIMarginsPropertyGridWidget::OnResetUIMarginsClicked()
     }
     
     PROPERTIESMAP propertiesMap = BuildMetadataPropertiesMap();
-	PROPERTIESMAPITER uiMarginsIter = propertiesMap.find(PropertyNames::UIMARGINS_PROPERTY_NAME);
+	PROPERTIESMAPITER uiMarginsIter = propertiesMap.find(GetPrefixedPropertyName(PropertyNames::MARGINS_PROPERTY_NAME));
 	DVASSERT(uiMarginsIter != propertiesMap.end());
 
     BaseCommand* command = new ChangePropertyCommand<QRectF>(activeMetadata, PropertyGridWidgetData(uiMarginsIter->second, false, false), QRectF());

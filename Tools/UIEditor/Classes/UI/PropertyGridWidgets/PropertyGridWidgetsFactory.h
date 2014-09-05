@@ -59,7 +59,6 @@
 #include "joypadpropertygridwidget.h"
 #include "webviewpropertygridwidget.h"
 #include "UIListCellPropertyGridWidget.h"
-#include "uimarginspropertygridwidget.h"
 
 #include "Custom/guidepropertygridwidget.h"
 
@@ -106,7 +105,6 @@ private:
     WebViewPropertyGridWidget* webViewWidget;
     UIListCellPropertyGridWidget* listCellWidget;
     GuidePropertyGridWidget* guideWidget;
-    UIMarginsPropertyGridWidget* marginsWidget;
 
     // The same widgets in the list manner - for easier handling of group operations.
     PROPERTYGRIDWIDGETSLIST registeredWidgets;

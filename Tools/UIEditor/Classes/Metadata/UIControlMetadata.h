@@ -35,6 +35,7 @@
 #include "UI/UIControl.h"
 
 #include <QColor>
+#include <QRectF>
 
 namespace DAVA {
 
@@ -99,6 +100,13 @@ class UIControlMetadata : public BaseMetadata
 	Q_PROPERTY(bool TopAlignEnabled READ GetTopAlignEnabled WRITE SetTopAlignEnabled);
 	Q_PROPERTY(bool VCenterAlignEnabled READ GetVCenterAlignEnabled WRITE SetVCenterAlignEnabled);
 	Q_PROPERTY(bool BottomAlignEnabled READ GetBottomAlignEnabled WRITE SetBottomAlignEnabled);
+
+    // Margins
+    Q_PROPERTY(QRectF Margins READ GetMargins WRITE SetMargins);
+    Q_PROPERTY(float LeftMargin READ GetLeftMargin WRITE SetLeftMargin);
+	Q_PROPERTY(float TopMargin READ GetTopMargin WRITE SetTopMargin);
+	Q_PROPERTY(float RightMargin READ GetRightMargin WRITE SetRightMargin);
+	Q_PROPERTY(float BottomMargin READ GetBottomMargin WRITE SetBottomMargin);
 
 	// Initial State Property.
 	Q_PROPERTY(int InitialState READ GetInitialState WRITE SetInitialState);
@@ -170,6 +178,22 @@ protected:
 	
 	virtual float GetTopBottomStretchCap();
 	virtual void SetTopBottomStretchCap(float value);
+
+    // Margins.
+    virtual QRectF GetMargins() const;
+    virtual void SetMargins(const QRectF& value);
+    
+    virtual float GetLeftMargin() const;
+    virtual void SetLeftMargin(float value);
+
+    virtual float GetTopMargin() const;
+    virtual void SetTopMargin(float value);
+
+    virtual float GetRightMargin() const;
+    virtual void SetRightMargin(float value);
+
+    virtual float GetBottomMargin() const;
+    virtual void SetBottomMargin(float value);
 
     //Color getter/setter. Also virtual.
     virtual QColor GetColor();
@@ -254,6 +278,13 @@ protected:
 
     // Verify whether UIControl exists and set its visible flag.
     void SetUIControlVisible(const bool isVisible, bool hierarchic);
+
+    // Get the margins from for updating.
+    virtual UIControlBackground::UIMargins GetMarginsToUpdate(UIControl::eControlState state = UIControl::STATE_NORMAL);
+
+    // Convert UIMargins to QRectF and vice versa.
+    QRectF UIMarginsToQRectF(const UIControlBackground::UIMargins* margins) const;
+    UIControlBackground::UIMargins QRectFToUIMargins(const QRectF& rect) const;
 
 private:
 	void ResizeScrollViewContent(UIControl *control);

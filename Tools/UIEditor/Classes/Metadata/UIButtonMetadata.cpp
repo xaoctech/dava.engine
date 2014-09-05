@@ -969,160 +969,6 @@ void UIButtonMetadata::UpdatePropertyDirtyFlagForTopBottomStretchCap()
     }
 }
 
-// Text Margins.
-bool UIButtonMetadata::GetMarginsEnabled() const
-{
-    if (!VerifyActiveParamID())
-    {
-        return false;
-    }
-    
-    return (GetActiveUIButton()->GetTextMargins() != NULL);
-}
-
-void UIButtonMetadata::SetMarginsEnabled(bool value)
-{
-    if (!VerifyActiveParamID())
-    {
-        return;
-    }
-
-    if (value)
-    {
-        UIButton::UIMargins emptyMargins;
-        GetActiveUIButton()->SetTextMargins(&emptyMargins);
-    }
-    else
-    {
-        GetActiveUIButton()->SetTextMargins(NULL);
-    }
-}
-
-QRectF UIButtonMetadata::GetTextMargins()
-{
-    if (!VerifyActiveParamID())
-    {
-        return QRectF();
-    }
-
-    UIButton::UIMargins* margins = GetActiveUIButton()->GetTextMargins();
-    if (!margins)
-    {
-        return QRectF();
-    }
-
-    return QRectF(margins->left, margins->top, margins->right - margins->left,
-                      margins->bottom - margins->top);
-}
-
-void UIButtonMetadata::SetTextMargins(const QRectF& marginsRect)
-{
-    if (!VerifyActiveParamID())
-    {
-        return;
-    }
-    
-    UIButton::UIMargins margins;
-    margins.left = marginsRect.left();
-    margins.top = marginsRect.top();
-    margins.right = marginsRect.right();
-    margins.bottom = marginsRect.bottom();
-
-    GetActiveUIButton()->SetTextMargins(&margins);
-}
-
-float UIButtonMetadata::GetLeftTextMargin() const
-{
-    if (!VerifyActiveParamID())
-    {
-        return 0.0f;
-    }
-    
-    UIButton::UIMargins* margins = GetActiveUIButton()->GetTextMargins();
-    return margins ? margins->left : 0.0f;
-}
-
-void UIButtonMetadata::SetLeftTextMargin(float value)
-{
-    if (!VerifyActiveParamID())
-    {
-        return;
-    }
-    
-    UIButton::UIMargins margins = GetTextMarginsToUpdate();
-    margins.left = value;
-    GetActiveUIButton()->SetTextMargins(&margins);
-}
-
-float UIButtonMetadata::GetTopTextMargin() const
-{
-    if (!VerifyActiveParamID())
-    {
-        return 0.0f;
-    }
-    
-    UIButton::UIMargins* margins = GetActiveUIButton()->GetTextMargins();
-    return margins ? margins->top : 0.0f;
-}
-
-void UIButtonMetadata::SetTopTextMargin(float value)
-{
-    if (!VerifyActiveParamID())
-    {
-        return;
-    }
-    
-    UIButton::UIMargins margins = GetTextMarginsToUpdate();
-    margins.top = value;
-    GetActiveUIButton()->SetTextMargins(&margins);
-}
-
-float UIButtonMetadata::GetRightTextMargin() const
-{
-    if (!VerifyActiveParamID())
-    {
-        return 0.0f;
-    }
-    
-    UIButton::UIMargins* margins = GetActiveUIButton()->GetTextMargins();
-    return margins ? margins->right : 0.0f;
-}
-
-void UIButtonMetadata::SetRightTextMargin(float value)
-{
-    if (!VerifyActiveParamID())
-    {
-        return;
-    }
-    
-    UIButton::UIMargins margins = GetTextMarginsToUpdate();
-    margins.right = value;
-    GetActiveUIButton()->SetTextMargins(&margins);
-}
-
-float UIButtonMetadata::GetBottomTextMargin() const
-{
-    if (!VerifyActiveParamID())
-    {
-        return 0.0f;
-    }
-    
-    UIButton::UIMargins* margins = GetActiveUIButton()->GetTextMargins();
-    return margins ? margins->bottom : 0.0f;
-}
-
-void UIButtonMetadata::SetBottomTextMargin(float value)
-{
-    if (!VerifyActiveParamID())
-    {
-        return;
-    }
-    
-    UIButton::UIMargins margins = GetTextMarginsToUpdate();
-    margins.bottom = value;
-    GetActiveUIButton()->SetTextMargins(&margins);
-}
-
 void UIButtonMetadata::UpdatePropertyDirtyFlagForShadowOffsetX()
 {
     int statesCount = UIControlStateHelper::GetUIControlStatesCount();
@@ -1189,6 +1035,282 @@ void UIButtonMetadata::SetFontShadowColorInheritType(int value)
     UpdatePropertyDirtyFlagForFontShadowColorInheritType();
 }
 
+
+QRectF UIButtonMetadata::GetMargins() const
+{
+    if (!VerifyActiveParamID())
+    {
+        return QRectF();
+    }
+    
+    return GetMarginsForState(uiControlStates[GetActiveStateIndex()]);
+}
+
+QRectF UIButtonMetadata::GetMarginsForState(UIControl::eControlState state) const
+{
+    if (!GetActiveUIButton()->GetStateBackground(state))
+    {
+        return QRectF();
+    }
+
+    const UIControlBackground::UIMargins* margins = GetActiveUIButton()->GetStateBackground(state)->GetMargins();
+    return UIMarginsToQRectF(margins);
+}
+
+void UIButtonMetadata::SetMargins(const QRectF& value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+    
+    for (uint32 i = 0; i < this->GetStatesCount(); ++i)
+	{
+        UIControl::eControlState state = uiControlStates[i];
+ 
+        UIControlBackground::UIMargins margins = QRectFToUIMargins(value);
+        GetActiveUIButton()->SetStateMargins(state, &margins);
+    }
+    
+    UpdatePropertyDirtyFlagForMargins();
+}
+
+float UIButtonMetadata::GetLeftMargin() const
+{
+    return GetMargins().left();
+}
+
+void UIButtonMetadata::SetLeftMargin(float value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+ 
+    for (uint32 i = 0; i < this->GetStatesCount(); ++i)
+	{
+        UIControl::eControlState state = uiControlStates[i];
+ 
+        UIControlBackground::UIMargins margins = GetMarginsToUpdate(state);
+        margins.left = value;
+        GetActiveUIButton()->SetStateMargins(state, &margins);
+    }
+    
+    UpdatePropertyDirtyFlagForMargins();
+}
+
+float UIButtonMetadata::GetTopMargin() const
+{
+    return GetMargins().top();
+}
+
+void UIButtonMetadata::SetTopMargin(float value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+    
+    for (uint32 i = 0; i < this->GetStatesCount(); ++i)
+	{
+        UIControl::eControlState state = uiControlStates[i];
+
+        UIControlBackground::UIMargins margins = GetMarginsToUpdate(state);
+        margins.top = value;
+        GetActiveUIButton()->SetStateMargins(state, &margins);
+    }
+    
+    UpdatePropertyDirtyFlagForMargins();
+}
+
+float UIButtonMetadata::GetRightMargin() const
+{
+    return GetMargins().width();
+}
+
+void  UIButtonMetadata::SetRightMargin(float value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+    
+    for (uint32 i = 0; i < this->GetStatesCount(); ++i)
+	{
+        UIControl::eControlState state = uiControlStates[i];
+        
+        UIControlBackground::UIMargins margins = GetMarginsToUpdate(state);
+        margins.right = value;
+        GetActiveUIButton()->SetStateMargins(state, &margins);
+    }
+    
+    UpdatePropertyDirtyFlagForMargins();
+}
+
+float UIButtonMetadata::GetBottomMargin() const
+{
+    return GetMargins().height();
+}
+
+void UIButtonMetadata::SetBottomMargin(float value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+    
+    for (uint32 i = 0; i < this->GetStatesCount(); ++i)
+	{
+        UIControl::eControlState state = uiControlStates[i];
+
+        UIControlBackground::UIMargins margins = GetMarginsToUpdate(state);
+        margins.bottom = value;
+        GetActiveUIButton()->SetStateMargins(state, &margins);
+    }
+    
+    UpdatePropertyDirtyFlagForMargins();
+}
+
+QRectF UIButtonMetadata::GetTextMargins() const
+{
+    if (!VerifyActiveParamID())
+    {
+        return QRectF();
+    }
+
+    return GetTextMarginsForState(uiControlStates[GetActiveStateIndex()]);
+}
+    
+QRectF UIButtonMetadata::GetTextMarginsForState(UIControl::eControlState state) const
+{
+    if (!GetActiveUIButton()->GetStateTextControl(state))
+    {
+        return QRectF();
+    }
+ 
+    const UIControlBackground::UIMargins* margins = GetActiveUIButton()->GetStateTextControl(state)->GetMargins();
+    return UIMarginsToQRectF(margins);
+}
+
+void UIButtonMetadata::SetTextMargins(const QRectF& value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+
+    for (uint32 i = 0; i < this->GetStatesCount(); ++i)
+    {
+        UIControl::eControlState state = uiControlStates[i];
+
+        UIControlBackground::UIMargins margins = QRectFToUIMargins(value);
+        GetActiveUIButton()->SetStateTextMargins(state, &margins);
+    }
+
+    UpdateExtraDataLocalizationKey();
+    UpdatePropertyDirtyFlagForTextMargins();
+}
+
+float UIButtonMetadata::GetTextLeftMargin() const
+{
+    return GetTextMargins().left();
+}
+
+void UIButtonMetadata::SetTextLeftMargin(float value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+    
+    for (uint32 i = 0; i < this->GetStatesCount(); ++i)
+	{
+        UIControl::eControlState state = uiControlStates[i];
+        
+        UIControlBackground::UIMargins margins = GetTextMarginsToUpdate(state);
+        margins.left = value;
+        GetActiveUIButton()->SetStateTextMargins(state, &margins);
+    }
+    
+    UpdatePropertyDirtyFlagForTextMargins();
+    UpdateExtraDataLocalizationKey();
+}
+
+float UIButtonMetadata::GetTextTopMargin() const
+{
+    return GetTextMargins().top();
+}
+
+void UIButtonMetadata::SetTextTopMargin(float value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+    
+    for (uint32 i = 0; i < this->GetStatesCount(); ++i)
+	{
+        UIControl::eControlState state = uiControlStates[i];
+        
+        UIControlBackground::UIMargins margins = GetTextMarginsToUpdate(state);
+        margins.top = value;
+        GetActiveUIButton()->SetStateTextMargins(state, &margins);
+    }
+    
+    UpdatePropertyDirtyFlagForTextMargins();
+    UpdateExtraDataLocalizationKey();
+}
+
+float UIButtonMetadata::GetTextRightMargin() const
+{
+    return GetTextMargins().width();
+}
+
+void UIButtonMetadata::SetTextRightMargin(float value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+    
+    for (uint32 i = 0; i < this->GetStatesCount(); ++i)
+	{
+        UIControl::eControlState state = uiControlStates[i];
+        
+        UIControlBackground::UIMargins margins = GetTextMarginsToUpdate(state);
+        margins.right = value;
+        GetActiveUIButton()->SetStateTextMargins(state, &margins);
+    }
+    
+    UpdatePropertyDirtyFlagForTextMargins();
+    UpdateExtraDataLocalizationKey();
+}
+
+float UIButtonMetadata::GetTextBottomMargin() const
+{
+    return GetTextMargins().height();
+}
+
+void UIButtonMetadata::SetTextBottomMargin(float value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+    
+    for (uint32 i = 0; i < this->GetStatesCount(); ++i)
+	{
+        UIControl::eControlState state = uiControlStates[i];
+        
+        UIControlBackground::UIMargins margins = GetTextMarginsToUpdate(state);
+        margins.bottom = value;
+        GetActiveUIButton()->SetStateTextMargins(state, &margins);
+    }
+    
+    UpdatePropertyDirtyFlagForTextMargins();
+    UpdateExtraDataLocalizationKey();
+}
+
 int UIButtonMetadata::GetFontShadowColorInheritTypeForState(UIControl::eControlState state) const
 {
     UIStaticText* textControl = GetActiveUIButton()->GetStateTextControl(state);
@@ -1210,6 +1332,48 @@ void UIButtonMetadata::UpdatePropertyDirtyFlagForFontShadowColorInheritType()
         bool curStateDirty = (GetFontShadowColorInheritTypeForState(curState) !=
                               GetFontShadowColorInheritTypeForState(GetReferenceState()));
         SetStateDirtyForProperty(curState, PropertyNames::FONT_SHADOW_COLOR_INHERIT_TYPE_PROPERTY_NAME, curStateDirty);
+    }
+}
+
+void UIButtonMetadata::UpdatePropertyDirtyFlagForMargins()
+{
+    int statesCount = UIControlStateHelper::GetUIControlStatesCount();
+    const QRectF& referenceMargins = GetMarginsForState(GetReferenceState());
+
+    for (int i = 0; i < statesCount; i ++)
+    {
+        UIControl::eControlState curState = UIControlStateHelper::GetUIControlState(i);
+        const QRectF& curMargins = GetMarginsForState(curState);
+
+        SetStateDirtyForProperty(curState, PropertyNames::LEFT_MARGIN_PROPERTY_NAME,
+                                 !FLOAT_EQUAL(referenceMargins.left(), curMargins.left()));
+        SetStateDirtyForProperty(curState, PropertyNames::TOP_MARGIN_PROPERTY_NAME,
+                                 !FLOAT_EQUAL(referenceMargins.top(), curMargins.top()));
+        SetStateDirtyForProperty(curState, PropertyNames::RIGHT_MARGIN_PROPERTY_NAME,
+                                 !FLOAT_EQUAL(referenceMargins.width(), curMargins.width()));
+        SetStateDirtyForProperty(curState, PropertyNames::BOTTOM_MARGIN_PROPERTY_NAME,
+                                 !FLOAT_EQUAL(referenceMargins.height(), curMargins.height()));
+    }
+}
+
+void UIButtonMetadata::UpdatePropertyDirtyFlagForTextMargins()
+{
+    int statesCount = UIControlStateHelper::GetUIControlStatesCount();
+    const QRectF& referenceMargins = GetTextMarginsForState(GetReferenceState());
+
+    for (int i = 0; i < statesCount; i ++)
+    {
+        UIControl::eControlState curState = UIControlStateHelper::GetUIControlState(i);
+        const QRectF& curMargins = GetTextMarginsForState(curState);
+        
+        SetStateDirtyForProperty(curState, PropertyNames::TEXT_LEFT_MARGIN_PROPERTY_NAME,
+                                 !FLOAT_EQUAL(referenceMargins.left(), curMargins.left()));
+        SetStateDirtyForProperty(curState, PropertyNames::TEXT_TOP_MARGIN_PROPERTY_NAME,
+                                 !FLOAT_EQUAL(referenceMargins.top(), curMargins.top()));
+        SetStateDirtyForProperty(curState, PropertyNames::TEXT_RIGHT_MARGIN_PROPERTY_NAME,
+                                 !FLOAT_EQUAL(referenceMargins.width(), curMargins.width()));
+        SetStateDirtyForProperty(curState, PropertyNames::TEXT_BOTTOM_MARGIN_PROPERTY_NAME,
+                                 !FLOAT_EQUAL(referenceMargins.height(), curMargins.height()));
     }
 }
 
@@ -1235,22 +1399,8 @@ void UIButtonMetadata::RecoverPropertyDirtyFlags()
     UpdatePropertyDirtyFlagForShadowColor();
     UpdatePropertyDirtyFlagForShadowOffsetX();
     UpdatePropertyDirtyFlagForShadowOffsetY();
-}
 
-UIButton::UIMargins UIButtonMetadata::GetTextMarginsToUpdate()
-{
-    if (!VerifyActiveParamID())
-    {
-        return UIButton::UIMargins();
-    }
-
-    UIButton::UIMargins* textMargins = GetActiveUIButton()->GetTextMargins();
-    if (!textMargins)
-    {
-        return UIButton::UIMargins();
-    }
-    
-    return *textMargins;
+    UpdatePropertyDirtyFlagForMargins();
 }
 
 void UIButtonMetadata::UpdateExtraDataLocalizationKey()
@@ -1288,3 +1438,34 @@ void UIButtonMetadata::UpdateExtraDataLocalizationKey()
     }
 }
 
+UIControlBackground::UIMargins UIButtonMetadata::GetMarginsToUpdate(UIControl::eControlState state)
+{
+    if (!VerifyActiveParamID() || !GetActiveUIButton()->GetStateBackground(state))
+    {
+        return UIControlBackground::UIMargins();
+    }
+
+    const UIControlBackground::UIMargins* margins = GetActiveUIButton()->GetStateBackground(state)->GetMargins();
+    if (!margins)
+    {
+        return UIControlBackground::UIMargins();
+    }
+
+    return *margins;
+}
+
+UIControlBackground::UIMargins UIButtonMetadata::GetTextMarginsToUpdate(UIControl::eControlState state)
+{
+    if (!VerifyActiveParamID() || !GetActiveUIButton()->GetStateTextControl(state))
+    {
+        return UIControlBackground::UIMargins();
+    }
+    
+    const UIControlBackground::UIMargins* margins = GetActiveUIButton()->GetStateTextControl(state)->GetMargins();
+    if (!margins)
+    {
+        return UIControlBackground::UIMargins();
+    }
+    
+    return *margins;
+}

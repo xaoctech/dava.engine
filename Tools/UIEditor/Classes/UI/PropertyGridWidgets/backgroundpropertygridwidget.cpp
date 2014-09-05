@@ -56,6 +56,8 @@ BackgroundPropertyGridWidget::BackgroundPropertyGridWidget(const QString& contro
     connect(ui->openSpriteButton, SIGNAL(clicked()), this, SLOT(OnOpenSpriteDialog()));
     connect(ui->removeSpriteButton, SIGNAL(clicked()), this, SLOT(OnRemoveSprite()));
     connect(ui->expandButton, SIGNAL(pressed()), this, SLOT(OnExpandButtonPressed()));
+    
+    ui->marginsWidget->SetPropertyPrefix(propPrefix.toStdString());
 }
 
 BackgroundPropertyGridWidget::~BackgroundPropertyGridWidget()
@@ -119,6 +121,7 @@ void BackgroundPropertyGridWidget::UpdateDetailsWidget()
 void BackgroundPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
 {
     BasePropertyGridWidget::Initialize(activeMetadata);
+    ui->marginsWidget->Initialize(activeMetadata);
     FillComboboxes();
 
     RegisterGridWidgetAsStateAware();
@@ -144,6 +147,7 @@ void BackgroundPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
 
 void BackgroundPropertyGridWidget::Cleanup()
 {
+    ui->marginsWidget->Cleanup();
     UnregisterGridWidgetAsStateAware();
     
     UnregisterColorWidget(ui->selectColorWidget);
@@ -379,6 +383,16 @@ String BackgroundPropertyGridWidget::GetPrefixedPropertyName(const char* propert
 
 void BackgroundPropertyGridWidget::ForceExpand(bool value)
 {
+    // Center the label in case the widget is expanded.
+    if (value)
+    {
+        ui->backgroundNameLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    }
+    else
+    {
+        ui->backgroundNameLabel->setAlignment(Qt::AlignHCenter | Qt::AlignLeft);
+    }
+
     ui->expandButton->setVisible(!value);
     isDetailsVisible = value;
     UpdateDetailsWidget();
