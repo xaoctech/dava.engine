@@ -1279,6 +1279,31 @@ void Shader::BindDynamicParameters()
                 }
                 break;
             }
+
+            case PARAM_JOINT_POSITIONS:
+                {
+                    int32 count = *((int32*)RenderManager::GetDynamicParam(PARAM_JOINTS_COUNT));
+                    pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_JOINT_POSITIONS);
+                    if (_updateSemantic != currentUniform->updateSemantic)
+                    {
+                        Vector3 * param = (Vector3*)RenderManager::GetDynamicParam(PARAM_JOINT_POSITIONS);
+                        SetUniformValueByUniform(currentUniform, Shader::UT_FLOAT_VEC4, count, param);
+                        currentUniform->updateSemantic = _updateSemantic;
+                    }
+                    break;
+                }
+            case PARAM_JOINT_QUATERNIONS:
+                {
+                    int32 count = *((int32*)RenderManager::GetDynamicParam(PARAM_JOINTS_COUNT));
+                    pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_JOINT_QUATERNIONS);
+                    if (_updateSemantic != currentUniform->updateSemantic)
+                    {
+                        Vector3 * param = (Vector3*)RenderManager::GetDynamicParam(PARAM_JOINT_QUATERNIONS);
+                        SetUniformValueByUniform(currentUniform, Shader::UT_FLOAT_VEC4, count, param);
+                        currentUniform->updateSemantic = _updateSemantic;
+                    }
+                    break;
+                }
             case PARAM_COLOR:
             {
                 const Color & c = RenderManager::Instance()->GetColor();

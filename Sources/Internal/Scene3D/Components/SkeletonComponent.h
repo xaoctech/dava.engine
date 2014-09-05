@@ -50,15 +50,19 @@ public:
 
     struct Joint
     {
+        struct JointTransform
+        {
+            Quaternion q;
+            Vector3 position;
+            float32 scale;
+        };
         enum {BF_UPDATED_THIS_FRAME = 1<<0 ,
               BS_MARKED_FOR_UPDATE  = 1<<1
         };
-        int16 flags;
-        int16 parent;
+        uint16 flags;
+        uint16 parent;
 
-        Quaternion q;
-        Vector3 position;
-        float32 scale;
+        JointTransform localTransform, worldTransform, inverseBindTransform;
     };
     
 
@@ -70,17 +74,21 @@ public:
     void SetJointOrientation(int32 jointId, const Quaternion &orientation);
     void SetJointScale(int32 jointId, float32 scale);
     
-    int32 GetJointId(const FastName& name);
+    uint16 GetJointId(const FastName& name);
 
     SkeletonComponent();
     ~SkeletonComponent();
 
 private:
 
-    Vector<Joint> joints;
-    Map<FastName, int32> jointMap;
+    Vector<Joint> joints; //stores joint information
+
+    Vector<Vector4> resultPositions; //stores final results
+    Vector<Vector4> resultQuaternions;
+
+    Map<FastName, uint16> jointMap;
         
-    uint16 startBone; //first bone in the list that was updated this frame
+    uint16 startJoint; //first joint in the list that was updated this frame
 
 };
 

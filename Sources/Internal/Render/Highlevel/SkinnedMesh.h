@@ -56,8 +56,8 @@ public:
 
     virtual void Save(KeyedArchive *archive, SerializationContext *serializationContext);
     virtual void Load(KeyedArchive *archive, SerializationContext *serializationContext);
-
-    virtual void RecalcBoundingBox();*/
+    */
+    virtual void RecalcBoundingBox(){}
 
     virtual void BindDynamicParameters(Camera * camera);
     
