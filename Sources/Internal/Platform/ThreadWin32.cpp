@@ -97,7 +97,7 @@ void Thread::KillNative()
     TerminateThread(handle, 0);
 }
 
-Thread::NativeId Thread::GetCurrentIdentifier()
+Thread::NativeId Thread::GetCurrentNativeId()
 {
     return ::GetCurrentThreadId();
 }

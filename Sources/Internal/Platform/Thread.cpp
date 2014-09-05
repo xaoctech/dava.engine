@@ -107,14 +107,14 @@ Thread::Id Thread::GetCurrentId()
     Id retId;
     
     LockGuard<Mutex> locker(threadIdListMutex);
-    NativeId nid = GetCurrentIdentifier();
-    Map<NativeId, Id>::iterator it = threadIdList.find(nid);
+    NativeId threadNativeIdentifier = GetCurrentNativeId();
+    Map<NativeId, Id>::iterator it = threadIdList.find(threadNativeIdentifier);
     if (it == threadIdList.end())
     {
-        NativeId threadIdentifier = GetCurrentIdentifier();
         static Id newId = 1;
-        threadIdList[threadIdentifier] = newId;
-        retId = newId++;
+        retId = newId;
+        threadIdList[threadNativeIdentifier] = newId;
+        ++newId;
     }
     else
     {
@@ -149,14 +149,15 @@ void Thread::Kill()
         threadIdList.erase(nativeId);
         threadIdListMutex.Unlock();
 
-        Release();
+        DVASSERT(0 != Release());
     }
 }
 
 void Thread::KillAll()
 {
     LockGuard<Mutex> locker(threadListMutex);
-    for(Set<Thread *>::iterator i = threadList.begin(); i != threadList.end(); ++i)
+    Set<Thread *>::iterator end = threadList.end();
+    for (Set<Thread *>::iterator i = threadList.begin(); i != end; ++i)
     {
         (*i)->Kill();
     }
@@ -179,7 +180,8 @@ void Thread::Cancel()
 void Thread::CancelAll()
 {
 	LockGuard<Mutex> locker(threadListMutex);
-    for(Set<Thread *>::iterator i = threadList.begin(); i != threadList.end(); ++i)
+    Set<Thread *>::iterator end = threadList.end();
+    for (Set<Thread *>::iterator i = threadList.begin(); i != end; ++i)
     {
         (*i)->Cancel();
     }
@@ -250,7 +252,7 @@ void Thread::Broadcast(ConditionalVariable * cv)
 void Thread::SetId(const Id &threadId)
 {
     id = threadId;
-    nativeId = GetCurrentIdentifier();
+    nativeId = GetCurrentNativeId();
 }
     
 void Thread::ThreadFunction(void *param)
@@ -285,7 +287,7 @@ void Thread::ThreadFunction(void *param)
     // kill could be called around this place. It will produce 2 Release instead of 1.
     // So we use mutex to avoid that.
     t->releaseKillMutex.Lock();
-    t->Release();
+    DVASSERT(0 != t->Release());
     t->releaseKillMutex.Unlock();
 }
     

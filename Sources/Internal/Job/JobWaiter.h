@@ -44,8 +44,8 @@ public:
 	~ThreadIdJobWaiter();
 	void Wait();
 
-	const Thread::Id & GetThreadId() const;
-	ConditionalVariable * GetConditionalVariable();
+    const Thread::Id & GetThreadId() const { return threadId; }
+    ConditionalVariable * GetConditionalVariable() { return &cv; }
 
 private:
 	Thread::Id threadId;
@@ -59,8 +59,8 @@ public:
 	~JobInstanceWaiter();
 	void Wait();
 
-	ConditionalVariable * GetConditionalVariable();
-	Job * GetJob();
+    ConditionalVariable * GetConditionalVariable() { return &cv; }
+    Job * GetJob() const { return job; }
 
 private:
 	Job * job;

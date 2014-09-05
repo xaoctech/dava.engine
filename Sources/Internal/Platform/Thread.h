@@ -183,7 +183,7 @@ private:
     /**
     \brief Get unique native identifier of the thread which calls this method.
     */
-    static NativeId GetCurrentIdentifier();
+    static NativeId GetCurrentNativeId();
     
     /**
     \brief Kill thread native implementation (contains no Thread logic)
