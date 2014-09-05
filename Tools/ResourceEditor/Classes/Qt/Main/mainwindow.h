@@ -54,6 +54,7 @@ class HangingObjectsHeight;
 class DeveloperTools;
 class VersionInfoWidget;
 
+
 class QtMainWindow
     : public QMainWindow
     , public DAVA::Singleton<QtMainWindow>
@@ -114,6 +115,7 @@ public slots:
 	void OnEditorGizmoToggle(bool show);
     void OnViewLightmapCanvas(bool show);
 	void OnAllowOnSceneSelectionToggle(bool allow);
+    void OnShowStaticOcclusionToggle(bool show);
 
 	void OnReloadTextures();
 	void OnReloadTexturesTriggered(QAction *reloadAction);
@@ -204,6 +206,10 @@ public slots:
     void OnReloadShaders();
 
     void OnSwitchWithDifferentLODs(bool checked);
+
+    void OnGenerateHeightDelta();
+
+    void OnBatchProcessScene();
     
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
