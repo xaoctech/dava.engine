@@ -42,4 +42,13 @@ SkinnedMesh::SkinnedMesh()
     type = TYPE_SKINNED_MESH;
 }
 
+void SkinnedMesh::BindDynamicParameters(Camera * camera)
+{
+    RenderObject::BindDynamicParameters(camera);
+
+    RenderManager::SetDynamicParam(PARAM_JOINTS_COUNT, &jointsCount, (pointer_size)jointsCount); //not pointer but count itself
+    
+    RenderManager::SetDynamicParam(PARAM_JOINT_POSITIONS, &sphericalHarmonics[0], UPDATE_SEMANTIC_ALWAYS);
+}
+
 }

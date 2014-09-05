@@ -494,6 +494,10 @@ enum eShaderSemantic
 
     PARAM_SPHERICAL_HARMONICS,
 
+    PARAM_JOINT_POSITIONS,
+    PARAM_JOINT_QUATERNIONS,
+    PARAM_JOINTS_COUNT,     //it wil not be bound into shader, but will be used to bind joints
+
     PARAM_RT_SIZE,
     PARAM_RT_PIXEL_SIZE,
     PARAM_RT_HALF_PIXEL_SIZE,
