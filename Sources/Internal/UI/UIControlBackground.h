@@ -96,6 +96,26 @@ public:
     /**
      \brief Constructor.
      */
+    struct UIMargins
+    {
+        UIMargins() :
+            top(0.0f), right(0.0f), bottom(0.0f), left(0.0f)
+        {
+        }
+        
+        inline bool operator == (const UIMargins & value) const;
+        inline bool operator != (const UIMargins & value) const;
+        inline bool empty() const;
+        
+        float32 top;
+        float32 right;
+        float32 bottom;
+        float32 left;
+    };
+
+    /**
+     \brief Constructor.
+     */
     UIControlBackground();
 
     virtual bool IsEqualTo(const UIControlBackground *back) const;
@@ -260,6 +280,17 @@ public:
 
 
     void SetShader(Shader *shader);
+    
+    /**
+     \brief Sets the margins for drawing background. Positive values means inner
+     offset, negative ones - outer.
+     */
+    void SetMargins(const UIMargins* uiMargins);
+    
+    /**
+     \brief Returns the margins for drawing background. Can be NULL.
+     */
+    const UIMargins* GetMargins() const;
 
 protected:
     void DrawStretched(const Rect &drawRect, UniqueHandle renderState);
@@ -302,6 +333,8 @@ private:
     };
 
     TiledDrawData *tiledData;
+    UIMargins* margins;
+
 public:
     void ReleaseDrawData(); // Delete all spec draw data
 
@@ -321,6 +354,23 @@ inline void UIControlBackground::SetColor(const Color & _color)
 inline const Color &UIControlBackground::GetColor() const
 {
     return color;
+}
+
+inline bool UIControlBackground::UIMargins::operator == (const UIControlBackground::UIMargins& value) const
+{
+    return FLOAT_EQUAL(left, value.left) && FLOAT_EQUAL(top, value.top) &&
+    FLOAT_EQUAL(right, value.right) && FLOAT_EQUAL(bottom, value.bottom);
+}
+
+inline bool UIControlBackground::UIMargins::operator != (const UIControlBackground::UIMargins& value) const
+{
+    return !UIControlBackground::UIMargins::operator == (value);
+}
+
+inline bool UIControlBackground::UIMargins::empty() const
+{
+    return FLOAT_EQUAL(left, 0.0f)  && FLOAT_EQUAL(top, 0.0f) &&
+    FLOAT_EQUAL(right, 0.0f) && FLOAT_EQUAL(bottom, 0.0f);
 }
 
 };

@@ -44,10 +44,14 @@ public:
     explicit UIMarginsPropertyGridWidget(QWidget *parent = 0);
     ~UIMarginsPropertyGridWidget();
 
+    void SetPropertyPrefix(const String& prefix);
+
     virtual void Initialize(BaseMetadata* activeMetadata);
     virtual void Cleanup();
 
 protected:
+    String GetPrefixedPropertyName(const char* propertyName);
+
 	virtual void HandleChangePropertySucceeded(const QString& propertyName);
     virtual void HandleChangePropertyFailed(const QString& propertyName);
 
@@ -56,7 +60,7 @@ protected:
     virtual void ProcessDoubleSpinBoxValueChanged(QDoubleSpinBox *doubleSpinBox,
                                                   const PROPERTYGRIDWIDGETSITER &iter,
                                                   const double value);
-    
+
     // Update the UI.
     void UpdateUI();
     
@@ -72,6 +76,7 @@ protected slots:
 
 private:
     Ui::UIMarginsPropertyGridWidget *ui;
+    String propertyPrefix;
 };
 
 #endif // UIMARGINSPROPERTYGRIDWIDGET_H

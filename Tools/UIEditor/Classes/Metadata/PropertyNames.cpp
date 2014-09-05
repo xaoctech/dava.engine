@@ -133,11 +133,18 @@ const char* PropertyNames::JOYPAD_DIGITAL_SENSE_PROPERTY_NAME = "DigitalSense";
 const char* PropertyNames::WEBVIEW_DATA_DETECTOR_TYPES_PROPERTY_NAME = "DataDetectorTypes";
 
 // UI Margin properties.
-const char* PropertyNames::UIMARGINS_PROPERTY_NAME = "UIMargins";
-const char* PropertyNames::UIMARGIN_LEFT_PROPERTY_NAME = "UIMarginLeft";
-const char* PropertyNames::UIMARGIN_TOP_PROPERTY_NAME = "UIMarginTop";
-const char* PropertyNames::UIMARGIN_RIGHT_PROPERTY_NAME = "UIMarginRight";
-const char* PropertyNames::UIMARGIN_BOTTOM_PROPERTY_NAME = "UIMarginBottom";
+const char* PropertyNames::MARGINS_PROPERTY_NAME = "Margins";
+const char* PropertyNames::LEFT_MARGIN_PROPERTY_NAME = "LeftMargin";
+const char* PropertyNames::TOP_MARGIN_PROPERTY_NAME = "TopMargin";
+const char* PropertyNames::RIGHT_MARGIN_PROPERTY_NAME = "RightMargin";
+const char* PropertyNames::BOTTOM_MARGIN_PROPERTY_NAME = "BottomMargin";
+
+// UI Text Margin properties.
+const char* PropertyNames::TEXT_MARGINS_PROPERTY_NAME = "TextMargins";
+const char* PropertyNames::TEXT_LEFT_MARGIN_PROPERTY_NAME = "TextLeftMargin";
+const char* PropertyNames::TEXT_TOP_MARGIN_PROPERTY_NAME = "TextTopMargin";
+const char* PropertyNames::TEXT_RIGHT_MARGIN_PROPERTY_NAME = "TextRightMargin";
+const char* PropertyNames::TEXT_BOTTOM_MARGIN_PROPERTY_NAME = "TextBottomMargin";
 
 // Custom Control properties.
 const char* PropertyNames::CUSTOM_CONTROL_NAME = "CustomControlName";

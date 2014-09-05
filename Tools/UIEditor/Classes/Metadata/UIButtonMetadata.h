@@ -47,13 +47,6 @@ class UIButtonMetadata : public UITextControlMetadata
 public:
     UIButtonMetadata(QObject* parent = 0);    
 
-    Q_PROPERTY(bool MarginsEnabled READ GetMarginsEnabled WRITE SetMarginsEnabled);
-    Q_PROPERTY(QRectF UIMargins READ GetTextMargins WRITE SetTextMargins);
-    Q_PROPERTY(float UIMarginLeft READ GetLeftTextMargin WRITE SetLeftTextMargin);
-	Q_PROPERTY(float UIMarginTop READ GetTopTextMargin WRITE SetTopTextMargin);
-	Q_PROPERTY(float UIMarginRight READ GetRightTextMargin WRITE SetRightTextMargin);
-	Q_PROPERTY(float UIMarginBottom READ GetBottomTextMargin WRITE SetBottomTextMargin);
-
 protected:
     virtual bool GetInitialInputEnabled() const {return true;};
 
@@ -131,6 +124,38 @@ protected:
     virtual int GetFontShadowColorInheritType() const;
     virtual void SetFontShadowColorInheritType(int value);
 
+    // Background Margins.
+    virtual QRectF GetMargins() const;
+    virtual void SetMargins(const QRectF& value);
+    
+    virtual float GetLeftMargin() const;
+    virtual void SetLeftMargin(float value);
+    
+    virtual float GetTopMargin() const;
+    virtual void SetTopMargin(float value);
+    
+    virtual float GetRightMargin() const;
+    virtual void SetRightMargin(float value);
+    
+    virtual float GetBottomMargin() const;
+    virtual void SetBottomMargin(float value);
+
+    // Text Margins.
+    virtual QRectF GetTextMargins() const;
+    virtual void SetTextMargins(const QRectF& value);
+    
+    virtual float GetTextLeftMargin() const;
+    virtual void SetTextLeftMargin(float value);
+    
+    virtual float GetTextTopMargin() const;
+    virtual void SetTextTopMargin(float value);
+    
+    virtual float GetTextRightMargin() const;
+    virtual void SetTextRightMargin(float value);
+    
+    virtual float GetTextBottomMargin() const;
+    virtual void SetTextBottomMargin(float value);
+
     // For UI Button localized text depends on state, so overriding this function.
     virtual UIControl::eControlState GetCurrentStateForLocalizedText() const;
     
@@ -191,28 +216,17 @@ protected:
 
     float GetTopBottomStretchCapForState(UIControl::eControlState state) const;
     void UpdatePropertyDirtyFlagForTopBottomStretchCap();
-    
+
+    // Margins.
+    QRectF GetMarginsForState(UIControl::eControlState state) const;
+    void UpdatePropertyDirtyFlagForMargins();
+
     // Text Margins.
-    bool GetMarginsEnabled() const;
-    void SetMarginsEnabled(bool value);
+    QRectF GetTextMarginsForState(UIControl::eControlState state) const;
+    void UpdatePropertyDirtyFlagForTextMargins();
 
-    QRectF GetTextMargins();
-    void SetTextMargins(const QRectF& marginsRect);
-
-    float GetLeftTextMargin() const;
-    void SetLeftTextMargin(float value);
-
-    float GetTopTextMargin() const;
-    void SetTopTextMargin(float value);
-
-    float GetRightTextMargin() const;
-    void SetRightTextMargin(float value);
-
-    float GetBottomTextMargin() const;
-    void SetBottomTextMargin(float value);
-
-    // Get the margins from the button for updating.
-    UIButton::UIMargins GetTextMarginsToUpdate();
+    virtual UIControlBackground::UIMargins GetMarginsToUpdate(UIControl::eControlState state);
+    virtual UIControlBackground::UIMargins GetTextMarginsToUpdate(UIControl::eControlState state);
 
     // Shadow offset&color.
     float GetShadowOffsetXForState(UIControl::eControlState state) const;

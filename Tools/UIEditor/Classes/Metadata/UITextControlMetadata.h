@@ -58,6 +58,13 @@ class UITextControlMetadata : public UIControlMetadata
 
     // Font color/shadow color inherit types.
     Q_PROPERTY(int FontShadowColorInheritType READ GetFontShadowColorInheritType WRITE SetFontShadowColorInheritType);
+    
+    // Text margins.
+    Q_PROPERTY(QRectF TextMargins READ GetTextMargins WRITE SetTextMargins);
+    Q_PROPERTY(float TextLeftMargin READ GetTextLeftMargin WRITE SetTextLeftMargin);
+	Q_PROPERTY(float TextTopMargin READ GetTextTopMargin WRITE SetTextTopMargin);
+	Q_PROPERTY(float TextRightMargin READ GetTextRightMargin WRITE SetTextRightMargin);
+	Q_PROPERTY(float TextBottomMargin READ GetTextBottomMargin WRITE SetTextBottomMargin);
 
 public:
     UITextControlMetadata(QObject* parent = 0);
@@ -91,6 +98,22 @@ protected:
 	
 	Vector2 GetOffsetX(const Vector2& currentOffset, float offsetX);
 	Vector2 GetOffsetY(const Vector2& currentOffset, float offsetY);
+
+    // Text margins. Should be overriden in the derived classes.
+    virtual QRectF GetTextMargins() const;
+    virtual void SetTextMargins(const QRectF& value);
+    
+    virtual float GetTextLeftMargin() const;
+    virtual void SetTextLeftMargin(float value);
+    
+    virtual float GetTextTopMargin() const;
+    virtual void SetTextTopMargin(float value);
+    
+    virtual float GetTextRightMargin() const;
+    virtual void SetTextRightMargin(float value);
+
+    virtual float GetTextBottomMargin() const;
+    virtual void SetTextBottomMargin(float value);
 
     // These methods should not be overriden for the UITextField, that's why not pure virtual.
     virtual int GetFontShadowColorInheritType() const;

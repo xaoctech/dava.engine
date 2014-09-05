@@ -1043,4 +1043,142 @@ void UIControlMetadata::SetUIControlVisible(const bool value, bool hierarchic)
     GetActiveUIControl()->SetVisible(value, hierarchic);
 }
 
+QRectF UIControlMetadata::GetMargins() const
+{
+    if (!VerifyActiveParamID() || !GetActiveUIControl()->GetBackground())
+    {
+        return QRectF();
+    }
+    
+    const UIControlBackground::UIMargins* margins = GetActiveUIControl()->GetBackground()->GetMargins();
+    if (!margins)
+    {
+        return QRectF();
+    }
+
+    return UIMarginsToQRectF(margins);
+}
+    
+void UIControlMetadata::SetMargins(const QRectF& value)
+{
+    if (!VerifyActiveParamID() || !GetActiveUIControl()->GetBackground())
+    {
+        return;
+    }
+
+    UIControlBackground::UIMargins margins = QRectFToUIMargins(value);
+    GetActiveUIControl()->GetBackground()->SetMargins(&margins);
+}
+
+float UIControlMetadata::GetLeftMargin() const
+{
+    return GetMargins().left();
+}
+
+void UIControlMetadata::SetLeftMargin(float value)
+{
+    if (!VerifyActiveParamID() || !GetActiveUIControl()->GetBackground())
+    {
+        return;
+    }
+
+    UIControlBackground::UIMargins margins = GetMarginsToUpdate();
+    margins.left = value;
+    GetActiveUIControl()->GetBackground()->SetMargins(&margins);
+}
+    
+float UIControlMetadata::GetTopMargin() const
+{
+    return GetMargins().top();
+}
+
+void UIControlMetadata::SetTopMargin(float value)
+{
+    if (!VerifyActiveParamID() || !GetActiveUIControl()->GetBackground())
+    {
+        return;
+    }
+    
+    UIControlBackground::UIMargins margins = GetMarginsToUpdate();
+    margins.top = value;
+    GetActiveUIControl()->GetBackground()->SetMargins(&margins);
+}
+    
+float UIControlMetadata::GetRightMargin() const
+{
+    return GetMargins().width();
+}
+    
+void UIControlMetadata::SetRightMargin(float value)
+{
+    if (!VerifyActiveParamID() || !GetActiveUIControl()->GetBackground())
+    {
+        return;
+    }
+    
+    UIControlBackground::UIMargins margins = GetMarginsToUpdate();
+    margins.right = value;
+    GetActiveUIControl()->GetBackground()->SetMargins(&margins);
+}
+
+float UIControlMetadata::GetBottomMargin() const
+{
+    return GetMargins().height();
+}
+
+void UIControlMetadata::SetBottomMargin(float value)
+{
+    if (!VerifyActiveParamID() || !GetActiveUIControl()->GetBackground())
+    {
+        return;
+    }
+    
+    UIControlBackground::UIMargins margins = GetMarginsToUpdate();
+    margins.bottom = value;
+    GetActiveUIControl()->GetBackground()->SetMargins(&margins);
+}
+
+UIControlBackground::UIMargins UIControlMetadata::GetMarginsToUpdate(UIControl::eControlState /* state */)
+{
+    if (!VerifyActiveParamID() || !GetActiveUIControl()->GetBackground())
+    {
+        return UIControlBackground::UIMargins();
+    }
+
+    const UIControlBackground::UIMargins* margins = GetActiveUIControl()->GetBackground()->GetMargins();
+    if (!margins)
+    {
+        return UIControlBackground::UIMargins();
+    }
+
+    return *margins;
+}
+
+QRectF UIControlMetadata::UIMarginsToQRectF(const UIControlBackground::UIMargins* margins) const
+{
+    if (!margins)
+    {
+        return QRectF();
+    }
+
+    QRectF resultRect;
+    resultRect.setLeft(margins->left);
+    resultRect.setTop(margins->top);
+    resultRect.setWidth(margins->right);
+    resultRect.setHeight(margins->bottom);
+
+    return resultRect;
+}
+    
+UIControlBackground::UIMargins UIControlMetadata::QRectFToUIMargins(const QRectF& rect) const
+{
+    UIControlBackground::UIMargins resultMargins;
+    resultMargins.left = rect.left();
+    resultMargins.top = rect.top();
+    resultMargins.right = rect.width();
+    resultMargins.bottom = rect.height();
+ 
+    return resultMargins;
+} 
+
 };

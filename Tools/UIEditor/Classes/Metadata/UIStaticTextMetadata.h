@@ -99,6 +99,24 @@ protected:
     
     virtual int GetFontShadowColorInheritType() const;
     virtual void SetFontShadowColorInheritType(int value);
+
+    // Text margins.
+    virtual QRectF GetTextMargins() const;
+    virtual void SetTextMargins(const QRectF& value);
+    
+    virtual float GetTextLeftMargin() const;
+    virtual void SetTextLeftMargin(float value);
+    
+    virtual float GetTextTopMargin() const;
+    virtual void SetTextTopMargin(float value);
+    
+    virtual float GetTextRightMargin() const;
+    virtual void SetTextRightMargin(float value);
+    
+    virtual float GetTextBottomMargin() const;
+    virtual void SetTextBottomMargin(float value);
+
+    virtual UIControlBackground::UIMargins GetTextMarginsToUpdate(UIControl::eControlState state = UIControl::STATE_NORMAL);
 };
 
 };

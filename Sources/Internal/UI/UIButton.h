@@ -54,28 +54,6 @@ class UIButton : public UIControl
 {
 
 public:
-    struct UIMargins
-    {
-        UIMargins() :
-            left(0.0f), top(0.0f), right(0.0f), bottom(0.0f)
-        {
-        }
-
-        inline bool operator == (const UIMargins & value) const;
-        inline bool operator != (const UIMargins & value) const;
-
-        inline bool empty() const
-        {
-            return FLOAT_EQUAL(left, 0.0f)  && FLOAT_EQUAL(top, 0.0f) &&
-                   FLOAT_EQUAL(right, 0.0f) && FLOAT_EQUAL(bottom, 0.0f);
-        }
-
-        float32 left;
-        float32 top;
-        float32 right;
-        float32 bottom;
-    };
-
     /**
      \brief Creates button with requested size and position.
      \param[in] rect Size and coordinates of control you want.
@@ -258,6 +236,18 @@ public:
      */
     virtual void SetStateTextAlign(int32 state, int32 align);
     /**
+     \brief Sets background margins for the requested states.
+     \param[in] state state text bit mask to set value for.
+     \param[in] margins the margins.
+     */
+    virtual void SetStateMargins(int32 state, const UIControlBackground::UIMargins* margins);
+    /**
+     \brief Sets text margins for the requested states.
+     \param[in] state state text bit mask to set value for.
+     \param[in] margins the margins.
+     */
+    virtual void SetStateTextMargins(int32 state, const UIControlBackground::UIMargins* margins);
+    /**
      \brief Sets text control what will be used for the requested states.
         UIStaticText is cloned inside button.
      \param[in] state state bit mask to set value for.
@@ -282,17 +272,6 @@ public:
      Will create the background once only and then cache it.
      */
     virtual void CreateBackgroundForState(int32 state);
-
-    /**
-     \brief Sets the text margins for the UIButton's text.
-     \param[in] state state bit mask to set value for. Can be NULL to disable text margins.
-     */
-    void SetTextMargins(UIMargins* margins);
-
-    /**
-     \brief Returns the text margins for the UIButton's text. Can be NULL.
-     */
-    UIMargins* GetTextMargins() const;
 
 protected:
     virtual ~UIButton();
@@ -340,8 +319,6 @@ private:
     UIStaticText *CreateDefaultTextBlock() const;
 
     void UpdateStateTextControlSize();
-    
-    UIMargins* textMargins;
 };
 };
 
