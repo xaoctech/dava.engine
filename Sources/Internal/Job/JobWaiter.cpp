@@ -52,18 +52,6 @@ void ThreadIdJobWaiter::Wait()
 	}
 }
 
-const Thread::Id & ThreadIdJobWaiter::GetThreadId() const
-{
-	return threadId;
-}
-
-ConditionalVariable * ThreadIdJobWaiter::GetConditionalVariable()
-{
-	return &cv;
-}
-
-
-
 JobInstanceWaiter::JobInstanceWaiter(Job * _job)
 :	job(_job)
 {
@@ -82,17 +70,6 @@ void JobInstanceWaiter::Wait()
 		Thread::Wait(&cv);
 	}
 }
-
-ConditionalVariable * JobInstanceWaiter::GetConditionalVariable()
-{
-	return &cv;
-}
-
-Job * JobInstanceWaiter::GetJob()
-{
-	return job;
-}
-
 
 
 }
