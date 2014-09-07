@@ -115,7 +115,27 @@ public:
     {
         sameType = false
     };
-};   
+};
+
+template<bool>
+struct IsEnumImpl
+{ };
+
+template<>
+struct IsEnumImpl<true>
+{
+	enum { result = true };
+};
+
+template<>
+struct IsEnumImpl<false>
+{
+	enum { result = false };
+};
+
+template <class T>
+struct IsEnum : public IsEnumImpl<__is_enum(T)>
+{ };
     
 template <class T>
 class Conversion<T, T>
@@ -127,7 +147,6 @@ public:
     
 #define SUPERSUBCLASS(SUPER, SUB) (Conversion<const SUB*, const SUPER*>::exists && !Conversion<const SUPER*, const void*>::sameType) 
   
-struct EmptyType{};
 
     /**
      \brief Works like dynamic_cast for Debug and like a static_cast for release.
