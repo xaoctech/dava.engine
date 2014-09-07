@@ -98,7 +98,7 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
 
-    new DLCDownloadTest();
+    //new DLCDownloadTest();
 
 	new ImageSizeTest();
     new DeviceInfoTest();
