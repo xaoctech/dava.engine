@@ -1,10 +1,11 @@
 #ifndef __DAVA_BIND_H__
 #define __DAVA_BIND_H__
 
-#include "Function.h"
-#include "TypeHolders.h"
 #include "TypeTraits.h"
 #include "TypeList.h"
+#include "Function.h"
+#include "FunctionTraits.h"
+#include "TypeHolders.h"
 
 namespace DAVA
 {

@@ -41,6 +41,7 @@ class FunctionBindSignalTest : public UITestTemplate<FunctionBindSignalTest>
 {
 protected:
 	~FunctionBindSignalTest(){}
+
 public:
 	FunctionBindSignalTest();
 
@@ -52,6 +53,7 @@ public:
 
 private:
 	UIStaticText* textInfoText;
+	bool done;
 };
 
 #endif // __FUNCTION_BIND_SIGNAL_TEST__
