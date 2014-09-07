@@ -35,15 +35,18 @@
 namespace DAVA
 {
 
-// Alexandresky style compile time assertion. 
-template <bool>
-struct CompileTimeError;
+#define COMPILER_ASSERT(expr)  (DAVA::StaticAssert<(expr) != 0>());
 
+// empty default template
+template <bool b>
+struct StaticAssert {};
+
+// template specialized on true
 template <>
-struct CompileTimeError<true> 
-{};
-
-#define COMPILER_ASSERT(expr) DAVA::CompileTimeError<(expr)>();
+struct StaticAssert<true>
+{
+	enum { Check = true };
+};
 
 template<bool C, typename T = void>
 struct EnableIf
@@ -76,6 +79,18 @@ template <typename T, typename U>
 struct Select<false, T, U>
 {
     typedef U Result;
+};
+
+template <bool, unsigned int index_A, unsigned int index_B>
+struct SelectIndex
+{
+	enum { result = index_A };
+};
+
+template <unsigned int index_A, unsigned int index_B>
+struct SelectIndex<false, index_A, index_B>
+{
+	enum { result = index_B };
 };
     
 template <class TO, class FROM>
@@ -111,173 +126,8 @@ public:
 };
     
 #define SUPERSUBCLASS(SUPER, SUB) (Conversion<const SUB*, const SUPER*>::exists && !Conversion<const SUPER*, const void*>::sameType) 
-
-class NullType{};
-
-template<typename U>
-struct IsNullType
-{
-	enum{ result = false };
-};
-
-template<>
-struct IsNullType<NullType>
-{
-	enum{ result = true };
-};
-
+  
 struct EmptyType{};
-    
-template<typename U>
-struct PointerTraits
-{
-    enum{result = false };
-    typedef NullType PointerType;
-};
-template <typename U>
-struct PointerTraits<U*>
-{
-    enum{result = true };
-    typedef U PointerType;
-};
-
-template<typename U>
-struct ReferenceTraits
-{
-    enum{result = false };
-	typedef NullType ReferenceType;
-};
-template <typename U>
-struct ReferenceTraits<U&>
-{
-    enum{result = true };
-    typedef U ReferenceType;
-};
-
-template<class U>
-struct P2MTraits
-{
-    enum{result = false };
-};
-template <class R, class V>
-struct P2MTraits<R V::*>
-{
-    enum{result = true };
-};
-
-template <typename T>
-class TypeTraits
-{
-public:    
-    enum {isPointer = PointerTraits<T>::result };    
-    enum {isReference = ReferenceTraits<T>::result };   
-    enum {isPointerToMemberFunction = P2MTraits<T>::result };
-	typedef typename Select<isPointer || isReference, T, const T&>::Result ParamType;
-	typedef typename Select<isReference, typename ReferenceTraits<T>::ReferenceType, T>::Result NonRefType;
-};
-
-// type list
-template <class T, class U>
-struct Typelist
-{
-	typedef T Head;
-	typedef U Tail;
-};
-
-// type list operations
-namespace TL
-{
-	// append type
-	template <class TList, class T>
-	struct Append;
-
-	template <>
-	struct Append<NullType, NullType>
-	{
-		typedef NullType Result;
-	};
-
-	template <class T>
-	struct Append<NullType, T>
-	{
-		typedef Typelist<T, NullType> Result;
-	};
-
-	template <class Head, class Tail>
-	struct Append<NullType, Typelist<Head, Tail> >
-	{
-		typedef Typelist<Head, Tail> Result;
-	};
-
-	template <class Head, class Tail, class T>
-	struct Append<Typelist<Head, Tail>, T>
-	{
-		typedef Typelist<Head, typename Append<Tail, T>::Result> Result;
-	};
-
-	template <class Head, class Tail>
-	struct Append<Typelist<Head, Tail>, NullType>
-	{
-		typedef Typelist<Head, Tail> Result;
-	};
-
-	// type at given index
-	template <class TList, unsigned int index>
-	struct TypeAt;
-
-	template <class Head, class Tail>
-	struct TypeAt<Typelist<Head, Tail>, 0>
-	{
-		typedef Head Result;
-	};
-
-	template <class Head, class Tail, unsigned int i>
-	struct TypeAt<Typelist<Head, Tail>, i>
-	{
-		typedef typename TypeAt<Tail, i - 1>::Result Result;
-	};
-
-	// type at given index with default type, when no such index 
-	template <class TList, unsigned int index, typename DefaultType = NullType>
-	struct TypeAtNonStrict
-	{
-		typedef DefaultType Result;
-	};
-
-	template <class Head, class Tail, typename DefaultType>
-	struct TypeAtNonStrict<Typelist<Head, Tail>, 0, DefaultType>
-	{
-		typedef Head Result;
-	};
-
-	template <class Head, class Tail, unsigned int i, typename DefaultType>
-	struct TypeAtNonStrict<Typelist<Head, Tail>, i, DefaultType>
-	{
-		typedef typename
-			TypeAtNonStrict<Tail, i - 1, DefaultType>::Result Result;
-	};
-};
-
-template<bool>
-struct IsEnumImpl
-{ };
-
-template<>
-struct IsEnumImpl<true>
-{
-    enum { result = true };
-};
-
-template<>
-struct IsEnumImpl<false>
-{
-    enum { result = false };
-};
-
-template <class T>
-struct IsEnum : public IsEnumImpl<__is_enum(T)>
-{ };
-
 
     /**
      \brief Works like dynamic_cast for Debug and like a static_cast for release.
@@ -291,7 +141,7 @@ struct IsEnum : public IsEnumImpl<__is_enum(T)>
         C c = dynamic_cast<C>(pObject);
         if (!c)
         {//assert emulation )
-            int *i = 0;
+            int *i = NULL;
             *(i) = 0;
         }
         return c;
