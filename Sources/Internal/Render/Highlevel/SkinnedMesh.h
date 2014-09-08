@@ -58,7 +58,7 @@ public:
     virtual void Load(KeyedArchive *archive, SerializationContext *serializationContext);
     */
     virtual void RecalcBoundingBox(){}
-
+    inline void SetObjectSpaceBoundingBox(const AABBox3& box);
     virtual void BindDynamicParameters(Camera * camera);
     
     inline void SetJointsPtr(Vector4 *positionPtr, Vector4 *quaternoinPtr, int32 count);
@@ -74,6 +74,11 @@ inline void SkinnedMesh::SetJointsPtr(Vector4 *positionPtr, Vector4 *quaternoinP
     positionArray = positionPtr;
     quaternionArray = quaternoinPtr;
     jointsCount = count;
+}
+
+inline void SkinnedMesh::SetObjectSpaceBoundingBox(const AABBox3& box)
+{
+    bbox = box;
 }
 
 }//ns

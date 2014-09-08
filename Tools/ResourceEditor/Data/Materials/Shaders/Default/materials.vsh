@@ -88,6 +88,9 @@ uniform vec3 metalFresnelReflectance;
 #if defined (SKINNING)
     uniform vec4 jointPositions[MAX_JOINTS]; // (x, y, z, scale)
     uniform vec4 jointQuaternions[MAX_JOINTS];
+    //debug only
+    uniform vec4 jointPosition;
+    uniform vec4 jointQuaternion;
 #endif
 
 #if defined(VERTEX_FOG)
@@ -277,6 +280,22 @@ vec3 FresnelShlickVec3(float NdotL, vec3 Cspec)
 	float fresnel_exponent = 5.0;
 	return Cspec + (1.0 - Cspec) * (pow(1.0 - NdotL, fresnel_exponent));
 }
+
+#if defined (SKINNING)
+vec3 JointTransform(vec3 inVec)
+{
+    vec3 t = 2.0 * cross(jointQuaternion.xyz, inVec);
+    return jointPosition.xyz + (inVec + jointQuaternion.w * t + cross(jointQuaternion.xyz, t))*jointPosition.w; 
+    //return inVec; 
+}
+
+vec3 JointTransformTangent(vec3 inVec)
+{
+    vec3 t = 2.0 * cross(jointQuaternion.xyz, inVec);
+    return inVec + jointQuaternion.w * t + cross(jointQuaternion.xyz, t); 
+    //return inVec; 
+}
+#endif
 
 #if defined(WAVE_ANIMATION)
 uniform float globalTime;
@@ -473,7 +492,12 @@ void main()
         gl_Position = worldViewProjMatrix * pos;
     
     #else
-        gl_Position = worldViewProjMatrix * inPosition;
+        #if defined (SKINNING)
+            vec4 skinnedPosition = vec4(JointTransform(inPosition.xyz), inPosition.w);
+            gl_Position = worldViewProjMatrix * skinnedPosition;
+        #else
+            gl_Position = worldViewProjMatrix * inPosition;
+        #endif
     #endif
 
 #endif //defined(WIND_ANIMATION)
@@ -486,7 +510,11 @@ void main()
     #if defined(MATERIAL_GRASS_TRANSFORM)
         vec3 eyeCoordsPosition = vec3(worldViewMatrix * pos); // view direction in view space
     #else
-        vec3 eyeCoordsPosition = vec3(worldViewMatrix *  inPosition); // view direction in view space
+        #if defined (SKINNING)
+            vec3 eyeCoordsPosition = vec3(worldViewMatrix * skinnedPosition); // view direction in view space
+        #else
+            vec3 eyeCoordsPosition = vec3(worldViewMatrix *  inPosition); // view direction in view space
+        #endif
     #endif
 #endif
 
@@ -535,7 +563,7 @@ void main()
     float Dbp = NdotL;
     float Geo = 1.0 / LdotH * LdotH;
     
-	varDiffuseColor = NdotL / _PI;
+    varDiffuseColor = NdotL / _PI;
     
     varSpecularColor = Dbp * Geo * fresnelOut * specularity;
     varNdotH = NdotH;
@@ -545,23 +573,30 @@ void main()
 #endif
 
 #if defined(PIXEL_LIT)
-	vec3 n = normalize (worldViewInvTransposeMatrix * inNormal);
-	vec3 t = normalize (worldViewInvTransposeMatrix * inTangent);		
-	vec3 b = normalize (worldViewInvTransposeMatrix * inBinormal);	
+
+    #if defined (SKINNING)
+        vec3 n = normalize (worldViewInvTransposeMatrix * JointTransformTangent(inNormal));
+        vec3 t = normalize (worldViewInvTransposeMatrix * JointTransformTangent(inTangent));
+        vec3 b = normalize (worldViewInvTransposeMatrix * JointTransformTangent(inBinormal));
+    #else
+        vec3 n = normalize (worldViewInvTransposeMatrix * inNormal);
+        vec3 t = normalize (worldViewInvTransposeMatrix * inTangent);
+        vec3 b = normalize (worldViewInvTransposeMatrix * inBinormal);
+    #endif
     
 #if defined(DISTANCE_ATTENUATION)
     varPerPixelAttenuation = length(toLightDir);
 #endif
     //lightDir = normalize(lightDir);
     
-	// transform light and half angle vectors by tangent basis
-	vec3 v;
-	v.x = dot (toLightDir, t);
-	v.y = dot (toLightDir, b);
-	v.z = dot (toLightDir, n);
+    // transform light and half angle vectors by tangent basis
+    vec3 v;
+    v.x = dot (toLightDir, t);
+    v.y = dot (toLightDir, b);
+    v.z = dot (toLightDir, n);
     
 #if !defined(FAST_NORMALIZATION)
-	varToLightVec = v;
+    varToLightVec = v;
 #else
     varToLightVec = normalize(v);
 #endif

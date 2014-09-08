@@ -48,49 +48,81 @@ public:
 
     const static uint16 INVALID_BONE_INDEX = -1;
 
-    struct Joint
-    {
-        struct JointTransform
-        {
-            Quaternion q;
-            Vector3 position;
-            float32 scale;
-        };
-        enum {BF_UPDATED_THIS_FRAME = 1<<0 ,
-              BS_MARKED_FOR_UPDATE  = 1<<1
-        };
-        uint16 flags;
-        uint16 parent;
-
-        JointTransform localTransform, worldTransform, inverseBindTransform;
-    };
     
+    struct JointTransform
+    {
+        Quaternion orientation;
+        Vector3 position;
+        float32 scale;
+    };                    
 
     virtual Component * Clone(Entity * toEntity);
     virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
     virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
 
-    void SetJointPosition(int32 jointId, const Vector3 &position);
-    void SetJointOrientation(int32 jointId, const Quaternion &orientation);
-    void SetJointScale(int32 jointId, float32 scale);
+    inline void SetJointPosition(uint16 jointId, const Vector3 &position);
+    inline void SetJointOrientation(uint16 jointId, const Quaternion &orientation);
+    inline void SetJointScale(uint16 jointId, float32 scale);
     
-    uint16 GetJointId(const FastName& name);
+    inline uint16 GetJointId(const FastName& name) const;
 
     SkeletonComponent();
     ~SkeletonComponent();
 
 private:
+    const static uint32 INFO_PARENT_MASK=0xff;
+    const static uint32 FLAG_UPDATED_THIS_FRAME=0x1+INFO_PARENT_MASK;
+    const static uint32 FLAG_MARKED_FOR_UPDATED=0x2+INFO_PARENT_MASK;
 
-    Vector<Joint> joints; //stores joint information
+    Vector<uint32> jointInfo; //flags and parent
+    
+    //transforms info
+    Vector<JointTransform> localTransforms;
+    Vector<JointTransform> worldTransforms;
+    Vector<JointTransform> inverseBindTransforms;
+
+    //bounding boxes for bone
+    Vector<AABBox3> boneLocalBoxes;
+    Vector<AABBox3> boneWorldBoxes;
 
     Vector<Vector4> resultPositions; //stores final results
     Vector<Vector4> resultQuaternions;
 
     Map<FastName, uint16> jointMap;
         
-    uint16 startJoint; //first joint in the list that was updated this frame
+    uint16 startJoint; //first joint in the list that was updated this frame - cache this value to optimize processing
 
 };
+
+
+
+inline void SkeletonComponent::SetJointPosition(uint16 jointId, const Vector3 &position)
+{
+    DVASSERT(jointId<localTransforms.size());
+    localTransforms[jointId].position = position;
+    startJoint = Min(startJoint, jointId);
+}
+inline void SkeletonComponent::SetJointOrientation(uint16 jointId, const Quaternion &orientation)
+{
+    DVASSERT(jointId<localTransforms.size());
+    localTransforms[jointId].orientation = orientation;
+    startJoint = Min(startJoint, jointId);
+}
+inline void SkeletonComponent::SetJointScale(uint16 jointId, float32 scale)
+{
+    DVASSERT(jointId<localTransforms.size());
+    localTransforms[jointId].scale = scale;
+    startJoint = Min(startJoint, jointId);
+}
+
+inline uint16 SkeletonComponent::GetJointId(const FastName& name) const
+{
+    Map<FastName, uint16>::const_iterator it = jointMap.find(name);
+    if (jointMap.end()!=it)
+        return it->second;
+    else
+        return INVALID_BONE_INDEX;
+}
 
 } //ns
 
