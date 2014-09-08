@@ -27,7 +27,6 @@
 =====================================================================================*/
 
 #include "LodToLod2Converter.h"
-#include "Render/3D/MeshUtils.h"
 
 static int32 emptyEntities = 0;
 
