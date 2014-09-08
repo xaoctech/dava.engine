@@ -44,8 +44,30 @@ class Entity;
 class AnimationSampler
 {
 public:
-    virtual float32 GetTimeLimit(void) = 0;
-    virtual float32 GetValue(float32 time) = 0;
+    virtual float32 GetValue(float32 time);
+    
+    enum eSamplerType
+    {
+        EST_TRANSLATION_X,
+        EST_TRANSLATION_Y,
+        EST_TRANSLATION_Z,
+        EST_ROTATION_X,
+        EST_ROTATION_Y,
+        EST_ROTATION_Z,
+        EST_COUNT
+    };
+
+    eSamplerType GetType(void){return type;};
+
+protected:
+    eSamplerType type;
+};
+
+struct AnimationClip
+{
+    String name;
+    Vector<AnimationSampler*> items;
+    float32 timeLimit;
 };
 
 class AnimationComponent : public Component
@@ -61,21 +83,13 @@ public:
 	virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
 	virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
 
-    enum eSamplerType
-    {
-        EST_TRANSLATION_X,
-        EST_TRANSLATION_Y,
-        EST_TRANSLATION_Z,
-        EST_ROTATION_X,
-        EST_ROTATION_Y,
-        EST_ROTATION_Z,
-        EST_COUNT
-    };
+    void PlayClip(const String & clipName, bool repeat);
+    void SetLocalTransform(const Matrix4 & transform);
 
 private:
 
 	friend class AnimationSystem;
-    AnimationSampler * samplers[EST_COUNT];
+    Map<String, AnimationClip> clipsMap;
     Matrix4 originalLocalTransform;
 
 public:
