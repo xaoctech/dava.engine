@@ -122,7 +122,7 @@ public:
 
 		This function return state of the thread. It can be STATE_CREATED, STATE_RUNNING, STATE_ENDED.
 	*/
-    eThreadState GetState() const {return state;}
+    inline eThreadState GetState() const;
 
     /** Wait until thread's finished.
     */
@@ -165,7 +165,7 @@ public:
     /**
      \returns returns Id of current Thread Object.
      */
-    inline Id GetId() const { return id; }
+    inline Id GetId() const;
 
     /**
      \brief register current native thread handle and remember it's Id as Id of MainThread.
@@ -234,6 +234,17 @@ private:
 
     Mutex releaseKillMutex;
 };
+
+
+inline Thread::eThreadState Thread::GetState() const
+{
+    return state;
+}
+
+inline Thread::Id Thread::GetId() const
+{
+    return id;
+}
 
 };
 

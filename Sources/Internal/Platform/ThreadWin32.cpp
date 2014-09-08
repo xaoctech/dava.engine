@@ -36,7 +36,7 @@ namespace DAVA
 
 void Thread::Init()
 {
-
+    handle = NULL;
 }
 
 void Thread::Shutdown()
