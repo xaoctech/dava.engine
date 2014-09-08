@@ -141,6 +141,15 @@ void UITextControlMetadata::SetFontShadowColorInheritType(int /*value*/)
 {
 }
 
+int UITextControlMetadata::GetTextPerPixelAccuracyType() const
+{
+    return UIControlBackground::PER_PIXEL_ACCURACY_DISABLED;
+}
+
+void UITextControlMetadata::SetTextPerPixelAccuracyType(int /*value*/)
+{
+}
+
 int UITextControlMetadata::GetFittingType() const
 {
     return TextBlock::FITTING_DISABLED;

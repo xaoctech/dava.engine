@@ -292,6 +292,9 @@ public:
      */
     const UIMargins* GetMargins() const;
 
+    void SetRenderState(UniqueHandle renderState);
+    UniqueHandle GetRenderState() const;
+
 protected:
     void DrawStretched(const Rect &drawRect, UniqueHandle renderState);
     void DrawTiled(const UIGeometricData &geometricData, UniqueHandle renderState);
@@ -343,6 +346,8 @@ protected:
     Color drawColor;
 
     Shader *shader;
+    
+    UniqueHandle renderState;
 };
 
 // Implementation
@@ -354,6 +359,16 @@ inline void UIControlBackground::SetColor(const Color & _color)
 inline const Color &UIControlBackground::GetColor() const
 {
     return color;
+}
+    
+inline void UIControlBackground::SetRenderState(UniqueHandle _renderState)
+{
+    renderState = _renderState;
+}
+    
+inline UniqueHandle UIControlBackground::GetRenderState() const
+{
+    return renderState;
 }
 
 inline bool UIControlBackground::UIMargins::operator == (const UIControlBackground::UIMargins& value) const

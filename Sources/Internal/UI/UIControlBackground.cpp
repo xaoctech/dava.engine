@@ -57,6 +57,7 @@ UIControlBackground::UIControlBackground()
 ,   texCoordStream(NULL)
 ,	shader(SafeRetain(RenderManager::TEXTURE_MUL_FLAT_COLOR))
 ,   margins(NULL)
+,   renderState(RenderState::RENDERSTATE_2D_BLEND)
 {
 }
 
@@ -292,7 +293,7 @@ void UIControlBackground::Draw(const UIGeometricData &parentGeometricData)
     RenderManager::Instance()->SetColor(drawColor.r, drawColor.g, drawColor.b, drawColor.a);
 
     Sprite::DrawState drawState;
-    drawState.SetRenderState(RenderState::RENDERSTATE_2D_BLEND); // set state explicitly
+    drawState.SetRenderState(renderState);
     if (spr)
     {
         drawState.SetShader(shader);

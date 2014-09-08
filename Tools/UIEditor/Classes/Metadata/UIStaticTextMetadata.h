@@ -96,7 +96,7 @@ protected:
     
     virtual int GetFittingType() const;
     virtual void SetFittingType(int value);
-    
+
     virtual int GetFontShadowColorInheritType() const;
     virtual void SetFontShadowColorInheritType(int value);
 
@@ -117,6 +117,9 @@ protected:
     virtual void SetTextBottomMargin(float value);
 
     virtual UIControlBackground::UIMargins GetTextMarginsToUpdate(UIControl::eControlState state = UIControl::STATE_NORMAL);
+    
+    virtual int GetTextPerPixelAccuracyType() const;
+    virtual void SetTextPerPixelAccuracyType(int value);
 };
 
 };

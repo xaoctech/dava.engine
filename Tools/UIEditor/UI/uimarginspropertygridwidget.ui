@@ -218,6 +218,13 @@
    </property>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>leftDoubleSpinBox</tabstop>
+  <tabstop>topDoubleSpinBox</tabstop>
+  <tabstop>rightDoubleSpinBox</tabstop>
+  <tabstop>bottomDoubleSpinBox</tabstop>
+  <tabstop>resetMarginsButton</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
