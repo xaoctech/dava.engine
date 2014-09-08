@@ -109,6 +109,7 @@ void ValueSlider::DrawForeground(QPainter* p) const
             arrows = QPixmap(arrowSize.width() * 2, arrowSize.height());
             arrows.fill(Qt::transparent);
             QPainter pa(&arrows);
+            pa.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform | QPainter::HighQualityAntialiasing, false);
             pa.drawImage(0, 0, left);
             pa.drawImage(arrowSize.width(), 0, right);
         }
@@ -273,8 +274,8 @@ void ValueSlider::acceptEditing()
     {
         const QString text = editor->text();
 
-        bool ok = false;
-        const double newVal = text.toDouble(&ok);
+        bool ok = true;
+        const double newVal = text.isEmpty() ? 0.0 : text.toDouble(&ok);
         if (ok)
         {
             val = newVal;

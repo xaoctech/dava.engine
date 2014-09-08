@@ -17,10 +17,14 @@ signals:
     void canceled();
     void picked(const QColor& color);
     void moved(const QColor& color);
+    void zoonFactorChanged(int zoom);
 
 public:
     DropperShade( const QImage& src, const QRect& rect );
     ~DropperShade();
+
+public slots:
+    void SetZoomFactor(int zoom);
 
 private slots:
     void OnMouseMove(const QPoint& pos);

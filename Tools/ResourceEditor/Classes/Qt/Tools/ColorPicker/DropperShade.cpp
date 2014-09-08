@@ -2,6 +2,7 @@
 
 #include <QPainter>
 #include <QKeyEvent>
+#include <QCursor>
 
 #include "../Helpers/MouseHelper.h"
 
@@ -20,6 +21,7 @@ DropperShade::DropperShade( const QImage& src, const QRect& rect )
     setCursor(Qt::BlankCursor);
     setFixedSize( rect.size() );
     move( rect.topLeft() );
+    cursorPos = mapFromGlobal(QCursor::pos());
 
     connect(mouse, SIGNAL( mouseMove( const QPoint& ) ), SLOT( OnMouseMove( const QPoint& ) ));
     connect(mouse, SIGNAL( mouseRelease( const QPoint& ) ), SLOT( OnClicked( const QPoint& ) ));
@@ -30,6 +32,15 @@ DropperShade::DropperShade( const QImage& src, const QRect& rect )
 
 DropperShade::~DropperShade()
 {
+}
+
+void DropperShade::SetZoomFactor(int zoom)
+{
+    if ( (sender() != this) && (zoomFactor != zoom) )
+    {
+        zoomFactor = zoom;
+        update();
+    }
 }
 
 void DropperShade::paintEvent(QPaintEvent* e)
@@ -104,7 +115,8 @@ void DropperShade::OnMouseWheel(int delta)
 {
     const int old = zoomFactor;
 
-    const int max = qMin(cursorSize.width(), cursorSize.height());
+    const int maxDpi = 5;
+    const int max = qMin(cursorSize.width() / maxDpi, cursorSize.height() / maxDpi);
     const int sign = delta > 0 ? 1 : -1;
     const double step = (zoomFactor - 1) / 2.0;
 
@@ -117,6 +129,7 @@ void DropperShade::OnMouseWheel(int delta)
     if (old != zoomFactor)
     {
         update();
+        emit zoonFactorChanged(zoomFactor);
     }
 }
 

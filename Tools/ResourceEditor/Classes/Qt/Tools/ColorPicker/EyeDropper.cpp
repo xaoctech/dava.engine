@@ -98,6 +98,17 @@ void EyeDropper::InitShades()
         connect( shade, SIGNAL( picked(const QColor&) ), SLOT( OnDone() ) );
     }
 
+    for (int i = 0; i < shades.size(); i++ )
+    {
+        for (int j = 0; j < shades.size(); j++)
+        {
+            if (i != j)
+            {
+                connect(shades[i], SIGNAL( zoonFactorChanged(int) ), shades[j], SLOT( SetZoomFactor(int) ));
+            }
+        }
+    }
+
 }
 
 void EyeDropper::FindExtraOfs(const ScreenArray& screens, int id, int& l, int& t, int& r, int& b)

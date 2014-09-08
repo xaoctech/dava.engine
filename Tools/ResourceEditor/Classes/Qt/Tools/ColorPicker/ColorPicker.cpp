@@ -1,6 +1,8 @@
 #include "ColorPicker.h"
 #include "ui_ColorPicker.h"
 
+#include <QKeyEvent>
+
 #include "AbstractColorPicker.h"
 #include "ColorPickerHSV.h"
 #include "ColorPickerRGBAM.h"
@@ -18,7 +20,7 @@ ColorPicker::ColorPicker(QWidget* parent)
     , confirmed(false)
 {
     ui->setupUi(this);
-    // posSaver->Attach(this); // Bugs with multiply monitors
+    //posSaver->Attach(this); // Bugs with multiply monitors
 
     setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
     setFocusPolicy(Qt::ClickFocus);
@@ -58,7 +60,8 @@ bool ColorPicker::Exec(const QString& title)
     const Qt::WindowFlags f = windowFlags();
     const Qt::WindowModality m = windowModality();
     setWindowFlags(f | Qt::Dialog);
-    setWindowModality(Qt::WindowModal);
+    setWindowModality(Qt::ApplicationModal);
+    setWindowOpacity(1.0);
     if (!title.isEmpty())
     {
         setWindowTitle(title);
@@ -146,6 +149,7 @@ void ColorPicker::OnDropper()
     dropper = new EyeDropper(this);
     connect(dropper, SIGNAL( picked( const QColor& ) ), SLOT( OnDropperChanged( const QColor& ) ));
     connect(dropper, SIGNAL( picked( const QColor& ) ), SLOT( show() ));
+    connect(dropper, SIGNAL( canceled() ), SLOT( show() ));
     const qreal opacity = windowOpacity();
     setWindowOpacity(0.0);
     hide();
@@ -200,6 +204,21 @@ void ColorPicker::closeEvent(QCloseEvent* e)
     SaveCustomPalette();
 
     QWidget::closeEvent(e);
+}
+
+void ColorPicker::keyPressEvent(QKeyEvent* e)
+{
+    switch(e->key())
+    {
+    case Qt::Key_Escape:
+        close();
+        break;
+    case Qt::Key_Enter:
+        OnOk();
+        break;
+    }
+
+    return QWidget::keyPressEvent(e);
 }
 
 void ColorPicker::LoadCustomPalette()

@@ -54,6 +54,7 @@ private:
     void UpdateControls(const QColor& c, AbstractColorPicker* source = NULL);
     void ConnectPicker(AbstractColorPicker* picker);
     void closeEvent(QCloseEvent* e);
+    void keyPressEvent(QKeyEvent * e);
 
     void LoadCustomPalette();
     void SaveCustomPalette();
