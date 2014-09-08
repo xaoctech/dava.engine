@@ -41,8 +41,7 @@ REGISTER_CLASS(AnimationComponent)
     
 AnimationComponent::AnimationComponent()
 {
-    for (int i = 0; i < EST_COUNT; i++)
-        samplers[i] = NULL;
+
 }
     
 AnimationComponent::~AnimationComponent()
@@ -79,6 +78,16 @@ void AnimationComponent::Deserialize(KeyedArchive *archive, SerializationContext
 	}
 
 	Component::Deserialize(archive, sceneFile);
+}
+
+void AnimationComponent::PlayClip( const String & clipName, bool repeat )
+{
+
+}
+
+void AnimationComponent::SetLocalTransform( const Matrix4 & transform )
+{
+    originalLocalTransform = transform;
 }
 
 };
