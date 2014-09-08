@@ -2,6 +2,7 @@
 #include "ui_ColorPicker.h"
 
 #include <QKeyEvent>
+#include <QDebug>
 
 #include "AbstractColorPicker.h"
 #include "ColorPickerHSV.h"
@@ -213,6 +214,7 @@ void ColorPicker::keyPressEvent(QKeyEvent* e)
     case Qt::Key_Escape:
         close();
         break;
+    case Qt::Key_Return:
     case Qt::Key_Enter:
         OnOk();
         break;
