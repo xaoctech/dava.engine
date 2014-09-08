@@ -58,7 +58,10 @@ class UITextControlMetadata : public UIControlMetadata
 
     // Font color/shadow color inherit types.
     Q_PROPERTY(int FontShadowColorInheritType READ GetFontShadowColorInheritType WRITE SetFontShadowColorInheritType);
-    
+
+    // Font/Shadow per pixel accuracy types
+    Q_PROPERTY(int TextPerPixelAccuracyType READ GetTextPerPixelAccuracyType WRITE SetTextPerPixelAccuracyType);
+
     // Text margins.
     Q_PROPERTY(QRectF TextMargins READ GetTextMargins WRITE SetTextMargins);
     Q_PROPERTY(float TextLeftMargin READ GetTextLeftMargin WRITE SetTextLeftMargin);
@@ -116,8 +119,12 @@ protected:
     virtual void SetTextBottomMargin(float value);
 
     // These methods should not be overriden for the UITextField, that's why not pure virtual.
+    
     virtual int GetFontShadowColorInheritType() const;
     virtual void SetFontShadowColorInheritType(int value);
+
+    virtual int GetTextPerPixelAccuracyType() const;
+    virtual void SetTextPerPixelAccuracyType(int value);
 
     virtual int GetFittingType() const;
     virtual void SetFittingType(int value);

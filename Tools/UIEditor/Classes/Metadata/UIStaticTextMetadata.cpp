@@ -371,6 +371,27 @@ void UIStaticTextMetadata::SetFontShadowColorInheritType(int value)
     GetActiveStaticText()->GetShadowBackground()->SetColorInheritType((UIControlBackground::eColorInheritType)value);
 }
 
+int UIStaticTextMetadata::GetTextPerPixelAccuracyType() const
+{
+    if (!VerifyActiveParamID() || !GetActiveStaticText()->GetTextBackground())
+    {
+        return UIControlBackground::PER_PIXEL_ACCURACY_DISABLED;
+    }
+    
+    return GetActiveStaticText()->GetTextBackground()->GetPerPixelAccuracyType();
+}
+
+void UIStaticTextMetadata::SetTextPerPixelAccuracyType(int value)
+{
+    if (!VerifyActiveParamID() || !GetActiveStaticText()->GetTextBackground())
+    {
+        return;
+    }
+    
+    GetActiveStaticText()->GetTextBackground()->SetPerPixelAccuracyType((UIControlBackground::ePerPixelAccuracyType)value);
+    GetActiveStaticText()->GetShadowBackground()->SetPerPixelAccuracyType((UIControlBackground::ePerPixelAccuracyType)value);
+}
+
 QRectF UIStaticTextMetadata::GetTextMargins() const
 {
     if (!VerifyActiveParamID() || !GetActiveStaticText()->GetTextBackground())
@@ -481,4 +502,3 @@ UIControlBackground::UIMargins UIStaticTextMetadata::GetTextMarginsToUpdate(UICo
     
     return *textMargins;
 }
-
