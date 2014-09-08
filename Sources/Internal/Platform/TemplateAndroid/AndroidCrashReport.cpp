@@ -206,7 +206,7 @@ void AndroidCrashReport::SignalHandler(int signal, struct siginfo *siginfo, void
 	Vector<JniCrashReporter::CrashStep> crashSteps;
 #ifdef TEAMCITY_BUILD_TYPE_ID
 	JniCrashReporter::CrashStep buildId;
-	step.module = TEAMCITY_BUILD_TYPE_ID;
+	buildId.module = TEAMCITY_BUILD_TYPE_ID;
 	crashSteps.push_back(buildId);
 #endif
 	if (unwind_backtrace_signal_arch != NULL)
