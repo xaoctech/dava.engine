@@ -97,6 +97,8 @@ void GradientSlider::DrawForeground(QPainter* p) const
         break;
     }
 
+    p->setRenderHints( QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform | QPainter::HighQualityAntialiasing, false );
+
     if (flags.testFlag(TOP_EDGE))
         drawArrow(TOP_EDGE, p);
     if (flags.testFlag(LEFT_EDGE))
