@@ -42,14 +42,14 @@ REGISTER_CLASS(AnimationComponent)
     
 AnimationComponent::AnimationComponent()
 :time(0.0f),
-activeClip(NULL),
-isPlaying(false)
+isPlaying(true),
+animation(NULL)
 {
 }
     
 AnimationComponent::~AnimationComponent()
 {
-
+    SafeRelease(animation);
 }
 
 Component * AnimationComponent::Clone(Entity * toEntity)
@@ -59,13 +59,8 @@ Component * AnimationComponent::Clone(Entity * toEntity)
     newAnimation->originalMatrix = originalMatrix;
     newAnimation->originalTranslate = originalTranslate;
     newAnimation->time = time;
-    newAnimation->isPlaying = false;
-
-    for (Map<String, SceneNodeAnimation*>::iterator it = clipsMap.begin(); it != clipsMap.end(); ++it)
-    {
-        newAnimation->clipsMap[it->first] = it->second->Clone();
-    }
-    newAnimation->activeClip = NULL;
+    newAnimation->isPlaying = true;
+    newAnimation->animation = animation ? animation->Clone() : NULL;
     return newAnimation;
 }
 
@@ -77,12 +72,14 @@ void AnimationComponent::Serialize(KeyedArchive *archive, SerializationContext *
 
 	if(NULL != archive)
 	{
-        archive->SetMatrix4("ac.originalMatrix", originalMatrix);
-        archive->SetVector3("ac.originalTranslate", originalTranslate);
-
-
-// 		archive->SetMatrix4("tc.localMatrix", localMatrix);
-// 		archive->SetMatrix4("tc.worldMatrix", worldMatrix);
+        archive->SetFloat("duration", animation->duration);
+        archive->SetInt32("keyCount", animation->keyCount);
+        for (int32 keyIndex = 0; keyIndex < animation->keyCount; ++keyIndex)
+        {
+            archive->SetFloat(Format("key_%i_time", keyIndex), animation->keys[keyIndex].time);
+            archive->SetVector3(Format("key_%i_translation", keyIndex), animation->keys[keyIndex].translation);
+            archive->SetVector4(Format("key_%i_rotation", keyIndex), Vector4(animation->keys[keyIndex].rotation.x, animation->keys[keyIndex].rotation.y, animation->keys[keyIndex].rotation.z, animation->keys[keyIndex].rotation.w));
+        }
 	}
 }
 
@@ -90,6 +87,24 @@ void AnimationComponent::Deserialize(KeyedArchive *archive, SerializationContext
 {
 	if(NULL != archive)
 	{
+        const int32 keyCount = archive->GetInt32("keyCount");
+
+        SafeRelease(animation);
+        animation = new SceneNodeAnimation(keyCount);
+
+        animation->SetDuration(archive->GetFloat("duration"));
+
+        for (int32 keyIndex = 0; keyIndex < keyCount; ++keyIndex)
+        {
+            SceneNodeAnimationKey key;
+
+            key.time = archive->GetFloat(Format("key_%i_time", keyIndex));
+            key.translation = archive->GetVector3(Format("key_%i_translation", keyIndex));
+            Vector4 rotation = archive->GetVector4(Format("key_%i_rotation", keyIndex));
+            key.rotation = Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
+
+            animation->SetKey(keyIndex, key);
+        }
 // 		localMatrix = archive->GetMatrix4("tc.localMatrix", Matrix4::IDENTITY);
 // 		worldMatrix = archive->GetMatrix4("tc.worldMatrix", Matrix4::IDENTITY);
 	}
@@ -97,22 +112,18 @@ void AnimationComponent::Deserialize(KeyedArchive *archive, SerializationContext
 	Component::Deserialize(archive, sceneFile);
 }
 
-void AnimationComponent::PlayClip( const String & clipName, bool repeat )
-{
-    Map<String, SceneNodeAnimation*>::iterator it = clipsMap.find(clipName);
-    if (it != clipsMap.end())
-    {
-        time = 0;
-        activeClip = it->second;
-        isPlaying = true;
-    }
-}
-
 void AnimationComponent::SetLocalTransform( const Matrix4 & transform )
 {
     originalMatrix = transform;
     originalTranslate = originalMatrix.GetTranslationVector();
     originalMatrix.SetTranslationVector(Vector3());
+}
+
+void AnimationComponent::SetAnimation(SceneNodeAnimation* _animation)
+{
+    SafeRetain(_animation);
+    SafeRelease(animation);
+    animation = _animation;
 }
 
 };

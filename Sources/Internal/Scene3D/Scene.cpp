@@ -69,6 +69,7 @@
 #include "Scene3D/Systems/SkyboxSystem.h"
 #include "Scene3D/Systems/WindSystem.h"
 #include "Scene3D/Systems/WaveSystem.h"
+#include "Scene3D/Systems/AnimationSystem.h"
 
 #include "Sound/SoundSystem.h"
 
@@ -119,6 +120,7 @@ Scene::Scene(uint32 _systemsMask /* = SCENE_SYSTEM_ALL_MASK */)
 	, materialSystem(0)
     , foliageSystem(0)
     , windSystem(0)
+    , animationSystem(0)
     , staticOcclusionDebugDrawSystem(0)
 	, sceneGlobalMaterial(0)
     , isDefaultGlobalMaterial(true)
@@ -355,6 +357,12 @@ void Scene::CreateSystems()
         waveSystem = new WaveSystem(this);
         AddSystem(waveSystem, (1 << Component::WAVE_COMPONENT), true);
     }
+
+    if(SCENE_SYSTEM_ANIMATION_FLAG & systemsMask)
+    {
+        animationSystem = new AnimationSystem(this);
+        AddSystem(animationSystem, (1 << Component::ANIMATION_COMPONENT), true);
+    }
 }
 
 Scene::~Scene()
@@ -408,6 +416,7 @@ Scene::~Scene()
     foliageSystem = 0;
     windSystem = 0;
     waveSystem = 0;
+    animationSystem = 0;
     
     uint32 size = (uint32)systems.size();
     for (uint32 k = 0; k < size; ++k)

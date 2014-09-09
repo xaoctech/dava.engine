@@ -55,6 +55,8 @@ public:
 
     virtual void Process(float32 timeElapsed);
 
+    virtual void RegisterComponent(Entity* entity, Component* component) override;
+    virtual void UnregisterComponent(Entity* entity, Component* component) override;
 private:
     Vector<AnimationComponent*> items;
 };

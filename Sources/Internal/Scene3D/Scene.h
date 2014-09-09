@@ -84,6 +84,7 @@ class SpeedTreeUpdateSystem;
 class FoliageSystem;
 class WindSystem;
 class WaveSystem;
+class AnimationSystem;
     
 /**
     \ingroup scene3d
@@ -118,6 +119,7 @@ public:
         SCENE_SYSTEM_SPEEDTREE_UPDATE_FLAG  = 1 << 14,
         SCENE_SYSTEM_WIND_UPDATE_FLAG       = 1 << 15,
         SCENE_SYSTEM_WAVE_UPDATE_FLAG       = 1 << 16,
+        SCENE_SYSTEM_ANIMATION_FLAG         = 1 << 17,
 
         SCENE_SYSTEM_ALL_MASK               = 0xFFFFFFFF
     };
@@ -170,6 +172,7 @@ public:
     VersionInfo::SceneVersion version;
     WindSystem * windSystem;
     WaveSystem * waveSystem;
+    AnimationSystem * animationSystem;
     StaticOcclusionDebugDrawSystem *staticOcclusionDebugDrawSystem;
     
     /**

@@ -60,17 +60,40 @@ void AnimationSystem::Process(float32 timeElapsed)
     for (it = items.begin(), endit = items.end(); it!= endit; ++it)
     {
         AnimationComponent * comp = *it;
-        if (comp->isPlaying && comp->activeClip)
+        if (comp->isPlaying && comp->animation)
         {
             comp->time += timeElapsed;
 
+            if (comp->time > comp->animation->duration)
+                comp->time = 0.0f;
+
             DAVA::Matrix3 rotationMatrix;
             DAVA::Matrix3 resultMatrix;
-            SceneNodeAnimationKey & key = comp->activeClip->Intepolate(comp->time);
+            SceneNodeAnimationKey & key = comp->animation->Intepolate(comp->time);
             Matrix4 result(key.rotation.GetMatrix() * comp->originalMatrix);
             result.SetTranslationVector(comp->originalTranslate + key.translation);
             ((TransformComponent*)(comp->GetEntity()->GetComponent(Component::TRANSFORM_COMPONENT)))->SetLocalTransform(&result);
         }
+    }
+}
+
+void AnimationSystem::RegisterComponent(Entity* entity, Component* component)
+{
+    if (component->GetType() == Component::ANIMATION_COMPONENT)
+    {
+        items.push_back(static_cast< AnimationComponent* >(component));
+    }
+}
+
+void AnimationSystem::UnregisterComponent(Entity* entity, Component* component)
+{
+    if (component->GetType() == Component::ANIMATION_COMPONENT)
+    {
+        for (uint32 i = 0; i < items.size(); ++i)
+        {
+            items[i] = items.back();
+        }
+        items.pop_back();
     }
 }
 
@@ -89,30 +112,14 @@ void AnimationSystem::ImmediateEvent(Entity * entity, uint32 event)
 
 void AnimationSystem::AddEntity(Entity * entity)
 {
-// 	TransformComponent * transform = (TransformComponent*)entity->GetComponent(Component::TRANSFORM_COMPONENT);
-// 	if (!transform) return; //just in case
-// 	if(transform->parentMatrix)	
-// 		transform->worldMatrix = transform->localMatrix * *(transform->parentMatrix);
-// 	else
-// 		transform->worldMatrix = transform->localMatrix;
+    if (entity->GetComponent(Component::ANIMATION_COMPONENT))
+        RegisterComponent(entity, entity->GetComponent(Component::ANIMATION_COMPONENT));
 }
 
 void AnimationSystem::RemoveEntity(Entity * entity)
 {
-	//TODO: use hashmap
-// 	uint32 size = updatableEntities.size();
-// 	for(uint32 i = 0; i < size; ++i)
-// 	{
-// 		if(updatableEntities[i] == entity)
-// 		{
-// 			entity->RemoveFlag(Entity::TRANSFORM_NEED_UPDATE);
-// 			entity->RemoveFlag(Entity::TRANSFORM_DIRTY);
-// 
-// 			updatableEntities[i] = updatableEntities[size-1];
-// 			updatableEntities.pop_back();
-// 			return;
-// 		}
-// 	}
+    if (entity->GetComponent(Component::ANIMATION_COMPONENT))
+        UnregisterComponent(entity, entity->GetComponent(Component::ANIMATION_COMPONENT));
 }
 
 };
