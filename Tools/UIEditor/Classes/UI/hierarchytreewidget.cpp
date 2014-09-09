@@ -52,6 +52,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QInputDialog>
+#include <QKeyEvent>
 
 #define ITEM_ID 0, Qt::UserRole
 
@@ -82,6 +83,7 @@ HierarchyTreeWidget::HierarchyTreeWidget(QWidget *parent) :
 	connect(ui->treeWidget, SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT(OnTreeItemChanged(QTreeWidgetItem*, int)));
 	
 	InitializeTreeWidgetActions();
+    installEventFilter(this);
 
 	internalSelectionChanged = false;
 }
@@ -961,5 +963,21 @@ HierarchyTreeControlNode* HierarchyTreeWidget::GetControlNodeByTreeItem(QTreeWid
 	HierarchyTreeNode::HIERARCHYTREENODEID id = data.toInt();
 	
 	return dynamic_cast<HierarchyTreeControlNode*>(HierarchyTreeController::Instance()->GetTree().GetNode(id));
+}
+
+bool HierarchyTreeWidget::eventFilter(QObject *target, QEvent *event)
+{
+    if (event->type() != QEvent::KeyPress || target != this)
+    {
+        return QWidget::eventFilter(target, event);
+    }
+
+    QKeyEvent* keyEvent = (QKeyEvent*)event;
+    if (keyEvent->key() == Qt::Key_Delete || keyEvent->key() == Qt::Key_Backspace)
+    {
+        OnDeleteControlAction();
+    }
+
+	return QWidget::eventFilter(target, event);
 }
 
