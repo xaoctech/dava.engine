@@ -34,13 +34,17 @@
 #include <time.h>
 #include <errno.h>
 
+#if defined (__DAVAENGINE_ANDROID__)
+#include "Platform/TemplateAndroid/CorePlatformAndroid.h"
+#endif
+
 #if defined (__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
 #import <Foundation/NSAutoreleasePool.h>
 #endif
 
 namespace DAVA
 {
-// becouse android have no way to kill a thread, we will use signal to determine
+// android have no way to kill a thread, so we will use signal to determine
 // if we need to end thread
 #if defined (__DAVAENGINE_ANDROID__)
 void Thread::thread_exit_handler(int sig)
@@ -110,13 +114,13 @@ void *PthreadMain(void *param)
 #endif
 
 #if defined (__DAVAENGINE_ANDROID__)
-    AttachToJVM();
+    Thread::AttachToJVM();
 #endif
     
     Thread::ThreadFunction(param);
 
 #if defined (__DAVAENGINE_ANDROID__)
-    DetachFromJVM();
+    Thread::DetachFromJVM();
 #endif
 
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
