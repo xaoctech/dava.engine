@@ -331,7 +331,6 @@ Font::StringMetrics FTInternalFont::DrawString(const WideString& str, void * buf
 
 	int32 faceBboxYMin = FT_MulFix(face->bbox.yMin, face->size->metrics.y_scale);
 	int32 faceBboxYMax = FT_MulFix(face->bbox.yMax, face->size->metrics.y_scale);
-	int32 faceBboxXMin = FT_MulFix(face->bbox.xMin, face->size->metrics.y_scale);
 	
 	if(!contentScaleIncluded) 
 	{
