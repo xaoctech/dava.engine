@@ -75,5 +75,26 @@ void JobInstanceWaiter::Wait()
 	}
 }
 
+//////
+TaggedWorkerJobsWaiter::TaggedWorkerJobsWaiter(int32 _tag)
+    :   tag(_tag)
+{
+}
+
+TaggedWorkerJobsWaiter::~TaggedWorkerJobsWaiter()
+{
+//    JobScheduler::Instance()->UnregisterWaiter(this);
+}
+
+void TaggedWorkerJobsWaiter::Wait()
+{
+//    if(JobManager::WAITER_WILL_WAIT == JobScheduler::Instance()->RegisterWaiterAndWait(this))
+    {
+        Thread::Wait(&cv, &mutex);
+        mutex.Unlock();
+    }
+}
+
+
 
 }
