@@ -715,42 +715,65 @@ void HierarchyTreeWidget::OnDeleteControlAction()
 	if (!items.size())
 		return;
 
-	bool needConfirm = false;
-	bool needDeleteFiles = false;
-
 	// DF-1273 - Remove all child nodes. We don't have to remove them here.
-	QList<QTreeWidgetItem*> parentItems(items);
+    // Convert nodes to items.
+    HierarchyTreeNode::HIERARCHYTREENODESLIST selectedNodes;
 	for (QList<QTreeWidgetItem*>::iterator iter = items.begin(); iter != items.end(); ++iter)
 	{
 		HierarchyTreeNode* node = GetNodeFromTreeItem(*iter);
-		
-		if (!node)
-			continue;
-				
-		for (QList<QTreeWidgetItem*>::iterator innerIter = items.begin(); innerIter != items.end(); ++innerIter)
-		{
-			HierarchyTreeNode* innerNode = GetNodeFromTreeItem(*innerIter);
-				
-			if (node->IsHasChild(innerNode))
-			{
-				parentItems.removeOne(*innerIter);
-			}
-		}
-	}	
+		if (node)
+        {
+            selectedNodes.push_back(node);
+        }
+    }
+    
+    DeleteNodes(selectedNodes);
+}
 
-	HierarchyTreeNode::HIERARCHYTREENODESLIST nodes;
-	for (QList<QTreeWidgetItem*>::iterator iter = parentItems.begin(); iter != parentItems.end(); ++iter)
+void HierarchyTreeWidget::OnDeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST& selectedNodes)
+{
+	DeleteNodes(selectedNodes);
+}
+
+void HierarchyTreeWidget::DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST& selectedNodes)
+{
+    // Remove the child nodes - leave parent ones only. Need to work with separate list to don't break iterators.
+    HierarchyTreeNode::HIERARCHYTREENODESLIST parentNodes(selectedNodes);
+    for (HierarchyTreeNode::HIERARCHYTREENODESCONSTITER parentIter = selectedNodes.begin();
+        parentIter != selectedNodes.end(); ++parentIter)
 	{
-		HierarchyTreeNode* node = GetNodeFromTreeItem(*iter);
-		
+		HierarchyTreeNode *parentNode = (*parentIter);
+		for (HierarchyTreeNode::HIERARCHYTREENODESCONSTITER innerIter = selectedNodes.begin();
+             innerIter != selectedNodes.end(); ++innerIter)
+		{
+            if (false == parentNode->IsHasChild(*innerIter))
+            {
+                continue;
+            }
+
+            HierarchyTreeNode::HIERARCHYTREENODESITER parentNodeIter = std::find(parentNodes.begin(), parentNodes.end(), *innerIter);
+            if (parentNodeIter != parentNodes.end())
+            {
+                parentNodes.erase(parentNodeIter);
+            }
+		}
+	}
+
+    bool needConfirm = false;
+    bool needDeleteFiles = false;
+    HierarchyTreeNode::HIERARCHYTREENODESLIST nodes;
+	for (HierarchyTreeNode::HIERARCHYTREENODESITER iter = parentNodes.begin(); iter != parentNodes.end(); ++iter)
+	{
+		HierarchyTreeNode* node = (*iter);
+    
 		HierarchyTreeAggregatorNode* aggregatorNode = dynamic_cast<HierarchyTreeAggregatorNode*>(node);
 		if (aggregatorNode)
 		{
 			const HierarchyTreeAggregatorNode::CHILDS& childs = aggregatorNode->GetChilds();
 			needConfirm |= (childs.size() > 0);
-			for (HierarchyTreeAggregatorNode::CHILDS::const_iterator iter = childs.begin(); iter != childs.end(); ++iter)
+			for (HierarchyTreeAggregatorNode::CHILDS::const_iterator innerIter = childs.begin(); innerIter != childs.end(); ++innerIter)
 			{
-				nodes.push_back((*iter));
+				nodes.push_back((*innerIter));
 			}
 		}
 
