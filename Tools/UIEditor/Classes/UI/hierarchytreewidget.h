@@ -112,6 +112,8 @@ private:
 	HierarchyTreeControlNode* GetControlNodeByTreeItem(QTreeWidgetItem* item);
 	void UpdateVisibleFlagRecursive(QTreeWidgetItem* rootItem, int column, bool flagValue);
 
+    virtual bool eventFilter(QObject *target, QEvent *event);
+
 private:
 	bool internalSelectionChanged;
     Ui::HierarchyTreeWidget *ui;
