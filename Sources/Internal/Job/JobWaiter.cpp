@@ -48,7 +48,9 @@ void ThreadIdJobWaiter::Wait()
 {
 	if(JobManager::WAITER_WILL_WAIT == JobManager::Instance()->RegisterWaiterForCreatorThread(this))
 	{
-		Thread::Wait(&cv);
+        Mutex mutex;
+        mutex.Lock();
+		Thread::Wait(&cv, &mutex);
 	}
 }
 
@@ -67,7 +69,9 @@ void JobInstanceWaiter::Wait()
 {
 	if(JobManager::WAITER_WILL_WAIT == JobManager::Instance()->RegisterWaiterForJobInstance(this))
 	{
-		Thread::Wait(&cv);
+        Mutex mutex;
+        mutex.Lock();
+		Thread::Wait(&cv, &mutex);
 	}
 }
 
