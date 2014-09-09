@@ -70,8 +70,8 @@ public:
 	Vector3 SetStartPosition(const Vector3 & position);
 	void ShiftStartPosition(const Vector3 & position);
 	
-	SceneNodeAnimation * Clone();
-
+    SceneNodeAnimation* Clone() const;
+	
 	// this is node of animation this animation is supposed for
 	Entity * bindNode;
 	FastName bindName;

@@ -66,7 +66,6 @@ eColladaErrorCodes ColladaDocument::Open( const char * filename )
 	colladaScene = new ColladaScene(loadedRootNode);
 
 	FCDGeometryLibrary * geometryLibrary = document->GetGeometryLibrary();
-
 	
 	DAVA::Logger::FrameworkDebug("* Export geometry: %d\n", (int)geometryLibrary->GetEntityCount());
 	for (int entityIndex = 0; entityIndex < (int)geometryLibrary->GetEntityCount(); ++entityIndex)
@@ -121,8 +120,8 @@ eColladaErrorCodes ColladaDocument::Open( const char * filename )
 	FCDAnimationLibrary * animationLibrary = document->GetAnimationLibrary();
 	FCDAnimationClipLibrary * animationClipLibrary = document->GetAnimationClipLibrary();
 	DAVA::Logger::FrameworkDebug("[A] Animations:%d Clips:%d\n", animationLibrary->GetEntityCount(), animationClipLibrary->GetEntityCount());
-	
-	
+
+
 	FCDControllerLibrary * controllerLibrary = document->GetControllerLibrary();
 	
 	DAVA::Logger::FrameworkDebug("* Export animation controllers: %d\n", controllerLibrary->GetEntityCount());
@@ -808,9 +807,12 @@ void ColladaDocument::WriteNodeAnimationList(ColladaAnimation * animation)
 		ColladaSceneNode * node = it->first;
 		SceneNodeAnimation * anim = it->second;
 		
-		char name[512];
-		strcpy(name, node->originalNode->GetDaeId().c_str());
-		fwrite(name, strlen(name) + 1, 1, sceneFP);
+        std::string name(node->originalNode->GetDaeId());
+        if (name.find("node-") == 0)
+        {//if node name begins from "node-"
+            name = name.substr(strlen("node-"));
+        }
+        fwrite(name.c_str(), name.length() + 1, 1, sceneFP);
 		
 		float32 duration = anim->GetDuration();
 		fwrite(&duration, sizeof(float32), 1, sceneFP);

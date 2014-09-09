@@ -54,18 +54,17 @@ public:
 	virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
 	virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
 
-    void PlayClip(const String & clipName, bool repeat);
     void SetLocalTransform(const Matrix4 & transform);
 
+    void SetAnimation(SceneNodeAnimation* animation);
 private:
 
 	friend class AnimationSystem;
-    Map<String, SceneNodeAnimation*> clipsMap;
+    SceneNodeAnimation* animation;
     Matrix4 originalMatrix;
     Vector3 originalTranslate;
     float32 time;
     bool isPlaying;
-    SceneNodeAnimation * activeClip;
 public:
 
 //     INTROSPECTION_EXTEND(TransformComponent, Component,

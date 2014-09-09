@@ -162,9 +162,17 @@ SceneNodeAnimationList * SceneNodeAnimation::GetParent()
 	return parent;
 }
 
-SceneNodeAnimation * SceneNodeAnimation::Clone()
+SceneNodeAnimation* SceneNodeAnimation::Clone() const
 {
-    return NULL;
+    SceneNodeAnimation* copy = new SceneNodeAnimation(keyCount);
+
+    copy->duration = duration;
+    for (int32 keyIndex = 0; keyIndex < keyCount; ++keyIndex)
+    {
+        copy->keys[keyIndex] = keys[keyIndex];
+    }
+
+    return copy;
 }
 
 }
