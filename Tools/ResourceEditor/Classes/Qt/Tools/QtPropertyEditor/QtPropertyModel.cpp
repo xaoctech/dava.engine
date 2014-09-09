@@ -327,7 +327,7 @@ void QtPropertyModel::DataChanged(QtPropertyData *data, int reason)
 	{
 		if(reason != QtPropertyData::VALUE_EDITED)
 		{
-			emit dataChanged(index.sibling(index.row(), 0), index);
+			emit dataChanged(index.sibling(index.row(), 0), index.sibling(index.row(), 1));
 		}
 
 		if(trackEdit)
