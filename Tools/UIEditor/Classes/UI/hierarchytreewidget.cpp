@@ -707,34 +707,31 @@ void HierarchyTreeWidget::OnRenameControlAction()
 
 void HierarchyTreeWidget::OnDeleteControlAction()
 {
-	// Do not handle to avoid double delete action
-	if (!ui->treeWidget->hasFocus())
-	{
-		return;
-	}
-	
-	QList<QTreeWidgetItem*> items = ui->treeWidget->selectedItems();
-	if (!items.size())
-		return;
+    // Do not handle to avoid double delete action
+    if (!ui->treeWidget->hasFocus())
+    {
+        return;
+    }
 
-	// DF-1273 - Remove all child nodes. We don't have to remove them here.
+    QList<QTreeWidgetItem*> items = ui->treeWidget->selectedItems();
+    if (!items.size())
+        return;
+
+    // DF-1273 - Remove all child nodes. We don't have to remove them here.
     // Convert nodes to items.
     HierarchyTreeNode::HIERARCHYTREENODESLIST selectedNodes;
-	for (QList<QTreeWidgetItem*>::iterator iter = items.begin(); iter != items.end(); ++iter)
-	{
-		HierarchyTreeNode* node = GetNodeFromTreeItem(*iter);
-		if (node)
-        {
-            selectedNodes.push_back(node);
-        }
+    for (QList<QTreeWidgetItem*>::iterator iter = items.begin(); iter != items.end(); ++iter)
+    {
+        HierarchyTreeNode* node = GetNodeFromTreeItem(*iter);
+        selectedNodes.push_back(node);
     }
-    
+
     DeleteNodes(selectedNodes);
 }
 
 void HierarchyTreeWidget::OnDeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST& selectedNodes)
 {
-	DeleteNodes(selectedNodes);
+    DeleteNodes(selectedNodes);
 }
 
 void HierarchyTreeWidget::DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST& selectedNodes)
@@ -743,90 +740,99 @@ void HierarchyTreeWidget::DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODE
     HierarchyTreeNode::HIERARCHYTREENODESLIST parentNodes(selectedNodes);
     for (HierarchyTreeNode::HIERARCHYTREENODESCONSTITER parentIter = selectedNodes.begin();
         parentIter != selectedNodes.end(); ++parentIter)
-	{
-		HierarchyTreeNode *parentNode = (*parentIter);
-		for (HierarchyTreeNode::HIERARCHYTREENODESCONSTITER innerIter = selectedNodes.begin();
-             innerIter != selectedNodes.end(); ++innerIter)
-		{
+    {
+        HierarchyTreeNode *parentNode = (*parentIter);
+        HierarchyTreeControlNode* controlNode = dynamic_cast<HierarchyTreeControlNode*>(parentNode);
+        if (controlNode && !IsDeleteNodeAllowed(controlNode))
+        {
+            parentNodes.remove(parentNode);
+            continue;
+        }
+
+        for (HierarchyTreeNode::HIERARCHYTREENODESCONSTITER innerIter = selectedNodes.begin();
+            innerIter != selectedNodes.end(); ++innerIter)
+        {
             if (false == parentNode->IsHasChild(*innerIter))
             {
                 continue;
             }
 
-            HierarchyTreeNode::HIERARCHYTREENODESITER parentNodeIter = std::find(parentNodes.begin(), parentNodes.end(), *innerIter);
-            if (parentNodeIter != parentNodes.end())
-            {
-                parentNodes.erase(parentNodeIter);
-            }
-		}
-	}
+            parentNodes.remove(parentNode);
+        }
+    }
 
     bool needConfirm = false;
     bool needDeleteFiles = false;
     HierarchyTreeNode::HIERARCHYTREENODESLIST nodes;
-	for (HierarchyTreeNode::HIERARCHYTREENODESITER iter = parentNodes.begin(); iter != parentNodes.end(); ++iter)
-	{
-		HierarchyTreeNode* node = (*iter);
-    
-		HierarchyTreeAggregatorNode* aggregatorNode = dynamic_cast<HierarchyTreeAggregatorNode*>(node);
-		if (aggregatorNode)
-		{
-			const HierarchyTreeAggregatorNode::CHILDS& childs = aggregatorNode->GetChilds();
-			needConfirm |= (childs.size() > 0);
-			for (HierarchyTreeAggregatorNode::CHILDS::const_iterator innerIter = childs.begin(); innerIter != childs.end(); ++innerIter)
-			{
-				nodes.push_back((*innerIter));
-			}
-		}
+    for (HierarchyTreeNode::HIERARCHYTREENODESITER iter = parentNodes.begin(); iter != parentNodes.end(); ++iter)
+    {
+        HierarchyTreeNode* node = (*iter);
 
-		if (aggregatorNode ||
-			dynamic_cast<HierarchyTreeScreenNode*>(node) ||
-			dynamic_cast<HierarchyTreePlatformNode*>(node))
-		{
-			QMessageBox messageBox;
-			messageBox.setText(tr("Delete nodes"));
-			messageBox.setInformativeText(tr("Do you want to remove selected nodes only from project, or delete their files from disk?"));
-			QAbstractButton* removeFromProjectButton = (QAbstractButton*)messageBox.addButton(tr("Remove from project"),
-																							  QMessageBox::YesRole);
-			QAbstractButton* deleteFromProjectButton = (QAbstractButton*)messageBox.addButton(tr("Delete from disk"),
-																							  QMessageBox::YesRole);
-			QAbstractButton* cancelButton = (QAbstractButton*)messageBox.addButton(tr("Cancel"),
-																				   QMessageBox::RejectRole);
-			messageBox.setDefaultButton((QPushButton*)removeFromProjectButton);
-			messageBox.setIcon(QMessageBox::Question);
-			messageBox.exec();
+        HierarchyTreeAggregatorNode* aggregatorNode = dynamic_cast<HierarchyTreeAggregatorNode*>(node);
+        if (aggregatorNode)
+        {
+            const HierarchyTreeAggregatorNode::CHILDS& childs = aggregatorNode->GetChilds();
+            needConfirm |= (childs.size() > 0);
+            for (HierarchyTreeAggregatorNode::CHILDS::const_iterator innerIter = childs.begin(); innerIter != childs.end(); ++innerIter)
+            {
+                nodes.push_back((*innerIter));
+            }
+        }
 
-			if (messageBox.clickedButton() == removeFromProjectButton)
-			{
-				Logger::Debug("removeFromProjectButton");
-			}
-			if (messageBox.clickedButton() == deleteFromProjectButton)
-			{
-				needDeleteFiles = true;
-				Logger::Debug("deleteFromProjectButton");
-			}
-			if (messageBox.clickedButton() == cancelButton)
-			{
-				Logger::Debug("cancelButton");
-				return;
-			}
-		}
-		
-		nodes.push_front(node);
-	}
-	
-	if (needConfirm)
-	{
-		if (QMessageBox::No == QMessageBox::information(this,
-								 "",
-								 "Selected aggregator control has child controls. Do you want delete aggregator with all child controls?",
-								 QMessageBox::Yes | QMessageBox::No))
-			return;
-	}
-	
-	DeleteSelectedNodeCommand* cmd = new DeleteSelectedNodeCommand(nodes, needDeleteFiles);
-	CommandsController::Instance()->ExecuteCommand(cmd);
-	SafeRelease(cmd);
+        if (aggregatorNode ||
+            dynamic_cast<HierarchyTreeScreenNode*>(node) ||
+            dynamic_cast<HierarchyTreePlatformNode*>(node))
+        {
+            QMessageBox messageBox;
+            messageBox.setText(tr("Delete nodes"));
+            messageBox.setInformativeText(tr("Do you want to remove selected nodes only from project, or delete their files from disk?"));
+            QAbstractButton* removeFromProjectButton = (QAbstractButton*)messageBox.addButton(tr("Remove from project"),
+                QMessageBox::YesRole);
+            QAbstractButton* deleteFromProjectButton = (QAbstractButton*)messageBox.addButton(tr("Delete from disk"),
+                QMessageBox::YesRole);
+            QAbstractButton* cancelButton = (QAbstractButton*)messageBox.addButton(tr("Cancel"),
+                QMessageBox::RejectRole);
+            messageBox.setDefaultButton((QPushButton*)removeFromProjectButton);
+            messageBox.setIcon(QMessageBox::Question);
+            messageBox.exec();
+
+            if (messageBox.clickedButton() == removeFromProjectButton)
+            {
+                Logger::Debug("removeFromProjectButton");
+            }
+            if (messageBox.clickedButton() == deleteFromProjectButton)
+            {
+                needDeleteFiles = true;
+                Logger::Debug("deleteFromProjectButton");
+            }
+            if (messageBox.clickedButton() == cancelButton)
+            {
+                Logger::Debug("cancelButton");
+                return;
+            }
+        }
+
+        nodes.push_front(node);
+    }
+
+    if (needConfirm)
+    {
+        if (QMessageBox::No == QMessageBox::information(this,
+            "",
+            "Selected aggregator control has child controls. Do you want delete aggregator with all child controls?",
+            QMessageBox::Yes | QMessageBox::No))
+            return;
+    }
+
+    if (nodes.empty())
+    {
+        // Nothing to delete.
+        return;
+    }
+
+    DeleteSelectedNodeCommand* cmd = new DeleteSelectedNodeCommand(nodes, needDeleteFiles);
+    CommandsController::Instance()->ExecuteCommand(cmd);
+    SafeRelease(cmd);
 }
 
 void HierarchyTreeWidget::OnImportScreenOrAggregatorAction()
