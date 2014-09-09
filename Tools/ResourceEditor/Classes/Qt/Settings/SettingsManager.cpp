@@ -103,6 +103,8 @@ void SettingsManager::Init()
 	CreateValue(Settings::Internal_LODEditorMode, DAVA::VariantType((bool) false));
     CreateValue(DAVA::FastName("Internal/RunActionEventWidget/CurrentType"), DAVA::VariantType((DAVA::uint32)0));
     CreateValue(DAVA::FastName("Internal/Beast/LightmapsDefaultDir"), DAVA::VariantType(DAVA::String("lightmaps")));
+    CreateValue(Settings::Internal_ImageSplitterPath, DAVA::VariantType(DAVA::String("")));
+    CreateValue(Settings::Internal_ImageSplitterPathSpecular, DAVA::VariantType(DAVA::String("")));
 }
 
 DAVA::VariantType SettingsManager::GetValue(const DAVA::FastName& path)
