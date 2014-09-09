@@ -36,6 +36,7 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
 #include "Debug/Stats.h"
+#include "Scene3D/SceneNodeAnimation.h"
 
 namespace DAVA
 {
@@ -54,26 +55,22 @@ AnimationSystem::~AnimationSystem()
 void AnimationSystem::Process(float32 timeElapsed)
 {
     TIME_PROFILE("TransformSystem::Process");
-    
-//     passedNodes = 0;
-//     multipliedNodes = 0;
-//     
-//     uint32 size = updatableEntities.size();
-//     for(uint32 i = 0; i < size; ++i)
-//     {
-//         //HierahicFindUpdatableTransform(updatableEntities[i]);
-//         FindNodeThatRequireUpdate(updatableEntities[i]);
-//     }
-//     
-//     GlobalEventSystem::Instance()->GroupEvent(GetScene(), sendEvent, EventSystem::WORLD_TRANSFORM_CHANGED);
-//     sendEvent.clear();
-//     
-//     updatableEntities.clear();
-//     
-//     if(passedNodes)
-//     {
-//         //		Logger::Info("TransformSystem %d passed %d multiplied", passedNodes, multipliedNodes);
-//     }
+    Vector<AnimationComponent*>::iterator it, endit;
+    for (it = items.begin(), endit = items.end(); it!= endit; ++it)
+    {
+        AnimationComponent * comp = *it;
+        if (comp->isPlaying && comp->activeClip)
+        {
+            comp->time += timeElapsed;
+
+            DAVA::Matrix3 rotationMatrix;
+            DAVA::Matrix3 resultMatrix;
+            SceneNodeAnimationKey & key = comp->activeClip->Intepolate(comp->time);
+            Matrix4 result(key.rotation.GetMatrix() * comp->originalMatrix);
+            result.SetTranslationVector(comp->originalTranslate + key.translation);
+            comp->GetEntity()->SetLocalTransform(result);
+        }
+    }
 }
 
 void AnimationSystem::ImmediateEvent(Entity * entity, uint32 event)

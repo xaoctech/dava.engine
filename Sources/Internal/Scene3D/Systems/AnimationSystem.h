@@ -41,7 +41,7 @@ namespace DAVA
 {
 
 class Entity;
-class Transform;
+class AnimationComponent;
 
 class AnimationSystem : public SceneSystem
 {
@@ -56,6 +56,7 @@ public:
     virtual void Process(float32 timeElapsed);
 
 private:
+    Vector<AnimationComponent*> items;
 };
 
 };

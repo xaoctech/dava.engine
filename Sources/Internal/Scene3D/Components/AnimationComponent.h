@@ -39,36 +39,7 @@
 namespace DAVA 
 {
 
-class Entity;
-
-class AnimationSampler
-{
-public:
-    virtual float32 GetValue(float32 time);
-    
-    enum eSamplerType
-    {
-        EST_TRANSLATION_X,
-        EST_TRANSLATION_Y,
-        EST_TRANSLATION_Z,
-        EST_ROTATION_X,
-        EST_ROTATION_Y,
-        EST_ROTATION_Z,
-        EST_COUNT
-    };
-
-    eSamplerType GetType(void){return type;};
-
-protected:
-    eSamplerType type;
-};
-
-struct AnimationClip
-{
-    String name;
-    Vector<AnimationSampler*> items;
-    float32 timeLimit;
-};
+class SceneNodeAnimation;
 
 class AnimationComponent : public Component
 {
@@ -89,9 +60,12 @@ public:
 private:
 
 	friend class AnimationSystem;
-    Map<String, AnimationClip> clipsMap;
-    Matrix4 originalLocalTransform;
-
+    Map<String, SceneNodeAnimation*> clipsMap;
+    Matrix4 originalMatrix;
+    Vector3 originalTranslate;
+    float32 time;
+    bool isPlaying;
+    SceneNodeAnimation * activeClip;
 public:
 
 //     INTROSPECTION_EXTEND(TransformComponent, Component,

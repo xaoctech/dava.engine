@@ -33,6 +33,7 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
+#include "Scene3D/SceneNodeAnimation.h"
 
 namespace DAVA
 {
@@ -40,13 +41,15 @@ namespace DAVA
 REGISTER_CLASS(AnimationComponent)
     
 AnimationComponent::AnimationComponent()
+:time(0.0f),
+activeClip(NULL),
+isPlaying(false)
 {
-
 }
     
 AnimationComponent::~AnimationComponent()
 {
-    
+
 }
 
 Component * AnimationComponent::Clone(Entity * toEntity)
@@ -82,12 +85,20 @@ void AnimationComponent::Deserialize(KeyedArchive *archive, SerializationContext
 
 void AnimationComponent::PlayClip( const String & clipName, bool repeat )
 {
-
+    Map<String, SceneNodeAnimation*>::iterator it = clipsMap.find(clipName);
+    if (it != clipsMap.end())
+    {
+        time = 0;
+        activeClip = it->second;
+        isPlaying = true;
+    }
 }
 
 void AnimationComponent::SetLocalTransform( const Matrix4 & transform )
 {
-    originalLocalTransform = transform;
+    originalMatrix = transform;
+    originalTranslate = originalMatrix.GetTranslationVector();
+    originalMatrix.SetTranslationVector(Vector3());
 }
 
 };
