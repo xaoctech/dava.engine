@@ -37,6 +37,7 @@
 #include "Scene3D/Systems/GlobalEventSystem.h"
 #include "Debug/Stats.h"
 #include "Scene3D/SceneNodeAnimation.h"
+#include "Scene3D/Components/TransformComponent.h"
 
 namespace DAVA
 {
@@ -68,7 +69,7 @@ void AnimationSystem::Process(float32 timeElapsed)
             SceneNodeAnimationKey & key = comp->activeClip->Intepolate(comp->time);
             Matrix4 result(key.rotation.GetMatrix() * comp->originalMatrix);
             result.SetTranslationVector(comp->originalTranslate + key.translation);
-            comp->GetEntity()->SetLocalTransform(result);
+            ((TransformComponent*)(comp->GetEntity()->GetComponent(Component::TRANSFORM_COMPONENT)))->SetLocalTransform(&result);
         }
     }
 }

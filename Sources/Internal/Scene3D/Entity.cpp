@@ -50,6 +50,7 @@
 #include "Scene3D/Components/SwitchComponent.h"
 #include "Utils/Random.h"
 #include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Components/AnimationComponent.h"
 
 #define USE_VECTOR(x) (((1 << x) & vectorComponentsMask) != 0)
 
@@ -1464,6 +1465,11 @@ void Entity::SetLocalTransform(const Matrix4 & newMatrix)
 {
 //	TIME_PROFILE("Entity::SetLocalTransform");
 	((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->SetLocalTransform(&newMatrix);
+    AnimationComponent * c = (AnimationComponent*)GetComponent(Component::ANIMATION_COMPONENT);
+    if (c)
+    {
+        c->SetLocalTransform(newMatrix);
+    }
 }
 	
 const Matrix4 & Entity::GetLocalTransform()

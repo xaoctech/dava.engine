@@ -56,6 +56,16 @@ Component * AnimationComponent::Clone(Entity * toEntity)
 {
     AnimationComponent * newAnimation = new AnimationComponent();
 
+    newAnimation->originalMatrix = originalMatrix;
+    newAnimation->originalTranslate = originalTranslate;
+    newAnimation->time = time;
+    newAnimation->isPlaying = false;
+
+    for (Map<String, SceneNodeAnimation*>::iterator it = clipsMap.begin(); it != clipsMap.end(); ++it)
+    {
+        newAnimation->clipsMap[it->first] = it->second->Clone();
+    }
+    newAnimation->activeClip = NULL;
     return newAnimation;
 }
 
@@ -67,6 +77,10 @@ void AnimationComponent::Serialize(KeyedArchive *archive, SerializationContext *
 
 	if(NULL != archive)
 	{
+        archive->SetMatrix4("ac.originalMatrix", originalMatrix);
+        archive->SetVector3("ac.originalTranslate", originalTranslate);
+
+
 // 		archive->SetMatrix4("tc.localMatrix", localMatrix);
 // 		archive->SetMatrix4("tc.worldMatrix", worldMatrix);
 	}
