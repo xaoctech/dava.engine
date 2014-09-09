@@ -162,4 +162,9 @@ SceneNodeAnimationList * SceneNodeAnimation::GetParent()
 	return parent;
 }
 
+SceneNodeAnimation * SceneNodeAnimation::Clone()
+{
+    return NULL;
+}
+
 }
