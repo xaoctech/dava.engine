@@ -88,6 +88,39 @@ inline Job *JobInstanceWaiter::GetJob() const
     return job;
 }
 
+/////
+class TaggedWorkerJobsWaiter
+{
+public:
+    TaggedWorkerJobsWaiter(int32 tag);
+    ~TaggedWorkerJobsWaiter();
+    void Wait();
+    ConditionalVariable * GetConditionalVariable();
+    int32 GetTag();
+    Mutex * GetMutex();
+
+private:
+    int32 tag;
+    ConditionalVariable cv;
+    Mutex mutex;
+};
+
+inline ConditionalVariable * TaggedWorkerJobsWaiter::GetConditionalVariable()
+{
+    return &cv;
+}
+
+inline int32 TaggedWorkerJobsWaiter::GetTag()
+{
+    return tag;
+}
+
+inline Mutex * TaggedWorkerJobsWaiter::GetMutex()
+{
+    return &mutex;
+}
+
+
 }
 
 #endif //__DAVAENGINE_JOB_WAITER_H__
