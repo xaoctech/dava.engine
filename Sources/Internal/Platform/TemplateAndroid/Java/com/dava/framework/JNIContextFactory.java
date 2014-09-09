@@ -6,6 +6,7 @@ import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
 
 import android.opengl.GLSurfaceView;
+import android.opengl.GLUtils;
 //import android.util.Log;
 import android.util.Log;
 
@@ -41,7 +42,25 @@ public class JNIContextFactory implements GLSurfaceView.EGLContextFactory
 	
 	private EGLContext createOpenGLESContext(int openglESVersion, EGL10 egl, EGLDisplay display, EGLConfig eglConfig)
 	{
-        int[] attrib_list = {EGL_CONTEXT_CLIENT_VERSION, openglESVersion, EGL10.EGL_NONE };
-        return egl.eglCreateContext(display, eglConfig, EGL10.EGL_NO_CONTEXT, attrib_list);
+		EGLContext context = null;
+		
+		try
+		{
+	        int[] attrib_list = {EGL_CONTEXT_CLIENT_VERSION, openglESVersion, EGL10.EGL_NONE };
+	        context = egl.eglCreateContext(display, eglConfig, EGL10.EGL_NO_CONTEXT, attrib_list);
+	        
+			if (egl.eglGetError() != EGL10.EGL_SUCCESS) 
+			{
+				context = null;
+			}
+		}
+		catch(Exception e)
+		{
+			Log.w(JNIConst.LOG_TAG, String.format("[createOpenGLESContext] exception: %s", e.toString()));
+
+			context = null;
+		}
+		
+		return context;
 	}
 }
