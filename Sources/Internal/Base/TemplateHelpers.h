@@ -31,22 +31,20 @@
 #define __DAVAENGINE_TEMPLATEHELPERS_H__
 
 #include <typeinfo>
+#include "NullType.h"
 
 namespace DAVA
 {
 
-#define COMPILER_ASSERT(expr)  (DAVA::StaticAssert<(expr) != 0>());
-
-// empty default template
-template <bool b>
-struct StaticAssert {};
-
-// template specialized on true
+// Alexandresky style compile time assertion.
+template <bool>
+struct CompileTimeError;
+    
 template <>
-struct StaticAssert<true>
-{
-	enum { Check = true };
-};
+struct CompileTimeError<true>
+{};
+    
+#define COMPILER_ASSERT(expr) DAVA::CompileTimeError<(expr)>();
 
 template<bool C, typename T = void>
 struct EnableIf
@@ -92,6 +90,56 @@ struct SelectIndex<false, index_A, index_B>
 {
 	enum { result = index_B };
 };
+    
+	template<typename U>
+	struct PointerTraits
+	{
+		enum{ result = false };
+		typedef NullType PointerType;
+	};
+	template <typename U>
+	struct PointerTraits<U*>
+	{
+		enum{ result = true };
+		typedef U PointerType;
+	};
+    
+	template<typename U>
+	struct ReferenceTraits
+	{
+		enum{ result = false };
+		typedef NullType ReferenceType;
+	};
+	template <typename U>
+	struct ReferenceTraits<U&>
+	{
+		enum{ result = true };
+		typedef U ReferenceType;
+	};
+    
+	template<class U>
+	struct P2MTraits
+	{
+		enum{ result = false };
+	};
+	template <class R, class V>
+	struct P2MTraits<R V::*>
+	{
+		enum{ result = true };
+	};
+    
+	template <typename T>
+	class TypeTraits
+	{
+	public:
+		enum { isPointer = PointerTraits<T>::result };
+		enum { isReference = ReferenceTraits<T>::result };
+		enum { isPointerToMemberFunction = P2MTraits<T>::result };
+        
+		typedef typename Select<isPointer || isReference, T, const T&>::Result ParamType;
+		typedef typename Select<isReference, typename ReferenceTraits<T>::ReferenceType, T>::Result NonRefType;
+    };
+    
     
 template <class TO, class FROM>
 class Conversion

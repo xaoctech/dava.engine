@@ -76,9 +76,9 @@ namespace DAVA
 
 		void Emit() 
 		{ 
-			for (size_t i = 0; i < slots.size(); ++i)
+			for (size_t i = 0; i < Base::slots.size(); ++i)
 			{
-				slots[i]();
+				Base::slots[i]();
 			}
 		}
 	};
@@ -90,9 +90,9 @@ namespace DAVA
 
 		void Emit(P1 p1, P2 p2, P3 p3)
 		{
-			for (size_t i = 0; i < slots.size(); ++i)
+			for (size_t i = 0; i < Base::slots.size(); ++i)
 			{
-				slots[i](p1, p2, p3);
+				Base::slots[i](p1, p2, p3);
 			}
 		}
 	};

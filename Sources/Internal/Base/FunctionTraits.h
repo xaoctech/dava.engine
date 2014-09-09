@@ -335,7 +335,7 @@ namespace DAVA
 	template<typename F> 
 	typename FuncTraits<F>::FunctionType MakeFunction(const F &fn) 
 	{ 
-		return FuncTraits<F>::FunctionType(fn); 
+		return typename FuncTraits<F>::FunctionType(fn);
 	}
 }
 
