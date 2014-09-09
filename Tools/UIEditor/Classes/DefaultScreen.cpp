@@ -670,24 +670,15 @@ void DefaultScreen::MoveControl(const Vector2& delta, bool alignControlToInteger
 void DefaultScreen::DeleteSelectedControls()
 {
 	const HierarchyTreeController::SELECTEDCONTROLNODES& selectedControls = HierarchyTreeController::Instance()->GetActiveControlNodes();
-    
+    if (selectedControls.empty())
+    {
+        return;
+    }
+
     HierarchyTreeNode::HIERARCHYTREENODESLIST nodesList;
     for (HierarchyTreeController::SELECTEDCONTROLNODES::const_iterator iter = selectedControls.begin(); iter != selectedControls.end(); iter ++)
     {
-        // No way to delete empty controls or subcontrols.
-        HierarchyTreeControlNode* controlNode = *iter;
-        if (!controlNode->GetUIObject() || controlNode->GetUIObject()->IsSubcontrol())
-        {
-            continue;
-        }
-
-        nodesList.push_back(controlNode);
-    }
-
-    if (nodesList.empty())
-    {
-        // Nothing to delete.
-        return;
+        nodesList.push_back(*iter);
     }
 
     // HierarchyTreeWidget is subscribed to this signal and will handle deletion.
