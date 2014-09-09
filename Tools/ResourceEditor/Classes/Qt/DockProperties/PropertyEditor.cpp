@@ -408,7 +408,7 @@ void PropertyEditor::ApplyCustomExtensions(QtPropertyData *data)
 				{
 					DAVA::RenderBatch *batch = (DAVA::RenderBatch *) introData->object;
 					DAVA::RenderObject *ro = batch->GetRenderObject();
-					if(ConvertToShadowCommand::CanConvertBatchToShadow(batch) && (ro->GetType() == RenderObject::TYPE_MESH))
+					if(ConvertToShadowCommand::CanConvertBatchToShadow(batch))
 					{
 						QtPropertyToolButton * convertButton = CreateButton(data, QIcon(":/QtIcons/shadow.png"), "Convert To ShadowVolume");
                         convertButton->setEnabled(isSingleSelection);
@@ -431,12 +431,6 @@ void PropertyEditor::ApplyCustomExtensions(QtPropertyData *data)
                         QObject::connect(rebuildTangentButton, SIGNAL(pressed()), this, SLOT(RebuildTangentSpace()));
                     }
 				}
-			}
-			else if(DAVA::MetaInfo::Instance<DAVA::ShadowVolume>() == meta)
-			{
-				QtPropertyToolButton * deleteButton = CreateButton(data, QIcon(":/QtIcons/remove.png"), "Delete RenderBatch");
-                deleteButton->setEnabled(isSingleSelection);
-				QObject::connect(deleteButton, SIGNAL(pressed()), this, SLOT(DeleteRenderBatch()));
 			}
 			else if(DAVA::MetaInfo::Instance<DAVA::NMaterial>() == meta)
 			{

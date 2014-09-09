@@ -119,6 +119,8 @@ public:
     void AddRenderBatch(RenderBatch * batch, int32 lodIndex, int32 switchIndex);
     void RemoveRenderBatch(RenderBatch * batch);
     void RemoveRenderBatch(uint32 batchIndex);
+    void ReplaceRenderBatch(RenderBatch * oldBatch, RenderBatch * newBatch);
+    void ReplaceRenderBatch(uint32 batchIndex, RenderBatch * newBatch);
 
     void SetRenderBatchLODIndex(uint32 batchIndex, int32 newLodIndex);
     void SetRenderBatchSwitchIndex(uint32 batchIndex, int32 newSwitchIndex);    
