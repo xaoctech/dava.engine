@@ -569,6 +569,15 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 void Font::AddCurrentLine(const WideString & text, const int32 pos, SeparatorPositions & separatorPosition, Vector<WideString> & resultVector) const
 {
     WideString currentLine = text.substr(separatorPosition.currentLineStart, pos - separatorPosition.currentLineStart);
+    //Trim whitespace at begin/end line
+    while(currentLine.size() > 1 && IsSpace(currentLine[0]))
+    {
+    	currentLine.erase(currentLine.begin());
+    }
+    while(currentLine.size() > 1 && IsSpace(currentLine[currentLine.size() - 1]))
+    {
+    	currentLine.erase(currentLine.end() - 1);
+    }
     resultVector.push_back(currentLine);
     
     separatorPosition.Reset();
