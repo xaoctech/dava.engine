@@ -41,6 +41,8 @@
 #include "FileSystem/LocalizationIPhone.h"
 #elif defined(__DAVAENGINE_ANDROID__)
 #include "FileSystem/LocalizationAndroid.h"
+#else
+#include "Core/Core.h"
 #endif
 
 
@@ -87,6 +89,8 @@ void LocalizationSystem::SetDirectory(const FilePath &directoryPath)
 	LocalizationIPhone::SelectPreferedLocalizationForPath(directoryPath);
 #elif defined(__DAVAENGINE_ANDROID__)
     LocalizationAndroid::SelectPreferedLocalization();
+#else
+    SetCurrentLocale(Core::Instance()->GetOptions()->GetString("locale", "ru"));
 #endif
 }
 
