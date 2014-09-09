@@ -184,7 +184,8 @@ void Thread::CancelAll()
 
 
 Thread::Thread(const Message& _msg)
-    : msg(_msg)
+    : BaseObject()
+    , msg(_msg)
     , state(STATE_CREATED)
     , id(0)
 	, nativeId(0)

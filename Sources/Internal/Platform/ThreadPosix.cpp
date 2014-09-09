@@ -128,6 +128,7 @@ void *PthreadMain(void *param)
 void Thread::Start()
 {
     DVASSERT(STATE_CREATED == state);
+    Retain();
     pthread_create(&handle, 0, PthreadMain, (void *)this);
 }
 
@@ -150,6 +151,7 @@ Thread::NativeId Thread::GetCurrentNativeId()
     return pthread_self();
 }
 
+#if defined(__DAVAENGINE_ANDROID__)
 void Thread::AttachToJVM()
 {
 	if (true == IsMainThread())
@@ -183,6 +185,7 @@ void Thread::DetachFromJVM()
 			Logger::Error("runtime_error(Could not detach current thread from JNI)");
 	}
 }
+#endif
 
 }
 
