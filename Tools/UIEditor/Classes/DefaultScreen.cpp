@@ -670,39 +670,28 @@ void DefaultScreen::MoveControl(const Vector2& delta, bool alignControlToInteger
 void DefaultScreen::DeleteSelectedControls()
 {
 	const HierarchyTreeController::SELECTEDCONTROLNODES& selectedControls = HierarchyTreeController::Instance()->GetActiveControlNodes();
-	HierarchyTreeController::SELECTEDCONTROLNODES::const_iterator iter;
-	HierarchyTreeController::SELECTEDCONTROLNODES::const_iterator innerIter;
-	HierarchyTreeNode::HIERARCHYTREENODESLIST nodes;
-	HierarchyTreeController::SELECTEDCONTROLNODES parentNodes(selectedControls);
-	
-	// DF-1273 - remove all child nodes of selected controls - we don't have to remove them here
-	for (iter = selectedControls.begin(); iter != selectedControls.end(); ++iter)
-	{
-		HierarchyTreeNode *node = (*iter);
-		for (innerIter = selectedControls.begin(); innerIter != selectedControls.end(); ++innerIter)
-		{			
-			if (node->IsHasChild(*innerIter))
-			{
-				HierarchyTreeController::SELECTEDCONTROLNODES::iterator parentNodeIter =
-					std::find(parentNodes.begin(), parentNodes.end(), *innerIter);
-				if (parentNodeIter != parentNodes.end())
-				{
-					parentNodes.erase(parentNodeIter);
-				}
-			}
-		}
-	}
+    
+    HierarchyTreeNode::HIERARCHYTREENODESLIST nodesList;
+    for (HierarchyTreeController::SELECTEDCONTROLNODES::const_iterator iter = selectedControls.begin(); iter != selectedControls.end(); iter ++)
+    {
+        // No way to delete empty controls or subcontrols.
+        HierarchyTreeControlNode* controlNode = *iter;
+        if (!controlNode->GetUIObject() || controlNode->GetUIObject()->IsSubcontrol())
+        {
+            continue;
+        }
 
-	// DF-1273 - put only "parent" nodes to delete
-	for (iter = parentNodes.begin(); iter != parentNodes.end(); ++iter)
-		nodes.push_back(*iter);
+        nodesList.push_back(controlNode);
+    }
 
-	if (!nodes.size())
-		return;
-	
-	DeleteSelectedNodeCommand* cmd = new DeleteSelectedNodeCommand(nodes);
-	CommandsController::Instance()->ExecuteCommand(cmd);
-	SafeRelease(cmd);
+    if (nodesList.empty())
+    {
+        // Nothing to delete.
+        return;
+    }
+
+    // HierarchyTreeWidget is subscribed to this signal and will handle deletion.
+    emit DeleteNodes(nodesList);
 }
 
 void DefaultScreen::MoveGuide(HierarchyTreeScreenNode* screenNode)

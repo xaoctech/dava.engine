@@ -50,7 +50,10 @@ public:
     ~HierarchyTreeWidget();
     void ScrollTo(HierarchyTreeNode *node);
     void HighlightScreenNodes(const QList<HierarchyTreeScreenNode*>& foundNodesList);
-	
+
+    // Delete the requested nodes.
+    void DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST& selectedNodes);
+
 private:
 	typedef Set<HierarchyTreeNode::HIERARCHYTREENODEID> EXPANDEDITEMS;
 	void AddControlItem(QTreeWidgetItem* parent, const HierarchyTreeNode::HIERARCHYTREENODESLIST& items);
@@ -65,6 +68,9 @@ signals:
 	void CreateNewAggregator();
 
 	void ImportScreenOrAggregator();
+
+public slots:
+	void OnDeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST& selectedNodes);
 
 protected slots:
 	void OnTreeUpdated(bool needRestoreSelection);
