@@ -54,6 +54,9 @@ public:
         Quaternion orientation;
         Vector3 position;
         float32 scale;
+
+        inline JointTransform MultiplyByParent(const JointTransform& parent) const;
+        inline Vector3 TransformVector(const Vector3 &inVec) const;
     };                    
 
     virtual Component * Clone(Entity * toEntity);
@@ -66,6 +69,8 @@ public:
     
     inline uint16 GetJointId(const FastName& name) const;
 
+    inline uint16 GetJointsCount() const;
+
     SkeletonComponent();
     ~SkeletonComponent();
 
@@ -77,19 +82,20 @@ private:
     Vector<uint32> jointInfo; //flags and parent
     
     //transforms info
-    Vector<JointTransform> localTransforms;
-    Vector<JointTransform> worldTransforms;
+    Vector<JointTransform> localSpaceTransforms;
+    Vector<JointTransform> objectSpaceTransforms;
+    
     Vector<JointTransform> inverseBindTransforms;
 
     //bounding boxes for bone
-    Vector<AABBox3> boneLocalBoxes;
-    Vector<AABBox3> boneWorldBoxes;
+    Vector<AABBox3> jointSpaceBoxes;
+    Vector<AABBox3> objectSpaceBoxes;
 
     Vector<Vector4> resultPositions; //stores final results
     Vector<Vector4> resultQuaternions;
 
     Map<FastName, uint16> jointMap;
-        
+            
     uint16 startJoint; //first joint in the list that was updated this frame - cache this value to optimize processing
 
 };
@@ -98,20 +104,20 @@ private:
 
 inline void SkeletonComponent::SetJointPosition(uint16 jointId, const Vector3 &position)
 {
-    DVASSERT(jointId<localTransforms.size());
-    localTransforms[jointId].position = position;
+    DVASSERT(jointId<GetJointsCount());
+    localSpaceTransforms[jointId].position = position;
     startJoint = Min(startJoint, jointId);
 }
 inline void SkeletonComponent::SetJointOrientation(uint16 jointId, const Quaternion &orientation)
 {
-    DVASSERT(jointId<localTransforms.size());
-    localTransforms[jointId].orientation = orientation;
+    DVASSERT(jointId<GetJointsCount());
+    localSpaceTransforms[jointId].orientation = orientation;
     startJoint = Min(startJoint, jointId);
 }
 inline void SkeletonComponent::SetJointScale(uint16 jointId, float32 scale)
 {
-    DVASSERT(jointId<localTransforms.size());
-    localTransforms[jointId].scale = scale;
+    DVASSERT(jointId<GetJointsCount());
+    localSpaceTransforms[jointId].scale = scale;
     startJoint = Min(startJoint, jointId);
 }
 
@@ -122,6 +128,16 @@ inline uint16 SkeletonComponent::GetJointId(const FastName& name) const
         return it->second;
     else
         return INVALID_BONE_INDEX;
+}
+
+inline uint16 SkeletonComponent::GetJointsCount() const
+{
+    return localSpaceTransforms.size(); //use local transforms size as it is the only one modifiable from outside
+}
+
+inline Vector3 SkeletonComponent::JointTransform::TransformVector(const Vector3 &inVec) const
+{    
+    return position + orientation.ApplyToVectorFast(inVec)*scale; 
 }
 
 } //ns

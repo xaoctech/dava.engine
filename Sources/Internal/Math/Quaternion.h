@@ -31,6 +31,7 @@
 #define __DAVAENGINE_QUATERNION_H__
 
 #include "Base/BaseTypes.h"
+#include "Math/Vector.h"
 #include "Math/Matrix4.h"
 
 
@@ -90,6 +91,8 @@ public:
 	
 	inline float32	DotProduct(const Quaternion & q2) const;
 	inline void		Slerp(const Quaternion & q1, const Quaternion & q2, float32 t);
+
+    inline Vector3 ApplyToVectorFast(const Vector3& inVec) const;
 	
 	//! Comparison operators
 	inline bool operator == (const Quaternion & _v) const;
@@ -290,6 +293,15 @@ inline Quaternion  Quaternion::operator *(const Quaternion & q)
 	Quaternion r;
 	this->Mul(&q, &r);
 	return r;
+}
+
+//according to  Molecule Engine it works 35% faster
+//see http://molecularmusings.wordpress.com/2013/05/24/a-faster-quaternion-vector-multiplication/ for details
+inline Vector3 Quaternion::ApplyToVectorFast(const Vector3& inVec) const
+{
+    Vector3 qVec(x, y, z);
+    Vector3 t = 2.0 * qVec.CrossProduct(inVec);
+    return inVec + w * t + qVec.CrossProduct(t); 
 }
 
 inline float32 Quaternion::DotProduct(const Quaternion & q2) const

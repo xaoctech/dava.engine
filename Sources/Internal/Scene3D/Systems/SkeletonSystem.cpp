@@ -31,6 +31,7 @@
 #include "Scene3D/Systems/SkeletonSystem.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Components/ComponentHelpers.h"
+#include "Render/Highlevel/SkinnedMesh.h"
 
 
 namespace DAVA
@@ -54,6 +55,55 @@ void SkeletonSystem::Process(float32 timeElapsed)
         /*else*/
         /*  remove was updated  - note that as bones come in descending order we do not care that was updated flag would be cared to next frame*/
 
+    }
+}
+
+void SkeletonSystem::RebuildPose(Entity *entity)
+{
+    SkeletonComponent *component = GetSkeletonComponent(entity);
+    uint16 count = component->GetJointsCount();
+    for (uint16 currJoint = component->startJoint; currJoint<count; ++currJoint)
+    {
+        uint16 parentJoint = component->jointInfo[currJoint]&SkeletonComponent::INFO_PARENT_MASK;
+        if ((component->jointInfo[currJoint]&SkeletonComponent::FLAG_MARKED_FOR_UPDATED)||(component->jointInfo[parentJoint]&SkeletonComponent::FLAG_UPDATED_THIS_FRAME))
+        {
+            //calculate local pose
+            if (parentJoint == SkeletonComponent::INVALID_BONE_INDEX) //root
+            {
+                component->objectSpaceTransforms[currJoint] = component->localSpaceTransforms[currJoint]; //just copy
+            }
+            else
+            {
+                component->objectSpaceTransforms[currJoint] = component->localSpaceTransforms[currJoint].MultiplyByParent(component->objectSpaceTransforms[parentJoint]);
+            }            
+            //update bbox
+            
+            //  add [was updated]  remove [marked for update]            
+            component->jointInfo[currJoint] &=~ SkeletonComponent::FLAG_MARKED_FOR_UPDATED;
+            component->jointInfo[currJoint] |= SkeletonComponent::FLAG_UPDATED_THIS_FRAME;
+        }
+        else
+        {
+            /*  remove was updated  - note that as bones come in descending order we do not care that was updated flag would be cared to next frame*/
+            component->jointInfo[currJoint] &=~ SkeletonComponent::FLAG_UPDATED_THIS_FRAME;
+        }
+    }
+
+    //recalculate object box
+    AABBox3 resBox;
+    for (uint16 currJoint=0; currJoint<count; ++currJoint)
+        resBox.AddAABBox(component->objectSpaceBoxes[currJoint]);
+
+    //set data to SkinnedMesh
+    RenderObject *ro = GetRenderObject(entity);
+    if (ro && (RenderObject::TYPE_SKINNED_MESH == ro->GetType()))
+    {
+        SkinnedMesh *skinnedMeshObject = static_cast<SkinnedMesh*>(ro);
+        DVASSERT(skinnedMeshObject);
+
+        skinnedMeshObject->SetJointsPtr(&component->resultPositions[0], &component->resultQuaternions[0], count);
+        skinnedMeshObject->SetObjectSpaceBoundingBox(resBox);
+        GetScene()->renderSystem->MarkForUpdate(skinnedMeshObject);
     }
 }
 
