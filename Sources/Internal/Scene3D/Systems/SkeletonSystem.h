@@ -48,6 +48,8 @@ public:
     ~SkeletonSystem();
     virtual void Process(float32 timeElapsed);		
 
+private:
+    void RebuildPose(Entity *entity);
 
 };
 
