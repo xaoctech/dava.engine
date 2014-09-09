@@ -67,7 +67,9 @@ void ThreadSyncTest::ThreadSyncTestFunction(PerfFuncData * data)
 	someThread = Thread::Create(Message(this, &ThreadSyncTest::SomeThreadFunc));
     someValue = -1;
     someThread->Start();
-    Thread::Wait(&cv);
+    Mutex mutex;
+    mutex.Lock();
+    Thread::Wait(&cv, &mutex);
     TEST_VERIFY(someValue == 0);
     someThread->Join();
     TEST_VERIFY(0 == someThread->Release());
