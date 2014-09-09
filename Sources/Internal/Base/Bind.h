@@ -1,7 +1,7 @@
 #ifndef __DAVA_BIND_H__
 #define __DAVA_BIND_H__
 
-#include "TypeTraits.h"
+#include "TemplateHelpers.h"
 #include "TypeList.h"
 #include "Function.h"
 #include "FunctionTraits.h"
@@ -46,35 +46,35 @@ namespace DAVA
 		typedef typename TL::Append<RealParamsList5, RealParamType6>::Result RealParamsList6;
 		typedef typename TL::Append<RealParamsList6, RealParamType7>::Result RealParamsList7;
 		typedef typename TL::Append<RealParamsList7, RealParamType8>::Result RealParamsList8;
-		typedef typename RealParamsList8 RealParamsFullList;
+		typedef RealParamsList8 RealParamsFullList;
 
 		// possible outgoing function types
-		typedef typename Function<ReturnType (
+		typedef Function<ReturnType (
 			)> OutgoingFunctionType0;
 
-		typedef typename Function<ReturnType(
+		typedef Function<ReturnType(
 			typename TL::TypeAtNonStrict<RealParamsFullList, SelectIndex<IsPlaceholder<P1>::result, PlaceholderIndex<P1>::value, 1>::result >::Result
 			)> OutgoingFunctionType1;
 
-		typedef typename Function<ReturnType(
+		typedef Function<ReturnType(
 			typename TL::TypeAtNonStrict<RealParamsFullList, SelectIndex<IsPlaceholder<P1>::result, PlaceholderIndex<P1>::value, 1>::result >::Result,
 			typename TL::TypeAtNonStrict<RealParamsFullList, SelectIndex<IsPlaceholder<P2>::result, PlaceholderIndex<P2>::value, 2>::result >::Result
 			)> OutgoingFunctionType2;
 
-		typedef typename Function<ReturnType(
+		typedef Function<ReturnType(
 			typename TL::TypeAtNonStrict<RealParamsFullList, SelectIndex<IsPlaceholder<P1>::result, PlaceholderIndex<P1>::value, 1>::result >::Result,
 			typename TL::TypeAtNonStrict<RealParamsFullList, SelectIndex<IsPlaceholder<P2>::result, PlaceholderIndex<P2>::value, 2>::result >::Result,
 			typename TL::TypeAtNonStrict<RealParamsFullList, SelectIndex<IsPlaceholder<P3>::result, PlaceholderIndex<P3>::value, 3>::result >::Result
 			)> OutgoingFunctionType3;
 
-		typedef typename Function<ReturnType(
+		typedef Function<ReturnType(
 			typename TL::TypeAtNonStrict<RealParamsFullList, SelectIndex<IsPlaceholder<P1>::result, PlaceholderIndex<P1>::value, 1>::result >::Result,
 			typename TL::TypeAtNonStrict<RealParamsFullList, SelectIndex<IsPlaceholder<P2>::result, PlaceholderIndex<P2>::value, 2>::result >::Result,
 			typename TL::TypeAtNonStrict<RealParamsFullList, SelectIndex<IsPlaceholder<P3>::result, PlaceholderIndex<P3>::value, 3>::result >::Result,
 			typename TL::TypeAtNonStrict<RealParamsFullList, SelectIndex<IsPlaceholder<P4>::result, PlaceholderIndex<P4>::value, 4>::result >::Result
 			)> OutgoingFunctionType4;
 
-		typedef typename Function<ReturnType(
+		typedef Function<ReturnType(
 			typename TL::TypeAtNonStrict<RealParamsFullList, SelectIndex<IsPlaceholder<P1>::result, PlaceholderIndex<P1>::value, 1>::result >::Result,
 			typename TL::TypeAtNonStrict<RealParamsFullList, SelectIndex<IsPlaceholder<P2>::result, PlaceholderIndex<P2>::value, 2>::result >::Result,
 			typename TL::TypeAtNonStrict<RealParamsFullList, SelectIndex<IsPlaceholder<P3>::result, PlaceholderIndex<P3>::value, 3>::result >::Result,
@@ -82,7 +82,7 @@ namespace DAVA
 			typename TL::TypeAtNonStrict<RealParamsFullList, SelectIndex<IsPlaceholder<P5>::result, PlaceholderIndex<P5>::value, 5>::result >::Result
 			)> OutgoingFunctionType5;
 
-		typedef typename Function<ReturnType(
+		typedef Function<ReturnType(
 			typename TL::TypeAtNonStrict<RealParamsFullList, SelectIndex<IsPlaceholder<P1>::result, PlaceholderIndex<P1>::value, 1>::result >::Result,
 			typename TL::TypeAtNonStrict<RealParamsFullList, SelectIndex<IsPlaceholder<P2>::result, PlaceholderIndex<P2>::value, 2>::result >::Result,
 			typename TL::TypeAtNonStrict<RealParamsFullList, SelectIndex<IsPlaceholder<P3>::result, PlaceholderIndex<P3>::value, 3>::result >::Result,
@@ -91,7 +91,7 @@ namespace DAVA
 			typename TL::TypeAtNonStrict<RealParamsFullList, SelectIndex<IsPlaceholder<P6>::result, PlaceholderIndex<P6>::value, 6>::result >::Result
 			)> OutgoingFunctionType6;
 
-		typedef typename Function<ReturnType(
+		typedef Function<ReturnType(
 			typename TL::TypeAtNonStrict<RealParamsFullList, SelectIndex<IsPlaceholder<P1>::result, PlaceholderIndex<P1>::value, 1>::result >::Result,
 			typename TL::TypeAtNonStrict<RealParamsFullList, SelectIndex<IsPlaceholder<P2>::result, PlaceholderIndex<P2>::value, 2>::result >::Result,
 			typename TL::TypeAtNonStrict<RealParamsFullList, SelectIndex<IsPlaceholder<P3>::result, PlaceholderIndex<P3>::value, 3>::result >::Result,
@@ -101,7 +101,7 @@ namespace DAVA
 			typename TL::TypeAtNonStrict<RealParamsFullList, SelectIndex<IsPlaceholder<P7>::result, PlaceholderIndex<P7>::value, 7>::result >::Result
 			)> OutgoingFunctionType7;
 
-		typedef typename Function<ReturnType(
+		typedef Function<ReturnType(
 			typename TL::TypeAtNonStrict<RealParamsFullList, SelectIndex<IsPlaceholder<P1>::result, PlaceholderIndex<P1>::value, 1>::result >::Result,
 			typename TL::TypeAtNonStrict<RealParamsFullList, SelectIndex<IsPlaceholder<P2>::result, PlaceholderIndex<P2>::value, 2>::result >::Result,
 			typename TL::TypeAtNonStrict<RealParamsFullList, SelectIndex<IsPlaceholder<P3>::result, PlaceholderIndex<P3>::value, 3>::result >::Result,
@@ -133,7 +133,7 @@ namespace DAVA
  	class Bound_1 : public RefCounter
  	{
  	public:
-		typedef typename BoundHelper<IncomingFunctionType, P1> Helper;
+		typedef BoundHelper<IncomingFunctionType, P1> Helper;
 		typedef typename Helper::ReturnType ReturnType;
 		typedef typename Helper::OutgoingFunctionType OutgoingFunctionType;
 
@@ -155,7 +155,7 @@ namespace DAVA
 	class Bound_2 : public RefCounter
 	{
 	public:
-		typedef typename BoundHelper<IncomingFunctionType, P1, P2> Helper;
+		typedef BoundHelper<IncomingFunctionType, P1, P2> Helper;
 		typedef typename Helper::ReturnType ReturnType;
 		typedef typename Helper::OutgoingFunctionType OutgoingFunctionType;
 
@@ -184,7 +184,7 @@ namespace DAVA
 	class Bound_3 : public RefCounter
 	{
 	public:
-		typedef typename BoundHelper<IncomingFunctionType, P1, P2, P3> Helper;
+		typedef BoundHelper<IncomingFunctionType, P1, P2, P3> Helper;
 		typedef typename Helper::ReturnType ReturnType;
 		typedef typename Helper::OutgoingFunctionType OutgoingFunctionType;
 
@@ -222,7 +222,7 @@ namespace DAVA
 	class Bound_4 : public RefCounter
 	{
 	public:
-		typedef typename BoundHelper<IncomingFunctionType, P1, P2, P3, P4> Helper;
+		typedef BoundHelper<IncomingFunctionType, P1, P2, P3, P4> Helper;
 		typedef typename Helper::ReturnType ReturnType;
 		typedef typename Helper::OutgoingFunctionType OutgoingFunctionType;
 
@@ -271,7 +271,7 @@ namespace DAVA
 	class Bound_5 : public RefCounter
 	{
 	public:
-		typedef typename BoundHelper<IncomingFunctionType, P1, P2, P3, P4, P5> Helper;
+		typedef BoundHelper<IncomingFunctionType, P1, P2, P3, P4, P5> Helper;
 		typedef typename Helper::ReturnType ReturnType;
 		typedef typename Helper::OutgoingFunctionType OutgoingFunctionType;
 
@@ -333,7 +333,7 @@ namespace DAVA
 	class Bound_6 : public RefCounter
 	{
 	public:
-		typedef typename BoundHelper<IncomingFunctionType, P1, P2, P3, P4, P5, P6> Helper;
+		typedef BoundHelper<IncomingFunctionType, P1, P2, P3, P4, P5, P6> Helper;
 		typedef typename Helper::ReturnType ReturnType;
 		typedef typename Helper::OutgoingFunctionType OutgoingFunctionType;
 
@@ -410,7 +410,7 @@ namespace DAVA
 	class Bound_7 : public RefCounter
 	{
 	public:
-		typedef typename BoundHelper<IncomingFunctionType, P1, P2, P3, P4, P5, P6, P7> Helper;
+		typedef BoundHelper<IncomingFunctionType, P1, P2, P3, P4, P5, P6, P7> Helper;
 		typedef typename Helper::ReturnType ReturnType;
 		typedef typename Helper::OutgoingFunctionType OutgoingFunctionType;
 
@@ -520,7 +520,7 @@ namespace DAVA
 	class Bound_8 : public RefCounter
 	{
 	public:
-		typedef typename BoundHelper<IncomingFunctionType, P1, P2, P3, P4, P5, P6, P7, P8> Helper;
+		typedef BoundHelper<IncomingFunctionType, P1, P2, P3, P4, P5, P6, P7, P8> Helper;
 		typedef typename Helper::ReturnType ReturnType;
 		typedef typename Helper::OutgoingFunctionType OutgoingFunctionType;
 
@@ -653,7 +653,7 @@ namespace DAVA
  	{
 		typedef Bound_1<typename FuncTraits<F>::FunctionType, P1> BoundType;
 		BoundType *b = new BoundType(MakeFunction(fn), p1);
-		return BoundType::OutgoingFunctionType(b, &BoundType::invoke);
+		return typename BoundType::OutgoingFunctionType(b, &BoundType::invoke);
  	}
 
   	template<typename F, typename P1, typename P2>
@@ -661,7 +661,7 @@ namespace DAVA
   	{
 		typedef Bound_2<typename FuncTraits<F>::FunctionType, P1, P2> BoundType;
   		BoundType *b = new BoundType(MakeFunction(fn), p1, p2);
- 		return BoundType::OutgoingFunctionType(b, &BoundType::invoke);
+ 		return typename  BoundType::OutgoingFunctionType(b, &BoundType::invoke);
   	}
 
 	template<typename F, typename P1, typename P2,  typename P3>
@@ -669,7 +669,7 @@ namespace DAVA
 	{
 		typedef Bound_3<typename FuncTraits<F>::FunctionType, P1, P2, P3> BoundType;
 		BoundType *b = new BoundType(MakeFunction(fn), p1, p2, p3);
-		return BoundType::OutgoingFunctionType(b, &BoundType::invoke);
+		return typename  BoundType::OutgoingFunctionType(b, &BoundType::invoke);
 	}
 
 	template<typename F, typename P1, typename P2,  typename P3,  typename P4>
@@ -677,7 +677,7 @@ namespace DAVA
 	{
 		typedef Bound_4<typename FuncTraits<F>::FunctionType, P1, P2, P3, P4> BoundType;
 		BoundType *b = new BoundType(MakeFunction(fn), p1, p2, p3, p4);
-		return BoundType::OutgoingFunctionType(b, &BoundType::invoke);
+		return typename BoundType::OutgoingFunctionType(b, &BoundType::invoke);
 	}
 
 	template<typename F, typename P1, typename P2,  typename P3,  typename P4,  typename P5>
@@ -685,7 +685,7 @@ namespace DAVA
 	{
 		typedef Bound_5<typename FuncTraits<F>::FunctionType, P1, P2, P3, P4, P5> BoundType;
 		BoundType *b = new BoundType(MakeFunction(fn), p1, p2, p3, p4, p5);
-		return BoundType::OutgoingFunctionType(b, &BoundType::invoke);
+		return typename BoundType::OutgoingFunctionType(b, &BoundType::invoke);
 	}
 
 	template<typename F, typename P1, typename P2,  typename P3,  typename P4,  typename P5,  typename P6>
@@ -693,7 +693,7 @@ namespace DAVA
 	{
 		typedef Bound_6<typename FuncTraits<F>::FunctionType, P1, P2, P3, P4, P5, P6> BoundType;
 		BoundType *b = new BoundType(MakeFunction(fn), p1, p2, p3, p4, p5, p6);
-		return BoundType::OutgoingFunctionType(b, &BoundType::invoke);
+		return typename BoundType::OutgoingFunctionType(b, &BoundType::invoke);
 	}
 
 	template<typename F, typename P1, typename P2,  typename P3,  typename P4,  typename P5,  typename P6,  typename P7>
@@ -701,7 +701,7 @@ namespace DAVA
 	{
 		typedef Bound_7<typename FuncTraits<F>::FunctionType, P1, P2, P3, P4, P5, P6, P7> BoundType;
 		BoundType *b = new BoundType(MakeFunction(fn), p1, p2, p3, p4, p5, p6, p7);
-		return BoundType::OutgoingFunctionType(b, &BoundType::invoke);
+		return typename BoundType::OutgoingFunctionType(b, &BoundType::invoke);
 	}
 
 	template<typename F, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
@@ -709,7 +709,7 @@ namespace DAVA
 	{
 		typedef Bound_8<typename FuncTraits<F>::FunctionType, P1, P2, P3, P4, P5, P6, P7, P8> BoundType;
 		BoundType *b = new BoundType(MakeFunction(fn), p1, p2, p3, p4, p5, p6, p7, p8);
-		return BoundType::OutgoingFunctionType(b, &BoundType::invoke);
+		return  typename BoundType::OutgoingFunctionType(b, &BoundType::invoke);
 	}
 };
 

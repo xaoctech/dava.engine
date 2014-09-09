@@ -29,20 +29,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __DAVA_FUNCTION_H__
 #define __DAVA_FUNCTION_H__
 
-#include "TypeTraits.h"
 #include "TypeHolders.h"
 
 namespace DAVA
 {
-	// ====================================================================================================================================================
+	// ===================================================================================================================
 	// FunctionBase class 
 	// TODO: description
-	// ====================================================================================================================================================
+	// ===================================================================================================================
 	template<typename R, typename P1 = NullType, typename P2 = NullType, typename P3 = NullType, typename P4 = NullType, typename P5 = NullType, typename P6 = NullType, typename P7 = NullType, typename P8 = NullType>
 	class FunctionBase
 	{
 	public:
-		typedef enum IsFunctionType;
+		typedef enum {} IsFunctionType;
 
 		typedef R ReturnType;
 		typedef P1 ParamType1;
@@ -240,7 +239,7 @@ namespace DAVA
 		bool operator!=(const FunctionBase &f) { return !operator==(f);	}
 
 		bool operator==(int ptr) { return (0 == ptr && objPointerHolder.object == NULL && fnPointerHolder.IsNull()); }
-		bool operator!=(int ptr) { return return !operator==(ptr); }
+		bool operator!=(int ptr) { return !operator==(ptr); }
 
 		template<typename CR, typename CP1, typename CP2, typename CP3, typename CP4, typename CP5, typename CP6, typename CP7, typename CP8>
 		bool operator==(const FunctionBase<CR, CP1, CP2, CP3, CP4, CP5, CP6, CP7, CP8> &f)
@@ -456,10 +455,10 @@ namespace DAVA
 		}
 	};
 
-	// ====================================================================================================================================================
-	// Function class 
+	// ===================================================================================================================
+	// Function class
 	// TODO: description
-	// ====================================================================================================================================================
+	// ===================================================================================================================
 	template<typename T>
 	struct Function
 	{ };
@@ -469,12 +468,14 @@ namespace DAVA
 	struct Function<R()> : public FunctionBase<R>
 	{
 		typedef FunctionBase<R> Base;
-		Function(int ptr = NULL) {}
+        Function() {}
+		Function(int ptr) {}
+		Function(long int ptr) {}
 		Function(typename Base::IncomingStaticFunctionType fn) : Base(fn) {}
 		Function(typename Base::IncomingClassFunctionType fn) : Base(fn) {}
 		Function(typename Base::IncomingClassFunctionConstType fn) : Base(fn) {}
-		template<typename O> Function(O* obj, typename Base::ObjectType<O>::IncomingObjectFunctionType fn) : Base(obj, fn) { }
-		template<typename O> Function(O* obj, typename Base::ObjectType<O>::IncomingObjectFunctionConstType fn) : Base(obj, fn) { }
+		template<typename O> Function(O* obj, typename Base::template ObjectType<O>::IncomingObjectFunctionType fn) : Base(obj, fn) { }
+		template<typename O> Function(O* obj, typename Base::template ObjectType<O>::IncomingObjectFunctionConstType fn) : Base(obj, fn) { }
 
 		inline R operator()() const { return Base::invoker0(Base::objPointerHolder.object, Base::fnPointerHolder); }
 	};
@@ -484,12 +485,14 @@ namespace DAVA
 	struct Function<R(P1)> : public FunctionBase<R, P1>
 	{
 		typedef FunctionBase<R, P1> Base;
-		Function(int ptr = NULL) {}
+        Function() {}
+		Function(int ptr) {}
+		Function(long int ptr) {}
 		Function(typename Base::IncomingStaticFunctionType fn) : Base(fn) {}
 		Function(typename Base::IncomingClassFunctionType fn) : Base(fn) {}
 		Function(typename Base::IncomingClassFunctionConstType fn) : Base(fn) {}
-		template<typename O> Function(O* obj, typename Base::ObjectType<O>::IncomingObjectFunctionType fn) : Base(obj, fn) { }
-		template<typename O> Function(O* obj, typename Base::ObjectType<O>::IncomingObjectFunctionConstType fn) : Base(obj, fn) { }
+		template<typename O> Function(O* obj, typename Base::template ObjectType<O>::IncomingObjectFunctionType fn) : Base(obj, fn) { }
+		template<typename O> Function(O* obj, typename Base::template ObjectType<O>::IncomingObjectFunctionConstType fn) : Base(obj, fn) { }
 
 		inline R operator()(P1 p1) const { return Base::invoker1(Base::objPointerHolder.object, Base::fnPointerHolder, p1); }
 	};
@@ -499,12 +502,14 @@ namespace DAVA
 	struct Function<R(P1, P2)> : public FunctionBase<R, P1, P2>
 	{
 		typedef FunctionBase<R, P1, P2> Base;
-		Function(int ptr = NULL) {}
+        Function() {}
+		Function(int ptr) {}
+		Function(long int ptr) {}
 		Function(typename Base::IncomingStaticFunctionType fn) : Base(fn) {}
 		Function(typename Base::IncomingClassFunctionType fn) : Base(fn) {}
 		Function(typename Base::IncomingClassFunctionConstType fn) : Base(fn) {}
-		template<typename O> Function(O* obj, typename Base::ObjectType<O>::IncomingObjectFunctionType fn) : Base(obj, fn) { }
-		template<typename O> Function(O* obj, typename Base::ObjectType<O>::IncomingObjectFunctionConstType fn) : Base(obj, fn) { }
+		template<typename O> Function(O* obj, typename Base::template ObjectType<O>::IncomingObjectFunctionType fn) : Base(obj, fn) { }
+		template<typename O> Function(O* obj, typename Base::template ObjectType<O>::IncomingObjectFunctionConstType fn) : Base(obj, fn) { }
 
 		inline R operator()(P1 p1, P2 p2) const { return Base::invoker2(Base::objPointerHolder.object, Base::fnPointerHolder, p1, p2); }
 	};
@@ -514,12 +519,14 @@ namespace DAVA
 	struct Function<R(P1, P2, P3)> : public FunctionBase<R, P1, P2, P3>
 	{
 		typedef FunctionBase<R, P1, P2, P3> Base;
-		Function(int ptr = NULL) {}
+        Function() {}
+		Function(int ptr) {}
+		Function(long int ptr) {}
 		Function(typename Base::IncomingStaticFunctionType fn) : Base(fn) {}
 		Function(typename Base::IncomingClassFunctionType fn) : Base(fn) {}
 		Function(typename Base::IncomingClassFunctionConstType fn) : Base(fn) {}
-		template<typename O> Function(O* obj, typename Base::ObjectType<O>::IncomingObjectFunctionType fn) : Base(obj, fn) { }
-		template<typename O> Function(O* obj, typename Base::ObjectType<O>::IncomingObjectFunctionConstType fn) : Base(obj, fn) { }
+		template<typename O> Function(O* obj, typename Base::template ObjectType<O>::IncomingObjectFunctionType fn) : Base(obj, fn) { }
+		template<typename O> Function(O* obj, typename Base::template ObjectType<O>::IncomingObjectFunctionConstType fn) : Base(obj, fn) { }
 
 		inline R operator()(P1 p1, P2 p2, P3 p3) const { return Base::invoker3(Base::objPointerHolder.object, Base::fnPointerHolder, p1, p2, p3); }
 	};
@@ -529,12 +536,14 @@ namespace DAVA
 	struct Function<R(P1, P2, P3, P4)> : public FunctionBase<R, P1, P2, P3, P4>
 	{
 		typedef FunctionBase<R, P1, P2, P3, P4> Base;
-		Function(int ptr = NULL) {}
+        Function() {}
+		Function(int ptr) {}
+		Function(long int ptr) {}
 		Function(typename Base::IncomingStaticFunctionType fn) : Base(fn) {}
 		Function(typename Base::IncomingClassFunctionType fn) : Base(fn) {}
 		Function(typename Base::IncomingClassFunctionConstType fn) : Base(fn) {}
-		template<typename O> Function(O* obj, typename Base::ObjectType<O>::IncomingObjectFunctionType fn) : Base(obj, fn) { }
-		template<typename O> Function(O* obj, typename Base::ObjectType<O>::IncomingObjectFunctionConstType fn) : Base(obj, fn) { }
+		template<typename O> Function(O* obj, typename Base::template ObjectType<O>::IncomingObjectFunctionType fn) : Base(obj, fn) { }
+		template<typename O> Function(O* obj, typename Base::template ObjectType<O>::IncomingObjectFunctionConstType fn) : Base(obj, fn) { }
 
 		inline R operator()(P1 p1, P2 p2, P3 p3, P4 p4) const { return Base::invoker4(Base::objPointerHolder.object, Base::fnPointerHolder, p1, p2, p3, p4); }
 	};
@@ -544,12 +553,14 @@ namespace DAVA
 	struct Function<R(P1, P2, P3, P4, P5)> : public FunctionBase<R, P1, P2, P3, P4, P5>
 	{
 		typedef FunctionBase<R, P1, P2, P3, P4, P5> Base;
-		Function(int ptr = NULL) {}
+        Function() {}
+		Function(int ptr) {}
+		Function(long int ptr) {}
 		Function(typename Base::IncomingStaticFunctionType fn) : Base(fn) {}
 		Function(typename Base::IncomingClassFunctionType fn) : Base(fn) {}
 		Function(typename Base::IncomingClassFunctionConstType fn) : Base(fn) {}
-		template<typename O> Function(O* obj, typename Base::ObjectType<O>::IncomingObjectFunctionType fn) : Base(obj, fn) { }
-		template<typename O> Function(O* obj, typename Base::ObjectType<O>::IncomingObjectFunctionConstType fn) : Base(obj, fn) { }
+		template<typename O> Function(O* obj, typename Base::template ObjectType<O>::IncomingObjectFunctionType fn) : Base(obj, fn) { }
+		template<typename O> Function(O* obj, typename Base::template ObjectType<O>::IncomingObjectFunctionConstType fn) : Base(obj, fn) { }
 
 		inline R operator()(P1 p1, P2 p2, P3 p3, P4 p4, P5 p5) const { return Base::invoker5(Base::objPointerHolder.object, Base::fnPointerHolder, p1, p2, p3, p4, p5); }
 	};
@@ -559,12 +570,14 @@ namespace DAVA
 	struct Function<R(P1, P2, P3, P4, P5, P6)> : public FunctionBase<R, P1, P2, P3, P4, P5, P6>
 	{
 		typedef FunctionBase<R, P1, P2, P3, P4, P5, P6> Base;
-		Function(int ptr = NULL) {}
+        Function() {}
+		Function(int ptr) {}
+		Function(long int ptr) {}
 		Function(typename Base::IncomingStaticFunctionType fn) : Base(fn) {}
 		Function(typename Base::IncomingClassFunctionType fn) : Base(fn) {}
 		Function(typename Base::IncomingClassFunctionConstType fn) : Base(fn) {}
-		template<typename O> Function(O* obj, typename Base::ObjectType<O>::IncomingObjectFunctionType fn) : Base(obj, fn) { }
-		template<typename O> Function(O* obj, typename Base::ObjectType<O>::IncomingObjectFunctionConstType fn) : Base(obj, fn) { }
+		template<typename O> Function(O* obj, typename Base::template ObjectType<O>::IncomingObjectFunctionType fn) : Base(obj, fn) { }
+		template<typename O> Function(O* obj, typename Base::template ObjectType<O>::IncomingObjectFunctionConstType fn) : Base(obj, fn) { }
 
 		inline R operator()(P1 p1, P2 p2, P3 p3, P4 p4, P5 p5, P6 p6) const { return Base::invoker6(Base::objPointerHolder.object, Base::fnPointerHolder, p1, p2, p3, p4, p5, p6); }
 	};
@@ -574,12 +587,14 @@ namespace DAVA
 	struct Function<R(P1, P2, P3, P4, P5, P6, P7)> : public FunctionBase<R, P1, P2, P3, P4, P5, P6, P7>
 	{
 		typedef FunctionBase<R, P1, P2, P3, P4, P5, P6, P7> Base;
-		Function(int ptr = NULL) {}
+        Function() {}
+		Function(int ptr) {}
+		Function(long int ptr) {}
 		Function(typename Base::IncomingStaticFunctionType fn) : Base(fn) {}
 		Function(typename Base::IncomingClassFunctionType fn) : Base(fn) {}
 		Function(typename Base::IncomingClassFunctionConstType fn) : Base(fn) {}
-		template<typename O> Function(O* obj, typename Base::ObjectType<O>::IncomingObjectFunctionType fn) : Base(obj, fn) { }
-		template<typename O> Function(O* obj, typename Base::ObjectType<O>::IncomingObjectFunctionConstType fn) : Base(obj, fn) { }
+		template<typename O> Function(O* obj, typename Base::template ObjectType<O>::IncomingObjectFunctionType fn) : Base(obj, fn) { }
+		template<typename O> Function(O* obj, typename Base::template ObjectType<O>::IncomingObjectFunctionConstType fn) : Base(obj, fn) { }
 
 		inline R operator()(P1 p1, P2 p2, P3 p3, P4 p4, P5 p5, P6 p6, P7 p7) const { return Base::invoker7(Base::objPointerHolder.object, Base::fnPointerHolder, p1, p2, p3, p4, p5, p6, p7); }
 	};
@@ -589,12 +604,14 @@ namespace DAVA
 	struct Function<R(P1, P2, P3, P4, P5, P6, P7, P8)> : public FunctionBase<R, P1, P2, P3, P4, P5, P6, P7, P8>
 	{
 		typedef FunctionBase<R, P1, P2, P3, P4, P5, P6, P7, P8> Base;
-		Function(int ptr = NULL) {}
+        Function() {}
+		Function(int ptr) {}
+		Function(long int ptr) {}
 		Function(typename Base::IncomingStaticFunctionType fn) : Base(fn) {}
 		Function(typename Base::IncomingClassFunctionType fn) : Base(fn) {}
 		Function(typename Base::IncomingClassFunctionConstType fn) : Base(fn) {}
-		template<typename O> Function(O* obj, typename Base::ObjectType<O>::IncomingObjectFunctionType fn) : Base(obj, fn) { }
-		template<typename O> Function(O* obj, typename Base::ObjectType<O>::IncomingObjectFunctionConstType fn) : Base(obj, fn) { }
+		template<typename O> Function(O* obj, typename Base::template ObjectType<O>::IncomingObjectFunctionType fn) : Base(obj, fn) { }
+		template<typename O> Function(O* obj, typename Base::template ObjectType<O>::IncomingObjectFunctionConstType fn) : Base(obj, fn) { }
 
 		inline R operator()(P1 p1, P2 p2, P3 p3, P4 p4, P5 p5, P6 p6, P7 p7, P8 p8) const { return Base::invoker8(Base::objPointerHolder.object, Base::fnPointerHolder, p1, p2, p3, p4, p5, p6, p7, p8); }
 	};

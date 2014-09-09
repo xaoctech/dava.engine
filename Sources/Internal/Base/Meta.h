@@ -31,7 +31,6 @@
 #define __DAVAENGINE_META_H__
 
 #include "Base/IntrospectionBase.h"
-#include "Base/TypeTraits.h"
 
 namespace DAVA
 {

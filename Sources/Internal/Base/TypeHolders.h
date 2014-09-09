@@ -66,7 +66,7 @@ namespace DAVA
 	{
 		enum
 		{
-			FuncHolderMaxSize = (sizeof(void *)* 4)
+			FuncHolderMaxSize = (sizeof(void *) * 4)
 		};
 
 		unsigned char buf[FuncHolderMaxSize];
@@ -86,7 +86,7 @@ namespace DAVA
 		{
 			// Function pointer with size greater than FuncHolderMaxSize
 			// can't be added to this holder. This will be checked on compile time.
-			StaticAssert< sizeof(F) <= FuncHolderMaxSize >::Check;
+			COMPILER_ASSERT(sizeof(F) <= FuncHolderMaxSize);
 
 			memset(buf, 0, FuncHolderMaxSize);
 			new(buf)F(fn);
@@ -105,7 +105,7 @@ namespace DAVA
 
 		bool IsNull() const
 		{
-			static const unsigned char zero_block[FuncHolderMaxSize];
+			static const unsigned char zero_block[FuncHolderMaxSize] = {0};
 			return (0 == memcmp(zero_block, buf, FuncHolderMaxSize));
 		}
 	};
@@ -206,7 +206,9 @@ namespace DAVA
 	// ====================================================================================================================================================
 	template<int>
 	struct Placeholder
-	{ };
+	{
+        Placeholder() {};
+    };
 
 	template<typename U> struct IsPlaceholder { enum { result = false }; };
 	template<> struct IsPlaceholder< Placeholder<1> > { enum { result = true }; };
