@@ -33,310 +33,312 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace DAVA
 {
-	// FuncTrains
-	template<typename T>
-	struct FuncTraits
-	{};
 
-	// Static functions
-	template<typename R>
-	struct FuncTraits<R(*)()>
-	{
-		typedef R ReturnType;
-		typedef Function<R()> FunctionType;
-	};
+// FuncTrains
+template<typename T>
+struct FuncTraits
+{};
 
-	template<typename R, typename P1>
-	struct FuncTraits<R(*)(P1)>
-	{
-		typedef R ReturnType;
-		typedef P1 ParamType1;
-		typedef Function<R (P1)> FunctionType;
-	};
+// Static functions
+template<typename R>
+struct FuncTraits<R(*)()>
+{
+	typedef R ReturnType;
+	typedef Function<R()> FunctionType;
+};
 
-	template<typename R, typename P1, typename P2>
-	struct FuncTraits<R(*)(P1, P2)>
-	{
-		typedef R ReturnType;
-		typedef P1 ParamType1;
-		typedef P2 ParamType2;
-		typedef Function<R (P1, P2)> FunctionType;
-	};
+template<typename R, typename P1>
+struct FuncTraits<R(*)(P1)>
+{
+	typedef R ReturnType;
+	typedef P1 ParamType1;
+	typedef Function<R (P1)> FunctionType;
+};
 
-	template<typename R, typename P1, typename P2, typename P3>
-	struct FuncTraits<R(*)(P1, P2, P3)>
-	{
-		typedef R ReturnType;
-		typedef P1 ParamType1;
-		typedef P2 ParamType2;
-		typedef P3 ParamType3;
-		typedef Function<R (P1, P2, P3)> FunctionType;
-	};
+template<typename R, typename P1, typename P2>
+struct FuncTraits<R(*)(P1, P2)>
+{
+	typedef R ReturnType;
+	typedef P1 ParamType1;
+	typedef P2 ParamType2;
+	typedef Function<R (P1, P2)> FunctionType;
+};
 
-	template<typename R, typename P1, typename P2, typename P3, typename P4>
-	struct FuncTraits<R(*)(P1, P2, P3, P4)>
-	{
-		typedef R ReturnType;
-		typedef P1 ParamType1;
-		typedef P2 ParamType2;
-		typedef P3 ParamType3;
-		typedef P4 ParamType4;
-		typedef Function<R (P1, P2, P3, P4)> FunctionType;
-	};
+template<typename R, typename P1, typename P2, typename P3>
+struct FuncTraits<R(*)(P1, P2, P3)>
+{
+	typedef R ReturnType;
+	typedef P1 ParamType1;
+	typedef P2 ParamType2;
+	typedef P3 ParamType3;
+	typedef Function<R (P1, P2, P3)> FunctionType;
+};
 
-	template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5>
-	struct FuncTraits<R(*)(P1, P2, P3, P4, P5)>
-	{
-		typedef R ReturnType;
-		typedef P1 ParamType1;
-		typedef P2 ParamType2;
-		typedef P3 ParamType3;
-		typedef P4 ParamType4;
-		typedef P5 ParamType5;
-		typedef Function<R (P1, P2, P3, P4, P5)> FunctionType;
-	};
+template<typename R, typename P1, typename P2, typename P3, typename P4>
+struct FuncTraits<R(*)(P1, P2, P3, P4)>
+{
+	typedef R ReturnType;
+	typedef P1 ParamType1;
+	typedef P2 ParamType2;
+	typedef P3 ParamType3;
+	typedef P4 ParamType4;
+	typedef Function<R (P1, P2, P3, P4)> FunctionType;
+};
 
-	template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6>
-	struct FuncTraits<R(*)(P1, P2, P3, P4, P5, P6)>
-	{
-		typedef R ReturnType;
-		typedef P1 ParamType1;
-		typedef P2 ParamType2;
-		typedef P3 ParamType3;
-		typedef P4 ParamType4;
-		typedef P5 ParamType5;
-		typedef P6 ParamType6;
-		typedef Function<R (P1, P2, P3, P4, P5, P6)> FunctionType;
-	};
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5>
+struct FuncTraits<R(*)(P1, P2, P3, P4, P5)>
+{
+	typedef R ReturnType;
+	typedef P1 ParamType1;
+	typedef P2 ParamType2;
+	typedef P3 ParamType3;
+	typedef P4 ParamType4;
+	typedef P5 ParamType5;
+	typedef Function<R (P1, P2, P3, P4, P5)> FunctionType;
+};
 
-	template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7>
-	struct FuncTraits<R(*)(P1, P2, P3, P4, P5, P6, P7)>
-	{
-		typedef R ReturnType;
-		typedef P1 ParamType1;
-		typedef P2 ParamType2;
-		typedef P3 ParamType3;
-		typedef P4 ParamType4;
-		typedef P5 ParamType5;
-		typedef P6 ParamType6;
-		typedef P7 ParamType7;
-		typedef Function<R (P1, P2, P3, P4, P5, P6, P7)> FunctionType;
-	};
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6>
+struct FuncTraits<R(*)(P1, P2, P3, P4, P5, P6)>
+{
+	typedef R ReturnType;
+	typedef P1 ParamType1;
+	typedef P2 ParamType2;
+	typedef P3 ParamType3;
+	typedef P4 ParamType4;
+	typedef P5 ParamType5;
+	typedef P6 ParamType6;
+	typedef Function<R (P1, P2, P3, P4, P5, P6)> FunctionType;
+};
 
-	template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
-	struct FuncTraits<R(*)(P1, P2, P3, P4, P5, P6, P7, P8)>
-	{
-		typedef R ReturnType;
-		typedef P1 ParamType1;
-		typedef P2 ParamType2;
-		typedef P3 ParamType3;
-		typedef P4 ParamType4;
-		typedef P5 ParamType5;
-		typedef P6 ParamType6;
-		typedef P7 ParamType7;
-		typedef P8 ParamType8;
-		typedef Function<R (P1, P2, P3, P4, P5, P6, P7, P8)> FunctionType;
-	};
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7>
+struct FuncTraits<R(*)(P1, P2, P3, P4, P5, P6, P7)>
+{
+	typedef R ReturnType;
+	typedef P1 ParamType1;
+	typedef P2 ParamType2;
+	typedef P3 ParamType3;
+	typedef P4 ParamType4;
+	typedef P5 ParamType5;
+	typedef P6 ParamType6;
+	typedef P7 ParamType7;
+	typedef Function<R (P1, P2, P3, P4, P5, P6, P7)> FunctionType;
+};
 
-	// Member functions
-	template<typename R, typename P1>
-	struct FuncTraits<R(P1::*)()>
-	{
-		typedef R ReturnType;
-		typedef P1* ParamType1;
-		typedef Function<R (P1*)> FunctionType;
-	};
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
+struct FuncTraits<R(*)(P1, P2, P3, P4, P5, P6, P7, P8)>
+{
+	typedef R ReturnType;
+	typedef P1 ParamType1;
+	typedef P2 ParamType2;
+	typedef P3 ParamType3;
+	typedef P4 ParamType4;
+	typedef P5 ParamType5;
+	typedef P6 ParamType6;
+	typedef P7 ParamType7;
+	typedef P8 ParamType8;
+	typedef Function<R (P1, P2, P3, P4, P5, P6, P7, P8)> FunctionType;
+};
 
-	template<typename R, typename P1, typename P2>
-	struct FuncTraits<R(P1::*)(P2)>
-	{
-		typedef R ReturnType;
-		typedef P1* ParamType1;
-		typedef P2 ParamType2;
-		typedef Function<R (P1*, P2)> FunctionType;
-	};
+// Member functions
+template<typename R, typename P1>
+struct FuncTraits<R(P1::*)()>
+{
+	typedef R ReturnType;
+	typedef P1* ParamType1;
+	typedef Function<R (P1*)> FunctionType;
+};
 
-	template<typename R, typename P1, typename P2, typename P3>
-	struct FuncTraits<R(P1::*)(P2, P3)>
-	{
-		typedef R ReturnType;
-		typedef P1* ParamType1;
-		typedef P2 ParamType2;
-		typedef P3 ParamType3;
-		typedef Function<R (P1*, P2, P3)> FunctionType;
-	};
+template<typename R, typename P1, typename P2>
+struct FuncTraits<R(P1::*)(P2)>
+{
+	typedef R ReturnType;
+	typedef P1* ParamType1;
+	typedef P2 ParamType2;
+	typedef Function<R (P1*, P2)> FunctionType;
+};
 
-	template<typename R, typename P1, typename P2, typename P3, typename P4>
-	struct FuncTraits<R(P1::*)(P2, P3, P4)>
-	{
-		typedef R ReturnType;
-		typedef P1* ParamType1;
-		typedef P2 ParamType2;
-		typedef P3 ParamType3;
-		typedef P4 ParamType4;
-		typedef Function<R (P1*, P2, P3, P4)> FunctionType;
-	};
+template<typename R, typename P1, typename P2, typename P3>
+struct FuncTraits<R(P1::*)(P2, P3)>
+{
+	typedef R ReturnType;
+	typedef P1* ParamType1;
+	typedef P2 ParamType2;
+	typedef P3 ParamType3;
+	typedef Function<R (P1*, P2, P3)> FunctionType;
+};
 
-	template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5>
-	struct FuncTraits<R(P1::*)(P2, P3, P4, P5)>
-	{
-		typedef R ReturnType;
-		typedef P1* ParamType1;
-		typedef P2 ParamType2;
-		typedef P3 ParamType3;
-		typedef P4 ParamType4;
-		typedef P5 ParamType5;
-		typedef Function<R (P1*, P2, P3, P4, P5)> FunctionType;
-	};
+template<typename R, typename P1, typename P2, typename P3, typename P4>
+struct FuncTraits<R(P1::*)(P2, P3, P4)>
+{
+	typedef R ReturnType;
+	typedef P1* ParamType1;
+	typedef P2 ParamType2;
+	typedef P3 ParamType3;
+	typedef P4 ParamType4;
+	typedef Function<R (P1*, P2, P3, P4)> FunctionType;
+};
 
-	template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6>
-	struct FuncTraits<R(P1::*)(P2, P3, P4, P5, P6)>
-	{
-		typedef R ReturnType;
-		typedef P1* ParamType1;
-		typedef P2 ParamType2;
-		typedef P3 ParamType3;
-		typedef P4 ParamType4;
-		typedef P5 ParamType5;
-		typedef P6 ParamType6;
-		typedef Function<R (P1*, P2, P3, P4, P5, P6)> FunctionType;
-	};
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5>
+struct FuncTraits<R(P1::*)(P2, P3, P4, P5)>
+{
+	typedef R ReturnType;
+	typedef P1* ParamType1;
+	typedef P2 ParamType2;
+	typedef P3 ParamType3;
+	typedef P4 ParamType4;
+	typedef P5 ParamType5;
+	typedef Function<R (P1*, P2, P3, P4, P5)> FunctionType;
+};
 
-	template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7>
-	struct FuncTraits<R(P1::*)(P2, P3, P4, P5, P6, P7)>
-	{
-		typedef R ReturnType;
-		typedef P1* ParamType1;
-		typedef P2 ParamType2;
-		typedef P3 ParamType3;
-		typedef P4 ParamType4;
-		typedef P5 ParamType5;
-		typedef P6 ParamType6;
-		typedef P7 ParamType7;
-		typedef Function<R (P1*, P2, P3, P4, P5, P6, P7)> FunctionType;
-	};
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6>
+struct FuncTraits<R(P1::*)(P2, P3, P4, P5, P6)>
+{
+	typedef R ReturnType;
+	typedef P1* ParamType1;
+	typedef P2 ParamType2;
+	typedef P3 ParamType3;
+	typedef P4 ParamType4;
+	typedef P5 ParamType5;
+	typedef P6 ParamType6;
+	typedef Function<R (P1*, P2, P3, P4, P5, P6)> FunctionType;
+};
 
-	template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
-	struct FuncTraits<R(P1::*)(P2, P3, P4, P5, P6, P7, P8)>
-	{
-		typedef R ReturnType;
-		typedef P1* ParamType1;
-		typedef P2 ParamType2;
-		typedef P3 ParamType3;
-		typedef P4 ParamType4;
-		typedef P5 ParamType5;
-		typedef P6 ParamType6;
-		typedef P7 ParamType7;
-		typedef P8 ParamType8;
-		typedef Function<R (P1*, P2, P3, P4, P5, P6, P7, P8)> FunctionType;
-	};
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7>
+struct FuncTraits<R(P1::*)(P2, P3, P4, P5, P6, P7)>
+{
+	typedef R ReturnType;
+	typedef P1* ParamType1;
+	typedef P2 ParamType2;
+	typedef P3 ParamType3;
+	typedef P4 ParamType4;
+	typedef P5 ParamType5;
+	typedef P6 ParamType6;
+	typedef P7 ParamType7;
+	typedef Function<R (P1*, P2, P3, P4, P5, P6, P7)> FunctionType;
+};
 
-	// Function class
-	template<typename R>
-	struct FuncTraits< Function<R()> >
-	{
-		typedef R ReturnType;
-		typedef Function<R()> FunctionType;
-	};
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
+struct FuncTraits<R(P1::*)(P2, P3, P4, P5, P6, P7, P8)>
+{
+	typedef R ReturnType;
+	typedef P1* ParamType1;
+	typedef P2 ParamType2;
+	typedef P3 ParamType3;
+	typedef P4 ParamType4;
+	typedef P5 ParamType5;
+	typedef P6 ParamType6;
+	typedef P7 ParamType7;
+	typedef P8 ParamType8;
+	typedef Function<R (P1*, P2, P3, P4, P5, P6, P7, P8)> FunctionType;
+};
 
-	template<typename R, typename P1>
-	struct FuncTraits< Function<R(P1)> >
-	{
-		typedef R ReturnType;
-		typedef P1 ParamType1;
-		typedef Function<R(P1)> FunctionType;
-	};
+// Function class
+template<typename R>
+struct FuncTraits< Function<R()> >
+{
+	typedef R ReturnType;
+	typedef Function<R()> FunctionType;
+};
 
-	template<typename R, typename P1, typename P2>
-	struct FuncTraits< Function<R(P1, P2)> >
-	{
-		typedef R ReturnType;
-		typedef P1 ParamType1;
-		typedef P2 ParamType2;
-		typedef Function<R(P1, P2)> FunctionType;
-	};
+template<typename R, typename P1>
+struct FuncTraits< Function<R(P1)> >
+{
+	typedef R ReturnType;
+	typedef P1 ParamType1;
+	typedef Function<R(P1)> FunctionType;
+};
 
-	template<typename R, typename P1, typename P2, typename P3>
-	struct FuncTraits< Function<R(P1, P2, P3)> >
-	{
-		typedef R ReturnType;
-		typedef P1 ParamType1;
-		typedef P2 ParamType2;
-		typedef P3 ParamType3;
-		typedef Function<R(P1, P2, P3)> FunctionType;
-	};
+template<typename R, typename P1, typename P2>
+struct FuncTraits< Function<R(P1, P2)> >
+{
+	typedef R ReturnType;
+	typedef P1 ParamType1;
+	typedef P2 ParamType2;
+	typedef Function<R(P1, P2)> FunctionType;
+};
 
-	template<typename R, typename P1, typename P2, typename P3, typename P4>
-	struct FuncTraits< Function<R(P1, P2, P3, P4)> >
-	{
-		typedef R ReturnType;
-		typedef P1 ParamType1;
-		typedef P2 ParamType2;
-		typedef P3 ParamType3;
-		typedef P4 ParamType4;
-		typedef Function<R(P1, P2, P3, P4)> FunctionType;
-	};
+template<typename R, typename P1, typename P2, typename P3>
+struct FuncTraits< Function<R(P1, P2, P3)> >
+{
+	typedef R ReturnType;
+	typedef P1 ParamType1;
+	typedef P2 ParamType2;
+	typedef P3 ParamType3;
+	typedef Function<R(P1, P2, P3)> FunctionType;
+};
 
-	template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5>
-	struct FuncTraits< Function<R(P1, P2, P3, P4, P5)> >
-	{
-		typedef R ReturnType;
-		typedef P1 ParamType1;
-		typedef P2 ParamType2;
-		typedef P3 ParamType3;
-		typedef P4 ParamType4;
-		typedef P5 ParamType5;
-		typedef Function<R(P1, P2, P3, P4, P5)> FunctionType;
-	};
+template<typename R, typename P1, typename P2, typename P3, typename P4>
+struct FuncTraits< Function<R(P1, P2, P3, P4)> >
+{
+	typedef R ReturnType;
+	typedef P1 ParamType1;
+	typedef P2 ParamType2;
+	typedef P3 ParamType3;
+	typedef P4 ParamType4;
+	typedef Function<R(P1, P2, P3, P4)> FunctionType;
+};
 
-	template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6>
-	struct FuncTraits< Function<R(P1, P2, P3, P4, P5, P6)> >
-	{
-		typedef R ReturnType;
-		typedef P1 ParamType1;
-		typedef P2 ParamType2;
-		typedef P3 ParamType3;
-		typedef P4 ParamType4;
-		typedef P5 ParamType5;
-		typedef P6 ParamType6;
-		typedef Function<R(P1, P2, P3, P4, P5, P6)> FunctionType;
-	};
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5>
+struct FuncTraits< Function<R(P1, P2, P3, P4, P5)> >
+{
+	typedef R ReturnType;
+	typedef P1 ParamType1;
+	typedef P2 ParamType2;
+	typedef P3 ParamType3;
+	typedef P4 ParamType4;
+	typedef P5 ParamType5;
+	typedef Function<R(P1, P2, P3, P4, P5)> FunctionType;
+};
 
-	template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7>
-	struct FuncTraits< Function<R(P1, P2, P3, P4, P5, P6, P7)> >
-	{
-		typedef R ReturnType;
-		typedef P1 ParamType1;
-		typedef P2 ParamType2;
-		typedef P3 ParamType3;
-		typedef P4 ParamType4;
-		typedef P5 ParamType5;
-		typedef P6 ParamType6;
-		typedef P7 ParamType7;
-		typedef Function<R(P1, P2, P3, P4, P5, P6, P7)> FunctionType;
-	};
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6>
+struct FuncTraits< Function<R(P1, P2, P3, P4, P5, P6)> >
+{
+	typedef R ReturnType;
+	typedef P1 ParamType1;
+	typedef P2 ParamType2;
+	typedef P3 ParamType3;
+	typedef P4 ParamType4;
+	typedef P5 ParamType5;
+	typedef P6 ParamType6;
+	typedef Function<R(P1, P2, P3, P4, P5, P6)> FunctionType;
+};
 
-	template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
-	struct FuncTraits< Function<R(P1, P2, P3, P4, P5, P6, P7, P8)> >
-	{
-		typedef R ReturnType;
-		typedef P1 ParamType1;
-		typedef P2 ParamType2;
-		typedef P3 ParamType3;
-		typedef P4 ParamType4;
-		typedef P5 ParamType5;
-		typedef P6 ParamType6;
-		typedef P7 ParamType7;
-		typedef P8 ParamType8;
-		typedef Function<R(P1, P2, P3, P4, P5, P6, P7, P8)> FunctionType;
-	};
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7>
+struct FuncTraits< Function<R(P1, P2, P3, P4, P5, P6, P7)> >
+{
+	typedef R ReturnType;
+	typedef P1 ParamType1;
+	typedef P2 ParamType2;
+	typedef P3 ParamType3;
+	typedef P4 ParamType4;
+	typedef P5 ParamType5;
+	typedef P6 ParamType6;
+	typedef P7 ParamType7;
+	typedef Function<R(P1, P2, P3, P4, P5, P6, P7)> FunctionType;
+};
 
-	// Make Function Helpers
-	template<typename F> 
-	typename FuncTraits<F>::FunctionType MakeFunction(const F &fn) 
-	{ 
-		return typename FuncTraits<F>::FunctionType(fn);
-	}
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
+struct FuncTraits< Function<R(P1, P2, P3, P4, P5, P6, P7, P8)> >
+{
+	typedef R ReturnType;
+	typedef P1 ParamType1;
+	typedef P2 ParamType2;
+	typedef P3 ParamType3;
+	typedef P4 ParamType4;
+	typedef P5 ParamType5;
+	typedef P6 ParamType6;
+	typedef P7 ParamType7;
+	typedef P8 ParamType8;
+	typedef Function<R(P1, P2, P3, P4, P5, P6, P7, P8)> FunctionType;
+};
+
+// Make Function Helpers
+template<typename F> 
+typename FuncTraits<F>::FunctionType MakeFunction(const F &fn) 
+{ 
+	return typename FuncTraits<F>::FunctionType(fn);
+}
+
 }
 
 #endif // __DAVAENGINE_FUNCTION_TRAITS_H__

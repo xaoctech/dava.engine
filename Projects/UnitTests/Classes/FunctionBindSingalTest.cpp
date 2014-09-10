@@ -146,6 +146,7 @@ void FunctionBindSignalTest::LoadResources()
 	textInfoText->SetDebugDraw(true);
 
 	AddControl(textInfoText);
+    SafeRelease(font);
 }
 
 void FunctionBindSignalTest::UnloadResources()
