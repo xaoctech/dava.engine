@@ -137,6 +137,43 @@ void RenderObject::RemoveRenderBatch(uint32 batchIndex)
     RecalcBoundingBox();
 }
 
+void RenderObject::ReplaceRenderBatch(RenderBatch * oldBatch, RenderBatch * newBatch)
+{
+    uint32 size = (uint32)renderBatchArray.size();
+    for (uint32 k = 0; k < size; ++k)
+    {
+        if (renderBatchArray[k].renderBatch == oldBatch)
+        {
+            ReplaceRenderBatch(k, newBatch);
+            return;
+        }
+    }
+}
+
+void RenderObject::ReplaceRenderBatch(uint32 batchIndex, RenderBatch * newBatch)
+{
+    uint32 size = (uint32)renderBatchArray.size();
+    DVASSERT(batchIndex < size);
+
+    RenderBatch * batch = renderBatchArray[batchIndex].renderBatch;
+    renderBatchArray[batchIndex].renderBatch = newBatch;
+
+    batch->SetRenderObject(0);
+    newBatch->SetRenderObject(this);
+
+    if (renderSystem)
+    {
+        renderSystem->UnregisterBatch(batch);
+        renderSystem->RegisterBatch(newBatch);
+    }
+
+    batch->Release();
+    newBatch->Retain();
+
+    UpdateActiveRenderBatches();
+    RecalcBoundingBox();
+}
+
 void RenderObject::SetRenderBatchLODIndex(uint32 batchIndex, int32 newLodIndex)
 {
     uint32 size = (uint32)renderBatchArray.size();
