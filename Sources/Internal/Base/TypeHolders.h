@@ -149,12 +149,15 @@ namespace DAVA
  
  		ObjectPointerHolder& operator=(const ObjectPointerHolder& holder)
  		{
- 			Release();
+            if(this != &holder)
+            {
+                Release();
  
-			type = holder.type;
-			object = holder.object;
+                type = holder.type;
+                object = holder.object;
  
- 			AddRef();
+                AddRef();
+            }
  
  			return *this;
  		}
