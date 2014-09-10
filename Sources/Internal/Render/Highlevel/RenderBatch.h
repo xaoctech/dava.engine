@@ -67,7 +67,6 @@ class RenderBatch;
 class NMaterial;
 class NMaterialInstance;
 class OcclusionQuery;
-class ShadowVolume;
 
     
 /*
@@ -130,9 +129,8 @@ public:
 	
     pointer_size layerSortingKey;
 
-	virtual ShadowVolume * CreateShadow();
-
-protected:        
+protected:
+    void BindDynamicParameters(Camera * camera);
     
     uint32 renderLayerIDsBitmaskFromMaterial;
     PolygonGroup * dataSource;

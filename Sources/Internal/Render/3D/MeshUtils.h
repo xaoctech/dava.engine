@@ -46,6 +46,7 @@ namespace MeshUtils
     void CopyGroupData(PolygonGroup *srcGroup, PolygonGroup *dstGroup);
 
     RenderObject * CreateSkinnedMesh(Entity * entity);
+    PolygonGroup * CreateShadowPolygonGroup(PolygonGroup * source);
 
     struct FaceWork
     {
@@ -94,6 +95,20 @@ namespace MeshUtils
         RenderBatch * batch;
         uint32 jointIndex;
     };
+
+    struct EdgeMappingWork
+    {
+        int32 oldEdge[2];
+        int32 newEdge[2][2];
+
+        EdgeMappingWork()
+        {
+            Memset(oldEdge, -1, sizeof(oldEdge));
+            Memset(newEdge, -1, sizeof(newEdge));
+        }
+    };
+
+    int32 FindEdgeInMappingTable(int32 nV1, int32 nV2, EdgeMappingWork * mapping, int32 count);
 };
 
 };
