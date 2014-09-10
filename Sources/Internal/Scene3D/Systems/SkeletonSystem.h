@@ -44,12 +44,17 @@ class SkeletonSystem : public SceneSystem
 
 public:
     SkeletonSystem(Scene * scene);
-
     ~SkeletonSystem();
+
+    virtual void AddEntity(Entity * entity);
+    virtual void RemoveEntity(Entity * entity);
+    
     virtual void Process(float32 timeElapsed);		
 
 private:
     void RebuildPose(Entity *entity);
+
+    Vector<Entity*> entities;
 
 };
 

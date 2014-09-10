@@ -42,25 +42,40 @@ SkeletonSystem::SkeletonSystem(Scene * scene):SceneSystem(scene)
 
 }
 
+void SkeletonSystem::AddEntity(Entity * entity)
+{
+    entities.push_back(entity); 
+}
+
+void SkeletonSystem::RemoveEntity(Entity * entity)
+{
+    uint32 size = entities.size();
+    for(uint32 i = 0; i < size; ++i)
+    {
+        if(entities[i] == entity)
+        {
+            entities[i] = entities[size-1];
+            entities.pop_back();
+            return;
+        }
+    }
+    DVASSERT(0);
+}
+
 void SkeletonSystem::Process(float32 timeElapsed)
 {
-    /*for each active component*/
+    for (int32 i=0, sz=entities.size(); i<sz; ++i)
     {
-       // SkeletonComponent *component;
-        /*for each bone*/        
-        /*if bone [marked for update]  or parent [was updated]*/
-        /*  recalculate object space transform*/
-        /*  add [was updated]*/
-        /*  remove [marked for update]*/
-        /*else*/
-        /*  remove was updated  - note that as bones come in descending order we do not care that was updated flag would be cared to next frame*/
-
-    }
+        RebuildPose(entities[i]);
+    }    
 }
 
 void SkeletonSystem::RebuildPose(Entity *entity)
 {
     SkeletonComponent *component = GetSkeletonComponent(entity);
+    if (component->startJoint == SkeletonComponent::INVALID_BONE_INDEX) //nothing changed
+        return;
+
     uint16 count = component->GetJointsCount();
     for (uint16 currJoint = component->startJoint; currJoint<count; ++currJoint)
     {
