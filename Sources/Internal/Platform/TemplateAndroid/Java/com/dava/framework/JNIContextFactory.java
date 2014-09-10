@@ -5,6 +5,9 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
 
+import android.app.ActivityManager;
+import android.content.Context;
+import android.content.pm.ConfigurationInfo;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
 //import android.util.Log;
@@ -23,7 +26,15 @@ public class JNIContextFactory implements GLSurfaceView.EGLContextFactory
         
         JNIConst.checkEglError("Before eglCreateContext", egl);
         
-        EGLContext context = createOpenGLESContext(glVersion30, egl, display, eglConfig);
+        final ActivityManager activityManager = (ActivityManager) JNIActivity.GetActivity().getSystemService(Context.ACTIVITY_SERVICE);
+    	final ConfigurationInfo configurationInfo = activityManager.getDeviceConfigurationInfo();
+
+        EGLContext context = null;
+		if(configurationInfo.reqGlEsVersion >= 0x30000)
+    	{
+            context = createOpenGLESContext(glVersion30, egl, display, eglConfig);
+    	}
+    		
         if(context == null)
         {
         	Log.w(JNIConst.LOG_TAG, "[JNIContextFactory::createContext] OpenGLES 3.0 is not supported");
@@ -49,8 +60,10 @@ public class JNIContextFactory implements GLSurfaceView.EGLContextFactory
 	        int[] attrib_list = {EGL_CONTEXT_CLIENT_VERSION, openglESVersion, EGL10.EGL_NONE };
 	        context = egl.eglCreateContext(display, eglConfig, EGL10.EGL_NO_CONTEXT, attrib_list);
 	        
-			if (egl.eglGetError() != EGL10.EGL_SUCCESS) 
+	        int error = egl.eglGetError(); 
+			if (error != EGL10.EGL_SUCCESS) 
 			{
+				Log.e(JNIConst.LOG_TAG, String.format("[createOpenGLESContext] EGL error: 0x%x (%s)", error, GLUtils.getEGLErrorString(error)));
 				context = null;
 			}
 		}
