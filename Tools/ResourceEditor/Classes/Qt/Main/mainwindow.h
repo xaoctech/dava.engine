@@ -106,7 +106,7 @@ public slots:
 	void OnSceneSaveToFolder();
 	void OnRecentTriggered(QAction *recentAction);
 	void ExportMenuTriggered(QAction *exportAsAction);
-
+    void OnPlaySceneAnimations(bool start);
     void OnImportSpeedTreeXML();
 
 	void OnUndo();

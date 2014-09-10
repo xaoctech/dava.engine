@@ -57,6 +57,9 @@ public:
 
     virtual void RegisterComponent(Entity* entity, Component* component) override;
     virtual void UnregisterComponent(Entity* entity, Component* component) override;
+
+    void PlaySceneAnimations(void);
+    void StopSceneAnimations(void);
 private:
     Vector<AnimationComponent*> items;
 };

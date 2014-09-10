@@ -481,6 +481,7 @@ void Scene::UnregisterComponent(Entity * entity, Component * component)
     
 }
 
+
 #if 0 // Removed temporarly if everything will work with events can be removed fully.
 void Scene::ImmediateEvent(Entity * entity, uint32 componentType, uint32 event)
 {
@@ -1074,6 +1075,10 @@ MaterialSystem * Scene::GetMaterialSystem() const
     return materialSystem;
 }
 
+AnimationSystem * Scene::GetAnimationSystem() const
+{
+    return animationSystem;
+}
 
 /*void Scene::Save(KeyedArchive * archive)
 {

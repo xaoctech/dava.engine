@@ -34,6 +34,7 @@
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
 #include "Scene3D/SceneNodeAnimation.h"
+#include "Scene3D/Components/TransformComponent.h"
 
 namespace DAVA
 {
@@ -42,8 +43,10 @@ REGISTER_CLASS(AnimationComponent)
     
 AnimationComponent::AnimationComponent()
 :time(0.0f),
-isPlaying(true),
-animation(NULL)
+isPlaying(false),
+animation(NULL),
+autoStart(true),
+repeat(true)
 {
 }
     
@@ -59,8 +62,10 @@ Component * AnimationComponent::Clone(Entity * toEntity)
     newAnimation->originalMatrix = originalMatrix;
     newAnimation->originalTranslate = originalTranslate;
     newAnimation->time = time;
-    newAnimation->isPlaying = true;
+    newAnimation->isPlaying = false;
     newAnimation->animation = animation ? animation->Clone() : NULL;
+    newAnimation->autoStart = autoStart;
+    newAnimation->repeat = repeat;
     return newAnimation;
 }
 
@@ -80,6 +85,8 @@ void AnimationComponent::Serialize(KeyedArchive *archive, SerializationContext *
             archive->SetVector3(Format("key_%i_translation", keyIndex), animation->keys[keyIndex].translation);
             archive->SetVector4(Format("key_%i_rotation", keyIndex), Vector4(animation->keys[keyIndex].rotation.x, animation->keys[keyIndex].rotation.y, animation->keys[keyIndex].rotation.z, animation->keys[keyIndex].rotation.w));
         }
+        archive->SetBool("autostart", autoStart);
+        archive->SetBool("repeat", repeat);
 	}
 }
 
@@ -105,6 +112,8 @@ void AnimationComponent::Deserialize(KeyedArchive *archive, SerializationContext
 
             animation->SetKey(keyIndex, key);
         }
+        autoStart = archive->GetBool("autostart", true);
+        repeat = archive->GetBool("repeat", true);
 // 		localMatrix = archive->GetMatrix4("tc.localMatrix", Matrix4::IDENTITY);
 // 		worldMatrix = archive->GetMatrix4("tc.worldMatrix", Matrix4::IDENTITY);
 	}
@@ -124,6 +133,24 @@ void AnimationComponent::SetAnimation(SceneNodeAnimation* _animation)
     SafeRetain(_animation);
     SafeRelease(animation);
     animation = _animation;
+}
+
+void AnimationComponent::SetIsPlaying( bool value )
+{
+    if (!value && isPlaying)
+    {
+        Matrix4 result(originalMatrix);
+        result.SetTranslationVector(originalTranslate);
+        ((TransformComponent*)(GetEntity()->GetComponent(Component::TRANSFORM_COMPONENT)))->SetLocalTransform(&result);
+        time = 0;
+    }
+    isPlaying = value;
+    time = 0.0f;
+}
+
+bool AnimationComponent::GetIsPlaying() const
+{
+    return isPlaying;
 }
 
 };
