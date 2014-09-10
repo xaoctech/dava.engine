@@ -163,20 +163,23 @@ public class JNITextField {
 					private final int _id = id;
 					
 					@Override
-					public CharSequence filter(final CharSequence source, final int start, final int end,
+					public CharSequence filter(CharSequence source, final int start, final int end,
 							Spanned dest, final int dstart, final int dend) {
 						
 						NativeEditText editText = GetNativeEditText(_id);
 						if (editText != null && editText.maxLengthFilter != null) {
 							CharSequence res = editText.maxLengthFilter.filter(source, start, end, dest, dstart, dend);
-							if (res != null)
+							if (res != null && res.toString().isEmpty())
 								return res;
+							if (res != null)
+								source = res;
 						}
 						
+						final CharSequence sourceToProcess = source;
 						FutureTask<Boolean> t = new FutureTask<Boolean>(new Callable<Boolean>() {
 							@Override
 							public Boolean call() throws Exception {
-								byte []bytes = source.toString().getBytes("UTF-8");
+								byte []bytes = sourceToProcess.toString().getBytes("UTF-8");
 								return TextFieldKeyPressed(_id, dstart, dend - dstart, bytes);
 							}
 						});
