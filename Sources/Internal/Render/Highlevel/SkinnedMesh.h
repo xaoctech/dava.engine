@@ -57,10 +57,10 @@ public:
     virtual void Save(KeyedArchive *archive, SerializationContext *serializationContext);
     virtual void Load(KeyedArchive *archive, SerializationContext *serializationContext);
     */
-    virtual void RecalcBoundingBox(){}
-    inline void SetObjectSpaceBoundingBox(const AABBox3& box);
+    virtual void RecalcBoundingBox(){}    
     virtual void BindDynamicParameters(Camera * camera);
     
+    inline void SetObjectSpaceBoundingBox(const AABBox3& box);
     inline void SetJointsPtr(Vector4 *positionPtr, Vector4 *quaternoinPtr, int32 count);
 protected:
     Vector4 *positionArray;
