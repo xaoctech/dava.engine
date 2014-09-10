@@ -44,7 +44,8 @@
 ImageArea::ImageArea(QWidget *parent /*= 0*/)
     : QLabel(parent)
     , image(NULL)
-    , acceptableSize(0,0)
+    , acceptableSize(0, 0)
+    , imagePath(SettingsManager::Instance()->GetValue(Settings::Internal_ImageSplitterPathSpecular).AsString())
 {
     setFrameStyle(QFrame::Sunken | QFrame::StyledPanel);
     setAcceptDrops(true);
