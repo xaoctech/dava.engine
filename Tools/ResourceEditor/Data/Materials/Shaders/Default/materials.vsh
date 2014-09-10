@@ -44,8 +44,8 @@ attribute vec3 inBinormal;
 #endif
 
 #if defined (SKINNING)
-attribute vec4 jointIndex;
-attribute vec4 jointWeight;
+attribute vec4 inJointIndex;
+attribute vec4 inJointWeight;
 #endif
 
 
@@ -91,6 +91,7 @@ uniform vec3 metalFresnelReflectance;
     //debug only
     uniform vec4 jointPosition;
     uniform vec4 jointQuaternion;
+	uniform int jointAffectIndex;
 #endif
 
 #if defined(VERTEX_FOG)
@@ -284,6 +285,12 @@ vec3 FresnelShlickVec3(float NdotL, vec3 Cspec)
 #if defined (SKINNING)
 vec3 JointTransform(vec3 inVec)
 {
+	int jointIndex = int(inJointIndex.x);
+	if(jointIndex != jointAffectIndex)
+	{
+		return inVec;
+	}
+
     vec3 t = 2.0 * cross(jointQuaternion.xyz, inVec);
     return jointPosition.xyz + (inVec + jointQuaternion.w * t + cross(jointQuaternion.xyz, t))*jointPosition.w; 
     //return inVec; 
@@ -291,6 +298,12 @@ vec3 JointTransform(vec3 inVec)
 
 vec3 JointTransformTangent(vec3 inVec)
 {
+	int jointIndex = int(inJointIndex.x);
+	if(jointIndex != jointAffectIndex)
+	{
+		return inVec;
+	}
+	
     vec3 t = 2.0 * cross(jointQuaternion.xyz, inVec);
     return inVec + jointQuaternion.w * t + cross(jointQuaternion.xyz, t); 
     //return inVec; 
