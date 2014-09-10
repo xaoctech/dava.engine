@@ -196,81 +196,54 @@ public:
 #define SUPERSUBCLASS(SUPER, SUB) (Conversion<const SUB*, const SUPER*>::exists && !Conversion<const SUPER*, const void*>::sameType) 
   
 
-    /**
-     \brief Works like dynamic_cast for Debug and like a static_cast for release.
-     */
-    template<class C, class O>
-    C DynamicTypeCheck(O* pObject)
-    {
+/**
+    \brief Works like dynamic_cast for Debug and like a static_cast for release.
+    */
+template<class C, class O>
+C DynamicTypeCheck(O* pObject)
+{
 #ifdef DAVA_DEBUG
-        if(!pObject) return static_cast<C>(pObject);
+    if(!pObject) return static_cast<C>(pObject);
         
-        C c = dynamic_cast<C>(pObject);
-        if (!c)
-        {//assert emulation )
-            int *i = NULL;
-            *(i) = 0;
-        }
-        return c;
+    C c = dynamic_cast<C>(pObject);
+    if (!c)
+    {//assert emulation )
+        int *i = NULL;
+        *(i) = 0;
+    }
+    return c;
 #else
-        return static_cast<C>(pObject);
+    return static_cast<C>(pObject);
 #endif
-    }
+}
     
-    /**
-     \brief Returns true if object pointer is a pointer to the exact class.
-     */
-    template<class C, class O>
-    bool IsPointerToExactClass(const O* pObject) 
+/**
+    \brief Returns true if object pointer is a pointer to the exact class.
+    */
+template<class C, class O>
+bool IsPointerToExactClass(const O* pObject) 
+{
+	if (pObject)
     {
-		if (pObject)
-        {
-			COMPILER_ASSERT(!TypeTraits<C>::isPointer);//You should not use pointers for this method
-			return &typeid(*pObject) == &typeid(C);
-		}
-	    return false;
-    }
+		COMPILER_ASSERT(!TypeTraits<C>::isPointer);//You should not use pointers for this method
+		return &typeid(*pObject) == &typeid(C);
+	}
+	return false;
+}
     
-    template<class C, class O>
-    C cast_if_equal(O* pObject)
+template<class C, class O>
+C cast_if_equal(O* pObject)
+{
+	if (pObject)
     {
-		if (pObject)
+		COMPILER_ASSERT(TypeTraits<C>::isPointer);
+		if (typeid(*pObject) == typeid(typename PointerTraits<C>::PointerType))
         {
-			COMPILER_ASSERT(TypeTraits<C>::isPointer);
-			if (typeid(*pObject) == typeid(typename PointerTraits<C>::PointerType))
-            {
-                return static_cast<C>(pObject);
-            }
-		}
-	    return 0;
-    }
-    
-    /* TEST, need to transfer to unit tests.
-     Logger::FrameworkDebug("%d", Conversion<double, int>::exists);
-     Logger::FrameworkDebug("%d", Conversion<Component*, VisibilityAABBoxComponent*>::exists);
-     Logger::FrameworkDebug("%d", Conversion<VisibilityAABBoxComponent*, Component*>::exists);
-     Logger::FrameworkDebug("%d", SUPERSUBCLASS(VisibilityAABBoxComponent, Component));
-     Logger::FrameworkDebug("%d", SUPERSUBCLASS(Component, VisibilityAABBoxComponent));
-     Logger::FrameworkDebug("%d", SUPERSUBCLASS(void*, VisibilityAABBoxComponent));
-     Logger::FrameworkDebug("%d", SUPERSUBCLASS(BaseObject, VisibilityAABBoxComponent));
-     
-     
-     Logger::FrameworkDebug("(BaseObject*) isPointer: %d", TypeTraits<BaseObject*>::isPointer);
-     Logger::FrameworkDebug("(BaseObject*) isReference: %d", TypeTraits<BaseObject*>::isReference);
-     Logger::FrameworkDebug("(BaseObject*) isPointerToMemberFunction: %d", TypeTraits<BaseObject*>::isPointerToMemberFunction);
-     
-     Logger::FrameworkDebug("(BaseObject&) isPointer: %d", TypeTraits<BaseObject&>::isPointer);
-     Logger::FrameworkDebug("(BaseObject&) isReference: %d", TypeTraits<BaseObject&>::isReference);
-     Logger::FrameworkDebug("(BaseObject&) isPointerToMemberFunction: %d", TypeTraits<BaseObject&>::isPointerToMemberFunction);
-     
-     void(VisibilityAABBoxSystem::*func)() = &VisibilityAABBoxSystem::Run;
-     
-     //    Logger::FrameworkDebug("(&VisibilityAABBoxSystem::Run) isPointer: %d", TypeTraits<VisibilityAABBoxSystem::Run>::isPointer);
-     //    Logger::FrameworkDebug("(&VisibilityAABBoxSystem::Run) isReference: %d", TypeTraits<&VisibilityAABBoxSystem::Run>::isReference);
-     //    Logger::FrameworkDebug("(&VisibilityAABBoxSystem::Run) isPointerToMemberFunction: %d", TypeTraits<&VisibilityAABBoxSystem::Run>::isPointerToMemberFunction);
-     */    
-
-    
+            return static_cast<C>(pObject);
+        }
+	}
+	return 0;
+}
     
 };
 
