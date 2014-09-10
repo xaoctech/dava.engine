@@ -361,6 +361,9 @@ void FunctionBindSignalTest::TestFunction(TestTemplate<FunctionBindSignalTest>::
 
 		Function<int()>		bound_f0 = Bind(class_f0, &aa);
 		Function<int(A*)>	bound_f0_1 = Bind(class_f0, _1);
+        
+        bound_f0 = bound_f0;
+        bound_f0();
 
 		TEST(bound_f0() == class_f0(&aa));
 		TEST(bound_f0_1(&aa) == class_f0(&aa));
@@ -433,7 +436,7 @@ void FunctionBindSignalTest::TestFunction(TestTemplate<FunctionBindSignalTest>::
 		//std::function<int()> c11_bound_f0 = std::bind(std::mem_fn(&A::classFn0), &a);
 		//std::function<int(int, int, int, int, int, int, int)> c11_bound_f7 = std::bind(std::mem_fn(&A::classFn7), &a, std::placeholders::_7, std::placeholders::_6, std::placeholders::_5, std::placeholders::_4, std::placeholders::_3, std::placeholders::_2, std::placeholders::_1);
 
-		int st_count = 1000000;
+		int st_count = 100000000;
 		uint64 time_ms;
 
 		functionBindSignalResultString += Format("\n\nEach invoke test will be run %u times:\n\n", st_count);
@@ -443,25 +446,25 @@ void FunctionBindSignalTest::TestFunction(TestTemplate<FunctionBindSignalTest>::
 
         time_ms = DAVA::SystemTimer::Instance()->AbsoluteMS(); for (int i = 0; i < st_count; ++i) { static_f0(); }
 		functionBindSignalResultString += Format(" dava static function 0: %llu ms\n", DAVA::SystemTimer::Instance()->AbsoluteMS() - time_ms);
-
+        
 		//time_ms = DAVA::SystemTimer::Instance()->AbsoluteMS(); for (int i = 0; i < st_count; ++i) { c11_static_f8(1, 2, 3, 4, 5, 6, 7, 8); }
 		//functionBindSignalResultString += Format(" c11 static function 8: %llu ms\n", DAVA::SystemTimer::Instance()->AbsoluteMS() - time_ms);
 
 		time_ms = DAVA::SystemTimer::Instance()->AbsoluteMS(); for (int i = 0; i < st_count; ++i) { static_f8(1, 2, 3, 4, 5, 6, 7, 8); }
 		functionBindSignalResultString += Format(" dava static function 8: %llu ms\n", DAVA::SystemTimer::Instance()->AbsoluteMS() - time_ms);
-
+        
 		//time_ms = DAVA::SystemTimer::Instance()->AbsoluteMS(); for (int i = 0; i < st_count; ++i) { c11_class_f0(&a); }
 		//functionBindSignalResultString += Format(" c11 class function 0: %llu ms\n", DAVA::SystemTimer::Instance()->AbsoluteMS() - time_ms);
 
 		time_ms = DAVA::SystemTimer::Instance()->AbsoluteMS(); for (int i = 0; i < st_count; ++i) { class_f0(&a); }
 		functionBindSignalResultString += Format(" dava class function 0: %llu ms\n", DAVA::SystemTimer::Instance()->AbsoluteMS() - time_ms);
-
+        
 		//time_ms = DAVA::SystemTimer::Instance()->AbsoluteMS(); for (int i = 0; i < st_count; ++i) { c11_class_f7(&a, 1, 2, 3, 4, 5, 6, 7); }
 		//functionBindSignalResultString += Format(" c11 class function 8: %llu ms\n", DAVA::SystemTimer::Instance()->AbsoluteMS() - time_ms);
 
 		time_ms = DAVA::SystemTimer::Instance()->AbsoluteMS(); for (int i = 0; i < st_count; ++i) { class_f7(&a, 1, 2, 3, 4, 5, 6, 7); }
 		functionBindSignalResultString += Format(" dava class function 8: %llu ms\n", DAVA::SystemTimer::Instance()->AbsoluteMS() - time_ms);
-
+        
 		//time_ms = DAVA::SystemTimer::Instance()->AbsoluteMS(); for (int i = 0; i < st_count; ++i) { c11_bound_f0(); }
 		//functionBindSignalResultString += Format(" bound c11 class function 0: %llu ms\n", DAVA::SystemTimer::Instance()->AbsoluteMS() - time_ms);
 
@@ -473,9 +476,6 @@ void FunctionBindSignalTest::TestFunction(TestTemplate<FunctionBindSignalTest>::
 
 		time_ms = DAVA::SystemTimer::Instance()->AbsoluteMS(); for (int i = 0; i < st_count; ++i) { bound_f7(10, 20, 30, 40, 50, 60, 70); }
 		functionBindSignalResultString += Format(" bound dava class function 7: %llu ms\n", DAVA::SystemTimer::Instance()->AbsoluteMS() - time_ms);
-
-		time_ms = DAVA::SystemTimer::Instance()->AbsoluteMS(); for (int i = 0; i < st_count; ++i) { static_f3(10, 20, 30); }
-		functionBindSignalResultString += Format(" regular static function 3: %llu\n", DAVA::SystemTimer::Instance()->AbsoluteMS() - time_ms);
 
 		time_ms = DAVA::SystemTimer::Instance()->AbsoluteMS(); for (int i = 0; i < st_count; ++i) { sig3.Emit(10, 20, 30); }
 		functionBindSignalResultString += Format(" dava signal 3: %llu\n", DAVA::SystemTimer::Instance()->AbsoluteMS() - time_ms);
