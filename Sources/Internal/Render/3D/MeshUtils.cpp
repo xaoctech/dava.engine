@@ -331,7 +331,7 @@ RenderObject * CreateSkinnedMesh(Entity * entity)
         }
 
         PolygonGroup * polygonGroup = new PolygonGroup();
-        polygonGroup->AllocateData(meshFormat | EVF_JOINTWEIGHT, vxCount, indCount);
+        polygonGroup->AllocateData(meshFormat | EVF_JOINTINDEX | EVF_JOINTWEIGHT, vxCount, indCount);
 
         int32 vertexOffset = 0;
         int32 indexOffset = 0;
@@ -343,7 +343,7 @@ RenderObject * CreateSkinnedMesh(Entity * entity)
             {
                 int32 newBatchVxIndex = vertexOffset + currentBatchVxIndex;
                 CopyVertex(currentGroup, currentBatchVxIndex, polygonGroup, newBatchVxIndex);
-                polygonGroup->SetWeight(newBatchVxIndex, 0, 1.f);
+                polygonGroup->SetJointWeight(newBatchVxIndex, 0, 1.f);
                 polygonGroup->SetJointIndex(newBatchVxIndex, 0, data[dataIndex].jointIndex);
                 polygonGroup->SetJointCount(newBatchVxIndex, 1);
             }

@@ -782,7 +782,7 @@ void RenderManager::AttachRenderData()
                 {
                     int32 attribIndexBitPos = (1 << attribIndex);
                     
-                    if(TYPE_UNSIGNED_BYTE == stream->type)
+                    if(stream->formatMark == EVF_COLOR || stream->formatMark == EVF_JOINTWEIGHT)
                     {
                         normalized = GL_TRUE;
                     }
