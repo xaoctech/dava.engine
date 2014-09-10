@@ -336,6 +336,13 @@ public:
     uint32 GetCursorPos();
     void SetCursorPos(uint32 pos);
 
+    /**
+      \brief Set maximum text length in text edit
+      maxLength - >=0 - max count, -1 - unlimited count
+     */
+    void SetMaxLength(int32 maxLength);
+    int32 GetMaxLength() const;
+
 protected:
 	WideString text;
 	UITextFieldDelegate * delegate;
@@ -369,6 +376,7 @@ private:
     Font * textFont;
 #endif
     float32 cursorTime;
+    int32 maxLength;
 };
 
 };
