@@ -260,7 +260,8 @@ public:
 	EventSystem * GetEventSystem() const;
 	RenderSystem * GetRenderSystem() const;
     MaterialSystem * GetMaterialSystem() const;
-    
+    AnimationSystem * GetAnimationSystem() const;
+
 	virtual SceneFileV2::eError Save(const DAVA::FilePath & pathname, bool saveForGame = false);
 
     virtual void OptimizeBeforeExport();

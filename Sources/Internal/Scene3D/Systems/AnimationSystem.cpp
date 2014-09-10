@@ -65,10 +65,13 @@ void AnimationSystem::Process(float32 timeElapsed)
             comp->time += timeElapsed;
 
             if (comp->time > comp->animation->duration)
-                comp->time = 0.0f;
+            {
+                if (comp->repeat)
+                    comp->time -= comp->animation->duration;
+                else
+                    comp->SetIsPlaying(false);
+            }
 
-            DAVA::Matrix3 rotationMatrix;
-            DAVA::Matrix3 resultMatrix;
             SceneNodeAnimationKey & key = comp->animation->Intepolate(comp->time);
             Matrix4 result(key.rotation.GetMatrix() * comp->originalMatrix);
             result.SetTranslationVector(comp->originalTranslate + key.translation);
@@ -120,6 +123,29 @@ void AnimationSystem::RemoveEntity(Entity * entity)
 {
     if (entity->GetComponent(Component::ANIMATION_COMPONENT))
         UnregisterComponent(entity, entity->GetComponent(Component::ANIMATION_COMPONENT));
+}
+
+void AnimationSystem::PlaySceneAnimations( void )
+{
+    Vector<AnimationComponent*>::iterator it, endit;
+    for (it = items.begin(), endit = items.end(); it!= endit; ++it)
+    {
+        AnimationComponent * comp = *it;
+        if (comp->autoStart)
+        {
+            comp->SetIsPlaying(true);
+        }
+    }
+}
+
+void AnimationSystem::StopSceneAnimations( void )
+{
+    Vector<AnimationComponent*>::iterator it, endit;
+    for (it = items.begin(), endit = items.end(); it!= endit; ++it)
+    {
+        AnimationComponent * comp = *it;
+        comp->SetIsPlaying(false);
+    }
 }
 
 };

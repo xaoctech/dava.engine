@@ -57,6 +57,10 @@ public:
     void SetLocalTransform(const Matrix4 & transform);
 
     void SetAnimation(SceneNodeAnimation* animation);
+
+    bool GetIsPlaying() const;
+    void SetIsPlaying(bool value);
+
 private:
 
 	friend class AnimationSystem;
@@ -65,13 +69,15 @@ private:
     Vector3 originalTranslate;
     float32 time;
     bool isPlaying;
+    bool autoStart;
+    bool repeat;
 public:
 
-//     INTROSPECTION_EXTEND(TransformComponent, Component,
-//         MEMBER(localMatrix, "Local Transform", I_SAVE | I_VIEW)
-//         MEMBER(worldMatrix, "World Transform", I_SAVE | I_VIEW)
-//         MEMBER(parentMatrix, "Parent Matrix", I_SAVE)
-//     );
+    INTROSPECTION_EXTEND(AnimationComponent, Component,
+        PROPERTY("isPlaying", "isPlaying", GetIsPlaying, SetIsPlaying, I_SAVE | I_EDIT | I_VIEW)
+        MEMBER(autoStart, "autostart", I_VIEW | I_EDIT | I_SAVE)
+        MEMBER(repeat, "repeat", I_VIEW | I_EDIT | I_SAVE)
+    );
 };
 
 

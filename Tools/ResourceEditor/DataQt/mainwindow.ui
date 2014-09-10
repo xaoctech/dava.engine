@@ -194,6 +194,7 @@
    <addaction name="separator"/>
    <addaction name="actionMaterialEditor"/>
    <addaction name="actionTextureConverter"/>
+   <addaction name="actionPlaySceneAnimations"/>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -201,7 +202,7 @@
      <x>0</x>
      <y>0</y>
      <width>1103</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -1938,6 +1939,19 @@
    </property>
    <property name="toolTip">
     <string>BatchProcess</string>
+   </property>
+  </action>
+  <action name="actionPlaySceneAnimations">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/play.png</normaloff>
+     <normalon>:/QtIcons/stop.png</normalon>:/QtIcons/play.png</iconset>
+   </property>
+   <property name="text">
+    <string>Play Scene Animations</string>
    </property>
   </action>
  </widget>
