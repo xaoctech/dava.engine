@@ -235,17 +235,12 @@ void Thread::Broadcast(ConditionalVariable * cv)
         Logger::FrameworkDebug("[Thread::Broadcast]: pthread_cond_broadcast error code %d", ret);
     }
 }
-
-void Thread::SetId(const Id &threadId)
-{
-    id = threadId;
-    nativeId = GetCurrentNativeId();
-}
     
 void Thread::ThreadFunction(void *param)
 {
     Thread * t = (Thread *)param;
-    t->SetId(GetCurrentId());
+    t->id = GetCurrentId();
+    t->nativeId = GetCurrentNativeId();
 
     if (STATE_CREATED == t->state)
     {

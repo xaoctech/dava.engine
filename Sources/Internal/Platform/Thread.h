@@ -177,7 +177,6 @@ private:
 	Thread(const Message &msg);
     void Init();
     void Shutdown();
-    void SetId(const Id &threadId);
 
     /**
     \brief Get unique native identifier of the thread which calls this method.
