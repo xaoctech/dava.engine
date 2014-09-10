@@ -138,11 +138,13 @@ public class JNITextField {
 	{
 	    if(manager == null)
 	    {
-	        throw new InvalidParameterException("WindowManager must be specified");
+	        Log.e(JNIConst.LOG_TAG, "[InitializeKeyboardLayout] WindowManager must be specified");
+	        return;
 	    }
 	    if(windowToken == null)
 	    {
-	        throw new InvalidParameterException("WindowToken must be specified");
+	        Log.e(JNIConst.LOG_TAG, "[InitializeKeyboardLayout] Window token must be specified");
+	        return;
 	    }
 	    
 	    // Add new layout to other window with special parameters

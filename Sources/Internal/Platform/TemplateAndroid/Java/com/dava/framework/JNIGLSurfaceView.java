@@ -87,7 +87,7 @@ public class JNIGLSurfaceView extends GLSurfaceView
 	
     @Override
     public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-        // [DF-4748] Fix lag when text field lost focus, but keyboard not closed yet. 
+        // Fix lag when text field lost focus, but keyboard not closed yet. 
         outAttrs.imeOptions = JNITextField.GetLastKeyboardIMEOptions();
         outAttrs.inputType = JNITextField.GetLastKeyboardInputType();
         return super.onCreateInputConnection(outAttrs);
