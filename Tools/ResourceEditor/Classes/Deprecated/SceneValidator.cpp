@@ -144,7 +144,7 @@ void SceneValidator::ValidateScalesInternal(Entity *sceneNode, Set<String> &erro
 		|| (!FLOAT_EQUAL(sy, 1.0f))
 		|| (!FLOAT_EQUAL(sz, 1.0f)))
 	{
- 		errorsLog.insert(Format("Node %s: has scale (%.3f, %.3f, %.3f) ! Re-design level. Scene: %s", sceneNode->GetName().c_str(), sx, sy, sz, pathForChecking));
+ 		errorsLog.insert(Format("Node %s: has scale (%.3f, %.3f, %.3f) ! Re-design level. Scene: %s", sceneNode->GetName().c_str(), sx, sy, sz, pathForChecking.GetFilename().c_str()));
 	}
 
 	int32 count = sceneNode->GetChildrenCount();
@@ -206,7 +206,7 @@ void SceneValidator::ValidateRenderComponent(Entity *ownerNode, Set<String> &err
 	if(ro->GetType() == RenderObject::TYPE_LANDSCAPE)
     {
         ownerNode->SetLocked(true);
-        FixIdentityTransform(ownerNode, errorsLog, Format("Landscape had wrong transform. Please re-save scene: %s", pathForChecking));
+        FixIdentityTransform(ownerNode, errorsLog, Format("Landscape had wrong transform. Please re-save scene: %s", pathForChecking.GetFilename().c_str()));
         
 		Landscape *landscape = static_cast<Landscape *>(ro);
         ValidateLandscape(landscape, errorsLog);
@@ -217,7 +217,7 @@ void SceneValidator::ValidateRenderComponent(Entity *ownerNode, Set<String> &err
     if(ro->GetType() == RenderObject::TYPE_VEGETATION)
     {
         ownerNode->SetLocked(true);
-        FixIdentityTransform(ownerNode, errorsLog, Format("Vegetation had wrong transform. Please re-save scene: %s", pathForChecking));
+        FixIdentityTransform(ownerNode, errorsLog, Format("Vegetation had wrong transform. Please re-save scene: %s", pathForChecking.GetFilename().c_str()));
     }
 }
 
@@ -258,7 +258,7 @@ void SceneValidator::ValidateParticleEmitter(ParticleEmitter *emitter, Set<Strin
 
     if(emitter->configPath.IsEmpty())
     {
-        errorsLog.insert(Format("Empty config path for emitter %s. Scene: %s", emitter->name.c_str(), pathForChecking));
+        errorsLog.insert(Format("Empty config path for emitter %s. Scene: %s", emitter->name.c_str(), pathForChecking.GetFilename().c_str()));
     }
     
     const Vector<ParticleLayer*> &layers = emitter->layers;
@@ -348,7 +348,7 @@ void SceneValidator::ValidateLandscape(Landscape *landscape, Set<String> &errors
     if(!pathIsCorrect)
     {
         String path = landscape->GetHeightmapPathname().GetRelativePathname(ProjectManager::Instance()->CurProjectDataSourcePath());
-        errorsLog.insert(Format("Wrong path of Heightmap: %s. Scene: %s", path, pathForChecking));
+        errorsLog.insert(Format("Wrong path of Heightmap: %s. Scene: %s", path, pathForChecking.GetFilename().c_str()));
     }
 }
 
@@ -422,11 +422,11 @@ void SceneValidator::ValidateTexture(Texture *texture, const String &validatedOb
 	{
 		if(texturePathname.IsEmpty())
 		{
-			errorsLog.insert(Format("Texture not set for object: %s. Scene: ", validatedObjectName, pathForChecking));
+			errorsLog.insert(Format("Texture not set for object: %s. Scene: %s", validatedObjectName, pathForChecking.GetFilename().c_str()));
 		}
 		else
 		{
-			errorsLog.insert(Format("Can't load texture: %s. Scene: %s", textureInfo, pathForChecking));
+			errorsLog.insert(Format("Can't load texture: %s. Scene: %s", textureInfo, pathForChecking.GetFilename().c_str()));
 		}
 		return;
 	}
@@ -434,18 +434,18 @@ void SceneValidator::ValidateTexture(Texture *texture, const String &validatedOb
 	bool pathIsCorrect = ValidatePathname(texturePathname, validatedObjectName);
 	if(!pathIsCorrect)
 	{
-		errorsLog.insert(Format("Wrong path of: %s. Scene: %s", textureInfo, pathForChecking));
+		errorsLog.insert(Format("Wrong path of: %s. Scene: %s", textureInfo, pathForChecking.GetFilename().c_str()));
 		return;
 	}
 	
 	if(!IsPowerOf2(texture->GetWidth()) || !IsPowerOf2(texture->GetHeight()))
 	{
-		errorsLog.insert(Format("Wrong size of %s. Scene: %s", textureInfo, pathForChecking));
+		errorsLog.insert(Format("Wrong size of %s. Scene: %s", textureInfo, pathForChecking.GetFilename().c_str()));
 	}
     
     if(texture->GetWidth() > 2048 || texture->GetHeight() > 2048)
 	{
-		errorsLog.insert(Format("Texture is too big. %s", textureInfo, pathForChecking));
+		errorsLog.insert(Format("Texture is too big. %s", textureInfo, pathForChecking.GetFilename().c_str()));
 	}
 }
 
@@ -498,13 +498,13 @@ bool SceneValidator::ValidateTexturePathname(const FilePath &pathForValidation, 
 		String::size_type extPosition = TextureDescriptor::GetSupportedTextureExtensions().find(textureExtension);
 		if(String::npos == extPosition)
 		{
-			errorsLog.insert(Format("Path %s has incorrect extension. Scene: %s", pathForValidation.GetAbsolutePathname().c_str(), pathForChecking));
+			errorsLog.insert(Format("Path %s has incorrect extension. Scene: %s", pathForValidation.GetAbsolutePathname().c_str(), pathForChecking.GetFilename().c_str()));
 			return false;
 		}
 	}
 	else
 	{
-		errorsLog.insert(Format("Path %s is incorrect for project %s. Scene: %s", pathForValidation.GetAbsolutePathname().c_str(), pathForChecking.GetAbsolutePathname().c_str(), pathForChecking));
+		errorsLog.insert(Format("Path %s is incorrect for project %s. Scene: %s", pathForValidation.GetAbsolutePathname().c_str(), pathForChecking.GetAbsolutePathname().c_str(), pathForChecking.GetFilename().c_str()));
 	}
 
 	return pathIsCorrect;
@@ -523,7 +523,7 @@ bool SceneValidator::ValidateHeightmapPathname(const FilePath &pathForValidation
         pathIsCorrect = ((String::npos != posPng) || (String::npos != posHeightmap));
         if(!pathIsCorrect)
         {
-            errorsLog.insert(Format("Heightmap path %s is wrong. Scene: %s", pathForValidation.GetAbsolutePathname().c_str(), pathForChecking));
+            errorsLog.insert(Format("Heightmap path %s is wrong. Scene: %s", pathForValidation.GetAbsolutePathname().c_str(), pathForChecking.GetFilename().c_str()));
             return false;
         }
         
@@ -543,7 +543,7 @@ bool SceneValidator::ValidateHeightmapPathname(const FilePath &pathForValidation
         if(!pathIsCorrect)
         {
             SafeRelease(heightmap);
-            errorsLog.insert(Format("Can't load Heightmap from path %s. Scene: %s", pathForValidation.GetAbsolutePathname().c_str(), pathForChecking));
+            errorsLog.insert(Format("Can't load Heightmap from path %s. Scene: %s", pathForValidation.GetAbsolutePathname().c_str(), pathForChecking.GetFilename().c_str()));
             return false;
         }
         
@@ -551,7 +551,7 @@ bool SceneValidator::ValidateHeightmapPathname(const FilePath &pathForValidation
         pathIsCorrect = IsPowerOf2(heightmap->Size() - 1);
         if(!pathIsCorrect)
         {
-            errorsLog.insert(Format("Heightmap %s has wrong size. Scene: %s", pathForValidation.GetAbsolutePathname().c_str(), pathForChecking));
+            errorsLog.insert(Format("Heightmap %s has wrong size. Scene: %s", pathForValidation.GetAbsolutePathname().c_str(), pathForChecking.GetFilename().c_str()));
         }
         
         SafeRelease(heightmap);
@@ -559,7 +559,7 @@ bool SceneValidator::ValidateHeightmapPathname(const FilePath &pathForValidation
 	}
 	else
 	{
-		errorsLog.insert(Format("Path %s is incorrect for project %s. Scene: %s", pathForValidation.GetAbsolutePathname().c_str(), pathForChecking.GetAbsolutePathname().c_str(), pathForChecking));
+		errorsLog.insert(Format("Path %s is incorrect for project %s.", pathForValidation.GetAbsolutePathname().c_str(), pathForChecking.GetAbsolutePathname().c_str()));
 	}
 
 	return pathIsCorrect;
@@ -654,13 +654,13 @@ void SceneValidator::ValidateCustomColorsTexture(Entity *landscapeEntity, Set<St
 		FilePath path = "/" + currentSaveName;
 		if(!path.IsEqualToExtension(".png"))
 		{
-			errorsLog.insert(Format("Custom colors texture has to have .png extension. Scene: %s", pathForChecking));
+			errorsLog.insert(Format("Custom colors texture has to have .png extension. Scene: %s", pathForChecking.GetFilename().c_str()));
 		}
         
         String::size_type foundPos = currentSaveName.find("DataSource/3d/");
         if(String::npos == foundPos)
         {
-			errorsLog.insert(Format("Custom colors texture has to begin from DataSource/3d/. Scene: %s", pathForChecking));
+			errorsLog.insert(Format("Custom colors texture has to begin from DataSource/3d/. Scene: %s", pathForChecking.GetFilename().c_str()));
         }
 	}
 }
