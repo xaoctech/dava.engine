@@ -348,7 +348,7 @@ void SceneValidator::ValidateLandscape(Landscape *landscape, Set<String> &errors
     if(!pathIsCorrect)
     {
         String path = landscape->GetHeightmapPathname().GetRelativePathname(ProjectManager::Instance()->CurProjectDataSourcePath());
-        errorsLog.insert(Format("Wrong path of Heightmap: %s. Scene: %s", path, pathForChecking.GetFilename().c_str()));
+        errorsLog.insert(Format("Wrong path of Heightmap: %s. Scene: %s", path.c_str(), pathForChecking.GetFilename().c_str()));
     }
 }
 
@@ -422,11 +422,11 @@ void SceneValidator::ValidateTexture(Texture *texture, const String &validatedOb
 	{
 		if(texturePathname.IsEmpty())
 		{
-			errorsLog.insert(Format("Texture not set for object: %s. Scene: %s", validatedObjectName, pathForChecking.GetFilename().c_str()));
+			errorsLog.insert(Format("Texture not set for object: %s. Scene: %s", validatedObjectName.c_str(), pathForChecking.GetFilename().c_str()));
 		}
 		else
 		{
-			errorsLog.insert(Format("Can't load texture: %s. Scene: %s", textureInfo, pathForChecking.GetFilename().c_str()));
+			errorsLog.insert(Format("Can't load texture: %s. Scene: %s", textureInfo.c_str(), pathForChecking.GetFilename().c_str()));
 		}
 		return;
 	}
@@ -434,18 +434,18 @@ void SceneValidator::ValidateTexture(Texture *texture, const String &validatedOb
 	bool pathIsCorrect = ValidatePathname(texturePathname, validatedObjectName);
 	if(!pathIsCorrect)
 	{
-		errorsLog.insert(Format("Wrong path of: %s. Scene: %s", textureInfo, pathForChecking.GetFilename().c_str()));
+		errorsLog.insert(Format("Wrong path of: %s. Scene: %s", textureInfo.c_str(), pathForChecking.GetFilename().c_str()));
 		return;
 	}
 	
 	if(!IsPowerOf2(texture->GetWidth()) || !IsPowerOf2(texture->GetHeight()))
 	{
-		errorsLog.insert(Format("Wrong size of %s. Scene: %s", textureInfo, pathForChecking.GetFilename().c_str()));
+		errorsLog.insert(Format("Wrong size of %s. Scene: %s", textureInfo.c_str(), pathForChecking.GetFilename().c_str()));
 	}
     
     if(texture->GetWidth() > 2048 || texture->GetHeight() > 2048)
 	{
-		errorsLog.insert(Format("Texture is too big. %s", textureInfo, pathForChecking.GetFilename().c_str()));
+		errorsLog.insert(Format("Texture is too big. %s", textureInfo.c_str(), pathForChecking.GetFilename().c_str()));
 	}
 }
 
