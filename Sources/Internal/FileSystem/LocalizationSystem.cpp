@@ -125,9 +125,9 @@ const FilePath &LocalizationSystem::GetDirectoryPath() const
 
 void LocalizationSystem::SetCurrentLocale(const String &requestedLangId)
 {
-    String actualLangId = DEFAULT_LOCALE;
+    String actualLangId;
     
-    Logger::Info("LocalizationSystem::SetCurrentLocale requestedLangId = %s", requestedLangId.c_str());
+    Logger::FrameworkDebug("LocalizationSystem::SetCurrentLocale requestedLangId = %s", requestedLangId.c_str());
     
     FilePath localeFilePath(directoryPath + (requestedLangId + ".yaml"));
     if(localeFilePath.Exists())
@@ -137,7 +137,7 @@ void LocalizationSystem::SetCurrentLocale(const String &requestedLangId)
     else if(requestedLangId.size() > 2)
     {
         String langPart = requestedLangId.substr(0, 2);
-        Logger::Info("LocalizationSystem::SetCurrentLocale requestedLangId = %s is not found, trying to check language part %s", requestedLangId.c_str(), langPart.c_str());
+        Logger::FrameworkDebug("LocalizationSystem::SetCurrentLocale requestedLangId = %s is not found, trying to check language part %s", requestedLangId.c_str(), langPart.c_str());
         
         localeFilePath = directoryPath + (langPart + ".yaml");
         if(localeFilePath.Exists())
@@ -146,15 +146,22 @@ void LocalizationSystem::SetCurrentLocale(const String &requestedLangId)
         }
     }
     
-    localeFilePath = directoryPath + (String(DEFAULT_LOCALE) + ".yaml");
-    if(!localeFilePath.Exists())
+    if(actualLangId.empty())
     {
-        Logger::Warning("LocalizationSystem::SetCurrentLocale failed to set default lang, locale will not be changed", actualLangId.c_str());
-        return;
+        localeFilePath = directoryPath + (String(DEFAULT_LOCALE) + ".yaml");
+        if(localeFilePath.Exists())
+        {
+            actualLangId = DEFAULT_LOCALE;
+        }
+        else
+        {
+            Logger::Warning("LocalizationSystem::SetCurrentLocale failed to set default lang, locale will not be changed", actualLangId.c_str());
+            return;
+        }
     }
     
     //TODO: add reloading strings data on langId changing
-    Logger::Info("LocalizationSystem::SetCurrentLocale actualLangId = %s", actualLangId.c_str());
+    Logger::FrameworkDebug("LocalizationSystem::SetCurrentLocale actualLangId = %s", actualLangId.c_str());
     langId = actualLangId;
     SoundSystem::Instance()->SetCurrentLocale(langId);
 }
