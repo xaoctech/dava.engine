@@ -34,7 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace DAVA
 {
 
-// FuncTrains
+// FuncTraits
 template<typename T>
 struct FuncTraits
 {};
