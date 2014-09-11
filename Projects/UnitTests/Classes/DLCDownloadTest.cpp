@@ -80,7 +80,7 @@ void DLCDownloadTest::WaitForTaskState(const uint32 &taskId, const DownloadStatu
     while (taskIdToWait != taskId && statusToWait != status)
     {
         DownloadManager::Instance()->Update();
-        Thread::Sleep(1);
+        Thread::SleepThread(1);
         uint64 delta = SystemTimer::Instance()->AbsoluteMS() - startTime;
         if (delta >= timeout)
             return;
@@ -774,13 +774,9 @@ void DLCDownloadTest::TestFunction(PerfFuncData * data)
     DownloadManager::Instance()->GetTotal(httpId, total);
     file = File::Create(dstHttps, File::OPEN | File::READ);
     TEST_VERIFY(NULL != file);
-    if (file)
+    if (NULL != file)
     {
         filesize = file->GetSize();
-    }
-    else
-    {
-        filesize = 0;
     }
     TEST_VERIFY(filesize == progress);
     TEST_VERIFY(total > progress);
