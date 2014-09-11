@@ -387,6 +387,12 @@ FMMatrix44 ColladaSceneNode::CalculateTransformForTime(FCDSceneNode * originalNo
 					}
 			}
 			colladaLocalMatrix = colladaLocalMatrix * matrix;
+		}else if (transform->GetType() == FCDTransform::SKEW)
+		{
+			DAVA::Logger::Debug("FCDTransform::SKEW");
+		}else if (transform->GetType() == FCDTransform::LOOKAT)
+		{
+			DAVA::Logger::Debug("FCDTransform::LOOKAT");
 		}else
 		{
 			colladaLocalMatrix = colladaLocalMatrix * transform->ToMatrix();
@@ -398,17 +404,28 @@ FMMatrix44 ColladaSceneNode::CalculateTransformForTime(FCDSceneNode * originalNo
 
 SceneNodeAnimationKey ColladaSceneNode::ExportAnimationKey(FCDSceneNode * originalNode, float32 time)
 {
-	FMMatrix44 colladaLocalMatrix = ColladaSceneNode::CalculateTransformForTime(originalNode, time);
-	Matrix4 lt = ConvertMatrix(colladaLocalMatrix);
-	
+	FMMatrix44 bindPoseMatrix = ColladaSceneNode::CalculateTransformForTime(originalNode, 0.0f);
 	SceneNodeAnimationKey key;
+	FMMatrix44 colladaLocalMatrix = bindPoseMatrix.Inverted() * ColladaSceneNode::CalculateTransformForTime(originalNode, time);
+	Matrix4 lt = ConvertMatrix(colladaLocalMatrix);
+	Vector3 rot;
+	lt.Decomposition(key.translation, key.scale, rot);
+	key.rotation.Construct(Vector3(rot.x, rot.y, rot.z));
+
 	key.time = time;
-	key.translation.x = lt._30;
+	/*key.translation.x = lt._30;
 	key.translation.y = lt._31;
 	key.translation.z = lt._32;
 	key.rotation.Construct(lt);
-	key.scale = lt.GetScaleVector();
+	key.scale = lt.GetScaleVector();*/
 
+	DAVA::Matrix4 res;
+	key.GetMatrix(res);
+
+	for (uint32 i = 0; i < 4; ++i)
+		DAVA::Logger::Debug("%f %f %f %f    %f %f %f %f", res._data[i][0], res._data[i][1], res._data[i][2], res._data[i][3], lt._data[i][0], lt._data[i][2], lt._data[i][2], lt._data[i][3]);
+
+	
 	return key;
 }
 	

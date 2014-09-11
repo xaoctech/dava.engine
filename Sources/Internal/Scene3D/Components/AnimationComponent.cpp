@@ -122,11 +122,6 @@ void AnimationComponent::Deserialize(KeyedArchive *archive, SerializationContext
 	Component::Deserialize(archive, sceneFile);
 }
 
-void AnimationComponent::SetLocalTransform( const Matrix4 & transform )
-{
-    originalMatrix = transform;
-}
-
 void AnimationComponent::SetAnimation(SceneNodeAnimation* _animation)
 {
     SafeRetain(_animation);
@@ -141,7 +136,9 @@ void AnimationComponent::SetIsPlaying( bool value )
         Matrix4 result(originalMatrix);
         ((TransformComponent*)(GetEntity()->GetComponent(Component::TRANSFORM_COMPONENT)))->SetLocalTransform(&result);
         time = 0;
-    }
+    } else if (value && !isPlaying) {
+		originalMatrix = entity->GetLocalTransform();
+	}
     isPlaying = value;
     time = 0.0f;
 }

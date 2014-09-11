@@ -44,21 +44,9 @@ public:
 	Vector3 scale;
 	// Matrix4 matrix;
 	
-	inline void GetMatrix(Matrix4 & matrix);
+	void GetMatrix(Matrix4 & matrix);
 };
 	
-	
-inline void SceneNodeAnimationKey::GetMatrix(Matrix4 & result)
-{
-	Matrix4 localTransformTrans;
-	Matrix4 localTransformRot;
-	Matrix4 localTransformScale;
-	localTransformTrans.CreateTranslation(translation);
-	localTransformRot = rotation.GetMatrix();
-	localTransformScale.CreateScale(scale);
-
-	result = localTransformRot * localTransformTrans * localTransformScale;	 
-}
 	
 };
 

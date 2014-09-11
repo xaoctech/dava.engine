@@ -54,8 +54,6 @@ public:
 	virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
 	virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
 
-    void SetLocalTransform(const Matrix4 & transform);
-
     void SetAnimation(SceneNodeAnimation* animation);
 
     bool GetIsPlaying() const;
