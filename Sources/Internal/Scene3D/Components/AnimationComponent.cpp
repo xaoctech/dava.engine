@@ -60,7 +60,6 @@ Component * AnimationComponent::Clone(Entity * toEntity)
     AnimationComponent * newAnimation = new AnimationComponent();
 
     newAnimation->originalMatrix = originalMatrix;
-    newAnimation->originalTranslate = originalTranslate;
     newAnimation->time = time;
     newAnimation->isPlaying = false;
     newAnimation->animation = animation ? animation->Clone() : NULL;
@@ -140,7 +139,6 @@ void AnimationComponent::SetIsPlaying( bool value )
     if (!value && isPlaying)
     {
         Matrix4 result(originalMatrix);
-        result.SetTranslationVector(originalTranslate);
         ((TransformComponent*)(GetEntity()->GetComponent(Component::TRANSFORM_COMPONENT)))->SetLocalTransform(&result);
         time = 0;
     }
