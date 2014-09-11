@@ -349,7 +349,7 @@ int UIStaticTextMetadata::GetFittingType() const
     return GetActiveStaticText()->GetFittingOption();
 }
 
-int UIStaticTextMetadata::GetFontShadowColorInheritType() const
+int UIStaticTextMetadata::GetFontColorInheritType() const
 {
     if (!VerifyActiveParamID() || !GetActiveStaticText()->GetTextBackground())
     {
@@ -360,7 +360,7 @@ int UIStaticTextMetadata::GetFontShadowColorInheritType() const
     return GetActiveStaticText()->GetTextBackground()->GetColorInheritType();
 }
 
-void UIStaticTextMetadata::SetFontShadowColorInheritType(int value)
+void UIStaticTextMetadata::SetFontColorInheritType(int value)
 {
     if (!VerifyActiveParamID() || !GetActiveStaticText()->GetTextBackground())
     {
@@ -371,7 +371,7 @@ void UIStaticTextMetadata::SetFontShadowColorInheritType(int value)
     GetActiveStaticText()->GetShadowBackground()->SetColorInheritType((UIControlBackground::eColorInheritType)value);
 }
 
-int UIStaticTextMetadata::GetTextPerPixelAccuracyType() const
+int UIStaticTextMetadata::GetFontPerPixelAccuracyType() const
 {
     if (!VerifyActiveParamID() || !GetActiveStaticText()->GetTextBackground())
     {
@@ -381,7 +381,7 @@ int UIStaticTextMetadata::GetTextPerPixelAccuracyType() const
     return GetActiveStaticText()->GetTextBackground()->GetPerPixelAccuracyType();
 }
 
-void UIStaticTextMetadata::SetTextPerPixelAccuracyType(int value)
+void UIStaticTextMetadata::SetFontPerPixelAccuracyType(int value)
 {
     if (!VerifyActiveParamID() || !GetActiveStaticText()->GetTextBackground())
     {

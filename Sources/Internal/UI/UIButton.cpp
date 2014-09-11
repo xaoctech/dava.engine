@@ -311,6 +311,21 @@ void UIButton::SetStateFontColorInheritType(int32 state, UIControlBackground::eC
     }
 }
 
+void UIButton::SetStateFontPerPixelAccuracyType(int32 state, UIControlBackground::ePerPixelAccuracyType pixelAccuracyType)
+{
+    for(int i = 0; i < DRAW_STATE_COUNT && state; i++)
+    {
+        if(state & 0x01)
+        {
+            UIStaticText* staticText = GetOrCreateTextBlock((eButtonDrawState)i);
+            staticText->GetTextBackground()->SetPerPixelAccuracyType(pixelAccuracyType);
+            staticText->GetShadowBackground()->SetPerPixelAccuracyType(pixelAccuracyType);
+        }
+
+        state >>= 1;
+    }
+}
+
 void UIButton::SetStateShadowColor(int32 state, const Color& shadowColor)
 {
     for(int i = 0; i < DRAW_STATE_COUNT && state; i++)
@@ -681,11 +696,12 @@ void UIButton::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
         const YamlNode * multilineBySymbolNode = node->Get(Format("stateMultilineBySymbol%s", statePostfix.c_str()));
         const YamlNode * textColorInheritTypeNode = node->Get(Format("stateTextColorInheritType%s", statePostfix.c_str()));
         const YamlNode * stateTextMarginsNode = node->Get(Format("stateTextMargins%s", statePostfix.c_str()));
-
+        const YamlNode * textPerPixelAccuracyTypeNode = node->Get(Format("stateTextPerPixelAccuracyType%s", statePostfix.c_str()));
+ 
         if (stateFontNode || stateTextAlignNode || stateTextColorNode ||
             stateShadowColorNode || stateShadowOffsetNode || stateFittingOptionNode ||
             stateTextNode || multilineNode || multilineBySymbolNode || textColorInheritTypeNode ||
-            stateTextMarginsNode)
+            stateTextMarginsNode || textPerPixelAccuracyTypeNode)
         {
             RefPtr<UIStaticText> stateTextBlock;
             if (drawState == DRAW_STATE_UNPRESSED)
@@ -740,6 +756,13 @@ void UIButton::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
                 UIControlBackground::eColorInheritType type = (UIControlBackground::eColorInheritType)loader->GetColorInheritTypeFromNode(textColorInheritTypeNode);
                 stateTextBlock->GetTextBackground()->SetColorInheritType(type);
                 stateTextBlock->GetShadowBackground()->SetColorInheritType(type);
+            }
+            
+            if (textPerPixelAccuracyTypeNode)
+            {
+                UIControlBackground::ePerPixelAccuracyType type = (UIControlBackground::ePerPixelAccuracyType)loader->GetPerPixelAccuracyTypeFromNode(textPerPixelAccuracyTypeNode);
+                stateTextBlock->GetTextBackground()->SetPerPixelAccuracyType(type);
+                stateTextBlock->GetShadowBackground()->SetPerPixelAccuracyType(type);
             }
 
             if (stateTextMarginsNode)
@@ -936,6 +959,12 @@ YamlNode * UIButton::SaveToYamlNode(UIYamlLoader * loader)
             if (textMargins)
             {
                 node->Set(Format("stateTextMargins%s", statePostfix.c_str()), textMargins->AsVector4());
+            }
+            
+            UIControlBackground::ePerPixelAccuracyType perPixelAccuracyType = stateTextBlock->GetTextBackground()->GetPerPixelAccuracyType();
+            if (baseStaticText->GetTextBackground()->GetPerPixelAccuracyType() != perPixelAccuracyType)
+            {
+                node->Set(Format("stateTextPerPixelAccuracyType%s", statePostfix.c_str()), loader->GetPerPixelAccuracyTypeNodeValue(perPixelAccuracyType));
             }
         }
     }
