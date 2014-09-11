@@ -229,8 +229,6 @@ private:
     */
     static Map<NativeId, Id> threadIdList;
     static Mutex threadIdListMutex;
-
-    Mutex releaseKillMutex;
 };
 
 

@@ -129,8 +129,6 @@ void Thread::Kill()
     // Important - DO NOT try to wait RUNNING state because that state wll not appear if thread is not started!!!
     // You can wait RUNNING state, but not from thred which should call Start() for created Thread.
 
-    // not a LockGuard because Mutex could be destroyed before than LockGuard (ad Release()).
-    releaseKillMutex.Lock();
     if (STATE_RUNNING == state)
     {
         KillNative();
@@ -138,13 +136,6 @@ void Thread::Kill()
         threadIdListMutex.Lock();
         threadIdList.erase(nativeId);
         threadIdListMutex.Unlock();
-
-        if (0 == Release())
-        {
-            return;
-        }
-        // if Release will destroy the object - we cannot call t->f().
-        releaseKillMutex.Unlock();
     }
 }
 
@@ -264,16 +255,6 @@ void Thread::ThreadFunction(void *param)
     threadIdListMutex.Lock();
     threadIdList.erase(t->nativeId);
     threadIdListMutex.Unlock();
-
-    // kill could be called around this place. It will produce 2 Release instead of 1.
-    // So we use mutex to avoid that.
-    t->releaseKillMutex.Lock();
-    if (0 == t->Release())
-    {
-        return;
-    }
-    // if Release will destroy the object - we cannot call t->f().
-    t->releaseKillMutex.Unlock();
 }
     
 };
