@@ -424,6 +424,7 @@ void UISlider::LoadBackgound(const char* prefix, UIControlBackground* background
     const YamlNode * frameNode = rootNode->Get(Format("%sframe", prefix));
     const YamlNode * alignNode = rootNode->Get(Format("%salign", prefix));
     const YamlNode * colorInheritNode = rootNode->Get(Format("%scolorInherit", prefix));
+    const YamlNode * pixelAccuracyNode = rootNode->Get(Format("%spixelAccuracy", prefix));
     const YamlNode * drawTypeNode = rootNode->Get(Format("%sdrawType", prefix));
     const YamlNode * leftRightStretchCapNode = rootNode->Get(Format("%sleftRightStretchCap", prefix));
     const YamlNode * topBottomStretchCapNode = rootNode->Get(Format("%stopBottomStretchCap", prefix));
@@ -452,6 +453,11 @@ void UISlider::LoadBackgound(const char* prefix, UIControlBackground* background
     if (colorInheritNode)
     {
         background->SetColorInheritType((UIControlBackground::eColorInheritType)loader->GetColorInheritTypeFromNode(colorInheritNode));
+    }
+
+    if (pixelAccuracyNode)
+    {
+        background->SetPerPixelAccuracyType((UIControlBackground::ePerPixelAccuracyType)loader->GetPerPixelAccuracyTypeFromNode(pixelAccuracyNode));
     }
     
     if(drawTypeNode)
@@ -518,6 +524,13 @@ void UISlider::SaveBackground(const char* prefix, UIControlBackground* backgroun
     if (baseBackground->GetColorInheritType() != colorInheritType)
     {
         rootNode->Set(Format("%scolorInherit", prefix), loader->GetColorInheritTypeNodeValue(colorInheritType));
+    }
+    
+    // Per pixel accuracy
+    UIControlBackground::ePerPixelAccuracyType perPixelAccuracyType =  background->GetPerPixelAccuracyType();
+    if (baseBackground->GetPerPixelAccuracyType() != perPixelAccuracyType)
+    {
+        rootNode->Set(Format("%spixelAccuracy", prefix), loader->GetPerPixelAccuracyTypeNodeValue(perPixelAccuracyType));
     }
 
     // Draw type.
