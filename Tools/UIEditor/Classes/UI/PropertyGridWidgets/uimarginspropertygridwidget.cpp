@@ -56,7 +56,7 @@ void UIMarginsPropertyGridWidget::Cleanup()
     BasePropertyGridWidget::Cleanup();
 }
 
-String UIMarginsPropertyGridWidget::GetPrefixedPropertyName(const char* propertyName)
+String UIMarginsPropertyGridWidget::GetPrefixedPropertyName(const char* propertyName) const
 {
     if (propertyPrefix.empty())
     {

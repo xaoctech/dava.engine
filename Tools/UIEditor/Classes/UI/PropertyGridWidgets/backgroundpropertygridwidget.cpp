@@ -392,7 +392,7 @@ void BackgroundPropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue(QComboB
     BasePropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue(comboBoxWidget, curProperty);
 }
 
-String BackgroundPropertyGridWidget::GetPrefixedPropertyName(const char* propertyName)
+String BackgroundPropertyGridWidget::GetPrefixedPropertyName(const char* propertyName) const
 {
     if (propertyPrefix.empty())
     {

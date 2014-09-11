@@ -321,7 +321,7 @@ void UIStaticText::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader
     
     if (textMarginsNode)
     {
-        UIControlBackground::UIMargins textMargins = Vector4ToUIMargins(textMarginsNode->AsVector4());
+        UIControlBackground::UIMargins textMargins(textMarginsNode->AsVector4());
         GetTextBackground()->SetMargins(&textMargins);
         GetShadowBackground()->SetMargins(&textMargins);
     }
@@ -440,7 +440,7 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
     const UIControlBackground::UIMargins* textMargins = GetTextBackground()->GetMargins();
     if (textMargins)
     {
-        VariantType textMarginsVariant(UIMarginsToVector4(*textMargins));
+        VariantType textMarginsVariant(textMargins->AsVector4());
         node->Set("textMargins", &textMarginsVariant);
     }
 
@@ -501,7 +501,7 @@ void UIStaticText::PrepareSpriteInternal(DAVA::BaseObject *caller, void *param, 
     }
 }
 
-Rect UIStaticText::CalculateTextBlockRect(const UIGeometricData &geometricData)
+Rect UIStaticText::CalculateTextBlockRect(const UIGeometricData &geometricData) const
 {
     Rect resultRect (geometricData.position, geometricData.size);
     const UIControlBackground::UIMargins* margins = textBg->GetMargins();

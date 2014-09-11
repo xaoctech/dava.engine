@@ -50,7 +50,7 @@ public:
     virtual void Cleanup();
 
 protected:
-    String GetPrefixedPropertyName(const char* propertyName);
+    String GetPrefixedPropertyName(const char* propertyName) const;
 
 	virtual void HandleChangePropertySucceeded(const QString& propertyName);
     virtual void HandleChangePropertyFailed(const QString& propertyName);

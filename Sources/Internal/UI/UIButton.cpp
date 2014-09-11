@@ -665,7 +665,7 @@ void UIButton::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
             
             if (marginsNode)
             {
-                UIControlBackground::UIMargins margins = Vector4ToUIMargins(marginsNode->AsVector4());
+                UIControlBackground::UIMargins margins(marginsNode->AsVector4());
                 stateBackground->SetMargins(&margins);
             }
         }
@@ -744,7 +744,7 @@ void UIButton::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 
             if (stateTextMarginsNode)
             {
-                UIControlBackground::UIMargins textMargins = Vector4ToUIMargins(stateTextMarginsNode->AsVector4());
+                UIControlBackground::UIMargins textMargins(stateTextMarginsNode->AsVector4());
                 stateTextBlock->SetMargins(&textMargins);
             }
 
@@ -847,7 +847,7 @@ YamlNode * UIButton::SaveToYamlNode(UIYamlLoader * loader)
             const UIControlBackground::UIMargins* margins = stateBackground->GetMargins();
             if (margins)
             {
-                node->Set(Format("stateMargins%s", statePostfix.c_str()), UIMarginsToVector4(*margins));
+                node->Set(Format("stateMargins%s", statePostfix.c_str()), margins->AsVector4());
 			}
 
 			// State per pixel accuracy
@@ -935,7 +935,7 @@ YamlNode * UIButton::SaveToYamlNode(UIYamlLoader * loader)
             const UIControlBackground::UIMargins* textMargins = stateTextBlock->GetMargins();
             if (textMargins)
             {
-                node->Set(Format("stateTextMargins%s", statePostfix.c_str()), UIMarginsToVector4(*textMargins));
+                node->Set(Format("stateTextMargins%s", statePostfix.c_str()), textMargins->AsVector4());
             }
         }
     }
