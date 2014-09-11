@@ -31,6 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <new>
 #include "TemplateHelpers.h"
+#include "Base/BaseTypes.h"
 
 namespace DAVA
 {
@@ -56,7 +57,7 @@ public:
 	}
 
 private:
-	unsigned int refCount;
+	uint32 refCount;
 };
 
 // ====================================================================================================================================================
