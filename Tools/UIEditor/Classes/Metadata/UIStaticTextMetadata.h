@@ -96,9 +96,12 @@ protected:
     
     virtual int GetFittingType() const;
     virtual void SetFittingType(int value);
-
-    virtual int GetFontShadowColorInheritType() const;
-    virtual void SetFontShadowColorInheritType(int value);
+    
+    virtual int GetFontColorInheritType() const;
+    virtual void SetFontColorInheritType(int value);
+    
+    virtual int GetFontPerPixelAccuracyType() const;
+    virtual void SetFontPerPixelAccuracyType(int value);
 
     // Text margins.
     virtual QRectF GetTextMargins() const;
@@ -106,7 +109,7 @@ protected:
     
     virtual float GetTextLeftMargin() const;
     virtual void SetTextLeftMargin(float value);
-    
+
     virtual float GetTextTopMargin() const;
     virtual void SetTextTopMargin(float value);
     
@@ -117,9 +120,6 @@ protected:
     virtual void SetTextBottomMargin(float value);
 
     virtual UIControlBackground::UIMargins GetTextMarginsToUpdate(UIControl::eControlState state = UIControl::STATE_NORMAL);
-    
-    virtual int GetTextPerPixelAccuracyType() const;
-    virtual void SetTextPerPixelAccuracyType(int value);
 };
 
 };
