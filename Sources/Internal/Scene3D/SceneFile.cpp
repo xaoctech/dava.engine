@@ -205,12 +205,18 @@ bool SceneFile::LoadScene(const FilePath & filename, Scene * _scene, bool relToB
 			{
 				if (debugLogEnabled)Logger::Error("*** ERROR: animation: %d can't find bind node: %s\n", animationIndex, name.c_str());
 			}
-            else
-            {
-                AnimationComponent* animComp = new AnimationComponent();
-                animComp->SetAnimation(anim);
-                bindNode->AddComponent(animComp);
-            }
+			else
+			{
+				if (bindNode->GetParent() && dynamic_cast< LodNode* >(bindNode->GetParent()))
+					bindNode = bindNode->GetParent();
+
+				if (!bindNode->GetComponent(Component::ANIMATION_COMPONENT))
+				{
+					AnimationComponent* animComp = new AnimationComponent();
+					animComp->SetAnimation(anim);
+					bindNode->AddComponent(animComp);
+				}
+			}
 		}
 	}
 	SafeRelease(sceneFP);

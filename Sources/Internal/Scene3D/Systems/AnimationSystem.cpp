@@ -45,12 +45,12 @@ namespace DAVA
 AnimationSystem::AnimationSystem(Scene * scene)
 :	SceneSystem(scene)
 {
-// 	scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::LOCAL_TRANSFORM_CHANGED);
-// 	scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::TRANSFORM_PARENT_CHANGED);
+
 }
 
 AnimationSystem::~AnimationSystem()
 {
+
 }
 
 void AnimationSystem::Process(float32 timeElapsed)
@@ -73,12 +73,11 @@ void AnimationSystem::Process(float32 timeElapsed)
             }
 
             SceneNodeAnimationKey & key = comp->animation->Intepolate(comp->time);
-
             Matrix4 animTransform;
             key.GetMatrix(animTransform);
 
             Matrix4 result = comp->originalMatrix * animTransform;
-            ((TransformComponent*)(comp->GetEntity()->GetComponent(Component::TRANSFORM_COMPONENT)))->SetLocalTransform(&result);
+            comp->GetEntity()->SetLocalTransform(result);
         }
     }
 }
@@ -105,14 +104,7 @@ void AnimationSystem::UnregisterComponent(Entity* entity, Component* component)
 
 void AnimationSystem::ImmediateEvent(Entity * entity, uint32 event)
 {
-	switch(event)
-	{
-	case EventSystem::LOCAL_TRANSFORM_CHANGED:
-	case EventSystem::TRANSFORM_PARENT_CHANGED:
-// 		EntityNeedUpdate(entity);
-// 		HierahicAddToUpdate(entity);
-		break;
-	}
+
 }
 
 
