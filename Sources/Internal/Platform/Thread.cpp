@@ -50,7 +50,7 @@ Thread::Id Thread::glThreadId = 0;
 ConditionalVariable::ConditionalVariable()
 {
     int32 ret = pthread_cond_init(&cv, 0);
-    if (ret)
+    if (0 != ret)
     {
         Logger::FrameworkDebug("[ConditionalVariable::ConditionalVariable()]: pthread_cond_init error code %d", ret);
     }
@@ -59,7 +59,7 @@ ConditionalVariable::ConditionalVariable()
 ConditionalVariable::~ConditionalVariable()
 {
     int32 ret = pthread_cond_destroy(&cv);
-    if (ret)
+    if (0 != ret)
     {
         Logger::FrameworkDebug("[ConditionalVariable::~ConditionalVariable()]: pthread_cond_destroy error code %d", ret);
     }
@@ -77,7 +77,7 @@ void Thread::InitGLThread()
 
 bool Thread::IsMainThread()
 {
-    if (mainThreadId == 0)
+    if (0 == mainThreadId)
     {
         Logger::Error("Main thread not initialized");
     }
