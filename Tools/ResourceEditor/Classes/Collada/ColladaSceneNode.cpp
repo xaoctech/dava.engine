@@ -341,6 +341,52 @@ FMMatrix44 ColladaSceneNode::CalculateTransformForTime(FCDSceneNode * originalNo
 					angle = curve->Evaluate(time);
 			}
 			colladaLocalMatrix = colladaLocalMatrix * FMMatrix44::AxisRotationMatrix(axis, angle * PI / 180.0f);
+		}else if (transform->GetType() == FCDTransform::SCALE)
+		{
+			FCDTScale * scaleTransform = dynamic_cast<FCDTScale*>(transform);
+			FMVector3 scale = FMVector3(1.0f, 1.0f, 1.0f);
+			scale = scaleTransform->GetScale();
+
+			if (scaleTransform->IsAnimated()) 
+			{
+				FCDAnimationCurve* curve;
+
+				// look for x animation
+				curve = scaleTransform->GetAnimated()->FindCurve(".X");
+				if (curve != 0) 
+					scale.x = curve->Evaluate(time);
+
+				// look for y animation
+				curve = scaleTransform->GetAnimated()->FindCurve(".Y");
+				if (curve != 0) 
+					scale.y = curve->Evaluate(time);
+
+				// look for z animation
+				curve = scaleTransform->GetAnimated()->FindCurve(".Z");
+				if (curve != 0) 
+					scale.z = curve->Evaluate(time);
+			}
+			colladaLocalMatrix = colladaLocalMatrix * FMMatrix44::ScaleMatrix(scale);
+		}else if (transform->GetType() == FCDTransform::MATRIX)
+		{
+			FCDTMatrix * matrixTransform = dynamic_cast<FCDTMatrix*>(transform);
+			FMMatrix44 matrix = transform->ToMatrix();
+
+			if (matrixTransform->IsAnimated()) 
+			{
+				FCDAnimationCurve* curve;
+
+				FCDAnimated* animated = matrixTransform->GetAnimated();
+
+				for (int32 i = 0; i < 4; ++i)
+					for (int32 j = 0; j < 4; ++j)
+					{
+						curve = animated->FindCurve(Format("(%i)(%i)", i, j).c_str());
+						if (curve != 0) 
+							matrix.m[i][j] = curve->Evaluate(time);
+					}
+			}
+			colladaLocalMatrix = colladaLocalMatrix * matrix;
 		}else
 		{
 			colladaLocalMatrix = colladaLocalMatrix * transform->ToMatrix();
@@ -361,6 +407,8 @@ SceneNodeAnimationKey ColladaSceneNode::ExportAnimationKey(FCDSceneNode * origin
 	key.translation.y = lt._31;
 	key.translation.z = lt._32;
 	key.rotation.Construct(lt);
+	key.scale = lt.GetScaleVector();
+
 	return key;
 }
 	

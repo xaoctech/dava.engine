@@ -41,7 +41,6 @@
 #include "FileSystem/FileSystem.h"
 #include "Debug/Stats.h"
 
-#include "Scene3D/SceneNodeAnimationList.h"
 #include "Scene3D/SceneFile.h"
 #include "Scene3D/SceneFileV2.h"
 #include "Scene3D/DataNode.h"
@@ -595,32 +594,6 @@ void Scene::RemoveAnimatedMesh(AnimatedMesh * mesh)
 AnimatedMesh * Scene::GetAnimatedMesh(int32 index)
 {
 	return animatedMeshes[index];
-}
-	
-void Scene::AddAnimation(SceneNodeAnimationList * animation)
-{
-	if (animation)
-	{
-		animation->Retain();
-		animations.push_back(animation);
-	}
-}
-
-SceneNodeAnimationList * Scene::GetAnimation(int32 index)
-{
-	return animations[index];
-}
-	
-SceneNodeAnimationList * Scene::GetAnimation(const FastName & name)
-{
-	int32 size = (int32)animations.size();
-	for (int32 k = 0; k < size; ++k)
-	{
-		SceneNodeAnimationList * node = animations[k];
-		if (node->GetName() == name)
-			return node;
-	}
-	return 0;
 }
 	
 	

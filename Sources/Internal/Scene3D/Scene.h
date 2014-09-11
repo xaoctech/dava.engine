@@ -184,11 +184,7 @@ public:
 	void RemoveAnimatedMesh(AnimatedMesh * mesh);
 	AnimatedMesh * GetAnimatedMesh(int32 index);
 	inline int32	GetAnimatedMeshCount();
-	
-	void AddAnimation(SceneNodeAnimationList * animation);
-	SceneNodeAnimationList * GetAnimation(int32 index);
-	SceneNodeAnimationList * GetAnimation(const FastName & name);
-	inline int32 GetAnimationCount();
+
     
     
     /**
@@ -291,7 +287,6 @@ protected:
 
 	Vector<AnimatedMesh*> animatedMeshes;
 	Vector<Camera*> cameras;
-	Vector<SceneNodeAnimationList*> animations;
     
     static Texture* stubTexture2d;
     static Texture* stubTextureCube;
@@ -322,11 +317,6 @@ protected:
     friend class Entity;
 };
 
-	
-int32 Scene::GetAnimationCount()
-{
-    return (int32)animations.size();
-}
 
 int32 Scene::GetAnimatedMeshCount()
 {

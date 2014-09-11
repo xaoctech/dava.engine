@@ -83,6 +83,7 @@ void AnimationComponent::Serialize(KeyedArchive *archive, SerializationContext *
         {
             archive->SetFloat(Format("key_%i_time", keyIndex), animation->keys[keyIndex].time);
             archive->SetVector3(Format("key_%i_translation", keyIndex), animation->keys[keyIndex].translation);
+            archive->SetVector3(Format("key_%i_scale", keyIndex), animation->keys[keyIndex].scale);
             archive->SetVector4(Format("key_%i_rotation", keyIndex), Vector4(animation->keys[keyIndex].rotation.x, animation->keys[keyIndex].rotation.y, animation->keys[keyIndex].rotation.z, animation->keys[keyIndex].rotation.w));
         }
         archive->SetBool("autostart", autoStart);
@@ -94,26 +95,27 @@ void AnimationComponent::Deserialize(KeyedArchive *archive, SerializationContext
 {
 	if(NULL != archive)
 	{
-        const int32 keyCount = archive->GetInt32("keyCount");
+		const int32 keyCount = archive->GetInt32("keyCount");
 
-        SafeRelease(animation);
-        animation = new SceneNodeAnimation(keyCount);
+		SafeRelease(animation);
+		animation = new SceneNodeAnimation(keyCount);
 
-        animation->SetDuration(archive->GetFloat("duration"));
+		animation->SetDuration(archive->GetFloat("duration"));
 
-        for (int32 keyIndex = 0; keyIndex < keyCount; ++keyIndex)
-        {
-            SceneNodeAnimationKey key;
+		for (int32 keyIndex = 0; keyIndex < keyCount; ++keyIndex)
+		{
+			SceneNodeAnimationKey key;
 
-            key.time = archive->GetFloat(Format("key_%i_time", keyIndex));
-            key.translation = archive->GetVector3(Format("key_%i_translation", keyIndex));
-            Vector4 rotation = archive->GetVector4(Format("key_%i_rotation", keyIndex));
-            key.rotation = Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
+			key.time = archive->GetFloat(Format("key_%i_time", keyIndex));
+			key.translation = archive->GetVector3(Format("key_%i_translation", keyIndex));
+			key.scale = archive->GetVector3(Format("key_%i_scale", keyIndex));
+			Vector4 rotation = archive->GetVector4(Format("key_%i_rotation", keyIndex));
+			key.rotation = Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
 
-            animation->SetKey(keyIndex, key);
-        }
-        autoStart = archive->GetBool("autostart", true);
-        repeat = archive->GetBool("repeat", true);
+			animation->SetKey(keyIndex, key);
+		}
+		autoStart = archive->GetBool("autostart", true);
+		repeat = archive->GetBool("repeat", true);
 // 		localMatrix = archive->GetMatrix4("tc.localMatrix", Matrix4::IDENTITY);
 // 		worldMatrix = archive->GetMatrix4("tc.worldMatrix", Matrix4::IDENTITY);
 	}
@@ -124,8 +126,6 @@ void AnimationComponent::Deserialize(KeyedArchive *archive, SerializationContext
 void AnimationComponent::SetLocalTransform( const Matrix4 & transform )
 {
     originalMatrix = transform;
-    originalTranslate = originalMatrix.GetTranslationVector();
-    originalMatrix.SetTranslationVector(Vector3());
 }
 
 void AnimationComponent::SetAnimation(SceneNodeAnimation* _animation)

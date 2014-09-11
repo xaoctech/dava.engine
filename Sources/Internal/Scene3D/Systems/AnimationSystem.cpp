@@ -73,8 +73,11 @@ void AnimationSystem::Process(float32 timeElapsed)
             }
 
             SceneNodeAnimationKey & key = comp->animation->Intepolate(comp->time);
-            Matrix4 result(key.rotation.GetMatrix() * comp->originalMatrix);
-            result.SetTranslationVector(comp->originalTranslate + key.translation);
+
+            Matrix4 animTransform;
+            key.GetMatrix(animTransform);
+
+            Matrix4 result = comp->originalMatrix * animTransform;
             ((TransformComponent*)(comp->GetEntity()->GetComponent(Component::TRANSFORM_COMPONENT)))->SetLocalTransform(&result);
         }
     }

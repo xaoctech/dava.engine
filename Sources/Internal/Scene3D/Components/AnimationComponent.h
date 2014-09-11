@@ -66,7 +66,6 @@ private:
 	friend class AnimationSystem;
     SceneNodeAnimation* animation;
     Matrix4 originalMatrix;
-    Vector3 originalTranslate;
     float32 time;
     bool isPlaying;
     bool autoStart;

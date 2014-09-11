@@ -92,6 +92,7 @@ SceneNodeAnimationKey & SceneNodeAnimation::Intepolate(float32 t)
 
 	currentValue.translation.Lerp(key1.translation, key2.translation, tInter);
 	currentValue.rotation.Slerp(key1.rotation, key2.rotation, tInter);
+	currentValue.scale.Lerp(key1.scale, key2.scale, tInter);
 	//currentValue.matrix = key1.matrix;
 	return currentValue;
 }
@@ -164,15 +165,15 @@ SceneNodeAnimationList * SceneNodeAnimation::GetParent()
 
 SceneNodeAnimation* SceneNodeAnimation::Clone() const
 {
-    SceneNodeAnimation* copy = new SceneNodeAnimation(keyCount);
+	SceneNodeAnimation* copy = new SceneNodeAnimation(keyCount);
 
-    copy->duration = duration;
-    for (int32 keyIndex = 0; keyIndex < keyCount; ++keyIndex)
-    {
-        copy->keys[keyIndex] = keys[keyIndex];
-    }
+	copy->duration = duration;
+	for (int32 keyIndex = 0; keyIndex < keyCount; ++keyIndex)
+	{
+		copy->keys[keyIndex] = keys[keyIndex];
+	}
 
-    return copy;
+	return copy;
 }
 
 }
