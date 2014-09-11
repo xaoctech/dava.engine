@@ -477,7 +477,7 @@ void UISlider::LoadBackgound(const char* prefix, UIControlBackground* background
     
     if (marginsNode)
     {
-        UIControlBackground::UIMargins margins = Vector4ToUIMargins(marginsNode->AsVector4());
+        UIControlBackground::UIMargins margins(marginsNode->AsVector4());
         background->SetMargins(&margins);
     }
 }
@@ -555,7 +555,7 @@ void UISlider::SaveBackground(const char* prefix, UIControlBackground* backgroun
     const UIControlBackground::UIMargins* margins = background->GetMargins();
     if (margins)
     {
-        rootNode->Set(Format("%smargins", prefix), UIMarginsToVector4(*margins));
+        rootNode->Set(Format("%smargins", prefix), margins->AsVector4());
     }
 }
 

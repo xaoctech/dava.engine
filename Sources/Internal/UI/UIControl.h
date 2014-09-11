@@ -1412,9 +1412,6 @@ protected:
     void DrawDebugRect(const UIGeometricData &geometricData, bool useAlpha = false);
     void DrawPivotPoint(const Rect &drawRect);
 
-    UIControlBackground::UIMargins Vector4ToUIMargins(const Vector4& marginsVect);
-    Vector4 UIMarginsToVector4(const UIControlBackground::UIMargins& margins);
-
 private:
     String  name;
     int32   tag;

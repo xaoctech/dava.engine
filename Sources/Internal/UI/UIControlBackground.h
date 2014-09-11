@@ -102,10 +102,20 @@ public:
             top(0.0f), right(0.0f), bottom(0.0f), left(0.0f)
         {
         }
-        
+
+        UIMargins(const Vector4& value)
+        {
+            left = value.x;
+            top = value.y;
+            right = value.z;
+            bottom = value.w;
+        }
+    
         inline bool operator == (const UIMargins & value) const;
         inline bool operator != (const UIMargins & value) const;
         inline bool empty() const;
+
+        inline Vector4 AsVector4() const;
         
         float32 top;
         float32 right;
@@ -290,7 +300,7 @@ public:
     /**
      \brief Returns the margins for drawing background. Can be NULL.
      */
-    const UIMargins* GetMargins() const;
+    inline const UIMargins* GetMargins() const;
 
     void SetRenderState(UniqueHandle renderState);
     UniqueHandle GetRenderState() const;
@@ -371,6 +381,11 @@ inline UniqueHandle UIControlBackground::GetRenderState() const
     return renderState;
 }
 
+inline const UIControlBackground::UIMargins* UIControlBackground::GetMargins() const
+{
+    return margins;
+}
+
 inline bool UIControlBackground::UIMargins::operator == (const UIControlBackground::UIMargins& value) const
 {
     return FLOAT_EQUAL(left, value.left) && FLOAT_EQUAL(top, value.top) &&
@@ -386,6 +401,11 @@ inline bool UIControlBackground::UIMargins::empty() const
 {
     return FLOAT_EQUAL(left, 0.0f)  && FLOAT_EQUAL(top, 0.0f) &&
     FLOAT_EQUAL(right, 0.0f) && FLOAT_EQUAL(bottom, 0.0f);
+}
+
+inline Vector4 UIControlBackground::UIMargins::AsVector4() const
+{
+    return Vector4(left, top, right, bottom);
 }
 
 };

@@ -967,9 +967,4 @@ void UIControlBackground::SetMargins(const UIMargins* uiMargins)
     *margins = *uiMargins;
 }
 
-const UIControlBackground::UIMargins* UIControlBackground::GetMargins() const
-{
-    return margins;
-}
-
 };
