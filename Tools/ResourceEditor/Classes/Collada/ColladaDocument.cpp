@@ -807,12 +807,12 @@ void ColladaDocument::WriteNodeAnimationList(ColladaAnimation * animation)
 		ColladaSceneNode * node = it->first;
 		SceneNodeAnimation * anim = it->second;
 		
-        std::string name(node->originalNode->GetDaeId());
-        if (name.find("node-") == 0)
-        {//if node name begins from "node-"
-            name = name.substr(strlen("node-"));
-        }
-        fwrite(name.c_str(), name.length() + 1, 1, sceneFP);
+		std::string name(node->originalNode->GetDaeId());
+		if (name.find("node-") == 0)
+		{//if node name begins from "node-"
+			name = name.substr(strlen("node-"));
+		}
+		fwrite(name.c_str(), name.length() + 1, 1, sceneFP);
 		
 		float32 duration = anim->GetDuration();
 		fwrite(&duration, sizeof(float32), 1, sceneFP);
@@ -829,6 +829,7 @@ void ColladaDocument::WriteNodeAnimationList(ColladaAnimation * animation)
 			fwrite(&key.time, sizeof(float32), 1, sceneFP);
 			fwrite(&key.translation, sizeof(Vector3), 1, sceneFP);
 			fwrite(&key.rotation, sizeof(Quaternion), 1, sceneFP);
+			fwrite(&key.scale, sizeof(Vector3), 1, sceneFP);
 			
 			//DAVA::Logger::FrameworkDebug("---- key: %f tr: %f %f %f q: %f %f %f %f\n", key.time, key.translation.x, key.translation.y, key.translation.z
 			//, key.rotation.x, key.rotation.y, key.rotation.z, key.rotation.w); 

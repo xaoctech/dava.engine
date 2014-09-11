@@ -101,7 +101,7 @@ bool SceneFile::LoadScene(const FilePath & filename, Scene * _scene, bool relToB
 //	staticMeshIndexOffset = scene->GetStaticMeshCount();
 	animatedMeshIndexOffset = scene->GetAnimatedMeshCount();
 	cameraIndexOffset = scene->GetCameraCount();
-	animationIndexOffset = scene->GetAnimationCount();
+//	animationIndexOffset = scene->GetAnimationCount();
     
 
 	sceneFP = File::Create(filename, File::OPEN | File::READ);
@@ -741,9 +741,10 @@ bool SceneFile::ReadAnimation()
 		for (int k = 0; k < keyCount; ++k)
 		{
 			SceneNodeAnimationKey key;
-            sceneFP->Read(&key.time, sizeof(float32));
-            sceneFP->Read(&key.translation, sizeof(Vector3));
-            sceneFP->Read(&key.rotation, sizeof(Quaternion));
+			sceneFP->Read(&key.time, sizeof(float32));
+			sceneFP->Read(&key.translation, sizeof(Vector3));
+			sceneFP->Read(&key.rotation, sizeof(Quaternion));
+			sceneFP->Read(&key.scale, sizeof(Vector3));
 			anim->SetKey(k, key);
 			//printf("---- key: %f tr: %f %f %f q: %f %f %f %f\n", key.time, key.translation.x, key.translation.y, key.translation.z
 			//	   , key.rotation.x, key.rotation.y, key.rotation.z, key.rotation.w); 
