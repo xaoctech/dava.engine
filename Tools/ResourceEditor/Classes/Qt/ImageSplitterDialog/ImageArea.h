@@ -64,6 +64,7 @@ private:
     void dropEvent(QDropEvent *event);
         
     void ConnectSignals();
+    DAVA::String GetDefaultPath() const;
     
     DAVA::Image* image;
     DAVA::Vector2 acceptableSize;

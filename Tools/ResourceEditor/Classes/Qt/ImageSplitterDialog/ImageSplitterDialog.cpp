@@ -55,7 +55,7 @@ ImageSplitterDialog::ImageSplitterDialog(QWidget *parent) :
     DAVA::FilePath defaultPath = SettingsManager::Instance()->GetValue(Settings::Internal_ImageSplitterPath).AsString();
     if (defaultPath.IsEmpty())
     {
-        defaultPath = ProjectManager::Instance()->CurProjectPath();
+        defaultPath = GetDefaultPath();
     }
 
     ui->selectPathWidget->SetOpenDialogDefaultPath(defaultPath.GetDirectory().GetAbsolutePathname());
@@ -107,7 +107,7 @@ void ImageSplitterDialog::PathSelected(DAVA::String path)
     DAVA::FilePath defaultPath = ui->selectPathWidget->getText().c_str();
     if (defaultPath.IsEmpty())
     {
-        defaultPath = ProjectManager::Instance()->CurProjectPath();
+        defaultPath = GetDefaultPath();
     }
     SettingsManager::Instance()->SetValue(Settings::Internal_ImageSplitterPath, DAVA::VariantType(defaultPath.GetAbsolutePathname()));
     
@@ -358,4 +358,9 @@ void ImageSplitterDialog::Save(const DAVA::FilePath& filePath, bool saveSplitted
         ui->selectPathWidget->setText(filePath.GetAbsolutePathname());
     }
     QMessageBox::information(this, "Save succes", "Saved!", QMessageBox::Ok);
+}
+
+DAVA::String ImageSplitterDialog::GetDefaultPath() const
+{
+    return ProjectManager::Instance()->CurProjectPath().GetAbsolutePathname();
 }

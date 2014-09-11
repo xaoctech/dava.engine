@@ -86,6 +86,11 @@ void ImageArea::ConnectSignals()
     connect(this, SIGNAL(changed()), this, SLOT(UpdatePreviewPicture()));
 }
 
+DAVA::String ImageArea::GetDefaultPath() const
+{
+    return ProjectManager::Instance()->CurProjectPath().GetAbsolutePathname();
+}
+
 void ImageArea::mousePressEvent (QMouseEvent * ev)
 {
     if(ev->button() == Qt::LeftButton)
@@ -96,7 +101,7 @@ void ImageArea::mousePressEvent (QMouseEvent * ev)
             defaultPath = SettingsManager::Instance()->GetValue(Settings::Internal_ImageSplitterPath).AsString();
             if (defaultPath.IsEmpty())
             {
-                defaultPath = ProjectManager::Instance()->CurProjectPath();
+                defaultPath = GetDefaultPath();
             }
         }
 

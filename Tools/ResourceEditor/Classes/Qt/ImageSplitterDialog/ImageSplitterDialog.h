@@ -48,7 +48,7 @@ class ImageSplitterDialog : public QDialog
 public:
     explicit ImageSplitterDialog(QWidget *parent = 0);
     ~ImageSplitterDialog();
-    
+
 private slots:
     void PathSelected(DAVA::String path);
     void ImageAreaChanged();
@@ -64,6 +64,7 @@ private:
     void ConnectSignals();
     void SetAcceptableImageSize(const DAVA::Vector2& newSize);
     void Save(const DAVA::FilePath& filePath, bool saveSplittedImagesSeparately);
+    DAVA::String GetDefaultPath() const;
     
     QScopedPointer<Ui::ImageSplitter> ui;
     DAVA::Vector2 acceptableSize;
