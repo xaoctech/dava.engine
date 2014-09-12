@@ -32,7 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "FunctionBindSingalTest.h"
 #include "Base/Function.h"
 #include "Base/Bind.h"
-#include "Base/Signal.h"
+#include "Base/Signal2.h"
 
 // =======================================================================================================================================
 // =======================================================================================================================================

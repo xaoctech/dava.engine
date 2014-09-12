@@ -867,7 +867,6 @@
 		1AD7C35E17D8951C00B9977C /* Vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AD7C35D17D8951C00B9977C /* Vector.cpp */; };
 		496526D0167F173400107C70 /* libdxt_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 496526CF167F173400107C70 /* libdxt_ios.a */; };
 		497BF6E216F751ED00AC57C6 /* DeviceInfoiOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 497BF6E116F751ED00AC57C6 /* DeviceInfoiOS.mm */; };
-		4F25830F19BDC94000C28926 /* Signal.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F25830919BDC94000C28926 /* Signal.h */; };
 		4F25831019BDC94000C28926 /* Bind.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F25830A19BDC94000C28926 /* Bind.h */; };
 		4F25831119BDC94000C28926 /* FunctionTraits.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F25830B19BDC94000C28926 /* FunctionTraits.h */; };
 		4F25831219BDC94000C28926 /* NullType.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F25830C19BDC94000C28926 /* NullType.h */; };
@@ -1810,7 +1809,6 @@
 		1AD7C35D17D8951C00B9977C /* Vector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Vector.cpp; sourceTree = "<group>"; };
 		496526CF167F173400107C70 /* libdxt_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_ios.a; path = ../../Libs/libs/libdxt_ios.a; sourceTree = "<group>"; };
 		497BF6E116F751ED00AC57C6 /* DeviceInfoiOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DeviceInfoiOS.mm; sourceTree = "<group>"; };
-		4F25830919BDC94000C28926 /* Signal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Signal.h; sourceTree = "<group>"; };
 		4F25830A19BDC94000C28926 /* Bind.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bind.h; sourceTree = "<group>"; };
 		4F25830B19BDC94000C28926 /* FunctionTraits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FunctionTraits.h; sourceTree = "<group>"; };
 		4F25830C19BDC94000C28926 /* NullType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NullType.h; sourceTree = "<group>"; };
@@ -2930,7 +2928,6 @@
 		E8B3C7BD16B9326D002BD35F /* Base */ = {
 			isa = PBXGroup;
 			children = (
-				4F25830919BDC94000C28926 /* Signal.h */,
 				4F25830A19BDC94000C28926 /* Bind.h */,
 				4F25830B19BDC94000C28926 /* FunctionTraits.h */,
 				4F25830C19BDC94000C28926 /* NullType.h */,
@@ -4388,7 +4385,6 @@
 				E8B3CA8C16B9326E002BD35F /* NamedAnimationsList.h in Headers */,
 				E8B3CA9216B9326E002BD35F /* AutotestingSystem.h in Headers */,
 				50C7D5FD186082B100D8936D /* StaticOcclusionComponent.h in Headers */,
-				4F25830F19BDC94000C28926 /* Signal.h in Headers */,
 				E8B3CA9516B9326E002BD35F /* MongodbUpdateObject.h in Headers */,
 				E8B3CA9916B9326E002BD35F /* BaseMath.h in Headers */,
 				E8B3CA9B16B9326E002BD35F /* BaseObject.h in Headers */,
