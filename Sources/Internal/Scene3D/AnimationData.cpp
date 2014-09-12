@@ -27,44 +27,38 @@
 =====================================================================================*/
 
 
-#include "Scene3D/SceneNodeAnimation.h"
+#include "Scene3D/AnimationData.h"
 #include "Scene3D/SceneNodeAnimationList.h"
 
 namespace DAVA 
 {
 
 
-SceneNodeAnimation::SceneNodeAnimation(int32 _keyCount)
+AnimationData::AnimationData(int32 _keyCount)
 {
 	keyCount = _keyCount;
-	bindNode = 0;
 	startIdx = 0;
 	keys = new SceneNodeAnimationKey[keyCount];
-	apply = true;
-	weight = 0.0f;
-	delayTime = 0.0f;
-	parent = 0;
 }
 
-SceneNodeAnimation::~SceneNodeAnimation()
+AnimationData::~AnimationData()
 {
 	SafeDeleteArray(keys);
 }
 	
-void SceneNodeAnimation::SetKey(int32 index, const SceneNodeAnimationKey & key)
+void AnimationData::SetKey(int32 index, const SceneNodeAnimationKey & key)
 {
 	keys[index] = key;
 }
 
-SceneNodeAnimationKey & SceneNodeAnimation::Intepolate(float32 t)
+SceneNodeAnimationKey AnimationData::Interpolate(float32 t)
 {
-	if (keyCount == 1)
+	if (this->keyCount == 1)
 	{
-		currentValue = keys[0];
-		return currentValue;
+		return this->keys[0];
 	}
 	
-	if (t < keys[startIdx].time)
+	if (t < this->keys[startIdx].time)
 	{
 		startIdx = 0;
 	}
@@ -81,95 +75,53 @@ SceneNodeAnimationKey & SceneNodeAnimation::Intepolate(float32 t)
 	
 	if (endIdx == keyCount)
 	{
-		currentValue = keys[keyCount - 1];
-		return currentValue;
+		startIdx = keyCount - 1;
+		endIdx = 0;
 	}
 	
 	SceneNodeAnimationKey & key1 = keys[startIdx];
 	SceneNodeAnimationKey & key2 = keys[endIdx];
 
-	float32 tInter = (t - key1.time) / (key2.time - key1.time);
+	float32 tInter;
+	if (endIdx > startIdx)
+		tInter = (t - key1.time) / (key2.time - key1.time);
+	else
+		tInter = (t - key1.time) / (duration - key1.time);
 
-	currentValue.translation.Lerp(key1.translation, key2.translation, tInter);
-	currentValue.rotation.Slerp(key1.rotation, key2.rotation, tInter);
-	currentValue.scale.Lerp(key1.scale, key2.scale, tInter);
-	//currentValue.matrix = key1.matrix;
-	return currentValue;
+	SceneNodeAnimationKey result;
+	result.translation.Lerp(key1.translation, key2.translation, tInter);
+	result.rotation.Slerp(key1.rotation, key2.rotation, tInter);
+	result.scale.Lerp(key1.scale, key2.scale, tInter);
+
+	return result;
 }
 
-void SceneNodeAnimation::SetDuration(float32 _duration)
+void AnimationData::SetDuration(float32 _duration)
 {
 	duration = _duration;
 }
 	
-void SceneNodeAnimation::SetBindNode(Entity * _bindNode)
-{
-	bindNode = _bindNode;
-}
-	
-void SceneNodeAnimation::SetBindName(const FastName & _bindName)
-{
-	bindName = _bindName;
-}
-
-void SceneNodeAnimation::SetInvPose(const Matrix4& mat)
+void AnimationData::SetInvPose(const Matrix4& mat)
 {
 	invPose = mat;
 }
-const Matrix4& SceneNodeAnimation::GetInvPose() const
+const Matrix4& AnimationData::GetInvPose() const
 {
 	return invPose;
 }
 	
-void SceneNodeAnimation::Update(float32 timeElapsed)
+AnimationData* AnimationData::Clone() const
 {
-	delayTime -= timeElapsed;
-	if (delayTime <= 0.0f)
-	{
-		delayTime = 0.0f;
-		currentTime += timeElapsed + delayTime;
-		if (currentTime > duration)
-		{
-			currentTime = duration;
-			//bindNode->DetachAnimation(this);
-		}
-	}
-}
-	
-void SceneNodeAnimation::Execute()
-{
-    DVASSERT(0);
-// 	startIdx = 0;
-// 	currentTime = 0;
-// 	bindNode->ExecuteAnimation(this);
-}
-	
-Vector3 SceneNodeAnimation::SetStartPosition(const Vector3 & position)
-{
-	Vector3 sPos = keys[0].translation;
-	for (int idx = 0; idx < keyCount; ++idx)
-	{
-		keys[idx].translation = position + keys[idx].translation - sPos;
-	}
-	return position - sPos;
-}	
+	AnimationData* copy = new AnimationData(keyCount);
 
-void SceneNodeAnimation::ShiftStartPosition(const Vector3 & shift)
-{
-	for (int idx = 0; idx < keyCount; ++idx)
+	copy->invPose = invPose;
+	copy->duration = duration;
+	for (int32 keyIndex = 0; keyIndex < keyCount; ++keyIndex)
 	{
-		keys[idx].translation += shift;
+		copy->keys[keyIndex] = keys[keyIndex];
 	}
-}
-	
-void SceneNodeAnimation::SetParent(SceneNodeAnimationList * list)
-{
-	parent = list;
-}
 
-SceneNodeAnimationList * SceneNodeAnimation::GetParent()
-{
-	return parent;
+	return copy;
 }
 
 }

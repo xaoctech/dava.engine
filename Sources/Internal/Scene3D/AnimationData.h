@@ -27,26 +27,62 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_SCENE_NODE_ANIMATION_KEY_H__
-#define __DAVAENGINE_SCENE_NODE_ANIMATION_KEY_H__
+#ifndef __DAVAENGINE_ANIMATION_DATA_H__
+#define __DAVAENGINE_ANIMATION_DATA_H__
 
 #include "Base/BaseTypes.h"
 #include "Scene3D/Entity.h"
-
+#include "Scene3D/SceneNodeAnimationKey.h"
 namespace DAVA 
 {
-class SceneNodeAnimationKey
-{
-public:
-	float32 time;
-	Vector3 translation;
-	Quaternion rotation;
-	Vector3 scale;
 	
-	void GetMatrix(Matrix4 & matrix);
+class AnimationData : public BaseObject
+{
+protected:
+	virtual ~AnimationData();
+public:
+	AnimationData(int32 keyCount);
+	
+	SceneNodeAnimationKey Interpolate(float32 t);
+	
+	void SetKey(int32 index, const SceneNodeAnimationKey & key);
+	
+	inline int32 GetKeyCount();
+	inline SceneNodeAnimationKey * GetKeys();
+	
+	void SetDuration(float32 _duration);
+	inline float32 GetDuration(); 
+	
+	void SetInvPose(const Matrix4& mat); 
+	const Matrix4& GetInvPose() const;
+	
+	AnimationData* Clone() const;
+
+	float32 duration;
+	
+	int32 keyCount;
+	SceneNodeAnimationKey * keys;
+
+	Matrix4 invPose;
+private:
+	int32 startIdx;
 };
 	
+inline float32 AnimationData::GetDuration()
+{
+	return duration;
+}
+	
+inline int32 AnimationData::GetKeyCount()
+{
+	return keyCount;
+}
+
+inline SceneNodeAnimationKey * AnimationData::GetKeys()
+{
+	return keys;
+}
 	
 };
 
-#endif // __DAVAENGINE_SCENE_NODE_ANIMATION_KEY_H__
+#endif // __DAVAENGINE_ANIMATION_DATA_H__

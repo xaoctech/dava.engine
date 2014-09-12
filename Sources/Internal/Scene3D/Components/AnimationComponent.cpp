@@ -33,7 +33,7 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
-#include "Scene3D/SceneNodeAnimation.h"
+#include "Scene3D/AnimationData.h"
 #include "Scene3D/Components/TransformComponent.h"
 
 namespace DAVA
@@ -59,7 +59,6 @@ Component * AnimationComponent::Clone(Entity * toEntity)
 {
     AnimationComponent * newAnimation = new AnimationComponent();
 
-    newAnimation->originalMatrix = originalMatrix;
     newAnimation->time = time;
     newAnimation->isPlaying = false;
     newAnimation->animation = animation ? animation->Clone() : NULL;
@@ -78,6 +77,8 @@ void AnimationComponent::Serialize(KeyedArchive *archive, SerializationContext *
 	{
         archive->SetFloat("duration", animation->duration);
         archive->SetInt32("keyCount", animation->keyCount);
+		archive->SetMatrix4("invPose", animation->invPose);
+
         for (int32 keyIndex = 0; keyIndex < animation->keyCount; ++keyIndex)
         {
             archive->SetFloat(Format("key_%i_time", keyIndex), animation->keys[keyIndex].time);
@@ -97,9 +98,10 @@ void AnimationComponent::Deserialize(KeyedArchive *archive, SerializationContext
 		const int32 keyCount = archive->GetInt32("keyCount");
 
 		SafeRelease(animation);
-		animation = new SceneNodeAnimation(keyCount);
+		animation = new AnimationData(keyCount);
 
 		animation->SetDuration(archive->GetFloat("duration"));
+		animation->SetInvPose(archive->GetMatrix4("invPose"));
 
 		for (int32 keyIndex = 0; keyIndex < keyCount; ++keyIndex)
 		{
@@ -113,6 +115,7 @@ void AnimationComponent::Deserialize(KeyedArchive *archive, SerializationContext
 
 			animation->SetKey(keyIndex, key);
 		}
+
 		autoStart = archive->GetBool("autostart", true);
 		repeat = archive->GetBool("repeat", true);
 // 		localMatrix = archive->GetMatrix4("tc.localMatrix", Matrix4::IDENTITY);
@@ -122,7 +125,7 @@ void AnimationComponent::Deserialize(KeyedArchive *archive, SerializationContext
 	Component::Deserialize(archive, sceneFile);
 }
 
-void AnimationComponent::SetAnimation(SceneNodeAnimation* _animation)
+void AnimationComponent::SetAnimation(AnimationData* _animation)
 {
     SafeRetain(_animation);
     SafeRelease(animation);
@@ -131,14 +134,6 @@ void AnimationComponent::SetAnimation(SceneNodeAnimation* _animation)
 
 void AnimationComponent::SetIsPlaying( bool value )
 {
-    if (!value && isPlaying)
-    {
-        Matrix4 result(originalMatrix);
-        ((TransformComponent*)(GetEntity()->GetComponent(Component::TRANSFORM_COMPONENT)))->SetLocalTransform(&result);
-        time = 0;
-    } else if (value && !isPlaying) {
-		originalMatrix = entity->GetLocalTransform();
-	}
     isPlaying = value;
     time = 0.0f;
 }

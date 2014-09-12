@@ -39,7 +39,7 @@
 namespace DAVA 
 {
 
-class SceneNodeAnimation;
+class AnimationData;
 
 class AnimationComponent : public Component
 {
@@ -54,7 +54,7 @@ public:
 	virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
 	virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
 
-    void SetAnimation(SceneNodeAnimation* animation);
+    void SetAnimation(AnimationData* animation);
 
     bool GetIsPlaying() const;
     void SetIsPlaying(bool value);
@@ -62,9 +62,8 @@ public:
 private:
 
 	friend class AnimationSystem;
-    SceneNodeAnimation* animation;
-    Matrix4 originalMatrix;
-    float32 time;
+    AnimationData* animation;
+	float32 time;
     bool isPlaying;
     bool autoStart;
     bool repeat;

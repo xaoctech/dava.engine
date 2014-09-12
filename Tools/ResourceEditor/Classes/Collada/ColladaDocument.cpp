@@ -821,7 +821,10 @@ void ColladaDocument::WriteNodeAnimationList(ColladaAnimation * animation)
 		fwrite(&keyCount, sizeof(int32), 1, sceneFP);
 		
 		DAVA::Logger::FrameworkDebug("-- scene node anim: %s keyCount: %d\n", name, keyCount); 
-		
+
+		Matrix4 invPose;
+		node->localTransform.GetInverse(invPose);
+		fwrite(invPose.data, sizeof(invPose.data), 1, sceneFP);
 		SceneNodeAnimationKey * keys = anim->GetKeys();
 		for (int k = 0; k < anim->GetKeyCount(); ++k)
 		{

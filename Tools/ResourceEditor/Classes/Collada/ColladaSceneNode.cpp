@@ -29,6 +29,7 @@
 
 #include "stdafx.h"
 #include "ColladaSceneNode.h"
+#include <cmath>
 
 namespace DAVA
 {
@@ -296,7 +297,6 @@ FMMatrix44 ColladaSceneNode::CalculateTransformForTime(FCDSceneNode * originalNo
 				curve = transform->GetAnimated()->FindCurve(".X");
 				if (curve != 0) 
 					point.x = curve->Evaluate(time);
-					
 				// look for y animation
 				curve = transform->GetAnimated()->FindCurve(".Y");
 				if (curve != 0) 
@@ -387,12 +387,6 @@ FMMatrix44 ColladaSceneNode::CalculateTransformForTime(FCDSceneNode * originalNo
 					}
 			}
 			colladaLocalMatrix = colladaLocalMatrix * matrix;
-		}else if (transform->GetType() == FCDTransform::SKEW)
-		{
-			DAVA::Logger::Debug("FCDTransform::SKEW");
-		}else if (transform->GetType() == FCDTransform::LOOKAT)
-		{
-			DAVA::Logger::Debug("FCDTransform::LOOKAT");
 		}else
 		{
 			colladaLocalMatrix = colladaLocalMatrix * transform->ToMatrix();
@@ -402,29 +396,52 @@ FMMatrix44 ColladaSceneNode::CalculateTransformForTime(FCDSceneNode * originalNo
 	return colladaLocalMatrix;
 }
 
+float32 copySign(float32 a, float32 b) {
+	return b < 0 ? -Abs(a) : Abs(a);
+}
+
+void Decompose(Matrix4 matrix, Vector3& translation, Vector3& scale, Quaternion& rot)
+{
+	scale = matrix.GetScaleVector();
+
+	translation = matrix.GetTranslationVector();
+
+	matrix._00 /= scale.x;
+	matrix._01 /= scale.x;
+	matrix._02 /= scale.x;
+
+	matrix._10 /= scale.y;
+	matrix._11 /= scale.y;
+	matrix._12 /= scale.y;
+
+	matrix._20 /= scale.z;
+	matrix._21 /= scale.z;
+	matrix._22 /= scale.z;
+
+	matrix.SetTranslationVector(Vector3(0.0f, 0.0f, 0.0f));
+
+	float32 d = (matrix(0, 0) * matrix(1, 1) - matrix(1, 0) * matrix(0, 1)) * (matrix(2, 2) * matrix(3, 3) - matrix(3, 2) * matrix(2, 3))	- (matrix(0, 0) * matrix(2, 1) - matrix(2, 0) * matrix(0, 1)) * (matrix(1, 2) * matrix(3, 3) - matrix(3, 2) * matrix(1, 3))
+		+ (matrix(0, 0) * matrix(3, 1) - matrix(3, 0) * matrix(0, 1)) * (matrix(1, 2) * matrix(2, 3) - matrix(2, 2) * matrix(1, 3))	+ (matrix(1, 0) * matrix(2, 1) - matrix(2, 0) * matrix(1, 1)) * (matrix(0, 2) * matrix(3, 3) - matrix(3, 2) * matrix(0, 3))
+		- (matrix(1, 0) * matrix(3, 1) - matrix(3, 0) * matrix(1, 1)) * (matrix(0, 2) * matrix(2, 3) - matrix(2, 2) * matrix(0, 3))	+ (matrix(2, 0) * matrix(3, 1) - matrix(3, 0) * matrix(2, 1)) * (matrix(0, 2) * matrix(1, 3) - matrix(1, 2) * matrix(0, 3));
+
+	float32 absQ = pow(d, 1.0f / 3.0f);
+	rot.w = sqrtf( Max( 0.0f, absQ + matrix._00 + matrix._11 + matrix._22 ) ) / 2; 
+	rot.x = sqrtf( Max( 0.0f, absQ + matrix._00 - matrix._11 - matrix._22 ) ) / 2; 
+	rot.y = sqrtf( Max( 0.0f, absQ - matrix._00 + matrix._11 - matrix._22 ) ) / 2; 
+	rot.z = sqrtf( Max( 0.0f, absQ - matrix._00 - matrix._11 + matrix._22 ) ) / 2; 
+	rot.x = copySign( rot.x, ( matrix._12 - matrix._21 ) );
+	rot.y = copySign( rot.y, ( matrix._20 - matrix._02 ) );
+	rot.z = copySign( rot.z, ( matrix._01 - matrix._10 ) );
+	rot.Normalize();
+}
+
 SceneNodeAnimationKey ColladaSceneNode::ExportAnimationKey(FCDSceneNode * originalNode, float32 time)
 {
-	FMMatrix44 bindPoseMatrix = ColladaSceneNode::CalculateTransformForTime(originalNode, 0.0f);
 	SceneNodeAnimationKey key;
-	FMMatrix44 colladaLocalMatrix = bindPoseMatrix.Inverted() * ColladaSceneNode::CalculateTransformForTime(originalNode, time);
+	FMMatrix44 colladaLocalMatrix =  ColladaSceneNode::CalculateTransformForTime(originalNode, time);
 	Matrix4 lt = ConvertMatrix(colladaLocalMatrix);
-	Vector3 rot;
-	lt.Decomposition(key.translation, key.scale, rot);
-	key.rotation.Construct(Vector3(rot.x, rot.y, rot.z));
-
 	key.time = time;
-	/*key.translation.x = lt._30;
-	key.translation.y = lt._31;
-	key.translation.z = lt._32;
-	key.rotation.Construct(lt);
-	key.scale = lt.GetScaleVector();*/
-
-	DAVA::Matrix4 res;
-	key.GetMatrix(res);
-
-	for (uint32 i = 0; i < 4; ++i)
-		DAVA::Logger::Debug("%f %f %f %f    %f %f %f %f", res._data[i][0], res._data[i][1], res._data[i][2], res._data[i][3], lt._data[i][0], lt._data[i][2], lt._data[i][2], lt._data[i][3]);
-
+	Decompose(lt, key.translation, key.scale, key.rotation);
 	
 	return key;
 }
@@ -434,10 +451,27 @@ SceneNodeAnimation * ColladaSceneNode::ExportNodeAnimation(FCDSceneNode * origin
 	if (!IsAnimated(originalNode))return 0;
 		
 	
-	int frameCount = (endTime - startTime) * fps;
+	int frameCount = 1;
+
+	for (int t = 0; t < (int)originalNode->GetTransformCount(); ++t)
+	{
+		FCDTransform * transform = originalNode->GetTransform(t);
+		if (transform->IsAnimated())
+		{
+			FCDAnimated * animated = transform->GetAnimated();
+			const FCDAnimationCurveListList& curves = animated->GetCurves();
+			for (FCDAnimationCurveListList::const_iterator curveIter = curves.begin(); curveIter != curves.end(); ++curveIter)
+			{
+				for (FCDAnimationCurveTrackList::const_iterator curveTrackIter = curveIter->begin(); curveTrackIter != curveIter->end(); ++curveTrackIter)
+				{
+					frameCount = LCM((*curveTrackIter)->GetKeyCount(), frameCount);
+				}
+			}
+		}
+	}
+
 	float32 t0 = startTime;
-	float32 tInc = (endTime - startTime) / (float)frameCount;
-	
+	float32 tInc = (endTime - startTime) / (float)(frameCount - 1);
 	
 	std::vector<SceneNodeAnimationKey> keys;
 	
