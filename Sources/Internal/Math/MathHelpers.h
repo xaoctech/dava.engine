@@ -48,6 +48,23 @@ namespace DAVA
 	inline float32 RadToDeg(float32 f) { return f * RAD_TO_DEG; };
 	inline float32 DegToRad(float32 f) { return f * DEG_TO_RAD; };
 
+	inline int32 GCD(int32 a, int32 b)
+	{
+		int32 c;
+		while (a != 0)
+		{
+			c = a;
+			a = b % a;
+			b = c;
+		}
+		return b;
+	}
+
+	inline int32 LCM(int32 a, int32 b)
+	{
+		return a * b / GCD(a, b);
+	}
+
 	inline void SinCosFast(float angleInRadians,float &sine,float &cosine) 
 	{
 		if(angleInRadians < 0.0f || angleInRadians >= PI_2) 

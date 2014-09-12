@@ -565,6 +565,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene2D\GameObjectAnimations.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene2D\GameObjectManager.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene2D\TextGameObject.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\AnimationData.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\BillboardNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\BoneNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ActionComponent.h" />
@@ -1011,6 +1012,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene2D\GameObjectAnimations.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene2D\GameObjectManager.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene2D\TextGameObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\AnimationData.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\BillboardNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\BoneNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\ActionComponent.cpp" />

@@ -46,6 +46,7 @@
 #include "Render/PixelFormatDescriptor.h"
 #include "Render/3D/MeshUtils.h"
 #include "Scene3D/Components/AnimationComponent.h"
+#include "Scene3D/AnimationData.h"
 
 namespace DAVA
 {
@@ -213,7 +214,16 @@ bool SceneFile::LoadScene(const FilePath & filename, Scene * _scene, bool relToB
 				if (!bindNode->GetComponent(Component::ANIMATION_COMPONENT))
 				{
 					AnimationComponent* animComp = new AnimationComponent();
-					animComp->SetAnimation(anim);
+
+					AnimationData* animData = new AnimationData(anim->GetKeyCount());
+					for (int32 keyIndex = 0; keyIndex < anim->GetKeyCount(); ++keyIndex)
+					{
+						animData->SetKey(keyIndex, anim->keys[keyIndex]);
+					}
+					animData->SetInvPose(anim->GetInvPose());
+					animData->SetDuration(anim->GetDuration());
+
+					animComp->SetAnimation(animData);
 					bindNode->AddComponent(animComp);
 				}
 			}
@@ -744,6 +754,7 @@ bool SceneFile::ReadAnimation()
 		anim->SetDuration(duration); 
 		if (debugLogEnabled)Logger::FrameworkDebug("-- scene node %d anim: %s keyCount: %d duration: %f seconds\n", nodeIndex, name, keyCount, duration); 
 
+		sceneFP->Read(anim->invPose.data, sizeof(anim->invPose.data));
 		for (int k = 0; k < keyCount; ++k)
 		{
 			SceneNodeAnimationKey key;

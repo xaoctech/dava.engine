@@ -36,7 +36,7 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
 #include "Debug/Stats.h"
-#include "Scene3D/SceneNodeAnimation.h"
+#include "Scene3D/AnimationData.h"
 #include "Scene3D/Components/TransformComponent.h"
 
 namespace DAVA
@@ -72,11 +72,10 @@ void AnimationSystem::Process(float32 timeElapsed)
                     comp->SetIsPlaying(false);
             }
 
-            SceneNodeAnimationKey & key = comp->animation->Intepolate(comp->time);
+            SceneNodeAnimationKey & key = comp->animation->Interpolate(comp->time);
             Matrix4 animTransform;
             key.GetMatrix(animTransform);
-
-            Matrix4 result = comp->originalMatrix * animTransform;
+            Matrix4 result = comp->animation->invPose * animTransform;
             comp->GetEntity()->SetLocalTransform(result);
         }
     }

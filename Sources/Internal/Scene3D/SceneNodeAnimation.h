@@ -60,6 +60,9 @@ public:
 		
 	void SetBindName(const FastName & bindName); 
 	void SetBindNode(Entity * bindNode);
+
+	void SetInvPose(const Matrix4& mat); 
+	const Matrix4& GetInvPose() const;
 	
 	virtual void Update(float32 timeElapsed);
 	virtual void Execute();
@@ -70,7 +73,6 @@ public:
 	Vector3 SetStartPosition(const Vector3 & position);
 	void ShiftStartPosition(const Vector3 & position);
 	
-    SceneNodeAnimation* Clone() const;
 	
 	// this is node of animation this animation is supposed for
 	Entity * bindNode;
@@ -87,6 +89,8 @@ public:
 	int32 keyCount;
 	SceneNodeAnimationKey * keys;
 	SceneNodeAnimationKey currentValue;
+
+	Matrix4 invPose;
 
 	void SetParent(SceneNodeAnimationList * list);
 	SceneNodeAnimationList * GetParent();
