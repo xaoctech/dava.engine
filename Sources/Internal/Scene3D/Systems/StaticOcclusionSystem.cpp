@@ -275,7 +275,7 @@ void StaticOcclusionBuildSystem::OcclusionBuildStep(BaseObject * bo, void * mess
         SceneForceLod(LodComponent::INVALID_LOD_LAYER);
         RestoreOcclusionMaterials();
     }
-    else
+    else if(staticOcclusion)
     {
         buildStepRemains = staticOcclusion->RenderFrame();
         if(buildStepRemains > buildStepsCount)
