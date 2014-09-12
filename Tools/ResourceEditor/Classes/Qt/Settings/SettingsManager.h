@@ -89,6 +89,8 @@ namespace Settings
 	static const DAVA::FastName Internal_LODEditorMode("Internal/LODEditorMode");
     static const DAVA::FastName Internal_ImageSplitterPath("Internal/ImageSplitterPath");
     static const DAVA::FastName Internal_ImageSplitterPathSpecular("Internal/ImageSplitterPath_specular");
+
+    static const DAVA::FastName Internal_CustomPalette("Internal/CustomPalette");
 };
 
 struct SettingsNode
