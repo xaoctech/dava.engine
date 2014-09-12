@@ -98,6 +98,12 @@
 		02FD826F192A3861007762C0 /* WaveComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02FD826B192A3861007762C0 /* WaveComponent.h */; };
 		02FD8270192A3861007762C0 /* WaveComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02FD826B192A3861007762C0 /* WaveComponent.h */; };
 		02FD8271192A3861007762C0 /* WaveComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02FD826B192A3861007762C0 /* WaveComponent.h */; };
+		11CB615019C3391B00B48A92 /* AnimationData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11CB614E19C3391B00B48A92 /* AnimationData.cpp */; };
+		11CB615119C3391B00B48A92 /* AnimationData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11CB614E19C3391B00B48A92 /* AnimationData.cpp */; };
+		11CB615219C3391B00B48A92 /* AnimationData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11CB614E19C3391B00B48A92 /* AnimationData.cpp */; };
+		11CB615319C3391B00B48A92 /* AnimationData.h in Headers */ = {isa = PBXBuildFile; fileRef = 11CB614F19C3391B00B48A92 /* AnimationData.h */; };
+		11CB615419C3391B00B48A92 /* AnimationData.h in Headers */ = {isa = PBXBuildFile; fileRef = 11CB614F19C3391B00B48A92 /* AnimationData.h */; };
+		11CB615519C3391B00B48A92 /* AnimationData.h in Headers */ = {isa = PBXBuildFile; fileRef = 11CB614F19C3391B00B48A92 /* AnimationData.h */; };
 		155D77D8197DD22E006AEBCD /* YamlNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 155D77D6197DD22E006AEBCD /* YamlNode.cpp */; };
 		155D77D9197DD22E006AEBCD /* YamlNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 155D77D6197DD22E006AEBCD /* YamlNode.cpp */; };
 		155D77DA197DD22E006AEBCD /* YamlNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 155D77D6197DD22E006AEBCD /* YamlNode.cpp */; };
@@ -2510,6 +2516,8 @@
 		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		0867D6A5FE840307C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		11CB614E19C3391B00B48A92 /* AnimationData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnimationData.cpp; sourceTree = "<group>"; };
+		11CB614F19C3391B00B48A92 /* AnimationData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimationData.h; sourceTree = "<group>"; };
 		155D77D6197DD22E006AEBCD /* YamlNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YamlNode.cpp; sourceTree = "<group>"; };
 		155D77D7197DD22E006AEBCD /* YamlNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YamlNode.h; sourceTree = "<group>"; };
 		15D3117E198285C800919AAA /* YamlEmitter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YamlEmitter.cpp; sourceTree = "<group>"; };
@@ -4341,6 +4349,8 @@
 			children = (
 				CC931B1D188EC934000375F9 /* Converters */,
 				A6B97D9917E20A5A00CBD64C /* SceneFile */,
+				11CB614E19C3391B00B48A92 /* AnimationData.cpp */,
+				11CB614F19C3391B00B48A92 /* AnimationData.h */,
 				CCC7A48716F1D6B80061EA5D /* Entity.cpp */,
 				CCC7A48816F1D6B80061EA5D /* Entity.h */,
 				E8989CC816BD24E500732C04 /* Components */,
@@ -4839,6 +4849,7 @@
 				176DE984174B5561007A983B /* FontManager.h in Headers */,
 				176DE985174B5561007A983B /* FTFont.h in Headers */,
 				4F53ED3119A23BE700D3869D /* CurlDownloader.h in Headers */,
+				11CB615519C3391B00B48A92 /* AnimationData.h in Headers */,
 				176DE986174B5561007A983B /* GraphicsFont.h in Headers */,
 				176DE987174B5561007A983B /* GridSprite.h in Headers */,
 				176DE988174B5561007A983B /* Sprite.h in Headers */,
@@ -5277,6 +5288,7 @@
 				02FD7EDC19237D96007762C0 /* WindSystem.h in Headers */,
 				E8989EFE16BD24E500732C04 /* TextureMulColorEffect.h in Headers */,
 				E8989F2B16BD24E500732C04 /* IndexBuffer.h in Headers */,
+				11CB615319C3391B00B48A92 /* AnimationData.h in Headers */,
 				E8989F3316BD24E500732C04 /* MaterialCompiler.h in Headers */,
 				E8989F3516BD24E500732C04 /* MaterialGraph.h in Headers */,
 				E8989F3716BD24E500732C04 /* MaterialGraphNode.h in Headers */,
@@ -5663,6 +5675,7 @@
 				E898A0C516BD265400732C04 /* Sphere.h in Headers */,
 				E898A0C616BD265400732C04 /* Spline.h in Headers */,
 				E898A0C716BD265400732C04 /* Vector.h in Headers */,
+				11CB615419C3391B00B48A92 /* AnimationData.h in Headers */,
 				E898A0C816BD265400732C04 /* BaseNetworkConnection.h in Headers */,
 				02FD7EDD19237D96007762C0 /* WindSystem.h in Headers */,
 				E898A0C916BD265400732C04 /* BTNetworkConnection.h in Headers */,
@@ -6314,6 +6327,7 @@
 				176DEB17174B5561007A983B /* UIHierarchyNode.cpp in Sources */,
 				176DEB18174B5561007A983B /* UIHoleTransition.cpp in Sources */,
 				176DEB19174B5561007A983B /* UIJoypad.cpp in Sources */,
+				11CB615219C3391B00B48A92 /* AnimationData.cpp in Sources */,
 				176DEB1A174B5561007A983B /* UIList.cpp in Sources */,
 				176DEB1B174B5561007A983B /* UIListCell.cpp in Sources */,
 				176DEB1C174B5561007A983B /* UILoadingTransition.cpp in Sources */,
@@ -6440,6 +6454,7 @@
 				02FD826C192A3861007762C0 /* WaveComponent.cpp in Sources */,
 				E8ADAEB918CA1226000B251C /* PixelFormatDescriptor.cpp in Sources */,
 				84CB6720191FC8850086483D /* LibDdsHelper.cpp in Sources */,
+				11CB615019C3391B00B48A92 /* AnimationData.cpp in Sources */,
 				E8989DB816BD24E500732C04 /* BaseObjectChecker.cpp in Sources */,
 				84CB6722191FC8850086483D /* LibJpegHelper.cpp in Sources */,
 				E8989DBB16BD24E500732C04 /* Data.cpp in Sources */,
@@ -7120,6 +7135,7 @@
 				A6D82799187716F30006A5DD /* Color.cpp in Sources */,
 				CCC7A42616F1D6170061EA5D /* Camera.cpp in Sources */,
 				4F53ED2C19A23BE700D3869D /* DownloaderCommon.cpp in Sources */,
+				11CB615119C3391B00B48A92 /* AnimationData.cpp in Sources */,
 				CCC7A42A16F1D6170061EA5D /* CullingSystem.cpp in Sources */,
 				644C86C519476A7100964F91 /* TextureSheet.cpp in Sources */,
 				CCC7A42E16F1D6170061EA5D /* Frustum.cpp in Sources */,
