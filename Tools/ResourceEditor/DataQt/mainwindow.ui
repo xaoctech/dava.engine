@@ -1940,6 +1940,14 @@
     <string>BatchProcess</string>
    </property>
   </action>
+  <action name="actionAddSkeletonComponent">
+   <property name="text">
+    <string>Add Skeleton Component</string>
+   </property>
+   <property name="toolTip">
+    <string>Add Skeleton Component</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>

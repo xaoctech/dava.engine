@@ -31,6 +31,8 @@
 #include "Scene3D/Components/SkeletonComponent.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Systems/GlobalEventSystem.h"
 
 namespace DAVA
 {
@@ -40,13 +42,33 @@ REGISTER_CLASS(SkeletonComponent)
 
 SkeletonComponent::SkeletonComponent()
 {
+    rootJoints.push_back(JointConfig());
+    rootJoints.push_back(JointConfig());
+    rootJoints[0].children.push_back(JointConfig());
+    rootJoints[0].children[0].children.push_back(JointConfig());
+    rootJoints[0].children[0].children.push_back(JointConfig());
 
+    rootJoints[1].children.push_back(JointConfig());
+    rootJoints[1].children.push_back(JointConfig());
+    rootJoints[1].children[0].children.push_back(JointConfig());
+    rootJoints[1].children[0].children.push_back(JointConfig());
+    rootJoints[1].children[1].children.push_back(JointConfig());
+    rootJoints[1].children[1].children.push_back(JointConfig());
+    rootJoints[1].children[1].children.push_back(JointConfig());
+    rootJoints[1].children[1].children[2].children.push_back(JointConfig());
+    rootJoints[1].children[1].children[2].children.push_back(JointConfig());
 }
 
 SkeletonComponent::~SkeletonComponent()
 {
 
 }
+
+void SkeletonComponent::RebuildFromConfig()
+{
+    GlobalEventSystem::Instance()->Event(GetEntity(), EventSystem::SKELETON_CONFIG_CHANGED);	
+}
+
 Component * SkeletonComponent::Clone(Entity * toEntity)
 {
     SkeletonComponent * newComponent = new SkeletonComponent();    
