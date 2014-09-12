@@ -84,10 +84,10 @@ public:
 	
     
 	// Fast methods
-	inline void Mul(const Quaternion * mul, Quaternion * res);
+	inline void Mul(const Quaternion * mul, Quaternion * res) const;
 
 	inline Quaternion & operator *=(const Quaternion & q);
-	inline Quaternion  operator *(const Quaternion & q);
+	inline Quaternion  operator *(const Quaternion & q) const;
 	
 	inline float32	DotProduct(const Quaternion & q2) const;
 	inline void		Slerp(const Quaternion & q1, const Quaternion & q2, float32 t);
@@ -262,9 +262,9 @@ inline void Quaternion::GetMatrix(Matrix4 * m) const
 	m->_data[3][3] = 1;
 }
 
-inline void Quaternion::Mul(const Quaternion * q2, Quaternion * res)
+inline void Quaternion::Mul(const Quaternion * q2, Quaternion * res) const
 {
-	Quaternion * q1 = this;
+	const Quaternion * q1 = this;
 	float32 A, B, C, D, E, F, G, H;
 
 	A = (q1->w + q1->x) * (q2->w + q2->x);
@@ -288,7 +288,7 @@ inline Quaternion & Quaternion::operator *=(const Quaternion & q)
 	return *this;
 }
 
-inline Quaternion  Quaternion::operator *(const Quaternion & q)
+inline Quaternion  Quaternion::operator *(const Quaternion & q) const
 {
 	Quaternion r;
 	this->Mul(&q, &r);

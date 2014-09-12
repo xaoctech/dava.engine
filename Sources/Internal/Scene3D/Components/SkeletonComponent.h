@@ -46,18 +46,42 @@ class SkeletonComponent : public Component
 public:
     IMPLEMENT_COMPONENT_TYPE(SKELETON_COMPONENT);
 
-    const static uint16 INVALID_BONE_INDEX = -1;
+    const static uint16 INVALID_JOINT_INDEX = -1;
 
     
     struct JointTransform
     {
+        
         Quaternion orientation;
+        
         Vector3 position;
-        float32 scale;
+        float32 scale;        
 
         inline JointTransform MultiplyByParent(const JointTransform& parent) const;
         inline Vector3 TransformVector(const Vector3 &inVec) const;
-    };                    
+    };  
+
+    struct JointConfig
+    {
+        FastName name;
+        Quaternion orientation;
+        Vector3 position;
+        float32 scale;
+        Vector<JointConfig> children;        
+
+        INTROSPECTION(JointConfig,
+            MEMBER(name, "Name", I_SAVE | I_VIEW | I_EDIT)
+            MEMBER(position, "Position", I_SAVE | I_VIEW | I_EDIT)
+            MEMBER(orientation, "Orientation", I_SAVE | I_VIEW | I_EDIT)
+            MEMBER(scale, "Scale", I_SAVE | I_VIEW | I_EDIT)
+            COLLECTION(children, "Child Joints", I_SAVE | I_VIEW | I_EDIT)
+            );
+    };
+
+    /*void ConfigAddJoint(const FastName& parentName);
+    void ConfigRemoveJoint(const FastName& name);*/
+    void RebuildFromConfig();
+
 
     virtual Component * Clone(Entity * toEntity);
     virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
@@ -71,10 +95,15 @@ public:
 
     inline uint16 GetJointsCount() const;
 
+
     SkeletonComponent();
     ~SkeletonComponent();
 
 private:
+    /*config time*/
+    Vector<JointConfig> rootJoints;
+        
+    /*runtime*/
     const static uint32 INFO_PARENT_MASK=0xff;
     const static uint32 FLAG_UPDATED_THIS_FRAME=0x1+INFO_PARENT_MASK;
     const static uint32 FLAG_MARKED_FOR_UPDATED=0x2+INFO_PARENT_MASK;
@@ -97,6 +126,12 @@ private:
     Map<FastName, uint16> jointMap;
             
     uint16 startJoint; //first joint in the list that was updated this frame - cache this value to optimize processing
+
+
+public:
+    INTROSPECTION_EXTEND(SkeletonComponent, Component,
+        COLLECTION(rootJoints, "Root Joints", I_SAVE | I_VIEW | I_EDIT)
+    );
 
 };
 
@@ -127,7 +162,7 @@ inline uint16 SkeletonComponent::GetJointId(const FastName& name) const
     if (jointMap.end()!=it)
         return it->second;
     else
-        return INVALID_BONE_INDEX;
+        return INVALID_JOINT_INDEX;
 }
 
 inline uint16 SkeletonComponent::GetJointsCount() const
@@ -138,6 +173,15 @@ inline uint16 SkeletonComponent::GetJointsCount() const
 inline Vector3 SkeletonComponent::JointTransform::TransformVector(const Vector3 &inVec) const
 {    
     return position + orientation.ApplyToVectorFast(inVec)*scale; 
+}
+
+inline SkeletonComponent::JointTransform SkeletonComponent::JointTransform::MultiplyByParent(const JointTransform& parent) const
+{
+    JointTransform res;
+    res.position = parent.position + parent.TransformVector(position);
+    res.orientation = parent.orientation * orientation;
+    res.scale = parent.scale * scale;
+    return res;
 }
 
 } //ns

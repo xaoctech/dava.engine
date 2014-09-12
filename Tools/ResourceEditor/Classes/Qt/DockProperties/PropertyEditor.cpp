@@ -92,6 +92,7 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */, bool connectToSceneSig
     connect(mainUi->actionAddStaticOcclusionComponent, SIGNAL(triggered()), SLOT(OnAddStaticOcclusionComponent()));
     connect(mainUi->actionAddSoundComponent, SIGNAL(triggered()), this, SLOT(OnAddSoundComponent()));
     connect(mainUi->actionAddWaveComponent, SIGNAL(triggered()), SLOT(OnAddWaveComponent()));
+    connect(mainUi->actionAddSkeletonComponent, SIGNAL(triggered()), SLOT(OnAddSkeletonComponent()));
 
 	SetUpdateTimeout(5000);
 	SetEditTracking(true);
@@ -1365,6 +1366,11 @@ void PropertyEditor::OnAddWaveComponent()
 void PropertyEditor::OnAddModelTypeComponent()
 {
     OnAddComponent(Component::QUALITY_SETTINGS_COMPONENT);
+}
+
+void PropertyEditor::OnAddSkeletonComponent()
+{
+    OnAddComponent(Component::SKELETON_COMPONENT);
 }
 
 void PropertyEditor::OnRemoveComponent()

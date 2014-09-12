@@ -39,6 +39,8 @@ namespace DAVA
 {
 
 class Component;
+class SkinnedMesh;
+
 class SkeletonSystem : public SceneSystem
 {
 
@@ -50,9 +52,15 @@ public:
     virtual void RemoveEntity(Entity * entity);
     
     virtual void Process(float32 timeElapsed);		
+    virtual void ImmediateEvent(Entity * entity, uint32 event);
 
 private:
-    void RebuildPose(Entity *entity);
+    void UpdatePose(SkeletonComponent *component);
+    void UpdateSkinnedMesh(SkeletonComponent *component, SkinnedMesh *skinnedMeshObject);
+
+    
+    void RebuildSkeleton(SkeletonComponent *component);
+    void AddJointConfig(SkeletonComponent *component, SkeletonComponent::JointConfig &config, uint16 parent);
 
     Vector<Entity*> entities;
 
