@@ -105,6 +105,8 @@ void SettingsManager::Init()
 	CreateValue(Settings::Internal_LODEditorMode, DAVA::VariantType((bool) false));
     CreateValue(DAVA::FastName("Internal/RunActionEventWidget/CurrentType"), DAVA::VariantType((DAVA::uint32)0));
     CreateValue(DAVA::FastName("Internal/Beast/LightmapsDefaultDir"), DAVA::VariantType(DAVA::String("lightmaps")));
+    CreateValue(Settings::Internal_ImageSplitterPath, DAVA::VariantType(DAVA::String("")));
+    CreateValue(Settings::Internal_ImageSplitterPathSpecular, DAVA::VariantType(DAVA::String("")));
 
     const DAVA::int32 nColors = Qt::darkYellow - Qt::black + 1;
     DAVA::uint32 colors[nColors];   // Init from Qt::GlobalColor
