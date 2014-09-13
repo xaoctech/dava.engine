@@ -26,13 +26,14 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "Notification/LocalNotificationAndroid.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
+
+#include "Notification/LocalNotificationController.h"
 #include "Platform/TemplateAndroid/CorePlatformAndroid.h"
 #include "Platform/TemplateAndroid/ExternC/AndroidLayer.h"
 #include "Thread/LockGuard.h"
-#include "Notification/LocalNotificationAndroid.h"
-#include "Notification/LocalNotificationController.h"
 
 namespace DAVA
 {
@@ -131,7 +132,6 @@ void LocalNotificationAndroid::ShowProgress(const WideString &title, const WideS
 
 extern "C"
 {
-
 	void Java_com_dava_framework_JNINotificationProvider_onNotificationPressed(JNIEnv* env, jobject classthis, uint32_t id)
 	{
 		DAVA::LocalNotificationController::Instance()->OnNotificationPressed(id);
