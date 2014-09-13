@@ -29,8 +29,6 @@
 
 
 #include "Notification/LocalNotification.h"
-#include "Notification/LocalNotificationAndroid.h"
-#include "Notification/LocalNotificationNotImplemented.h"
 #include "Thread/LockGuard.h"
 
 namespace DAVA

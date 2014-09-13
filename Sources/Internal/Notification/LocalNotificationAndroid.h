@@ -31,11 +31,12 @@
 #ifndef __DAVAENGINE_LOCAL_NOTIFICATION_ANDROID_H__
 #define __DAVAENGINE_LOCAL_NOTIFICATION_ANDROID_H__
 
+#include "Base/BaseTypes.h"
+
 #if defined (__DAVAENGINE_ANDROID__)
 
 #include "JniExtensions.h"
 #include "Base/Message.h"
-#include "Base/BaseTypes.h"
 #include "Platform/Mutex.h"
 
 namespace DAVA

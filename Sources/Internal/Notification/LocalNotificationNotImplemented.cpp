@@ -26,17 +26,35 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
+#include "Notification/LocalNotificationNotImplemented.h"
 
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
 
-#include "NotificationNotImplemented.h"
-
 namespace DAVA
 {
+
+LocalNotificationNotImplemented::LocalNotificationNotImplemented(const uint32 _id)
+    : id(_id)
+{
+}
     
 LocalNotificationNotImplemented::~LocalNotificationNotImplemented()
 {
 }
 
+void LocalNotificationNotImplemented::SetAction(const Message &msg)
+{
+}
+
+void LocalNotificationNotImplemented::Hide()
+{
+}
+void LocalNotificationNotImplemented::ShowText(const WideString &title, const WideString text)
+{
+}
+void LocalNotificationNotImplemented::ShowProgress(const WideString &title, const WideString text, const uint32 total, const uint32 progress)
+{
+}
+    
 }
 #endif

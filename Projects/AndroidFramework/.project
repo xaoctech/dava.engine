@@ -142,6 +142,11 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>Internal/Notification</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>Internal/Particles</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -1517,6 +1522,71 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Network/WFNetworkConnection.mm</locationURI>
 		</link>
 		<link>
+			<name>Internal/Notification/.DS_Store</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Notification/.DS_Store</locationURI>
+		</link>
+		<link>
+			<name>Internal/Notification/LocalNotification.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Notification/LocalNotification.cpp</locationURI>
+		</link>
+		<link>
+			<name>Internal/Notification/LocalNotification.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Notification/LocalNotification.h</locationURI>
+		</link>
+		<link>
+			<name>Internal/Notification/LocalNotificationAndroid.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Notification/LocalNotificationAndroid.cpp</locationURI>
+		</link>
+		<link>
+			<name>Internal/Notification/LocalNotificationAndroid.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Notification/LocalNotificationAndroid.h</locationURI>
+		</link>
+		<link>
+			<name>Internal/Notification/LocalNotificationController.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Notification/LocalNotificationController.cpp</locationURI>
+		</link>
+		<link>
+			<name>Internal/Notification/LocalNotificationController.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Notification/LocalNotificationController.h</locationURI>
+		</link>
+		<link>
+			<name>Internal/Notification/LocalNotificationNotImplemented.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Notification/LocalNotificationNotImplemented.cpp</locationURI>
+		</link>
+		<link>
+			<name>Internal/Notification/LocalNotificationNotImplemented.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Notification/LocalNotificationNotImplemented.h</locationURI>
+		</link>
+		<link>
+			<name>Internal/Notification/LocalNotificationProgress.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Notification/LocalNotificationProgress.cpp</locationURI>
+		</link>
+		<link>
+			<name>Internal/Notification/LocalNotificationProgress.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Notification/LocalNotificationProgress.h</locationURI>
+		</link>
+		<link>
+			<name>Internal/Notification/LocalNotificationText.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Notification/LocalNotificationText.cpp</locationURI>
+		</link>
+		<link>
+			<name>Internal/Notification/LocalNotificationText.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Notification/LocalNotificationText.h</locationURI>
+		</link>
+		<link>
 			<name>Internal/Particles/Particle.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Particles/Particle.cpp</locationURI>
@@ -1650,36 +1720,6 @@
 			<name>Internal/Platform/Mutex.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/Mutex.h</locationURI>
-		</link>
-		<link>
-			<name>Internal/Platform/Notification.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/Notification.cpp</locationURI>
-		</link>
-		<link>
-			<name>Internal/Platform/Notification.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/Notification.h</locationURI>
-		</link>
-		<link>
-			<name>Internal/Platform/NotificationAndroid.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/NotificationAndroid.cpp</locationURI>
-		</link>
-		<link>
-			<name>Internal/Platform/NotificationAndroid.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/NotificationAndroid.h</locationURI>
-		</link>
-		<link>
-			<name>Internal/Platform/NotificationNotImplemented.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/NotificationNotImplemented.cpp</locationURI>
-		</link>
-		<link>
-			<name>Internal/Platform/NotificationNotImplemented.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/NotificationNotImplemented.h</locationURI>
 		</link>
 		<link>
 			<name>Internal/Platform/OpenUDIDApple.h</name>

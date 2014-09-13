@@ -29,15 +29,27 @@
 #ifndef __DAVAENGINE_LOCAL_NOTIFICATION_NOT_IMPLEMENTED_H__
 #define __DAVAENGINE_LOCAL_NOTIFICATION_NOT_IMPLEMENTED_H__
 
+#include "Base/BaseTypes.h"
+
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
+
+#include "Base/Message.h"
 
 namespace DAVA
 {
     
 class LocalNotificationNotImplemented
-    {
+{
 public:
+    LocalNotificationNotImplemented(const uint32 _id);
     virtual ~LocalNotificationNotImplemented();
+
+    void SetAction(const Message &msg);
+    void Hide();
+    void ShowText(const WideString &title, const WideString text);
+    void ShowProgress(const WideString &title, const WideString text, const uint32 total, const uint32 progress);
+public:
+    uint32 id;
 };
 
 }

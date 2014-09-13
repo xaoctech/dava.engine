@@ -40,8 +40,7 @@
 namespace DAVA
 {
 
-class LocalNotification
-		: public BaseObject
+class LocalNotification : public BaseObject
 {
 
 #if defined(__DAVAENGINE_ANDROID__)
@@ -56,7 +55,7 @@ protected:
 
 public:
     void SetAction(const Message& msg);
-    inline void RunAction() {action(this);}
+    inline void RunAction();
 
 	void SetTitle(const WideString &_title);
 	void SetText(const WideString &_text);
@@ -64,10 +63,9 @@ public:
     void Hide();
     void Update();
 
-    bool IsChanged() const {return isChanged;}
-	bool IsVisible() const {return isVisible;}
-    inline const uint32 GetId() const {return impl->id;}
-
+    inline bool IsChanged() const;
+	inline bool IsVisible() const;
+    inline uint32 GetId() const;
 private:
     virtual void ImplShow() = 0;
 
@@ -82,6 +80,27 @@ protected:
     WideString title;
     WideString text;
 };
+    
+    
+inline void LocalNotification::RunAction()
+{
+    action(this);
+}
+    
+inline bool LocalNotification::IsChanged() const
+{
+    return isChanged;
+}
+
+inline bool LocalNotification::IsVisible() const
+{
+    return isVisible;
+}
+
+inline uint32 LocalNotification::GetId() const
+{
+    return impl->id;
+}
 
 }
 
