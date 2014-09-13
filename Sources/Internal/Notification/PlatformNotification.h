@@ -26,49 +26,78 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "FileSystem/LocalizationAndroid.h"
-#include "FileSystem/LocalizationSystem.h"
-#include "ExternC/AndroidLayer.h"
+
+
+#ifndef __NOTIFICATION_H__
+#define __NOTIFICATION_H__
+
+#include "Base/BaseTypes.h"
+#include "Base/Singleton.h"
+#include "Base/Message.h"
+#include "Notification/NotificationAndroid.h"
+#include "Notification/NotificationNotImplemented.h"
+
 
 namespace DAVA
 {
+class LocalNotificationController;
 
-jclass JniLocalization::gJavaClass = NULL;
-const char* JniLocalization::gJavaClassName = NULL;
-
-jclass JniLocalization::GetJavaClass() const
+class LocalNotification
+		: public BaseObject
 {
-	return gJavaClass;
-}
+	friend class LocalNotificationController;
+protected:
+	LocalNotification();
+    virtual ~LocalNotification();
 
-const char* JniLocalization::GetJavaClassName() const
-{
-	return gJavaClassName;
-}
+public:
+    bool IsChanged() const;
+    bool IsVisible() const;
 
-String JniLocalization::GetLocale()
-{
-	jmethodID mid = GetMethodID("GetLocale", "()Ljava/lang/String;");
-	if (mid)
-	{
-		jobject obj = GetEnvironment()->CallStaticObjectMethod(GetJavaClass(), mid);
-		char str[256] = {0};
-		CreateStringFromJni(GetEnvironment(), jstring(obj), str);
-		String locale = str;
-		return locale;
-	}
+    void SetAction(const Message& msg);
+    inline void RunAction() {action(this);}
 
-	return "en";
-}
+	void SetTitle(const WideString &_title);
+	void SetText(const WideString &_text);
+	void Show();
+    void Hide();
+    inline uint32 GetId() {return id;}
+    void Update();
 
-void LocalizationAndroid::SelecePreferedLocalization()
-{
-	LocalizationSystem::Instance()->SetCurrentLocale(GetDeviceLang());
-}
+	void SetProgressCurrent(uint32 _currentProgress);
+	void SetProgressTotal(uint32 _total);
 
-String LocalizationAndroid::GetDeviceLang(void)
-{
-    JniLocalization jniLocalization;
-    return jniLocalization.GetLocale();
-}
+protected:
+    virtual void NativeShow() = 0;
+    virtual void NativeHide();
+
+protected:
+#if defined(__DAVAENGINE_ANDROID__)
+    JniLocalNotification *impl;
+#elif
+    NotificationNotImplemented *impl;
+#endif;
+
+    bool isChanged;
+    bool isVisible;
+
+    Message action;
+
+    uint32 id;
+    WideString title;
+    WideString text;
 };
+
+
+class LocalNotificationText : public LocalNotification
+{
+	friend class LocalNotificationController;
+
+protected:
+	virtual void NativeShow();
+};
+
+
+}
+
+#endif // __NOTIFICATION_H__
