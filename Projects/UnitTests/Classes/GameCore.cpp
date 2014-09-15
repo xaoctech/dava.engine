@@ -72,7 +72,7 @@
 #include "ParseTextTest.h"
 #include "ImageSizeTest.h"
 #include "DLCDownloadTest.h"
-
+#include "FunctionBindSingalTest.h"
 
 using namespace DAVA;
 
@@ -98,8 +98,10 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
 
+	new FunctionBindSignalTest();
     new ThreadSyncTest();
     new DLCDownloadTest();
+
 
 	new ImageSizeTest();
     new DeviceInfoTest();
