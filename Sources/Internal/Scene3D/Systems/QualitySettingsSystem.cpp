@@ -37,6 +37,7 @@ namespace DAVA
 {
 
 const FastName QualitySettingsSystem::QUALITY_OPTION_VEGETATION_ANIMATION("VEGETATION_ANIMATION");
+const FastName QualitySettingsSystem::QUALITY_OPTION_STENCIL_SHADOW("STENCIL_SHADOW");
 
 QualitySettingsSystem::QualitySettingsSystem()
     : curTextureQuality(0)
@@ -46,6 +47,7 @@ QualitySettingsSystem::QualitySettingsSystem()
     Load("~res:/quality.yaml");
 
     EnableOption(QUALITY_OPTION_VEGETATION_ANIMATION, true);
+    EnableOption(QUALITY_OPTION_STENCIL_SHADOW, true);
 }
 
 void QualitySettingsSystem::Load(const FilePath &path)
