@@ -26,34 +26,49 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __DAVAENGINE_LOCAL_NOTIFICATION_NOT_IMPLEMENTED_H__
-#define __DAVAENGINE_LOCAL_NOTIFICATION_NOT_IMPLEMENTED_H__
+#include "Notification/LocalNotificationIOS.h"
 
-#include "Base/BaseTypes.h"
+#if defined(__DAVAENGINE_IPHONE__)
 
-#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
-
-#include "Base/Message.h"
+#include <UIKit/UILocalNotification.h>
+#include <UIKit/UIApplication.h>
 
 namespace DAVA
 {
-    
-class LocalNotificationNotImplemented
+
+LocalNotificationIOS::LocalNotificationIOS(const uint32 _id)
+    : id(_id)
 {
-public:
-    LocalNotificationNotImplemented(const uint32 _id);
-    virtual ~LocalNotificationNotImplemented();
-
-    void SetAction(const Message &msg);
-    void Hide();
-    void ShowText(const WideString &title, const WideString text);
-    void ShowProgress(const WideString &title, const WideString text, const uint32 total, const uint32 progress);
-public:
-    uint32 id;
-};
-
+}
+    
+LocalNotificationIOS::~LocalNotificationIOS()
+{
 }
 
-#endif
+void LocalNotificationIOS::SetAction(const Message &msg)
+{
+}
 
-#endif /* defined __DAVAENGINE_NOTIFICATION_MACOS_H__ */
+void LocalNotificationIOS::Hide()
+{
+}
+void LocalNotificationIOS::ShowText(const WideString &title, const WideString text)
+{
+    WideString txt = L"Test text";
+    NSStringEncoding encoding = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingUTF32LE);
+	NSString* nsstring = [[NSString alloc]
+						  initWithBytes:(const char*)txt.c_str()
+						  length:txt.length() * sizeof(wchar_t)
+						  encoding:encoding];
+    UILocalNotification *note = [[UILocalNotification alloc] init];
+    note.alertBody = nsstring;
+    
+    [[UIApplication sharedApplication] scheduleLocalNotification:note];
+    
+}
+void LocalNotificationIOS::ShowProgress(const WideString &title, const WideString text, const uint32 total, const uint32 progress)
+{
+}
+    
+}
+#endif

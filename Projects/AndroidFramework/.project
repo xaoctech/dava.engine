@@ -1557,6 +1557,16 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Notification/LocalNotificationController.h</locationURI>
 		</link>
 		<link>
+			<name>Internal/Notification/LocalNotificationIOS.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Notification/LocalNotificationIOS.cpp</locationURI>
+		</link>
+		<link>
+			<name>Internal/Notification/LocalNotificationIOS.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Notification/LocalNotificationIOS.h</locationURI>
+		</link>
+		<link>
 			<name>Internal/Notification/LocalNotificationNotImplemented.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Notification/LocalNotificationNotImplemented.cpp</locationURI>

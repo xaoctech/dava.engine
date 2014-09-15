@@ -26,23 +26,23 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __DAVAENGINE_LOCAL_NOTIFICATION_NOT_IMPLEMENTED_H__
-#define __DAVAENGINE_LOCAL_NOTIFICATION_NOT_IMPLEMENTED_H__
+#ifndef __DAVAENGINE_LOCAL_NOTIFICATION_IOS_H__
+#define __DAVAENGINE_LOCAL_NOTIFICATION_IOS_H__
 
 #include "Base/BaseTypes.h"
 
-#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
+#if defined(__DAVAENGINE_IPHONE__)
 
 #include "Base/Message.h"
 
 namespace DAVA
 {
     
-class LocalNotificationNotImplemented
+class LocalNotificationIOS
 {
 public:
-    LocalNotificationNotImplemented(const uint32 _id);
-    virtual ~LocalNotificationNotImplemented();
+	LocalNotificationIOS(const uint32 _id);
+    virtual ~LocalNotificationIOS();
 
     void SetAction(const Message &msg);
     void Hide();

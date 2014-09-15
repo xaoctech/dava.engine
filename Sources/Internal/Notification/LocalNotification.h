@@ -34,8 +34,10 @@
 #include "Base/BaseTypes.h"
 #include "Base/Singleton.h"
 #include "Base/Message.h"
+#include "Notification/LocalNotificationIOS.h"
 #include "Notification/LocalNotificationAndroid.h"
 #include "Notification/LocalNotificationNotImplemented.h"
+
 
 namespace DAVA
 {
@@ -45,6 +47,8 @@ class LocalNotification : public BaseObject
 
 #if defined(__DAVAENGINE_ANDROID__)
     typedef LocalNotificationAndroid LocalNotificationImplementation;
+#elif defined (__DAVAENGINE_IPHONE__)
+    typedef LocalNotificationIOS LocalNotificationImplementation;
 #else
     typedef LocalNotificationNotImplemented LocalNotificationImplementation;
 #endif
