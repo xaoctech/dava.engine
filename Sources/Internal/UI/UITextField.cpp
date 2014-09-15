@@ -959,7 +959,7 @@ void UITextField::SetMaxLength(int32 maxLength)
 {
     this->maxLength = maxLength;
 #ifdef __DAVAENGINE_IPHONE__
-	//textFieldiPhone->SetMaxLength(maxLength);
+    textFieldiPhone->SetMaxLength(maxLength);
 #elif defined(__DAVAENGINE_ANDROID__)
 	textFieldAndroid->SetMaxLength(maxLength);
 #endif
