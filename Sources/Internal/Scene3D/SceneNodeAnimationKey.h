@@ -43,10 +43,21 @@ public:
 	Quaternion rotation;
 	Vector3 scale;
 	
-	void GetMatrix(Matrix4 & matrix);
+	inline void GetMatrix(Matrix4 & matrix);
 };
 	
 	
+inline void SceneNodeAnimationKey::GetMatrix(Matrix4 & result)
+{
+	Matrix4 localTransformRot;
+	Matrix4 localTransformScale;
+	localTransformRot = rotation.GetMatrix();
+	localTransformScale.CreateScale(scale);
+
+	result = localTransformRot * localTransformScale;	 
+	result.SetTranslationVector(translation);
+}
+
 };
 
 #endif // __DAVAENGINE_SCENE_NODE_ANIMATION_KEY_H__

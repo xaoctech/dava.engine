@@ -55,7 +55,7 @@ AnimationSystem::~AnimationSystem()
 
 void AnimationSystem::Process(float32 timeElapsed)
 {
-    TIME_PROFILE("TransformSystem::Process");
+    TIME_PROFILE("AnimationSystem::Process");
     Vector<AnimationComponent*>::iterator it, endit;
     for (it = items.begin(), endit = items.end(); it!= endit; ++it)
     {
@@ -75,8 +75,7 @@ void AnimationSystem::Process(float32 timeElapsed)
             SceneNodeAnimationKey & key = comp->animation->Interpolate(comp->time);
             Matrix4 animTransform;
             key.GetMatrix(animTransform);
-            Matrix4 result = comp->animation->invPose * animTransform;
-            comp->GetEntity()->SetLocalTransform(result);
+            comp->GetEntity()->SetLocalTransform(comp->animation->invPose * animTransform);
         }
     }
 }
@@ -100,12 +99,6 @@ void AnimationSystem::UnregisterComponent(Entity* entity, Component* component)
         items.pop_back();
     }
 }
-
-void AnimationSystem::ImmediateEvent(Entity * entity, uint32 event)
-{
-
-}
-
 
 void AnimationSystem::AddEntity(Entity * entity)
 {

@@ -2985,12 +2985,10 @@ void QtMainWindow::OnBatchProcessScene()
 
 void QtMainWindow::OnPlaySceneAnimations(bool start)
 {
-    //todo Disable selection and editing in play Mode
     Scene * scene = GetCurrentScene();
     AnimationSystem * sys = scene->GetAnimationSystem();
     if (start)
         sys->PlaySceneAnimations();
     else
         sys->StopSceneAnimations();
-//    sys->
 }

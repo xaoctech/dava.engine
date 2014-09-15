@@ -31,10 +31,7 @@
 #include "Scene3D/Components/AnimationComponent.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Scene.h"
-#include "Scene3D/Systems/EventSystem.h"
-#include "Scene3D/Systems/GlobalEventSystem.h"
 #include "Scene3D/AnimationData.h"
-#include "Scene3D/Components/TransformComponent.h"
 
 namespace DAVA
 {
@@ -49,22 +46,22 @@ autoStart(true),
 repeat(true)
 {
 }
-    
+
 AnimationComponent::~AnimationComponent()
 {
-    SafeRelease(animation);
+	SafeRelease(animation);
 }
 
 Component * AnimationComponent::Clone(Entity * toEntity)
 {
-    AnimationComponent * newAnimation = new AnimationComponent();
+	AnimationComponent * newAnimation = new AnimationComponent();
 
-    newAnimation->time = time;
-    newAnimation->isPlaying = false;
-    newAnimation->animation = animation ? animation->Clone() : NULL;
-    newAnimation->autoStart = autoStart;
-    newAnimation->repeat = repeat;
-    return newAnimation;
+	newAnimation->time = time;
+	newAnimation->isPlaying = false;
+	newAnimation->animation = animation ? animation->Clone() : NULL;
+	newAnimation->autoStart = autoStart;
+	newAnimation->repeat = repeat;
+	return newAnimation;
 }
 
 
@@ -75,19 +72,19 @@ void AnimationComponent::Serialize(KeyedArchive *archive, SerializationContext *
 
 	if(NULL != archive)
 	{
-        archive->SetFloat("duration", animation->duration);
-        archive->SetInt32("keyCount", animation->keyCount);
+		archive->SetFloat("duration", animation->duration);
+		archive->SetInt32("keyCount", animation->keyCount);
 		archive->SetMatrix4("invPose", animation->invPose);
 
-        for (int32 keyIndex = 0; keyIndex < animation->keyCount; ++keyIndex)
-        {
-            archive->SetFloat(Format("key_%i_time", keyIndex), animation->keys[keyIndex].time);
-            archive->SetVector3(Format("key_%i_translation", keyIndex), animation->keys[keyIndex].translation);
-            archive->SetVector3(Format("key_%i_scale", keyIndex), animation->keys[keyIndex].scale);
-            archive->SetVector4(Format("key_%i_rotation", keyIndex), Vector4(animation->keys[keyIndex].rotation.x, animation->keys[keyIndex].rotation.y, animation->keys[keyIndex].rotation.z, animation->keys[keyIndex].rotation.w));
-        }
-        archive->SetBool("autostart", autoStart);
-        archive->SetBool("repeat", repeat);
+		for (int32 keyIndex = 0; keyIndex < animation->keyCount; ++keyIndex)
+		{
+			archive->SetFloat(Format("key_%i_time", keyIndex), animation->keys[keyIndex].time);
+			archive->SetVector3(Format("key_%i_translation", keyIndex), animation->keys[keyIndex].translation);
+			archive->SetVector3(Format("key_%i_scale", keyIndex), animation->keys[keyIndex].scale);
+			archive->SetVector4(Format("key_%i_rotation", keyIndex), Vector4(animation->keys[keyIndex].rotation.x, animation->keys[keyIndex].rotation.y, animation->keys[keyIndex].rotation.z, animation->keys[keyIndex].rotation.w));
+		}
+		archive->SetBool("autostart", autoStart);
+		archive->SetBool("repeat", repeat);
 	}
 }
 
@@ -118,8 +115,6 @@ void AnimationComponent::Deserialize(KeyedArchive *archive, SerializationContext
 
 		autoStart = archive->GetBool("autostart", true);
 		repeat = archive->GetBool("repeat", true);
-// 		localMatrix = archive->GetMatrix4("tc.localMatrix", Matrix4::IDENTITY);
-// 		worldMatrix = archive->GetMatrix4("tc.worldMatrix", Matrix4::IDENTITY);
 	}
 
 	Component::Deserialize(archive, sceneFile);
@@ -127,20 +122,27 @@ void AnimationComponent::Deserialize(KeyedArchive *archive, SerializationContext
 
 void AnimationComponent::SetAnimation(AnimationData* _animation)
 {
-    SafeRetain(_animation);
-    SafeRelease(animation);
-    animation = _animation;
+	if (_animation == animation)
+		return
+
+	SafeRelease(animation);
+	animation = SafeRetain(_animation);
 }
 
 void AnimationComponent::SetIsPlaying( bool value )
 {
-    isPlaying = value;
-    time = 0.0f;
+	isPlaying = value;
+
+	if (!isPlaying)
+	{
+		GetEntity()->SetLocalTransform(Matrix4::IDENTITY);
+	}
+	time = 0.0f;
 }
 
 bool AnimationComponent::GetIsPlaying() const
 {
-    return isPlaying;
+	return isPlaying;
 }
 
 };
