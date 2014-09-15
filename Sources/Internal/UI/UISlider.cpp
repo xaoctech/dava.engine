@@ -138,8 +138,14 @@ void UISlider::SyncThumbWithSprite()
 
 void UISlider::SetValue(float32 value)
 {
+    bool needSendEvent = !FLOAT_EQUAL(currentValue, value);
 	currentValue = value;
 	RecalcButtonPos();
+    
+    if (needSendEvent)
+    {
+        PerformEventWithData(EVENT_VALUE_CHANGED, (void*)true);
+    }
 }
 
 void UISlider::SetMinValue(float32 value)

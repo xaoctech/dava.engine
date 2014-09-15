@@ -36,7 +36,7 @@
 namespace DAVA
 {
 
-	REGISTER_CLASS(LodComponent)
+REGISTER_CLASS(LodComponent)
 	
 const float32 LodComponent::INVALID_DISTANCE = -1.f;
 const float32 LodComponent::MIN_LOD_DISTANCE = 0.f;
@@ -243,7 +243,7 @@ void LodComponent::SetLodLayerDistance(int32 layerNum, float32 distance)
         float32 nearDistance = distance * NEAR_DISTANCE_COEFF;
         float32 farDistance = distance * FAR_DISTANCE_COEFF;
         
-        if(GetLodLayersCount() - 1 == layerNum)
+        if(DAVA::GetLodLayersCount(this) - 1 == layerNum)
         {
             lodLayersArray[layerNum].SetFarDistance(MAX_LOD_DISTANCE * FAR_DISTANCE_COEFF);
         }

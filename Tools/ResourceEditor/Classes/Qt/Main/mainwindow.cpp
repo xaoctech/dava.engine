@@ -2460,17 +2460,24 @@ void QtMainWindow::OnBuildStaticOcclusion()
     QtWaitDialog *waitOcclusionDlg = new QtWaitDialog(this);
     waitOcclusionDlg->Show("Static occlusion", "Please wait while building static occlusion.", true, true);
 
+    bool sceneWasChanged = true;
     scene->staticOcclusionBuildSystem->Build();
     while(scene->staticOcclusionBuildSystem->IsInBuild())
     {
         if(waitOcclusionDlg->WasCanceled())
         {
             scene->staticOcclusionBuildSystem->Cancel();
+            sceneWasChanged = false;
         }
         else
         {
             waitOcclusionDlg->SetValue(scene->staticOcclusionBuildSystem->GetBuildStatus());
         }
+    }
+    
+    if(sceneWasChanged)
+    {
+        scene->MarkAsChanged();
     }
 
     delete waitOcclusionDlg;
