@@ -354,6 +354,8 @@ void Core::CalculateScaleMultipliers()
 	
 	drawOffset.y = floorf(drawOffset.y);
 	drawOffset.x = floorf(drawOffset.x);
+	virtualScreenHeight = ceilf(virtualScreenHeight);
+	virtualScreenWidth = ceilf(virtualScreenWidth);
 
 	UIControlSystem::Instance()->CalculateScaleMultipliers();
 
