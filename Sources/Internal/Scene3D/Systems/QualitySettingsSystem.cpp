@@ -36,8 +36,8 @@
 namespace DAVA
 {
 
-const FastName QualitySettingsSystem::QUALITY_OPTION_VEGETATION_ANIMATION("VEGETATION_ANIMATION");
-const FastName QualitySettingsSystem::QUALITY_OPTION_STENCIL_SHADOW("STENCIL_SHADOW");
+const FastName QualitySettingsSystem::QUALITY_OPTION_VEGETATION_ANIMATION("Vegetation Animation");
+const FastName QualitySettingsSystem::QUALITY_OPTION_STENCIL_SHADOW("Stencil Shadows");
 
 QualitySettingsSystem::QualitySettingsSystem()
     : curTextureQuality(0)
@@ -444,6 +444,16 @@ bool QualitySettingsSystem::IsOptionEnabled( const FastName & option ) const
 	}
 
 	return false;
+}
+
+int32 QualitySettingsSystem::GetOptionsCount() const
+{
+    return qualityOptions.size();
+}
+
+FastName QualitySettingsSystem::GetOptionName(int32 index) const
+{
+    return qualityOptions.keyByIndex(index);
 }
 
 void QualitySettingsSystem::UpdateEntityAfterLoad(Entity *entity)
