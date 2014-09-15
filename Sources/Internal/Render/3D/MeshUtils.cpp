@@ -289,7 +289,7 @@ void RebuildMeshTangentSpace(PolygonGroup *group, bool precomputeBinormal/*=true
 
 RenderObject * CreateSkinnedMesh(Entity * entity)
 {
-    Map<SkinnedMeshWorkKey, Vector<SkinnedMeshWork>> collapseDataMap;
+    Map<SkinnedMeshWorkKey, Vector<SkinnedMeshWork> > collapseDataMap;
 
     Vector<Entity *> oldNodes;
     oldNodes.push_back(entity);
@@ -312,8 +312,8 @@ RenderObject * CreateSkinnedMesh(Entity * entity)
 
     RenderObject * newRenderObject = new RenderObject();
 
-    Map<SkinnedMeshWorkKey, Vector<SkinnedMeshWork>>::iterator it = collapseDataMap.begin();
-    Map<SkinnedMeshWorkKey, Vector<SkinnedMeshWork>>::iterator itEnd = collapseDataMap.end();
+    Map<SkinnedMeshWorkKey, Vector<SkinnedMeshWork> >::iterator it = collapseDataMap.begin();
+    Map<SkinnedMeshWorkKey, Vector<SkinnedMeshWork> >::iterator itEnd = collapseDataMap.end();
     for(;it != itEnd; ++it)
     {
         const SkinnedMeshWorkKey & key = it->first;
@@ -365,6 +365,7 @@ RenderObject * CreateSkinnedMesh(Entity * entity)
 
         RenderBatch * newBatch = new RenderBatch();
         polygonGroup->RecalcAABBox();
+        polygonGroup->BuildBuffers();
         newBatch->SetPolygonGroup(polygonGroup);
         newBatch->SetMaterial(material);
 
