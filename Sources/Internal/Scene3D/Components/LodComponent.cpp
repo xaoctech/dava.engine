@@ -36,7 +36,6 @@
 namespace DAVA
 {
 
-REGISTER_CLASS(LodComponent)
 	
 const float32 LodComponent::INVALID_DISTANCE = -1.f;
 const float32 LodComponent::MIN_LOD_DISTANCE = 0.f;
