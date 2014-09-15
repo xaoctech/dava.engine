@@ -115,6 +115,7 @@ void SettingsManager::Init()
         colors[i] = QColor(Qt::GlobalColor(i + Qt::black)).rgba();
     }
     CreateValue(Settings::Internal_CustomPalette, DAVA::VariantType( (DAVA::uint8 *)colors, nColors * sizeof(*colors) ));
+    CreateValue(Settings::General_ColorMultiplyMax, DAVA::VariantType((DAVA::float32)2.0));
 }
 
 DAVA::VariantType SettingsManager::GetValue(const DAVA::FastName& path)
