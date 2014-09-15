@@ -75,7 +75,6 @@ SceneNodeAnimationKey AnimationData::Interpolate(float32 t)
 	
 	if (endIdx == keyCount)
 	{
-		startIdx = keyCount - 1;
 		endIdx = 0;
 	}
 	
@@ -85,7 +84,7 @@ SceneNodeAnimationKey AnimationData::Interpolate(float32 t)
 	float32 tInter;
 	if (endIdx > startIdx)
 		tInter = (t - key1.time) / (key2.time - key1.time);
-	else
+	else // interpolate from last to first
 		tInter = (t - key1.time) / (duration - key1.time);
 
 	SceneNodeAnimationKey result;

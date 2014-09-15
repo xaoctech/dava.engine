@@ -49,7 +49,6 @@ public:
 	AnimationSystem(Scene * scene);
 	~AnimationSystem();
 
-	virtual void ImmediateEvent(Entity * entity, uint32 event);
 	virtual void AddEntity(Entity * entity);
 	virtual void RemoveEntity(Entity * entity);
 

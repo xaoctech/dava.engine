@@ -44,36 +44,36 @@ class AnimationData;
 class AnimationComponent : public Component
 {
 protected:
-    virtual ~AnimationComponent();
+	virtual ~AnimationComponent();
 public:
-    AnimationComponent();
+	AnimationComponent();
 
-    IMPLEMENT_COMPONENT_TYPE(ANIMATION_COMPONENT);
+	IMPLEMENT_COMPONENT_TYPE(ANIMATION_COMPONENT);
 
-    virtual Component * Clone(Entity * toEntity);
+	virtual Component * Clone(Entity * toEntity);
 	virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
 	virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
 
-    void SetAnimation(AnimationData* animation);
+	void SetAnimation(AnimationData* animation);
 
-    bool GetIsPlaying() const;
-    void SetIsPlaying(bool value);
+	bool GetIsPlaying() const;
+	void SetIsPlaying(bool value);
 
 private:
 
 	friend class AnimationSystem;
-    AnimationData* animation;
+	AnimationData* animation;
 	float32 time;
-    bool isPlaying;
-    bool autoStart;
-    bool repeat;
+	bool isPlaying;
+	bool autoStart;
+	bool repeat;
 public:
 
-    INTROSPECTION_EXTEND(AnimationComponent, Component,
-        PROPERTY("isPlaying", "isPlaying", GetIsPlaying, SetIsPlaying, I_SAVE | I_EDIT | I_VIEW)
-        MEMBER(autoStart, "autostart", I_VIEW | I_EDIT | I_SAVE)
-        MEMBER(repeat, "repeat", I_VIEW | I_EDIT | I_SAVE)
-    );
+	INTROSPECTION_EXTEND(AnimationComponent, Component,
+		PROPERTY("isPlaying", "isPlaying", GetIsPlaying, SetIsPlaying, I_SAVE | I_EDIT | I_VIEW)
+		MEMBER(autoStart, "autostart", I_VIEW | I_EDIT | I_SAVE)
+		MEMBER(repeat, "repeat", I_VIEW | I_EDIT | I_SAVE)
+	);
 };
 
 
