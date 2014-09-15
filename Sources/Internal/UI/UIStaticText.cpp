@@ -96,6 +96,7 @@ void UIStaticText::SetText(const WideString& _string, const Vector2 &requestedTe
 {
     textBlock->SetRectSize(size);
     textBlock->SetText(_string, requestedTextRectSize);
+    textBg->SetAlign(textBlock->GetAlign());
     PrepareSprite();
 }
 
@@ -162,13 +163,23 @@ int32 UIStaticText::GetAlign() const
 
 void UIStaticText::SetTextAlign(int32 _align)
 {
-    textBg->SetAlign(_align);
     textBlock->SetAlign(_align);
+    textBg->SetAlign(textBlock->GetAlign());
 }
 
 int32 UIStaticText::GetTextAlign() const
 {
-    return textBg->GetAlign();
+    return textBlock->GetAlign();
+}
+
+void UIStaticText::SetTextUseRtlAlign(bool useRtlAlign)
+{
+    textBlock->SetUseRtlAlign(useRtlAlign);
+}
+
+bool UIStaticText::GetTextUseRtlAlign() const
+{
+    return textBlock->GetUseRtlAlign();
 }
 
 const Vector2 & UIStaticText::GetTextSize()

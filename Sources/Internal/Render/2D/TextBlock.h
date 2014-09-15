@@ -74,6 +74,10 @@ public:
 	virtual void SetPivotPoint(const Vector2& pivotPoint);
 	virtual void SetAlign(int32 align);
 	virtual int32 GetAlign();
+    virtual void SetUseRtlAlign(const bool& useRtlAlign);
+    virtual bool GetUseRtlAlign();
+    virtual bool IsRtl();
+
 	
 	//[DO NOT ACTUAL ANYMORE] if requested size is 0 - text creates in the rect with size of the drawRect on draw phase
 	//if requested size is >0 - text creates int the rect with the requested size
@@ -118,7 +122,7 @@ protected:
 	
 
 	Vector2 rectSize;
-        bool needRedraw;
+    bool needRedraw;
 	Vector2 requestedSize;
 
     Vector2 cacheFinalSize;
@@ -133,9 +137,12 @@ protected:
 	Vector2 position;
 	Vector2 pivotPoint;
 	int32 align;
+    bool useRtlAlign;
+    bool isRtl;
 
 	Font * font;
 	WideString text;
+    WideString originalText;
     WideString pointsStr;
 	Vector<WideString> multilineStrings;
 	Vector<int32> stringSizes;

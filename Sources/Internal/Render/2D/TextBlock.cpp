@@ -43,6 +43,9 @@
 #include "Render/2D/TextBlockGraphicsRender.h"
 #include "Render/2D/TextBlockDistanceRender.h"
 
+#include "Utils/UTF8Utils.h"
+#include "Utils/BiDiUtils.h"
+
 namespace DAVA 
 {
     
@@ -110,6 +113,8 @@ TextBlock::TextBlock()
 
 	originalFontSize = 0.1f;
 	align = ALIGN_HCENTER|ALIGN_VCENTER;
+    useRtlAlign = true;
+    isRtl = false;
 	RegisterTextBlock(this);
     isMultilineBySymbolEnabled = false;
     treatMultilineAsSingleLine = false;
@@ -196,14 +201,20 @@ void TextBlock::SetPivotPoint(const Vector2& pivotPoint)
 void TextBlock::SetText(const WideString & _string, const Vector2 &requestedTextRectSize)
 {
     mutex.Lock();
-	if(text == _string && requestedSize == requestedTextRectSize)
+	if(originalText == _string && requestedSize == requestedTextRectSize)
 	{
         mutex.Unlock();
 		return;
 	}
 	requestedSize = requestedTextRectSize;
-	text = _string;
+	originalText = _string;
     needRedraw = true;
+
+    if(!BiDiUtils::TransformString(originalText, text, isRtl))
+    {
+        text = originalText;
+        isRtl = false;
+    }
 
     mutex.Unlock();
 	Prepare();
@@ -262,7 +273,7 @@ const WideString & TextBlock::GetText()
     mutex.Lock();
     mutex.Unlock();
 
-	return text;
+	return originalText;
 }
 
 bool TextBlock::GetMultiline()
@@ -304,10 +315,37 @@ void TextBlock::SetAlign(int32 _align)
     mutex.Unlock();
 }
 
+void TextBlock::SetUseRtlAlign(bool const& useRtlAlign)
+{
+    mutex.Lock();
+    this->useRtlAlign = useRtlAlign;
+    mutex.Unlock();
+}
+
+bool TextBlock::GetUseRtlAlign()
+{
+    mutex.Lock();
+    mutex.Unlock();
+    return useRtlAlign;
+}
+
+bool TextBlock::IsRtl()
+{
+    mutex.Lock();
+    mutex.Unlock();
+    return isRtl;
+}
+
 int32 TextBlock::GetAlign()
 {
     mutex.Lock();
     mutex.Unlock();
+
+    if(useRtlAlign && isRtl)
+    {
+        // Mirror left/right align
+        return align ^ (ALIGN_LEFT | ALIGN_RIGHT);
+    }
 
 	return align;
 }
@@ -455,7 +493,8 @@ void TextBlock::CalculateCacheParams()
         {
             Size2i textSizePoints;
             int32 length = (int32)text.length();
-            if(ALIGN_RIGHT & align)
+            int32 _align =  GetAlign();
+            if(ALIGN_RIGHT & _align)
             {
                 for(int32 i = 1; i < length - 1; ++i)
                 {
@@ -469,7 +508,7 @@ void TextBlock::CalculateCacheParams()
                     }
                 }
             }
-            else if(ALIGN_HCENTER & align)
+            else if(ALIGN_HCENTER & _align)
             {
                 int32 endPos = length / 2;
                 int32 startPos = endPos - 1;
@@ -811,7 +850,7 @@ TextBlock * TextBlock::Clone()
 
     block->SetRectSize(rectSize);
     block->SetMultiline(GetMultiline(), GetMultilineBySymbol());
-    block->SetAlign(GetAlign());
+    block->SetAlign(align);
     block->SetFittingOption(fittingType);
     
     if (GetFont())
