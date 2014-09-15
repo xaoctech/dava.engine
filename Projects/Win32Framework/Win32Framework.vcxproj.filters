@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="External">
@@ -1578,6 +1578,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Platform\NotificationAndroid.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\NotificationNotImplemented.h" />
+    <ClInclude Include="..\..\Sources\Internal\Utils\BiDiUtils.h">
+      <Filter>Internal\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2831,5 +2834,8 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Platform\NotificationAndroid.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\NotificationNotImplemented.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Utils\BiDiUtils.cpp">
+      <Filter>Internal\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
