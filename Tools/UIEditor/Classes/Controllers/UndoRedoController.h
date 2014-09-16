@@ -64,8 +64,8 @@ public:
 
 	// We need to control saved changes for each screen to determine which of them
 	// were changed.
-	void IncrementUnsavedChanges(bool forUndoStack);
-	void DecrementUnsavedChanges(bool forUndoStack);
+	void IncrementUnsavedChanges(bool forUndoStack, HierarchyTreeNode::HIERARCHYTREENODEID stackId);
+	void DecrementUnsavedChanges(bool forUndoStack, HierarchyTreeNode::HIERARCHYTREENODEID stackId);
 	void ResetUnsavedChanges();
 
 protected:
@@ -76,7 +76,6 @@ protected:
 	// Cleanup the particular stack.
 	void CleanupStack(Deque<BaseCommand*>& stackToCleanup);
 
-    HierarchyTreeNode::HIERARCHYTREENODEID  GetCurrentScreenId();
     
     // Stacks.
     Map<HierarchyTreeNode::HIERARCHYTREENODEID,Deque<BaseCommand*> > undoStacks;
