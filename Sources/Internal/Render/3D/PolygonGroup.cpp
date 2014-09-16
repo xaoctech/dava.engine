@@ -153,7 +153,7 @@ void PolygonGroup::UpdateDataPointersAndStreams()
     }
 	if (vertexFormat & EVF_JOINTWEIGHT)
 	{
-		jointWeightArray = reinterpret_cast<uint32*>(meshData + baseShift + 4 * 4);
+		jointWeightArray = reinterpret_cast<uint32*>(meshData + baseShift);
 		baseShift += GetVertexSize(EVF_JOINTWEIGHT);
 		
         renderDataObject->SetStream(EVF_JOINTWEIGHT , TYPE_UNSIGNED_BYTE, 4, vertexStride, jointWeightArray);
