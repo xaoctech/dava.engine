@@ -370,8 +370,11 @@ HierarchyTreeNode::HIERARCHYTREENODEID HierarchyTreeController::CreateNewControl
 	{
 		HierarchyTreeControlNode* parentControlNode = (*activeControlNodes.begin());
 		parentNode = parentControlNode;
-		parentDelta = parentControlNode->GetParentDelta();
-        float32 angle = parentControlNode->GetUIObject()->GetGeometricData().angle;
+        UIGeometricData parentGD = parentControlNode->GetUIObject()->GetGeometricData();
+        Polygon2 polygon;
+        parentGD.GetPolygon(polygon);
+        parentDelta = polygon.points[0];
+        float32 angle = parentGD.angle;
         if (!FLOAT_EQUAL(angle, 0.0f))
         {
             rotationMatrix.BuildRotation(-angle);
