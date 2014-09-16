@@ -286,6 +286,19 @@ void CreateControlCommand::Execute()
 	this->createdControlID = newControlID;
 }
 
+HierarchyTreeNode::HIERARCHYTREENODEID CreateControlCommand::GetUndoRedoStackId()
+{
+    HierarchyTreeScreenNode* screen = HierarchyTreeController::Instance()->GetScreenNodeForNode(this->parentNode);
+    if(NULL == screen)
+    {
+        return HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
+    }
+    else
+    {
+        return screen->GetId();
+    }
+}
+
 void CreateControlCommand::Rollback()
 {
 	if (this->createdControlID == HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY)
