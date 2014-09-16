@@ -579,6 +579,18 @@ namespace DAVA
         
     return retValue;
     }
+	
+	void UITextFieldiPhone::SetTextUseRtlAlign(bool useRtlAlign)
+	{
+		UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
+		[textFieldHolder->textField setBaseWritingDirection:(useRtlAlign ? NSWritingDirectionNatural : NSWritingDirectionLeftToRight) forRange:nil];
+	}
+	
+	bool UITextFieldiPhone::GetTextUseRtlAlign() const
+	{
+		UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
+		return [textFieldHolder->textField baseWritingDirectionForPosition:nil inDirection:UITextStorageDirectionForward] == NSWritingDirectionNatural;
+	}
     
     void UITextFieldiPhone::OpenKeyboard()
     {
