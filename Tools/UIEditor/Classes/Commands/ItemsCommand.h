@@ -133,6 +133,7 @@ public:
 	virtual void Execute();
 	void Rollback();
 	virtual bool IsUndoRedoSupported() {return true;};
+    virtual HierarchyTreeNode::HIERARCHYTREENODEID GetUndoRedoStackId();
 
 protected:
 	// Command mode.
