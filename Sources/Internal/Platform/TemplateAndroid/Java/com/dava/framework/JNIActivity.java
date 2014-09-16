@@ -12,7 +12,6 @@ import android.os.Handler;
 import android.support.v4.app.NotificationCompat.Builder;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -80,20 +79,6 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         glView.setClickable(true);
         glView.setFocusable(true);
         glView.requestFocus();
-        
-        glView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener()
-        {
-            @Override
-            public void onViewDetachedFromWindow(View v)
-            {
-            }
-            
-            @Override
-            public void onViewAttachedToWindow(View v)
-            {
-                JNITextField.InitializeKeyboardLayout(getWindowManager(), glView.getWindowToken());
-            }
-        });
         
         mController = Controller.getInstance(this);
         if(mController != null)
@@ -271,6 +256,16 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
     
     @Override
     public void onBackPressed() {
+    }
+    
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+    	super.onWindowFocusChanged(hasFocus);
+    	if(hasFocus) {
+    		JNITextField.InitializeKeyboardLayout(getWindowManager(), glView.getWindowToken());
+    	} else {
+    		JNITextField.DestroyKeyboardLayout(getWindowManager());
+    	}
     }
     
     public void onAccelerationChanged(float x, float y, float z)
