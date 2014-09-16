@@ -69,6 +69,7 @@
 #include "Scene3D/Systems/SkyboxSystem.h"
 #include "Scene3D/Systems/WindSystem.h"
 #include "Scene3D/Systems/WaveSystem.h"
+#include "Scene3D/Systems/SkeletonSystem.h"
 
 #include "Sound/SoundSystem.h"
 
@@ -354,6 +355,18 @@ void Scene::CreateSystems()
     {
         waveSystem = new WaveSystem(this);
         AddSystem(waveSystem, (1 << Component::WAVE_COMPONENT), true);
+    }
+
+    if(SCENE_SYSTEM_WAVE_UPDATE_FLAG & systemsMask)
+    {
+        waveSystem = new WaveSystem(this);
+        AddSystem(waveSystem, (1 << Component::WAVE_COMPONENT), true);
+    }
+
+    if(SCENE_SYSTEM_SKELETON_UPDATE_FLAG & systemsMask)
+    {
+        skeletonSystem = new SkeletonSystem(this);
+        AddSystem(skeletonSystem, (1 << Component::SKELETON_COMPONENT), true);
     }
 }
 

@@ -109,7 +109,7 @@ void SkeletonSystem::UpdatePose(SkeletonComponent *component)
     for (uint16 currJoint = component->startJoint; currJoint<count; ++currJoint)
     {
         uint16 parentJoint = component->jointInfo[currJoint]&SkeletonComponent::INFO_PARENT_MASK;
-        if ((component->jointInfo[currJoint]&SkeletonComponent::FLAG_MARKED_FOR_UPDATED)||(component->jointInfo[parentJoint]&SkeletonComponent::FLAG_UPDATED_THIS_FRAME))
+        if ((component->jointInfo[currJoint]&SkeletonComponent::FLAG_MARKED_FOR_UPDATED)||((parentJoint!=SkeletonComponent::INVALID_JOINT_INDEX)&&(component->jointInfo[parentJoint]&SkeletonComponent::FLAG_UPDATED_THIS_FRAME)))
         {
             //calculate local pose
             if (parentJoint == SkeletonComponent::INVALID_JOINT_INDEX) //root
@@ -118,9 +118,10 @@ void SkeletonSystem::UpdatePose(SkeletonComponent *component)
             }
             else
             {
-                component->objectSpaceTransforms[currJoint] = component->localSpaceTransforms[currJoint].MultiplyByParent(component->objectSpaceTransforms[parentJoint]);
-            }            
-            SkeletonComponent::JointTransform finalTransform = component->inverseBindTransforms[currJoint].MultiplyByParent(component->objectSpaceTransforms[currJoint]);
+                component->objectSpaceTransforms[currJoint] = component->objectSpaceTransforms[parentJoint].AppendTransform(component->localSpaceTransforms[currJoint]);
+            }              
+            //calculate final transform including bindTransform
+            SkeletonComponent::JointTransform finalTransform = component->objectSpaceTransforms[currJoint].AppendTransform(component->inverseBindTransforms[currJoint]);
             component->resultPositions[currJoint].Set(finalTransform.position.x, finalTransform.position.y, finalTransform.position.z, finalTransform.scale);
             component->resultQuaternions[currJoint].Set(finalTransform.orientation.x, finalTransform.orientation.y, finalTransform.orientation.z, finalTransform.orientation.w);
             //update bbox
@@ -169,21 +170,53 @@ void SkeletonSystem::UpdateSkinnedMesh(SkeletonComponent *component, SkinnedMesh
 void SkeletonSystem::RebuildSkeleton(SkeletonComponent *component)
 {
     /*convert joint configs to joints*/
-    component->jointInfo.clear();
-    component->localSpaceTransforms.clear();
-    component->jointSpaceBoxes;
+    component->jointsCount = component->GetConfigJointsCount();
+        
+    component->jointInfo.resize(component->jointsCount);
+    component->localSpaceTransforms.resize(component->jointsCount);
+    component->objectSpaceTransforms.resize(component->jointsCount);
+    component->inverseBindTransforms.resize(component->jointsCount);
+    component->jointSpaceBoxes.resize(component->jointsCount);
+    component->objectSpaceBoxes.resize(component->jointsCount);
+    component->resultPositions.resize(component->jointsCount);
+    component->resultQuaternions.resize(component->jointsCount);
+    component->jointMap.clear();
     
+    uint16 targetSlot = 0;
     for (int32 i=0, sz = component->rootJoints.size(); i<sz; ++i)
-        AddJointConfig(component, component->rootJoints[i], SkeletonComponent::INVALID_JOINT_INDEX);
+        AddJointConfig(component, component->rootJoints[i], targetSlot, SkeletonComponent::INVALID_JOINT_INDEX);
 
     component->startJoint = 0;
     UpdatePose(component);
 }
 
-void SkeletonSystem::AddJointConfig(SkeletonComponent *component, SkeletonComponent::JointConfig &config, uint16 parent)
+void SkeletonSystem::AddJointConfig(SkeletonComponent *component, SkeletonComponent::JointConfig &config, uint16& slotId, uint16 parentId)
 {
-    /*int32 jointid = component->localSpaceTransforms.size();
-    jointid*/
+    DVASSERT((parentId==SkeletonComponent::INVALID_JOINT_INDEX)||((parentId&SkeletonComponent::INFO_PARENT_MASK)==parentId));
+    
+    uint16 currId = slotId++;
+    DVASSERT((currId&SkeletonComponent::INFO_PARENT_MASK)==currId);
+    component->jointInfo[currId] = parentId | SkeletonComponent::FLAG_MARKED_FOR_UPDATED;
+
+    DVASSERT(component->jointMap.find(config.name) == component->jointMap.end()); //duplicate bone name
+    component->jointMap[config.name] = currId;
+
+    SkeletonComponent::JointTransform localTransform;
+    localTransform.position = config.position;
+    localTransform.orientation = config.orientation;
+    localTransform.scale = config.scale;
+
+    component->localSpaceTransforms[currId] = localTransform;    
+    if (parentId==SkeletonComponent::INVALID_JOINT_INDEX)
+        component->objectSpaceTransforms[currId] = localTransform;
+    else
+        component->objectSpaceTransforms[currId] = component->objectSpaceTransforms[parentId].AppendTransform(localTransform);
+    component->inverseBindTransforms[currId] = component->objectSpaceTransforms[currId].GetInverse();
+    component->jointSpaceBoxes[currId] = config.bbox;
+    
+    for (int32 i=0, sz = config.children.size(); i<sz; ++i)
+        AddJointConfig(component, config.children[i], slotId, currId);
+
 }
 
 
