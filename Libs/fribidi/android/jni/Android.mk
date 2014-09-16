@@ -20,26 +20,26 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
 
 # set source files
 LOCAL_SRC_FILES :=  \
-                  ../../fribidi.c \
-                  ../../fribidi-arabic.c \
-                  ../../fribidi-bidi.c \
-                  ../../fribidi-bidi-types.c \
-                  ../../fribidi-deprecated.c \
-                  ../../fribidi-joining.c \
-                  ../../fribidi-joining-types.c \
-                  ../../fribidi-mem.c \
-                  ../../fribidi-mirroring.c \
-                  ../../fribidi-run.c \
-                  ../../fribidi-shape.c \
-                  ../../fribidi-char-sets.c \
-                  ../../fribidi-char-sets-cap-rtl.c \
-                  ../../fribidi-char-sets-cp1255.c \
-                  ../../fribidi-char-sets-cp1256.c \
-                  ../../fribidi-char-sets-iso8859-6.c \
-                  ../../fribidi-char-sets-iso8859-8.c \
-                  ../../fribidi-char-sets-utf8.c \
+                  ../../lib/fribidi.c \
+                  ../../lib/fribidi-arabic.c \
+                  ../../lib/fribidi-bidi.c \
+                  ../../lib/fribidi-bidi-types.c \
+                  ../../lib/fribidi-deprecated.c \
+                  ../../lib/fribidi-joining.c \
+                  ../../lib/fribidi-joining-types.c \
+                  ../../lib/fribidi-mem.c \
+                  ../../lib/fribidi-mirroring.c \
+                  ../../lib/fribidi-run.c \
+                  ../../lib/fribidi-shape.c \
+                  ../../charset/fribidi-char-sets.c \
+                  ../../charset/fribidi-char-sets-cap-rtl.c \
+                  ../../charset/fribidi-char-sets-cp1255.c \
+                  ../../charset/fribidi-char-sets-cp1256.c \
+                  ../../charset/fribidi-char-sets-iso8859-6.c \
+                  ../../charset/fribidi-char-sets-iso8859-8.c \
+                  ../../charset/fribidi-char-sets-utf8.c \
 
-LOCAL_CFLAGS := -O2
+LOCAL_CFLAGS := -O2 -DHAVE_CONFIG_H=1
 
 # build static library
 include $(BUILD_STATIC_LIBRARY)
