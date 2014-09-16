@@ -54,7 +54,7 @@ void BiDiTest::LoadResources()
     staticText = new UIStaticText(Rect(10, 10, 512, 50));
 	staticText->SetFont(font);
     staticText->SetTextColor(Color::White);
-	staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_LEFT);
+	staticText->SetTextAlign(ALIGN_VCENTER | ALIGN_LEFT);
 	staticText->SetText(L"textField");
 	staticText->SetDebugDraw(true);
 	AddControl(staticText);
@@ -62,8 +62,8 @@ void BiDiTest::LoadResources()
     textField = new UITextField(Rect(10, 110, 512, 50));
 	textField->SetFont(font);
     textField->SetTextColor(Color::White);
-    textField->SetTextAlign(ALIGN_HCENTER | ALIGN_LEFT);
-	textField->SetText(L"textField");
+    textField->SetTextAlign(ALIGN_VCENTER | ALIGN_LEFT);
+    textField->SetText(L"textField");
 	textField->SetDebugDraw(true);
 	textField->SetDelegate(this);
 	AddControl(textField);
