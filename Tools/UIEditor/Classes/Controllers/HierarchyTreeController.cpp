@@ -760,7 +760,7 @@ void HierarchyTreeController::OnUnsavedChangesNumberChanged()
 HierarchyTreeScreenNode* HierarchyTreeController::GetScreenNodeForNode(HierarchyTreeNode* node)
 {
 	bool foundScreen = false;
-	HierarchyTreeNode* screen = node;
+	HierarchyTreeNode* screen = node->GetParent();
 	do
 	{
 		if (dynamic_cast<HierarchyTreeScreenNode*>(screen))
@@ -924,14 +924,4 @@ void HierarchyTreeController::DeleteUnusedItemsFromDisk(const QString& projectPa
     }
 
     CleanupUnusedItems();
-}
-
-HierarchyTreeNode::HIERARCHYTREENODEID HierarchyTreeController::GetActiveScreenId() const
-{
-    HierarchyTreeNode::HIERARCHYTREENODEID idScreen = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
-    if (NULL != activeScreen)
-    {
-        idScreen = activeScreen->GetId();
-    }
-    return idScreen;
 }

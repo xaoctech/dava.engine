@@ -61,13 +61,9 @@ public:
 	virtual void ActivateCommandScreen();
 
 	// Access to the screen unsaved changes counter.
-	virtual void IncrementUnsavedChangesById(HierarchyTreeNode::HIERARCHYTREENODEID idScreen);
-	virtual void DecrementUnsavedChangesById(HierarchyTreeNode::HIERARCHYTREENODEID idScreen);
-    virtual void IncrementUnsavedChanges();
+	virtual void IncrementUnsavedChanges();
 	virtual void DecrementUnsavedChanges();
 	void ResetUnsavedChanges();
-    
-    virtual HierarchyTreeNode::HIERARCHYTREENODEID GetUndoRedoStackId();
 
 protected:
     // Get the Metadata for the tree node passed.
@@ -75,8 +71,6 @@ protected:
 	
 	HierarchyTreeNode::HIERARCHYTREENODEID activePlatform;
 	HierarchyTreeNode::HIERARCHYTREENODEID activeScreen;
-    virtual void IncrementUnsavedChangesWithScreen(HierarchyTreeScreenNode* screen);
-    virtual void DecrementUnsavedChangesWithScreen(HierarchyTreeScreenNode* screen);
 };
     
 }

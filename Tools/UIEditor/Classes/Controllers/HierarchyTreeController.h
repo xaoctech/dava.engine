@@ -203,8 +203,6 @@ public:
 
     // Perform the physical deletion from the disk of the unused items.
     void DeleteUnusedItemsFromDisk(const QString& projectPath);
-    
-    HierarchyTreeNode::HIERARCHYTREENODEID GetActiveScreenId() const;
 
 private:
 	void DeleteNodesInternal(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes);
