@@ -122,6 +122,7 @@
 #include "Classes/Commands2/PaintHeightDeltaAction.h"
 
 #include "Tools/HeightDeltaTool/HeightDeltaTool.h"
+#include "Tools/ColorPicker/ColorPicker.h"
 
 #include "SceneProcessing/SceneProcessor.h"
 
@@ -744,6 +745,11 @@ void QtMainWindow::SetupActions()
         QAction *act = ui->menuDebug_Functions->addAction("Edit version tags");
         connect(act, SIGNAL(triggered()), SLOT(DebugVersionInfo()));
 #endif
+	}
+    // Debug colorpicker
+	{
+        QAction *act = ui->menuDebug_Functions->addAction("Color picker");
+        connect(act, SIGNAL(triggered()), SLOT(DebugColorPicker()));
 	}
     
  	//Collision Box Types
@@ -2457,17 +2463,24 @@ void QtMainWindow::OnBuildStaticOcclusion()
     QtWaitDialog *waitOcclusionDlg = new QtWaitDialog(this);
     waitOcclusionDlg->Show("Static occlusion", "Please wait while building static occlusion.", true, true);
 
+    bool sceneWasChanged = true;
     scene->staticOcclusionBuildSystem->Build();
     while(scene->staticOcclusionBuildSystem->IsInBuild())
     {
         if(waitOcclusionDlg->WasCanceled())
         {
             scene->staticOcclusionBuildSystem->Cancel();
+            sceneWasChanged = false;
         }
         else
         {
             waitOcclusionDlg->SetValue(scene->staticOcclusionBuildSystem->GetBuildStatus());
         }
+    }
+    
+    if(sceneWasChanged)
+    {
+        scene->MarkAsChanged();
     }
 
     delete waitOcclusionDlg;
@@ -2955,6 +2968,13 @@ void QtMainWindow::DebugVersionInfo()
     }
 
     versionInfoWidget->show();
+}
+
+void QtMainWindow::DebugColorPicker()
+{
+    ColorPicker *cp = new ColorPicker(this);
+
+    cp->Exec();
 }
 
 void QtMainWindow::OnGenerateHeightDelta()
