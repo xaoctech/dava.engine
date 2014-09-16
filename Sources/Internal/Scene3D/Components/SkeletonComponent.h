@@ -35,6 +35,7 @@
 #include "Entity/Component.h"
 #include "Debug/DVAssert.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
+#include "Math/AABBox3.h"
 
 namespace DAVA
 {
@@ -46,7 +47,7 @@ class SkeletonComponent : public Component
 public:
     IMPLEMENT_COMPONENT_TYPE(SKELETON_COMPONENT);
 
-    const static uint16 INVALID_JOINT_INDEX = -1;
+    const static uint16 INVALID_JOINT_INDEX = 0xff; //same as INFO_PARENT_MASK
 
     
     struct JointTransform
@@ -57,31 +58,34 @@ public:
         Vector3 position;
         float32 scale;        
 
-        inline JointTransform MultiplyByParent(const JointTransform& parent) const;
+        inline JointTransform AppendTransform(const JointTransform& transform) const;        
+        inline JointTransform GetInverse() const;        
         inline Vector3 TransformVector(const Vector3 &inVec) const;
     };  
 
     struct JointConfig
     {
+        JointConfig();
+        JointConfig(const FastName& name);
+        JointConfig(const FastName& name, const Vector3& position, const Quaternion& orientation, float32 scale, const AABBox3& bbox);
         FastName name;
         Quaternion orientation;
         Vector3 position;
         float32 scale;
+        AABBox3 bbox;
         Vector<JointConfig> children;        
 
         INTROSPECTION(JointConfig,
             MEMBER(name, "Name", I_SAVE | I_VIEW | I_EDIT)
             MEMBER(position, "Position", I_SAVE | I_VIEW | I_EDIT)
-            MEMBER(orientation, "Orientation", I_SAVE | I_VIEW | I_EDIT)
+            //MEMBER(orientation, "Orientation", I_SAVE | I_VIEW | I_EDIT)
             MEMBER(scale, "Scale", I_SAVE | I_VIEW | I_EDIT)
             COLLECTION(children, "Child Joints", I_SAVE | I_VIEW | I_EDIT)
             );
     };
-
-    /*void ConfigAddJoint(const FastName& parentName);
-    void ConfigRemoveJoint(const FastName& name);*/
+    
     void RebuildFromConfig();
-
+    uint16 GetConfigJointsCount();
 
     virtual Component * Clone(Entity * toEntity);
     virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
@@ -95,7 +99,6 @@ public:
 
     inline uint16 GetJointsCount() const;
 
-
     SkeletonComponent();
     ~SkeletonComponent();
 
@@ -108,14 +111,13 @@ private:
     const static uint32 FLAG_UPDATED_THIS_FRAME=0x1+INFO_PARENT_MASK;
     const static uint32 FLAG_MARKED_FOR_UPDATED=0x2+INFO_PARENT_MASK;
 
-    Vector<uint32> jointInfo; //flags and parent
-    
+    uint16 jointsCount;
+    Vector<uint32> jointInfo; //flags and parent    
     //transforms info
     Vector<JointTransform> localSpaceTransforms;
     Vector<JointTransform> objectSpaceTransforms;
-    
+    //bind pose
     Vector<JointTransform> inverseBindTransforms;
-
     //bounding boxes for bone
     Vector<AABBox3> jointSpaceBoxes;
     Vector<AABBox3> objectSpaceBoxes;
@@ -127,6 +129,7 @@ private:
             
     uint16 startJoint; //first joint in the list that was updated this frame - cache this value to optimize processing
 
+    uint16 GetConfigJointsCountRecursively(const JointConfig &joint);
 
 public:
     INTROSPECTION_EXTEND(SkeletonComponent, Component,
@@ -167,7 +170,7 @@ inline uint16 SkeletonComponent::GetJointId(const FastName& name) const
 
 inline uint16 SkeletonComponent::GetJointsCount() const
 {
-    return localSpaceTransforms.size(); //use local transforms size as it is the only one modifiable from outside
+    return jointsCount;
 }
 
 inline Vector3 SkeletonComponent::JointTransform::TransformVector(const Vector3 &inVec) const
@@ -175,14 +178,26 @@ inline Vector3 SkeletonComponent::JointTransform::TransformVector(const Vector3 
     return position + orientation.ApplyToVectorFast(inVec)*scale; 
 }
 
-inline SkeletonComponent::JointTransform SkeletonComponent::JointTransform::MultiplyByParent(const JointTransform& parent) const
+inline SkeletonComponent::JointTransform SkeletonComponent::JointTransform::AppendTransform(const JointTransform& transform) const
 {
     JointTransform res;
-    res.position = parent.position + parent.TransformVector(position);
-    res.orientation = parent.orientation * orientation;
-    res.scale = parent.scale * scale;
+    res.position = position + TransformVector(transform.position);
+    res.orientation = orientation * transform.orientation;
+    res.scale = scale * transform.scale;
     return res;
 }
+
+inline SkeletonComponent::JointTransform SkeletonComponent::JointTransform::GetInverse() const
+{
+    JointTransform res;
+    res.scale = 1.0f/scale;    
+    res.orientation = orientation;
+    res.orientation.Inverse();
+    res.position = -res.orientation.ApplyToVectorFast(position)*res.scale;
+    
+    return res;
+}
+
 
 } //ns
 

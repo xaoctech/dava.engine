@@ -60,7 +60,7 @@ private:
 
     
     void RebuildSkeleton(SkeletonComponent *component);
-    void AddJointConfig(SkeletonComponent *component, SkeletonComponent::JointConfig &config, uint16 parent);
+    void AddJointConfig(SkeletonComponent *component, SkeletonComponent::JointConfig &config, uint16& slotId, uint16 parentId);
 
     Vector<Entity*> entities;
 
