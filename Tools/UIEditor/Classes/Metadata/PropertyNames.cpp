@@ -77,6 +77,8 @@ const char* PropertyNames::SHADOW_COLOR = "ShadowColor";
 const char* PropertyNames::FONT_COLOR_INHERIT_TYPE_PROPERTY_NAME = "FontColorInheritType";
 const char* PropertyNames::FONT_PER_PIXEL_ACCURACY_TYPE_PROPERTY_NAME = "FontPerPixelAccuracyType";
 
+const char* PropertyNames::MAX_TEXT_LENGTH_PROPERTY_NAME = "MaxLength";
+
 // Slider properties
 const char* PropertyNames::SLIDER_VALUE_PROPERTY_NAME = "SliderValue";
 const char* PropertyNames::SLIDER_MIN_VALUE_PROPERTY_NAME = "SliderMinValue";
