@@ -34,7 +34,7 @@ namespace DAVA
 {
 
 LocalNotificationNotImplemented::LocalNotificationNotImplemented(const uint32 _id)
-    : id(_id)
+    : notificationId(_id)
 {
 }
     

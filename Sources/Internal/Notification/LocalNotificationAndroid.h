@@ -59,7 +59,7 @@ public:
 	static jclass gJavaClass;
 	static const char* gJavaClassName;
 
-	uint32 id;
+	uint32 notificationId;
 
 private:
 	Mutex javaCallMutex;

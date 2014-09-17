@@ -1112,6 +1112,10 @@
 		D7CC267619C517E500A3B754 /* LocalNotificationText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7CC265B19C517E500A3B754 /* LocalNotificationText.cpp */; };
 		D7CC267719C517E500A3B754 /* LocalNotificationText.h in Headers */ = {isa = PBXBuildFile; fileRef = D7CC265C19C517E500A3B754 /* LocalNotificationText.h */; };
 		D7CC267819C517E500A3B754 /* LocalNotificationText.h in Headers */ = {isa = PBXBuildFile; fileRef = D7CC265C19C517E500A3B754 /* LocalNotificationText.h */; };
+		D7D3A2C419C8313300CD6B51 /* NSStringUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = D7D3A2C219C8313300CD6B51 /* NSStringUtils.h */; };
+		D7D3A2C519C8313300CD6B51 /* NSStringUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = D7D3A2C219C8313300CD6B51 /* NSStringUtils.h */; };
+		D7D3A2C619C8313300CD6B51 /* NSStringUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = D7D3A2C319C8313300CD6B51 /* NSStringUtils.mm */; };
+		D7D3A2C719C8313300CD6B51 /* NSStringUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = D7D3A2C319C8313300CD6B51 /* NSStringUtils.mm */; };
 		D7FEF13B19864E5C00B2C7AF /* DLC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7FEF12319864E5C00B2C7AF /* DLC.cpp */; };
 		D7FEF13C19864E5C00B2C7AF /* DLC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7FEF12319864E5C00B2C7AF /* DLC.cpp */; };
 		D7FEF13D19864E5C00B2C7AF /* DLC.h in Headers */ = {isa = PBXBuildFile; fileRef = D7FEF12419864E5C00B2C7AF /* DLC.h */; };
@@ -2013,13 +2017,15 @@
 		D7CC265319C517E500A3B754 /* LocalNotificationController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LocalNotificationController.cpp; sourceTree = "<group>"; };
 		D7CC265419C517E500A3B754 /* LocalNotificationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalNotificationController.h; sourceTree = "<group>"; };
 		D7CC265519C517E500A3B754 /* LocalNotificationIOS.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = LocalNotificationIOS.cpp; sourceTree = "<group>"; };
-		D7CC265619C517E500A3B754 /* LocalNotificationIOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalNotificationIOS.h; sourceTree = "<group>"; };
+		D7CC265619C517E500A3B754 /* LocalNotificationIOS.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = LocalNotificationIOS.h; sourceTree = "<group>"; };
 		D7CC265719C517E500A3B754 /* LocalNotificationNotImplemented.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LocalNotificationNotImplemented.cpp; sourceTree = "<group>"; };
 		D7CC265819C517E500A3B754 /* LocalNotificationNotImplemented.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalNotificationNotImplemented.h; sourceTree = "<group>"; };
 		D7CC265919C517E500A3B754 /* LocalNotificationProgress.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LocalNotificationProgress.cpp; sourceTree = "<group>"; };
 		D7CC265A19C517E500A3B754 /* LocalNotificationProgress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalNotificationProgress.h; sourceTree = "<group>"; };
 		D7CC265B19C517E500A3B754 /* LocalNotificationText.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LocalNotificationText.cpp; sourceTree = "<group>"; };
 		D7CC265C19C517E500A3B754 /* LocalNotificationText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalNotificationText.h; sourceTree = "<group>"; };
+		D7D3A2C219C8313300CD6B51 /* NSStringUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSStringUtils.h; sourceTree = "<group>"; };
+		D7D3A2C319C8313300CD6B51 /* NSStringUtils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NSStringUtils.mm; sourceTree = "<group>"; };
 		D7FEF12319864E5C00B2C7AF /* DLC.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DLC.cpp; sourceTree = "<group>"; };
 		D7FEF12419864E5C00B2C7AF /* DLC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DLC.h; sourceTree = "<group>"; };
 		D7FEF12619864E5C00B2C7AF /* CurlDownloader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CurlDownloader.cpp; sourceTree = "<group>"; };
@@ -3878,6 +3884,8 @@
 				E8B3CA7B16B9326E002BD35F /* Utils.cpp */,
 				E8B3CA7C16B9326E002BD35F /* Utils.h */,
 				E8B3CA7D16B9326E002BD35F /* UtilsMacOS.mm */,
+				D7D3A2C219C8313300CD6B51 /* NSStringUtils.h */,
+				D7D3A2C319C8313300CD6B51 /* NSStringUtils.mm */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -4135,6 +4143,7 @@
 				D7CC266C19C517E500A3B754 /* LocalNotificationIOS.h in Headers */,
 				02FD7FAA1924997C007762C0 /* PolygonGroup.h in Headers */,
 				02FD7FAB1924997C007762C0 /* StaticMesh.h in Headers */,
+				D7D3A2C519C8313300CD6B51 /* NSStringUtils.h in Headers */,
 				02FD7FAC1924997C007762C0 /* Cursor.h in Headers */,
 				02FD7FAD1924997C007762C0 /* ColorOnlyEffect.h in Headers */,
 				02FD7FAE1924997C007762C0 /* MultiTextureEffect.h in Headers */,
@@ -4429,6 +4438,7 @@
 				E8B3CAAA16B9326E002BD35F /* FixedSizePoolAllocator.h in Headers */,
 				02FD7EBC19237D33007762C0 /* SpeedTreeComponent.h in Headers */,
 				E8B3CAAB16B9326E002BD35F /* Hash.h in Headers */,
+				D7D3A2C419C8313300CD6B51 /* NSStringUtils.h in Headers */,
 				E8C486F6196BD2390082E634 /* LockGuard.h in Headers */,
 				E8B3CAAC16B9326E002BD35F /* HashMap.h in Headers */,
 				E8B3CAAD16B9326E002BD35F /* Introspection.h in Headers */,
@@ -4965,6 +4975,7 @@
 				02FD80B01924997C007762C0 /* Core.cpp in Sources */,
 				02FD80B11924997C007762C0 /* MongodbClient.cpp in Sources */,
 				02FD80B21924997C007762C0 /* MongodbObject.cpp in Sources */,
+				D7D3A2C719C8313300CD6B51 /* NSStringUtils.mm in Sources */,
 				02FD80B31924997C007762C0 /* UIParticles.cpp in Sources */,
 				02FD80B41924997C007762C0 /* DAVAEngine.cpp in Sources */,
 				02FD80B51924997C007762C0 /* Backtrace.cpp in Sources */,
@@ -5472,6 +5483,7 @@
 				E8B3CBE516B9326E002BD35F /* CullingSystem.cpp in Sources */,
 				E8B3CBE716B9326E002BD35F /* Heightmap.cpp in Sources */,
 				E8B3CBEA16B9326E002BD35F /* LandscapeChunk.cpp in Sources */,
+				D7D3A2C619C8313300CD6B51 /* NSStringUtils.mm in Sources */,
 				E8B3CBEC16B9326E002BD35F /* LandscapeCursor.cpp in Sources */,
 				E8B3CBF216B9326E002BD35F /* Light.cpp in Sources */,
 				E8B3CBF416B9326E002BD35F /* Mesh.cpp in Sources */,
