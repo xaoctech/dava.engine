@@ -75,7 +75,9 @@ void AnimationSystem::Process(float32 timeElapsed)
             SceneNodeAnimationKey & key = comp->animation->Interpolate(comp->time);
             Matrix4 animTransform;
             key.GetMatrix(animTransform);
-            comp->GetEntity()->SetLocalTransform(comp->animation->invPose * animTransform);
+            comp->animationTransform = comp->animation->invPose * animTransform;
+            GlobalEventSystem::Instance()->Event(comp->GetEntity(), EventSystem::ANIMATION_TRANSFORM_CHANGED);
+//            comp->GetEntity()->SetLocalTransform(comp->animation->invPose * animTransform);
         }
     }
 }

@@ -62,11 +62,13 @@ public:
 private:
 
 	friend class AnimationSystem;
+    friend class TransformSystem;
 	AnimationData* animation;
 	float32 time;
 	bool isPlaying;
 	bool autoStart;
 	bool repeat;
+    Matrix4 animationTransform;
 public:
 
 	INTROSPECTION_EXTEND(AnimationComponent, Component,

@@ -135,7 +135,7 @@ void AnimationComponent::SetIsPlaying( bool value )
 
 	if (!isPlaying)
 	{
-		GetEntity()->SetLocalTransform(Matrix4::IDENTITY);
+        animationTransform.Identity();
 	}
 	time = 0.0f;
 }
