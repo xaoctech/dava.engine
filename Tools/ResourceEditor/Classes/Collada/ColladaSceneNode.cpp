@@ -403,73 +403,66 @@ SceneNodeAnimationKey ColladaSceneNode::ExportAnimationKey(FCDSceneNode * origin
 	Matrix4 lt = ConvertMatrix(colladaLocalMatrix);
 	key.time = time;
 	lt.Decomposition(key.translation, key.scale, key.rotation);
-	
+
 	return key;
 }
-	
+
+bool ColladaSceneNode::KeyTimeEqual(float32 first, float32 second)
+{
+	return fabsf(first - second) <= EPSILON;
+}
+
 SceneNodeAnimation * ColladaSceneNode::ExportNodeAnimation(FCDSceneNode * originalNode, float32 startTime, float32 endTime, float32 fps)
 {
 	if (!IsAnimated(originalNode))return 0;
 		
 	
-	// we cant sample matrix animations with custom frequency
-	int frameCount = 1;
-
-	for (int t = 0; t < (int)originalNode->GetTransformCount(); ++t)
+	Vector< float32 > keyTimes;
+	// collect animation key times
+	for (int transformIndex = 0; transformIndex < (int)originalNode->GetTransformCount(); ++transformIndex)
 	{
-		FCDTransform * transform = originalNode->GetTransform(t);
+		FCDTransform * transform = originalNode->GetTransform(transformIndex);
 		if (transform->IsAnimated())
 		{
+			if ((transform->GetType() == FCDTransform::MATRIX) && (originalNode->GetTransformCount() > 1))
+			{
+				DVASSERT(false, "Multiple matrix animations are not supported.");
+				return NULL;
+			}
+
 			FCDAnimated * animated = transform->GetAnimated();
+			
 			const FCDAnimationCurveListList& curves = animated->GetCurves();
 			for (FCDAnimationCurveListList::const_iterator curveIter = curves.begin(); curveIter != curves.end(); ++curveIter)
 			{
 				for (FCDAnimationCurveTrackList::const_iterator curveTrackIter = curveIter->begin(); curveTrackIter != curveIter->end(); ++curveTrackIter)
 				{
-					frameCount = LCM((*curveTrackIter)->GetKeyCount(), frameCount);
+					for (int keyIndex = 0; keyIndex < (*curveTrackIter)->GetKeyCount(); ++keyIndex)
+					{
+						float32 key = (*curveTrackIter)->GetKey(keyIndex)->input;
+						
+						if (!std::binary_search(keyTimes.begin(), keyTimes.end(), key))
+						{
+							keyTimes.insert(std::lower_bound(keyTimes.begin(), keyTimes.end(), key), key);
+						}
+					}
 				}
 			}
 		}
 	}
 
-	float32 t0 = startTime;
-	float32 tInc = (endTime - startTime) / (float)(frameCount - 1);
+	Vector< float32 >::iterator last = std::unique(keyTimes.begin(), keyTimes.end(), KeyTimeEqual);
+	keyTimes.erase(last, keyTimes.end());
 	
-	std::vector<SceneNodeAnimationKey> keys;
-	
-	for (int k = 0; k < frameCount; ++k)
-	{
-		SceneNodeAnimationKey key = ExportAnimationKey(originalNode, t0);
-//		duplicate keys
-//		if (keys.size() != 0)
-//		{
-//			SceneNodeAnimationKey & keyPrev = keys[keys.size() - 1];
-//			if ((keyPrev.translation == key.translation)
-//				&& (keyPrev.rotation == key.rotation))
-//			{
-//				keyPrev.time = t0;
-//			}else
-//			{
-//				keys.push_back(key);
-//			}
-//		}else
-		{
-			keys.push_back(key);
-		}
-		t0 += tInc;
-	}
-	
-	
-	SceneNodeAnimation * anim = new SceneNodeAnimation(keys.size());
+	SceneNodeAnimation * anim = new SceneNodeAnimation(keyTimes.size());
 	anim->SetDuration(endTime);
-	for (int k = 0; k < (int)keys.size(); ++k)
+	for (int k = 0; k < (int)keyTimes.size(); ++k)
 	{
-		anim->SetKey(k, keys[k]);
+		anim->SetKey(k, ExportAnimationKey(originalNode, keyTimes[k]));
 	}
 	
-	printf("= keys export: frameCount: %d keyCount:%ld compression: %f\n", frameCount, keys.size(), 100.0f * (float32)keys.size() / (float32)frameCount);
+	printf("= keys export: keyCount:%ld\n", keyTimes.size());
 		 
-	ExportAnimationKey(originalNode, 0);
 	return anim;
 }
 

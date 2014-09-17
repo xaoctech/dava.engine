@@ -72,7 +72,7 @@ void AnimationSystem::Process(float32 timeElapsed)
                     comp->SetIsPlaying(false);
             }
 
-            SceneNodeAnimationKey & key = comp->animation->Interpolate(comp->time);
+            SceneNodeAnimationKey & key = comp->animation->Interpolate(comp->time, &comp->frameIndex);
             Matrix4 animTransform;
             key.GetMatrix(animTransform);
             comp->animationTransform = comp->animation->invPose * animTransform;

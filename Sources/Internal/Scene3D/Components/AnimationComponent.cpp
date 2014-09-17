@@ -43,7 +43,8 @@ AnimationComponent::AnimationComponent()
 isPlaying(false),
 animation(NULL),
 autoStart(true),
-repeat(true)
+repeat(true),
+frameIndex(0)
 {
 }
 
@@ -72,17 +73,7 @@ void AnimationComponent::Serialize(KeyedArchive *archive, SerializationContext *
 
 	if(NULL != archive)
 	{
-		archive->SetFloat("duration", animation->duration);
-		archive->SetInt32("keyCount", animation->keyCount);
-		archive->SetMatrix4("invPose", animation->invPose);
-
-		for (int32 keyIndex = 0; keyIndex < animation->keyCount; ++keyIndex)
-		{
-			archive->SetFloat(Format("key_%i_time", keyIndex), animation->keys[keyIndex].time);
-			archive->SetVector3(Format("key_%i_translation", keyIndex), animation->keys[keyIndex].translation);
-			archive->SetVector3(Format("key_%i_scale", keyIndex), animation->keys[keyIndex].scale);
-			archive->SetVector4(Format("key_%i_rotation", keyIndex), Vector4(animation->keys[keyIndex].rotation.x, animation->keys[keyIndex].rotation.y, animation->keys[keyIndex].rotation.z, animation->keys[keyIndex].rotation.w));
-		}
+		archive->SetVariant("animation", VariantType((uint64)animation));
 		archive->SetBool("autostart", autoStart);
 		archive->SetBool("repeat", repeat);
 	}
@@ -92,32 +83,23 @@ void AnimationComponent::Deserialize(KeyedArchive *archive, SerializationContext
 {
 	if(NULL != archive)
 	{
-		const int32 keyCount = archive->GetInt32("keyCount");
-
-		SafeRelease(animation);
-		animation = new AnimationData(keyCount);
-
-		animation->SetDuration(archive->GetFloat("duration"));
-		animation->SetInvPose(archive->GetMatrix4("invPose"));
-
-		for (int32 keyIndex = 0; keyIndex < keyCount; ++keyIndex)
+		AnimationData* newAnimation = static_cast<AnimationData*>(sceneFile->GetDataBlock(archive->GetVariant("animation")->AsUInt64()));
+		if (animation != newAnimation)
 		{
-			SceneNodeAnimationKey key;
-
-			key.time = archive->GetFloat(Format("key_%i_time", keyIndex));
-			key.translation = archive->GetVector3(Format("key_%i_translation", keyIndex));
-			key.scale = archive->GetVector3(Format("key_%i_scale", keyIndex));
-			Vector4 rotation = archive->GetVector4(Format("key_%i_rotation", keyIndex));
-			key.rotation = Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
-
-			animation->SetKey(keyIndex, key);
+			SafeRelease(animation);
+			animation = SafeRetain(newAnimation);
 		}
-
 		autoStart = archive->GetBool("autostart", true);
 		repeat = archive->GetBool("repeat", true);
 	}
 
 	Component::Deserialize(archive, sceneFile);
+}
+
+void AnimationComponent::GetDataNodes(Set<DataNode*> & dataNodes)
+{
+	if (animation)
+		dataNodes.insert(animation);
 }
 
 void AnimationComponent::SetAnimation(AnimationData* _animation)
