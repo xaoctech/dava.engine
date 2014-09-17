@@ -356,8 +356,6 @@ protected:
 	eKeyboardType keyboardType;
 	eReturnKeyType returnKeyType;
 
-    int32 maxLength;
-
 	// All Boolean variables are grouped together because of DF-2149.
 	bool needRedraw : 1;
 	bool isPassword : 1;
