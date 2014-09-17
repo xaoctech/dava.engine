@@ -53,12 +53,12 @@ public:
 	virtual Component * Clone(Entity * toEntity);
 	virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
 	virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
+	virtual void GetDataNodes(Set<DataNode*> & dataNodes);
 
 	void SetAnimation(AnimationData* animation);
 
 	bool GetIsPlaying() const;
 	void SetIsPlaying(bool value);
-
 private:
 
 	friend class AnimationSystem;
@@ -68,6 +68,7 @@ private:
 	bool isPlaying;
 	bool autoStart;
 	bool repeat;
+	uint32 frameIndex;
     Matrix4 animationTransform;
 public:
 
