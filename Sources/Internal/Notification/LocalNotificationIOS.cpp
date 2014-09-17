@@ -30,19 +30,36 @@
 
 #if defined(__DAVAENGINE_IPHONE__)
 
-#include <UIKit/UILocalNotification.h>
+
 #include <UIKit/UIApplication.h>
+#include <UIKit/UILocalNotification.h>
+#import "NSStringUtils.h"
 
 namespace DAVA
 {
+    
+struct UILocalNotificationWrapper
+{
+    UILocalNotification *impl = NULL;
+};
 
 LocalNotificationIOS::LocalNotificationIOS(const uint32 _id)
-    : id(_id)
+    : notificationId(_id)
+    , notification(NULL)
 {
 }
     
 LocalNotificationIOS::~LocalNotificationIOS()
 {
+    if (notification)
+    {
+        if (notification->impl)
+        {
+            [notification->impl release];
+        }
+        delete notification;
+    }
+    
 }
 
 void LocalNotificationIOS::SetAction(const Message &msg)
@@ -51,24 +68,37 @@ void LocalNotificationIOS::SetAction(const Message &msg)
 
 void LocalNotificationIOS::Hide()
 {
+    if (NULL != notification)
+    {
+        [[UIApplication sharedApplication] cancelLocalNotification:notification->impl];
+    }
 }
+
 void LocalNotificationIOS::ShowText(const WideString &title, const WideString text)
 {
-    WideString txt = L"Test text";
-    NSStringEncoding encoding = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingUTF32LE);
-	NSString* nsstring = [[NSString alloc]
-						  initWithBytes:(const char*)txt.c_str()
-						  length:txt.length() * sizeof(wchar_t)
-						  encoding:encoding];
-    UILocalNotification *note = [[UILocalNotification alloc] init];
-    note.alertBody = nsstring;
+    if (NULL == notification)
+    {
+        notification = new UILocalNotificationWrapper();
+        notification->impl = [[UILocalNotification alloc] init];
+    }
     
-    [[UIApplication sharedApplication] scheduleLocalNotification:note];
+    notification->impl.alertBody = [NSStringUtils NSStringFromWideString:text];
     
+    NSNumber *idNum = [NSNumber numberWithInt:notificationId];
+
+    NSArray *keys = [NSArray arrayWithObjects:@"id",@"action", nil];
+    NSArray *objects = [NSArray arrayWithObjects:idNum, @"test action", nil];
+    
+    notification->impl.userInfo = [NSDictionary dictionaryWithObjects:objects forKeys:keys];
+
+    [[UIApplication sharedApplication] cancelLocalNotification:notification->impl];
+    [[UIApplication sharedApplication] scheduleLocalNotification:notification->impl];
 }
+
 void LocalNotificationIOS::ShowProgress(const WideString &title, const WideString text, const uint32 total, const uint32 progress)
 {
 }
     
 }
+
 #endif

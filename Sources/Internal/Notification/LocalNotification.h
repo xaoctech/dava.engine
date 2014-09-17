@@ -103,7 +103,7 @@ inline bool LocalNotification::IsVisible() const
 
 inline uint32 LocalNotification::GetId() const
 {
-    return impl->id;
+    return impl->notificationId;
 }
 
 }

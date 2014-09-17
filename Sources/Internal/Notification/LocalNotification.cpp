@@ -46,7 +46,7 @@ LocalNotification::LocalNotification()
     
 LocalNotification::~LocalNotification()
 {
-
+    delete impl;
 }
 
 void LocalNotification::SetAction(const Message& msg)

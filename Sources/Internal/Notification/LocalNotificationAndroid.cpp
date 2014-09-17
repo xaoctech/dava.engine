@@ -42,7 +42,7 @@ jclass LocalNotificationAndroid::gJavaClass = NULL;
 const char* LocalNotificationAndroid::gJavaClassName = NULL;
 
 LocalNotificationAndroid::LocalNotificationAndroid(const uint32 _id)
-	: id(_id)
+	: notificationId(_id)
 	, methodSetText(0)
 	, methodSetProgress(0)
 {
@@ -66,7 +66,7 @@ void LocalNotificationAndroid::SetAction(const Message &msg)
 	GetEnvironment()->CallStaticVoidMethod(
 					gJavaClass,
 					GetMethodID("EnableTapAction", "(I)V"),
-					id);
+					notificationId);
 }
 
 void LocalNotificationAndroid::Hide()
@@ -76,7 +76,7 @@ void LocalNotificationAndroid::Hide()
 	GetEnvironment()->CallStaticVoidMethod(
 					gJavaClass,
 					GetMethodID("HideNotification", "(I)V"),
-					id);
+					notificationId);
 }
 
 void LocalNotificationAndroid::ShowText(const WideString &title, const WideString text)
@@ -94,7 +94,7 @@ void LocalNotificationAndroid::ShowText(const WideString &title, const WideStrin
 	env->CallStaticVoidMethod(
 					gJavaClass,
 					methodSetText,
-					id,
+					notificationId,
 					jStrTitle,
 					jStrText);
 
@@ -118,7 +118,7 @@ void LocalNotificationAndroid::ShowProgress(const WideString &title, const WideS
 	env->CallStaticVoidMethod(
 					gJavaClass,
 					methodSetProgress,
-					id,
+					notificationId,
 					jStrTitle,
 					jStrText,
 					total,

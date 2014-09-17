@@ -38,6 +38,8 @@
 namespace DAVA
 {
     
+struct UILocalNotificationWrapper;
+
 class LocalNotificationIOS
 {
 public:
@@ -49,7 +51,8 @@ public:
     void ShowText(const WideString &title, const WideString text);
     void ShowProgress(const WideString &title, const WideString text, const uint32 total, const uint32 progress);
 public:
-    uint32 id;
+    uint32 notificationId;
+    UILocalNotificationWrapper *notification;
 };
 
 }
