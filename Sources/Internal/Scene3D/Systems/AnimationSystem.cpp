@@ -61,10 +61,11 @@ AnimationSystem::~AnimationSystem()
 void AnimationSystem::Process(float32 timeElapsed)
 {
     TIME_PROFILE("AnimationSystem::Process");
-    Vector<AnimationComponent*>::iterator it, endit;
-    for (it = activeComponents.begin(), endit = activeComponents.end(); it!= endit; ++it)
+
+    int componentsCount = activeComponents.size();
+    for(int i = 0; i < componentsCount; i++) 
     {
-        AnimationComponent * comp = *it;
+        AnimationComponent * comp = activeComponents[i];
         comp->time += timeElapsed;
         if (comp->time > comp->animation->duration)
         {
@@ -75,7 +76,10 @@ void AnimationSystem::Process(float32 timeElapsed)
             }
             else
             {
-                comp->Stop();
+                RemoveFromActive(comp);
+                componentsCount--;
+                i--;
+                comp->animationTransform.Identity();
                 continue;
             }
         }
