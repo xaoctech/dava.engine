@@ -337,8 +337,9 @@ public:
     void SetCursorPos(uint32 pos);
 
     /**
- 	 \brief Maximum text length.
-	 */
+      \brief Set maximum text length in text edit
+      maxLength - >=0 - max count, -1 - unlimited count
+     */
     void SetMaxLength(int32 maxLength);
     int32 GetMaxLength() const;
 
@@ -376,6 +377,7 @@ private:
     Font * textFont;
 #endif
     float32 cursorTime;
+    int32 maxLength;
 };
 
 };
