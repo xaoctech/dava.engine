@@ -3005,10 +3005,10 @@ void QtMainWindow::OnBatchProcessScene()
 
 void QtMainWindow::OnPlaySceneAnimations(bool start)
 {
-    Scene * scene = GetCurrentScene();
-    AnimationSystem * sys = scene->GetAnimationSystem();
-    if (start)
-        sys->PlaySceneAnimations();
-    else
-        sys->StopSceneAnimations();
+//     Scene * scene = GetCurrentScene();
+//     AnimationSystem * sys = scene->GetAnimationSystem();
+//     if (start)
+//         sys->PlaySceneAnimations();
+//     else
+//         sys->StopSceneAnimations();
 }
