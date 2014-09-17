@@ -1,5 +1,5 @@
 /*==================================================================================
-    Copyright (c) 2014, thorin
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,7 @@
 #include "Scene3D/Systems/AnimationSystem.h"
 #include "Entity/Component.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
+#include "Base/Message.h"
 
 namespace DAVA 
 {
@@ -57,25 +58,40 @@ public:
 
 	void SetAnimation(AnimationData* animation);
 
-	bool GetIsPlaying() const;
-	void SetIsPlaying(bool value);
+ 	bool GetIsPlaying() const;
+ 	void SetIsPlaying(bool value);
+
+    void Start();
+    void Stop();
+    void StopAfterNRepeats(int32 numberOfRepeats);    
+
+    enum eState
+    {
+        STATE_PLAYING,  
+        STATE_PAUSED,   
+        STATE_STOPPED   
+    };
+
 private:
 
 	friend class AnimationSystem;
     friend class TransformSystem;
 	AnimationData* animation;
 	float32 time;
-	bool isPlaying;
-	bool autoStart;
-	bool repeat;
 	uint32 frameIndex;
+    uint32 repeatsCount;
+    uint32 currRepeatsCont;
+    eState state;	
+
+    /*completion message stuff*/	
+    Message playbackComplete;		
+
     Matrix4 animationTransform;
 public:
 
 	INTROSPECTION_EXTEND(AnimationComponent, Component,
-		PROPERTY("isPlaying", "isPlaying", GetIsPlaying, SetIsPlaying, I_SAVE | I_EDIT | I_VIEW)
-		MEMBER(autoStart, "autostart", I_VIEW | I_EDIT | I_SAVE)
-		MEMBER(repeat, "repeat", I_VIEW | I_EDIT | I_SAVE)
+        MEMBER(repeatsCount, "repeatsCount", I_VIEW | I_EDIT | I_SAVE)
+       	PROPERTY("isPlaying", "isPlaying", GetIsPlaying, SetIsPlaying, I_SAVE | I_EDIT | I_VIEW)
 	);
 };
 

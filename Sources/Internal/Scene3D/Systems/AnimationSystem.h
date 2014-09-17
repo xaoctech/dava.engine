@@ -1,5 +1,5 @@
 /*==================================================================================
-    Copyright (c) 2014, thorin
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -49,18 +49,15 @@ public:
 	AnimationSystem(Scene * scene);
 	~AnimationSystem();
 
-	virtual void AddEntity(Entity * entity);
-	virtual void RemoveEntity(Entity * entity);
-
     virtual void Process(float32 timeElapsed);
 
-    virtual void RegisterComponent(Entity* entity, Component* component) override;
-    virtual void UnregisterComponent(Entity* entity, Component* component) override;
-
-    void PlaySceneAnimations(void);
-    void StopSceneAnimations(void);
+    virtual void ImmediateEvent(Entity * entity, uint32 event);
+    
 private:
-    Vector<AnimationComponent*> items;
+    Vector<AnimationComponent*> activeComponents;
+    void AddToActive(AnimationComponent *comp);
+    void RemoveFromActive(AnimationComponent *comp);
+
 };
 
 };
