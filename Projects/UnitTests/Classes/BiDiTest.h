@@ -57,7 +57,9 @@ private:
 
 	UIStaticText* staticText;
 	UITextField* textField;
-    
+	
+    UIButton* modeButton;
+	UIButton* rtlButton;
 	UIButton* testButton;
 	
 	void* delegate;
