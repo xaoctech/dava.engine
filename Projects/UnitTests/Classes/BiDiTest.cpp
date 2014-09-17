@@ -51,7 +51,7 @@ void BiDiTest::LoadResources()
     DVASSERT(font);
 	font->SetSize(20);
 	
-    staticText = new UIStaticText(Rect(10, 10, 512, 50));
+    staticText = new UIStaticText(Rect(10, 10, 300, 50));
 	staticText->SetFont(font);
     staticText->SetTextColor(Color::White);
 	staticText->SetTextAlign(ALIGN_VCENTER | ALIGN_LEFT);
@@ -59,7 +59,7 @@ void BiDiTest::LoadResources()
 	staticText->SetDebugDraw(true);
 	AddControl(staticText);
 
-    textField = new UITextField(Rect(10, 110, 512, 50));
+    textField = new UITextField(Rect(10, 70, 300, 50));
 	textField->SetFont(font);
     textField->SetTextColor(Color::White);
     textField->SetTextAlign(ALIGN_VCENTER | ALIGN_LEFT);
@@ -68,7 +68,23 @@ void BiDiTest::LoadResources()
 	textField->SetDelegate(this);
 	AddControl(textField);
 
-    testButton = new UIButton(Rect(10, 210, 512, 50));
+	modeButton = new UIButton(Rect(320, 10, 200, 50));
+	modeButton->SetStateFont(0xFF, font);
+	modeButton->SetStateFontColor(0xFF, Color::White);
+	modeButton->SetStateText(0xFF, L"Align: Left");
+	modeButton->SetDebugDraw(true);
+	modeButton->AddEvent(EVENT_TOUCH_UP_INSIDE, Message(this, &BiDiTest::ButtonPressed));
+    AddControl(modeButton);
+	
+	rtlButton = new UIButton(Rect(320, 70, 200, 50));
+	rtlButton->SetStateFont(0xFF, font);
+	rtlButton->SetStateFontColor(0xFF, Color::White);
+	rtlButton->SetStateText(0xFF, L"RTL Align: Enabled");
+	rtlButton->SetDebugDraw(true);
+	rtlButton->AddEvent(EVENT_TOUCH_UP_INSIDE, Message(this, &BiDiTest::ButtonPressed));
+    AddControl(rtlButton);
+	
+    testButton = new UIButton(Rect(10, 150, 510, 50));
 	testButton->SetStateFont(0xFF, font);
 	testButton->SetStateFontColor(0xFF, Color::White);
 	testButton->SetStateText(0xFF, L"Finish Test");
@@ -131,5 +147,34 @@ void BiDiTest::ButtonPressed(BaseObject* obj, void* data, void* callerData)
     if (obj == testButton)
 	{
 		testFinished = true;
+	}
+	else if (obj == modeButton)
+	{
+		int32 align = textField->GetTextAlign();
+		WideString cap = L"Align: ";
+		if ((align & ALIGN_LEFT) > 0)
+		{
+			align = (align & ~ALIGN_LEFT) | ALIGN_HCENTER;
+			cap.append(L"Center");
+		}
+		else if ((align & ALIGN_HCENTER) > 0)
+		{
+			align = (align & ~ALIGN_HCENTER) | ALIGN_RIGHT;
+			cap.append(L"Right");
+		}
+		else if ((align & ALIGN_RIGHT) > 0)
+		{
+			align = (align & ~ALIGN_RIGHT) | ALIGN_LEFT;
+			cap.append(L"Left");
+		}
+		textField->SetTextAlign(align);
+		staticText->SetTextAlign(align);
+		modeButton->SetStateText(0xFF, cap);
+	}
+	else if (obj == rtlButton)
+	{
+		textField->SetTextUseRtlAlign(!textField->GetTextUseRtlAlign());
+		staticText->SetTextUseRtlAlign(!staticText->GetTextUseRtlAlign());
+		rtlButton->SetStateText(0xFF, textField->GetTextUseRtlAlign() ? L"RTL align: Enabled" : L"RTL align: Disabled");
 	}
 }

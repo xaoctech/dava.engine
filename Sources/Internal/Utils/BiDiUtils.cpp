@@ -39,7 +39,7 @@ bool BiDiUtils::TransformString(WideString const& input, WideString& output, boo
 {
     FriBidiParType base = FRIBIDI_PAR_ON; // Detect string type automaticaly (LTR,RTL...)
     String inputUTF = UTF8Utils::EncodeToUTF8(input);
-    uint32 utf_len = inputUTF.length();
+    uint32 utf_len = (uint32)inputUTF.length();
     uint32 fribidi_len;
     char outstring[MAX_LINE_LENGTH];
 
@@ -47,11 +47,11 @@ bool BiDiUtils::TransformString(WideString const& input, WideString& output, boo
     fribidi_len = fribidi_charset_to_unicode (FRIBIDI_CHAR_SET_UTF8, inputUTF.c_str(), utf_len, logical);
     
     FriBidiChar* visual = new FriBidiChar[fribidi_len + 1];
-    FriBidiLevel log2vis = fribidi_log2vis (logical, fribidi_len, &base, visual, nullptr, nullptr, nullptr);
+    FriBidiLevel log2vis = fribidi_log2vis (logical, fribidi_len, &base, visual, NULL, NULL, NULL);
 
     if(log2vis != 0)
     {
-        fribidi_len = fribidi_remove_bidi_marks (visual, fribidi_len, nullptr, nullptr, nullptr);
+        fribidi_len = fribidi_remove_bidi_marks (visual, fribidi_len, NULL, NULL, NULL);
         utf_len = fribidi_unicode_to_charset (FRIBIDI_CHAR_SET_UTF8, visual, fribidi_len, outstring);
         UTF8Utils::EncodeToWideString(reinterpret_cast<unsigned char*>(outstring), utf_len, output);
         isRTL = FRIBIDI_IS_RTL(base);

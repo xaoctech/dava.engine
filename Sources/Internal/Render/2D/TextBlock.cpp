@@ -318,7 +318,14 @@ void TextBlock::SetAlign(int32 _align)
 void TextBlock::SetUseRtlAlign(bool const& useRtlAlign)
 {
     mutex.Lock();
-    this->useRtlAlign = useRtlAlign;
+	if(this->useRtlAlign != useRtlAlign)
+	{
+		this->useRtlAlign = useRtlAlign;
+		needRedraw = true;
+		mutex.Unlock();
+		Prepare();
+		return;
+	}
     mutex.Unlock();
 }
 
@@ -341,7 +348,7 @@ int32 TextBlock::GetAlign()
     mutex.Lock();
     mutex.Unlock();
 
-    if(useRtlAlign && isRtl)
+    if(useRtlAlign && isRtl && (align & ALIGN_LEFT || align & ALIGN_RIGHT))
     {
         // Mirror left/right align
         return align ^ (ALIGN_LEFT | ALIGN_RIGHT);
@@ -480,7 +487,7 @@ void TextBlock::CalculateCacheParams()
                     pointsStr.clear();
                     pointsStr.append(text, 0, i);
                     pointsStr += L"...";
-                    
+					
                     textSize = font->GetStringSize(pointsStr);
                     if(textSize.dx <= drawSize.x)
                     {
@@ -493,14 +500,13 @@ void TextBlock::CalculateCacheParams()
         {
             Size2i textSizePoints;
             int32 length = (int32)text.length();
-            int32 _align =  GetAlign();
-            if(ALIGN_RIGHT & _align)
+            if(ALIGN_RIGHT & align)
             {
                 for(int32 i = 1; i < length - 1; ++i)
                 {
                     pointsStr.clear();
                     pointsStr.append(text, i, length - i);
-                    
+					
                     textSize = font->GetStringSize(pointsStr);
                     if(textSize.dx <= drawSize.x)
                     {
@@ -508,7 +514,7 @@ void TextBlock::CalculateCacheParams()
                     }
                 }
             }
-            else if(ALIGN_HCENTER & _align)
+            else if(ALIGN_HCENTER & align)
             {
                 int32 endPos = length / 2;
                 int32 startPos = endPos - 1;
@@ -520,7 +526,7 @@ void TextBlock::CalculateCacheParams()
                 {
                     pointsStr.clear();
                     pointsStr.append(text, startPos, endPos - startPos);
-                    
+					
                     textSize = font->GetStringSize(pointsStr);
                     if(drawSize.x <= textSize.dx)
                     {

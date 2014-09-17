@@ -175,6 +175,7 @@ int32 UIStaticText::GetTextAlign() const
 void UIStaticText::SetTextUseRtlAlign(bool useRtlAlign)
 {
     textBlock->SetUseRtlAlign(useRtlAlign);
+	textBg->SetAlign(textBlock->GetAlign());
 }
 
 bool UIStaticText::GetTextUseRtlAlign() const
