@@ -37,6 +37,7 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
 #include "Debug/Stats.h"
+#include "Scene3D/Components/ComponentHelpers.h"
 
 namespace DAVA
 {
@@ -139,7 +140,7 @@ void TransformSystem::TransformAllChildEntities(Entity * entity)
         TransformComponent * transform = (TransformComponent*)entity->GetComponent(Component::TRANSFORM_COMPONENT);
         if(transform->parentMatrix)
         {
-            AnimationComponent * animComp = (AnimationComponent*)entity->GetComponent(Component::ANIMATION_COMPONENT);
+            AnimationComponent * animComp = GetAnimationComponent(entity);
             localMultiplied++;
             if (animComp)
                 transform->worldMatrix = animComp->animationTransform * transform->localMatrix * *(transform->parentMatrix);
