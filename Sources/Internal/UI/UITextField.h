@@ -336,6 +336,12 @@ public:
     uint32 GetCursorPos();
     void SetCursorPos(uint32 pos);
 
+    /**
+ 	 \brief Maximum text length.
+	 */
+    void SetMaxLength(int32 maxLength);
+    int32 GetMaxLength() const;
+
 protected:
 	WideString text;
 	UITextFieldDelegate * delegate;
@@ -349,6 +355,7 @@ protected:
 	eKeyboardType keyboardType;
 	eReturnKeyType returnKeyType;
 
+    int32 maxLength;
 
 	// All Boolean variables are grouped together because of DF-2149.
 	bool needRedraw : 1;
