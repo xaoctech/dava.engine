@@ -70,7 +70,9 @@ public:
 
     virtual void SetTextAlign(int32 _align);
     virtual int32 GetTextAlign() const;
-    virtual void SetTextUseRtlAlign(bool useRtlAlign);
+	virtual int32 GetTextVisualAlign() const;
+	virtual bool GetTextIsRtl() const;
+	virtual void SetTextUseRtlAlign(bool useRtlAlign);
     virtual bool GetTextUseRtlAlign() const;
 
     const Vector2 & GetTextSize();

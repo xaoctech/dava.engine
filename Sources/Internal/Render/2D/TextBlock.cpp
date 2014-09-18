@@ -347,6 +347,13 @@ int32 TextBlock::GetAlign()
 {
     mutex.Lock();
     mutex.Unlock();
+	return align;
+}
+	
+int32 TextBlock::GetVisualAlign()
+{
+	mutex.Lock();
+    mutex.Unlock();
 
     if(useRtlAlign && isRtl && (align & ALIGN_LEFT || align & ALIGN_RIGHT))
     {

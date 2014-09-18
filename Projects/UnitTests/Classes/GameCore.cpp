@@ -73,6 +73,7 @@
 #include "ImageSizeTest.h"
 #include "DLCDownloadTest.h"
 #include "FunctionBindSingalTest.h"
+#include "BiDiTest.h"
 
 using namespace DAVA;
 
@@ -137,6 +138,7 @@ void GameCore::OnAppStarted()
  	new SoundTest();
  	new SplitTest();
  	new AlignTest();
+    new BiDiTest();
  	new EMailTest();
  	new DPITest();
  	new MaterialCompilerTest();

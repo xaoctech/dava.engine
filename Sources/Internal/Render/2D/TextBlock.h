@@ -74,6 +74,7 @@ public:
 	virtual void SetPivotPoint(const Vector2& pivotPoint);
 	virtual void SetAlign(int32 align);
 	virtual int32 GetAlign();
+	virtual int32 GetVisualAlign(); // Return align for displaying BiDi-text
     virtual void SetUseRtlAlign(const bool& useRtlAlign);
     virtual bool GetUseRtlAlign();
     virtual bool IsRtl();
