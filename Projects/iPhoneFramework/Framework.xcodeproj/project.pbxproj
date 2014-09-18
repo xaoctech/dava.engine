@@ -1116,6 +1116,8 @@
 		D7D3A2C519C8313300CD6B51 /* NSStringUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = D7D3A2C219C8313300CD6B51 /* NSStringUtils.h */; };
 		D7D3A2C619C8313300CD6B51 /* NSStringUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = D7D3A2C319C8313300CD6B51 /* NSStringUtils.mm */; };
 		D7D3A2C719C8313300CD6B51 /* NSStringUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = D7D3A2C319C8313300CD6B51 /* NSStringUtils.mm */; };
+		D7D3A2CE19CAB6C000CD6B51 /* LocalNotificationImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = D7D3A2CB19CAB6C000CD6B51 /* LocalNotificationImpl.h */; };
+		D7D3A2CF19CAB6C000CD6B51 /* LocalNotificationImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = D7D3A2CB19CAB6C000CD6B51 /* LocalNotificationImpl.h */; };
 		D7FEF13B19864E5C00B2C7AF /* DLC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7FEF12319864E5C00B2C7AF /* DLC.cpp */; };
 		D7FEF13C19864E5C00B2C7AF /* DLC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7FEF12319864E5C00B2C7AF /* DLC.cpp */; };
 		D7FEF13D19864E5C00B2C7AF /* DLC.h in Headers */ = {isa = PBXBuildFile; fileRef = D7FEF12419864E5C00B2C7AF /* DLC.h */; };
@@ -2026,6 +2028,7 @@
 		D7CC265C19C517E500A3B754 /* LocalNotificationText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalNotificationText.h; sourceTree = "<group>"; };
 		D7D3A2C219C8313300CD6B51 /* NSStringUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSStringUtils.h; sourceTree = "<group>"; };
 		D7D3A2C319C8313300CD6B51 /* NSStringUtils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NSStringUtils.mm; sourceTree = "<group>"; };
+		D7D3A2CB19CAB6C000CD6B51 /* LocalNotificationImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalNotificationImpl.h; sourceTree = "<group>"; };
 		D7FEF12319864E5C00B2C7AF /* DLC.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DLC.cpp; sourceTree = "<group>"; };
 		D7FEF12419864E5C00B2C7AF /* DLC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DLC.h; sourceTree = "<group>"; };
 		D7FEF12619864E5C00B2C7AF /* CurlDownloader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CurlDownloader.cpp; sourceTree = "<group>"; };
@@ -2877,6 +2880,7 @@
 				D7CC265A19C517E500A3B754 /* LocalNotificationProgress.h */,
 				D7CC265B19C517E500A3B754 /* LocalNotificationText.cpp */,
 				D7CC265C19C517E500A3B754 /* LocalNotificationText.h */,
+				D7D3A2CB19CAB6C000CD6B51 /* LocalNotificationImpl.h */,
 			);
 			path = Notification;
 			sourceTree = "<group>";
@@ -4085,6 +4089,7 @@
 				02FD7F7A1924997C007762C0 /* NeonMath.h in Headers */,
 				02FD7F7B1924997C007762C0 /* OOBBox.h in Headers */,
 				64493E1719476F4700AB2715 /* VegetationRenderData.h in Headers */,
+				D7D3A2CF19CAB6C000CD6B51 /* LocalNotificationImpl.h in Headers */,
 				02FD7F7C1924997C007762C0 /* Plane.h in Headers */,
 				02FD7F7D1924997C007762C0 /* Polygon2.h in Headers */,
 				02FD7F7E1924997C007762C0 /* Polygon3.h in Headers */,
@@ -4774,6 +4779,7 @@
 				E8B3CD3316B9326E002BD35F /* Utils.h in Headers */,
 				E8F21DD116C1971F007F957A /* GlobalEventSystem.h in Headers */,
 				E89CE92B16C54A36006BEFF4 /* SpriteObject.h in Headers */,
+				D7D3A2CE19CAB6C000CD6B51 /* LocalNotificationImpl.h in Headers */,
 				E89CE92D16C54A36006BEFF4 /* SpriteRenderBatch.h in Headers */,
 				CCB4C44716CBC65D00F2B085 /* ComponentHelpers.h in Headers */,
 				022AA8E01934CECD009A4B84 /* WaveComponent.h in Headers */,

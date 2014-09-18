@@ -26,35 +26,36 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __DAVAENGINE_LOCAL_NOTIFICATION_NOT_IMPLEMENTED_H__
-#define __DAVAENGINE_LOCAL_NOTIFICATION_NOT_IMPLEMENTED_H__
-
-#include "Base/BaseTypes.h"
-
-#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
-
-#include "Notification/LocalNotificationImpl.h"
-#include "Base/Message.h"
+#ifndef __DAVAENGINE_LOCAL_NOTIFICATION_IMPL_H__
+#define __DAVAENGINE_LOCAL_NOTIFICATION_IMPL_H__
 
 namespace DAVA
 {
-    
-class LocalNotificationNotImplemented : public LocalNotificationImpl
+
+#include "Base/BaseTypes.h"
+
+class LocalNotificationImpl
 {
 public:
-    LocalNotificationNotImplemented(const uint32 _id);
-    virtual ~LocalNotificationNotImplemented();
+    virtual ~LocalNotificationImpl() {};
+    
+    virtual void SetAction(const WideString &action) = 0;
+    virtual void Hide() = 0;
+    virtual void ShowText(const WideString &title, const WideString text) = 0;
+    virtual void ShowProgress(const WideString &title, const WideString text, const uint32 total, const uint32 progress) = 0;
+    
+    static LocalNotificationImpl *Create(const uint32 _id);
+    
+    inline uint32 GetId();
 
-    virtual void SetAction(const WideString &action);
-    virtual void Hide();
-    virtual void ShowText(const WideString &title, const WideString text);
-    virtual void ShowProgress(const WideString &title, const WideString text, const uint32 total, const uint32 progress);
-public:
+protected:
     uint32 notificationId;
 };
 
+inline uint32 LocalNotificationImpl::GetId()
+{
+    return notificationId;
 }
-
+    
+}
 #endif
-
-#endif /* defined __DAVAENGINE_NOTIFICATION_MACOS_H__ */

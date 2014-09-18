@@ -34,25 +34,13 @@
 #include "Base/BaseTypes.h"
 #include "Base/Singleton.h"
 #include "Base/Message.h"
-#include "Notification/LocalNotificationIOS.h"
-#include "Notification/LocalNotificationAndroid.h"
-#include "Notification/LocalNotificationNotImplemented.h"
-
+#include "Notification/LocalNotificationImpl.h"
 
 namespace DAVA
 {
 
 class LocalNotification : public BaseObject
 {
-
-#if defined(__DAVAENGINE_ANDROID__)
-    typedef LocalNotificationAndroid LocalNotificationImplementation;
-#elif defined (__DAVAENGINE_IPHONE__)
-    typedef LocalNotificationIOS LocalNotificationImplementation;
-#else
-    typedef LocalNotificationNotImplemented LocalNotificationImplementation;
-#endif
-
 protected:
 	LocalNotification();
     virtual ~LocalNotification();
@@ -74,7 +62,7 @@ private:
     virtual void ImplShow() = 0;
 
 protected:
-    LocalNotificationImplementation *impl;
+    LocalNotificationImpl *impl;
 
     bool isChanged;
     bool isVisible;
@@ -103,7 +91,7 @@ inline bool LocalNotification::IsVisible() const
 
 inline uint32 LocalNotification::GetId() const
 {
-    return impl->notificationId;
+    return impl->GetId();
 }
 
 }

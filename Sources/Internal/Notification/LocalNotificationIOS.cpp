@@ -30,7 +30,7 @@
 
 #if defined(__DAVAENGINE_IPHONE__)
 
-
+#include "Notification/LocalNotificationImpl.h"
 #include <UIKit/UIApplication.h>
 #include <UIKit/UILocalNotification.h>
 #import "NSStringUtils.h"
@@ -44,9 +44,9 @@ struct UILocalNotificationWrapper
 };
 
 LocalNotificationIOS::LocalNotificationIOS(const uint32 _id)
-    : notificationId(_id)
-    , notification(NULL)
+    : notification(NULL)
 {
+    notificationId = _id;
 }
     
 LocalNotificationIOS::~LocalNotificationIOS()
@@ -62,7 +62,7 @@ LocalNotificationIOS::~LocalNotificationIOS()
     
 }
 
-void LocalNotificationIOS::SetAction(const Message &msg)
+void LocalNotificationIOS::SetAction(const WideString &_action)
 {
 }
 
@@ -98,7 +98,11 @@ void LocalNotificationIOS::ShowText(const WideString &title, const WideString te
 void LocalNotificationIOS::ShowProgress(const WideString &title, const WideString text, const uint32 total, const uint32 progress)
 {
 }
+
+LocalNotificationImpl *LocalNotificationImpl::Create(const uint32 _id)
+{
+    return new LocalNotificationIOS(_id);
+}
     
 }
-
 #endif
