@@ -255,6 +255,8 @@ void Thread::ThreadFunction(void *param)
     threadIdListMutex.Lock();
     threadIdList.erase(t->nativeId);
     threadIdListMutex.Unlock();
+
+    t->Release();
 }
     
 };
