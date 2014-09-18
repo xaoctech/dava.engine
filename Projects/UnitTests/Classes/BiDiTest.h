@@ -37,6 +37,22 @@ using namespace DAVA;
 class BiDiTest: public TestTemplate<BiDiTest>, public UITextFieldDelegate
 {
 protected:
+	struct sBiDiTestData
+	{
+		sBiDiTestData(const WideString& text, int32 align, bool useRtl, int32 visualAlign, bool isRtl)
+			: text(text)
+			, align(align)
+			, useRtl(useRtl)
+			, visualAlign(visualAlign)
+			, isRtl(isRtl)
+		{}
+		WideString text;
+		int32 align;
+		bool useRtl;
+		int32 visualAlign;
+		bool isRtl;
+	};
+	
     ~BiDiTest(){}
 public:
 	BiDiTest();
@@ -45,17 +61,19 @@ public:
 	virtual void UnloadResources();
 	virtual bool RunTest(int32 testNum);
 
-	virtual void DidAppear();
 	virtual void Update(float32 timeElapsed);
 
 	virtual bool TextFieldKeyPressed(UITextField * textField, int32 replacementLocation, int32 replacementLength, const WideString & replacementString);
 
 	void TestFunction(PerfFuncData * data);
+	void ManualTestStartFunction(PerfFuncData * data);
+	void ManualTestProcessFunction(PerfFuncData * data);
 	
 private:
 	void ButtonPressed(BaseObject *obj, void *data, void *callerData);
 
 	UIStaticText* staticText;
+	UIStaticText* autoStaticText;
 	UITextField* textField;
 	
     UIButton* modeButton;
@@ -65,6 +83,7 @@ private:
 	void* delegate;
 
 	bool testFinished;
+	bool manualStarted;
 	float onScreenTime;
     
 };

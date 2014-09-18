@@ -39,8 +39,51 @@ BiDiTest::BiDiTest()
 	
 	onScreenTime = 0.0f;
 	testFinished = false;
+	manualStarted = false;
+	
+#define TEST(text,align,usertl,valing,isrtl) \
+	RegisterFunction(this, &BiDiTest::TestFunction, Format("BiDiTest"), new sBiDiTestData(text, align | ALIGN_VCENTER, usertl, valing | ALIGN_VCENTER, isrtl));
+	
+	// English text, LTR
+	TEST(L"English text", ALIGN_LEFT,    true, ALIGN_LEFT,    false);
+	TEST(L"English text", ALIGN_HCENTER, true, ALIGN_HCENTER, false);
+	TEST(L"English text", ALIGN_RIGHT,   true, ALIGN_RIGHT,   false);
+	TEST(L"English text", ALIGN_LEFT,    true, ALIGN_LEFT,    false);
+	TEST(L"English text", ALIGN_HCENTER, true, ALIGN_HCENTER, false);
+	TEST(L"English text", ALIGN_RIGHT,   true, ALIGN_RIGHT,   false);
 
-    RegisterFunction(this, &BiDiTest::TestFunction, Format("BiDiTest"), NULL);
+	// Arabic text, RTL
+	TEST(L"النص العربي", ALIGN_LEFT,    true, ALIGN_RIGHT,   true);
+	TEST(L"النص العربي", ALIGN_HCENTER, true, ALIGN_HCENTER, true);
+	TEST(L"النص العربي", ALIGN_RIGHT,   true, ALIGN_LEFT,    true);
+	TEST(L"النص العربي", ALIGN_LEFT,    true, ALIGN_RIGHT,   true);
+	TEST(L"النص العربي", ALIGN_HCENTER, true, ALIGN_HCENTER, true);
+	TEST(L"النص العربي", ALIGN_RIGHT,   true, ALIGN_LEFT,    true);
+	
+	// Mixed english and arabic text, english symbols firts, LTR
+	TEST(L"Mixed text النص العربي", ALIGN_LEFT,    true, ALIGN_LEFT,    false);
+	TEST(L"Mixed text النص العربي", ALIGN_HCENTER, true, ALIGN_HCENTER, false);
+	TEST(L"Mixed text النص العربي", ALIGN_RIGHT,   true, ALIGN_RIGHT,   false);
+	TEST(L"Mixed text النص العربي", ALIGN_LEFT,    true, ALIGN_LEFT,    false);
+	TEST(L"Mixed text النص العربي", ALIGN_HCENTER, true, ALIGN_HCENTER, false);
+	TEST(L"Mixed text النص العربي", ALIGN_RIGHT,   true, ALIGN_RIGHT,   false);
+	
+	// Mised arabic and englich text, arabic symbols first, RTL
+	TEST(L"النص العربي mixed text", ALIGN_LEFT,    true, ALIGN_RIGHT,   true);
+	TEST(L"النص العربي mixed text", ALIGN_HCENTER, true, ALIGN_HCENTER, true);
+	TEST(L"النص العربي mixed text", ALIGN_RIGHT,   true, ALIGN_LEFT,    true);
+	TEST(L"النص العربي mixed text", ALIGN_LEFT,    true, ALIGN_RIGHT,   true);
+	TEST(L"النص العربي mixed text", ALIGN_HCENTER, true, ALIGN_HCENTER, true);
+	TEST(L"النص العربي mixed text", ALIGN_RIGHT,   true, ALIGN_LEFT,    true);
+	
+#undef TEST
+
+	// Functions for manual testing - just wait BIDI_TEST_AUTO_CLOSE_TIME seconds
+#if 0
+	RegisterFunction(this, &BiDiTest::ManualTestStartFunction, Format("BiDiTestManual"), NULL);
+	RegisterFunction(this, &BiDiTest::ManualTestProcessFunction, Format("BiDiTestManual"), NULL);
+#endif
+	
 }
 
 void BiDiTest::LoadResources()
@@ -84,7 +127,15 @@ void BiDiTest::LoadResources()
 	rtlButton->AddEvent(EVENT_TOUCH_UP_INSIDE, Message(this, &BiDiTest::ButtonPressed));
     AddControl(rtlButton);
 	
-    testButton = new UIButton(Rect(10, 150, 510, 50));
+	autoStaticText = new UIStaticText(Rect(10, 140, 510, 50));
+	autoStaticText->SetFont(font);
+    autoStaticText->SetTextColor(Color::White);
+	autoStaticText->SetTextAlign(ALIGN_VCENTER | ALIGN_LEFT);
+	autoStaticText->SetText(L"autoTestTextField");
+	autoStaticText->SetDebugDraw(true);
+	AddControl(autoStaticText);
+	
+    testButton = new UIButton(Rect(10, 210, 510, 50));
 	testButton->SetStateFont(0xFF, font);
 	testButton->SetStateFontColor(0xFF, Color::White);
 	testButton->SetStateText(0xFF, L"Finish Test");
@@ -104,24 +155,16 @@ void BiDiTest::UnloadResources()
 	SafeRelease(staticText);
 }
 
-bool BiDiTest::RunTest(int32 testNum)
-{
-    TestTemplate<BiDiTest>::RunTest(testNum);
-	return testFinished;
-}
-
-void BiDiTest::DidAppear()
-{
-    onScreenTime = 0.f;
-}
-
 void BiDiTest::Update(float32 timeElapsed)
 {
-    onScreenTime += timeElapsed;
-    if(onScreenTime > BIDI_TEST_AUTO_CLOSE_TIME)
-    {
-        testFinished = true;
-    }
+	if(manualStarted)
+	{
+		onScreenTime += timeElapsed;
+		if(onScreenTime > BIDI_TEST_AUTO_CLOSE_TIME)
+		{
+			testFinished = true;
+		}
+	}
     TestTemplate<BiDiTest>::Update(timeElapsed);
 }
 
@@ -140,12 +183,44 @@ bool BiDiTest::TextFieldKeyPressed(UITextField* textField, int32 replacementLoca
 
 void BiDiTest::TestFunction(PerfFuncData* data)
 {
+	sBiDiTestData* testData = (sBiDiTestData*)data->testData.userData;
+	autoStaticText->SetText(testData->text);
+	autoStaticText->SetTextAlign(testData->align);
+	autoStaticText->SetTextUseRtlAlign(testData->useRtl);
+
+	TEST_VERIFY(autoStaticText->GetTextAlign() == testData->align);
+	TEST_VERIFY(autoStaticText->GetTextVisualAlign() == testData->visualAlign);
+	TEST_VERIFY(autoStaticText->GetTextIsRtl() == testData->isRtl);
+	
+	delete testData;
+}
+
+void BiDiTest::ManualTestStartFunction(PerfFuncData * data)
+{
+	onScreenTime = 0.f;
+	testFinished = false;
+	manualStarted = true;
+}
+
+void BiDiTest::ManualTestProcessFunction(PerfFuncData * data)
+{
+	// Empty function. Waiting manual test timer.
+}
+
+bool BiDiTest::RunTest(int32 testNum)
+{
+	if(!manualStarted)
+	{
+		return TestTemplate<BiDiTest>::RunTest(testNum);
+	}
+	return testFinished;
 }
 
 void BiDiTest::ButtonPressed(BaseObject* obj, void* data, void* callerData)
 {
     if (obj == testButton)
 	{
+		manualStarted = true;
 		testFinished = true;
 	}
 	else if (obj == modeButton)
