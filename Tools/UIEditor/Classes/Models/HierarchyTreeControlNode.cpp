@@ -309,7 +309,7 @@ void HierarchyTreeControlNode::RemoveTreeNodeFromScene()
 
 void HierarchyTreeControlNode::RestoreParentControl(UIControl* parentControl)
 {
-	if (!this->uiObject || !parentControl)
+	if (!uiObject || !parentControl)
     {
     	return;
 	}
@@ -330,7 +330,7 @@ void HierarchyTreeControlNode::RestoreParentControl(UIControl* parentControl)
 	}
 	else
 	{
-		parentControl->InsertChildBelow(this->uiObject, childUIObjectAbove);
+		parentControl->InsertChildBelow(uiObject, childUIObjectAbove);
 	}
     
     // Restore all childs for current control node
@@ -346,20 +346,20 @@ void HierarchyTreeControlNode::RestoreParentControl(UIControl* parentControl)
 	parentControl->Release();
 	
 	// We just reset extra references to uiObject and parentUIObject - no additional release needed.
-	this->needReleaseUIObjects = false;
+	needReleaseUIObjects = false;
 }
 
 void HierarchyTreeControlNode::ReturnTreeNodeToScene()
 {
-	if (!this->uiObject || !this->parentUIObject || !this->redoParentNode)
+	if (!uiObject || !parentUIObject || !redoParentNode)
 	{
 		return;
 	}
 
 	// Need to recover the node previously deleted, taking position into account.
-	this->redoParentNode->AddTreeNode(this, redoPreviousNode);
+	redoParentNode->AddTreeNode(this, redoPreviousNode);
     // Restore also inner controls hierachy
-    this->RestoreParentControl(this->parentUIObject);
+    RestoreParentControl(parentUIObject);
 }
 
 Rect HierarchyTreeControlNode::GetRect() const
