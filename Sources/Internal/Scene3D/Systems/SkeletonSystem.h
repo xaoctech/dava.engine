@@ -59,8 +59,7 @@ private:
     void UpdateSkinnedMesh(SkeletonComponent *component, SkinnedMesh *skinnedMeshObject);
 
     
-    void RebuildSkeleton(SkeletonComponent *component);
-    void AddJointConfig(SkeletonComponent *component, SkeletonComponent::JointConfig &config, uint16& slotId, uint16 parentId);
+    void RebuildSkeleton(Entity *entity);    
 
     Vector<Entity*> entities;
 

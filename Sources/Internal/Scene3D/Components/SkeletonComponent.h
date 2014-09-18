@@ -66,26 +66,29 @@ public:
     struct JointConfig
     {
         JointConfig();
-        JointConfig(const FastName& name);
-        JointConfig(const FastName& name, const Vector3& position, const Quaternion& orientation, float32 scale, const AABBox3& bbox);
+
+        JointConfig(int32 parentId, int32 targetId, const FastName& name, const Vector3& position, const Quaternion& orientation, float32 scale, const AABBox3& bbox);
+        
+        int32 parentId, targetId;
         FastName name;
         Quaternion orientation;
         Vector3 position;
         float32 scale;
-        AABBox3 bbox;
-        Vector<JointConfig> children;        
+        AABBox3 bbox;        
 
         INTROSPECTION(JointConfig,
             MEMBER(name, "Name", I_SAVE | I_VIEW | I_EDIT)
             MEMBER(position, "Position", I_SAVE | I_VIEW | I_EDIT)
             //MEMBER(orientation, "Orientation", I_SAVE | I_VIEW | I_EDIT)
-            MEMBER(scale, "Scale", I_SAVE | I_VIEW | I_EDIT)
-            COLLECTION(children, "Child Joints", I_SAVE | I_VIEW | I_EDIT)
+            MEMBER(scale, "Scale", I_SAVE | I_VIEW | I_EDIT)            
+            MEMBER(bbox, "Bounding box", I_SAVE | I_VIEW | I_EDIT)
             );
     };
     
     void RebuildFromConfig();
+    void SetConfigJoints(const Vector<JointConfig>& config);
     uint16 GetConfigJointsCount();
+        
 
     virtual Component * Clone(Entity * toEntity);
     virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
@@ -104,12 +107,14 @@ public:
 
 private:
     /*config time*/
-    Vector<JointConfig> rootJoints;
+    Vector<JointConfig> configJoints;
         
     /*runtime*/
-    const static uint32 INFO_PARENT_MASK=0xff;
-    const static uint32 FLAG_UPDATED_THIS_FRAME=0x1+INFO_PARENT_MASK;
-    const static uint32 FLAG_MARKED_FOR_UPDATED=0x2+INFO_PARENT_MASK;
+    const static uint32 INFO_PARENT_MASK = 0xff;    
+    const static uint32 INFO_TARGET_SHIFT= 8;
+    const static uint32 INFO_FLAG_BASE = 0x10000;
+    const static uint32 FLAG_UPDATED_THIS_FRAME = INFO_FLAG_BASE << 0;
+    const static uint32 FLAG_MARKED_FOR_UPDATED = INFO_FLAG_BASE << 1;
 
     uint16 jointsCount;
     Vector<uint32> jointInfo; //flags and parent    
@@ -127,13 +132,11 @@ private:
 
     Map<FastName, uint16> jointMap;
             
-    uint16 startJoint; //first joint in the list that was updated this frame - cache this value to optimize processing
-
-    uint16 GetConfigJointsCountRecursively(const JointConfig &joint);
+    uint16 startJoint; //first joint in the list that was updated this frame - cache this value to optimize processing    
 
 public:
     INTROSPECTION_EXTEND(SkeletonComponent, Component,
-        COLLECTION(rootJoints, "Root Joints", I_SAVE | I_VIEW | I_EDIT)
+        COLLECTION(configJoints, "Root Joints", I_SAVE | I_VIEW | I_EDIT)
     );
 
 };
@@ -143,18 +146,21 @@ public:
 inline void SkeletonComponent::SetJointPosition(uint16 jointId, const Vector3 &position)
 {
     DVASSERT(jointId<GetJointsCount());
+    jointInfo[jointId]|=FLAG_MARKED_FOR_UPDATED;
     localSpaceTransforms[jointId].position = position;
     startJoint = Min(startJoint, jointId);
 }
 inline void SkeletonComponent::SetJointOrientation(uint16 jointId, const Quaternion &orientation)
 {
     DVASSERT(jointId<GetJointsCount());
+    jointInfo[jointId]|=FLAG_MARKED_FOR_UPDATED;
     localSpaceTransforms[jointId].orientation = orientation;
     startJoint = Min(startJoint, jointId);
 }
 inline void SkeletonComponent::SetJointScale(uint16 jointId, float32 scale)
 {
     DVASSERT(jointId<GetJointsCount());
+    jointInfo[jointId]|=FLAG_MARKED_FOR_UPDATED;
     localSpaceTransforms[jointId].scale = scale;
     startJoint = Min(startJoint, jointId);
 }
@@ -181,7 +187,7 @@ inline Vector3 SkeletonComponent::JointTransform::TransformVector(const Vector3 
 inline SkeletonComponent::JointTransform SkeletonComponent::JointTransform::AppendTransform(const JointTransform& transform) const
 {
     JointTransform res;
-    res.position = position + TransformVector(transform.position);
+    res.position = TransformVector(transform.position);
     res.orientation = orientation * transform.orientation;
     res.scale = scale * transform.scale;
     return res;

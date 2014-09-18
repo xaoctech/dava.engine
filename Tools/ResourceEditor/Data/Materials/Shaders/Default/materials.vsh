@@ -87,11 +87,7 @@ uniform vec3 metalFresnelReflectance;
 
 #if defined (SKINNING)
     uniform vec4 jointPositions[MAX_JOINTS]; // (x, y, z, scale)
-    uniform vec4 jointQuaternions[MAX_JOINTS];
-    //debug only
-    uniform vec4 jointPosition;
-    uniform vec4 jointQuaternion;
-	uniform int jointAffectIndex;
+    uniform vec4 jointQuaternions[MAX_JOINTS];    
 #endif
 
 #if defined(VERTEX_FOG)
@@ -282,33 +278,19 @@ vec3 FresnelShlickVec3(float NdotL, vec3 Cspec)
 	return Cspec + (1.0 - Cspec) * (pow(1.0 - NdotL, fresnel_exponent));
 }
 
-#if defined (SKINNING)
-vec3 JointTransform(vec3 inVec)
+vec3 JointTransform(vec3 inVec, vec4 jointPosition, vec4 jointQuaternion)
 {
-	int jointIndex = int(inJointIndex.x);
-	if(jointIndex != jointAffectIndex)
-	{
-		return inVec;
-	}
-
     vec3 t = 2.0 * cross(jointQuaternion.xyz, inVec);
     return jointPosition.xyz + (inVec + jointQuaternion.w * t + cross(jointQuaternion.xyz, t))*jointPosition.w; 
     //return inVec; 
 }
 
-vec3 JointTransformTangent(vec3 inVec)
+vec3 JointTransformTangent(vec3 inVec, vec4 jointQuaternion)
 {
-	int jointIndex = int(inJointIndex.x);
-	if(jointIndex != jointAffectIndex)
-	{
-		return inVec;
-	}
-	
     vec3 t = 2.0 * cross(jointQuaternion.xyz, inVec);
     return inVec + jointQuaternion.w * t + cross(jointQuaternion.xyz, t); 
     //return inVec; 
 }
-#endif
 
 #if defined(WAVE_ANIMATION)
 uniform float globalTime;
@@ -348,7 +330,15 @@ vec4 Wave(float time, vec4 pos, vec2 uv)
 }
 
 void main()
-{	
+{
+
+#if defined (SKINNING)
+    //compute final state - for now just effected by 1 bone - later blend everything here
+    int index = int(inJointIndex);
+    vec4 weightedVertexPosition = jointPositions[index];
+    vec4 weightedVertexQuaternion = jointQuaternions[index];
+#endif
+
 #if defined(MATERIAL_SKYBOX)
 	vec4 vecPos = (worldViewProjMatrix * inPosition);
 	gl_Position = vec4(vecPos.xy, vecPos.w - 0.0001, vecPos.w);
@@ -506,7 +496,7 @@ void main()
     
     #else
         #if defined (SKINNING)
-            vec4 skinnedPosition = vec4(JointTransform(inPosition.xyz), inPosition.w);
+            vec4 skinnedPosition = vec4(JointTransform(inPosition.xyz, weightedVertexPosition, weightedVertexQuaternion), inPosition.w);
             gl_Position = worldViewProjMatrix * skinnedPosition;
         #else
             gl_Position = worldViewProjMatrix * inPosition;
@@ -588,9 +578,9 @@ void main()
 #if defined(PIXEL_LIT)
 
     #if defined (SKINNING)
-        vec3 n = normalize (worldViewInvTransposeMatrix * JointTransformTangent(inNormal));
-        vec3 t = normalize (worldViewInvTransposeMatrix * JointTransformTangent(inTangent));
-        vec3 b = normalize (worldViewInvTransposeMatrix * JointTransformTangent(inBinormal));
+        vec3 n = normalize (worldViewInvTransposeMatrix * JointTransformTangent(inNormal, weightedVertexQuaternion));
+        vec3 t = normalize (worldViewInvTransposeMatrix * JointTransformTangent(inTangent, weightedVertexQuaternion));
+        vec3 b = normalize (worldViewInvTransposeMatrix * JointTransformTangent(inBinormal, weightedVertexQuaternion));
     #else
         vec3 n = normalize (worldViewInvTransposeMatrix * inNormal);
         vec3 t = normalize (worldViewInvTransposeMatrix * inTangent);
