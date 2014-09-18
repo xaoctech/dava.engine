@@ -74,7 +74,7 @@ public:
 	virtual void SetPivotPoint(const Vector2& pivotPoint);
 	virtual void SetAlign(int32 align);
 	virtual int32 GetAlign();
-	virtual int32 GetVisualAlign(); // Return align for displaying BiDi-text
+	virtual int32 GetVisualAlign(); // Return align for displaying BiDi-text (w/ mutex lock)
     virtual void SetUseRtlAlign(const bool& useRtlAlign);
     virtual bool GetUseRtlAlign();
     virtual bool IsRtl();
@@ -121,6 +121,7 @@ protected:
 
 	void ProcessAlign();
 	
+	int32 GetVisualAlignUnsafe() const; // Return align for displaying BiDi-text (w/o mutex lock)
 
 	Vector2 rectSize;
     bool needRedraw;

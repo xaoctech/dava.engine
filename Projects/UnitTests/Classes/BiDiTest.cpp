@@ -30,8 +30,45 @@
 
 static const float BIDI_TEST_AUTO_CLOSE_TIME = 30.0f;
 
+static const sBiDiTestData TEST_DATA[] =
+{
+	// Input: Text, align, useRtl; Test output: visualAlign, isRtl
+	
+	// English text, LTR
+	sBiDiTestData(L"English text", ALIGN_LEFT,    true,  ALIGN_LEFT,    false),
+	sBiDiTestData(L"English text", ALIGN_HCENTER, true,  ALIGN_HCENTER, false),
+	sBiDiTestData(L"English text", ALIGN_RIGHT,   true,  ALIGN_RIGHT,   false),
+	sBiDiTestData(L"English text", ALIGN_LEFT,    false, ALIGN_LEFT,    false),
+	sBiDiTestData(L"English text", ALIGN_HCENTER, false, ALIGN_HCENTER, false),
+	sBiDiTestData(L"English text", ALIGN_RIGHT,   false, ALIGN_RIGHT,   false),
+	
+	// Arabic text, RTL
+	sBiDiTestData(L"النص العربي", ALIGN_LEFT,    true,  ALIGN_RIGHT,   true),
+	sBiDiTestData(L"النص العربي", ALIGN_HCENTER, true,  ALIGN_HCENTER, true),
+	sBiDiTestData(L"النص العربي", ALIGN_RIGHT,   true,  ALIGN_LEFT,    true),
+	sBiDiTestData(L"النص العربي", ALIGN_LEFT,    false, ALIGN_LEFT,    true),
+	sBiDiTestData(L"النص العربي", ALIGN_HCENTER, false, ALIGN_HCENTER, true),
+	sBiDiTestData(L"النص العربي", ALIGN_RIGHT,   false, ALIGN_RIGHT,   true),
+	
+	// Mixed english and arabic text, english symbols firts, LTR
+	sBiDiTestData(L"Mixed text النص العربي", ALIGN_LEFT,    true,  ALIGN_LEFT,    false),
+	sBiDiTestData(L"Mixed text النص العربي", ALIGN_HCENTER, true,  ALIGN_HCENTER, false),
+	sBiDiTestData(L"Mixed text النص العربي", ALIGN_RIGHT,   true,  ALIGN_RIGHT,   false),
+	sBiDiTestData(L"Mixed text النص العربي", ALIGN_LEFT,    false, ALIGN_LEFT,    false),
+	sBiDiTestData(L"Mixed text النص العربي", ALIGN_HCENTER, false, ALIGN_HCENTER, false),
+	sBiDiTestData(L"Mixed text النص العربي", ALIGN_RIGHT,   false, ALIGN_RIGHT,   false),
+	
+	// Mised arabic and englich text, arabic symbols first, RTL
+	sBiDiTestData(L"النص العربي mixed text", ALIGN_LEFT,    true,  ALIGN_RIGHT,   true),
+	sBiDiTestData(L"النص العربي mixed text", ALIGN_HCENTER, true,  ALIGN_HCENTER, true),
+	sBiDiTestData(L"النص العربي mixed text", ALIGN_RIGHT,   true,  ALIGN_LEFT,    true),
+	sBiDiTestData(L"النص العربي mixed text", ALIGN_LEFT,    false, ALIGN_LEFT,    true),
+	sBiDiTestData(L"النص العربي mixed text", ALIGN_HCENTER, false, ALIGN_HCENTER, true),
+	sBiDiTestData(L"النص العربي mixed text", ALIGN_RIGHT,   false, ALIGN_RIGHT,   true),
+};
+
 BiDiTest::BiDiTest()
-    : TestTemplate<BiDiTest>("InputTest")
+    : TestTemplate<BiDiTest>("BiDiTest")
 {
     textField = NULL;
 	staticText = NULL;
@@ -41,43 +78,14 @@ BiDiTest::BiDiTest()
 	testFinished = false;
 	manualStarted = false;
 	
-#define TEST(text,align,usertl,valing,isrtl) \
-	RegisterFunction(this, &BiDiTest::TestFunction, Format("BiDiTest"), new sBiDiTestData(text, align | ALIGN_VCENTER, usertl, valing | ALIGN_VCENTER, isrtl));
+	uint32 testDataSize = sizeof(TEST_DATA) / sizeof(sBiDiTestData);
 	
-	// English text, LTR
-	TEST(L"English text", ALIGN_LEFT,    true, ALIGN_LEFT,    false);
-	TEST(L"English text", ALIGN_HCENTER, true, ALIGN_HCENTER, false);
-	TEST(L"English text", ALIGN_RIGHT,   true, ALIGN_RIGHT,   false);
-	TEST(L"English text", ALIGN_LEFT,    true, ALIGN_LEFT,    false);
-	TEST(L"English text", ALIGN_HCENTER, true, ALIGN_HCENTER, false);
-	TEST(L"English text", ALIGN_RIGHT,   true, ALIGN_RIGHT,   false);
-
-	// Arabic text, RTL
-	TEST(L"النص العربي", ALIGN_LEFT,    true, ALIGN_RIGHT,   true);
-	TEST(L"النص العربي", ALIGN_HCENTER, true, ALIGN_HCENTER, true);
-	TEST(L"النص العربي", ALIGN_RIGHT,   true, ALIGN_LEFT,    true);
-	TEST(L"النص العربي", ALIGN_LEFT,    true, ALIGN_RIGHT,   true);
-	TEST(L"النص العربي", ALIGN_HCENTER, true, ALIGN_HCENTER, true);
-	TEST(L"النص العربي", ALIGN_RIGHT,   true, ALIGN_LEFT,    true);
+	for (uint32 i = 0; i < testDataSize; ++i)
+	{
+		const sBiDiTestData& d = TEST_DATA[i];
+		RegisterFunction(this, &BiDiTest::TestFunction, Format("BiDiTest"), new sBiDiTestData(d.text, d.align | ALIGN_VCENTER, d.useRtl, d.visualAlign | ALIGN_VCENTER, d.isRtl));
+	}
 	
-	// Mixed english and arabic text, english symbols firts, LTR
-	TEST(L"Mixed text النص العربي", ALIGN_LEFT,    true, ALIGN_LEFT,    false);
-	TEST(L"Mixed text النص العربي", ALIGN_HCENTER, true, ALIGN_HCENTER, false);
-	TEST(L"Mixed text النص العربي", ALIGN_RIGHT,   true, ALIGN_RIGHT,   false);
-	TEST(L"Mixed text النص العربي", ALIGN_LEFT,    true, ALIGN_LEFT,    false);
-	TEST(L"Mixed text النص العربي", ALIGN_HCENTER, true, ALIGN_HCENTER, false);
-	TEST(L"Mixed text النص العربي", ALIGN_RIGHT,   true, ALIGN_RIGHT,   false);
-	
-	// Mised arabic and englich text, arabic symbols first, RTL
-	TEST(L"النص العربي mixed text", ALIGN_LEFT,    true, ALIGN_RIGHT,   true);
-	TEST(L"النص العربي mixed text", ALIGN_HCENTER, true, ALIGN_HCENTER, true);
-	TEST(L"النص العربي mixed text", ALIGN_RIGHT,   true, ALIGN_LEFT,    true);
-	TEST(L"النص العربي mixed text", ALIGN_LEFT,    true, ALIGN_RIGHT,   true);
-	TEST(L"النص العربي mixed text", ALIGN_HCENTER, true, ALIGN_HCENTER, true);
-	TEST(L"النص العربي mixed text", ALIGN_RIGHT,   true, ALIGN_LEFT,    true);
-	
-#undef TEST
-
 	// Functions for manual testing - just wait BIDI_TEST_AUTO_CLOSE_TIME seconds
 #if 0
 	RegisterFunction(this, &BiDiTest::ManualTestStartFunction, Format("BiDiTestManual"), NULL);
@@ -188,11 +196,9 @@ void BiDiTest::TestFunction(PerfFuncData* data)
 	autoStaticText->SetTextAlign(testData->align);
 	autoStaticText->SetTextUseRtlAlign(testData->useRtl);
 
-	TEST_VERIFY(autoStaticText->GetTextAlign() == testData->align);
-	TEST_VERIFY(autoStaticText->GetTextVisualAlign() == testData->visualAlign);
-	TEST_VERIFY(autoStaticText->GetTextIsRtl() == testData->isRtl);
-	
-	delete testData;
+	DVASSERT(autoStaticText->GetTextAlign() == testData->align);
+	DVASSERT(autoStaticText->GetTextVisualAlign() == testData->visualAlign);
+	DVASSERT(autoStaticText->GetTextIsRtl() == testData->isRtl);
 }
 
 void BiDiTest::ManualTestStartFunction(PerfFuncData * data)

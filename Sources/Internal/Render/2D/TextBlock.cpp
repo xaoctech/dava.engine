@@ -354,13 +354,16 @@ int32 TextBlock::GetVisualAlign()
 {
 	mutex.Lock();
     mutex.Unlock();
-
-    if(useRtlAlign && isRtl && (align & ALIGN_LEFT || align & ALIGN_RIGHT))
+	return GetVisualAlignUnsafe();
+}
+	
+int32 TextBlock::GetVisualAlignUnsafe() const
+{
+	if(useRtlAlign && isRtl && (align & ALIGN_LEFT || align & ALIGN_RIGHT))
     {
         // Mirror left/right align
         return align ^ (ALIGN_LEFT | ALIGN_RIGHT);
     }
-
 	return align;
 }
 

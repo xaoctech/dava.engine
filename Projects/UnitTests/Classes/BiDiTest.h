@@ -34,25 +34,25 @@
 
 using namespace DAVA;
 
+struct sBiDiTestData
+{
+	sBiDiTestData(const WideString& text, int32 align, bool useRtl, int32 visualAlign, bool isRtl)
+	: text(text)
+	, align(align)
+	, useRtl(useRtl)
+	, visualAlign(visualAlign)
+	, isRtl(isRtl)
+	{}
+	WideString text;
+	int32 align;
+	bool useRtl;
+	int32 visualAlign;
+	bool isRtl;
+};
+
 class BiDiTest: public TestTemplate<BiDiTest>, public UITextFieldDelegate
 {
 protected:
-	struct sBiDiTestData
-	{
-		sBiDiTestData(const WideString& text, int32 align, bool useRtl, int32 visualAlign, bool isRtl)
-			: text(text)
-			, align(align)
-			, useRtl(useRtl)
-			, visualAlign(visualAlign)
-			, isRtl(isRtl)
-		{}
-		WideString text;
-		int32 align;
-		bool useRtl;
-		int32 visualAlign;
-		bool isRtl;
-	};
-	
     ~BiDiTest(){}
 public:
 	BiDiTest();

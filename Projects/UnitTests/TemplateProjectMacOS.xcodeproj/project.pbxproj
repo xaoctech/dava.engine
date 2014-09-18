@@ -36,6 +36,7 @@
 		840CB02418EE08C600B722D0 /* JPEGTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 840CB02218EE08C600B722D0 /* JPEGTest.cpp */; };
 		84E2926F18DA5D4300B5D4C9 /* DateTimeTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84E2926D18DA5D4300B5D4C9 /* DateTimeTest.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		B72EFFE319CB340100D38C33 /* TextSizeTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B72EFFE119CB340100D38C33 /* TextSizeTest.cpp */; };
 		B7D6C98E19CAC7EB0095250A /* BiDiTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7D6C98D19CAC7EB0095250A /* BiDiTest.cpp */; };
 		C151B19116D37E8300E09BAF /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C151B18E16D37E2700E09BAF /* WebKit.framework */; };
 		C151B1C016D50BDA00E09BAF /* eMailTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C151B1BE16D50BDA00E09BAF /* eMailTest.cpp */; };
@@ -178,6 +179,8 @@
 		84E2926D18DA5D4300B5D4C9 /* DateTimeTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DateTimeTest.cpp; path = Classes/DateTimeTest.cpp; sourceTree = "<group>"; };
 		84E2926E18DA5D4300B5D4C9 /* DateTimeTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DateTimeTest.h; path = Classes/DateTimeTest.h; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* UnitTests.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UnitTests.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B72EFFE119CB340100D38C33 /* TextSizeTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextSizeTest.cpp; path = Classes/TextSizeTest.cpp; sourceTree = "<group>"; };
+		B72EFFE219CB340100D38C33 /* TextSizeTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextSizeTest.h; path = Classes/TextSizeTest.h; sourceTree = "<group>"; };
 		B7D6C98819CAC6F90095250A /* BiDiTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BiDiTest.h; path = Classes/BiDiTest.h; sourceTree = "<group>"; };
 		B7D6C98D19CAC7EB0095250A /* BiDiTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BiDiTest.cpp; path = Classes/BiDiTest.cpp; sourceTree = "<group>"; };
 		C151B18E16D37E2700E09BAF /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
@@ -427,6 +430,7 @@
 		5C1066D8156D351400912A45 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				B7BEB95419CB2265005B4BC7 /* TextSizeTest */,
 				B7D6C98C19CAC7220095250A /* BiDiTest */,
 				4F25831719BF237800C28926 /* FunctionBindSingalTest.cpp */,
 				4F25831819BF237800C28926 /* FunctionBindSingalTest.h */,
@@ -563,6 +567,15 @@
 				84E2926E18DA5D4300B5D4C9 /* DateTimeTest.h */,
 			);
 			name = DateTimeTest;
+			sourceTree = "<group>";
+		};
+		B7BEB95419CB2265005B4BC7 /* TextSizeTest */ = {
+			isa = PBXGroup;
+			children = (
+				B72EFFE119CB340100D38C33 /* TextSizeTest.cpp */,
+				B72EFFE219CB340100D38C33 /* TextSizeTest.h */,
+			);
+			name = TextSizeTest;
 			sourceTree = "<group>";
 		};
 		B7D6C98C19CAC7220095250A /* BiDiTest */ = {
@@ -894,6 +907,7 @@
 				5CDC24FE156CC72400742348 /* SampleTest.cpp in Sources */,
 				50353035194A46C4006B66DB /* SceneSystemTest.cpp in Sources */,
 				E8573EA818C890E4004A8B50 /* OpenGLES30FormatTest.cpp in Sources */,
+				B72EFFE319CB340100D38C33 /* TextSizeTest.cpp in Sources */,
 				5CF22540157E555D00DF5395 /* BaseScreen.cpp in Sources */,
 				5CA2461D158F46D600465879 /* EntityTest.cpp in Sources */,
 				FEA8F6EB159DB0EF00EED3DC /* MemoryAllocatorsTest.cpp in Sources */,
