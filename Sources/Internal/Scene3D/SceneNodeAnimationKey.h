@@ -43,11 +43,11 @@ public:
 	Quaternion rotation;
 	Vector3 scale;
 	
-	inline void GetMatrix(Matrix4 & matrix);
+	inline void GetMatrix(Matrix4 & matrix) const;
 };
 	
 	
-inline void SceneNodeAnimationKey::GetMatrix(Matrix4 & result)
+inline void SceneNodeAnimationKey::GetMatrix(Matrix4 & result) const
 {
 	Matrix4 localTransformRot;
 	Matrix4 localTransformScale;

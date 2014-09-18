@@ -27,57 +27,29 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_ANIMATION_DATA_H__
-#define __DAVAENGINE_ANIMATION_DATA_H__
 
-#include "Base/BaseTypes.h"
-#include "Scene3D/Entity.h"
-#include "Scene3D/SceneNodeAnimationKey.h"
-#include "Scene3D/DataNode.h"
-namespace DAVA 
-{
-	
-class AnimationData : public DataNode
+#ifndef __MATH_TEST_H__
+#define __MATH_TEST_H__
+
+#include "DAVAEngine.h"
+using namespace DAVA;
+
+#include "TestTemplate.h"
+
+class MathTest : public TestTemplate<MathTest>
 {
 protected:
-	virtual ~AnimationData();
+    ~MathTest(){}
 public:
-	AnimationData();
-	
-	SceneNodeAnimationKey Interpolate(float32 t, uint32* startIdxCache) const;
-	
-	void AddKey(const SceneNodeAnimationKey & key);
-	
-	inline int32 GetKeyCount() const;
-	
-	void SetDuration(float32 _duration);
-	inline float32 GetDuration() const; 
-	
-	void SetInvPose(const Matrix4& mat); 
-	const Matrix4& GetInvPose() const;
-	
-	virtual void Save(KeyedArchive * archive, SerializationContext * serializationContext);
-	virtual void Load(KeyedArchive * archive, SerializationContext * serializationContext);
+	MathTest();
 
-	AnimationData* Clone() const;
+	virtual void LoadResources();
+	virtual void UnloadResources();
 
-	float32 duration;
-	
-	DAVA::Vector< SceneNodeAnimationKey > keys;
-
-	Matrix4 invPose;
-};
-	
-inline float32 AnimationData::GetDuration() const
-{
-	return duration;
-}
-	
-inline int32 AnimationData::GetKeyCount() const
-{
-	return keys.size();
-}
-	
+	void MatrixTestFunction(PerfFuncData * data);
+private:
+	float32 TestMatrixDecomposition(const Matrix4& mat);
 };
 
-#endif // __DAVAENGINE_ANIMATION_DATA_H__
+
+#endif // __MATH_TEST_H__

@@ -49,7 +49,7 @@ void AnimationData::AddKey(const SceneNodeAnimationKey & key)
 	keys.push_back(key);
 }
 
-SceneNodeAnimationKey AnimationData::Interpolate(float32 t, uint32* startIdxCache)
+SceneNodeAnimationKey AnimationData::Interpolate(float32 t, uint32* startIdxCache) const
 {
 	if (keys.size() == 1)
 	{
@@ -76,8 +76,8 @@ SceneNodeAnimationKey AnimationData::Interpolate(float32 t, uint32* startIdxCach
 		endIdx = 0;
 	}
 	
-	SceneNodeAnimationKey & key1 = keys[*startIdxCache];
-	SceneNodeAnimationKey & key2 = keys[endIdx];
+	const SceneNodeAnimationKey & key1 = keys[*startIdxCache];
+	const SceneNodeAnimationKey & key2 = keys[endIdx];
 
 	float32 tInter;
 	if (endIdx > *startIdxCache)
