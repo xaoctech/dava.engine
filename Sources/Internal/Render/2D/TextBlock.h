@@ -96,6 +96,7 @@ public:
 	
 	Sprite * GetSprite();
 	bool IsSpriteReady();
+	const Vector2& GetSpriteOffset();
     
     const Vector2 & GetTextSize();
 
@@ -128,12 +129,15 @@ protected:
 	Vector2 requestedSize;
 
     Vector2 cacheFinalSize;
+	Vector2 cacheSpriteOffset;
 
 	float32 originalFontSize;
     
 	int32 cacheDx;
 	int32 cacheDy;
 	int32 cacheW;
+	int32 cacheOx;
+	int32 cacheOy;
 
     int32 fittingType;
 	Vector2 position;
