@@ -1,4 +1,4 @@
-/*==================================================================================
+﻿/*==================================================================================
  Copyright (c) 2008, binaryzebra
  All rights reserved.
  
@@ -32,8 +32,8 @@ static const WideString TEST_DATA[] =
 {
 	L"THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED", // English
 	L"هذا البرنامج يتم توفيرها من قبل DAVA، INC والمساهمين 'كما هو' وأية ضمانات صريحة أو ضمنية، بما في ذلك على سبيل المثال لا الحصر، ضمنية", // Arabic
-	L"本ソフトウェアはDAVA、株式会社によって提供され、協力者「現状のまま」と明示しまたはその他を含む保証を、黙示、これらに限定されないが、暗黙的に指定され", // Japanesse
-	L"本軟件提供的DAVA，公司和貢獻者“按原樣”提供任何明示或暗示的擔保，包括但不限於，暗示", // Chinesse
+	L"本ソフトウェアはDAVA、株式会社によって提供され、協力者「現状のまま」と明示しまたはその他を含む保証を、黙示、これらに限定されないが、暗黙的に指定され", // Japanese
+	L"本軟件提供的DAVA，公司和貢獻者“按原樣”提供任何明示或暗示的擔保，包括但不限於，暗示", // Chinese
 	L"इस सॉफ़्टवेयर Dava, कांग्रेस द्वारा प्रदत्त योगदानकर्ताओं 'जैसी है' और किसी प्रकट या वारंटियों, निहित है, लेकिन सीमित नहीं, निहित है", // Hindi
 };
 
@@ -44,7 +44,7 @@ TextSizeTest::TextSizeTest()
 {
 	font = NULL;
 	
-	uint32 testDataSize = sizeof(TEST_DATA) / sizeof(WideString*);
+	uint32 testDataSize = sizeof(TEST_DATA) / sizeof(WideString);
 	for (uint32 i = 0; i < testDataSize; ++i)
 	{
 		RegisterFunction(this, &TextSizeTest::TestFunction, Format("TextSizeTest"), (void*)&TEST_DATA[i]);
@@ -67,7 +67,7 @@ void TextSizeTest::UnloadResources()
 
 void TextSizeTest::TestFunction(PerfFuncData* data)
 {
-	const WideString* test = (const WideString*)data->testData.userData;
+	const WideString* test = static_cast<const WideString*>(data->testData.userData);
 	Vector<float32> charSizes;
 	Size2i size = font->GetStringSize(*test, &charSizes);
 	int32 charsSum = 0;
