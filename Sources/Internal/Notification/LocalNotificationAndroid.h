@@ -35,6 +35,7 @@
 
 #if defined (__DAVAENGINE_ANDROID__)
 
+#include "Notification/LocalNotificationImpl.h"
 #include "JniExtensions.h"
 #include "Base/Message.h"
 #include "Platform/Mutex.h"
@@ -42,14 +43,14 @@
 namespace DAVA
 {
 
-class LocalNotificationAndroid: public JniExtension
+class LocalNotificationAndroid: public LocalNotificationImpl, public JniExtension
 {
 public:
 	LocalNotificationAndroid(const uint32 _id);
-	void SetAction(const Message &msg);
-	void Hide();
-	void ShowText(const WideString &title, const WideString text);
-	void ShowProgress(const WideString &title, const WideString text, const uint32 total, const uint32 progress);
+	virtual void SetAction(const WideString &action);
+	virtual void Hide();
+	virtual void ShowText(const WideString &title, const WideString text);
+	virtual void ShowProgress(const WideString &title, const WideString text, const uint32 total, const uint32 progress);
 
 protected:
 	virtual jclass GetJavaClass() const;
@@ -58,8 +59,6 @@ protected:
 public:
 	static jclass gJavaClass;
 	static const char* gJavaClassName;
-
-	uint32 notificationId;
 
 private:
 	Mutex javaCallMutex;

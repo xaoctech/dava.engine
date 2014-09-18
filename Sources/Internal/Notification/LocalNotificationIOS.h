@@ -33,6 +33,8 @@
 
 #if defined(__DAVAENGINE_IPHONE__)
 
+#include "Notification/LocalNotificationImpl.h"
+
 #include "Base/Message.h"
 
 namespace DAVA
@@ -40,18 +42,18 @@ namespace DAVA
     
 struct UILocalNotificationWrapper;
 
-class LocalNotificationIOS
+class LocalNotificationIOS : public LocalNotificationImpl
 {
 public:
 	LocalNotificationIOS(const uint32 _id);
     virtual ~LocalNotificationIOS();
 
-    void SetAction(const Message &msg);
-    void Hide();
-    void ShowText(const WideString &title, const WideString text);
-    void ShowProgress(const WideString &title, const WideString text, const uint32 total, const uint32 progress);
+    virtual void SetAction(const WideString &action);
+    virtual void Hide();
+    virtual void ShowText(const WideString &title, const WideString text);
+    virtual void ShowProgress(const WideString &title, const WideString text, const uint32 total, const uint32 progress);
+
 public:
-    uint32 notificationId;
     UILocalNotificationWrapper *notification;
 };
 

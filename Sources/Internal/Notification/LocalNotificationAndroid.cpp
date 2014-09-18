@@ -42,10 +42,11 @@ jclass LocalNotificationAndroid::gJavaClass = NULL;
 const char* LocalNotificationAndroid::gJavaClassName = NULL;
 
 LocalNotificationAndroid::LocalNotificationAndroid(const uint32 _id)
-	: notificationId(_id)
-	, methodSetText(0)
+	: methodSetText(0)
 	, methodSetProgress(0)
 {
+    notificationId = _id;
+
 	SetJavaClass(GetEnvironment(), "com/dava/framework/JNINotificationProvider", &LocalNotificationAndroid::gJavaClass, &LocalNotificationAndroid::gJavaClassName);
 }
 
@@ -59,7 +60,7 @@ const char* LocalNotificationAndroid::GetJavaClassName() const
 	return gJavaClassName;
 }
 
-void LocalNotificationAndroid::SetAction(const Message &msg)
+void LocalNotificationAndroid::SetAction(const WideString &action)
 {
 	LockGuard<Mutex> mutexGuard(javaCallMutex);
 
@@ -126,6 +127,11 @@ void LocalNotificationAndroid::ShowProgress(const WideString &title, const WideS
 
 	env->DeleteLocalRef(jStrTitle);
 	env->DeleteLocalRef(jStrText);
+}
+
+LocalNotificationImpl *LocalNotificationImpl::Create(const uint32 _id)
+{
+    return new LocalNotificationAndroid(_id);
 }
 
 }

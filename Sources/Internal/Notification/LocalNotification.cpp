@@ -41,7 +41,7 @@ LocalNotification::LocalNotification()
 	, text(L"")
 {
     static uint32 lastId = 0;
-    impl = new LocalNotificationImplementation(++lastId);
+    impl = LocalNotificationImpl::Create(++lastId);
 }
     
 LocalNotification::~LocalNotification()
@@ -52,7 +52,7 @@ LocalNotification::~LocalNotification()
 void LocalNotification::SetAction(const Message& msg)
 {
 	action = msg;
-	impl->SetAction(msg);
+	impl->SetAction(L"");
 }
 
 void LocalNotification::SetTitle(const WideString &_title)

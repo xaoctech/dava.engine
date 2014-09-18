@@ -34,15 +34,15 @@ namespace DAVA
 {
 
 LocalNotificationNotImplemented::LocalNotificationNotImplemented(const uint32 _id)
-    : notificationId(_id)
 {
+	notificationId = _id;
 }
     
 LocalNotificationNotImplemented::~LocalNotificationNotImplemented()
 {
 }
 
-void LocalNotificationNotImplemented::SetAction(const Message &msg)
+void LocalNotificationNotImplemented::SetAction(const WideString &action)
 {
 }
 
@@ -54,6 +54,11 @@ void LocalNotificationNotImplemented::ShowText(const WideString &title, const Wi
 }
 void LocalNotificationNotImplemented::ShowProgress(const WideString &title, const WideString text, const uint32 total, const uint32 progress)
 {
+}
+    
+LocalNotificationImpl *LocalNotificationImpl::Create(uint32 _id)
+{
+    return new LocalNotificationNotImplemented(_id);
 }
     
 }
