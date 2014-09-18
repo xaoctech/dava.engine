@@ -51,6 +51,8 @@ namespace Settings
     
     static const DAVA::FastName General_HeighMaskTool_Color0("General/HeighMaskTool/Color0");
     static const DAVA::FastName General_HeighMaskTool_Color1("General/HeighMaskTool/Color1");
+
+    static const DAVA::FastName General_ColorMultiplyMax("General/ColorPicker/Maximum multiplier");
     
 	static const DAVA::FastName Scene_GridStep("Scene/GridStep");
 	static const DAVA::FastName Scene_GridSize("Scene/GridSize");

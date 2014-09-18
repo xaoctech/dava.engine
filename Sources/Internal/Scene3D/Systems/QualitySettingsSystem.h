@@ -97,8 +97,9 @@ public:
     // ------------------------------------------
 
 	void EnableOption(const FastName & option, bool enabled);
-    
 	bool IsOptionEnabled(const FastName & option) const;
+    int32 GetOptionsCount() const;
+    FastName GetOptionName(int32 index) const;
 
     bool NeedLoadEntity(const Entity *entity);
     
