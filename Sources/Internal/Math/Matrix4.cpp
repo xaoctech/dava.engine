@@ -286,37 +286,19 @@ void Matrix4::Dump()
     Logger::FrameworkDebug("%5.5f %5.5f %5.5f %5.5f ", _30, _31, _32, _33);
 }
 
-static float32 CopySign(float32 a, float32 b)
-{
-	return b < 0 ? -Abs(a) : Abs(a);
-}
-
 void Matrix4::Decomposition(Vector3& position, Vector3& scale, Quaternion& rot) const
 {
 	scale = GetScaleVector();
 	position = GetTranslationVector();
-
-	float32 matScaled[3][3];
+	
+	Matrix4 unscaled(*this);
 	for (int32 i = 0; i < 3; ++i)
 	{
-		matScaled[0][i] = _data[0][i] / scale.x;
-		matScaled[1][i] = _data[1][i] / scale.y;
-		matScaled[2][i] = _data[2][i] / scale.z;
+		unscaled._data[0][i] /= scale.x;
+		unscaled._data[1][i] /= scale.y;
+		unscaled._data[2][i] /= scale.z;
 	}
-
-	float32 d = (matScaled[0][0] * matScaled[1][1] - matScaled[1][0] * matScaled[0][1]) * matScaled[2][2]
-		- (matScaled[0][0] * matScaled[2][1] - matScaled[2][0] * matScaled[0][1]) * matScaled[1][2]
-		+ (matScaled[1][0] * matScaled[2][1] - matScaled[2][0] * matScaled[1][1]) * matScaled[0][2];
-
-	float32 absQ = pow(d, 1.0f / 3.0f);
-	rot.w = sqrtf(Max(0.0f, absQ + matScaled[0][0] + matScaled[1][1] + matScaled[2][2])) / 2.0f;
-	rot.x = sqrtf(Max(0.0f, absQ + matScaled[0][0] - matScaled[1][1] - matScaled[2][2])) / 2.0f;
-	rot.y = sqrtf(Max(0.0f, absQ - matScaled[0][0] + matScaled[1][1] - matScaled[2][2])) / 2.0f;
-	rot.z = sqrtf(Max(0.0f, absQ - matScaled[0][0] - matScaled[1][1] + matScaled[2][2])) / 2.0f;
-	rot.x = CopySign(rot.x, (matScaled[1][2] - matScaled[2][1]));
-	rot.y = CopySign(rot.y, (matScaled[2][0] - matScaled[0][2]));
-	rot.z = CopySign(rot.z, (matScaled[0][1] - matScaled[1][0]));
-	rot.Normalize();
+	rot.Construct(unscaled);
 }
 
 };

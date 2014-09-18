@@ -57,12 +57,14 @@ AnimationComponent::~AnimationComponent()
 Component * AnimationComponent::Clone(Entity * toEntity)
 {
 	AnimationComponent * newAnimation = new AnimationComponent();
+	newAnimation->SetEntity(toEntity);
 
 	newAnimation->time = time;
-	newAnimation->animation = animation ? animation->Clone() : NULL;
+	newAnimation->animation = SafeRetain(animation);
 	newAnimation->repeatsCount = repeatsCount;
 	newAnimation->currRepeatsCont = 0;
-    newAnimation->state = STATE_STOPPED; //for another state we need add this one to AnimationSystem
+	newAnimation->state = STATE_STOPPED; //for another state we need add this one to AnimationSystem
+
 	return newAnimation;
 }
 
@@ -102,7 +104,7 @@ void AnimationComponent::GetDataNodes(Set<DataNode*> & dataNodes)
 void AnimationComponent::SetAnimation(AnimationData* _animation)
 {
 	if (_animation == animation)
-		return
+		return;
 
 	SafeRelease(animation);
 	animation = SafeRetain(_animation);

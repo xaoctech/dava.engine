@@ -27,57 +27,63 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_ANIMATION_DATA_H__
-#define __DAVAENGINE_ANIMATION_DATA_H__
 
-#include "Base/BaseTypes.h"
-#include "Scene3D/Entity.h"
-#include "Scene3D/SceneNodeAnimationKey.h"
-#include "Scene3D/DataNode.h"
-namespace DAVA 
+#include "MathTest.h"
+
+using namespace DAVA;
+
+namespace
 {
-	
-class AnimationData : public DataNode
-{
-protected:
-	virtual ~AnimationData();
-public:
-	AnimationData();
-	
-	SceneNodeAnimationKey Interpolate(float32 t, uint32* startIdxCache) const;
-	
-	void AddKey(const SceneNodeAnimationKey & key);
-	
-	inline int32 GetKeyCount() const;
-	
-	void SetDuration(float32 _duration);
-	inline float32 GetDuration() const; 
-	
-	void SetInvPose(const Matrix4& mat); 
-	const Matrix4& GetInvPose() const;
-	
-	virtual void Save(KeyedArchive * archive, SerializationContext * serializationContext);
-	virtual void Load(KeyedArchive * archive, SerializationContext * serializationContext);
+	float32 SquareDist(const Matrix4& m1, const Matrix4& m2)
+	{
+		float32 result = 0.0f;
+		for (uint32 i = 0; i < 4; ++i)
+			for (uint32 j = 0; j < 4; ++j)
+				result += Abs(m1(i, j) - m2(i, j)) * Abs(m1(i, j) - m2(i, j));
 
-	AnimationData* Clone() const;
-
-	float32 duration;
-	
-	DAVA::Vector< SceneNodeAnimationKey > keys;
-
-	Matrix4 invPose;
-};
-	
-inline float32 AnimationData::GetDuration() const
-{
-	return duration;
+		return result;
+	}
 }
-	
-inline int32 AnimationData::GetKeyCount() const
-{
-	return keys.size();
-}
-	
-};
 
-#endif // __DAVAENGINE_ANIMATION_DATA_H__
+MathTest::MathTest()
+: TestTemplate<MathTest>("MathTest")
+{
+	RegisterFunction(this, &MathTest::MatrixTestFunction, "MatrixTestFunction", NULL);
+}
+
+void MathTest::LoadResources()
+{
+	GetBackground()->SetColor(Color::White);
+}
+
+void MathTest::UnloadResources()
+{
+
+}
+
+void MathTest::MatrixTestFunction(PerfFuncData * data)
+{
+	TEST_VERIFY(TestMatrixDecomposition(Matrix4::MakeTranslation(Vector3(10.0f, 0.0f, 0.0f))) < 0.0001f);
+	TEST_VERIFY(TestMatrixDecomposition(Matrix4::MakeRotation(Vector3(1.0f, 0.0f, 0.0f), PI_05)) < 0.0001f);
+	TEST_VERIFY(TestMatrixDecomposition(Matrix4::MakeScale(Vector3(3.0f, 3.0f, 3.0f))) < 0.0001f);
+
+	Vector3 axis(0.0f, 1.0f, 1.0f);
+	axis.Normalize();
+	TEST_VERIFY(
+		TestMatrixDecomposition(
+		Matrix4::MakeTranslation(Vector3(10.0f, 0.0f, 0.0f)) *
+		Matrix4::MakeRotation(axis, PI_05 * 0.25f) *
+		Matrix4::MakeScale(Vector3(3.0f, 3.0f, 3.0f))) < 0.0001f);
+}
+
+float32 MathTest::TestMatrixDecomposition(const Matrix4& mat)
+{
+	Vector3 position, scale;
+	Quaternion rotation;
+	mat.Decomposition(position, scale, rotation);
+
+	Matrix4 reconstructedMatrix = rotation.GetMatrix() * Matrix4::MakeScale(scale);
+	reconstructedMatrix.SetTranslationVector(position);
+
+	return SquareDist(reconstructedMatrix, mat);
+}
