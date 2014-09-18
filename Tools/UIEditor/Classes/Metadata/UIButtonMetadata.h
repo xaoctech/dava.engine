@@ -110,6 +110,9 @@ protected:
 
 	virtual int GetTextAlign();
     virtual void SetTextAlign(int align);
+	
+	virtual bool GetTextUseRtlAlign();
+    virtual void SetTextUseRtlAlign(bool value);
 
     virtual int GetFittingType() const;
     virtual void SetFittingType(int value);
@@ -163,7 +166,11 @@ protected:
 	// Text Align.
 	int GetTextAlignForState(UIControl::eControlState state) const;
     void UpdatePropertyDirtyFlagForTextAlign();
-    
+	
+	// Text use RTL align
+	bool GetTextUseRtlAlignForState(UIControl::eControlState state) const;
+    void UpdatePropertyDirtyFlagForTextUseRtlAlign();
+	
     // Draw Type.
     void UpdatePropertyDirtyFlagForDrawType();
   
