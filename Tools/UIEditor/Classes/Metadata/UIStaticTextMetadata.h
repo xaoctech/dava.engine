@@ -69,6 +69,9 @@ protected:
 
 	virtual int GetTextAlign();
     virtual void SetTextAlign(int value);
+	
+	virtual bool GetTextUseRtlAlign();
+	virtual void SetTextUseRtlAlign(bool value);
 
     virtual Font * GetFont();
     virtual void SetFont(Font* font);

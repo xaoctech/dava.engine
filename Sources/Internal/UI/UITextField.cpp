@@ -694,7 +694,7 @@ void UITextField::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 		SetTextAlign(loader->GetAlignFromYamlNode(textAlignNode));
 	}
 
-	const YamlNode * textUseRtlAlign = node->Get("useRtlAlign");
+	const YamlNode * textUseRtlAlign = node->Get("textUseRtlAlign");
 	if(textUseRtlAlign)
 	{
 		SetTextUseRtlAlign(textUseRtlAlign->AsBool());
@@ -750,6 +750,9 @@ YamlNode * UITextField::SaveToYamlNode(UIYamlLoader * loader)
 
 	// Text align
 	node->SetNodeToMap("textalign", loader->GetAlignNodeValue(this->GetTextAlign()));
+	
+	// Text use rtl align
+	node->Set("textUseRtlAlign", this->GetTextUseRtlAlign());
 
 	// Draw Type must be overwritten fot UITextField.
 	UIControlBackground::eDrawType drawType =  this->GetBackground()->GetDrawType();
@@ -766,7 +769,6 @@ YamlNode * UITextField::SaveToYamlNode(UIYamlLoader * loader)
 	node->Set("keyboardType", keyboardType);
 	node->Set("returnKeyType", returnKeyType);
 	node->Set("enableReturnKeyAutomatically", enableReturnKeyAutomatically);
-	node->Set("useRtlAlign", this->GetTextUseRtlAlign());
 
     SafeDelete(nodeValue);
     

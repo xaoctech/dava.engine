@@ -269,6 +269,7 @@ void UIStaticText::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader
     const YamlNode * shadowColorNode = node->Get("shadowcolor");
     const YamlNode * shadowOffsetNode = node->Get("shadowoffset");
     const YamlNode * textAlignNode = node->Get("textalign");
+	const YamlNode * textUseRtlAlignNode = node->Get("textUseRtlAlign");
     const YamlNode * textColorInheritTypeNode = node->Get("textcolorInheritType");
     const YamlNode * shadowColorInheritTypeNode = node->Get("shadowcolorInheritType");
     const YamlNode * textPerPixelAccuracyTypeNode = node->Get("textperPixelAccuracyType");
@@ -309,6 +310,11 @@ void UIStaticText::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader
     {
         SetTextAlign(loader->GetAlignFromYamlNode(textAlignNode));
     }
+	
+	if (textUseRtlAlignNode)
+	{
+		SetTextUseRtlAlign(textUseRtlAlignNode->AsBool());
+	}
 
     if (textNode)
     {
@@ -436,6 +442,12 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
     if (baseControl->GetTextAlign() != this->GetTextAlign())
     {
         node->SetNodeToMap("textalign", loader->GetAlignNodeValue(this->GetTextAlign()));
+    }
+	
+	// Text use rtl align
+    if (baseControl->GetTextAlign() != this->GetTextAlign())
+    {
+        node->Set("textUseRtlAlign", this->GetTextUseRtlAlign());
     }
 
     // Draw type. Must be overriden for UITextControls.
