@@ -104,7 +104,6 @@
 #include "Scene3D/Components/ActionComponent.h"
 #include "Scene3D/Systems/SkyboxSystem.h"
 #include "Scene3D/Systems/MaterialSystem.h"
-#include "Scene3D/Systems/AnimationSystem.h"
 
 #include "Classes/Constants.h"
 
@@ -605,8 +604,6 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionSaveScene, SIGNAL(triggered()), this, SLOT(OnSceneSave()));
 	QObject::connect(ui->actionSaveSceneAs, SIGNAL(triggered()), this, SLOT(OnSceneSaveAs()));
 	QObject::connect(ui->actionSaveToFolder, SIGNAL(triggered()), this, SLOT(OnSceneSaveToFolder()));
-
-    QObject::connect(ui->actionPlaySceneAnimations, SIGNAL(toggled(bool)), this, SLOT(OnPlaySceneAnimations(bool)));
 
 	QObject::connect(ui->menuFile, SIGNAL(triggered(QAction *)), this, SLOT(OnRecentTriggered(QAction *)));
 
@@ -3001,14 +2998,4 @@ void QtMainWindow::OnBatchProcessScene()
     {
         SaveScene(sceneEditor);
     }
-}
-
-void QtMainWindow::OnPlaySceneAnimations(bool start)
-{
-//     Scene * scene = GetCurrentScene();
-//     AnimationSystem * sys = scene->GetAnimationSystem();
-//     if (start)
-//         sys->PlaySceneAnimations();
-//     else
-//         sys->StopSceneAnimations();
 }
