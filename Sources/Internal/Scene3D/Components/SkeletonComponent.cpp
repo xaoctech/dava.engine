@@ -41,22 +41,7 @@ REGISTER_CLASS(SkeletonComponent)
 
 
 SkeletonComponent::SkeletonComponent()
-{
-    /*rootJoints.push_back(JointConfig(FastName("root0")));
-    rootJoints.push_back(JointConfig(FastName("root1")));
-    rootJoints[0].children.push_back(JointConfig(FastName("root0.bone0")));
-    rootJoints[0].children[0].children.push_back(JointConfig(FastName("root0.bone0.bone0")));
-    rootJoints[0].children[0].children.push_back(JointConfig(FastName("root0.bone0.bone1")));    
-
-    rootJoints[1].children.push_back(JointConfig(FastName("root1.bone0")));
-    rootJoints[1].children.push_back(JointConfig(FastName("root1.bone1")));
-    rootJoints[1].children[0].children.push_back(JointConfig(FastName("root1.bone0.bone0")));
-    rootJoints[1].children[0].children.push_back(JointConfig(FastName("root1.bone0.bone1")));
-    rootJoints[1].children[1].children.push_back(JointConfig(FastName("root1.bone1.bone0")));
-    rootJoints[1].children[1].children.push_back(JointConfig(FastName("root1.bone1.bone1")));
-    rootJoints[1].children[1].children.push_back(JointConfig(FastName("root1.bone1.bone2")));
-    rootJoints[1].children[1].children[2].children.push_back(JointConfig(FastName("root1.bone1.bone2.bone0")));
-    rootJoints[1].children[1].children[2].children.push_back(JointConfig(FastName("root1.bone1.bone2.bone1")));*/
+{   
 }
 
 SkeletonComponent::~SkeletonComponent()
@@ -64,11 +49,11 @@ SkeletonComponent::~SkeletonComponent()
 
 }
 
-SkeletonComponent::JointConfig::JointConfig() : position(0.0f,0.0f,0.0f), orientation(0.0f,0.0f,0.0f,1.0f), scale(1.0f), parentId(INVALID_JOINT_INDEX), targetId(INVALID_JOINT_INDEX)
+SkeletonComponent::JointConfig::JointConfig() : position(0.0f,0.0f,0.0f), orientation(0.0f,0.0f,0.0f,1.0f), scale(1.0f), parentIndex(INVALID_JOINT_INDEX), targetId(INVALID_JOINT_INDEX)
 {    
 }
-SkeletonComponent::JointConfig::JointConfig(int32 _parentId, int32 _targetId, const FastName& _name, const Vector3& _position, const Quaternion& _orientation, float32 _scale, const AABBox3& _bbox) :
-                                            parentId(_parentId), targetId(_targetId), name(_name), position(_position), orientation(_orientation), scale(_scale), bbox(_bbox)
+SkeletonComponent::JointConfig::JointConfig(int32 _parentIndex, int32 _targetId, const FastName& _name, const Vector3& _position, const Quaternion& _orientation, float32 _scale, const AABBox3& _bbox) :
+                                            parentIndex(_parentIndex), targetId(_targetId), name(_name), position(_position), orientation(_orientation), scale(_scale), bbox(_bbox)
 {
 }
 
@@ -91,17 +76,57 @@ void SkeletonComponent::RebuildFromConfig()
 
 Component * SkeletonComponent::Clone(Entity * toEntity)
 {
-    SkeletonComponent * newComponent = new SkeletonComponent();    
-
+    SkeletonComponent * newComponent = new SkeletonComponent();      
+    newComponent->SetEntity(toEntity);
+    newComponent->configJoints = configJoints;
     return newComponent;
 }
 void SkeletonComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
-    Component::Serialize(archive, serializationContext);
+    Component::Serialize(archive, serializationContext);    
+    archive->SetUInt32("skeletoncomponent.jointsCount", configJoints.size());
+    ScopedPtr<KeyedArchive> jointsArch (new KeyedArchive());	
+    for (int32 i=0, sz = configJoints.size(); i<sz; ++i)
+    {		
+        const JointConfig& joint = configJoints[i];
+        ScopedPtr<KeyedArchive> jointArch (new KeyedArchive());	  
+        jointArch->SetFastName("joint.name", joint.name);
+        jointArch->SetInt32("joint.parentIndex", joint.parentIndex);
+        jointArch->SetInt32("joint.targetId", joint.targetId);
+        jointArch->SetVector3("joint.position", joint.position);
+        jointArch->SetVector4("joint.orientation", Vector4(joint.orientation.x, joint.orientation.y, joint.orientation.z, joint.orientation.w));
+        jointArch->SetFloat("joint.scale", joint.scale);
+        jointArch->SetVector3("joint.bbox.min", joint.bbox.min);
+        jointArch->SetVector3("joint.bbox.max", joint.bbox.max);
+
+        jointsArch->SetArchive(KeyedArchive::GenKeyFromIndex(i), jointArch);
+    }     
+
+    archive->SetArchive("skeletoncomponent.joints", jointsArch);
+
 }
 void SkeletonComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
     Component::Deserialize(archive, serializationContext);
+
+   
+    uint32 configJointsCount = archive->GetUInt32("skeletoncomponent.jointsCount", configJoints.size());
+    configJoints.resize(configJointsCount);
+    KeyedArchive *jointsArch = archive->GetArchive("skeletoncomponent.joints");    
+    for (uint32 i=0; i<configJointsCount; ++i)
+    {		
+        JointConfig& joint = configJoints[i];
+        KeyedArchive *jointArch = jointsArch->GetArchive(KeyedArchive::GenKeyFromIndex(i));
+        joint.name = jointArch->GetFastName("joint.name");
+        joint.parentIndex = jointArch->GetInt32("joint.parentIndex");
+        joint.targetId = jointArch->GetInt32("joint.targetId");
+        joint.position = jointArch->GetVector3("joint.position");
+        Vector4 qv = jointArch->GetVector4("joint.orientation");
+        joint.orientation = Quaternion(qv.x, qv.y, qv.z, qv.w);
+        joint.scale = jointArch->GetFloat("joint.scale");
+        joint.bbox.min = jointArch->GetVector3("joint.bbox.min");
+        joint.bbox.max = jointArch->GetVector3("joint.bbox.max");      
+    } 	   
 }
 
 }
