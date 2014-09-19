@@ -46,6 +46,19 @@ SkinnedMesh::SkinnedMesh()
     quaternionArray = NULL;
 }
 
+
+RenderObject * SkinnedMesh::Clone(RenderObject *newObject)
+{
+
+    if(!newObject)
+    {
+        DVASSERT_MSG(IsPointerToExactClass<SkinnedMesh>(this), "Can clone only SpeedTreeObject");
+        newObject = new SkinnedMesh();
+    }
+    RenderObject::Clone(newObject);   
+    return newObject;
+}
+
 void SkinnedMesh::BindDynamicParameters(Camera * camera)
 {
     

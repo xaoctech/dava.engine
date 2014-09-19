@@ -50,13 +50,11 @@ class SkinnedMesh : public RenderObject
 
 public:
     SkinnedMesh();
-    /*virtual ~SkinnedMesh();
+    
     
     virtual RenderObject * Clone(RenderObject *newObject);
 
-    virtual void Save(KeyedArchive *archive, SerializationContext *serializationContext);
-    virtual void Load(KeyedArchive *archive, SerializationContext *serializationContext);
-    */
+    
     virtual void RecalcBoundingBox(){}    
     virtual void BindDynamicParameters(Camera * camera);
     

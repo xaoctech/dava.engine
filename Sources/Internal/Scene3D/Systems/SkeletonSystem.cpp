@@ -51,7 +51,7 @@ SkeletonSystem::~SkeletonSystem()
 
 void SkeletonSystem::AddEntity(Entity * entity)
 {
-    entities.push_back(entity);     
+    entities.push_back(entity);
     RebuildSkeleton(entity);
 }
 
@@ -131,8 +131,8 @@ void SkeletonSystem::UpdatePose(SkeletonComponent *component)
             if (targetId!=SkeletonComponent::INVALID_JOINT_INDEX)
             {
                 SkeletonComponent::JointTransform finalTransform = component->objectSpaceTransforms[currJoint].AppendTransform(component->inverseBindTransforms[currJoint]);
-                component->resultPositions[currJoint].Set(finalTransform.position.x, finalTransform.position.y, finalTransform.position.z, finalTransform.scale);
-                component->resultQuaternions[currJoint].Set(finalTransform.orientation.x, finalTransform.orientation.y, finalTransform.orientation.z, finalTransform.orientation.w);
+                component->resultPositions[targetId].Set(finalTransform.position.x, finalTransform.position.y, finalTransform.position.z, finalTransform.scale);
+                component->resultQuaternions[targetId].Set(finalTransform.orientation.x, finalTransform.orientation.y, finalTransform.orientation.z, finalTransform.orientation.w);
                 const Vector3& min = component->jointSpaceBoxes[currJoint].min;
                 const Vector3& max = component->jointSpaceBoxes[currJoint].max;
                 AABBox3& box = component->objectSpaceBoxes[currJoint];
@@ -175,7 +175,7 @@ void SkeletonSystem::UpdateSkinnedMesh(SkeletonComponent *component, SkinnedMesh
     }
 
     //set data to SkinnedMesh    
-    skinnedMeshObject->SetJointsPtr(&component->resultPositions[0], &component->resultQuaternions[0], count);
+    skinnedMeshObject->SetJointsPtr(&component->resultPositions[0], &component->resultQuaternions[0], component->targetJointsCount);
     skinnedMeshObject->SetObjectSpaceBoundingBox(resBox);
     GetScene()->renderSystem->MarkForUpdate(skinnedMeshObject);        
 }
@@ -183,6 +183,7 @@ void SkeletonSystem::UpdateSkinnedMesh(SkeletonComponent *component, SkinnedMesh
 
 void SkeletonSystem::RebuildSkeleton(Entity *entity)
 {
+    
     SkeletonComponent *component = GetSkeletonComponent(entity);
     DVASSERT(component);
     /*convert joint configs to joints*/
@@ -193,21 +194,23 @@ void SkeletonSystem::RebuildSkeleton(Entity *entity)
     component->objectSpaceTransforms.resize(component->jointsCount);
     component->inverseBindTransforms.resize(component->jointsCount);
     component->jointSpaceBoxes.resize(component->jointsCount);
-    component->objectSpaceBoxes.resize(component->jointsCount);
-    component->resultPositions.resize(component->jointsCount);
-    component->resultQuaternions.resize(component->jointsCount);
+    component->objectSpaceBoxes.resize(component->jointsCount);    
     component->jointMap.clear();
     
-    uint16 targetSlot = 0;
+    component->targetJointsCount = 0;
+    int32 maxTargetJoint = 0;
     DVASSERT(component->configJoints.size()<SkeletonComponent::INFO_PARENT_MASK);
     for (int32 i=0, sz = component->configJoints.size(); i<sz; ++i)
     {
-        DVASSERT((component->configJoints[i].parentId==SkeletonComponent::INVALID_JOINT_INDEX)||((component->configJoints[i].parentId&SkeletonComponent::INFO_PARENT_MASK)==component->configJoints[i].parentId));
-        DVASSERT((component->configJoints[i].targetId==SkeletonComponent::INVALID_JOINT_INDEX)||((component->configJoints[i].targetId&SkeletonComponent::INFO_PARENT_MASK)==component->configJoints[i].targetId));
+        DVASSERT((component->configJoints[i].parentIndex==SkeletonComponent::INVALID_JOINT_INDEX)||(component->configJoints[i].parentIndex<i)); //order
+        DVASSERT((component->configJoints[i].parentIndex==SkeletonComponent::INVALID_JOINT_INDEX)||((component->configJoints[i].parentIndex&SkeletonComponent::INFO_PARENT_MASK)==component->configJoints[i].parentIndex)); //parent fits mask
+        DVASSERT((component->configJoints[i].targetId==SkeletonComponent::INVALID_JOINT_INDEX)||((component->configJoints[i].targetId&SkeletonComponent::INFO_PARENT_MASK)==component->configJoints[i].targetId)); //target fits mask
+        DVASSERT((component->configJoints[i].targetId==SkeletonComponent::INVALID_JOINT_INDEX)||(component->configJoints[i].targetId<SkeletonComponent::MAX_TARGET_JOINTS));
         DVASSERT(component->jointMap.find(component->configJoints[i].name) == component->jointMap.end()); //duplicate bone name
         
-        component->jointInfo[i] = component->configJoints[i].parentId | (component->configJoints[i].targetId<<SkeletonComponent::INFO_TARGET_SHIFT) | SkeletonComponent::FLAG_MARKED_FOR_UPDATED;
-
+        component->jointInfo[i] = component->configJoints[i].parentIndex | (component->configJoints[i].targetId<<SkeletonComponent::INFO_TARGET_SHIFT) | SkeletonComponent::FLAG_MARKED_FOR_UPDATED;
+        if ((component->configJoints[i].targetId!=SkeletonComponent::INVALID_JOINT_INDEX)&&component->configJoints[i].targetId>maxTargetJoint)
+            maxTargetJoint = component->configJoints[i].targetId;            
         
         component->jointMap[component->configJoints[i].name] = i;
 
@@ -217,13 +220,16 @@ void SkeletonSystem::RebuildSkeleton(Entity *entity)
         localTransform.scale = component->configJoints[i].scale;
 
         component->localSpaceTransforms[i] = localTransform;    
-        if (component->configJoints[i].parentId==SkeletonComponent::INVALID_JOINT_INDEX)
+        if (component->configJoints[i].parentIndex==SkeletonComponent::INVALID_JOINT_INDEX)
             component->objectSpaceTransforms[i] = localTransform;
         else
-            component->objectSpaceTransforms[i] = component->objectSpaceTransforms[component->configJoints[i].parentId].AppendTransform(localTransform);
+            component->objectSpaceTransforms[i] = component->objectSpaceTransforms[component->configJoints[i].parentIndex].AppendTransform(localTransform);
         component->inverseBindTransforms[i] = component->objectSpaceTransforms[i].GetInverse();
         component->jointSpaceBoxes[i] = component->configJoints[i].bbox;        
     }        
+    component->targetJointsCount = maxTargetJoint+1;
+    component->resultPositions.resize(component->targetJointsCount);
+    component->resultQuaternions.resize(component->targetJointsCount);
 
     component->startJoint = 0;
     UpdatePose(component);
