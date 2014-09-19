@@ -519,8 +519,7 @@ namespace DAVA
             AnimationComponent* component = GetAnimationComponent(target);
             if ( component )
             {
-//                 component->StopAfterNRepeats(action.stopAfterNRepeats);
-//                 component->StopWhenEmpty(action.stopWhenEmpty);
+                component->StopAfterNRepeats(action.stopAfterNRepeats);
                 component->Stop();
                 component->Start();
             }
