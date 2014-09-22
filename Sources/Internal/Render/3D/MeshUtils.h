@@ -31,7 +31,7 @@
 #define __DAVAENGINE_MESH_UTILS_H__
 
 #include "PolygonGroup.h"
-
+#include "Scene3D/Components/SkeletonComponent.h"
 
 namespace DAVA
 {
@@ -39,13 +39,14 @@ namespace DAVA
 class RenderBatch;
 class RenderObject;
 class Entity;
+class SkinnedMesh;
 namespace MeshUtils
 {
     void RebuildMeshTangentSpace(PolygonGroup *group, bool precomputeBinormal=true);
     void CopyVertex(PolygonGroup *srcGroup, uint32 srcPos, PolygonGroup *dstGroup, uint32 dstPos);
     void CopyGroupData(PolygonGroup *srcGroup, PolygonGroup *dstGroup);
 
-    RenderObject * CreateSkinnedMesh(Entity * entity);
+    SkinnedMesh * CreateSkinnedMesh(Entity * fromEntity, Vector<SkeletonComponent::JointConfig> & outJoints);
     PolygonGroup * CreateShadowPolygonGroup(PolygonGroup * source);
 
     struct FaceWork
@@ -87,9 +88,9 @@ namespace MeshUtils
         NMaterial * materialParent;
     };
 
-    struct SkinnedMeshWork
+    struct SkinnedMeshJointWork
     {
-        SkinnedMeshWork(RenderBatch * _batch, uint32 _jointIndex) :
+        SkinnedMeshJointWork(RenderBatch * _batch, uint32 _jointIndex) :
             batch(_batch), jointIndex(_jointIndex) {}
 
         RenderBatch * batch;

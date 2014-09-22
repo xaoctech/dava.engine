@@ -33,6 +33,8 @@
 #include "Render/Highlevel/RenderBatch.h"
 #include "Render/Material/NMaterial.h"
 #include "Render/Highlevel/ShadowVolume.h"
+#include "Render/Highlevel/SkinnedMesh.h"
+#include "Scene3D/Components/RenderComponent.h"
 
 namespace DAVA
 {
@@ -287,16 +289,19 @@ void RebuildMeshTangentSpace(PolygonGroup *group, bool precomputeBinormal/*=true
     group->BuildBuffers();
 }
 
-RenderObject * CreateSkinnedMesh(Entity * entity)
+SkinnedMesh * CreateSkinnedMesh(Entity * fromEntity, Vector<SkeletonComponent::JointConfig> & outJoints)
 {
-    Map<SkinnedMeshWorkKey, Vector<SkinnedMeshWork> > collapseDataMap;
+    Map<SkinnedMeshWorkKey, Vector<SkinnedMeshJointWork> > collapseDataMap;
 
-    Vector<Entity *> oldNodes;
-    oldNodes.push_back(entity);
-    entity->GetChildNodes(oldNodes);
-    for(int32 nodeIndex = 0; nodeIndex < (int32)oldNodes.size(); ++nodeIndex)
+    Vector<Entity *> childrenNodes;
+    fromEntity->GetChildNodes(childrenNodes);
+
+    outJoints.resize(childrenNodes.size());
+
+    for(int32 nodeIndex = 0; nodeIndex < (int32)childrenNodes.size(); ++nodeIndex)
     {
-        RenderObject * ro = GetRenderObject(oldNodes[nodeIndex]);
+        Entity * child = childrenNodes[nodeIndex];
+        RenderObject * ro = GetRenderObject(child);
         if(ro)
         {
             int32 batchesCount = ro->GetRenderBatchCount();
@@ -305,19 +310,46 @@ RenderObject * CreateSkinnedMesh(Entity * entity)
                 int32 lodIndex, switchIndex;
                 RenderBatch * rb = ro->GetRenderBatch(batchIndex, lodIndex, switchIndex);
                 SkinnedMeshWorkKey dataKey(lodIndex, switchIndex, rb->GetMaterial()->GetParent());
-                collapseDataMap[dataKey].push_back(SkinnedMeshWork(rb, nodeIndex));
+
+                collapseDataMap[dataKey].push_back(SkinnedMeshJointWork(rb, nodeIndex));
+            }
+
+            const Matrix4 & localTransform = child->GetLocalTransform();
+
+            outJoints[nodeIndex].name = childrenNodes[nodeIndex]->GetName();
+            outJoints[nodeIndex].bbox = ro->GetBoundingBox();
+            outJoints[nodeIndex].orientation.Construct(localTransform);
+            outJoints[nodeIndex].position = localTransform.GetTranslationVector();
+            outJoints[nodeIndex].scale = localTransform.GetScaleVector().x;
+            outJoints[nodeIndex].targetId = nodeIndex;
+            
+            Entity * parentEntity = child->GetParent();
+            if(!parentEntity || parentEntity == fromEntity)
+            {
+                outJoints[nodeIndex].parentId = SkeletonComponent::INVALID_JOINT_INDEX;
+            }
+            else
+            {
+                for(int32 i = 0; i < (int32)childrenNodes.size(); ++i)
+                {
+                    if(parentEntity == childrenNodes[i])
+                    {
+                        outJoints[nodeIndex].parentId = i;
+                        continue;
+                    }
+                }
             }
         }
     }
 
-    RenderObject * newRenderObject = new RenderObject();
+    SkinnedMesh * newRenderObject = new SkinnedMesh();
 
-    Map<SkinnedMeshWorkKey, Vector<SkinnedMeshWork> >::iterator it = collapseDataMap.begin();
-    Map<SkinnedMeshWorkKey, Vector<SkinnedMeshWork> >::iterator itEnd = collapseDataMap.end();
+    Map<SkinnedMeshWorkKey, Vector<SkinnedMeshJointWork> >::iterator it = collapseDataMap.begin();
+    Map<SkinnedMeshWorkKey, Vector<SkinnedMeshJointWork> >::iterator itEnd = collapseDataMap.end();
     for(;it != itEnd; ++it)
     {
         const SkinnedMeshWorkKey & key = it->first;
-        Vector<SkinnedMeshWork> & data = it->second;
+        Vector<SkinnedMeshJointWork> & data = it->second;
 
         int32 vxCount = 0;
         int32 indCount = 0;
@@ -362,6 +394,7 @@ RenderObject * CreateSkinnedMesh(Entity * entity)
 
         NMaterial * material = NMaterial::CreateMaterialInstance();
         material->SetParent(key.materialParent);
+        material->SetFlag(NMaterial::FLAG_SKINNING, NMaterial::FlagOn);
 
         RenderBatch * newBatch = new RenderBatch();
         polygonGroup->RecalcAABBox();
