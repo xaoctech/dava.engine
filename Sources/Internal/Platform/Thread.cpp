@@ -41,8 +41,6 @@ namespace DAVA
 
 Set<Thread *> Thread::threadList;
 Mutex Thread::threadListMutex;
-Map<Thread::NativeId, Thread::Id> Thread::threadIdList;
-Mutex Thread::threadIdListMutex;
 
 Thread::Id Thread::mainThreadId = 0;
 Thread::Id Thread::glThreadId = 0;
@@ -72,7 +70,7 @@ void Thread::InitMainThread()
 
 void Thread::InitGLThread()
 {
-	glThreadId = GetCurrentId();
+    glThreadId = GetCurrentId();
 }
 
 bool Thread::IsMainThread()
@@ -82,39 +80,13 @@ bool Thread::IsMainThread()
         Logger::Error("Main thread not initialized");
     }
 
-    //Not an any thread which calls IsMainThread is DAVA::Thread, so it sould not contain nativeId
-    Id currentId = GetCurrentId();
-
+    Id currentId = GetCurrentThreadId();
     return currentId == mainThreadId || currentId == glThreadId;
 }
 
-Thread::Id Thread::GetCurrentId()
+Thread *Thread::Create(const Message& msg)
 {
-    // try to find in map
-    // if not found - create new id
-    Id retId;
-    
-    LockGuard<Mutex> locker(threadIdListMutex);
-    NativeId threadNativeIdentifier = GetCurrentNativeId();
-    Map<NativeId, Id>::iterator it = threadIdList.find(threadNativeIdentifier);
-    if (it == threadIdList.end())
-    {
-        static Id newId = 1;
-        retId = newId;
-        threadIdList[threadNativeIdentifier] = newId;
-        ++newId;
-    }
-    else
-    {
-        retId = it->second;
-    }
-
-    return retId;
-}
-
-Thread * Thread::Create(const Message& msg)
-{
-	Thread * t = new Thread(msg);
+    Thread * t = new Thread(msg);
     t->state = STATE_CREATED;
 
     return t;
@@ -133,9 +105,6 @@ void Thread::Kill()
     {
         KillNative();
         state = STATE_KILLED;
-        threadIdListMutex.Lock();
-        threadIdList.erase(nativeId);
-        threadIdListMutex.Unlock();
     }
 }
 
@@ -179,7 +148,6 @@ Thread::Thread(const Message& _msg)
     , msg(_msg)
     , state(STATE_CREATED)
     , id(0)
-	, nativeId(0)
 {
     threadListMutex.Lock();
     threadList.insert(this);
@@ -191,9 +159,6 @@ Thread::Thread(const Message& _msg)
 Thread::~Thread()
 {
     Shutdown();
-    threadIdListMutex.Lock();
-    threadIdList.erase(nativeId);
-    threadIdListMutex.Unlock();
     threadListMutex.Lock();
     threadList.erase(this);
     threadListMutex.Unlock();
@@ -231,7 +196,6 @@ void Thread::ThreadFunction(void *param)
 {
     Thread * t = (Thread *)param;
     t->id = GetCurrentId();
-    t->nativeId = GetCurrentNativeId();
 
     if (STATE_CREATED == t->state)
     {
@@ -250,11 +214,6 @@ void Thread::ThreadFunction(void *param)
     default:
         break;
     }
-
-    // thread is finishing so we need to unregister it
-    threadIdListMutex.Lock();
-    threadIdList.erase(t->nativeId);
-    threadIdListMutex.Unlock();
 
     t->Release();
 }

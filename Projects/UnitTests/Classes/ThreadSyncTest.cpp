@@ -101,6 +101,10 @@ void ThreadSyncTest::ShortThreadFunction(BaseObject * caller, void * callerData,
 void ThreadSyncTest::TestThread(PerfFuncData * data)
 {
 	Logger::Debug("[ThreadSyncTest] testing threads logic");
+
+    Thread::Id t = Thread::GetCurrentId();
+    TEST_VERIFY(true == Thread::IsMainThread());
+
     Thread *infiniteThread = Thread::Create(Message(this, &ThreadSyncTest::InfiniteThreadFunction));
     
     TEST_VERIFY(Thread::STATE_CREATED == infiniteThread->GetState());
@@ -122,7 +126,7 @@ void ThreadSyncTest::TestThread(PerfFuncData * data)
     shortThread->Start();
     shortThread->Join();
     TEST_VERIFY(Thread::STATE_ENDED == shortThread->GetState());
-    
+
     TEST_VERIFY(0 == shortThread->Release());
 	shortThread = NULL;
 	TEST_VERIFY(0 == infiniteThread->Release());
@@ -135,6 +139,18 @@ void ThreadSyncTest::TestThread(PerfFuncData * data)
     shortThread->Start();
 
     Thread::Sleep(50);
+    timeout = 3000;
+    while (timeout-- > 0 
+        && Thread::STATE_RUNNING != infiniteThread->GetState()
+        && Thread::STATE_RUNNING != shortThread->GetState())
+    {
+        Thread::Sleep(1);
+    }
+
+    Thread::Id itid = infiniteThread->GetId();
+    Thread::Id stid = shortThread->GetId();
+    TEST_VERIFY(itid != stid);
+
     Thread::KillAll();
     
     shortThread->Join();
@@ -144,9 +160,11 @@ void ThreadSyncTest::TestThread(PerfFuncData * data)
     TEST_VERIFY(Thread::STATE_KILLED == infiniteThread->GetState());
 
     TEST_VERIFY(0 != shortThread);
+    TEST_VERIFY(0 != shortThread->Release());
     TEST_VERIFY(0 == shortThread->Release());
     shortThread = NULL;
 
+    TEST_VERIFY(0 != infiniteThread->Release());
     TEST_VERIFY(0 == infiniteThread->Release());
     infiniteThread = NULL;
 

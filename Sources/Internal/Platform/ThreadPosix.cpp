@@ -150,7 +150,7 @@ void Thread::Join()
     pthread_join(handle, NULL);
 }
 
-Thread::NativeId Thread::GetCurrentNativeId()
+Thread::Id Thread::GetCurrentId()
 {
     return pthread_self();
 }

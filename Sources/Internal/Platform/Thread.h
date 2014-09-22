@@ -71,22 +71,24 @@ private:
 
 class Thread : public BaseObject
 {
-private:
 #if defined(__DAVAENGINE_PTHREAD__)
+private:
     typedef pthread_t Handle;
-    typedef pthread_t NativeId;
     friend void	*PthreadMain(void *param);
+public:
+    typedef pthread_t Id;
 #elif defined(__DAVAENGINE_WIN32__)
+private:
     typedef HANDLE Handle;
-    typedef DWORD NativeId;
     friend DWORD WINAPI ThreadFunc(void *param);
+public:
+    typedef DWORD Id;
 #endif
 #if defined(__DAVAENGINE_ANDROID__)
     static void thread_exit_handler(int sig);
 #endif
     
 public:
-    typedef uint32 Id;
 	
     enum eThreadState
 	{
@@ -156,13 +158,13 @@ public:
     static void Sleep(uint32 timeMS);
 
     /**
-     \brief registers id for current thread if not registered before and returns it from map.
-     \returns id as sequential number of registered in this application thread
+     \brief 
+     \returns returns unique current thread identifier.
     */
     static Id GetCurrentId();
 
     /**
-     \returns returns Id of current Thread Object.
+     \returns returns Id of Thread Object.
      */
     inline Id GetId() const;
 
@@ -178,11 +180,6 @@ private:
     void Init();
     void Shutdown();
 
-    /**
-    \brief Get unique native identifier of the thread which calls this method.
-    */
-    static NativeId GetCurrentNativeId();
-    
     /**
     \brief Kill thread native implementation (contains no Thread logic)
     */
@@ -206,29 +203,17 @@ private:
     */
     Handle handle;
     /**
-    \brief ingeter sequence number of created DAVA::Thread. Need to differentiate therads.
+    \brief Some value which is unique for any thread in current OS. Could be used only for equals comparision.
     */
 	Id id;
 	static Id mainThreadId;
 	static Id glThreadId;
 
     /**
-    \brief Some value which is unique for any thread in current OS. Could be used only for equals comparision.
-    */
-    NativeId nativeId;
-
-    /**
     \brief Full list of created DAVA::Thread's. Main thread is not DAVA::Thread, so it is not there.
     */
     static Set<Thread *> threadList;
     static Mutex threadListMutex;
-
-    /**
-    \brief Map of registered threads. Any thread could be registered, even it is not DAVA::Thread. 
-    Used to compare threads Id's predictable and repeatable.
-    */
-    static Map<NativeId, Id> threadIdList;
-    static Mutex threadIdListMutex;
 };
 
 
