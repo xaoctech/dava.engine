@@ -49,26 +49,26 @@ void AnimationData::AddKey(const SceneNodeAnimationKey & key)
 	keys.push_back(key);
 }
 
-SceneNodeAnimationKey AnimationData::Interpolate(float32 t, uint32* startIdxCache) const
+SceneNodeAnimationKey AnimationData::Interpolate(float32 t, uint32& startIdxCache) const
 {
 	if (keys.size() == 1)
 	{
 		return keys[0];
 	}
 	
-	if (t < keys[*startIdxCache].time)
+	if (t < keys[startIdxCache].time)
 	{
-		*startIdxCache = 0;
+		startIdxCache = 0;
 	}
 	
 	uint32 endIdx = 0;
-	for (endIdx = *startIdxCache; endIdx < keys.size(); ++endIdx)
+	for (endIdx = startIdxCache; endIdx < keys.size(); ++endIdx)
 	{
 		if (keys[endIdx].time > t)
 		{
 			break;
 		}
-		*startIdxCache = endIdx;
+		startIdxCache = endIdx;
 	}
 	
 	if (endIdx == keys.size())
@@ -76,11 +76,11 @@ SceneNodeAnimationKey AnimationData::Interpolate(float32 t, uint32* startIdxCach
 		endIdx = 0;
 	}
 	
-	const SceneNodeAnimationKey & key1 = keys[*startIdxCache];
+	const SceneNodeAnimationKey & key1 = keys[startIdxCache];
 	const SceneNodeAnimationKey & key2 = keys[endIdx];
 
 	float32 tInter;
-	if (endIdx > *startIdxCache)
+	if (endIdx > startIdxCache)
 		tInter = (t - key1.time) / (key2.time - key1.time);
 	else // interpolate from last to first
 		tInter = (t - key1.time) / (duration - key1.time);
