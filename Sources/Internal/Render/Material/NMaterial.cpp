@@ -146,8 +146,7 @@ static FastName RUNTIME_ONLY_FLAGS[] =
 	NMaterial::FLAG_TEXTUREONLY,
 	NMaterial::FLAG_SETUPLIGHTMAP,
 
-    NMaterial::FLAG_DEBUG_UNITY_Z_NORMAL,
-    NMaterial::FLAG_SKINNING,
+    NMaterial::FLAG_DEBUG_UNITY_Z_NORMAL,    
 	
 	NMaterial::FLAG_VIEWALBEDO,
 	NMaterial::FLAG_VIEWAMBIENT,
