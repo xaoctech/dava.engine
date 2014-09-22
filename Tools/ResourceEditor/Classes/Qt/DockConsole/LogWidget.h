@@ -28,11 +28,13 @@ public:
 private slots:
     void OnFilterChanged();
     void OnTextFilterChanged(const QString& text);
+    void OnCopy();
 
 private:
     void FillFiltersCombo();
     void LoadSettings();
     void SaveSettings();
+    bool eventFilter( QObject * watched, QEvent * event );
 
     QScopedPointer<Ui::LogWidget> ui;
     QPointer<LogModel> logModel;

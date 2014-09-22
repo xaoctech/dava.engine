@@ -4,6 +4,11 @@
 
 #include <QAbstractItemModel>
 #include <QDebug>
+#include <QClipboard>
+#include <QApplication>
+#include <QTextStream>
+#include <QEvent>
+#include <QKeyEvent>
 
 #include "Settings/SettingsManager.h"
 
@@ -18,11 +23,14 @@ LogWidget::LogWidget(QWidget* parent)
 {
     ui->setupUi(this);
 
-    new LogDelegate(ui->log, this);
+    LogDelegate *delegate = new LogDelegate(ui->log, this);
     logModel = new LogModel( this );
     logFilterModel = new LogFilterModel(this);
+
     logFilterModel->setSourceModel(logModel);
     ui->log->setModel(logFilterModel);
+    connect( delegate, SIGNAL( copyRequest() ), SLOT( OnCopy() ) );
+    ui->log->installEventFilter(this);
 
     FillFiltersCombo();
 
@@ -113,4 +121,48 @@ void LogWidget::SaveSettings()
 
     const DAVA::String text = ui->search->text().toStdString();
     SettingsManager::Instance()->SetValue( Settings::Internal_LogTextFilter, DAVA::VariantType(text) );
+}
+
+bool LogWidget::eventFilter(QObject* watched, QEvent* event)
+{
+    if ( watched == ui->log )
+    {
+        switch ( event->type() )
+        {
+        case QEvent::KeyPress:
+            {
+                QKeyEvent *ke = static_cast<QKeyEvent *>(event);
+                if (ke->matches(QKeySequence::Copy))
+                {
+                    OnCopy();
+                    return true;
+                }
+            }
+            break;
+
+        default:
+            break;
+        }
+    }
+
+    return QWidget::eventFilter( watched, event );
+}
+
+void LogWidget::OnCopy()
+{
+    const QModelIndexList& selection =  ui->log->selectionModel()->selectedIndexes();
+    const int n = selection.size();
+    if ( n == 0 )
+        return ;
+
+    QString text;
+    QTextStream ss(&text);
+    for ( int i = 0; i < n; i++ )
+    {
+        ss << selection[i].data( Qt::DisplayRole ).toString() << "\n";
+    }
+    ss.flush();
+
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setText(text);
 }
