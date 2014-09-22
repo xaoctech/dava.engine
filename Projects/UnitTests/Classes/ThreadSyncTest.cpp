@@ -102,7 +102,6 @@ void ThreadSyncTest::TestThread(PerfFuncData * data)
 {
 	Logger::Debug("[ThreadSyncTest] testing threads logic");
 
-    Thread::Id t = Thread::GetCurrentId();
     TEST_VERIFY(true == Thread::IsMainThread());
 
     Thread *infiniteThread = Thread::Create(Message(this, &ThreadSyncTest::InfiniteThreadFunction));
