@@ -117,6 +117,7 @@
 #include "Classes/Qt/BeastDialog/BeastDialog.h"
 #include "DebugTools/VersionInfoWidget/VersionInfoWidget.h"
 #include "Classes/Qt/RunActionEventWidget/RunActionEventWidget.h"
+#include "Classes/Qt/DockConsole/LogWidget.h"
 
 #include "Classes/Commands2/PaintHeightDeltaAction.h"
 
@@ -442,6 +443,7 @@ void QtMainWindow::SetupMainMenu()
 	ui->menuDockWindows->addAction(ui->dockLandscapeEditorControls->toggleViewAction());
 
     ui->menuDockWindows->addAction(dockActionEvent->toggleViewAction());
+    ui->menuDockWindows->addAction(dockConsole->toggleViewAction());
 
 	InitRecent();
 }
@@ -590,6 +592,13 @@ void QtMainWindow::SetupDocks()
         dockActionEvent->setObjectName(QString( "dock_%1" ).arg(dockActionEvent->widget()->objectName()));
         addDockWidget(Qt::RightDockWidgetArea, dockActionEvent);
     }
+    // Console dock
+	{
+        dockConsole = new QDockWidget("ConsoleV2", this);
+        dockConsole->setWidget(new LogWidget());
+        dockConsole->setObjectName(QString( "dock_%1" ).arg(dockConsole->widget()->objectName()));
+        addDockWidget(Qt::RightDockWidgetArea, dockConsole);
+	}
     
 	ui->dockProperties->Init();
 }
