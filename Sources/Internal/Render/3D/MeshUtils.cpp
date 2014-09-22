@@ -313,30 +313,30 @@ SkinnedMesh * CreateSkinnedMesh(Entity * fromEntity, Vector<SkeletonComponent::J
 
                 collapseDataMap[dataKey].push_back(SkinnedMeshJointWork(rb, nodeIndex));
             }
+        }
 
-            const Matrix4 & localTransform = child->GetLocalTransform();
+        const Matrix4 & localTransform = child->GetLocalTransform();
 
-            outJoints[nodeIndex].name = childrenNodes[nodeIndex]->GetName();
-            outJoints[nodeIndex].bbox = ro->GetBoundingBox();
-            outJoints[nodeIndex].orientation.Construct(localTransform);
-            outJoints[nodeIndex].position = localTransform.GetTranslationVector();
-            outJoints[nodeIndex].scale = localTransform.GetScaleVector().x;
-            outJoints[nodeIndex].targetId = nodeIndex;
-            
-            Entity * parentEntity = child->GetParent();
-            if(!parentEntity || parentEntity == fromEntity)
+        outJoints[nodeIndex].name = childrenNodes[nodeIndex]->GetName();
+        outJoints[nodeIndex].bbox = ro->GetBoundingBox();
+        outJoints[nodeIndex].orientation.Construct(localTransform);
+        outJoints[nodeIndex].position = localTransform.GetTranslationVector();
+        outJoints[nodeIndex].scale = localTransform.GetScaleVector().x;
+        outJoints[nodeIndex].targetId = nodeIndex;
+
+        Entity * parentEntity = child->GetParent();
+        if(!parentEntity || parentEntity == fromEntity)
+        {
+            outJoints[nodeIndex].parentIndex = SkeletonComponent::INVALID_JOINT_INDEX;
+        }
+        else
+        {
+            for(int32 i = 0; i < (int32)childrenNodes.size(); ++i)
             {
-                outJoints[nodeIndex].parentId = SkeletonComponent::INVALID_JOINT_INDEX;
-            }
-            else
-            {
-                for(int32 i = 0; i < (int32)childrenNodes.size(); ++i)
+                if(parentEntity == childrenNodes[i])
                 {
-                    if(parentEntity == childrenNodes[i])
-                    {
-                        outJoints[nodeIndex].parentId = i;
-                        continue;
-                    }
+                    outJoints[nodeIndex].parentIndex = i;
+                    continue;
                 }
             }
         }
