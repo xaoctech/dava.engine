@@ -261,6 +261,12 @@ void Scene::CreateSystems()
         AddSystem(staticOcclusionSystem, (1 << Component::STATIC_OCCLUSION_DATA_COMPONENT), true);
     }
 
+    if(SCENE_SYSTEM_ANIMATION_FLAG & systemsMask)
+    {
+        animationSystem = new AnimationSystem(this);
+        AddSystem(animationSystem, (1 << Component::ANIMATION_COMPONENT), true);
+    }
+
     if(SCENE_SYSTEM_TRANSFORM_FLAG & systemsMask)
     {
         transformSystem = new TransformSystem(this);
@@ -355,12 +361,6 @@ void Scene::CreateSystems()
     {
         waveSystem = new WaveSystem(this);
         AddSystem(waveSystem, (1 << Component::WAVE_COMPONENT), true);
-    }
-
-    if(SCENE_SYSTEM_ANIMATION_FLAG & systemsMask)
-    {
-        animationSystem = new AnimationSystem(this);
-        AddSystem(animationSystem, (1 << Component::ANIMATION_COMPONENT), true);
     }
 }
 

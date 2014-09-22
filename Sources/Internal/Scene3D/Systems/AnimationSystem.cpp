@@ -85,7 +85,7 @@ void AnimationSystem::Process(float32 timeElapsed)
         }
 
         Matrix4 animTransform;
-        comp->animation->Interpolate(comp->time, &comp->frameIndex).GetMatrix(animTransform);
+        comp->animation->Interpolate(comp->time, comp->frameIndex).GetMatrix(animTransform);
         comp->animationTransform = comp->animation->invPose * animTransform;
         GlobalEventSystem::Instance()->Event(comp->GetEntity(), EventSystem::ANIMATION_TRANSFORM_CHANGED);
     }

@@ -52,10 +52,10 @@ namespace DAVA
                 TYPE_NONE = 0,
                 TYPE_PARTICLE_EFFECT_START,
                 TYPE_SOUND_START,
-                TYPE_ANIMATION_START,
                 TYPE_WAVE,
                 TYPE_PARTICLE_EFFECT_STOP,
                 TYPE_SOUND_STOP,
+                TYPE_ANIMATION_START,
                 TYPE_ANIMATION_STOP
 			};
 
