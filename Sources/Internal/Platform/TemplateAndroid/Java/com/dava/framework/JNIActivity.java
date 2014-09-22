@@ -221,7 +221,10 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         
         //call native method
         nativeOnStop();
-
+        
+        // Destroy keyboard layout if its hasn't been destroyed by lost focus (samsung lock workaround)
+        JNITextField.DestroyKeyboardLayout(getWindowManager());
+        
         Log.i(JNIConst.LOG_TAG, "[Activity::onStop] finish");
         
         super.onStop();
