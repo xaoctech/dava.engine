@@ -48,6 +48,7 @@ public:
     IMPLEMENT_COMPONENT_TYPE(SKELETON_COMPONENT);
 
     const static uint16 INVALID_JOINT_INDEX = 0xff; //same as INFO_PARENT_MASK
+    const static uint16 MAX_TARGET_JOINTS = 32; //same as in shader
 
     
     struct JointTransform
@@ -67,9 +68,10 @@ public:
     {
         JointConfig();
 
-        JointConfig(int32 parentId, int32 targetId, const FastName& name, const Vector3& position, const Quaternion& orientation, float32 scale, const AABBox3& bbox);
+        JointConfig(int32 parentIndex, int32 targetId, const FastName& name, const Vector3& position, const Quaternion& orientation, float32 scale, const AABBox3& bbox);
         
-        int32 parentId, targetId;
+        int32 parentIndex;
+        int32 targetId;
         FastName name;
         Quaternion orientation;
         Vector3 position;
@@ -117,6 +119,7 @@ private:
     const static uint32 FLAG_MARKED_FOR_UPDATED = INFO_FLAG_BASE << 1;
 
     uint16 jointsCount;
+    uint16 targetJointsCount; //amount of joints bound to skinnedMesh
     Vector<uint32> jointInfo; //flags and parent    
     //transforms info
     Vector<JointTransform> localSpaceTransforms;

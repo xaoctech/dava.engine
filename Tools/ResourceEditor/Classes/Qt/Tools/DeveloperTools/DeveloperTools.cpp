@@ -104,20 +104,7 @@ void DeveloperTools::OnDebugCreateTestSkinnedObject()
     configJoints.push_back(SkeletonComponent::JointConfig(1, 2, FastName("root0.bone0.bone0"), Vector3(2,0,5), Quaternion(0,0,0,1), 1.0, AABBox3(jointBox.min+boxes[2], jointBox.max+boxes[2])));
     configJoints.push_back(SkeletonComponent::JointConfig(1, 3, FastName("root0.bone0.bone1"), Vector3(-2,0,5), Quaternion(0,0,0,1), 1.0, AABBox3(jointBox.min+boxes[3], jointBox.max+boxes[3])));    
     component->SetConfigJoints(configJoints);
-    entity->AddComponent(component);
-    
-
-    /*rootJoints.push_back(SkeletonComponent::JointConfig(FastName("root1")));
-    rootJoints[1].children.push_back(SkeletonComponent::JointConfig(FastName("root1.bone0")));
-    rootJoints[1].children.push_back(SkeletonComponent::JointConfig(FastName("root1.bone1")));
-    rootJoints[1].children[0].children.push_back(SkeletonComponent::JointConfig(FastName("root1.bone0.bone0")));
-    rootJoints[1].children[0].children.push_back(SkeletonComponent::JointConfig(FastName("root1.bone0.bone1")));
-    rootJoints[1].children[1].children.push_back(SkeletonComponent::JointConfig(FastName("root1.bone1.bone0")));
-    rootJoints[1].children[1].children.push_back(SkeletonComponent::JointConfig(FastName("root1.bone1.bone1")));
-    rootJoints[1].children[1].children.push_back(SkeletonComponent::JointConfig(FastName("root1.bone1.bone2")));
-    rootJoints[1].children[1].children[2].children.push_back(SkeletonComponent::JointConfig(FastName("root1.bone1.bone2.bone0")));
-    rootJoints[1].children[1].children[2].children.push_back(SkeletonComponent::JointConfig(FastName("root1.bone1.bone2.bone1")));*/    
-
+    entity->AddComponent(component);        
     
     ScopedPtr<PolygonGroup> polygonGroup(new PolygonGroup());
     polygonGroup->AllocateData(EVF_VERTEX | EVF_JOINTINDEX | EVF_JOINTWEIGHT, boxesCount*8, boxesCount*24);
@@ -155,8 +142,9 @@ void DeveloperTools::OnDebugCreateTestSkinnedObject()
     polygonGroup->SetPrimitiveType(PRIMITIVETYPE_LINELIST);
     ScopedPtr<NMaterial> parentMaterial(NMaterial::CreateMaterial(FastName("DebugSkeleton"),  NMaterialName::DECAL_OPAQUE, NMaterial::DEFAULT_QUALITY_NAME));
     ScopedPtr<NMaterial> materialInstance(NMaterial::CreateMaterialInstance());    
+    parentMaterial->SetFlag(NMaterial::FLAG_SKINNING, NMaterial::FlagOn);
     materialInstance->SetParent(parentMaterial);
-    materialInstance->SetFlag(FastName("SKINNING"), NMaterial::FlagOn);
+    
     ScopedPtr<RenderBatch> renderBatch(new RenderBatch());
     renderBatch->SetMaterial(materialInstance);
     renderBatch->SetPolygonGroup(polygonGroup);
@@ -169,5 +157,5 @@ void DeveloperTools::OnDebugCreateTestSkinnedObject()
     entity->AddComponent(renderComponent);
 
     currentScene->Exec(new EntityAddCommand(entity, currentScene));
-    currentScene->selectionSystem->SetSelection(entity);
+    currentScene->selectionSystem->SetSelection(entity);    
 }
