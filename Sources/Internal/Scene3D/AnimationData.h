@@ -44,7 +44,7 @@ protected:
 public:
 	AnimationData();
 	
-	SceneNodeAnimationKey Interpolate(float32 t, uint32* startIdxCache) const;
+	SceneNodeAnimationKey Interpolate(float32 t, uint32& startIdxCache) const;
 	
 	void AddKey(const SceneNodeAnimationKey & key);
 	
