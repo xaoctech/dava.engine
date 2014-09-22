@@ -52,7 +52,7 @@ RenderObject * SkinnedMesh::Clone(RenderObject *newObject)
 
     if(!newObject)
     {
-        DVASSERT_MSG(IsPointerToExactClass<SkinnedMesh>(this), "Can clone only SpeedTreeObject");
+        DVASSERT_MSG(IsPointerToExactClass<SkinnedMesh>(this), "Can clone only SkinnedMesh");
         newObject = new SkinnedMesh();
     }
     RenderObject::Clone(newObject);   
