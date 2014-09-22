@@ -80,7 +80,7 @@ bool Thread::IsMainThread()
         Logger::Error("Main thread not initialized");
     }
 
-    Id currentId = GetCurrentThreadId();
+    Id currentId = GetCurrentId();
     return currentId == mainThreadId || currentId == glThreadId;
 }
 
