@@ -1157,7 +1157,7 @@ void UIControlMetadata::SetBottomMargin(float value)
     GetActiveUIControl()->GetBackground()->SetMargins(&margins);
 }
 
-UIControlBackground::UIMargins UIControlMetadata::GetMarginsToUpdate(UIControl::eControlState /* state */)
+UIControlBackground::UIMargins UIControlMetadata::GetMarginsToUpdate(UIControl::eControlState /* state */) const
 {
     if (!VerifyActiveParamID() || !GetActiveUIControl()->GetBackground())
     {

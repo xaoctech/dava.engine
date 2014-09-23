@@ -119,7 +119,7 @@ protected:
     virtual float GetTextBottomMargin() const;
     virtual void SetTextBottomMargin(float value);
 
-    virtual UIControlBackground::UIMargins GetTextMarginsToUpdate(UIControl::eControlState state = UIControl::STATE_NORMAL);
+    virtual UIControlBackground::UIMargins GetTextMarginsToUpdate(UIControl::eControlState state = UIControl::STATE_NORMAL) const;
 };
 
 };

@@ -487,7 +487,7 @@ void UIStaticTextMetadata::SetTextBottomMargin(float value)
     GetActiveStaticText()->GetTextBackground()->SetMargins(&margins);
 }
 
-UIControlBackground::UIMargins UIStaticTextMetadata::GetTextMarginsToUpdate(UIControl::eControlState /* state */)
+UIControlBackground::UIMargins UIStaticTextMetadata::GetTextMarginsToUpdate(UIControl::eControlState /* state */) const
 {
     if (!VerifyActiveParamID() || !GetActiveStaticText()->GetTextBackground())
     {

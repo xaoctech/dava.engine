@@ -284,7 +284,7 @@ protected:
     void SetUIControlVisible(const bool isVisible, bool hierarchic);
 
     // Get the margins from for updating.
-    virtual UIControlBackground::UIMargins GetMarginsToUpdate(UIControl::eControlState state = UIControl::STATE_NORMAL);
+    virtual UIControlBackground::UIMargins GetMarginsToUpdate(UIControl::eControlState state = UIControl::STATE_NORMAL) const;
 
     // Convert UIMargins to QRectF and vice versa.
     QRectF UIMarginsToQRectF(const UIControlBackground::UIMargins* margins) const;
