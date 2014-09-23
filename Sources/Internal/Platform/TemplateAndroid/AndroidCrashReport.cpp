@@ -233,6 +233,7 @@ void AndroidCrashReport::SignalHandler(int signal, struct siginfo *siginfo, void
 					buildId.module = TEAMCITY_BUILD_TYPE_ID;
 					buildId.function = "Crash::AppCrashed()";
 					buildId.fileLine = (frame->absolute_pc - mi->start);
+					crashSteps.push_back(buildId);
 				}
 #endif				
 				
