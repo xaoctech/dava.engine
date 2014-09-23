@@ -82,7 +82,6 @@
 		02FD7F131924997C007762C0 /* NamedAnimationsList.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C7B016B9326D002BD35F /* NamedAnimationsList.h */; };
 		02FD7F141924997C007762C0 /* AutotestingSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C7B716B9326D002BD35F /* AutotestingSystem.h */; };
 		02FD7F151924997C007762C0 /* StaticOcclusionComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 50C7D5FB186082B100D8936D /* StaticOcclusionComponent.h */; };
-		02FD7F161924997C007762C0 /* Config.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C7B816B9326D002BD35F /* Config.h */; };
 		02FD7F171924997C007762C0 /* MongodbUpdateObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C7BA16B9326D002BD35F /* MongodbUpdateObject.h */; };
 		02FD7F181924997C007762C0 /* BaseMath.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C7BF16B9326D002BD35F /* BaseMath.h */; };
 		02FD7F191924997C007762C0 /* BaseObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C7C116B9326D002BD35F /* BaseObject.h */; };
@@ -868,6 +867,11 @@
 		1AD7C35E17D8951C00B9977C /* Vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AD7C35D17D8951C00B9977C /* Vector.cpp */; };
 		496526D0167F173400107C70 /* libdxt_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 496526CF167F173400107C70 /* libdxt_ios.a */; };
 		497BF6E216F751ED00AC57C6 /* DeviceInfoiOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 497BF6E116F751ED00AC57C6 /* DeviceInfoiOS.mm */; };
+		4F25831019BDC94000C28926 /* Bind.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F25830A19BDC94000C28926 /* Bind.h */; };
+		4F25831119BDC94000C28926 /* FunctionTraits.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F25830B19BDC94000C28926 /* FunctionTraits.h */; };
+		4F25831219BDC94000C28926 /* NullType.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F25830C19BDC94000C28926 /* NullType.h */; };
+		4F25831319BDC94000C28926 /* TypeHolders.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F25830D19BDC94000C28926 /* TypeHolders.h */; };
+		4F25831419BDC94000C28926 /* TypeList.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F25830E19BDC94000C28926 /* TypeList.h */; };
 		4FDDEC5917A6920D00D9DDEA /* MaterialOptimazer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FDDEC5717A6920D00D9DDEA /* MaterialOptimazer.cpp */; };
 		4FDDEC5A17A6920D00D9DDEA /* MaterialOptimazer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FDDEC5817A6920D00D9DDEA /* MaterialOptimazer.h */; };
 		505EB41C18250C53009BEA3C /* OcclusionQuery.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 505EB41A18250C53009BEA3C /* OcclusionQuery.cpp */; };
@@ -947,6 +951,12 @@
 		647EFC7C195F0AC40073B3CB /* NMaterialStateDynamicTexturesInsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 647EFC6D195F0AC40073B3CB /* NMaterialStateDynamicTexturesInsp.cpp */; };
 		647EFC7D195F0AC40073B3CB /* NMaterialStateDynamicTexturesInsp.h in Headers */ = {isa = PBXBuildFile; fileRef = 647EFC6E195F0AC40073B3CB /* NMaterialStateDynamicTexturesInsp.h */; };
 		647EFC7E195F0AC40073B3CB /* NMaterialStateDynamicTexturesInsp.h in Headers */ = {isa = PBXBuildFile; fileRef = 647EFC6E195F0AC40073B3CB /* NMaterialStateDynamicTexturesInsp.h */; };
+		8402AB9E19B9FFB000111F35 /* libmongodb_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0105D11577993400E0B939 /* libmongodb_ios.a */; };
+		8402ABA219BA033200111F35 /* TextBlockDistanceRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C172EC2218C9F9D4004309CF /* TextBlockDistanceRender.cpp */; };
+		8402ABA319BA033600111F35 /* TextBlockGraphicsRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C172EC2418C9F9D4004309CF /* TextBlockGraphicsRender.cpp */; };
+		8402ABA419BA033900111F35 /* TextBlockRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C172EC2618C9F9D4004309CF /* TextBlockRender.cpp */; };
+		8402ABA519BA033C00111F35 /* TextBlockSoftwareRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C172EC2818C9F9D4004309CF /* TextBlockSoftwareRender.cpp */; };
+		8402ABA619BA033E00111F35 /* DFFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C13E6DB6186861FA00D1B2CE /* DFFont.cpp */; };
 		840ED3C916D506F900D2BA6C /* DPIHelperiOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 840ED3C816D506F900D2BA6C /* DPIHelperiOS.mm */; };
 		840ED3CB16D5070400D2BA6C /* DPIHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 840ED3CA16D5070400D2BA6C /* DPIHelper.h */; };
 		84D18BFB19201BEF009E3E90 /* Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84D18BEC19201BEF009E3E90 /* Image.cpp */; };
@@ -1170,7 +1180,6 @@
 		E8B3CA8C16B9326E002BD35F /* NamedAnimationsList.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C7B016B9326D002BD35F /* NamedAnimationsList.h */; };
 		E8B3CA9116B9326E002BD35F /* AutotestingSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C7B616B9326D002BD35F /* AutotestingSystem.cpp */; };
 		E8B3CA9216B9326E002BD35F /* AutotestingSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C7B716B9326D002BD35F /* AutotestingSystem.h */; };
-		E8B3CA9316B9326E002BD35F /* Config.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C7B816B9326D002BD35F /* Config.h */; };
 		E8B3CA9416B9326E002BD35F /* MongodbUpdateObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C7B916B9326D002BD35F /* MongodbUpdateObject.cpp */; };
 		E8B3CA9516B9326E002BD35F /* MongodbUpdateObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C7BA16B9326D002BD35F /* MongodbUpdateObject.h */; };
 		E8B3CA9816B9326E002BD35F /* BaseMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C7BE16B9326D002BD35F /* BaseMath.cpp */; };
@@ -1800,6 +1809,11 @@
 		1AD7C35D17D8951C00B9977C /* Vector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Vector.cpp; sourceTree = "<group>"; };
 		496526CF167F173400107C70 /* libdxt_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_ios.a; path = ../../Libs/libs/libdxt_ios.a; sourceTree = "<group>"; };
 		497BF6E116F751ED00AC57C6 /* DeviceInfoiOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DeviceInfoiOS.mm; sourceTree = "<group>"; };
+		4F25830A19BDC94000C28926 /* Bind.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bind.h; sourceTree = "<group>"; };
+		4F25830B19BDC94000C28926 /* FunctionTraits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FunctionTraits.h; sourceTree = "<group>"; };
+		4F25830C19BDC94000C28926 /* NullType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NullType.h; sourceTree = "<group>"; };
+		4F25830D19BDC94000C28926 /* TypeHolders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TypeHolders.h; sourceTree = "<group>"; };
+		4F25830E19BDC94000C28926 /* TypeList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TypeList.h; sourceTree = "<group>"; };
 		4FDDEC5717A6920D00D9DDEA /* MaterialOptimazer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialOptimazer.cpp; sourceTree = "<group>"; };
 		4FDDEC5817A6920D00D9DDEA /* MaterialOptimazer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialOptimazer.h; sourceTree = "<group>"; };
 		505EB41A18250C53009BEA3C /* OcclusionQuery.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OcclusionQuery.cpp; sourceTree = "<group>"; };
@@ -2053,7 +2067,6 @@
 		E8B3C7B016B9326D002BD35F /* NamedAnimationsList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NamedAnimationsList.h; sourceTree = "<group>"; };
 		E8B3C7B616B9326D002BD35F /* AutotestingSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystem.cpp; sourceTree = "<group>"; };
 		E8B3C7B716B9326D002BD35F /* AutotestingSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystem.h; sourceTree = "<group>"; };
-		E8B3C7B816B9326D002BD35F /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
 		E8B3C7B916B9326D002BD35F /* MongodbUpdateObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MongodbUpdateObject.cpp; sourceTree = "<group>"; };
 		E8B3C7BA16B9326D002BD35F /* MongodbUpdateObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MongodbUpdateObject.h; sourceTree = "<group>"; };
 		E8B3C7BE16B9326D002BD35F /* BaseMath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseMath.cpp; sourceTree = "<group>"; };
@@ -2623,6 +2636,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8402AB9E19B9FFB000111F35 /* libmongodb_ios.a in Frameworks */,
 				CC677BA5197D46390089547A /* SystemConfiguration.framework in Frameworks */,
 				6252BF2618ED506E00058754 /* libjpeg_ios.a in Frameworks */,
 				87A0C45B18EACBEE00A7402D /* AssetsLibrary.framework in Frameworks */,
@@ -2905,7 +2919,6 @@
 				C7E76D2E16DF69370041ED9A /* VectorSwig.cpp */,
 				E8B3C7B616B9326D002BD35F /* AutotestingSystem.cpp */,
 				E8B3C7B716B9326D002BD35F /* AutotestingSystem.h */,
-				E8B3C7B816B9326D002BD35F /* Config.h */,
 				E8B3C7B916B9326D002BD35F /* MongodbUpdateObject.cpp */,
 				E8B3C7BA16B9326D002BD35F /* MongodbUpdateObject.h */,
 			);
@@ -2915,6 +2928,11 @@
 		E8B3C7BD16B9326D002BD35F /* Base */ = {
 			isa = PBXGroup;
 			children = (
+				4F25830A19BDC94000C28926 /* Bind.h */,
+				4F25830B19BDC94000C28926 /* FunctionTraits.h */,
+				4F25830C19BDC94000C28926 /* NullType.h */,
+				4F25830D19BDC94000C28926 /* TypeHolders.h */,
+				4F25830E19BDC94000C28926 /* TypeList.h */,
 				E89C58F218B24832002C25FE /* Atomic.h */,
 				E89C58F318B24832002C25FE /* AtomicMacOS.mm */,
 				17816B7E17B2748900B067E1 /* AllocatorFactory.cpp */,
@@ -3921,7 +3939,6 @@
 				02E9B4C919407C48001DBDDF /* SpeedTreeComponent.h in Headers */,
 				02FD7F141924997C007762C0 /* AutotestingSystem.h in Headers */,
 				02FD7F151924997C007762C0 /* StaticOcclusionComponent.h in Headers */,
-				02FD7F161924997C007762C0 /* Config.h in Headers */,
 				02FD7F171924997C007762C0 /* MongodbUpdateObject.h in Headers */,
 				02FD7F181924997C007762C0 /* BaseMath.h in Headers */,
 				02FD7F191924997C007762C0 /* BaseObject.h in Headers */,
@@ -4362,12 +4379,12 @@
 				E8B3CA8516B9326E002BD35F /* BezierSplineAnimation.h in Headers */,
 				029BAE581859B81700478671 /* SoundEvent.h in Headers */,
 				E8B3CA8716B9326E002BD35F /* Interpolation.h in Headers */,
+				4F25831019BDC94000C28926 /* Bind.h in Headers */,
 				E8B3CA8916B9326E002BD35F /* KeyframeAnimation.h in Headers */,
 				E8B3CA8B16B9326E002BD35F /* LinearAnimation.h in Headers */,
 				E8B3CA8C16B9326E002BD35F /* NamedAnimationsList.h in Headers */,
 				E8B3CA9216B9326E002BD35F /* AutotestingSystem.h in Headers */,
 				50C7D5FD186082B100D8936D /* StaticOcclusionComponent.h in Headers */,
-				E8B3CA9316B9326E002BD35F /* Config.h in Headers */,
 				E8B3CA9516B9326E002BD35F /* MongodbUpdateObject.h in Headers */,
 				E8B3CA9916B9326E002BD35F /* BaseMath.h in Headers */,
 				E8B3CA9B16B9326E002BD35F /* BaseObject.h in Headers */,
@@ -4479,6 +4496,7 @@
 				E8FC1308186972C80095D8FE /* QualitySettingsSystem.h in Headers */,
 				E8B3CB5516B9326E002BD35F /* NeonMath.h in Headers */,
 				E8B3CB5616B9326E002BD35F /* OOBBox.h in Headers */,
+				4F25831419BDC94000C28926 /* TypeList.h in Headers */,
 				E8B3CB5716B9326E002BD35F /* Plane.h in Headers */,
 				647EFC71195F0AC40073B3CB /* NMaterialHelper.h in Headers */,
 				84D18C0519201BEF009E3E90 /* LibJpegHelper.h in Headers */,
@@ -4538,6 +4556,7 @@
 				E8B3CBDC16B9326E002BD35F /* ColorOnlyEffect.h in Headers */,
 				E8B3CBDE16B9326E002BD35F /* MultiTextureEffect.h in Headers */,
 				E8FC1304186972B60095D8FE /* QualitySettingsComponent.h in Headers */,
+				4F25831119BDC94000C28926 /* FunctionTraits.h in Headers */,
 				E8B3CBE016B9326E002BD35F /* TextureMulColorAlphaTestEffect.h in Headers */,
 				E8B3CBE216B9326E002BD35F /* TextureMulColorEffect.h in Headers */,
 				E8B3CBE416B9326E002BD35F /* Camera.h in Headers */,
@@ -4597,6 +4616,7 @@
 				E8B3CC5116B9326E002BD35F /* Box2DGameObject.h in Headers */,
 				E8B3CC5316B9326E002BD35F /* Box2DGameObjectManager.h in Headers */,
 				E8B3CC5516B9326E002BD35F /* Box2DHelper.h in Headers */,
+				4F25831319BDC94000C28926 /* TypeHolders.h in Headers */,
 				E8B3CC5716B9326E002BD35F /* Box2DTileCollider.h in Headers */,
 				64493DFC19476F4700AB2715 /* VegetationCustomGeometry.h in Headers */,
 				E8B3CC5916B9326E002BD35F /* GameObject.h in Headers */,
@@ -4787,6 +4807,7 @@
 				EAADA0061892A48E001E1AA2 /* UIParticles.h in Headers */,
 				A6919538183A6E9B00D598AE /* UniqueStateSet.h in Headers */,
 				A670F2E818479DD20030E075 /* TextureStateData.h in Headers */,
+				4F25831219BDC94000C28926 /* NullType.h in Headers */,
 				9A011FF039AF222095F1FFD4 /* GamepadDevice.h in Headers */,
 				9A011EB2802FEC4E0A4AA289 /* GamepadManager.h in Headers */,
 			);
@@ -4906,6 +4927,7 @@
 				02FD80A71924997C007762C0 /* FixedSizePoolAllocator.cpp in Sources */,
 				02FD80A81924997C007762C0 /* Message.cpp in Sources */,
 				02FD80A91924997C007762C0 /* ObjectFactory.cpp in Sources */,
+				8402ABA219BA033200111F35 /* TextBlockDistanceRender.cpp in Sources */,
 				02FD80AA1924997C007762C0 /* Observable.cpp in Sources */,
 				02FD80AB1924997C007762C0 /* Radix.cpp in Sources */,
 				02FD80AC1924997C007762C0 /* CollisionObject2.cpp in Sources */,
@@ -4965,6 +4987,7 @@
 				02FD80DC1924997C007762C0 /* Math2D.cpp in Sources */,
 				02FD80DD1924997C007762C0 /* Matrix4.cpp in Sources */,
 				02FD80DE1924997C007762C0 /* NeonMath.cpp in Sources */,
+				8402ABA319BA033600111F35 /* TextBlockGraphicsRender.cpp in Sources */,
 				02FD80DF1924997C007762C0 /* Polygon2.cpp in Sources */,
 				02FD80E01924997C007762C0 /* Polygon3.cpp in Sources */,
 				02FD80E11924997C007762C0 /* RectPacker.cpp in Sources */,
@@ -4980,6 +5003,7 @@
 				02FD80E81924997C007762C0 /* NetworkPacket.cpp in Sources */,
 				02FD80E91924997C007762C0 /* TCPServer.mm in Sources */,
 				02FD80EA1924997C007762C0 /* WFNetworkConnection.mm in Sources */,
+				8402ABA619BA033E00111F35 /* DFFont.cpp in Sources */,
 				02FD80EB1924997C007762C0 /* Particle.cpp in Sources */,
 				02FD80EC1924997C007762C0 /* ParticleEmitter.cpp in Sources */,
 				02FD80ED1924997C007762C0 /* ParticleLayer.cpp in Sources */,
@@ -5054,6 +5078,7 @@
 				02FD812E1924997C007762C0 /* RenderOptions.cpp in Sources */,
 				02FD812F1924997C007762C0 /* RenderResource.cpp in Sources */,
 				02FD81301924997C007762C0 /* Shader.cpp in Sources */,
+				8402ABA519BA033C00111F35 /* TextBlockSoftwareRender.cpp in Sources */,
 				02FD81311924997C007762C0 /* ShaderDX.cpp in Sources */,
 				64493E1519476F4700AB2715 /* VegetationRenderData.cpp in Sources */,
 				02FD81321924997C007762C0 /* ShaderGL.cpp in Sources */,
@@ -5125,6 +5150,7 @@
 				02FD816B1924997C007762C0 /* ShadowVolumeNode.cpp in Sources */,
 				02FD816C1924997C007762C0 /* SkeletonNode.cpp in Sources */,
 				02FD816D1924997C007762C0 /* SpriteNode.cpp in Sources */,
+				8402ABA419BA033900111F35 /* TextBlockRender.cpp in Sources */,
 				02FD816E1924997C007762C0 /* SwitchNode.cpp in Sources */,
 				02FD816F1924997C007762C0 /* BaseProcessSystem.cpp in Sources */,
 				02FD81701924997C007762C0 /* DebugRenderSystem.cpp in Sources */,
@@ -5866,15 +5892,26 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../..\"",
 				);
+				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Framework_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					DDARWIN_NO_CARBON,
+					FT2_BUILD_LIBRARY,
+					DAVA_DEBUG,
+					DAVA_FMOD,
+					__DAVAENGINE_AUTOTESTING__,
+					AUTOTESTING_LUA,
+				);
 				GCC_WARN_ABOUT_MISSING_NEWLINE = NO;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -5909,10 +5946,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../..\"",
 				);
+				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Framework_Prefix.pch;
@@ -5920,6 +5960,8 @@
 					DDARWIN_NO_CARBON,
 					FT2_BUILD_LIBRARY,
 					DAVA_FMOD,
+					__DAVAENGINE_AUTOTESTING__,
+					AUTOTESTING_LUA,
 				);
 				GCC_WARN_ABOUT_MISSING_NEWLINE = NO;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
@@ -5961,6 +6003,8 @@
 					FT2_BUILD_LIBRARY,
 					DAVA_DEBUG,
 					DAVA_FMOD,
+					__DAVAENGINE_AUTOTESTING__,
+					AUTOTESTING_LUA,
 				);
 				GCC_THUMB_SUPPORT = NO;
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
@@ -6006,6 +6050,8 @@
 					DDARWIN_NO_CARBON,
 					FT2_BUILD_LIBRARY,
 					DAVA_FMOD,
+					__DAVAENGINE_AUTOTESTING__,
+					AUTOTESTING_LUA,
 				);
 				GCC_THUMB_SUPPORT = NO;
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
@@ -6050,6 +6096,8 @@
 					DDARWIN_NO_CARBON,
 					FT2_BUILD_LIBRARY,
 					DAVA_FMOD,
+					__DAVAENGINE_AUTOTESTING__,
+					AUTOTESTING_LUA,
 				);
 				GCC_THUMB_SUPPORT = NO;
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
@@ -6089,10 +6137,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../..\"",
 				);
+				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Framework_Prefix.pch;
@@ -6135,6 +6186,8 @@
 					DDARWIN_NO_CARBON,
 					FT2_BUILD_LIBRARY,
 					DAVA_FMOD,
+					__DAVAENGINE_AUTOTESTING__,
+					AUTOTESTING_LUA,
 				);
 				GCC_THUMB_SUPPORT = NO;
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
@@ -6174,10 +6227,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../..\"",
 				);
+				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Framework_Prefix.pch;
