@@ -95,6 +95,7 @@ bool SceneExporterTool::InitializeFromCommandLine()
     
     filename = CommandLineParser::GetCommandParam(String("-processfile"));
     foldername = CommandLineParser::GetCommandParam(String("-processdir"));
+    qualityConfigPath = CommandLineParser::GetCommandParam(String("-qualitycfgpath"));
 
     if(!filename.empty())
     {
@@ -131,6 +132,8 @@ void SceneExporterTool::DumpParams()
 
 void SceneExporterTool::Process()
 {
+    QualitySettingsSystem::Instance()->Load(qualityConfigPath);
+
     SceneExporter exporter;
 
     exporter.SetOutFolder(outFolder);
