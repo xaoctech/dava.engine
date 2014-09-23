@@ -116,10 +116,16 @@ void *PthreadMain(void *param)
 #if defined (__DAVAENGINE_ANDROID__)
     Thread::AttachToJVM();
 #endif
-    
-    Thread *t = static_cast<Thread *>(param);
+
+#if defined(__DAVAENGINE_DEBUG__) 
+    Thread *t = static_cast<Thread *>(param);    
+#if defined (__DAVAENGINE_ANDROID__)
+    pthread_setname_np(t->handle, t->name.c_str());
+#elif defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
     pthread_setname_np(t->name.c_str());
-    
+#endif
+#endif
+
     Thread::ThreadFunction(param);
 
 #if defined (__DAVAENGINE_ANDROID__)
