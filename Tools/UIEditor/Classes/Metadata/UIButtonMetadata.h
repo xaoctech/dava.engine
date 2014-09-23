@@ -236,12 +236,11 @@ protected:
     QRectF GetTextMarginsForState(UIControl::eControlState state) const;
     void UpdatePropertyDirtyFlagForTextMargins();
 
-    virtual UIControlBackground::UIMargins GetMarginsToUpdate(UIControl::eControlState state);
-    virtual UIControlBackground::UIMargins GetTextMarginsToUpdate(UIControl::eControlState state);
+    virtual UIControlBackground::UIMargins GetMarginsToUpdate(UIControl::eControlState state) const;
+    virtual UIControlBackground::UIMargins GetTextMarginsToUpdate(UIControl::eControlState state) const;
 
     // Shadow offset&color.
-    float GetShadowOffsetXForState(UIControl::eControlState state) const;
-    float GetShadowOffsetYForState(UIControl::eControlState state) const;
+    Vector2 GetShadowOffsetXYForState(UIControl::eControlState state) const;
     QColor GetShadowColorForState(UIControl::eControlState state) const;
 
     // Font/shadow color inherit type.
@@ -252,8 +251,7 @@ protected:
     int GetTextPerPixelAccuracyTypeForState(UIControl::eControlState state) const;
     void UpdatePropertyDirtyFlagForTextPerPixelAccuracyType();
     
-    void UpdatePropertyDirtyFlagForShadowOffsetX();
-    void UpdatePropertyDirtyFlagForShadowOffsetY();
+    void UpdatePropertyDirtyFlagForShadowOffsetXY();
     void UpdatePropertyDirtyFlagForShadowColor();
 
     // Recover dirty flags.
