@@ -107,7 +107,7 @@ void ThreadSyncTest::TestThread(PerfFuncData * data)
     Thread *infiniteThread = Thread::Create(Message(this, &ThreadSyncTest::InfiniteThreadFunction));
     
     TEST_VERIFY(Thread::STATE_CREATED == infiniteThread->GetState());
-    
+    infiniteThread->SetName("Infinite test thread");
     infiniteThread->Start();
     
     uint32 timeout = 3000;

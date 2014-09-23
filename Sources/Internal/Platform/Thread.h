@@ -113,6 +113,12 @@ public:
 	*/
 	static Thread *Create(const Message& msg);
 
+    /**
+     \brief Sets thread name. You should to use it before Thread::Start().
+     */
+    inline void SetName(const String &_name);
+    inline String GetName();
+    
 	/**
 		\brief Start execution of the thread
 	*/
@@ -214,9 +220,26 @@ private:
     */
     static Set<Thread *> threadList;
     static Mutex threadListMutex;
+    
+    /**
+     \brief Full list of created DAVA::Thread's. Main thread is not DAVA::Thread, so it is not there.
+     */
+    String name;
 };
 
 
+inline void Thread::SetName(const String &_name)
+{
+    // name sets inside thread function, so we cannot change thread name after starting.
+    DVASSERT(STATE_CREATED == state);
+    name = _name;
+}
+
+inline String Thread::GetName()
+{
+    return name;
+}
+    
 inline Thread::eThreadState Thread::GetState() const
 {
     return state;

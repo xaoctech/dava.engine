@@ -117,6 +117,9 @@ void *PthreadMain(void *param)
     Thread::AttachToJVM();
 #endif
     
+    Thread *t = static_cast<Thread *>(param);
+    pthread_setname_np(t->name.c_str());
+    
     Thread::ThreadFunction(param);
 
 #if defined (__DAVAENGINE_ANDROID__)
@@ -135,7 +138,7 @@ void Thread::Start()
     Retain();
     pthread_create(&handle, 0, PthreadMain, (void *)this);
 }
-
+    
 void Thread::Yield()
 {
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
