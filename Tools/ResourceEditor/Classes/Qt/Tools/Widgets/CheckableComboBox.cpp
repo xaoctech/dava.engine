@@ -119,7 +119,7 @@ bool CheckableComboBox::eventFilter(QObject* obj, QEvent* e)
     {
         switch (e->type())
         {
-        case QEvent::MouseButtonRelease:
+        case QEvent::MouseButtonPress:
             {
                 QAbstractItemView* v = view();
                 QAbstractItemModel* m = v->model();
@@ -127,6 +127,8 @@ bool CheckableComboBox::eventFilter(QObject* obj, QEvent* e)
                 const bool isChecked = (m->data(index, Qt::CheckStateRole).toInt() == Qt::Checked);
                 m->setData(index, isChecked ? Qt::Unchecked : Qt::Checked, Qt::CheckStateRole);
             }
+            break;
+        case QEvent::MouseButtonRelease:
             return true;
 
         case QEvent::Show:
