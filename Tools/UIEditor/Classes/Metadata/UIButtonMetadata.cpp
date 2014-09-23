@@ -1056,17 +1056,17 @@ void UIButtonMetadata::UpdatePropertyDirtyFlagForShadowColor()
     }
 }
 
-int UIButtonMetadata::GetFontShadowColorInheritType() const
+int UIButtonMetadata::GetTextColorInheritType() const
 {
     if (!VerifyActiveParamID())
     {
         return UIControlBackground::COLOR_IGNORE_PARENT;
     }
     
-    return GetFontShadowColorInheritTypeForState(uiControlStates[GetActiveStateIndex()]);
+    return GetTextColorInheritTypeForState(uiControlStates[GetActiveStateIndex()]);
 }
 
-void UIButtonMetadata::SetFontShadowColorInheritType(int value)
+void UIButtonMetadata::SetTextColorInheritType(int value)
 {
     if (!VerifyActiveParamID())
     {
@@ -1076,14 +1076,14 @@ void UIButtonMetadata::SetFontShadowColorInheritType(int value)
     for (uint32 i = 0; i < this->GetStatesCount(); ++i)
 	{
         UIControl::eControlState state = uiControlStates[i];
-        GetActiveUIButton()->SetStateFontColorInheritType(state, (UIControlBackground::eColorInheritType)value);
+        GetActiveUIButton()->SetStateTextColorInheritType(state, (UIControlBackground::eColorInheritType)value);
     }
 
     UpdateExtraDataLocalizationKey();
-    UpdatePropertyDirtyFlagForFontShadowColorInheritType();
+    UpdatePropertyDirtyFlagForTextColorInheritType();
 }
 
-int UIButtonMetadata::GetFontShadowColorInheritTypeForState(UIControl::eControlState state) const
+int UIButtonMetadata::GetTextColorInheritTypeForState(UIControl::eControlState state) const
 {
     UIStaticText* textControl = GetActiveUIButton()->GetStateTextControl(state);
     if (textControl)
@@ -1094,16 +1094,67 @@ int UIButtonMetadata::GetFontShadowColorInheritTypeForState(UIControl::eControlS
     return UIControlBackground::COLOR_IGNORE_PARENT;
 }
 
-void UIButtonMetadata::UpdatePropertyDirtyFlagForFontShadowColorInheritType()
+void UIButtonMetadata::UpdatePropertyDirtyFlagForTextColorInheritType()
 {
     int statesCount = UIControlStateHelper::GetUIControlStatesCount();
     for (int i = 0; i < statesCount; i ++)
     {
         UIControl::eControlState curState = UIControlStateHelper::GetUIControlState(i);
         
-        bool curStateDirty = (GetFontShadowColorInheritTypeForState(curState) !=
-                              GetFontShadowColorInheritTypeForState(GetReferenceState()));
+        bool curStateDirty = (GetTextColorInheritTypeForState(curState) !=
+                              GetTextColorInheritTypeForState(GetReferenceState()));
         SetStateDirtyForProperty(curState, PropertyNames::TEXT_COLOR_INHERIT_TYPE_PROPERTY_NAME, curStateDirty);
+    }
+}
+
+int UIButtonMetadata::GetTextPerPixelAccuracyType() const
+{
+   if (!VerifyActiveParamID())
+    {
+        return UIControlBackground::PER_PIXEL_ACCURACY_DISABLED;
+    }
+    
+    return GetTextPerPixelAccuracyTypeForState(uiControlStates[GetActiveStateIndex()]);
+}
+
+void UIButtonMetadata::SetTextPerPixelAccuracyType(int value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+
+    for (uint32 i = 0; i < this->GetStatesCount(); ++i)
+	{
+        UIControl::eControlState state = uiControlStates[i];
+        GetActiveUIButton()->SetStateTextPerPixelAccuracyType(state, (UIControlBackground::ePerPixelAccuracyType)value);
+    }
+
+    UpdateExtraDataLocalizationKey();
+    UpdatePropertyDirtyFlagForTextPerPixelAccuracyType();
+}
+
+int UIButtonMetadata::GetTextPerPixelAccuracyTypeForState(UIControl::eControlState state) const
+{
+    UIStaticText* textControl = GetActiveUIButton()->GetStateTextControl(state);
+    if (textControl)
+    {
+        return textControl->GetTextBackground()->GetPerPixelAccuracyType();
+    }
+    
+    return UIControlBackground::PER_PIXEL_ACCURACY_DISABLED;
+}
+
+void UIButtonMetadata::UpdatePropertyDirtyFlagForTextPerPixelAccuracyType()
+{
+    int statesCount = UIControlStateHelper::GetUIControlStatesCount();
+    for (int i = 0; i < statesCount; i ++)
+    {
+        UIControl::eControlState curState = UIControlStateHelper::GetUIControlState(i);
+        
+        bool curStateDirty = (GetTextPerPixelAccuracyTypeForState(curState) !=
+                              GetTextPerPixelAccuracyTypeForState(GetReferenceState()));
+        SetStateDirtyForProperty(curState, PropertyNames::TEXT_PER_PIXEL_ACCURACY_TYPE_PROPERTY_NAME, curStateDirty);
     }
 }
 
@@ -1122,7 +1173,8 @@ void UIButtonMetadata::RecoverPropertyDirtyFlags()
     UpdatePropertyDirtyFlagForAlign();
     
     UpdatePropertyDirtyFlagForFittingType();
-    UpdatePropertyDirtyFlagForFontShadowColorInheritType();
+    UpdatePropertyDirtyFlagForTextColorInheritType();
+    UpdatePropertyDirtyFlagForTextPerPixelAccuracyType();
     
     UpdatePropertyDirtyFlagForLeftRightStretchCap();
     UpdatePropertyDirtyFlagForTopBottomStretchCap();
