@@ -2,14 +2,14 @@
 
 LineEditEx::LineEditEx(QWidget* parent)
     : QLineEdit(parent)
-    , timer( new QTimer( this ) )
+      , timer(new QTimer(this))
 {
     timer->setSingleShot(true);
     SetAcceptInterval(500);
 
-    connect( timer, SIGNAL( timeout() ), SLOT( OnAcceptEdit() ) );
-    connect( this, SIGNAL( editingFinished() ), SLOT( OnAcceptEdit() ) );
-    connect( this, SIGNAL( textChanged( const QString& ) ), SLOT( OnTextEdit() ) );
+    connect(timer, SIGNAL( timeout() ), SLOT( OnAcceptEdit() ));
+    connect(this, SIGNAL( editingFinished() ), SLOT( OnAcceptEdit() ));
+    connect(this, SIGNAL( textChanged( const QString& ) ), SLOT( OnTextEdit() ));
 }
 
 LineEditEx::~LineEditEx()
@@ -21,7 +21,7 @@ void LineEditEx::SetAcceptInterval(int msec)
     const bool wasActive = timer->isActive();
     timer->stop();
     timer->setInterval(msec);
-    if ( wasActive )
+    if (wasActive)
         timer->start();
 }
 

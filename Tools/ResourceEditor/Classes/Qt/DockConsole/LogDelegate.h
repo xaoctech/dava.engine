@@ -8,7 +8,6 @@
 #include <QStyledItemDelegate>
 
 
-
 class QAbstractItemView;
 
 
@@ -17,19 +16,18 @@ class LogDelegate
 {
     Q_OBJECT
 
-signals:
+    signals:
     void copyRequest();
 
 public:
-    explicit LogDelegate(QAbstractItemView *view, QObject *parent = NULL);
+    explicit LogDelegate(QAbstractItemView* view, QObject* parent = NULL);
     ~LogDelegate();
 
 private:
-    bool editorEvent( QEvent * event, QAbstractItemModel * model, const QStyleOptionViewItem & option, const QModelIndex & index ) ;
+    bool editorEvent(QEvent* event, QAbstractItemModel* model, const QStyleOptionViewItem& option, const QModelIndex& index);
 
     QPointer<QAbstractItemView> view;
 };
-
 
 
 #endif // __LOGDELEGATE_H__

@@ -13,7 +13,7 @@ class CheckableComboBox
 {
     Q_OBJECT
 
-signals:
+    signals:
     void done();
 
 public:
@@ -21,17 +21,20 @@ public:
     ~CheckableComboBox();
 
     QStringList GetSelectedItems() const;
-    QList< QVariant > GetSelectedUserData() const;
-    void SelectUserData( const QList< QVariant >& dataList );
+    QList<QVariant> GetSelectedUserData() const;
+    void SelectUserData(const QList<QVariant>& dataList);
 
 private slots:
-    void OnRowsInserted(const QModelIndex & parent, int start, int end);
+    void OnRowsInserted(const QModelIndex& parent, int start, int end);
+    void UpdateTextHints();
 
 private:
     QModelIndexList GetCheckedIndexes() const;
 
-    bool eventFilter(QObject *obj, QEvent *e);
-    void paintEvent(QPaintEvent *event);
+    bool eventFilter(QObject* obj, QEvent* e);
+    void paintEvent(QPaintEvent* event);
+
+    QString textHint;
 };
 
 

@@ -22,25 +22,25 @@ class LogWidget
     Q_OBJECT
 
 public:
-    explicit LogWidget(QWidget *parent = NULL);
+    explicit LogWidget(QWidget* parent = NULL);
     ~LogWidget();
 
 private slots:
     void OnFilterChanged();
     void OnTextFilterChanged(const QString& text);
     void OnCopy();
+    void OnClear();
 
 private:
     void FillFiltersCombo();
     void LoadSettings();
     void SaveSettings();
-    bool eventFilter( QObject * watched, QEvent * event );
+    bool eventFilter(QObject* watched, QEvent* event);
 
     QScopedPointer<Ui::LogWidget> ui;
     QPointer<LogModel> logModel;
     QPointer<LogFilterModel> logFilterModel;
 };
-
 
 
 #endif // __LOGWIDGET_H__

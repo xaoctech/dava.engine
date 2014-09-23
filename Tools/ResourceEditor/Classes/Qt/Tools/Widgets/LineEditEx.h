@@ -12,7 +12,7 @@ class LineEditEx
 {
     Q_OBJECT
 
-signals:
+    signals:
     void textUpdated(const QString& text);
 
 public:
@@ -26,7 +26,7 @@ private slots:
     void OnAcceptEdit();
 
 private:
-    QPointer< QTimer > timer;
+    QPointer<QTimer> timer;
 };
 
 

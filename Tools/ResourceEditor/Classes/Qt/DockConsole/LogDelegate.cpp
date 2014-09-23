@@ -8,8 +8,8 @@
 
 
 LogDelegate::LogDelegate(QAbstractItemView* _view, QObject* parent)
-    : QStyledItemDelegate( parent )
-    , view( _view )
+    : QStyledItemDelegate(parent)
+      , view(_view)
 {
     Q_ASSERT( _view );
     view->setItemDelegate(this);
@@ -25,12 +25,12 @@ bool LogDelegate::editorEvent(QEvent* event, QAbstractItemModel* model, QStyleOp
     {
     case QEvent::MouseButtonRelease:
         {
-            QMouseEvent *me = static_cast<QMouseEvent *>(event);
-            if ( me->button() == Qt::RightButton )
+            QMouseEvent* me = static_cast<QMouseEvent *>(event);
+            if (me->button() == Qt::RightButton)
             {
                 QMenu menu;
-                QAction *copy = new QAction("Copy", this);
-                connect( copy, SIGNAL( triggered() ), SIGNAL(copyRequest()) );
+                QAction* copy = new QAction("Copy", this);
+                connect(copy, SIGNAL( triggered() ), SIGNAL(copyRequest()));
                 menu.addAction(copy);
                 menu.exec(QCursor::pos());
                 copy->deleteLater();
