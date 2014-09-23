@@ -426,7 +426,7 @@ SceneNodeAnimation * ColladaSceneNode::ExportNodeAnimation(FCDSceneNode * origin
 		{
 			if ((transform->GetType() == FCDTransform::MATRIX) && (originalNode->GetTransformCount() > 1))
 			{
-				DVASSERT(false, "Multiple matrix animations are not supported.");
+				DVASSERT_MSG(false, "Multiple matrix animations are not supported.");
 				return NULL;
 			}
 
