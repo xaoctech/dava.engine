@@ -19,25 +19,26 @@
 
 LogWidget::LogWidget(QWidget* parent)
     : QWidget(parent)
-    , ui( new Ui::LogWidget() )
+    , ui(new Ui::LogWidget())
 {
     ui->setupUi(this);
 
-    LogDelegate *delegate = new LogDelegate(ui->log, this);
-    logModel = new LogModel( this );
+    LogDelegate* delegate = new LogDelegate(ui->log, this);
+    logModel = new LogModel(this);
     logFilterModel = new LogFilterModel(this);
 
     logFilterModel->setSourceModel(logModel);
     ui->log->setModel(logFilterModel);
-    connect( delegate, SIGNAL( copyRequest() ), SLOT( OnCopy() ) );
+    connect(delegate, SIGNAL( copyRequest() ), SLOT( OnCopy() ));
     ui->log->installEventFilter(this);
 
     FillFiltersCombo();
 
-    connect( ui->filter, SIGNAL( done() ), SLOT( OnFilterChanged() ) );
-    connect( ui->search, SIGNAL( textUpdated( const QString& ) ), SLOT( OnTextFilterChanged( const QString& ) ) );
+    connect(ui->clear, SIGNAL( clicked() ), SLOT( OnClear() ));
+    connect(ui->filter, SIGNAL( done() ), SLOT( OnFilterChanged() ));
+    connect(ui->search, SIGNAL( textUpdated( const QString& ) ), SLOT( OnTextFilterChanged( const QString& ) ));
 
-    DAVA::Logger::AddCustomOutput( logModel );
+    DAVA::Logger::AddCustomOutput(logModel);
     LoadSettings();
     OnFilterChanged();
 }
@@ -45,19 +46,19 @@ LogWidget::LogWidget(QWidget* parent)
 LogWidget::~LogWidget()
 {
     SaveSettings();
-    DAVA::Logger::RemoveCustomOutput( logModel );
+    DAVA::Logger::RemoveCustomOutput(logModel);
 }
 
 void LogWidget::OnFilterChanged()
 {
-    QList< QVariant > selection = ui->filter->GetSelectedUserData();
+    QList<QVariant> selection = ui->filter->GetSelectedUserData();
     QSet<int> levels;
 
-    for ( int i = 0; i < selection.size(); i++ )
+    for (int i = 0; i < selection.size(); i++)
     {
         bool isValid = false;
         const int level = selection[i].toInt(&isValid);
-        if ( isValid )
+        if (isValid)
         {
             levels.insert(level);
         }
@@ -79,13 +80,13 @@ void LogWidget::FillFiltersCombo()
     ui->filter->addItem("LEVEL_WARNING", DAVA::Logger::LEVEL_WARNING);
     ui->filter->addItem("LEVEL_ERROR", DAVA::Logger::LEVEL_ERROR);
 
-    QAbstractItemModel *m = ui->filter->model();
+    QAbstractItemModel* m = ui->filter->model();
     const int n = m->rowCount();
-    for ( int i = 0; i < n; i++ )
+    for (int i = 0; i < n; i++)
     {
-        QModelIndex index = m->index( i, 0, QModelIndex() );
-        const int ll = index.data( LogModel::LEVEL_ROLE ).toInt();
-        const QPixmap& pix = logModel->GetIcon( ll );
+        QModelIndex index = m->index(i, 0, QModelIndex());
+        const int ll = index.data(LogModel::LEVEL_ROLE).toInt();
+        const QPixmap& pix = logModel->GetIcon(ll);
         m->setData(index, pix, Qt::DecorationRole);
     }
 }
@@ -95,8 +96,8 @@ void LogWidget::LoadSettings()
     DAVA::VariantType v = SettingsManager::Instance()->GetValue(Settings::Internal_LogLevelFilter);
     const DAVA::uint32* a = (DAVA::uint32*)v.AsByteArray();
     const DAVA::int32 n = SettingsManager::Instance()->GetValue(Settings::Internal_LogLevelFilter).AsByteArraySize() / sizeof(DAVA::uint32);
-    QList< QVariant > levels;
-    for ( int i = 0; i < n; i++ )
+    QList<QVariant> levels;
+    for (int i = 0; i < n; i++)
     {
         levels << a[i];
     }
@@ -109,29 +110,29 @@ void LogWidget::LoadSettings()
 
 void LogWidget::SaveSettings()
 {
-    const QList< QVariant >& selection = ui->filter->GetSelectedUserData();
+    const QList<QVariant>& selection = ui->filter->GetSelectedUserData();
     const int n = selection.size();
     DAVA::Vector<DAVA::uint32> v;
-    v.reserve( selection.size() );
-    for ( int i = 0; i < n; i++ )
+    v.reserve(selection.size());
+    for (int i = 0; i < n; i++)
     {
-        v.push_back( selection[i].toInt() );
+        v.push_back(selection[i].toInt());
     }
-    SettingsManager::Instance()->SetValue(Settings::Internal_LogLevelFilter, DAVA::VariantType( (DAVA::uint8 *)&v[0], v.size() * sizeof( v[0] ) ) );
+    SettingsManager::Instance()->SetValue(Settings::Internal_LogLevelFilter, DAVA::VariantType((DAVA::uint8 *)&v[0], v.size() * sizeof( v[0] )));
 
     const DAVA::String text = ui->search->text().toStdString();
-    SettingsManager::Instance()->SetValue( Settings::Internal_LogTextFilter, DAVA::VariantType(text) );
+    SettingsManager::Instance()->SetValue(Settings::Internal_LogTextFilter, DAVA::VariantType(text));
 }
 
 bool LogWidget::eventFilter(QObject* watched, QEvent* event)
 {
-    if ( watched == ui->log )
+    if (watched == ui->log)
     {
-        switch ( event->type() )
+        switch (event->type())
         {
         case QEvent::KeyPress:
             {
-                QKeyEvent *ke = static_cast<QKeyEvent *>(event);
+                QKeyEvent* ke = static_cast<QKeyEvent *>(event);
                 if (ke->matches(QKeySequence::Copy))
                 {
                     OnCopy();
@@ -145,24 +146,29 @@ bool LogWidget::eventFilter(QObject* watched, QEvent* event)
         }
     }
 
-    return QWidget::eventFilter( watched, event );
+    return QWidget::eventFilter(watched, event);
 }
 
 void LogWidget::OnCopy()
 {
-    const QModelIndexList& selection =  ui->log->selectionModel()->selectedIndexes();
+    const QModelIndexList& selection = ui->log->selectionModel()->selectedIndexes();
     const int n = selection.size();
-    if ( n == 0 )
+    if (n == 0)
         return ;
 
     QString text;
     QTextStream ss(&text);
-    for ( int i = 0; i < n; i++ )
+    for (int i = 0; i < n; i++)
     {
-        ss << selection[i].data( Qt::DisplayRole ).toString() << "\n";
+        ss << selection[i].data(Qt::DisplayRole).toString() << "\n";
     }
     ss.flush();
 
-    QClipboard *clipboard = QApplication::clipboard();
+    QClipboard* clipboard = QApplication::clipboard();
     clipboard->setText(text);
+}
+
+void LogWidget::OnClear()
+{
+    logModel->clear();
 }

@@ -13,7 +13,7 @@ class LogFilterModel
     Q_OBJECT
 
 public:
-    explicit LogFilterModel(QObject *parent = NULL);
+    explicit LogFilterModel(QObject* parent = NULL);
     ~LogFilterModel();
 
 public slots:
@@ -21,12 +21,11 @@ public slots:
     void SetFilterString(const QString& filter);
 
 private:
-    bool filterAcceptsRow( int source_row, const QModelIndex & source_parent ) const;
+    bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const;
 
     QSet<int> filters;
     QString filterText;
 };
-
 
 
 #endif // __LOGFILTERMODEL_H__

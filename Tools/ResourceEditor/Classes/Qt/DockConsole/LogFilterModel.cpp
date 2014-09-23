@@ -5,7 +5,6 @@
 #include "LogModel.h"
 
 
-
 LogFilterModel::LogFilterModel(QObject* parent)
     : QSortFilterProxyModel(parent)
 {
@@ -26,7 +25,7 @@ void LogFilterModel::SetFilters(const QSet<int>& _filters)
 
 void LogFilterModel::SetFilterString(const QString& _filter)
 {
-    if ( _filter != filterText)
+    if (_filter != filterText)
     {
         filterText = _filter;
         invalidateFilter();
@@ -40,8 +39,8 @@ bool LogFilterModel::filterAcceptsRow(int source_row, const QModelIndex& source_
     bool isAcceptedByText = true;
     if (!filterText.isEmpty())
     {
-        const QString text = source.data( Qt::DisplayRole).toString();
-        if ( !text.contains(filterText) )
+        const QString text = source.data(Qt::DisplayRole).toString();
+        if (!text.contains(filterText))
         {
             isAcceptedByText = false;
         }

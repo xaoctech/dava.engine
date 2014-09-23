@@ -12,33 +12,33 @@
 
 class LogModel
     : public QStandardItemModel
-    , public DAVA::LoggerOutput
+      , public DAVA::LoggerOutput
 {
     Q_OBJECT
 
-signals:
-    void logged( int ll, const QString& text );
+    signals:
+    void logged(int ll, const QString& text);
 
 public:
     enum Roles
     {
-		LEVEL_ROLE = Qt::UserRole,
+        LEVEL_ROLE = Qt::UserRole,
     };
 
 public:
-    explicit LogModel(QObject *parent = NULL);
+    explicit LogModel(QObject* parent = NULL);
     ~LogModel();
 
     QPixmap GetIcon(int ll) const;
-    
+
     void Output(DAVA::Logger::eLogLevel ll, const DAVA::char8* text) const;
-	void Output(DAVA::Logger::eLogLevel ll, const DAVA::char16* text) const;
+    void Output(DAVA::Logger::eLogLevel ll, const DAVA::char16* text) const;
 
 private slots:
-    void OnAddMessage( int ll, const QString& text );
+    void OnAddMessage(int ll, const QString& text);
 
 private:
-    QList<QStandardItem *> CreateItem( int ll, const QString& text ) const;
+    QList<QStandardItem *> CreateItem(int ll, const QString& text) const;
     QString normalize(const QString& text) const;
 
     mutable QMap<int, QPixmap> icons;

@@ -7,27 +7,27 @@
 #include "Utils/UTF8Utils.h"
 
 
-LogModel::LogModel(QObject *parent)
+LogModel::LogModel(QObject* parent)
     : QStandardItemModel(parent)
 {
-    connect( this, SIGNAL( logged( int, const QString& ) ), SLOT( OnAddMessage( int, const QString& ) ) );
+    connect(this, SIGNAL( logged( int, const QString& ) ), SLOT( OnAddMessage( int, const QString& ) ));
 }
 
 LogModel::~LogModel()
 {
 }
 
-void LogModel::Output(DAVA::Logger::eLogLevel ll, const DAVA::char8 * text) const
+void LogModel::Output(DAVA::Logger::eLogLevel ll, const DAVA::char8* text) const
 {
-    emit const_cast<LogModel *>(this)->logged( ll, QString::fromStdString( std::string( text ) ) );
+    emit const_cast<LogModel *>(this)->logged(ll, QString::fromStdString(std::string(text)));
 }
 
-void LogModel::Output(DAVA::Logger::eLogLevel ll, const DAVA::char16 * text) const
+void LogModel::Output(DAVA::Logger::eLogLevel ll, const DAVA::char16* text) const
 {
     const DAVA::WideString wide(text);
     const DAVA::String utf8 = DAVA::UTF8Utils::EncodeToUTF8(wide);
-    const QString& str = QString::fromUtf8( utf8.data(), utf8.size() );
-    emit const_cast<LogModel *>(this)->logged( ll, str );
+    const QString& str = QString::fromUtf8(utf8.data(), utf8.size());
+    emit const_cast<LogModel *>(this)->logged(ll, str);
 }
 
 void LogModel::OnAddMessage(int ll, const QString& text)
@@ -40,13 +40,13 @@ QList<QStandardItem *> LogModel::CreateItem(int ll, const QString& text) const
 {
     QList<QStandardItem *> row;
 
-    QStandardItem *textItem = new QStandardItem();
+    QStandardItem* textItem = new QStandardItem();
     textItem->setText(text);
     textItem->setToolTip(text);
     textItem->setIcon(GetIcon(ll));
     row << textItem;
 
-    for ( int i = 0; i < row.size(); i++ )
+    for (int i = 0; i < row.size(); i++)
     {
         row[i]->setData(ll, LEVEL_ROLE);
     }
@@ -62,13 +62,13 @@ QString LogModel::normalize(const QString& text) const
 QPixmap LogModel::GetIcon(int ll) const
 {
     const auto it = icons.constFind(ll);
-    if ( it != icons.constEnd() )
+    if (it != icons.constEnd())
     {
         return it.value();
     }
 
-    QPixmap pix( 16, 16 );
-    pix.fill( Qt::transparent );
+    QPixmap pix(16, 16);
+    pix.fill(Qt::transparent);
     QPainter p(&pix);
 
     QColor bg = Qt::transparent;
@@ -97,10 +97,10 @@ QPixmap LogModel::GetIcon(int ll) const
 
     const int ofs = 3;
 
-    p.setBrush( bg );
-    QRect rc = QRect( QPoint( 0, 0 ), pix.size() ).adjusted( ofs, ofs, -ofs, -ofs );
-    p.setPen( fg1 );
-    p.drawEllipse( rc );
+    p.setBrush(bg);
+    QRect rc = QRect(QPoint(0, 0), pix.size()).adjusted(ofs, ofs, -ofs, -ofs);
+    p.setPen(fg1);
+    p.drawEllipse(rc);
 
     icons[ll] = pix;
     return pix;
