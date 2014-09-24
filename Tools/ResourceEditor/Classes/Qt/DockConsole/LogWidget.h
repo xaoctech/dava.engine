@@ -30,6 +30,8 @@ private slots:
     void OnTextFilterChanged(const QString& text);
     void OnCopy();
     void OnClear();
+    void DetectAutoScroll();
+    void DoAutoScroll();
 
 private:
     void FillFiltersCombo();
@@ -40,6 +42,7 @@ private:
     QScopedPointer<Ui::LogWidget> ui;
     QPointer<LogModel> logModel;
     QPointer<LogFilterModel> logFilterModel;
+    bool m_doAutoScroll;
 };
 
 
