@@ -208,6 +208,8 @@ public slots:
     void OnSwitchWithDifferentLODs(bool checked);
 
     void OnGenerateHeightDelta();
+
+    void OnBatchProcessScene();
     
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
@@ -249,6 +251,7 @@ private slots:
 	void UnmodalDialogFinished(int);
 
     void DebugVersionInfo();
+    void DebugColorPicker();
 
 private:
 	Ui::MainWindow *ui;

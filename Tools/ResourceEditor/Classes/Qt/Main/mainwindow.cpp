@@ -121,7 +121,9 @@
 #include "Classes/Commands2/PaintHeightDeltaAction.h"
 
 #include "Tools/HeightDeltaTool/HeightDeltaTool.h"
+#include "Tools/ColorPicker/ColorPicker.h"
 
+#include "SceneProcessing/SceneProcessor.h"
 
 QtMainWindow::QtMainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -741,6 +743,11 @@ void QtMainWindow::SetupActions()
         connect(act, SIGNAL(triggered()), SLOT(DebugVersionInfo()));
 #endif
 	}
+    // Debug colorpicker
+	{
+        QAction *act = ui->menuDebug_Functions->addAction("Color picker");
+        connect(act, SIGNAL(triggered()), SLOT(DebugColorPicker()));
+	}
     
  	//Collision Box Types
     objectTypesLabel = new QtLabelWithActions();
@@ -764,6 +771,8 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionHangingObjects, SIGNAL(triggered()), this, SLOT(OnHangingObjects()));
 	QObject::connect(ui->actionReloadShader, SIGNAL(triggered()), this, SLOT(OnReloadShaders()));
     QObject::connect(ui->actionSwitchesWithDifferentLODs, SIGNAL(triggered(bool)), this, SLOT(OnSwitchWithDifferentLODs(bool)));
+    
+    QObject::connect(ui->actionBatchProcess, SIGNAL(triggered(bool)), this, SLOT(OnBatchProcessScene()));
 }
 
 void QtMainWindow::SetupShortCuts()
@@ -2024,6 +2033,15 @@ void QtMainWindow::OnConvertModifiedTextures()
 		{
 
 			DAVA::TextureConverter::ConvertTexture(*descriptor, gpu, true, (TextureConverter::eConvertQuality)quality.AsInt32());
+
+            DAVA::TexturesMap texturesMap = Texture::GetTextureMap();
+            DAVA::TexturesMap::iterator found = texturesMap.find(FILEPATH_MAP_KEY(descriptor->pathname));
+            if(found != texturesMap.end())
+            {
+                DAVA::Texture *tex = found->second;
+                tex->Reload();
+            }
+            
 			WaitSetValue(++convretedNumber);
 		}
 	}
@@ -2442,17 +2460,24 @@ void QtMainWindow::OnBuildStaticOcclusion()
     QtWaitDialog *waitOcclusionDlg = new QtWaitDialog(this);
     waitOcclusionDlg->Show("Static occlusion", "Please wait while building static occlusion.", true, true);
 
+    bool sceneWasChanged = true;
     scene->staticOcclusionBuildSystem->Build();
     while(scene->staticOcclusionBuildSystem->IsInBuild())
     {
         if(waitOcclusionDlg->WasCanceled())
         {
             scene->staticOcclusionBuildSystem->Cancel();
+            sceneWasChanged = false;
         }
         else
         {
             waitOcclusionDlg->SetValue(scene->staticOcclusionBuildSystem->GetBuildStatus());
         }
+    }
+    
+    if(sceneWasChanged)
+    {
+        scene->MarkAsChanged();
     }
 
     delete waitOcclusionDlg;
@@ -2942,6 +2967,13 @@ void QtMainWindow::DebugVersionInfo()
     versionInfoWidget->show();
 }
 
+void QtMainWindow::DebugColorPicker()
+{
+    ColorPicker *cp = new ColorPicker(this);
+
+    cp->Exec();
+}
+
 void QtMainWindow::OnGenerateHeightDelta()
 {
     HeightDeltaTool *w = new HeightDeltaTool( this );
@@ -2950,4 +2982,20 @@ void QtMainWindow::OnGenerateHeightDelta()
     w->SetOutputTemplate( "h_", QString() );
     
     w->show();
+}
+
+void QtMainWindow::OnBatchProcessScene()
+{
+    SceneProcessor sceneProcessor;
+
+    // For client developers: need to set entity processor derived from EntityProcessorBase
+    //DestructibleSoundAdder *entityProcessor = new DestructibleSoundAdder();
+    //sceneProcessor.SetEntityProcessor(entityProcessor);
+    //SafeRelease(entityProcessor);
+
+    SceneEditor2* sceneEditor = GetCurrentScene();
+    if (sceneProcessor.Execute(sceneEditor))
+    {
+        SaveScene(sceneEditor);
+    }
 }

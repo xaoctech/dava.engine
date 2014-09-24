@@ -36,6 +36,8 @@
 #include "Base/ObjectFactory.h"
 #include "Utils/Utils.h"
 #include "Core/Core.h"
+#include "UI/UIEvent.h"
+#include "UI/UIYamlLoader.h"
 
 namespace DAVA 
 {
@@ -136,27 +138,59 @@ void UISlider::SyncThumbWithSprite()
 
 void UISlider::SetValue(float32 value)
 {
+    bool needSendEvent = !FLOAT_EQUAL(currentValue, value);
 	currentValue = value;
 	RecalcButtonPos();
+    
+    if (needSendEvent)
+    {
+        PerformEventWithData(EVENT_VALUE_CHANGED, (void*)true);
+    }
 }
 
 void UISlider::SetMinValue(float32 value)
 {
     minValue = value;
-    RecalcButtonPos();
+    if (currentValue < minValue)
+    {
+        SetValue(minValue);
+    }
+    else
+    {
+        RecalcButtonPos();
+    }
 }
     
 void UISlider::SetMaxValue(float32 value)
 {
     maxValue = value;
-    RecalcButtonPos();
+    if (currentValue > maxValue)
+    {
+        SetValue(maxValue);
+    }
+    else
+    {
+        RecalcButtonPos();
+    }
 }
     
 void UISlider::SetMinMaxValue(float32 _minValue, float32 _maxValue)
 {
 	minValue = _minValue;
 	maxValue = _maxValue;
-	SetValue((minValue + maxValue) / 2.0f);
+
+    if (currentValue < minValue)
+    {
+        SetValue(minValue);
+    }
+    else if (currentValue > maxValue)
+    {
+        SetValue(maxValue);
+    }
+    else
+    {
+        RecalcButtonPos();
+    }
 }
 
 void UISlider::AddControl(UIControl *control)
@@ -393,9 +427,9 @@ void UISlider::AttachToSubcontrols()
 		thumbButton = FindByName(UISLIDER_THUMB_SPRITE_CONTROL_NAME);
 		DVASSERT(thumbButton);
         thumbButton->Retain();
-        
-		InitInactiveParts(thumbButton->GetBackground()->GetSprite());
 	}
+
+    InitInactiveParts(thumbButton->GetBackground()->GetSprite());
 }
 
 List<UIControl*> UISlider::GetSubcontrols()
@@ -422,6 +456,7 @@ void UISlider::LoadBackgound(const char* prefix, UIControlBackground* background
     const YamlNode * frameNode = rootNode->Get(Format("%sframe", prefix));
     const YamlNode * alignNode = rootNode->Get(Format("%salign", prefix));
     const YamlNode * colorInheritNode = rootNode->Get(Format("%scolorInherit", prefix));
+    const YamlNode * pixelAccuracyNode = rootNode->Get(Format("%spixelAccuracy", prefix));
     const YamlNode * drawTypeNode = rootNode->Get(Format("%sdrawType", prefix));
     const YamlNode * leftRightStretchCapNode = rootNode->Get(Format("%sleftRightStretchCap", prefix));
     const YamlNode * topBottomStretchCapNode = rootNode->Get(Format("%stopBottomStretchCap", prefix));
@@ -434,7 +469,9 @@ void UISlider::LoadBackgound(const char* prefix, UIControlBackground* background
 
     if (spriteNode)
     {
-        background->SetSprite(Sprite::Create(spriteNode->AsString()), 0);
+        Sprite* sprite = Sprite::Create(spriteNode->AsString());
+        background->SetSprite(sprite, 0);
+        SafeRelease(sprite);
     }
     
     if (frameNode)
@@ -450,6 +487,11 @@ void UISlider::LoadBackgound(const char* prefix, UIControlBackground* background
     if (colorInheritNode)
     {
         background->SetColorInheritType((UIControlBackground::eColorInheritType)loader->GetColorInheritTypeFromNode(colorInheritNode));
+    }
+
+    if (pixelAccuracyNode)
+    {
+        background->SetPerPixelAccuracyType((UIControlBackground::ePerPixelAccuracyType)loader->GetPerPixelAccuracyTypeFromNode(pixelAccuracyNode));
     }
     
     if(drawTypeNode)
@@ -516,6 +558,13 @@ void UISlider::SaveBackground(const char* prefix, UIControlBackground* backgroun
     if (baseBackground->GetColorInheritType() != colorInheritType)
     {
         rootNode->Set(Format("%scolorInherit", prefix), loader->GetColorInheritTypeNodeValue(colorInheritType));
+    }
+    
+    // Per pixel accuracy
+    UIControlBackground::ePerPixelAccuracyType perPixelAccuracyType =  background->GetPerPixelAccuracyType();
+    if (baseBackground->GetPerPixelAccuracyType() != perPixelAccuracyType)
+    {
+        rootNode->Set(Format("%spixelAccuracy", prefix), loader->GetPerPixelAccuracyTypeNodeValue(perPixelAccuracyType));
     }
 
     // Draw type.
