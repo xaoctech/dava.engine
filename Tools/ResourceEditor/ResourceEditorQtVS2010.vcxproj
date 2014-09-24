@@ -409,9 +409,6 @@
     <ClCompile Include="Classes\Qt\CubemapEditor\CubemapUtils.cpp" />
     <ClCompile Include="Classes\Qt\CubemapEditor\MaterialHelper.cpp" />
     <ClCompile Include="Classes\Qt\DebugTools\VersionInfoWidget\VersionInfoWidget.cpp" />
-    <ClCompile Include="Classes\Qt\DockConsole\Console.cpp" />
-    <ClCompile Include="Classes\Qt\DockConsole\ConsoleView.cpp" />
-    <ClCompile Include="Classes\Qt\DockConsole\ConsoleWidget.cpp" />
     <ClCompile Include="Classes\Qt\DockConsole\LogDelegate.cpp" />
     <ClCompile Include="Classes\Qt\DockConsole\LogFilterModel.cpp" />
     <ClCompile Include="Classes\Qt\DockConsole\LogModel.cpp" />
@@ -611,9 +608,6 @@
     <ClCompile Include="_GeneratedQt\CubemapEditor\CubemapUtils_moc.cpp" />
     <ClCompile Include="_GeneratedQt\CubemapEditor\MaterialHelper_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DebugTools\VersionInfoWidget\VersionInfoWidget_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\DockConsole\ConsoleView_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\DockConsole\ConsoleWidget_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\DockConsole\Console_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockConsole\LogDelegate_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockConsole\LogFilterModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockConsole\LogModel_moc.cpp" />
@@ -1109,9 +1103,6 @@
     <ClInclude Include="Classes\Qt\CubemapEditor\CubemapUtils.h" />
     <ClInclude Include="Classes\Qt\CubemapEditor\MaterialHelper.h" />
     <ClInclude Include="Classes\Qt\DebugTools\VersionInfoWidget\VersionInfoWidget.h" />
-    <ClInclude Include="Classes\Qt\DockConsole\Console.h" />
-    <ClInclude Include="Classes\Qt\DockConsole\ConsoleView.h" />
-    <ClInclude Include="Classes\Qt\DockConsole\ConsoleWidget.h" />
     <ClInclude Include="Classes\Qt\DockConsole\LogDelegate.h" />
     <ClInclude Include="Classes\Qt\DockConsole\LogFilterModel.h" />
     <ClInclude Include="Classes\Qt\DockConsole\LogModel.h" />

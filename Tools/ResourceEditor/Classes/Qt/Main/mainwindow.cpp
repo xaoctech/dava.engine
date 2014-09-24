@@ -42,7 +42,6 @@
 #include "mainwindow.h"
 #include "QtUtils.h"
 #include "Project/ProjectManager.h"
-#include "DockConsole/Console.h"
 #include "Scene/SceneHelper.h"
 #include "SpritesPacker/SpritePackerHelper.h"
 
@@ -138,7 +137,6 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     , modificationWidget(NULL)
     , developerTools(new DeveloperTools(this))
 {
-	new Console();
 	new ProjectManager();
 	new RecentFilesManager();
 	ui->setupUi(this);
@@ -204,7 +202,6 @@ QtMainWindow::~QtMainWindow()
 	ui = NULL;
 
 	ProjectManager::Instance()->Release();
-	Console::Instance()->Release();
 	RecentFilesManager::Instance()->Release();
 }
 
@@ -438,7 +435,6 @@ void QtMainWindow::SetupMainMenu()
 	ui->menuDockWindows->addAction(ui->dockParticleEditor->toggleViewAction());
 	ui->menuDockWindows->addAction(ui->dockParticleEditorTimeLine->toggleViewAction());
 	ui->menuDockWindows->addAction(ui->dockSceneTree->toggleViewAction());
-	ui->menuDockWindows->addAction(ui->dockConsole->toggleViewAction());
 	ui->menuDockWindows->addAction(ui->dockLODEditor->toggleViewAction());
 	ui->menuDockWindows->addAction(ui->dockLandscapeEditorControls->toggleViewAction());
 
@@ -594,8 +590,9 @@ void QtMainWindow::SetupDocks()
     }
     // Console dock
 	{
-        dockConsole = new QDockWidget("ConsoleV2", this);
-        dockConsole->setWidget(new LogWidget());
+        LogWidget *logWidget = new LogWidget();
+        dockConsole = new QDockWidget(logWidget->windowTitle(), this);
+        dockConsole->setWidget(logWidget);
         dockConsole->setObjectName(QString( "dock_%1" ).arg(dockConsole->widget()->objectName()));
         addDockWidget(Qt::RightDockWidgetArea, dockConsole);
 	}
