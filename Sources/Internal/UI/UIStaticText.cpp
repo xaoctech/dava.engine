@@ -201,22 +201,25 @@ void UIStaticText::Draw(const UIGeometricData &geometricData)
 
     UIControl::Draw(geometricData);
 
+	UIGeometricData textGeomData;
+	textGeomData.position = textBlock->GetSpriteOffset();
+	textGeomData.size = GetSize();
+	textGeomData.AddToGeometricData(geometricData);
+
     if(!FLOAT_EQUAL(shadowBg->GetDrawColor().a, 0.0f) && (!FLOAT_EQUAL(shadowOffset.dx, 0.0f) || !FLOAT_EQUAL(shadowOffset.dy, 0.0f)))
     {
 		textBlock->Draw(GetShadowColor(), &shadowOffset);
         UIGeometricData shadowGeomData;
         shadowGeomData.position = shadowOffset;
         shadowGeomData.size = GetSize();
-        shadowGeomData.AddToGeometricData(geometricData);
+        shadowGeomData.AddToGeometricData(textGeomData);
 
         shadowBg->SetAlign(textBg->GetAlign());
-        shadowBg->SetPerPixelAccuracyType(background->GetPerPixelAccuracyType());
         shadowBg->Draw(shadowGeomData);
     }
 
     textBlock->Draw(GetTextColor());
-    textBg->SetPerPixelAccuracyType(background->GetPerPixelAccuracyType());
-    textBg->Draw(geometricData);
+	textBg->Draw(textGeomData);
 }
 
 void UIStaticText::SetParentColor(const Color &parentColor)
@@ -251,6 +254,7 @@ void UIStaticText::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader
     const YamlNode * textAlignNode = node->Get("textalign");
     const YamlNode * textColorInheritTypeNode = node->Get("textcolorInheritType");
     const YamlNode * shadowColorInheritTypeNode = node->Get("shadowcolorInheritType");
+    const YamlNode * textPerPixelAccuracyTypeNode = node->Get("textperPixelAccuracyType");
 
     if (fontNode)
     {
@@ -302,11 +306,20 @@ void UIStaticText::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader
     {
         GetShadowBackground()->SetColorInheritType((UIControlBackground::eColorInheritType)loader->GetColorInheritTypeFromNode(shadowColorInheritTypeNode));
     }
+    
+    if (textPerPixelAccuracyTypeNode)
+    {
+    	GetTextBackground()->SetPerPixelAccuracyType((UIControlBackground::ePerPixelAccuracyType)loader->GetPerPixelAccuracyTypeFromNode(textPerPixelAccuracyTypeNode));
+	    GetShadowBackground()->SetPerPixelAccuracyType((UIControlBackground::ePerPixelAccuracyType)loader->GetPerPixelAccuracyTypeFromNode(textPerPixelAccuracyTypeNode));
+    }
 }
 
 YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
 {
     YamlNode *node = UIControl::SaveToYamlNode(loader);
+    
+    // UIStaticText has its own default value for Pixel Accuracy
+    node->RemoveNodeFromMap("perPixelAccuracy");
 
     UIStaticText *baseControl = new UIStaticText();
 
@@ -325,14 +338,14 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
         nodeValue->SetColor(textColor);
         node->Set("textcolor", nodeValue);
     }
-
-    // Text Color Inherit Type.
-    int32 colorInheritType = (int32)GetTextBackground()->GetColorInheritType();
-    if (baseControl->GetTextBackground()->GetColorInheritType() != colorInheritType)
+    
+    // Base per pixel accuracy
+    int perPixelAccuracyType = GetBackground()->GetPerPixelAccuracyType();
+    if (baseControl->GetBackground()->GetPerPixelAccuracyType() != perPixelAccuracyType)
     {
-        node->Set("textcolorInheritType", loader->GetColorInheritTypeNodeValue(colorInheritType));
+    	node->Set("perPixelAccuracy", loader->GetPerPixelAccuracyTypeNodeValue(perPixelAccuracyType));
     }
-
+    
     // ShadowColor
     const Color &shadowColor = GetShadowColor();
     if (baseControl->GetShadowColor() != shadowColor)
@@ -341,11 +354,25 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
         node->Set("shadowcolor", nodeValue);
     }
 
+    // Text Color Inherit Type.
+    int32 colorInheritType = (int32)GetTextBackground()->GetColorInheritType();
+    if (baseControl->GetTextBackground()->GetColorInheritType() != colorInheritType)
+    {
+        node->Set("textcolorInheritType", loader->GetColorInheritTypeNodeValue(colorInheritType));
+    }
+
     // Shadow Color Inherit Type.
     colorInheritType = (int32)GetShadowBackground()->GetColorInheritType();
     if (baseControl->GetShadowBackground()->GetColorInheritType() != colorInheritType)
     {
         node->Set("shadowcolorInheritType", loader->GetColorInheritTypeNodeValue(colorInheritType));
+    }
+    
+    // Text Per Pixel Accuracy Type - text and text shadow
+    int32 textPerPixelAccuracyType = (int32)GetTextBackground()->GetPerPixelAccuracyType();
+    if (baseControl->GetTextBackground()->GetPerPixelAccuracyType() != textPerPixelAccuracyType)
+    {
+    	node->Set("textperPixelAccuracyType", loader->GetPerPixelAccuracyTypeNodeValue(textPerPixelAccuracyType));
     }
 
     // ShadowOffset
