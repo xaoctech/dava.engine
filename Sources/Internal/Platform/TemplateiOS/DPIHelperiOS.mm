@@ -48,7 +48,7 @@ namespace DAVA
         IPAD_1_2                = 132,
         IPAD_3_4                = 264,
         IPHONE_6_PLUS           = 460,
-        IPHONE_6_PLUS_7_1       = 401
+        IPHONE_6_PLUS_7_1       = 307
     };
     
         
@@ -60,7 +60,7 @@ namespace DAVA
         DeviceScreenInfo(768, IPAD_1_2,  ""),
         DeviceScreenInfo(768, IPHONE_3_IPAD_MINI, "mini"),
         DeviceScreenInfo(1242, IPHONE_6_PLUS, ""),
-        DeviceScreenInfo(1080, IPHONE_6_PLUS_7_1, ""),
+        DeviceScreenInfo(828, IPHONE_6_PLUS_7_1, ""),
         DeviceScreenInfo(1536, IPAD_3_4, ""),
     };
     
@@ -120,6 +120,8 @@ namespace DAVA
         CGFloat scale = [[UIScreen mainScreen] scale]; //support of retina
         CGFloat screenWidth = screenRect.size.width * scale;
         CGFloat screenHeight = screenRect.size.height * scale;
+        
+        NSLog(@"w=%f h=%f", screenWidth, screenHeight);
         
          //width and height could be swapped according orientation
         uint32 minRes = screenWidth > screenHeight ? screenHeight : screenWidth;
