@@ -9,6 +9,7 @@
 #include <QTextStream>
 #include <QEvent>
 #include <QKeyEvent>
+#include <QScrollBar>
 
 #include "Settings/SettingsManager.h"
 
@@ -20,6 +21,7 @@
 LogWidget::LogWidget(QWidget* parent)
     : QWidget(parent)
     , ui(new Ui::LogWidget())
+    , m_doAutoScroll(true)
 {
     ui->setupUi(this);
 
@@ -37,6 +39,13 @@ LogWidget::LogWidget(QWidget* parent)
     connect(ui->clear, SIGNAL( clicked() ), SLOT( OnClear() ));
     connect(ui->filter, SIGNAL( done() ), SLOT( OnFilterChanged() ));
     connect(ui->search, SIGNAL( textUpdated( const QString& ) ), SLOT( OnTextFilterChanged( const QString& ) ));
+
+    // Auto scroll feature
+    connect(ui->log->model(), SIGNAL( rowsAboutToBeInserted(const QModelIndex&, int, int) ), SLOT( DetectAutoScroll() ));
+    connect(ui->log->model(), SIGNAL( rowsAboutToBeRemoved(const QModelIndex&, int, int) ), SLOT( DetectAutoScroll() ));
+    connect(ui->log->model(), SIGNAL( modelAboutToBeReset() ), SLOT( DetectAutoScroll() ));
+    connect(ui->log->model(), SIGNAL( rowsInserted(const QModelIndex&, int, int) ), SLOT( DoAutoScroll() ));
+    connect(ui->log->model(), SIGNAL( modelReset() ), SLOT( DoAutoScroll() ));
 
     DAVA::Logger::AddCustomOutput(logModel);
     LoadSettings();
@@ -156,11 +165,19 @@ void LogWidget::OnCopy()
     if (n == 0)
         return ;
 
-    QString text;
-    QTextStream ss(&text);
+    QMap< int, QModelIndex > sortedSelection;
     for (int i = 0; i < n; i++)
     {
-        ss << selection[i].data(Qt::DisplayRole).toString() << "\n";
+        const QModelIndex& index = selection[i];
+        const int realIdx = index.row();
+        sortedSelection[realIdx] = index;
+    }
+
+    QString text;
+    QTextStream ss(&text);
+    for (auto it = sortedSelection.constBegin(); it != sortedSelection.constEnd(); ++it)
+    {
+        ss << it.value().data(Qt::DisplayRole).toString() << "\n";
     }
     ss.flush();
 
@@ -171,4 +188,18 @@ void LogWidget::OnCopy()
 void LogWidget::OnClear()
 {
     logModel->clear();
+}
+
+void LogWidget::DetectAutoScroll()
+{
+    QScrollBar *scroll = ui->log->verticalScrollBar();
+    m_doAutoScroll = scroll->value() == scroll->maximum();
+}
+
+void LogWidget::DoAutoScroll()
+{
+    if (!m_doAutoScroll)
+        return ;
+
+    ui->log->scrollToBottom();
 }
