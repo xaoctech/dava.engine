@@ -240,15 +240,16 @@ void HierarchyTreeController::UpdateSelection(const HierarchyTreeNode* activeIte
 	emit SelectedTreeItemChanged(activeItem);
 }
 
-void HierarchyTreeController::ChangeItemSelection(HierarchyTreeControlNode* control)
+void HierarchyTreeController::ChangeItemSelection(HierarchyTreeControlNode* control,
+                                                  eExpandControlType expandType)
 {
 	if (IsControlSelected(control))
 		UnselectControl(control);
 	else
-		SelectControl(control);
+		SelectControl(control, expandType);
 }
 
-void HierarchyTreeController::SelectControl(HierarchyTreeControlNode* control)
+void HierarchyTreeController::SelectControl(HierarchyTreeControlNode* control, eExpandControlType expandType)
 {
 	if (IsControlSelected(control))
 	{
@@ -259,7 +260,7 @@ void HierarchyTreeController::SelectControl(HierarchyTreeControlNode* control)
 	InsertSelectedControlToList(control);
 	
 	emit AddSelectedControl(control);
-	emit SelectedControlNodesChanged(activeControlNodes);
+	emit SelectedControlNodesChanged(activeControlNodes, expandType);
 }
 
 void HierarchyTreeController::UnselectControl(HierarchyTreeControlNode* control, bool emitSelectedControlNodesChanged)
@@ -353,7 +354,8 @@ void HierarchyTreeController::Clear()
     CleanupUnusedItems();
 }
 
-HierarchyTreeNode::HIERARCHYTREENODEID HierarchyTreeController::CreateNewControl(const QString& strType, const QPoint& position)
+HierarchyTreeNode::HIERARCHYTREENODEID HierarchyTreeController::CreateNewControl(HierarchyTreeNode::HIERARCHYTREENODEID typeId,
+                                                                                const QPoint& position)
 {
 	if (!activeScreen)
 	{
@@ -377,20 +379,16 @@ HierarchyTreeNode::HIERARCHYTREENODEID HierarchyTreeController::CreateNewControl
 	point -= parentDelta;
 	
 	// Can create.
-	return CreateNewControl(strType, point, parentNode);
+	return CreateNewControl(typeId, point, parentNode);
 }
 
-HierarchyTreeNode::HIERARCHYTREENODEID HierarchyTreeController::CreateNewControl(const QString& strType, const Vector2& position,
-																				 HierarchyTreeNode* parentNode)
+HierarchyTreeNode::HIERARCHYTREENODEID HierarchyTreeController::CreateNewControl(HierarchyTreeNode::HIERARCHYTREENODEID typeId,
+                                                                                const Vector2& position,
+                                                                                HierarchyTreeNode* parentNode)
 {
 	// Create the control itself.
-	String type = strType.toStdString();
-	String newName = activeScreen->GetNewControlName(type);
-
     // Add the tree node - we need it before initializing control.
-	HierarchyTreeControlNode* controlNode = LibraryController::Instance()->CreateNewControl(parentNode, strType,
-																							QString::fromStdString(newName),
-																							position);
+	HierarchyTreeControlNode* controlNode = LibraryController::Instance()->CreateNewControl(parentNode, typeId, position);
 	if (!controlNode)
 	{
 		return HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
@@ -677,6 +675,11 @@ void HierarchyTreeController::UpdateControlsData()
 	 hierarchyTree.UpdateControlsData();
 }
 
+void HierarchyTreeController::UpdateControlsData(const HierarchyTreeScreenNode* screenNode)
+{
+    hierarchyTree.UpdateControlsData(screenNode);
+}
+
 void HierarchyTreeController::UpdateLocalization(bool takePathFromLocalizationSystem)
 {
     // Update the Active Platform.
@@ -706,8 +709,9 @@ void HierarchyTreeController::UpdateLocalization(bool takePathFromLocalizationSy
         else
         {
             // Re-setup the Localization System with the values stored on Platform level.
+            LocalizationSystem::Instance()->SetDirectory(localizationPath);
             LocalizationSystem::Instance()->SetCurrentLocale(locale);
-            LocalizationSystem::Instance()->InitWithDirectory(localizationPath);
+            LocalizationSystem::Instance()->Init();
         }
     }
     

@@ -206,24 +206,36 @@ void SceneValidator::ValidateRenderComponent(Entity *ownerNode, Set<String> &err
 	if(ro->GetType() == RenderObject::TYPE_LANDSCAPE)
     {
         ownerNode->SetLocked(true);
-        if(ownerNode->GetLocalTransform() != DAVA::Matrix4::IDENTITY)
-        {
-            ownerNode->SetLocalTransform(DAVA::Matrix4::IDENTITY);
-            SceneEditor2 *sc = dynamic_cast<SceneEditor2 *>(ownerNode->GetScene());
-            if(sc)
-            {
-                sc->MarkAsChanged();
-            }
-            errorsLog.insert("Landscape had wrong transform. Please re-save scene.");
-        }
+        FixIdentityTransform(ownerNode, errorsLog, "Landscape had wrong transform. Please re-save scene.");
         
 		Landscape *landscape = static_cast<Landscape *>(ro);
         ValidateLandscape(landscape, errorsLog);
 
 		ValidateCustomColorsTexture(ownerNode, errorsLog);
     }
+    
+    if(ro->GetType() == RenderObject::TYPE_VEGETATION)
+    {
+        ownerNode->SetLocked(true);
+        FixIdentityTransform(ownerNode, errorsLog, "Vegetation had wrong transform. Please re-save scene.");
+    }
 }
 
+void SceneValidator::FixIdentityTransform(Entity *ownerNode,
+                          Set<String> &errorsLog,
+                          const String& errorMessage)
+{
+    if(ownerNode->GetLocalTransform() != DAVA::Matrix4::IDENTITY)
+    {
+        ownerNode->SetLocalTransform(DAVA::Matrix4::IDENTITY);
+        SceneEditor2 *sc = dynamic_cast<SceneEditor2 *>(ownerNode->GetScene());
+        if(sc)
+        {
+            sc->MarkAsChanged();
+        }
+        errorsLog.insert(errorMessage);
+    }
+}
 
 
 void SceneValidator::ValidateParticleEffectComponent(DAVA::Entity *ownerNode, Set<String> &errorsLog) const
@@ -297,6 +309,31 @@ void SceneValidator::ValidateMaterials(DAVA::Scene *scene, Set<String> &errorsLo
                     else
                     {
                         texturesMap[tex] = Format("Material: %s. Texture %s.", (*it)->GetMaterialName().c_str(), (*it)->GetTextureName(t).c_str());
+                    }
+                }
+            }
+
+            if((*it)->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_MATERIAL)
+            {
+                bool qualityGroupIsOk = false;
+                DAVA::FastName materialGroup = (*it)->GetMaterialGroup();
+
+                // if some group is set in material we should check it exists in quality system
+                if(materialGroup.IsValid())
+                {
+                    size_t qcount = DAVA::QualitySettingsSystem::Instance()->GetMaterialQualityGroupCount();
+                    for(size_t q = 0; q < qcount; ++q)
+                    {
+                        if(materialGroup == DAVA::QualitySettingsSystem::Instance()->GetMaterialQualityGroupName(q))
+                        {
+                            qualityGroupIsOk = true;
+                            break;
+                        }
+                    }
+
+                    if(!qualityGroupIsOk)
+                    {
+                        errorsLog.insert(Format("Material \"%s\" has unknown quality group \"%s\"", (*it)->GetMaterialName().c_str(), materialGroup.c_str()));
                     }
                 }
             }

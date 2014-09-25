@@ -35,6 +35,9 @@
 
 namespace DAVA
 {
+
+static const char* useLocalResourcesPath = "/mnt/sdcard/DavaProject/";
+    
 /**
 	\ingroup filesystem
 	\brief class to work with file pathname
@@ -98,7 +101,7 @@ public:
         \returns pathname value
 	 */
     const String GetAbsolutePathname() const;
-    
+
 	/**
         \brief Function to retrieve filename from pathname. Filename for path "/Users/Folder/image.png" is "image.png".
         \returns filename value

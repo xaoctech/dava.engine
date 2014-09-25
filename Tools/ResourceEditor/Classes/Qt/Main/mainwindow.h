@@ -54,6 +54,7 @@ class HangingObjectsHeight;
 class DeveloperTools;
 class VersionInfoWidget;
 
+
 class QtMainWindow
     : public QMainWindow
     , public DAVA::Singleton<QtMainWindow>
@@ -114,6 +115,7 @@ public slots:
 	void OnEditorGizmoToggle(bool show);
     void OnViewLightmapCanvas(bool show);
 	void OnAllowOnSceneSelectionToggle(bool allow);
+    void OnShowStaticOcclusionToggle(bool show);
 
 	void OnReloadTextures();
 	void OnReloadTexturesTriggered(QAction *reloadAction);
@@ -160,7 +162,6 @@ public slots:
 	void OnShowSettings();
 	void OnOpenHelp();
 
-	void OnSetShadowColor();
 	void OnShadowBlendModeWillShow();
 	void OnShadowBlendModeAlpha();
 	void OnShadowBlendModeMultiply();
@@ -205,6 +206,10 @@ public slots:
     void OnReloadShaders();
 
     void OnSwitchWithDifferentLODs(bool checked);
+
+    void OnGenerateHeightDelta();
+
+    void OnBatchProcessScene();
     
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
@@ -246,12 +251,14 @@ private slots:
 	void UnmodalDialogFinished(int);
 
     void DebugVersionInfo();
+    void DebugColorPicker();
 
 private:
 	Ui::MainWindow *ui;
 	QtWaitDialog *waitDialog;
 	QtWaitDialog *beastWaitDialog;
     QPointer<QDockWidget> dockActionEvent;
+    QPointer<QDockWidget> dockConsole;
 
 	QtPosSaver posSaver;
 	bool globalInvalidate;

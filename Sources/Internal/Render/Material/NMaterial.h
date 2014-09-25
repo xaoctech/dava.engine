@@ -179,8 +179,8 @@ public:
 	static const FastName TEXTURE_DECAL;
 	static const FastName TEXTURE_CUBEMAP;
     static const FastName TEXTURE_HEIGHTMAP;
-    static const FastName TEXTURE_TILEMASK;
-    static const FastName TEXTURE_TILETEXTURE;
+    static const FastName TEXTURE_DECALMASK;
+    static const FastName TEXTURE_DECALTEXTURE;
     
     static const FastName TEXTURE_DYNAMIC_REFLECTION;
     static const FastName TEXTURE_DYNAMIC_REFRACTION;
@@ -199,24 +199,36 @@ public:
 	static const FastName PARAM_FOG_DENSITY;
     static const FastName PARAM_FOG_START;
     static const FastName PARAM_FOG_END;
+    static const FastName PARAM_FOG_ATMOSPHERE_COLOR_SUN;
+    static const FastName PARAM_FOG_ATMOSPHERE_COLOR_SKY;
+    static const FastName PARAM_FOG_ATMOSPHERE_SCATTERING;
+    static const FastName PARAM_FOG_ATMOSPHERE_DISTANCE;
+    static const FastName PARAM_FOG_HALFSPACE_HEIGHT;
+    static const FastName PARAM_FOG_HALFSPACE_DENSITY;
+    static const FastName PARAM_FOG_HALFSPACE_FALLOFF;
+    static const FastName PARAM_FOG_HALFSPACE_LIMIT;
 	static const FastName PARAM_FLAT_COLOR;
 	static const FastName PARAM_TEXTURE0_SHIFT;
 	static const FastName PARAM_UV_OFFSET;
 	static const FastName PARAM_UV_SCALE;
     static const FastName PARAM_LIGHTMAP_SIZE;
     static const FastName PARAM_SHADOW_COLOR;
-    static const FastName PARAM_TILE_SCALE;
+    static const FastName PARAM_DECAL_TILE_SCALE;
+    static const FastName PARAM_DECAL_TILE_COLOR;
     static const FastName PARAM_RCP_SCREEN_SIZE;
     static const FastName PARAM_SCREEN_OFFSET;
     
 	static const FastName FLAG_VERTEXFOG;
 	static const FastName FLAG_FOG_EXP;
 	static const FastName FLAG_FOG_LINEAR;
+    static const FastName FLAG_FOG_HALFSPACE;
+    static const FastName FLAG_FOG_HALFSPACE_LINEAR;
+	static const FastName FLAG_FOG_ATMOSPHERE;
 	static const FastName FLAG_TEXTURESHIFT;
 	static const FastName FLAG_TEXTURE0_ANIMATION_SHIFT;
 	static const FastName FLAG_WAVE_ANIMATION;
 	static const FastName FLAG_FAST_NORMALIZATION;    
-    
+    static const FastName FLAG_TILED_DECAL;
 	static const FastName FLAG_FLATCOLOR;
     static const FastName FLAG_DISTANCEATTENUATION;
     static const FastName FLAG_SPECULAR;
@@ -705,6 +717,11 @@ public:
 	 \brief Rebuilds cache of shader parameters
 	 */
     void BuildActiveUniformsCacheParamsCache();
+    
+    /**
+	 \brief Rebuilds cache of texture parameters
+	 */
+    void BuildTextureParamsCache();
     
     /**
 	 \brief Marks all material properties as dirty to re-bind them to shader

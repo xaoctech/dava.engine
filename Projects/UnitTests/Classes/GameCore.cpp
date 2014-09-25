@@ -46,7 +46,6 @@
 #include "DXTTest.h"
 #include "KeyedArchiveYamlTest.h"
 #include "CloneTest.h"
-#include "DLCSystemTests.h"
 #include "DPITest.h"
 #include "EMailTest.h"
 #include "InputTest.h"
@@ -61,6 +60,7 @@
 #include "UIScrollViewTest.h"
 #include "ThreadSyncTest.h"
 #include "UIMovieTest.h"
+#include "DFFontTest.h"
 #include "ComponentsTest.h"
 #include "RectSpriteTest.h"
 #include "OpenGLES30FormatTest.h"
@@ -71,7 +71,8 @@
 #include "SceneSystemTest.h"
 #include "ParseTextTest.h"
 #include "ImageSizeTest.h"
-
+#include "DLCDownloadTest.h"
+#include "FunctionBindSingalTest.h"
 
 using namespace DAVA;
 
@@ -97,6 +98,9 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
 
+	new FunctionBindSignalTest();
+	new DLCDownloadTest();
+
 	new ImageSizeTest();
     new DeviceInfoTest();
 
@@ -104,7 +108,8 @@ void GameCore::OnAppStarted()
  	new DXTTest();
     new JPEGTest();
 
-    new ParseTextTest();
+    new ParseTextTest(Font::TYPE_FT);
+    new ParseTextTest(Font::TYPE_GRAPHICAL);
     new OpenGLES30FormatTest();
     new SaveImageTest();
     
@@ -141,7 +146,6 @@ void GameCore::OnAppStarted()
  	new MemoryAllocatorsTest();
  	new HashMapTest();
  	new KeyedArchiveYamlTest();
- 	new DLCTest();
  	new UIListTest();
  	new UIScrollViewTest();
  
@@ -220,7 +224,7 @@ void GameCore::OnResume()
 void GameCore::OnDeviceLocked()
 {
 //    Logger::Debug("GameCore::OnDeviceLocked");
-    Core::Instance()->Quit();
+    //Core::Instance()->Quit();
 }
 
 void GameCore::OnBackground()

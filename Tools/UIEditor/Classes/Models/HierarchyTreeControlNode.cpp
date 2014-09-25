@@ -50,7 +50,7 @@ HierarchyTreeControlNode::HierarchyTreeControlNode(HierarchyTreeNode* parent,
 	UIList *list = dynamic_cast<UIList*>(uiObject);
 	if (list)
 	{
-		listDelegate = new EditorListDelegate(list->GetRect(), list->GetOrientation());
+		listDelegate = new EditorListDelegate(list);
 		list->SetDelegate(listDelegate);
 	}
 
@@ -72,7 +72,7 @@ HierarchyTreeControlNode::HierarchyTreeControlNode(HierarchyTreeNode* parent,
 	UIList *srcList = dynamic_cast<UIList*>(node->GetUIObject());
 	if (list)
 	{
-		listDelegate = new EditorListDelegate(list->GetRect(), list->GetOrientation());
+		listDelegate = new EditorListDelegate(list);
 		EditorListDelegate *srcListDelegate = dynamic_cast<EditorListDelegate*>(srcList->GetDelegate());
 		if (srcListDelegate)
 		{
@@ -146,8 +146,6 @@ HierarchyTreeControlNode::~HierarchyTreeControlNode()
 		SafeRelease(uiObject);
 		SafeRelease(parentUIObject);
 	}
-
-    SafeRelease(listDelegate);
 }
 
 HierarchyTreeScreenNode* HierarchyTreeControlNode::GetScreenNode() const
@@ -274,12 +272,18 @@ void HierarchyTreeControlNode::RemoveTreeNodeFromScene()
 	{
 		return;
 	}
-	
+
+    // Don't touch the subcontrol nodes - they are controlled by the parent control itself.
+    List<UIControl*> subControlNodes = uiObject->GetSubcontrols();
 	for (HIERARCHYTREENODESLIST::iterator iter = childNodes.begin(); iter != childNodes.end(); ++iter)
 	{
 		HierarchyTreeControlNode* control = dynamic_cast<HierarchyTreeControlNode*>(*iter);
-		if (!control)
+		if (!control || std::find(subControlNodes.begin(), subControlNodes.end(), control->GetUIObject())
+            != subControlNodes.end())
+        {
 			continue;
+        }
+
 		control->RemoveTreeNodeFromScene();
 	}
 	

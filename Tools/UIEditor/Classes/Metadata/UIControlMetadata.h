@@ -73,6 +73,7 @@ class UIControlMetadata : public BaseMetadata
     
     Q_PROPERTY(int DrawType READ GetDrawType WRITE SetDrawType);
     Q_PROPERTY(int ColorInheritType READ GetColorInheritType WRITE SetColorInheritType);
+    Q_PROPERTY(int PerPixelAccuracyType READ GetPerPixelAccuracyType WRITE SetPerPixelAccuracyType);
     Q_PROPERTY(int Align READ GetAlign WRITE SetAlign);
     
 	Q_PROPERTY(float LeftRightStretchCap READ GetLeftRightStretchCap WRITE SetLeftRightStretchCap);
@@ -110,7 +111,7 @@ public:
     UIControlMetadata(QObject* parent = 0);
     
     // Apply move/resize for all controls.
-    virtual void ApplyMove(const Vector2& moveDelta);
+    virtual void ApplyMove(const Vector2& moveDelta, bool alignControlsToIntegerPos);
     virtual void ApplyResize(const Rect& originalRect, const Rect& newRect);
 
 protected:
@@ -162,6 +163,9 @@ protected:
     virtual int GetColorInheritType();
     virtual void SetColorInheritType(int value);
     
+    virtual int GetPerPixelAccuracyType();
+    virtual void SetPerPixelAccuracyType(int value);
+    
     virtual int GetAlign();
     virtual void SetAlign(int value);
 
@@ -178,7 +182,7 @@ protected:
     // Sprite getter/setter. Also virtual one - its implementation is different
     // for different control types.
     virtual void SetSprite(const QString& value);
-    virtual QString GetSprite();
+    virtual QString GetSprite() const;
 
     virtual void SetSpriteFrame(int value);
     virtual int GetSpriteFrame();
@@ -244,7 +248,7 @@ protected:
 	int GetInitialState() const;
 	void SetInitialState(int value);
 
-	virtual void SetActiveControlRect(const Rect& rect, bool restoreAlign);
+	virtual void SetActiveControlRect(const Rect& rect, bool restoreAlign, bool alignToIntegerPos = false);
 
 	// Refresh the align params.
 	void RefreshAlign();

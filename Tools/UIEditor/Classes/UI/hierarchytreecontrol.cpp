@@ -27,11 +27,14 @@
 =====================================================================================*/
 
 
-
-#include "Classes/UI/hierarchytreecontrol.h"
 #include <QAction>
 #include <QMenu>
 #include <QContextMenuEvent>
+#include <QHeaderView>
+#include <QScrollBar>
+
+#include "Classes/UI/hierarchytreecontrol.h"
+
 #include "HierarchyTreeController.h"
 #include "HierarchyTreeAggregatorControlNode.h"
 #include "ItemsCommand.h"
@@ -104,23 +107,29 @@ bool HierarchyTreeControlMimeData::IsDropEnable(const HierarchyTreeNode *parentI
 	return true;
 }
 
-HierarchyTreeNode::HIERARCHYTREENODESIDLIST HierarchyTreeControlMimeData::GetItems() const
+const HierarchyTreeNode::HIERARCHYTREENODESIDLIST &HierarchyTreeControlMimeData::GetItems() const
 {
 	return items;
 }
 
 HierarchyTreeControl::HierarchyTreeControl(QWidget *parent) :
     QTreeWidget(parent),
-    expandNodeID(HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY)
+    expandNodeItem(NULL),
+    expandCheckMousePos(false)
 {
 	setAcceptDrops(true);
 	setAutoScroll(true);
 	setDropIndicatorShown(true);
-    
+
+    header()->setHorizontalScrollMode(QAbstractItemView::ScrollPerItem);
+    header()->setVerticalScrollMode(QAbstractItemView::ScrollPerItem);
+    header()->setResizeMode(0, QHeaderView::ResizeToContents);
+    header()->setStretchLastSection(false);
+
     expandTimer = new QTimer();
     expandTimer->setSingleShot(true);
     
-    static const int expandInterval = 1500; //ms
+    static const int expandInterval = 1000; //ms
     expandTimer->setInterval(expandInterval);
     connect(expandTimer, SIGNAL(timeout()), this, SLOT(OnExpandTimer()));
 }
@@ -135,6 +144,19 @@ HierarchyTreeControl::~HierarchyTreeControl()
 void HierarchyTreeControl::contextMenuEvent(QContextMenuEvent * event)
 {
 	emit ShowCustomMenu(event->globalPos());
+}
+
+void HierarchyTreeControl::scrollTo(const QModelIndex &index, ScrollHint hint)
+{
+    if (!horizontalScrollBar())
+    {
+        QTreeWidget::scrollTo(index, hint);
+        return;
+    }
+
+    int32 horzScrollPos = horizontalScrollBar()->value();
+    QTreeWidget::scrollTo(index, hint);
+    horizontalScrollBar()->setValue(horzScrollPos);
 }
 
 Vector<int32> HierarchyTreeControl::GetPositionKey(QTreeWidgetItem* item) const
@@ -257,7 +279,7 @@ void HierarchyTreeControl::HandleDropControlMimeData(QDropEvent *event, const Co
     
     StopExpandTimer();
     
-    CreateControlCommand* cmd = new CreateControlCommand(mimeData->GetControlName(), parentNode, insertAfterNode);
+    CreateControlCommand* cmd = new CreateControlCommand(mimeData->GetControlId(), parentNode, insertAfterNode);
 	CommandsController::Instance()->ExecuteCommand(cmd);
 	SafeRelease(cmd);
 }
@@ -289,7 +311,23 @@ void HierarchyTreeControl::HandleDropHierarchyMimeData(QDropEvent *event, const 
 	}
 	else //Otherwise move item(s)
 	{
-		HierarchyTreeNode::HIERARCHYTREENODESIDLIST items = mimeData->GetItems();
+		const HierarchyTreeNode::HIERARCHYTREENODESIDLIST &items = mimeData->GetItems();
+        
+        // Perform the validation - in case at least one item coincides with insertInto
+        // or insertAfter items, block the move. This may happen under MacOS
+        // because of Qt defect https://bugreports.qt-project.org/browse/QTBUG-4075
+        for (HierarchyTreeNode::HIERARCHYTREENODESIDLIST::const_iterator iter = items.begin();
+             iter != items.end(); iter ++)
+        {
+            if ((*iter) == insertInTo || (*iter) == insertAfter)
+            {
+                // No way to move.
+                HierarchyTreeController::Instance()->ResetSelectedControl();
+                event->ignore();
+                return;
+            }
+        }
+
 		ChangeNodeHeirarchy* cmd = new ChangeNodeHeirarchy(insertInTo, insertAfter, items);
 		CommandsController::Instance()->ExecuteCommand(cmd);
 		SafeRelease(cmd);
@@ -322,7 +360,7 @@ void HierarchyTreeControl::dragEnterEvent(QDragEnterEvent *event)
 	event->ignore();
 }
 
-void HierarchyTreeControl::dragLeaveEvent(QDragLeaveEvent */*event*/)
+void HierarchyTreeControl::dragLeaveEvent(QDragLeaveEvent * /*event*/)
 {
     StopExpandTimer();
 }
@@ -421,9 +459,7 @@ void HierarchyTreeControl::HandleDragMoveControlMimeData(QDragMoveEvent *event, 
     }
 
     scrollTo(indexAt(event->pos()));
-    expandNodeID = insertInto;
-    expandTimer->stop();
-    expandTimer->start();
+    StartExpandTimer(item, true);
 
 	HierarchyTreeControlNode* controlNode = dynamic_cast<HierarchyTreeControlNode*>(nodeToInsertControlTo);
 	if (controlNode)
@@ -432,7 +468,7 @@ void HierarchyTreeControl::HandleDragMoveControlMimeData(QDragMoveEvent *event, 
 		if (!HierarchyTreeController::Instance()->IsControlSelected(controlNode))
 		{
 			HierarchyTreeController::Instance()->ResetSelectedControl();
-			HierarchyTreeController::Instance()->SelectControl(controlNode);
+			HierarchyTreeController::Instance()->SelectControl(controlNode, HierarchyTreeController::DeferredExpandWithMouseCheck);
 		}
 	}
 
@@ -468,6 +504,13 @@ void HierarchyTreeControl::HandleDragMoveHierarchyMimeData(QDragMoveEvent *event
 
 	if (mimeData->IsDropEnable(node))
 	{
+        QTreeWidgetItem* item = itemAt(event->pos());
+        if (item)
+        {
+            scrollTo(indexAt(event->pos()));
+            StartExpandTimer(item, true);
+        }
+
 		event->accept();
 	}
 }
@@ -522,20 +565,37 @@ bool HierarchyTreeControl::GetMoveItemID(QDropEvent *event, HierarchyTreeNode::H
 	return true;
 }
 
+void HierarchyTreeControl::StartExpandTimer(QTreeWidgetItem* nodeItem, bool needCheckMousePos)
+{
+    expandTimer->stop();
+    expandNodeItem = nodeItem;
+    expandCheckMousePos = needCheckMousePos;
+    expandTimer->start();
+}
+
+
 void HierarchyTreeControl::StopExpandTimer()
 {
-    expandNodeID = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
+    expandNodeItem = NULL;
     expandTimer->stop();
 }
 
 void HierarchyTreeControl::OnExpandTimer()
 {
-    if (expandNodeID == HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY)
+    if (!expandNodeItem)
     {
         // Nothing to expand.
         return;
     }
 
+    if (!expandCheckMousePos)
+    {
+        // Just expand the item selected, without any checks.
+        ExpandItemAndScrollTo(expandNodeItem);
+        return;
+    }
+    
+    // Perform the check - what is under mouse cursor.
     QModelIndex modelIndex = indexAt(mapFromGlobal(QCursor::pos()));
     if (!modelIndex.isValid())
     {
@@ -543,15 +603,21 @@ void HierarchyTreeControl::OnExpandTimer()
     }
 
     QTreeWidgetItem* selectedItem = itemFromIndex(modelIndex);
-    if (!selectedItem)
+    if (selectedItem == expandNodeItem)
     {
-        return;
+        ExpandItemAndScrollTo(selectedItem);
     }
-    
-    QVariant data = selectedItem->data(ITEM_ID);
-    HierarchyTreeNode::HIERARCHYTREENODEID currentNodeID = data.toInt();
-    if (currentNodeID == expandNodeID)
+}
+
+void HierarchyTreeControl::ExpandItemAndScrollTo(QTreeWidgetItem* item)
+{
+    item->setExpanded(true);
+    scrollToItem(item);
+
+    QTreeWidgetItem* parentItem = item->parent();
+    while (parentItem)
     {
-        expandItem(selectedItem);
+        parentItem->setExpanded(true);
+        parentItem = parentItem->parent();
     }
 }
