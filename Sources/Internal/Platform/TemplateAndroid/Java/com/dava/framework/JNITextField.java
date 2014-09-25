@@ -418,13 +418,15 @@ public class JNITextField {
                             readyToClose = true;
                             handler.postDelayed(new Runnable()
                             {
+                                // Store windowToken if text field will be detached from window
+                                final private IBinder windowToken = text.getWindowToken();
                                 @Override
                                 public void run()
                                 {
                                     if(readyToClose) // Closing keyboard didn't aborted
                                     {
                                         InputMethodManager imm = (InputMethodManager) JNIActivity.GetActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                                        imm.hideSoftInputFromWindow(text.getWindowToken(), 0);
+                                        imm.hideSoftInputFromWindow(windowToken, 0);
                                         activeTextField = NO_ACTIVE_TEXTFIELD;
                                         readyToClose = false;
                                     }
@@ -449,6 +451,7 @@ public class JNITextField {
 		InternalTask<Void> task = new InternalTask<Void>(editText, new Callable<Void>() {
 			@Override
 			public Void call() throws Exception {
+                editText.clearFocus(); // Clear focus before destroying to try to close keyboard
 				ViewGroup parent = (ViewGroup) editText.getParent();
 				if (parent != null)
 					parent.removeView(editText);
@@ -786,6 +789,9 @@ public class JNITextField {
 				InternalTask<Void> task = new InternalTask<Void>(text, new Callable<Void>() {
 					@Override
 					public Void call() throws Exception {
+					    if (!visible) {
+					        text.clearFocus(); // Clear focus before hiding to try to close keyboard
+					    }
 						text.setVisibility(visible ? View.VISIBLE : View.GONE);
 						return null;
 					}
