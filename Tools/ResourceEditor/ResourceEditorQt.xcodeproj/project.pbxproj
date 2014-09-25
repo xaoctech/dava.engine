@@ -48,6 +48,18 @@
 		64FA1F24198914350004981D /* PaintHeightDeltaAction.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 64FA1F22198914350004981D /* PaintHeightDeltaAction.cpp */; };
 		763DCF001964524200D94EB3 /* VersionInfoWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 763DCEFE1964524200D94EB3 /* VersionInfoWidget.cpp */; };
 		763DCF0B1964546C00D94EB3 /* VersionInfoWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 763DCF0A1964546C00D94EB3 /* VersionInfoWidget_moc.cpp */; };
+		76405EB019D1D052000E470B /* CheckableComboBox.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76405EAC19D1D052000E470B /* CheckableComboBox.cpp */; };
+		76405EB119D1D052000E470B /* LineEditEx.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76405EAE19D1D052000E470B /* LineEditEx.cpp */; };
+		76405EC119D1D068000E470B /* LogDelegate.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76405EB919D1D068000E470B /* LogDelegate.cpp */; };
+		76405EC219D1D068000E470B /* LogFilterModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76405EBB19D1D068000E470B /* LogFilterModel.cpp */; };
+		76405EC319D1D068000E470B /* LogModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76405EBD19D1D068000E470B /* LogModel.cpp */; };
+		76405EC419D1D068000E470B /* LogWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76405EBF19D1D068000E470B /* LogWidget.cpp */; };
+		76405EC919D1D0C9000E470B /* LogDelegate_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76405EC519D1D0C9000E470B /* LogDelegate_moc.cpp */; };
+		76405ECA19D1D0C9000E470B /* LogFilterModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76405EC619D1D0C9000E470B /* LogFilterModel_moc.cpp */; };
+		76405ECB19D1D0C9000E470B /* LogModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76405EC719D1D0C9000E470B /* LogModel_moc.cpp */; };
+		76405ECC19D1D0C9000E470B /* LogWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76405EC819D1D0C9000E470B /* LogWidget_moc.cpp */; };
+		76405ECF19D1D0ED000E470B /* CheckableComboBox_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76405ECD19D1D0ED000E470B /* CheckableComboBox_moc.cpp */; };
+		76405ED019D1D0ED000E470B /* LineEditEx_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76405ECE19D1D0ED000E470B /* LineEditEx_moc.cpp */; };
 		76524BE61992208B00F805AB /* HeightDeltaTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76524BE41992208B00F805AB /* HeightDeltaTool.cpp */; };
 		76524BE91992212200F805AB /* HeightDeltaTool_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76524BE81992212200F805AB /* HeightDeltaTool_moc.cpp */; };
 		765A0ADB18CE0C7F0044516F /* MaterialTemplateModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 765A0AD918CE0C7F0044516F /* MaterialTemplateModel.cpp */; };
@@ -766,6 +778,24 @@
 		763DCEFE1964524200D94EB3 /* VersionInfoWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VersionInfoWidget.cpp; path = DebugTools/VersionInfoWidget/VersionInfoWidget.cpp; sourceTree = "<group>"; };
 		763DCEFF1964524200D94EB3 /* VersionInfoWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VersionInfoWidget.h; path = DebugTools/VersionInfoWidget/VersionInfoWidget.h; sourceTree = "<group>"; };
 		763DCF0A1964546C00D94EB3 /* VersionInfoWidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VersionInfoWidget_moc.cpp; path = _GeneratedQt/DebugTools/VersionInfoWidget/VersionInfoWidget_moc.cpp; sourceTree = "<group>"; };
+		76405EAC19D1D052000E470B /* CheckableComboBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CheckableComboBox.cpp; sourceTree = "<group>"; };
+		76405EAD19D1D052000E470B /* CheckableComboBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CheckableComboBox.h; sourceTree = "<group>"; };
+		76405EAE19D1D052000E470B /* LineEditEx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LineEditEx.cpp; sourceTree = "<group>"; };
+		76405EAF19D1D052000E470B /* LineEditEx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LineEditEx.h; sourceTree = "<group>"; };
+		76405EB919D1D068000E470B /* LogDelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LogDelegate.cpp; sourceTree = "<group>"; };
+		76405EBA19D1D068000E470B /* LogDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogDelegate.h; sourceTree = "<group>"; };
+		76405EBB19D1D068000E470B /* LogFilterModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LogFilterModel.cpp; sourceTree = "<group>"; };
+		76405EBC19D1D068000E470B /* LogFilterModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogFilterModel.h; sourceTree = "<group>"; };
+		76405EBD19D1D068000E470B /* LogModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LogModel.cpp; sourceTree = "<group>"; };
+		76405EBE19D1D068000E470B /* LogModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogModel.h; sourceTree = "<group>"; };
+		76405EBF19D1D068000E470B /* LogWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LogWidget.cpp; sourceTree = "<group>"; };
+		76405EC019D1D068000E470B /* LogWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogWidget.h; sourceTree = "<group>"; };
+		76405EC519D1D0C9000E470B /* LogDelegate_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LogDelegate_moc.cpp; path = _GeneratedQt/DockConsole/LogDelegate_moc.cpp; sourceTree = "<group>"; };
+		76405EC619D1D0C9000E470B /* LogFilterModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LogFilterModel_moc.cpp; path = _GeneratedQt/DockConsole/LogFilterModel_moc.cpp; sourceTree = "<group>"; };
+		76405EC719D1D0C9000E470B /* LogModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LogModel_moc.cpp; path = _GeneratedQt/DockConsole/LogModel_moc.cpp; sourceTree = "<group>"; };
+		76405EC819D1D0C9000E470B /* LogWidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LogWidget_moc.cpp; path = _GeneratedQt/DockConsole/LogWidget_moc.cpp; sourceTree = "<group>"; };
+		76405ECD19D1D0ED000E470B /* CheckableComboBox_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CheckableComboBox_moc.cpp; path = _GeneratedQt/Tools/Widgets/CheckableComboBox_moc.cpp; sourceTree = "<group>"; };
+		76405ECE19D1D0ED000E470B /* LineEditEx_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LineEditEx_moc.cpp; path = _GeneratedQt/Tools/Widgets/LineEditEx_moc.cpp; sourceTree = "<group>"; };
 		76524BE41992208B00F805AB /* HeightDeltaTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HeightDeltaTool.cpp; sourceTree = "<group>"; };
 		76524BE51992208B00F805AB /* HeightDeltaTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HeightDeltaTool.h; sourceTree = "<group>"; };
 		76524BE81992212200F805AB /* HeightDeltaTool_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HeightDeltaTool_moc.cpp; sourceTree = "<group>"; };
@@ -2071,6 +2101,10 @@
 		76E5FFC219ADE80D004AC39F /* Widgets */ = {
 			isa = PBXGroup;
 			children = (
+				76405EAC19D1D052000E470B /* CheckableComboBox.cpp */,
+				76405EAD19D1D052000E470B /* CheckableComboBox.h */,
+				76405EAE19D1D052000E470B /* LineEditEx.cpp */,
+				76405EAF19D1D052000E470B /* LineEditEx.h */,
 				76E5FFC319ADE80D004AC39F /* AbstractSlider.cpp */,
 				76E5FFC419ADE80D004AC39F /* AbstractSlider.h */,
 				76E5FFC519ADE80D004AC39F /* ValueSlider.cpp */,
@@ -2213,6 +2247,12 @@
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
+				76405ECD19D1D0ED000E470B /* CheckableComboBox_moc.cpp */,
+				76405ECE19D1D0ED000E470B /* LineEditEx_moc.cpp */,
+				76405EC519D1D0C9000E470B /* LogDelegate_moc.cpp */,
+				76405EC619D1D0C9000E470B /* LogFilterModel_moc.cpp */,
+				76405EC719D1D0C9000E470B /* LogModel_moc.cpp */,
+				76405EC819D1D0C9000E470B /* LogWidget_moc.cpp */,
 				763DCF0A1964546C00D94EB3 /* VersionInfoWidget_moc.cpp */,
 				76BA73E319583B840029DC61 /* RunActionEventWidget_moc.cpp */,
 				765BA23C19406B0B005D6B4E /* BeastDialog_moc.cpp */,
@@ -3595,6 +3635,14 @@
 		E8C99083184CD0EB00AFBF3F /* DockConsole */ = {
 			isa = PBXGroup;
 			children = (
+				76405EB919D1D068000E470B /* LogDelegate.cpp */,
+				76405EBA19D1D068000E470B /* LogDelegate.h */,
+				76405EBB19D1D068000E470B /* LogFilterModel.cpp */,
+				76405EBC19D1D068000E470B /* LogFilterModel.h */,
+				76405EBD19D1D068000E470B /* LogModel.cpp */,
+				76405EBE19D1D068000E470B /* LogModel.h */,
+				76405EBF19D1D068000E470B /* LogWidget.cpp */,
+				76405EC019D1D068000E470B /* LogWidget.h */,
 				E8C99084184CD0EB00AFBF3F /* Console.cpp */,
 				E8C99085184CD0EB00AFBF3F /* Console.h */,
 				E8C99086184CD0EB00AFBF3F /* ConsoleView.cpp */,
@@ -4490,6 +4538,7 @@
 				E8C9925A184CD0EC00AFBF3F /* btWheelInfo.cpp in Build Sources */,
 				E8BAD5D41859F48600C98C8D /* MaterialEditor.cpp in Build Sources */,
 				E8C9928D184CD0EC00AFBF3F /* EntityRemoveCommand.cpp in Build Sources */,
+				76405EC119D1D068000E470B /* LogDelegate.cpp in Build Sources */,
 				E8C992EC184CD0EC00AFBF3F /* QtUtils.cpp in Build Sources */,
 				E8C99291184CD0EC00AFBF3F /* KeyedArchiveCommand.cpp in Build Sources */,
 				E8C99298184CD0EC00AFBF3F /* ParticleForceRemoveCommand.cpp in Build Sources */,
@@ -4506,6 +4555,7 @@
 				E8C9933A184CD0EC00AFBF3F /* QtPropertyDataKeyedArchiveMember.cpp in Build Sources */,
 				E8BAD70E1859F50300C98C8D /* TextDrawSystem_moc.cpp in Build Sources */,
 				E8C991EC184CD0EC00AFBF3F /* btAxisSweep3.cpp in Build Sources */,
+				76405ECB19D1D0C9000E470B /* LogModel_moc.cpp in Build Sources */,
 				E8ACC89418A3EA1B00F26ABC /* SwitchEntityCreator.cpp in Build Sources */,
 				76E5FFF519ADE9AB004AC39F /* PaintingHelper_moc.cpp in Build Sources */,
 				E8C9924D184CD0EC00AFBF3F /* btHinge2Constraint.cpp in Build Sources */,
@@ -4541,6 +4591,8 @@
 				76E5FFEB19ADE9AB004AC39F /* AbstractColorPicker_moc.cpp in Build Sources */,
 				E8C99256184CD0EC00AFBF3F /* btRigidBody.cpp in Build Sources */,
 				76E5FFF619ADE9AB004AC39F /* AbstractSlider_moc.cpp in Build Sources */,
+				76405ED019D1D0ED000E470B /* LineEditEx_moc.cpp in Build Sources */,
+				76405EC219D1D068000E470B /* LogFilterModel.cpp in Build Sources */,
 				E8EA8DBF185C38040064906E /* MaterialTree.cpp in Build Sources */,
 				E8C992A1184CD0EC00AFBF3F /* CameraController.cpp in Build Sources */,
 				E8BAD7241859F50300C98C8D /* LabeledSlider_moc.cpp in Build Sources */,
@@ -4550,6 +4602,7 @@
 				E8C992CF184CD0EC00AFBF3F /* EditorLODData.cpp in Build Sources */,
 				E8BAD6D41859F50300C98C8D /* SceneTreeItem_moc.cpp in Build Sources */,
 				E8BAD73D1859F50300C98C8D /* SelectEntityPathWidget_moc.cpp in Build Sources */,
+				76405EB019D1D052000E470B /* CheckableComboBox.cpp in Build Sources */,
 				84A6B1FE189735AB002FD263 /* IntRangeValidator.cpp in Build Sources */,
 				E8BAD751185A46BC00C98C8D /* LibraryFilteringModel.cpp in Build Sources */,
 				E8BAD6ED1859F50300C98C8D /* CameraSystem_moc.cpp in Build Sources */,
@@ -4600,6 +4653,7 @@
 				E8C9928B184CD0EC00AFBF3F /* EntityAddCommand.cpp in Build Sources */,
 				E8C99294184CD0EC00AFBF3F /* MaterialSwitchParentCommand.cpp in Build Sources */,
 				E8C99207184CD0EC00AFBF3F /* btSimulationIslandManager.cpp in Build Sources */,
+				76405ECA19D1D0C9000E470B /* LogFilterModel_moc.cpp in Build Sources */,
 				E8C99340184CD0EC00AFBF3F /* QtPropertyItemDelegate.cpp in Build Sources */,
 				E8C99318184CD0EC00AFBF3F /* TilemaskEditorSystem.cpp in Build Sources */,
 				E8C991F8184CD0EC00AFBF3F /* btBoxBoxCollisionAlgorithm.cpp in Build Sources */,
@@ -4616,6 +4670,7 @@
 				E8BAD7341859F50300C98C8D /* QtPropertyDataMetaObject_moc.cpp in Build Sources */,
 				E8C99229184CD0EC00AFBF3F /* btTetrahedronShape.cpp in Build Sources */,
 				76F04BC719B5FAFD0012A485 /* ColorCell.cpp in Build Sources */,
+				76405EC419D1D068000E470B /* LogWidget.cpp in Build Sources */,
 				E8BAD7181859F50300C98C8D /* TextureConvertorWork_moc.cpp in Build Sources */,
 				E8C992D5184CD0EC00AFBF3F /* ParticleEditorWidget.cpp in Build Sources */,
 				E8B1577B19010E1100E966EA /* FlagSelectorCombo_moc.cpp in Build Sources */,
@@ -4670,6 +4725,7 @@
 				E8185C2B190950E500AAD457 /* MaterialGlobalCommand.cpp in Build Sources */,
 				E8BAD6FD1859F50300C98C8D /* NormalHood_moc.cpp in Build Sources */,
 				62C1B9A2188E947200CD3005 /* MaterialFilterModel_moc.cpp in Build Sources */,
+				76405EC319D1D068000E470B /* LogModel.cpp in Build Sources */,
 				E8C9927D184CD0EC00AFBF3F /* TextureDescriptorUtils.cpp in Build Sources */,
 				E8BAD6E81859F50300C98C8D /* SceneHelper_moc.cpp in Build Sources */,
 				E8C992BB184CD0EC00AFBF3F /* HeightmapEditorPanel.cpp in Build Sources */,
@@ -4733,6 +4789,7 @@
 				E8BAD73A1859F50300C98C8D /* QtPropertyModel_moc.cpp in Build Sources */,
 				E8C992B1184CD0EC00AFBF3F /* ClickableQLabel.cpp in Build Sources */,
 				E8C99227184CD0EC00AFBF3F /* btStaticPlaneShape.cpp in Build Sources */,
+				76405EC919D1D0C9000E470B /* LogDelegate_moc.cpp in Build Sources */,
 				76E5FFCF19ADE80D004AC39F /* PaletteHSV.cpp in Build Sources */,
 				E8C9930D184CD0EC00AFBF3F /* LandscapeProxy.cpp in Build Sources */,
 				E8C9931D184CD0EC00AFBF3F /* SpritePackerHelper.cpp in Build Sources */,
@@ -4791,6 +4848,7 @@
 				E8C992D1184CD0EC00AFBF3F /* BaseParticleEditorContentWidget.cpp in Build Sources */,
 				E8C99344184CD0EC00AFBF3F /* SelectEntityPathWidget.cpp in Build Sources */,
 				E8BAD6E11859F50300C98C8D /* MaterialEditor_moc.cpp in Build Sources */,
+				76405EB119D1D052000E470B /* LineEditEx.cpp in Build Sources */,
 				E8C99261184CD0EC00AFBF3F /* ColladaAnimatedMesh.cpp in Build Sources */,
 				E8BAD6B81859F50300C98C8D /* RulerToolPanel_moc.cpp in Build Sources */,
 				E8BAD6B11859F50300C98C8D /* MaterialHelper_moc.cpp in Build Sources */,
@@ -4923,6 +4981,7 @@
 				E8C991F2184CD0EC00AFBF3F /* btMultiSapBroadphase.cpp in Build Sources */,
 				E8BAD6B41859F50300C98C8D /* LandscapeEditorControlsPlaceholder_moc.cpp in Build Sources */,
 				E8BAD6DA1859F50300C98C8D /* mainwindow_moc.cpp in Build Sources */,
+				76405ECC19D1D0C9000E470B /* LogWidget_moc.cpp in Build Sources */,
 				E8BAD6DF1859F50300C98C8D /* StatusBar_moc.cpp in Build Sources */,
 				84D61E4318A43D0F006E989B /* HeightmapValidator.cpp in Build Sources */,
 				E8BAD7191859F50300C98C8D /* TextureList_moc.cpp in Build Sources */,
@@ -4970,6 +5029,7 @@
 				E8BAD72D1859F50300C98C8D /* QtPropertyDataDavaKeyedArchive_moc.cpp in Build Sources */,
 				E8C99331184CD0EC00AFBF3F /* QResourceEditorProgressDialog.cpp in Build Sources */,
 				E8BAD756185A46DE00C98C8D /* LibraryFilesystemModel_moc.cpp in Build Sources */,
+				76405ECF19D1D0ED000E470B /* CheckableComboBox_moc.cpp in Build Sources */,
 				E8C9932A184CD0EC00AFBF3F /* BaseAddEntityDialog.cpp in Build Sources */,
 				E8C99243184CD0EC00AFBF3F /* btPersistentManifold.cpp in Build Sources */,
 				76E5FFEF19ADE9AB004AC39F /* ColorPickerRGBAM_moc.cpp in Build Sources */,
