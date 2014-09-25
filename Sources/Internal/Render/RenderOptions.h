@@ -76,6 +76,12 @@ public:
         
         LAYER_OCCLUSION_STATS,
 
+        ENABLE_STATIC_OCCLUSION,
+        DEBUG_DRAW_STATIC_OCCLUSION,
+
+        PARTICLES_DRAW,
+        PARTICLES_PREPARE_BUFFERS,
+        
 		OPTIONS_COUNT
 	};
 

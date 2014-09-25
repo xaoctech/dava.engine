@@ -78,7 +78,7 @@ public class JNIRenderer implements GLSurfaceView.Renderer {
 			skipFirstFrame = false;
 			return;
 		}
-			
+
 		nativeRender();
 	}
 	
@@ -92,4 +92,5 @@ public class JNIRenderer implements GLSurfaceView.Renderer {
 	{
 		nativeOnResumeView();
 	}
+	
 }

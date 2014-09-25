@@ -33,6 +33,8 @@
 #include "UI/UIScrollViewContainer.h"
 #include "UI/ScrollHelper.h"
 
+#include "UIYamlLoader.h"
+
 namespace DAVA 
 {
 	
@@ -62,9 +64,9 @@ UIScrollView::~UIScrollView()
 	SafeRelease(scrollVertical);
 }
 
-void UIScrollView::SetRect(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*/)
+void UIScrollView::SetRect(const Rect &rect)
 {
-	UIControl::SetRect(rect, rectInAbsoluteCoordinates);
+	UIControl::SetRect(rect);
 
 	scrollHorizontal->SetViewSize(rect.dx);
 	scrollVertical->SetViewSize(rect.dy);
@@ -497,6 +499,11 @@ void UIScrollView::ScrollToPosition( const Vector2& pos, float32 timeSec )
 {
     scrollHorizontal->ScrollToPosition(pos.x, timeSec);
     scrollVertical->ScrollToPosition(pos.y, timeSec);
+}
+    
+const String UIScrollView::GetDelegateControlPath() const
+{
+    return UIYamlLoader::GetControlPath(this);
 }
 
 };

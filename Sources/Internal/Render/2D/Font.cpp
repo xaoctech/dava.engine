@@ -129,7 +129,11 @@ int32 Font::GetVerticalSpacing() const
 	return verticalSpacing;
 }
 
-    
+Size2i Font::GetStringSize(const WideString &str, Vector<float32> *charSizes)
+{
+	Font::StringMetrics metrics = GetStringMetrics(str, charSizes);
+	return Size2i(metrics.width, metrics.height);
+}
     
 void Font::SplitTextBySymbolsToStrings(const WideString & text, const Vector2 & targetRectSize, Vector<WideString> & resultVector)
 {
@@ -142,7 +146,7 @@ void Font::SplitTextBySymbolsToStrings(const WideString & text, const Vector2 & 
     
 	resultVector.clear();
     
-    Vector<int32> sizes;
+    Vector<float32> sizes;
 	GetStringSize(text, &sizes);
 	if(sizes.size() == 0)
 	{
@@ -190,7 +194,7 @@ void Font::SplitTextBySymbolsToStrings(const WideString & text, const Vector2 & 
         }
         else
         {
-            currentLineDx += sizes[pos];
+            currentLineDx += (int32)sizes[pos];
         }
     }
     
@@ -397,7 +401,7 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 	int state = SKIP;
 	int totalSize = (int)text.length();
 	
-	Vector<int32> sizes;
+	Vector<float32> sizes;
 	GetStringSize(text, &sizes);
     if(sizes.size() == 0)
     {
@@ -413,6 +417,8 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 		{
 			t = text[pos];
 		}
+        bool isSeparator = IsWordSeparator(t);
+
 		switch (state) 
 		{
 			case SKIP:
@@ -443,12 +449,12 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 				break;
 			case GOODCHAR:
                 {
-                    bool isSeparator = IsWordSeparator(t);
+                    
                     if(IsSpace(t) || IsLineEnd(t) || t == 0 || (wasSeparator && !isSeparator)) // if we've found any possible separator process current line
 				    {
                     
                         //calculate current line width
-					    int currentLineWidth = 0;
+					    float32 currentLineWidth = 0;
 
 					    int32 startPos = (separator.IsLineInitialized()) ? separator.currentLineStart : 0;
 					    for (int i = startPos; i < pos ; i++)
@@ -482,7 +488,22 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
                             
                                 pos = separator.currentLineEnd;
                                 AddCurrentLine(text, pos, separator, resultVector);
-							    state = SKIP;
+                                t = 0;
+                                if(pos + 1 < totalSize)
+		                        {
+			                        t = text[pos + 1];
+		                        }
+                                if(IsSpace(t) || IsLineEnd(t) || t == 0)
+                                {
+							        state = SKIP;
+                                }
+                                else
+                                {
+                                    state = GOODCHAR;
+					                separator.lastWordStart = pos;
+					                separator.lastWordEnd = pos;
+					                if (!separator.IsLineInitialized()) separator.currentLineStart = pos;
+                                }
 							    break;
                             }
                             else if(pos)
@@ -523,18 +544,17 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
                                 DVASSERT(0);
                             }
                         }
+                    }
 
-					    if (IsSpace(t) || IsLineEnd(t)) state = SKIP; // if cur char is space go to skip
-					    else if (t == 0) state = FINISH;
-                        else if(wasSeparator && !isSeparator)
-                        {
-                            // good char after separator
-					        separator.lastWordStart = pos;
-					        separator.lastWordEnd = pos;
-					        if (!separator.IsLineInitialized()) separator.currentLineStart = pos;
-                        }
-                        wasSeparator = isSeparator;
-				    }
+					if (IsSpace(t) || IsLineEnd(t)) state = SKIP; // if cur char is space go to skip
+					else if (t == 0) state = FINISH;
+                    else if(wasSeparator && !isSeparator)
+                    {
+                        // good char after separator
+					    separator.lastWordStart = pos;
+					    separator.lastWordEnd = pos;
+					    if (!separator.IsLineInitialized()) separator.currentLineStart = pos;
+                    }
                 }
 				break;
 			case FINISH:
@@ -546,12 +566,22 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 				state = EXIT; // always exit from here
 				break;
 		};
+        wasSeparator = isSeparator;
 	};
 }
 
 void Font::AddCurrentLine(const WideString & text, const int32 pos, SeparatorPositions & separatorPosition, Vector<WideString> & resultVector) const
 {
     WideString currentLine = text.substr(separatorPosition.currentLineStart, pos - separatorPosition.currentLineStart);
+    //Trim whitespace at begin/end line
+    while(currentLine.size() > 1 && IsSpace(currentLine[0]))
+    {
+    	currentLine.erase(currentLine.begin());
+    }
+    while(currentLine.size() > 1 && IsSpace(currentLine[currentLine.size() - 1]))
+    {
+    	currentLine.erase(currentLine.end() - 1);
+    }
     resultVector.push_back(currentLine);
     
     separatorPosition.Reset();
@@ -578,16 +608,6 @@ YamlNode * Font::SaveToYamlNode() const
     SafeDelete(nodeValue);
     
     return node;
-}
-
-Size2i Font::DrawString(float32 /*offsetX*/, float32 /*offsetY*/, const WideString & /*str*/, int32 /*justifyWidth*/)
-{
-	return Size2i(0, 0);
-}
-
-Size2i Font::DrawStringToBuffer(void * /*buffer*/, int32 /*bufWidth*/, int32 /*bufHeight*/, int32 /*offsetX*/, int32 /*offsetY*/, int32 /*justifyWidth*/, int32 /*spaceAddon*/, const WideString & /*str*/, bool /*contentScaleIncluded*/)
-{
-	return  Size2i(0, 0);
 }
 
 };

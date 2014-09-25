@@ -84,8 +84,9 @@ SystemTimer::SystemTimer()
 {
     globalTime = 0.0f;
     pauseMultiplier = 1.0f;
-
 #if defined(__DAVAENGINE_WIN32__)
+    t0 = 0;
+    QueryPerformanceCounter(&tLi);
 	bHighTimerSupport = QueryPerformanceFrequency(&liFrequency);
 	if (bHighTimerSupport)
 	{
@@ -233,7 +234,7 @@ uint64 SystemTimer::GetAbsoluteNano()
 #elif defined(__DAVAENGINE_ANDROID__)
 	struct timespec now;
 	clock_gettime(CLOCK_MONOTONIC, &now);
-	return now.tv_sec * 1000000 + now.tv_nsec / 1000;
+	return now.tv_sec * 1000000000 + now.tv_nsec;
 #elif defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
 	uint64_t numer = timebase.numer;
 	uint64_t denom = timebase.denom;
