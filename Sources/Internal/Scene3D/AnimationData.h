@@ -27,106 +27,57 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_SCENE_NODE_ANIMATION_H__
-#define __DAVAENGINE_SCENE_NODE_ANIMATION_H__
+#ifndef __DAVAENGINE_ANIMATION_DATA_H__
+#define __DAVAENGINE_ANIMATION_DATA_H__
 
 #include "Base/BaseTypes.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/SceneNodeAnimationKey.h"
+#include "Scene3D/DataNode.h"
 namespace DAVA 
 {
 	
-	
-/*
-	TODO: efficient pack & unpack of animations (Vector / Quaternion spline approximation)
- */
-class SceneNodeAnimationList;
-class SceneNodeAnimation : public BaseObject
+class AnimationData : public DataNode
 {
 protected:
-	virtual ~SceneNodeAnimation();
+	virtual ~AnimationData();
 public:
-	SceneNodeAnimation(int32 keyCount);
+	AnimationData();
 	
-	SceneNodeAnimationKey & Intepolate(float32 t);
+	SceneNodeAnimationKey Interpolate(float32 t, uint32& startIdxCache) const;
 	
-	void SetKey(int32 index, const SceneNodeAnimationKey & key);
+	void AddKey(const SceneNodeAnimationKey & key);
 	
-	inline int32 GetKeyCount();
-	inline SceneNodeAnimationKey * GetKeys();
+	inline int32 GetKeyCount() const;
 	
 	void SetDuration(float32 _duration);
-	inline float32 GetDuration(); 
-		
-	void SetBindName(const FastName & bindName); 
-	void SetBindNode(Entity * bindNode);
-
+	inline float32 GetDuration() const; 
+	
 	void SetInvPose(const Matrix4& mat); 
 	const Matrix4& GetInvPose() const;
 	
-	virtual void Update(float32 timeElapsed);
-	virtual void Execute();
-	
-	inline float32 GetCurrentTime();
-	inline float32 GetNormalDuration();
-	
-	Vector3 SetStartPosition(const Vector3 & position);
-	void ShiftStartPosition(const Vector3 & position);
-	
-	
-	// this is node of animation this animation is supposed for
-	Entity * bindNode;
-	FastName bindName;
-	bool apply;
-	float32 weight;
+	virtual void Save(KeyedArchive * archive, SerializationContext * serializationContext);
+	virtual void Load(KeyedArchive * archive, SerializationContext * serializationContext);
 
-	float32 delayTime;
-	float32 currentTime;
+	AnimationData* Clone() const;
+
 	float32 duration;
 	
-	int32 startIdx;
-	
-	int32 keyCount;
-	SceneNodeAnimationKey * keys;
-	SceneNodeAnimationKey currentValue;
+	DAVA::Vector< SceneNodeAnimationKey > keys;
 
 	Matrix4 invPose;
-
-	void SetParent(SceneNodeAnimationList * list);
-	SceneNodeAnimationList * GetParent();
-	
-private:
-	SceneNodeAnimationList * parent;
 };
 	
-inline float32 SceneNodeAnimation::GetCurrentTime()	
-{
-	return currentTime;
-}
-	
-inline float32 SceneNodeAnimation::GetDuration()
+inline float32 AnimationData::GetDuration() const
 {
 	return duration;
 }
 	
-inline float32 SceneNodeAnimation::GetNormalDuration()
+inline int32 AnimationData::GetKeyCount() const
 {
-	if (keyCount == 0)
-		return 0;
-	
-	return keys[keyCount-1].time;
-}
-	
-inline int32 SceneNodeAnimation::GetKeyCount()
-{
-	return keyCount;
-}
-
-inline SceneNodeAnimationKey * SceneNodeAnimation::GetKeys()
-{
-	return keys;
+	return keys.size();
 }
 	
 };
 
-#endif // __DAVAENGINE_SCENE_NODE_ANIMATION_KEY_H__
+#endif // __DAVAENGINE_ANIMATION_DATA_H__

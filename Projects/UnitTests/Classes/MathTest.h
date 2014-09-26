@@ -26,3 +26,30 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+
+
+#ifndef __MATH_TEST_H__
+#define __MATH_TEST_H__
+
+#include "DAVAEngine.h"
+using namespace DAVA;
+
+#include "TestTemplate.h"
+
+class MathTest : public TestTemplate<MathTest>
+{
+protected:
+    ~MathTest(){}
+public:
+	MathTest();
+
+	virtual void LoadResources();
+	virtual void UnloadResources();
+
+	void MatrixTestFunction(PerfFuncData * data);
+private:
+	float32 TestMatrixDecomposition(const Matrix4& mat);
+};
+
+
+#endif // __MATH_TEST_H__

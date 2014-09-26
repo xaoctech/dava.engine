@@ -26,3 +26,40 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+
+
+#ifndef __DAVAENGINE_ANIMATION_SYSTEM_H__
+#define __DAVAENGINE_ANIMATION_SYSTEM_H__
+
+#include "Base/BaseTypes.h"
+#include "Math/MathConstants.h"
+#include "Math/Matrix4.h"
+#include "Base/Singleton.h"
+#include "Entity/SceneSystem.h"
+
+namespace DAVA 
+{
+
+class Entity;
+class AnimationComponent;
+
+class AnimationSystem : public SceneSystem
+{
+public:
+	AnimationSystem(Scene * scene);
+	~AnimationSystem();
+
+    virtual void Process(float32 timeElapsed);
+
+    virtual void ImmediateEvent(Entity * entity, uint32 event);
+    
+private:
+    Vector<AnimationComponent*> activeComponents;
+    void AddToActive(AnimationComponent *comp);
+    void RemoveFromActive(AnimationComponent *comp);
+
+};
+
+};
+
+#endif //__DAVAENGINE_ANIMATION_SYSTEM_H__
