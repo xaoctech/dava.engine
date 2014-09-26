@@ -36,7 +36,7 @@
 namespace DAVA
 {
 
-static const char* useLocalResourcesPath = "/mnt/sdcard/DavaProject/";
+static const char* localResourcesPath = "/mnt/sdcard/DavaProject/";
     
 /**
 	\ingroup filesystem

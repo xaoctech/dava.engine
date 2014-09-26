@@ -257,6 +257,7 @@ private:
 	QtWaitDialog *waitDialog;
 	QtWaitDialog *beastWaitDialog;
     QPointer<QDockWidget> dockActionEvent;
+    QPointer<QDockWidget> dockConsole;
 
 	QtPosSaver posSaver;
 	bool globalInvalidate;
