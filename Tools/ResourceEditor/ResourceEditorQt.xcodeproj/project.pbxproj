@@ -149,8 +149,6 @@
 		E8BAD6AF1859F50300C98C8D /* CubeMapTextureBrowser_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD5DB1859F50200C98C8D /* CubeMapTextureBrowser_moc.cpp */; };
 		E8BAD6B01859F50300C98C8D /* CubemapUtils_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD5DC1859F50200C98C8D /* CubemapUtils_moc.cpp */; };
 		E8BAD6B11859F50300C98C8D /* MaterialHelper_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD5DD1859F50200C98C8D /* MaterialHelper_moc.cpp */; };
-		E8BAD6B21859F50300C98C8D /* Console_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD5DF1859F50200C98C8D /* Console_moc.cpp */; };
-		E8BAD6B31859F50300C98C8D /* ConsoleView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD5E01859F50200C98C8D /* ConsoleView_moc.cpp */; };
 		E8BAD6B41859F50300C98C8D /* LandscapeEditorControlsPlaceholder_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD5E21859F50200C98C8D /* LandscapeEditorControlsPlaceholder_moc.cpp */; };
 		E8BAD6B51859F50300C98C8D /* CustomColorsPanel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD5E41859F50200C98C8D /* CustomColorsPanel_moc.cpp */; };
 		E8BAD6B61859F50300C98C8D /* HeightmapEditorPanel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD5E51859F50200C98C8D /* HeightmapEditorPanel_moc.cpp */; };
@@ -295,8 +293,6 @@
 		E8BAD756185A46DE00C98C8D /* LibraryFilesystemModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD753185A46DE00C98C8D /* LibraryFilesystemModel_moc.cpp */; };
 		E8BAD757185A46DE00C98C8D /* LibraryFilteringModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD754185A46DE00C98C8D /* LibraryFilteringModel_moc.cpp */; };
 		E8BAD758185A46DE00C98C8D /* LibraryWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD755185A46DE00C98C8D /* LibraryWidget_moc.cpp */; };
-		E8BAD767185A555700C98C8D /* ConsoleWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD765185A555700C98C8D /* ConsoleWidget.cpp */; };
-		E8BAD769185A578000C98C8D /* ConsoleWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD768185A578000C98C8D /* ConsoleWidget_moc.cpp */; };
 		E8BD1F0016DE40ED00499E18 /* libFrameworkQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = E8BD1EFF16DE40E300499E18 /* libFrameworkQt.a */; };
 		E8C991EA184CD0EC00AFBF3F /* BeastProxy.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C98E7B184CD0EA00AFBF3F /* BeastProxy.cpp */; };
 		E8C991EB184CD0EC00AFBF3F /* LightmapsPacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C98E7E184CD0EA00AFBF3F /* LightmapsPacker.cpp */; };
@@ -499,8 +495,6 @@
 		E8C992B4184CD0EC00AFBF3F /* CubeMapTextureBrowser.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9907C184CD0EB00AFBF3F /* CubeMapTextureBrowser.cpp */; };
 		E8C992B5184CD0EC00AFBF3F /* CubemapUtils.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9907E184CD0EB00AFBF3F /* CubemapUtils.cpp */; };
 		E8C992B6184CD0EC00AFBF3F /* MaterialHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C99080184CD0EB00AFBF3F /* MaterialHelper.cpp */; };
-		E8C992B7184CD0EC00AFBF3F /* Console.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C99084184CD0EB00AFBF3F /* Console.cpp */; };
-		E8C992B8184CD0EC00AFBF3F /* ConsoleView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C99086184CD0EB00AFBF3F /* ConsoleView.cpp */; };
 		E8C992B9184CD0EC00AFBF3F /* LandscapeEditorControlsPlaceholder.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C99089184CD0EB00AFBF3F /* LandscapeEditorControlsPlaceholder.cpp */; };
 		E8C992BA184CD0EC00AFBF3F /* CustomColorsPanel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9908C184CD0EB00AFBF3F /* CustomColorsPanel.cpp */; };
 		E8C992BB184CD0EC00AFBF3F /* HeightmapEditorPanel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9908E184CD0EB00AFBF3F /* HeightmapEditorPanel.cpp */; };
@@ -936,8 +930,6 @@
 		E8BAD5DB1859F50200C98C8D /* CubeMapTextureBrowser_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CubeMapTextureBrowser_moc.cpp; sourceTree = "<group>"; };
 		E8BAD5DC1859F50200C98C8D /* CubemapUtils_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CubemapUtils_moc.cpp; sourceTree = "<group>"; };
 		E8BAD5DD1859F50200C98C8D /* MaterialHelper_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialHelper_moc.cpp; sourceTree = "<group>"; };
-		E8BAD5DF1859F50200C98C8D /* Console_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Console_moc.cpp; sourceTree = "<group>"; };
-		E8BAD5E01859F50200C98C8D /* ConsoleView_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConsoleView_moc.cpp; sourceTree = "<group>"; };
 		E8BAD5E21859F50200C98C8D /* LandscapeEditorControlsPlaceholder_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeEditorControlsPlaceholder_moc.cpp; sourceTree = "<group>"; };
 		E8BAD5E41859F50200C98C8D /* CustomColorsPanel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CustomColorsPanel_moc.cpp; sourceTree = "<group>"; };
 		E8BAD5E51859F50200C98C8D /* HeightmapEditorPanel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HeightmapEditorPanel_moc.cpp; sourceTree = "<group>"; };
@@ -1097,9 +1089,6 @@
 		E8BAD753185A46DE00C98C8D /* LibraryFilesystemModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LibraryFilesystemModel_moc.cpp; path = _GeneratedQt/DockLibrary/LibraryFilesystemModel_moc.cpp; sourceTree = SOURCE_ROOT; };
 		E8BAD754185A46DE00C98C8D /* LibraryFilteringModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LibraryFilteringModel_moc.cpp; path = _GeneratedQt/DockLibrary/LibraryFilteringModel_moc.cpp; sourceTree = SOURCE_ROOT; };
 		E8BAD755185A46DE00C98C8D /* LibraryWidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LibraryWidget_moc.cpp; path = _GeneratedQt/DockLibrary/LibraryWidget_moc.cpp; sourceTree = SOURCE_ROOT; };
-		E8BAD765185A555700C98C8D /* ConsoleWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConsoleWidget.cpp; sourceTree = "<group>"; };
-		E8BAD766185A555700C98C8D /* ConsoleWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConsoleWidget.h; sourceTree = "<group>"; };
-		E8BAD768185A578000C98C8D /* ConsoleWidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConsoleWidget_moc.cpp; sourceTree = "<group>"; };
 		E8BD1EF616DE40E300499E18 /* Framework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Framework.xcodeproj; path = ../../Projects/MacOSFramework/Framework.xcodeproj; sourceTree = "<group>"; };
 		E8C98E7B184CD0EA00AFBF3F /* BeastProxy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BeastProxy.cpp; sourceTree = "<group>"; };
 		E8C98E7C184CD0EA00AFBF3F /* BeastProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeastProxy.h; sourceTree = "<group>"; };
@@ -1583,10 +1572,6 @@
 		E8C9907F184CD0EB00AFBF3F /* CubemapUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CubemapUtils.h; sourceTree = "<group>"; };
 		E8C99080184CD0EB00AFBF3F /* MaterialHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialHelper.cpp; sourceTree = "<group>"; };
 		E8C99081184CD0EB00AFBF3F /* MaterialHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialHelper.h; sourceTree = "<group>"; };
-		E8C99084184CD0EB00AFBF3F /* Console.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Console.cpp; sourceTree = "<group>"; };
-		E8C99085184CD0EB00AFBF3F /* Console.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Console.h; sourceTree = "<group>"; };
-		E8C99086184CD0EB00AFBF3F /* ConsoleView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConsoleView.cpp; sourceTree = "<group>"; };
-		E8C99087184CD0EB00AFBF3F /* ConsoleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConsoleView.h; sourceTree = "<group>"; };
 		E8C99089184CD0EB00AFBF3F /* LandscapeEditorControlsPlaceholder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeEditorControlsPlaceholder.cpp; sourceTree = "<group>"; };
 		E8C9908A184CD0EB00AFBF3F /* LandscapeEditorControlsPlaceholder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeEditorControlsPlaceholder.h; sourceTree = "<group>"; };
 		E8C9908C184CD0EB00AFBF3F /* CustomColorsPanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CustomColorsPanel.cpp; sourceTree = "<group>"; };
@@ -2336,9 +2321,6 @@
 		E8BAD5DE1859F50200C98C8D /* DockConsole */ = {
 			isa = PBXGroup;
 			children = (
-				E8BAD768185A578000C98C8D /* ConsoleWidget_moc.cpp */,
-				E8BAD5DF1859F50200C98C8D /* Console_moc.cpp */,
-				E8BAD5E01859F50200C98C8D /* ConsoleView_moc.cpp */,
 			);
 			name = DockConsole;
 			path = _GeneratedQt/DockConsole;
@@ -3643,12 +3625,6 @@
 				76405EBE19D1D068000E470B /* LogModel.h */,
 				76405EBF19D1D068000E470B /* LogWidget.cpp */,
 				76405EC019D1D068000E470B /* LogWidget.h */,
-				E8C99084184CD0EB00AFBF3F /* Console.cpp */,
-				E8C99085184CD0EB00AFBF3F /* Console.h */,
-				E8C99086184CD0EB00AFBF3F /* ConsoleView.cpp */,
-				E8C99087184CD0EB00AFBF3F /* ConsoleView.h */,
-				E8BAD765185A555700C98C8D /* ConsoleWidget.cpp */,
-				E8BAD766185A555700C98C8D /* ConsoleWidget.h */,
 			);
 			path = DockConsole;
 			sourceTree = "<group>";
@@ -4617,7 +4593,6 @@
 				E86F97C718DB2990007330E1 /* DeveloperTools_moc.cpp in Build Sources */,
 				E8BAD7301859F50300C98C8D /* QtPropertyDataInspDynamic_moc.cpp in Build Sources */,
 				E8C992E5184CD0EC00AFBF3F /* SceneTreeItemForce.cpp in Build Sources */,
-				E8BAD769185A578000C98C8D /* ConsoleWidget_moc.cpp in Build Sources */,
 				64B9018718BF7ADE001E6CCC /* GrassEditorPanel_moc.cpp in Build Sources */,
 				62B36CD61876B72100F7F030 /* RecentFilesManager.cpp in Build Sources */,
 				E8C99323184CD0EC00AFBF3F /* TextureListDelegate.cpp in Build Sources */,
@@ -4739,7 +4714,6 @@
 				E8C9928C184CD0EC00AFBF3F /* EntityParentChangeCommand.cpp in Build Sources */,
 				E8BAD7001859F50300C98C8D /* HoodSystem_moc.cpp in Build Sources */,
 				E8BAD7451859F50300C98C8D /* TileTexturePreviewWidgetItemDelegate_moc.cpp in Build Sources */,
-				E8C992B7184CD0EC00AFBF3F /* Console.cpp in Build Sources */,
 				A6D8279E1877175E0006A5DD /* PlaneLODDialog.cpp in Build Sources */,
 				76524BE91992212200F805AB /* HeightDeltaTool_moc.cpp in Build Sources */,
 				E8BAD6D81859F50300C98C8D /* SceneTreeModel_moc.cpp in Build Sources */,
@@ -4751,7 +4725,6 @@
 				E8C992EE184CD0EC00AFBF3F /* StatusBar.cpp in Build Sources */,
 				E8C99254184CD0EC00AFBF3F /* btUniversalConstraint.cpp in Build Sources */,
 				E8C99272184CD0EC00AFBF3F /* CommandLineManager.cpp in Build Sources */,
-				E8BAD767185A555700C98C8D /* ConsoleWidget.cpp in Build Sources */,
 				E8C99341184CD0EC00AFBF3F /* QtPropertyModel.cpp in Build Sources */,
 				E8C99262184CD0EC00AFBF3F /* ColladaAnimation.cpp in Build Sources */,
 				E8BAD7391859F50300C98C8D /* QtPropertyItemDelegate_moc.cpp in Build Sources */,
@@ -4813,7 +4786,6 @@
 				84A6B1FB18972F64002FD263 /* FloatRangeValidator.cpp in Build Sources */,
 				E8BAD71C1859F50300C98C8D /* TextureProperties_moc.cpp in Build Sources */,
 				76E5FFCC19ADE80D004AC39F /* ColorPreview.cpp in Build Sources */,
-				E8BAD6B31859F50300C98C8D /* ConsoleView_moc.cpp in Build Sources */,
 				E8C992BD184CD0EC00AFBF3F /* RulerToolPanel.cpp in Build Sources */,
 				E8BAD6F21859F50300C98C8D /* CollisionRenderObject_moc.cpp in Build Sources */,
 				E8C9922E184CD0EC00AFBF3F /* btTriangleMesh.cpp in Build Sources */,
@@ -4854,7 +4826,6 @@
 				E8BAD6B11859F50300C98C8D /* MaterialHelper_moc.cpp in Build Sources */,
 				E8C992DA184CD0EC00AFBF3F /* ScrollZoomWidget.cpp in Build Sources */,
 				E8BAD6EE1859F50300C98C8D /* CollisionBaseObject_moc.cpp in Build Sources */,
-				E8C992B8184CD0EC00AFBF3F /* ConsoleView.cpp in Build Sources */,
 				E8C9923E184CD0EC00AFBF3F /* btGjkConvexCast.cpp in Build Sources */,
 				E8C992A7184CD0EC00AFBF3F /* ExtendedDialog.cpp in Build Sources */,
 				E8BAD6D71859F50300C98C8D /* SceneTreeItemLayer_moc.cpp in Build Sources */,
@@ -5109,7 +5080,6 @@
 				E8C992F4184CD0EC00AFBF3F /* SceneSignals.cpp in Build Sources */,
 				E8C992A6184CD0EC00AFBF3F /* EditorSettings.cpp in Build Sources */,
 				E86F97CF18DB38F1007330E1 /* CloneLastBatchCommand.cpp in Build Sources */,
-				E8BAD6B21859F50300C98C8D /* Console_moc.cpp in Build Sources */,
 				E8C9932B184CD0EC00AFBF3F /* EventFilterDoubleSpinBox.cpp in Build Sources */,
 				E8C9923B184CD0EC00AFBF3F /* gim_tri_collision.cpp in Build Sources */,
 				E8C9926E184CD0EC00AFBF3F /* ColladaSceneNode.cpp in Build Sources */,
