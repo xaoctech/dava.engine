@@ -73,6 +73,7 @@
 #include "ImageSizeTest.h"
 #include "DLCDownloadTest.h"
 #include "FunctionBindSingalTest.h"
+#include "MathTest.h"
 #include "BiDiTest.h"
 #include "TextSizeTest.h"
 
@@ -100,6 +101,7 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
 
+	new MathTest();
 	new FunctionBindSignalTest();
 	new DLCDownloadTest();
 
