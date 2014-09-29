@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="Classes\BaseScreen.cpp" />
@@ -49,6 +49,7 @@
     <ClCompile Include="Classes\FunctionBindSingalTest.cpp" />
     <ClCompile Include="Classes\BiDiTest.cpp" />
     <ClCompile Include="Classes\TextSizeTest.cpp" />
+    <ClCompile Include="Classes\MathTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\BaseScreen.h" />
@@ -101,5 +102,6 @@
     <ClInclude Include="Classes\FunctionBindSingalTest.h" />
     <ClInclude Include="Classes\BiDiTest.h" />
     <ClInclude Include="Classes\TextSizeTest.h" />
+    <ClInclude Include="Classes\MathTest.h" />
   </ItemGroup>
 </Project>
