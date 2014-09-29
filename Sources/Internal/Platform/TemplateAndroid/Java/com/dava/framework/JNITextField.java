@@ -22,6 +22,7 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -266,6 +267,14 @@ public class JNITextField {
 			public Void call() throws Exception {
 				JNIActivity activity = JNIActivity.GetActivity();
 				final EditText text = new EditText(activity) {
+					@Override
+					public boolean onTouchEvent(MotionEvent event) {
+						MotionEvent newEvent = MotionEvent.obtain(event);
+						newEvent.setLocation(getLeft() + event.getX(), getTop() + event.getY());
+						JNIActivity.GetActivity().glView.dispatchTouchEvent(newEvent);
+						return super.onTouchEvent(event);
+					}
+
 				    // Workaround for BACK press when keyboard opened
 				    @Override
 				    public boolean onKeyPreIme(int keyCode, KeyEvent event)
