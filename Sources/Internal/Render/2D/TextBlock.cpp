@@ -354,10 +354,10 @@ int32 TextBlock::GetVisualAlign()
 {
 	mutex.Lock();
     mutex.Unlock();
-	return GetVisualAlignUnsafe();
+	return GetVisualAlignNoMutexLock();
 }
 	
-int32 TextBlock::GetVisualAlignUnsafe() const
+int32 TextBlock::GetVisualAlignNoMutexLock() const
 {
 	if(useRtlAlign && isRtl && (align & ALIGN_LEFT || align & ALIGN_RIGHT))
     {
@@ -865,6 +865,7 @@ TextBlock * TextBlock::Clone()
     block->SetMultiline(GetMultiline(), GetMultilineBySymbol());
     block->SetAlign(align);
     block->SetFittingOption(fittingType);
+    block->SetUseRtlAlign(useRtlAlign);
 
     if (GetFont())
     {

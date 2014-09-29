@@ -77,7 +77,7 @@ void TextBlockRender::DrawText()
 				textBlock->cacheUseJustify = false;
 			}
 			int32 xOffset = 0;
-            int32 align = textBlock->GetVisualAlignUnsafe();
+            int32 align = textBlock->GetVisualAlignNoMutexLock();
 			if (align & ALIGN_RIGHT)
 			{
                 xOffset = (int32)(textBlock->cacheFinalSize.dx - textBlock->stringSizes[line]);

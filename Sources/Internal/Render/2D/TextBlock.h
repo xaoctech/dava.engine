@@ -122,7 +122,7 @@ protected:
 
 	void ProcessAlign();
 	
-	int32 GetVisualAlignUnsafe() const; // Return align for displaying BiDi-text (w/o mutex lock)
+	int32 GetVisualAlignNoMutexLock() const; // Return align for displaying BiDi-text (w/o mutex lock)
 
 	Vector2 rectSize;
     bool needRedraw;
