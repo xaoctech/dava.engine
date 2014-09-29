@@ -33,8 +33,9 @@ public:
     void SetUseDelayedUpdate(bool use);
 
 protected:
-    virtual QAbstractButton * CreateButton( const QAction *action ) const;
+    virtual QAbstractButton * CreateButton( const QAction *action );
     virtual QSize ButtonSizeHint(const QAction *action) const;
+    virtual void SyncButtonWithAction( const QAction *action, QAbstractButton *button);
 
     int ButtonsWidth() const;
 
@@ -42,6 +43,7 @@ private slots:
     void OnTextEdit();
     void OnAcceptEdit();
     void UpdatePadding();
+    void OnActionChanged();
 
 private:
     void SetupConnections( bool delayed, bool instant );

@@ -2148,6 +2148,12 @@
     <ClCompile Include="Classes\Qt\Tools\Widgets\LineEditStyle.cpp">
       <Filter>Classes\Qt\Tools\Widgets</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\Widgets\PathBrowser.cpp">
+      <Filter>Classes\Qt\Tools\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\Widgets\PathBrowser_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3741,6 +3747,9 @@
       <Filter>Classes\Qt\Tools\Widgets</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\Widgets\LineEditStyle.h">
+      <Filter>Classes\Qt\Tools\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\Widgets\PathBrowser.h">
       <Filter>Classes\Qt\Tools\Widgets</Filter>
     </ClInclude>
   </ItemGroup>
