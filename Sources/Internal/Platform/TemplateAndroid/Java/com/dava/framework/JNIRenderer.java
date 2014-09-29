@@ -16,8 +16,6 @@ public class JNIRenderer implements GLSurfaceView.Renderer {
 	private native void nativeRenderRecreated();
 	private native void nativeOnResumeView();
 	private native void nativeOnPauseView(boolean isLock);
-	
-	private boolean skipFirstFrame = false;
 
 	private int width = 0;
 	private int height = 0;
@@ -65,7 +63,6 @@ public class JNIRenderer implements GLSurfaceView.Renderer {
 			isRenderRecreated = false;
 		}
 		OnResume();
-		skipFirstFrame = true;
 
 		Log.w(JNIConst.LOG_TAG, "_________onSurfaceChanged__DONE___");
 	}
@@ -74,11 +71,6 @@ public class JNIRenderer implements GLSurfaceView.Renderer {
 
 	@Override
 	public void onDrawFrame(GL10 gl) {
-		if (skipFirstFrame) {
-			skipFirstFrame = false;
-			return;
-		}
-
 		nativeRender();
 	}
 	
