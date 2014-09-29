@@ -596,6 +596,7 @@
     <ClCompile Include="Classes\Qt\Tools\ToolButtonWithWidget\ToolButtonWithWidget.cpp" />
     <ClCompile Include="Classes\Qt\Tools\Widgets\CheckableComboBox.cpp" />
     <ClCompile Include="Classes\Qt\Tools\Widgets\LineEditEx.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\Widgets\LineEditStyle.cpp" />
     <ClCompile Include="Classes\SceneProcessing\SceneProcessor.cpp" />
     <ClCompile Include="Classes\Qt\Tools\Widgets\AbstractSlider.cpp" />
     <ClCompile Include="Classes\Qt\Tools\Widgets\ValueSlider.cpp" />
@@ -1296,6 +1297,7 @@
     <ClInclude Include="Classes\Qt\Tools\ToolButtonWithWidget\ToolButtonWithWidget.h" />
     <ClInclude Include="Classes\Qt\Tools\Widgets\CheckableComboBox.h" />
     <ClInclude Include="Classes\Qt\Tools\Widgets\LineEditEx.h" />
+    <ClInclude Include="Classes\Qt\Tools\Widgets\LineEditStyle.h" />
     <ClInclude Include="Classes\SceneProcessing\SceneProcessor.h" />
     <ClInclude Include="Classes\Qt\Tools\Widgets\AbstractSlider.h" />
     <ClInclude Include="Classes\Qt\Tools\Widgets\ValueSlider.h" />
