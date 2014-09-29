@@ -55,11 +55,10 @@ void LineEditEx::SetUseDelayedUpdate(bool use)
     SetupConnections(useDelayedUpdate, !useDelayedUpdate);
 }
 
-QAbstractButton* LineEditEx::CreateButton(const QAction * action) const
+QAbstractButton* LineEditEx::CreateButton(const QAction * action)
 {
     QPushButton *btn = new QPushButton();
-    btn->setToolTip(action->toolTip());
-    btn->setIcon(action->icon());
+    SyncButtonWithAction( action, btn );
 
     btn->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     btn->setFixedSize(ButtonSizeHint(action));
@@ -72,6 +71,13 @@ QSize LineEditEx::ButtonSizeHint(const QAction* action) const
 {
     Q_UNUSED(action);
     return QSize(20, 20);
+}
+
+void LineEditEx::SyncButtonWithAction(const QAction* action, QAbstractButton* button)
+{
+    button->setText(action->text());
+    button->setToolTip(action->toolTip());
+    button->setIcon(action->icon());
 }
 
 int LineEditEx::ButtonsWidth() const
@@ -101,7 +107,21 @@ void LineEditEx::UpdatePadding()
     {
         buttonsWidth += layout()->spacing() * ( buttons.size() - 1 );
     }
+    updateGeometry();
     update();
+}
+
+void LineEditEx::OnActionChanged()
+{
+    QAction *action = qobject_cast<QAction *>(sender());
+    if ( action == NULL)
+        return;
+
+    auto it = buttons.find(action);
+    if ( it != buttons.end() )
+    {
+        SyncButtonWithAction( it.key(), it.value() );
+    }
 }
 
 void LineEditEx::SetupConnections(bool delayed, bool instant)
@@ -134,6 +154,9 @@ void LineEditEx::AddActionHandler(QAction* action)
     QAbstractButton *btn = CreateButton(action);
     buttons[action] = btn;
     layout()->addWidget(btn);
+
+    connect( action, SIGNAL( changed() ), SLOT( OnActionChanged() ) );
+    connect( btn, SIGNAL( clicked() ), action, SLOT( trigger() ) );
 
     UpdatePadding();
 }
