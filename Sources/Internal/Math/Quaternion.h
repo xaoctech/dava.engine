@@ -369,9 +369,9 @@ inline void Quaternion::Construct(const Vector3 & axis, float32 angle)
 inline void Quaternion::Construct(const Vector3 & euler)
 {
 	Quaternion x_q, y_q, z_q, v;
-	x_q.Construct(Vector3(1.0f, 0.0f, 0.0f), euler.x);
-	y_q.Construct(Vector3(0.0f, 1.0f, 0.0f), euler.y);
-	z_q.Construct(Vector3(0.0f, 0.0f, 1.0f), euler.z);
+	x_q.Construct(Vector3::UnitX, euler.x);
+	y_q.Construct(Vector3::UnitY, euler.y);
+	z_q.Construct(Vector3::UnitZ, euler.z);
 	
 	*this = x_q;
 	Mul(&y_q, &v);
@@ -475,5 +475,3 @@ inline bool Quaternion::operator != (const Quaternion & _v) const
 };
 
 #endif // __DAVAENGINE_QUATERNION_H__
-
-

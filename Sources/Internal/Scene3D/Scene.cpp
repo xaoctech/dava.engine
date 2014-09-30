@@ -41,7 +41,6 @@
 #include "FileSystem/FileSystem.h"
 #include "Debug/Stats.h"
 
-#include "Scene3D/SceneNodeAnimationList.h"
 #include "Scene3D/SceneFile.h"
 #include "Scene3D/SceneFileV2.h"
 #include "Scene3D/DataNode.h"
@@ -70,6 +69,7 @@
 #include "Scene3D/Systems/WindSystem.h"
 #include "Scene3D/Systems/WaveSystem.h"
 #include "Scene3D/Systems/SkeletonSystem.h"
+#include "Scene3D/Systems/AnimationSystem.h"
 
 #include "Sound/SoundSystem.h"
 
@@ -120,6 +120,7 @@ Scene::Scene(uint32 _systemsMask /* = SCENE_SYSTEM_ALL_MASK */)
 	, materialSystem(0)
     , foliageSystem(0)
     , windSystem(0)
+    , animationSystem(0)
     , staticOcclusionDebugDrawSystem(0)
 	, sceneGlobalMaterial(0)
     , isDefaultGlobalMaterial(true)
@@ -259,6 +260,12 @@ void Scene::CreateSystems()
     {
         staticOcclusionSystem = new StaticOcclusionSystem(this);
         AddSystem(staticOcclusionSystem, (1 << Component::STATIC_OCCLUSION_DATA_COMPONENT), true);
+    }
+
+    if(SCENE_SYSTEM_ANIMATION_FLAG & systemsMask)
+    {
+        animationSystem = new AnimationSystem(this);
+        AddSystem(animationSystem, (1 << Component::ANIMATION_COMPONENT), true);
     }
 
     if(SCENE_SYSTEM_TRANSFORM_FLAG & systemsMask)
@@ -421,6 +428,7 @@ Scene::~Scene()
     foliageSystem = 0;
     windSystem = 0;
     waveSystem = 0;
+    animationSystem = 0;
     
     uint32 size = (uint32)systems.size();
     for (uint32 k = 0; k < size; ++k)
@@ -484,6 +492,7 @@ void Scene::UnregisterComponent(Entity * entity, Component * component)
     }
     
 }
+
 
 #if 0 // Removed temporarly if everything will work with events can be removed fully.
 void Scene::ImmediateEvent(Entity * entity, uint32 componentType, uint32 event)
@@ -598,32 +607,6 @@ void Scene::RemoveAnimatedMesh(AnimatedMesh * mesh)
 AnimatedMesh * Scene::GetAnimatedMesh(int32 index)
 {
 	return animatedMeshes[index];
-}
-	
-void Scene::AddAnimation(SceneNodeAnimationList * animation)
-{
-	if (animation)
-	{
-		animation->Retain();
-		animations.push_back(animation);
-	}
-}
-
-SceneNodeAnimationList * Scene::GetAnimation(int32 index)
-{
-	return animations[index];
-}
-	
-SceneNodeAnimationList * Scene::GetAnimation(const FastName & name)
-{
-	int32 size = (int32)animations.size();
-	for (int32 k = 0; k < size; ++k)
-	{
-		SceneNodeAnimationList * node = animations[k];
-		if (node->GetName() == name)
-			return node;
-	}
-	return 0;
 }
 	
 	
@@ -1078,6 +1061,10 @@ MaterialSystem * Scene::GetMaterialSystem() const
     return materialSystem;
 }
 
+AnimationSystem * Scene::GetAnimationSystem() const
+{
+    return animationSystem;
+}
 
 /*void Scene::Save(KeyedArchive * archive)
 {

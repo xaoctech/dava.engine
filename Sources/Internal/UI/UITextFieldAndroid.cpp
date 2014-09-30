@@ -325,6 +325,14 @@ void JniTextField::SetCursorPos(uint32 pos)
 	GetEnvironment()->CallStaticVoidMethod(GetJavaClass(), mid, id, pos);
 }
 
+void JniTextField::SetMaxLength(int32_t value)
+{
+	jmethodID mid = GetMethodID("SetMaxLength", "(II)V");
+	if (!mid)
+		return;
+	GetEnvironment()->CallStaticVoidMethod(GetJavaClass(), mid, id, value);
+}
+
 uint32_t UITextFieldAndroid::sId = 0;
 DAVA::Map<uint32_t, UITextFieldAndroid*> UITextFieldAndroid::controls;
 
@@ -482,6 +490,12 @@ void UITextFieldAndroid::SetCursorPos(uint32 pos)
 	return jniTextField.SetCursorPos(pos);
 }
 
+void UITextFieldAndroid::SetMaxLength(DAVA::int32 value)
+{
+	JniTextField jniTextField(id);
+	return jniTextField.SetMaxLength(value);
+}
+
 bool UITextFieldAndroid::TextFieldKeyPressed(int32 replacementLocation, int32 replacementLength, const WideString &text)
 {
 	bool res = true;
@@ -517,24 +531,6 @@ void UITextFieldAndroid::TextFieldShouldReturn()
 		delegate->TextFieldShouldReturn(textField);
 }
 
-void UITextFieldAndroid::FocusChanged(bool hasFocus)
-{
-	if (hasFocus)
-	{
-        if (DAVA::UIControlSystem::Instance()->GetFocusedControl() != textField)
-        {
-            DAVA::UIControlSystem::Instance()->SetFocusedControl(textField, false);
-        }
-	}
-	else
-	{
-		if (DAVA::UIControlSystem::Instance()->GetFocusedControl() == textField)
-        {
-            DAVA::UIControlSystem::Instance()->SetFocusedControl(NULL, false);
-        }
-	}
-}
-
 void UITextFieldAndroid::TextFieldShouldReturn(uint32_t id)
 {
 	UITextFieldAndroid* control = GetUITextFieldAndroid(id);
@@ -544,15 +540,6 @@ void UITextFieldAndroid::TextFieldShouldReturn(uint32_t id)
 	control->TextFieldShouldReturn();
 }
 
-void UITextFieldAndroid::TextFieldFocusChanged(uint32_t id, bool hasFocus)
-{
-	UITextFieldAndroid *control = GetUITextFieldAndroid(id);
-	if (!control)
-		return;
-
-	control->FocusChanged(hasFocus);
-}
-
 UITextFieldAndroid* UITextFieldAndroid::GetUITextFieldAndroid(uint32_t id)
 {
 	DAVA::Map<uint32_t, UITextFieldAndroid*>::iterator iter = controls.find(id);
@@ -560,4 +547,63 @@ UITextFieldAndroid* UITextFieldAndroid::GetUITextFieldAndroid(uint32_t id)
 		return iter->second;
 
 	return NULL;
+}
+
+void UITextFieldAndroid::TextFieldKeyboardShown(const Rect& rect)
+{
+    UITextFieldDelegate* delegate = textField->GetDelegate();
+    if (delegate)
+        delegate->OnKeyboardShown(rect);
+}
+
+void UITextFieldAndroid::TextFieldKeyboardShown(uint32_t id, const Rect& rect)
+{
+    UITextFieldAndroid* control = GetUITextFieldAndroid(id);
+    if (!control)
+        return;
+    control->TextFieldKeyboardShown(rect);
+}
+
+void UITextFieldAndroid::TextFieldKeyboardHidden()
+{
+    UITextFieldDelegate* delegate = textField->GetDelegate();
+    if (delegate)
+        delegate->OnKeyboardHidden();
+}
+
+void UITextFieldAndroid::TextFieldKeyboardHidden(uint32_t id)
+{
+    UITextFieldAndroid* control = GetUITextFieldAndroid(id);
+    if (!control)
+        return;
+    control->TextFieldKeyboardHidden();
+}
+
+void UITextFieldAndroid::TextFieldFocusChanged(bool hasFocus)
+{
+    if(textField)
+    {
+        if(hasFocus)
+        {
+            if (DAVA::UIControlSystem::Instance()->GetFocusedControl() != textField)
+            {
+                DAVA::UIControlSystem::Instance()->SetFocusedControl(textField, false);
+            }
+        }
+        else
+        {
+            if (DAVA::UIControlSystem::Instance()->GetFocusedControl() == textField)
+            {
+                DAVA::UIControlSystem::Instance()->SetFocusedControl(NULL, false);
+            }
+        }
+    }
+}
+
+void UITextFieldAndroid::TextFieldFocusChanged(uint32_t id, bool hasFocus)
+{
+    UITextFieldAndroid* control = GetUITextFieldAndroid(id);
+    if (!control)
+        return;
+    control->TextFieldFocusChanged(hasFocus);
 }
