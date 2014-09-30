@@ -93,7 +93,7 @@ void SkeletonSystem::Process(float32 timeElapsed)
                 q.Construct(Vector3(0,1,0), fi);
                 component->SetJointOrientation(i, q);
             }
-        }/**/
+        }*/
         if (component&&(component->startJoint!=SkeletonComponent::INVALID_JOINT_INDEX))
         {
             UpdatePose(component);     
