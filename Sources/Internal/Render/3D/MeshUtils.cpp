@@ -313,12 +313,13 @@ SkinnedMesh * CreateSkinnedMesh(Entity * fromEntity, Vector<SkeletonComponent::J
 
                 collapseDataMap[dataKey].push_back(SkinnedMeshJointWork(rb, nodeIndex));
             }
+
+            outJoints[nodeIndex].bbox = ro->GetBoundingBox();
         }
 
         const Matrix4 & localTransform = child->GetLocalTransform();
 
         outJoints[nodeIndex].name = childrenNodes[nodeIndex]->GetName();
-        outJoints[nodeIndex].bbox = ro->GetBoundingBox();
         outJoints[nodeIndex].orientation.Construct(localTransform);
         outJoints[nodeIndex].position = localTransform.GetTranslationVector();
         outJoints[nodeIndex].scale = localTransform.GetScaleVector().x;

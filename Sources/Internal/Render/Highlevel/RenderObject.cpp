@@ -82,7 +82,7 @@ void RenderObject::AddRenderBatch(RenderBatch * batch, int32 _lodIndex, int32 _s
 	ind.renderBatch = batch;
     renderBatchArray.push_back(ind);
 
-    if(_lodIndex == lodIndex && _switchIndex == switchIndex)
+    if((_lodIndex == lodIndex && _switchIndex == switchIndex) || (_lodIndex == -1 && _switchIndex == -1))
     {
         activeRenderBatchArray.push_back(batch);
     }
