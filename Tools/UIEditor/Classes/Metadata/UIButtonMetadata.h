@@ -67,7 +67,7 @@ protected:
     //virtual void SetFontSize(float fontSize);
     
     // Color getter/setter. Also virtual.
-    virtual Font * GetFont();
+    virtual Font * GetFont() const;
     virtual void SetFont(Font* font);
     
     virtual QColor GetFontColor() const;
@@ -84,7 +84,7 @@ protected:
 	virtual void SetShadowColor(const QColor& value);
 
     // Color getter/setter. Also virtual.
-    virtual QColor GetColor();
+    virtual QColor GetColor() const;
     virtual void SetColor(const QColor& value);
 
     // Sprite getter/setter.
@@ -92,35 +92,35 @@ protected:
     virtual QString GetSprite() const;
     
     virtual void SetSpriteFrame(int value);
-    virtual int GetSpriteFrame();
+    virtual int GetSpriteFrame() const;
     
     // Drawing flags getters/setters.
-    virtual int GetDrawType();
+    virtual int GetDrawType() const;
     virtual void SetDrawType(int value);
 
-    virtual int GetColorInheritType();
+    virtual int GetColorInheritType() const;
     virtual void SetColorInheritType(int value);
     
-    virtual int GetPerPixelAccuracyType();
+    virtual int GetPerPixelAccuracyType() const;
     virtual void SetPerPixelAccuracyType(int value);
 
-    virtual int GetAlign();
+    virtual int GetAlign() const;
     virtual void SetAlign(int value);
 
 	virtual void SetSpriteModification(int value);
-	virtual int GetSpriteModification();
+	virtual int GetSpriteModification() const;
 
-	virtual int GetTextAlign();
+	virtual int GetTextAlign() const;
     virtual void SetTextAlign(int align);
 
     virtual int GetFittingType() const;
     virtual void SetFittingType(int value);
 
     // Stretch Cap.
-    virtual float GetLeftRightStretchCap();
+    virtual float GetLeftRightStretchCap() const;
 	virtual void SetLeftRightStretchCap(float value);
     
-    virtual float GetTopBottomStretchCap();
+    virtual float GetTopBottomStretchCap() const;
 	virtual void SetTopBottomStretchCap(float value);
 
     // Color Inherit Type.

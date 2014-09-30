@@ -118,14 +118,14 @@ void UITextControlMetadata::UpdateStaticTextExtraData(UIStaticText* staticText, 
     }
 }
 
-Vector2 UITextControlMetadata::GetOffsetX(const Vector2& currentOffset, float offsetX)
+Vector2 UITextControlMetadata::GetOffsetX(const Vector2& currentOffset, float offsetX) const
 {
 	Vector2 offset(currentOffset);
 	offset.x = offsetX;
 	return offset;
 }
 
-Vector2 UITextControlMetadata::GetOffsetY(const Vector2& currentOffset, float offsetY)
+Vector2 UITextControlMetadata::GetOffsetY(const Vector2& currentOffset, float offsetY) const
 {
 	Vector2 offset(currentOffset);
 	offset.y = offsetY;

@@ -451,7 +451,7 @@ void UIControlMetadata::ApplyResize(const Rect& /*originalRect*/, const Rect& ne
 	SetActiveControlRect(newRect, false);
 }
                  
-QColor UIControlMetadata::GetColor()
+QColor UIControlMetadata::GetColor() const
 {
     if (!VerifyActiveParamID())
     {
@@ -471,7 +471,7 @@ void UIControlMetadata::SetColor(const QColor& value)
     GetActiveUIControl()->GetBackground()->SetColor(ColorHelper::QTColorToDAVAColor(value));
 }
     
-int UIControlMetadata::GetDrawType()
+int UIControlMetadata::GetDrawType() const
 {
     if (!VerifyActiveParamID())
     {
@@ -491,7 +491,7 @@ void UIControlMetadata::SetDrawType(int value)
     GetActiveUIControl()->GetBackground()->SetDrawType((UIControlBackground::eDrawType)value);
 }
     
-int UIControlMetadata::GetColorInheritType()
+int UIControlMetadata::GetColorInheritType() const
 {
     if (!VerifyActiveParamID())
     {
@@ -511,7 +511,7 @@ void UIControlMetadata::SetColorInheritType(int value)
     GetActiveUIControl()->GetBackground()->SetColorInheritType((UIControlBackground::eColorInheritType)value);
 }
 
-int UIControlMetadata::GetPerPixelAccuracyType()
+int UIControlMetadata::GetPerPixelAccuracyType() const
 {
     if (!VerifyActiveParamID())
     {
@@ -530,7 +530,7 @@ void UIControlMetadata::SetPerPixelAccuracyType(int value)
     GetActiveUIControl()->GetBackground()->SetPerPixelAccuracyType((UIControlBackground::ePerPixelAccuracyType)value);
 }
     
-int UIControlMetadata::GetAlign()
+int UIControlMetadata::GetAlign() const
 {
     if (!VerifyActiveParamID())
     {
@@ -550,7 +550,7 @@ void UIControlMetadata::SetAlign(int value)
     GetActiveUIControl()->GetBackground()->SetAlign((eAlign)value);
 }
 
-float UIControlMetadata::GetLeftRightStretchCap()
+float UIControlMetadata::GetLeftRightStretchCap() const
 {
     if (!VerifyActiveParamID())
     {
@@ -560,7 +560,7 @@ float UIControlMetadata::GetLeftRightStretchCap()
     return GetActiveUIControl()->GetBackground()->GetLeftRightStretchCap();
 }
 
-float UIControlMetadata::GetTopBottomStretchCap()
+float UIControlMetadata::GetTopBottomStretchCap() const
 {
     if (!VerifyActiveParamID())
     {
@@ -667,7 +667,7 @@ void UIControlMetadata::SetSpriteFrame(int value)
     GetActiveUIControl()->GetBackground()->SetFrame(value);
 }
     
-int UIControlMetadata::GetSpriteFrame()
+int UIControlMetadata::GetSpriteFrame() const
 {
     if (!VerifyActiveParamID())
     {
@@ -699,7 +699,7 @@ void UIControlMetadata::SetSpriteModification(int value)
     GetActiveUIControl()->GetBackground()->SetModification(value);
 }
 
-int UIControlMetadata::GetSpriteModification()
+int UIControlMetadata::GetSpriteModification() const
 {
     if (!VerifyActiveParamID())
     {
@@ -715,7 +715,7 @@ int UIControlMetadata::GetSpriteModification()
     return GetActiveUIControl()->GetBackground()->GetModification();
 }
 
-int UIControlMetadata::GetLeftAlign()
+int UIControlMetadata::GetLeftAlign() const
 {
     if (!VerifyActiveParamID())
     {
@@ -734,7 +734,7 @@ void UIControlMetadata::SetLeftAlign(int value)
 	GetActiveUIControl()->SetLeftAlign(value);
 }
 	
-int UIControlMetadata::GetHCenterAlign()
+int UIControlMetadata::GetHCenterAlign() const
 {
     if (!VerifyActiveParamID())
     {
@@ -754,7 +754,7 @@ void UIControlMetadata::SetHCenterAlign(int value)
 	GetActiveUIControl()->SetHCenterAlign(value);
 }
 
-int UIControlMetadata::GetRightAlign()
+int UIControlMetadata::GetRightAlign() const
 {
     if (!VerifyActiveParamID())
     {
@@ -774,7 +774,7 @@ void UIControlMetadata::SetRightAlign(int value)
 	GetActiveUIControl()->SetRightAlign(value);
 }
 
-int UIControlMetadata::GetTopAlign()
+int UIControlMetadata::GetTopAlign() const
 {
     if (!VerifyActiveParamID())
     {
@@ -794,7 +794,7 @@ void UIControlMetadata::SetTopAlign(int value)
 	GetActiveUIControl()->SetTopAlign(value);
 }
 
-int UIControlMetadata::GetVCenterAlign()
+int UIControlMetadata::GetVCenterAlign() const
 {
     if (!VerifyActiveParamID())
     {
@@ -814,7 +814,7 @@ void UIControlMetadata::SetVCenterAlign(int value)
 	GetActiveUIControl()->SetVCenterAlign(value);
 }
 
-int UIControlMetadata::GetBottomAlign()
+int UIControlMetadata::GetBottomAlign() const
 {
     if (!VerifyActiveParamID())
     {

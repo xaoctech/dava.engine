@@ -64,13 +64,13 @@ protected:
     UIStaticText* GetActiveStaticText() const;
     
     // Getters/setters.
-	virtual int GetAlign();
+	virtual int GetAlign() const;
     virtual void SetAlign(int value);
 
-	virtual int GetTextAlign();
+	virtual int GetTextAlign() const;
     virtual void SetTextAlign(int value);
 
-    virtual Font * GetFont();
+    virtual Font * GetFont() const;
     virtual void SetFont(Font* font);
     
     virtual float GetFontSize() const;
