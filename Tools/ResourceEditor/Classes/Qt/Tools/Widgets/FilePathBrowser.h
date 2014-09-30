@@ -1,18 +1,21 @@
-#ifndef PATHBROWSER_H
-#define PATHBROWSER_H
+#ifndef FILEPATHBROWSER_H
+#define FILEPATHBROWSER_H
 
 
 #include "LineEditEx.h"
 
 
-class PathBrowser
+class FilePathBrowser
     : public LineEditEx
 {
     Q_OBJECT
 
+signals:
+    void pathChanged( const QString& path );
+
 public:
-    explicit PathBrowser(QWidget *parent = NULL);
-    ~PathBrowser();
+    explicit FilePathBrowser(QWidget *parent = NULL);
+    ~FilePathBrowser();
 
     void SetHint(const QString& hint);
     void SetDefaultFolder(const QString& path);
@@ -26,9 +29,11 @@ protected:
 
 private slots:
     void OnBrowse();
+    void OnReturnPressed();
 
 private:
     void InitActions();
+    void TryToAcceptPath(const QString& path);
 
     QAbstractButton * CreateButton( const QAction *action );
     QSize ButtonSizeHint(const QAction *action) const;
@@ -40,4 +45,4 @@ private:
 };
 
 
-#endif // PATHBROWSER_H
+#endif // FILEPATHBROWSER_H
