@@ -945,4 +945,5 @@ public class JNITextField {
 	public static native void TextFieldKeyboardShown(int id, int x, int y, int dx, int dy);
 	public static native void TextFieldKeyboardHidden(int id);
 	public static native void TextFieldFocusChanged(int id, final boolean hasFocus);
+	public static native boolean IsVisible(int id);
 }

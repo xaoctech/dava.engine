@@ -1,5 +1,7 @@
 package com.dava.framework;
 
+import java.util.Iterator;
+
 import org.fmod.FMODAudioDevice;
 
 import android.app.Activity;
@@ -12,10 +14,12 @@ import android.os.Handler;
 import android.support.v4.app.NotificationCompat.Builder;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
 import com.bda.controller.Controller;
+import com.dava.framework.JNITextField.NativeEditText;
 
 public abstract class JNIActivity extends Activity implements JNIAccelerometer.JNIAccelerometerListener
 {
@@ -150,6 +154,12 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         // The activity has become visible (it is now "resumed").
 		Log.i(JNIConst.LOG_TAG, "[Activity::onResume] start");
 
+		
+		for (Iterator<NativeEditText> iter = JNITextField.controls.values().iterator(); iter.hasNext();) {
+			NativeEditText textField = iter.next();
+			textField.editText.setVisibility(View.GONE);
+		}
+		
 		if(mController != null)
 		{
 			mController.onResume();
