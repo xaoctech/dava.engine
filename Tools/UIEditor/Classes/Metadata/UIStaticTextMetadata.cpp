@@ -47,7 +47,7 @@ UIStaticText* UIStaticTextMetadata::GetActiveStaticText() const
     return static_cast<UIStaticText*>(GetActiveUIControl());
 }
 
-Font * UIStaticTextMetadata::GetFont()
+Font * UIStaticTextMetadata::GetFont() const
 {
     if (VerifyActiveParamID())
     {
@@ -244,7 +244,7 @@ void UIStaticTextMetadata::SetShadowColor(const QColor& value)
 	GetActiveStaticText()->SetShadowColor(ColorHelper::QTColorToDAVAColor(value));
 }
 
-int UIStaticTextMetadata::GetAlign()
+int UIStaticTextMetadata::GetAlign() const
 {
     if (!VerifyActiveParamID())
     {
@@ -264,7 +264,7 @@ void UIStaticTextMetadata::SetAlign(int value)
     GetActiveStaticText()->SetAlign((eAlign)value);
 }
 
-int UIStaticTextMetadata::GetTextAlign()
+int UIStaticTextMetadata::GetTextAlign() const
 {
     if (!VerifyActiveParamID())
     {

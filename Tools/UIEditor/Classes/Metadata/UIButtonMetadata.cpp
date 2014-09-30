@@ -97,7 +97,7 @@ QString DAVA::UIButtonMetadata::GetLocalizedTextKeyForState( UIControl::eControl
     return QString();
 }
 
-Font * UIButtonMetadata::GetFont()
+Font * UIButtonMetadata::GetFont() const
 {
     if (VerifyActiveParamID())
     {
@@ -433,7 +433,7 @@ void UIButtonMetadata::SetSpriteFrame(int value)
     UpdatePropertyDirtyFlagForSpriteFrame();
 }
 
-int UIButtonMetadata::GetSpriteFrame()
+int UIButtonMetadata::GetSpriteFrame() const
 {
     if (!VerifyActiveParamID())
     {
@@ -467,7 +467,7 @@ UIControl::eControlState UIButtonMetadata::GetCurrentStateForLocalizedText() con
     return this->uiControlStates[GetActiveStateIndex()];
 }
 
-QColor UIButtonMetadata::GetColor()
+QColor UIButtonMetadata::GetColor() const
 {
     if (!VerifyActiveParamID())
     {
@@ -517,7 +517,7 @@ QColor UIButtonMetadata::GetColorForState(UIControl::eControlState state) const
     return QColor();
 }
 
-int UIButtonMetadata::GetDrawType()
+int UIButtonMetadata::GetDrawType() const
 {
     if (!VerifyActiveParamID())
     {
@@ -554,7 +554,7 @@ void UIButtonMetadata::UpdatePropertyDirtyFlagForDrawType()
     }
 }
 
-int UIButtonMetadata::GetColorInheritType()
+int UIButtonMetadata::GetColorInheritType() const
 {
     if (!VerifyActiveParamID())
     {
@@ -602,7 +602,7 @@ void UIButtonMetadata::UpdatePropertyDirtyFlagForColorInheritType()
     }
 }
 
-int UIButtonMetadata::GetPerPixelAccuracyType()
+int UIButtonMetadata::GetPerPixelAccuracyType() const
 {
     if (!VerifyActiveParamID())
     {
@@ -650,7 +650,7 @@ void UIButtonMetadata::UpdatePropertyDirtyFlagForPerPixelAccuracyType()
     }
 }
 
-int UIButtonMetadata::GetAlign()
+int UIButtonMetadata::GetAlign() const
 {
     if (!VerifyActiveParamID())
     {
@@ -694,7 +694,7 @@ void UIButtonMetadata::UpdatePropertyDirtyFlagForAlign()
 }
 
 
-int UIButtonMetadata::GetSpriteModification()
+int UIButtonMetadata::GetSpriteModification() const
 {
 	if (!VerifyActiveParamID())
 	{
@@ -704,7 +704,7 @@ int UIButtonMetadata::GetSpriteModification()
 	return GetSpriteModificationForState(uiControlStates[GetActiveStateIndex()]);
 }
 
-int UIButtonMetadata::GetTextAlign()
+int UIButtonMetadata::GetTextAlign() const
 {
 	if (!VerifyActiveParamID())
 	{
@@ -879,7 +879,7 @@ void UIButtonMetadata::UpdatePropertyDirtyFlagForFittingType()
 	}
 }
 
-float UIButtonMetadata::GetLeftRightStretchCap()
+float UIButtonMetadata::GetLeftRightStretchCap() const
 {
     if (!VerifyActiveParamID())
     {
@@ -908,7 +908,7 @@ void UIButtonMetadata::SetLeftRightStretchCap(float value)
     UpdatePropertyDirtyFlagForLeftRightStretchCap();
 }
 
-float UIButtonMetadata::GetTopBottomStretchCap()
+float UIButtonMetadata::GetTopBottomStretchCap() const
 {
     if (!VerifyActiveParamID())
     {

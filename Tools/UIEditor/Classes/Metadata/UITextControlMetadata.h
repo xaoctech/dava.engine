@@ -77,10 +77,10 @@ protected:
     virtual void SetLocalizedTextKey(const QString& value);
     
     // Getters/setters.
-    virtual Font * GetFont() = 0;
+    virtual Font * GetFont() const = 0;
     virtual void SetFont(Font * font) = 0;
 
-	virtual int GetTextAlign() = 0;
+	virtual int GetTextAlign() const = 0;
     virtual void SetTextAlign(int align) = 0;
     
     virtual float GetFontSize() const = 0;
@@ -98,8 +98,8 @@ protected:
 	virtual QColor GetShadowColor() const = 0;
 	virtual void SetShadowColor(const QColor& value) = 0;
 	
-	Vector2 GetOffsetX(const Vector2& currentOffset, float offsetX);
-	Vector2 GetOffsetY(const Vector2& currentOffset, float offsetY);
+	Vector2 GetOffsetX(const Vector2& currentOffset, float offsetX) const;
+	Vector2 GetOffsetY(const Vector2& currentOffset, float offsetY) const;
 
     // Text margins. Should be overriden in the derived classes.
     virtual QRectF GetTextMargins() const;
