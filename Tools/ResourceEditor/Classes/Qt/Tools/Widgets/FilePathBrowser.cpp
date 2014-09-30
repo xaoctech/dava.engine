@@ -1,4 +1,4 @@
-#include "PathBrowser.h"
+#include "FilePathBrowser.h"
 
 #include <QAction>
 #include <QAbstractButton>
@@ -14,9 +14,10 @@ namespace
 }
 
 
-PathBrowser::PathBrowser(QWidget* parent)
+FilePathBrowser::FilePathBrowser(QWidget* parent)
     : LineEditEx(parent)
 {
+    SetUseDelayedUpdate(false);
     InitActions();
 
     QBoxLayout *l = qobject_cast<QBoxLayout *>( layout() );
@@ -24,34 +25,38 @@ PathBrowser::PathBrowser(QWidget* parent)
     {
         l->setContentsMargins( 2, 2, 2, 2 );
     }
+
+    connect( this, SIGNAL( returnPressed() ), SLOT( OnReturnPressed() ) );
 }
 
-PathBrowser::~PathBrowser()
+FilePathBrowser::~FilePathBrowser()
 {
 }
 
-void PathBrowser::SetHint(const QString& hint)
+void FilePathBrowser::SetHint(const QString& hint)
 {
     hintText = hint;
     setPlaceholderText(hintText);
 }
 
-void PathBrowser::SetDefaultFolder(const QString& _path)
+void FilePathBrowser::SetDefaultFolder(const QString& _path)
 {
     defaultFolder = _path;
 }
 
-void PathBrowser::SetPath(const QString& _path)
+void FilePathBrowser::SetPath(const QString& _path)
 {
     path = _path;
+    setText(path);
+    setToolTip(path);
 }
 
-void PathBrowser::SetFilter(const QString& _filter)
+void FilePathBrowser::SetFilter(const QString& _filter)
 {
     filter = _filter;
 }
 
-QSize PathBrowser::sizeHint() const
+QSize FilePathBrowser::sizeHint() const
 {
     QSize hint = LineEditEx::sizeHint();
     const bool hasActions = !actions().isEmpty();
@@ -72,9 +77,9 @@ QSize PathBrowser::sizeHint() const
     return hint;
 }
 
-QString PathBrowser::DefaultBrowsePath()
+QString FilePathBrowser::DefaultBrowsePath()
 {
-    const QFileInfo pathInfo(path);
+    const QFileInfo pathInfo(text());
     const QFileInfo defaultInfo(defaultFolder);
 
     if (pathInfo.isFile())
@@ -86,12 +91,18 @@ QString PathBrowser::DefaultBrowsePath()
     return QString();
 }
 
-void PathBrowser::OnBrowse()
+void FilePathBrowser::OnBrowse()
 {
     const QString newPath = QFileDialog::getOpenFileName( this, hintText, DefaultBrowsePath(), filter, NULL, 0 );
+    TryToAcceptPath(newPath);
 }
 
-void PathBrowser::InitActions()
+void FilePathBrowser::OnReturnPressed()
+{
+    TryToAcceptPath(text());
+}
+
+void FilePathBrowser::InitActions()
 {
     QAction *browse = new QAction(this);
     browse->setToolTip("Browse...");
@@ -101,13 +112,24 @@ void PathBrowser::InitActions()
     addAction(browse);
 }
 
-QAbstractButton* PathBrowser::CreateButton(QAction const* action)
+void FilePathBrowser::TryToAcceptPath(const QString& _path)
+{
+    QFileInfo newInfo( _path );
+    
+    if (newInfo.isFile())
+    {
+        SetPath(_path);
+        emit pathChanged(_path);
+    }
+}
+
+QAbstractButton* FilePathBrowser::CreateButton(QAction const* action)
 {
     QAbstractButton *btn = LineEditEx::CreateButton(action);
     return btn;
 }
 
-QSize PathBrowser::ButtonSizeHint(const QAction * action) const
+QSize FilePathBrowser::ButtonSizeHint(const QAction * action) const
 {
     Q_UNUSED(action);
     return cButtonSize;

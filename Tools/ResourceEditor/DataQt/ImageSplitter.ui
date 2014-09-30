@@ -66,7 +66,7 @@
       </widget>
      </item>
      <item>
-      <widget class="PathBrowser" name="path">
+      <widget class="FilePathBrowser" name="path">
        <property name="placeholderText">
         <string>Select PNG image...</string>
        </property>
@@ -530,9 +530,9 @@
    <header>classes/Qt/ImageSplitterDialog/ImageArea.h</header>
   </customwidget>
   <customwidget>
-   <class>PathBrowser</class>
+   <class>FilePathBrowser</class>
    <extends>QLineEdit</extends>
-   <header>Tools/Widgets/PathBrowser.h</header>
+   <header>Tools/Widgets/FilePathBrowser.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
