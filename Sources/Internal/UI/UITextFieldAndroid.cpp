@@ -540,6 +540,20 @@ void UITextFieldAndroid::TextFieldShouldReturn(uint32_t id)
 	control->TextFieldShouldReturn();
 }
 
+bool UITextFieldAndroid::IsVisible()
+{
+	return textField->GetRecursiveVisible();
+}
+
+bool UITextFieldAndroid::IsVisible(uint32_t id)
+{
+	UITextFieldAndroid* control = GetUITextFieldAndroid(id);
+	if (!control)
+		return false;
+
+	return control->IsVisible();
+}
+
 UITextFieldAndroid* UITextFieldAndroid::GetUITextFieldAndroid(uint32_t id)
 {
 	DAVA::Map<uint32_t, UITextFieldAndroid*>::iterator iter = controls.find(id);
