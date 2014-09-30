@@ -202,4 +202,5 @@ void LogWidget::DoAutoScroll()
         return ;
 
     ui->log->scrollToBottom();
+    m_doAutoScroll = false;
 }
