@@ -311,59 +311,40 @@ void HierarchyTreeControlNode::RemoveTreeNodeFromScene()
 	this->needReleaseUIObjects = true;
 }
 
-void HierarchyTreeControlNode::RestoreParentControl(UIControl* parentControl)
-{
-	if (!uiObject || !parentControl)
-    {
-    	return;
-	}
-
-	// Return the object back to the proper position.
-	if (childUIObjectAbove == NULL)
-	{
-		// Set it to the top.
-		int childCount = parentControl->GetChildren().size();
-		if (childCount == 0)
-		{
-			parentControl->AddControl(uiObject);
-		}
-		else
-		{
-			parentControl->InsertChildAbove(uiObject, parentControl->GetChildren().front());
-		}
-	}
-	else
-	{
-		parentControl->InsertChildBelow(uiObject, childUIObjectAbove);
-	}
-    
-    // Restore all childs for current control node
-    for (HIERARCHYTREENODESLIST::iterator iter = childNodes.begin(); iter != childNodes.end(); ++iter)
-	{
-		HierarchyTreeControlNode* childControl = dynamic_cast<HierarchyTreeControlNode*>(*iter);
-		if (!childControl)
-			continue;
-		childControl->RestoreParentControl(uiObject);
-	}
-    
-    uiObject->Release();
-	parentControl->Release();
-	
-	// We just reset extra references to uiObject and parentUIObject - no additional release needed.
-	needReleaseUIObjects = false;
-}
-
 void HierarchyTreeControlNode::ReturnTreeNodeToScene()
 {
-	if (!uiObject || !parentUIObject || !redoParentNode)
+	if (!this->uiObject || !this->parentUIObject || !this->redoParentNode)
 	{
 		return;
 	}
 
 	// Need to recover the node previously deleted, taking position into account.
-	redoParentNode->AddTreeNode(this, redoPreviousNode);
-    // Restore also inner controls hierachy
-    RestoreParentControl(parentUIObject);
+	this->redoParentNode->AddTreeNode(this, redoPreviousNode);
+
+	// Return the object back to the proper position.
+	if (childUIObjectAbove == NULL)
+	{
+		// Set it to the top.
+		int childCount = parentUIObject->GetChildren().size();
+		if (childCount == 0)
+		{
+			parentUIObject->AddControl(uiObject);
+		}
+		else
+		{
+			parentUIObject->InsertChildAbove(uiObject, parentUIObject->GetChildren().front());
+		}
+	}
+	else
+	{
+		parentUIObject->InsertChildBelow(uiObject, childUIObjectAbove);
+	}
+
+	uiObject->Release();
+	parentUIObject->Release();
+	
+	// We just reset extra references to uiObject and parentUIObject - no additional release needed.
+	this->needReleaseUIObjects = false;
 }
 
 Rect HierarchyTreeControlNode::GetRect() const
