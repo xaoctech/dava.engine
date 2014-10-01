@@ -270,7 +270,7 @@ void UISlider::Draw(const UIGeometricData &geometricData)
     float32 screenYMin = - drawTranslate.y / drawScale.y;
     float32 screenYMax = (GetScreenHeight() - drawTranslate.y) / drawScale.y;
 
-	if (minBackground)
+    if (minBackground)
 	{
 		minBackground->SetParentColor(GetBackground()->GetDrawColor());
 		RenderManager::Instance()->ClipPush();
@@ -293,12 +293,13 @@ void UISlider::Draw(const UIGeometricData &geometricData)
 	}
 }
 
-void UISlider::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
+bool UISlider::LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader)
 {
     RemoveControl(thumbButton);
     SafeRelease(thumbButton);
 
-	UIControl::LoadFromYamlNode(node, loader);
+	if (!UIControl::LoadPropertiesFromYamlNode(node, loader))
+        return false;
 
 	// Values
 	const YamlNode * valueNode = node->Get("value");
@@ -328,6 +329,8 @@ void UISlider::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
         LoadBackgound("min", minBackground, node, loader);
         LoadBackgound("max", maxBackground, node, loader);
     }
+
+    return true;
 }
 
 void UISlider::SetSize(const DAVA::Vector2 &newSize)
@@ -352,11 +355,12 @@ void UISlider::LoadFromYamlNodeCompleted()
     SyncThumbWithSprite();
 }
 	
-YamlNode * UISlider::SaveToYamlNode(UIYamlLoader * loader)
+bool UISlider::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader)
 {
     thumbButton->SetName(UISLIDER_THUMB_SPRITE_CONTROL_NAME);
 
-    YamlNode *node = UIControl::SaveToYamlNode(loader);
+    if (!UIControl::SavePropertiesToYamlNode(node, defaultControl, loader))
+        return false;
 
 	// Sprite value
 	float32 value = this->GetValue();
@@ -377,7 +381,7 @@ YamlNode * UISlider::SaveToYamlNode(UIYamlLoader * loader)
     // Sprites are now embedded into UISlider.
     node->Set("spritesEmbedded", true);
 
-    return node;
+    return true;
 }
 	
 UIControl* UISlider::Clone()
@@ -449,7 +453,7 @@ void UISlider::SetVisibleForUIEditor(bool value, bool hierarchic/* = true*/)
     }
 }
 
-void UISlider::LoadBackgound(const char* prefix, UIControlBackground* background, const YamlNode* rootNode, UIYamlLoader* loader)
+void UISlider::LoadBackgound(const char* prefix, UIControlBackground* background, const YamlNode* rootNode, const UIYamlLoader* loader)
 {
     const YamlNode * colorNode = rootNode->Get(Format("%scolor", prefix));
     const YamlNode * spriteNode = rootNode->Get(Format("%ssprite", prefix));
@@ -515,7 +519,7 @@ void UISlider::LoadBackgound(const char* prefix, UIControlBackground* background
     }
 }
 
-void UISlider::SaveBackground(const char* prefix, UIControlBackground* background, YamlNode* rootNode, UIYamlLoader * loader)
+void UISlider::SaveBackground(const char* prefix, UIControlBackground* background, YamlNode* rootNode, const UIYamlLoader * loader)
 {
     if (!background)
     {
@@ -607,5 +611,59 @@ void UISlider::CopyBackgroundAndRemoveControl(UIControl* from, UIControlBackgrou
     to = from->GetBackground()->Clone();
     RemoveControl(from);
 }
-	
+
+int32 UISlider::GetBackgroundComponentsCount() const
+{
+    return 3;
+}
+
+UIControlBackground *UISlider::GetBackgroundComponent(int32 index) const
+{
+    switch (index)
+    {
+        case 0:
+            return GetBackground();
+            
+        case 1:
+            return minBackground;
+            
+        case 2:
+            return maxBackground;
+            
+        default:
+            DVASSERT(false);
+            return NULL;
+    }
+}
+
+UIControlBackground *UISlider::CreateBackgroundComponent(int32 index) const
+{
+    DVASSERT(0 <= index && index < 3);
+    return new UIControlBackground();
+}
+
+void UISlider::SetBackgroundComponent(int32 index, UIControlBackground *bg)
+{
+    DVASSERT(false);
+}
+
+String UISlider::GetBackgroundComponentName(int32 index) const
+{
+    switch (index)
+    {
+        case 0:
+            return "Background";
+            
+        case 1:
+            return "min";
+            
+        case 2:
+            return "max";
+            
+        default:
+            DVASSERT(false);
+            return NULL;
+    }
+}
+
 } // ns

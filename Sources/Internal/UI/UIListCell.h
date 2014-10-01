@@ -72,8 +72,8 @@ namespace DAVA
         virtual UIListCell *Clone();
         void CopyDataFrom(UIControl *srcControl);
         
-        virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
-        virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
+        virtual bool LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader);
+        virtual bool SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader);
 		
 	protected:
 		virtual ~UIListCell();

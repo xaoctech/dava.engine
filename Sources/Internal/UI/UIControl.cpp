@@ -26,25 +26,23 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-
 #include "UI/UIControl.h"
 #include "UI/UIControlSystem.h"
+#include "UI/UIYamlLoader.h"
 #include "Animation/LinearAnimation.h"
 #include "Debug/DVAssert.h"
-#include "Render/RenderManager.h"
-#include "Base/ObjectFactory.h"
-#include "UI/UIYamlLoader.h"
-#include "Render/RenderHelper.h"
-#include "Utils/Utils.h"
-#include "Input/InputSystem.h"
-#include "Utils/StringFormat.h"
 #include "FileSystem/YamlNode.h"
+#include "Input/InputSystem.h"
+#include "Render/RenderHelper.h"
+#include "Render/RenderManager.h"
+#include "Utils/StringFormat.h"
+#include "Utils/Utils.h"
 
 namespace DAVA
 {
 
     UIControl::UIControl(const Rect &rect, bool rectInAbsoluteCoordinates/* = false*/)
+        : customData(NULL)
     {
         parent = NULL;
         controlState = STATE_NORMAL;
@@ -107,6 +105,7 @@ namespace DAVA
         SafeRelease(background);
         SafeRelease(eventDispatcher);
         RemoveAllControls();
+        SafeRelease(customData);
     }
 
     void UIControl::SetParent(UIControl *newParent)
@@ -360,7 +359,7 @@ namespace DAVA
         this->SetPosition(relativePosition, false);
     }
 
-    int32 UIControl::GetLeftAlign()
+    int32 UIControl::GetLeftAlign() const
     {
         return leftAlign;
     }
@@ -403,7 +402,7 @@ namespace DAVA
         this->SetPosition(relativePosition, false);
     }
 
-    int32 UIControl::GetHCenterAlign()
+    int32 UIControl::GetHCenterAlign() const
     {
         return hcenterAlign;
     }
@@ -447,7 +446,7 @@ namespace DAVA
         this->SetPosition(relativePosition, false);
     }
 
-    int32 UIControl::GetRightAlign()
+    int32 UIControl::GetRightAlign() const
     {
         return rightAlign;
     }
@@ -488,7 +487,7 @@ namespace DAVA
         this->SetSize(controlSize);
     }
 
-    int32 UIControl::GetTopAlign()
+    int32 UIControl::GetTopAlign() const
     {
         return topAlign;
     }
@@ -531,7 +530,7 @@ namespace DAVA
         this->SetPosition(relativePosition, false);
     }
 
-    int32 UIControl::GetVCenterAlign()
+    int32 UIControl::GetVCenterAlign() const
     {
         return vcenterAlign;
     }
@@ -576,7 +575,7 @@ namespace DAVA
         this->SetPosition(relativePosition, false);
     }
 
-    int32 UIControl::GetBottomAlign()
+    int32 UIControl::GetBottomAlign() const
     {
         return bottomAlign;
     }
@@ -598,7 +597,7 @@ namespace DAVA
         }
     }
 
-    bool UIControl::GetLeftAlignEnabled()
+    bool UIControl::GetLeftAlignEnabled() const
     {
         return leftAlignEnabled;
     }
@@ -612,7 +611,7 @@ namespace DAVA
         }
     }
 
-    bool UIControl::GetHCenterAlignEnabled()
+    bool UIControl::GetHCenterAlignEnabled() const
     {
         return hcenterAlignEnabled;
     }
@@ -633,7 +632,7 @@ namespace DAVA
         }
     }
 
-    bool UIControl::GetRightAlignEnabled()
+    bool UIControl::GetRightAlignEnabled() const
     {
         return rightAlignEnabled;
     }
@@ -654,7 +653,7 @@ namespace DAVA
         }
     }
 
-    bool UIControl::GetTopAlignEnabled()
+    bool UIControl::GetTopAlignEnabled() const
     {
         return topAlignEnabled;
     }
@@ -668,7 +667,7 @@ namespace DAVA
         }
     }
 
-    bool UIControl::GetVCenterAlignEnabled()
+    bool UIControl::GetVCenterAlignEnabled() const
     {
         return vcenterAlignEnabled;
     }
@@ -689,7 +688,7 @@ namespace DAVA
         }
     }
 
-    bool UIControl::GetBottomAlignEnabled()
+    bool UIControl::GetBottomAlignEnabled() const
     {
         return bottomAlignEnabled;
     }
@@ -1285,7 +1284,7 @@ namespace DAVA
         inputEnabled = srcControl->inputEnabled;
         clipContents = srcControl->clipContents;
 
-        customControlType = srcControl->GetCustomControlType();
+        customControlType = srcControl->GetCustomControlClassName();
         initialState = srcControl->GetInitialState();
         drawPivotPointMode = srcControl->drawPivotPointMode;
         debugDrawColor = srcControl->debugDrawColor;
@@ -2049,16 +2048,13 @@ namespace DAVA
     {
     }
 
-    YamlNode* UIControl::SaveToYamlNode(UIYamlLoader * loader)
+    bool UIControl::SavePropertiesToYamlNode(YamlNode *node, UIControl *baseControl, const UIYamlLoader *loader)
     {
-        // Return node
-        YamlNode *node = YamlNode::CreateMapNode(false);
-        // Model UIControl to be used in comparing
-        UIControl *baseControl = new UIControl();
-
-        // Control name
-        SetPreferredNodeType(node, GetClassName());
-
+        if (node->GetType() != YamlNode::TYPE_MAP)
+        {
+            DVASSERT(false);
+            return false;
+        }
         // Transform data
         // Position
         const Vector2 &position = GetPosition();
@@ -2213,13 +2209,17 @@ namespace DAVA
                 node->Set("spriteModification", GetBackground()->GetModification());
             }
         }
-        // Release model variable
-        SafeRelease(baseControl);
-        return node;
+        return true;
     }
 
-    void UIControl::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
+    bool UIControl::LoadPropertiesFromYamlNode( const YamlNode *node, UIYamlLoader *loader )
     {
+        if (node->GetType() != YamlNode::TYPE_MAP)
+        {
+            DVASSERT(false);
+            return false;
+        }
+
         const YamlNode * rectNode = node->Get("rect");
         if (rectNode)
         {
@@ -2345,8 +2345,7 @@ namespace DAVA
         const YamlNode * drawTypeNode = node->Get("drawType");
         if (drawTypeNode)
         {
-            UIControlBackground::eDrawType type = (UIControlBackground::eDrawType)loader->GetDrawTypeFromNode(drawTypeNode);
-            GetBackground()->SetDrawType(type);
+            GetBackground()->SetDrawType((UIControlBackground::eDrawType)loader->GetDrawTypeFromNode(drawTypeNode));
         }
 
         const YamlNode * spriteNode = node->Get("sprite");
@@ -2402,6 +2401,8 @@ namespace DAVA
         {
             GetBackground()->SetModification(spriteModificationNode->AsInt32());
         }
+
+        return true;
     }
 
     Animation * UIControl::WaitAnimation(float32 time, int32 track)
@@ -2834,35 +2835,40 @@ namespace DAVA
         RecalculateChildsSize();
     }
 
-    const String &UIControl::GetCustomControlType() const
+    const String & UIControl::GetControlClassName() const
+    {
+        return GetClassName();
+    }
+
+    const String &UIControl::GetCustomControlClassName() const
     {
         return customControlType;
     }
 
-    void UIControl::SetCustomControlType(const String& value)
+    void UIControl::SetCustomControlClassName(const String& value)
     {
         customControlType = value;
     }
 
-    void UIControl::ResetCustomControlType()
+    void UIControl::ResetCustomControlClassName()
     {
         customControlType = String();
     }
 
-    void UIControl::SetPreferredNodeType(YamlNode* node, const String& nodeTypeName)
+    void UIControl::SetPreferredNodeType(YamlNode* node, const String& controlClassName)
     {
         // Do we have Custom Control name? If yes, use it as type and passed one
         // as the "Base Type"
-        bool hasCustomControl = !GetCustomControlType().empty();
+        bool hasCustomControl = !GetCustomControlClassName().empty();
         if (hasCustomControl)
         {
-            node->Set("type", GetCustomControlType());
-            node->Set("baseType", nodeTypeName);
+            node->Set("type", GetCustomControlClassName());
+            node->Set("baseType", controlClassName);
         }
         else
         {
             // The type coincides with the node type name passed, no base type exists.
-            node->Set("type", nodeTypeName);
+            node->Set("type", controlClassName);
         }
     }
 
@@ -2939,4 +2945,82 @@ namespace DAVA
             (*it)->DumpInputs(depthLevel + 1);
         }
     }
+
+    BaseObject *UIControl::GetCustomData() const
+    {
+        return customData;
+    }
+    
+    void UIControl::SetCustomData(BaseObject *data)
+    {
+        if (data != customData)
+        {
+            SafeRelease(customData);
+            customData = SafeRetain(data);
+        }
+    }
+    
+
+    int32 UIControl::GetBackgroundComponentsCount() const
+    {
+        return 1;
+    }
+    
+    UIControlBackground *UIControl::GetBackgroundComponent(int32 index) const
+    {
+        DVASSERT(index == 0);
+        return background;
+    }
+    
+    UIControlBackground *UIControl::CreateBackgroundComponent(int32 index) const
+    {
+        DVASSERT(index == 0);
+        return new UIControlBackground();
+    }
+    
+    void UIControl::SetBackgroundComponent(int32 index, UIControlBackground *bg)
+    {
+        DVASSERT(false);
+    }
+    
+    String UIControl::GetBackgroundComponentName(int32 index) const
+    {
+        DVASSERT(index == 0);
+        return "Background";
+    }
+    
+    int32 UIControl::GetInternalControlsCount() const
+    {
+        return 0;
+    }
+    
+    UIControl *UIControl::GetInternalControl(int32 index) const
+    {
+        DVASSERT(false);
+        return NULL;
+    }
+    
+    UIControl *UIControl::CreateInternalControl(int32 index) const
+    {
+        DVASSERT(false);
+        return NULL;
+    }
+    
+    void UIControl::SetInternalControl(int32 index, UIControl *control)
+    {
+        DVASSERT(false);
+    }
+
+    String UIControl::GetInternalControlName(int32 index) const
+    {
+        DVASSERT(false);
+        return "";
+    }
+
+    String UIControl::GetInternalControlDescriptions() const
+    {
+        DVASSERT(false);
+        return "";
+    }
+
 }

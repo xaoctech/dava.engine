@@ -30,10 +30,9 @@
 
 #include "UI/UIScrollBar.h"
 #include "UI/UIEvent.h"
-#include "Base/ObjectFactory.h"
+#include "UI/UIControlHelpers.h"
+#include "UI/UIYamlLoader.h"
 #include "FileSystem/YamlNode.h"
-
-#include "UIYamlLoader.h"
 
 namespace DAVA 
 {
@@ -61,11 +60,11 @@ void UIScrollBar::SetDelegate(UIScrollBarDelegate *newDelegate)
     delegate = newDelegate;
 }
 
-const String UIScrollBar::GetDelegatePath() const
+const String UIScrollBar::GetDelegatePath(const UIControl *rootControl) const
 {
     if (delegate)
     {
-        return delegate->GetDelegateControlPath();
+        return delegate->GetDelegateControlPath(rootControl);
     } else
     {
         return "";
@@ -139,12 +138,13 @@ void UIScrollBar::LoadFromYamlNodeCompleted()
 	}
 }
 
-void UIScrollBar::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
+bool UIScrollBar::LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader)
 {
 	RemoveControl(slider);
 	SafeRelease(slider);
 
-	UIControl::LoadFromYamlNode(node, loader);
+	if (!UIControl::LoadPropertiesFromYamlNode(node, loader))
+        return false;
 		
 	const YamlNode * orientNode = node->Get("orientation");
 	if (orientNode)
@@ -164,13 +164,17 @@ void UIScrollBar::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
         String delegatePath = delegateNode->AsString();
         loader->AddScrollBarToLink(this,delegatePath);
     }
+
+    return true;
 }
 
-YamlNode * UIScrollBar::SaveToYamlNode(UIYamlLoader * loader)
+bool UIScrollBar::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader)
 {
 	slider->SetName(UISCROLLBAR_SLIDER_NAME);
 
-	YamlNode *node = UIControl::SaveToYamlNode(loader);
+	if (!UIControl::SavePropertiesToYamlNode(node, defaultControl, loader))
+        return false;
+
 	//Temp variables
 	String stringValue;
 
@@ -190,15 +194,13 @@ YamlNode * UIScrollBar::SaveToYamlNode(UIYamlLoader * loader)
 	}
 	node->Set("orientation", stringValue);
 
-
     if (delegate)
     {
         UIControl* delegateControl = dynamic_cast<UIControl*>(delegate);
-        node->Set("linkedScrollBarDelegate", UIYamlLoader::GetControlPath(delegateControl));
+        node->Set("linkedScrollBarDelegate", UIControlHelpers::GetControlPath(delegateControl, loader->GetRootControl()));
     }
-    
-    
-	return node;
+
+	return true;
 }
     
 void UIScrollBar::Input(UIEvent *currentInput)

@@ -296,11 +296,11 @@ void UISpinner::ReleaseButtons()
     SafeRelease(content);
 }
 
-void UISpinner::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
+bool UISpinner::LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader)
 {
     //release default buttons - they have to be loaded from yaml
     ReleaseButtons();
-    UIControl::LoadFromYamlNode(node, loader);
+    return UIControl::LoadPropertiesFromYamlNode(node, loader);
 }
 
 void UISpinner::CopyDataFrom(UIControl *srcControl)
@@ -368,14 +368,13 @@ void UISpinner::LoadFromYamlNodeCompleted()
     InitButtons();
 }
 
-YamlNode * UISpinner::SaveToYamlNode(UIYamlLoader * loader)
+bool UISpinner::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader)
 {
     buttonPrevious->SetName(UISPINNER_BUTTON_PREVIOUS_NAME);
 	buttonNext->SetName(UISPINNER_BUTTON_NEXT_NAME);
 	content->SetName(UISPINNER_CONTENT_NAME);
 
-	YamlNode *node = UIControl::SaveToYamlNode(loader);
-	return node;
+	return UIControl::SavePropertiesToYamlNode(node, defaultControl, loader);
 }
 	
 List<UIControl* > UISpinner::GetSubcontrols()

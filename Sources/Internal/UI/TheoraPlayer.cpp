@@ -377,9 +377,11 @@ void TheoraPlayer::Update(float32 timeElapsed)
     }
 }
 
-void TheoraPlayer::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
+bool TheoraPlayer::LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader)
 {
-    UIControl::LoadFromYamlNode(node, loader);
+    if (!UIControl::LoadPropertiesFromYamlNode(node, loader))
+        return false;
+
     const YamlNode * fileNode = node->Get("file");
     
 	if(fileNode)
@@ -397,6 +399,8 @@ void TheoraPlayer::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader
         
         SetRect(rect);
     }
+
+    return true;
 }
 
 void TheoraPlayer::Draw(const UIGeometricData &geometricData)
