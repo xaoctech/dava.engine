@@ -29,13 +29,13 @@ LogWidget::LogWidget(QWidget* parent)
     : QWidget(parent)
     , ui(new Ui::LogWidget())
     , doAutoScroll(true)
-    , m_eventSkipper(new QTimer(this))
+    , eventSkipper(new QTimer(this))
     , scrollStateDetected(false)
 {
     ui->setupUi(this);
 
-    m_eventSkipper->setInterval(scrollDelay);
-    m_eventSkipper->setSingleShot(true);
+    eventSkipper->setInterval(scrollDelay);
+    eventSkipper->setSingleShot(true);
 
     LogDelegate* delegate = new LogDelegate(ui->log, this);
     logModel = new LogModel(this);
@@ -57,9 +57,9 @@ LogWidget::LogWidget(QWidget* parent)
     connect(ui->log->model(), SIGNAL( rowsAboutToBeRemoved(const QModelIndex&, int, int) ), SLOT( DetectAutoScroll() ));
     connect(ui->log->model(), SIGNAL( modelAboutToBeReset() ), SLOT( DetectAutoScroll() ));
 
-    connect(ui->log->model(), SIGNAL( rowsInserted(const QModelIndex&, int, int) ), m_eventSkipper, SLOT( start() ));
-    connect(ui->log->model(), SIGNAL( modelReset() ), m_eventSkipper, SLOT( start() ));
-    connect(m_eventSkipper, SIGNAL( timeout() ), SLOT( DoAutoScroll() ) );
+    connect(ui->log->model(), SIGNAL( rowsInserted(const QModelIndex&, int, int) ), eventSkipper, SLOT( start() ));
+    connect(ui->log->model(), SIGNAL( modelReset() ), eventSkipper, SLOT( start() ));
+    connect(eventSkipper, SIGNAL( timeout() ), SLOT( DoAutoScroll() ) );
 
     DAVA::Logger::AddCustomOutput(logModel);
     LoadSettings();

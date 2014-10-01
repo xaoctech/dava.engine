@@ -48,8 +48,6 @@ ImageSplitterDialog::ImageSplitterDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
-    //ui->selectPathWidget->SetClearButtonVisible(false);
-    //ui->selectPathWidget->setAcceptDrops(true);
     ui->path->SetFilter("PNG (*.png)");
 
     DAVA::FilePath defaultPath = SettingsManager::Instance()->GetValue(Settings::Internal_ImageSplitterPath).AsString();
