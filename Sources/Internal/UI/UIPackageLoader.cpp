@@ -211,6 +211,14 @@ UIPackage *UIPackageLoader::LoadPackage(const FilePath &packagePath, const Legac
     
     bool legacySupport;
     const YamlNode *headerNode = rootNode->Get("Header");
+    
+    if (headerNode)
+    {
+        const YamlNode *versionNode = rootNode->Get("version");
+        if (versionNode == NULL || versionNode->GetType() != YamlNode::TYPE_STRING)
+            headerNode = NULL; // legacy node with children with name Header
+    }
+    
     if (headerNode)
     {
         legacySupport = false;
@@ -334,8 +342,14 @@ UIControl *UIPackageLoader::CreateControl(const YamlNode *node, const UIPackage 
 
 void UIPackageLoader::LoadControl(UIControl *control, const YamlNode *node, const UIPackage *package, bool legacySupport)
 {
-    // DVVERIFY(control->LoadPropertiesFromYamlNode(node, yamlLoader));
-    LoadPropertiesFromYamlNode(control, node, legacySupport);
+    if (legacySupport)
+    {
+        DVVERIFY(control->LoadPropertiesFromYamlNode(node, yamlLoader));
+    }
+    else
+    {
+        LoadPropertiesFromYamlNode(control, node, legacySupport);
+    }
     
     // load children
     const YamlNode * childrenNode = node->Get("children");
