@@ -72,7 +72,7 @@ protected:
     
 inline bool ImageFormatInterface::IsFileExtensionSupported(const String& extension) const
 {
-    for (auto it = supportedExtensions.cbegin(); it != supportedExtensions.cend(); ++it)
+    for (auto it = supportedExtensions.begin(); it != supportedExtensions.end(); ++it)
     {
         const bool isEqual = (CompareCaseInsensitive(*it, extension) == 0);
         if (isEqual)
