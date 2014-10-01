@@ -42,9 +42,7 @@ Vector2DEdit::Vector2DEdit(QWidget *parent)
 
     setAutoFillBackground(true);
 
-    //setFocusPolicy(Qt::StrongFocus);
-    //setFocusPolicy(Qt::WheelFocus);
-    setFocusProxy(editX);
+    setFocusPolicy(Qt::StrongFocus);
 }
 
 Vector2DEdit::~Vector2DEdit()

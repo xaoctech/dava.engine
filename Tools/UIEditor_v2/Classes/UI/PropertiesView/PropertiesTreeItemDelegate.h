@@ -5,7 +5,9 @@
 #include <QVector2D>
 #include <QLineEdit>
 #include <QStyledItemDelegate>
-class ItemDelegateForQVector2D;
+#include "UIControls/BaseProperty.h"
+#include "FileSystem/VariantType.h"
+class PropertyAbstractEditor;
 
 class PropertiesTreeItemDelegate : public QStyledItemDelegate
 {
@@ -22,13 +24,16 @@ public:
     virtual void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
     virtual bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
 
-    QAbstractItemDelegate * GetCustomItemDelegateForIndex(const QModelIndex & index) const;
+    PropertyAbstractEditor * GetCustomItemDelegateForIndex(const QModelIndex & index) const;
 
-private slots:
-    void OnCommitData(QWidget *editor);
-    void OnCloseEditor(QWidget *editor, QAbstractItemDelegate::EndEditHint hint);
+    void NeedCommitData(QWidget * editor);
+    void NeedCommitDataAndCloseEditor(QWidget * editor, QAbstractItemDelegate::EndEditHint hint = NoHint);
+
 private:
-    QMap<QVariant::Type, QAbstractItemDelegate *> qvariantItemDelegates;
-    mutable QAbstractItemDelegate *currentDelegate;
+    QMap<QVariant::Type, PropertyAbstractEditor *> qvariantItemDelegates;
+    QMap<BaseProperty::ePropertyType, PropertyAbstractEditor *> propertyItemDelegates;
+    QMap<DAVA::VariantType::eVariantType, PropertyAbstractEditor *> variantTypeItemDelegates;
+    
+    mutable PropertyAbstractEditor *currentDelegate;
 };
 #endif // __PROPERTIESTREEITEMDELEGATE_H__
