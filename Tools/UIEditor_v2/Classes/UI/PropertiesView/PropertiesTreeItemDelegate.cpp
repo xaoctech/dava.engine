@@ -9,15 +9,15 @@
 #include "QtControls/lineeditext.h"
 
 #include "DAVAEngine.h"
-#include "QtControls/Vector2Edit.h"
+#include "QtControls/Vector2DEdit.h"
 #include "UIControls/BaseProperty.h"
-#include "PropertiesTreeQVariantItemDelegate.h"
+#include "ItemDelegateForQVector2D.h"
 
 PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject *parent)
     : QStyledItemDelegate(parent)
     , currentDelegate(NULL)
 {
-    qvariantItemDelegates[QVariant::Vector2D] = new PropertiesTreeQVariantItemDelegate(this);
+    qvariantItemDelegates[QVariant::Vector2D] = new ItemDelegateForQVector2D(this);
 }
 
 PropertiesTreeItemDelegate::~PropertiesTreeItemDelegate()
@@ -80,7 +80,6 @@ void PropertiesTreeItemDelegate::updateEditorGeometry(QWidget *editor, const QSt
 
 bool PropertiesTreeItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
 {
-    QEvent::Type type = event->type();
     if (currentDelegate)
         return currentDelegate->editorEvent(event, model, option, index);
 

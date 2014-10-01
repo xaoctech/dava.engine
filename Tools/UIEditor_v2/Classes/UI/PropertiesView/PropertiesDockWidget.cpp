@@ -15,7 +15,7 @@
 #include <qitemeditorfactory.h>
 #include "QtControls/lineeditext.h"
 #include <qstyleditemdelegate.h>
-#include "QtControls/Vector2Edit.h"
+#include "QtControls/Vector2DEdit.h"
 
 using namespace DAVA;
 

@@ -243,9 +243,6 @@
     <ClCompile Include="Classes\UI\PropertiesView\PropertiesTreeView.cpp">
       <Filter>Sources\UI\PropertiesView</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\QtControls\Vector2Edit.cpp">
-      <Filter>Sources\QtControls</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\UIControls\BackgroundPropertiesSection.cpp">
       <Filter>Sources\UIControls</Filter>
     </ClCompile>
@@ -270,11 +267,14 @@
     <ClCompile Include="Classes\UI\GraphicView\EditScreen.cpp">
       <Filter>Sources\UI\GraphicView</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\UI\PropertiesView\PropertiesTreeQVariantItemDelegate.cpp">
-      <Filter>Sources\UI\PropertiesView</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\UIControls\SubValueProperty.cpp">
       <Filter>Sources\UIControls</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForQVector2D.cpp">
+      <Filter>Sources\UI\PropertiesView</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\QtControls\Vector2DEdit.cpp">
+      <Filter>Sources\QtControls</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -443,9 +443,6 @@
     <ClInclude Include="Classes\UI\PropertiesView\PropertiesTreeView.h">
       <Filter>Sources\UI\PropertiesView</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\QtControls\Vector2Edit.h">
-      <Filter>Sources\QtControls</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\UIControls\BackgroundPropertiesSection.h">
       <Filter>Sources\UIControls</Filter>
     </ClInclude>
@@ -470,11 +467,14 @@
     <ClInclude Include="Classes\UI\GraphicView\EditScreen.h">
       <Filter>Sources\UI\GraphicView</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\UI\PropertiesView\PropertiesTreeQVariantItemDelegate.h">
-      <Filter>Sources\UI\PropertiesView</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\UIControls\SubValueProperty.h">
       <Filter>Sources\UIControls</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForQVector2D.h">
+      <Filter>Sources\UI\PropertiesView</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\QtControls\Vector2DEdit.h">
+      <Filter>Sources\QtControls</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

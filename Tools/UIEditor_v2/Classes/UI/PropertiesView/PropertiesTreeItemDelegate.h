@@ -5,7 +5,7 @@
 #include <QVector2D>
 #include <QLineEdit>
 #include <QStyledItemDelegate>
-class PropertiesTreeQVariantItemDelegate;
+class ItemDelegateForQVector2D;
 
 class PropertiesTreeItemDelegate : public QStyledItemDelegate
 {
@@ -23,7 +23,7 @@ public:
     virtual bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
 
     QAbstractItemDelegate * GetCustomItemDelegateForIndex(const QModelIndex & index) const;
-    bool registerItemDelegate( QAbstractItemDelegate *delegate ){ return false; }
+
 private slots:
     void OnCommitData(QWidget *editor);
     void OnCloseEditor(QWidget *editor, QAbstractItemDelegate::EndEditHint hint);
