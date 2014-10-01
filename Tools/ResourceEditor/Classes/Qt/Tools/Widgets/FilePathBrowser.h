@@ -35,7 +35,6 @@ private:
     void InitActions();
     void TryToAcceptPath(const QString& path);
 
-    QAbstractButton * CreateButton( const QAction *action );
     QSize ButtonSizeHint(const QAction *action) const;
 
     QString hintText;
