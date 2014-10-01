@@ -1,19 +1,13 @@
 package com.dava.framework;
 
-import java.util.Iterator;
-
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import com.dava.framework.JNITextField.NativeEditText;
-
-import android.app.Activity;
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.os.PowerManager;
 import android.util.Log;
-import android.view.View;
 
 public class JNIRenderer implements GLSurfaceView.Renderer {
 
@@ -92,19 +86,7 @@ public class JNIRenderer implements GLSurfaceView.Renderer {
 		if(showTextFields)
 		{
 			showTextFields = false;
-			JNIActivity.GetActivity().runOnUiThread(new Runnable() {
-				
-				@Override
-				public void run() {
-					for (Iterator<NativeEditText> iter = JNITextField.controls.values().iterator(); iter.hasNext();) {						
-						NativeEditText textField = iter.next();
-						if(JNITextField.IsVisible(textField.id))
-						{
-							textField.editText.setVisibility(View.VISIBLE);
-						}
-					}				
-				}
-			});
+			JNITextField.ShowVisibleTextFields();
 		}
 	}
 	
