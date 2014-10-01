@@ -188,8 +188,3 @@ void LineEditEx::actionEvent(QActionEvent* event)
         break;
     }
 }
-
-void LineEditEx::paintEvent(QPaintEvent* event)
-{
-    QLineEdit::paintEvent(event);
-}

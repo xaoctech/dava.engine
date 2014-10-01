@@ -123,12 +123,6 @@ void FilePathBrowser::TryToAcceptPath(const QString& _path)
     }
 }
 
-QAbstractButton* FilePathBrowser::CreateButton(QAction const* action)
-{
-    QAbstractButton *btn = LineEditEx::CreateButton(action);
-    return btn;
-}
-
 QSize FilePathBrowser::ButtonSizeHint(const QAction * action) const
 {
     Q_UNUSED(action);

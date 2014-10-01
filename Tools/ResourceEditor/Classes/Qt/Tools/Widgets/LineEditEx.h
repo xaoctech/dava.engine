@@ -51,7 +51,6 @@ private:
     void RemoveActionHandler(QAction *action);
     
     void actionEvent(QActionEvent * event);
-    void paintEvent(QPaintEvent * event);
 
     // Delayed update
     QPointer<QTimer> timer;
