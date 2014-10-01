@@ -43,8 +43,8 @@ namespace DAVA
 		UIAggregatorControl(const Rect &rect = Rect(), bool rectInAbsoluteCoordinates = false);
 		virtual UIControl *Clone();
 
-		virtual YamlNode* SaveToYamlNode(UIYamlLoader * loader);
-		virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
+        virtual bool LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader);
+        virtual bool SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader);
 		virtual List<UIControl* >& GetRealChildren();
 	
 		void AddAggregatorChild(UIControl* uiControl);

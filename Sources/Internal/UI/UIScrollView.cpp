@@ -33,7 +33,8 @@
 #include "UI/UIScrollViewContainer.h"
 #include "UI/ScrollHelper.h"
 
-#include "UIYamlLoader.h"
+#include "UI/UIYamlLoader.h"
+#include "UI/UIControlHelpers.h"
 
 namespace DAVA 
 {
@@ -260,12 +261,12 @@ const Vector2 UIScrollView::GetContentSize() const
 	return Vector2(contentRect.dx, contentRect.dy);
 }
 		
-void UIScrollView::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
+bool UIScrollView::LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader)
 {
 	RemoveControl(scrollContainer);
 	SafeRelease(scrollContainer);
 
-    UIControl::LoadFromYamlNode(node, loader);
+    return UIControl::LoadPropertiesFromYamlNode(node, loader);
 }
 
 void UIScrollView::LoadFromYamlNodeCompleted()
@@ -274,15 +275,14 @@ void UIScrollView::LoadFromYamlNodeCompleted()
 	RecalculateContentSize();
 }
 
-YamlNode * UIScrollView::SaveToYamlNode(UIYamlLoader * loader)
+bool UIScrollView::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader)
 {
     if (scrollContainer)
     {
         scrollContainer->SetName(UISCROLL_VIEW_CONTAINER_NAME);
     }
     
-    YamlNode *node = UIControl::SaveToYamlNode(loader);
-    return node;
+    return UIControl::SavePropertiesToYamlNode(node, defaultControl, loader);
 }
 
 void UIScrollView::RecalculateContentSize()
@@ -501,9 +501,9 @@ void UIScrollView::ScrollToPosition( const Vector2& pos, float32 timeSec )
     scrollVertical->ScrollToPosition(pos.y, timeSec);
 }
     
-const String UIScrollView::GetDelegateControlPath() const
+const String UIScrollView::GetDelegateControlPath(const UIControl *rootControl) const
 {
-    return UIYamlLoader::GetControlPath(this);
+    return UIControlHelpers::GetControlPath(this, rootControl);
 }
 
 };

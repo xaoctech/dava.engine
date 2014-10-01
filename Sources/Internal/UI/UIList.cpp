@@ -34,7 +34,8 @@
 #include "UI/UIControlSystem.h"
 #include "Base/ObjectFactory.h"
 #include "FileSystem/YamlNode.h"
-#include "UIYamlLoader.h"
+#include "UI/UIYamlLoader.h"
+#include "UI/UIControlHelpers.h"
 
 namespace DAVA
 {
@@ -661,9 +662,10 @@ void UIList::SystemWillAppear()
     Refresh();
 }
 
-void UIList::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
+bool UIList::LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader)
 {
-    UIControl::LoadFromYamlNode(node, loader);
+    if (!UIControl::LoadPropertiesFromYamlNode(node, loader))
+        return false;
 
     const YamlNode * orientNode = node->Get("orientation");
     if (orientNode)
@@ -686,6 +688,8 @@ void UIList::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 
     // TODO
     InitAfterYaml();
+
+    return true;
 }
 
 UIControl *UIList::Clone()
@@ -714,9 +718,11 @@ void UIList::SetAggregatorPath(const FilePath &aggregatorPath)
     this->aggregatorPath = aggregatorPath;
 }
 
-YamlNode * UIList::SaveToYamlNode(UIYamlLoader * loader)
+bool UIList::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader)
 {
-    YamlNode *node = UIControl::SaveToYamlNode(loader);
+    if (!UIControl::SavePropertiesToYamlNode(node, defaultControl, loader))
+        return false;
+
     //Temp variables
     String stringValue;
 
@@ -748,7 +754,7 @@ YamlNode * UIList::SaveToYamlNode(UIYamlLoader * loader)
         node->Set("aggregatorPath", aggregatorPath.GetFrameworkPath());
     }
 
-    return node;
+    return true;
 }
 
 float32 UIList::VisibleAreaSize(UIScrollBar *forScrollBar)
@@ -783,9 +789,9 @@ void UIList::ScrollToPosition( float32 position, float32 timeSec /*= 0.3f*/ )
     scroll->ScrollToPosition(-position);
 }
 
-const String UIList::GetDelegateControlPath() const
+const String UIList::GetDelegateControlPath(const UIControl *rootControl) const
 {
-    return UIYamlLoader::GetControlPath(this);
+    return UIControlHelpers::GetControlPath(this, rootControl);
 }
 
 };

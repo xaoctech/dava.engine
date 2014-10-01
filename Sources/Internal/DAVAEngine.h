@@ -147,6 +147,8 @@
 // UI
 #include "UI/UIControl.h"
 #include "UI/UIControlSystem.h"
+#include "UI/UIPackage.h"
+#include "UI/UIPackageLoader.h"
 #include "UI/UIEvent.h"
 #include "UI/UIButton.h"
 #include "UI/UIStaticText.h"

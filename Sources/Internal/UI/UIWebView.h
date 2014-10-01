@@ -66,8 +66,8 @@ public:
 	virtual void SetSize(const Vector2 &newSize);
 	virtual void SetVisible(bool isVisible, bool hierarchic = true);
 
-    virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
-	virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
+    virtual bool LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader);
+    virtual bool SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader);
 
     virtual UIControl* Clone();
     virtual void CopyDataFrom(UIControl *srcControl);

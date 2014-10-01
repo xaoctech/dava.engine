@@ -174,30 +174,34 @@ int32 UIWebView::GetDataDetectorTypes() const
     return dataDetectorTypes;
 }
 
-void UIWebView::LoadFromYamlNode(const DAVA::YamlNode *node, DAVA::UIYamlLoader *loader)
+bool UIWebView::LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader)
 {
-    UIControl::LoadFromYamlNode(node, loader);
+    if (!UIControl::LoadPropertiesFromYamlNode(node, loader))
+        return false;
     
     const YamlNode * dataDetectorTypesNode = node->Get("dataDetectorTypes");
     if (dataDetectorTypesNode)
     {
         SetDataDetectorTypes(dataDetectorTypesNode->AsInt32());
     }
+
+    return true;
 }
 
-YamlNode* UIWebView::SaveToYamlNode(DAVA::UIYamlLoader *loader)
+bool UIWebView::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader)
 {
-    UIWebView* baseControl = new UIWebView();
-    YamlNode *node = UIControl::SaveToYamlNode(loader);
-    
+    if (!UIControl::SavePropertiesToYamlNode(node, defaultControl, loader))
+        return false;
+
+    UIWebView *baseControl = DynamicTypeCheck<UIWebView *>(defaultControl);
+
     // Data Detector Types.
     if (baseControl->GetDataDetectorTypes() != GetDataDetectorTypes())
     {
         node->Set("dataDetectorTypes", GetDataDetectorTypes());
     }
     
-    SafeRelease(baseControl);
-    return node;
+    return true;
 }
 
 UIControl* UIWebView::Clone()

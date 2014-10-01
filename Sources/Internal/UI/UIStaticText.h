@@ -42,6 +42,14 @@ namespace DAVA
 {
 class UIStaticText : public UIControl
 {
+public:
+    enum eMultiline
+    {
+        MULTILINE_DISABLED = 0,
+        MULTILINE_ENABLED,
+        MULTILINE_ENABLED_BY_SYMBOL
+    };
+    
 protected:
     virtual ~UIStaticText();
 public:
@@ -68,7 +76,7 @@ public:
     int32 GetFittingOption() const;
 
     //for background sprite
-    virtual void SetAlign(int32 _align);
+    virtual void SetAlign(int32 _align); // TODO remove legacy methods
     virtual int32 GetAlign() const;
 
     virtual void SetTextAlign(int32 _align);
@@ -111,8 +119,51 @@ protected:
     UIControlBackground *textBg;
 
 public:
-    void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
-    virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
+    virtual bool LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader);
+    virtual bool SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader);
+    
+public:
+    void SetTextWithoutRect(const WideString &text) {
+        SetText(text);
+    }
+    
+    String GetFontName() const;
+    void SetFontName(const String &fontName);
+    
+    int32 GetTextColorInheritType() const;
+    void SetTextColorInheritType(int32 type);
+    
+    int32 GetShadowColorInheritType() const;
+    void SetShadowColorInheritType(int32 type);
+    
+    int32 GetTextPerPixelAccuracyType() const;
+    void SetTextPerPixelAccuracyType(int32 type);
+    
+    int32 GetShadowPerPixelAccuracyType() const;
+    void SetShadowPerPixelAccuracyType(int32 type);
+    
+    int32 GetMultilineType() const;
+    void SetMultilineType(int32 multilineType);
+    
+    
+    INTROSPECTION_EXTEND(UIStaticText, UIControl,
+                         PROPERTY("text", "Text", GetText, SetTextWithoutRect, I_SAVE | I_VIEW | I_EDIT)
+                         PROPERTY("font", "Font", GetFontName, SetFontName, I_SAVE | I_VIEW | I_EDIT)
+                         
+                         PROPERTY("textColor", "Text Color", GetTextColor, SetTextColor, I_SAVE | I_VIEW | I_EDIT)
+                         PROPERTY("textcolorInheritType", InspDesc("Text Color Inherit Type", GlobalEnumMap<UIControlBackground::eColorInheritType>::Instance()), GetTextColorInheritType, SetTextColorInheritType, I_SAVE | I_VIEW | I_EDIT)
+                         PROPERTY("textperPixelAccuracyType", InspDesc("Text Per Pixel Accuracy Type", GlobalEnumMap<UIControlBackground::ePerPixelAccuracyType>::Instance()), GetTextPerPixelAccuracyType, SetTextPerPixelAccuracyType, I_SAVE | I_VIEW | I_EDIT)
+
+                         PROPERTY("shadowoffset", "Shadow Offset", GetShadowOffset, SetShadowOffset, I_SAVE | I_VIEW | I_EDIT)
+                         PROPERTY("shadowcolor", "Shadow Color", GetShadowColor, SetShadowColor, I_SAVE | I_VIEW | I_EDIT)
+                         PROPERTY("shadowcolorInheritType", InspDesc("Shadow Color Inherit Type", GlobalEnumMap<UIControlBackground::eColorInheritType>::Instance()), GetShadowColorInheritType, SetShadowColorInheritType, I_SAVE | I_VIEW | I_EDIT)
+                         PROPERTY("shadowperPixelAccuracyType", InspDesc("Shadow Per PixelAccuracy Type", GlobalEnumMap<UIControlBackground::ePerPixelAccuracyType>::Instance()), GetShadowPerPixelAccuracyType, SetShadowPerPixelAccuracyType, I_SAVE | I_VIEW | I_EDIT)
+                         
+                         PROPERTY("multiline", InspDesc("Multi Line", GlobalEnumMap<eMultiline>::Instance()), GetMultilineType, SetMultilineType, I_SAVE | I_VIEW | I_EDIT)
+                         PROPERTY("fitting", InspDesc("Fitting", GlobalEnumMap<TextBlock::eFitType>::Instance(), InspDesc::T_FLAGS), GetFittingOption, SetFittingOption, I_SAVE | I_VIEW | I_EDIT)
+                         PROPERTY("textalign", InspDesc("Text Align", GlobalEnumMap<eAlign>::Instance(), InspDesc::T_FLAGS), GetTextAlign, SetTextAlign, I_SAVE | I_VIEW | I_EDIT)
+                         );
+
 };
 
 };

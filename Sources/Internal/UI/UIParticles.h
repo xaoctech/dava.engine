@@ -66,8 +66,8 @@ public:
     virtual void CopyDataFrom(UIControl *srcControl);
 
     // Load/save functionality.
-    virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
-    virtual YamlNode* SaveToYamlNode(UIYamlLoader * loader);
+    virtual bool LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader);
+    virtual bool SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader);
 
     void Load(const FilePath& path);
     void Reload();

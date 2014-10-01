@@ -570,9 +570,10 @@ void UITextField::RenderText()
 #endif
 }
 
-void UITextField::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
+bool UITextField::LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader)
 {
-	UIControl::LoadFromYamlNode(node, loader);
+    if (!UIControl::LoadPropertiesFromYamlNode(node, loader))
+        return false;
 
     const YamlNode * textNode = node->Get("text");
 	if (textNode)
@@ -689,37 +690,33 @@ void UITextField::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 		// TODO
 	InitAfterYaml();
 #endif
+    return true;
 }
 
-YamlNode * UITextField::SaveToYamlNode(UIYamlLoader * loader)
+bool UITextField::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader)
 {
-    YamlNode *node = UIControl::SaveToYamlNode(loader);
+    if (!UIControl::SavePropertiesToYamlNode(node, defaultControl, loader))
+        return false;
 
-    //Temp variable
-    VariantType *nodeValue = new VariantType();
+    //UITextField *baseControl = DynamicTypeCheck<UITextField *>(defaultControl);
 
     //Text
-    nodeValue->SetWideString(this->GetText());
-    node->Set("text", nodeValue);
+    node->Set("text", GetText());
 
     //Font
     //Get font name and put it here
-    nodeValue->SetString(FontManager::Instance()->GetFontName(this->GetFont()));
-    node->Set("font", nodeValue);
+    node->Set("font", FontManager::Instance()->GetFontName(this->GetFont()));
 	
 	//TextColor
 	const Color &textColor = GetTextColor();
-	nodeValue->SetColor(textColor);
-	node->Set("textcolor", nodeValue);
+	node->Set("textcolor", VariantType(textColor));
 
 	// ShadowColor
 	const Color &shadowColor = GetShadowColor();
-	nodeValue->SetColor(shadowColor);
-	node->Set("shadowcolor", nodeValue);
+	node->Set("shadowcolor", VariantType(shadowColor));
 
 	// ShadowOffset
-	nodeValue->SetVector2(GetShadowOffset());
-	node->Set("shadowoffset", nodeValue);
+	node->Set("shadowoffset", GetShadowOffset());
 
 	// Text align
 	node->SetNodeToMap("textalign", loader->GetAlignNodeValue(this->GetTextAlign()));
@@ -740,9 +737,7 @@ YamlNode * UITextField::SaveToYamlNode(UIYamlLoader * loader)
 	node->Set("returnKeyType", returnKeyType);
 	node->Set("enableReturnKeyAutomatically", enableReturnKeyAutomatically);
 
-    SafeDelete(nodeValue);
-    
-    return node;
+    return true;
 }
 
 List<UIControl* >& UITextField::GetRealChildren()

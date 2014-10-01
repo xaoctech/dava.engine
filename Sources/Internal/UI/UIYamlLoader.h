@@ -53,6 +53,8 @@ class Font;
 
 class UIYamlLoader : public BaseObject
 {
+    friend class UIPackageLoader;
+    
 protected:
     ~UIYamlLoader(){}
     UIYamlLoader();
@@ -110,28 +112,18 @@ public:
     void AddScrollBarToLink(UIScrollBar* scroll,const String& delegatePath);
     static String GetControlPath(const UIControl* conrol);
     static UIControl* GetControlByPath(const String& controlPath, UIControl* rootControl);
-
+    UIControl *GetRootControl() const { return mainRootControl; }
 protected:
-    //Internal functions that do actual loading and saving.
-    void ProcessLoad(UIControl * rootControl, const FilePath & yamlPathname);
     YamlNode *CreateRootNode(const FilePath & yamlPathname);
     void LoadFontsFromNode(const YamlNode * node);
-    void LoadFromNode(UIControl * rootControl, const YamlNode * node, bool needParentCallback);
-
-    YamlNode* SaveToNode(UIControl * parentControl, YamlNode * rootNode);
-    void SaveChildren(UIControl* parentControl, YamlNode * parentNode);
-
-    bool ProcessSave(UIControl * rootControl, const FilePath & yamlPathname, bool skipRootNode);
 
     // Set the "ASSERT if custom control is not found during loading" flag.
     void SetAssertIfCustomControlNotFound(bool value);
 
     const FilePath & GetCurrentPath() const;
-
+    void SetRootControl(UIControl *control);
 protected:
-	// Create the control by its type or base type.
-	UIControl* CreateControl(const String& type, const String& baseType);
-
+    UIControl *mainRootControl;
     //Called after loading
     void PostLoad(UIControl * rootControl);
     void SetScrollBarDelegates(UIControl * rootControl);

@@ -218,8 +218,8 @@ public:
 
     virtual void SystemWillAppear(); // Internal method used by ControlSystem
 
-    virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
-    virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
+    virtual bool LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader);
+    virtual bool SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader);
 
     virtual float32 VisibleAreaSize(UIScrollBar *forScrollBar);
     virtual float32 TotalAreaSize(UIScrollBar *forScrollBar);
@@ -229,7 +229,7 @@ public:
     virtual UIControl *Clone();
     virtual void CopyDataFrom(UIControl *srcControl);
 
-    virtual const String GetDelegateControlPath() const;
+    virtual const String GetDelegateControlPath(const UIControl *rootControl) const;
 
 protected:
     void InitAfterYaml();

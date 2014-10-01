@@ -264,8 +264,8 @@ public:
     virtual UIButton *Clone();
     virtual void CopyDataFrom(UIControl *srcControl);
 
-    virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
-    virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
+    virtual bool LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader);
+    virtual bool SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader);
 
     /**
      \brief Creates the background for the UIButton for particular state and caches it.
@@ -276,6 +276,7 @@ public:
 protected:
     virtual ~UIButton();
 
+public:
     enum eButtonDrawState
     {
             DRAW_STATE_UNPRESSED = 0
@@ -297,6 +298,7 @@ protected:
 
     static eButtonDrawState ControlStateToDrawState(int32 state);
     static eControlState DrawStateToControlState(eButtonDrawState state);
+    
     static const String &DrawStatePostfix(eButtonDrawState state);
     static eButtonDrawState GetStateReplacer(eButtonDrawState drawState);
 private:
@@ -319,6 +321,21 @@ private:
     UIStaticText *CreateDefaultTextBlock() const;
 
     void UpdateStateTextControlSize();
+
+public:
+    virtual int32 GetBackgroundComponentsCount() const;
+    virtual UIControlBackground *GetBackgroundComponent(int32 index) const;
+    virtual UIControlBackground *CreateBackgroundComponent(int32 index) const;
+    virtual void SetBackgroundComponent(int32 index, UIControlBackground *bg);
+    virtual String GetBackgroundComponentName(int32 index) const;
+    
+    virtual int32 GetInternalControlsCount() const;
+    virtual UIControl *GetInternalControl(int32 index) const;
+    virtual UIControl *CreateInternalControl(int32 index) const;
+    virtual void SetInternalControl(int32 index, UIControl *control);
+    virtual String GetInternalControlName(int32 index) const;
+    virtual String GetInternalControlDescriptions() const;
+
 };
 };
 

@@ -91,25 +91,32 @@ namespace DAVA
         identifier = srcListCell->identifier;
     }
     
-    void UIListCell::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
+    bool UIListCell::LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader)
 	{
-        UIButton::LoadFromYamlNode(node, loader);
+        if (!UIButton::LoadPropertiesFromYamlNode(node, loader))
+            return false;
+
         const YamlNode * identifierNode = node->Get("identifier");
         if (identifierNode)
         {
             SetIdentifier(identifierNode->AsString());
         }
+
+        return true;
     }
     
-    YamlNode * UIListCell::SaveToYamlNode(UIYamlLoader * loader)
+    bool UIListCell::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader)
     {
-        YamlNode *node = UIButton::SaveToYamlNode(loader);
+        if (!UIButton::SavePropertiesToYamlNode(node, defaultControl, loader))
+            return false;
 
+        UIListCell *baseControl = DynamicTypeCheck<UIListCell*>(defaultControl);
         //Identifier
-        if( !GetIdentifier().empty() )
+        if (baseControl->GetIdentifier() != GetIdentifier())
         {
             node->Set("identifier", GetIdentifier());
         }
-        return node;
+
+        return true;
     }
 };

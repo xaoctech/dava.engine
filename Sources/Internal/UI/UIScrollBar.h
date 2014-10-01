@@ -48,7 +48,7 @@ public:
     virtual float32 TotalAreaSize(UIScrollBar *forScrollBar) = 0;
     virtual float32 ViewPosition(UIScrollBar *forScrollBar) = 0;
     virtual void OnViewPositionChanged(UIScrollBar *byScrollBar, float32 newPosition) = 0;
-    virtual const String GetDelegateControlPath() const {return String(); }; // TODO!! TEMP SOLUTION, CHECK WITH AUTHOR!
+    virtual const String GetDelegateControlPath(const UIControl *rootControl) const {return String(); }; // TODO!! TEMP SOLUTION, CHECK WITH AUTHOR!
 };
 
 
@@ -68,7 +68,7 @@ public:
 				bool rectInAbsoluteCoordinates = false);
 
     void SetDelegate(UIScrollBarDelegate *newDelegate);
-    const String GetDelegatePath() const;
+    const String GetDelegatePath(const UIControl *rootControl) const;
     UIControl *GetSlider();
     
     virtual void Draw(const UIGeometricData &geometricData);
@@ -78,9 +78,9 @@ public:
 	
 	virtual List<UIControl* > GetSubcontrols();
 	
-	virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
+    virtual bool LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader);
+    virtual bool SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader);
     virtual void LoadFromYamlNodeCompleted();
-	virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
 	
     void Input(UIEvent *currentInput);
 
