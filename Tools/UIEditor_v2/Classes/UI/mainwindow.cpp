@@ -177,8 +177,8 @@ void MainWindow::TabCloseRequested(int index)
 bool MainWindow::CloseTab(int index)
 {
     PackageDocument *document = GetTabDocument(index);
-    if (!project->SavePackage(document->Package()))
-        return false;
+//    if (!project->SavePackage(document->Package()))
+//        return false;
     
     ui->tabBar->removeTab(index);
     
@@ -537,6 +537,8 @@ void MainWindow::OpenProject(const QString &path)
 
 void MainWindow::SaveProject()
 {
+    PackageDocument *document = ui->tabBar->tabData(ui->tabBar->currentIndex()).value<PackageDocument *>();
+    project->SavePackage(document->Package());
 }
 
 bool MainWindow::CloseProject()

@@ -163,7 +163,7 @@ void UIPackageInternalControlSection::Apply()
 // UIPackageLoader
 ////////////////////////////////////////////////////////////////////////////////
 
-UIPackageLoader::UIPackageLoader()
+UIPackageLoader::UIPackageLoader() : useIntrospectionForLegacyData(false)
 {
     yamlLoader = new UIYamlLoader();
 
@@ -214,7 +214,7 @@ UIPackage *UIPackageLoader::LoadPackage(const FilePath &packagePath, const Legac
     
     if (headerNode)
     {
-        const YamlNode *versionNode = rootNode->Get("version");
+        const YamlNode *versionNode = headerNode->Get("version");
         if (versionNode == NULL || versionNode->GetType() != YamlNode::TYPE_STRING)
             headerNode = NULL; // legacy node with children with name Header
     }
@@ -238,12 +238,6 @@ UIPackage *UIPackageLoader::LoadPackage(const FilePath &packagePath, const Legac
     }
     else
     {
-//        ScopedPtr<UIControl> legacyControl(CreateControlFromYamlNodeLegacy(rootNode, data));
-//        
-//        UIPackage *package = new UIPackage(packagePath);
-//        package->AddControl(legacyControl);
-//        return package;
-        
         legacySupport = true;
         UIPackage *package = new UIPackage(packagePath);
 
@@ -284,6 +278,11 @@ bool UIPackageLoader::SavePackage(UIPackage *package)
     rootNode->Add("Controls", controlsNode);
 
     return YamlEmitter::SaveToYamlFile(package->getFilePath(), rootNode);
+}
+
+void UIPackageLoader::SetUsingIntrospectionForLegacyData(bool useIntrospection)
+{
+    this->useIntrospectionForLegacyData = useIntrospection;
 }
 
 UIControl *UIPackageLoader::CreateControl(const YamlNode *node, const UIPackage *package, bool legacySupport)
@@ -342,7 +341,7 @@ UIControl *UIPackageLoader::CreateControl(const YamlNode *node, const UIPackage 
 
 void UIPackageLoader::LoadControl(UIControl *control, const YamlNode *node, const UIPackage *package, bool legacySupport)
 {
-    if (legacySupport)
+    if (legacySupport && !useIntrospectionForLegacyData)
     {
         DVVERIFY(control->LoadPropertiesFromYamlNode(node, yamlLoader));
     }
@@ -464,42 +463,53 @@ UIControl *UIPackageLoader::CreateControlFromPrototype(UIControl *control)
 
 void UIPackageLoader::LoadPropertiesFromYamlNode(UIControl *control, const YamlNode *node, bool legacySupport)
 {
-    String className = control->GetControlClassName();
+    LoadControlPropertiesFromYamlNode(control, control->GetTypeInfo(), node, legacySupport);
+    LoadBgPropertiesFromYamlNode(control, node, legacySupport);
+    LoadInternalControlPropertiesFromYamlNode(control, node, legacySupport);
+}
     
-    const InspInfo *insp = control->GetTypeInfo();
-    while (insp)
+void UIPackageLoader::LoadControlPropertiesFromYamlNode(UIControl *control, const InspInfo *typeInfo, const YamlNode *node, bool legacySupport)
+{
+    const InspInfo *baseInfo = typeInfo->BaseInfo();
+    if (baseInfo)
+        LoadControlPropertiesFromYamlNode(control, baseInfo, node, legacySupport);
+    
+    String className = control->GetControlClassName();
+    UIPackageSection *section = CreateControlSection(control, typeInfo->Name());
+    for (int i = 0; i < typeInfo->MembersCount(); i++)
     {
-        UIPackageSection *section = CreateControlSection(control, insp->Name());
-        for (int i = 0; i < insp->MembersCount(); i++)
+        const InspMember *member = typeInfo->Member(i);
+        String memberName = GetOldPropertyName(className, member->Name());
+        
+        VariantType res;
+        
+        if (legacySupport && memberName == "name")
+            res = VariantType(control->GetName());
+        else
+            res = ReadVariantTypeFromYamlNode(member, node, -1, memberName, legacySupport);
+        
+        section->SetProperty(member, res);
+        if (res.GetType() != VariantType::TYPE_NONE)
         {
-            const InspMember *member = insp->Member(i);
-            String memberName = GetOldPropertyName(className, member->Name());
-            
-            VariantType res;
-            if (!legacySupport || memberName != "name")
+            if (legacySupport)
             {
-                res = ReadVariantTypeFromYamlNode(member, node, -1, memberName, legacySupport);
-            }
-            section->SetProperty(member, res);
-            if (res.GetType() != VariantType::TYPE_NONE)
-            {
-                if (legacySupport)
+                // FIXME: temporary hack: find enabled properties
+                if (String(member->Name()).find("Align") != String::npos)
                 {
-                    // FIXME: temporary hack: find enabled properties
-                    if (String(member->Name()).find("Align") != String::npos)
-                    {
-                        String enabledProp = String(member->Name()) + "Enabled";
-                        const InspMember *m = insp->Member(enabledProp.c_str());
-                        if (m)
-                            section->SetProperty(m, VariantType(true));
-                    }
+                    String enabledProp = String(member->Name()) + "Enabled";
+                    const InspMember *m = typeInfo->Member(enabledProp.c_str());
+                    if (m)
+                        section->SetProperty(m, VariantType(true));
                 }
             }
         }
-        ReleaseSection(section);
-        insp = insp->BaseInfo();
     }
+    ReleaseSection(section);
+}
     
+void UIPackageLoader::LoadBgPropertiesFromYamlNode(UIControl *control, const YamlNode *node, bool legacySupport)
+{
+    String className = control->GetControlClassName();
     const YamlNode *componentsNode = node->Get("components");
     
     for (int i = 0; i < control->GetBackgroundComponentsCount(); i++)
@@ -551,7 +561,12 @@ void UIPackageLoader::LoadPropertiesFromYamlNode(UIControl *control, const YamlN
         }
         ReleaseSection(section);
     }
-    
+}
+
+void UIPackageLoader::LoadInternalControlPropertiesFromYamlNode(UIControl *control, const YamlNode *node, bool legacySupport)
+{
+    String className = control->GetControlClassName();
+    const YamlNode *componentsNode = node->Get("components");
     for (int i = 0; i < control->GetInternalControlsCount(); i++)
     {
         const YamlNode *componentNode = NULL;
@@ -585,7 +600,7 @@ void UIPackageLoader::LoadPropertiesFromYamlNode(UIControl *control, const YamlN
         ReleaseSection(section);
     }
 }
-    
+
 UIPackageSection *UIPackageLoader::CreateControlSection(UIControl *control, const String &name)
 {
     return new UIPackageControlSection(control, name);

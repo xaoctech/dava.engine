@@ -112,18 +112,29 @@ public:
     UIPackage *LoadPackage(const FilePath &packagePath, const LegacyControlData *data = NULL);
     bool SavePackage(UIPackage *package);
 
+protected:
+    void SetUsingIntrospectionForLegacyData(bool useIntrospection);
+
 private:
     UIControl *CreateControl(const YamlNode *node, const UIPackage *package, bool legacySupport);
     void LoadControl(UIControl *control, const YamlNode *node, const UIPackage *package, bool legacySupport);
 
     YamlNode *CreateYamlNode(UIControl *control);
+
     
 protected:
     virtual UIControl *CreateControlByClassName(const String &className);
     virtual UIControl *CreateCustomControl(const String &customClassName, const String &baseClassName);
     virtual UIControl *CreateControlFromPrototype(UIControl *prototype);
     
+protected:
     virtual void LoadPropertiesFromYamlNode(UIControl *control, const YamlNode *node, bool legacySupport);
+private:
+    void LoadControlPropertiesFromYamlNode(UIControl *control, const InspInfo *typeInfo, const YamlNode *node, bool legacySupport);
+    void LoadBgPropertiesFromYamlNode(UIControl *control, const YamlNode *node, bool legacySupport);
+    void LoadInternalControlPropertiesFromYamlNode(UIControl *control, const YamlNode *node, bool legacySupport);
+    
+protected:
     virtual UIPackageSection *CreateControlSection(UIControl *control, const String &name);
     virtual UIPackageSection *CreateBackgroundSection(UIControl *control, int bgNum);
     virtual UIPackageSection *CreateInternalControlSection(UIControl *control, int internalControlNum);
@@ -145,6 +156,8 @@ private:
 
 private:
     UIYamlLoader *yamlLoader;
+    bool useIntrospectionForLegacyData;
+
 };
 
 };
