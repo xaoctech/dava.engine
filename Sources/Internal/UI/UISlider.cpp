@@ -144,7 +144,6 @@ void UISlider::SetValue(float32 value)
     
     if (needSendEvent)
     {
-        // callerData == true in this case means that value is changed from code, not from UI.
         PerformEventWithData(EVENT_VALUE_CHANGED, (void*)true);
     }
 }
