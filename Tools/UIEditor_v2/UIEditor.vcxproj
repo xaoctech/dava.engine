@@ -37,7 +37,7 @@
     <ClCompile Include="Classes\main.cpp" />
     <ClCompile Include="Classes\Project.cpp" />
     <ClCompile Include="Classes\QtControls\LineEditExt.cpp" />
-    <ClCompile Include="Classes\QtControls\Vector2Edit.cpp" />
+    <ClCompile Include="Classes\QtControls\Vector2DEdit.cpp" />
     <ClCompile Include="Classes\Ruler\RulerController.cpp" />
     <ClCompile Include="Classes\Ruler\RulerWidget.cpp" />
     <ClCompile Include="Classes\StringUtils.cpp" />
@@ -71,7 +71,7 @@
     <ClCompile Include="Classes\UI\PropertiesView\PropertiesTreeItemDelegate.cpp" />
     <ClCompile Include="Classes\UI\PropertiesView\PropertiesTreeModel.cpp" />
     <ClCompile Include="Classes\UI\PropertiesView\PropertiesDockWidget.cpp" />
-    <ClCompile Include="Classes\UI\PropertiesView\PropertiesTreeQVariantItemDelegate.cpp" />
+    <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForQVector2D.cpp" />
     <ClCompile Include="Classes\UI\PropertiesView\PropertiesTreeView.cpp" />
     <ClCompile Include="Classes\Utils\QtDavaConvertion.cpp" />
     <ClCompile Include="Classes\Validators\BaseValidator.cpp" />
@@ -117,7 +117,7 @@
     <ClInclude Include="Classes\Helpers\WidgetSignalsBlocker.h" />
     <ClInclude Include="Classes\Project.h" />
     <ClInclude Include="Classes\QtControls\LineEditExt.h" />
-    <ClInclude Include="Classes\QtControls\Vector2Edit.h" />
+    <ClInclude Include="Classes\QtControls\Vector2DEdit.h" />
     <ClInclude Include="Classes\Ruler\RulerController.h" />
     <ClInclude Include="Classes\Ruler\RulerSettings.h" />
     <ClInclude Include="Classes\Ruler\RulerWidget.h" />
@@ -169,7 +169,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe"   -D_WINDOWS -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -D_CRT_SECURE_NO_DEPRECATE -DDAVA_QT -DDAVA_SAVE_TO_YAML  "-I." "-I.\..\..\Sources\Internal" "-I.\..\..\Sources\External" "-I.\..\..\Libs\glew\Include" "-I.\..\..\Libs\include" "-I.\Classes" "-I.\Classes\Commands" "-I.\Classes\Controllers" "-I.\Classes\Helpers" "-I.\Classes\Metadata" "-I.\Classes\Models" "-I.\Classes\UI" "-I.\Classes\UI\Dialogs" "-I.\Classes\UI\PropertyGridWidgets" "-I$(DXSDK_DIR)\include" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtNetwork" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtOpenGL" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default" "-Ic:\Program Files\OpenAL 1.1 SDK\include" "-Ic:\Program Files (x86)\OpenAL 1.1 SDK\include" "-I$(Configuration)\." "-I.\GeneratedFiles" "-I." "-I." "-I." "-I." "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"</Command>
     </ClInclude>
-    <ClInclude Include="Classes\UI\PropertiesView\PropertiesTreeQVariantItemDelegate.h" />
+    <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForQVector2D.h" />
     <ClInclude Include="Classes\UI\PropertiesView\PropertiesTreeView.h" />
     <ClInclude Include="Classes\Utils\QtDavaConvertion.h" />
     <ClInclude Include="Classes\Validators\BaseValidator.h" />
