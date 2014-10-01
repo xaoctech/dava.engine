@@ -22,12 +22,18 @@ ValueProperty::ValueProperty(BaseObject *object, const InspMember *member) : obj
         AddProperty(new SubValueProperty(0));
         AddProperty(new SubValueProperty(1));
     }
-    if (defaultValue.GetType() == VariantType::TYPE_COLOR)
+    else if (defaultValue.GetType() == VariantType::TYPE_COLOR)
     {
         AddProperty(new SubValueProperty(0));
         AddProperty(new SubValueProperty(1));
         AddProperty(new SubValueProperty(2));
         AddProperty(new SubValueProperty(3));
+    }
+    else if (defaultValue.GetType() == VariantType::TYPE_INT32 && member->Desc().type == InspDesc::T_FLAGS)
+    {
+        const EnumMap *map = member->Desc().enumMap;
+        for (int32 i = 0; i < (int32) map->GetCount(); i++)
+            AddProperty(new SubValueProperty(i));
     }
 }
 
@@ -100,6 +106,21 @@ String ValueProperty::GetSubValueName(int index) const
                 return "Alpha";
         }
             
+        case VariantType::TYPE_INT32:
+            if (member->Desc().type == InspDesc::T_FLAGS)
+            {
+                const EnumMap *map = member->Desc().enumMap;
+                int val = 0;
+                map->GetValue(index, val);
+                return map->ToString(val);
+            }
+            else
+            {
+                DVASSERT(false);
+                return "???";
+            }
+
+            
         default:
         {
             DVASSERT(false);
@@ -126,6 +147,21 @@ VariantType ValueProperty::GetSubValue(int index) const
             else
                 return VariantType(GetValue().AsColor().a);
         }
+            
+        case VariantType::TYPE_INT32:
+            if (member->Desc().type == InspDesc::T_FLAGS)
+            {
+                const EnumMap *map = member->Desc().enumMap;
+                int val = 0;
+                map->GetValue(index, val);
+                return VariantType((GetValue().AsInt32() & val) != 0);
+            }
+            else
+            {
+                DVASSERT(false);
+                return VariantType();
+            }
+
         default:
             DVASSERT(false);
             return VariantType();
@@ -163,6 +199,25 @@ void ValueProperty::SetSubValue(int index, const DAVA::VariantType &newValue)
             SetValue(VariantType(val));
             break;
         }
+            
+        case VariantType::TYPE_INT32:
+            if (member->Desc().type == InspDesc::T_FLAGS)
+            {
+                const EnumMap *map = member->Desc().enumMap;
+                int32 value = GetValue().AsInt32();
+
+                int val = 0;
+                map->GetValue(index, val);
+                if (newValue.AsBool())
+                    SetValue(VariantType(value | val));
+                else
+                    SetValue(VariantType(value & (~val)));
+            }
+            else
+            {
+                DVASSERT(false);
+            }
+            break;
             
         default:
             DVASSERT(false);
