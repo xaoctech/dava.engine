@@ -484,7 +484,7 @@ void UIPackageLoader::LoadControlPropertiesFromYamlNode(UIControl *control, cons
         
         if (legacySupport && memberName == "name")
             res = VariantType(control->GetName());
-        else
+        else if (node)
             res = ReadVariantTypeFromYamlNode(member, node, -1, memberName, legacySupport);
         
         section->SetProperty(member, res);
@@ -509,7 +509,7 @@ void UIPackageLoader::LoadControlPropertiesFromYamlNode(UIControl *control, cons
 void UIPackageLoader::LoadBgPropertiesFromYamlNode(UIControl *control, const YamlNode *node, bool legacySupport)
 {
     String className = control->GetControlClassName();
-    const YamlNode *componentsNode = node->Get("components");
+    const YamlNode *componentsNode = node ? node->Get("components") : NULL;
     
     for (int i = 0; i < control->GetBackgroundComponentsCount(); i++)
     {
@@ -564,7 +564,7 @@ void UIPackageLoader::LoadBgPropertiesFromYamlNode(UIControl *control, const Yam
 void UIPackageLoader::LoadInternalControlPropertiesFromYamlNode(UIControl *control, const YamlNode *node, bool legacySupport)
 {
     String className = control->GetControlClassName();
-    const YamlNode *componentsNode = node->Get("components");
+    const YamlNode *componentsNode = node ? node->Get("components") : NULL;
     for (int i = 0; i < control->GetInternalControlsCount(); i++)
     {
         const YamlNode *componentNode = NULL;
