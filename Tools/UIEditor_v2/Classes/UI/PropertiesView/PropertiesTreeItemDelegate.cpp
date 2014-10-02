@@ -6,6 +6,9 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QEvent>
+#include <QPainter>
+#include <QStylePainter>
+#include <QApplication>
 #include "QtControls/lineeditext.h"
 
 #include "DAVAEngine.h"
@@ -25,7 +28,6 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject *parent)
     : QStyledItemDelegate(parent)
     , currentDelegate(NULL)
 {
-    //qvariantItemDelegates[QVariant::Vector2D] = new ItemDelegateForQVector2D();
     propertyItemDelegates[BaseProperty::TYPE_ENUM] = new ItemDelegateForPropertyEnum(this);
     variantTypeItemDelegates[DAVA::VariantType::TYPE_VECTOR2] = new ItemDelegateForVector2();
     variantTypeItemDelegates[DAVA::VariantType::TYPE_STRING] = new ItemDelegateForString();
@@ -37,9 +39,6 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject *parent)
     variantTypeItemDelegates[DAVA::VariantType::TYPE_UINT32] = new ItemDelegateForInteger(this);
     variantTypeItemDelegates[DAVA::VariantType::TYPE_UINT64] = new ItemDelegateForInteger(this);
     variantTypeItemDelegates[DAVA::VariantType::TYPE_FLOAT] = new ItemDelegateForFloat(this);
-
-    
-    //propertyItemDelegates[BaseProperty::TYPE_FLAGS] = new ItemDelegateForPropertyEnum(this);
 }
 
 PropertiesTreeItemDelegate::~PropertiesTreeItemDelegate()
@@ -48,17 +47,34 @@ PropertiesTreeItemDelegate::~PropertiesTreeItemDelegate()
 
 void PropertiesTreeItemDelegate::paint( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const
 {
-//     if (currentDelegate)
-//         return currentDelegate->paint(painter, option, index);
+    QStyleOptionViewItemV4 opt = option;
+    initStyleOption(&opt, index);
+//     if (index.column() == 1)
+//     {
+// 
+//         QStyleOptionToolButton buttonOption;
+//         buttonOption.subControls = QStyle::SC_ToolButton;
+//         buttonOption.activeSubControls = QStyle::SC_ToolButton;
+//         buttonOption.state = option.state;
+//         QRect buttonrect = opt.rect;
+//         buttonrect.setWidth(buttonrect.height());
+//         buttonrect.moveRight(opt.rect.right());
+//         buttonOption.features = QStyleOptionToolButton::None;
+//         buttonOption.rect = buttonrect;
+//         buttonOption.arrowType = Qt::NoArrow;
+//         buttonOption.toolButtonStyle = Qt::ToolButtonIconOnly;
+//         buttonOption.icon = QIcon(":/Icons/editclear.png");
+//         buttonOption.iconSize = buttonOption.rect.size();
+// 
+//         QApplication::style()->drawComplexControl(QStyle::CC_ToolButton, &buttonOption, painter);
+//         opt.rect.setRight(buttonOption.rect.left());
+//     }
 
-    return QStyledItemDelegate::paint(painter, option, index);
+    return QStyledItemDelegate::paint(painter, opt, index);
 }
 
 QSize PropertiesTreeItemDelegate::sizeHint( const QStyleOptionViewItem &option, const QModelIndex &index ) const
 {
-//     if (currentDelegate)
-//         return currentDelegate->sizeHint(option, index);
-
     return QStyledItemDelegate::sizeHint(option, index);
 }
 
@@ -98,17 +114,19 @@ void PropertiesTreeItemDelegate::setModelData(QWidget * editor, QAbstractItemMod
 
 void PropertiesTreeItemDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-//     if (currentDelegate)
-//         return currentDelegate->updateEditorGeometry(editor, option, index);
-
     QStyledItemDelegate::updateEditorGeometry(editor, option, index);
+
+//     if(NULL != editor)
+//     {
+//         QRect r = option.rect;
+//         r.setWidth(r.width() - r.height());
+//         editor->setGeometry(r);
+//     }
+
 }
 
 bool PropertiesTreeItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
 {
-//     if (currentDelegate)
-//         return currentDelegate->editorEvent(event, model, option, index);
-
     return QStyledItemDelegate::editorEvent(event, model, option, index);
 }
 

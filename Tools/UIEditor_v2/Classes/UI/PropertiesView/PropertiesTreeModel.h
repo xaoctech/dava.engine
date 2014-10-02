@@ -43,9 +43,7 @@ public:
                                 int role = Qt::DisplayRole) const override;
 
 private:
-    QVariant makeQVariant(const DAVA::VariantType &val) const;
-    DAVA::VariantType makeVariantType(const QVariant &val) const;
-    QString makeQString(const BaseProperty *property) const;
+    QVariant makeQVariant(const BaseProperty *property) const;
     void initVariantType(DAVA::VariantType &var, const QVariant &val) const;
     
 private:
