@@ -21,37 +21,44 @@ public class JNIApplication extends Application
 	private String internalDocumentsDir; 
 
 	private Locale launchLocale;
+	
+	private boolean firstRun = true;
+
 
 	@Override
 	public void onCreate()
 	{
 		app = this;
 		super.onCreate();
-	
-        JNINotificationProvider.Init();
-
-		ApplicationInfo info = getApplicationInfo();
-		
 		Log.i(JNIConst.LOG_TAG, "[Application::onCreate] start"); 
+        
+		/*
+		 * Core initialization moved to onConfigurationChanged
+		 */
+	    JNINotificationProvider.Init();
 		
-		externalDocumentsDir = this.getExternalFilesDir(null).getAbsolutePath();
-		internalDocumentsDir = this.getFilesDir().getAbsolutePath();
-
-		launchLocale = Locale.getDefault();
-
-		Log.w(JNIConst.LOG_TAG, String.format("[Application::onCreate] apkFilePath is %s", info.publicSourceDir)); 
-		OnCreateApplication(externalDocumentsDir, internalDocumentsDir, info.publicSourceDir, JNIConst.LOG_TAG, info.packageName);
-
-
 		Log.i(JNIConst.LOG_TAG, "[Application::onCreate] finish"); 
 	}
-
+	
 	@Override
 	public void onConfigurationChanged(Configuration newConfig)
 	{
-		Log.w(JNIConst.LOG_TAG, String.format("[Application::onConfigurationChanged]")); 
+		Log.i(JNIConst.LOG_TAG, String.format("[Application::onConfigurationChanged]")); 
 
 		super.onConfigurationChanged(newConfig);
+		
+		if (firstRun) {
+		    externalDocumentsDir = this.getExternalFilesDir(null).getAbsolutePath();
+		    internalDocumentsDir = this.getFilesDir().getAbsolutePath();
+
+    		ApplicationInfo info = getApplicationInfo();
+    		launchLocale = Locale.getDefault();
+
+    		Log.w(JNIConst.LOG_TAG, String.format("[Application::onConfigurationChanged] Create Application. apkFilePath is %s", info.publicSourceDir)); 
+            OnCreateApplication(externalDocumentsDir, internalDocumentsDir, info.publicSourceDir, JNIConst.LOG_TAG, info.packageName);
+            
+            firstRun = false;
+		}
 
 		OnConfigurationChanged();
 
