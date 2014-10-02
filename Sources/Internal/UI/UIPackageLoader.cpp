@@ -683,6 +683,8 @@ VariantType UIPackageLoader::ReadVariantTypeFromYamlNode(const InspMember *membe
             return VariantType(valueNode->AsBool());
         else if (member->Type() == MetaInfo::Instance<int32>())
             return VariantType(valueNode->AsInt32());
+        else if (member->Type() == MetaInfo::Instance<uint32>())
+            return VariantType(valueNode->AsUInt32());
         else if (member->Type() == MetaInfo::Instance<String>())
             return VariantType(valueNode->AsString());
         else if (member->Type() == MetaInfo::Instance<WideString>())
@@ -693,6 +695,8 @@ VariantType UIPackageLoader::ReadVariantTypeFromYamlNode(const InspMember *membe
             return VariantType(valueNode->AsVector2());
         else if (member->Type() == MetaInfo::Instance<Color>())
             return VariantType(valueNode->AsColor());
+        else if (member->Type() == MetaInfo::Instance<FilePath>())
+            return VariantType(FilePath(valueNode->AsString()));
         else
         {
             DVASSERT(false);

@@ -327,11 +327,11 @@ public:
         SetDrawType((UIControlBackground::eDrawType) type);
     }
     
-    String GetBgSprite() const {
+    FilePath GetBgSprite() const {
         return Sprite::GetPathString(GetSprite());
     }
     
-    void SetBgSprite(const String &path) {
+    void SetBgSprite(const FilePath &path) {
         SetSprite(path, GetFrame());
     }
     

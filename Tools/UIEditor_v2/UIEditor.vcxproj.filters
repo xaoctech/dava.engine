@@ -76,7 +76,7 @@
     <Filter Include="Sources\UI\FileSystemView">
       <UniqueIdentifier>{faf9da69-20d5-4ed5-b62d-417acd6e8b8e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\UI\PropertiesView\Editors">
+    <Filter Include="Sources\UI\PropertiesView\VariantDelegates">
       <UniqueIdentifier>{e68c9760-8a28-4969-93aa-daf90721aee5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -270,14 +270,29 @@
     <ClCompile Include="Classes\UIControls\SubValueProperty.cpp">
       <Filter>Sources\UIControls</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForQVector2D.cpp">
-      <Filter>Sources\UI\PropertiesView</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\QtControls\Vector2DEdit.cpp">
       <Filter>Sources\QtControls</Filter>
     </ClCompile>
     <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForPropertyEnum.cpp">
       <Filter>Sources\UI\PropertiesView</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForString.cpp">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForFilePath.cpp">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForVector2.cpp">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForColor.cpp">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForInteger.cpp">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForFloat.cpp">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -473,9 +488,6 @@
     <ClInclude Include="Classes\UIControls\SubValueProperty.h">
       <Filter>Sources\UIControls</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForQVector2D.h">
-      <Filter>Sources\UI\PropertiesView</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\QtControls\Vector2DEdit.h">
       <Filter>Sources\QtControls</Filter>
     </ClInclude>
@@ -484,6 +496,24 @@
     </ClInclude>
     <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForPropertyEnum.h">
       <Filter>Sources\UI\PropertiesView</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForString.h">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForFilePath.h">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForVector2.h">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForColor.h">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForInteger.h">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForFloat.h">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

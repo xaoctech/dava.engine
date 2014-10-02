@@ -61,8 +61,8 @@ private slots:
     void OnShowHelp();
 	
 	void OnNewProject();
-	void OnSaveProject();
-	void OnSaveProjectAll();
+	void OnSaveDocument();
+	void OnSaveAllDocuments();
     void OnOpenProject();
 	void OnCloseProject();
 	void OnExitApplication();
@@ -88,7 +88,6 @@ private slots:
 
 private:
     void OpenProject(const QString &path);
-    void SaveProject();
 	bool CloseProject();
 	
 	void InitMenu();
@@ -109,10 +108,9 @@ private:
     void UpdateSaveButtons();
 
     bool CheckAndUnlockProject(const QString& projectPath);
-    
-    PackageDocument *GetCurrentTabContent() const;
-    int GetTabContent(const QString &fileName) const;
-    
+
+    int GetTabIndexByPath(const QString &fileName) const;
+    PackageDocument *GetCurrentTabDocument() const;
     PackageDocument *GetTabDocument(int index) const;
 
 private:
