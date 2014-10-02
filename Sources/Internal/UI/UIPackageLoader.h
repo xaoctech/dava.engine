@@ -119,13 +119,11 @@ private:
     UIControl *CreateControl(const YamlNode *node, const UIPackage *package, bool legacySupport);
     void LoadControl(UIControl *control, const YamlNode *node, const UIPackage *package, bool legacySupport);
 
-    YamlNode *CreateYamlNode(UIControl *control);
-
-    
 protected:
     virtual UIControl *CreateControlByClassName(const String &className);
     virtual UIControl *CreateCustomControl(const String &customClassName, const String &baseClassName);
     virtual UIControl *CreateControlFromPrototype(UIControl *prototype);
+    virtual YamlNode *CreateYamlNode(UIControl *control);
     
 protected:
     virtual void LoadPropertiesFromYamlNode(UIControl *control, const YamlNode *node, bool legacySupport);
@@ -142,10 +140,9 @@ protected:
     virtual VariantType ReadVariantTypeFromYamlNode(const InspMember *member, const YamlNode *node, int subNodeIndex, const String &propertyName, bool legacySupport);
 
     virtual bool AddObjectPropertyToYamlNode(BaseObject *obj, const InspMember *member, YamlNode *node);
-    virtual void AddClassPropertiesToYamlNode(UIControl *control, YamlNode *node);
-    virtual void AddPropertiesToNode(UIControl *control, YamlNode *node);
     
 private:
+    void AddPropertiesToNode(UIControl *control, YamlNode *node);
     DAVA::String GetOldPropertyName(const DAVA::String controlClassName, const DAVA::String name);
     DAVA::String GetOldBgPrefix(const DAVA::String controlClassName, const DAVA::String name);
     DAVA::String GetOldBgPostfix(const DAVA::String controlClassName, const DAVA::String name);
