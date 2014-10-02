@@ -364,12 +364,6 @@ void Scene::CreateSystems()
         AddSystem(waveSystem, (1 << Component::WAVE_COMPONENT), true);
     }
 
-    if(SCENE_SYSTEM_WAVE_UPDATE_FLAG & systemsMask)
-    {
-        waveSystem = new WaveSystem(this);
-        AddSystem(waveSystem, (1 << Component::WAVE_COMPONENT), true);
-    }
-
     if(SCENE_SYSTEM_SKELETON_UPDATE_FLAG & systemsMask)
     {
         skeletonSystem = new SkeletonSystem(this);
