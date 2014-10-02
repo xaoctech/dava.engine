@@ -682,6 +682,8 @@ VariantType UIPackageLoader::ReadVariantTypeFromYamlNode(const InspMember *membe
             return VariantType(valueNode->AsBool());
         else if (member->Type() == MetaInfo::Instance<int32>())
             return VariantType(valueNode->AsInt32());
+        else if (member->Type() == MetaInfo::Instance<uint32>())
+            return VariantType(valueNode->AsUInt32());
         else if (member->Type() == MetaInfo::Instance<String>())
             return VariantType(valueNode->AsString());
         else if (member->Type() == MetaInfo::Instance<WideString>())
@@ -692,6 +694,8 @@ VariantType UIPackageLoader::ReadVariantTypeFromYamlNode(const InspMember *membe
             return VariantType(valueNode->AsVector2());
         else if (member->Type() == MetaInfo::Instance<Color>())
             return VariantType(valueNode->AsColor());
+        else if (member->Type() == MetaInfo::Instance<FilePath>())
+            return VariantType(FilePath(valueNode->AsString()));
         else
         {
             DVASSERT(false);
@@ -754,24 +758,10 @@ bool UIPackageLoader::AddObjectPropertyToYamlNode(BaseObject *obj, const InspMem
         }
         node->Add(member->Name(), valueNode);
     }
-    else if (member->Type() == MetaInfo::Instance<bool>())
-        node->Add(member->Name(), member->Value(obj).AsBool());
-    else if (member->Type() == MetaInfo::Instance<int32>())
-        node->Add(member->Name(), member->Value(obj).AsInt32());
-    else if (member->Type() == MetaInfo::Instance<String>())
-        node->Add(member->Name(), member->Value(obj).AsString());
-    else if (member->Type() == MetaInfo::Instance<WideString>())
-        node->Add(member->Name(), member->Value(obj).AsWideString());
-    else if (member->Type() == MetaInfo::Instance<float32>())
-        node->Add(member->Name(), member->Value(obj).AsFloat());
-    else if (member->Type() == MetaInfo::Instance<Vector2>())
-        node->Add(member->Name(), member->Value(obj).AsVector2());
-    else if (member->Type() == MetaInfo::Instance<Color>())
-        node->Add(member->Name(), member->Value(obj).AsColor());
     else
     {
-        DVASSERT(false);
-        return false;
+        node->Add(member->Name(), member->Value(obj));
+        return true;
     }
     
     return true;

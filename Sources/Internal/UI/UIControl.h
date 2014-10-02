@@ -581,6 +581,7 @@ public:
      \returns control angle in radians.
      */
     inline float32 GetAngle() const;
+    inline float32 GetAngleInDegrees() const;
     
     /**
      \brief Returns control's parents total rotation angle in radians.
@@ -594,6 +595,8 @@ public:
      \param[in] angleInRad new control angle in radians.
      */
     virtual void SetAngle(float32 angleInRad);
+
+    void SetAngleInDegrees(float32 angle);
 
     /**
      \brief Returns control visibility.
@@ -1477,7 +1480,7 @@ public:
                          PROPERTY("position", "Position", GetPosition, SetPosition, I_SAVE | I_VIEW | I_EDIT)
                          PROPERTY("size", "Size", GetSize, SetSize, I_SAVE | I_VIEW | I_EDIT)
                          PROPERTY("pivot", "Pivot", GetPivotPoint, SetPivotPoint, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("angle", "Angle", GetAngle, SetAngle, I_SAVE | I_VIEW | I_EDIT)
+                         PROPERTY("angle", "Angle", GetAngleInDegrees, SetAngleInDegrees, I_SAVE | I_VIEW | I_EDIT)
                          PROPERTY("visible", "Visible", GetRecursiveVisible, SetRecursiveVisible, I_SAVE | I_VIEW | I_EDIT)
                          PROPERTY("enabled", "Enabled", GetEnabled, SetEnabledNotHierarchic, I_SAVE | I_VIEW | I_EDIT)
                          PROPERTY("clip", "Clip", GetClipContents, SetClipContents, I_SAVE | I_VIEW | I_EDIT)
@@ -1551,6 +1554,11 @@ const Vector2 &UIControl::GetPosition() const
 float32 UIControl::GetAngle() const
 {
     return angle;
+}
+
+float32 UIControl::GetAngleInDegrees() const
+{
+    return RadToDeg(angle);
 }
 
 const String & UIControl::GetName() const

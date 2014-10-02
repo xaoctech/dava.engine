@@ -11,16 +11,35 @@
 #include "DAVAEngine.h"
 #include "QtControls/Vector2DEdit.h"
 #include "UIControls/BaseProperty.h"
-#include "ItemDelegateForQVector2D.h"
+#include "Utils/QtDavaConvertion.h"
+#include "ItemDelegateForVector2.h"
 #include "ItemDelegateForPropertyEnum.h"
+#include "PropertiesTreeModel.h"
+#include "ItemDelegateForString.h"
+#include "ItemDelegateForFilePath.h"
+#include "ItemDelegateForColor.h"
+#include "ItemDelegateForInteger.h"
+#include "ItemDelegateForFloat.h"
 
 PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject *parent)
     : QStyledItemDelegate(parent)
     , currentDelegate(NULL)
 {
-    qvariantItemDelegates[QVariant::Vector2D] = new ItemDelegateForQVector2D();
+    //qvariantItemDelegates[QVariant::Vector2D] = new ItemDelegateForQVector2D();
     propertyItemDelegates[BaseProperty::TYPE_ENUM] = new ItemDelegateForPropertyEnum(this);
-    propertyItemDelegates[BaseProperty::TYPE_FLAGS] = new ItemDelegateForPropertyEnum(this);
+    variantTypeItemDelegates[DAVA::VariantType::TYPE_VECTOR2] = new ItemDelegateForVector2();
+    variantTypeItemDelegates[DAVA::VariantType::TYPE_STRING] = new ItemDelegateForString();
+    variantTypeItemDelegates[DAVA::VariantType::TYPE_WIDE_STRING] = new ItemDelegateForString();
+    variantTypeItemDelegates[DAVA::VariantType::TYPE_FILEPATH] = new ItemDelegateForFilePath();
+    variantTypeItemDelegates[DAVA::VariantType::TYPE_COLOR] = new ItemDelegateForColor();
+    variantTypeItemDelegates[DAVA::VariantType::TYPE_INT32] = new ItemDelegateForInteger(this);
+    variantTypeItemDelegates[DAVA::VariantType::TYPE_INT64] = new ItemDelegateForInteger(this);
+    variantTypeItemDelegates[DAVA::VariantType::TYPE_UINT32] = new ItemDelegateForInteger(this);
+    variantTypeItemDelegates[DAVA::VariantType::TYPE_UINT64] = new ItemDelegateForInteger(this);
+    variantTypeItemDelegates[DAVA::VariantType::TYPE_FLOAT] = new ItemDelegateForFloat(this);
+
+    
+    //propertyItemDelegates[BaseProperty::TYPE_FLAGS] = new ItemDelegateForPropertyEnum(this);
 }
 
 PropertiesTreeItemDelegate::~PropertiesTreeItemDelegate()
@@ -51,6 +70,9 @@ QWidget *PropertiesTreeItemDelegate::createEditor( QWidget * parent, const QStyl
         return currentDelegate->createEditor(parent, option, index);
     }
 
+    if (index.data(Qt::EditRole).type() == QVariant::Bool)
+        return NULL;
+
     return QStyledItemDelegate::createEditor(parent, option, index);
 }
 
@@ -70,10 +92,6 @@ void PropertiesTreeItemDelegate::setModelData(QWidget * editor, QAbstractItemMod
     QLineEdit *lineEdit = qobject_cast<QLineEdit *>(editor);
     if (lineEdit && !lineEdit->isModified())
         return;
-
-//     QComboBox *comboBox = qobject_cast<QComboBox *>(editor);
-//     if (comboBox && !lineEdit->isModified())
-//         return;
 
     QStyledItemDelegate::setModelData(editor, model, index);
 }
@@ -103,7 +121,8 @@ PropertyAbstractEditor * PropertiesTreeItemDelegate::GetCustomItemDelegateForInd
         if (prop_iter != propertyItemDelegates.end())
             return prop_iter.value();
 
-        QMap<DAVA::VariantType::eVariantType, PropertyAbstractEditor *>::const_iterator var_iter = variantTypeItemDelegates.find(property->GetValue().GetType());
+        DAVA::VariantType variantType = index.data(DAVA::VariantTypeEditRole).value<DAVA::VariantType>();
+        QMap<DAVA::VariantType::eVariantType, PropertyAbstractEditor *>::const_iterator var_iter = variantTypeItemDelegates.find(variantType.GetType());
         if (var_iter != variantTypeItemDelegates.end())
             return var_iter.value();
     }
