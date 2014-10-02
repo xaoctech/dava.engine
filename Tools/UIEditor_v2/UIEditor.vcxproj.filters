@@ -276,6 +276,9 @@
     <ClCompile Include="Classes\QtControls\Vector2DEdit.cpp">
       <Filter>Sources\QtControls</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForPropertyEnum.cpp">
+      <Filter>Sources\UI\PropertiesView</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\FrameworkMain.h">
@@ -475,6 +478,12 @@
     </ClInclude>
     <ClInclude Include="Classes\QtControls\Vector2DEdit.h">
       <Filter>Sources\QtControls</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertiesView\PropertyAbstractEditor.h">
+      <Filter>Sources\UI\PropertiesView</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForPropertyEnum.h">
+      <Filter>Sources\UI\PropertiesView</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
