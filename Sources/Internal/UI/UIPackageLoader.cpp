@@ -522,42 +522,41 @@ void UIPackageLoader::LoadBgPropertiesFromYamlNode(UIControl *control, const Yam
             componentNode = componentsNode->Get(control->GetBackgroundComponentName(i));
         
         UIPackageSection *section = CreateBackgroundSection(control, i);
-        if (componentNode)
+        const InspInfo *insp = section->GetBaseObject()->GetTypeInfo();
+        String bgName = control->GetBackgroundComponentName(i);
+        
+        for (int j = 0; j < insp->MembersCount(); j++)
         {
-            const InspInfo *insp = section->GetBaseObject()->GetTypeInfo();
-            String bgName = control->GetBackgroundComponentName(i);
+            const InspMember *member = insp->Member(j);
+            String memberName = member->Name();
+            int subNodeIndex = -1;
             
-            for (int j = 0; j < insp->MembersCount(); j++)
+            if (legacySupport)
             {
-                const InspMember *member = insp->Member(j);
-                String memberName = member->Name();
-                int subNodeIndex = -1;
-                
-                if (legacySupport)
+                memberName = GetOldPropertyName(className, memberName);
+                if (memberName == "stateSprite")
                 {
-                    memberName = GetOldPropertyName(className, memberName);
-                    if (memberName == "stateSprite")
-                    {
-                        subNodeIndex = 0;
-                        memberName = "stateSprite";
-                    }
-                    else if (memberName == "stateFrame")
-                    {
-                        subNodeIndex = 1;
-                        memberName = "stateSprite";
-                    }
-                    else if (memberName == "stateSpriteModification")
-                    {
-                        subNodeIndex = 2;
-                        memberName = "stateSprite";
-                    }
-                    
-                    memberName = GetOldBgPrefix(className, bgName) + memberName + GetOldBgPostfix(className, bgName);
+                    subNodeIndex = 0;
+                    memberName = "stateSprite";
+                }
+                else if (memberName == "stateFrame")
+                {
+                    subNodeIndex = 1;
+                    memberName = "stateSprite";
+                }
+                else if (memberName == "stateSpriteModification")
+                {
+                    subNodeIndex = 2;
+                    memberName = "stateSprite";
                 }
                 
-                VariantType res = ReadVariantTypeFromYamlNode(member, componentNode, subNodeIndex, memberName, legacySupport);
-                section->SetProperty(member, res);
+                memberName = GetOldBgPrefix(className, bgName) + memberName + GetOldBgPostfix(className, bgName);
             }
+            
+            VariantType res;
+            if (componentNode)
+                res = ReadVariantTypeFromYamlNode(member, componentNode, subNodeIndex, memberName, legacySupport);
+            section->SetProperty(member, res);
         }
         ReleaseSection(section);
     }
@@ -578,25 +577,26 @@ void UIPackageLoader::LoadInternalControlPropertiesFromYamlNode(UIControl *contr
         
         UIPackageSection *section = CreateInternalControlSection(control, i);
         
-        if (componentNode)
+        const InspInfo *insp = section->GetBaseObject()->GetTypeInfo();
+        String bgName = control->GetInternalControlName(i);
+        
+        for (int j = 0; j < insp->MembersCount(); j++)
         {
-            const InspInfo *insp = section->GetBaseObject()->GetTypeInfo();
-            String bgName = control->GetInternalControlName(i);
+            const InspMember *member = insp->Member(j);
+            String memberName = member->Name();
             
-            for (int j = 0; j < insp->MembersCount(); j++)
+            if (legacySupport)
             {
-                const InspMember *member = insp->Member(j);
-                String memberName = member->Name();
-                
-                if (legacySupport)
-                {
-                    memberName = GetOldPropertyName(className, memberName);
-                    memberName = GetOldBgPrefix(className, bgName) + memberName + GetOldBgPostfix(className, bgName);
-                }
-                VariantType value = ReadVariantTypeFromYamlNode(member, componentNode, -1, memberName, legacySupport);
-                section->SetProperty(member, value);
+                memberName = GetOldPropertyName(className, memberName);
+                memberName = GetOldBgPrefix(className, bgName) + memberName + GetOldBgPostfix(className, bgName);
             }
+            
+            VariantType value;
+            if (componentNode)
+                value = ReadVariantTypeFromYamlNode(member, componentNode, -1, memberName, legacySupport);
+            section->SetProperty(member, value);
         }
+
         ReleaseSection(section);
     }
 }
