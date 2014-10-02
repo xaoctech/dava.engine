@@ -203,7 +203,7 @@ bool EditorUIPackageLoader::AddControlToNode(DAVA::UIControl *control, DAVA::Yam
     YamlNode *childrenNode = YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION);
     bool childrensAdded = AddChildrenToNode(control, childrenNode, prototype ? childrenNode : prototypeChildren);
     
-    if (childrensAdded)
+    if (childrenNode->GetCount() > 0)
         node->Add("children", childrenNode);
     else
         SafeRelease(childrenNode);
@@ -211,30 +211,27 @@ bool EditorUIPackageLoader::AddControlToNode(DAVA::UIControl *control, DAVA::Yam
     return propertiesAdded || childrensAdded;
 }
 
-bool EditorUIPackageLoader::AddChildrenToNode(DAVA::UIControl *control, DAVA::YamlNode *childrenNode, YamlNode *prototypeChildren)
+bool EditorUIPackageLoader::AddChildrenToNode(UIControl *control, YamlNode *childrenNode, YamlNode *prototypeChildren)
 {
     bool atLeastOneChildWasAdded = false;
-    List<UIControl*> &children = control->GetRealChildren();
-    if(!children.empty())
+    const List<UIControl*> &children = control->GetRealChildren();
+    for (auto iter = children.begin();iter != children.end(); ++iter)
     {
-        List<UIControl* >::const_iterator iter = children.begin();
-        for (;iter != children.end(); ++iter)
+        YamlNode *childNode = YamlNode::CreateMapNode(false, YamlNode::MR_BLOCK_REPRESENTATION, YamlNode::SR_PLAIN_REPRESENTATION);
+        if (AddControlToNode(*iter, childNode, prototypeChildren))
         {
-            YamlNode *childNode = YamlNode::CreateMapNode(false, YamlNode::MR_BLOCK_REPRESENTATION, YamlNode::SR_PLAIN_REPRESENTATION);
-            if (AddControlToNode(*iter, childNode, prototypeChildren))
-            {
-                UIEditorComponent *component = dynamic_cast<UIEditorComponent*>(control->GetCustomData());
-                if (component && component->IsClonedFromPrototype())
-                    prototypeChildren->Add(childNode);
-                else
-                    childrenNode->Add(childNode);
-                
-                atLeastOneChildWasAdded = true;
-            }
+            UIEditorComponent *component = dynamic_cast<UIEditorComponent*>(control->GetCustomData());
+            if (component && component->IsClonedFromPrototype())
+                prototypeChildren->Add(childNode);
             else
             {
-                SafeRelease(childNode);
+                childrenNode->Add(childNode);
+                atLeastOneChildWasAdded = true;
             }
+        }
+        else
+        {
+            SafeRelease(childNode);
         }
     }
     return atLeastOneChildWasAdded;
@@ -321,6 +318,8 @@ void EditorUIPackageLoader::SetClonedFromPrototypeProperty(UIControl *control, c
         component->SetClonedFromPrototype(path);
         control->SetCustomData(component);
         SafeRelease(component);
+
+        LoadPropertiesFromYamlNode(control, NULL, false);
     }
     
     const DAVA::List<UIControl*> &children = control->GetChildren();
