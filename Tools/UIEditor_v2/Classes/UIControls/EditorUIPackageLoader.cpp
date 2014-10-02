@@ -62,6 +62,10 @@ public:
     
     virtual void SetProperty(const InspMember *member, const DAVA::VariantType &value)
     {
+        if (control->GetName() == "DefaultButton")
+        {
+            Logger::Debug("!!!! %s, %s, %x", section->GetName().c_str(), member->Name(), dynamic_cast<UIEditorComponent*>(control->GetCustomData())->GetPrototype());
+        }
         UIPackageBackgroundSection::SetProperty(member, value);
         ValueProperty *property = new ValueProperty(GetBaseObject(), member);
         if (value.GetType() != VariantType::TYPE_NONE)
@@ -69,6 +73,13 @@ public:
         section->AddProperty(property);
     }
     
+    virtual void Apply()
+    {
+        UIPackageBackgroundSection::Apply();
+        if (bgWasCreated && !bgHasChanges)
+            section->HideContent();
+    }
+
 private:
     BackgroundPropertiesSection *section;
 };
@@ -91,6 +102,13 @@ public:
         if (value.GetType() != VariantType::TYPE_NONE)
             property->SetValue(value);
         section->AddProperty(property);
+    }
+    
+    virtual void Apply()
+    {
+        UIPackageInternalControlSection::Apply();
+        if (internalWasCreated && !internalHasChanges)
+            section->HideContent();
     }
     
 private:

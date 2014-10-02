@@ -29,9 +29,9 @@ public:
 
     BaseProperty *GetParent() const;
     void AddProperty(BaseProperty *property);
-    int GetCount() const;
-    BaseProperty *GetProperty(int index) const;
-    int GetIndex(BaseProperty *property) const;
+    virtual int GetCount() const;
+    virtual BaseProperty *GetProperty(int index) const;
+    virtual int GetIndex(BaseProperty *property) const;
 
     virtual DAVA::String GetName() const = 0;
     virtual ePropertyType GetType() const = 0;
