@@ -7,6 +7,7 @@
 #include "ControlPropertiesSection.h"
 #include "BackgroundPropertiesSection.h"
 #include "InternalControlPropertiesSection.h"
+#include "UI/UIControlHelpers.h"
 
 using namespace DAVA;
 
@@ -163,7 +164,7 @@ UIControl *EditorUIPackageLoader::CreateControlFromPrototype(UIControl *prototyp
     control->SetCustomData(component);
     SafeRelease(component);
     
-    SetClonedFromPrototypeProperty(control);
+    SetClonedFromPrototypeProperty(control, "");
 
     return control;
 }
@@ -183,8 +184,62 @@ UIPackageSection *EditorUIPackageLoader::CreateInternalControlSection(DAVA::UICo
     return new EditorUIPackageInternalControlSection(control, internalControlNum);
 }
 
-void EditorUIPackageLoader::AddClassPropertiesToYamlNode(UIControl *control, YamlNode *node)
+YamlNode *EditorUIPackageLoader::CreateYamlNode(UIControl *control)
 {
+    YamlNode *node = YamlNode::CreateMapNode(false, YamlNode::MR_BLOCK_REPRESENTATION, YamlNode::SR_PLAIN_REPRESENTATION);
+    AddControlToNode(control, node, NULL);
+    return SafeRetain<YamlNode>(node);
+}
+
+bool EditorUIPackageLoader::AddControlToNode(DAVA::UIControl *control, DAVA::YamlNode *node, YamlNode *prototypeChildren)
+{
+    bool propertiesAdded = AddPropertiesToNode(control, node);
+
+    UIEditorComponent *component = dynamic_cast<UIEditorComponent*>(control->GetCustomData());
+    UIControl *prototype = NULL;
+    if (component)
+        prototype = component->GetPrototype();
+
+    YamlNode *childrenNode = YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION);
+    bool childrensAdded = AddChildrenToNode(control, childrenNode, prototype ? childrenNode : prototypeChildren);
+    
+    if (childrenNode->GetCount() > 0)
+        node->Add("children", childrenNode);
+    else
+        SafeRelease(childrenNode);
+    
+    return propertiesAdded || childrensAdded;
+}
+
+bool EditorUIPackageLoader::AddChildrenToNode(UIControl *control, YamlNode *childrenNode, YamlNode *prototypeChildren)
+{
+    bool atLeastOneChildWasAdded = false;
+    const List<UIControl*> &children = control->GetRealChildren();
+    for (auto iter = children.begin();iter != children.end(); ++iter)
+    {
+        YamlNode *childNode = YamlNode::CreateMapNode(false, YamlNode::MR_BLOCK_REPRESENTATION, YamlNode::SR_PLAIN_REPRESENTATION);
+        if (AddControlToNode(*iter, childNode, prototypeChildren))
+        {
+            UIEditorComponent *component = dynamic_cast<UIEditorComponent*>(control->GetCustomData());
+            if (component && component->IsClonedFromPrototype())
+                prototypeChildren->Add(childNode);
+            else
+            {
+                childrenNode->Add(childNode);
+                atLeastOneChildWasAdded = true;
+            }
+        }
+        else
+        {
+            SafeRelease(childNode);
+        }
+    }
+    return atLeastOneChildWasAdded;
+}
+
+bool EditorUIPackageLoader::AddPropertiesToNode(UIControl *control, YamlNode *node)
+{
+    bool hasChanges = false;
     UIEditorComponent *component = dynamic_cast<UIEditorComponent*>(control->GetCustomData());
     UIControl *prototype = NULL;
     if (component)
@@ -193,27 +248,23 @@ void EditorUIPackageLoader::AddClassPropertiesToYamlNode(UIControl *control, Yam
     if (component && component->IsClonedFromPrototype())
     {
         if (prototype)
+        {
+            hasChanges = true;
             node->Set("prototype", prototype->GetName());
+        }
         else
         {
-            String path = control->GetName(); // TODO: find path
-            node->Set("path", path);
+            node->Set("path", component->GetPathFromPrototype());
         }
     }
     else
     {
+        hasChanges = true;
         node->Set("class", control->GetClassName());
         if (!control->GetCustomControlClassName().empty())
             node->Set("customClass", control->GetCustomControlClassName());
     }
-}
 
-void EditorUIPackageLoader::AddPropertiesToNode(UIControl *control, YamlNode *node)
-{
-    UIEditorComponent *component = dynamic_cast<UIEditorComponent*>(control->GetCustomData());
-    UIControl *prototype = NULL;
-    if (component)
-        prototype = component->GetPrototype();
     
     String className = control->GetControlClassName();
 
@@ -237,12 +288,16 @@ void EditorUIPackageLoader::AddPropertiesToNode(UIControl *control, YamlNode *no
                     componentsNode->AddNodeToMap(section->GetName(), sectionNode);
                 }
                 AddObjectPropertyToYamlNode(valueProperty->GetBaseObject(), valueProperty->GetMember(), sectionNode);
+                hasChanges = true;
             }
         }
     }
     
     if (componentsNode->GetCount() > 0)
+    {
+        hasChanges = true;
         node->Add("components", componentsNode);
+    }
     else
         SafeRelease(componentsNode);
 
@@ -251,22 +306,31 @@ void EditorUIPackageLoader::AddPropertiesToNode(UIControl *control, YamlNode *no
 //        return false;
 //    
 //    return true; //component->IsMemberReplaced(obj, member);
+    return hasChanges;
    
 }
 
-void EditorUIPackageLoader::SetClonedFromPrototypeProperty(UIControl *control)
+void EditorUIPackageLoader::SetClonedFromPrototypeProperty(UIControl *control, const DAVA::String &path)
 {
     if (!control->GetCustomData())
     {
         UIEditorComponent *component = new UIEditorComponent();
-        component->SetClonedFromPrototype(true);
+        component->SetClonedFromPrototype(path);
         control->SetCustomData(component);
         SafeRelease(component);
+
+        LoadPropertiesFromYamlNode(control, NULL, false);
     }
     
     const DAVA::List<UIControl*> &children = control->GetChildren();
     for (auto it = children.begin(); it != children.end(); ++it)
-        SetClonedFromPrototypeProperty(*it);
+    {
+        String p = path;
+        if (!p.empty())
+            p += "/";
+        p += (*it)->GetName();
+        SetClonedFromPrototypeProperty(*it, p);
+    }
     
 }
 

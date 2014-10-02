@@ -23,12 +23,14 @@ public:
     void SetPrototype(DAVA::UIControl *prototype);
     
     bool IsClonedFromPrototype() const;
-    void SetClonedFromPrototype(bool cloned);
+    void SetClonedFromPrototype(const DAVA::String &path);
+    const DAVA::String &GetPathFromPrototype() const {return pathFromPrototype; }
 
     BaseProperty *GetPropertiesRoot() const {return propertiesRoot; }
     
 private:
     DAVA::UIControl *prototype;
+    DAVA::String pathFromPrototype;
     bool clonedFromPrototype;
     
     BaseProperty *propertiesRoot;
