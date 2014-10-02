@@ -2,10 +2,14 @@
 #define __QTDAVACONVERTION_H__
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
+#include "FileSystem/VariantType.h"
+#include "qmetatype.h"
 
 class QString;
 class QColor;
 class QVector2D;
+
+Q_DECLARE_METATYPE(DAVA::VariantType);
 
 DAVA::String QStringToString(const QString &str);
 QString StringToQString(const DAVA::String &str);

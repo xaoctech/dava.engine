@@ -109,6 +109,14 @@ QVariant PropertiesTreeModel::data(const QModelIndex &index, int role) const
             }
         }
         break;
+        case DAVA::VariantTypeDisplayRole:
+        case DAVA::VariantTypeEditRole:
+            {
+                QVariant var;
+                var.setValue<DAVA::VariantType>(property->GetValue());
+                return var;
+            }
+            break;
             
         case Qt::BackgroundRole:
             return property->GetType() == BaseProperty::TYPE_HEADER ? Qt::lightGray : Qt::white;
@@ -150,6 +158,13 @@ bool PropertiesTreeModel::setData(const QModelIndex &index, const QVariant &valu
             VariantType newVal(property->GetValue());
             initVariantType(newVal, value);
             property->SetValue(newVal);
+            return true;
+        }
+        break;
+
+    case DAVA::VariantTypeEditRole:
+        {
+            property->SetValue(value.value<VariantType>());
             return true;
         }
         break;
@@ -249,8 +264,8 @@ QString PropertiesTreeModel::makeQString(const BaseProperty *property) const
             return QString();
             
         case VariantType::TYPE_BOOLEAN:
-            return QVariant(val.AsBool()).toString();
-            
+            return QString();
+
         case VariantType::TYPE_INT32:
             if (property->GetType() == BaseProperty::TYPE_ENUM)
             {
@@ -279,7 +294,10 @@ QString PropertiesTreeModel::makeQString(const BaseProperty *property) const
             {
                 return QVariant(val.AsInt32()).toString();
             }
-            
+
+        case VariantType::TYPE_UINT32:
+            return QVariant(val.AsUInt32()).toString();
+
         case VariantType::TYPE_FLOAT:
             return QVariant(val.AsFloat()).toString();
             
@@ -299,10 +317,13 @@ QString PropertiesTreeModel::makeQString(const BaseProperty *property) const
 //            return val.AsUInt64();
             
         case VariantType::TYPE_VECTOR2:
-            return QString::fromStdString(Format("[%g, %g]", val.AsVector2().x, val.AsVector2().y));
+            return StringToQString(Format("[%g, %g]", val.AsVector2().x, val.AsVector2().y));
             
         case VariantType::TYPE_COLOR:
-            return QString::fromStdString(Format("%g, %g, %g, %g", val.AsColor().a, val.AsColor().r, val.AsColor().g, val.AsColor().b));
+            return StringToQString(Format("%g, %g, %g, %g", val.AsColor().a, val.AsColor().r, val.AsColor().g, val.AsColor().b));
+
+        case VariantType::TYPE_FILEPATH:
+            return StringToQString(val.AsFilePath().GetAbsolutePathname());
             
         case VariantType::TYPE_BYTE_ARRAY:
         case VariantType::TYPE_KEYED_ARCHIVE:
@@ -313,7 +334,6 @@ QString PropertiesTreeModel::makeQString(const BaseProperty *property) const
         case VariantType::TYPE_MATRIX4:
         case VariantType::TYPE_FASTNAME:
         case VariantType::TYPE_AABBOX3:
-        case VariantType::TYPE_FILEPATH:
         default:
             DVASSERT(false);
             break;
