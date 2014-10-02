@@ -406,34 +406,6 @@ void UIPackageLoader::LoadControl(UIControl *control, const YamlNode *node, cons
     yamlLoader->PostLoad(control);
 }
 
-YamlNode *UIPackageLoader::CreateYamlNode(UIControl *control)
-{
-    YamlNode *node = YamlNode::CreateMapNode(false, YamlNode::MR_BLOCK_REPRESENTATION, YamlNode::SR_PLAIN_REPRESENTATION);
-    AddClassPropertiesToYamlNode(control, node);
-    AddPropertiesToNode(control, node);
-
-    List<UIControl*> &children = control->GetRealChildren();
-    if(!children.empty())
-    {
-        YamlNode *childrenNode = YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION);
-
-        List<UIControl* >::const_iterator iter = children.begin();
-        for (;iter != children.end(); ++iter)
-        {
-            YamlNode *childNode = CreateYamlNode(*iter);
-            if (childNode)
-                childrenNode->Add(childNode);
-        }
-        
-        if (childrenNode->GetCount() > 0)
-            node->Add("children", childrenNode);
-        else
-            SafeRelease(childrenNode);
-
-    }
-    return SafeRetain<YamlNode>(node);
-}
-
 UIControl *UIPackageLoader::CreateControlByClassName(const String &className)
 {
     UIControl *control = ObjectFactory::Instance()->New<UIControl>(className);
@@ -459,6 +431,33 @@ UIControl *UIPackageLoader::CreateCustomControl(const String &customClassName, c
 UIControl *UIPackageLoader::CreateControlFromPrototype(UIControl *control)
 {
     return control->Clone();
+}
+
+YamlNode *UIPackageLoader::CreateYamlNode(UIControl *control)
+{
+    YamlNode *node = YamlNode::CreateMapNode(false, YamlNode::MR_BLOCK_REPRESENTATION, YamlNode::SR_PLAIN_REPRESENTATION);
+    AddPropertiesToNode(control, node);
+
+    List<UIControl*> &children = control->GetRealChildren();
+    if(!children.empty())
+    {
+        YamlNode *childrenNode = YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION);
+
+        List<UIControl* >::const_iterator iter = children.begin();
+        for (;iter != children.end(); ++iter)
+        {
+            YamlNode *childNode = CreateYamlNode(*iter);
+            if (childNode)
+                childrenNode->Add(childNode);
+        }
+        
+        if (childrenNode->GetCount() > 0)
+            node->Add("children", childrenNode);
+        else
+            SafeRelease(childrenNode);
+
+    }
+    return SafeRetain<YamlNode>(node);
 }
 
 void UIPackageLoader::LoadPropertiesFromYamlNode(UIControl *control, const YamlNode *node, bool legacySupport)
@@ -778,17 +777,14 @@ bool UIPackageLoader::AddObjectPropertyToYamlNode(BaseObject *obj, const InspMem
     return true;
 }
 
-void UIPackageLoader::AddClassPropertiesToYamlNode(UIControl *control, YamlNode *node)
-{
-    node->Set("class", control->GetClassName());
-    if (!control->GetCustomControlClassName().empty())
-        node->Set("customClass", control->GetCustomControlClassName());
-}
-
 void UIPackageLoader::AddPropertiesToNode(UIControl *control, YamlNode *node)
 {
     String className = control->GetControlClassName();
-    
+
+    node->Set("class", control->GetClassName());
+    if (!control->GetCustomControlClassName().empty())
+        node->Set("customClass", control->GetCustomControlClassName());
+
     const InspInfo *insp = control->GetTypeInfo();
     while (insp)
     {
