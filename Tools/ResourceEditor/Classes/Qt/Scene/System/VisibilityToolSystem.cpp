@@ -158,8 +158,6 @@ void VisibilityToolSystem::ProcessUIEvent(DAVA::UIEvent *event)
 	}
 	else if (event->tid == UIEvent::BUTTON_1)
 	{
-		Vector3 point;
-
 		switch(event->phase)
 		{
 			case UIEvent::PHASE_BEGAN:
@@ -178,7 +176,7 @@ void VisibilityToolSystem::ProcessUIEvent(DAVA::UIEvent *event)
 				{
 					if (state == VT_STATE_SET_POINT)
 					{
-						SetVisibilityPointInternal(cursorPosition);
+						SetVisibilityPointInternal();
 					}
 					else if (state == VT_STATE_SET_AREA)
 					{
@@ -308,7 +306,7 @@ void VisibilityToolSystem::SetVisibilityArea()
 	SetState(VT_STATE_SET_AREA);
 }
 
-void VisibilityToolSystem::SetVisibilityPointInternal(const Vector2& point)
+void VisibilityToolSystem::SetVisibilityPointInternal()
 {
 	Sprite* sprite = Sprite::CreateAsRenderTarget(CROSS_TEXTURE_SIZE, CROSS_TEXTURE_SIZE, FORMAT_RGBA8888);
 
@@ -405,13 +403,13 @@ void VisibilityToolSystem::PerformHeightTest(Vector3 spectatorCoords,
         xLine.reserve(sideLength);
 		for(uint32 x = 0; x < sideLength; ++x)
 		{
-			float xOfPoint = startOfCounting.x + density * x;
 			Vector<Vector3> yLine;
             yLine.reserve(sideLength);
             
+            float32 xOfPoint = startOfCounting.x + density * x;
 			for(uint32 y = 0; y < sideLength; ++y)
 			{
-				float yOfPoint = startOfCounting.y + density * y;
+				float32 yOfPoint = startOfCounting.y + density * y;
 				float32 zOfPoint = drawSystem->GetHeightAtTexturePoint(textureLevel, Vector2(xOfPoint, yOfPoint));
 				zOfPoint += heightValues[layerIndex];
 				Vector3 pointToInsert(xOfPoint, yOfPoint, zOfPoint);
@@ -453,7 +451,7 @@ void VisibilityToolSystem::PerformHeightTest(Vector3 spectatorCoords,
 					wasIntersection = collisionSystem->LandRayTest(sourcePoint, target, p);
 				}
 
-				float colorIndex = 0;
+				float32 colorIndex = 0;
 				if(prevWasIntersection == false)
 				{
 					if(wasIntersection)
