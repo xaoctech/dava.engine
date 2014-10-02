@@ -18,10 +18,14 @@ public:
     virtual ~InternalControlPropertiesSection();
     
     virtual DAVA::String GetName() const;
-    
+
+    virtual int GetCount() const;
+    void HideContent();
+
 private:
     DAVA::UIControl *control;
     int internalControlNum;
+    bool isContentHidden;
 };
 
 

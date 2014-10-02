@@ -18,10 +18,14 @@ public:
     virtual ~BackgroundPropertiesSection();
     
     DAVA::String GetName() const;
+    virtual int GetCount() const;
     
+    void HideContent();
+
 private:
     DAVA::UIControl *control;
     int bgNum;
+    bool isContentHidden;
 };
 
 #endif // __UI_EDITOR_BACKGROUND_PROPERTIES_SECTION_H__
