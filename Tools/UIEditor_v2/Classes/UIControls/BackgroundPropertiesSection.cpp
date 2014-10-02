@@ -10,7 +10,7 @@
 
 using namespace DAVA;
 
-BackgroundPropertiesSection::BackgroundPropertiesSection(UIControl *control, int bgNum) : control(NULL), bgNum(bgNum)
+BackgroundPropertiesSection::BackgroundPropertiesSection(UIControl *control, int bgNum) : control(NULL), bgNum(bgNum), isContentHidden(false)
 {
     this->control = SafeRetain(control);
 }
@@ -23,4 +23,14 @@ BackgroundPropertiesSection::~BackgroundPropertiesSection()
 DAVA::String BackgroundPropertiesSection::GetName() const
 {
     return control->GetBackgroundComponentName(bgNum);
+}
+
+int BackgroundPropertiesSection::GetCount() const
+{
+    return isContentHidden ? 0 : PropertiesSection::GetCount();
+}
+
+void BackgroundPropertiesSection::HideContent()
+{
+    isContentHidden = true;
 }
