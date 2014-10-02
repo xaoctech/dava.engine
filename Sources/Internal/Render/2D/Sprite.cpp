@@ -505,7 +505,6 @@ Sprite* Sprite::CreateFromSourceFile(const FilePath& path, bool contentScaleIncl
     if (sprite)
     {
         sprite->SetRelativePathname(path);
-        sprite->GetTexture()->texDescriptor->pathname = path;
     }
 
     for_each(images.begin(), images.end(), SafeRelease<Image>);
@@ -1690,6 +1689,7 @@ void Sprite::SetRelativePathname(const FilePath& path)
     relativePathname = path;
     spriteMap[FILEPATH_MAP_KEY(this->relativePathname)] = this;
     spriteMapMutex.Unlock();
+    GetTexture()->SetPathname(path);
 }
 
 };
