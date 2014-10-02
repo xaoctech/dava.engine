@@ -99,7 +99,7 @@ private:
 
 EditorUIPackageLoader::EditorUIPackageLoader()
 {
-
+    SetUsingIntrospectionForLegacyData(true);
 }
 
 EditorUIPackageLoader::~EditorUIPackageLoader()
