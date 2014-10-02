@@ -177,8 +177,8 @@ void MainWindow::TabCloseRequested(int index)
 bool MainWindow::CloseTab(int index)
 {
     PackageDocument *document = GetTabDocument(index);
-//    if (!project->SavePackage(document->Package()))
-//        return false;
+//     if (!project->SavePackage(document->Package()))
+//         return false;
     
     ui->tabBar->removeTab(index);
     
@@ -227,8 +227,8 @@ void MainWindow::InitMenu()
     SetupViewMenu();
 
 	connect(ui->actionNew_project, SIGNAL(triggered()), this, SLOT(OnNewProject()));
-	connect(ui->actionSave_project, SIGNAL(triggered()), this, SLOT(OnSaveProject()));
-	connect(ui->actionSave_All, SIGNAL(triggered()), this, SLOT(OnSaveProjectAll()));
+	connect(ui->actionSaveDocument, SIGNAL(triggered()), this, SLOT(OnSaveDocument()));
+	connect(ui->actionSaveAllDocuments, SIGNAL(triggered()), this, SLOT(OnSaveAllDocuments()));
     connect(ui->actionOpen_project, SIGNAL(triggered()), this, SLOT(OnOpenProject()));
 	connect(ui->actionClose_project, SIGNAL(triggered()), this, SLOT(OnCloseProject()));
 
@@ -462,15 +462,24 @@ void MainWindow::OnOpenProject()
     OpenProject(projectPath);
 }
 
-void MainWindow::OnSaveProject()
+void MainWindow::OnSaveDocument()
 {
-	//DoSaveProject(true);
-    SaveProject();
+    PackageDocument * document = GetCurrentTabDocument();
+    if (!document || !document->IsModified())
+        return;
+
+    DVVERIFY(project->SavePackage(activeDocument->Package()));
 }
 
-void MainWindow::OnSaveProjectAll()
+void MainWindow::OnSaveAllDocuments()
 {
-	//DoSaveProject(false);
+	for (int i = 0; i < ui->tabBar->count(); ++i)
+    {
+        PackageDocument * document = GetTabDocument(i);
+        if (!document || !document->IsModified())
+            continue;
+        DVVERIFY(project->SavePackage(document->Package()));
+    }
 }
 
 void MainWindow::OnCloseProject()
@@ -492,7 +501,7 @@ void MainWindow::OnOpenPackageFile(const QString &path)
     {
         if (!path.isEmpty())
         {
-            int index = GetTabContent(path);
+            int index = GetTabIndexByPath(path);
             if (index == -1)
             {
                 DAVA::UIPackage *package = project->OpenPackage(path);
@@ -535,12 +544,6 @@ void MainWindow::OpenProject(const QString &path)
     }
 }
 
-void MainWindow::SaveProject()
-{
-    PackageDocument *document = ui->tabBar->tabData(ui->tabBar->currentIndex()).value<PackageDocument *>();
-    project->SavePackage(document->Package());
-}
-
 bool MainWindow::CloseProject()
 {
     if (project)
@@ -561,7 +564,7 @@ bool MainWindow::CloseProject()
             if (ret == QMessageBox::Cancel)
                 return false;
             else if (ret == QMessageBox::Save)
-                OnSaveProject();
+                OnSaveDocument();
         }
         
         ui->fileSystemTreeWidget->setEnabled(false);
@@ -670,11 +673,8 @@ void MainWindow::SetBackgroundColorMenuTriggered(QAction* action)
 
 void MainWindow::UpdateSaveButtons()
 {
-    bool hasUnsavedChanges = false;//HierarchyTreeController::Instance()->HasUnsavedChanges();
-    
-    ui->actionSave_project->setEnabled(true); // TODO: FIXME: 
-    //ui->actionSave_project->setEnabled(hasUnsavedChanges);
-    ui->actionSave_All->setEnabled(hasUnsavedChanges);
+    ui->actionSaveDocument->setEnabled(true);
+    ui->actionSaveAllDocuments->setEnabled(true);
 }
 
 int MainWindow::CreateTabContent(DAVA::UIPackage *package)
@@ -698,7 +698,7 @@ int MainWindow::CreateTabContent(DAVA::UIPackage *package)
     return index;
 }
 
-PackageDocument *MainWindow::GetCurrentTabContent() const
+PackageDocument *MainWindow::GetCurrentTabDocument() const
 {
     int index = ui->tabBar->currentIndex();
     if(index>=0)
@@ -709,7 +709,7 @@ PackageDocument *MainWindow::GetCurrentTabContent() const
     return NULL;
 }
 
-int MainWindow::GetTabContent(const QString &fileName) const
+int MainWindow::GetTabIndexByPath(const QString &fileName) const
 {
     QString canonicalFilePath = QFileInfo(fileName).canonicalFilePath();
     FilePath davaPath(canonicalFilePath.toStdString());

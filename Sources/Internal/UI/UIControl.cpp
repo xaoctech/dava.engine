@@ -803,6 +803,11 @@ namespace DAVA
     {
         angle = angleInRad;
     }
+    
+    void UIControl::SetAngleInDegrees(float32 angleInDeg)
+    {
+        SetAngle(DegToRad(angleInDeg));
+    }
 
     Rect UIControl::GetRect(bool absoluteCoordinates)
     {

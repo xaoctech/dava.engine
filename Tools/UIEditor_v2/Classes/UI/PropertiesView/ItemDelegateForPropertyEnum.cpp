@@ -2,6 +2,8 @@
 #include <QComboBox>
 #include "UIControls/BaseProperty.h"
 #include "PropertiesTreeItemDelegate.h"
+#include "Utils/QtDavaConvertion.h"
+#include "PropertiesTreeModel.h"
 
 ItemDelegateForPropertyEnum::ItemDelegateForPropertyEnum(PropertiesTreeItemDelegate *delegate)
     : PropertyAbstractEditor()
@@ -28,7 +30,9 @@ QWidget * ItemDelegateForPropertyEnum::createEditor( QWidget * parent, const QSt
         int value = 0;
         if (enumMap->GetValue(i, value))
         {
-            editor->addItem(QString(enumMap->ToString(value)), QVariant(value));
+            QVariant variantValue;
+            variantValue.setValue<DAVA::VariantType>(DAVA::VariantType(value));
+            editor->addItem(QString(enumMap->ToString(value)),variantValue);
         }
     }
     editor->blockSignals(false);
@@ -39,11 +43,13 @@ QWidget * ItemDelegateForPropertyEnum::createEditor( QWidget * parent, const QSt
 void ItemDelegateForPropertyEnum::setEditorData( QWidget * editor, const QModelIndex & index ) const 
 {
     QComboBox *comboBox = qobject_cast<QComboBox *>(editor);
-    BaseProperty *property = static_cast<BaseProperty *>(index.internalPointer());
 
     editor->blockSignals(true);
-    comboBox->setCurrentIndex(comboBox->findData(QVariant(property->GetValue().AsInt32())));
+    int comboIndex = comboBox->findText(index.data(Qt::DisplayRole).toString());
+    comboBox->setCurrentIndex(comboIndex);
     editor->blockSignals(false);
+
+    PropertyAbstractEditor::SetValueModified(editor, false);
 }
 
 void ItemDelegateForPropertyEnum::setModelData( QWidget * editor, QAbstractItemModel * model, const QModelIndex & index ) const 
@@ -52,8 +58,7 @@ void ItemDelegateForPropertyEnum::setModelData( QWidget * editor, QAbstractItemM
     if (!PropertyAbstractEditor::IsValueModified(comboBox))
         return;
 
-    int value = comboBox->itemData(comboBox->currentIndex()).toInt();
-    model->setData(index, value);
+    model->setData(index, comboBox->itemData(comboBox->currentIndex()), DAVA::VariantTypeEditRole);
 }
 
 void ItemDelegateForPropertyEnum::OnCurrentIndexChanged()

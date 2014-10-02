@@ -63,6 +63,7 @@ public:
     PackageDocument(DAVA::UIPackage *package, QObject *parent = NULL);
     ~PackageDocument();
     
+    bool IsModified() const { return true; }
     const DAVA::FilePath &PackageFilePath() const;
     DAVA::UIPackage *Package() const {return package;}
     
