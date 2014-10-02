@@ -213,6 +213,7 @@ public:
         \returns pathname of texture
      */
     const FilePath & GetPathname() const;
+    void SetPathname(const FilePath& path);
     
     Image * CreateImageFromMemory(UniqueHandle renderState);
 

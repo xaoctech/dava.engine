@@ -1293,6 +1293,18 @@ const FilePath & Texture::GetPathname() const
 {
     return texDescriptor->pathname;
 }
+    
+void Texture::SetPathname(const FilePath& path)
+{
+    textureMapMutex.Lock();
+    textureMap.erase(FILEPATH_MAP_KEY(texDescriptor->pathname));
+    texDescriptor->pathname = path;
+    if(texDescriptor->pathname.IsEmpty())
+    {
+        textureMap[FILEPATH_MAP_KEY(texDescriptor->pathname)] = this;
+    }
+    textureMapMutex.Unlock();
+}
 
 PixelFormat Texture::GetFormat() const
 {
