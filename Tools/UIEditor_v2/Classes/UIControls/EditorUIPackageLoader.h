@@ -18,13 +18,17 @@ protected:
     virtual DAVA::UIPackageSection *CreateBackgroundSection(DAVA::UIControl *control, int bgNum);
     virtual DAVA::UIPackageSection *CreateInternalControlSection(DAVA::UIControl *control, int internalControlNum);
 
-    virtual void AddClassPropertiesToYamlNode(DAVA::UIControl *control, DAVA::YamlNode *node);
-    virtual void AddPropertiesToNode(DAVA::UIControl *control, DAVA::YamlNode *node);
+    virtual DAVA::YamlNode *CreateYamlNode(DAVA::UIControl *control);
+
+private:
+    bool AddControlToNode(DAVA::UIControl *control, DAVA::YamlNode *node, DAVA::YamlNode *prototypeChildren);
+    bool AddChildrenToNode(DAVA::UIControl *control, DAVA::YamlNode *childrenNode, DAVA::YamlNode *prototypeChildren);
+    bool AddPropertiesToNode(DAVA::UIControl *control, DAVA::YamlNode *node);
 
 //    bool HaveToSaveProperty(DAVA::UIControl *control, DAVA::BaseObject *obj, const DAVA::InspMember *member);
 
 private:
-    void SetClonedFromPrototypeProperty(DAVA::UIControl *control);
+    void SetClonedFromPrototypeProperty(DAVA::UIControl *control, const DAVA::String &path);
 
 };
 

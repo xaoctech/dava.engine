@@ -52,7 +52,8 @@ bool UIEditorComponent::IsClonedFromPrototype() const
     return clonedFromPrototype;
 }
 
-void UIEditorComponent::SetClonedFromPrototype(bool cloned)
+void UIEditorComponent::SetClonedFromPrototype(const DAVA::String &path)
 {
-    clonedFromPrototype = cloned;
+    clonedFromPrototype = true;
+    pathFromPrototype = path;
 }

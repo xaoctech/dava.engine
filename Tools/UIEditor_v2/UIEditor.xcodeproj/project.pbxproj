@@ -69,6 +69,7 @@
 		32EDA8FB19DACC6A009845AD /* ValueProperty.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 32EDA8F919DACC6A009845AD /* ValueProperty.cpp */; };
 		32F0D0ED19DC34E7003EC7B8 /* Vector2DEdit.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 32F0D0EB19DC34E7003EC7B8 /* Vector2DEdit.cpp */; };
 		32F0D0F019DC3523003EC7B8 /* ItemDelegateForQVector2D.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 32F0D0EE19DC3523003EC7B8 /* ItemDelegateForQVector2D.cpp */; };
+		32FA5FC019DD61470006F43B /* ItemDelegateForPropertyEnum.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 32FA5FBD19DD61470006F43B /* ItemDelegateForPropertyEnum.cpp */; };
 		32FB45FA19C19090003A401C /* Project.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 32FB45F819C19090003A401C /* Project.cpp */; };
 		49220EEF196552C4006E88C5 /* TextureDescriptorUtils.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49220EED196552C4006E88C5 /* TextureDescriptorUtils.cpp */; };
 		498B61FD16F76E2C009D4417 /* IconHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498B61FB16F76E2C009D4417 /* IconHelper.cpp */; };
@@ -279,6 +280,9 @@
 		32F0D0EC19DC34E7003EC7B8 /* Vector2DEdit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vector2DEdit.h; sourceTree = "<group>"; };
 		32F0D0EE19DC3523003EC7B8 /* ItemDelegateForQVector2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ItemDelegateForQVector2D.cpp; sourceTree = "<group>"; };
 		32F0D0EF19DC3523003EC7B8 /* ItemDelegateForQVector2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItemDelegateForQVector2D.h; sourceTree = "<group>"; };
+		32FA5FBD19DD61470006F43B /* ItemDelegateForPropertyEnum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ItemDelegateForPropertyEnum.cpp; sourceTree = "<group>"; };
+		32FA5FBE19DD61470006F43B /* ItemDelegateForPropertyEnum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItemDelegateForPropertyEnum.h; sourceTree = "<group>"; };
+		32FA5FBF19DD61470006F43B /* PropertyAbstractEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyAbstractEditor.h; sourceTree = "<group>"; };
 		32FB45F819C19090003A401C /* Project.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Project.cpp; sourceTree = "<group>"; };
 		32FB45F919C19090003A401C /* Project.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Project.h; sourceTree = "<group>"; };
 		336CB11D929F5E35FA69020F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
@@ -581,6 +585,9 @@
 		32F623BB19D3F4DD0000A101 /* PropertiesView */ = {
 			isa = PBXGroup;
 			children = (
+				32FA5FBD19DD61470006F43B /* ItemDelegateForPropertyEnum.cpp */,
+				32FA5FBE19DD61470006F43B /* ItemDelegateForPropertyEnum.h */,
+				32FA5FBF19DD61470006F43B /* PropertyAbstractEditor.h */,
 				32F0D0EE19DC3523003EC7B8 /* ItemDelegateForQVector2D.cpp */,
 				32F0D0EF19DC3523003EC7B8 /* ItemDelegateForQVector2D.h */,
 				1595D3A419DAC95B007338DF /* PropertiesTreeView.h */,
@@ -652,6 +659,8 @@
 				498FEAE319643D51007E1660 /* Validators */,
 				176B4ED418682ADE0020798C /* Grid */,
 				17660BB4186B1D8D00CF7A14 /* Ruler */,
+				17112B5616392E880017E713 /* Helpers */,
+				C15C2FE8162AD6E400818631 /* UI */,
 				C17246101637E18900709AAF /* EditorFontManager.cpp */,
 				C17246111637E18900709AAF /* EditorFontManager.h */,
 				740F353316832022003B35E7 /* EditorSettings.cpp */,
@@ -663,8 +672,6 @@
 				C15C2FE5162AD6E400818631 /* main.cpp */,
 				49220EED196552C4006E88C5 /* TextureDescriptorUtils.cpp */,
 				49220EEE196552C4006E88C5 /* TextureDescriptorUtils.h */,
-				17112B5616392E880017E713 /* Helpers */,
-				C15C2FE8162AD6E400818631 /* UI */,
 				32FB45F819C19090003A401C /* Project.cpp */,
 				32FB45F919C19090003A401C /* Project.h */,
 			);
@@ -680,9 +687,9 @@
 				15959DDB19D5750600B52AEF /* PackageView */,
 				32F623BB19D3F4DD0000A101 /* PropertiesView */,
 				15959DBD19D3167C00B52AEF /* GraphicView */,
+				17FF15FD16400A41001B130F /* Dialogs */,
 				1541251419C8E62E00FC2883 /* PackageDocument.h */,
 				1541251519C8E62E00FC2883 /* PackageDocument.cpp */,
-				17FF15FD16400A41001B130F /* Dialogs */,
 				C15C2FE9162AD6E400818631 /* davaglwidget.cpp */,
 				C15C2FEA162AD6E400818631 /* davaglwidget.h */,
 				498B61FB16F76E2C009D4417 /* IconHelper.cpp */,
@@ -947,6 +954,7 @@
 				740F353416832022003B35E7 /* EditorSettings.cpp in Build Sources */,
 				329E0D3919D3F340008A9CE6 /* InspDynamicModifyCommand.cpp in Build Sources */,
 				498FEAF019643D84007E1660 /* BaseValidator.cpp in Build Sources */,
+				32FA5FC019DD61470006F43B /* ItemDelegateForPropertyEnum.cpp in Build Sources */,
 				32F0D0ED19DC34E7003EC7B8 /* Vector2DEdit.cpp in Build Sources */,
 				C746392318DCE8640045C57B /* editfontdialog.cpp in Build Sources */,
 				49220EEF196552C4006E88C5 /* TextureDescriptorUtils.cpp in Build Sources */,
