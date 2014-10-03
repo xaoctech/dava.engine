@@ -126,14 +126,6 @@ public class JNITextField {
 		}
 	}
 
-	private static float GetScaledDensity()
-	{
-		DisplayMetrics dm = new DisplayMetrics();
-		JNIActivity.GetActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
-
-		return Math.min(2.0f, dm.scaledDensity);
-	}
-	
 	public static void InitializeKeyboardLayout(WindowManager manager, IBinder windowToken)
 	{
 		if(keyboardLayout == null) {
@@ -301,8 +293,6 @@ public class JNITextField {
 				params.gravity = Gravity.LEFT | Gravity.TOP;
 				text.setPadding(0, 0, 0, 0);
 				text.setSingleLine(true);
-				int fontSize = (int) (20 * GetScaledDensity());
-				text.setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSize);
 				text.setBackgroundColor(Color.TRANSPARENT);
 				text.setTextColor(Color.WHITE);
 				text.setVisibility(View.GONE);
@@ -539,7 +529,7 @@ public class JNITextField {
 		InternalTask<Void> task = new InternalTask<Void>(text, new Callable<Void>() {
 			@Override
 			public Void call() throws Exception {
-				text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size * GetScaledDensity()));
+				text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)size);
 				return null;
 			}
 		});
