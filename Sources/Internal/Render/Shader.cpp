@@ -695,7 +695,8 @@ void Shader::SetUniformValueByIndex(int32 uniformIndex, eUniformType uniformType
     int32 size = GetUniformTypeSize((eUniformType)currentUniform->type) * currentUniform->size;
     if(currentUniform->ValidateCache(data, size) == false)
 #else
-    if(currentUniform->ValidateCache(data, currentUniform->cacheValueSize) == false)
+    int32 size = GetUniformTypeSize((eUniformType)currentUniform->type) * arraySize;
+    if(currentUniform->ValidateCache(data, size) == false)
 #endif
     {
         switch(uniformType)
@@ -834,7 +835,8 @@ void Shader::SetUniformValueByUniform(Uniform* currentUniform, eUniformType unif
     int32 size = GetUniformTypeSize((eUniformType)currentUniform->type) * currentUniform->size;
     if(currentUniform->ValidateCache(data, size) == false)
 #else
-    if(currentUniform->ValidateCache(data, currentUniform->cacheValueSize) == false)
+    int32 size = GetUniformTypeSize((eUniformType)currentUniform->type) * arraySize;
+    if(currentUniform->ValidateCache(data, size) == false)
 #endif
     {
         switch(uniformType)
@@ -1288,7 +1290,7 @@ void Shader::BindDynamicParameters()
                     pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_JOINT_POSITIONS);
                     if (_updateSemantic != currentUniform->updateSemantic)
                     {
-                        Vector3 * param = (Vector3*)RenderManager::GetDynamicParam(PARAM_JOINT_POSITIONS);
+                        Vector4 * param = (Vector4*)RenderManager::GetDynamicParam(PARAM_JOINT_POSITIONS);
                         SetUniformValueByUniform(currentUniform, Shader::UT_FLOAT_VEC4, count, param);
                         currentUniform->updateSemantic = _updateSemantic;
                     }
@@ -1300,7 +1302,7 @@ void Shader::BindDynamicParameters()
                     pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_JOINT_QUATERNIONS);
                     if (_updateSemantic != currentUniform->updateSemantic)
                     {
-                        Vector3 * param = (Vector3*)RenderManager::GetDynamicParam(PARAM_JOINT_QUATERNIONS);
+                        Vector4 * param = (Vector4*)RenderManager::GetDynamicParam(PARAM_JOINT_QUATERNIONS);
                         SetUniformValueByUniform(currentUniform, Shader::UT_FLOAT_VEC4, count, param);
                         currentUniform->updateSemantic = _updateSemantic;
                     }
@@ -1692,7 +1694,7 @@ bool Shader::Uniform::ValidateCache(const void* value, uint16 valueSize)
         crc = crc32;
     }
 #else
-    DVASSERT(valueSize >= cacheValueSize);
+    DVASSERT(valueSize <= cacheValueSize);
     
     bool result = false;
     if(cacheValueSize == valueSize)
