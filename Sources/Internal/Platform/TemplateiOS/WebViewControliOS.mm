@@ -223,7 +223,7 @@ void WebViewControl::OpenFromBuffer(const String& string, const FilePath& basePa
     UIWebView* innerWebView = (UIWebView*)webViewPtr;
     [innerWebView stopLoading];
     
-    [innerWebView loadHTMLString:dataToOpen baseURL:[NSURL fileURLWithPath:baseUrl]];
+    [innerWebView loadHTMLString:dataToOpen baseURL:[NSURL URLWithString:baseUrl]];
 }
 
 void WebViewControl::SetRect(const Rect& rect)

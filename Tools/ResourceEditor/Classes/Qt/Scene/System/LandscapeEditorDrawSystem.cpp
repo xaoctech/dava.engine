@@ -453,7 +453,7 @@ Vector2 LandscapeEditorDrawSystem::TranslatePoint(const Vector2& point, const Re
 
 	Vector2 relPos = point - fromRect.GetPosition();
 	Vector2 newRelPos(relPos.x * scale.x,
-					  relPos.y * scale.y);
+					  toRect.dy - 1.0f - relPos.y * scale.y);
 
 	Vector2 newPos = newRelPos + toRect.GetPosition();
 
