@@ -200,6 +200,12 @@ UIPackageLoader::~UIPackageLoader()
     
 UIPackage *UIPackageLoader::LoadPackage(const FilePath &packagePath, const LegacyControlData *data)
 {
+    if (!loadingQueue.empty())
+    {
+        DVASSERT(false);
+        loadingQueue.clear();
+    }
+
     if (!packagePath.Exists())
         return false;
     
@@ -227,12 +233,30 @@ UIPackage *UIPackageLoader::LoadPackage(const FilePath &packagePath, const Legac
         {
             UIPackage *package = new UIPackage(packagePath);
             uint32 count = controlsNode->GetCount();
-            for (uint32 i = 0; i < count; ++i)
+            for (uint32 i = 0; i < count; i++)
             {
-                ScopedPtr<UIControl> control(CreateControl(controlsNode->Get(i), package, legacySupport));
-                LoadControl(control, controlsNode->Get(i), package, legacySupport);
-                package->AddControl(control);
+                const YamlNode *node = controlsNode->Get(i);
+                QueueItem item;
+                item.name = node->Get("name")->AsString();
+                item.node = node;
+                item.status = STATUS_WAIT;
+                item.control = 0;
+                loadingQueue.push_back(item);
             }
+            
+            for (uint32 i = 0; i < count; i++)
+            {
+                if (loadingQueue[i].status == STATUS_WAIT)
+                    LoadRootControl(i);
+            }
+            for (uint32 i = 0; i < count; i++)
+            {
+                DVASSERT(loadingQueue[i].control != NULL);
+                DVASSERT(loadingQueue[i].status == STATUS_LOADED);
+                package->AddControl(loadingQueue[i].control);
+                SafeRelease(loadingQueue[i].control);
+            }
+            loadingQueue.clear();
             return package;
         }
     }
@@ -252,7 +276,7 @@ UIPackage *UIPackageLoader::LoadPackage(const FilePath &packagePath, const Legac
             legacyControl->SetName("LegacyControl");
         }
 
-        LoadControl(legacyControl, rootNode, package, legacySupport);
+        LoadControl(legacyControl, rootNode, legacySupport);
         
         package->AddControl(legacyControl);
         
@@ -284,8 +308,51 @@ void UIPackageLoader::SetUsingIntrospectionForLegacyData(bool useIntrospection)
 {
     this->useIntrospectionForLegacyData = useIntrospection;
 }
+    
+void UIPackageLoader::LoadRootControl(int index)
+{
+    DVASSERT(loadingQueue[index].status == STATUS_WAIT);
+    
+    const YamlNode *node = loadingQueue[index].node;
+    loadingQueue[index].status = STATUS_LOADING;
+    loadingQueue[index].control = CreateControl(node, false);
+    LoadControl(loadingQueue[index].control, node, false);
+    loadingQueue[index].status = STATUS_LOADED;
+}
 
-UIControl *UIPackageLoader::CreateControl(const YamlNode *node, const UIPackage *package, bool legacySupport)
+UIControl *UIPackageLoader::GetLoadedControlByName(const String &name)
+{
+    for (int index = 0; index < loadingQueue.size(); index++)
+    {
+        if (loadingQueue[index].name == name)
+        {
+            switch (loadingQueue[index].status)
+            {
+                case STATUS_WAIT:
+                    LoadRootControl(index);
+                    if (loadingQueue[index].status != STATUS_LOADED)
+                    {
+                        DVASSERT(false);
+                        return NULL;
+                    }
+                    return loadingQueue[index].control;
+                    
+                case STATUS_LOADED:
+                    return loadingQueue[index].control;
+
+                case STATUS_LOADING:
+                    DVASSERT(false);
+                    return NULL;
+                    
+                default:
+                    DVASSERT(false);
+            }
+        }
+    }
+    return NULL;
+}
+
+UIControl *UIPackageLoader::CreateControl(const YamlNode *node, bool legacySupport)
 {
     if (legacySupport)
     {
@@ -306,9 +373,9 @@ UIControl *UIPackageLoader::CreateControl(const YamlNode *node, const UIPackage 
     {
         const YamlNode *prototypeNode = node->Get("prototype");
         const YamlNode *classNode = node->Get("class");
-        if (prototypeNode && package != NULL)
+        if (prototypeNode)
         {
-            UIControl *prototype = package->GetControl(prototypeNode->AsString());
+            UIControl *prototype = GetLoadedControlByName(prototypeNode->AsString());
             if (!prototype)
             {
                 Logger::Error("[UIYamlLoader::CreateControlFromYamlNode] Can't create prototype with name \"%s\"", prototypeNode->AsString().c_str());
@@ -339,7 +406,7 @@ UIControl *UIPackageLoader::CreateControl(const YamlNode *node, const UIPackage 
     return NULL;
 }
 
-void UIPackageLoader::LoadControl(UIControl *control, const YamlNode *node, const UIPackage *package, bool legacySupport)
+void UIPackageLoader::LoadControl(UIControl *control, const YamlNode *node, bool legacySupport)
 {
     if (legacySupport && !useIntrospectionForLegacyData)
     {
@@ -363,11 +430,11 @@ void UIPackageLoader::LoadControl(UIControl *control, const YamlNode *node, cons
             if (!childNode->Get("type"))
                 continue;
             
-            UIControl *child = CreateControl(childNode, package, legacySupport);
+            UIControl *child = CreateControl(childNode, legacySupport);
             if (child)
             {
                 child->SetName(childrenNode->GetItemKeyName(i));
-                LoadControl(child, childNode, package, legacySupport);
+                LoadControl(child, childNode, legacySupport);
                 control->AddControl(child);
             }
         }
@@ -386,14 +453,14 @@ void UIPackageLoader::LoadControl(UIControl *control, const YamlNode *node, cons
                 {
                     UIControl *child = UIControlHelpers::GetControlByPath(pathNode->AsString(), control);
                     if (child)
-                        LoadControl(child, childNode, package, legacySupport);
+                        LoadControl(child, childNode, legacySupport);
                 }
                 else
                 {
-                    UIControl *child = CreateControl(childNode, package, legacySupport);
+                    UIControl *child = CreateControl(childNode, legacySupport);
                     if (child)
                     {
-                        LoadControl(child, childNode, package, legacySupport);
+                        LoadControl(child, childNode, legacySupport);
                         control->AddControl(child);
                     }
                 }

@@ -116,8 +116,10 @@ protected:
     void SetUsingIntrospectionForLegacyData(bool useIntrospection);
 
 private:
-    UIControl *CreateControl(const YamlNode *node, const UIPackage *package, bool legacySupport);
-    void LoadControl(UIControl *control, const YamlNode *node, const UIPackage *package, bool legacySupport);
+    void LoadRootControl(int index);
+    UIControl *GetLoadedControlByName(const String &name);
+    UIControl *CreateControl(const YamlNode *node, bool legacySupport);
+    void LoadControl(UIControl *control, const YamlNode *node, bool legacySupport);
 
 protected:
     virtual UIControl *CreateControlByClassName(const String &className);
@@ -155,6 +157,19 @@ private:
     UIYamlLoader *yamlLoader;
     bool useIntrospectionForLegacyData;
 
+    enum eItemStatus {
+        STATUS_WAIT,
+        STATUS_LOADING,
+        STATUS_LOADED
+    };
+    
+    struct QueueItem {
+        String name;
+        const YamlNode *node;
+        UIControl *control;
+        int status;
+    };
+    Vector<QueueItem> loadingQueue;
 };
 
 };
