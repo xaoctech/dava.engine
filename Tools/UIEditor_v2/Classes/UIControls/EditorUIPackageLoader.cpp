@@ -23,7 +23,7 @@ public:
     {
         if ((member->Flags() & I_EDIT) != 0)
         {
-            UIPackageControlSection::SetProperty(member, value);
+            /*UIPackageControlSection::SetProperty(member, value);*/
             ValueProperty *property = new ValueProperty(GetBaseObject(), member);
             if (value.GetType() != VariantType::TYPE_NONE)
                 property->SetValue(value);
@@ -63,14 +63,13 @@ public:
     
     virtual void SetProperty(const InspMember *member, const DAVA::VariantType &value)
     {
-        if (control->GetName() == "DefaultButton")
-        {
-            Logger::Debug("!!!! %s, %s, %x", section->GetName().c_str(), member->Name(), dynamic_cast<UIEditorComponent*>(control->GetCustomData())->GetPrototype());
-        }
-        UIPackageBackgroundSection::SetProperty(member, value);
+        /*UIPackageBackgroundSection::SetProperty(member, value);*/
         ValueProperty *property = new ValueProperty(GetBaseObject(), member);
         if (value.GetType() != VariantType::TYPE_NONE)
+        {
             property->SetValue(value);
+            bgHasChanges = true;
+        }
         section->AddProperty(property);
     }
     
@@ -98,10 +97,13 @@ public:
     
     virtual void SetProperty(const InspMember *member, const DAVA::VariantType &value)
     {
-        UIPackageInternalControlSection::SetProperty(member, value);
+        /*UIPackageInternalControlSection::SetProperty(member, value);*/
         ValueProperty *property = new ValueProperty(GetBaseObject(), member);
         if (value.GetType() != VariantType::TYPE_NONE)
+        {
             property->SetValue(value);
+            internalHasChanges = true;
+        }
         section->AddProperty(property);
     }
     
