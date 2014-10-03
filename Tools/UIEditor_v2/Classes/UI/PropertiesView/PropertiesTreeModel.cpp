@@ -88,27 +88,21 @@ QVariant PropertiesTreeModel::data(const QModelIndex &index, int role) const
     switch (role)
     {
         case Qt::CheckStateRole:
-        {
-            if (property->GetValue().GetType() == VariantType::TYPE_BOOLEAN && index.column() == 1)
-                return property->GetValue().AsBool() ? Qt::Checked : Qt::Unchecked;
+            {
+                if (property->GetValue().GetType() == VariantType::TYPE_BOOLEAN && index.column() == 1)
+                    return property->GetValue().AsBool() ? Qt::Checked : Qt::Unchecked;
+            }
             break;
-        }
             
         case Qt::DisplayRole:
         case Qt::EditRole:
-        {
-            if (index.column() == 0)
-                return property->GetName().c_str();
-            if (role == Qt::DisplayRole)
             {
-                return makeQString(property);
+                if (index.column() == 0)
+                    return QVariant(property->GetName().c_str());
+
+                return makeQVariant(property);
             }
-            else
-            {
-                return makeQVariant(property->GetValue());
-            }
-        }
-        break;
+            break;
         case DAVA::VariantTypeDisplayRole:
         case DAVA::VariantTypeEditRole:
             {
@@ -122,17 +116,18 @@ QVariant PropertiesTreeModel::data(const QModelIndex &index, int role) const
             return property->GetType() == BaseProperty::TYPE_HEADER ? Qt::lightGray : Qt::white;
             
         case Qt::FontRole:
-        {
-            if (property->IsReplaced())
             {
-                QFont myFont;
-                myFont.setBold(true);
-                return myFont;
+                if (property->IsReplaced())
+                {
+                    QFont myFont;
+                    myFont.setBold(true);
+                    return myFont;
+                }
+//                return QVariant();
             }
-            return QVariant();
-        }
+            break;
     }
-    
+
     return QVariant();
 }
 
@@ -195,67 +190,7 @@ QVariant PropertiesTreeModel::headerData(int section, Qt::Orientation /*orientat
     return QVariant();
 }
 
-QVariant PropertiesTreeModel::makeQVariant(const VariantType &val) const
-{
-    switch (val.GetType())
-    {
-        case VariantType::TYPE_NONE:
-            return QVariant();
-            
-        case VariantType::TYPE_BOOLEAN:
-            return val.AsBool();
-            
-        case VariantType::TYPE_INT32:
-            return val.AsInt32();
-            
-        case VariantType::TYPE_FLOAT:
-            return val.AsFloat();
-
-        case VariantType::TYPE_STRING:
-            return StringToQString(val.AsString());
-            
-        case VariantType::TYPE_WIDE_STRING:
-            return WideStringToQString(val.AsWideString());
-            
-        case VariantType::TYPE_UINT32:
-            return val.AsUInt32();
-
-        case VariantType::TYPE_INT64:
-            return val.AsInt64();
-            
-        case VariantType::TYPE_UINT64:
-            return val.AsUInt64();
-
-        case VariantType::TYPE_VECTOR2:
-            return Vector2ToQVector2D(val.AsVector2());
-
-        case VariantType::TYPE_COLOR:
-            return ColorToQColor(val.AsColor());
-
-        case VariantType::TYPE_BYTE_ARRAY:
-        case VariantType::TYPE_KEYED_ARCHIVE:
-        case VariantType::TYPE_VECTOR3:
-        case VariantType::TYPE_VECTOR4:
-        case VariantType::TYPE_MATRIX2:
-        case VariantType::TYPE_MATRIX3:
-        case VariantType::TYPE_MATRIX4:
-        case VariantType::TYPE_FASTNAME:
-        case VariantType::TYPE_AABBOX3:
-        case VariantType::TYPE_FILEPATH:
-        default:
-            DVASSERT(false);
-            break;
-    }
-    return QVariant();
-}
-
-DAVA::VariantType PropertiesTreeModel::makeVariantType(const QVariant & /*val*/) const
-{
-    DVASSERT(false);
-    return VariantType();
-}
-
-QString PropertiesTreeModel::makeQString(const BaseProperty *property) const
+QVariant PropertiesTreeModel::makeQVariant(const BaseProperty *property) const
 {
     const VariantType &val = property->GetValue();
     switch (val.GetType())
