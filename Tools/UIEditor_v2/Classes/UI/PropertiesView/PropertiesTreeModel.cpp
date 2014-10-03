@@ -95,7 +95,6 @@ QVariant PropertiesTreeModel::data(const QModelIndex &index, int role) const
             break;
             
         case Qt::DisplayRole:
-        case Qt::EditRole:
             {
                 if (index.column() == 0)
                     return QVariant(property->GetName().c_str());
@@ -103,15 +102,18 @@ QVariant PropertiesTreeModel::data(const QModelIndex &index, int role) const
                 return makeQVariant(property);
             }
             break;
-        case DAVA::VariantTypeDisplayRole:
-        case DAVA::VariantTypeEditRole:
+
+        case Qt::EditRole:
             {
                 QVariant var;
-                var.setValue<DAVA::VariantType>(property->GetValue());
+                if (index.column() != 0)
+                {
+                    var.setValue<DAVA::VariantType>(property->GetValue());
+                }
                 return var;
             }
             break;
-            
+
         case Qt::BackgroundRole:
             return property->GetType() == BaseProperty::TYPE_HEADER ? Qt::lightGray : Qt::white;
             
@@ -150,16 +152,23 @@ bool PropertiesTreeModel::setData(const QModelIndex &index, const QVariant &valu
         break;
     case Qt::EditRole:
         {
-            VariantType newVal(property->GetValue());
-            initVariantType(newVal, value);
-            property->SetValue(newVal);
+            if (value.userType() == QMetaTypeId<VariantType>::qt_metatype_id())
+            {
+                property->SetValue(value.value<VariantType>());
+            }
+            else
+            {
+                VariantType newVal(property->GetValue());
+                initVariantType(newVal, value);
+                property->SetValue(newVal);
+            }
             return true;
         }
         break;
 
-    case DAVA::VariantTypeEditRole:
+    case DAVA::ResetRole:
         {
-            property->SetValue(value.value<VariantType>());
+            property->ResetValue();
             return true;
         }
         break;

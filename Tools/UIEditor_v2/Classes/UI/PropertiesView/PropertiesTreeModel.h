@@ -16,8 +16,7 @@ namespace DAVA {
     class InspInfo;
     enum ItemDataRole
     {
-        VariantTypeDisplayRole = Qt::UserRole +1,
-        VariantTypeEditRole = Qt::UserRole +2
+        ResetRole = Qt::UserRole +1,
     };
 }
 

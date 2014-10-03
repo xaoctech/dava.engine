@@ -15,15 +15,12 @@ public:
     ItemDelegateForPropertyEnum(PropertiesTreeItemDelegate *delegate);
     ~ItemDelegateForPropertyEnum();
 
-    virtual QWidget * createEditor( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const override;
+    virtual void addEditorWidgets(QWidget *parent, const QModelIndex &index) const override;
     virtual void setEditorData ( QWidget * editor, const QModelIndex & index ) const override;
-    virtual void setModelData ( QWidget * editor, QAbstractItemModel * model, const QModelIndex & index ) const override;
+    virtual bool setModelData ( QWidget * editor, QAbstractItemModel * model, const QModelIndex & index ) const override;
 
 private slots:
     void OnCurrentIndexChanged();
-
-private:
-    PropertiesTreeItemDelegate *itemDelegate;
 };
 
 #endif // __ITEMDELEGATEFORPROPERTYENUM_H__

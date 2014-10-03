@@ -1,12 +1,13 @@
 #include "ItemDelegateForInteger.h"
 #include <QSpinBox>
+#include <QLayout>
 #include "FileSystem/VariantType.h"
 #include "PropertiesTreeModel.h"
 #include "PropertiesTreeItemDelegate.h"
 #include "Utils/QtDavaConvertion.h"
 
 ItemDelegateForInteger::ItemDelegateForInteger(PropertiesTreeItemDelegate *delegate)
-    : itemDelegate(delegate)
+    : PropertyAbstractEditor(delegate)
 {
 
 }
@@ -16,18 +17,22 @@ ItemDelegateForInteger::~ItemDelegateForInteger()
 
 }
 
-QWidget * ItemDelegateForInteger::createEditor( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const 
+void ItemDelegateForInteger::addEditorWidgets( QWidget *parent, const QModelIndex &index ) const
 {
-    QSpinBox *editor = new QSpinBox(parent);
-    connect(editor, SIGNAL(valueChanged(int)), this, SLOT(OnValueChanged()));
-    return editor;
+    QSpinBox *spinBox = new QSpinBox(parent);
+    spinBox->setObjectName(QString::fromUtf8("spinBox"));
+    connect(spinBox, SIGNAL(valueChanged(int)), this, SLOT(OnValueChanged()));
+    parent->layout()->addWidget(spinBox);
+
+    PropertyAbstractEditor::addEditorWidgets(parent, index);
 }
 
 void ItemDelegateForInteger::setEditorData( QWidget * rawEditor, const QModelIndex & index ) const 
 {
-    QSpinBox *editor = static_cast<QSpinBox *>(rawEditor);
+    QSpinBox *editor = rawEditor->findChild<QSpinBox*>("spinBox");
 
-    DAVA::VariantType variant = index.data(DAVA::VariantTypeEditRole).value<DAVA::VariantType>();
+    editor->blockSignals(true);
+    DAVA::VariantType variant = index.data(Qt::EditRole).value<DAVA::VariantType>();
     switch (variant.GetType())
     {
     case DAVA::VariantType::TYPE_INT32:
@@ -47,16 +52,18 @@ void ItemDelegateForInteger::setEditorData( QWidget * rawEditor, const QModelInd
     default:
         break;
     }
+    editor->blockSignals(false);
     PropertyAbstractEditor::SetValueModified(editor, false);
 }
 
-void ItemDelegateForInteger::setModelData( QWidget * rawEditor, QAbstractItemModel * model, const QModelIndex & index ) const 
+bool ItemDelegateForInteger::setModelData( QWidget * rawEditor, QAbstractItemModel * model, const QModelIndex & index ) const 
 {
-    QSpinBox *editor = static_cast<QSpinBox *>(rawEditor);
-    if (!PropertyAbstractEditor::IsValueModified(editor))
-        return;
+    if (PropertyAbstractEditor::setModelData(rawEditor, model, index))
+        return true;
 
-    DAVA::VariantType variantType = index.data(DAVA::VariantTypeEditRole).value<DAVA::VariantType>();
+    QSpinBox *editor = rawEditor->findChild<QSpinBox*>("spinBox");
+
+    DAVA::VariantType variantType = index.data(Qt::EditRole).value<DAVA::VariantType>();
 
     switch (variantType.GetType())
     {
@@ -79,15 +86,19 @@ void ItemDelegateForInteger::setModelData( QWidget * rawEditor, QAbstractItemMod
     QVariant variant;
     variant.setValue<DAVA::VariantType>(variantType);
 
-    model->setData(index, variant, DAVA::VariantTypeEditRole);
+    return model->setData(index, variant, Qt::EditRole);
 }
 
 void ItemDelegateForInteger::OnValueChanged()
 {
-    QWidget *editor = qobject_cast<QWidget *>(sender());
+    QWidget *spinBox = qobject_cast<QWidget *>(sender());
+    if (!spinBox)
+        return;
+
+    QWidget *editor = spinBox->parentWidget();
     if (!editor)
         return;
 
     PropertyAbstractEditor::SetValueModified(editor, true);
-    itemDelegate->NeedCommitData(editor);
+    itemDelegate->emitCommitData(editor);
 }

@@ -1,13 +1,13 @@
 #include "ItemDelegateForPropertyEnum.h"
 #include <QComboBox>
+#include <QLayout>
 #include "UIControls/BaseProperty.h"
 #include "PropertiesTreeItemDelegate.h"
 #include "Utils/QtDavaConvertion.h"
 #include "PropertiesTreeModel.h"
 
 ItemDelegateForPropertyEnum::ItemDelegateForPropertyEnum(PropertiesTreeItemDelegate *delegate)
-    : PropertyAbstractEditor()
-    , itemDelegate(delegate)
+    : PropertyAbstractEditor(delegate)
 {
 }
 
@@ -15,16 +15,17 @@ ItemDelegateForPropertyEnum::~ItemDelegateForPropertyEnum()
 {
 }
 
-QWidget * ItemDelegateForPropertyEnum::createEditor( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const 
+void ItemDelegateForPropertyEnum::addEditorWidgets(QWidget *parent, const QModelIndex &index) const
 {
-    QComboBox *editor = new QComboBox(parent);
-    connect(editor, SIGNAL(currentIndexChanged(int)), this, SLOT(OnCurrentIndexChanged()));
+    QComboBox *comboBox = new QComboBox(parent);
+    comboBox->setObjectName(QString::fromUtf8("comboBox"));
+    connect(comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnCurrentIndexChanged()));
 
     BaseProperty *property = static_cast<BaseProperty *>(index.internalPointer());
     const EnumMap *enumMap = property->GetEnumMap();
     DVASSERT(enumMap);
 
-    editor->blockSignals(true);
+    comboBox->blockSignals(true);
     for (size_t i = 0; i < enumMap->GetCount(); ++i)
     {
         int value = 0;
@@ -32,17 +33,19 @@ QWidget * ItemDelegateForPropertyEnum::createEditor( QWidget * parent, const QSt
         {
             QVariant variantValue;
             variantValue.setValue<DAVA::VariantType>(DAVA::VariantType(value));
-            editor->addItem(QString(enumMap->ToString(value)),variantValue);
+            comboBox->addItem(QString(enumMap->ToString(value)),variantValue);
         }
     }
-    editor->blockSignals(false);
+    comboBox->blockSignals(false);
 
-    return editor;
+    parent->layout()->addWidget(comboBox);
+
+    PropertyAbstractEditor::addEditorWidgets(parent, index);
 }
 
 void ItemDelegateForPropertyEnum::setEditorData( QWidget * editor, const QModelIndex & index ) const 
 {
-    QComboBox *comboBox = qobject_cast<QComboBox *>(editor);
+    QComboBox *comboBox = editor->findChild<QComboBox *>("comboBox");
 
     editor->blockSignals(true);
     int comboIndex = comboBox->findText(index.data(Qt::DisplayRole).toString());
@@ -52,22 +55,27 @@ void ItemDelegateForPropertyEnum::setEditorData( QWidget * editor, const QModelI
     PropertyAbstractEditor::SetValueModified(editor, false);
 }
 
-void ItemDelegateForPropertyEnum::setModelData( QWidget * editor, QAbstractItemModel * model, const QModelIndex & index ) const 
+bool ItemDelegateForPropertyEnum::setModelData( QWidget * editor, QAbstractItemModel * model, const QModelIndex & index ) const 
 {
-    QComboBox *comboBox = qobject_cast<QComboBox *>(editor);
-    if (!PropertyAbstractEditor::IsValueModified(comboBox))
-        return;
+    if (PropertyAbstractEditor::setModelData(editor, model, index))
+        return true;
 
-    model->setData(index, comboBox->itemData(comboBox->currentIndex()), DAVA::VariantTypeEditRole);
+    QComboBox *comboBox = editor->findChild<QComboBox *>("comboBox");
+
+    return model->setData(index, comboBox->itemData(comboBox->currentIndex()), Qt::EditRole);
 }
 
 void ItemDelegateForPropertyEnum::OnCurrentIndexChanged()
 {
-    QWidget *editor = qobject_cast<QWidget *>(sender());
+    QWidget *comboBox = qobject_cast<QWidget *>(sender());
+    if (!comboBox)
+        return;
+
+    QWidget *editor = comboBox->parentWidget();
     if (!editor)
         return;
 
     PropertyAbstractEditor::SetValueModified(editor, true);
-    itemDelegate->NeedCommitData(editor);
+    itemDelegate->emitCommitData(editor);
 }
 

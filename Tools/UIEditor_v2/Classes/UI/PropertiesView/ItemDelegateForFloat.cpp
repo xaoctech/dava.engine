@@ -5,10 +5,11 @@
 #include "Utils/QtDavaConvertion.h"
 #include <QLineEdit>
 #include <QDoubleValidator>
+#include <QLayout>
 
 
 ItemDelegateForFloat::ItemDelegateForFloat( PropertiesTreeItemDelegate *delegate )
-    : itemDelegate(delegate)
+    : PropertyAbstractEditor(delegate)
 {
 
 }
@@ -18,42 +19,53 @@ ItemDelegateForFloat::~ItemDelegateForFloat()
 
 }
 
-QWidget * ItemDelegateForFloat::createEditor( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const 
+void ItemDelegateForFloat::addEditorWidgets( QWidget * parent, const QModelIndex & index ) const 
 {
-    QLineEdit *editor = new QLineEdit(parent);
-    connect(editor, SIGNAL(textChanged(const QString &)), this, SLOT(OnValueChanged()));
-    editor->setValidator( new QDoubleValidator(-999999.0, 999999.0, 6, editor) );
-    return editor;
+    QLineEdit *lineEdit = new QLineEdit(parent);
+    lineEdit->setObjectName(QString::fromUtf8("lineEdit"));
+    connect(lineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(OnValueChanged()));
+    lineEdit->setValidator( new QDoubleValidator(-999999.0, 999999.0, 6, lineEdit) );
+
+    parent->layout()->addWidget(lineEdit);
+
+    PropertyAbstractEditor::addEditorWidgets(parent, index);
 }
 
 void ItemDelegateForFloat::setEditorData( QWidget * rawEditor, const QModelIndex & index ) const 
 {
-    QLineEdit *editor = static_cast<QLineEdit *>(rawEditor);
+    QLineEdit *editor = rawEditor->findChild<QLineEdit*>("lineEdit");
 
-    DAVA::VariantType variant = index.data(DAVA::VariantTypeEditRole).value<DAVA::VariantType>();
+    DAVA::VariantType variant = index.data(Qt::EditRole).value<DAVA::VariantType>();
+    editor->blockSignals(true);
     editor->setText(QString("%1").arg(variant.AsFloat()));
+    editor->blockSignals(false);
 
     PropertyAbstractEditor::SetValueModified(editor, false);
 }
 
-void ItemDelegateForFloat::setModelData( QWidget * rawEditor, QAbstractItemModel * model, const QModelIndex & index ) const 
+bool ItemDelegateForFloat::setModelData( QWidget * rawEditor, QAbstractItemModel * model, const QModelIndex & index ) const 
 {
-    QLineEdit *editor = static_cast<QLineEdit *>(rawEditor);
-    if (!PropertyAbstractEditor::IsValueModified(editor))
-        return;
+    if (PropertyAbstractEditor::setModelData(rawEditor, model, index))
+        return true;
+
+    QLineEdit *editor = rawEditor->findChild<QLineEdit*>("lineEdit");
 
     QVariant variant;
     variant.setValue<DAVA::VariantType>(DAVA::VariantType(editor->text().toFloat()));
 
-    model->setData(index, variant, DAVA::VariantTypeEditRole);
+    return model->setData(index, variant, Qt::EditRole);
 }
 
 void ItemDelegateForFloat::OnValueChanged()
 {
-    QWidget *editor = qobject_cast<QWidget *>(sender());
+    QWidget *lineEdit = qobject_cast<QWidget *>(sender());
+    if (!lineEdit)
+        return;
+
+    QWidget *editor = lineEdit->parentWidget();
     if (!editor)
         return;
 
     PropertyAbstractEditor::SetValueModified(editor, true);
-    itemDelegate->NeedCommitData(editor);
+    itemDelegate->emitCommitData(editor);
 }
