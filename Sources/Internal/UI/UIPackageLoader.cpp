@@ -322,7 +322,7 @@ void UIPackageLoader::LoadRootControl(int index)
 
 UIControl *UIPackageLoader::GetLoadedControlByName(const String &name)
 {
-    for (int index = 0; index < loadingQueue.size(); index++)
+    for (size_t index = 0; index < loadingQueue.size(); index++)
     {
         if (loadingQueue[index].name == name)
         {
