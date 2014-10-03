@@ -244,6 +244,20 @@ public class JNITextField {
 			}
 			activeTextField = NO_ACTIVE_TEXTFIELD;
 		}
+		// Workaround: Send close keyboard event if text field lost focus and activity 
+		// lost focus too before keyboard was hidden (animation not finished)
+		else if(lastClosedTextField != NO_ACTIVE_TEXTFIELD) {
+            JNIActivity.GetActivity().PostEventToGL(new Runnable()
+            {
+                final int localId = lastClosedTextField;
+                @Override
+                public void run()
+                {
+                    KeyboardClosed(localId);
+                }
+            });
+            lastClosedTextField = NO_ACTIVE_TEXTFIELD;
+		}
 	}
 	
 	public static int GetLastKeyboardIMEOptions() {
