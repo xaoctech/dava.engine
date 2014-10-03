@@ -40,10 +40,11 @@
 namespace DAVA
 {
 
-DLC::DLC(const String &url, const FilePath &sourceDir, const FilePath &destinationDir, const FilePath &workingDir, const String &gameVersion, const FilePath &resVersionPath, bool forceFullUpdate)
+DLC::DLC(const String &url, const FilePath &sourceDir, const FilePath &destinationDir, const FilePath &workingDir, const String &gameVersion, const FilePath &resVersionPath, bool forceFullUpdate, bool isNoMedia)
 : dlcState(DS_INIT)
 , dlcError(DE_NO_ERROR)
 , patchingThread(NULL)
+, hideMediaContentFromData(isNoMedia)
 {
     DVASSERT(workingDir.IsDirectoryPathname());
     DVASSERT(workingDir.Exists());
@@ -55,6 +56,11 @@ DLC::DLC(const String &url, const FilePath &sourceDir, const FilePath &destinati
     DVASSERT(sourceDir.Exists());
 
     DVASSERT(!gameVersion.empty());
+
+    if (hideMediaContentFromData)
+    {
+    	FileSystem::Instance()->MarkFolderAsNoMedia(destinationDir);
+    }
 
     // initial values
     dlcContext.remoteUrl = url;
@@ -446,7 +452,7 @@ void DLC::StepCheckInfoBegin()
     Logger::Info("DLC: Downloading game-info\n\tfrom: %s\n\tto: %s", dlcContext.remoteVerUrl.c_str(), dlcContext.remoteVerStotePath.GetAbsolutePathname().c_str());
 
     DownloadManager::Instance()->SetNotificationCallback(DownloadManager::NotifyFunctor(this, &DLC::StepCheckInfoFinish));
-    dlcContext.remoteVerDownloadId = DownloadManager::Instance()->Download(dlcContext.remoteVerUrl, dlcContext.remoteVerStotePath.GetAbsolutePathname(), FULL);   
+    dlcContext.remoteVerDownloadId = DownloadManager::Instance()->Download(dlcContext.remoteVerUrl, dlcContext.remoteVerStotePath.GetAbsolutePathname(), FULL);
 }
 
 // downloading DLC version file finished. need to read removeVersion
@@ -748,7 +754,7 @@ void DLC::StepPatchBegin()
         }
         while(patchReader.ReadNext());
     }
-
+    
     Logger::Info("DLC: Patching, %d files to patch", dlcContext.patchCount);
     patchingThread = Thread::Create(Message(this, &DLC::PatchingThread));
     patchingThread->Start();
