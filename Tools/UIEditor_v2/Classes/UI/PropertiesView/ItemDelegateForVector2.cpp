@@ -25,17 +25,20 @@ QWidget * ItemDelegateForVector2::createEditor( QWidget * parent, const QStyleOp
 void ItemDelegateForVector2::setEditorData( QWidget * editor, const QModelIndex & index ) const 
 {
     Vector2DEdit *vectorEditor = static_cast<Vector2DEdit *>(editor);
-    vectorEditor->setVector2D(Vector2ToQVector2D(index.data(DAVA::VariantTypeEditRole).value<DAVA::VariantType>().AsVector2()));
+    vectorEditor->setVector2D(Vector2ToQVector2D(index.data(Qt::EditRole).value<DAVA::VariantType>().AsVector2()));
 }
 
-void ItemDelegateForVector2::setModelData( QWidget * editor, QAbstractItemModel * model, const QModelIndex & index ) const 
+bool ItemDelegateForVector2::setModelData( QWidget * editor, QAbstractItemModel * model, const QModelIndex & index ) const 
 {
+    if (PropertyAbstractEditor::setModelData(editor, model, index))
+        return true;
+
     Vector2DEdit *vectorEditor = static_cast<Vector2DEdit *>(editor);
     if (!vectorEditor->isModified())
-        return;
+        return true;
 
     DAVA::VariantType vectorType( QVector2DToVector2(vectorEditor->vector2D()) );
     QVariant vectorVariant;
     vectorVariant.setValue<DAVA::VariantType>(vectorType);
-    model->setData(index, vectorVariant, DAVA::VariantTypeEditRole);
+    return model->setData(index, vectorVariant, Qt::EditRole);
 }

@@ -79,6 +79,7 @@
     <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForVector2.cpp" />
     <ClCompile Include="Classes\UI\PropertiesView\PropertiesTreeView.cpp" />
     <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForFilePath.cpp" />
+    <ClCompile Include="Classes\UI\PropertiesView\PropertyAbstractEditor.cpp" />
     <ClCompile Include="Classes\Utils\QtDavaConvertion.cpp" />
     <ClCompile Include="Classes\Validators\BaseValidator.cpp" />
     <ClCompile Include="Classes\Validators\DistanceFontValidator.cpp" />

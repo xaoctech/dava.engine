@@ -20,7 +20,7 @@ void ItemDelegateForFilePath::setEditorData( QWidget * editor, const QModelIndex
 
 }
 
-void ItemDelegateForFilePath::setModelData( QWidget * editor, QAbstractItemModel * model, const QModelIndex & index ) const 
+bool ItemDelegateForFilePath::setModelData( QWidget * editor, QAbstractItemModel * model, const QModelIndex & index ) const 
 {
-
+    return PropertyAbstractEditor::setModelData(editor, model, index);
 }

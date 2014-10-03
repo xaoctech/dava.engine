@@ -8,6 +8,7 @@
 #include "UIControls/BaseProperty.h"
 #include "FileSystem/VariantType.h"
 class PropertyAbstractEditor;
+class QToolButton;
 
 class PropertiesTreeItemDelegate : public QStyledItemDelegate
 {
@@ -26,14 +27,12 @@ public:
 
     PropertyAbstractEditor * GetCustomItemDelegateForIndex(const QModelIndex & index) const;
 
-    void NeedCommitData(QWidget * editor);
-    void NeedCommitDataAndCloseEditor(QWidget * editor, QAbstractItemDelegate::EndEditHint hint = NoHint);
+    void emitCommitData(QWidget * editor);
+    void emitCloseEditor(QWidget * editor, QAbstractItemDelegate::EndEditHint hint);
 
 private:
     QMap<QVariant::Type, PropertyAbstractEditor *> qvariantItemDelegates;
     QMap<BaseProperty::ePropertyType, PropertyAbstractEditor *> propertyItemDelegates;
     QMap<DAVA::VariantType::eVariantType, PropertyAbstractEditor *> variantTypeItemDelegates;
-    
-    mutable PropertyAbstractEditor *currentDelegate;
 };
 #endif // __PROPERTIESTREEITEMDELEGATE_H__

@@ -1,19 +1,23 @@
 #ifndef __ITEMDELEGATEFORCOLOR_H__
 #define __ITEMDELEGATEFORCOLOR_H__
 
-
 #include "PropertyAbstractEditor.h"
+
+class QToolButton;
 
 class ItemDelegateForColor: public PropertyAbstractEditor
 {
-    //    Q_OBJECT
+    Q_OBJECT
 public:
-    explicit ItemDelegateForColor();
+    explicit ItemDelegateForColor(PropertiesTreeItemDelegate *delegate);
     ~ItemDelegateForColor();
 
-    virtual QWidget * createEditor( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const override;
+    //virtual QWidget * createEditor( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const override;
+    virtual void addEditorWidgets(QWidget *parent, const QModelIndex &index) const override;
     virtual void setEditorData ( QWidget * editor, const QModelIndex & index ) const override;
-    virtual void setModelData ( QWidget * editor, QAbstractItemModel * model, const QModelIndex & index ) const override;
+    virtual bool setModelData ( QWidget * editor, QAbstractItemModel * model, const QModelIndex & index ) const override;
+private slots:
+    void chooseColorClicked();
 };
 
 

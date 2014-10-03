@@ -22,6 +22,13 @@ public:
         TYPE_ENUM,
         TYPE_FLAGS,
     };
+
+    enum eEditFrags
+    {
+        EF_NONE = 0,
+        EF_CAN_RESET = 1 << 0,
+        EF_ADD_REMOVE = 1 << 1,
+    };
     
 public:
     BaseProperty();
@@ -35,6 +42,7 @@ public:
 
     virtual DAVA::String GetName() const = 0;
     virtual ePropertyType GetType() const = 0;
+    virtual eEditFrags GetEditFlag() const { return EF_NONE; };
 
     virtual bool CanRemove() const {return false; }
     virtual bool CanCreate() const {return false; }

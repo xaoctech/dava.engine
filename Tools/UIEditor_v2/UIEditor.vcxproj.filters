@@ -294,6 +294,9 @@
     <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForFloat.cpp">
       <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\UI\PropertiesView\PropertyAbstractEditor.cpp">
+      <Filter>Sources\UI\PropertiesView</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\FrameworkMain.h">
