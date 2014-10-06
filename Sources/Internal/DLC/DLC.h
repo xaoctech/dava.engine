@@ -79,7 +79,7 @@ public:
         \param[in] resVersionPath - path to file, where resources version is stored. This file will be re-wrote after patch finished.
         \param[in] forceFullUpdate - "true" value will force full-patch to be downloaded from the server. "false" leaves patch version to be determined automatically.
     */
-    DLC(const String &url, const FilePath &sourceDir, const FilePath &destinationDir, const FilePath &workingDir, const String &gameVersion, const FilePath &resVersionPath, bool forceFullUpdate = false, bool isNoMedia = true);
+    DLC(const String &url, const FilePath &sourceDir, const FilePath &destinationDir, const FilePath &workingDir, const String &gameVersion, const FilePath &resVersionPath, bool forceFullUpdate = false);
     ~DLC();
 
     /**
@@ -183,9 +183,6 @@ protected:
 
     // patch thread variables
     Thread *patchingThread;
-    
-    // create .nomedia file for android if true
-    bool hideMediaContentFromData;
 
     void PostEvent(DLCEvent event);
     void PostError(DLCError error);

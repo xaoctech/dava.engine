@@ -40,11 +40,10 @@
 namespace DAVA
 {
 
-DLC::DLC(const String &url, const FilePath &sourceDir, const FilePath &destinationDir, const FilePath &workingDir, const String &gameVersion, const FilePath &resVersionPath, bool forceFullUpdate, bool isNoMedia)
+DLC::DLC(const String &url, const FilePath &sourceDir, const FilePath &destinationDir, const FilePath &workingDir, const String &gameVersion, const FilePath &resVersionPath, bool forceFullUpdate)
 : dlcState(DS_INIT)
 , dlcError(DE_NO_ERROR)
 , patchingThread(NULL)
-, hideMediaContentFromData(isNoMedia)
 {
     DVASSERT(workingDir.IsDirectoryPathname());
     DVASSERT(workingDir.Exists());
@@ -57,10 +56,8 @@ DLC::DLC(const String &url, const FilePath &sourceDir, const FilePath &destinati
 
     DVASSERT(!gameVersion.empty());
 
-    if (hideMediaContentFromData)
-    {
-    	FileSystem::Instance()->MarkFolderAsNoMedia(destinationDir);
-    }
+    //  we suppose that downloaded data should not be media data and exclude it from index.
+	FileSystem::Instance()->MarkFolderAsNoMedia(destinationDir);
 
     // initial values
     dlcContext.remoteUrl = url;
