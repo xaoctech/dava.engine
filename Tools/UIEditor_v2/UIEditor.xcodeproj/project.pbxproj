@@ -42,6 +42,7 @@
 		17FF160016400A75001B130F /* localizationeditordialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17FF15FE16400A75001B130F /* localizationeditordialog.cpp */; };
 		32014C7519C8718A006A4228 /* UIEditorComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 32014C7319C8718A006A4228 /* UIEditorComponent.cpp */; };
 		32014C7819C87EE0006A4228 /* EditorUIPackageLoader.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 32014C7619C87EE0006A4228 /* EditorUIPackageLoader.cpp */; };
+		3241EF9719DED36C00991BDB /* UIPackageModelNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 3241EF9519DED36C00991BDB /* UIPackageModelNode.cpp */; };
 		325FCCF319DD8AC800197B03 /* ItemDelegateForColor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 325FCCDC19DD8AC800197B03 /* ItemDelegateForColor.cpp */; };
 		325FCCF419DD8AC800197B03 /* ItemDelegateForFilePath.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 325FCCDE19DD8AC800197B03 /* ItemDelegateForFilePath.cpp */; };
 		325FCCF519DD8AC800197B03 /* ItemDelegateForFloat.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 325FCCE019DD8AC800197B03 /* ItemDelegateForFloat.cpp */; };
@@ -230,6 +231,8 @@
 		32014C7419C8718A006A4228 /* UIEditorComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIEditorComponent.h; sourceTree = "<group>"; };
 		32014C7619C87EE0006A4228 /* EditorUIPackageLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditorUIPackageLoader.cpp; sourceTree = "<group>"; };
 		32014C7719C87EE0006A4228 /* EditorUIPackageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorUIPackageLoader.h; sourceTree = "<group>"; };
+		3241EF9519DED36C00991BDB /* UIPackageModelNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIPackageModelNode.cpp; sourceTree = "<group>"; };
+		3241EF9619DED36C00991BDB /* UIPackageModelNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIPackageModelNode.h; sourceTree = "<group>"; };
 		325FCCDC19DD8AC800197B03 /* ItemDelegateForColor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ItemDelegateForColor.cpp; sourceTree = "<group>"; };
 		325FCCDD19DD8AC800197B03 /* ItemDelegateForColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItemDelegateForColor.h; sourceTree = "<group>"; };
 		325FCCDE19DD8AC800197B03 /* ItemDelegateForFilePath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ItemDelegateForFilePath.cpp; sourceTree = "<group>"; };
@@ -440,6 +443,8 @@
 				15959DDF19D5750600B52AEF /* UIFilteredPackageModel.h */,
 				15959DE019D5750600B52AEF /* UIPackageModel.cpp */,
 				15959DE119D5750600B52AEF /* UIPackageModel.h */,
+				3241EF9519DED36C00991BDB /* UIPackageModelNode.cpp */,
+				3241EF9619DED36C00991BDB /* UIPackageModelNode.h */,
 			);
 			path = PackageView;
 			sourceTree = "<group>";
@@ -946,6 +951,7 @@
 				325FCCF519DD8AC800197B03 /* ItemDelegateForFloat.cpp in Build Sources */,
 				329E0D3719D3F340008A9CE6 /* EntityParentChangeCommand.cpp in Build Sources */,
 				32EB47A919DB359F00775432 /* SubValueProperty.cpp in Build Sources */,
+				3241EF9719DED36C00991BDB /* UIPackageModelNode.cpp in Build Sources */,
 				1595D3B219DAF259007338DF /* FileSystemTreeWidget.cpp in Build Sources */,
 				329E0D3819D3F340008A9CE6 /* EntityRemoveCommand.cpp in Build Sources */,
 				15959DC219D3169400B52AEF /* PackageGraphicsWidget.cpp in Build Sources */,

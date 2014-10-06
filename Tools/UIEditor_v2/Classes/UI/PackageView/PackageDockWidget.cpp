@@ -12,6 +12,7 @@
 #include "DAVAEngine.h"
 #include "UI/PackageView/UIFilteredPackageModel.h"
 #include "UI/PackageDocument.h"
+#include "UIPackageModelNode.h"
 
 #include "Project.h"
 
@@ -56,6 +57,9 @@ void PackageDockWidget::SetDocument(PackageDocument *newDocument)
     if (document)
     {
         ui->treeView->setModel(document->GetTreeContext()->proxyModel);
+        ui->treeView->expandToDepth(0);
+        ui->treeView->setColumnWidth(0, ui->treeView->size().width());
+
         ui->filterLine->setText(document->GetTreeContext()->filterString);
         connect(ui->treeView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(OnSelectionChanged(const QItemSelection &, const QItemSelection &)));
         //ui->filterLine->setEnabled(true);
@@ -79,17 +83,16 @@ void PackageDockWidget::OnSelectionChanged(const QItemSelection &proxySelected, 
     {
         foreach(QModelIndex index, selectedIndexList)
         {
-            UIControl *control = static_cast<UIControl*>(index.internalPointer());
-            selectedControl.push_back(control);
-            
-            while(index.parent().isValid())
+            UIPackageModelNode *node = static_cast<UIPackageModelNode*>(index.internalPointer());
+            if (node->GetControl())
             {
-                index = index.parent();
-            }
-            control = static_cast<UIControl*>(index.internalPointer());
-            if (selectedRootControl.indexOf(control) < 0)
-            {
-                selectedRootControl.push_back(control);
+                selectedControl.push_back(node->GetControl());
+                
+                while (node->GetParent() && node->GetParent()->GetControl())
+                    node = node->GetParent();
+                
+                if (selectedRootControl.indexOf(node->GetControl()) < 0)
+                    selectedRootControl.push_back(node->GetControl());
             }
         }
     }
@@ -99,23 +102,21 @@ void PackageDockWidget::OnSelectionChanged(const QItemSelection &proxySelected, 
     {
         foreach(QModelIndex index, deselectedIndexList)
         {
-            UIControl *control = static_cast<UIControl*>(index.internalPointer());
-            deselectedControl.push_back(control);
-            
-            while(index.parent().isValid())
+            UIPackageModelNode *node = static_cast<UIPackageModelNode*>(index.internalPointer());
+            if (node->GetControl())
             {
-                index = index.parent();
-            }
-            control = static_cast<UIControl*>(index.internalPointer());
-            if (deselectedRootControl.indexOf(control) < 0)
-            {
-                deselectedRootControl.push_back(control);
+                deselectedControl.push_back(node->GetControl());
+                
+                while(node->GetParent() && node->GetParent()->GetControl())
+                    node = node->GetParent();
+                
+                if (deselectedRootControl.indexOf(node->GetControl()) < 0)
+                    deselectedRootControl.push_back(node->GetControl());
             }
         }
     }
 
     emit SelectionRootControlChanged(selectedRootControl, deselectedRootControl);
-    
     emit SelectionControlChanged(selectedControl, deselectedControl);
 }
 

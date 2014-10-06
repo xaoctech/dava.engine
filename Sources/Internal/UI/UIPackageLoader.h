@@ -170,6 +170,8 @@ private:
         int status;
     };
     Vector<QueueItem> loadingQueue;
+    DAVA::Map<DAVA::String, UIPackage*> importedPackages;
+    UIPackage *currentPackage;
 };
 
 };

@@ -33,7 +33,7 @@ PackageDocument::PackageDocument(DAVA::UIPackage *_package, QObject *parent)
     //propertiesContext;
     //libraryContext;
 
-    for (size_t index = 0; index < package->GetControlsCount(); ++index)
+    for (int32 index = 0; index < package->GetControlsCount(); ++index)
     {
         activeRootControls.push_back(package->GetControl(index));
     }
@@ -56,7 +56,7 @@ PackageDocument::~PackageDocument()
 
 const DAVA::FilePath &PackageDocument::PackageFilePath() const
 {
-    return package->getFilePath();
+    return package->GetFilePath();
 }
 
 void PackageDocument::OnSelectionRootControlChanged(const QList<DAVA::UIControl *> &activatedRootControls, const QList<DAVA::UIControl *> &deactivatedRootControls)
