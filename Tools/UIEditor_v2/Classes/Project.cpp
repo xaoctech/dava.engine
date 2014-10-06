@@ -19,11 +19,12 @@ using namespace DAVA;
 
 Project::Project()
 {
-    
+    legacyData = new LegacyControlData();
 }
 
 Project::~Project()
 {
+    SafeRelease(legacyData);
 }
 
 bool Project::Open(const QString &path)
@@ -124,12 +125,12 @@ bool Project::Open(const QString &path)
         for (int j = 0; j < (int32) screens->GetCount(); j++)
         {
             const String &screenName = screens->Get(j)->AsString();
-            LegacyControlData data;
+            LegacyControlData::Data data;
             data.name = screenName;
             data.isAggregator = false;
             data.size = Vector2(platformWidth, platformHeight);
             String key = "~res:/UI/" + platformName + "/" + screenName + ".yaml";
-            legacyDataMap[key] = data;
+            legacyData->Put(key, data);
         }
         
         const YamlNode *aggregators = platform->Get("aggregators");
@@ -140,12 +141,12 @@ bool Project::Open(const QString &path)
             float aggregatorWidth = aggregator->Get("width")->AsFloat();
             float aggregatorHeight = aggregator->Get("height")->AsFloat();
 
-            LegacyControlData data;
+            LegacyControlData::Data data;
             data.name = aggregatorName;
             data.isAggregator = false;
             data.size = Vector2(aggregatorWidth, aggregatorHeight);
             String key = "~res:/UI/" + platformName + "/" + aggregatorName + ".yaml";
-            legacyDataMap[key] = data;
+            legacyData->Put(key, data);
         }
         
 	}
@@ -160,7 +161,7 @@ UIPackage *Project::OpenPackage(const QString &packagePath)
     FilePath path(packagePath.toStdString());
     String fwPath = path.GetFrameworkPath();
 
-    UIPackage *newPackage = EditorUIPackageLoader().LoadPackage(path, GetLegacyControlData(fwPath));
+    UIPackage *newPackage = EditorUIPackageLoader(legacyData).LoadPackage(path);
     return newPackage;
 }
 
@@ -170,15 +171,3 @@ bool Project::SavePackage(DAVA::UIPackage *package)
     return EditorUIPackageLoader().SavePackage(package);
 }
 
-DAVA::LegacyControlData *Project::GetLegacyControlData(const DAVA::String fwPath)
-{
-    auto it = legacyDataMap.find(fwPath);
-    if (it != legacyDataMap.end())
-    {
-        return &(it->second);
-    }
-    else
-    {
-        return NULL;
-    }
-}
