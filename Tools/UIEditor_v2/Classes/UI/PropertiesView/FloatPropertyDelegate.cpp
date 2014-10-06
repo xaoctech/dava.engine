@@ -1,4 +1,4 @@
-#include "ItemDelegateForFloat.h"
+#include "FloatPropertyDelegate.h"
 #include "FileSystem/VariantType.h"
 #include "PropertiesTreeModel.h"
 #include "PropertiesTreeItemDelegate.h"
@@ -8,18 +8,18 @@
 #include <QLayout>
 
 
-ItemDelegateForFloat::ItemDelegateForFloat( PropertiesTreeItemDelegate *delegate )
-    : PropertyAbstractEditor(delegate)
+FloatPropertyDelegate::FloatPropertyDelegate( PropertiesTreeItemDelegate *delegate )
+    : BasePropertyDelegate(delegate)
 {
 
 }
 
-ItemDelegateForFloat::~ItemDelegateForFloat()
+FloatPropertyDelegate::~FloatPropertyDelegate()
 {
 
 }
 
-QWidget * ItemDelegateForFloat::createEditor( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const
+QWidget * FloatPropertyDelegate::createEditor( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const
 {
     QLineEdit *lineEdit = new QLineEdit(parent);
     lineEdit->setObjectName(QString::fromUtf8("lineEdit"));
@@ -29,7 +29,7 @@ QWidget * ItemDelegateForFloat::createEditor( QWidget * parent, const QStyleOpti
     return lineEdit;
 }
 
-void ItemDelegateForFloat::setEditorData( QWidget * rawEditor, const QModelIndex & index ) const 
+void FloatPropertyDelegate::setEditorData( QWidget * rawEditor, const QModelIndex & index ) const 
 {
     QLineEdit *editor = rawEditor->findChild<QLineEdit*>("lineEdit");
 
@@ -38,12 +38,12 @@ void ItemDelegateForFloat::setEditorData( QWidget * rawEditor, const QModelIndex
     editor->setText(QString("%1").arg(variant.AsFloat()));
     editor->blockSignals(false);
 
-    PropertyAbstractEditor::SetValueModified(editor, false);
+    BasePropertyDelegate::SetValueModified(editor, false);
 }
 
-bool ItemDelegateForFloat::setModelData( QWidget * rawEditor, QAbstractItemModel * model, const QModelIndex & index ) const 
+bool FloatPropertyDelegate::setModelData( QWidget * rawEditor, QAbstractItemModel * model, const QModelIndex & index ) const 
 {
-    if (PropertyAbstractEditor::setModelData(rawEditor, model, index))
+    if (BasePropertyDelegate::setModelData(rawEditor, model, index))
         return true;
 
     QLineEdit *editor = rawEditor->findChild<QLineEdit*>("lineEdit");
@@ -54,7 +54,7 @@ bool ItemDelegateForFloat::setModelData( QWidget * rawEditor, QAbstractItemModel
     return model->setData(index, variant, Qt::EditRole);
 }
 
-void ItemDelegateForFloat::OnValueChanged()
+void FloatPropertyDelegate::OnValueChanged()
 {
     QWidget *lineEdit = qobject_cast<QWidget *>(sender());
     if (!lineEdit)
@@ -64,6 +64,6 @@ void ItemDelegateForFloat::OnValueChanged()
     if (!editor)
         return;
 
-    PropertyAbstractEditor::SetValueModified(editor, true);
+    BasePropertyDelegate::SetValueModified(editor, true);
     itemDelegate->emitCommitData(editor);
 }
