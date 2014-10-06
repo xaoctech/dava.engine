@@ -118,7 +118,7 @@ private:
     InternalControlPropertiesSection *section;
 };
 
-EditorUIPackageLoader::EditorUIPackageLoader()
+EditorUIPackageLoader::EditorUIPackageLoader(LegacyControlData *data) : UIPackageLoader(data)
 {
     SetUsingIntrospectionForLegacyData(true);
 }
