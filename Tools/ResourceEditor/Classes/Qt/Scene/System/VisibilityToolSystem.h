@@ -100,7 +100,7 @@ protected:
 	void PrepareConfig();
 	void SetState(eVisibilityToolState newState);
 
-	void SetVisibilityPointInternal(const Vector2& point);
+	void SetVisibilityPointInternal();
 	void SetVisibilityAreaInternal();
 
 	
