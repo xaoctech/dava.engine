@@ -181,6 +181,24 @@ public class JNITextField {
 	            @Override
 	            public void onSoftKeyboardClosed()
 	            {
+	                // Workaround: if keyboard was closed by other IME type we restore focus
+                    if(activeTextField != NO_ACTIVE_TEXTFIELD)
+                    {
+                        EditText text = GetEditText(activeTextField);
+                        if(text != null)
+                        {
+                            // Check that we close keyboard w/o going to next field with other IME type
+                            if(lastClosedTextField == NO_ACTIVE_TEXTFIELD)
+                            {
+                                activeTextField = NO_ACTIVE_TEXTFIELD;
+                                text.clearFocus();
+                            }
+                            else
+                            {
+                                text.requestFocus();
+                            }
+                        }
+                    }
 	                // Send close event to native
 	                JNIActivity.GetActivity().PostEventToGL(new Runnable()
 	                {
@@ -191,15 +209,6 @@ public class JNITextField {
 	                        KeyboardClosed(localId);
 	                    }
 	                });
-	                // Workaround: if keyboard was closed by other IME type we restore focus
-	                if(activeTextField != NO_ACTIVE_TEXTFIELD)
-	                {
-	                    EditText text = GetEditText(activeTextField);
-	                    if(text != null)
-	                    {
-	                        text.requestFocus();
-	                    }
-	                }
 	                // Clear IDs of active fields on real close keyboard 
 	                lastClosedTextField = NO_ACTIVE_TEXTFIELD;
 	            }
