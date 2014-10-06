@@ -196,6 +196,11 @@ UIPackageLoader::UIPackageLoader() : useIntrospectionForLegacyData(false)
 UIPackageLoader::~UIPackageLoader()
 {
     SafeRelease(yamlLoader);
+    for (auto it = importedPackages.begin(); it != importedPackages.end(); ++it)
+    {
+        it->second->Release();
+    }
+    importedPackages.clear();
 }
     
 UIPackage *UIPackageLoader::LoadPackage(const FilePath &packagePath, const LegacyControlData *data)
@@ -207,7 +212,7 @@ UIPackage *UIPackageLoader::LoadPackage(const FilePath &packagePath, const Legac
     }
 
     if (!packagePath.Exists())
-        return false;
+        return NULL;
     
     ScopedPtr<YamlParser> parser(YamlParser::Create(packagePath));
     
@@ -227,13 +232,35 @@ UIPackage *UIPackageLoader::LoadPackage(const FilePath &packagePath, const Legac
     
     if (headerNode)
     {
+        UIPackage *package = new UIPackage(packagePath);
         legacySupport = false;
+        
+        const YamlNode *importedPackagesNode = rootNode->Get("ImportedPackages");
+        if (importedPackagesNode)
+        {
+            for (int32 i = 0; i < (int32) importedPackagesNode->GetCount(); i++)
+            {
+                const YamlNode *node = importedPackagesNode->Get(i);
+                auto it = importedPackages.find(node->AsString());
+                UIPackage *importedPackage;
+                if (it != importedPackages.end())
+                    importedPackage = it->second;
+                else
+                {
+                    importedPackage = LoadPackage(node->AsString(), NULL);
+                    importedPackages[node->AsString()] = importedPackage;
+                }
+                DVASSERT(importedPackage);
+                package->AddPackage(importedPackage);
+            }
+        }
+
         const YamlNode *controlsNode = rootNode->Get("Controls");
         if (controlsNode)
         {
-            UIPackage *package = new UIPackage(packagePath);
-            uint32 count = controlsNode->GetCount();
-            for (uint32 i = 0; i < count; i++)
+            currentPackage = package;
+            int32 count = (int32) controlsNode->GetCount();
+            for (int32 i = 0; i < count; i++)
             {
                 const YamlNode *node = controlsNode->Get(i);
                 QueueItem item;
@@ -244,12 +271,12 @@ UIPackage *UIPackageLoader::LoadPackage(const FilePath &packagePath, const Legac
                 loadingQueue.push_back(item);
             }
             
-            for (uint32 i = 0; i < count; i++)
+            for (int32 i = 0; i < count; i++)
             {
                 if (loadingQueue[i].status == STATUS_WAIT)
                     LoadRootControl(i);
             }
-            for (uint32 i = 0; i < count; i++)
+            for (int32 i = 0; i < count; i++)
             {
                 DVASSERT(loadingQueue[i].control != NULL);
                 DVASSERT(loadingQueue[i].status == STATUS_LOADED);
@@ -257,8 +284,9 @@ UIPackage *UIPackageLoader::LoadPackage(const FilePath &packagePath, const Legac
                 SafeRelease(loadingQueue[i].control);
             }
             loadingQueue.clear();
-            return package;
+            currentPackage = NULL;
         }
+        return package;
     }
     else
     {
@@ -295,13 +323,18 @@ bool UIPackageLoader::SavePackage(UIPackage *package)
     headerNode->Set("version", "0");
     rootNode->Add("Header", headerNode);
     
+    YamlNode *packagesNode = YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION);
+    for (int32 i = 0; i < package->GetPackagesCount(); i++)
+        packagesNode->Add(package->GetPackage(i)->GetFilePath().GetFrameworkPath());
+    rootNode->Add("ImportedPackages", packagesNode);
+
     YamlNode *controlsNode = YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION);
     for (uint32 i = 0; i < package->GetControlsCount(); ++i)
         controlsNode->Add(CreateYamlNode(package->GetControl(i)));
     
     rootNode->Add("Controls", controlsNode);
 
-    return YamlEmitter::SaveToYamlFile(package->getFilePath(), rootNode);
+    return YamlEmitter::SaveToYamlFile(package->GetFilePath(), rootNode);
 }
 
 void UIPackageLoader::SetUsingIntrospectionForLegacyData(bool useIntrospection)
@@ -348,6 +381,14 @@ UIControl *UIPackageLoader::GetLoadedControlByName(const String &name)
                     DVASSERT(false);
             }
         }
+    }
+    
+    for (int i = 0; i < currentPackage->GetPackagesCount(); i++)
+    {
+        UIPackage *pack = currentPackage->GetPackage(i);
+        UIControl *control = pack->GetControl(name);
+        if (control)
+            return control;
     }
     return NULL;
 }

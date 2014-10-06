@@ -14,16 +14,25 @@ UIPackage::UIPackage(const FilePath &path)
 
 UIPackage::~UIPackage()
 {
-    Vector<UIControl *>::iterator iter = controls.begin();
-    Vector<UIControl *>::iterator end = controls.end();
-    for (; iter != end; ++iter)
-    {
+    for (auto iter = controls.begin(); iter != controls.end(); ++iter)
         SafeRelease(*iter);
-    }
-
     controls.clear();
+    
+    for (auto it = importedPackages.begin(); it != importedPackages.end(); ++it)
+        SafeRelease(*it);
+    importedPackages.clear();
 }
 
+String UIPackage::GetName() const
+{
+    return packagePath.GetBasename();
+}
+
+DAVA::int32 UIPackage::GetControlsCount() const
+{
+    return controls.size();
+}
+    
 UIControl * UIPackage::GetControl(const String &name) const
 {
     Vector<UIControl *>::const_iterator iter = controls.begin();
@@ -37,7 +46,7 @@ UIControl * UIPackage::GetControl(const String &name) const
     return NULL;
 }
 
-UIControl * UIPackage::GetControl( uint32 index ) const
+UIControl * UIPackage::GetControl(int32 index) const
 {
     return controls[index];
 }
@@ -57,14 +66,19 @@ void UIPackage::RemoveControl(UIControl *control)
     }
 }
 
-String UIPackage::GetName() const
+int32 UIPackage::GetPackagesCount() const
 {
-    return packagePath.GetBasename();
+    return (int32) importedPackages.size();
 }
 
-DAVA::uint32 UIPackage::GetControlsCount() const
+UIPackage *UIPackage::GetPackage(int32 index) const
 {
-    return controls.size();
+    return importedPackages[index];
+}
+
+void UIPackage::AddPackage(UIPackage *package)
+{
+    importedPackages.push_back(SafeRetain(package));
 }
 
 }

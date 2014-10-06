@@ -16,6 +16,8 @@
 #include <QUndoCommand>
 #include "DAVAEngine.h"
 
+class UIPackageModelNode;
+
 class UIPackageMimeData: public QMimeData
 {
     Q_OBJECT
@@ -79,13 +81,12 @@ public:
     void CopyItem(const QModelIndex &srcItem, int dstRow, const QModelIndex &dstParent);
     void RemoveItem(const QModelIndex &srcItem);
     
+//private:
+//    bool IsPackageRootControl(const DAVA::UIControl *control) const;
+//    bool IsPackageContentControl(const DAVA::UIControl *control) const;
 private:
-    int GetControlRow(DAVA::UIControl *control) const;
-
-    bool IsPackageRootControl(const DAVA::UIControl *control) const;
-    bool IsPackageContentControl(const DAVA::UIControl *control) const;
-private:
-    DAVA::UIPackage *package;
+    UIPackageModelNode *root;
+    
     QUndoStack *undoStack;
     QAction *undoAction;
     QAction *redoAction;
