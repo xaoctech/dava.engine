@@ -170,7 +170,7 @@ bool Project::SavePackage(DAVA::UIPackage *package)
     return EditorUIPackageLoader().SavePackage(package);
 }
 
-DAVA::LegacyControlData *Project::GetLegacyControlData(const DAVA::String &fwPath)
+DAVA::LegacyControlData *Project::GetLegacyControlData(const DAVA::String fwPath)
 {
     auto it = legacyDataMap.find(fwPath);
     if (it != legacyDataMap.end())
