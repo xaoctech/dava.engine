@@ -43,7 +43,7 @@ private:
     QScopedPointer<Ui::LogWidget> ui;
     QPointer<LogModel> logModel;
     QPointer<LogFilterModel> logFilterModel;
-    QPointer<QTimer> m_eventSkipper;
+    QPointer<QTimer> eventSkipper;
     bool doAutoScroll;
     bool scrollStateDetected;
 };

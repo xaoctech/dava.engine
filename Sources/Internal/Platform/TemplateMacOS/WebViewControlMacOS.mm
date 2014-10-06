@@ -202,7 +202,7 @@ void WebViewControl::OpenFromBuffer(const String& string, const FilePath& basePa
 {
     NSString* dataToOpen = [NSString stringWithUTF8String:string.c_str()];
     NSString* baseUrl = [NSString stringWithUTF8String:basePath.AsURL().c_str()];
-    [[(WebView*)webViewPtr mainFrame] loadHTMLString:dataToOpen baseURL:[NSURL fileURLWithPath:baseUrl]];
+    [[(WebView*)webViewPtr mainFrame] loadHTMLString:dataToOpen baseURL:[NSURL URLWithString:baseUrl]];
 }
 
 void WebViewControl::SetRect(const Rect& rect)
