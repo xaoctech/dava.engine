@@ -15,7 +15,7 @@ ItemDelegateForPropertyEnum::~ItemDelegateForPropertyEnum()
 {
 }
 
-void ItemDelegateForPropertyEnum::addEditorWidgets(QWidget *parent, const QModelIndex &index) const
+QWidget * ItemDelegateForPropertyEnum::createEditor( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const
 {
     QComboBox *comboBox = new QComboBox(parent);
     comboBox->setObjectName(QString::fromUtf8("comboBox"));
@@ -38,9 +38,7 @@ void ItemDelegateForPropertyEnum::addEditorWidgets(QWidget *parent, const QModel
     }
     comboBox->blockSignals(false);
 
-    parent->layout()->addWidget(comboBox);
-
-    PropertyAbstractEditor::addEditorWidgets(parent, index);
+    return comboBox;
 }
 
 void ItemDelegateForPropertyEnum::setEditorData( QWidget * editor, const QModelIndex & index ) const 

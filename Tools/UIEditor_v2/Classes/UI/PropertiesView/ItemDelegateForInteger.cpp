@@ -17,14 +17,13 @@ ItemDelegateForInteger::~ItemDelegateForInteger()
 
 }
 
-void ItemDelegateForInteger::addEditorWidgets( QWidget *parent, const QModelIndex &index ) const
+QWidget * ItemDelegateForInteger::createEditor( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const
 {
     QSpinBox *spinBox = new QSpinBox(parent);
     spinBox->setObjectName(QString::fromUtf8("spinBox"));
     connect(spinBox, SIGNAL(valueChanged(int)), this, SLOT(OnValueChanged()));
-    parent->layout()->addWidget(spinBox);
 
-    PropertyAbstractEditor::addEditorWidgets(parent, index);
+    return spinBox;
 }
 
 void ItemDelegateForInteger::setEditorData( QWidget * rawEditor, const QModelIndex & index ) const 

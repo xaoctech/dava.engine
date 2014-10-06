@@ -12,8 +12,8 @@ public:
     explicit ItemDelegateForColor(PropertiesTreeItemDelegate *delegate);
     ~ItemDelegateForColor();
 
-    //virtual QWidget * createEditor( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const override;
-    virtual void addEditorWidgets(QWidget *parent, const QModelIndex &index) const override;
+    virtual QWidget * createEditor( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const override;
+    virtual QList<QAction *> enumEditorActions(QWidget *parent, const QModelIndex &index) const;
     virtual void setEditorData ( QWidget * editor, const QModelIndex & index ) const override;
     virtual bool setModelData ( QWidget * editor, QAbstractItemModel * model, const QModelIndex & index ) const override;
 private slots:

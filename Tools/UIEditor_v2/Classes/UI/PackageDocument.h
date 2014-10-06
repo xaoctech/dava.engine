@@ -60,6 +60,7 @@ public:
     ~PackageDocument();
     
     bool IsModified() const;
+    void ClearModified();
     const DAVA::FilePath &PackageFilePath() const;
     DAVA::UIPackage *Package() const {return package;}
     

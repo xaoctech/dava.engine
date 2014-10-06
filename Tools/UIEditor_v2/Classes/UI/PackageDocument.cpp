@@ -71,6 +71,11 @@ bool PackageDocument::IsModified() const
     return !undoStack->isClean();
 }
 
+void PackageDocument::ClearModified()
+{
+    undoStack->clear();
+}
+
 const DAVA::FilePath &PackageDocument::PackageFilePath() const
 {
     return package->getFilePath();

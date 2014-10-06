@@ -19,16 +19,14 @@ ItemDelegateForFloat::~ItemDelegateForFloat()
 
 }
 
-void ItemDelegateForFloat::addEditorWidgets( QWidget * parent, const QModelIndex & index ) const 
+QWidget * ItemDelegateForFloat::createEditor( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const
 {
     QLineEdit *lineEdit = new QLineEdit(parent);
     lineEdit->setObjectName(QString::fromUtf8("lineEdit"));
     connect(lineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(OnValueChanged()));
     lineEdit->setValidator( new QDoubleValidator(-999999.0, 999999.0, 6, lineEdit) );
 
-    parent->layout()->addWidget(lineEdit);
-
-    PropertyAbstractEditor::addEditorWidgets(parent, index);
+    return lineEdit;
 }
 
 void ItemDelegateForFloat::setEditorData( QWidget * rawEditor, const QModelIndex & index ) const 

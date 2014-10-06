@@ -8,7 +8,7 @@ class ItemDelegateForVector2: public PropertyAbstractEditor
 {
 //    Q_OBJECT
 public:
-    explicit ItemDelegateForVector2();
+    explicit ItemDelegateForVector2(PropertiesTreeItemDelegate *delegate);
     ~ItemDelegateForVector2();
 
     virtual QWidget * createEditor( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const override;

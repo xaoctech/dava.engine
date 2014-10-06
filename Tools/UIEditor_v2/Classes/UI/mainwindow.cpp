@@ -480,6 +480,7 @@ void MainWindow::OnSaveDocument()
         return;
 
     DVVERIFY(project->SavePackage(activeDocument->Package()));
+    activeDocument->ClearModified();
 }
 
 void MainWindow::OnSaveAllDocuments()

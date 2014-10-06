@@ -3,8 +3,10 @@
 #include <QPainter>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QAction>
 #include "PropertiesTreeItemDelegate.h"
 #include "PropertiesTreeModel.h"
+
 
 ItemDelegateForColor::ItemDelegateForColor(PropertiesTreeItemDelegate *delegate)
     : PropertyAbstractEditor(delegate)
@@ -16,19 +18,22 @@ ItemDelegateForColor::~ItemDelegateForColor()
 
 }
 
-void ItemDelegateForColor::addEditorWidgets(QWidget *parent, const QModelIndex &index) const
+QWidget *ItemDelegateForColor::createEditor( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const
 {
     QLabel *label = new QLabel(parent);
     label->setObjectName(QString::fromUtf8("label"));
-    parent->layout()->addWidget(label);
+    return label;
+}
 
-    QToolButton *chooseButton = new QToolButton(parent);
-    chooseButton->setObjectName(QString::fromUtf8("chooseButton"));
-    chooseButton->setText("...");
-    parent->layout()->addWidget(chooseButton);
-    connect(chooseButton, SIGNAL(clicked()), this, SLOT(chooseColorClicked()));
+QList<QAction *> ItemDelegateForColor::enumEditorActions( QWidget *parent, const QModelIndex &index ) const
+{
+    QList<QAction *> actions = PropertyAbstractEditor::enumEditorActions(parent, index);
 
-    PropertyAbstractEditor::addEditorWidgets(parent, index);
+    QAction *chooseColor = new QAction(tr("..."), parent);
+    connect(chooseColor, SIGNAL(triggered(bool)), this, SLOT(chooseColorClicked()));
+    actions.push_front(chooseColor);
+
+    return actions;
 }
 
 void ItemDelegateForColor::setEditorData( QWidget * editor, const QModelIndex & index ) const 
