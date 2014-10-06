@@ -72,7 +72,7 @@ public class JNIRenderer implements GLSurfaceView.Renderer {
 	@Override
 	public void onDrawFrame(GL10 gl) {
 		if (skipFirstFrame) {
-			skipFirstFrame = false;
+			skipFirstFrame = false; //skip first frame for correct unlock device in landscape mode
 			return;
 		}
 		
