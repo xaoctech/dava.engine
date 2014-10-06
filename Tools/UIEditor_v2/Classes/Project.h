@@ -35,7 +35,7 @@ signals:
     void ProjectOpened();
 
 private:
-    DAVA::LegacyControlData *GetLegacyControlData(const DAVA::String &fwPath);
+    DAVA::LegacyControlData *GetLegacyControlData(const DAVA::String fwPath);
 
 private:
     QString projectFile;
