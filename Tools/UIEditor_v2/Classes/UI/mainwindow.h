@@ -77,6 +77,8 @@ private slots:
     
     // Pixelization.
     void OnPixelizationStateChanged();
+
+    void OnCleanChanged(bool clean);
     
     void CurrentTabChanged(int index);
     void TabCloseRequested(int index);

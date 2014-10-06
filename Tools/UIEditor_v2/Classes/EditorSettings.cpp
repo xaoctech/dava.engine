@@ -38,7 +38,7 @@ static const Color DEFAULT_GRID_COLOR(0.5f, 0.5f, 0.5f, 1.0f);
 EditorSettings::EditorSettings()
 {
     settings = new KeyedArchive();    
-    settings->Load("~doc:/UIEditorOptions.archive");
+    settings->Load("~doc:/UIEditor_v2_Options.archive");
 }
 
 EditorSettings::~EditorSettings()
@@ -53,7 +53,7 @@ KeyedArchive *EditorSettings::GetSettings()
 
 void EditorSettings::Save()
 {
-    settings->Save("~doc:/UIEditorOptions.archive");
+    settings->Save("~doc:/UIEditor_v2_Options.archive");
 }
 
 void EditorSettings::SetProjectPath(const String &projectPath)
@@ -83,31 +83,38 @@ String EditorSettings::GetLastOpenedFile(int32 index)
 void EditorSettings::AddLastOpenedFile(const String & pathToFile)
 {
     Vector<String> filesList;
-    
-	// Put all slash symbols to Unix style
-	QString normalizedPath = ResourcesManageHelper::ConvertPathToUnixStyle(QString::fromStdString(pathToFile));
-	String _pathToFile = normalizedPath.toStdString();
 
-    int32 count = GetLastOpenedCount();
+    // Put all slash symbols to Unix style
+    QString normalizedPath = ResourcesManageHelper::ConvertPathToUnixStyle(QString::fromStdString(pathToFile));
+    String _pathToFile = normalizedPath.toStdString();
 
-    for(int32 i = 0; i < count; ++i)
+    const int32 count = GetLastOpenedCount();
+
+    for (int32 i = 0; i < count; ++i)
     {
         String path = settings->GetString(Format("LastOpenedFile_%d", i), "");
-        if(path == _pathToFile)
+        if (path == _pathToFile)
         {
-            return;
+            continue;
         }
+
         filesList.push_back(path);
     }
-    
+
     filesList.insert(filesList.begin(), _pathToFile);
-    count = 0;
-    for(;(count < (int32)filesList.size()) && (count < RECENT_FILES_COUNT); ++count)
+
+    if (filesList.size() > RECENT_FILES_COUNT)
     {
-        settings->SetString(Format("LastOpenedFile_%d", count), filesList[count]);
+        filesList.erase(filesList.begin() + RECENT_FILES_COUNT, filesList.end());
     }
-    settings->SetInt32("LastOpenedFilesCount", count);
-    
+
+    for (int32 i = 0; i < (int32)filesList.size(); ++i)
+    {
+        settings->SetString(Format("LastOpenedFile_%d", i), filesList[i]);
+    }
+
+    settings->SetInt32("LastOpenedFilesCount", filesList.size());
+
     Save();
 }
 

@@ -40,6 +40,7 @@
 #include <QColorDialog>
 #include <QDateTime>
 #include <QPushButton>
+#include <QUndoStack>
 
 //////////////////////////////////////////////////////////////////////////
 #include "fontmanagerdialog.h"
@@ -147,8 +148,11 @@ void MainWindow::CurrentTabChanged(int index)
 {
     if (activeDocument)
     {
+        disconnect(activeDocument->UndoStack(), SIGNAL(cleanChanged(bool)), this, SLOT(OnCleanChanged(bool)));
         disconnect(ui->packageTreeDock, SIGNAL(SelectionRootControlChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)), activeDocument, SLOT(OnSelectionRootControlChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)));
         disconnect(ui->packageTreeDock, SIGNAL(SelectionControlChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)), activeDocument, SLOT(OnSelectionControlChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)));
+        ui->mainToolbar->removeAction(activeDocument->UndoAction());
+        ui->mainToolbar->removeAction(activeDocument->RedoAction());
     }
     
     activeDocument = GetTabDocument(ui->tabBar->currentIndex());
@@ -159,19 +163,25 @@ void MainWindow::CurrentTabChanged(int index)
     
     ui->packageTreeDock->SetDocument(activeDocument);
     ui->packageGraphicsWidget->SetDocument(activeDocument);
-    ui->propertiesDockWidget->SetDocument(activeDocument);
+    ui->propertiesDockWidget->SetContext(activeDocument ? activeDocument->GetPropertiesContext() : NULL);
 //    ui->packageLibraryWidget->SetDocument(activeDocument);
     
     if (activeDocument)
     {
         connect(ui->packageTreeDock, SIGNAL(SelectionControlChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)), activeDocument, SLOT(OnSelectionControlChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)));
         connect(ui->packageTreeDock, SIGNAL(SelectionRootControlChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)), activeDocument, SLOT(OnSelectionRootControlChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)));
+        ui->mainToolbar->addAction(activeDocument->UndoAction());
+        ui->mainToolbar->addAction(activeDocument->RedoAction());
+        connect(activeDocument->UndoStack(), SIGNAL(cleanChanged(bool)), this, SLOT(OnCleanChanged(bool)));
     }
+
+    UpdateSaveButtons();
 }
 
 void MainWindow::TabCloseRequested(int index)
 {
     CloseTab(index);
+    UpdateSaveButtons();
 }
 
 bool MainWindow::CloseTab(int index)
@@ -193,7 +203,7 @@ bool MainWindow::CloseAllTabs()
         if (!CloseTab(0))
             return false;
     }
-    
+
     return true;
 }
 
@@ -378,6 +388,7 @@ void MainWindow::RebuildRecentMenu()
             ui->menuRecent->addAction(recentProject);
         }
     }
+    ui->menuRecent->setEnabled(projectCount > 0);
 }
 
 void MainWindow::RecentMenuTriggered(QAction *recentProjectAction)
@@ -469,6 +480,7 @@ void MainWindow::OnSaveDocument()
         return;
 
     DVVERIFY(project->SavePackage(activeDocument->Package()));
+    activeDocument->ClearModified();
 }
 
 void MainWindow::OnSaveAllDocuments()
@@ -575,6 +587,7 @@ bool MainWindow::CloseProject()
         delete project;
         project = NULL;
 	}
+    UpdateSaveButtons();
 	return true;
 }
 
@@ -673,8 +686,12 @@ void MainWindow::SetBackgroundColorMenuTriggered(QAction* action)
 
 void MainWindow::UpdateSaveButtons()
 {
-    ui->actionSaveDocument->setEnabled(true);
-    ui->actionSaveAllDocuments->setEnabled(true);
+    bool enableSingleSave = activeDocument && activeDocument->IsModified();
+    ui->actionSaveDocument->setEnabled(enableSingleSave);
+
+
+    bool enableMultiSave = ui->tabBar->count() > 0;
+    ui->actionSaveAllDocuments->setEnabled(enableMultiSave);
 }
 
 int MainWindow::CreateTabContent(DAVA::UIPackage *package)
@@ -728,4 +745,15 @@ PackageDocument *MainWindow::GetTabDocument(int index) const
 {
     PackageDocument *document = ui->tabBar->tabData(index).value<PackageDocument *>();
     return document;
+}
+
+void MainWindow::OnCleanChanged(bool clean)
+{
+    QString tabText(activeDocument->PackageFilePath().GetBasename().c_str());
+    if(!clean)
+        tabText.append("*");
+
+    ui->tabBar->setTabText(ui->tabBar->currentIndex(), tabText);
+
+    UpdateSaveButtons();
 }

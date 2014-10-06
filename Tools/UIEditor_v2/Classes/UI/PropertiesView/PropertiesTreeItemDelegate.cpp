@@ -9,6 +9,7 @@
 #include <QPainter>
 #include <QStylePainter>
 #include <QApplication>
+#include <QToolButton>
 #include "QtControls/lineeditext.h"
 
 #include "DAVAEngine.h"
@@ -26,14 +27,13 @@
 
 PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject *parent)
     : QStyledItemDelegate(parent)
-    , currentDelegate(NULL)
 {
     propertyItemDelegates[BaseProperty::TYPE_ENUM] = new ItemDelegateForPropertyEnum(this);
-    variantTypeItemDelegates[DAVA::VariantType::TYPE_VECTOR2] = new ItemDelegateForVector2();
-    variantTypeItemDelegates[DAVA::VariantType::TYPE_STRING] = new ItemDelegateForString();
-    variantTypeItemDelegates[DAVA::VariantType::TYPE_WIDE_STRING] = new ItemDelegateForString();
+    variantTypeItemDelegates[DAVA::VariantType::TYPE_VECTOR2] = new ItemDelegateForVector2(this);
+    variantTypeItemDelegates[DAVA::VariantType::TYPE_STRING] = new ItemDelegateForString(this);
+    variantTypeItemDelegates[DAVA::VariantType::TYPE_WIDE_STRING] = new ItemDelegateForString(this);
     variantTypeItemDelegates[DAVA::VariantType::TYPE_FILEPATH] = new ItemDelegateForFilePath();
-    variantTypeItemDelegates[DAVA::VariantType::TYPE_COLOR] = new ItemDelegateForColor();
+    variantTypeItemDelegates[DAVA::VariantType::TYPE_COLOR] = new ItemDelegateForColor(this);
     variantTypeItemDelegates[DAVA::VariantType::TYPE_INT32] = new ItemDelegateForInteger(this);
     variantTypeItemDelegates[DAVA::VariantType::TYPE_INT64] = new ItemDelegateForInteger(this);
     variantTypeItemDelegates[DAVA::VariantType::TYPE_UINT32] = new ItemDelegateForInteger(this);
@@ -49,28 +49,15 @@ void PropertiesTreeItemDelegate::paint( QPainter * painter, const QStyleOptionVi
 {
     QStyleOptionViewItemV4 opt = option;
     initStyleOption(&opt, index);
-//     if (index.column() == 1)
-//     {
-// 
-//         QStyleOptionToolButton buttonOption;
-//         buttonOption.subControls = QStyle::SC_ToolButton;
-//         buttonOption.activeSubControls = QStyle::SC_ToolButton;
-//         buttonOption.state = option.state;
-//         QRect buttonrect = opt.rect;
-//         buttonrect.setWidth(buttonrect.height());
-//         buttonrect.moveRight(opt.rect.right());
-//         buttonOption.features = QStyleOptionToolButton::None;
-//         buttonOption.rect = buttonrect;
-//         buttonOption.arrowType = Qt::NoArrow;
-//         buttonOption.toolButtonStyle = Qt::ToolButtonIconOnly;
-//         buttonOption.icon = QIcon(":/Icons/editclear.png");
-//         buttonOption.iconSize = buttonOption.rect.size();
-// 
-//         QApplication::style()->drawComplexControl(QStyle::CC_ToolButton, &buttonOption, painter);
-//         opt.rect.setRight(buttonOption.rect.left());
-//     }
 
-    return QStyledItemDelegate::paint(painter, opt, index);
+    PropertyAbstractEditor *currentDelegate = GetCustomItemDelegateForIndex(index);
+    if (currentDelegate)
+    {
+        currentDelegate->paint(painter, opt, index);
+    }
+
+    //return QStyledItemDelegate::paint(painter, opt, index);
+    QStyledItemDelegate::paint(painter, opt, index);
 }
 
 QSize PropertiesTreeItemDelegate::sizeHint( const QStyleOptionViewItem &option, const QModelIndex &index ) const
@@ -80,10 +67,10 @@ QSize PropertiesTreeItemDelegate::sizeHint( const QStyleOptionViewItem &option, 
 
 QWidget *PropertiesTreeItemDelegate::createEditor( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const
 {
-    currentDelegate = GetCustomItemDelegateForIndex(index);
+    PropertyAbstractEditor *currentDelegate = GetCustomItemDelegateForIndex(index);
     if (currentDelegate)
     {
-        return currentDelegate->createEditor(parent, option, index);
+        return currentDelegate->createEditorWidget(parent, option, index);
     }
 
     if (index.data(Qt::EditRole).type() == QVariant::Bool)
@@ -94,6 +81,7 @@ QWidget *PropertiesTreeItemDelegate::createEditor( QWidget * parent, const QStyl
 
 void PropertiesTreeItemDelegate::setEditorData( QWidget *editor, const QModelIndex & index ) const
 {
+    PropertyAbstractEditor *currentDelegate = GetCustomItemDelegateForIndex(index);
     if (currentDelegate)
         return currentDelegate->setEditorData(editor, index);
 
@@ -102,8 +90,12 @@ void PropertiesTreeItemDelegate::setEditorData( QWidget *editor, const QModelInd
 
 void PropertiesTreeItemDelegate::setModelData(QWidget * editor, QAbstractItemModel *model, const QModelIndex & index) const
 {
+    PropertyAbstractEditor *currentDelegate = GetCustomItemDelegateForIndex(index);
     if (currentDelegate)
-        return currentDelegate->setModelData(editor, model, index);
+    {
+        currentDelegate->setModelData(editor, model, index);
+        return;
+    }
 
     QLineEdit *lineEdit = qobject_cast<QLineEdit *>(editor);
     if (lineEdit && !lineEdit->isModified())
@@ -138,28 +130,33 @@ PropertyAbstractEditor * PropertiesTreeItemDelegate::GetCustomItemDelegateForInd
         QMap<BaseProperty::ePropertyType, PropertyAbstractEditor *>::const_iterator prop_iter = propertyItemDelegates.find(property->GetType());
         if (prop_iter != propertyItemDelegates.end())
             return prop_iter.value();
+    }
 
-        DAVA::VariantType variantType = index.data(DAVA::VariantTypeEditRole).value<DAVA::VariantType>();
+    QVariant editValue = index.data(Qt::EditRole);
+    if (editValue.userType() == QMetaTypeId<DAVA::VariantType>::qt_metatype_id())
+    {
+        DAVA::VariantType variantType = editValue.value<DAVA::VariantType>();
         QMap<DAVA::VariantType::eVariantType, PropertyAbstractEditor *>::const_iterator var_iter = variantTypeItemDelegates.find(variantType.GetType());
         if (var_iter != variantTypeItemDelegates.end())
             return var_iter.value();
     }
-
-    QMap<QVariant::Type, PropertyAbstractEditor *>::const_iterator iter = qvariantItemDelegates.find(index.data(Qt::EditRole).type());
-    if (iter != qvariantItemDelegates.end())
-        return iter.value();
+    else
+    {
+        QMap<QVariant::Type, PropertyAbstractEditor *>::const_iterator iter = qvariantItemDelegates.find(editValue.type());
+        if (iter != qvariantItemDelegates.end())
+            return iter.value();
+    }
 
     return NULL;
 }
 
-void PropertiesTreeItemDelegate::NeedCommitData( QWidget * editor )
+void PropertiesTreeItemDelegate::emitCommitData(QWidget * editor)
 {
     emit commitData(editor);
 }
 
-void PropertiesTreeItemDelegate::NeedCommitDataAndCloseEditor( QWidget * editor, QAbstractItemDelegate::EndEditHint hint)
+void PropertiesTreeItemDelegate::emitCloseEditor(QWidget * editor, QAbstractItemDelegate::EndEditHint hint)
 {
-    emit commitData(editor);
     emit closeEditor(editor, hint);
 }
 
