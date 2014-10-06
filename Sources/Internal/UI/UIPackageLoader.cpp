@@ -329,7 +329,7 @@ bool UIPackageLoader::SavePackage(UIPackage *package)
     rootNode->Add("ImportedPackages", packagesNode);
 
     YamlNode *controlsNode = YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION);
-    for (uint32 i = 0; i < package->GetControlsCount(); ++i)
+    for (int32 i = 0; i < package->GetControlsCount(); ++i)
         controlsNode->Add(CreateYamlNode(package->GetControl(i)));
     
     rootNode->Add("Controls", controlsNode);

@@ -17,10 +17,8 @@ public:
     QVector2D vector2D() const;
     void setVector2D(const QVector2D &newValue);
 
-    bool isModified() const;
-
-    QLineEdit *lineEditX() const{ return editX; }
-    QLineEdit *lineEditY() const{ return editY; }
+    QLineEdit *lineEditX() const { return editX; }
+    QLineEdit *lineEditY() const { return editY; }
 
 private:
     QLineEdit *editX;

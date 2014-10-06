@@ -43,8 +43,6 @@ Vector2DEdit::Vector2DEdit(QWidget *parent)
     horizontalLayout->setStretch(3, 1);
 
     setAutoFillBackground(true);
-
-    //setFocusPolicy(Qt::StrongFocus);
 }
 
 Vector2DEdit::~Vector2DEdit()
@@ -61,9 +59,3 @@ void Vector2DEdit::setVector2D(const QVector2D &newValue)
     editX->setText(QString("%1").arg(newValue.x()));
     editY->setText(QString("%1").arg(newValue.y()));
 }
-
-bool Vector2DEdit::isModified() const
-{
-    return editX->isModified() || editY->isModified();
-}
-

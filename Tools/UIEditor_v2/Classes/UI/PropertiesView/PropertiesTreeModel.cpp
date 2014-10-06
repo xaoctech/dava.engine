@@ -120,6 +120,12 @@ QVariant PropertiesTreeModel::data(const QModelIndex &index, int role) const
                 return var;
             }
             break;
+        case Qt::DecorationRole:
+            {
+                if (property->GetType() == VariantType::TYPE_COLOR)
+                    return ColorToQColor(property->GetValue().AsColor());
+            }
+            break;
 
         case Qt::BackgroundRole:
             return property->GetType() == BaseProperty::TYPE_HEADER ? Qt::lightGray : Qt::white;
