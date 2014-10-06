@@ -19,11 +19,22 @@ public class JNIApplication extends Application
 	
 	private String externalDocumentsDir;
 	private String internalDocumentsDir; 
-
 	private Locale launchLocale;
-	
-	private boolean firstRun = true;
+	private boolean firstLaunch = true;
 
+	/**
+	 * Initialize native framework core in first time.
+	 * Should be called on activity starting.
+	 */
+	public void InitFramework()
+	{
+	    if (firstLaunch) {
+            ApplicationInfo info = getApplicationInfo();
+            Log.w(JNIConst.LOG_TAG, String.format("[Application::InitFramework] Create Application. apkFilePath is %s", info.publicSourceDir)); 
+            OnCreateApplication(externalDocumentsDir, internalDocumentsDir, info.publicSourceDir, JNIConst.LOG_TAG, info.packageName);
+            firstLaunch = false;
+        }
+	}
 
 	@Override
 	public void onCreate()
@@ -33,9 +44,13 @@ public class JNIApplication extends Application
 		Log.i(JNIConst.LOG_TAG, "[Application::onCreate] start"); 
         
 		/*
-		 * Core initialization moved to onConfigurationChanged
+		 * Core initialization moved to JNIActivity
 		 */
 	    JNINotificationProvider.Init();
+	    
+        externalDocumentsDir = this.getExternalFilesDir(null).getAbsolutePath();
+        internalDocumentsDir = this.getFilesDir().getAbsolutePath();
+        launchLocale = Locale.getDefault();
 		
 		Log.i(JNIConst.LOG_TAG, "[Application::onCreate] finish"); 
 	}
@@ -47,19 +62,6 @@ public class JNIApplication extends Application
 
 		super.onConfigurationChanged(newConfig);
 		
-		if (firstRun) {
-		    externalDocumentsDir = this.getExternalFilesDir(null).getAbsolutePath();
-		    internalDocumentsDir = this.getFilesDir().getAbsolutePath();
-
-    		ApplicationInfo info = getApplicationInfo();
-    		launchLocale = Locale.getDefault();
-
-    		Log.w(JNIConst.LOG_TAG, String.format("[Application::onConfigurationChanged] Create Application. apkFilePath is %s", info.publicSourceDir)); 
-            OnCreateApplication(externalDocumentsDir, internalDocumentsDir, info.publicSourceDir, JNIConst.LOG_TAG, info.packageName);
-            
-            firstRun = false;
-		}
-
 		OnConfigurationChanged();
 
 		if (IsApplicationShouldBeRestarted())
