@@ -14,15 +14,31 @@ class UIPackage;
 class UIControlFactory;
 class UIControlBackground;
     
-class LegacyControlData
+class LegacyControlData : public BaseObject
 {
+public:
+    struct Data {
+        String name;
+        bool isAggregator;
+        Vector2 size;
+    };
 public:
     LegacyControlData(){}
     
+    const Data *Get(const String &fwPath)
+    {
+        auto it = map.find(fwPath);
+        return it == map.end() ? NULL : &(it->second);
+    }
+    
+    void Put(const String &fwPath, const Data &data)
+    {
+        map[fwPath] = data;
+    }
+    
 public:
-    String name;
-    bool isAggregator;
-    Vector2 size;
+    
+    Map<String, Data> map;
 };
     
 ////////////////////////////////////////////////////////////////////////////////
@@ -105,21 +121,21 @@ protected:
 class UIPackageLoader
 {
 public:
-    UIPackageLoader();
+    UIPackageLoader(LegacyControlData *data = NULL);
     virtual ~UIPackageLoader();
 
 public:
-    UIPackage *LoadPackage(const FilePath &packagePath, const LegacyControlData *data = NULL);
+    UIPackage *LoadPackage(const FilePath &packagePath);
     bool SavePackage(UIPackage *package);
 
 protected:
     void SetUsingIntrospectionForLegacyData(bool useIntrospection);
 
 private:
-    void LoadRootControl(int index);
-    UIControl *GetLoadedControlByName(const String &name);
-    UIControl *CreateControl(const YamlNode *node, bool legacySupport);
-    void LoadControl(UIControl *control, const YamlNode *node, bool legacySupport);
+    void LoadRootControl(int index, UIPackage *currentPackage);
+    UIControl *GetLoadedControlByName(const String &name, UIPackage *currentPackage);
+    UIControl *CreateControl(const YamlNode *node, bool legacySupport, UIPackage *currentPackage);
+    void LoadControl(UIControl *control, const YamlNode *node, bool legacySupport, UIPackage *currentPackage);
 
 protected:
     virtual UIControl *CreateControlByClassName(const String &className);
@@ -154,6 +170,7 @@ private:
     DAVA::Map<DAVA::String, DAVA::String> baseClasses;
 
 private:
+    LegacyControlData *legacyData;
     UIYamlLoader *yamlLoader;
     bool useIntrospectionForLegacyData;
 
@@ -171,7 +188,6 @@ private:
     };
     Vector<QueueItem> loadingQueue;
     DAVA::Map<DAVA::String, UIPackage*> importedPackages;
-    UIPackage *currentPackage;
 };
 
 };
