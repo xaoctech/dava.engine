@@ -14,8 +14,10 @@ class PropertyAbstractEditor: public QObject
 public:
     explicit PropertyAbstractEditor(PropertiesTreeItemDelegate *delegate = NULL);
     virtual ~PropertyAbstractEditor();
-    virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-    virtual void addEditorWidgets(QWidget *parent, const QModelIndex &index) const;;
+    virtual QWidget *createEditorWidget(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const { return NULL; };
+    virtual void addEditorWidgets(QWidget *parent, const QModelIndex &index) const;
+    virtual QList<QAction *> enumEditorActions(QWidget *parent, const QModelIndex &index) const;
     virtual void setEditorData(QWidget *editor, const QModelIndex &index) const = 0;
     virtual bool setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
     virtual void paint( QPainter * painter, QStyleOptionViewItem & option, const QModelIndex & index ) const{}

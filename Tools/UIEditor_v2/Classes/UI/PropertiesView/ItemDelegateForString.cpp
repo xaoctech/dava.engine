@@ -17,14 +17,13 @@ ItemDelegateForString::~ItemDelegateForString()
 
 }
 
-void ItemDelegateForString::addEditorWidgets(QWidget *parent, const QModelIndex &index) const
+QWidget *ItemDelegateForString::createEditor( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const
 {
     QLineEdit *lineEdit = new QLineEdit(parent);
     lineEdit->setObjectName(QString::fromUtf8("lineEdit"));
     connect(lineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(OnValueChanged()));
-    parent->layout()->addWidget(lineEdit);
 
-    PropertyAbstractEditor::addEditorWidgets(parent, index);
+    return lineEdit;
 }
 
 void ItemDelegateForString::setEditorData( QWidget *rawEditor, const QModelIndex & index ) const 

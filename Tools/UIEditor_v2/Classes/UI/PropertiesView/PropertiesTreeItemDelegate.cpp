@@ -29,7 +29,7 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject *parent)
     : QStyledItemDelegate(parent)
 {
     propertyItemDelegates[BaseProperty::TYPE_ENUM] = new ItemDelegateForPropertyEnum(this);
-    variantTypeItemDelegates[DAVA::VariantType::TYPE_VECTOR2] = new ItemDelegateForVector2();
+    variantTypeItemDelegates[DAVA::VariantType::TYPE_VECTOR2] = new ItemDelegateForVector2(this);
     variantTypeItemDelegates[DAVA::VariantType::TYPE_STRING] = new ItemDelegateForString(this);
     variantTypeItemDelegates[DAVA::VariantType::TYPE_WIDE_STRING] = new ItemDelegateForString(this);
     variantTypeItemDelegates[DAVA::VariantType::TYPE_FILEPATH] = new ItemDelegateForFilePath();
@@ -70,7 +70,7 @@ QWidget *PropertiesTreeItemDelegate::createEditor( QWidget * parent, const QStyl
     PropertyAbstractEditor *currentDelegate = GetCustomItemDelegateForIndex(index);
     if (currentDelegate)
     {
-        return currentDelegate->createEditor(parent, option, index);
+        return currentDelegate->createEditorWidget(parent, option, index);
     }
 
     if (index.data(Qt::EditRole).type() == QVariant::Bool)
