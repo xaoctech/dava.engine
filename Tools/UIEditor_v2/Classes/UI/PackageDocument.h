@@ -27,6 +27,7 @@ namespace DAVA {
 
 class QAbstractItemModel;
 class QSortFilterProxyModel;
+class QUndoStack;
 
 class UIPackageModel;
 class DavaGLWidget;
@@ -41,12 +42,6 @@ public:
     QString filterString;
 };
 
-class PropertiesViewContext
-{
-public:
-    QPoint scrollPosition;
-};
-
 class LibraryViewContext
 {
 public:
@@ -55,6 +50,7 @@ public:
 };
 
 class GraphicsViewContext;
+class PropertiesViewContext;
 
 class PackageDocument: public QObject
 {
@@ -63,7 +59,7 @@ public:
     PackageDocument(DAVA::UIPackage *package, QObject *parent = NULL);
     ~PackageDocument();
     
-    bool IsModified() const { return true; }
+    bool IsModified() const;
     const DAVA::FilePath &PackageFilePath() const;
     DAVA::UIPackage *Package() const {return package;}
     
@@ -72,14 +68,18 @@ public:
     
     const TreeViewContext *GetTreeContext() const { return &treeContext; };
     const GraphicsViewContext *GetGraphicsContext() const {return graphicsContext; };
-    const PropertiesViewContext *GetPropertiesContext() const {return &propertiesContext; };
+    const PropertiesViewContext *GetPropertiesContext() const {return propertiesContext; };
     const LibraryViewContext *GetLibraryContext() const {return &libraryContext; };
 
     TreeViewContext *GetTreeContext() { return &treeContext; };
     GraphicsViewContext *GetGraphicsContext() {return graphicsContext; };
-    PropertiesViewContext *GetPropertiesContext() {return &propertiesContext; };
+    PropertiesViewContext *GetPropertiesContext() {return propertiesContext; };
     LibraryViewContext *GetLibraryContext() {return &libraryContext; };
-    
+
+    QAction *UndoAction() const { return undoAction; }
+    QAction *RedoAction() const { return redoAction; }
+    QUndoStack *UndoStack() const { return undoStack; }
+
 signals:
     void controlsSelectionChanged(const QList<DAVA::UIControl *> &activatedControls, const QList<DAVA::UIControl *> &deactivatedControls);
     void activeRootControlsChanged(const QList<DAVA::UIControl *> &activatedRootControls, const QList<DAVA::UIControl *> &deactivatedRootControls);
@@ -95,12 +95,14 @@ private:
     DAVA::UIPackage *package;
     QList<DAVA::UIControl *> selectedControls;
     QList<DAVA::UIControl *> activeRootControls;
-//    DAVA::Vector<DAVA::UIControl *> selectedControls;
-    
     TreeViewContext treeContext;
     GraphicsViewContext *graphicsContext;
-    PropertiesViewContext propertiesContext;
+    PropertiesViewContext *propertiesContext;
     LibraryViewContext libraryContext;
+
+    QUndoStack *undoStack;
+    QAction *undoAction;
+    QAction *redoAction;
 };
 
 Q_DECLARE_METATYPE(PackageDocument *);
