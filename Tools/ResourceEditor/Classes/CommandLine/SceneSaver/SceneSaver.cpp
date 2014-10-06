@@ -66,7 +66,7 @@ void SceneSaver::EnableCopyConverted(bool enabled)
     copyConverted = enabled;
 }
 
-void SceneSaver::SaveFile(const String &fileName, Set<String> &errorLog)
+void SceneSaver::SaveFile(const String &fileName, bool saveForGame, Set<String> &errorLog)
 {
     Logger::FrameworkDebug("[SceneSaver::SaveFile] %s", fileName.c_str());
     
@@ -89,7 +89,7 @@ void SceneSaver::SaveFile(const String &fileName, Set<String> &errorLog)
 			scene->AddNode(tempV[i]);
 		}
 		
-		SaveScene(scene, filePath, errorLog);
+		SaveScene(scene, filePath, saveForGame, errorLog);
     }
 	else
 	{
@@ -134,7 +134,7 @@ void SceneSaver::ResaveFile(const String &fileName, Set<String> &errorLog)
 	SafeRelease(scene);
 }
 
-void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, Set<String> &errorLog)
+void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, bool saveForGame, Set<String> &errorLog)
 {
     uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
     
@@ -187,7 +187,7 @@ void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, Set<String> &
     tempSceneName.ReplaceExtension(".saved.sc2");
     
     sceneUtils.CopyFiles(errorLog);
-    scene->Save(tempSceneName, true);
+    scene->Save(tempSceneName, saveForGame);
 
     bool moved = FileSystem::Instance()->MoveFile(tempSceneName, sceneUtils.dataFolder + relativeFilename, true);
 	if(!moved)
