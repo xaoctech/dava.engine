@@ -9,11 +9,13 @@
 #include "PackageDocument.h"
 #include <DAVAEngine.h>
 #include <QLineEdit>
+#include <QAction>
 
 #include "UI/PackageView/UIPackageModel.h"
 #include "UI/PackageView/UIFilteredPackageModel.h"
 #include "UI/DavaGLWidget.h"
 #include "UI/GraphicView/GraphicsViewContext.h"
+#include "UI/PropertiesView/PropertiesViewContext.h"
 
 using namespace DAVA;
 
@@ -22,6 +24,15 @@ PackageDocument::PackageDocument(DAVA::UIPackage *_package, QObject *parent)
 , package(SafeRetain(_package))
 , graphicsContext(NULL)
 {
+    undoStack = new QUndoStack(this);
+    undoAction = undoStack->createUndoAction(undoStack);
+    undoAction->setShortcuts(QKeySequence::Undo);
+    undoAction->setIcon(QIcon(":/Icons/edit_undo.png"));
+
+    redoAction = undoStack->createRedoAction(undoStack);
+    redoAction->setShortcuts(QKeySequence::Redo);
+    redoAction->setIcon(QIcon(":/Icons/edit_redo.png"));
+
     treeContext.model = new UIPackageModel(package, this);
     treeContext.proxyModel = new UIFilteredPackageModel(this);
     treeContext.proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
@@ -30,7 +41,7 @@ PackageDocument::PackageDocument(DAVA::UIPackage *_package, QObject *parent)
     graphicsContext = new GraphicsViewContext();
     connect(this, SIGNAL(activeRootControlsChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)), graphicsContext, SLOT(OnActiveRootControlsChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)));
 
-    //propertiesContext;
+    propertiesContext = new PropertiesViewContext(this);
     //libraryContext;
 
     for (size_t index = 0; index < package->GetControlsCount(); ++index)
@@ -50,8 +61,14 @@ PackageDocument::~PackageDocument()
     SafeDelete(treeContext.proxyModel);
     disconnect(this, SIGNAL(activeRootControlsChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)), graphicsContext, SLOT(OnActiveRootControlsChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)));
     SafeDelete(graphicsContext);
+    SafeDelete(propertiesContext);
     
     SafeRelease(package);
+}
+
+bool PackageDocument::IsModified() const
+{
+    return !undoStack->isClean();
 }
 
 const DAVA::FilePath &PackageDocument::PackageFilePath() const

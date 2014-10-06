@@ -297,6 +297,12 @@
     <ClCompile Include="Classes\UI\PropertiesView\PropertyAbstractEditor.cpp">
       <Filter>Sources\UI\PropertiesView</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\UI\PropertiesView\ChangePropertyValueCommand.cpp">
+      <Filter>Sources\UI\PropertiesView</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\PropertiesView\PropertiesViewContext.cpp">
+      <Filter>Sources\UI\PropertiesView</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\FrameworkMain.h">
@@ -517,6 +523,12 @@
     </ClInclude>
     <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForFloat.h">
       <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertiesView\ChangePropertyValueCommand.h">
+      <Filter>Sources\UI\PropertiesView</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertiesView\PropertiesViewContext.h">
+      <Filter>Sources\UI\PropertiesView</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
