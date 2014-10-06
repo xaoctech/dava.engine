@@ -710,7 +710,7 @@ int32 FileSystem::Spawn(const String& command)
 	{
 		Logger::Warning("[FileSystem::Spawn] command (%s) has return code (%d)", command.c_str(), retCode);
 	}
-
+    return retCode;
 }
 
 void FileSystem::MarkFolderAsNoMedia(const FilePath &folder)
