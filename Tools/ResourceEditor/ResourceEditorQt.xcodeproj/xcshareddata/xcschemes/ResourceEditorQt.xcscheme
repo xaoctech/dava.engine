@@ -64,7 +64,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-staticocclusion -build -processfile /Users/victorkleschenko/Work/WoT/wot.blitz_trunk/DataSource/3d/Untitled.sc2"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-extract -path /Users/user/Documents/work/test/extractor_test  -mipmap 2 -forceclose"
