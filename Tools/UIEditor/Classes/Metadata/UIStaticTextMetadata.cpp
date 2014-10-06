@@ -410,13 +410,13 @@ QRectF UIStaticTextMetadata::GetTextMargins() const
 
 void UIStaticTextMetadata::SetTextMargins(const QRectF& value)
 {
-    if (!VerifyActiveParamID() || !GetActiveStaticText()->GetTextBackground())
+    if (!VerifyActiveParamID())
     {
         return;
     }
     
     UIControlBackground::UIMargins margins = QRectFToUIMargins(value);
-    GetActiveStaticText()->GetTextBackground()->SetMargins(&margins);
+    GetActiveStaticText()->SetMargins(&margins);
 }
 
 float UIStaticTextMetadata::GetTextLeftMargin() const
@@ -426,14 +426,14 @@ float UIStaticTextMetadata::GetTextLeftMargin() const
 
 void UIStaticTextMetadata::SetTextLeftMargin(float value)
 {
-    if (!VerifyActiveParamID() || !GetActiveStaticText()->GetTextBackground())
+    if (!VerifyActiveParamID())
     {
         return;
     }
     
     UIControlBackground::UIMargins margins = GetTextMarginsToUpdate();
     margins.left = value;
-    GetActiveStaticText()->GetTextBackground()->SetMargins(&margins);
+    GetActiveStaticText()->SetMargins(&margins);
 }
 
 float UIStaticTextMetadata::GetTextTopMargin() const
@@ -443,14 +443,14 @@ float UIStaticTextMetadata::GetTextTopMargin() const
 
 void UIStaticTextMetadata::SetTextTopMargin(float value)
 {
-    if (!VerifyActiveParamID() || !GetActiveStaticText()->GetTextBackground())
+    if (!VerifyActiveParamID())
     {
         return;
     }
     
     UIControlBackground::UIMargins margins = GetTextMarginsToUpdate();
     margins.top = value;
-    GetActiveStaticText()->GetTextBackground()->SetMargins(&margins);
+    GetActiveStaticText()->SetMargins(&margins);
 }
 
 float UIStaticTextMetadata::GetTextRightMargin() const
@@ -460,14 +460,14 @@ float UIStaticTextMetadata::GetTextRightMargin() const
 
 void UIStaticTextMetadata::SetTextRightMargin(float value)
 {
-    if (!VerifyActiveParamID() || !GetActiveStaticText()->GetTextBackground())
+    if (!VerifyActiveParamID())
     {
         return;
     }
     
     UIControlBackground::UIMargins margins = GetTextMarginsToUpdate();
     margins.right = value;
-    GetActiveStaticText()->GetTextBackground()->SetMargins(&margins);
+    GetActiveStaticText()->SetMargins(&margins);
 }
 
 float UIStaticTextMetadata::GetTextBottomMargin() const
@@ -477,14 +477,14 @@ float UIStaticTextMetadata::GetTextBottomMargin() const
 
 void UIStaticTextMetadata::SetTextBottomMargin(float value)
 {
-    if (!VerifyActiveParamID() || !GetActiveStaticText()->GetTextBackground())
+    if (!VerifyActiveParamID())
     {
         return;
     }
     
     UIControlBackground::UIMargins margins = GetTextMarginsToUpdate();
     margins.bottom = value;
-    GetActiveStaticText()->GetTextBackground()->SetMargins(&margins);
+    GetActiveStaticText()->SetMargins(&margins);
 }
 
 UIControlBackground::UIMargins UIStaticTextMetadata::GetTextMarginsToUpdate(UIControl::eControlState /* state */) const
