@@ -68,6 +68,7 @@
     <ClCompile Include="Classes\UI\PackageView\PackageDockWidget.cpp" />
     <ClCompile Include="Classes\UI\PackageView\UIFilteredPackageModel.cpp" />
     <ClCompile Include="Classes\UI\PackageView\UIPackageModel.cpp" />
+    <ClCompile Include="Classes\UI\PropertiesView\ChangePropertyValueCommand.cpp" />
     <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForColor.cpp" />
     <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForFloat.cpp" />
     <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForInteger.cpp" />
@@ -79,6 +80,8 @@
     <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForVector2.cpp" />
     <ClCompile Include="Classes\UI\PropertiesView\PropertiesTreeView.cpp" />
     <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForFilePath.cpp" />
+    <ClCompile Include="Classes\UI\PropertiesView\PropertiesViewContext.cpp" />
+    <ClCompile Include="Classes\UI\PropertiesView\PropertyAbstractEditor.cpp" />
     <ClCompile Include="Classes\Utils\QtDavaConvertion.cpp" />
     <ClCompile Include="Classes\Validators\BaseValidator.cpp" />
     <ClCompile Include="Classes\Validators\DistanceFontValidator.cpp" />
@@ -162,6 +165,7 @@
     <ClInclude Include="Classes\UI\PackageView\PackageDockWidget.h" />
     <ClInclude Include="Classes\UI\PackageView\UIFilteredPackageModel.h" />
     <ClInclude Include="Classes\UI\PackageView\UIPackageModel.h" />
+    <ClInclude Include="Classes\UI\PropertiesView\ChangePropertyValueCommand.h" />
     <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForColor.h" />
     <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForFilePath.h" />
     <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForFloat.h" />
@@ -183,6 +187,7 @@
     </ClInclude>
     <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForVector2.h" />
     <ClInclude Include="Classes\UI\PropertiesView\PropertiesTreeView.h" />
+    <ClInclude Include="Classes\UI\PropertiesView\PropertiesViewContext.h" />
     <ClInclude Include="Classes\UI\PropertiesView\PropertyAbstractEditor.h" />
     <ClInclude Include="Classes\Utils\QtDavaConvertion.h" />
     <ClInclude Include="Classes\Validators\BaseValidator.h" />

@@ -1,10 +1,13 @@
 #include "ItemDelegateForString.h"
 #include <QLineEdit>
+#include <QLayout>
 #include "DAVAEngine.h"
 #include "PropertiesTreeModel.h"
 #include "Utils/QtDavaConvertion.h"
+#include "PropertiesTreeItemDelegate.h"
 
-ItemDelegateForString::ItemDelegateForString()
+ItemDelegateForString::ItemDelegateForString(PropertiesTreeItemDelegate *delegate)
+    : PropertyAbstractEditor(delegate)
 {
 
 }
@@ -14,16 +17,20 @@ ItemDelegateForString::~ItemDelegateForString()
 
 }
 
-QWidget * ItemDelegateForString::createEditor( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const 
+QWidget *ItemDelegateForString::createEditor( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const
 {
-    return new QLineEdit(parent);
+    QLineEdit *lineEdit = new QLineEdit(parent);
+    lineEdit->setObjectName(QString::fromUtf8("lineEdit"));
+    connect(lineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(OnValueChanged()));
+
+    return lineEdit;
 }
 
 void ItemDelegateForString::setEditorData( QWidget *rawEditor, const QModelIndex & index ) const 
 {
-    QLineEdit *editor = static_cast<QLineEdit *>(rawEditor);
+    QLineEdit *editor = rawEditor->findChild<QLineEdit*>("lineEdit");
 
-    DAVA::VariantType variant = index.data(DAVA::VariantTypeEditRole).value<DAVA::VariantType>();
+    DAVA::VariantType variant = index.data(Qt::EditRole).value<DAVA::VariantType>();
     QString stringValue;
     if (variant.GetType() == DAVA::VariantType::TYPE_STRING)
     {
@@ -36,13 +43,14 @@ void ItemDelegateForString::setEditorData( QWidget *rawEditor, const QModelIndex
     editor->setText(stringValue);
 }
 
-void ItemDelegateForString::setModelData( QWidget * rawEditor, QAbstractItemModel * model, const QModelIndex & index ) const 
+bool ItemDelegateForString::setModelData( QWidget * rawEditor, QAbstractItemModel * model, const QModelIndex & index ) const 
 {
-    QLineEdit *editor = static_cast<QLineEdit *>(rawEditor);
-    if (!editor->isModified())
-        return;
+    if (PropertyAbstractEditor::setModelData(rawEditor, model, index))
+        return true;
 
-    DAVA::VariantType variantType = index.data(DAVA::VariantTypeEditRole).value<DAVA::VariantType>();
+    QLineEdit *editor = rawEditor->findChild<QLineEdit*>("lineEdit");
+
+    DAVA::VariantType variantType = index.data(Qt::EditRole).value<DAVA::VariantType>();
 
     if (variantType.GetType() == DAVA::VariantType::TYPE_STRING)
     {
@@ -56,5 +64,19 @@ void ItemDelegateForString::setModelData( QWidget * rawEditor, QAbstractItemMode
     QVariant variant;
     variant.setValue<DAVA::VariantType>(variantType);
 
-    model->setData(index, variant, DAVA::VariantTypeEditRole);
+    return model->setData(index, variant, Qt::EditRole);
+}
+
+void ItemDelegateForString::OnValueChanged()
+{
+    QWidget *lineEdit = qobject_cast<QWidget *>(sender());
+    if (!lineEdit)
+        return;
+
+    QWidget *editor = lineEdit->parentWidget();
+    if (!editor)
+        return;
+
+    PropertyAbstractEditor::SetValueModified(editor, true);
+    itemDelegate->emitCommitData(editor);
 }

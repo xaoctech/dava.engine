@@ -6,6 +6,8 @@
 
 Vector2DEdit::Vector2DEdit(QWidget *parent)
     : QWidget(parent)
+    , editX(NULL)
+    , editY(NULL)
 {
     QHBoxLayout *horizontalLayout = new QHBoxLayout(this);
     horizontalLayout->setSpacing(1);
@@ -54,7 +56,7 @@ QVector2D Vector2DEdit::vector2D() const
     return QVector2D(editX->text().toDouble(), editY->text().toDouble() );
 }
 
-void Vector2DEdit::setVector2D( const QVector2D &newValue)
+void Vector2DEdit::setVector2D(const QVector2D &newValue)
 {
     editX->setText(QString("%1").arg(newValue.x()));
     editY->setText(QString("%1").arg(newValue.y()));

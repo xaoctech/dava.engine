@@ -19,6 +19,7 @@ public:
     
     virtual DAVA::String GetName() const;
     virtual ePropertyType GetType() const;
+    virtual eEditFrags GetEditFlag() const { return EF_CAN_RESET; };
 
     virtual DAVA::VariantType GetValue() const;
     virtual void SetValue(const DAVA::VariantType &newValue);

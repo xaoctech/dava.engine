@@ -8,18 +8,25 @@
 
 #include "PropertiesTreeModel.h"
 
-#include "UIControls/BaseProperty.h"
-#include "UIControls/UIEditorComponent.h"
-
 #include <QPoint>
 #include <QColor>
 #include <QFont>
 #include <QVector2D>
+#include <QUndoStack>
+
+#include "UIControls/BaseProperty.h"
+#include "UIControls/UIEditorComponent.h"
 #include "Utils/QtDavaConvertion.h"
+#include "ChangePropertyValueCommand.h"
+#include "PackageDocument.h"
+#include "PropertiesViewContext.h"
 
 using namespace DAVA;
 
-PropertiesTreeModel::PropertiesTreeModel(DAVA::UIControl *control, QObject *parent) : QAbstractItemModel(parent), root(NULL)
+PropertiesTreeModel::PropertiesTreeModel(DAVA::UIControl *control, PropertiesViewContext *context, QObject *parent)
+    : QAbstractItemModel(parent)
+    , propertiesViewContext(context)
+    , root(NULL)
 {
     UIEditorComponent* component = dynamic_cast<UIEditorComponent*>(control->GetCustomData());
     if (component)
@@ -95,7 +102,6 @@ QVariant PropertiesTreeModel::data(const QModelIndex &index, int role) const
             break;
             
         case Qt::DisplayRole:
-        case Qt::EditRole:
             {
                 if (index.column() == 0)
                     return QVariant(property->GetName().c_str());
@@ -103,15 +109,18 @@ QVariant PropertiesTreeModel::data(const QModelIndex &index, int role) const
                 return makeQVariant(property);
             }
             break;
-        case DAVA::VariantTypeDisplayRole:
-        case DAVA::VariantTypeEditRole:
+
+        case Qt::EditRole:
             {
                 QVariant var;
-                var.setValue<DAVA::VariantType>(property->GetValue());
+                if (index.column() != 0)
+                {
+                    var.setValue<DAVA::VariantType>(property->GetValue());
+                }
                 return var;
             }
             break;
-            
+
         case Qt::BackgroundRole:
             return property->GetType() == BaseProperty::TYPE_HEADER ? Qt::lightGray : Qt::white;
             
@@ -143,23 +152,41 @@ bool PropertiesTreeModel::setData(const QModelIndex &index, const QVariant &valu
         {
             if (property->GetValue().GetType() == VariantType::TYPE_BOOLEAN)
             {
-                property->SetValue(VariantType(value != Qt::Unchecked));
+                VariantType newVal(value != Qt::Unchecked);
+                QUndoCommand *command = new ChangePropertyValueCommand(property, newVal);
+                propertiesViewContext->Document()->UndoStack()->push(command);
                 return true;
             }
         }
         break;
     case Qt::EditRole:
         {
-            VariantType newVal(property->GetValue());
-            initVariantType(newVal, value);
-            property->SetValue(newVal);
+            VariantType newVal;
+
+            if (value.userType() == QMetaTypeId<VariantType>::qt_metatype_id())
+            {
+                newVal = value.value<VariantType>();
+            }
+            else
+            {
+                newVal = property->GetValue();
+                initVariantType(newVal, value);
+            }
+
+            QUndoCommand *command = new ChangePropertyValueCommand(property, newVal);
+            propertiesViewContext->Document()->UndoStack()->push(command);
+
+            QModelIndex siblingIndex = index.sibling(index.row(), index.column()-1);
+            emit dataChanged(siblingIndex, siblingIndex);
             return true;
         }
         break;
 
-    case DAVA::VariantTypeEditRole:
+    case DAVA::ResetRole:
         {
-            property->SetValue(value.value<VariantType>());
+            QUndoCommand *command = new ChangePropertyValueCommand(property);
+            propertiesViewContext->Document()->UndoStack()->push(command);
+            emit dataChanged(index.sibling(index.row(), index.column()-1), index);
             return true;
         }
         break;

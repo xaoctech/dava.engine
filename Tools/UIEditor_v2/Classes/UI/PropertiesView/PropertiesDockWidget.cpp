@@ -8,21 +8,21 @@
 
 #include "PropertiesDockWidget.h"
 
+#include <qitemeditorfactory>
+#include <qstyleditemdelegate>
+
 #include "ui_PropertiesDockWidget.h"
 #include "PropertiesTreeModel.h"
 #include "UI/PackageDocument.h"
 #include "UI/PropertiesView/PropertiesTreeItemDelegate.h"
-#include <qitemeditorfactory.h>
-#include "QtControls/lineeditext.h"
-#include <qstyleditemdelegate.h>
-#include "QtControls/Vector2DEdit.h"
+#include "PropertiesViewContext.h"
 
 using namespace DAVA;
 
 PropertiesDockWidget::PropertiesDockWidget(QWidget *parent)
     : QDockWidget(parent)
     , ui(new Ui::PropertiesDockWidget())
-    , document(NULL)
+    , context(NULL)
 {
     ui->setupUi(this);
 }
@@ -33,23 +33,23 @@ PropertiesDockWidget::~PropertiesDockWidget()
     ui = NULL;
 }
 
-void PropertiesDockWidget::SetDocument(PackageDocument *newDocument)
+void PropertiesDockWidget::SetContext(PropertiesViewContext *newContext)
 {
-    if (document)
+    if (context)
     {
-        disconnect(document, SIGNAL(controlsSelectionChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)), this, SLOT(OnControlsSelectionChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)));
+        disconnect(context->Document(), SIGNAL(controlsSelectionChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)), this, SLOT(OnControlsSelectionChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)));
         ui->treeView->setModel(NULL);
         //ui->filterLine->setEnabled(false);
         //ui->treeView->setEnabled(false);
     }
-    
-    document = newDocument;
-    
-    if (document)
+
+    context = newContext;
+
+    if (context)
     {
         //ui->treeView->setModel(document->GetTreeContext()->proxyModel);
         //ui->filterLine->setText(document->GetTreeContext()->filterString);
-        connect(document, SIGNAL(controlsSelectionChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)), this, SLOT(OnControlsSelectionChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)));
+        connect(context->Document(), SIGNAL(controlsSelectionChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)), this, SLOT(OnControlsSelectionChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)));
         //ui->filterLine->setEnabled(true);
         //ui->treeView->setEnabled(true);
     }
@@ -68,7 +68,7 @@ void PropertiesDockWidget::SetControl(DAVA::UIControl *control)
     if (control)
     {
         QStyledItemDelegate *itemDelegate = new PropertiesTreeItemDelegate(this);
-        PropertiesTreeModel *model = new PropertiesTreeModel(control, this);
+        PropertiesTreeModel *model = new PropertiesTreeModel(control, context, this);
 //        QItemEditorFactory *itemEditorFactory = new QItemEditorFactory();
 //        itemEditorFactory->registerEditor( QVariant::Vector2D, new QStandardItemEditorCreator<Vector2Edit>());
 //        itemDelegate->setItemEditorFactory(itemEditorFactory);
