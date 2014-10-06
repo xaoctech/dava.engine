@@ -6,7 +6,7 @@
 class EditorUIPackageLoader: public DAVA::UIPackageLoader
 {
 public:
-    EditorUIPackageLoader();
+    EditorUIPackageLoader(DAVA::LegacyControlData *data = NULL);
     virtual ~EditorUIPackageLoader();
 
 protected:

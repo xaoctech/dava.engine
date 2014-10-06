@@ -35,13 +35,10 @@ signals:
     void ProjectOpened();
 
 private:
-    DAVA::LegacyControlData *GetLegacyControlData(const DAVA::String fwPath);
-
-private:
     QString projectFile;
     QString projectDir;
     
-    DAVA::Map<DAVA::String, DAVA::LegacyControlData> legacyDataMap;
+    DAVA::LegacyControlData *legacyData;
 };
 
 #endif // __UI_EDITOR_PROJECT_H__
