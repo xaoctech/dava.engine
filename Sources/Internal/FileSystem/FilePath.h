@@ -35,6 +35,9 @@
 
 namespace DAVA
 {
+
+static const char* localResourcesPath = "/mnt/sdcard/DavaProject/";
+    
 /**
 	\ingroup filesystem
 	\brief class to work with file pathname

@@ -54,6 +54,7 @@ void CommandsController::ExecuteCommand(BaseCommand* command)
     command->Execute();
     
     undoRedoController.AddCommandToUndoStack(command);
+    undoRedoController.IncrementUnsavedChanges(true);
 
     emit UndoRedoAvailabilityChanged();
     emit UnsavedChangesNumberChanged();
@@ -94,6 +95,7 @@ bool CommandsController::IsRedoAvailable()
 
 bool CommandsController::Undo()
 {
+	undoRedoController.DecrementUnsavedChanges(true);
 	bool undoResult = undoRedoController.Undo();
 
 	emit UndoRedoAvailabilityChanged();
@@ -103,6 +105,7 @@ bool CommandsController::Undo()
 
 bool CommandsController::Redo()
 {
+	undoRedoController.IncrementUnsavedChanges(false);
 	bool redoResult = undoRedoController.Redo();
 
 	emit UndoRedoAvailabilityChanged();

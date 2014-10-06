@@ -169,6 +169,7 @@ public:
 
 	// Loock through all controls and update their values
 	void UpdateControlsData();
+    void UpdateControlsData(const HierarchyTreeScreenNode* screenNode);
 
     // Look through all controls and update their localized texts.
     void UpdateLocalization(bool takePathFromLocalizationSystem);
@@ -203,8 +204,6 @@ public:
 
     // Perform the physical deletion from the disk of the unused items.
     void DeleteUnusedItemsFromDisk(const QString& projectPath);
-    
-    HierarchyTreeNode::HIERARCHYTREENODEID GetActiveScreenId() const;
 
 private:
 	void DeleteNodesInternal(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes);

@@ -675,6 +675,11 @@ void HierarchyTreeController::UpdateControlsData()
 	 hierarchyTree.UpdateControlsData();
 }
 
+void HierarchyTreeController::UpdateControlsData(const HierarchyTreeScreenNode* screenNode)
+{
+    hierarchyTree.UpdateControlsData(screenNode);
+}
+
 void HierarchyTreeController::UpdateLocalization(bool takePathFromLocalizationSystem)
 {
     // Update the Active Platform.
@@ -704,8 +709,9 @@ void HierarchyTreeController::UpdateLocalization(bool takePathFromLocalizationSy
         else
         {
             // Re-setup the Localization System with the values stored on Platform level.
+            LocalizationSystem::Instance()->SetDirectory(localizationPath);
             LocalizationSystem::Instance()->SetCurrentLocale(locale);
-            LocalizationSystem::Instance()->InitWithDirectory(localizationPath);
+            LocalizationSystem::Instance()->Init();
         }
     }
     
@@ -760,7 +766,7 @@ void HierarchyTreeController::OnUnsavedChangesNumberChanged()
 HierarchyTreeScreenNode* HierarchyTreeController::GetScreenNodeForNode(HierarchyTreeNode* node)
 {
 	bool foundScreen = false;
-	HierarchyTreeNode* screen = node;
+	HierarchyTreeNode* screen = node->GetParent();
 	do
 	{
 		if (dynamic_cast<HierarchyTreeScreenNode*>(screen))
@@ -924,14 +930,4 @@ void HierarchyTreeController::DeleteUnusedItemsFromDisk(const QString& projectPa
     }
 
     CleanupUnusedItems();
-}
-
-HierarchyTreeNode::HIERARCHYTREENODEID HierarchyTreeController::GetActiveScreenId() const
-{
-    HierarchyTreeNode::HIERARCHYTREENODEID idScreen = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
-    if (NULL != activeScreen)
-    {
-        idScreen = activeScreen->GetId();
-    }
-    return idScreen;
 }
