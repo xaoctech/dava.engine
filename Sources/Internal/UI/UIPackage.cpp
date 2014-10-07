@@ -76,6 +76,16 @@ UIPackage *UIPackage::GetPackage(int32 index) const
     return importedPackages[index];
 }
 
+UIPackage *UIPackage::GetPackage(const String name) const
+{
+    for (auto it = importedPackages.begin(); it != importedPackages.end(); ++it)
+    {
+        if ((*it)->GetName() == name)
+            return *it;
+    }
+    return NULL;
+}
+
 void UIPackage::AddPackage(UIPackage *package)
 {
     importedPackages.push_back(SafeRetain(package));
