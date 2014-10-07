@@ -148,7 +148,13 @@ static struct sigaction *sa_old;
 
 void AndroidCrashReport::Init()
 {
-#if defined(DAVA_DEBUG) && !defined(DESYM_STACK)
+	/*
+	 * define USE_NDKSTACK_TOOL for desybolicating callstack with ndk-stack tool
+	 * adb logcat | ./ndk-stack -sym
+	 *
+	 * define DESYM_STACK for desybolicating callstack with libcorkscrew
+	 */
+#if defined(DAVA_DEBUG) && !defined(DESYM_STACK) && defined(USE_NDKSTACK_TOOL)
 	return;
 #endif
 	void* libcorkscrew = dlopen("/system/lib/libcorkscrew.so", RTLD_NOW);
@@ -192,10 +198,9 @@ void AndroidCrashReport::Init()
 		sigemptyset(&sa.sa_mask);
 		sa.sa_sigaction = &SignalHandler;
 		
-		//if (sigaction(fatalSignals[i], &sa, NULL) != 0)
 		if (sigaction(fatalSignals[i], &sa, &sa_old[fatalSignals[i]]) != 0)
 		{
-			Logger::Error("Signal registration for failed:");
+			LOGEr("Signal registration for failed:");
 		}
 	}
 }
