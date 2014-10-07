@@ -3,6 +3,7 @@
 #include "UIEditorComponent.h"
 #include "BaseProperty.h"
 #include "ValueProperty.h"
+#include "LocalizedTextValueProperty.h"
 #include "PropertiesSection.h"
 #include "ControlPropertiesSection.h"
 #include "BackgroundPropertiesSection.h"
@@ -23,8 +24,11 @@ public:
     {
         if ((member->Flags() & I_EDIT) != 0)
         {
-            /*UIPackageControlSection::SetProperty(member, value);*/
-            ValueProperty *property = new ValueProperty(GetBaseObject(), member);
+            ValueProperty *property = NULL;
+            if (String(member->Name()) == "text")
+                property = new LocalizedTextValueProperty(GetBaseObject(), member);
+            else
+                property = new ValueProperty(GetBaseObject(), member);
             if (value.GetType() != VariantType::TYPE_NONE)
                 property->SetValue(value);
             section->AddProperty(property);
@@ -292,7 +296,43 @@ bool EditorUIPackageLoader::AddPropertiesToNode(UIControl *control, YamlNode *no
                     sectionNode = YamlNode::CreateMapNode(false, YamlNode::MR_BLOCK_REPRESENTATION, YamlNode::SR_PLAIN_REPRESENTATION);
                     componentsNode->AddNodeToMap(section->GetName(), sectionNode);
                 }
-                AddObjectPropertyToYamlNode(valueProperty->GetBaseObject(), valueProperty->GetMember(), sectionNode);
+                //AddObjectPropertyToYamlNode(valueProperty->GetBaseObject(), valueProperty->GetMember(), sectionNode);
+                
+                const InspMember *member = valueProperty->GetMember();
+                if (member->Desc().type == InspDesc::T_ENUM)
+                {
+                    VariantType val = valueProperty->GetValue();
+                    const char *res = member->Desc().enumMap->ToString(val.AsInt32());
+                    if (res)
+                    {
+                        sectionNode->Add(member->Name(), res);
+                    }
+                    else
+                    {
+                        DVASSERT(false);
+                        return false;
+                    }
+                }
+                else if (member->Desc().type == InspDesc::T_FLAGS)
+                {
+                    YamlNode *valueNode = new YamlNode(YamlNode::TYPE_ARRAY);
+                    int32 val = valueProperty->GetValue().AsInt32();
+                    
+                    int r = 0;
+                    while (val > 0)
+                    {
+                        if ((val & 1) != 0)
+                            valueNode->Add(member->Desc().enumMap->ToString(1 << r));
+                        
+                        r++;
+                        val >>= 1;
+                    }
+                    sectionNode->Add(member->Name(), valueNode);
+                }
+                else
+                {
+                    sectionNode->Add(member->Name(), valueProperty->GetValue());
+                }
                 hasChanges = true;
             }
         }
