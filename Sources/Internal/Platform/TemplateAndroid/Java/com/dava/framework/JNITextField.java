@@ -127,14 +127,6 @@ public class JNITextField {
 		}
 	}
 
-	private static float GetScaledDensity()
-	{
-		DisplayMetrics dm = new DisplayMetrics();
-		JNIActivity.GetActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
-
-		return Math.min(2.0f, dm.scaledDensity);
-	}
-	
 	public static void InitializeKeyboardLayout(WindowManager manager, IBinder windowToken)
 	{
 		if(keyboardLayout == null) {
@@ -190,6 +182,24 @@ public class JNITextField {
 	            @Override
 	            public void onSoftKeyboardClosed()
 	            {
+	                // Workaround: if keyboard was closed by other IME type we restore focus
+                    if(activeTextField != NO_ACTIVE_TEXTFIELD)
+                    {
+                        EditText text = GetEditText(activeTextField);
+                        if(text != null)
+                        {
+                            // Check that we close keyboard w/o going to next field with other IME type
+                            if(lastClosedTextField == NO_ACTIVE_TEXTFIELD)
+                            {
+                                activeTextField = NO_ACTIVE_TEXTFIELD;
+                                text.clearFocus();
+                            }
+                            else
+                            {
+                                text.requestFocus();
+                            }
+                        }
+                    }
 	                // Send close event to native
 	                JNIActivity.GetActivity().PostEventToGL(new Runnable()
 	                {
@@ -200,15 +210,6 @@ public class JNITextField {
 	                        KeyboardClosed(localId);
 	                    }
 	                });
-	                // Workaround: if keyboard was closed by other IME type we restore focus
-	                if(activeTextField != NO_ACTIVE_TEXTFIELD)
-	                {
-	                    EditText text = GetEditText(activeTextField);
-	                    if(text != null)
-	                    {
-	                        text.requestFocus();
-	                    }
-	                }
 	                // Clear IDs of active fields on real close keyboard 
 	                lastClosedTextField = NO_ACTIVE_TEXTFIELD;
 	            }
@@ -244,6 +245,20 @@ public class JNITextField {
 				text.clearFocus();
 			}
 			activeTextField = NO_ACTIVE_TEXTFIELD;
+		}
+		// Workaround: Send close keyboard event if text field lost focus and activity 
+		// lost focus too before keyboard was hidden (animation not finished)
+		else if(lastClosedTextField != NO_ACTIVE_TEXTFIELD) {
+            JNIActivity.GetActivity().PostEventToGL(new Runnable()
+            {
+                final int localId = lastClosedTextField;
+                @Override
+                public void run()
+                {
+                    KeyboardClosed(localId);
+                }
+            });
+            lastClosedTextField = NO_ACTIVE_TEXTFIELD;
 		}
 	}
 	
@@ -288,8 +303,6 @@ public class JNITextField {
 				params.gravity = Gravity.LEFT | Gravity.TOP;
 				text.setPadding(0, 0, 0, 0);
 				text.setSingleLine(true);
-				int fontSize = (int) (20 * GetScaledDensity());
-				text.setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSize);
 				text.setBackgroundColor(Color.TRANSPARENT);
 				text.setTextColor(Color.WHITE);
 				text.setVisibility(View.GONE);
@@ -526,7 +539,7 @@ public class JNITextField {
 		InternalTask<Void> task = new InternalTask<Void>(text, new Callable<Void>() {
 			@Override
 			public Void call() throws Exception {
-				text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size * GetScaledDensity()));
+				text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)size);
 				return null;
 			}
 		});
