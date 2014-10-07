@@ -10,6 +10,7 @@
 #define __UIEDITOR_UI_EDITOR_COMPONENT__
 
 #include "UI/UIControl.h"
+#include "UI/UIPackage.h"
 #include "BaseProperty.h"
 
 class UIEditorComponent : public DAVA::BaseObject
@@ -20,7 +21,8 @@ private:
     virtual ~UIEditorComponent();
 public:
     DAVA::UIControl *GetPrototype() const;
-    void SetPrototype(DAVA::UIControl *prototype);
+    DAVA::UIPackage *GetPrototypePackage() const;
+    void SetPrototype(DAVA::UIControl *prototype, DAVA::UIPackage *package);
     
     bool IsClonedFromPrototype() const;
     void SetClonedFromPrototype(const DAVA::String &path);
@@ -30,6 +32,7 @@ public:
     
 private:
     DAVA::UIControl *prototype;
+    DAVA::UIPackage *prototypePackage;
     DAVA::String pathFromPrototype;
     bool clonedFromPrototype;
     

@@ -353,44 +353,32 @@ void UIPackageLoader::LoadRootControl(int index, UIPackage *currentPackage)
 
 UIControl *UIPackageLoader::GetLoadedControlByName(const String &name, UIPackage *currentPackage)
 {
-    size_t pos = name.find('/');
-    if (pos == String::npos)
+    for (size_t index = 0; index < loadingQueue.size(); index++)
     {
-        for (size_t index = 0; index < loadingQueue.size(); index++)
+        if (loadingQueue[index].name == name)
         {
-            if (loadingQueue[index].name == name)
+            switch (loadingQueue[index].status)
             {
-                switch (loadingQueue[index].status)
-                {
-                    case STATUS_WAIT:
-                        LoadRootControl(index, currentPackage);
-                        if (loadingQueue[index].status != STATUS_LOADED)
-                        {
-                            DVASSERT(false);
-                            return NULL;
-                        }
-                        return loadingQueue[index].control;
-                        
-                    case STATUS_LOADED:
-                        return loadingQueue[index].control;
-
-                    case STATUS_LOADING:
+                case STATUS_WAIT:
+                    LoadRootControl(index, currentPackage);
+                    if (loadingQueue[index].status != STATUS_LOADED)
+                    {
                         DVASSERT(false);
                         return NULL;
-                        
-                    default:
-                        DVASSERT(false);
-                }
+                    }
+                    return loadingQueue[index].control;
+                    
+                case STATUS_LOADED:
+                    return loadingQueue[index].control;
+
+                case STATUS_LOADING:
+                    DVASSERT(false);
+                    return NULL;
+                    
+                default:
+                    DVASSERT(false);
             }
         }
-    }
-    else
-    {
-        String packageName = name.substr(0, pos);
-        String controlName = name.substr(pos + 1, name.length() - pos - 1);
-        UIPackage *pack = currentPackage->GetPackage(packageName);
-        if (pack)
-            return pack->GetControl(controlName);
     }
     return NULL;
 }
@@ -420,7 +408,7 @@ UIControl *UIPackageLoader::CreateControl(const YamlNode *node, bool legacySuppo
             }
             DVASSERT(importedPackage);
             UIControl *prototype = importedPackage->GetControl(0);
-            return CreateControlFromPrototype(prototype);
+            return CreateControlFromPrototype(prototype, importedPackage);
             
         }
         else if (baseType)
@@ -436,14 +424,34 @@ UIControl *UIPackageLoader::CreateControl(const YamlNode *node, bool legacySuppo
         const YamlNode *classNode = node->Get("class");
         if (prototypeNode)
         {
-            UIControl *prototype = GetLoadedControlByName(prototypeNode->AsString(), currentPackage);
+            UIControl *prototype = NULL;
+            UIPackage *prototypePackage = NULL;
+            String name = prototypeNode->AsString();
+            size_t pos = name.find('/');
+            if (pos == String::npos)
+            {
+                prototype = GetLoadedControlByName(name, currentPackage);
+            }
+            else
+            {
+                String packageName = name.substr(0, pos);
+                String controlName = name.substr(pos + 1, name.length() - pos - 1);
+                UIPackage *pack = currentPackage->GetPackage(packageName);
+                if (pack)
+                {
+                    prototype = pack->GetControl(controlName);
+                    prototypePackage = pack;
+                }
+            }
+            
             if (!prototype)
             {
                 Logger::Error("[UIYamlLoader::CreateControlFromYamlNode] Can't create prototype with name \"%s\"", prototypeNode->AsString().c_str());
                 DVASSERT(false); // TODO remove assert
                 return NULL;
             }
-            return CreateControlFromPrototype(prototype);
+            
+            return CreateControlFromPrototype(prototype, prototypePackage);
         }
         else if (classNode)
         {
@@ -556,7 +564,7 @@ UIControl *UIPackageLoader::CreateCustomControl(const String &customClassName, c
 }
     
     
-UIControl *UIPackageLoader::CreateControlFromPrototype(UIControl *control)
+UIControl *UIPackageLoader::CreateControlFromPrototype(UIControl *control, UIPackage *prototypePackage)
 {
     return control->Clone();
 }
@@ -606,10 +614,12 @@ void UIPackageLoader::LoadControlPropertiesFromYamlNode(UIControl *control, cons
     for (int i = 0; i < typeInfo->MembersCount(); i++)
     {
         const InspMember *member = typeInfo->Member(i);
-        String memberName = GetOldPropertyName(className, member->Name());
+        String memberName = member->Name();
+        
+        if (legacySupport)
+            memberName = GetOldPropertyName(className, memberName);
         
         VariantType res;
-        
         if (legacySupport && memberName == "name")
             res = VariantType(control->GetName());
         else if (node)
