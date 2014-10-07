@@ -153,6 +153,9 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         // The activity has become visible (it is now "resumed").
 		Log.i(JNIConst.LOG_TAG, "[Activity::onResume] start");
 
+		
+		JNITextField.HideAllTextFields();
+		
 		if(mController != null)
 		{
 			mController.onResume();
