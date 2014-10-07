@@ -472,14 +472,24 @@ void UIStaticText::PrepareSpriteInternal(DAVA::BaseObject *caller, void *param, 
     
 String UIStaticText::GetFontName() const
 {
-    return FontManager::Instance()->GetFontName(this->GetFont());
+    Font *font = GetFont();
+    if (!font)
+        return "";
+    return FontManager::Instance()->GetFontName(font);
 }
 
 void UIStaticText::SetFontName(const String &fontName)
 {
-    SetFont(FontManager::Instance()->GetFont(fontName));
+    Font *font = NULL;
+
+    if (!fontName.empty())
+    {
+        font = FontManager::Instance()->GetFont(fontName);
+    }
+
+    SetFont(font);
 }
-    
+
 int32 UIStaticText::GetTextColorInheritType() const
 {
     return GetTextBackground()->GetColorInheritType();
