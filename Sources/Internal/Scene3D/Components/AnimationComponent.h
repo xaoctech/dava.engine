@@ -1,5 +1,5 @@
 /*==================================================================================
-    Copyright (c) 2008, binaryzebra
+    Copyright (c) 2014, thorin
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,6 @@
 #include "Scene3D/Systems/AnimationSystem.h"
 #include "Entity/Component.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
-#include "Base/Message.h"
 
 namespace DAVA 
 {
@@ -45,54 +44,36 @@ class AnimationData;
 class AnimationComponent : public Component
 {
 protected:
-	virtual ~AnimationComponent();
+    virtual ~AnimationComponent();
 public:
-	AnimationComponent();
+    AnimationComponent();
 
-	IMPLEMENT_COMPONENT_TYPE(ANIMATION_COMPONENT);
+    IMPLEMENT_COMPONENT_TYPE(ANIMATION_COMPONENT);
 
-	virtual Component * Clone(Entity * toEntity);
+    virtual Component * Clone(Entity * toEntity);
 	virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
 	virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
-	virtual void GetDataNodes(Set<DataNode*> & dataNodes);
 
-	void SetAnimation(AnimationData* animation);
+    void SetAnimation(AnimationData* animation);
 
- 	bool GetIsPlaying() const;
- 	void SetIsPlaying(bool value);
-
-    void Start();
-    void Stop();
-    void StopAfterNRepeats(int32 numberOfRepeats);    
-
-    enum eState
-    {
-        STATE_PLAYING,  
-        STATE_PAUSED,   
-        STATE_STOPPED   
-    };
+    bool GetIsPlaying() const;
+    void SetIsPlaying(bool value);
 
 private:
 
 	friend class AnimationSystem;
-    friend class TransformSystem;
-	AnimationData* animation;
+    AnimationData* animation;
 	float32 time;
-	uint32 frameIndex;
-    uint32 repeatsCount;
-    uint32 currRepeatsCont;
-    eState state;	
-
-    /*completion message stuff*/	
-    Message playbackComplete;		
-
-    Matrix4 animationTransform;
+    bool isPlaying;
+    bool autoStart;
+    bool repeat;
 public:
 
-	INTROSPECTION_EXTEND(AnimationComponent, Component,
-        MEMBER(repeatsCount, "repeatsCount", I_VIEW | I_EDIT | I_SAVE)
-       	PROPERTY("isPlaying", "isPlaying", GetIsPlaying, SetIsPlaying, I_SAVE | I_EDIT | I_VIEW)
-	);
+    INTROSPECTION_EXTEND(AnimationComponent, Component,
+        PROPERTY("isPlaying", "isPlaying", GetIsPlaying, SetIsPlaying, I_SAVE | I_EDIT | I_VIEW)
+        MEMBER(autoStart, "autostart", I_VIEW | I_EDIT | I_SAVE)
+        MEMBER(repeat, "repeat", I_VIEW | I_EDIT | I_SAVE)
+    );
 };
 
 

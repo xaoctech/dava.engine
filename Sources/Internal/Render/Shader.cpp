@@ -79,7 +79,6 @@ Shader::Shader()
     //#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
     //    relativeFileName = "";
     //#endif //#if defined(__DAVAENGINE_ANDROID__)
-    allowInvalidation = false;
 }
 
 String VertexTypeStringFromEnum(GLenum type); // Fucking XCode 4 analyzer
@@ -583,8 +582,7 @@ void Shader::RecompileInternal(BaseObject * caller, void * param, void *callerDa
                 autobindUniformIndex++;
             }
         }
-    }		
-    allowInvalidation = true;
+    }
 }
 
 bool Shader::Recompile(bool silentDelete)
@@ -1400,7 +1398,7 @@ void Shader::Lost()
     fragmentShader = 0;
     if (program == activeProgram)
         activeProgram = 0;
-    program = 0;
+    //program = 0;
     activeAttributes = 0;
     activeUniforms = 0;
     
@@ -1409,8 +1407,9 @@ void Shader::Lost()
 
 void Shader::Invalidate()
 {
-    if(!allowInvalidation)
+    if (program == 0)
         return;
+    program = 0;
     
     RenderResource::Invalidate();
     Recompile();

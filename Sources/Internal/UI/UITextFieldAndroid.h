@@ -61,8 +61,7 @@ public:
 	void SetKeyboardType(int32_t value);
 	void SetReturnKeyType(int32_t value);
 	void SetEnableReturnKeyAutomatically(bool value);
-	void ShowField();
-	void HideField();
+	void SetVisible(bool isVisible);
 	void OpenKeyboard();
 	void CloseKeyboard();
 	uint32 GetCursorPos();
@@ -98,8 +97,6 @@ public:
 	void SetTextAlign(DAVA::int32 align);
 	DAVA::int32 GetTextAlign();
 
-	void ShowField();
-	void HideField();
 	void SetVisible(bool isVisible);
 
 	void SetIsPassword(bool isPassword);
@@ -120,8 +117,10 @@ public:
 
 	bool TextFieldKeyPressed(int32 replacementLocation, int32 replacementLength, const WideString &text);
 	void TextFieldShouldReturn();
+	void FocusChanged(bool hasFocus);
 	static bool TextFieldKeyPressed(uint32_t id, int32 replacementLocation, int32 replacementLength, const WideString &text);
 	static void TextFieldShouldReturn(uint32_t id);
+	static void TextFieldFocusChanged(uint32_t id, bool hasFocus);
 
 private:
 	static UITextFieldAndroid* GetUITextFieldAndroid(uint32_t id);
