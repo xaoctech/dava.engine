@@ -29,7 +29,9 @@ QWidget * Vector2PropertyDelegate::createEditor( QWidget * parent, const QStyleO
 void Vector2PropertyDelegate::setEditorData( QWidget * editor, const QModelIndex & index ) const 
 {
     Vector2DEdit *vectorEditor = editor->findChild<Vector2DEdit *>("vectorEditor");
+    vectorEditor->blockSignals(true);
     vectorEditor->setVector2D(Vector2ToQVector2D(index.data(Qt::EditRole).value<DAVA::VariantType>().AsVector2()));
+    vectorEditor->blockSignals(false);
 }
 
 bool Vector2PropertyDelegate::setModelData( QWidget * editor, QAbstractItemModel * model, const QModelIndex & index ) const 
@@ -51,7 +53,7 @@ void Vector2PropertyDelegate::OnValueChanged()
     if (!lineEdit)
         return;
 
-    QWidget *editor = lineEdit->parentWidget();
+    QWidget *editor = lineEdit->parentWidget()->parentWidget();
     if (!editor)
         return;
 

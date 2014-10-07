@@ -488,7 +488,7 @@ void MainWindow::OnSaveAllDocuments()
 	for (int i = 0; i < ui->tabBar->count(); ++i)
     {
         PackageDocument * document = GetTabDocument(i);
-        if (!document || !document->IsModified())
+        if (!document)
             continue;
         DVVERIFY(project->SavePackage(document->Package()));
     }

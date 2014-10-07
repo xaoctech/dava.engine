@@ -134,20 +134,17 @@ VariantType ValueProperty::GetSubValue(int index) const
     switch (defaultValue.GetType())
     {
         case VariantType::TYPE_VECTOR2:
-            return index == 0 ? VariantType(GetValue().AsVector2().x) : VariantType(GetValue().AsVector2().y);
+            {
+                DVASSERT(index >= 0 && index < 2);
+                return VariantType(GetValue().AsVector2().data[index]);
+            }
 
         case VariantType::TYPE_COLOR:
         {
-            if (index == 0)
-                return VariantType(GetValue().AsColor().r);
-            else if (index == 1)
-                return VariantType(GetValue().AsColor().g);
-            else if (index == 2)
-                return VariantType(GetValue().AsColor().b);
-            else
-                return VariantType(GetValue().AsColor().a);
+            DVASSERT(index >= 0 && index < 4);
+            return VariantType(GetValue().AsColor().color[index]);
         }
-            
+
         case VariantType::TYPE_INT32:
             if (member->Desc().type == InspDesc::T_FLAGS)
             {
