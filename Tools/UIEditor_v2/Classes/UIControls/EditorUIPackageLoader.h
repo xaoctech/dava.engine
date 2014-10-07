@@ -10,15 +10,15 @@ public:
     virtual ~EditorUIPackageLoader();
 
 protected:
-    virtual DAVA::UIControl *CreateControlByClassName(const DAVA::String &className);
-    virtual DAVA::UIControl *CreateCustomControl(const DAVA::String &customClassName, const DAVA::String &baseClassName);
-    virtual DAVA::UIControl *CreateControlFromPrototype(DAVA::UIControl *prototype);
+    virtual DAVA::UIControl *CreateControlByClassName(const DAVA::String &className) override;
+    virtual DAVA::UIControl *CreateCustomControl(const DAVA::String &customClassName, const DAVA::String &baseClassName) override;
+    virtual DAVA::UIControl *CreateControlFromPrototype(DAVA::UIControl *prototype, DAVA::UIPackage *prototypePackage) override;
 
-    virtual DAVA::UIPackageSection *CreateControlSection(DAVA::UIControl *control, const DAVA::String &name);
-    virtual DAVA::UIPackageSection *CreateBackgroundSection(DAVA::UIControl *control, int bgNum);
-    virtual DAVA::UIPackageSection *CreateInternalControlSection(DAVA::UIControl *control, int internalControlNum);
+    virtual DAVA::UIPackageSection *CreateControlSection(DAVA::UIControl *control, const DAVA::String &name) override;
+    virtual DAVA::UIPackageSection *CreateBackgroundSection(DAVA::UIControl *control, int bgNum) override;
+    virtual DAVA::UIPackageSection *CreateInternalControlSection(DAVA::UIControl *control, int internalControlNum) override;
 
-    virtual DAVA::YamlNode *CreateYamlNode(DAVA::UIControl *control);
+    virtual DAVA::YamlNode *CreateYamlNode(DAVA::UIControl *control) override;
 
 private:
     bool AddControlToNode(DAVA::UIControl *control, DAVA::YamlNode *node, DAVA::YamlNode *prototypeChildren);

@@ -23,7 +23,7 @@ public:
     
 };
 
-UIEditorComponent::UIEditorComponent() : prototype(NULL), clonedFromPrototype(false), propertiesRoot(NULL)
+UIEditorComponent::UIEditorComponent() : prototype(NULL), prototypePackage(NULL), clonedFromPrototype(false), propertiesRoot(NULL)
 {
     propertiesRoot = new PropertiesRoot();
 }
@@ -38,11 +38,20 @@ UIControl *UIEditorComponent::GetPrototype() const
     return prototype;
 }
 
-void UIEditorComponent::SetPrototype(DAVA::UIControl *prototype)
+UIPackage *UIEditorComponent::GetPrototypePackage() const
+{
+    return prototypePackage;
+}
+
+void UIEditorComponent::SetPrototype(DAVA::UIControl *prototype, DAVA::UIPackage *package)
 {
     SafeRetain(prototype);
     SafeRelease(this->prototype);
     this->prototype = prototype;
+    
+    SafeRetain(package);
+    SafeRelease(prototypePackage);
+    prototypePackage = package;
 
     clonedFromPrototype = true;
 }

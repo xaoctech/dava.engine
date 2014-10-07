@@ -140,7 +140,7 @@ private:
 protected:
     virtual UIControl *CreateControlByClassName(const String &className);
     virtual UIControl *CreateCustomControl(const String &customClassName, const String &baseClassName);
-    virtual UIControl *CreateControlFromPrototype(UIControl *prototype);
+    virtual UIControl *CreateControlFromPrototype(UIControl *prototype, UIPackage *prototypePackage);
     virtual YamlNode *CreateYamlNode(UIControl *control);
     
 protected:

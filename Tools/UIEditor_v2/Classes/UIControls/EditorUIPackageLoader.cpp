@@ -157,12 +157,12 @@ UIControl *EditorUIPackageLoader::CreateCustomControl(const String &customClassN
     return control;
 }
 
-UIControl *EditorUIPackageLoader::CreateControlFromPrototype(UIControl *prototype)
+UIControl *EditorUIPackageLoader::CreateControlFromPrototype(UIControl *prototype, UIPackage *prototypePackage)
 {
     UIControl *control = prototype->Clone();
     
     UIEditorComponent *component = new UIEditorComponent();
-    component->SetPrototype(prototype);
+    component->SetPrototype(prototype, prototypePackage);
     control->SetCustomData(component);
     SafeRelease(component);
     
@@ -252,7 +252,10 @@ bool EditorUIPackageLoader::AddPropertiesToNode(UIControl *control, YamlNode *no
         if (prototype)
         {
             hasChanges = true;
-            node->Set("prototype", prototype->GetName());
+            if (component->GetPrototypePackage())
+                node->Set("prototype", component->GetPrototypePackage()->GetName() + "/" + prototype->GetName());
+            else
+                node->Set("prototype", prototype->GetName());
         }
         else
         {
