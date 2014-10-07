@@ -1,23 +1,22 @@
-#ifndef __ITEMDELEGATEFORFLOAT_H__
-#define __ITEMDELEGATEFORFLOAT_H__
+#ifndef __ITEMDELEGATEFORINTEGER_H__
+#define __ITEMDELEGATEFORINTEGER_H__
 
-#include "DAVAEngine.h"
-
-#include "PropertyAbstractEditor.h"
+#include "BasePropertyDelegate.h"
 class PropertiesTreeItemDelegate;
 
-class ItemDelegateForFloat: public PropertyAbstractEditor
+class IntegerPropertyDelegate: public BasePropertyDelegate
 {
     Q_OBJECT
 public:
-    explicit ItemDelegateForFloat(PropertiesTreeItemDelegate *delegate);
-    ~ItemDelegateForFloat();
+    explicit IntegerPropertyDelegate(PropertiesTreeItemDelegate *delegate);
+    ~IntegerPropertyDelegate();
 
     virtual QWidget * createEditor( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const override;
     virtual void setEditorData ( QWidget * editor, const QModelIndex & index ) const override;
     virtual bool setModelData ( QWidget * editor, QAbstractItemModel * model, const QModelIndex & index ) const override;
 private slots:
-    void OnValueChanged();
+        void OnValueChanged();
 };
 
-#endif // __ITEMDELEGATEFORFLOAT_H__
+
+#endif // __ITEMDELEGATEFORINTEGER_H__

@@ -1,14 +1,14 @@
 #ifndef __ITEMDELEGATEFORFILEPATH_H__
 #define __ITEMDELEGATEFORFILEPATH_H__
 
-#include "PropertyAbstractEditor.h"
+#include "BasePropertyDelegate.h"
 
-class ItemDelegateForFilePath: public PropertyAbstractEditor
+class FilePathPropertyDelegate: public BasePropertyDelegate
 {
     //    Q_OBJECT
 public:
-    explicit ItemDelegateForFilePath();
-    ~ItemDelegateForFilePath();
+    explicit FilePathPropertyDelegate();
+    ~FilePathPropertyDelegate();
 
     virtual QWidget * createEditor( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const override;
     virtual void setEditorData ( QWidget * editor, const QModelIndex & index ) const override;

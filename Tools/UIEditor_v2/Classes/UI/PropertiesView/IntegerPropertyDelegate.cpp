@@ -1,4 +1,4 @@
-#include "ItemDelegateForInteger.h"
+#include "IntegerPropertyDelegate.h"
 #include <QSpinBox>
 #include <QLayout>
 #include "FileSystem/VariantType.h"
@@ -6,18 +6,18 @@
 #include "PropertiesTreeItemDelegate.h"
 #include "Utils/QtDavaConvertion.h"
 
-ItemDelegateForInteger::ItemDelegateForInteger(PropertiesTreeItemDelegate *delegate)
-    : PropertyAbstractEditor(delegate)
+IntegerPropertyDelegate::IntegerPropertyDelegate(PropertiesTreeItemDelegate *delegate)
+    : BasePropertyDelegate(delegate)
 {
 
 }
 
-ItemDelegateForInteger::~ItemDelegateForInteger()
+IntegerPropertyDelegate::~IntegerPropertyDelegate()
 {
 
 }
 
-QWidget * ItemDelegateForInteger::createEditor( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const
+QWidget * IntegerPropertyDelegate::createEditor( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const
 {
     QSpinBox *spinBox = new QSpinBox(parent);
     spinBox->setObjectName(QString::fromUtf8("spinBox"));
@@ -26,7 +26,7 @@ QWidget * ItemDelegateForInteger::createEditor( QWidget * parent, const QStyleOp
     return spinBox;
 }
 
-void ItemDelegateForInteger::setEditorData( QWidget * rawEditor, const QModelIndex & index ) const 
+void IntegerPropertyDelegate::setEditorData( QWidget * rawEditor, const QModelIndex & index ) const 
 {
     QSpinBox *editor = rawEditor->findChild<QSpinBox*>("spinBox");
 
@@ -52,12 +52,12 @@ void ItemDelegateForInteger::setEditorData( QWidget * rawEditor, const QModelInd
         break;
     }
     editor->blockSignals(false);
-    PropertyAbstractEditor::SetValueModified(editor, false);
+    BasePropertyDelegate::SetValueModified(editor, false);
 }
 
-bool ItemDelegateForInteger::setModelData( QWidget * rawEditor, QAbstractItemModel * model, const QModelIndex & index ) const 
+bool IntegerPropertyDelegate::setModelData( QWidget * rawEditor, QAbstractItemModel * model, const QModelIndex & index ) const 
 {
-    if (PropertyAbstractEditor::setModelData(rawEditor, model, index))
+    if (BasePropertyDelegate::setModelData(rawEditor, model, index))
         return true;
 
     QSpinBox *editor = rawEditor->findChild<QSpinBox*>("spinBox");
@@ -88,7 +88,7 @@ bool ItemDelegateForInteger::setModelData( QWidget * rawEditor, QAbstractItemMod
     return model->setData(index, variant, Qt::EditRole);
 }
 
-void ItemDelegateForInteger::OnValueChanged()
+void IntegerPropertyDelegate::OnValueChanged()
 {
     QWidget *spinBox = qobject_cast<QWidget *>(sender());
     if (!spinBox)
@@ -98,6 +98,6 @@ void ItemDelegateForInteger::OnValueChanged()
     if (!editor)
         return;
 
-    PropertyAbstractEditor::SetValueModified(editor, true);
+    BasePropertyDelegate::SetValueModified(editor, true);
     itemDelegate->emitCommitData(editor);
 }

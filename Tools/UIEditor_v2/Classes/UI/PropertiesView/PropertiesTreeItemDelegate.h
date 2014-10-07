@@ -7,7 +7,7 @@
 #include <QStyledItemDelegate>
 #include "UIControls/BaseProperty.h"
 #include "FileSystem/VariantType.h"
-class PropertyAbstractEditor;
+class AbstractPropertyDelegate;
 class QToolButton;
 
 class PropertiesTreeItemDelegate : public QStyledItemDelegate
@@ -25,14 +25,14 @@ public:
     virtual void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
     virtual bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
 
-    PropertyAbstractEditor * GetCustomItemDelegateForIndex(const QModelIndex & index) const;
+    AbstractPropertyDelegate * GetCustomItemDelegateForIndex(const QModelIndex & index) const;
 
     void emitCommitData(QWidget * editor);
     void emitCloseEditor(QWidget * editor, QAbstractItemDelegate::EndEditHint hint);
 
 private:
-    QMap<QVariant::Type, PropertyAbstractEditor *> qvariantItemDelegates;
-    QMap<BaseProperty::ePropertyType, PropertyAbstractEditor *> propertyItemDelegates;
-    QMap<DAVA::VariantType::eVariantType, PropertyAbstractEditor *> variantTypeItemDelegates;
+    QMap<QVariant::Type, AbstractPropertyDelegate *> qvariantItemDelegates;
+    QMap<BaseProperty::ePropertyType, AbstractPropertyDelegate *> propertyItemDelegates;
+    QMap<DAVA::VariantType::eVariantType, AbstractPropertyDelegate *> variantTypeItemDelegates;
 };
 #endif // __PROPERTIESTREEITEMDELEGATE_H__
