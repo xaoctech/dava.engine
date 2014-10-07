@@ -56,6 +56,18 @@ QVector2D Vector2DEdit::vector2D() const
 
 void Vector2DEdit::setVector2D(const QVector2D &newValue)
 {
+    if (signalsBlocked())
+    {
+        editX->blockSignals(true);
+        editY->blockSignals(true);
+    }
+
     editX->setText(QString("%1").arg(newValue.x()));
     editY->setText(QString("%1").arg(newValue.y()));
+
+    if (signalsBlocked())
+    {
+        editX->blockSignals(false);
+        editY->blockSignals(false);
+    }
 }

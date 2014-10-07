@@ -40,7 +40,9 @@ void StringPropertyDelegate::setEditorData( QWidget *rawEditor, const QModelInde
     {
         stringValue = WideStringToQString(variant.AsWideString());
     }
+    editor->blockSignals(true);
     editor->setText(stringValue);
+    editor->blockSignals(false);
 }
 
 bool StringPropertyDelegate::setModelData( QWidget * rawEditor, QAbstractItemModel * model, const QModelIndex & index ) const 
