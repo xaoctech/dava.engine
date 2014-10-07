@@ -102,7 +102,6 @@ bool SceneFile::LoadScene(const FilePath & filename, Scene * _scene, bool relToB
 //	staticMeshIndexOffset = scene->GetStaticMeshCount();
 	animatedMeshIndexOffset = scene->GetAnimatedMeshCount();
 	cameraIndexOffset = scene->GetCameraCount();
-//	animationIndexOffset = scene->GetAnimationCount();
     
 
 	sceneFP = File::Create(filename, File::OPEN | File::READ);
@@ -215,10 +214,10 @@ bool SceneFile::LoadScene(const FilePath & filename, Scene * _scene, bool relToB
 				{
 					AnimationComponent* animComp = new AnimationComponent();
 
-					AnimationData* animData = new AnimationData(anim->GetKeyCount());
+					AnimationData* animData = new AnimationData();
 					for (int32 keyIndex = 0; keyIndex < anim->GetKeyCount(); ++keyIndex)
 					{
-						animData->SetKey(keyIndex, anim->keys[keyIndex]);
+						animData->AddKey(anim->keys[keyIndex]);
 					}
 					animData->SetInvPose(anim->GetInvPose());
 					animData->SetDuration(anim->GetDuration());

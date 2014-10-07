@@ -161,6 +161,9 @@ void StaticOcclusionBuildSystem::Cancel()
 {
     activeIndex = -1;
     SafeDelete(staticOcclusion);
+    
+    StaticOcclusionSystem *sos = GetScene()->staticOcclusionSystem;
+    sos->InvalidateOcclusion();
 }
     
 void StaticOcclusionBuildSystem::StartBuildOcclusion(BaseObject * bo, void * messageData, void * callerData)
@@ -275,7 +278,7 @@ void StaticOcclusionBuildSystem::OcclusionBuildStep(BaseObject * bo, void * mess
         SceneForceLod(LodComponent::INVALID_LOD_LAYER);
         RestoreOcclusionMaterials();
     }
-    else
+    else if(staticOcclusion)
     {
         buildStepRemains = staticOcclusion->RenderFrame();
         if(buildStepRemains > buildStepsCount)

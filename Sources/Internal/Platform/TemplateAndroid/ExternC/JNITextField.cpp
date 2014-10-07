@@ -35,6 +35,11 @@
 
 extern "C"
 {
+	bool Java_com_dava_framework_JNITextField_IsVisible(JNIEnv* env, jobject classthis, uint32_t id)
+	{
+		return DAVA::UITextFieldAndroid::IsVisible(id);
+	}
+	
 	void Java_com_dava_framework_JNITextField_TextFieldShouldReturn(JNIEnv* env, jobject classthis, uint32_t id)
 	{
 		DAVA::UITextFieldAndroid::TextFieldShouldReturn(id);
@@ -52,6 +57,25 @@ extern "C"
 		env->ReleaseByteArrayElements(replacementString, bufferPtr, 0);
 
 		return DAVA::UITextFieldAndroid::TextFieldKeyPressed(id, replacementLocation, replacementLength, string);
+	}
+
+	void Java_com_dava_framework_JNITextField_TextFieldKeyboardShown(JNIEnv* env, jobject classthis, uint32_t id, int x, int y, int dx, int dy)
+	{
+	    // Recalculate to virtual coordinates.
+	    DAVA::Vector2 keyboardOrigin(x, y);
+	    keyboardOrigin *= DAVA::UIControlSystem::Instance()->GetScaleFactor();
+	    keyboardOrigin += DAVA::UIControlSystem::Instance()->GetInputOffset();
+
+	    DAVA::Vector2 keyboardSize(dx, dy);
+	    keyboardSize *= DAVA::UIControlSystem::Instance()->GetScaleFactor();
+	    keyboardSize += DAVA::UIControlSystem::Instance()->GetInputOffset();
+
+	    DAVA::UITextFieldAndroid::TextFieldKeyboardShown(id, DAVA::Rect(keyboardOrigin, keyboardSize));
+	}
+
+	void Java_com_dava_framework_JNITextField_TextFieldKeyboardHidden(JNIEnv* env, jobject classthis, uint32_t id)
+	{
+	    DAVA::UITextFieldAndroid::TextFieldKeyboardHidden(id);
 	}
 
     void Java_com_dava_framework_JNITextField_TextFieldFocusChanged(JNIEnv* env, jobject classthis, uint32_t id, bool hasFocus)
