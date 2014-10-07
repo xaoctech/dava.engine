@@ -298,6 +298,7 @@ SkinnedMesh * CreateSkinnedMesh(Entity * fromEntity, Vector<SkeletonComponent::J
 
     outJoints.resize(childrenNodes.size());
 
+    int32 currentTargetIndex = 0;
     for(int32 nodeIndex = 0; nodeIndex < (int32)childrenNodes.size(); ++nodeIndex)
     {
         Entity * child = childrenNodes[nodeIndex];
@@ -311,10 +312,17 @@ SkinnedMesh * CreateSkinnedMesh(Entity * fromEntity, Vector<SkeletonComponent::J
                 RenderBatch * rb = ro->GetRenderBatch(batchIndex, lodIndex, switchIndex);
                 SkinnedMeshWorkKey dataKey(lodIndex, switchIndex, rb->GetMaterial()->GetParent());
 
-                collapseDataMap[dataKey].push_back(SkinnedMeshJointWork(rb, nodeIndex));
+                collapseDataMap[dataKey].push_back(SkinnedMeshJointWork(rb, currentTargetIndex));
             }
 
             outJoints[nodeIndex].bbox = ro->GetBoundingBox();
+
+            outJoints[nodeIndex].targetId = currentTargetIndex;
+            currentTargetIndex++;
+        }
+        else
+        {
+            outJoints[nodeIndex].targetId = SkeletonComponent::INVALID_JOINT_INDEX;
         }
 
         const Matrix4 & localTransform = child->GetLocalTransform();
@@ -323,7 +331,6 @@ SkinnedMesh * CreateSkinnedMesh(Entity * fromEntity, Vector<SkeletonComponent::J
         outJoints[nodeIndex].orientation.Construct(localTransform);
         outJoints[nodeIndex].position = localTransform.GetTranslationVector();
         outJoints[nodeIndex].scale = localTransform.GetScaleVector().x;
-        outJoints[nodeIndex].targetId = nodeIndex;
 
         Entity * parentEntity = child->GetParent();
         if(!parentEntity || parentEntity == fromEntity)
