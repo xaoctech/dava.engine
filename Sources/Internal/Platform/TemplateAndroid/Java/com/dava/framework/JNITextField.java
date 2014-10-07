@@ -54,6 +54,7 @@ public class JNITextField {
 		public EditText editText;
 		public int id;
 		public InputFilter maxLengthFilter = null;
+		public boolean visible = false;
 	}
 	static Map<Integer, NativeEditText> controls = new HashMap<Integer, NativeEditText>();
 	
@@ -801,6 +802,7 @@ public class JNITextField {
 	public static void SetVisible(int id, boolean isVisible)
 	{
 		final EditText text = GetEditText(id);
+		final NativeEditText nativeText = GetNativeEditText(id);
 		final boolean visible = isVisible;
 		if (text == null)
 			return;
@@ -816,6 +818,7 @@ public class JNITextField {
 					        text.clearFocus(); // Clear focus before hiding to try to close keyboard
 					    }
 						text.setVisibility(visible ? View.VISIBLE : View.GONE);
+						nativeText.visible = visible; 
 						return null;
 					}
 				});
@@ -973,7 +976,7 @@ public class JNITextField {
 			public void run() {
 				for (Iterator<NativeEditText> iter = controls.values().iterator(); iter.hasNext();) {						
 					NativeEditText textField = iter.next();
-					if(IsVisible(textField.id))
+					if(textField.visible)
 					{
 						textField.editText.setVisibility(View.VISIBLE);
 					}
@@ -991,5 +994,4 @@ public class JNITextField {
 	public static native void TextFieldKeyboardShown(int id, int x, int y, int dx, int dy);
 	public static native void TextFieldKeyboardHidden(int id);
 	public static native void TextFieldFocusChanged(int id, final boolean hasFocus);
-	public static native boolean IsVisible(int id);
 }
