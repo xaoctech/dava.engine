@@ -73,6 +73,7 @@
 		329E0D3B19D3F340008A9CE6 /* KeyedArchiveCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 329E0D2919D3F340008A9CE6 /* KeyedArchiveCommand.cpp */; };
 		329E0D3C19D3F340008A9CE6 /* MetaObjModifyCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 329E0D2B19D3F340008A9CE6 /* MetaObjModifyCommand.cpp */; };
 		329E0D3D19D3F340008A9CE6 /* RemoveComponentCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 329E0D2D19D3F340008A9CE6 /* RemoveComponentCommand.cpp */; };
+		32D11F5319E416B100C8ADEB /* LocalizedTextValueProperty.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 32D11F5119E416B100C8ADEB /* LocalizedTextValueProperty.cpp */; };
 		32EB47A919DB359F00775432 /* SubValueProperty.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 32EB47A719DB359F00775432 /* SubValueProperty.cpp */; };
 		32EDA8EA19DABD83009845AD /* PropertiesSection.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 32EDA8E819DABD83009845AD /* PropertiesSection.cpp */; };
 		32EDA8F219DAC6EE009845AD /* BackgroundPropertiesSection.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 32EDA8F019DAC6EE009845AD /* BackgroundPropertiesSection.cpp */; };
@@ -298,6 +299,8 @@
 		329E0D2C19D3F340008A9CE6 /* MetaObjModifyCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetaObjModifyCommand.h; sourceTree = "<group>"; };
 		329E0D2D19D3F340008A9CE6 /* RemoveComponentCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RemoveComponentCommand.cpp; sourceTree = "<group>"; };
 		329E0D2E19D3F340008A9CE6 /* RemoveComponentCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RemoveComponentCommand.h; sourceTree = "<group>"; };
+		32D11F5119E416B100C8ADEB /* LocalizedTextValueProperty.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LocalizedTextValueProperty.cpp; sourceTree = "<group>"; };
+		32D11F5219E416B100C8ADEB /* LocalizedTextValueProperty.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalizedTextValueProperty.h; sourceTree = "<group>"; };
 		32EB47A719DB359F00775432 /* SubValueProperty.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SubValueProperty.cpp; sourceTree = "<group>"; };
 		32EB47A819DB359F00775432 /* SubValueProperty.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SubValueProperty.h; sourceTree = "<group>"; };
 		32EDA8E819DABD83009845AD /* PropertiesSection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertiesSection.cpp; sourceTree = "<group>"; };
@@ -563,6 +566,8 @@
 				32EDA8FA19DACC6A009845AD /* ValueProperty.h */,
 				32EB47A719DB359F00775432 /* SubValueProperty.cpp */,
 				32EB47A819DB359F00775432 /* SubValueProperty.h */,
+				32D11F5119E416B100C8ADEB /* LocalizedTextValueProperty.cpp */,
+				32D11F5219E416B100C8ADEB /* LocalizedTextValueProperty.h */,
 				32EDA8F019DAC6EE009845AD /* BackgroundPropertiesSection.cpp */,
 				32EDA8F119DAC6EE009845AD /* BackgroundPropertiesSection.h */,
 				32EDA8F319DAC6FC009845AD /* InternalControlPropertiesSection.cpp */,
@@ -989,6 +994,7 @@
 				329E0D3219D3F340008A9CE6 /* CommandBatch.cpp in Build Sources */,
 				17FF160016400A75001B130F /* localizationeditordialog.cpp in Build Sources */,
 				159ED7C619E2F61C00C8B37A /* FloatPropertyDelegate.cpp in Build Sources */,
+				32D11F5319E416B100C8ADEB /* LocalizedTextValueProperty.cpp in Build Sources */,
 				15959DE419D5750600B52AEF /* UIPackageModel.cpp in Build Sources */,
 				17607FC2164121FB004E36DE /* LocalizationSystemHelper.cpp in Build Sources */,
 				32014C7519C8718A006A4228 /* UIEditorComponent.cpp in Build Sources */,

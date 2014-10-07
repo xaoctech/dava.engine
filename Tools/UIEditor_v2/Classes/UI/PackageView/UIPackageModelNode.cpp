@@ -119,13 +119,13 @@ UIControl *UIPackageModelControlNode::GetControl() const
 bool UIPackageModelControlNode::IsInstancedFromPrototype() const
 {
     UIEditorComponent *component = static_cast<UIEditorComponent*>(control->GetCustomData());
-    return component->GetPrototype() != NULL;
+    return component && component->GetPrototype() != NULL;
 }
 
 bool UIPackageModelControlNode::IsCloned() const
 {
     UIEditorComponent *component = static_cast<UIEditorComponent*>(control->GetCustomData());
-    return component->IsClonedFromPrototype();
+    return component && component->IsClonedFromPrototype();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

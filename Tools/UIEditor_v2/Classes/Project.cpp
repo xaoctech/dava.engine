@@ -150,8 +150,20 @@ bool Project::Open(const QString &path)
             legacyData->Put(key, data);
         }
         
+        if (i == 0)
+        {
+            const YamlNode *localizationPathNode = platform->Get("LocalizationPath");
+            const YamlNode *localeNode = platform->Get("Locale");
+            if (localizationPathNode && localeNode)
+            {
+                LocalizationSystem::Instance()->SetDirectory(localizationPathNode->AsString());
+                LocalizationSystem::Instance()->SetCurrentLocale(localeNode->AsString());
+                LocalizationSystem::Instance()->Init();
+            }
+        }
 	}
     
+
     SafeRelease(parser);
     
     return true;
