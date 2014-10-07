@@ -1,6 +1,7 @@
 package com.dava.framework;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -948,6 +949,29 @@ public class JNITextField {
               TextFieldKeyboardHidden(id);
         }
 	}
+    
+    public static void HideAllTextFields() {
+    	for (Iterator<NativeEditText> iter = controls.values().iterator(); iter.hasNext();) {
+			NativeEditText textField = iter.next();
+			textField.editText.setVisibility(View.GONE);
+		}
+    }
+    
+    public static void ShowVisibleTextFields() {
+    	JNIActivity.GetActivity().runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				for (Iterator<NativeEditText> iter = controls.values().iterator(); iter.hasNext();) {						
+					NativeEditText textField = iter.next();
+					if(IsVisible(textField.id))
+					{
+						textField.editText.setVisibility(View.VISIBLE);
+					}
+				}				
+			}
+		});
+    }
 
 	public static native void TextFieldShouldReturn(int id);
 	public static native boolean TextFieldKeyPressed(
@@ -958,4 +982,5 @@ public class JNITextField {
 	public static native void TextFieldKeyboardShown(int id, int x, int y, int dx, int dy);
 	public static native void TextFieldKeyboardHidden(int id);
 	public static native void TextFieldFocusChanged(int id, final boolean hasFocus);
+	public static native boolean IsVisible(int id);
 }
