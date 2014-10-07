@@ -78,7 +78,7 @@ void DownloadManager::SetDownloader(Downloader *_downloader)
     
     while(NULL != currentTask)
     {
-        Thread::SleepThread(10);
+        Thread::Sleep(10);
         Update();
     }
 
@@ -270,7 +270,7 @@ void DownloadManager::ThreadFunction(BaseObject *caller, void *callerData, void 
 {
     while(isThreadStarted)
     {
-        Thread::SleepThread(20);
+        Thread::Sleep(20);
 
         currentTaskMutex.Lock();
         if (!currentTask || DL_FINISHED == currentTask->status)
@@ -344,7 +344,7 @@ void DownloadManager::Wait(const uint32 &taskId)
     while (waitTask
        && (waitTask->status == DL_IN_PROGRESS || waitTask->status == DL_PENDING))
     {
-        Thread::SleepThread(20);
+        Thread::Sleep(20);
         Update();
     }
 }
@@ -357,7 +357,7 @@ void DownloadManager::WaitAll()
 
         if (needToWait)
         {
-            Thread::SleepThread(20);
+            Thread::Sleep(20);
             Update();
         }
         else

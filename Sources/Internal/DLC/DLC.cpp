@@ -56,6 +56,9 @@ DLC::DLC(const String &url, const FilePath &sourceDir, const FilePath &destinati
 
     DVASSERT(!gameVersion.empty());
 
+    //  we suppose that downloaded data should not be media data and exclude it from index.
+	FileSystem::Instance()->MarkFolderAsNoMedia(destinationDir);
+
     // initial values
     dlcContext.remoteUrl = url;
     dlcContext.localVer = 0;
@@ -446,7 +449,7 @@ void DLC::StepCheckInfoBegin()
     Logger::Info("DLC: Downloading game-info\n\tfrom: %s\n\tto: %s", dlcContext.remoteVerUrl.c_str(), dlcContext.remoteVerStotePath.GetAbsolutePathname().c_str());
 
     DownloadManager::Instance()->SetNotificationCallback(DownloadManager::NotifyFunctor(this, &DLC::StepCheckInfoFinish));
-    dlcContext.remoteVerDownloadId = DownloadManager::Instance()->Download(dlcContext.remoteVerUrl, dlcContext.remoteVerStotePath.GetAbsolutePathname(), FULL);   
+    dlcContext.remoteVerDownloadId = DownloadManager::Instance()->Download(dlcContext.remoteVerUrl, dlcContext.remoteVerStotePath.GetAbsolutePathname(), FULL);
 }
 
 // downloading DLC version file finished. need to read removeVersion
@@ -748,7 +751,7 @@ void DLC::StepPatchBegin()
         }
         while(patchReader.ReadNext());
     }
-
+    
     Logger::Info("DLC: Patching, %d files to patch", dlcContext.patchCount);
     patchingThread = Thread::Create(Message(this, &DLC::PatchingThread));
     patchingThread->Start();
