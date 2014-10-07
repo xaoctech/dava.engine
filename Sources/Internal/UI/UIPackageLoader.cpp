@@ -353,40 +353,44 @@ void UIPackageLoader::LoadRootControl(int index, UIPackage *currentPackage)
 
 UIControl *UIPackageLoader::GetLoadedControlByName(const String &name, UIPackage *currentPackage)
 {
-    for (size_t index = 0; index < loadingQueue.size(); index++)
+    size_t pos = name.find('/');
+    if (pos == String::npos)
     {
-        if (loadingQueue[index].name == name)
+        for (size_t index = 0; index < loadingQueue.size(); index++)
         {
-            switch (loadingQueue[index].status)
+            if (loadingQueue[index].name == name)
             {
-                case STATUS_WAIT:
-                    LoadRootControl(index, currentPackage);
-                    if (loadingQueue[index].status != STATUS_LOADED)
-                    {
+                switch (loadingQueue[index].status)
+                {
+                    case STATUS_WAIT:
+                        LoadRootControl(index, currentPackage);
+                        if (loadingQueue[index].status != STATUS_LOADED)
+                        {
+                            DVASSERT(false);
+                            return NULL;
+                        }
+                        return loadingQueue[index].control;
+                        
+                    case STATUS_LOADED:
+                        return loadingQueue[index].control;
+
+                    case STATUS_LOADING:
                         DVASSERT(false);
                         return NULL;
-                    }
-                    return loadingQueue[index].control;
-                    
-                case STATUS_LOADED:
-                    return loadingQueue[index].control;
-
-                case STATUS_LOADING:
-                    DVASSERT(false);
-                    return NULL;
-                    
-                default:
-                    DVASSERT(false);
+                        
+                    default:
+                        DVASSERT(false);
+                }
             }
         }
     }
-    
-    for (int i = 0; i < currentPackage->GetPackagesCount(); i++)
+    else
     {
-        UIPackage *pack = currentPackage->GetPackage(i);
-        UIControl *control = pack->GetControl(name);
-        if (control)
-            return control;
+        String packageName = name.substr(0, pos);
+        String controlName = name.substr(pos + 1, name.length() - pos - 1);
+        UIPackage *pack = currentPackage->GetPackage(packageName);
+        if (pack)
+            return pack->GetControl(controlName);
     }
     return NULL;
 }

@@ -29,6 +29,7 @@ public:
     
     int32 GetPackagesCount() const;
     UIPackage *GetPackage(int32 index) const;
+    UIPackage *GetPackage(const String name) const;
     void AddPackage(UIPackage *package);
     
 protected:
