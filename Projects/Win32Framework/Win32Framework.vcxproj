@@ -569,8 +569,8 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\BillboardNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\BoneNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ActionComponent.h" />
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\BulletComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\AnimationComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\BulletComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\CameraComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ComponentHelpers.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\CustomPropertiesComponent.h" />
@@ -618,8 +618,8 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SpriteNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SwitchNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ActionUpdateSystem.h" />
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\BaseProcessSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\AnimationSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\BaseProcessSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\DebugRenderSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\EventSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\FoliageSystem.h" />
