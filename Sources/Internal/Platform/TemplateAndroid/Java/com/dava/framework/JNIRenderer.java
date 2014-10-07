@@ -18,12 +18,13 @@ public class JNIRenderer implements GLSurfaceView.Renderer {
 	private native void nativeOnPauseView(boolean isLock);
 	
 	private boolean skipFirstFrame = false;
+	private boolean showTextFields = false;
 
 	private int width = 0;
 	private int height = 0;
 	
 	private boolean isRenderRecreated = false;
-
+	
 	public JNIRenderer()
 	{
 	}
@@ -66,6 +67,7 @@ public class JNIRenderer implements GLSurfaceView.Renderer {
 		}
 		OnResume();
 		skipFirstFrame = true;
+		showTextFields = true;
 
 		Log.w(JNIConst.LOG_TAG, "_________onSurfaceChanged__DONE___");
 	}
@@ -78,8 +80,14 @@ public class JNIRenderer implements GLSurfaceView.Renderer {
 			skipFirstFrame = false;
 			return;
 		}
-			
+
 		nativeRender();
+		
+		if(showTextFields)
+		{
+			showTextFields = false;
+			JNITextField.ShowVisibleTextFields();
+		}
 	}
 	
 	public void OnPause()

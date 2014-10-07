@@ -1,5 +1,5 @@
 /*==================================================================================
-    Copyright (c) 2014, thorin
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -31,43 +31,42 @@
 #include "Scene3D/Components/AnimationComponent.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Scene.h"
-#include "Scene3D/Systems/EventSystem.h"
-#include "Scene3D/Systems/GlobalEventSystem.h"
 #include "Scene3D/AnimationData.h"
-#include "Scene3D/Components/TransformComponent.h"
+#include "Scene3D/Systems/GlobalEventSystem.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Components/ComponentHelpers.h"
 
 namespace DAVA
 {
 
-REGISTER_CLASS(AnimationComponent)
-    
 AnimationComponent::AnimationComponent()
 :time(0.0f),
-isPlaying(false),
 animation(NULL),
-autoStart(true),
-repeat(true)
+repeatsCount(1),
+currRepeatsCont(0),
+state(STATE_STOPPED),
+frameIndex(0)
 {
 }
-    
+
 AnimationComponent::~AnimationComponent()
 {
-    SafeRelease(animation);
+	SafeRelease(animation);
 }
 
 Component * AnimationComponent::Clone(Entity * toEntity)
 {
-    AnimationComponent * newAnimation = new AnimationComponent();
+	AnimationComponent * newAnimation = new AnimationComponent();
+	newAnimation->SetEntity(toEntity);
 
-    newAnimation->time = time;
-    newAnimation->isPlaying = false;
-    newAnimation->animation = animation ? animation->Clone() : NULL;
-    newAnimation->autoStart = autoStart;
-    newAnimation->repeat = repeat;
-    return newAnimation;
+	newAnimation->time = time;
+	newAnimation->animation = SafeRetain(animation);
+	newAnimation->repeatsCount = repeatsCount;
+	newAnimation->currRepeatsCont = 0;
+	newAnimation->state = STATE_STOPPED; //for another state we need add this one to AnimationSystem
+
+	return newAnimation;
 }
-
-
 
 void AnimationComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
@@ -75,19 +74,8 @@ void AnimationComponent::Serialize(KeyedArchive *archive, SerializationContext *
 
 	if(NULL != archive)
 	{
-        archive->SetFloat("duration", animation->duration);
-        archive->SetInt32("keyCount", animation->keyCount);
-		archive->SetMatrix4("invPose", animation->invPose);
-
-        for (int32 keyIndex = 0; keyIndex < animation->keyCount; ++keyIndex)
-        {
-            archive->SetFloat(Format("key_%i_time", keyIndex), animation->keys[keyIndex].time);
-            archive->SetVector3(Format("key_%i_translation", keyIndex), animation->keys[keyIndex].translation);
-            archive->SetVector3(Format("key_%i_scale", keyIndex), animation->keys[keyIndex].scale);
-            archive->SetVector4(Format("key_%i_rotation", keyIndex), Vector4(animation->keys[keyIndex].rotation.x, animation->keys[keyIndex].rotation.y, animation->keys[keyIndex].rotation.z, animation->keys[keyIndex].rotation.w));
-        }
-        archive->SetBool("autostart", autoStart);
-        archive->SetBool("repeat", repeat);
+		archive->SetVariant("animation", VariantType((uint64)animation));
+		archive->SetUInt32("repeatsCount", repeatsCount);
 	}
 }
 
@@ -95,52 +83,63 @@ void AnimationComponent::Deserialize(KeyedArchive *archive, SerializationContext
 {
 	if(NULL != archive)
 	{
-		const int32 keyCount = archive->GetInt32("keyCount");
-
-		SafeRelease(animation);
-		animation = new AnimationData(keyCount);
-
-		animation->SetDuration(archive->GetFloat("duration"));
-		animation->SetInvPose(archive->GetMatrix4("invPose"));
-
-		for (int32 keyIndex = 0; keyIndex < keyCount; ++keyIndex)
+		AnimationData* newAnimation = static_cast<AnimationData*>(sceneFile->GetDataBlock(archive->GetVariant("animation")->AsUInt64()));
+		if (animation != newAnimation)
 		{
-			SceneNodeAnimationKey key;
-
-			key.time = archive->GetFloat(Format("key_%i_time", keyIndex));
-			key.translation = archive->GetVector3(Format("key_%i_translation", keyIndex));
-			key.scale = archive->GetVector3(Format("key_%i_scale", keyIndex));
-			Vector4 rotation = archive->GetVector4(Format("key_%i_rotation", keyIndex));
-			key.rotation = Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
-
-			animation->SetKey(keyIndex, key);
+			SafeRelease(animation);
+			animation = SafeRetain(newAnimation);
 		}
-
-		autoStart = archive->GetBool("autostart", true);
-		repeat = archive->GetBool("repeat", true);
-// 		localMatrix = archive->GetMatrix4("tc.localMatrix", Matrix4::IDENTITY);
-// 		worldMatrix = archive->GetMatrix4("tc.worldMatrix", Matrix4::IDENTITY);
+		repeatsCount = archive->GetUInt32("repeatsCount", 1);
 	}
 
 	Component::Deserialize(archive, sceneFile);
 }
 
+void AnimationComponent::GetDataNodes(Set<DataNode*> & dataNodes)
+{
+	if (animation)
+		dataNodes.insert(animation);
+}
+
 void AnimationComponent::SetAnimation(AnimationData* _animation)
 {
-    SafeRetain(_animation);
-    SafeRelease(animation);
-    animation = _animation;
+	if (_animation == animation)
+		return;
+
+	SafeRelease(animation);
+	animation = SafeRetain(_animation);
 }
 
 void AnimationComponent::SetIsPlaying( bool value )
 {
-    isPlaying = value;
-    time = 0.0f;
+    if (state == STATE_STOPPED && value)
+        Start();
+    if (state == STATE_PLAYING && !value)
+        Stop();
 }
 
 bool AnimationComponent::GetIsPlaying() const
 {
-    return isPlaying;
+	return state == STATE_PLAYING;
+}
+
+void AnimationComponent::Start()
+{
+    GlobalEventSystem::Instance()->Event(GetEntity(), EventSystem::START_ANIMATION);
+}
+
+void AnimationComponent::StopAfterNRepeats( int32 numberOfRepeats )
+{
+    repeatsCount = numberOfRepeats;
+}
+
+
+void AnimationComponent::Stop()
+{
+    if (state == STATE_STOPPED) 
+        return;
+    GlobalEventSystem::Instance()->Event(GetEntity(), EventSystem::STOP_ANIMATION);
+    animationTransform.Identity();
 }
 
 };

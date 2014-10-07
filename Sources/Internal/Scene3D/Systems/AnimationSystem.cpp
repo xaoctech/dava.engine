@@ -1,5 +1,5 @@
 /*==================================================================================
-    Copyright (c) 2014, thorin
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,7 @@
 #include "Debug/Stats.h"
 #include "Scene3D/AnimationData.h"
 #include "Scene3D/Components/TransformComponent.h"
+#include "Scene3D/Components/ComponentHelpers.h"
 
 namespace DAVA
 {
@@ -45,7 +46,11 @@ namespace DAVA
 AnimationSystem::AnimationSystem(Scene * scene)
 :	SceneSystem(scene)
 {
-
+    if (scene)
+    {
+        scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::START_ANIMATION);
+        scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::STOP_ANIMATION);
+    }
 }
 
 AnimationSystem::~AnimationSystem()
@@ -55,91 +60,66 @@ AnimationSystem::~AnimationSystem()
 
 void AnimationSystem::Process(float32 timeElapsed)
 {
-    TIME_PROFILE("TransformSystem::Process");
-    Vector<AnimationComponent*>::iterator it, endit;
-    for (it = items.begin(), endit = items.end(); it!= endit; ++it)
-    {
-        AnimationComponent * comp = *it;
-        if (comp->isPlaying && comp->animation)
-        {
-            comp->time += timeElapsed;
+    TIME_PROFILE("AnimationSystem::Process");
 
-            if (comp->time > comp->animation->duration)
+    int componentsCount = activeComponents.size();
+    for(int i = 0; i < componentsCount; i++) 
+    {
+        AnimationComponent * comp = activeComponents[i];
+        comp->time += timeElapsed;
+        if (comp->time > comp->animation->duration)
+        {
+            comp->currRepeatsCont++;
+            if (((comp->repeatsCount==0) || (comp->currRepeatsCont < comp->repeatsCount)))
             {
-                if (comp->repeat)
-                    comp->time -= comp->animation->duration;
-                else
-                    comp->SetIsPlaying(false);
+                comp->time -= comp->animation->duration;
             }
-
-            SceneNodeAnimationKey & key = comp->animation->Interpolate(comp->time);
-            Matrix4 animTransform;
-            key.GetMatrix(animTransform);
-            Matrix4 result = comp->animation->invPose * animTransform;
-            comp->GetEntity()->SetLocalTransform(result);
+            else
+            {
+                RemoveFromActive(comp);
+                componentsCount--;
+                i--;
+                comp->animationTransform.Identity();
+                continue;
+            }
         }
-    }
-}
 
-void AnimationSystem::RegisterComponent(Entity* entity, Component* component)
-{
-    if (component->GetType() == Component::ANIMATION_COMPONENT)
-    {
-        items.push_back(static_cast< AnimationComponent* >(component));
-    }
-}
-
-void AnimationSystem::UnregisterComponent(Entity* entity, Component* component)
-{
-    if (component->GetType() == Component::ANIMATION_COMPONENT)
-    {
-        for (uint32 i = 0; i < items.size(); ++i)
-        {
-            items[i] = items.back();
-        }
-        items.pop_back();
+        Matrix4 animTransform;
+        comp->animation->Interpolate(comp->time, comp->frameIndex).GetMatrix(animTransform);
+        comp->animationTransform = comp->animation->invPose * animTransform;
+        GlobalEventSystem::Instance()->Event(comp->GetEntity(), EventSystem::ANIMATION_TRANSFORM_CHANGED);
     }
 }
 
 void AnimationSystem::ImmediateEvent(Entity * entity, uint32 event)
 {
-
-}
-
-
-void AnimationSystem::AddEntity(Entity * entity)
-{
-    if (entity->GetComponent(Component::ANIMATION_COMPONENT))
-        RegisterComponent(entity, entity->GetComponent(Component::ANIMATION_COMPONENT));
-}
-
-void AnimationSystem::RemoveEntity(Entity * entity)
-{
-    if (entity->GetComponent(Component::ANIMATION_COMPONENT))
-        UnregisterComponent(entity, entity->GetComponent(Component::ANIMATION_COMPONENT));
-}
-
-void AnimationSystem::PlaySceneAnimations( void )
-{
-    Vector<AnimationComponent*>::iterator it, endit;
-    for (it = items.begin(), endit = items.end(); it!= endit; ++it)
+    AnimationComponent *comp = GetAnimationComponent(entity);
+    if (!comp) return;
+    if (event == EventSystem::START_ANIMATION)
     {
-        AnimationComponent * comp = *it;
-        if (comp->autoStart)
-        {
-            comp->SetIsPlaying(true);
-        }
+        if (comp->state == AnimationComponent::STATE_STOPPED)
+            AddToActive(comp);
+        comp->state = AnimationComponent::STATE_PLAYING;
+        comp->currRepeatsCont = 0;
+    }
+    else if (event == EventSystem::STOP_ANIMATION)
+        RemoveFromActive(comp);
+}
+
+void AnimationSystem::AddToActive( AnimationComponent *comp )
+{
+    if (comp->state == AnimationComponent::STATE_STOPPED)
+    {
+        activeComponents.push_back(comp);
     }
 }
 
-void AnimationSystem::StopSceneAnimations( void )
+void AnimationSystem::RemoveFromActive( AnimationComponent *comp )
 {
-    Vector<AnimationComponent*>::iterator it, endit;
-    for (it = items.begin(), endit = items.end(); it!= endit; ++it)
-    {
-        AnimationComponent * comp = *it;
-        comp->SetIsPlaying(false);
-    }
+    Vector<AnimationComponent*>::iterator it = std::find(activeComponents.begin(), activeComponents.end(), comp);
+    DVASSERT(it!=activeComponents.end());
+    activeComponents.erase(it);
+    comp->state = AnimationComponent::STATE_STOPPED;
 }
 
 };

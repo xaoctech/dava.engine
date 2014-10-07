@@ -194,7 +194,6 @@
    <addaction name="separator"/>
    <addaction name="actionMaterialEditor"/>
    <addaction name="actionTextureConverter"/>
-   <addaction name="actionPlaySceneAnimations"/>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -636,15 +635,6 @@
      </item>
     </layout>
    </widget>
-  </widget>
-  <widget class="QDockWidget" name="dockConsole">
-   <property name="windowTitle">
-    <string>Console</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>2</number>
-   </attribute>
-   <widget class="ConsoleWidget" name="dockConsoleContents"/>
   </widget>
   <widget class="QDockWidget" name="dockLODEditor">
    <property name="windowTitle">
@@ -1941,19 +1931,6 @@
     <string>BatchProcess</string>
    </property>
   </action>
-  <action name="actionPlaySceneAnimations">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/play.png</normaloff>
-     <normalon>:/QtIcons/stop.png</normalon>:/QtIcons/play.png</iconset>
-   </property>
-   <property name="text">
-    <string>Play Scene Animations</string>
-   </property>
-  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -2017,12 +1994,6 @@
    <class>LibraryWidget</class>
    <extends>QWidget</extends>
    <header>DockLibrary/LibraryWidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ConsoleWidget</class>
-   <extends>QWidget</extends>
-   <header>DockConsole/ConsoleWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

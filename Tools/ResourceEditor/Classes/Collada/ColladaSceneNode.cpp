@@ -396,118 +396,73 @@ FMMatrix44 ColladaSceneNode::CalculateTransformForTime(FCDSceneNode * originalNo
 	return colladaLocalMatrix;
 }
 
-float32 copySign(float32 a, float32 b) {
-	return b < 0 ? -Abs(a) : Abs(a);
-}
-
-void Decompose(Matrix4 matrix, Vector3& translation, Vector3& scale, Quaternion& rot)
-{
-	scale = matrix.GetScaleVector();
-
-	translation = matrix.GetTranslationVector();
-
-	matrix._00 /= scale.x;
-	matrix._01 /= scale.x;
-	matrix._02 /= scale.x;
-
-	matrix._10 /= scale.y;
-	matrix._11 /= scale.y;
-	matrix._12 /= scale.y;
-
-	matrix._20 /= scale.z;
-	matrix._21 /= scale.z;
-	matrix._22 /= scale.z;
-
-	matrix.SetTranslationVector(Vector3(0.0f, 0.0f, 0.0f));
-
-	float32 d = (matrix(0, 0) * matrix(1, 1) - matrix(1, 0) * matrix(0, 1)) * (matrix(2, 2) * matrix(3, 3) - matrix(3, 2) * matrix(2, 3))	- (matrix(0, 0) * matrix(2, 1) - matrix(2, 0) * matrix(0, 1)) * (matrix(1, 2) * matrix(3, 3) - matrix(3, 2) * matrix(1, 3))
-		+ (matrix(0, 0) * matrix(3, 1) - matrix(3, 0) * matrix(0, 1)) * (matrix(1, 2) * matrix(2, 3) - matrix(2, 2) * matrix(1, 3))	+ (matrix(1, 0) * matrix(2, 1) - matrix(2, 0) * matrix(1, 1)) * (matrix(0, 2) * matrix(3, 3) - matrix(3, 2) * matrix(0, 3))
-		- (matrix(1, 0) * matrix(3, 1) - matrix(3, 0) * matrix(1, 1)) * (matrix(0, 2) * matrix(2, 3) - matrix(2, 2) * matrix(0, 3))	+ (matrix(2, 0) * matrix(3, 1) - matrix(3, 0) * matrix(2, 1)) * (matrix(0, 2) * matrix(1, 3) - matrix(1, 2) * matrix(0, 3));
-
-	float32 absQ = pow(d, 1.0f / 3.0f);
-	rot.w = sqrtf( Max( 0.0f, absQ + matrix._00 + matrix._11 + matrix._22 ) ) / 2; 
-	rot.x = sqrtf( Max( 0.0f, absQ + matrix._00 - matrix._11 - matrix._22 ) ) / 2; 
-	rot.y = sqrtf( Max( 0.0f, absQ - matrix._00 + matrix._11 - matrix._22 ) ) / 2; 
-	rot.z = sqrtf( Max( 0.0f, absQ - matrix._00 - matrix._11 + matrix._22 ) ) / 2; 
-	rot.x = copySign( rot.x, ( matrix._12 - matrix._21 ) );
-	rot.y = copySign( rot.y, ( matrix._20 - matrix._02 ) );
-	rot.z = copySign( rot.z, ( matrix._01 - matrix._10 ) );
-	rot.Normalize();
-}
-
 SceneNodeAnimationKey ColladaSceneNode::ExportAnimationKey(FCDSceneNode * originalNode, float32 time)
 {
 	SceneNodeAnimationKey key;
 	FMMatrix44 colladaLocalMatrix =  ColladaSceneNode::CalculateTransformForTime(originalNode, time);
 	Matrix4 lt = ConvertMatrix(colladaLocalMatrix);
 	key.time = time;
-	Decompose(lt, key.translation, key.scale, key.rotation);
-	
+	lt.Decomposition(key.translation, key.scale, key.rotation);
+
 	return key;
 }
-	
+
+bool ColladaSceneNode::KeyTimeEqual(float32 first, float32 second)
+{
+	return fabsf(first - second) <= EPSILON;
+}
+
 SceneNodeAnimation * ColladaSceneNode::ExportNodeAnimation(FCDSceneNode * originalNode, float32 startTime, float32 endTime, float32 fps)
 {
 	if (!IsAnimated(originalNode))return 0;
 		
 	
-	int frameCount = 1;
-
-	for (int t = 0; t < (int)originalNode->GetTransformCount(); ++t)
+	Vector< float32 > keyTimes;
+	// collect animation key times
+	for (int transformIndex = 0; transformIndex < (int)originalNode->GetTransformCount(); ++transformIndex)
 	{
-		FCDTransform * transform = originalNode->GetTransform(t);
+		FCDTransform * transform = originalNode->GetTransform(transformIndex);
 		if (transform->IsAnimated())
 		{
+			if ((transform->GetType() == FCDTransform::MATRIX) && (originalNode->GetTransformCount() > 1))
+			{
+				DVASSERT_MSG(false, "Multiple matrix animations are not supported.");
+				return NULL;
+			}
+
 			FCDAnimated * animated = transform->GetAnimated();
+			
 			const FCDAnimationCurveListList& curves = animated->GetCurves();
 			for (FCDAnimationCurveListList::const_iterator curveIter = curves.begin(); curveIter != curves.end(); ++curveIter)
 			{
 				for (FCDAnimationCurveTrackList::const_iterator curveTrackIter = curveIter->begin(); curveTrackIter != curveIter->end(); ++curveTrackIter)
 				{
-					frameCount = LCM((*curveTrackIter)->GetKeyCount(), frameCount);
+					for (int keyIndex = 0; keyIndex < (*curveTrackIter)->GetKeyCount(); ++keyIndex)
+					{
+						float32 key = (*curveTrackIter)->GetKey(keyIndex)->input;
+						
+						if (!std::binary_search(keyTimes.begin(), keyTimes.end(), key))
+						{
+							keyTimes.insert(std::lower_bound(keyTimes.begin(), keyTimes.end(), key), key);
+						}
+					}
 				}
 			}
 		}
 	}
 
-	float32 t0 = startTime;
-	float32 tInc = (endTime - startTime) / (float)(frameCount - 1);
+	Vector< float32 >::iterator last = std::unique(keyTimes.begin(), keyTimes.end(), KeyTimeEqual);
+	keyTimes.erase(last, keyTimes.end());
 	
-	std::vector<SceneNodeAnimationKey> keys;
-	
-	for (int k = 0; k < frameCount; ++k)
-	{
-		SceneNodeAnimationKey key = ExportAnimationKey(originalNode, t0);
-//		duplicate keys
-//		if (keys.size() != 0)
-//		{
-//			SceneNodeAnimationKey & keyPrev = keys[keys.size() - 1];
-//			if ((keyPrev.translation == key.translation)
-//				&& (keyPrev.rotation == key.rotation))
-//			{
-//				keyPrev.time = t0;
-//			}else
-//			{
-//				keys.push_back(key);
-//			}
-//		}else
-		{
-			keys.push_back(key);
-		}
-		t0 += tInc;
-	}
-	
-	
-	SceneNodeAnimation * anim = new SceneNodeAnimation(keys.size());
+	SceneNodeAnimation * anim = new SceneNodeAnimation(keyTimes.size());
 	anim->SetDuration(endTime);
-	for (int k = 0; k < (int)keys.size(); ++k)
+	for (int k = 0; k < (int)keyTimes.size(); ++k)
 	{
-		anim->SetKey(k, keys[k]);
+		anim->SetKey(k, ExportAnimationKey(originalNode, keyTimes[k]));
 	}
 	
-	printf("= keys export: frameCount: %d keyCount:%ld compression: %f\n", frameCount, keys.size(), 100.0f * (float32)keys.size() / (float32)frameCount);
+	printf("= keys export: keyCount:%ld\n", keyTimes.size());
 		 
-	ExportAnimationKey(originalNode, 0);
 	return anim;
 }
 

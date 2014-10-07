@@ -33,54 +33,49 @@
 #include "Base/BaseTypes.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/SceneNodeAnimationKey.h"
+#include "Scene3D/DataNode.h"
 namespace DAVA 
 {
 	
-class AnimationData : public BaseObject
+class AnimationData : public DataNode
 {
 protected:
 	virtual ~AnimationData();
 public:
-	AnimationData(int32 keyCount);
+	AnimationData();
 	
-	SceneNodeAnimationKey Interpolate(float32 t);
+	SceneNodeAnimationKey Interpolate(float32 t, uint32& startIdxCache) const;
 	
-	void SetKey(int32 index, const SceneNodeAnimationKey & key);
+	void AddKey(const SceneNodeAnimationKey & key);
 	
-	inline int32 GetKeyCount();
-	inline SceneNodeAnimationKey * GetKeys();
+	inline int32 GetKeyCount() const;
 	
 	void SetDuration(float32 _duration);
-	inline float32 GetDuration(); 
+	inline float32 GetDuration() const; 
 	
 	void SetInvPose(const Matrix4& mat); 
 	const Matrix4& GetInvPose() const;
 	
+	virtual void Save(KeyedArchive * archive, SerializationContext * serializationContext);
+	virtual void Load(KeyedArchive * archive, SerializationContext * serializationContext);
+
 	AnimationData* Clone() const;
 
 	float32 duration;
 	
-	int32 keyCount;
-	SceneNodeAnimationKey * keys;
+	DAVA::Vector< SceneNodeAnimationKey > keys;
 
 	Matrix4 invPose;
-private:
-	int32 startIdx;
 };
 	
-inline float32 AnimationData::GetDuration()
+inline float32 AnimationData::GetDuration() const
 {
 	return duration;
 }
 	
-inline int32 AnimationData::GetKeyCount()
+inline int32 AnimationData::GetKeyCount() const
 {
-	return keyCount;
-}
-
-inline SceneNodeAnimationKey * AnimationData::GetKeys()
-{
-	return keys;
+	return keys.size();
 }
 	
 };
