@@ -35,6 +35,11 @@
 
 extern "C"
 {
+	bool Java_com_dava_framework_JNITextField_IsVisible(JNIEnv* env, jobject classthis, uint32_t id)
+	{
+		return DAVA::UITextFieldAndroid::IsVisible(id);
+	}
+	
 	void Java_com_dava_framework_JNITextField_TextFieldShouldReturn(JNIEnv* env, jobject classthis, uint32_t id)
 	{
 		DAVA::UITextFieldAndroid::TextFieldShouldReturn(id);
