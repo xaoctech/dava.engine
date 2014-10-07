@@ -68,20 +68,22 @@
     <ClCompile Include="Classes\UI\PackageView\PackageDockWidget.cpp" />
     <ClCompile Include="Classes\UI\PackageView\UIFilteredPackageModel.cpp" />
     <ClCompile Include="Classes\UI\PackageView\UIPackageModel.cpp" />
+    <ClCompile Include="Classes\UI\PackageView\UIPackageModelNode.cpp" />
+    <ClCompile Include="Classes\UI\PropertiesView\AbstractPropertyDelegate.cpp" />
     <ClCompile Include="Classes\UI\PropertiesView\ChangePropertyValueCommand.cpp" />
-    <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForColor.cpp" />
-    <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForFloat.cpp" />
-    <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForInteger.cpp" />
-    <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForPropertyEnum.cpp" />
-    <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForString.cpp" />
+    <ClCompile Include="Classes\UI\PropertiesView\ColorPropertyDelegate.cpp" />
+    <ClCompile Include="Classes\UI\PropertiesView\FloatPropertyDelegate.cpp" />
+    <ClCompile Include="Classes\UI\PropertiesView\IntegerPropertyDelegate.cpp" />
+    <ClCompile Include="Classes\UI\PropertiesView\EnumPropertyDelegate.cpp" />
+    <ClCompile Include="Classes\UI\PropertiesView\StringPropertyDelegate.cpp" />
     <ClCompile Include="Classes\UI\PropertiesView\PropertiesTreeItemDelegate.cpp" />
     <ClCompile Include="Classes\UI\PropertiesView\PropertiesTreeModel.cpp" />
     <ClCompile Include="Classes\UI\PropertiesView\PropertiesDockWidget.cpp" />
-    <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForVector2.cpp" />
+    <ClCompile Include="Classes\UI\PropertiesView\Vector2PropertyDelegate.cpp" />
     <ClCompile Include="Classes\UI\PropertiesView\PropertiesTreeView.cpp" />
-    <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForFilePath.cpp" />
+    <ClCompile Include="Classes\UI\PropertiesView\FilePathPropertyDelegate.cpp" />
     <ClCompile Include="Classes\UI\PropertiesView\PropertiesViewContext.cpp" />
-    <ClCompile Include="Classes\UI\PropertiesView\PropertyAbstractEditor.cpp" />
+    <ClCompile Include="Classes\UI\PropertiesView\BasePropertyDelegate.cpp" />
     <ClCompile Include="Classes\Utils\QtDavaConvertion.cpp" />
     <ClCompile Include="Classes\Validators\BaseValidator.cpp" />
     <ClCompile Include="Classes\Validators\DistanceFontValidator.cpp" />
@@ -165,13 +167,15 @@
     <ClInclude Include="Classes\UI\PackageView\PackageDockWidget.h" />
     <ClInclude Include="Classes\UI\PackageView\UIFilteredPackageModel.h" />
     <ClInclude Include="Classes\UI\PackageView\UIPackageModel.h" />
+    <ClInclude Include="Classes\UI\PackageView\UIPackageModelNode.h" />
+    <ClInclude Include="Classes\UI\PropertiesView\AbstractPropertyDelegate.h" />
     <ClInclude Include="Classes\UI\PropertiesView\ChangePropertyValueCommand.h" />
-    <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForColor.h" />
-    <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForFilePath.h" />
-    <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForFloat.h" />
-    <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForInteger.h" />
-    <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForPropertyEnum.h" />
-    <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForString.h" />
+    <ClInclude Include="Classes\UI\PropertiesView\ColorPropertyDelegate.h" />
+    <ClInclude Include="Classes\UI\PropertiesView\FilePathPropertyDelegate.h" />
+    <ClInclude Include="Classes\UI\PropertiesView\FloatPropertyDelegate.h" />
+    <ClInclude Include="Classes\UI\PropertiesView\IntegerPropertyDelegate.h" />
+    <ClInclude Include="Classes\UI\PropertiesView\EnumPropertyDelegate.h" />
+    <ClInclude Include="Classes\UI\PropertiesView\StringPropertyDelegate.h" />
     <ClInclude Include="Classes\UI\PropertiesView\PropertiesTreeItemDelegate.h" />
     <ClInclude Include="Classes\UI\PropertiesView\PropertiesTreeModel.h" />
     <ClInclude Include="Classes\UI\PropertiesView\PropertiesDockWidget.h" />
@@ -185,10 +189,10 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe"   -D_WINDOWS -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -D_CRT_SECURE_NO_DEPRECATE -DDAVA_QT -DDAVA_SAVE_TO_YAML  "-I." "-I.\..\..\Sources\Internal" "-I.\..\..\Sources\External" "-I.\..\..\Libs\glew\Include" "-I.\..\..\Libs\include" "-I.\Classes" "-I.\Classes\Commands" "-I.\Classes\Controllers" "-I.\Classes\Helpers" "-I.\Classes\Metadata" "-I.\Classes\Models" "-I.\Classes\UI" "-I.\Classes\UI\Dialogs" "-I.\Classes\UI\PropertyGridWidgets" "-I$(DXSDK_DIR)\include" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtNetwork" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtOpenGL" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default" "-Ic:\Program Files\OpenAL 1.1 SDK\include" "-Ic:\Program Files (x86)\OpenAL 1.1 SDK\include" "-I$(Configuration)\." "-I.\GeneratedFiles" "-I." "-I." "-I." "-I." "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"</Command>
     </ClInclude>
-    <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForVector2.h" />
+    <ClInclude Include="Classes\UI\PropertiesView\Vector2PropertyDelegate.h" />
     <ClInclude Include="Classes\UI\PropertiesView\PropertiesTreeView.h" />
     <ClInclude Include="Classes\UI\PropertiesView\PropertiesViewContext.h" />
-    <ClInclude Include="Classes\UI\PropertiesView\PropertyAbstractEditor.h" />
+    <ClInclude Include="Classes\UI\PropertiesView\BasePropertyDelegate.h" />
     <ClInclude Include="Classes\Utils\QtDavaConvertion.h" />
     <ClInclude Include="Classes\Validators\BaseValidator.h" />
     <ClInclude Include="Classes\Validators\DistanceFontValidator.h" />

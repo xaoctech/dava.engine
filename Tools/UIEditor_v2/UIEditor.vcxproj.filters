@@ -273,35 +273,41 @@
     <ClCompile Include="Classes\QtControls\Vector2DEdit.cpp">
       <Filter>Sources\QtControls</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForPropertyEnum.cpp">
+    <ClCompile Include="Classes\UI\PropertiesView\PropertiesViewContext.cpp">
       <Filter>Sources\UI\PropertiesView</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForString.cpp">
-      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForFilePath.cpp">
-      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForVector2.cpp">
-      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForColor.cpp">
-      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForInteger.cpp">
-      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\UI\PropertiesView\ItemDelegateForFloat.cpp">
-      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\UI\PropertiesView\PropertyAbstractEditor.cpp">
-      <Filter>Sources\UI\PropertiesView</Filter>
+    <ClCompile Include="Classes\UI\PackageView\UIPackageModelNode.cpp">
+      <Filter>Sources\UI\PackageView</Filter>
     </ClCompile>
     <ClCompile Include="Classes\UI\PropertiesView\ChangePropertyValueCommand.cpp">
       <Filter>Sources\UI\PropertiesView</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\UI\PropertiesView\PropertiesViewContext.cpp">
-      <Filter>Sources\UI\PropertiesView</Filter>
+    <ClCompile Include="Classes\UI\PropertiesView\AbstractPropertyDelegate.cpp">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\PropertiesView\BasePropertyDelegate.cpp">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\PropertiesView\Vector2PropertyDelegate.cpp">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\PropertiesView\StringPropertyDelegate.cpp">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\PropertiesView\IntegerPropertyDelegate.cpp">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\PropertiesView\EnumPropertyDelegate.cpp">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\PropertiesView\FloatPropertyDelegate.cpp">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\PropertiesView\ColorPropertyDelegate.cpp">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\PropertiesView\FilePathPropertyDelegate.cpp">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -500,35 +506,41 @@
     <ClInclude Include="Classes\QtControls\Vector2DEdit.h">
       <Filter>Sources\QtControls</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\UI\PropertiesView\PropertyAbstractEditor.h">
+    <ClInclude Include="Classes\UI\PropertiesView\PropertiesViewContext.h">
       <Filter>Sources\UI\PropertiesView</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForPropertyEnum.h">
-      <Filter>Sources\UI\PropertiesView</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForString.h">
-      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForFilePath.h">
-      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForVector2.h">
-      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForColor.h">
-      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForInteger.h">
-      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\UI\PropertiesView\ItemDelegateForFloat.h">
-      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
+    <ClInclude Include="Classes\UI\PackageView\UIPackageModelNode.h">
+      <Filter>Sources\UI\PackageView</Filter>
     </ClInclude>
     <ClInclude Include="Classes\UI\PropertiesView\ChangePropertyValueCommand.h">
       <Filter>Sources\UI\PropertiesView</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\UI\PropertiesView\PropertiesViewContext.h">
-      <Filter>Sources\UI\PropertiesView</Filter>
+    <ClInclude Include="Classes\UI\PropertiesView\AbstractPropertyDelegate.h">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertiesView\BasePropertyDelegate.h">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertiesView\Vector2PropertyDelegate.h">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertiesView\StringPropertyDelegate.h">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertiesView\IntegerPropertyDelegate.h">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertiesView\EnumPropertyDelegate.h">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertiesView\FloatPropertyDelegate.h">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertiesView\ColorPropertyDelegate.h">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertiesView\FilePathPropertyDelegate.h">
+      <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

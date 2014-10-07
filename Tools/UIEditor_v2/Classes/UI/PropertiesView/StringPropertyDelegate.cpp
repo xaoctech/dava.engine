@@ -1,4 +1,4 @@
-#include "ItemDelegateForString.h"
+#include "StringPropertyDelegate.h"
 #include <QLineEdit>
 #include <QLayout>
 #include "DAVAEngine.h"
@@ -6,18 +6,18 @@
 #include "Utils/QtDavaConvertion.h"
 #include "PropertiesTreeItemDelegate.h"
 
-ItemDelegateForString::ItemDelegateForString(PropertiesTreeItemDelegate *delegate)
-    : PropertyAbstractEditor(delegate)
+StringPropertyDelegate::StringPropertyDelegate(PropertiesTreeItemDelegate *delegate)
+    : BasePropertyDelegate(delegate)
 {
 
 }
 
-ItemDelegateForString::~ItemDelegateForString()
+StringPropertyDelegate::~StringPropertyDelegate()
 {
 
 }
 
-QWidget *ItemDelegateForString::createEditor( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const
+QWidget *StringPropertyDelegate::createEditor( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const
 {
     QLineEdit *lineEdit = new QLineEdit(parent);
     lineEdit->setObjectName(QString::fromUtf8("lineEdit"));
@@ -26,7 +26,7 @@ QWidget *ItemDelegateForString::createEditor( QWidget * parent, const QStyleOpti
     return lineEdit;
 }
 
-void ItemDelegateForString::setEditorData( QWidget *rawEditor, const QModelIndex & index ) const 
+void StringPropertyDelegate::setEditorData( QWidget *rawEditor, const QModelIndex & index ) const 
 {
     QLineEdit *editor = rawEditor->findChild<QLineEdit*>("lineEdit");
 
@@ -43,9 +43,9 @@ void ItemDelegateForString::setEditorData( QWidget *rawEditor, const QModelIndex
     editor->setText(stringValue);
 }
 
-bool ItemDelegateForString::setModelData( QWidget * rawEditor, QAbstractItemModel * model, const QModelIndex & index ) const 
+bool StringPropertyDelegate::setModelData( QWidget * rawEditor, QAbstractItemModel * model, const QModelIndex & index ) const 
 {
-    if (PropertyAbstractEditor::setModelData(rawEditor, model, index))
+    if (BasePropertyDelegate::setModelData(rawEditor, model, index))
         return true;
 
     QLineEdit *editor = rawEditor->findChild<QLineEdit*>("lineEdit");
@@ -67,7 +67,7 @@ bool ItemDelegateForString::setModelData( QWidget * rawEditor, QAbstractItemMode
     return model->setData(index, variant, Qt::EditRole);
 }
 
-void ItemDelegateForString::OnValueChanged()
+void StringPropertyDelegate::OnValueChanged()
 {
     QWidget *lineEdit = qobject_cast<QWidget *>(sender());
     if (!lineEdit)
@@ -77,6 +77,6 @@ void ItemDelegateForString::OnValueChanged()
     if (!editor)
         return;
 
-    PropertyAbstractEditor::SetValueModified(editor, true);
+    BasePropertyDelegate::SetValueModified(editor, true);
     itemDelegate->emitCommitData(editor);
 }

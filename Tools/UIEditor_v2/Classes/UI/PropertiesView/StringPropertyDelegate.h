@@ -1,14 +1,14 @@
 #ifndef __ITEMDELEGATEFORSTRING_H__
 #define __ITEMDELEGATEFORSTRING_H__
 
-#include "PropertyAbstractEditor.h"
+#include "BasePropertyDelegate.h"
 
-class ItemDelegateForString: public PropertyAbstractEditor
+class StringPropertyDelegate: public BasePropertyDelegate
 {
     Q_OBJECT
 public:
-    explicit ItemDelegateForString(PropertiesTreeItemDelegate *delegate);
-    ~ItemDelegateForString();
+    explicit StringPropertyDelegate(PropertiesTreeItemDelegate *delegate);
+    ~StringPropertyDelegate();
 
     virtual QWidget * createEditor(QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index) const override;
     virtual void setEditorData(QWidget * editor, const QModelIndex & index) const override;
