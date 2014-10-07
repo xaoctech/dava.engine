@@ -26,4 +26,19 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "Scene3D/SceneNodeAnimationKey.h"
 
+namespace DAVA
+{
+	void SceneNodeAnimationKey::GetMatrix(Matrix4 & result)
+	{
+		Matrix4 localTransformRot;
+		Matrix4 localTransformScale;
+		localTransformRot = rotation.GetMatrix();
+		localTransformScale.CreateScale(scale);
+
+		result = localTransformRot * localTransformScale;	 
+		result.SetTranslationVector(translation);
+	}
+
+}

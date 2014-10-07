@@ -41,22 +41,11 @@ public:
 	float32 time;
 	Vector3 translation;
 	Quaternion rotation;
-	// Matrix4 matrix;
+	Vector3 scale;
 	
-	inline void GetMatrix(Matrix4 & matrix);
+	void GetMatrix(Matrix4 & matrix);
 };
 	
-	
-inline void SceneNodeAnimationKey::GetMatrix(Matrix4 & result)
-{
-	Matrix4 localTransformTrans;
-	Matrix4 localTransformRot;
-	Matrix4 localTransformFinal;
-	localTransformTrans.CreateTranslation(translation);
-	localTransformRot = rotation.GetMatrix();
-
-	result = localTransformRot * localTransformTrans;	 
-}
 	
 };
 

@@ -106,7 +106,7 @@ public slots:
 	void OnSceneSaveToFolder();
 	void OnRecentTriggered(QAction *recentAction);
 	void ExportMenuTriggered(QAction *exportAsAction);
-
+    void OnPlaySceneAnimations(bool start);
     void OnImportSpeedTreeXML();
 
 	void OnUndo();
@@ -208,6 +208,8 @@ public slots:
     void OnSwitchWithDifferentLODs(bool checked);
 
     void OnGenerateHeightDelta();
+
+    void OnBatchProcessScene();
     
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
