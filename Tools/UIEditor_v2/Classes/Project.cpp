@@ -110,6 +110,7 @@ bool Project::Open(const QString &path)
         EditorFontManager::Instance()->SetDefaultFontsPath(FilePath(bundleName.GetAbsolutePathname() + "Data/UI/Fonts/fonts.yaml"));
     }
     EditorFontManager::Instance()->LoadLocalizedFonts();
+    FontManager::Instance()->PrepareToSaveFonts(true);
     
 	const YamlNode* platforms = projectRoot->Get("platforms");
 	for (uint32 i = 0; i < platforms->GetCount(); i++)
@@ -167,7 +168,6 @@ UIPackage *Project::OpenPackage(const QString &packagePath)
 
 bool Project::SavePackage(DAVA::UIPackage *package)
 {
-    EditorFontManager::Instance()->SaveLocalizedFonts(); // TODO: move into suitable place
     return EditorUIPackageLoader().SavePackage(package);
 }
 
