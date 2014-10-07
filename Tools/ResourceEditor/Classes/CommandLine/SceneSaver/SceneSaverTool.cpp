@@ -118,7 +118,7 @@ void SceneSaverTool::Process()
     {
         saver.SetOutFolder(outFolder);
         saver.EnableCopyConverted(copyConverted);
-        saver.SaveFile(filename, false, errors);
+        saver.SaveFile(filename, errors);
     }
     else if(commandAction == ACTION_RESAVE)
     {
