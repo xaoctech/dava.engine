@@ -130,6 +130,7 @@ void JniTextField::SetTextColor(float r, float g, float b, float a)
 
 void JniTextField::SetFontSize(float size)
 {
+	float32 v2p = Core::Instance()->GetVirtualToPhysicalFactor();
 	jmethodID mid = GetMethodID("SetFontSize", "(IF)V");
 	if (mid)
 	{
@@ -137,7 +138,7 @@ void JniTextField::SetFontSize(float size)
 				GetJavaClass(),
 				mid,
 				id,
-				size);
+				size * v2p);
 	}
 }
 
@@ -538,6 +539,20 @@ void UITextFieldAndroid::TextFieldShouldReturn(uint32_t id)
 		return;
 
 	control->TextFieldShouldReturn();
+}
+
+bool UITextFieldAndroid::IsVisible()
+{
+	return textField->GetRecursiveVisible();
+}
+
+bool UITextFieldAndroid::IsVisible(uint32_t id)
+{
+	UITextFieldAndroid* control = GetUITextFieldAndroid(id);
+	if (!control)
+		return false;
+
+	return control->IsVisible();
 }
 
 UITextFieldAndroid* UITextFieldAndroid::GetUITextFieldAndroid(uint32_t id)
