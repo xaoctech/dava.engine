@@ -59,8 +59,6 @@ void BasePropertyDelegate::resetClicked()
     if (!editor)
         return;
 
-    DAVA::Logger::Debug( "resetClicked editor name %s", QStringToString(editor->objectName()).c_str());
-
     BasePropertyDelegate::SetValueReseted(editor, true);
     BasePropertyDelegate::SetValueModified(editor, true);
     itemDelegate->emitCommitData(editor);

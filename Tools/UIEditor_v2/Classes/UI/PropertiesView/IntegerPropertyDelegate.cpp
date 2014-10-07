@@ -32,6 +32,8 @@ void IntegerPropertyDelegate::setEditorData( QWidget * rawEditor, const QModelIn
 
     editor->blockSignals(true);
     DAVA::VariantType variant = index.data(Qt::EditRole).value<DAVA::VariantType>();
+    editor->setMinimum(-99999);
+    editor->setMaximum(99999);
     switch (variant.GetType())
     {
     case DAVA::VariantType::TYPE_INT32:
