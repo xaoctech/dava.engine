@@ -191,6 +191,7 @@ void Texture::AddToMap(Texture *tex)
     if(!tex->texDescriptor->pathname.IsEmpty())
     {
         textureMapMutex.Lock();
+        DVASSERT(textureMap.find(FILEPATH_MAP_KEY(tex->texDescriptor->pathname)) == textureMap.end());
 		textureMap[FILEPATH_MAP_KEY(tex->texDescriptor->pathname)] = tex;
         textureMapMutex.Unlock();
     }
@@ -1299,8 +1300,9 @@ void Texture::SetPathname(const FilePath& path)
     textureMapMutex.Lock();
     textureMap.erase(FILEPATH_MAP_KEY(texDescriptor->pathname));
     texDescriptor->pathname = path;
-    if(texDescriptor->pathname.IsEmpty())
+    if (!texDescriptor->pathname.IsEmpty())
     {
+        DVASSERT(textureMap.find(FILEPATH_MAP_KEY(texDescriptor->pathname)) == textureMap.end());
         textureMap[FILEPATH_MAP_KEY(texDescriptor->pathname)] = this;
     }
     textureMapMutex.Unlock();
