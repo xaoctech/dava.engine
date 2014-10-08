@@ -9,118 +9,10 @@
 #include "BackgroundPropertiesSection.h"
 #include "InternalControlPropertiesSection.h"
 #include "UI/UIControlHelpers.h"
+#include "UI/UIPackageSectionLoader.h"
+#include "EditorUIPackageSectionLoaders.h"
 
 using namespace DAVA;
-
-class EditorUIPackageControlSection : public UIPackageControlSection
-{
-public:
-    EditorUIPackageControlSection(UIControl *control, const String &name) : UIPackageControlSection(control, name)
-    {
-        section = new ControlPropertiesSection(name);
-    }
-
-    virtual void SetProperty(const InspMember *member, const DAVA::VariantType &value)
-    {
-        if ((member->Flags() & I_EDIT) != 0)
-        {
-            ValueProperty *property = NULL;
-            if (String(member->Name()) == "text")
-                property = new LocalizedTextValueProperty(GetBaseObject(), member);
-            else
-                property = new ValueProperty(GetBaseObject(), member);
-            if (value.GetType() != VariantType::TYPE_NONE)
-                property->SetValue(value);
-            section->AddProperty(property);
-        }
-    }
-    
-    virtual void Apply()
-    {
-        if (section->GetCount() > 0)
-        {
-            UIEditorComponent *component = dynamic_cast<UIEditorComponent*>(control->GetCustomData());
-            DVASSERT(component != NULL);
-            component->GetPropertiesRoot()->AddProperty(section);
-        }
-        else
-        {
-            SafeRelease(section);
-        }
-    }
-    
-private:
-    PropertiesSection *section;
-};
-
-class EditorUIPackageBackgroundSection : public UIPackageBackgroundSection
-{
-public:
-    EditorUIPackageBackgroundSection(UIControl *control, int num) : UIPackageBackgroundSection(control, num)
-    {
-        section = new BackgroundPropertiesSection(control, num);
-
-        UIEditorComponent *component = dynamic_cast<UIEditorComponent*>(control->GetCustomData());
-        DVASSERT(component != NULL);
-        component->GetPropertiesRoot()->AddProperty(section);
-    }
-    
-    virtual void SetProperty(const InspMember *member, const DAVA::VariantType &value)
-    {
-        /*UIPackageBackgroundSection::SetProperty(member, value);*/
-        ValueProperty *property = new ValueProperty(GetBaseObject(), member);
-        if (value.GetType() != VariantType::TYPE_NONE)
-        {
-            property->SetValue(value);
-            bgHasChanges = true;
-        }
-        section->AddProperty(property);
-    }
-    
-    virtual void Apply()
-    {
-        UIPackageBackgroundSection::Apply();
-        if (bgWasCreated && !bgHasChanges)
-            section->HideContent();
-    }
-
-private:
-    BackgroundPropertiesSection *section;
-};
-
-class EditorUIPackageInternalControlSection : public UIPackageInternalControlSection
-{
-public:
-    EditorUIPackageInternalControlSection(UIControl *control, int num) : UIPackageInternalControlSection(control, num)
-    {
-        section = new InternalControlPropertiesSection(control, num);
-        UIEditorComponent *component = dynamic_cast<UIEditorComponent*>(control->GetCustomData());
-        DVASSERT(component != NULL);
-        component->GetPropertiesRoot()->AddProperty(section);
-    }
-    
-    virtual void SetProperty(const InspMember *member, const DAVA::VariantType &value)
-    {
-        /*UIPackageInternalControlSection::SetProperty(member, value);*/
-        ValueProperty *property = new ValueProperty(GetBaseObject(), member);
-        if (value.GetType() != VariantType::TYPE_NONE)
-        {
-            property->SetValue(value);
-            internalHasChanges = true;
-        }
-        section->AddProperty(property);
-    }
-    
-    virtual void Apply()
-    {
-        UIPackageInternalControlSection::Apply();
-        if (internalWasCreated && !internalHasChanges)
-            section->HideContent();
-    }
-    
-private:
-    InternalControlPropertiesSection *section;
-};
 
 EditorUIPackageLoader::EditorUIPackageLoader(LegacyControlData *data) : UIPackageLoader(data)
 {
@@ -175,19 +67,19 @@ UIControl *EditorUIPackageLoader::CreateControlFromPrototype(UIControl *prototyp
     return control;
 }
 
-UIPackageSection *EditorUIPackageLoader::CreateControlSection(DAVA::UIControl *control, const DAVA::String &name)
+UIPackageSectionLoader *EditorUIPackageLoader::CreateControlSectionLoader(DAVA::UIControl *control, const DAVA::String &name)
 {
-    return new EditorUIPackageControlSection(control, name);
+    return new EditorUIPackageControlSectionLoader(control, name);
 }
 
-UIPackageSection *EditorUIPackageLoader::CreateBackgroundSection(DAVA::UIControl *control, int bgNum)
+UIPackageSectionLoader *EditorUIPackageLoader::CreateBackgroundSectionLoader(DAVA::UIControl *control, int bgNum)
 {
-    return new EditorUIPackageBackgroundSection(control, bgNum);
+    return new EditorUIPackageBackgroundSectionLoader(control, bgNum);
 }
 
-UIPackageSection *EditorUIPackageLoader::CreateInternalControlSection(DAVA::UIControl *control, int internalControlNum)
+UIPackageSectionLoader *EditorUIPackageLoader::CreateInternalControlSectionLoader(DAVA::UIControl *control, int internalControlNum)
 {
-    return new EditorUIPackageInternalControlSection(control, internalControlNum);
+    return new EditorUIPackageInternalControlSectionLoader(control, internalControlNum);
 }
 
 YamlNode *EditorUIPackageLoader::CreateYamlNode(UIControl *control)

@@ -14,9 +14,9 @@ protected:
     virtual DAVA::UIControl *CreateCustomControl(const DAVA::String &customClassName, const DAVA::String &baseClassName) override;
     virtual DAVA::UIControl *CreateControlFromPrototype(DAVA::UIControl *prototype, DAVA::UIPackage *prototypePackage) override;
 
-    virtual DAVA::UIPackageSection *CreateControlSection(DAVA::UIControl *control, const DAVA::String &name) override;
-    virtual DAVA::UIPackageSection *CreateBackgroundSection(DAVA::UIControl *control, int bgNum) override;
-    virtual DAVA::UIPackageSection *CreateInternalControlSection(DAVA::UIControl *control, int internalControlNum) override;
+    virtual DAVA::UIPackageSectionLoader *CreateControlSectionLoader(DAVA::UIControl *control, const DAVA::String &name) override;
+    virtual DAVA::UIPackageSectionLoader *CreateBackgroundSectionLoader(DAVA::UIControl *control, int bgNum) override;
+    virtual DAVA::UIPackageSectionLoader *CreateInternalControlSectionLoader(DAVA::UIControl *control, int internalControlNum) override;
 
     virtual DAVA::YamlNode *CreateYamlNode(DAVA::UIControl *control) override;
 
