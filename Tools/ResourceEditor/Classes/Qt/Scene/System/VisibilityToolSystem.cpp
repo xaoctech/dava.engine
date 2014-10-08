@@ -517,6 +517,29 @@ void VisibilityToolSystem::ExcludeEntities(EntityGroup *entities) const
                 needToExclude = true;
             }
         }
+        
+        if(!needToExclude)
+        {
+            RenderObject *ro = GetRenderObject(object);
+            if(ro)
+            {
+                switch (ro->GetType())
+                {
+                    case RenderObject::TYPE_LANDSCAPE:
+                    case RenderObject::TYPE_SKYBOX:
+                    case RenderObject::TYPE_SPEED_TREE:
+                    case RenderObject::TYPE_SPRITE:
+                    case RenderObject::TYPE_VEGETATION:
+                    case RenderObject::TYPE_PARTICLE_EMTITTER:
+                        needToExclude = true;
+                        break;
+                        
+                    default:
+                        break;
+                }
+            }
+        }
+
         if(!needToExclude)
         {   // exclude sky
             
@@ -534,7 +557,6 @@ void VisibilityToolSystem::ExcludeEntities(EntityGroup *entities) const
                 }
             }
         }
-        
 
         if(needToExclude)
         {
