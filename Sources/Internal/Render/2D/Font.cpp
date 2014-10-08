@@ -134,7 +134,8 @@ Size2i Font::GetStringSize(const WideString &str, Vector<float32> *charSizes)
 	StringMetrics metrics = GetStringMetrics(str, charSizes);
 	return Size2i(metrics.width, metrics.height);
 }
-    
+
+
 Font::eFontType Font::GetFontType() const
 {
     return  fontType;
