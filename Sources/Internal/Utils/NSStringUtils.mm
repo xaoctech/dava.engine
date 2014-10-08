@@ -14,10 +14,10 @@
 {
     
     NSStringEncoding encoding = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingUTF32LE);
-	NSString *nsstring = [[NSString alloc]
+	NSString *nsstring = [[[NSString alloc]
                    initWithBytes:(const char*)str.c_str()
                    length:str.length() * sizeof(wchar_t)
-                   encoding:encoding];
+                   encoding:encoding] autorelease];
     return nsstring;
     
 }

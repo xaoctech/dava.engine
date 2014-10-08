@@ -66,6 +66,12 @@ namespace DAVA
     }
 
 #endif
+
+String GenerateGUID()
+{
+    NSUUID  *UUID = [NSUUID UUID];
+    return String([[UUID UUIDString] cStringUsingEncoding:NSNonLossyASCIIStringEncoding]);
+}
 	
 #if defined(__DAVAENGINE_IPHONE__)
 void DisableSleepTimer()
