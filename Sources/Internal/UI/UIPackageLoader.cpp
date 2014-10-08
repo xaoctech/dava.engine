@@ -9,158 +9,11 @@
 #include "UI/UIStaticText.h"
 #include "UI/UIControlHelpers.h"
 #include "UI/UIPackage.h"
+#include "UIPackageSectionLoader.h"
+
 
 namespace DAVA
 {
-
-////////////////////////////////////////////////////////////////////////////////
-// UIPackageSection
-////////////////////////////////////////////////////////////////////////////////
-    
-UIPackageSection::UIPackageSection()
-{
-}
-
-UIPackageSection::~UIPackageSection()
-{
-
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// UIPackageSection
-////////////////////////////////////////////////////////////////////////////////
-
-UIPackageControlSection::UIPackageControlSection(UIControl *control, const String &name) : control(NULL), name(name)
-{
-    this->control = SafeRetain(control);
-}
-
-UIPackageControlSection::~UIPackageControlSection()
-{
-    SafeRelease(control);
-}
-
-void UIPackageControlSection::SetProperty(const InspMember *member, const DAVA::VariantType &value)
-{
-    if (value.GetType() != VariantType::TYPE_NONE)
-        member->SetValue(control, value);
-}
-
-BaseObject *UIPackageControlSection::GetBaseObject() const
-{
-    return control;
-}
-
-String UIPackageControlSection::GetName() const
-{
-    return name;
-}
-
-void UIPackageControlSection::Apply()
-{
-    // do nothing
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// UIPackageSection
-////////////////////////////////////////////////////////////////////////////////
-
-UIPackageBackgroundSection::UIPackageBackgroundSection(UIControl *control, int num) : control(NULL), bg(NULL), bgWasCreated(false), bgHasChanges(false), bgNum(num)
-{
-    this->control = SafeRetain(control);
-    bg = SafeRetain(control->GetBackgroundComponent(num));
-    if (!bg)
-    {
-        bg = control->CreateBackgroundComponent(num);
-        bgWasCreated = true;
-    }
-}
-
-UIPackageBackgroundSection::~UIPackageBackgroundSection()
-{
-    SafeRelease(control);
-    SafeRelease(bg);
-}
-
-void UIPackageBackgroundSection::SetProperty(const InspMember *member, const DAVA::VariantType &value)
-{
-    if (value.GetType() != VariantType::TYPE_NONE)
-    {
-        member->SetValue(bg, value);
-        bgHasChanges = true;
-    }
-}
-
-BaseObject *UIPackageBackgroundSection::GetBaseObject() const
-{
-    return bg;
-}
-
-String UIPackageBackgroundSection::GetName() const
-{
-    return control->GetBackgroundComponentName(bgNum);
-}
-    
-void UIPackageBackgroundSection::Apply()
-{
-    if (bgWasCreated && bgHasChanges)
-        control->SetBackgroundComponent(bgNum, bg);
-}
-    
-////////////////////////////////////////////////////////////////////////////////
-// UIPackageSection
-////////////////////////////////////////////////////////////////////////////////
-
-UIPackageInternalControlSection::UIPackageInternalControlSection(UIControl *control, int num)
-    : control(NULL)
-    , internalControl(NULL)
-    , internalWasCreated(false)
-    , internalHasChanges(false)
-    , internalControlNum(num)
-{
-    this->control = SafeRetain(control);
-    internalControl = SafeRetain(control->GetInternalControl(num));
-    if (!internalControl)
-    {
-        internalControl = control->CreateInternalControl(num);
-        internalWasCreated = true;
-    }
-}
-
-UIPackageInternalControlSection::~UIPackageInternalControlSection()
-{
-    SafeRelease(control);
-    SafeRelease(internalControl);
-}
-
-void UIPackageInternalControlSection::SetProperty(const InspMember *member, const DAVA::VariantType &value)
-{
-    if (value.GetType() != VariantType::TYPE_NONE)
-    {
-        member->SetValue(internalControl, value);
-        internalHasChanges = true;
-    }
-}
-
-BaseObject *UIPackageInternalControlSection::GetBaseObject() const
-{
-    return internalControl;
-}
-    
-String UIPackageInternalControlSection::GetName() const
-{
-    return control->GetInternalControlName(internalControlNum) + control->GetInternalControlDescriptions();
-}
-    
-void UIPackageInternalControlSection::Apply()
-{
-    if (internalWasCreated && internalHasChanges)
-        control->SetInternalControl(internalControlNum, internalControl);
-}
-    
-////////////////////////////////////////////////////////////////////////////////
-// UIPackageLoader
-////////////////////////////////////////////////////////////////////////////////
 
 UIPackageLoader::UIPackageLoader(LegacyControlData *data) : useIntrospectionForLegacyData(false), legacyData(SafeRetain(data))
 {
@@ -626,7 +479,7 @@ void UIPackageLoader::LoadControlPropertiesFromYamlNode(UIControl *control, cons
         LoadControlPropertiesFromYamlNode(control, baseInfo, node, legacySupport);
     
     String className = control->GetControlClassName();
-    UIPackageSection *section = CreateControlSection(control, typeInfo->Name());
+    UIPackageSectionLoader *section = CreateControlSectionLoader(control, typeInfo->Name());
     for (int i = 0; i < typeInfo->MembersCount(); i++)
     {
         const InspMember *member = typeInfo->Member(i);
@@ -657,7 +510,7 @@ void UIPackageLoader::LoadControlPropertiesFromYamlNode(UIControl *control, cons
             }
         }
     }
-    ReleaseSection(section);
+    ReleaseSectionLoader(section);
 }
     
 void UIPackageLoader::LoadBgPropertiesFromYamlNode(UIControl *control, const YamlNode *node, bool legacySupport)
@@ -674,7 +527,7 @@ void UIPackageLoader::LoadBgPropertiesFromYamlNode(UIControl *control, const Yam
         else if (componentsNode)
             componentNode = componentsNode->Get(control->GetBackgroundComponentName(i));
         
-        UIPackageSection *section = CreateBackgroundSection(control, i);
+        UIPackageSectionLoader *section = CreateBackgroundSectionLoader(control, i);
         const InspInfo *insp = section->GetBaseObject()->GetTypeInfo();
         String bgName = control->GetBackgroundComponentName(i);
         
@@ -711,7 +564,7 @@ void UIPackageLoader::LoadBgPropertiesFromYamlNode(UIControl *control, const Yam
                 res = ReadVariantTypeFromYamlNode(member, componentNode, subNodeIndex, memberName, legacySupport);
             section->SetProperty(member, res);
         }
-        ReleaseSection(section);
+        ReleaseSectionLoader(section);
     }
 }
 
@@ -728,7 +581,7 @@ void UIPackageLoader::LoadInternalControlPropertiesFromYamlNode(UIControl *contr
         else if (componentsNode)
             componentNode = componentsNode->Get(control->GetInternalControlName(i) + control->GetInternalControlDescriptions());
         
-        UIPackageSection *section = CreateInternalControlSection(control, i);
+        UIPackageSectionLoader *section = CreateInternalControlSectionLoader(control, i);
         
         const InspInfo *insp = section->GetBaseObject()->GetTypeInfo();
         String bgName = control->GetInternalControlName(i);
@@ -750,26 +603,26 @@ void UIPackageLoader::LoadInternalControlPropertiesFromYamlNode(UIControl *contr
             section->SetProperty(member, value);
         }
 
-        ReleaseSection(section);
+        ReleaseSectionLoader(section);
     }
 }
 
-UIPackageSection *UIPackageLoader::CreateControlSection(UIControl *control, const String &name)
+UIPackageSectionLoader *UIPackageLoader::CreateControlSectionLoader(UIControl *control, const String &name)
 {
-    return new UIPackageControlSection(control, name);
+    return new UIPackageControlSectionLoader(control, name);
 }
 
-UIPackageSection *UIPackageLoader::CreateBackgroundSection(UIControl *control, int bgNum)
+UIPackageSectionLoader *UIPackageLoader::CreateBackgroundSectionLoader(UIControl *control, int bgNum)
 {
-    return new UIPackageBackgroundSection(control, bgNum);
+    return new UIPackageBackgroundSectionLoader(control, bgNum);
 }
 
-UIPackageSection *UIPackageLoader::CreateInternalControlSection(UIControl *control, int internalControlNum)
+UIPackageSectionLoader *UIPackageLoader::CreateInternalControlSectionLoader(UIControl *control, int internalControlNum)
 {
-    return new UIPackageInternalControlSection(control, internalControlNum);
+    return new UIPackageInternalControlSectionLoader(control, internalControlNum);
 }
     
-void UIPackageLoader::ReleaseSection(UIPackageSection *section)
+void UIPackageLoader::ReleaseSectionLoader(UIPackageSectionLoader *section)
 {
     section->Apply();
     SafeRelease(section);

@@ -58,6 +58,7 @@
 		325FCCFB19DD8AC800197B03 /* PropertiesTreeItemDelegate.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 325FCCEC19DD8AC800197B03 /* PropertiesTreeItemDelegate.cpp */; };
 		325FCCFC19DD8AC800197B03 /* PropertiesTreeModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 325FCCEE19DD8AC800197B03 /* PropertiesTreeModel.cpp */; };
 		325FCCFD19DD8AC800197B03 /* PropertiesTreeView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 325FCCF019DD8AC800197B03 /* PropertiesTreeView.cpp */; };
+		3294A72119E593F2000C0B0A /* EditorUIPackageSectionLoaders.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 3294A71F19E593F2000C0B0A /* EditorUIPackageSectionLoaders.cpp */; };
 		329E0D2F19D3F340008A9CE6 /* AddComponentCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 329E0D1019D3F340008A9CE6 /* AddComponentCommand.cpp */; };
 		329E0D3019D3F340008A9CE6 /* Command2.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 329E0D1219D3F340008A9CE6 /* Command2.cpp */; };
 		329E0D3119D3F340008A9CE6 /* CommandAction.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 329E0D1419D3F340008A9CE6 /* CommandAction.cpp */; };
@@ -268,6 +269,8 @@
 		325FCCEF19DD8AC800197B03 /* PropertiesTreeModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertiesTreeModel.h; sourceTree = "<group>"; };
 		325FCCF019DD8AC800197B03 /* PropertiesTreeView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertiesTreeView.cpp; sourceTree = "<group>"; };
 		325FCCF119DD8AC800197B03 /* PropertiesTreeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertiesTreeView.h; sourceTree = "<group>"; };
+		3294A71F19E593F2000C0B0A /* EditorUIPackageSectionLoaders.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditorUIPackageSectionLoaders.cpp; sourceTree = "<group>"; };
+		3294A72019E593F2000C0B0A /* EditorUIPackageSectionLoaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorUIPackageSectionLoaders.h; sourceTree = "<group>"; };
 		329E0D1019D3F340008A9CE6 /* AddComponentCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddComponentCommand.cpp; sourceTree = "<group>"; };
 		329E0D1119D3F340008A9CE6 /* AddComponentCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddComponentCommand.h; sourceTree = "<group>"; };
 		329E0D1219D3F340008A9CE6 /* Command2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Command2.cpp; sourceTree = "<group>"; };
@@ -574,6 +577,8 @@
 				32EDA8F419DAC6FC009845AD /* InternalControlPropertiesSection.h */,
 				32014C7619C87EE0006A4228 /* EditorUIPackageLoader.cpp */,
 				32014C7719C87EE0006A4228 /* EditorUIPackageLoader.h */,
+				3294A71F19E593F2000C0B0A /* EditorUIPackageSectionLoaders.cpp */,
+				3294A72019E593F2000C0B0A /* EditorUIPackageSectionLoaders.h */,
 				32014C7319C8718A006A4228 /* UIEditorComponent.cpp */,
 				32014C7419C8718A006A4228 /* UIEditorComponent.h */,
 			);
@@ -978,6 +983,7 @@
 				15959DC219D3169400B52AEF /* PackageGraphicsWidget.cpp in Build Sources */,
 				C17246121637E18900709AAF /* EditorFontManager.cpp in Build Sources */,
 				7492E0EA1639445D00DF883A /* fontmanagerdialog.cpp in Build Sources */,
+				3294A72119E593F2000C0B0A /* EditorUIPackageSectionLoaders.cpp in Build Sources */,
 				15959DE319D5750600B52AEF /* UIFilteredPackageModel.cpp in Build Sources */,
 				1595D3B619DAF26F007338DF /* QtDavaConvertion.cpp in Build Sources */,
 				329E0D3B19D3F340008A9CE6 /* KeyedArchiveCommand.cpp in Build Sources */,

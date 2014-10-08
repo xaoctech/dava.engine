@@ -13,6 +13,7 @@ class FilePath;
 class UIPackage;
 class UIControlFactory;
 class UIControlBackground;
+class UIPackageSectionLoader;
     
 class LegacyControlData : public BaseObject
 {
@@ -41,79 +42,6 @@ public:
     Map<String, Data> map;
 };
     
-////////////////////////////////////////////////////////////////////////////////
-// UIPackageSectionIControlSection
-////////////////////////////////////////////////////////////////////////////////
-    
-class UIPackageSection : public BaseObject
-{
-public:
-    UIPackageSection();
-    virtual ~UIPackageSection();
-    
-    virtual void SetProperty(const InspMember *member, const DAVA::VariantType &value) = 0;
-    virtual BaseObject *GetBaseObject() const = 0;
-    virtual String GetName() const = 0;
-    
-    virtual void Apply() = 0;
-};
-    
-class UIPackageControlSection : public UIPackageSection
-{
-public:
-    UIPackageControlSection(UIControl *control, const String &name);
-    virtual ~UIPackageControlSection();
-    
-    virtual void SetProperty(const InspMember *member, const DAVA::VariantType &value);
-    virtual BaseObject *GetBaseObject() const;
-    virtual String GetName() const;
-    
-    virtual void Apply();
-
-protected:
-    String name;
-    UIControl *control;
-};
-
-class UIPackageBackgroundSection : public UIPackageSection
-{
-public:
-    UIPackageBackgroundSection(UIControl *control, int num);
-    virtual ~UIPackageBackgroundSection();
-    
-    virtual void SetProperty(const InspMember *member, const DAVA::VariantType &value);
-    virtual BaseObject *GetBaseObject() const;
-    virtual String GetName() const;
-    
-    virtual void Apply();
-
-protected:
-    UIControl *control;
-    UIControlBackground *bg;
-    bool bgWasCreated;
-    bool bgHasChanges;
-    int bgNum;
-};
-
-class UIPackageInternalControlSection : public UIPackageSection
-{
-public:
-    UIPackageInternalControlSection(UIControl *control, int num);
-    virtual ~UIPackageInternalControlSection();
-    
-    virtual void SetProperty(const InspMember *member, const DAVA::VariantType &value);
-    virtual BaseObject *GetBaseObject() const;
-    virtual String GetName() const;
-
-    virtual void Apply();
-
-protected:
-    UIControl *control;
-    UIControl *internalControl;
-    bool internalWasCreated;
-    bool internalHasChanges;
-    int internalControlNum;
-};
 
 ////////////////////////////////////////////////////////////////////////////////
 // UIPackageLoader
@@ -151,10 +79,10 @@ private:
     void LoadInternalControlPropertiesFromYamlNode(UIControl *control, const YamlNode *node, bool legacySupport);
     
 protected:
-    virtual UIPackageSection *CreateControlSection(UIControl *control, const String &name);
-    virtual UIPackageSection *CreateBackgroundSection(UIControl *control, int bgNum);
-    virtual UIPackageSection *CreateInternalControlSection(UIControl *control, int internalControlNum);
-    virtual void ReleaseSection(UIPackageSection *section);
+    virtual UIPackageSectionLoader *CreateControlSectionLoader(UIControl *control, const String &name);
+    virtual UIPackageSectionLoader *CreateBackgroundSectionLoader(UIControl *control, int bgNum);
+    virtual UIPackageSectionLoader *CreateInternalControlSectionLoader(UIControl *control, int internalControlNum);
+    virtual void ReleaseSectionLoader(UIPackageSectionLoader *section);
     virtual VariantType ReadVariantTypeFromYamlNode(const InspMember *member, const YamlNode *node, int subNodeIndex, const String &propertyName, bool legacySupport);
 
     virtual bool AddObjectPropertyToYamlNode(BaseObject *obj, const InspMember *member, YamlNode *node);
