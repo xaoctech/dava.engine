@@ -46,6 +46,7 @@
     <ClCompile Include="Classes\UIControls\ControlPropertiesSection.cpp" />
     <ClCompile Include="Classes\UIControls\EditorUIPackageLoader.cpp" />
     <ClCompile Include="Classes\UIControls\InternalControlPropertiesSection.cpp" />
+    <ClCompile Include="Classes\UIControls\LocalizedTextValueProperty.cpp" />
     <ClCompile Include="Classes\UIControls\PropertiesSection.cpp" />
     <ClCompile Include="Classes\UIControls\SubValueProperty.cpp" />
     <ClCompile Include="Classes\UIControls\UIEditorComponent.cpp" />
@@ -56,7 +57,7 @@
     <ClCompile Include="Classes\UI\Dialogs\editfontdialog.cpp" />
     <ClCompile Include="Classes\UI\Dialogs\localizationeditordialog.cpp" />
     <ClCompile Include="Classes\UI\Dialogs\regexpinputdialog.cpp" />
-    <ClCompile Include="Classes\UI\FileSystemView\FileSystemTreeWidget.cpp" />
+    <ClCompile Include="Classes\UI\FileSystemView\FileSystemDockWidget.cpp" />
     <ClCompile Include="Classes\UI\fontmanagerdialog.cpp" />
     <ClCompile Include="Classes\UI\GraphicView\EditScreen.cpp" />
     <ClCompile Include="Classes\UI\GraphicView\GraphicsViewContext.cpp" />
@@ -138,6 +139,7 @@
     <ClInclude Include="Classes\UIControls\ControlPropertiesSection.h" />
     <ClInclude Include="Classes\UIControls\EditorUIPackageLoader.h" />
     <ClInclude Include="Classes\UIControls\InternalControlPropertiesSection.h" />
+    <ClInclude Include="Classes\UIControls\LocalizedTextValueProperty.h" />
     <ClInclude Include="Classes\UIControls\PropertiesSection.h" />
     <ClInclude Include="Classes\UIControls\SubValueProperty.h" />
     <ClInclude Include="Classes\UIControls\UIEditorComponent.h" />
@@ -157,7 +159,7 @@
     <ClInclude Include="Classes\UI\Dialogs\editfontdialog.h" />
     <ClInclude Include="Classes\UI\Dialogs\localizationeditordialog.h" />
     <ClInclude Include="Classes\UI\Dialogs\regexpinputdialog.h" />
-    <ClInclude Include="Classes\UI\FileSystemView\FileSystemTreeWidget.h" />
+    <ClInclude Include="Classes\UI\FileSystemView\FileSystemDockWidget.h" />
     <ClInclude Include="Classes\UI\GraphicView\EditScreen.h" />
     <ClInclude Include="Classes\UI\GraphicView\GraphicsViewContext.h" />
     <ClInclude Include="Classes\UI\GraphicView\PackageGraphicsWidget.h" />
@@ -217,7 +219,7 @@
     <None Include="UI\ConsoleDockWidget.ui" />
     <None Include="UI\davaglwidget.ui" />
     <None Include="UI\editfontdialog.ui" />
-    <None Include="UI\FileSystemTreeWidget.ui" />
+    <None Include="UI\FileSystemDockWidget.ui" />
     <None Include="UI\fontmanagerdialog.ui" />
     <None Include="UI\localizationeditordialog.ui" />
     <None Include="UI\mainwindow.ui" />

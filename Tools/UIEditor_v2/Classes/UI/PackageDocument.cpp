@@ -25,13 +25,6 @@ PackageDocument::PackageDocument(DAVA::UIPackage *_package, QObject *parent)
 , graphicsContext(NULL)
 {
     undoStack = new QUndoStack(this);
-    undoAction = undoStack->createUndoAction(undoStack);
-    undoAction->setShortcuts(QKeySequence::Undo);
-    undoAction->setIcon(QIcon(":/Icons/edit_undo.png"));
-
-    redoAction = undoStack->createRedoAction(undoStack);
-    redoAction->setShortcuts(QKeySequence::Redo);
-    redoAction->setIcon(QIcon(":/Icons/edit_redo.png"));
 
     treeContext.model = new UIPackageModel(package, this);
     treeContext.proxyModel = new UIFilteredPackageModel(this);
@@ -73,7 +66,7 @@ bool PackageDocument::IsModified() const
 
 void PackageDocument::ClearModified()
 {
-    undoStack->clear();
+    undoStack->setClean();
 }
 
 const DAVA::FilePath &PackageDocument::PackageFilePath() const

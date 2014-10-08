@@ -156,7 +156,7 @@
     <number>2</number>
    </attribute>
   </widget>
-  <widget class="QDockWidget" name="fileSystemTreeDock">
+  <widget class="FileSystemDockWidget" name="fileSystemDockWidget">
    <property name="minimumSize">
     <size>
      <width>200</width>
@@ -169,9 +169,6 @@
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
-   <widget class="FileSystemTreeWidget" name="fileSystemTreeWidget">
-    <layout class="QHBoxLayout" name="horizontalLayout_5"/>
-   </widget>
   </widget>
   <widget class="PackageDockWidget" name="packageTreeDock">
    <property name="minimumSize">
@@ -472,12 +469,6 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>FileSystemTreeWidget</class>
-   <extends>QWidget</extends>
-   <header>UI/FileSystemView/FileSystemTreeWidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>QTabBar</class>
    <extends>QWidget</extends>
    <header>qtabbar.h</header>
@@ -497,6 +488,12 @@
    <class>ConsoleDockWidget</class>
    <extends>QDockWidget</extends>
    <header>UI/ConsoleView/ConsoleDockWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>FileSystemDockWidget</class>
+   <extends>QDockWidget</extends>
+   <header>UI/FileSystemView/FileSystemDockWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
