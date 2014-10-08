@@ -57,7 +57,7 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         // Initialize native framework core         
         JNIApplication.GetApplication().InitFramework();
         
-        JNINotificationProvider.AttachToActivity();
+        //JNINotificationProvider.AttachToActivity();
         
         if(null != savedInstanceState)
         {

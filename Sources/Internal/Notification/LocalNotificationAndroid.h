@@ -36,7 +36,7 @@
 #if defined (__DAVAENGINE_ANDROID__)
 
 #include "Notification/LocalNotificationImpl.h"
-#include "JniExtensions.h"
+#include "Platform/TemplateAndroid/JniExtensions.h"
 #include "Base/Message.h"
 #include "Platform/Mutex.h"
 
