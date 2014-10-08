@@ -417,7 +417,7 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 				if(0 == width && ' ' == str[i])
 				{
 					width = advances[i].x >> 6;
-					left = pen.x >> 6;
+					left = (pen.x >> 6) + 1;
 				}
 				
 				if(charSizes)

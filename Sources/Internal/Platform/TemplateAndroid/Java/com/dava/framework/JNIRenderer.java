@@ -16,8 +16,10 @@ public class JNIRenderer implements GLSurfaceView.Renderer {
 	private native void nativeRenderRecreated();
 	private native void nativeOnResumeView();
 	private native void nativeOnPauseView(boolean isLock);
-
+	
 	private boolean skipFirstFrame = false;
+	private boolean showTextFields = false;
+
 	private int width = 0;
 	private int height = 0;
 	
@@ -65,6 +67,7 @@ public class JNIRenderer implements GLSurfaceView.Renderer {
 			isRenderRecreated = false;
 		}
 		OnResume();
+		showTextFields = true;
 
 		Log.w(JNIConst.LOG_TAG, "_________onSurfaceChanged__DONE___");
 	}
@@ -75,8 +78,14 @@ public class JNIRenderer implements GLSurfaceView.Renderer {
 			skipFirstFrame = false; //skip first frame for correct unlock device in landscape mode, after unlock device in first frame draw in portrait mode
 			return;
 		}
-		
+
 		nativeRender();
+		
+		if(showTextFields)
+		{
+			showTextFields = false;
+			JNITextField.ShowVisibleTextFields();
+		}
 	}
 	
 	public void OnPause()
