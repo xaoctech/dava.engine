@@ -130,6 +130,7 @@ protected:
 
     Vector2 cacheFinalSize;
 	Vector2 cacheSpriteOffset;
+    Vector2 cacheTextSize;
 
 	float32 originalFontSize;
     

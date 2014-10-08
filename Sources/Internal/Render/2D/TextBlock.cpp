@@ -103,6 +103,7 @@ TextBlock::TextBlock()
     , cacheDy(0)
     , cacheOx(0)
     , cacheOy(0)
+    , cacheTextSize(0.f,0.f)
 {
     font = NULL;
     isMultilineEnabled = false;
@@ -394,7 +395,7 @@ void TextBlock::CalculateCacheParams()
         cacheOx = 0;
         cacheOy = 0;
         cacheSpriteOffset = Vector2(0.f,0.f);
-
+        cacheTextSize = Vector2(0.f,0.f);
         return;
     }
 
@@ -745,8 +746,8 @@ void TextBlock::CalculateCacheParams()
     float32 virt2phys = Core::GetVirtualToPhysicalFactor();
     int32 dx = (int32)ceilf(virt2phys * textSize.drawRect.dx);
     int32 dy = (int32)ceilf(virt2phys * textSize.drawRect.dy);
-    int32 ox = (int32)floorf(virt2phys * textSize.drawRect.x);
-    int32 oy = (int32)floorf(virt2phys * textSize.drawRect.y);
+    int32 ox = (int32)ceilf(virt2phys * textSize.drawRect.x);
+    int32 oy = (int32)ceilf(virt2phys * textSize.drawRect.y);
 
     cacheUseJustify = useJustify;
     cacheDx = dx;
@@ -761,6 +762,7 @@ void TextBlock::CalculateCacheParams()
     cacheW = textSize.drawRect.dx;
     cacheFinalSize.x = (float32)textSize.drawRect.dx;
     cacheFinalSize.y = (float32)textSize.drawRect.dy;
+    cacheTextSize = Vector2((float32)textSize.width, (float32)textSize.height);
 
     // Align sprite offset
     if(align & ALIGN_RIGHT)
@@ -835,7 +837,7 @@ const Vector2 & TextBlock::GetTextSize()
     mutex.Lock();
     mutex.Unlock();
 
-    return cacheFinalSize;
+    return cacheTextSize;
 }
 
 const Vector<int32> & TextBlock::GetStringSizes() const
