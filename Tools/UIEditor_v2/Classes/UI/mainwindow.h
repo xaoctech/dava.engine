@@ -43,6 +43,7 @@ class MainWindow;
 class QFileDialog;
 class Project;
 class PackageDocument;
+class QUndoGroup;
 
 class MainWindow : public QMainWindow
 {
@@ -128,6 +129,9 @@ private:
      
     Project *project;
     PackageDocument *activeDocument;
+    QUndoGroup *undoGroup;
+    QAction *undoAction;
+    QAction *redoAction;
 };
 
 #endif // MAINWINDOW_H

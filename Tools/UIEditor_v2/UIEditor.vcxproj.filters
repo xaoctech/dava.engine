@@ -261,9 +261,6 @@
     <ClCompile Include="Classes\Utils\QtDavaConvertion.cpp">
       <Filter>Sources\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\UI\FileSystemView\FileSystemTreeWidget.cpp">
-      <Filter>Sources\UI\FileSystemView</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\UI\GraphicView\EditScreen.cpp">
       <Filter>Sources\UI\GraphicView</Filter>
     </ClCompile>
@@ -308,6 +305,12 @@
     </ClCompile>
     <ClCompile Include="Classes\UI\PropertiesView\FilePathPropertyDelegate.cpp">
       <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UIControls\LocalizedTextValueProperty.cpp">
+      <Filter>Sources\UIControls</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\FileSystemView\FileSystemDockWidget.cpp">
+      <Filter>Sources\UI\FileSystemView</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -494,9 +497,6 @@
     <ClInclude Include="Classes\Utils\QtDavaConvertion.h">
       <Filter>Sources\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\UI\FileSystemView\FileSystemTreeWidget.h">
-      <Filter>Sources\UI\FileSystemView</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\UI\GraphicView\EditScreen.h">
       <Filter>Sources\UI\GraphicView</Filter>
     </ClInclude>
@@ -542,6 +542,12 @@
     <ClInclude Include="Classes\UI\PropertiesView\FilePathPropertyDelegate.h">
       <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\UIControls\LocalizedTextValueProperty.h">
+      <Filter>Sources\UIControls</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\FileSystemView\FileSystemDockWidget.h">
+      <Filter>Sources\UI\FileSystemView</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\icons.qrc">
@@ -551,9 +557,6 @@
       <Filter>Form Files</Filter>
     </None>
     <None Include="UI\editfontdialog.ui">
-      <Filter>Form Files</Filter>
-    </None>
-    <None Include="UI\FileSystemTreeWidget.ui">
       <Filter>Form Files</Filter>
     </None>
     <None Include="UI\fontmanagerdialog.ui">
@@ -575,6 +578,9 @@
       <Filter>Form Files</Filter>
     </None>
     <None Include="UI\ConsoleDockWidget.ui">
+      <Filter>Form Files</Filter>
+    </None>
+    <None Include="UI\FileSystemDockWidget.ui">
       <Filter>Form Files</Filter>
     </None>
   </ItemGroup>
