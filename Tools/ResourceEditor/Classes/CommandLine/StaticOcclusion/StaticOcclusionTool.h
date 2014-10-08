@@ -27,40 +27,34 @@
 =====================================================================================*/
 
 
+#ifndef __STATIC_OCCLUSION_TOOL_H__
+#define __STATIC_OCCLUSION_TOOL_H__
 
-#ifndef __DAVAENGINE_JPEG_HELPER_H__
-#define __DAVAENGINE_JPEG_HELPER_H__
+#include "../CommandLineTool.h"
 
-#include "Base/BaseTypes.h"
-#include "Render/RenderBase.h"
-#include "FileSystem/FilePath.h"
-#include "Render/Image/ImageFormatInterface.h"
-
-namespace DAVA 
+class StaticOcclusionTool: public CommandLineTool
 {
+    enum eAction
+    {
+        ACTION_NONE = -1,
+        
+        ACTION_BUILD,
+    };
 
-class LibJpegWrapper: public ImageFormatInterface
-{
 public:
-    
-    LibJpegWrapper();
-    
-    virtual bool IsImage(File *file) const;
-    
-    virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0) const;
 
-    //only RGB888 or A8
-    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) const;
-    
-    //only RGB888 or A8
-    virtual eErrorCode WriteFileAsCubeMap(const FilePath & fileName, const Vector<Vector<Image *> > &imageSet, PixelFormat compressionFormat) const;
-    
-    virtual uint32 GetDataSize(File *infile) const;
+    virtual DAVA::String GetCommandLineKey();
+    virtual bool InitializeFromCommandLine();
+    virtual void Process();
+    virtual void PrintUsage();
+    virtual void DumpParams();
 
-	virtual Size2i GetImageSize(File *infile) const;
+ 
+protected:
 
+    eAction commandAction;
+    DAVA::FilePath scenePathname;
 };
 
-};
 
-#endif // __DAVAENGINE_JPEG_HELPER_H__
+#endif // __STATIC_OCCLUSION_TOOL_H__
