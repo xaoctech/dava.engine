@@ -737,7 +737,7 @@ void HierarchyTreeWidget::OnDeleteNodes(const HierarchyTreeNode::HIERARCHYTREENO
 void HierarchyTreeWidget::DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST& selectedNodes)
 {
     // Remove the child nodes - leave parent ones only. Need to work with separate list to don't break iterators.
-    HierarchyTreeNode::HIERARCHYTREENODESLIST parentNodes(selectedNodes);
+    HierarchyTreeNode::HIERARCHYTREENODESLIST parentNodes;
     for (HierarchyTreeNode::HIERARCHYTREENODESCONSTITER parentIter = selectedNodes.begin();
         parentIter != selectedNodes.end(); ++parentIter)
     {
@@ -745,25 +745,31 @@ void HierarchyTreeWidget::DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODE
         HierarchyTreeControlNode* controlNode = dynamic_cast<HierarchyTreeControlNode*>(parentNode);
         if (controlNode && !IsDeleteNodeAllowed(controlNode))
         {
-            parentNodes.remove(parentNode);
+            // Can't delete this node.
             continue;
         }
 
+        bool useParentNode = true;
         for (HierarchyTreeNode::HIERARCHYTREENODESCONSTITER innerIter = selectedNodes.begin();
-            innerIter != selectedNodes.end(); ++innerIter)
+             innerIter != selectedNodes.end(); ++innerIter)
         {
-            if (false == parentNode->IsHasChild(*innerIter))
+            if (parentNode->IsHasChild(*innerIter))
             {
-                continue;
+                useParentNode = false;
+                break;
             }
+        }
 
-            parentNodes.remove(parentNode);
+        if (useParentNode)
+        {
+            parentNodes.push_back(parentNode);
         }
     }
 
     bool needConfirm = false;
     bool needDeleteFiles = false;
     HierarchyTreeNode::HIERARCHYTREENODESLIST nodes;
+    HierarchyTreeNode::HIERARCHYTREENODESLIST agregatorNodes;
     for (HierarchyTreeNode::HIERARCHYTREENODESITER iter = parentNodes.begin(); iter != parentNodes.end(); ++iter)
     {
         HierarchyTreeNode* node = (*iter);
@@ -775,7 +781,7 @@ void HierarchyTreeWidget::DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODE
             needConfirm |= (childs.size() > 0);
             for (HierarchyTreeAggregatorNode::CHILDS::const_iterator innerIter = childs.begin(); innerIter != childs.end(); ++innerIter)
             {
-                nodes.push_back((*innerIter));
+                agregatorNodes.push_back((*innerIter));
             }
         }
 
@@ -812,8 +818,9 @@ void HierarchyTreeWidget::DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODE
             }
         }
 
-        nodes.push_front(node);
+        nodes.push_back(node);
     }
+    nodes.insert(nodes.end(), agregatorNodes.begin(), agregatorNodes.end());
 
     if (needConfirm)
     {

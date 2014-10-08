@@ -34,6 +34,7 @@
 		<link>
 			<name>Internal</name>
 			<type>2</type>
+<<<<<<< HEAD
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
@@ -185,12 +186,16 @@
 			<name>Internal/Utils</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
+=======
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal</locationURI>
+>>>>>>> development
 		</link>
 		<link>
 			<name>src/com</name>
 			<type>2</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/Java/com</locationURI>
 		</link>
+<<<<<<< HEAD
 		<link>
 			<name>Internal/Animation/AnimatedObject.cpp</name>
 			<type>1</type>
@@ -4436,5 +4441,7 @@
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/ExternC/JNIWebViewControl.cpp</locationURI>
 		</link>
+=======
+>>>>>>> development
 	</linkedResources>
 </projectDescription>
