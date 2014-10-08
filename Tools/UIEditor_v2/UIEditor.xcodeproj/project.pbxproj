@@ -22,7 +22,6 @@
 		15959DE319D5750600B52AEF /* UIFilteredPackageModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 15959DDE19D5750600B52AEF /* UIFilteredPackageModel.cpp */; };
 		15959DE419D5750600B52AEF /* UIPackageModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 15959DE019D5750600B52AEF /* UIPackageModel.cpp */; };
 		1595D39019D980A3007338DF /* ConsoleDockWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1595D38E19D980A3007338DF /* ConsoleDockWidget.cpp */; };
-		1595D3B219DAF259007338DF /* FileSystemTreeWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1595D3B019DAF259007338DF /* FileSystemTreeWidget.cpp */; };
 		1595D3B619DAF26F007338DF /* QtDavaConvertion.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1595D3B419DAF26F007338DF /* QtDavaConvertion.cpp */; };
 		1595D3B919DAF2A2007338DF /* EditScreen.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1595D3B819DAF2A2007338DF /* EditScreen.cpp */; };
 		159ED7A219E2B09900C8B37A /* PropertiesViewContext.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 159ED79E19E2B09900C8B37A /* PropertiesViewContext.cpp */; };
@@ -36,6 +35,7 @@
 		159ED7C919E2F61C00C8B37A /* ColorPropertyDelegate.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 159ED7BE19E2F61C00C8B37A /* ColorPropertyDelegate.cpp */; };
 		159ED7CA19E2F61C00C8B37A /* BasePropertyDelegate.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 159ED7C019E2F61C00C8B37A /* BasePropertyDelegate.cpp */; };
 		159ED7CB19E2F61C00C8B37A /* AbstractPropertyDelegate.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 159ED7C219E2F61C00C8B37A /* AbstractPropertyDelegate.cpp */; };
+		159ED7D619E51AD200C8B37A /* FileSystemDockWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 159ED7D519E51AD200C8B37A /* FileSystemDockWidget.cpp */; };
 		15B892ED19CCC323007EABC6 /* GeneratedFiles in Build Sources */ = {isa = PBXBuildFile; fileRef = 1548A1C419CCAB2600620C60 /* GeneratedFiles */; };
 		15BE534C19D72CA500788209 /* LibraryDockWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 15BE534A19D72CA500788209 /* LibraryDockWidget.cpp */; };
 		17112B5916392EA80017E713 /* WidgetSignalsBlocker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17112B5716392EA80017E713 /* WidgetSignalsBlocker.cpp */; };
@@ -199,8 +199,6 @@
 		15959DE119D5750600B52AEF /* UIPackageModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIPackageModel.h; sourceTree = "<group>"; };
 		1595D38E19D980A3007338DF /* ConsoleDockWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConsoleDockWidget.cpp; sourceTree = "<group>"; };
 		1595D38F19D980A3007338DF /* ConsoleDockWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConsoleDockWidget.h; sourceTree = "<group>"; };
-		1595D3B019DAF259007338DF /* FileSystemTreeWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileSystemTreeWidget.cpp; sourceTree = "<group>"; };
-		1595D3B119DAF259007338DF /* FileSystemTreeWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileSystemTreeWidget.h; sourceTree = "<group>"; };
 		1595D3B419DAF26F007338DF /* QtDavaConvertion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtDavaConvertion.cpp; sourceTree = "<group>"; };
 		1595D3B519DAF26F007338DF /* QtDavaConvertion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtDavaConvertion.h; sourceTree = "<group>"; };
 		1595D3B719DAF2A2007338DF /* EditScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditScreen.h; sourceTree = "<group>"; };
@@ -227,6 +225,8 @@
 		159ED7C019E2F61C00C8B37A /* BasePropertyDelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BasePropertyDelegate.cpp; sourceTree = "<group>"; };
 		159ED7C119E2F61C00C8B37A /* AbstractPropertyDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AbstractPropertyDelegate.h; sourceTree = "<group>"; };
 		159ED7C219E2F61C00C8B37A /* AbstractPropertyDelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AbstractPropertyDelegate.cpp; sourceTree = "<group>"; };
+		159ED7D419E51AD200C8B37A /* FileSystemDockWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileSystemDockWidget.h; sourceTree = "<group>"; };
+		159ED7D519E51AD200C8B37A /* FileSystemDockWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileSystemDockWidget.cpp; sourceTree = "<group>"; };
 		15BE534A19D72CA500788209 /* LibraryDockWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryDockWidget.cpp; sourceTree = "<group>"; };
 		15BE534B19D72CA500788209 /* LibraryDockWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryDockWidget.h; sourceTree = "<group>"; };
 		17112B5716392EA80017E713 /* WidgetSignalsBlocker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WidgetSignalsBlocker.cpp; path = Helpers/WidgetSignalsBlocker.cpp; sourceTree = "<group>"; };
@@ -484,8 +484,8 @@
 		1595D3AF19DAF259007338DF /* FileSystemView */ = {
 			isa = PBXGroup;
 			children = (
-				1595D3B019DAF259007338DF /* FileSystemTreeWidget.cpp */,
-				1595D3B119DAF259007338DF /* FileSystemTreeWidget.h */,
+				159ED7D419E51AD200C8B37A /* FileSystemDockWidget.h */,
+				159ED7D519E51AD200C8B37A /* FileSystemDockWidget.cpp */,
 			);
 			path = FileSystemView;
 			sourceTree = "<group>";
@@ -974,7 +974,6 @@
 				32EB47A919DB359F00775432 /* SubValueProperty.cpp in Build Sources */,
 				159ED7CA19E2F61C00C8B37A /* BasePropertyDelegate.cpp in Build Sources */,
 				3241EF9719DED36C00991BDB /* UIPackageModelNode.cpp in Build Sources */,
-				1595D3B219DAF259007338DF /* FileSystemTreeWidget.cpp in Build Sources */,
 				329E0D3819D3F340008A9CE6 /* EntityRemoveCommand.cpp in Build Sources */,
 				15959DC219D3169400B52AEF /* PackageGraphicsWidget.cpp in Build Sources */,
 				C17246121637E18900709AAF /* EditorFontManager.cpp in Build Sources */,
@@ -1034,6 +1033,7 @@
 				325FCCFB19DD8AC800197B03 /* PropertiesTreeItemDelegate.cpp in Build Sources */,
 				325FCCFA19DD8AC800197B03 /* PropertiesDockWidget.cpp in Build Sources */,
 				174E1FBF17F3483600C7EC10 /* regexpinputdialog.cpp in Build Sources */,
+				159ED7D619E51AD200C8B37A /* FileSystemDockWidget.cpp in Build Sources */,
 				15B892ED19CCC323007EABC6 /* GeneratedFiles in Build Sources */,
 			);
 			name = "Build Sources";
