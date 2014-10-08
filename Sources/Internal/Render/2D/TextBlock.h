@@ -124,6 +124,14 @@ protected:
 	
 	int32 GetVisualAlignNoMutexLock() const; // Return align for displaying BiDi-text (w/o mutex lock)
 
+    void SplitTextToStrings(const WideString & text, const Vector2 & targetRectSize, Vector<WideString> & resultVector);
+    void SplitTextBySymbolsToStrings(const WideString & text, const Vector2 & targetRectSize, Vector<WideString> & resultVector);   
+    inline bool IsLineEnd(char16 t) const;
+    inline bool IsSpace(char16 t) const;
+    bool IsWordSeparator(char16 t) const;
+    WideString Trim(const WideString& str) const;
+
+
 	Vector2 rectSize;
     bool needRedraw;
 	Vector2 requestedSize;
@@ -168,6 +176,16 @@ protected:
 	TextBlockRender* textBlockRender;
     TextureInvalidater *textureInvalidater;
 };
+
+inline bool TextBlock::IsLineEnd(char16 t) const
+{
+    return (t == L'\n');
+}
+    
+inline bool TextBlock::IsSpace(char16 t) const
+{
+    return (t == L' ');
+}
 
 }; //end of namespace
 
