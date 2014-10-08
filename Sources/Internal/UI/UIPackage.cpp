@@ -88,7 +88,8 @@ UIPackage *UIPackage::GetPackage(const String name) const
 
 void UIPackage::AddPackage(UIPackage *package)
 {
-    importedPackages.push_back(SafeRetain(package));
+    if (std::find(importedPackages.begin(), importedPackages.end(), package) == importedPackages.end())
+        importedPackages.push_back(SafeRetain(package));
 }
 
 }
