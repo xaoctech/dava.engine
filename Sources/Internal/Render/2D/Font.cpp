@@ -474,8 +474,8 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
                                 separator.lastWordEnd = pos;
                             }
                         }
-                        else if(currentLineWidth == targetWidth)
-                        {   // line fit all available space
+                        else if((currentLineWidth == targetWidth) || (currentLineWidth == sizes[pos-1]))
+                        {   // line fit all available space or even exceeds symbols size
                             DVASSERT(pos > separator.currentLineStart);
                         
                             AddCurrentLine(text, pos, separator, resultVector);
@@ -518,7 +518,9 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
                                     for (int i = pos-1; i >= endPos; --i)
                                     {
                                         currentLineWidth -= sizes[i];
-                                        if(currentLineWidth <= targetWidth)
+                                        // Last symbol in current line can have size bigger than targetWidth. So we should always add
+                                        // this symbol to avoid errors in further
+                                        if((currentLineWidth <= targetWidth) || (currentLineWidth == sizes[endPos]))
                                         {
                                             separator.currentLineEnd = i;
                                             int32 currentLineLength = separator.currentLineEnd - separator.currentLineStart;
