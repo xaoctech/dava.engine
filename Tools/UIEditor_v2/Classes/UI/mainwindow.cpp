@@ -41,6 +41,7 @@
 #include <QDateTime>
 #include <QPushButton>
 #include <QUndoStack>
+#include <QUndoGroup>
 
 //////////////////////////////////////////////////////////////////////////
 #include "fontmanagerdialog.h"
@@ -52,7 +53,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "Project.h"
-#include "UI/FileSystemView/FileSystemTreeWidget.h"
+#include "UI/FileSystemView/FileSystemDockWidget.h"
 #include "UI/PackageDocument.h"
 #include "UI/UIPackageLoader.h"
 #include "UIControls/EditorUIPackageLoader.h"
@@ -74,7 +75,19 @@ MainWindow::MainWindow(QWidget *parent)
     , project(NULL)
     , activeDocument(NULL)
 {
+    undoGroup = new QUndoGroup(this);
+    undoAction = undoGroup->createUndoAction(undoGroup);
+    undoAction->setShortcuts(QKeySequence::Undo);
+    undoAction->setIcon(QIcon(":/Icons/edit_undo.png"));
+
+    redoAction = undoGroup->createRedoAction(undoGroup);
+    redoAction->setShortcuts(QKeySequence::Redo);
+    redoAction->setIcon(QIcon(":/Icons/edit_redo.png"));
+
     ui->setupUi(this);
+
+    ui->mainToolbar->addAction(undoAction);
+    ui->mainToolbar->addAction(redoAction);
 
 	setWindowTitle(ResourcesManageHelper::GetProjectTitle());
     
@@ -90,12 +103,13 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionLocalizationManager, SIGNAL(triggered()), this, SLOT(OnOpenLocalizationManager()));
 
 
-    connect(ui->fileSystemTreeWidget, SIGNAL(OpenPackageFile(const QString&)), this, SLOT(OnOpenPackageFile(const QString&)));
+    connect(ui->fileSystemDockWidget, SIGNAL(OpenPackageFile(const QString&)), this, SLOT(OnOpenPackageFile(const QString&)));
 
 	InitMenu();
 	RestoreMainWindowState();
     
-    ui->fileSystemTreeWidget->setEnabled(false);
+    ui->propertiesDockWidget->setEnabled(false);
+    ui->fileSystemDockWidget->setEnabled(false);
     ui->packageTreeDock->setEnabled(false);
     ui->packageGraphicsWidget->setEnabled(false);
     ui->libraryDockWidget->setEnabled(false);
@@ -107,6 +121,9 @@ MainWindow::~MainWindow()
 {
 	SaveMainWindowState();
     delete ui;
+    delete undoAction;
+    delete redoAction;
+    delete undoGroup;
 }
 
 void MainWindow::SaveMainWindowState()
@@ -151,12 +168,12 @@ void MainWindow::CurrentTabChanged(int index)
         disconnect(activeDocument->UndoStack(), SIGNAL(cleanChanged(bool)), this, SLOT(OnCleanChanged(bool)));
         disconnect(ui->packageTreeDock, SIGNAL(SelectionRootControlChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)), activeDocument, SLOT(OnSelectionRootControlChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)));
         disconnect(ui->packageTreeDock, SIGNAL(SelectionControlChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)), activeDocument, SLOT(OnSelectionControlChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)));
-        ui->mainToolbar->removeAction(activeDocument->UndoAction());
-        ui->mainToolbar->removeAction(activeDocument->RedoAction());
+        activeDocument->UndoStack()->setActive(false);
     }
     
     activeDocument = GetTabDocument(ui->tabBar->currentIndex());
     
+    ui->propertiesDockWidget->setEnabled(activeDocument != NULL);
     ui->packageTreeDock->setEnabled(activeDocument != NULL);
     ui->packageGraphicsWidget->setEnabled(activeDocument != NULL);
     ui->libraryDockWidget->setEnabled(activeDocument != NULL);
@@ -170,8 +187,7 @@ void MainWindow::CurrentTabChanged(int index)
     {
         connect(ui->packageTreeDock, SIGNAL(SelectionControlChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)), activeDocument, SLOT(OnSelectionControlChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)));
         connect(ui->packageTreeDock, SIGNAL(SelectionRootControlChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)), activeDocument, SLOT(OnSelectionRootControlChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)));
-        ui->mainToolbar->addAction(activeDocument->UndoAction());
-        ui->mainToolbar->addAction(activeDocument->RedoAction());
+        activeDocument->UndoStack()->setActive(true);
         connect(activeDocument->UndoStack(), SIGNAL(cleanChanged(bool)), this, SLOT(OnCleanChanged(bool)));
     }
 
@@ -191,7 +207,7 @@ bool MainWindow::CloseTab(int index)
 //         return false;
     
     ui->tabBar->removeTab(index);
-    
+    undoGroup->removeStack(document->UndoStack());
     SafeDelete(document);
     return true;
 }
@@ -269,7 +285,7 @@ void MainWindow::SetupViewMenu()
 {
     // Setup the common menu actions.
     ui->menuView->addAction(ui->propertiesDockWidget->toggleViewAction());
-    ui->menuView->addAction(ui->fileSystemTreeDock->toggleViewAction());
+    ui->menuView->addAction(ui->fileSystemDockWidget->toggleViewAction());
     ui->menuView->addAction(ui->packageTreeDock->toggleViewAction());
     ui->menuView->addAction(ui->libraryDockWidget->toggleViewAction());
     ui->menuView->addAction(ui->consoleDockWidget->toggleViewAction());
@@ -370,7 +386,7 @@ void MainWindow::OnNewProject()
 //		msgBox.setText(tr("Error while creating project"));
 //		msgBox.exec();
 //	}
-    ui->fileSystemTreeWidget->SetProjectDir(projectDir);
+    ui->fileSystemDockWidget->SetProjectDir(projectDir);
 }
 
 void MainWindow::RebuildRecentMenu()
@@ -491,6 +507,7 @@ void MainWindow::OnSaveAllDocuments()
         if (!document)
             continue;
         DVVERIFY(project->SavePackage(document->Package()));
+        document->ClearModified();
     }
 }
 
@@ -542,8 +559,8 @@ void MainWindow::OpenProject(const QString &path)
     {
         UpdateProjectSettings(path);
         RebuildRecentMenu();
-        ui->fileSystemTreeWidget->SetProjectDir(path);
-        ui->fileSystemTreeWidget->setEnabled(true);
+        ui->fileSystemDockWidget->SetProjectDir(path);
+        ui->fileSystemDockWidget->setEnabled(true);
         //CommandsController::Instance()->CleanupUndoRedoStack();
         //	if (HierarchyTreeController::Instance()->Load(path))
         //        return true;
@@ -579,7 +596,7 @@ bool MainWindow::CloseProject()
                 OnSaveDocument();
         }
         
-        ui->fileSystemTreeWidget->setEnabled(false);
+        ui->fileSystemDockWidget->setEnabled(false);
         //HierarchyTreeController::Instance()->CloseProject();
         // Update project title
         this->setWindowTitle(ResourcesManageHelper::GetProjectTitle());
@@ -707,6 +724,7 @@ int MainWindow::CreateTabContent(DAVA::UIPackage *package)
     ui->tabBar->setTabData(index, var);
     ui->tabBar->blockSignals(false);
     
+    undoGroup->addStack(document->UndoStack());
     if (oldIndex < 0)
     {
         CurrentTabChanged(index);
