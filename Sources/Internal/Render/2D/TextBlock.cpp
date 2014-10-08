@@ -882,6 +882,7 @@ void TextBlock::SplitTextToStrings(WideString const& text, Vector2 const& target
             currentLine.clear();
             lastSeparatorPos = 0;
             currentWidth = 0;
+            continue;
         }
 
         if(IsWordSeparator(ch) | IsSpace(ch))
