@@ -129,10 +129,13 @@ QVariant UIPackageModel::data(const QModelIndex &index, int role) const
             return StringToQString(node->GetName());
         }
         break;
-//    case Qt::DecorationRole:
-//        return QIcon(IconHelper::GetIconPathForUIControl(control));
-//    case Qt::CheckStateRole:
-//        return control->GetVisibleForUIEditor() ? Qt::Checked : Qt::Unchecked;
+    case Qt::DecorationRole:
+            return node->GetControl() != NULL ? QIcon(IconHelper::GetIconPathForUIControl(node->GetControl())) : QVariant();
+    case Qt::CheckStateRole:
+            if (node->GetControl())
+                return node->GetControl()->GetVisibleForUIEditor() ? Qt::Checked : Qt::Unchecked;
+            else
+                return QVariant();
 //    case Qt::ToolTipRole:
 //        return QString(control->GetControlClassName().c_str());
 //    case Qt::EditRole:
@@ -168,11 +171,12 @@ bool UIPackageModel::setData(const QModelIndex &index, const QVariant &value, in
     
     UIPackageModelNode *node = static_cast<UIPackageModelNode*>(index.internalPointer());
     
-//    if (role == Qt::CheckStateRole)
-//    {
-//        control->SetVisibleForUIEditor(value.toBool());
-//        return true;
-//    }
+    if (role == Qt::CheckStateRole)
+    {
+        if (node->GetControl())
+            node->GetControl()->SetVisibleForUIEditor(value.toBool());
+        return true;
+    }
 //    else if (role == Qt::EditRole)
 //    {
 //        control->SetName(value.toString().toStdString());
@@ -193,7 +197,7 @@ Qt::ItemFlags UIPackageModel::flags(const QModelIndex &index) const
         return Qt::NoItemFlags;
     
     Qt::ItemFlags flags = QAbstractItemModel::flags(index);
-    flags |= Qt::ItemIsEditable | Qt::ItemIsUserCheckable;
+    flags |= /*Qt::ItemIsEditable | */Qt::ItemIsUserCheckable;
     
 //    const UIControl *control = static_cast<UIControl*>(index.internalPointer());
 //    

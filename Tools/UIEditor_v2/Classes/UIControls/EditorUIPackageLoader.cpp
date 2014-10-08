@@ -226,8 +226,8 @@ bool EditorUIPackageLoader::AddChildrenToNode(UIControl *control, YamlNode *chil
         YamlNode *childNode = YamlNode::CreateMapNode(false, YamlNode::MR_BLOCK_REPRESENTATION, YamlNode::SR_PLAIN_REPRESENTATION);
         if (AddControlToNode(*iter, childNode, prototypeChildren))
         {
-            UIEditorComponent *component = dynamic_cast<UIEditorComponent*>(control->GetCustomData());
-            if (component && component->IsClonedFromPrototype())
+            UIEditorComponent *component = dynamic_cast<UIEditorComponent*>((*iter)->GetCustomData());
+            if (component && component->IsClonedFromPrototype() && component->GetPrototype() == NULL)
                 prototypeChildren->Add(childNode);
             else
             {

@@ -175,6 +175,8 @@ UIPackage *Project::OpenPackage(const QString &packagePath)
     String fwPath = path.GetFrameworkPath();
 
     UIPackage *newPackage = EditorUIPackageLoader(legacyData).LoadPackage(path);
+    
+    
     return newPackage;
 }
 

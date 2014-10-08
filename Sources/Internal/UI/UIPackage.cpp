@@ -30,7 +30,7 @@ String UIPackage::GetName() const
 
 DAVA::int32 UIPackage::GetControlsCount() const
 {
-    return controls.size();
+    return (int32) controls.size();
 }
     
 UIControl * UIPackage::GetControl(const String &name) const

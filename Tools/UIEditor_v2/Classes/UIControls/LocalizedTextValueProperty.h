@@ -17,12 +17,15 @@ public:
     LocalizedTextValueProperty(DAVA::BaseObject *object, const DAVA::InspMember *member);
     virtual ~LocalizedTextValueProperty();
     
-    virtual DAVA::VariantType GetValue() const;
-    virtual void SetValue(const DAVA::VariantType &newValue);
-    virtual void ResetValue();
-    
+    virtual DAVA::VariantType GetValue() const override;
+    virtual void SetValue(const DAVA::VariantType &newValue) override;
+    virtual void ResetValue() override;
+  
+    virtual void PrepareToEdit() override;
+
 protected:
     DAVA::WideString text;
+    bool isEditMode;
 };
 
 #endif // __UI_EDITOR_LOCALIZED_TEXT_VALUE_PROPERTY__

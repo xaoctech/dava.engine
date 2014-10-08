@@ -772,18 +772,6 @@
 		322FFD5319C042880000ED71 /* UIPackage.h in Headers */ = {isa = PBXBuildFile; fileRef = 322FFD3D19C042880000ED71 /* UIPackage.h */; };
 		322FFD5419C042880000ED71 /* UIPackage.h in Headers */ = {isa = PBXBuildFile; fileRef = 322FFD3D19C042880000ED71 /* UIPackage.h */; };
 		322FFD5519C042880000ED71 /* UIPackage.h in Headers */ = {isa = PBXBuildFile; fileRef = 322FFD3D19C042880000ED71 /* UIPackage.h */; };
-		32E8095619CC77AF008B4896 /* UIControlPropertiesGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32E8095419CC77AF008B4896 /* UIControlPropertiesGroup.cpp */; };
-		32E8095719CC77AF008B4896 /* UIControlPropertiesGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32E8095419CC77AF008B4896 /* UIControlPropertiesGroup.cpp */; };
-		32E8095819CC77AF008B4896 /* UIControlPropertiesGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32E8095419CC77AF008B4896 /* UIControlPropertiesGroup.cpp */; };
-		32E8095919CC77AF008B4896 /* UIControlPropertiesGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 32E8095519CC77AF008B4896 /* UIControlPropertiesGroup.h */; };
-		32E8095A19CC77AF008B4896 /* UIControlPropertiesGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 32E8095519CC77AF008B4896 /* UIControlPropertiesGroup.h */; };
-		32E8095B19CC77AF008B4896 /* UIControlPropertiesGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 32E8095519CC77AF008B4896 /* UIControlPropertiesGroup.h */; };
-		32FB460719C1EDD2003A401C /* UIControlTypeInformation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32FB460519C1EDD2003A401C /* UIControlTypeInformation.cpp */; };
-		32FB460819C1EDD2003A401C /* UIControlTypeInformation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32FB460519C1EDD2003A401C /* UIControlTypeInformation.cpp */; };
-		32FB460919C1EDD2003A401C /* UIControlTypeInformation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32FB460519C1EDD2003A401C /* UIControlTypeInformation.cpp */; };
-		32FB460A19C1EDD2003A401C /* UIControlTypeInformation.h in Headers */ = {isa = PBXBuildFile; fileRef = 32FB460619C1EDD2003A401C /* UIControlTypeInformation.h */; };
-		32FB460B19C1EDD2003A401C /* UIControlTypeInformation.h in Headers */ = {isa = PBXBuildFile; fileRef = 32FB460619C1EDD2003A401C /* UIControlTypeInformation.h */; };
-		32FB460C19C1EDD2003A401C /* UIControlTypeInformation.h in Headers */ = {isa = PBXBuildFile; fileRef = 32FB460619C1EDD2003A401C /* UIControlTypeInformation.h */; };
 		4910CBF6167B73EC00CF948A /* libdxt_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4910CBF5167B73EC00CF948A /* libdxt_macos.a */; };
 		4F53ED2419A23BE100D3869D /* DLC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7E6C58E198255BF00B96D1A /* DLC.cpp */; };
 		4F53ED2519A23BE100D3869D /* DLC.h in Headers */ = {isa = PBXBuildFile; fileRef = D7E6C58F198255BF00B96D1A /* DLC.h */; };
@@ -2601,10 +2589,6 @@
 		322FFD3C19C042880000ED71 /* UIPackage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIPackage.cpp; sourceTree = "<group>"; };
 		322FFD3D19C042880000ED71 /* UIPackage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIPackage.h; sourceTree = "<group>"; };
 		32DBCF5E0370ADEE00C91783 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = "<group>"; };
-		32E8095419CC77AF008B4896 /* UIControlPropertiesGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIControlPropertiesGroup.cpp; sourceTree = "<group>"; };
-		32E8095519CC77AF008B4896 /* UIControlPropertiesGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIControlPropertiesGroup.h; sourceTree = "<group>"; };
-		32FB460519C1EDD2003A401C /* UIControlTypeInformation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIControlTypeInformation.cpp; sourceTree = "<group>"; };
-		32FB460619C1EDD2003A401C /* UIControlTypeInformation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIControlTypeInformation.h; sourceTree = "<group>"; };
 		4910CBF5167B73EC00CF948A /* libdxt_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_macos.a; path = ../../Libs/libs/libdxt_macos.a; sourceTree = "<group>"; };
 		4F64847F17AFB73C00034454 /* AllocatorFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AllocatorFactory.cpp; sourceTree = "<group>"; };
 		4F64848017AFB73C00034454 /* AllocatorFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AllocatorFactory.h; sourceTree = "<group>"; };
@@ -4589,8 +4573,6 @@
 				322FFD3B19C042880000ED71 /* UIPackageLoader.h */,
 				322FFD3C19C042880000ED71 /* UIPackage.cpp */,
 				322FFD3D19C042880000ED71 /* UIPackage.h */,
-				32FB460519C1EDD2003A401C /* UIControlTypeInformation.cpp */,
-				32FB460619C1EDD2003A401C /* UIControlTypeInformation.h */,
 				EAAD9FFE1892A458001E1AA2 /* UIParticles.cpp */,
 				EAAD9FFF1892A458001E1AA2 /* UIParticles.h */,
 				C18593D816F30BED005D30E2 /* UIAggregatorControl.cpp */,
@@ -4604,8 +4586,6 @@
 				E8989D5016BD24E500732C04 /* UI3DView.h */,
 				E8989D5116BD24E500732C04 /* UIButton.cpp */,
 				E8989D5216BD24E500732C04 /* UIButton.h */,
-				32E8095419CC77AF008B4896 /* UIControlPropertiesGroup.cpp */,
-				32E8095519CC77AF008B4896 /* UIControlPropertiesGroup.h */,
 				E8989D5316BD24E500732C04 /* UIControl.cpp */,
 				E8989D5416BD24E500732C04 /* UIControl.h */,
 				E8989D5516BD24E500732C04 /* UIControlBackground.cpp */,
@@ -5155,11 +5135,9 @@
 				50229521186DD1BC00F55478 /* RenderPassManager.h in Headers */,
 				1795E4C5174CC24D00050F64 /* NPAPICorePlatformMacOS.h in Headers */,
 				A6E4FE0E1761D9CD00B48E41 /* ActionComponent.h in Headers */,
-				32FB460C19C1EDD2003A401C /* UIControlTypeInformation.h in Headers */,
 				644C86F619476A7100964F91 /* VegetationRenderData.h in Headers */,
 				A6E4FE121761D9D900B48E41 /* CustomPropertiesComponent.h in Headers */,
 				A6E4FE161761D9E700B48E41 /* ActionUpdateSystem.h in Headers */,
-				32E8095B19CC77AF008B4896 /* UIControlPropertiesGroup.h in Headers */,
 				4FFE5CB31779E0B200728624 /* MipmapReplacer.h in Headers */,
 				A68B3EF517AA8C4000E129C1 /* SkyboxSystem.h in Headers */,
 				4F64848D17AFCAF900034454 /* AllocatorFactory.h in Headers */,
@@ -5243,7 +5221,6 @@
 				E8989DDE16BD24E500732C04 /* TemplateHelpers.h in Headers */,
 				E8989DE016BD24E500732C04 /* CollisionObject2.h in Headers */,
 				E8989DE216BD24E500732C04 /* CollisionPolygons.h in Headers */,
-				32E8095919CC77AF008B4896 /* UIControlPropertiesGroup.h in Headers */,
 				02FD7ED619237D96007762C0 /* SpeedTreeUpdateSystem.h in Headers */,
 				E8989DE416BD24E500732C04 /* Collisions.h in Headers */,
 				EAADA0011892A458001E1AA2 /* UIParticles.h in Headers */,
@@ -5429,7 +5406,6 @@
 				E8989F9916BD24E500732C04 /* UpdatableComponent.h in Headers */,
 				E8989F9B16BD24E500732C04 /* DataNode.h in Headers */,
 				647EFC5C195EEF2A0073B3CB /* NMaterialHelper.h in Headers */,
-				32FB460A19C1EDD2003A401C /* UIControlTypeInformation.h in Headers */,
 				E8989F9C16BD24E500732C04 /* Drawable.h in Headers */,
 				E8989FA016BD24E500732C04 /* ImposterManager.h in Headers */,
 				0282B87718BC72BE006F1EE4 /* FMODFileSoundEvent.h in Headers */,
@@ -5717,7 +5693,6 @@
 				CC84B02018211A9000934482 /* JobManager.h in Headers */,
 				E898A0A016BD265400732C04 /* FileSystem.h in Headers */,
 				E898A0A116BD265400732C04 /* KeyedArchive.h in Headers */,
-				32E8095A19CC77AF008B4896 /* UIControlPropertiesGroup.h in Headers */,
 				E898A0A216BD265400732C04 /* KeyedArchiver.h in Headers */,
 				E898A0A316BD265400732C04 /* KeyedUnarchiver.h in Headers */,
 				E898A0A416BD265400732C04 /* LocalizationSystem.h in Headers */,
@@ -5947,7 +5922,6 @@
 				641A61DE18CDC2F4003359E7 /* FoliageSystem.h in Headers */,
 				E898A18E16BD265400732C04 /* UIScreenTransition.h in Headers */,
 				4F53ED2F19A23BE700D3869D /* DownloadManager.h in Headers */,
-				32FB460B19C1EDD2003A401C /* UIControlTypeInformation.h in Headers */,
 				155D77DC197DD22E006AEBCD /* YamlNode.h in Headers */,
 				E898A18F16BD265400732C04 /* UIScrollBar.h in Headers */,
 				0282B87A18BC72C6006F1EE4 /* SoundEvent.h in Headers */,
@@ -6318,7 +6292,6 @@
 				176DEACD174B5561007A983B /* SharedFBO.cpp in Sources */,
 				176DEACE174B5561007A983B /* Texture.cpp in Sources */,
 				176DEACF174B5561007A983B /* TextureDescriptor.cpp in Sources */,
-				32E8095819CC77AF008B4896 /* UIControlPropertiesGroup.cpp in Sources */,
 				176DEAD0174B5561007A983B /* UberShader.cpp in Sources */,
 				176DEAD1174B5561007A983B /* Box2DDebugDraw.cpp in Sources */,
 				176DEAD2174B5561007A983B /* Box2DGameObject.cpp in Sources */,
@@ -6428,7 +6401,6 @@
 				176DEB1C174B5561007A983B /* UILoadingTransition.cpp in Sources */,
 				176DEB1D174B5561007A983B /* UIMoveInTransition.cpp in Sources */,
 				176DEB1E174B5561007A983B /* UIPopup.cpp in Sources */,
-				32FB460919C1EDD2003A401C /* UIControlTypeInformation.cpp in Sources */,
 				176DEB1F174B5561007A983B /* UIScreen.cpp in Sources */,
 				176DEB20174B5561007A983B /* UIScreenManagerMacOS.cpp in Sources */,
 				176DEB21174B5561007A983B /* UIScreenTransition.cpp in Sources */,
@@ -6741,7 +6713,6 @@
 				E8989FA716BD24E500732C04 /* MeshInstanceNode.cpp in Sources */,
 				E8989FA916BD24E500732C04 /* ParticleEffectNode.cpp in Sources */,
 				E8989FAB16BD24E500732C04 /* ParticleEmitterNode.cpp in Sources */,
-				32E8095619CC77AF008B4896 /* UIControlPropertiesGroup.cpp in Sources */,
 				E8989FAD16BD24E500732C04 /* PathManip.cpp in Sources */,
 				E8989FAF16BD24E500732C04 /* PolygonGroupInstance.cpp in Sources */,
 				E8989FB116BD24E500732C04 /* ProxyNode.cpp in Sources */,
@@ -6800,7 +6771,6 @@
 				E898A01916BD24E500732C04 /* UIHierarchyCell.cpp in Sources */,
 				E898A01B16BD24E500732C04 /* UIHierarchyNode.cpp in Sources */,
 				E898A01D16BD24E500732C04 /* UIHoleTransition.cpp in Sources */,
-				32FB460719C1EDD2003A401C /* UIControlTypeInformation.cpp in Sources */,
 				A6DBFA6F1887D804006BE11C /* NMaterialNames.cpp in Sources */,
 				E898A01F16BD24E500732C04 /* UIJoypad.cpp in Sources */,
 				E898A02116BD24E500732C04 /* UIList.cpp in Sources */,
@@ -7020,7 +6990,6 @@
 				E898A1E016BD265400732C04 /* BezierSpline.cpp in Sources */,
 				E898A1E116BD265400732C04 /* Math2D.cpp in Sources */,
 				E898A1E216BD265400732C04 /* Matrix4.cpp in Sources */,
-				32E8095719CC77AF008B4896 /* UIControlPropertiesGroup.cpp in Sources */,
 				E898A1E316BD265400732C04 /* NeonMath.cpp in Sources */,
 				E898A1E416BD265400732C04 /* Polygon2.cpp in Sources */,
 				E898A1E516BD265400732C04 /* Polygon3.cpp in Sources */,
@@ -7261,7 +7230,6 @@
 				CCC7A45C16F1D6170061EA5D /* RenderObject.cpp in Sources */,
 				155D77D9197DD22E006AEBCD /* YamlNode.cpp in Sources */,
 				CCC7A46016F1D6170061EA5D /* RenderPass.cpp in Sources */,
-				32FB460819C1EDD2003A401C /* UIControlTypeInformation.cpp in Sources */,
 				CCC7A46416F1D6170061EA5D /* RenderSystem.cpp in Sources */,
 				7A16933F180EE618005F1FBC /* RectSwig.cpp in Sources */,
 				CCC7A46816F1D6170061EA5D /* ShadowRect.cpp in Sources */,
