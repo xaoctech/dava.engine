@@ -414,37 +414,15 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 				int32 width = bitmap->width;
 				//int32 height = bitmap->rows;
 
-				if(0 == width && ' ' == str[i])
+				if(0 == width)
 				{
-					width = advances[i].x >> 6;
-					left = (pen.x >> 6) + 1;
+					width = (advances[i].x + 63) >> 6;
+					left = pen.x >> 6;
 				}
 				
 				if(charSizes)
 				{
-					if(0 == width)
-					{
-                        if(str[i] == ' ')
-                        {
-                            charSizes->push_back((float32)width);
-                            lastRight += width;
-                        }
-                        else
-                        {
-                            charSizes->push_back(0);
-                        }
-					}
-					else if(charSizes->empty())
-					{
-						charSizes->push_back((float32)width);
-						lastRight = width;
-					}
-					else
-					{
-						int32 value = left+width-lastRight;
-						lastRight += value;
-						charSizes->push_back((float32)value);
-					}
+					charSizes->push_back((float32)width);
 				}
 
 				maxWidth = Max(maxWidth, left+width);
@@ -535,9 +513,16 @@ void FTInternalFont::Prepare(FT_Vector * advances)
 	{
 		Glyph & glyph = glyphs[i];
 
-		advances[i] = glyph.image->advance;
-		advances[i].x >>= 10;
-		advances[i].y >>= 10;
+		if(glyph.index != 0)
+		{
+			advances[i] = glyph.image->advance;
+			advances[i].x >>= 10;
+			advances[i].y >>= 10;
+		}
+		else
+		{
+			advances[i].x = advances[i].y = 0;
+		}
 
 		if(prevAdvance)
 		{
