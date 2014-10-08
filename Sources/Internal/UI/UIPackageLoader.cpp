@@ -244,7 +244,10 @@ UIPackage *UIPackageLoader::LoadPackage(const FilePath &packagePath)
                 auto it = importedPackages.find(node->AsString());
                 UIPackage *importedPackage;
                 if (it != importedPackages.end())
+                {
                     importedPackage = it->second;
+                    package->AddPackage(importedPackage);
+                }
                 else
                 {
                     importedPackage = LoadPackage(node->AsString());
@@ -399,7 +402,10 @@ UIControl *UIPackageLoader::CreateControl(const YamlNode *node, bool legacySuppo
             auto it = importedPackages.find(pathNode->AsString());
             UIPackage *importedPackage;
             if (it != importedPackages.end())
+            {
                 importedPackage = it->second;
+                currentPackage->AddPackage(importedPackage);
+            }
             else
             {
                 importedPackage = LoadPackage(pathNode->AsString());
