@@ -121,16 +121,15 @@ protected:
 	void DrawToBuffer(Font *font, uint8 *buf);
 
 	void ProcessAlign();
-	
-	int32 GetVisualAlignNoMutexLock() const; // Return align for displaying BiDi-text (w/o mutex lock)
 
+	int32 GetVisualAlignNoMutexLock() const; // Return align for displaying BiDi-text (w/o mutex lock)
+	    	
     void SplitTextToStrings(const WideString & text, const Vector2 & targetRectSize, Vector<WideString> & resultVector);
     void SplitTextBySymbolsToStrings(const WideString & text, const Vector2 & targetRectSize, Vector<WideString> & resultVector);   
     inline bool IsLineEnd(char16 t) const;
     inline bool IsSpace(char16 t) const;
     bool IsWordSeparator(char16 t) const;
     WideString Trim(const WideString& str) const;
-
 
 	Vector2 rectSize;
     bool needRedraw;

@@ -200,13 +200,13 @@ void TextBlock::SetText(const WideString & _string, const Vector2 &requestedText
     mutex.Lock();
 
     WideString trimStr = Trim(_string);
-	if(originalText == trimStr && requestedSize == requestedTextRectSize)
-	{
+    if(originalText == trimStr && requestedSize == requestedTextRectSize)
+    {
         mutex.Unlock();
-		return;
-	}
-	requestedSize = requestedTextRectSize;
-	originalText = trimStr;
+        return;
+    }
+    requestedSize = requestedTextRectSize;
+    originalText = trimStr;
     needRedraw = true;
 
     if(!BiDiUtils::TransformString(originalText, text, isRtl))
@@ -907,7 +907,7 @@ void TextBlock::SplitTextToStrings(WideString const& text, Vector2 const& target
     resultVector.clear();
 
     Vector<float32> sizes;
-	font->GetStringSize(text, &sizes);
+    font->GetStringSize(text, &sizes);
     if(sizes.size() == 0)
     {
         return;
@@ -933,6 +933,7 @@ void TextBlock::SplitTextToStrings(WideString const& text, Vector2 const& target
             currentLine.clear();
             lastSeparatorPos = 0;
             currentWidth = 0;
+            continue;
         }
 
         if(IsWordSeparator(ch) | IsSpace(ch))
@@ -1246,6 +1247,5 @@ WideString TextBlock::Trim(WideString const& str) const
     while(rit.base() != it && IsSpace(*rit)) ++rit;
     return WideString(it,rit.base());
 }
-
 
 };
