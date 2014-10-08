@@ -416,6 +416,14 @@ UIControl *UIPackageLoader::CreateControl(const YamlNode *node, bool legacySuppo
         else
             control = CreateControlByClassName(type->AsString());
         
+        List<UIControl* > subcontrols = control->GetSubcontrols();
+        List<UIControl* >::iterator iter = subcontrols.begin();
+
+        for ( ; iter!=subcontrols.end(); ++iter)//remove all sub controls
+        {
+            control->RemoveControl(*iter);
+        }
+
         return control;
     }
     else
@@ -463,10 +471,12 @@ UIControl *UIPackageLoader::CreateControl(const YamlNode *node, bool legacySuppo
             else
                 control = CreateControlByClassName(classNode->AsString());
             
-            if (legacySupport)
+            List<UIControl* > subcontrols = control->GetSubcontrols();
+            List<UIControl* >::iterator iter = subcontrols.begin();
+
+            for ( ; iter!=subcontrols.end(); ++iter)//remove all sub controls
             {
-                if (control->GetClassName() == "UISlider")
-                    control->RemoveControl(control->FindByName("thumbSpriteControl"));
+                control->RemoveControl(*iter);
             }
             return control;
         }

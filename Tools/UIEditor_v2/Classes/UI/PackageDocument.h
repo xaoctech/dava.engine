@@ -77,8 +77,6 @@ public:
     PropertiesViewContext *GetPropertiesContext() {return propertiesContext; };
     LibraryViewContext *GetLibraryContext() {return &libraryContext; };
 
-    QAction *UndoAction() const { return undoAction; }
-    QAction *RedoAction() const { return redoAction; }
     QUndoStack *UndoStack() const { return undoStack; }
 
 signals:
@@ -102,8 +100,6 @@ private:
     LibraryViewContext libraryContext;
 
     QUndoStack *undoStack;
-    QAction *undoAction;
-    QAction *redoAction;
 };
 
 Q_DECLARE_METATYPE(PackageDocument *);
