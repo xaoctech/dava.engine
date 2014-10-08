@@ -76,3 +76,11 @@ bool BaseProperty::IsReplaced() const
 {
     return false; // false by default
 }
+
+void BaseProperty::PrepareToEdit()
+{
+    for (auto it = children.begin(); it != children.end(); ++it)
+    {
+        (*it)->PrepareToEdit();
+    }
+}

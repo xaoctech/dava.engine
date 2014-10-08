@@ -339,7 +339,7 @@ void UIPackageLoader::SetUsingIntrospectionForLegacyData(bool useIntrospection)
 {
     this->useIntrospectionForLegacyData = useIntrospection;
 }
-    
+        
 void UIPackageLoader::LoadRootControl(int index, UIPackage *currentPackage)
 {
     DVASSERT(loadingQueue[index].status == STATUS_WAIT);
@@ -393,7 +393,7 @@ UIControl *UIPackageLoader::CreateControl(const YamlNode *node, bool legacySuppo
         const YamlNode *type = node->Get("type");
         const YamlNode *baseType = node->Get("baseType");
         UIControl *control;
-        if (type->AsString() == "UIAggregatorControl")
+        if (!useIntrospectionForLegacyData && type->AsString() == "UIAggregatorControl")
         {
             const YamlNode *pathNode = node->Get("aggregatorPath");
             auto it = importedPackages.find(pathNode->AsString());

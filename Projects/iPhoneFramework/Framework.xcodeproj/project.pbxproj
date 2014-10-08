@@ -863,6 +863,22 @@
 		17FFF905193F03AA003D51DA /* MongodbClient.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C7FE16B9326D002BD35F /* MongodbClient.h */; };
 		17FFF906193F03AF003D51DA /* MongodbObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C80016B9326D002BD35F /* MongodbObject.h */; };
 		1AD7C35E17D8951C00B9977C /* Vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AD7C35D17D8951C00B9977C /* Vector.cpp */; };
+		3267C4AC19E5501A003CF16F /* ComponentIndices.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3267C4AA19E5501A003CF16F /* ComponentIndices.cpp */; };
+		3267C4AD19E5501A003CF16F /* ComponentIndices.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3267C4AA19E5501A003CF16F /* ComponentIndices.cpp */; };
+		3267C4AE19E5501A003CF16F /* ComponentIndices.h in Headers */ = {isa = PBXBuildFile; fileRef = 3267C4AB19E5501A003CF16F /* ComponentIndices.h */; };
+		3267C4AF19E5501A003CF16F /* ComponentIndices.h in Headers */ = {isa = PBXBuildFile; fileRef = 3267C4AB19E5501A003CF16F /* ComponentIndices.h */; };
+		32B074BD19E53C0C0069981A /* UIControlHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32B074B719E53C0C0069981A /* UIControlHelpers.cpp */; };
+		32B074BE19E53C0C0069981A /* UIControlHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32B074B719E53C0C0069981A /* UIControlHelpers.cpp */; };
+		32B074BF19E53C0C0069981A /* UIControlHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 32B074B819E53C0C0069981A /* UIControlHelpers.h */; };
+		32B074C019E53C0C0069981A /* UIControlHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 32B074B819E53C0C0069981A /* UIControlHelpers.h */; };
+		32B074C119E53C0C0069981A /* UIPackage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32B074B919E53C0C0069981A /* UIPackage.cpp */; };
+		32B074C219E53C0C0069981A /* UIPackage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32B074B919E53C0C0069981A /* UIPackage.cpp */; };
+		32B074C319E53C0C0069981A /* UIPackage.h in Headers */ = {isa = PBXBuildFile; fileRef = 32B074BA19E53C0C0069981A /* UIPackage.h */; };
+		32B074C419E53C0C0069981A /* UIPackage.h in Headers */ = {isa = PBXBuildFile; fileRef = 32B074BA19E53C0C0069981A /* UIPackage.h */; };
+		32B074C519E53C0C0069981A /* UIPackageLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32B074BB19E53C0C0069981A /* UIPackageLoader.cpp */; };
+		32B074C619E53C0C0069981A /* UIPackageLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32B074BB19E53C0C0069981A /* UIPackageLoader.cpp */; };
+		32B074C719E53C0C0069981A /* UIPackageLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 32B074BC19E53C0C0069981A /* UIPackageLoader.h */; };
+		32B074C819E53C0C0069981A /* UIPackageLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 32B074BC19E53C0C0069981A /* UIPackageLoader.h */; };
 		496526D0167F173400107C70 /* libdxt_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 496526CF167F173400107C70 /* libdxt_ios.a */; };
 		497BF6E216F751ED00AC57C6 /* DeviceInfoiOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 497BF6E116F751ED00AC57C6 /* DeviceInfoiOS.mm */; };
 		4F25831019BDC94000C28926 /* Bind.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F25830A19BDC94000C28926 /* Bind.h */; };
@@ -1811,6 +1827,14 @@
 		17F53E3216D3705E004D5099 /* WebViewControliOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewControliOS.h; sourceTree = "<group>"; };
 		17F53E3316D3705E004D5099 /* WebViewControliOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WebViewControliOS.mm; sourceTree = "<group>"; };
 		1AD7C35D17D8951C00B9977C /* Vector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Vector.cpp; sourceTree = "<group>"; };
+		3267C4AA19E5501A003CF16F /* ComponentIndices.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ComponentIndices.cpp; sourceTree = "<group>"; };
+		3267C4AB19E5501A003CF16F /* ComponentIndices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComponentIndices.h; sourceTree = "<group>"; };
+		32B074B719E53C0C0069981A /* UIControlHelpers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIControlHelpers.cpp; sourceTree = "<group>"; };
+		32B074B819E53C0C0069981A /* UIControlHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIControlHelpers.h; sourceTree = "<group>"; };
+		32B074B919E53C0C0069981A /* UIPackage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIPackage.cpp; sourceTree = "<group>"; };
+		32B074BA19E53C0C0069981A /* UIPackage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIPackage.h; sourceTree = "<group>"; };
+		32B074BB19E53C0C0069981A /* UIPackageLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIPackageLoader.cpp; sourceTree = "<group>"; };
+		32B074BC19E53C0C0069981A /* UIPackageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIPackageLoader.h; sourceTree = "<group>"; };
 		496526CF167F173400107C70 /* libdxt_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_ios.a; path = ../../Libs/libs/libdxt_ios.a; sourceTree = "<group>"; };
 		497BF6E116F751ED00AC57C6 /* DeviceInfoiOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DeviceInfoiOS.mm; sourceTree = "<group>"; };
 		4F25830A19BDC94000C28926 /* Bind.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bind.h; sourceTree = "<group>"; };
@@ -3578,6 +3602,8 @@
 		E8B3C9A316B9326E002BD35F /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				3267C4AA19E5501A003CF16F /* ComponentIndices.cpp */,
+				3267C4AB19E5501A003CF16F /* ComponentIndices.h */,
 				CCEB54371886FF0C0018491F /* Converters */,
 				A695E52F18113327008A0F20 /* SceneFile */,
 				11CB614719C338DF00B48A92 /* AnimationData.cpp */,
@@ -3761,6 +3787,12 @@
 		E8B3CA2E16B9326E002BD35F /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				32B074B719E53C0C0069981A /* UIControlHelpers.cpp */,
+				32B074B819E53C0C0069981A /* UIControlHelpers.h */,
+				32B074B919E53C0C0069981A /* UIPackage.cpp */,
+				32B074BA19E53C0C0069981A /* UIPackage.h */,
+				32B074BB19E53C0C0069981A /* UIPackageLoader.cpp */,
+				32B074BC19E53C0C0069981A /* UIPackageLoader.h */,
 				EAADA0031892A48E001E1AA2 /* UIParticles.cpp */,
 				EAADA0041892A48E001E1AA2 /* UIParticles.h */,
 				17DC600717DE16D40075813E /* IMovieViewControl.h */,
@@ -3976,6 +4008,7 @@
 				02FD7F2D1924997C007762C0 /* Meta.h in Headers */,
 				02FD7F2E1924997C007762C0 /* ObjectCreator.h in Headers */,
 				02E9B4C719407C41001DBDDF /* TreeToAnimatedTreeConverter.h in Headers */,
+				32B074C819E53C0C0069981A /* UIPackageLoader.h in Headers */,
 				02FD7F2F1924997C007762C0 /* ObjectFactory.h in Headers */,
 				02FD7F301924997C007762C0 /* Observable.h in Headers */,
 				02FD7F311924997C007762C0 /* Observer.h in Headers */,
@@ -4126,6 +4159,7 @@
 				02FD7FB21924997C007762C0 /* Camera.h in Headers */,
 				02FD7FB31924997C007762C0 /* CullingSystem.h in Headers */,
 				02FD7FB41924997C007762C0 /* Heightmap.h in Headers */,
+				32B074C419E53C0C0069981A /* UIPackage.h in Headers */,
 				64493E0919476F4700AB2715 /* VegetationFixedGeometry.h in Headers */,
 				64493DFD19476F4700AB2715 /* VegetationCustomGeometry.h in Headers */,
 				02FD7FB51924997C007762C0 /* IRenderUpdatable.h in Headers */,
@@ -4133,6 +4167,7 @@
 				17675C1A19472C1400054F8F /* CRCAdditionInterface.h in Headers */,
 				02FD7FB71924997C007762C0 /* LandscapeCursor.h in Headers */,
 				02FD7FB81924997C007762C0 /* Light.h in Headers */,
+				3267C4AF19E5501A003CF16F /* ComponentIndices.h in Headers */,
 				D7B50F3019ACB28900F8C0C9 /* Notification.h in Headers */,
 				02FD7FB91924997C007762C0 /* Mesh.h in Headers */,
 				02FD7FBA1924997C007762C0 /* RenderBatch.h in Headers */,
@@ -4318,6 +4353,7 @@
 				02FD80621924997C007762C0 /* Landscape.h in Headers */,
 				02FD80631924997C007762C0 /* RenderFastNames.h in Headers */,
 				02FD80641924997C007762C0 /* RenderState.h in Headers */,
+				32B074C019E53C0C0069981A /* UIControlHelpers.h in Headers */,
 				02FD80651924997C007762C0 /* Entity.h in Headers */,
 				02FD80661924997C007762C0 /* UpdateSystem.h in Headers */,
 				D7FEF14219864E5C00B2C7AF /* CurlDownloader.h in Headers */,
@@ -4396,6 +4432,7 @@
 				E8B3CA9B16B9326E002BD35F /* BaseObject.h in Headers */,
 				E8B3CA9D16B9326E002BD35F /* BaseObjectChecker.h in Headers */,
 				E8B3CA9E16B9326E002BD35F /* BaseTypes.h in Headers */,
+				32B074C319E53C0C0069981A /* UIPackage.h in Headers */,
 				641A620018CE0F61003359E7 /* FoliageSystem.h in Headers */,
 				E8B3CAA016B9326E002BD35F /* Data.h in Headers */,
 				E8B3CAA216B9326E002BD35F /* DynamicObjectCache.h in Headers */,
@@ -4497,6 +4534,7 @@
 				A611714E1860C2A500E18F8C /* StaticOcclusionSystem.h in Headers */,
 				D7FEF14F19864E5C00B2C7AF /* bs_common.h in Headers */,
 				CC84B04518211BCE00934482 /* JobWaiter.h in Headers */,
+				3267C4AE19E5501A003CF16F /* ComponentIndices.h in Headers */,
 				E8B3CB5116B9326E002BD35F /* Matrix3.h in Headers */,
 				E8B3CB5316B9326E002BD35F /* Matrix4.h in Headers */,
 				E8FC1308186972C80095D8FE /* QualitySettingsSystem.h in Headers */,
@@ -4542,6 +4580,7 @@
 				E8B3CBA016B9326E002BD35F /* EAGLView.h in Headers */,
 				E8B3CBA216B9326E002BD35F /* EAGLViewController.h in Headers */,
 				E8B3CBA416B9326E002BD35F /* ES1Renderer.h in Headers */,
+				32B074BF19E53C0C0069981A /* UIControlHelpers.h in Headers */,
 				E8B3CBA616B9326E002BD35F /* ES2Renderer.h in Headers */,
 				E8B3CBA816B9326E002BD35F /* ESRenderer.h in Headers */,
 				E8B3CBA916B9326E002BD35F /* HelperAppDelegate.h in Headers */,
@@ -4556,6 +4595,7 @@
 				A6DBFA7F1887E3D5006BE11C /* NMaterialNames.h in Headers */,
 				E8B3CBCB16B9326E002BD35F /* AnimatedMesh.h in Headers */,
 				505EB41D18250C53009BEA3C /* OcclusionQuery.h in Headers */,
+				32B074C719E53C0C0069981A /* UIPackageLoader.h in Headers */,
 				E8B3CBCD16B9326E002BD35F /* EdgeAdjacency.h in Headers */,
 				E8B3CBCF16B9326E002BD35F /* PolygonGroup.h in Headers */,
 				E8B3CBD116B9326E002BD35F /* StaticMesh.h in Headers */,
@@ -4949,6 +4989,7 @@
 				02FD80B31924997C007762C0 /* UIParticles.cpp in Sources */,
 				02FD80B41924997C007762C0 /* DAVAEngine.cpp in Sources */,
 				02FD80B51924997C007762C0 /* Backtrace.cpp in Sources */,
+				3267C4AD19E5501A003CF16F /* ComponentIndices.cpp in Sources */,
 				02FD80B61924997C007762C0 /* MemoryManager.cpp in Sources */,
 				E84E5BE81988D99200686C14 /* OGLHelpers.cpp in Sources */,
 				02FD80B71924997C007762C0 /* Replay.cpp in Sources */,
@@ -5054,6 +5095,7 @@
 				02FD810A1924997C007762C0 /* Heightmap.cpp in Sources */,
 				02FD810B1924997C007762C0 /* LandscapeChunk.cpp in Sources */,
 				02FD810C1924997C007762C0 /* LandscapeCursor.cpp in Sources */,
+				32B074BE19E53C0C0069981A /* UIControlHelpers.cpp in Sources */,
 				02FD810D1924997C007762C0 /* Light.cpp in Sources */,
 				02FD810E1924997C007762C0 /* Mesh.cpp in Sources */,
 				02FD810F1924997C007762C0 /* RenderBatch.cpp in Sources */,
@@ -5081,6 +5123,7 @@
 				02FD812B1924997C007762C0 /* RenderManager.cpp in Sources */,
 				02FD812C1924997C007762C0 /* RenderManagerFactory.cpp in Sources */,
 				02FD812D1924997C007762C0 /* RenderManagerGL.cpp in Sources */,
+				32B074C619E53C0C0069981A /* UIPackageLoader.cpp in Sources */,
 				02FD812E1924997C007762C0 /* RenderOptions.cpp in Sources */,
 				02FD812F1924997C007762C0 /* RenderResource.cpp in Sources */,
 				02FD81301924997C007762C0 /* Shader.cpp in Sources */,
@@ -5213,6 +5256,7 @@
 				02FD819E1924997C007762C0 /* HTTPDownloader.mm in Sources */,
 				02FD819F1924997C007762C0 /* MD5.cpp in Sources */,
 				02FD81A01924997C007762C0 /* LodToLod2Converter.cpp in Sources */,
+				32B074C219E53C0C0069981A /* UIPackage.cpp in Sources */,
 				02FD81A11924997C007762C0 /* StringFormat.cpp in Sources */,
 				02FD81A21924997C007762C0 /* Utils.cpp in Sources */,
 				02FD81A31924997C007762C0 /* UtilsMacOS.mm in Sources */,
@@ -5347,6 +5391,7 @@
 				E8B3CADA16B9326E002BD35F /* Backtrace.cpp in Sources */,
 				C13E6DB8186861FA00D1B2CE /* DFFont.cpp in Sources */,
 				E8B3CADF16B9326E002BD35F /* MemoryManager.cpp in Sources */,
+				3267C4AC19E5501A003CF16F /* ComponentIndices.cpp in Sources */,
 				E8B3CAE116B9326E002BD35F /* Replay.cpp in Sources */,
 				E8B3CAE316B9326E002BD35F /* Stats.cpp in Sources */,
 				E8B3CAEE16B9326E002BD35F /* Component.cpp in Sources */,
@@ -5452,6 +5497,7 @@
 				E8B3CBFD16B9326E002BD35F /* RenderObject.cpp in Sources */,
 				E8B3CBFF16B9326E002BD35F /* RenderPass.cpp in Sources */,
 				E8B3CC0116B9326E002BD35F /* RenderSystem.cpp in Sources */,
+				32B074BD19E53C0C0069981A /* UIControlHelpers.cpp in Sources */,
 				E8B3CC0316B9326E002BD35F /* ShadowRect.cpp in Sources */,
 				02FD7EC319237D43007762C0 /* SpeedTreeUpdateSystem.cpp in Sources */,
 				E8B3CC0516B9326E002BD35F /* ShadowVolume.cpp in Sources */,
@@ -5479,6 +5525,7 @@
 				E8B3CC3116B9326E002BD35F /* RenderManagerGL.cpp in Sources */,
 				E8B3CC3416B9326E002BD35F /* RenderOptions.cpp in Sources */,
 				E8B3CC3616B9326E002BD35F /* RenderResource.cpp in Sources */,
+				32B074C519E53C0C0069981A /* UIPackageLoader.cpp in Sources */,
 				E8B3CC3B16B9326E002BD35F /* Shader.cpp in Sources */,
 				E8B3CC3D16B9326E002BD35F /* ShaderDX.cpp in Sources */,
 				E8B3CC3E16B9326E002BD35F /* ShaderGL.cpp in Sources */,
@@ -5611,6 +5658,7 @@
 				E8F21DD016C1971F007F957A /* GlobalEventSystem.cpp in Sources */,
 				E89CE92A16C54A36006BEFF4 /* SpriteObject.cpp in Sources */,
 				E89CE92C16C54A36006BEFF4 /* SpriteRenderBatch.cpp in Sources */,
+				32B074C119E53C0C0069981A /* UIPackage.cpp in Sources */,
 				CCB4C44616CBC65D00F2B085 /* ComponentHelpers.cpp in Sources */,
 				1799E51A16CCEBDA0058061F /* ParticleForce.cpp in Sources */,
 				C7E76D3116DF69370041ED9A /* AutotestingSystemLua.cpp in Sources */,

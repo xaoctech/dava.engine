@@ -25,12 +25,15 @@ using namespace DAVA;
 
 PropertiesTreeModel::PropertiesTreeModel(DAVA::UIControl *control, PropertiesViewContext *context, QObject *parent)
     : QAbstractItemModel(parent)
-    , propertiesViewContext(context)
     , root(NULL)
+    , propertiesViewContext(context)
 {
     UIEditorComponent* component = dynamic_cast<UIEditorComponent*>(control->GetCustomData());
     if (component)
+    {
         root = SafeRetain(component->GetPropertiesRoot());
+        root->PrepareToEdit();
+    }
 }
 
 PropertiesTreeModel::~PropertiesTreeModel()

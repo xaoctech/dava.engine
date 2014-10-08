@@ -52,6 +52,8 @@ public:
     virtual const EnumMap *GetEnumMap() const;
     virtual void ResetValue();
     virtual bool IsReplaced() const;
+    
+    virtual void PrepareToEdit();
 
 private:
     BaseProperty *parent;
