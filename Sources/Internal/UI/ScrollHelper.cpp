@@ -147,7 +147,7 @@ namespace DAVA
 			moves.push_back(m);
 			totalDeltaTime += timeDelta;
 			totalDeltaMove += positionDelta;
-			if(totalDeltaTime >= 0.4f)
+			if(totalDeltaTime >= 0.1f)
 			{
 				List<MovesDelta>::iterator it = moves.begin();
 				totalDeltaTime -= it->deltaTime;
@@ -250,7 +250,9 @@ namespace DAVA
 					speed = speed - speed / slowDown * timeDelta;
 					if((oldSpd > 0.f && speed < 1.0f) || (oldSpd < 0.f && speed > -1.0f))
 					{
+                    	Logger::FrameworkDebug("****** SET SPEED = 0 ******");
 						speed = 0.f;
+                        
 					}
 					position += speed * timeDelta;
 				}
