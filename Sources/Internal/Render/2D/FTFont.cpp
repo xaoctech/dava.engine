@@ -426,32 +426,7 @@ Font::StringMetrics FTInternalFont::DrawString(const WideString& str, void * buf
 
 			if(charSizes)
 			{
-				if(0 == width)
-				{
-                    if(str[i] == L' ')
-                    {
-						int32 spaceWidth = advances[i].x >> ftToPixelShift;
-                        int32 spaceLeft = (pen.x >> ftToPixelShift) + 1;
-                        int32 value = spaceLeft + spaceWidth - lastRight;
-					    lastRight += value;
-                        charSizes->push_back((float32)value);
-                    }
-                    else
-                    {
-                        charSizes->push_back(0);
-                    }
-				}
-				else if(charSizes->empty())
-				{
-					charSizes->push_back((float32)width);
-					lastRight = width;
-				}
-				else
-				{
-					int32 value = left + width - lastRight;
-					lastRight += value;
-					charSizes->push_back((float32)value);
-				}
+				charSizes->push_back((float32)advances[i].x / ftToPixelScale);
 			}
 
 			layoutWidth += advances[i].x;
@@ -488,9 +463,7 @@ Font::StringMetrics FTInternalFont::DrawString(const WideString& str, void * buf
 
             pen.x += advances[i].x;
             pen.y += advances[i].y;
-
 		}
-		
 		FT_Done_Glyph(image);
 	}
 
@@ -498,11 +471,12 @@ Font::StringMetrics FTInternalFont::DrawString(const WideString& str, void * buf
 	drawStringMutex.Unlock();
 
 	// Transform right/bottom edges into width/height
-	metrics.drawRect.dx -= metrics.drawRect.x;
-	metrics.drawRect.dy -= metrics.drawRect.y;
+	metrics.drawRect.dx += -metrics.drawRect.x + 1;
+    metrics.drawRect.dy += -metrics.drawRect.y + 1;
 
 	// Transform width from FT points to pixels
-	metrics.width = layoutWidth >> ftToPixelShift;
+    // Increase width by 1 for get total size litle larged that summ of length all symbols in float32 (charSizes)
+    metrics.width = (layoutWidth >> ftToPixelShift) + 1;
 
 	if(!contentScaleIncluded) 
 	{
