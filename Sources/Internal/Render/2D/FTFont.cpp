@@ -504,7 +504,7 @@ Font::StringMetrics FTInternalFont::DrawString(const WideString& str, void * buf
 	if(!contentScaleIncluded) 
 	{
 		float32 physicalToVirtualFactor = Core::GetPhysicalToVirtualFactor();
-		metrics.drawRect.x = (int32)floorf(metrics.drawRect.x * physicalToVirtualFactor);
+		metrics.drawRect.x = (int32)ceilf(metrics.drawRect.x * physicalToVirtualFactor);
 		metrics.drawRect.y = (int32)floorf(metrics.drawRect.y * physicalToVirtualFactor);
 		metrics.drawRect.dx = (int32)ceilf(metrics.drawRect.dx * physicalToVirtualFactor);
 		metrics.drawRect.dy = (int32)ceilf(metrics.drawRect.dy * physicalToVirtualFactor);
