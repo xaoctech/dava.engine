@@ -21,21 +21,6 @@ UIFilteredPackageModel::~UIFilteredPackageModel()
     
 }
 
-Qt::DropActions UIFilteredPackageModel::supportedDropActions() const
-{
-    Qt::DropActions flags = QSortFilterProxyModel::supportedDropActions();
-    DAVA::Logger::Debug("[UIFilteredPackageModel::supportedDropActions] %d", (int)flags);
-    return flags;
-}
-
-Qt::ItemFlags UIFilteredPackageModel::flags(const QModelIndex &index) const
-{
-    Qt::ItemFlags flags = QSortFilterProxyModel::flags(index);
-    if (int(flags) != 63)
-        DAVA::Logger::Debug("[UIFilteredPackageModel::flags] %d", (int)flags);
-    return flags;
-}
-
 bool UIFilteredPackageModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
     if (QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent))

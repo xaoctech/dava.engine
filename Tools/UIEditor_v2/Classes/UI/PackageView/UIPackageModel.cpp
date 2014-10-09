@@ -207,8 +207,6 @@ Qt::ItemFlags UIPackageModel::flags(const QModelIndex &index) const
 //        flags = flags | Qt::ItemIsDropEnabled;
     
     flags |= Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
-    if (int(flags) != 63)
-        DAVA::Logger::Debug("[UIPackageModel::flags] %d", (int)flags);
     return flags;
 }
 
