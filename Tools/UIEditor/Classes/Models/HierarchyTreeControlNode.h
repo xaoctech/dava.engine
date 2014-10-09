@@ -74,7 +74,6 @@ public:
 private:
 	void AddControlToParent();
     void UpdateUIObject();
-    void RestoreParentControl(UIControl* parentControl);
 	
 private:
 	HierarchyTreeNode* parent;
@@ -83,7 +82,6 @@ private:
     EditorListDelegate *listDelegate;
 
 	UIControl* parentUIObject;
-	UIControl* childUIObjectAbove;
 	bool needReleaseUIObjects;
 };
 
