@@ -878,17 +878,18 @@ void TextBlock::SplitTextToStrings(WideString const& text, Vector2 const& target
             continue;
         }
 
-        if(IsWordSeparator(ch) | IsSpace(ch))
+        bool isSpace = IsSpace(ch);
+        if(IsWordSeparator(ch) || isSpace)
         {
             prevSeparatorPos = lastSeparatorPos;
             lastSeparatorPos = currentLine.length();
-            lastSeparatorIsSpace = IsSpace(ch);
+            lastSeparatorIsSpace = isSpace;
         }
 
         currentLine.push_back(ch);
         currentWidth += sizes[pos] * p2v;
 
-        if(0 == targetWidth || currentWidth <= targetWidth)
+        if(0 == targetWidth || currentWidth <= targetWidth || isSpace)
         {
             continue;
         }
@@ -926,14 +927,9 @@ void TextBlock::SplitTextToStrings(WideString const& text, Vector2 const& target
             else
             {
                 pos -= revert;
-                if(lastSeparatorIsSpace)
-                {
-                    currentLine.resize(lastSeparatorPos);
-                }
-                else
-                {
-                    currentLine.resize(lastSeparatorPos + 1);
-                }                
+                WideString::iterator it = currentLine.begin() + lastSeparatorPos;
+                while(it != currentLine.begin() && IsSpace(*it)) --it;
+                currentLine.erase(it + 1, currentLine.end());
             }
         }
 
