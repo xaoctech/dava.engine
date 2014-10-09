@@ -45,7 +45,7 @@ struct UILocalNotificationWrapper;
 class LocalNotificationIOS : public LocalNotificationImpl
 {
 public:
-	LocalNotificationIOS(const uint32 _id);
+	LocalNotificationIOS(const String &_id);
     virtual ~LocalNotificationIOS();
 
     virtual void SetAction(const WideString &action);

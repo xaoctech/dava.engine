@@ -44,18 +44,16 @@ public:
     virtual void ShowText(const WideString &title, const WideString text) = 0;
     virtual void ShowProgress(const WideString &title, const WideString text, const uint32 total, const uint32 progress) = 0;
     
-    static LocalNotificationImpl *Create(const uint32 _id);
+    static LocalNotificationImpl *Create(const String &_id);
     
-    inline uint32 GetId();
+    DAVA::String& GetId()
+    {
+        return notificationId;
+    }
 
 protected:
-    uint32 notificationId;
+    DAVA::String notificationId;
 };
 
-inline uint32 LocalNotificationImpl::GetId()
-{
-    return notificationId;
-}
-    
 }
 #endif

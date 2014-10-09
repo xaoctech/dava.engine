@@ -34,6 +34,7 @@
 #include <UIKit/UIApplication.h>
 #include <UIKit/UILocalNotification.h>
 #import "NSStringUtils.h"
+#include "Platform/DateTime.h"
 
 namespace DAVA
 {
@@ -43,7 +44,7 @@ struct UILocalNotificationWrapper
     UILocalNotification *impl = NULL;
 };
 
-LocalNotificationIOS::LocalNotificationIOS(const uint32 _id)
+LocalNotificationIOS::LocalNotificationIOS(const String &_id)
     : notification(NULL)
 {
     notificationId = _id;
@@ -70,6 +71,17 @@ void LocalNotificationIOS::Hide()
 {
     if (NULL != notification)
     {
+        NSString *uid = NSStringFromString(notificationId);
+        bool scheduledNotificationFoundAndRemoved = false;
+        for(UILocalNotification *n in [[UIApplication sharedApplication] scheduledLocalNotifications])
+        {
+            NSDictionary *userInfo = n.userInfo;
+            if(userInfo && [userInfo[@"uid"] isEqual:uid])
+            {
+                //[UIApplication sharedApplication] cancel
+                scheduledNotificationFoundAndRemoved = true;
+            }
+        }
         [[UIApplication sharedApplication] cancelLocalNotification:notification->impl];
     }
 }
@@ -82,14 +94,9 @@ void LocalNotificationIOS::ShowText(const WideString &title, const WideString te
         notification->impl = [[UILocalNotification alloc] init];
     }
     
-    notification->impl.alertBody = [NSStringUtils NSStringFromWideString:text];
+    notification->impl.alertBody = NSStringFromWideString(text);
     
-    NSNumber *idNum = [NSNumber numberWithInt:notificationId];
-
-    NSArray *keys = [NSArray arrayWithObjects:@"id",@"action", nil];
-    NSArray *objects = [NSArray arrayWithObjects:idNum, @"test action", nil];
-    
-    notification->impl.userInfo = [NSDictionary dictionaryWithObjects:objects forKeys:keys];
+    notification->impl.userInfo = @{ @"uid" : NSStringFromString(notificationId), @"action" : @"test action"};
 
     [[UIApplication sharedApplication] cancelLocalNotification:notification->impl];
     [[UIApplication sharedApplication] scheduleLocalNotification:notification->impl];
@@ -99,7 +106,7 @@ void LocalNotificationIOS::ShowProgress(const WideString &title, const WideStrin
 {
 }
 
-LocalNotificationImpl *LocalNotificationImpl::Create(const uint32 _id)
+LocalNotificationImpl *LocalNotificationImpl::Create(const String &_id)
 {
     return new LocalNotificationIOS(_id);
 }

@@ -57,7 +57,7 @@ public:
 
     inline bool IsChanged() const;
 	inline bool IsVisible() const;
-    inline uint32 GetId() const;
+    DAVA::String& GetId() const;
 private:
     virtual void ImplShow() = 0;
 
@@ -89,7 +89,7 @@ inline bool LocalNotification::IsVisible() const
     return isVisible;
 }
 
-inline uint32 LocalNotification::GetId() const
+inline DAVA::String& LocalNotification::GetId() const
 {
     return impl->GetId();
 }
