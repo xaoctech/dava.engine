@@ -312,6 +312,9 @@
     <ClCompile Include="Classes\UI\FileSystemView\FileSystemDockWidget.cpp">
       <Filter>Sources\UI\FileSystemView</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\UIControls\EditorUIPackageSectionLoaders.cpp">
+      <Filter>Sources\UIControls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\FrameworkMain.h">
@@ -547,6 +550,9 @@
     </ClInclude>
     <ClInclude Include="Classes\UI\FileSystemView\FileSystemDockWidget.h">
       <Filter>Sources\UI\FileSystemView</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UIControls\EditorUIPackageSectionLoaders.h">
+      <Filter>Sources\UIControls</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
