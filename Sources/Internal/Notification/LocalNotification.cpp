@@ -29,6 +29,7 @@
 
 
 #include "Notification/LocalNotification.h"
+#include "Utils/Utils.h"
 #include "Thread/LockGuard.h"
 
 namespace DAVA
@@ -40,8 +41,7 @@ LocalNotification::LocalNotification()
 	, title(L"")
 	, text(L"")
 {
-    static uint32 lastId = 0;
-    impl = LocalNotificationImpl::Create(++lastId);
+    impl = LocalNotificationImpl::Create(GenerateGUID());
 }
     
 LocalNotification::~LocalNotification()

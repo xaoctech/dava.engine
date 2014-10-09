@@ -129,7 +129,7 @@ void LocalNotificationAndroid::ShowProgress(const WideString &title, const WideS
 	env->DeleteLocalRef(jStrText);
 }
 
-LocalNotificationImpl *LocalNotificationImpl::Create(const uint32 _id)
+LocalNotificationImpl *LocalNotificationImpl::Create(const String &_id)
 {
     return new LocalNotificationAndroid(_id);
 }
