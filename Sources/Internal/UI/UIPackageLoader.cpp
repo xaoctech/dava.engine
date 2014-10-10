@@ -249,7 +249,7 @@ UIControl *UIPackageLoader::CreateControl(const YamlNode *node, bool legacySuppo
         const YamlNode *type = node->Get("type");
         const YamlNode *baseType = node->Get("baseType");
         UIControl *control;
-        if (!useIntrospectionForLegacyData && type->AsString() == "UIAggregatorControl")
+        if (useIntrospectionForLegacyData && type->AsString() == "UIAggregatorControl")
         {
             const YamlNode *pathNode = node->Get("aggregatorPath");
             auto it = importedPackages.find(pathNode->AsString());
@@ -407,7 +407,7 @@ void UIPackageLoader::LoadControl(UIControl *control, const YamlNode *node, bool
     }
 
     control->LoadFromYamlNodeCompleted();
-    control->ApplyAlignSettingsForChildren();
+    control->UpdateLayout();
     yamlLoader->PostLoad(control);
 }
 

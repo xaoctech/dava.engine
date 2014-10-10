@@ -1311,6 +1311,7 @@ public:
     /// sets rect to match background sprite, also moves pivot point to center
     void SetSizeFromBg(bool pivotToCenter = true);
 
+    virtual void UpdateLayout();
     // Recalculate the size and positions for the child controls according to their Align Options.
     void ApplyAlignSettingsForChildren();
 
@@ -1405,10 +1406,6 @@ protected:
     void SetParent(UIControl *newParent);
 
     virtual ~UIControl();
-
-    // Set the preferred node type. Needed for saving controls to Yaml while taking
-    // custom controls into account.
-    void SetPreferredNodeType(YamlNode* node, const String& nodeTypeName);
 
     void RegisterInputProcessor();
     void RegisterInputProcessors(int32 processorsCount);

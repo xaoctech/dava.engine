@@ -187,6 +187,7 @@
 #include "UI/UIAggregatorControl.h"
 
 #include "UI/UIScrollViewContainer.h"
+#include "UI/UIControlHelpers.h"
 
 // Game object manager / 2D Scene
 #include "Scene2D/GameObject.h"
