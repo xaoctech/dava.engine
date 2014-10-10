@@ -821,7 +821,7 @@ PolygonGroup* StaticOcclusionDebugDrawSystem::CreateStaticOcclusionDebugDrawCove
     int32 xSideIndexCount = xSubdivisions * 6 * 2; 
     int32 ySideIndexCount = ySubdivisions * 6 * 2;
     int32 xySideIndexCount =  xSideIndexCount + ySideIndexCount;
-    int32 zSideIndexCount = xSubdivisions * xSubdivisions * 6 * 2;
+    int32 zSideIndexCount = xSubdivisions * ySubdivisions * 6 * 2;
     int32 totalSideIndexCount = xySideIndexCount+zSideIndexCount;
     int32 xExtraIndexCount = (xSubdivisions-1) * (ySubdivisions) * 6 * 2;
     int32 yExtraIndexCount = (ySubdivisions-1) * (xSubdivisions) * 6 * 2;
