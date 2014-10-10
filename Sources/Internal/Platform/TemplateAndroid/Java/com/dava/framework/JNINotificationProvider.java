@@ -13,7 +13,7 @@ public class JNINotificationProvider {
 	private static AssetManager assetsManager = null;
 	private static boolean isInited = false;
 	
-	private native static void onNotificationPressed(int id);
+	private native static void onNotificationPressed(String uid);
 
     static void Init() {
 		Context context = JNIApplication.GetApplication();
@@ -48,10 +48,10 @@ public class JNINotificationProvider {
 		}
 	}
 	
-    static void NotificationPressed(int id)
+    static void NotificationPressed(String uid)
     {
     	if (isInited) {
-    		onNotificationPressed(id);
+    		onNotificationPressed(uid);
     	}
     }
     
