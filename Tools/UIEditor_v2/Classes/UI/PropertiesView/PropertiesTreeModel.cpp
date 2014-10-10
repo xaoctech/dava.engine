@@ -18,7 +18,7 @@
 #include "UIControls/UIEditorComponent.h"
 #include "Utils/QtDavaConvertion.h"
 #include "ChangePropertyValueCommand.h"
-#include "PackageDocument.h"
+#include "UI/PackageDocument.h"
 #include "PropertiesViewContext.h"
 
 using namespace DAVA;

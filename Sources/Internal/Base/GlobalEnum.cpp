@@ -37,6 +37,7 @@
 #include "UI/UIControlBackground.h"
 #include "UI/UIStaticText.h"
 #include "Render/2D/TextBlock.h"
+#include "UI/UIList.h"
 
 using namespace DAVA;
 
@@ -207,6 +208,12 @@ ENUM_DECLARE(TextBlock::eFitType)
     ENUM_ADD_DESCR(TextBlock::FITTING_ENLARGE, "ENLARGE");
     ENUM_ADD_DESCR(TextBlock::FITTING_REDUCE, "REDUCE");
     ENUM_ADD_DESCR(TextBlock::FITTING_POINTS, "POINTS");
+};
+
+ENUM_DECLARE(UIList::eListOrientation)
+{
+    ENUM_ADD_DESCR(UIList::ORIENTATION_VERTICAL, "ORIENTATION_VERTICAL");
+    ENUM_ADD_DESCR(UIList::ORIENTATION_HORIZONTAL, "ORIENTATION_HORIZONTAL");
 };
 
 /*
