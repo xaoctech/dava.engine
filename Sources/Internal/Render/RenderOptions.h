@@ -43,7 +43,9 @@ class RenderOptions : public Observable
 public:
 	enum RenderOption
 	{
-		LANDSCAPE_DRAW = 0,
+        TEST_OPTION = 0,
+
+		LANDSCAPE_DRAW,
 		WATER_REFLECTION_REFRACTION_DRAW,
 		OPAQUE_DRAW,
 		TRANSPARENT_DRAW,

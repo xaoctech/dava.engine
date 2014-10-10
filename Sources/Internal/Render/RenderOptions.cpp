@@ -35,6 +35,8 @@ namespace DAVA
 
 FastName optionsNames[RenderOptions::OPTIONS_COUNT] = 
 {
+    FastName("Test Option"),
+
     FastName("Draw Landscape"),
     FastName("Draw Water Refl/Refr"),
     FastName("Draw Opaque Layer"),
