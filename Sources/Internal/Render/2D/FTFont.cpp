@@ -350,7 +350,6 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 	FT_Vector * advances = new FT_Vector[strLen];
 	Prepare(advances);
 
-    int32 lastRight = 0; //charSizes helper
     int32 justifyOffset = 0;
     int32 fixJustifyOffset = 0;
     if (countSpace > 0 && justifyWidth > 0 && spaceAddon > 0)
