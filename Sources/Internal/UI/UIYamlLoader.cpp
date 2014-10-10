@@ -54,7 +54,7 @@ UIYamlLoader::UIYamlLoader() :
     currentPath = FilePath();
 }
 
-int32 UIYamlLoader::GetDrawTypeFromNode(const YamlNode * drawTypeNode)
+int32 UIYamlLoader::GetDrawTypeFromNode(const YamlNode * drawTypeNode) const
 {
     int32 ret = UIControlBackground::DRAW_ALIGNED;
     if(!drawTypeNode)
@@ -75,7 +75,7 @@ int32 UIYamlLoader::GetDrawTypeFromNode(const YamlNode * drawTypeNode)
     return ret;
 }
 
-String UIYamlLoader::GetDrawTypeNodeValue(int32 drawType)
+String UIYamlLoader::GetDrawTypeNodeValue(int32 drawType) const
 {
     String ret;
     switch (drawType) {
@@ -113,7 +113,7 @@ String UIYamlLoader::GetDrawTypeNodeValue(int32 drawType)
     return ret;
 }
 
-int32 UIYamlLoader::GetColorInheritTypeFromNode(const YamlNode * colorInheritNode)
+int32 UIYamlLoader::GetColorInheritTypeFromNode(const YamlNode * colorInheritNode) const
 {
     int32 ret = UIControlBackground::COLOR_IGNORE_PARENT;
     if(!colorInheritNode)
@@ -131,7 +131,7 @@ int32 UIYamlLoader::GetColorInheritTypeFromNode(const YamlNode * colorInheritNod
     return ret;
 }
 
-String UIYamlLoader::GetColorInheritTypeNodeValue(int32 colorInheritType)
+String UIYamlLoader::GetColorInheritTypeNodeValue(int32 colorInheritType) const
 {
     String ret;
     switch (colorInheritType) {
@@ -160,7 +160,7 @@ String UIYamlLoader::GetColorInheritTypeNodeValue(int32 colorInheritType)
     return ret;
 }
 
-int32 UIYamlLoader::GetPerPixelAccuracyTypeFromNode(const YamlNode *perPixelAccuracyNode)
+int32 UIYamlLoader::GetPerPixelAccuracyTypeFromNode(const YamlNode *perPixelAccuracyNode) const
 {
 	int32 ret = UIControlBackground::PER_PIXEL_ACCURACY_DISABLED;
 	if(!perPixelAccuracyNode)
@@ -175,7 +175,7 @@ int32 UIYamlLoader::GetPerPixelAccuracyTypeFromNode(const YamlNode *perPixelAccu
 	return ret;
 }
 
-String UIYamlLoader::GetPerPixelAccuracyTypeNodeValue(int32 perPixelAccuracyType)
+String UIYamlLoader::GetPerPixelAccuracyTypeNodeValue(int32 perPixelAccuracyType) const
 {
 	String ret;
     switch (perPixelAccuracyType) {
@@ -192,7 +192,7 @@ String UIYamlLoader::GetPerPixelAccuracyTypeNodeValue(int32 perPixelAccuracyType
     return ret;
 }
 	
-int32 UIYamlLoader::GetAlignFromYamlNode(const YamlNode * alignNode)
+int32 UIYamlLoader::GetAlignFromYamlNode(const YamlNode * alignNode) const
 {
     if (!alignNode)return ALIGN_HCENTER | ALIGN_VCENTER;
 
@@ -248,7 +248,7 @@ int32 UIYamlLoader::GetFittingOptionFromYamlNode( const YamlNode * fittingNode )
 }
 
 //Vector<String> UIYamlLoader::GetAlignNodeValue(int32 align)
-YamlNode * UIYamlLoader::GetAlignNodeValue(int32 align)
+YamlNode * UIYamlLoader::GetAlignNodeValue(int32 align) const
 {
     YamlNode *alignNode = YamlNode::CreateArrayNode(YamlNode::AR_FLOW_REPRESENTATION);
     String horzAlign = "HCENTER";
@@ -318,7 +318,7 @@ YamlNode * UIYamlLoader::GetFittingOptionNodeValue( int32 fitting ) const
     return fittingNode;
 }
 
-bool UIYamlLoader::GetBoolFromYamlNode(const YamlNode * node, bool defaultValue)
+bool UIYamlLoader::GetBoolFromYamlNode(const YamlNode * node, bool defaultValue) const
 {
     if (!node)return defaultValue;
 
@@ -338,7 +338,7 @@ int32 HexCharToInt(char c)
     return 0;
 }
 
-Color UIYamlLoader::GetColorFromYamlNode(const YamlNode * node)
+Color UIYamlLoader::GetColorFromYamlNode(const YamlNode * node) const
 {
     if (node->GetType() == YamlNode::TYPE_ARRAY)
     {
