@@ -2835,6 +2835,11 @@ namespace DAVA
         }
     }
 
+    void UIControl::UpdateLayout()
+    {
+        RecalculateChildsSize();
+    }
+
     void UIControl::ApplyAlignSettingsForChildren()
     {
         RecalculateChildsSize();
@@ -2858,23 +2863,6 @@ namespace DAVA
     void UIControl::ResetCustomControlClassName()
     {
         customControlType = String();
-    }
-
-    void UIControl::SetPreferredNodeType(YamlNode* node, const String& controlClassName)
-    {
-        // Do we have Custom Control name? If yes, use it as type and passed one
-        // as the "Base Type"
-        bool hasCustomControl = !GetCustomControlClassName().empty();
-        if (hasCustomControl)
-        {
-            node->Set("type", GetCustomControlClassName());
-            node->Set("baseType", controlClassName);
-        }
-        else
-        {
-            // The type coincides with the node type name passed, no base type exists.
-            node->Set("type", controlClassName);
-        }
     }
 
     int32 UIControl::GetInitialState() const
