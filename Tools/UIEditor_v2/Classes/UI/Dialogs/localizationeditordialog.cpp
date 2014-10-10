@@ -29,10 +29,10 @@
 
 #include "localizationeditordialog.h"
 #include "ui_localizationeditordialog.h"
-#include "LocalizationSystemHelper.h"
+#include "Helpers/LocalizationSystemHelper.h"
 #include "FileSystem/LocalizationSystem.h"
 #include "FileSystem/FileSystem.h"
-#include "ResourcesManageHelper.h"
+#include "Helpers/ResourcesManageHelper.h"
 
 #include "EditorFontManager.h"
 

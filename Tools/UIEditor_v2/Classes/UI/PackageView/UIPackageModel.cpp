@@ -9,7 +9,7 @@
 #include "UIPackageModel.h"
 
 #include "DAVAEngine.h"
-#include "IconHelper.h"
+#include "UI/IconHelper.h"
 #include "UIControls/UIEditorComponent.h"
 #include "Utils/QtDavaConvertion.h"
 #include "UIPackageModelNode.h"

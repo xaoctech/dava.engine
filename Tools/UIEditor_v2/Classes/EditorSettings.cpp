@@ -29,7 +29,7 @@
 
 
 #include "EditorSettings.h"
-#include "ResourcesManageHelper.h"
+#include "Helpers/ResourcesManageHelper.h"
 #include <QString>
 
 static const Color DEFAULT_BACKGROUND_FRAME_COLOR(0.2f, 0.2f, 0.2f, 1.0f);

@@ -46,7 +46,7 @@
 //////////////////////////////////////////////////////////////////////////
 #include "fontmanagerdialog.h"
 #include "FileSystem/FileSystem.h"
-#include "ResourcesManageHelper.h"
+#include "Helpers/ResourcesManageHelper.h"
 #include "Dialogs/localizationeditordialog.h"
 #include "Grid/GridVisualizer.h"
 #include "EditorFontManager.h"
