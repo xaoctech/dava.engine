@@ -41,7 +41,7 @@ namespace DAVA
 jclass LocalNotificationAndroid::gJavaClass = NULL;
 const char* LocalNotificationAndroid::gJavaClassName = NULL;
 
-LocalNotificationAndroid::LocalNotificationAndroid(const uint32 _id)
+LocalNotificationAndroid::LocalNotificationAndroid(const String &_id)
 	: methodSetText(0)
 	, methodSetProgress(0)
 {
@@ -63,26 +63,31 @@ const char* LocalNotificationAndroid::GetJavaClassName() const
 void LocalNotificationAndroid::SetAction(const WideString &action)
 {
 	LockGuard<Mutex> mutexGuard(javaCallMutex);
+    jstring jstrNotificationUid = GetEnvironment()->NewStringUTF(notificationId.c_str());
 
 	GetEnvironment()->CallStaticVoidMethod(
 					gJavaClass,
 					GetMethodID("EnableTapAction", "(I)V"),
-					notificationId);
+					jstrNotificationUid);
+    GetEnvironment()->DeleteLocalRef(jstrNotificationUid);
 }
 
 void LocalNotificationAndroid::Hide()
 {
 	LockGuard<Mutex> mutexGuard(javaCallMutex);
+    jstring jstrNotificationUid = GetEnvironment()->NewStringUTF(notificationId.c_str());
 
 	GetEnvironment()->CallStaticVoidMethod(
 					gJavaClass,
 					GetMethodID("HideNotification", "(I)V"),
-					notificationId);
+					jstrNotificationUid);
+    GetEnvironment()->DeleteLocalRef(jstrNotificationUid);
 }
 
 void LocalNotificationAndroid::ShowText(const WideString &title, const WideString text)
 {
 	LockGuard<Mutex> mutexGuard(javaCallMutex);
+    jstring jstrNotificationUid = GetEnvironment()->NewStringUTF(notificationId.c_str());
 
 	JNIEnv *env = GetEnvironment();
 
@@ -95,10 +100,11 @@ void LocalNotificationAndroid::ShowText(const WideString &title, const WideStrin
 	env->CallStaticVoidMethod(
 					gJavaClass,
 					methodSetText,
-					notificationId,
+					jstrNotificationUid,
 					jStrTitle,
 					jStrText);
 
+    env->DeleteLocalRef(jstrNotificationUid);
 	env->DeleteLocalRef(jStrTitle);
 	env->DeleteLocalRef(jStrText);
 }
@@ -107,6 +113,8 @@ void LocalNotificationAndroid::ShowText(const WideString &title, const WideStrin
 void LocalNotificationAndroid::ShowProgress(const WideString &title, const WideString text, const uint32 total, const uint32 progress)
 {
 	LockGuard<Mutex> mutexGuard(javaCallMutex);
+    jstring jstrNotificationUid = GetEnvironment()->NewStringUTF(notificationId.c_str());
+    GetEnvironment()->DeleteLocalRef(jstrNotificationUid);
 
 	JNIEnv *env = GetEnvironment();
 
@@ -119,12 +127,13 @@ void LocalNotificationAndroid::ShowProgress(const WideString &title, const WideS
 	env->CallStaticVoidMethod(
 					gJavaClass,
 					methodSetProgress,
-					notificationId,
+					jstrNotificationUid,
 					jStrTitle,
 					jStrText,
 					total,
 					progress);
 
+    env->DeleteLocalRef(jstrNotificationUid);
 	env->DeleteLocalRef(jStrTitle);
 	env->DeleteLocalRef(jStrText);
 }
@@ -138,9 +147,11 @@ LocalNotificationImpl *LocalNotificationImpl::Create(const String &_id)
 
 extern "C"
 {
-	void Java_com_dava_framework_JNINotificationProvider_onNotificationPressed(JNIEnv* env, jobject classthis, uint32_t id)
+	void Java_com_dava_framework_JNINotificationProvider_onNotificationPressed(JNIEnv* env, jobject classthis, jstring uid)
 	{
-		DAVA::LocalNotificationController::Instance()->OnNotificationPressed(id);
+        const char *str = env->GetStringUTFChars(uid, 0);
+		DAVA::LocalNotificationController::Instance()->OnNotificationPressed(DAVA::String(str));
+        env->ReleaseStringUTFChars(uid, str);
 	}
 }
 

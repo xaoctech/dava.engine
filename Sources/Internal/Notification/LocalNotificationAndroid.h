@@ -46,7 +46,7 @@ namespace DAVA
 class LocalNotificationAndroid: public LocalNotificationImpl, public JniExtension
 {
 public:
-	LocalNotificationAndroid(const uint32 _id);
+	LocalNotificationAndroid(const String &_id);
 	virtual void SetAction(const WideString &action);
 	virtual void Hide();
 	virtual void ShowText(const WideString &title, const WideString text);

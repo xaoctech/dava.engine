@@ -117,9 +117,9 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         
 		Intent intent = getIntent();
 		if (null != intent) {
-			int id = intent.getIntExtra("ID", 0);
-			if (0 != id) {
-				JNINotificationProvider.NotificationPressed(id);
+			String uid = intent.getStringExtra("uid");
+			if (uid != null) {
+				JNINotificationProvider.NotificationPressed(uid);
 			}
 		}
     }

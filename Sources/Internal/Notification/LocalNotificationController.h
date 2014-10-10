@@ -51,6 +51,8 @@ public:
     virtual ~LocalNotificationController();
 	LocalNotificationProgress *const CreateNotificationProgress(const WideString &title = L"", const WideString &text = L"", const uint32 max = 0, const uint32 current = 0);
     LocalNotificationText *const CreateNotificationText(const WideString &title = L"", const WideString &text = L"");
+    void PostDelayedNotification(const WideString &title, const WideString text, int delaySeconds);
+    void ClearAllDelayedNotifications();
     bool Remove(LocalNotification *const notification);
     bool RemoveById(const String &notificationId);
     void Clear();
