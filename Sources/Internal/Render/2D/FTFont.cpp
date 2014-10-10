@@ -425,8 +425,9 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 					charSizes->push_back((float32)advances[i].x / 64.f);
 				}
 
-				maxWidth = Max(maxWidth, left + width + 2);
-
+                int32 localMax = Max(left + width, int32(pen.x + advances[i].x + 63) >> 6);
+                maxWidth = Max(maxWidth, localMax);
+                
 				if(realDraw)
 				{
 					int32 realH = Min((int32)bitmap->rows, (int32)(bufHeight - top));
