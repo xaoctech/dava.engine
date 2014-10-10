@@ -93,20 +93,25 @@ public:
 
     Font * GetFontByName(const String & fontName) const;
 
-    int32 GetDrawTypeFromNode(const YamlNode * drawTypeNode);
-    int32 GetColorInheritTypeFromNode(const YamlNode * colorInheritNode);
-    int32 GetPerPixelAccuracyTypeFromNode(const YamlNode * perPixelAccuracyNode);
-    int32 GetAlignFromYamlNode(const YamlNode * align);
+    int32 GetDrawTypeFromNode(const YamlNode * drawTypeNode) const;
+    int32 GetColorInheritTypeFromNode(const YamlNode * colorInheritNode) const;
+    int32 GetPerPixelAccuracyTypeFromNode(const YamlNode * perPixelAccuracyNode) const;
+    int32 GetAlignFromYamlNode(const YamlNode * align) const;
     int32 GetFittingOptionFromYamlNode(const YamlNode * fittingNode) const;
-    bool GetBoolFromYamlNode(const YamlNode * node, bool defaultValue);
-    Color GetColorFromYamlNode(const YamlNode * node);
+    bool GetBoolFromYamlNode(const YamlNode * node, bool defaultValue) const;
+    Color GetColorFromYamlNode(const YamlNode * node) const;
 
-    String GetColorInheritTypeNodeValue(int32 colorInheritType);
-    String GetPerPixelAccuracyTypeNodeValue(int32 perPixelAccuracyType);
-    String GetDrawTypeNodeValue(int32 drawType);
-    YamlNode * GetAlignNodeValue(int32 align);
+    String GetColorInheritTypeNodeValue(int32 colorInheritType) const;
+    String GetPerPixelAccuracyTypeNodeValue(int32 perPixelAccuracyType) const;
+    String GetDrawTypeNodeValue(int32 drawType) const;
+    YamlNode * GetAlignNodeValue(int32 align) const;
     YamlNode * GetFittingOptionNodeValue(int32 fitting) const;
 
+    void AddScrollBarToLink(UIScrollBar* scroll,const String& delegatePath);
+    static String GetControlPath(const UIControl* conrol);
+    static UIControl* GetControlByPath(const String& controlPath, UIControl* rootControl);
+
+protected:
     //Internal functions that do actual loading and saving.
     void ProcessLoad(UIControl * rootControl, const FilePath & yamlPathname);
     YamlNode *CreateRootNode(const FilePath & yamlPathname);
@@ -121,14 +126,12 @@ public:
     // Set the "ASSERT if custom control is not found during loading" flag.
     void SetAssertIfCustomControlNotFound(bool value);
 
-	const FilePath & GetCurrentPath() const;
-    void AddScrollBarToLink(UIScrollBar* scroll,const String& delegatePath);
-    static String GetControlPath(const UIControl* conrol);
-    static UIControl* GetControlByPath(const String& controlPath, UIControl* rootControl);
-    
+    const FilePath & GetCurrentPath() const;
+
 protected:
 	// Create the control by its type or base type.
 	UIControl* CreateControl(const String& type, const String& baseType);
+
     //Called after loading
     void PostLoad(UIControl * rootControl);
     void SetScrollBarDelegates(UIControl * rootControl);
