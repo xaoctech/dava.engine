@@ -16,7 +16,7 @@
 #include <QUndoCommand>
 #include "DAVAEngine.h"
 
-class UIPackageModelNode;
+class PackageNode;
 
 class UIPackageMimeData: public QMimeData
 {
@@ -85,7 +85,7 @@ public:
 //    bool IsPackageRootControl(const DAVA::UIControl *control) const;
 //    bool IsPackageContentControl(const DAVA::UIControl *control) const;
 private:
-    UIPackageModelNode *root;
+    PackageNode *root;
     
     QUndoStack *undoStack;
     QAction *undoAction;

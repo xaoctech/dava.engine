@@ -14,8 +14,8 @@
 
 namespace DAVA {
     class UIPackage;
-    class LegacyControlData;
 }
+class LegacyControlData;
 
 class Project : QObject
 {
@@ -38,7 +38,7 @@ private:
     QString projectFile;
     QString projectDir;
     
-    DAVA::LegacyControlData *legacyData;
+    LegacyControlData *legacyData;
 };
 
 #endif // __UI_EDITOR_PROJECT_H__
