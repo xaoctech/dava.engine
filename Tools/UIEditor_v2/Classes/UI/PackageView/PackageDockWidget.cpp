@@ -12,7 +12,7 @@
 #include "DAVAEngine.h"
 #include "UI/PackageView/UIFilteredPackageModel.h"
 #include "UI/PackageDocument.h"
-#include "UIPackageModelNode.h"
+#include "UIControls/PackageHierarchy/PackageBaseNode.h"
 
 #include "Project.h"
 
@@ -83,7 +83,7 @@ void PackageDockWidget::OnSelectionChanged(const QItemSelection &proxySelected, 
     {
         foreach(QModelIndex index, selectedIndexList)
         {
-            UIPackageModelNode *node = static_cast<UIPackageModelNode*>(index.internalPointer());
+            PackageBaseNode *node = static_cast<PackageBaseNode*>(index.internalPointer());
             if (node->GetControl())
             {
                 selectedControl.push_back(node->GetControl());
@@ -102,7 +102,7 @@ void PackageDockWidget::OnSelectionChanged(const QItemSelection &proxySelected, 
     {
         foreach(QModelIndex index, deselectedIndexList)
         {
-            UIPackageModelNode *node = static_cast<UIPackageModelNode*>(index.internalPointer());
+            PackageBaseNode *node = static_cast<PackageBaseNode*>(index.internalPointer());
             if (node->GetControl())
             {
                 deselectedControl.push_back(node->GetControl());

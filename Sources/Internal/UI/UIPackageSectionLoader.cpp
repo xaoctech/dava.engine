@@ -1,14 +1,6 @@
 #include "UIPackageSectionLoader.h"
 
-//#include "Base/ObjectFactory.h"
-//#include "FileSystem/FilePath.h"
-//#include "FileSystem/YamlNode.h"
-//#include "FileSystem/YamlEmitter.h"
-//#include "UI/UIYamlLoader.h"
 #include "UI/UIControl.h"
-//#include "UI/UIStaticText.h"
-//#include "UI/UIControlHelpers.h"
-//#include "UI/UIPackage.h"
 
 namespace DAVA
 {

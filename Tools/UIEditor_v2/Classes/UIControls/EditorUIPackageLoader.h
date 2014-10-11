@@ -2,12 +2,14 @@
 #define __EDITORUICONTROLFACTORY_H__
 
 #include "DAVAEngine.h"
-
+/*
 class EditorUIPackageLoader: public DAVA::UIPackageLoader
 {
 public:
-    EditorUIPackageLoader(DAVA::LegacyControlData *data = NULL);
+    EditorUIPackageLoader();
     virtual ~EditorUIPackageLoader();
+
+    bool SavePackage(DAVA::UIPackage *package);
 
 protected:
     virtual DAVA::UIControl *CreateControlByClassName(const DAVA::String &className) override;
@@ -18,7 +20,7 @@ protected:
     virtual DAVA::UIPackageSectionLoader *CreateBackgroundSectionLoader(DAVA::UIControl *control, int bgNum) override;
     virtual DAVA::UIPackageSectionLoader *CreateInternalControlSectionLoader(DAVA::UIControl *control, int internalControlNum) override;
 
-    virtual DAVA::YamlNode *CreateYamlNode(DAVA::UIControl *control) override;
+    DAVA::YamlNode *CreateYamlNode(DAVA::UIControl *control);
 
 private:
     bool AddControlToNode(DAVA::UIControl *control, DAVA::YamlNode *node, DAVA::YamlNode *prototypeChildren);
@@ -31,5 +33,5 @@ private:
     void SetClonedFromPrototypeProperty(DAVA::UIControl *control, const DAVA::String &path);
 
 };
-
+*/
 #endif // __EDITORUICONTROLFACTORY_H__

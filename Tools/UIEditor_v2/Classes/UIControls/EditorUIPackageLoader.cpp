@@ -14,9 +14,9 @@
 
 using namespace DAVA;
 
-EditorUIPackageLoader::EditorUIPackageLoader(LegacyControlData *data) : UIPackageLoader(data)
+/*
+EditorUIPackageLoader::EditorUIPackageLoader()
 {
-    SetUsingIntrospectionForLegacyData(true);
 }
 
 EditorUIPackageLoader::~EditorUIPackageLoader()
@@ -87,6 +87,28 @@ YamlNode *EditorUIPackageLoader::CreateYamlNode(UIControl *control)
     YamlNode *node = YamlNode::CreateMapNode(false, YamlNode::MR_BLOCK_REPRESENTATION, YamlNode::SR_PLAIN_REPRESENTATION);
     AddControlToNode(control, node, NULL);
     return SafeRetain<YamlNode>(node);
+}
+
+bool EditorUIPackageLoader::SavePackage(UIPackage *package)
+{
+    ScopedPtr<YamlNode> rootNode(YamlNode::CreateMapNode(false));
+    
+    YamlNode *headerNode = YamlNode::CreateMapNode();
+    headerNode->Set("version", "0");
+    rootNode->Add("Header", headerNode);
+    
+    YamlNode *packagesNode = YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION);
+    for (int32 i = 0; i < package->GetPackagesCount(); i++)
+        packagesNode->Add(package->GetPackage(i)->GetFilePath().GetFrameworkPath());
+    rootNode->Add("ImportedPackages", packagesNode);
+    
+    YamlNode *controlsNode = YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION);
+    for (int32 i = 0; i < package->GetControlsCount(); ++i)
+        controlsNode->Add(CreateYamlNode(package->GetControl(i)));
+    
+    rootNode->Add("Controls", controlsNode);
+    
+    return YamlEmitter::SaveToYamlFile(package->GetFilePath(), rootNode);
 }
 
 bool EditorUIPackageLoader::AddControlToNode(DAVA::UIControl *control, DAVA::YamlNode *node, YamlNode *prototypeChildren)
@@ -256,7 +278,7 @@ void EditorUIPackageLoader::SetClonedFromPrototypeProperty(UIControl *control, c
         control->SetCustomData(component);
         SafeRelease(component);
 
-        LoadPropertiesFromYamlNode(control, NULL, false);
+        LoadPropertiesFromYamlNode(control, NULL);
     }
     
     const DAVA::List<UIControl*> &children = control->GetChildren();
@@ -270,4 +292,4 @@ void EditorUIPackageLoader::SetClonedFromPrototypeProperty(UIControl *control, c
     }
     
 }
-
+*/

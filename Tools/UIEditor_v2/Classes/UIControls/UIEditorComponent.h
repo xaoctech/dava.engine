@@ -11,7 +11,7 @@
 
 #include "UI/UIControl.h"
 #include "UI/UIPackage.h"
-#include "BaseProperty.h"
+#include "UIControls/PackageHierarchy/ControlNode.h"
 
 class UIEditorComponent : public DAVA::BaseObject
 {
@@ -29,13 +29,16 @@ public:
     const DAVA::String &GetPathFromPrototype() const {return pathFromPrototype; }
 
     BaseProperty *GetPropertiesRoot() const {return propertiesRoot; }
-    
+
 private:
     DAVA::UIControl *prototype;
     DAVA::UIPackage *prototypePackage;
     DAVA::String pathFromPrototype;
     bool clonedFromPrototype;
     
+    ControlNode *modelNode;
+    
+    DAVA::UIControl *control;
     BaseProperty *propertiesRoot;
 };
 
