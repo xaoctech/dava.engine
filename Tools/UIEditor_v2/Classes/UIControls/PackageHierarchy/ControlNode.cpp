@@ -1,32 +1,10 @@
 #include "ControlNode.h"
 
-#include "UIControls/UIEditorComponent.h"
-
 using namespace DAVA;
-
-class ControlPropertiesRoot : public BaseProperty
-{
-public:
-    virtual String GetName() const {
-        return "ROOT";
-    }
-    
-    virtual ePropertyType GetType() const {
-        return TYPE_HEADER;
-    }
-    
-};
 
 ControlNode::ControlNode(UIControl *control) : PackageBaseNode(NULL), control(SafeRetain(control)), propertiesRoot(NULL), editable(true)
 {
-    propertiesRoot = new ControlPropertiesRoot();
-//    const List<UIControl*> &children = control->GetChildren();
-//    for (auto it = children.begin(); it != children.end(); ++it)
-//    {
-//        ControlNode *node = new ControlNode(*it, editable);
-//        Add(node);
-//        SafeRelease(node);
-//    }
+    propertiesRoot = new PropertiesRoot();
 }
 
 ControlNode::~ControlNode()
@@ -83,14 +61,14 @@ UIControl *ControlNode::GetControl() const
 
 bool ControlNode::IsInstancedFromPrototype() const
 {
-    UIEditorComponent *component = static_cast<UIEditorComponent*>(control->GetCustomData());
-    return component && component->GetPrototype() != NULL;
+    // TODO: FIXME:
+    return false;
 }
 
 bool ControlNode::IsCloned() const
 {
-    UIEditorComponent *component = static_cast<UIEditorComponent*>(control->GetCustomData());
-    return component && component->IsClonedFromPrototype();
+    // TODO: FIXME:
+    return false;
 }
 
 ControlNode *ControlNode::CloneNode(const ControlNode *node) const

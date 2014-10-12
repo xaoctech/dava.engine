@@ -22,6 +22,16 @@ SubValueProperty::~SubValueProperty()
     
 }
 
+int SubValueProperty::GetCount() const
+{
+    return 0;
+}
+
+BaseProperty *SubValueProperty::GetProperty(int index) const
+{
+    return NULL;
+}
+
 String SubValueProperty::GetName() const
 {
     return GetValueProperty()->GetSubValueName(index);

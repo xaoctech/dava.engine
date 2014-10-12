@@ -20,6 +20,16 @@ LocalizedTextValueProperty::~LocalizedTextValueProperty()
     
 }
 
+int LocalizedTextValueProperty::GetCount() const
+{
+    return 0;
+}
+
+BaseProperty *LocalizedTextValueProperty::GetProperty(int index) const
+{
+    return NULL;
+}
+
 VariantType LocalizedTextValueProperty::GetValue() const
 {
     return VariantType(text);
@@ -39,10 +49,4 @@ void LocalizedTextValueProperty::ResetValue()
     text = GetMember()->Value(GetBaseObject()).AsWideString();
     if (isEditMode)
         GetMember()->SetValue(GetBaseObject(), VariantType(LocalizedString(text)));
-}
-
-void LocalizedTextValueProperty::PrepareToEdit()
-{
-    isEditMode = true;
-    GetMember()->SetValue(GetBaseObject(), VariantType(LocalizedString(text)));
 }

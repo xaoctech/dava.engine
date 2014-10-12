@@ -10,7 +10,6 @@
 #include "UI/UIStaticText.h"
 #include "UI/UIControlHelpers.h"
 #include "UI/UIPackage.h"
-#include "UI/UIPackageSectionLoader.h"
 
 using namespace DAVA;
 
@@ -201,121 +200,100 @@ void LegacyEditorUIPackageLoader::LoadControlPropertiesFromYamlNode(UIControl *c
         LoadControlPropertiesFromYamlNode(control, baseInfo, node);
     
     String className = control->GetControlClassName();
-    UIPackageSectionLoader *section = CreateControlSectionLoader(control, typeInfo->Name());
-    for (int i = 0; i < typeInfo->MembersCount(); i++)
-    {
-        const InspMember *member = typeInfo->Member(i);
-        String memberName = member->Name();
-        
-        memberName = GetOldPropertyName(className, memberName);
-        
-        VariantType res;
-        if (memberName == "name")
-            res = VariantType(control->GetName());
-        else if (node)
-            res = ReadVariantTypeFromYamlNode(member, node, -1, memberName);
-        
-        section->SetProperty(member, res);
-        if (res.GetType() != VariantType::TYPE_NONE)
-        {
-            if (String(member->Name()).find("Align") != String::npos)
-            {
-                String enabledProp = String(member->Name()) + "Enabled";
-                const InspMember *m = typeInfo->Member(enabledProp.c_str());
-                if (m)
-                    section->SetProperty(m, VariantType(true));
-            }
-        }
-    }
-    ReleaseSectionLoader(section);
+//    UIPackageSectionLoader *section = CreateControlSectionLoader(control, typeInfo->Name());
+//    for (int i = 0; i < typeInfo->MembersCount(); i++)
+//    {
+//        const InspMember *member = typeInfo->Member(i);
+//        String memberName = member->Name();
+//        
+//        memberName = GetOldPropertyName(className, memberName);
+//        
+//        VariantType res;
+//        if (memberName == "name")
+//            res = VariantType(control->GetName());
+//        else if (node)
+//            res = ReadVariantTypeFromYamlNode(member, node, -1, memberName);
+//        
+//        section->SetProperty(member, res);
+//        if (res.GetType() != VariantType::TYPE_NONE)
+//        {
+//            if (String(member->Name()).find("Align") != String::npos)
+//            {
+//                String enabledProp = String(member->Name()) + "Enabled";
+//                const InspMember *m = typeInfo->Member(enabledProp.c_str());
+//                if (m)
+//                    section->SetProperty(m, VariantType(true));
+//            }
+//        }
+//    }
+//    ReleaseSectionLoader(section);
 }
 
 void LegacyEditorUIPackageLoader::LoadBgPropertiesFromYamlNode(UIControl *control, const YamlNode *node)
 {
-    String className = control->GetControlClassName();
-    
-    for (int i = 0; i < control->GetBackgroundComponentsCount(); i++)
-    {
-        UIPackageSectionLoader *section = CreateBackgroundSectionLoader(control, i);
-        const InspInfo *insp = section->GetBaseObject()->GetTypeInfo();
-        String bgName = control->GetBackgroundComponentName(i);
-        
-        for (int j = 0; j < insp->MembersCount(); j++)
-        {
-            const InspMember *member = insp->Member(j);
-            String memberName = member->Name();
-            int subNodeIndex = -1;
-            
-            memberName = GetOldPropertyName(className, memberName);
-            if (memberName == "stateSprite")
-            {
-                subNodeIndex = 0;
-                memberName = "stateSprite";
-            }
-            else if (memberName == "stateFrame")
-            {
-                subNodeIndex = 1;
-                memberName = "stateSprite";
-            }
-            else if (memberName == "stateSpriteModification")
-            {
-                subNodeIndex = 2;
-                memberName = "stateSprite";
-            }
-            
-            memberName = GetOldBgPrefix(className, bgName) + memberName + GetOldBgPostfix(className, bgName);
-            
-            VariantType res = ReadVariantTypeFromYamlNode(member, node, subNodeIndex, memberName);
-            section->SetProperty(member, res);
-        }
-        ReleaseSectionLoader(section);
-    }
+//    String className = control->GetControlClassName();
+//    
+//    for (int i = 0; i < control->GetBackgroundComponentsCount(); i++)
+//    {
+//        UIPackageSectionLoader *section = CreateBackgroundSectionLoader(control, i);
+//        const InspInfo *insp = section->GetBaseObject()->GetTypeInfo();
+//        String bgName = control->GetBackgroundComponentName(i);
+//        
+//        for (int j = 0; j < insp->MembersCount(); j++)
+//        {
+//            const InspMember *member = insp->Member(j);
+//            String memberName = member->Name();
+//            int subNodeIndex = -1;
+//            
+//            memberName = GetOldPropertyName(className, memberName);
+//            if (memberName == "stateSprite")
+//            {
+//                subNodeIndex = 0;
+//                memberName = "stateSprite";
+//            }
+//            else if (memberName == "stateFrame")
+//            {
+//                subNodeIndex = 1;
+//                memberName = "stateSprite";
+//            }
+//            else if (memberName == "stateSpriteModification")
+//            {
+//                subNodeIndex = 2;
+//                memberName = "stateSprite";
+//            }
+//            
+//            memberName = GetOldBgPrefix(className, bgName) + memberName + GetOldBgPostfix(className, bgName);
+//            
+//            VariantType res = ReadVariantTypeFromYamlNode(member, node, subNodeIndex, memberName);
+//            section->SetProperty(member, res);
+//        }
+//        ReleaseSectionLoader(section);
+//    }
 }
 
 void LegacyEditorUIPackageLoader::LoadInternalControlPropertiesFromYamlNode(UIControl *control, const YamlNode *node)
 {
-    String className = control->GetControlClassName();
-    for (int i = 0; i < control->GetInternalControlsCount(); i++)
-    {
-        UIPackageSectionLoader *section = CreateInternalControlSectionLoader(control, i);
-        
-        const InspInfo *insp = section->GetBaseObject()->GetTypeInfo();
-        String bgName = control->GetInternalControlName(i);
-        
-        for (int j = 0; j < insp->MembersCount(); j++)
-        {
-            const InspMember *member = insp->Member(j);
-            String memberName = member->Name();
-            memberName = GetOldPropertyName(className, memberName);
-            memberName = GetOldBgPrefix(className, bgName) + memberName + GetOldBgPostfix(className, bgName);
-            
-            VariantType value = ReadVariantTypeFromYamlNode(member, node, -1, memberName);
-            section->SetProperty(member, value);
-        }
-        
-        ReleaseSectionLoader(section);
-    }
-}
-
-UIPackageSectionLoader *LegacyEditorUIPackageLoader::CreateControlSectionLoader(UIControl *control, const String &name)
-{
-    return new UIPackageControlSectionLoader(control, name);
-}
-
-UIPackageSectionLoader *LegacyEditorUIPackageLoader::CreateBackgroundSectionLoader(UIControl *control, int bgNum)
-{
-    return new UIPackageBackgroundSectionLoader(control, bgNum);
-}
-
-UIPackageSectionLoader *LegacyEditorUIPackageLoader::CreateInternalControlSectionLoader(UIControl *control, int internalControlNum)
-{
-    return new UIPackageInternalControlSectionLoader(control, internalControlNum);
-}
-
-void LegacyEditorUIPackageLoader::ReleaseSectionLoader(UIPackageSectionLoader *section)
-{
-    section->Apply();
-    SafeRelease(section);
+//    String className = control->GetControlClassName();
+//    for (int i = 0; i < control->GetInternalControlsCount(); i++)
+//    {
+//        UIPackageSectionLoader *section = CreateInternalControlSectionLoader(control, i);
+//        
+//        const InspInfo *insp = section->GetBaseObject()->GetTypeInfo();
+//        String bgName = control->GetInternalControlName(i);
+//        
+//        for (int j = 0; j < insp->MembersCount(); j++)
+//        {
+//            const InspMember *member = insp->Member(j);
+//            String memberName = member->Name();
+//            memberName = GetOldPropertyName(className, memberName);
+//            memberName = GetOldBgPrefix(className, bgName) + memberName + GetOldBgPostfix(className, bgName);
+//            
+//            VariantType value = ReadVariantTypeFromYamlNode(member, node, -1, memberName);
+//            section->SetProperty(member, value);
+//        }
+//        
+//        ReleaseSectionLoader(section);
+//    }
 }
 
 VariantType LegacyEditorUIPackageLoader::ReadVariantTypeFromYamlNode(const InspMember *member, const YamlNode *node, int subNodeIndex, const String &propertyName)

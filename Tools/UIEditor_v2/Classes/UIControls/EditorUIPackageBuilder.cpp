@@ -136,7 +136,7 @@ void EditorUIPackageBuilder::EndControl()
 
 void EditorUIPackageBuilder::BeginControlPropretiesSection(const String &name)
 {
-    currentSection = new ControlPropertiesSection(name);
+    currentSection = new ControlPropertiesSection(controlsStack.back()->GetControl(), name);
     currentObject = controlsStack.back()->GetControl();
 }
 
@@ -144,10 +144,9 @@ void EditorUIPackageBuilder::EndControlPropertiesSection()
 {
     if (currentSection && currentSection->GetCount() > 0)
         controlsStack.back()->GetPropertiesRoot()->AddProperty(currentSection);
-    else
-        SafeRelease(currentSection);
+
+    SafeRelease(currentSection);
     
-    currentSection = NULL;
     currentObject = NULL;
 }
 
@@ -159,6 +158,7 @@ UIControlBackground *EditorUIPackageBuilder::BeginBgPropertiesSection(int index,
     controlsStack.back()->GetPropertiesRoot()->AddProperty(section);
     if (!sectionHasProperties)
     {
+        SafeRelease(currentSection);
         return NULL;
     }
     else
@@ -179,7 +179,7 @@ UIControlBackground *EditorUIPackageBuilder::BeginBgPropertiesSection(int index,
 
 void EditorUIPackageBuilder::EndBgPropertiesSection()
 {
-    currentSection = NULL;
+    SafeRelease(currentSection);
     currentObject = NULL;
 }
 
@@ -191,6 +191,7 @@ UIControl *EditorUIPackageBuilder::BeginInternalControlSection(int index, bool s
     controlsStack.back()->GetPropertiesRoot()->AddProperty(section);
     if (!sectionHasProperties)
     {
+        SafeRelease(currentSection);
         return NULL;
     }
     else
@@ -211,9 +212,8 @@ UIControl *EditorUIPackageBuilder::BeginInternalControlSection(int index, bool s
 
 void EditorUIPackageBuilder::EndInternalControlSection()
 {
-    currentSection = NULL;
+    SafeRelease(currentSection);
     currentObject = NULL;
-
 }
 
 void EditorUIPackageBuilder::ProcessProperty(const InspMember *member, const VariantType &value)
@@ -230,6 +230,7 @@ void EditorUIPackageBuilder::ProcessProperty(const InspMember *member, const Var
             property->SetValue(value);
         
         currentSection->AddProperty(property);
+        SafeRelease(property);
     }
 }
 

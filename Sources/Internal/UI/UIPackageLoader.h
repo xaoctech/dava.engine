@@ -15,7 +15,6 @@ class FilePath;
 class UIPackage;
 class UIControlFactory;
 class UIControlBackground;
-class UIPackageSectionLoader;
     
 class UIPackageLoader
 {
