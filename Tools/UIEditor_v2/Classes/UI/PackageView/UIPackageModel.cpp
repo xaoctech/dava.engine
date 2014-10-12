@@ -10,7 +10,6 @@
 
 #include "DAVAEngine.h"
 #include "IconHelper.h"
-#include "UIControls/UIEditorComponent.h"
 #include "Utils/QtDavaConvertion.h"
 #include "UIControls/PackageHierarchy/PackageNode.h"
 #include <qicon.h>
@@ -119,10 +118,6 @@ QVariant UIPackageModel::data(const QModelIndex &index, int role) const
         return QVariant();
 
     PackageBaseNode *node = static_cast<PackageBaseNode*>(index.internalPointer());
-    
-    //UIEditorComponent *editorComponent = dynamic_cast<UIEditorComponent*>(control->GetCustomData());
-//    DVASSERT(editorComponent != NULL);
-//    bool createdFromPrototype = editorComponent != NULL && editorComponent->IsClonedFromPrototype();
     
     switch(role)
     {

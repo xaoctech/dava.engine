@@ -28,7 +28,6 @@ PropertiesTreeModel::PropertiesTreeModel(BaseProperty *propertiesRoot, Propertie
     , propertiesViewContext(context)
 {
     root = SafeRetain(propertiesRoot);
-    root->PrepareToEdit();
 }
 
 PropertiesTreeModel::~PropertiesTreeModel()

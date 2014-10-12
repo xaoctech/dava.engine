@@ -783,12 +783,6 @@
 		322FFD5319C042880000ED71 /* UIPackage.h in Headers */ = {isa = PBXBuildFile; fileRef = 322FFD3D19C042880000ED71 /* UIPackage.h */; };
 		322FFD5419C042880000ED71 /* UIPackage.h in Headers */ = {isa = PBXBuildFile; fileRef = 322FFD3D19C042880000ED71 /* UIPackage.h */; };
 		322FFD5519C042880000ED71 /* UIPackage.h in Headers */ = {isa = PBXBuildFile; fileRef = 322FFD3D19C042880000ED71 /* UIPackage.h */; };
-		3294A71119E58845000C0B0A /* UIPackageSectionLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3294A70F19E58845000C0B0A /* UIPackageSectionLoader.cpp */; };
-		3294A71219E58845000C0B0A /* UIPackageSectionLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3294A70F19E58845000C0B0A /* UIPackageSectionLoader.cpp */; };
-		3294A71319E58845000C0B0A /* UIPackageSectionLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3294A70F19E58845000C0B0A /* UIPackageSectionLoader.cpp */; };
-		3294A71419E58845000C0B0A /* UIPackageSectionLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 3294A71019E58845000C0B0A /* UIPackageSectionLoader.h */; };
-		3294A71519E58845000C0B0A /* UIPackageSectionLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 3294A71019E58845000C0B0A /* UIPackageSectionLoader.h */; };
-		3294A71619E58845000C0B0A /* UIPackageSectionLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 3294A71019E58845000C0B0A /* UIPackageSectionLoader.h */; };
 		4910CBF6167B73EC00CF948A /* libdxt_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4910CBF5167B73EC00CF948A /* libdxt_macos.a */; };
 		4F53ED2419A23BE100D3869D /* DLC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7E6C58E198255BF00B96D1A /* DLC.cpp */; };
 		4F53ED2519A23BE100D3869D /* DLC.h in Headers */ = {isa = PBXBuildFile; fileRef = D7E6C58F198255BF00B96D1A /* DLC.h */; };
@@ -2611,8 +2605,6 @@
 		322FFD3B19C042880000ED71 /* UIPackageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIPackageLoader.h; sourceTree = "<group>"; };
 		322FFD3C19C042880000ED71 /* UIPackage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIPackage.cpp; sourceTree = "<group>"; };
 		322FFD3D19C042880000ED71 /* UIPackage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIPackage.h; sourceTree = "<group>"; };
-		3294A70F19E58845000C0B0A /* UIPackageSectionLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIPackageSectionLoader.cpp; sourceTree = "<group>"; };
-		3294A71019E58845000C0B0A /* UIPackageSectionLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIPackageSectionLoader.h; sourceTree = "<group>"; };
 		32DBCF5E0370ADEE00C91783 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = "<group>"; };
 		4910CBF5167B73EC00CF948A /* libdxt_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_macos.a; path = ../../Libs/libs/libdxt_macos.a; sourceTree = "<group>"; };
 		4F64847F17AFB73C00034454 /* AllocatorFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AllocatorFactory.cpp; sourceTree = "<group>"; };
@@ -4602,8 +4594,6 @@
 				320A4B3419E6BA3C0049D713 /* DefaultUIPackageBuilder.h */,
 				322FFD3A19C042880000ED71 /* UIPackageLoader.cpp */,
 				322FFD3B19C042880000ED71 /* UIPackageLoader.h */,
-				3294A70F19E58845000C0B0A /* UIPackageSectionLoader.cpp */,
-				3294A71019E58845000C0B0A /* UIPackageSectionLoader.h */,
 				322FFD3C19C042880000ED71 /* UIPackage.cpp */,
 				322FFD3D19C042880000ED71 /* UIPackage.h */,
 				EAAD9FFE1892A458001E1AA2 /* UIParticles.cpp */,
@@ -5069,7 +5059,6 @@
 				176DE9F1174B5561007A983B /* UIButton.h in Headers */,
 				176DE9F2174B5561007A983B /* UIControl.h in Headers */,
 				176DE9F3174B5561007A983B /* UIControlBackground.h in Headers */,
-				3294A71619E58845000C0B0A /* UIPackageSectionLoader.h in Headers */,
 				176DE9F4174B5561007A983B /* UIControlSystem.h in Headers */,
 				176DE9F5174B5561007A983B /* UIEvent.h in Headers */,
 				322FFD4F19C042880000ED71 /* UIPackageLoader.h in Headers */,
@@ -5417,7 +5406,6 @@
 				D7E6C5B4198255C000B96D1A /* BSDiff.h in Headers */,
 				62D1C35E1922624A00B8143B /* CRCAdditionInterface.h in Headers */,
 				E8989F6D16BD24E500732C04 /* Box2DGameObject.h in Headers */,
-				3294A71419E58845000C0B0A /* UIPackageSectionLoader.h in Headers */,
 				E8989F6F16BD24E500732C04 /* Box2DGameObjectManager.h in Headers */,
 				644C86D319476A7100964F91 /* VegetationCustomGeometrySerializationData.h in Headers */,
 				E8989F7116BD24E500732C04 /* Box2DHelper.h in Headers */,
@@ -5989,7 +5977,6 @@
 				17FB4BB71923B9A400F3E3BC /* UIWebView.h in Headers */,
 				CCC7A42C16F1D6170061EA5D /* CullingSystem.h in Headers */,
 				CCC7A43016F1D6170061EA5D /* Frustum.h in Headers */,
-				3294A71519E58845000C0B0A /* UIPackageSectionLoader.h in Headers */,
 				CCC7A43416F1D6170061EA5D /* Heightmap.h in Headers */,
 				CCC7A43616F1D6170061EA5D /* IRenderUpdatable.h in Headers */,
 				CCC7A43A16F1D6170061EA5D /* Landscape.h in Headers */,
@@ -6507,7 +6494,6 @@
 				176DEB53174B5561007A983B /* DeviceInfo.cpp in Sources */,
 				176DEB54174B5561007A983B /* DeviceInfoMacOS.mm in Sources */,
 				4F53ED4819A23BF300D3869D /* bs_diff.c in Sources */,
-				3294A71319E58845000C0B0A /* UIPackageSectionLoader.cpp in Sources */,
 				176DEB55174B5561007A983B /* UIAggregatorControl.cpp in Sources */,
 				176DEB56174B5561007A983B /* FilePathObjective.mm in Sources */,
 				E8F43E26186C3D02006796CB /* MaterialSystem.cpp in Sources */,
@@ -6679,7 +6665,6 @@
 				E8989EDF16BD24E500732C04 /* GraphicsFont.cpp in Sources */,
 				E8989EE216BD24E500732C04 /* Sprite.cpp in Sources */,
 				84CB671B191FC8850086483D /* Image.mm in Sources */,
-				3294A71119E58845000C0B0A /* UIPackageSectionLoader.cpp in Sources */,
 				B4C29D3F199B592D001B83FE /* SceneCache.cpp in Sources */,
 				E8989EE416BD24E500732C04 /* TextBlock.cpp in Sources */,
 				E8989EE616BD24E500732C04 /* AnimatedMesh.cpp in Sources */,
@@ -7090,7 +7075,6 @@
 				76199F3E192DF73D008A47E2 /* VersionInfo.cpp in Sources */,
 				7A16933B180EE618005F1FBC /* KeyedArchiveSwig.cpp in Sources */,
 				5022951D186DD1BC00F55478 /* RenderPassManager.cpp in Sources */,
-				3294A71219E58845000C0B0A /* UIPackageSectionLoader.cpp in Sources */,
 				CC84B02318211A9000934482 /* JobQueue.cpp in Sources */,
 				E898A22D16BD265400732C04 /* MaterialCompiler.cpp in Sources */,
 				E898A22E16BD265400732C04 /* MaterialGraph.cpp in Sources */,

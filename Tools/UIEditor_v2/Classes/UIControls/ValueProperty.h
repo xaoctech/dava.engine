@@ -11,12 +11,17 @@
 
 #include "BaseProperty.h"
 
+class SubValueProperty;
+
 class ValueProperty : public BaseProperty
 {
 public:
     ValueProperty(DAVA::BaseObject *object, const DAVA::InspMember *member);
     virtual ~ValueProperty();
     
+    virtual int GetCount() const override;
+    virtual BaseProperty *GetProperty(int index) const override;
+
     virtual DAVA::String GetName() const;
     virtual ePropertyType GetType() const;
     virtual eEditFrags GetEditFlag() const { return EF_CAN_RESET; };
@@ -45,6 +50,7 @@ private:
     const DAVA::InspMember *member;
     bool replaced;
     DAVA::VariantType defaultValue;
+    DAVA::Vector<SubValueProperty*> children;
 };
 
 #endif //__UI_EDITOR_VALUE_PROPERTY__

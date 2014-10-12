@@ -11,7 +11,7 @@
 
 #include "PackageBaseNode.h"
 
-#include "UIControls/BaseProperty.h"
+#include "UIControls/ControlProperties/PropertiesRoot.h"
 
 class ControlNode : public PackageBaseNode
 {
@@ -34,14 +34,14 @@ public:
     virtual bool IsCloned() const;
     virtual bool IsEditable() const {return editable; }
 
-    BaseProperty *GetPropertiesRoot() const {return propertiesRoot; }
+    PropertiesRoot *GetPropertiesRoot() const {return propertiesRoot; }
 
 private:
     ControlNode *CloneNode(const ControlNode *node) const;
     
 private:
     DAVA::UIControl *control;
-    BaseProperty *propertiesRoot;
+    PropertiesRoot *propertiesRoot;
     DAVA::Vector<ControlNode*>nodes;
     
     bool editable;

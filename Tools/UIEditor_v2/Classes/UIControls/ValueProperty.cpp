@@ -19,27 +19,44 @@ ValueProperty::ValueProperty(BaseObject *object, const InspMember *member) : obj
     
     if (defaultValue.GetType() == VariantType::TYPE_VECTOR2)
     {
-        AddProperty(new SubValueProperty(0));
-        AddProperty(new SubValueProperty(1));
+        children.push_back(new SubValueProperty(0));
+        children.push_back(new SubValueProperty(1));
     }
     else if (defaultValue.GetType() == VariantType::TYPE_COLOR)
     {
-        AddProperty(new SubValueProperty(0));
-        AddProperty(new SubValueProperty(1));
-        AddProperty(new SubValueProperty(2));
-        AddProperty(new SubValueProperty(3));
+        children.push_back(new SubValueProperty(0));
+        children.push_back(new SubValueProperty(1));
+        children.push_back(new SubValueProperty(2));
+        children.push_back(new SubValueProperty(3));
     }
     else if (defaultValue.GetType() == VariantType::TYPE_INT32 && member->Desc().type == InspDesc::T_FLAGS)
     {
         const EnumMap *map = member->Desc().enumMap;
         for (int32 i = 0; i < (int32) map->GetCount(); i++)
-            AddProperty(new SubValueProperty(i));
+            children.push_back(new SubValueProperty(i));
     }
+    
+    for (auto it = children.begin(); it != children.end(); ++it)
+        (*it)->SetParent(this);
 }
 
 ValueProperty::~ValueProperty()
 {
+    for (auto it = children.begin(); it != children.end(); ++it)
+        (*it)->Release();
+    children.clear();
+    
     SafeRelease(object);
+}
+
+int ValueProperty::GetCount() const
+{
+    return (int) children.size();
+}
+
+BaseProperty *ValueProperty::GetProperty(int index) const
+{
+    return children[index];
 }
 
 String ValueProperty::GetName() const

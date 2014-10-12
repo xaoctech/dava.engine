@@ -7,7 +7,6 @@
 //
 
 #include "PackageBaseNode.h"
-#include "UIControls/UIEditorComponent.h"
 
 using namespace DAVA;
 

@@ -1,16 +1,15 @@
-//
-//  ControlPropertiesSection.cpp
-//  UIEditor
-//
-//  Created by Dmitry Belsky on 30.9.14.
-//
-//
-
 #include "ControlPropertiesSection.h"
 
-ControlPropertiesSection::ControlPropertiesSection(const DAVA::String &name) : name(name)
+#include "ValueProperty.h"
+
+ControlPropertiesSection::ControlPropertiesSection(DAVA::UIControl *control, const DAVA::String &name) : control(SafeRetain(control)), name(name)
 {
     
+}
+
+ControlPropertiesSection::~ControlPropertiesSection()
+{
+    SafeRelease(control);
 }
 
 DAVA::String ControlPropertiesSection::GetName() const
@@ -18,13 +17,13 @@ DAVA::String ControlPropertiesSection::GetName() const
     return name;
 }
 
-BaseProperty *ControlPropertiesSection::CopyAndApplyToOtherControl(DAVA::UIControl *control)
+ControlPropertiesSection *ControlPropertiesSection::CopyAndApplyToOtherControl(DAVA::UIControl *newControl)
 {
-    ControlPropertiesSection *section = new ControlPropertiesSection(name);
+    ControlPropertiesSection *section = new ControlPropertiesSection(newControl, name);
     
     for (int i = 0; i < GetCount(); i++)
     {
-        BaseProperty *prop = GetProperty(i)->CopyAndApplyToOtherControl(control);
+        ValueProperty *prop = new ValueProperty(newControl, children[i]->GetMember());
         section->AddProperty(prop);
     }
     

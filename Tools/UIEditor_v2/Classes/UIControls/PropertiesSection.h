@@ -11,12 +11,24 @@
 
 #include "BaseProperty.h"
 
+class ValueProperty;
+
 class PropertiesSection : public BaseProperty
 {
 public:
+    PropertiesSection();
+    virtual ~PropertiesSection();
+    
+    void AddProperty(ValueProperty *section);
+    virtual int GetCount() const override;
+    virtual BaseProperty *GetProperty(int index) const override;
+    
     virtual ePropertyType GetType() const {
         return TYPE_HEADER;
     }
+    
+protected:
+    DAVA::Vector<ValueProperty*> children;
 
 };
 

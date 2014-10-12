@@ -13,11 +13,16 @@
 
 class ValueProperty;
 
+class SubValueProperty;
+
 class SubValueProperty : public BaseProperty
 {
 public:
     SubValueProperty(int index);
     virtual ~SubValueProperty();
+
+    virtual int GetCount() const override;
+    virtual BaseProperty *GetProperty(int index) const override;
 
     virtual DAVA::String GetName() const;
     virtual ePropertyType GetType() const;

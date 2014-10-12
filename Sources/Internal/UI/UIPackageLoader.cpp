@@ -9,7 +9,6 @@
 #include "UI/UIStaticText.h"
 #include "UI/UIControlHelpers.h"
 #include "UI/UIPackage.h"
-#include "UIPackageSectionLoader.h"
 
 
 namespace DAVA
@@ -18,7 +17,6 @@ namespace DAVA
 UIPackageLoader::UIPackageLoader(AbstractUIPackageBuilder *builder) : builder(builder)
 {
     yamlLoader = new UIYamlLoader();
-
 }
 
 UIPackageLoader::~UIPackageLoader()
