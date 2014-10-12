@@ -48,11 +48,13 @@ QVariant UIPackageMimeData::retrieveData(const QString &mimetype, QVariant::Type
     return QMimeData::retrieveData(mimetype, preferredType);
 }
 
-UIPackageModel::UIPackageModel(DAVA::UIPackage *_package, QObject *parent)
+UIPackageModel::UIPackageModel(PackageNode *_package, QObject *parent)
     : QAbstractItemModel(parent)
     , root(NULL)
 {
-    root = new PackageNode(_package);
+    root = SafeRetain(_package);
+    if (root)
+        root->debugDump(0);
     
     undoStack = new QUndoStack(this);
     undoAction = undoStack->createUndoAction(this, tr("&Undo"));

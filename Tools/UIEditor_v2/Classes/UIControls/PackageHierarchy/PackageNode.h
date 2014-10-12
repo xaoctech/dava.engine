@@ -3,18 +3,31 @@
 
 #include "PackageBaseNode.h"
 
+class ImportedPackagesNode;
+class PackageControlsNode;
+
 class PackageNode : public PackageBaseNode
 {
 public:
     PackageNode(DAVA::UIPackage *package);
     virtual ~PackageNode();
     
+    virtual int GetCount() const override;
+    virtual PackageBaseNode *Get(int index) const override;
+
     virtual DAVA::String GetName() const;
     
     virtual bool IsHeader() const {return true; }
     
+    DAVA::UIPackage *GetPackage() const;
+    ImportedPackagesNode *GetImportedPackagesNode() const;
+    PackageControlsNode *GetPackageControlsNode() const;
+    
 private:
     DAVA::UIPackage *package;
+    
+    ImportedPackagesNode *importedPackagesNode;
+    PackageControlsNode *packageControlsNode;
 };
 
 #endif // __UI_EDITOR_PACKAGE_NODE_H__

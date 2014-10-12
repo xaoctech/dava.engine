@@ -30,6 +30,7 @@ class QSortFilterProxyModel;
 class QUndoStack;
 
 class UIPackageModel;
+class PackageNode;
 class DavaGLWidget;
 
 class TreeViewContext
@@ -51,21 +52,23 @@ public:
 
 class GraphicsViewContext;
 class PropertiesViewContext;
+class PackageNode;
+class ControlNode;
 
 class PackageDocument: public QObject
 {
     Q_OBJECT
 public:
-    PackageDocument(DAVA::UIPackage *package, QObject *parent = NULL);
+    PackageDocument(PackageNode *package, QObject *parent = NULL);
     ~PackageDocument();
     
     bool IsModified() const;
     void ClearModified();
     const DAVA::FilePath &PackageFilePath() const;
-    DAVA::UIPackage *Package() const {return package;}
+    PackageNode *Package() const {return package;}
     
-    const QList<DAVA::UIControl *> &GetSelectedControls() const { return selectedControls; }
-    const QList<DAVA::UIControl *> &GetActiveRootControls() const { return activeRootControls; }
+    const QList<ControlNode*> &GetSelectedControls() const { return selectedControls; }
+    const QList<ControlNode*> &GetActiveRootControls() const { return activeRootControls; }
     
     const TreeViewContext *GetTreeContext() const { return &treeContext; };
     const GraphicsViewContext *GetGraphicsContext() const {return graphicsContext; };
@@ -80,20 +83,20 @@ public:
     QUndoStack *UndoStack() const { return undoStack; }
 
 signals:
-    void controlsSelectionChanged(const QList<DAVA::UIControl *> &activatedControls, const QList<DAVA::UIControl *> &deactivatedControls);
-    void activeRootControlsChanged(const QList<DAVA::UIControl *> &activatedRootControls, const QList<DAVA::UIControl *> &deactivatedRootControls);
+    void controlsSelectionChanged(const QList<ControlNode *> &activatedControls, const QList<ControlNode *> &deactivatedControls);
+    void activeRootControlsChanged(const QList<ControlNode *> &activatedRootControls, const QList<ControlNode *> &deactivatedRootControls);
     
 public slots:
-    void OnSelectionRootControlChanged(const QList<DAVA::UIControl *> &activatedRootControls, const QList<DAVA::UIControl *> &deactivatedRootControls);
-    void OnSelectionControlChanged(const QList<DAVA::UIControl *> &activatedControls, const QList<DAVA::UIControl *> &deactivatedControls);
+    void OnSelectionRootControlChanged(const QList<ControlNode *> &activatedRootControls, const QList<ControlNode *> &deactivatedRootControls);
+    void OnSelectionControlChanged(const QList<ControlNode *> &activatedControls, const QList<ControlNode *> &deactivatedControls);
 
 private:
     void UpdateControlCanvas();
     
 private:
-    DAVA::UIPackage *package;
-    QList<DAVA::UIControl *> selectedControls;
-    QList<DAVA::UIControl *> activeRootControls;
+    PackageNode *package;
+    QList<ControlNode *> selectedControls;
+    QList<ControlNode *> activeRootControls;
     TreeViewContext treeContext;
     GraphicsViewContext *graphicsContext;
     PropertiesViewContext *propertiesContext;

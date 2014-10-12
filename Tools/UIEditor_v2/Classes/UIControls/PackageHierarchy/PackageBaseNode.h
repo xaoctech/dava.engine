@@ -14,15 +14,15 @@
 class PackageBaseNode : public DAVA::BaseObject
 {
 public:
-    PackageBaseNode();
+    PackageBaseNode(PackageBaseNode *parent);
     virtual ~PackageBaseNode();
     
-    int GetCount() const;
-    PackageBaseNode *Get(int index) const;
+    virtual int GetCount() const = 0;
+    virtual PackageBaseNode *Get(int index) const = 0;
     int GetIndex(PackageBaseNode *node) const;
-    void Add(PackageBaseNode *node);
     
     PackageBaseNode *GetParent() const;
+    void SetParent(PackageBaseNode *parent);
     
     virtual DAVA::String GetName() const;
     virtual DAVA::UIControl *GetControl() const;
@@ -31,8 +31,9 @@ public:
     virtual bool IsCloned() const;
     virtual bool IsEditable() const;
     
+    virtual void debugDump(int depth);
+    
 private:
-    DAVA::Vector<PackageBaseNode*> children;
     PackageBaseNode *parent;
 };
 

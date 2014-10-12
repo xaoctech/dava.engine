@@ -13,19 +13,57 @@
 
 using namespace DAVA;
 
-PackageNode::PackageNode(DAVA::UIPackage *package) : package(SafeRetain(package))
+PackageNode::PackageNode(DAVA::UIPackage *package)
+    : PackageBaseNode(NULL)
+    , package(SafeRetain(package))
+    , importedPackagesNode(NULL)
+    , packageControlsNode(NULL)
 {
-    Add(new ImportedPackagesNode(package));
-    Add(new PackageControlsNode(package, package->GetName(), true));
+    importedPackagesNode = new ImportedPackagesNode(this);
+    packageControlsNode = new PackageControlsNode(this);
 }
 
 PackageNode::~PackageNode()
 {
     SafeRelease(package);
+    importedPackagesNode->SetParent(NULL);
+    SafeRelease(importedPackagesNode);
+    packageControlsNode->SetParent(NULL);
+    SafeRelease(packageControlsNode);
+}
+
+int PackageNode::GetCount() const
+{
+    return 2;
+}
+
+PackageBaseNode *PackageNode::Get(int index) const
+{
+    if (index == 0)
+        return importedPackagesNode;
+    else if (index == 1)
+        return packageControlsNode;
+    else
+        return NULL;
 }
 
 String PackageNode::GetName() const
 {
     return package->GetName();
+}
+
+UIPackage *PackageNode::GetPackage() const
+{
+    return package;
+}
+
+ImportedPackagesNode *PackageNode::GetImportedPackagesNode() const
+{
+    return importedPackagesNode;
+}
+
+PackageControlsNode *PackageNode::GetPackageControlsNode() const
+{
+    return packageControlsNode;
 }
 

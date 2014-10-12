@@ -11,13 +11,21 @@
 
 #include "PackageBaseNode.h"
 
+class PackageControlsNode;
+
 class ImportedPackagesNode : public PackageBaseNode
 {
 public:
-    ImportedPackagesNode(DAVA::UIPackage *package);
+    ImportedPackagesNode(PackageBaseNode *parent);
     virtual ~ImportedPackagesNode();
+
+    void Add(PackageControlsNode *node);
+    virtual int GetCount() const override;
+    virtual PackageBaseNode *Get(int index) const override;
     
     virtual DAVA::String GetName() const;
+    PackageControlsNode *FindPackageControlsNodeByName(const DAVA::String &name) const;
+
     
     virtual bool IsHeader() const {
         return true;
@@ -26,6 +34,9 @@ public:
     virtual bool IsEditable() const {
         return false;
     }
+    
+private:
+    DAVA::Vector<PackageControlsNode*> packageControlsNode;
 };
 
 

@@ -40,6 +40,8 @@ public:
     virtual BaseProperty *GetProperty(int index) const;
     virtual int GetIndex(BaseProperty *property) const;
 
+    virtual BaseProperty *CopyAndApplyToOtherControl(DAVA::UIControl *control) {}
+
     virtual DAVA::String GetName() const = 0;
     virtual ePropertyType GetType() const = 0;
     virtual eEditFrags GetEditFlag() const { return EF_NONE; };
@@ -54,6 +56,7 @@ public:
     virtual bool IsReplaced() const;
     
     virtual void PrepareToEdit();
+    
 
 private:
     BaseProperty *parent;

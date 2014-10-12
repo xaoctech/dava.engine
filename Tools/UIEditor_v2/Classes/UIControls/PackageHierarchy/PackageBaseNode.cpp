@@ -11,47 +11,34 @@
 
 using namespace DAVA;
 
-PackageBaseNode::PackageBaseNode() : parent(NULL)
+PackageBaseNode::PackageBaseNode(PackageBaseNode *parent) : parent(parent)
 {
     
 }
 
 PackageBaseNode::~PackageBaseNode()
 {
-    for (auto it = children.begin(); it != children.end(); ++it)
-    {
-        DVASSERT((*it)->parent == this);
-        (*it)->parent = NULL;
-        SafeRelease(*it);
-    }
-    children.clear();
-}
-
-int PackageBaseNode::GetCount() const
-{
-    return (int) children.size();
-}
-
-PackageBaseNode *PackageBaseNode::Get(int index) const
-{
-    return children[index];
+    parent = NULL;
 }
 
 int PackageBaseNode::GetIndex(PackageBaseNode *node) const
 {
-    return find(children.begin(), children.end(), node) - children.begin();
-}
-
-void PackageBaseNode::Add(PackageBaseNode *node)
-{
-    DVASSERT(node->parent == NULL);
-    node->parent = this;
-    children.push_back(node);
+    for (int i = 0; i < GetCount(); i++)
+    {
+        if (Get(i) == node)
+            return i;
+    }
+    return -1;
 }
 
 PackageBaseNode *PackageBaseNode::GetParent() const
 {
     return parent;
+}
+
+void PackageBaseNode::SetParent(PackageBaseNode *parent)
+{
+    this->parent = parent;
 }
 
 String PackageBaseNode::GetName() const
@@ -82,4 +69,14 @@ bool PackageBaseNode::IsCloned() const
 bool PackageBaseNode::IsEditable() const
 {
     return false;
+}
+
+void PackageBaseNode::debugDump(int depth)
+{
+    String str;
+    for (int i = 0; i < depth; i++)
+        str += ' ';
+    Logger::Debug("%sNode %s (%s), %d", str.c_str(), GetName().c_str(), typeid(this).name(), this->GetRetainCount());
+    for (int i = 0; i < GetCount(); i++)
+        Get(i)->debugDump(depth + 2);
 }

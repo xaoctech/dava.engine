@@ -16,8 +16,15 @@
 class ControlNode : public PackageBaseNode
 {
 public:
-    ControlNode(DAVA::UIControl *control, bool editable);
+    ControlNode(DAVA::UIControl *control);
     virtual ~ControlNode();
+
+    void Add(ControlNode *node);
+    virtual int GetCount() const override;
+    virtual PackageBaseNode *Get(int index) const override;
+    ControlNode *FindByName(const DAVA::String &name) const;
+    
+    ControlNode *Clone() const;
     
     virtual DAVA::String GetName() const;
     DAVA::UIControl *GetControl() const;
@@ -30,10 +37,15 @@ public:
     BaseProperty *GetPropertiesRoot() const {return propertiesRoot; }
 
 private:
+    ControlNode *CloneNode(const ControlNode *node) const;
+    
+private:
     DAVA::UIControl *control;
     BaseProperty *propertiesRoot;
+    DAVA::Vector<ControlNode*>nodes;
     
     bool editable;
+    
 };
 
 
