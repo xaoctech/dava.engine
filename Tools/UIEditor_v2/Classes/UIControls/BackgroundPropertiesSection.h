@@ -9,6 +9,8 @@ public:
     BackgroundPropertiesSection(DAVA::UIControl *control, int bgNum);
     virtual ~BackgroundPropertiesSection();
     
+    virtual PropertiesSection *CopyAndApplyForNewControl(DAVA::UIControl *newControl) override;
+
     DAVA::String GetName() const;
     virtual int GetCount() const;
     

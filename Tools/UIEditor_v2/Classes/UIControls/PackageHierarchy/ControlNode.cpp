@@ -2,9 +2,21 @@
 
 using namespace DAVA;
 
-ControlNode::ControlNode(UIControl *control) : PackageBaseNode(NULL), control(SafeRetain(control)), propertiesRoot(NULL), editable(true)
+ControlNode::ControlNode(UIControl *control) : PackageBaseNode(NULL), control(SafeRetain(control)), propertiesRoot(NULL), editable(true), cloned(false)
 {
-    propertiesRoot = new PropertiesRoot();
+    this->propertiesRoot = new PropertiesRoot();
+}
+
+ControlNode::ControlNode(const ControlNode *node) : PackageBaseNode(NULL), control(NULL), propertiesRoot(NULL), editable(true), cloned(true)
+{
+    UIControl *sourceControl = node->GetControl();
+    control = ObjectFactory::Instance()->New<UIControl>(sourceControl->GetControlClassName());
+    control->SetCustomControlClassName(sourceControl->GetCustomControlClassName());
+    
+    propertiesRoot = node->GetPropertiesRoot()->CopyAndApplyForNewControl(control);
+    
+    for (auto it = node->nodes.begin(); it != node->nodes.end(); ++it)
+        nodes.push_back(new ControlNode(*it));
 }
 
 ControlNode::~ControlNode()
@@ -46,7 +58,7 @@ ControlNode *ControlNode::FindByName(const DAVA::String &name) const
 
 ControlNode *ControlNode::Clone() const
 {
-    return CloneNode(this);
+    return new ControlNode(this);
 }
 
 String ControlNode::GetName() const
@@ -67,27 +79,6 @@ bool ControlNode::IsInstancedFromPrototype() const
 
 bool ControlNode::IsCloned() const
 {
-    // TODO: FIXME:
-    return false;
+    return cloned;
 }
 
-ControlNode *ControlNode::CloneNode(const ControlNode *node) const
-{
-    UIControl *sourceControl = node->GetControl();
-    UIControl *clonedControl = ObjectFactory::Instance()->New<UIControl>(sourceControl->GetControlClassName());
-    clonedControl->SetCustomControlClassName(sourceControl->GetCustomControlClassName());
-    
-    ControlNode *clonedNode = new ControlNode(clonedControl);
-    SafeRelease(clonedControl);
-    
-    // TODO: Apply properties
-    
-    for (auto it = node->nodes.begin(); it != node->nodes.end(); ++it)
-    {
-        ControlNode *child = CloneNode(*it);
-        clonedNode->Add(child);
-        SafeRelease(child);
-    }
-    
-    return clonedNode;
-}

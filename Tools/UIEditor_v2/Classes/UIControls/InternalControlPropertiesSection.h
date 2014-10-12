@@ -1,11 +1,3 @@
-//
-//  InternalControlPropertiesSection.h
-//  UIEditor
-//
-//  Created by Dmitry Belsky on 30.9.14.
-//
-//
-
 #ifndef __UI_EDITOR_INTERNAL_CONTROL_PROPERTIES_SECTION_H__
 #define __UI_EDITOR_INTERNAL_CONTROL_PROPERTIES_SECTION_H__
 
@@ -17,6 +9,8 @@ public:
     InternalControlPropertiesSection(DAVA::UIControl *control, int num);
     virtual ~InternalControlPropertiesSection();
     
+    virtual PropertiesSection *CopyAndApplyForNewControl(DAVA::UIControl *newControl) override;
+
     virtual DAVA::String GetName() const;
 
     virtual int GetCount() const;

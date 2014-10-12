@@ -1,11 +1,3 @@
-//
-//  ControlNode.h
-//  UIEditor
-//
-//  Created by Dmitry Belsky on 9.10.14.
-//
-//
-
 #ifndef __UI_EDITOR_CONTROL_NODE__
 #define __UI_EDITOR_CONTROL_NODE__
 
@@ -17,6 +9,7 @@ class ControlNode : public PackageBaseNode
 {
 public:
     ControlNode(DAVA::UIControl *control);
+    ControlNode(const ControlNode *node);
     virtual ~ControlNode();
 
     void Add(ControlNode *node);
@@ -37,14 +30,12 @@ public:
     PropertiesRoot *GetPropertiesRoot() const {return propertiesRoot; }
 
 private:
-    ControlNode *CloneNode(const ControlNode *node) const;
-    
-private:
     DAVA::UIControl *control;
     PropertiesRoot *propertiesRoot;
     DAVA::Vector<ControlNode*>nodes;
     
     bool editable;
+    bool cloned;
     
 };
 

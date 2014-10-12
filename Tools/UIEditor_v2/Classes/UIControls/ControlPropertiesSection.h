@@ -9,8 +9,10 @@ public:
     ControlPropertiesSection(DAVA::UIControl *control, const DAVA::String &name);
     virtual ~ControlPropertiesSection();
     
+    virtual PropertiesSection *CopyAndApplyForNewControl(DAVA::UIControl *control) override;
+
     virtual DAVA::String GetName() const;
-    ControlPropertiesSection *CopyAndApplyToOtherControl(DAVA::UIControl *control);
+
 
 private:
     DAVA::UIControl *control;
