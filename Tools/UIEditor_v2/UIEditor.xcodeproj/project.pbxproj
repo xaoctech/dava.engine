@@ -52,7 +52,6 @@
 		17B0617518892C1500FD8007 /* WebKit.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 17B0617418892C1500FD8007 /* WebKit.framework */; };
 		17FF160016400A75001B130F /* localizationeditordialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17FF15FE16400A75001B130F /* localizationeditordialog.cpp */; };
 		32014C7519C8718A006A4228 /* UIEditorComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 32014C7319C8718A006A4228 /* UIEditorComponent.cpp */; };
-		32014C7819C87EE0006A4228 /* EditorUIPackageLoader.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 32014C7619C87EE0006A4228 /* EditorUIPackageLoader.cpp */; };
 		320A4B3D19E6CC6A0049D713 /* LegacyEditorUIPackageLoader.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 320A4B3B19E6CC6A0049D713 /* LegacyEditorUIPackageLoader.cpp */; };
 		325FCCFA19DD8AC800197B03 /* PropertiesDockWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 325FCCEA19DD8AC800197B03 /* PropertiesDockWidget.cpp */; };
 		325FCCFB19DD8AC800197B03 /* PropertiesTreeItemDelegate.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 325FCCEC19DD8AC800197B03 /* PropertiesTreeItemDelegate.cpp */; };
@@ -63,7 +62,6 @@
 		3262FB8A19E699CB00E32F8E /* PackageNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 3262FB8819E699CB00E32F8E /* PackageNode.cpp */; };
 		3262FB8D19E69A5500E32F8E /* ImportedPackagesNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 3262FB8B19E69A5500E32F8E /* ImportedPackagesNode.cpp */; };
 		3262FB9019E69AB800E32F8E /* PackageControlsNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 3262FB8E19E69AB800E32F8E /* PackageControlsNode.cpp */; };
-		3294A72119E593F2000C0B0A /* EditorUIPackageSectionLoaders.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 3294A71F19E593F2000C0B0A /* EditorUIPackageSectionLoaders.cpp */; };
 		329E0D2F19D3F340008A9CE6 /* AddComponentCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 329E0D1019D3F340008A9CE6 /* AddComponentCommand.cpp */; };
 		329E0D3019D3F340008A9CE6 /* Command2.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 329E0D1219D3F340008A9CE6 /* Command2.cpp */; };
 		329E0D3119D3F340008A9CE6 /* CommandAction.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 329E0D1419D3F340008A9CE6 /* CommandAction.cpp */; };
@@ -80,6 +78,7 @@
 		329E0D3C19D3F340008A9CE6 /* MetaObjModifyCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 329E0D2B19D3F340008A9CE6 /* MetaObjModifyCommand.cpp */; };
 		329E0D3D19D3F340008A9CE6 /* RemoveComponentCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 329E0D2D19D3F340008A9CE6 /* RemoveComponentCommand.cpp */; };
 		32D11F5319E416B100C8ADEB /* LocalizedTextValueProperty.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 32D11F5119E416B100C8ADEB /* LocalizedTextValueProperty.cpp */; };
+		32DFC7B719E92704005EE689 /* EditorUIPackageBuilder.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 32DFC7B519E92704005EE689 /* EditorUIPackageBuilder.cpp */; };
 		32EB47A919DB359F00775432 /* SubValueProperty.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 32EB47A719DB359F00775432 /* SubValueProperty.cpp */; };
 		32EDA8EA19DABD83009845AD /* PropertiesSection.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 32EDA8E819DABD83009845AD /* PropertiesSection.cpp */; };
 		32EDA8F219DAC6EE009845AD /* BackgroundPropertiesSection.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 32EDA8F019DAC6EE009845AD /* BackgroundPropertiesSection.cpp */; };
@@ -262,8 +261,6 @@
 		2A689518AF9C22C7AA97C9EF /* ogg_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ogg_macos; path = ../dava.framework/Libs/libs/libogg_macos.a; sourceTree = "<group>"; };
 		32014C7319C8718A006A4228 /* UIEditorComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIEditorComponent.cpp; sourceTree = "<group>"; };
 		32014C7419C8718A006A4228 /* UIEditorComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIEditorComponent.h; sourceTree = "<group>"; };
-		32014C7619C87EE0006A4228 /* EditorUIPackageLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditorUIPackageLoader.cpp; sourceTree = "<group>"; };
-		32014C7719C87EE0006A4228 /* EditorUIPackageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorUIPackageLoader.h; sourceTree = "<group>"; };
 		320A4B3B19E6CC6A0049D713 /* LegacyEditorUIPackageLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LegacyEditorUIPackageLoader.cpp; sourceTree = "<group>"; };
 		320A4B3C19E6CC6A0049D713 /* LegacyEditorUIPackageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LegacyEditorUIPackageLoader.h; sourceTree = "<group>"; };
 		325FCCEA19DD8AC800197B03 /* PropertiesDockWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertiesDockWidget.cpp; sourceTree = "<group>"; };
@@ -284,8 +281,6 @@
 		3262FB8C19E69A5500E32F8E /* ImportedPackagesNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImportedPackagesNode.h; sourceTree = "<group>"; };
 		3262FB8E19E69AB800E32F8E /* PackageControlsNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PackageControlsNode.cpp; sourceTree = "<group>"; };
 		3262FB8F19E69AB800E32F8E /* PackageControlsNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PackageControlsNode.h; sourceTree = "<group>"; };
-		3294A71F19E593F2000C0B0A /* EditorUIPackageSectionLoaders.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditorUIPackageSectionLoaders.cpp; sourceTree = "<group>"; };
-		3294A72019E593F2000C0B0A /* EditorUIPackageSectionLoaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorUIPackageSectionLoaders.h; sourceTree = "<group>"; };
 		329E0D1019D3F340008A9CE6 /* AddComponentCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddComponentCommand.cpp; sourceTree = "<group>"; };
 		329E0D1119D3F340008A9CE6 /* AddComponentCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddComponentCommand.h; sourceTree = "<group>"; };
 		329E0D1219D3F340008A9CE6 /* Command2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Command2.cpp; sourceTree = "<group>"; };
@@ -319,6 +314,8 @@
 		329E0D2E19D3F340008A9CE6 /* RemoveComponentCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RemoveComponentCommand.h; sourceTree = "<group>"; };
 		32D11F5119E416B100C8ADEB /* LocalizedTextValueProperty.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LocalizedTextValueProperty.cpp; sourceTree = "<group>"; };
 		32D11F5219E416B100C8ADEB /* LocalizedTextValueProperty.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalizedTextValueProperty.h; sourceTree = "<group>"; };
+		32DFC7B519E92704005EE689 /* EditorUIPackageBuilder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditorUIPackageBuilder.cpp; sourceTree = "<group>"; };
+		32DFC7B619E92704005EE689 /* EditorUIPackageBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorUIPackageBuilder.h; sourceTree = "<group>"; };
 		32EB47A719DB359F00775432 /* SubValueProperty.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SubValueProperty.cpp; sourceTree = "<group>"; };
 		32EB47A819DB359F00775432 /* SubValueProperty.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SubValueProperty.h; sourceTree = "<group>"; };
 		32EDA8E819DABD83009845AD /* PropertiesSection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertiesSection.cpp; sourceTree = "<group>"; };
@@ -589,14 +586,12 @@
 				32EDA8F119DAC6EE009845AD /* BackgroundPropertiesSection.h */,
 				32EDA8F319DAC6FC009845AD /* InternalControlPropertiesSection.cpp */,
 				32EDA8F419DAC6FC009845AD /* InternalControlPropertiesSection.h */,
-				32014C7619C87EE0006A4228 /* EditorUIPackageLoader.cpp */,
-				32014C7719C87EE0006A4228 /* EditorUIPackageLoader.h */,
-				3294A71F19E593F2000C0B0A /* EditorUIPackageSectionLoaders.cpp */,
-				3294A72019E593F2000C0B0A /* EditorUIPackageSectionLoaders.h */,
 				32014C7319C8718A006A4228 /* UIEditorComponent.cpp */,
 				32014C7419C8718A006A4228 /* UIEditorComponent.h */,
 				320A4B3B19E6CC6A0049D713 /* LegacyEditorUIPackageLoader.cpp */,
 				320A4B3C19E6CC6A0049D713 /* LegacyEditorUIPackageLoader.h */,
+				32DFC7B519E92704005EE689 /* EditorUIPackageBuilder.cpp */,
+				32DFC7B619E92704005EE689 /* EditorUIPackageBuilder.h */,
 			);
 			path = UIControls;
 			sourceTree = "<group>";
@@ -1016,7 +1011,7 @@
 				15959DC219D3169400B52AEF /* PackageGraphicsWidget.cpp in Build Sources */,
 				C17246121637E18900709AAF /* EditorFontManager.cpp in Build Sources */,
 				7492E0EA1639445D00DF883A /* fontmanagerdialog.cpp in Build Sources */,
-				3294A72119E593F2000C0B0A /* EditorUIPackageSectionLoaders.cpp in Build Sources */,
+				32DFC7B719E92704005EE689 /* EditorUIPackageBuilder.cpp in Build Sources */,
 				15959DE319D5750600B52AEF /* UIFilteredPackageModel.cpp in Build Sources */,
 				1595D3B619DAF26F007338DF /* QtDavaConvertion.cpp in Build Sources */,
 				329E0D3B19D3F340008A9CE6 /* KeyedArchiveCommand.cpp in Build Sources */,
@@ -1044,7 +1039,6 @@
 				159ED7C519E2F61C00C8B37A /* IntegerPropertyDelegate.cpp in Build Sources */,
 				159ED7C719E2F61C00C8B37A /* FilePathPropertyDelegate.cpp in Build Sources */,
 				15959DD619D574C800B52AEF /* BaseProperty.cpp in Build Sources */,
-				32014C7819C87EE0006A4228 /* EditorUIPackageLoader.cpp in Build Sources */,
 				178F303E165677BF008678AD /* StringUtils.cpp in Build Sources */,
 				74893AD4165A8E90006B2762 /* ResourcesManageHelper.cpp in Build Sources */,
 				159ED7C819E2F61C00C8B37A /* EnumPropertyDelegate.cpp in Build Sources */,

@@ -43,7 +43,7 @@ class UIPackageModel : public QAbstractItemModel
     Q_OBJECT
     
 public:
-    UIPackageModel(DAVA::UIPackage *package, QObject *parent = 0);
+    UIPackageModel(PackageNode *package, QObject *parent = 0);
     virtual ~UIPackageModel();
     
     virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;

@@ -17,6 +17,7 @@ public:
     ControlPropertiesSection(const DAVA::String &name);
     
     virtual DAVA::String GetName() const;
+    virtual BaseProperty *CopyAndApplyToOtherControl(DAVA::UIControl *control);
 
 private:
     DAVA::String name;

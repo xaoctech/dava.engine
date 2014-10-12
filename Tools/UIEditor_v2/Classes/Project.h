@@ -12,9 +12,7 @@
 #include <QObject>
 #include "Base/BaseTypes.h"
 
-namespace DAVA {
-    class UIPackage;
-}
+class PackageNode;
 class LegacyControlData;
 
 class Project : QObject
@@ -26,10 +24,10 @@ public:
 
     bool Open(const QString &path);
 
-    DAVA::UIPackage *NewPackage(const QString &path){return NULL;}
-    DAVA::UIPackage *OpenPackage(const QString &path);
-    bool SavePackage(DAVA::UIPackage *package);
-    bool SaveAsPackage(DAVA::UIPackage *package){return false;}
+    PackageNode *NewPackage(const QString &path){return NULL;}
+    PackageNode *OpenPackage(const QString &path);
+    bool SavePackage(PackageNode *package);
+    bool SaveAsPackage(PackageNode *package){return false;}
 
 signals:
     void ProjectOpened();

@@ -15,7 +15,6 @@
 #include <QUndoStack>
 
 #include "UIControls/BaseProperty.h"
-#include "UIControls/UIEditorComponent.h"
 #include "Utils/QtDavaConvertion.h"
 #include "ChangePropertyValueCommand.h"
 #include "PackageDocument.h"
@@ -23,17 +22,13 @@
 
 using namespace DAVA;
 
-PropertiesTreeModel::PropertiesTreeModel(DAVA::UIControl *control, PropertiesViewContext *context, QObject *parent)
+PropertiesTreeModel::PropertiesTreeModel(BaseProperty *propertiesRoot, PropertiesViewContext *context, QObject *parent)
     : QAbstractItemModel(parent)
     , root(NULL)
     , propertiesViewContext(context)
 {
-    UIEditorComponent* component = dynamic_cast<UIEditorComponent*>(control->GetCustomData());
-    if (component)
-    {
-        root = SafeRetain(component->GetPropertiesRoot());
-        root->PrepareToEdit();
-    }
+    root = SafeRetain(propertiesRoot);
+    root->PrepareToEdit();
 }
 
 PropertiesTreeModel::~PropertiesTreeModel()
@@ -125,8 +120,10 @@ QVariant PropertiesTreeModel::data(const QModelIndex &index, int role) const
             break;
         case Qt::DecorationRole:
             {
-                if (property->GetType() == VariantType::TYPE_COLOR)
-                    return ColorToQColor(property->GetValue().AsColor());
+                // TODO: fix
+                return QVariant();
+//                if (property->GetType() == VariantType::TYPE_COLOR)
+//                    return ColorToQColor(property->GetValue().AsColor());
             }
             break;
 
