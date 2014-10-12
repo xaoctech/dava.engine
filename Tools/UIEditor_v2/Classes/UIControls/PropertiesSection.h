@@ -23,6 +23,8 @@ public:
     virtual int GetCount() const override;
     virtual BaseProperty *GetProperty(int index) const override;
     
+    virtual PropertiesSection *CopyAndApplyForNewControl(DAVA::UIControl *control) = 0;
+
     virtual ePropertyType GetType() const {
         return TYPE_HEADER;
     }

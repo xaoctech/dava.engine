@@ -2,6 +2,8 @@
 
 #include "ValueProperty.h"
 
+using namespace DAVA;
+
 ControlPropertiesSection::ControlPropertiesSection(DAVA::UIControl *control, const DAVA::String &name) : control(SafeRetain(control)), name(name)
 {
     
@@ -17,14 +19,17 @@ DAVA::String ControlPropertiesSection::GetName() const
     return name;
 }
 
-ControlPropertiesSection *ControlPropertiesSection::CopyAndApplyToOtherControl(DAVA::UIControl *newControl)
+PropertiesSection *ControlPropertiesSection::CopyAndApplyForNewControl(UIControl *newControl)
 {
     ControlPropertiesSection *section = new ControlPropertiesSection(newControl, name);
     
-    for (int i = 0; i < GetCount(); i++)
+    for (auto it = children.begin(); it != children.end(); ++it)
     {
-        ValueProperty *prop = new ValueProperty(newControl, children[i]->GetMember());
-        section->AddProperty(prop);
+        const InspMember *member = (*it)->GetMember();
+        member->SetValue(newControl, (*it)->GetValue());
+//        ValueProperty *prop = new ValueProperty(newControl, member);
+//        section->AddProperty(prop);
+//        SafeRelease(prop);
     }
     
     return section;

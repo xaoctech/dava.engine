@@ -15,6 +15,8 @@ public:
     virtual int GetCount() const override;
     virtual BaseProperty *GetProperty(int index) const override;
     
+    PropertiesRoot *CopyAndApplyForNewControl(DAVA::UIControl *control);
+    
     virtual DAVA::String GetName() const;
     virtual ePropertyType GetType() const;
     

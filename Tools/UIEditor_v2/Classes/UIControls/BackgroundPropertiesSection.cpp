@@ -8,6 +8,8 @@
 
 #include "BackgroundPropertiesSection.h"
 
+#include "ValueProperty.h"
+
 using namespace DAVA;
 
 BackgroundPropertiesSection::BackgroundPropertiesSection(UIControl *control, int bgNum) : control(NULL), bgNum(bgNum), isContentHidden(false)
@@ -18,6 +20,32 @@ BackgroundPropertiesSection::BackgroundPropertiesSection(UIControl *control, int
 BackgroundPropertiesSection::~BackgroundPropertiesSection()
 {
     SafeRelease(control);
+}
+
+PropertiesSection *BackgroundPropertiesSection::CopyAndApplyForNewControl(UIControl *newControl)
+{
+    BackgroundPropertiesSection *section = new BackgroundPropertiesSection(newControl, bgNum);
+    if (control->GetBackgroundComponent(bgNum) != NULL && newControl->GetBackgroundComponent(bgNum) == NULL)
+    {
+        UIControlBackground *bg = newControl->CreateBackgroundComponent(bgNum);
+        newControl->SetBackgroundComponent(bgNum, bg);
+        SafeRelease(bg);
+    }
+
+    UIControlBackground *bg = newControl->GetBackgroundComponent(bgNum);
+    if (bg)
+    {
+        for (auto it = children.begin(); it != children.end(); ++it)
+        {
+            const InspMember *member = (*it)->GetMember();
+            member->SetValue(bg, (*it)->GetValue());
+//            ValueProperty *prop = new ValueProperty(bg, member);
+//            section->AddProperty(prop);
+//            SafeRelease(prop);
+        }
+    }
+    
+    return section;
 }
 
 DAVA::String BackgroundPropertiesSection::GetName() const

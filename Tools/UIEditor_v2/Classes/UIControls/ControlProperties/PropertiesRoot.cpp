@@ -36,6 +36,18 @@ BaseProperty *PropertiesRoot::GetProperty(int index) const
     return children[index];
 }
 
+PropertiesRoot *PropertiesRoot::CopyAndApplyForNewControl(DAVA::UIControl *control)
+{
+    PropertiesRoot *newRoot = new PropertiesRoot();
+    for (auto it = children.begin(); it != children.end(); ++it)
+    {
+        PropertiesSection *section = (*it)->CopyAndApplyForNewControl(control);
+        newRoot->AddProperty(section);
+        SafeRelease(section);
+    }
+    return newRoot;
+}
+
 String PropertiesRoot::GetName() const {
     return "ROOT";
 }
