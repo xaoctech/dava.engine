@@ -49,6 +49,15 @@ void InternalControlPropertiesSection::CreateInternalControl()
     {
         internalControl = control->CreateInternalControl(internalControlNum);
         control->SetInternalControl(internalControlNum, internalControl);
+        
+        const InspInfo *insp = internalControl->GetTypeInfo();
+        for (int j = 0; j < insp->MembersCount(); j++)
+        {
+            const InspMember *member = insp->Member(j);
+            ValueProperty *prop = new ValueProperty(internalControl, member);
+            AddProperty(prop);
+            SafeRelease(prop);
+        }
     }
 }
 
