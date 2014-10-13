@@ -170,9 +170,7 @@ void Core::CreateSingletons()
     new AutotestingSystem();
 #endif
 
-#if defined(__DAVAENGINE_WIN32__)
 	Thread::InitMainThread();
-#endif
 
     new DownloadManager();
     DownloadManager::Instance()->SetDownloader(new CurlDownloader());
@@ -635,6 +633,10 @@ void Core::SystemAppStarted()
     if (file.Exists())
     {
         AutotestingSystem::Instance()->OnAppStarted();
+    }
+    else
+    {
+        Logger::FrameworkDebug("Core::SystemAppStarted() autotesting doesnt init. There are no id.ayml");
     }
 #endif //__DAVAENGINE_AUTOTESTING__
 }

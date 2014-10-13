@@ -52,9 +52,11 @@ UIStaticText::UIStaticText(const Rect &rect, bool rectInAbsoluteCoordinates/* = 
 
     textBg = new UIControlBackground();
     textBg->SetDrawType(UIControlBackground::DRAW_ALIGNED);
-
+	textBg->SetPerPixelAccuracyType(UIControlBackground::PER_PIXEL_ACCURACY_ENABLED);
+    
     shadowBg = new UIControlBackground();
     shadowBg->SetDrawType(UIControlBackground::DRAW_ALIGNED);
+    shadowBg->SetPerPixelAccuracyType(UIControlBackground::PER_PIXEL_ACCURACY_ENABLED);
 
     SetTextColor(Color::White);
     SetShadowColor(Color::Black);
@@ -193,28 +195,35 @@ const Vector2 &UIStaticText::GetShadowOffset() const
 
 void UIStaticText::Draw(const UIGeometricData &geometricData)
 {
-	textBlock->SetRectSize(size);
-	textBlock->SetPosition(geometricData.position);
+	const Rect& textBlockRect = CalculateTextBlockRect(geometricData);
+    textBlock->SetRectSize(textBlockRect.GetSize());
+    textBlock->SetPosition(textBlockRect.GetPosition());
+
 	textBlock->SetPivotPoint(geometricData.pivotPoint);
 	PrepareSprite();
 	textBlock->PreDraw();
 
     UIControl::Draw(geometricData);
 
+	UIGeometricData textGeomData;
+	textGeomData.position = textBlock->GetSpriteOffset();
+	textGeomData.size = GetSize();
+	textGeomData.AddToGeometricData(geometricData);
+
     if(!FLOAT_EQUAL(shadowBg->GetDrawColor().a, 0.0f) && (!FLOAT_EQUAL(shadowOffset.dx, 0.0f) || !FLOAT_EQUAL(shadowOffset.dy, 0.0f)))
     {
-		textBlock->Draw(GetShadowColor(), &shadowOffset);
+		textBlock->Draw(shadowBg->GetDrawColor(), &shadowOffset);
         UIGeometricData shadowGeomData;
         shadowGeomData.position = shadowOffset;
         shadowGeomData.size = GetSize();
-        shadowGeomData.AddToGeometricData(geometricData);
+        shadowGeomData.AddToGeometricData(textGeomData);
 
         shadowBg->SetAlign(textBg->GetAlign());
         shadowBg->Draw(shadowGeomData);
     }
 
-    textBlock->Draw(GetTextColor());
-    textBg->Draw(geometricData);
+    textBlock->Draw(textBg->GetDrawColor());
+	textBg->Draw(textGeomData);
 }
 
 void UIStaticText::SetParentColor(const Color &parentColor)
@@ -234,6 +243,17 @@ const WideString & UIStaticText::GetText() const
     return textBlock->GetText();
 }
 
+void UIStaticText::SetMargins(const UIControlBackground::UIMargins* margins)
+{
+    textBg->SetMargins(margins);
+    shadowBg->SetMargins(margins);
+}
+
+const UIControlBackground::UIMargins* UIStaticText::GetMargins() const
+{
+    return textBg->GetMargins();
+}
+
 void UIStaticText::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
     UIControl::LoadFromYamlNode(node, loader);
@@ -249,8 +269,8 @@ void UIStaticText::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader
     const YamlNode * textAlignNode = node->Get("textalign");
     const YamlNode * textColorInheritTypeNode = node->Get("textcolorInheritType");
     const YamlNode * shadowColorInheritTypeNode = node->Get("shadowcolorInheritType");
+    const YamlNode * textMarginsNode = node->Get("textMargins");
     const YamlNode * textPerPixelAccuracyTypeNode = node->Get("textperPixelAccuracyType");
-    const YamlNode * shadowPerPixelAccuracyTypeNode = node->Get("shadowperPixelAccuracyType");
 
     if (fontNode)
     {
@@ -303,13 +323,17 @@ void UIStaticText::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader
         GetShadowBackground()->SetColorInheritType((UIControlBackground::eColorInheritType)loader->GetColorInheritTypeFromNode(shadowColorInheritTypeNode));
     }
     
+    if (textMarginsNode)
+    {
+        UIControlBackground::UIMargins textMargins(textMarginsNode->AsVector4());
+        GetTextBackground()->SetMargins(&textMargins);
+        GetShadowBackground()->SetMargins(&textMargins);
+    }
+    
     if (textPerPixelAccuracyTypeNode)
     {
     	GetTextBackground()->SetPerPixelAccuracyType((UIControlBackground::ePerPixelAccuracyType)loader->GetPerPixelAccuracyTypeFromNode(textPerPixelAccuracyTypeNode));
-    }
-    if (shadowPerPixelAccuracyTypeNode)
-    {
-        GetShadowBackground()->SetPerPixelAccuracyType((UIControlBackground::ePerPixelAccuracyType)loader->GetPerPixelAccuracyTypeFromNode(shadowPerPixelAccuracyTypeNode));
+	    GetShadowBackground()->SetPerPixelAccuracyType((UIControlBackground::ePerPixelAccuracyType)loader->GetPerPixelAccuracyTypeFromNode(textPerPixelAccuracyTypeNode));
     }
 }
 
@@ -367,17 +391,11 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
         node->Set("shadowcolorInheritType", loader->GetColorInheritTypeNodeValue(colorInheritType));
     }
     
-    // Text Per Pixel Accuracy Type
+    // Text Per Pixel Accuracy Type - text and text shadow
     int32 textPerPixelAccuracyType = (int32)GetTextBackground()->GetPerPixelAccuracyType();
     if (baseControl->GetTextBackground()->GetPerPixelAccuracyType() != textPerPixelAccuracyType)
     {
     	node->Set("textperPixelAccuracyType", loader->GetPerPixelAccuracyTypeNodeValue(textPerPixelAccuracyType));
-    }
-    // Shadow Per Pixel Accuracy Type
-    textPerPixelAccuracyType = (int32)GetShadowBackground()->GetPerPixelAccuracyType();
-    if (baseControl->GetShadowBackground()->GetPerPixelAccuracyType() != textPerPixelAccuracyType)
-    {
-        node->Set("shadowperPixelAccuracyType", loader->GetPerPixelAccuracyTypeNodeValue(textPerPixelAccuracyType));
     }
 
     // ShadowOffset
@@ -420,6 +438,15 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
     if (baseControl->GetBackground()->GetDrawType() != this->GetBackground()->GetDrawType())
     {
         node->Set("drawType", loader->GetDrawTypeNodeValue(this->GetBackground()->GetDrawType()));
+    }
+
+    // No need to compare text margins with the base one -
+    // if they exist, they are always non-default.
+    const UIControlBackground::UIMargins* textMargins = GetTextBackground()->GetMargins();
+    if (textMargins)
+    {
+        VariantType textMarginsVariant(textMargins->AsVector4());
+        node->Set("textMargins", &textMarginsVariant);
     }
 
     SafeDelete(nodeValue);
@@ -477,6 +504,21 @@ void UIStaticText::PrepareSpriteInternal(DAVA::BaseObject *caller, void *param, 
         shadowBg->SetSprite(NULL, 0);
         textBg->SetSprite(NULL, 0);
     }
+}
+
+Rect UIStaticText::CalculateTextBlockRect(const UIGeometricData &geometricData) const
+{
+    Rect resultRect (geometricData.position, geometricData.size);
+    const UIControlBackground::UIMargins* margins = textBg->GetMargins();
+    if (margins)
+    {
+        resultRect.x += margins->left;
+        resultRect.y += margins->top;
+        resultRect.dx -= (margins->right + margins->left);
+        resultRect.dy -= (margins->bottom + margins->top);
+    }
+
+    return resultRect;
 }
 
 };

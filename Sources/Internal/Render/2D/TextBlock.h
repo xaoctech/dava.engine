@@ -91,6 +91,7 @@ public:
 	
 	Sprite * GetSprite();
 	bool IsSpriteReady();
+	const Vector2& GetSpriteOffset();
     
     const Vector2 & GetTextSize();
 
@@ -116,18 +117,27 @@ protected:
 
 	void ProcessAlign();
 	
+    void SplitTextToStrings(const WideString & text, const Vector2 & targetRectSize, Vector<WideString> & resultVector);
+	void SplitTextBySymbolsToStrings(const WideString & text, const Vector2 & targetRectSize, Vector<WideString> & resultVector);   
+    inline bool IsLineEnd(char16 t) const;
+    inline bool IsSpace(char16 t) const;
+    bool IsWordSeparator(char16 t) const;
+    WideString Trim(const WideString& str) const;
 
 	Vector2 rectSize;
         bool needRedraw;
 	Vector2 requestedSize;
 
     Vector2 cacheFinalSize;
+	Vector2 cacheSpriteOffset;
 
 	float32 originalFontSize;
     
 	int32 cacheDx;
 	int32 cacheDy;
 	int32 cacheW;
+	int32 cacheOx;
+	int32 cacheOy;
 
     int32 fittingType;
 	Vector2 position;
@@ -155,6 +165,16 @@ protected:
 	TextBlockRender* textBlockRender;
     TextureInvalidater *textureInvalidater;
 };
+
+inline bool TextBlock::IsLineEnd(char16 t) const
+{
+    return (t == L'\n');
+}
+    
+inline bool TextBlock::IsSpace(char16 t) const
+{
+    return (t == L' ');
+}
 
 }; //end of namespace
 
