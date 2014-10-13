@@ -170,9 +170,7 @@ void Core::CreateSingletons()
     new AutotestingSystem();
 #endif
 
-#if defined(__DAVAENGINE_WIN32__)
 	Thread::InitMainThread();
-#endif
 
     new DownloadManager();
     DownloadManager::Instance()->SetDownloader(new CurlDownloader());
@@ -354,6 +352,8 @@ void Core::CalculateScaleMultipliers()
 	
 	drawOffset.y = floorf(drawOffset.y);
 	drawOffset.x = floorf(drawOffset.x);
+	virtualScreenHeight = ceilf(virtualScreenHeight);
+	virtualScreenWidth = ceilf(virtualScreenWidth);
 
 	UIControlSystem::Instance()->CalculateScaleMultipliers();
 
@@ -629,7 +629,15 @@ void Core::SystemAppStarted()
 	if (core)core->OnAppStarted();
     
 #ifdef __DAVAENGINE_AUTOTESTING__
-    AutotestingSystem::Instance()->OnAppStarted();
+    FilePath file = "~res:/Autotesting/id.yaml";
+    if (file.Exists())
+    {
+        AutotestingSystem::Instance()->OnAppStarted();
+    }
+    else
+    {
+        Logger::FrameworkDebug("Core::SystemAppStarted() autotesting doesnt init. There are no id.ayml");
+    }
 #endif //__DAVAENGINE_AUTOTESTING__
 }
 	

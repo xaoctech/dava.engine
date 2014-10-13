@@ -66,6 +66,7 @@ public:
 	void CloseKeyboard();
 	uint32 GetCursorPos();
 	void SetCursorPos(uint32 pos);
+	void SetMaxLength(int32_t value);
 
 protected:
 	virtual jclass GetJavaClass() const;
@@ -111,14 +112,20 @@ public:
 	void SetKeyboardType(DAVA::int32 value);
 	void SetReturnKeyType(DAVA::int32 value);
 	void SetEnableReturnKeyAutomatically(bool value);
-
 	uint32 GetCursorPos();
 	void SetCursorPos(uint32 pos);
+	void SetMaxLength(DAVA::int32 value);
 
 	bool TextFieldKeyPressed(int32 replacementLocation, int32 replacementLength, const WideString &text);
 	void TextFieldShouldReturn();
+	void TextFieldKeyboardShown(const Rect& rect);
+	void TextFieldKeyboardHidden();
+	void TextFieldFocusChanged(bool hasFocus);
 	static bool TextFieldKeyPressed(uint32_t id, int32 replacementLocation, int32 replacementLength, const WideString &text);
 	static void TextFieldShouldReturn(uint32_t id);
+	static void TextFieldKeyboardShown(uint32_t id, const Rect& rect);
+	static void TextFieldKeyboardHidden(uint32_t id);
+	static void TextFieldFocusChanged(uint32_t id, bool hasFocus);
 
 private:
 	static UITextFieldAndroid* GetUITextFieldAndroid(uint32_t id);
