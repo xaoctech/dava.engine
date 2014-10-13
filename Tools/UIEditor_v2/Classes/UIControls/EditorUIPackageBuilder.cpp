@@ -136,83 +136,65 @@ void EditorUIPackageBuilder::EndControl()
 
 void EditorUIPackageBuilder::BeginControlPropretiesSection(const String &name)
 {
-    currentSection = new ControlPropertiesSection(controlsStack.back()->GetControl(), name);
+    currentSection = controlsStack.back()->GetPropertiesRoot()->GetControlPropertiesSection(name);
     currentObject = controlsStack.back()->GetControl();
 }
 
 void EditorUIPackageBuilder::EndControlPropertiesSection()
 {
-    if (currentSection && currentSection->GetCount() > 0)
-        controlsStack.back()->GetPropertiesRoot()->AddProperty(currentSection);
-
-    SafeRelease(currentSection);
-    
+    currentSection = NULL;
     currentObject = NULL;
 }
 
 UIControlBackground *EditorUIPackageBuilder::BeginBgPropertiesSection(int index, bool sectionHasProperties)
 {
     ControlNode *node = controlsStack.back();
-    UIControl *control = node->GetControl();
-    BackgroundPropertiesSection *section = new BackgroundPropertiesSection(control, index);
-    controlsStack.back()->GetPropertiesRoot()->AddProperty(section);
-    if (!sectionHasProperties)
+    BackgroundPropertiesSection *section = node->GetPropertiesRoot()->GetBackgroundPropertiesSection(index);
+    if (section && sectionHasProperties)
     {
-        SafeRelease(currentSection);
-        return NULL;
-    }
-    else
-    {
-        UIControlBackground *bg = control->GetBackgroundComponent(index);
-        if (!bg)
+        if (section->GetBg() == NULL)
+            section->CreateControlBackground();
+
+        if (section->GetBg())
         {
-            bg = control->CreateBackgroundComponent(index);
-            control->SetBackgroundComponent(index, bg);
-            SafeRelease(bg);
-            currentObject = control->GetBackgroundComponent(index);
+            currentObject = section->GetBg();
+            currentSection = section;
+            return section->GetBg();
         }
-        currentObject = bg;
-        currentSection = section;
-        return bg;
     }
+    
+    return NULL;
 }
 
 void EditorUIPackageBuilder::EndBgPropertiesSection()
 {
-    SafeRelease(currentSection);
+    currentSection = NULL;
     currentObject = NULL;
 }
 
 UIControl *EditorUIPackageBuilder::BeginInternalControlSection(int index, bool sectionHasProperties)
 {
     ControlNode *node = controlsStack.back();
-    UIControl *control = node->GetControl();
-    InternalControlPropertiesSection *section = new InternalControlPropertiesSection(control, index);
-    controlsStack.back()->GetPropertiesRoot()->AddProperty(section);
-    if (!sectionHasProperties)
+    InternalControlPropertiesSection *section = node->GetPropertiesRoot()->GetInternalControlPropertiesSection(index);
+    if (section && sectionHasProperties)
     {
-        SafeRelease(currentSection);
-        return NULL;
-    }
-    else
-    {
-        UIControl *internal = control->GetInternalControl(index);
-        if (!internal)
+        if (section->GetInternalControl() == NULL)
+            section->CreateInternalControl();
+        
+        if (section->GetInternalControl())
         {
-            internal = control->CreateInternalControl(index);
-            control->SetInternalControl(index, internal);
-            SafeRelease(internal);
-            currentObject = control->GetInternalControl(index);
+            currentObject = section->GetInternalControl();
+            currentSection = section;
+            return section->GetInternalControl();
         }
-        currentObject = internal;
-        currentSection = section;
-        return internal;
     }
+    
+    return NULL;
 }
 
 void EditorUIPackageBuilder::EndInternalControlSection()
 {
-    SafeRelease(currentSection);
+    currentSection = NULL;
     currentObject = NULL;
 }
 
@@ -220,17 +202,9 @@ void EditorUIPackageBuilder::ProcessProperty(const InspMember *member, const Var
 {
     if (currentObject && currentSection && (member->Flags() & I_EDIT))
     {
-        ValueProperty *property = NULL;
-
-        if (String(member->Name()) == "text")
-            property = new LocalizedTextValueProperty(currentObject, member);
-        else
-            property = new ValueProperty(currentObject, member);
-        if (value.GetType() != VariantType::TYPE_NONE)
+        ValueProperty *property = currentSection->FindProperty(member);
+        if (property && value.GetType() != VariantType::TYPE_NONE)
             property->SetValue(value);
-        
-        currentSection->AddProperty(property);
-        SafeRelease(property);
     }
 }
 

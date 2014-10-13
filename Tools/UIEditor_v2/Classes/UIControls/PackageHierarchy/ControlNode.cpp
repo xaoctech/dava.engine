@@ -4,7 +4,7 @@ using namespace DAVA;
 
 ControlNode::ControlNode(UIControl *control) : PackageBaseNode(NULL), control(SafeRetain(control)), propertiesRoot(NULL), editable(true), cloned(false)
 {
-    this->propertiesRoot = new PropertiesRoot();
+    this->propertiesRoot = new PropertiesRoot(control);
 }
 
 ControlNode::ControlNode(const ControlNode *node) : PackageBaseNode(NULL), control(NULL), propertiesRoot(NULL), editable(true), cloned(true)
@@ -13,10 +13,15 @@ ControlNode::ControlNode(const ControlNode *node) : PackageBaseNode(NULL), contr
     control = ObjectFactory::Instance()->New<UIControl>(sourceControl->GetControlClassName());
     control->SetCustomControlClassName(sourceControl->GetCustomControlClassName());
     
-    propertiesRoot = node->GetPropertiesRoot()->CopyAndApplyForNewControl(control);
+    propertiesRoot = new PropertiesRoot(control, node->GetPropertiesRoot());
     
     for (auto it = node->nodes.begin(); it != node->nodes.end(); ++it)
-        nodes.push_back(new ControlNode(*it));
+    {
+        ControlNode *childNode = new ControlNode(*it);
+        childNode->SetParent(this);
+        nodes.push_back(childNode);
+        control->AddControl(childNode->GetControl());
+    }
 }
 
 ControlNode::~ControlNode()
@@ -34,6 +39,7 @@ void ControlNode::Add(ControlNode *node)
     DVASSERT(node->GetParent() == NULL);
     node->SetParent(this);
     nodes.push_back(SafeRetain(node));
+    control->AddControl(node->GetControl());
 }
 
 int ControlNode::GetCount() const

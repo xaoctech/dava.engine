@@ -6,10 +6,11 @@
 class BackgroundPropertiesSection : public PropertiesSection
 {
 public:
-    BackgroundPropertiesSection(DAVA::UIControl *control, int bgNum);
+    BackgroundPropertiesSection(DAVA::UIControl *control, int bgNum, const BackgroundPropertiesSection *sourceSection);
     virtual ~BackgroundPropertiesSection();
     
-    virtual PropertiesSection *CopyAndApplyForNewControl(DAVA::UIControl *newControl) override;
+    DAVA::UIControlBackground *GetBg() const;
+    void CreateControlBackground();
 
     DAVA::String GetName() const;
     virtual int GetCount() const;
@@ -18,6 +19,8 @@ public:
 
 private:
     DAVA::UIControl *control;
+    DAVA::UIControlBackground *bg;
+    
     int bgNum;
     bool isContentHidden;
 };

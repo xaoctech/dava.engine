@@ -4,41 +4,52 @@
 
 using namespace DAVA;
 
-InternalControlPropertiesSection::InternalControlPropertiesSection(DAVA::UIControl *control, int num) : control(NULL), internalControlNum(num), isContentHidden(false)
+InternalControlPropertiesSection::InternalControlPropertiesSection(DAVA::UIControl *control, int num, const InternalControlPropertiesSection *sourceSection) : control(NULL), internalControl(NULL), internalControlNum(num), isContentHidden(false)
 {
     this->control = SafeRetain(control);
+    
+    internalControl = SafeRetain(control->GetInternalControl(num));
+    if (internalControl == NULL && sourceSection != NULL && sourceSection->GetInternalControl() != NULL)
+    {
+        internalControl = control->CreateInternalControl(num);
+        control->SetInternalControl(num, internalControl);
+    }
+    
+    if (internalControl)
+    {
+        const InspInfo *insp = internalControl->GetTypeInfo();
+        for (int j = 0; j < insp->MembersCount(); j++)
+        {
+            const InspMember *member = insp->Member(j);
+            ValueProperty *sourceProp = sourceSection == NULL ? NULL : sourceSection->FindProperty(member);
+            if (sourceProp && sourceProp->GetValue() != member->Value(internalControl))
+                member->SetValue(internalControl, sourceProp->GetValue());
+            
+            ValueProperty *prop = new ValueProperty(internalControl, member);
+            AddProperty(prop);
+            SafeRelease(prop);
+        }
+    }
 }
 
 InternalControlPropertiesSection::~InternalControlPropertiesSection()
 {
+    SafeRelease(internalControl);
     SafeRelease(control);
 }
 
-PropertiesSection *InternalControlPropertiesSection::CopyAndApplyForNewControl(UIControl *newControl)
+UIControl *InternalControlPropertiesSection::GetInternalControl() const
 {
-    InternalControlPropertiesSection *section = new InternalControlPropertiesSection(newControl, internalControlNum);
+    return internalControl;
+}
 
-    if (control->GetInternalControl(internalControlNum) != NULL && newControl->GetInternalControl(internalControlNum) == NULL)
+void InternalControlPropertiesSection::CreateInternalControl()
+{
+    if (!internalControl)
     {
-        UIControl *internal = newControl->CreateInternalControl(internalControlNum);
-        newControl->SetInternalControl(internalControlNum, internal);
-        SafeRelease(internal);
+        internalControl = control->CreateInternalControl(internalControlNum);
+        control->SetInternalControl(internalControlNum, internalControl);
     }
-    
-    UIControl *internal = newControl->GetInternalControl(internalControlNum);
-    if (internal)
-    {
-        for (auto it = children.begin(); it != children.end(); ++it)
-        {
-            const InspMember *member = (*it)->GetMember();
-            member->SetValue(internal, (*it)->GetValue());
-//            ValueProperty *prop = new ValueProperty(internal, member);
-//            section->AddProperty(prop);
-//            SafeRelease(prop);
-        }
-    }
-    
-    return section;
 }
 
 DAVA::String InternalControlPropertiesSection::GetName() const

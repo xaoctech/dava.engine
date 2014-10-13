@@ -1,51 +1,91 @@
 #include "PropertiesRoot.h"
 
-#include "UIControls/PropertiesSection.h"
+#include "UIControls/ControlPropertiesSection.h"
+#include "UIControls/BackgroundPropertiesSection.h"
+#include "UIControls/InternalControlPropertiesSection.h"
+#include "UIControls/ValueProperty.h"
+#include "UIControls/LocalizedTextValueProperty.h"
 
 using namespace DAVA;
 
-PropertiesRoot::PropertiesRoot()
+PropertiesRoot::PropertiesRoot(UIControl *control)
 {
-    
+    MakeControlPropertiesSection(control, control->GetTypeInfo(), NULL);
+    MakeBackgroundPropertiesSection(control, NULL);
+    MakeInternalControlPropertiesSection(control, NULL);
+}
+
+PropertiesRoot::PropertiesRoot(UIControl *control, const PropertiesRoot *sourceProperties)
+{
+    MakeControlPropertiesSection(control, control->GetTypeInfo(), sourceProperties);
+    MakeBackgroundPropertiesSection(control, sourceProperties);
+    MakeInternalControlPropertiesSection(control, sourceProperties);
 }
 
 PropertiesRoot::~PropertiesRoot()
 {
-    for (auto it = children.begin(); it != children.end(); ++it)
+    for (auto it = controlProperties.begin(); it != controlProperties.end(); ++it)
     {
         (*it)->SetParent(NULL);
         (*it)->Release();
     }
-    children.clear();
-}
+    controlProperties.clear();
 
-void PropertiesRoot::AddProperty(PropertiesSection *section)
-{
-    DVASSERT(section->GetParent() == NULL);
-    section->SetParent(this);
-    children.push_back(SafeRetain(section));
+    for (auto it = backgroundProperties.begin(); it != backgroundProperties.end(); ++it)
+    {
+        (*it)->SetParent(NULL);
+        (*it)->Release();
+    }
+    backgroundProperties.clear();
+
+    for (auto it = internalControlProperties.begin(); it != internalControlProperties.end(); ++it)
+    {
+        (*it)->SetParent(NULL);
+        (*it)->Release();
+    }
+    internalControlProperties.clear();
 }
 
 int PropertiesRoot::GetCount() const
 {
-    return (int) children.size();
+    return (int) (controlProperties.size() + backgroundProperties.size() + internalControlProperties.size());
 }
 
 BaseProperty *PropertiesRoot::GetProperty(int index) const
 {
-    return children[index];
+    if (index < (int) controlProperties.size())
+        return controlProperties[index];
+    index -= controlProperties.size();
+    
+    if (index < (int) backgroundProperties.size())
+        return backgroundProperties[index];
+    index -= backgroundProperties.size();
+    
+    return internalControlProperties[index];
 }
 
-PropertiesRoot *PropertiesRoot::CopyAndApplyForNewControl(DAVA::UIControl *control)
+ControlPropertiesSection *PropertiesRoot::GetControlPropertiesSection(const DAVA::String &name) const
 {
-    PropertiesRoot *newRoot = new PropertiesRoot();
-    for (auto it = children.begin(); it != children.end(); ++it)
+    for (auto it = controlProperties.begin(); it != controlProperties.end(); ++it)
     {
-        PropertiesSection *section = (*it)->CopyAndApplyForNewControl(control);
-        newRoot->AddProperty(section);
-        SafeRelease(section);
+        if ((*it)->GetName() == name)
+            return *it;
     }
-    return newRoot;
+    return NULL;
+}
+
+BackgroundPropertiesSection *PropertiesRoot::GetBackgroundPropertiesSection(int num) const
+{
+    if (0 <= num && num < (int) backgroundProperties.size())
+        return backgroundProperties[num];
+    return NULL;
+}
+
+InternalControlPropertiesSection *PropertiesRoot::GetInternalControlPropertiesSection(int num) const
+{
+    if (0 <= num && num < (int) internalControlProperties.size())
+        return internalControlProperties[num];
+    return NULL;
 }
 
 String PropertiesRoot::GetName() const {
@@ -54,4 +94,51 @@ String PropertiesRoot::GetName() const {
 
 BaseProperty::ePropertyType PropertiesRoot::GetType() const {
     return TYPE_HEADER;
+}
+
+void PropertiesRoot::MakeControlPropertiesSection(DAVA::UIControl *control, const DAVA::InspInfo *typeInfo, const PropertiesRoot *sourceProperties)
+{
+    const InspInfo *baseInfo = typeInfo->BaseInfo();
+    if (baseInfo)
+        MakeControlPropertiesSection(control, baseInfo, sourceProperties);
+    
+    bool hasProperties = false;
+    for (int i = 0; i < typeInfo->MembersCount(); i++)
+    {
+        const InspMember *member = typeInfo->Member(i);
+        if ((member->Flags() & I_EDIT) != 0)
+        {
+            hasProperties = true;
+            break;
+        }
+    }
+    if (hasProperties)
+    {
+        ControlPropertiesSection *sourceSection = sourceProperties == NULL ? NULL : sourceProperties->GetControlPropertiesSection(typeInfo->Name());
+        ControlPropertiesSection *section = new ControlPropertiesSection(control, typeInfo, sourceSection);
+        section->SetParent(this);
+        controlProperties.push_back(section);
+    }
+}
+
+void PropertiesRoot::MakeBackgroundPropertiesSection(DAVA::UIControl *control, const PropertiesRoot *sourceProperties)
+{
+    for (int i = 0; i < control->GetBackgroundComponentsCount(); i++)
+    {
+        BackgroundPropertiesSection *sourceSection = sourceProperties == NULL ? NULL : sourceProperties->GetBackgroundPropertiesSection(i);
+        BackgroundPropertiesSection *section = new BackgroundPropertiesSection(control, i, sourceSection);
+        section->SetParent(this);
+        backgroundProperties.push_back(section);
+    }
+}
+
+void PropertiesRoot::MakeInternalControlPropertiesSection(DAVA::UIControl *control, const PropertiesRoot *sourceProperties)
+{
+    for (int i = 0; i < control->GetInternalControlsCount(); i++)
+    {
+        InternalControlPropertiesSection *sourceSection = sourceProperties == NULL ? NULL : sourceProperties->GetInternalControlPropertiesSection(i);
+        InternalControlPropertiesSection *section = new InternalControlPropertiesSection(control, i, sourceSection);
+        section->SetParent(this);
+        internalControlProperties.push_back(section);
+    }
 }

@@ -36,3 +36,13 @@ BaseProperty *PropertiesSection::GetProperty(int index) const
 {
     return children[index];
 }
+
+ValueProperty *PropertiesSection::FindProperty(const DAVA::InspMember *member) const
+{
+    for (auto it = children.begin(); it != children.end(); ++it)
+    {
+        if ((*it)->GetMember() == member)
+            return *it;
+    }
+    return NULL;
+}
