@@ -79,7 +79,7 @@ public:
         \param[in] assertIfCustomControlNotFound	if this flag is set to true, ASSERT and stop app execution if the
                                                     custom control can't be loaded.
      */
-    static void Load(UIControl * rootControl, const FilePath & yamlPathname, bool assertIfCustomControlNotFound = false);
+    static void Load(UIControl * rootControl, const FilePath & yamlPathname, bool assertIfCustomControlNotFound = true);
 
     /**
      \brief	This function saves the UIControl's hierarchy to the YAML file passed.
