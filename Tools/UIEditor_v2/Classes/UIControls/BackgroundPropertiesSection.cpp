@@ -57,6 +57,15 @@ void BackgroundPropertiesSection::CreateControlBackground()
     {
         bg = control->CreateBackgroundComponent(bgNum);
         control->SetBackgroundComponent(bgNum, bg);
+        
+        const InspInfo *insp = bg->GetTypeInfo();
+        for (int j = 0; j < insp->MembersCount(); j++)
+        {
+            const InspMember *member = insp->Member(j);
+            ValueProperty *prop = new ValueProperty(bg, member);
+            AddProperty(prop);
+            SafeRelease(prop);
+        }
     }
 }
 
