@@ -27,9 +27,6 @@
 =====================================================================================*/
 
 
-
-
-
 #ifndef __DAVAENGINE_UI_BUTTON_H__
 #define __DAVAENGINE_UI_BUTTON_H__
 
@@ -49,6 +46,7 @@ namespace DAVA
         you should use GetStateBackground() and GetStateTextControl().
      */
 class UIStaticText;
+class Font;
 
 class UIButton : public UIControl
 {
@@ -150,6 +148,13 @@ public:
      */
     virtual void SetStateColorInheritType(int32 state, UIControlBackground::eColorInheritType value);
     /**
+     \brief Sets Sprite's per pixel accuracy type you want to use for draw for the control UIControlBackground object for the requested state.
+        Method creates UIControlBackground object for the state if this is neccesary.
+     \param[in] state state bit mask to set value for.
+     \param[in] value type of pixel accuracy.
+     */
+    virtual void SetStatePerPixelAccuracyType(int32 state, UIControlBackground::ePerPixelAccuracyType value);
+    /**
      \brief Returns background used for drawing of the requested state.
      \param[in] state state to get value for.
      \returns background used for state draw.
@@ -198,7 +203,14 @@ public:
      \param[in] state state bit mask to set value for.
      \param[in] color font used for text draw of the states.
      */
-    void SetStateFontColorInheritType(int32 state, UIControlBackground::eColorInheritType colorInheritType);
+    void SetStateTextColorInheritType(int32 state, UIControlBackground::eColorInheritType colorInheritType);
+
+    /**
+     \brief Sets the per pixel accuracy type of the text and shadow for particular state.
+     \param[in] state state bit mask to set value for.
+     \param[in] color font used for text draw of the states.
+     */
+    void SetStateTextPerPixelAccuracyType(int32 state, UIControlBackground::ePerPixelAccuracyType pixelAccuracyType);
 
     /**
      \brief Sets the color of the shadow for particular state.
@@ -235,6 +247,18 @@ public:
      \param[in] align the align .
      */
     virtual void SetStateTextAlign(int32 state, int32 align);
+    /**
+     \brief Sets background margins for the requested states.
+     \param[in] state state text bit mask to set value for.
+     \param[in] margins the margins.
+     */
+    virtual void SetStateMargins(int32 state, const UIControlBackground::UIMargins* margins);
+    /**
+     \brief Sets text margins for the requested states.
+     \param[in] state state text bit mask to set value for.
+     \param[in] margins the margins.
+     */
+    virtual void SetStateTextMargins(int32 state, const UIControlBackground::UIMargins* margins);
     /**
      \brief Sets text control what will be used for the requested states.
         UIStaticText is cloned inside button.
