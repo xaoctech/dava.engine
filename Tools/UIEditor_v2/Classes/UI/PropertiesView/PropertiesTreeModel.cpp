@@ -14,7 +14,7 @@
 #include <QVector2D>
 #include <QUndoStack>
 
-#include "UIControls/BaseProperty.h"
+#include "UIControls/ControlProperties/BaseProperty.h"
 #include "Utils/QtDavaConvertion.h"
 #include "ChangePropertyValueCommand.h"
 #include "UI/PackageDocument.h"
