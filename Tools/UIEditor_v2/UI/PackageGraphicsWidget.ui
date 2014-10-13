@@ -149,13 +149,13 @@
   <customwidget>
    <class>DavaGLWidget</class>
    <extends>QWidget</extends>
-   <header>davaglwidget.h</header>
+   <header>UI/davaglwidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>RulerWidget</class>
    <extends>QWidget</extends>
-   <header>Classes/Ruler/RulerWidget.h</header>
+   <header>Ruler/RulerWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

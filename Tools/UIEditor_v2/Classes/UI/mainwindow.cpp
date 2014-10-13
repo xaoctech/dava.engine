@@ -46,7 +46,7 @@
 //////////////////////////////////////////////////////////////////////////
 #include "fontmanagerdialog.h"
 #include "FileSystem/FileSystem.h"
-#include "ResourcesManageHelper.h"
+#include "Helpers/ResourcesManageHelper.h"
 #include "Dialogs/localizationeditordialog.h"
 #include "Grid/GridVisualizer.h"
 #include "EditorFontManager.h"
@@ -94,7 +94,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tabBar->setUsesScrollButtons(true);
     connect(ui->tabBar, SIGNAL(currentChanged(int)), this, SLOT(CurrentTabChanged(int)));
     connect(ui->tabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(TabCloseRequested(int)));
-    connect(ui->tabBar, SIGNAL(tabMoved(int, int)), this, SLOT(OnTabMoved(int, int)));
  
     setUnifiedTitleAndToolBarOnMac(true);
 

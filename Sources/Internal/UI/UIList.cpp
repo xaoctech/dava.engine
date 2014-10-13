@@ -174,9 +174,9 @@ void UIList::ScrollToElement(int32 index)
     SetScrollPosition(newScrollPos);
 }
 
-void UIList::SetOrientation(eListOrientation _orientation)
+void UIList::SetOrientation(int32 _orientation)
 {
-    orientation = _orientation;
+    orientation = (UIList::eListOrientation)_orientation;
 }
 
 float32 UIList::GetScrollPosition()
@@ -727,7 +727,7 @@ bool UIList::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl,
     String stringValue;
 
     //Orientation
-    eListOrientation orient = this->GetOrientation();
+    eListOrientation orient = (eListOrientation)GetOrientation();
     switch(orient)
     {
         case ORIENTATION_VERTICAL:

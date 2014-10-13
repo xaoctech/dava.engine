@@ -470,7 +470,7 @@ void UIStaticText::PrepareSpriteInternal(DAVA::BaseObject *caller, void *param, 
 }
 
     
-String UIStaticText::GetFontName() const
+String UIStaticText::GetFontPresetName() const
 {
     Font *font = GetFont();
     if (!font)
@@ -478,13 +478,13 @@ String UIStaticText::GetFontName() const
     return FontManager::Instance()->GetFontName(font);
 }
 
-void UIStaticText::SetFontName(const String &fontName)
+void UIStaticText::SetFontPresetName(const String &presetName)
 {
     Font *font = NULL;
 
-    if (!fontName.empty())
+    if (!presetName.empty())
     {
-        font = FontManager::Instance()->GetFont(fontName);
+        font = FontManager::Instance()->GetFont(presetName);
     }
 
     SetFont(font);
@@ -498,15 +498,6 @@ int32 UIStaticText::GetTextColorInheritType() const
 void UIStaticText::SetTextColorInheritType(int32 type)
 {
     GetTextBackground()->SetColorInheritType((UIControlBackground::eColorInheritType) type);
-}
-
-int32 UIStaticText::GetShadowColorInheritType() const
-{
-    return GetShadowBackground()->GetColorInheritType();
-}
-    
-void UIStaticText::SetShadowColorInheritType(int32 type)
-{
     GetShadowBackground()->SetColorInheritType((UIControlBackground::eColorInheritType) type);
 }
 
@@ -518,18 +509,9 @@ int32 UIStaticText::GetTextPerPixelAccuracyType() const
 void UIStaticText::SetTextPerPixelAccuracyType(int32 type)
 {
     GetTextBackground()->SetPerPixelAccuracyType((UIControlBackground::ePerPixelAccuracyType) type);
-}
-    
-int32 UIStaticText::GetShadowPerPixelAccuracyType() const
-{
-    return GetShadowBackground()->GetPerPixelAccuracyType();
-}
-    
-void UIStaticText::SetShadowPerPixelAccuracyType(int32 type)
-{
     GetShadowBackground()->SetPerPixelAccuracyType((UIControlBackground::ePerPixelAccuracyType) type);
 }
-    
+
 int32 UIStaticText::GetMultilineType() const
 {
     if (GetMultiline())

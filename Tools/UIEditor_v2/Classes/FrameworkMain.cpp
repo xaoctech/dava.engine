@@ -31,6 +31,7 @@
 #include "DAVAEngine.h"
 #include "GameCore.h"
 #include "version.h"
+#include "Platform/DPIHelper.h"
 
 using namespace DAVA;
 
@@ -46,12 +47,13 @@ void FrameworkDidLaunched()
 #ifdef __DAVAENGINE_MACOS__
     //NSScreen *mainScreen = [NSScreen mainScreen];
 #endif
-    Size2i screenSize(100, 100);// = GetNativeScreenSize();
+
+    Size2i screenSize = DPIHelper::GetScreenSize();
     appOptions->SetInt32("width",  screenSize.dx);
 	appOptions->SetInt32("height", screenSize.dy);
     Core::Instance()->SetVirtualScreenSize(screenSize.dx, screenSize.dy);
     Core::Instance()->RegisterAvailableResourceSize(screenSize.dx, screenSize.dy, "Gfx");
-    float32 screenScale = 1.0f;//GetNativeScreenScale();
+    float64 screenScale = DPIHelper::GetDpiScaleFactor(0);
     if (screenScale != 1.0f)
     {
         Core::Instance()->RegisterAvailableResourceSize(screenSize.dx*screenScale, screenSize.dy*screenScale, "Gfx2");

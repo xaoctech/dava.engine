@@ -77,7 +77,7 @@ QWidget *PropertiesTreeItemDelegate::createEditor( QWidget * parent, const QStyl
             editorWidget->setLayout(horizontalLayout);
 
             editorWidget->setAutoFillBackground(true);
-            editorWidget->setFocusPolicy(Qt::StrongFocus);
+            editorWidget->setFocusProxy(editor);
 
             editorWidget->layout()->addWidget(editor);
 

@@ -37,7 +37,7 @@
 #include "EditorFontManager.h"
 //#include "ScreenManager.h"
 #include "EditorSettings.h"
-#include "ResourcesManageHelper.h"
+#include "Helpers/ResourcesManageHelper.h"
 #include "FileSystem/ResourceArchive.h"
 #include "version.h"
 

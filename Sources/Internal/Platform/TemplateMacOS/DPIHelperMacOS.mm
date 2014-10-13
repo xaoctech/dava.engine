@@ -47,5 +47,10 @@ namespace DAVA
         
         return scale;
     }
-    
+ 
+    Size2i DPIHelper::GetScreenSize()
+    {
+        return Size2i();
+    }
+
 }

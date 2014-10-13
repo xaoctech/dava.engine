@@ -433,7 +433,7 @@ void UIYamlLoader::Load(UIControl * rootControl, const FilePath & yamlPathname, 
     }
 
     if (rootControl->GetSize() != control->GetSize())
-        rootControl->ApplyAlignSettingsForChildren();
+        rootControl->UpdateLayout();
 }
 
 bool UIYamlLoader::Save(UIControl * rootControl, const FilePath & yamlPathname, bool skipRootNode)
