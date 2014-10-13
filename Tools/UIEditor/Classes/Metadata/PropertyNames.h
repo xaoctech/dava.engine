@@ -80,8 +80,8 @@ public:
 	static const char* SHADOW_OFFSET_Y;
 	static const char* SHADOW_COLOR;
     
-    static const char* FONT_COLOR_INHERIT_TYPE_PROPERTY_NAME;
-    static const char* FONT_PER_PIXEL_ACCURACY_TYPE_PROPERTY_NAME;
+    static const char* TEXT_COLOR_INHERIT_TYPE_PROPERTY_NAME;
+    static const char* TEXT_PER_PIXEL_ACCURACY_TYPE_PROPERTY_NAME;
 
     static const char* MAX_TEXT_LENGTH_PROPERTY_NAME;
     
@@ -145,6 +145,20 @@ public:
     
     // UI Web View properties.
     static const char* WEBVIEW_DATA_DETECTOR_TYPES_PROPERTY_NAME;
+
+    // UI Margins properties.
+    static const char* MARGINS_PROPERTY_NAME;
+    static const char* LEFT_MARGIN_PROPERTY_NAME;
+    static const char* TOP_MARGIN_PROPERTY_NAME;
+    static const char* RIGHT_MARGIN_PROPERTY_NAME;
+    static const char* BOTTOM_MARGIN_PROPERTY_NAME;
+
+    // UI Text Margins properties.
+    static const char* TEXT_MARGINS_PROPERTY_NAME;
+    static const char* TEXT_LEFT_MARGIN_PROPERTY_NAME;
+    static const char* TEXT_TOP_MARGIN_PROPERTY_NAME;
+    static const char* TEXT_RIGHT_MARGIN_PROPERTY_NAME;
+    static const char* TEXT_BOTTOM_MARGIN_PROPERTY_NAME;
 
 	// Custom Control properties.
 	static const char* CUSTOM_CONTROL_NAME;
