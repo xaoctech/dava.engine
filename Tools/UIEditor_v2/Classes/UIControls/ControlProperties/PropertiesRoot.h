@@ -1,7 +1,7 @@
 #ifndef __UI_EDITOR_PROPERTIES_ROOT_H__
 #define __UI_EDITOR_PROPERTIES_ROOT_H__
 
-#include "UIControls/BaseProperty.h"
+#include "UIControls/ControlProperties/BaseProperty.h"
 
 class ControlPropertiesSection;
 class BackgroundPropertiesSection;

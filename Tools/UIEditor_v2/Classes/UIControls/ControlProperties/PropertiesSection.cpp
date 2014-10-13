@@ -1,6 +1,6 @@
 #include "PropertiesSection.h"
 
-#include "UIControls/ValueProperty.h"
+#include "UIControls/ControlProperties/ValueProperty.h"
 
 using namespace DAVA;
 

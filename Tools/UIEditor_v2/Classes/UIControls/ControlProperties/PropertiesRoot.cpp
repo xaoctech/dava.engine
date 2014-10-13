@@ -1,10 +1,10 @@
 #include "PropertiesRoot.h"
 
-#include "UIControls/ControlPropertiesSection.h"
-#include "UIControls/BackgroundPropertiesSection.h"
-#include "UIControls/InternalControlPropertiesSection.h"
-#include "UIControls/ValueProperty.h"
-#include "UIControls/LocalizedTextValueProperty.h"
+#include "ControlPropertiesSection.h"
+#include "BackgroundPropertiesSection.h"
+#include "InternalControlPropertiesSection.h"
+#include "ValueProperty.h"
+#include "LocalizedTextValueProperty.h"
 
 using namespace DAVA;
 

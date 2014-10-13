@@ -1,7 +1,7 @@
 #include "EnumPropertyDelegate.h"
 #include <QComboBox>
 #include <QLayout>
-#include "UIControls/BaseProperty.h"
+#include "UIControls/ControlProperties/BaseProperty.h"
 #include "PropertiesTreeItemDelegate.h"
 #include "Utils/QtDavaConvertion.h"
 #include "PropertiesTreeModel.h"
