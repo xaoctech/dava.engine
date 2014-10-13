@@ -213,6 +213,7 @@ const map_info_t* find_map_info(const map_info_t* milist, uintptr_t addr) {
     return mi;
 }
 
+
 void AndroidCrashReport::SignalHandler(int signal, struct siginfo *siginfo, void *sigcontext)
 {
 	if(signal<SIG_NUMBER_MAX)
