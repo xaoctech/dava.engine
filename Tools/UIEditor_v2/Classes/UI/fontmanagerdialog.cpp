@@ -29,7 +29,7 @@
 
 #include "fontmanagerdialog.h"
 #include "ui_fontmanagerdialog.h"
-#include "ResourcesManageHelper.h"
+#include "Helpers/ResourcesManageHelper.h"
 #include "EditorFontManager.h"
 #include "EditorSettings.h"
 #include "TexturePacker/ResourcePacker2D.h"

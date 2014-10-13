@@ -43,9 +43,9 @@
 #include <QStringList>
 #include <QTableWidgetItem>
 
-#include "ResourcesManageHelper.h"
-#include "fontmanagerdialog.h"
-#include "WidgetSignalsBlocker.h"
+#include "Helpers/ResourcesManageHelper.h"
+#include "UI/fontmanagerdialog.h"
+#include "Helpers/WidgetSignalsBlocker.h"
 #include "EditorFontManager.h"
 
 //static const QString FONT_TABLE_NAME_COLUMN = "Font Name";

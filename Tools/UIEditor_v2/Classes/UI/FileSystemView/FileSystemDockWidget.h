@@ -33,25 +33,12 @@ signals:
 
 private slots:
     void onDoubleClicked(const QModelIndex &index);
+    void setFilterFixedString(const QString &filterStr);
+    void onDataChanged( const QModelIndex & topLeft, const QModelIndex & bottomRight );
     
 private:
     Ui::FileSystemDockWidget *ui;
     QFileSystemModel *model;
-    class FilteredFileSystemModel *proxyModel;
-};
-
-class FilteredFileSystemModel: public QSortFilterProxyModel
-{
-    Q_OBJECT
-public:
-    FilteredFileSystemModel(QObject *parent = NULL);
-    ~FilteredFileSystemModel();
-
-protected:
-    virtual bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
-
-    bool filterAcceptsRowSelf(int sourceRow, const QModelIndex &sourceParent) const;
-    bool hasAcceptedChildren(int sourceRow, const QModelIndex &sourceParent) const;
 };
 
 #endif // __UI_EDITOR_FILE_SYSTEM_TREE_WIDGET_H__

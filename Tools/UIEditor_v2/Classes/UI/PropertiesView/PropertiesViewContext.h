@@ -2,7 +2,7 @@
 #define __PROPERTIESVIEWCONTEXT_H__
 
 #include <QPointer>
-#include "PackageDocument.h"
+#include "UI/PackageDocument.h"
 
 class PropertiesViewContext
 {

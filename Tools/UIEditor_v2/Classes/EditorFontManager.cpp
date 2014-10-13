@@ -33,7 +33,7 @@
 
 #include "UI/UIYamlLoader.h"
 
-#include "LocalizationSystemHelper.h"
+#include "Helpers/LocalizationSystemHelper.h"
 
 static const String DEFAULT_FONT_PRESET = "Font_default";
 
