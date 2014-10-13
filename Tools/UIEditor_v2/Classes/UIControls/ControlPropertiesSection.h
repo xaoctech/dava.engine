@@ -6,11 +6,9 @@
 class ControlPropertiesSection : public PropertiesSection
 {
 public:
-    ControlPropertiesSection(DAVA::UIControl *control, const DAVA::String &name);
+    ControlPropertiesSection(DAVA::UIControl *control, const DAVA::InspInfo *typeInfo, const ControlPropertiesSection *sourceSection);
     virtual ~ControlPropertiesSection();
     
-    virtual PropertiesSection *CopyAndApplyForNewControl(DAVA::UIControl *control) override;
-
     virtual DAVA::String GetName() const;
 
 

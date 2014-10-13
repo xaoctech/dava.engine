@@ -1,12 +1,34 @@
 #include "ControlPropertiesSection.h"
 
 #include "ValueProperty.h"
+#include "LocalizedTextValueProperty.h"
 
 using namespace DAVA;
 
-ControlPropertiesSection::ControlPropertiesSection(DAVA::UIControl *control, const DAVA::String &name) : control(SafeRetain(control)), name(name)
+ControlPropertiesSection::ControlPropertiesSection(DAVA::UIControl *control, const DAVA::InspInfo *typeInfo, const ControlPropertiesSection *sourceSection) : control(SafeRetain(control))
 {
+    name = typeInfo->Name();
     
+    for (int i = 0; i < typeInfo->MembersCount(); i++)
+    {
+        const InspMember *member = typeInfo->Member(i);
+        if ((member->Flags() & I_EDIT) != 0)
+        {
+            String memberName = member->Name();
+            ValueProperty *sourceProperty = sourceSection == NULL ? NULL : sourceSection->FindProperty(member);
+            if (sourceProperty)
+                member->SetValue(control, sourceProperty->GetValue());
+            
+            ValueProperty *prop;
+            if (String(member->Name()) == "text")
+                prop = new LocalizedTextValueProperty(control, member);
+            else
+                prop = new ValueProperty(control, member);
+            
+            AddProperty(prop);
+            SafeRelease(prop);
+        }
+    }
 }
 
 ControlPropertiesSection::~ControlPropertiesSection()
@@ -19,18 +41,3 @@ DAVA::String ControlPropertiesSection::GetName() const
     return name;
 }
 
-PropertiesSection *ControlPropertiesSection::CopyAndApplyForNewControl(UIControl *newControl)
-{
-    ControlPropertiesSection *section = new ControlPropertiesSection(newControl, name);
-    
-    for (auto it = children.begin(); it != children.end(); ++it)
-    {
-        const InspMember *member = (*it)->GetMember();
-        member->SetValue(newControl, (*it)->GetValue());
-//        ValueProperty *prop = new ValueProperty(newControl, member);
-//        section->AddProperty(prop);
-//        SafeRelease(prop);
-    }
-    
-    return section;
-}

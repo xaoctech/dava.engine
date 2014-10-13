@@ -6,11 +6,12 @@
 class InternalControlPropertiesSection : public PropertiesSection
 {
 public:
-    InternalControlPropertiesSection(DAVA::UIControl *control, int num);
+    InternalControlPropertiesSection(DAVA::UIControl *control, int num, const InternalControlPropertiesSection *sourceSection);
     virtual ~InternalControlPropertiesSection();
-    
-    virtual PropertiesSection *CopyAndApplyForNewControl(DAVA::UIControl *newControl) override;
 
+    virtual DAVA::UIControl *GetInternalControl() const;
+    void CreateInternalControl();
+    
     virtual DAVA::String GetName() const;
 
     virtual int GetCount() const;
@@ -18,6 +19,7 @@ public:
 
 private:
     DAVA::UIControl *control;
+    DAVA::UIControl *internalControl;
     int internalControlNum;
     bool isContentHidden;
 };
