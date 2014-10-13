@@ -873,6 +873,9 @@
     <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\uimarginspropertygridwidget_moc.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\CursorsManager.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\DefaultScreen.h">
@@ -1402,6 +1405,9 @@
     </ClInclude>
     <ClInclude Include="Classes\UI\PropertyGridWidgets\uimarginspropertygridwidget.h">
       <Filter>Sources\UI\PropertyGridWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\CursorsManager.h">
+      <Filter>Sources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
