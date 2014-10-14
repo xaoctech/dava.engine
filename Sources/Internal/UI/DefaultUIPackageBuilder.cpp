@@ -33,23 +33,27 @@ namespace DAVA
         package = NULL;
     }
     
-    void DefaultUIPackageBuilder::ProcessImportedPackage(const String &packagePath, UIPackageLoader *loader)
+    UIPackage *DefaultUIPackageBuilder::ProcessImportedPackage(const String &packagePath, AbstractUIPackageLoader *loader)
     {
+        UIPackage *result;
         UIPackage *prevPackage = package;
         package = NULL;
         auto it = importedPackages.find(packagePath);
         if (it != importedPackages.end())
         {
+            result = it->second;
             prevPackage->AddPackage(it->second);
         }
         else
         {
             UIPackage *loadedPackage = loader->LoadPackage(packagePath);
+            result = loadedPackage;
             importedPackages[packagePath] = loadedPackage;
             prevPackage->AddPackage(loadedPackage);
         }
         DVASSERT(package == NULL);
         package = prevPackage;
+        return result;
     }
     
     UIControl *DefaultUIPackageBuilder::BeginControlWithClass(const String className)
@@ -82,7 +86,7 @@ namespace DAVA
         return control;
     }
     
-    UIControl *DefaultUIPackageBuilder::BeginControlWithPrototype(const String &packageName, const String &prototypeName, UIPackageLoader *loader)
+    UIControl *DefaultUIPackageBuilder::BeginControlWithPrototype(const String &packageName, const String &prototypeName, AbstractUIPackageLoader *loader)
     {
         UIControl *prototype;
         if (packageName.empty())

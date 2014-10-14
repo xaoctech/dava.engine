@@ -200,7 +200,6 @@ void UIPackageLoader::LoadControlPropertiesFromYamlNode(UIControl *control, cons
     
 void UIPackageLoader::LoadBgPropertiesFromYamlNode(UIControl *control, const YamlNode *node)
 {
-    String className = control->GetControlClassName();
     const YamlNode *componentsNode = node ? node->Get("components") : NULL;
     
     for (int i = 0; i < control->GetBackgroundComponentsCount(); i++)
@@ -229,7 +228,6 @@ void UIPackageLoader::LoadBgPropertiesFromYamlNode(UIControl *control, const Yam
 
 void UIPackageLoader::LoadInternalControlPropertiesFromYamlNode(UIControl *control, const YamlNode *node)
 {
-    String className = control->GetControlClassName();
     const YamlNode *componentsNode = node ? node->Get("components") : NULL;
     for (int i = 0; i < control->GetInternalControlsCount(); i++)
     {

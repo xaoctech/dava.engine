@@ -16,15 +16,15 @@ class UIPackage;
 class UIControlFactory;
 class UIControlBackground;
     
-class UIPackageLoader
+class UIPackageLoader : AbstractUIPackageLoader
 {
 public:
     UIPackageLoader(AbstractUIPackageBuilder *builder);
     virtual ~UIPackageLoader();
 
 public:
-    UIPackage *LoadPackage(const FilePath &packagePath);
-    bool LoadControlByName(const String &name);
+    virtual UIPackage *LoadPackage(const FilePath &packagePath) override;
+    virtual bool LoadControlByName(const String &name) override;
 
 private:
     void LoadControl(const YamlNode *node);

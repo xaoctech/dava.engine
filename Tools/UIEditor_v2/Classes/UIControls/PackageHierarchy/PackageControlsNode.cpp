@@ -21,6 +21,7 @@ void PackageControlsNode::Add(ControlNode *node)
     DVASSERT(node->GetParent() == NULL);
     node->SetParent(this);
     nodes.push_back(SafeRetain(node));
+    package->AddControl(node->GetControl());
 }
 
 int PackageControlsNode::GetCount() const

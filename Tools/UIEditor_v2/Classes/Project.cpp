@@ -176,13 +176,24 @@ PackageNode *Project::OpenPackage(const QString &packagePath)
     FilePath path(packagePath.toStdString());
     String fwPath = path.GetFrameworkPath();
 
-    //UIPackage *newPackage = LegacyEditorUIPackageLoader(legacyData).LoadPackage(path);
-    //DefaultUIPackageBuilder builder;
     EditorUIPackageBuilder builder;
     UIPackage *newPackage = UIPackageLoader(&builder).LoadPackage(path);
-    SafeRelease(newPackage);
-    PackageNode *node = builder.GetPackageNode();
-    return node;
+    if (newPackage)
+    {
+        SafeRelease(newPackage);
+        return builder.GetPackageNode();
+    }
+    else
+    {
+        EditorUIPackageBuilder b2;
+        newPackage = LegacyEditorUIPackageLoader(&b2, legacyData).LoadPackage(path);
+        if (newPackage)
+        {
+            SafeRelease(newPackage);
+            return b2.GetPackageNode();
+        }
+    }
+    return NULL;
 }
 
 bool Project::SavePackage(PackageNode *package)

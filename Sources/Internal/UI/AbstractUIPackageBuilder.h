@@ -8,11 +8,18 @@
 namespace DAVA
 {
     
-    class UIPackageLoader;
     class UIPackage;
     class UIControl;
     class UIControlBackground;
     class YamlNode;
+    
+    class AbstractUIPackageLoader
+    {
+    public:
+        virtual UIPackage *LoadPackage(const FilePath &packagePath) = 0;
+        virtual bool LoadControlByName(const String &name) = 0;
+    };
+
     
     class AbstractUIPackageBuilder
     {
@@ -23,11 +30,11 @@ namespace DAVA
         virtual UIPackage *BeginPackage(const FilePath &packagePath) = 0;
         virtual void EndPackage() = 0;
         
-        virtual void ProcessImportedPackage(const String &packagePath, UIPackageLoader *loader) = 0;
+        virtual UIPackage *ProcessImportedPackage(const String &packagePath, AbstractUIPackageLoader *loader) = 0;
         
         virtual UIControl *BeginControlWithClass(const String className) = 0;
         virtual UIControl *BeginControlWithCustomClass(const String customClassName, const String className) = 0;
-        virtual UIControl *BeginControlWithPrototype(const String &packageName, const String &prototypeName, UIPackageLoader *loader) = 0;
+        virtual UIControl *BeginControlWithPrototype(const String &packageName, const String &prototypeName, AbstractUIPackageLoader *loader) = 0;
         virtual UIControl *BeginControlWithPath(const String &pathName) = 0;
         virtual UIControl *BeginUnknownControl(const YamlNode *node) = 0;
         virtual void EndControl() = 0;

@@ -43,19 +43,36 @@ void EditorUIPackageBuilder::EndPackage()
     DVASSERT(packageNode != NULL);
 }
 
-void EditorUIPackageBuilder::ProcessImportedPackage(const String &packagePath, UIPackageLoader *loader)
+UIPackage * EditorUIPackageBuilder::ProcessImportedPackage(const String &packagePath, AbstractUIPackageLoader *loader)
 {
+    // store state
     PackageNode *prevPackageNode = packageNode;
+    DAVA::Vector<ControlNode*> prevControlsStack = controlsStack;
+    DAVA::BaseObject *prevObj = currentObject;
+    PropertiesSection *prevSect = currentSection;
+
+    // clear state
     packageNode = NULL;
-    loader->LoadPackage(packagePath);
+    controlsStack.clear();
+    currentObject = NULL;
+    currentSection = NULL;
+    
+    // load package
+    UIPackage *result = loader->LoadPackage(packagePath);
     PackageControlsNode *controlsNode = SafeRetain(packageNode->GetPackageControlsNode());
     controlsNode->SetName(packageNode->GetName());
     SafeRelease(packageNode);
     
     prevPackageNode->GetImportedPackagesNode()->Add(controlsNode);
     SafeRelease(controlsNode);
-    
+
+    // restore state
     packageNode = prevPackageNode;
+    controlsStack = prevControlsStack;
+    currentObject = prevObj;
+    currentSection = prevSect;
+
+    return result;
 }
 
 UIControl *EditorUIPackageBuilder::BeginControlWithClass(const String className)
@@ -75,7 +92,7 @@ UIControl *EditorUIPackageBuilder::BeginControlWithCustomClass(const String cust
     return control;
 }
 
-UIControl *EditorUIPackageBuilder::BeginControlWithPrototype(const String &packageName, const String &prototypeName, UIPackageLoader *loader)
+UIControl *EditorUIPackageBuilder::BeginControlWithPrototype(const String &packageName, const String &prototypeName, AbstractUIPackageLoader *loader)
 {
     ControlNode *prototypeNode = NULL;
     UIPackage *prototypePackage = NULL;
