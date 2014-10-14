@@ -289,4 +289,7 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 	public void InitNotification(Builder builder) {
 		Log.e("JNIActivity", "Need to implement InitNotification");
 	}
+	
+	protected void OnRenderDestroyed() {}
+	protected void OnFirstFrameAfterDraw() {}
 }
