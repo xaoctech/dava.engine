@@ -11,7 +11,7 @@
 
 using namespace DAVA;
 
-LegacyEditorUIPackageLoader::LegacyEditorUIPackageLoader(LegacyControlData *data) : legacyData(SafeRetain(data))
+LegacyEditorUIPackageLoader::LegacyEditorUIPackageLoader(AbstractUIPackageBuilder *builder, LegacyControlData *data) : builder(builder), legacyData(SafeRetain(data))
 {
     
     // for legacy loading
@@ -42,6 +42,7 @@ LegacyEditorUIPackageLoader::LegacyEditorUIPackageLoader(LegacyControlData *data
 
 LegacyEditorUIPackageLoader::~LegacyEditorUIPackageLoader()
 {
+    builder = NULL;
     SafeRelease(legacyData);
     for (auto it = importedPackages.begin(); it != importedPackages.end(); ++it)
     {
@@ -58,23 +59,27 @@ UIPackage *LegacyEditorUIPackageLoader::LoadPackage(const FilePath &packagePath)
     if (!rootNode)
         return NULL;
     
-
-    UIPackage *package = new UIPackage(packagePath);
-    UIControl *legacyControl = CreateControlByClassName("UIControl");
+    UIPackage *package = builder->BeginPackage(packagePath);
+    
+    UIControl *legacyControl = builder->BeginControlWithClass("UIControl");
+    builder->BeginControlPropretiesSection("UIControl");
     const LegacyControlData::Data *data = legacyData ? legacyData->Get(packagePath.GetFrameworkPath()) : NULL;
     if (data)
     {
-        legacyControl->SetSize(data->size);
-        legacyControl->SetName(data->name);
+        builder->ProcessProperty(legacyControl->TypeInfo()->Member("name"), VariantType(data->name));
+        builder->ProcessProperty(legacyControl->TypeInfo()->Member("size"), VariantType(data->size));
     }
     else
     {
-        legacyControl->SetName("LegacyControl");
+        builder->ProcessProperty(legacyControl->TypeInfo()->Member("name"), VariantType("LegacyControl"));
     }
+    builder->EndControlPropertiesSection();
     
     LoadControl(legacyControl, rootNode, package);
     
-    package->AddControl(legacyControl);
+    builder->EndControl();
+    
+    builder->EndPackage();
     
     return package;
 }
@@ -127,7 +132,10 @@ UIControl *LegacyEditorUIPackageLoader::CreateControl(const YamlNode *node, UIPa
 
 void LegacyEditorUIPackageLoader::LoadControl(UIControl *control, const YamlNode *node, UIPackage *currentPackage)
 {
-    LoadPropertiesFromYamlNode(control, node);
+    LoadControlPropertiesFromYamlNode(control, control->GetTypeInfo(), node);
+    LoadBgPropertiesFromYamlNode(control, node);
+    LoadInternalControlPropertiesFromYamlNode(control, node);
+
     
     // load children
     const YamlNode * childrenNode = node->Get("children");
@@ -180,13 +188,6 @@ UIControl *LegacyEditorUIPackageLoader::CreateCustomControl(const String &custom
 UIControl *LegacyEditorUIPackageLoader::CreateControlFromPrototype(UIControl *control)
 {
     return control->Clone();
-}
-
-void LegacyEditorUIPackageLoader::LoadPropertiesFromYamlNode(UIControl *control, const YamlNode *node)
-{
-    LoadControlPropertiesFromYamlNode(control, control->GetTypeInfo(), node);
-    LoadBgPropertiesFromYamlNode(control, node);
-    LoadInternalControlPropertiesFromYamlNode(control, node);
 }
 
 void LegacyEditorUIPackageLoader::LoadControlPropertiesFromYamlNode(UIControl *control, const InspInfo *typeInfo, const YamlNode *node)

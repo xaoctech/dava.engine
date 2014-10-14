@@ -4,6 +4,11 @@
 
 #include "DAVAEngine.h"
 
+namespace DAVA
+{
+    class AbstractUIPackageBuilder;
+}
+
 class LegacyControlData : public DAVA::BaseObject
 {
 public:
@@ -34,7 +39,7 @@ public:
 class LegacyEditorUIPackageLoader
 {
 public:
-    LegacyEditorUIPackageLoader(LegacyControlData *data = NULL);
+    LegacyEditorUIPackageLoader(DAVA::AbstractUIPackageBuilder *builder, LegacyControlData *data = NULL);
     virtual ~LegacyEditorUIPackageLoader();
     
 public:
@@ -49,8 +54,6 @@ protected:
     virtual DAVA::UIControl *CreateCustomControl(const DAVA::String &customClassName, const DAVA::String &baseClassName);
     virtual DAVA::UIControl *CreateControlFromPrototype(DAVA::UIControl *prototype);
     
-protected:
-    virtual void LoadPropertiesFromYamlNode(DAVA::UIControl *control, const DAVA::YamlNode *node);
 private:
     void LoadControlPropertiesFromYamlNode(DAVA::UIControl *control, const DAVA::InspInfo *typeInfo, const DAVA::YamlNode *node);
     void LoadBgPropertiesFromYamlNode(DAVA::UIControl *control, const DAVA::YamlNode *node);
@@ -73,8 +76,8 @@ private:
     DAVA::Map<DAVA::String, DAVA::String> baseClasses;
     
 private:
+    DAVA::AbstractUIPackageBuilder *builder;
     LegacyControlData *legacyData;
-    
     DAVA::Map<DAVA::String, DAVA::UIPackage*> importedPackages;
 };
 
