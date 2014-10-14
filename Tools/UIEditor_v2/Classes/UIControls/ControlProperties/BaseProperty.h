@@ -35,9 +35,10 @@ public:
     virtual ~BaseProperty();
 
     BaseProperty *GetParent() const;
-    void AddProperty(BaseProperty *property);
-    virtual int GetCount() const;
-    virtual BaseProperty *GetProperty(int index) const;
+    void SetParent(BaseProperty *parent);
+    
+    virtual int GetCount() const = 0;
+    virtual BaseProperty *GetProperty(int index) const = 0;
     virtual int GetIndex(BaseProperty *property) const;
 
     virtual DAVA::String GetName() const = 0;
@@ -52,12 +53,10 @@ public:
     virtual const EnumMap *GetEnumMap() const;
     virtual void ResetValue();
     virtual bool IsReplaced() const;
-    
-    virtual void PrepareToEdit();
 
 private:
     BaseProperty *parent;
-    DAVA::Vector<BaseProperty*> children;
 };
+
 
 #endif // __UI_EDITOR_BASE_PROPERTY_H__

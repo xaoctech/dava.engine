@@ -33,9 +33,6 @@ public:
     void AddPackage(UIPackage *package);
     
 protected:
-    void SaveControls(YamlNode *rootNode) const;
-
-protected:
     FilePath packagePath;
     Vector<UIControl *> controls;
     

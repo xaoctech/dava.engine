@@ -57,8 +57,8 @@ class UIYamlLoader : public BaseObject
     
 protected:
     ~UIYamlLoader(){}
-    UIYamlLoader();
 public:
+    UIYamlLoader();
     /**
      \brief	This is main function in UIYamlLoader and it loads fonts from yamlPathname file.
 
@@ -125,7 +125,10 @@ protected:
 protected:
     UIControl *mainRootControl;
     //Called after loading
+public: // TODO: fixme
     void PostLoad(UIControl * rootControl);
+    
+protected:
     void SetScrollBarDelegates(UIControl * rootControl);
 
     // ASSERTion flag for "Custom Control not found" state.

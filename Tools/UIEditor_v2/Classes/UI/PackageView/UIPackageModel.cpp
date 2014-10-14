@@ -9,10 +9,9 @@
 #include "UIPackageModel.h"
 
 #include "DAVAEngine.h"
-#include "UI/IconHelper.h"
-#include "UIControls/UIEditorComponent.h"
+#include "IconHelper.h"
 #include "Utils/QtDavaConvertion.h"
-#include "UIPackageModelNode.h"
+#include "UIControls/PackageHierarchy/PackageNode.h"
 #include <qicon.h>
 #include <QAction>
 
@@ -48,11 +47,13 @@ QVariant UIPackageMimeData::retrieveData(const QString &mimetype, QVariant::Type
     return QMimeData::retrieveData(mimetype, preferredType);
 }
 
-UIPackageModel::UIPackageModel(DAVA::UIPackage *_package, QObject *parent)
+UIPackageModel::UIPackageModel(PackageNode *_package, QObject *parent)
     : QAbstractItemModel(parent)
     , root(NULL)
 {
-    root = new UIPackageModelRootNode(_package, _package->GetName(), UIPackageModelRootNode::MODE_CONTROLS_AND_IMPORTED_PACKAGED);
+    root = SafeRetain(_package);
+    if (root)
+        root->debugDump(0);
     
     undoStack = new QUndoStack(this);
     undoAction = undoStack->createUndoAction(this, tr("&Undo"));
@@ -78,7 +79,7 @@ QModelIndex UIPackageModel::index(int row, int column, const QModelIndex &parent
     if (!parent.isValid())
         return createIndex(row, column, root->Get(row));
 
-    UIPackageModelNode *node = static_cast<UIPackageModelNode*>(parent.internalPointer());
+    PackageBaseNode *node = static_cast<PackageBaseNode*>(parent.internalPointer());
     return createIndex(row, column, node->Get(row));
 }
 
@@ -87,8 +88,8 @@ QModelIndex UIPackageModel::parent(const QModelIndex &child) const
     if (!child.isValid())
         return QModelIndex();
 
-    UIPackageModelNode *node = static_cast<UIPackageModelNode*>(child.internalPointer());
-    UIPackageModelNode *parent = node->GetParent();
+    PackageBaseNode *node = static_cast<PackageBaseNode*>(child.internalPointer());
+    PackageBaseNode *parent = node->GetParent();
     if (parent == NULL || parent == root)
         return QModelIndex();
     
@@ -103,7 +104,7 @@ int UIPackageModel::rowCount(const QModelIndex &parent) const
     if (!parent.isValid())
         return root ? root->GetCount() : 0;
     
-    return static_cast<UIPackageModelNode*>(parent.internalPointer())->GetCount();
+    return static_cast<PackageBaseNode*>(parent.internalPointer())->GetCount();
 }
 
 int UIPackageModel::columnCount(const QModelIndex &/*parent*/) const
@@ -116,11 +117,7 @@ QVariant UIPackageModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    UIPackageModelNode *node = static_cast<UIPackageModelNode*>(index.internalPointer());
-    
-    //UIEditorComponent *editorComponent = dynamic_cast<UIEditorComponent*>(control->GetCustomData());
-//    DVASSERT(editorComponent != NULL);
-//    bool createdFromPrototype = editorComponent != NULL && editorComponent->IsClonedFromPrototype();
+    PackageBaseNode *node = static_cast<PackageBaseNode*>(index.internalPointer());
     
     switch(role)
     {
@@ -169,7 +166,7 @@ bool UIPackageModel::setData(const QModelIndex &index, const QVariant &value, in
     if (!index.isValid())
         return false;
     
-    UIPackageModelNode *node = static_cast<UIPackageModelNode*>(index.internalPointer());
+    PackageBaseNode *node = static_cast<PackageBaseNode*>(index.internalPointer());
     
     if (role == Qt::CheckStateRole)
     {

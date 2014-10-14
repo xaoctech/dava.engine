@@ -10,8 +10,10 @@
 #include "DAVAEngine.h"
 #include "EditorFontManager.h"
 #include "UI/UIPackageLoader.h"
-#include "UIControls/EditorUIPackageLoader.h"
-
+#include "UI/DefaultUIPackageBuilder.h"
+#include "UIControls/EditorUIPackageBuilder.h"
+#include "UIControls/LegacyEditorUIPackageLoader.h"
+#include "UIControls/PackageHierarchy/PackageNode.h"
 
 #include <QDir>
 
@@ -169,19 +171,24 @@ bool Project::Open(const QString &path)
     return true;
 }
 
-UIPackage *Project::OpenPackage(const QString &packagePath)
+PackageNode *Project::OpenPackage(const QString &packagePath)
 {
     FilePath path(packagePath.toStdString());
     String fwPath = path.GetFrameworkPath();
 
-    UIPackage *newPackage = EditorUIPackageLoader(legacyData).LoadPackage(path);
-    
-    
-    return newPackage;
+    //UIPackage *newPackage = LegacyEditorUIPackageLoader(legacyData).LoadPackage(path);
+    //DefaultUIPackageBuilder builder;
+    EditorUIPackageBuilder builder;
+    UIPackage *newPackage = UIPackageLoader(&builder).LoadPackage(path);
+    SafeRelease(newPackage);
+    PackageNode *node = builder.GetPackageNode();
+    return node;
 }
 
-bool Project::SavePackage(DAVA::UIPackage *package)
+bool Project::SavePackage(PackageNode *package)
 {
-    return EditorUIPackageLoader().SavePackage(package);
+    DVASSERT(false);
+    return false;
+    // return EditorUIPackageLoader().SavePackage(package);
 }
 

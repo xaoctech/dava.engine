@@ -28,7 +28,7 @@ class PropertiesTreeModel : public QAbstractItemModel
     Q_OBJECT
     
 public:
-    PropertiesTreeModel(DAVA::UIControl *control, PropertiesViewContext *context, QObject *parent = NULL);
+    PropertiesTreeModel(BaseProperty *propertiesRoot, PropertiesViewContext *context, QObject *parent = NULL);
     virtual ~PropertiesTreeModel();
     
     virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
