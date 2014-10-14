@@ -18,7 +18,7 @@ public class JNIRenderer implements GLSurfaceView.Renderer {
 	private native void nativeOnPauseView(boolean isLock);
 	
 	private boolean skipFirstFrame = false;
-	private boolean showTextFields = false;
+	private boolean isFirstFrameAfterDraw = false;
 
 	private int width = 0;
 	private int height = 0;
@@ -43,7 +43,6 @@ public class JNIRenderer implements GLSurfaceView.Renderer {
 		Log.w(JNIConst.LOG_TAG, "_________onSurfaceCreated_____DONE_____");
 	}
 
-
 	private void LogExtensions() {
 		String oglVersion = GLES20.glGetString(GLES20.GL_VERSION);
 		String deviceName = GLES20.glGetString(GLES20.GL_RENDERER);
@@ -67,7 +66,7 @@ public class JNIRenderer implements GLSurfaceView.Renderer {
 			isRenderRecreated = false;
 		}
 		OnResume();
-		showTextFields = true;
+		isFirstFrameAfterDraw = true;
 
 		Log.w(JNIConst.LOG_TAG, "_________onSurfaceChanged__DONE___");
 	}
@@ -81,9 +80,10 @@ public class JNIRenderer implements GLSurfaceView.Renderer {
 
 		nativeRender();
 		
-		if(showTextFields)
+		if(isFirstFrameAfterDraw)
 		{
-			showTextFields = false;
+			isFirstFrameAfterDraw = false;
+			JNIActivity.GetActivity().OnFirstFrameAfterDraw();
 			JNITextField.ShowVisibleTextFields();
 		}
 	}
