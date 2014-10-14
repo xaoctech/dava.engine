@@ -32,9 +32,8 @@
 #include <QTreeWidgetItem>
 #include "HierarchyTreeNode.h"
 
-class QtLibraryTreeWidgetItem : public QTreeWidgetItem
+class QtLibraryTreeWidgetItem : public QObject, public QTreeWidgetItem
 {
-	Q_OBJECT
 
 public:
 	QtLibraryTreeWidgetItem(QTreeWidgetItem * parent);

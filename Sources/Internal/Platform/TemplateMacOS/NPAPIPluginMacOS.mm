@@ -14,10 +14,11 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#import  <AppKit/AppKit.h>
 #import "NPAPIPluginMacOS.h"
 
 #include "NPAPICorePlatformMacOS.h"
-#include "RenderManager.h"
+#include "Render/RenderManager.h"
 
 #include <pwd.h>
 
