@@ -54,11 +54,10 @@ class Font;
 class UIYamlLoader : public BaseObject
 {
     friend class UIPackageLoader;
-    
 protected:
     ~UIYamlLoader(){}
-public:
     UIYamlLoader();
+public:
     /**
      \brief	This is main function in UIYamlLoader and it loads fonts from yamlPathname file.
 
@@ -81,17 +80,7 @@ public:
         \param[in] assertIfCustomControlNotFound	if this flag is set to true, ASSERT and stop app execution if the
                                                     custom control can't be loaded.
      */
-    static void Load(UIControl * rootControl, const FilePath & yamlPathname, bool assertIfCustomControlNotFound = false);
-
-    /**
-     \brief	This function saves the UIControl's hierarchy to the YAML file passed.
-     rootControl.
-
-     \param[in, out]	rootControl		is used to take the configuration from
-     \param[in]			yamlPathName	path to store hierarchy to
-     \return            true if the save was successful
-     */
-    static bool Save(UIControl * rootControl, const FilePath & yamlPathname, bool skipRootNode);
+    static void Load(UIControl * rootControl, const FilePath & yamlPathname, bool assertIfCustomControlNotFound = true);
 
     Font * GetFontByName(const String & fontName) const;
 
@@ -110,25 +99,27 @@ public:
     YamlNode * GetFittingOptionNodeValue(int32 fitting) const;
 
     void AddScrollBarToLink(UIScrollBar* scroll,const String& delegatePath);
-    static String GetControlPath(const UIControl* conrol);
-    static UIControl* GetControlByPath(const String& controlPath, UIControl* rootControl);
-    UIControl *GetRootControl() const { return mainRootControl; }
+
+    inline bool GetAssertIfCustomControlNotFound() const;
+
 protected:
+    //Internal functions that do actual loading and saving.
+    void ProcessLoad(UIControl * rootControl, const FilePath & yamlPathname);
     YamlNode *CreateRootNode(const FilePath & yamlPathname);
     void LoadFontsFromNode(const YamlNode * node);
+    void LoadFromNode(UIControl * rootControl, const YamlNode * node, bool needParentCallback);
 
     // Set the "ASSERT if custom control is not found during loading" flag.
     void SetAssertIfCustomControlNotFound(bool value);
 
     const FilePath & GetCurrentPath() const;
-    void SetRootControl(UIControl *control);
+
 protected:
-    UIControl *mainRootControl;
+	// Create the control by its type or base type.
+	UIControl* CreateControl(const String& type, const String& baseType);
+
     //Called after loading
-public: // TODO: fixme
     void PostLoad(UIControl * rootControl);
-    
-protected:
     void SetScrollBarDelegates(UIControl * rootControl);
 
     // ASSERTion flag for "Custom Control not found" state.
@@ -138,6 +129,12 @@ protected:
 
     Map<UIScrollBar*,String> scrollsToLink;    
 };
+    
+inline bool UIYamlLoader::GetAssertIfCustomControlNotFound() const
+{
+    return assertIfCustomControlNotFound;
+}
+
 };
 
 #endif // __DAVAENGINE_YAML_LOADER_H__
