@@ -25,11 +25,11 @@ public:
     virtual DAVA::UIPackage *BeginPackage(const DAVA::FilePath &packagePath) override;
     virtual void EndPackage() override;
     
-    virtual void ProcessImportedPackage(const DAVA::String &packagePath, DAVA::UIPackageLoader *loader) override;
+    virtual DAVA::UIPackage *ProcessImportedPackage(const DAVA::String &packagePath, DAVA::AbstractUIPackageLoader *loader) override;
     
     virtual DAVA::UIControl *BeginControlWithClass(const DAVA::String className) override;
     virtual DAVA::UIControl *BeginControlWithCustomClass(const DAVA::String customClassName, const DAVA::String className) override;
-    virtual DAVA::UIControl *BeginControlWithPrototype(const DAVA::String &packageName, const DAVA::String &prototypeName, DAVA::UIPackageLoader *loader) override;
+    virtual DAVA::UIControl *BeginControlWithPrototype(const DAVA::String &packageName, const DAVA::String &prototypeName, DAVA::AbstractUIPackageLoader *loader) override;
     virtual DAVA::UIControl *BeginControlWithPath(const DAVA::String &pathName) override;
     virtual DAVA::UIControl *BeginUnknownControl(const DAVA::YamlNode *node) override;
     virtual void EndControl() override;

@@ -15,11 +15,11 @@ namespace DAVA
         virtual UIPackage *BeginPackage(const FilePath &packagePath) override;
         virtual void EndPackage() override;
         
-        virtual void ProcessImportedPackage(const String &packagePath, UIPackageLoader *loader) override;
+        virtual UIPackage *ProcessImportedPackage(const String &packagePath, AbstractUIPackageLoader *loader) override;
         
         virtual UIControl *BeginControlWithClass(const String className) override;
         virtual UIControl *BeginControlWithCustomClass(const String customClassName, const String className) override;
-        virtual UIControl *BeginControlWithPrototype(const String &packageName, const String &prototypeName, UIPackageLoader *loader) override;
+        virtual UIControl *BeginControlWithPrototype(const String &packageName, const String &prototypeName, AbstractUIPackageLoader *loader) override;
         virtual UIControl *BeginControlWithPath(const String &pathName) override;
         virtual UIControl *BeginUnknownControl(const YamlNode *node) override;
         virtual void EndControl() override;

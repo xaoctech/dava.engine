@@ -4,10 +4,7 @@
 
 #include "DAVAEngine.h"
 
-namespace DAVA
-{
-    class AbstractUIPackageBuilder;
-}
+#include "UI/AbstractUIPackageBuilder.h"
 
 class LegacyControlData : public DAVA::BaseObject
 {
@@ -36,23 +33,18 @@ public:
     DAVA::Map<DAVA::String, Data> map;
 };
 
-class LegacyEditorUIPackageLoader
+class LegacyEditorUIPackageLoader : public DAVA::AbstractUIPackageLoader
 {
 public:
     LegacyEditorUIPackageLoader(DAVA::AbstractUIPackageBuilder *builder, LegacyControlData *data = NULL);
     virtual ~LegacyEditorUIPackageLoader();
     
 public:
-    DAVA::UIPackage *LoadPackage(const DAVA::FilePath &packagePath);
-    
+    virtual DAVA::UIPackage *LoadPackage(const DAVA::FilePath &packagePath) override;
+    virtual bool LoadControlByName(const DAVA::String &name) override;
+
 private:
-    DAVA::UIControl *CreateControl(const DAVA::YamlNode *node, DAVA::UIPackage *currentPackage);
-    void LoadControl(DAVA::UIControl *control, const DAVA::YamlNode *node, DAVA::UIPackage *currentPackage);
-    
-protected:
-    virtual DAVA::UIControl *CreateControlByClassName(const DAVA::String &className);
-    virtual DAVA::UIControl *CreateCustomControl(const DAVA::String &customClassName, const DAVA::String &baseClassName);
-    virtual DAVA::UIControl *CreateControlFromPrototype(DAVA::UIControl *prototype);
+    void LoadControl(const DAVA::String &controlName, const DAVA::YamlNode *node);
     
 private:
     void LoadControlPropertiesFromYamlNode(DAVA::UIControl *control, const DAVA::InspInfo *typeInfo, const DAVA::YamlNode *node);
@@ -78,7 +70,6 @@ private:
 private:
     DAVA::AbstractUIPackageBuilder *builder;
     LegacyControlData *legacyData;
-    DAVA::Map<DAVA::String, DAVA::UIPackage*> importedPackages;
 };
 
 
