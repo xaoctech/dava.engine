@@ -36,3 +36,5 @@ ddd
 /testproj/
 fmod.log
 *.user
+/Tools/ResourceEditor/_build
+/Tools/UIEditor/_build
