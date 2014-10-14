@@ -238,3 +238,34 @@ void ValueProperty::SetSubValue(int index, const DAVA::VariantType &newValue)
             break;
     }
 }
+
+void ValueProperty::AddPropertiesToNode(YamlNode *node) const
+{
+    if (replaced)
+    {
+        VariantType value = GetValue();
+        if (value.GetType() == VariantType::TYPE_INT32 && member->Desc().type == InspDesc::T_FLAGS)
+        {
+            YamlNode *array = YamlNode::CreateArrayNode();
+
+            int val = value.AsInt32();
+            int p = 1;
+            while (val > 0)
+            {
+                if ((val & 0x01) != 0)
+                    array->Add(member->Desc().enumMap->ToString(p));
+                val >>= 1;
+                p <<= 1;
+            }
+            node->Add(member->Name(), array);
+        }
+        else if (value.GetType() == VariantType::TYPE_INT32 && member->Desc().type == InspDesc::T_ENUM)
+        {
+            node->Add(member->Name(), member->Desc().enumMap->ToString(value.AsInt32()));
+        }
+        else
+        {
+            node->Add(member->Name(), value);
+        }
+    }
+}

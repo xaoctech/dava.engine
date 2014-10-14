@@ -44,7 +44,8 @@ public:
     }
     
     virtual const EnumMap *GetEnumMap() const;
-    
+    virtual void AddPropertiesToNode(DAVA::YamlNode *node) const;
+
 private:
     DAVA::BaseObject *object;
     const DAVA::InspMember *member;

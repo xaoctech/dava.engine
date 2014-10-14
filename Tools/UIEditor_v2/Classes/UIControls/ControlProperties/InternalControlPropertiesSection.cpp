@@ -4,7 +4,7 @@
 
 using namespace DAVA;
 
-InternalControlPropertiesSection::InternalControlPropertiesSection(DAVA::UIControl *control, int num, const InternalControlPropertiesSection *sourceSection) : control(NULL), internalControl(NULL), internalControlNum(num), isContentHidden(false)
+InternalControlPropertiesSection::InternalControlPropertiesSection(DAVA::UIControl *control, int num, const InternalControlPropertiesSection *sourceSection) : control(NULL), internalControl(NULL), internalControlNum(num)
 {
     this->control = SafeRetain(control);
     
@@ -66,12 +66,16 @@ DAVA::String InternalControlPropertiesSection::GetName() const
     return control->GetInternalControlName(internalControlNum) + control->GetInternalControlDescriptions();
 }
 
-int InternalControlPropertiesSection::GetCount() const
+void InternalControlPropertiesSection::AddPropertiesToNode(YamlNode *node) const
 {
-    return isContentHidden ? 0 : PropertiesSection::GetCount();
-}
-
-void InternalControlPropertiesSection::HideContent()
-{
-    isContentHidden = true;
+    if (internalControl)
+    {
+        YamlNode *mapNode = YamlNode::CreateMapNode(false);
+        for (auto it = children.begin(); it != children.end(); ++it)
+            (*it)->AddPropertiesToNode(mapNode);
+        if (mapNode->GetCount() > 0)
+            node->Add(GetName(), mapNode);
+        else
+            SafeRelease(mapNode);
+    }
 }

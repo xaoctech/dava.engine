@@ -20,7 +20,7 @@ PackageNode::PackageNode(DAVA::UIPackage *package)
     , packageControlsNode(NULL)
 {
     importedPackagesNode = new ImportedPackagesNode(this);
-    packageControlsNode = new PackageControlsNode(this);
+    packageControlsNode = new PackageControlsNode(this, package);
 }
 
 PackageNode::~PackageNode()
@@ -67,3 +67,16 @@ PackageControlsNode *PackageNode::GetPackageControlsNode() const
     return packageControlsNode;
 }
 
+YamlNode *PackageNode::Serialize() const
+{
+    YamlNode *node = YamlNode::CreateMapNode(false, YamlNode::MR_BLOCK_REPRESENTATION, YamlNode::SR_PLAIN_REPRESENTATION);
+    
+    YamlNode *headerNode = YamlNode::CreateMapNode(false, YamlNode::MR_BLOCK_REPRESENTATION, YamlNode::SR_PLAIN_REPRESENTATION);
+    headerNode->Add("version", "0");
+    
+    node->Add("Header", headerNode);
+    node->Add("ImportedPackages", importedPackagesNode->Serialize());
+    node->Add("Controls", packageControlsNode->Serialize());
+    
+    return node;
+}

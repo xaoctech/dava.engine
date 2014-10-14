@@ -4,7 +4,7 @@
 
 using namespace DAVA;
 
-PackageControlsNode::PackageControlsNode(PackageBaseNode *parent) : PackageBaseNode(parent), name("Controls"), editable(true)
+PackageControlsNode::PackageControlsNode(PackageBaseNode *parent, UIPackage *package) : PackageBaseNode(parent), name("Controls"), editable(true), package(SafeRetain(package))
 {
 }
 
@@ -13,6 +13,7 @@ PackageControlsNode::~PackageControlsNode()
     for (auto it = nodes.begin(); it != nodes.end(); ++it)
         (*it)->Release();
     nodes.clear();
+    SafeRelease(package);
 }
 
 void PackageControlsNode::Add(ControlNode *node)
@@ -42,6 +43,16 @@ void PackageControlsNode::SetName(const DAVA::String &name)
     this->name = name;
 }
 
+UIPackage *PackageControlsNode::GetPackage() const
+{
+    return package;
+}
+
+const FilePath &PackageControlsNode::GetPackagePath() const
+{
+    return package->GetFilePath();
+}
+
 bool PackageControlsNode::IsInstancedFromPrototype() const
 {
     return false;
@@ -60,4 +71,12 @@ ControlNode *PackageControlsNode::FindControlNodeByName(const DAVA::String &name
             return *it;
     }
     return NULL;
+}
+
+YamlNode *PackageControlsNode::Serialize() const
+{
+    YamlNode *arrayNode = YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION);
+    for (auto it = nodes.begin(); it != nodes.end(); ++it)
+        arrayNode->Add((*it)->Serialize(NULL));
+    return arrayNode;
 }

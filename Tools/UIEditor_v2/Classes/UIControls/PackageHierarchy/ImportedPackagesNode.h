@@ -35,6 +35,8 @@ public:
         return false;
     }
     
+    DAVA::YamlNode *Serialize() const;
+    
 private:
     DAVA::Vector<PackageControlsNode*> packageControlsNode;
 };

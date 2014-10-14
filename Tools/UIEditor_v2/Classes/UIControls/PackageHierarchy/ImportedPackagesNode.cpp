@@ -54,3 +54,11 @@ PackageControlsNode *ImportedPackagesNode::FindPackageControlsNodeByName(const D
     }
     return NULL;
 }
+
+YamlNode *ImportedPackagesNode::Serialize() const
+{
+    YamlNode *arrayNode = YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION);
+    for (auto it = packageControlsNode.begin(); it != packageControlsNode.end(); ++it)
+        arrayNode->Add((*it)->GetPackagePath().GetFrameworkPath());
+    return arrayNode;
+}

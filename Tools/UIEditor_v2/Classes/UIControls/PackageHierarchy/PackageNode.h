@@ -23,6 +23,8 @@ public:
     ImportedPackagesNode *GetImportedPackagesNode() const;
     PackageControlsNode *GetPackageControlsNode() const;
     
+    DAVA::YamlNode *Serialize() const;
+    
 private:
     DAVA::UIPackage *package;
     

@@ -14,14 +14,12 @@ public:
     
     virtual DAVA::String GetName() const;
 
-    virtual int GetCount() const;
-    void HideContent();
+    void AddPropertiesToNode(DAVA::YamlNode *node) const;
 
 private:
     DAVA::UIControl *control;
     DAVA::UIControl *internalControl;
     int internalControlNum;
-    bool isContentHidden;
 };
 
 
