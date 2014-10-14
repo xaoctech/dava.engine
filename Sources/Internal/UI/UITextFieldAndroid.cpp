@@ -497,7 +497,7 @@ void UITextFieldAndroid::SetMaxLength(DAVA::int32 value)
 	return jniTextField.SetMaxLength(value);
 }
 
-bool UITextFieldAndroid::TextFieldKeyPressed(int32 replacementLocation, int32 replacementLength, const WideString &text)
+bool UITextFieldAndroid::TextFieldKeyPressed(int32 replacementLocation, int32 replacementLength, WideString &text)
 {
 	bool res = true;
 	UITextFieldDelegate* delegate = textField->GetDelegate();
@@ -516,7 +516,7 @@ bool UITextFieldAndroid::TextFieldKeyPressed(int32 replacementLocation, int32 re
 	return res;
 }
 
-bool UITextFieldAndroid::TextFieldKeyPressed(uint32_t id, int32 replacementLocation, int32 replacementLength, const WideString &text)
+bool UITextFieldAndroid::TextFieldKeyPressed(uint32_t id, int32 replacementLocation, int32 replacementLength, WideString &text)
 {
 	UITextFieldAndroid* control = GetUITextFieldAndroid(id);
 	if (!control)
