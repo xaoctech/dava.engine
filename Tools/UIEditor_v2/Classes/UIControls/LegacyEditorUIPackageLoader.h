@@ -74,7 +74,6 @@ private:
     
 private:
     LegacyControlData *legacyData;
-    DAVA::UIYamlLoader *yamlLoader;
     
     DAVA::Map<DAVA::String, DAVA::UIPackage*> importedPackages;
 };

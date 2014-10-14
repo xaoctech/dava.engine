@@ -1,11 +1,9 @@
 #include "LegacyEditorUIPackageLoader.h"
 
-
 #include "Base/ObjectFactory.h"
 #include "FileSystem/FilePath.h"
 #include "FileSystem/YamlNode.h"
 #include "FileSystem/YamlEmitter.h"
-#include "UI/UIYamlLoader.h"
 #include "UI/UIControl.h"
 #include "UI/UIStaticText.h"
 #include "UI/UIControlHelpers.h"
@@ -15,7 +13,6 @@ using namespace DAVA;
 
 LegacyEditorUIPackageLoader::LegacyEditorUIPackageLoader(LegacyControlData *data) : legacyData(SafeRetain(data))
 {
-    yamlLoader = new UIYamlLoader();
     
     // for legacy loading
     propertyNamesMap["UIControl"]["visible"] = "recursiveVisible";
@@ -46,7 +43,6 @@ LegacyEditorUIPackageLoader::LegacyEditorUIPackageLoader(LegacyControlData *data
 LegacyEditorUIPackageLoader::~LegacyEditorUIPackageLoader()
 {
     SafeRelease(legacyData);
-    SafeRelease(yamlLoader);
     for (auto it = importedPackages.begin(); it != importedPackages.end(); ++it)
     {
         it->second->Release();
@@ -156,7 +152,7 @@ void LegacyEditorUIPackageLoader::LoadControl(UIControl *control, const YamlNode
     
     control->LoadFromYamlNodeCompleted();
     control->ApplyAlignSettingsForChildren();
-    yamlLoader->PostLoad(control);
+    // yamlLoader->PostLoad(control);
 }
 
 UIControl *LegacyEditorUIPackageLoader::CreateControlByClassName(const String &className)
