@@ -1594,7 +1594,10 @@
       <Filter>Internal\UI</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\UI\UIPackageLoader.h" />
-    <ClInclude Include="..\..\Sources\Internal\UI\UIPackageSectionLoader.h">
+    <ClInclude Include="..\..\Sources\Internal\UI\AbstractUIPackageBuilder.h">
+      <Filter>Internal\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\UI\DefaultUIPackageBuilder.h">
       <Filter>Internal\UI</Filter>
     </ClInclude>
   </ItemGroup>
@@ -2866,7 +2869,11 @@
       <Filter>Internal\UI</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\UI\UIPackageLoader.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\UI\UIPackageSectionLoader.cpp">
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\Polygon2Swig.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\AbstractUIPackageBuilder.cpp">
+      <Filter>Internal\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\UI\DefaultUIPackageBuilder.cpp">
       <Filter>Internal\UI</Filter>
     </ClCompile>
   </ItemGroup>

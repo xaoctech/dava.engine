@@ -646,6 +646,8 @@
     <ClInclude Include="..\..\Sources\Internal\Sound\SoundEvent.h" />
     <ClInclude Include="..\..\Sources\Internal\Sound\SoundSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Thread\LockGuard.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\AbstractUIPackageBuilder.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\DefaultUIPackageBuilder.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\ScrollHelper.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\TheoraPlayer.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UI3DView.h" />
@@ -670,7 +672,6 @@
     <ClInclude Include="..\..\Sources\Internal\UI\UIMovieView.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIPackage.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIPackageLoader.h" />
-    <ClInclude Include="..\..\Sources\Internal\UI\UIPackageSectionLoader.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIParticles.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIPopup.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIScreen.h" />
@@ -1095,6 +1096,8 @@
     <ClCompile Include="..\..\Sources\Internal\Sound\FMODFileSoundEvent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Sound\FMODSoundEvent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Sound\FMODSoundSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\AbstractUIPackageBuilder.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\DefaultUIPackageBuilder.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\ScrollHelper.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\TheoraPlayer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UI3DView.cpp" />
@@ -1119,7 +1122,6 @@
     <ClCompile Include="..\..\Sources\Internal\UI\UIMovieView.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIPackage.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIPackageLoader.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\UI\UIPackageSectionLoader.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIParticles.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIPopup.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIScreen.cpp" />
