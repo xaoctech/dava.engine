@@ -187,8 +187,9 @@ PackageNode *Project::OpenPackage(const QString &packagePath)
 
 bool Project::SavePackage(PackageNode *package)
 {
-    DVASSERT(false);
-    return false;
-    // return EditorUIPackageLoader().SavePackage(package);
+    YamlNode *node = package->Serialize();
+    YamlEmitter::SaveToYamlFile(package->GetPackage()->GetFilePath(), node);
+    SafeRelease(node);
+    return true;
 }
 

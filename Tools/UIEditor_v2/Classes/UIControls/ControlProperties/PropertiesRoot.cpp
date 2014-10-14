@@ -121,6 +121,22 @@ void PropertiesRoot::MakeControlPropertiesSection(DAVA::UIControl *control, cons
     }
 }
 
+void PropertiesRoot::AddPropertiesToNode(YamlNode *node) const
+{
+    for (auto it = controlProperties.begin(); it != controlProperties.end(); ++it)
+        (*it)->AddPropertiesToNode(node);
+
+    YamlNode *componentsNode = YamlNode::CreateMapNode(false);
+    for (auto it = backgroundProperties.begin(); it != backgroundProperties.end(); ++it)
+        (*it)->AddPropertiesToNode(componentsNode);
+    for (auto it = internalControlProperties.begin(); it != internalControlProperties.end(); ++it)
+        (*it)->AddPropertiesToNode(componentsNode);
+    if (componentsNode->GetCount() > 0)
+        node->Add("components", componentsNode);
+    else
+        SafeRelease(componentsNode);
+}
+
 void PropertiesRoot::MakeBackgroundPropertiesSection(DAVA::UIControl *control, const PropertiesRoot *sourceProperties)
 {
     for (int i = 0; i < control->GetBackgroundComponentsCount(); i++)

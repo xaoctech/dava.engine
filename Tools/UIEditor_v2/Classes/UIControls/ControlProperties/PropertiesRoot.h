@@ -24,6 +24,8 @@ public:
     virtual DAVA::String GetName() const;
     virtual ePropertyType GetType() const;
 
+    void AddPropertiesToNode(DAVA::YamlNode *node) const;
+    
 private:
     void MakeControlPropertiesSection(DAVA::UIControl *control, const DAVA::InspInfo *typeInfo, const PropertiesRoot *sourceProperties);
     void MakeBackgroundPropertiesSection(DAVA::UIControl *control, const PropertiesRoot *sourceProperties);

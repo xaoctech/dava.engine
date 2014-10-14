@@ -78,6 +78,7 @@ UIControl *EditorUIPackageBuilder::BeginControlWithCustomClass(const String cust
 UIControl *EditorUIPackageBuilder::BeginControlWithPrototype(const String &packageName, const String &prototypeName, UIPackageLoader *loader)
 {
     ControlNode *prototypeNode = NULL;
+    UIPackage *prototypePackage = NULL;
     if (packageName.empty())
     {
         prototypeNode = packageNode->GetPackageControlsNode()->FindControlNodeByName(prototypeName);
@@ -91,10 +92,13 @@ UIControl *EditorUIPackageBuilder::BeginControlWithPrototype(const String &packa
     {
         PackageControlsNode *importedPackage = packageNode->GetImportedPackagesNode()->FindPackageControlsNodeByName(packageName);
         if (importedPackage)
+        {
+            prototypePackage = importedPackage->GetPackage();
             prototypeNode = importedPackage->FindControlNodeByName(prototypeName);
+        }
     }
     DVASSERT(prototypeNode);
-    ControlNode *node = prototypeNode->Clone();
+    ControlNode *node = new ControlNode(prototypeNode, prototypePackage);
     AddControlNode(node);
     return node->GetControl();
 }

@@ -7,7 +7,7 @@
 class PackageControlsNode : public PackageBaseNode
 {
 public:
-    PackageControlsNode(PackageBaseNode *parent);
+    PackageControlsNode(PackageBaseNode *parent, DAVA::UIPackage *package);
     virtual ~PackageControlsNode();
     
     void Add(ControlNode *node);
@@ -16,6 +16,9 @@ public:
 
     virtual DAVA::String GetName() const;
     void SetName(const DAVA::String &name);
+    
+    DAVA::UIPackage *GetPackage() const;
+    const DAVA::FilePath &GetPackagePath() const;
     
     virtual bool IsHeader() const {
         return true;
@@ -29,11 +32,13 @@ public:
     virtual bool IsCloned() const;
 
     ControlNode *FindControlNodeByName(const DAVA::String &name) const;
-    
+    DAVA::YamlNode *Serialize() const;
+
 private:
     DAVA::String name;
     bool editable;
     DAVA::Vector<ControlNode*> nodes;
+    DAVA::UIPackage *package;
 };
 
 #endif // __UI_EDITOR_PACKAGE_CONTROLS_NODE_H__

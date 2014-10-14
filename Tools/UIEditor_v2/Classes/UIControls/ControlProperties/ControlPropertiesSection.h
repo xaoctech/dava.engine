@@ -10,6 +10,7 @@ public:
     virtual ~ControlPropertiesSection();
     
     virtual DAVA::String GetName() const;
+    void AddPropertiesToNode(DAVA::YamlNode *node) const;
 
 
 private:

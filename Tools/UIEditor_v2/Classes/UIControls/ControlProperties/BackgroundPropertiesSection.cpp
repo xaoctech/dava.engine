@@ -1,18 +1,10 @@
-//
-//  BackgroundPropertiesSection.cpp
-//  UIEditor
-//
-//  Created by Dmitry Belsky on 30.9.14.
-//
-//
-
 #include "BackgroundPropertiesSection.h"
 
 #include "ValueProperty.h"
 
 using namespace DAVA;
 
-BackgroundPropertiesSection::BackgroundPropertiesSection(UIControl *control, int bgNum, const BackgroundPropertiesSection *sourceSection) : control(NULL), bg(NULL), bgNum(bgNum), isContentHidden(false)
+BackgroundPropertiesSection::BackgroundPropertiesSection(UIControl *control, int bgNum, const BackgroundPropertiesSection *sourceSection) : control(NULL), bg(NULL), bgNum(bgNum)
 {
     this->control = SafeRetain(control);
     
@@ -74,12 +66,16 @@ DAVA::String BackgroundPropertiesSection::GetName() const
     return control->GetBackgroundComponentName(bgNum);
 }
 
-int BackgroundPropertiesSection::GetCount() const
+void BackgroundPropertiesSection::AddPropertiesToNode(YamlNode *node) const
 {
-    return isContentHidden ? 0 : PropertiesSection::GetCount();
-}
-
-void BackgroundPropertiesSection::HideContent()
-{
-    isContentHidden = true;
+    if (bg)
+    {
+        YamlNode *mapNode = YamlNode::CreateMapNode(false);
+        for (auto it = children.begin(); it != children.end(); ++it)
+            (*it)->AddPropertiesToNode(mapNode);
+        if (mapNode->GetCount() > 0)
+            node->Add(GetName(), mapNode);
+        else
+            SafeRelease(mapNode);
+    }
 }

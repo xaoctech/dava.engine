@@ -13,16 +13,14 @@ public:
     void CreateControlBackground();
 
     DAVA::String GetName() const;
-    virtual int GetCount() const;
     
-    void HideContent();
+    void AddPropertiesToNode(DAVA::YamlNode *node) const;
 
 private:
     DAVA::UIControl *control;
     DAVA::UIControlBackground *bg;
     
     int bgNum;
-    bool isContentHidden;
 };
 
 #endif // __UI_EDITOR_BACKGROUND_PROPERTIES_SECTION_H__
