@@ -11,12 +11,12 @@
 #include "PackageHierarchy/PackageNode.h"
 #include "PackageHierarchy/ImportedPackagesNode.h"
 #include "PackageHierarchy/PackageControlsNode.h"
-#include "ControlPropertiesSection.h"
-#include "BackgroundPropertiesSection.h"
-#include "InternalControlPropertiesSection.h"
-#include "ValueProperty.h"
-#include "LocalizedTextValueProperty.h"
-#include "ControlNode.h"
+#include "UIControls/ControlProperties/ControlPropertiesSection.h"
+#include "UIControls/ControlProperties/BackgroundPropertiesSection.h"
+#include "UIControls/ControlProperties/InternalControlPropertiesSection.h"
+#include "UIControls/ControlProperties/ValueProperty.h"
+#include "UIControls/ControlProperties/LocalizedTextValueProperty.h"
+#include "UIControls/PackageHierarchy/ControlNode.h"
 
 using namespace DAVA;
 
