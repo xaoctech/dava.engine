@@ -170,22 +170,32 @@ float GetUITextViewSizeDivider()
                 }
 
                 string = [string substringToIndex:charsToInsert];
-                [textField setText: [textField.text stringByReplacingCharactersInRange:range withString:string]];
 
-                needIgnoreDelegateResult = TRUE;
+                needIgnoreDelegateResult = YES;
             }
         }
 
         // Length check OK, continue with the delegate.
         DAVA::WideString repString;
+        DAVA::WideString cpyString;
         const char * cstr = [string cStringUsingEncoding:NSUTF8StringEncoding];
         DAVA::UTF8Utils::EncodeToWideString((DAVA::uint8*)cstr, (DAVA::int32)strlen(cstr), repString);
+        cpyString = repString;
 
         BOOL delegateResult = cppTextField->GetDelegate()->TextFieldKeyPressed(cppTextField, (DAVA::int32)range.location, (DAVA::int32)range.length, repString);
-        return needIgnoreDelegateResult ? FALSE : delegateResult;
+
+        if (YES == needIgnoreDelegateResult || (TRUE == delegateResult && repString != cpyString))
+        {
+            NSString* s = [NSString stringWithUTF8String:DAVA::UTF8Utils::EncodeToUTF8(repString).c_str()];
+            [textField setText: [textField.text stringByReplacingCharactersInRange:range withString:s]];
+
+            return NO;
+        }
+
+        return delegateResult;
 	}
 
-	return TRUE;
+	return YES;
 }
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
