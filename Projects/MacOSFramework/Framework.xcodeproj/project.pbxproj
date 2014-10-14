@@ -1031,6 +1031,7 @@
 		840D24231703311400267C58 /* DeviceInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 840D24211703311400267C58 /* DeviceInfo.h */; };
 		840ED3E116D5089E00D2BA6C /* DPIHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 840ED3E016D5089E00D2BA6C /* DPIHelper.h */; };
 		840ED3E316D5095000D2BA6C /* DPIHelperMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 840ED3E216D5095000D2BA6C /* DPIHelperMacOS.mm */; };
+		8446E19B19E5471A0015E772 /* Polygon2Swig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8446E19A19E5471A0015E772 /* Polygon2Swig.cpp */; };
 		846CFE5F174D1A64004ECE3C /* OpenUDIDApple.h in Headers */ = {isa = PBXBuildFile; fileRef = 846CFE5D174D1A64004ECE3C /* OpenUDIDApple.h */; };
 		846CFE60174D1A64004ECE3C /* OpenUDIDApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 846CFE5E174D1A64004ECE3C /* OpenUDIDApple.mm */; };
 		846CFE63174D1A75004ECE3C /* OpenUDIDMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 846CFE61174D1A75004ECE3C /* OpenUDIDMacOS.h */; };
@@ -2696,6 +2697,7 @@
 		840D24211703311400267C58 /* DeviceInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceInfo.h; sourceTree = "<group>"; };
 		840ED3E016D5089E00D2BA6C /* DPIHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DPIHelper.h; sourceTree = "<group>"; };
 		840ED3E216D5095000D2BA6C /* DPIHelperMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DPIHelperMacOS.mm; sourceTree = "<group>"; };
+		8446E19A19E5471A0015E772 /* Polygon2Swig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Polygon2Swig.cpp; sourceTree = "<group>"; };
 		846CFE5D174D1A64004ECE3C /* OpenUDIDApple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenUDIDApple.h; sourceTree = "<group>"; };
 		846CFE5E174D1A64004ECE3C /* OpenUDIDApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenUDIDApple.mm; sourceTree = "<group>"; };
 		846CFE61174D1A75004ECE3C /* OpenUDIDMacOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenUDIDMacOS.h; sourceTree = "<group>"; };
@@ -3750,6 +3752,7 @@
 		E8989ACD16BD24E400732C04 /* Autotesting */ = {
 			isa = PBXGroup;
 			children = (
+				8446E19A19E5471A0015E772 /* Polygon2Swig.cpp */,
 				7A169349180EE75A005F1FBC /* AutotestingDB.cpp */,
 				7A16934A180EE75A005F1FBC /* AutotestingDB.h */,
 				7A16934B180EE75A005F1FBC /* GameAPI.cpp */,
@@ -6570,6 +6573,7 @@
 				E8989DA616BD24E500732C04 /* LinearAnimation.cpp in Sources */,
 				D7E6C5B3198255C000B96D1A /* BSDiff.cpp in Sources */,
 				E8989DAD16BD24E500732C04 /* AutotestingSystem.cpp in Sources */,
+				8446E19B19E5471A0015E772 /* Polygon2Swig.cpp in Sources */,
 				E8989DB016BD24E500732C04 /* MongodbUpdateObject.cpp in Sources */,
 				E8989DB416BD24E500732C04 /* BaseMath.cpp in Sources */,
 				E8989DB616BD24E500732C04 /* BaseObject.cpp in Sources */,
