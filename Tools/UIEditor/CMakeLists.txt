@@ -73,7 +73,7 @@ elseif( APPLE )
 
 endif()
 
-file              ( GLOB_RECURSE QT_LIST "Classes/*.h" "Classes/*.hpp" "Classes/*.cpp")
+file              ( GLOB_RECURSE QT_LIST "Classes/*.h" )
 qt4_wrap_cpp      ( MOC_APP_SRCS ${QT_LIST} )
 
 file              ( GLOB UI_LIST "Ui/*.ui" )
