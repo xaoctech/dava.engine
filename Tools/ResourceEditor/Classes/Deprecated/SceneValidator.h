@@ -170,6 +170,7 @@ protected:
     Set<String> errorMessages;
     
     FilePath pathForChecking;
+    String sceneName;
 };
 
 
