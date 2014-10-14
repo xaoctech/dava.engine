@@ -196,8 +196,8 @@ bool UIScrollBar::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultCon
 
     if (delegate)
     {
-        UIControl* delegateControl = dynamic_cast<UIControl*>(delegate);
-        node->Set("linkedScrollBarDelegate", UIControlHelpers::GetControlPath(delegateControl, loader->GetRootControl()));
+        //UIControl* delegateControl = dynamic_cast<UIControl*>(delegate);
+        //node->Set("linkedScrollBarDelegate", UIControlHelpers::GetControlPath(delegateControl, loader->GetRootControl()));
     }
 
 	return true;
