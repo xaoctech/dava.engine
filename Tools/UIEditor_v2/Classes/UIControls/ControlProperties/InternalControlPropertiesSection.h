@@ -1,11 +1,3 @@
-//
-//  InternalControlPropertiesSection.h
-//  UIEditor
-//
-//  Created by Dmitry Belsky on 30.9.14.
-//
-//
-
 #ifndef __UI_EDITOR_INTERNAL_CONTROL_PROPERTIES_SECTION_H__
 #define __UI_EDITOR_INTERNAL_CONTROL_PROPERTIES_SECTION_H__
 
@@ -14,8 +6,11 @@
 class InternalControlPropertiesSection : public PropertiesSection
 {
 public:
-    InternalControlPropertiesSection(DAVA::UIControl *control, int num);
+    InternalControlPropertiesSection(DAVA::UIControl *control, int num, const InternalControlPropertiesSection *sourceSection);
     virtual ~InternalControlPropertiesSection();
+
+    virtual DAVA::UIControl *GetInternalControl() const;
+    void CreateInternalControl();
     
     virtual DAVA::String GetName() const;
 
@@ -24,6 +19,7 @@ public:
 
 private:
     DAVA::UIControl *control;
+    DAVA::UIControl *internalControl;
     int internalControlNum;
     bool isContentHidden;
 };

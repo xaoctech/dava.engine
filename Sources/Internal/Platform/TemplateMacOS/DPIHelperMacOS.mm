@@ -58,5 +58,4 @@ namespace DAVA
         
         return screenSize;
     }
-    
 }

@@ -44,6 +44,7 @@ class QFileDialog;
 class Project;
 class PackageDocument;
 class QUndoGroup;
+class PackageNode;
 
 class MainWindow : public QMainWindow
 {
@@ -83,7 +84,7 @@ private slots:
     
     void CurrentTabChanged(int index);
     void TabCloseRequested(int index);
-    int CreateTabContent(DAVA::UIPackage *package);
+    int CreateTabContent(PackageNode *package);
     bool CloseTab(int index);
     bool CloseAllTabs();
 

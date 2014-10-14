@@ -328,11 +328,19 @@ public:
     }
     
     FilePath GetBgSprite() const {
-        return Sprite::GetPathString(GetSprite());
+        if (GetSprite() == NULL)
+            return "";
+        else if (GetSprite()->GetRelativePathname().GetType() == FilePath::PATH_IN_MEMORY)
+            return "";
+        else
+            return Sprite::GetPathString(GetSprite());
     }
     
     void SetBgSprite(const FilePath &path) {
-        SetSprite(path, GetFrame());
+        if (path == "")
+            SetSprite(NULL, 0);
+        else
+            SetSprite(path, GetFrame());
     }
     
     int32 GetBgColorInherit() const {

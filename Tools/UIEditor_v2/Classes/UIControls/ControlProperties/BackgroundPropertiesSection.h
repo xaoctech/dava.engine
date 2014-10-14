@@ -1,11 +1,3 @@
-//
-//  BackgroundPropertiesSection.h
-//  UIEditor
-//
-//  Created by Dmitry Belsky on 30.9.14.
-//
-//
-
 #ifndef __UI_EDITOR_BACKGROUND_PROPERTIES_SECTION_H__
 #define __UI_EDITOR_BACKGROUND_PROPERTIES_SECTION_H__
 
@@ -14,9 +6,12 @@
 class BackgroundPropertiesSection : public PropertiesSection
 {
 public:
-    BackgroundPropertiesSection(DAVA::UIControl *control, int bgNum);
+    BackgroundPropertiesSection(DAVA::UIControl *control, int bgNum, const BackgroundPropertiesSection *sourceSection);
     virtual ~BackgroundPropertiesSection();
     
+    DAVA::UIControlBackground *GetBg() const;
+    void CreateControlBackground();
+
     DAVA::String GetName() const;
     virtual int GetCount() const;
     
@@ -24,6 +19,8 @@ public:
 
 private:
     DAVA::UIControl *control;
+    DAVA::UIControlBackground *bg;
+    
     int bgNum;
     bool isContentHidden;
 };

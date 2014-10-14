@@ -56,7 +56,6 @@
 #include "UI/FileSystemView/FileSystemDockWidget.h"
 #include "UI/PackageDocument.h"
 #include "UI/UIPackageLoader.h"
-#include "UIControls/EditorUIPackageLoader.h"
 #include "Utils/QtDavaConvertion.h"
 
 const QString APP_NAME = "UIEditor";
@@ -165,8 +164,8 @@ void MainWindow::CurrentTabChanged(int index)
     if (activeDocument)
     {
         disconnect(activeDocument->UndoStack(), SIGNAL(cleanChanged(bool)), this, SLOT(OnCleanChanged(bool)));
-        disconnect(ui->packageTreeDock, SIGNAL(SelectionRootControlChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)), activeDocument, SLOT(OnSelectionRootControlChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)));
-        disconnect(ui->packageTreeDock, SIGNAL(SelectionControlChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)), activeDocument, SLOT(OnSelectionControlChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)));
+        disconnect(ui->packageTreeDock, SIGNAL(SelectionRootControlChanged(const QList<ControlNode*> &, const QList<ControlNode*> &)), activeDocument, SLOT(OnSelectionRootControlChanged(const QList<ControlNode*> &, const QList<ControlNode*> &)));
+        disconnect(ui->packageTreeDock, SIGNAL(SelectionControlChanged(const QList<ControlNode*> &, const QList<ControlNode*> &)), activeDocument, SLOT(OnSelectionControlChanged(const QList<ControlNode*> &, const QList<ControlNode*> &)));
         activeDocument->UndoStack()->setActive(false);
     }
     
@@ -184,8 +183,8 @@ void MainWindow::CurrentTabChanged(int index)
     
     if (activeDocument)
     {
-        connect(ui->packageTreeDock, SIGNAL(SelectionControlChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)), activeDocument, SLOT(OnSelectionControlChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)));
-        connect(ui->packageTreeDock, SIGNAL(SelectionRootControlChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)), activeDocument, SLOT(OnSelectionRootControlChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)));
+        connect(ui->packageTreeDock, SIGNAL(SelectionControlChanged(const QList<ControlNode*> &, const QList<ControlNode*> &)), activeDocument, SLOT(OnSelectionControlChanged(const QList<ControlNode*> &, const QList<ControlNode*> &)));
+        connect(ui->packageTreeDock, SIGNAL(SelectionRootControlChanged(const QList<ControlNode*> &, const QList<ControlNode*> &)), activeDocument, SLOT(OnSelectionRootControlChanged(const QList<ControlNode*> &, const QList<ControlNode*> &)));
         activeDocument->UndoStack()->setActive(true);
         connect(activeDocument->UndoStack(), SIGNAL(cleanChanged(bool)), this, SLOT(OnCleanChanged(bool)));
     }
@@ -532,7 +531,7 @@ void MainWindow::OnOpenPackageFile(const QString &path)
             int index = GetTabIndexByPath(path);
             if (index == -1)
             {
-                DAVA::UIPackage *package = project->OpenPackage(path);
+                PackageNode *package = project->OpenPackage(path);
                 if (package)
                 {
                     index = CreateTabContent(package);
@@ -710,7 +709,7 @@ void MainWindow::UpdateSaveButtons()
     ui->actionSaveAllDocuments->setEnabled(enableMultiSave);
 }
 
-int MainWindow::CreateTabContent(DAVA::UIPackage *package)
+int MainWindow::CreateTabContent(PackageNode *package)
 {
     int oldIndex = ui->tabBar->currentIndex();
     PackageDocument *document = new PackageDocument(package, this);

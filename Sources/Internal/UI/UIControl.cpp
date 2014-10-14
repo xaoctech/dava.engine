@@ -2973,7 +2973,8 @@ namespace DAVA
     
     void UIControl::SetBackgroundComponent(int32 index, UIControlBackground *bg)
     {
-        DVASSERT(false);
+        DVASSERT(index == 0);
+        SetBackground(bg);
     }
     
     String UIControl::GetBackgroundComponentName(int32 index) const

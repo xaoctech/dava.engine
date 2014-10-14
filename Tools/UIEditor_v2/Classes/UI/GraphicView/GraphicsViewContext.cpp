@@ -1,5 +1,6 @@
 #include "GraphicsViewContext.h"
 #include "EditScreen.h"
+#include "UIControls/PackageHierarchy/ControlNode.h"
 
 using namespace DAVA;
 
@@ -160,17 +161,17 @@ void GraphicsViewContext::SetCanvasPosition(const QPoint &newCanvasPosition)
     }
 }
 
-void GraphicsViewContext::OnActiveRootControlsChanged(const QList<DAVA::UIControl *> &activatedControls, const QList<DAVA::UIControl *> &/*deactivatedControls*/)
+void GraphicsViewContext::OnActiveRootControlsChanged(const QList<ControlNode*> &activatedControls, const QList<ControlNode*> &/*deactivatedControls*/)
 {
     canvas->RemoveAllControls();
 
     //const DAVA::Vector<DAVA::UIControl *> &activeControls = document->GetActiveRootControls();
 
-    foreach(DAVA::UIControl *control, activatedControls)
+    foreach(ControlNode *controlNode, activatedControls)
     {
         ScopedPtr<UIControl> checkeredCanvas(new CheckeredCanvas());
-        checkeredCanvas->AddControl(control);
-        checkeredCanvas->SetSize(control->GetSize());
+        checkeredCanvas->AddControl(controlNode->GetControl());
+        checkeredCanvas->SetSize(controlNode->GetControl()->GetSize());
         canvas->AddControl(checkeredCanvas);
     }
 

@@ -1,11 +1,3 @@
-//
-//  ControlPropertiesSection.h
-//  UIEditor
-//
-//  Created by Dmitry Belsky on 30.9.14.
-//
-//
-
 #ifndef __UI_EDITOR_CONTROL_PROPERTIES_SECTION_H__
 #define __UI_EDITOR_CONTROL_PROPERTIES_SECTION_H__
 
@@ -14,11 +6,14 @@
 class ControlPropertiesSection : public PropertiesSection
 {
 public:
-    ControlPropertiesSection(const DAVA::String &name);
+    ControlPropertiesSection(DAVA::UIControl *control, const DAVA::InspInfo *typeInfo, const ControlPropertiesSection *sourceSection);
+    virtual ~ControlPropertiesSection();
     
     virtual DAVA::String GetName() const;
 
+
 private:
+    DAVA::UIControl *control;
     DAVA::String name;
 };
 

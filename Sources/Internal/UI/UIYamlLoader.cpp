@@ -45,6 +45,7 @@
 #include "Render/2D/FTFont.h"
 #include "UIControlHelpers.h"
 #include "UIPackageLoader.h"
+#include "DefaultUIPackageBuilder.h"
 
 namespace DAVA
 {
@@ -418,7 +419,8 @@ bool UIYamlLoader::SaveFonts(const FilePath & yamlPathname)
 
 void UIYamlLoader::Load(UIControl * rootControl, const FilePath & yamlPathname, bool assertIfCustomControlNotFound)
 {
-    RefPtr<UIPackage> package(UIPackageLoader().LoadPackage(yamlPathname));
+    DefaultUIPackageBuilder builder;
+    RefPtr<UIPackage> package(UIPackageLoader(&builder).LoadPackage(yamlPathname));
     if (!package.Valid())
         return;
 
@@ -438,7 +440,9 @@ bool UIYamlLoader::Save(UIControl * rootControl, const FilePath & yamlPathname, 
 {
     ScopedPtr<UIPackage> package(new UIPackage(yamlPathname));
     package->AddControl(rootControl);
-    return UIPackageLoader().SavePackage(package);
+    DVASSERT(false);
+    return false;
+    //return UIPackageLoader().SavePackage(package);
 }
 
 YamlNode *UIYamlLoader::CreateRootNode(const FilePath & yamlPathname)
