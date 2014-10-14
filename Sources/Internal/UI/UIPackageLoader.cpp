@@ -16,12 +16,10 @@ namespace DAVA
 
 UIPackageLoader::UIPackageLoader(AbstractUIPackageBuilder *builder) : builder(builder)
 {
-    yamlLoader = new UIYamlLoader();
 }
 
 UIPackageLoader::~UIPackageLoader()
 {
-    SafeRelease(yamlLoader);
     this->builder = NULL;
 }
     
@@ -175,7 +173,7 @@ void UIPackageLoader::LoadControl(const YamlNode *node)
 
         control->LoadFromYamlNodeCompleted();
         control->ApplyAlignSettingsForChildren();
-        yamlLoader->PostLoad(control);
+        // yamlLoader->PostLoad(control);
     }
     builder->EndControl();
 }

@@ -35,8 +35,6 @@ private:
     virtual VariantType ReadVariantTypeFromYamlNode(const InspMember *member, const YamlNode *node);
 
 private:
-    UIYamlLoader *yamlLoader;
-
     enum eItemStatus {
         STATUS_WAIT,
         STATUS_LOADING,
