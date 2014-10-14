@@ -49,7 +49,6 @@ public class JNIContextFactory implements GLSurfaceView.EGLContextFactory
 	public void destroyContext(EGL10 egl, EGLDisplay display, EGLContext context) 
     {
         egl.eglDestroyContext(display, context);
-        JNIActivity.GetActivity().OnRenderDestroyed();
     }
 	
 	private EGLContext createOpenGLESContext(int openglESVersion, EGL10 egl, EGLDisplay display, EGLConfig eglConfig)

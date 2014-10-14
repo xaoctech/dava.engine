@@ -18,7 +18,7 @@ public class JNIRenderer implements GLSurfaceView.Renderer {
 	private native void nativeOnPauseView(boolean isLock);
 	
 	private boolean skipFirstFrame = false;
-	private boolean isFirstFrameAfterDraw = false;
+	private boolean showTextFields = false;
 
 	private int width = 0;
 	private int height = 0;
@@ -66,7 +66,7 @@ public class JNIRenderer implements GLSurfaceView.Renderer {
 			isRenderRecreated = false;
 		}
 		OnResume();
-		isFirstFrameAfterDraw = true;
+		showTextFields = true;
 
 		Log.w(JNIConst.LOG_TAG, "_________onSurfaceChanged__DONE___");
 	}
@@ -80,10 +80,9 @@ public class JNIRenderer implements GLSurfaceView.Renderer {
 
 		nativeRender();
 		
-		if(isFirstFrameAfterDraw)
+		if(showTextFields)
 		{
-			isFirstFrameAfterDraw = false;
-			JNIActivity.GetActivity().OnFirstFrameAfterDraw();
+			showTextFields = false;
 			JNITextField.ShowVisibleTextFields();
 		}
 	}
