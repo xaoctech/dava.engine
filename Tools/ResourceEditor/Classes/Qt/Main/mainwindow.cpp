@@ -2921,6 +2921,8 @@ void QtMainWindow::OnReloadShaders()
                 materialList.insert(particleIt->second->GetParent());
         }
 
+        scene->foliageSystem->CollectFoliageMaterials(materialList);
+
         DAVA::Set<DAVA::NMaterial *>::iterator it = materialList.begin();
         DAVA::Set<DAVA::NMaterial *>::iterator endIt = materialList.end();
         while (it != endIt)
