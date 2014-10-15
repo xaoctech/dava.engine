@@ -111,6 +111,8 @@ YamlNode *ControlNode::Serialize(YamlNode *prototypeChildren) const
             node->Add("prototype", prototypePackage->GetName() + "/" + prototype->GetName());
         else
             node->Add("prototype", prototype->GetName());
+        if (!control->GetCustomControlClassName().empty() && prototype->GetControl()->GetCustomControlClassName() != control->GetCustomControlClassName())
+            node->Add("customClass", control->GetCustomControlClassName());
     }
     else if (creationType == CREATED_FROM_PROTOTYPE_CHILD)
     {

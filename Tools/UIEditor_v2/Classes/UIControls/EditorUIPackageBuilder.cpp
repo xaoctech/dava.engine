@@ -92,7 +92,7 @@ UIControl *EditorUIPackageBuilder::BeginControlWithCustomClass(const String cust
     return control;
 }
 
-UIControl *EditorUIPackageBuilder::BeginControlWithPrototype(const String &packageName, const String &prototypeName, AbstractUIPackageLoader *loader)
+UIControl *EditorUIPackageBuilder::BeginControlWithPrototype(const String &packageName, const String &prototypeName, const String &customClassName, AbstractUIPackageLoader *loader)
 {
     ControlNode *prototypeNode = NULL;
     UIPackage *prototypePackage = NULL;
@@ -116,6 +116,7 @@ UIControl *EditorUIPackageBuilder::BeginControlWithPrototype(const String &packa
     }
     DVASSERT(prototypeNode);
     ControlNode *node = new ControlNode(prototypeNode, prototypePackage);
+    node->GetControl()->SetCustomControlClassName(customClassName);
     AddControlNode(node);
     return node->GetControl();
 }

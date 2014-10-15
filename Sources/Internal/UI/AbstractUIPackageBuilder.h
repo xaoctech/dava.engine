@@ -34,7 +34,7 @@ namespace DAVA
         
         virtual UIControl *BeginControlWithClass(const String className) = 0;
         virtual UIControl *BeginControlWithCustomClass(const String customClassName, const String className) = 0;
-        virtual UIControl *BeginControlWithPrototype(const String &packageName, const String &prototypeName, AbstractUIPackageLoader *loader) = 0;
+        virtual UIControl *BeginControlWithPrototype(const String &packageName, const String &prototypeName, const String &customClassName, AbstractUIPackageLoader *loader) = 0;
         virtual UIControl *BeginControlWithPath(const String &pathName) = 0;
         virtual UIControl *BeginUnknownControl(const YamlNode *node) = 0;
         virtual void EndControl() = 0;

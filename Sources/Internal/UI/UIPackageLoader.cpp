@@ -132,6 +132,8 @@ void UIPackageLoader::LoadControl(const YamlNode *node)
     }
     else if (prototypeNode)
     {
+        const YamlNode *customClassNode = node->Get("customClass");
+        String customClass = customClassNode == NULL ? "" : customClassNode->AsString();
         String controlName = prototypeNode->AsString();
         String packageName = "";
         size_t pos = controlName.find('/');
@@ -141,7 +143,7 @@ void UIPackageLoader::LoadControl(const YamlNode *node)
             controlName = controlName.substr(pos + 1, controlName.length() - pos - 1);
         }
         
-        control = builder->BeginControlWithPrototype(packageName, controlName, this);
+        control = builder->BeginControlWithPrototype(packageName, controlName, customClass, this);
     }
     else if (classNode)
     {

@@ -19,7 +19,7 @@ namespace DAVA
         
         virtual UIControl *BeginControlWithClass(const String className) override;
         virtual UIControl *BeginControlWithCustomClass(const String customClassName, const String className) override;
-        virtual UIControl *BeginControlWithPrototype(const String &packageName, const String &prototypeName, AbstractUIPackageLoader *loader) override;
+        virtual UIControl *BeginControlWithPrototype(const String &packageName, const String &prototypeName, const String &customClassName, AbstractUIPackageLoader *loader) override;
         virtual UIControl *BeginControlWithPath(const String &pathName) override;
         virtual UIControl *BeginUnknownControl(const YamlNode *node) override;
         virtual void EndControl() override;
