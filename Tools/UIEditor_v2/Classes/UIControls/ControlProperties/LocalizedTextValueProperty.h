@@ -26,7 +26,6 @@ public:
   
 protected:
     DAVA::WideString text;
-    bool isEditMode;
 };
 
 #endif // __UI_EDITOR_LOCALIZED_TEXT_VALUE_PROPERTY__
