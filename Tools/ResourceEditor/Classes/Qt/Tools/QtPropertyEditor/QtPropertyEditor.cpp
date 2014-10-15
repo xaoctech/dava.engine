@@ -33,7 +33,6 @@
 #include <QPainter>
 #include <QApplication>
 #include <QScrollBar>
-#include <QDebug>
 
 #include "QtPropertyEditor.h"
 #include "QtPropertyModel.h"
