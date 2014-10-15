@@ -70,7 +70,7 @@ bool UIAggregatorControl::LoadPropertiesFromYamlNode(const YamlNode *node, UIYam
 	{
 		aggregatorPath = FilePath(pathNode->AsString());
 		// DF-2230 - Pass relative path to loader
-		UIYamlLoader::Load(this, aggregatorPath);
+		UIYamlLoader::Load(this, aggregatorPath, loader->GetAssertIfCustomControlNotFound());
 	}
 
     return true;
