@@ -815,8 +815,6 @@ bool UIButton::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultContro
     node->RemoveNodeFromMap("spriteModification");
     node->RemoveNodeFromMap("margins");
     node->RemoveNodeFromMap("textMargins");
-    
-    ScopedPtr<UIButton> baseControl( new UIButton() );
 
     UIButton *baseControl = DynamicTypeCheck<UIButton *>(defaultControl);
 

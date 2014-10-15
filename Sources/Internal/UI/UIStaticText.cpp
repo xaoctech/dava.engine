@@ -445,9 +445,6 @@ bool UIStaticText::SavePropertiesToYamlNode( YamlNode *node, UIControl *defaultC
         node->Set("textMargins", &textMarginsVariant);
     }
 
-    SafeDelete(nodeValue);
-    SafeRelease(baseControl);
-
     return true;
 }
 
@@ -517,8 +514,6 @@ Rect UIStaticText::CalculateTextBlockRect(const UIGeometricData &geometricData) 
     return resultRect;
 }
 
-};
-    
 String UIStaticText::GetFontPresetName() const
 {
     Font *font = GetFont();
