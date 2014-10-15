@@ -5,6 +5,7 @@
 #include "Base/ObjectFactory.h"
 #include "UI/UIControl.h"
 #include "UI/UIControlHelpers.h"
+#include "FileSystem/LocalizationSystem.h"
 
 namespace DAVA
 {
@@ -86,7 +87,7 @@ namespace DAVA
         return control;
     }
     
-    UIControl *DefaultUIPackageBuilder::BeginControlWithPrototype(const String &packageName, const String &prototypeName, AbstractUIPackageLoader *loader)
+    UIControl *DefaultUIPackageBuilder::BeginControlWithPrototype(const String &packageName, const String &prototypeName, const String &customClassName, AbstractUIPackageLoader *loader)
     {
         UIControl *prototype;
         if (packageName.empty())
@@ -107,7 +108,15 @@ namespace DAVA
         
         DVASSERT(prototype != NULL);
         
-        UIControl *control = prototype->Clone();
+        UIControl *control;
+        if (!customClassName.empty())
+        {
+            control = ObjectFactory::Instance()->New<UIControl>(customClassName);
+            control->CopyDataFrom(prototype);
+        }
+        else
+            control = prototype->Clone();
+        
         AddControl(control);
         return control;
     }
@@ -201,7 +210,12 @@ namespace DAVA
         DVASSERT(currentObject);
         
         if (currentObject && value.GetType() != VariantType::TYPE_NONE)
-            member->SetValue(currentObject, value);
+        {
+            if (String(member->Name()) == "text")
+                member->SetValue(currentObject, VariantType(LocalizedString(value.AsWideString())));
+            else
+                member->SetValue(currentObject, value);
+        }
     }
 
     void DefaultUIPackageBuilder::AddControl(UIControl *control)
