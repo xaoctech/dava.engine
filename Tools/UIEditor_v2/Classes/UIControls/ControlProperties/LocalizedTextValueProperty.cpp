@@ -10,9 +10,10 @@
 
 using namespace DAVA;
 
-LocalizedTextValueProperty::LocalizedTextValueProperty(DAVA::BaseObject *object, const DAVA::InspMember *member) : ValueProperty(object, member), isEditMode(false)
+LocalizedTextValueProperty::LocalizedTextValueProperty(DAVA::BaseObject *object, const DAVA::InspMember *member) : ValueProperty(object, member)
 {
     text = member->Value(object).AsWideString();
+    GetMember()->SetValue(GetBaseObject(), VariantType(LocalizedString(text)));
 }
 
 LocalizedTextValueProperty::~LocalizedTextValueProperty()
@@ -39,14 +40,12 @@ void LocalizedTextValueProperty::SetValue(const DAVA::VariantType &newValue)
 {
     ValueProperty::SetValue(newValue);
     text = newValue.AsWideString();
-    if (isEditMode)
-        GetMember()->SetValue(GetBaseObject(), VariantType(LocalizedString(text)));
+    GetMember()->SetValue(GetBaseObject(), VariantType(LocalizedString(text)));
 }
 
 void LocalizedTextValueProperty::ResetValue()
 {
     ValueProperty::ResetValue();
     text = GetMember()->Value(GetBaseObject()).AsWideString();
-    if (isEditMode)
-        GetMember()->SetValue(GetBaseObject(), VariantType(LocalizedString(text)));
+    GetMember()->SetValue(GetBaseObject(), VariantType(LocalizedString(text)));
 }
