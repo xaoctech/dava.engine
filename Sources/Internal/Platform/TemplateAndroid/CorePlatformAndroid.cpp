@@ -181,10 +181,7 @@ namespace DAVA
 
 		Thread::InitGLThread();
 
-		if(totalTouches.size() != 0)
-		{
-			totalTouches.clear();
-		}
+		totalTouches.clear();
 
 		if(wasCreated)
 		{
