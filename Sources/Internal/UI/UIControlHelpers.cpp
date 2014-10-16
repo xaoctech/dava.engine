@@ -25,21 +25,23 @@ String UIControlHelpers::GetControlPath(const UIControl *control, const UIContro
     return controlPath;
 }
 
-UIControl *UIControlHelpers::GetControlByPath(const String &controlPath, UIControl *rootControl)
+UIControl *UIControlHelpers::GetControlByPath(const String &controlPath, const UIControl *rootControl)
 {
-    UIControl* control = rootControl;
+    const UIControl* control = rootControl;
     Vector<String> controlNames;
     Split(controlPath, "/", controlNames, false, true);
     Vector<String>::const_iterator iter = controlNames.begin();
+    UIControl* findControl = NULL;
     for (; iter!=controlNames.end(); ++iter)
     {
-        control = control->FindByName(*iter,false);
-        if (!control)
+        findControl = control->FindByName(*iter,false);
+        if (!findControl)
         {
             return NULL;
         }
+        control = findControl;
     }
-    return control;
+    return findControl;
 }
 
 }
