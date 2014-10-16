@@ -39,7 +39,7 @@ class UIControlHelpers
 {
 public:
     static String GetControlPath(const UIControl *control, const UIControl *rootControl = NULL);
-    static UIControl *GetControlByPath(const String &controlPath, UIControl *rootControl);
+    static UIControl *GetControlByPath(const String &controlPath, const UIControl *rootControl);
 };
 
 };
