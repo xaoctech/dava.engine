@@ -113,6 +113,9 @@ public slots:
 
     void CloneRenderBatchesToFixSwitchLODs();
 
+    void ResetProperties();
+
+
 protected:
 	eViewMode viewMode;
 	bool favoritesEditMode;
@@ -156,9 +159,6 @@ protected:
 	QtPropertyToolButton * CreateButton(QtPropertyData *data, const QIcon & icon, const QString & tooltip);
 
 	QString GetDefaultFilePath(); 
-
-private slots:
-    void ResetProperties();
 
 private:
     int resetRequests;

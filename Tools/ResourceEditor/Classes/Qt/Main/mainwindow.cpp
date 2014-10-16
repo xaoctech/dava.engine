@@ -2481,6 +2481,7 @@ void QtMainWindow::OnBuildStaticOcclusion()
     if(sceneWasChanged)
     {
         scene->MarkAsChanged();
+        ui->propertyEditor->ResetProperties();
     }
 
     delete waitOcclusionDlg;
@@ -2917,6 +2918,8 @@ void QtMainWindow::OnReloadShaders()
             if(particleIt->second->GetParent())
                 materialList.insert(particleIt->second->GetParent());
         }
+
+        scene->foliageSystem->CollectFoliageMaterials(materialList);
 
         DAVA::Set<DAVA::NMaterial *>::iterator it = materialList.begin();
         DAVA::Set<DAVA::NMaterial *>::iterator endIt = materialList.end();

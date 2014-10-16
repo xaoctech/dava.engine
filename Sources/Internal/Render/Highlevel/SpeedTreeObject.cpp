@@ -39,7 +39,8 @@ namespace DAVA
 const FastName SpeedTreeObject::FLAG_WIND_ANIMATION("WIND_ANIMATION");
 
 SpeedTreeObject::SpeedTreeObject() :
-lightSmoothing(0.f)
+lightSmoothing(0.f),
+harmonicsValue(1.f)
 {
     type = TYPE_SPEED_TREE;
 
@@ -91,6 +92,16 @@ const float32 & SpeedTreeObject::GetLightSmoothing() const
     return lightSmoothing;
 }
 
+void SpeedTreeObject::SetSHValue(const float32 & value)
+{
+    harmonicsValue = value;
+}
+
+const float32 & SpeedTreeObject::GetSHValue() const
+{
+    return harmonicsValue;
+}
+
 void SpeedTreeObject::BindDynamicParameters(Camera * camera)
 {
     RenderObject::BindDynamicParameters(camera);
@@ -100,6 +111,7 @@ void SpeedTreeObject::BindDynamicParameters(Camera * camera)
 
     DVASSERT(sphericalHarmonics.size() == SPHERICAL_HARMONICS_BASIS_MAX_SIZE);
     RenderManager::SetDynamicParam(PARAM_SPHERICAL_HARMONICS, &sphericalHarmonics[0], UPDATE_SEMANTIC_ALWAYS);
+    RenderManager::SetDynamicParam(PARAM_SPHERICAL_HARMONICS_VALUE, &harmonicsValue, UPDATE_SEMANTIC_ALWAYS);
 }
 
 void SpeedTreeObject::UpdateAnimationFlag(int32 maxAnimatedLod)
@@ -125,6 +137,7 @@ RenderObject * SpeedTreeObject::Clone(RenderObject *newObject)
     SpeedTreeObject * treeObject = (SpeedTreeObject *)newObject;
     treeObject->SetSphericalHarmonics(GetSphericalHarmonics());
     treeObject->SetLightSmoothing(GetLightSmoothing());
+    treeObject->SetSHValue(GetSHValue());
 
     return newObject;
 }
@@ -141,6 +154,7 @@ void SpeedTreeObject::Save(KeyedArchive *archive, SerializationContext *serializ
     }
 
     archive->SetFloat("sto.lightSmoothing", lightSmoothing);
+    archive->SetFloat("sto.harmonicsValue", harmonicsValue);
 }
 
 void SpeedTreeObject::Load(KeyedArchive *archive, SerializationContext *serializationContext)
@@ -153,6 +167,7 @@ void SpeedTreeObject::Load(KeyedArchive *archive, SerializationContext *serializ
         sphericalHarmonics.assign(sphericalArray, sphericalArray + shCount);
 
     lightSmoothing = archive->GetFloat("sto.lightSmoothing", lightSmoothing);
+    harmonicsValue = archive->GetFloat("sto.harmonicsValue", harmonicsValue);
     
     uint32 size = (uint32)renderBatchArray.size();
     for (uint32 k = 0; k < size; ++k)
