@@ -795,6 +795,8 @@ public:
      */
     UIControl * FindByName(const String & name, bool recursive = true) const;
 
+    UIControl * FindByPath(const String & path) const;
+
     /**
      \brief Returns control state bit mask.
      \returns control state.

@@ -29,6 +29,7 @@
 #include "UI/UIControl.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UIYamlLoader.h"
+#include "UI/UIControlHelpers.h"
 #include "Animation/LinearAnimation.h"
 #include "Debug/DVAssert.h"
 #include "FileSystem/YamlNode.h"
@@ -36,7 +37,6 @@
 #include "Render/RenderHelper.h"
 #include "Render/RenderManager.h"
 #include "Utils/StringFormat.h"
-#include "Utils/Utils.h"
 
 namespace DAVA
 {
@@ -274,6 +274,11 @@ namespace DAVA
         return 0;
     }
 
+    UIControl * UIControl::FindByPath(const String &path) const
+    {
+        return UIControlHelpers::GetControlByPath(path, this);
+    }
+
     void UIControl::SetState(int32 state)
     {
         controlState = state;
@@ -345,18 +350,16 @@ namespace DAVA
         if (this->GetRightAlignEnabled())
         {
             controlSize.x = GetSizeX(parentControl, align, rightAlign);
-            RecalculatePivotPoint(Rect(0, 0, controlSize.x, controlSize.y));
         }
         else if (this->GetHCenterAlignEnabled())
         {
             controlSize.x = GetSizeX(parentControl, align, (-1)*hcenterAlign, true);
-            RecalculatePivotPoint(Rect(0, 0, controlSize.x, controlSize.y));
         }
+        SetSize(controlSize);
         // Change position
-        relativePosition.x = (float32)align + pivotPoint.x;
+        relativePosition.x = (float32)align + GetPivotPoint().x;
         // Update the size of control
-        this->SetSize(controlSize);
-        this->SetPosition(relativePosition, false);
+        SetPosition(relativePosition, false);
     }
 
     int32 UIControl::GetLeftAlign() const
@@ -381,25 +384,31 @@ namespace DAVA
         Vector2 controlSize = this->GetSize();
 
         // Check if two align options selected simultaneously
-        if (this->GetLeftAlignEnabled())
+        if (GetLeftAlignEnabled())
         {
             controlSize.x = GetSizeX(parentControl, (-1)*align, leftAlign, true);
-            RecalculatePivotPoint(Rect(0, 0, controlSize.x, controlSize.y));
-            relativePosition.x = (float32)leftAlign + pivotPoint.x;
         }
-        else if (this->GetRightAlignEnabled())
+        else if (GetRightAlignEnabled())
         {
             controlSize.x = GetSizeX(parentControl, align, rightAlign, true);
-            RecalculatePivotPoint(Rect(0, 0, controlSize.x, controlSize.y));
-            relativePosition.x = GetRelativeX(parentControl, align) + pivotPoint.x;
+        }
+
+        SetSize(controlSize);
+
+        if (GetLeftAlignEnabled())
+        {
+            relativePosition.x = (float32)leftAlign + GetPivotPoint().x;
+        }
+        else if (GetRightAlignEnabled())
+        {
+            relativePosition.x = GetRelativeX(parentControl, align) + GetPivotPoint().x;
         }
         else // If only hcenter option is selected - set center of this control relative to it's parent center
         {
-            relativePosition.x = GetCenterX(parentControl, align, this) + pivotPoint.x;
+            relativePosition.x = GetCenterX(parentControl, align, this) + GetPivotPoint().x;
         }
 
-        this->SetSize(controlSize);
-        this->SetPosition(relativePosition, false);
+        SetPosition(relativePosition);
     }
 
     int32 UIControl::GetHCenterAlign() const
@@ -425,25 +434,30 @@ namespace DAVA
         if (!parentControl)
             return;
 
-        if (this->GetLeftAlignEnabled())
+        if (GetLeftAlignEnabled())
         {
             controlSize.x = GetSizeX(parentControl, leftAlign, align);
-            RecalculatePivotPoint(Rect(0, 0, controlSize.x, controlSize.y));
-            relativePosition.x = (float32)leftAlign + pivotPoint.x;
         }
-        else if (this->GetHCenterAlignEnabled())
+        else if (GetHCenterAlignEnabled())
         {
             controlSize.x = GetSizeX(parentControl, align, hcenterAlign, true);
-            RecalculatePivotPoint(Rect(0, 0, controlSize.x, controlSize.y));
-            relativePosition.x =  GetRelativeX(parentControl, hcenterAlign) + pivotPoint.x;
+        }
+
+        SetSize(controlSize);
+
+        if (GetLeftAlignEnabled())
+        {
+            relativePosition.x = (float32)leftAlign + GetPivotPoint().x;
+        }
+        else if (GetHCenterAlignEnabled())
+        {
+            relativePosition.x =  GetRelativeX(parentControl, hcenterAlign) + GetPivotPoint().x;
         }
         else // If only right option is on - just change relative position
         {
-            relativePosition.x = GetRelativeX(parentControl, align, this) + pivotPoint.x;
+            relativePosition.x = GetRelativeX(parentControl, align, this) + GetPivotPoint().x;
         }
-
-        this->SetSize(controlSize);
-        this->SetPosition(relativePosition, false);
+        SetPosition(relativePosition);
     }
 
     int32 UIControl::GetRightAlign() const
@@ -474,17 +488,16 @@ namespace DAVA
         if (this->GetBottomAlignEnabled())
         {
             controlSize.y = GetSizeY(parentControl, align, bottomAlign);
-            RecalculatePivotPoint(Rect(0, 0, controlSize.x, controlSize.y));
         }
         else if (this->GetVCenterAlignEnabled())
         {
             controlSize.y = GetSizeY(parentControl, align, (-1)*vcenterAlign, true);
-            RecalculatePivotPoint(Rect(0, 0, controlSize.x, controlSize.y));
         }
+        SetSize(controlSize);
         // Set position and change size
-        relativePosition.y = (float32)align + pivotPoint.y;
+        relativePosition.y = (float32)align + GetPivotPoint().y;
         this->SetPosition(relativePosition, false);
-        this->SetSize(controlSize);
+        
     }
 
     int32 UIControl::GetTopAlign() const
@@ -509,25 +522,31 @@ namespace DAVA
         Vector2 controlSize = this->GetSize();
 
         // Check if two align options selected simultaneously
-        if (this->GetTopAlignEnabled())
+        if (GetTopAlignEnabled())
         {
             controlSize.y = GetSizeY(parentControl, (-1)*align, topAlign, true);
-            RecalculatePivotPoint(Rect(0, 0, controlSize.x, controlSize.y));
-            relativePosition.y = (float32)topAlign + pivotPoint.y;
         }
-        else if (this->GetBottomAlignEnabled())
+        else if (GetBottomAlignEnabled())
         {
             controlSize.y = GetSizeY(parentControl, align, bottomAlign, true);
-            RecalculatePivotPoint(Rect(0, 0, controlSize.x, controlSize.y));
-            relativePosition.y = GetRelativeY(parentControl, align) + pivotPoint.y;
+        }
+
+        SetSize(controlSize);
+
+        if (GetTopAlignEnabled())
+        {
+            relativePosition.y = (float32)topAlign + GetPivotPoint().y;
+        }
+        else if (GetBottomAlignEnabled())
+        {
+            relativePosition.y = GetRelativeY(parentControl, align) + GetPivotPoint().y;
         }
         else
         {
-            relativePosition.y = GetCenterY(parentControl, align, this) + pivotPoint.y;
+            relativePosition.y = GetCenterY(parentControl, align, this) + GetPivotPoint().y;
         }
 
-        this->SetSize(controlSize);
-        this->SetPosition(relativePosition, false);
+        this->SetPosition(relativePosition);
     }
 
     int32 UIControl::GetVCenterAlign() const
@@ -554,25 +573,31 @@ namespace DAVA
         if (!parentControl)
             return;
 
-        if (this->GetTopAlignEnabled())
+        if (GetTopAlignEnabled())
         {
             controlSize.y = GetSizeY(parentControl, topAlign, align);
-            RecalculatePivotPoint(Rect(0, 0, controlSize.x, controlSize.y));
-            relativePosition.y = (float32)topAlign + pivotPoint.y;
         }
-        else if (this->GetVCenterAlignEnabled())
+        else if (GetVCenterAlignEnabled())
         {
             controlSize.y = GetSizeY(parentControl, vcenterAlign, align, true);
-            RecalculatePivotPoint(Rect(0, 0, controlSize.x, controlSize.y));
-            relativePosition.y =  GetRelativeY(parentControl, vcenterAlign) + pivotPoint.y;
+        }
+
+        SetSize(controlSize);
+
+        if (GetTopAlignEnabled())
+        {
+            relativePosition.y = (float32)topAlign + GetPivotPoint().y;
+        }
+        else if (GetVCenterAlignEnabled())
+        {
+            relativePosition.y =  GetRelativeY(parentControl, vcenterAlign) + GetPivotPoint().y;
         }
         else //If only bottom option is on - just change relative position
         {
-            relativePosition.y = GetRelativeY(parentControl, align, this) + pivotPoint.y;
+            relativePosition.y = GetRelativeY(parentControl, align, this) + GetPivotPoint().y;
         }
 
-        this->SetSize(controlSize);
-        this->SetPosition(relativePosition, false);
+        SetPosition(relativePosition);
     }
 
     int32 UIControl::GetBottomAlign() const
@@ -780,9 +805,11 @@ namespace DAVA
 
     void UIControl::SetSize(const Vector2 &newSize)
     {
+        Vector2 oldPivot = GetPivot();
         size = newSize;
+        SetPivot(oldPivot);
         // Update size and align of childs
-        RecalculateChildsSize();
+        UpdateLayout();
     }
 
     float32 UIControl::GetParentsTotalAngle(bool includeOwn)
@@ -819,15 +846,13 @@ namespace DAVA
 
     Rect UIControl::GetAbsoluteRect()
     {
-        return Rect(GetAbsolutePosition() - pivotPoint, size);
+        return Rect(GetAbsolutePosition() - GetPivotPoint(), size);
     }
 
     void UIControl::SetRect(const Rect &rect)
     {
-        RecalculatePivotPoint(rect);
-
         SetSize(rect.GetSize());
-        SetPosition(rect.GetPosition() + pivotPoint);
+        SetPosition(rect.GetPosition() + GetPivotPoint());
 
         // Update aligns if control was resized manually
         RecalculateAlignProperties();
@@ -1617,7 +1642,7 @@ namespace DAVA
             return;
         }
 
-        if (drawPivotPointMode == DRAW_ONLY_IF_NONZERO && pivotPoint.IsZero())
+        if (drawPivotPointMode == DRAW_ONLY_IF_NONZERO && GetPivotPoint().IsZero())
         {
             return;
         }
@@ -1629,7 +1654,7 @@ namespace DAVA
         RenderManager::Instance()->ClipPush();
         RenderManager::Instance()->SetColor(Color(1.0f, 0.0f, 0.0f, 1.0f));
 
-        Vector2 pivotPointCenter = drawRect.GetPosition() + pivotPoint;
+        Vector2 pivotPointCenter = drawRect.GetPosition() + GetPivotPoint();
         RenderHelper::Instance()->DrawCircle(pivotPointCenter, PIVOT_POINT_MARK_RADIUS, RenderState::RENDERSTATE_2D_BLEND);
 
         // Draw the cross mark.
@@ -2650,7 +2675,7 @@ namespace DAVA
 
         if (pivotToCenter)
         {
-            pivotPoint = GetSize()/2.f;
+            SetPivot(Vector2(0.5f, 0.5f));
         }
     }
 
@@ -2856,7 +2881,7 @@ namespace DAVA
 
     void UIControl::ApplyAlignSettingsForChildren()
     {
-        RecalculateChildsSize();
+        UpdateLayout();
     }
 
     const String & UIControl::GetControlClassName() const
