@@ -50,12 +50,37 @@ public:
     }
     
 private:
-    void AddControlNode(ControlNode *node);
+    struct ControlDescr {
+        ControlNode *node;
+        bool addToParent;
+        ControlDescr() : node(NULL), addToParent(false) {}
+        
+        ControlDescr(ControlNode *node, bool addToParent) : node(node), addToParent(addToParent) { }
+        ControlDescr(const ControlDescr &descr) {
+            node = DAVA::SafeRetain(descr.node);
+            addToParent = descr.addToParent;
+        }
+        
+        ~ControlDescr()
+        {
+            DAVA::SafeRelease(node);
+        }
+        
+        ControlDescr &operator=(const ControlDescr &descr)
+        {
+            DAVA::SafeRetain(descr.node);
+            DAVA::SafeRelease(node);
+            
+            node = descr.node;
+            addToParent = descr.addToParent;
+            return *this;
+        }
+    };
     
 private:
     PackageNode *packageNode;
     
-    DAVA::Vector<ControlNode*> controlsStack;
+    DAVA::List<ControlDescr> controlsStack;
     DAVA::BaseObject *currentObject;
     PropertiesSection *currentSection;
 };

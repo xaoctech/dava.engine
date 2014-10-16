@@ -60,6 +60,7 @@ namespace DAVA
     UIControl *DefaultUIPackageBuilder::BeginControlWithClass(const String className)
     {
         UIControl *control = ObjectFactory::Instance()->New<UIControl>(className);
+        control->RemoveAllControls();
         if (!control)
             Logger::Warning("[DefaultUIControlFactory::CreateControl] Can't create control with class name \"%s\"", className.c_str());
 
@@ -70,7 +71,8 @@ namespace DAVA
     UIControl *DefaultUIPackageBuilder::BeginControlWithCustomClass(const String customClassName, const String className)
     {
         UIControl *control = ObjectFactory::Instance()->New<UIControl>(customClassName);
-
+        control->RemoveAllControls();
+        
         if (!control)
             control = ObjectFactory::Instance()->New<UIControl>(className); // TODO: remove
         
@@ -112,6 +114,8 @@ namespace DAVA
         if (!customClassName.empty())
         {
             control = ObjectFactory::Instance()->New<UIControl>(customClassName);
+            control->RemoveAllControls();
+            
             control->CopyDataFrom(prototype);
         }
         else
