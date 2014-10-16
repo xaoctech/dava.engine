@@ -17,6 +17,8 @@
 #include "DAVAEngine.h"
 
 class PackageNode;
+class ControlNode;
+class PackageBaseNode;
 
 class UIPackageMimeData: public QMimeData
 {
@@ -53,6 +55,7 @@ public:
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
     
+    virtual Qt::DropActions supportedDragActions() const;
     virtual Qt::DropActions supportedDropActions() const;
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
     virtual QStringList mimeTypes() const;
@@ -63,14 +66,8 @@ public:
     
     virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
     
-    void InsertControl(DAVA::UIControl *control, const QModelIndex &parent, const QModelIndex &insertBelowIndex);
-    void RemoveControl(DAVA::UIControl *control);
-    
-    void InsertControlToContent(DAVA::UIControl *control, DAVA::UIControl *parent, DAVA::UIControl *insertBelowControl);
-    void RemoveControlFromContent(DAVA::UIControl *control);
-    
-    void InsertControlToPackage(DAVA::UIControl *control, int index);
-    void RemoveControlFromPackage(DAVA::UIControl *control);
+    void InsertNode(ControlNode *node, const QModelIndex &parent, const QModelIndex &insertBelowIndex);
+    void RemoveNode(ControlNode *node);
     
     QAction *UndoAction() const { return undoAction; }
     QAction *RedoAction() const { return redoAction; }
@@ -81,9 +78,6 @@ public:
     void CopyItem(const QModelIndex &srcItem, int dstRow, const QModelIndex &dstParent);
     void RemoveItem(const QModelIndex &srcItem);
     
-//private:
-//    bool IsPackageRootControl(const DAVA::UIControl *control) const;
-//    bool IsPackageContentControl(const DAVA::UIControl *control) const;
 private:
     PackageNode *root;
     
