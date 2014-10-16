@@ -83,11 +83,23 @@ void UIScrollView::SetSize(const DAVA::Vector2 &newSize)
 
 void UIScrollView::AddControl(UIControl *control)
 {
-	UIControl::AddControl(control);
-	if (control->GetName() == UISCROLL_VIEW_CONTAINER_NAME)
-	{
-		scrollContainer = (UIScrollViewContainer*)control;
-	}	
+    UIControl::AddControl(control);
+
+    if (control->GetName() == UISCROLL_VIEW_CONTAINER_NAME && scrollContainer != control)
+    {
+        SafeRelease(scrollContainer);
+        scrollContainer = SafeRetain(DynamicTypeCheck<UIScrollViewContainer*>(control));
+    }
+}
+
+void UIScrollView::RemoveControl( UIControl *control )
+{
+    if (control == scrollContainer)
+    {
+        SafeRelease(scrollContainer);
+    }
+
+    UIControl::RemoveControl(control);
 }
 
 void UIScrollView::PushContentToBounds(UIControl *parentControl)
@@ -215,14 +227,6 @@ void UIScrollView::CopyDataFrom(UIControl *srcControl)
 	AddControl(scrollContainer);
 }
 
-void UIScrollView::FindRequiredControls()
-{
-    UIControl * scrollContainerControl = FindByName(UISCROLL_VIEW_CONTAINER_NAME);
-    DVASSERT(scrollContainerControl);
-    scrollContainer = SafeRetain(DynamicTypeCheck<UIScrollViewContainer*>(scrollContainerControl));
-    DVASSERT(scrollContainer);
-}
-
 void UIScrollView::SetPadding(const Vector2 & padding)
 {
 	if (!scrollHorizontal || !scrollVertical || !scrollContainer)
@@ -271,8 +275,6 @@ bool UIScrollView::LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader
 
 void UIScrollView::LoadFromYamlNodeCompleted()
 {
-	FindRequiredControls();
-	RecalculateContentSize();
 }
 
 bool UIScrollView::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader)
