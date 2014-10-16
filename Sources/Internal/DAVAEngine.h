@@ -292,6 +292,7 @@
 #include "Notification/LocalNotification.h"
 #include "Notification/LocalNotificationText.h"
 #include "Notification/LocalNotificationProgress.h"
+#include "Notification/LocalNotificationDelayed.h"
 #include "Notification/LocalNotificationController.h"
 
 #endif // __DAVAENGINE_H__

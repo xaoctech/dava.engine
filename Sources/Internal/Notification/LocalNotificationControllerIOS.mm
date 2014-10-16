@@ -13,7 +13,7 @@ void LocalNotificationController::PostDelayedNotification(const WideString &titl
     [[UIApplication sharedApplication] scheduleLocalNotification:notification];
 }
 
-void LocalNotificationController::ClearAllDelayedNotifications()
+void LocalNotificationController::RemoveAllDelayedNotifications()
 {
     for(UILocalNotification *notification in [[UIApplication sharedApplication] scheduledLocalNotifications])
     {

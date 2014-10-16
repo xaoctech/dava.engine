@@ -977,6 +977,10 @@
 		84E5E102174D02F60001C74F /* OpenUDIDios.h in Headers */ = {isa = PBXBuildFile; fileRef = 84E5E100174D02F60001C74F /* OpenUDIDios.h */; };
 		84E5E103174D02F60001C74F /* OpenUDIDios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 84E5E101174D02F60001C74F /* OpenUDIDios.mm */; };
 		87A0C45B18EACBEE00A7402D /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87A0C45A18EACBEE00A7402D /* AssetsLibrary.framework */; };
+		9A0110663B88BCD0451F54EF /* LocalNotificationDelayed.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A011E482AD5A0EA4F082005 /* LocalNotificationDelayed.h */; };
+		9A0110F1302925F60E1FB064 /* LocalNotificationDelayed.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A011A8135D9BBBADF8E3299 /* LocalNotificationDelayed.cpp */; };
+		9A0116C9D40C6F4C8F6D62D2 /* LocalNotificationDelayed.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A011A8135D9BBBADF8E3299 /* LocalNotificationDelayed.cpp */; };
+		9A0116D5BCEED06B84CA6928 /* LocalNotificationDelayed.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A011E482AD5A0EA4F082005 /* LocalNotificationDelayed.h */; };
 		9A0116F3967F43C036364993 /* GamepadDevice.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9A011B491A9F000929E1677C /* GamepadDevice.mm */; };
 		9A0118DA743CA22531AE4139 /* LocalNotificationControllerIOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9A01120119A0333494AD0916 /* LocalNotificationControllerIOS.mm */; };
 		9A011C77BA90F38DCDB7F4E6 /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A0118E18AC6866222998E4C /* GameController.framework */; };
@@ -1923,8 +1927,10 @@
 		9A01120119A0333494AD0916 /* LocalNotificationControllerIOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = LocalNotificationControllerIOS.mm; sourceTree = "<group>"; };
 		9A011711EF06ABD979FD9B39 /* GamepadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GamepadManager.h; sourceTree = "<group>"; };
 		9A0118E18AC6866222998E4C /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = System/Library/Frameworks/GameController.framework; sourceTree = SDKROOT; };
+		9A011A8135D9BBBADF8E3299 /* LocalNotificationDelayed.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LocalNotificationDelayed.cpp; sourceTree = "<group>"; };
 		9A011B491A9F000929E1677C /* GamepadDevice.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GamepadDevice.mm; sourceTree = "<group>"; };
 		9A011D1A54C2070D923E1061 /* GamepadDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GamepadDevice.h; sourceTree = "<group>"; };
+		9A011E482AD5A0EA4F082005 /* LocalNotificationDelayed.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalNotificationDelayed.h; sourceTree = "<group>"; };
 		9A011F9F2BA83F7B090CBCFF /* GamepadManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GamepadManager.mm; sourceTree = "<group>"; };
 		A61171411860C24D00E18F8C /* StaticOcclusion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StaticOcclusion.cpp; sourceTree = "<group>"; };
 		A61171421860C24D00E18F8C /* StaticOcclusion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticOcclusion.h; sourceTree = "<group>"; };
@@ -2900,6 +2906,8 @@
 				D7CC265C19C517E500A3B754 /* LocalNotificationText.h */,
 				D7D3A2CB19CAB6C000CD6B51 /* LocalNotificationImpl.h */,
 				9A01120119A0333494AD0916 /* LocalNotificationControllerIOS.mm */,
+				9A011A8135D9BBBADF8E3299 /* LocalNotificationDelayed.cpp */,
+				9A011E482AD5A0EA4F082005 /* LocalNotificationDelayed.h */,
 			);
 			path = Notification;
 			sourceTree = "<group>";
@@ -4433,6 +4441,7 @@
 				02FD80911924997C007762C0 /* TextureStateData.h in Headers */,
 				02FD80921924997C007762C0 /* GamepadDevice.h in Headers */,
 				02FD80931924997C007762C0 /* GamepadManager.h in Headers */,
+				9A0116D5BCEED06B84CA6928 /* LocalNotificationDelayed.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4889,6 +4898,7 @@
 				4F25831219BDC94000C28926 /* NullType.h in Headers */,
 				9A011FF039AF222095F1FFD4 /* GamepadDevice.h in Headers */,
 				9A011EB2802FEC4E0A4AA289 /* GamepadManager.h in Headers */,
+				9A0110663B88BCD0451F54EF /* LocalNotificationDelayed.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5377,6 +5387,7 @@
 				02FD81EE1924997C007762C0 /* GamepadDevice.mm in Sources */,
 				02FD81EF1924997C007762C0 /* DateTime.cpp in Sources */,
 				02FD81F01924997C007762C0 /* GamepadManager.mm in Sources */,
+				9A0110F1302925F60E1FB064 /* LocalNotificationDelayed.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5782,6 +5793,7 @@
 				B4C29D52199B933F001B83FE /* SceneCache.cpp in Sources */,
 				9A011FD535036524CA050EF7 /* GamepadManager.mm in Sources */,
 				9A0118DA743CA22531AE4139 /* LocalNotificationControllerIOS.mm in Sources */,
+				9A0116C9D40C6F4C8F6D62D2 /* LocalNotificationDelayed.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

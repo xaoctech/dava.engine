@@ -52,6 +52,8 @@ public:
     virtual void Hide();
     virtual void ShowText(const WideString &title, const WideString text);
     virtual void ShowProgress(const WideString &title, const WideString text, const uint32 total, const uint32 progress);
+    virtual void ShowDelayed(WideString const &title, WideString const &text, int delaySeconds);
+    virtual void RemoveAllDelayedNotifications();
 
 public:
     UILocalNotificationWrapper *notification;

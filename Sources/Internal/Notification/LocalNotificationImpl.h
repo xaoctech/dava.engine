@@ -43,7 +43,9 @@ public:
     virtual void Hide() = 0;
     virtual void ShowText(const WideString &title, const WideString text) = 0;
     virtual void ShowProgress(const WideString &title, const WideString text, const uint32 total, const uint32 progress) = 0;
-    
+    virtual void ShowDelayed(const WideString &title, const WideString &text, int delaySeconds) = 0;
+    virtual void RemoveAllDelayedNotifications() = 0;
+
     static LocalNotificationImpl *Create(const String &_id);
     
     DAVA::String& GetId()

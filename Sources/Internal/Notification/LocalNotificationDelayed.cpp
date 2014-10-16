@@ -26,46 +26,20 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_LOCAL_NOTIFICATION_CONTROLLER_H__
-#define __DAVAENGINE_LOCAL_NOTIFICATION_CONTROLLER_H__
-
-#include "Base/BaseTypes.h"
-#include "Base/Singleton.h"
-#include "Base/Message.h"
-#include "Platform/Mutex.h"
-#include "Notification/LocalNotificationAndroid.h"
-#include "Notification/LocalNotificationNotImplemented.h"
-
+#include "Notification/LocalNotificationDelayed.h"
 
 namespace DAVA
 {
 
-class LocalNotification;
-class LocalNotificationText;
-class LocalNotificationProgress;
-
-class LocalNotificationController : public Singleton<LocalNotificationController>
+void LocalNotificationDelayed::ImplShow()
 {
-	friend class LocalNotification;
-public:
-    virtual ~LocalNotificationController();
-	LocalNotificationProgress *const CreateNotificationProgress(const WideString &title = L"", const WideString &text = L"", const uint32 max = 0, const uint32 current = 0);
-    LocalNotificationText *const CreateNotificationText(const WideString &title = L"", const WideString &text = L"");
-    void PostDelayedNotification(const WideString &title, const WideString text, int delaySeconds);
-    void RemoveAllDelayedNotifications();
-    bool Remove(LocalNotification *const notification);
-    bool RemoveById(const String &notificationId);
-    void Clear();
-    void Update();
+	impl->ShowDelayed(title, text, delaySeconds);
+}
 
-    LocalNotification *const GetNotificationById(const String &id);
-    void OnNotificationPressed(const String &id);
-
-private:
-	Mutex notificationsListMutex;
-	List<LocalNotification *> notificationsList;
-};
+void LocalNotificationDelayed::RemoveAllDelayedNotifications()
+{
+    impl->RemoveAllDelayedNotifications();
+}
 
 }
 
-#endif // __NOTIFICATION_H__
