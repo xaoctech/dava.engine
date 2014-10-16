@@ -2484,6 +2484,7 @@ void QtMainWindow::OnBuildStaticOcclusion()
     if(sceneWasChanged)
     {
         scene->MarkAsChanged();
+        ui->propertyEditor->ResetProperties();
     }
 
     delete waitOcclusionDlg;

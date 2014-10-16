@@ -111,6 +111,8 @@ public:
     static String GetControlPath(const UIControl* conrol);
     static UIControl* GetControlByPath(const String& controlPath, UIControl* rootControl);
 
+    inline bool GetAssertIfCustomControlNotFound() const;
+
 protected:
     //Internal functions that do actual loading and saving.
     void ProcessLoad(UIControl * rootControl, const FilePath & yamlPathname);
@@ -143,6 +145,12 @@ protected:
 
     Map<UIScrollBar*,String> scrollsToLink;    
 };
+    
+inline bool UIYamlLoader::GetAssertIfCustomControlNotFound() const
+{
+    return assertIfCustomControlNotFound;
+}
+
 };
 
 #endif // __DAVAENGINE_YAML_LOADER_H__
