@@ -27,6 +27,7 @@ void ImportedPackagesNode::Add(PackageControlsNode *node)
 {
     DVASSERT(node->GetParent() == NULL);
     node->SetParent(this);
+    node->SetReadOnly();
     packageControlsNode.push_back(SafeRetain(node));
 }
 
@@ -53,6 +54,11 @@ PackageControlsNode *ImportedPackagesNode::FindPackageControlsNodeByName(const D
             return *it;
     }
     return NULL;
+}
+
+int ImportedPackagesNode::GetFlags() const
+{
+    return FLAG_READ_ONLY;
 }
 
 YamlNode *ImportedPackagesNode::Serialize() const
