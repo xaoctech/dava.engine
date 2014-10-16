@@ -27,7 +27,7 @@ public:
     virtual bool LoadControlByName(const String &name) override;
 
 private:
-    void LoadControl(const YamlNode *node);
+    void LoadControl(const YamlNode *node, bool root);
 
     void LoadControlPropertiesFromYamlNode(UIControl *control, const InspInfo *typeInfo, const YamlNode *node);
     void LoadBgPropertiesFromYamlNode(UIControl *control, const YamlNode *node);

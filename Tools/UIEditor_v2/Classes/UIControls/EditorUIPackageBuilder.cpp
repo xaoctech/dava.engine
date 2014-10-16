@@ -47,7 +47,8 @@ UIPackage * EditorUIPackageBuilder::ProcessImportedPackage(const String &package
 {
     // store state
     PackageNode *prevPackageNode = packageNode;
-    DAVA::Vector<ControlNode*> prevControlsStack = controlsStack;
+    DAVA::List<ControlDescr> prevControlsStack = controlsStack;
+    
     DAVA::BaseObject *prevObj = currentObject;
     PropertiesSection *prevSect = currentSection;
 
@@ -78,8 +79,8 @@ UIPackage * EditorUIPackageBuilder::ProcessImportedPackage(const String &package
 UIControl *EditorUIPackageBuilder::BeginControlWithClass(const String className)
 {
     UIControl *control = ObjectFactory::Instance()->New<UIControl>(className);
-    ControlNode *node = new ControlNode(control);
-    AddControlNode(node);
+    control->RemoveAllControls();
+    controlsStack.push_back(ControlDescr(new ControlNode(control), true));
     return control;
 }
 
@@ -87,8 +88,9 @@ UIControl *EditorUIPackageBuilder::BeginControlWithCustomClass(const String cust
 {
     UIControl *control = ObjectFactory::Instance()->New<UIControl>(className);
     control->SetCustomControlClassName(customClassName);
+    control->RemoveAllControls();
     ControlNode *node = new ControlNode(control);
-    AddControlNode(node);
+    controlsStack.push_back(ControlDescr(new ControlNode(control), true));
     return control;
 }
 
@@ -117,7 +119,8 @@ UIControl *EditorUIPackageBuilder::BeginControlWithPrototype(const String &packa
     DVASSERT(prototypeNode);
     ControlNode *node = new ControlNode(prototypeNode, prototypePackage);
     node->GetControl()->SetCustomControlClassName(customClassName);
-    AddControlNode(node);
+    controlsStack.push_back(ControlDescr(node, true));
+
     return node->GetControl();
 }
 
@@ -126,7 +129,7 @@ UIControl *EditorUIPackageBuilder::BeginControlWithPath(const String &pathName)
     ControlNode *control = NULL;
     if (!controlsStack.empty())
     {
-        control = controlsStack.back();
+        control = controlsStack.back().node;
         Vector<String> controlNames;
         Split(pathName, "/", controlNames, false, true);
         for (Vector<String>::const_iterator iter = controlNames.begin(); iter!=controlNames.end(); ++iter)
@@ -138,7 +141,7 @@ UIControl *EditorUIPackageBuilder::BeginControlWithPath(const String &pathName)
     }
     
     DVASSERT(control != NULL);
-    controlsStack.push_back(SafeRetain(control));
+    controlsStack.push_back(ControlDescr(SafeRetain(control), false));
     return control->GetControl();
 }
 
@@ -150,16 +153,24 @@ UIControl *EditorUIPackageBuilder::BeginUnknownControl(const YamlNode *node)
 
 void EditorUIPackageBuilder::EndControl()
 {
-    ControlNode *lastControl = controlsStack.back();
+    ControlNode *lastControl = SafeRetain(controlsStack.back().node);
+    bool addToParent = controlsStack.back().addToParent;
     controlsStack.pop_back();
-    if (lastControl)
-        SafeRelease(lastControl);
+    
+    if (addToParent)
+    {
+        if (controlsStack.empty())
+            packageNode->GetPackageControlsNode()->Add(lastControl);
+        else
+            controlsStack.back().node->Add(lastControl);
+    }
+    SafeRelease(lastControl);
 }
 
 void EditorUIPackageBuilder::BeginControlPropretiesSection(const String &name)
 {
-    currentSection = controlsStack.back()->GetPropertiesRoot()->GetControlPropertiesSection(name);
-    currentObject = controlsStack.back()->GetControl();
+    currentSection = controlsStack.back().node->GetPropertiesRoot()->GetControlPropertiesSection(name);
+    currentObject = controlsStack.back().node->GetControl();
 }
 
 void EditorUIPackageBuilder::EndControlPropertiesSection()
@@ -170,7 +181,7 @@ void EditorUIPackageBuilder::EndControlPropertiesSection()
 
 UIControlBackground *EditorUIPackageBuilder::BeginBgPropertiesSection(int index, bool sectionHasProperties)
 {
-    ControlNode *node = controlsStack.back();
+    ControlNode *node = controlsStack.back().node;
     BackgroundPropertiesSection *section = node->GetPropertiesRoot()->GetBackgroundPropertiesSection(index);
     if (section && sectionHasProperties)
     {
@@ -196,7 +207,7 @@ void EditorUIPackageBuilder::EndBgPropertiesSection()
 
 UIControl *EditorUIPackageBuilder::BeginInternalControlSection(int index, bool sectionHasProperties)
 {
-    ControlNode *node = controlsStack.back();
+    ControlNode *node = controlsStack.back().node;
     InternalControlPropertiesSection *section = node->GetPropertiesRoot()->GetInternalControlPropertiesSection(index);
     if (section && sectionHasProperties)
     {
@@ -228,15 +239,4 @@ void EditorUIPackageBuilder::ProcessProperty(const InspMember *member, const Var
         if (property && value.GetType() != VariantType::TYPE_NONE)
             property->SetValue(value);
     }
-}
-
-void EditorUIPackageBuilder::AddControlNode(ControlNode *node)
-{
-    if (controlsStack.empty())
-        packageNode->GetPackageControlsNode()->Add(node);
-    else
-        controlsStack.back()->Add(node);
-
-    controlsStack.push_back(node);
-    
 }

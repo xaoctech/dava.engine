@@ -76,7 +76,7 @@ UIPackage *UIPackageLoader::LoadPackage(const FilePath &packagePath)
             if (loadingQueue[i].status == STATUS_WAIT)
             {
                 loadingQueue[i].status = STATUS_LOADING;
-                LoadControl(loadingQueue[i].node);
+                LoadControl(loadingQueue[i].node, true);
                 loadingQueue[i].status = STATUS_LOADED;
             }
         }
@@ -101,7 +101,7 @@ bool UIPackageLoader::LoadControlByName(const String &name)
             {
                 case STATUS_WAIT:
                     loadingQueue[index].status = STATUS_LOADING;
-                    LoadControl(loadingQueue[index].node);
+                    LoadControl(loadingQueue[index].node, true);
                     loadingQueue[index].status = STATUS_LOADED;
                     return true;
                     
@@ -120,7 +120,7 @@ bool UIPackageLoader::LoadControlByName(const String &name)
     return false;
 }
 
-void UIPackageLoader::LoadControl(const YamlNode *node)
+void UIPackageLoader::LoadControl(const YamlNode *node, bool root)
 {
     UIControl *control = NULL;
     const YamlNode *pathNode = node->Get("path");
@@ -170,11 +170,12 @@ void UIPackageLoader::LoadControl(const YamlNode *node)
         {
             uint32 count = childrenNode->GetCount();
             for (uint32 i = 0; i < count; i++)
-                LoadControl(childrenNode->Get(i));
+                LoadControl(childrenNode->Get(i), false);
         }
 
         control->LoadFromYamlNodeCompleted();
-        control->ApplyAlignSettingsForChildren();
+        if (root)
+            control->ApplyAlignSettingsForChildren();
         // yamlLoader->PostLoad(control);
     }
     builder->EndControl();
