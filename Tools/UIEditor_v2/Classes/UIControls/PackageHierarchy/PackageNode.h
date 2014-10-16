@@ -15,9 +15,8 @@ public:
     virtual int GetCount() const override;
     virtual PackageBaseNode *Get(int index) const override;
 
-    virtual DAVA::String GetName() const;
-    
-    virtual bool IsHeader() const {return true; }
+    virtual DAVA::String GetName() const override;
+    int GetFlags() const override;
     
     DAVA::UIPackage *GetPackage() const;
     ImportedPackagesNode *GetImportedPackagesNode() const;

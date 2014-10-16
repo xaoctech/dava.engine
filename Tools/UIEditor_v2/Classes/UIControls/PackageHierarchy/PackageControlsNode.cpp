@@ -4,7 +4,11 @@
 
 using namespace DAVA;
 
-PackageControlsNode::PackageControlsNode(PackageBaseNode *parent, UIPackage *package) : PackageBaseNode(parent), name("Controls"), editable(true), package(SafeRetain(package))
+PackageControlsNode::PackageControlsNode(PackageBaseNode *parent, UIPackage *package)
+    : PackageBaseNode(parent)
+    , name("Controls")
+    , package(SafeRetain(package))
+    , readOnly(false)
 {
 }
 
@@ -22,6 +26,41 @@ void PackageControlsNode::Add(ControlNode *node)
     node->SetParent(this);
     nodes.push_back(SafeRetain(node));
     package->AddControl(node->GetControl());
+}
+
+void PackageControlsNode::InsertBelow(ControlNode *node, const ControlNode *belowThis)
+{
+    DVASSERT(node->GetParent() == NULL);
+    node->SetParent(this);
+    auto it = find(nodes.begin(), nodes.end(), belowThis);
+    if (it != nodes.end())
+    {
+        package->InsertControlBelow(node->GetControl(), (*it)->GetControl());
+        nodes.insert(it, SafeRetain(node));
+    }
+    else
+    {
+        nodes.push_back(SafeRetain(node));
+        package->AddControl(node->GetControl());
+    }
+}
+
+void PackageControlsNode::Remove(ControlNode *node)
+{
+    auto it = find(nodes.begin(), nodes.end(), node);
+    if (it != nodes.end())
+    {
+        DVASSERT(node->GetParent() == this);
+        node->SetParent(NULL);
+
+        package->RemoveControl(node->GetControl());
+        nodes.erase(it);
+        SafeRelease(node);
+    }
+    else
+    {
+        DVASSERT(false);
+    }
 }
 
 int PackageControlsNode::GetCount() const
@@ -54,14 +93,18 @@ const FilePath &PackageControlsNode::GetPackagePath() const
     return package->GetFilePath();
 }
 
-bool PackageControlsNode::IsInstancedFromPrototype() const
+int PackageControlsNode::GetFlags() const
 {
-    return false;
+    return readOnly ? FLAG_READ_ONLY : 0;
 }
 
-bool PackageControlsNode::IsCloned() const
+void PackageControlsNode::SetReadOnly()
 {
-    return false;
+    readOnly = true;
+    for (auto it = nodes.begin(); it != nodes.end(); ++it)
+    {
+        (*it)->SetReadOnly();
+    }
 }
 
 ControlNode *PackageControlsNode::FindControlNodeByName(const DAVA::String &name) const

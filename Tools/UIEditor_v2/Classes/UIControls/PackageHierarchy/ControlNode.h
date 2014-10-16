@@ -21,17 +21,17 @@ public:
     virtual ~ControlNode();
 
     void Add(ControlNode *node);
+    void InsertBelow(ControlNode *node, const ControlNode *belowThis);
+    void Remove(ControlNode *node);
     virtual int GetCount() const override;
     virtual PackageBaseNode *Get(int index) const override;
     ControlNode *FindByName(const DAVA::String &name) const;
     
     virtual DAVA::String GetName() const;
     DAVA::UIControl *GetControl() const;
-    
-    virtual bool IsHeader() const {return false; }
-    virtual bool IsInstancedFromPrototype() const;
-    virtual bool IsCloned() const;
-    virtual bool IsEditable() const {return editable; }
+
+    virtual int GetFlags() const override;
+    void SetReadOnly();
     
     eCreationType GetCreationType() const { return creationType; }
 
@@ -48,7 +48,7 @@ private:
 
     eCreationType creationType;
     
-    bool editable;
+    bool readOnly;
     
 };
 

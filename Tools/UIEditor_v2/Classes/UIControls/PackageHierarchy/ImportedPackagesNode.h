@@ -26,14 +26,7 @@ public:
     virtual DAVA::String GetName() const;
     PackageControlsNode *FindPackageControlsNodeByName(const DAVA::String &name) const;
 
-    
-    virtual bool IsHeader() const {
-        return true;
-    }
-    
-    virtual bool IsEditable() const {
-        return false;
-    }
+    virtual int GetFlags() const override;
     
     DAVA::YamlNode *Serialize() const;
     

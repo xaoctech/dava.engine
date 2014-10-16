@@ -50,26 +50,6 @@ UIControl *PackageBaseNode::GetControl() const
     return NULL;
 }
 
-bool PackageBaseNode::IsHeader() const
-{
-    return false;
-}
-
-bool PackageBaseNode::IsInstancedFromPrototype() const
-{
-    return false;
-}
-
-bool PackageBaseNode::IsCloned() const
-{
-    return false;
-}
-
-bool PackageBaseNode::IsEditable() const
-{
-    return false;
-}
-
 void PackageBaseNode::debugDump(int depth)
 {
     String str;
