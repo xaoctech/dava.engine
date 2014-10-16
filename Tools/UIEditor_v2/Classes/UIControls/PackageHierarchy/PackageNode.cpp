@@ -52,6 +52,11 @@ String PackageNode::GetName() const
     return package->GetName();
 }
 
+int PackageNode::GetFlags() const 
+{
+    return 0;
+}
+
 UIPackage *PackageNode::GetPackage() const
 {
     return package;

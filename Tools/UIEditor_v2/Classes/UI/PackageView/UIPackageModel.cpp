@@ -12,6 +12,8 @@
 #include "UI/IconHelper.h"
 #include "Utils/QtDavaConvertion.h"
 #include "UIControls/PackageHierarchy/PackageNode.h"
+#include "UIControls/PackageHierarchy/ControlNode.h"
+#include "UIControls/PackageHierarchy/PackageControlsNode.h"
 #include <qicon.h>
 #include <QAction>
 
@@ -119,6 +121,9 @@ QVariant UIPackageModel::data(const QModelIndex &index, int role) const
 
     PackageBaseNode *node = static_cast<PackageBaseNode*>(index.internalPointer());
     
+    int prototypeFlag = PackageBaseNode::FLAG_CONTROL_CREATED_FROM_PROTOTYPE | PackageBaseNode::FLAG_CONTROL_CREATED_FROM_PROTOTYPE_CHILD;
+    int controlFlag = PackageBaseNode::FLAG_CONTROL_CREATED_FROM_CLASS | PackageBaseNode::FLAG_CONTROL_CREATED_FROM_PROTOTYPE | PackageBaseNode::FLAG_CONTROL_CREATED_FROM_PROTOTYPE_CHILD;
+    int flags = node->GetFlags();
     switch(role)
     {
     case Qt::DisplayRole:
@@ -135,20 +140,18 @@ QVariant UIPackageModel::data(const QModelIndex &index, int role) const
                 return QVariant();
 //    case Qt::ToolTipRole:
 //        return QString(control->GetControlClassName().c_str());
-//    case Qt::EditRole:
-//        return QString(control->GetName().c_str());
         case Qt::TextColorRole:
-            return node->IsCloned() ? Qt::blue : Qt::black;
+            return (flags & prototypeFlag) != 0 ? Qt::blue : Qt::black;
             
         case Qt::BackgroundRole:
-            return node->IsHeader() ? Qt::lightGray : Qt::white;
+            return (flags & controlFlag) == 0 ? Qt::lightGray : Qt::white;
             
         case Qt::FontRole:
         {
             QFont myFont;
-            if (node->IsInstancedFromPrototype() || node->IsHeader())
+            if ((flags & PackageBaseNode::FLAG_CONTROL_CREATED_FROM_PROTOTYPE) != 0 || (flags & controlFlag) == 0)
                 myFont.setBold(true);
-            if (!node->IsEditable())
+            if ((flags & PackageBaseNode::FLAG_READ_ONLY) != 0)
                 myFont.setItalic(true);
 
             return myFont;
@@ -183,6 +186,11 @@ bool UIPackageModel::setData(const QModelIndex &index, const QVariant &value, in
     return false;
 }
 
+Qt::DropActions UIPackageModel::supportedDragActions() const
+{
+    return Qt::CopyAction | Qt::MoveAction;
+}
+
 Qt::DropActions UIPackageModel::supportedDropActions() const
 {
     return Qt::CopyAction | Qt::MoveAction;
@@ -193,17 +201,14 @@ Qt::ItemFlags UIPackageModel::flags(const QModelIndex &index) const
     if (!index.isValid())
         return Qt::NoItemFlags;
     
-    Qt::ItemFlags flags = QAbstractItemModel::flags(index);
-    flags |= /*Qt::ItemIsEditable | */Qt::ItemIsUserCheckable;
+    Qt::ItemFlags flags = QAbstractItemModel::flags(index) | Qt::ItemIsUserCheckable;
     
-//    const UIControl *control = static_cast<UIControl*>(index.internalPointer());
-//    
-//    if (IsPackageRootControl(control))
-//        flags = flags | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
-//    else if(IsPackageContentControl(control))
-//        flags = flags | Qt::ItemIsDropEnabled;
+    const PackageBaseNode *node = static_cast<PackageBaseNode*>(index.internalPointer());
+    if ((node->GetFlags() & PackageBaseNode::FLAGS_CONTROL) != 0)
+        flags |= Qt::ItemIsDragEnabled;
+    if ((node->GetFlags() & PackageBaseNode::FLAG_READ_ONLY) == 0)
+        flags |= Qt::ItemIsDropEnabled;
     
-    flags |= Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
     return flags;
 }
 
@@ -268,6 +273,7 @@ bool UIPackageModel::dropMimeData(const QMimeData *data, Qt::DropAction action, 
     {
         QUndoCommand *changeCommand = new CopyItemModelCommand(this, srcIndex, dstRow, dstParent);
         undoStack->push(changeCommand);
+        return true;
     }
     else if (action == Qt::MoveAction)
     {
@@ -278,128 +284,170 @@ bool UIPackageModel::dropMimeData(const QMimeData *data, Qt::DropAction action, 
             return false;
         }
         
-        if (srcParent == dstParent &&
-            (dstRow == srcRow || dstRow == srcRow + 1))
+        if (srcParent == dstParent && (dstRow == srcRow || dstRow == srcRow + 1))
         {
             return false;
         }
+
+        ControlNode *sourceNode = dynamic_cast<ControlNode*>(static_cast<PackageBaseNode*>(index(srcRow, 0, srcParent).internalPointer()));
+        if (!sourceNode || (sourceNode->GetFlags() & PackageBaseNode::FLAG_READ_ONLY) != 0)
+        {
+            return false;
+        }
+
         
         QUndoCommand *changeCommand = new MoveItemModelCommand(this, srcIndex, dstRow, dstParent);
         undoStack->push(changeCommand);
+        return true;
+    }
+    else if (action == Qt::LinkAction)
+    {
+        DVASSERT(false);
+        return true;
     }
     
-    return true;
+    return false;
 }
 
 void UIPackageModel::MoveItem(const QModelIndex &srcItem, int dstRow, const QModelIndex &dstParent)
 {
-    beginMoveRows(srcItem.parent(), srcItem.row(), srcItem.row(), dstParent, dstRow);
+    ControlNode *sourceNode(dynamic_cast<ControlNode*>(static_cast<PackageBaseNode*>(srcItem.internalPointer())));
+    if (sourceNode)
     {
-        QModelIndex insertBelowIndex = index(dstRow, 0, dstParent);
-    
-        ScopedPtr<UIControl> control(SafeRetain(static_cast<UIControl*>(srcItem.internalPointer())));
-        RemoveControl(control);
-        InsertControl(control, dstParent, insertBelowIndex);
+        beginMoveRows(srcItem.parent(), srcItem.row(), srcItem.row(), dstParent, dstRow);
+        {
+            QModelIndex insertBelowIndex = index(dstRow, 0, dstParent);
+            SafeRetain(sourceNode);
+            RemoveNode(sourceNode);
+            InsertNode(sourceNode, dstParent, insertBelowIndex);
+            SafeRelease(sourceNode);
+        }
+        endMoveRows();
     }
-    endMoveRows();
+    else
+    {
+        DVASSERT(false);
+    }
 }
 
 void UIPackageModel::CopyItem(const QModelIndex &srcItem, int dstRow, const QModelIndex &dstParent)
 {
-    beginInsertRows(dstParent, dstRow, dstRow);
+    ControlNode *sourceNode = dynamic_cast<ControlNode*>(static_cast<PackageBaseNode*>(srcItem.internalPointer()));
+    if (sourceNode)
     {
-        QModelIndex insertBelowIndex = index(dstRow, 0, dstParent);
-    
-        ScopedPtr<UIControl> control(static_cast<UIControl*>(srcItem.internalPointer())->Clone());
-        InsertControl(control, dstParent, insertBelowIndex);
+        beginInsertRows(dstParent, dstRow, dstRow);
+        {
+            QModelIndex insertBelowIndex = index(dstRow, 0, dstParent);
+            ControlNode* node = new ControlNode(sourceNode, NULL, ControlNode::CREATED_FROM_CLASS);
+            InsertNode(node, dstParent, insertBelowIndex);
+            SafeRelease(node);
+        }
+        endInsertRows();
     }
-    endInsertRows();
+    else
+    {
+        DVASSERT(false);
+    }
 }
 
 void UIPackageModel::RemoveItem(const QModelIndex &srcItem)
 {
-    beginRemoveRows(srcItem.parent(), srcItem.row(), srcItem.row());
+    ControlNode *sourceNode = dynamic_cast<ControlNode*>(static_cast<PackageBaseNode*>(srcItem.internalPointer()));
+    if (sourceNode)
     {
-        ScopedPtr<UIControl> control(SafeRetain(static_cast<UIControl*>(srcItem.internalPointer())));
-        RemoveControl(control);
+        beginRemoveRows(srcItem.parent(), srcItem.row(), srcItem.row());
+        RemoveNode(sourceNode);
+        endRemoveRows();
     }
-    UIControl * removedControl = static_cast<UIControl*>(srcItem.internalPointer());
-    endRemoveRows();
+    else
+    {
+        DVASSERT(false);
+    }
 }
 
-//bool UIPackageModel::IsPackageRootControl(const UIControl *control) const
-//{
-//    uint32 count = package->GetControlsCount();
-//    for (uint32 index = 0; index < count; ++index)
-//    {
-//        if (package->GetControl(index) == control)
-//            return true;
-//    }
-//    
-//    return false;
-//}
-//
-//bool UIPackageModel::IsPackageContentControl(const UIControl *control) const
-//{
-//    const UIControl *rootControl = control;
-//    while (rootControl->GetParent())
-//    {
-//        rootControl = rootControl->GetParent();
-//    }
-//    return IsPackageRootControl(rootControl);
-//}
-
-void UIPackageModel::InsertControl(DAVA::UIControl *control, const QModelIndex &parent, const QModelIndex &insertBelowIndex)
+void UIPackageModel::InsertNode(ControlNode *node, const QModelIndex &parent, const QModelIndex &insertBelowIndex)
 {
     if (parent.isValid())
     {
-        DAVA::UIControl *parentControl = static_cast<UIControl*>(parent.internalPointer());
-        DAVA::UIControl *insertBelowControl = static_cast<UIControl*>(insertBelowIndex.internalPointer());
-        InsertControlToContent(control, parentControl, insertBelowControl);
+        PackageBaseNode *parentNode = static_cast<PackageBaseNode*>(parent.internalPointer());
+        if ((parentNode->GetFlags() & PackageBaseNode::FLAG_READ_ONLY) == 0)
+        {
+            if ((parentNode->GetFlags() & PackageBaseNode::FLAGS_CONTROL) != 0)
+            {
+                ControlNode *parentControl = dynamic_cast<ControlNode*>(parentNode);
+                if (parentControl)
+                {
+                    ControlNode *belowThis = static_cast<ControlNode*>(insertBelowIndex.internalPointer());
+                    if (belowThis)
+                        parentControl->InsertBelow(node, belowThis);
+                    else
+                        parentControl->Add(node);
+                }
+                else
+                {
+                    DVASSERT(false);
+                }
+            }
+            else
+            {
+                PackageControlsNode *parentControls = dynamic_cast<PackageControlsNode*>(parentNode);
+                if (parentControls)
+                {
+                    ControlNode *belowThis = static_cast<ControlNode*>(insertBelowIndex.internalPointer());
+                    if (belowThis)
+                        parentControls->InsertBelow(node, belowThis);
+                    else
+                        parentControls->Add(node);
+                }
+                else
+                {
+                    DVASSERT(false);
+                }
+            }
+        }
     }
     else
     {
-        InsertControlToPackage(control, insertBelowIndex.row());
+        DVASSERT(false);
     }
 }
 
-void UIPackageModel::RemoveControl(DAVA::UIControl *control)
+void UIPackageModel::RemoveNode(ControlNode *node)
 {
-    if (control->GetParent())
+    PackageBaseNode *parentNode = node->GetParent();
+    if ((parentNode->GetFlags() & PackageBaseNode::FLAG_READ_ONLY) == 0)
     {
-        RemoveControlFromContent(control);
+        PackageControlsNode *controls = dynamic_cast<PackageControlsNode*>(parentNode);
+        if (controls)
+        {
+            controls->Remove(node);
+        }
+        else
+        {
+            ControlNode *parentControl = dynamic_cast<ControlNode*>(parentNode);
+            if (parentControl)
+            {
+                parentControl->Remove(node);
+            }
+            else
+            {
+                DVASSERT(false);
+            }
+        }
     }
     else
     {
-        RemoveControlFromPackage(control);
+        DVASSERT(false);
     }
-}
-
-void UIPackageModel::InsertControlToContent(DAVA::UIControl *control, DAVA::UIControl *parent, DAVA::UIControl *insertBelowControl)
-{
-    if (!insertBelowControl)
-    {
-        parent->AddControl(control);
-    }
-    else
-    {
-        parent->InsertChildBelow(control, insertBelowControl);
-    }
-}
-
-void UIPackageModel::RemoveControlFromContent(DAVA::UIControl *control)
-{
-    control->RemoveFromParent();
-}
-
-void UIPackageModel::InsertControlToPackage(DAVA::UIControl *control, int index)
-{
     
-}
-
-void UIPackageModel::RemoveControlFromPackage(DAVA::UIControl *control)
-{
-    
+//    if (control->GetParent())
+//    {
+//        RemoveNodeFromContent(control);
+//    }
+//    else
+//    {
+//        RemoveNodeFromPackage(control);
+//    }
 }
 
 MoveItemModelCommand::MoveItemModelCommand(UIPackageModel *_package, const QModelIndex &srcIndex, int _dstRow, const QModelIndex &_dstParent, QUndoCommand *parent)
