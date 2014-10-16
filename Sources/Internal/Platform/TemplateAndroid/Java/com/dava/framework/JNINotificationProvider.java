@@ -1,11 +1,14 @@
 package com.dava.framework;
 
+import android.app.AlarmManager;
 import android.content.res.AssetManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
+
+import java.util.Calendar;
 
 public class JNINotificationProvider {
 	private static NotificationCompat.Builder builder = null;
@@ -34,17 +37,17 @@ public class JNINotificationProvider {
     	}
     }
 
-    static void EnableTapAction(int id) {
+    static void EnableTapAction(String uid) {
 		if (isInited) {
 			CleanBuilder();
 			JNIActivity activity = JNIActivity.GetActivity();
 			
 			Intent intent = new Intent(activity, activity.getClass());
-			intent.putExtra("ID", id);
+			intent.putExtra("uid", uid);
 			PendingIntent pIntent = PendingIntent.getActivity(activity, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 			builder.setContentIntent(pIntent);
 			
-			notificationManager.notify(id, builder.build());
+			notificationManager.notify(uid, 0, builder.build());
 		}
 	}
 	
@@ -55,31 +58,50 @@ public class JNINotificationProvider {
     	}
     }
     
-	static void NotifyProgress(int id, String title, String text, int maxValue, int value) {
+	static void NotifyProgress(String uid, String title, String text, int maxValue, int value) {
 		if (isInited) {
 			CleanBuilder();
 			builder.setContentTitle(title)
 				.setContentText(text)
 				.setProgress(maxValue, value, false);
 			
-			notificationManager.notify(id, builder.build());
+			notificationManager.notify(uid, 0, builder.build());
 		}
 	}
 	
-    static void NotifyText(int id, String title, String text) {
+    static void NotifyText(String uid, String title, String text) {
 		if (isInited) {
 			CleanBuilder();
 			builder.setContentTitle(title)
 					.setContentText(text);
 
-			notificationManager.notify(id, builder.build());
+			notificationManager.notify(uid, 0, builder.build());
 		}
 	}
-    
-    static void HideNotification(int id) {
+
+    static void NotifyDelayed(String uid, String title, String text, int delaySeconds) {
+        Context context = JNIApplication.GetApplication();
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, ScheduledNotificationReceiver.class);
+        intent.putExtra("uid", uid);
+        //intent.putExtra("action", action);
+        intent.putExtra("text", text);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis() + 5000, pendingIntent);
+    }
+
+    static void RemoveAllDelayedNotifications() {
+        Context context = JNIApplication.GetApplication();
+        Intent intent = new Intent(context, ScheduledNotificationReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
+    }
+
+    static void HideNotification(String uid) {
 		if (isInited){
 			CleanBuilder();
-			notificationManager.cancel(id);
+			notificationManager.cancel(uid, 0);
 		}
 	}
 

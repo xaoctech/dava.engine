@@ -106,10 +106,16 @@ void LocalNotificationIOS::ShowProgress(const WideString &title, const WideStrin
 {
 }
 
+
+
 LocalNotificationImpl *LocalNotificationImpl::Create(const String &_id)
 {
     return new LocalNotificationIOS(_id);
 }
-    
+
+void LocalNotificationIOS::ShowDelayed(const WideString &title, const WideString &text, int delaySeconds) {}
+
+void LocalNotificationIOS::RemoveAllDelayedNotifications() {}
+
 }
 #endif

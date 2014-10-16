@@ -304,22 +304,5 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 	public void SetNotificationIcon(Builder builder) {
 
 	}
-
-    public void PostDelayedNotification(String uid, String action, String text, int delay) {
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(this, ScheduledNotificationReceiver.class);
-        intent.putExtra("uid", uid);
-        intent.putExtra("action", action);
-        intent.putExtra("text", text);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis() + 5000, pendingIntent);
-    }
-
-    public void RemoveAllDelayedNotifications() {
-        Intent intent = new Intent(this, ScheduledNotificationReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, 0);
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        alarmManager.cancel(pendingIntent);
-    }
 }
 

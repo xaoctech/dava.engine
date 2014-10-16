@@ -67,7 +67,7 @@ void LocalNotificationAndroid::SetAction(const WideString &action)
 
 	GetEnvironment()->CallStaticVoidMethod(
 					gJavaClass,
-					GetMethodID("EnableTapAction", "(I)V"),
+					GetMethodID("EnableTapAction", "(Ljava/lang/String;)V"),
 					jstrNotificationUid);
     GetEnvironment()->DeleteLocalRef(jstrNotificationUid);
 }
@@ -79,7 +79,7 @@ void LocalNotificationAndroid::Hide()
 
 	GetEnvironment()->CallStaticVoidMethod(
 					gJavaClass,
-					GetMethodID("HideNotification", "(I)V"),
+					GetMethodID("HideNotification", "(Ljava/lang/String;)V"),
 					jstrNotificationUid);
     GetEnvironment()->DeleteLocalRef(jstrNotificationUid);
 }
@@ -94,7 +94,7 @@ void LocalNotificationAndroid::ShowText(const WideString &title, const WideStrin
 	jstring jStrTitle = CreateJString(env, title);
 	jstring jStrText = CreateJString(env, text);
 
-	static const jmethodID methodSetText = GetMethodID("NotifyText", "(ILjava/lang/String;Ljava/lang/String;)V");
+	static const jmethodID methodSetText = GetMethodID("NotifyText", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
 	DVASSERT(0 != methodSetText);
 
 	env->CallStaticVoidMethod(
@@ -114,14 +114,13 @@ void LocalNotificationAndroid::ShowProgress(const WideString &title, const WideS
 {
 	LockGuard<Mutex> mutexGuard(javaCallMutex);
     jstring jstrNotificationUid = GetEnvironment()->NewStringUTF(notificationId.c_str());
-    GetEnvironment()->DeleteLocalRef(jstrNotificationUid);
 
 	JNIEnv *env = GetEnvironment();
 
 	jstring jStrTitle = CreateJString(env, title);
 	jstring jStrText = CreateJString(env, text);
 
-	static const jmethodID methodSetProgress = GetMethodID("NotifyProgress", "(ILjava/lang/String;Ljava/lang/String;II)V");
+	static const jmethodID methodSetProgress = GetMethodID("NotifyProgress", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;II)V");
 	DVASSERT(0 != methodSetProgress);
 
 	env->CallStaticVoidMethod(
@@ -136,6 +135,41 @@ void LocalNotificationAndroid::ShowProgress(const WideString &title, const WideS
     env->DeleteLocalRef(jstrNotificationUid);
 	env->DeleteLocalRef(jStrTitle);
 	env->DeleteLocalRef(jStrText);
+}
+
+void LocalNotificationAndroid::ShowDelayed(const WideString &title, const WideString &text, int delaySeconds)
+{
+	LockGuard<Mutex> mutexGuard(javaCallMutex);
+	JNIEnv *env = GetEnvironment();
+    jstring jstrNotificationUid = env->NewStringUTF(notificationId.c_str());
+	jstring jStrTitle = CreateJString(env, title);
+	jstring jStrText = CreateJString(env, text);
+
+	static const jmethodID methodNotifyDelayed = GetMethodID("NotifyDelayed", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V");
+	DVASSERT(0 != methodNotifyDelayed);
+
+	env->CallStaticVoidMethod(
+					gJavaClass,
+					methodNotifyDelayed,
+					jstrNotificationUid,
+					jStrTitle,
+					jStrText,
+					delaySeconds);
+
+    env->DeleteLocalRef(jstrNotificationUid);
+	env->DeleteLocalRef(jStrTitle);
+	env->DeleteLocalRef(jStrText);
+}
+
+void LocalNotificationAndroid::RemoveAllDelayedNotifications()
+{
+	JNIEnv *env = GetEnvironment();
+	static const jmethodID methodRemoveAllDelayedNotifications = GetMethodID("RemoveAllDelayedNotifications", "()V");
+	DVASSERT(0 != methodRemoveAllDelayedNotifications);
+
+	env->CallStaticVoidMethod(
+					gJavaClass,
+					methodRemoveAllDelayedNotifications);
 }
 
 LocalNotificationImpl *LocalNotificationImpl::Create(const String &_id)
