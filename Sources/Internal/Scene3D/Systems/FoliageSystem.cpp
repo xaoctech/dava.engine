@@ -227,6 +227,9 @@ void FoliageSystem::DebugDrawVegetation()
 
 void FoliageSystem::CollectFoliageMaterials(Set<NMaterial *> & materials)
 {
+    if(!foliageEntity)
+        return;
+
     Set<DataNode *> dataNodes;
     foliageEntity->GetDataNodes(dataNodes);
 
