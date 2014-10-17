@@ -323,7 +323,6 @@ void UISwitch::InternalSetIsLeftSelected(bool aIsLeftSelected, bool changeVisual
         }
         else
         {
-            // callerData == true in this case means that value is changed from code, not from UI.
             PerformEventWithData(EVENT_VALUE_CHANGED, (void*)true);
         }
     }
