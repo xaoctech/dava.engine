@@ -8,7 +8,7 @@ void LocalNotificationController::PostDelayedNotification(const WideString &titl
     notification->SetTitle(title);
     notification->SetText(text);
     notification->SetDelaySeconds(delaySeconds);
-    notification->Show();
+    notification->Post();
     SafeRelease(notification);
 }
 

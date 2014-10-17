@@ -42,6 +42,7 @@ public:
     void SetDelaySeconds(int value) { delaySeconds = value; }
     int GetDelaySeconds() { return delaySeconds; }
     void RemoveAllDelayedNotifications();
+    void Post();
 
 private:
 	virtual void ImplShow();
