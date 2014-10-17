@@ -41,5 +41,10 @@ void LocalNotificationDelayed::RemoveAllDelayedNotifications()
     impl->RemoveAllDelayedNotifications();
 }
 
+void LocalNotificationDelayed::Post()
+{
+    impl->ShowDelayed(title, text, delaySeconds);
+}
+
 }
 

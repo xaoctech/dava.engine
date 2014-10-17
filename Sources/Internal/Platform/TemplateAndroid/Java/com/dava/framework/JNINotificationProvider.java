@@ -87,7 +87,7 @@ public class JNINotificationProvider {
         //intent.putExtra("action", action);
         intent.putExtra("text", text);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis() + 5000, pendingIntent);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis() + delaySeconds * 1000, pendingIntent);
     }
 
     static void RemoveAllDelayedNotifications() {
