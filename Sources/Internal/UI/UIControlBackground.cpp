@@ -80,6 +80,7 @@ UIControlBackground::UIControlBackground()
 ,   vertexStream(NULL)
 ,   texCoordStream(NULL)
 ,	shader(SafeRetain(RenderManager::TEXTURE_MUL_FLAT_COLOR))
+,   margins(NULL)
 ,   renderState(RenderState::RENDERSTATE_2D_BLEND)
 {
 }
@@ -100,6 +101,7 @@ void UIControlBackground::CopyDataFrom(UIControlBackground *srcBackground)
 
     SafeRelease(rdoObject);
     SetDrawType(srcBackground->type);
+    SetMargins(srcBackground->GetMargins());
 
     color = srcBackground->color;
     spriteModification = srcBackground->spriteModification;
@@ -117,6 +119,7 @@ UIControlBackground::~UIControlBackground()
     SafeRelease(rdoObject);
     SafeRelease(spr);
     SafeRelease(shader);
+    SafeDelete(margins);
     ReleaseDrawData();
 }
 
@@ -131,7 +134,8 @@ bool UIControlBackground::IsEqualTo( const UIControlBackground *back ) const
         GetModification() != back->GetModification() ||
         GetLeftRightStretchCap() != back->GetLeftRightStretchCap() ||
         GetTopBottomStretchCap() != back->GetTopBottomStretchCap() ||
-        GetPerPixelAccuracyType() != back->GetPerPixelAccuracyType())
+        GetPerPixelAccuracyType() != back->GetPerPixelAccuracyType() ||
+        GetMargins() != back->GetMargins())
         return false;
     return true;
 }
@@ -297,13 +301,18 @@ void UIControlBackground::SetParentColor(const Color &parentColor)
     }
 }
 
-void UIControlBackground::Draw(const UIGeometricData &geometricData)
+void UIControlBackground::Draw(const UIGeometricData &parentGeometricData)
 {
+    UIGeometricData geometricData;
+    geometricData.size = parentGeometricData.size;
+    if (margins)
+    {
+        geometricData.position = Vector2(margins->left, margins->top);
+        geometricData.size += Vector2(-(margins->right + margins->left), -(margins->bottom + margins->top));
+    }
+
+    geometricData.AddToGeometricData(parentGeometricData);
     Rect drawRect = geometricData.GetUnrotatedRect();
-//	if(drawRect.x > RenderManager::Instance()->GetScreenWidth() || drawRect.y > RenderManager::Instance()->GetScreenHeight() || drawRect.x + drawRect.dx < 0 || drawRect.y + drawRect.dy < 0)
-//	{//TODO: change to screen size from control system and sizes from sprite
-//		return;
-//	}
 
     RenderManager::Instance()->SetColor(drawColor.r, drawColor.g, drawColor.b, drawColor.a);
 
@@ -1027,5 +1036,20 @@ void UIControlBackground::SetShader(Shader *_shader)
     }
 }
 
+void UIControlBackground::SetMargins(const UIMargins* uiMargins)
+{
+    if (!uiMargins || uiMargins->empty())
+    {
+        SafeDelete(margins);
+        return;
+    }
+
+    if (!margins)
+    {
+        margins = new UIControlBackground::UIMargins();
+    }
+
+    *margins = *uiMargins;
+}
 
 };

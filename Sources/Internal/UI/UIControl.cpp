@@ -2206,6 +2206,13 @@ namespace DAVA
             {
                 node->Set("spriteModification", GetBackground()->GetModification());
             }
+
+            // margins.
+            const UIControlBackground::UIMargins* margins = GetBackground()->GetMargins();
+            if (margins)
+            {
+                node->Set("margins", margins->AsVector4());
+            }
         }
         // Release model variable
         SafeRelease(baseControl);
@@ -2395,6 +2402,13 @@ namespace DAVA
         if (spriteModificationNode)
         {
             GetBackground()->SetModification(spriteModificationNode->AsInt32());
+        }
+        
+        const YamlNode * marginsNode = node->Get("margins");
+        if (marginsNode)
+        {
+            UIControlBackground::UIMargins margins(marginsNode->AsVector4());
+            GetBackground()->SetMargins(&margins);
         }
     }
 
@@ -2932,5 +2946,5 @@ namespace DAVA
         {
             (*it)->DumpInputs(depthLevel + 1);
         }
-    }
+    }    
 }
