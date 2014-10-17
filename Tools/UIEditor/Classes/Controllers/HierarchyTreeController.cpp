@@ -693,9 +693,19 @@ void HierarchyTreeController::UpdateControlsData(const HierarchyTreeScreenNode* 
     hierarchyTree.UpdateControlsData(screenNode);
 }
 
-void HierarchyTreeController::UpdateLocalization(bool takePathFromLocalizationSystem)
+void  HierarchyTreeController::UpdateLocalization(bool takePathFromLocalizationSystem,
+													const HierarchyTreeScreenNode* screenNode)
 {
-    // Update the Active Platform.
+ 	UpdateLocalizationInternal(takePathFromLocalizationSystem);
+    // Localization System is updated; need to look through all controls
+    // and cause them to update their texts according to the new Localization.
+    hierarchyTree.UpdateLocalization(screenNode);
+    ResetSelectedControl();
+}
+
+void  HierarchyTreeController::UpdateLocalizationInternal(bool takePathFromLocalizationSystem)
+{
+   // Update the Active Platform.
     HierarchyTreePlatformNode* activePlatformNode = GetActivePlatform();
     if (!activePlatformNode)
     {
@@ -727,7 +737,11 @@ void HierarchyTreeController::UpdateLocalization(bool takePathFromLocalizationSy
             LocalizationSystem::Instance()->Init();
         }
     }
-    
+}
+
+void HierarchyTreeController::UpdateLocalization(bool takePathFromLocalizationSystem)
+{
+ 	UpdateLocalizationInternal(takePathFromLocalizationSystem);
     // Localization System is updated; need to look through all controls
     // and cause them to update their texts according to the new Localization.
     hierarchyTree.UpdateLocalization();
