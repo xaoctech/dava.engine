@@ -1,11 +1,3 @@
-//
-//  EditorUIPackageBuilder.h
-//  UIEditor
-//
-//  Created by Dmitry Belsky on 11.10.14.
-//
-//
-
 #ifndef __EDITOR_UI_PACKAGE_BUILDER_H__
 #define __EDITOR_UI_PACKAGE_BUILDER_H__
 
@@ -53,28 +45,12 @@ private:
     struct ControlDescr {
         ControlNode *node;
         bool addToParent;
-        ControlDescr() : node(NULL), addToParent(false) {}
-        
-        ControlDescr(ControlNode *node, bool addToParent) : node(node), addToParent(addToParent) { }
-        ControlDescr(const ControlDescr &descr) {
-            node = DAVA::SafeRetain(descr.node);
-            addToParent = descr.addToParent;
-        }
-        
-        ~ControlDescr()
-        {
-            DAVA::SafeRelease(node);
-        }
-        
-        ControlDescr &operator=(const ControlDescr &descr)
-        {
-            DAVA::SafeRetain(descr.node);
-            DAVA::SafeRelease(node);
-            
-            node = descr.node;
-            addToParent = descr.addToParent;
-            return *this;
-        }
+
+        ControlDescr();
+        ControlDescr(ControlNode *node, bool addToParent);
+        ControlDescr(const ControlDescr &descr);
+        ~ControlDescr();
+        ControlDescr &operator=(const ControlDescr &descr);
     };
     
 private:

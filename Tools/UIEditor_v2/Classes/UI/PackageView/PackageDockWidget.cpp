@@ -26,7 +26,6 @@ PackageDockWidget::PackageDockWidget(QWidget *parent)
 {
     ui->setupUi(this);
     ui->treeView->header()->setResizeMode(QHeaderView::ResizeToContents);
-    ui->treeView->setDefaultDropAction(Qt::MoveAction);
 
     connect(ui->filterLine, SIGNAL(textChanged(const QString &)), this, SLOT(filterTextChanged(const QString &)));
 

@@ -48,6 +48,7 @@ class LibraryViewContext
 public:
     QPoint scrollPosition;
     //QModelIndexList expandedItems;
+    QAbstractItemModel *model;
 };
 
 class GraphicsViewContext;

@@ -179,6 +179,7 @@ void MainWindow::CurrentTabChanged(int index)
     ui->packageTreeDock->SetDocument(activeDocument);
     ui->packageGraphicsWidget->SetDocument(activeDocument);
     ui->propertiesDockWidget->SetContext(activeDocument ? activeDocument->GetPropertiesContext() : NULL);
+    ui->libraryDockWidget->SetDocument(activeDocument);
 //    ui->packageLibraryWidget->SetDocument(activeDocument);
     
     if (activeDocument)
