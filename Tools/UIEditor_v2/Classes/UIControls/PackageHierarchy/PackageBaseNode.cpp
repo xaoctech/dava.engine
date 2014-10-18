@@ -1,11 +1,3 @@
-//
-//  UIPackageModelNode.cpp
-//  UIEditor
-//
-//  Created by Dmitry Belsky on 3.10.14.
-//
-//
-
 #include "PackageBaseNode.h"
 
 using namespace DAVA;

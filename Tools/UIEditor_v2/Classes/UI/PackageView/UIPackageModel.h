@@ -74,6 +74,7 @@ public:
     
     friend class MoveItemModelCommand;
     
+    void InsertItem(const QString &name, int dstRow, const QModelIndex &dstParent);
     void MoveItem(const QModelIndex &srcItem, int dstRow, const QModelIndex &dstParent);
     void CopyItem(const QModelIndex &srcItem, int dstRow, const QModelIndex &dstParent);
     void RemoveItem(const QModelIndex &srcItem);
@@ -134,5 +135,18 @@ private:
     QPersistentModelIndex dstParent;
 };
 
+class InsertControlNodeCommand: public BasePackageModelCommand
+{
+public:
+    InsertControlNodeCommand(UIPackageModel *_package, const QString &controlName, int dstRow, const QModelIndex &dstParent, QUndoCommand * parent = 0);
+    ~InsertControlNodeCommand();
+    
+    virtual void undo();
+    virtual void redo();
+private:
+    int dstRow;
+    QPersistentModelIndex dstParent;
+    const QString &controlName;
+};
 
 #endif // __UI_EDITOR_UI_PACKAGE_MODEL_H__

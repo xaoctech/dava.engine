@@ -1,11 +1,3 @@
-//
-//  UIPackageModelNode.h
-//  UIEditor
-//
-//  Created by Dmitry Belsky on 3.10.14.
-//
-//
-
 #ifndef __UI_EDITOR_UI_PACKAGE_MODEL_NODE__
 #define __UI_EDITOR_UI_PACKAGE_MODEL_NODE__
 
@@ -43,8 +35,5 @@ public:
 private:
     PackageBaseNode *parent;
 };
-
-
-
 
 #endif // __UI_EDITOR_UI_PACKAGE_MODEL_NODE__

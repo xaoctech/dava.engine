@@ -1,11 +1,3 @@
-//
-//  EditorUIPackageBuilder.cpp
-//  UIEditor
-//
-//  Created by Dmitry Belsky on 11.10.14.
-//
-//
-
 #include "EditorUIPackageBuilder.h"
 
 #include "PackageHierarchy/PackageNode.h"
@@ -239,4 +231,36 @@ void EditorUIPackageBuilder::ProcessProperty(const InspMember *member, const Var
         if (property && value.GetType() != VariantType::TYPE_NONE)
             property->SetValue(value);
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// ControlDescr
+////////////////////////////////////////////////////////////////////////////////
+EditorUIPackageBuilder::ControlDescr::ControlDescr() : node(NULL), addToParent(false)
+{
+}
+
+EditorUIPackageBuilder::ControlDescr::ControlDescr(ControlNode *node, bool addToParent) : node(node), addToParent(addToParent)
+{
+}
+
+EditorUIPackageBuilder::ControlDescr::ControlDescr(const ControlDescr &descr)
+{
+    node = DAVA::SafeRetain(descr.node);
+    addToParent = descr.addToParent;
+}
+
+EditorUIPackageBuilder::ControlDescr::~ControlDescr()
+{
+    DAVA::SafeRelease(node);
+}
+
+EditorUIPackageBuilder::ControlDescr &EditorUIPackageBuilder::ControlDescr::operator=(const ControlDescr &descr)
+{
+    DAVA::SafeRetain(descr.node);
+    DAVA::SafeRelease(node);
+    
+    node = descr.node;
+    addToParent = descr.addToParent;
+    return *this;
 }

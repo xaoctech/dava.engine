@@ -51,6 +51,7 @@
 		17B0617518892C1500FD8007 /* WebKit.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 17B0617418892C1500FD8007 /* WebKit.framework */; };
 		17FF160016400A75001B130F /* localizationeditordialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17FF15FE16400A75001B130F /* localizationeditordialog.cpp */; };
 		320A4B3D19E6CC6A0049D713 /* LegacyEditorUIPackageLoader.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 320A4B3B19E6CC6A0049D713 /* LegacyEditorUIPackageLoader.cpp */; };
+		3228309B19F12D9A009F8881 /* LibraryModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 3228309919F12D9A009F8881 /* LibraryModel.cpp */; };
 		322CF61E19EC06D70023D61F /* BackgroundPropertiesSection.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 322CF60E19EC06D70023D61F /* BackgroundPropertiesSection.cpp */; };
 		322CF61F19EC06D70023D61F /* BaseProperty.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 322CF61019EC06D70023D61F /* BaseProperty.cpp */; };
 		322CF62019EC06D70023D61F /* ControlPropertiesSection.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 322CF61219EC06D70023D61F /* ControlPropertiesSection.cpp */; };
@@ -259,6 +260,8 @@
 		2A689518AF9C22C7AA97C9EF /* ogg_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ogg_macos; path = ../dava.framework/Libs/libs/libogg_macos.a; sourceTree = "<group>"; };
 		320A4B3B19E6CC6A0049D713 /* LegacyEditorUIPackageLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LegacyEditorUIPackageLoader.cpp; sourceTree = "<group>"; };
 		320A4B3C19E6CC6A0049D713 /* LegacyEditorUIPackageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LegacyEditorUIPackageLoader.h; sourceTree = "<group>"; };
+		3228309919F12D9A009F8881 /* LibraryModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryModel.cpp; sourceTree = "<group>"; };
+		3228309A19F12D9A009F8881 /* LibraryModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryModel.h; sourceTree = "<group>"; };
 		322CF60E19EC06D70023D61F /* BackgroundPropertiesSection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BackgroundPropertiesSection.cpp; sourceTree = "<group>"; };
 		322CF60F19EC06D70023D61F /* BackgroundPropertiesSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackgroundPropertiesSection.h; sourceTree = "<group>"; };
 		322CF61019EC06D70023D61F /* BaseProperty.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseProperty.cpp; sourceTree = "<group>"; };
@@ -481,6 +484,8 @@
 			children = (
 				15BE534A19D72CA500788209 /* LibraryDockWidget.cpp */,
 				15BE534B19D72CA500788209 /* LibraryDockWidget.h */,
+				3228309919F12D9A009F8881 /* LibraryModel.cpp */,
+				3228309A19F12D9A009F8881 /* LibraryModel.h */,
 			);
 			path = LibraryView;
 			sourceTree = "<group>";
@@ -1053,6 +1058,7 @@
 				329E0D3519D3F340008A9CE6 /* EntityAddCommand.cpp in Build Sources */,
 				329E0D3419D3F340008A9CE6 /* CommandStack.cpp in Build Sources */,
 				159ED7C319E2F61C00C8B37A /* Vector2PropertyDelegate.cpp in Build Sources */,
+				3228309B19F12D9A009F8881 /* LibraryModel.cpp in Build Sources */,
 				740F353416832022003B35E7 /* EditorSettings.cpp in Build Sources */,
 				329E0D3919D3F340008A9CE6 /* InspDynamicModifyCommand.cpp in Build Sources */,
 				498FEAF019643D84007E1660 /* BaseValidator.cpp in Build Sources */,
