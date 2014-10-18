@@ -32,6 +32,7 @@ public:
 private slots:
     void OnSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
     void filterTextChanged(const QString &);
+    void OnRemove();
 
 signals:
     void SelectionRootControlChanged(const QList<ControlNode*> &activatedRootControls, const QList<ControlNode*> &deactivatedRootControls);

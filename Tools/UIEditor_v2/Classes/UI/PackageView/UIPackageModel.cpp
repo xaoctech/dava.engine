@@ -57,8 +57,6 @@ UIPackageModel::UIPackageModel(PackageNode *_package, QObject *parent)
     , root(NULL)
 {
     root = SafeRetain(_package);
-    if (root)
-        root->debugDump(0);
     
     undoStack = new QUndoStack(this);
     undoAction = undoStack->createUndoAction(this, tr("&Undo"));
@@ -503,6 +501,7 @@ void UIPackageModel::RemoveNode(ControlNode *node)
 //        RemoveNodeFromPackage(control);
 //    }
 }
+
 
 MoveItemModelCommand::MoveItemModelCommand(UIPackageModel *_package, const QModelIndex &srcIndex, int _dstRow, const QModelIndex &_dstParent, QUndoCommand *parent)
 : BasePackageModelCommand(_package, "Move item", parent)
