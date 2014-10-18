@@ -32,6 +32,11 @@ PackageDockWidget::PackageDockWidget(QWidget *parent)
     //setTitleBarWidget(ui->filterLine);
     //ui->filterLine->setEnabled(false);
     //ui->treeView->setEnabled(false);
+    
+    QAction *removeAction = new QAction("Remove", this);
+    removeAction->setShortcut(QKeySequence(Qt::Key_Delete));
+    connect(removeAction, SIGNAL(triggered()), this, SLOT(OnRemove()));
+    ui->treeView->addAction(removeAction);
 }
 
 PackageDockWidget::~PackageDockWidget()
@@ -118,6 +123,23 @@ void PackageDockWidget::OnSelectionChanged(const QItemSelection &proxySelected, 
 
     emit SelectionRootControlChanged(selectedRootControl, deselectedRootControl);
     emit SelectionControlChanged(selectedControl, deselectedControl);
+}
+
+void PackageDockWidget::OnRemove()
+{
+    QModelIndexList list = ui->treeView->selectionModel()->selectedIndexes();
+    if (!list.empty())
+    {
+        QModelIndex &index = list.first();
+        QModelIndex srcIndex = document->GetTreeContext()->proxyModel->mapToSource(index);
+        ControlNode *sourceNode = dynamic_cast<ControlNode*>(static_cast<PackageBaseNode*>(srcIndex.internalPointer()));
+        if (sourceNode && (sourceNode->GetCreationType() == ControlNode::CREATED_FROM_CLASS || sourceNode->GetCreationType() == ControlNode::CREATED_FROM_PROTOTYPE))
+        {
+            document->GetTreeContext()->model->RemoveItem(srcIndex);
+        }
+    }
+    //document->GetTreeContext()->proxyModel
+    
 }
 
 void PackageDockWidget::filterTextChanged(const QString &filterText)

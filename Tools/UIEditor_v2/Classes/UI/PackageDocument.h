@@ -38,7 +38,7 @@ class TreeViewContext
 public:
     QPoint scrollPosition;
     //QModelIndexList expandedItems;
-    QAbstractItemModel *model;
+    UIPackageModel *model;
     QSortFilterProxyModel *proxyModel;
     QString filterString;
 };

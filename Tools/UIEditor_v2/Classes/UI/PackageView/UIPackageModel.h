@@ -1,11 +1,3 @@
-//
-//  UIPackageModel.h
-//  UIEditor
-//
-//  Created by Dmitry Belsky on 10.9.14.
-//
-//
-
 #ifndef __UI_EDITOR_UI_PACKAGE_MODEL_H__
 #define __UI_EDITOR_UI_PACKAGE_MODEL_H__
 
