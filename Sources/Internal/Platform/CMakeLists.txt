@@ -9,11 +9,13 @@ elseif( APPLE )
 
     if( IOS )
 
-    	set( ADDED_CPP_PATTERNS TemplateiOS/*.cpp TemplateiOS/*.mm )
+    	set( ADDED_CPP_PATTERNS *.mm *.m TemplateiOS/*.cpp TemplateiOS/*.mm )
     	set( ADDED_H_PATTERNS TemplateiOS/*.h )
 
-        set( ADD_ENGINE_INCLUDES_DIR  ${ADD_ENGINE_INCLUDES_DIR} "${CMAKE_CURRENT_LIST_DIR}/TemplateiOS/" PARENT_SCOPE)
-        set( ADD_ENGINE_INCLUDES_DIR  ${ADD_ENGINE_INCLUDES_DIR} "${CMAKE_CURRENT_LIST_DIR}/" PARENT_SCOPE)
+        set( ADD_ENGINE_INCLUDES_DIR  ${ADD_ENGINE_INCLUDES_DIR}
+            "${CMAKE_CURRENT_LIST_DIR}/"
+            "${CMAKE_CURRENT_LIST_DIR}/TemplateiOS/" PARENT_SCOPE )
+
 
     else()
 

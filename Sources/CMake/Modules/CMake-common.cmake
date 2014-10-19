@@ -109,25 +109,36 @@ macro (define_source_folders )
     
     set( SOURCE_FOLDERS  )
     
-    IF( ARG_GLOB_FOLDER)
+    IF( ARG_GLOB_FOLDER )
     
-        set ( CPP_PATTERNS ${ARG_GLOB_FOLDER}/*.c ${ARG_GLOB_FOLDER}/*.cpp )    
-        if( APPLE )  
-            list ( APPEND CPP_PATTERNS ${ARG_GLOB_FOLDER}/*.mm  )
-        endif  ()
-    
-        define_source_files ( GLOB_CPP_PATTERNS ${CPP_PATTERNS}
-                              GLOB_H_PATTERNS   ${ARG_GLOB_FOLDER}/*.h ${ARG_GLOB_FOLDER}/*.hpp )
-                              
-        FILE( GLOB SOURCE_FOLDERS "${ARG_GLOB_FOLDER}/*" )
+        FOREACH( FOLDER_ITEM ${ARG_GLOB_FOLDER} )
+
+            set ( CPP_PATTERNS ${FOLDER_ITEM}/*.c ${FOLDER_ITEM}/*.cpp )    
+            if( APPLE )  
+                list ( APPEND CPP_PATTERNS ${FOLDER_ITEM}/*.m  ${FOLDER_ITEM}/*.mm )
+            endif  ()
+        
+            define_source_files ( GLOB_CPP_PATTERNS ${CPP_PATTERNS}
+                                  GLOB_H_PATTERNS   ${FOLDER_ITEM}/*.h ${FOLDER_ITEM}/*.hpp )
+                                  
+            FILE( GLOB SOURCE_FOLDERS "${FOLDER_ITEM}/*" )
+            list ( APPEND PROJECT_SOURCE_FILES_CPP  ${CPP_FILES} ) 
+            list ( APPEND PROJECT_SOURCE_FILES_HPP  ${H_FILES}   ) 
+            list ( APPEND PROJECT_SOURCE_FILES      ${CPP_FILES} ${H_FILES} )
+
+        ENDFOREACH()
+
     ELSE()
         define_source_files ( )
         FILE( GLOB SOURCE_FOLDERS "*" )
+
+        list ( APPEND PROJECT_SOURCE_FILES_CPP  ${CPP_FILES} ) 
+        list ( APPEND PROJECT_SOURCE_FILES_HPP  ${H_FILES}   ) 
+        list ( APPEND PROJECT_SOURCE_FILES      ${CPP_FILES} ${H_FILES} )
+
     ENDIF()
     
-    list ( APPEND PROJECT_SOURCE_FILES_CPP  ${CPP_FILES} ) 
-    list ( APPEND PROJECT_SOURCE_FILES_HPP  ${H_FILES}   ) 
-    list ( APPEND PROJECT_SOURCE_FILES      ${CPP_FILES} ${H_FILES} )
+
              
     FOREACH(FOLDER_ITEM ${SOURCE_FOLDERS})
         IF( IS_DIRECTORY "${FOLDER_ITEM}" )
