@@ -7,6 +7,7 @@
 #include "Base/ObjectFactory.h"
 
 #include "UI/IconHelper.h"
+#include "UI/PackageDocument.h"
 #include "Utils/QtDavaConvertion.h"
 #include "UIControls/PackageHierarchy/PackageNode.h"
 #include "UIControls/PackageHierarchy/ControlNode.h"
@@ -18,26 +19,18 @@
 
 using namespace DAVA;
 
-UIPackageModel::UIPackageModel(PackageNode *_package, QObject *parent)
-    : QAbstractItemModel(parent)
+UIPackageModel::UIPackageModel(PackageDocument *document)
+    : QAbstractItemModel(document)
     , root(NULL)
+    , document(document)
 {
-    root = SafeRetain(_package);
-    
-    undoStack = new QUndoStack(this);
-    undoAction = undoStack->createUndoAction(this, tr("&Undo"));
-    undoAction->setShortcuts(QKeySequence::Undo);
-    undoAction->setIcon(QIcon(":/Icons/118.png"));
-    
-    redoAction = undoStack->createRedoAction(this, tr("&Redo"));
-    redoAction->setShortcuts(QKeySequence::Redo);
-    redoAction->setIcon(QIcon(":/Icons/117.png"));
+    root = SafeRetain(document->Package());
 }
 
 UIPackageModel::~UIPackageModel()
 {
+    document = NULL;
     SafeRelease(root);
-    delete undoStack;
 }
 
 QModelIndex UIPackageModel::index(int row, int column, const QModelIndex &parent) const
@@ -146,16 +139,6 @@ bool UIPackageModel::setData(const QModelIndex &index, const QVariant &value, in
     return false;
 }
 
-Qt::DropActions UIPackageModel::supportedDragActions() const
-{
-    return Qt::CopyAction | Qt::MoveAction;
-}
-
-Qt::DropActions UIPackageModel::supportedDropActions() const
-{
-    return Qt::CopyAction | Qt::MoveAction;
-}
-
 Qt::ItemFlags UIPackageModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
@@ -170,6 +153,11 @@ Qt::ItemFlags UIPackageModel::flags(const QModelIndex &index) const
         flags |= Qt::ItemIsDropEnabled;
     
     return flags;
+}
+
+Qt::DropActions UIPackageModel::supportedDropActions() const
+{
+    return Qt::CopyAction | Qt::MoveAction;
 }
 
 QStringList UIPackageModel::mimeTypes() const
@@ -187,9 +175,7 @@ QMimeData *UIPackageModel::mimeData(const QModelIndexList &indexes) const
     foreach (QModelIndex index, indexes)
     {
         if (index.isValid())
-        {
             mimeData->SetIndex(index);
-        }
     }
 
     return mimeData;
@@ -225,7 +211,7 @@ bool UIPackageModel::dropMimeData(const QMimeData *data, Qt::DropAction action, 
         if (action == Qt::CopyAction)
         {
             QUndoCommand *changeCommand = new CopyItemModelCommand(this, srcIndex, dstRow, dstParent);
-            undoStack->push(changeCommand);
+            document->UndoStack()->push(changeCommand);
             return true;
         }
         else if (action == Qt::MoveAction)
@@ -248,7 +234,7 @@ bool UIPackageModel::dropMimeData(const QMimeData *data, Qt::DropAction action, 
                 return false;
             }
 
-            undoStack->push(new MoveItemModelCommand(this, srcIndex, dstRow, dstParent));
+            document->UndoStack()->push(new MoveItemModelCommand(this, srcIndex, dstRow, dstParent));
             return true;
         }
         else if (action == Qt::LinkAction)
@@ -262,7 +248,7 @@ bool UIPackageModel::dropMimeData(const QMimeData *data, Qt::DropAction action, 
         QModelIndex dstParent = parent;
         int dstRow = rowIndex;
         QUndoCommand *changeCommand = new InsertControlNodeCommand(this, data->text(), dstRow, dstParent);
-        undoStack->push(changeCommand);
+        document->UndoStack()->push(changeCommand);
         return true;
     }
 
@@ -305,10 +291,7 @@ void UIPackageModel::InsertItem(const QString &name, int dstRow, const QModelInd
     if (node)
     {
         beginInsertRows(dstParent, dstRow, dstRow);
-        {
-            QModelIndex insertBelowIndex = index(dstRow, 0, dstParent);
-            InsertNode(node, dstParent, insertBelowIndex);
-        }
+        InsertNode(node, dstParent, dstRow);
         endInsertRows();
         SafeRelease(node);
     }
@@ -318,6 +301,13 @@ void UIPackageModel::InsertItem(const QString &name, int dstRow, const QModelInd
     }
 }
 
+void UIPackageModel::InsertItem(ControlNode *node, int dstRow, const QModelIndex &dstParent)
+{
+    beginInsertRows(dstParent, dstRow, dstRow);
+    InsertNode(node, dstParent, dstRow);
+    endInsertRows();
+}
+
 void UIPackageModel::MoveItem(const QModelIndex &srcItem, int dstRow, const QModelIndex &dstParent)
 {
     ControlNode *sourceNode(dynamic_cast<ControlNode*>(static_cast<PackageBaseNode*>(srcItem.internalPointer())));
@@ -325,10 +315,9 @@ void UIPackageModel::MoveItem(const QModelIndex &srcItem, int dstRow, const QMod
     {
         beginMoveRows(srcItem.parent(), srcItem.row(), srcItem.row(), dstParent, dstRow);
         {
-            QModelIndex insertBelowIndex = index(dstRow, 0, dstParent);
             SafeRetain(sourceNode);
             RemoveNode(sourceNode);
-            InsertNode(sourceNode, dstParent, insertBelowIndex);
+            InsertNode(sourceNode, dstParent, dstRow);
             SafeRelease(sourceNode);
         }
         endMoveRows();
@@ -346,9 +335,8 @@ void UIPackageModel::CopyItem(const QModelIndex &srcItem, int dstRow, const QMod
     {
         beginInsertRows(dstParent, dstRow, dstRow);
         {
-            QModelIndex insertBelowIndex = index(dstRow, 0, dstParent);
             ControlNode* node = new ControlNode(sourceNode, NULL, ControlNode::CREATED_FROM_CLASS);
-            InsertNode(node, dstParent, insertBelowIndex);
+            InsertNode(node, dstParent, dstRow);
             SafeRelease(node);
         }
         endInsertRows();
@@ -374,13 +362,14 @@ void UIPackageModel::RemoveItem(const QModelIndex &srcItem)
     }
 }
 
-void UIPackageModel::InsertNode(ControlNode *node, const QModelIndex &parent, const QModelIndex &insertBelowIndex)
+void UIPackageModel::InsertNode(ControlNode *node, const QModelIndex &parent, int dstRow)
 {
     if (parent.isValid())
     {
         PackageBaseNode *parentNode = static_cast<PackageBaseNode*>(parent.internalPointer());
         if ((parentNode->GetFlags() & PackageBaseNode::FLAG_READ_ONLY) == 0)
         {
+            const QModelIndex &insertBelowIndex = index(dstRow, 0, parent);
             if ((parentNode->GetFlags() & PackageBaseNode::FLAGS_CONTROL) != 0)
             {
                 ControlNode *parentControl = dynamic_cast<ControlNode*>(parentNode);

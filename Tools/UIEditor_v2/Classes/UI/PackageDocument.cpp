@@ -31,7 +31,7 @@ PackageDocument::PackageDocument(PackageNode *_package, QObject *parent)
 {
     undoStack = new QUndoStack(this);
 
-    treeContext.model = new UIPackageModel(package, this);
+    treeContext.model = new UIPackageModel(this);
     treeContext.proxyModel = new UIFilteredPackageModel(this);
     treeContext.proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
     treeContext.proxyModel->setSourceModel(treeContext.model);

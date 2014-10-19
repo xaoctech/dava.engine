@@ -12,6 +12,7 @@
 #include "DAVAEngine.h"
 #include "UI/PackageView/UIFilteredPackageModel.h"
 #include "UI/PackageDocument.h"
+#include "UI/PackageView/PackageModelCommands.h"
 #include "UIControls/PackageHierarchy/PackageBaseNode.h"
 #include "UIControls/PackageHierarchy/ControlNode.h"
 
@@ -133,13 +134,13 @@ void PackageDockWidget::OnRemove()
         QModelIndex &index = list.first();
         QModelIndex srcIndex = document->GetTreeContext()->proxyModel->mapToSource(index);
         ControlNode *sourceNode = dynamic_cast<ControlNode*>(static_cast<PackageBaseNode*>(srcIndex.internalPointer()));
+        UIPackageModel *model = document->GetTreeContext()->model;
         if (sourceNode && (sourceNode->GetCreationType() == ControlNode::CREATED_FROM_CLASS || sourceNode->GetCreationType() == ControlNode::CREATED_FROM_PROTOTYPE))
         {
-            document->GetTreeContext()->model->RemoveItem(srcIndex);
+            RemoveControlNodeCommand *cmd = new RemoveControlNodeCommand(model, srcIndex.row(), srcIndex.parent());
+            document->UndoStack()->push(cmd);
         }
     }
-    //document->GetTreeContext()->proxyModel
-    
 }
 
 void PackageDockWidget::filterTextChanged(const QString &filterText)
