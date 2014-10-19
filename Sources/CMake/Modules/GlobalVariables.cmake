@@ -4,21 +4,21 @@ if ( GLOBAL_VAR_FOUND )
 endif ()
 set ( GLOBAL_VAR_FOUND 1 )
 
+if( APPLE AND NOT IOS )
+	set ( MACOS 1 )
+endif ()
 
 set ( DAVA_LIBRARY                     "DavaFramework" )
 set ( DAVA_ROOT_DIR                    "${CMAKE_CURRENT_LIST_DIR}/../../.." )
-set ( DAVA_ENGINE_DIR                  "${CMAKE_CURRENT_LIST_DIR}/../../Internal" )
-set ( DAVA_THIRD_PARTY_ROOT_PATH       "${CMAKE_CURRENT_LIST_DIR}/../../../Libs" )
-set ( DAVA_CONFIGURE_FILES_PATH        "${CMAKE_CURRENT_LIST_DIR}/../ConfigureFiles" )
 
-
+set ( DAVA_ENGINE_DIR                  "${DAVA_ROOT_DIR}/Sources/Internal" )
+set ( DAVA_THIRD_PARTY_ROOT_PATH       "${DAVA_ROOT_DIR}/Libs" )
+set ( DAVA_CONFIGURE_FILES_PATH        "${DAVA_ROOT_DIR}/Sources/CMake/ConfigureFiles" )
 set ( DAVA_THIRD_PARTY_INCLUDES_PATH   "${DAVA_THIRD_PARTY_ROOT_PATH}/include" 
                                        "${DAVA_ENGINE_DIR}/../External" 
                                        "${DAVA_ENGINE_DIR}/../Tools" 
                                        "${DAVA_THIRD_PARTY_ROOT_PATH}/glew/include" 
                                        "${DAVA_THIRD_PARTY_ROOT_PATH}/fmod/include" 
-                                       "${DAVA_ENGINE_DIR}/../../Tools/ColladaConverter/Collada15/FCollada" 
-                                       "${DAVA_ENGINE_DIR}/../../Tools/ColladaConverter/Collada15/External/Cg/include" 
                                       ) 
 
 
@@ -28,7 +28,7 @@ if     ( ANDROID )
 elseif ( IOS     ) 
     set ( DAVA_THIRD_PARTY_LIBRARIES_PATH  "${DAVA_THIRD_PARTY_ROOT_PATH}/lib_CMake/ios" ) 
     
-elseif ( APPLE AND NOT IOS )
+elseif ( MACOS )
     set ( DAVA_THIRD_PARTY_LIBRARIES_PATH  "${DAVA_THIRD_PARTY_ROOT_PATH}/lib_CMake/mac" ) 
 
 else   ()
@@ -39,7 +39,7 @@ endif  ()
 set ( DAVA_INCLUDE_DIR ${DAVA_ENGINE_DIR} ${DAVA_THIRD_PARTY_INCLUDES_PATH} )
 
 #ImageMagick
-if( APPLE AND NOT IOS ) 
+if( MACOS ) 
 
 	set ( DAVA_IMAGE_MAGICK_INCLUDES_PATH  
 	     "${CMAKE_CURRENT_LIST_DIR}/../../../Libs/ImageMagick-6.7.4/include/ImageMagick"
