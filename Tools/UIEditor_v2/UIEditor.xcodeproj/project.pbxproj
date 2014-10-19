@@ -50,6 +50,8 @@
 		178F303E165677BF008678AD /* StringUtils.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 178F303C165677BF008678AD /* StringUtils.cpp */; };
 		17B0617518892C1500FD8007 /* WebKit.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 17B0617418892C1500FD8007 /* WebKit.framework */; };
 		17FF160016400A75001B130F /* localizationeditordialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17FF15FE16400A75001B130F /* localizationeditordialog.cpp */; };
+		320A302419F393C6003D5140 /* PackageModelCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 320A302219F393C6003D5140 /* PackageModelCommands.cpp */; };
+		320A302C19F397BF003D5140 /* UIPackageMimeData.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 320A302A19F397BF003D5140 /* UIPackageMimeData.cpp */; };
 		320A4B3D19E6CC6A0049D713 /* LegacyEditorUIPackageLoader.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 320A4B3B19E6CC6A0049D713 /* LegacyEditorUIPackageLoader.cpp */; };
 		3228309B19F12D9A009F8881 /* LibraryModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 3228309919F12D9A009F8881 /* LibraryModel.cpp */; };
 		322CF61E19EC06D70023D61F /* BackgroundPropertiesSection.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 322CF60E19EC06D70023D61F /* BackgroundPropertiesSection.cpp */; };
@@ -258,6 +260,10 @@
 		17FF15FF16400A75001B130F /* localizationeditordialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = localizationeditordialog.h; path = Dialogs/localizationeditordialog.h; sourceTree = "<group>"; };
 		29FF4FD1BCB9408020402F99 /* theora_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = theora_macos; path = ../dava.framework/Libs/libs/libtheora_macos.a; sourceTree = "<group>"; };
 		2A689518AF9C22C7AA97C9EF /* ogg_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ogg_macos; path = ../dava.framework/Libs/libs/libogg_macos.a; sourceTree = "<group>"; };
+		320A302219F393C6003D5140 /* PackageModelCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PackageModelCommands.cpp; sourceTree = "<group>"; };
+		320A302319F393C6003D5140 /* PackageModelCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PackageModelCommands.h; sourceTree = "<group>"; };
+		320A302A19F397BF003D5140 /* UIPackageMimeData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIPackageMimeData.cpp; sourceTree = "<group>"; };
+		320A302B19F397BF003D5140 /* UIPackageMimeData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIPackageMimeData.h; sourceTree = "<group>"; };
 		320A4B3B19E6CC6A0049D713 /* LegacyEditorUIPackageLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LegacyEditorUIPackageLoader.cpp; sourceTree = "<group>"; };
 		320A4B3C19E6CC6A0049D713 /* LegacyEditorUIPackageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LegacyEditorUIPackageLoader.h; sourceTree = "<group>"; };
 		3228309919F12D9A009F8881 /* LibraryModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryModel.cpp; sourceTree = "<group>"; };
@@ -475,6 +481,10 @@
 				15959DDF19D5750600B52AEF /* UIFilteredPackageModel.h */,
 				15959DE019D5750600B52AEF /* UIPackageModel.cpp */,
 				15959DE119D5750600B52AEF /* UIPackageModel.h */,
+				320A302A19F397BF003D5140 /* UIPackageMimeData.cpp */,
+				320A302B19F397BF003D5140 /* UIPackageMimeData.h */,
+				320A302219F393C6003D5140 /* PackageModelCommands.cpp */,
+				320A302319F393C6003D5140 /* PackageModelCommands.h */,
 			);
 			path = PackageView;
 			sourceTree = "<group>";
@@ -1050,6 +1060,7 @@
 				159ED7CB19E2F61C00C8B37A /* AbstractPropertyDelegate.cpp in Build Sources */,
 				17607FEF16415B7C004E36DE /* BackgroundGridWidgetHelper.cpp in Build Sources */,
 				3237E8E719EAB2BC00CB639B /* PropertiesRoot.cpp in Build Sources */,
+				320A302419F393C6003D5140 /* PackageModelCommands.cpp in Build Sources */,
 				159ED7C519E2F61C00C8B37A /* IntegerPropertyDelegate.cpp in Build Sources */,
 				159ED7C719E2F61C00C8B37A /* FilePathPropertyDelegate.cpp in Build Sources */,
 				178F303E165677BF008678AD /* StringUtils.cpp in Build Sources */,
@@ -1057,6 +1068,7 @@
 				159ED7C819E2F61C00C8B37A /* EnumPropertyDelegate.cpp in Build Sources */,
 				329E0D3519D3F340008A9CE6 /* EntityAddCommand.cpp in Build Sources */,
 				329E0D3419D3F340008A9CE6 /* CommandStack.cpp in Build Sources */,
+				320A302C19F397BF003D5140 /* UIPackageMimeData.cpp in Build Sources */,
 				159ED7C319E2F61C00C8B37A /* Vector2PropertyDelegate.cpp in Build Sources */,
 				3228309B19F12D9A009F8881 /* LibraryModel.cpp in Build Sources */,
 				740F353416832022003B35E7 /* EditorSettings.cpp in Build Sources */,

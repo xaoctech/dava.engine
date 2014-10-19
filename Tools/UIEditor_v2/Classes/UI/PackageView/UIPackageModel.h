@@ -5,32 +5,11 @@
 #include <QMimeData>
 #include <QStringList>
 #include <QUndoStack>
-#include <QUndoCommand>
 #include "DAVAEngine.h"
 
 class PackageNode;
 class ControlNode;
 class PackageBaseNode;
-
-class UIPackageMimeData: public QMimeData
-{
-    Q_OBJECT
-public:
-    UIPackageMimeData();
-    ~UIPackageMimeData();
-    
-    void SetIndex(const QModelIndex &_index ){ index = _index;}
-    const QModelIndex &GetIndex() const{ return index;}
-    
-    virtual bool hasFormat(const QString &mimetype) const override;
-    virtual QStringList formats() const override;
-    
-protected:
-    virtual QVariant retrieveData(const QString &mimetype, QVariant::Type preferredType) const override;
-    
-private:
-    QPersistentModelIndex index;
-};
 
 class UIPackageModel : public QAbstractItemModel
 {
@@ -77,68 +56,6 @@ private:
     QUndoStack *undoStack;
     QAction *undoAction;
     QAction *redoAction;
-};
-
-class BasePackageModelCommand: public QUndoCommand
-{
-public:
-    BasePackageModelCommand(UIPackageModel *_package, const QString &text, QUndoCommand * parent = 0)
-    : QUndoCommand(text, parent)
-    , package(_package)
-    {}
-    
-    virtual ~BasePackageModelCommand()
-    {
-    }
-    
-    UIPackageModel *GetModel(){return package;}
-    
-private:
-    UIPackageModel *package;
-};
-
-class MoveItemModelCommand: public BasePackageModelCommand
-{
-public:
-    MoveItemModelCommand(UIPackageModel *_package, const QModelIndex &srcIndex, int dstRow, const QModelIndex &dstParent, QUndoCommand * parent = 0);
-    ~MoveItemModelCommand();
-    
-    virtual void undo();
-    virtual void redo();
-private:
-    int srcRow;
-    int dstRow;
-    QPersistentModelIndex srcParent;
-    QPersistentModelIndex dstParent;
-};
-
-class CopyItemModelCommand: public BasePackageModelCommand
-{
-public:
-    CopyItemModelCommand(UIPackageModel *_package, const QModelIndex &srcIndex, int dstRow, const QModelIndex &dstParent, QUndoCommand * parent = 0);
-    ~CopyItemModelCommand();
-    
-    virtual void undo();
-    virtual void redo();
-private:
-    int srcRow;
-    int dstRow;
-    QPersistentModelIndex srcParent;
-    QPersistentModelIndex dstParent;
-};
-
-class InsertControlNodeCommand: public BasePackageModelCommand
-{
-public:
-    InsertControlNodeCommand(UIPackageModel *_package, const QString &controlName, int dstRow, const QModelIndex &dstParent, QUndoCommand * parent = 0);
-    ~InsertControlNodeCommand();
-    
-    virtual void undo();
-    virtual void redo();
-private:
-    int dstRow;
-    QPersistentModelIndex dstParent;
-    const QString &controlName;
 };
 
 #endif // __UI_EDITOR_UI_PACKAGE_MODEL_H__
