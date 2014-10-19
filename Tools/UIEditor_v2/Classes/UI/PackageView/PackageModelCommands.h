@@ -5,6 +5,7 @@
 #include <QModelIndex>
 
 class UIPackageModel;
+class ControlNode;
 
 class BasePackageModelCommand: public QUndoCommand
 {
@@ -67,8 +68,21 @@ public:
 private:
     int dstRow;
     QPersistentModelIndex dstParent;
-    const QString &controlName;
+    QString controlName;
 };
 
-
+class RemoveControlNodeCommand: public BasePackageModelCommand
+{
+public:
+    RemoveControlNodeCommand(UIPackageModel *_package, int row, const QModelIndex &parentIndex, QUndoCommand *parent = 0);
+    ~RemoveControlNodeCommand();
+    
+    virtual void undo();
+    virtual void redo();
+private:
+    QPersistentModelIndex parentIndex;
+    int row;
+    ControlNode *node;
+    
+};
 #endif // __UI_EDITOR_PACKAGE_MODEL_COMMANDS_H__

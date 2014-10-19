@@ -1,6 +1,11 @@
 #include "PackageModelCommands.h"
 
 #include "UIPackageModel.h"
+#include "UIControls/PackageHierarchy/ControlNode.h"
+
+////////////////////////////////////////////////////////////////////////////////
+// MoveItemModelCommand
+////////////////////////////////////////////////////////////////////////////////
 
 MoveItemModelCommand::MoveItemModelCommand(UIPackageModel *_package, const QModelIndex &srcIndex, int _dstRow, const QModelIndex &_dstParent, QUndoCommand *parent)
     : BasePackageModelCommand(_package, "Move item", parent)
@@ -43,12 +48,16 @@ void MoveItemModelCommand::redo()
     GetModel()->MoveItem(srcIndex, dstRow, dstParent);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// CopyItemModelCommand
+////////////////////////////////////////////////////////////////////////////////
+
 CopyItemModelCommand::CopyItemModelCommand(UIPackageModel *_package, const QModelIndex &srcIndex, int _dstRow, const QModelIndex &_dstParent, QUndoCommand *parent)
-: BasePackageModelCommand(_package, "Move item", parent)
-, srcRow(srcIndex.row())
-, dstRow(_dstRow)
-, srcParent(srcIndex.parent())
-, dstParent(_dstParent)
+    : BasePackageModelCommand(_package, "Move item", parent)
+    , srcRow(srcIndex.row())
+    , dstRow(_dstRow)
+    , srcParent(srcIndex.parent())
+    , dstParent(_dstParent)
 {
     
 }
@@ -70,6 +79,10 @@ void CopyItemModelCommand::redo()
     GetModel()->CopyItem(srcIndex, dstRow, dstParent);
 }
 
+
+////////////////////////////////////////////////////////////////////////////////
+// InsertControlNodeCommand
+////////////////////////////////////////////////////////////////////////////////
 
 InsertControlNodeCommand::InsertControlNodeCommand(UIPackageModel *_package, const QString &controlName, int dstRow, const QModelIndex &dstParent, QUndoCommand *parent)
     : BasePackageModelCommand(_package, "Insert Control", parent)
@@ -94,4 +107,35 @@ void InsertControlNodeCommand::undo()
 void InsertControlNodeCommand::redo()
 {
     GetModel()->InsertItem(controlName, dstRow, dstParent);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// RemoveControlNodeCommand
+////////////////////////////////////////////////////////////////////////////////
+
+RemoveControlNodeCommand::RemoveControlNodeCommand(UIPackageModel *_package, int row, const QModelIndex &parentIndex, QUndoCommand *parent)
+    : BasePackageModelCommand(_package, "Remove Control", parent)
+    , parentIndex(parentIndex)
+    , row(row)
+    , node(NULL)
+{
+    QModelIndex index = parentIndex.child(row, 0);
+    node = dynamic_cast<ControlNode*>(static_cast<PackageBaseNode*>(index.internalPointer()));
+    SafeRetain(node);
+    DVASSERT(node);
+}
+
+RemoveControlNodeCommand::~RemoveControlNodeCommand()
+{
+    SafeRelease(node);
+}
+
+void RemoveControlNodeCommand::undo()
+{
+    GetModel()->InsertItem(node, row, parentIndex);
+}
+
+void RemoveControlNodeCommand::redo()
+{
+    GetModel()->RemoveItem(parentIndex.child(row, 0));
 }
