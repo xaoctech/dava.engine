@@ -1,14 +1,6 @@
-//
-//  UIFilteredPackageModel.cpp
-//  UIEditor
-//
-//  Created by Alexey Strokachuk on 9/16/14.
-//
-//
-
 #include "UIFilteredPackageModel.h"
-#include "DAVAEngine.h"
 
+#include "DAVAEngine.h"
 
 UIFilteredPackageModel::UIFilteredPackageModel(QObject *parent)
     : QSortFilterProxyModel(parent)
