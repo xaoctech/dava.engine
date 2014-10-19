@@ -28,7 +28,7 @@ if     ( ANDROID )
 elseif ( IOS     ) 
     set ( DAVA_THIRD_PARTY_LIBRARIES_PATH  "${DAVA_THIRD_PARTY_ROOT_PATH}/lib_CMake/ios" ) 
     
-elseif ( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
+elseif ( APPLE AND NOT IOS )
     set ( DAVA_THIRD_PARTY_LIBRARIES_PATH  "${DAVA_THIRD_PARTY_ROOT_PATH}/lib_CMake/mac" ) 
 
 else   ()
@@ -54,7 +54,7 @@ if( APPLE AND NOT IOS )
 
 	file ( GLOB DAVA_IMAGE_MAGICK_LIBRARIES_DEBUG    "${DAVA_IMAGE_MAGICK_LIBRARIES_RELEASE}" )
 
-elseif( APPLE AND IOS ) 
+elseif( IOS ) 
 
 else()
 
