@@ -43,7 +43,7 @@ macro (define_source_files)
     if (NOT ARG_GLOB_CPP_PATTERNS)
         set (ARG_GLOB_CPP_PATTERNS *.c *.cpp )    # Default glob pattern
         if( APPLE )  
-            list ( APPEND ARG_GLOB_CPP_PATTERNS *.mm )
+            list ( APPEND ARG_GLOB_CPP_PATTERNS *.m *.mm )
         endif  ()
     endif ()
     
@@ -99,7 +99,7 @@ endmacro ()
 #
 macro (define_source_folders )
 
-    cmake_parse_arguments (ARG "RECURSIVE_CALL" "" "GLOB_FOLDER;GLOB_ERASE_FOLDERS" ${ARGN})
+    cmake_parse_arguments (ARG "RECURSIVE_CALL" "" "SRC_ROOT;GLOB_ERASE_FOLDERS" ${ARGN})
     
     IF( NOT ARG_RECURSIVE_CALL )
         set( PROJECT_SOURCE_FILES  ) 
@@ -109,9 +109,9 @@ macro (define_source_folders )
     
     set( SOURCE_FOLDERS  )
     
-    IF( ARG_GLOB_FOLDER )
+    IF( ARG_SRC_ROOT )
     
-        FOREACH( FOLDER_ITEM ${ARG_GLOB_FOLDER} )
+        FOREACH( FOLDER_ITEM ${ARG_SRC_ROOT} )
 
             set ( CPP_PATTERNS ${FOLDER_ITEM}/*.c ${FOLDER_ITEM}/*.cpp )    
             if( APPLE )  
@@ -160,7 +160,7 @@ macro (define_source_folders )
                     list ( APPEND PROJECT_SOURCE_FILES_HPP  ${${FOLDER_NAME}_H_FILES}   ) 
                 ELSE()
                     list (APPEND PROJECT_SOURCE_FILES ${CPP_FILES} ${H_FILES})
-                    define_source_folders( GLOB_FOLDER ${FOLDER_ITEM} GLOB_ERASE_FOLDERS ${ARG_GLOB_ERASE_FOLDERS} RECURSIVE_CALL )
+                    define_source_folders( SRC_ROOT ${FOLDER_ITEM} GLOB_ERASE_FOLDERS ${ARG_GLOB_ERASE_FOLDERS} RECURSIVE_CALL )
                 ENDIF()
             ENDIF()
         ENDIF()
@@ -201,7 +201,7 @@ install(
         DIRECTORY
         ${CMAKE_CURRENT_SOURCE_DIR}/
         DESTINATION
-        "D:/Dava/dava.framework/Libs/include/${TARGET_NAME}"
+        "${DAVA_THIRD_PARTY_ROOT_PATH}/include/${TARGET_NAME}"
         FILES_MATCHING
         PATTERN
         "*.h" )
@@ -210,7 +210,7 @@ install(
         DIRECTORY
         ${CMAKE_CURRENT_SOURCE_DIR}/
         DESTINATION
-        "D:/Dava/dava.framework/Libs/include/${TARGET_NAME}"
+        "${DAVA_THIRD_PARTY_ROOT_PATH}/include/${TARGET_NAME}"
         FILES_MATCHING
         PATTERN
         "*.hpp" )

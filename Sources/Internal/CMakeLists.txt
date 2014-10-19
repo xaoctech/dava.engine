@@ -1,16 +1,15 @@
 cmake_minimum_required (VERSION 2.8.6)
 
-project (DavaFramework)
+project( DavaFramework )
 
-set ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/../CMake/Modules/" ) 
+set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/../CMake/Modules/" ) 
 
-include ( CMake-common )
+include( CMake-common )
 
 set ( FRAMEWORK_DEFINITIONS 
 -D_UNICODE 
 -DUNICODE 
 -D_CRT_SECURE_NO_DEPRECATE 
--D_CRT_SECURE_NO_DEPRECATE
 -D_CRT_NON_CONFORMING_SWPRINTFS
 -DCURL_STATICLIB
 -DDAVA_FMOD
@@ -46,7 +45,7 @@ if( ANDROID )
     set ( FRAMEWORK_DEFINITIONS  ${FRAMEWORK_DEFINITIONS} -D__ANDROID__ )
     set ( LIBRARY_OUTPUT_PATH    ${THIRD_PARTY_LIBRARIES_PATH} )
 
-elseif( APPLE AND NOT IOS )
+elseif( MACOS )
     set ( LIBRARY_TYPE STATIC )
 
     add_definitions( -D__DAVAENGINE_PTHREAD__ ) 
@@ -145,36 +144,22 @@ generate_source_groups_project ()
 include_directories    (.)
 include_directories    ( ${DAVA_INCLUDE_DIR} )
 include_directories    ( ${ADD_ENGINE_INCLUDES_DIR} ) 
-include_directories    ( ${DAVA_THIRD_PARTY_ROOT_PATH}/include/FCollada )
 include_directories    ( ${DAVA_THIRD_PARTY_INCLUDES_PATH} ) 
 
 
 add_definitions        ( ${FRAMEWORK_DEFINITIONS} )
-add_library            ( DavaFramework ${LIBRARY_TYPE} ${PROJECT_SOURCE_FILES} ${RESOURCE} )
+add_library            ( ${PROJECT_NAME} ${LIBRARY_TYPE} ${PROJECT_SOURCE_FILES} ${RESOURCE} )
 
 
-target_link_libraries  ( DavaFramework ${LIST_SHARED_LIBRARIES} )  
+target_link_libraries  ( ${PROJECT_NAME} ${LIST_SHARED_LIBRARIES} )  
 
 foreach ( FILE ${LIST_SHARED_LIBRARIES_DEBUG} )
-    target_link_libraries  ( DavaFramework debug ${FILE} )
+    target_link_libraries  ( ${PROJECT_NAME} debug ${FILE} )
 endforeach ()
 
 foreach ( FILE ${LIST_SHARED_LIBRARIES_RELEASE} )
-    target_link_libraries  ( DavaFramework optimized ${FILE} )
+    target_link_libraries  ( ${PROJECT_NAME} optimized ${FILE} )
 endforeach ()
 
+install_libraries( ${PROJECT_NAME} )
 
-#install(
-#    TARGETS
-#    DavaFramework
-#    DESTINATION
-#    ${DAVA_THIRD_PARTY_LIBRARIES_PATH} )
-
-#install(
-#    DIRECTORY
-#    ${CMAKE_CURRENT_SOURCE_DIR}/
-#    DESTINATION
-#    ${THIRD_PARTY_INCLUDE_PATH}/DavaFramework
-#    FILES_MATCHING
-#    PATTERN
-#    "*.h")

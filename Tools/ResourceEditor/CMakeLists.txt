@@ -12,7 +12,7 @@ find_package ( DavaFramework REQUIRED )
 include      ( CMake-common )
 include      ( ${QT_USE_FILE} )
 
-define_source_folders ( GLOB_FOLDER "Classes" GLOB_ERASE_FOLDERS "_build" )
+define_source_folders ( SRC_ROOT "Classes" GLOB_ERASE_FOLDERS "_build" )
 generate_source_groups_project ()
 
 include_directories   ( "${DAVA_ROOT_DIR}/../dava.speedtree/Sources" )
@@ -23,6 +23,9 @@ include_directories   ( ${DAVA_THIRD_PARTY_INCLUDES_PATH} )
 include_directories   ( ${CMAKE_CURRENT_BINARY_DIR} )
 include_directories   ( ${DAVA_IMAGE_MAGICK_INCLUDES_PATH} ) 
 include_directories   ( "${DAVA_ROOT_DIR}/dava.speedtree" )
+include_directories   ( ${DAVA_ROOT_DIR}/Tools/ColladaConverter/Collada15/FCollada )
+include_directories   ( ${DAVA_ENGINE_DIR}/Tools/ColladaConverter/Collada15/External/Cg/include )
+
 
 include_directories   (.)
 include_directories   ( "../TextureTools" )
@@ -55,7 +58,7 @@ add_definitions       (
 -DDAVA_DEBUG
 )
 
-if (MSVC)
+if( MSVC )
     set ( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd /MP" ) 
     set ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT /MP /fp:fast /Zi /GS- /D _SECURE_SCL=0" )
     
@@ -81,8 +84,7 @@ qt4_add_resources ( RCC_APP_SRCS  ${RCC_LIST} )
 
 add_subdirectory  ( "${CMAKE_CURRENT_LIST_DIR}/../../Sources/Tools" ${CMAKE_CURRENT_BINARY_DIR}/TextureTools )
 
-if( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
-
+if( MACOS )
     set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libstdc++")
 
     file ( GLOB_RECURSE RESOURCES_LIST "${CMAKE_CURRENT_LIST_DIR}/Data/*" )
@@ -102,14 +104,14 @@ if( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
     list ( APPEND RESOURCES_LIST  ${DYLIB_FILES} ) 
     list ( APPEND LIBRARIES       ${DYLIB_FILES} )
     
-else()
+elseif( WIN32 )
     file ( GLOB_RECURSE BEAST_LIST "${DAVA_ROOT_DIR}/../dava.resourceeditor.beast/wrapper/*.cpp"  
                                    "${DAVA_ROOT_DIR}/../dava.resourceeditor.beast/wrapper/*.h" 
                                   )
 endif()
 
                                
-add_executable  ( ResourceEditor MACOSX_BUNDLE
+add_executable  ( ${PROJECT_NAME} MACOSX_BUNDLE
     ${MOC_APP_SRCS} 
     ${UI_APP_HDRS} 
     ${RCC_APP_SRCS} 
@@ -136,14 +138,14 @@ if( APPLE )
         install_name_tool -change ./libfmodex.dylib @executable_path/../Frameworks/libfmodex.dylib ${CMAKE_BINARY_DIR}/${BUILD_MODE}/${PROJECT_NAME}.app/Contents/MacOS/${PROJECT_NAME}    
     )
 
-elseif (MSVC)
+elseif( MSVC )
 
-    set_target_properties ( ResourceEditor PROPERTIES LINK_FLAGS "/NODEFAULTLIB:\"libcmt.lib;libcmtd.lib\"")
+    set_target_properties ( ${PROJECT_NAME} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:\"libcmt.lib;libcmtd.lib\"")
 
 endif()
 
 
-target_link_libraries ( ResourceEditor
+target_link_libraries ( ${PROJECT_NAME}
     ${DAVA_LIBRARY}
     ${QT_LIBRARIES} 
     ${LIBRARIES} 
@@ -151,15 +153,15 @@ target_link_libraries ( ResourceEditor
 )
 
 if (MSVC) 
-    configure_file( ${DAVA_CONFIGURE_FILES_PATH}/editor.vcxproj.user_
-                    ${CMAKE_CURRENT_BINARY_DIR}/ResourceEditor.vcxproj.user @ONLY )
+    configure_file( ${DAVA_CONFIGURE_FILES_PATH}/editor.in
+                    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.vcxproj.user @ONLY )
 endif()
  
 foreach ( FILE ${LIBRARIES_DEBUG} )
-    target_link_libraries  ( ResourceEditor debug ${FILE} )
+    target_link_libraries  ( ${PROJECT_NAME} debug ${FILE} )
 endforeach ()
 
 foreach ( FILE ${LIBRARIES_RELEASE} )
-    target_link_libraries  ( ResourceEditor optimized ${FILE} )
+    target_link_libraries  ( ${PROJECT_NAME} optimized ${FILE} )
 endforeach ()
 
