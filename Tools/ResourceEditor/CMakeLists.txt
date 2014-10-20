@@ -139,7 +139,6 @@ if( APPLE )
     )
 
 elseif( MSVC )
-
     set_target_properties ( ${PROJECT_NAME} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:\"libcmt.lib;libcmtd.lib\"")
 
 endif()
