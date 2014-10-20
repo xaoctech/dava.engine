@@ -81,7 +81,6 @@ UIControl *EditorUIPackageBuilder::BeginControlWithCustomClass(const String cust
     UIControl *control = ObjectFactory::Instance()->New<UIControl>(className);
     control->SetCustomControlClassName(customClassName);
     control->RemoveAllControls();
-    ControlNode *node = new ControlNode(control);
     controlsStack.push_back(ControlDescr(new ControlNode(control), true));
     return control;
 }

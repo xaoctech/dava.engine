@@ -1474,6 +1474,16 @@ public:
         SetInputEnabled(!noInput, false);
     }
     
+    bool IsDebugDraw() const
+    {
+        return debugDrawEnabled;
+    }
+    
+    void SetDebugDrawNotHierarchic(bool val)
+    {
+        SetDebugDraw(val, false);
+    }
+    
     INTROSPECTION_EXTEND(UIControl, AnimatedObject,
                          PROPERTY("name", "Name", GetName, SetName, I_SAVE | I_VIEW | I_EDIT)
                          PROPERTY("position", "Position", GetPosition, SetPosition, I_SAVE | I_VIEW | I_EDIT)
@@ -1504,6 +1514,7 @@ public:
 
                          PROPERTY("vcenterAlignEnabled", "Vertical Center Align Enabled", GetVCenterAlignEnabled, SetVCenterAlignEnabled, I_SAVE | I_VIEW | I_EDIT)
                          PROPERTY("vcenterAlign", "Vertical Center Align", GetVCenterAlign, SetVCenterAlign, I_SAVE | I_VIEW | I_EDIT)
+                         PROPERTY("debugDraw", "Debug Draw", IsDebugDraw, SetDebugDrawNotHierarchic, I_VIEW | I_EDIT)
                          );
 };
 
