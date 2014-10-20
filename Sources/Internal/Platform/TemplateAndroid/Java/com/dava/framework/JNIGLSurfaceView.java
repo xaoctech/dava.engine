@@ -172,11 +172,11 @@ public class JNIGLSurfaceView extends GLSurfaceView
 		{
 			events = new ArrayList<InputEvent>();
 			action = event.getActionMasked();
+			final int historySize = event.getHistorySize();
+			final int eventSource = event.getSource();
 			if(action == MotionEvent.ACTION_MOVE)
 			{
 				final int pointerCount = event.getPointerCount();
-				final int historySize = event.getHistorySize();
-				final int eventSource = event.getSource();
 				for (int i = 0; i < pointerCount; ++i)
 				{
 					final int pointerId = event.getPointerId(i);
@@ -208,7 +208,13 @@ public class JNIGLSurfaceView extends GLSurfaceView
     		{
     			int actionIdx = event.getActionIndex();
     			assert(actionIdx <= event.getPointerCount());
-    			events.add(new InputEvent(event.getPointerId(actionIdx), event.getX(actionIdx), event.getY(actionIdx), event.getSource(), tapCount));
+    			
+    			final int pointerId = event.getPointerId(actionIdx);
+    			for (int h = 0; h < historySize; ++h) {
+					events.add(new InputEvent(pointerId, event.getHistoricalX(actionIdx, h), event.getHistoricalY(actionIdx, h), eventSource, tapCount));
+				}
+    			
+    			events.add(new InputEvent(pointerId, event.getX(actionIdx), event.getY(actionIdx), eventSource, tapCount));
     		}
     	}
     	public InputRunnable(final com.bda.controller.MotionEvent event)
