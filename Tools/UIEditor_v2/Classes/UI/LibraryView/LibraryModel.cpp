@@ -7,7 +7,7 @@
 #include "UIControls/PackageHierarchy/ImportedPackagesNode.h"
 #include "UIControls/PackageHierarchy/PackageControlsNode.h"
 #include "UIControls/PackageHierarchy/ControlNode.h"
-#include "PackageNode.h"
+#include "UIControls/PackageHierarchy/PackageNode.h"
 #include "Utils/QtDavaConvertion.h"
 #include "UI/IconHelper.h"
 
