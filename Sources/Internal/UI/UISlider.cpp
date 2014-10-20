@@ -444,15 +444,6 @@ List<UIControl*> UISlider::GetSubcontrols()
 	return subControls;
 }
 
-void UISlider::SetVisibleForUIEditor(bool value, bool hierarchic/* = true*/)
-{
-    UIControl::SetVisibleForUIEditor(value, hierarchic);
-    if (thumbButton)
-    {
-        thumbButton->SetVisibleForUIEditor(value, hierarchic);
-    }
-}
-
 void UISlider::LoadBackgound(const char* prefix, UIControlBackground* background, const YamlNode* rootNode, const UIYamlLoader* loader)
 {
     const YamlNode * colorNode = rootNode->Get(Format("%scolor", prefix));

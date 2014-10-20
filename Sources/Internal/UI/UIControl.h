@@ -609,32 +609,11 @@ public:
 
     /**
      \brief Returns control visibility.
-        Invisible controls don't process any inputs. But allows input processing for their children.
-        Also for invisible controls didn't calls Draw() and DrawAfterChilds() methods.
-        But this methods calls for their children.
-     \returns control visibility.
-     */
-    DAVA_DEPRECATED(virtual bool GetVisible() const);// use GetRecursiveVisible instead
-
-    /**
-     \brief Sets contol visibility.
-        Invisible controls don't process any inputs. But allows input processing for their children.
-        Also for invisible controls didn't calls Draw() and DrawAfterChilds() methods.
-        But this methods calls for their children.
-        It's always better to remove part of controls hierarchy from the parent then to make them invisible.
-        Visibility is usually used for the single control.
-     \param[in] isVisible new control visibility.
-     \param[in] hierarchic use true if you want to all control children change visiblity.
-     */
-    DAVA_DEPRECATED(virtual void SetVisible(bool isVisible, bool hierarchic = true));// use SetRecursiveVisible instead;
-
-    /**
-     \brief Returns control visibility.
         Invisible controls don't process any inputs.
         Also for invisible controls didn't calls Draw() and DrawAfterChilds() methods.
      \returns control visibility.
      */
-    inline bool GetRecursiveVisible() const;
+    inline bool GetVisible() const;
 
     /**
      \brief Sets contol recursive visibility.
@@ -642,7 +621,7 @@ public:
         Also for invisible controls didn't calls Draw() and DrawAfterChilds() methods.
      \param[in] isVisible new control visibility.
      */
-    virtual void SetRecursiveVisible(bool isVisible);
+    virtual void SetVisible(bool isVisible);
 
     /**
      \brief Returns control input processing ability.
@@ -1046,20 +1025,11 @@ public:
     /**
      \brief Starts control visible animation. This animation changing control visibility
         on the next frame after the animation start.
-     \param[in] visible New control visible value.
-     \param[in] hierarhic Is value need to be changed in all coltrol children.
-     \param[in] track animation track. 0 by default.
-     \returns Animation object
-     */
-    Animation *     VisibleAnimation(bool visible, bool hierarhic = true, int32 track = 0);
-    /**
-     \brief Starts control recursive visible animation. This animation changing control visibility
-        on the next frame after the animation start.
      \param[in] visible New control recursive visible value.
      \param[in] track animation track. 0 by default.
      \returns Animation object
      */
-    Animation *     RecursiveVisibleAnimation(bool visible, int32 track = 0);
+    Animation *		VisibleAnimation(bool visible, int32 track = 0);
     /**
      \brief Starts control removation animation. This animation removes control from the parent
      on the next frame  after the animation start.
@@ -1081,7 +1051,6 @@ protected:
     void TouchableAnimationCallback(BaseObject * caller, void * param, void *callerData);
     void DisabledAnimationCallback(BaseObject * caller, void * param, void *callerData);
     void VisibleAnimationCallback(BaseObject * caller, void * param, void *callerData);
-    void RecursiveVisibleAnimationCallback(BaseObject * caller, void * param, void *callerData);
     void RemoveControlAnimationCallback(BaseObject * caller, void * param, void *callerData);
 
 public:
@@ -1342,7 +1311,7 @@ public:
 
     // Get/set visible flag for UI editor. Should not be serialized.
     bool GetVisibleForUIEditor() const { return visibleForUIEditor; };
-    virtual void SetVisibleForUIEditor(bool value, bool hierarchic = true);
+    virtual void SetVisibleForUIEditor(bool value);
 
     void DumpInputs(int32 depthLevel);
     
@@ -1368,7 +1337,6 @@ protected:
 
     // boolean flags are grouped here to pack them together (see please DF-2149).
     bool exclusiveInput : 1;
-    bool recursiveVisible : 1;
     bool visible : 1;
     bool clipContents : 1;
     bool debugDrawEnabled : 1;
@@ -1453,6 +1421,8 @@ private:
     float32 GetRelativeY(UIControl *parent, int32 align, UIControl* child, bool useHalfParentSize = false);
     
 public:
+    inline bool GetSystemVisible() const;
+    void SystemNotifyVisibilityChanged();
     
     virtual int32 GetBackgroundComponentsCount() const;
     virtual UIControlBackground *GetBackgroundComponent(int32 index) const;
@@ -1500,7 +1470,7 @@ public:
                          PROPERTY("size", "Size", GetSize, SetSize, I_SAVE | I_VIEW | I_EDIT)
                          PROPERTY("pivot", "Pivot", GetPivotPoint, SetPivotPoint, I_SAVE | I_VIEW | I_EDIT)
                          PROPERTY("angle", "Angle", GetAngleInDegrees, SetAngleInDegrees, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("visible", "Visible", GetRecursiveVisible, SetRecursiveVisible, I_SAVE | I_VIEW | I_EDIT)
+                         PROPERTY("visible", "Visible", GetVisible, SetVisible, I_SAVE | I_VIEW | I_EDIT)
                          PROPERTY("enabled", "Enabled", GetEnabled, SetEnabledNotHierarchic, I_SAVE | I_VIEW | I_EDIT)
                          PROPERTY("clip", "Clip", GetClipContents, SetClipContents, I_SAVE | I_VIEW | I_EDIT)
                          PROPERTY("noInput", "No Input", GetNoInput, SetNoInput, I_SAVE | I_VIEW | I_EDIT)
@@ -1526,6 +1496,7 @@ public:
                          PROPERTY("vcenterAlign", "Vertical Center Align", GetVCenterAlign, SetVCenterAlign, I_SAVE | I_VIEW | I_EDIT)
                          PROPERTY("debugDraw", "Debug Draw", IsDebugDraw, SetDebugDrawNotHierarchic, I_VIEW | I_EDIT)
                          );
+
 };
 
 const Vector2 & UIControl::GetPivotPoint() const
@@ -1596,9 +1567,9 @@ Rect UIControl::GetRect() const
     return Rect(relativePosition - pivotPoint, size);
 }
 
-bool UIControl::GetRecursiveVisible() const
+bool UIControl::GetVisible() const
 {
-    return recursiveVisible;
+    return visible;
 }
 
 bool UIControl::GetInputEnabled() const
@@ -1630,6 +1601,12 @@ int32 UIControl::GetState() const
 {
     return controlState;
 }
+    
+bool UIControl::GetSystemVisible() const
+{
+    return visible & visibleForUIEditor;
+}
+
 };
 
 #endif
