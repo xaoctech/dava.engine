@@ -64,7 +64,7 @@ namespace DAVA
         if (!control)
             Logger::Warning("[DefaultUIControlFactory::CreateControl] Can't create control with class name \"%s\"", className.c_str());
 
-        AddControl(control);
+        controlsStack.push_back(ControlDescr(control, true));
         return control;
     }
     
@@ -85,7 +85,7 @@ namespace DAVA
             DVASSERT(control != NULL);
         }
         
-        AddControl(control);
+        controlsStack.push_back(ControlDescr(control, true));
         return control;
     }
     
@@ -121,7 +121,7 @@ namespace DAVA
         else
             control = prototype->Clone();
         
-        AddControl(control);
+        controlsStack.push_back(ControlDescr(control, true));
         return control;
     }
     
@@ -130,32 +130,37 @@ namespace DAVA
         UIControl *control = NULL;
         if (!controlsStack.empty())
         {
-            control = UIControlHelpers::GetControlByPath(pathName, controlsStack.back());
+            control = UIControlHelpers::GetControlByPath(pathName, controlsStack.back().control);
         }
         
         DVASSERT(control != NULL);
-        controlsStack.push_back(SafeRetain(control));
+        controlsStack.push_back(ControlDescr(SafeRetain(control), false));
         return control;
     }
     
     UIControl *DefaultUIPackageBuilder::BeginUnknownControl(const YamlNode *node)
     {
         DVASSERT(false);
-        controlsStack.push_back(NULL);
+        controlsStack.push_back(ControlDescr(NULL, false));
         return NULL;
     }
     
     void DefaultUIPackageBuilder::EndControl()
     {
-        UIControl *lastControl = controlsStack.back();
+        ControlDescr lastControl = controlsStack.back();
         controlsStack.pop_back();
-        if (lastControl)
-            SafeRelease(lastControl);
+        if (lastControl.addToParent)
+        {
+            if (controlsStack.empty())
+                package->AddControl(lastControl.control);
+            else
+                controlsStack.back().control->AddControl(lastControl.control);
+        }
     }
     
     void DefaultUIPackageBuilder::BeginControlPropretiesSection(const String &name)
     {
-        currentObject = controlsStack.back();
+        currentObject = controlsStack.back().control;
     }
     
     void DefaultUIPackageBuilder::EndControlPropertiesSection()
@@ -167,7 +172,7 @@ namespace DAVA
     {
         if (sectionHasProperties)
         {
-            UIControl *control = controlsStack.back();
+            UIControl *control = controlsStack.back().control;
             if (!control->GetBackgroundComponent(index))
             {
                 UIControlBackground *bg = control->CreateBackgroundComponent(index);
@@ -190,7 +195,7 @@ namespace DAVA
     {
         if (sectionHasProperties)
         {
-            UIControl *control = controlsStack.back();
+            UIControl *control = controlsStack.back().control;
             if (!control->GetInternalControl(index))
             {
                 UIControl *internal = control->CreateInternalControl(index);
@@ -221,18 +226,38 @@ namespace DAVA
                 member->SetValue(currentObject, value);
         }
     }
-
-    void DefaultUIPackageBuilder::AddControl(UIControl *control)
+    
+    ////////////////////////////////////////////////////////////////////////////////
+    // ControlDescr
+    ////////////////////////////////////////////////////////////////////////////////
+    
+    DefaultUIPackageBuilder::ControlDescr::ControlDescr() : control(NULL), addToParent(false)
     {
-        if (control)
-        {
-            if (controlsStack.empty())
-                package->AddControl(control);
-            else
-                controlsStack.back()->AddControl(control);
-        }
+    }
+    
+    DefaultUIPackageBuilder::ControlDescr::ControlDescr(UIControl *control, bool addToParent) : control(control), addToParent(addToParent)
+    {
+    }
+    
+    DefaultUIPackageBuilder::ControlDescr::ControlDescr(const ControlDescr &descr)
+    {
+        control = DAVA::SafeRetain(descr.control);
+        addToParent = descr.addToParent;
+    }
+    
+    DefaultUIPackageBuilder::ControlDescr::~ControlDescr()
+    {
+        SafeRelease(control);
+    }
+    
+    DefaultUIPackageBuilder::ControlDescr &DefaultUIPackageBuilder::ControlDescr::operator=(const ControlDescr &descr)
+    {
+        SafeRetain(descr.control);
+        SafeRelease(control);
         
-        controlsStack.push_back(control);
+        control = descr.control;
+        addToParent = descr.addToParent;
+        return *this;
     }
 
 }

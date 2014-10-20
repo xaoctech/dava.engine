@@ -36,12 +36,20 @@ namespace DAVA
         virtual void ProcessProperty(const InspMember *member, const VariantType &value) override;
         
     private:
-        void AddControl(UIControl *control);
-        
-    private:
+        struct ControlDescr {
+            UIControl *control;
+            bool addToParent;
+            
+            ControlDescr();
+            ControlDescr(UIControl *node, bool addToParent);
+            ControlDescr(const ControlDescr &descr);
+            ~ControlDescr();
+            ControlDescr &operator=(const ControlDescr &descr);
+        };
+
         UIPackage *package;
         Map<String, UIPackage*> importedPackages;
-        Vector<UIControl*> controlsStack;
+        List<ControlDescr> controlsStack;
         BaseObject *currentObject;
     };
 }
