@@ -69,6 +69,7 @@ void ControlNode::Add(ControlNode *node)
     node->SetParent(this);
     nodes.push_back(SafeRetain(node));
     control->AddControl(node->GetControl());
+    node->GetControl()->UpdateLayout();
 }
 
 void ControlNode::InsertBelow(ControlNode *node, const ControlNode *belowThis)

@@ -70,10 +70,13 @@
     <ClCompile Include="Classes\UI\GraphicView\PackageGraphicsWidget.cpp" />
     <ClCompile Include="Classes\UI\IconHelper.cpp" />
     <ClCompile Include="Classes\UI\LibraryView\LibraryDockWidget.cpp" />
+    <ClCompile Include="Classes\UI\LibraryView\LibraryModel.cpp" />
     <ClCompile Include="Classes\UI\mainwindow.cpp" />
     <ClCompile Include="Classes\UI\PackageDocument.cpp" />
     <ClCompile Include="Classes\UI\PackageView\PackageDockWidget.cpp" />
+    <ClCompile Include="Classes\UI\PackageView\PackageModelCommands.cpp" />
     <ClCompile Include="Classes\UI\PackageView\UIFilteredPackageModel.cpp" />
+    <ClCompile Include="Classes\UI\PackageView\UIPackageMimeData.cpp" />
     <ClCompile Include="Classes\UI\PackageView\UIPackageModel.cpp" />
     <ClCompile Include="Classes\UI\PropertiesView\AbstractPropertyDelegate.cpp" />
     <ClCompile Include="Classes\UI\PropertiesView\ChangePropertyValueCommand.cpp" />
@@ -176,9 +179,12 @@
     <ClInclude Include="Classes\UI\GraphicView\PackageGraphicsWidget.h" />
     <ClInclude Include="Classes\UI\IconHelper.h" />
     <ClInclude Include="Classes\UI\LibraryView\LibraryDockWidget.h" />
+    <ClInclude Include="Classes\UI\LibraryView\LibraryModel.h" />
     <ClInclude Include="Classes\UI\PackageDocument.h" />
     <ClInclude Include="Classes\UI\PackageView\PackageDockWidget.h" />
+    <ClInclude Include="Classes\UI\PackageView\PackageModelCommands.h" />
     <ClInclude Include="Classes\UI\PackageView\UIFilteredPackageModel.h" />
+    <ClInclude Include="Classes\UI\PackageView\UIPackageMimeData.h" />
     <ClInclude Include="Classes\UI\PackageView\UIPackageModel.h" />
     <ClInclude Include="Classes\UI\PropertiesView\AbstractPropertyDelegate.h" />
     <ClInclude Include="Classes\UI\PropertiesView\ChangePropertyValueCommand.h" />
