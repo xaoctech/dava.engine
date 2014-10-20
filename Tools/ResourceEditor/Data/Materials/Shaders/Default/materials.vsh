@@ -139,7 +139,6 @@ uniform float cutDistance;
 uniform vec3 worldViewObjectCenter;
 uniform mat4 invViewMatrix;
 uniform vec3 boundingBoxSize;
-uniform mediump float sphericalHarmonicsValue;
 
 	#if defined(SPHERICAL_HARMONICS_9)
 		uniform vec3 sphericalHarmonics[9];
@@ -715,7 +714,7 @@ void main()
 
 #endif
 	
-	sphericalLightFactor = vec3(1.0 - sphericalHarmonicsValue) + sphericalLightFactor * (2.0 * sphericalHarmonicsValue); // mix(1.0, factor, value)
+	sphericalLightFactor *= 2.0;
 	
 	#if defined(VERTEX_COLOR)
 		varVertexColor *= vec4(sphericalLightFactor, 1.0);

@@ -299,7 +299,6 @@ const FastName DYNAMIC_PARAM_NAMES[] =
         FastName("speedTreeLightSmoothing"),
 
         FastName("sphericalHarmonics[0]"),
-        FastName("sphericalHarmonicsValue"),
 
         FastName("rtSize"),
         FastName("rtPixelSize"),
