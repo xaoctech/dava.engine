@@ -300,9 +300,8 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 		glView.queueEvent(event);
 	}
 
-	// reimplement this methid to set application icon by builder.setSmallIcon;
-	public void SetNotificationIcon(Builder builder) {
-
-	}
+	public int GetNotificationIcon() {
+        return android.R.drawable.sym_def_app_icon;
+    }
 }
 

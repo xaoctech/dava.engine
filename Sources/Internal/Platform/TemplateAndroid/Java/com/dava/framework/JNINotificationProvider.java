@@ -15,8 +15,11 @@ public class JNINotificationProvider {
 	private static NotificationManager notificationManager = null;
 	private static AssetManager assetsManager = null;
 	private static boolean isInited = false;
-	
+    private static int icon;
+
 	private native static void onNotificationPressed(String uid);
+
+    public static void SetNotificationIcon(int value) { icon = value; }
 
     static void Init() {
 		Context context = JNIApplication.GetApplication();
@@ -46,7 +49,7 @@ public class JNINotificationProvider {
 			intent.putExtra("uid", uid);
 			PendingIntent pIntent = PendingIntent.getActivity(activity, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 			builder.setContentIntent(pIntent);
-			
+
 			notificationManager.notify(uid, 0, builder.build());
 		}
 	}
@@ -85,6 +88,7 @@ public class JNINotificationProvider {
         Intent intent = new Intent(context, ScheduledNotificationReceiver.class);
         intent.putExtra("uid", uid);
         //intent.putExtra("action", action);
+        intent.putExtra("icon", icon);
         intent.putExtra("text", text);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
         alarmManager.set(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis() + delaySeconds * 1000, pendingIntent);
@@ -107,7 +111,8 @@ public class JNINotificationProvider {
 
 	public static void AttachToActivity(JNIActivity activity) {
 		if (isInited) {
-			activity.SetNotificationIcon(builder);
+            icon = activity.GetNotificationIcon();
+            builder.setSmallIcon(icon);
 		}
 	}
     
