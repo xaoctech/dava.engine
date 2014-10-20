@@ -330,7 +330,9 @@ public class JNITextField {
 					@Override
 					public CharSequence filter(CharSequence source, final int start, final int end,
 							Spanned dest, final int dstart, final int dend) {
-						
+
+						String origSource = source.toString();
+
 						NativeEditText editText = GetNativeEditText(_id);
 
 						int sourceRepLen = end - start;
@@ -373,7 +375,7 @@ public class JNITextField {
 						JNIActivity.GetActivity().PostEventToGL(t);
 						try {
 							String s = t.get();
-							if (s.equals(source.toString()))
+							if (s.equals(oldSource))
 							{
 								return null;
 							}
