@@ -163,7 +163,7 @@ void UIPackageLoader::LoadControl(const YamlNode *node, bool root)
         LoadControlPropertiesFromYamlNode(control, control->GetTypeInfo(), node);
         LoadBgPropertiesFromYamlNode(control, node);
         LoadInternalControlPropertiesFromYamlNode(control, node);
-        
+
         // load children
         const YamlNode * childrenNode = node->Get("children");
         if (childrenNode)
@@ -177,8 +177,9 @@ void UIPackageLoader::LoadControl(const YamlNode *node, bool root)
         if (root)
             control->ApplyAlignSettingsForChildren();
         // yamlLoader->PostLoad(control);
+
+        builder->EndControl();
     }
-    builder->EndControl();
 }
 
 void UIPackageLoader::LoadControlPropertiesFromYamlNode(UIControl *control, const InspInfo *typeInfo, const YamlNode *node)

@@ -99,7 +99,7 @@ QVariant UIPackageModel::data(const QModelIndex &index, int role) const
                 return QVariant();
             
         case Qt::ToolTipRole:
-            return QString(node->GetControl()->GetControlClassName().c_str());
+            return node->GetControl() != NULL ? QString(node->GetControl()->GetControlClassName().c_str()) : QVariant();
             
         case Qt::TextColorRole:
             return (flags & prototypeFlag) != 0 ? Qt::blue : Qt::black;

@@ -817,7 +817,7 @@ namespace DAVA
         size = newSize;
         SetPivot(oldPivot);
         // Update size and align of childs
-        UpdateLayout();
+        UpdateChildrenLayout();
     }
 
     void UIControl::SetAngle(float32 angleInRad)
@@ -2736,40 +2736,6 @@ namespace DAVA
         }
     }
 
-    void UIControl::RecalculateChildsSize()
-    {
-        const List<UIControl*>& realChildren = this->GetChildren();//YZ recalculate size for all controls
-        for(List<UIControl*>::const_iterator iter = realChildren.begin(); iter != realChildren.end(); ++iter)
-        {
-            UIControl* child = (*iter);
-            if (child)
-            {
-                // Recalculate horizontal aligns
-                if (child->GetHCenterAlignEnabled())
-                {
-                    int32 hcenterAlign = child->GetHCenterAlign();
-                    child->SetHCenterAlign(hcenterAlign);
-                }
-                else if (child->GetRightAlignEnabled())
-                {
-                    int32 rightAlign = child->GetRightAlign();
-                    child->SetRightAlign(rightAlign);
-                }
-                // Recalculate vertical aligns
-                if (child->GetVCenterAlignEnabled())
-                {
-                    int32 vcenterAlign = child->GetVCenterAlign();
-                    child->SetVCenterAlign(vcenterAlign);
-                }
-                else if (child->GetBottomAlignEnabled())
-                {
-                    int32 bottomAlign = child->GetBottomAlign();
-                    child->SetBottomAlign(bottomAlign);
-                }
-            }
-        }
-    }
-
     float32 UIControl::GetSizeX(UIControl *parent, int32 leftAlign, int32 rightAlign, bool useHalfParentSize /* = FALSE*/)
     {
         if (!parent)
@@ -2868,14 +2834,9 @@ namespace DAVA
         }
     }
 
-    void UIControl::UpdateLayout()
-    {
-        RecalculateChildsSize();
-    }
-
     void UIControl::ApplyAlignSettingsForChildren()
     {
-        UpdateLayout();
+        UpdateChildrenLayout();
     }
 
     const String & UIControl::GetControlClassName() const
@@ -3050,4 +3011,42 @@ namespace DAVA
         return "";
     }
 
+    void UIControl::UpdateLayout()
+    {
+        // Recalculate horizontal aligns
+        if (GetHCenterAlignEnabled())
+        {
+            int32 align = GetHCenterAlign();
+            SetHCenterAlign(align);
+        }
+        else if (GetRightAlignEnabled())
+        {
+            int32 align = GetRightAlign();
+            SetRightAlign(align);
+        }
+        // Recalculate vertical aligns
+        if (GetVCenterAlignEnabled())
+        {
+            int32 align = GetVCenterAlign();
+            SetVCenterAlign(align);
+        }
+        else if (GetBottomAlignEnabled())
+        {
+            int32 align = GetBottomAlign();
+            SetBottomAlign(align);
+        }
+    }
+
+    void UIControl::UpdateChildrenLayout()
+    {
+        const List<UIControl*>& realChildren = this->GetChildren();//YZ recalculate size for all controls
+        for(List<UIControl*>::const_iterator iter = realChildren.begin(); iter != realChildren.end(); ++iter)
+        {
+            UIControl* child = (*iter);
+            if (child)
+            {
+                child->UpdateLayout();
+            }
+        }
+    }
 }
