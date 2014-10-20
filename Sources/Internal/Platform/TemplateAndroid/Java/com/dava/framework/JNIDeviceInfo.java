@@ -222,6 +222,7 @@ public class JNIDeviceInfo {
 	public static StorageInfo GetInternalStorageInfo()
 	{
 		String path = Environment.getDataDirectory().getPath();
+		path += "/";
 		StatFs statFs = new StatFs(path);
 
 		long capacity = (long)statFs.getBlockCount() * (long)statFs.getBlockSize();
@@ -246,6 +247,7 @@ public class JNIDeviceInfo {
 		if (IsPrimaryExternalStoragePresent())
 		{
 			String path = Environment.getExternalStorageDirectory().getPath();
+			path += "/";
 			StatFs statFs = new StatFs(path);
 
             long capacity = (long)statFs.getBlockCount() * (long)statFs.getBlockSize();
@@ -298,6 +300,7 @@ public class JNIDeviceInfo {
 
 					if (fileSystem.equals("vfat") || mountPoint.startsWith("/mnt") || mountPoint.startsWith("/storage"))
 					{
+						mountPoint += "/";
 						paths.add(mountPoint);
 
 						StatFs statFs = null;
