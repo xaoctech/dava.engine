@@ -152,9 +152,15 @@ namespace DAVA
         if (lastControl.addToParent)
         {
             if (controlsStack.empty())
+            {
                 package->AddControl(lastControl.control);
+            }
             else
-                controlsStack.back().control->AddControl(lastControl.control);
+            {
+                UIControl *control = controlsStack.back().control;
+                control->AddControl(lastControl.control);
+                control->UpdateLayout();
+            }
         }
     }
     
