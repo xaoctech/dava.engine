@@ -15,16 +15,16 @@ include      ( ${QT_USE_FILE} )
 define_source_folders ( SRC_ROOT "Classes" GLOB_ERASE_FOLDERS "_build" )
 generate_source_groups_project ()
 
-include_directories   ( "${DAVA_ROOT_DIR}/../dava.speedtree/Sources" )
-include_directories   ( "${DAVA_ROOT_DIR}/../dava.resourceeditor.beast/wrapper" )
-include_directories   ( "${DAVA_ROOT_DIR}/../dava.resourceeditor.beast/beast/include" )
+include_directories   ( "${DAVA_SPEEDTREE_ROOT_DIR}" )
+include_directories   ( "${DAVA_SPEEDTREE_ROOT_DIR}/Sources" )
+include_directories   ( "${DAVA_RESOURCEEDITOR_BEAST_ROOT_DIR}/wrapper" )
+include_directories   ( "${DAVA_RESOURCEEDITOR_BEAST_ROOT_DIR}/beast/include" )
 include_directories   ( ${DAVA_INCLUDE_DIR} ) 
 include_directories   ( ${DAVA_THIRD_PARTY_INCLUDES_PATH} )
 include_directories   ( ${CMAKE_CURRENT_BINARY_DIR} )
 include_directories   ( ${DAVA_IMAGE_MAGICK_INCLUDES_PATH} ) 
-include_directories   ( "${DAVA_ROOT_DIR}/dava.speedtree" )
 include_directories   ( ${DAVA_ROOT_DIR}/Tools/ColladaConverter/Collada15/FCollada )
-include_directories   ( ${DAVA_ENGINE_DIR}/Tools/ColladaConverter/Collada15/External/Cg/include )
+include_directories   ( ${DAVA_ROOT_DIR}/Tools/ColladaConverter/Collada15/External/Cg/include )
 
 
 include_directories   (.)
@@ -63,15 +63,15 @@ if( MSVC )
     set ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT /MP /fp:fast /Zi /GS- /D _SECURE_SCL=0" )
     
     set( LIBRARIES "gdi32.lib" "glu32.lib" #"winmm.lib" "opengl32.lib"
-                   "${DAVA_ROOT_DIR}/../dava.resourceeditor.beast/beast/lib/beast32.lib"  )
+                   "${DAVA_RESOURCEEDITOR_BEAST_ROOT_DIR}/beast/lib/beast32.lib"  )
 
     set( LIBRARIES_DEBUG   "msvcrtd.lib"  )    
     set( LIBRARIES_RELEASE "msvcrt.lib"   ) 
 
 endif()
 
-set ( PROJECT_SOURCE_FILES ${PROJECT_SOURCE_FILES} "${DAVA_ROOT_DIR}/../dava.speedtree/Sources/SpeedTreeImporter.h" 
-                                                   "${DAVA_ROOT_DIR}/../dava.speedtree/Sources/SpeedTreeImporter.cpp" )
+set ( PROJECT_SOURCE_FILES ${PROJECT_SOURCE_FILES} "${DAVA_SPEEDTREE_ROOT_DIR}/Sources/SpeedTreeImporter.h" 
+                                                   "${DAVA_SPEEDTREE_ROOT_DIR}/Sources/SpeedTreeImporter.cpp" )
 
 file              ( GLOB_RECURSE QT_LIST "Classes/Qt/*.h"  )
 qt4_wrap_cpp      ( MOC_APP_SRCS ${QT_LIST} )
@@ -105,8 +105,8 @@ if( MACOS )
     list ( APPEND LIBRARIES       ${DYLIB_FILES} )
     
 elseif( WIN32 )
-    file ( GLOB_RECURSE BEAST_LIST "${DAVA_ROOT_DIR}/../dava.resourceeditor.beast/wrapper/*.cpp"  
-                                   "${DAVA_ROOT_DIR}/../dava.resourceeditor.beast/wrapper/*.h" 
+    file ( GLOB_RECURSE BEAST_LIST "${DAVA_RESOURCEEDITOR_BEAST_ROOT_DIR}/wrapper/*.cpp"  
+                                   "${DAVA_RESOURCEEDITOR_BEAST_ROOT_DIR}/wrapper/*.h" 
                                   )
 endif()
 
@@ -116,7 +116,7 @@ add_executable  ( ${PROJECT_NAME} MACOSX_BUNDLE
     ${UI_APP_HDRS} 
     ${RCC_APP_SRCS} 
     ${PROJECT_SOURCE_FILES} 
-    "${DAVA_ROOT_DIR}/../dava.speedtree/Sources/SpeedTreeImporter.cpp"
+    "${DAVA_SPEEDTREE_ROOT_DIR}/Sources/SpeedTreeImporter.cpp"
     ${BEAST_LIST}
     ${RESOURCES_LIST} 
 )
