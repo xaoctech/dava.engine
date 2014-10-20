@@ -375,7 +375,7 @@ public class JNITextField {
 						JNIActivity.GetActivity().PostEventToGL(t);
 						try {
 							String s = t.get();
-							if (s.equals(oldSource))
+							if (s.equals(origSource))
 							{
 								return null;
 							}
