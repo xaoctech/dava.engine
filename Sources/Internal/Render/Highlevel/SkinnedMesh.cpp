@@ -27,42 +27,45 @@
 =====================================================================================*/
 
 
-#include "Render/Highlevel/LandscapeChunk.h"
-#include "Render/Highlevel/Landscape.h"
-#include "Render/Highlevel/RenderFastNames.h"
-#include "Scene3D/SceneFileV2.h"
+#include "Render/Highlevel/SkinnedMesh.h"
+#include "Render/Highlevel/RenderBatch.h"
+#include "Render/3D/PolygonGroup.h"
+#include "Render/Highlevel/ShadowVolume.h"
+#include "Render/Material/NMaterial.h"
 
 namespace DAVA
 {
 
-LandscapeChunk::LandscapeChunk(Landscape * _landscape)
-    : landscape(_landscape)
+
+SkinnedMesh::SkinnedMesh()
 {
-    //SetOwnerLayerName(LAYER_OPAQUE);
-}
-    
-LandscapeChunk::~LandscapeChunk()
-{
-    
-}
-    
-void LandscapeChunk::Draw(const FastName & ownerPassName, Camera * camera)
-{
-	if(NULL != landscape)
-	{
-        landscape->BindDynamicParameters(camera);
-		landscape->Draw(camera);
-	}
+    type = TYPE_SKINNED_MESH;
+    bbox = AABBox3(Vector3(0,0,0), Vector3(0,0,0));
+    jointsCount = 0;
+    positionArray = NULL;
+    quaternionArray = NULL;
 }
 
-void LandscapeChunk::Save(KeyedArchive *archive, SerializationContext *serializationContext)
+
+RenderObject * SkinnedMesh::Clone(RenderObject *newObject)
 {
-    RenderBatch::Save(archive, serializationContext);
-}
- 
-void LandscapeChunk::Load(KeyedArchive *archive, SerializationContext *serializationContext)
-{
-    RenderBatch::Load(archive, serializationContext);
+
+    if(!newObject)
+    {
+        DVASSERT_MSG(IsPointerToExactClass<SkinnedMesh>(this), "Can clone only SkinnedMesh");
+        newObject = new SkinnedMesh();
+    }
+    RenderObject::Clone(newObject);   
+    return newObject;
 }
 
-};
+void SkinnedMesh::BindDynamicParameters(Camera * camera)
+{
+    RenderManager::SetDynamicParam(PARAM_JOINTS_COUNT, &jointsCount, (pointer_size)(&jointsCount));
+    RenderManager::SetDynamicParam(PARAM_JOINT_POSITIONS, &positionArray[0], (pointer_size)positionArray);
+    RenderManager::SetDynamicParam(PARAM_JOINT_QUATERNIONS, &quaternionArray[0], (pointer_size)quaternionArray);
+
+    RenderObject::BindDynamicParameters(camera);
+}
+
+}
