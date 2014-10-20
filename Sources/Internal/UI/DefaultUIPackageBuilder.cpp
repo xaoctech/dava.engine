@@ -132,8 +132,10 @@ namespace DAVA
         {
             control = UIControlHelpers::GetControlByPath(pathName, controlsStack.back().control);
         }
-        
-        DVASSERT(control != NULL);
+
+        if (!control)
+            return NULL;
+
         controlsStack.push_back(ControlDescr(SafeRetain(control), false));
         return control;
     }
@@ -159,7 +161,7 @@ namespace DAVA
             {
                 UIControl *control = controlsStack.back().control;
                 control->AddControl(lastControl.control);
-                control->UpdateLayout();
+                lastControl.control->UpdateLayout();
             }
         }
     }

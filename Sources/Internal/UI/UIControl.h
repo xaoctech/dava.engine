@@ -1323,6 +1323,7 @@ public:
     void SetSizeFromBg(bool pivotToCenter = true);
 
     virtual void UpdateLayout();
+    virtual void UpdateChildrenLayout();
     // Recalculate the size and positions for the child controls according to their Align Options.
     void ApplyAlignSettingsForChildren();
 
@@ -1437,7 +1438,7 @@ private:
 
 
     void RecalculateAlignProperties();
-    void RecalculateChildsSize();
+
     void RecalculatePivotPoint(const Rect &newRect);
 
     float32 GetSizeX(UIControl *parent, int32 leftAlign, int32 rightAlign, bool useHalfParentSize = false);
