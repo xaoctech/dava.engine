@@ -130,12 +130,10 @@ namespace DAVA
         UIControl *control = NULL;
         if (!controlsStack.empty())
         {
-            control = UIControlHelpers::GetControlByPath(pathName, controlsStack.back().control);
+            control = controlsStack.back().control->FindByPath(pathName);
         }
 
-        if (!control)
-            return NULL;
-
+        DVASSERT(control);
         controlsStack.push_back(ControlDescr(SafeRetain(control), false));
         return control;
     }

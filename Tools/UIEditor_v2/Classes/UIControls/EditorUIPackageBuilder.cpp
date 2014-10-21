@@ -131,10 +131,11 @@ UIControl *EditorUIPackageBuilder::BeginControlWithPath(const String &pathName)
         }
     }
 
+    controlsStack.push_back(ControlDescr(SafeRetain(control), false));
+
     if (!control)
         return NULL;
 
-    controlsStack.push_back(ControlDescr(SafeRetain(control), false));
     return control->GetControl();
 }
 
