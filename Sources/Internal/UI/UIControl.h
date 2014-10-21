@@ -784,6 +784,12 @@ public:
     UIControl * FindByName(const String & name, bool recursive = true) const;
 
     UIControl * FindByPath(const String & path) const;
+    
+    template<class C>
+    C FindByPath(const String & path) const
+    {
+        return DynamicTypeCheck<C>(FindByPath(path));
+    }
 
     /**
      \brief Returns control state bit mask.
