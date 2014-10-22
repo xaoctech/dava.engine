@@ -494,10 +494,7 @@ String Sprite::GetPathString( const Sprite *sprite )
 
 Sprite* Sprite::CreateFromSourceFile(const FilePath& path, bool contentScaleIncluded /* = false*/, bool inVirtualSpace /* = false */)
 {
-    spriteMapMutex.Lock();
-    Sprite* sprite = spriteMap[FILEPATH_MAP_KEY(path)];
-    SafeRetain(sprite);
-    spriteMapMutex.Unlock();
+    Sprite* sprite = GetSpriteFromMap(path);
     if (sprite)
     {
         return sprite;
