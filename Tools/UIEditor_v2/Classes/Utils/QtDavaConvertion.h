@@ -20,6 +20,9 @@ QString WideStringToQString(const DAVA::WideString &str);
 DAVA::Color QColorToColor(const QColor &color);
 QColor ColorToQColor(const DAVA::Color &color);
 
+QColor HexToQColor(const QString &str);
+QString QColorToHex(const QColor &color);
+
 DAVA::Vector2 QVector2DToVector2(const QVector2D &vector);
 QVector2D Vector2ToQVector2D(const DAVA::Vector2 &vector);
 

@@ -2975,29 +2975,44 @@ namespace DAVA
         return "";
     }
 
-    void UIControl::UpdateLayout()
+    void UIControl::UpdateLayout()//TODO: reimplement this method for use more optimal algoritm
     {
-        // Recalculate horizontal aligns
+        // ugly code for recalc horizontal align
         if (GetHCenterAlignEnabled())
         {
             int32 align = GetHCenterAlign();
             SetHCenterAlign(align);
         }
-        else if (GetRightAlignEnabled())
+        else 
+        if (GetRightAlignEnabled())
         {
             int32 align = GetRightAlign();
             SetRightAlign(align);
         }
-        // Recalculate vertical aligns
+        else
+        if (GetLeftAlignEnabled())
+        {
+            int32 align = GetLeftAlign();
+            SetLeftAlign(align);
+        }
+
+        // ugly code for vertical horizontal align
         if (GetVCenterAlignEnabled())
         {
             int32 align = GetVCenterAlign();
             SetVCenterAlign(align);
         }
-        else if (GetBottomAlignEnabled())
+        else
+        if (GetBottomAlignEnabled())
         {
             int32 align = GetBottomAlign();
             SetBottomAlign(align);
+        }
+        else
+        if (GetTopAlignEnabled())
+        {
+            int32 align = GetTopAlign();
+            SetTopAlign(align);
         }
     }
 
