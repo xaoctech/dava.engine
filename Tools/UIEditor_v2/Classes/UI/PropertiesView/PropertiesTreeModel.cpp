@@ -287,7 +287,7 @@ QVariant PropertiesTreeModel::makeQVariant(const BaseProperty *property) const
             return StringToQString(Format("[%g, %g]", val.AsVector2().x, val.AsVector2().y));
             
         case VariantType::TYPE_COLOR:
-            return StringToQString(Format("%g, %g, %g, %g", val.AsColor().a, val.AsColor().r, val.AsColor().g, val.AsColor().b));
+            return QColorToHex(ColorToQColor(val.AsColor()));
 
         case VariantType::TYPE_FILEPATH:
             return StringToQString(val.AsFilePath().GetAbsolutePathname());
