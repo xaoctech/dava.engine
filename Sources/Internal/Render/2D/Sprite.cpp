@@ -494,6 +494,15 @@ String Sprite::GetPathString( const Sprite *sprite )
 
 Sprite* Sprite::CreateFromSourceFile(const FilePath& path, bool contentScaleIncluded /* = false*/, bool inVirtualSpace /* = false */)
 {
+    spriteMapMutex.Lock();
+    Sprite* sprite = spriteMap[FILEPATH_MAP_KEY(path)];
+    SafeRetain(sprite);
+    spriteMapMutex.Unlock();
+    if (sprite)
+    {
+        return sprite;
+    }
+    
     Vector<Image*> images;
     ImageSystem::Instance()->Load(path, images);
     if (images.size() == 0)
@@ -501,7 +510,7 @@ Sprite* Sprite::CreateFromSourceFile(const FilePath& path, bool contentScaleIncl
         return NULL;
     }
 
-    Sprite* sprite = CreateFromImage(images[0], contentScaleIncluded, inVirtualSpace);
+    sprite = CreateFromImage(images[0], contentScaleIncluded, inVirtualSpace);
     if (sprite)
     {
         sprite->SetRelativePathname(path);
