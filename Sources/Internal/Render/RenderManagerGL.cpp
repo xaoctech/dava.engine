@@ -863,29 +863,10 @@ int32 RenderManager::HWglGetLastTextureID(int textureType)
 	
 void RenderManager::HWglBindTexture(int32 tId, uint32 textureType)
 {
-    if(0 != tId)
-    {
-        RENDER_VERIFY(glBindTexture((Texture::TEXTURE_2D == textureType) ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP, tId));
-        
-        		//GLenum err = glGetError();
-        		//if (err != GL_NO_ERROR)
-        		//	Logger::Error("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glBindTexture(GL_TEXTURE_2D, tId)", __FILE__, __LINE__, err);
-        
-        lastBindedTexture[textureType] = tId;
-		lastBindedTextureType = textureType;
-    }
-}
-	
-void RenderManager::HWglForceBindTexture(int32 tId, uint32 textureType)
-{
-	glBindTexture((Texture::TEXTURE_2D == textureType) ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP, tId);
-	
-	//GLenum err = glGetError();
-	//if (err != GL_NO_ERROR)
-	//	Logger::Error("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glBindTexture(GL_TEXTURE_2D, tId)", __FILE__, __LINE__, err);
-	
-	lastBindedTexture[textureType] = tId;
-	lastBindedTextureType = textureType;
+    RENDER_VERIFY(glBindTexture((Texture::TEXTURE_2D == textureType) ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP, tId));
+
+    lastBindedTexture[textureType] = tId;
+    lastBindedTextureType = textureType;
 }
 
 int32 RenderManager::HWglGetLastFBO()
