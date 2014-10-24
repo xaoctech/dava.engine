@@ -364,20 +364,33 @@ HierarchyTreeNode::HIERARCHYTREENODEID HierarchyTreeController::CreateNewControl
 		
 	HierarchyTreeNode* parentNode = activeScreen;
 	Vector2 parentDelta(0, 0);
+    Matrix3 rotationMatrix;
+
 	if (activeControlNodes.size() == 1)
 	{
 		HierarchyTreeControlNode* parentControlNode = (*activeControlNodes.begin());
 		parentNode = parentControlNode;
-		//parentDelta = parentControlNode->GetUIObject()->GetPosition();
-		parentDelta = parentControlNode->GetParentDelta();
-	}
+        UIGeometricData parentGD = parentControlNode->GetUIObject()->GetGeometricData();
+        Polygon2 polygon;
+        parentGD.GetPolygon(polygon);
+        parentDelta = polygon.points[0];
+        float32 angle = parentGD.angle;
+        if (!FLOAT_EQUAL(angle, 0.0f))
+        {
+            rotationMatrix.BuildRotation(-angle);
+        }
+    }
 	
 	Vector2 point = Vector2(position.x(), position.y());
 	DefaultScreen* screen = ScreenWrapper::Instance()->GetActiveScreen();
 	if (screen)
+    {
 		point = screen->LocalToInternal(point);
+    }
+
 	point -= parentDelta;
-	
+    point = point * rotationMatrix;
+
 	// Can create.
 	return CreateNewControl(typeId, point, parentNode);
 }
