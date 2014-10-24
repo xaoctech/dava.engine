@@ -25,6 +25,7 @@ public:
     UIControl *GetControl(int32 index) const;
     UIControl *GetControl(const String &name) const;
     void AddControl(UIControl *control);
+    void InsertControlBelow(UIControl *control, const UIControl *belowThis);
     void RemoveControl(UIControl *control);
     
     int32 GetPackagesCount() const;
@@ -32,9 +33,6 @@ public:
     UIPackage *GetPackage(const String name) const;
     void AddPackage(UIPackage *package);
     
-protected:
-    void SaveControls(YamlNode *rootNode) const;
-
 protected:
     FilePath packagePath;
     Vector<UIControl *> controls;

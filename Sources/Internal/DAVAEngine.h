@@ -149,6 +149,7 @@
 #include "UI/UIControlSystem.h"
 #include "UI/UIPackage.h"
 #include "UI/UIPackageLoader.h"
+#include "UI/DefaultUIPackageBuilder.h"
 #include "UI/UIEvent.h"
 #include "UI/UIButton.h"
 #include "UI/UIStaticText.h"
@@ -215,12 +216,14 @@
 #include "Render/3D/StaticMesh.h"
 #include "Render/3D/PolygonGroup.h"
 #include "Render/3D/EdgeAdjacency.h"
+#include "Render/3D/MeshUtils.h"
 
 // Material compiler
 #include "Render/Material/MaterialCompiler.h"
 #include "Render/Material/MaterialGraph.h"
 #include "Render/Material/MaterialGraphNode.h"
 #include "Render/Material/RenderTechnique.h"
+#include "Render/Material/NMaterialNames.h"
 
 // 3D scene management
 #include "Scene3D/Scene.h"
@@ -231,7 +234,7 @@
 #include "Render/Highlevel/Heightmap.h"
 #include "Render/Highlevel/Light.h"
 #include "Render/Highlevel/Mesh.h"
-#include "Render/Highlevel/ShadowVolume.h"
+#include "Render/Highlevel/SkinnedMesh.h"
 #include "Render/Highlevel/SpriteObject.h"
 #include "Render/Highlevel/RenderObject.h"
 #include "Render/Highlevel/RenderFastNames.h"

@@ -196,8 +196,8 @@ bool UIScrollBar::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultCon
 
     if (delegate)
     {
-        UIControl* delegateControl = dynamic_cast<UIControl*>(delegate);
-        node->Set("linkedScrollBarDelegate", UIControlHelpers::GetControlPath(delegateControl, loader->GetRootControl()));
+        //UIControl* delegateControl = dynamic_cast<UIControl*>(delegate);
+        //node->Set("linkedScrollBarDelegate", UIControlHelpers::GetControlPath(delegateControl, loader->GetRootControl()));
     }
 
 	return true;
@@ -305,13 +305,13 @@ void UIScrollBar::Draw(const UIGeometricData &geometricData)
                 {
                     slider->size.y = FLOAT_EQUAL(totalSize, 0.0f) ? 0.0f : size.y * (visibleArea / totalSize);
 					slider->size.y = GetValidSliderSize(slider->size.y);
-                    if (slider->size.y >= size.y) 
+                    if ((slider->size.y >= size.y) || FLOAT_EQUAL(totalSize, 0.0f))
                     {
-                        slider->SetVisible(false, true);
+                        slider->SetVisible(false);
                     }
                     else 
                     {
-                        slider->SetVisible(true, true);
+                        slider->SetVisible(true);
                     }
                 }
                     //TODO: optimize
@@ -339,13 +339,13 @@ void UIScrollBar::Draw(const UIGeometricData &geometricData)
                 {
                     slider->size.x = FLOAT_EQUAL(totalSize, 0.0f) ? 0.0f : size.x * (visibleArea / totalSize);
 					slider->size.x = GetValidSliderSize(slider->size.x);
-                    if (slider->size.x >= size.x) 
+                    if ((slider->size.x >= size.x) || FLOAT_EQUAL(totalSize, 0.0f))
                     {
-                        slider->SetVisible(false, true);
+                        slider->SetVisible(false);
                     }
                     else 
                     {
-                        slider->SetVisible(true, true);
+                        slider->SetVisible(true);
                     }
                 }
                 slider->relativePosition.x = (size.x - slider->size.x) * (viewPos / diff);

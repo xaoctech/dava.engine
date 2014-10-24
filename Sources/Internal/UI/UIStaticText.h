@@ -72,6 +72,9 @@ public:
     bool GetMultiline() const;
     bool GetMultilineBySymbol() const;
 
+    void SetMargins(const UIControlBackground::UIMargins* margins);
+    const UIControlBackground::UIMargins* GetMargins() const;
+
     void SetFittingOption(int32 fittingType);//may be FITTING_DISABLED, FITTING_ENLARGE, FITTING_REDUCE, FITTING_ENLARGE | FITTING_REDUCE
     int32 GetFittingOption() const;
 
@@ -110,7 +113,7 @@ public:
 
 protected:
     void PrepareSpriteInternal(BaseObject * caller, void * param, void *callerData);
-
+    Rect CalculateTextBlockRect(const UIGeometricData &geometricData) const;
 
 protected:
     TextBlock *textBlock;

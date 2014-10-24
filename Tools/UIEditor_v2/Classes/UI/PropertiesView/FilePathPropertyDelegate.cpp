@@ -1,6 +1,11 @@
 #include "FilePathPropertyDelegate.h"
+#include <QLineEdit>
+#include "DAVAEngine.h"
+#include "Utils/QtDavaConvertion.h"
+#include "PropertiesTreeItemDelegate.h"
 
-FilePathPropertyDelegate::FilePathPropertyDelegate()
+FilePathPropertyDelegate::FilePathPropertyDelegate(PropertiesTreeItemDelegate *delegate)
+    : BasePropertyDelegate(delegate)
 {
 
 }
@@ -12,15 +17,52 @@ FilePathPropertyDelegate::~FilePathPropertyDelegate()
 
 QWidget * FilePathPropertyDelegate::createEditor( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const 
 {
-    return NULL;
+    QLineEdit *lineEdit = new QLineEdit(parent);
+    lineEdit->setObjectName(QString::fromUtf8("lineEdit"));
+    connect(lineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(OnValueChanged()));
+
+    return lineEdit;
 }
 
-void FilePathPropertyDelegate::setEditorData( QWidget * editor, const QModelIndex & index ) const 
+void FilePathPropertyDelegate::setEditorData( QWidget * rawEditor, const QModelIndex & index ) const 
 {
+    QLineEdit *editor = rawEditor->findChild<QLineEdit*>("lineEdit");
 
+    DAVA::VariantType variant = index.data(Qt::EditRole).value<DAVA::VariantType>();
+    QString stringValue = StringToQString(variant.AsFilePath().GetAbsolutePathname());
+    editor->blockSignals(true);
+    editor->setText(stringValue);
+    editor->blockSignals(false);
 }
 
-bool FilePathPropertyDelegate::setModelData( QWidget * editor, QAbstractItemModel * model, const QModelIndex & index ) const 
+bool FilePathPropertyDelegate::setModelData( QWidget * rawEditor, QAbstractItemModel * model, const QModelIndex & index ) const 
 {
-    return BasePropertyDelegate::setModelData(editor, model, index);
+    if (BasePropertyDelegate::setModelData(rawEditor, model, index))
+        return true;
+
+    QLineEdit *editor = rawEditor->findChild<QLineEdit*>("lineEdit");
+
+    DAVA::VariantType variantType = index.data(Qt::EditRole).value<DAVA::VariantType>();
+    DAVA::String str = QStringToString(editor->text());
+    DAVA::FilePath filePath = str;
+    variantType.SetFilePath(filePath);
+
+    QVariant variant;
+    variant.setValue<DAVA::VariantType>(variantType);
+
+    return model->setData(index, variant, Qt::EditRole);
+}
+
+void FilePathPropertyDelegate::OnValueChanged()
+{
+    QWidget *lineEdit = qobject_cast<QWidget *>(sender());
+    if (!lineEdit)
+        return;
+
+    QWidget *editor = lineEdit->parentWidget();
+    if (!editor)
+        return;
+
+    BasePropertyDelegate::SetValueModified(editor, true);
+    itemDelegate->emitCommitData(editor);
 }

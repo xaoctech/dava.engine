@@ -16,6 +16,7 @@
 #include "UI/PackageDocument.h"
 #include "UI/PropertiesView/PropertiesTreeItemDelegate.h"
 #include "PropertiesViewContext.h"
+#include "UIControls/PackageHierarchy/ControlNode.h"
 
 using namespace DAVA;
 
@@ -37,7 +38,7 @@ void PropertiesDockWidget::SetContext(PropertiesViewContext *newContext)
 {
     if (context)
     {
-        disconnect(context->Document(), SIGNAL(controlsSelectionChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)), this, SLOT(OnControlsSelectionChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)));
+        disconnect(context->Document(), SIGNAL(controlsSelectionChanged(const QList<ControlNode*> &, const QList<ControlNode*> &)), this, SLOT(OnControlsSelectionChanged(const QList<ControlNode*> &, const QList<ControlNode*> &)));
         ui->treeView->setModel(NULL);
         //ui->filterLine->setEnabled(false);
         //ui->treeView->setEnabled(false);
@@ -49,13 +50,13 @@ void PropertiesDockWidget::SetContext(PropertiesViewContext *newContext)
     {
         //ui->treeView->setModel(document->GetTreeContext()->proxyModel);
         //ui->filterLine->setText(document->GetTreeContext()->filterString);
-        connect(context->Document(), SIGNAL(controlsSelectionChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)), this, SLOT(OnControlsSelectionChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)));
+        connect(context->Document(), SIGNAL(controlsSelectionChanged(const QList<ControlNode*> &, const QList<ControlNode*> &)), this, SLOT(OnControlsSelectionChanged(const QList<ControlNode*> &, const QList<ControlNode*> &)));
         //ui->filterLine->setEnabled(true);
         //ui->treeView->setEnabled(true);
     }
 }
 
-void PropertiesDockWidget::OnControlsSelectionChanged(const QList<DAVA::UIControl *> &activatedControls, const QList<DAVA::UIControl *> &deactivatedControls)
+void PropertiesDockWidget::OnControlsSelectionChanged(const QList<ControlNode*> &activatedControls, const QList<ControlNode*> &deactivatedControls)
 {
     if (!activatedControls.empty())
         SetControl(activatedControls.front());
@@ -63,12 +64,12 @@ void PropertiesDockWidget::OnControlsSelectionChanged(const QList<DAVA::UIContro
         SetControl(NULL);
 }
 
-void PropertiesDockWidget::SetControl(DAVA::UIControl *control)
+void PropertiesDockWidget::SetControl(ControlNode *controlNode)
 {
-    if (control)
+    if (controlNode)
     {
         QStyledItemDelegate *itemDelegate = new PropertiesTreeItemDelegate(this);
-        PropertiesTreeModel *model = new PropertiesTreeModel(control, context, this);
+        PropertiesTreeModel *model = new PropertiesTreeModel(controlNode->GetPropertiesRoot(), context, this);
 //        QItemEditorFactory *itemEditorFactory = new QItemEditorFactory();
 //        itemEditorFactory->registerEditor( QVariant::Vector2D, new QStandardItemEditorCreator<Vector2Edit>());
 //        itemDelegate->setItemEditorFactory(itemEditorFactory);

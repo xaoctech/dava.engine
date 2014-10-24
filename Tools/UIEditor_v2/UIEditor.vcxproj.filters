@@ -79,6 +79,12 @@
     <Filter Include="Sources\UI\PropertiesView\VariantDelegates">
       <UniqueIdentifier>{e68c9760-8a28-4969-93aa-daf90721aee5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\UIControls\ControlProperties">
+      <UniqueIdentifier>{dcf2a11f-0843-4abc-848a-81b6fa5bf8eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\UIControls\PackageHierarchy">
+      <UniqueIdentifier>{2b2a148d-03f0-41d5-b1d9-5c63a4cb1ba9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\FrameworkMain.cpp">
@@ -143,9 +149,6 @@
     </ClCompile>
     <ClCompile Include="Classes\UI\PackageDocument.cpp">
       <Filter>Sources\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\UIControls\UIEditorComponent.cpp">
-      <Filter>Sources\UIControls</Filter>
     </ClCompile>
     <ClCompile Include="Classes\UI\Dialogs\editfontdialog.cpp">
       <Filter>Sources\UI\Dialogs</Filter>
@@ -213,21 +216,6 @@
     <ClCompile Include="Classes\UI\PropertiesView\PropertiesTreeModel.cpp">
       <Filter>Sources\UI\PropertiesView</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\UI\PackageView\UIFilteredPackageModel.cpp">
-      <Filter>Sources\UI\PackageView</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\UI\PackageView\UIPackageModel.cpp">
-      <Filter>Sources\UI\PackageView</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\UIControls\BaseProperty.cpp">
-      <Filter>Sources\UIControls</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\UIControls\EditorUIPackageLoader.cpp">
-      <Filter>Sources\UIControls</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\UI\PackageView\PackageDockWidget.cpp">
-      <Filter>Sources\UI\PackageView</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\UI\LibraryView\LibraryDockWidget.cpp">
       <Filter>Sources\UI\LibraryView</Filter>
     </ClCompile>
@@ -243,38 +231,17 @@
     <ClCompile Include="Classes\UI\PropertiesView\PropertiesTreeView.cpp">
       <Filter>Sources\UI\PropertiesView</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\UIControls\BackgroundPropertiesSection.cpp">
-      <Filter>Sources\UIControls</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\UIControls\ControlPropertiesSection.cpp">
-      <Filter>Sources\UIControls</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\UIControls\InternalControlPropertiesSection.cpp">
-      <Filter>Sources\UIControls</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\UIControls\PropertiesSection.cpp">
-      <Filter>Sources\UIControls</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\UIControls\ValueProperty.cpp">
-      <Filter>Sources\UIControls</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Utils\QtDavaConvertion.cpp">
       <Filter>Sources\Utils</Filter>
     </ClCompile>
     <ClCompile Include="Classes\UI\GraphicView\EditScreen.cpp">
       <Filter>Sources\UI\GraphicView</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\UIControls\SubValueProperty.cpp">
-      <Filter>Sources\UIControls</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\QtControls\Vector2DEdit.cpp">
       <Filter>Sources\QtControls</Filter>
     </ClCompile>
     <ClCompile Include="Classes\UI\PropertiesView\PropertiesViewContext.cpp">
       <Filter>Sources\UI\PropertiesView</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\UI\PackageView\UIPackageModelNode.cpp">
-      <Filter>Sources\UI\PackageView</Filter>
     </ClCompile>
     <ClCompile Include="Classes\UI\PropertiesView\ChangePropertyValueCommand.cpp">
       <Filter>Sources\UI\PropertiesView</Filter>
@@ -306,14 +273,74 @@
     <ClCompile Include="Classes\UI\PropertiesView\FilePathPropertyDelegate.cpp">
       <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\UIControls\LocalizedTextValueProperty.cpp">
-      <Filter>Sources\UIControls</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\UI\FileSystemView\FileSystemDockWidget.cpp">
       <Filter>Sources\UI\FileSystemView</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\UIControls\EditorUIPackageSectionLoaders.cpp">
+    <ClCompile Include="Classes\UIControls\EditorUIPackageBuilder.cpp">
       <Filter>Sources\UIControls</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UIControls\LegacyEditorUIPackageLoader.cpp">
+      <Filter>Sources\UIControls</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UIControls\ControlProperties\BackgroundPropertiesSection.cpp">
+      <Filter>Sources\UIControls\ControlProperties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UIControls\ControlProperties\BaseProperty.cpp">
+      <Filter>Sources\UIControls\ControlProperties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UIControls\ControlProperties\ControlPropertiesSection.cpp">
+      <Filter>Sources\UIControls\ControlProperties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UIControls\ControlProperties\InternalControlPropertiesSection.cpp">
+      <Filter>Sources\UIControls\ControlProperties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UIControls\ControlProperties\LocalizedTextValueProperty.cpp">
+      <Filter>Sources\UIControls\ControlProperties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UIControls\ControlProperties\PropertiesRoot.cpp">
+      <Filter>Sources\UIControls\ControlProperties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UIControls\ControlProperties\PropertiesSection.cpp">
+      <Filter>Sources\UIControls\ControlProperties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UIControls\ControlProperties\SubValueProperty.cpp">
+      <Filter>Sources\UIControls\ControlProperties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UIControls\ControlProperties\ValueProperty.cpp">
+      <Filter>Sources\UIControls\ControlProperties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UIControls\PackageHierarchy\ControlNode.cpp">
+      <Filter>Sources\UIControls\PackageHierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UIControls\PackageHierarchy\ImportedPackagesNode.cpp">
+      <Filter>Sources\UIControls\PackageHierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UIControls\PackageHierarchy\PackageBaseNode.cpp">
+      <Filter>Sources\UIControls\PackageHierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UIControls\PackageHierarchy\PackageControlsNode.cpp">
+      <Filter>Sources\UIControls\PackageHierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UIControls\PackageHierarchy\PackageNode.cpp">
+      <Filter>Sources\UIControls\PackageHierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\PackageView\PackageDockWidget.cpp">
+      <Filter>Sources\UI\PackageView</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\PackageView\UIFilteredPackageModel.cpp">
+      <Filter>Sources\UI\PackageView</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\PackageView\UIPackageModel.cpp">
+      <Filter>Sources\UI\PackageView</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\PackageView\PackageModelCommands.cpp">
+      <Filter>Sources\UI\PackageView</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\PackageView\UIPackageMimeData.cpp">
+      <Filter>Sources\UI\PackageView</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\LibraryView\LibraryModel.cpp">
+      <Filter>Sources\UI\LibraryView</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -379,9 +406,6 @@
     </ClInclude>
     <ClInclude Include="Classes\UI\PackageDocument.h">
       <Filter>Sources\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\UIControls\UIEditorComponent.h">
-      <Filter>Sources\UIControls</Filter>
     </ClInclude>
     <ClInclude Include="Classes\UI\Dialogs\editfontdialog.h">
       <Filter>Sources\UI\Dialogs</Filter>
@@ -452,21 +476,6 @@
     <ClInclude Include="Classes\UI\PropertiesView\PropertiesTreeModel.h">
       <Filter>Sources\UI\PropertiesView</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\UI\PackageView\UIFilteredPackageModel.h">
-      <Filter>Sources\UI\PackageView</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\UI\PackageView\UIPackageModel.h">
-      <Filter>Sources\UI\PackageView</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\UIControls\BaseProperty.h">
-      <Filter>Sources\UIControls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\UIControls\EditorUIPackageLoader.h">
-      <Filter>Sources\UIControls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\UI\PackageView\PackageDockWidget.h">
-      <Filter>Sources\UI\PackageView</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\UI\LibraryView\LibraryDockWidget.h">
       <Filter>Sources\UI\LibraryView</Filter>
     </ClInclude>
@@ -482,38 +491,17 @@
     <ClInclude Include="Classes\UI\PropertiesView\PropertiesTreeView.h">
       <Filter>Sources\UI\PropertiesView</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\UIControls\BackgroundPropertiesSection.h">
-      <Filter>Sources\UIControls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\UIControls\ControlPropertiesSection.h">
-      <Filter>Sources\UIControls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\UIControls\InternalControlPropertiesSection.h">
-      <Filter>Sources\UIControls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\UIControls\PropertiesSection.h">
-      <Filter>Sources\UIControls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\UIControls\ValueProperty.h">
-      <Filter>Sources\UIControls</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Utils\QtDavaConvertion.h">
       <Filter>Sources\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Classes\UI\GraphicView\EditScreen.h">
       <Filter>Sources\UI\GraphicView</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\UIControls\SubValueProperty.h">
-      <Filter>Sources\UIControls</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\QtControls\Vector2DEdit.h">
       <Filter>Sources\QtControls</Filter>
     </ClInclude>
     <ClInclude Include="Classes\UI\PropertiesView\PropertiesViewContext.h">
       <Filter>Sources\UI\PropertiesView</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\UI\PackageView\UIPackageModelNode.h">
-      <Filter>Sources\UI\PackageView</Filter>
     </ClInclude>
     <ClInclude Include="Classes\UI\PropertiesView\ChangePropertyValueCommand.h">
       <Filter>Sources\UI\PropertiesView</Filter>
@@ -545,14 +533,74 @@
     <ClInclude Include="Classes\UI\PropertiesView\FilePathPropertyDelegate.h">
       <Filter>Sources\UI\PropertiesView\VariantDelegates</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\UIControls\LocalizedTextValueProperty.h">
-      <Filter>Sources\UIControls</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\UI\FileSystemView\FileSystemDockWidget.h">
       <Filter>Sources\UI\FileSystemView</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\UIControls\EditorUIPackageSectionLoaders.h">
+    <ClInclude Include="Classes\UIControls\EditorUIPackageBuilder.h">
       <Filter>Sources\UIControls</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UIControls\LegacyEditorUIPackageLoader.h">
+      <Filter>Sources\UIControls</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UIControls\ControlProperties\BackgroundPropertiesSection.h">
+      <Filter>Sources\UIControls\ControlProperties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UIControls\ControlProperties\BaseProperty.h">
+      <Filter>Sources\UIControls\ControlProperties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UIControls\ControlProperties\ControlPropertiesSection.h">
+      <Filter>Sources\UIControls\ControlProperties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UIControls\ControlProperties\InternalControlPropertiesSection.h">
+      <Filter>Sources\UIControls\ControlProperties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UIControls\ControlProperties\LocalizedTextValueProperty.h">
+      <Filter>Sources\UIControls\ControlProperties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UIControls\ControlProperties\PropertiesRoot.h">
+      <Filter>Sources\UIControls\ControlProperties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UIControls\ControlProperties\PropertiesSection.h">
+      <Filter>Sources\UIControls\ControlProperties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UIControls\ControlProperties\SubValueProperty.h">
+      <Filter>Sources\UIControls\ControlProperties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UIControls\ControlProperties\ValueProperty.h">
+      <Filter>Sources\UIControls\ControlProperties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UIControls\PackageHierarchy\ControlNode.h">
+      <Filter>Sources\UIControls\PackageHierarchy</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UIControls\PackageHierarchy\ImportedPackagesNode.h">
+      <Filter>Sources\UIControls\PackageHierarchy</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UIControls\PackageHierarchy\PackageBaseNode.h">
+      <Filter>Sources\UIControls\PackageHierarchy</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UIControls\PackageHierarchy\PackageControlsNode.h">
+      <Filter>Sources\UIControls\PackageHierarchy</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UIControls\PackageHierarchy\PackageNode.h">
+      <Filter>Sources\UIControls\PackageHierarchy</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PackageView\PackageDockWidget.h">
+      <Filter>Sources\UI\PackageView</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PackageView\UIFilteredPackageModel.h">
+      <Filter>Sources\UI\PackageView</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PackageView\UIPackageModel.h">
+      <Filter>Sources\UI\PackageView</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PackageView\PackageModelCommands.h">
+      <Filter>Sources\UI\PackageView</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PackageView\UIPackageMimeData.h">
+      <Filter>Sources\UI\PackageView</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\LibraryView\LibraryModel.h">
+      <Filter>Sources\UI\LibraryView</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

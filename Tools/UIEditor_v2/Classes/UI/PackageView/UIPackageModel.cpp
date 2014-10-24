@@ -1,73 +1,36 @@
-//
-//  UIPackageModel.cpp
-//  UIEditor
-//
-//  Created by Dmitry Belsky on 10.9.14.
-//
-//
-
 #include "UIPackageModel.h"
 
-#include "DAVAEngine.h"
-#include "UI/IconHelper.h"
-#include "UIControls/UIEditorComponent.h"
-#include "Utils/QtDavaConvertion.h"
-#include "UIPackageModelNode.h"
 #include <qicon.h>
 #include <QAction>
 
+#include "DAVAEngine.h"
+#include "Base/ObjectFactory.h"
+
+#include "UI/IconHelper.h"
+#include "UI/PackageDocument.h"
+#include "Utils/QtDavaConvertion.h"
+#include "UIControls/PackageHierarchy/PackageNode.h"
+#include "UIControls/PackageHierarchy/ControlNode.h"
+#include "UIControls/PackageHierarchy/PackageControlsNode.h"
+#include "UIControls/PackageHierarchy/ImportedPackagesNode.h"
+#include "PackageModelCommands.h"
+
+#include "UIPackageMimeData.h"
+
 using namespace DAVA;
 
-UIPackageMimeData::UIPackageMimeData()
-{
-}
-
-UIPackageMimeData::~UIPackageMimeData()
-{
-}
-
-bool UIPackageMimeData::hasFormat(const QString &mimetype) const
-{
-    if (mimetype == "application/packageModel")
-        return true;
-    return QMimeData::hasFormat(mimetype);
-}
-
-QStringList UIPackageMimeData::formats() const
-{
-    QStringList types;
-    types << "application/packageModel";
-    return types;
-}
-
-QVariant UIPackageMimeData::retrieveData(const QString &mimetype, QVariant::Type preferredType) const
-{
-    if (mimetype == "application/packageModel")
-        return QVariant(QVariant::UserType);
-    
-    return QMimeData::retrieveData(mimetype, preferredType);
-}
-
-UIPackageModel::UIPackageModel(DAVA::UIPackage *_package, QObject *parent)
-    : QAbstractItemModel(parent)
+UIPackageModel::UIPackageModel(PackageDocument *document)
+    : QAbstractItemModel(document)
     , root(NULL)
+    , document(document)
 {
-    root = new UIPackageModelRootNode(_package, _package->GetName(), UIPackageModelRootNode::MODE_CONTROLS_AND_IMPORTED_PACKAGED);
-    
-    undoStack = new QUndoStack(this);
-    undoAction = undoStack->createUndoAction(this, tr("&Undo"));
-    undoAction->setShortcuts(QKeySequence::Undo);
-    undoAction->setIcon(QIcon(":/Icons/118.png"));
-    
-    redoAction = undoStack->createRedoAction(this, tr("&Redo"));
-    redoAction->setShortcuts(QKeySequence::Redo);
-    redoAction->setIcon(QIcon(":/Icons/117.png"));
+    root = SafeRetain(document->Package());
 }
 
 UIPackageModel::~UIPackageModel()
 {
+    document = NULL;
     SafeRelease(root);
-    delete undoStack;
 }
 
 QModelIndex UIPackageModel::index(int row, int column, const QModelIndex &parent) const
@@ -78,7 +41,7 @@ QModelIndex UIPackageModel::index(int row, int column, const QModelIndex &parent
     if (!parent.isValid())
         return createIndex(row, column, root->Get(row));
 
-    UIPackageModelNode *node = static_cast<UIPackageModelNode*>(parent.internalPointer());
+    PackageBaseNode *node = static_cast<PackageBaseNode*>(parent.internalPointer());
     return createIndex(row, column, node->Get(row));
 }
 
@@ -87,8 +50,8 @@ QModelIndex UIPackageModel::parent(const QModelIndex &child) const
     if (!child.isValid())
         return QModelIndex();
 
-    UIPackageModelNode *node = static_cast<UIPackageModelNode*>(child.internalPointer());
-    UIPackageModelNode *parent = node->GetParent();
+    PackageBaseNode *node = static_cast<PackageBaseNode*>(child.internalPointer());
+    PackageBaseNode *parent = node->GetParent();
     if (parent == NULL || parent == root)
         return QModelIndex();
     
@@ -103,7 +66,7 @@ int UIPackageModel::rowCount(const QModelIndex &parent) const
     if (!parent.isValid())
         return root ? root->GetCount() : 0;
     
-    return static_cast<UIPackageModelNode*>(parent.internalPointer())->GetCount();
+    return static_cast<PackageBaseNode*>(parent.internalPointer())->GetCount();
 }
 
 int UIPackageModel::columnCount(const QModelIndex &/*parent*/) const
@@ -116,52 +79,48 @@ QVariant UIPackageModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    UIPackageModelNode *node = static_cast<UIPackageModelNode*>(index.internalPointer());
+    PackageBaseNode *node = static_cast<PackageBaseNode*>(index.internalPointer());
     
-    //UIEditorComponent *editorComponent = dynamic_cast<UIEditorComponent*>(control->GetCustomData());
-//    DVASSERT(editorComponent != NULL);
-//    bool createdFromPrototype = editorComponent != NULL && editorComponent->IsClonedFromPrototype();
-    
+    int prototypeFlag = PackageBaseNode::FLAG_CONTROL_CREATED_FROM_PROTOTYPE | PackageBaseNode::FLAG_CONTROL_CREATED_FROM_PROTOTYPE_CHILD;
+    int controlFlag = PackageBaseNode::FLAG_CONTROL_CREATED_FROM_CLASS | PackageBaseNode::FLAG_CONTROL_CREATED_FROM_PROTOTYPE | PackageBaseNode::FLAG_CONTROL_CREATED_FROM_PROTOTYPE_CHILD;
+    int flags = node->GetFlags();
     switch(role)
     {
-    case Qt::DisplayRole:
-        {
+        case Qt::DisplayRole:
             return StringToQString(node->GetName());
-        }
-        break;
-    case Qt::DecorationRole:
+            
+        case Qt::DecorationRole:
             return node->GetControl() != NULL ? QIcon(IconHelper::GetIconPathForUIControl(node->GetControl())) : QVariant();
-    case Qt::CheckStateRole:
+            
+        case Qt::CheckStateRole:
             if (node->GetControl())
                 return node->GetControl()->GetVisibleForUIEditor() ? Qt::Checked : Qt::Unchecked;
             else
                 return QVariant();
-//    case Qt::ToolTipRole:
-//        return QString(control->GetControlClassName().c_str());
-//    case Qt::EditRole:
-//        return QString(control->GetName().c_str());
+            
+        case Qt::ToolTipRole:
+            return node->GetControl() != NULL ? QString(node->GetControl()->GetControlClassName().c_str()) : QVariant();
+            
         case Qt::TextColorRole:
-            return node->IsCloned() ? Qt::blue : Qt::black;
+            return (flags & prototypeFlag) != 0 ? Qt::blue : Qt::black;
             
         case Qt::BackgroundRole:
-            return node->IsHeader() ? Qt::lightGray : Qt::white;
+            return (flags & controlFlag) == 0 ? Qt::lightGray : Qt::white;
             
         case Qt::FontRole:
         {
             QFont myFont;
-            if (node->IsInstancedFromPrototype() || node->IsHeader())
+            if ((flags & PackageBaseNode::FLAG_CONTROL_CREATED_FROM_PROTOTYPE) != 0 || (flags & controlFlag) == 0)
                 myFont.setBold(true);
-            if (!node->IsEditable())
+            if ((flags & PackageBaseNode::FLAG_READ_ONLY) != 0)
                 myFont.setItalic(true);
-
+            
             return myFont;
         }
             
-    default:
-        break;
+        default:
+            return QVariant();
     }
-
-    return QVariant();
 }
 
 bool UIPackageModel::setData(const QModelIndex &index, const QVariant &value, int role)
@@ -169,7 +128,7 @@ bool UIPackageModel::setData(const QModelIndex &index, const QVariant &value, in
     if (!index.isValid())
         return false;
     
-    UIPackageModelNode *node = static_cast<UIPackageModelNode*>(index.internalPointer());
+    PackageBaseNode *node = static_cast<PackageBaseNode*>(index.internalPointer());
     
     if (role == Qt::CheckStateRole)
     {
@@ -177,18 +136,7 @@ bool UIPackageModel::setData(const QModelIndex &index, const QVariant &value, in
             node->GetControl()->SetVisibleForUIEditor(value.toBool());
         return true;
     }
-//    else if (role == Qt::EditRole)
-//    {
-//        control->SetName(value.toString().toStdString());
-//        return true;
-//    }
-    
     return false;
-}
-
-Qt::DropActions UIPackageModel::supportedDropActions() const
-{
-    return Qt::CopyAction | Qt::MoveAction;
 }
 
 Qt::ItemFlags UIPackageModel::flags(const QModelIndex &index) const
@@ -196,24 +144,27 @@ Qt::ItemFlags UIPackageModel::flags(const QModelIndex &index) const
     if (!index.isValid())
         return Qt::NoItemFlags;
     
-    Qt::ItemFlags flags = QAbstractItemModel::flags(index);
-    flags |= /*Qt::ItemIsEditable | */Qt::ItemIsUserCheckable;
+    Qt::ItemFlags flags = QAbstractItemModel::flags(index) | Qt::ItemIsUserCheckable;
     
-//    const UIControl *control = static_cast<UIControl*>(index.internalPointer());
-//    
-//    if (IsPackageRootControl(control))
-//        flags = flags | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
-//    else if(IsPackageContentControl(control))
-//        flags = flags | Qt::ItemIsDropEnabled;
+    const PackageBaseNode *node = static_cast<PackageBaseNode*>(index.internalPointer());
+    if ((node->GetFlags() & PackageBaseNode::FLAGS_CONTROL) != 0)
+        flags |= Qt::ItemIsDragEnabled;
+    if ((node->GetFlags() & PackageBaseNode::FLAG_READ_ONLY) == 0)
+        flags |= Qt::ItemIsDropEnabled;
     
-    flags |= Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
     return flags;
+}
+
+Qt::DropActions UIPackageModel::supportedDropActions() const
+{
+    return Qt::CopyAction | Qt::MoveAction;
 }
 
 QStringList UIPackageModel::mimeTypes() const
 {
     QStringList types;
     types << "application/packageModel";
+    types << "text/plain";
     return types;
 }
 
@@ -224,9 +175,7 @@ QMimeData *UIPackageModel::mimeData(const QModelIndexList &indexes) const
     foreach (QModelIndex index, indexes)
     {
         if (index.isValid())
-        {
             mimeData->SetIndex(index);
-        }
     }
 
     return mimeData;
@@ -237,239 +186,255 @@ bool UIPackageModel::dropMimeData(const QMimeData *data, Qt::DropAction action, 
     if (action == Qt::IgnoreAction)
         return true;
     
-    if (!data->hasFormat("application/packageModel"))
-        return false;
-    
-    const UIPackageMimeData *controlMimeData = dynamic_cast<const UIPackageMimeData*>(data);
-    if (!controlMimeData)
-        return false;
-    
-    if (column > 0)
-        return false;
-
     int rowIndex;
-    
     if (row != -1)
-    {
         rowIndex = row;
-    }
     else if (parent.isValid())
-    {
         rowIndex = rowCount(parent);
+    else
+        rowIndex = rowCount(QModelIndex());
+
+    if (data->hasFormat("application/packageModel"))
+    {
+        const UIPackageMimeData *controlMimeData = dynamic_cast<const UIPackageMimeData*>(data);
+        if (!controlMimeData)
+            return false;
+        
+        if (column > 0)
+            return false;
+
+        QModelIndex srcIndex = controlMimeData->GetIndex();
+        QModelIndex srcParent = srcIndex.parent();
+        QModelIndex dstParent = parent;
+        int dstRow = rowIndex;
+        
+        if (action == Qt::CopyAction)
+        {
+            QUndoCommand *changeCommand = new CopyItemModelCommand(this, srcIndex, dstRow, dstParent);
+            document->UndoStack()->push(changeCommand);
+            return true;
+        }
+        else if (action == Qt::MoveAction)
+        {
+            int srcRow = srcIndex.row();
+            
+            if (srcIndex == dstParent)
+            {
+                return false;
+            }
+            
+            if (srcParent == dstParent && (dstRow == srcRow || dstRow == srcRow + 1))
+            {
+                return false;
+            }
+
+            ControlNode *sourceNode = dynamic_cast<ControlNode*>(static_cast<PackageBaseNode*>(index(srcRow, 0, srcParent).internalPointer()));
+            if (!sourceNode || (sourceNode->GetFlags() & PackageBaseNode::FLAG_READ_ONLY) != 0)
+            {
+                return false;
+            }
+
+            document->UndoStack()->push(new MoveItemModelCommand(this, srcIndex, dstRow, dstParent));
+            return true;
+        }
+        else if (action == Qt::LinkAction)
+        {
+            DVASSERT(false);
+            return true;
+        }
+    }
+    else if (data->hasFormat("text/plain") && data->hasText())
+    {
+        QModelIndex dstParent = parent;
+        int dstRow = rowIndex;
+        QUndoCommand *changeCommand = new InsertControlNodeCommand(this, data->text(), dstRow, dstParent);
+        document->UndoStack()->push(changeCommand);
+        return true;
+    }
+
+    return false;
+}
+
+void UIPackageModel::InsertItem(const QString &name, int dstRow, const QModelIndex &dstParent)
+{
+    String controlName = QStringToString(name);
+    size_t slashIndex = controlName.find("/");
+    ControlNode *node = NULL;
+    if (slashIndex != String::npos)
+    {
+        String packName = controlName.substr(0, slashIndex);
+        controlName = controlName.substr(slashIndex + 1, controlName.size() - slashIndex - 1);
+        PackageControlsNode *packageControls = root->GetImportedPackagesNode()->FindPackageControlsNodeByName(packName);
+        if (packageControls)
+        {
+            ControlNode *prototype = packageControls->FindControlNodeByName(controlName);
+            if (prototype)
+                node = new ControlNode(prototype, packageControls->GetPackage());
+        }
     }
     else
     {
-        rowIndex = rowCount(QModelIndex());
-    }
-    
-    QModelIndex srcIndex = controlMimeData->GetIndex();
-    QModelIndex srcParent = srcIndex.parent();
-    QModelIndex dstParent = parent;
-    int dstRow = rowIndex;
-    
-    if (action == Qt::CopyAction)
-    {
-        QUndoCommand *changeCommand = new CopyItemModelCommand(this, srcIndex, dstRow, dstParent);
-        undoStack->push(changeCommand);
-    }
-    else if (action == Qt::MoveAction)
-    {
-        int srcRow = srcIndex.row();
-        
-        if (srcIndex == dstParent)
+        UIControl *control = ObjectFactory::Instance()->New<UIControl>(controlName);
+        if (control)
         {
-            return false;
+            node = new ControlNode(control);
+            SafeRelease(control);
         }
-        
-        if (srcParent == dstParent &&
-            (dstRow == srcRow || dstRow == srcRow + 1))
+        else
         {
-            return false;
+            ControlNode *prototype = root->GetPackageControlsNode()->FindControlNodeByName(controlName);
+            if (prototype)
+                node = new ControlNode(prototype, NULL);
         }
-        
-        QUndoCommand *changeCommand = new MoveItemModelCommand(this, srcIndex, dstRow, dstParent);
-        undoStack->push(changeCommand);
     }
     
-    return true;
+    if (node)
+    {
+        beginInsertRows(dstParent, dstRow, dstRow);
+        InsertNode(node, dstParent, dstRow);
+        endInsertRows();
+        SafeRelease(node);
+    }
+    else
+    {
+        DVASSERT(false);
+    }
+}
+
+void UIPackageModel::InsertItem(ControlNode *node, int dstRow, const QModelIndex &dstParent)
+{
+    beginInsertRows(dstParent, dstRow, dstRow);
+    InsertNode(node, dstParent, dstRow);
+    endInsertRows();
 }
 
 void UIPackageModel::MoveItem(const QModelIndex &srcItem, int dstRow, const QModelIndex &dstParent)
 {
-    beginMoveRows(srcItem.parent(), srcItem.row(), srcItem.row(), dstParent, dstRow);
+    ControlNode *sourceNode(dynamic_cast<ControlNode*>(static_cast<PackageBaseNode*>(srcItem.internalPointer())));
+    if (sourceNode)
     {
-        QModelIndex insertBelowIndex = index(dstRow, 0, dstParent);
-    
-        ScopedPtr<UIControl> control(SafeRetain(static_cast<UIControl*>(srcItem.internalPointer())));
-        RemoveControl(control);
-        InsertControl(control, dstParent, insertBelowIndex);
+        beginMoveRows(srcItem.parent(), srcItem.row(), srcItem.row(), dstParent, dstRow);
+        {
+            SafeRetain(sourceNode);
+            RemoveNode(sourceNode);
+            InsertNode(sourceNode, dstParent, dstRow);
+            SafeRelease(sourceNode);
+        }
+        endMoveRows();
     }
-    endMoveRows();
+    else
+    {
+        DVASSERT(false);
+    }
 }
 
 void UIPackageModel::CopyItem(const QModelIndex &srcItem, int dstRow, const QModelIndex &dstParent)
 {
-    beginInsertRows(dstParent, dstRow, dstRow);
+    ControlNode *sourceNode = dynamic_cast<ControlNode*>(static_cast<PackageBaseNode*>(srcItem.internalPointer()));
+    if (sourceNode)
     {
-        QModelIndex insertBelowIndex = index(dstRow, 0, dstParent);
-    
-        ScopedPtr<UIControl> control(static_cast<UIControl*>(srcItem.internalPointer())->Clone());
-        InsertControl(control, dstParent, insertBelowIndex);
+        beginInsertRows(dstParent, dstRow, dstRow);
+        {
+            ControlNode* node = new ControlNode(sourceNode, NULL, ControlNode::CREATED_FROM_CLASS);
+            InsertNode(node, dstParent, dstRow);
+            SafeRelease(node);
+        }
+        endInsertRows();
     }
-    endInsertRows();
+    else
+    {
+        DVASSERT(false);
+    }
 }
 
 void UIPackageModel::RemoveItem(const QModelIndex &srcItem)
 {
-    beginRemoveRows(srcItem.parent(), srcItem.row(), srcItem.row());
+    ControlNode *sourceNode = dynamic_cast<ControlNode*>(static_cast<PackageBaseNode*>(srcItem.internalPointer()));
+    if (sourceNode)
     {
-        ScopedPtr<UIControl> control(SafeRetain(static_cast<UIControl*>(srcItem.internalPointer())));
-        RemoveControl(control);
+        beginRemoveRows(srcItem.parent(), srcItem.row(), srcItem.row());
+        RemoveNode(sourceNode);
+        endRemoveRows();
     }
-    UIControl * removedControl = static_cast<UIControl*>(srcItem.internalPointer());
-    endRemoveRows();
+    else
+    {
+        DVASSERT(false);
+    }
 }
 
-//bool UIPackageModel::IsPackageRootControl(const UIControl *control) const
-//{
-//    uint32 count = package->GetControlsCount();
-//    for (uint32 index = 0; index < count; ++index)
-//    {
-//        if (package->GetControl(index) == control)
-//            return true;
-//    }
-//    
-//    return false;
-//}
-//
-//bool UIPackageModel::IsPackageContentControl(const UIControl *control) const
-//{
-//    const UIControl *rootControl = control;
-//    while (rootControl->GetParent())
-//    {
-//        rootControl = rootControl->GetParent();
-//    }
-//    return IsPackageRootControl(rootControl);
-//}
-
-void UIPackageModel::InsertControl(DAVA::UIControl *control, const QModelIndex &parent, const QModelIndex &insertBelowIndex)
+void UIPackageModel::InsertNode(ControlNode *node, const QModelIndex &parent, int dstRow)
 {
     if (parent.isValid())
     {
-        DAVA::UIControl *parentControl = static_cast<UIControl*>(parent.internalPointer());
-        DAVA::UIControl *insertBelowControl = static_cast<UIControl*>(insertBelowIndex.internalPointer());
-        InsertControlToContent(control, parentControl, insertBelowControl);
-    }
-    else
-    {
-        InsertControlToPackage(control, insertBelowIndex.row());
-    }
-}
-
-void UIPackageModel::RemoveControl(DAVA::UIControl *control)
-{
-    if (control->GetParent())
-    {
-        RemoveControlFromContent(control);
-    }
-    else
-    {
-        RemoveControlFromPackage(control);
-    }
-}
-
-void UIPackageModel::InsertControlToContent(DAVA::UIControl *control, DAVA::UIControl *parent, DAVA::UIControl *insertBelowControl)
-{
-    if (!insertBelowControl)
-    {
-        parent->AddControl(control);
-    }
-    else
-    {
-        parent->InsertChildBelow(control, insertBelowControl);
-    }
-}
-
-void UIPackageModel::RemoveControlFromContent(DAVA::UIControl *control)
-{
-    control->RemoveFromParent();
-}
-
-void UIPackageModel::InsertControlToPackage(DAVA::UIControl *control, int index)
-{
-    
-}
-
-void UIPackageModel::RemoveControlFromPackage(DAVA::UIControl *control)
-{
-    
-}
-
-MoveItemModelCommand::MoveItemModelCommand(UIPackageModel *_package, const QModelIndex &srcIndex, int _dstRow, const QModelIndex &_dstParent, QUndoCommand *parent)
-: BasePackageModelCommand(_package, "Move item", parent)
-, srcRow(srcIndex.row())
-, dstRow(_dstRow)
-, srcParent(srcIndex.parent())
-, dstParent(_dstParent)
-{
-    
-}
-
-MoveItemModelCommand::~MoveItemModelCommand()
-{
-    
-}
-
-void MoveItemModelCommand::undo()
-{
-    int fixedDstRow = dstRow;
-    int fixedSrcRow = srcRow;
-    if (srcParent == dstParent)
-    {
-        if (dstRow > srcRow)
+        PackageBaseNode *parentNode = static_cast<PackageBaseNode*>(parent.internalPointer());
+        if ((parentNode->GetFlags() & PackageBaseNode::FLAG_READ_ONLY) == 0)
         {
-            --fixedDstRow;
+            const QModelIndex &insertBelowIndex = index(dstRow, 0, parent);
+            if ((parentNode->GetFlags() & PackageBaseNode::FLAGS_CONTROL) != 0)
+            {
+                ControlNode *parentControl = dynamic_cast<ControlNode*>(parentNode);
+                if (parentControl)
+                {
+                    ControlNode *belowThis = static_cast<ControlNode*>(insertBelowIndex.internalPointer());
+                    if (belowThis)
+                        parentControl->InsertBelow(node, belowThis);
+                    else
+                        parentControl->Add(node);
+                }
+                else
+                {
+                    DVASSERT(false);
+                }
+            }
+            else
+            {
+                PackageControlsNode *parentControls = dynamic_cast<PackageControlsNode*>(parentNode);
+                if (parentControls)
+                {
+                    ControlNode *belowThis = static_cast<ControlNode*>(insertBelowIndex.internalPointer());
+                    if (belowThis)
+                        parentControls->InsertBelow(node, belowThis);
+                    else
+                        parentControls->Add(node);
+                }
+                else
+                {
+                    DVASSERT(false);
+                }
+            }
+        }
+    }
+    else
+    {
+        DVASSERT(false);
+    }
+}
+
+void UIPackageModel::RemoveNode(ControlNode *node)
+{
+    PackageBaseNode *parentNode = node->GetParent();
+    if ((parentNode->GetFlags() & PackageBaseNode::FLAG_READ_ONLY) == 0)
+    {
+        PackageControlsNode *controls = dynamic_cast<PackageControlsNode*>(parentNode);
+        if (controls)
+        {
+            controls->Remove(node);
         }
         else
         {
-            ++fixedSrcRow;
+            ControlNode *parentControl = dynamic_cast<ControlNode*>(parentNode);
+            if (parentControl)
+            {
+                parentControl->Remove(node);
+            }
+            else
+            {
+                DVASSERT(false);
+            }
         }
-            
     }
-    QModelIndex dstIndex = GetModel()->index(fixedDstRow, 0, dstParent);
-    GetModel()->MoveItem(dstIndex, fixedSrcRow, srcParent);
+    else
+    {
+        DVASSERT(false);
+    }
 }
-
-void MoveItemModelCommand::redo()
-{
-    QModelIndex srcIndex = GetModel()->index(srcRow, 0, srcParent);
-    GetModel()->MoveItem(srcIndex, dstRow, dstParent);
-}
-
-CopyItemModelCommand::CopyItemModelCommand(UIPackageModel *_package, const QModelIndex &srcIndex, int _dstRow, const QModelIndex &_dstParent, QUndoCommand *parent)
-: BasePackageModelCommand(_package, "Move item", parent)
-, srcRow(srcIndex.row())
-, dstRow(_dstRow)
-, srcParent(srcIndex.parent())
-, dstParent(_dstParent)
-{
-    
-}
-
-CopyItemModelCommand::~CopyItemModelCommand()
-{
-    
-}
-
-void CopyItemModelCommand::undo()
-{
-    QModelIndex dstIndex = GetModel()->index(dstRow, 0, dstParent);
-    GetModel()->RemoveItem(dstIndex);
-}
-
-void CopyItemModelCommand::redo()
-{
-    QModelIndex srcIndex = GetModel()->index(srcRow, 0, srcParent);
-    GetModel()->CopyItem(srcIndex, dstRow, dstParent);
-}
-

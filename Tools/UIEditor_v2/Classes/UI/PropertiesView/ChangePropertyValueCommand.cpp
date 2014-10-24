@@ -1,5 +1,5 @@
 #include "ChangePropertyValueCommand.h"
-#include "UIControls/BaseProperty.h"
+#include "UIControls/ControlProperties/BaseProperty.h"
 
 ChangePropertyValueCommand::ChangePropertyValueCommand( BaseProperty *prop, const DAVA::VariantType &newVal, QUndoCommand *parent /*= 0*/ )
     : QUndoCommand(parent)

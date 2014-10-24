@@ -12,7 +12,9 @@
 #include "DAVAEngine.h"
 #include "UI/PackageView/UIFilteredPackageModel.h"
 #include "UI/PackageDocument.h"
-#include "UIPackageModelNode.h"
+#include "UI/PackageView/PackageModelCommands.h"
+#include "UIControls/PackageHierarchy/PackageBaseNode.h"
+#include "UIControls/PackageHierarchy/ControlNode.h"
 
 #include "Project.h"
 
@@ -25,13 +27,17 @@ PackageDockWidget::PackageDockWidget(QWidget *parent)
 {
     ui->setupUi(this);
     ui->treeView->header()->setResizeMode(QHeaderView::ResizeToContents);
-    ui->treeView->setDefaultDropAction(Qt::MoveAction);
 
     connect(ui->filterLine, SIGNAL(textChanged(const QString &)), this, SLOT(filterTextChanged(const QString &)));
 
     //setTitleBarWidget(ui->filterLine);
     //ui->filterLine->setEnabled(false);
     //ui->treeView->setEnabled(false);
+    
+    QAction *removeAction = new QAction("Remove", this);
+    removeAction->setShortcut(QKeySequence(Qt::Key_Delete));
+    connect(removeAction, SIGNAL(triggered()), this, SLOT(OnRemove()));
+    ui->treeView->addAction(removeAction);
 }
 
 PackageDockWidget::~PackageDockWidget()
@@ -69,11 +75,11 @@ void PackageDockWidget::SetDocument(PackageDocument *newDocument)
 
 void PackageDockWidget::OnSelectionChanged(const QItemSelection &proxySelected, const QItemSelection &proxyDeselected)
 {
-    QList<UIControl *> selectedRootControl;
-    QList<UIControl *> deselectedRootControl;
+    QList<ControlNode*> selectedRootControl;
+    QList<ControlNode*> deselectedRootControl;
     
-    QList<UIControl *> selectedControl;
-    QList<UIControl *> deselectedControl;
+    QList<ControlNode*> selectedControl;
+    QList<ControlNode*> deselectedControl;
     
     QItemSelection selected = document->GetTreeContext()->proxyModel->mapSelectionToSource(proxySelected);
     QItemSelection deselected = document->GetTreeContext()->proxyModel->mapSelectionToSource(proxyDeselected);
@@ -83,16 +89,16 @@ void PackageDockWidget::OnSelectionChanged(const QItemSelection &proxySelected, 
     {
         foreach(QModelIndex index, selectedIndexList)
         {
-            UIPackageModelNode *node = static_cast<UIPackageModelNode*>(index.internalPointer());
+            PackageBaseNode *node = static_cast<PackageBaseNode*>(index.internalPointer());
             if (node->GetControl())
             {
-                selectedControl.push_back(node->GetControl());
+                selectedControl.push_back(static_cast<ControlNode*>(node));
                 
                 while (node->GetParent() && node->GetParent()->GetControl())
                     node = node->GetParent();
                 
-                if (selectedRootControl.indexOf(node->GetControl()) < 0)
-                    selectedRootControl.push_back(node->GetControl());
+                if (selectedRootControl.indexOf(static_cast<ControlNode*>(node)) < 0)
+                    selectedRootControl.push_back(static_cast<ControlNode*>(node));
             }
         }
     }
@@ -102,22 +108,39 @@ void PackageDockWidget::OnSelectionChanged(const QItemSelection &proxySelected, 
     {
         foreach(QModelIndex index, deselectedIndexList)
         {
-            UIPackageModelNode *node = static_cast<UIPackageModelNode*>(index.internalPointer());
+            PackageBaseNode *node = static_cast<PackageBaseNode*>(index.internalPointer());
             if (node->GetControl())
             {
-                deselectedControl.push_back(node->GetControl());
+                deselectedControl.push_back(static_cast<ControlNode*>(node));
                 
                 while(node->GetParent() && node->GetParent()->GetControl())
                     node = node->GetParent();
                 
-                if (deselectedRootControl.indexOf(node->GetControl()) < 0)
-                    deselectedRootControl.push_back(node->GetControl());
+                if (deselectedRootControl.indexOf(static_cast<ControlNode*>(node)) < 0)
+                    deselectedRootControl.push_back(static_cast<ControlNode*>(node));
             }
         }
     }
 
     emit SelectionRootControlChanged(selectedRootControl, deselectedRootControl);
     emit SelectionControlChanged(selectedControl, deselectedControl);
+}
+
+void PackageDockWidget::OnRemove()
+{
+    QModelIndexList list = ui->treeView->selectionModel()->selectedIndexes();
+    if (!list.empty())
+    {
+        QModelIndex &index = list.first();
+        QModelIndex srcIndex = document->GetTreeContext()->proxyModel->mapToSource(index);
+        ControlNode *sourceNode = dynamic_cast<ControlNode*>(static_cast<PackageBaseNode*>(srcIndex.internalPointer()));
+        UIPackageModel *model = document->GetTreeContext()->model;
+        if (sourceNode && (sourceNode->GetCreationType() == ControlNode::CREATED_FROM_CLASS || sourceNode->GetCreationType() == ControlNode::CREATED_FROM_PROTOTYPE))
+        {
+            RemoveControlNodeCommand *cmd = new RemoveControlNodeCommand(model, srcIndex.row(), srcIndex.parent());
+            document->UndoStack()->push(cmd);
+        }
+    }
 }
 
 void PackageDockWidget::filterTextChanged(const QString &filterText)
