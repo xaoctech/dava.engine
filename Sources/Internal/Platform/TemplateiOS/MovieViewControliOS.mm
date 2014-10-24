@@ -96,7 +96,7 @@ void MovieViewControl::SetRect(const Rect& rect)
 		
 	
 	// Apply the Retina scale divider, if any.
-	float scaleDivider = GetScaleDivider();
+    DAVA::float32 scaleDivider = [HelperAppDelegate GetScale];
 	playerViewRect.origin.x /= scaleDivider;
 	playerViewRect.origin.y /= scaleDivider;
 	playerViewRect.size.height /= scaleDivider;
@@ -135,21 +135,6 @@ bool MovieViewControl::IsPlaying()
 {
 	MPMoviePlayerController* player = (MPMoviePlayerController*)moviePlayerController;
 	return (player.playbackState == MPMoviePlaybackStatePlaying);
-}
-
-float MovieViewControl::GetScaleDivider()
-{
-	float scaleDivider = 1.f;
-	if (DAVA::Core::IsAutodetectContentScaleFactor())
-	{
-		if ([UIScreen instancesRespondToSelector: @selector(scale) ]
-			&& [UIView instancesRespondToSelector: @selector(contentScaleFactor) ])
-		{
-			scaleDivider = [[UIScreen mainScreen] scale];
-		}
-	}
-		
-	return scaleDivider;
 }
 
 int MovieViewControl::ConvertScalingModeToPlatform(eMovieScalingMode scalingMode)

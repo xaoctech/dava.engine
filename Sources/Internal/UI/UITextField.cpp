@@ -117,7 +117,9 @@ UITextField::UITextField(const Rect &rect, bool rectInAbsoluteCoordinates/*= fal
 #endif
     
     cursorTime = 0;
-    showCursor = true;    
+    showCursor = true;
+    
+    LogFunction(__FUNCTION__);
 }
 
 UITextField::UITextField()
@@ -153,6 +155,8 @@ UITextField::UITextField()
     
     cursorTime = 0;
     showCursor = true;
+
+    LogFunction(__FUNCTION__);
 }
 
 //void UITextField::InitAfterYaml()
@@ -174,6 +178,8 @@ UITextField::UITextField()
 	
 UITextField::~UITextField()
 {
+    LogFunction(__FUNCTION__);
+
 #if defined (__DAVAENGINE_ANDROID__)
 	SafeDelete(textFieldAndroid);
 #elif defined (__DAVAENGINE_IPHONE__)
@@ -188,6 +194,8 @@ UITextField::~UITextField()
 
 void UITextField::OpenKeyboard()
 {
+    LogFunction(__FUNCTION__);
+
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->OpenKeyboard();
 #elif defined(__DAVAENGINE_ANDROID__)
@@ -197,6 +205,8 @@ void UITextField::OpenKeyboard()
 
 void UITextField::CloseKeyboard()
 {
+    LogFunction(__FUNCTION__);
+
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->CloseKeyboard();
 #elif defined(__DAVAENGINE_ANDROID__)
@@ -252,6 +262,8 @@ void UITextField::WillAppear()
 
 void UITextField::DidAppear()
 {
+    LogFunction(__FUNCTION__);
+
 #ifdef __DAVAENGINE_IPHONE__
     textFieldiPhone->ShowField();
 #endif
@@ -259,6 +271,8 @@ void UITextField::DidAppear()
 
 void UITextField::WillDisappear()
 {
+    LogFunction(__FUNCTION__);
+
 #ifdef __DAVAENGINE_IPHONE__
     textFieldiPhone->HideField();
 #endif
@@ -266,6 +280,8 @@ void UITextField::WillDisappear()
     
 void UITextField::OnFocused()
 {
+    LogFunction(__FUNCTION__);
+
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->OpenKeyboard();
 #elif defined(__DAVAENGINE_ANDROID__)
@@ -275,6 +291,8 @@ void UITextField::OnFocused()
     
 void UITextField::OnFocusLost(UIControl *newFocus)
 {
+    LogFunction(__FUNCTION__);
+
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->CloseKeyboard();
 #elif defined(__DAVAENGINE_ANDROID__)
@@ -973,6 +991,8 @@ int32 UITextField::GetMaxLength() const
 
 void UITextField::WillBecomeVisible()
 {
+    LogFunction(__FUNCTION__);
+
     UIControl::WillBecomeVisible();
 
 #ifdef __DAVAENGINE_IPHONE__
@@ -986,6 +1006,8 @@ void UITextField::WillBecomeVisible()
 
 void UITextField::WillBecomeInvisible()
 {
+    LogFunction(__FUNCTION__);
+
     UIControl::WillBecomeInvisible();
 
 #ifdef __DAVAENGINE_IPHONE__
@@ -996,6 +1018,12 @@ void UITextField::WillBecomeInvisible()
     staticText->SetVisible(false);
 #endif
 }
+    
+void UITextField::LogFunction(const char8 * functionName)
+{
+    Logger::Info("[UITextField::%s] %s", functionName, GetName().c_str());
+}
+
 
 }; // namespace
 

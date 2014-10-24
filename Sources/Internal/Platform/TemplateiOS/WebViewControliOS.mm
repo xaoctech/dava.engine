@@ -18,6 +18,7 @@
 
 #import <UIKit/UIKit.h>
 #import <HelperAppDelegate.h>
+#import "Platform/TemplateiOS/BackgroundView.h"
 
 @interface WebViewURLDelegate : NSObject<UIWebViewDelegate>
 {
@@ -159,13 +160,16 @@ namespace DAVA
 WebViewControl::WebViewControl()
 {
     gesturesEnabled = false;
+    HelperAppDelegate* appDelegate = [[UIApplication sharedApplication] delegate];
+    BackgroundView* backgroundView = [appDelegate glController].backgroundView;
+    
+    UIWebView* localWebView = [backgroundView CreateWebView];
+    webViewPtr = localWebView;
+    
     CGRect emptyRect = CGRectMake(0.0f, 0.0f, 0.0f, 0.0f);
-    webViewPtr = [[UIWebView alloc] initWithFrame:emptyRect];
-    SetBounces(false);
+    [localWebView setFrame:emptyRect];
 
-	UIWebView* localWebView = (UIWebView*)webViewPtr;
-	HelperAppDelegate* appDelegate = [[UIApplication sharedApplication] delegate];
-	[[appDelegate glController].backgroundView addSubview:localWebView];
+    SetBounces(false);
 
     webViewURLDelegatePtr = [[WebViewURLDelegate alloc] init];
     [localWebView setDelegate:(WebViewURLDelegate*)webViewURLDelegatePtr];
@@ -178,11 +182,18 @@ WebViewControl::~WebViewControl()
     SetGestures(NO);
 	UIWebView* innerWebView = (UIWebView*)webViewPtr;
 
+    
     [innerWebView setDelegate:nil];
     [innerWebView stopLoading];
     [innerWebView loadHTMLString:@"" baseURL:nil];
-	[innerWebView removeFromSuperview];
-	[innerWebView release];
+    
+    [innerWebView resignFirstResponder];
+
+    
+    HelperAppDelegate* appDelegate = [[UIApplication sharedApplication] delegate];
+    BackgroundView* backgroundView = [appDelegate glController].backgroundView;
+    [backgroundView ReleaseWebView:innerWebView];
+    
 	webViewPtr = nil;
 
 	WebViewURLDelegate* w = (WebViewURLDelegate*)webViewURLDelegatePtr;
@@ -243,7 +254,7 @@ void WebViewControl::SetRect(const Rect& rect)
 
 	
 	// Apply the Retina scale divider, if any.
-	float scaleDivider = GetScaleDivider();
+    DAVA::float32 scaleDivider = [HelperAppDelegate GetScale];
 	webViewRect.origin.x /= scaleDivider;
 	webViewRect.origin.y /= scaleDivider;
 	webViewRect.size.height /= scaleDivider;
@@ -255,21 +266,6 @@ void WebViewControl::SetRect(const Rect& rect)
 void WebViewControl::SetVisible(bool isVisible, bool hierarchic)
 {
 	[(UIWebView*)webViewPtr setHidden:!isVisible];
-}
-
-float WebViewControl::GetScaleDivider()
-{
-    float scaleDivider = 1.f;
-    if (DAVA::Core::IsAutodetectContentScaleFactor())
-    {
-        if ([UIScreen instancesRespondToSelector: @selector(scale) ]
-            && [UIView instancesRespondToSelector: @selector(contentScaleFactor) ])
-        {
-            scaleDivider = [[UIScreen mainScreen] scale];
-        }
-	}
-
-	return scaleDivider;
 }
 
 void WebViewControl::SetBackgroundTransparency(bool enabled)

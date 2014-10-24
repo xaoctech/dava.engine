@@ -30,14 +30,10 @@
 #include "Base/BaseTypes.h"
 #if defined(__DAVAENGINE_IPHONE__)
 
+#import "Platform/TemplateiOS/BackgroundView.h"
+
 #import <UIKit/UIKit.h>
 #import "Platform/TemplateiOS/EAGLView.h"
-
-@interface BackgroundView : UIView
-@end
-
-// YuriCoder, 2013/11/26. Background view is needed to add iOS native controls to it.
-// See please DF-2751.
 
 @interface EAGLViewController : UIViewController 
 {
@@ -45,7 +41,7 @@
     BackgroundView* backgroundView;
 }
 
-@property (nonatomic, readonly, getter = getBackgroundView) UIView* backgroundView;
+@property (nonatomic, readonly, getter = getBackgroundView) BackgroundView* backgroundView;
 
 - (void) createGLView;
 

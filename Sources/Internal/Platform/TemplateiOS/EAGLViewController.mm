@@ -19,15 +19,6 @@
 
 #import "Platform/TemplateiOS/EAGLViewController.h"
 
-@implementation BackgroundView
-
-- (void)drawRect:(CGRect)rect
-{
-    // Do nothing to reduce fill usage.
-}
-
-@end
-
 @implementation EAGLViewController
 
 @synthesize backgroundView;
@@ -81,7 +72,7 @@
 //   glView = nil;
 }
 
--(UIView*) getBackgroundView
+-(BackgroundView *) getBackgroundView
 {
     return backgroundView;
 }
