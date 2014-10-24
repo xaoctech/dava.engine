@@ -58,6 +58,7 @@ namespace DAVA
     UITextFieldiPhone::~UITextFieldiPhone()
     {
         UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
+        textFieldHolder.davaTextField = (DAVA::UITextField *)nil;
         
         HelperAppDelegate* appDelegate = [[UIApplication sharedApplication] delegate];
         BackgroundView* backgroundView = [appDelegate glController].backgroundView;
@@ -339,11 +340,6 @@ namespace DAVA
     {
         UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
         [textFieldHolder setHidden: value == false];
-//        if (textFieldHolder)
-//        {
-//            ::UITextField* textField = textFieldHolder->textField;
-//            [textField setHidden: value == false];
-//        }
     }
 
     void UITextFieldiPhone::SetMaxLength(int maxLength)
