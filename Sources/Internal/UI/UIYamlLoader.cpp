@@ -30,7 +30,6 @@
 #include "UI/UIYamlLoader.h"
 #include "Base/ObjectFactory.h"
 #include "Platform/SystemTimer.h"
-#include "UI/UIPackage.h"
 #include "UI/UIControl.h"
 #include "UI/UIScrollBar.h"
 #include "FileSystem/YamlNode.h"
@@ -43,13 +42,15 @@
 #include "Render/2D/TextBlock.h"
 #include "Utils/Utils.h"
 #include "Render/2D/FTFont.h"
-#include "UIControlHelpers.h"
-#include "UIPackageLoader.h"
+#include "UI/UIPackage.h"
+#include "UI/DefaultUIPackageBuilder.h"
+#include "UI/UIPackageLoader.h"
+#include "UI/UIControlHelpers.h"
 
 namespace DAVA
 {
-UIYamlLoader::UIYamlLoader()
-    : mainRootControl(NULL)
+UIYamlLoader::UIYamlLoader() :
+    BaseObject()
 {
     // Default mode is to ASSERT if custom control isn't found.
     assertIfCustomControlNotFound = true;
@@ -416,29 +417,31 @@ bool UIYamlLoader::SaveFonts(const FilePath & yamlPathname)
     return res;
 }
 
-void UIYamlLoader::Load(UIControl * rootControl, const FilePath & yamlPathname, bool assertIfCustomControlNotFound)
+void UIYamlLoader::Load(UIControl * rootControl, const FilePath & yamlPathname, bool assertIfCustomControlNotFound /* = true */)
 {
-    RefPtr<UIPackage> package(UIPackageLoader().LoadPackage(yamlPathname));
-    if (!package.Valid())
-        return;
-
-    DVASSERT(package->GetControlsCount() == 1);
-    UIControl *control = package->GetControl(0);
-    DVASSERT(control);
-    while (!control->GetChildren().empty())
+    DefaultUIPackageBuilder builder;
+    RefPtr<UIPackage> package(UIPackageLoader(&builder).LoadPackage(yamlPathname));
+    if (package.Valid())
     {
-        rootControl->AddControl(control->GetChildren().front());
+        DVASSERT(package->GetControlsCount() == 1);
+        UIControl *control = package->GetControl(0);
+        DVASSERT(control);
+        while (!control->GetChildren().empty())
+        {
+            rootControl->AddControl(control->GetChildren().front());
+        }
+
+        if (rootControl->GetSize() != control->GetSize())
+            rootControl->UpdateLayout();
+        return;
     }
 
-    if (rootControl->GetSize() != control->GetSize())
-        rootControl->UpdateLayout();
-}
+    UIYamlLoader * loader = new UIYamlLoader();
+    loader->SetAssertIfCustomControlNotFound(assertIfCustomControlNotFound);
 
-bool UIYamlLoader::Save(UIControl * rootControl, const FilePath & yamlPathname, bool skipRootNode)
-{
-    ScopedPtr<UIPackage> package(new UIPackage(yamlPathname));
-    package->AddControl(rootControl);
-    return UIPackageLoader().SavePackage(package);
+    loader->ProcessLoad(rootControl, yamlPathname);
+
+    loader->Release();
 }
 
 YamlNode *UIYamlLoader::CreateRootNode(const FilePath & yamlPathname)
@@ -453,6 +456,36 @@ YamlNode *UIYamlLoader::CreateRootNode(const FilePath & yamlPathname)
     YamlNode * rootNode = SafeRetain(parser->GetRootNode());
     SafeRelease(parser);
     return rootNode;
+}
+
+void UIYamlLoader::ProcessLoad(UIControl * rootControl, const FilePath & yamlPathname)
+{
+    uint64 t1 = SystemTimer::Instance()->AbsoluteMS();
+
+    YamlNode * rootNode = CreateRootNode(yamlPathname);
+    if (!rootNode)
+    {
+        // Empty YAML file.
+        Logger::Warning("yaml file: %s is empty", yamlPathname.GetAbsolutePathname().c_str());
+        return;
+    }
+
+    const YamlNode *childrenNode = rootNode->Get("children");
+    if (!childrenNode)
+        childrenNode = rootNode;
+
+    LoadFromNode(rootControl, childrenNode, false);
+
+    SafeRelease(rootNode);
+	
+	// After the scene is fully loaded, apply the align settings
+	// to position child controls correctly.
+	rootControl->ApplyAlignSettingsForChildren();
+    
+    PostLoad(rootControl);
+    
+	uint64 t2 = SystemTimer::Instance()->AbsoluteMS();
+	Logger::FrameworkDebug("Load of %s time: %lld", yamlPathname.GetAbsolutePathname().c_str(), t2 - t1);    
 }
 
 void UIYamlLoader::PostLoad(UIControl * rootControl)
@@ -576,6 +609,92 @@ void UIYamlLoader::LoadFontsFromNode(const YamlNode * rootNode)
     }
 }
 
+void UIYamlLoader::LoadFromNode(UIControl * parentControl, const YamlNode * rootNode, bool needParentCallback)
+{
+    //for (Map<String, YamlNode*>::iterator t = rootNode->AsMap().begin(); t != rootNode->AsMap().end(); ++t)
+    int cnt = rootNode->GetCount();
+    for (int k = 0; k < cnt; ++k)
+    {
+        const YamlNode * node = rootNode->Get(k);
+        const YamlNode * typeNode = node->Get("type");
+        if (!typeNode)
+            continue;
+
+        const String & type = typeNode->AsString();
+
+        // Base Type might be absent.
+        const YamlNode* baseTypeNode = node->Get("baseType");
+        const String baseType = baseTypeNode ? baseTypeNode->AsString() : String();
+
+        // The control can be loaded either from its Type or from Base Type (depending on
+        // whether the control is custom or not.
+        UIControl* control = CreateControl(type, baseType);
+        if (!control)
+        {
+            Logger::Warning("ObjectFactory haven't found object with type:%s, base type %s", type.c_str(), baseType.c_str());
+            continue;
+        }else
+        {
+            //Logger::FrameworkDebug("Create control with type:%s", type.c_str());
+        }
+
+        control->SetName(rootNode->GetItemKeyName(k));
+        DVVERIFY(control->LoadPropertiesFromYamlNode(node, this));
+        parentControl->AddControl(control);
+
+        const YamlNode *childrenNode = node->Get("children");
+        if (!childrenNode)
+            childrenNode = node;
+
+        LoadFromNode(control, childrenNode, true);
+        SafeRelease(control);
+    }
+
+    if(needParentCallback)
+    {
+        parentControl->LoadFromYamlNodeCompleted();
+    }
+}
+
+UIControl* UIYamlLoader::CreateControl(const String& type, const String& baseType)
+{
+    // Firstly try Type (Custom Control).
+    UIControl * control = dynamic_cast<UIControl*> (ObjectFactory::Instance()->New<UIControl>(type));
+    if (control)
+    {
+        // Everything is OK. Just update the custom control type for the control, if any.
+        bool hasCustomType = (!type.empty() && !baseType.empty() && (type != baseType));
+        if (hasCustomType)
+        {
+            control->SetCustomControlClassName(type);
+        }
+
+        return control;
+    }
+
+    // The control can't be loaded by its type - probably it is Custom Control and we are
+    // running under UIEditor or other app which doesn't support custom controls. Verify this.
+    if (this->assertIfCustomControlNotFound)
+    {
+        Logger::Error("Unable to load UI Control %s and 'ASSERT if Custom Control Not Found' flag is set to TRUE", type.c_str());
+        DVASSERT(false);
+    }
+
+    // Retry with base type, if any.
+    if (!baseType.empty())
+    {
+        control = dynamic_cast<UIControl*> (ObjectFactory::Instance()->New<UIControl>(baseType));
+        if (control)
+        {
+            // Even if the control of the base type was created, we have to store its custom type.
+            control->SetCustomControlClassName(type);
+        }
+    }
+
+    // A NULL might be here too.
+    return control;
+}
+
 void UIYamlLoader::SetAssertIfCustomControlNotFound(bool value)
 {
     this->assertIfCustomControlNotFound = value;
@@ -590,12 +709,5 @@ void UIYamlLoader::AddScrollBarToLink(UIScrollBar* scroll, const String& delegat
 {
     scrollsToLink.insert(std::pair<UIScrollBar*,String>(scroll,delegatePath));
 }
-
-void UIYamlLoader::SetRootControl(UIControl *control)
-{
-    SafeRelease(mainRootControl);
-    mainRootControl = SafeRetain(control);
-}
-
 
 }

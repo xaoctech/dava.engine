@@ -10,8 +10,10 @@
 #include "DAVAEngine.h"
 #include "EditorFontManager.h"
 #include "UI/UIPackageLoader.h"
-#include "UIControls/EditorUIPackageLoader.h"
-
+#include "UI/DefaultUIPackageBuilder.h"
+#include "UIControls/EditorUIPackageBuilder.h"
+#include "UIControls/LegacyEditorUIPackageLoader.h"
+#include "UIControls/PackageHierarchy/PackageNode.h"
 
 #include <QDir>
 
@@ -169,19 +171,36 @@ bool Project::Open(const QString &path)
     return true;
 }
 
-UIPackage *Project::OpenPackage(const QString &packagePath)
+PackageNode *Project::OpenPackage(const QString &packagePath)
 {
     FilePath path(packagePath.toStdString());
     String fwPath = path.GetFrameworkPath();
 
-    UIPackage *newPackage = EditorUIPackageLoader(legacyData).LoadPackage(path);
-    
-    
-    return newPackage;
+    EditorUIPackageBuilder builder;
+    UIPackage *newPackage = UIPackageLoader(&builder).LoadPackage(path);
+    if (newPackage)
+    {
+        SafeRelease(newPackage);
+        return builder.GetPackageNode();
+    }
+    else
+    {
+        EditorUIPackageBuilder b2;
+        newPackage = LegacyEditorUIPackageLoader(&b2, legacyData).LoadPackage(path);
+        if (newPackage)
+        {
+            SafeRelease(newPackage);
+            return b2.GetPackageNode();
+        }
+    }
+    return NULL;
 }
 
-bool Project::SavePackage(DAVA::UIPackage *package)
+bool Project::SavePackage(PackageNode *package)
 {
-    return EditorUIPackageLoader().SavePackage(package);
+    YamlNode *node = package->Serialize();
+    YamlEmitter::SaveToYamlFile(package->GetPackage()->GetFilePath(), node);
+    SafeRelease(node);
+    return true;
 }
 

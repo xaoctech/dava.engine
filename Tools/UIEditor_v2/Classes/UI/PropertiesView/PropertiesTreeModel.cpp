@@ -14,8 +14,7 @@
 #include <QVector2D>
 #include <QUndoStack>
 
-#include "UIControls/BaseProperty.h"
-#include "UIControls/UIEditorComponent.h"
+#include "UIControls/ControlProperties/BaseProperty.h"
 #include "Utils/QtDavaConvertion.h"
 #include "ChangePropertyValueCommand.h"
 #include "UI/PackageDocument.h"
@@ -23,17 +22,12 @@
 
 using namespace DAVA;
 
-PropertiesTreeModel::PropertiesTreeModel(DAVA::UIControl *control, PropertiesViewContext *context, QObject *parent)
+PropertiesTreeModel::PropertiesTreeModel(BaseProperty *propertiesRoot, PropertiesViewContext *context, QObject *parent)
     : QAbstractItemModel(parent)
     , root(NULL)
     , propertiesViewContext(context)
 {
-    UIEditorComponent* component = dynamic_cast<UIEditorComponent*>(control->GetCustomData());
-    if (component)
-    {
-        root = SafeRetain(component->GetPropertiesRoot());
-        root->PrepareToEdit();
-    }
+    root = SafeRetain(propertiesRoot);
 }
 
 PropertiesTreeModel::~PropertiesTreeModel()
@@ -125,8 +119,10 @@ QVariant PropertiesTreeModel::data(const QModelIndex &index, int role) const
             break;
         case Qt::DecorationRole:
             {
-                if (property->GetType() == VariantType::TYPE_COLOR)
-                    return ColorToQColor(property->GetValue().AsColor());
+                // TODO: fix
+                return QVariant();
+//                if (property->GetType() == VariantType::TYPE_COLOR)
+//                    return ColorToQColor(property->GetValue().AsColor());
             }
             break;
 
@@ -291,7 +287,7 @@ QVariant PropertiesTreeModel::makeQVariant(const BaseProperty *property) const
             return StringToQString(Format("[%g, %g]", val.AsVector2().x, val.AsVector2().y));
             
         case VariantType::TYPE_COLOR:
-            return StringToQString(Format("%g, %g, %g, %g", val.AsColor().a, val.AsColor().r, val.AsColor().g, val.AsColor().b));
+            return QColorToHex(ColorToQColor(val.AsColor()));
 
         case VariantType::TYPE_FILEPATH:
             return StringToQString(val.AsFilePath().GetAbsolutePathname());

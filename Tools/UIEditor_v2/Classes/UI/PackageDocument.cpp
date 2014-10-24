@@ -16,34 +16,39 @@
 #include "UI/DavaGLWidget.h"
 #include "UI/GraphicView/GraphicsViewContext.h"
 #include "UI/PropertiesView/PropertiesViewContext.h"
+#include "UI/LibraryView/LibraryModel.h"
+
+#include "UIControls/PackageHierarchy/PackageNode.h"
+#include "UIControls/PackageHierarchy/PackageControlsNode.h"
+#include "UIControls/PackageHierarchy/ControlNode.h"
 
 using namespace DAVA;
 
-PackageDocument::PackageDocument(DAVA::UIPackage *_package, QObject *parent)
+PackageDocument::PackageDocument(PackageNode *_package, QObject *parent)
 : QObject(parent)
 , package(SafeRetain(_package))
 , graphicsContext(NULL)
 {
     undoStack = new QUndoStack(this);
 
-    treeContext.model = new UIPackageModel(package, this);
+    treeContext.model = new UIPackageModel(this);
     treeContext.proxyModel = new UIFilteredPackageModel(this);
     treeContext.proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
     treeContext.proxyModel->setSourceModel(treeContext.model);
 
     graphicsContext = new GraphicsViewContext();
-    connect(this, SIGNAL(activeRootControlsChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)), graphicsContext, SLOT(OnActiveRootControlsChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)));
+    connect(this, SIGNAL(activeRootControlsChanged(const QList<ControlNode*> &, const QList<ControlNode*> &)), graphicsContext, SLOT(OnActiveRootControlsChanged(const QList<ControlNode*> &, const QList<ControlNode*> &)));
 
     propertiesContext = new PropertiesViewContext(this);
-    //libraryContext;
+    
+    libraryContext.model = new LibraryModel(package, this);
 
-    for (int32 index = 0; index < package->GetControlsCount(); ++index)
-    {
-        activeRootControls.push_back(package->GetControl(index));
-    }
+    PackageControlsNode *controlsNode = package->GetPackageControlsNode();
+    for (int32 index = 0; index < controlsNode->GetCount(); ++index)
+        activeRootControls.push_back(controlsNode->Get(index));
 
     if (!activeRootControls.empty())
-        emit activeRootControlsChanged(activeRootControls, QList<UIControl*>());
+        emit activeRootControlsChanged(activeRootControls, QList<ControlNode*>());
 }
 
 PackageDocument::~PackageDocument()
@@ -52,9 +57,10 @@ PackageDocument::~PackageDocument()
 
     SafeDelete(treeContext.model);
     SafeDelete(treeContext.proxyModel);
-    disconnect(this, SIGNAL(activeRootControlsChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)), graphicsContext, SLOT(OnActiveRootControlsChanged(const QList<DAVA::UIControl *> &, const QList<DAVA::UIControl *> &)));
+    disconnect(this, SIGNAL(activeRootControlsChanged(const QList<ControlNode*> &, const QList<ControlNode*> &)), graphicsContext, SLOT(OnActiveRootControlsChanged(const QList<ControlNode*> &, const QList<ControlNode*> &)));
     SafeDelete(graphicsContext);
     SafeDelete(propertiesContext);
+    SafeDelete(libraryContext.model);
     
     SafeRelease(package);
 }
@@ -71,13 +77,13 @@ void PackageDocument::ClearModified()
 
 const DAVA::FilePath &PackageDocument::PackageFilePath() const
 {
-    return package->GetFilePath();
+    return package->GetPackage()->GetFilePath();
 }
 
-void PackageDocument::OnSelectionRootControlChanged(const QList<DAVA::UIControl *> &activatedRootControls, const QList<DAVA::UIControl *> &deactivatedRootControls)
+void PackageDocument::OnSelectionRootControlChanged(const QList<ControlNode*> &activatedRootControls, const QList<ControlNode*> &deactivatedRootControls)
 {
     activeRootControls.clear();
-    foreach(DAVA::UIControl *control, activatedRootControls)
+    foreach(ControlNode *control, activatedRootControls)
     {
         activeRootControls.push_back(control);
     }
@@ -85,11 +91,11 @@ void PackageDocument::OnSelectionRootControlChanged(const QList<DAVA::UIControl 
     emit activeRootControlsChanged(activeRootControls, deactivatedRootControls);
 }
 
-void PackageDocument::OnSelectionControlChanged(const QList<DAVA::UIControl *> &activatedControls, const QList<DAVA::UIControl *> &deactivatedControls)
+void PackageDocument::OnSelectionControlChanged(const QList<ControlNode*> &activatedControls, const QList<ControlNode*> &deactivatedControls)
 {
     selectedControls.clear();
     
-    foreach(DAVA::UIControl *control, activatedControls)
+    foreach(ControlNode *control, activatedControls)
     {
         selectedControls.push_back(control);
     }

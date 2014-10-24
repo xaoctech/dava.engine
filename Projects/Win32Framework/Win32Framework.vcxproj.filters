@@ -1578,6 +1578,15 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Platform\NotificationAndroid.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\NotificationNotImplemented.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SkeletonComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SkeletonSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\SkinnedMesh.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\AnimationComponent.h">
       <Filter>Internal\Scene3D\Components</Filter>
     </ClInclude>
@@ -1594,7 +1603,10 @@
       <Filter>Internal\UI</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\UI\UIPackageLoader.h" />
-    <ClInclude Include="..\..\Sources\Internal\UI\UIPackageSectionLoader.h">
+    <ClInclude Include="..\..\Sources\Internal\UI\AbstractUIPackageBuilder.h">
+      <Filter>Internal\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\UI\DefaultUIPackageBuilder.h">
       <Filter>Internal\UI</Filter>
     </ClInclude>
   </ItemGroup>
@@ -2850,6 +2862,15 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Platform\NotificationAndroid.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\NotificationNotImplemented.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SkeletonComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SkeletonSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\SkinnedMesh.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\AnimationComponent.cpp">
       <Filter>Internal\Scene3D\Components</Filter>
     </ClCompile>
@@ -2866,7 +2887,11 @@
       <Filter>Internal\UI</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\UI\UIPackageLoader.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\UI\UIPackageSectionLoader.cpp">
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\Polygon2Swig.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\AbstractUIPackageBuilder.cpp">
+      <Filter>Internal\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\UI\DefaultUIPackageBuilder.cpp">
       <Filter>Internal\UI</Filter>
     </ClCompile>
   </ItemGroup>

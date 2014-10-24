@@ -7,6 +7,7 @@
 #include "DAVAEngine.h"
 
 class PackageCanvas;
+class ControlNode;
 
 class GraphicsViewContext: public QObject
 {
@@ -33,7 +34,7 @@ signals:
     void CanvasScaleChanged(int canvasScale);
 
 public slots:
-    void OnActiveRootControlsChanged(const QList<DAVA::UIControl *> &activatedControls, const QList<DAVA::UIControl *> &deactivatedControls);
+    void OnActiveRootControlsChanged(const QList<ControlNode *> &activatedControls, const QList<ControlNode*> &deactivatedControls);
 private:
     DAVA::Vector2 canvasPosition;
 

@@ -13,13 +13,12 @@
 #include <QDockWidget>
 #include <QItemSelectionModel>
 
-#include "UI/UIControl.h"
-
 namespace Ui {
     class PackageDockWidget;
 }
 
 class PackageDocument;
+class ControlNode;
 
 class PackageDockWidget : public QDockWidget
 {
@@ -33,10 +32,11 @@ public:
 private slots:
     void OnSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
     void filterTextChanged(const QString &);
+    void OnRemove();
 
 signals:
-    void SelectionRootControlChanged(const QList<DAVA::UIControl *> &activatedRootControls, const QList<DAVA::UIControl *> &deactivatedRootControls);
-    void SelectionControlChanged(const QList<DAVA::UIControl *> &activatedControls, const QList<DAVA::UIControl *> &deactivatedControls);
+    void SelectionRootControlChanged(const QList<ControlNode*> &activatedRootControls, const QList<ControlNode*> &deactivatedRootControls);
+    void SelectionControlChanged(const QList<ControlNode*> &activatedControls, const QList<ControlNode*> &deactivatedControls);
 
 private:
     Ui::PackageDockWidget *ui;
