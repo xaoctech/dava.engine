@@ -39,20 +39,6 @@
 		self.userInteractionEnabled = TRUE;
 		textInputAllowed = YES;
 
-//		cppTextField = tf;
-//		DAVA::Rect rect = tf->GetRect();
-//		textField = [[UITextField alloc] initWithFrame: CGRectMake((rect.x - DAVA::Core::Instance()->GetVirtualScreenXMin()) 
-//                                                                   * DAVA::Core::GetVirtualToPhysicalFactor()
-//																   , (rect.y - DAVA::Core::Instance()->GetVirtualScreenYMin()) * DAVA::Core::GetVirtualToPhysicalFactor()
-//																   , rect.dx * DAVA::Core::GetVirtualToPhysicalFactor()
-//																   , rect.dy * DAVA::Core::GetVirtualToPhysicalFactor())];
-//		textField.frame = CGRectMake((rect.x - DAVA::Core::Instance()->GetVirtualScreenXMin()) * DAVA::Core::GetVirtualToPhysicalFactor()
-//									 , (rect.y - DAVA::Core::Instance()->GetVirtualScreenYMin()) * DAVA::Core::GetVirtualToPhysicalFactor()
-//									 , rect.dx * DAVA::Core::GetVirtualToPhysicalFactor()
-//									 , rect.dy * DAVA::Core::GetVirtualToPhysicalFactor());
-//        
-
-        
         textField = [[UITextField alloc] initWithFrame: CGRectMake(0.f, 0.f, 0.f, 0.f)];
 		textField.delegate = self;
 		

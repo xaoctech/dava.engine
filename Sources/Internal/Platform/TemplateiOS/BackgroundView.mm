@@ -19,47 +19,10 @@
 
 #import "Platform/TemplateiOS/NativeViewPool.h"
 
-@interface UICustomWebView : UIWebView
-@end
-
-@implementation UICustomWebView
-
--(id)retain
-{
-    return [super retain];
-}
-
-- (oneway void)release
-{
-    [super release];
-}
-
-@end
-
-
-@interface UICustomTextField : UITextFieldHolder
-@end
-
-@implementation UICustomTextField
-
--(id)retain
-{
-    return [super retain];
-}
-
-- (oneway void)release
-{
-    [super release];
-}
-
-@end
-
-
-
 @implementation BackgroundView
 {
-    DAVA::NativeViewPool<UICustomWebView> webViewPool;
-    DAVA::NativeViewPool<UICustomTextField> textFieldPool;
+    DAVA::NativeViewPool<UIWebView> webViewPool;
+    DAVA::NativeViewPool<UITextFieldHolder> textFieldPool;
 }
 
 - (void)drawRect:(CGRect)rect
@@ -82,24 +45,24 @@
 
 - (UIWebView *) CreateWebView
 {
-    return (UIWebView *)[self PrepareView:webViewPool.GetOrCreateView()];
+    return [self PrepareView:webViewPool.GetOrCreateView()];
 }
 
 - (UITextFieldHolder *) CreateTextField
 {
-    return (UITextFieldHolder *)[self PrepareView:textFieldPool.GetOrCreateView()];
+    return [self PrepareView:textFieldPool.GetOrCreateView()];
 }
 
 - (void) ReleaseWebView: (UIWebView *)webView
 {
     [webView setHidden:YES];
-    webViewPool.ReleaseView((UICustomWebView *)webView);
+    webViewPool.ReleaseView(webView);
 }
 
 - (void) ReleaseTextField: (UITextFieldHolder *)textField
 {
     [textField setHidden:YES];
-    textFieldPool.ReleaseView((UICustomTextField *)textField);
+    textFieldPool.ReleaseView(textField);
 }
 
 
