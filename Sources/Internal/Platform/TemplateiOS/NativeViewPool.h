@@ -60,7 +60,6 @@ private:
 };
     
 
-    
 template <class VIEW_TYPE>
 NativeViewPool<VIEW_TYPE>::NativeViewPool()
 : usedViewsCount(0)
@@ -68,6 +67,7 @@ NativeViewPool<VIEW_TYPE>::NativeViewPool()
     
 }
 
+    
 template <class VIEW_TYPE>
 NativeViewPool<VIEW_TYPE>::~NativeViewPool()
 {
@@ -84,6 +84,7 @@ NativeViewPool<VIEW_TYPE>::~NativeViewPool()
     usedViewsCount = 0;
 }
 
+    
 template <class VIEW_TYPE>
 void NativeViewPool<VIEW_TYPE>::ReleaseView(const VIEW_TYPE *view)
 {
@@ -112,8 +113,7 @@ void NativeViewPool<VIEW_TYPE>::ReleaseView(const VIEW_TYPE *view)
     }
 }
     
-    
-    
+
 template <class VIEW_TYPE>
 VIEW_TYPE * NativeViewPool<VIEW_TYPE>::GetOrCreateView()
 {
@@ -133,9 +133,6 @@ VIEW_TYPE * NativeViewPool<VIEW_TYPE>::GetOrCreateView()
     ++usedViewsCount;
     return view;
 }
-
-    
-    
     
     
 };
