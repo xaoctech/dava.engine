@@ -55,11 +55,18 @@
 - (void) setTextField:(DAVA::UITextField *) tf
 {
     cppTextField = tf;
-    const DAVA::Rect rect = tf->GetRect();
-    textField.frame = CGRectMake((rect.x - DAVA::Core::Instance()->GetVirtualScreenXMin()) * DAVA::Core::GetVirtualToPhysicalFactor()
-                                 , (rect.y - DAVA::Core::Instance()->GetVirtualScreenYMin()) * DAVA::Core::GetVirtualToPhysicalFactor()
-                                 , rect.dx * DAVA::Core::GetVirtualToPhysicalFactor()
-                                 , rect.dy * DAVA::Core::GetVirtualToPhysicalFactor());
+    if(tf)
+    {
+        const DAVA::Rect rect = tf->GetRect();
+        textField.frame = CGRectMake((rect.x - DAVA::Core::Instance()->GetVirtualScreenXMin()) * DAVA::Core::GetVirtualToPhysicalFactor()
+                                     , (rect.y - DAVA::Core::Instance()->GetVirtualScreenYMin()) * DAVA::Core::GetVirtualToPhysicalFactor()
+                                     , rect.dx * DAVA::Core::GetVirtualToPhysicalFactor()
+                                     , rect.dy * DAVA::Core::GetVirtualToPhysicalFactor());
+    }
+    else
+    {
+        textField.frame = CGRectMake(0.f, 0.f, 0.f, 0.f);
+    }
 }
 
 
