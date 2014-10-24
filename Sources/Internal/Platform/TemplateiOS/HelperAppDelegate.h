@@ -48,6 +48,8 @@ enum
 
 @property (nonatomic, retain) EAGLViewController * glController;
 
++ (DAVA::float32) GetScale;
+
 @end
 
 #endif

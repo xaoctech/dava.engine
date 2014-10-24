@@ -27,68 +27,29 @@
 =====================================================================================*/
 
 
+#include "Base/BaseTypes.h"
+#if defined(__DAVAENGINE_IPHONE__)
 
-#ifndef __DAVAENGINE_WEBVIEWCONTROL_IOS_H__
-#define __DAVAENGINE_WEBVIEWCONTROL_IOS_H__
+#import <UIKit/UIKit.h>
+#import "Platform/TemplateiOS/UITextFieldHolder.h"
 
-#include "../../UI/IWebViewControl.h"
+@interface BackgroundView : UIView
 
-namespace DAVA {
+- (UIWebView *) CreateWebView;
+- (void) ReleaseWebView: (UIWebView *)webView;
 
-class FilePath;
-    
-// Web View Control - MacOS version.
-class WebViewControl : public IWebViewControl
-{
-public:
-	WebViewControl();
-	virtual ~WebViewControl();
-	
-	// Initialize the control.
-	virtual void Initialize(const Rect& rect);
-	
-	// Open the URL requested.
-	virtual void OpenURL(const String& urlToOpen);
+- (UITextFieldHolder *) CreateTextField;
+- (void) ReleaseTextField: (UITextFieldHolder *)textField;
 
-    virtual void OpenFromBuffer(const String& string, const FilePath& basePath);
-    
-	// Size/pos/visibility changes.
-	virtual void SetRect(const Rect& rect);
-	virtual void SetVisible(bool isVisible, bool hierarchic);
 
-	virtual void SetDelegate(DAVA::IUIWebViewDelegate *delegate, DAVA::UIWebView* webView);
-	virtual void SetBackgroundTransparency(bool enabled);
+@end
 
-	// Bounces control.
-	virtual bool GetBounces() const;
-	virtual void SetBounces(bool value);
-    virtual void SetGestures(bool value);
 
-    // Data detector types.
-    virtual void SetDataDetectorTypes(int32 value);
-    virtual int32 GetDataDetectorTypes() const;
 
-protected:
 
-	//A pointer to iOS WebView.
-	void* webViewPtr;
-	
-	// A pointer to the WebView delegate.
-	void* webViewDelegatePtr;
 
-	void* webViewURLDelegatePtr;
 
-    void *rightSwipeGesturePtr;
-    void *leftSwipeGesturePtr;
 
-    
-	Map<void*, bool> subviewVisibilityMap;
+#endif // #if defined(__DAVAENGINE_IPHONE__)
 
-	void HideSubviewImages(void* view);
-	void RestoreSubviewImages();
-    bool gesturesEnabled;
-};
-
-};
-
-#endif /* defined(__DAVAENGINE_WEBVIEWCONTROL_IOS_H__) */
+ 

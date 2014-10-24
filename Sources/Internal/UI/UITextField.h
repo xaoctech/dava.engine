@@ -374,6 +374,8 @@ private:
 #endif
     float32 cursorTime;
     int32 maxLength;
+    
+    void LogFunction(const char8 * functionName);
 };
 
 };
