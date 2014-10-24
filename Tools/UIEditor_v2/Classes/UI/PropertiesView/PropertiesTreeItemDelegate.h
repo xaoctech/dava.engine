@@ -35,4 +35,26 @@ private:
     QMap<BaseProperty::ePropertyType, AbstractPropertyDelegate *> propertyItemDelegates;
     QMap<DAVA::VariantType::eVariantType, AbstractPropertyDelegate *> variantTypeItemDelegates;
 };
+class PropertyWidget: public QWidget
+{
+    Q_OBJECT
+public:
+    explicit PropertyWidget(QWidget *parent = NULL);
+    ~PropertyWidget(){};
+
+    bool event(QEvent *e) override;
+
+    void keyPressEvent(QKeyEvent *e) override;
+
+    void mousePressEvent(QMouseEvent *e) override;
+
+    void mouseReleaseEvent(QMouseEvent *e) override;
+
+    void focusInEvent(QFocusEvent *e) override;
+
+    void focusOutEvent(QFocusEvent *e) override;
+
+public:
+    QWidget *editWidget;
+};
 #endif // __PROPERTIESTREEITEMDELEGATE_H__

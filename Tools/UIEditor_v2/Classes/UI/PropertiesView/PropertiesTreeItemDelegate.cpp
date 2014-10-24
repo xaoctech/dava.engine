@@ -10,6 +10,8 @@
 #include <QStylePainter>
 #include <QApplication>
 #include <QToolButton>
+#include <QEvent>
+#include <QMouseEvent>
 #include "QtControls/lineeditext.h"
 
 #include "DAVAEngine.h"
@@ -60,16 +62,19 @@ QWidget *PropertiesTreeItemDelegate::createEditor( QWidget * parent, const QStyl
     AbstractPropertyDelegate *currentDelegate = GetCustomItemDelegateForIndex(index);
     if (currentDelegate)
     {
-        QWidget *editorWidget = new QWidget(parent);
+        PropertyWidget *editorWidget = new PropertyWidget(parent);
         editorWidget->setObjectName(QString::fromUtf8("editorWidget"));
         QWidget *editor = currentDelegate->createEditor(editorWidget, option, index);
-
         if (!editor)
         {
             DAVA::SafeDelete(editorWidget);
         }
         else
         {
+            editorWidget->editWidget = editor;
+            editor->setFocusProxy(editorWidget);
+            editorWidget->setFocusPolicy(Qt::WheelFocus);
+
             QHBoxLayout *horizontalLayout = new QHBoxLayout(editorWidget);
             horizontalLayout->setSpacing(1);
             horizontalLayout->setContentsMargins(0, 0, 0, 0);
@@ -178,3 +183,58 @@ void PropertiesTreeItemDelegate::emitCloseEditor(QWidget * editor, QAbstractItem
 }
 
 
+
+PropertyWidget::PropertyWidget( QWidget *parent /*= NULL*/ ) : QWidget(parent), editWidget(NULL)
+{
+
+}
+
+bool PropertyWidget::event(QEvent *e)
+{
+    switch(e->type())
+    {
+    case QEvent::ShortcutOverride:
+         if(((QObject *)editWidget)->event(e))
+             return true;
+        break;
+
+    case QEvent::InputMethod:
+        return ((QObject *)editWidget)->event(e);
+        break;
+
+    default:
+        break;
+    }
+
+    return QWidget::event(e);
+}
+
+void PropertyWidget::keyPressEvent( QKeyEvent *e )
+{
+    ((QObject *)editWidget)->event(e);
+}
+
+void PropertyWidget::mousePressEvent( QMouseEvent *e )
+{
+    if(e->button() != Qt::LeftButton)
+        return;
+
+    e->ignore();
+}
+
+void PropertyWidget::mouseReleaseEvent( QMouseEvent *e )
+{
+    e->accept();
+}
+
+void PropertyWidget::focusInEvent( QFocusEvent *e )
+{
+    ((QObject *)editWidget)->event(e);
+    QWidget::focusInEvent(e);
+}
+
+void PropertyWidget::focusOutEvent( QFocusEvent *e )
+{
+    ((QObject *)editWidget)->event(e);
+    QWidget::focusOutEvent(e);
+}
