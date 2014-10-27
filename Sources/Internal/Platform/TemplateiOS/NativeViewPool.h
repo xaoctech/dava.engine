@@ -26,6 +26,9 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __DAVAENGINE_NATIVE_VIEW_POOL_H__
+#define __DAVAENGINE_NATIVE_VIEW_POOL_H__
+
 
 #include "Base/BaseTypes.h"
 
@@ -137,5 +140,8 @@ VIEW_TYPE * NativeViewPool<VIEW_TYPE>::GetOrCreateView()
     
 };
 #endif // #if defined(__DAVAENGINE_IPHONE__)
+
+#endif //__DAVAENGINE_NATIVE_VIEW_POOL_H__
+
 
  
