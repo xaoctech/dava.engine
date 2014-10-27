@@ -75,16 +75,17 @@ void ColorPropertyDelegate::OnChooseColorClicked()
     if (!editor)
         return;
 
-    QLabel *label = editor->findChild<QLabel *>("label");
+    QLineEdit *lineEdit = editor->findChild<QLineEdit *>("lineEdit");
 
     QColorDialog dlg(editor);
 
     dlg.setOptions(QColorDialog::ShowAlphaChannel | QColorDialog::DontUseNativeDialog);
-    dlg.setCurrentColor(label->property("color").value<QColor>());
+    dlg.setCurrentColor(lineEdit->property("color").value<QColor>());
 
     if (dlg.exec() == QDialog::Accepted)
     {
-        label->setProperty("color", dlg.selectedColor());
+        lineEdit->setText(QColorToHex(dlg.selectedColor()));
+        lineEdit->setProperty("color", dlg.selectedColor());
         BasePropertyDelegate::SetValueModified(editor, true);
         itemDelegate->emitCommitData(editor);
     }
