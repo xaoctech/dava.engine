@@ -46,7 +46,7 @@ set ( DAVA_INCLUDE_DIR ${DAVA_ENGINE_DIR} ${DAVA_THIRD_PARTY_INCLUDES_PATH} )
 #ImageMagick
 if( MACOS ) 
 
-        set( IMAGE_MAGICK ImageMagick-6.8.9 )
+        set( IMAGE_MAGICK ImageMagick-6.8.9-Mac )
 
 	set ( DAVA_IMAGE_MAGICK_INCLUDES_PATH  
 	     "${CMAKE_CURRENT_LIST_DIR}/../../../Libs/${IMAGE_MAGICK}/include/ImageMagick"
@@ -55,7 +55,7 @@ if( MACOS )
 	     )
 
 	set ( DAVA_IMAGE_MAGICK_LIBRARIES_PATH  
-	     "${CMAKE_CURRENT_LIST_DIR}/../../../Libs/ImageMagick-6.7.4" )  
+	     "${CMAKE_CURRENT_LIST_DIR}/../../../Libs/${IMAGE_MAGICK}" )  
 
 	file ( GLOB DAVA_IMAGE_MAGICK_LIBRARIES_RELEASE  ${DAVA_IMAGE_MAGICK_LIBRARIES_PATH}/lib/*.a ${DAVA_IMAGE_MAGICK_LIBRARIES_PATH}/delegates/lib/*.a )
 
