@@ -24,6 +24,13 @@ public:
     int32 GetControlsCount() const;
     UIControl *GetControl(int32 index) const;
     UIControl *GetControl(const String &name) const;
+    
+    template<class C>
+    C GetControl(const String &name) const
+    {
+        return DynamicTypeCheck<C>(GetControl(name));
+    }
+    
     void AddControl(UIControl *control);
     void InsertControlBelow(UIControl *control, const UIControl *belowThis);
     void RemoveControl(UIControl *control);
