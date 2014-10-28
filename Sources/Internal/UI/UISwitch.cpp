@@ -316,7 +316,8 @@ void UISwitch::InternalSetIsLeftSelected(bool aIsLeftSelected, bool changeVisual
             ChangeVisualState();
         }
 
-        PerformEventWithData(EVENT_VALUE_CHANGED, (void*)isFromUI);
+        bool fromCode = !isFromUI;
+        PerformEventWithData(EVENT_VALUE_CHANGED, (void*)fromCode);
     }
 }
 
