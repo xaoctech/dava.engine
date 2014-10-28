@@ -12,6 +12,8 @@
 	<dict>
 		<key>62289F3C472C02540432B448FB463096A6264DBD</key>
 		<string>https://github.com/dava/dava.framework.git</string>
+		<key>8aec89cc-5276-49cb-ae3b-0d638fc3e4e0++4802</key>
+		<string>https://svn2.wargaming.net/svn/dava_framework/dava.speedtree/trunk</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>Tools/ResourceEditor/ResourceEditorQt.xcodeproj</string>
@@ -19,6 +21,13 @@
 	<dict>
 		<key>62289F3C472C02540432B448FB463096A6264DBD</key>
 		<string>../../../..</string>
+		<key>8aec89cc-5276-49cb-ae3b-0d638fc3e4e0++4802</key>
+		<string>../../../../../dava.speedtree</string>
+	</dict>
+	<key>IDESourceControlProjectRepositoryRootDictionary</key>
+	<dict>
+		<key>8aec89cc-5276-49cb-ae3b-0d638fc3e4e0++4802</key>
+		<string>https://svn2.wargaming.net/svn/dava_framework</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/dava/dava.framework.git</string>
@@ -35,6 +44,14 @@
 			<string>62289F3C472C02540432B448FB463096A6264DBD</string>
 			<key>IDESourceControlWCCName</key>
 			<string>dava.framework.original</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.subversion</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>8aec89cc-5276-49cb-ae3b-0d638fc3e4e0++4802</string>
+			<key>IDESourceControlWCCName</key>
+			<string>dava.speedtree</string>
 		</dict>
 	</array>
 </dict>
