@@ -40,6 +40,7 @@
 #include "Scene3D/Systems/MaterialSystem.h"
 
 #include <QTimer>
+#include <QDebug>
 
 
 MaterialFilteringModel::MaterialFilteringModel(MaterialModel *_materialModel, QObject *parent /* = NULL */)
@@ -172,6 +173,16 @@ bool MaterialFilteringModel::lessThan(const QModelIndex &left, const QModelIndex
         else if (mRight->GetMaterialType() == NMaterial::MATERIALTYPE_GLOBAL)
         {
             swap = (sortOrder() == Qt::DescendingOrder);
+        }
+        else
+        {
+            const QString lhsText = QString(mLeft->GetMaterialName().c_str());
+            const QString rhsText = QString(mRight->GetMaterialName().c_str());
+
+            swap = ( lhsText.compare( rhsText, Qt::CaseInsensitive ) < 0 );
+            {
+                swap = true;
+            }
         }
     }
 
