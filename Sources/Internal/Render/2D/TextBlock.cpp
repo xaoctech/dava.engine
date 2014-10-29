@@ -45,6 +45,8 @@
 
 #include "Utils/UTF8Utils.h"
 #include "Utils/BiDiUtils.h"
+#include "Utils/StringUtils.h"
+
 
 namespace DAVA 
 {
@@ -103,6 +105,7 @@ TextBlock::TextBlock()
     , cacheDy(0)
     , cacheOx(0)
     , cacheOy(0)
+    , cacheTextSize(0.f,0.f)
 {
     font = NULL;
     isMultilineEnabled = false;
@@ -116,16 +119,16 @@ TextBlock::TextBlock()
     isMultilineBySymbolEnabled = false;
     treatMultilineAsSingleLine = false;
     
-	textBlockRender = NULL;
+    textBlockRender = NULL;
     textureInvalidater = NULL;
 }
 
 TextBlock::~TextBlock()
 {
-	SafeRelease(textBlockRender);
+    SafeRelease(textBlockRender);
     SafeDelete(textureInvalidater);
-	SafeRelease(font);
-	UnregisterTextBlock(this);
+    SafeRelease(font);
+    UnregisterTextBlock(this);
 }
 
 // Setters // Getters
@@ -143,28 +146,28 @@ void TextBlock::SetFont(Font * _font)
     SafeRelease(font);
     font = SafeRetain(_font);
 
-	originalFontSize = font->GetSize();
-	
-	SafeRelease(textBlockRender);
+    originalFontSize = font->GetSize();
+    
+    SafeRelease(textBlockRender);
     SafeDelete(textureInvalidater);
-	switch (font->GetFontType()) {
-		case Font::TYPE_FT:
-			textBlockRender = new TextBlockSoftwareRender(this);
+    switch (font->GetFontType()) {
+        case Font::TYPE_FT:
+            textBlockRender = new TextBlockSoftwareRender(this);
             textureInvalidater = new TextBlockSoftwareTexInvalidater(this);
-			break;
-		case Font::TYPE_GRAPHICAL:
-			textBlockRender = new TextBlockGraphicsRender(this);
-			break;
-		case Font::TYPE_DISTANCE:
-			textBlockRender = new TextBlockDistanceRender(this);
-			break;
-			
-		default:
-			DVASSERT(!"Unknown font type");
-			break;
-	}
-	
-	needRedraw = true;
+            break;
+        case Font::TYPE_GRAPHICAL:
+            textBlockRender = new TextBlockGraphicsRender(this);
+            break;
+        case Font::TYPE_DISTANCE:
+            textBlockRender = new TextBlockDistanceRender(this);
+            break;
+            
+        default:
+            DVASSERT(!"Unknown font type");
+            break;
+    }
+    
+    needRedraw = true;
 
     mutex.Unlock();
     Prepare();
@@ -199,21 +202,14 @@ void TextBlock::SetText(const WideString & _string, const Vector2 &requestedText
 {
     mutex.Lock();
 
-    WideString trimStr = Trim(_string);
-    if(originalText == trimStr && requestedSize == requestedTextRectSize)
+    if (text == _string && requestedSize == requestedTextRectSize)
     {
         mutex.Unlock();
         return;
     }
     requestedSize = requestedTextRectSize;
-    originalText = trimStr;
+    text = _string;
     needRedraw = true;
-
-    if(!BiDiUtils::TransformString(originalText, text, isRtl))
-    {
-        text = originalText;
-        isRtl = false;
-    }
 
     mutex.Unlock();
     Prepare();
@@ -401,16 +397,16 @@ bool TextBlock::IsSpriteReady()
 
 void TextBlock::Prepare(Texture *texture /*=NULL*/)
 {
-	Retain();
-	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &TextBlock::PrepareInternal,
+    Retain();
+    ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &TextBlock::PrepareInternal,
                                                                                             SafeRetain(texture)));
 }
 
 void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerData)
 {
     Texture * texture = (Texture *)param;
-	if(!font)
-	{
+    if(!font)
+    {
         Release();
         return;
     }
@@ -422,7 +418,7 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 
         if(textBlockRender)
         {
-			textBlockRender->Prepare(texture);
+            textBlockRender->Prepare(texture);
         }
 
         needRedraw = false;
@@ -430,7 +426,7 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 
     mutex.Unlock();
     SafeRelease(texture);
-	Release();
+    Release();
 }
 
 void TextBlock::CalculateCacheParams()
@@ -444,7 +440,7 @@ void TextBlock::CalculateCacheParams()
         cacheOx = 0;
         cacheOy = 0;
         cacheSpriteOffset = Vector2(0.f,0.f);
-
+        cacheTextSize = Vector2(0.f,0.f);
         return;
     }
 
@@ -527,9 +523,7 @@ void TextBlock::CalculateCacheParams()
             {
                 int32 endPos = length / 2;
                 int32 startPos = endPos - 1;
-
                 int32 count = endPos;
-                WideString savedStr = L"";
 
                 for(int32 i = 1; i < count; ++i)
                 {
@@ -627,7 +621,7 @@ void TextBlock::CalculateCacheParams()
                 }
                 font->SetRenderSize(finalSize);
                 textSize = font->GetStringMetrics(text);
-            };
+            }
         }
 
         if(!pointsStr.empty())
@@ -730,7 +724,7 @@ void TextBlock::CalculateCacheParams()
                 fontHeight = font->GetFontHeight() + yOffset;
                 textSize.height = fontHeight * (int32)multilineStrings.size() - yOffset;
 
-            };
+            }
 
         }
 
@@ -795,8 +789,8 @@ void TextBlock::CalculateCacheParams()
     float32 virt2phys = Core::GetVirtualToPhysicalFactor();
     int32 dx = (int32)ceilf(virt2phys * textSize.drawRect.dx);
     int32 dy = (int32)ceilf(virt2phys * textSize.drawRect.dy);
-    int32 ox = (int32)floorf(virt2phys * textSize.drawRect.x);
-    int32 oy = (int32)floorf(virt2phys * textSize.drawRect.y);
+    int32 ox = (int32)ceilf(virt2phys * textSize.drawRect.x);
+    int32 oy = (int32)ceilf(virt2phys * textSize.drawRect.y);
 
     cacheUseJustify = useJustify;
     cacheDx = dx;
@@ -811,6 +805,7 @@ void TextBlock::CalculateCacheParams()
     cacheW = textSize.drawRect.dx;
     cacheFinalSize.x = (float32)textSize.drawRect.dx;
     cacheFinalSize.y = (float32)textSize.drawRect.dy;
+    cacheTextSize = Vector2((float32)textSize.width, (float32)textSize.height);
 
     // Align sprite offset
     if(align & ALIGN_RIGHT)
@@ -886,7 +881,7 @@ const Vector2 & TextBlock::GetTextSize()
     mutex.Lock();
     mutex.Unlock();
 
-    return cacheFinalSize;
+    return cacheTextSize;
 }
 
 const Vector<int32> & TextBlock::GetStringSizes() const
@@ -908,119 +903,89 @@ void TextBlock::SplitTextToStrings(WideString const& text, Vector2 const& target
 
     Vector<float32> sizes;
     font->GetStringSize(text, &sizes);
-    if(sizes.size() == 0)
+    if(sizes.size() != text.length())
     {
         return;
     }
 
+    Vector<StringUtils::eLineBreakType> breaks;
+    StringUtils::GetLineBreaks(text, breaks);
+    if (breaks.size() != text.length())
+    {
+        return;
+    }
+    
     const float32 p2v = Core::GetPhysicalToVirtualFactor();
     int32 targetWidth = (int32)targetRectSize.dx;
-    WideString currentLine;
-    int32 lastSeparatorPos = 0;
-    int32 prevSeparatorPos = 0;
-    bool lastSeparatorIsSpace = false;
     float32 currentWidth = 0;
-    
+    uint32 lastPossibleBreak = 0;
+
+    uint32 fromPos = 0;
     uint32 textLength = text.length();
     for (uint32 pos = 0; pos < textLength; ++pos)
     {
         char16 ch = text[pos];
-        bool isLineEnd = IsLineEnd(ch);
-        
-        if(isLineEnd)
+        uint8 canBreak = breaks[pos];
+
+        if (canBreak == StringUtils::LB_MUSTBREAK) // If symbol is line breaker then split string
         {
-            resultVector.push_back(currentLine);
-            currentLine.clear();
-            lastSeparatorPos = 0;
-            currentWidth = 0;
+            resultVector.push_back(text.substr(fromPos, pos - fromPos + 1));
+            currentWidth = 0.f;
+            fromPos = pos + 1;
             continue;
         }
-
-        bool isSpace = IsSpace(ch);
-        if(IsWordSeparator(ch) || isSpace)
-        {
-            prevSeparatorPos = lastSeparatorPos;
-            lastSeparatorPos = currentLine.length();
-            lastSeparatorIsSpace = isSpace;
-        }
-
-        currentLine.push_back(ch);
+            
         currentWidth += sizes[pos] * p2v;
 
-        if(0 == targetWidth || currentWidth <= targetWidth || isSpace)
+        // Check that targetWidth defined and currentWidth less than targetWidth.
+        // If symbol is whitespace skip it and go to next (add all whitespaces to current line)
+        if (targetWidth == 0 || currentWidth <= targetWidth || StringUtils::IsWhitespace(ch)) 
         {
+            if (canBreak == StringUtils::LB_ALLOWBREAK) // Store breakable symbol position
+            {
+                lastPossibleBreak = pos;
+            }
             continue;
         }
-       
-        if(lastSeparatorPos == 0)
+
+        if (lastPossibleBreak > 0) // If we have any breakable symbol in current substring then split by it
+        {
+            pos = lastPossibleBreak;
+        }
+        else // If not then split by previous symbol
         {
             pos--;
-            currentLine.resize(currentLine.length() - 1);
-        }
-        else
-        {
-            int32 currentLength = currentLine.length();
-            int32 revert = currentLength - lastSeparatorPos - 1;
-
-            // Check last symbol is special separator and other separator in current line
-            if(revert == 0 && !lastSeparatorIsSpace && prevSeparatorPos > 0)
-            {
-                lastSeparatorPos = prevSeparatorPos;
-                revert = currentLength - lastSeparatorPos - 1;
-                lastSeparatorIsSpace = IsSpace(currentLine[lastSeparatorPos]);
-            }
-
-            if(revert == 0)
-            {
-                if(lastSeparatorIsSpace)
-                {
-                    currentLine.resize(currentLength - 1);
-                }
-                else
-                {
-                    pos -= 2;
-                    currentLine.resize(currentLength - 2);
-                }
-            }
-            else
-            {
-                pos -= revert;
-                WideString::iterator it = currentLine.begin() + lastSeparatorPos;
-                while(it != currentLine.begin() && IsSpace(*it)) --it;
-                currentLine.erase(it + 1, currentLine.end());
-            }
         }
 
-        resultVector.push_back(currentLine);
-        currentLine.clear();
-        lastSeparatorPos = 0;
-        currentWidth = 0;
+        resultVector.push_back(text.substr(fromPos, pos - fromPos + 1));
+        currentWidth = 0.f;
+        fromPos = pos + 1;
     }
 
-    if(!currentLine.empty())
+    if (fromPos < text.size())
     {
-        resultVector.push_back(currentLine);
+        resultVector.push_back(text.substr(fromPos));
     }
-    
+
 }
 
 void TextBlock::SplitTextBySymbolsToStrings(const WideString & text, const Vector2 & targetRectSize, Vector<WideString> & resultVector)
 {
-	int32 targetWidth = (int32)(targetRectSize.dx);
+    int32 targetWidth = (int32)(targetRectSize.dx);
     int32 totalSize = (int)text.length();
     
     int32 currentLineStart = 0;
-	int32 currentLineEnd = 0;
+    int32 currentLineEnd = 0;
     float32 currentLineDx = 0;
     
-	resultVector.clear();
+    resultVector.clear();
     
     Vector<float32> sizes;
-	font->GetStringSize(text, &sizes);
-	if(sizes.size() == 0)
-	{
-		return;
-	}
+    font->GetStringSize(text, &sizes);
+    if(sizes.size() == 0)
+    {
+        return;
+    }
 
     for(int pos = 0; pos < totalSize; pos++)
     {
@@ -1047,11 +1012,11 @@ void TextBlock::SplitTextBySymbolsToStrings(const WideString & text, const Vecto
             currentLineStart = pos + 2;
             currentLineDx = 0;
         }
-		
-		// Use additional condition to prevent endless loop, when target size is less than
-		// size of one symbol (sizes[pos] > targetWidth)
-		// To keep initial index logic we should always perform action currentLineDx += sizes[pos]
-		// before entering this condition, so currentLineDx > 0.
+        
+        // Use additional condition to prevent endless loop, when target size is less than
+        // size of one symbol (sizes[pos] > targetWidth)
+        // To keep initial index logic we should always perform action currentLineDx += sizes[pos]
+        // before entering this condition, so currentLineDx > 0.
         if((currentLineDx > 0) && ((currentLineDx + sizes[pos] * Core::GetPhysicalToVirtualFactor()) > targetWidth))
         {
             WideString currentLine = text.substr(currentLineStart, currentLineEnd - currentLineStart);
@@ -1069,180 +1034,6 @@ void TextBlock::SplitTextBySymbolsToStrings(const WideString & text, const Vecto
     
     WideString currentLine = text.substr(currentLineStart, currentLineEnd - currentLineStart + 1);
     resultVector.push_back(currentLine);
-}
-
-bool TextBlock::IsWordSeparator(char16 t) const
-{
-    switch(t)
-    {
-        case 183: // interpunkt
-        // japanese characters that cannot start line ヽヾーァィゥェォッャュョヮヵヶぁぃぅぇぉっゃゅょゎゕゖㇰㇱㇲㇳㇴㇵㇶㇷㇸㇹㇺㇻㇼㇽㇾㇿ々〻
-        case 12541:
-        case 12542:
-        case 12540:
-        case 12449:
-        case 12451:
-        case 12453:
-        case 12455:
-        case 12457:
-        case 12483:
-        case 12515:
-        case 12517:
-        case 12519:
-        case 12526:
-        case 12533:
-        case 12534:
-        case 12353:
-        case 12355:
-        case 12357:
-        case 12359:
-        case 12361:
-        case 12387:
-        case 12419:
-        case 12421:
-        case 12423:
-        case 12430:
-        case 12437:
-        case 12438:
-        case 12784:
-        case 12785:
-        case 12786:
-        case 12787:
-        case 12788:
-        case 12789:
-        case 12790:
-        case 12791:
-        case 12792:
-        case 12793:
-        case 12794:
-        case 12795:
-        case 12796:
-        case 12797:
-        case 12798:
-        case 12799:
-        case 12293:
-        case 12347:
-        // brackets )]｝〕〉》」』】〙〗〟’”｠»
-        case 41:
-        case 93:
-        case 65373:
-        case 12309:
-        case 12297:
-        case 12299:
-        case 12301:
-        case 12303:
-        case 12305:
-        case 12313:
-        case 12311:
-        case 12319:
-        case 8217:
-        case 8221:
-        case 65376:
-        case 187:
-        // hyphens ‐゠–〜
-        case 8208:
-        case 12448:
-        case 8211:
-        case 12316:
-        // delimeters ?!‼⁇⁈⁉
-        case 63:
-        case 33:
-        case 8252:
-        case 8263:
-        case 8264:
-        case 8265:
-        // punctuation mid ・、:;,
-        case 12539:
-        case 12289: // ideographic comma
-        case 58:
-        case 59:
-        case 44:
-        // punctuation end 。.
-        case 12290:
-        case 46:
-            return true;
-        // chinese simplified and traditional
-        case 37:
-        case 62:
-        case 125: 
-        case 162: 
-        case 168: 
-        case 176:
-        case 711: 
-        case 713: 
-        case 8213: 
-        case 8214:
-        case 8222: 
-        case 8223: 
-        case 8224: 
-        case 8225: 
-        case 8250: 
-        case 8451: 
-        case 8758:
-        case 12291: 
-        case 12294: 
-        case 12296: 
-        case 12298:
-        case 12300:
-        case 12302:
-        case 12318:
-        case 65077:
-        case 65081:
-        case 65085:
-        case 65087:
-        case 65091:
-        case 65112:
-        case 65114:
-        case 65116:
-        case 65281:
-        case 65282:
-        case 65285:
-        case 65287:
-        case 65289:
-        case 65292:
-        case 65294:
-        case 65306:
-        case 65307:
-        case 65311:
-        case 65341:
-        case 65344:
-        case 65372:
-        case 65374:
-        case 8212:
-        case 8226:
-        case 8229:
-        case 8231:
-        case 9588:
-        case 65072:
-        case 65073:
-        case 65074:
-        case 65075:
-        case 65079:
-        case 65083:
-        case 65089:
-        case 65103:
-        case 65104:
-        case 65105:
-        case 65106:
-        case 65107:
-        case 65108:
-        case 65109:
-        case 65110:
-        case 65380:
-            return true;
-    }
-    
-    return false;
-}
-
-WideString TextBlock::Trim(const WideString& str) const
-{
-    const WideString::const_iterator eit = str.end();
-    WideString::const_iterator it = str.begin();
-    while(it != eit && IsSpace(*it)) ++it;
-    WideString::const_reverse_iterator rit = str.rbegin();
-    while(rit.base() != it && IsSpace(*rit)) ++rit;
-    return WideString(it,rit.base());
 }
 
 };
