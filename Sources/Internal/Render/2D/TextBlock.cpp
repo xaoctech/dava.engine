@@ -43,6 +43,9 @@
 #include "Render/2D/TextBlockGraphicsRender.h"
 #include "Render/2D/TextBlockDistanceRender.h"
 
+#include "Utils/UTF8Utils.h"
+#include "Utils/BiDiUtils.h"
+
 namespace DAVA 
 {
 
@@ -53,9 +56,6 @@ struct TextBlockData
 
     Font *font;
 };
-
-
-
 
 //TODO: использовать мапу	
 static	Vector<TextBlock *> registredBlocks;
@@ -200,14 +200,20 @@ void TextBlock::SetText(const WideString & _string, const Vector2 &requestedText
     mutex.Lock();
 
     WideString trimStr = Trim(_string);
-	if(text == trimStr && requestedSize == requestedTextRectSize)
+    if(originalText == trimStr && requestedSize == requestedTextRectSize)
     {
         mutex.Unlock();
         return;
     }
     requestedSize = requestedTextRectSize;
-    text = trimStr;
+    originalText = trimStr;
     needRedraw = true;
+
+    if(!BiDiUtils::TransformString(originalText, text, isRtl))
+    {
+        text = originalText;
+        isRtl = false;
+    }
 
     mutex.Unlock();
     Prepare();
@@ -266,7 +272,7 @@ const WideString & TextBlock::GetText()
     mutex.Lock();
     mutex.Unlock();
 
-    return text;
+	return originalText;
 }
 
 bool TextBlock::GetMultiline()
@@ -308,12 +314,56 @@ void TextBlock::SetAlign(int32 _align)
     mutex.Unlock();
 }
 
+void TextBlock::SetUseRtlAlign(bool const& useRtlAlign)
+{
+    mutex.Lock();
+	if(this->useRtlAlign != useRtlAlign)
+	{
+		this->useRtlAlign = useRtlAlign;
+		needRedraw = true;
+		mutex.Unlock();
+		Prepare();
+		return;
+	}
+    mutex.Unlock();
+}
+
+bool TextBlock::GetUseRtlAlign()
+{
+    mutex.Lock();
+    mutex.Unlock();
+    return useRtlAlign;
+}
+
+bool TextBlock::IsRtl()
+{
+    mutex.Lock();
+    mutex.Unlock();
+    return isRtl;
+}
+
 int32 TextBlock::GetAlign()
 {
     mutex.Lock();
     mutex.Unlock();
-
-    return align;
+	return align;
+}
+	
+int32 TextBlock::GetVisualAlign()
+{
+	mutex.Lock();
+    mutex.Unlock();
+	return GetVisualAlignNoMutexLock();
+}
+	
+int32 TextBlock::GetVisualAlignNoMutexLock() const
+{
+	if(useRtlAlign && isRtl && (align & ALIGN_LEFT || align & ALIGN_RIGHT))
+    {
+        // Mirror left/right align
+        return align ^ (ALIGN_LEFT | ALIGN_RIGHT);
+    }
+	return align;
 }
 
 Sprite * TextBlock::GetSprite()
@@ -812,8 +862,9 @@ TextBlock * TextBlock::Clone()
 
     block->SetRectSize(rectSize);
     block->SetMultiline(GetMultiline(), GetMultilineBySymbol());
-    block->SetAlign(GetAlign());
+    block->SetAlign(align);
     block->SetFittingOption(fittingType);
+    block->SetUseRtlAlign(useRtlAlign);
 
     if (GetFont())
     {

@@ -1149,6 +1149,15 @@
 		B4C29D42199B592D001B83FE /* SceneCache.h in Headers */ = {isa = PBXBuildFile; fileRef = B4C29D3E199B592D001B83FE /* SceneCache.h */; };
 		B4C29D43199B592D001B83FE /* SceneCache.h in Headers */ = {isa = PBXBuildFile; fileRef = B4C29D3E199B592D001B83FE /* SceneCache.h */; };
 		B4C29D44199B592D001B83FE /* SceneCache.h in Headers */ = {isa = PBXBuildFile; fileRef = B4C29D3E199B592D001B83FE /* SceneCache.h */; };
+		B7BEB94819CB1A47005B4BC7 /* libfribidi_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7D6C98319CAC6980095250A /* libfribidi_macos.a */; };
+		B7BEB94919CB1A48005B4BC7 /* libfribidi_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7D6C98319CAC6980095250A /* libfribidi_macos.a */; };
+		B7BEB94A19CB1A54005B4BC7 /* BiDiUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7D6C97B19CAC6820095250A /* BiDiUtils.cpp */; };
+		B7BEB94B19CB1A54005B4BC7 /* BiDiUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = B7D6C97C19CAC6820095250A /* BiDiUtils.h */; };
+		B7BEB94C19CB1A54005B4BC7 /* BiDiUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7D6C97B19CAC6820095250A /* BiDiUtils.cpp */; };
+		B7BEB94D19CB1A54005B4BC7 /* BiDiUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = B7D6C97C19CAC6820095250A /* BiDiUtils.h */; };
+		B7D6C97D19CAC6820095250A /* BiDiUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7D6C97B19CAC6820095250A /* BiDiUtils.cpp */; };
+		B7D6C98019CAC6820095250A /* BiDiUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = B7D6C97C19CAC6820095250A /* BiDiUtils.h */; };
+		B7D6C98419CAC6980095250A /* libfribidi_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7D6C98319CAC6980095250A /* libfribidi_macos.a */; };
 		C151B17716D3747E00E09BAF /* DVAssertMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C151B17416D3747E00E09BAF /* DVAssertMessage.cpp */; };
 		C151B17816D3747E00E09BAF /* DVAssertMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = C151B17516D3747E00E09BAF /* DVAssertMessage.h */; };
 		C151B17916D3747E00E09BAF /* DVAssertMessageApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = C151B17616D3747E00E09BAF /* DVAssertMessageApple.mm */; };
@@ -2678,6 +2687,9 @@
 		A6E4FE081761D97C00B48E41 /* ActionUpdateSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionUpdateSystem.h; sourceTree = "<group>"; };
 		B4C29D3D199B592D001B83FE /* SceneCache.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneCache.cpp; sourceTree = "<group>"; };
 		B4C29D3E199B592D001B83FE /* SceneCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneCache.h; sourceTree = "<group>"; };
+		B7D6C97B19CAC6820095250A /* BiDiUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BiDiUtils.cpp; sourceTree = "<group>"; };
+		B7D6C97C19CAC6820095250A /* BiDiUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BiDiUtils.h; sourceTree = "<group>"; };
+		B7D6C98319CAC6980095250A /* libfribidi_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfribidi_macos.a; path = ../../Libs/libs/libfribidi_macos.a; sourceTree = "<group>"; };
 		C151B17416D3747E00E09BAF /* DVAssertMessage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DVAssertMessage.cpp; sourceTree = "<group>"; };
 		C151B17516D3747E00E09BAF /* DVAssertMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVAssertMessage.h; sourceTree = "<group>"; };
 		C151B17616D3747E00E09BAF /* DVAssertMessageApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DVAssertMessageApple.mm; sourceTree = "<group>"; };
@@ -3333,6 +3345,7 @@
 				176DEB6E174B5561007A983B /* libvorbis_macos.a in Frameworks */,
 				176DEB6F174B5561007A983B /* libvorbisfile_macos.a in Frameworks */,
 				176DEB70174B5561007A983B /* libfreetype_macos.a in Frameworks */,
+				B7BEB94919CB1A48005B4BC7 /* libfribidi_macos.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3340,6 +3353,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B7D6C98419CAC6980095250A /* libfribidi_macos.a in Frameworks */,
 				620638B618EE9F5100C85F25 /* libjpeg_macos.a in Frameworks */,
 				C1DC1F001717EC1E001C5EC3 /* libTextureConverter_macos.a in Frameworks */,
 				C7FBCFC116CD2060006F1B3F /* liblua_macos.a in Frameworks */,
@@ -3374,6 +3388,7 @@
 				E898A2B416BD265400732C04 /* libmongodb_macos.a in Frameworks */,
 				E898A2B516BD265400732C04 /* libyaml_macos.a in Frameworks */,
 				E898A2B616BD265400732C04 /* libxml_macos.a in Frameworks */,
+				B7BEB94819CB1A47005B4BC7 /* libfribidi_macos.a in Frameworks */,
 				E898A2B716BD265400732C04 /* libpng_macos.a in Frameworks */,
 				E898A2B816BD265400732C04 /* libBox2D_MacOS.a in Frameworks */,
 				E898A2B916BD265400732C04 /* Cocoa.framework in Frameworks */,
@@ -3414,6 +3429,7 @@
 		0867D691FE84028FC02AAC07 /* Framework */ = {
 			isa = PBXGroup;
 			children = (
+				B7D6C98319CAC6980095250A /* libfribidi_macos.a */,
 				CCE2CA18197950A600D8086F /* AVFoundation.framework */,
 				627AFA6C18E964E300F2A52A /* libjpeg_macos.a */,
 				C1DC1EFB1717E791001C5EC3 /* libTextureConverter_macos.a */,
@@ -4560,6 +4576,8 @@
 		E8989D8C16BD24E500732C04 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				B7D6C97B19CAC6820095250A /* BiDiUtils.cpp */,
+				B7D6C97C19CAC6820095250A /* BiDiUtils.h */,
 				0286451119795E1200ABCAA0 /* VirtualToPhysicalHelper.cpp */,
 				0286451219795E1200ABCAA0 /* VirtualToPhysicalHelper.h */,
 				E8989D8D16BD24E500732C04 /* HTTPDownloader.h */,
@@ -4751,6 +4769,7 @@
 				17FB4BB41923B97800F3E3BC /* UIScrollView.h in Headers */,
 				176DE954174B5561007A983B /* BezierSpline.h in Headers */,
 				176DE955174B5561007A983B /* Circle.h in Headers */,
+				B7BEB94D19CB1A54005B4BC7 /* BiDiUtils.h in Headers */,
 				CC84B01B18211A9000934482 /* Job.h in Headers */,
 				4F53ED4319A23BEE00D3869D /* ZLibStream.h in Headers */,
 				176DE956174B5561007A983B /* Color.h in Headers */,
@@ -5425,6 +5444,7 @@
 				CCC7A46916F1D6170061EA5D /* ShadowRect.h in Headers */,
 				CCC7A46D16F1D6170061EA5D /* ShadowVolume.h in Headers */,
 				CCC7A47116F1D6170061EA5D /* ShadowVolumeRenderPass.h in Headers */,
+				B7D6C98019CAC6820095250A /* BiDiUtils.h in Headers */,
 				CCC7A47516F1D6170061EA5D /* SpriteObject.h in Headers */,
 				CCC7A47916F1D6170061EA5D /* SpriteRenderBatch.h in Headers */,
 				CCC7A47F16F1D64D0061EA5D /* RenderState.h in Headers */,
@@ -5567,6 +5587,7 @@
 				E898A09B16BD265400732C04 /* Bitstream.h in Headers */,
 				647EFC4D195EE2ED0073B3CB /* NMaterialStateDynamicFlagsInsp.h in Headers */,
 				E898A09C16BD265400732C04 /* DynamicMemoryFile.h in Headers */,
+				B7BEB94B19CB1A54005B4BC7 /* BiDiUtils.h in Headers */,
 				B4C29D43199B592D001B83FE /* SceneCache.h in Headers */,
 				E898A09D16BD265400732C04 /* File.h in Headers */,
 				0214140B181984D600925E51 /* DAVAClassRegistrator.h in Headers */,
@@ -6053,6 +6074,7 @@
 				176DEA67174B5561007A983B /* Replay.cpp in Sources */,
 				176DEA68174B5561007A983B /* Stats.cpp in Sources */,
 				176DEA6C174B5561007A983B /* Component.cpp in Sources */,
+				B7BEB94C19CB1A54005B4BC7 /* BiDiUtils.cpp in Sources */,
 				176DEA6D174B5561007A983B /* SceneSystem.cpp in Sources */,
 				644C86C019476A7100964F91 /* RenderBatchPool.cpp in Sources */,
 				176DEA6E174B5561007A983B /* Bitstream.cpp in Sources */,
@@ -6392,6 +6414,7 @@
 				E8989DB616BD24E500732C04 /* BaseObject.cpp in Sources */,
 				02FD826C192A3861007762C0 /* WaveComponent.cpp in Sources */,
 				E8ADAEB918CA1226000B251C /* PixelFormatDescriptor.cpp in Sources */,
+				B7D6C97D19CAC6820095250A /* BiDiUtils.cpp in Sources */,
 				84CB6720191FC8850086483D /* LibDdsHelper.cpp in Sources */,
 				11CB615019C3391B00B48A92 /* AnimationData.cpp in Sources */,
 				E8989DB816BD24E500732C04 /* BaseObjectChecker.cpp in Sources */,
@@ -6896,6 +6919,7 @@
 				E898A22F16BD265400732C04 /* MaterialGraphNode.cpp in Sources */,
 				E898A23016BD265400732C04 /* NMaterial.cpp in Sources */,
 				02141408181984D600925E51 /* DAVAClassRegistrator.cpp in Sources */,
+				B7BEB94A19CB1A54005B4BC7 /* BiDiUtils.cpp in Sources */,
 				4F53ED2E19A23BE700D3869D /* DownloadManager.cpp in Sources */,
 				E898A23116BD265400732C04 /* Material.cpp in Sources */,
 				E898A23216BD265400732C04 /* RenderBase.cpp in Sources */,
@@ -7277,7 +7301,6 @@
 					"\"$(SRCROOT)/../../Libs/libs\"",
 					"\"$(SRCROOT)/../../Libs/fmod/lib\"",
 					"\"$(SRCROOT)/../../Libs/fmod/lib/macos\"",
-					/Users/a_makovii/Documents/work/git/dava.framework/Libs/libs,
 				);
 				PRODUCT_NAME = Framework;
 			};
@@ -7314,7 +7337,6 @@
 					"\"$(SRCROOT)/../../Libs/libs\"",
 					"\"$(SRCROOT)/../../Libs/fmod/lib\"",
 					"\"$(SRCROOT)/../../Libs/fmod/lib/macos\"",
-					/Users/a_makovii/Documents/work/git/dava.framework/Libs/libs,
 				);
 				PRODUCT_NAME = Framework;
 			};

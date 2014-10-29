@@ -74,6 +74,11 @@ public:
 	virtual void SetPivotPoint(const Vector2& pivotPoint);
 	virtual void SetAlign(int32 align);
 	virtual int32 GetAlign();
+	virtual int32 GetVisualAlign(); // Return align for displaying BiDi-text (w/ mutex lock)
+    virtual void SetUseRtlAlign(const bool& useRtlAlign);
+    virtual bool GetUseRtlAlign();
+    virtual bool IsRtl();
+
 	
 	//[DO NOT ACTUAL ANYMORE] if requested size is 0 - text creates in the rect with size of the drawRect on draw phase
 	//if requested size is >0 - text creates int the rect with the requested size
@@ -116,16 +121,18 @@ protected:
 	void DrawToBuffer(Font *font, uint8 *buf);
 
 	void ProcessAlign();
-	
+
+	int32 GetVisualAlignNoMutexLock() const; // Return align for displaying BiDi-text (w/o mutex lock)
+	    	
     void SplitTextToStrings(const WideString & text, const Vector2 & targetRectSize, Vector<WideString> & resultVector);
-	void SplitTextBySymbolsToStrings(const WideString & text, const Vector2 & targetRectSize, Vector<WideString> & resultVector);   
+    void SplitTextBySymbolsToStrings(const WideString & text, const Vector2 & targetRectSize, Vector<WideString> & resultVector);   
     inline bool IsLineEnd(char16 t) const;
     inline bool IsSpace(char16 t) const;
     bool IsWordSeparator(char16 t) const;
     WideString Trim(const WideString& str) const;
 
 	Vector2 rectSize;
-        bool needRedraw;
+    bool needRedraw;
 	Vector2 requestedSize;
 
     Vector2 cacheFinalSize;
@@ -143,9 +150,12 @@ protected:
 	Vector2 position;
 	Vector2 pivotPoint;
 	int32 align;
+    bool useRtlAlign;
+    bool isRtl;
 
 	Font * font;
 	WideString text;
+    WideString originalText;
     WideString pointsStr;
 	Vector<WideString> multilineStrings;
 	Vector<int32> stringSizes;
