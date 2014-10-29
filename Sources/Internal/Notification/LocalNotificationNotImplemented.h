@@ -42,15 +42,15 @@ namespace DAVA
 class LocalNotificationNotImplemented : public LocalNotificationImpl
 {
 public:
-    LocalNotificationNotImplemented(const uint32 _id);
+    LocalNotificationNotImplemented(const String &_id);
     virtual ~LocalNotificationNotImplemented();
 
     virtual void SetAction(const WideString &action);
     virtual void Hide();
     virtual void ShowText(const WideString &title, const WideString text);
     virtual void ShowProgress(const WideString &title, const WideString text, const uint32 total, const uint32 progress);
-public:
-    uint32 notificationId;
+    virtual void ShowDelayed(const WideString &title, const WideString &text, int delaySeconds);
+    virtual void RemoveAllDelayedNotifications();
 };
 
 }
