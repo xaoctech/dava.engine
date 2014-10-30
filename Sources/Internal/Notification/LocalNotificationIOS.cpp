@@ -30,11 +30,11 @@
 
 #if defined(__DAVAENGINE_IPHONE__)
 
-#include "Notification/LocalNotificationImpl.h"
-#include <UIKit/UIApplication.h>
-#include <UIKit/UILocalNotification.h>
-#import "NSStringUtils.h"
-#include "Platform/DateTime.h"
+#import "Notification/LocalNotificationImpl.h"
+#import <UIKit/UIApplication.h>
+#import <UIKit/UILocalNotification.h>
+#import "Utils/NSStringUtils.h"
+#import "Platform/DateTime.h"
 
 namespace DAVA
 {
@@ -106,16 +106,27 @@ void LocalNotificationIOS::ShowProgress(const WideString &title, const WideStrin
 {
 }
 
+void LocalNotificationIOS::PostDelayedNotification(const WideString &title, const WideString &text, int delaySeconds)
+{
+    UILocalNotification *notification = [[[UILocalNotification alloc] init] autorelease];
+    notification.alertBody = NSStringFromWideString(text);
+    notification.timeZone = [NSTimeZone defaultTimeZone];
+    notification.fireDate = [NSDate dateWithTimeIntervalSinceNow:delaySeconds];
+    [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+}
 
+void LocalNotificationIOS::RemoveAllDelayedNotifications()
+{
+    for(UILocalNotification *notification in [[UIApplication sharedApplication] scheduledLocalNotifications])
+    {
+        [[UIApplication sharedApplication] cancelLocalNotification:notification];
+    }
+}
 
 LocalNotificationImpl *LocalNotificationImpl::Create(const String &_id)
 {
     return new LocalNotificationIOS(_id);
 }
-
-void LocalNotificationIOS::ShowDelayed(const WideString &title, const WideString &text, int delaySeconds) {}
-
-void LocalNotificationIOS::RemoveAllDelayedNotifications() {}
 
 }
 #endif

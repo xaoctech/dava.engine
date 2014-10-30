@@ -61,7 +61,7 @@ LocalNotificationImpl *LocalNotificationImpl::Create(const String &_id)
     return new LocalNotificationNotImplemented(_id);
 }
 
-void LocalNotificationNotImplemented::ShowDelayed(const WideString &title, const WideString &text, int delaySeconds)
+void LocalNotificationNotImplemented::PostDelayedNotification(const WideString &title, const WideString &text, int delaySeconds)
 {
 }
 

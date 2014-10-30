@@ -49,7 +49,7 @@ public:
     virtual void Hide();
     virtual void ShowText(const WideString &title, const WideString text);
     virtual void ShowProgress(const WideString &title, const WideString text, const uint32 total, const uint32 progress);
-    virtual void ShowDelayed(const WideString &title, const WideString &text, int delaySeconds);
+    virtual void PostDelayedNotification(const WideString &title, const WideString &text, int delaySeconds);
     virtual void RemoveAllDelayedNotifications();
 };
 

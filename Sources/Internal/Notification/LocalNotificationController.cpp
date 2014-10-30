@@ -31,6 +31,7 @@
 #include "Notification/LocalNotificationController.h"
 #include "Notification/LocalNotificationProgress.h"
 #include "Notification/LocalNotificationText.h"
+#include "Notification/LocalNotificationDelayed.h"
 
 #include "Base/BaseTypes.h"
 #include "Thread/LockGuard.h"
@@ -181,5 +182,21 @@ void LocalNotificationController::OnNotificationPressed(const String &id)
 	}
 }
 
+void LocalNotificationController::PostDelayedNotification(const WideString &title, const WideString text, int delaySeconds)
+{
+    LocalNotificationDelayed *notification = new LocalNotificationDelayed();
+    notification->SetTitle(title);
+    notification->SetText(text);
+    notification->SetDelaySeconds(delaySeconds);
+    notification->Post();
+    SafeRelease(notification);
 }
 
+void LocalNotificationController::RemoveAllDelayedNotifications()
+{
+    LocalNotificationDelayed *notification = new LocalNotificationDelayed();
+    notification->RemoveAllDelayedNotifications();
+    SafeRelease(notification);
+}
+
+}
