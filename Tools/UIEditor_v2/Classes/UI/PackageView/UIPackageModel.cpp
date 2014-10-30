@@ -99,7 +99,22 @@ QVariant UIPackageModel::data(const QModelIndex &index, int role) const
                 return QVariant();
             
         case Qt::ToolTipRole:
-            return node->GetControl() != NULL ? QString(node->GetControl()->GetControlClassName().c_str()) : QVariant();
+            if (node->GetControl() != NULL)
+            {
+                ControlNode *controlNode = DynamicTypeCheck<ControlNode *>(node);
+                QString toolTip = QString("class: ") + controlNode->GetControl()->GetControlClassName().c_str();
+                if (!controlNode->GetControl()->GetCustomControlClassName().empty())
+                {
+                    toolTip += QString("\ncustom class: ") + controlNode->GetControl()->GetCustomControlClassName().c_str();
+                }
+
+                if (!controlNode->GetPrototypeName().empty())
+                {
+                    toolTip += QString("\nprototype: ") + controlNode->GetPrototypeName().c_str();
+                }
+                return toolTip;
+            }
+            break;
             
         case Qt::TextColorRole:
             return (flags & prototypeFlag) != 0 ? Qt::blue : Qt::black;
@@ -121,6 +136,8 @@ QVariant UIPackageModel::data(const QModelIndex &index, int role) const
         default:
             return QVariant();
     }
+
+    return QVariant();
 }
 
 bool UIPackageModel::setData(const QModelIndex &index, const QVariant &value, int role)
