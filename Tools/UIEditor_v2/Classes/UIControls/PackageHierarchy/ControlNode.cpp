@@ -137,6 +137,17 @@ UIControl *ControlNode::GetControl() const
     return control;
 }
 
+String ControlNode::GetPrototypeName() const
+{
+    if (!prototype)
+        return "";
+
+    if (prototypePackage)
+        return prototypePackage->GetName() + "/" + prototype->GetName();
+
+    return prototype->GetName();
+}
+
 int ControlNode::GetFlags() const
 {
     int flag = 0;
@@ -171,10 +182,8 @@ YamlNode *ControlNode::Serialize(YamlNode *prototypeChildren) const
     
     if (creationType == CREATED_FROM_PROTOTYPE)
     {
-        if (prototypePackage)
-            node->Add("prototype", prototypePackage->GetName() + "/" + prototype->GetName());
-        else
-            node->Add("prototype", prototype->GetName());
+        node->Add("prototype", GetPrototypeName());
+
         if (!control->GetCustomControlClassName().empty() && prototype->GetControl()->GetCustomControlClassName() != control->GetCustomControlClassName())
             node->Add("customClass", control->GetCustomControlClassName());
     }
