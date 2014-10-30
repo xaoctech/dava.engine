@@ -212,19 +212,7 @@ UIControl* UIScrollView::Clone()
 	
 void UIScrollView::CopyDataFrom(UIControl *srcControl)
 {
-	// Release and remove scrollContainer here - it has to be copied from srcControl
-	// We have to finish this before call UIControl::CopyDataFrom() to avoid release
-	// of unavailable object
-	RemoveControl(scrollContainer);
-  	SafeRelease(scrollContainer);
-	
 	UIControl::CopyDataFrom(srcControl);
-	
-	UIScrollView* t = static_cast<UIScrollView*>(srcControl);
-		
-	scrollContainer = static_cast<UIScrollViewContainer*>(t->scrollContainer->Clone());
-		
-	AddControl(scrollContainer);
 }
 
 void UIScrollView::SetPadding(const Vector2 & padding)
