@@ -804,6 +804,14 @@
 		11CB614A19C338DF00B48A92 /* AnimationData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11CB614719C338DF00B48A92 /* AnimationData.cpp */; };
 		11CB614B19C338DF00B48A92 /* AnimationData.h in Headers */ = {isa = PBXBuildFile; fileRef = 11CB614819C338DF00B48A92 /* AnimationData.h */; };
 		11CB614C19C338DF00B48A92 /* AnimationData.h in Headers */ = {isa = PBXBuildFile; fileRef = 11CB614819C338DF00B48A92 /* AnimationData.h */; };
+		150353931A02D5AA00C90B4F /* DefaultUIPackageBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = 1503538F1A02D5AA00C90B4F /* DefaultUIPackageBuilder.h */; };
+		150353941A02D5AA00C90B4F /* DefaultUIPackageBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = 1503538F1A02D5AA00C90B4F /* DefaultUIPackageBuilder.h */; };
+		150353951A02D5AA00C90B4F /* DefaultUIPackageBuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 150353901A02D5AA00C90B4F /* DefaultUIPackageBuilder.cpp */; };
+		150353961A02D5AA00C90B4F /* DefaultUIPackageBuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 150353901A02D5AA00C90B4F /* DefaultUIPackageBuilder.cpp */; };
+		150353971A02D5AA00C90B4F /* AbstractUIPackageBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = 150353911A02D5AA00C90B4F /* AbstractUIPackageBuilder.h */; };
+		150353981A02D5AA00C90B4F /* AbstractUIPackageBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = 150353911A02D5AA00C90B4F /* AbstractUIPackageBuilder.h */; };
+		150353991A02D5AA00C90B4F /* AbstractUIPackageBuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 150353921A02D5AA00C90B4F /* AbstractUIPackageBuilder.cpp */; };
+		1503539A1A02D5AA00C90B4F /* AbstractUIPackageBuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 150353921A02D5AA00C90B4F /* AbstractUIPackageBuilder.cpp */; };
 		155D77E8197DD265006AEBCD /* YamlNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 155D77E6197DD265006AEBCD /* YamlNode.cpp */; };
 		155D77E9197DD265006AEBCD /* YamlNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 155D77E6197DD265006AEBCD /* YamlNode.cpp */; };
 		155D77EA197DD265006AEBCD /* YamlNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 155D77E7197DD265006AEBCD /* YamlNode.h */; };
@@ -853,7 +861,6 @@
 		17FFF905193F03AA003D51DA /* MongodbClient.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C7FE16B9326D002BD35F /* MongodbClient.h */; };
 		17FFF906193F03AF003D51DA /* MongodbObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C80016B9326D002BD35F /* MongodbObject.h */; };
 		1AD7C35E17D8951C00B9977C /* Vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AD7C35D17D8951C00B9977C /* Vector.cpp */; };
-		3267C4AC19E5501A003CF16F /* ComponentIndices.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3267C4AA19E5501A003CF16F /* ComponentIndices.cpp */; };
 		3267C4AD19E5501A003CF16F /* ComponentIndices.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3267C4AA19E5501A003CF16F /* ComponentIndices.cpp */; };
 		3267C4AE19E5501A003CF16F /* ComponentIndices.h in Headers */ = {isa = PBXBuildFile; fileRef = 3267C4AB19E5501A003CF16F /* ComponentIndices.h */; };
 		3267C4AF19E5501A003CF16F /* ComponentIndices.h in Headers */ = {isa = PBXBuildFile; fileRef = 3267C4AB19E5501A003CF16F /* ComponentIndices.h */; };
@@ -1781,6 +1788,10 @@
 		1146E10D19D0066F009E5FAB /* AnimationComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimationComponent.h; sourceTree = "<group>"; };
 		11CB614719C338DF00B48A92 /* AnimationData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnimationData.cpp; sourceTree = "<group>"; };
 		11CB614819C338DF00B48A92 /* AnimationData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimationData.h; sourceTree = "<group>"; };
+		1503538F1A02D5AA00C90B4F /* DefaultUIPackageBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefaultUIPackageBuilder.h; sourceTree = "<group>"; };
+		150353901A02D5AA00C90B4F /* DefaultUIPackageBuilder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DefaultUIPackageBuilder.cpp; sourceTree = "<group>"; };
+		150353911A02D5AA00C90B4F /* AbstractUIPackageBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AbstractUIPackageBuilder.h; sourceTree = "<group>"; };
+		150353921A02D5AA00C90B4F /* AbstractUIPackageBuilder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AbstractUIPackageBuilder.cpp; sourceTree = "<group>"; };
 		155D77E6197DD265006AEBCD /* YamlNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YamlNode.cpp; sourceTree = "<group>"; };
 		155D77E7197DD265006AEBCD /* YamlNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YamlNode.h; sourceTree = "<group>"; };
 		15D3118E1982861500919AAA /* YamlEmitter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YamlEmitter.cpp; sourceTree = "<group>"; };
@@ -3723,6 +3734,10 @@
 		E8B3CA2E16B9326E002BD35F /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				1503538F1A02D5AA00C90B4F /* DefaultUIPackageBuilder.h */,
+				150353901A02D5AA00C90B4F /* DefaultUIPackageBuilder.cpp */,
+				150353911A02D5AA00C90B4F /* AbstractUIPackageBuilder.h */,
+				150353921A02D5AA00C90B4F /* AbstractUIPackageBuilder.cpp */,
 				32B074B719E53C0C0069981A /* UIControlHelpers.cpp */,
 				32B074B819E53C0C0069981A /* UIControlHelpers.h */,
 				32B074B919E53C0C0069981A /* UIPackage.cpp */,
@@ -3988,6 +4003,7 @@
 				02FD7F551924997C007762C0 /* File.h in Headers */,
 				02FD7F561924997C007762C0 /* FileList.h in Headers */,
 				02FD7F571924997C007762C0 /* FilePath.h in Headers */,
+				150353981A02D5AA00C90B4F /* AbstractUIPackageBuilder.h in Headers */,
 				64493E0D19476F4700AB2715 /* VegetationGeometry.h in Headers */,
 				02FD7F581924997C007762C0 /* FileSystem.h in Headers */,
 				02FD7F5A1924997C007762C0 /* KeyedArchive.h in Headers */,
@@ -4035,6 +4051,7 @@
 				02FD7F7E1924997C007762C0 /* Polygon3.h in Headers */,
 				02FD7F7F1924997C007762C0 /* ParticleGroup.h in Headers */,
 				02FD7F801924997C007762C0 /* Quaternion.h in Headers */,
+				150353941A02D5AA00C90B4F /* DefaultUIPackageBuilder.h in Headers */,
 				02FD7F811924997C007762C0 /* Ray.h in Headers */,
 				02864526197960F200ABCAA0 /* VirtualToPhysicalHelper.h in Headers */,
 				D7FEF15019864E5C00B2C7AF /* bs_common.h in Headers */,
@@ -4543,6 +4560,7 @@
 				E8ADAEC918CA1325000B251C /* PixelFormatDescriptor.h in Headers */,
 				E8B3CBFE16B9326E002BD35F /* RenderObject.h in Headers */,
 				E8B3CC0016B9326E002BD35F /* RenderPass.h in Headers */,
+				150353971A02D5AA00C90B4F /* AbstractUIPackageBuilder.h in Headers */,
 				E8B3CC0216B9326E002BD35F /* RenderSystem.h in Headers */,
 				E8B3CC0416B9326E002BD35F /* ShadowRect.h in Headers */,
 				E8B3CC0616B9326E002BD35F /* ShadowVolume.h in Headers */,
@@ -4553,6 +4571,7 @@
 				E8B3CC1716B9326E002BD35F /* MaterialCompiler.h in Headers */,
 				155D77EA197DD265006AEBCD /* YamlNode.h in Headers */,
 				021414171819851100925E51 /* DAVAClassRegistrator.h in Headers */,
+				150353931A02D5AA00C90B4F /* DefaultUIPackageBuilder.h in Headers */,
 				1146E10919D00649009E5FAB /* AnimationSystem.h in Headers */,
 				E8B3CC1916B9326E002BD35F /* MaterialGraph.h in Headers */,
 				E8B3CC1B16B9326E002BD35F /* MaterialGraphNode.h in Headers */,
@@ -4898,6 +4917,7 @@
 				02FD80A81924997C007762C0 /* Message.cpp in Sources */,
 				02FD80A91924997C007762C0 /* ObjectFactory.cpp in Sources */,
 				8402ABA219BA033200111F35 /* TextBlockDistanceRender.cpp in Sources */,
+				1503539A1A02D5AA00C90B4F /* AbstractUIPackageBuilder.cpp in Sources */,
 				02FD80AA1924997C007762C0 /* Observable.cpp in Sources */,
 				02FD80AB1924997C007762C0 /* Radix.cpp in Sources */,
 				02FD80AC1924997C007762C0 /* CollisionObject2.cpp in Sources */,
@@ -5026,6 +5046,7 @@
 				02FD811F1924997C007762C0 /* MaterialCompiler.cpp in Sources */,
 				02FD81201924997C007762C0 /* MaterialGraph.cpp in Sources */,
 				02FD81211924997C007762C0 /* JobQueue.cpp in Sources */,
+				150353961A02D5AA00C90B4F /* DefaultUIPackageBuilder.cpp in Sources */,
 				02FD81221924997C007762C0 /* MaterialGraphNode.cpp in Sources */,
 				02FD81231924997C007762C0 /* NMaterial.cpp in Sources */,
 				02FD81241924997C007762C0 /* Material.cpp in Sources */,
@@ -5292,6 +5313,7 @@
 				E8B3CAB316B9326E002BD35F /* Message.cpp in Sources */,
 				E8B3CAB716B9326E002BD35F /* ObjectFactory.cpp in Sources */,
 				84D18BFD19201BEF009E3E90 /* Image.mm in Sources */,
+				150353991A02D5AA00C90B4F /* AbstractUIPackageBuilder.cpp in Sources */,
 				E8B3CAB916B9326E002BD35F /* Observable.cpp in Sources */,
 				E8B3CABC16B9326E002BD35F /* Radix.cpp in Sources */,
 				E8B3CAC316B9326E002BD35F /* CollisionObject2.cpp in Sources */,
@@ -5304,7 +5326,6 @@
 				E8B3CADA16B9326E002BD35F /* Backtrace.cpp in Sources */,
 				C13E6DB8186861FA00D1B2CE /* DFFont.cpp in Sources */,
 				E8B3CADF16B9326E002BD35F /* MemoryManager.cpp in Sources */,
-				3267C4AC19E5501A003CF16F /* ComponentIndices.cpp in Sources */,
 				E8B3CAE116B9326E002BD35F /* Replay.cpp in Sources */,
 				E8B3CAE316B9326E002BD35F /* Stats.cpp in Sources */,
 				E8B3CAEE16B9326E002BD35F /* Component.cpp in Sources */,
@@ -5421,6 +5442,7 @@
 				E8B3CC2316B9326E002BD35F /* RenderBase.cpp in Sources */,
 				50C7D5FC186082B100D8936D /* StaticOcclusionComponent.cpp in Sources */,
 				E8B3CC2516B9326E002BD35F /* RenderDataObject.cpp in Sources */,
+				150353951A02D5AA00C90B4F /* DefaultUIPackageBuilder.cpp in Sources */,
 				64493DF619476F4700AB2715 /* TextureSheet.cpp in Sources */,
 				E8B3CC2716B9326E002BD35F /* RenderEffect.cpp in Sources */,
 				E8B3CC2916B9326E002BD35F /* RenderGrayscaleEffect.cpp in Sources */,
