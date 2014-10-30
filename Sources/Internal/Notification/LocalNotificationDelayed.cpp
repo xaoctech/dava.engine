@@ -33,7 +33,7 @@ namespace DAVA
 
 void LocalNotificationDelayed::ImplShow()
 {
-	impl->ShowDelayed(title, text, delaySeconds);
+	impl->PostDelayedNotification(title, text, delaySeconds);
 }
 
 void LocalNotificationDelayed::RemoveAllDelayedNotifications()
@@ -43,7 +43,7 @@ void LocalNotificationDelayed::RemoveAllDelayedNotifications()
 
 void LocalNotificationDelayed::Post()
 {
-    impl->ShowDelayed(title, text, delaySeconds);
+    impl->PostDelayedNotification(title, text, delaySeconds);
 }
 
 }

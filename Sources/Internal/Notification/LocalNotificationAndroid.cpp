@@ -137,7 +137,7 @@ void LocalNotificationAndroid::ShowProgress(const WideString &title, const WideS
 	env->DeleteLocalRef(jStrText);
 }
 
-void LocalNotificationAndroid::ShowDelayed(const WideString &title, const WideString &text, int delaySeconds)
+void LocalNotificationAndroid::PostDelayedNotification(const WideString &title, const WideString &text, int delaySeconds)
 {
 	LockGuard<Mutex> mutexGuard(javaCallMutex);
 	JNIEnv *env = GetEnvironment();
