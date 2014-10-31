@@ -30,6 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define __DAVAENGINE_STRING_UTILS__
 
 #include "Base/BaseTypes.h"
+#include <fribidi/fribidi-bidi-types.h>
 
 namespace DAVA
 {
@@ -59,7 +60,7 @@ static enum eLineBreakType
 * \param [out] breaks The output vector of breaks.
 * \param locale (Optional) The locale code.
 */
-void GetLineBreaks(const WideString& string, Vector<eLineBreakType>& breaks, const char8* locale = 0);
+void GetLineBreaks(const WideString& string, Vector<uint8>& breaks, const char8* locale = 0);
 
 /**
 * \brief Trims the given string.
@@ -88,6 +89,43 @@ inline bool IsWhitespace(char16 t)
 {
     return iswspace(static_cast<wint_t>(t)) != 0;
 }
+
+struct sBiDiParams
+{
+    sBiDiParams()
+    {
+        base_dir = FRIBIDI_PAR_ON;
+        embedding_levels = NULL;
+        bidi_types = NULL;
+        processStr = NULL;
+    }
+    ~sBiDiParams()
+    {
+        SAFE_DELETE(embedding_levels);
+        SAFE_DELETE(bidi_types);
+        SAFE_DELETE(processStr);
+    }
+    FriBidiParType base_dir;
+    FriBidiLevel *embedding_levels;
+    FriBidiCharType *bidi_types;
+    FriBidiChar *processStr;
+};
+
+bool BiDiPrepare(const WideString& logicalStr, WideString& shapeStr, WideString& visualStr, sBiDiParams& params, bool* isRTL);
+
+bool BiDiReorder(WideString& string, sBiDiParams& params, uint32 lineOffset);
+
+/**
+ * \brief Bi-directional text transform.
+ * \param [in,out] string The string.
+ * \param [out] isRTL Sets true if given string is Right-to-Left.
+ * \param [out] logical2virtual (Optional) If non-null, pointer to the logical to virtual indeces list.
+ * \param [out] virtual2logical (Optional) If non-null, pointer to the virtual to logical indeces list.
+ * \return true if it succeeds, false if it fails.
+ */
+bool BiDiTransform(WideString& string, bool& isRTL, Vector<int32>* logical2virtual = 0, Vector<int32>* virtual2logical = 0);
+
+bool BiDiTransformEx(const WideString& logicalStr, WideString& shapedStr, WideString& visualStr, bool& isRTL, Vector<int32>* logical2virtual = 0, Vector<int32>* virtual2logical = 0);
 
 }
 }

@@ -106,7 +106,7 @@ void TextBlockSoftwareRender::Prepare(Texture *texture /*=NULL*/)
 	String addInfo;
 	if (!textBlock->isMultilineEnabled)
 	{
-		addInfo = WStringToString(textBlock->text.c_str());
+		addInfo = WStringToString(textBlock->visualText.c_str());
 	}
 	else
 	{
