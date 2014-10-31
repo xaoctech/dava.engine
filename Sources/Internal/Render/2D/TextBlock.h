@@ -38,6 +38,7 @@
 #include "Render/2D/Sprite.h"
 #include "Render/2D/Font.h"
 #include "Platform/Mutex.h"
+#include <Utils/StringUtils.h>
 
 namespace DAVA
 {
@@ -123,6 +124,9 @@ protected:
 	    	
     void SplitTextToStrings(const WideString & text, const Vector2 & targetRectSize, Vector<WideString> & resultVector);
     void SplitTextBySymbolsToStrings(const WideString & text, const Vector2 & targetRectSize, Vector<WideString> & resultVector);   
+
+    void SplitTextToStrings(const WideString & logicalText, const WideString & visualText, StringUtils::sBiDiParams& params, const Vector2 & targetRectSize, Vector<WideString> & resultVector);
+    void SplitTextBySymbolsToStrings(const WideString & logicalText, const WideString & visualText, const Vector<int32> l2v, const Vector2 & targetRectSize, Vector<WideString> & resultVector);
     
     Vector2 rectSize;
     bool needRedraw;
@@ -148,9 +152,8 @@ protected:
     bool isRtl;
 
     Font * font;
-    WideString text;
-    WideString originalText;
-    WideString pointsStr;
+    WideString logicalText;
+    WideString visualText;
     Vector<WideString> multilineStrings;
     Vector<int32> stringSizes;
     

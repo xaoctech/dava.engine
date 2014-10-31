@@ -53,15 +53,7 @@ void TextBlockRender::DrawText()
 {
 	if (!textBlock->isMultilineEnabled || textBlock->treatMultilineAsSingleLine)
 	{
-		WideString drawText = textBlock->text;
-		
-		//if((fittingType & FITTING_POINTS) && pointsStr.length())
-		if (textBlock->pointsStr.length())
-		{
-			drawText = textBlock->pointsStr;
-		}
-		
-		DrawTextSL(drawText, textBlock->cacheDx, textBlock->cacheDy, textBlock->cacheW);
+        DrawTextSL(textBlock->visualText, textBlock->cacheDx, textBlock->cacheDy, textBlock->cacheW);
 	}
 	else
 	{

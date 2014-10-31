@@ -43,10 +43,7 @@
 #include "Render/2D/TextBlockGraphicsRender.h"
 #include "Render/2D/TextBlockDistanceRender.h"
 
-#include "Utils/UTF8Utils.h"
-#include "Utils/BiDiUtils.h"
 #include "Utils/StringUtils.h"
-
 
 namespace DAVA 
 {
@@ -109,6 +106,8 @@ TextBlock::TextBlock()
 {
     font = NULL;
     isMultilineEnabled = false;
+    isRtl = false;
+    useRtlAlign = false;
     fittingType = FITTING_DISABLED;
 
     needRedraw = true;
@@ -202,13 +201,13 @@ void TextBlock::SetText(const WideString & _string, const Vector2 &requestedText
 {
     mutex.Lock();
 
-    if (text == _string && requestedSize == requestedTextRectSize)
+    if (logicalText == _string && requestedSize == requestedTextRectSize)
     {
         mutex.Unlock();
         return;
     }
     requestedSize = requestedTextRectSize;
-    text = _string;
+    logicalText = _string;
     needRedraw = true;
 
     mutex.Unlock();
@@ -268,7 +267,7 @@ const WideString & TextBlock::GetText()
     mutex.Lock();
     mutex.Unlock();
 
-	return originalText;
+    return logicalText;
 }
 
 bool TextBlock::GetMultiline()
@@ -431,8 +430,10 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 
 void TextBlock::CalculateCacheParams()
 {
-    if(text.empty())
+    if (logicalText.empty())
     {
+        visualText.clear();
+        isRtl = false;
         cacheFinalSize = Vector2(0.f,0.f);
         cacheW = 0;
         cacheDx = 0;
@@ -442,6 +443,25 @@ void TextBlock::CalculateCacheParams()
         cacheSpriteOffset = Vector2(0.f,0.f);
         cacheTextSize = Vector2(0.f,0.f);
         return;
+    }
+
+    visualText = logicalText;
+    //WideString shapeText;
+
+//    Vector<int32> l2v, v2l;
+//    if(!StringUtils::BiDiTransformEx(visualText, shapeText, visualText, isRtl, &l2v, &v2l))
+//    {
+//        DVASSERT(false);
+//    }
+//
+//    DVASSERT(visualText.length() == logicalText.length());
+
+    StringUtils::sBiDiParams params;
+    WideString shapedText;
+    if (!StringUtils::BiDiPrepare(logicalText, shapedText, visualText, params, &isRtl))
+    {
+        visualText = logicalText;
+        isRtl = false;
     }
 
     bool useJustify = ((align & ALIGN_HJUSTIFY) != 0);
@@ -466,11 +486,12 @@ void TextBlock::CalculateCacheParams()
     {
         if(isMultilineBySymbolEnabled)
         {
-            SplitTextBySymbolsToStrings(text, drawSize, multilineStrings);
+            SplitTextBySymbolsToStrings(visualText, drawSize, multilineStrings);
         }
         else
         {
-            SplitTextToStrings(text, drawSize, multilineStrings);
+            //SplitTextToStrings(visualText, drawSize, multilineStrings);
+            SplitTextToStrings(shapedText, visualText, params, drawSize, multilineStrings);
         }
 
         treatMultilineAsSingleLine = multilineStrings.size() == 1;
@@ -478,19 +499,19 @@ void TextBlock::CalculateCacheParams()
 
     if(!isMultilineEnabled || treatMultilineAsSingleLine)
     {
-        textSize = font->GetStringMetrics(text);
-        pointsStr.clear();
+        textSize = font->GetStringMetrics(visualText);
+        WideString pointsStr;
         if(fittingType & FITTING_POINTS)
         {
             if(drawSize.x < textSize.width)
             {
                 Size2i textSizePoints;
 
-                int32 length = (int32)text.length();
+                int32 length = (int32)visualText.length();
                 for(int32 i = length - 1; i > 0; --i)
                 {
                     pointsStr.clear();
-                    pointsStr.append(text, 0, i);
+                    pointsStr.append(visualText, 0, i);
                     pointsStr += L"...";
 
                     textSize = font->GetStringMetrics(pointsStr);
@@ -504,13 +525,13 @@ void TextBlock::CalculateCacheParams()
         else if(!((fittingType & FITTING_REDUCE) || (fittingType & FITTING_ENLARGE)) && (drawSize.x < textSize.width) && (requestedSize.x >= 0))
         {
             Size2i textSizePoints;
-            int32 length = (int32)text.length();
+            int32 length = (int32)visualText.length();
             if(ALIGN_RIGHT & align)
             {
                 for(int32 i = 1; i < length - 1; ++i)
                 {
                     pointsStr.clear();
-                    pointsStr.append(text, i, length - i);
+                    pointsStr.append(visualText, i, length - i);
 
                     textSize = font->GetStringMetrics(pointsStr);
                     if(textSize.width <= drawSize.x)
@@ -528,7 +549,7 @@ void TextBlock::CalculateCacheParams()
                 for(int32 i = 1; i < count; ++i)
                 {
                     pointsStr.clear();
-                    pointsStr.append(text, startPos, endPos - startPos);
+                    pointsStr.append(visualText, startPos, endPos - startPos);
 
                     textSize = font->GetStringMetrics(pointsStr);
                     if(drawSize.x <= textSize.width)
@@ -561,7 +582,7 @@ void TextBlock::CalculateCacheParams()
                         if (prevFontSize < font->GetRenderSize())
                         {
                             font->SetRenderSize(prevFontSize);
-                            textSize = font->GetStringMetrics(text);
+                            textSize = font->GetStringMetrics(visualText);
                             break;
                         }
                         yBigger = true;
@@ -585,7 +606,7 @@ void TextBlock::CalculateCacheParams()
                         if (prevFontSize < font->GetRenderSize())
                         {
                             font->SetRenderSize(prevFontSize);
-                            textSize = font->GetStringMetrics(text);
+                            textSize = font->GetStringMetrics(visualText);
                             break;
                         }
                         xBigger = true;
@@ -620,13 +641,14 @@ void TextBlock::CalculateCacheParams()
                     finalSize *= yMul;
                 }
                 font->SetRenderSize(finalSize);
-                textSize = font->GetStringMetrics(text);
+                textSize = font->GetStringMetrics(visualText);
             }
         }
 
         if(!pointsStr.empty())
         {
-            textSize = font->GetStringMetrics(pointsStr);
+            visualText = pointsStr;
+            textSize = font->GetStringMetrics(visualText);
         }
 
         if (treatMultilineAsSingleLine)
@@ -635,18 +657,23 @@ void TextBlock::CalculateCacheParams()
             // string sizes.
             multilineStrings.clear();
             stringSizes.clear();
-            multilineStrings.push_back(text);
+            multilineStrings.push_back(visualText);
             stringSizes.push_back(textSize.width);
         }
     }
     else //if(!isMultilineEnabled)
     {
-        if(fittingType && (requestedSize.dy >= 0/* || requestedSize.dx >= 0*/) && text.size() > 3)
+        if (fittingType && (requestedSize.dy >= 0/* || requestedSize.dx >= 0*/) && visualText.size() > 3)
         {
-            if(isMultilineBySymbolEnabled)
-                SplitTextBySymbolsToStrings(text, drawSize, multilineStrings);
+            if (isMultilineBySymbolEnabled)
+            {
+                SplitTextBySymbolsToStrings(visualText, drawSize, multilineStrings);
+            }
             else
-                SplitTextToStrings(text, drawSize, multilineStrings);
+            {
+//                SplitTextToStrings(visualText, drawSize, multilineStrings);
+                SplitTextToStrings(shapedText, visualText, params, drawSize, multilineStrings);
+            }
 
             int32 yOffset = font->GetVerticalSpacing();
             int32 fontHeight = font->GetFontHeight() + yOffset;
@@ -715,10 +742,15 @@ void TextBlock::CalculateCacheParams()
 
                 font->SetRenderSize(finalSize);
 
-                if(isMultilineBySymbolEnabled)
-                    SplitTextBySymbolsToStrings(text, drawSize, multilineStrings);
+                if (isMultilineBySymbolEnabled)
+                {
+                    SplitTextBySymbolsToStrings(visualText, drawSize, multilineStrings);
+                }
                 else
-                    SplitTextToStrings(text, drawSize, multilineStrings);
+                {
+                    //SplitTextToStrings(visualText, drawSize, multilineStrings);
+                    SplitTextToStrings(shapedText, visualText, params, drawSize, multilineStrings);
+                }
 
                 yOffset = font->GetVerticalSpacing();
                 fontHeight = font->GetFontHeight() + yOffset;
@@ -728,10 +760,15 @@ void TextBlock::CalculateCacheParams()
 
         }
 
-        if(isMultilineBySymbolEnabled)
-            SplitTextBySymbolsToStrings(text, drawSize, multilineStrings);
+        if (isMultilineBySymbolEnabled)
+        {
+            SplitTextBySymbolsToStrings(visualText, drawSize, multilineStrings);
+        }
         else
-            SplitTextToStrings(text, drawSize, multilineStrings);
+        {
+//            SplitTextToStrings(visualText, drawSize, multilineStrings);
+            SplitTextToStrings(shapedText, visualText, params, drawSize, multilineStrings);
+        }
 
         int32 yOffset = font->GetVerticalSpacing();
         int32 fontHeight = font->GetFontHeight() + yOffset;
@@ -908,7 +945,7 @@ void TextBlock::SplitTextToStrings(WideString const& text, Vector2 const& target
         return;
     }
 
-    Vector<StringUtils::eLineBreakType> breaks;
+    Vector<uint8> breaks;
     StringUtils::GetLineBreaks(text, breaks);
     if (breaks.size() != text.length())
     {
@@ -931,6 +968,7 @@ void TextBlock::SplitTextToStrings(WideString const& text, Vector2 const& target
         {
             resultVector.push_back(text.substr(fromPos, pos - fromPos + 1));
             currentWidth = 0.f;
+            lastPossibleBreak = 0;
             fromPos = pos + 1;
             continue;
         }
@@ -948,6 +986,9 @@ void TextBlock::SplitTextToStrings(WideString const& text, Vector2 const& target
             continue;
         }
 
+        // TODO: Check that 1 symbol bigger that targetWidth
+        // DF bug: sizes contains bug positiva and negative values
+
         if (lastPossibleBreak > 0) // If we have any breakable symbol in current substring then split by it
         {
             pos = lastPossibleBreak;
@@ -959,6 +1000,7 @@ void TextBlock::SplitTextToStrings(WideString const& text, Vector2 const& target
 
         resultVector.push_back(text.substr(fromPos, pos - fromPos + 1));
         currentWidth = 0.f;
+        lastPossibleBreak = 0;
         fromPos = pos + 1;
     }
 
@@ -1036,4 +1078,94 @@ void TextBlock::SplitTextBySymbolsToStrings(const WideString & text, const Vecto
     resultVector.push_back(currentLine);
 }
 
+void TextBlock::SplitTextToStrings(WideString const& shapedText, WideString const& visualText, StringUtils::sBiDiParams& params, Vector2 const& targetRectSize, Vector<WideString>& resultVector)
+{
+
+    resultVector.clear();
+
+    Vector<float32> sizes;
+    font->GetStringSize(shapedText, &sizes);
+    if (sizes.size() != shapedText.length())
+    {
+        return;
+    }
+
+    Vector<uint8> breaks;
+    StringUtils::GetLineBreaks(shapedText, breaks);
+    if (breaks.size() != shapedText.length())
+    {
+        return;
+    }
+
+    const float32 p2v = Core::GetPhysicalToVirtualFactor();
+    int32 targetWidth = (int32)targetRectSize.dx;
+    float32 currentWidth = 0;
+    uint32 lastPossibleBreak = 0;
+
+    uint32 fromPos = 0;
+    uint32 textLength = shapedText.length();
+    for (uint32 pos = 0; pos < textLength; ++pos)
+    {
+        char16 ch = shapedText[pos];
+        uint8 canBreak = breaks[pos];
+
+        if (canBreak == StringUtils::LB_MUSTBREAK) // If symbol is line breaker then split string
+        {
+            uint32 to = pos - fromPos + 1;
+//            if (StringUtils::IsWhitespace(ch))
+//            {
+//                to--;
+//            }
+            WideString str = shapedText.substr(fromPos, to);
+            StringUtils::BiDiReorder(str, params, fromPos);
+            resultVector.push_back(str);
+            currentWidth = 0.f;
+            lastPossibleBreak = 0;
+            fromPos = pos + 1;
+            continue;
+        }
+
+        currentWidth += sizes[pos] * p2v;
+
+        // Check that targetWidth defined and currentWidth less than targetWidth.
+        // If symbol is whitespace skip it and go to next (add all whitespaces to current line)
+        if (targetWidth == 0 || currentWidth <= targetWidth || StringUtils::IsWhitespace(ch))
+        {
+            if (canBreak == StringUtils::LB_ALLOWBREAK) // Store breakable symbol position
+            {
+                lastPossibleBreak = pos;
+            }
+            continue;
+        }
+
+        if (lastPossibleBreak > 0) // If we have any breakable symbol in current substring then split by it
+        {
+            pos = lastPossibleBreak;
+        }
+        else // If not then split by previous symbol
+        {
+            pos--;
+        }
+
+        WideString str = shapedText.substr(fromPos, pos - fromPos + 1);
+        StringUtils::BiDiReorder(str, params, fromPos);
+        resultVector.push_back(str);
+        currentWidth = 0.f;
+        lastPossibleBreak = 0;
+        fromPos = pos + 1;
+    }
+
+    if (fromPos < shapedText.size())
+    {
+        WideString str = shapedText.substr(fromPos);
+        StringUtils::BiDiReorder(str, params, 0);
+        resultVector.push_back(str);
+    }
+
+
+}
+
+void TextBlock::SplitTextBySymbolsToStrings(WideString const& logicalText, WideString const& visualText, Vector<int32> const l2v, Vector2 const& targetRectSize, Vector<WideString>& resultVector)
+{
+}
 };
