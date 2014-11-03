@@ -29,10 +29,21 @@
 
 
 #include "CommandLineTool.h"
+#include "Main/QtUtils.h"
 
 using namespace DAVA;
 
 CommandLineTool::CommandLineTool()
 {
 	oneFrameCommand = true;
+}
+
+
+DAVA::FilePath CommandLineTool::CreateQualityConfigPath(const DAVA::FilePath & path) const
+{
+    FilePath projectPath = CreateProjectPathFromPath(path);
+    if(projectPath.IsEmpty())
+        return projectPath;
+    
+    return (projectPath + "Data/Quality.yaml");
 }

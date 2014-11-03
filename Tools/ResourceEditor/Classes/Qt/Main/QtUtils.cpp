@@ -51,6 +51,18 @@ DAVA::FilePath PathnameToDAVAStyle(const QString &convertedPathname)
     return FilePath((const String &)QSTRING_TO_DAVASTRING(convertedPathname));
 }
 
+FilePath CreateProjectPathFromPath(const FilePath & pathname)
+{
+    String fullPath = pathname.GetAbsolutePathname();
+    String::size_type pos = fullPath.find("/Data");
+    if(pos != String::npos)
+    {
+        return fullPath.substr(0, pos+1);
+    }
+    
+    return FilePath();
+}
+
 
 DAVA::FilePath GetOpenFileName(const DAVA::String &title, const DAVA::FilePath &pathname, const DAVA::String &filter)
 {
