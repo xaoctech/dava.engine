@@ -180,36 +180,31 @@ bool MaterialFilteringModel::lessThan(const QModelIndex &left, const QModelIndex
         MaterialItem *lhsItem = materialModel->itemFromIndex(left.sibling(left.row(), 0));
         MaterialItem *rhsItem = materialModel->itemFromIndex(right.sibling(right.row(), 0));
 
-        const QString lhsText = QString(mLeft->GetMaterialName().c_str());
-        const QString rhsText = QString(mRight->GetMaterialName().c_str());
-
-        const int textComp = lhsItem->text().compare( rhsItem->text(), Qt::CaseInsensitive );
-        const int lodComp = lhsItem->GetLodIndex() - rhsItem->GetLodIndex();
-        const int switchComp = lhsItem->GetSwitchIndex() - rhsItem->GetSwitchIndex();
-        int compAll = 0;
+        int compResult = 0;
 
         switch ( sortColumn() )
         {
-        case 0:
-            compAll = textComp;
+        case MaterialModel::TITLE_COLUMN:
+            compResult = compareNames(mLeft, mRight);
             break;
-        case 1:
-            compAll = lodComp;
+        case MaterialModel::LOD_COLUMN:
+            compResult = lhsItem->GetLodIndex() - rhsItem->GetLodIndex();
             break;
-        case 2:
-            compAll = switchComp;
+        case MaterialModel::SWITCH_COLUMN:
+            compResult = lhsItem->GetSwitchIndex() - rhsItem->GetSwitchIndex();
             break;
         default:
             break;
         }
 
         // If sorting column data is equal then sort by text
-        if ( compAll == 0 )
+        if ( compResult == 0 && sortColumn() != MaterialModel::TITLE_COLUMN )
         {
-            compAll = (sortOrder() == Qt::AscendingOrder) ? textComp : -textComp;   // Always sort text in ascending order
+            const int textComp = compareNames(mLeft, mRight);
+            compResult = (sortOrder() == Qt::AscendingOrder) ? textComp : -textComp;   // Always sort text in ascending order
         }
 
-        if (compAll < 0)
+        if (compResult < 0)
         {
             swap = true;
         }
@@ -225,4 +220,12 @@ bool MaterialFilteringModel::dropMimeData(QMimeData const* data, Qt::DropAction 
         invalidate();
 
     return ret;
+}
+
+int MaterialFilteringModel::compareNames(DAVA::NMaterial* left, DAVA::NMaterial* right) const
+{
+    const QString lhsText = QString(left->GetMaterialName().c_str());
+    const QString rhsText = QString(right->GetMaterialName().c_str());
+    const int textComp = lhsText.compare( rhsText, Qt::CaseInsensitive );
+    return textComp;
 }
