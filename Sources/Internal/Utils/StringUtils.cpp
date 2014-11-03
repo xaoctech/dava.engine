@@ -96,6 +96,7 @@ bool StringUtils::BiDiPrepare(const WideString& logicalStr, WideString& shapeStr
 
     FriBidiChar* visual = new FriBidiChar[fribidi_len + 1];
     fribidi_get_bidi_types(logical, fribidi_len, params.bidi_types);
+    params.bidi_types[fribidi_len - 1] = params.bidi_types[fribidi_len - 2];
 
     DVASSERT(!params.embedding_levels);
     params.embedding_levels = new FriBidiLevel[fribidi_len];
@@ -136,7 +137,7 @@ bool StringUtils::BiDiPrepare(const WideString& logicalStr, WideString& shapeStr
     * line in this deprecated function */
     fribidi_boolean status = fribidi_reorder_line(flags, params.bidi_types, fribidi_len, 0, params.base_dir, params.embedding_levels, visual, NULL);
 
-    fribidi_len = fribidi_remove_bidi_marks(visual, fribidi_len, NULL, NULL, params.embedding_levels);
+    fribidi_len = fribidi_remove_bidi_marks(visual, fribidi_len, NULL, NULL, NULL);
     utf_len = fribidi_unicode_to_charset(FRIBIDI_CHAR_SET_UTF8, visual, fribidi_len, outstring);
     UTF8Utils::EncodeToWideString(reinterpret_cast<unsigned char*>(outstring), utf_len, visualStr);
 
@@ -145,7 +146,7 @@ bool StringUtils::BiDiPrepare(const WideString& logicalStr, WideString& shapeStr
     return (status != 0) && (max_level + 1 > 0);
 }
 
-bool StringUtils::BiDiReorder(WideString& string, sBiDiParams& params, uint32 lineOffset)
+bool StringUtils::BiDiReorder(WideString& string, sBiDiParams& params, uint32 lineOffset, uint32 lineLength)
 {
     static const uint32 MAX_LINE_LENGTH = 65535;
     static FriBidiFlags flags = FRIBIDI_FLAGS_DEFAULT | FRIBIDI_FLAGS_ARABIC;
@@ -210,13 +211,7 @@ bool StringUtils::BiDiTransform(WideString& string, bool& isRTL, Vector<int32>* 
 
         fribidi_len = fribidi_remove_bidi_marks(visual, fribidi_len, 0, 0, 0);
         utf_len = fribidi_unicode_to_charset(FRIBIDI_CHAR_SET_UTF8, visual, fribidi_len, outstring);
-
-        WideString out;
-        UTF8Utils::EncodeToWideString(reinterpret_cast<unsigned char*>(outstring), utf_len, out);
-
-        DVASSERT(out.length() == string.length());
-        out.swap(string);
-
+        UTF8Utils::EncodeToWideString(reinterpret_cast<unsigned char*>(outstring), utf_len, string);
         isRTL = FRIBIDI_IS_RTL(base);
     }
 

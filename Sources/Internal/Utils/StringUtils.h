@@ -113,7 +113,7 @@ struct sBiDiParams
 
 bool BiDiPrepare(const WideString& logicalStr, WideString& shapeStr, WideString& visualStr, sBiDiParams& params, bool* isRTL);
 
-bool BiDiReorder(WideString& string, sBiDiParams& params, uint32 lineOffset);
+bool BiDiReorder(WideString& string, sBiDiParams& params, uint32 lineOffset, uint32 lineLength);
 
 /**
  * \brief Bi-directional text transform.
