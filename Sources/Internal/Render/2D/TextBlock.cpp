@@ -463,6 +463,9 @@ void TextBlock::CalculateCacheParams()
         visualText = logicalText;
         isRtl = false;
     }
+//
+//    StringUtils::BiDiTransform(visualText, isRtl, 0, 0);
+//    WideString shapedText = visualText;
 
     bool useJustify = ((align & ALIGN_HJUSTIFY) != 0);
     font->SetSize(originalFontSize);
@@ -776,7 +779,7 @@ void TextBlock::CalculateCacheParams()
         textSize.width = textSize.drawRect.dx = 0;
         textSize.height = textSize.drawRect.dy = fontHeight * (int32)multilineStrings.size() - yOffset;	
 
-        if(textSize.height > drawSize.y)
+        if (textSize.height > drawSize.y && requestedSize.y >= 0.f)
         {
             int32 needLines = Min((int32)multilineStrings.size(), (int32)ceilf(drawSize.y / fontHeight) + 1);
             Vector<WideString> oldLines;
@@ -1111,13 +1114,13 @@ void TextBlock::SplitTextToStrings(WideString const& shapedText, WideString cons
 
         if (canBreak == StringUtils::LB_MUSTBREAK) // If symbol is line breaker then split string
         {
-            uint32 to = pos - fromPos + 1;
+            uint32 len = pos - fromPos + 1;
 //            if (StringUtils::IsWhitespace(ch))
 //            {
 //                to--;
 //            }
-            WideString str = shapedText.substr(fromPos, to);
-            StringUtils::BiDiReorder(str, params, fromPos);
+            WideString str = shapedText.substr(fromPos, len);
+            StringUtils::BiDiReorder(str, params, fromPos, len);
             resultVector.push_back(str);
             currentWidth = 0.f;
             lastPossibleBreak = 0;
@@ -1147,8 +1150,9 @@ void TextBlock::SplitTextToStrings(WideString const& shapedText, WideString cons
             pos--;
         }
 
-        WideString str = shapedText.substr(fromPos, pos - fromPos + 1);
-        StringUtils::BiDiReorder(str, params, fromPos);
+        uint32 len = pos - fromPos + 1;
+        WideString str = shapedText.substr(fromPos, len);
+        StringUtils::BiDiReorder(str, params, fromPos, len);
         resultVector.push_back(str);
         currentWidth = 0.f;
         lastPossibleBreak = 0;
@@ -1157,8 +1161,9 @@ void TextBlock::SplitTextToStrings(WideString const& shapedText, WideString cons
 
     if (fromPos < shapedText.size())
     {
+        uint32 len = shapedText.size() - fromPos;
         WideString str = shapedText.substr(fromPos);
-        StringUtils::BiDiReorder(str, params, 0);
+        StringUtils::BiDiReorder(str, params, fromPos, len);
         resultVector.push_back(str);
     }
 

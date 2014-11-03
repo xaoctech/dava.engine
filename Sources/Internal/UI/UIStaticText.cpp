@@ -61,6 +61,8 @@ UIStaticText::UIStaticText(const Rect &rect, bool rectInAbsoluteCoordinates/* = 
     SetTextColor(Color::White);
     SetShadowColor(Color::Black);
     SetTextAlign(ALIGN_HCENTER | ALIGN_VCENTER);
+
+    SetDebugDraw(true);
 }
 
 UIStaticText::~UIStaticText()
