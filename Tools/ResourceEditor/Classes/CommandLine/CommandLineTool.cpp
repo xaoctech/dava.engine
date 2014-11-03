@@ -29,7 +29,6 @@
 
 
 #include "CommandLineTool.h"
-#include "Main/QtUtils.h"
 
 using namespace DAVA;
 
@@ -46,4 +45,17 @@ DAVA::FilePath CommandLineTool::CreateQualityConfigPath(const DAVA::FilePath & p
         return projectPath;
     
     return (projectPath + "Data/Quality.yaml");
+}
+
+
+FilePath CommandLineTool::CreateProjectPathFromPath(const FilePath & pathname)
+{
+    String fullPath = pathname.GetAbsolutePathname();
+    String::size_type pos = fullPath.find("/Data");
+    if(pos != String::npos)
+    {
+        return fullPath.substr(0, pos+1);
+    }
+    
+    return FilePath();
 }

@@ -43,9 +43,6 @@
 
 DAVA::FilePath PathnameToDAVAStyle(const QString &convertedPathname);
 
-DAVA::FilePath CreateProjectPathFromPath(const DAVA::FilePath & pathname);
-
-
 DAVA::FilePath GetOpenFileName(const DAVA::String &title, const DAVA::FilePath &pathname, const DAVA::String &filter);
 
 void ShowActionWithText(QToolBar *toolbar, QAction *action, bool showText);
