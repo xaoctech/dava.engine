@@ -48,6 +48,8 @@ public:
 
     const DAVA::FilePath & GetScenePathname() const;
     
+    virtual DAVA::FilePath GetQualityConfigPath();
+
 protected:
     DAVA::FilePath scenePathname;
     DAVA::FilePath outputPath;

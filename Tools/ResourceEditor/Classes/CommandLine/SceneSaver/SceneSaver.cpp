@@ -381,15 +381,3 @@ void SceneSaver::CopyCustomColorTexture(Scene *scene, const FilePath & sceneFold
     //save new path to custom colors texture
     customProps->SetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP, newTexPathname.GetRelativePathname(newProjectPathname));
 }
-
-FilePath SceneSaver::CreateProjectPathFromPath(const FilePath & pathname)
-{
-	String fullPath = pathname.GetAbsolutePathname();
-	String::size_type pos = fullPath.find("/Data");
-	if(pos != String::npos)
-	{
-        return fullPath.substr(0, pos+1);
-	}
-    
-    return FilePath();
-}

@@ -126,4 +126,8 @@ void SceneSaverTool::Process()
     }
 }
 
+DAVA::FilePath SceneSaverTool::GetQualityConfigPath()
+{
+    return CreateQualityConfigPath(inFolder);
+}
 

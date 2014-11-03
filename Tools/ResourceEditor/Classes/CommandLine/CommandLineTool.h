@@ -49,6 +49,8 @@ public:
 
     virtual void PrintUsage() = 0;
     
+    virtual DAVA::FilePath GetQualityConfigPath() {return DAVA::FilePath(); };
+    
     virtual void DumpParams() {};
 
     inline const DAVA::Set<DAVA::String> & GetErrorList() const;
@@ -56,6 +58,9 @@ public:
 	inline bool IsOneFrameCommand() const;
 
 protected:
+    
+    DAVA::FilePath CreateQualityConfigPath(const DAVA::FilePath & path) const;
+    
     
     DAVA::Set<DAVA::String> errors;
 	bool oneFrameCommand;

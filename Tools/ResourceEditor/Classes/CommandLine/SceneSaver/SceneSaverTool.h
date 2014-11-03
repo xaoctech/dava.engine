@@ -50,7 +50,8 @@ public:
     virtual void PrintUsage();
     virtual void DumpParams();
 
- 
+    virtual DAVA::FilePath GetQualityConfigPath();
+
 protected:
 
     eAction commandAction;
