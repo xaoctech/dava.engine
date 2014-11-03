@@ -60,7 +60,7 @@ void UITextFieldDelegate::TextFieldLostFocus(UITextField * /*textField*/)
 {
 };
 
-bool UITextFieldDelegate::TextFieldKeyPressed(UITextField * /*textField*/, int32 /*replacementLocation*/, int32 /*replacementLength*/, const WideString & /*replacementString*/)
+bool UITextFieldDelegate::TextFieldKeyPressed(UITextField * /*textField*/, int32 /*replacementLocation*/, int32 /*replacementLength*/, WideString & /*replacementString*/)
 {
 	return true;
 }
