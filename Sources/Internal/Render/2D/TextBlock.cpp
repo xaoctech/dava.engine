@@ -446,26 +446,21 @@ void TextBlock::CalculateCacheParams()
     }
 
     visualText = logicalText;
-    //WideString shapeText;
 
-//    Vector<int32> l2v, v2l;
-//    if(!StringUtils::BiDiTransformEx(visualText, shapeText, visualText, isRtl, &l2v, &v2l))
-//    {
-//        DVASSERT(false);
-//    }
-//
-//    DVASSERT(visualText.length() == logicalText.length());
-
-    StringUtils::sBiDiParams params;
-    WideString shapedText;
-    if (!StringUtils::BiDiPrepare(logicalText, shapedText, visualText, params, &isRtl))
+    StringUtils::sBiDiParams* biDiParams = NULL;
+    if (true) // Check BiDi support
     {
-        visualText = logicalText;
+        biDiParams = new StringUtils::sBiDiParams();
+        if (!StringUtils::BiDiPrepare(logicalText, visualText, *biDiParams, &isRtl))
+        {
+            visualText = logicalText;
+            isRtl = false;
+        }
+    }
+    else
+    {
         isRtl = false;
     }
-//
-//    StringUtils::BiDiTransform(visualText, isRtl, 0, 0);
-//    WideString shapedText = visualText;
 
     bool useJustify = ((align & ALIGN_HJUSTIFY) != 0);
     font->SetSize(originalFontSize);
@@ -489,12 +484,11 @@ void TextBlock::CalculateCacheParams()
     {
         if(isMultilineBySymbolEnabled)
         {
-            SplitTextBySymbolsToStrings(visualText, drawSize, multilineStrings);
+            SplitTextBySymbolsToStrings(visualText, drawSize, multilineStrings, biDiParams);
         }
         else
         {
-            //SplitTextToStrings(visualText, drawSize, multilineStrings);
-            SplitTextToStrings(shapedText, visualText, params, drawSize, multilineStrings);
+            SplitTextToStrings(visualText, drawSize, multilineStrings, biDiParams);
         }
 
         treatMultilineAsSingleLine = multilineStrings.size() == 1;
@@ -670,12 +664,11 @@ void TextBlock::CalculateCacheParams()
         {
             if (isMultilineBySymbolEnabled)
             {
-                SplitTextBySymbolsToStrings(visualText, drawSize, multilineStrings);
+                SplitTextBySymbolsToStrings(visualText, drawSize, multilineStrings, biDiParams);
             }
             else
             {
-//                SplitTextToStrings(visualText, drawSize, multilineStrings);
-                SplitTextToStrings(shapedText, visualText, params, drawSize, multilineStrings);
+                SplitTextToStrings(visualText, drawSize, multilineStrings, biDiParams);
             }
 
             int32 yOffset = font->GetVerticalSpacing();
@@ -747,12 +740,11 @@ void TextBlock::CalculateCacheParams()
 
                 if (isMultilineBySymbolEnabled)
                 {
-                    SplitTextBySymbolsToStrings(visualText, drawSize, multilineStrings);
+                    SplitTextBySymbolsToStrings(visualText, drawSize, multilineStrings, biDiParams);
                 }
                 else
                 {
-                    //SplitTextToStrings(visualText, drawSize, multilineStrings);
-                    SplitTextToStrings(shapedText, visualText, params, drawSize, multilineStrings);
+                    SplitTextToStrings(visualText, drawSize, multilineStrings, biDiParams);
                 }
 
                 yOffset = font->GetVerticalSpacing();
@@ -765,12 +757,11 @@ void TextBlock::CalculateCacheParams()
 
         if (isMultilineBySymbolEnabled)
         {
-            SplitTextBySymbolsToStrings(visualText, drawSize, multilineStrings);
+            SplitTextBySymbolsToStrings(visualText, drawSize, multilineStrings, biDiParams);
         }
         else
         {
-//            SplitTextToStrings(visualText, drawSize, multilineStrings);
-            SplitTextToStrings(shapedText, visualText, params, drawSize, multilineStrings);
+            SplitTextToStrings(visualText, drawSize, multilineStrings, biDiParams);
         }
 
         int32 yOffset = font->GetVerticalSpacing();
@@ -818,6 +809,12 @@ void TextBlock::CalculateCacheParams()
             }
             textSize.drawRect.x = Min(textSize.drawRect.x, stringSize.drawRect.x);
         }
+    }
+
+    if (biDiParams) // Complete BiDi transformation for visualText
+    {
+        StringUtils::BiDiReorder(visualText, *biDiParams, 0);
+        SAFE_DELETE(biDiParams);
     }
 
     if (requestedSize.dx >= 0 && useJustify)
@@ -937,165 +934,20 @@ const Vector2& TextBlock::GetSpriteOffset()
     return cacheSpriteOffset;
 }
 
-void TextBlock::SplitTextToStrings(WideString const& text, Vector2 const& targetRectSize, Vector<WideString>& resultVector)
+void TextBlock::SplitTextToStrings(const WideString& string, Vector2 const& targetRectSize, Vector<WideString>& resultVector, StringUtils::sBiDiParams* params)
 {
     resultVector.clear();
 
     Vector<float32> sizes;
-    font->GetStringSize(text, &sizes);
-    if(sizes.size() != text.length())
+    font->GetStringSize(string, &sizes);
+    if (sizes.size() != string.length())
     {
         return;
     }
 
     Vector<uint8> breaks;
-    StringUtils::GetLineBreaks(text, breaks);
-    if (breaks.size() != text.length())
-    {
-        return;
-    }
-    
-    const float32 p2v = Core::GetPhysicalToVirtualFactor();
-    int32 targetWidth = (int32)targetRectSize.dx;
-    float32 currentWidth = 0;
-    uint32 lastPossibleBreak = 0;
-
-    uint32 fromPos = 0;
-    uint32 textLength = text.length();
-    for (uint32 pos = 0; pos < textLength; ++pos)
-    {
-        char16 ch = text[pos];
-        uint8 canBreak = breaks[pos];
-
-        if (canBreak == StringUtils::LB_MUSTBREAK) // If symbol is line breaker then split string
-        {
-            resultVector.push_back(text.substr(fromPos, pos - fromPos + 1));
-            currentWidth = 0.f;
-            lastPossibleBreak = 0;
-            fromPos = pos + 1;
-            continue;
-        }
-            
-        currentWidth += sizes[pos] * p2v;
-
-        // Check that targetWidth defined and currentWidth less than targetWidth.
-        // If symbol is whitespace skip it and go to next (add all whitespaces to current line)
-        if (targetWidth == 0 || currentWidth <= targetWidth || StringUtils::IsWhitespace(ch)) 
-        {
-            if (canBreak == StringUtils::LB_ALLOWBREAK) // Store breakable symbol position
-            {
-                lastPossibleBreak = pos;
-            }
-            continue;
-        }
-
-        // TODO: Check that 1 symbol bigger that targetWidth
-        // DF bug: sizes contains bug positiva and negative values
-
-        if (lastPossibleBreak > 0) // If we have any breakable symbol in current substring then split by it
-        {
-            pos = lastPossibleBreak;
-        }
-        else // If not then split by previous symbol
-        {
-            pos--;
-        }
-
-        resultVector.push_back(text.substr(fromPos, pos - fromPos + 1));
-        currentWidth = 0.f;
-        lastPossibleBreak = 0;
-        fromPos = pos + 1;
-    }
-
-    if (fromPos < text.size())
-    {
-        resultVector.push_back(text.substr(fromPos));
-    }
-
-}
-
-void TextBlock::SplitTextBySymbolsToStrings(const WideString & text, const Vector2 & targetRectSize, Vector<WideString> & resultVector)
-{
-    int32 targetWidth = (int32)(targetRectSize.dx);
-    int32 totalSize = (int)text.length();
-    
-    int32 currentLineStart = 0;
-    int32 currentLineEnd = 0;
-    float32 currentLineDx = 0;
-    
-    resultVector.clear();
-    
-    Vector<float32> sizes;
-    font->GetStringSize(text, &sizes);
-    if(sizes.size() == 0)
-    {
-        return;
-    }
-
-    for(int pos = 0; pos < totalSize; pos++)
-    {
-        char16 t = text[pos];
-        char16 tNext = 0;
-        if(pos+1 < totalSize)
-            tNext = text[pos+1];
-        
-        currentLineEnd = pos;
-        
-        if(t == L'\n')
-        {
-            WideString currentLine = text.substr(currentLineStart, currentLineEnd - currentLineStart);
-            resultVector.push_back(currentLine);
-            
-            currentLineStart = pos + 1;
-            currentLineDx = 0;
-        }
-        if(t == L'\\' && tNext == L'n')
-        {
-            WideString currentLine = text.substr(currentLineStart, currentLineEnd - currentLineStart);
-            resultVector.push_back(currentLine);
-            
-            currentLineStart = pos + 2;
-            currentLineDx = 0;
-        }
-        
-        // Use additional condition to prevent endless loop, when target size is less than
-        // size of one symbol (sizes[pos] > targetWidth)
-        // To keep initial index logic we should always perform action currentLineDx += sizes[pos]
-        // before entering this condition, so currentLineDx > 0.
-        if((currentLineDx > 0) && ((currentLineDx + sizes[pos] * Core::GetPhysicalToVirtualFactor()) > targetWidth))
-        {
-            WideString currentLine = text.substr(currentLineStart, currentLineEnd - currentLineStart);
-            resultVector.push_back(currentLine);
-            
-            currentLineStart = pos;
-            currentLineDx = 0;
-            pos--;
-        }
-        else
-        {
-            currentLineDx += sizes[pos] * Core::GetPhysicalToVirtualFactor();
-        }
-    }
-    
-    WideString currentLine = text.substr(currentLineStart, currentLineEnd - currentLineStart + 1);
-    resultVector.push_back(currentLine);
-}
-
-void TextBlock::SplitTextToStrings(WideString const& shapedText, WideString const& visualText, StringUtils::sBiDiParams& params, Vector2 const& targetRectSize, Vector<WideString>& resultVector)
-{
-
-    resultVector.clear();
-
-    Vector<float32> sizes;
-    font->GetStringSize(shapedText, &sizes);
-    if (sizes.size() != shapedText.length())
-    {
-        return;
-    }
-
-    Vector<uint8> breaks;
-    StringUtils::GetLineBreaks(shapedText, breaks);
-    if (breaks.size() != shapedText.length())
+    StringUtils::GetLineBreaks(string, breaks);
+    if (breaks.size() != string.length())
     {
         return;
     }
@@ -1106,18 +958,20 @@ void TextBlock::SplitTextToStrings(WideString const& shapedText, WideString cons
     uint32 lastPossibleBreak = 0;
 
     uint32 fromPos = 0;
-    uint32 textLength = shapedText.length();
+    uint32 textLength = string.length();
     for (uint32 pos = 0; pos < textLength; ++pos)
     {
-        char16 ch = shapedText[pos];
+        char16 ch = string[pos];
         uint8 canBreak = breaks[pos];
 
         if (canBreak == StringUtils::LB_MUSTBREAK && pos < textLength - 1) // If symbol is line breaker then split string
         {
-            uint32 len = pos - fromPos + 1;
-            WideString str = shapedText.substr(fromPos, len);
-            StringUtils::BiDiReorder(str, params, fromPos, len);
-            resultVector.push_back(str);
+            WideString line = string.substr(fromPos, pos - fromPos + 1);
+            if (params)
+            {
+                StringUtils::BiDiReorder(line, *params, fromPos);
+            }
+            resultVector.push_back(line);
             currentWidth = 0.f;
             lastPossibleBreak = 0;
             fromPos = pos + 1;
@@ -1146,27 +1000,111 @@ void TextBlock::SplitTextToStrings(WideString const& shapedText, WideString cons
             pos--;
         }
 
-        uint32 len = pos - fromPos + 1;
-        WideString str = shapedText.substr(fromPos, len);
-        StringUtils::BiDiReorder(str, params, fromPos, len);
-        resultVector.push_back(str);
+        WideString line = string.substr(fromPos, pos - fromPos + 1);
+        if (params)
+        {
+            StringUtils::BiDiReorder(line, *params, fromPos);
+        }
+        resultVector.push_back(line);
         currentWidth = 0.f;
         lastPossibleBreak = 0;
         fromPos = pos + 1;
     }
 
-    if (fromPos < shapedText.size())
+    if (fromPos < string.size())
     {
-        uint32 len = shapedText.size() - fromPos;
-        WideString str = shapedText.substr(fromPos);
-        StringUtils::BiDiReorder(str, params, fromPos, len);
-        resultVector.push_back(str);
+        WideString line = string.substr(fromPos);
+        if (params)
+        {
+            StringUtils::BiDiReorder(line, *params, fromPos);
+        }
+        resultVector.push_back(line);
     }
 
 
 }
 
-void TextBlock::SplitTextBySymbolsToStrings(WideString const& logicalText, WideString const& visualText, Vector<int32> const l2v, Vector2 const& targetRectSize, Vector<WideString>& resultVector)
+void TextBlock::SplitTextBySymbolsToStrings(const WideString& string, Vector2 const& targetRectSize, Vector<WideString>& resultVector, StringUtils::sBiDiParams* params)
 {
+    int32 targetWidth = (int32)(targetRectSize.dx);
+    int32 totalSize = (int)string.length();
+
+    int32 currentLineStart = 0;
+    int32 currentLineEnd = 0;
+    float32 currentLineDx = 0;
+
+    resultVector.clear();
+
+    Vector<float32> sizes;
+    font->GetStringSize(string, &sizes);
+    if (sizes.size() == 0)
+    {
+        return;
+    }
+
+    for (int pos = 0; pos < totalSize; pos++)
+    {
+        char16 t = string[pos];
+        char16 tNext = 0;
+        if (pos + 1 < totalSize)
+            tNext = string[pos + 1];
+
+        currentLineEnd = pos;
+
+        if (t == L'\n')
+        {
+            WideString currentLine = string.substr(currentLineStart, currentLineEnd - currentLineStart);
+            if (params)
+            {
+                StringUtils::BiDiReorder(currentLine, *params, currentLineStart);
+            }
+            resultVector.push_back(currentLine);
+
+            currentLineStart = pos + 1;
+            currentLineDx = 0;
+        }
+        if (t == L'\\' && tNext == L'n')
+        {
+            WideString currentLine = string.substr(currentLineStart, currentLineEnd - currentLineStart);
+            if (params)
+            {
+                StringUtils::BiDiReorder(currentLine, *params, currentLineStart);
+            }
+            resultVector.push_back(currentLine);
+
+            currentLineStart = pos + 2;
+            currentLineDx = 0;
+        }
+
+        // Use additional condition to prevent endless loop, when target size is less than
+        // size of one symbol (sizes[pos] > targetWidth)
+        // To keep initial index logic we should always perform action currentLineDx += sizes[pos]
+        // before entering this condition, so currentLineDx > 0.
+        if ((currentLineDx > 0) && ((currentLineDx + sizes[pos] * Core::GetPhysicalToVirtualFactor()) > targetWidth))
+        {
+            WideString currentLine = string.substr(currentLineStart, currentLineEnd - currentLineStart);
+            if (params)
+            {
+                StringUtils::BiDiReorder(currentLine, *params, currentLineStart);
+            }
+            resultVector.push_back(currentLine);
+
+            currentLineStart = pos;
+            currentLineDx = 0;
+            pos--;
+        }
+        else
+        {
+            currentLineDx += sizes[pos] * Core::GetPhysicalToVirtualFactor();
+        }
+    }
+
+    WideString currentLine = string.substr(currentLineStart, currentLineEnd - currentLineStart + 1);
+    if (params)
+    {
+        StringUtils::BiDiReorder(currentLine, *params, currentLineStart);
+    }
+    resultVector.push_back(currentLine);
 }
+
 };

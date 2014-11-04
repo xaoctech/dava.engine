@@ -116,17 +116,27 @@ protected:
     
     void Prepare(Texture *texture = NULL);
     void PrepareInternal(BaseObject * caller, void * param, void *callerData);
-    
     void CalculateCacheParams();
-    
 
 	int32 GetVisualAlignNoMutexLock() const; // Return align for displaying BiDi-text (w/o mutex lock)
-	    	
-    void SplitTextToStrings(const WideString & text, const Vector2 & targetRectSize, Vector<WideString> & resultVector);
-    void SplitTextBySymbolsToStrings(const WideString & text, const Vector2 & targetRectSize, Vector<WideString> & resultVector);   
 
-    void SplitTextToStrings(const WideString & logicalText, const WideString & visualText, StringUtils::sBiDiParams& params, const Vector2 & targetRectSize, Vector<WideString> & resultVector);
-    void SplitTextBySymbolsToStrings(const WideString & logicalText, const WideString & visualText, const Vector<int32> l2v, const Vector2 & targetRectSize, Vector<WideString> & resultVector);
+    /**
+     * \brief Splits text to strings.
+     * \param string The string.
+     * \param targetRectSize Size of the target rectangle.
+     * \param [out] resultVector The result vector.
+     * \param params Pointer to struct with BiDi metadata, if NULL then disable BiDi reorder for splited lines.
+     */
+    void SplitTextToStrings(const WideString & string, const Vector2 & targetRectSize, Vector<WideString> & resultVector, StringUtils::sBiDiParams* params = NULL);
+
+    /**
+     * \brief Splits text to strings by symbols.
+     * \param string The string.
+     * \param targetRectSize Size of the target rectangle.
+     * \param [out] resultVector The result vector.
+     * \param params Pointer to struct with BiDi metadata, if NULL then disable BiDi reorder for splited lines.
+     */
+    void SplitTextBySymbolsToStrings(const WideString & string, const Vector2 & targetRectSize, Vector<WideString> & resultVector, StringUtils::sBiDiParams* params = NULL);
     
     Vector2 rectSize;
     bool needRedraw;

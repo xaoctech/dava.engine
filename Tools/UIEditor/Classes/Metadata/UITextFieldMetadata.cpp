@@ -245,7 +245,7 @@ bool UITextFieldMetadata::GetTextUseRtlAlign()
 {
 	if (!VerifyActiveParamID())
 	{
-		return true;
+		return false;
 	}
 	
 	return GetActiveUITextField()->GetTextUseRtlAlign();
