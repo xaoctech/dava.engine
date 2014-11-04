@@ -367,10 +367,10 @@ Font::StringMetrics FTInternalFont::DrawString(const WideString& str, void * buf
     }
 
 	Font::StringMetrics metrics;
-
 	metrics.baseline =  (int32)ceilf((float32)faceBboxYMax / ftToPixelScale * virtualToPhysicalFactor);
 	metrics.height = baseSize;
-    metrics.drawRect = Rect2i(0x7fffffff, 0x7fffffff, 0, baseSize); // Setup rect with maximum int32 value for x/y, and zero width/height
+    metrics.drawRect = Rect2i(0x7fffffff, 0x7fffffff, 0, baseSize); // Setup rect with maximum int32 value for x/y, and zero width
+    
 	int32 layoutWidth = 0; // width in FT points
 		
 	for(int32 i = 0; i < strLen; ++i)
@@ -469,6 +469,12 @@ Font::StringMetrics FTInternalFont::DrawString(const WideString& str, void * buf
 	SafeDeleteArray(advances);
 	drawStringMutex.Unlock();
 
+    if (metrics.drawRect.x == 0x7fffffff || metrics.drawRect.y == 0x7fffffff) // Empty string
+    {
+        metrics.drawRect.x = 0;
+        metrics.drawRect.y = 0;
+    }
+    
 	// Transform right/bottom edges into width/height
 	metrics.drawRect.dx += -metrics.drawRect.x + 1;
     metrics.drawRect.dy += -metrics.drawRect.y + 1;

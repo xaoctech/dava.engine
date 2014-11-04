@@ -31,6 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Utils/UTF8Utils.h"
 
 #include "fribidi/fribidi.h"
+#include "fribidi/fribidi-bidi-types.h"
 #include "unibreak/linebreak.h"
 
 namespace DAVA
@@ -97,7 +98,6 @@ bool StringUtils::BiDiPrepare(const WideString& logicalStr, WideString& prepared
     }
 
     fribidi_get_bidi_types(logical, fribidi_len, params.bidi_types);
-    //params.bidi_types[fribidi_len - 1] = params.bidi_types[fribidi_len - 2];
 
     params.embedding_levels = new FriBidiLevel[fribidi_len];
     if (!params.embedding_levels)
@@ -106,11 +106,16 @@ bool StringUtils::BiDiPrepare(const WideString& logicalStr, WideString& prepared
         return false;
     }
 
+    params.base_dir = FRIBIDI_PAR_ON;
     FriBidiLevel max_level = fribidi_get_par_embedding_levels(params.bidi_types, fribidi_len, &params.base_dir, params.embedding_levels) - 1;
     if (max_level < 0)
     {
         SAFE_DELETE(logical);
         return false;
+    }
+    if (fribidi_len >=2)
+    {
+        params.embedding_levels[fribidi_len - 1] = params.embedding_levels[fribidi_len - 2];
     }
 
     FriBidiChar* visual = new FriBidiChar[fribidi_len + 1];

@@ -446,21 +446,26 @@ void TextBlock::CalculateCacheParams()
     }
 
     visualText = logicalText;
+    WideString preparedText = logicalText;
+    isRtl = false;
 
     StringUtils::sBiDiParams* biDiParams = NULL;
     if (true) // Check BiDi support
     {
         biDiParams = new StringUtils::sBiDiParams();
-        if (!StringUtils::BiDiPrepare(logicalText, visualText, *biDiParams, &isRtl))
+        if (StringUtils::BiDiPrepare(logicalText, preparedText, *biDiParams, &isRtl))
+        {
+            visualText = preparedText;
+            StringUtils::BiDiReorder(visualText, *biDiParams, 0);
+        }
+        else
         {
             visualText = logicalText;
+            preparedText = logicalText;
             isRtl = false;
         }
     }
-    else
-    {
-        isRtl = false;
-    }
+    CleanLine(visualText);
 
     bool useJustify = ((align & ALIGN_HJUSTIFY) != 0);
     font->SetSize(originalFontSize);
@@ -484,11 +489,11 @@ void TextBlock::CalculateCacheParams()
     {
         if(isMultilineBySymbolEnabled)
         {
-            SplitTextBySymbolsToStrings(visualText, drawSize, multilineStrings, biDiParams);
+            SplitTextBySymbolsToStrings(preparedText, drawSize, multilineStrings, biDiParams);
         }
         else
         {
-            SplitTextToStrings(visualText, drawSize, multilineStrings, biDiParams);
+            SplitTextToStrings(preparedText, drawSize, multilineStrings, biDiParams);
         }
 
         treatMultilineAsSingleLine = multilineStrings.size() == 1;
@@ -664,11 +669,11 @@ void TextBlock::CalculateCacheParams()
         {
             if (isMultilineBySymbolEnabled)
             {
-                SplitTextBySymbolsToStrings(visualText, drawSize, multilineStrings, biDiParams);
+                SplitTextBySymbolsToStrings(preparedText, drawSize, multilineStrings, biDiParams);
             }
             else
             {
-                SplitTextToStrings(visualText, drawSize, multilineStrings, biDiParams);
+                SplitTextToStrings(preparedText, drawSize, multilineStrings, biDiParams);
             }
 
             int32 yOffset = font->GetVerticalSpacing();
@@ -740,11 +745,11 @@ void TextBlock::CalculateCacheParams()
 
                 if (isMultilineBySymbolEnabled)
                 {
-                    SplitTextBySymbolsToStrings(visualText, drawSize, multilineStrings, biDiParams);
+                    SplitTextBySymbolsToStrings(preparedText, drawSize, multilineStrings, biDiParams);
                 }
                 else
                 {
-                    SplitTextToStrings(visualText, drawSize, multilineStrings, biDiParams);
+                    SplitTextToStrings(preparedText, drawSize, multilineStrings, biDiParams);
                 }
 
                 yOffset = font->GetVerticalSpacing();
@@ -757,11 +762,11 @@ void TextBlock::CalculateCacheParams()
 
         if (isMultilineBySymbolEnabled)
         {
-            SplitTextBySymbolsToStrings(visualText, drawSize, multilineStrings, biDiParams);
+            SplitTextBySymbolsToStrings(preparedText, drawSize, multilineStrings, biDiParams);
         }
         else
         {
-            SplitTextToStrings(visualText, drawSize, multilineStrings, biDiParams);
+            SplitTextToStrings(preparedText, drawSize, multilineStrings, biDiParams);
         }
 
         int32 yOffset = font->GetVerticalSpacing();
@@ -811,12 +816,8 @@ void TextBlock::CalculateCacheParams()
         }
     }
 
-    if (biDiParams) // Complete BiDi transformation for visualText
-    {
-        StringUtils::BiDiReorder(visualText, *biDiParams, 0);
-        SAFE_DELETE(biDiParams);
-    }
-
+    SAFE_DELETE(biDiParams);
+    
     if (requestedSize.dx >= 0 && useJustify)
     {
         textSize.drawRect.dx = Max(textSize.drawRect.dx, (int)drawSize.dx);
@@ -964,13 +965,14 @@ void TextBlock::SplitTextToStrings(const WideString& string, Vector2 const& targ
         char16 ch = string[pos];
         uint8 canBreak = breaks[pos];
 
-        if (canBreak == StringUtils::LB_MUSTBREAK && pos < textLength - 1) // If symbol is line breaker then split string
+        if (canBreak == StringUtils::LB_MUSTBREAK) // If symbol is line breaker then split string
         {
             WideString line = string.substr(fromPos, pos - fromPos + 1);
             if (params)
             {
                 StringUtils::BiDiReorder(line, *params, fromPos);
             }
+            CleanLine(line, pos < textLength - 1);
             resultVector.push_back(line);
             currentWidth = 0.f;
             lastPossibleBreak = 0;
@@ -1005,6 +1007,7 @@ void TextBlock::SplitTextToStrings(const WideString& string, Vector2 const& targ
         {
             StringUtils::BiDiReorder(line, *params, fromPos);
         }
+        CleanLine(line, true);
         resultVector.push_back(line);
         currentWidth = 0.f;
         lastPossibleBreak = 0;
@@ -1018,6 +1021,7 @@ void TextBlock::SplitTextToStrings(const WideString& string, Vector2 const& targ
         {
             StringUtils::BiDiReorder(line, *params, fromPos);
         }
+        CleanLine(line, false);
         resultVector.push_back(line);
     }
 
@@ -1058,6 +1062,7 @@ void TextBlock::SplitTextBySymbolsToStrings(const WideString& string, Vector2 co
             {
                 StringUtils::BiDiReorder(currentLine, *params, currentLineStart);
             }
+            CleanLine(currentLine);
             resultVector.push_back(currentLine);
 
             currentLineStart = pos + 1;
@@ -1070,6 +1075,7 @@ void TextBlock::SplitTextBySymbolsToStrings(const WideString& string, Vector2 co
             {
                 StringUtils::BiDiReorder(currentLine, *params, currentLineStart);
             }
+            CleanLine(currentLine);
             resultVector.push_back(currentLine);
 
             currentLineStart = pos + 2;
@@ -1087,6 +1093,7 @@ void TextBlock::SplitTextBySymbolsToStrings(const WideString& string, Vector2 co
             {
                 StringUtils::BiDiReorder(currentLine, *params, currentLineStart);
             }
+            CleanLine(currentLine);
             resultVector.push_back(currentLine);
 
             currentLineStart = pos;
@@ -1104,7 +1111,37 @@ void TextBlock::SplitTextBySymbolsToStrings(const WideString& string, Vector2 co
     {
         StringUtils::BiDiReorder(currentLine, *params, currentLineStart);
     }
+    CleanLine(currentLine);
     resultVector.push_back(currentLine);
+}
+
+void TextBlock::CleanLine(WideString& string, bool trimRight)
+{
+    if (trimRight)
+    {
+        StringUtils::TrimRight(string);
+    }
+
+    WideString::iterator it = string.begin();
+    WideString::iterator end = string.end();
+    while(it != end)
+    {
+        switch (*it)
+        {
+        case L'\n':
+        case L'\r':
+        case 0x200B:
+            it = string.erase(it);
+            end = string.end();
+            break;
+        case L'\t':
+        case 0xA0:
+            *it = L' ';
+        default:
+            ++it;
+            break;
+        }
+    }
 }
 
 };

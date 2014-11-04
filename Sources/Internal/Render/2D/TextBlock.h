@@ -137,7 +137,14 @@ protected:
      * \param params Pointer to struct with BiDi metadata, if NULL then disable BiDi reorder for splited lines.
      */
     void SplitTextBySymbolsToStrings(const WideString & string, const Vector2 & targetRectSize, Vector<WideString> & resultVector, StringUtils::sBiDiParams* params = NULL);
-    
+
+    /**
+     * \brief Clean line.
+     * \param [in,out] string The string.
+     * \param trimRight (Optional) true to trim right.
+     */
+    void CleanLine(WideString& string, bool trimRight = false);
+
     Vector2 rectSize;
     bool needRedraw;
     Vector2 requestedSize;

@@ -30,7 +30,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define __DAVAENGINE_STRING_UTILS__
 
 #include "Base/BaseTypes.h"
-#include <fribidi/fribidi-bidi-types.h>
 
 namespace DAVA
 {
@@ -78,7 +77,7 @@ void TrimLeft(WideString& string);
 * \brief Trim right.
 * \param [in,out] string The string.
 */
-static void TrimRight(WideString& string);
+void TrimRight(WideString& string);
 
 /**
  * \brief Query if 't' is space.
@@ -95,7 +94,7 @@ struct sBiDiParams
 {
     inline sBiDiParams()
     {
-        base_dir = FRIBIDI_PAR_ON;
+        base_dir = 0;
         embedding_levels = NULL;
         bidi_types = NULL;
     }
