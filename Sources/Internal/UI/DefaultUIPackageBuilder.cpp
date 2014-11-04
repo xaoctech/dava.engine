@@ -57,10 +57,14 @@ namespace DAVA
         return result;
     }
     
-    UIControl *DefaultUIPackageBuilder::BeginControlWithClass(const String className)
+    UIControl *DefaultUIPackageBuilder::BeginControlWithClass(const String &className)
     {
         UIControl *control = ObjectFactory::Instance()->New<UIControl>(className);
-        control->RemoveAllControls();
+        if (className != "UITextField")//TODO: fix internal staticText for Win\Mac
+        {
+            control->RemoveAllControls();
+        }
+
         if (!control)
             Logger::Warning("[DefaultUIControlFactory::CreateControl] Can't create control with class name \"%s\"", className.c_str());
 
@@ -68,11 +72,14 @@ namespace DAVA
         return control;
     }
     
-    UIControl *DefaultUIPackageBuilder::BeginControlWithCustomClass(const String customClassName, const String className)
+    UIControl *DefaultUIPackageBuilder::BeginControlWithCustomClass(const String &customClassName, const String &className)
     {
         UIControl *control = ObjectFactory::Instance()->New<UIControl>(customClassName);
-        control->RemoveAllControls();
-        
+        if (className != "UITextField")//TODO: fix internal staticText for Win\Mac
+        {
+            control->RemoveAllControls();
+        }
+
         if (!control)
             control = ObjectFactory::Instance()->New<UIControl>(className); // TODO: remove
         
