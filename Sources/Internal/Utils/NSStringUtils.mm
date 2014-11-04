@@ -33,21 +33,21 @@
 namespace DAVA
 {
 
-    NSString *NSStringFromString(const DAVA::String &str) {
-        NSStringEncoding encoding = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingASCII);
-        NSString *nsstring = [[[NSString alloc] initWithBytes:str.c_str()
-                                                       length:str.length()
-                                                     encoding:encoding] autorelease];
-        return nsstring;
-    }
+NSString *NSStringFromString(const DAVA::String &str) {
+    NSStringEncoding encoding = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingASCII);
+    NSString *nsstring = [[[NSString alloc] initWithBytes:str.c_str()
+                                                   length:str.length()
+                                                 encoding:encoding] autorelease];
+    return nsstring;
+}
 
-    NSString *NSStringFromWideString(const DAVA::WideString &str) {
-        NSStringEncoding encoding = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingUTF32LE);
-        NSString *nsstring = [[[NSString alloc] initWithBytes:(const char *) str.c_str()
-                                                       length:str.length() * sizeof(wchar_t)
-                                                     encoding:encoding] autorelease];
-        return nsstring;
-    }
+NSString *NSStringFromWideString(const DAVA::WideString &str) {
+    NSStringEncoding encoding = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingUTF32LE);
+    NSString *nsstring = [[[NSString alloc] initWithBytes:(const char *) str.c_str()
+                                                   length:str.length() * sizeof(wchar_t)
+                                                 encoding:encoding] autorelease];
+    return nsstring;
+}
 
 }
 
