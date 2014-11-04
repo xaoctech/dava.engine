@@ -39,7 +39,11 @@ namespace DAVA
 void StringUtils::GetLineBreaks(const WideString& string, Vector<uint8>& breaks, const char8* locale)
 {
     breaks.resize(string.length(), LB_NOBREAK); // By default all characters not breakable
+#if defined(__DAVAENGINE_WIN32__) // sizeof(wchar_t) == 2
     set_linebreaks_utf16(reinterpret_cast<const utf16_t*>(string.c_str()), string.length(), locale, reinterpret_cast<char*>(&breaks.front()));
+#else
+    set_linebreaks_utf32(reinterpret_cast<const utf32_t*>(string.c_str()), string.length(), locale, reinterpret_cast<char*>(&breaks.front()));
+#endif
 }
 
 void StringUtils::Trim(WideString& string)
@@ -85,6 +89,7 @@ bool StringUtils::BiDiPrepare(const WideString& logicalStr, WideString& shapeStr
         SAFE_DELETE(logical);
         return false;
     }
+    logical[fribidi_len] = 0;
 
     DVASSERT(!params.bidi_types);
     params.bidi_types = new FriBidiCharType[fribidi_len];
@@ -96,7 +101,7 @@ bool StringUtils::BiDiPrepare(const WideString& logicalStr, WideString& shapeStr
 
     FriBidiChar* visual = new FriBidiChar[fribidi_len + 1];
     fribidi_get_bidi_types(logical, fribidi_len, params.bidi_types);
-    params.bidi_types[fribidi_len - 1] = params.bidi_types[fribidi_len - 2];
+    //params.bidi_types[fribidi_len - 1] = params.bidi_types[fribidi_len - 2];
 
     DVASSERT(!params.embedding_levels);
     params.embedding_levels = new FriBidiLevel[fribidi_len];
@@ -328,120 +333,4 @@ bool StringUtils::BiDiTransformEx(WideString const& logicalStr, WideString& shap
     return (status != 0) && (max_level + 1 != 0);
 }
 
-}
-
-
-FriBidiLevel log2vis(const FriBidiChar *str, const FriBidiStrIndex len, FriBidiParType *pbase_dir, FriBidiChar *visual_str, FriBidiStrIndex *positions_L_to_V, FriBidiStrIndex *positions_V_to_L, FriBidiLevel *embedding_levels)
-{
-    static FriBidiFlags flags = FRIBIDI_FLAGS_DEFAULT | FRIBIDI_FLAGS_ARABIC;
-
-    register FriBidiStrIndex i;
-    FriBidiLevel max_level = 0;
-    fribidi_boolean private_V_to_L = false;
-    fribidi_boolean private_embedding_levels = false;
-    fribidi_boolean status = false;
-    FriBidiArabicProp *ar_props = NULL;
-    FriBidiCharType *bidi_types = NULL;
-
-    if (len == 0)
-    {
-        status = true;
-        goto out;
-    }
-
-    bidi_types = (FriBidiCharType*)malloc(len * sizeof bidi_types[0]);
-    if (!bidi_types)
-    {
-        goto out;
-    }
-
-    fribidi_get_bidi_types(str, len, bidi_types);
-
-    if (!embedding_levels)
-    {
-        embedding_levels = (FriBidiLevel*)malloc(len * sizeof embedding_levels[0]);
-        if (!embedding_levels)
-        {
-            goto out;
-        }
-        private_embedding_levels = true;
-    }
-
-    max_level = fribidi_get_par_embedding_levels(bidi_types, len, pbase_dir, embedding_levels) - 1;
-    if (max_level < 0)
-    {
-        goto out;
-    }
-
-    /* If l2v is to be calculated we must have v2l as well. If it is not
-    given by the caller, we have to make a private instance of it. */
-    if (positions_L_to_V && !positions_V_to_L)
-    {
-        positions_V_to_L = (FriBidiStrIndex *)malloc(sizeof(FriBidiStrIndex) * len);
-        if (!positions_V_to_L)
-        {
-            goto out;
-        }
-        private_V_to_L = true;
-    }
-
-    /* Set up the ordering array to identity order */
-    if (positions_V_to_L)
-    {
-        for (i = 0; i < len; i++)
-        {
-            positions_V_to_L[i] = i;
-        }
-    }
-
-    if (visual_str)
-    {
-        memcpy(visual_str, str, len * sizeof(*visual_str));
-
-        /* Arabic joining */
-        ar_props = (FriBidiArabicProp*) malloc (len * sizeof ar_props[0]);
-        fribidi_get_joining_types(str, len, ar_props);
-        fribidi_join_arabic(bidi_types, len, embedding_levels, ar_props);
-
-        fribidi_shape(flags, embedding_levels, len, ar_props, visual_str);
-    }
-
-    /* line breaking goes here, but we assume one line in this function */
-
-    /* and this should be called once per line, but again, we assume one
-    * line in this deprecated function */
-    status = fribidi_reorder_line(flags, bidi_types, len, 0, *pbase_dir, embedding_levels, visual_str, positions_V_to_L);
-
-    /* Convert the v2l list to l2v */
-    if (positions_L_to_V)
-    {
-        for (i = 0; i < len; i++)
-            positions_L_to_V[i] = -1;
-        for (i = 0; i < len; i++)
-            positions_L_to_V[positions_V_to_L[i]] = i;
-    }
-
-out:
-
-    if (private_V_to_L)
-    {
-        free(positions_V_to_L);
-    }
-
-    if (private_embedding_levels)
-    {
-        free(embedding_levels);
-    }
-
-    if (ar_props)
-    {
-        free(ar_props);
-    }
-
-    if (bidi_types)
-    {
-        free(bidi_types);
-    }
-
-    return status ? max_level + 1 : 0;
 }

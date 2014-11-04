@@ -124,13 +124,13 @@ namespace DAVA
 		// Set natural alignment if need
 		switch (textFieldHolder->textField.contentHorizontalAlignment) {
 			case UIControlContentHorizontalAlignmentLeft:
-				textFieldHolder->textField.textAlignment = textFieldHolder.useRtlAlign ? NSTextAlignmentNatural : NSTextAlignmentLeft;
+				textFieldHolder->textField.textAlignment = textFieldHolder->useRtlAlign ? NSTextAlignmentNatural : NSTextAlignmentLeft;
 				break;
 			case UIControlContentVerticalAlignmentCenter:
 				textFieldHolder->textField.textAlignment = NSTextAlignmentCenter;
 				break;
 			case UIControlContentHorizontalAlignmentRight:
-				textFieldHolder->textField.textAlignment = textFieldHolder.useRtlAlign ? NSTextAlignmentNatural : NSTextAlignmentRight;
+				textFieldHolder->textField.textAlignment = textFieldHolder->useRtlAlign ? NSTextAlignmentNatural : NSTextAlignmentRight;
 				break;
 		}
     }
@@ -182,10 +182,10 @@ namespace DAVA
 		// Set natural alignment if need
 		switch (textFieldHolder->textField.contentHorizontalAlignment) {
 			case UIControlContentHorizontalAlignmentLeft:
-				textFieldHolder->textField.textAlignment = textFieldHolder.useRtlAlign ? NSTextAlignmentNatural : NSTextAlignmentLeft;
+				textFieldHolder->textField.textAlignment = textFieldHolder->useRtlAlign ? NSTextAlignmentNatural : NSTextAlignmentLeft;
 				break;
 			case UIControlContentHorizontalAlignmentRight:
-				textFieldHolder->textField.textAlignment = textFieldHolder.useRtlAlign ? NSTextAlignmentNatural : NSTextAlignmentRight;
+				textFieldHolder->textField.textAlignment = textFieldHolder->useRtlAlign ? NSTextAlignmentNatural : NSTextAlignmentRight;
 				break;
 		}
 	}
@@ -193,7 +193,7 @@ namespace DAVA
 	bool UITextFieldiPhone::GetTextUseRtlAlign() const
 	{
 		UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
-		return textFieldHolder.useRtlAlign == YES;
+		return textFieldHolder->useRtlAlign == YES;
 	}
     
     void UITextFieldiPhone::OpenKeyboard()

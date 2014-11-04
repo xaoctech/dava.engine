@@ -46,7 +46,7 @@ namespace StringUtils
 *
 * \brief Values that represent line break types.
 */
-static enum eLineBreakType
+enum eLineBreakType
 {
     LB_MUSTBREAK = 0,   /**< Break is mandatory */
     LB_ALLOWBREAK,      /**< Break is allowed */

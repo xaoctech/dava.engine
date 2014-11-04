@@ -1112,13 +1112,9 @@ void TextBlock::SplitTextToStrings(WideString const& shapedText, WideString cons
         char16 ch = shapedText[pos];
         uint8 canBreak = breaks[pos];
 
-        if (canBreak == StringUtils::LB_MUSTBREAK) // If symbol is line breaker then split string
+        if (canBreak == StringUtils::LB_MUSTBREAK && pos < textLength - 1) // If symbol is line breaker then split string
         {
             uint32 len = pos - fromPos + 1;
-//            if (StringUtils::IsWhitespace(ch))
-//            {
-//                to--;
-//            }
             WideString str = shapedText.substr(fromPos, len);
             StringUtils::BiDiReorder(str, params, fromPos, len);
             resultVector.push_back(str);
