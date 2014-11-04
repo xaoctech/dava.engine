@@ -15,6 +15,7 @@ set ( FRAMEWORK_DEFINITIONS
 -DDAVA_FMOD
 )
 
+set_property( GLOBAL PROPERTY USE_FOLDERS ON )
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDAVA_DEBUG")
 
@@ -128,9 +129,6 @@ elseif( WIN32 )
         list ( APPEND LIST_SHARED_LIBRARIES_RELEASE ${LIB_LIST}  )
 
         set  ( LIST_SHARED_LIBRARIES "opengl32.lib" "ws2_32.lib" "winmm.lib" "wldap32.lib" "iphlpapi.lib"  )
-
-        set( CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG} /MTd /MP"  )
-        set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT /MP /fp:fast /Zi /GS- /D _SECURE_SCL=0" )
   
     endif()
 
