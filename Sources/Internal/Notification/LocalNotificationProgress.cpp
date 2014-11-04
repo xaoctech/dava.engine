@@ -26,37 +26,46 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-#ifndef __DAVAENGINE_UTILS_ANDROID_H__
-#define __DAVAENGINE_UTILS_ANDROID_H__
-
-#include "Base/BaseTypes.h"
-#if defined(__DAVAENGINE_ANDROID__)
-#include "JniExtensions.h"
+#include "Notification/LocalNotificationProgress.h"
 
 namespace DAVA
 {
 
-class JniUtils: public JniExtension
+LocalNotificationProgress::LocalNotificationProgress()
+    : LocalNotification()
+    , total(0)
+    , progress(0)
 {
-public:
-	bool DisableSleepTimer();
-	bool EnableSleepTimer();
-	void OpenURL(const String& url);
-	String GenerateGUID();
 
-protected:
-	virtual jclass GetJavaClass() const;
-	virtual const char* GetJavaClassName() const;
+}
+    
+LocalNotificationProgress::~LocalNotificationProgress()
+{
+	impl->Hide();
+}
 
-public:
-	static jclass gJavaClass;
-	static const char* gJavaClassName;
-};
+void LocalNotificationProgress::SetProgressCurrent(const uint32 _currentProgress)
+{
+	if (progress != _currentProgress)
+	{
+		isChanged = true;
+		progress = _currentProgress;
+	}
+}
 
-};
+void LocalNotificationProgress::SetProgressTotal(const uint32 _total)
+{
+	if (total != _total)
+	{
+		isChanged = true;
+		total = _total;
+	}
+}
 
-#endif //__DAVAENGINE_ANDROID__
+void LocalNotificationProgress::ImplShow()
+{
+	impl->ShowProgress(title, text, total, progress);
+}
 
-#endif // __DAVAENGINE_UTILS_H__
+}
 

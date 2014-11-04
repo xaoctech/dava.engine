@@ -26,37 +26,15 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-#ifndef __DAVAENGINE_UTILS_ANDROID_H__
-#define __DAVAENGINE_UTILS_ANDROID_H__
-
-#include "Base/BaseTypes.h"
-#if defined(__DAVAENGINE_ANDROID__)
-#include "JniExtensions.h"
+#include "Notification/LocalNotificationText.h"
 
 namespace DAVA
 {
 
-class JniUtils: public JniExtension
+void LocalNotificationText::ImplShow()
 {
-public:
-	bool DisableSleepTimer();
-	bool EnableSleepTimer();
-	void OpenURL(const String& url);
-	String GenerateGUID();
+	impl->ShowText(title, text);
+}
 
-protected:
-	virtual jclass GetJavaClass() const;
-	virtual const char* GetJavaClassName() const;
-
-public:
-	static jclass gJavaClass;
-	static const char* gJavaClassName;
-};
-
-};
-
-#endif //__DAVAENGINE_ANDROID__
-
-#endif // __DAVAENGINE_UTILS_H__
+}
 

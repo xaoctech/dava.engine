@@ -82,7 +82,7 @@ public:
         \returns true if the specified text range should be replaced; otherwise, false to keep the old text. Default implementation returns true.
 	 */
 	virtual bool TextFieldKeyPressed(UITextField * textField, int32 replacementLocation, int32 replacementLength, WideString & replacementString);
-    
+
     virtual bool IsTextFieldShouldSetFocusedOnAppear(UITextField * textField);
     virtual bool IsTextFieldCanLostFocus(UITextField * textField);
 	

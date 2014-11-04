@@ -26,37 +26,26 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-#ifndef __DAVAENGINE_UTILS_ANDROID_H__
-#define __DAVAENGINE_UTILS_ANDROID_H__
-
-#include "Base/BaseTypes.h"
-#if defined(__DAVAENGINE_ANDROID__)
-#include "JniExtensions.h"
+#import "NSStringUtils.h"
+#import <Foundation/Foundation.h>
 
 namespace DAVA
 {
 
-class JniUtils: public JniExtension
-{
-public:
-	bool DisableSleepTimer();
-	bool EnableSleepTimer();
-	void OpenURL(const String& url);
-	String GenerateGUID();
+    NSString *NSStringFromString(const DAVA::String &str) {
+        NSStringEncoding encoding = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingASCII);
+        NSString *nsstring = [[[NSString alloc] initWithBytes:str.c_str()
+                                                       length:str.length()
+                                                     encoding:encoding] autorelease];
+        return nsstring;
+    }
 
-protected:
-	virtual jclass GetJavaClass() const;
-	virtual const char* GetJavaClassName() const;
+    NSString *NSStringFromWideString(const DAVA::WideString &str) {
+        NSStringEncoding encoding = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingUTF32LE);
+        NSString *nsstring = [[[NSString alloc] initWithBytes:(const char *) str.c_str()
+                                                       length:str.length() * sizeof(wchar_t)
+                                                     encoding:encoding] autorelease];
+        return nsstring;
+    }
 
-public:
-	static jclass gJavaClass;
-	static const char* gJavaClassName;
-};
-
-};
-
-#endif //__DAVAENGINE_ANDROID__
-
-#endif // __DAVAENGINE_UTILS_H__
-
+}
