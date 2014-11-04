@@ -26,54 +26,46 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "Notification/LocalNotificationProgress.h"
 
-
-#ifndef __SCENE_SAVER_H__
-#define __SCENE_SAVER_H__
-
-#include "DAVAEngine.h"
-#include "CommandLine/SceneUtils/SceneUtils.h"
-
-using namespace DAVA;
-
-class SceneSaver
+namespace DAVA
 {
-public:
-	SceneSaver();
-	virtual ~SceneSaver();
-    
-    void SetInFolder(const FilePath &folderPathname);
-    void SetOutFolder(const FilePath &folderPathname);
-    
-    void SaveFile(const String &fileName, Set<String> &errorLog);
-	void ResaveFile(const String &fileName, Set<String> &errorLog);
-    void SaveScene(Scene *scene, const FilePath &fileName, Set<String> &errorLog);
-    
-    void EnableCopyConverted(bool enabled);
-    
-protected:
-    
-    void ReleaseTextures();
 
-    void CopyTextures(Scene *scene);
-    void CopyTexture(const FilePath &texturePathname);
+LocalNotificationProgress::LocalNotificationProgress()
+    : LocalNotification()
+    , total(0)
+    , progress(0)
+{
 
-	void CopyReferencedObject(Entity *node);
-	void CopyEffects(Entity *node);
-	void CopyEmitter(ParticleEmitter *emitter);
-
-	void CopyCustomColorTexture(Scene *scene, const FilePath & sceneFolder, Set<String> &errorLog);
-
-protected:
+}
     
-    SceneUtils sceneUtils;
-    
-    TexturesMap texturesForSave;
-    bool copyConverted;
-    
-    DAVA::Set<DAVA::FilePath> effectFolders;
-};
+LocalNotificationProgress::~LocalNotificationProgress()
+{
+	impl->Hide();
+}
 
+void LocalNotificationProgress::SetProgressCurrent(const uint32 _currentProgress)
+{
+	if (progress != _currentProgress)
+	{
+		isChanged = true;
+		progress = _currentProgress;
+	}
+}
 
+void LocalNotificationProgress::SetProgressTotal(const uint32 _total)
+{
+	if (total != _total)
+	{
+		isChanged = true;
+		total = _total;
+	}
+}
 
-#endif // __SCENE_SAVER_H__
+void LocalNotificationProgress::ImplShow()
+{
+	impl->ShowProgress(title, text, total, progress);
+}
+
+}
+

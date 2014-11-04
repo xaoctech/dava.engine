@@ -28,52 +28,75 @@
 
 
 
-#ifndef __SCENE_SAVER_H__
-#define __SCENE_SAVER_H__
+#include "Notification/LocalNotification.h"
+#include "Utils/Utils.h"
+#include "Thread/LockGuard.h"
 
-#include "DAVAEngine.h"
-#include "CommandLine/SceneUtils/SceneUtils.h"
-
-using namespace DAVA;
-
-class SceneSaver
+namespace DAVA
 {
-public:
-	SceneSaver();
-	virtual ~SceneSaver();
-    
-    void SetInFolder(const FilePath &folderPathname);
-    void SetOutFolder(const FilePath &folderPathname);
-    
-    void SaveFile(const String &fileName, Set<String> &errorLog);
-	void ResaveFile(const String &fileName, Set<String> &errorLog);
-    void SaveScene(Scene *scene, const FilePath &fileName, Set<String> &errorLog);
-    
-    void EnableCopyConverted(bool enabled);
-    
-protected:
-    
-    void ReleaseTextures();
 
-    void CopyTextures(Scene *scene);
-    void CopyTexture(const FilePath &texturePathname);
-
-	void CopyReferencedObject(Entity *node);
-	void CopyEffects(Entity *node);
-	void CopyEmitter(ParticleEmitter *emitter);
-
-	void CopyCustomColorTexture(Scene *scene, const FilePath & sceneFolder, Set<String> &errorLog);
-
-protected:
+LocalNotification::LocalNotification()
+	: isChanged(false)
+	, isVisible(true)
+	, title(L"")
+	, text(L"")
+{
+    impl = LocalNotificationImpl::Create(GenerateGUID());
+}
     
-    SceneUtils sceneUtils;
-    
-    TexturesMap texturesForSave;
-    bool copyConverted;
-    
-    DAVA::Set<DAVA::FilePath> effectFolders;
-};
+LocalNotification::~LocalNotification()
+{
+    delete impl;
+}
 
+void LocalNotification::SetAction(const Message& msg)
+{
+	action = msg;
+	impl->SetAction(L"");
+}
 
+void LocalNotification::SetTitle(const WideString &_title)
+{
+	if (_title != title)
+	{
+		isChanged = true;
+		title = _title;
+	}
+}
 
-#endif // __SCENE_SAVER_H__
+void LocalNotification::SetText(const WideString &_text)
+{
+	if (_text != text)
+	{
+		isChanged = true;
+		text = _text;
+	}
+}
+
+void LocalNotification::Show()
+{
+	isVisible = true;
+	isChanged = true;
+}
+
+void LocalNotification::Hide()
+{
+	isVisible = false;
+	isChanged = true;
+}
+
+void LocalNotification::Update()
+{
+	if (false == isChanged)
+		return;
+
+	if (true == isVisible)
+		ImplShow();
+	else
+		impl->Hide();
+
+	isChanged = false;
+}
+
+}
+
