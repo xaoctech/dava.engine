@@ -409,7 +409,7 @@ const WideString & UITextField::GetText()
 	return text;
 }
     
-Font* UITextField::GetFont()
+Font* UITextField::GetFont() const
 {
 #if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_IPHONE__)
     return NULL;
@@ -814,14 +814,14 @@ WideString UITextField::GetVisibleText() const
     return text;
 }
 	
-UITextField::eAutoCapitalizationType UITextField::GetAutoCapitalizationType() const
+int32 UITextField::GetAutoCapitalizationType() const
 {
 	return autoCapitalizationType;
 }
 
-void UITextField::SetAutoCapitalizationType(eAutoCapitalizationType value)
+void UITextField::SetAutoCapitalizationType(int32 value)
 {
-	autoCapitalizationType = value;
+	autoCapitalizationType = (eAutoCapitalizationType)value;
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->SetAutoCapitalizationType(value);
 #elif defined(__DAVAENGINE_ANDROID__)
@@ -829,14 +829,14 @@ void UITextField::SetAutoCapitalizationType(eAutoCapitalizationType value)
 #endif
 }
 
-UITextField::eAutoCorrectionType UITextField::GetAutoCorrectionType() const
+int32 UITextField::GetAutoCorrectionType() const
 {
 	return autoCorrectionType;
 }
 
-void UITextField::SetAutoCorrectionType(eAutoCorrectionType value)
+void UITextField::SetAutoCorrectionType(int32 value)
 {
-	autoCorrectionType = value;
+	autoCorrectionType = (eAutoCorrectionType)value;
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->SetAutoCorrectionType(value);
 #elif defined(__DAVAENGINE_ANDROID__)
@@ -844,14 +844,14 @@ void UITextField::SetAutoCorrectionType(eAutoCorrectionType value)
 #endif
 }
 
-UITextField::eSpellCheckingType UITextField::GetSpellCheckingType() const
+int32 UITextField::GetSpellCheckingType() const
 {
 	return spellCheckingType;
 }
 
-void UITextField::SetSpellCheckingType(eSpellCheckingType value)
+void UITextField::SetSpellCheckingType(int32 value)
 {
-	spellCheckingType = value;
+	spellCheckingType = (eSpellCheckingType)value;
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->SetSpellCheckingType(value);
 #elif defined(__DAVAENGINE_ANDROID__)
@@ -859,14 +859,14 @@ void UITextField::SetSpellCheckingType(eSpellCheckingType value)
 #endif
 }
 
-UITextField::eKeyboardAppearanceType UITextField::GetKeyboardAppearanceType() const
+int32 UITextField::GetKeyboardAppearanceType() const
 {
 	return keyboardAppearanceType;
 }
 
-void UITextField::SetKeyboardAppearanceType(eKeyboardAppearanceType value)
+void UITextField::SetKeyboardAppearanceType(int32 value)
 {
-	keyboardAppearanceType = value;
+	keyboardAppearanceType = (eKeyboardAppearanceType)value;
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->SetKeyboardAppearanceType(value);
 #elif defined(__DAVAENGINE_ANDROID__)
@@ -874,14 +874,14 @@ void UITextField::SetKeyboardAppearanceType(eKeyboardAppearanceType value)
 #endif
 }
 
-UITextField::eKeyboardType UITextField::GetKeyboardType() const
+int32 UITextField::GetKeyboardType() const
 {
 	return keyboardType;
 }
 
-void UITextField::SetKeyboardType(eKeyboardType value)
+void UITextField::SetKeyboardType(int32 value)
 {
-	keyboardType = value;
+	keyboardType = (eKeyboardType)value;
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->SetKeyboardType(value);
 #elif defined(__DAVAENGINE_ANDROID__)
@@ -889,14 +889,14 @@ void UITextField::SetKeyboardType(eKeyboardType value)
 #endif
 }
 
-UITextField::eReturnKeyType UITextField::GetReturnKeyType() const
+int32 UITextField::GetReturnKeyType() const
 {
 	return returnKeyType;
 }
 
-void UITextField::SetReturnKeyType(eReturnKeyType value)
+void UITextField::SetReturnKeyType(int32 value)
 {
-	returnKeyType = value;
+	returnKeyType = (eReturnKeyType)value;
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->SetReturnKeyType(value);
 #elif defined(__DAVAENGINE_ANDROID__)
@@ -990,6 +990,26 @@ void UITextField::WillBecomeInvisible()
 #else
     staticText->SetVisible(false);
 #endif
+}
+
+String UITextField::GetFontPresetName() const
+{
+    Font *font = GetFont();
+    if (!font)
+        return "";
+    return FontManager::Instance()->GetFontName(font);
+}
+
+void UITextField::SetFontPresetName( const String &presetName )
+{
+    Font *font = NULL;
+
+    if (!presetName.empty())
+    {
+        font = FontManager::Instance()->GetFont(presetName);
+    }
+
+    SetFont(font);
 }
 
 }; // namespace

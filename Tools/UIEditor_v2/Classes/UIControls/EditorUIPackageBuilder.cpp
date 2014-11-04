@@ -68,19 +68,27 @@ UIPackage * EditorUIPackageBuilder::ProcessImportedPackage(const String &package
     return result;
 }
 
-UIControl *EditorUIPackageBuilder::BeginControlWithClass(const String className)
+UIControl *EditorUIPackageBuilder::BeginControlWithClass(const String &className)
 {
     UIControl *control = ObjectFactory::Instance()->New<UIControl>(className);
-    control->RemoveAllControls();
+    if (className != "UITextField")//TODO: fix internal staticText for Win\Mac
+    {
+        control->RemoveAllControls();
+    }
+
     controlsStack.push_back(ControlDescr(new ControlNode(control), true));
     return control;
 }
 
-UIControl *EditorUIPackageBuilder::BeginControlWithCustomClass(const String customClassName, const String className)
+UIControl *EditorUIPackageBuilder::BeginControlWithCustomClass(const String &customClassName, const String &className)
 {
     UIControl *control = ObjectFactory::Instance()->New<UIControl>(className);
     control->SetCustomControlClassName(customClassName);
-    control->RemoveAllControls();
+    if (className != "UITextField")//TODO: fix internal staticText for Win\Mac
+    {
+        control->RemoveAllControls();
+    }
+
     controlsStack.push_back(ControlDescr(new ControlNode(control), true));
     return control;
 }
