@@ -114,7 +114,6 @@ UITextField::UITextField(const Rect &rect, bool rectInAbsoluteCoordinates/*= fal
     staticText = new UIStaticText(Rect(0,0,GetRect().dx, GetRect().dy));
     staticText->SetVisible(false);
     AddControl(staticText);
-    
     staticText->SetSpriteAlign(ALIGN_LEFT | ALIGN_BOTTOM);
 #endif
     
@@ -142,18 +141,18 @@ UITextField::UITextField()
 #if defined (__DAVAENGINE_ANDROID__)
 	textFieldAndroid = new UITextFieldAndroid(this);
     textFieldAndroid->SetVisible(false);
+    SetTextUseRtlAlign(false);
 #elif defined(__DAVAENGINE_IPHONE__)
 	textFieldiPhone = new UITextFieldiPhone(this);
     textFieldiPhone->SetVisible(false);
+    SetTextUseRtlAlign(false);
 #else
     staticText = new UIStaticText(Rect(0,0,GetRect().dx, GetRect().dy));
     staticText->SetVisible(false);
     AddControl(staticText);
-    
     staticText->SetSpriteAlign(ALIGN_LEFT | ALIGN_BOTTOM);
 #endif
     
-    SetTextUseRtlAlign(false);
     cursorTime = 0;
     showCursor = true;
 }

@@ -357,7 +357,7 @@ bool UIButtonMetadata::GetTextUseRtlAlignForState(UIControl::eControlState state
 		return referenceButtonText->GetTextUseRtlAlign();
     }
     
-    return true;
+    return false;
 }
 
 void UIButtonMetadata::UpdatePropertyDirtyFlagForTextUseRtlAlign()
@@ -759,7 +759,7 @@ bool UIButtonMetadata::GetTextUseRtlAlign()
 {
 	if (!VerifyActiveParamID())
 	{
-		return true;
+		return false;
 	}
 	
 	return GetTextUseRtlAlignForState(this->uiControlStates[GetActiveStateIndex()]);

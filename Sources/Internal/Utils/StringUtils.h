@@ -90,42 +90,43 @@ inline bool IsWhitespace(char16 t)
     return iswspace(static_cast<wint_t>(t)) != 0;
 }
 
+/** \brief A BiDi trasformation metadata. */
 struct sBiDiParams
 {
-    sBiDiParams()
+    inline sBiDiParams()
     {
         base_dir = FRIBIDI_PAR_ON;
         embedding_levels = NULL;
         bidi_types = NULL;
-        processStr = NULL;
     }
-    ~sBiDiParams()
+    inline ~sBiDiParams()
     {
         SAFE_DELETE(embedding_levels);
         SAFE_DELETE(bidi_types);
-        SAFE_DELETE(processStr);
     }
-    FriBidiParType base_dir;
-    FriBidiLevel *embedding_levels;
-    FriBidiCharType *bidi_types;
-    FriBidiChar *processStr;
+    uint32 base_dir; // FriBidiParType
+    int8 *embedding_levels; // FriBidiLevel
+    uint32 *bidi_types; //FriBidiCharType
 };
 
-bool BiDiPrepare(const WideString& logicalStr, WideString& shapeStr, WideString& visualStr, sBiDiParams& params, bool* isRTL);
-
-bool BiDiReorder(WideString& string, sBiDiParams& params, uint32 lineOffset, uint32 lineLength);
-
 /**
- * \brief Bi-directional text transform.
- * \param [in,out] string The string.
- * \param [out] isRTL Sets true if given string is Right-to-Left.
- * \param [out] logical2virtual (Optional) If non-null, pointer to the logical to virtual indeces list.
- * \param [out] virtual2logical (Optional) If non-null, pointer to the virtual to logical indeces list.
+ * \brief Prepare string for BiDi transformation (create metadata and shape string).
+ * \param [in] logicalStr The logical string.
+ * \param [out] preparedStr The prepared string.
+ * \param [out] params Struct with metadata for BiDi transformation.
+ * \param [out] isRTL If non-null, store in isRTL true if line contains Right-to-left text.
  * \return true if it succeeds, false if it fails.
  */
-bool BiDiTransform(WideString& string, bool& isRTL, Vector<int32>* logical2virtual = 0, Vector<int32>* virtual2logical = 0);
+bool BiDiPrepare(const WideString& logicalStr, WideString& preparedStr, sBiDiParams& params, bool* isRTL);
 
-bool BiDiTransformEx(const WideString& logicalStr, WideString& shapedStr, WideString& visualStr, bool& isRTL, Vector<int32>* logical2virtual = 0, Vector<int32>* virtual2logical = 0);
+/**
+ * \brief Reorder characters in string based on BiDi metadata.
+ * \param [in,out] string The string.
+ * \param [in] params Struct with metadata for BiDi transformation.
+ * \param [in] lineOffset The offset from first character in paragraph.
+ * \return true if it succeeds, false if it fails.
+ */
+bool BiDiReorder(WideString& string, const sBiDiParams& params, const uint32 lineOffset);
 
 }
 }
