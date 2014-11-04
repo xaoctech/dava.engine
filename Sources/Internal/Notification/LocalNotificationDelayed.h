@@ -27,36 +27,30 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_UTILS_ANDROID_H__
-#define __DAVAENGINE_UTILS_ANDROID_H__
 
-#include "Base/BaseTypes.h"
-#if defined(__DAVAENGINE_ANDROID__)
-#include "JniExtensions.h"
+#ifndef __DAVAENGINE_LOCAL_NOTIFICATION_DELAYED_H__
+#define __DAVAENGINE_LOCAL_NOTIFICATION_DELAYED_H__
+
+#include "Notification/LocalNotification.h"
 
 namespace DAVA
 {
 
-class JniUtils: public JniExtension
+class LocalNotificationDelayed : public LocalNotification
 {
 public:
-	bool DisableSleepTimer();
-	bool EnableSleepTimer();
-	void OpenURL(const String& url);
-	String GenerateGUID();
+    void SetDelaySeconds(int value) { delaySeconds = value; }
+    int GetDelaySeconds() { return delaySeconds; }
+    void RemoveAllDelayedNotifications();
+    void Post();
 
-protected:
-	virtual jclass GetJavaClass() const;
-	virtual const char* GetJavaClassName() const;
+private:
+	virtual void ImplShow();
 
-public:
-	static jclass gJavaClass;
-	static const char* gJavaClassName;
+private:
+    int delaySeconds;
 };
 
-};
+}
 
-#endif //__DAVAENGINE_ANDROID__
-
-#endif // __DAVAENGINE_UTILS_H__
-
+#endif // __NOTIFICATION_H__
