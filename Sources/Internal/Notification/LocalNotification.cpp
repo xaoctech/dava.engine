@@ -27,36 +27,76 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_UTILS_ANDROID_H__
-#define __DAVAENGINE_UTILS_ANDROID_H__
 
-#include "Base/BaseTypes.h"
-#if defined(__DAVAENGINE_ANDROID__)
-#include "JniExtensions.h"
+#include "Notification/LocalNotification.h"
+#include "Utils/Utils.h"
+#include "Thread/LockGuard.h"
 
 namespace DAVA
 {
 
-class JniUtils: public JniExtension
+LocalNotification::LocalNotification()
+	: isChanged(false)
+	, isVisible(true)
+	, title(L"")
+	, text(L"")
 {
-public:
-	bool DisableSleepTimer();
-	bool EnableSleepTimer();
-	void OpenURL(const String& url);
-	String GenerateGUID();
+    impl = LocalNotificationImpl::Create(GenerateGUID());
+}
+    
+LocalNotification::~LocalNotification()
+{
+    delete impl;
+}
 
-protected:
-	virtual jclass GetJavaClass() const;
-	virtual const char* GetJavaClassName() const;
+void LocalNotification::SetAction(const Message& msg)
+{
+	action = msg;
+	impl->SetAction(L"");
+}
 
-public:
-	static jclass gJavaClass;
-	static const char* gJavaClassName;
-};
+void LocalNotification::SetTitle(const WideString &_title)
+{
+	if (_title != title)
+	{
+		isChanged = true;
+		title = _title;
+	}
+}
 
-};
+void LocalNotification::SetText(const WideString &_text)
+{
+	if (_text != text)
+	{
+		isChanged = true;
+		text = _text;
+	}
+}
 
-#endif //__DAVAENGINE_ANDROID__
+void LocalNotification::Show()
+{
+	isVisible = true;
+	isChanged = true;
+}
 
-#endif // __DAVAENGINE_UTILS_H__
+void LocalNotification::Hide()
+{
+	isVisible = false;
+	isChanged = true;
+}
+
+void LocalNotification::Update()
+{
+	if (false == isChanged)
+		return;
+
+	if (true == isVisible)
+		ImplShow();
+	else
+		impl->Hide();
+
+	isChanged = false;
+}
+
+}
 
