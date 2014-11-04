@@ -26,8 +26,9 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#import "NSStringUtils.h"
-#import <Foundation/Foundation.h>
+#include "NSStringUtils.h"
+
+#if defined (__DAVAENGINE_MACOS__) || defined (__DAVAENGINE_IPHONE__)
 
 namespace DAVA
 {
@@ -49,3 +50,5 @@ namespace DAVA
     }
 
 }
+
+#endif //#if defined (__DAVAENGINE_MACOS__) || defined (__DAVAENGINE_IPHONE__)
