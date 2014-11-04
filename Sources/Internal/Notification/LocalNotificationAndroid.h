@@ -27,23 +27,32 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_UTILS_ANDROID_H__
-#define __DAVAENGINE_UTILS_ANDROID_H__
+
+#ifndef __DAVAENGINE_LOCAL_NOTIFICATION_ANDROID_H__
+#define __DAVAENGINE_LOCAL_NOTIFICATION_ANDROID_H__
 
 #include "Base/BaseTypes.h"
-#if defined(__DAVAENGINE_ANDROID__)
-#include "JniExtensions.h"
+
+#if defined (__DAVAENGINE_ANDROID__)
+
+#include "Notification/LocalNotificationImpl.h"
+#include "Platform/TemplateAndroid/JniExtensions.h"
+#include "Base/Message.h"
+#include "Platform/Mutex.h"
 
 namespace DAVA
 {
 
-class JniUtils: public JniExtension
+class LocalNotificationAndroid: public LocalNotificationImpl, public JniExtension
 {
 public:
-	bool DisableSleepTimer();
-	bool EnableSleepTimer();
-	void OpenURL(const String& url);
-	String GenerateGUID();
+	LocalNotificationAndroid(const String &_id);
+	virtual void SetAction(const WideString &action);
+	virtual void Hide();
+	virtual void ShowText(const WideString &title, const WideString text);
+	virtual void ShowProgress(const WideString &title, const WideString text, const uint32 total, const uint32 progress);
+    virtual void PostDelayedNotification(WideString const &title, WideString const &text, int delaySeconds);
+    virtual void RemoveAllDelayedNotifications();
 
 protected:
 	virtual jclass GetJavaClass() const;
@@ -52,11 +61,14 @@ protected:
 public:
 	static jclass gJavaClass;
 	static const char* gJavaClassName;
+
+private:
+	Mutex javaCallMutex;
+	jmethodID methodSetText;
+	jmethodID methodSetProgress;
 };
 
-};
-
+}
 #endif //__DAVAENGINE_ANDROID__
 
-#endif // __DAVAENGINE_UTILS_H__
-
+#endif // __NOTIFICATION_ANDROID_H__
