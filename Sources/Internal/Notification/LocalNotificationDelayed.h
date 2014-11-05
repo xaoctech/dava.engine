@@ -28,52 +28,29 @@
 
 
 
-#ifndef __SCENE_SAVER_H__
-#define __SCENE_SAVER_H__
+#ifndef __DAVAENGINE_LOCAL_NOTIFICATION_DELAYED_H__
+#define __DAVAENGINE_LOCAL_NOTIFICATION_DELAYED_H__
 
-#include "DAVAEngine.h"
-#include "CommandLine/SceneUtils/SceneUtils.h"
+#include "Notification/LocalNotification.h"
 
-using namespace DAVA;
+namespace DAVA
+{
 
-class SceneSaver
+class LocalNotificationDelayed : public LocalNotification
 {
 public:
-	SceneSaver();
-	virtual ~SceneSaver();
-    
-    void SetInFolder(const FilePath &folderPathname);
-    void SetOutFolder(const FilePath &folderPathname);
-    
-    void SaveFile(const String &fileName, Set<String> &errorLog);
-	void ResaveFile(const String &fileName, Set<String> &errorLog);
-    void SaveScene(Scene *scene, const FilePath &fileName, Set<String> &errorLog);
-    
-    void EnableCopyConverted(bool enabled);
-    
-protected:
-    
-    void ReleaseTextures();
+    void SetDelaySeconds(int value) { delaySeconds = value; }
+    int GetDelaySeconds() { return delaySeconds; }
+    void RemoveAllDelayedNotifications();
+    void Post();
 
-    void CopyTextures(Scene *scene);
-    void CopyTexture(const FilePath &texturePathname);
+private:
+	virtual void ImplShow();
 
-	void CopyReferencedObject(Entity *node);
-	void CopyEffects(Entity *node);
-	void CopyEmitter(ParticleEmitter *emitter);
-
-	void CopyCustomColorTexture(Scene *scene, const FilePath & sceneFolder, Set<String> &errorLog);
-
-protected:
-    
-    SceneUtils sceneUtils;
-    
-    TexturesMap texturesForSave;
-    bool copyConverted;
-    
-    DAVA::Set<DAVA::FilePath> effectFolders;
+private:
+    int delaySeconds;
 };
 
+}
 
-
-#endif // __SCENE_SAVER_H__
+#endif // __NOTIFICATION_H__

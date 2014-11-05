@@ -26,54 +26,29 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "NSStringUtils.h"
 
+#if defined (__DAVAENGINE_MACOS__) || defined (__DAVAENGINE_IPHONE__)
 
-#ifndef __SCENE_SAVER_H__
-#define __SCENE_SAVER_H__
-
-#include "DAVAEngine.h"
-#include "CommandLine/SceneUtils/SceneUtils.h"
-
-using namespace DAVA;
-
-class SceneSaver
+namespace DAVA
 {
-public:
-	SceneSaver();
-	virtual ~SceneSaver();
-    
-    void SetInFolder(const FilePath &folderPathname);
-    void SetOutFolder(const FilePath &folderPathname);
-    
-    void SaveFile(const String &fileName, Set<String> &errorLog);
-	void ResaveFile(const String &fileName, Set<String> &errorLog);
-    void SaveScene(Scene *scene, const FilePath &fileName, Set<String> &errorLog);
-    
-    void EnableCopyConverted(bool enabled);
-    
-protected:
-    
-    void ReleaseTextures();
 
-    void CopyTextures(Scene *scene);
-    void CopyTexture(const FilePath &texturePathname);
+NSString *NSStringFromString(const DAVA::String &str) {
+    NSStringEncoding encoding = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingASCII);
+    NSString *nsstring = [[[NSString alloc] initWithBytes:str.c_str()
+                                                   length:str.length()
+                                                 encoding:encoding] autorelease];
+    return nsstring;
+}
 
-	void CopyReferencedObject(Entity *node);
-	void CopyEffects(Entity *node);
-	void CopyEmitter(ParticleEmitter *emitter);
+NSString *NSStringFromWideString(const DAVA::WideString &str) {
+    NSStringEncoding encoding = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingUTF32LE);
+    NSString *nsstring = [[[NSString alloc] initWithBytes:(const char *) str.c_str()
+                                                   length:str.length() * sizeof(wchar_t)
+                                                 encoding:encoding] autorelease];
+    return nsstring;
+}
 
-	void CopyCustomColorTexture(Scene *scene, const FilePath & sceneFolder, Set<String> &errorLog);
+}
 
-protected:
-    
-    SceneUtils sceneUtils;
-    
-    TexturesMap texturesForSave;
-    bool copyConverted;
-    
-    DAVA::Set<DAVA::FilePath> effectFolders;
-};
-
-
-
-#endif // __SCENE_SAVER_H__
+#endif //#if defined (__DAVAENGINE_MACOS__) || defined (__DAVAENGINE_IPHONE__)

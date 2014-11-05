@@ -28,52 +28,47 @@
 
 
 
-#ifndef __SCENE_SAVER_H__
-#define __SCENE_SAVER_H__
+#ifndef __DAVAENGINE_LOCAL_NOTIFICATION_ANDROID_H__
+#define __DAVAENGINE_LOCAL_NOTIFICATION_ANDROID_H__
 
-#include "DAVAEngine.h"
-#include "CommandLine/SceneUtils/SceneUtils.h"
+#include "Base/BaseTypes.h"
 
-using namespace DAVA;
+#if defined (__DAVAENGINE_ANDROID__)
 
-class SceneSaver
+#include "Notification/LocalNotificationImpl.h"
+#include "Platform/TemplateAndroid/JniExtensions.h"
+#include "Base/Message.h"
+#include "Platform/Mutex.h"
+
+namespace DAVA
+{
+
+class LocalNotificationAndroid: public LocalNotificationImpl, public JniExtension
 {
 public:
-	SceneSaver();
-	virtual ~SceneSaver();
-    
-    void SetInFolder(const FilePath &folderPathname);
-    void SetOutFolder(const FilePath &folderPathname);
-    
-    void SaveFile(const String &fileName, Set<String> &errorLog);
-	void ResaveFile(const String &fileName, Set<String> &errorLog);
-    void SaveScene(Scene *scene, const FilePath &fileName, Set<String> &errorLog);
-    
-    void EnableCopyConverted(bool enabled);
-    
-protected:
-    
-    void ReleaseTextures();
-
-    void CopyTextures(Scene *scene);
-    void CopyTexture(const FilePath &texturePathname);
-
-	void CopyReferencedObject(Entity *node);
-	void CopyEffects(Entity *node);
-	void CopyEmitter(ParticleEmitter *emitter);
-
-	void CopyCustomColorTexture(Scene *scene, const FilePath & sceneFolder, Set<String> &errorLog);
+	LocalNotificationAndroid(const String &_id);
+	virtual void SetAction(const WideString &action);
+	virtual void Hide();
+	virtual void ShowText(const WideString &title, const WideString text);
+	virtual void ShowProgress(const WideString &title, const WideString text, const uint32 total, const uint32 progress);
+    virtual void PostDelayedNotification(WideString const &title, WideString const &text, int delaySeconds);
+    virtual void RemoveAllDelayedNotifications();
 
 protected:
-    
-    SceneUtils sceneUtils;
-    
-    TexturesMap texturesForSave;
-    bool copyConverted;
-    
-    DAVA::Set<DAVA::FilePath> effectFolders;
+	virtual jclass GetJavaClass() const;
+	virtual const char* GetJavaClassName() const;
+
+public:
+	static jclass gJavaClass;
+	static const char* gJavaClassName;
+
+private:
+	Mutex javaCallMutex;
+	jmethodID methodSetText;
+	jmethodID methodSetProgress;
 };
 
+}
+#endif //__DAVAENGINE_ANDROID__
 
-
-#endif // __SCENE_SAVER_H__
+#endif // __NOTIFICATION_ANDROID_H__
