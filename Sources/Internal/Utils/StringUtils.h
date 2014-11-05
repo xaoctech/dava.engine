@@ -89,43 +89,22 @@ inline bool IsWhitespace(char16 t)
     return iswspace(static_cast<wint_t>(t)) != 0;
 }
 
-/** \brief A BiDi trasformation metadata. */
-struct sBiDiParams
-{
-    inline sBiDiParams()
-    {
-        base_dir = 0;
-        embedding_levels = NULL;
-        bidi_types = NULL;
-    }
-    inline ~sBiDiParams()
-    {
-        SAFE_DELETE(embedding_levels);
-        SAFE_DELETE(bidi_types);
-    }
-    uint32 base_dir; // FriBidiParType
-    int8 *embedding_levels; // FriBidiLevel
-    uint32 *bidi_types; //FriBidiCharType
-};
-
 /**
- * \brief Prepare string for BiDi transformation (create metadata and shape string).
+ * \brief Prepare string for BiDi transformation (shape arabic string). Need for correct splitting.
  * \param [in] logicalStr The logical string.
  * \param [out] preparedStr The prepared string.
- * \param [out] params Struct with metadata for BiDi transformation.
  * \param [out] isRTL If non-null, store in isRTL true if line contains Right-to-left text.
  * \return true if it succeeds, false if it fails.
  */
-bool BiDiPrepare(const WideString& logicalStr, WideString& preparedStr, sBiDiParams& params, bool* isRTL);
+bool BiDiPrepare(const WideString& logicalStr, WideString& preparedStr, bool* isRTL);
 
 /**
- * \brief Reorder characters in string based on BiDi metadata.
+ * \brief Reorder characters in string based.
  * \param [in,out] string The string.
- * \param [in] params Struct with metadata for BiDi transformation.
- * \param [in] lineOffset The offset from first character in paragraph.
+ * \param forceRtl (Optional) true if input text is mixed and must be processed as RTL.
  * \return true if it succeeds, false if it fails.
  */
-bool BiDiReorder(WideString& string, const sBiDiParams& params, const uint32 lineOffset);
+bool BiDiReorder(WideString& string, const bool forceRtl = false);
 
 }
 }
