@@ -4,6 +4,9 @@ project      ( IMagickHelper )
 
 set          ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/../../Sources/CMake/Modules/" ) 
 
+
+set          ( DISABLE_SOUNDS 1 )
+
 include      ( CMake-common         )
 include      ( FindDavaFramework    )
 include      ( GenerateExportHeader )
@@ -12,17 +15,35 @@ set_property ( GLOBAL PROPERTY USE_FOLDERS ON )
 
 add_definitions ( 
     -DSTATIC_MAGICK 
-    -D_MAGICKLIB_
+    -D_MAGICKLIB_   
+    -D_LIB 
     -D_CONSOLE
     -D_SCL_SECURE_NO_WARNING
     -D_CRT_SECURE_NO_DEPRECATE 
     -D_CRT_NON_CONFORMING_SWPRINTFS
 )
 
-set ( LIBRARIES_DIR  "D:/AddSources" )
 
-if( MACOS ) 
-    set( IMAGE_MAGICK ImageMagick-6.7.4 )
+set ( LIBRARIES_DIR  "${CMAKE_CURRENT_LIST_DIR}" )
+
+if( APPLE ) 
+    set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libstdc++")
+
+    set( IMAGE_MAGICK ImageMagick-6.8.9-9 )
+
+    set ( IMAGE_MAGICK_INCLUDES_PATH  
+         "${LIBRARIES_DIR}/${IMAGE_MAGICK}/include/ImageMagick"
+         "${LIBRARIES_DIR}/${IMAGE_MAGICK}/delegates/include" 
+         "${LIBRARIES_DIR}/${IMAGE_MAGICK}/" 
+         )
+
+    set ( IMAGE_MAGICK_LIBRARIES_PATH  
+         "${LIBRARIES_DIR}/${IMAGE_MAGICK}" )  
+
+    file ( GLOB IMAGE_MAGICK_LIBRARIES_RELEASE  ${IMAGE_MAGICK_LIBRARIES_PATH}/lib/*.a)
+    file ( GLOB IMAGE_MAGICK_LIBRARIES_DEBUG    ${IMAGE_MAGICK_LIBRARIES_PATH}/lib/*.a )
+
+    list ( APPEND LIBRARIES libbz2.dylib ) 
 
 elseif( WIN32 )
     set( IMAGE_MAGICK ImageMagick-6.8.9 )
@@ -55,6 +76,16 @@ set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "libraries")
 
 if ( MSVC )
     set_target_properties ( ${PROJECT_NAME} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:\"libcmt.lib;libcmtd.lib\"")    
+
+elseif( APPLE )
+
+    ADD_CUSTOM_COMMAND(
+    TARGET ${PROJECT_NAME}
+    POST_BUILD
+    COMMAND
+    install_name_tool -id @executable_path/../Frameworks/lib${PROJECT_NAME}.dylib 
+                           ${CMAKE_BINARY_DIR}/$<CONFIG>/lib${PROJECT_NAME}.dylib
+    )
 
 endif()
 
