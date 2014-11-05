@@ -73,7 +73,7 @@ void StringUtils::TrimRight(WideString& string)
     string.erase(it.base(), string.end());
 }
 
-bool StringUtils::BiDiPrepare(const WideString& logicalStr, WideString& preparedStr, sBiDiParams& params, bool* isRTL)
+bool StringUtils::BiDiPrepare(const WideString& logicalStr, WideString& preparedStr, bool* isRTL)
 {
     static const uint32 MAX_LINE_LENGTH = 65535;
     static FriBidiFlags flags = FRIBIDI_FLAGS_DEFAULT | FRIBIDI_FLAGS_ARABIC;
@@ -88,45 +88,39 @@ bool StringUtils::BiDiPrepare(const WideString& logicalStr, WideString& prepared
         SAFE_DELETE(logical);
         return false;
     }
-    logical[fribidi_len] = 0; // Null-terminated string
-
-    params.bidi_types = new FriBidiCharType[fribidi_len];
-    if (!params.bidi_types)
+    
+    FriBidiCharType* bidi_types = new FriBidiCharType[fribidi_len];
+    if (!bidi_types)
     {
         SAFE_DELETE(logical);
         return false;
     }
 
-    fribidi_get_bidi_types(logical, fribidi_len, params.bidi_types);
+    fribidi_get_bidi_types(logical, fribidi_len, bidi_types);
 
-    params.embedding_levels = new FriBidiLevel[fribidi_len];
-    if (!params.embedding_levels)
+    FriBidiLevel* embedding_levels = new FriBidiLevel[fribidi_len];
+    if (!embedding_levels)
     {
         SAFE_DELETE(logical);
         return false;
     }
 
-    params.base_dir = FRIBIDI_PAR_ON;
-    FriBidiLevel max_level = fribidi_get_par_embedding_levels(params.bidi_types, fribidi_len, &params.base_dir, params.embedding_levels) - 1;
+    FriBidiParType base_dir = FRIBIDI_PAR_ON;
+    FriBidiLevel max_level = fribidi_get_par_embedding_levels(bidi_types, fribidi_len, &base_dir, embedding_levels) - 1;
     if (max_level < 0)
     {
         SAFE_DELETE(logical);
         return false;
     }
-    if (fribidi_len >=2)
-    {
-        params.embedding_levels[fribidi_len - 1] = params.embedding_levels[fribidi_len - 2];
-    }
 
     FriBidiChar* visual = new FriBidiChar[fribidi_len + 1];
     Memcpy(visual, logical, fribidi_len * sizeof(*visual));
-    visual[fribidi_len] = 0; // Null-terminated string
 
     /* Arabic joining */
     FriBidiArabicProp * ar_props = new FriBidiArabicProp[fribidi_len];
     fribidi_get_joining_types(logical, fribidi_len, ar_props);
-    fribidi_join_arabic(params.bidi_types, fribidi_len, params.embedding_levels, ar_props);
-    fribidi_shape(flags, params.embedding_levels, fribidi_len, ar_props, visual);
+    fribidi_join_arabic(bidi_types, fribidi_len, embedding_levels, ar_props);
+    fribidi_shape(flags, embedding_levels, fribidi_len, ar_props, visual);
     SAFE_DELETE(ar_props);
     
     char outstring[MAX_LINE_LENGTH];
@@ -134,39 +128,65 @@ bool StringUtils::BiDiPrepare(const WideString& logicalStr, WideString& prepared
     UTF8Utils::EncodeToWideString(reinterpret_cast<unsigned char*>(outstring), utf_len, preparedStr);
     if (isRTL)
     {
-        *isRTL = FRIBIDI_IS_RTL(params.base_dir);
+        *isRTL = FRIBIDI_IS_RTL(base_dir);
     }
 
     SAFE_DELETE(logical);
     SAFE_DELETE(visual);
-    return (max_level + 1 > 0);
+    return true;
 }
 
-bool StringUtils::BiDiReorder(WideString& string, const sBiDiParams& params, const uint32 lineOffset)
+bool StringUtils::BiDiReorder(WideString& string, const bool forceRtl)
 {
     static const uint32 MAX_LINE_LENGTH = 65535;
     static FriBidiFlags flags = FRIBIDI_FLAGS_DEFAULT | FRIBIDI_FLAGS_ARABIC;
 
     String inputUTF = UTF8Utils::EncodeToUTF8(string);
     uint32 utf_len = (uint32)inputUTF.length();
-    uint32 fribidi_len;
-    char outstring[MAX_LINE_LENGTH];
 
-    FriBidiChar* visual = new FriBidiChar[utf_len + 1];
-    fribidi_len = fribidi_charset_to_unicode(FRIBIDI_CHAR_SET_UTF8, inputUTF.c_str(), utf_len, visual);
+    FriBidiChar* logical = new FriBidiChar[utf_len + 1];
+    uint32 fribidi_len = fribidi_charset_to_unicode(FRIBIDI_CHAR_SET_UTF8, inputUTF.c_str(), utf_len, logical);
     if (fribidi_len == 0)
     {
-        SAFE_DELETE(visual);
+        SAFE_DELETE(logical);
         return false;
     }
-    visual[fribidi_len] = 0; // Null-terminated string
 
-    fribidi_boolean status = fribidi_reorder_line(flags, &params.bidi_types[lineOffset], fribidi_len, 0, params.base_dir, &params.embedding_levels[lineOffset], visual, NULL);
+    FriBidiCharType* bidi_types = new FriBidiCharType[fribidi_len];
+    if (!bidi_types)
+    {
+        SAFE_DELETE(logical);
+        return false;
+    }
 
+    fribidi_get_bidi_types(logical, fribidi_len, bidi_types);
+
+    FriBidiLevel* embedding_levels = new FriBidiLevel[fribidi_len];
+    if (!embedding_levels)
+    {
+        SAFE_DELETE(logical);
+        return false;
+    }
+
+    FriBidiParType base_dir = forceRtl ? (FRIBIDI_PAR_RTL) : (FRIBIDI_PAR_ON);
+    FriBidiLevel max_level = fribidi_get_par_embedding_levels(bidi_types, fribidi_len, &base_dir, embedding_levels) - 1;
+    if (max_level < 0)
+    {
+        SAFE_DELETE(logical);
+        return false;
+    }
+
+    FriBidiChar* visual = new FriBidiChar[fribidi_len + 1];
+    Memcpy(visual, logical, fribidi_len * sizeof(*visual));
+
+    fribidi_boolean status = fribidi_reorder_line(flags, bidi_types, fribidi_len, 0, base_dir, embedding_levels, visual, NULL);
+
+    char outstring[MAX_LINE_LENGTH];
     fribidi_len = fribidi_remove_bidi_marks(visual, fribidi_len, NULL, NULL, NULL);
     utf_len = fribidi_unicode_to_charset(FRIBIDI_CHAR_SET_UTF8, visual, fribidi_len, outstring);
     UTF8Utils::EncodeToWideString(reinterpret_cast<unsigned char*>(outstring), utf_len, string);
 
+    SAFE_DELETE(logical);
     SAFE_DELETE(visual);
     return status != 0;
 }

@@ -110,8 +110,17 @@ public:
     
     void ForcePrepare(Texture *texture);
 
+    /**
+     * \brief Sets BiDi transformation support enabled.
+     * \param value true to enable BiDi support.
+     */
     static void SetBiDiSupportEnabled(bool value);
-    static const bool& IsBiDiSupportEnabled();
+
+    /**
+     * \brief Is BiDi trasformations support enabled.
+     * \return true if BiDi trasformations supported.
+     */
+    static const bool & IsBiDiSupportEnabled();
     
 protected:
     TextBlock();
@@ -128,18 +137,20 @@ protected:
      * \param string The string.
      * \param targetRectSize Size of the target rectangle.
      * \param [out] resultVector The result vector.
-     * \param params Pointer to struct with BiDi metadata, if NULL then disable BiDi reorder for splited lines.
+     * \param forceRtl Flag for force RTL transformation
+     *  splited lines.
      */
-    void SplitTextToStrings(const WideString & string, const Vector2 & targetRectSize, Vector<WideString> & resultVector, StringUtils::sBiDiParams* params = NULL);
+    void SplitTextToStrings(const WideString & string, const Vector2 & targetRectSize, Vector<WideString> & resultVector, const bool forceRtl);
 
     /**
      * \brief Splits text to strings by symbols.
      * \param string The string.
      * \param targetRectSize Size of the target rectangle.
      * \param [out] resultVector The result vector.
-     * \param params Pointer to struct with BiDi metadata, if NULL then disable BiDi reorder for splited lines.
+     * \param forceRtl Flag for force RTL transformation
+     *  splited lines.
      */
-    void SplitTextBySymbolsToStrings(const WideString & string, const Vector2 & targetRectSize, Vector<WideString> & resultVector, StringUtils::sBiDiParams* params = NULL);
+    void SplitTextBySymbolsToStrings(const WideString & string, const Vector2 & targetRectSize, Vector<WideString> & resultVector, const bool forceRtl);
 
     /**
      * \brief Clean line.
