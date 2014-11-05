@@ -1127,7 +1127,7 @@ void TextBlock::CleanLine(WideString& string, bool trimRight)
             end = string.end();
             break;
         case L'\t':
-        case 0xA0:
+        case 0xA0: // Non-break space
             *it = L' ';
         default:
             ++it;
