@@ -109,6 +109,9 @@ public:
     const Vector<int32> & GetStringSizes() const;
     
     void ForcePrepare(Texture *texture);
+
+    static void SetBiDiSupportEnabled(bool value);
+    static const bool& IsBiDiSupportEnabled();
     
 protected:
     TextBlock();
@@ -181,6 +184,8 @@ protected:
     bool isPredrawed:1;
     bool cacheUseJustify:1;
     bool treatMultilineAsSingleLine:1;
+
+    static bool isBiDiSupportEnabled;   //!< true if BiDi transformation support enabled
 
     friend class TextBlockRender;
     friend class TextBlockSoftwareRender;

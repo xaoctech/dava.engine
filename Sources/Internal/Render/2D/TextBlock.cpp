@@ -48,6 +48,8 @@
 namespace DAVA 
 {
 
+bool TextBlock::isBiDiSupportEnabled = false;
+
 struct TextBlockData
 {
     TextBlockData(): font(NULL) { };
@@ -450,7 +452,7 @@ void TextBlock::CalculateCacheParams()
     isRtl = false;
 
     StringUtils::sBiDiParams* biDiParams = NULL;
-    if (true) // Check BiDi support
+    if (isBiDiSupportEnabled) // Check BiDi support
     {
         biDiParams = new StringUtils::sBiDiParams();
         if (StringUtils::BiDiPrepare(logicalText, preparedText, *biDiParams, &isRtl))
@@ -914,6 +916,16 @@ void TextBlock::ForcePrepare(Texture *texture)
     Prepare(texture);
 }
 
+void TextBlock::SetBiDiSupportEnabled(bool value)
+{
+    isBiDiSupportEnabled = value;
+}
+
+bool const& TextBlock::IsBiDiSupportEnabled()
+{
+    return isBiDiSupportEnabled;
+}
+
 const Vector2 & TextBlock::GetTextSize()
 {
     mutex.Lock();
@@ -965,28 +977,26 @@ void TextBlock::SplitTextToStrings(const WideString& string, Vector2 const& targ
         char16 ch = string[pos];
         uint8 canBreak = breaks[pos];
 
-        if (canBreak == StringUtils::LB_MUSTBREAK) // If symbol is line breaker then split string
-        {
-            WideString line = string.substr(fromPos, pos - fromPos + 1);
-            if (params)
-            {
-                StringUtils::BiDiReorder(line, *params, fromPos);
-            }
-            CleanLine(line, pos < textLength - 1);
-            resultVector.push_back(line);
-            currentWidth = 0.f;
-            lastPossibleBreak = 0;
-            fromPos = pos + 1;
-            continue;
-        }
-
         currentWidth += sizes[pos] * p2v;
 
         // Check that targetWidth defined and currentWidth less than targetWidth.
         // If symbol is whitespace skip it and go to next (add all whitespaces to current line)
         if (targetWidth == 0 || currentWidth <= targetWidth || StringUtils::IsWhitespace(ch))
         {
-            if (canBreak == StringUtils::LB_ALLOWBREAK) // Store breakable symbol position
+            if (canBreak == StringUtils::LB_MUSTBREAK) // If symbol is line breaker then split string
+            {
+                WideString line = string.substr(fromPos, pos - fromPos + 1);
+                if (params)
+                {
+                    StringUtils::BiDiReorder(line, *params, fromPos);
+                }
+                CleanLine(line, pos < textLength - 1);
+                resultVector.push_back(line);
+                currentWidth = 0.f;
+                lastPossibleBreak = 0;
+                fromPos = pos + 1;
+            }
+            else if (canBreak == StringUtils::LB_ALLOWBREAK) // Store breakable symbol position
             {
                 lastPossibleBreak = pos;
             }
