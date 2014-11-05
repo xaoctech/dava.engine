@@ -8,6 +8,7 @@
 #include "FileSystem/FileSystem.h"
 
 #include <stdio.h>
+#include <string>
 
 using namespace DAVA;
 
@@ -131,6 +132,8 @@ bool ConvertToPNGCroppedGeometry ( const char *in_image_path, const char *out_pa
         {
             layers.push_back(layers[0]);
         }
+        
+        char c_buf[32];
 
         int width = (int)layers[0].columns();
         int height = (int)layers[0].rows();
@@ -143,8 +146,13 @@ bool ConvertToPNGCroppedGeometry ( const char *in_image_path, const char *out_pa
             {
                 out_image_path.ReplaceDirectory( String( out_path )  );
             }
+                        
+            sprintf( c_buf, "%i", k - (skip_first_layer ? 1 : 0 ) );
             
-            out_image_path.ReplaceBasename( out_image_path.GetBasename() + "_" + std::to_string( (unsigned long long) (k - (skip_first_layer ? 1 : 0) ) )   );
+            out_image_path.ReplaceBasename( out_image_path.GetBasename()
+                                          + "_"
+                                          + c_buf
+                                          );
 
             Magick::Image & currentLayer = layers[k];
 
