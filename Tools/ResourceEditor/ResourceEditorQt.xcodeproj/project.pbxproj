@@ -5214,9 +5214,6 @@
 					"-L../../Libs/libs/",
 					"-L../../Libs/freetype/lib/",
 					"-L../../Libs/oggvorbis/lib/",
-					"-lMagickCore",
-					"-lMagick++",
-					"-lMagickWand",
 				);
 				PRODUCT_NAME = ResourceEditorQt;
 			};
@@ -5348,9 +5345,6 @@
 					"-L../../Libs/libs/",
 					"-L../../Libs/freetype/lib/",
 					"-L../../Libs/oggvorbis/lib/",
-					"-lMagickCore",
-					"-lMagick++",
-					"-lMagickWand",
 				);
 				PRODUCT_NAME = ResourceEditorQt;
 			};
