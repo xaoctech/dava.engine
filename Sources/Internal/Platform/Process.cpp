@@ -28,6 +28,7 @@
 
 #include "Platform/Process.h"
 #include "FileSystem/FilePath.h"
+#include <sys/wait.h>
 
 #if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
 

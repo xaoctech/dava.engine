@@ -128,6 +128,8 @@
 		A6D827AB187717EA0006A5DD /* CreatePlaneLODCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A6D827A9187717EA0006A5DD /* CreatePlaneLODCommand.cpp */; };
 		A93E34BD17283146D6E95207 /* QtCore.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 419FFB6CDDEB353FF0A4F469 /* QtCore.framework */; };
 		B08AE0866171E2B79EF2D621 /* QtOpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */; };
+		B0BB6F671A0AB85600D89BA0 /* libIMagickHelper.dylib in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = B0BB6F661A0AB85600D89BA0 /* libIMagickHelper.dylib */; };
+		B0BB6F681A0AB86400D89BA0 /* libIMagickHelper.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = B0BB6F661A0AB85600D89BA0 /* libIMagickHelper.dylib */; };
 		BCEF71E1EDFB18DA77DC750B /* OpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = DA18A6831232F53228631AD1 /* OpenGL.framework */; };
 		E8064AC3189A95FA00EE7164 /* DeleteRenderBatchCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8064AC1189A95FA00EE7164 /* DeleteRenderBatchCommand.cpp */; };
 		E8185C2B190950E500AAD457 /* MaterialGlobalCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8185C29190950E500AAD457 /* MaterialGlobalCommand.cpp */; };
@@ -696,6 +698,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				B0BB6F681A0AB86400D89BA0 /* libIMagickHelper.dylib in CopyFiles */,
 				02F640801745372B0053F038 /* libfmodevent.dylib in CopyFiles */,
 				02F640811745372B0053F038 /* libfmodex.dylib in CopyFiles */,
 			);
@@ -898,6 +901,7 @@
 		A6D827A7187717A60006A5DD /* PlaneLODDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PlaneLODDialog_moc.cpp; sourceTree = "<group>"; };
 		A6D827A9187717EA0006A5DD /* CreatePlaneLODCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CreatePlaneLODCommand.cpp; sourceTree = "<group>"; };
 		A6D827AA187717EA0006A5DD /* CreatePlaneLODCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreatePlaneLODCommand.h; sourceTree = "<group>"; };
+		B0BB6F661A0AB85600D89BA0 /* libIMagickHelper.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libIMagickHelper.dylib; path = ../../Libs/IMagickHelpLib/libIMagickHelper.dylib; sourceTree = "<group>"; };
 		C6766F86E49E9C8701C8E637 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
 		CBE0854C74E7E8A8F67923BE /* yaml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = yaml_macos; path = ../../Libs/libs/libyaml_macos.a; sourceTree = "<group>"; };
 		DA18A6831232F53228631AD1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
@@ -1870,6 +1874,7 @@
 				17FB4BD11924B86800F3E3BC /* AVFoundation.framework in Frameworks & Libraries */,
 				A69D4043188940CF0093F7AA /* WebKit.framework in Frameworks & Libraries */,
 				A6A617DD17CF4CF500375E11 /* libFrameworkToolsQt.a in Frameworks & Libraries */,
+				B0BB6F671A0AB85600D89BA0 /* libIMagickHelper.dylib in Frameworks & Libraries */,
 				02E9E4101739612300C501BC /* libfmodevent.dylib in Frameworks & Libraries */,
 				02E9E4111739612300C501BC /* libfmodex.dylib in Frameworks & Libraries */,
 				5CCC0FF115B4516900DA83EB /* libFColladaS.a in Frameworks & Libraries */,
@@ -1924,6 +1929,7 @@
 				02E9E40F1739612300C501BC /* libfmodex.dylib */,
 				5CCC10B315B45FC200DA83EB /* libbz2.dylib */,
 				5CCC10B115B45FBB00DA83EB /* libz.dylib */,
+				B0BB6F661A0AB85600D89BA0 /* libIMagickHelper.dylib */,
 				E8BD1EF616DE40E300499E18 /* Framework.xcodeproj */,
 				5C7F49F815B44F6D0038AF3A /* FCollada.xcodeproj */,
 				5C7F49F615B44EE50038AF3A /* icon.icns */,
@@ -5179,22 +5185,19 @@
 					.,
 					/usr/local/include,
 					/System/Library/Frameworks/CarbonCore.framework/Headers,
-					"./../../Libs/ImageMagick-6.7.4/include/ImageMagick",
-					"./../../Libs/ImageMagick-6.7.4/delegates/include",
-					"./../../Libs/ImageMagick-6.7.4/",
 					./../../Tools/ColladaConverter/Collada15/FCollada,
 					./../../Tools/ColladaConverter/Collada15/FCollada/LibXML/include,
 					./Classes/Qt,
 					./_GeneratedQt,
 					../../../dava.speedtree/Sources,
+					./../../Libs/IMagickHelpLib,
 				);
 				INFOPLIST_FILE = Info.plist;
 				LIBRARY_SEARCH_PATHS = (
 					../../Libs/libs/,
 					../../Libs/freetype/lib/,
 					../../Libs/oggvorbis/lib/,
-					"./../../Libs/ImageMagick-6.7.4/lib/",
-					"./../../Libs/ImageMagick-6.7.4/delegates/lib",
+					./../../Libs/IMagickHelpLib/,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CFLAGS = (
@@ -5219,9 +5222,6 @@
 					"-L../../Libs/libs/",
 					"-L../../Libs/freetype/lib/",
 					"-L../../Libs/oggvorbis/lib/",
-					"-lMagickCore",
-					"-lMagick++",
-					"-lMagickWand",
 				);
 				PRODUCT_NAME = ResourceEditorQt;
 			};
@@ -5235,7 +5235,9 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../Libs/fmod/lib/macos\"",
+					"$(SRCROOT)/../../Libs/fmod/lib/macos",
+					"$(PROJECT_DIR)",
+					/Users/i_bratchik/Documents/work/dava.framework/Libs/IMagickHelpLib,
 				);
 				OTHER_LDFLAGS = (
 					"-headerpad_max_install_names",
@@ -5243,9 +5245,7 @@
 					"-L../../Libs/libs/",
 					"-L../../Libs/freetype/lib/",
 					"-L../../Libs/oggvorbis/lib/",
-					"-lMagickCore",
-					"-lMagick++",
-					"-lMagickWand",
+					"-L../../Libs/IMagickHelpLib",
 				);
 			};
 			name = Release;
@@ -5265,7 +5265,9 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../Libs/fmod/lib/macos\"",
+					"$(SRCROOT)/../../Libs/fmod/lib/macos",
+					"$(PROJECT_DIR)",
+					/Users/i_bratchik/Documents/work/dava.framework/Libs/IMagickHelpLib,
 				);
 				OTHER_LDFLAGS = (
 					"-headerpad_max_install_names",
@@ -5273,9 +5275,7 @@
 					"-L../../Libs/libs/",
 					"-L../../Libs/freetype/lib/",
 					"-L../../Libs/oggvorbis/lib/",
-					"-lMagickCore",
-					"-lMagick++",
-					"-lMagickWand",
+					"-L../../Libs/IMagickHelpLib",
 				);
 			};
 			name = Debug;
@@ -5316,22 +5316,19 @@
 					.,
 					/usr/local/include,
 					/System/Library/Frameworks/CarbonCore.framework/Headers,
-					"./../../Libs/ImageMagick-6.7.4/include/ImageMagick",
-					"./../../Libs/ImageMagick-6.7.4/delegates/include",
-					"./../../Libs/ImageMagick-6.7.4/",
 					./../../Tools/ColladaConverter/Collada15/FCollada,
 					./../../Tools/ColladaConverter/Collada15/FCollada/LibXML/include,
 					./Classes/Qt,
 					./_GeneratedQt,
 					../../../dava.speedtree/Sources,
+					./../../Libs/IMagickHelpLib,
 				);
 				INFOPLIST_FILE = Info.plist;
 				LIBRARY_SEARCH_PATHS = (
 					../../Libs/libs/,
 					../../Libs/freetype/lib/,
 					../../Libs/oggvorbis/lib/,
-					"./../../Libs/ImageMagick-6.7.4/lib/",
-					"./../../Libs/ImageMagick-6.7.4/delegates/lib",
+					./../../Libs/IMagickHelpLib/,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CFLAGS = (
@@ -5356,9 +5353,6 @@
 					"-L../../Libs/libs/",
 					"-L../../Libs/freetype/lib/",
 					"-L../../Libs/oggvorbis/lib/",
-					"-lMagickCore",
-					"-lMagick++",
-					"-lMagickWand",
 				);
 				PRODUCT_NAME = ResourceEditorQt;
 			};
