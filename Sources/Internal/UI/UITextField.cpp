@@ -704,13 +704,12 @@ bool UITextField::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultCon
     if (!UIControl::SavePropertiesToYamlNode(node, defaultControl, loader))
         return false;
 
-    //UITextField *baseControl = DynamicTypeCheck<UITextField *>(defaultControl);
+    UITextField *baseTextField = DynamicTypeCheck<UITextField *>(defaultControl);
 
     //Text
     if (baseTextField->GetText() != this->GetText())
     {
-        nodeValue->SetWideString(this->GetText());
-        node->Set("text", nodeValue);
+        node->Set("text", GetText());
     }
 
     //Font
@@ -721,23 +720,20 @@ bool UITextField::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultCon
 	const Color &textColor = GetTextColor();
     if (baseTextField->GetTextColor() != textColor)
     {
-        nodeValue->SetColor(textColor);
-        node->Set("textcolor", nodeValue);
+        node->Set("textcolor", VariantType(textColor));
     }
 
 	// ShadowColor
 	const Color &shadowColor = GetShadowColor();
     if (baseTextField->GetShadowColor() != GetShadowColor())
     {
-        nodeValue->SetColor(shadowColor);
-        node->Set("shadowcolor", nodeValue);
+        node->Set("shadowcolor", VariantType(shadowColor));
     }
 
 	// ShadowOffset
     if (baseTextField->GetShadowOffset() != GetShadowOffset())
     {
-        nodeValue->SetVector2(GetShadowOffset());
-        node->Set("shadowoffset", nodeValue);
+        node->Set("shadowoffset", GetShadowOffset());
     }
 
 	// Text align
