@@ -291,14 +291,13 @@ bool UIParticles::IsAutostart() const
 {
     return isAutostart;
 }
-
-bool UIParticles::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader)
+   
+YamlNode * UIParticles::SaveToYamlNode(UIYamlLoader * loader)
 {
-    if (!UIControl::SavePropertiesToYamlNode(node, defaultControl, loader))
-        return false;
+    ScopedPtr<UIParticles> baseControl(new UIParticles());
 
-    UIParticles* baseControl = DynamicTypeCheck<UIParticles*>(defaultControl);
-
+    YamlNode *node = UIControl::SaveToYamlNode(loader);
+    
     if (baseControl->GetEffectPath() != effectPath)
     {
         node->Set("effectPath", effectPath.GetFrameworkPath());
@@ -314,7 +313,7 @@ bool UIParticles::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultCon
         node->Set("startDelay", startDelay);
     }
 
-    return true;
+    return node;
 }
 
 UIControl* UIParticles::Clone()
@@ -338,10 +337,9 @@ void UIParticles::CopyDataFrom(UIControl *srcControl)
     }
 }
 
-bool UIParticles::LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader)
+void UIParticles::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
-	if (!UIControl::LoadPropertiesFromYamlNode(node, loader))
-        return false;
+	UIControl::LoadFromYamlNode(node, loader);
 
     const YamlNode * effectPathNode = node->Get("effectPath");
 	const YamlNode * autoStartNode = node->Get("autoStart");
@@ -361,8 +359,6 @@ bool UIParticles::LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader 
     {
         SetAutostart(autoStartNode->AsBool());
     }
-
-    return true;
 }
 
 void UIParticles::HandleAutostart()

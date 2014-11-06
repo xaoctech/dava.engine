@@ -99,10 +99,11 @@ public:
 
     virtual const String GetDelegateControlPath(const UIControl *rootControl) const;
 
-    virtual bool LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader);
-    virtual bool SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader);
-    virtual void LoadFromYamlNodeCompleted();
 protected:
+	virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
+    virtual void LoadFromYamlNodeCompleted();
+	virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
+
 	Vector2 GetMaxSize(UIControl *control, Vector2 currentMaxSize, Vector2 parentShift);	
 	void PushContentToBounds(UIControl *control);
 	Vector2 GetControlOffset(UIControl *control, Vector2 currentContentOffset);

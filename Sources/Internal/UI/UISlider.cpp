@@ -293,13 +293,12 @@ void UISlider::Draw(const UIGeometricData &geometricData)
 	}
 }
 
-bool UISlider::LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader)
+void UISlider::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
     RemoveControl(thumbButton);
     SafeRelease(thumbButton);
 
-	if (!UIControl::LoadPropertiesFromYamlNode(node, loader))
-        return false;
+	UIControl::LoadFromYamlNode(node, loader);
 
 	// Values
 	const YamlNode * valueNode = node->Get("value");
@@ -329,8 +328,6 @@ bool UISlider::LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *lo
         LoadBackgound("min", minBackground, node, loader);
         LoadBackgound("max", maxBackground, node, loader);
     }
-
-    return true;
 }
 
 void UISlider::SetSize(const DAVA::Vector2 &newSize)
@@ -355,12 +352,11 @@ void UISlider::LoadFromYamlNodeCompleted()
     SyncThumbWithSprite();
 }
 	
-bool UISlider::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader)
+YamlNode * UISlider::SaveToYamlNode(UIYamlLoader * loader)
 {
     thumbButton->SetName(UISLIDER_THUMB_SPRITE_CONTROL_NAME);
 
-    if (!UIControl::SavePropertiesToYamlNode(node, defaultControl, loader))
-        return false;
+    YamlNode *node = UIControl::SaveToYamlNode(loader);
 
 	// Sprite value
 	float32 value = this->GetValue();
@@ -381,7 +377,7 @@ bool UISlider::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultContro
     // Sprites are now embedded into UISlider.
     node->Set("spritesEmbedded", true);
 
-    return true;
+    return node;
 }
 	
 UIControl* UISlider::Clone()

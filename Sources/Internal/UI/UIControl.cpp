@@ -2060,13 +2060,16 @@ namespace DAVA
     {
     }
 
-    bool UIControl::SavePropertiesToYamlNode(YamlNode *node, UIControl *baseControl, const UIYamlLoader *loader)
+    YamlNode* UIControl::SaveToYamlNode(UIYamlLoader * loader)
     {
-        if (node->GetType() != YamlNode::TYPE_MAP)
-        {
-            DVASSERT(false);
-            return false;
-        }
+        // Return node
+        YamlNode *node = YamlNode::CreateMapNode(false);
+        // Model UIControl to be used in comparing
+        ScopedPtr<UIControl> baseControl(new UIControl());
+
+        // Control name
+        SetPreferredNodeType(node, GetControlClassName());
+
         // Transform data
         // Position
         const Vector2 &position = GetPosition();
@@ -2221,17 +2224,11 @@ namespace DAVA
                 node->Set("margins", margins->AsVector4());
             }
         }
-        return true;
+        return node;
     }
 
-    bool UIControl::LoadPropertiesFromYamlNode( const YamlNode *node, UIYamlLoader *loader )
+    void UIControl::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
     {
-        if (node->GetType() != YamlNode::TYPE_MAP)
-        {
-            DVASSERT(false);
-            return false;
-        }
-
         const YamlNode * rectNode = node->Get("rect");
         if (rectNode)
         {
@@ -2422,8 +2419,6 @@ namespace DAVA
             UIControlBackground::UIMargins margins(marginsNode->AsVector4());
             GetBackground()->SetMargins(&margins);
         }
-
-        return true;
     }
 
     Animation * UIControl::WaitAnimation(float32 time, int32 track)
@@ -2821,6 +2816,23 @@ namespace DAVA
     void UIControl::ResetCustomControlClassName()
     {
         customControlType = String();
+    }
+
+    void UIControl::SetPreferredNodeType(YamlNode* node, const String& nodeTypeName)
+    {
+        // Do we have Custom Control name? If yes, use it as type and passed one
+        // as the "Base Type"
+        bool hasCustomControl = !GetCustomControlClassName().empty();
+        if (hasCustomControl)
+        {
+            node->Set("type", GetCustomControlClassName());
+            node->Set("baseType", nodeTypeName);
+        }
+        else
+        {
+            // The type coincides with the node type name passed, no base type exists.
+            node->Set("type", nodeTypeName);
+        }
     }
 
     int32 UIControl::GetInitialState() const

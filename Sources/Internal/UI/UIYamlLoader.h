@@ -82,6 +82,16 @@ public:
      */
     static void Load(UIControl * rootControl, const FilePath & yamlPathname, bool assertIfCustomControlNotFound = true);
 
+    /**
+     \brief	This function saves the UIControl's hierarchy to the YAML file passed.
+     rootControl.
+
+     \param[in, out]	rootControl		is used to take the configuration from
+     \param[in]			yamlPathName	path to store hierarchy to
+     \return            true if the save was successful
+     */
+    static bool Save(UIControl * rootControl, const FilePath & yamlPathname, bool skipRootNode);
+
     Font * GetFontByName(const String & fontName) const;
 
     int32 GetDrawTypeFromNode(const YamlNode * drawTypeNode) const;
@@ -108,6 +118,11 @@ protected:
     YamlNode *CreateRootNode(const FilePath & yamlPathname);
     void LoadFontsFromNode(const YamlNode * node);
     void LoadFromNode(UIControl * rootControl, const YamlNode * node, bool needParentCallback);
+
+    YamlNode* SaveToNode(UIControl * parentControl, YamlNode * rootNode);
+    void SaveChildren(UIControl* parentControl, YamlNode * parentNode);
+
+    bool ProcessSave(UIControl * rootControl, const FilePath & yamlPathname, bool skipRootNode);
 
     // Set the "ASSERT if custom control is not found during loading" flag.
     void SetAssertIfCustomControlNotFound(bool value);

@@ -138,13 +138,12 @@ void UIScrollBar::LoadFromYamlNodeCompleted()
 	}
 }
 
-bool UIScrollBar::LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader)
+void UIScrollBar::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
 	RemoveControl(slider);
 	SafeRelease(slider);
 
-	if (!UIControl::LoadPropertiesFromYamlNode(node, loader))
-        return false;
+	UIControl::LoadFromYamlNode(node, loader);
 		
 	const YamlNode * orientNode = node->Get("orientation");
 	if (orientNode)
@@ -164,17 +163,13 @@ bool UIScrollBar::LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader 
         String delegatePath = delegateNode->AsString();
         loader->AddScrollBarToLink(this,delegatePath);
     }
-
-    return true;
 }
 
-bool UIScrollBar::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader)
+YamlNode * UIScrollBar::SaveToYamlNode(UIYamlLoader * loader)
 {
 	slider->SetName(UISCROLLBAR_SLIDER_NAME);
 
-	if (!UIControl::SavePropertiesToYamlNode(node, defaultControl, loader))
-        return false;
-
+	YamlNode *node = UIControl::SaveToYamlNode(loader);
 	//Temp variables
 	String stringValue;
 
@@ -194,13 +189,15 @@ bool UIScrollBar::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultCon
 	}
 	node->Set("orientation", stringValue);
 
+
     if (delegate)
     {
-        //UIControl* delegateControl = dynamic_cast<UIControl*>(delegate);
-        //node->Set("linkedScrollBarDelegate", UIControlHelpers::GetControlPath(delegateControl, loader->GetRootControl()));
+        UIControl* delegateControl = dynamic_cast<UIControl*>(delegate);
+        node->Set("linkedScrollBarDelegate", UIControlHelpers::GetControlPath(delegateControl));
     }
-
-	return true;
+    
+    
+	return node;
 }
     
 void UIScrollBar::Input(UIEvent *currentInput)

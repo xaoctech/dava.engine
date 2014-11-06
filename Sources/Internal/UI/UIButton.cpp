@@ -593,10 +593,9 @@ UIButton::eButtonDrawState UIButton::GetActualTextBlockState(eButtonDrawState dr
     return drawState;
 }
 
-bool UIButton::LoadPropertiesFromYamlNode( const YamlNode *node, UIYamlLoader *loader )
+void UIButton::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
-    if (!UIControl::LoadPropertiesFromYamlNode(node, loader))
-        return false;
+    UIControl::LoadFromYamlNode(node, loader);
 
     for (int32 i = 0; i < STATE_COUNT; ++i)
     {
@@ -792,14 +791,11 @@ bool UIButton::LoadPropertiesFromYamlNode( const YamlNode *node, UIYamlLoader *l
             stateTextBlock->SetMultiline(multiline, multilineBySymbol);
         }
     }
-
-    return true;
 }
 
-bool UIButton::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader)
+YamlNode * UIButton::SaveToYamlNode(UIYamlLoader * loader)
 {
-    if (!UIControl::SavePropertiesToYamlNode(node, defaultControl, loader))
-        return false;
+    YamlNode *node = UIControl::SaveToYamlNode(loader);
 
     //Remove values of UIControl
     //UIButton has state specific properties
@@ -815,8 +811,8 @@ bool UIButton::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultContro
     node->RemoveNodeFromMap("spriteModification");
     node->RemoveNodeFromMap("margins");
     node->RemoveNodeFromMap("textMargins");
-
-    UIButton *baseControl = DynamicTypeCheck<UIButton *>(defaultControl);
+    
+    ScopedPtr<UIButton> baseControl( new UIButton() );
 
     //States cycle for values
     for (int32 i = 0; i < STATE_COUNT; ++i)
@@ -988,7 +984,7 @@ bool UIButton::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultContro
         }
     }
 
-    return true;
+    return node;
 }
 
 void UIButton::SetTextBlock( eButtonDrawState drawState, UIStaticText * newTextBlock )

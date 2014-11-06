@@ -276,8 +276,8 @@ public:
     virtual UIButton *Clone();
     virtual void CopyDataFrom(UIControl *srcControl);
 
-    virtual bool LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader);
-    virtual bool SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader);
+    virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
+    virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
 
     /**
      \brief Creates the background for the UIButton for particular state and caches it.
@@ -310,7 +310,6 @@ public:
 
     static eButtonDrawState ControlStateToDrawState(int32 state);
     static eControlState DrawStateToControlState(eButtonDrawState state);
-    
     static const String &DrawStatePostfix(eButtonDrawState state);
     static eButtonDrawState GetStateReplacer(eButtonDrawState drawState);
 private:

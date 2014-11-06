@@ -254,10 +254,9 @@ const UIControlBackground::UIMargins* UIStaticText::GetMargins() const
     return textBg->GetMargins();
 }
 
-bool UIStaticText::LoadPropertiesFromYamlNode( const YamlNode *node, UIYamlLoader *loader )
+void UIStaticText::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
-    if (!UIControl::LoadPropertiesFromYamlNode(node, loader))
-        return false;
+    UIControl::LoadFromYamlNode(node, loader);
 
     const YamlNode * fontNode = node->Get("font");
     const YamlNode * textNode = node->Get("text");
@@ -336,19 +335,16 @@ bool UIStaticText::LoadPropertiesFromYamlNode( const YamlNode *node, UIYamlLoade
     	GetTextBackground()->SetPerPixelAccuracyType((UIControlBackground::ePerPixelAccuracyType)loader->GetPerPixelAccuracyTypeFromNode(textPerPixelAccuracyTypeNode));
 	    GetShadowBackground()->SetPerPixelAccuracyType((UIControlBackground::ePerPixelAccuracyType)loader->GetPerPixelAccuracyTypeFromNode(textPerPixelAccuracyTypeNode));
     }
-
-    return true;
 }
 
-bool UIStaticText::SavePropertiesToYamlNode( YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader )
+YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
 {
-    if (!UIControl::SavePropertiesToYamlNode(node, defaultControl, loader))
-        return false;
+    YamlNode *node = UIControl::SaveToYamlNode(loader);
     
     // UIStaticText has its own default value for Pixel Accuracy
     node->RemoveNodeFromMap("perPixelAccuracy");
 
-    UIStaticText *baseControl = DynamicTypeCheck<UIStaticText *>(defaultControl);
+    ScopedPtr<UIStaticText> baseControl(new UIStaticText());
     //Font
     //Get font name and put it here
     node->Set("font", FontManager::Instance()->GetFontName(this->GetFont()));
@@ -445,7 +441,7 @@ bool UIStaticText::SavePropertiesToYamlNode( YamlNode *node, UIControl *defaultC
         node->Set("textMargins", &textMarginsVariant);
     }
 
-    return true;
+    return node;
 }
 
 Animation * UIStaticText::TextColorAnimation(const Color & finalColor, float32 time, Interpolation::FuncType interpolationFunc /*= Interpolation::LINEAR*/, int32 track /*= 0*/)

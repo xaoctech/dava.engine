@@ -78,9 +78,9 @@ public:
 	
 	virtual List<UIControl* > GetSubcontrols();
 	
-    virtual bool LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader);
-    virtual bool SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader);
+	virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
     virtual void LoadFromYamlNodeCompleted();
+	virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
 	
     void Input(UIEvent *currentInput);
 

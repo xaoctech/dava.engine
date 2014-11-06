@@ -570,10 +570,9 @@ void UITextField::RenderText()
 #endif
 }
 
-bool UITextField::LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader)
+void UITextField::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
-    if (!UIControl::LoadPropertiesFromYamlNode(node, loader))
-        return false;
+	UIControl::LoadFromYamlNode(node, loader);
 
     const YamlNode * textNode = node->Get("text");
 	if (textNode)
@@ -696,15 +695,13 @@ bool UITextField::LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader 
 		// TODO
 	InitAfterYaml();
 #endif
-    return true;
 }
 
-bool UITextField::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader)
+YamlNode * UITextField::SaveToYamlNode(UIYamlLoader * loader)
 {
-    if (!UIControl::SavePropertiesToYamlNode(node, defaultControl, loader))
-        return false;
+    ScopedPtr<UITextField> baseTextField(new UITextField());
 
-    UITextField *baseTextField = DynamicTypeCheck<UITextField *>(defaultControl);
+    YamlNode *node = UIControl::SaveToYamlNode(loader);
 
     //Text
     if (baseTextField->GetText() != this->GetText())
@@ -786,7 +783,13 @@ bool UITextField::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultCon
         node->Set("enableReturnKeyAutomatically", IsEnableReturnKeyAutomatically());
     }
 
-    return true;
+    // Max length.
+    if (baseTextField->GetMaxLength() != GetMaxLength())
+    {
+        node->Set("maxLength", GetMaxLength());
+    }
+
+    return node;
 }
 
 List<UIControl* >& UITextField::GetRealChildren()

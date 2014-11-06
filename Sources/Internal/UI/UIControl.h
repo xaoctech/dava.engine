@@ -1253,11 +1253,12 @@ protected:
 
 public:
 
+        //TODO: Борода напиши дескрипшн.
+    virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
     /**
      \brief Save the control to YAML node and return it.
      */
-    virtual bool LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader);
-    virtual bool SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader);
+    virtual YamlNode* SaveToYamlNode(UIYamlLoader * loader);
 
     /**
      \brief Called when this control and his children are loaded.
@@ -1392,6 +1393,10 @@ protected:
     void SetParent(UIControl *newParent);
 
     virtual ~UIControl();
+
+    // Set the preferred node type. Needed for saving controls to Yaml while taking
+    // custom controls into account.
+    void SetPreferredNodeType(YamlNode* node, const String& nodeTypeName);
 
     void RegisterInputProcessor();
     void RegisterInputProcessors(int32 processorsCount);

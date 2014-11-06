@@ -65,8 +65,8 @@ public:
 	virtual void SetPosition(const Vector2 &position, bool positionInAbsoluteCoordinates = false);
 	virtual void SetSize(const Vector2 &newSize);
 
-    virtual bool LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader);
-    virtual bool SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader);
+    virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
+	virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
 
     virtual UIControl* Clone();
     virtual void CopyDataFrom(UIControl *srcControl);
