@@ -60,7 +60,7 @@ void UITextFieldDelegate::TextFieldLostFocus(UITextField * /*textField*/)
 {
 };
 
-bool UITextFieldDelegate::TextFieldKeyPressed(UITextField * /*textField*/, int32 /*replacementLocation*/, int32 /*replacementLength*/, const WideString & /*replacementString*/)
+bool UITextFieldDelegate::TextFieldKeyPressed(UITextField * /*textField*/, int32 /*replacementLocation*/, int32 /*replacementLength*/, WideString & /*replacementString*/)
 {
 	return true;
 }
@@ -117,7 +117,7 @@ UITextField::UITextField(const Rect &rect, bool rectInAbsoluteCoordinates/*= fal
 #endif
     
     cursorTime = 0;
-    showCursor = true;    
+    showCursor = true;
 }
 
 UITextField::UITextField()
@@ -675,6 +675,12 @@ bool UITextField::LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader 
 	}
     //InitAfterYaml();
 
+    const YamlNode* maxLengthNode = node->Get("maxLength");
+    if (maxLengthNode)
+    {
+        SetMaxLength(maxLengthNode->AsInt32());
+    }
+
 #if 0
 	const YamlNode * orientNode = node->Get("orientation");
 	if (orientNode)
@@ -701,7 +707,11 @@ bool UITextField::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultCon
     //UITextField *baseControl = DynamicTypeCheck<UITextField *>(defaultControl);
 
     //Text
-    node->Set("text", GetText());
+    if (baseTextField->GetText() != this->GetText())
+    {
+        nodeValue->SetWideString(this->GetText());
+        node->Set("text", nodeValue);
+    }
 
     //Font
     //Get font name and put it here
@@ -709,33 +719,76 @@ bool UITextField::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultCon
 	
 	//TextColor
 	const Color &textColor = GetTextColor();
-	node->Set("textcolor", VariantType(textColor));
+    if (baseTextField->GetTextColor() != textColor)
+    {
+        nodeValue->SetColor(textColor);
+        node->Set("textcolor", nodeValue);
+    }
 
 	// ShadowColor
 	const Color &shadowColor = GetShadowColor();
-	node->Set("shadowcolor", VariantType(shadowColor));
+    if (baseTextField->GetShadowColor() != GetShadowColor())
+    {
+        nodeValue->SetColor(shadowColor);
+        node->Set("shadowcolor", nodeValue);
+    }
 
 	// ShadowOffset
-	node->Set("shadowoffset", GetShadowOffset());
+    if (baseTextField->GetShadowOffset() != GetShadowOffset())
+    {
+        nodeValue->SetVector2(GetShadowOffset());
+        node->Set("shadowoffset", nodeValue);
+    }
 
 	// Text align
-	node->SetNodeToMap("textalign", loader->GetAlignNodeValue(this->GetTextAlign()));
+    if (baseTextField->GetTextAlign() != GetTextAlign())
+    {
+        node->SetNodeToMap("textalign", loader->GetAlignNodeValue(GetTextAlign()));
+    }
 
 	// Draw Type must be overwritten fot UITextField.
-	UIControlBackground::eDrawType drawType =  this->GetBackground()->GetDrawType();
-	node->Set("drawType", loader->GetDrawTypeNodeValue(drawType));
+	UIControlBackground::eDrawType drawType = GetBackground()->GetDrawType();
     
+    if (baseTextField->GetBackground()->GetDrawType() != drawType)
+    {
+        node->Set("drawType", loader->GetDrawTypeNodeValue(drawType));
+    }
+
     // Is password
-    node->Set("isPassword", isPassword);
+    if (baseTextField->IsPassword() != IsPassword())
+    {
+        node->Set("isPassword", IsPassword());
+    }
 
 	// Keyboard customization params.
-	node->Set("autoCapitalizationType", autoCapitalizationType);
-	node->Set("autoCorrectionType", autoCorrectionType);
-	node->Set("spellCheckingType", spellCheckingType);
-	node->Set("keyboardAppearanceType", keyboardAppearanceType);
-	node->Set("keyboardType", keyboardType);
-	node->Set("returnKeyType", returnKeyType);
-	node->Set("enableReturnKeyAutomatically", enableReturnKeyAutomatically);
+    if (baseTextField->GetAutoCapitalizationType() != GetAutoCapitalizationType())
+    {
+        node->Set("autoCapitalizationType", GetAutoCapitalizationType());
+    }
+    if (baseTextField->GetAutoCorrectionType() != GetAutoCorrectionType())
+    {
+        node->Set("autoCorrectionType", GetAutoCorrectionType());
+    }
+    if (baseTextField->GetSpellCheckingType() != GetSpellCheckingType())
+    {
+        node->Set("spellCheckingType", GetSpellCheckingType());
+    }
+    if (baseTextField->GetKeyboardAppearanceType() != GetKeyboardAppearanceType())
+    {
+        node->Set("keyboardAppearanceType", GetKeyboardAppearanceType());
+    }
+    if (baseTextField->GetKeyboardType() != GetKeyboardType())
+    {
+        node->Set("keyboardType", GetKeyboardType());
+    }
+    if (baseTextField->GetReturnKeyType() != GetReturnKeyType())
+    {
+        node->Set("returnKeyType", GetReturnKeyType());
+    }
+    if (baseTextField->IsEnableReturnKeyAutomatically() != IsEnableReturnKeyAutomatically())
+    {
+        node->Set("enableReturnKeyAutomatically", IsEnableReturnKeyAutomatically());
+    }
 
     return true;
 }
@@ -991,6 +1044,7 @@ void UITextField::WillBecomeInvisible()
     staticText->SetVisible(false);
 #endif
 }
+    
 
 String UITextField::GetFontPresetName() const
 {
