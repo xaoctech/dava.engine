@@ -444,6 +444,16 @@ void UIYamlLoader::Load(UIControl * rootControl, const FilePath & yamlPathname, 
     loader->Release();
 }
 
+bool UIYamlLoader::Save(UIControl * rootControl, const FilePath & yamlPathname, bool skipRootNode)
+{
+    UIYamlLoader * loader = new UIYamlLoader();
+
+    bool savedOK = loader->ProcessSave(rootControl, yamlPathname, skipRootNode);
+
+    loader->Release();
+    return savedOK;
+}
+
 YamlNode *UIYamlLoader::CreateRootNode(const FilePath & yamlPathname)
 {
     YamlParser * parser = YamlParser::Create(yamlPathname);
@@ -503,6 +513,26 @@ void UIYamlLoader::SetScrollBarDelegates(UIControl * rootControl)
         it->first->SetDelegate( dynamic_cast<UIScrollBarDelegate*>(control));
     }
     scrollsToLink.clear();
+}
+
+bool UIYamlLoader::ProcessSave(UIControl * rootControl, const FilePath & yamlPathname, bool skipRootNode)
+{
+    uint64 t1 = SystemTimer::Instance()->AbsoluteMS();
+
+    DVASSERT(rootControl);
+    YamlNode* resultNode = SaveToNode(rootControl, NULL);
+
+    uint32 fileAttr = File::CREATE | File::WRITE;
+
+    // Save the resulting YAML file to the path passed.
+    bool savedOK = YamlEmitter::SaveToYamlFile(yamlPathname, resultNode, fileAttr);
+
+    SafeRelease(resultNode);
+
+    uint64 t2 = SystemTimer::Instance()->AbsoluteMS();
+    Logger::FrameworkDebug("Save of %s time: %lld", yamlPathname.GetAbsolutePathname().c_str(), t2 - t1);
+
+    return savedOK;
 }
 
 void UIYamlLoader::LoadFontsFromNode(const YamlNode * rootNode)
@@ -639,7 +669,7 @@ void UIYamlLoader::LoadFromNode(UIControl * parentControl, const YamlNode * root
         }
 
         control->SetName(rootNode->GetItemKeyName(k));
-        DVVERIFY(control->LoadPropertiesFromYamlNode(node, this));
+        control->LoadFromYamlNode(node, this);
         parentControl->AddControl(control);
 
         const YamlNode *childrenNode = node->Get("children");
@@ -693,6 +723,37 @@ UIControl* UIYamlLoader::CreateControl(const String& type, const String& baseTyp
 
     // A NULL might be here too.
     return control;
+}
+
+YamlNode* UIYamlLoader::SaveToNode(UIControl * parentControl, YamlNode * parentNode)
+{
+    // Save ourselves and all children.
+    YamlNode* childNode = parentControl->SaveToYamlNode(this);
+    if (parentNode && parentNode->GetType() == YamlNode::TYPE_MAP)
+    {
+        parentNode->AddNodeToMap(parentControl->GetName(), childNode);
+    }
+
+    SaveChildren(parentControl, childNode);
+
+    return childNode;
+}
+
+void UIYamlLoader::SaveChildren(UIControl* parentControl, YamlNode * parentNode)
+{
+    const List<UIControl*>& children = parentControl->GetRealChildren();
+    if (children.empty())
+        return;
+
+    YamlNode *childrenNode = YamlNode::CreateMapNode(false);
+
+    for (List<UIControl*>::const_iterator childIter = children.begin(); childIter != children.end(); childIter ++)
+    {
+        UIControl* childControl = (*childIter);
+        SaveToNode(childControl, childrenNode);
+    }
+
+    parentNode->Add("children", childrenNode);
 }
 
 void UIYamlLoader::SetAssertIfCustomControlNotFound(bool value)

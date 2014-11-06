@@ -662,10 +662,9 @@ void UIList::SystemWillAppear()
     Refresh();
 }
 
-bool UIList::LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader)
+void UIList::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
-    if (!UIControl::LoadPropertiesFromYamlNode(node, loader))
-        return false;
+    UIControl::LoadFromYamlNode(node, loader);
 
     const YamlNode * orientNode = node->Get("orientation");
     if (orientNode)
@@ -688,8 +687,6 @@ bool UIList::LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *load
 
     // TODO
     InitAfterYaml();
-
-    return true;
 }
 
 UIControl *UIList::Clone()
@@ -718,11 +715,9 @@ void UIList::SetAggregatorPath(const FilePath &aggregatorPath)
     this->aggregatorPath = aggregatorPath;
 }
 
-bool UIList::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader)
+YamlNode * UIList::SaveToYamlNode(UIYamlLoader * loader)
 {
-    if (!UIControl::SavePropertiesToYamlNode(node, defaultControl, loader))
-        return false;
-
+    YamlNode *node = UIControl::SaveToYamlNode(loader);
     //Temp variables
     String stringValue;
 
@@ -754,7 +749,7 @@ bool UIList::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl,
         node->Set("aggregatorPath", aggregatorPath.GetFrameworkPath());
     }
 
-    return true;
+    return node;
 }
 
 float32 UIList::VisibleAreaSize(UIScrollBar *forScrollBar)

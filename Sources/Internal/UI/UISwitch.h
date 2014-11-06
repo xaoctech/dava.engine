@@ -59,11 +59,11 @@ protected:
 public:
     UISwitch(const Rect &rect = Rect(), bool rectInAbsoluteCoordinates = false);
 
+    virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
+    virtual void LoadFromYamlNodeCompleted();
     virtual void CopyDataFrom(DAVA::UIControl *srcControl);
 
-    virtual bool LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader);
-    virtual bool SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader);
-    virtual void LoadFromYamlNodeCompleted();
+	YamlNode * SaveToYamlNode(UIYamlLoader * loader);
 
     virtual List<UIControl* > GetSubcontrols();
 	virtual void AddControl(UIControl *control);

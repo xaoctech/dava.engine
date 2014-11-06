@@ -292,10 +292,9 @@ void UIJoypad::InputCancelled(UIEvent *currentInput)
 	}
 }
 
-bool UIJoypad::LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader)
+void UIJoypad::LoadFromYamlNode(const DAVA::YamlNode *node, DAVA::UIYamlLoader *loader)
 {
-    if (!UIControl::LoadPropertiesFromYamlNode(node, loader))
-        return false;
+    UIControl::LoadFromYamlNode(node, loader);
 
     const YamlNode * stickSpriteNode = node->Get("stickSprite");
     const YamlNode * stickFrameNode = node->Get("stickFrame");
@@ -322,16 +321,14 @@ bool UIJoypad::LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *lo
     {
         SetDigitalSense(digitalSenseNode->AsFloat());
     }
-
-    return true;
 }
 
-bool UIJoypad::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader)
+YamlNode*  UIJoypad::SaveToYamlNode(DAVA::UIYamlLoader *loader)
 {
-    if (!UIControl::SavePropertiesToYamlNode(node, defaultControl, loader))
-        return false;
+    ScopedPtr<UIJoypad> baseControl(new UIJoypad());
+
+    YamlNode *node = UIControl::SaveToYamlNode(loader);
     
-    UIJoypad *baseControl = DynamicTypeCheck<UIJoypad *>(defaultControl);
     // Sprite
     if (stick && stick->GetSprite())
     {
@@ -349,7 +346,7 @@ bool UIJoypad::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultContro
         node->Set("digitalSense", GetDigitalSense());
     }
 
-    return true;
+    return node;
 }
     
 List<UIControl* >& UIJoypad::GetRealChildren()

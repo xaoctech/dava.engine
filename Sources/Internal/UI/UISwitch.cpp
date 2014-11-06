@@ -129,23 +129,24 @@ void UISwitch::ReleaseControls()
     SafeRelease(toggle);
 }
 
-bool UISwitch::LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader)
+void UISwitch::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
     //release default buttons - they have to be loaded from yaml
     RemoveControl(buttonLeft);
     RemoveControl(buttonRight);
     RemoveControl(toggle);
     ReleaseControls();
-    return UIControl::LoadPropertiesFromYamlNode(node, loader);
+    UIControl::LoadFromYamlNode(node, loader);
 }
 
-bool UISwitch::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader)
+YamlNode * UISwitch::SaveToYamlNode(UIYamlLoader * loader)
 {
     buttonLeft->SetName(UISWITCH_BUTTON_LEFT_NAME);
 	toggle->SetName(UISWITCH_BUTTON_TOGGLE_NAME);
 	buttonRight->SetName(UISWITCH_BUTTON_RIGHT_NAME);
 
-    return UIControl::SavePropertiesToYamlNode(node, defaultControl, loader);
+	YamlNode *node = UIControl::SaveToYamlNode(loader);
+	return node;
 }
 
 void UISwitch::AddControl(UIControl *control)

@@ -51,19 +51,16 @@ UIControl* UIAggregatorControl::Clone()
 	return c;
 }
 
-bool UIAggregatorControl::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader)
+YamlNode* UIAggregatorControl::SaveToYamlNode(UIYamlLoader * loader)
 {
-	if (!UIControl::SavePropertiesToYamlNode(node, defaultControl, loader))
-        return false;
-
+	YamlNode* node = UIControl::SaveToYamlNode(loader);
 	node->Set(AGGREGATOR_PATH, aggregatorPath.GetFrameworkPath());
-	return true;
+	return node;
 }
 
-bool UIAggregatorControl::LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader)
+void UIAggregatorControl::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
-	if (!UIControl::LoadPropertiesFromYamlNode(node, loader))
-        return false;
+	UIControl::LoadFromYamlNode(node, loader);
 	
 	const YamlNode * pathNode = node->Get(AGGREGATOR_PATH);
 	if (pathNode)
@@ -72,8 +69,6 @@ bool UIAggregatorControl::LoadPropertiesFromYamlNode(const YamlNode *node, UIYam
 		// DF-2230 - Pass relative path to loader
 		UIYamlLoader::Load(this, aggregatorPath, loader->GetAssertIfCustomControlNotFound());
 	}
-
-    return true;
 }
 
 List<UIControl* >& UIAggregatorControl::GetRealChildren()

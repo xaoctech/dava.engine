@@ -253,26 +253,27 @@ const Vector2 UIScrollView::GetContentSize() const
 	return Vector2(contentRect.dx, contentRect.dy);
 }
 		
-bool UIScrollView::LoadPropertiesFromYamlNode(const YamlNode *node, UIYamlLoader *loader)
+void UIScrollView::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
 	RemoveControl(scrollContainer);
 	SafeRelease(scrollContainer);
 
-    return UIControl::LoadPropertiesFromYamlNode(node, loader);
+    UIControl::LoadFromYamlNode(node, loader);
 }
 
 void UIScrollView::LoadFromYamlNodeCompleted()
 {
 }
 
-bool UIScrollView::SavePropertiesToYamlNode(YamlNode *node, UIControl *defaultControl, const UIYamlLoader *loader)
+YamlNode * UIScrollView::SaveToYamlNode(UIYamlLoader * loader)
 {
     if (scrollContainer)
     {
         scrollContainer->SetName(UISCROLL_VIEW_CONTAINER_NAME);
     }
     
-    return UIControl::SavePropertiesToYamlNode(node, defaultControl, loader);
+    YamlNode *node = UIControl::SaveToYamlNode(loader);
+    return node;
 }
 
 void UIScrollView::RecalculateContentSize()
