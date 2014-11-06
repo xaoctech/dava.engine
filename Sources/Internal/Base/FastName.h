@@ -31,6 +31,8 @@
 #ifndef __DAVAENGINE_FAST_NAME__
 #define __DAVAENGINE_FAST_NAME__
 
+#include <stdlib.h>
+
 #include "Base/HashMap.h"
 #include "Base/StaticSingleton.h"
 

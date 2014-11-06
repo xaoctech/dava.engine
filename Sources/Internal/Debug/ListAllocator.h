@@ -31,6 +31,7 @@
 #define __DAVAENGINE_LIST_ALLOCATOR_H__
 
 #include "Base/BaseTypes.h"
+#include <stdlib.h>
 
 namespace DAVA 
 {
