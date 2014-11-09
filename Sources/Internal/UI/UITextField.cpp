@@ -801,7 +801,7 @@ List<UIControl* >& UITextField::GetRealChildren()
 	return realChildren;
 }
 
-UIControl* UITextField::Clone()
+UITextField* UITextField::Clone()
 {
 	UITextField *t = new UITextField();
 	t->CopyDataFrom(this);
