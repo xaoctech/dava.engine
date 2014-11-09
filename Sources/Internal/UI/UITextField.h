@@ -327,7 +327,7 @@ public:
 	 */
 	virtual List<UIControl* >& GetRealChildren();
 	
-	virtual UIControl *Clone();
+	virtual UITextField *Clone();
 	virtual void CopyDataFrom(UIControl *srcControl);
 
     // Cursor control.
@@ -381,16 +381,17 @@ private:
 public:
     INTROSPECTION_EXTEND(UITextField, UIControl,
         PROPERTY("text", "Text", GetText, SetText, I_SAVE | I_VIEW | I_EDIT)
-        PROPERTY("font", "Font", GetFontPresetName, SetFontPresetName, I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("font", "Font preset", GetFontPresetName, SetFontPresetName, I_SAVE | I_VIEW | I_EDIT)
         PROPERTY("textalign", InspDesc("Text Align", GlobalEnumMap<eAlign>::Instance(), InspDesc::T_FLAGS), GetTextAlign, SetTextAlign, I_SAVE | I_VIEW | I_EDIT)
-        PROPERTY("textcolor", "textcolor", GetTextColor, SetTextColor, I_SAVE | I_VIEW | I_EDIT)
-        PROPERTY("isPassword"            , "isPassword"                                                                          , IsPassword               , SetIsPassword             , I_SAVE | I_VIEW | I_EDIT)
-        PROPERTY("autoCapitalizationType", InspDesc("autoCapitalizationType", GlobalEnumMap<eAutoCapitalizationType>::Instance()), GetAutoCapitalizationType, SetAutoCapitalizationType , I_SAVE | I_VIEW | I_EDIT)
-        PROPERTY("autoCorrectionType"    , InspDesc("autoCorrectionType"    , GlobalEnumMap<eAutoCorrectionType>::Instance())    , GetAutoCorrectionType    , SetAutoCorrectionType     , I_SAVE | I_VIEW | I_EDIT)
-        PROPERTY("spellCheckingType"     , InspDesc("spellCheckingType"     , GlobalEnumMap<eSpellCheckingType>::Instance())     , GetSpellCheckingType     , SetSpellCheckingType      , I_SAVE | I_VIEW | I_EDIT)
-        PROPERTY("keyboardAppearanceType", InspDesc("keyboardAppearanceType", GlobalEnumMap<eKeyboardAppearanceType>::Instance()), GetKeyboardAppearanceType, SetKeyboardAppearanceType , I_SAVE | I_VIEW | I_EDIT)
-        PROPERTY("keyboardType"          , InspDesc("keyboardType"          , GlobalEnumMap<eKeyboardType>::Instance())          , GetKeyboardType          , SetKeyboardType           , I_SAVE | I_VIEW | I_EDIT)
-        PROPERTY("returnKeyType"         , InspDesc("returnKeyType"         , GlobalEnumMap<eReturnKeyType>::Instance())         , GetReturnKeyType         , SetReturnKeyType          , I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("textcolor", "Text color", GetTextColor, SetTextColor, I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("maxLength", "Max text lenght", GetMaxLength, SetMaxLength, I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("isPassword", "Is password", IsPassword, SetIsPassword, I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("autoCapitalizationType", InspDesc("Auto capitalization type", GlobalEnumMap<eAutoCapitalizationType>::Instance()), GetAutoCapitalizationType, SetAutoCapitalizationType , I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("autoCorrectionType"    , InspDesc("Auto correction type"    , GlobalEnumMap<eAutoCorrectionType>::Instance())    , GetAutoCorrectionType    , SetAutoCorrectionType     , I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("spellCheckingType"     , InspDesc("Spell checking type"     , GlobalEnumMap<eSpellCheckingType>::Instance())     , GetSpellCheckingType     , SetSpellCheckingType      , I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("keyboardAppearanceType", InspDesc("Keyboard appearance type", GlobalEnumMap<eKeyboardAppearanceType>::Instance()), GetKeyboardAppearanceType, SetKeyboardAppearanceType , I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("keyboardType"          , InspDesc("Keyboard type"           , GlobalEnumMap<eKeyboardType>::Instance())          , GetKeyboardType          , SetKeyboardType           , I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("returnKeyType"         , InspDesc("Return key type"         , GlobalEnumMap<eReturnKeyType>::Instance())         , GetReturnKeyType         , SetReturnKeyType          , I_SAVE | I_VIEW | I_EDIT)
         );
 };
 

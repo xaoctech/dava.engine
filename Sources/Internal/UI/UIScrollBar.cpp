@@ -174,7 +174,7 @@ YamlNode * UIScrollBar::SaveToYamlNode(UIYamlLoader * loader)
 	String stringValue;
 
 	//Orientation
-	eScrollOrientation orient = this->GetOrientation();
+	eScrollOrientation orient = (eScrollOrientation)GetOrientation();
 	switch(orient)
 	{
 		case ORIENTATION_VERTICAL:
@@ -368,14 +368,14 @@ void UIScrollBar::Draw(const UIGeometricData &geometricData)
     UIControl::Draw(geometricData);
 }
 
-UIScrollBar::eScrollOrientation UIScrollBar::GetOrientation() const
+int32 UIScrollBar::GetOrientation() const
 {
-	return (eScrollOrientation)orientation;
+	return orientation;
 }
 
-void UIScrollBar::SetOrientation(eScrollOrientation value)
+void UIScrollBar::SetOrientation(int32 value)
 {
-	orientation = value;
+	orientation = (eScrollOrientation)value;
 }
 
 float32 UIScrollBar::GetValidSliderSize(float32 size)
