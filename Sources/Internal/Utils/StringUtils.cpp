@@ -47,30 +47,30 @@ void StringUtils::GetLineBreaks(const WideString& string, Vector<uint8>& breaks,
 #endif
 }
 
-void StringUtils::Trim(WideString& string)
+WideString StringUtils::Trim(const WideString& string)
 {
-    WideString::iterator it = string.begin();
-    WideString::iterator end = string.end();
-    WideString::reverse_iterator rit = string.rbegin();
+    WideString::const_iterator it = string.begin();
+    WideString::const_iterator end = string.end();
+    WideString::const_reverse_iterator rit = string.rbegin();
     while (it != end && iswspace(*it)) ++it;
     while (rit.base() != it && iswspace(*rit)) ++rit;
-    string.erase(it, rit.base());
+    return WideString(it, rit.base());
 }
 
-void StringUtils::TrimLeft(WideString& string)
+WideString StringUtils::TrimLeft(const WideString& string)
 {
-    WideString::iterator it = string.begin();
-    WideString::iterator end = string.end();
+    WideString::const_iterator it = string.begin();
+    WideString::const_iterator end = string.end();
     while (it != end && iswspace(*it)) ++it;
-    string.erase(string.begin(), it);
+    return WideString(it, end);
 }
 
-void StringUtils::TrimRight(WideString& string)
+WideString StringUtils::TrimRight(const WideString& string)
 {
-    WideString::reverse_iterator it = string.rbegin();
-    WideString::reverse_iterator end = string.rend();
-    while (it != end && iswspace(*it)) ++it;
-    string.erase(it.base(), string.end());
+    WideString::const_reverse_iterator rit = string.rbegin();
+    WideString::const_reverse_iterator rend = string.rend();
+    while (rit != rend && iswspace(*rit)) ++rit;
+    return WideString(rend.base(), rit.base());
 }
 
 bool StringUtils::BiDiPrepare(const WideString& logicalStr, WideString& preparedStr, bool* isRTL)

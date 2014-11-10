@@ -48,7 +48,7 @@
 namespace DAVA 
 {
 
-bool TextBlock::isBiDiSupportEnabled = false;
+bool TextBlock::isBiDiSupportEnabled = true;    //!< Enable BiDi support by default
 
 struct TextBlockData
 {
@@ -1108,7 +1108,7 @@ void TextBlock::CleanLine(WideString& string, bool trimRight)
 {
     if (trimRight)
     {
-        StringUtils::TrimRight(string);
+        string.swap(StringUtils::TrimRight(string));
     }
 
     WideString::iterator it = string.begin();
