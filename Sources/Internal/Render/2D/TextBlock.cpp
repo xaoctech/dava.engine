@@ -1108,7 +1108,8 @@ void TextBlock::CleanLine(WideString& string, bool trimRight)
 {
     if (trimRight)
     {
-        string.swap(StringUtils::TrimRight(string));
+    	WideString trimed = StringUtils::TrimRight(string);
+        string.swap(trimed);
     }
 
     WideString::iterator it = string.begin();
