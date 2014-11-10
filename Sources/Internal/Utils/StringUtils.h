@@ -65,19 +65,19 @@ void GetLineBreaks(const WideString& string, Vector<uint8>& breaks, const char8*
 * \brief Trims the given string.
 * \param [in,out] string The string.
 */
-void Trim(WideString& string);
+WideString Trim(const WideString& string);
 
 /**
 * \brief Trim left.
 * \param [in,out] string The string.
 */
-void TrimLeft(WideString& string);
+WideString TrimLeft(const WideString& string);
 
 /**
 * \brief Trim right.
 * \param [in,out] string The string.
 */
-void TrimRight(WideString& string);
+WideString TrimRight(const WideString& string);
 
 /**
  * \brief Query if 't' is space.

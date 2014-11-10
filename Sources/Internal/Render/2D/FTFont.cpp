@@ -367,7 +367,7 @@ Font::StringMetrics FTInternalFont::DrawString(const WideString& str, void * buf
     }
 
 	Font::StringMetrics metrics;
-	metrics.baseline =  (int32)ceilf((float32)faceBboxYMax / ftToPixelScale * virtualToPhysicalFactor);
+	metrics.baseline = (int32)ceilf((float32)faceBboxYMax / ftToPixelScale * virtualToPhysicalFactor);
 	metrics.height = baseSize;
     metrics.drawRect = Rect2i(0x7fffffff, 0x7fffffff, 0, baseSize); // Setup rect with maximum int32 value for x/y, and zero width
     
