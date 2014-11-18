@@ -27,72 +27,52 @@
 =====================================================================================*/
 
 
-
-#include "BaseScreen.h"
+#include "DAVAEngine.h"
 #include "GameCore.h"
+ 
+using namespace DAVA;
 
-int32 BaseScreen::globalScreenId = 1;
 
-BaseScreen::BaseScreen(const String & _screenName, int32 skipBeforeTests)
-    :   UIScreen()
+void FrameworkDidLaunched()
 {
-	SetName(_screenName);
+#if defined(__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
     
-    skipCount = skipBeforeTests;
-    skipCounter = 0;
-    readyForTests = false;
-
-    currentScreenId = globalScreenId++;
-    GameCore::Instance()->RegisterScreen(this);
-}
-
-BaseScreen::BaseScreen()
-    :   UIScreen()
-{
-    SetName("BaseScreen");
-
-    skipCount = 10;
-    skipCounter = 0;
-    readyForTests = false;
-
+#define WIDTH   960
+#define HEIGHT  640
     
-    currentScreenId = globalScreenId++;
-    GameCore::Instance()->RegisterScreen(this);
+    KeyedArchive * appOptions = new KeyedArchive();
+    appOptions->SetInt32("orientation", Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT);
+
+    appOptions->SetInt32("renderer", Core::RENDERER_OPENGL_ES_3_0);
+
+    appOptions->SetBool("iPhone_autodetectScreenScaleFactor", true);
+    appOptions->SetInt32("width", WIDTH);
+    appOptions->SetInt32("height", HEIGHT);
+
+    DAVA::Core::Instance()->SetVirtualScreenSize(WIDTH, HEIGHT);
+    DAVA::Core::Instance()->RegisterAvailableResourceSize(WIDTH, HEIGHT, "Gfx");
+
+#else
+    KeyedArchive * appOptions = new KeyedArchive();
+
+    appOptions->SetInt32("width",    1024);
+    appOptions->SetInt32("height", 768);
+
+    appOptions->SetInt32("fullscreen", 0);
+    appOptions->SetInt32("bpp", 32);
+    appOptions->SetString(String("title"), String("Unit Tests"));
+
+    DAVA::Core::Instance()->SetVirtualScreenSize(1024, 768);
+    DAVA::Core::Instance()->RegisterAvailableResourceSize(1024, 768, "Gfx");
+#endif 
+
+    GameCore * core = new GameCore();
+    DAVA::Core::SetApplicationCore(core);
+    DAVA::Core::Instance()->SetOptions(appOptions);
 }
 
-int32 BaseScreen::GetScreenId()
-{
-    return currentScreenId;
-}
 
-void BaseScreen::WillAppear()
+void FrameworkWillTerminate()
 {
-    skipCounter = 0;
-    readyForTests = (skipCounter == skipCount);
-}
 
-
-void BaseScreen::DidAppear()
-{
-    skipCounter = 0;
-    readyForTests = (skipCounter == skipCount);
-}
-
-bool BaseScreen::ReadyForTests()
-{
-    return readyForTests;
-}
-
-void BaseScreen::Update(float32 timeElapsed)
-{
-    if(!readyForTests)
-    {
-        ++skipCounter;
-        if(skipCount == skipCounter)
-        {
-            readyForTests = true;
-        }
-    }
-    
-    UIScreen::Update(timeElapsed);
 }
