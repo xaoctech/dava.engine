@@ -51,6 +51,13 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
     private static JNIActivity activity = null;
     protected static SingalStrengthListner singalStrengthListner = null;
     
+    private boolean isPausing = false;
+    
+    public boolean GetIsPausing()
+    {
+        return isPausing;
+    }
+
     public static JNIActivity GetActivity()
 	{
 		return activity;
@@ -182,7 +189,10 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
     @Override
     protected void onResume() 
     {
+        isPausing = false;
+        
         super.onResume();
+        
         // The activity has become visible (it is now "resumed").
 		Log.i(JNIConst.LOG_TAG, "[Activity::onResume] start");
 
@@ -218,6 +228,7 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
     @Override
     protected void onPause() 
     {
+        isPausing = true;
         super.onPause();
         // Another activity is taking focus (this activity is about to be "paused").
 
