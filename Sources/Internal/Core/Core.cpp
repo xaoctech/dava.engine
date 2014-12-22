@@ -171,6 +171,8 @@ void Core::CreateSingletons()
     new AutotestingSystem();
 #endif
 
+    Sprite::CreateRenderObject();
+
 	Thread::InitMainThread();
 
     new DownloadManager();
@@ -227,6 +229,8 @@ void Core::ReleaseSingletons()
 #if defined(__DAVAENGINE_ANDROID__)
     AssetsManager::Instance()->Release();
 #endif
+
+    Sprite::ReleaseRenderObject();
 }
 
 void Core::SetOptions(KeyedArchive * archiveOfOptions)

@@ -71,6 +71,10 @@ Sprite::DrawState::DrawState()
     //shader = SafeRetain(RenderManager::TEXTURE_MUL_FLAT_COLOR);
 }
 
+RenderDataObject* Sprite::spriteRenderObject = NULL;
+RenderDataStream* Sprite::vertexStream = NULL;
+RenderDataStream* Sprite::texCoordStream = NULL;
+
 Sprite::Sprite()
 {
 	textures = 0;
@@ -99,10 +103,6 @@ Sprite::Sprite()
 
 	resourceToVirtualFactor = 1.0f;
 	resourceToPhysicalFactor = 1.0f;
-
-	spriteRenderObject = new RenderDataObject();
-	vertexStream = spriteRenderObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 2, 0, 0);
-	texCoordStream  = spriteRenderObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, 0);
 
 	//pivotPoint = Vector2(0.0f, 0.0f);
 	defaultPivotPoint = Vector2(0.0f, 0.0f);
@@ -693,7 +693,6 @@ void Sprite::Clear()
 Sprite::~Sprite()
 {
     spriteMapMutex.Lock();
-    SafeRelease(spriteRenderObject);
     spriteMap.erase(FILEPATH_MAP_KEY(relativePathname));
     spriteMapMutex.Unlock();
 	Clear();
@@ -1187,11 +1186,14 @@ void Sprite::Draw(DrawState * state)
 		RenderManager::Instance()->ClipRect( clipRect );
 	}
 
-    RenderManager::Instance()->SetRenderState(state->renderState);
-	RenderManager::Instance()->SetTextureState(textureHandles[frameTextureIndex[frame]]);
-	RenderManager::Instance()->SetRenderData(spriteRenderObject);
-    RenderManager::Instance()->SetRenderEffect(state->shader);
- 	RenderManager::Instance()->DrawArrays(primitiveToDraw, 0, vertexCount);
+    if(clipPolygon || IsSpriteOnScreen())
+    {
+        RenderManager::Instance()->SetRenderState(state->renderState);
+        RenderManager::Instance()->SetTextureState(textureHandles[frameTextureIndex[frame]]);
+        RenderManager::Instance()->SetRenderData(spriteRenderObject);
+        RenderManager::Instance()->SetRenderEffect(state->shader);
+        RenderManager::Instance()->DrawArrays(primitiveToDraw, 0, vertexCount);
+    }
 
 	if( clipPolygon )
 	{
@@ -1698,6 +1700,44 @@ void Sprite::SetRelativePathname(const FilePath& path)
     spriteMap[FILEPATH_MAP_KEY(this->relativePathname)] = this;
     spriteMapMutex.Unlock();
     GetTexture()->SetPathname(path);
+}
+
+bool Sprite::IsSpriteOnScreen()
+{
+	if(RenderManager::Instance()->IsRenderTarget()) 
+		return true;
+
+	Rect clipRect = RenderManager::Instance()->currentClip;
+	if(clipRect.dx == -1)
+	{
+		clipRect.dx = Core::Instance()->GetVirtualScreenWidth();
+	}
+	if(clipRect.dy == -1)
+	{
+		clipRect.dy = Core::Instance()->GetVirtualScreenHeight();
+	}
+
+    float32 left = Min(Min(tempVertices[0], tempVertices[2]), Min(tempVertices[4], tempVertices[6]));
+    float32 right = Max(Max(tempVertices[0], tempVertices[2]), Max(tempVertices[4], tempVertices[6]));
+    float32 top = Min(Min(tempVertices[1], tempVertices[3]), Min(tempVertices[5], tempVertices[7]));
+    float32 bottom = Max(Max(tempVertices[1], tempVertices[3]), Max(tempVertices[5], tempVertices[7]));
+    
+	const Rect spriteRect(left, top, right - left, bottom - top);
+	return clipRect.RectIntersects(spriteRect);
+}
+
+void Sprite::CreateRenderObject()
+{
+	DVASSERT(spriteRenderObject == NULL && "Need be not initalized");
+	spriteRenderObject = new RenderDataObject();
+	vertexStream = spriteRenderObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 2, 0, 0);
+	texCoordStream  = spriteRenderObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, 0);
+}
+
+void Sprite::ReleaseRenderObject()
+{
+	vertexStream = texCoordStream = NULL;
+	SafeRelease(spriteRenderObject);
 }
 
 };
