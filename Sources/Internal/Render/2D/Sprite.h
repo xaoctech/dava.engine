@@ -279,7 +279,7 @@ public:
 	const FilePath & GetRelativePathname() const;
 
 	inline void PrepareSpriteRenderData(Sprite::DrawState * drawState);
-	RenderDataObject * spriteRenderObject;
+	static RenderDataObject * spriteRenderObject;
 
     /**
 	 \brief Removes all sprite data.
@@ -295,6 +295,9 @@ public:
 	 \brief Reloads all sprites.
 	 */
 	static void ReloadSprites();
+
+	static void CreateRenderObject();
+	static void ReleaseRenderObject();
 
 protected:
 	Sprite();
@@ -374,8 +377,8 @@ protected:
 //public:
 	float32 **rectsAndOffsets;
 
-	RenderDataStream * vertexStream;
-	RenderDataStream * texCoordStream;
+	static RenderDataStream * vertexStream;
+	static RenderDataStream * texCoordStream;
 	ePrimitiveType primitiveToDraw;
 	int32 vertexCount;
 
@@ -388,6 +391,8 @@ protected:
 	//static Vector<Vector2>
     
 private:
+	bool IsSpriteOnScreen();
+    
     FilePath  relativePathname;
 };
 
