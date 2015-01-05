@@ -26,54 +26,51 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "SnapToLandscapeControllerComponent.h"
+#include "FileSystem/KeyedArchive.h"
 
-#ifndef __SCENE_PREVIEW_CONTROL_H__
-#define __SCENE_PREVIEW_CONTROL_H__
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Systems/GlobalEventSystem.h"
 
-#include "DAVAEngine.h"
-#include "Scene3D/Systems/Controller/RotationControllerSystem.h"
 
-using namespace DAVA;
-
-class ScenePreviewControl: public UI3DView
+namespace DAVA
 {
-public:
     
-    enum eError
-    {
-        ERROR_WRONG_EXTENSION = 100,
-        ERROR_CANNOT_OPEN_FILE = 101
-    };
+SnapToLandscapeControllerComponent::SnapToLandscapeControllerComponent()
+    : Component()
+    , heightOnLandscape(0.f)
+{
     
-public:
-    ScenePreviewControl(const Rect & rect);
-    virtual ~ScenePreviewControl();
-    
-    virtual void Input(UIEvent * touch);
-    virtual void Update(float32 timeElapsed);
+}
 
-    int32 OpenScene(const FilePath &pathToFile);
-    void ReleaseScene();
-    void RecreateScene();
-    
-protected:
 
-    void CreateCamera();
-    void SetupCamera();
+Component * SnapToLandscapeControllerComponent::Clone(Entity * toEntity)
+{
+    SnapToLandscapeControllerComponent * component = new SnapToLandscapeControllerComponent();
+    component->SetEntity(toEntity);
+    component->heightOnLandscape = heightOnLandscape;
     
-    //scene controls
-    Scene * editorScene;
-    RotationControllerSystem * rotationSystem;
+    return component;
+}
+
+void SnapToLandscapeControllerComponent::SetHeightOnLandscape(float32 height)
+{
+    heightOnLandscape = height;
+    GlobalEventSystem::Instance()->Event(entity, EventSystem::SNAP_TO_LANDSCAPE_HEIGHT_CHANGED);
+}
+
     
-	Camera * activeCamera;
-    UI3DView * scene3dView;
+void SnapToLandscapeControllerComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+    Component::Serialize(archive, serializationContext);
+    archive->SetFloat("heightOnLandscape", heightOnLandscape);
+}
+
+void SnapToLandscapeControllerComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+    Component::Deserialize(archive, serializationContext);
+    heightOnLandscape = archive->GetFloat("heightOnLandscape", 0.f);
+}
     
-    FilePath currentScenePath;
-    Entity *rootNode;
-    
-    bool needSetCamera;
 };
 
-
-
-#endif // __SCENE_PREVIEW_CONTROL_H__

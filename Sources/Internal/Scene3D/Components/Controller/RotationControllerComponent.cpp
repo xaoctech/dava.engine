@@ -27,53 +27,18 @@
 =====================================================================================*/
 
 
-#ifndef __SCENE_PREVIEW_CONTROL_H__
-#define __SCENE_PREVIEW_CONTROL_H__
+#include "RotationControllerComponent.h"
 
-#include "DAVAEngine.h"
-#include "Scene3D/Systems/Controller/RotationControllerSystem.h"
-
-using namespace DAVA;
-
-class ScenePreviewControl: public UI3DView
+namespace DAVA
 {
-public:
     
-    enum eError
-    {
-        ERROR_WRONG_EXTENSION = 100,
-        ERROR_CANNOT_OPEN_FILE = 101
-    };
+Component * RotationControllerComponent::Clone(Entity * toEntity)
+{
+    RotationControllerComponent * component = new RotationControllerComponent();
+    component->SetEntity(toEntity);
     
-public:
-    ScenePreviewControl(const Rect & rect);
-    virtual ~ScenePreviewControl();
-    
-    virtual void Input(UIEvent * touch);
-    virtual void Update(float32 timeElapsed);
+    return component;
+}
 
-    int32 OpenScene(const FilePath &pathToFile);
-    void ReleaseScene();
-    void RecreateScene();
-    
-protected:
 
-    void CreateCamera();
-    void SetupCamera();
-    
-    //scene controls
-    Scene * editorScene;
-    RotationControllerSystem * rotationSystem;
-    
-	Camera * activeCamera;
-    UI3DView * scene3dView;
-    
-    FilePath currentScenePath;
-    Entity *rootNode;
-    
-    bool needSetCamera;
 };
-
-
-
-#endif // __SCENE_PREVIEW_CONTROL_H__
