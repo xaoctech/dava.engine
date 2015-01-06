@@ -13,11 +13,11 @@ import android.util.Log;
 import com.bda.controller.Controller;
 import com.bda.controller.IControllerService;
 
-public class SuperMogaHack {
+public class MogaFixForLollipop {
 	
     public static void init( Controller controller, Context context )
     {
-        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH )
+        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP )
         {
             boolean mIsBound = false;
             java.lang.reflect.Field fIsBound = null;
