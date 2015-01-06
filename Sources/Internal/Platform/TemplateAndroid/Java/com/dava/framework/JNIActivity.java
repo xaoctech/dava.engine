@@ -116,7 +116,14 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         mController = Controller.getInstance(this);
         if(mController != null)
         {
-        	MogaFixForLollipop.init(mController, this);
+            if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP )
+            {		
+        	    MogaFixForLollipop.init(mController, this);
+			}
+            else
+            {
+                mController.init();
+            }
         	mController.setListener(glView.mogaListener, new Handler());
         }
         
