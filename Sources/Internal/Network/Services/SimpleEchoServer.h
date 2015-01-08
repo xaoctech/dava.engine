@@ -26,62 +26,43 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_SERVICEREGISTRAR_H__
-#define __DAVAENGINE_SERVICEREGISTRAR_H__
+#ifndef __DAVAENGINE_SIMPLEECHOSERVER_H__
+#define __DAVAENGINE_SIMPLEECHOSERVER_H__
 
-#include <Base/BaseTypes.h>
-#include <Base/Function.h>
+#include <Network/NetService.h>
 
 namespace DAVA
 {
 namespace Net
 {
 
-struct IChannelListener;
-
-typedef Function<IChannelListener* (uint32 serviceId, void* context)> ServiceCreator;
-typedef Function<void (IChannelListener* obj, void* context)> ServiceDeleter;
-
-class ServiceRegistrar
+/*
+ This is a simple echo service: each recieved packet is sent back
+*/
+class SimpleEchoServer : public NetService
 {
-private:
-    struct Entry
-    {
-        Entry(uint32 id, ServiceCreator creatorFunc, ServiceDeleter deleterFunc);
-
-        uint32 serviceId;
-        ServiceCreator creator;
-        ServiceDeleter deleter;
-    };
-
-    friend bool operator == (const Entry& entry, uint32 serviceId);
-
 public:
-    bool Register(uint32 serviceId, ServiceCreator creator, ServiceDeleter deleter);
+    virtual void OnPacketReceived(IChannel* channel, const void* buffer, size_t length)
+    {
+        uint8* p = new uint8[length];
+        Memcpy(p, buffer, length);
 
-    IChannelListener* Create(uint32 serviceId, void* context) const;
-    bool Delete(uint32 serviceId, IChannelListener* obj, void* context) const;
+        buffers.push_back(std::make_pair(p, length));
+        Send(p, length);
+    }
+
+    virtual void PacketSent()
+    {
+        std::pair<const uint8*, size_t> item = buffers.front();
+        buffers.pop_front();
+        delete [] item.first;
+    }
 
 private:
-    const Entry* FindEntry(uint32 serviceId) const;
-
-private:
-    Vector<Entry> registrar;
+    Deque<std::pair<const uint8*, size_t>> buffers;
 };
-
-//////////////////////////////////////////////////////////////////////////
-inline ServiceRegistrar::Entry::Entry(uint32 id, ServiceCreator creatorFunc, ServiceDeleter deleterFunc)
-    : serviceId(id)
-    , creator(creatorFunc)
-    , deleter(deleterFunc)
-{}
-
-inline bool operator == (const ServiceRegistrar::Entry& entry, uint32 serviceId)
-{
-    return entry.serviceId == serviceId;
-}
 
 }   // namespace Net
 }   // namespace DAVA
 
-#endif  // __DAVAENGINE_SERVICEREGISTRAR_H__
+#endif  // __DAVAENGINE_SIMPLEECHOSERVER_H__
