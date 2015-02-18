@@ -26,63 +26,48 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __DAVAENGINE_UI_COMPONENT_H__
+#define __DAVAENGINE_UI_COMPONENT_H__
 
+#include "Entity/Component.h"
 
-#ifndef __ENTITY_GROUP_H__
-#define __ENTITY_GROUP_H__
-
-#include "Scene3D/Entity.h"
-
-struct EntityGroupItem 
+namespace DAVA
 {
-	EntityGroupItem() : entity(NULL)
-	{ }
+class UIControl;
 
-	EntityGroupItem(DAVA::Entity *_entity, DAVA::AABBox3 _bbox) 
-		: entity(_entity), bbox(_bbox)
-	{ }
-
-	DAVA::Entity *entity;
-	DAVA::AABBox3 bbox;
-};
-
-class EntityGroup
+class UIComponent : public Component
 {
 public:
-	EntityGroup();
-	EntityGroup(const EntityGroup &ss);
-	~EntityGroup();
+    UIComponent();
+    virtual ~UIComponent();
 
-	void Add(DAVA::Entity *entity, DAVA::AABBox3 entityBbox = DAVA::AABBox3());
-	void Add(const EntityGroupItem &groupItem);
-	void Rem(DAVA::Entity *entity);
-	void Clear();
+    void SetControl(UIControl* _control);
+    UIControl* GetControl() const;
 
-	size_t Size() const;
-	DAVA::Entity* GetEntity(size_t i) const;
+    virtual Component* Clone(Entity* toEntity);
+    virtual Component* Clone(UIControl * toControl) = 0;
 
-	EntityGroupItem* GetItem(size_t i) const;
+private:
+    UIControl* control;
 
-	DAVA::AABBox3 GetBbox(size_t i) const;
-	void SetBbox(size_t i, const DAVA::AABBox3 &entityBbox);
+public:
+    INTROSPECTION_EXTEND(UIComponent, Component,
+        MEMBER(control, "control", I_SAVE)
+        );
 
-    DAVA::AABBox3 GetCommonBbox() const;
-
-	DAVA::Vector3 GetZeroPos(size_t i) const;
-	DAVA::Vector3 GetCommonZeroPos() const;
-
-	bool HasEntity(DAVA::Entity *entity) const;
-	bool Index(DAVA::Entity *entity, size_t &index) const;
-
-	DAVA::Entity* IntersectedEntity(const EntityGroup *group) const;
-
-	EntityGroup& operator=(const EntityGroup &ss);
-	bool operator==(const EntityGroup &ss) const;
-    bool operator!=(const EntityGroup &ss) const;
-
-protected:
-	DAVA::Vector<EntityGroupItem> entities;
-	DAVA::AABBox3 entitiesBbox;
 };
 
-#endif // __ENTITY_GROUP_H__
+inline void UIComponent::SetControl(UIControl* _control)
+{
+    control = _control;
+}
+
+inline UIControl* UIComponent::GetControl() const
+{
+    return control;
+}
+
+}
+
+
+#endif //__DAVAENGINE_UI_COMPONENT_H__

@@ -26,63 +26,25 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "UIComponent.h"
+#include "UI/UIControl.h"
 
-
-#ifndef __ENTITY_GROUP_H__
-#define __ENTITY_GROUP_H__
-
-#include "Scene3D/Entity.h"
-
-struct EntityGroupItem 
+namespace DAVA
 {
-	EntityGroupItem() : entity(NULL)
-	{ }
 
-	EntityGroupItem(DAVA::Entity *_entity, DAVA::AABBox3 _bbox) 
-		: entity(_entity), bbox(_bbox)
-	{ }
-
-	DAVA::Entity *entity;
-	DAVA::AABBox3 bbox;
-};
-
-class EntityGroup
+UIComponent::UIComponent()
+    : control(NULL)
 {
-public:
-	EntityGroup();
-	EntityGroup(const EntityGroup &ss);
-	~EntityGroup();
+}
 
-	void Add(DAVA::Entity *entity, DAVA::AABBox3 entityBbox = DAVA::AABBox3());
-	void Add(const EntityGroupItem &groupItem);
-	void Rem(DAVA::Entity *entity);
-	void Clear();
+UIComponent::~UIComponent()
+{
+}
 
-	size_t Size() const;
-	DAVA::Entity* GetEntity(size_t i) const;
+Component* UIComponent::Clone(Entity* toEntity)
+{
+    // Empty stub
+    return NULL;
+}
 
-	EntityGroupItem* GetItem(size_t i) const;
-
-	DAVA::AABBox3 GetBbox(size_t i) const;
-	void SetBbox(size_t i, const DAVA::AABBox3 &entityBbox);
-
-    DAVA::AABBox3 GetCommonBbox() const;
-
-	DAVA::Vector3 GetZeroPos(size_t i) const;
-	DAVA::Vector3 GetCommonZeroPos() const;
-
-	bool HasEntity(DAVA::Entity *entity) const;
-	bool Index(DAVA::Entity *entity, size_t &index) const;
-
-	DAVA::Entity* IntersectedEntity(const EntityGroup *group) const;
-
-	EntityGroup& operator=(const EntityGroup &ss);
-	bool operator==(const EntityGroup &ss) const;
-    bool operator!=(const EntityGroup &ss) const;
-
-protected:
-	DAVA::Vector<EntityGroupItem> entities;
-	DAVA::AABBox3 entitiesBbox;
-};
-
-#endif // __ENTITY_GROUP_H__
+}
