@@ -26,43 +26,43 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __TEST_CHAIN_SCREEN_H__
-#define __TEST_CHAIN_SCREEN_H__
+#ifndef __TEST_CHOOSER_SCREEN_H__
+#define __TEST_CHOOSER_SCREEN_H__
 
 #include "DAVAEngine.h"
 #include "BaseScreen.h"
+#include "Tests/BaseTest.h"
 
-#include "Tests/PerfomanceTest.h"
-
-using namespace DAVA;
-
-class TestChainScreen : public BaseScreen
+class TestChooserScreen: public BaseScreen
 {
 public:
-	TestChainScreen(const Vector<BaseTest*>& testsChain);
+	TestChooserScreen(const Vector<BaseTest*>& testsChain);
 
-	virtual void OnStart(HashMap<String, BaseObject*>& params) override;
-	virtual void OnFinish(HashMap<String, BaseObject*>& params) override;
+	bool IsFinished() const override;
+	void OnFinish() override;
 
-	virtual void BeginFrame() override;
-	virtual void EndFrame() override;
-
-	virtual void Update(float32 timeElapsed) override;
-	virtual void Draw() override;
-
-	virtual bool IsFinished() const override;
+	BaseTest* GetTestForRun() const;
 
 protected:
-	virtual ~TestChainScreen();
+
+	void OnButtonPressed(BaseObject *obj, void *data, void *callerData);
+
+	void LoadResources() override;
+	void UnloadResources() override;
 
 private:
+	void CreateChooserUI();
 
-	Vector<BaseTest*> testsChain;
-	BaseTest* currentTest;
+	Vector<BaseTest*> testChain;
+	BaseTest* testForRun;
 
-	uint32 currentTestIndex;
-
-	bool testsFinished;
+	Font* chooserFont;
 };
 
+inline BaseTest* TestChooserScreen::GetTestForRun() const
+{
+	return testForRun;
+}
+
 #endif
+

@@ -26,69 +26,49 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "SingleTestScreen.h"
+#include "SingleTestFlowController.h"
 
-
-SingleTestScreen::SingleTestScreen(): 
-testForRun(nullptr)
+SingleTestFlowController::SingleTestFlowController() :
+		testForRun(nullptr)
+	,	testChooserScreen(nullptr)
+	,	currentScreen(nullptr)
 {
 }
 
-SingleTestScreen::~SingleTestScreen()
+void SingleTestFlowController::Init(Vector<BaseTest*>& _testChain)
 {
+	TestFlowController::Init(_testChain);
+
+	testChooserScreen = new TestChooserScreen(testChain);
+	currentScreen = testChooserScreen;
 }
 
-void SingleTestScreen::OnStart(HashMap<String, BaseObject*>& params)
+void SingleTestFlowController::BeginFrame()
 {
-	auto it = params.find(TEST_FOR_RUN);
-	if (it != params.end())
+	if (!currentScreen->IsRegistered())
 	{
-		testForRun = static_cast<BaseTest*>(it->second);
-		testForRun->SetupTest();
+		currentScreen->RegisterScreen();
+		currentScreen->OnStart();
 	}
 
-	DVASSERT(testForRun != nullptr);
+	currentScreen->BeginFrame();
 }
 
-void SingleTestScreen::OnFinish(HashMap<String, BaseObject*>& params)
+void SingleTestFlowController::EndFrame()
 {
+	currentScreen->EndFrame();
 
-}
-
-void SingleTestScreen::BeginFrame()
-{
-	RenderManager::Instance()->BeginFrame();
-	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
-
-	testForRun->BeginFrame();
-}
-
-void SingleTestScreen::EndFrame()
-{
-	testForRun->EndFrame();
-	if (testForRun->IsPerformed())
+	if (nullptr == testForRun)
 	{
-		testForRun->FinishTest();
+		if (testChooserScreen->IsFinished())
+		{
+			testForRun = testChooserScreen->GetTestForRun();
+			testForRun->SetDebuggable(true);
+			currentScreen = testForRun;
+		}
 	}
-
-	RenderManager::Instance()->EndFrame();
-	RenderManager::Instance()->ProcessStats();
-}
-
-void SingleTestScreen::Update(float32 timeElapsed)
-{
-	if (testForRun->IsDebuggable() 
-		&& testForRun->GetFrameNumber() > (testForRun->GetDebugFrame() + BaseTest::FRAME_OFFSET))
+	else if (testForRun->IsFinished())
 	{
-		testForRun->Update();
+		testForRun->OnFinish();
 	}
-	else
-	{
-		testForRun->Update(timeElapsed);	
-	}	
-}
-
-void SingleTestScreen::Draw()
-{
-	testForRun->Draw();
 }

@@ -26,40 +26,10 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __TEST_CHOOSER_SCREEN_H__
-#define __TEST_CHOOSER_SCREEN_H__
+#include "TestFlowController.h"
 
-#include "DAVAEngine.h"
-#include "BaseScreen.h"
-#include "BaseTest.h"
-
-
-class TestChooserScreen: public BaseScreen
+void TestFlowController::Init(Vector<BaseTest*>& _testChain)
 {
-public:
-	TestChooserScreen(const Vector<BaseTest*>& testsChain);
-
-	virtual bool IsFinished() const override;
-
-	virtual void BeginFrame() override;
-	virtual void EndFrame() override;
-
-	virtual void OnStart(HashMap<String, BaseObject*>& params) override;
-	virtual void OnFinish(HashMap<String, BaseObject*>& params) override;
-
-	virtual void Update(float32 timeElapsed) override;
-	virtual void Draw() override;
-
-protected:
-	virtual ~TestChooserScreen();
-
-private:
-
-	void CreateChooserUI();
-
-	Vector<BaseTest*> testChain;
-	BaseTest* testForRun;
-};
-
-#endif
-
+	DVASSERT(!_testChain.empty());
+	testChain = _testChain;
+}

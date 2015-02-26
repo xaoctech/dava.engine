@@ -26,95 +26,33 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "BaseTest.h"
+#ifndef __TEST_CHAIN_FLOW_CONTROLLER_H__
+#define __TEST_CHAIN_FLOW_CONTROLLER_H__
 
-const float32 BaseTest::FRAME_OFFSET = 1;
+#include "TestFlowController.h"
+#include "Infrastructure/Screen/ReportScreen.h"
 
-BaseTest::BaseTest(const String& _testName, uint32 frames, float32 delta, uint32 _debugFrame) :
-frameNumber(0),
-fixedDelta(delta),
-targetFramesCount(frames), 
-targetTestTime(0),
-testTime(0),
-startTime(0),
-testName(_testName),
-debugFrame(_debugFrame)
-
+class TestChainFlowController: public TestFlowController
 {
-	scene = new Scene();
-}
+public:
+	TestChainFlowController(bool showUIReport);
 
-BaseTest::BaseTest(const String& _testName, uint32 time) :
-frameNumber(0), 
-fixedDelta(0.0f),
-targetFramesCount(0),
-targetTestTime(time),
-testTime(0),
-startTime(0),
-testName(_testName),
-debugFrame(0)
+	void Init(Vector<BaseTest*>& testChain) override;
 
-{
-	scene = new Scene();
-}
+	void BeginFrame() override;
+	void EndFrame() override;
 
+private:
 
-BaseTest::~BaseTest()
-{
-	ReleaseTest();
-}
+	ReportScreen* reportScreen;
+	BaseScreen* currentScreen;
+	BaseTest* currentTest;
 
-void BaseTest::FinishTest()
-{
-	elapsedTime = SystemTimer::Instance()->FrameStampTimeMS() - startTime;
-}
+	uint32 currentTestIndex;
 
-void BaseTest::ReleaseTest()
-{
-	SafeRelease(scene);
-}
+	bool showUIReport;
+	bool reportCreated;
+	bool testsFinished;
+};
 
-void BaseTest::SetupTest()
-{
-}
-
-void BaseTest::Draw()
-{
-	scene->Draw();
-	frameNumber++;
-}
-
-void BaseTest::Update(float32 timeElapsed)
-{
-	if (frameNumber > FRAME_OFFSET)
-	{
-		if (fixedDelta > 0)
-		{
-			scene->Update(fixedDelta);
-		}
-		else
-		{
-			scene->Update(timeElapsed);
-		}
-		
-		frames.push_back(FrameInfo(timeElapsed, frameNumber));
-		testTime += timeElapsed;
-	}
-	else
-	{
-		scene->Update(0.0f);
-	}	
-}
-
-void BaseTest::BeginFrame()
-{
-	if (frameNumber > 0 && startTime == 0)
-	{
-		startTime = SystemTimer::Instance()->FrameStampTimeMS();
-	}
-}
-
-void BaseTest::EndFrame()
-{
-
-}
+#endif

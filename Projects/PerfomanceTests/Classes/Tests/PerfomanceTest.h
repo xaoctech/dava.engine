@@ -34,13 +34,16 @@ public:
 	PerfomanceTest(uint32 frames, float32 delta, uint32 targetFrame);
 	PerfomanceTest(uint32 time);
 
-	virtual void SetupTest() override;
-	virtual void Update(float32 timeElapsed) override;
-
 protected:
-		virtual ~PerfomanceTest();
+
+	void LoadResources() override;
+	void UnloadResources() override;
+
+	void PerformTestLogic() override;
 
 private:
 	static const String TEST_NAME;
+
+	Entity* stoneEntity;
 };
 
