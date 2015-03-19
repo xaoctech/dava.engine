@@ -27,60 +27,53 @@
 =====================================================================================*/
 
 
-#ifndef __QT_IMAGE_AREA_H__
-#define __QT_IMAGE_AREA_H__
+#ifndef __IMAGESPLITTER_DIALOG_NORMAL_H__
+#define __IMAGESPLITTER_DIALOG_NORMAL_H__
 
-#include <QLabel>
-#include "DAVAEngine.h"
+#include "Render/Image/Image.h"
 
-class QMimeData;
+#include <QDialog>
+#include <QScopedPointer>
 
-class ImageArea : public QLabel
+#include <array>
+
+namespace Ui {
+class ImageSplitterNormal;
+}
+
+class ImageArea;
+class ImageSplitterDialogNormal: public QDialog
 {
     Q_OBJECT
     
+    enum ChannelsID
+    {
+        RED = 0,
+        GREEN,
+        BLUE,
+        ALPHA,
+
+        CHANNELS_COUNT
+    };
+    
 public:
-    explicit ImageArea(QWidget *parent = 0);
-    ~ImageArea();
-    void SetImage(const DAVA::FilePath& filePath);
-    void SetImage(DAVA::Image* image);
-    inline DAVA::Image* GetImage() const;
-    DAVA::Vector2 GetAcceptableSize() const;
-    const DAVA::FilePath& GetImagePath() const;
+    explicit ImageSplitterDialogNormal(QWidget *parent = 0);
+    ~ImageSplitterDialogNormal();
+
+private slots:
+    void OnSaveClicked();
     
-    void SetRequestedImageFormat(const DAVA::PixelFormat format);
-    DAVA::PixelFormat GetRequestedImageFormat() const;
-    
-    
-public slots:
-    void ClearArea();
-    void UpdatePreviewPicture();
-    
-    void SetAcceptableSize(const DAVA::Vector2& size);
-    
-signals:
-    
-    void changed();
     
 private:
-    void mousePressEvent(QMouseEvent * event);
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dropEvent(QDropEvent *event);
-        
-    void ConnectSignals();
-    DAVA::String GetDefaultPath() const;
     
-    DAVA::Image* image;
-    DAVA::Vector2 acceptableSize;
-    DAVA::FilePath imagePath;
+    void SaveAndReloadNormal(const DAVA::FilePath &pathname, int first, int second);
     
-    DAVA::PixelFormat requestedFormat;
+    DAVA::Image * CreateMergedImage(DAVA::Image *firstImage, DAVA::Image *secondImage);
     
+private:
+
+    QScopedPointer<Ui::ImageSplitterNormal> ui;
+    std::array<ImageArea *, CHANNELS_COUNT> imageArreas;
 };
 
-inline DAVA::Image* ImageArea::GetImage() const
-{
-    return image;
-}
-
-#endif /* defined(__QT_IMAGE_AREA_H__) */
+#endif // __IMAGESPLITTER_DIALOG_NORMAL_H__
