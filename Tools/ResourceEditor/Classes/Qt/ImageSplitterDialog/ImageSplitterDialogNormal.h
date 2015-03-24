@@ -27,53 +27,53 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_QT_LAYER_MAC_OS_H__
-#define __DAVAENGINE_QT_LAYER_MAC_OS_H__
+#ifndef __IMAGESPLITTER_DIALOG_NORMAL_H__
+#define __IMAGESPLITTER_DIALOG_NORMAL_H__
 
-#include "DAVAEngine.h"
-#include "Qtlayer.h"
+#include "Render/Image/Image.h"
 
-#if defined(__DAVAENGINE_MACOS__)
+#include <QDialog>
+#include <QScopedPointer>
 
-namespace DAVA 
+#include <array>
+
+namespace Ui {
+class ImageSplitterNormal;
+}
+
+class ImageArea;
+class ImageSplitterDialogNormal: public QDialog
 {
-class QtLayerMacOS : public QtLayer
-{
+    Q_OBJECT
+    
+    enum ChannelsID
+    {
+        RED = 0,
+        GREEN,
+        BLUE,
+        ALPHA,
+
+        CHANNELS_COUNT
+    };
+    
 public:
-    
-    QtLayerMacOS();
-    virtual ~QtLayerMacOS();
-    
-    virtual void WidgetCreated();
-    virtual void WidgetDestroyed();
-    
-    virtual void OnSuspend();
-    virtual void OnResume();
-	
-    virtual void AppStarted();
-    virtual void AppFinished();
-    
-    virtual void Resize(int32 width, int32 height);
-    virtual void Move(int32 x, int32 y);
+    explicit ImageSplitterDialogNormal(QWidget *parent = nullptr);
+    ~ImageSplitterDialogNormal();
 
-    virtual void ProcessFrame();
+private slots:
+    void OnSaveClicked();
     
-    virtual void LockKeyboardInput(bool locked);
-
-    virtual void * CreateAutoreleasePool();
-    virtual void ReleaseAutoreleasePool(void *pool);
-
     
-    void InitializeGlWindow(void *qtView, int32 width, int32 height);
+private:
     
-    void MouseMoved(float32 x, float32 y);
-    void HandleEvent(void *message);
-	
-	virtual void* GetOpenGLView();
-};	
+    void SaveAndReloadNormal(const DAVA::FilePath &pathname, int first, int second);
+    
+    DAVA::Image * CreateMergedImage(DAVA::Image *firstImage, DAVA::Image *secondImage);
+    
+private:
 
+    QScopedPointer<Ui::ImageSplitterNormal> ui;
+    std::array<ImageArea *, CHANNELS_COUNT> imageArreas;
 };
 
-#endif //#if defined(__DAVAENGINE_MACOS__)
-
-#endif // __DAVAENGINE_QT_LAYER_MAC_OS_H__
+#endif // __IMAGESPLITTER_DIALOG_NORMAL_H__
