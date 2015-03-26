@@ -26,61 +26,57 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "defines.h"
+#include "filedownloader.h"
+#include <QObject>
 
-#ifndef __QT_IMAGE_AREA_H__
-#define __QT_IMAGE_AREA_H__
-
-#include <QLabel>
-#include "DAVAEngine.h"
-
-class QMimeData;
-
-class ImageArea : public QLabel
+FileDownloader::FileDownloader(QNetworkAccessManager * accessManager) :
+    networkManager(accessManager),
+    currentDownload(0),
+    lastErrorCode(0)
 {
-    Q_OBJECT
-    
-public:
-    explicit ImageArea(QWidget *parent = 0);
-    ~ImageArea();
-    void SetImage(const DAVA::FilePath& filePath);
-    void SetImage(DAVA::Image* image);
-    inline DAVA::Image* GetImage() const;
-    DAVA::Vector2 GetAcceptableSize() const;
-    const DAVA::FilePath& GetImagePath() const;
-    
-    void SetRequestedImageFormat(const DAVA::PixelFormat format);
-    DAVA::PixelFormat GetRequestedImageFormat() const;
-    
-    
-public slots:
-    void ClearArea();
-    void UpdatePreviewPicture();
-    
-    void SetAcceptableSize(const DAVA::Vector2& size);
-    
-signals:
-    
-    void changed();
-    
-private:
-    void mousePressEvent(QMouseEvent * event);
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dropEvent(QDropEvent *event);
-        
-    void ConnectSignals();
-    DAVA::String GetDefaultPath() const;
-    
-    DAVA::Image* image;
-    DAVA::Vector2 acceptableSize;
-    DAVA::FilePath imagePath;
-    
-    DAVA::PixelFormat requestedFormat;
-    
-};
-
-inline DAVA::Image* ImageArea::GetImage() const
-{
-    return image;
 }
 
-#endif /* defined(__QT_IMAGE_AREA_H__) */
+FileDownloader::~FileDownloader()
+{
+}
+
+
+void FileDownloader::Download(QUrl url)
+{
+    Cancel();
+    
+    currentDownload = networkManager->get(QNetworkRequest(url));
+
+    connect(currentDownload, SIGNAL(finished()), this, SLOT(DownloadFinished()));
+    connect(currentDownload, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(NetworkError(QNetworkReply::NetworkError)));
+}
+
+void FileDownloader::Cancel()
+{
+    if(currentDownload)
+    {
+        currentDownload->abort();
+    }
+}
+
+void FileDownloader::NetworkError(QNetworkReply::NetworkError code)
+{
+    lastErrorCode = code;
+    lastErrorDesc = currentDownload->errorString();
+}
+
+void FileDownloader::DownloadFinished()
+{
+    if(lastErrorCode)
+    {
+        emit Finished(QByteArray(), QList< QPair<QByteArray, QByteArray> >(), lastErrorCode, lastErrorDesc);
+    }
+    else if(currentDownload)
+    {
+        emit Finished(currentDownload->readAll(), currentDownload->rawHeaderPairs(), lastErrorCode, lastErrorDesc);
+
+        currentDownload->deleteLater();
+        currentDownload = 0;
+    }
+}

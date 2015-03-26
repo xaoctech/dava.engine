@@ -27,60 +27,39 @@
 =====================================================================================*/
 
 
-#ifndef __QT_IMAGE_AREA_H__
-#define __QT_IMAGE_AREA_H__
+#ifndef CONFIGDOWNLOADER_H
+#define CONFIGDOWNLOADER_H
 
-#include <QLabel>
-#include "DAVAEngine.h"
+#include <QDialog>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QFile>
+#include "filedownloader.h"
 
-class QMimeData;
+namespace Ui {
+class ConfigDownloader;
+}
 
-class ImageArea : public QLabel
+class ApplicationManager;
+class ConfigDownloader : public QDialog
 {
     Q_OBJECT
     
 public:
-    explicit ImageArea(QWidget *parent = 0);
-    ~ImageArea();
-    void SetImage(const DAVA::FilePath& filePath);
-    void SetImage(DAVA::Image* image);
-    inline DAVA::Image* GetImage() const;
-    DAVA::Vector2 GetAcceptableSize() const;
-    const DAVA::FilePath& GetImagePath() const;
-    
-    void SetRequestedImageFormat(const DAVA::PixelFormat format);
-    DAVA::PixelFormat GetRequestedImageFormat() const;
-    
-    
-public slots:
-    void ClearArea();
-    void UpdatePreviewPicture();
-    
-    void SetAcceptableSize(const DAVA::Vector2& size);
-    
-signals:
-    
-    void changed();
-    
+    explicit ConfigDownloader(ApplicationManager * manager, QNetworkAccessManager * accessManager, QWidget *parent = 0);
+    ~ConfigDownloader();
+
+    virtual int exec();
+
+private slots:
+    void DownloadFinished(QByteArray downloadedData, QList< QPair<QByteArray, QByteArray> > rawHeaderList, int errorCode, QString errorDescr);
+
 private:
-    void mousePressEvent(QMouseEvent * event);
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dropEvent(QDropEvent *event);
-        
-    void ConnectSignals();
-    DAVA::String GetDefaultPath() const;
-    
-    DAVA::Image* image;
-    DAVA::Vector2 acceptableSize;
-    DAVA::FilePath imagePath;
-    
-    DAVA::PixelFormat requestedFormat;
-    
+    Ui::ConfigDownloader *ui;
+
+    FileDownloader * downloader;
+
+    ApplicationManager * appManager;
 };
 
-inline DAVA::Image* ImageArea::GetImage() const
-{
-    return image;
-}
-
-#endif /* defined(__QT_IMAGE_AREA_H__) */
+#endif // CONFIGDOWNLOADER_H

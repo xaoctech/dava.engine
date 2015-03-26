@@ -27,60 +27,46 @@
 =====================================================================================*/
 
 
-#ifndef __QT_IMAGE_AREA_H__
-#define __QT_IMAGE_AREA_H__
+#ifndef SELFUPDATER_H
+#define SELFUPDATER_H
 
-#include <QLabel>
-#include "DAVAEngine.h"
+#include "zipunpacker.h"
+#include <QDialog>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QFile>
 
-class QMimeData;
+namespace Ui {
+class SelfUpdater;
+}
 
-class ImageArea : public QLabel
+class SelfUpdater : public QDialog
 {
     Q_OBJECT
     
 public:
-    explicit ImageArea(QWidget *parent = 0);
-    ~ImageArea();
-    void SetImage(const DAVA::FilePath& filePath);
-    void SetImage(DAVA::Image* image);
-    inline DAVA::Image* GetImage() const;
-    DAVA::Vector2 GetAcceptableSize() const;
-    const DAVA::FilePath& GetImagePath() const;
-    
-    void SetRequestedImageFormat(const DAVA::PixelFormat format);
-    DAVA::PixelFormat GetRequestedImageFormat() const;
-    
-    
-public slots:
-    void ClearArea();
-    void UpdatePreviewPicture();
-    
-    void SetAcceptableSize(const DAVA::Vector2& size);
-    
+    explicit SelfUpdater(const QString & arcUrl, QNetworkAccessManager * accessManager, QWidget *parent = 0);
+    ~SelfUpdater();
+
 signals:
-    
-    void changed();
-    
+    void StartUpdating();
+
+private slots:
+    void NetworkError(QNetworkReply::NetworkError code);
+    void DownloadFinished();
+    void OnStartUpdating();
+
 private:
-    void mousePressEvent(QMouseEvent * event);
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dropEvent(QDropEvent *event);
-        
-    void ConnectSignals();
-    DAVA::String GetDefaultPath() const;
-    
-    DAVA::Image* image;
-    DAVA::Vector2 acceptableSize;
-    DAVA::FilePath imagePath;
-    
-    DAVA::PixelFormat requestedFormat;
-    
+    Ui::SelfUpdater *ui;
+    QString archiveUrl;
+
+    QNetworkAccessManager * networkManager;
+    QNetworkReply * currentDownload;
+
+    ZipUnpacker * unpacker;
+
+    int lastErrorCode;
+    QString lastErrorDesrc;
 };
 
-inline DAVA::Image* ImageArea::GetImage() const
-{
-    return image;
-}
-
-#endif /* defined(__QT_IMAGE_AREA_H__) */
+#endif // SELFUPDATER_H
