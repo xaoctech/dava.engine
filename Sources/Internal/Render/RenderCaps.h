@@ -26,69 +26,47 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_RENDERER_H__
-#define __DAVAENGINE_RENDERER_H__
-
-#include "Core/Core.h"
-#include "RenderBase.h"
-#include "RenderOptions.h"
-#include "RenderCaps.h"
-#include "RHI/rhi_Public.h"
-#include "RHI/rhi_Type.h"
+#ifndef __DAVAENGINE_RENDERCAPS_H__
+#define __DAVAENGINE_RENDERCAPS_H__
 
 namespace DAVA
 {
 
-struct ScreenShotCallbackDelegate;
 
-namespace Renderer
+struct RenderCaps
 {
-
-    //init
-    void Initialize(rhi::Api api);
-    void Uninitialize();
-
-    rhi::Api GetAPI();
-
-    bool IsDeviceLost();
-
-    void SetDesiredFPS(int32 fps);
-    int32 GetDesiredFPS();
-
-    //frame management
-    void BeginFrame();
-    void EndFrame();
-
-    //caps
-    const RenderCaps & GetCaps();
-
-    //misc
-    void RequestGLScreenShot(ScreenShotCallbackDelegate *screenShotCallback);
-
-    //options
-    RenderOptions *GetOptions();    
-
-    //dynamic params
-    //color will just use internal storage for dynamic PARAM_COLOR and bind it to dynamic params - it's here only to simplify legacy code moving to new renderer
-    const Color& GetColor();
-    void SetColor(const Color& color);
-    void SetColor(float32 r, float32 g, float32 b, float32 a); 
-
-    void SetDynamicParam(eShaderSemantic shaderSemantic, const void * value, pointer_size updateSemantic);
-    const void * GetDynamicParam(eShaderSemantic shaderSemantic);
-    pointer_size GetDynamicParamUpdateSemantic(eShaderSemantic shaderSemantic);        
-}
-
-
-class Image;
-struct ScreenShotCallbackDelegate
-{
-    void operator()(Image *image)
+    RenderCaps()
     {
-        return OnScreenShot(image);
+        isHardwareCursorSupported = false;
+
+        isPVRTC2Supported = false;
+        isOpenGLES3Supported = false;
+
+        isFramebufferFetchSupported = isPVRTCSupported = isETCSupported = isDXTSupported = isATCSupported = false;
+        isVertexTextureUnitsSupported = isBGRA8888Supported = isFloat16Supported = isFloat32Supported = false;
+
+#if defined(__DAVAENGINE_ANDROID__)
+        isGlDepth24Stencil8Supported = isGlDepthNvNonLinearSupported = false;
+#endif
     }
-protected:
-    virtual void OnScreenShot(Image *image) = 0;
+    bool isHardwareCursorSupported;
+    bool isPVRTCSupported;
+    bool isPVRTC2Supported;
+    bool isETCSupported;
+    bool isOpenGLES3Supported;
+    bool isBGRA8888Supported;
+    bool isFloat16Supported;
+    bool isFloat32Supported;
+    bool isDXTSupported;
+    bool isATCSupported;
+    bool isVertexTextureUnitsSupported;
+    bool isFramebufferFetchSupported;
+
+#if defined(__DAVAENGINE_ANDROID__)
+    bool isGlDepth24Stencil8Supported;
+    bool isGlDepthNvNonLinearSupported;
+#endif
+
 };
 
 }
