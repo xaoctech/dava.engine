@@ -27,46 +27,36 @@
 =====================================================================================*/
 
 
+#include "MainWindow.h"
+#include "ui_mainwindow.h"
+
 #include "DAVAEngine.h"
-#include "GameCore.h"
- 
-using namespace DAVA;
+#include "QtTools/DavaGLWidget/davaglwidget.h"
+#include "QtTools/FrameworkBinding/FrameworkLoop.h"
 
-
-void FrameworkDidLaunched()
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
 {
-#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
-	KeyedArchive * appOptions = new KeyedArchive();
-	appOptions->SetInt32("orientation", Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT);
-    appOptions->SetInt32("renderer", Core::RENDERER_OPENGL_ES_2_0);
-	
-	DAVA::VirtualCoordinatesSystem::Instance()->SetVirtualScreenSize(960, 480);
-	DAVA::VirtualCoordinatesSystem::Instance()->RegisterAvailableResourceSize(960, 480, "Gfx");
+    ui->setupUi(this);
 
-#else
-	KeyedArchive * appOptions = new KeyedArchive();
-	
-	appOptions->SetInt32("width", 700);
-	appOptions->SetInt32("height", 500);
+    new DAVA::QtLayer();
+    new DavaLoop();
+    new FrameworkLoop();
 
-// 	appOptions->SetInt("fullscreen.width",	1280);
-// 	appOptions->SetInt("fullscreen.height", 800);
-	
-	appOptions->SetInt32("fullscreen", 0);
-	appOptions->SetInt32("bpp", 32); 
+    DavaGLWidget *glWidget = new DavaGLWidget(this);
+    FrameworkLoop::Instance()->SetOpenGLWindow(glWidget);
 
-	DAVA::VirtualCoordinatesSystem::Instance()->SetVirtualScreenSize(700, 500);
-	DAVA::VirtualCoordinatesSystem::Instance()->RegisterAvailableResourceSize(700, 500, "Gfx");
-	DAVA::VirtualCoordinatesSystem::Instance()->RegisterAvailableResourceSize(500, 700, "Gfx");
-#endif 
+    DavaLoop::Instance()->StartLoop(FrameworkLoop::Instance());
 
-	GameCore * core = new GameCore();
-	DAVA::Core::SetApplicationCore(core);
-	DAVA::Core::Instance()->SetOptions(appOptions);
+    ui->verticalLayout->addWidget(glWidget);
 }
 
-
-void FrameworkWillTerminate() 
+MainWindow::~MainWindow()
 {
+    FrameworkLoop::Instance()->Release();
+    DAVA::QtLayer::Instance()->Release();
+    DavaLoop::Instance()->Release();
 
+    delete ui;
 }

@@ -32,23 +32,25 @@
 
 #include <QMainWindow>
 
-namespace Ui {
-class MainWindow;
+class DavaGLWidget;
+
+namespace Ui
+{
+    class MainWindow;
 }
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-    
+
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    
-protected:
-    
 
 private:
     Ui::MainWindow *ui;
+
+    DavaGLWidget *glWidget;
 };
 
 #endif // MAINWINDOW_H
