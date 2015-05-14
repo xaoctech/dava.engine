@@ -27,35 +27,47 @@
 =====================================================================================*/
 
 
+#ifndef REMOTEASSETCACHSERVER_H
+#define REMOTEASSETCACHSERVER_H
 
-#ifndef __UIEditor__LocalizationSystemHelper__
-#define __UIEditor__LocalizationSystemHelper__
+#include <QWidget>
 
-#include "Base/BaseTypes.h"
-
-namespace DAVA {
-    
-class LocalizationSystemHelper
+struct ServerData
 {
-public:
-    // Helper to work with Localization System.
-    static int GetSupportedLanguagesCount();
-    static String GetSupportedLanguageID(int index);
-    static String GetSupportedLanguageDesc(int index);
-    static String GetLanguageDescByLanguageID(String languageID);
-    
-protected:
-    // Validate the language index.
-    static bool ValidateLanguageIndex(int index);
+    ServerData();
+    ServerData(QString newIp, quint16 newPort);
 
-    struct LocalizationSystemHelperData
-    {
-        String languageID;
-        String languageDescription;
-    };
-
-    static const LocalizationSystemHelperData helperData[];
+    QString ip;
+    quint16 port;
 };
 
+namespace Ui
+{
+    class RemoteAssetCacheServer;
 }
-#endif /* defined(__UIEditor__LocalizationSystemHelper__) */
+
+class RemoteAssetCacheServer : public QWidget
+{
+    Q_OBJECT
+
+public:
+    explicit RemoteAssetCacheServer(QWidget *parent = nullptr);
+    explicit RemoteAssetCacheServer(ServerData &newServer, QWidget *parent = nullptr);
+    ~RemoteAssetCacheServer() override;
+
+    ServerData GetServerData() const;
+
+    bool IsCorrectData();
+
+signals:
+    void ParametersChanged();
+    void RemoveLater();
+
+private slots:
+    void OnParametersChanged();
+
+private:
+    Ui::RemoteAssetCacheServer *ui;
+};
+
+#endif // REMOTEASSETCACHSERVER_H
