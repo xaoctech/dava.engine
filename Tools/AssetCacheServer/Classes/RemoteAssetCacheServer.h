@@ -27,28 +27,47 @@
 =====================================================================================*/
 
 
+#ifndef REMOTEASSETCACHSERVER_H
+#define REMOTEASSETCACHSERVER_H
 
+#include <QWidget>
 
-#include "WidgetSignalsBlocker.h"
-using namespace DAVA;
-
-WidgetSignalsBlocker::WidgetSignalsBlocker(QWidget* widget)
+struct ServerData
 {
-    this->widget = widget;
-    if (this->widget)
-    {
-        // Save the current signals state and block signals.
-        this->signalsWereBlocked = widget->signalsBlocked();
-        widget->blockSignals(true);
-    }
+    ServerData();
+    ServerData(QString newIp, quint16 newPort);
+
+    QString ip;
+    quint16 port;
+};
+
+namespace Ui
+{
+    class RemoteAssetCacheServer;
 }
 
-
-WidgetSignalsBlocker::~WidgetSignalsBlocker()
+class RemoteAssetCacheServer : public QWidget
 {
-    // Restore the previous signals state.
-    if (this->widget)
-    {
-        this->widget->blockSignals(this->signalsWereBlocked);
-    }
-}
+    Q_OBJECT
+
+public:
+    explicit RemoteAssetCacheServer(QWidget *parent = nullptr);
+    explicit RemoteAssetCacheServer(ServerData &newServer, QWidget *parent = nullptr);
+    ~RemoteAssetCacheServer() override;
+
+    ServerData GetServerData() const;
+
+    bool IsCorrectData();
+
+signals:
+    void ParametersChanged();
+    void RemoveLater();
+
+private slots:
+    void OnParametersChanged();
+
+private:
+    Ui::RemoteAssetCacheServer *ui;
+};
+
+#endif // REMOTEASSETCACHSERVER_H
