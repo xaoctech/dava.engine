@@ -26,69 +26,17 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_RENDERER_H__
-#define __DAVAENGINE_RENDERER_H__
-
-#include "Core/Core.h"
-#include "RenderBase.h"
-#include "RenderOptions.h"
-#include "RenderCaps.h"
-#include "DynamicBindings.h"
-#include "RHI/rhi_Public.h"
-#include "RHI/rhi_Type.h"
+#ifndef __DAVAENGINE_DYNAMIC_BUFFER_ALLOCATOR_H_
+#define __DAVAENGINE_DYNAMIC_BUFFER_ALLOCATOR_H_
 
 namespace DAVA
 {
-
-struct ScreenShotCallbackDelegate;
-
-namespace Renderer
+namespace DynamicBufferAllocator
 {
 
-    //init
-    void Initialize(rhi::Api api, int32 framebufferWidth, int32 framebufferHeight, void * externalData);
-    void Uninitialize();
-
-    void Reset(int32 framebufferWidth, int32 framebufferHeight);
-
-    rhi::Api GetAPI();
-
-    bool IsDeviceLost();
-
-    void SetDesiredFPS(int32 fps);
-    int32 GetDesiredFPS();
-
-    //frame management
-    void BeginFrame();
-    void EndFrame();
-
-    //caps
-    const RenderCaps & GetCaps();
-
-    //misc
-    int32 GetFramebufferWidth();
-    int32 GetFramebufferHeight();
-    void RequestGLScreenShot(ScreenShotCallbackDelegate *screenShotCallback);
-
-    //options
-    RenderOptions *GetOptions();    
-
-    //dynamic params
-    DynamicBindings& GetDynamicBindings();
+    void Present();
+    void Clear();
+}
 }
 
-
-class Image;
-struct ScreenShotCallbackDelegate
-{
-    void operator()(Image *image)
-    {
-        return OnScreenShot(image);
-    }
-protected:
-    virtual void OnScreenShot(Image *image) = 0;
-};
-
-}
-
-#endif
+#endif // !__DAVAENGINE_PARTICLE_RENDER_OBJECT_H_
