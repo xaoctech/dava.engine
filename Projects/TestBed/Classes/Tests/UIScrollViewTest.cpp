@@ -26,27 +26,11 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-//
-//  UIScrollViewTest.cpp
-//  TemplateProjectMacOS
-//
-//  Created by Denis Bespalov on 5/20/13.
-//
-//
-
 #include "UIScrollViewTest.h"
 
-static const float LIST_TEST_AUTO_CLOSE_TIME = 30.0f;
-
-UIScrollViewTest::UIScrollViewTest() :
- TestTemplate<UIScrollViewTest>("UIScrollViewTest")
+UIScrollViewTest::UIScrollViewTest()
+    : BaseScreen("UIScrollViewTest")
 {
-	testFinished = false;
-	
-	RegisterFunction(this, &UIScrollViewTest::TestFunction, Format("UIScrollViewTest"), NULL);
-	
-	onScreenTime = 0.f;
 }
 
 void UIScrollViewTest::LoadResources()
@@ -180,6 +164,8 @@ void UIScrollViewTest::LoadResources()
 	AddControl(finishTestBtn);
 
 	SafeRelease(font);
+    
+    BaseScreen::LoadResources();
 }
 
 void UIScrollViewTest::UnloadResources()
@@ -187,35 +173,9 @@ void UIScrollViewTest::UnloadResources()
 	RemoveAllControls();
 	SafeRelease(finishTestBtn);
 	SafeRelease(testMessageText);
-}
-
-void UIScrollViewTest::DidAppear()
-{
-    onScreenTime = 0.f;
-}
-
-void UIScrollViewTest::Update(float32 timeElapsed)
-{
-    onScreenTime += timeElapsed;
-    if(onScreenTime > LIST_TEST_AUTO_CLOSE_TIME)
-    {
-        testFinished = true;
-    }
     
-    TestTemplate<UIScrollViewTest>::Update(timeElapsed);
+    BaseScreen::UnloadResources();
 }
-
-void UIScrollViewTest::TestFunction(PerfFuncData * data)
-{
-	return;
-}
-
-bool UIScrollViewTest::RunTest(int32 testNum)
-{
-	TestTemplate<UIScrollViewTest>::RunTest(testNum);
-	return testFinished;
-}
-
 
 void UIScrollViewTest::ButtonPressed(BaseObject *obj, void *data, void *callerData)
 {
@@ -228,10 +188,5 @@ void UIScrollViewTest::ButtonPressed(BaseObject *obj, void *data, void *callerDa
 	else
 	{
 		testMessageText->SetText(L"");
-	}
-
-	if (obj == finishTestBtn)
-	{
-		testFinished = true;
 	}
 }

@@ -26,46 +26,30 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __UISCROLL_VIEW_TEST__
+#define __UISCROLL_VIEW_TEST__
 
-#include "ImageSizeTest.h"
+#include "BaseScreen.h"
 
-ImageSizeTest::ImageSizeTest()
-: TestTemplate<ImageSizeTest>("ImageSizeTest")
+using namespace DAVA;
+
+class UIScrollViewTest: public BaseScreen
 {
-	RegisterFunction(this, &ImageSizeTest::TestFunction, "ImageSizeTest", NULL);
-}
+protected:
+    ~UIScrollViewTest(){}
+public:
+	UIScrollViewTest();
 
-void ImageSizeTest::LoadResources()
-{
-    GetBackground()->SetColor(DAVA::Color(0.0f, 1.0f, 0.0f, 1.0f));
-}
+	virtual void LoadResources();
+	virtual void UnloadResources();
+	
+private:
+	void ButtonPressed(BaseObject *obj, void *data, void *callerData);
+	
+private:
+	UIButton* 		finishTestBtn;
+	UIStaticText*	testMessageText;
+	UIScrollView*	scrollView;
+};
 
-
-void ImageSizeTest::UnloadResources()
-{
-    RemoveAllControls();
-}
-
-void ImageSizeTest::TestFunction(PerfFuncData * data)
-{
-	static const DAVA::FilePath imagePathnames[DAVA::ImageSystem::FILE_FORMAT_COUNT] = 
-	{
-		"~res:/TestData/ImageSizeTest/image.png",
-		"~res:/TestData/ImageSizeTest/image.jpg",
-		"~res:/TestData/ImageSizeTest/image.pvr",
-		"~res:/TestData/ImageSizeTest/image.dds"
-	};
-
-
-    //TODO: -1 due to DF-5704
-	for(uint32 i = 0; i < DAVA::ImageSystem::FILE_FORMAT_COUNT-1; ++i)
-	{
-		DAVA::ImageFormatInterface *im = DAVA::ImageSystem::Instance()->GetImageFormatInterface(imagePathnames[i]);	
-		Size2i imageSize = im->GetImageSize(imagePathnames[i]);
-
-		TEST_VERIFY(imageSize.dx == 128);
-		TEST_VERIFY(imageSize.dy == 128);
-	}
-}
-
-
+#endif /* defined(__UISCROLL_VIEW_TEST__) */

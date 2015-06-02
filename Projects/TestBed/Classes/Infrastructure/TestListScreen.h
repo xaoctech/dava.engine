@@ -27,29 +27,38 @@
 =====================================================================================*/
 
 
-#ifndef __FUNCTION_BIND_SIGNAL_TEST__
-#define __FUNCTION_BIND_SIGNAL_TEST__
+#ifndef __TEST_LIST_SCREEN_H__
+#define __TEST_LIST_SCREEN_H__
 
-#include "DAVAEngine.h"
+#include "BaseScreen.h"
+#include "UI/UIList.h"
 
 using namespace DAVA;
 
-#include "UITestTemplate.h"
-#include "Platform/DeviceInfo.h"
-
-class FunctionBindSignalTest : public TestTemplate<FunctionBindSignalTest>
+class TestListScreen : public UIScreen, public UIListDelegate
 {
 protected:
-	~FunctionBindSignalTest(){}
+    virtual ~TestListScreen();
 
 public:
-	FunctionBindSignalTest();
+    TestListScreen();
+    
+    void LoadResources() override;
+    void UnloadResources() override;
+    
+    void AddTestScreen(BaseScreen *screen);
+    
+//UIListDelegate interface
+private:
+    float32 CellHeight(UIList * list, int32 index) override;
+    int32 ElementsCount(UIList * list) override;
+    UIListCell *CellAtIndex(UIList *list, int32 index) override;
+    void OnCellSelected(UIList *forList, UIListCell *selectedCell) override;
 
-	virtual void LoadResources();
-	virtual void UnloadResources();
-	virtual void DidAppear();
-
-	void TestFunction(PerfFuncData * data);
+private:
+    Vector<BaseScreen *> testScreens;
+    UIList *testsGrid;
+    float32 cellHeight;
 };
 
-#endif // __FUNCTION_BIND_SIGNAL_TEST__
+#endif
