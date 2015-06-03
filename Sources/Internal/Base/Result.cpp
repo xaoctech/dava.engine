@@ -29,22 +29,16 @@
 
 #include "result.h"
 
-Result::Result(ResultType type, const QString &error)
+Result::Result(ResultType type_, const DAVA::String &error_, const DAVA::VariantType &data_)
+    : type(type_)
+    , resultText(resultText)
+    , data(data_)
 {
-        types << type;
-        errors << error;
 }
 
 Result::operator bool() const
 {
-    for (auto type : types)
-    {
-        if (type != Success)
-        {
-            return false;
-        }
-    }
-    return true;
+    return type == RESULT_SUCCESS;
 }
 
 Result Result::addError(Result::ResultType type, const QString &errorText)
