@@ -34,6 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "RenderOptions.h"
 #include "RenderCaps.h"
 #include "DynamicBindings.h"
+#include "RuntimeTextures.h"
 #include "RHI/rhi_Public.h"
 #include "RHI/rhi_Type.h"
 
@@ -75,6 +76,9 @@ namespace Renderer
 
     //dynamic params
     DynamicBindings& GetDynamicBindings();
+
+    //runtime textures
+    RuntimeTextures& GetRuntimeTextures();
 }
 
 
