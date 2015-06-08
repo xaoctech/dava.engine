@@ -26,68 +26,26 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __DAVAENGINE_TEAMCITY_TEST_OUTPUT_H__
+#define __DAVAENGINE_TEAMCITY_TEST_OUTPUT_H__
 
-#include "BaseScreen.h"
-#include "GameCore.h"
+#include "TeamcityOutput/TeamcityOutput.h"
 
-int32 BaseScreen::globalScreenId = 1;
-
-BaseScreen::BaseScreen(const String & _screenName, int32 skipBeforeTests)
-    :   UIScreen(),
-    currentScreenId(globalScreenId++),
-    skipCount(skipBeforeTests),
-    skipCounter(0),
-    readyForTests(false)
+namespace DAVA 
 {
-    SetName(_screenName);
-    
-    GameCore::Instance()->RegisterScreen(this);
-}
 
-BaseScreen::BaseScreen()
-    :   UIScreen(),
-    currentScreenId(globalScreenId++),
-    skipCount(10), 
-    skipCounter(0),
-    readyForTests(false)
+class TeamcityTestsOutput: public TeamcityOutput
 {
-    SetName("BaseScreen");
-    GameCore::Instance()->RegisterScreen(this);
-}
+public:
+    virtual void Output(Logger::eLogLevel ll, const char8* text);
 
-int32 BaseScreen::GetScreenId()
-{
-    return currentScreenId;
-}
+    static String FormatTestStarted(const String& testName);
+    static String FormatTestFinished(const String& testName);
+    static String FormatTestFailed(const String& testName, const String& condition, const String& errMsg);
+private:
+    void TestOutput(const String& data);
+};
 
-void BaseScreen::WillAppear()
-{
-    skipCounter = 0;
-    readyForTests = (skipCounter == skipCount);
-}
+};
 
-
-void BaseScreen::DidAppear()
-{
-    skipCounter = 0;
-    readyForTests = (skipCounter == skipCount);
-}
-
-bool BaseScreen::ReadyForTests()
-{
-    return readyForTests;
-}
-
-void BaseScreen::Update(float32 timeElapsed)
-{
-    if(!readyForTests)
-    {
-        ++skipCounter;
-        if(skipCount == skipCounter)
-        {
-            readyForTests = true;
-        }
-    }
-    
-    UIScreen::Update(timeElapsed);
-}
+#endif // __DAVAENGINE_TEAMCITY_TEST_OUTPUT_H__
