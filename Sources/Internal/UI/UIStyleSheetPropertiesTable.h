@@ -27,45 +27,38 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_UI_STYLESHEET_CASCADE_H__
-#define __DAVAENGINE_UI_STYLESHEET_CASCADE_H__
+#ifndef __DAVAENGINE_UI_STYLESHEET_PROPERTIES_TABLE_H__
+#define __DAVAENGINE_UI_STYLESHEET_PROPERTIES_TABLE_H__
 
-#include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
-#include "UI/UIStyleSheet.h"
+#include "Base/BaseTypes.h"
+#include "Base/FastName.h"
+#include "FileSystem/VariantType.h"
 
 namespace DAVA
 {
-    class VariantType;
-
-    class UIStyleSheetCascade
+    enum class ePropertyOwner
     {
-    public:
-        ~UIStyleSheetCascade();
-        UIStyleSheetCascade();
-
-        void Clear();
-        void AddStyleSheet(const UIStyleSheet* table);
-
-        inline const VariantType* GetProperty(uint32 index) const
-        {
-            const auto& endIter = styleSheets.end();
-            for (auto styleSheetIter = styleSheets.begin(); styleSheetIter != endIter; ++styleSheetIter)
-            {
-                const UIStyleSheet* styleSheet = *styleSheetIter;
-
-                if (const VariantType * prop = styleSheet->GetProperty(index))
-                    return prop;
-            }
-            return nullptr;
-        }
-
-        const Bitset< STYLE_SHEET_PROPERTY_COUNT >& GetPropertySet() const;
-    private:
-        Vector< const UIStyleSheet* > styleSheets;
-
-        Bitset< STYLE_SHEET_PROPERTY_COUNT > propertiesSet;
+        UNKNOWN,
+        CONTROL,
+        BACKGROUND,
+        COMPONENT
     };
+    struct UIStyleSheetPropertyDescriptor
+    {
+        FastName name;
+        VariantType::eVariantType type;
+        ePropertyOwner owner;
+        const InspMember* inspMember;
+        DAVA::Vector< std::pair< uint32, const InspMember* > > targetComponents;
+    };
+
+    enum { STYLE_SHEET_PROPERTY_COUNT = 4 };
+
+    void InitializeStyleSheetPropertyTable();
+    uint32 StyleSheetProperty(const FastName& name);
+    const UIStyleSheetPropertyDescriptor& GetStyleSheetPropertyByIndex(uint32 index);
 };
+
 
 #endif
