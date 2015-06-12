@@ -26,23 +26,50 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __GENERALSTATMODEL_H__
+#define __GENERALSTATMODEL_H__
 
-#pragma once
-#include "qcustomplot.h"
-class MemProfInfoModel;
-class MemProfPlot : public QCustomPlot
+#include <QAbstractTableModel>
+
+#include "Base/BaseTypes.h"
+#include "MemoryManager/MemoryManagerTypes.h"
+
+class ProfilingSession;
+class MemoryStatItem;
+
+class GeneralStatModel : public QAbstractTableModel
 {
-    Q_OBJECT
 public:
-    explicit MemProfPlot(QWidget *parent = 0);
-    void mousePressEvent(QMouseEvent *event) override;
-    void mouseMoveEvent(QMouseEvent *event) override;
-    ~MemProfPlot();
-    void setModel(MemProfInfoModel * model);
-protected slots:
-    //bind to model data change signal
-    void dataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight);
-protected:
-    MemProfInfoModel * model;
+    enum {
+        CLM_VALUE = 0,
+        NCOLUMNS = 1
+    };
+    enum {
+        ROW_ALLOC_INTERNAL = 0,
+        ROW_ALLOC_INTERNAL_TOTAL,
+        ROW_NBLOCKS_INTERNAL,
+        ROW_ALLOC_GHOST,
+        ROW_NBLOCKS_GHOST,
+        NROWS = 5
+    };
+
+public:
+    GeneralStatModel(QObject* parent = nullptr);
+    virtual ~GeneralStatModel();
+
+    int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+    int columnCount(const QModelIndex& parent = QModelIndex()) const override;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
+
+    void BeginNewProfileSession(ProfilingSession* profSession);
+    void SetCurrentValues(const MemoryStatItem& item);
+
+private:
+    ProfilingSession* profileSession;
+
+    DAVA::uint64 timestamp;
+    DAVA::GeneralAllocStat curValues;
 };
 
+#endif  // __GENERALSTATMODEL_H__
