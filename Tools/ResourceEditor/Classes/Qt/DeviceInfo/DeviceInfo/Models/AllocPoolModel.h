@@ -26,27 +26,50 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __ALLOCPOOLMODEL_H__
+#define __ALLOCPOOLMODEL_H__
 
-#pragma once
-#include <QStyledItemDelegate>
-class MemoryItemStyleDelegate : public QStyledItemDelegate
+#include <QColor>
+#include <QAbstractTableModel>
+
+#include "Base/BaseTypes.h"
+#include "MemoryManager/MemoryManagerTypes.h"
+
+class ProfilingSession;
+class MemoryStatItem;
+
+class AllocPoolModel : public QAbstractTableModel
 {
     Q_OBJECT
+
 public:
-    MemoryItemStyleDelegate(QWidget *parent = 0) : QStyledItemDelegate(parent) {}
+    enum {
+        CLM_NAME = 0,
+        CLM_ALLOC_APP,
+        CLM_ALLOC_TOTAL,
+        CLM_NBLOCKS,
+        NCOLUMNS = 4
+    };
 
-    void paint(QPainter *painter, const QStyleOptionViewItem &option,
-        const QModelIndex &index) const override;
-    QSize sizeHint(const QStyleOptionViewItem &option,
-        const QModelIndex &index) const override;
-    
+public:
+    AllocPoolModel(QObject* parent = nullptr);
+    virtual ~AllocPoolModel();
 
-    ~MemoryItemStyleDelegate();
+    int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+    int columnCount(const QModelIndex& parent = QModelIndex()) const override;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
 
-public slots:
-    void commitAndCloseEditor();
+    void BeginNewProfileSession(ProfilingSession* profSession);
+    void SetCurrentValues(const MemoryStatItem& item);
+    void SetPoolColors(const DAVA::Vector<QColor>& poolColors);
 
+private:
+    ProfilingSession* profileSession;
 
-
+    DAVA::uint64 timestamp;
+    DAVA::Vector<DAVA::AllocPoolStat> curValues;
+    DAVA::Vector<QColor> poolColors;
 };
 
+#endif  // __ALLOCPOOLMODEL_H__
