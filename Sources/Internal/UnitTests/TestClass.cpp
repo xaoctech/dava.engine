@@ -26,66 +26,53 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "DAVAEngine.h"
-#include "UnitTests/UnitTests.h"
+#include "TestClass.h"
 
-#include "Utils/Random.h"
-#include "Base/HashMap.h"
+#if defined(__DAVAENGINE_APPLE__) || defined(__DAVAENGINE_ANDROID__)
+#   include <cxxabi.h>
+#endif
 
-using namespace DAVA;
-
-DAVA_TESTCLASS(HashMapTest)
+namespace DAVA
 {
-    DEDUCE_COVERED_CLASS_FROM_TESTCLASS()
+namespace UnitTests
+{
 
-    DAVA_TEST(HashMapInsertRemoveGetTest)
+String TestClass::PrettifyTypeName(const String& name) const
+{
+    String result = name;
+#if defined(__DAVAENGINE_APPLE__) || defined(__DAVAENGINE_ANDROID__)
+    // abi::__cxa_demangle reference
+    // https://gcc.gnu.org/onlinedocs/libstdc++/libstdc++-html-USERS-4.3/a01696.html
+    int status = 0;
+    char* demangledName = abi::__cxa_demangle(name.c_str(), nullptr, nullptr, &status);
+    if (demangledName != nullptr)
     {
-        const int32 SIZE = 20000;
-        Vector<DAVA::uint32> vect(SIZE, 0);
-        HashMap<DAVA::int32, DAVA::uint32> map;
-
-        for (int32 i = 0; i < SIZE; ++i)
-        {
-            uint32 v = (i + 1); // any value
-            vect[i] = v;
-            map.insert(i, v);
-        }
-
-        // Get test
-        for (int32 i = 0; i < SIZE; ++i)
-        {
-            TEST_VERIFY(vect[i] == map[i]);
-        }
-
-        //// remove some items
-        //for (int i = 0; i < sz/10; i++)
-        //{
-        //    int index = DAVA::Random::Instance()->Rand(sz);
-        //    vect[i] = 0;
-        //    map.Remove(i);
-        //}
-
-        // check get after remove
-        for (int32 i = 0; i < SIZE; ++i)
-        {
-            if (0 != vect[i])
-            {
-                TEST_VERIFY(vect[i] == map[i]);
-            }
-        }
-
-        // iterator test
-        HashMap<int32, uint32>::iterator iter = map.begin();
-        for (;iter != map.end(); ++iter)
-        {
-            // TEST_VERIFY(vect[iter.GetKey()] == iter.GetValue());
-        }
-
-        // 0-size hash map iterator test
-        HashMap<int32, uint32> map0;
-        iter = map0.begin();
-        for (; iter != map0.end(); ++iter)
-        {
-        }
+        result = demangledName;
+        free(demangledName);
     }
-};
+#endif
+
+    size_t spacePos = result.find_last_of(": ");
+    if (spacePos != String::npos)
+    {
+        return result.substr(spacePos + 1);
+    }
+    return result;
+}
+
+String TestClass::RemoveTestPostfix(const String& name) const
+{
+    String lowcase = name;
+    // Convert name to lower case
+    std::transform(lowcase.begin(), lowcase.end(), lowcase.begin(), [](char ch) -> char { return 'A' <= ch && ch <= 'Z' ? ch - 'A' + 'a' : ch; });
+    size_t pos = lowcase.rfind("test");
+    // If name ends with 'test' discard it
+    if (pos != String::npos && pos > 0 && lowcase.length() - pos == 4)
+    {
+        return name.substr(0, pos);
+    }
+    return name;
+}
+
+}   // namespace UnitTests
+}   // namespace DAVA
