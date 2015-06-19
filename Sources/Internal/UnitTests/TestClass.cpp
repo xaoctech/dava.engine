@@ -26,15 +26,53 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "Base/Platform.h"
-#if defined(__DAVAENGINE_WIN_UAP__)
+#include "TestClass.h"
 
-#include "Core/Core.h"
+#if defined(__DAVAENGINE_APPLE__) || defined(__DAVAENGINE_ANDROID__)
+#   include <cxxabi.h>
+#endif
 
-[Platform::MTAThread]
-int main(Platform::Array<Platform::String^>^ args)
+namespace DAVA
 {
-    return DAVA::Core::Run(0, 0, 0);
+namespace UnitTests
+{
+
+String TestClass::PrettifyTypeName(const String& name) const
+{
+    String result = name;
+#if defined(__DAVAENGINE_APPLE__) || defined(__DAVAENGINE_ANDROID__)
+    // abi::__cxa_demangle reference
+    // https://gcc.gnu.org/onlinedocs/libstdc++/libstdc++-html-USERS-4.3/a01696.html
+    int status = 0;
+    char* demangledName = abi::__cxa_demangle(name.c_str(), nullptr, nullptr, &status);
+    if (demangledName != nullptr)
+    {
+        result = demangledName;
+        free(demangledName);
+    }
+#endif
+
+    size_t spacePos = result.find_last_of(": ");
+    if (spacePos != String::npos)
+    {
+        return result.substr(spacePos + 1);
+    }
+    return result;
 }
 
-#endif // defined(__DAVAENGINE_WIN_UAP__)
+String TestClass::RemoveTestPostfix(const String& name) const
+{
+    String lowcase = name;
+    // Convert name to lower case
+    std::transform(lowcase.begin(), lowcase.end(), lowcase.begin(), [](char ch) -> char { return 'A' <= ch && ch <= 'Z' ? ch - 'A' + 'a' : ch; });
+    size_t pos = lowcase.rfind("test");
+    // If name ends with 'test' discard it
+    if (pos != String::npos && pos > 0 && lowcase.length() - pos == 4)
+    {
+        return name.substr(0, pos);
+    }
+    return name;
+}
+
+}   // namespace UnitTests
+}   // namespace DAVA
