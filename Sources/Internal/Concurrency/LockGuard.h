@@ -27,38 +27,50 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_PTHREAD_WIN32_H__
-#define __DAVAENGINE_PTHREAD_WIN32_H__ 
-
-#include "Base/Platform.h"
-
-//mimic to some posix threads api
-//No cancellations!
-
-#ifdef __DAVAENGINE_WINDOWS__
+#ifndef __DAVAENGINE_LOCK_GUARD_H__
+#define __DAVAENGINE_LOCK_GUARD_H__
 
 namespace DAVA
 {
 
-using pthread_condattr_t = void;
-using pthread_mutex_t = CRITICAL_SECTION;
-using pthread_mutexattr_t = void;
-using pthread_cond_t = CONDITION_VARIABLE;
+//-----------------------------------------------------------------------------
+//LockGuard class - RAII wrapper for mutex object
+//-----------------------------------------------------------------------------
+template<class MutexT>
+class LockGuard
+{
+    using MutexType = MutexT;
+public:
+    // construct and lock
+    explicit LockGuard(MutexType& mutex);
 
-#define PTHREAD_COND_INITIALIZER {0}
+    // clean up
+    ~LockGuard() DAVA_NOEXCEPT;
 
-int pthread_cond_init(pthread_cond_t *cv, const pthread_condattr_t *);
-int pthread_cond_wait(pthread_cond_t *cv, pthread_mutex_t *external_mutex);
-int pthread_cond_signal(pthread_cond_t *cv);
-int pthread_cond_broadcast(pthread_cond_t *cv);
-int pthread_cond_destroy(pthread_cond_t* cond);
+    // no copy construct and assign operator
+    LockGuard(const LockGuard&) = delete;
+    LockGuard& operator=(const LockGuard&) = delete;
 
-int pthread_mutex_init(pthread_mutex_t *mutex, const pthread_mutexattr_t *mutexattr);
-int pthread_mutex_lock(pthread_mutex_t *mutex);
-int pthread_mutex_unlock(pthread_mutex_t *mutex);
-int pthread_mutex_destroy(pthread_mutex_t *mutex);
+private:
+    MutexType& mutex_ref;
 };
 
-#endif //__DAVAENGINE_WINDOWS__
+//-----------------------------------------------------------------------------
+//Realization of LockGuard
+//-----------------------------------------------------------------------------
+template<class MutexT>
+LockGuard<MutexT>::LockGuard(MutexType& mutex)
+    : mutex_ref(mutex)
+{
+    mutex_ref.Lock();
+}
 
-#endif // __DAVAENGINE_PTHREAD_WIN32_H__
+template<class MutexT>
+LockGuard<MutexT>::~LockGuard() DAVA_NOEXCEPT
+{
+    mutex_ref.Unlock();
+}
+
+} //  namespace DAVA
+
+#endif //  __DAVAENGINE_LOCK_GUARD_H__
