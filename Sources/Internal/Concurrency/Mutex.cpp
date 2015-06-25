@@ -27,71 +27,69 @@
 =====================================================================================*/
 
 
-#include "Debug/DVAssert.h"
-#include "Platform/TemplateWin32/pThreadWin32.h"
+#include "Base/Platform.h"
+#ifndef USE_CPP11_CONCURRENCY
 
-#ifdef __DAVAENGINE_WINDOWS__
+#include "Concurrency/Mutex.h"
+#include "Debug/DVAssert.h"
+
 namespace DAVA
 {
 
-int pthread_cond_init(pthread_cond_t *cv, const pthread_condattr_t*)
+Mutex::Mutex()
 {
-    InitializeConditionVariable(cv);
-    return 0;
-}
-
-int pthread_cond_destroy(pthread_cond_t* /*cv*/)
-{
-    return 0;
-}
-
-int pthread_cond_wait(pthread_cond_t *cv, pthread_mutex_t *external_mutex)
-{
-    return SleepConditionVariableCS(cv, external_mutex, INFINITE) != 0 ? 0 : GetLastError();
-}
-
-int pthread_cond_signal(pthread_cond_t *cv)
-{
-    WakeConditionVariable(cv);
-    return 0;
-}
-
-int pthread_cond_broadcast(pthread_cond_t *cv)
-{
-    WakeAllConditionVariable(cv);
-    return 0;
-}
-
-int pthread_mutex_init(pthread_mutex_t *mutex, const pthread_mutexattr_t *)
-{
-    return InitializeCriticalSectionEx(mutex, 1000, 0) != 0 ? 0 : GetLastError();
-}
-
-int pthread_mutex_lock(pthread_mutex_t *mutex)
-{
-    EnterCriticalSection(mutex);
-
-    //deadlock
-    if (mutex->RecursionCount > 1)
+    int ret = pthread_mutex_init(&mutex, nullptr);
+    if (ret != 0)
     {
-        DVASSERT_MSG(false, "Thread in deadlocked");
-        while (mutex->RecursionCount > 1) {}
+        Logger::Error("Mutex::Mutex() error: %d", ret);
     }
-
-    return 0;
 }
 
-int pthread_mutex_unlock(pthread_mutex_t *mutex)
+RecursiveMutex::RecursiveMutex()
 {
-    LeaveCriticalSection(mutex);
-    return 0;
+    pthread_mutexattr_t attributes;
+    pthread_mutexattr_init(&attributes);
+    pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_RECURSIVE);
+
+    int ret = pthread_mutex_init(&mutex, &attributes);
+    if (ret != 0)
+    {
+        Logger::Error("RecursiveMutex::RecursiveMutex() error: %d", ret);
+    }
 }
 
-int pthread_mutex_destroy(pthread_mutex_t *mutex)
+MutexBase::~MutexBase()
 {
-    DeleteCriticalSection(mutex);
-    return 0;
+    int ret = pthread_mutex_destroy(&mutex);
+    if (ret != 0)
+    {
+        Logger::Error("Mutex::~Mutex() error: %d", ret);
+    }
 }
 
-};
-#endif //__DAVAENGINE_WINDOWS__
+void MutexBase::Lock()
+{
+    int ret = pthread_mutex_lock(&mutex);
+    if (ret != 0)
+    {
+        Logger::Error("MutexBase::Lock() error: %d", ret);
+    }
+}
+
+void MutexBase::Unlock()
+{
+    int ret = pthread_mutex_unlock(&mutex);
+    if (ret != 0)
+    {
+        Logger::Error("MutexBase::Unlock() error: %d", ret);
+    }
+}
+
+bool MutexBase::TryLock()
+{
+    return pthread_mutex_trylock(&mutex) == 0;
+}
+
+}  // namespace DAVA
+
+#endif  // !USE_CPP11_CONCURRENCY

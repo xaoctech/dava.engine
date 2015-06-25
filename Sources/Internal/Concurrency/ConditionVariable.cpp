@@ -27,30 +27,65 @@
 =====================================================================================*/
 
 
-#include "Base/Atomic.h"
+#include "Base/Platform.h"
+#ifndef USE_CPP11_CONCURRENCY
 
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
-
-#import <libkern/OSAtomic.h>
+#include "Concurrency/ConditionVariable.h"
+#include "Debug/DVAssert.h"
 
 namespace DAVA
 {
-    
-int32 AtomicIncrement( int32 &value )
+
+//-------------------------------------------------------------------------------------------------
+//Condition variable realization using POSIX Threads API
+//-------------------------------------------------------------------------------------------------
+ConditionVariable::ConditionVariable()
 {
-    return (int32)OSAtomicIncrement32Barrier((volatile int32_t *)&value);
+    int ret = pthread_cond_init(&cv, nullptr);
+    if (ret != 0)
+    {
+        Logger::Error("ConditionVariable::ConditionVariable() error: %d", ret);
+    }
 }
 
-int32 AtomicDecrement( int32 &value )
+ConditionVariable::~ConditionVariable() DAVA_NOEXCEPT
 {
-    return (int32)OSAtomicDecrement32Barrier((volatile int32_t *)&value);
+    int ret = pthread_cond_destroy(&cv);
+    if (ret != 0)
+    {
+        Logger::Error("ConditionVariable::~ConditionVariable() error: %d", ret);
+    }
 }
-    
-bool AtomicCompareAndSwap(const int32 oldVal, const int32 newVal, int32 &value)
-{
-    return OSAtomicCompareAndSwap32Barrier(oldVal, newVal, (volatile int32_t *)&value);
-}
-    
-};
 
-#endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
+void ConditionVariable::Wait(UniqueLock<Mutex>& guard)
+{
+    pthread_mutex_t* mutex = &guard.GetMutex()->mutex;
+    int ret = pthread_cond_wait(&cv, mutex);
+
+    if (ret != 0)
+    {
+        Logger::Error("ConditionVariable::Wait() error: %d", ret);
+    }
+}
+
+void ConditionVariable::NotifyOne()
+{
+    int ret = pthread_cond_signal(&cv);
+    if (ret != 0)
+    {
+        Logger::Error("ConditionVariable::NotifyOne() error: %d", ret);
+    }
+}
+
+void ConditionVariable::NotifyAll()
+{
+    int ret = pthread_cond_broadcast(&cv);
+    if (ret != 0)
+    {
+        Logger::Error("ConditionVariable::NotifyAll() error: %d", ret);
+    }
+}
+
+} //  namespace DAVA
+
+#endif //  !USE_CPP11_CONCURRENCY
