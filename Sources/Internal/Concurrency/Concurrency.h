@@ -27,31 +27,22 @@
 =====================================================================================*/
 
 
-#include "Base/Atomic.h"
+#ifndef __DAVAENGINE_CONCURRENCY_H__
+#define __DAVAENGINE_CONCURRENCY_H__
 
-#if defined(__DAVAENGINE_ANDROID__)
+// All concurrency subsystem includes
 
-#include <sys/atomics.h>
+#include "Concurrency/Atomic.h"
+#include "Concurrency/ConcurrentObject.h"
+#include "Concurrency/ConditionVariable.h"
+#include "Concurrency/LockGuard.h"
+#include "Concurrency/Mutex.h"
+#include "Concurrency/Semaphore.h"
+#include "Concurrency/Spinlock.h"
+#include "Concurrency/Thread.h"
+#include "Concurrency/ThreadLocalPtr.h"
 
-namespace DAVA 
-{
+//TODO: uncomment this include in client
+#include "Concurrency/PosixThreads.h"
 
-int32 AtomicIncrement( int32 &value )
-{
-    return (int32)(__atomic_inc((int *)&value) + 1);
-}
-
-int32 AtomicDecrement( int32 &value )
-{
-	return (int32)(__atomic_dec((int *)&value) - 1);
-}
-
-bool AtomicCompareAndSwap(const int32 oldVal, const int32 newVal, volatile int32 &value)
-{
-    return (oldVal == __atomic_cmpxchg(oldVal, newVal, &value));
-}
-
-};
-
-#endif //#if defined(__DAVAENGINE_ANDROID__)
-
+#endif //  __DAVAENGINE_CONCURRENCY_H__
