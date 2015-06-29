@@ -27,46 +27,47 @@
 =====================================================================================*/
 
 
-#include "Platform/Mutex.h"
-#include "FileSystem/Logger.h"
+#ifndef __SPRITES_PACKER_H__
+#define __SPRITES_PACKER_H__
 
-namespace DAVA
-{
+#include "Render/RenderBase.h"
+#include "TextureCompression/TextureConverter.h"
+#include <QObject>
+#include <atomic>
 
-Mutex::Mutex()
-{
-    int ret = pthread_mutex_init(&mutex, NULL);
-    if (ret != 0)
-    {
-        Logger::Error("Mutex::Mutex() error: %d", ret);
-    }
+namespace DAVA {
+    class ResourcePacker2D;
 }
+class QDir;
 
-Mutex::~Mutex()
+class SpritesPacker : public QObject
 {
-    int ret = pthread_mutex_destroy(&mutex);
-    if (ret != 0)
-    {
-        Logger::Error("Mutex::~Mutex() error: %d", ret);
-    }
-}
+    Q_OBJECT
+    Q_PROPERTY(bool running READ IsRunning WRITE SetRunning NOTIFY RunningStateChanged);
+public:
+    SpritesPacker(QObject *parent = nullptr);
+    ~SpritesPacker();
+    void AddTask(const QDir &inputDir, const QDir &outputDir);
+    void ClearTasks();
+    Q_INVOKABLE void ReloadSprites(bool clearDirs, const DAVA::eGPUFamily gpu, const DAVA::TextureConverter::eConvertQuality quality);
+public slots:
+    void Cancel();
+signals:
+    void Finished();
 
-void Mutex::Lock()
-{
-    int ret = pthread_mutex_lock(&mutex);
-    if (ret != 0)
-    {
-        Logger::Error("Mutex::Lock() error: %d", ret);
-    }
-}
+private:
+    DAVA::ResourcePacker2D *resourcePacker2D;
+    QList < QPair<QDir, QDir> > tasks;
 
-void Mutex::Unlock()
-{
-    int ret = pthread_mutex_unlock(&mutex);
-    if (ret != 0)
-    {
-        Logger::Error("Mutex::Unlock() error: %d", ret);
-    }
-}
-
+    //properties section
+public:
+    bool IsRunning() const;
+public slots:
+    void SetRunning(bool arg);
+signals:
+    void RunningStateChanged(bool arg);
+private:
+    std::atomic<bool> running;
 };
+
+#endif //__SPRITES_PACKER_H__
