@@ -27,71 +27,53 @@
 =====================================================================================*/
 
 
-#include "Debug/DVAssert.h"
-#include "Platform/TemplateWin32/pThreadWin32.h"
+#ifndef __DAVAENGINE_POSIX_THREADS_H__
+#define __DAVAENGINE_POSIX_THREADS_H__ 
 
-#ifdef __DAVAENGINE_WINDOWS__
+#include "Base/Platform.h"
+
+#ifndef __DAVAENGINE_WINDOWS__
+#   include <pthread.h>
+#else
+	
+//mimic to some posix threads api
+//No cancellations!
+
 namespace DAVA
 {
 
-int pthread_cond_init(pthread_cond_t *cv, const pthread_condattr_t*)
+using pthread_condattr_t = void;
+using pthread_cond_t = CONDITION_VARIABLE;
+
+struct pthread_mutexattr_t
 {
-    InitializeConditionVariable(cv);
-    return 0;
-}
-
-int pthread_cond_destroy(pthread_cond_t* /*cv*/)
-{
-    return 0;
-}
-
-int pthread_cond_wait(pthread_cond_t *cv, pthread_mutex_t *external_mutex)
-{
-    return SleepConditionVariableCS(cv, external_mutex, INFINITE) != 0 ? 0 : GetLastError();
-}
-
-int pthread_cond_signal(pthread_cond_t *cv)
-{
-    WakeConditionVariable(cv);
-    return 0;
-}
-
-int pthread_cond_broadcast(pthread_cond_t *cv)
-{
-    WakeAllConditionVariable(cv);
-    return 0;
-}
-
-int pthread_mutex_init(pthread_mutex_t *mutex, const pthread_mutexattr_t *)
-{
-    return InitializeCriticalSectionEx(mutex, 1000, 0) != 0 ? 0 : GetLastError();
-}
-
-int pthread_mutex_lock(pthread_mutex_t *mutex)
-{
-    EnterCriticalSection(mutex);
-
-    //deadlock
-    if (mutex->RecursionCount > 1)
-    {
-        DVASSERT_MSG(false, "Thread in deadlocked");
-        while (mutex->RecursionCount > 1) {}
-    }
-
-    return 0;
-}
-
-int pthread_mutex_unlock(pthread_mutex_t *mutex)
-{
-    LeaveCriticalSection(mutex);
-    return 0;
-}
-
-int pthread_mutex_destroy(pthread_mutex_t *mutex)
-{
-    DeleteCriticalSection(mutex);
-    return 0;
-}
-
+    bool isRecursive;
 };
-#endif //__DAVAENGINE_WINDOWS__
+
+struct pthread_mutex_t
+{
+    pthread_mutexattr_t attributes;
+    CRITICAL_SECTION critical_section;
+};
+
+#define PTHREAD_COND_INITIALIZER {0}
+const int PTHREAD_MUTEX_RECURSIVE = 1;
+
+int pthread_cond_init(pthread_cond_t *cv, const pthread_condattr_t *);
+int pthread_cond_wait(pthread_cond_t *cv, pthread_mutex_t *external_mutex);
+int pthread_cond_signal(pthread_cond_t *cv);
+int pthread_cond_broadcast(pthread_cond_t *cv);
+int pthread_cond_destroy(pthread_cond_t* cond);
+
+int pthread_mutexattr_init(pthread_mutexattr_t *attr);
+int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int type);
+int pthread_mutex_init(pthread_mutex_t *mutex, const pthread_mutexattr_t *mutexattr);
+int pthread_mutex_lock(pthread_mutex_t *mutex);
+int pthread_mutex_trylock(pthread_mutex_t *mutex);
+int pthread_mutex_unlock(pthread_mutex_t *mutex);
+int pthread_mutex_destroy(pthread_mutex_t *mutex);
+};
+
+#endif //  !__DAVAENGINE_WINDOWS__
+
+#endif // __DAVAENGINE_POSIX_THREADS_H__

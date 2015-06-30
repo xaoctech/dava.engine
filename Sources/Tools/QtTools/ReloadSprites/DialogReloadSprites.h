@@ -27,18 +27,53 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_ATOMIC__
-#define __DAVAENGINE_ATOMIC__
+#ifndef __DIALOG_RELOAD_SPRITES_H__
+#define __DIALOG_RELOAD_SPRITES_H__
 
-#include "Base/BaseTypes.h"
+#include "SpritesPacker.h"
+#include <QDialog>
 
-namespace DAVA 
+#include <QThread>
+namespace Ui
 {
+    class DialogReloadSprites;
+}
 
-int32 AtomicIncrement(int32 &value);
-int32 AtomicDecrement(int32 &value);
-bool AtomicCompareAndSwap(const int32 oldVal, const int32 newVal, volatile int32 &value);
+class DialogReloadSprites : public QDialog
+{
+    Q_OBJECT
+    QThread workerThread;
+public:
+    explicit DialogReloadSprites(QWidget *parent = nullptr);
+    ~DialogReloadSprites();
+    SpritesPacker *GetSpritesPacker() const;
+    QAction* GetActionReloadSprites() const;
+signals:
+    bool StarPackProcess();
+private slots:
+    void OnStartClicked();
+    void OnStopClicked();
+    void OnRunningChanged(bool running);
+protected:
+    void closeEvent(QCloseEvent *event) override;
+private:
+    void LoadSettings();
+    void SaveSettings() const;
+    void BlockingStop();
 
+    Ui::DialogReloadSprites *ui;
+    SpritesPacker *spritesPacker;
+    QAction *actionReloadSprites;
 };
 
-#endif //__DAVAENGINE_ATOMIC__
+inline SpritesPacker* DialogReloadSprites::GetSpritesPacker() const
+{
+    return spritesPacker;
+}
+
+inline QAction* DialogReloadSprites::GetActionReloadSprites() const
+{
+    return actionReloadSprites;
+}
+
+#endif // __DIALOG_RELOAD_SPRITES_H__
