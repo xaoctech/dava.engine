@@ -27,30 +27,69 @@
 =====================================================================================*/
 
 
-#include "Base/Atomic.h"
+#include "Base/Platform.h"
+#ifndef USE_CPP11_CONCURRENCY
 
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
-
-#import <libkern/OSAtomic.h>
+#include "Concurrency/Mutex.h"
+#include "Debug/DVAssert.h"
 
 namespace DAVA
 {
-    
-int32 AtomicIncrement( int32 &value )
+
+Mutex::Mutex()
 {
-    return (int32)OSAtomicIncrement32Barrier((volatile int32_t *)&value);
+    int ret = pthread_mutex_init(&mutex, nullptr);
+    if (ret != 0)
+    {
+        Logger::Error("Mutex::Mutex() error: %d", ret);
+    }
 }
 
-int32 AtomicDecrement( int32 &value )
+RecursiveMutex::RecursiveMutex()
 {
-    return (int32)OSAtomicDecrement32Barrier((volatile int32_t *)&value);
-}
-    
-bool AtomicCompareAndSwap(const int32 oldVal, const int32 newVal, int32 &value)
-{
-    return OSAtomicCompareAndSwap32Barrier(oldVal, newVal, (volatile int32_t *)&value);
-}
-    
-};
+    pthread_mutexattr_t attributes;
+    pthread_mutexattr_init(&attributes);
+    pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_RECURSIVE);
 
-#endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
+    int ret = pthread_mutex_init(&mutex, &attributes);
+    if (ret != 0)
+    {
+        Logger::Error("RecursiveMutex::RecursiveMutex() error: %d", ret);
+    }
+}
+
+MutexBase::~MutexBase()
+{
+    int ret = pthread_mutex_destroy(&mutex);
+    if (ret != 0)
+    {
+        Logger::Error("Mutex::~Mutex() error: %d", ret);
+    }
+}
+
+void MutexBase::Lock()
+{
+    int ret = pthread_mutex_lock(&mutex);
+    if (ret != 0)
+    {
+        Logger::Error("MutexBase::Lock() error: %d", ret);
+    }
+}
+
+void MutexBase::Unlock()
+{
+    int ret = pthread_mutex_unlock(&mutex);
+    if (ret != 0)
+    {
+        Logger::Error("MutexBase::Unlock() error: %d", ret);
+    }
+}
+
+bool MutexBase::TryLock()
+{
+    return pthread_mutex_trylock(&mutex) == 0;
+}
+
+}  // namespace DAVA
+
+#endif  // !USE_CPP11_CONCURRENCY
