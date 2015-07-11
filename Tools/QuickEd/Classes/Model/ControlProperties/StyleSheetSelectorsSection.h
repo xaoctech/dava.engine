@@ -27,58 +27,44 @@
  =====================================================================================*/
 
 
-#include "StyleSheetSelectorsProperty.h"
+#ifndef __QUICKED_STYLE_SHEET_SELECTORS_SECTION_H__
+#define __QUICKED_STYLE_SHEET_SELECTORS_SECTION_H__
 
-#include "PropertyVisitor.h"
-#include "../PackageHierarchy/StyleSheetNode.h"
+#include "Model/ControlProperties/ValueProperty.h"
+#include "Model/ControlProperties/StyleSheetSelectorProperty.h"
+#include "UI/Styles/UIStyleSheetSelectorChain.h"
 
-#include "UI/Styles/UIStyleSheet.h"
+class ValueProperty;
 
-using namespace DAVA;
+class StyleSheetNode;
 
-StyleSheetSelectorsProperty::StyleSheetSelectorsProperty(StyleSheetNode *aStyleSheet)
-    : ValueProperty("Selectors")
-    , styleSheet(aStyleSheet) // weak
+namespace DAVA
 {
+    class UIControl;
+}
+
+class StyleSheetSelectorsSection : public ValueProperty
+{
+public:
+    StyleSheetSelectorsSection(StyleSheetNode *styleSheet, const DAVA::Vector<DAVA::UIStyleSheetSelectorChain> &selectorChains);
+protected:
+    virtual ~StyleSheetSelectorsSection();
     
-}
-
-StyleSheetSelectorsProperty::~StyleSheetSelectorsProperty()
-{
-    styleSheet = nullptr; //weak
-}
-
-int StyleSheetSelectorsProperty::GetCount() const
-{
-    return 0;
-}
-
-AbstractProperty *StyleSheetSelectorsProperty::GetProperty(int index) const
-{
-    return nullptr;
-}
-
-void StyleSheetSelectorsProperty::Accept(PropertyVisitor *visitor)
-{
-    visitor->VisitStyleSheetSelectorsProperty(this);
-}
-
-bool StyleSheetSelectorsProperty::IsReadOnly() const
-{
-    return styleSheet->IsReadOnly();
-}
-
-AbstractProperty::ePropertyType StyleSheetSelectorsProperty::GetType() const
-{
-    return TYPE_VARIANT;
-}
-
-DAVA::VariantType StyleSheetSelectorsProperty::GetValue() const
-{
-    return VariantType(styleSheet->GetName());
-}
-
-void StyleSheetSelectorsProperty::ApplyValue(const DAVA::VariantType &value)
-{
+public:
+    int GetCount() const override;
+    StyleSheetSelectorProperty *GetProperty(int index) const override;
     
-}
+    void Accept(PropertyVisitor *visitor) override;
+    bool IsReadOnly() const override;
+    
+    ePropertyType GetType() const override;
+    
+    DAVA::VariantType GetValue() const;
+    void ApplyValue(const DAVA::VariantType &value);
+
+private:
+    StyleSheetNode *styleSheet; // weak
+    DAVA::Vector<StyleSheetSelectorProperty*> selectors;
+};
+
+#endif // __QUICKED_STYLE_SHEET_SELECTORS_SECTION_H__
