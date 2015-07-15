@@ -25,41 +25,55 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
-#ifndef __DAVAENGINE_NMATERIALSTATEDYNAMICPROPERTYSINSP_NAMES_H__
-#define __DAVAENGINE_NMATERIALSTATEDYNAMICPROPERTYSINSP_NAMES_H__
+
+#ifndef __DAVEAENGINE_UI_SCREENSHOTER__
+#define __DAVEAENGINE_UI_SCREENSHOTER__
 
 #include "Base/BaseTypes.h"
-#include "Base/HashMap.h"
-#include "Base/FastNameMap.h"
-#include "Base/Introspection.h"
-#include "Render/RHI/rhi_ShaderSource.h"
+#include "Base/BaseMath.h"
+#include "UI/UIControl.h"
 
 namespace DAVA
 {
-class NMaterial;
 
-class NMaterialStateDynamicPropertiesInsp : public InspInfoDynamic
+class UIControl;
+class UI3DView;
+class Texture;
+
+class UIScreenshoter
 {
 public:
-    DynamicData Prepare(void *object, int filter) const override;
-    Vector<FastName> MembersList(const DynamicData& ddata) const override;
-    InspDesc MemberDesc(const DynamicData& ddata, const FastName &key) const override;
-    int MemberFlags(const DynamicData& ddata, const FastName &key) const override;
-    VariantType MemberValueGet(const DynamicData& ddata, const FastName &key) const override;
-    void MemberValueSet(const DynamicData& ddata, const FastName &key, const VariantType &value) override;
-    
-protected:
-    struct PropData
+    UIScreenshoter();
+    ~UIScreenshoter();
+
+    Texture* MakeScreenshot(UIControl* control, const PixelFormat format, bool cloneControl = false);
+    void MakeScreenshotWithCallback(UIControl* control, const PixelFormat format, Function<void(Texture*)> callback, bool cloneControl = false);
+    void MakeScreenshotWithPreparedTexture(UIControl* control, Texture* texture, bool cloneControl = false);
+
+    void OnFrame();
+
+private:
+    struct Control3dInfo
     {
-        uint32 size;
-        rhi::ShaderProp::Type type;
-        const float32* defaultValue;
+        UI3DView* control;
+        int32 priority;
+        rhi::Handle texture;
     };
+
+    struct ScreenshotWaiter
+    {
+        UIControl * control;
+        Texture * texture;
+        int32 cooldown;
+        Function<void(Texture*)> callback;
+    };
+
+    List<Control3dInfo> FindAll3dViews(UIControl * control);
+    void RenderToTexture(UIControl* control, Texture* screenshot);
     
-    bool IsColor(const FastName &key) const;
-    FastNameMap<PropData>* FindMaterialProperties(NMaterial *state) const;
+    List<ScreenshotWaiter> waiters;
 };
 
 };
 
-#endif /* defined(__DAVAENGINE_NMATERIALSTATEDYNAMICPROPERTYSINSP_NAMES_H__) */
+#endif //__DAVEAENGINE_UI_SCREENSHOTER__
