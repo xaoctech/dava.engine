@@ -27,42 +27,44 @@
  =====================================================================================*/
 
 
-#ifndef __UI_EDITOR_STYLE_SHEET_NODE_H__
-#define __UI_EDITOR_STYLE_SHEET_NODE_H__
+#include "InsertRemoveStyleCommand.h"
 
-#include "PackageBaseNode.h"
-#include "UI/Styles/UIStyleSheetSelectorChain.h"
+#include "Model/PackageHierarchy/StyleSheetNode.h"
+#include "Model/PackageHierarchy/StyleSheetsNode.h"
+#include "Model/PackageHierarchy/PackageNode.h"
 
-namespace DAVA
+using namespace DAVA;
+
+InsertRemoveStyleCommand::InsertRemoveStyleCommand(PackageNode *_root, StyleSheetNode *_node, StyleSheetsNode *_dest, int _index, bool _insert, QUndoCommand *parent)
+    : QUndoCommand(parent)
+    , root(SafeRetain(_root))
+    , node(SafeRetain(_node))
+    , dest(SafeRetain(_dest))
+    , index(_index)
+    , insert(_insert)
 {
-    class UIStyleSheet;
+    
 }
 
-class StyleSheetRootProperty;
-
-class StyleSheetNode : public PackageBaseNode
+InsertRemoveStyleCommand::~InsertRemoveStyleCommand()
 {
-public:
-    StyleSheetNode(const DAVA::Vector<DAVA::UIStyleSheetSelectorChain> &selectorChains, const DAVA::Vector<DAVA::UIStyleSheetProperty> &properties);
-    virtual ~StyleSheetNode();
+    SafeRelease(root);
+    SafeRelease(node);
+    SafeRelease(dest);
+}
 
-    StyleSheetNode *Clone() const;
+void InsertRemoveStyleCommand::redo()
+{
+    if (insert)
+        root->InsertStyle(node, dest, index);
+    else
+        root->RemoveStyle(node, dest);
+}
 
-    int GetCount() const override;
-    PackageBaseNode *Get(DAVA::int32 index) const override;
-    void Accept(PackageVisitor *visitor) override;
-    
-    DAVA::String GetName() const override;
-    void UpdateName();
-
-    bool CanRemove() const override;
-    bool CanCopy() const override;
-
-    StyleSheetRootProperty *GetRootProperty() const;
-    
-private:
-    StyleSheetRootProperty *rootProperty;
-    DAVA::String name;
-};
-
-#endif //__UI_EDITOR_STYLE_SHEET_NODE_H__
+void InsertRemoveStyleCommand::undo()
+{
+    if (insert)
+        root->RemoveStyle(node, dest);
+    else
+        root->InsertStyle(node, dest, index);
+}

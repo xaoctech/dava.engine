@@ -27,42 +27,30 @@
  =====================================================================================*/
 
 
-#ifndef __UI_EDITOR_STYLE_SHEET_NODE_H__
-#define __UI_EDITOR_STYLE_SHEET_NODE_H__
+#ifndef __QUICKED_INSERT_REMOVE_STYLE_COMMAND_H__
+#define __QUICKED_INSERT_REMOVE_STYLE_COMMAND_H__
 
-#include "PackageBaseNode.h"
-#include "UI/Styles/UIStyleSheetSelectorChain.h"
+#include <QUndoCommand>
 
-namespace DAVA
-{
-    class UIStyleSheet;
-}
+class PackageNode;
+class StyleSheetNode;
+class StyleSheetsNode;
 
-class StyleSheetRootProperty;
-
-class StyleSheetNode : public PackageBaseNode
+class InsertRemoveStyleCommand : public QUndoCommand
 {
 public:
-    StyleSheetNode(const DAVA::Vector<DAVA::UIStyleSheetSelectorChain> &selectorChains, const DAVA::Vector<DAVA::UIStyleSheetProperty> &properties);
-    virtual ~StyleSheetNode();
-
-    StyleSheetNode *Clone() const;
-
-    int GetCount() const override;
-    PackageBaseNode *Get(DAVA::int32 index) const override;
-    void Accept(PackageVisitor *visitor) override;
+    InsertRemoveStyleCommand(PackageNode *_root, StyleSheetNode *_node, StyleSheetsNode *_dest, int _index, bool insert, QUndoCommand *parent = nullptr);
+    virtual ~InsertRemoveStyleCommand();
     
-    DAVA::String GetName() const override;
-    void UpdateName();
-
-    bool CanRemove() const override;
-    bool CanCopy() const override;
-
-    StyleSheetRootProperty *GetRootProperty() const;
+    void redo() override;
+    void undo() override;
     
 private:
-    StyleSheetRootProperty *rootProperty;
-    DAVA::String name;
+    PackageNode *root;
+    StyleSheetNode *node;
+    StyleSheetsNode *dest;
+    int index;
+    bool insert;
 };
 
-#endif //__UI_EDITOR_STYLE_SHEET_NODE_H__
+#endif // __QUICKED_INSERT_REMOVE_STYLE_COMMAND_H__
