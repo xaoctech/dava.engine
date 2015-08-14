@@ -27,41 +27,30 @@
  =====================================================================================*/
 
 
-#ifndef __QUICKED_STYLE_SHEET_SELECTORS_PROPERTY_H__
-#define __QUICKED_STYLE_SHEET_SELECTORS_PROPERTY_H__
+#ifndef __QUICKED_INSERT_REMOVE_STYLE_COMMAND_H__
+#define __QUICKED_INSERT_REMOVE_STYLE_COMMAND_H__
 
-#include "Model/ControlProperties/ValueProperty.h"
+#include <QUndoCommand>
 
-class ValueProperty;
-
+class PackageNode;
 class StyleSheetNode;
+class StyleSheetsNode;
 
-namespace DAVA
-{
-    class UIControl;
-}
-
-class StyleSheetSelectorsProperty : public ValueProperty
+class InsertRemoveStyleCommand : public QUndoCommand
 {
 public:
-    StyleSheetSelectorsProperty(StyleSheetNode *styleSheet);
-protected:
-    virtual ~StyleSheetSelectorsProperty();
+    InsertRemoveStyleCommand(PackageNode *_root, StyleSheetNode *_node, StyleSheetsNode *_dest, int _index, bool insert, QUndoCommand *parent = nullptr);
+    virtual ~InsertRemoveStyleCommand();
     
-public:
-    int GetCount() const override;
-    AbstractProperty *GetProperty(int index) const override;
+    void redo() override;
+    void undo() override;
     
-    void Accept(PropertyVisitor *visitor) override;
-    bool IsReadOnly() const override;
-    
-    ePropertyType GetType() const override;
-    
-    DAVA::VariantType GetValue() const;
-    void ApplyValue(const DAVA::VariantType &value);
-
 private:
-    StyleSheetNode *styleSheet; // weak
+    PackageNode *root;
+    StyleSheetNode *node;
+    StyleSheetsNode *dest;
+    int index;
+    bool insert;
 };
 
-#endif // __QUICKED_STYLE_SHEET_SELECTORS_PROPERTY_H__
+#endif // __QUICKED_INSERT_REMOVE_STYLE_COMMAND_H__
