@@ -27,51 +27,40 @@
  =====================================================================================*/
 
 
-#ifndef __QUICKED_STYLE_SHEET_TRANSITION_H__
-#define __QUICKED_STYLE_SHEET_TRANSITION_H__
+#ifndef __QUICKED_VALUE_PROPERTY_H__
+#define __QUICKED_VALUE_PROPERTY_H__
 
 #include "Model/ControlProperties/ValueProperty.h"
-#include "Animation/Interpolation.h"
 
 class ValueProperty;
+class IntrospectionProperty;
 
 class StyleSheetNode;
 
 namespace DAVA
 {
     class UIControl;
-    struct UIStyleSheetProperty;
 }
 
-class StyleSheetTransition : public ValueProperty
+class VariantTypeProperty : public ValueProperty
 {
 public:
-    StyleSheetTransition(StyleSheetNode *styleSheet, DAVA::uint32 propertyIndex);
+    VariantTypeProperty(const DAVA::String &name, DAVA::VariantType &variantType);
 protected:
-    virtual ~StyleSheetTransition();
+    virtual ~VariantTypeProperty();
     
 public:
-    int GetCount() const override;
-    AbstractProperty *GetProperty(int index) const override;
-    
     void Accept(PropertyVisitor *visitor) override;
     bool IsReadOnly() const override;
     
     ePropertyType GetType() const override;
-
+    
     DAVA::VariantType GetValue() const;
-
-    DAVA::float32 GetTransitionTime() const;
-    DAVA::Interpolation::FuncType GetTransitionFunction() const;
-
     const EnumMap *GetEnumMap() const;
     void ApplyValue(const DAVA::VariantType &value);
     
 private:
-    const DAVA::UIStyleSheetProperty* GetStyleSheetProperty() const;
-
-    StyleSheetNode *styleSheet; // weak
-    DAVA::uint32 propertyIndex;
+    DAVA::VariantType &value;
 };
 
-#endif // __QUICKED_STYLE_SHEET_TRANSITION_H__
+#endif // __QUICKED_VALUE_PROPERTY_H__
