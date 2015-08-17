@@ -27,64 +27,29 @@
  =====================================================================================*/
 
 
-#include "StyleSheetPropertiesSection.h"
+#ifndef __QUICKED_ADD_REMOVE_STYLE_PROPERTY_COMMAND_H__
+#define __QUICKED_ADD_REMOVE_STYLE_PROPERTY_COMMAND_H__
 
-#include "StyleSheetProperty.h"
-#include "PropertyVisitor.h"
-#include "../PackageHierarchy/StyleSheetNode.h"
-#include "UI/Styles/UIStyleSheet.h"
+#include <QUndoCommand>
 
-using namespace DAVA;
+class PackageNode;
+class StyleSheetNode;
+class StyleSheetProperty;
 
-StyleSheetPropertiesSection::StyleSheetPropertiesSection(StyleSheetNode *aStyleSheet)
-    : styleSheet(aStyleSheet) // weak
+class AddRemoveStylePropertyCommand : public QUndoCommand
 {
-    UIStyleSheet *ss = styleSheet->GetStyleSheet();
-    const UIStyleSheetPropertyTable *table = ss->GetPropertyTable();
-    const Vector<UIStyleSheetProperty> &tableProperties = table->GetProperties();
-    for (auto &pair : tableProperties)
-    {
-        StyleSheetProperty *prop = new StyleSheetProperty(styleSheet, pair.propertyIndex);
-        prop->SetParent(this);
-        properties.push_back(prop);
-    }
-}
+public:
+    AddRemoveStylePropertyCommand(PackageNode *root, StyleSheetNode *node, StyleSheetProperty *property, bool add, QUndoCommand *parent = nullptr);
+    virtual ~AddRemoveStylePropertyCommand();
+    
+    void redo() override;
+    void undo() override;
+    
+private:
+    PackageNode *root;
+    StyleSheetNode *node;
+    StyleSheetProperty *property;
+    bool add;
+};
 
-StyleSheetPropertiesSection::~StyleSheetPropertiesSection()
-{
-    styleSheet = nullptr; //weak
-    for (StyleSheetProperty *prop : properties)
-        SafeRelease(prop);
-    properties.clear();
-}
-
-int StyleSheetPropertiesSection::GetCount() const
-{
-    return static_cast<int>(properties.size());
-}
-
-AbstractProperty *StyleSheetPropertiesSection::GetProperty(int index) const
-{
-    return properties[index];
-}
-
-void StyleSheetPropertiesSection::Accept(PropertyVisitor *visitor)
-{
-    visitor->VisitStyleSheetPropertiesSection(this);
-}
-
-bool StyleSheetPropertiesSection::IsReadOnly() const
-{
-    return true;
-}
-
-const DAVA::String &StyleSheetPropertiesSection::GetName() const
-{
-    static String name = "Properties";
-    return name;
-}
-
-AbstractProperty::ePropertyType StyleSheetPropertiesSection::GetType() const
-{
-    return TYPE_HEADER;
-}
+#endif // __QUICKED_ADD_REMOVE_STYLE_PROPERTY_COMMAND_H__

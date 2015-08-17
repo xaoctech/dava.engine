@@ -26,29 +26,62 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
+#ifndef __MATERIALS_TEST_H__
+#define __MATERIALS_TEST_H__
 
-#ifndef __QUICKED_DEPENDED_ON_LAYOUT_PROPERTY_H__
-#define __QUICKED_DEPENDED_ON_LAYOUT_PROPERTY_H__
+#include "BaseTest.h"
 
-#include "IntrospectionProperty.h"
-
-class DependedOnLayoutProperty : public IntrospectionProperty
+class MaterialsTest : public BaseTest
 {
 public:
-    DependedOnLayoutProperty(DAVA::BaseObject *object, const DAVA::InspMember *member, const DependedOnLayoutProperty *sourceProperty, eCloneType cloneType);
+    MaterialsTest(const TestParams& testParams);
+    ~MaterialsTest();
+    
+    void BeginFrame() override;
+    
+    bool IsFinished() const override;
+    
+    static const String TEST_NAME;
     
 protected:
-    virtual ~DependedOnLayoutProperty();
+  
+    void LoadResources() override;
+    void PerformTestLogic(float32 timeElapsed) override {};
     
-public:
-    void RestoreSourceValue();
+    void PrintStatistic(const Vector<BaseTest::FrameInfo>& frames) override;
     
-    DAVA::VariantType GetValue() const override;
-protected:
-    void ApplyValue(const DAVA::VariantType &value) override;
+    const String& GetSceneName() const override;
     
-protected:
-    DAVA::VariantType sourceValue;
+private:
+    
+    Entity* CreateSpeedTreeEntity(Entity* entity);
+    Entity* CreateSkinnedEntity(Entity* entity);
+    Entity* CreateEntityForLightmapMaterial(Entity* entity);
+    
+    void ReplacePlanes(const Vector<Entity*>& planes);
+    
+    static const String SPHERICAL_LIT_MATERIAL;
+    static const String SKINNED_MATERIAL;
+    static const String LIGHTMAP_MATERIAL;
+    
+    static const FastName LIGHT_ENTITY;
+    static const FastName CAMERA_ENTITY;
+    static const FastName PLANE_ENTITY;
+    static const FastName MATERIALS_ENTITY;
+    
+    static const uint32 FRAMES_PER_MATERIAL_TEST;
+    
+    int32  currentTestStartFrame;
+    uint64 currentTestStartTime;
+    uint32 currentMaterialIndex;
+    
+    Vector<Entity*> planes;
+    Vector<Entity*> spoPlanes;
+    Vector<Entity*> skinnedPlanes;
+    Vector<Entity*> lightmapMaterialPlanes;
+    
+    Vector<NMaterial*> materials;
+    Vector<float32> materialTestsElapsedTime;
 };
 
-#endif // __QUICKED_DEPENDED_ON_LAYOUT_PROPERTY_H__
+#endif
