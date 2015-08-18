@@ -27,54 +27,41 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_SIMPLE_CONNECTION_LISTENER_PRIVATE_H__
-#define __DAVAENGINE_SIMPLE_CONNECTION_LISTENER_PRIVATE_H__
+#ifndef __DAVAENGINE_SIMPLE_TCP_SOCKET_H__
+#define __DAVAENGINE_SIMPLE_TCP_SOCKET_H__
 
-#include "Concurrency/Atomic.h"
-#include "Concurrency/ConcurrentObject.h"
-#include "Concurrency/Spinlock.h"
-#include "Concurrency/Thread.h"
-#include "Network/SimpleNetworking/SimpleConnectionListener.h"
+#include "Network/Base/Endpoint.h"
+#include "Network/SimpleNetworking/Private/SimpleAbstractSocket.h"
 
 namespace DAVA
 {
 namespace Net
 {
 
-template <typename T>
-using ConcurrentList = ConcurrentObject<List<T>>;
-
-template <typename T>
-using ConcurrentRefPtr = ConcurrentObject<RefPtr<T>, Spinlock>;
-
-class ConnectionListenerPrivate
+class SimpleTcpSocket : public ISimpleAbstractSocket
 {
 public:
-    ConnectionListenerPrivate(const ConnectionWaitFunction& connWaiter,
-                              const Endpoint& endPoint,
-                              NotificationType notifType);
+    SimpleTcpSocket(const Endpoint& endPoint);
+    ~SimpleTcpSocket();
+    
+    const Endpoint& GetEndpoint() override { return socketEndPoint; }
+    bool Shutdown() override;
+    
+    size_t Send(const char* buf, size_t bufSize) override;
+    size_t Recv(char* buf, size_t bufSize, bool recvAll = false) override;
+    bool IsConnectionEstablished() override { return connectionEstablished; }
 
-    ConnectionListenerPrivate(IConnectionPtr& conn, NotificationType notifType);
-    ~ConnectionListenerPrivate();
-
-    IConnectionPtr GetConnection() const;
-    void AddConnectionCallback(const ConnectionCallback& cb);
-    void AddDataReceiveCallback(const DataReceiveCallback& cb);
-
-    void Start();
-
-private:
-    void Start(const ConnectionWaitFunction& connectionWaiter, const Endpoint& endPoint);
-    void Start(IConnectionPtr& conn);
-
-    RefPtr<Thread> thread;
-    mutable ConcurrentRefPtr<IConnection> connection;
-    ConcurrentList<ConnectionCallback> onConnectCallbacks;
-    ConcurrentList<DataReceiveCallback> onDataReceiveCallbacks;
-    Atomic<NotificationType> notificationType;
+    bool IsValid() override { return socketId != INVALID_SOCKET; }
+    
+protected:
+    void Close();
+    
+    bool connectionEstablished = false;
+    Endpoint socketEndPoint;
+    SOCKET socketId;
 };
 
 }  // namespace Net
 }  // namespace DAVA
 
-#endif  // __DAVAENGINE_SIMPLE_CONNECTION_LISTENER_PRIVATE_H__
+#endif  // __DAVAENGINE_SIMPLE_TCP_SOCKET_H__
