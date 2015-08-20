@@ -27,31 +27,30 @@
  =====================================================================================*/
 
 
-#ifndef __QUICKED_STYLE_SHEETS_NODE_H__
-#define __QUICKED_STYLE_SHEETS_NODE_H__
+#ifndef __QUICKED_ADD_REMOVE_STYLE_SELECTOR_COMMAND_H__
+#define __QUICKED_ADD_REMOVE_STYLE_SELECTOR_COMMAND_H__
 
-#include "StyleSheetNode.h"
+#include <QUndoCommand>
 
-class StyleSheetsNode : public PackageBaseNode
+class PackageNode;
+class StyleSheetNode;
+class StyleSheetSelectorProperty;
+
+class AddRemoveStyleSelectorCommand : public QUndoCommand
 {
 public:
-    StyleSheetsNode(PackageBaseNode *parent);
-    virtual ~StyleSheetsNode();
+    AddRemoveStyleSelectorCommand(PackageNode *root, StyleSheetNode *node, StyleSheetSelectorProperty *property, bool add, QUndoCommand *parent = nullptr);
+    virtual ~AddRemoveStyleSelectorCommand();
     
-    void Add(StyleSheetNode *node);
-    void InsertAtIndex(DAVA::int32 index, StyleSheetNode *node);
-    void Remove(StyleSheetNode *node);
-    int GetCount() const override;
-    StyleSheetNode *Get(DAVA::int32 index) const override;
-    void Accept(PackageVisitor *visitor) override;
+    void redo() override;
+    void undo() override;
     
-    DAVA::String GetName() const override;
-
-    bool IsInsertingStylesSupported() const override;
-    bool CanInsertStyle(StyleSheetNode *node, DAVA::int32 pos) const override;
-
 private:
-    DAVA::Vector<StyleSheetNode*> styleSheets;
+    PackageNode *root;
+    StyleSheetNode *node;
+    StyleSheetSelectorProperty *property;
+    bool add;
+    int index;
 };
 
-#endif //__QUICKED_STYLE_SHEETS_NODE_H__
+#endif // __QUICKED_ADD_REMOVE_STYLE_SELECTOR_COMMAND_H__
