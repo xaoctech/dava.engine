@@ -27,52 +27,37 @@
 =====================================================================================*/
 
 
-#ifndef __HTTP_DOWNLOADER_H__
-#define __HTTP_DOWNLOADER_H__
+#ifndef __DUMP_TOOL_H__
+#define __DUMP_TOOL_H__
 
+#include "CommandLine/CommandLineTool.h"
 
-#include "Base/BaseTypes.h"
-#include "Base/BaseObject.h"
-#include "FileSystem/FilePath.h"
-
-
-namespace DAVA 
+class DumpTool: public CommandLineTool
 {
-	
-
-class HTTPDownloaderDelegate
-{
+    enum eAction
+    {
+        ACTION_NONE = -1,
+        
+        ACTION_DUMP_LINKS,
+    };
+    
 public:
-	/*
-		VB: Надо убрать HTTPDownloaderDelegate из названия функций потому-что 
-	 void MyClass::HTTPDownloaderDelegate::DidFailWithErrorMessage(String & error)
-	 {
-	 
-	 }
-	*/
-	virtual void HTTPDownloaderDelegateDidFailWithErrorMessage(String &errorMessage) = 0;
-	virtual void HTTPDownloaderDelegateDidFinish(const unsigned char *bytes, int length) = 0;
-};
-	
-class HTTPDownloader : public BaseObject 
-{
-public:
-	
-	HTTPDownloader();
-	
-	void DownloadFile(const String &address, HTTPDownloaderDelegate *delegate);
-	
-private:
-	void*downloader;
+
+	DAVA::String GetCommandLineKey() const override;
+	bool InitializeFromCommandLine() override;
+	void Process() override;
+	void PrintUsage() const override;
+	void DumpParams() const override;
+	DAVA::FilePath GetQualityConfigPath() const override;
 
 protected:
-	
-	~HTTPDownloader();
-};
-	
-	
-bool DownloadFileFromURLToDocuments(const String & url, const FilePath & documentsPathname);
-	
+
+    eAction commandAction;
+    DAVA::String filename;
+    DAVA::FilePath inFolder;
+	DAVA::FilePath outFile;
+	DAVA::FilePath qualityPathname;
 };
 
-#endif // __HTTP_DOWNLOADER_H__
+
+#endif // __DUMP_TOOL_H__
