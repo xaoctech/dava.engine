@@ -42,7 +42,7 @@ struct PackageOptions
 {
     Optional<String> package;
     Optional<String> profile;
-    Optional<String> dependencies; //?
+    Optional<String> dependencies;
 };
 
 PackageOptions ParseCommandLine();
