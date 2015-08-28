@@ -35,13 +35,12 @@
 
 struct Branch;
 class BacktraceSymbolTable;
+class ProfilingSession;
 
 class MemorySnapshot final
 {
 public:
-    MemorySnapshot(const DAVA::FilePath& filename, const DAVA::MMSnapshot* msnapshot);
-    MemorySnapshot(const MemorySnapshot&) = delete;
-    MemorySnapshot& operator = (const MemorySnapshot&) = delete;
+    MemorySnapshot(const ProfilingSession* profilingSession, const DAVA::FilePath& filename, const DAVA::MMSnapshot* msnapshot);
     MemorySnapshot(MemorySnapshot&& other);
     MemorySnapshot& operator = (MemorySnapshot&& other);
     ~MemorySnapshot() = default;
@@ -58,34 +57,38 @@ public:
     void Unload();
 
     const BacktraceSymbolTable* SymbolTable() const;
+    const ProfilingSession* Session() const;
+    const DAVA::Vector<DAVA::MMBlock>& MemoryBlocks() const { return mblocks; }
     
     // Create call tree branch starting from given names
-    Branch* CreateBranch(const DAVA::Vector<const char*>& startNames) const;
+    Branch* CreateBranch(const DAVA::Vector<const DAVA::String*>& startNames) const;
 
 private:
     void Init(const DAVA::MMSnapshot* msnapshot);
     bool LoadFile();
     void BuildBlockMap();
     
-    Branch* BuildPath(Branch* parent, int startFrame, const DAVA::Vector<const char*>& frames) const;
-    int FindNamesInBacktrace(const DAVA::Vector<const char*>& names, const DAVA::Vector<const char*>& frames) const;
+    Branch* BuildPath(Branch* parent, int startFrame, const DAVA::Vector<const DAVA::String*>& bktraceNames) const;
+    int FindNamesInBacktrace(const DAVA::Vector<const DAVA::String*>& namesToFind, const DAVA::Vector<const DAVA::String*>& bktraceNames) const;
 
 private:
+    const ProfilingSession* profilingSession = nullptr;
     DAVA::FilePath fileName;
-    DAVA::uint64 timestamp;
-    size_t blockCount;
-    size_t symbolCount;
-    size_t bktraceCount;
-    size_t totalSize;
+    DAVA::uint64 timestamp = 0;
+    size_t blockCount = 0;
+    size_t symbolCount = 0;
+    size_t bktraceCount = 0;
+    size_t totalSize = 0;
 
     BacktraceSymbolTable* symbolTable = nullptr;
-    DAVA::Vector<DAVA::MMBlock> mblocks;
-    DAVA::Map<DAVA::uint32, DAVA::Vector<DAVA::MMBlock>> blockMap;
+    DAVA::Vector<DAVA::MMBlock> mblocks;                                // All memory blocks contained in snapshot
+    DAVA::Map<DAVA::uint32, DAVA::Vector<DAVA::MMBlock*>> blockMap;     // Map of memory blocks allocated at backtrace identified by its hash
 };
 
 //////////////////////////////////////////////////////////////////////////
-inline MemorySnapshot::MemorySnapshot(const DAVA::FilePath& filename, const DAVA::MMSnapshot* msnapshot)
-    : fileName(filename)
+inline MemorySnapshot::MemorySnapshot(const ProfilingSession* profilingSession_, const DAVA::FilePath& filename, const DAVA::MMSnapshot* msnapshot)
+    : profilingSession(profilingSession_)
+    , fileName(filename)
 {
     Init(msnapshot);
 }
@@ -128,6 +131,11 @@ inline bool MemorySnapshot::IsLoaded() const
 inline const BacktraceSymbolTable* MemorySnapshot::SymbolTable() const
 {
     return symbolTable;
+}
+
+inline const ProfilingSession* MemorySnapshot::Session() const
+{
+    return profilingSession;
 }
 
 inline void MemorySnapshot::Init(const DAVA::MMSnapshot* msnapshot)

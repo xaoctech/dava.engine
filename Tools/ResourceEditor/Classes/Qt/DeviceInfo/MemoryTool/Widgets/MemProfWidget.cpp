@@ -29,11 +29,20 @@
 #include "Base/BaseTypes.h"
 #include "MemoryManager/MemoryManagerTypes.h"
 
-#include "ProfilingSession.h"
-#include "Models/AllocPoolModel.h"
-#include "Models/TagModel.h"
-#include "Models/GeneralStatModel.h"
-#include "Models/SnapshotListModel.h"
+#include "Qt/DeviceInfo/MemoryTool/BranchDiff.h"
+#include "Qt/DeviceInfo/MemoryTool/Branch.h"
+#include "Qt/DeviceInfo/MemoryTool/ProfilingSession.h"
+
+#include "Qt/DeviceInfo/MemoryTool/Models/AllocPoolModel.h"
+#include "Qt/DeviceInfo/MemoryTool/Models/TagModel.h"
+#include "Qt/DeviceInfo/MemoryTool/Models/GeneralStatModel.h"
+#include "Qt/DeviceInfo/MemoryTool/Models/SnapshotListModel.h"
+
+#include "Qt/DeviceInfo/MemoryTool/Widgets/SnapshotViewerWidget.h"
+#include "Qt/DeviceInfo/MemoryTool/Widgets/SnapshotDiffViewerWidget.h"
+#include "Qt/DeviceInfo/MemoryTool/Widgets/MemProfWidget.h"
+
+#include "ui_MemProfWidget.h"
 
 #include <QLabel>
 #include <QFrame>
@@ -42,15 +51,6 @@
 #include <QVBoxLayout>
 #include <QMessageBox>
 #include "qcustomplot.h"
-
-#include "SnapshotViewerWidget.h"
-#include "SnapshotDiffViewerWidget.h"
-
-#include "BranchDiff.h"
-#include "Branch.h"
-
-#include "MemProfWidget.h"
-#include "ui_MemProfWidget.h"
 
 using namespace DAVA;
 
@@ -109,7 +109,7 @@ void MemProfWidget::ConnectionLost(const char8* message)
                                                 : QString("Connection lost"));
 }
 
-void MemProfWidget::StatArrived(size_t /*itemCount*/)
+void MemProfWidget::StatArrived(uint32 /*itemCount*/)
 {
     const MemoryStatItem& stat = profileSession->LastStat();
     if (realtimeMode)
@@ -121,18 +121,14 @@ void MemProfWidget::StatArrived(size_t /*itemCount*/)
     UpdatePlot(stat);
 }
 
-void MemProfWidget::SnapshotArrived(size_t sizeTotal, size_t sizeRecv)
+void MemProfWidget::SnapshotProgress(uint32 totalSize, uint32 recvSize)
 {
-    if (sizeTotal > 0 && sizeRecv > 0)
+    if (totalSize > 0)
     {
-        if (sizeRecv < sizeTotal)
+        int percent = static_cast<int>(double(recvSize) / double(totalSize) * 100.0);
+        ui->snapshotProgress->setValue(percent);
+        if (totalSize == recvSize)
         {
-            int percent = static_cast<int>(double(sizeRecv) / double(sizeTotal) * 100.0);
-            ui->snapshotProgress->setValue(percent);
-        }
-        else
-        {
-            ui->snapshotProgress->setValue(100);
             snapshotModel->NewSnapshotArrived();
         }
     }
@@ -202,10 +198,7 @@ void MemProfWidget::DiffClicked()
     int index2 = selected[1];
     if (profileSession->LoadSnapshot(index1) && profileSession->LoadSnapshot(index2))
     {
-        const MemorySnapshot& snapshot1 = profileSession->Snapshot(index1);
-        const MemorySnapshot& snapshot2 = profileSession->Snapshot(index2);
-
-        SnapshotDiffViewerWidget* w = new SnapshotDiffViewerWidget(&snapshot1, &snapshot2, this);
+        SnapshotDiffViewerWidget* w = new SnapshotDiffViewerWidget(profileSession, index1, index2, this);
         w->resize(800, 600);
         w->show();
     }
@@ -216,8 +209,7 @@ void MemProfWidget::SnapshotList_OnDoubleClicked(const QModelIndex& index)
     int row = index.row();
     if (profileSession->LoadSnapshot(row))
     {
-        const MemorySnapshot& snapshot = profileSession->Snapshot(row);
-        SnapshotViewerWidget* w = new SnapshotViewerWidget(&snapshot, this);
+        SnapshotViewerWidget* w = new SnapshotViewerWidget(profileSession, row, this);
         w->resize(800, 600);
         w->show();
     }

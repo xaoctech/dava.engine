@@ -26,35 +26,37 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __MEMORYTOOL_BACKTRACELISTMODEL_H__
+#define __MEMORYTOOL_BACKTRACELISTMODEL_H__
+
 #include "Base/BaseTypes.h"
 
-#if defined(DAVA_MEMORY_PROFILING_ENABLE)
+#include <QAbstractListModel>
 
-#include "MemoryManager/MemoryManager.h"
+class BacktraceSymbolTable;
 
-namespace DAVA
+class BacktraceListModel : public QAbstractListModel
 {
+public:
+    enum
+    {
+        ROLE_SYMBOL_POINTER = Qt::UserRole + 1
+    };
 
-void* TrackingAlloc(size_t size, int poolIndex)
-{
-    return MemoryManager::Instance()->Allocate(size, poolIndex);
-}
+public:
+    BacktraceListModel(const BacktraceSymbolTable& symbolTable, QObject* parent = nullptr);
+    virtual ~BacktraceListModel();
 
-void TrackingDealloc(void* ptr)
-{
-    MemoryManager::Instance()->Deallocate(ptr);
-}
+    void Update(DAVA::uint32 backtraceHash);
+    void Clear();
 
-void* InternalAlloc(size_t size)
-{
-    return MemoryManager::Instance()->InternalAllocate(size);
-}
+    // QAbstractListModel
+    int rowCount(const QModelIndex& parent) const override;
+    QVariant data(const QModelIndex& index, int role) const override;
 
-void InternalDealloc(void* ptr)
-{
-    MemoryManager::Instance()->InternalDeallocate(ptr);
-}
+private:
+    const BacktraceSymbolTable& symbolTable;
+    const DAVA::Vector<const DAVA::String*>* symbols = nullptr;
+};
 
-}   // namespace DAVA
-
-#endif  // defined(DAVA_MEMORY_PROFILING_ENABLE)
+#endif  // __MEMORYTOOL_BACKTRACELISTMODEL_H__

@@ -26,58 +26,64 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "Qt/DeviceInfo/MemoryTool/BacktraceSymbolTable.h"
 
-#include "DeviceListWidget.h"
+#include "Qt/DeviceInfo/MemoryTool/Models/SymbolsListModel.h"
 
-#include "ui_DeviceListWidget.h"
+#include "Qt/DeviceInfo/MemoryTool/Widgets/SymbolsWidget.h"
 
-#include <QDebug>
-#include <QCloseEvent> 
-#include <QFileDialog>
-#include <QTreeView>
+#include <QListView>
+#include <QLineEdit>
 #include <QVBoxLayout>
-#include <QTabWidget>
-
-#include "FileSystem/FilePath.h"
-#include "FileSystem/File.h"
-
-#include "Qt/DeviceInfo/MemoryTool/ProfilingSession.h"
-#include "Qt/DeviceInfo/MemoryTool/MemProfController.h"
-#include "Qt/DeviceInfo/MemoryTool/Widgets/MemProfWidget.h"
 
 using namespace DAVA;
 
-DeviceListWidget::DeviceListWidget( QWidget *parent )
-    : QWidget( parent, Qt::Window )
-    , ui( new Ui::DeviceListWidget() )
+SymbolsWidget::SymbolsWidget(const BacktraceSymbolTable& symbolTable_, QWidget* parent)
+    : QWidget(parent)
+    , symbolTable(symbolTable_)
 {
-    ui->setupUi( this );
-
-    connect( ui->connectDevice, &QPushButton::clicked, this, &DeviceListWidget::connectClicked );
-    connect( ui->disconnectDevice, &QPushButton::clicked, this, &DeviceListWidget::disconnectClicked );
-    connect( ui->showLog, &QPushButton::clicked, this, &DeviceListWidget::showLogClicked );
-
-    connect(ui->viewDump, &QPushButton::clicked, this, &DeviceListWidget::OnViewDump);
+    Init();
 }
 
-DeviceListWidget::~DeviceListWidget() {}
+SymbolsWidget::~SymbolsWidget() = default;
 
-QTreeView* DeviceListWidget::ItemView()
+Vector<const String*> SymbolsWidget::GetSelectedSymbols()
 {
-    return ui->view;
-}
-
-void DeviceListWidget::OnViewDump()
-{
-    DAVA::FilePath snapshotDir("~doc:/memory-profiling");
-    QString filename = QFileDialog::getOpenFileName(this, "Select dump file", snapshotDir.GetAbsolutePathname().c_str(), "Memory logs (*.mlog)");
-    if (!filename.isEmpty())
+    Vector<const String*> result;
+    QItemSelectionModel* selectionModel = listWidget->selectionModel();
+    if (selectionModel->hasSelection())
     {
-        std::string s = filename.toStdString();
-        MemProfController* obj = new MemProfController(FilePath(s), this);
-        if (!obj->IsFileLoaded())
+        QModelIndexList indexList = selectionModel->selectedRows();
+        result.reserve(indexList.size());
+        for (const QModelIndex& i : indexList)
         {
-            delete obj;
+            QVariant v = symbolFilterModel->data(i, SymbolsListModel::ROLE_SYMBOL_POINTER);
+            const String* name = static_cast<const String*>(v.value<void*>());
+            Q_ASSERT(name != nullptr);
+            result.push_back(name);
         }
     }
+    return result;
+}
+
+void SymbolsWidget::Init()
+{
+    symbolListModel.reset(new SymbolsListModel(symbolTable));
+    symbolFilterModel.reset(new SymbolsFilterModel(symbolListModel.get()));
+    symbolFilterModel->sort(0);
+
+    listWidget = new QListView;
+    listWidget->setFont(QFont("Consolas", 10, 500));
+    listWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    listWidget->setModel(symbolFilterModel.get());
+
+    QLineEdit* filterWidget = new QLineEdit;
+
+    connect(filterWidget, &QLineEdit::textChanged, symbolFilterModel.get(), &SymbolsFilterModel::SetFilterString);
+
+    QVBoxLayout* layout = new QVBoxLayout;
+    layout->addWidget(filterWidget);
+    layout->addWidget(listWidget);
+
+    setLayout(layout);
 }

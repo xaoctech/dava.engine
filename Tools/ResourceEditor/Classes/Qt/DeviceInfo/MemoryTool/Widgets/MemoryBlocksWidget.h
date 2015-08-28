@@ -26,35 +26,66 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __MEMORYTOOL_MEMORYBLOCKSWIDGET_H__
+#define __MEMORYTOOL_MEMORYBLOCKSWIDGET_H__
+
 #include "Base/BaseTypes.h"
 
-#if defined(DAVA_MEMORY_PROFILING_ENABLE)
+#include "Qt/DeviceInfo/MemoryTool/BlockLink.h"
 
-#include "MemoryManager/MemoryManager.h"
+#include <QWidget>
 
-namespace DAVA
+class QTableView;
+class QListView;
+class QModelIndex;
+
+class ProfilingSession;
+class MemorySnapshot;
+class MemoryBlocksModel;
+class MemoryBlocksFilterModel;
+class BacktraceListModel;
+struct BlockLink;
+
+class MemoryBlocksWidget : public QWidget
 {
+    Q_OBJECT
 
-void* TrackingAlloc(size_t size, int poolIndex)
-{
-    return MemoryManager::Instance()->Allocate(size, poolIndex);
-}
+public:
+    MemoryBlocksWidget(const ProfilingSession* session, const BlockLink* blockLink, bool showBacktrace = true, QWidget* parent = nullptr);
+    virtual ~MemoryBlocksWidget();
 
-void TrackingDealloc(void* ptr)
-{
-    MemoryManager::Instance()->Deallocate(ptr);
-}
+    void SetBlockLink(const BlockLink* blockLink);
 
-void* InternalAlloc(size_t size)
-{
-    return MemoryManager::Instance()->InternalAllocate(size);
-}
+signals:
+    void MemoryBlockDoubleClicked(const BlockLink::Item& item);
 
-void InternalDealloc(void* ptr)
-{
-    MemoryManager::Instance()->InternalDeallocate(ptr);
-}
+private slots:
+    void TableWidget_SelectionChanged(const QModelIndex& current, const QModelIndex& previous);
+    void TableWidget_DoubleClicked(const QModelIndex& index);
 
-}   // namespace DAVA
+    void FilterBar_SortingOrderChanged(int order);
+    void FilterBar_FilterChanged(DAVA::uint32 poolMask, DAVA::uint32 tagMask);
+    void FilterBar_HideTheSameChanged(bool hide);
 
-#endif  // defined(DAVA_MEMORY_PROFILING_ENABLE)
+private:
+    void Init();
+    bool Filter(const BlockLink::Item& item);
+
+private:
+    const ProfilingSession* session = nullptr;
+    const BlockLink* blockLink = nullptr;
+
+    QTableView* tableWidget = nullptr;
+    QListView* backtraceWidget = nullptr;
+    bool showBacktrace = true;
+
+    std::unique_ptr<MemoryBlocksModel> memoryBlocksModel;
+    std::unique_ptr<MemoryBlocksFilterModel> memoryBlocksFilterModel;
+    std::unique_ptr<BacktraceListModel> backtraceListModel;
+
+    DAVA::uint32 filterPoolMask = 0;
+    DAVA::uint32 filterTagMask = 0;
+    bool hideTheSame = false;
+};
+
+#endif  // __MEMORYTOOL_MEMORYBLOCKSWIDGET_H__

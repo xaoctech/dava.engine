@@ -26,51 +26,46 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __BRANCH_H__
-#define __BRANCH_H__
+#ifndef __MEMORYTOOL_BLOCKLINK_H__
+#define __MEMORYTOOL_BLOCKLINK_H__
 
 #include "Base/BaseTypes.h"
-#include "MemoryManager/MemoryManagerTypes.h"
 
-struct Branch final
+namespace DAVA
 {
-    Branch(const char* aName);
-    ~Branch();
-
-    Branch* FindInChildren(const char* name) const;
-    int ChildIndex(Branch* child) const;
-
-    void AppendChild(Branch* child);
-    void UpdateStat(DAVA::uint32 allocSize, DAVA::uint32 blockCount);
-
-    // Get memory blocks from all children
-    DAVA::Vector<DAVA::MMBlock> GetMemoryBlocks() const;
-
-    template<typename F>
-    void SortChildren(F fn);
-
-    int level = 0;                      // Level in tree hierarchy - for convenience in Qt models
-    const char* name = nullptr;         // Function name
-    Branch* parent = nullptr;
-    DAVA::Vector<Branch*> children;
-
-    DAVA::uint32 allocByApp = 0;            // Total allocated size in branch including children
-    DAVA::uint32 nblocks = 0;               // Total block count in branch including children
-    DAVA::Vector<DAVA::MMBlock> mblocks;    // Memory blocks belonging to leaf branch
-
-private:
-    static void CollectBlocks(const Branch* branch, DAVA::Vector<DAVA::MMBlock>& target);
-};
-
-//////////////////////////////////////////////////////////////////////////
-template<typename F>
-inline void Branch::SortChildren(F fn)
-{
-    std::sort(children.begin(), children.end(), fn);
-    for (Branch* child : children)
-    {
-        child->SortChildren(fn);
-    }
+    struct MMBlock;
 }
 
-#endif  // __BRANCH_H__
+class MemorySnapshot;
+
+struct BlockLink
+{
+    using Item = std::pair<const DAVA::MMBlock*, const DAVA::MMBlock*>;
+
+    static const DAVA::MMBlock* AnyBlock(const Item& item)
+    {
+        return item.first != nullptr ? item.first : item.second;
+    }
+    static const DAVA::MMBlock* Block(const Item& item, int index)
+    {
+        return 0 == index ? item.first : item.second;
+    }
+
+    static BlockLink CreateBlockLink(const MemorySnapshot* snapshot);
+    static BlockLink CreateBlockLink(const MemorySnapshot* snapshot1, const MemorySnapshot* snapshot2);
+    static BlockLink CreateBlockLink(const DAVA::Vector<DAVA::MMBlock*>& blocks, const MemorySnapshot* snapshot);
+    static BlockLink CreateBlockLink(const DAVA::Vector<DAVA::MMBlock*>& blocks1, const MemorySnapshot* snapshot1,
+                                     const DAVA::Vector<DAVA::MMBlock*>& blocks2, const MemorySnapshot* snapshot2);
+
+    BlockLink() = default;
+    BlockLink(BlockLink&& other);
+    BlockLink& operator = (BlockLink&& other);
+
+    DAVA::Vector<Item> items;
+    DAVA::uint32 linkCount = 0;
+    DAVA::uint32 allocSize[2];
+    DAVA::uint32 blockCount[2];
+    const MemorySnapshot* sourceSnapshots[2];
+};
+
+#endif  // __MEMORYTOOL_BLOCKLINK_H__

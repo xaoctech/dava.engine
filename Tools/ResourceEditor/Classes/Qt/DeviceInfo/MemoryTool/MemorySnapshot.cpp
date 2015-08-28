@@ -30,14 +30,15 @@
 #include "Debug/DVAssert.h"
 #include "FileSystem/File.h"
 
-#include "Branch.h"
-#include "BacktraceSymbolTable.h"
-#include "MemorySnapshot.h"
+#include "Qt/DeviceInfo/MemoryTool/Branch.h"
+#include "Qt/DeviceInfo/MemoryTool/BacktraceSymbolTable.h"
+#include "Qt/DeviceInfo/MemoryTool/MemorySnapshot.h"
 
 using namespace DAVA;
 
 MemorySnapshot::MemorySnapshot(MemorySnapshot&& other)
-    : fileName(std::move(other.fileName))
+    : profilingSession(std::move(other.profilingSession))
+    , fileName(std::move(other.fileName))
     , timestamp(std::move(other.timestamp))
     , blockCount(std::move(other.blockCount))
     , symbolCount(std::move(other.symbolCount))
@@ -52,6 +53,7 @@ MemorySnapshot& MemorySnapshot::operator = (MemorySnapshot&& other)
 {
     if (this != &other)
     {
+        profilingSession = std::move(other.profilingSession);
         fileName = std::move(other.fileName);
         timestamp = std::move(other.timestamp);
         blockCount = std::move(other.blockCount);
@@ -86,44 +88,50 @@ void MemorySnapshot::Unload()
     mblocks.shrink_to_fit();
 }
 
-Branch* MemorySnapshot::CreateBranch(const DAVA::Vector<const char*>& startNames) const
+Branch* MemorySnapshot::CreateBranch(const Vector<const String*>& startNames) const
 {
     DVASSERT(IsLoaded());
     
-    Branch* root = new Branch(nullptr);
+    Branch* root = new Branch;
     for (auto& pair : blockMap)
     {
-        auto& frames = symbolTable->GetFrames(pair.first);
-        auto& blocks = pair.second;
+        const Vector<const String*>* bktraceNames = symbolTable->GetBacktraceSymbols(pair.first);
+        const Vector<MMBlock*>& blocks = pair.second;
+        DVASSERT(bktraceNames != nullptr);
         
-        if (!blocks.empty() && !frames.empty())
+        if (!blocks.empty() && !bktraceNames->empty())
         {
-            int startFrame = FindNamesInBacktrace(startNames, frames);
+            int startFrame = FindNamesInBacktrace(startNames, *bktraceNames);
             if (startFrame >= 0)
             {
-                Branch* leaf = BuildPath(root, startFrame, frames);
+                Branch* leaf = BuildPath(root, startFrame, *bktraceNames);
                 
                 // Append memory blocks to leaf
                 uint32 allocByApp = 0;
-                leaf->mblocks.reserve(leaf->mblocks.size() + blocks.size());
+                uint32 pools = 0;
+                uint32 tags = 0;
+                uint32 nblocks = static_cast<uint32>(blocks.size());
+                leaf->mblocks.reserve(leaf->mblocks.size() + nblocks);
                 for (auto& x : blocks)
                 {
-                    allocByApp += x.allocByApp;
+                    allocByApp += x->allocByApp;
+                    pools |= x->pool;
+                    tags |= x->tags;
                     leaf->mblocks.emplace_back(x);
                 }
-                leaf->UpdateStat(allocByApp, static_cast<uint32>(blocks.size()));
+                leaf->UpdateStat(allocByApp, nblocks, pools, tags);
             }
         }
     }
     // Sort children by symbol name
-    root->SortChildren([](const Branch* l, const Branch* r) -> bool { return strcmp(l->name, r->name) < 0; });
+    root->SortChildren([](const Branch* l, const Branch* r) -> bool { return *l->name < *r->name; });
     return root;
 }
 
-Branch* MemorySnapshot::BuildPath(Branch* parent, int startFrame, const DAVA::Vector<const char*>& frames) const
+Branch* MemorySnapshot::BuildPath(Branch* parent, int startFrame, const Vector<const String*>& bktraceNames) const
 {
     do {
-        const char* curName = frames[startFrame];
+        const String* curName = bktraceNames[startFrame];
         Branch* branch = parent->FindInChildren(curName);
         if (nullptr == branch)
         {
@@ -135,12 +143,12 @@ Branch* MemorySnapshot::BuildPath(Branch* parent, int startFrame, const DAVA::Ve
     return parent;
 }
 
-int MemorySnapshot::FindNamesInBacktrace(const DAVA::Vector<const char*>& names, const DAVA::Vector<const char*>& frames) const
+int MemorySnapshot::FindNamesInBacktrace(const Vector<const String*>& namesToFind, const Vector<const String*>& bktraceNames) const
 {
-    int index = static_cast<int>(frames.size() - 1);
+    int index = static_cast<int>(bktraceNames.size() - 1);
     do {
-        auto iterFind = std::find(names.begin(), names.end(), frames[index]);
-        if (iterFind != names.end())
+        auto iterFind = std::find(namesToFind.begin(), namesToFind.end(), bktraceNames[index]);
+        if (iterFind != namesToFind.end())
         {
             return index;
         }
@@ -158,8 +166,8 @@ bool MemorySnapshot::LoadFile()
         size_t nread = file->Read(&msnapshot);
         if (sizeof(MMSnapshot) == nread || file->GetSize() == msnapshot.size)
         {
-            // Skip statistics
-            file->Seek(msnapshot.statItemSize, File::SEEK_FROM_CURRENT);
+            // Move pointer to data
+            file->Seek(msnapshot.dataOffset, File::SEEK_FROM_START);
 
             const uint32 bktraceSize = sizeof(MMBacktrace) + msnapshot.bktraceDepth * sizeof(uint64);
             Vector<MMBlock> blocks(msnapshot.blockCount, MMBlock());
@@ -187,6 +195,11 @@ bool MemorySnapshot::LoadFile()
                             curOffset += bktraceSize;
                         }
 
+                        for (MMBlock& x : blocks)
+                        {
+                            x.pool = 1 << x.pool;
+                        }
+                        std::sort(blocks.begin(), blocks.end(), [](const MMBlock& l, const MMBlock& r) -> bool { return l.orderNo < r.orderNo; });
                         mblocks.swap(blocks);
                         return true;
                     }
@@ -199,15 +212,15 @@ bool MemorySnapshot::LoadFile()
 
 void MemorySnapshot::BuildBlockMap()
 {
-    DAVA::Map<DAVA::uint32, DAVA::Vector<DAVA::MMBlock>> map;
+    Map<uint32, Vector<MMBlock*>> map;
     for (MMBlock& curBlock : mblocks)
     {
-        auto iterAt = map.find(curBlock.bktraceHash);
-        if (iterAt == map.end())
+        auto iter = map.find(curBlock.bktraceHash);
+        if (iter == map.end())
         {
-            iterAt = map.emplace(curBlock.bktraceHash, DAVA::Vector<DAVA::MMBlock>()).first;
+            iter = map.emplace(curBlock.bktraceHash, Vector<MMBlock*>()).first;
         }
-        iterAt->second.emplace_back(curBlock);
+        iter->second.emplace_back(&curBlock);
     }
     blockMap.swap(map);
 }

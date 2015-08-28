@@ -1,10 +1,10 @@
 #include "Debug/DVAssert.h"
 
-#include "BranchTreeModel.h"
-#include "DataFormat.h"
+#include "Qt/DeviceInfo/MemoryTool/Models/BranchTreeModel.h"
+#include "Qt/DeviceInfo/MemoryTool/Models/DataFormat.h"
 
-#include "Classes/Qt/DeviceInfo/DeviceInfo/Branch.h"
-#include "Classes/Qt/DeviceInfo/DeviceInfo/MemorySnapshot.h"
+#include "Qt/DeviceInfo/MemoryTool/Branch.h"
+#include "Qt/DeviceInfo/MemoryTool/MemorySnapshot.h"
 
 #include <QColor>
 
@@ -22,7 +22,7 @@ BranchTreeModel::~BranchTreeModel()
     SafeDelete(rootBranch);
 }
 
-void BranchTreeModel::PrepareModel(const DAVA::Vector<const char*>& names)
+void BranchTreeModel::PrepareModel(const Vector<const String*>& names)
 {
     DVASSERT(!names.empty());
 
@@ -50,7 +50,7 @@ QVariant BranchTreeModel::data(const QModelIndex& index, int role) const
             switch (clm)
             {
             case CLM_NAME:
-                return QString(branch->name != nullptr ? branch->name : "Root");
+                return QString(branch->name != nullptr ? branch->name->c_str() : "Root");
             case CLM_STAT:
                 return QString("alloc=%1, nblocks=%2")
                     .arg(FormatNumberWithDigitGroups(branch->allocByApp).c_str())

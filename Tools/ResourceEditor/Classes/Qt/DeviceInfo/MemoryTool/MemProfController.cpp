@@ -32,15 +32,16 @@
 
 #include <Utils/UTF8Utils.h>
 
+#include "FileSystem/File.h"
 #include "FileSystem/FileSystem.h"
 #include "FileSystem/Logger.h"
 #include "Platform/DateTime.h"
 #include "Network/Services/MMNet/MMNetClient.h"
 
-#include "MemProfWidget.h"
-#include "MemProfController.h"
-#include "ProfilingSession.h"
-#include "BacktraceSymbolTable.h"
+#include "Qt/DeviceInfo/MemoryTool/ProfilingSession.h"
+#include "Qt/DeviceInfo/MemoryTool/BacktraceSymbolTable.h"
+#include "Qt/DeviceInfo/MemoryTool/MemProfController.h"
+#include "Qt/DeviceInfo/MemoryTool/Widgets/MemProfWidget.h"
 
 using namespace DAVA;
 using namespace DAVA::Net;
@@ -58,6 +59,7 @@ MemProfController::MemProfController(const DAVA::Net::PeerDescription& peerDescr
                                 MakeFunction(this, &MemProfController::NetConnLost),
                                 MakeFunction(this, &MemProfController::NetStatRecieved),
                                 MakeFunction(this, &MemProfController::NetSnapshotRecieved));
+    connect(this, &MemProfController::SnapshotSaved, this, &MemProfController::OnSnapshotSaved, Qt::QueuedConnection);
 }
 
 MemProfController::MemProfController(const DAVA::FilePath& srcDir, QWidget* parentWidget_, QObject *parent)
@@ -108,7 +110,7 @@ void MemProfController::ShowView()
         connect(this, &MemProfController::ConnectionEstablished, view, &MemProfWidget::ConnectionEstablished);
         connect(this, &MemProfController::ConnectionLost, view, &MemProfWidget::ConnectionLost);
         connect(this, &MemProfController::StatArrived, view, &MemProfWidget::StatArrived);
-        connect(this, &MemProfController::SnapshotArrived, view, &MemProfWidget::SnapshotArrived);
+        connect(this, &MemProfController::SnapshotProgress, view, &MemProfWidget::SnapshotProgress, Qt::QueuedConnection);
 
         connect(view, SIGNAL(OnSnapshotButton()), this, SLOT(OnSnapshotPressed()));
         if (MODE_FILE == mode)
@@ -148,7 +150,7 @@ void MemProfController::NetConnEstablished(bool resumed, const DAVA::MMStatConfi
         }
         else
         {
-            Logger::Error("Faild to start new memory profiling session");
+            Logger::Error("Failed to start new memory profiling session");
         }
     }
 }
@@ -159,32 +161,55 @@ void MemProfController::NetConnLost(const DAVA::char8* message)
     emit ConnectionLost(message);
 }
 
-void MemProfController::NetStatRecieved(const DAVA::MMCurStat* stat, size_t count)
+void MemProfController::NetStatRecieved(const DAVA::MMCurStat* stat, uint32 count)
 {
     profilingSession->AppendStatItems(stat, count);
     emit StatArrived(count);
 }
 
-void MemProfController::NetSnapshotRecieved(int stage, size_t totalSize, size_t recvSize, const void* data)
+void MemProfController::NetSnapshotRecieved(uint32 totalSize, uint32 chunkOffset, uint32 chunkSize, const uint8* chunk)
 {
-    switch (stage)
+    if (nullptr == chunk)   // Error while transferring snapshot
     {
-    case MMNetClient::SNAPSHOT_STAGE_STARTED:
-        emit SnapshotArrived(totalSize, 0);
-        break;
-    case MMNetClient::SNAPSHOT_STAGE_PROGRESS:
-        emit SnapshotArrived(totalSize, recvSize);
-        break;
-    case MMNetClient::SNAPSHOT_STAGE_FINISHED:
-        profilingSession->AppendSnapshot(static_cast<const MMSnapshot*>(data));
-        emit SnapshotArrived(totalSize, recvSize);
-        break;
-    case MMNetClient::SNAPSHOT_STAGE_ERROR:
-        emit SnapshotArrived(0, 0);
-        break;
-    default:
-        break;
+        SafeRelease(snapshotFile);
+        FileSystem::Instance()->DeleteFile(snapshotTempName);
+        emit SnapshotProgress(0, 0);
+        return;
     }
+
+    if (!snapshotInProgress)
+    {
+        snapshotInProgress = true;
+        snapshotTotalSize = totalSize;
+        snapshotRecvSize = 0;
+        snapshotTempName = profilingSession->GenerateSnapshotFilename();
+        snapshotFile = File::Create(snapshotTempName, File::CREATE | File::WRITE);
+        if (nullptr == snapshotFile)
+        {
+            Logger::Error("[MemProfController] Failed to create temporal snapshot file");
+        }
+        emit SnapshotProgress(totalSize, 0);
+    }
+
+    if (snapshotFile != nullptr)
+    {
+        snapshotFile->Write(chunk, chunkSize);
+    }
+    snapshotRecvSize += chunkSize;
+    emit SnapshotProgress(totalSize, snapshotRecvSize);
+
+    if (snapshotRecvSize == snapshotTotalSize)
+    {
+        snapshotInProgress = false;
+        SafeRelease(snapshotFile);
+        emit SnapshotSaved(new FilePath(snapshotTempName));
+    }
+}
+
+void MemProfController::OnSnapshotSaved(const DAVA::FilePath* filePath)
+{
+    profilingSession->AppendSnapshot(*filePath);
+    delete filePath;
 }
 
 void MemProfController::ComposeFilePath(DAVA::FilePath& result)
@@ -198,7 +223,7 @@ void MemProfController::ComposeFilePath(DAVA::FilePath& result)
 
     DateTime now = DateTime::Now();
     String level3 = Format("%04d-%02d-%02d %02d%02d%02d/",
-                           now.GetYear(), now.GetMonth(), now.GetDay(),
+                           now.GetYear(), now.GetMonth() + 1, now.GetDay(),
                            now.GetHour(), now.GetMinute(), now.GetSecond());
 
     result = "~doc:/";

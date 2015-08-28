@@ -26,35 +26,39 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __MEMORYTOOL_SYMBOLSWIDGET_H__
+#define __MEMORYTOOL_SYMBOLSWIDGET_H__
+
 #include "Base/BaseTypes.h"
 
-#if defined(DAVA_MEMORY_PROFILING_ENABLE)
+#include <QWidget>
 
-#include "MemoryManager/MemoryManager.h"
+class SymbolsListModel;
+class SymbolsFilterModel;
+class BacktraceSymbolTable;
 
-namespace DAVA
+class QListView;
+
+class SymbolsWidget : public QWidget
 {
+    Q_OBJECT
 
-void* TrackingAlloc(size_t size, int poolIndex)
-{
-    return MemoryManager::Instance()->Allocate(size, poolIndex);
-}
+public:
+    SymbolsWidget(const BacktraceSymbolTable& symbolTable, QWidget* parent = nullptr);
+    virtual ~SymbolsWidget();
 
-void TrackingDealloc(void* ptr)
-{
-    MemoryManager::Instance()->Deallocate(ptr);
-}
+    DAVA::Vector<const DAVA::String*> GetSelectedSymbols();
 
-void* InternalAlloc(size_t size)
-{
-    return MemoryManager::Instance()->InternalAllocate(size);
-}
+private:
+    void Init();
 
-void InternalDealloc(void* ptr)
-{
-    MemoryManager::Instance()->InternalDeallocate(ptr);
-}
+private:
+    const BacktraceSymbolTable& symbolTable;
 
-}   // namespace DAVA
+    std::unique_ptr<SymbolsListModel> symbolListModel;
+    std::unique_ptr<SymbolsFilterModel> symbolFilterModel;
 
-#endif  // defined(DAVA_MEMORY_PROFILING_ENABLE)
+    QListView* listWidget = nullptr;
+};
+
+#endif  // __MEMORYTOOL_SYMBOLSWIDGET_H__

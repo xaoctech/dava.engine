@@ -33,15 +33,19 @@
 #include <QObject>
 #include <QPointer>
 
+#include "FileSystem/FilePath.h"
 #include "Network/PeerDesription.h"
 #include "MemoryManager/MemoryManagerTypes.h"
 
-namespace DAVA {
-class FilePath;
-namespace Net {
-struct IChannelListener;
-class MMNetClient;
-}}
+namespace DAVA
+{
+class File;
+namespace Net
+{
+    struct IChannelListener;
+    class MMNetClient;
+}   // namespace Net
+}   // namespace DAVA
 
 class MemProfWidget;
 class ProfilingSession;
@@ -72,18 +76,22 @@ public:
 
     void NetConnEstablished(bool resumed, const DAVA::MMStatConfig* config);
     void NetConnLost(const DAVA::char8* message);
-    void NetStatRecieved(const DAVA::MMCurStat* stat, size_t count);
-    void NetSnapshotRecieved(int stage, size_t totalSize, size_t recvSize, const void* data);
+    void NetStatRecieved(const DAVA::MMCurStat* stat, DAVA::uint32 count);
+    void NetSnapshotRecieved(DAVA::uint32 totalSize, DAVA::uint32 chunkOffset, DAVA::uint32 chunkSize, const DAVA::uint8* chunk);
 
 signals:
     void ConnectionEstablished(bool newConnection);
     void ConnectionLost(const DAVA::char8* message);
-    void StatArrived(size_t itemCount);
-    void SnapshotArrived(size_t sizeTotal, size_t sizeRecv);
+    void StatArrived(DAVA::uint32 itemCount);
+    void SnapshotProgress(DAVA::uint32 totalSize, DAVA::uint32 recvSize);
+    void SnapshotSaved(const DAVA::FilePath* filePath);
 
 public slots:
     void OnSnapshotPressed();
-    
+
+private slots:
+    void OnSnapshotSaved(const DAVA::FilePath* filePath);
+
 private:
     void ComposeFilePath(DAVA::FilePath& result);
 
@@ -91,6 +99,12 @@ private:
     int mode;
     QPointer<MemProfWidget> view;
     QPointer<QWidget> parentWidget;
+
+    bool snapshotInProgress = false;
+    DAVA::FilePath snapshotTempName;
+    DAVA::File* snapshotFile = nullptr;
+    DAVA::uint32 snapshotTotalSize = 0;
+    DAVA::uint32 snapshotRecvSize = 0;
 
     DAVA::Net::PeerDescription profiledPeer;
     std::unique_ptr<DAVA::Net::MMNetClient> netClient;
