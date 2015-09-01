@@ -26,22 +26,39 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __MEMORYTOOL_SYMBOLSWIDGET_H__
+#define __MEMORYTOOL_SYMBOLSWIDGET_H__
 
-#ifndef __DAVAENGINE_ANDROID_BACKTRACE_CHOOSER_H__
-#define __DAVAENGINE_ANDROID_BACKTRACE_CHOOSER_H__
-#include "BacktraceCorkscrewImpl.h"
+#include "Base/BaseTypes.h"
 
-namespace DAVA 
+#include <QWidget>
+
+class SymbolsListModel;
+class SymbolsFilterModel;
+class BacktraceSymbolTable;
+
+class QListView;
+
+class SymbolsWidget : public QWidget
 {
-class AndroidBacktraceChooser
-{
+    Q_OBJECT
+
 public:
-    static BacktraceInterface* ChooseBacktraceAndroid();
-    static void ReleaseBacktraceInterface();
+    SymbolsWidget(const BacktraceSymbolTable& symbolTable, QWidget* parent = nullptr);
+    virtual ~SymbolsWidget();
+
+    DAVA::Vector<const DAVA::String*> GetSelectedSymbols();
+
 private:
-    static BacktraceInterface * backtraceProvider;
+    void Init();
+
+private:
+    const BacktraceSymbolTable& symbolTable;
+
+    std::unique_ptr<SymbolsListModel> symbolListModel;
+    std::unique_ptr<SymbolsFilterModel> symbolFilterModel;
+
+    QListView* listWidget = nullptr;
 };
 
-}
-
-#endif //__DAVAENGINE_ANDROID_BACKTRACE_CHOOSER_H__
+#endif  // __MEMORYTOOL_SYMBOLSWIDGET_H__

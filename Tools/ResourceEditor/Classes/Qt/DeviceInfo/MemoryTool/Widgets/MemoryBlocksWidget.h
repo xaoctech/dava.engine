@@ -26,22 +26,66 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __MEMORYTOOL_MEMORYBLOCKSWIDGET_H__
+#define __MEMORYTOOL_MEMORYBLOCKSWIDGET_H__
 
-#ifndef __DAVAENGINE_ANDROID_BACKTRACE_CHOOSER_H__
-#define __DAVAENGINE_ANDROID_BACKTRACE_CHOOSER_H__
-#include "BacktraceCorkscrewImpl.h"
+#include "Base/BaseTypes.h"
 
-namespace DAVA 
+#include "Qt/DeviceInfo/MemoryTool/BlockLink.h"
+
+#include <QWidget>
+
+class QTableView;
+class QListView;
+class QModelIndex;
+
+class ProfilingSession;
+class MemorySnapshot;
+class MemoryBlocksModel;
+class MemoryBlocksFilterModel;
+class BacktraceListModel;
+struct BlockLink;
+
+class MemoryBlocksWidget : public QWidget
 {
-class AndroidBacktraceChooser
-{
+    Q_OBJECT
+
 public:
-    static BacktraceInterface* ChooseBacktraceAndroid();
-    static void ReleaseBacktraceInterface();
+    MemoryBlocksWidget(const ProfilingSession* session, const BlockLink* blockLink, bool showBacktrace = true, QWidget* parent = nullptr);
+    virtual ~MemoryBlocksWidget();
+
+    void SetBlockLink(const BlockLink* blockLink);
+
+signals:
+    void MemoryBlockDoubleClicked(const BlockLink::Item& item);
+
+private slots:
+    void TableWidget_SelectionChanged(const QModelIndex& current, const QModelIndex& previous);
+    void TableWidget_DoubleClicked(const QModelIndex& index);
+
+    void FilterBar_SortingOrderChanged(int order);
+    void FilterBar_FilterChanged(DAVA::uint32 poolMask, DAVA::uint32 tagMask);
+    void FilterBar_HideTheSameChanged(bool hide);
+
 private:
-    static BacktraceInterface * backtraceProvider;
+    void Init();
+    bool Filter(const BlockLink::Item& item);
+
+private:
+    const ProfilingSession* session = nullptr;
+    const BlockLink* blockLink = nullptr;
+
+    QTableView* tableWidget = nullptr;
+    QListView* backtraceWidget = nullptr;
+    bool showBacktrace = true;
+
+    std::unique_ptr<MemoryBlocksModel> memoryBlocksModel;
+    std::unique_ptr<MemoryBlocksFilterModel> memoryBlocksFilterModel;
+    std::unique_ptr<BacktraceListModel> backtraceListModel;
+
+    DAVA::uint32 filterPoolMask = 0;
+    DAVA::uint32 filterTagMask = 0;
+    bool hideTheSame = false;
 };
 
-}
-
-#endif //__DAVAENGINE_ANDROID_BACKTRACE_CHOOSER_H__
+#endif  // __MEMORYTOOL_MEMORYBLOCKSWIDGET_H__
