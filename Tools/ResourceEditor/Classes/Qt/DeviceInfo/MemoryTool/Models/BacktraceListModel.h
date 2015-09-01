@@ -26,22 +26,37 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __MEMORYTOOL_BACKTRACELISTMODEL_H__
+#define __MEMORYTOOL_BACKTRACELISTMODEL_H__
 
-#ifndef __DAVAENGINE_ANDROID_BACKTRACE_CHOOSER_H__
-#define __DAVAENGINE_ANDROID_BACKTRACE_CHOOSER_H__
-#include "BacktraceCorkscrewImpl.h"
+#include "Base/BaseTypes.h"
 
-namespace DAVA 
-{
-class AndroidBacktraceChooser
+#include <QAbstractListModel>
+
+class BacktraceSymbolTable;
+
+class BacktraceListModel : public QAbstractListModel
 {
 public:
-    static BacktraceInterface* ChooseBacktraceAndroid();
-    static void ReleaseBacktraceInterface();
+    enum
+    {
+        ROLE_SYMBOL_POINTER = Qt::UserRole + 1
+    };
+
+public:
+    BacktraceListModel(const BacktraceSymbolTable& symbolTable, QObject* parent = nullptr);
+    virtual ~BacktraceListModel();
+
+    void Update(DAVA::uint32 backtraceHash);
+    void Clear();
+
+    // QAbstractListModel
+    int rowCount(const QModelIndex& parent) const override;
+    QVariant data(const QModelIndex& index, int role) const override;
+
 private:
-    static BacktraceInterface * backtraceProvider;
+    const BacktraceSymbolTable& symbolTable;
+    const DAVA::Vector<const DAVA::String*>* symbols = nullptr;
 };
 
-}
-
-#endif //__DAVAENGINE_ANDROID_BACKTRACE_CHOOSER_H__
+#endif  // __MEMORYTOOL_BACKTRACELISTMODEL_H__
