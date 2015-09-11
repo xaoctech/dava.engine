@@ -1,10 +1,10 @@
 /*==================================================================================
     Copyright (c) 2008, binaryzebra
     All rights reserved.
-
+ 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are met:
-
+ 
     * Redistributions of source code must retain the above copyright
     notice, this list of conditions and the following disclaimer.
     * Redistributions in binary form must reproduce the above copyright
@@ -13,7 +13,7 @@
     * Neither the name of the binaryzebra nor the
     names of its contributors may be used to endorse or promote products
     derived from this software without specific prior written permission.
-
+ 
     THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
     ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -26,50 +26,54 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef DAVAPLUGIN_LIBRARY_H
+#define DAVAPLUGIN_LIBRARY_H
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#include <memory>
 
-#include <QMainWindow>
+#include "core_data_model/i_tree_model.hpp"
 
-class QFileSystemModel;
-class QItemSelection;
-class DavaGLWidget;
+#include "core_ui_framework/i_action.hpp"
+#include "core_ui_framework/i_view.hpp"
+#include "core_ui_framework/i_ui_framework.hpp"
+#include "core_ui_framework/i_ui_application.hpp"
 
-namespace DAVA { class UI3DView; }
+#include <QObject>
+#include <QVariant>
 
-namespace Ui
-{
-    class MainWindow;
-}
+class FileSystemModel;
 
-class MainWindow : public QMainWindow
+class Library : public QObject
 {
     Q_OBJECT
-
 public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    Library();
+
+    void Initialize(IUIFramework & uiFramework, IUIApplication & uiApplication);
+    void Finilize();
+
+    IView & GetView();
+    Q_SIGNAL void OpenScene(std::string const & scenePath);
+
+    Q_PROPERTY(bool canBeLoaded READ CanBeLoaded NOTIFY CanBeLoadedChanged);
+
+    Q_SIGNAL void CanBeLoadedChanged();
+
+    Q_INVOKABLE bool CanBeLoaded() const;
+    Q_INVOKABLE void OnOpenSceneButton();
+    Q_INVOKABLE void OnSelectionChanged(const QList<QVariant> & selections);
+    Q_INVOKABLE QVariant GetFileSystemModel();
 
 private:
-    void CreateGlWidget();
-    void LoadScene(QString const & scenePath);
-
-private slots:
-    void OnGlInitialized();
-    void OnGlWidgedResized(int width, int height, int dpr);
-    void OnFileSelectionChanged(QItemSelection const & selected, QItemSelection const & deselected);
-    void OnLoadSceneButton();
-    void OnLoadSceneAction();
+    void OnOpenSceneMenu();
 
 private:
-    Ui::MainWindow * ui = nullptr;
+    std::unique_ptr<IAction> openSceneAction;
+    std::unique_ptr<IView> libraryView;
 
-    DavaGLWidget * glWidget = nullptr;
-    QFileSystemModel * model = nullptr;
-    DAVA::UI3DView * view = nullptr;
+    std::string selectedScene;
 
-    static const quint8 NUMBER_OF_SCREEN = 0;
+    FileSystemModel * model = nullptr;
 };
 
-#endif // MAINWINDOW_H
+#endif // DAVAPLUGIN_LIBRARY_H
