@@ -27,37 +27,37 @@
 =====================================================================================*/
 
 
-#include "LocalizedTextValueProperty.h"
+#include "DebugTools/DebugTools.h"
 
-#include "FileSystem/LocalizationSystem.h"
+#include "Render/2D/Sprite.h"
+#include "Render/Texture.h"
+#include "UI/UIControl.h"
 
-using namespace DAVA;
+#include <QObject>
 
-LocalizedTextValueProperty::LocalizedTextValueProperty(DAVA::BaseObject *anObject, const DAVA::InspMember *aMmember, const IntrospectionProperty *sourceProperty, eCloneType cloneType)
-    : IntrospectionProperty(anObject, aMmember, sourceProperty, cloneType)
+namespace DebugTools
 {
-    ApplyValue(member->Value(object));
+
+void ConnectToUI(Ui::MainWindow *ui)
+{
+    QObject::connect(ui->actionDump_Controls, &QAction::triggered, [] {
+        DAVA::UIControl::DumpControls(false);
+    });
+
+#if !defined(__DAVAENGINE_DEBUG__)
+    ui->actionDump_Controls->setVisible(false);
+#endif //#if !defined(__DAVAENGINE_DEBUG__)
+
+
+
+    QObject::connect(ui->actionDump_Textures, &QAction::triggered, [] {
+        DAVA::Texture::DumpTextures();
+    });
+
+    QObject::connect(ui->actionDump_Sprites, &QAction::triggered, [] {
+        DAVA::Sprite::DumpSprites();
+    });
 }
 
-LocalizedTextValueProperty::~LocalizedTextValueProperty()
-{
-}
 
-void LocalizedTextValueProperty::Refresh(DAVA::int32 refreshFlags)
-{
-    IntrospectionProperty::Refresh(refreshFlags);
-    
-    if (refreshFlags & REFRESH_LOCALIZATION)
-        member->SetValue(GetBaseObject(), VariantType(LocalizedString(text)));
-}
-
-VariantType LocalizedTextValueProperty::GetValue() const
-{
-    return VariantType(text);
-}
-
-void LocalizedTextValueProperty::ApplyValue(const DAVA::VariantType &value)
-{
-    text = value.AsWideString();
-    member->SetValue(GetBaseObject(), VariantType(LocalizedString(text)));
 }
