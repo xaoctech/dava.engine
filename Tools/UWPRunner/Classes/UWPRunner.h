@@ -41,13 +41,12 @@ using DAVA::FilePath;
 struct PackageOptions
 {
     Optional<String> package;
+    Optional<String> architecture;
     Optional<String> profile;
     Optional<String> dependencies;
 };
 
 PackageOptions ParseCommandLine();
 bool CheckOptions(const PackageOptions& options);
-
-FilePath ExtractManifest(const FilePath& package);
 
 #endif  // UWP_RUNNER_H
