@@ -60,9 +60,7 @@ private:
     void CollectControls(UIControl *control);
     void CollectControlChildren(UIControl *control, int32 parentIndex);
     
-    void MeasureControl(ControlLayoutData &data, Vector2::eAxis axis);
     void ApplyAnchorLayout(ControlLayoutData &data, Vector2::eAxis axis, bool onlyForIgnoredControls);
-
     
 private:
     bool isRtl = false;
