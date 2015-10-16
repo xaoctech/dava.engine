@@ -28,18 +28,26 @@
 
 #include "Base/BaseTypes.h"
 
-#ifdef __DAVAENGINE_APPLE__
+#ifndef __DAVAENGINE_APPLE__
 
-#import <Foundation/NSProcessInfo.h>
+using namespace DAVA;
 
-namespace DAVA
-{
+#ifdef __DAVAENGINE_ANDROID__
+#include <unistd.h>
 
 int32 GetCpuCount()
 {
-    return (int32)[[NSProcessInfo processInfo] processorCount];
+    return sysconf(_SC_NPROCESSORS_CONF);
 }
+#endif
 
-} // namespace DAVA
+#ifdef __DAVAENGINE_WINDOWS__
+int32 GetCpuCount()
+{
+    SYSTEM_INFO sysinfo;
+    GetSystemInfo(&sysinfo);
+    return sysinfo.dwNumberOfProcessors;
+}
+#endif
 
-#endif // __DAVAENGINE_APPLE__
+#endif // !__DAVAENGINE_APPLE__
