@@ -27,73 +27,29 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
 
-#include "Base/BaseTypes.h"
+#ifndef __FULLSCREENTEST_TEST_H__
+#define __FULLSCREENTEST_TEST_H__
 
-#if defined(__DAVAENGINE_WIN_UAP__)
+#include "DAVAEngine.h"
+#include "Infrastructure/BaseScreen.h"
 
-#include "FileSystem/FileSystem.h"
-#include "Render/Cursor.h"
-#include "Platform/TemplateWin32/CorePlatformWinUAP.h"
+using namespace DAVA;
 
-namespace DAVA
+class FullscreenTest : public BaseScreen
 {
-InputSystem::eMouseCaptureMode Cursor::GetMouseCaptureMode()
-{
-    CorePlatformWinUAP* winCore = static_cast<CorePlatformWinUAP*>(Core::Instance());
-    return winCore->GetMouseCaptureMode();
-}
+public:
+    FullscreenTest();
 
-bool Cursor::SetMouseCaptureMode(InputSystem::eMouseCaptureMode mode)
-{
-    CorePlatformWinUAP* winCore = static_cast<CorePlatformWinUAP*>(Core::Instance());
-    return winCore->SetMouseCaptureMode(mode);
-}
-
-bool Cursor::GetSystemCursorVisibility()
-{
-    CorePlatformWinUAP* winCore = static_cast<CorePlatformWinUAP*>(Core::Instance());
-    return winCore->GetCursorVisibility();
-}
-
-bool Cursor::SetSystemCursorVisibility(bool show)
-{
-    DVASSERT("Cursor::SetSystemCursorVisibility not implemented");
-    return false;
-}
-
-Cursor* Cursor::Create(const FilePath & cursorPathname, const Vector2 & hotSpot)
-{
-    __DAVAENGINE_WIN_UAP_INCOMPLETE_IMPLEMENTATION__
-    Cursor * cursor = new Cursor();
-    return cursor;
-}
-
-Cursor::Cursor() : show(true)
-{
-    __DAVAENGINE_WIN_UAP_INCOMPLETE_IMPLEMENTATION__
-}
-	
-Cursor::~Cursor()
-{
-    __DAVAENGINE_WIN_UAP_INCOMPLETE_IMPLEMENTATION__
-}
-
-void Cursor::HardwareSet()
-{
-    __DAVAENGINE_WIN_UAP_INCOMPLETE_IMPLEMENTATION__
-}
-
-void Cursor::Show(bool _show)
-{
-    __DAVAENGINE_WIN_UAP_INCOMPLETE_IMPLEMENTATION__
-}
-
-DAVA::Vector2 Cursor::GetPosition()
-{
-    __DAVAENGINE_WIN_UAP_INCOMPLETE_IMPLEMENTATION__
-        return DAVA::Vector2();
-}
-
+protected:
+    void LoadResources() override;
+    void UnloadResources() override;
+    
+private:
+    void UpdateMode();
+    void OnSelectModeClick(BaseObject* sender, void * data, void * callerData);
+    
+    UIStaticText* currentModeText;
+    
 };
 
-#endif //  (__DAVAENGINE_WIN_UAP__)
+#endif //__FULLSCREENTEST_TEST_H__
