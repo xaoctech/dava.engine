@@ -25,3 +25,13 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+#include "KeyboardProxy.h"
+
+#include <QApplication>
+
+bool KeyboardProxy::IsKeyPressed(eKeys key)
+{
+    Qt::KeyboardModifier modifier = static_cast<Qt::KeyboardModifier>(key);
+    return QApplication::keyboardModifiers().testFlag(modifier);
+}

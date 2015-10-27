@@ -25,3 +25,22 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+#ifndef __QUICKED_KEYBOARD_PROXY_H__
+#define __QUICKED_KEYBOARD_PROXY_H__
+
+#include <Qt>
+
+namespace KeyboardProxy
+{
+    enum eKeys
+    {
+        KEY_SHIFT = Qt::ShiftModifier,
+        KEY_CTRL = Qt::ControlModifier,
+        KEY_ALT = Qt::AltModifier
+    };
+
+    bool IsKeyPressed(eKeys key);
+};
+
+#endif // __QUICKED_KEYBOARD_PROXY_H__
