@@ -26,54 +26,31 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "Base/Platform.h"
 
-#ifndef __DAVAENGINE_UI_STYLESHEET_PROPERTIES_TABLE_H__
-#define __DAVAENGINE_UI_STYLESHEET_PROPERTIES_TABLE_H__
+#if defined(__DAVAENGINE_WIN_UAP__)
 
-#include "Base/BaseObject.h"
-#include "Base/BaseTypes.h"
-#include "Base/FastName.h"
-#include "Base/StaticSingleton.h"
-#include "FileSystem/VariantType.h"
-#include "UI/Styles/UIStyleSheetStructs.h"
+#include "FileSystem/LocalizationWinUAP.h"
+#include "FileSystem/LocalizationSystem.h"
+#include "Platform/DeviceInfo.h"
 
 namespace DAVA
 {
-
-class UIStyleSheetPropertyDataBase : 
-    public StaticSingleton<UIStyleSheetPropertyDataBase >
+void LocalizationWinUAP::SelectPreferedLocalization()
 {
-public:
-    static const int32 STYLE_SHEET_PROPERTY_COUNT = 58;
+    LocalizationSystem::Instance()->SetCurrentLocale(GetDeviceLang());
+}
 
-    UIStyleSheetPropertyDataBase();
-
-    uint32 GetStyleSheetPropertyIndex(const FastName& name) const;
-    bool IsValidStyleSheetProperty(const FastName& name) const;
-    const UIStyleSheetPropertyDescriptor& GetStyleSheetPropertyByIndex(uint32 index) const;
-    int32 FindStyleSheetPropertyByMember(const InspMember* memberInfo) const;
-
-private:
-    UIStyleSheetPropertyGroup controlGroup;
-    UIStyleSheetPropertyGroup bgGroup;
-    UIStyleSheetPropertyGroup staticTextGroup;
-    UIStyleSheetPropertyGroup textFieldGroup;
-
-    UIStyleSheetPropertyGroup linearLayoutGroup;
-    UIStyleSheetPropertyGroup flowLayoutGroup;
-    UIStyleSheetPropertyGroup flowLayoutHintGroup;
-    UIStyleSheetPropertyGroup ignoreLayoutGroup;
-    UIStyleSheetPropertyGroup sizePolicyGroup;
-    UIStyleSheetPropertyGroup anchorGroup;
-
-    Array<UIStyleSheetPropertyDescriptor, STYLE_SHEET_PROPERTY_COUNT> properties; // have to be after groups declaration
-
-    UnorderedMap<FastName, uint32> propertyNameToIndexMap;
+String LocalizationWinUAP::GetDeviceLang(void)
+{
+    String locale = DeviceInfo::GetLocale();
+    String::size_type posEnd = locale.find('-', 2);
+    if (String::npos != posEnd)
+    {
+        locale = locale.substr(0, posEnd);
+    }
+    return locale;
+}
 };
 
-typedef Bitset<UIStyleSheetPropertyDataBase::STYLE_SHEET_PROPERTY_COUNT> UIStyleSheetPropertySet;
-
-};
-
-
-#endif
+#endif // __DAVAENGINE_WIN_UAP__
