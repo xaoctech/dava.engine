@@ -26,41 +26,31 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "Base/Platform.h"
 
-#ifndef __HOOD_OBJECT_H__
-#define __HOOD_OBJECT_H__
+#if defined(__DAVAENGINE_WIN_UAP__)
 
-#include "Scene/System/HoodSystem/HoodCollObject.h"
-#include "Scene/SceneTypes.h"
-#include "Render/RenderHelper.h"
+#include "FileSystem/LocalizationWinUAP.h"
+#include "FileSystem/LocalizationSystem.h"
+#include "Platform/DeviceInfo.h"
 
-#include "Render/UniqueStateSet.h"
-
-class TextDrawSystem;
-
-struct HoodObject 
+namespace DAVA
 {
-	HoodObject(DAVA::float32 baseSize);
-	virtual ~HoodObject();
+void LocalizationWinUAP::SelectPreferedLocalization()
+{
+    LocalizationSystem::Instance()->SetCurrentLocale(GetDeviceLang());
+}
 
-	DAVA::float32 baseSize;
-	DAVA::float32 objScale;
-	DAVA::Color colorX; // axis X
-	DAVA::Color colorY; // axis X
-	DAVA::Color colorZ; // axis X
-	DAVA::Color colorS; // axis selected
-
-	virtual void UpdatePos(const DAVA::Vector3 &pos);
-	virtual void UpdateScale(const DAVA::float32 &scale);
-    virtual void Draw(ST_Axis selectedAxis, ST_Axis mouseOverAxis, DAVA::RenderHelper* drawer, TextDrawSystem* textDrawSystem) = 0;
-
-    HoodCollObject* CreateLine(const DAVA::Vector3& from, const DAVA::Vector3& to);
-    DAVA::Rect DrawAxisText(TextDrawSystem *textDrawSystem, HoodCollObject *x, HoodCollObject *y, HoodCollObject *z);
-
-	DAVA::Vector<HoodCollObject*> collObjects;
-
-protected:
-	DAVA::Vector3 GetAxisTextPos(HoodCollObject *axis);
+String LocalizationWinUAP::GetDeviceLang(void)
+{
+    String locale = DeviceInfo::GetLocale();
+    String::size_type posEnd = locale.find('-', 2);
+    if (String::npos != posEnd)
+    {
+        locale = locale.substr(0, posEnd);
+    }
+    return locale;
+}
 };
 
-#endif
+#endif // __DAVAENGINE_WIN_UAP__
