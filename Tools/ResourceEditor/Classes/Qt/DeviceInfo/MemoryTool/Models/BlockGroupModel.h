@@ -26,52 +26,39 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __GENERALSTATMODEL_H__
-#define __GENERALSTATMODEL_H__
+#ifndef __MEMORYTOOL_BLOCKGROUPMODEL_H__
+#define __MEMORYTOOL_BLOCKGROUPMODEL_H__
+
+#include "Base/BaseTypes.h"
+
+#include "Qt/DeviceInfo/MemoryTool/BlockGroup.h"
 
 #include <QAbstractTableModel>
 
-#include "Base/BaseTypes.h"
-#include "MemoryManager/MemoryManagerTypes.h"
-
-class ProfilingSession;
-class MemoryStatItem;
-
-class GeneralStatModel : public QAbstractTableModel
+class BlockGroupModel : public QAbstractTableModel
 {
+    Q_OBJECT
+
 public:
-    enum {
-        CLM_VALUE = 0,
-        NCOLUMNS = 1
-    };
     enum
     {
-        ROW_ALLOC_INTERNAL = 0,
-        ROW_ALLOC_INTERNAL_TOTAL,
-        ROW_NBLOCKS_INTERNAL,
-        ROW_ALLOC_GHOST,
-        ROW_NBLOCKS_GHOST,
-        ROW_TOTAL_ALLOC_COUNT,
-        NROWS
+        ROLE_GROUP_POINTER = Qt::UserRole + 1
     };
 
 public:
-    GeneralStatModel(QObject* parent = nullptr);
-    virtual ~GeneralStatModel();
+    BlockGroupModel(QObject* parent = nullptr);
+    virtual ~BlockGroupModel();
 
+    void SetBlockGroups(const DAVA::Vector<BlockGroup>* groups);
+
+    // reimplemented QAbstractTableModel methods
     int rowCount(const QModelIndex& parent = QModelIndex()) const override;
     int columnCount(const QModelIndex& parent = QModelIndex()) const override;
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
-
-    void BeginNewProfileSession(ProfilingSession* profSession);
-    void SetCurrentValues(const MemoryStatItem& item);
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
 private:
-    ProfilingSession* profileSession;
-
-    DAVA::uint64 timestamp;
-    DAVA::GeneralAllocStat curValues;
+    const DAVA::Vector<BlockGroup>* groups = nullptr;
 };
 
-#endif  // __GENERALSTATMODEL_H__
+#endif // __MEMORYTOOL_BLOCKGROUPMODEL_H__
