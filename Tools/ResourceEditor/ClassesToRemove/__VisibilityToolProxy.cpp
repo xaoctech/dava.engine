@@ -27,54 +27,53 @@
 =====================================================================================*/
 
 
-#ifndef __RESOURCEEDITORQT__LANDSCAPEEDITORCONTROLSPLACEHOLDER__
-#define __RESOURCEEDITORQT__LANDSCAPEEDITORCONTROLSPLACEHOLDER__
+#include "__VisibilityToolProxy.h"
 
-#include <QWidget>
-#include "DAVAEngine.h"
-
-#include "LandscapeEditorPanels/LandscapeEditorBasePanel.h"
-
-class CustomColorsPanel;
-class RulerToolPanel;
-class TilemaskEditorPanel;
-class HeightmapEditorPanel;
-
-class LandscapeEditorControlsPlaceholder: public QWidget
+VisibilityToolProxy::VisibilityToolProxy(int32 size)
+    : size(size)
+    , visibilityPoint(Vector2(-1.f, -1.f))
+    , isVisibilityPointSet(false)
 {
-	Q_OBJECT
-	
-public:
-	explicit LandscapeEditorControlsPlaceholder(QWidget* parent = 0);
-	~LandscapeEditorControlsPlaceholder();
-	
-	void SetPanel(LandscapeEditorBasePanel* panel);
-	void RemovePanel();
+    visibilityToolTexture = Texture::CreateFBO((uint32)size, (uint32)size, FORMAT_RGBA8888);
 
-public slots:
-    
-    void OnOpenGLInitialized();
-    
-private slots:
-	void SceneActivated(SceneEditor2* scene);
-	void SceneDeactivated(SceneEditor2* scene);
+    rhi::Viewport viewport;
+    viewport.x = viewport.y = 0U;
+    viewport.width = (uint32)size;
+    viewport.height = (uint32)size;
+    RenderHelper::CreateClearPass(visibilityToolTexture->handle, PRIORITY_CLEAR, Color(0.f, 0.f, 0.f, 0.f), viewport);
+}
 
-	void EditorToggled(SceneEditor2* scene);
+VisibilityToolProxy::~VisibilityToolProxy()
+{
+    SafeRelease(visibilityToolTexture);
+}
 
-private:
-	SceneEditor2* activeScene;
-	LandscapeEditorBasePanel* currentPanel;
+int32 VisibilityToolProxy::GetSize()
+{
+    return size;
+}
 
-	CustomColorsPanel* customColorsPanel;
-	RulerToolPanel* rulerToolPanel;
-	TilemaskEditorPanel* tilemaskEditorPanel;
-	HeightmapEditorPanel* heightmapEditorPanel;
+Texture* VisibilityToolProxy::GetTexture()
+{
+    return visibilityToolTexture;
+}
 
-	void InitUI();
-	void ConnectToSignals();
-	void CreatePanels();
+void VisibilityToolProxy::SetVisibilityPoint(const Vector2& visibilityPoint)
+{
+    this->visibilityPoint = visibilityPoint;
+}
 
-	void UpdatePanels();
-};
+Vector2 VisibilityToolProxy::GetVisibilityPoint()
+{
+    return visibilityPoint;
+}
 
-#endif /* defined(__RESOURCEEDITORQT__LANDSCAPEEDITORCONTROLSPLACEHOLDER__) */
+bool VisibilityToolProxy::IsVisibilityPointSet()
+{
+    return isVisibilityPointSet;
+}
+
+void VisibilityToolProxy::UpdateVisibilityPointSet(bool visibilityPointSet)
+{
+    isVisibilityPointSet = visibilityPointSet;
+}

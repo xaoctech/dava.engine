@@ -27,54 +27,62 @@
 =====================================================================================*/
 
 
-#ifndef __RESOURCEEDITORQT__LANDSCAPEEDITORCONTROLSPLACEHOLDER__
-#define __RESOURCEEDITORQT__LANDSCAPEEDITORCONTROLSPLACEHOLDER__
+#ifndef __RESOURCEEDITORQT__VISIBILITYTOOLPANEL__
+#define __RESOURCEEDITORQT__VISIBILITYTOOLPANEL__
 
-#include <QWidget>
+#include "LandscapeEditorBasePanel.h"
 #include "DAVAEngine.h"
+#include "../../Scene/System/VisibilityToolSystem.h"
 
-#include "LandscapeEditorPanels/LandscapeEditorBasePanel.h"
+using namespace DAVA;
 
-class CustomColorsPanel;
-class RulerToolPanel;
-class TilemaskEditorPanel;
-class HeightmapEditorPanel;
+class QPushButton;
+class QListWidget;
+class VisibilityPointLayout;
 
-class LandscapeEditorControlsPlaceholder: public QWidget
+class VisibilityToolPanel : public LandscapeEditorBasePanel
 {
-	Q_OBJECT
-	
+    Q_OBJECT
+
 public:
-	explicit LandscapeEditorControlsPlaceholder(QWidget* parent = 0);
-	~LandscapeEditorControlsPlaceholder();
-	
-	void SetPanel(LandscapeEditorBasePanel* panel);
-	void RemovePanel();
+    static const int DEF_AREA_MIN_SIZE = 3;
+    static const int DEF_AREA_MAX_SIZE = 40;
 
-public slots:
-    
-    void OnOpenGLInitialized();
-    
+    explicit VisibilityToolPanel(QWidget* parent = 0);
+    ~VisibilityToolPanel();
+
 private slots:
-	void SceneActivated(SceneEditor2* scene);
-	void SceneDeactivated(SceneEditor2* scene);
+    void SetVisibilityToolButtonsState(SceneEditor2* scene, VisibilityToolSystem::State state);
 
-	void EditorToggled(SceneEditor2* scene);
+    void AddVisibilityPoint();
+    void ComputeVisibilityArea();
+    void SaveTexture();
+
+protected:
+    virtual bool GetEditorEnabled();
+
+    virtual void SetWidgetsState(bool enabled);
+    virtual void BlockAllSignals(bool block);
+
+    virtual void InitUI();
+    virtual void ConnectToSignals();
+
+    virtual void StoreState();
+    virtual void RestoreState();
+
+    virtual void ConnectToShortcuts();
+    virtual void DisconnectFromShortcuts();
 
 private:
-	SceneEditor2* activeScene;
-	LandscapeEditorBasePanel* currentPanel;
+    int32 AreaSizeUIToSystem(int32 uiValue);
+    int32 AreaSizeSystemToUI(int32 systemValue);
 
-	CustomColorsPanel* customColorsPanel;
-	RulerToolPanel* rulerToolPanel;
-	TilemaskEditorPanel* tilemaskEditorPanel;
-	HeightmapEditorPanel* heightmapEditorPanel;
-
-	void InitUI();
-	void ConnectToSignals();
-	void CreatePanels();
-
-	void UpdatePanels();
+private:
+    QPushButton* buttonAddVisibilityPoint = nullptr;
+    QPushButton* buttonComputeVisibilityArea = nullptr;
+    QPushButton* buttonSaveTexture = nullptr;
+    QListWidget* pointsList = nullptr;
+    Vector<VisibilityPointLayout> points;
 };
 
-#endif /* defined(__RESOURCEEDITORQT__LANDSCAPEEDITORCONTROLSPLACEHOLDER__) */
+#endif /* defined(__RESOURCEEDITORQT__VISIBILITYTOOLPANEL__) */

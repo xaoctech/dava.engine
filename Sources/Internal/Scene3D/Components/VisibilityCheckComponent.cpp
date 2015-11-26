@@ -26,55 +26,38 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "VisibilityCheckComponent.h"
+#include "Scene3D/Entity.h"
+#include "Render/Texture.h"
 
-#ifndef __RESOURCEEDITORQT__LANDSCAPEEDITORCONTROLSPLACEHOLDER__
-#define __RESOURCEEDITORQT__LANDSCAPEEDITORCONTROLSPLACEHOLDER__
+using namespace DAVA;
 
-#include <QWidget>
-#include "DAVAEngine.h"
+const uint32 renderTargetSize = 1024;
 
-#include "LandscapeEditorPanels/LandscapeEditorBasePanel.h"
-
-class CustomColorsPanel;
-class RulerToolPanel;
-class TilemaskEditorPanel;
-class HeightmapEditorPanel;
-
-class LandscapeEditorControlsPlaceholder: public QWidget
+VisibilityCheckComponent::VisibilityCheckComponent()
+    : renderTarget(Texture::CreateFBO(renderTargetSize, renderTargetSize, PixelFormat::FORMAT_RGBA8888, true, rhi::TEXTURE_TYPE_CUBE))
 {
-	Q_OBJECT
-	
-public:
-	explicit LandscapeEditorControlsPlaceholder(QWidget* parent = 0);
-	~LandscapeEditorControlsPlaceholder();
-	
-	void SetPanel(LandscapeEditorBasePanel* panel);
-	void RemovePanel();
+}
 
-public slots:
-    
-    void OnOpenGLInitialized();
-    
-private slots:
-	void SceneActivated(SceneEditor2* scene);
-	void SceneDeactivated(SceneEditor2* scene);
+Component* VisibilityCheckComponent::Clone(Entity* toEntity)
+{
+    auto visibilityCheckComponent = new VisibilityCheckComponent();
+    visibilityCheckComponent->SetEntity(toEntity);
 
-	void EditorToggled(SceneEditor2* scene);
+    return visibilityCheckComponent;
+}
 
-private:
-	SceneEditor2* activeScene;
-	LandscapeEditorBasePanel* currentPanel;
+float VisibilityCheckComponent::GetRadius() const
+{
+    return radius;
+}
 
-	CustomColorsPanel* customColorsPanel;
-	RulerToolPanel* rulerToolPanel;
-	TilemaskEditorPanel* tilemaskEditorPanel;
-	HeightmapEditorPanel* heightmapEditorPanel;
+void VisibilityCheckComponent::SetRadius(float r)
+{
+    radius = r;
+}
 
-	void InitUI();
-	void ConnectToSignals();
-	void CreatePanels();
-
-	void UpdatePanels();
-};
-
-#endif /* defined(__RESOURCEEDITORQT__LANDSCAPEEDITORCONTROLSPLACEHOLDER__) */
+Texture* VisibilityCheckComponent::GetRenderTarget() const
+{
+    return renderTarget;
+}
