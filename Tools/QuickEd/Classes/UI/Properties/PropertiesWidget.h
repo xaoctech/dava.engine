@@ -76,7 +76,6 @@ private:
 
     void ApplyExpanding();
 
-    Document* document = nullptr;
     QAction* addComponentAction = nullptr;
     QAction* addStylePropertyAction = nullptr;
     QAction* addStyleSelectorAction = nullptr;
