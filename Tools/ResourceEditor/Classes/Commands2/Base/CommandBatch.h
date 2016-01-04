@@ -27,47 +27,32 @@
 =====================================================================================*/
 
 
+#ifndef __COMMAND_BATCH_H__
+#define __COMMAND_BATCH_H__
+
 #include "Commands2/Command2.h"
+#include "Commands2/CommandNotify.h"
 
-Command2::Command2(int _id, const DAVA::String& _text)
-	: id(_id)
-	, text(_text)
-{ }
-
-bool Command2::MergeWith(const Command2* command)
+class CommandBatch : public Command2
 {
-	return false;
-}
+public:
+    CommandBatch();
+    ~CommandBatch();
 
-int Command2::GetId() const
-{
-	return id;
-}
+    virtual void Undo();
+    virtual void Redo();
+    virtual DAVA::Entity* GetEntity() const;
 
-DAVA::String Command2::GetText() const
-{
-	return text;
-}
+    void AddAndExec(Command2* command);
+    int Size() const;
+    Command2* GetCommand(int index) const;
 
-void Command2::SetText(const DAVA::String &_text)
-{
-	text = _text;
-}
+    void Clear(int commandId);
 
-void Command2::UndoInternalCommand(Command2 *command)
-{
-	if(NULL != command)
-	{
-		command->Undo();
-		EmitNotify(command, false);
-	}
-}
+    bool ContainsCommand(int commandId) const;
 
-void Command2::RedoInternalCommand(Command2 *command)
-{
-	if(NULL != command)
-	{
-		command->Redo();
-		EmitNotify(command, true);
-	}
-}
+protected:
+    std::vector<Command2*> commandList;
+};
+
+#endif // __COMMAND_BATCH_H__

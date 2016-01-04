@@ -27,37 +27,50 @@
 =====================================================================================*/
 
 
-#ifndef __COMMAND2_H__
-#define __COMMAND2_H__
-
-#include "Base/BaseTypes.h"
-#include "Scene3D/Scene.h"
-
-#include "Commands2/CommandID.h"
 #include "Commands2/CommandNotify.h"
 
-class Command2 : public CommandNotifyProvider
+CommandNotify::CommandNotify()
 {
-public:
-	Command2(int _id, const DAVA::String& _text = "");
+}
 
-	int GetId() const;
+CommandNotify::~CommandNotify()
+{
+}
 
-	virtual void Undo() = 0;
-	virtual void Redo() = 0;
-	virtual DAVA::Entity* GetEntity() const = 0;
+CommandNotifyProvider::CommandNotifyProvider()
+    : curNotify(NULL)
+{
+}
 
-	virtual bool MergeWith(const Command2* command);
+CommandNotifyProvider::~CommandNotifyProvider()
+{
+    SafeRelease(curNotify);
+}
 
-	DAVA::String GetText() const;
-	void SetText(const DAVA::String &text);
+void CommandNotifyProvider::SetNotify(CommandNotify* notify)
+{
+    SafeRelease(curNotify);
+    curNotify = notify;
+    SafeRetain(curNotify);
+}
 
-protected:
-	int id;
-	DAVA::String text;
+CommandNotify* CommandNotifyProvider::GetNotify() const
+{
+    return curNotify;
+}
 
-	void UndoInternalCommand(Command2 *command);
-	void RedoInternalCommand(Command2 *command);
-};
+void CommandNotifyProvider::EmitNotify(const Command2* command, bool redo)
+{
+    if (NULL != curNotify)
+    {
+        curNotify->Notify(command, redo);
+    }
+}
 
-#endif // __COMMAND2_H__
+void CommandNotifyProvider::EmitCleanChanged(bool clean)
+{
+    if (NULL != curNotify)
+    {
+        curNotify->CleanChanged(clean);
+    }
+}
