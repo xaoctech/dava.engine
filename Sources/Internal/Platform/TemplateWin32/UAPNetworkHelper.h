@@ -27,66 +27,28 @@
 =====================================================================================*/
 
 
-#include "RegKey.h"
+#ifndef __DAVAENGINE_UAP_NETWORK_HELPER_H__
+#define __DAVAENGINE_UAP_NETWORK_HELPER_H__
 
-using namespace DAVA;
+#include "Base/BaseTypes.h"
+#include "Network/Base/Endpoint.h"
+#include "Network/NetworkCommon.h"
 
-RegKey::RegKey(HKEY scope, const char* keyName, bool createIfNotExist)
+namespace DAVA
 {
-    long res = ::RegOpenKeyEx(scope, keyName, 0, KEY_READ | KEY_WOW64_64KEY, &key);
-
-    if (res != ERROR_SUCCESS && createIfNotExist)
-    {
-        res = ::RegCreateKeyEx(
-            scope, keyName, 0, 0, 0, KEY_WRITE | KEY_WOW64_64KEY, 0, &key, 0);
-        isCreated = res == ERROR_SUCCESS;
-    }
-
-    isExist = res == ERROR_SUCCESS;
-}
-
-String RegKey::QueryString(const char* valueName) const
+    
+class UAPNetworkHelper
 {
-    Array<char, 1024> arr{};
-    DWORD size = arr.size();
-    DWORD type;
+public:
+    static const uint16 UAP_DESKTOP_TCP_PORT = 777;
+    static const uint16 UAP_MOBILE_TCP_PORT = 1911;
+    static const char* UAP_IP_ADDRESS;
 
-    ::RegQueryValueEx(key,
-                      valueName,
-                      NULL,
-                      &type,
-                      reinterpret_cast<LPBYTE>(arr.data()),
-                      &size);
+    static Net::eNetworkRole GetCurrentNetworkRole();
+    static Net::Endpoint GetCurrentEndPoint();
+    static Net::Endpoint GetEndPoint(Net::eNetworkRole role);
+};
 
-    return type == REG_SZ ? arr.data() : "";
-}
+}  // namespace DAVA
 
-bool RegKey::SetValue(const String& valName, const String& val)
-{
-    long res = ::RegSetValueEx(key, valName.c_str(), 0, REG_SZ,
-        (LPBYTE)val.c_str(), val.size() + 1);
-    return res == ERROR_SUCCESS;
-}
-
-DWORD RegKey::QueryDWORD(const char* valueName) const
-{
-    DWORD result;
-    DWORD size = sizeof(result);
-    DWORD type;
-
-    ::RegQueryValueEx(key,
-                      valueName,
-                      NULL,
-                      &type,
-                      reinterpret_cast<LPBYTE>(&result),
-                      &size);
-
-    return type == REG_DWORD ? result : -1;
-}
-
-bool RegKey::SetValue(const String& valName, DWORD val)
-{
-    long res = ::RegSetValueEx(key, valName.c_str(), 0, REG_DWORD,
-        (LPBYTE)&val, sizeof(DWORD));
-    return res == ERROR_SUCCESS;
-}
+#endif  // __DAVAENGINE_UAP_NETWORK_HELPER_H__

@@ -27,66 +27,30 @@
 =====================================================================================*/
 
 
-#include "RegKey.h"
+#include "UWPLogConsumer.h"
 
-using namespace DAVA;
-
-RegKey::RegKey(HKEY scope, const char* keyName, bool createIfNotExist)
+UWPLogConsumer::UWPLogConsumer()
 {
-    long res = ::RegOpenKeyEx(scope, keyName, 0, KEY_READ | KEY_WOW64_64KEY, &key);
-
-    if (res != ERROR_SUCCESS && createIfNotExist)
-    {
-        res = ::RegCreateKeyEx(
-            scope, keyName, 0, 0, 0, KEY_WRITE | KEY_WOW64_64KEY, 0, &key, 0);
-        isCreated = res == ERROR_SUCCESS;
-    }
-
-    isExist = res == ERROR_SUCCESS;
+    newDataNotifier.Connect(DAVA::MakeFunction(this, &UWPLogConsumer::OnNewData));
 }
 
-String RegKey::QueryString(const char* valueName) const
+bool UWPLogConsumer::IsSessionEnded()
 {
-    Array<char, 1024> arr{};
-    DWORD size = arr.size();
-    DWORD type;
-
-    ::RegQueryValueEx(key,
-                      valueName,
-                      NULL,
-                      &type,
-                      reinterpret_cast<LPBYTE>(arr.data()),
-                      &size);
-
-    return type == REG_SZ ? arr.data() : "";
+    return !channelOpened && dataReceived;
 }
 
-bool RegKey::SetValue(const String& valName, const String& val)
+void UWPLogConsumer::ChannelOpen()
 {
-    long res = ::RegSetValueEx(key, valName.c_str(), 0, REG_SZ,
-        (LPBYTE)val.c_str(), val.size() + 1);
-    return res == ERROR_SUCCESS;
+    channelOpened = true;
 }
 
-DWORD RegKey::QueryDWORD(const char* valueName) const
+void UWPLogConsumer::ChannelClosed(const DAVA::char8* message)
 {
-    DWORD result;
-    DWORD size = sizeof(result);
-    DWORD type;
-
-    ::RegQueryValueEx(key,
-                      valueName,
-                      NULL,
-                      &type,
-                      reinterpret_cast<LPBYTE>(&result),
-                      &size);
-
-    return type == REG_DWORD ? result : -1;
+    channelOpened = false;
 }
 
-bool RegKey::SetValue(const String& valName, DWORD val)
+void UWPLogConsumer::OnNewData(const DAVA::String& str)
 {
-    long res = ::RegSetValueEx(key, valName.c_str(), 0, REG_DWORD,
-        (LPBYTE)&val, sizeof(DWORD));
-    return res == ERROR_SUCCESS;
+    dataReceived = true;
+    newMessageNotifier.Emit(str);
 }

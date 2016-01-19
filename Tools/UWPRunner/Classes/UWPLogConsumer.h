@@ -27,66 +27,29 @@
 =====================================================================================*/
 
 
-#include "RegKey.h"
+#ifndef UWP_LOG_CONSUMER_H
+#define UWP_LOG_CONSUMER_H
 
-using namespace DAVA;
+#include "Base/BaseTypes.h"
+#include "Network/Services/LogConsumer.h"
 
-RegKey::RegKey(HKEY scope, const char* keyName, bool createIfNotExist)
+class UWPLogConsumer : public DAVA::Net::LogConsumer
 {
-    long res = ::RegOpenKeyEx(scope, keyName, 0, KEY_READ | KEY_WOW64_64KEY, &key);
+public:
+    UWPLogConsumer();
 
-    if (res != ERROR_SUCCESS && createIfNotExist)
-    {
-        res = ::RegCreateKeyEx(
-            scope, keyName, 0, 0, 0, KEY_WRITE | KEY_WOW64_64KEY, 0, &key, 0);
-        isCreated = res == ERROR_SUCCESS;
-    }
+    bool IsSessionEnded();
+    DAVA::Signal<const DAVA::String&> newMessageNotifier;
 
-    isExist = res == ERROR_SUCCESS;
-}
+private:
+    //NetService method implementation
+    void ChannelOpen() override;
+    void ChannelClosed(const DAVA::char8* message) override;
 
-String RegKey::QueryString(const char* valueName) const
-{
-    Array<char, 1024> arr{};
-    DWORD size = arr.size();
-    DWORD type;
+    void OnNewData(const DAVA::String& str);
 
-    ::RegQueryValueEx(key,
-                      valueName,
-                      NULL,
-                      &type,
-                      reinterpret_cast<LPBYTE>(arr.data()),
-                      &size);
+    bool channelOpened = false;
+    bool dataReceived = false;
+};
 
-    return type == REG_SZ ? arr.data() : "";
-}
-
-bool RegKey::SetValue(const String& valName, const String& val)
-{
-    long res = ::RegSetValueEx(key, valName.c_str(), 0, REG_SZ,
-        (LPBYTE)val.c_str(), val.size() + 1);
-    return res == ERROR_SUCCESS;
-}
-
-DWORD RegKey::QueryDWORD(const char* valueName) const
-{
-    DWORD result;
-    DWORD size = sizeof(result);
-    DWORD type;
-
-    ::RegQueryValueEx(key,
-                      valueName,
-                      NULL,
-                      &type,
-                      reinterpret_cast<LPBYTE>(&result),
-                      &size);
-
-    return type == REG_DWORD ? result : -1;
-}
-
-bool RegKey::SetValue(const String& valName, DWORD val)
-{
-    long res = ::RegSetValueEx(key, valName.c_str(), 0, REG_DWORD,
-        (LPBYTE)&val, sizeof(DWORD));
-    return res == ERROR_SUCCESS;
-}
+#endif  // UWP_LOG_CONSUMER_H
