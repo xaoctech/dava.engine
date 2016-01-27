@@ -1,10 +1,10 @@
 /*==================================================================================
     Copyright (c) 2008, binaryzebra
     All rights reserved.
-
+ 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are met:
-
+ 
     * Redistributions of source code must retain the above copyright
     notice, this list of conditions and the following disclaimer.
     * Redistributions in binary form must reproduce the above copyright
@@ -13,7 +13,7 @@
     * Neither the name of the binaryzebra nor the
     names of its contributors may be used to endorse or promote products
     derived from this software without specific prior written permission.
-
+ 
     THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
     ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -26,67 +26,35 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __QTTOOLS_QTCONNECTIONS_H__
+#define __QTTOOLS_QTCONNECTIONS_H__
 
-#ifndef __RESOURCEEDITORQT__VISIBILITYTOOLPANEL__
-#define __RESOURCEEDITORQT__VISIBILITYTOOLPANEL__
+#include "Base/BaseTypes.h"
 
-#include "LandscapeEditorBasePanel.h"
-#include "DAVAEngine.h"
-#include "../../Scene/System/VisibilityToolSystem.h"
+#include <QMetaObject>
+#include <QPointer>
 
-using namespace DAVA;
-
-class QPushButton;
-class SliderWidget;
-
-class VisibilityToolPanel: public LandscapeEditorBasePanel
+class QtConnections
 {
-	Q_OBJECT
-
 public:
-	static const int DEF_AREA_MIN_SIZE = 3;
-	static const int DEF_AREA_MAX_SIZE = 40;
+    ~QtConnections()
+    {
+        for (QMetaObject::Connection & connection : connections)
+        {
+            QObject::disconnect(connection);
+        }
 
-	explicit VisibilityToolPanel(QWidget* parent = 0);
-	~VisibilityToolPanel();
+        connections.clear();
+    }
 
-private slots:
-	void SetVisibilityToolButtonsState(SceneEditor2* scene,
-									   VisibilityToolSystem::eVisibilityToolState state);
-
-	void SaveTexture();
-	void SetVisibilityPoint();
-	void SetVisibilityArea();
-	void SetVisibilityAreaSize(int areaSize);
-
-	void IncreaseBrushSize();
-	void DecreaseBrushSize();
-	void IncreaseBrushSizeLarge();
-	void DecreaseBrushSizeLarge();
-
-protected:
-	virtual bool GetEditorEnabled();
-
-	virtual void SetWidgetsState(bool enabled);
-	virtual void BlockAllSignals(bool block);
-
-	virtual void InitUI();
-	virtual void ConnectToSignals();
-
-	virtual void StoreState();
-	virtual void RestoreState();
-
-	virtual void ConnectToShortcuts();
-	virtual void DisconnectFromShortcuts();
+    template <typename Func1, typename Func2>
+    void AddConnection(const typename QtPrivate::FunctionPointer<Func1>::Object *sender, Func1 signal, Func2 slot)
+    {
+        connections.push_back(QObject::connect(sender, signal, slot));
+    }
 
 private:
-	QPushButton* buttonSetVisibilityPoint;
-	QPushButton* buttonSetVisibilityArea;
-	QPushButton* buttonSaveTexture;
-	SliderWidget* sliderWidgetAreaSize;
-
-	int32 AreaSizeUIToSystem(int32 uiValue);
-	int32 AreaSizeSystemToUI(int32 systemValue);
+    DAVA::Vector<QMetaObject::Connection> connections;
 };
 
-#endif /* defined(__RESOURCEEDITORQT__VISIBILITYTOOLPANEL__) */
+#endif // __QTTOOLS_QTCONNECTIONS_H__
