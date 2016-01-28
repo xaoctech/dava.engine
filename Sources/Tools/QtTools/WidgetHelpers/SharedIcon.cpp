@@ -26,54 +26,16 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "SharedIcon.h"
+#include "Base/BaseTypes.h"
 
-#include "VisibilityToolProxy.h"
+#include <qcoreapplication.h>
 
-VisibilityToolProxy::VisibilityToolProxy(int32 size)
-    : size(size)
-    , visibilityPoint(Vector2(-1.f, -1.f))
-    , isVisibilityPointSet(false)
+const QIcon& SharedIcon(const char* path)
 {
-    visibilityToolTexture = Texture::CreateFBO((uint32)size, (uint32)size, FORMAT_RGBA8888);
-
-    rhi::Viewport viewport;
-    viewport.x = viewport.y = 0U;
-    viewport.width = (uint32)size;
-    viewport.height = (uint32)size;
-    RenderHelper::CreateClearPass(visibilityToolTexture->handle, PRIORITY_CLEAR, Color(0.f, 0.f, 0.f, 0.f), viewport);
-}
-
-VisibilityToolProxy::~VisibilityToolProxy()
-{
-	SafeRelease(visibilityToolTexture);
-}
-
-int32 VisibilityToolProxy::GetSize()
-{
-	return size;
-}
-
-Texture* VisibilityToolProxy::GetTexture()
-{
-	return visibilityToolTexture;
-}
-
-void VisibilityToolProxy::SetVisibilityPoint(const Vector2& visibilityPoint)
-{
-	this->visibilityPoint = visibilityPoint;
-}
-
-Vector2 VisibilityToolProxy::GetVisibilityPoint()
-{
-	return visibilityPoint;
-}
-
-bool VisibilityToolProxy::IsVisibilityPointSet()
-{
-	return isVisibilityPointSet;
-}
-
-void VisibilityToolProxy::UpdateVisibilityPointSet(bool visibilityPointSet)
-{
-	isVisibilityPointSet = visibilityPointSet;
+    static DAVA::UnorderedMap<DAVA::String, QIcon> sharedMap;
+    qAddPostRoutine([]() {
+        sharedMap.clear();
+    });
+    return sharedMap.emplace(DAVA::String(path), QIcon(path)).first->second;
 }
