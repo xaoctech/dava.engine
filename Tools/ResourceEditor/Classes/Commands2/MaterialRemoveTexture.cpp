@@ -1,10 +1,10 @@
 /*==================================================================================
     Copyright (c) 2008, binaryzebra
     All rights reserved.
-
+ 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are met:
-
+ 
     * Redistributions of source code must retain the above copyright
     notice, this list of conditions and the following disclaimer.
     * Redistributions in binary form must reproduce the above copyright
@@ -13,7 +13,7 @@
     * Neither the name of the binaryzebra nor the
     names of its contributors may be used to endorse or promote products
     derived from this software without specific prior written permission.
-
+ 
     THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
     ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -26,63 +26,41 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "MaterialRemoveTexture.h"
 
-#include "GameCore.h"
+#include "Debug/DVAssert.h"
+#include "Base/FastName.h"
+#include "Render/Material/NMaterial.h"
 
-#include "FileSystem/ResourceArchive.h"
-#include "StringConstants.h"
-#include "version.h"
-
-using namespace DAVA;
-
-GameCore::GameCore()
+MaterialRemoveTexture::MaterialRemoveTexture(const DAVA::FastName& textureSlot_, DAVA::NMaterial* material_)
+    : Command2(CMDID_MATERIAL_REMOVE_TEXTURE, "Remove invalid texture from material")
 {
+    DVASSERT(material_ != nullptr);
+    DVASSERT(textureSlot_.IsValid());
+    DVASSERT(material_->HasLocalTexture(textureSlot_));
+
+    textureSlot = textureSlot_;
+    material = DAVA::SafeRetain(material_);
+    texture = DAVA::SafeRetain(material->GetLocalTexture(textureSlot));
 }
 
-GameCore::~GameCore()
+MaterialRemoveTexture::~MaterialRemoveTexture()
 {
+    DAVA::SafeRelease(texture);
+    DAVA::SafeRelease(material);
 }
 
-void GameCore::OnAppStarted()
+void MaterialRemoveTexture::Undo()
 {
-    Renderer::SetDesiredFPS(60);
-
-    Renderer::GetOptions()->SetOption(RenderOptions::LAYER_OCCLUSION_STATS, true);
-    DynamicBufferAllocator::SetPageSize(16 * 1024 * 1024); // 16 mb
-
-    UIControlSystem::Instance()->SetClearColor(Color(.3f, .3f, .3f, 1.f));
+    material->AddTexture(textureSlot, texture);
 }
 
-void GameCore::OnAppFinished()
+void MaterialRemoveTexture::Redo()
 {
+    material->RemoveTexture(textureSlot);
 }
 
-void GameCore::OnSuspend()
+DAVA::Entity* MaterialRemoveTexture::GetEntity() const
 {
-    //prevent going to suspend
-}
-
-void GameCore::OnResume()
-{
-    ApplicationCore::OnResume();
-}
-
-void GameCore::OnBackground()
-{
-    //prevent going to background
-}
-
-void GameCore::BeginFrame()
-{
-    ApplicationCore::BeginFrame();
-}
-
-void GameCore::Update(float32 timeElapsed)
-{
-    ApplicationCore::Update(timeElapsed);
-}
-
-void GameCore::Draw()
-{
-    ApplicationCore::Draw();
+    return nullptr;
 }
