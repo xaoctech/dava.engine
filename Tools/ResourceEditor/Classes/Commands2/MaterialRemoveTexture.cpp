@@ -1,10 +1,10 @@
 /*==================================================================================
     Copyright (c) 2008, binaryzebra
     All rights reserved.
-
+ 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are met:
-
+ 
     * Redistributions of source code must retain the above copyright
     notice, this list of conditions and the following disclaimer.
     * Redistributions in binary form must reproduce the above copyright
@@ -13,7 +13,7 @@
     * Neither the name of the binaryzebra nor the
     names of its contributors may be used to endorse or promote products
     derived from this software without specific prior written permission.
-
+ 
     THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
     ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -26,30 +26,41 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "MaterialRemoveTexture.h"
 
-#ifndef QUACRC32_H
-#define QUACRC32_H
+#include "Debug/DVAssert.h"
+#include "Base/FastName.h"
+#include "Render/Material/NMaterial.h"
 
-#include "quachecksum32.h"
-
-///CRC32 checksum
-/** \class QuaCrc32 quacrc32.h <quazip/quacrc32.h>
-* This class wrappers the crc32 function with the QuaChecksum32 interface.
-* See QuaChecksum32 for more info.
-*/
-class QUAZIP_EXPORT QuaCrc32 : public QuaChecksum32
+MaterialRemoveTexture::MaterialRemoveTexture(const DAVA::FastName& textureSlot_, DAVA::NMaterial* material_)
+    : Command2(CMDID_MATERIAL_REMOVE_TEXTURE, "Remove invalid texture from material")
 {
-public:
-    QuaCrc32();
+    DVASSERT(material_ != nullptr);
+    DVASSERT(textureSlot_.IsValid());
+    DVASSERT(material_->HasLocalTexture(textureSlot_));
 
-    quint32 calculate(const QByteArray& data);
+    textureSlot = textureSlot_;
+    material = DAVA::SafeRetain(material_);
+    texture = DAVA::SafeRetain(material->GetLocalTexture(textureSlot));
+}
 
-    void reset();
-    void update(const QByteArray& buf);
-    quint32 value();
+MaterialRemoveTexture::~MaterialRemoveTexture()
+{
+    DAVA::SafeRelease(texture);
+    DAVA::SafeRelease(material);
+}
 
-private:
-    quint32 checksum;
-};
+void MaterialRemoveTexture::Undo()
+{
+    material->AddTexture(textureSlot, texture);
+}
 
-#endif //QUACRC32_H
+void MaterialRemoveTexture::Redo()
+{
+    material->RemoveTexture(textureSlot);
+}
+
+DAVA::Entity* MaterialRemoveTexture::GetEntity() const
+{
+    return nullptr;
+}
