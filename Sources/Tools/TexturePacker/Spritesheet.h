@@ -34,10 +34,20 @@
 
 namespace DAVA
 {
-struct ImageCell
+enum class PackingAlgorithm
 {
-    Rect2i rect;
-    Rect2i imageRect;
+    ALG_BASIC,
+    ALG_MAXRECTS_BOTTOM_LEFT,
+    ALG_MAXRECTS_BEST_AREA_FIT,
+    ALG_MAXRECTS_BEST_SHORT_SIDE_FIT,
+    ALG_MAXRECTS_BEST_LONG_SIDE_FIT,
+    ALG_MAXRRECT_BEST_CONTACT_POINT
+};
+
+struct SpriteBoundsRect
+{
+    Rect2i marginsRect;
+    Rect2i spriteRect;
     uint32 leftEdgePixel = 0;
     uint32 rightEdgePixel = 0;
     uint32 topEdgePixel = 0;
@@ -46,41 +56,16 @@ struct ImageCell
     uint32 bottomMargin = 0;
 };
 
-//! helper class to simplify packing of many small 2D images to one big 2D image
-class TextureAtlas
+struct SpritesheetLayout
 {
-public:
-    TextureAtlas(const Rect2i& _rect, bool _useTwoSideMargin, int32 _texturesMargin);
+    virtual ~SpritesheetLayout() = default;
+    virtual bool AddSprite(const Size2i& spriteSize, void* searchPtr) = 0;
+    virtual const SpriteBoundsRect* GetSpritePosition(void* searchPtr) const = 0;
+    virtual const Rect2i& GetRect() const = 0;
+    virtual uint32 GetWeight() const = 0;
 
-    bool AddImage(const Size2i& imageSize, void* searchPtr);
-    ImageCell* GetImageCell(void* searchPtr);
-
-    Rect2i& GetRect()
-    {
-        return rootNode->cell.rect;
-    };
-
-private:
-    struct AtlasNode;
-    using AtlasNodePtr = std::unique_ptr<AtlasNode>;
-
-    struct AtlasNode
-    {
-        AtlasNodePtr child[2];
-        ImageCell cell;
-        void* imagePtr = nullptr;
-    };
-
-    AtlasNode* Insert(const AtlasNodePtr& node, const Size2i& imageSize, void* imagePtr);
-    AtlasNode* SearchRectForPtr(const AtlasNodePtr& node, void* imagePtr);
-
-    const int32 edgePixel;
-    const int32 texturesMargin;
-    const int32 splitter;
-    AtlasNodePtr rootNode;
+    static std::unique_ptr<SpritesheetLayout> Create(uint32 w, uint32 h, bool duplicateEdgePixel, uint32 spritesMargin, PackingAlgorithm alg);
 };
-
-using TextureAtlasPtr = std::unique_ptr<TextureAtlas>;
 }
 
 #endif // __DAVAENGINE_IMAGEPACKER_H__
