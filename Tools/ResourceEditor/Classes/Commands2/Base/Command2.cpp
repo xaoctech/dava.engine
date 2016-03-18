@@ -27,50 +27,44 @@
 =====================================================================================*/
 
 
-#include "Commands2/Command2.h"
+#include "Commands2/Base/Command2.h"
 
-Command2::Command2(int _id, const DAVA::String& _text)
-    : id(_id)
-    , text(_text)
+Command2::Command2(DAVA::int32 _id, const DAVA::String& _text)
+    : text(_text)
+    , id(_id)
 {
 }
 
-bool Command2::MergeWith(const Command2* command)
-{
-    return false;
-}
-
-int Command2::GetId() const
-{
-    return id;
-}
-
-DAVA::String Command2::GetText() const
-{
-    return text;
-}
-
-void Command2::SetText(const DAVA::String& _text)
-{
-    text = _text;
-}
+Command2::~Command2() = default;
 
 void Command2::UndoInternalCommand(Command2* command)
 {
-    if (NULL != command)
-    {
-        command->Undo();
-        EmitNotify(command, false);
-    }
+    command->Undo();
+    EmitNotify(command, false);
 }
 
 void Command2::RedoInternalCommand(Command2* command)
 {
-    if (NULL != command)
+    command->Redo();
+    EmitNotify(command, true);
+}
+
+bool Command2::MatchCommandID(DAVA::int32 commandID) const
+{
+    return (id == commandID);
+}
+
+bool Command2::MatchCommandIDs(const DAVA::Vector<DAVA::int32>& commandIDVector) const
+{
+    for (auto commandID : commandIDVector)
     {
-        command->Redo();
-        EmitNotify(command, true);
+        if (id == commandID)
+        {
+            return true;
+        }
     }
+
+    return false;
 }
 
 void Command2::Execute()
