@@ -27,50 +27,78 @@
 =====================================================================================*/
 
 
-#include "Commands2/CommandNotify.h"
+#ifndef __COMMAND2_H__
+#define __COMMAND2_H__
 
-CommandNotify::CommandNotify()
-{
-}
+#include "Base/BaseTypes.h"
+#include "Scene3D/Entity.h"
 
-CommandNotify::~CommandNotify()
-{
-}
+#include "Command/ICommand.h"
 
-CommandNotifyProvider::CommandNotifyProvider()
-    : curNotify(NULL)
-{
-}
+#include "Commands2/CommandID.h"
+#include "Commands2/Base/CommandNotify.h"
 
-CommandNotifyProvider::~CommandNotifyProvider()
+class Command2 : public CommandNotifyProvider, public DAVA::ICommand
 {
-    SafeRelease(curNotify);
-}
+public:
+    using Pointer = std::unique_ptr<Command2>;
 
-void CommandNotifyProvider::SetNotify(CommandNotify* notify)
-{
-    SafeRelease(curNotify);
-    curNotify = notify;
-    SafeRetain(curNotify);
-}
+protected:
+    Command2(DAVA::int32 id, const DAVA::String& text = "");
 
-CommandNotify* CommandNotifyProvider::GetNotify() const
-{
-    return curNotify;
-}
+public:
+    ~Command2() override;
 
-void CommandNotifyProvider::EmitNotify(const Command2* command, bool redo)
-{
-    if (NULL != curNotify)
+    template <typename CMD, typename... Arg>
+    static std::unique_ptr<CMD> Create(Arg&&... arg)
     {
-        curNotify->Notify(command, redo);
+        return std::unique_ptr<CMD>(new CMD(std::forward<Arg>(arg)...));
     }
+
+    static Pointer CreateEmptyCommand()
+    {
+        return Pointer();
+    }
+
+    DAVA::int32 GetId() const;
+    const DAVA::String& GetText() const;
+
+    DAVA_DEPRECATED(virtual DAVA::Entity* GetEntity() const = 0);
+
+    void Execute() override;
+
+    virtual bool IsModifying() const;
+    virtual bool CanUndo() const;
+
+    virtual bool MatchCommandID(DAVA::int32 commandID) const;
+    virtual bool MatchCommandIDs(const DAVA::Vector<DAVA::int32>& commandIDVector) const;
+
+protected:
+    void UndoInternalCommand(Command2* command);
+    void RedoInternalCommand(Command2* command);
+
+    const DAVA::String text;
+    const DAVA::int32 id;
+};
+
+inline DAVA::int32 Command2::GetId() const
+{
+    return id;
 }
 
-void CommandNotifyProvider::EmitCleanChanged(bool clean)
+inline const DAVA::String& Command2::GetText() const
 {
-    if (NULL != curNotify)
-    {
-        curNotify->CleanChanged(clean);
-    }
+    return text;
 }
+
+inline bool Command2::CanUndo() const
+{
+    return true;
+}
+
+inline bool Command2::IsModifying() const
+{
+    return true;
+}
+
+#endif // __COMMAND2_H__
