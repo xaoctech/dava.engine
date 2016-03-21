@@ -26,53 +26,25 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "Base/Platform.h"
 
-#ifndef __COMMAND2_H__
-#define __COMMAND2_H__
+#if defined(__DAVAENGINE_WINDOWS__)
 
-#include "Base/BaseTypes.h"
-#include "Scene3D/Scene.h"
+#include "FileSystem/LocalizationSystem.h"
+#include "Platform/DeviceInfo.h"
 
-#include "Command/ICommand.h"
-
-#include "Commands2/CommandID.h"
-#include "Commands2/CommandNotify.h"
-
-class Command2 : public CommandNotifyProvider, public DAVA::ICommand
+namespace DAVA
 {
-public:
-    Command2(int _id, const DAVA::String& _text = "");
-    ~Command2() override = default;
-
-    int GetId() const;
-
-    void Execute() override;
-
-    virtual bool IsModifying() const;
-    virtual bool CanUndo() const;
-
-    virtual DAVA::Entity* GetEntity() const = 0;
-    virtual bool MergeWith(const Command2* command);
-
-    DAVA::String GetText() const;
-    void SetText(const DAVA::String& text);
-
-protected:
-    int id;
-    DAVA::String text;
-
-    void UndoInternalCommand(Command2* command);
-    void RedoInternalCommand(Command2* command);
+String LocalizationSystem::GetDeviceLocale(void) const
+{
+    String locale = DeviceInfo::GetLocale();
+    String::size_type posEnd = locale.find('-', 2);
+    if (String::npos != posEnd)
+    {
+        locale = locale.substr(0, posEnd);
+    }
+    return locale;
+}
 };
 
-inline bool Command2::CanUndo() const
-{
-    return true;
-}
-
-inline bool Command2::IsModifying() const
-{
-    return true;
-}
-
-#endif // __COMMAND2_H__
+#endif // __DAVAENGINE_WIN_UAP__

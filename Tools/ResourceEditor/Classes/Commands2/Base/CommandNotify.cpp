@@ -27,22 +27,34 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_LOCALIZATION_WINUAP_H__
-#define __DAVAENGINE_LOCALIZATION_WINUAP_H__
+#include "Commands2/Base/CommandNotify.h"
 
-#include "Base/BaseTypes.h"
-#if defined(__DAVAENGINE_WIN_UAP__)
-
-namespace DAVA
+CommandNotifyProvider::~CommandNotifyProvider()
 {
-class LocalizationWinUAP
+    SafeRelease(curNotify);
+}
+
+void CommandNotifyProvider::SetNotify(CommandNotify* notify)
 {
-public:
-    static void SelectPreferedLocalization();
-    static String GetDeviceLang(void);
-};
-};
+    if (curNotify != notify)
+    {
+        SafeRelease(curNotify);
+        curNotify = SafeRetain(notify);
+    }
+}
 
-#endif //__DAVAENGINE_WIN_UAP__
+void CommandNotifyProvider::EmitNotify(const Command2* command, bool redo)
+{
+    if (nullptr != curNotify)
+    {
+        curNotify->Notify(command, redo);
+    }
+}
 
-#endif //__DAVAENGINE_LOCALIZATION_WINUAP_H__
+void CommandNotifyProvider::EmitCleanChanged(bool clean)
+{
+    if (nullptr != curNotify)
+    {
+        curNotify->CleanChanged(clean);
+    }
+}
