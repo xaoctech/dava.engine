@@ -42,7 +42,7 @@ protected:
     ~ReadOnlyArchiveFile() override;
 
 public:
-    static ReadOnlyArchiveFile* Create(const FilePath& filePath, ResourceArchive::ContentAndSize&& data);
+    static ReadOnlyArchiveFile* Create(const FilePath& filePath, Vector<char8>&& data);
 
     const FilePath& GetFilename() override;
 
@@ -54,7 +54,7 @@ public:
     bool IsEof() const override;
 
 private:
-    ResourceArchive::ContentAndSize data_;
+    Vector<char8> data_;
     uint32 pos_;
     FilePath filePath_;
 };
