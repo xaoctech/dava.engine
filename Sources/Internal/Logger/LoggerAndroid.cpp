@@ -27,32 +27,72 @@
 =====================================================================================*/
 
 
-#ifndef __COMMAND_BATCH_H__
-#define __COMMAND_BATCH_H__
+#include "Logger/Logger.h"
 
-#include "Commands2/Command2.h"
-#include "Commands2/CommandNotify.h"
+#if defined(__DAVAENGINE_ANDROID__)
 
-class CommandBatch : public Command2
+#include <stdarg.h>
+#include <android/log.h>
+#include "Utils/StringFormat.h"
+
+namespace DAVA
 {
-public:
-    CommandBatch();
-    ~CommandBatch();
+static DAVA::String androidLogTag = "";
 
-    virtual void Undo();
-    virtual void Redo();
-    virtual DAVA::Entity* GetEntity() const;
+int32 LogLevelToAndtoid(Logger::eLogLevel ll)
+{
+    int32 androidLL = ANDROID_LOG_DEFAULT;
+    switch (ll)
+    {
+    case Logger::LEVEL_FRAMEWORK:
+    case Logger::LEVEL_DEBUG:
+        androidLL = ANDROID_LOG_DEBUG;
+        break;
 
-    void AddAndExec(Command2* command);
-    int Size() const;
-    Command2* GetCommand(int index) const;
+    case Logger::LEVEL_INFO:
+        androidLL = ANDROID_LOG_INFO;
+        break;
 
-    void Clear(int commandId);
+    case Logger::LEVEL_WARNING:
+        androidLL = ANDROID_LOG_WARN;
+        break;
 
-    bool ContainsCommand(int commandId) const;
+    case Logger::LEVEL_ERROR:
+        androidLL = ANDROID_LOG_ERROR;
+        break;
+    default:
+        break;
+    }
 
-protected:
-    std::vector<Command2*> commandList;
-};
+    return androidLL;
+}
 
-#endif // __COMMAND_BATCH_H__
+void Logger::PlatformLog(eLogLevel ll, const char8* text) const
+{
+    size_t len = strlen(text);
+    // about limit on android: http://stackoverflow.com/questions/8888654/android-set-max-length-of-logcat-messages
+    const size_t limit{ 4000 };
+
+    char8* str = const_cast<char*>(text);
+
+    while (len > limit)
+    {
+        char8 lastChar = str[limit];
+        str[limit] = '\0';
+        __android_log_print(LogLevelToAndtoid(ll), androidLogTag.c_str(), str, "");
+        str[limit] = lastChar;
+        str += limit;
+        len -= limit;
+    }
+
+    __android_log_print(LogLevelToAndtoid(ll), androidLogTag.c_str(), str, "");
+}
+
+void Logger::SetTag(const char8* logTag)
+{
+    androidLogTag = Format("%s", logTag);
+}
+
+} // end namespace DAVA
+
+#endif //#if defined(__DAVAENGINE_ANDROID__)
