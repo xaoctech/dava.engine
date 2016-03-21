@@ -30,29 +30,55 @@
 #ifndef __COMMAND_BATCH_H__
 #define __COMMAND_BATCH_H__
 
-#include "Commands2/Command2.h"
-#include "Commands2/CommandNotify.h"
+#include "Base/BaseTypes.h"
 
-class CommandBatch : public Command2
+#include "Commands2/Base/Command2.h"
+#include "Commands2/Base/CommandNotify.h"
+
+class CommandBatch final : public Command2
 {
 public:
-    CommandBatch();
-    ~CommandBatch();
+    CommandBatch(const DAVA::String& text, DAVA::uint32 commandsCount);
 
-    virtual void Undo();
-    virtual void Redo();
-    virtual DAVA::Entity* GetEntity() const;
+    void Undo() override;
+    void Redo() override;
 
-    void AddAndExec(Command2* command);
-    int Size() const;
-    Command2* GetCommand(int index) const;
+    DAVA_DEPRECATED(DAVA::Entity* GetEntity() const override);
 
-    void Clear(int commandId);
+    void AddAndExec(Command2::Pointer&& command);
+    void RemoveCommands(DAVA::int32 commandId);
 
-    bool ContainsCommand(int commandId) const;
+    bool Empty() const;
+    DAVA::uint32 Size() const;
+
+    Command2* GetCommand(DAVA::uint32 index) const;
+
+    bool MatchCommandID(DAVA::int32 commandID) const override;
+    bool MatchCommandIDs(const DAVA::Vector<DAVA::int32>& commandIDVector) const override;
+
+    bool IsMultiCommandBatch() const;
 
 protected:
-    std::vector<Command2*> commandList;
+    using CommandsContainer = DAVA::Vector<Command2::Pointer>;
+    CommandsContainer commandList;
+
+    DAVA::UnorderedSet<DAVA::int32> commandIDs;
 };
+
+inline bool CommandBatch::Empty() const
+{
+    return commandList.empty();
+}
+
+inline DAVA::uint32 CommandBatch::Size() const
+{
+    return static_cast<DAVA::uint32>(commandList.size());
+}
+
+inline bool CommandBatch::IsMultiCommandBatch() const
+{
+    return (commandIDs.size() > 1);
+}
+
 
 #endif // __COMMAND_BATCH_H__
