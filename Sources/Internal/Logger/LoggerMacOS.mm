@@ -27,53 +27,31 @@
 =====================================================================================*/
 
 
-#include "Commands2/Command2.h"
+#include "Logger/Logger.h"
 
-Command2::Command2(int _id, const DAVA::String& _text)
-    : id(_id)
-    , text(_text)
+#if defined(__DAVAENGINE_MACOS__)
+
+#include <cstdio>
+namespace DAVA
 {
+void Logger::PlatformLog(eLogLevel ll, const char8* text) const
+{
+    // Use printf instead of std::cout as std::cout can produce mess when
+    // logging from several threads
+    std::printf("[%s] %s", GetLogLevelString(ll), text);
+}
+} // namespace DAVA
+
+#elif defined(__DAVAENGINE_IPHONE__)
+
+#import <Foundation/Foundation.h>
+namespace DAVA
+{
+void Logger::PlatformLog(eLogLevel ll, const char8* text) const
+{
+    NSLog(@"[%s] %s", GetLogLevelString(ll), text);
 }
 
-bool Command2::MergeWith(const Command2* command)
-{
-    return false;
-}
+} // namespace DAVA
 
-int Command2::GetId() const
-{
-    return id;
-}
-
-DAVA::String Command2::GetText() const
-{
-    return text;
-}
-
-void Command2::SetText(const DAVA::String& _text)
-{
-    text = _text;
-}
-
-void Command2::UndoInternalCommand(Command2* command)
-{
-    if (NULL != command)
-    {
-        command->Undo();
-        EmitNotify(command, false);
-    }
-}
-
-void Command2::RedoInternalCommand(Command2* command)
-{
-    if (NULL != command)
-    {
-        command->Redo();
-        EmitNotify(command, true);
-    }
-}
-
-void Command2::Execute()
-{
-    Redo();
-}
+#endif
