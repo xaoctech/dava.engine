@@ -26,48 +26,25 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_TEAMCITY_TEST_OUTPUT_H__
-#define __DAVAENGINE_TEAMCITY_TEST_OUTPUT_H__
+#include "Base/Platform.h"
 
-#include "TeamcityOutput/TeamcityOutput.h"
+#if defined(__DAVAENGINE_WINDOWS__)
+
+#include "FileSystem/LocalizationSystem.h"
+#include "Platform/DeviceInfo.h"
 
 namespace DAVA
 {
-
-class TeamcityTestsOutput : public TeamcityOutput
+String LocalizationSystem::GetDeviceLocale(void) const
 {
-public:
-    virtual void Output(Logger::eLogLevel ll, const char8* text);
-
-    bool CaptureStdoutFlag() const;
-    void SetCaptureStdoutFlag(bool value);
-
-    static String FormatTestStarted(const String& testClassName, const String& testName);
-    static String FormatTestFinished(const String& testClassName, const String& testName);
-    static String FormatTestFailed(const String& testClassName, const String& testName, const String& condition, const String& errMsg);
-
-    static String FormatTestClassStarted(const String& testClassName);
-    static String FormatTestClassFinished(const String& testClassName);
-    static String FormatTestClassDisabled(const String& testClassName);
-
-private:
-    void TestOutput(const String& data);
-
-private:
-    bool captureStdoutFlag = false;     // Flag controls whether TeamCity attribute 'captureStandardOutput=true' is set on test start
+    String locale = DeviceInfo::GetLocale();
+    String::size_type posEnd = locale.find('-', 2);
+    if (String::npos != posEnd)
+    {
+        locale = locale.substr(0, posEnd);
+    }
+    return locale;
+}
 };
 
-//////////////////////////////////////////////////////////////////////////
-inline bool TeamcityTestsOutput::CaptureStdoutFlag() const
-{
-    return captureStdoutFlag;
-}
-
-inline void TeamcityTestsOutput::SetCaptureStdoutFlag(bool value)
-{
-    captureStdoutFlag = value;
-}
-
-}   // namespace DAVA
-
-#endif // __DAVAENGINE_TEAMCITY_TEST_OUTPUT_H__
+#endif // __DAVAENGINE_WIN_UAP__

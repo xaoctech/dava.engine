@@ -26,23 +26,28 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __DAVAENGINE_TEAMCITY_OUTPUT_H__
+#define __DAVAENGINE_TEAMCITY_OUTPUT_H__
 
-#ifndef __DAVAENGINE_LOCALIZATION_ANDROID_H__
-#define __DAVAENGINE_LOCALIZATION_ANDROID_H__
+/**
+    \defgroup utils Utilities
+ */
 
-#include "Base/BaseTypes.h"
-#if defined(__DAVAENGINE_ANDROID__)
+#include "Logger/Logger.h"
 
 namespace DAVA
 {
-class LocalizationAndroid
+class TeamcityOutput : public LoggerOutput
 {
 public:
-    static void SelectPreferedLocalization();
-    static String GetDeviceLang(void);
-};
+    void Output(Logger::eLogLevel ll, const char8* text) override;
+
+protected:
+    void PlatformOutput(const String& text) const;
+
+    String NormalizeString(const char8* text) const;
 };
 
-#endif //__DAVAENGINE_ANDROID__
+} // namespace DAVA 
 
-#endif //__DAVAENGINE_LOCALIZATION_ANDROID_H__
+#endif // __DAVAENGINE_TEAMCITY_OUTPUT_H__

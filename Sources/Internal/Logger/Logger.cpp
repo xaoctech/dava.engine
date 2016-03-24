@@ -27,7 +27,7 @@
 =====================================================================================*/
 
 
-#include "FileSystem/Logger.h"
+#include "Logger/Logger.h"
 #include "FileSystem/FileSystem.h"
 #include "Debug/DVAssert.h"
 #include <cstdarg>
@@ -118,7 +118,7 @@ void Logger::Logv(const FilePath& customLogFilename, eLogLevel ll, const char8* 
 static const Array<const char8*, 5> logLevelString
 {
   {
-  "framwork",
+  "framework",
   "debug",
   "info",
   "warning",

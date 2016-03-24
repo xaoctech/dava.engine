@@ -26,73 +26,35 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "TeamcityOutput.h"
-#include "Utils/Utils.h"
 
-#include <iostream>
+#include "Commands2/Base/CommandNotify.h"
 
-#if defined(__DAVAENGINE_ANDROID__)
-#   include <android/log.h>
-#   define LOG_TAG      "TeamcityOutput"
-#elif defined(__DAVAENGINE_IPHONE__)
-#   import "UIKit/UIKit.h"
-#endif
-
-namespace DAVA
+CommandNotifyProvider::~CommandNotifyProvider()
 {
-    
-void TeamcityOutput::Output(Logger::eLogLevel ll, const char8 *text)
+    SafeRelease(curNotify);
+}
+
+void CommandNotifyProvider::SetNotify(CommandNotify* notify)
 {
-    if(ll < Logger::Instance()->GetLogLevel())
-        return;
-    
-    String outStr = NormalizeString(text);
-    String output;
-    String status;
-    
-    switch (ll)
+    if (curNotify != notify)
     {
-    case Logger::LEVEL_ERROR:
-        status = "ERROR";
-        break;
-    case Logger::LEVEL_WARNING:
-        status = "WARNING";
-        break;
-    default:
-        status = "NORMAL";
-        break;
+        SafeRelease(curNotify);
+        curNotify = SafeRetain(notify);
     }
-
-    output = "##teamcity[message text=\'" + outStr + "\' errorDetails=\'\' status=\'" + status + "\']\n";
-    PlatformOutput(output);
 }
 
-String TeamcityOutput::NormalizeString(const char8 *text) const
+void CommandNotifyProvider::EmitNotify(const Command2* command, bool redo)
 {
-    String str = text;
-    
-    StringReplace(str, "|", "||");
-
-    StringReplace(str, "'", "|'");
-    StringReplace(str, "\n", "|n");
-    StringReplace(str, "\r", "|r");
-
-    StringReplace(str, "[", "|[");
-    StringReplace(str, "]", "|]");
-    
-    return str;
+    if (nullptr != curNotify)
+    {
+        curNotify->Notify(command, redo);
+    }
 }
 
-void TeamcityOutput::PlatformOutput(const String &text) const
+void CommandNotifyProvider::EmitCleanChanged(bool clean)
 {
-#ifdef __DAVAENGINE_IPHONE__
-    NSLog(@"%s", text.c_str());
-#elif  defined(__DAVAENGINE_ANDROID__)
-    __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "%s", text.c_str());
-#else
-    std::cout << text << std::endl << std::flush;
-#endif
+    if (nullptr != curNotify)
+    {
+        curNotify->CleanChanged(clean);
+    }
 }
-    
-}; // end of namespace DAVA
-

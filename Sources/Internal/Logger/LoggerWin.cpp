@@ -27,50 +27,20 @@
 =====================================================================================*/
 
 
-#include "Commands2/CommandNotify.h"
+#include "Logger/Logger.h"
 
-CommandNotify::CommandNotify()
+#if defined(__DAVAENGINE_WINDOWS__)
+
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <windowsx.h>
+
+namespace DAVA
 {
+void Logger::PlatformLog(eLogLevel ll, const char8* text) const
+{
+    OutputDebugStringA(text);
+}
 }
 
-CommandNotify::~CommandNotify()
-{
-}
-
-CommandNotifyProvider::CommandNotifyProvider()
-    : curNotify(NULL)
-{
-}
-
-CommandNotifyProvider::~CommandNotifyProvider()
-{
-    SafeRelease(curNotify);
-}
-
-void CommandNotifyProvider::SetNotify(CommandNotify* notify)
-{
-    SafeRelease(curNotify);
-    curNotify = notify;
-    SafeRetain(curNotify);
-}
-
-CommandNotify* CommandNotifyProvider::GetNotify() const
-{
-    return curNotify;
-}
-
-void CommandNotifyProvider::EmitNotify(const Command2* command, bool redo)
-{
-    if (NULL != curNotify)
-    {
-        curNotify->Notify(command, redo);
-    }
-}
-
-void CommandNotifyProvider::EmitCleanChanged(bool clean)
-{
-    if (NULL != curNotify)
-    {
-        curNotify->CleanChanged(clean);
-    }
-}
+#endif
