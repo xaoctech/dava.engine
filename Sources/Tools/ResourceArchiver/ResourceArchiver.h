@@ -26,29 +26,19 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __COMMAND_TOOL_MANAGER_H__
-#define __COMMAND_TOOL_MANAGER_H__
+#pragma once
 
-#include "Base/BaseTypes.h"
-#include "CommandLine/ProgramOptions.h"
-#include "CommandLineTool.h"
+#include <FileSystem/FilePath.h>
+#include <FileSystem/ResourceArchive.h>
 
-// the idea is to place CommandToolManager and CommandLineTool into Sources/Tools in near future,
-// combine them with CommandToolManager, CommandLineTool of ResourceEditor/Classes/CommandLine/
-// and use that classes througout all our command line tools
-class CommandToolManager
+namespace DAVA
 {
-public:
-    CommandToolManager(DAVA::String toolName);
-    void AddTool(std::unique_ptr<CommandLineTool> tool);
-    void Process(int argc, char* argv[]);
+namespace ResourceArchiver
+{
+bool StringToPackType(const DAVA::String& compressionStr, DAVA::Compressor::Type& type);
+DAVA::String PackTypeToString(DAVA::Compressor::Type packType);
 
-private:
-    void PrintUsage();
+bool CreateArchive(const FilePath& packName, const Vector<String>& sourcesList, bool addHiddenFiles);
 
-    DAVA::String toolName;
-    DAVA::Vector<std::unique_ptr<CommandLineTool>> tools;
-    DAVA::ProgramOptions helpOption;
-};
-
-#endif // __COMMAND_TOOL_MANAGER_H__
+} // namespace Archive
+} // namespace DAVA

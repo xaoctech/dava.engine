@@ -26,70 +26,30 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __COMMAND_TOOL_MANAGER_H__
+#define __COMMAND_TOOL_MANAGER_H__
+
+#include "Base/BaseTypes.h"
+#include "CommandLine/ProgramOptions.h"
 #include "CommandLineTool.h"
-#include "Logger/Logger.h"
-#include "Logger/TeamcityOutput.h"
-#include "CommandLine/CommandLineParser.h"
 
-using namespace DAVA;
-
-CommandLineTool::CommandLineTool(const DAVA::String& toolName)
-    : options(toolName)
+// the idea is to place CommandToolManager and CommandLineTool into Sources/Tools in near future,
+// combine them with CommandToolManager, CommandLineTool of ResourceEditor/Classes/CommandLine/
+// and use that classes througout all our command line tools
+class CommandToolManager
 {
-    options.AddOption("-v", VariantType(false), "Verbose output");
-    options.AddOption("-h", VariantType(false), "Help for command");
-    options.AddOption("-teamcity", VariantType(false), "Extra output in teamcity format");
-}
+public:
+    CommandToolManager(DAVA::String toolName);
+    void AddTool(std::unique_ptr<CommandLineTool> tool);
+    //void Process(int argc, char* argv[]);
+    void Process(const DAVA::Vector<DAVA::String>& commandLine);
 
-bool CommandLineTool::ParseOptions(int argc, char* argv[])
-{
-    return options.Parse(argc, argv);
-}
+private:
+    void PrintUsage();
 
-void CommandLineTool::PrintUsage() const
-{
-    options.PrintUsage();
-}
+    DAVA::String toolName;
+    DAVA::Vector<std::unique_ptr<CommandLineTool>> tools;
+    DAVA::ProgramOptions helpOption;
+};
 
-DAVA::String CommandLineTool::GetToolKey() const
-{
-    return options.GetCommand();
-}
-
-void CommandLineTool::Process()
-{
-    const bool printUsage = options.GetOption("-h").AsBool();
-    if (printUsage)
-    {
-        PrintUsage();
-        return;
-    }
-
-    PrepareEnvironment();
-
-    if (ConvertOptionsToParamsInternal())
-    {
-        ProcessInternal();
-    }
-    else
-    {
-        PrintUsage();
-    }
-}
-
-void CommandLineTool::PrepareEnvironment() const
-{
-    const bool verboseMode = options.GetOption("-v").AsBool();
-    if (verboseMode)
-    {
-        CommandLineParser::Instance()->SetVerbose(true);
-        Logger::Instance()->SetLogLevel(Logger::LEVEL_DEBUG);
-    }
-
-    const bool useTeamcity = options.GetOption("-teamcity").AsBool();
-    if (useTeamcity)
-    {
-        CommandLineParser::Instance()->SetUseTeamcityOutput(true);
-        Logger::AddCustomOutput(new TeamcityOutput());
-    }
-}
+#endif // __COMMAND_TOOL_MANAGER_H__
