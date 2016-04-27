@@ -26,40 +26,27 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef COMPRESSION_LZ4_COMPRESSOR_H
+#define COMPRESSION_LZ4_COMPRESSOR_H
 
-#include "Base/BaseTypes.h"
-
-#if defined(__DAVAENGINE_WIN_UAP__)
-
-#include "FileSystem/FileSystem.h"
-#include "Render/Cursor.h"
-#include "Platform/TemplateWin32/CorePlatformWinUAP.h"
+#include "Compression/Compressor.h"
 
 namespace DAVA
 {
-InputSystem::eMouseCaptureMode Cursor::GetMouseCaptureMode()
+class LZ4Compressor : public Compressor
 {
-    CorePlatformWinUAP* winCore = static_cast<CorePlatformWinUAP*>(Core::Instance());
-    return winCore->GetMouseCaptureMode();
-}
-
-bool Cursor::SetMouseCaptureMode(InputSystem::eMouseCaptureMode mode)
-{
-    CorePlatformWinUAP* winCore = static_cast<CorePlatformWinUAP*>(Core::Instance());
-    return winCore->SetMouseCaptureMode(mode);
-}
-
-bool Cursor::GetSystemCursorVisibility()
-{
-    CorePlatformWinUAP* winCore = static_cast<CorePlatformWinUAP*>(Core::Instance());
-    return winCore->GetCursorVisibility();
-}
-
-bool Cursor::SetSystemCursorVisibility(bool show)
-{
-    DVASSERT("Cursor::SetSystemCursorVisibility not implemented");
-    return false;
-}
+public:
+    bool Compress(const Vector<uint8>& in, Vector<uint8>& out) const override;
+    // you should resize output to correct size before call this method
+    bool Decompress(const Vector<uint8>& in, Vector<uint8>& out) const override;
 };
 
-#endif //  (__DAVAENGINE_WIN_UAP__)
+class LZ4HCCompressor final : public LZ4Compressor
+{
+public:
+    bool Compress(const Vector<uint8>& in, Vector<uint8>& out) const override;
+};
+
+} // end namespace DAVA
+
+#endif // COMPRESSION_LZ4_COMPRESSOR_H
