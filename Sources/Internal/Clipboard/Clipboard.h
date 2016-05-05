@@ -26,34 +26,65 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "UI/Styles/UIStyleSheetPropertyTable.h"
+#ifndef __DAVAENGINE_CLIPBOARD_H__
+#define __DAVAENGINE_CLIPBOARD_H__
+
+#include "Base/BaseTypes.h"
 
 namespace DAVA
 {
-void UIStyleSheetPropertyTable::SetProperties(const Vector<UIStyleSheetProperty>& newProperties)
+class IClipboardImpl;
+
+/**
+ * \brief Helper to work with system clipboard
+ */
+class Clipboard
 {
-    properties = newProperties;
+public:
+    /**
+     * \brief Constructor
+     */
+    Clipboard();
 
-    std::sort(properties.begin(), properties.end(),
-              [](const UIStyleSheetProperty& first, const UIStyleSheetProperty& second) {
-                  return first.propertyIndex < second.propertyIndex;
-              });
+    /**
+     * \brief Destructor
+     */
+    ~Clipboard();
 
-    propertySet.reset();
+    /**
+     * \brief Return status of clipboard helper
+     * \return true if helper ready to work with clipboard
+     */
+    bool IsReadyToUse() const;
 
-    for (const UIStyleSheetProperty& prop : properties)
-    {
-        propertySet[prop.propertyIndex] = true;
-    }
+    /**
+     * \brief Clear system clipboard
+     * \return true if successful
+     */
+    bool ClearClipboard() const;
+
+    /**
+     * \brief Check that system clipboard contains Unicode text
+     * \return true if system clipboard contains Unicode text
+     */
+    bool HasText() const;
+
+    /**
+     * \brief Copy to system clipboard WideString as Unicode string
+     * \param[in] str input string
+     * \return true if successful
+     */
+    bool SetText(const WideString& str);
+
+    /**
+     * \brief Get from system clipboard Unicode text data as WideString
+     * \return WideString with clipboard content
+     */
+    WideString GetText() const;
+
+private:
+    IClipboardImpl* pImpl;
+};
 }
 
-const Vector<UIStyleSheetProperty>& UIStyleSheetPropertyTable::GetProperties() const
-{
-    return properties;
-}
-
-const UIStyleSheetPropertySet& UIStyleSheetPropertyTable::GetPropertySet() const
-{
-    return propertySet;
-}
-}
+#endif //__DAVAENGINE_CLIPBOARD_H__
