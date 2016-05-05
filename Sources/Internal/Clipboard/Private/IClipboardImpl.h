@@ -26,40 +26,55 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __DAVAENGINE_ICLIPBOARDIMPL_H__
+#define __DAVAENGINE_ICLIPBOARDIMPL_H__
 
 #include "Base/BaseTypes.h"
 
-#if defined(__DAVAENGINE_WIN_UAP__)
-
-#include "FileSystem/FileSystem.h"
-#include "Render/Cursor.h"
-#include "Platform/TemplateWin32/CorePlatformWinUAP.h"
-
 namespace DAVA
 {
-InputSystem::eMouseCaptureMode Cursor::GetMouseCaptureMode()
+/**
+ * \brief Interface to implement platform clipboard helper
+ */
+class IClipboardImpl
 {
-    CorePlatformWinUAP* winCore = static_cast<CorePlatformWinUAP*>(Core::Instance());
-    return winCore->GetMouseCaptureMode();
-}
+public:
+    /**
+     * \brief Destructor
+     */
+    virtual ~IClipboardImpl() = default;
 
-bool Cursor::SetMouseCaptureMode(InputSystem::eMouseCaptureMode mode)
-{
-    CorePlatformWinUAP* winCore = static_cast<CorePlatformWinUAP*>(Core::Instance());
-    return winCore->SetMouseCaptureMode(mode);
-}
+    /**
+     * \brief Return status of clipboard helper
+     * \return true if helper ready to work with clipboard
+     */
+    virtual bool IsReadyToUse() const = 0;
 
-bool Cursor::GetSystemCursorVisibility()
-{
-    CorePlatformWinUAP* winCore = static_cast<CorePlatformWinUAP*>(Core::Instance());
-    return winCore->GetCursorVisibility();
-}
+    /**
+     * \brief Clear system clipboard
+     * \return true if successful 
+     */
+    virtual bool ClearClipboard() const = 0;
 
-bool Cursor::SetSystemCursorVisibility(bool show)
-{
-    DVASSERT("Cursor::SetSystemCursorVisibility not implemented");
-    return false;
-}
+    /**
+     * \brief Check that system clipboard contains Unicode text
+     * \return true if system clipboard contains Unicode text
+     */
+    virtual bool HasText() const = 0;
+
+    /**
+     * \brief Copy to system clipboard WideString as Unicode string
+     * \param[in] str input string
+     * \return true if successful
+     */
+    virtual bool SetText(const WideString& str) = 0;
+
+    /**
+     * \brief Get from system clipboard Unicode text data as WideString
+     * \return WideString with clipboard content
+     */
+    virtual WideString GetText() const = 0;
 };
+}
 
-#endif //  (__DAVAENGINE_WIN_UAP__)
+#endif //__DAVAENGINE_ICLIPBOARDIMPL_H__
