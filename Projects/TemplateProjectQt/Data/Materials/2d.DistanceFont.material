@@ -1,8 +1,7 @@
 RenderTechnique:
-    Layers: ["VegetationRenderLayer"]
     RenderPass:
-        Name: "ForwardPass"
-        Shader: "~res:/Materials/Shaders/Default/grass"
+        Name: "2d"
+        Shader: "~res:/Materials/Shaders/2d/df"
         UniqueDefines: []
         RenderState:
             alphaFunc: "CMP_ALWAYS"
@@ -12,7 +11,7 @@ RenderTechnique:
             cullMode: "FACE_BACK"
             depthFunc: "CMP_LESS"
             fillMode: "FILLMODE_SOLID"
-            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
+            state: "STATE_BLEND | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
             stencil:
                 failBack: "STENCILOP_KEEP"
                 failFront: "STENCILOP_KEEP"

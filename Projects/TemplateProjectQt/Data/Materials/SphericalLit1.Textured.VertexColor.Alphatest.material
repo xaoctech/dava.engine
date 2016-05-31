@@ -1,9 +1,9 @@
 RenderTechnique:
-    Layers: ["VegetationRenderLayer"]
+    Layers: ["AlphaTestLayer"]
     RenderPass:
         Name: "ForwardPass"
-        Shader: "~res:/Materials/Shaders/Default/grass"
-        UniqueDefines: []
+        Shader: "~res:/Materials/Shaders/Default/materials"
+        UniqueDefines: ["MATERIAL_TEXTURE", "ALPHATEST", "SPHERICAL_LIT", "VERTEX_COLOR"]
         RenderState:
             alphaFunc: "CMP_ALWAYS"
             alphaFuncCmpValue: 0.0000
