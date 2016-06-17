@@ -1,20 +1,20 @@
 #ifndef __QUICKED_INSERT_CONTROL_COMMAND_H__
 #define __QUICKED_INSERT_CONTROL_COMMAND_H__
 
-#include <QUndoCommand>
+#include "Document/CommandsBase/Command.h"
 
 class PackageNode;
 class ControlNode;
 class ControlsContainerNode;
 
-class InsertControlCommand : public QUndoCommand
+class InsertControlCommand : public QECommand
 {
 public:
-    InsertControlCommand(PackageNode* _root, ControlNode* _node, ControlsContainerNode* _dest, int _index, QUndoCommand* parent = nullptr);
+    InsertControlCommand(PackageNode* _root, ControlNode* _node, ControlsContainerNode* _dest, int _index);
     virtual ~InsertControlCommand();
 
-    void redo() override;
-    void undo() override;
+    void Redo() override;
+    void Undo() override;
 
 private:
     PackageNode* root;

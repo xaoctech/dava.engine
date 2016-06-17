@@ -4,15 +4,14 @@
 #include "Model/PackageHierarchy/StyleSheetNode.h"
 #include "Model/ControlProperties/AbstractProperty.h"
 
-ChangeStylePropertyCommand::ChangeStylePropertyCommand(PackageNode* _root, StyleSheetNode* _node, AbstractProperty* prop, const DAVA::VariantType& newVal, QUndoCommand* parent /*= 0*/)
-    : QUndoCommand(parent)
+ChangeStylePropertyCommand::ChangeStylePropertyCommand(PackageNode* _root, StyleSheetNode* _node, AbstractProperty* prop, const DAVA::VariantType& newVal)
+    : QECommand(DAVA::String("change ") + property->GetName().c_str())
     , root(SafeRetain(_root))
     , node(SafeRetain(_node))
     , property(SafeRetain(prop))
     , newValue(newVal)
 {
     oldValue = property->GetValue();
-    setText(QString("change %1").arg(QString(property->GetName().c_str())));
 }
 
 ChangeStylePropertyCommand::~ChangeStylePropertyCommand()
@@ -22,12 +21,12 @@ ChangeStylePropertyCommand::~ChangeStylePropertyCommand()
     SafeRelease(property);
 }
 
-void ChangeStylePropertyCommand::redo()
+void ChangeStylePropertyCommand::Redo()
 {
     root->SetStyleProperty(node, property, newValue);
 }
 
-void ChangeStylePropertyCommand::undo()
+void ChangeStylePropertyCommand::Undo()
 {
     root->SetStyleProperty(node, property, oldValue);
 }

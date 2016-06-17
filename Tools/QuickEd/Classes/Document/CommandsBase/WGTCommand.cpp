@@ -1,6 +1,6 @@
-#include "Document/Commands/WGTCommand.h"
-#include "Document/Commands/Command.h"
-#include "Document/Commands/CommandBatch.h"
+#include "Document/CommandsBase/WGTCommand.h"
+#include "Document/CommandsBase/Command.h"
+#include "Document/CommandsBase/CommandBatch.h"
 
 #include "NgtTools/Common/GlobalContext.h"
 
@@ -15,7 +15,7 @@ ObjectHandle WGTCommand::execute(const ObjectHandle& arguments) const
 {
     DAVA::ICommand* command = arguments.getBase<DAVA::ICommand>();
     DVASSERT(command != nullptr);
-    command->Redo();
+    command->Execute();
     return CommandErrorCode::COMMAND_NO_ERROR;
 }
 

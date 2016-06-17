@@ -1,19 +1,19 @@
 #ifndef __QUICKED_INSERT_IMPORTED_PACKAGE_COMMAND_H__
 #define __QUICKED_INSERT_IMPORTED_PACKAGE_COMMAND_H__
 
-#include <QUndoCommand>
+#include "Document/CommandsBase/Command.h"
 
 class PackageNode;
 class PackageControlsNode;
 
-class InsertImportedPackageCommand : public QUndoCommand
+class InsertImportedPackageCommand : public QECommand
 {
 public:
-    InsertImportedPackageCommand(PackageNode* aRoot, PackageNode* anImportedPackage, int anIndex, QUndoCommand* parent = nullptr);
+    InsertImportedPackageCommand(PackageNode* aRoot, PackageNode* anImportedPackage, int anIndex);
     virtual ~InsertImportedPackageCommand();
 
-    void redo() override;
-    void undo() override;
+    void Redo() override;
+    void Undo() override;
 
 private:
     PackageNode* root;

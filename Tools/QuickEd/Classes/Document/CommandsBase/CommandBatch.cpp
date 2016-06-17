@@ -1,4 +1,4 @@
-#include "Document/Commands/CommandBatch.h"
+#include "Document/CommandsBase/CommandBatch.h"
 #include "Debug/DVAssert.h"
 
 CommandBatch::CommandBatch(const DAVA::String& text)
@@ -8,10 +8,6 @@ CommandBatch::CommandBatch(const DAVA::String& text)
 
 void CommandBatch::Execute()
 {
-    for (CommandPtr& commandPtr : commands)
-    {
-        commandPtr->Execute();
-    }
 }
 
 void CommandBatch::Undo()

@@ -5,8 +5,8 @@
 
 using namespace DAVA;
 
-InsertImportedPackageCommand::InsertImportedPackageCommand(PackageNode* aRoot, PackageNode* anImportedPackage, int anIndex, QUndoCommand* parent)
-    : QUndoCommand(parent)
+InsertImportedPackageCommand::InsertImportedPackageCommand(PackageNode* aRoot, PackageNode* anImportedPackage, int anIndex)
+    : QECommand("InsertImportedPackage")
     , root(SafeRetain(aRoot))
     , importedPackage(SafeRetain(anImportedPackage))
     , index(anIndex)
@@ -19,12 +19,12 @@ InsertImportedPackageCommand::~InsertImportedPackageCommand()
     SafeRelease(root);
 }
 
-void InsertImportedPackageCommand::redo()
+void InsertImportedPackageCommand::Redo()
 {
     root->InsertImportedPackage(importedPackage, index);
 }
 
-void InsertImportedPackageCommand::undo()
+void InsertImportedPackageCommand::Undo()
 {
     root->RemoveImportedPackage(importedPackage);
 }

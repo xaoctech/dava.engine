@@ -7,8 +7,8 @@
 
 using namespace DAVA;
 
-RemoveComponentCommand::RemoveComponentCommand(PackageNode* _root, ControlNode* _node, ComponentPropertiesSection* _section, QUndoCommand* parent)
-    : QUndoCommand(parent)
+RemoveComponentCommand::RemoveComponentCommand(PackageNode* _root, ControlNode* _node, ComponentPropertiesSection* _section)
+    : QECommand("RemoveComponent")
     , root(SafeRetain(_root))
     , node(SafeRetain(_node))
     , componentSection(SafeRetain(_section))
@@ -22,12 +22,12 @@ RemoveComponentCommand::~RemoveComponentCommand()
     SafeRelease(componentSection);
 }
 
-void RemoveComponentCommand::redo()
+void RemoveComponentCommand::Redo()
 {
     root->RemoveComponent(node, componentSection);
 }
 
-void RemoveComponentCommand::undo()
+void RemoveComponentCommand::Undo()
 {
     root->AddComponent(node, componentSection);
 }

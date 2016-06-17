@@ -1,20 +1,20 @@
 #ifndef __QUICKED_REMOVE_CONTROL_COMMAND_H__
 #define __QUICKED_REMOVE_CONTROL_COMMAND_H__
 
-#include <QUndoCommand>
+#include "Document/CommandsBase/Command.h"
 
 class PackageNode;
 class ControlNode;
 class ControlsContainerNode;
 
-class RemoveControlCommand : public QUndoCommand
+class RemoveControlCommand : public QECommand
 {
 public:
-    RemoveControlCommand(PackageNode* _root, ControlNode* _node, ControlsContainerNode* _from, int _index, QUndoCommand* parent = nullptr);
+    RemoveControlCommand(PackageNode* _root, ControlNode* _node, ControlsContainerNode* _from, int _index);
     virtual ~RemoveControlCommand();
 
-    void redo() override;
-    void undo() override;
+    void Redo() override;
+    void Undo() override;
 
 private:
     PackageNode* root;

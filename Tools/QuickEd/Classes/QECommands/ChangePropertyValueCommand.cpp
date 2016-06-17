@@ -4,10 +4,11 @@
 #include "Model/PackageHierarchy/ControlNode.h"
 #include "Model/ControlProperties/AbstractProperty.h"
 
+#include <QString>
 using namespace DAVA;
 
-ChangePropertyValueCommand::ChangePropertyValueCommand(PackageNode* root_, const Vector<ChangePropertyAction>& propertyActions_, size_t hash_, QUndoCommand* parent /*= nullptr*/)
-    : QUndoCommand(parent)
+ChangePropertyValueCommand::ChangePropertyValueCommand(PackageNode* root_, const Vector<ChangePropertyAction>& propertyActions_, size_t hash_)
+    : QECommand("ChangePropertyValue")
     , root(SafeRetain(root_))
     , hash(hash_)
 {
@@ -24,8 +25,8 @@ ChangePropertyValueCommand::ChangePropertyValueCommand(PackageNode* root_, const
     Init();
 }
 
-ChangePropertyValueCommand::ChangePropertyValueCommand(PackageNode* root_, ControlNode* node, AbstractProperty* prop, const VariantType& newVal, size_t hash_, QUndoCommand* parent /*= nullptr*/)
-    : QUndoCommand(parent)
+ChangePropertyValueCommand::ChangePropertyValueCommand(PackageNode* root_, ControlNode* node, AbstractProperty* prop, const VariantType& newVal, size_t hash_)
+    : QECommand("ChangePropertyValue")
     , root(SafeRetain(root_))
     , hash(hash_)
 {
@@ -33,8 +34,8 @@ ChangePropertyValueCommand::ChangePropertyValueCommand(PackageNode* root_, Contr
     Init();
 }
 
-ChangePropertyValueCommand::ChangePropertyValueCommand(PackageNode* root_, ControlNode* node, AbstractProperty* prop, QUndoCommand* parent /*= nullptr*/)
-    : QUndoCommand(parent)
+ChangePropertyValueCommand::ChangePropertyValueCommand(PackageNode* root_, ControlNode* node, AbstractProperty* prop)
+    : QECommand("ChangePropertyValue")
     , root(SafeRetain(root_))
 {
     changedProperties.emplace_back(node, prop, GetValueFromProperty(prop), VariantType());
@@ -51,7 +52,7 @@ void ChangePropertyValueCommand::Init()
         hash = ptrHash(prop) ^ (hash << 1);
         text += QString(" %1").arg(prop->GetName().c_str());
     }
-    setText(text);
+    SetText(text.toUtf8().data());
 }
 
 ChangePropertyValueCommand::~ChangePropertyValueCommand()
@@ -59,7 +60,7 @@ ChangePropertyValueCommand::~ChangePropertyValueCommand()
     SafeRelease(root);
 }
 
-void ChangePropertyValueCommand::redo()
+void ChangePropertyValueCommand::Redo()
 {
     for (const auto& action : changedProperties)
     {
@@ -78,7 +79,7 @@ void ChangePropertyValueCommand::redo()
     }
 }
 
-void ChangePropertyValueCommand::undo()
+void ChangePropertyValueCommand::Undo()
 {
     for (const auto& action : changedProperties)
     {
@@ -95,23 +96,6 @@ void ChangePropertyValueCommand::undo()
             root->SetControlProperty(node, property, oldValue);
         }
     }
-}
-
-int ChangePropertyValueCommand::id() const
-{
-    return static_cast<int>(hash);
-}
-
-bool ChangePropertyValueCommand::mergeWith(const QUndoCommand* other)
-{
-    if (other->id() != id())
-        return false;
-    const ChangePropertyValueCommand* otherCommand = static_cast<const ChangePropertyValueCommand*>(other);
-    for (int i = 0, k = changedProperties.size(); i < k; ++i)
-    {
-        changedProperties.at(i).newValue = otherCommand->changedProperties.at(i).newValue;
-    }
-    return true;
 }
 
 VariantType ChangePropertyValueCommand::GetValueFromProperty(AbstractProperty* property)

@@ -8,8 +8,8 @@
 
 using namespace DAVA;
 
-AddRemoveStylePropertyCommand::AddRemoveStylePropertyCommand(PackageNode* aRoot, StyleSheetNode* aNode, StyleSheetProperty* aProperty, bool anAdd, QUndoCommand* parent)
-    : QUndoCommand(parent)
+AddRemoveStylePropertyCommand::AddRemoveStylePropertyCommand(PackageNode* aRoot, StyleSheetNode* aNode, StyleSheetProperty* aProperty, bool anAdd)
+    : QECommand("AddRemoveStyleProperty")
     , root(SafeRetain(aRoot))
     , node(SafeRetain(aNode))
     , property(SafeRetain(aProperty))
@@ -24,7 +24,7 @@ AddRemoveStylePropertyCommand::~AddRemoveStylePropertyCommand()
     SafeRelease(property);
 }
 
-void AddRemoveStylePropertyCommand::redo()
+void AddRemoveStylePropertyCommand::Redo()
 {
     if (add)
         root->AddStyleProperty(node, property);
@@ -32,7 +32,7 @@ void AddRemoveStylePropertyCommand::redo()
         root->RemoveStyleProperty(node, property);
 }
 
-void AddRemoveStylePropertyCommand::undo()
+void AddRemoveStylePropertyCommand::Undo()
 {
     if (add)
         root->RemoveStyleProperty(node, property);

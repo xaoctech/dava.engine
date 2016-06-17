@@ -13,6 +13,8 @@ public:
     void SetText(const DAVA::String& text);
     DAVA::String GetText() const;
 
+    void Execute() override;
+
 private:
     DAVA::String text;
 };

@@ -1,4 +1,4 @@
-#include "Document/Commands/Command.h"
+#include "Document/CommandsBase/Command.h"
 #include "Base/BaseTypes.h"
 
 class CommandBatch : public QECommand

@@ -6,8 +6,8 @@
 
 using namespace DAVA;
 
-InsertControlCommand::InsertControlCommand(PackageNode* _root, ControlNode* _node, ControlsContainerNode* _dest, int _index, QUndoCommand* parent)
-    : QUndoCommand(parent)
+InsertControlCommand::InsertControlCommand(PackageNode* _root, ControlNode* _node, ControlsContainerNode* _dest, int _index)
+    : QECommand("InsertControl")
     , root(SafeRetain(_root))
     , node(SafeRetain(_node))
     , dest(SafeRetain(_dest))
@@ -22,12 +22,12 @@ InsertControlCommand::~InsertControlCommand()
     SafeRelease(dest);
 }
 
-void InsertControlCommand::redo()
+void InsertControlCommand::Redo()
 {
     root->InsertControl(node, dest, index);
 }
 
-void InsertControlCommand::undo()
+void InsertControlCommand::Undo()
 {
     root->RemoveControl(node, dest);
 }

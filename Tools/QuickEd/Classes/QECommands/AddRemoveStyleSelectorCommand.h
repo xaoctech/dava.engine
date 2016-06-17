@@ -1,20 +1,20 @@
 #ifndef __QUICKED_ADD_REMOVE_STYLE_SELECTOR_COMMAND_H__
 #define __QUICKED_ADD_REMOVE_STYLE_SELECTOR_COMMAND_H__
 
-#include <QUndoCommand>
+#include "Document/CommandsBase/Command.h"
 
 class PackageNode;
 class StyleSheetNode;
 class StyleSheetSelectorProperty;
 
-class AddRemoveStyleSelectorCommand : public QUndoCommand
+class AddRemoveStyleSelectorCommand : public QECommand
 {
 public:
-    AddRemoveStyleSelectorCommand(PackageNode* root, StyleSheetNode* node, StyleSheetSelectorProperty* property, bool add, QUndoCommand* parent = nullptr);
+    AddRemoveStyleSelectorCommand(PackageNode* root, StyleSheetNode* node, StyleSheetSelectorProperty* property, bool add);
     virtual ~AddRemoveStyleSelectorCommand();
 
-    void redo() override;
-    void undo() override;
+    void Redo() override;
+    void Undo() override;
 
 private:
     PackageNode* root;

@@ -6,8 +6,8 @@
 
 using namespace DAVA;
 
-InsertRemoveStyleCommand::InsertRemoveStyleCommand(PackageNode* _root, StyleSheetNode* _node, StyleSheetsNode* _dest, int _index, bool _insert, QUndoCommand* parent)
-    : QUndoCommand(parent)
+InsertRemoveStyleCommand::InsertRemoveStyleCommand(PackageNode* _root, StyleSheetNode* _node, StyleSheetsNode* _dest, int _index, bool _insert)
+    : QECommand("InsertRemoveStyle")
     , root(SafeRetain(_root))
     , node(SafeRetain(_node))
     , dest(SafeRetain(_dest))
@@ -23,7 +23,7 @@ InsertRemoveStyleCommand::~InsertRemoveStyleCommand()
     SafeRelease(dest);
 }
 
-void InsertRemoveStyleCommand::redo()
+void InsertRemoveStyleCommand::Redo()
 {
     if (insert)
         root->InsertStyle(node, dest, index);
@@ -31,7 +31,7 @@ void InsertRemoveStyleCommand::redo()
         root->RemoveStyle(node, dest);
 }
 
-void InsertRemoveStyleCommand::undo()
+void InsertRemoveStyleCommand::Undo()
 {
     if (insert)
         root->RemoveStyle(node, dest);

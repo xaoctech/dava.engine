@@ -1,5 +1,6 @@
-#include "Document/Commands/CommandStackGroup.h"
 #include "Debug/DVAssert.h"
+#include "Document/CommandsBase/CommandStackGroup.h"
+#include "Document/CommandsBase/CommandStack.h"
 
 #include "NgtTools/Common/GlobalContext.h"
 #include <core_command_system/i_env_system.hpp>
@@ -26,10 +27,15 @@ void CommandStackGroup::AddStack(CommandStack* stackToAdd)
 
 void CommandStackGroup::SetActiveStack(CommandStack* commandStack)
 {
-    if (stacks.find(commandStack) == stacks.end())
+    if (activeStack != nullptr)
     {
-        DVASSERT(false && "Can not find stack to set it active");
-        return;
+        activeStack->DisconnectFromCommandManager();
     }
     activeStack = commandStack;
+    if (commandStack != nullptr)
+    {
+        DVASSERT(stacks.find(commandStack) != stacks.end());
+        envManager->selectEnv(activeStack->ID);
+        activeStack->ConnectToCommandManager();
+    }
 }

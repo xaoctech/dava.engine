@@ -7,8 +7,8 @@
 
 using namespace DAVA;
 
-AttachComponentPrototypeSectionCommand::AttachComponentPrototypeSectionCommand(PackageNode* aRoot, ControlNode* aNode, ComponentPropertiesSection* aDestSection, ComponentPropertiesSection* aPrototypeSection, QUndoCommand* parent)
-    : QUndoCommand(parent)
+AttachComponentPrototypeSectionCommand::AttachComponentPrototypeSectionCommand(PackageNode* aRoot, ControlNode* aNode, ComponentPropertiesSection* aDestSection, ComponentPropertiesSection* aPrototypeSection)
+    : QECommand("AttachComponentPrototypeSection")
     , root(SafeRetain(aRoot))
     , node(SafeRetain(aNode))
     , destSection(SafeRetain(aDestSection))
@@ -24,12 +24,12 @@ AttachComponentPrototypeSectionCommand::~AttachComponentPrototypeSectionCommand(
     SafeRelease(prototypeSection);
 }
 
-void AttachComponentPrototypeSectionCommand::redo()
+void AttachComponentPrototypeSectionCommand::Redo()
 {
     root->AttachPrototypeComponent(node, destSection, prototypeSection);
 }
 
-void AttachComponentPrototypeSectionCommand::undo()
+void AttachComponentPrototypeSectionCommand::Undo()
 {
     root->DetachPrototypeComponent(node, destSection, prototypeSection);
 }

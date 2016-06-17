@@ -9,8 +9,8 @@
 
 using namespace DAVA;
 
-AddRemoveStyleSelectorCommand::AddRemoveStyleSelectorCommand(PackageNode* aRoot, StyleSheetNode* aNode, StyleSheetSelectorProperty* aProperty, bool anAdd, QUndoCommand* parent)
-    : QUndoCommand(parent)
+AddRemoveStyleSelectorCommand::AddRemoveStyleSelectorCommand(PackageNode* aRoot, StyleSheetNode* aNode, StyleSheetSelectorProperty* aProperty, bool anAdd)
+    : QECommand("AddRemoveStyleSelector")
     , root(SafeRetain(aRoot))
     , node(SafeRetain(aNode))
     , property(SafeRetain(aProperty))
@@ -36,7 +36,7 @@ AddRemoveStyleSelectorCommand::~AddRemoveStyleSelectorCommand()
     SafeRelease(property);
 }
 
-void AddRemoveStyleSelectorCommand::redo()
+void AddRemoveStyleSelectorCommand::Redo()
 {
     if (index != -1)
     {
@@ -47,7 +47,7 @@ void AddRemoveStyleSelectorCommand::redo()
     }
 }
 
-void AddRemoveStyleSelectorCommand::undo()
+void AddRemoveStyleSelectorCommand::Undo()
 {
     if (index != -1)
     {
