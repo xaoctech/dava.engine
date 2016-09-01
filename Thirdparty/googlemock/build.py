@@ -7,6 +7,12 @@ import shutil
 import stat
 from subprocess import Popen, PIPE
 
+def on_rm_error(func, path, exc_info):
+    # path contains the path of the file that couldn't be removed
+    # let's just assume that it's read-only and unlink it.
+    os.chmod(path, stat.S_IWRITE)
+    os.unlink(path)
+
 def runProcess(args):
     process = Popen(args,  shell=True, stdout=PIPE)
     for line in iter(process.stdout.readline,''):
@@ -27,23 +33,27 @@ def copyFolder(src, dst):
         shutil.rmtree(dst)
     shutil.copytree(src, dst)
 
-def on_rm_error(func, path, exc_info):
-    # path contains the path of the file that couldn't be removed
-    # let's just assume that it's read-only and unlink it.
-    os.chmod(path, stat.S_IWRITE)
-    os.unlink(path)
+def removeFolder(folder):
+    if (os.path.exists(folder) and os.path.isdir(folder)):
+        shutil.rmtree(folder, onerror=on_rm_error);
 
-libsFolder = os.path.join(os.getcwd(), "..")
+libsFolder = os.path.join(os.getcwd(), "../../Modules/TArc/Libs")
 
+
+removeFolder("googletest")
 runProcess("git clone https://github.com/google/googletest.git")
 
 os.chdir("googletest")
+runProcess("git apply --whitespace=fix ../lib.diff")
+
+removeFolder(os.path.join(libsFolder, "Include"))
 copyFolder("googlemock/include/gmock", os.path.join(libsFolder, "Include/gmock"))
 copyFolder("googletest/include/gtest", os.path.join(libsFolder, "Include/gtest"))
 
 makeDirAndGo("_build")
 
 if (platform.system() == "Windows"):
+    removeFolder(os.path.join(libsFolder, "Win32"))
     makeDirAndGo("x86")
     runProcess("cmake -G\"Visual Studio 12\" ../..")
     runProcess("cmake --build . --config Debug")
@@ -60,6 +70,7 @@ if (platform.system() == "Windows"):
     copyLib("googlemock/Release/gmock.lib", os.path.join(libsFolder, "Win32/x64/Release/"))
     os.chdir("../../..")
 elif (platform.system() == "Darwin"):
+    removeFolder(os.path.join(libsFolder, "Mac"))
     makeDirAndGo("Debug")
     runProcess("cmake  ../..")
     runProcess("cmake --build . --config Debug")
@@ -71,6 +82,4 @@ elif (platform.system() == "Darwin"):
     runProcess("cmake --build . --config Release")
     copyLib("googlemock/libgmock.a", os.path.join(libsFolder, "Mac/Release/"))
     os.chdir("../../..")
-
-shutil.rmtree("googletest", onerror=on_rm_error)
 
