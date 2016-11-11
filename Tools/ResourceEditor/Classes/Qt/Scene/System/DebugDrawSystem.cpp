@@ -118,13 +118,13 @@ void DebugDrawSystem::DrawUserNode(DAVA::Entity* entity)
         DVASSERT(!worldBox.IsEmpty());
         DAVA::float32 delta = worldBox.GetSize().Length() / 4;
 
-        drawer->DrawAABoxTransformed(worldBox, entity->GetWorldTransform(), DAVA::Color(0.5f, 0.5f, 1.0f, 0.3f), RenderHelper::DRAW_SOLID_DEPTH);
-        drawer->DrawAABoxTransformed(worldBox, entity->GetWorldTransform(), DAVA::Color(0.2f, 0.2f, 0.8f, 1.0f), RenderHelper::DRAW_WIRE_DEPTH);
+        drawer->DrawAABoxTransformed(worldBox, GetTransformComponent(entity)->GetWorldTransform(), DAVA::Color(0.5f, 0.5f, 1.0f, 0.3f), RenderHelper::DRAW_SOLID_DEPTH);
+        drawer->DrawAABoxTransformed(worldBox, GetTransformComponent(entity)->GetWorldTransform(), DAVA::Color(0.2f, 0.2f, 0.8f, 1.0f), RenderHelper::DRAW_WIRE_DEPTH);
 
-        const Vector3 center = entity->GetWorldTransform().GetTranslationVector();
-        const Vector3 xAxis = MultiplyVectorMat3x3(DAVA::Vector3(delta, 0.f, 0.f), entity->GetWorldTransform());
-        const Vector3 yAxis = MultiplyVectorMat3x3(DAVA::Vector3(0.f, delta, 0.f), entity->GetWorldTransform());
-        const Vector3 zAxis = MultiplyVectorMat3x3(DAVA::Vector3(0.f, 0.f, delta), entity->GetWorldTransform());
+        const Vector3 center = GetTransformComponent(entity)->GetWorldTransform().GetTranslationVector();
+        const Vector3 xAxis = MultiplyVectorMat3x3(DAVA::Vector3(delta, 0.f, 0.f), GetTransformComponent(entity)->GetWorldTransform());
+        const Vector3 yAxis = MultiplyVectorMat3x3(DAVA::Vector3(0.f, delta, 0.f), GetTransformComponent(entity)->GetWorldTransform());
+        const Vector3 zAxis = MultiplyVectorMat3x3(DAVA::Vector3(0.f, 0.f, delta), GetTransformComponent(entity)->GetWorldTransform());
 
         // axises
         drawer->DrawLine(center, center + xAxis, DAVA::Color(0.7f, 0, 0, 1.0f));
@@ -143,7 +143,7 @@ void DebugDrawSystem::DrawLightNode(DAVA::Entity* entity)
         AABBox3 worldBox;
         AABBox3 localBox = selSystem->GetUntransformedBoundingBox(entity);
         DVASSERT(!localBox.IsEmpty());
-        localBox.GetTransformedBox(entity->GetWorldTransform(), worldBox);
+        localBox.GetTransformedBox(GetTransformComponent(entity)->GetWorldTransform(), worldBox);
 
         if (light->GetType() == Light::TYPE_DIRECTIONAL)
         {
@@ -184,7 +184,7 @@ void DebugDrawSystem::DrawSoundNode(DAVA::Entity* entity)
         AABBox3 localBox = selSystem->GetUntransformedBoundingBox(entity);
         if (!localBox.IsEmpty())
         {
-            localBox.GetTransformedBox(entity->GetWorldTransform(), worldBox);
+            localBox.GetTransformedBox(GetTransformComponent(entity)->GetWorldTransform(), worldBox);
 
             Color soundColor = settings->GetValue(Settings::Scene_Sound_SoundObjectBoxColor).AsColor();
             GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawAABox(worldBox, ClampToUnityRange(soundColor), RenderHelper::DRAW_SOLID_DEPTH);
@@ -204,7 +204,7 @@ void DebugDrawSystem::DrawSelectedSoundNode(DAVA::Entity* entity)
     {
         SceneEditor2* sceneEditor = ((SceneEditor2*)GetScene());
 
-        Vector3 position = entity->GetWorldTransform().GetTranslationVector();
+        Vector3 position = GetTransformComponent(entity)->GetWorldTransform().GetTranslationVector();
 
         uint32 fontHeight = 0;
         GraphicFont* debugTextFont = sceneEditor->textDrawSystem->GetFont();
@@ -238,7 +238,7 @@ void DebugDrawSystem::DrawWindNode(DAVA::Entity* entity)
     WindComponent* wind = GetWindComponent(entity);
     if (wind)
     {
-        const Matrix4& worldMx = entity->GetWorldTransform();
+        const Matrix4& worldMx = GetTransformComponent(entity)->GetWorldTransform();
         Vector3 worldPosition = worldMx.GetTranslationVector();
 
         GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawArrow(worldPosition, worldPosition + wind->GetDirection() * 3.f, .75f, DAVA::Color(1.0f, 0.5f, 0.2f, 1.0f), RenderHelper::DRAW_WIRE_DEPTH);
@@ -250,7 +250,7 @@ void DebugDrawSystem::DrawEntityBox(DAVA::Entity* entity, const DAVA::Color& col
     AABBox3 worldBox;
     AABBox3 localBox = selSystem->GetUntransformedBoundingBox(entity);
     DVASSERT(!localBox.IsEmpty());
-    localBox.GetTransformedBox(entity->GetWorldTransform(), worldBox);
+    localBox.GetTransformedBox(GetTransformComponent(entity)->GetWorldTransform(), worldBox);
     GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawAABox(worldBox, color, RenderHelper::DRAW_WIRE_DEPTH);
 }
 
@@ -270,7 +270,7 @@ void DebugDrawSystem::CollectRenderBatchesRecursively(Entity* entity, RenderBatc
         auto roType = ro->GetType();
         if ((roType == RenderObject::TYPE_MESH) || (roType == RenderObject::TYPE_RENDEROBJECT) || (roType == RenderObject::TYPE_SPEED_TREE))
         {
-            const Matrix4& wt = entity->GetWorldTransform();
+            const Matrix4& wt = GetTransformComponent(entity)->GetWorldTransform();
             for (uint32 i = 0, e = ro->GetActiveRenderBatchCount(); i < e; ++i)
             {
                 RenderBatch* batch = ro->GetActiveRenderBatch(i);
@@ -366,7 +366,7 @@ void DebugDrawSystem::DrawSwitchesWithDifferentLods(DAVA::Entity* entity)
         AABBox3 worldBox;
         AABBox3 localBox = selSystem->GetUntransformedBoundingBox(entity);
         DVASSERT(!localBox.IsEmpty());
-        localBox.GetTransformedBox(entity->GetWorldTransform(), worldBox);
+        localBox.GetTransformedBox(GetTransformComponent(entity)->GetWorldTransform(), worldBox);
         GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawAABox(worldBox, Color(1.0f, 0.f, 0.f, 1.f), RenderHelper::DRAW_WIRE_DEPTH);
     }
 }

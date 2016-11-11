@@ -1,4 +1,6 @@
 #include "Scene/System/CollisionSystem/CollisionRenderObject.h"
+#include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/TransformComponent.h>
 
 CollisionRenderObject::CollisionRenderObject(DAVA::Entity* entity, btCollisionWorld* word, DAVA::RenderObject* renderObject)
     : CollisionBaseObject(entity, word)
@@ -6,7 +8,7 @@ CollisionRenderObject::CollisionRenderObject(DAVA::Entity* entity, btCollisionWo
     if ((renderObject == nullptr) || (word == nullptr))
         return;
 
-    DAVA::Matrix4 curEntityTransform = entity->GetWorldTransform();
+    DAVA::Matrix4 curEntityTransform = GetTransformComponent(entity)->GetWorldTransform();
 
     int maxVertexCount = 0;
     int bestLodIndex = 0;

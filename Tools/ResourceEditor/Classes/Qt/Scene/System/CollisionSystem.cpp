@@ -593,11 +593,11 @@ void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bo
                 EnumerateObjectHierarchy(Selectable(particleEffect->GetEmitterInstance(i)), createCollision, callback);
             }
 
-            result = CollisionDetails::InitCollision<CollisionBox>(createCollision, entity, objectsCollWorld, entity->GetWorldTransform().GetTranslationVector(), debugBoxParticleScale);
+            result = CollisionDetails::InitCollision<CollisionBox>(createCollision, entity, objectsCollWorld, GetTransformComponent(entity)->GetWorldTransform().GetTranslationVector(), debugBoxParticleScale);
         }
 
         DAVA::RenderObject* renderObject = DAVA::GetRenderObject(entity);
-        if ((result.isValid == false) && (renderObject != nullptr) && entity->IsLodMain(0))
+        if ((result.isValid == false) && (renderObject != nullptr))
         {
             DAVA::RenderObject::eType objType = renderObject->GetType();
             if (objType == DAVA::RenderObject::TYPE_BILLBOARD)
@@ -624,15 +624,15 @@ void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bo
                 (entity->GetComponent(DAVA::Component::LIGHT_COMPONENT) != nullptr) ||
                 (entity->GetComponent(DAVA::Component::WIND_COMPONENT) != nullptr))
             {
-                result = CollisionDetails::InitCollision<CollisionBox>(createCollision, entity, objectsCollWorld, entity->GetWorldTransform().GetTranslationVector(), debugBoxScale);
+                result = CollisionDetails::InitCollision<CollisionBox>(createCollision, entity, objectsCollWorld, GetTransformComponent(entity)->GetWorldTransform().GetTranslationVector(), debugBoxScale);
             }
             else if (entity->GetComponent(DAVA::Component::USER_COMPONENT) != nullptr)
             {
-                result = CollisionDetails::InitCollision<CollisionBox>(createCollision, entity, objectsCollWorld, entity->GetWorldTransform().GetTranslationVector(), debugBoxUserScale);
+                result = CollisionDetails::InitCollision<CollisionBox>(createCollision, entity, objectsCollWorld, GetTransformComponent(entity)->GetWorldTransform().GetTranslationVector(), debugBoxUserScale);
             }
             else if (GetWaypointComponent(entity) != nullptr)
             {
-                result = CollisionDetails::InitCollision<CollisionBox>(createCollision, entity, objectsCollWorld, entity->GetWorldTransform().GetTranslationVector(), debugBoxWaypointScale);
+                result = CollisionDetails::InitCollision<CollisionBox>(createCollision, entity, objectsCollWorld, GetTransformComponent(entity)->GetWorldTransform().GetTranslationVector(), debugBoxWaypointScale);
             }
         }
 

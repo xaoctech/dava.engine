@@ -245,7 +245,6 @@ protected:
     uint32 nodeCounter;
 
     uint32 systemsMask;
-    uint32 maxEntityIDCounter;
 
     Vector<Camera*> cameras;
 

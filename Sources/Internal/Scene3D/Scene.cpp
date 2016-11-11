@@ -175,13 +175,11 @@ Scene::Scene(uint32 _systemsMask /* = SCENE_SYSTEM_ALL_MASK */)
     , animationSystem(0)
     , staticOcclusionDebugDrawSystem(0)
     , systemsMask(_systemsMask)
-    , maxEntityIDCounter(0)
     , sceneGlobalMaterial(0)
     , mainCamera(0)
     , drawCamera(0)
 {
     static uint32 idCounter = 0;
-    sceneId = ++idCounter;
 
     CreateComponents();
     CreateSystems();
@@ -394,12 +392,6 @@ Scene::~Scene()
 
 void Scene::RegisterEntity(Entity* entity)
 {
-    if (entity->GetSceneID() == 0 ||
-        entity->GetSceneID() != sceneId)
-    {
-        entity->SetSceneID(sceneId);
-    }
-
     for (auto& system : systems)
     {
         system->RegisterEntity(entity);
@@ -690,17 +682,6 @@ void Scene::Draw()
 
 void Scene::SceneDidLoaded()
 {
-    maxEntityIDCounter = 0;
-
-    std::function<void(Entity*)> findMaxId = [&](Entity* entity)
-    {
-        if (maxEntityIDCounter < entity->id)
-            maxEntityIDCounter = entity->id;
-        for (auto child : entity->children) findMaxId(child);
-    };
-
-    findMaxId(this);
-
     uint32 systemsCount = static_cast<uint32>(systems.size());
     for (uint32 k = 0; k < systemsCount; ++k)
     {
@@ -891,15 +872,6 @@ SceneFileV2::eError Scene::LoadScene(const DAVA::FilePath& pathname)
 
 SceneFileV2::eError Scene::SaveScene(const DAVA::FilePath& pathname, bool saveForGame /*= false*/)
 {
-    std::function<void(Entity*)> resolveId = [&](Entity* entity)
-    {
-        if (0 == entity->id)
-            entity->id = ++maxEntityIDCounter;
-        for (auto child : entity->children) resolveId(child);
-    };
-
-    resolveId(this);
-
     ScopedPtr<SceneFileV2> file(new SceneFileV2());
     file->EnableDebugLog(false);
     file->EnableSaveForGame(saveForGame);

@@ -281,7 +281,6 @@ void StructureSystem::ReloadInternal(InternalMapping& mapping, const DAVA::FileP
                         DAVA::Entity* before = origEntity->GetParent()->GetNextChild(origEntity);
 
                         newEntityInstance->SetLocalTransform(origEntity->GetLocalTransform());
-                        newEntityInstance->SetSceneID(origEntity->GetSceneID());
                         it->second = newEntityInstance;
 
                         if (saveLightmapSettings)

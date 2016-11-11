@@ -31,12 +31,9 @@ const char* Entity::SCENE_NODE_IS_NOT_REMOVABLE_PROPERTY_NAME = "editor.isNotRem
 Entity::Entity()
     : scene(nullptr)
     , parent(nullptr)
-    , tag(0)
     , family(nullptr)
-    , id(0)
-    , sceneId(0)
 {
-    flags = NODE_VISIBLE | NODE_UPDATABLE | NODE_LOCAL_MATRIX_IDENTITY;
+    flags = NODE_VISIBLE;
     UpdateFamily();
 
     AddComponent(new TransformComponent());
@@ -151,7 +148,6 @@ void Entity::AddNode(Entity* node)
         }
         uint32 insertPosition = static_cast<uint32>(children.size());
         children.push_back(node);
-        node->SetIndexInParent(insertPosition);
         node->SetParent(this);
         node->SetScene(GetScene());
     }
@@ -215,7 +211,6 @@ void Entity::RemoveNode(Entity* node)
             if (node)
             {
                 node->SetScene(nullptr);
-                node->SetIndexInParent(ENTITY_INDEX_MASK);
                 node->SetParent(nullptr);
                 node->Release();
             }
@@ -283,35 +278,12 @@ void Entity::BakeTransforms()
     {
         children[0]->SetLocalTransform(children[0]->GetLocalTransform() * GetLocalTransform());
         SetLocalTransform(Matrix4::IDENTITY);
-        AddFlag(NODE_LOCAL_MATRIX_IDENTITY);
     }
 
     for (auto child : children)
     {
         child->BakeTransforms();
     }
-}
-
-void Entity::PropagateBoolProperty(String name, bool value)
-{
-    KeyedArchive* currentProperties = GetOrCreateCustomProperties(this)->GetArchive();
-    currentProperties->SetBool(name, value);
-
-    for (auto child : children)
-    {
-        child->PropagateBoolProperty(name, value);
-    }
-}
-
-void Entity::ExtractCurrentNodeKeyForAnimation(SceneNodeAnimationKey& key)
-{
-    const Matrix4& localTransform = GetLocalTransform();
-    key.time = 0.0f;
-    key.translation.x = localTransform._30;
-    key.translation.y = localTransform._31;
-    key.translation.z = localTransform._32;
-    key.rotation.Construct(localTransform);
-    //key.matrix = localTransform;
 }
 
 void Entity::SceneDidLoaded()
@@ -335,9 +307,6 @@ Entity* Entity::Clone(Entity* dstNode)
     }
 
     dstNode->name = name;
-    dstNode->tag = tag;
-    dstNode->sceneId = sceneId;
-    dstNode->id = 0;
 
     //flags are intentionally not cloned
     //dstNode->flags = flags;
@@ -483,12 +452,9 @@ void Entity::Save(KeyedArchive* archive, SerializationContext* serializationCont
     BaseObject::SaveObject(archive);
 
     archive->SetString("name", String(name.c_str()));
-    archive->SetInt32("tag", tag);
-    archive->SetUInt32("id", id);
     archive->SetByteArrayAsType("localTransform", GetLocalTransform());
 
     archive->SetUInt32("flags", flags);
-    //    archive->SetUInt32("debugFlags", debugFlags);
 
     KeyedArchive* compsArch = new KeyedArchive();
     uint32 savedIndex = 0;
@@ -524,16 +490,8 @@ void Entity::Load(KeyedArchive* archive, SerializationContext* serializationCont
     BaseObject::LoadObject(archive);
 
     name = FastName(archive->GetString("name", "").c_str());
-    tag = archive->GetInt32("tag", 0);
-
-    id = archive->GetUInt32("id", 0);
-    if (nullptr != serializationContext->GetScene())
-    {
-        sceneId = serializationContext->GetScene()->GetSceneID();
-    }
 
     flags = archive->GetUInt32("flags", NODE_VISIBLE);
-    flags |= NODE_UPDATABLE;
     flags &= ~TRANSFORM_DIRTY;
 
     const Matrix4& localTransform = archive->GetByteArrayAsType("localTransform", GetLocalTransform());
@@ -688,11 +646,6 @@ void Entity::RemoveFlagRecursive(int32 flagToRemove)
     }
 }
 
-Matrix4& Entity::ModifyLocalTransform()
-{
-    return (static_cast<TransformComponent*>(GetComponent(Component::TRANSFORM_COMPONENT)))->ModifyLocalTransform();
-}
-
 void Entity::SetLocalTransform(const Matrix4& newMatrix)
 {
     //	TIME_PROFILE("Entity::SetLocalTransform");
@@ -702,11 +655,6 @@ void Entity::SetLocalTransform(const Matrix4& newMatrix)
 const Matrix4& Entity::GetLocalTransform()
 {
     return (static_cast<TransformComponent*>(GetComponent(Component::TRANSFORM_COMPONENT)))->GetLocalTransform();
-}
-
-const Matrix4& Entity::GetWorldTransform() const
-{
-    return (static_cast<TransformComponent*>(GetComponent(Component::TRANSFORM_COMPONENT)))->GetWorldTransform();
 }
 
 Matrix4 Entity::AccamulateLocalTransform(Entity* fromParent)
@@ -818,5 +766,10 @@ void Entity::SetVisible(const bool& isVisible)
     {
         GetChild(i)->SetVisible(isVisible);
     }
+}
+
+const Matrix4& Entity::GetWorldTransform() const
+{
+    return (static_cast<TransformComponent*>(GetComponent(Component::TRANSFORM_COMPONENT)))->GetWorldTransform();
 }
 };

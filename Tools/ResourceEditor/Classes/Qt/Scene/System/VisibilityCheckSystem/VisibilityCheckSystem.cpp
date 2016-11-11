@@ -181,7 +181,7 @@ void VisibilityCheckSystem::Draw()
         auto visibilityComponent = static_cast<DAVA::VisibilityCheckComponent*>(mapItem.first->GetComponent(DAVA::Component::VISIBILITY_CHECK_COMPONENT));
         if (visibilityComponent->IsEnabled())
         {
-            auto worldTransform = mapItem.first->GetWorldTransform();
+            auto worldTransform = GetTransformComponent(mapItem.first)->GetWorldTransform();
             DAVA::Vector3 position = worldTransform.GetTranslationVector();
             DAVA::Vector3 direction = MultiplyVectorMat3x3(DAVA::Vector3(0.0f, 0.0f, 1.0f), worldTransform);
             dbg->DrawCircle(position, direction, visibilityComponent->GetRadius(), 36, DAVA::Color::White, DAVA::RenderHelper::DRAW_WIRE_DEPTH);
@@ -253,7 +253,7 @@ void VisibilityCheckSystem::UpdatePointSet()
         auto visibilityComponent = static_cast<DAVA::VisibilityCheckComponent*>(entity->GetComponent(DAVA::Component::VISIBILITY_CHECK_COMPONENT));
         if (visibilityComponent->IsEnabled())
         {
-            auto worldTransform = entity->GetWorldTransform();
+            auto worldTransform = GetTransformComponent(entity)->GetWorldTransform();
             DAVA::Vector3 position = worldTransform.GetTranslationVector();
             DAVA::Vector3 normal = MultiplyVectorMat3x3(DAVA::Vector3(0.0f, 0.0f, 1.0f), worldTransform);
             normal.Normalize();

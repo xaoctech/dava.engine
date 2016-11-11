@@ -32,7 +32,7 @@ void EditorParticlesSystem::DrawDebugInfoForEffect(DAVA::Entity* effectEntity)
     DAVA::AABBox3 worldBox;
     DAVA::AABBox3 collBox = collisionSystem->GetBoundingBox(effectEntity);
     DVASSERT(!collBox.IsEmpty());
-    collBox.GetTransformedBox(effectEntity->GetWorldTransform(), worldBox);
+    collBox.GetTransformedBox(GetTransformComponent(effectEntity)->GetWorldTransform(), worldBox);
     DAVA::float32 radius = (collBox.max - collBox.min).Length() / 3;
     GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawIcosahedron(worldBox.GetCenter(), radius, DAVA::Color(0.9f, 0.9f, 0.9f, 0.35f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
 }
@@ -44,8 +44,8 @@ void EditorParticlesSystem::DrawEmitter(DAVA::ParticleEmitterInstance* emitter, 
     SceneCollisionSystem* collisionSystem = ((SceneEditor2*)GetScene())->collisionSystem;
 
     DAVA::Vector3 center = emitter->GetSpawnPosition();
-    TransformPerserveLength(center, DAVA::Matrix3(owner->GetWorldTransform()));
-    center += owner->GetWorldTransform().GetTranslationVector();
+    TransformPerserveLength(center, DAVA::Matrix3(GetTransformComponent(owner)->GetWorldTransform()));
+    center += GetTransformComponent(owner)->GetWorldTransform().GetTranslationVector();
 
     DAVA::AABBox3 boundingBox = collisionSystem->GetBoundingBox(owner);
     DVASSERT(!boundingBox.IsEmpty());
@@ -114,7 +114,7 @@ void EditorParticlesSystem::DrawSizeCircleShockWave(DAVA::Entity* effectEntity, 
 
     if (emitter->GetEmitter()->emissionVector)
     {
-        DAVA::Matrix4 wMat = effectEntity->GetWorldTransform();
+        DAVA::Matrix4 wMat = GetTransformComponent(effectEntity)->GetWorldTransform();
         wMat.SetTranslationVector(DAVA::Vector3(0.0f, 0.0f, 0.0f));
         emissionVector = emitter->GetEmitter()->emissionVector->GetValue(time) * wMat;
     }
@@ -138,7 +138,7 @@ void EditorParticlesSystem::DrawSizeCircle(DAVA::Entity* effectEntity, DAVA::Par
 
     if (emitter->GetEmitter()->emissionVector)
     {
-        DAVA::Matrix4 wMat = effectEntity->GetWorldTransform();
+        DAVA::Matrix4 wMat = GetTransformComponent(effectEntity)->GetWorldTransform();
         wMat.SetTranslationVector(DAVA::Vector3(0.0f, 0.0f, 0.0f));
         emitterVector = emitter->GetEmitter()->emissionVector->GetValue(time) * wMat;
     }
@@ -162,7 +162,7 @@ void EditorParticlesSystem::DrawSizeBox(DAVA::Entity* effectEntity, DAVA::Partic
         emitterSize = emitter->GetEmitter()->size->GetValue(time);
     }
 
-    DAVA::Matrix4 wMat = effectEntity->GetWorldTransform();
+    DAVA::Matrix4 wMat = GetTransformComponent(effectEntity)->GetWorldTransform();
     wMat.SetTranslationVector(Selectable(emitter).GetWorldTransform().GetTranslationVector());
 
     DAVA::RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
@@ -194,7 +194,7 @@ void EditorParticlesSystem::DrawVectorArrow(DAVA::ParticleEmitterInstance* emitt
     DAVA::float32 arrowBaseSize = 5.0f;
     emitterVector = (emitterVector * arrowBaseSize * scale);
 
-    DAVA::Matrix4 wMat = effect->GetEntity()->GetWorldTransform();
+    DAVA::Matrix4 wMat = GetTransformComponent(effect->GetEntity())->GetWorldTransform();
     wMat.SetTranslationVector(DAVA::Vector3(0, 0, 0));
     TransformPerserveLength(emitterVector, wMat);
 

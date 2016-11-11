@@ -110,21 +110,12 @@ public:
 
     Entity* GetParent();
 
-    // extract data from current node to use it in animations
-    void ExtractCurrentNodeKeyForAnimation(SceneNodeAnimationKey& resultKey);
-
     const Matrix4& GetLocalTransform();
 
     void SetVisible(const bool& isVisible);
     bool GetVisible();
 
-    /**
-     \brief This method means that you always modify matrix you get. 
-        If you dont want to modify matrix call GetLocalTransform().
-     */
-    Matrix4& ModifyLocalTransform();
     const Matrix4& GetWorldTransform() const;
-
     void SetLocalTransform(const Matrix4& newMatrix);
     Matrix4 AccamulateLocalTransform(Entity* fromParent);
     Matrix4 AccamulateTransformUptoFarParent(Entity* farParent);
@@ -135,38 +126,12 @@ public:
      */
     virtual void BakeTransforms();
 
-    /*
-        \brief Go down by hierarchy and propagate bool custom property to all children.
-     */
-    void PropagateBoolProperty(String name, bool value);
-
     enum EntityFlags
     {
-        // NODE_STATIC = 0x1,  // this flag means that node is always static and we do not need to update it's worldTransform
-        // NODE_DYNAMIC = 0x2, // node automatically become dynamic when we update it's local matrix
-        NODE_WORLD_MATRIX_ACTUAL = 1, // if this flag set this means we do not need to rebuild worldMatrix
         NODE_VISIBLE = 1 << 1, // is node and subnodes should draw
-        NODE_UPDATABLE = 1 << 2, // is node and subnodes should updates. This flag is updated by the engine and can be changed at any time. Flag is always rise up on node loading
-        NODE_IS_LOD_PART = 1 << 3, // node is part of a LOD node.
-        NODE_LOCAL_MATRIX_IDENTITY = 1 << 4, // local matrix of this node is identity. Used to avoid unnecessary computations.
-
-        BOUNDING_VOLUME_AABB = 1 << 5, // node has axial aligned bounding box.
-        BOUNDING_VOLUME_OOB = 1 << 6, // node has object oriented bounding box.
-        BOUNDING_VOLUME_SPHERE = 1 << 7, // node has bounding sphere.
-
-        NODE_CLIPPED_PREV_FRAME = 1 << 8, //
-        NODE_CLIPPED_THIS_FRAME = 1 << 9, //
-        NODE_INVALID = 1 << 10, // THIS NODE not passed some of verification stages and marked as invalid. Such nodes shouldn't be drawn.
 
         TRANSFORM_NEED_UPDATE = 1 << 11,
-        TRANSFORM_DIRTY = 1 << 12,
-        NODE_DELETED = 1 << 13,
-
-        // I decided to put scene flags here to avoid 2 variables. But probably we can create additional variable later if it'll be required.
-        SCENE_LIGHTS_MODIFIED = 1 << 14,
-
-        ENTITY_INDEX_POSITION = 16,
-        ENTITY_INDEX_MASK = 0xffff,
+        TRANSFORM_DIRTY = 1 << 12
     };
 
     inline void AddFlag(int32 flagToAdd);
@@ -174,16 +139,6 @@ public:
     inline uint32 GetFlags() const;
     void AddFlagRecursive(int32 flagToAdd);
     void RemoveFlagRecursive(int32 flagToRemove);
-    inline uint32 GetIndexInParent()
-    {
-        return (flags >> ENTITY_INDEX_POSITION) & ENTITY_INDEX_MASK;
-    }
-    inline void SetIndexInParent(uint32 index)
-    {
-        flags |= (index & ENTITY_INDEX_MASK) << ENTITY_INDEX_POSITION;
-    }
-    void SetSceneID(uint32 sceneId);
-    uint32 GetSceneID() const;
 
     virtual Entity* Clone(Entity* dstNode = NULL);
 
@@ -286,9 +241,8 @@ public:
 
     Vector<Entity*> children;
 
-    void UpdateFamily();
-
 protected:
+    void UpdateFamily();
     void RemoveAllComponents();
     void LoadComponentsV7(KeyedArchive* compsArch, SerializationContext* serializationContext);
 
@@ -299,10 +253,7 @@ protected:
     Scene* scene;
     Entity* parent;
     FastName name;
-    int32 tag;
     uint32 flags;
-    uint32 id;
-    uint32 sceneId;
 
     /**
     \brief Function to set scene for node and it's children.
@@ -323,7 +274,6 @@ private:
 public:
     INTROSPECTION_EXTEND(Entity, BaseObject,
                          MEMBER(name, "Name", I_SAVE | I_VIEW | I_EDIT)
-                         MEMBER(tag, "Tag", I_SAVE | I_VIEW | I_EDIT)
                          MEMBER(flags, "Flags", I_SAVE | I_VIEW | I_EDIT)
                          COLLECTION(components, "components", I_VIEW)
                          )
@@ -467,16 +417,6 @@ inline Scene* Entity::GetScene()
 inline uint32 Entity::GetComponentCount(uint32 componentType) const
 {
     return family->GetComponentsCount(componentType);
-}
-
-inline uint32 Entity::GetSceneID() const
-{
-    return sceneId;
-}
-
-inline void Entity::SetSceneID(uint32 sceneId_)
-{
-    sceneId = sceneId_;
 }
 
 inline bool Entity::GetVisible()

@@ -77,7 +77,6 @@ public:
 
 protected:
     void ValidateRenderComponent(DAVA::Entity* ownerNode);
-    void ValidateRenderBatch(DAVA::Entity* ownerNode, DAVA::RenderBatch* renderBatch);
 
     void ValidateParticleEffectComponent(DAVA::Entity* ownerNode) const;
     void ValidateParticleEmitter(DAVA::ParticleEmitterInstance* emitter, DAVA::Entity* owner) const;

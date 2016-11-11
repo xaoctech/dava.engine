@@ -204,7 +204,7 @@ void PathSystem::DrawInViewOnlyMode()
         {
             DAVA::Vector3 startPosition = waypoint->position;
             const DAVA::AABBox3 wpBoundingBox(startPosition, boxScale);
-            const auto& transform = entity->GetWorldTransform();
+            const auto& transform = GetTransformComponent(entity)->GetWorldTransform();
             bool isStarting = waypoint->IsStarting();
 
             GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawAABoxTransformed(wpBoundingBox, transform, DAVA::Color(0.3f, 0.3f, isStarting ? 1.0f : 0.0f, 0.3f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);

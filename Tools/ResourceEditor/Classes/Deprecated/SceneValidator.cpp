@@ -160,13 +160,6 @@ void SceneValidator::ValidateRenderComponent(DAVA::Entity* ownerNode)
         return;
     }
 
-    DAVA::uint32 count = ro->GetRenderBatchCount();
-    for (DAVA::uint32 b = 0; b < count; ++b)
-    {
-        DAVA::RenderBatch* renderBatch = ro->GetRenderBatch(b);
-        ValidateRenderBatch(ownerNode, renderBatch);
-    }
-
     if (ro->GetType() == DAVA::RenderObject::TYPE_LANDSCAPE)
     {
         ownerNode->SetLocked(true);
@@ -234,11 +227,6 @@ void SceneValidator::ValidateParticleEmitter(DAVA::ParticleEmitterInstance* inst
             ValidateParticleEmitter(instance, owner);
         }
     }
-}
-
-void SceneValidator::ValidateRenderBatch(DAVA::Entity* ownerNode, DAVA::RenderBatch* renderBatch)
-{
-    ownerNode->RemoveFlag(DAVA::Entity::NODE_INVALID);
 }
 
 void SceneValidator::ValidateMaterials(DAVA::Scene* scene)
