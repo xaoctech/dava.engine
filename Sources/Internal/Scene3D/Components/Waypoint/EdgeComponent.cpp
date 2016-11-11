@@ -75,19 +75,4 @@ const FastName EdgeComponent::GetNextEntityName() const
     return nextEntityName;
 }
 
-void EdgeComponent::SetNextEntityTag(int32 tag)
-{
-    //do nothing
-}
-
-int32 EdgeComponent::GetNextEntityTag() const
-{
-    int32 tag = 0;
-    if (nextEntity)
-    {
-        tag = nextEntity->GetTag();
-    }
-
-    return tag;
-}
 }

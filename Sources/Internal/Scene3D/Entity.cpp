@@ -20,13 +20,8 @@
 #include "Scene3D/Components/ComponentHelpers.h"
 #include <functional>
 
-#define USE_VECTOR(x) ((((uint64)1 << (uint64)x) & vectorComponentsMask) != (uint64)0)
-
 namespace DAVA
 {
-const int COMPONENT_COUNT_V6 = 18;
-
-uint64 vectorComponentsMask = MAKE_COMPONENT_MASK(Component::TRANSFORM_COMPONENT) | MAKE_COMPONENT_MASK(Component::RENDER_COMPONENT) | MAKE_COMPONENT_MASK(Component::LOD_COMPONENT);
 
 // Property Names
 const char* Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME = "editor.isSolid";
@@ -248,30 +243,6 @@ Entity* Entity::GetNextChild(Entity* child)
     return next;
 }
 
-int32 Entity::GetChildrenCountRecursive() const
-{
-    int32 result = 0;
-    result += static_cast<int32>(children.size());
-    for (Vector<Entity*>::const_iterator t = children.begin(); t != children.end(); ++t)
-    {
-        Entity* node = *t;
-        result += node->GetChildrenCountRecursive();
-    }
-    return result;
-}
-
-bool Entity::IsMyChildRecursive(const Entity* child) const
-{
-    if (std::find(children.begin(), children.end(), child) != children.end())
-    {
-        return true;
-    }
-    else
-    {
-        return std::any_of(children.begin(), children.end(), [&](const Entity* ch) { return ch->IsMyChildRecursive(child); });
-    }
-}
-
 void Entity::RemoveAllChildren()
 {
     for (Vector<Entity*>::iterator t = children.begin(); t != children.end(); ++t)
@@ -341,57 +312,6 @@ void Entity::ExtractCurrentNodeKeyForAnimation(SceneNodeAnimationKey& key)
     key.translation.z = localTransform._32;
     key.rotation.Construct(localTransform);
     //key.matrix = localTransform;
-}
-
-void Entity::Draw()
-{
-    //Stats::Instance()->BeginTimeMeasure("Scene.Draw.Entity.Draw", this);
-
-    if (!(flags & NODE_VISIBLE) || !(flags & NODE_UPDATABLE) || (flags & NODE_INVALID))
-        return;
-
-    for (auto child : children)
-        child->Draw();
-
-    if (scene)
-        scene->nodeCounter++;
-		
-#if 0
-	if (debugFlags & DEBUG_DRAW_AABOX_CORNERS)
-	{
-		//		Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
-		//		Matrix4 finalMatrix = worldTransform * prevMatrix;
-		//		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
-			
-		AABBox3 box = GetWTMaximumBoundingBoxSlow();
-		if(box == AABBox3())
-		{
-			box.min = Vector3(0, 0, 0) * GetWorldTransform();
-			box.max = box.min;
-		}
-			
-		RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
-		RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE | RenderStateBlock::STATE_DEPTH_TEST);
-		RenderSystem2D::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
-		RenderHelper::Instance()->DrawCornerBox(box);
-		RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
-		RenderSystem2D::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
-		//		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
-	}
-		
-	if (debugFlags & DEBUG_DRAW_RED_AABBOX)
-	{
-		AABBox3 box = GetWTMaximumBoundingBoxSlow();
-		RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
-		RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE | RenderStateBlock::STATE_DEPTH_TEST);
-		RenderSystem2D::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
-		RenderHelper::Instance()->DrawBox(box);
-		RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
-		RenderSystem2D::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
-	}
-#endif
-
-    //Stats::Instance()->EndTimeMeasure("Scene.Draw.Entity.Draw", this);
 }
 
 void Entity::SceneDidLoaded()
@@ -624,14 +544,7 @@ void Entity::Load(KeyedArchive* archive, SerializationContext* serializationCont
 
     KeyedArchive* compsArch = archive->GetArchive("components");
 
-    if (serializationContext->GetVersion() < COMPONENTS_BY_NAME_SAVE_SCENE_VERSION)
-    {
-        LoadComponentsV6(compsArch, serializationContext);
-    }
-    else
-    {
-        LoadComponentsV7(compsArch, serializationContext);
-    }
+    LoadComponentsV7(compsArch, serializationContext);
 
     if (serializationContext->GetVersion() < CUSTOM_PROPERTIES_COMPONENT_SAVE_SCENE_VERSION)
     {
@@ -642,47 +555,6 @@ void Entity::Load(KeyedArchive* archive, SerializationContext* serializationCont
             customPropsComponent->LoadFromArchive(*customProps, serializationContext);
 
             customProps->Release();
-        }
-    }
-}
-
-void Entity::LoadComponentsV6(KeyedArchive* compsArch, SerializationContext* serializationContext)
-{
-    if (nullptr != compsArch)
-    {
-        for (uint32 i = 0; i < COMPONENT_COUNT_V6; ++i)
-        {
-            KeyedArchive* compArch = compsArch->GetArchive(KeyedArchive::GenKeyFromIndex(i));
-            if (nullptr != compArch)
-            {
-                uint32 compType = compArch->GetUInt32("comp.type", 0xFFFFFFFF);
-                if (compType != 0xFFFFFFFF)
-                {
-                    //VI{
-                    //Need to swap these 2 components since their order in the enum
-                    //has been changed
-                    if (Component::DEBUG_RENDER_COMPONENT == compType)
-                    {
-                        compType = Component::LOD_COMPONENT;
-                        compArch->SetUInt32("comp.type", compType);
-                    }
-                    else if (Component::LOD_COMPONENT == compType)
-                    {
-                        compType = Component::DEBUG_RENDER_COMPONENT;
-                        compArch->SetUInt32("comp.type", compType);
-                    }
-                    //}VI
-
-                    Component* comp = Component::CreateByType(compType);
-                    if (nullptr != comp)
-                    {
-                        if (compType == Component::TRANSFORM_COMPONENT)
-                            RemoveComponent(compType);
-                        AddComponent(comp);
-                        comp->Deserialize(compArch, serializationContext);
-                    }
-                }
-            }
         }
     }
 }
@@ -816,65 +688,6 @@ void Entity::RemoveFlagRecursive(int32 flagToRemove)
     }
 }
 
-bool Entity::IsLodMain(Entity* childToCheck)
-{
-    if (nullptr == parent || !IsLodPart())
-    {
-        return true;
-    }
-
-    return parent->IsLodMain(this);
-}
-
-String Entity::GetPathID(Entity* root)
-{
-    String result;
-    Entity* curr = this;
-    Entity* parent = nullptr;
-    int32 sz, i;
-
-    while (curr != root)
-    {
-        parent = curr->GetParent();
-        sz = parent->GetChildrenCount();
-        for (i = 0; i < sz; i++)
-        {
-            if (curr == parent->GetChild(i))
-            {
-                result = Format("%d:", i) + result;
-                break;
-            }
-        }
-        curr = parent;
-    }
-    return result;
-}
-
-Entity* Entity::GetNodeByPathID(Entity* root, String pathID)
-{
-    Entity* result = root;
-    int32 offs = 0;
-    int32 index = 0;
-    int32 sz = static_cast<int32>(pathID.size());
-    char val;
-    while (offs < sz)
-    {
-        val = pathID[offs];
-        if (val < '0' || val > '9')
-        {
-            offs++;
-            if (index >= 0 && result->GetChildrenCount() > index)
-                result = result->GetChild(index);
-            else
-                return nullptr;
-            continue;
-        }
-        index = index * 10 + val - '0';
-        offs++;
-    }
-    return result;
-}
-
 Matrix4& Entity::ModifyLocalTransform()
 {
     return (static_cast<TransformComponent*>(GetComponent(Component::TRANSFORM_COMPONENT)))->ModifyLocalTransform();
@@ -894,72 +707,6 @@ const Matrix4& Entity::GetLocalTransform()
 const Matrix4& Entity::GetWorldTransform() const
 {
     return (static_cast<TransformComponent*>(GetComponent(Component::TRANSFORM_COMPONENT)))->GetWorldTransform();
-}
-
-void Entity::SetVisible(const bool& isVisible)
-{
-    RenderComponent* renderComponent = static_cast<RenderComponent*>(GetComponent(Component::RENDER_COMPONENT));
-    if (isVisible)
-    {
-        AddFlag(NODE_VISIBLE);
-
-        if (nullptr != renderComponent)
-        {
-            RenderObject* renderObject = renderComponent->GetRenderObject();
-            renderObject->SetFlags(renderObject->GetFlags() | RenderObject::VISIBLE);
-            if ((renderObject->GetFlags() & RenderObject::NEED_UPDATE) &&
-                renderObject->GetRenderSystem() != nullptr)
-            {
-                renderObject->GetRenderSystem()->MarkForUpdate(renderObject);
-            }
-        }
-    }
-    else
-    {
-        RemoveFlag(NODE_VISIBLE);
-        if (nullptr != renderComponent)
-        {
-            RenderObject* renderObject = renderComponent->GetRenderObject();
-            renderObject->SetFlags(renderObject->GetFlags() & ~RenderObject::VISIBLE);
-        }
-    }
-
-    ParticleEffectComponent* effect = GetEffectComponent(this);
-    if (nullptr != effect)
-        effect->SetRenderObjectVisible(isVisible);
-
-    int32 count = GetChildrenCount();
-    for (int32 i = 0; i < count; ++i)
-    {
-        GetChild(i)->SetVisible(isVisible);
-    }
-}
-
-void Entity::SetUpdatable(bool isUpdatable)
-{
-    RenderComponent* renderComponent = static_cast<RenderComponent*>(GetComponent(Component::RENDER_COMPONENT));
-    if (isUpdatable)
-    {
-        AddFlag(NODE_UPDATABLE);
-        if (nullptr != renderComponent)
-        {
-            renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() | RenderObject::VISIBLE);
-        }
-    }
-    else
-    {
-        RemoveFlag(NODE_UPDATABLE);
-        if (nullptr != renderComponent)
-        {
-            renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() & ~RenderObject::VISIBLE);
-        }
-    }
-
-    int32 count = GetChildrenCount();
-    for (int32 i = 0; i < count; ++i)
-    {
-        GetChild(i)->SetUpdatable(isUpdatable);
-    }
 }
 
 Matrix4 Entity::AccamulateLocalTransform(Entity* fromParent)
@@ -1022,26 +769,54 @@ inline void Entity::RemoveComponent(Vector<Component*>::iterator& it)
     }
 }
 
-Entity* Entity::GetEntityByID(uint32 id)
+bool Entity::IsMyChildRecursive(const Entity* child) const
 {
-    Entity* ret = nullptr;
-
-    if (this->id == id)
+    if (std::find(children.begin(), children.end(), child) != children.end())
     {
-        ret = this;
+        return true;
     }
     else
     {
-        for (auto child : children)
+        return std::any_of(children.begin(), children.end(), [&](const Entity* ch) { return ch->IsMyChildRecursive(child); });
+    }
+}
+
+void Entity::SetVisible(const bool& isVisible)
+{
+    RenderComponent* renderComponent = static_cast<RenderComponent*>(GetComponent(Component::RENDER_COMPONENT));
+    if (isVisible)
+    {
+        AddFlag(NODE_VISIBLE);
+
+        if (nullptr != renderComponent)
         {
-            ret = child->GetEntityByID(id);
-            if (nullptr != ret)
+            RenderObject* renderObject = renderComponent->GetRenderObject();
+            renderObject->SetFlags(renderObject->GetFlags() | RenderObject::VISIBLE);
+            if ((renderObject->GetFlags() & RenderObject::NEED_UPDATE) &&
+                renderObject->GetRenderSystem() != nullptr)
             {
-                break;
+                renderObject->GetRenderSystem()->MarkForUpdate(renderObject);
             }
         }
     }
+    else
+    {
+        RemoveFlag(NODE_VISIBLE);
+        if (nullptr != renderComponent)
+        {
+            RenderObject* renderObject = renderComponent->GetRenderObject();
+            renderObject->SetFlags(renderObject->GetFlags() & ~RenderObject::VISIBLE);
+        }
+    }
 
-    return ret;
+    ParticleEffectComponent* effect = GetEffectComponent(this);
+    if (nullptr != effect)
+        effect->SetRenderObjectVisible(isVisible);
+
+    int32 count = GetChildrenCount();
+    for (int32 i = 0; i < count; ++i)
+    {
+        GetChild(i)->SetVisible(isVisible);
+    }
 }
 };

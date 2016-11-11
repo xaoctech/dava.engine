@@ -100,7 +100,6 @@ void EntityCache::Preload(const FilePath& path)
             dstRootEntity->AddNode(tempV[i]);
         }
 
-        dstRootEntity->ResetID();
         dstRootEntity->SetName(scene->GetName());
         cachedEntities[path] = dstRootEntity;
     }
@@ -395,11 +394,9 @@ Scene::~Scene()
 
 void Scene::RegisterEntity(Entity* entity)
 {
-    if (entity->GetID() == 0 ||
-        entity->GetSceneID() == 0 ||
+    if (entity->GetSceneID() == 0 ||
         entity->GetSceneID() != sceneId)
     {
-        entity->SetID(++maxEntityIDCounter);
         entity->SetSceneID(sceneId);
     }
 
@@ -632,7 +629,7 @@ void Scene::SetupTestLighting()
 #endif
 }
 
-void Scene::Update(float timeElapsed)
+void Scene::Update(float32 timeElapsed)
 {
     DAVA_CPU_PROFILER_SCOPE("Scene::Update")
 

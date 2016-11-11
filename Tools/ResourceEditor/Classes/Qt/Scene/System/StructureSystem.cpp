@@ -281,7 +281,6 @@ void StructureSystem::ReloadInternal(InternalMapping& mapping, const DAVA::FileP
                         DAVA::Entity* before = origEntity->GetParent()->GetNextChild(origEntity);
 
                         newEntityInstance->SetLocalTransform(origEntity->GetLocalTransform());
-                        newEntityInstance->SetID(origEntity->GetID());
                         newEntityInstance->SetSceneID(origEntity->GetSceneID());
                         it->second = newEntityInstance;
 

@@ -611,17 +611,12 @@ void SceneTreeModel::SetFilterInternal(const QModelIndex& _index, const QString&
 {
     SceneTreeItem* item = GetItem(_index);
     const QString& name = item->ItemName();
-    DAVA::uint32 id = 0xFFFFFFFF;
 
     DAVA::Entity* entity = SceneTreeItemEntity::GetEntity(item);
-    if (nullptr != entity)
-    {
-        id = entity->GetID();
-    }
 
     if (!item->IsAcceptedByFilter())
     {
-        const bool match = (text.isEmpty() || name.contains(text, Qt::CaseInsensitive) || text == QString::number(id));
+        const bool match = (text.isEmpty() || name.contains(text, Qt::CaseInsensitive));
 
         item->SetAcceptByFilter(match);
         item->SetHighlight(match);

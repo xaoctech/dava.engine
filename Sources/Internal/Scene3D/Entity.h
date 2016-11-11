@@ -38,12 +38,6 @@ public:
     Entity();
 
     /**
-        \brief Function to set scene for node and it's children. 
-        Function goes recursively and set scene for this node, and each child. 
-        \param[in] _scene pointer to scene we want to set as holder for this node. 
-     */
-    virtual void SetScene(Scene* _scene); //TODO: Move SetScene to private
-    /**
         \brief Function to return scene of this node. This is virtual function. For Entity's function returns it's scene value. 
         In Scene class function is overloaded and returns self. It required to avoid dynamic casts to find a scene. 
         \returns pointer to the scene that holds this node. 
@@ -62,14 +56,13 @@ public:
 
     inline uint64 GetAvailableComponentFlags();
 
+    bool IsMyChildRecursive(const Entity* child) const;
+
     // working with childs
     virtual void AddNode(Entity* node);
-
+    virtual void RemoveNode(Entity* node);
     virtual void InsertBeforeNode(Entity* newNode, Entity* beforeNode);
 
-    virtual void RemoveNode(Entity* node);
-    virtual int32 GetChildrenCountRecursive() const;
-    virtual bool IsMyChildRecursive(const Entity* child) const;
     virtual void RemoveAllChildren();
     virtual Entity* GetNextChild(Entity* child);
 
@@ -77,47 +70,6 @@ public:
     inline int32 GetChildrenCount() const;
 
     virtual bool FindNodesByNamePart(const String& namePart, List<Entity*>& outNodeList);
-
-    /**
-        \brief Function sets entity unique ID. WARNING: Almost all time this function shouldn't be used by user, because IDs are
-        generated automatically. However, it can be used in some exceptional cases, when the user exactly knows what he is doing,
-        for example in the ResourceEditor during ReloadModel operation.
-
-        Entity ID is automatically modified in this cases:
-         - when entity with ID = 0 is added into scene, new ID will be generated
-         - when entity with ID != 0 is added from one scene into another scene, new ID will be generated
-         - cloned entity will always have ID = 0
-    */
-    void SetID(uint32 id);
-
-    /**
-        \brief Function return an entity ID, that is unique within scene. This ID is automatically generated, when entity (with empty ID = 0)
-        is added into scene. Generated entity ID will be relative to the scene in which that entity was added. 
-    */
-    uint32 GetID() const;
-
-    /**
-        \brief Function reset entity ID, and IDs in all child entities. ID should be reset only for entities that aren't part of the scene.
-    */
-    void ResetID();
-
-    /**
-        \brief Function allows to find necessary entity by id.
-        \returns entity with given id or nullptr
-    */
-    Entity* GetEntityByID(uint32 id);
-
-    /**
-    \brief Get string with path by indexes in scenegraph from root node to current node.
-    \returns result string.
-    */
-    DAVA_DEPRECATED(String GetPathID(Entity* root));
-
-    /**
-        \brief Get Node by pathID, generated in prev function.
-        \returns result Entity.
-     */
-    DAVA_DEPRECATED(static Entity* GetNodeByPathID(Entity* root, String pathID));
 
     /**
         \brief Find node by it's name inside this scene node.
@@ -156,35 +108,15 @@ public:
      */
     String GetFullName();
 
-    /**
-        \brief Set tag for this object.
-        Tag can be used to identify object, or find it. You can mark objects with same properies by tag, and later find them using tag criteria. 
-     */
-    inline void SetTag(int32 _tag);
-
-    /**
-        \brief Return tag for this object
-        \returns tag for this object
-     */
-    inline int32 GetTag();
-
-    // virtual updates
-    //virtual void	Update(float32 timeElapsed);
-    virtual void Draw();
-
-    // properties
-    void SetVisible(const bool& isVisible);
-    bool GetVisible();
-    inline Entity* GetParent();
-    DAVA_DEPRECATED(void SetUpdatable(bool isUpdatable));
-    DAVA_DEPRECATED(inline bool GetUpdatable(void));
-    inline bool IsLodPart(void);
-    virtual bool IsLodMain(Entity* childToCheck = NULL); //if childToCheck is NULL checks the caller node
+    Entity* GetParent();
 
     // extract data from current node to use it in animations
     void ExtractCurrentNodeKeyForAnimation(SceneNodeAnimationKey& resultKey);
 
     const Matrix4& GetLocalTransform();
+
+    void SetVisible(const bool& isVisible);
+    bool GetVisible();
 
     /**
      \brief This method means that you always modify matrix you get. 
@@ -254,16 +186,6 @@ public:
     uint32 GetSceneID() const;
 
     virtual Entity* Clone(Entity* dstNode = NULL);
-
-    // Do we need enum, or we can use virtual functions?
-    enum
-    {
-        EVENT_CREATE_ENTITY = 1,
-        EVENT_DELETE_ENTITY,
-        EVENT_ADD_COMPONENT,
-        EVENT_DELETE_COMPONENT,
-        EVENT_NOTIFY_UPDATE,
-    };
 
     /**
         \brief function to enable or disable debug drawing for particular node.
@@ -368,10 +290,8 @@ public:
 
 protected:
     void RemoveAllComponents();
-    void LoadComponentsV6(KeyedArchive* compsArch, SerializationContext* serializationContext);
     void LoadComponentsV7(KeyedArchive* compsArch, SerializationContext* serializationContext);
 
-protected:
     String RecursiveBuildFullName(Entity* node, Entity* endNode);
 
     void SetParent(Entity* node);
@@ -384,6 +304,13 @@ protected:
     uint32 id;
     uint32 sceneId;
 
+    /**
+    \brief Function to set scene for node and it's children.
+    Function goes recursively and set scene for this node, and each child.
+    \param[in] _scene pointer to scene we want to set as holder for this node.
+    */
+    virtual void SetScene(Scene* _scene); //TODO: Move SetScene to private
+
 private:
     Vector<Component*> components;
     EntityFamily* family;
@@ -391,32 +318,17 @@ private:
     void RemoveComponent(Vector<Component*>::iterator& it);
 
     friend class Scene;
+    friend class SceneFileV2;
 
 public:
     INTROSPECTION_EXTEND(Entity, BaseObject,
-                         PROPERTY("ID", "ID", GetID, SetID, I_VIEW | I_SAVE)
                          MEMBER(name, "Name", I_SAVE | I_VIEW | I_EDIT)
                          MEMBER(tag, "Tag", I_SAVE | I_VIEW | I_EDIT)
                          MEMBER(flags, "Flags", I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("visible", "Visible", GetVisible, SetVisible, I_VIEW | I_EDIT)
                          COLLECTION(components, "components", I_VIEW)
                          )
 };
 
-inline bool Entity::GetVisible()
-{
-    return (flags & NODE_VISIBLE) != 0;
-}
-
-inline bool Entity::GetUpdatable(void)
-{
-    return (flags & NODE_UPDATABLE) != 0;
-}
-
-inline bool Entity::IsLodPart(void)
-{
-    return (flags & NODE_IS_LOD_PART) != 0;
-}
 
 inline void Entity::AddFlag(int32 flagToAdd)
 {
@@ -441,16 +353,6 @@ inline Entity* Entity::GetParent()
 inline const FastName& Entity::GetName() const
 {
     return name;
-}
-
-inline int32 Entity::GetTag()
-{
-    return tag;
-}
-
-inline void Entity::SetTag(int32 _tag)
-{
-    tag = _tag;
 }
 
 template <template <typename, typename> class Container, class T, class A>
@@ -567,16 +469,6 @@ inline uint32 Entity::GetComponentCount(uint32 componentType) const
     return family->GetComponentsCount(componentType);
 }
 
-inline uint32 Entity::GetID() const
-{
-    return id;
-}
-
-inline void Entity::SetID(uint32 id_)
-{
-    id = id_;
-}
-
 inline uint32 Entity::GetSceneID() const
 {
     return sceneId;
@@ -587,16 +479,9 @@ inline void Entity::SetSceneID(uint32 sceneId_)
     sceneId = sceneId_;
 }
 
-inline void Entity::ResetID()
+inline bool Entity::GetVisible()
 {
-    DVASSERT(nullptr == GetScene() && "ID can safely be reset in entities that aren't part of scene");
-
-    id = 0;
-    sceneId = 0;
-    for (auto child : children)
-    {
-        child->ResetID();
-    }
+    return (flags & NODE_VISIBLE) != 0;
 }
 };
 
