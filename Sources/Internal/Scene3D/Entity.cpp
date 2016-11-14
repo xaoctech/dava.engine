@@ -441,11 +441,6 @@ AABBox3 Entity::GetWTMaximumBoundingBoxSlow()
     return retBBox;
 }
 
-String Entity::GetDebugDescription()
-{
-    return Format("children: %d ", GetChildrenCount());
-}
-
 void Entity::Save(KeyedArchive* archive, SerializationContext* serializationContext)
 {
     // Perform refactoring and add Matrix4, Vector4 types to VariantType and KeyedArchive

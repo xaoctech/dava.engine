@@ -186,11 +186,6 @@ public:
     virtual void Load(KeyedArchive* archive, SerializationContext* serializationContext);
 
     /**
-        \brief Function to get node description for debug printing
-     */
-    virtual String GetDebugDescription();
-
-    /**
         \brief This function should be implemented in each node that have data nodes inside it.
      */
     virtual void GetDataNodes(Set<DataNode*>& dataNodes);
