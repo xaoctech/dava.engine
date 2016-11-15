@@ -34,6 +34,53 @@ DAVA_TESTCLASS (SceneIdTest)
         scene1->AddNode(fake1_1);
         scene1->AddNode(fake1_2);
 
+        // test that id was assigned
+        TEST_VERIFY(fake1_1->GetID() != 0);
+        TEST_VERIFY(fake1_2->GetID() != 0);
+        TEST_VERIFY(fake1_2->GetID() != fake1_1->GetID());
+
+        // test that clone has zero id
+        Entity* clonedEntity = fake1_1->Clone();
+        TEST_VERIFY(clonedEntity->GetID() == 0);
+        SafeRelease(clonedEntity);
+
+        // test that scene has unique id
+        std::set<uint32> uniqu_ids;
+        std::function<bool(Entity*)> checkUnique = [&checkUnique, &uniqu_ids](Entity* entity) -> bool
+        {
+            bool ret = true;
+            if (0 == uniqu_ids.count(entity->GetID()))
+            {
+                uniqu_ids.insert(entity->GetID());
+                for (auto child : entity->children)
+                {
+                    if (!checkUnique(child))
+                    {
+                        ret = false;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                ret = false;
+            }
+
+            return ret;
+        };
+
+        TEST_VERIFY(checkUnique(scene1));
+
+        // add node from one scene to other. ID should be generated
+        Scene* tmpScene = new Scene();
+        tmpScene->AddNode(fake1_3);
+        uint32 oldID = fake1_3->GetID();
+
+        scene1->AddNode(fake1_3);
+        SafeRelease(tmpScene);
+
+        TEST_VERIFY(oldID != fake1_3->GetID());
+
         // save/load scene test
         scene1->SaveScene(testScenePath1);
 
