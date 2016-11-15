@@ -38,22 +38,19 @@ public:
     Entity();
 
     /**
-        \brief Function to return scene of this node. This is virtual function. For Entity's function returns it's scene value. 
-        In Scene class function is overloaded and returns self. It required to avoid dynamic casts to find a scene. 
-        \returns pointer to the scene that holds this node. 
+    Return scene of this entity or nullptr if this entity is not in scene.
      */
     virtual Scene* GetScene();
 
+    //components
     void AddComponent(Component* component);
     void RemoveComponent(Component* component);
     void RemoveComponent(uint32 componentType, uint32 index = 0);
     void DetachComponent(Component* component);
-
     Component* GetComponent(uint32 componentType, uint32 index = 0) const;
     Component* GetOrCreateComponent(uint32 componentType, uint32 index = 0);
     uint32 GetComponentCount() const;
     uint32 GetComponentCount(uint32 componentType) const;
-
     inline uint64 GetAvailableComponentFlags();
 
     bool IsMyChildRecursive(const Entity* child) const;
@@ -70,6 +67,34 @@ public:
     inline int32 GetChildrenCount() const;
 
     virtual bool FindNodesByNamePart(const String& namePart, List<Entity*>& outNodeList);
+
+    /**
+    Set entity unique ID. WARNING: Almost all time this function shouldn't be used by user, because IDs are
+    generated automatically. However, it can be used in some exceptional cases, when the user exactly knows what he is doing,
+    for example in the ResourceEditor during ReloadModel operation.
+
+    Entity ID is automatically modified in this cases:
+    - when entity with ID = 0 is added into scene, new ID will be generated
+    - when entity with ID != 0 is added from one scene into another scene, new ID will be generated
+    - cloned entity will always have ID = 0
+    */
+    void SetID(uint32 id);
+
+    /**
+    Return an entity ID, that is unique within scene. This ID is automatically generated, when entity (with empty ID = 0)
+    is added into scene. Generated entity ID will be relative to the scene in which that entity was added.
+    */
+    uint32 GetID() const;
+
+    /**
+    Reset entity ID, and IDs for all child entities. ID should be reset only for entities that aren't part of the scene.
+    */
+    void ResetID();
+
+    /**
+    Find necessary entity in children by id. Return entity pointer or nullptr if not found.
+    */
+    Entity* GetEntityByID(uint32 id);
 
     /**
         \brief Find node by it's name inside this scene node.
@@ -245,10 +270,11 @@ protected:
 
     void SetParent(Entity* node);
 
-    Scene* scene;
-    Entity* parent;
+    Scene* scene = nullptr;
+    Entity* parent = nullptr;
     FastName name;
-    uint32 flags;
+    uint32 flags = NODE_VISIBLE;
+    uint32 id = 0;
 
     /**
     \brief Function to set scene for node and it's children.
@@ -259,7 +285,7 @@ protected:
 
 private:
     Vector<Component*> components;
-    EntityFamily* family;
+    EntityFamily* family = nullptr;
     void DetachComponent(Vector<Component*>::iterator& it);
     void RemoveComponent(Vector<Component*>::iterator& it);
 
@@ -268,12 +294,34 @@ private:
 
 public:
     INTROSPECTION_EXTEND(Entity, BaseObject,
+                         PROPERTY("ID", "ID", GetID, SetID, I_VIEW | I_SAVE)
                          MEMBER(name, "Name", I_SAVE | I_VIEW | I_EDIT)
                          MEMBER(flags, "Flags", I_SAVE | I_VIEW | I_EDIT)
+                         PROPERTY("visible", "Visible", GetVisible, SetVisible, I_VIEW | I_EDIT)
                          COLLECTION(components, "components", I_VIEW)
                          )
 };
 
+inline uint32 Entity::GetID() const
+{
+    return id;
+}
+
+inline void Entity::SetID(uint32 id_)
+{
+    id = id_;
+}
+
+inline void Entity::ResetID()
+{
+    DVASSERT(nullptr == GetScene() && "ID can safely be reset in entities that aren't part of scene");
+
+    id = 0;
+    for (auto child : children)
+    {
+        child->ResetID();
+    }
+}
 
 inline void Entity::AddFlag(int32 flagToAdd)
 {

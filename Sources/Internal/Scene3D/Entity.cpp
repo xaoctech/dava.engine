@@ -29,11 +29,7 @@ const char* Entity::SCENE_NODE_IS_LOCKED_PROPERTY_NAME = "editor.isLocked";
 const char* Entity::SCENE_NODE_IS_NOT_REMOVABLE_PROPERTY_NAME = "editor.isNotRemovable";
 
 Entity::Entity()
-    : scene(nullptr)
-    , parent(nullptr)
-    , family(nullptr)
 {
-    flags = NODE_VISIBLE;
     UpdateFamily();
 
     AddComponent(new TransformComponent());
@@ -307,6 +303,7 @@ Entity* Entity::Clone(Entity* dstNode)
     }
 
     dstNode->name = name;
+    dstNode->id = 0;
 
     //flags are intentionally not cloned
     //dstNode->flags = flags;
@@ -448,6 +445,7 @@ void Entity::Save(KeyedArchive* archive, SerializationContext* serializationCont
 
     archive->SetString("name", String(name.c_str()));
     archive->SetByteArrayAsType("localTransform", GetLocalTransform());
+    archive->SetUInt32("id", id);
 
     archive->SetUInt32("flags", flags);
 
@@ -485,6 +483,7 @@ void Entity::Load(KeyedArchive* archive, SerializationContext* serializationCont
     BaseObject::LoadObject(archive);
 
     name = FastName(archive->GetString("name", "").c_str());
+    id = archive->GetUInt32("id", 0);
 
     flags = archive->GetUInt32("flags", NODE_VISIBLE);
     flags &= ~TRANSFORM_DIRTY;
@@ -766,5 +765,28 @@ void Entity::SetVisible(const bool& isVisible)
 const Matrix4& Entity::GetWorldTransform() const
 {
     return (static_cast<TransformComponent*>(GetComponent(Component::TRANSFORM_COMPONENT)))->GetWorldTransform();
+}
+
+Entity* Entity::GetEntityByID(uint32 id)
+{
+    Entity* ret = nullptr;
+
+    if (this->id == id)
+    {
+        ret = this;
+    }
+    else
+    {
+        for (auto child : children)
+        {
+            ret = child->GetEntityByID(id);
+            if (nullptr != ret)
+            {
+                break;
+            }
+        }
+    }
+
+    return ret;
 }
 };
