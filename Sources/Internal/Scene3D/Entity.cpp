@@ -485,6 +485,10 @@ void Entity::Load(KeyedArchive* archive, SerializationContext* serializationCont
 
     name = FastName(archive->GetString("name", "").c_str());
     id = archive->GetUInt32("id", 0);
+    if (nullptr != serializationContext->GetScene())
+    {
+        sceneId = serializationContext->GetScene()->GetSceneID();
+    }
 
     flags = archive->GetUInt32("flags", NODE_VISIBLE);
     flags &= ~TRANSFORM_DIRTY;

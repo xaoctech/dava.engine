@@ -321,6 +321,7 @@ inline void Entity::ResetID()
     DVASSERT(nullptr == GetScene() && "ID can safely be reset in entities that aren't part of scene");
 
     id = 0;
+    sceneId = 0;
     for (auto child : children)
     {
         child->ResetID();
