@@ -53,8 +53,6 @@ public:
     uint32 GetComponentCount(uint32 componentType) const;
     inline uint64 GetAvailableComponentFlags();
 
-    bool IsMyChildRecursive(const Entity* child) const;
-
     // working with children
     virtual void AddNode(Entity* node);
     virtual void RemoveNode(Entity* node);
@@ -138,21 +136,20 @@ public:
 
     Entity* GetParent();
 
+    //transform
     const Matrix4& GetLocalTransform();
+    void SetLocalTransform(const Matrix4& newMatrix);
+    const Matrix4& GetWorldTransform() const;
+    Matrix4 AccamulateLocalTransform(Entity* fromParent);
+    Matrix4 AccamulateTransformUptoFarParent(Entity* farParent);
+    /*
+    \brief Go down by hierarchy and bake all transforms.
+    Function can be used to bake transforms to minimize amount of matrix multiplications.
+    */
+    virtual void BakeTransforms();
 
     void SetVisible(const bool& isVisible);
     bool GetVisible();
-
-    const Matrix4& GetWorldTransform() const;
-    void SetLocalTransform(const Matrix4& newMatrix);
-    Matrix4 AccamulateLocalTransform(Entity* fromParent);
-    Matrix4 AccamulateTransformUptoFarParent(Entity* farParent);
-
-    /*
-        \brief Go down by hierarchy and bake all transforms.
-        Function can be used to bake transforms to minimize amount of matrix multiplications.
-     */
-    virtual void BakeTransforms();
 
     enum EntityFlags
     {

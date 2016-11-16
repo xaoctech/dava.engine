@@ -695,18 +695,6 @@ inline void Entity::RemoveComponent(Vector<Component*>::iterator& it)
     }
 }
 
-bool Entity::IsMyChildRecursive(const Entity* child) const
-{
-    if (std::find(children.begin(), children.end(), child) != children.end())
-    {
-        return true;
-    }
-    else
-    {
-        return std::any_of(children.begin(), children.end(), [&](const Entity* ch) { return ch->IsMyChildRecursive(child); });
-    }
-}
-
 void Entity::SetVisible(const bool& isVisible)
 {
     RenderComponent* renderComponent = static_cast<RenderComponent*>(GetComponent(Component::RENDER_COMPONENT));
