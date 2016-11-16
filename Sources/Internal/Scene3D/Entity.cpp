@@ -303,6 +303,7 @@ Entity* Entity::Clone(Entity* dstNode)
     }
 
     dstNode->name = name;
+    dstNode->sceneId = sceneId;
     dstNode->id = 0;
 
     //flags are intentionally not cloned
