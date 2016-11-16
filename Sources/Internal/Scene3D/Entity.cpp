@@ -441,25 +441,22 @@ AABBox3 Entity::GetWTMaximumBoundingBoxSlow()
 
 void Entity::Save(KeyedArchive* archive, SerializationContext* serializationContext)
 {
-    // Perform refactoring and add Matrix4, Vector4 types to VariantType and KeyedArchive
     BaseObject::SaveObject(archive);
 
     archive->SetString("name", String(name.c_str()));
-    archive->SetByteArrayAsType("localTransform", GetLocalTransform());
     archive->SetUInt32("id", id);
-
     archive->SetUInt32("flags", flags);
 
     KeyedArchive* compsArch = new KeyedArchive();
     uint32 savedIndex = 0;
-    for (uint32 i = 0; i < components.size(); ++i)
+    for (Component* c : components)
     {
-        if (components[i]->GetType() < Component::DEBUG_COMPONENTS)
+        if (c->GetType() < Component::DEBUG_COMPONENTS)
         {
             //don't save empty custom properties
-            if (Component::CUSTOM_PROPERTIES_COMPONENT == i)
+            if (c->GetType() == Component::CUSTOM_PROPERTIES_COMPONENT)
             {
-                CustomPropertiesComponent* customProps = cast_if_equal<CustomPropertiesComponent*>(components[i]);
+                CustomPropertiesComponent* customProps = cast_if_equal<CustomPropertiesComponent*>(c);
                 if (customProps && customProps->GetArchive()->Count() <= 0)
                 {
                     continue;
@@ -467,7 +464,7 @@ void Entity::Save(KeyedArchive* archive, SerializationContext* serializationCont
             }
 
             KeyedArchive* compArch = new KeyedArchive();
-            components[i]->Serialize(compArch, serializationContext);
+            c->Serialize(compArch, serializationContext);
             compsArch->SetArchive(KeyedArchive::GenKeyFromIndex(savedIndex), compArch);
             compArch->Release();
             savedIndex++;
@@ -493,27 +490,9 @@ void Entity::Load(KeyedArchive* archive, SerializationContext* serializationCont
     flags = archive->GetUInt32("flags", NODE_VISIBLE);
     flags &= ~TRANSFORM_DIRTY;
 
-    const Matrix4& localTransform = archive->GetByteArrayAsType("localTransform", GetLocalTransform());
-    SetLocalTransform(localTransform);
-
-    /// InvalidateLocalTransform();
-    //    debugFlags = archive->GetUInt32("debugFlags", 0);
-
     KeyedArchive* compsArch = archive->GetArchive("components");
 
     LoadComponentsV7(compsArch, serializationContext);
-
-    if (serializationContext->GetVersion() < CUSTOM_PROPERTIES_COMPONENT_SAVE_SCENE_VERSION)
-    {
-        KeyedArchive* customProps = archive->GetArchiveFromByteArray("customprops");
-        if (customProps != nullptr)
-        {
-            CustomPropertiesComponent* customPropsComponent = GetOrCreateCustomProperties(this);
-            customPropsComponent->LoadFromArchive(*customProps, serializationContext);
-
-            customProps->Release();
-        }
-    }
 }
 
 void Entity::LoadComponentsV7(KeyedArchive* compsArch, SerializationContext* serializationContext)

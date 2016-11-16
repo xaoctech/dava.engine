@@ -182,6 +182,7 @@ Scene::Scene(uint32 _systemsMask /* = SCENE_SYSTEM_ALL_MASK */)
     , drawCamera(0)
 {
     static uint32 idCounter = 0;
+    sceneId = ++idCounter;
 
     CreateComponents();
     CreateSystems();
