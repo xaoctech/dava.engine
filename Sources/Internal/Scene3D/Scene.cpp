@@ -100,6 +100,7 @@ void EntityCache::Preload(const FilePath& path)
             dstRootEntity->AddNode(tempV[i]);
         }
 
+        dstRootEntity->ResetID();
         dstRootEntity->SetName(scene->GetName());
         cachedEntities[path] = dstRootEntity;
     }
@@ -175,6 +176,7 @@ Scene::Scene(uint32 _systemsMask /* = SCENE_SYSTEM_ALL_MASK */)
     , animationSystem(0)
     , staticOcclusionDebugDrawSystem(0)
     , systemsMask(_systemsMask)
+    , maxEntityIDCounter(0)
     , sceneGlobalMaterial(0)
     , mainCamera(0)
     , drawCamera(0)
@@ -392,6 +394,14 @@ Scene::~Scene()
 
 void Scene::RegisterEntity(Entity* entity)
 {
+    if (entity->GetID() == 0 ||
+        entity->GetSceneID() == 0 ||
+        entity->GetSceneID() != sceneId)
+    {
+        entity->SetID(++maxEntityIDCounter);
+        entity->SetSceneID(sceneId);
+    }
+
     for (auto& system : systems)
     {
         system->RegisterEntity(entity);
@@ -438,39 +448,6 @@ void Scene::UnregisterComponent(Entity* entity, Component* component)
         systems[k]->UnregisterComponent(entity, component);
     }
 }
-
-
-#if 0 // Removed temporarly if everything will work with events can be removed fully.
-void Scene::ImmediateEvent(Entity * entity, uint32 componentType, uint32 event)
-{
-#if 1
-    uint32 systemsCount = systems.size();
-    uint64 updatedComponentFlag = MAKE_COMPONENT_MASK(componentType);
-    uint64 componentsInEntity = entity->GetAvailableComponentFlags();
-
-    for (uint32 k = 0; k < systemsCount; ++k)
-    {
-        uint64 requiredComponentFlags = systems[k]->GetRequiredComponents();
-        
-        if (((requiredComponentFlags & updatedComponentFlag) != 0) && ((requiredComponentFlags & componentsInEntity) == requiredComponentFlags))
-        {
-			eventSystem->NotifySystem(systems[k], entity, event);
-        }
-    }
-#else
-    uint64 componentsInEntity = entity->GetAvailableComponentFlags();
-    Set<SceneSystem*> & systemSetForType = componentTypeMapping.GetValue(componentsInEntity);
-    
-    for (Set<SceneSystem*>::iterator it = systemSetForType.begin(); it != systemSetForType.end(); ++it)
-    {
-        SceneSystem * system = *it;
-        uint64 requiredComponentFlags = system->GetRequiredComponents();
-        if ((requiredComponentFlags & componentsInEntity) == requiredComponentFlags)
-            eventSystem->NotifySystem(system, entity, event);
-    }
-#endif
-}
-#endif
 
 void Scene::AddSystem(SceneSystem* sceneSystem, uint64 componentFlags, uint32 processFlags /*= 0*/, SceneSystem* insertBeforeSceneForProcess /* = nullptr */)
 {
@@ -682,6 +659,17 @@ void Scene::Draw()
 
 void Scene::SceneDidLoaded()
 {
+    maxEntityIDCounter = 0;
+
+    std::function<void(Entity*)> findMaxId = [&](Entity* entity)
+    {
+        if (maxEntityIDCounter < entity->id)
+            maxEntityIDCounter = entity->id;
+        for (auto child : entity->children) findMaxId(child);
+    };
+
+    findMaxId(this);
+
     uint32 systemsCount = static_cast<uint32>(systems.size());
     for (uint32 k = 0; k < systemsCount; ++k)
     {
@@ -872,6 +860,15 @@ SceneFileV2::eError Scene::LoadScene(const DAVA::FilePath& pathname)
 
 SceneFileV2::eError Scene::SaveScene(const DAVA::FilePath& pathname, bool saveForGame /*= false*/)
 {
+    std::function<void(Entity*)> resolveId = [&](Entity* entity)
+    {
+        if (0 == entity->id)
+            entity->id = ++maxEntityIDCounter;
+        for (auto child : entity->children) resolveId(child);
+    };
+
+    resolveId(this);
+
     ScopedPtr<SceneFileV2> file(new SceneFileV2());
     file->EnableDebugLog(false);
     file->EnableSaveForGame(saveForGame);

@@ -90,7 +90,6 @@ DAVA_TESTCLASS (SceneIdTest)
         TEST_VERIFY(CompareScene(scene1, scene2));
 
         // remove/add entity test
-        uint32 entityToExtractIndex = Random::Instance()->Rand(nodesToAdd - 1);
         Entity* entityToExtract = scene1->children[0];
         Entity* entityBefore = scene1->children[1];
 

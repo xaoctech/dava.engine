@@ -55,7 +55,7 @@ public:
 
     bool IsMyChildRecursive(const Entity* child) const;
 
-    // working with childs
+    // working with children
     virtual void AddNode(Entity* node);
     virtual void RemoveNode(Entity* node);
     virtual void InsertBeforeNode(Entity* newNode, Entity* beforeNode);
@@ -95,6 +95,9 @@ public:
     Find necessary entity in children by id. Return entity pointer or nullptr if not found.
     */
     Entity* GetEntityByID(uint32 id);
+
+    void SetSceneID(uint32 sceneId);
+    uint32 GetSceneID() const;
 
     /**
         \brief Find node by it's name inside this scene node.
@@ -275,6 +278,7 @@ protected:
     FastName name;
     uint32 flags = NODE_VISIBLE;
     uint32 id = 0;
+    uint32 sceneId = 0;
 
     /**
     \brief Function to set scene for node and it's children.
@@ -465,6 +469,16 @@ inline uint32 Entity::GetComponentCount(uint32 componentType) const
 inline bool Entity::GetVisible()
 {
     return (flags & NODE_VISIBLE) != 0;
+}
+
+inline uint32 Entity::GetSceneID() const
+{
+    return sceneId;
+}
+
+inline void Entity::SetSceneID(uint32 sceneId_)
+{
+    sceneId = sceneId_;
 }
 };
 
