@@ -7,12 +7,15 @@
     #include "Render/RHI/rhi_ShaderSource.h"
 
     #include "Render/RHI/Common/PreProcess.h"
+    #include "Render/RHI/Common/PreProcessor.h"
+    #include "Render/RHI/Common/rhi_Utils.h"
 
 #include "Render/RenderBase.h"
 
     #include "Render/RHI/dbg_Draw.h"
 
     #include "FileSystem/DynamicMemoryFile.h"
+    #include "Platform/SystemTimer.h"
 
 using namespace DAVA;
 
@@ -528,8 +531,78 @@ void GameCore::SetupTank()
     rhi::Handle tex;*/
 }
 
+static void
+_TestFile( const char* input_name, const char* output_name )
+{
+    PreProc             pp;
+    std::vector<char>   output;
+//    StopWatch   sw;
+    uint64              pp_time;
+    uint64              mcpp_time;
+    uint64              t0;
+    DAVA::SystemTimer   timer;
+
+
+    t0 = timer.GetAbsoluteUs();
+    if( pp.process_file( input_name, &output ) )
+    {
+        pp_time = timer.GetAbsoluteUs() - t0;
+
+        DAVA::File* out = DAVA::File::Create( output_name, DAVA::File::WRITE|DAVA::File::CREATE );
+
+        if( out )
+        {
+            out->Write( &(output[0]), output.size() );
+            out->Release();
+        }
+    }
+
+    
+    {
+    t0 = timer.GetAbsoluteUs();
+    DAVA::File* in = DAVA::File::Create( input_name, DAVA::File::READ|DAVA::File::OPEN );
+
+    if( in )
+    {
+        uint64      input_sz    = in->GetSize();
+        char*       input       = (char*)::malloc( input_sz );
+        std::string output;
+        const char* argv[128];
+        unsigned    argc    = 0;
+        ShaderPreprocessScope crap;
+
+        in->Read( input, input_sz );
+        SetPreprocessCurFile( input_name );
+        PreProcessText( input, argv, argc, &output );
+        ::free( input );
+        in->Release();
+        
+        mcpp_time = timer.GetAbsoluteUs() - t0;
+    }
+    }
+
+    DAVA::Logger::Info( "%s", input_name );
+    DAVA::Logger::Info( "  pp time   = %i us", int(pp_time) );
+    DAVA::Logger::Info( "  mcpp time = %i us", int(mcpp_time) );
+}
+
 void GameCore::OnAppStarted()
 {
+ExpressionEvaluator ev;
+ev.set_variable( "bla", 13 );
+const char* expr[] = { "2+2", "bla+7", "(5+3) / (3-1)" };
+for( unsigned i=0; i!=countof(expr); ++i )
+{
+    float   res = 0;
+
+    if( ev.evaluate( expr[i], &res ) )
+        DAVA::Logger::Info( "%s = %f", expr[i], res );
+}
+exit(0);
+
+    _TestFile( "input-0.txt", "output-0.txt" );
+    exit(0);
+
     //    const char * src = "../../Tools/ResourceEditor/Data/Materials/Shaders/Default/materials-vp.sl";
     const char* src = "../../Tools/ResourceEditor/Data/Materials/Shaders/Default/water-fp.sl";
     //    const char * src = "../../Tools/ResourceEditor/Data/Materials/Shaders/ShadowVolume/shadowvolume-vp.sl";
