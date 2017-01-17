@@ -570,8 +570,8 @@ void Core::SystemAppStarted()
     if (core != nullptr)
     {
         rhi::ShaderSourceCache::Load("~doc:/ShaderSource.bin");
-        Core::Instance()->CreateRenderer();
-        RenderSystem2D::Instance()->Init();
+//        Core::Instance()->CreateRenderer();
+//        RenderSystem2D::Instance()->Init();
         core->OnAppStarted();
     }
 

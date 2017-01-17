@@ -367,15 +367,14 @@ PreProc::_process_include( const char* file_name, std::vector<PreProc::Line>* li
 bool
 PreProc::_process_define( const char* name, const char* val )
 {
-/*
-    _var.append( 1, null_ptr, 16 );
-    strcpy( _var.back()->name, name );
+    _var.push_back( Var() );
+    strcpy( _var.back().name, name );
 
     // TODO: handle definition via previously defined var(s)
-    _var.back()->val = atoi( val );
+    _var.back().val = atoi( val );
 
     _eval.set_variable( name, atoi(val) );
-*/
+
     return true;
 }
 
@@ -394,10 +393,5 @@ PreProc::_generate_output( TextBuf* output )
 
         output->insert( output->end(), l->text, l->text+sz );
         output->insert( output->end(), endl, endl+2 );
-/*
-        output->append( sz, l->text, 1024 );
-        output->push_back( '\r', 1024 );
-        output->push_back( '\n', 1024 );
-*/    
     }
 }

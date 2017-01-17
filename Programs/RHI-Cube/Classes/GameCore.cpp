@@ -590,13 +590,13 @@ void GameCore::OnAppStarted()
 {
 ExpressionEvaluator ev;
 ev.set_variable( "bla", 13 );
-const char* expr[] = { "2+2", "bla+7", "(5+3) / (3-1)" };
+const char* expr[] = { "2+2", "bla+7", "(5+3) / (3-1)", "3 + ((1+7)/2) + 1" };
 for( unsigned i=0; i!=countof(expr); ++i )
 {
     float   res = 0;
 
     if( ev.evaluate( expr[i], &res ) )
-        DAVA::Logger::Info( "%s = %f", expr[i], res );
+        DAVA::Logger::Info( "%s = %.1f", expr[i], res );
 }
 exit(0);
 
