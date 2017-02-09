@@ -9,7 +9,7 @@
 #include "FileSystem/FileList.h"
 #include "Utils/UTF8Utils.h"
 #include "Core/Core.h"
-#include "Platform/SystemTimer.h"
+#include "Time/SystemTimer.h"
 #include "UI/UIControlSystem.h"
 #include "Render/2D/FTFont.h"
 #include "Logger/Logger.h"
@@ -26,8 +26,8 @@ UIFileSystemDialog::UIFileSystemDialog(const FilePath& _fontPath)
 {
     fontPath = _fontPath;
 
-    background->SetDrawType(UIControlBackground::DRAW_FILL);
-    background->SetColor(Color(0.5, 0.5, 0.5, 0.75));
+    GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
+    GetBackground()->SetColor(Color(0.5f, 0.5f, 0.5f, 0.75f));
     SetPivot(Vector2(0.5f, 0.5f));
 
     operationType = OPERATION_LOAD;
@@ -499,7 +499,7 @@ void UIFileSystemDialog::OnCellSelected(UIList* forList, UIListCell* selectedCel
     {
         lastSelected->GetBackground()->SetDrawType(UIControlBackground::DRAW_ALIGNED);
     }
-    uint64 curTime = SystemTimer::Instance()->AbsoluteMS();
+    uint64 curTime = SystemTimer::GetMs();
     if (curTime - lastSelectionTime < 330 && lastSelected == selectedCell)
     {
         lastSelected = selectedCell;

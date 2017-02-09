@@ -3,7 +3,7 @@
 #include "Base/BaseTypes.h"
 #include "FileSystem/ResourceArchive.h"
 #include "CommandLineTool.h"
-#include "AssetCache/AssetCacheClient.h"
+#include <Tools/AssetCache/AssetCacheClient.h>
 
 class ArchivePackTool : public CommandLineTool
 {
@@ -15,6 +15,7 @@ private:
     {
         UseListFiles,
         UseSrc,
+        UseMetaDB,
         Unknown
     };
 
@@ -27,6 +28,7 @@ private:
     DAVA::Compressor::Type compressionType;
     bool addHidden = false;
     bool useCache = false;
+    bool genDvpl = false;
     DAVA::AssetCacheClient::ConnectionParams assetCacheParams;
     DAVA::String logFileName;
     DAVA::String srcDir;
@@ -34,5 +36,6 @@ private:
     DAVA::Vector<DAVA::String> srcFiles;
     DAVA::String packFileName;
     DAVA::String baseDir;
+    DAVA::String metaDbPath;
     Source source = Source::Unknown;
 };

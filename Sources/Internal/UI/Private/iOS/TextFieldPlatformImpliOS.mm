@@ -1,9 +1,12 @@
 #include "Base/BaseTypes.h"
 #include "Core/Core.h"
+#include "Logger/Logger.h"
 
 #if defined(__DAVAENGINE_IPHONE__)
 
-#include <UIKit/UIKit.h>
+#import <UIKit/UIKit.h>
+
+#include "Logger/Logger.h"
 #include "UI/UITextField.h"
 #include "UI/Private/iOS/TextFieldPlatformImpliOS.h"
 #include "UI/Private/iOS/UITextFieldHolder.h"
@@ -16,6 +19,7 @@
 
 #if defined(__DAVAENGINE_COREV2__)
 #include "Engine/Engine.h"
+#include "Engine/Ios/PlatformApi.h"
 #else
 #import "Platform/TemplateiOS/HelperAppDelegate.h"
 #include "UI/Private/iOS/WebViewControliOS.h"
@@ -58,6 +62,8 @@ TextFieldPlatformImpl::TextFieldPlatformImpl(Window* w, UITextField* uiTextField
     {
         UpdateNativeRect(prevRect, 0);
     }
+
+    windowDestroyedSigId = Engine::Instance()->windowDestroyed.Connect(this, &TextFieldPlatformImpl::OnWindowDestroyed);
 }
 
 TextFieldPlatformImpl::~TextFieldPlatformImpl()
@@ -75,8 +81,22 @@ TextFieldPlatformImpl::~TextFieldPlatformImpl()
         [textFieldHolder addSubview:textFieldHolder->textCtrl];
     }
 
-    PlatformApi::Ios::ReturnUIViewToPool(window, textFieldHolder);
+    if (window != nullptr)
+    {
+        PlatformApi::Ios::ReturnUIViewToPool(window, textFieldHolder);
+    }
+
+    Engine::Instance()->windowDestroyed.Disconnect(windowDestroyedSigId);
 }
+
+void TextFieldPlatformImpl::OnWindowDestroyed(Window* destroyedWindow)
+{
+    if (destroyedWindow == window)
+    {
+        window = nullptr;
+    }
+}
+
 #else // defined(__DAVAENGINE_COREV2__)
 TextFieldPlatformImpl::TextFieldPlatformImpl(DAVA::UITextField* tf)
     : bridge(new TextFieldObjcBridge)

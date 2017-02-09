@@ -5,7 +5,7 @@
 #include "../Common/RenderLoop.h"
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
-#include "Platform/SystemTimer.h"
+#include "Time/SystemTimer.h"
 #include <wrl/client.h>
 
 /*
@@ -1434,6 +1434,8 @@ static void dx11_FinishFrame()
 
 static void dx11_ExecImmediateCommand(CommonImpl::ImmediateCommand* command)
 {
+    DAVA_PROFILER_CPU_SCOPE(DAVA::ProfilerCPUMarkerName::RHI_EXECUTE_IMMEDIATE_CMDS);
+
     DX11Command* commandData = reinterpret_cast<DX11Command*>(command->cmdData);
     for (DX11Command *cmd = commandData, *cmdEnd = commandData + command->cmdCount; cmd != cmdEnd; ++cmd)
     {
@@ -1487,7 +1489,7 @@ static void dx11_ExecImmediateCommand(CommonImpl::ImmediateCommand* command)
 
                     if (timestamp)
                     {
-                        *reinterpret_cast<uint64*>(arg[0]) = DAVA::SystemTimer::Instance()->GetAbsoluteUs();
+                        *reinterpret_cast<uint64*>(arg[0]) = DAVA::SystemTimer::GetUs();
 
                         D3D11_QUERY_DATA_TIMESTAMP_DISJOINT data;
                         while (S_FALSE == dx11.context->GetData(fqQuery, &data, sizeof(data), 0))

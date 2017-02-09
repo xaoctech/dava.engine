@@ -3,7 +3,7 @@
 #include "UI/UIControl.h"
 #include "UI/UIControlPackageContext.h"
 #include "UI/Components/UIComponent.h"
-#include "Platform/SystemTimer.h"
+#include "Time/SystemTimer.h"
 #include "Animation/LinearPropertyAnimation.h"
 #include "Animation/AnimationManager.h"
 #include "Logger/Logger.h"
@@ -88,11 +88,11 @@ UIStyleSheetSystem::~UIStyleSheetSystem()
 void UIStyleSheetSystem::ProcessControl(UIControl* control, bool styleSheetListChanged /* = false*/)
 {
 #if STYLESHEET_STATS
-    uint64 startTime = SystemTimer::Instance()->GetAbsoluteUs();
+    uint64 startTime = SystemTimer::GetUs();
 #endif
     ProcessControl(control, 0, styleSheetListChanged, true, false, nullptr);
 #if STYLESHEET_STATS
-    statsTime += SystemTimer::Instance()->GetAbsoluteUs() - startTime;
+    statsTime += SystemTimer::GetUs() - startTime;
 #endif
 }
 
@@ -316,10 +316,6 @@ void UIStyleSheetSystem::DoForAllPropertyInstances(UIControl* control, uint32 pr
 
         break;
     }
-    case ePropertyOwner::BACKGROUND:
-        if (control->GetBackgroundComponentsCount() > 0)
-            action(control, control->GetBackgroundComponent(0), descr.memberInfo);
-        break;
     case ePropertyOwner::COMPONENT:
         if (UIComponent* component = control->GetComponent(descr.group->componentType))
             action(control, component, descr.memberInfo);

@@ -3,7 +3,7 @@
 
 #if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
 
-#include "ResourceArchiver/ResourceArchiver.h"
+#include "Tools/ResourceArchiver/ResourceArchiver.h"
 
 using namespace DAVA;
 

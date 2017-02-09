@@ -14,7 +14,7 @@ using DAVA::Logger;
 #include "Debug/ProfilerMarkerNames.h"
 #include "Concurrency/Thread.h"
 #include "Concurrency/Semaphore.h"
-#include "Platform/SystemTimer.h"
+#include "Time/SystemTimer.h"
 
 #include "../Common/SoftwareCommandBuffer.h"
 #include "../Common/RenderLoop.h"
@@ -1190,6 +1190,8 @@ void _DX9_ResetBlock()
 
 static void _DX9_ExecImmediateCommand(CommonImpl::ImmediateCommand* command)
 {
+    DAVA_PROFILER_CPU_SCOPE(DAVA::ProfilerCPUMarkerName::RHI_EXECUTE_IMMEDIATE_CMDS);
+
 #if 1
     #define CHECK_HR(hr) \
     if (FAILED(hr)) \
@@ -1621,7 +1623,7 @@ static void _DX9_ExecImmediateCommand(CommonImpl::ImmediateCommand* command)
                     };
                     if (timestamp)
                     {
-                        *reinterpret_cast<uint64*>(arg[0]) = DAVA::SystemTimer::Instance()->GetAbsoluteUs();
+                        *reinterpret_cast<uint64*>(arg[0]) = DAVA::SystemTimer::GetUs();
 
                         while (S_FALSE == disjointQuery->GetData(&disjoint, sizeof(bool), D3DGETDATA_FLUSH))
                         {
@@ -1659,12 +1661,12 @@ static void _DX9_ExecImmediateCommand(CommonImpl::ImmediateCommand* command)
 
 //------------------------------------------------------------------------------
 
-void ExecDX9(DX9Command* command, uint32 cmdCount, bool forceImmediate)
+void ExecDX9(DX9Command* command, uint32 cmdCount, bool forceExecute)
 {
     CommonImpl::ImmediateCommand cmd;
     cmd.cmdData = command;
     cmd.cmdCount = cmdCount;
-    cmd.forceImmediate = forceImmediate;
+    cmd.forceExecute = forceExecute;
     RenderLoop::IssueImmediateCommand(&cmd);
 }
 

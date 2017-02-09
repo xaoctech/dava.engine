@@ -5,16 +5,16 @@
 #include "Utils/SceneExporter/SceneExporter.h"
 #include "TArc/Utils/ModuleCollection.h"
 
+#include <Tools/AssetCache/AssetCache.h>
+
 #include "Logger/Logger.h"
 #include "FileSystem/File.h"
 #include "FileSystem/FileList.h"
-#include "Platform/DateTime.h"
 #include "Platform/DeviceInfo.h"
 #include "Render/GPUFamilyDescriptor.h"
 #include "Render/Highlevel/Heightmap.h"
+#include "Time/DateTime.h"
 #include "Utils/UTF8Utils.h"
-
-#include "AssetCache/AssetCache.h"
 
 namespace SceneExporterToolDetail
 {
@@ -114,7 +114,7 @@ bool CollectObjectFromFileList(const DAVA::FilePath& fileListPath, const DAVA::F
 }
 
 SceneExporterTool::SceneExporterTool(const DAVA::Vector<DAVA::String>& commandLine)
-    : REConsoleModuleCommon(commandLine, "-sceneexporter")
+    : CommandLineModule(commandLine, "-sceneexporter")
 {
     using namespace DAVA;
 
@@ -318,7 +318,7 @@ void SceneExporterTool::BeforeDestroyedInternal()
 
 void SceneExporterTool::ShowHelpInternal()
 {
-    REConsoleModuleCommon::ShowHelpInternal();
+    CommandLineModule::ShowHelpInternal();
 
     DAVA::Logger::Info("Examples:");
     DAVA::Logger::Info("\t-sceneexporter -indir /Users/SmokeTest/DataSource/3d/ -outdir /Users/SmokeTest/Data/3d/ -processfile Maps/scene.sc2 -gpu mali -qualitycfgpath Users/SmokeTest/Data/quality.yaml");

@@ -3,6 +3,8 @@
 #include "Scene3D/Systems/Controller/RotationControllerSystem.h"
 #include "Scene3D/Systems/Controller/WASDControllerSystem.h"
 
+#include "Render/2D/Sprite.h"
+
 using namespace DAVA;
 
 void ViewSceneScreen::LoadResources()
@@ -117,6 +119,8 @@ void ViewSceneScreen::LoadResources()
 
         moveJoyPAD = new UIJoypad(Rect(0, screenRect.dy - 200.f, 200.f, 200.f));
         moveJoyPAD->SetDebugDraw(true);
+        ScopedPtr<Sprite> stickSprite(Sprite::CreateFromSourceFile("~res:/Joypad/Stick.png"));
+        moveJoyPAD->SetStickSprite(stickSprite, 0);
         AddControl(moveJoyPAD);
         moveJoyPAD->Release();
     }
@@ -187,20 +191,20 @@ void ViewSceneScreen::OnReloadShaders(DAVA::BaseObject* caller, void* param, voi
 
 void ViewSceneScreen::Draw(const DAVA::UIGeometricData& geometricData)
 {
-    uint64 startTime = SystemTimer::Instance()->GetAbsoluteNano();
+    uint64 startTime = SystemTimer::GetNs();
 
     BaseScreen::Draw(geometricData);
 
-    drawTime += (SystemTimer::Instance()->GetAbsoluteNano() - startTime);
+    drawTime += (SystemTimer::GetNs() - startTime);
 }
 
 void ViewSceneScreen::Update(float32 timeElapsed)
 {
-    uint64 startTime = SystemTimer::Instance()->GetAbsoluteNano();
+    uint64 startTime = SystemTimer::GetNs();
 
     BaseScreen::Update(timeElapsed);
 
-    updateTime += (SystemTimer::Instance()->GetAbsoluteNano() - startTime);
+    updateTime += (SystemTimer::GetNs() - startTime);
 
     UpdateInfo(timeElapsed);
 
