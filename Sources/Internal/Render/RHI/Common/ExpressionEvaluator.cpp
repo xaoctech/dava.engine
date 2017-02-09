@@ -151,7 +151,7 @@ ExpressionEvaluator::_Evaluate( const SyntaxTreeNode* node, float* out, unsigned
                 }
                 else
                 {
-                    return false; // error code and index alredy fille
+                    return false; // error code and index already filled
                 }
             }
             else

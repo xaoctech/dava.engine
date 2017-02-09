@@ -147,7 +147,7 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
 
     int         condition     = 1;
     int         pending_endif = 0;
-    bool        skip_lines    = false;
+    int skip_lines = false;
 
     for( char* s=text; *s; ++s ) 
     {
@@ -373,7 +373,7 @@ PreProc::_process_define( const char* name, const char* val )
     // TODO: handle definition via previously defined var(s)
     _var.back().val = atoi( val );
 
-    _eval.set_variable( name, atoi(val) );
+    _eval.set_variable(name, float(atof(val)));
 
     return true;
 }
