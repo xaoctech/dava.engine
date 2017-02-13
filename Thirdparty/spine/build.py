@@ -60,7 +60,8 @@ def _build_win32(working_directory_path, root_project_path):
         'Project.sln', 'spine-c',
         'spine-c.lib', 'spine-c.lib',
         'spined.lib', 'spine.lib',
-        'spined.lib', 'spine.lib')
+        'spined.lib', 'spine.lib',
+        output_libs_path='Modules/Spine/Libs/lib')
 
     _copy_headers(source_folder_path, root_project_path)
 
@@ -77,7 +78,8 @@ def _build_win10(working_directory_path, root_project_path):
         'spine-c.lib', 'spine-c.lib',
         'spined.lib', 'spine.lib',
         'spined.lib', 'spine.lib',
-        'spined.lib', 'spine.lib')
+        'spined.lib', 'spine.lib',
+        output_libs_path='Modules/Spine/Libs/lib')
 
     _copy_headers(source_folder_path, root_project_path)
 
@@ -127,5 +129,5 @@ def _build_android(working_directory_path, root_project_path):
 
 
 def _copy_headers(source_folder_path, root_project_path):
-    include_path = os.path.join(root_project_path, 'Libs', 'include', 'spine')
+    include_path = os.path.join(root_project_path, 'Modules', 'Spine', 'Libs', 'include', 'spine')
     build_utils.copy_files(os.path.join(source_folder_path, 'include', 'spine'), include_path, '*.h')
