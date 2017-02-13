@@ -123,6 +123,8 @@ def build_xcode_alltargets(project, configuration):
 
 def copy_files(from_dir, to_dir, wildcard):
     print "Copying %s from %s to %s" % (wildcard, from_dir, to_dir)
+    if not os.path.exists(to_dir):
+        os.mkdir(to_dir)
     for file in glob.glob(from_dir+"/"+wildcard):
         shutil.copy(file, to_dir)
 

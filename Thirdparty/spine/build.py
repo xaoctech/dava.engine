@@ -91,8 +91,8 @@ def _build_macos(working_directory_path, root_project_path):
         source_folder_paths['spine_c'],
         root_project_path,
         'spine_c.xcodeproj', 'spine_c',
-        'spine_c.a',
-        'spine_c.a')
+        'spine.a',
+        'spine.a')
 
     _copy_headers(source_folder_path, root_project_path)
 
@@ -106,8 +106,8 @@ def _build_ios(working_directory_path, root_project_path):
         source_folder_path,
         root_project_path,
         'spine_c.xcodeproj', 'spine_c',
-        'spine_c.a',
-        'spine_c.a')
+        'spine.a',
+        'spine.a')
 
     _copy_headers(source_folder_path, root_project_path)
 
@@ -120,12 +120,12 @@ def _build_android(working_directory_path, root_project_path):
         os.path.join(working_directory_path, 'gen'),
         source_folder_path,
         root_project_path,
-        'spine_c.a',
-        'spine_c.a')
+        'spine.a',
+        'spine.a')
 
     _copy_headers(source_folder_paths['lua'], root_project_path)
 
 
 def _copy_headers(source_folder_path, root_project_path):
-    include_path = os.path.join(root_project_path, 'Libs/spine/include')
-    build_utils.copy_files(source_folder_path, include_path, 'spine_c/include/*.h')
+    include_path = os.path.join(root_project_path, 'Libs', 'include', 'spine')
+    build_utils.copy_files(os.path.join(source_folder_path, 'include', 'spine'), include_path, '*.h')
