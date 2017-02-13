@@ -32,7 +32,7 @@ def get_download_url():
 
 
 def _download_and_extract(working_directory_path):
-    source_folder_path = os.path.join(working_directory_path, 'spine_source') 
+    source_folder_path = os.path.join(working_directory_path, 'spine_source')
     url = get_download_url()
     build_utils.download_and_extract(
             url,
