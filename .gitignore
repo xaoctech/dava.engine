@@ -99,3 +99,5 @@ Programs/support/total_commander_plugins/packer_wcx/.project
 Programs/support/total_commander_plugins/packer_wcx/.settings/language.settings.xml
 Programs/support/total_commander_plugins/packer_wcx/.settings/org.eclipse.cdt.managedbuilder.core.prefs
 Thirdparty/output/
+Bin/Toolset/
+*.iml

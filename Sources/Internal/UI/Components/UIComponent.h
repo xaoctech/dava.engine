@@ -1,7 +1,7 @@
-#ifndef __DAVAENGINE_UI_COMPONENT_H__
-#define __DAVAENGINE_UI_COMPONENT_H__
+#pragma once
 
 #include "Base/BaseObject.h"
+#include "Reflection/Reflection.h"
 
 namespace DAVA
 {
@@ -9,27 +9,7 @@ class UIControl;
 
 class UIComponent : public BaseObject
 {
-public:
-    enum eType
-    {
-        BACKGROUND_COMPONENT,
-        LINEAR_LAYOUT_COMPONENT,
-        FLOW_LAYOUT_COMPONENT,
-        FLOW_LAYOUT_HINT_COMPONENT,
-        IGNORE_LAYOUT_COMPONENT,
-        SIZE_POLICY_COMPONENT,
-        ANCHOR_COMPONENT,
-        MODAL_INPUT_COMPONENT,
-        FOCUS_COMPONENT,
-        FOCUS_GROUP_COMPONENT,
-        NAVIGATION_COMPONENT,
-        TAB_ORDER_COMPONENT,
-        ACTION_COMPONENT,
-        ACTION_BINDING_COMPONENT,
-        SCROLL_BAR_DELEGATE_COMPONENT,
-
-        COMPONENT_COUNT
-    };
+    DAVA_VIRTUAL_REFLECTION(UIComponent, BaseObject);
 
 public:
     UIComponent();
@@ -38,11 +18,9 @@ public:
 
     UIComponent& operator=(const UIComponent& src);
 
-    static UIComponent* CreateByType(uint32 componentType);
-    static RefPtr<UIComponent> SafeCreateByType(uint32 componentType);
-    static bool IsMultiple(uint32 componentType);
-
-    virtual uint32 GetType() const = 0;
+    static UIComponent* CreateByType(const Type* componentType);
+    static RefPtr<UIComponent> SafeCreateByType(const Type* componentType);
+    static bool IsMultiple(const Type* componentType);
 
     void SetControl(UIControl* _control);
     UIControl* GetControl() const;
@@ -51,20 +29,12 @@ public:
 
     RefPtr<UIComponent> SafeClone() const;
 
+    virtual int32 GetRuntimeType() const = 0;
+
+    virtual const Type* GetType() const = 0;
+
 private:
     UIControl* control;
-};
-
-template <uint32 TYPE>
-class UIBaseComponent : public UIComponent
-{
-public:
-    static const uint32 C_TYPE = TYPE;
-
-    uint32 GetType() const override
-    {
-        return TYPE;
-    }
 };
 
 inline void UIComponent::SetControl(UIControl* _control)
@@ -76,7 +46,35 @@ inline UIControl* UIComponent::GetControl() const
 {
     return control;
 }
+
+template <class T>
+class UIBaseComponent : public UIComponent
+{
+public:
+    int32 GetRuntimeType() const override
+    {
+        return runtimeType;
+    }
+
+    static int32 GetStaticRuntimeType()
+    {
+        return runtimeType;
+    }
+
+    const Type* GetType() const override
+    {
+        return reflectionType;
+    }
+
+private:
+    static int32 runtimeType;
+    static const Type* reflectionType;
+    friend class ComponentManager;
+};
+
+template <class T>
+int32 UIBaseComponent<T>::runtimeType = -1;
+
+template <class T>
+const Type* UIBaseComponent<T>::reflectionType = Type::Instance<T>();
 }
-
-
-#endif //__DAVAENGINE_UI_COMPONENT_H__

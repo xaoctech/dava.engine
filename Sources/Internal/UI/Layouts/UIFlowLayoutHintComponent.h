@@ -2,14 +2,17 @@
 #define __DAVAENGINE_UI_FLOW_LAYOUT_HINT_COMPONENT_H__
 
 #include "UI/Components/UIComponent.h"
+#include "Reflection/Reflection.h"
 #include <bitset>
 
 namespace DAVA
 {
 class UIControl;
 
-class UIFlowLayoutHintComponent : public UIBaseComponent<UIComponent::FLOW_LAYOUT_HINT_COMPONENT>
+class UIFlowLayoutHintComponent : public UIBaseComponent<UIFlowLayoutHintComponent>
 {
+    DAVA_VIRTUAL_REFLECTION(UIFlowLayoutHintComponent, UIComponent);
+
 public:
     UIFlowLayoutHintComponent();
     UIFlowLayoutHintComponent(const UIFlowLayoutHintComponent& src);
@@ -41,11 +44,6 @@ private:
     };
 
     std::bitset<eFlags::FLAG_COUNT> flags;
-
-public:
-    INTROSPECTION_EXTEND(UIFlowLayoutHintComponent, UIComponent,
-                         PROPERTY("newLineBeforeThis", "New Line Before This", IsNewLineBeforeThis, SetNewLineBeforeThis, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("newLineAfterThis", "New Line After This", IsNewLineAfterThis, SetNewLineAfterThis, I_SAVE | I_VIEW | I_EDIT))
 };
 }
 

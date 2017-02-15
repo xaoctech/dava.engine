@@ -2,10 +2,19 @@
 #include "UI/UIScrollView.h"
 #include "UI/UIControlSystem.h"
 #include "UI/ScrollHelper.h"
+#include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
 {
 const int32 DEFAULT_TOUCH_TRESHOLD = 15; // Default value for finger touch tresshold
+
+DAVA_VIRTUAL_REFLECTION_IMPL(UIScrollViewContainer)
+{
+    ReflectionRegistrator<UIScrollViewContainer>::Begin()
+    .ConstructorByPointer()
+    .DestructorByPointer([](UIScrollViewContainer* o) { o->Release(); })
+    .End();
+}
 
 UIScrollViewContainer::UIScrollViewContainer(const Rect& rect)
     : UIControl(rect)

@@ -415,7 +415,7 @@ void PreviewWidget::InitEditorSystems()
     connect(selectAllAction, &QAction::triggered, std::bind(&EditorSystemsManager::SelectAll, systemsManager.get()));
     editorCanvas = systemsManager->GetEditorCanvas();
     editorCanvas->sizeChanged.Connect(this, &PreviewWidget::UpdateScrollArea);
-    editorCanvas->ositionChanged.Connect(this, &PreviewWidget::OnPositionChanged);
+    editorCanvas->positionChanged.Connect(this, &PreviewWidget::OnPositionChanged);
     editorCanvas->nestedControlPositionChanged.Connect(this, &PreviewWidget::OnNestedControlPositionChanged);
     editorCanvas->scaleChanged.Connect(this, &PreviewWidget::OnScaleChanged);
     //fastest way to apply displayed scale to the editorCanvas
@@ -558,10 +558,10 @@ void PreviewWidget::ChangeControlText(ControlNode* node)
     DVASSERT(staticText != nullptr);
 
     RootProperty* rootProperty = node->GetRootProperty();
-    AbstractProperty* textProperty = rootProperty->FindPropertyByName("Text");
+    AbstractProperty* textProperty = rootProperty->FindPropertyByName("text");
     DVASSERT(textProperty != nullptr);
 
-    String text = textProperty->GetValue().AsString();
+    String text = textProperty->GetValue().Cast<String>();
 
     QString label = tr("Enter new text, please");
     bool ok;
@@ -571,14 +571,14 @@ void PreviewWidget::ChangeControlText(ControlNode* node)
         DVASSERT(document != nullptr);
         QtModelPackageCommandExecutor* executor = document->GetCommandExecutor();
         executor->BeginMacro("change text by user");
-        AbstractProperty* multilineProperty = rootProperty->FindPropertyByName("Multi Line");
+        AbstractProperty* multilineProperty = rootProperty->FindPropertyByName("multiline");
         DVASSERT(multilineProperty != nullptr);
-        UIStaticText::eMultiline multilineType = static_cast<UIStaticText::eMultiline>(multilineProperty->GetValue().AsInt32());
+        UIStaticText::eMultiline multilineType = static_cast<UIStaticText::eMultiline>(multilineProperty->GetValue().Get<int32>());
         if (inputText.contains('\n') && multilineType == UIStaticText::MULTILINE_DISABLED)
         {
-            executor->ChangeProperty(node, multilineProperty, VariantType(UIStaticText::MULTILINE_ENABLED));
+            executor->ChangeProperty(node, multilineProperty, UIStaticText::MULTILINE_ENABLED);
         }
-        executor->ChangeProperty(node, textProperty, VariantType(inputText.toStdString()));
+        executor->ChangeProperty(node, textProperty, inputText.toStdString());
         executor->EndMacro();
     }
 }
@@ -868,7 +868,7 @@ void PreviewWidget::OnDragStateChanged(EditorSystemsManager::eDragState dragStat
     }
 }
 
-void PreviewWidget::OnPropertyChanged(ControlNode* node, AbstractProperty* property, VariantType newValue)
+void PreviewWidget::OnPropertyChanged(ControlNode* node, AbstractProperty* property, const Any& newValue)
 {
     DVASSERT(!document.isNull());
     QtModelPackageCommandExecutor* commandExecutor = document->GetCommandExecutor();

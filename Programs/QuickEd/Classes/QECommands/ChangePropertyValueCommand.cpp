@@ -7,19 +7,19 @@
 #include <QString>
 using namespace DAVA;
 
-ChangePropertyValueCommand::ChangePropertyValueCommand(PackageNode* root_, ControlNode* node_, AbstractProperty* prop, const VariantType& newVal)
-    : DAVA::Command(DAVA::String("changed property: ") + prop->GetName().c_str())
+ChangePropertyValueCommand::ChangePropertyValueCommand(PackageNode* root_, ControlNode* node_, AbstractProperty* property_, const Any& newVal_)
+    : DAVA::Command(DAVA::String("changed property: ") + property_->GetName().c_str())
     , root(root_)
     , node(node_)
-    , property(prop)
-    , oldValue(GetValueFromProperty(prop))
-    , newValue(newVal)
+    , property(property_)
+    , oldValue(GetValueFromProperty(property_))
+    , newValue(newVal_)
 {
 }
 
 void ChangePropertyValueCommand::Redo()
 {
-    if (newValue.GetType() == VariantType::TYPE_NONE)
+    if (newValue.IsEmpty())
     {
         root->ResetControlProperty(node, property);
     }
@@ -31,7 +31,7 @@ void ChangePropertyValueCommand::Redo()
 
 void ChangePropertyValueCommand::Undo()
 {
-    if (oldValue.GetType() == VariantType::TYPE_NONE)
+    if (oldValue.IsEmpty())
     {
         root->ResetControlProperty(node, property);
     }
@@ -41,7 +41,7 @@ void ChangePropertyValueCommand::Undo()
     }
 }
 
-VariantType ChangePropertyValueCommand::GetValueFromProperty(AbstractProperty* property)
+Any ChangePropertyValueCommand::GetValueFromProperty(AbstractProperty* property)
 {
-    return property->IsOverriddenLocally() ? property->GetValue() : VariantType();
+    return property->IsOverriddenLocally() ? property->GetValue() : Any();
 }

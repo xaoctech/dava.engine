@@ -1,7 +1,20 @@
-#include "UINavigationComponent.h"
+#include "UI/Focus/UINavigationComponent.h"
+#include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(UINavigationComponent)
+{
+    ReflectionRegistrator<UINavigationComponent>::Begin()
+    .ConstructorByPointer()
+    .DestructorByPointer([](UINavigationComponent* o) { o->Release(); })
+    .Field("left", &UINavigationComponent::GetNextFocusLeft, &UINavigationComponent::SetNextFocusLeft)
+    .Field("right", &UINavigationComponent::GetNextFocusRight, &UINavigationComponent::SetNextFocusRight)
+    .Field("up", &UINavigationComponent::GetNextFocusUp, &UINavigationComponent::SetNextFocusUp)
+    .Field("down", &UINavigationComponent::GetNextFocusDown, &UINavigationComponent::SetNextFocusDown)
+    .End();
+}
+
 UINavigationComponent::UINavigationComponent()
 {
 }

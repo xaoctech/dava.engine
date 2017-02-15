@@ -1,10 +1,21 @@
-#include "UIFlowLayoutHintComponent.h"
+#include "UI/Layouts/UIFlowLayoutHintComponent.h"
+#include "Reflection/ReflectionRegistrator.h"
 
 #include "UI/UIControl.h"
 #include "Math/Vector.h"
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(UIFlowLayoutHintComponent)
+{
+    ReflectionRegistrator<UIFlowLayoutHintComponent>::Begin()
+    .ConstructorByPointer()
+    .DestructorByPointer([](UIFlowLayoutHintComponent* o) { o->Release(); })
+    .Field("newLineBeforeThis", &UIFlowLayoutHintComponent::IsNewLineBeforeThis, &UIFlowLayoutHintComponent::SetNewLineBeforeThis)
+    .Field("newLineAfterThis", &UIFlowLayoutHintComponent::IsNewLineAfterThis, &UIFlowLayoutHintComponent::SetNewLineAfterThis)
+    .End();
+}
+
 UIFlowLayoutHintComponent::UIFlowLayoutHintComponent()
 {
 }

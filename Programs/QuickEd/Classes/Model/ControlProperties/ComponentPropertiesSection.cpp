@@ -3,13 +3,14 @@
 #include "IntrospectionProperty.h"
 #include "PropertyVisitor.h"
 
-#include "UI/UIControl.h"
-
-#include "Utils/StringFormat.h"
+#include <UI/UIControl.h>
+#include <Utils/StringFormat.h>
+#include <Reflection/ReflectedMeta.h>
+#include <Reflection/ReflectedTypeDB.h>
 
 using namespace DAVA;
 
-ComponentPropertiesSection::ComponentPropertiesSection(DAVA::UIControl* control_, DAVA::UIComponent::eType type_, int32 index_, const ComponentPropertiesSection* sourceSection, eCloneType cloneType)
+ComponentPropertiesSection::ComponentPropertiesSection(DAVA::UIControl* control_, const DAVA::Type* type_, int32 index_, const ComponentPropertiesSection* sourceSection, eCloneType cloneType)
     : SectionProperty("")
     , control(SafeRetain(control_))
     , component(nullptr)
@@ -35,15 +36,18 @@ ComponentPropertiesSection::ComponentPropertiesSection(DAVA::UIControl* control_
 
     RefreshName();
 
-    const InspInfo* insp = component->GetTypeInfo();
-    for (int j = 0; j < insp->MembersCount(); j++)
+    Reflection componentRef = Reflection::Create(&component);
+    Vector<Reflection::Field> fields = componentRef.GetFields();
+    for (const Reflection::Field& field : fields)
     {
-        const InspMember* member = insp->Member(j);
-
-        const IntrospectionProperty* sourceProp = sourceSection == nullptr ? nullptr : sourceSection->FindProperty(member);
-        IntrospectionProperty* prop = new IntrospectionProperty(component, member, sourceProp, cloneType);
-        AddProperty(prop);
-        SafeRelease(prop);
+        if (!(field.ref.IsReadonly() || field.ref.HasMeta<DAVA::M::ReadOnly>()))
+        {
+            String name = field.key.Get<String>();
+            const IntrospectionProperty* sourceProp = sourceSection == nullptr ? nullptr : sourceSection->FindChildPropertyByName(name);
+            IntrospectionProperty* prop = new IntrospectionProperty(component, type_, name, field.ref, sourceProp, cloneType);
+            AddProperty(prop);
+            SafeRelease(prop);
+        }
     }
 }
 
@@ -59,7 +63,7 @@ UIComponent* ComponentPropertiesSection::GetComponent() const
     return component;
 }
 
-DAVA::uint32 ComponentPropertiesSection::GetComponentType() const
+const DAVA::Type* ComponentPropertiesSection::GetComponentType() const
 {
     return component->GetType();
 }
@@ -69,12 +73,15 @@ void ComponentPropertiesSection::AttachPrototypeSection(ComponentPropertiesSecti
     if (prototypeSection == nullptr)
     {
         prototypeSection = section;
-        const InspInfo* insp = component->GetTypeInfo();
-        for (int j = 0; j < insp->MembersCount(); j++)
+
+        Reflection componentRef = Reflection::Create(&component);
+        Vector<Reflection::Field> fields = componentRef.GetFields();
+
+        for (const Reflection::Field& field : fields)
         {
-            const InspMember* member = insp->Member(j);
-            ValueProperty* value = FindProperty(member);
-            ValueProperty* prototypeValue = prototypeSection->FindProperty(member);
+            String name = field.key.Cast<String>();
+            ValueProperty* value = FindChildPropertyByName(name);
+            ValueProperty* prototypeValue = prototypeSection->FindChildPropertyByName(name);
             value->AttachPrototypeProperty(prototypeValue);
         }
     }
@@ -178,7 +185,7 @@ void ComponentPropertiesSection::Accept(PropertyVisitor* visitor)
 
 String ComponentPropertiesSection::GetComponentName() const
 {
-    return GlobalEnumMap<UIComponent::eType>::Instance()->ToString(component->GetType());
+    return ReflectedTypeDB::GetByType(component->GetType())->GetPermanentName();
 }
 
 void ComponentPropertiesSection::RefreshName()

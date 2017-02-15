@@ -35,14 +35,15 @@
 
 #include "Project/Project.h"
 
-#include "UI/UIControl.h"
-#include "UI/UIPackageLoader.h"
-#include "UI/Styles/UIStyleSheetPropertyDataBase.h"
-
-#include "QtTools/ConsoleWidget/PointerSerializer.h"
-
-#include "Logger/Logger.h"
-#include "Utils/StringFormat.h"
+#include <UI/UIControl.h>
+#include <UI/UIPackageLoader.h>
+#include <UI/Styles/UIStyleSheetPropertyDataBase.h>
+         
+#include <QtTools/ConsoleWidget/PointerSerializer.h>
+         
+#include <Logger/Logger.h>
+#include <Utils/StringFormat.h>
+#include <Reflection/ReflectedTypeDB.h>
 
 using namespace DAVA;
 
@@ -141,7 +142,7 @@ void QtModelPackageCommandExecutor::RemoveImportedPackagesFromPackage(const DAVA
     }
 }
 
-void QtModelPackageCommandExecutor::ChangeProperty(ControlNode* node, AbstractProperty* property, const VariantType& value)
+void QtModelPackageCommandExecutor::ChangeProperty(ControlNode* node, AbstractProperty* property, const Any& value)
 {
     if (!property->IsReadOnly())
     {
@@ -153,38 +154,38 @@ void QtModelPackageCommandExecutor::ResetProperty(ControlNode* node, AbstractPro
 {
     if (!property->IsReadOnly())
     {
-        ExecCommand(std::unique_ptr<Command>(new ChangePropertyValueCommand(packageNode, node, property, VariantType())));
+        ExecCommand(std::unique_ptr<Command>(new ChangePropertyValueCommand(packageNode, node, property, Any())));
     }
 }
 
-void QtModelPackageCommandExecutor::AddComponent(ControlNode* node, uint32 componentType)
+void QtModelPackageCommandExecutor::AddComponent(ControlNode* node, const Type* componentType)
 {
     if (node->GetRootProperty()->CanAddComponent(componentType))
     {
-        const char* componentName = GlobalEnumMap<UIComponent::eType>::Instance()->ToString(componentType);
-        BeginMacro(Format("Add Component %s", componentName).c_str());
+        const String& componentName = ReflectedTypeDB::GetByPointer(componentType)->GetPermanentName();
+        BeginMacro(Format("Add Component %s", componentName.c_str()).c_str());
         int32 index = node->GetControl()->GetComponentCount(componentType);
         AddComponentImpl(node, componentType, index, nullptr);
         EndMacro();
     }
 }
 
-void QtModelPackageCommandExecutor::RemoveComponent(ControlNode* node, uint32 componentType, DAVA::uint32 componentIndex)
+void QtModelPackageCommandExecutor::RemoveComponent(ControlNode* node, const Type* componentType, DAVA::uint32 componentIndex)
 {
     if (node->GetRootProperty()->CanRemoveComponent(componentType))
     {
         ComponentPropertiesSection* section = node->GetRootProperty()->FindComponentPropertiesSection(componentType, componentIndex);
         if (section)
         {
-            const char* componentName = GlobalEnumMap<UIComponent::eType>::Instance()->ToString(componentType);
-            BeginMacro(Format("Remove Component %s", componentName).c_str());
+            const String& componentName = ReflectedTypeDB::GetByPointer(componentType)->GetPermanentName();
+            BeginMacro(Format("Remove Component %s", componentName.c_str()).c_str());
             RemoveComponentImpl(node, section);
             EndMacro();
         }
     }
 }
 
-void QtModelPackageCommandExecutor::ChangeProperty(StyleSheetNode* node, AbstractProperty* property, const DAVA::VariantType& value)
+void QtModelPackageCommandExecutor::ChangeProperty(StyleSheetNode* node, AbstractProperty* property, const DAVA::Any& value)
 {
     if (!property->IsReadOnly())
     {
@@ -691,10 +692,8 @@ bool QtModelPackageCommandExecutor::MoveControlImpl(ControlNode* node, ControlsC
     return result;
 }
 
-void QtModelPackageCommandExecutor::AddComponentImpl(ControlNode* node, int32 typeIndex, int32 index, ComponentPropertiesSection* prototypeSection)
+void QtModelPackageCommandExecutor::AddComponentImpl(ControlNode* node, const Type* type, int32 index, ComponentPropertiesSection* prototypeSection)
 {
-    UIComponent::eType type = static_cast<UIComponent::eType>(typeIndex);
-
     ComponentPropertiesSection* destSection = nullptr;
     if (!UIComponent::IsMultiple(type))
     {

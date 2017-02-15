@@ -32,7 +32,7 @@ class UIControlPackageContext;
             -if hierarchy is allready on the screen SystemActive() will be called after adding control to hierarhy. SystemActive()
                 calls OnActive() for the control and then calls SystemActive() for all control children.
 
-            -if hierarchy is not on the screen methods would be called only when the hierarcy parent
+            -if hierarchy is not on the screen methods would be called only when the hierarchy parent
                 be placed to the screen.
 
         When the control removes from hierarchy:
@@ -69,6 +69,7 @@ class UIControl : public AnimatedObject
 {
     friend class UIInputSystem;
     friend class UIControlSystem;
+    DAVA_VIRTUAL_REFLECTION(UIControl, AnimatedObject);
 
 public:
     /**
@@ -100,7 +101,7 @@ public:
         EVENT_HOVERED_SET = 4, //!<
         EVENT_HOVERED_REMOVED = 5, //!<
         EVENT_FOCUS_SET = 6, //!<Trigger when control becomes focused
-        EVENT_FOCUS_LOST = 7, //!<Trigger when control losts focus
+        EVENT_FOCUS_LOST = 7, //!<Trigger when control lost focus
         EVENT_TOUCH_UP_OUTSIDE = 8, //!<Trigger when mouse pressure or touch processed by the control is released outside of the control.
         EVENT_ALL_ANIMATIONS_FINISHED = 9, //!<Trigger when all animations associated with control are ended.
         EVENTS_COUNT
@@ -351,7 +352,7 @@ public:
     inline float32 GetAngleInDegrees() const;
 
     /**
-     \brief Sets contol rotation angle in radians.
+     \brief Sets control rotation angle in radians.
         Control rotates around the pivot point.
      \param[in] angleInRad new control angle in radians.
      */
@@ -371,7 +372,7 @@ public:
     inline bool GetVisibilityFlag() const;
 
     /**
-     \brief Sets contol recursive visibility.
+     \brief Sets control recursive visibility.
         Invisible controls don't process any inputs.
         Also for invisible controls didn't calls Draw() and DrawAfterChilds() methods.
      \param[in] isVisible new control visibility.
@@ -381,14 +382,14 @@ public:
     /**
      \brief Returns control input processing ability.
         Be ware! Base control processing inputs by default.
-     \returns true if control pocessing inputs.
+     \returns true if control processing inputs.
      */
     inline bool GetInputEnabled() const;
 
     /**
-     \brief Sets contol input processing ability.
+     \brief Sets control input processing ability.
         If input is disabled control don't process any inputs. If input is disabled all inputs events would comes to the parent control.
-        Please use input enabling/disabling for the single controls or forthe small parts of hierarchy.
+        Please use input enabling/disabling for the single controls or for the small parts of hierarchy.
         It's always better to add transparent control that covers all screen and would process all
         incoming inputs to prevent input processing for the all screen controls or for the large part of hierarchy.
      \param[in] isEnabled is control should process inputs?
@@ -407,7 +408,7 @@ public:
     bool GetDisabled() const;
 
     /**
-     \brief Sets the contol enabling/disabling.
+     \brief Sets the control enabling/disabling.
         Disabled control don't process any inputs. But allows input processing for their children.
         Use this state only if you want change graphical representation of the control.
         Don't use this state for the disabling inputs for parts of the controls hierarchy!
@@ -424,7 +425,7 @@ public:
     bool GetSelected() const;
 
     /**
-     \brief Sets contol selection state.
+     \brief Sets control selection state.
         Selection state don't influence on any control activities.
      \param[in] isSelected is control selected?
      \param[in] hierarchic use true if you want to all control children change selection state.
@@ -448,14 +449,14 @@ public:
 
     /**
      \brief Returns control hover state.
-        Only controlsa what processed inputs may be hovered.
-     \returns control hover state is true if mouse placed over the control rect and no mous buttons is pressed.
+        Only controls what processed inputs may be hovered.
+     \returns control hover state is true if mouse placed over the control rect and no mouce buttons is pressed.
      */
     bool GetHover() const;
 
     /**
      \brief Is exclusive input enabled.
-        If control have exlusive input enabled and this control starts to process
+        If control have exclusive input enabled and this control starts to process
         inputs. All inputs would be directed only to this control. But this control can
         process multiple number of inputs at a time.
         Exclusive input is disabled by default.
@@ -464,7 +465,7 @@ public:
     inline bool GetExclusiveInput() const;
     /**
      \brief Enables or disables control exclusive input.
-        If control have exlusive input enabled and this control starts to process
+        If control have exclusive input enabled and this control starts to process
         inputs. All inputs would be directed only to this control. But this control can
         process multiple number of inputs at a time.
         Exclusive input is disabled by default.
@@ -477,16 +478,16 @@ public:
         If multiple input is enabled control can process all incoming inputs (Two or
         more touches for example). Otherwise control process only first incoming input.
         Multiply input is disabled by default.
-     \returns true if control supports multyple inputs.
+     \returns true if control supports multiple inputs.
      */
     inline bool GetMultiInput() const;
     /**
-     \brief Sets contol multi input processing.
+     \brief Sets control multi input processing.
         If multiple input is enabled control can process all incoming inputs (Two or
         more touches for example). Otherwise control process only first incoming input.
         Multiply input is disabled by default.
      \param[in] isMultiInput should control supports multiple inputs?
-     \param[in] hierarchic use true if you want to all control children change multi nput support state.
+     \param[in] hierarchic use true if you want to all control children change multi input support state.
      */
     virtual void SetMultiInput(bool isMultiInput, bool hierarchic = true);
     /**
@@ -497,7 +498,7 @@ public:
     template <class T>
     inline void SortChildren(const T& predicate);
     /*
-     \brief Sets the contol name.
+     \brief Sets the conrtol name.
         Later you can find control by this name.
      \param[in] _name new control name.
      */
@@ -511,7 +512,7 @@ public:
     inline const FastName& GetName() const;
 
     /**
-     \brief Sets the contol tag.
+     \brief Sets the control tag.
      \param[in] tag new control tag.
      */
     void SetTag(int32 tag);
@@ -560,7 +561,7 @@ public:
 
     /**
      \brief Returns control parent.
-     \returns if contorl hasn't parent returns NULL.
+     \returns if control hasn't parent returns NULL.
      */
     UIControl* GetParent() const;
 
@@ -572,13 +573,13 @@ public:
     /**
      \brief Add control as a child.
         Children draws in the sequence of adding. If child has another parent
-        this child removes from the parrent firstly.
+        this child removes from the parent firstly.
      \param[in] control control to add.
      */
     virtual void AddControl(UIControl* control);
     /**
      \brief Removes control from the children list.
-        If child isn't present in the method owners list nothin happens.
+        If child isn't present in the method owners list nothing happens.
      \param[in] control control to remove.
      */
     virtual void RemoveControl(UIControl* control);
@@ -593,14 +594,14 @@ public:
     /**
      \brief Brings given child front.
         This child will be drawn at the top of the control children.
-        If child isn't present in the owners list nothin happens.
+        If child isn't present in the owners list nothing happens.
      \param[in] _control control to bring front.
      */
     virtual void BringChildFront(UIControl* _control);
     /**
      \brief Brings given child back.
         This child will be drawn at the bottom of the control children.
-        If child isn't present in the owners list nothin happens.
+        If child isn't present in the owners list nothing happens.
      \param[in] _control control to bring back.
      */
     virtual void BringChildBack(UIControl* _control);
@@ -620,14 +621,14 @@ public:
     virtual void InsertChildAbove(UIControl* _control, UIControl* _aboveThisChild);
     /**
      \brief Sends given child before the requested.
-        If one of the given children isn't present in the owners list nothin happens.
+        If one of the given children isn't present in the owners list nothing happens.
      \param[in] _control control to move.
      \param[in] _belowThisChild control to sends before.
      */
     virtual void SendChildBelow(UIControl* _control, UIControl* _belowThisChild);
     /**
      \brief Sends given child after the requested.
-        If one of the given children isn't present in the owners list nothin happens.
+        If one of the given children isn't present in the owners list nothing happens.
      \param[in] _control control to move.
      \param[in] _aboveThisChild control to sends after.
      */
@@ -636,7 +637,7 @@ public:
     /**
      \brief Adds callback message for the event trigger.
      \param[in] eventType event type you want to process.
-     \param[in] msg message should be calld when the event triggered.
+     \param[in] msg message should be called when the event triggered.
      */
     void AddEvent(int32 eventType, const Message& msg);
     /**
@@ -665,14 +666,14 @@ public:
     void PerformEventWithData(int32 eventType, void* callerData);
 
     /**
-     \brief Creates the absoulutely identic copy of the control.
+     \brief Creates the absolutely identical copy of the control.
      \returns control copy.
      */
     virtual UIControl* Clone();
 
     RefPtr<UIControl> SafeClone();
     /**
-     \brief Copies all contorl parameters from the sended control.
+     \brief Copies all control parameters from the sent control.
      \param[in] srcControl Source control to copy parameters from.
      */
     virtual void CopyDataFrom(UIControl* srcControl);
@@ -753,7 +754,7 @@ public:
      \brief Starts input enabling switching animation. This animation changing control
         input enabling state on the next frame after the animation start.
      \param[in] touchable New input enabled value.
-     \param[in] hierarhic Is value need to be changed in all coltrol children.
+     \param[in] hierarhic Is value need to be changed in all control children.
      \param[in] track animation track. 0 by default.
      \returns Animation object
      */
@@ -762,7 +763,7 @@ public:
      \brief Starts control disabling animation. This animation changing control
         disable state on the next frame after the animation start.
      \param[in] disabled New control disabling value.
-     \param[in] hierarhic Is value need to be changed in all coltrol children.
+     \param[in] hierarhic Is value need to be changed in all control children.
      \param[in] track animation track. 0 by default.
      \returns Animation object
      */
@@ -776,7 +777,7 @@ public:
      */
     Animation* VisibleAnimation(bool visible, int32 track = 0);
     /**
-     \brief Starts control removation animation. This animation removes control from the parent
+     \brief Starts control remove animation. This animation removes control from the parent
      on the next frame  after the animation start.
      \param[in] track animation track. 0 by default.
      \returns Animation object
@@ -800,9 +801,9 @@ protected:
 
 public:
     /**
-     \brief enabling or disabling dbug draw for the control.
+     \brief enabling or disabling debug draw for the control.
      \param[in] _debugDrawEnabled New debug draw value.
-     \param[in] hierarchic Is value need to be changed in all coltrol children.
+     \param[in] hierarchic Is value need to be changed in all control children.
      */
     void SetDebugDraw(bool _debugDrawEnabled, bool hierarchic = false);
     void SetDebugDrawColor(const Color& color);
@@ -811,14 +812,14 @@ public:
     /**
      \brief Set the draw pivot point mode for the control.
      \param[in] mode draw pivot point mode
-     \param[in] hierarchic Is value need to be changed in all coltrol children.
+     \param[in] hierarchic Is value need to be changed in all control children.
      */
     void SetDrawPivotPointMode(eDebugDrawPivotMode mode, bool hierarchic = false);
 
 public:
     /**
      \brief SystemUpdate() calls Updadte() for the control then SystemUpdate() calls for the all control children.
-        Internal method used by ControlSystem. Can be overriden to prevent hierarchical call or adjust functionality.
+        Internal method used by ControlSystem. Can be overridden to prevent hierarchical call or adjust functionality.
      \param[in] timeElapsed Current frame time delta.
      */
     virtual void SystemUpdate(float32 timeElapsed);
@@ -827,7 +828,7 @@ public:
         Firstly this method calls Draw() for the curent control. When SystemDraw() called for the every control child.
         And at the end DrawAfterChilds() called for current control.
         Internal method used by ControlSystem.
-        Can be overriden to adjust draw hierarchy.
+        Can be overridden to adjust draw hierarchy.
      \param[in] geometricData Parent geometric data.
      */
     virtual void SystemDraw(const UIGeometricData& geometricData); // Internal method used by ControlSystem
@@ -857,7 +858,7 @@ public:
     Function<bool(UIControl*, UIEvent*)> customSystemProcessInput;
 
     /**
-     \brief Calls when input processd by control is cancelled.
+     \brief Calls when input processed by control is canceled.
         Internal method used by ControlSystem.
      \param[in] currentInput Input information.
      */
@@ -865,58 +866,58 @@ public:
 
     /**
      \brief Called when control is set as the hovered (by the mouse) control.
-     Internal method used by ControlSystem. Can be overriden only by the people ho knows UI architecture.
+     Internal method used by ControlSystem. Can be overridden only by the people ho knows UI architecture.
      */
     virtual void SystemDidSetHovered();
     /**
      \brief Called when control is not a hovered (by the mouse) control.
-     Internal method used by ControlSystem. Can be overriden only by the people ho knows UI architecture.
+     Internal method used by ControlSystem. Can be overridden only by the people ho knows UI architecture.
      */
     virtual void SystemDidRemoveHovered();
 
     /**
      \brief Called when control is set as the hovered (by the mouse) control.
-     Can be overriden to implement start hoverig reaction.
+     Can be overridden to implement start hovering reaction.
      */
     virtual void DidSetHovered();
     /**
      \brief Called when control is not a hovered (by the mouse) control.
-     Can be overriden to implement end hoverig reaction.
+     Can be overridden to implement end hovering reaction.
      */
     virtual void DidRemoveHovered();
 
     /**
      \brief Calls on every input event coming to control.
-        Should be overriden to implement custom input reaction.
+        Should be overridden to implement custom input reaction.
         During one input processing step into control may come more then one input event.
-        For example: Pressing began event and pressing ended or five conituous mose move events etc.
+        For example: Pressing began event and pressing ended or five continuous mouse move events etc.
         Called only if control inputEnable is true.
      \param[in] currentInput Input information.
      */
     virtual void Input(UIEvent* currentInput);
     /**
-     \brief Calls when input processd by control is cancelled.
-        Should be overriden to implement custom input cancelling reaction.
+     \brief Calls when input processed by control is canceled.
+        Should be overridden to implement custom input cancelling reaction.
      \param[in] currentInput Input information.
      */
     virtual void InputCancelled(UIEvent* currentInput);
     /**
-     \brief Calls on every frame with frame delata time parameter.
-        Should be overriden to implement perframe functionality.
+     \brief Calls on every frame with frame delta time parameter.
+        Should be overridden to implement per frame functionality.
         Default realization is empty.
      \param[in] timeElapsed Current frame time delta.
      */
     virtual void Update(float32 timeElapsed);
     /**
      \brief Calls on every frame to draw control.
-        Can be overriden to implement custom draw functionality.
+        Can be overridden to implement custom draw functionality.
         Default realization is drawing UIControlBackground with requested parameters.
      \param[in] geometricData Control geometric data.
      */
     virtual void Draw(const UIGeometricData& geometricData);
     /**
-     \brief Calls on every frame with UIGeometricData after all children is drawed.
-        Can be overriden to implement after children drawing.
+     \brief Calls on every frame with UIGeometricData after all children is are drew.
+        Can be overridden to implement after children drawing.
         Default realization is empty.
      \param[in] geometricData Control geometric data.
      */
@@ -971,7 +972,7 @@ public:
      */
     bool IsVisible() const;
     /**
-     \brief Returns point status realtive to control .
+     \brief Returns point status relative to control.
      \param[in] point Point to check.
      \param[in] expandWithFocus Is area should be expanded with focus.
      \returns True if inside the control rect.
@@ -1072,46 +1073,95 @@ private:
     eViewState viewState = eViewState::INACTIVE;
     bool inputEnabled : 1;
 
-    /* Components */
 public:
+    //@{
+    /** @name Components */
+    /**
+    Add specified 'component'. 
+    The behavior is undefined unless 'component' is a valid pointer and 'component' is not already added to any UIControl.
+    */
     void AddComponent(UIComponent* component);
+
+    /**
+    Add specified 'component' at specified 'index' for multi-component support.
+    For example, control has 4 UIActionComponents [a, b, c, d] with indeces [0, 1, 2, 3]. If we call InsertComponentAt(e, 2), we will get control with [a, b, e, c, d] components. If we call InsertComponentAt(e, 4 or more), we will get control with [a, b, c, d, e] components. 
+    The behavior is undefined unless 'component' is a valid pointer and 'component' is not already added to any UIControl.
+    */
     void InsertComponentAt(UIComponent* component, uint32 index);
+
+    /** 
+    Remove specified 'component' if it is already added to control.
+    The behavior is undefined unless 'component' is a valid pointer.
+    */
     void RemoveComponent(UIComponent* component);
-    void RemoveComponent(uint32 componentType, uint32 index = 0);
+
+    /** Remove component with specified 'type' at specified 'index'. */
+    void RemoveComponent(const Type* type, uint32 index = 0);
+
+    /** Remove component with specified 'runtimeType' at specified 'index'. */
+    void RemoveComponent(int32 runtimeType, uint32 index = 0);
+
+    /** Remove all components. */
     void RemoveAllComponents();
 
-    UIComponent* GetComponent(uint32 componentType, uint32 index = 0) const;
-    int32 GetComponentIndex(const UIComponent* component) const;
-    UIComponent* GetOrCreateComponent(uint32 componentType, uint32 index = 0);
+    /** Return UIComponent with specified 'type' at specified 'index'. Return nullptr if such component is not found. */
+    UIComponent* GetComponent(const Type* type, uint32 index = 0) const;
 
+    /** Return UIComponent with specified 'runtimeType' at specified 'index'. Return nullptr if such component is not found. */
+    UIComponent* GetComponent(int32 runtimeType, uint32 index = 0) const;
+
+    /** Return UIComponent with specified type 'T' at specified 'index'. */
     template <class T>
     inline T* GetComponent(uint32 index = 0) const
     {
-        return DynamicTypeCheck<T*>(GetComponent(T::C_TYPE, index));
+        return DynamicTypeCheck<T*>(GetComponent(T::GetStaticRuntimeType(), index));
     }
+
+    /**
+    Return index in UIControl::components of specified 'component'. Return -1 if 'component' is not found in control.
+    The behavior is undefined unless 'component' is a valid pointer.
+    */
+    int32 GetComponentIndex(const UIComponent* component) const;
+
+    /** Return UIComponent with specified 'type' at specified 'index'. 
+    If such component is not found, new component with 'type' is created, added to control and returned. 
+    In case of creation, the behavior is undefined until 'index' is 0. */
+    UIComponent* GetOrCreateComponent(const Type* type, uint32 index = 0);
+
+    /** Return UIComponent with specified type'T' at specified 'index'.
+    If such component is not found, new component with 'type' is created, added to control and returned.
+    In case of creation, the behavior is undefined until 'index' is 0. */
     template <class T>
     inline T* GetOrCreateComponent(uint32 index = 0)
     {
-        return DynamicTypeCheck<T*>(GetOrCreateComponent(T::C_TYPE, index));
+        return DynamicTypeCheck<T*>(GetOrCreateComponent(Type::Instance<T>(), index));
     }
+
+    /** Return total number of components. */
+    uint32 GetComponentCount() const;
+
+    /** Return total number of components with specified 'type'. */
+    uint32 GetComponentCount(const Type* type) const;
+
+    /** Return total number of components with specified 'runtimeType'. */
+    uint32 GetComponentCount(int32 runtimeType) const;
+
+    /** Return total number of components with specified 'T'. */
     template <class T>
     inline uint32 GetComponentCount() const
     {
-        return GetComponentCount(T::C_TYPE);
+        return GetComponentCount(T::GetStaticRuntimeType());
     }
 
-    uint32 GetComponentCount() const;
-    uint32 GetComponentCount(uint32 componentType) const;
-    uint64 GetAvailableComponentFlags() const;
-
+    /** Return UIControl::components reference. */
     const Vector<UIComponent*>& GetComponents();
+    //@}
 
 private:
     Vector<UIComponent*> components;
     UIControlFamily* family;
     void RemoveComponent(const Vector<UIComponent*>::iterator& it);
     void UpdateFamily();
-    /* Components */
 
     /* Styles */
 public:
@@ -1179,25 +1229,6 @@ public:
     inline void SetNoInput(bool noInput);
     inline bool GetDebugDraw() const;
     inline void SetDebugDrawNotHierarchic(bool val);
-
-    INTROSPECTION_EXTEND(UIControl, AnimatedObject,
-                         PROPERTY("position", "Position", GetPosition, SetPosition, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("size", "Size", GetSize, SetSize, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("scale", "Scale", GetScale, SetScale, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("pivot", "Pivot", GetPivot, SetPivot, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("angle", "Angle", GetAngleInDegrees, SetAngleInDegrees, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("visible", "Visible", GetVisibilityFlag, SetVisibilityFlag, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("enabled", "Enabled", GetEnabled, SetEnabledNotHierarchic, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("selected", "Selected", GetSelected, SetSelectedNotHierarchic, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("clip", "Clip", GetClipContents, SetClipContents, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("noInput", "No Input", GetNoInput, SetNoInput, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("exclusiveInput", "Exclusive Input", GetExclusiveInput, SetExclusiveInputNotHierarchic, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("wheelSensitivity", "Wheel Sensitivity", GetWheelSensitivity, SetWheelSensitivity, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("tag", "Tag", GetTag, SetTag, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("classes", "Classes", GetClassesAsString, SetClassesFromString, I_SAVE | I_VIEW | I_EDIT)
-
-                         PROPERTY("debugDraw", "Debug Draw", GetDebugDraw, SetDebugDrawNotHierarchic, I_VIEW | I_EDIT)
-                         PROPERTY("debugDrawColor", "Debug draw color", GetDebugDrawColor, SetDebugDrawColor, I_VIEW | I_EDIT));
 };
 
 Vector2 UIControl::GetPivotPoint() const

@@ -188,7 +188,7 @@ void PackageInformationBuilder::EndControlPropertiesSection()
     // do nothing
 }
 
-DAVA::UIComponent* PackageInformationBuilder::BeginComponentPropertiesSection(DAVA::uint32 componentType, DAVA::uint32 componentIndex)
+DAVA::UIComponent* PackageInformationBuilder::BeginComponentPropertiesSection(const DAVA::Type* componentType, DAVA::uint32 componentIndex)
 {
     return nullptr; // do nothing
 }
@@ -198,7 +198,7 @@ void PackageInformationBuilder::EndComponentPropertiesSection()
     // do nothing
 }
 
-void PackageInformationBuilder::ProcessProperty(const DAVA::InspMember* member, const DAVA::VariantType& value)
+void PackageInformationBuilder::ProcessProperty(const Reflection::Field& field, const Any& value)
 {
 }
 

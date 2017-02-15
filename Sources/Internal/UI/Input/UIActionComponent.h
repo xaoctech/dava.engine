@@ -4,13 +4,16 @@
 #include "Base/BaseTypes.h"
 
 #include "UI/Components/UIComponent.h"
+#include "Reflection/Reflection.h"
 
 namespace DAVA
 {
 class UIControl;
 
-class UIActionComponent : public UIBaseComponent<UIComponent::ACTION_COMPONENT>
+class UIActionComponent : public UIBaseComponent<UIActionComponent>
 {
+    DAVA_VIRTUAL_REFLECTION(UIActionComponent, UIComponent);
+
 public:
     UIActionComponent();
     UIActionComponent(const UIActionComponent& src);
@@ -32,10 +35,6 @@ private:
     void SetActionFromString(const String& value);
 
     FastName action;
-
-public:
-    INTROSPECTION_EXTEND(UIActionComponent, UIComponent,
-                         PROPERTY("action", "Action", GetActionAsString, SetActionFromString, I_SAVE | I_VIEW | I_EDIT));
 };
 }
 
