@@ -1,5 +1,5 @@
 
-set( NAME_MODULE Spine )
+set( NAME_MODULE SpineModule )
 
 set( MODULE_TYPE STATIC )
 
@@ -9,11 +9,11 @@ set( INCLUDES_PRIVATE ${CMAKE_CURRENT_LIST_DIR}/Libs/include
                       ${CMAKE_CURRENT_LIST_DIR}/Sources
                       ${DAVA_ENGINE_DIR} )
 
-#set( MODULE_INITIALIZATION_CODE SampleModule.h ) # set hider where found module
-#set( MODULE_INITIALIZATION_NAMESPACE Test )      # set module namespace
+set( MODULE_INITIALIZATION_CODE Sources/SpineModule.h )
+#set( MODULE_INITIALIZATION_NAMESPACE Spine )
 
-set( HPP_FILES Sources/UI/Spine/*.h )
-set( CPP_FILES Sources/UI/Spine/*.cpp )
+set( HPP_FILES_RECURSE *.h )
+set( CPP_FILES_RECURSE *.cpp )
 
 set( LIBRARIES_SPINE ${CMAKE_CURRENT_LIST_DIR}/Libs/lib )
 
@@ -35,6 +35,6 @@ set( STATIC_LIBRARIES_WINUAP_RELEASE ${LIBRARIES_SPINE}/win10/$(Platform)/Releas
 
 set( STATIC_LIBRARIES_WINUAP_DEBUG   ${LIBRARIES_SPINE}/win10/$(Platform)/Debug/spined.lib )
 
-#set( EXCLUDE_FROM_ALL true )
+set( EXCLUDE_FROM_ALL true )
 
 setup_main_module()
