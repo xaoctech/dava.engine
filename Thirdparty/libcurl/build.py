@@ -32,7 +32,7 @@ def build_for_target(target, working_directory_path, root_project_path):
 
 def get_download_info():
     return {'macos_and_ios': 'maintained by curl-ios-build-scripts (bundled)',
-            'others': 'https://curl.haxx.se/download/curl-7.50.3.tar.gz'}
+            'others': 'https://curl.haxx.se/download/curl-7.53.1.tar.gz'}
 
 
 def _download_and_extract(working_directory_path):
@@ -261,17 +261,17 @@ def _build_android(working_directory_path, root_project_path):
 
     env['PATH'] = '{}:{}'.format(
         os.path.join(toolchain_path_arm, 'bin'), original_path_var)
-    install_dir_arm = os.path.join(working_directory_path, 'gen/install_arm')
+    install_dir_android_arm = os.path.join(working_directory_path, 'gen/install_android_arm')
     configure_args = [
         '--host=arm-linux-androideabi',
         '--disable-shared',
         '--with-ssl=' + os.path.abspath(
             os.path.join(
-                working_directory_path, '../openssl/gen/install_arm/'))]
+                working_directory_path, '../openssl/gen/install_android_arm/'))]
     build_utils.build_with_autotools(
         source_folder_path,
         configure_args,
-        install_dir_arm,
+        install_dir_android_arm,
         env)
 
     # x86
@@ -287,18 +287,30 @@ def _build_android(working_directory_path, root_project_path):
 
     env['PATH'] = '{}:{}'.format(
         os.path.join(toolchain_path_x86, 'bin'), original_path_var)
-    install_dir_arm = os.path.join(working_directory_path, 'gen/install_x86')
+    install_dir_android_x86 = os.path.join(working_directory_path, 'gen/install_android_x86')
     configure_args = [
         '--host=i686-linux-android',
         '--disable-shared',
         '--with-ssl=' + os.path.abspath(
             os.path.join(
                 working_directory_path,
-                '../openssl/gen/install_x86/'))]
+                '../openssl/gen/install_android_x86/'))]
     build_utils.build_with_autotools(
         source_folder_path,
         configure_args,
-        install_dir_arm, env)
+        install_dir_android_x86, env)
+
+    # intermediate libs
+    lib_android_arm_itm = os.path.join(install_dir_android_arm, 'lib/libcurl.a')
+    lib_android_x86_itm = os.path.join(install_dir_android_x86, 'lib/libcurl.a')
+
+    # ready libs
+    libs_android_root = os.path.join(root_project_path, 'Libs/lib_CMake/android')
+    lib_android_arm = os.path.join(libs_android_root, 'armeabi-v7a/libcurl.a')
+    lib_android_x86 = os.path.join(libs_android_root, 'x86/libcurl.a')
+
+    shutil.copyfile(lib_android_arm_itm, lib_android_arm)
+    shutil.copyfile(lib_android_x86_itm, lib_android_x86)
 
     _copy_headers(source_folder_path, root_project_path, 'Others')
 

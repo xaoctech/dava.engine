@@ -33,7 +33,7 @@ def build_for_target(target, working_directory_path, root_project_path):
 def get_download_info():
     # Win 10 uses different sources - maintained by Microsoft
     return {'win10': 'https://github.com/Microsoft/openssl/archive/OpenSSL_1_0_2j_WinRT.tar.gz',
-            'others': 'https://www.openssl.org/source/openssl-1.1.0b.tar.gz'}
+            'others': 'https://www.openssl.org/source/openssl-1.1.0e.tar.gz'}
 
 
 def _download_and_extract(working_directory_path, win10=False):

@@ -12,7 +12,7 @@
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
- * are also available at http://curl.haxx.se/docs/copyright.html.
+ * are also available at https://curl.haxx.se/docs/copyright.html.
  *
  * You may opt to use, copy, modify, merge, publish, distribute and/or sell
  * copies of the Software, and permit persons to whom the Software is
@@ -36,7 +36,7 @@
  *
  * If you think that something actually needs to be changed, adjusted
  * or fixed in this file, then, report it on the libcurl development
- * mailing list: http://cool.haxx.se/mailman/listinfo/curl-library/
+ * mailing list: https://cool.haxx.se/mailman/listinfo/curl-library/
  *
  * This header file shall only export symbols which are 'curl' or 'CURL'
  * prefixed, otherwise public name space would be polluted.
@@ -159,7 +159,6 @@
 #  include <sys/poll.h>
 #endif
 
-#if defined(__LP64__)
 /* The size of `long', as computed by sizeof. */
 #define CURL_SIZEOF_LONG 8
 
@@ -195,45 +194,5 @@ typedef CURL_TYPEOF_CURL_OFF_T curl_off_t;
 
 /* unsigned curl_off_t constant suffix. */
 #define CURL_SUFFIX_CURL_OFF_TU UL
-
-#else
-
-/* The size of `long', as computed by sizeof. */
-#define CURL_SIZEOF_LONG 4
-
-/* Integral data type used for curl_socklen_t. */
-#define CURL_TYPEOF_CURL_SOCKLEN_T socklen_t
-
-/* The size of `curl_socklen_t', as computed by sizeof. */
-#define CURL_SIZEOF_CURL_SOCKLEN_T 4
-
-/* Data type definition of curl_socklen_t. */
-typedef CURL_TYPEOF_CURL_SOCKLEN_T curl_socklen_t;
-
-/* Signed integral data type used for curl_off_t. */
-#define CURL_TYPEOF_CURL_OFF_T int64_t
-
-/* Data type definition of curl_off_t. */
-typedef CURL_TYPEOF_CURL_OFF_T curl_off_t;
-
-/* curl_off_t formatting string directive without "%" conversion specifier. */
-#define CURL_FORMAT_CURL_OFF_T "lld"
-
-/* unsigned curl_off_t formatting string without "%" conversion specifier. */
-#define CURL_FORMAT_CURL_OFF_TU "llu"
-
-/* curl_off_t formatting string directive with "%" conversion specifier. */
-#define CURL_FORMAT_OFF_T "%lld"
-
-/* The size of `curl_off_t', as computed by sizeof. */
-#define CURL_SIZEOF_CURL_OFF_T 8
-
-/* curl_off_t constant suffix. */
-#define CURL_SUFFIX_CURL_OFF_T LL
-
-/* unsigned curl_off_t constant suffix. */
-#define CURL_SUFFIX_CURL_OFF_TU ULL
-
-#endif
 
 #endif /* __CURL_CURLBUILD_H */
