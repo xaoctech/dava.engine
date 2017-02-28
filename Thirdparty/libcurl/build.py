@@ -103,10 +103,8 @@ def _build_win10(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
     _patch_sources(source_folder_path, working_directory_path)
 
-    vc14_solution_folder_path = os.path.join(
-        source_folder_path, 'projects/Windows/VC14')
     vc14_solution_file_path = os.path.join(
-        vc14_solution_folder_path, 'curl-all.sln')
+        source_folder_path, 'projects/Windows/VC14/lib/libcurl.sln')
 
     build_utils.build_vs(
         vc14_solution_file_path,
@@ -154,20 +152,17 @@ def _build_win10(working_directory_path, root_project_path):
             'build/Win64/VC14/LIB Release - DLL Windows SSPI/libcurl.lib'),
         os.path.join(
             root_project_path, 'Libs/lib_CMake/win10/x64/Release/libcurl.lib'))
-
-    # ARM outptu folder isn't specifically set by solution, so it's a default one
-
     shutil.copyfile(
         os.path.join(
-            vc14_solution_folder_path,
-            'ARM/LIB Debug - DLL Windows SSPI/libcurld.lib'),
+            source_folder_path,
+            'build/ARM/VC14/LIB Debug - DLL Windows SSPI/libcurld.lib'),
         os.path.join(
             root_project_path,
             'Libs/lib_CMake/win10/arm/Debug/libcurl.lib'))
     shutil.copyfile(
         os.path.join(
-            vc14_solution_folder_path,
-            'ARM/LIB Release - DLL Windows SSPI/libcurl.lib'),
+            source_folder_path,
+            'build/ARM/VC14/LIB Release - DLL Windows SSPI/libcurl.lib'),
         os.path.join(
             root_project_path,
             'Libs/lib_CMake/win10/arm/Release/libcurl.lib'))
