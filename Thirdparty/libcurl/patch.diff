@@ -1,3 +1,5 @@
+PATCHED: Switched from 8.1 SDK to 10.0.10240 (Win10), added ARM configuration, fixed machine type for ARM Configuration, added ipv6 support
+
 diff -urw ./libcurl_source_original/lib/config-win32.h ./libcurl_source/lib/config-win32.h
 --- ./libcurl_source_original/lib/config-win32.h	2016-11-07 12:18:18.000000000 +0300
 +++ ./libcurl_source/lib/config-win32.h	2017-02-28 14:26:41.736944200 +0300
