@@ -2,6 +2,7 @@ import os
 import shutil
 import build_utils
 
+libcurl_version = '7.53.1'
 
 def get_supported_targets(platform):
     if platform == 'win32':
@@ -29,16 +30,10 @@ def build_for_target(target, working_directory_path, root_project_path):
     elif target == 'android':
         _build_android(working_directory_path, root_project_path)
 
-
-def get_download_info():
-    return {'macos_and_ios': 'maintained by curl-ios-build-scripts (bundled)',
-            'others': 'https://curl.haxx.se/download/curl-7.53.1.tar.gz'}
-
-
 def _download_and_extract(working_directory_path):
     source_folder_path = os.path.join(working_directory_path, 'libcurl_source')
 
-    url = get_download_info()['others']
+    url = 'https://curl.haxx.se/download/curl-' + libcurl_version + '.tar.gz'
     build_utils.download_and_extract(
         url,
         working_directory_path,
@@ -96,7 +91,7 @@ def _build_win32(working_directory_path, root_project_path):
             'build/Win64/VC12/LIB Release - DLL Windows SSPI/libcurl.lib'),
         os.path.join(libs_win_root, 'x64/Release/libcurl_a.lib'))
 
-    _copy_headers(source_folder_path, root_project_path, 'Others')
+    _copy_headers(source_folder_path, root_project_path)
 
 
 def _build_win10(working_directory_path, root_project_path):
@@ -167,7 +162,7 @@ def _build_win10(working_directory_path, root_project_path):
             root_project_path,
             'Libs/lib_CMake/win10/arm/Release/libcurl.lib'))
 
-    _copy_headers(source_folder_path, root_project_path, 'Others')
+    _copy_headers(source_folder_path, root_project_path)
 
 
 def _build_macos(working_directory_path, root_project_path):
@@ -177,7 +172,16 @@ def _build_macos(working_directory_path, root_project_path):
         os.makedirs(build_curl_run_dir)
 
     build_curl_args = [
-        './build_curl', '--arch', 'x86_64', '--run-dir', build_curl_run_dir]
+        './build_curl', 
+        '--libcurl-version',
+        libcurl_version,
+        '--osx-sdk-version',
+        '10.12',
+        '--arch', 
+        'x86_64', 
+        '--run-dir', 
+        build_curl_run_dir]
+
     if (build_utils.verbose):
         build_curl_args.append('--verbose')
 
@@ -185,21 +189,14 @@ def _build_macos(working_directory_path, root_project_path):
         build_curl_args,
         process_cwd='curl-ios-build-scripts-master')
 
-    output_path = os.path.join(build_curl_run_dir, 'curl/osx/lib/libcurl.a')
-
+    # copy libs
     shutil.copyfile(
-        output_path,
-        os.path.join(
-            root_project_path,
-            os.path.join('Libs/lib_CMake/mac/libcurl_macos.a')))
+        os.path.join(build_curl_run_dir, 'curl/osx/lib/libcurl.a'),
+        os.path.join(root_project_path, os.path.join('Libs/lib_CMake/mac/libcurl_macos.a')))
 
-    include_path = os.path.join(
-        root_project_path,
-        os.path.join('Libs/include/curl/iOS_MacOS'))
-    build_utils.copy_files(
-        os.path.join(build_curl_run_dir, 'curl/osx/include'),
-        include_path,
-        '*.h')
+    # copy headers from original archive
+    source_folder_path = _download_and_extract(working_directory_path)
+    _copy_headers(source_folder_path, root_project_path)    
 
 
 def _build_ios(working_directory_path, root_project_path):
@@ -210,31 +207,29 @@ def _build_ios(working_directory_path, root_project_path):
 
     build_curl_args = [
         './build_curl',
+        '--libcurl-version',
+        libcurl_version,
+        '--sdk-version',
+        '10.2',
         '--arch',
         'armv7,armv7s,arm64',
         '--run-dir',
         build_curl_run_dir]
+
     if (build_utils.verbose):
         build_curl_args.append('--verbose')
 
     build_utils.run_process(
         build_curl_args, process_cwd='curl-ios-build-scripts-master')
 
-    output_path = os.path.join(
-        build_curl_run_dir, 'curl/ios-appstore/lib/libcurl.a')
-
+    # copy libs
     shutil.copyfile(
-        output_path,
-        os.path.join(
-            root_project_path,
-            os.path.join('Libs/lib_CMake/ios/libcurl_ios.a')))
+        os.path.join(build_curl_run_dir, 'curl/ios-appstore/lib/libcurl.a'),
+        os.path.join(root_project_path, os.path.join('Libs/lib_CMake/ios/libcurl_ios.a')))
 
-    include_path = os.path.join(
-        root_project_path, os.path.join('Libs/include/curl/iOS_MacOS'))
-    build_utils.copy_files(
-        os.path.join(build_curl_run_dir, 'curl/ios-appstore/include'),
-        include_path,
-        '*.h')
+    # copy headers from original archive
+    source_folder_path = _download_and_extract(working_directory_path)    
+    _copy_headers(source_folder_path, root_project_path)
 
 
 def _build_android(working_directory_path, root_project_path):
@@ -307,11 +302,9 @@ def _build_android(working_directory_path, root_project_path):
     shutil.copyfile(lib_android_arm_itm, lib_android_arm)
     shutil.copyfile(lib_android_x86_itm, lib_android_x86)
 
-    _copy_headers(source_folder_path, root_project_path, 'Others')
+    _copy_headers(source_folder_path, root_project_path)
 
 
-def _copy_headers(source_folder_path, root_project_path, target_folder):
-    include_path = os.path.join(
-        root_project_path, os.path.join('Libs/include/curl', target_folder))
-    build_utils.copy_files(
-        os.path.join(source_folder_path, 'include/curl'), include_path, '*.h')
+def _copy_headers(source_folder_path, root_project_path):
+    include_path = os.path.join(root_project_path, 'Libs/include/curl')
+    build_utils.copy_files(os.path.join(source_folder_path, 'include/curl'), include_path, '*.h')

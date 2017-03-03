@@ -93,7 +93,7 @@ module CurlBuilder
 
     def compilation_flags_for(platform, architecture)
       if platform == "iPhoneSimulator" || platform == "iPhoneOS"
-        version = "6.0"
+        version = "7.0"
         min_version = "-miphoneos-version-min=#{version}"
       else
         min_version = "-mmacosx-version-min=10.8"
