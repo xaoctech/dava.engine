@@ -66,12 +66,17 @@ DAVA_TESTCLASS (OpenSSLTest)
             return;
         }
 
-        const unsigned keyBits = 1024;
-        RSA* rsa = RSA_generate_key(keyBits, RSA_F4, nullptr, nullptr);
+        BIGNUM* bne = BN_new();
+        BN_set_word(bne, RSA_F4);
+
+        RSA* rsa = RSA_new();
+        RSA_generate_key_ex(rsa, 1024, bne, nullptr);
+
         const EVP_CIPHER* cipher = EVP_get_cipherbyname("bf-ofb");
         SCOPE_EXIT
         {
             RSA_free(rsa);
+            BN_free(bne);
         };
 
         char* pwdData = const_cast<char*>(password.c_str());
