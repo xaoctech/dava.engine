@@ -192,6 +192,9 @@ def _build_ios(working_directory_path, root_project_path):
 def _build_android(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
 
+    # copy headers
+    _copy_headers(source_folder_path, root_project_path)
+
     env = os.environ.copy()
     original_path_var = env["PATH"]
 
@@ -258,8 +261,6 @@ def _build_android(working_directory_path, root_project_path):
 
     shutil.copyfile(lib_android_arm_itm, lib_android_arm)
     shutil.copyfile(lib_android_x86_itm, lib_android_x86)
-
-    _copy_headers(source_folder_path, root_project_path)
 
 
 def _copy_headers(source_folder_path, root_project_path):
