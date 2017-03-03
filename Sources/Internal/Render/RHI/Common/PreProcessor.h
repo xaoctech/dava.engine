@@ -12,7 +12,7 @@ PreProc
 public:
     class FileCallback;
 
-            PreProc();
+            PreProc(FileCallback* fc=nullptr);
             ~PreProc();
 
     bool    process_file( const char* file_name, TextBuf* output );

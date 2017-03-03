@@ -15,7 +15,7 @@
     #include "Render/RHI/dbg_Draw.h"
 
     #include "FileSystem/DynamicMemoryFile.h"
-    #include "Platform/SystemTimer.h"
+    #include "Time/SystemTimer.h"
 
 using namespace DAVA;
 
@@ -543,10 +543,10 @@ _TestFile( const char* input_name, const char* output_name )
     DAVA::SystemTimer   timer;
 
 
-    t0 = timer.GetAbsoluteUs();
+    t0 = timer.GetUs();
     if( pp.process_file( input_name, &output ) )
     {
-        pp_time = timer.GetAbsoluteUs() - t0;
+        pp_time = timer.GetUs() - t0;
 
         DAVA::File* out = DAVA::File::Create( output_name, DAVA::File::WRITE|DAVA::File::CREATE );
 
@@ -559,7 +559,7 @@ _TestFile( const char* input_name, const char* output_name )
 
     
     {
-    t0 = timer.GetAbsoluteUs();
+    t0 = timer.GetUs();
     DAVA::File* in = DAVA::File::Create( input_name, DAVA::File::READ|DAVA::File::OPEN );
 
     if( in )
@@ -577,7 +577,7 @@ _TestFile( const char* input_name, const char* output_name )
         ::free( input );
         in->Release();
         
-        mcpp_time = timer.GetAbsoluteUs() - t0;
+        mcpp_time = timer.GetUs() - t0;
     }
     }
 

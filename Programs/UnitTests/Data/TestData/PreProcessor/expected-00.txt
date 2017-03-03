@@ -1,0 +1,10 @@
+first
+second
+third
+
+simple-if 0
+
+
+  expected text (if LIFE != 5) 
+
+last

@@ -8,8 +8,8 @@ PreProc::DefFileCallback    PreProc::_DefFileCallback;
 
 //------------------------------------------------------------------------------
 
-PreProc::PreProc()
-  : _file_cb(&_DefFileCallback)
+PreProc::PreProc(FileCallback* fc)
+  : _file_cb((fc)?fc:&_DefFileCallback)
 {
 }
 
@@ -152,7 +152,12 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
     for( char* s=text; *s; ++s ) 
     {
         if( *s == '\r' )
-            *s = ' ';
+        {
+            if( s[1] == '\n' )
+                *s++ = 0;
+            else
+                *s = ' ';
+        }
 
         if( skip_lines )
         {
@@ -245,7 +250,7 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
                 val[v1-v0+1] = 0;
 
                 _process_define( name, val );
-                while( *t != '\n' )
+                while( *t  &&  *t != '\n' )
                     ++t;
                 if( *t == 0 )
                 {
@@ -253,7 +258,8 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
                 }
                 else
                 {
-                    ln = s = t;
+                    s  = t;
+                    ln = t + 1;
                 }
             }
             else if( strncmp( s+1, "if", 2 ) == 0 )
@@ -326,7 +332,7 @@ DAVA::Logger::Error( err );
                 if( *s == 0 )
                     break;
                 else
-                    ln = s;
+                    ln = s+1;
             }
         }
     }
