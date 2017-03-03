@@ -44,51 +44,39 @@ def _download_and_extract(working_directory_path):
 
 
 @build_utils.run_once
-def _patch_sources(source_folder_path, working_directory_path):
+def _patch_sources(source_folder_path, working_directory_path, patch_name):
     # Apply fixes
     build_utils.apply_patch(
-        os.path.abspath('patch.diff'), working_directory_path)
+        os.path.abspath(patch_name), working_directory_path)
 
 
 def _build_win32(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
+    _patch_sources(source_folder_path, working_directory_path, 'patch_win32.diff')
 
-    vc12_solution_file_path = os.path.join(
-        source_folder_path, 'projects/Windows/VC12/curl-all.sln')
-    build_utils.build_vs(
-        vc12_solution_file_path,
-        'LIB Debug - DLL Windows SSPI', 'Win32', 'libcurl')
-    build_utils.build_vs(
-        vc12_solution_file_path,
-        'LIB Release - DLL Windows SSPI', 'Win32', 'libcurl')
-    build_utils.build_vs(
-        vc12_solution_file_path,
-        'LIB Debug - DLL Windows SSPI', 'x64', 'libcurl')
-    build_utils.build_vs(
-        vc12_solution_file_path,
-        'LIB Release - DLL Windows SSPI', 'x64', 'libcurl')
+    vc12_solution_file_path = os.path.join(source_folder_path, 'projects/Windows/VC12/lib/libcurl.sln')
+
+    build_utils.build_vs(vc12_solution_file_path, 'LIB Debug', 'Win32', 'libcurl')
+    build_utils.build_vs(vc12_solution_file_path, 'LIB Release', 'Win32', 'libcurl')
+    build_utils.build_vs(vc12_solution_file_path, 'LIB Debug', 'x64', 'libcurl')
+    build_utils.build_vs(vc12_solution_file_path, 'LIB Release', 'x64', 'libcurl')
 
     libs_win_root = os.path.join(root_project_path, 'Libs/lib_CMake/win')
 
     shutil.copyfile(
-        os.path.join(
-            source_folder_path,
-            'build/Win32/VC12/LIB Debug - DLL Windows SSPI/libcurld.lib'),
+        os.path.join(source_folder_path,'build/Win32/VC12/LIB Debug/libcurld.lib'),
         os.path.join(libs_win_root, 'x86/Debug/libcurl.lib'))
+
     shutil.copyfile(
-        os.path.join(
-            source_folder_path,
-            'build/Win32/VC12/LIB Release - DLL Windows SSPI/libcurl.lib'),
+        os.path.join(source_folder_path, 'build/Win32/VC12/LIB Release/libcurl.lib'),
         os.path.join(libs_win_root, 'x86/Release/libcurl.lib'))
+
     shutil.copyfile(
-        os.path.join(
-            source_folder_path,
-            'build/Win64/VC12/LIB Debug - DLL Windows SSPI/libcurld.lib'),
+        os.path.join(source_folder_path, 'build/Win64/VC12/LIB Debug/libcurld.lib'),
         os.path.join(libs_win_root, 'x64/Debug/libcurl_a_debug.lib'))
+
     shutil.copyfile(
-        os.path.join(
-            source_folder_path,
-            'build/Win64/VC12/LIB Release - DLL Windows SSPI/libcurl.lib'),
+        os.path.join(source_folder_path, 'build/Win64/VC12/LIB Release/libcurl.lib'),
         os.path.join(libs_win_root, 'x64/Release/libcurl_a.lib'))
 
     _copy_headers(source_folder_path, root_project_path)
@@ -96,71 +84,40 @@ def _build_win32(working_directory_path, root_project_path):
 
 def _build_win10(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
-    _patch_sources(source_folder_path, working_directory_path)
+    _patch_sources(source_folder_path, working_directory_path, 'patch_win10.diff')
 
-    vc14_solution_file_path = os.path.join(
-        source_folder_path, 'projects/Windows/VC14/lib/libcurl.sln')
+    vc14_solution_file_path = os.path.join(source_folder_path, 'projects/Windows/VC14/lib/libcurl.sln')
 
-    build_utils.build_vs(
-        vc14_solution_file_path,
-        'LIB Debug - DLL Windows SSPI', 'Win32', 'libcurl')
-    build_utils.build_vs(
-        vc14_solution_file_path,
-        'LIB Release - DLL Windows SSPI', 'Win32', 'libcurl')
-    build_utils.build_vs(
-        vc14_solution_file_path,
-        'LIB Debug - DLL Windows SSPI', 'x64', 'libcurl')
-    build_utils.build_vs(
-        vc14_solution_file_path,
-        'LIB Release - DLL Windows SSPI', 'x64', 'libcurl')
-    build_utils.build_vs(
-        vc14_solution_file_path,
-        'LIB Debug - DLL Windows SSPI', 'ARM', 'libcurl')
-    build_utils.build_vs(
-        vc14_solution_file_path,
-        'LIB Release - DLL Windows SSPI', 'ARM', 'libcurl')
+    build_utils.build_vs(vc14_solution_file_path, 'LIB Debug', 'Win32', 'libcurl')
+    build_utils.build_vs(vc14_solution_file_path, 'LIB Release', 'Win32', 'libcurl')
+    build_utils.build_vs(vc14_solution_file_path, 'LIB Debug', 'x64', 'libcurl')
+    build_utils.build_vs(vc14_solution_file_path, 'LIB Release', 'x64', 'libcurl')
+    build_utils.build_vs(vc14_solution_file_path, 'LIB Debug', 'ARM', 'libcurl')
+    build_utils.build_vs(vc14_solution_file_path, 'LIB Release', 'ARM', 'libcurl')
 
     shutil.copyfile(
-        os.path.join(
-            source_folder_path,
-            'build/Win32/VC14/LIB Debug - DLL Windows SSPI/libcurld.lib'),
-        os.path.join(
-            root_project_path,
-            'Libs/lib_CMake/win10/Win32/Debug/libcurl.lib'))
+        os.path.join(source_folder_path, 'build/Win32/VC14/LIB Debug/libcurld.lib'),
+        os.path.join(root_project_path, 'Libs/lib_CMake/win10/Win32/Debug/libcurl.lib'))
+
     shutil.copyfile(
-        os.path.join(
-            source_folder_path,
-            'build/Win32/VC14/LIB Release - DLL Windows SSPI/libcurl.lib'),
-        os.path.join(
-            root_project_path,
-            'Libs/lib_CMake/win10/Win32/Release/libcurl.lib'))
+        os.path.join(source_folder_path, 'build/Win32/VC14/LIB Release/libcurl.lib'),
+        os.path.join(root_project_path, 'Libs/lib_CMake/win10/Win32/Release/libcurl.lib'))
+
     shutil.copyfile(
-        os.path.join(
-            source_folder_path,
-            'build/Win64/VC14/LIB Debug - DLL Windows SSPI/libcurld.lib'),
-        os.path.join(
-            root_project_path,
-            'Libs/lib_CMake/win10/x64/Debug/libcurl.lib'))
+        os.path.join(source_folder_path, 'build/Win64/VC14/LIB Debug/libcurld.lib'),
+        os.path.join(root_project_path, 'Libs/lib_CMake/win10/x64/Debug/libcurl.lib'))
+
     shutil.copyfile(
-        os.path.join(
-            source_folder_path,
-            'build/Win64/VC14/LIB Release - DLL Windows SSPI/libcurl.lib'),
-        os.path.join(
-            root_project_path, 'Libs/lib_CMake/win10/x64/Release/libcurl.lib'))
+        os.path.join(source_folder_path, 'build/Win64/VC14/LIB Release/libcurl.lib'),
+        os.path.join(root_project_path, 'Libs/lib_CMake/win10/x64/Release/libcurl.lib'))
+
     shutil.copyfile(
-        os.path.join(
-            source_folder_path,
-            'build/ARM/VC14/LIB Debug - DLL Windows SSPI/libcurld.lib'),
-        os.path.join(
-            root_project_path,
-            'Libs/lib_CMake/win10/arm/Debug/libcurl.lib'))
+        os.path.join(source_folder_path, 'build/ARM/VC14/LIB Debug/libcurld.lib'),
+        os.path.join(root_project_path, 'Libs/lib_CMake/win10/arm/Debug/libcurl.lib'))
+
     shutil.copyfile(
-        os.path.join(
-            source_folder_path,
-            'build/ARM/VC14/LIB Release - DLL Windows SSPI/libcurl.lib'),
-        os.path.join(
-            root_project_path,
-            'Libs/lib_CMake/win10/arm/Release/libcurl.lib'))
+        os.path.join(source_folder_path, 'build/ARM/VC14/LIB Release/libcurl.lib'),
+        os.path.join(root_project_path, 'Libs/lib_CMake/win10/arm/Release/libcurl.lib'))
 
     _copy_headers(source_folder_path, root_project_path)
 
