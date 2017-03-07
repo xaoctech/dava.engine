@@ -1,5 +1,7 @@
+#ifdef __clang__ 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wold-style-cast"
+#endif
 
 #include "DAVAEngine.h"
 #include "UnitTests/UnitTests.h"
@@ -177,4 +179,6 @@ DAVA_TESTCLASS (OpenSSLTest)
     }
 };
 
+#ifdef __clang__ 
 #pragma clang diagnostic pop
+#endif
