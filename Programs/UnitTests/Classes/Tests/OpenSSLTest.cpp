@@ -1,3 +1,6 @@
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wold-style-cast"
+
 #include "DAVAEngine.h"
 #include "UnitTests/UnitTests.h"
 
@@ -173,3 +176,5 @@ DAVA_TESTCLASS (OpenSSLTest)
         TEST_VERIFY(memcmp(data.data(), decryptedData.data(), originalDataLen) == 0);
     }
 };
+
+#pragma clang diagnostic pop
