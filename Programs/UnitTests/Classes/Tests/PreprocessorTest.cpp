@@ -56,8 +56,9 @@ DAVA_TESTCLASS (PreprocessorTest)
         }
         test[] = 
         {
-            { "input-00.txt", "expected-00.txt" }
+            { "00-input.txt", "00-output.txt" }
         };
+        static const char* BaseDir = "~res:/TestData/PreProcessor";
 
 
         class
@@ -65,13 +66,17 @@ DAVA_TESTCLASS (PreprocessorTest)
           : public PreProc::FileCallback
         {
         public:
+                                TestFileCallback( const char* base_dir )
+                                  : _base_dir(base_dir)
+                                {}
 
             virtual bool        open( const char* file_name )
                                 {
-                                    char    fname[2048] = "~res:/TestData/PreProcessor/";
+                                    char    fname[2048];
                                     
-                                    strcat( fname, file_name );
+                                    Snprintf( fname, countof(fname), "%s/%s", _base_dir, file_name );
                                     _in = DAVA::File::Create( fname, DAVA::File::READ|DAVA::File::OPEN );
+
                                     return (_in)  ? true  : false;
                                 }
             virtual void        close()
@@ -91,19 +96,20 @@ DAVA_TESTCLASS (PreprocessorTest)
 
         private:
 
-            DAVA::File* _in;
+            DAVA::File*         _in;
+            const char* const   _base_dir;
         };
 
 
         for( int i=0; i!=countof(test); ++i )
         {
-            TestFileCallback    fc;
+            TestFileCallback    fc(BaseDir);
             PreProc             pp(&fc);
             std::vector<char>   output;
-            char                fname[2048] = "~res:/TestData/PreProcessor/"; strcat(fname,test[i].resultFileName);
-            DAVA::File*         expected_file = DAVA::File::Create( fname, DAVA::File::READ|DAVA::File::OPEN ); 
-            size_t              expected_sz = size_t(expected_file->GetSize());
-            char*               expected_data = (char*)(::malloc( expected_sz + 1 ));
+            char                fname[2048];    Snprintf( fname, countof(fname), "%s/%s", BaseDir, test[i].resultFileName );
+            DAVA::File*         expected_file   = DAVA::File::Create( fname, DAVA::File::READ|DAVA::File::OPEN ); 
+            size_t              expected_sz     = size_t(expected_file->GetSize());
+            char*               expected_data   = (char*)(::malloc( expected_sz + 1 ));
 
             TEST_VERIFY(pp.process_file( test[i].inputFileName, &output ));
 
