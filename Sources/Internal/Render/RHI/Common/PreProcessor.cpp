@@ -320,7 +320,7 @@ DAVA::Logger::Error( err );
                 if( *s == 0 )
                     break;
                 else
-                    ln = s;
+                    ln = s+1;
             }
             else if( strncmp( s+1, "endif", 5 ) == 0 )
             {

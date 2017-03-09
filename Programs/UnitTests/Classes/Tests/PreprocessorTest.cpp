@@ -56,7 +56,10 @@ DAVA_TESTCLASS (PreprocessorTest)
         }
         test[] = 
         {
-            { "00-input.txt", "00-output.txt" }
+            { "00-input.txt", "00-output.txt" },
+            { "01-input.txt", "01-output.txt" },
+            { "02-input.txt", "02-output.txt" },
+            { "03-input.txt", "03-output.txt" }
         };
         static const char* BaseDir = "~res:/TestData/PreProcessor";
 
@@ -115,6 +118,18 @@ DAVA_TESTCLASS (PreprocessorTest)
 
             expected_file->Read( expected_data, expected_sz );
             expected_data[expected_sz] = 0;
+
+            #if 0
+            {
+            char    aname[2048] = "~res:/Data/TestData/PreProcessor/";
+
+            strcat( aname, test[i].resultFileName );
+            strcat( aname, ".actual" );
+            DAVA::File* out = DAVA::File::Create( aname, DAVA::File::CREATE|DAVA::File::WRITE ); 
+            out->Write( &output[0], output.size() );
+            out->Release();
+            }
+            #endif
 
             const char* actual_data = &output[0];
             TEST_VERIFY(output.size()==expected_sz);
