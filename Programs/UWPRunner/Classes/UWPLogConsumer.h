@@ -1,8 +1,7 @@
-#ifndef UWP_LOG_CONSUMER_H
-#define UWP_LOG_CONSUMER_H
+#pragma once
 
 #include "Base/BaseTypes.h"
-#include "Network/Services/LogConsumer.h"
+#include <LoggerService/LogConsumer.h>
 
 class UWPLogConsumer : public DAVA::Net::LogConsumer
 {
@@ -23,5 +22,3 @@ private:
     bool channelOpened;
     bool dataReceived = false;
 };
-
-#endif // UWP_LOG_CONSUMER_H

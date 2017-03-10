@@ -71,12 +71,19 @@ void Announcer::DoStart()
     // Restart only if both UDP socket and TCP acceptor failed
     if (error != 0 && errorA != 0 && false == isTerminating)
     {
+        status = START_FAILED;
         DoStop();
+    }
+    else
+    {
+        status = STARTED;
     }
 }
 
 void Announcer::DoStop()
 {
+    status = NOT_STARTED;
+
     if (socket.IsOpen() && !socket.IsClosing())
     {
         runningObjects += 1;

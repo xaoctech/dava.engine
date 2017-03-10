@@ -11,6 +11,8 @@ dava_add_definitions ( -D__DAVAENGINE_COREV2__ )
 
 find_package( DavaFramework REQUIRED COMPONENTS ALL DAVA_DISABLE_AUTOTESTS )
 find_package( ScenePerformanceTests REQUIRED )
+find_package( LoggerService REQUIRED )
+find_package( MemoryProfilerService REQUIRED )
 
 include_directories   ( "Classes" )
 

@@ -1,5 +1,4 @@
-#ifndef __DEVICELISTCONTROLLER_H__
-#define __DEVICELISTCONTROLLER_H__
+#pragma once
 
 #include <QObject>
 #include <QPointer>
@@ -7,6 +6,7 @@
 
 #include <Network/NetCore.h>
 #include <Network/Base/Endpoint.h>
+#include <Network/PeerDesription.h>
 
 #include <Network/PeerDesription.h>
 
@@ -79,7 +79,7 @@ private:
     void DeleteMemProfiler(DAVA::Net::IChannelListener* obj, void* context);
 
     // Check whether device already has been discovered
-    bool AlreadyInModel(const DAVA::Net::Endpoint& endp) const;
+    bool AlreadyInModel(const DAVA::Net::Endpoint& endp, const DAVA::String& appName) const;
 
 private:
     QPointer<QStandardItemModel> model;
@@ -88,7 +88,3 @@ private:
 private:
     static QStandardItem* CreateDeviceItem(const DAVA::Net::Endpoint& endp, const DAVA::Net::PeerDescription& peerDescr);
 };
-
-
-
-#endif // __DEVICELISTCONTROLLER_H__

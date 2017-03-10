@@ -23,8 +23,9 @@ void DeviceLogController::ShowView()
 {
     if (NULL == view)
     {
-        const QString title = QString("%1 (%2 %3)")
-                              .arg(peer.GetName().c_str())
+        const QString title = QString("%1 | %2 (%3 %4)")
+                              .arg(peer.GetAppName().c_str())
+                              .arg(peer.GetDeviceName().c_str())
                               .arg(peer.GetPlatformString().c_str())
                               .arg(peer.GetVersion().c_str());
 

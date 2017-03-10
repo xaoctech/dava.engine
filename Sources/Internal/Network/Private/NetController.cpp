@@ -117,18 +117,26 @@ void NetController::Restart()
 
 void NetController::DoStartServers()
 {
+    bool wasFailed = false;
     runningObjects = servers.size();
     for (size_t i = 0, n = servers.size(); i < n; ++i)
     {
-        servers[i]->Start(this);
+        int32 res = servers[i]->Start(this);
+        if (res != 0)
+        {
+            wasFailed = true;
+        }
     }
+
+    status = wasFailed ? START_FAILED : STARTED;
 }
 
 void NetController::DoStartClients()
 {
     // For now there is always one transport in client role
     runningObjects = 1;
-    clients.front().client->Start(this);
+    int res = clients.front().client->Start(this);
+    status = (res == 0 ? STARTED : START_FAILED);
 }
 
 void NetController::DoRestart()
@@ -144,6 +152,7 @@ void NetController::DoRestart()
 
 void NetController::DoStopServers()
 {
+    status = NOT_STARTED;
     if (true == clients.empty())
     {
         for (size_t i = 0, n = servers.size(); i < n; ++i)
@@ -157,6 +166,7 @@ void NetController::DoStopServers()
 
 void NetController::DoStopClients()
 {
+    status = NOT_STARTED;
     for (List<ClientEntry>::iterator i = clients.begin(), e = clients.end(); i != e; ++i)
     {
         ClientEntry& entry = *i;

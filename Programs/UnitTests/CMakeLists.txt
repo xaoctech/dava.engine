@@ -37,6 +37,7 @@ endif()
 
 find_package( Steam REQUIRED )
 find_package( DavaFramework REQUIRED COMPONENTS "${DAVA_COMPONENTS}" )
+find_package( LoggerService REQUIRED )
 
 include_directories   ( "Classes" )
 

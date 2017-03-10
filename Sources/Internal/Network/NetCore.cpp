@@ -69,6 +69,20 @@ NetCore::TrackId NetCore::CreateController(const NetConfig& config, void* contex
 #endif
 }
 
+bool NetCore::GetControllerStatus(TrackId id, IController::Status& status) const
+{
+    IController* ctrl = TrackIdToObject(id);
+    if (ctrl)
+    {
+        status = ctrl->GetStatus();
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 NetCore::TrackId NetCore::CreateAnnouncer(const Endpoint& endpoint, uint32 sendPeriod, Function<size_t(size_t, void*)> needDataCallback, const Endpoint& tcpEndpoint)
 {
 #if !defined(DAVA_NETWORK_DISABLE)

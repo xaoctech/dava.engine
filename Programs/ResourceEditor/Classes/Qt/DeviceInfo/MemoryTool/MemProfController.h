@@ -1,5 +1,4 @@
-#ifndef __MEMPROFCONTROLLER_H__
-#define __MEMPROFCONTROLLER_H__
+#pragma once
 
 #include <QObject>
 #include <QPointer>
@@ -87,5 +86,3 @@ inline int MemProfController::Mode() const
 {
     return mode;
 }
-
-#endif // __MEMPROFCONTROLLER_H__

@@ -1,6 +1,5 @@
 #include "DeviceListController.h"
 
-
 #include <QDebug>
 #include <QStandardItemModel>
 #include <QStandardItem>
@@ -17,6 +16,9 @@
 #include <Network/NetworkCommon.h>
 #include <Network/PeerDesription.h>
 
+#include <LoggerService/ServiceInfo.h>
+#include <MemoryProfilerService/ServiceInfo.h>
+
 using namespace DAVA;
 using namespace DAVA::Net;
 
@@ -27,8 +29,8 @@ DeviceListController::DeviceListController(QObject* parent)
     model = new QStandardItemModel(this);
 
     // Register network service for recieving logs from device
-    NetCore::Instance()->RegisterService(NetCore::SERVICE_LOG, MakeFunction(this, &DeviceListController::CreateLogger), MakeFunction(this, &DeviceListController::DeleteLogger), "Logger");
-    NetCore::Instance()->RegisterService(NetCore::SERVICE_MEMPROF, MakeFunction(this, &DeviceListController::CreateMemProfiler), MakeFunction(this, &DeviceListController::DeleteMemProfiler), "Memory profiler");
+    NetCore::Instance()->RegisterService(LOG_SERVICE_ID, MakeFunction(this, &DeviceListController::CreateLogger), MakeFunction(this, &DeviceListController::DeleteLogger), "Logger");
+    NetCore::Instance()->RegisterService(MEMORY_PROFILER_SERVICE_ID, MakeFunction(this, &DeviceListController::CreateMemProfiler), MakeFunction(this, &DeviceListController::DeleteMemProfiler), "Memory profiler");
 
     // Create controller for discovering remote devices
     DAVA::Net::Endpoint endpoint(NetCore::defaultAnnounceMulticastGroup, NetCore::DEFAULT_UDP_ANNOUNCE_PORT);
@@ -198,7 +200,7 @@ void DeviceListController::ConnectDeviceInternal(QModelIndex& index, size_t ifIn
 
         // Check whether remote device is under memory profiler and increase read timeout
         // Else leave it zero to allow underlying network system to choose timeout itself
-        bool deviceUnderMemoryProfiler = std::find(servIds.begin(), servIds.end(), NetCore::SERVICE_MEMPROF) != servIds.end();
+        bool deviceUnderMemoryProfiler = std::find(servIds.begin(), servIds.end(), MEMORY_PROFILER_SERVICE_ID) != servIds.end();
         uint32 readTimeout = deviceUnderMemoryProfiler ? 120 * 1000 : Net::DEFAULT_READ_TIMEOUT;
 
         trackId = NetCore::Instance()->CreateController(config, reinterpret_cast<void*>(index.row()), readTimeout);
@@ -217,12 +219,12 @@ void DeviceListController::ConnectDeviceInternal(QModelIndex& index, size_t ifIn
             {
                 DeviceServices services = index.data(ROLE_PEER_SERVICES).value<DeviceServices>();
                 // Check whether remote device has corresponding services
-                auto iterService = std::find(servIds.begin(), servIds.end(), NetCore::SERVICE_LOG);
+                auto iterService = std::find(servIds.begin(), servIds.end(), LOG_SERVICE_ID);
                 if (iterService != servIds.end())
                 {
                     services.log = new DeviceLogController(peer, view, this);
                 }
-                iterService = std::find(servIds.begin(), servIds.end(), NetCore::SERVICE_MEMPROF);
+                iterService = std::find(servIds.begin(), servIds.end(), MEMORY_PROFILER_SERVICE_ID);
                 if (iterService != servIds.end())
                 {
                     services.memprof = new MemProfController(peer, view, this);
@@ -337,8 +339,9 @@ QStandardItem* DeviceListController::CreateDeviceItem(const Endpoint& endp, cons
 {
     // Item text in the form of <name> - <platform> - <ip address>
     // E.g., 9f5656fd - Android - 192.168.0.24
-    const QString caption = QString("%1 - %2 - %3")
-                            .arg(peerDescr.GetName().c_str())
+    const QString caption = QString("%1 - %2 - %3 - %4")
+                            .arg(peerDescr.GetAppName().c_str())
+                            .arg(peerDescr.GetDeviceName().c_str())
                             .arg(peerDescr.GetPlatformString().c_str())
                             .arg(endp.Address().ToString().c_str());
     QStandardItem* item = new QStandardItem();
@@ -457,8 +460,11 @@ void DeviceListController::DiscoverCallback(size_t buflen, const void* buffer, c
 {
     // This method is called when announce packet has arrived
 
-    // Check whether device has been already announced, check by address from which packet recieved
-    if (!AlreadyInModel(endpoint))
+    String appName;
+    bool extracted = PeerDescription::ExtractAppName(buffer, buflen, appName);
+
+    // Check whether device+app has been already announced
+    if (extracted && !AlreadyInModel(endpoint, appName))
     {
         PeerDescription peer;
         if (peer.Deserialize(buffer, buflen) > 0)
@@ -474,12 +480,13 @@ void DeviceListController::DiscoverCallback(size_t buflen, const void* buffer, c
     }
 }
 
-bool DeviceListController::AlreadyInModel(const Endpoint& endp) const
+bool DeviceListController::AlreadyInModel(const Endpoint& endp, const String& appName) const
 {
     for (int i = 0, n = model->rowCount(); i < n; ++i)
     {
         QVariant v = model->item(i)->data(ROLE_SOURCE_ADDRESS);
-        if (endp == v.value<Endpoint>())
+        QVariant p = model->item(i)->data(ROLE_PEER_DESCRIPTION);
+        if (endp == v.value<Endpoint>() && appName == p.value<PeerDescription>().GetAppName())
         {
             return true;
         }

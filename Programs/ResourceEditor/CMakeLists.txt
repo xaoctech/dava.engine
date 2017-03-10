@@ -40,7 +40,8 @@ find_package( DavaFramework REQUIRED COMPONENTS ALL
 
 find_package( QtTools REQUIRED )
 find_package( TArc REQUIRED )
-
+find_package( LoggerService REQUIRED )
+find_package( MemoryProfilerService REQUIRED )
 #
 
 include_directories   ( "${DAVA_SPEEDTREE_ROOT_DIR}" )

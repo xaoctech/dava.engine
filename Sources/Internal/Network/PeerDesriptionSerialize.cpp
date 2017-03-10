@@ -29,10 +29,11 @@ struct SerializedGeneralInfo
     Array<char8, 16> manufacturer;
     Array<char8, 32> model;
     Array<char8, 64> udid;
-    Array<char8, 32> name;
+    Array<char8, 32> deviceName;
+    Array<char8, 32> appName;
 };
 // make sure that sizeof SerializedGeneralInfo with arrays like char8 arr[] is same as witn std::array
-static_assert(196 == sizeof(SerializedGeneralInfo), "invalid SerializedGeneralInfo size.");
+static_assert(228 == sizeof(SerializedGeneralInfo), "invalid SerializedGeneralInfo size.");
 
 struct SerializedIfAddress
 {
@@ -139,8 +140,10 @@ size_t PeerDescription::Serialize(void* dstBuffer, size_t buflen) const
     general->model[general->model.size() - 1] = '\0';
     strncpy(general->udid.data(), udid.c_str(), general->udid.size());
     general->udid[general->udid.size() - 1] = '\0';
-    strncpy(general->name.data(), name.c_str(), general->name.size());
-    general->name[general->name.size() - 1] = '\0';
+    strncpy(general->deviceName.data(), deviceName.c_str(), general->deviceName.size());
+    general->deviceName[general->deviceName.size() - 1] = '\0';
+    strncpy(general->appName.data(), appName.c_str(), general->appName.size());
+    general->appName[general->appName.size() - 1] = '\0';
 
     SerializedIfAddress* ifa = reinterpret_cast<SerializedIfAddress*>(general + 1);
     for (size_t i = 0, n = ifaddr.size(); i < n; ++i)
@@ -196,7 +199,8 @@ size_t PeerDescription::Deserialize(const void* srcBuffer, size_t buflen)
     temp.manufacturer = general->manufacturer.data();
     temp.model = general->model.data();
     temp.udid = general->udid.data();
-    temp.name = general->name.data();
+    temp.deviceName = general->deviceName.data();
+    temp.appName = general->appName.data();
 
     const SerializedIfAddress* ifa = reinterpret_cast<const SerializedIfAddress*>(general + 1);
     for (uint32 i = 0; i < header->ifadrCount; ++i)
@@ -221,6 +225,21 @@ size_t PeerDescription::Deserialize(const void* srcBuffer, size_t buflen)
     // TODO: implement as swap or move semantic
     *this = temp;
     return header->totalSize;
+}
+
+bool PeerDescription::ExtractAppName(const void* srcBuffer, size_t buflen, String& appName)
+{
+    if (srcBuffer == nullptr || buflen < sizeof(SerializedHeader) + sizeof(SerializedGeneralInfo))
+    {
+        DVASSERT(false, "wrong buffer");
+        return false;
+    }
+
+    const SerializedHeader* header = static_cast<const SerializedHeader*>(srcBuffer);
+    const SerializedGeneralInfo* general = reinterpret_cast<const SerializedGeneralInfo*>(header + 1);
+    appName = general->appName.data();
+
+    return true;
 }
 
 } // namespace Net

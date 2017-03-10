@@ -1,13 +1,11 @@
-#ifndef __DAVAENGINE_MMNetClient_H__
-#define __DAVAENGINE_MMNetClient_H__
+#pragma once
 
-#include "Base/BaseTypes.h"
-#include "Functional/Function.h"
+#include "MMNetProto.h"
 
-#include "Network/NetService.h"
-#include "Network/Services/MMNet/MMNetProto.h"
-
-#include "MemoryManager/MemoryManagerTypes.h"
+#include <Base/BaseTypes.h>
+#include <Functional/Function.h>
+#include <Network/NetService.h>
+#include <MemoryManager/MemoryManagerTypes.h>
 
 namespace DAVA
 {
@@ -62,5 +60,3 @@ private:
 
 } // namespace Net
 } // namespace DAVA
-
-#endif // __DAVAENGINE_MMNetClient_H__

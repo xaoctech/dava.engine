@@ -45,7 +45,9 @@
 
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
 #include <MemoryManager/MemoryProfiler.h>
+#include <MemoryProfilerService/ServiceInfo.h>
 #endif
+#include <LoggerService/ServiceInfo.h>
 
 #include "Infrastructure/NativeDelegateMac.h"
 #include "Infrastructure/NativeDelegateIos.h"
@@ -53,6 +55,7 @@
 #ifdef __DAVAENGINE_WIN_UAP__
 #include <Platform/TemplateWin32/UAPNetworkHelper.h>
 #endif
+
 
 void CheckDeviceInfoValid();
 
@@ -117,6 +120,7 @@ TestBed::TestBed(Engine& engine)
     : engine(engine)
     , currentScreen(nullptr)
     , testListScreen(nullptr)
+    , servicesProvider(engine, "TestBed")
 {
     using namespace DAVA;
 
@@ -155,6 +159,11 @@ TestBed::TestBed(Engine& engine)
     }
 
     engine.GetContext()->settings->Load("~res:/EngineSettings.yaml");
+
+    netLogger.reset(new DAVA::Net::NetLogger);
+#if defined(DAVA_MEMORY_PROFILING_ENABLE)
+    memprofServer.reset(new DAVA::Net::MMNetServer);
+#endif
 }
 
 void TestBed::OnGameLoopStarted()
@@ -197,7 +206,12 @@ void TestBed::OnGameLoopStopped()
 void TestBed::OnEngineCleanup()
 {
     Logger::Debug("****** TestBed::OnEngineCleanup");
-    netLogger.Uninstall();
+
+    servicesProvider.Stop();
+    netLogger.reset();
+#if defined(DAVA_MEMORY_PROFILING_ENABLE)
+    memprofServer.reset();
+#endif
 
 #if !defined(__DAVAENGINE_MACOS__)
     nativeDelegate.reset();
@@ -409,60 +423,12 @@ bool TestBed::IsNeedSkipTest(const BaseScreen& screen) const
 
 void TestBed::InitNetwork()
 {
-    using namespace Net;
-    auto loggerCreate = [this](uint32 serviceId, void*) -> IChannelListener* {
-        if (!loggerInUse)
-        {
-            loggerInUse = true;
-            return &netLogger;
-        }
-        return nullptr;
-    };
-    NetCore::Instance()->RegisterService(NetCore::SERVICE_LOG, loggerCreate,
-                                         [this](IChannelListener* obj, void*) -> void { loggerInUse = false; });
-
+    servicesProvider.AddService(DAVA::Net::LOG_SERVICE_ID, netLogger.get());
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
-    auto memprofCreate = [this](uint32 serviceId, void*) -> IChannelListener* {
-        if (!memprofInUse)
-        {
-            memprofInUse = true;
-            return &memprofServer;
-        }
-        return nullptr;
-    };
-    NetCore::Instance()->RegisterService(NetCore::SERVICE_MEMPROF, memprofCreate,
-                                         [this](IChannelListener* obj, void*) -> void { memprofInUse = false; });
+    servicesProvider.AddService(DAVA::Net::MEMORY_PROFILER_SERVICE_ID, memprofServer.get());
 #endif
 
-    eNetworkRole role = SERVER_ROLE;
-    Net::Endpoint endpoint = Net::Endpoint(NetCore::DEFAULT_TCP_PORT);
-
-#ifdef __DAVAENGINE_WIN_UAP__
-    role = UAPNetworkHelper::GetCurrentNetworkRole();
-    endpoint = UAPNetworkHelper::GetCurrentEndPoint();
-#endif
-
-    NetConfig config(role);
-    config.AddTransport(TRANSPORT_TCP, endpoint);
-    config.AddService(NetCore::SERVICE_LOG);
-#if defined(DAVA_MEMORY_PROFILING_ENABLE)
-    config.AddService(NetCore::SERVICE_MEMPROF);
-#endif
-    peerDescr = PeerDescription(config);
-    Net::Endpoint annoUdpEndpoint(NetCore::defaultAnnounceMulticastGroup, NetCore::DEFAULT_UDP_ANNOUNCE_PORT);
-    Net::Endpoint annoTcpEndpoint(NetCore::DEFAULT_TCP_ANNOUNCE_PORT);
-    id_anno = NetCore::Instance()->CreateAnnouncer(annoUdpEndpoint, DEFAULT_ANNOUNCE_TIME_PERIOD, MakeFunction(this, &TestBed::AnnounceDataSupplier), annoTcpEndpoint);
-    id_net = NetCore::Instance()->CreateController(config, nullptr);
-}
-
-size_t TestBed::AnnounceDataSupplier(size_t length, void* buffer)
-{
-    using namespace Net;
-    if (true == peerDescr.NetworkInterfaces().empty())
-    {
-        peerDescr.SetNetworkInterfaces(NetCore::Instance()->InstalledInterfaces());
-    }
-    return peerDescr.Serialize(buffer, length);
+    servicesProvider.Start();
 }
 
 void CheckDeviceInfoValid()

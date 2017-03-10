@@ -1,5 +1,4 @@
-#ifndef __DEVICELOGCONTROLLER_H__
-#define __DEVICELOGCONTROLLER_H__
+#pragma once
 
 #include <QObject>
 #include <QPointer>
@@ -9,8 +8,7 @@
 
 class LogWidget;
 
-class DeviceLogController : public QObject
-                            ,
+class DeviceLogController : public QObject,
                             public DAVA::Net::NetService
 {
     Q_OBJECT
@@ -33,5 +31,3 @@ private:
     QPointer<QWidget> parentWidget;
     DAVA::Net::PeerDescription peer;
 };
-
-#endif // __DEVICELOGCONTROLLER_H__
