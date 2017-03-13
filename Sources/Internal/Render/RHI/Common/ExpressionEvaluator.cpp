@@ -8,12 +8,14 @@
 
 //------------------------------------------------------------------------------
 
-const char* ExpressionEvaluator::_Operators         = "+-*/^!\001\002\003\004";
+const char* ExpressionEvaluator::_Operators         = "+-*/^!\001\002\003\004\006\007";
 const char  ExpressionEvaluator::_OpEqual           = '\001';
 const char  ExpressionEvaluator::_OpNotEqual        = '\002';
 const char  ExpressionEvaluator::_OpLogicalAnd      = '\003';
 const char  ExpressionEvaluator::_OpLogicalOr       = '\004';
 const char  ExpressionEvaluator::_OpFunctionCall    = '\005';
+const char  ExpressionEvaluator::_OpDefined         = '\006';
+const char  ExpressionEvaluator::_OpNotDefined      = '\007';
 
 static const unsigned InvalidIndex = (unsigned)(-1);
 static const float Epsilon = 0.000001f;
@@ -88,8 +90,11 @@ ExpressionEvaluator::_PopConnectPush()
 {
     _operator_stack.back().right_i = _node_stack.back();
     _node_stack.pop_back();
-    _operator_stack.back().left_i  = _node_stack.back();
-    _node_stack.pop_back();
+    if( _operator_stack.back().operation != _OpDefined  &&  _operator_stack.back().operation != _OpNotDefined )
+    {
+        _operator_stack.back().left_i  = _node_stack.back();
+        _node_stack.pop_back();
+    }
 
     _node_stack.push_back( _node.size() );
     _node.push_back( _operator_stack.back() );
@@ -109,49 +114,79 @@ ExpressionEvaluator::_Evaluate( const SyntaxTreeNode* node, float* out, unsigned
     {
         if( node->operation )
         {
-            if(    (node->operation == _OpFunctionCall && node->right_i != InvalidIndex)   // for funcs only right arg makes sence
+            if(    ((node->operation == _OpFunctionCall  ||  node->operation == _OpDefined  ||  node->operation == _OpNotDefined) && node->right_i != InvalidIndex)   // for funcs only right arg makes sense
                 || (node->left_i  != InvalidIndex && node->right_i != InvalidIndex) // for normal ops - binary operator is assumed
               )
             {
-                float x, y;
-                
-                if(    (node->left_i == InvalidIndex  ||  _Evaluate( (&_node[0])+node->left_i,  &x, err_code, err_index ))
-                    && _Evaluate( (&_node[0])+node->right_i, &y, err_code, err_index ) 
-                  )
+                if( node->operation == _OpDefined )
                 {
-                    switch( node->operation )
+                    float   val;
+
+                    if( _Evaluate( (&_node[0])+node->right_i, &val, err_code, err_index ) )
                     {
-                        case '+' : *out = x + y; break;
-                        case '-' : *out = x - y; break;
-                        case '*' : *out = x * y; break;
-                        case '/' : *out = x / y; break;
-
-                        case '^' : *out = pow(x, y);  break;
-
-                        case _OpEqual : 
-                            *out = fabs(x - y) < Epsilon ? 1.0f : 0.0f; 
-                            break;
-                            
-                        case _OpNotEqual : 
-                            *out = fabs(x - y) < Epsilon ? 0.0f : 1.0f; 
-                            break;
-
-                        case _OpLogicalAnd : 
-                            *out = (fabs(x) > Epsilon  &&  fabs(y) > Epsilon) ? 1.0f : 0.0f; 
-                            break;
-                        case _OpLogicalOr : 
-                            *out = (fabs(x) > Epsilon  ||  fabs(y) > Epsilon) ? 1.0f : 0.0f; 
-                            break;
-
-//                        case _OpFunctionCall : 
-//                            *out = func[node->function_code](y);
-//                            break;
+                        *out = (val==0.0f)  ? 0.0f  : 1.0f;
                     }
+                    else
+                    {
+                        return false; // error code and index already filled
+                    }
+                }
+                else if( node->operation == _OpNotDefined )
+                {
+                    float   val;
 
+                    if( _Evaluate( (&_node[0])+node->right_i, &val, err_code, err_index ) )
+                    {
+                        *out = (val==0.0f)  ? 1.0f  : 0.0f;
+                    }
+                    else
+                    {
+                        return false; // error code and index already filled
+                    }
                 }
                 else
                 {
-                    return false; // error code and index already filled
+                    float x, y;
+                
+                    if(    (node->left_i == InvalidIndex  ||  _Evaluate( (&_node[0])+node->left_i,  &x, err_code, err_index ))
+                        && _Evaluate( (&_node[0])+node->right_i, &y, err_code, err_index ) 
+                      )
+                    {
+                        switch( node->operation )
+                        {
+                            case '+' : *out = x + y; break;
+                            case '-' : *out = x - y; break;
+                            case '*' : *out = x * y; break;
+                            case '/' : *out = x / y; break;
+
+                            case '^' : *out = pow(x, y);  break;
+
+                            case _OpEqual : 
+                                *out = fabs(x - y) < Epsilon ? 1.0f : 0.0f; 
+                                break;
+                            
+                            case _OpNotEqual : 
+                                *out = fabs(x - y) < Epsilon ? 0.0f : 1.0f; 
+                                break;
+
+                            case _OpLogicalAnd : 
+                                *out = (fabs(x) > Epsilon  &&  fabs(y) > Epsilon) ? 1.0f : 0.0f; 
+                                break;
+
+                            case _OpLogicalOr : 
+                                *out = (fabs(x) > Epsilon  ||  fabs(y) > Epsilon) ? 1.0f : 0.0f; 
+                                break;
+
+    //                        case _OpFunctionCall : 
+    //                            *out = func[node->function_code](y);
+    //                            break;
+                        }
+
+                    }
+                    else
+                    {
+                        return false; // error code and index already filled
+                    }
                 }
             }
             else
@@ -222,6 +257,9 @@ ExpressionEvaluator::_Priority( char operation )
     {
         case '!' :
             ret+=2;
+        case _OpDefined :
+        case _OpNotDefined :
+            ret+=3;
         case '^' :
             ++ret;
         case '*' :
@@ -279,6 +317,16 @@ ExpressionEvaluator::evaluate( const char* expression, float* result )
             *d++ = _OpLogicalOr;
             s += 2;
         }
+        else if( _strnicmp( s, "!defined", 8 ) == 0 )
+        {
+            *d++ = _OpNotDefined;
+            s += 8+1;
+        }
+        else if( _strnicmp( s, "defined", 7 ) == 0 )
+        {
+            *d++ = _OpDefined;
+            s += 7+1;
+        }
         else 
         { 
             *d++ = *s++; 
@@ -330,7 +378,8 @@ ExpressionEvaluator::evaluate( const char* expression, float* result )
         // process variables
         else if( isalpha(*expr) )
         {
-            offset      = _GetVariable(expr);
+            offset = _GetVariable( expr );
+
             strncpy(&var[0], expr, offset);
             var[offset] = '\0';
             uint32 vhash = DAVA::HashValue_N(var,offset);
@@ -342,6 +391,9 @@ ExpressionEvaluator::evaluate( const char* expression, float* result )
                     value = -value;
                 if( invert_operand_value )
                     value = (fabs(value) > Epsilon)  ? 0.0f  : 1.0f;
+                
+                if( _operator_stack.size()  && (_operator_stack.back().operation == _OpDefined  ||  _operator_stack.back().operation == _OpNotDefined) )
+                    value = 1.0f;
 
                 _node_stack.push_back( _node.size() );
                 _node.push_back( SyntaxTreeNode( value, expr-text ) );
@@ -352,11 +404,24 @@ ExpressionEvaluator::evaluate( const char* expression, float* result )
             }
             else
             {
-                // undefined symbol
-                _last_error_code  = 3;
-                _last_error_index = expr - text;
-                return false;
+                if( _operator_stack.size()  &&  (_operator_stack.back().operation == _OpDefined  ||  _operator_stack.back().operation == _OpNotDefined) )
+                {
+                    _node_stack.push_back( _node.size() );
+                    _node.push_back( SyntaxTreeNode( 0.0f, InvalidIndex ) );
+
+                    last_token_operand   = true;
+                    negate_operand_value = false;
+                    invert_operand_value = false;
+                }
+                else
+                {
+                    // undefined symbol
+                    _last_error_code  = 3;
+                    _last_error_index = expr - text;
+                    return false;
+                }
             }
+
         }
         // process operators
         else if( strchr( _Operators, *expr ) )
@@ -391,7 +456,7 @@ ExpressionEvaluator::evaluate( const char* expression, float* result )
                         &&  _Priority(_operator_stack.back().operation) >= _Priority(*expr)
                      )
                 {
-                    if( _node_stack.size() < 2 )
+                    if( _node_stack.size() < 2  &&  _operator_stack.back().operation != _OpDefined  &&  _operator_stack.back().operation != _OpNotDefined )
                     {
                         // not enough operands
                         _last_error_code  = 1;
@@ -476,7 +541,7 @@ ExpressionEvaluator::evaluate( const char* expression, float* result )
             _last_error_index = _operator_stack.back().expr_index;
             return false;
         }
-        else if( _node_stack.size() < 2 )
+        else if( _node_stack.size() < 2  &&  _operator_stack.back().operation != _OpDefined  &&  _operator_stack.back().operation != _OpNotDefined )
         {
             // not enough operands
             _last_error_code  = 1;

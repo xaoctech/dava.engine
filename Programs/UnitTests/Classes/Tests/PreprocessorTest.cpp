@@ -27,7 +27,10 @@ DAVA_TESTCLASS (PreprocessorTest)
           { "LIGHTING_ENABLED", 1.0f },
           { "!DARKNESS_DISABLED", 1.0f },
           { "!DARKNESS_DISABLED && SHADING != SHADING_NONE", 1.0f },
-          { "LIGHTING_ENABLED || !DARKNESS_DISABLED", 1.0f }
+          { "LIGHTING_ENABLED || !DARKNESS_DISABLED", 1.0f },
+          { "defined DARKNESS_DISABLED", 1.0f },
+          { "!defined RANDOM_BULLSHIT", 1.0f },
+          { "SHADING != SHADING_NONE  &&  !defined RANDOM_BULLSHIT", 1.0f }
         };
 
         ev.set_variable("bla", 13);
