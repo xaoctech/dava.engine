@@ -1,12 +1,10 @@
-#ifndef __DAVAENGINE_DISCOVERER_H__
-#define __DAVAENGINE_DISCOVERER_H__
+#pragma once
 
-#include <Network/Base/UDPSocket.h>
-#include <Network/Base/DeadlineTimer.h>
-
+#include "Concurrency/Atomic.h"
+#include "Network/Base/UDPSocket.h"
+#include "Network/Base/DeadlineTimer.h"
 #include "Network/Base/TCPSocket.h"
-
-#include <Network/IController.h>
+#include "Network/IController.h"
 
 namespace DAVA
 {
@@ -67,5 +65,3 @@ inline IController::Status Discoverer::GetStatus() const
 
 } // namespace Net
 } // namespace DAVA
-
-#endif // __DAVAENGINE_DISCOVERER_H__

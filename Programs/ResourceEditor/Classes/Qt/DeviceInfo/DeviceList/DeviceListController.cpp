@@ -28,8 +28,8 @@ DeviceListController::DeviceListController(QObject* parent)
     model = new QStandardItemModel(this);
 
     // Register network service for recieving logs from device
-    NetCore::Instance()->RegisterService(LOG_SERVICE_ID, MakeFunction(this, &DeviceListController::CreateLogger), MakeFunction(this, &DeviceListController::DeleteLogger), "Logger");
-    NetCore::Instance()->RegisterService(MEMORY_PROFILER_SERVICE_ID, MakeFunction(this, &DeviceListController::CreateMemProfiler), MakeFunction(this, &DeviceListController::DeleteMemProfiler), "Memory profiler");
+    NetCore::Instance()->RegisterService(LOG_SERVICE_ID, DAVA::MakeFunction(this, &DeviceListController::CreateLogger), DAVA::MakeFunction(this, &DeviceListController::DeleteLogger), "Logger");
+    NetCore::Instance()->RegisterService(MEMORY_PROFILER_SERVICE_ID, DAVA::MakeFunction(this, &DeviceListController::CreateMemProfiler), DAVA::MakeFunction(this, &DeviceListController::DeleteMemProfiler), "Memory profiler");
 
     // Create controller for discovering remote devices
     Endpoint endpoint(NetCore::defaultAnnounceMulticastGroup, NetCore::DEFAULT_UDP_ANNOUNCE_PORT);
@@ -141,7 +141,7 @@ void DeviceListController::DeleteLogger(DAVA::Net::IChannelListener*, void* cont
         if (item != NULL)
         {
             DeviceServices services = index.data(ROLE_PEER_SERVICES).value<DeviceServices>();
-            SafeDelete(services.log);
+            DAVA::SafeDelete(services.log);
 
             QVariant v;
             v.setValue(services);
@@ -173,7 +173,7 @@ void DeviceListController::DeleteMemProfiler(DAVA::Net::IChannelListener* obj, v
         if (item != NULL)
         {
             DeviceServices services = index.data(ROLE_PEER_SERVICES).value<DeviceServices>();
-            SafeDelete(services.memprof);
+            DAVA::SafeDelete(services.memprof);
 
             QVariant v;
             v.setValue(services);
@@ -295,7 +295,7 @@ void DeviceListController::OnDisconnectButtonPressed()
 {
     if (!DAVA::Net::NetCore::IsNetworkEnabled())
     {
-        Logger::Warning("[DeviceListController] Network is disabled in this build");
+        DAVA::Logger::Warning("[DeviceListController] Network is disabled in this build");
         return;
     }
 

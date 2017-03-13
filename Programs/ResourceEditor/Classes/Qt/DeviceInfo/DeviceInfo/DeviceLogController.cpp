@@ -44,7 +44,7 @@ void DeviceLogController::ChannelOpen()
 
 void DeviceLogController::ChannelClosed(const DAVA::char8* message)
 {
-    String s("************ Connection closed: ");
+    DAVA::String s("************ Connection closed: ");
     s += message;
     Output(s);
 }
