@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Functional/Signal.h"
-
-#include "Network/NetService.h"
+#include <Functional/Signal.h>
+#include <Network/NetService.h>
 
 namespace DAVA
 {

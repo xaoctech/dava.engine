@@ -17,6 +17,8 @@ public:
     PeerDescription();
     PeerDescription(const String& appName, const NetConfig& config);
 
+    PeerDescription& operator=(PeerDescription&&);
+
     DeviceInfo::ePlatform GetPlatform() const;
     const String& GetPlatformString() const;
     const String& GetVersion() const;

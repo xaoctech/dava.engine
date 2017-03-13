@@ -72,10 +72,10 @@ private:
     void DisonnectDeviceInternal(QModelIndex& index);
 
     // Methods to create and delete network services
-    DAVA::Net::IChannelListener* CreateLogger(DAVA::uint32 serviceId, void* context);
+    DAVA::Net::IChannelListener* CreateLogger(DAVA::Net::ServiceID serviceId, void* context);
     void DeleteLogger(DAVA::Net::IChannelListener*, void* context);
 
-    DAVA::Net::IChannelListener* CreateMemProfiler(DAVA::uint32 serviceId, void* context);
+    DAVA::Net::IChannelListener* CreateMemProfiler(DAVA::Net::ServiceID serviceId, void* context);
     void DeleteMemProfiler(DAVA::Net::IChannelListener* obj, void* context);
 
     // Check whether device already has been discovered

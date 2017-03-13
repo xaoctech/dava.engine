@@ -56,7 +56,6 @@
 #include <Platform/TemplateWin32/UAPNetworkHelper.h>
 #endif
 
-
 void CheckDeviceInfoValid();
 
 int DAVAMain(DAVA::Vector<DAVA::String> cmdline)

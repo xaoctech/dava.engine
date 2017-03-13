@@ -17,6 +17,7 @@ struct IController
     {
         NOT_STARTED,
         STARTED,
+        STARTED_SOME_FAILED,
         START_FAILED
     };
     virtual Status GetStatus() const = 0;

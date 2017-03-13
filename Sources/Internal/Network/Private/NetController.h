@@ -1,7 +1,7 @@
-#ifndef __DAVAENGINE_NETCONTROLLER_H__
-#define __DAVAENGINE_NETCONTROLLER_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
+#include "Concurrency/Atomic.h"
 
 #include "Network/NetworkCommon.h"
 #include "Network/IController.h"
@@ -105,5 +105,3 @@ inline IController::Status NetController::GetStatus() const
 
 } // namespace Net
 } // namespace DAVA
-
-#endif // __DAVAENGINE_NETCONTROLLER_H__

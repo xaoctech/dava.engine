@@ -63,5 +63,5 @@ private:
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
     std::unique_ptr<DAVA::Net::MMNetServer> memprofServer;
 #endif
-    std::unique_ptr<DAVA::Net::ServicesProvider> servicesProvider;
+    DAVA::Net::ServicesProvider servicesProvider;
 };

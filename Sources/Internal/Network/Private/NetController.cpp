@@ -117,18 +117,33 @@ void NetController::Restart()
 
 void NetController::DoStartServers()
 {
-    bool wasFailed = false;
+    size_t failedCount = 0;
     runningObjects = servers.size();
-    for (size_t i = 0, n = servers.size(); i < n; ++i)
+    for (IServerTransport* server : servers)
     {
-        int32 res = servers[i]->Start(this);
+        int32 res = server->Start(this);
         if (res != 0)
         {
-            wasFailed = true;
+            ++failedCount;
         }
     }
 
-    status = wasFailed ? START_FAILED : STARTED;
+    if (!runningObjects)
+    {
+        status = NOT_STARTED;
+    }
+    else if (failedCount == 0)
+    {
+        status = STARTED;
+    }
+    else if (failedCount == runningObjects)
+    {
+        status = START_FAILED;
+    }
+    else
+    {
+        status = STARTED_SOME_FAILED;
+    }
 }
 
 void NetController::DoStartClients()
