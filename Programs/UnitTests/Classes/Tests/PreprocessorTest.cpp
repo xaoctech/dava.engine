@@ -62,7 +62,8 @@ DAVA_TESTCLASS (PreprocessorTest)
             { "00-input.txt", "00-output.txt" },
             { "01-input.txt", "01-output.txt" },
             { "02-input.txt", "02-output.txt" },
-            { "03-input.txt", "03-output.txt" }
+            { "03-input.txt", "03-output.txt" },
+            { "04-input.txt", "04-output.txt" }
         };
         static const char* BaseDir = "~res:/TestData/PreProcessor";
 
@@ -122,7 +123,7 @@ DAVA_TESTCLASS (PreprocessorTest)
             expected_file->Read( expected_data, expected_sz );
             expected_data[expected_sz] = 0;
 
-            #if 0
+            #if 1
             {
             char    aname[2048] = "~res:/Data/TestData/PreProcessor/";
 

@@ -18,6 +18,8 @@ public:
     bool        set_variable( const char* var, float value );
     void        clear_variables();
 
+    bool        has_variable( const char* name ) const;
+
     // returns 
     // true, if there was error and fills provided buffer with error message
     // false, when no error occured (err_buffer is not changed)

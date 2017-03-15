@@ -262,6 +262,60 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
                     ln = t + 1;
                 }
             }
+            else if( strncmp( s+1, "ifdef", 5 ) == 0 )
+            {
+                char*   t  = s+1+5;
+                char*   n0 = nullptr;
+                char*   n1 = nullptr;
+                char    name[128];
+
+                while( *t == ' '  ||  *t == '\t'  )
+                    ++t;
+                DVASSERT(*t);
+                n0 = t;
+                while( *t != ' '  &&  *t != '\t'  &&  *t != '\r'  &&  *t != '\n'  )
+                    ++t;
+                DVASSERT(*t);
+                n1 = t-1;
+
+                strncpy( name, n0, n1-n0+1 );
+                name[n1-n0+1] = 0;
+                
+                while( *s != '\n' )
+                    ++s;
+                
+                ln = s = s+1;
+                condition  = (_eval.has_variable( name ))  ? 1  : 0;
+                skip_lines = !condition;
+                ++pending_endif;
+            }
+            else if( strncmp( s+1, "ifndef", 6 ) == 0 )
+            {
+                char*   t  = s+1+6;
+                char*   n0 = nullptr;
+                char*   n1 = nullptr;
+                char    name[128];
+
+                while( *t == ' '  ||  *t == '\t'  )
+                    ++t;
+                DVASSERT(*t);
+                n0 = t;
+                while( *t != ' '  &&  *t != '\t'  &&  *t != '\r'  &&  *t != '\n'  )
+                    ++t;
+                DVASSERT(*t);
+                n1 = t-1;
+
+                strncpy( name, n0, n1-n0+1 );
+                name[n1-n0+1] = 0;
+                
+                while( *s != '\n' )
+                    ++s;
+                
+                ln = s = s+1;
+                condition  = (_eval.has_variable( name ))  ? 0  : 1;
+                skip_lines = !condition;
+                ++pending_endif;
+            }
             else if( strncmp( s+1, "if", 2 ) == 0 )
             {
                 char*   e = s+1 + 2;

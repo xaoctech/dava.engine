@@ -566,6 +566,15 @@ ExpressionEvaluator::set_variable( const char* var, float value )
     return success;
 }
 
+bool
+ExpressionEvaluator::has_variable( const char* name ) const
+{
+    bool    success = false;
+    uint32  var_id  = DAVA::HashValue_N( name, strlen(name) );
+
+    return _var.find( var_id ) != _var.end();
+}
+
 
 void
 ExpressionEvaluator::clear_variables()
