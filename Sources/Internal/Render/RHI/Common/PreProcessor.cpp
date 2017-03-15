@@ -425,17 +425,21 @@ PreProc::_process_include( const char* file_name, std::vector<PreProc::Line>* li
 //------------------------------------------------------------------------------
 
 bool
-PreProc::_process_define( const char* name, const char* val )
+PreProc::_process_define( const char* name, const char* value )
 {
-    _var.push_back( Var() );
-    strcpy( _var.back().name, name );
+    bool    success = false;
+    float   val;
 
-    // TODO: handle definition via previously defined var(s)
-    _var.back().val = atoi( val );
+    if( _eval.evaluate( value, &val ) )
+    {
+        _var.push_back( Var() );
+        strcpy( _var.back().name, name );
+        _var.back().val = int(val);
+    
+        _eval.set_variable( name, val );
+    }
 
-    _eval.set_variable(name, float(atof(val)));
-
-    return true;
+    return success;
 }
 
 
