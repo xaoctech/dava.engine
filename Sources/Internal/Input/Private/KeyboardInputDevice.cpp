@@ -1,0 +1,59 @@
+#include "Input/KeyboardInputDevice.h"
+#include "Engine/Engine.h"
+
+namespace DAVA
+{
+const InputDeviceType KeyboardInputDevice::TYPE = 1;
+
+KeyboardInputDevice::KeyboardInputDevice(uint32 id)
+    : InputDevice(id)
+{
+    endFrameConnectionToken = Engine::Instance()->endFrame.Connect(this, &KeyboardInputDevice::OnEndFrame);
+}
+
+KeyboardInputDevice::~KeyboardInputDevice()
+{
+    Engine::Instance()->endFrame.Disconnect(endFrameConnectionToken);
+}
+
+DigitalControlState KeyboardInputDevice::GetDigitalControlState(uint32 controlId) const
+{
+    return keys[controlId].GetState();
+}
+
+AnalogControlState KeyboardInputDevice::GetAnalogControlState(uint32 controlId) const
+{
+    DVASSERT(false, "A keyboard does not support analog controls");
+    return {};
+}
+
+void KeyboardInputDevice::ProcessInputEvent(InputEvent& event)
+{
+    if (!event.keyboardEvent.isCharEvent)
+    {
+        // Update control id to be platform-independent
+        event.controlId = static_cast<uint32>(SystemKeyToDavaKey(event.controlId));
+
+        if (event.digitalState.IsPressed())
+        {
+			keys[event.controlId].Press();
+        }
+        else
+        {
+			keys[event.controlId].Release();
+        }
+    }
+}
+
+void KeyboardInputDevice::OnEndFrame()
+{
+    // Promote JustPressed & JustReleased states to Pressed/Released accordingly
+    // TODO: optimize
+
+    for (int i = 0; i < static_cast<uint32>(Key::TOTAL_KEYS_COUNT); ++i)
+    {
+		keys[i].OnEndFrame();
+    }
+}
+
+}

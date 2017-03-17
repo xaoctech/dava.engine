@@ -10,10 +10,6 @@
 
 namespace DAVA
 {
-/**
-    \defgroup input Input System
-*/
-
 class Engine;
 class UIEvent;
 class KeyboardDevice;
