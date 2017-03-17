@@ -20,6 +20,8 @@ public:
     bool    process( const char* src_text, TextBuf* output );
     void    clear();
 
+    bool    add_define( const char* name, const char* value );
+
     void    dump() const;
     
 
@@ -47,11 +49,13 @@ private:
 
     void    _reset();
     char*   _alloc_buffer( unsigned sz );
+    bool    _process_inplace( char* src_text, TextBuf* output );
     bool    _process_buffer( char* text, std::vector<Line>* line );
     bool    _process_include( const char* file_name, std::vector<Line>* line );
     bool    _process_define( const char* name, const char* val );
     void    _generate_output( TextBuf* output );
 
+    void    _report_expr_eval_error( unsigned line_n );
 
     struct
     Line
@@ -83,6 +87,7 @@ private:
     ExpressionEvaluator     _eval;
     
     FileCallback*           _file_cb;
+    const char*             _cur_file_name; 
 
     class
     DefFileCallback

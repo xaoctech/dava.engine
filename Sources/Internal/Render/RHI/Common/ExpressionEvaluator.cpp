@@ -1,6 +1,7 @@
 #include "ExpressionEvaluator.h"
 
 #include "Debug/DVAssert.h"
+#include "Logger/Logger.h"
 #include "Base/Hash.h"
 
 #include <string.h>
@@ -96,7 +97,7 @@ ExpressionEvaluator::_PopConnectPush()
         _node_stack.pop_back();
     }
 
-    _node_stack.push_back( _node.size() );
+    _node_stack.push_back( unsigned(_node.size()) );
     _node.push_back( _operator_stack.back() );
     _operator_stack.pop_back();
 }
@@ -286,7 +287,8 @@ ExpressionEvaluator::_Priority( char operation )
 bool
 ExpressionEvaluator::evaluate( const char* expression, float* result )
 {
-    unsigned    len     = strlen(expression);
+DAVA::Logger::Info("expr= \"%s\"",expression);
+    unsigned    len     = unsigned(strlen(expression));
     char*       text    = (char*)(::malloc( len+1 ));
 
     DVASSERT( result );
@@ -361,14 +363,14 @@ ExpressionEvaluator::evaluate( const char* expression, float* result )
         {
             SyntaxTreeNode node;
             offset = _GetOperand( expr, &node.operand );
-            node.expr_index = expr - text;
+            node.expr_index = unsigned(expr - text);
 
             if( negate_operand_value )
                 node.operand = -node.operand;
             if( invert_operand_value )
                 node.operand = (fabs(node.operand) > Epsilon)  ? 0.0f  : 1.0f;
 
-            _node_stack.push_back( _node.size() );
+            _node_stack.push_back( unsigned(_node.size()) );
             _node.push_back( node );
 
             last_token_operand   = true;
@@ -395,8 +397,8 @@ ExpressionEvaluator::evaluate( const char* expression, float* result )
                 if( _operator_stack.size()  && (_operator_stack.back().operation == _OpDefined  ||  _operator_stack.back().operation == _OpNotDefined) )
                     value = 1.0f;
 
-                _node_stack.push_back( _node.size() );
-                _node.push_back( SyntaxTreeNode( value, expr-text ) );
+                _node_stack.push_back( unsigned(_node.size()) );
+                _node.push_back( SyntaxTreeNode( value, unsigned(expr-text) ) );
 
                 last_token_operand   = true;
                 negate_operand_value = false;
@@ -406,7 +408,7 @@ ExpressionEvaluator::evaluate( const char* expression, float* result )
             {
                 if( _operator_stack.size()  &&  (_operator_stack.back().operation == _OpDefined  ||  _operator_stack.back().operation == _OpNotDefined) )
                 {
-                    _node_stack.push_back( _node.size() );
+                    _node_stack.push_back( unsigned(_node.size()) );
                     _node.push_back( SyntaxTreeNode( 0.0f, InvalidIndex ) );
 
                     last_token_operand   = true;
@@ -417,7 +419,7 @@ ExpressionEvaluator::evaluate( const char* expression, float* result )
                 {
                     // undefined symbol
                     _last_error_code  = 3;
-                    _last_error_index = expr - text;
+                    _last_error_index = unsigned(expr - text);
                     return false;
                 }
             }
@@ -446,7 +448,7 @@ ExpressionEvaluator::evaluate( const char* expression, float* result )
                 ||  _Priority(_operator_stack.back().operation) < _Priority(*expr)
                )
             {
-                _operator_stack.push_back( SyntaxTreeNode(*expr, expr-text) );
+                _operator_stack.push_back( SyntaxTreeNode(*expr,unsigned(expr-text)) );
             }
             else
             {
@@ -466,7 +468,7 @@ ExpressionEvaluator::evaluate( const char* expression, float* result )
                     _PopConnectPush();
                 }
                 
-                _operator_stack.push_back( SyntaxTreeNode(*expr, expr-text) );
+                _operator_stack.push_back( SyntaxTreeNode(*expr,unsigned(expr-text)) );
             }
 
             last_token_operand = false;
@@ -476,7 +478,7 @@ ExpressionEvaluator::evaluate( const char* expression, float* result )
         // process parenthesis
         else if( *expr == '(' )
         {
-            _operator_stack.push_back( SyntaxTreeNode(*expr, expr-text) );
+            _operator_stack.push_back( SyntaxTreeNode(*expr,unsigned(expr-text)) );
             offset = 1;
 
             last_token_operand = false;
@@ -501,7 +503,7 @@ ExpressionEvaluator::evaluate( const char* expression, float* result )
             {
                 //parenthesis are unbalanced
                 _last_error_code  = 2;
-                _last_error_index = expr - text;
+                _last_error_index = unsigned(expr - text);
                 return false;
             }
             
@@ -559,7 +561,7 @@ bool
 ExpressionEvaluator::set_variable( const char* var, float value )
 {
     bool    success = false;
-    uint32  var_id  = DAVA::HashValue_N( var, strlen(var) );
+    uint32  var_id  = DAVA::HashValue_N( var, uint32(strlen(var)) );
 
     _var[var_id] = value;
 
@@ -570,7 +572,7 @@ bool
 ExpressionEvaluator::has_variable( const char* name ) const
 {
     bool    success = false;
-    uint32  var_id  = DAVA::HashValue_N( name, strlen(name) );
+    uint32  var_id  = DAVA::HashValue_N( name, uint32(strlen(name)) );
 
     return _var.find( var_id ) != _var.end();
 }
@@ -589,7 +591,7 @@ ExpressionEvaluator::get_last_error( char* err_buffer, unsigned err_buffer_size 
 
     if( _last_error_code )
     {
-        unsigned    len = ::strlen( _expression );
+        unsigned    len = unsigned(::strlen( _expression ));
         char        buf[2048];
 
         ::memset( buf, ' ', len );

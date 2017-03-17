@@ -9,7 +9,8 @@ PreProc::DefFileCallback    PreProc::_DefFileCallback;
 //------------------------------------------------------------------------------
 
 PreProc::PreProc(FileCallback* fc)
-  : _file_cb((fc)?fc:&_DefFileCallback)
+  : _file_cb((fc)?fc:&_DefFileCallback),
+    _cur_file_name("<buffer>")
 {
 }
 
@@ -38,6 +39,7 @@ PreProc::process_file( const char* file_name, TextBuf* output )
         text[text_sz] = 0;
         _file_cb->close();
 
+        _cur_file_name = "<buffer>";
         if( _process_buffer( text, &_line ) )
         {
             _generate_output( output );
@@ -54,16 +56,8 @@ PreProc::process_file( const char* file_name, TextBuf* output )
 bool
 PreProc::process_inplace( char* src_text, TextBuf* output )
 {
-    bool    success = false;
-
     _reset();
-    if( _process_buffer( src_text, &_line ) )
-    {
-        _generate_output( output );
-        success = true;
-    }
-
-    return success;
+    return _process_inplace( src_text, output );
 }
 
 
@@ -72,12 +66,15 @@ PreProc::process_inplace( char* src_text, TextBuf* output )
 bool    
 PreProc::process( const char* src_text, TextBuf* output )
 {
+    _reset();
+
     bool    success = false;
-    char*   text    = _alloc_buffer( strlen(src_text) );
+    char*   text    = _alloc_buffer( unsigned(strlen(src_text))+1 );
 
     strcpy( text, src_text );
 
-    if( process_inplace( text, output ) )
+LCP;
+    if( _process_inplace( text, output ) )
     {
         _generate_output( output );
         success = true;
@@ -102,6 +99,15 @@ PreProc::clear()
 
 //------------------------------------------------------------------------------
 
+bool    
+PreProc::add_define( const char* name, const char* value )
+{
+    return _process_define( name, value );
+}
+
+
+//------------------------------------------------------------------------------
+
 void    
 PreProc::dump() const
 {
@@ -118,6 +124,7 @@ void
 PreProc::_reset()
 {
     clear();
+    _cur_file_name = "<buffer>";
 }
 
 
@@ -141,13 +148,14 @@ PreProc::_alloc_buffer( unsigned sz )
 bool    
 PreProc::_process_buffer( char* text, std::vector<Line>* line )
 {
-    bool        success = true;
-    char*       ln      = text;    
-    unsigned    line_n  = 1;
+    bool        success       = true;
+    char*       ln            = text;    
+    unsigned    line_n        = 1;
+    unsigned    src_line_n    = 1;
 
     int         condition     = 1;
     int         pending_endif = 0;
-    int skip_lines = false;
+    int         skip_lines    = false;
 
     for( char* s=text; *s; ++s ) 
     {
@@ -169,6 +177,8 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
                 break;
             else
                 ln = s = s+1;
+            
+            ++src_line_n;
         }
 
         if( *s == '\n' )
@@ -177,6 +187,7 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
             line->push_back( Line(ln,line_n) );
             ln = s+1;
             ++line_n;
+            ++src_line_n;
         }
         else if( *s == '#' )
         {
@@ -329,11 +340,7 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
                 float   v=0;
                 if(!_eval.evaluate( e, &v ))
                 {
-                    char    err[256];
-
-                    _eval.get_last_error( err, countof(err) );
-DAVA::Logger::Error( err );
-//DUMP((char*)err);
+                    _report_expr_eval_error( src_line_n );
                 }
 
                 ln = s = s+1;
@@ -354,11 +361,7 @@ DAVA::Logger::Error( err );
 
                 if(!_eval.evaluate( e, &v ))
                 {
-                    char    err[256];
-
-                    _eval.get_last_error( err, countof(err) );
-DAVA::Logger::Error( err );
-//DUMP((char*)err);
+                    _report_expr_eval_error( src_line_n );
                 }
 
                 ln = s = s+1;
@@ -401,6 +404,23 @@ DAVA::Logger::Error( err );
 //------------------------------------------------------------------------------
 
 bool    
+PreProc::_process_inplace( char* src_text, TextBuf* output )
+{
+    bool    success = false;
+
+    if( _process_buffer( src_text, &_line ) )
+    {
+        _generate_output( output );
+        success = true;
+    }
+
+    return success;
+}
+
+
+//------------------------------------------------------------------------------
+
+bool    
 PreProc::_process_include( const char* file_name, std::vector<PreProc::Line>* line )
 {   
     bool    success = true;
@@ -414,7 +434,15 @@ PreProc::_process_include( const char* file_name, std::vector<PreProc::Line>* li
         text[text_sz] = 0;
         _file_cb->close();
 
+        const char* prev_file_name = _cur_file_name;
+
+        _cur_file_name = file_name;
         _process_buffer( text, &_line );
+        _cur_file_name = prev_file_name;
+    }
+    else
+    {
+        DAVA::Logger::Error( "failed to open \"%s\"\n", file_name );
     }
 
 
@@ -453,9 +481,21 @@ PreProc::_generate_output( TextBuf* output )
     output->clear();
     for( std::vector<Line>::const_iterator l=_line.begin(),l_end=_line.end(); l!=l_end; ++l )
     {
-        unsigned    sz = strlen( l->text );
+        unsigned    sz = unsigned(strlen( l->text ));
 
         output->insert( output->end(), l->text, l->text+sz );
         output->insert( output->end(), endl, endl+2 );
     }
+}
+
+
+//------------------------------------------------------------------------------
+
+void    
+PreProc::_report_expr_eval_error( unsigned line_n )
+{
+    char    err[256];
+
+    _eval.get_last_error( err, countof(err) );
+    DAVA::Logger::Error( "%s  : %u  %s", _cur_file_name, line_n, err );
 }
