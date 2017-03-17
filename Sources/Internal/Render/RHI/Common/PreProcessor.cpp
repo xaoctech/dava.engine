@@ -73,7 +73,6 @@ PreProc::process( const char* src_text, TextBuf* output )
 
     strcpy( text, src_text );
 
-LCP;
     if( _process_inplace( text, output ) )
     {
         _generate_output( output );
@@ -153,9 +152,9 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
     unsigned    line_n        = 1;
     unsigned    src_line_n    = 1;
 
-    int         condition     = 1;
-    int         pending_endif = 0;
-    int         skip_lines    = false;
+    int                 skip_lines      = false;
+    bool                dcheck_pending  = true;
+    std::vector<int>    pending_endif;
 
     for( char* s=text; *s; ++s ) 
     {
@@ -179,6 +178,7 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
                 ln = s = s+1;
             
             ++src_line_n;
+            dcheck_pending = true;
         }
 
         if( *s == '\n' )
@@ -188,209 +188,234 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
             ln = s+1;
             ++line_n;
             ++src_line_n;
+            dcheck_pending = true;
         }
-        else if( *s == '#' )
+        else if( dcheck_pending )
         {
-            DVASSERT(s[1]);
-            if( strncmp( s+1, "include", 7 ) == 0 )
+            char* ns1 = s;
+
+            while( *ns1 == ' '  ||  *ns1 == '\t' )
+                ++ns1;
+
+            if( *ns1 == '#' )
             {
-                char*   t  = s;
-                char*   f0 = nullptr;
-                char*   f1 = nullptr;
-                
-                while( *t != '\"' )
-                    ++t;
-                DVASSERT(*t);
-                f0 = t+1;
-                ++t;
-                while( *t != '\"' )
-                    ++t;
-                DVASSERT(*t);
-                f1 = t-1;
+                s = ns1;
 
-                char    fname[256];
-
-                strncpy( fname, f0, f1-f0+1 );
-                fname[f1-f0+1] = 0;
-                _process_include( fname, line );
-
-                while( *t != '\n' )
-                    ++t;
-                if( *t == 0 )
+                DVASSERT(s[1]);
+                if( strncmp( s+1, "include", 7 ) == 0 )
                 {
-                    break;
+                    char*   t  = s;
+                    char*   f0 = nullptr;
+                    char*   f1 = nullptr;
+                
+                    while( *t != '\"' )
+                        ++t;
+                    DVASSERT(*t);
+                    f0 = t+1;
+                    ++t;
+                    while( *t != '\"' )
+                        ++t;
+                    DVASSERT(*t);
+                    f1 = t-1;
+
+                    char    fname[256];
+
+                    strncpy( fname, f0, f1-f0+1 );
+                    fname[f1-f0+1] = 0;
+                    _process_include( fname, line );
+
+                    while( *t != '\n' )
+                        ++t;
+                    if( *t == 0 )
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        ln = s = t+1;
+                    }
                 }
-                else
+                else if( strncmp( s+1, "define", 6 ) == 0 )
                 {
-                    ln = s = t+1;
+                    char*   t  = s+1+6;
+                    char*   n0 = nullptr;
+                    char*   n1 = nullptr;
+                    char*   v0 = nullptr;
+                    char*   v1 = nullptr;
+                    char    name[128];
+                    char    val[16];
+
+                    while( *t == ' '  ||  *t == '\t'  )
+                        ++t;
+                    DVASSERT(*t);
+                    n0 = t;
+                    while( *t != ' '  &&  *t != '\t'  )
+                        ++t;
+                    DVASSERT(*t);
+                    n1 = t-1;
+
+
+                    while( *t == ' '  ||  *t == '\t'  )
+                        ++t;
+                    DVASSERT(*t);
+                    v0 = t;
+                    while( *t != ' '  &&  *t != '\t'  &&  *t != '\n'  )
+                        ++t;
+                    DVASSERT(*t);
+                    v1 = t-1;
+
+                    strncpy( name, n0, n1-n0+1 );
+                    name[n1-n0+1] = 0;
+
+                    strncpy( val, v0, v1-v0+1 );
+                    val[v1-v0+1] = 0;
+
+                    _process_define( name, val );
+                    while( *t  &&  *t != '\n' )
+                        ++t;
+                    if( *t == 0 )
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        s  = t;
+                        ln = t + 1;
+                    }
                 }
-            }
-            else if( strncmp( s+1, "define", 6 ) == 0 )
-            {
-                char*   t  = s+1+6;
-                char*   n0 = nullptr;
-                char*   n1 = nullptr;
-                char*   v0 = nullptr;
-                char*   v1 = nullptr;
-                char    name[128];
-                char    val[16];
-
-                while( *t == ' '  ||  *t == '\t'  )
-                    ++t;
-                DVASSERT(*t);
-                n0 = t;
-                while( *t != ' '  &&  *t != '\t'  )
-                    ++t;
-                DVASSERT(*t);
-                n1 = t-1;
-
-
-                while( *t == ' '  ||  *t == '\t'  )
-                    ++t;
-                DVASSERT(*t);
-                v0 = t;
-                while( *t != ' '  &&  *t != '\t'  &&  *t != '\n'  )
-                    ++t;
-                DVASSERT(*t);
-                v1 = t-1;
-
-                strncpy( name, n0, n1-n0+1 );
-                name[n1-n0+1] = 0;
-
-                strncpy( val, v0, v1-v0+1 );
-                val[v1-v0+1] = 0;
-
-                _process_define( name, val );
-                while( *t  &&  *t != '\n' )
-                    ++t;
-                if( *t == 0 )
+                else if( strncmp( s+1, "ifdef", 5 ) == 0 )
                 {
-                    break;
-                }
-                else
-                {
-                    s  = t;
-                    ln = t + 1;
-                }
-            }
-            else if( strncmp( s+1, "ifdef", 5 ) == 0 )
-            {
-                char*   t  = s+1+5;
-                char*   n0 = nullptr;
-                char*   n1 = nullptr;
-                char    name[128];
+                    char*   t  = s+1+5;
+                    char*   n0 = nullptr;
+                    char*   n1 = nullptr;
+                    char    name[128];
 
-                while( *t == ' '  ||  *t == '\t'  )
-                    ++t;
-                DVASSERT(*t);
-                n0 = t;
-                while( *t != ' '  &&  *t != '\t'  &&  *t != '\r'  &&  *t != '\n'  )
-                    ++t;
-                DVASSERT(*t);
-                n1 = t-1;
+                    while( *t == ' '  ||  *t == '\t'  )
+                        ++t;
+                    DVASSERT(*t);
+                    n0 = t;
+                    while( *t != ' '  &&  *t != '\t'  &&  *t != '\r'  &&  *t != '\n'  )
+                        ++t;
+                    DVASSERT(*t);
+                    n1 = t-1;
 
-                strncpy( name, n0, n1-n0+1 );
-                name[n1-n0+1] = 0;
+                    strncpy( name, n0, n1-n0+1 );
+                    name[n1-n0+1] = 0;
                 
-                while( *s != '\n' )
-                    ++s;
+                    while( *s != '\n' )
+                        ++s;
                 
-                ln = s = s+1;
-                condition  = (_eval.has_variable( name ))  ? 1  : 0;
-                skip_lines = !condition;
-                ++pending_endif;
-            }
-            else if( strncmp( s+1, "ifndef", 6 ) == 0 )
-            {
-                char*   t  = s+1+6;
-                char*   n0 = nullptr;
-                char*   n1 = nullptr;
-                char    name[128];
-
-                while( *t == ' '  ||  *t == '\t'  )
-                    ++t;
-                DVASSERT(*t);
-                n0 = t;
-                while( *t != ' '  &&  *t != '\t'  &&  *t != '\r'  &&  *t != '\n'  )
-                    ++t;
-                DVASSERT(*t);
-                n1 = t-1;
-
-                strncpy( name, n0, n1-n0+1 );
-                name[n1-n0+1] = 0;
-                
-                while( *s != '\n' )
-                    ++s;
-                
-                ln = s = s+1;
-                condition  = (_eval.has_variable( name ))  ? 0  : 1;
-                skip_lines = !condition;
-                ++pending_endif;
-            }
-            else if( strncmp( s+1, "if", 2 ) == 0 )
-            {
-                char*   e = s+1 + 2;
-                
-                while( *s != '\n' )
-                    ++s;
-                DVASSERT(*s);
-                *s = 0;
-
-
-                float   v=0;
-                if(!_eval.evaluate( e, &v ))
-                {
-                    _report_expr_eval_error( src_line_n );
-                }
-
-                ln = s = s+1;
-                condition  = int(v);
-                skip_lines = !condition;
-                ++pending_endif;
-            }
-            else if( strncmp( s+1, "elif", 4 ) == 0 )
-            {
-                char*   e = s+1 + 4;
-                
-                while( *s != '\n' )
-                    ++s;
-                DVASSERT(*s);
-                *s = 0;
-
-                float   v=0;
-
-                if(!_eval.evaluate( e, &v ))
-                {
-                    _report_expr_eval_error( src_line_n );
-                }
-
-                ln = s = s+1;
-                condition  = int(v);
-                skip_lines = !condition;
-            }
-            else if( strncmp( s+1, "else", 4 ) == 0 )
-            {
-                skip_lines = condition;                    
-
-                while( *s != '\n' )
-                    ++s;
-                if( *s == 0 )
-                    break;
-                else
                     ln = s+1;
-            }
-            else if( strncmp( s+1, "endif", 5 ) == 0 )
-            {
-                --pending_endif;
-                skip_lines = false;
+                    int condition = (_eval.has_variable( name ))  ? 1  : 0;
+                    pending_endif.push_back( condition );
 
-                while( *s != '\n' )
-                    ++s;
-                if( *s == 0 )
-                    break;
-                else
+                    skip_lines = !condition;
+                }
+                else if( strncmp( s+1, "ifndef", 6 ) == 0 )
+                {
+                    char*   t  = s+1+6;
+                    char*   n0 = nullptr;
+                    char*   n1 = nullptr;
+                    char    name[128];
+
+                    while( *t == ' '  ||  *t == '\t'  )
+                        ++t;
+                    DVASSERT(*t);
+                    n0 = t;
+                    while( *t != ' '  &&  *t != '\t'  &&  *t != '\r'  &&  *t != '\n'  )
+                        ++t;
+                    DVASSERT(*t);
+                    n1 = t-1;
+
+                    strncpy( name, n0, n1-n0+1 );
+                    name[n1-n0+1] = 0;
+                
+                    while( *s != '\n' )
+                        ++s;
+                
                     ln = s+1;
+
+                    int condition = (_eval.has_variable( name ))  ? 0  : 1;
+                    skip_lines = !condition;
+                    pending_endif.push_back( condition );
+                }
+                else if( strncmp( s+1, "if", 2 ) == 0 )
+                {
+                    char*   e = s+1 + 2;
+                
+                    while( *s != '\n' )
+                        ++s;
+                    DVASSERT(*s);
+                    *s = 0;
+
+
+                    float   v=0;
+                    if( !_eval.evaluate( e, &v ) )
+                    {
+                        _report_expr_eval_error( src_line_n );
+                    }
+
+                    ln = s+1;
+
+                    int condition = int(v);
+                    skip_lines = !condition;
+                    pending_endif.push_back( condition );
+                }
+                else if( strncmp( s+1, "elif", 4 ) == 0 )
+                {
+                    char*   e = s+1 + 4;
+                
+                    while( *s != '\n' )
+                        ++s;
+                    DVASSERT(*s);
+                    *s = 0;
+
+                    float   v=0;
+
+                    if( !_eval.evaluate( e, &v ) )
+                    {
+                        _report_expr_eval_error( src_line_n );
+                    }
+
+                    ln = s+1;
+
+                    int condition = int(v);
+                    skip_lines = !condition;
+                    pending_endif.back() =  condition;
+                }
+                else if( strncmp( s+1, "else", 4 ) == 0 )
+                {
+                    skip_lines = pending_endif.back();
+
+                    while( *s != '\n' )
+                        ++s;
+                    if( *s == 0 )
+                        break;
+                    else
+                        ln = s+1;
+                }
+                else if( strncmp( s+1, "endif", 5 ) == 0 )
+                {
+                    pending_endif.pop_back();
+                    skip_lines = (pending_endif.size())  ? !pending_endif.back()  : false;
+
+                    while( *s != '\n' )
+                        ++s;
+                    if( *s == 0 )
+                        break;
+                    else
+                        ln = s+1;
+                }
+                
+                dcheck_pending = true;
             }
+            else
+            {
+                if( *ns1 == '\n' )
+                    s = ns1-1;                
+                
+                dcheck_pending = false;
+            }            
         }
     }
 

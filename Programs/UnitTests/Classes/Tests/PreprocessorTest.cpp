@@ -1,6 +1,7 @@
 #include "UnitTests/UnitTests.h"
 #include "Render/RHI/Common/PreProcessor.h"
 #include "Render/RHI/Common/rhi_Utils.h"
+#include "Logger/Logger.h"
 
 #include <malloc.h>
 
@@ -64,7 +65,8 @@ DAVA_TESTCLASS (PreprocessorTest)
             { "02-input.txt", "02-output.txt" },
             { "03-input.txt", "03-output.txt" },
             { "04-input.txt", "04-output.txt" },
-            { "05-input.txt", "05-output.txt" }
+            { "05-input.txt", "05-output.txt" },
+            { "06-input.txt", "06-output.txt" }
         };
         static const char* BaseDir = "~res:/TestData/PreProcessor";
 
@@ -111,6 +113,8 @@ DAVA_TESTCLASS (PreprocessorTest)
 
         for( int i=0; i!=countof(test); ++i )
         {
+            DAVA::Logger::Info( "pre-proc test %i  \"%s\"...", i, test[i].inputFileName );
+
             TestFileCallback    fc(BaseDir);
             PreProc             pp(&fc);
             std::vector<char>   output;
@@ -142,6 +146,8 @@ DAVA_TESTCLASS (PreprocessorTest)
 
             ::free( expected_data );
             expected_file->Release();
+            
+            DAVA::Logger::Info( "  OK" );
         }
     }
 

@@ -287,7 +287,6 @@ ExpressionEvaluator::_Priority( char operation )
 bool
 ExpressionEvaluator::evaluate( const char* expression, float* result )
 {
-DAVA::Logger::Info("expr= \"%s\"",expression);
     unsigned    len     = unsigned(strlen(expression));
     char*       text    = (char*)(::malloc( len+1 ));
 
