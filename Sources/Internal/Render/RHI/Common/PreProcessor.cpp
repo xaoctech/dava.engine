@@ -151,7 +151,7 @@ PreProc::_get_expression( char* txt, char** end ) const
     char*   s   = txt;
     bool    cmt = false;
                 
-    while( *s != '\n' )
+    while( *s != '\n'  &&  *s != '\r' )
     {
         if( s[0] == '/' )
         {
@@ -178,6 +178,9 @@ PreProc::_get_expression( char* txt, char** end ) const
     }
     DVASSERT(*s);
     *s = 0;
+
+    while( *s != '\n' )
+        ++s;
 
     *end = s;
     return e;
@@ -267,17 +270,35 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
 
         if( skipping_line )
         {
-            // ignore entire line
+            bool    do_skip = true;
 
-            while( *s != '\n' )
-                ++s;
-            if( *s == 0 )
-                break;
-            else
-                ln = s = s+1;
+            if( dcheck_pending )
+            {
+                char* ns1 = s;
+
+                while( *ns1  &&  *ns1 == ' '  ||  *ns1 == '\t' )
+                    ++ns1;
+                if( *ns1 == 0 )
+                {
+                    success = false;
+                    break;
+                }
+
+                if( *ns1 == '#' )
+                    do_skip = false;
+            }
+
+            if( do_skip )
+            {
+                while( *s != '\n' )
+                    ++s;
+
+                if( *s == 0 )   break;
+                else            ln = s = s+1;
             
-            ++src_line_n;
-            dcheck_pending = true;
+                ++src_line_n;
+                dcheck_pending = true;
+            }
         }
 
         if( *s == '\n' )
@@ -293,8 +314,13 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
         {
             char* ns1 = s;
 
-            while( *ns1 == ' '  ||  *ns1 == '\t' )
+            while( *ns1  &&  *ns1 == ' '  ||  *ns1 == '\t' )
                 ++ns1;
+            if( *ns1 == 0 )
+            {
+                success = false;
+                break;
+            }
 
             if( *ns1 == '#' )
             {
@@ -331,7 +357,8 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
                     }
                     else
                     {
-                        ln = s = t+1;
+                        s  = t;
+                        ln = t+1;
                     }
                 }
                 else if( strncmp( s+1, "define", 6 ) == 0 )
@@ -341,8 +368,8 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
                     char*   n1 = nullptr;
                     char*   v0 = nullptr;
                     char*   v1 = nullptr;
-                    char    name[128];
-                    char    val[16];
+                    char    name[256];
+                    char    val[256];
 
                     while( *t == ' '  ||  *t == '\t'  )
                         ++t;
@@ -416,6 +443,7 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
                     if( !_eval.evaluate( e, &v ) )
                     {
                         _report_expr_eval_error( src_line_n );
+                        return false;
                     }
 
                     ln = s+1;
@@ -435,6 +463,7 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
                     if( !_eval.evaluate( e, &v ) )
                     {
                         _report_expr_eval_error( src_line_n );
+                        return false;
                     }
 
                     ln = s+1;
@@ -457,8 +486,9 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
                 else if( strncmp( s+1, "endif", 5 ) == 0 )
                 {
                     pending_elif.pop_back();
+                    DVASSERT(pending_elif.size());
 
-                    while( *s != '\n' )
+                    while( *s  &&  *s != '\n' )
                         ++s;
                     if( *s == 0 )
                         break;
