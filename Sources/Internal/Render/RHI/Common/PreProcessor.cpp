@@ -152,12 +152,20 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
     unsigned    line_n        = 1;
     unsigned    src_line_n    = 1;
 
-    bool                dcheck_pending  = true;
-    std::vector<int>    pending_endif;
-    std::vector<int>    pending_endif_conds;
-    std::vector<int>    skip_lines;
+    struct
+    condition_t
+    {
+        bool    original_condition;
+        bool    effective_condition;
+        bool    do_skip_lines;
+    };
 
-    skip_lines.push_back(false);
+    std::vector<condition_t>    pending_elif;
+    bool                        dcheck_pending  = true;
+
+
+    pending_elif.resize(1);
+    pending_elif.back().do_skip_lines = false;
 
     for( char* s=text; *s; ++s ) 
     {
@@ -171,9 +179,9 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
 
         int skipping_line = false;
 
-        for( int i=skip_lines.size()-1; i>=0; --i )
+        for( int i=pending_elif.size()-1; i>=0; --i )
         {
-            if( skip_lines[i] )
+            if( pending_elif[i].do_skip_lines )
             {
                 skipping_line = true;
                 break;
@@ -321,11 +329,13 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
                         ++s;
                 
                     ln = s+1;
-                    int condition = (_eval.has_variable( name ))  ? 1  : 0;
-                    pending_endif.push_back( condition );
-                    pending_endif_conds.push_back( condition );
 
-                    skip_lines.push_back(  !condition );
+                    bool        condition = _eval.has_variable( name );
+                    condition_t p;
+                    p.original_condition  = condition;
+                    p.effective_condition = condition;
+                    p.do_skip_lines       = !condition;
+                    pending_elif.push_back( p );
                 }
                 else if( strncmp( s+1, "ifndef", 6 ) == 0 )
                 {
@@ -351,10 +361,12 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
                 
                     ln = s+1;
 
-                    int condition = (_eval.has_variable( name ))  ? 0  : 1;
-                    skip_lines.push_back( !condition );
-                    pending_endif.push_back( condition );
-                    pending_endif_conds.push_back( condition );
+                    bool        condition = !_eval.has_variable( name );
+                    condition_t p;
+                    p.original_condition  = condition;
+                    p.effective_condition = condition;
+                    p.do_skip_lines       = !condition;
+                    pending_elif.push_back( p );
                 }
                 else if( strncmp( s+1, "if", 2 ) == 0 )
                 {
@@ -374,10 +386,12 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
 
                     ln = s+1;
 
-                    int condition = int(v);
-                    pending_endif.push_back( condition );
-                    pending_endif_conds.push_back( condition );
-                    skip_lines.push_back( !condition );
+                    bool        condition = (int(v))  ? true  : false;
+                    condition_t p;
+                    p.original_condition  = condition;
+                    p.effective_condition = condition;
+                    p.do_skip_lines       = !condition;
+                    pending_elif.push_back( p );
                 }
                 else if( strncmp( s+1, "elif", 4 ) == 0 )
                 {
@@ -397,13 +411,13 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
 
                     ln = s+1;
 
-                    int condition = int(v);
-                    skip_lines.back() = !condition;
-                    pending_endif_conds.back() = pending_endif_conds.back() | condition;
+                    bool condition = (int(v))  ? true  : false;
+                    pending_elif.back().do_skip_lines       = !condition;
+                    pending_elif.back().effective_condition = pending_elif.back().effective_condition || condition;
                 }
                 else if( strncmp( s+1, "else", 4 ) == 0 )
                 {
-                    skip_lines.back() = pending_endif_conds.back();
+                    pending_elif.back().do_skip_lines = pending_elif.back().effective_condition;
 
                     while( *s != '\n' )
                         ++s;
@@ -414,9 +428,7 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
                 }
                 else if( strncmp( s+1, "endif", 5 ) == 0 )
                 {
-                    pending_endif.pop_back();
-                    pending_endif_conds.pop_back();
-                    skip_lines.pop_back();
+                    pending_elif.pop_back();
 
                     while( *s != '\n' )
                         ++s;
