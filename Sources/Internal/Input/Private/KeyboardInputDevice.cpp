@@ -8,7 +8,7 @@ const InputDeviceType KeyboardInputDevice::TYPE = 1;
 KeyboardInputDevice::KeyboardInputDevice(uint32 id)
     : InputDevice(id)
 {
-    endFrameConnectionToken = Engine::Instance()->endFrame.Connect(this, &KeyboardInputDevice::OnEndFrame);
+	endFrameConnectionToken = Engine::Instance()->endFrame.Connect(this, &KeyboardInputDevice::OnEndFrame);
 }
 
 KeyboardInputDevice::~KeyboardInputDevice()
@@ -23,7 +23,7 @@ DigitalControlState KeyboardInputDevice::GetDigitalControlState(uint32 controlId
 
 AnalogControlState KeyboardInputDevice::GetAnalogControlState(uint32 controlId) const
 {
-    DVASSERT(false, "A keyboard does not support analog controls");
+    DVASSERT(false, "KeyboardInputDevice does not support analog controls");
     return {};
 }
 
@@ -48,7 +48,7 @@ void KeyboardInputDevice::ProcessInputEvent(InputEvent& event)
 void KeyboardInputDevice::OnEndFrame()
 {
     // Promote JustPressed & JustReleased states to Pressed/Released accordingly
-    // TODO: optimize
+    // TODO: optimize?
 
     for (int i = 0; i < static_cast<uint32>(Key::TOTAL_KEYS_COUNT); ++i)
     {

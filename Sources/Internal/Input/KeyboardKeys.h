@@ -147,7 +147,7 @@ enum class eKeyboardKey : uint32
 
 /**
     \ingroup input
-    Translates platform-dependent key code to `eKeyboardKey` value;
+    Translates platform-dependent key code to `eKeyboardKey` value.
 */
 eKeyboardKey SystemKeyToDavaKey(uint32 systemKeyCode);
 

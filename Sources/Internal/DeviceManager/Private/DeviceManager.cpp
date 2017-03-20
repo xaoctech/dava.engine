@@ -52,6 +52,18 @@ void DeviceManager::HandleEvent(const Private::MainDispatcherEvent& e)
     }
 }
 
+void DeviceManager::OnEngineInited()
+{
+#if defined(__DAVAENGINE_WINDOWS__) || defined(__DAVAENGINE_MACOS__)
+	keyboard = new KeyboardInputDevice(0);
+#endif
+}
+
+KeyboardInputDevice* DeviceManager::GetKeyboard()
+{
+	return keyboard;
+}
+
 } // namespace DAVA
 
 #endif // __DAVAENGINE_COREV2__

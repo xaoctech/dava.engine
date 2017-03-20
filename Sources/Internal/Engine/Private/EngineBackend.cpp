@@ -210,6 +210,9 @@ void EngineBackend::Init(eEngineRunMode engineRunMode, const Vector<String>& mod
     RegisterReflectionForBaseTypes();
 
     isInitialized = true;
+
+	// TODO: find a better way
+	context->deviceManager->OnEngineInited();
 }
 
 int EngineBackend::Run()
