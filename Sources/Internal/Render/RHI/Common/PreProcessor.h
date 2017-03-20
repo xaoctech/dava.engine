@@ -55,6 +55,8 @@ private:
     bool    _process_define( const char* name, const char* val );
     void    _generate_output( TextBuf* output );
 
+    char*   _get_expression( char* txt, char** end ) const;
+    char*   _get_identifier( char* txt, char** end ) const;
     void    _report_expr_eval_error( unsigned line_n );
 
     struct

@@ -4,7 +4,7 @@ COMLEX IF-EXPRESSION
 #define LIFE 42 
 
 first
-#if SOMETHING == 7 &&  LIFE != 7
+#if SOMETHING == 7 &&  LIFE != 7 // a condition
   expected
   ssl 1
   ssl 2

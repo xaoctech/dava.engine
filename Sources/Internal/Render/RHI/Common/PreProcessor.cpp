@@ -144,6 +144,82 @@ PreProc::_alloc_buffer( unsigned sz )
 
 //------------------------------------------------------------------------------
 
+inline char*
+PreProc::_get_expression( char* txt, char** end ) const
+{
+    char*   e   = txt;
+    char*   s   = txt;
+    bool    cmt = false;
+                
+    while( *s != '\n' )
+    {
+        if( s[0] == '/' )
+        {
+            if( s[1] == '/' ) 
+            {
+                *s = 0;
+            }
+            else if( s[1] == '*' ) 
+            {
+                DVASSERT(!cmt);
+                cmt = true;
+            }
+        }
+        else if( s[0] == '*'  &&  s[1] == '/' )
+        {
+            cmt  = false;
+            s[0] = ' ';
+            s[1] = ' ';
+        }
+
+        if( cmt )
+            *s = ' ';
+        ++s;
+    }
+    DVASSERT(*s);
+    *s = 0;
+
+    *end = s;
+    return e;
+}
+
+
+//------------------------------------------------------------------------------
+
+char*   
+PreProc::_get_identifier( char* txt, char** end ) const
+{
+    char*   t   = txt;
+    char*   n   = nullptr;
+    bool    cmt = false;
+
+    while( !cmt  &&  !(isalnum(*t)  ||  *t == '_') )
+    {
+        if( t[0] == '/'  &&  t[1] == '*' )
+            cmt = true;
+        else if( t[0] == '*'  &&  t[1] == '/' )
+            cmt = false;
+
+        ++t;
+    }
+    DVASSERT(*t);
+    n = t;
+
+    while( isalnum(*t)  ||  *t == '_'  ) 
+        ++t;
+    DVASSERT(*t);
+    *t = 0;
+
+    while( *t != '\n' )
+        ++t;
+
+    *end = t;
+    return n;
+}
+
+
+//------------------------------------------------------------------------------
+
 bool    
 PreProc::_process_buffer( char* text, std::vector<Line>* line )
 {
@@ -308,77 +384,35 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
                 }
                 else if( strncmp( s+1, "ifdef", 5 ) == 0 )
                 {
-                    char*   t  = s+1+5;
-                    char*   n0 = nullptr;
-                    char*   n1 = nullptr;
-                    char    name[128];
-
-                    while( *t == ' '  ||  *t == '\t'  )
-                        ++t;
-                    DVASSERT(*t);
-                    n0 = t;
-                    while( *t != ' '  &&  *t != '\t'  &&  *t != '\r'  &&  *t != '\n'  )
-                        ++t;
-                    DVASSERT(*t);
-                    n1 = t-1;
-
-                    strncpy( name, n0, n1-n0+1 );
-                    name[n1-n0+1] = 0;
-                
-                    while( *s != '\n' )
-                        ++s;
-                
-                    ln = s+1;
-
+                    char*       name      = _get_identifier( s+1+5, &s );
                     bool        condition = _eval.has_variable( name );
                     condition_t p;
+
                     p.original_condition  = condition;
                     p.effective_condition = condition;
                     p.do_skip_lines       = !condition;
                     pending_elif.push_back( p );
+                    
+                    ln = s+1;
                 }
                 else if( strncmp( s+1, "ifndef", 6 ) == 0 )
                 {
-                    char*   t  = s+1+6;
-                    char*   n0 = nullptr;
-                    char*   n1 = nullptr;
-                    char    name[128];
-
-                    while( *t == ' '  ||  *t == '\t'  )
-                        ++t;
-                    DVASSERT(*t);
-                    n0 = t;
-                    while( *t != ' '  &&  *t != '\t'  &&  *t != '\r'  &&  *t != '\n'  )
-                        ++t;
-                    DVASSERT(*t);
-                    n1 = t-1;
-
-                    strncpy( name, n0, n1-n0+1 );
-                    name[n1-n0+1] = 0;
-                
-                    while( *s != '\n' )
-                        ++s;
-                
-                    ln = s+1;
-
+                    char*       name      = _get_identifier( s+1+6, &s );
                     bool        condition = !_eval.has_variable( name );
                     condition_t p;
+
                     p.original_condition  = condition;
                     p.effective_condition = condition;
                     p.do_skip_lines       = !condition;
                     pending_elif.push_back( p );
+                    
+                    ln = s+1;
                 }
                 else if( strncmp( s+1, "if", 2 ) == 0 )
                 {
-                    char*   e = s+1 + 2;
-                
-                    while( *s != '\n' )
-                        ++s;
-                    DVASSERT(*s);
-                    *s = 0;
+                    char*   e = _get_expression( s+1 + 2, &s );
+                    float   v = 0;
 
-
-                    float   v=0;
                     if( !_eval.evaluate( e, &v ) )
                     {
                         _report_expr_eval_error( src_line_n );
@@ -395,14 +429,8 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
                 }
                 else if( strncmp( s+1, "elif", 4 ) == 0 )
                 {
-                    char*   e = s+1 + 4;
-                
-                    while( *s != '\n' )
-                        ++s;
-                    DVASSERT(*s);
-                    *s = 0;
-
-                    float   v=0;
+                    char*   e = _get_expression( s+1 + 4, &s );
+                    float   v = 0;
 
                     if( !_eval.evaluate( e, &v ) )
                     {
