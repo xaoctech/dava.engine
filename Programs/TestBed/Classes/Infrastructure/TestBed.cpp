@@ -42,6 +42,8 @@
 #include "Tests/SoundTest.h"
 #include "Tests/AnyPerformanceTest.h"
 #include "Tests/WindowTest.h"
+#include "Tests/InputSystemTest.h"
+
 //$UNITTEST_INCLUDE
 
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
@@ -312,6 +314,7 @@ void TestBed::RegisterTests()
     new FontTest(*this);
     new WebViewTest(*this);
     new FunctionSignalTest(*this);
+	new InputSystemTest(*this);
     new KeyboardTest(*this);
     new FullscreenTest(*this);
     new UIBackgroundTest(*this);

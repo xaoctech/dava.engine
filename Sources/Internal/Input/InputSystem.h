@@ -7,6 +7,7 @@
 #include "Base/RefPtr.h"
 #include "Engine/EngineTypes.h"
 #include "Functional/Function.h"
+#include "Input/InputEvent.h"
 
 namespace DAVA
 {
@@ -37,6 +38,9 @@ public:
 
     KeyboardDevice& GetKeyboard();
     GamepadDevice& GetGamepadDevice();
+
+	void AddInputEventHandler(const Function<bool(const InputEvent&)>& handler);
+	void ProcessInputEvent(InputEvent const& event);
 
 private:
     InputSystem(Engine* engine);
@@ -70,6 +74,8 @@ private:
     Vector<InputHandler> handlers;
     uint32 nextHandlerToken = 1;
     bool pendingHandlerRemoval = false;
+
+	Vector<Function<bool(const InputEvent&)>> inputEventHandlers;
 };
 
 inline InputSystem::InputHandler::InputHandler(uint32 token_, eInputDevices inputDeviceMask_, const Function<bool(UIEvent*)>& callback_)

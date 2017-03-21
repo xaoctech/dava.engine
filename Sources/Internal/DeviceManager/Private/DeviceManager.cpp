@@ -56,12 +56,36 @@ void DeviceManager::OnEngineInited()
 {
 #if defined(__DAVAENGINE_WINDOWS__) || defined(__DAVAENGINE_MACOS__)
 	keyboard = new KeyboardInputDevice(0);
+	mouse = new MouseInputDevice(1);
+
+	inputDevices.push_back(keyboard);
+	inputDevices.push_back(mouse);
 #endif
+}
+
+InputDevice* DeviceManager::GetInputDevice(uint32 id)
+{
+	for (InputDevice* device : inputDevices)
+	{
+		if (device->GetId() == id)
+		{
+			return device;
+		}
+	}
+
+	DVASSERT(false);
+
+	return nullptr;
 }
 
 KeyboardInputDevice* DeviceManager::GetKeyboard()
 {
 	return keyboard;
+}
+
+MouseInputDevice* DeviceManager::GetMouse()
+{
+	return mouse;
 }
 
 } // namespace DAVA

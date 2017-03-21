@@ -113,6 +113,19 @@ void InputSystem::HandleGamepadRemoved(const Private::MainDispatcherEvent& e)
     gamepad->HandleGamepadRemoved(e);
 }
 
+void InputSystem::AddInputEventHandler(const Function<bool(const InputEvent&)>& handler)
+{
+	inputEventHandlers.push_back(handler);
+}
+
+void InputSystem::ProcessInputEvent(InputEvent const& event)
+{
+	for (auto handler : inputEventHandlers)
+	{
+		handler(event);
+	}
+}
+
 } // namespace DAVA
 
 #else // __DAVAENGINE_COREV2__
