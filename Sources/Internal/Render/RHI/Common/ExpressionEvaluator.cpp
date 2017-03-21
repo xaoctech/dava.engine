@@ -138,7 +138,7 @@ ExpressionEvaluator::_Evaluate( const SyntaxTreeNode* node, float* out, unsigned
 
                     if( _Evaluate( (&_node[0])+node->right_i, &val, err_code, err_index ) )
                     {
-                        *out = (val==0.0f)  ? 1.0f  : 0.0f;
+                        *out = (val==0.0f)  ? 0.0f  : 1.0f;
                     }
                     else
                     {
@@ -393,8 +393,10 @@ ExpressionEvaluator::evaluate( const char* expression, float* result )
                 if( invert_operand_value )
                     value = (fabs(value) > Epsilon)  ? 0.0f  : 1.0f;
                 
-                if( _operator_stack.size()  && (_operator_stack.back().operation == _OpDefined  ||  _operator_stack.back().operation == _OpNotDefined) )
+                if( _operator_stack.size()  &&  _operator_stack.back().operation == _OpDefined )
                     value = 1.0f;
+                if( _operator_stack.size()  &&  _operator_stack.back().operation == _OpNotDefined )
+                    value = 0.0f;
 
                 _node_stack.push_back( unsigned(_node.size()) );
                 _node.push_back( SyntaxTreeNode( value, unsigned(expr-text) ) );
@@ -408,7 +410,7 @@ ExpressionEvaluator::evaluate( const char* expression, float* result )
                 if( _operator_stack.size()  &&  (_operator_stack.back().operation == _OpDefined  ||  _operator_stack.back().operation == _OpNotDefined) )
                 {
                     _node_stack.push_back( unsigned(_node.size()) );
-                    _node.push_back( SyntaxTreeNode( 0.0f, InvalidIndex ) );
+                    _node.push_back( SyntaxTreeNode( (_operator_stack.back().operation == _OpDefined)?0.0f:1.0f, InvalidIndex ) );
 
                     last_token_operand   = true;
                     negate_operand_value = false;
