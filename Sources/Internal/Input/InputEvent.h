@@ -4,7 +4,6 @@
 
 namespace DAVA
 {
-
 class Window;
 
 /**
@@ -34,7 +33,7 @@ struct InputEvent
     union
     {
         /** Digital control's state */
-        DigitalControlState digitalState;
+        eDigitalControlState digitalState;
 
         /** Analog control's state */
         AnalogControlState analogState;
@@ -52,5 +51,4 @@ struct InputEvent
         KeyboardEvent keyboardEvent;
     };
 };
-
 }

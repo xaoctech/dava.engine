@@ -5,7 +5,6 @@
 
 namespace DAVA
 {
-
 /**
     \defgroup actions Actions
     // TODO: description
@@ -42,7 +41,19 @@ public:
     {
         uint32 deviceId;
         uint32 controlId;
-        DigitalControlState state;
+        eDigitalControlState stateMask;
+
+        DeviceDigitalControlState()
+        {
+            deviceId = -1;
+        }
+
+        DeviceDigitalControlState(uint32 deviceId, uint32 controlId, eDigitalControlState stateMask)
+            : deviceId(deviceId)
+            , controlId(controlId)
+            , stateMask(stateMask)
+        {
+        }
     };
 
     ActionSystem();
@@ -52,8 +63,8 @@ public:
 
     /** Bind an action with specified `actionId` to digital inputs */
     uint32 BindDigitalAction(uint32 actionId, DeviceDigitalControlState state1);
-	uint32 BindDigitalAction(uint32 actionId, DeviceDigitalControlState state1, DeviceDigitalControlState state2);
-	uint32 BindDigitalAction(uint32 actionId, DeviceDigitalControlState state1, DeviceDigitalControlState state2, DeviceDigitalControlState state3);
+    uint32 BindDigitalAction(uint32 actionId, DeviceDigitalControlState state1, DeviceDigitalControlState state2);
+    uint32 BindDigitalAction(uint32 actionId, DeviceDigitalControlState state1, DeviceDigitalControlState state2, DeviceDigitalControlState state3);
 
     /** Notify when an action happens */
     Signal<Action> ActionTriggered;
@@ -62,31 +73,13 @@ private:
     struct DigitalActionBinding
     {
         uint32 actionId;
-        Vector<DeviceDigitalControlState> requiredStates;
+        DeviceDigitalControlState states[3];
     };
 
-    struct AnalogActionBinding
-    {
-        uint32 actionId;
-        uint32 deviceId;
-        uint32 analogControlId;
-        Vector<DeviceDigitalControlState> requiredDigitalStates;
-    };
-
-    struct DigitalToAnalogBinding
-    {
-        uint32 actionId;
-        Vector<DeviceDigitalControlState> requiredStates;
-        AnalogControlState resultAnalogState;
-    };
-    
     bool OnInputEvent(const InputEvent& event);
 
     Vector<DigitalActionBinding> digitalBindings;
-    Vector<AnalogActionBinding> analogBindings;
-    Vector<DigitalToAnalogBinding> digitalToAnalogBindings;
 
     SigConnectionID inputSystemHandlerToken;
 };
-
 }

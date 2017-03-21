@@ -314,7 +314,7 @@ void TestBed::RegisterTests()
     new FontTest(*this);
     new WebViewTest(*this);
     new FunctionSignalTest(*this);
-	new InputSystemTest(*this);
+    new InputSystemTest(*this);
     new KeyboardTest(*this);
     new FullscreenTest(*this);
     new UIBackgroundTest(*this);

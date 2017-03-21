@@ -9,7 +9,7 @@ const InputDeviceType KeyboardInputDevice::TYPE = 1;
 KeyboardInputDevice::KeyboardInputDevice(uint32 id)
     : InputDevice(id)
 {
-	endFrameConnectionToken = Engine::Instance()->endFrame.Connect(this, &KeyboardInputDevice::OnEndFrame);
+    endFrameConnectionToken = Engine::Instance()->endFrame.Connect(this, &KeyboardInputDevice::OnEndFrame);
 }
 
 KeyboardInputDevice::~KeyboardInputDevice()
@@ -17,7 +17,7 @@ KeyboardInputDevice::~KeyboardInputDevice()
     Engine::Instance()->endFrame.Disconnect(endFrameConnectionToken);
 }
 
-DigitalControlState KeyboardInputDevice::GetDigitalControlState(uint32 controlId) const
+eDigitalControlState KeyboardInputDevice::GetDigitalControlState(uint32 controlId) const
 {
     return keys[controlId].GetState();
 }
@@ -35,19 +35,19 @@ void KeyboardInputDevice::ProcessInputEvent(InputEvent& event)
         // Update control id to be platform-independent
         event.controlId = static_cast<uint32>(SystemKeyToDavaKey(event.controlId));
 
-        if (event.digitalState.IsPressed())
+        if ((event.digitalState & eDigitalControlState::PRESSED) != eDigitalControlState::NONE)
         {
-			keys[event.controlId].Press();
+            keys[event.controlId].Press();
         }
         else
         {
-			keys[event.controlId].Release();
+            keys[event.controlId].Release();
         }
 
-		event.digitalState = keys[event.controlId].GetState();
+        event.digitalState = keys[event.controlId].GetState();
     }
 
-	GetEngineContext()->inputSystem->ProcessInputEvent(event);
+    GetEngineContext()->inputSystem->ProcessInputEvent(event);
 }
 
 void KeyboardInputDevice::OnEndFrame()
@@ -57,8 +57,7 @@ void KeyboardInputDevice::OnEndFrame()
 
     for (int i = 0; i < static_cast<uint32>(Key::TOTAL_KEYS_COUNT); ++i)
     {
-		keys[i].OnEndFrame();
+        keys[i].OnEndFrame();
     }
 }
-
 }

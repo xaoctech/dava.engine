@@ -4,7 +4,6 @@
 
 namespace DAVA
 {
-
 /**
     \ingroup input
     Keyboard keys.
@@ -150,5 +149,4 @@ enum class eKeyboardKey : uint32
     Translates platform-dependent key code to `eKeyboardKey` value.
 */
 eKeyboardKey SystemKeyToDavaKey(uint32 systemKeyCode);
-
 }

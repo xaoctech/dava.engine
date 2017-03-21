@@ -6,45 +6,44 @@ namespace DAVA
 {
 namespace Private
 {
-
 // Helper class to use in input devices that have digital controls
 class DigitalControl
 {
 public:
-	DigitalControl()
-	{
-		state.pressed = false;
-		state.changedThisFrame = false;
-	}
+    DigitalControl()
+    {
+        state = eDigitalControlState::RELEASED;
+    }
 
-	void Press()
-	{
-		if (state.pressed == false)
-		{
-			state.pressed = true;
-			state.changedThisFrame = true;
-		}
-	}
+    void Press()
+    {
+        if ((state & eDigitalControlState::PRESSED) == eDigitalControlState::NONE)
+        {
+            state = eDigitalControlState::PRESSED | eDigitalControlState::JUST_PRESSED;
+        }
+    }
 
-	void Release()
-	{
-		if (state.pressed == true)
-		{
-			state.pressed = false;
-			state.changedThisFrame = true;
-		}
-	}
-	
-	void OnEndFrame()
-	{
-		state.changedThisFrame = false;
-	}
+    void Release()
+    {
+        if ((state & eDigitalControlState::PRESSED) != eDigitalControlState::NONE)
+        {
+            state = eDigitalControlState::RELEASED | eDigitalControlState::JUST_RELEASED;
+        }
+    }
 
-	DigitalControlState const& GetState() const { return state; }
+    void OnEndFrame()
+    {
+        // Clear JUST_PRESSED and JUST_RELEASED flags
+        state &= ~(eDigitalControlState::JUST_PRESSED | eDigitalControlState::JUST_RELEASED);
+    }
+
+    eDigitalControlState GetState() const
+    {
+        return state;
+    }
 
 private:
-	DigitalControlState state;
+    eDigitalControlState state;
 };
-
 }
 }

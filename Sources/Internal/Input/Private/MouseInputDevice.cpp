@@ -9,7 +9,7 @@ const InputDeviceType MouseInputDevice::TYPE = 2;
 MouseInputDevice::MouseInputDevice(uint32 id)
     : InputDevice(id)
 {
-	mousePosition.x = mousePosition.y = mousePosition.z = 0;
+    mousePosition.x = mousePosition.y = mousePosition.z = 0;
     endFrameConnectionToken = Engine::Instance()->endFrame.Connect(this, &MouseInputDevice::OnEndFrame);
 }
 
@@ -18,36 +18,36 @@ MouseInputDevice::~MouseInputDevice()
     Engine::Instance()->endFrame.Disconnect(endFrameConnectionToken);
 }
 
-DigitalControlState MouseInputDevice::GetDigitalControlState(uint32 controlId) const
+eDigitalControlState MouseInputDevice::GetDigitalControlState(uint32 controlId) const
 {
-	return GetDigitalControl(controlId)->GetState();
+    return GetDigitalControl(controlId)->GetState();
 }
 
 AnalogControlState MouseInputDevice::GetAnalogControlState(uint32 controlId) const
 {
-	return mousePosition;
+    return mousePosition;
 }
 
 void MouseInputDevice::ProcessInputEvent(InputEvent& event)
 {
-	if (event.controlId == MOUSE)
-	{
-		mousePosition = event.analogState;
-	}
-	else
-	{
-		Private::DigitalControl* control = GetDigitalControl(event.controlId);
-		if (event.digitalState.IsPressed())
-		{
-			control->Press();
-		}
-		else
-		{
-			control->Release();
-		}
+    if (event.controlId == MOUSE)
+    {
+        mousePosition = event.analogState;
+    }
+    else
+    {
+        Private::DigitalControl* control = GetDigitalControl(event.controlId);
+        if ((event.digitalState & eDigitalControlState::PRESSED) != eDigitalControlState::NONE)
+        {
+            control->Press();
+        }
+        else
+        {
+            control->Release();
+        }
 
-		event.digitalState = control->GetState();
-	}
+        event.digitalState = control->GetState();
+    }
 
     GetEngineContext()->inputSystem->ProcessInputEvent(event);
 }
@@ -59,34 +59,33 @@ void MouseInputDevice::OnEndFrame()
 
     for (int i = 0; i < static_cast<uint32>(Key::TOTAL_KEYS_COUNT); ++i)
     {
-		leftButton.OnEndFrame();
-		middleButton.OnEndFrame();
-		rightButton.OnEndFrame();
+        leftButton.OnEndFrame();
+        middleButton.OnEndFrame();
+        rightButton.OnEndFrame();
     }
 }
 
 Private::DigitalControl* MouseInputDevice::GetDigitalControl(DAVA::uint32 controlId)
 {
-	return const_cast<Private::DigitalControl*>(static_cast<const MouseInputDevice*>(this)->GetDigitalControl(controlId));
+    return const_cast<Private::DigitalControl*>(static_cast<const MouseInputDevice*>(this)->GetDigitalControl(controlId));
 }
 
 const Private::DigitalControl* MouseInputDevice::GetDigitalControl(DAVA::uint32 controlId) const
 {
-	switch (controlId)
-	{
-	case eControl::LEFT_BUTTON:
-		return &leftButton;
+    switch (controlId)
+    {
+    case eControl::LEFT_BUTTON:
+        return &leftButton;
 
-	case eControl::MIDDLE_BUTTON:
-		return &middleButton;
+    case eControl::MIDDLE_BUTTON:
+        return &middleButton;
 
-	case eControl::RIGHT_BUTTON:
-		return &rightButton;
+    case eControl::RIGHT_BUTTON:
+        return &rightButton;
 
-	default:
-		DVASSERT(false);
-		return nullptr;
-	}
+    default:
+        DVASSERT(false);
+        return nullptr;
+    }
 }
-
 }

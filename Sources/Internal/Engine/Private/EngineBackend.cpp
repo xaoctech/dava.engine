@@ -32,6 +32,7 @@
 #include "FileSystem/KeyedArchive.h"
 #include "Job/JobManager.h"
 #include "Input/InputSystem.h"
+#include "Input/ActionSystem.h"
 #include "Logger/Logger.h"
 #include "MemoryManager/MemoryManager.h"
 #include "ModuleManager/ModuleManager.h"
@@ -211,8 +212,8 @@ void EngineBackend::Init(eEngineRunMode engineRunMode, const Vector<String>& mod
 
     isInitialized = true;
 
-	// TODO: find a better way
-	context->deviceManager->OnEngineInited();
+    // TODO: find a better way
+    context->deviceManager->OnEngineInited();
 }
 
 int EngineBackend::Run()
@@ -790,6 +791,7 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
     if (!IsConsoleMode())
     {
         context->inputSystem = new InputSystem(engine);
+        context->actionSystem = new ActionSystem();
         context->uiScreenManager = new UIScreenManager();
         context->localNotificationController = new LocalNotificationController();
 

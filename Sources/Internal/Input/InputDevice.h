@@ -4,7 +4,6 @@
 
 namespace DAVA
 {
-
 /**
     \defgroup input Input
 
@@ -21,42 +20,29 @@ namespace DAVA
 */
 
 /**
-    \ingroup input    
-	Struct describing possible state for a digital control.
+    \ingroup input
+	Enum describing possible states for a digital control.
 
-	Each digital control can be either pressed or released (can be checked using `pressed` field).
-	Additionally, there is a `changedThisFrame` flag, which is equal to `true` if state has changed in current frame.
-
-	These two fields describe four possible state:
-		- Button has just been pressed (pressed = true, changedThisFrame = true)
-		- Button is pressed, but not necessary in this frame (pressed = true, changedThisFrame = either true or false)
-        - Button has just been released (pressed=false, changedThisFrame = true)
-        - Button is released, but not necessary in this frame (pressed = false, changedThisFrame = either true or false).
-
-    For simplicity there are four helper methods: `IsJustPressed`, `IsPressed`, `IsJustReleased` and `IsReleased`.
-
-	|------------------------------------------------|---------------|---------|--------------|----------|
-	|                                                |   JustPressed | Pressed | JustReleased | Released |
-	|------------------------------------------------|---------------|---------|--------------|----------|
-	| initial control state                          | -             | -       | -            | +        |
-	| right after user pressed a button (same frame) | +             | +       | -            | -        |
-	| user keeps the button pressed (next frames)    | -             | +       | -            | -        |
-	| user released the button (same frame)          | -             | -       | +            | +        |
-	| user released the button (next frames)         | -             | -       | -            | +        |
+	|------------------------------------------------|---------------|---------|---------------|----------|
+	|                                                |  JUST_PRESSED | PRESSED | JUST_RELEASED | RELEASED |
+	|------------------------------------------------|---------------|---------|---------------|----------|
+	| initial control state                          | -             | -       | -             | +        |
+	| right after user pressed a button (same frame) | +             | +       | -             | -        |
+	| user keeps the button pressed (next frames)    | -             | +       | -             | -        |
+	| user released the button (same frame)          | -             | -       | +             | +        |
+	| user released the button (next frames)         | -             | -       | -             | +        |
 */
-struct DigitalControlState
+enum class eDigitalControlState : uint32
 {
-	bool IsJustPressed() const { return pressed & changedThisFrame; }
-	bool IsPressed() const { return pressed; }
-	bool IsJustReleased() const { return !pressed & changedThisFrame; }
-	bool IsReleased() const { return !pressed; }
+    NONE = 0,
 
-	bool operator==(const DigitalControlState& other) const { return pressed == other.pressed && changedThisFrame == other.changedThisFrame; }
-	bool operator!=(const DigitalControlState& other) const { return !(*this == other); }
-
-	bool pressed;
-	bool changedThisFrame;
+    JUST_PRESSED = 1 << 0,
+    PRESSED = 1 << 1,
+    JUST_RELEASED = 1 << 2,
+    RELEASED = 1 << 3
 };
+
+DAVA_DEFINE_ENUM_BITWISE_OPERATORS(eDigitalControlState)
 
 /**
     \ingroup input    
@@ -90,8 +76,10 @@ class InputDevice
 public:
     /** Create InputDevice instance with specified `id` */
     InputDevice(uint32 id);
-    
-    virtual ~InputDevice() {}
+
+    virtual ~InputDevice()
+    {
+    }
 
     /** Return unique device id */
     uint32 GetId() const;
@@ -101,7 +89,7 @@ public:
 
         \pre Device should have a digital control with specified `controlId`.
     */
-    virtual DigitalControlState GetDigitalControlState(uint32 controlId) const = 0;
+    virtual eDigitalControlState GetDigitalControlState(uint32 controlId) const = 0;
 
     /**
         Get an analog control's state with specified `controlId`
@@ -114,7 +102,8 @@ private:
     const uint32 id;
 };
 
-inline InputDevice::InputDevice(uint32 id) : id(id)
+inline InputDevice::InputDevice(uint32 id)
+    : id(id)
 {
 }
 
@@ -122,5 +111,4 @@ inline uint32 InputDevice::GetId() const
 {
     return id;
 }
-
 }

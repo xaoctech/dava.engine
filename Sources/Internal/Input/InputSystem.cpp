@@ -115,15 +115,15 @@ void InputSystem::HandleGamepadRemoved(const Private::MainDispatcherEvent& e)
 
 void InputSystem::AddInputEventHandler(const Function<bool(const InputEvent&)>& handler)
 {
-	inputEventHandlers.push_back(handler);
+    inputEventHandlers.push_back(handler);
 }
 
 void InputSystem::ProcessInputEvent(InputEvent const& event)
 {
-	for (auto handler : inputEventHandlers)
-	{
-		handler(event);
-	}
+    for (auto handler : inputEventHandlers)
+    {
+        handler(event);
+    }
 }
 
 } // namespace DAVA
