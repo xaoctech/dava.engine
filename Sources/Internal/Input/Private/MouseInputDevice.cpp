@@ -9,7 +9,7 @@ const InputDeviceType MouseInputDevice::TYPE = 2;
 MouseInputDevice::MouseInputDevice(uint32 id)
     : InputDevice(id)
 {
-    mousePosition.x = mousePosition.y = mousePosition.z = 0;
+    mousePosition.x = mousePosition.y = mousePosition.z = 0.0f;
     endFrameConnectionToken = Engine::Instance()->endFrame.Connect(this, &MouseInputDevice::OnEndFrame);
 }
 
@@ -20,11 +20,13 @@ MouseInputDevice::~MouseInputDevice()
 
 eDigitalControlState MouseInputDevice::GetDigitalControlState(uint32 controlId) const
 {
+    DVASSERT(controlId < eControl::MOUSE);
     return GetDigitalControl(controlId)->GetState();
 }
 
 AnalogControlState MouseInputDevice::GetAnalogControlState(uint32 controlId) const
 {
+    DVASSERT(controlId == eControl::MOUSE);
     return mousePosition;
 }
 

@@ -6,9 +6,9 @@
 
 using namespace DAVA;
 
-static const DAVA::uint32 FIRE = 0;
-static const DAVA::uint32 JUMP = 1;
-static const DAVA::uint32 HIGH_JUMP = 2;
+static const DAVA::FastName FIRE = DAVA::FastName("FIRE");
+static const DAVA::FastName JUMP = DAVA::FastName("JUMP");
+static const DAVA::FastName HIGH_JUMP = DAVA::FastName("HIGH_JUMP");
 
 InputSystemTest::InputSystemTest(TestBed& app)
     : BaseScreen(app, "InputSystemTest")

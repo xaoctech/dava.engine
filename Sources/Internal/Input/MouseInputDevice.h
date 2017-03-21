@@ -18,6 +18,7 @@ class MouseInputDevice final : public InputDevice
 public:
     enum eControl : DAVA::uint32
     {
+        // TODO: starts from one to match old eMouseButtons, fix this
         LEFT_BUTTON = 1,
         RIGHT_BUTTON,
         MIDDLE_BUTTON,

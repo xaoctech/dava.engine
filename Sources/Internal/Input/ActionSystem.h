@@ -2,6 +2,7 @@
 
 #include "Input/InputEvent.h"
 #include "Functional/Signal.h"
+#include "Base/FastName.h"
 
 namespace DAVA
 {
@@ -17,7 +18,7 @@ namespace DAVA
 struct Action
 {
     /** Id of the action */
-    uint32 actionId;
+    FastName actionId;
 
     /** Id of the device which triggered the action */
     uint32 triggeredDeviceId;
@@ -45,6 +46,7 @@ public:
 
         DeviceDigitalControlState()
         {
+            // To indicate empty state
             deviceId = -1;
         }
 
@@ -61,18 +63,22 @@ public:
     ActionSystem(const ActionSystem&) = delete;
     ActionSystem& operator=(const ActionSystem&) = delete;
 
-    /** Bind an action with specified `actionId` to digital inputs */
-    uint32 BindDigitalAction(uint32 actionId, DeviceDigitalControlState state1);
-    uint32 BindDigitalAction(uint32 actionId, DeviceDigitalControlState state1, DeviceDigitalControlState state2);
-    uint32 BindDigitalAction(uint32 actionId, DeviceDigitalControlState state1, DeviceDigitalControlState state2, DeviceDigitalControlState state3);
+    /** Bind an action with specified `actionId` to a digital control */
+    void BindDigitalAction(FastName actionId, DeviceDigitalControlState state);
 
-    /** Notify when an action happens */
+    /** Bind an action with specified `actionId` to digital controls */
+    void BindDigitalAction(FastName actionId, DeviceDigitalControlState state1, DeviceDigitalControlState state2);
+
+    /** Bind an action with specified `actionId` to digital controls */
+    void BindDigitalAction(FastName actionId, DeviceDigitalControlState state1, DeviceDigitalControlState state2, DeviceDigitalControlState state3);
+
+    /** Emits when an action happens */
     Signal<Action> ActionTriggered;
 
 private:
     struct DigitalActionBinding
     {
-        uint32 actionId;
+        FastName actionId;
         DeviceDigitalControlState states[3];
     };
 

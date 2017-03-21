@@ -19,6 +19,7 @@ KeyboardInputDevice::~KeyboardInputDevice()
 
 eDigitalControlState KeyboardInputDevice::GetDigitalControlState(uint32 controlId) const
 {
+    DVASSERT(controlId < keys.size());
     return keys[controlId].GetState();
 }
 
@@ -46,6 +47,8 @@ void KeyboardInputDevice::ProcessInputEvent(InputEvent& event)
 
         event.digitalState = keys[event.controlId].GetState();
     }
+
+    // TODO: char event?
 
     GetEngineContext()->inputSystem->ProcessInputEvent(event);
 }

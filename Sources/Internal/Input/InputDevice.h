@@ -21,19 +21,20 @@ namespace DAVA
 
 /**
     \ingroup input
-	Enum describing possible states for a digital control.
+    Enum describing possible states for a digital control.
 
-	|------------------------------------------------|---------------|---------|---------------|----------|
-	|                                                |  JUST_PRESSED | PRESSED | JUST_RELEASED | RELEASED |
-	|------------------------------------------------|---------------|---------|---------------|----------|
-	| initial control state                          | -             | -       | -             | +        |
-	| right after user pressed a button (same frame) | +             | +       | -             | -        |
-	| user keeps the button pressed (next frames)    | -             | +       | -             | -        |
-	| user released the button (same frame)          | -             | -       | +             | +        |
-	| user released the button (next frames)         | -             | -       | -             | +        |
+    |------------------------------------------------|---------------|---------|---------------|----------|
+    |                                                |  JUST_PRESSED | PRESSED | JUST_RELEASED | RELEASED |
+    |------------------------------------------------|---------------|---------|---------------|----------|
+    | initial control state                          | -             | -       | -             | +        |
+    | right after user pressed a button (same frame) | +             | +       | -             | -        |
+    | user keeps the button pressed (next frames)    | -             | +       | -             | -        |
+    | user released the button (same frame)          | -             | -       | +             | +        |
+    | user released the button (next frames)         | -             | -       | -             | +        |
 */
 enum class eDigitalControlState : uint32
 {
+    // Helper value to use in bitwise operations
     NONE = 0,
 
     JUST_PRESSED = 1 << 0,
