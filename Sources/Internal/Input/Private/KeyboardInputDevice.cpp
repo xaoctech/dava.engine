@@ -1,5 +1,6 @@
 #include "Input/KeyboardInputDevice.h"
 #include "Engine/Engine.h"
+#include "Input/InputSystem.h"
 
 namespace DAVA
 {
@@ -42,7 +43,11 @@ void KeyboardInputDevice::ProcessInputEvent(InputEvent& event)
         {
 			keys[event.controlId].Release();
         }
+
+		event.digitalState = keys[event.controlId].GetState();
     }
+
+	GetEngineContext()->inputSystem->ProcessInputEvent(event);
 }
 
 void KeyboardInputDevice::OnEndFrame()

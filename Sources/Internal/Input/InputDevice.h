@@ -46,10 +46,13 @@ namespace DAVA
 */
 struct DigitalControlState
 {
-	bool IsJustPressed() { return pressed & changedThisFrame; }
-	bool IsPressed() { return pressed; }
-	bool IsJustReleased() { return !pressed & changedThisFrame; }
-	bool IsReleased() { return !pressed; }
+	bool IsJustPressed() const { return pressed & changedThisFrame; }
+	bool IsPressed() const { return pressed; }
+	bool IsJustReleased() const { return !pressed & changedThisFrame; }
+	bool IsReleased() const { return !pressed; }
+
+	bool operator==(const DigitalControlState& other) const { return pressed == other.pressed && changedThisFrame == other.changedThisFrame; }
+	bool operator!=(const DigitalControlState& other) const { return !(*this == other); }
 
 	bool pressed;
 	bool changedThisFrame;

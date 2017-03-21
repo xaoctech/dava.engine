@@ -11,6 +11,12 @@ namespace Private
 class DigitalControl
 {
 public:
+	DigitalControl()
+	{
+		state.pressed = false;
+		state.changedThisFrame = false;
+	}
+
 	void Press()
 	{
 		if (state.pressed == false)
