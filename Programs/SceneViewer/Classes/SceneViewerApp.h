@@ -4,11 +4,6 @@
 
 #include <GridTest.h>
 
-#include <LoggerService/NetLogger.h>
-#if defined(DAVA_MEMORY_PROFILING_ENABLE)
-#include <MemoryProfilerService/MMNetServer.h>
-#endif
-
 #include <Network/ServicesProvider.h>
 #include <DAVAEngine.h>
 #include <Base/ScopedPtr.h>
@@ -59,9 +54,9 @@ private:
 
     SceneViewerData data;
 
-    std::unique_ptr<DAVA::Net::NetLogger> netLogger;
+    std::shared_ptr<DAVA::Net::NetService> netLogger;
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
-    std::unique_ptr<DAVA::Net::MMNetServer> memprofServer;
+    std::shared_ptr<DAVA::Net::NetService> memprofServer;
 #endif
-    DAVA::Net::ServicesProvider servicesProvider;
+    std::unique_ptr<DAVA::Net::ServicesProvider> servicesProvider;
 };

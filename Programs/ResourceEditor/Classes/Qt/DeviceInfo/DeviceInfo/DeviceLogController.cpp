@@ -63,7 +63,7 @@ void DeviceLogController::Output(const DAVA::String& msg)
     // Current message format: <date> <time> <level> <text>
     if (list.size() > 3)
     {
-        if (list[2] == "framwork")
+        if (list[2] == "framework")
             ll = DAVA::Logger::LEVEL_FRAMEWORK;
         else if (list[2] == "debug")
             ll = DAVA::Logger::LEVEL_DEBUG;

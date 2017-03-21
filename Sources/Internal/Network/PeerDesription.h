@@ -16,10 +16,6 @@ class PeerDescription
 public:
     PeerDescription();
     PeerDescription(const String& appName, const NetConfig& config);
-    PeerDescription(const PeerDescription&) = default;
-
-    PeerDescription& operator=(const PeerDescription&) = default;
-    PeerDescription& operator=(PeerDescription&&);
 
     DeviceInfo::ePlatform GetPlatform() const;
     const String& GetPlatformString() const;

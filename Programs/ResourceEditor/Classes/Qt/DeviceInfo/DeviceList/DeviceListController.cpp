@@ -69,7 +69,7 @@ void DeviceListController::ShowView()
 void DeviceListController::OnDeviceDiscover(const QString& addr)
 {
     using namespace DAVA;
-    using namespace Net;
+    using namespace DAVA::Net;
 
     if (!NetCore::IsNetworkEnabled())
     {
@@ -185,7 +185,7 @@ void DeviceListController::DeleteMemProfiler(DAVA::Net::IChannelListener* obj, v
 void DeviceListController::ConnectDeviceInternal(QModelIndex& index, size_t ifIndex)
 {
     using namespace DAVA;
-    using namespace Net;
+    using namespace DAVA::Net;
 
     // Check whether we have connection with device
     NetCore::TrackId trackId = static_cast<NetCore::TrackId>(index.data(ROLE_CONNECTION_ID).toULongLong());
@@ -245,8 +245,7 @@ void DeviceListController::ConnectDeviceInternal(QModelIndex& index, size_t ifIn
 
 void DeviceListController::DisonnectDeviceInternal(QModelIndex& index)
 {
-    using namespace DAVA;
-    using namespace Net;
+    using namespace DAVA::Net;
 
     // Check whether we have connection with device
     NetCore::TrackId trackId = static_cast<NetCore::TrackId>(index.data(ROLE_CONNECTION_ID).toULongLong());
@@ -260,7 +259,7 @@ void DeviceListController::DisonnectDeviceInternal(QModelIndex& index)
 
     item->setData(QVariant(static_cast<qulonglong>(NetCore::INVALID_TRACK_ID)), ROLE_CONNECTION_ID);
     // And destroy controller related to remote device
-    DAVA::Net::NetCore::Instance()->DestroyControllerBlocked(trackId);
+    NetCore::Instance()->DestroyControllerBlocked(trackId);
 
     QString s = item->text();
     int pos = s.indexOf('!');
@@ -313,7 +312,7 @@ void DeviceListController::OnDisconnectButtonPressed()
 void DeviceListController::OnShowLogButtonPressed()
 {
     using namespace DAVA;
-    using namespace Net;
+    using namespace DAVA::Net;
 
     if (!NetCore::IsNetworkEnabled())
     {
@@ -349,7 +348,7 @@ void DeviceListController::OnShowLogButtonPressed()
 QStandardItem* DeviceListController::CreateDeviceItem(const DAVA::Net::Endpoint& endp, const DAVA::Net::PeerDescription& peerDescr)
 {
     using namespace DAVA;
-    using namespace Net;
+    using namespace DAVA::Net;
 
     // Item text in the form of <name> - <platform> - <ip address>
     // E.g., 9f5656fd - Android - 192.168.0.24

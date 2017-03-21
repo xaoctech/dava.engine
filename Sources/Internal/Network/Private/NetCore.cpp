@@ -5,6 +5,7 @@
 #include <Network/Private/NetController.h>
 #include <Network/Private/Announcer.h>
 #include <Network/Private/Discoverer.h>
+#include "Utils/StringFormat.h"
 
 #include "Engine/Engine.h"
 
@@ -69,17 +70,17 @@ NetCore::TrackId NetCore::CreateController(const NetConfig& config, void* contex
 #endif
 }
 
-bool NetCore::GetControllerStatus(TrackId id, IController::Status& status) const
+IController::Status NetCore::GetControllerStatus(TrackId id) const
 {
     IController* ctrl = TrackIdToObject(id);
     if (ctrl)
     {
-        status = ctrl->GetStatus();
-        return true;
+        return ctrl->GetStatus();
     }
     else
     {
-        return false;
+        DVASSERT(false, Format("Wrong track id: %u", id).c_str());
+        return IController::START_FAILED;
     }
 }
 

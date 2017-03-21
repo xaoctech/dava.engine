@@ -6,6 +6,8 @@ namespace DAVA
 {
 namespace Net
 {
+namespace PeerDescriptionDetails
+{
 struct SerializedHeader
 {
     uint32 magicZero; // Magic zero
@@ -50,19 +52,19 @@ struct SerializedTransport
     uint32 port;
 };
 
-static DeviceInfo::ePlatform IntToPlatform(uint32 n)
+DeviceInfo::ePlatform IntToPlatform(uint32 n)
 {
     return DeviceInfo::PLATFORM_MACOS <= n && n < DeviceInfo::PLATFORMS_COUNT ? static_cast<DeviceInfo::ePlatform>(n) : DeviceInfo::PLATFORM_UNKNOWN_VALUE;
 }
 
-static eGPUFamily IntToGPUFamily(uint32 n)
+eGPUFamily IntToGPUFamily(uint32 n)
 {
     return GPU_POWERVR_IOS <= n && n < GPU_FAMILY_COUNT ? static_cast<eGPUFamily>(n)
                                                           :
                                                           GPU_INVALID;
 }
 
-static eTransportType IntToTransportType(uint32 n)
+eTransportType IntToTransportType(uint32 n)
 {
     switch (n)
     {
@@ -73,7 +75,7 @@ static eTransportType IntToTransportType(uint32 n)
     return TRANSPORT_TCP;
 }
 
-static eNetworkRole IntToNetworkRole(uint32 n)
+eNetworkRole IntToNetworkRole(uint32 n)
 {
     switch (n)
     {
@@ -86,7 +88,7 @@ static eNetworkRole IntToNetworkRole(uint32 n)
     return SERVER_ROLE;
 }
 
-static size_t EstimateBufferSize(const SerializedHeader* header)
+size_t EstimateBufferSize(const SerializedHeader* header)
 {
     return
     sizeof(SerializedHeader) +
@@ -96,8 +98,21 @@ static size_t EstimateBufferSize(const SerializedHeader* header)
     sizeof(uint32) * header->serviceCount;
 }
 
+bool ValidateHeader(const SerializedHeader* header, size_t buflen)
+{
+    size_t estimatedSize = EstimateBufferSize(header);
+    // TODO: verify checksum
+    return (0 == header->magicZero
+            && header->totalSize <= buflen
+            && header->totalSize == estimatedSize
+            && (SERVER_ROLE == header->networkRole || CLIENT_ROLE == header->networkRole));
+}
+} // namespace PeerDescriptionDetails
+
 size_t PeerDescription::SerializedSize() const
 {
+    using namespace PeerDescriptionDetails;
+
     return
     sizeof(SerializedHeader) +
     sizeof(SerializedGeneralInfo) +
@@ -108,6 +123,8 @@ size_t PeerDescription::SerializedSize() const
 
 size_t PeerDescription::Serialize(void* dstBuffer, size_t buflen) const
 {
+    using namespace PeerDescriptionDetails;
+
     size_t totalSize = SerializedSize();
     DVASSERT(dstBuffer != NULL && totalSize <= buflen);
     if (false == (dstBuffer != NULL && totalSize <= buflen))
@@ -173,16 +190,18 @@ size_t PeerDescription::Serialize(void* dstBuffer, size_t buflen) const
 
 size_t PeerDescription::Deserialize(const void* srcBuffer, size_t buflen)
 {
+    using namespace PeerDescriptionDetails;
+
     DVASSERT(srcBuffer != NULL && buflen > sizeof(SerializedHeader));
     if (false == (srcBuffer != NULL && buflen > sizeof(SerializedHeader)))
         return 0;
 
     const SerializedHeader* header = static_cast<const SerializedHeader*>(srcBuffer);
-    size_t estimatedSize = EstimateBufferSize(header);
-    // TODO: verify checksum
-    if (false == (0 == header->magicZero && header->totalSize <= buflen && header->totalSize == estimatedSize &&
-                  (SERVER_ROLE == header->networkRole || CLIENT_ROLE == header->networkRole)))
+
+    if (false == ValidateHeader(header, buflen))
+    {
         return 0;
+    }
 
     PeerDescription temp;
     temp.ifaddr.reserve(header->ifadrCount);
@@ -222,20 +241,24 @@ size_t PeerDescription::Deserialize(const void* srcBuffer, size_t buflen)
     {
         temp.netConfig.AddService(serv[i]);
     }
-    // TODO: implement as swap or move semantic
+
     *this = std::move(temp);
     return header->totalSize;
 }
 
 bool PeerDescription::ExtractAppName(const void* srcBuffer, size_t buflen, String& appName)
 {
-    if (srcBuffer == nullptr || buflen < sizeof(SerializedHeader) + sizeof(SerializedGeneralInfo))
+    using namespace PeerDescriptionDetails;
+
+    const SerializedHeader* header = static_cast<const SerializedHeader*>(srcBuffer);
+    if (srcBuffer == nullptr
+        || buflen < sizeof(SerializedHeader) + sizeof(SerializedGeneralInfo)
+        || false == ValidateHeader(header, buflen))
     {
         DVASSERT(false, "wrong buffer");
         return false;
     }
 
-    const SerializedHeader* header = static_cast<const SerializedHeader*>(srcBuffer);
     const SerializedGeneralInfo* general = reinterpret_cast<const SerializedGeneralInfo*>(header + 1);
     appName = general->appName.data();
 

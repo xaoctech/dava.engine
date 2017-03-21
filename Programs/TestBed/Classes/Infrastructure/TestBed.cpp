@@ -44,10 +44,12 @@
 //$UNITTEST_INCLUDE
 
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
-#include <MemoryManager/MemoryProfiler.h>
 #include <MemoryProfilerService/ServiceInfo.h>
+#include <MemoryProfilerService/MMNetServer.h>
+#include <MemoryManager/MemoryProfiler.h>
 #endif
 #include <LoggerService/ServiceInfo.h>
+#include <LoggerService/NetLogger.h>
 
 #include "Infrastructure/NativeDelegateMac.h"
 #include "Infrastructure/NativeDelegateIos.h"
@@ -119,7 +121,6 @@ TestBed::TestBed(Engine& engine)
     : engine(engine)
     , currentScreen(nullptr)
     , testListScreen(nullptr)
-    , servicesProvider(engine, "TestBed")
 {
     using namespace DAVA;
 
@@ -159,6 +160,7 @@ TestBed::TestBed(Engine& engine)
 
     engine.GetContext()->settings->Load("~res:/EngineSettings.yaml");
 
+    servicesProvider.reset(new DAVA::Net::ServicesProvider(engine, "TestBed"));
     netLogger.reset(new DAVA::Net::NetLogger);
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
     memprofServer.reset(new DAVA::Net::MMNetServer);
@@ -206,7 +208,7 @@ void TestBed::OnEngineCleanup()
 {
     Logger::Debug("****** TestBed::OnEngineCleanup");
 
-    servicesProvider.Stop();
+    servicesProvider.reset();
     netLogger.reset();
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
     memprofServer.reset();
@@ -422,12 +424,12 @@ bool TestBed::IsNeedSkipTest(const BaseScreen& screen) const
 
 void TestBed::InitNetwork()
 {
-    servicesProvider.AddService(DAVA::Net::LOG_SERVICE_ID, netLogger.get());
+    servicesProvider->AddService(DAVA::Net::LOG_SERVICE_ID, netLogger);
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
-    servicesProvider.AddService(DAVA::Net::MEMORY_PROFILER_SERVICE_ID, memprofServer.get());
+    servicesProvider->AddService(DAVA::Net::MEMORY_PROFILER_SERVICE_ID, memprofServer);
 #endif
 
-    servicesProvider.Start();
+    servicesProvider->Start();
 }
 
 void CheckDeviceInfoValid()

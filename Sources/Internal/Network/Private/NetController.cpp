@@ -136,13 +136,9 @@ void NetController::DoStartServers()
     {
         status = STARTED;
     }
-    else if (failedCount == runningObjects)
-    {
-        status = START_FAILED;
-    }
     else
     {
-        status = STARTED_SOME_FAILED;
+        status = START_FAILED;
     }
 }
 
