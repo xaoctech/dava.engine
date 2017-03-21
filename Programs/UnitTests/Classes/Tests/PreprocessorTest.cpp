@@ -30,7 +30,9 @@ DAVA_TESTCLASS (PreprocessorTest)
           { "!DARKNESS_DISABLED && SHADING != SHADING_NONE", 1.0f },
           { "LIGHTING_ENABLED || !DARKNESS_DISABLED", 1.0f },
           { "defined DARKNESS_DISABLED", 1.0f },
+          { "!defined DARKNESS_DISABLED", 0.0f },
           { "!defined RANDOM_BULLSHIT", 1.0f },
+          { "defined RANDOM_BULLSHIT", 0.0f },
           { "SHADING != SHADING_NONE  &&  !defined RANDOM_BULLSHIT", 1.0f }
         };
 
@@ -60,8 +62,7 @@ DAVA_TESTCLASS (PreprocessorTest)
         }
         test[] = 
         {
-#if 0
-#else
+#if 1
             { "00-input.txt", "00-output.txt" },
             { "01-input.txt", "01-output.txt" },
             { "02-input.txt", "02-output.txt" },
@@ -71,7 +72,10 @@ DAVA_TESTCLASS (PreprocessorTest)
             { "06-input.txt", "06-output.txt" },
             { "07-input.txt", "07-output.txt" },
             { "CC01-input.txt", "CC01-output.txt" },
-            { "CC02-input.txt", "CC02-output.txt" }
+            { "CC02-input.txt", "CC02-output.txt" },
+            { "CC03-input.txt", "CC03-output.txt" }
+#else
+            { "CC03-input.txt", "CC03-output.txt" }
 #endif        
         };
         static const char* BaseDir = "~res:/TestData/PreProcessor";

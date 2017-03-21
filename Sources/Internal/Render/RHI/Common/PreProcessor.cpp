@@ -88,11 +88,7 @@ PreProc::process( const char* src_text, TextBuf* output )
 void    
 PreProc::clear()
 {
-    _line.clear();
-    
-    for( unsigned b=0; b!=_buf.size(); ++b )
-        ::free( _buf[b].mem );
-    _buf.clear();
+    _reset();
 }
 
 
@@ -122,7 +118,12 @@ PreProc::dump() const
 void
 PreProc::_reset()
 {
-    clear();
+    _line.clear();
+    
+    for( unsigned b=0; b!=_buf.size(); ++b )
+        ::free( _buf[b].mem );
+    _buf.clear();
+
     _cur_file_name = "<buffer>";
 }
 
@@ -327,7 +328,7 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
                 s = ns1;
 
                 DVASSERT(s[1]);
-                if( strncmp( s+1, "include", 7 ) == 0 )
+                if( !skipping_line  &&  strncmp( s+1, "include", 7 ) == 0 )
                 {
                     char*   t  = s;
                     char*   f0 = nullptr;
@@ -347,7 +348,10 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
 
                     strncpy( fname, f0, f1-f0+1 );
                     fname[f1-f0+1] = 0;
-                    _process_include( fname, line );
+                    if( !_process_include( fname, line ) )
+                    {
+                        return false;
+                    }
 
                     while( *t != '\n' )
                         ++t;
@@ -361,7 +365,7 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
                         ln = t+1;
                     }
                 }
-                else if( strncmp( s+1, "define", 6 ) == 0 )
+                else if( !skipping_line  &&  strncmp( s+1, "define", 6 ) == 0 )
                 {
                     char*   t  = s+1+6;
                     char*   n0 = nullptr;
@@ -471,6 +475,12 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
                     bool condition = (int(v))  ? true  : false;
                     pending_elif.back().do_skip_lines       = !condition;
                     pending_elif.back().effective_condition = pending_elif.back().effective_condition || condition;
+                    
+                    if( *s == 0 )
+                    { 
+                        ln[0] = 0; 
+                        break; 
+                    }
                 }
                 else if( strncmp( s+1, "else", 4 ) == 0 )
                 {
@@ -479,7 +489,7 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
                     while( *s != '\n' )
                         ++s;
                     if( *s == 0 )
-                        break;
+                        { ln[0] = 0; break; }
                     else
                         ln = s+1;
                 }
@@ -491,7 +501,7 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
                     while( *s  &&  *s != '\n' )
                         ++s;
                     if( *s == 0 )
-                        break;
+                        { ln[0] = 0; break; }
                     else
                         ln = s+1;
                 }
@@ -558,7 +568,6 @@ PreProc::_process_include( const char* file_name, std::vector<PreProc::Line>* li
     {
         DAVA::Logger::Error( "failed to open \"%s\"\n", file_name );
     }
-
 
     return success;
 }
