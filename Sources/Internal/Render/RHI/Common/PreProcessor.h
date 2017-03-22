@@ -122,6 +122,18 @@ private:
         DAVA::File* _in;
     };
 
+    struct
+    macro_t
+    {
+        char        name[128];
+        char        value[128];
+        unsigned    name_len;
+        unsigned    value_len;
+    };
+
+    std::vector<macro_t>    _macro;
+    unsigned                _min_macro_length;
+
 
     static DefFileCallback  _DefFileCallback;
 };

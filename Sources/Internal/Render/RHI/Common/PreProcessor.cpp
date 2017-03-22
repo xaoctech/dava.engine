@@ -1,6 +1,7 @@
 #include "PreProcessor.h"
 
 #include "Logger/Logger.h"
+#include "Base/BaseTypes.h"
 #include "rhi_Utils.h"
 
 PreProc::DefFileCallback    PreProc::_DefFileCallback;
@@ -89,6 +90,8 @@ void
 PreProc::clear()
 {
     _reset();
+    _min_macro_length = DAVA::InvalidIndex;
+    _macro.clear();
 }
 
 
@@ -227,10 +230,13 @@ PreProc::_get_identifier( char* txt, char** end ) const
 bool    
 PreProc::_process_buffer( char* text, std::vector<Line>* line )
 {
-    bool        success       = true;
-    char*       ln            = text;    
-    unsigned    line_n        = 1;
-    unsigned    src_line_n    = 1;
+    bool        success     = true;
+    char*       ln          = text;
+    bool        ln_external = false;
+    char*       ln_m0       = nullptr;
+    char*       last_s      = nullptr;
+    unsigned    line_n      = 1;
+    unsigned    src_line_n  = 1;
 
     struct
     condition_t
@@ -306,6 +312,13 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
         {
             *s = 0;
             line->push_back( Line(ln,line_n) );
+            
+            if( ln_external )
+            {
+                s           = last_s;
+                ln_external = false;
+            }
+
             ln = s+1;
             ++line_n;
             ++src_line_n;
@@ -389,7 +402,7 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
                         ++t;
                     DVASSERT(*t);
                     v0 = t;
-                    while( *t != ' '  &&  *t != '\t'  &&  *t != '\n'  )
+                    while( *t != ' '  &&  *t != '\t'  &&  *t != '\n'  &&  *t != '\r' )
                         ++t;
                     DVASSERT(*t);
                     v1 = t-1;
@@ -516,6 +529,66 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
                 dcheck_pending = false;
             }            
         }
+        else
+        {
+            // expand macros, if any
+            char*   ln_end         = s;
+            bool    macro_expanded = false;
+            bool    restore_nl     = false;
+
+            while( *ln_end  &&  *ln_end != '\n' )
+                ++ln_end;
+            
+            if( *ln_end == '\n' )
+            {
+                *ln_end    = '\0';
+                restore_nl = true;
+            }
+
+            for( unsigned m=0; m!=_macro.size(); ++m )
+            {
+                char*   t = strstr( s, _macro[m].name );
+
+                if( t )
+                {
+
+                    size_t  sz = ln_end - ln;
+                    char*   l  = _alloc_buffer( sz + _macro[m].value_len + 1 );
+                    
+                    size_t  l1 = t - ln;
+
+                    strncpy( l, ln, l1 );
+                    strncpy( l+l1, _macro[m].value, _macro[m].value_len );
+                    strncpy( l+l1+_macro[m].value_len, t+_macro[m].name_len, sz-(l1+_macro[m].name_len) );
+                    l[l1+_macro[m].value_len + sz-(l1+_macro[m].name_len)]     = '\n';
+                    l[l1+_macro[m].value_len + sz-(l1+_macro[m].name_len) + 1] = '\0';
+
+                    ln = l;
+                    s  = l + l1 + _macro[m].value_len;
+
+                    if( !ln_external )
+                    {
+                        last_s      = ln_end;
+                        ln_external = true;
+                    }
+
+                    macro_expanded = true;
+                    break;
+                }
+            }
+
+            if( restore_nl )
+                *ln_end = '\n';
+
+            if(     !macro_expanded 
+                &&  _min_macro_length != DAVA::InvalidIndex
+                &&  s + _min_macro_length < ln_end
+              )
+            {
+                s += _min_macro_length-1;
+            }
+    
+        }
     }
 
     if( ln[0] )
@@ -589,6 +662,14 @@ PreProc::_process_define( const char* name, const char* value )
     
         _eval.set_variable( name, val );
     }
+
+    _macro.resize( _macro.size()+1 );
+    strncpy( _macro.back().name, name, countof(_macro.back().name) );
+    strncpy( _macro.back().value, value, countof(_macro.back().value) );
+    _macro.back().name_len  = strlen( name );
+    _macro.back().value_len = strlen( value );
+    if( _macro.back().value_len < _min_macro_length )
+        _min_macro_length = _macro.back().value_len;
 
     return success;
 }

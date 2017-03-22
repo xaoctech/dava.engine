@@ -7,6 +7,6 @@ third
 simple-if 0
 
 
-  expected text (if LIFE != 5) 
+  expected text (if 42 != 5) 
 
 last

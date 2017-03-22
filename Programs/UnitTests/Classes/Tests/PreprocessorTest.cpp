@@ -71,11 +71,12 @@ DAVA_TESTCLASS (PreprocessorTest)
             { "05-input.txt", "05-output.txt" },
             { "06-input.txt", "06-output.txt" },
             { "07-input.txt", "07-output.txt" },
+            { "08-input.txt", "08-output.txt" },
             { "CC01-input.txt", "CC01-output.txt" },
             { "CC02-input.txt", "CC02-output.txt" },
             { "CC03-input.txt", "CC03-output.txt" }
 #else
-            { "CC03-input.txt", "CC03-output.txt" }
+            { "01-input.txt", "01-output.txt" },
 #endif        
         };
         static const char* BaseDir = "~res:/TestData/PreProcessor";
