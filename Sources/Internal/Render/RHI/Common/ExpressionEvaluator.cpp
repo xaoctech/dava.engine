@@ -9,14 +9,15 @@
 
 //------------------------------------------------------------------------------
 
-const char* ExpressionEvaluator::_Operators         = "+-*/^!\001\002\003\004\006\007";
-const char  ExpressionEvaluator::_OpEqual           = '\001';
-const char  ExpressionEvaluator::_OpNotEqual        = '\002';
-const char  ExpressionEvaluator::_OpLogicalAnd      = '\003';
-const char  ExpressionEvaluator::_OpLogicalOr       = '\004';
-const char  ExpressionEvaluator::_OpFunctionCall    = '\005';
-const char  ExpressionEvaluator::_OpDefined         = '\006';
-const char  ExpressionEvaluator::_OpNotDefined      = '\007';
+const char* ExpressionEvaluator::_Operators         = "+-*/^!\x01\x02\x03\x04\x06\x07";
+const char  ExpressionEvaluator::_OpEqual           = '\x01';
+const char  ExpressionEvaluator::_OpNotEqual        = '\x02';
+const char  ExpressionEvaluator::_OpLogicalAnd      = '\x03';
+const char  ExpressionEvaluator::_OpLogicalOr       = '\x04';
+const char  ExpressionEvaluator::_OpLogicalNot      = '\x08';
+const char  ExpressionEvaluator::_OpFunctionCall    = '\x05';
+const char  ExpressionEvaluator::_OpDefined         = '\x06';
+const char  ExpressionEvaluator::_OpNotDefined      = '\x07';
 
 static const unsigned InvalidIndex = (unsigned)(-1);
 static const float Epsilon = 0.000001f;
@@ -115,7 +116,7 @@ ExpressionEvaluator::_Evaluate( const SyntaxTreeNode* node, float* out, unsigned
     {
         if( node->operation )
         {
-            if(    ((node->operation == _OpFunctionCall  ||  node->operation == _OpDefined  ||  node->operation == _OpNotDefined) && node->right_i != InvalidIndex)   // for funcs only right arg makes sense
+            if(    ((node->operation == _OpFunctionCall  ||  node->operation == _OpLogicalNot  ||  node->operation == _OpDefined  ||  node->operation == _OpNotDefined) && node->right_i != InvalidIndex)   // for funcs only right arg makes sense
                 || (node->left_i  != InvalidIndex && node->right_i != InvalidIndex) // for normal ops - binary operator is assumed
               )
             {
@@ -176,6 +177,10 @@ ExpressionEvaluator::_Evaluate( const SyntaxTreeNode* node, float* out, unsigned
 
                             case _OpLogicalOr : 
                                 *out = (fabs(x) > Epsilon  ||  fabs(y) > Epsilon) ? 1.0f : 0.0f; 
+                                break;
+                            
+                            case _OpLogicalNot : 
+                                *out = (fabs(y) > Epsilon)  ? 0.0f  : 1.0f; 
                                 break;
 
     //                        case _OpFunctionCall : 
@@ -261,6 +266,8 @@ ExpressionEvaluator::_Priority( char operation )
         case _OpDefined :
         case _OpNotDefined :
             ret+=3;
+        case _OpLogicalNot :
+            ret+=3;
         case '^' :
             ++ret;
         case '*' :
@@ -327,6 +334,22 @@ ExpressionEvaluator::evaluate( const char* expression, float* result )
         {
             *d++ = _OpDefined;
             s += 7+1;
+        }
+        else if( *s == '!' )
+        { 
+            const char* ns1 = s+1;
+            while( *ns1  &&  (*ns1 == ' '  ||  *ns1 == '\t') )
+                ++ns1;
+            
+            if( *ns1 == '(' )
+            {
+                *d++ = _OpLogicalNot;
+                s += 1;
+            }
+            else
+            {
+                *d++ = *s++; 
+            }
         }
         else 
         { 
@@ -426,6 +449,12 @@ ExpressionEvaluator::evaluate( const char* expression, float* result )
             }
 
         }
+        else if( *expr == _OpLogicalNot )
+        {
+            _operator_stack.push_back( SyntaxTreeNode( _OpLogicalNot, expr-text ) );
+            last_token_operand = false;
+            offset             = 1;
+        }
         // process operators
         else if( strchr( _Operators, *expr ) )
         {
@@ -510,6 +539,17 @@ ExpressionEvaluator::evaluate( const char* expression, float* result )
             
             _operator_stack.pop_back();
 
+            // check if it was logical-NOT in form !(some-expression)
+            if( (_operator_stack.size() != 0) && (_operator_stack.back().operation == _OpLogicalNot) )
+            {
+                _operator_stack.back().right_i = _node_stack.back();
+                _node_stack.pop_back();
+
+                _node_stack.push_back( _node.size() );
+                _node.push_back( _operator_stack.back() );
+
+                _operator_stack.pop_back();
+            }
 /*
             // check if it was function call
             if( (_operator_stack.size() != 0) && (_operator_stack.back().operation == _OpFunctionCall) )

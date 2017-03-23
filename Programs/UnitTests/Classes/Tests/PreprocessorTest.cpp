@@ -19,6 +19,7 @@ DAVA_TESTCLASS (PreprocessorTest)
             const float result;
         } data[] =
         {
+#if 1
           { "2+2", 4.0f },
           { "bla+7", 20.0f },
           { "(5+3) / (3-1)", 4.0f },
@@ -33,7 +34,12 @@ DAVA_TESTCLASS (PreprocessorTest)
           { "!defined DARKNESS_DISABLED", 0.0f },
           { "!defined RANDOM_BULLSHIT", 1.0f },
           { "defined RANDOM_BULLSHIT", 0.0f },
-          { "SHADING != SHADING_NONE  &&  !defined RANDOM_BULLSHIT", 1.0f }
+          { "SHADING != SHADING_NONE  &&  !defined RANDOM_BULLSHIT", 1.0f },
+          { "!(LIGHTING_ENABLED)", 0.0f },
+          { "!(LIGHTING_ENABLED && DARKNESS_ENABLED)", 1.0f }
+#else          
+//          { "!(LIGHTING_ENABLED && DARKNESS_ENABLED)", 1.0f }
+#endif        
         };
 
         ev.set_variable("bla", 13);
@@ -42,6 +48,7 @@ DAVA_TESTCLASS (PreprocessorTest)
         ev.set_variable("SHADING_PERPIXEL", 2);
         ev.set_variable("SHADING", 1);
         ev.set_variable("LIGHTING_ENABLED", 1);
+        ev.set_variable("DARKNESS_ENABLED", 0);
         ev.set_variable("DARKNESS_DISABLED", 0);
         for (unsigned i = 0; i != countof(data); ++i)
         {

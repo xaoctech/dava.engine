@@ -52,6 +52,7 @@ private:
     static const char           _OpNotEqual;
     static const char           _OpLogicalAnd;
     static const char           _OpLogicalOr;
+    static const char           _OpLogicalNot;
     static const char           _OpFunctionCall;
     static const char           _OpDefined;
     static const char           _OpNotDefined;
