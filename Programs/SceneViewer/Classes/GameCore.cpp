@@ -74,7 +74,9 @@ void GameCore::OnWindowCreated(DAVA::Window* w)
     //SetScenePath( "~doc:/GB/Cromwell-test.sc2" );
     //    SetScenePath("~doc:/effect.sc2");
     //    SetScenePath("~doc:/karelia/karelia.sc2");
-    SetScenePath("~res:/3d/Maps/05_amigosville_am/05_amigosville_am.sc2");
+    SetScenePath("~doc:/05_amigosville_am/05_amigosville_am.sc2");
+    //SetScenePath("~doc:/17_karelia_ka/17_karelia_ka.sc2");
+    //SetScenePath("~doc:/22_italy_it_night/22_italy_it_night.sc2");
     //    SetScenePath("~doc:/scene_viewer/test_box/box.sc2");
     //SetScenePath("~res:/amigosville/amigosville.sc2");
     //      SetScenePath("~doc:/fort/fort.sc2");

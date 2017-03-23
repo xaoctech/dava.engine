@@ -2,7 +2,6 @@
 #include "UI/UIControlSystem.h"
 #include "Render/RenderHelper.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
-#include "Render/RHI/Common/PreProcess.h"
 #include "Time/SystemTimer.h"
 
 namespace DAVA
@@ -99,7 +98,6 @@ void UIScreen::LoadGroup()
 {
     //Logger::FrameworkDebug("load group started");
     //uint64 loadGroupStart = SystemTimer::GetMs();
-    ShaderPreprocessScope preprocessScope;
 
     if (groupId < 0)
     {

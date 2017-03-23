@@ -11,6 +11,23 @@
 #define BLENDING BLENDING_NONE
 #endif
 
+#ifndef ALPHATEST
+#define ALPHATEST 0
+#endif
+
+#ifndef TEXTURED
+#define TEXTURED 0
+#endif
+
+#ifndef ALPHA8
+#define ALPHA8 0
+#endif
+
+#ifndef GRAYSCALE
+#define GRAYSCALE 0
+#endif
+
+
 #if BLENDING == BLENDING_ALPHABLEND
     blending { src=src_alpha dst=inv_src_alpha }
 #elif BLENDING == BLENDING_ADDITIVE
