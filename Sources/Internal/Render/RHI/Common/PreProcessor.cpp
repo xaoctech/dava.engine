@@ -486,9 +486,12 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
                     ln = s+1;
 
                     bool condition = (int(v))  ? true  : false;
-                    pending_elif.back().do_skip_lines       = !condition;
+                    if( pending_elif.back().original_condition )
+                        pending_elif.back().do_skip_lines = true;
+                    else
+                        pending_elif.back().do_skip_lines = !condition;
                     pending_elif.back().effective_condition = pending_elif.back().effective_condition || condition;
-                    
+
                     if( *s == 0 )
                     { 
                         ln[0] = 0; 
