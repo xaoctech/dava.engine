@@ -17,6 +17,11 @@ KeyboardInputDevice::~KeyboardInputDevice()
     Engine::Instance()->endFrame.Disconnect(endFrameConnectionToken);
 }
 
+bool KeyboardInputDevice::HasControlWithId(uint32 controlId) const
+{
+    return (controlId >= static_cast<uint32>(eKeyboardKey::UNKNOWN)) && (controlId < static_cast<uint32>(eKeyboardKey::TOTAL_KEYS_COUNT));
+}
+
 eDigitalControlState KeyboardInputDevice::GetDigitalControlState(uint32 controlId) const
 {
     DVASSERT(controlId < keys.size());

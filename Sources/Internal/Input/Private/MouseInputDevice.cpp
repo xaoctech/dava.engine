@@ -18,6 +18,11 @@ MouseInputDevice::~MouseInputDevice()
     Engine::Instance()->endFrame.Disconnect(endFrameConnectionToken);
 }
 
+bool MouseInputDevice::HasControlWithId(uint32 controlId) const
+{
+    return (controlId >= eControl::LEFT_BUTTON) && (controlId <= eControl::MOUSE);
+}
+
 eDigitalControlState MouseInputDevice::GetDigitalControlState(uint32 controlId) const
 {
     DVASSERT(controlId < eControl::MOUSE);

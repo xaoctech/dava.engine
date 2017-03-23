@@ -85,6 +85,8 @@ public:
     /** Return unique device id */
     uint32 GetId() const;
 
+    virtual bool HasControlWithId(uint32 controlId) const = 0;
+
     /**
         Get digital state of a control with specified `controlId`.
 

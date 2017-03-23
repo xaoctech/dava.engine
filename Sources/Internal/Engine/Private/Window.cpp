@@ -524,17 +524,21 @@ void Window::HandleMouseClick(const Private::MainDispatcherEvent& e)
 
     inputSystem->HandleInputEvent(&uie);
 
+    // New
+
+    MouseInputDevice* mouse = engineBackend->GetContext()->deviceManager->GetMouse();
+
     eDigitalControlState keyState = pressed ? eDigitalControlState::PRESSED : eDigitalControlState::RELEASED;
 
     InputEvent event;
     event.window = e.window;
     event.timestamp = e.timestamp / 1000.0f;
     event.deviceType = MouseInputDevice::TYPE;
-    event.deviceId = 0;
+    event.deviceId = mouse->GetId();
     event.controlId = static_cast<uint32>(e.mouseEvent.button);
     event.digitalState = keyState;
 
-    engineBackend->GetContext()->deviceManager->GetMouse()->ProcessInputEvent(event);
+    mouse->ProcessInputEvent(event);
 }
 
 void Window::HandleMouseWheel(const Private::MainDispatcherEvent& e)
@@ -585,17 +589,21 @@ void Window::HandleMouseMove(const Private::MainDispatcherEvent& e)
         inputSystem->HandleInputEvent(&uie);
     }
 
+    // New
+
+    MouseInputDevice* mouse = engineBackend->GetContext()->deviceManager->GetMouse();
+
     InputEvent event;
     event.window = e.window;
     event.timestamp = e.timestamp / 1000.0f;
     event.deviceType = MouseInputDevice::TYPE;
-    event.deviceId = 0;
+    event.deviceId = mouse->GetId();
     event.controlId = MouseInputDevice::MOUSE;
 
     event.analogState.x = e.mouseEvent.x;
     event.analogState.y = e.mouseEvent.y;
 
-    engineBackend->GetContext()->deviceManager->GetMouse()->ProcessInputEvent(event);
+    mouse->ProcessInputEvent(event);
 }
 
 void Window::HandleTouchClick(const Private::MainDispatcherEvent& e)
@@ -676,18 +684,22 @@ void Window::HandleKeyPress(const Private::MainDispatcherEvent& e)
     }
     inputSystem->HandleInputEvent(&uie);
 
+    // New
+
+    KeyboardInputDevice* keyboardInputDevice = engineBackend->GetContext()->deviceManager->GetKeyboard();
+
     eDigitalControlState keyState = pressed ? eDigitalControlState::PRESSED : eDigitalControlState::RELEASED;
 
     InputEvent inputEvent;
     inputEvent.keyboardEvent.isCharEvent = false;
     inputEvent.controlId = e.keyEvent.key;
-    inputEvent.deviceId = 0; // ?
+    inputEvent.deviceId = keyboardInputDevice->GetId();
     inputEvent.deviceType = KeyboardInputDevice::TYPE;
     inputEvent.digitalState = keyState;
     inputEvent.timestamp = e.timestamp / 1000.0;
     inputEvent.window = e.window;
 
-    engineBackend->GetContext()->deviceManager->GetKeyboard()->ProcessInputEvent(inputEvent);
+    keyboardInputDevice->ProcessInputEvent(inputEvent);
 }
 
 void Window::HandleKeyChar(const Private::MainDispatcherEvent& e)

@@ -29,6 +29,7 @@ public:
 
     static const InputDeviceType TYPE;
 
+    bool HasControlWithId(uint32 controlId) const override;
     eDigitalControlState GetDigitalControlState(uint32 controlId) const override;
     AnalogControlState GetAnalogControlState(uint32 controlId) const override;
 
