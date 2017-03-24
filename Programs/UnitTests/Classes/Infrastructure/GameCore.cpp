@@ -1,5 +1,7 @@
 #include "Infrastructure/GameCore.h"
 
+#include <LoggerService/ServiceInfo.h>
+
 #include "CommandLine/CommandLineParser.h"
 #include "Debug/DVAssert.h"
 #include "Debug/DVAssertDefaultHandlers.h"
@@ -357,14 +359,14 @@ void GameCore::InitNetwork()
     };
     // clang-format on
 
-    NetCore::Instance()->RegisterService(LOG_SERVICE_ID, loggerCreate, loggerDestroy);
+    NetCore::Instance()->RegisterService(DAVA::Net::LOG_SERVICE_ID, loggerCreate, loggerDestroy);
 
     eNetworkRole role = UAPNetworkHelper::GetCurrentNetworkRole();
     Net::Endpoint endpoint = UAPNetworkHelper::GetCurrentEndPoint();
 
     NetConfig config(role);
     config.AddTransport(TRANSPORT_TCP, endpoint);
-    config.AddService(LOG_SERVICE_ID);
+    config.AddService(DAVA::Net::LOG_SERVICE_ID);
 
     netController = NetCore::Instance()->CreateController(config, nullptr);
 }
