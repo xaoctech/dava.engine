@@ -8,7 +8,7 @@ namespace DAVA
 // Keyboard controls
 
 
-enum eInputControl : uint32
+enum eInputElements : uint32
 {
     NONE = 0,
 
