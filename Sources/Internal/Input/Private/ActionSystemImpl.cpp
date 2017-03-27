@@ -9,10 +9,10 @@ namespace Private
 {
 // Calculates number of states in array which are not empty
 // Used for sorting
-static size_t GetNonEmptyStatesCount(const Array<DigitalControlState, MAX_DIGITAL_STATES_COUNT>& array)
+static size_t GetNonEmptyStatesCount(const Array<DigitalElementState, MAX_DIGITAL_STATES_COUNT>& array)
 {
     size_t result = 0;
-    for (const DigitalControlState& deviceControlState : array)
+    for (const DigitalElementState& deviceControlState : array)
     {
         if (deviceControlState.elementId > 0)
         {
@@ -86,9 +86,9 @@ void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)
 }
 
 // Helper function to check if specified states are active
-bool ActionSystemImpl::CheckDigitalStates(const Array<DigitalControlState, MAX_DIGITAL_STATES_COUNT>& states, const Vector<uint32>& devices)
+bool ActionSystemImpl::CheckDigitalStates(const Array<DigitalElementState, MAX_DIGITAL_STATES_COUNT>& states, const Vector<uint32>& devices)
 {
-    for (const DigitalControlState& requiredState : states)
+    for (const DigitalElementState& requiredState : states)
     {
         if (requiredState.elementId == 0)
         {

@@ -68,26 +68,7 @@ void InputSystemTest::LoadResources()
     GetEngineContext()->actionSystem->BindSet(set, 1, 2);
     GetEngineContext()->actionSystem->BindSet(set, 1, 2);
     GetEngineContext()->actionSystem->BindSet(set, 1, 2);
-
-    /*
-    AnalogBinding rotateCameraBinding;
-    rotateCameraBinding.actionId = ROTATE_CAMERA;
-    rotateCameraBinding.analogControlId = eInputControl::MOUSE_POSITION;
-    rotateCameraBinding.deviceId = 2;
-    rotateCameraBinding.requiredDigitalControlStates[0].deviceId = 2;
-    rotateCameraBinding.requiredDigitalControlStates[0].controlId = eInputControl::MOUSE_LBUTTON;
-    rotateCameraBinding.requiredDigitalControlStates[0].stateMask = eDigitalControlState::PRESSED;
-    rotateCameraBinding.requiredDigitalControlStates[1].deviceId = 1;
-    rotateCameraBinding.requiredDigitalControlStates[1].controlId = static_cast<uint32>(eInputControl::KB_LCTRL);
-    rotateCameraBinding.requiredDigitalControlStates[1].stateMask = eDigitalControlState::PRESSED;
-    GetEngineContext()->actionSystem->BindAnalogAction(rotateCameraBinding);
-
-    AnalogBinding aimBinding;
-    aimBinding.actionId = AIM;
-    aimBinding.analogControlId = eInputControl::MOUSE_POSITION;
-    aimBinding.deviceId = 2;
-    GetEngineContext()->actionSystem->BindAnalogAction(aimBinding);*/
-}
+ }
 
 void InputSystemTest::UnloadResources()
 {
