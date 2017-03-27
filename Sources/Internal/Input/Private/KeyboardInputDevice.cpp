@@ -19,12 +19,12 @@ KeyboardInputDevice::~KeyboardInputDevice()
 
 bool KeyboardInputDevice::HasControlWithId(uint32 controlId) const
 {
-    return (controlId >= static_cast<uint32>(eKeyboardKey::UNKNOWN)) && (controlId < static_cast<uint32>(eKeyboardKey::TOTAL_KEYS_COUNT));
+    return (controlId >= static_cast<uint32>(eInputControl::KB_FIRST)) && (controlId <= static_cast<uint32>(eInputControl::KB_LAST));
 }
 
 eDigitalControlState KeyboardInputDevice::GetDigitalControlState(uint32 controlId) const
 {
-    DVASSERT(controlId < keys.size());
+    DVASSERT(HasControlWithId(controlId));
     return keys[controlId].GetState();
 }
 
@@ -38,9 +38,6 @@ void KeyboardInputDevice::ProcessInputEvent(InputEvent& event)
 {
     if (!event.keyboardEvent.isCharEvent)
     {
-        // Update control id to be platform-independent
-        event.controlId = static_cast<uint32>(SystemKeyToDavaKey(event.controlId));
-
         if ((event.digitalState & eDigitalControlState::PRESSED) != eDigitalControlState::NONE)
         {
             keys[event.controlId].Press();
@@ -63,7 +60,7 @@ void KeyboardInputDevice::OnEndFrame()
     // Promote JustPressed & JustReleased states to Pressed/Released accordingly
     // TODO: optimize?
 
-    for (int i = 0; i < static_cast<uint32>(Key::TOTAL_KEYS_COUNT); ++i)
+    for (int i = 0; i < static_cast<uint32>(eInputControl::KB_COUNT); ++i)
     {
         keys[i].OnEndFrame();
     }

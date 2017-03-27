@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Input/InputDevice.h"
+#include "Input/InputControls.h"
 
 namespace DAVA
 {
@@ -28,7 +29,7 @@ struct InputEvent
         Device's control Id.
         Control is a part of a device that can be used for input (like a button, a stick, a wheel).
     */
-    uint32 controlId;
+    eInputControl controlId;
 
     union
     {

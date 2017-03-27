@@ -1,6 +1,7 @@
 #include "Input/MouseInputDevice.h"
 #include "Engine/Engine.h"
 #include "Input/InputSystem.h"
+#include "Input/InputControls.h"
 
 namespace DAVA
 {
@@ -20,24 +21,24 @@ MouseInputDevice::~MouseInputDevice()
 
 bool MouseInputDevice::HasControlWithId(uint32 controlId) const
 {
-    return (controlId >= eControl::LEFT_BUTTON) && (controlId <= eControl::MOUSE);
+    return (controlId >= eInputControl::MOUSE_FIRST) && (controlId <= eInputControl::MOUSE_LAST);
 }
 
 eDigitalControlState MouseInputDevice::GetDigitalControlState(uint32 controlId) const
 {
-    DVASSERT(controlId < eControl::MOUSE);
+    DVASSERT(HasControlWithId(controlId));
     return GetDigitalControl(controlId)->GetState();
 }
 
 AnalogControlState MouseInputDevice::GetAnalogControlState(uint32 controlId) const
 {
-    DVASSERT(controlId == eControl::MOUSE);
+    DVASSERT(controlId == eInputControl::MOUSE_POSITION);
     return mousePosition;
 }
 
 void MouseInputDevice::ProcessInputEvent(InputEvent& event)
 {
-    if (event.controlId == MOUSE)
+    if (event.controlId == eInputControl::MOUSE_POSITION)
     {
         mousePosition = event.analogState;
     }
@@ -81,13 +82,13 @@ const Private::DigitalControl* MouseInputDevice::GetDigitalControl(DAVA::uint32 
 {
     switch (controlId)
     {
-    case eControl::LEFT_BUTTON:
+    case eInputControl::MOUSE_LBUTTON:
         return &leftButton;
 
-    case eControl::MIDDLE_BUTTON:
+    case eInputControl::MOUSE_MBUTTON:
         return &middleButton;
 
-    case eControl::RIGHT_BUTTON:
+    case eInputControl::MOUSE_RBUTTON:
         return &rightButton;
 
     default:

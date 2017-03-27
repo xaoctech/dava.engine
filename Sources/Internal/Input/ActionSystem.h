@@ -1,91 +1,207 @@
 #pragma once
 
-#include "Input/InputEvent.h"
-#include "Functional/Signal.h"
+#include "Base/BaseTypes.h"
 #include "Base/FastName.h"
+#include "Functional/Signal.h"
+#include "Input/InputDevice.h"
+#include "Input/InputControls.h"
 
 namespace DAVA
 {
+namespace Private
+{
+class EngineBackend;
+class ActionSystemImpl;
+}
+
 /**
-    \defgroup actions Actions
-    // TODO: description
+\defgroup actions Actions
 */
+
+// Maximum number of digital control states which is supported by action system
+// I.e. user can only specify up to MAX_DIGITAL_STATES_COUNT buttons to trigger an action
+#define MAX_DIGITAL_STATES_COUNT 3
 
 /**
     \ingroup actions
     Describes an action triggered by `ActionSystem`.
 */
-struct Action
+struct Action final
 {
     /** Id of the action */
     FastName actionId;
 
-    /** Id of the device which triggered the action */
+    /** Id of the device whose event triggered the action */
     uint32 triggeredDeviceId;
 
-    /** Type of the device that triggered the action */
-    uint32 triggeredDeviceType;
-
-    /** State of the analog control that triggered the action. This field should not be used if it was a pure digital action */
+    /**
+        If the action was triggered using `AnalogBinding`, this field contains state of the control which triggered the action.
+        If the action was triggered using `DigitalBinding`, this field contains value taken from `DigitalBinding::outputAnalogState` field (user-specified).
+   */
     AnalogControlState analogControlState;
 };
 
 /**
     \ingroup actions
-    Class that handles actions bindings and notifies when an action is triggered
+    Describes specific digital control's state.
+*/
+struct DigitalControlState final
+{
+    /** Id of the control */
+    eInputControl controlId = eInputControl::NONE;
+
+    /** State of the control */
+    eDigitalControlState stateMask = eDigitalControlState::NONE;
+};
+
+/**
+    \ingroup actions
+    Describes an action binded to a number of digital controls.
+*/
+struct DigitalBinding final
+{
+    /** Id of the action to trigger */
+    FastName actionId;
+
+    /**
+        Array of digital control states which are required for the action to be triggered.
+    */
+    Array<DigitalControlState, MAX_DIGITAL_STATES_COUNT> requiredStates;
+
+    /**
+        Analog state which will be put into a triggered action.
+        Useful in cases when a button performs the same action as an analog control.
+        For example if a user uses gamepad's stick for MOVE action (which sends [-1; 1] values for x and y axes),
+        he might also want to bind movement to WASD buttons.
+        In this situation, he can specify (0, 1) for W, (-1, 0) for A, (0, -1) for S and (0, 1) for D, thuis unifiying input handling code for this action:
+
+        \code
+        if (action.actionId == MOVE)
+        {
+            // Don't care about the way analogControlState was filled
+            // Just know that it's in a range [-1; 1] for x and y
+            Vector2 velocity(action.analogControlState.x, action.analogControlState.y);
+            Move(velocity);
+        }
+        \endcode
+    */
+    AnalogControlState outputAnalogState;
+};
+
+/**
+    \ingroup actions
+    Describes an action binded to an analog control.
+    Additional digital control modifiers can be specified.
+    For example, we can bind an action to shift (digital modifier) + mouse move (analog control).
+*/
+struct AnalogBinding final
+{
+    /** Id of the action to trigger. */
+    FastName actionId;
+
+    /** Id of the analog control whose state changes will trigger the action. */
+    uint32 analogControlId;
+
+    /** Additional digital control states required for the action to trigger. */
+    Array<DigitalControlState, MAX_DIGITAL_STATES_COUNT> requiredDigitalControlStates;
+};
+
+/**
+    \ingroup actions
+    Specified list of bindings for action system.
+*/
+struct ActionSet final
+{
+    /** List of bindings to digital controls. */
+    Vector<DigitalBinding> digitalBindings;
+
+    /** List of bindings to analog controls. */
+    Vector<AnalogBinding> analogBindings;
+};
+
+/**
+    \ingroup actions
+    Class which is responsible for binding action sets and notifying when action is triggered.
+    `BindSet` function is used to bind an action set.
+    `ActionTriggered` is emitted when an action is trigger.
+
+    Usage example:
+    \code
+    void OnEnterBattle()
+    {
+        // Create and fill action set
+
+        ActionSet set;
+
+        DigitalBinding fireBinding;
+        fireBinding.actionId = FIRE;
+        fireBinding.requiredStates[0].controlId = GAMEPAD_X;
+        fireBinding.requiredStates[0].stateMask = eDigitalControlState::PRESSED;
+        set.digitalBindings.push_back(fireBinding);
+
+        AnalogBinding moveBinding;
+        moveBinding.actionId = MOVE;
+        moveBinding.analogControlId = GAMEPAD_STICK1;
+        set.analogBindings.push_back(moveBinding);
+
+        ActionSystem* actionSystem = GetEngineContext()->actionSystem;
+
+        actionSystem->BindSet(set);
+        actionSystem->ActionTriggered.Connect(&OnAction);
+    }
+
+    void OnAction(Action action)
+    {
+        if (action.actionId == FIRE)
+        {
+            // Fire a bullet
+        }
+        else if (action.actionId == MOVE)
+        {
+            Vector2 velocity(action.analogControlState.x, action.analogControlState.y);
+            
+            // Move a character
+        }
+    }
+
+    \endcode
 */
 class ActionSystem final
 {
+    friend class Private::EngineBackend; // For creation
+
 public:
-    /** Struct describing specific control's state, used for binding */
-    struct DeviceDigitalControlState
-    {
-        uint32 deviceId;
-        uint32 controlId;
-        eDigitalControlState stateMask;
+    /**
+        Binds an action set to all the input devices.
+        That is, whenever any binding matches its requirements from ANY device, the action will be triggered.
+        Useful for single player game, since we don't want to restrict user to use only concrete list of devices.
+    */
+    void BindSet(const ActionSet& actionSet);
 
-        DeviceDigitalControlState()
-        {
-            // To indicate empty state
-            deviceId = -1;
-        }
+    /**
+        Binds an action set to a specific device.
+        All binding requirements will be checked only on this device.
+        Useful for local multiplayer setup, since we can bind one set to a gamepad-1 and another set to a gamepad-2.
+    */
+    void BindSet(const ActionSet& actionSet, uint32 deviceId);
 
-        DeviceDigitalControlState(uint32 deviceId, uint32 controlId, eDigitalControlState stateMask)
-            : deviceId(deviceId)
-            , controlId(controlId)
-            , stateMask(stateMask)
-        {
-        }
-    };
+    /**
+        Binds an action set to two devices.
+        All binding requirements will be checked only on these devices.
+        Can be used to bind a set to a keyboard and mouse in local multiplayer setup.
+    */
+    void BindSet(const ActionSet& actionSet, uint32 deviceId1, uint32 deviceId2);
 
+    /** Emits when an action is triggered */
+    Signal<Action> ActionTriggered;
+
+private:
     ActionSystem();
     ~ActionSystem();
     ActionSystem(const ActionSystem&) = delete;
     ActionSystem& operator=(const ActionSystem&) = delete;
 
-    /** Bind an action with specified `actionId` to a digital control */
-    void BindDigitalAction(FastName actionId, DeviceDigitalControlState state);
-
-    /** Bind an action with specified `actionId` to digital controls */
-    void BindDigitalAction(FastName actionId, DeviceDigitalControlState state1, DeviceDigitalControlState state2);
-
-    /** Bind an action with specified `actionId` to digital controls */
-    void BindDigitalAction(FastName actionId, DeviceDigitalControlState state1, DeviceDigitalControlState state2, DeviceDigitalControlState state3);
-
-    /** Emits when an action happens */
-    Signal<Action> ActionTriggered;
-
 private:
-    struct DigitalActionBinding
-    {
-        FastName actionId;
-        DeviceDigitalControlState states[3];
-    };
-
-    bool OnInputEvent(const InputEvent& event);
-
-    Vector<DigitalActionBinding> digitalBindings;
-
-    SigConnectionID inputSystemHandlerToken;
+    Private::ActionSystemImpl* impl = nullptr;;
 };
 }

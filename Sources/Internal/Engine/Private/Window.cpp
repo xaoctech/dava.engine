@@ -535,7 +535,16 @@ void Window::HandleMouseClick(const Private::MainDispatcherEvent& e)
     event.timestamp = e.timestamp / 1000.0f;
     event.deviceType = MouseInputDevice::TYPE;
     event.deviceId = mouse->GetId();
-    event.controlId = static_cast<uint32>(e.mouseEvent.button);
+
+    if (e.mouseEvent.button == eMouseButtons::LEFT)
+    {
+        event.controlId = eInputControl::MOUSE_LBUTTON;
+    }
+    else if (e.mouseEvent.button == eMouseButtons::RIGHT)
+    {
+        event.controlId = eInputControl::MOUSE_RBUTTON;
+    }
+
     event.digitalState = keyState;
 
     mouse->ProcessInputEvent(event);
@@ -598,7 +607,7 @@ void Window::HandleMouseMove(const Private::MainDispatcherEvent& e)
     event.timestamp = e.timestamp / 1000.0f;
     event.deviceType = MouseInputDevice::TYPE;
     event.deviceId = mouse->GetId();
-    event.controlId = MouseInputDevice::MOUSE;
+    event.controlId = eInputControl::MOUSE_POSITION;
 
     event.analogState.x = e.mouseEvent.x;
     event.analogState.y = e.mouseEvent.y;
@@ -692,7 +701,7 @@ void Window::HandleKeyPress(const Private::MainDispatcherEvent& e)
 
     InputEvent inputEvent;
     inputEvent.keyboardEvent.isCharEvent = false;
-    inputEvent.controlId = e.keyEvent.key;
+    inputEvent.controlId = SystemKeyToDavaKey(e.keyEvent.key);
     inputEvent.deviceId = keyboardInputDevice->GetId();
     inputEvent.deviceType = KeyboardInputDevice::TYPE;
     inputEvent.digitalState = keyState;

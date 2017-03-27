@@ -33,7 +33,7 @@ private:
     void OnEndFrame();
 
 private:
-    Array<Private::DigitalControl, static_cast<uint32>(eKeyboardKey::TOTAL_KEYS_COUNT)> keys;
+    Array<Private::DigitalControl, static_cast<uint32>(eInputControl::KB_COUNT)> keys;
     size_t endFrameConnectionToken;
 };
 }
