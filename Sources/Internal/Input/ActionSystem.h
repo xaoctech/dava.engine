@@ -191,6 +191,8 @@ public:
     */
     void BindSet(const ActionSet& actionSet, uint32 deviceId1, uint32 deviceId2);
 
+    void GetUserInput(Function<void(Vector<eInputElements>)> callback);
+
     /** Emits when an action is triggered */
     Signal<Action> ActionTriggered;
 
@@ -201,6 +203,7 @@ private:
     ActionSystem& operator=(const ActionSystem&) = delete;
 
 private:
-    Private::ActionSystemImpl* impl = nullptr;;
+    Private::ActionSystemImpl* impl = nullptr;
+    ;
 };
 }

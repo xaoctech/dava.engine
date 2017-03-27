@@ -33,9 +33,10 @@ bool AnalogBindingCompare::operator()(const AnalogBinding& first, const AnalogBi
     return GetNonEmptyStatesCount(first.requiredDigitalElementStates) > GetNonEmptyStatesCount(second.requiredDigitalElementStates);
 }
 
-ActionSystemImpl::ActionSystemImpl(ActionSystem* actionSystem) : actionSystem(actionSystem)
+ActionSystemImpl::ActionSystemImpl(ActionSystem* actionSystem)
+    : actionSystem(actionSystem)
 {
-   GetEngineContext()->inputSystem->AddInputEventHandler(MakeFunction(this, &ActionSystemImpl::OnInputEvent));
+    GetEngineContext()->inputSystem->AddInputEventHandler(MakeFunction(this, &ActionSystemImpl::OnInputEvent));
 }
 
 ActionSystemImpl::~ActionSystemImpl()
@@ -61,8 +62,8 @@ void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)
                 for (const uint32 deviceId : devices)
                 {
                     bindedSet.devices.erase(
-                        std::remove(bindedSet.devices.begin(), bindedSet.devices.end(), deviceId),
-                        bindedSet.devices.end());
+                    std::remove(bindedSet.devices.begin(), bindedSet.devices.end(), deviceId),
+                    bindedSet.devices.end());
                 }
 
                 // If it is not binded to any devices anymore - remove it from the list
@@ -83,6 +84,11 @@ void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)
     bindedSet.devices = devices;
 
     bindedSets.push_back(bindedSet);
+}
+
+void ActionSystemImpl::GetUserInput(Function<void(Vector<eInputElements>)> callback)
+{
+    userInputCallback = callback;
 }
 
 // Helper function to check if specified states are active
@@ -124,6 +130,35 @@ bool ActionSystemImpl::CheckDigitalStates(const Array<DigitalElementState, MAX_D
 
 bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
 {
+    // If user requested user input, process it
+    // Ignore action sets
+    if (userInputCallback != nullptr)
+    {
+        const InputElementInfo& elementInfo = GetInputElementInfo(event.elementId);
+        if (elementInfo.type == eInputElementType::DIGITAL)
+        {
+            if ((event.digitalState & eDigitalElementState::JUST_PRESSED) == eDigitalElementState::JUST_PRESSED)
+            {
+                listenedInputElements.push_back(event.elementId);
+            }
+            else if ((event.digitalState & eDigitalElementState::JUST_RELEASED) == eDigitalElementState::JUST_RELEASED)
+            {
+                if (listenedInputElements.size() != 0)
+                {
+                    userInputCallback(listenedInputElements);
+                    listenedInputElements.clear();
+                    userInputCallback = nullptr;
+                }
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    // Handle binded sets
+
     for (const BindedActionSet& setBinding : bindedSets)
     {
         // Check if any digital action has triggered

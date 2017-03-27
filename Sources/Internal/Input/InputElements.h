@@ -4,9 +4,17 @@
 
 namespace DAVA
 {
+enum eInputElementType
+{
+    DIGITAL,
+    ANALOG
+};
 
-// Keyboard controls
-
+struct InputElementInfo final
+{
+    String name;
+    eInputElementType type;
+};
 
 enum eInputElements : uint32
 {
@@ -34,7 +42,7 @@ enum eInputElements : uint32
     KB_HOME,
     KB_END,
     KB_INSERT,
-    KB_DELETE, // TODO
+    KB_DELETE,
     KB_LEFT,
     KB_UP,
     KB_RIGHT,
@@ -130,7 +138,7 @@ enum eInputElements : uint32
     KB_F19,
 
     // Mouse
-    
+
     MOUSE_LBUTTON,
     MOUSE_RBUTTON,
     MOUSE_MBUTTON,
@@ -140,12 +148,18 @@ enum eInputElements : uint32
 
     // Counters
 
+    FIRST = NONE,
+    LAST = MOUSE_POSITION,
+    COUNT = LAST - FIRST + 1,
+
     KB_FIRST = KB_ESCAPE,
     KB_LAST = KB_F19,
-    KB_COUNT = KB_LAST - KB_FIRST,
+    KB_COUNT = KB_LAST - KB_FIRST + 1,
 
     MOUSE_FIRST = MOUSE_LBUTTON,
     MOUSE_LAST = MOUSE_POSITION,
-    MOUSE_COUNT = MOUSE_LAST - MOUSE_FIRST
+    MOUSE_COUNT = MOUSE_LAST - MOUSE_FIRST + 1
 };
+
+const InputElementInfo& GetInputElementInfo(eInputElements element);
 }

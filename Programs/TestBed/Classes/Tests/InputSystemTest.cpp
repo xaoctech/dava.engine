@@ -6,11 +6,11 @@
 
 using namespace DAVA;
 
-static const DAVA::FastName FIRE = DAVA::FastName("FIRE");
-static const DAVA::FastName JUMP = DAVA::FastName("JUMP");
-static const DAVA::FastName HIGH_JUMP = DAVA::FastName("HIGH_JUMP");
-static const DAVA::FastName ROTATE_CAMERA = DAVA::FastName("ROTATE_CAMERA");
-static const DAVA::FastName AIM = DAVA::FastName("AIM");
+static const DAVA::FastName ACTION_1 = DAVA::FastName("ACTION 1");
+static const DAVA::FastName ACTION_2 = DAVA::FastName("ACTION 2");
+static const DAVA::FastName ACTION_3 = DAVA::FastName("ACTION 3");
+static const DAVA::FastName ACTION_4 = DAVA::FastName("ACTION 4");
+static const DAVA::FastName ACTION_5 = DAVA::FastName("ACTION 5");
 
 InputSystemTest::InputSystemTest(TestBed& app)
     : BaseScreen(app, "InputSystemTest")
@@ -24,51 +24,53 @@ void InputSystemTest::LoadResources()
     CreateKeyboardUI();
     CreateMouseUI();
     CreateActionsUI();
+    CreateInputListenerUI();
 
     Engine::Instance()->beginFrame.Connect(this, &InputSystemTest::OnBeginFrame);
     GetEngineContext()->inputSystem->AddInputEventHandler(MakeFunction(this, &InputSystemTest::OnInputEvent));
     GetEngineContext()->actionSystem->ActionTriggered.Connect(this, &InputSystemTest::OnAction);
 
     ActionSet set;
-    
+
     DigitalBinding fireBinding;
-    fireBinding.actionId = FIRE;
+    fireBinding.actionId = ACTION_1;
     fireBinding.requiredStates[0].elementId = eInputElements::KB_KEY_J;
     fireBinding.requiredStates[0].stateMask = eDigitalElementState::PRESSED;
     set.digitalBindings.push_back(fireBinding);
 
     DigitalBinding jumpBinding;
-    jumpBinding.actionId = JUMP;
+    jumpBinding.actionId = ACTION_2;
     jumpBinding.requiredStates[0].elementId = eInputElements::KB_SPACE;
     jumpBinding.requiredStates[0].stateMask = eDigitalElementState::JUST_PRESSED;
     set.digitalBindings.push_back(jumpBinding);
 
     DigitalBinding highJumpBinding;
-    highJumpBinding.actionId = HIGH_JUMP;
+    highJumpBinding.actionId = ACTION_3;
     highJumpBinding.requiredStates[0].elementId = eInputElements::KB_SPACE;
     highJumpBinding.requiredStates[0].stateMask = eDigitalElementState::JUST_PRESSED;
     highJumpBinding.requiredStates[1].elementId = eInputElements::KB_LSHIFT;
     highJumpBinding.requiredStates[1].stateMask = eDigitalElementState::PRESSED;
     set.digitalBindings.push_back(highJumpBinding);
 
+    AnalogBinding aimBinding;
+    aimBinding.actionId = ACTION_4;
+    aimBinding.analogElementId = eInputElements::MOUSE_POSITION;
+    set.analogBindings.push_back(aimBinding);
+
     AnalogBinding rotateCameraBinding;
-    rotateCameraBinding.actionId = ROTATE_CAMERA;
+    rotateCameraBinding.actionId = ACTION_5;
     rotateCameraBinding.analogElementId = eInputElements::MOUSE_POSITION;
-    rotateCameraBinding.requiredDigitalElementStates[0].elementId = eInputElements::MOUSE_LBUTTON;;
+    rotateCameraBinding.requiredDigitalElementStates[0].elementId = eInputElements::MOUSE_LBUTTON;
+    ;
     rotateCameraBinding.requiredDigitalElementStates[0].stateMask = eDigitalElementState::PRESSED;
     rotateCameraBinding.requiredDigitalElementStates[1].elementId = eInputElements::KB_LCTRL;
     rotateCameraBinding.requiredDigitalElementStates[1].stateMask = eDigitalElementState::PRESSED;
     set.analogBindings.push_back(rotateCameraBinding);
 
-    AnalogBinding aimBinding;
-    aimBinding.actionId = AIM;
-    aimBinding.analogElementId = eInputElements::MOUSE_POSITION;
-    set.analogBindings.push_back(aimBinding);
-
     GetEngineContext()->actionSystem->BindSet(set, 1, 2);
     GetEngineContext()->actionSystem->BindSet(set, 1, 2);
     GetEngineContext()->actionSystem->BindSet(set, 1, 2);
- }
+}
 
 void InputSystemTest::UnloadResources()
 {
@@ -243,17 +245,20 @@ void InputSystemTest::CreateActionsUI()
 {
     ScopedPtr<FTFont> font(FTFont::Create("~res:/Fonts/korinna.ttf"));
 
+    float32 y = 450.0f;
+    const float32 yDelta = 60.0f;
+
     //
 
-    UIStaticText* staticText = new UIStaticText(Rect(10, 700, 100, 30));
+    UIStaticText* staticText = new UIStaticText(Rect(10, y, 200, 30));
     staticText->SetTextColor(Color::White);
     staticText->SetFont(font);
     staticText->SetMultiline(true);
-    staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_TOP);
-    staticText->SetText(L"FIRE");
+    staticText->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
+    staticText->SetText(L"Action 1 (J pressed):");
     AddControl(staticText);
 
-    staticText = new UIStaticText(Rect(115, 700, 50, 30));
+    staticText = new UIStaticText(Rect(215, y, 50, 30));
     staticText->SetTextColor(Color::White);
     staticText->SetFont(font);
     staticText->SetMultiline(true);
@@ -261,19 +266,21 @@ void InputSystemTest::CreateActionsUI()
     staticText->SetText(L"0");
     AddControl(staticText);
 
-    actionCounters[FIRE] = staticText;
+    actionCounters[ACTION_1] = staticText;
+
+    y += yDelta;
 
     //
 
-    staticText = new UIStaticText(Rect(130, 700, 100, 30));
+    staticText = new UIStaticText(Rect(10, y, 200, 30));
     staticText->SetTextColor(Color::White);
     staticText->SetFont(font);
     staticText->SetMultiline(true);
-    staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_TOP);
-    staticText->SetText(L"JUMP");
+    staticText->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
+    staticText->SetText(L"Action 2 (Space just pressed):");
     AddControl(staticText);
 
-    staticText = new UIStaticText(Rect(235, 700, 50, 30));
+    staticText = new UIStaticText(Rect(215, y, 50, 30));
     staticText->SetTextColor(Color::White);
     staticText->SetFont(font);
     staticText->SetMultiline(true);
@@ -281,19 +288,21 @@ void InputSystemTest::CreateActionsUI()
     staticText->SetText(L"0");
     AddControl(staticText);
 
-    actionCounters[JUMP] = staticText;
+    actionCounters[ACTION_2] = staticText;
+
+    y += yDelta;
 
     //
 
-    staticText = new UIStaticText(Rect(350, 700, 100, 30));
+    staticText = new UIStaticText(Rect(10, y, 200, 30));
     staticText->SetTextColor(Color::White);
     staticText->SetFont(font);
     staticText->SetMultiline(true);
-    staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_TOP);
-    staticText->SetText(L"HIGH JUMP");
+    staticText->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
+    staticText->SetText(L"Action 3 (Left Shift pressed, Space just pressed):");
     AddControl(staticText);
 
-    staticText = new UIStaticText(Rect(455, 700, 50, 30));
+    staticText = new UIStaticText(Rect(215, y, 50, 30));
     staticText->SetTextColor(Color::White);
     staticText->SetFont(font);
     staticText->SetMultiline(true);
@@ -301,19 +310,21 @@ void InputSystemTest::CreateActionsUI()
     staticText->SetText(L"0");
     AddControl(staticText);
 
-    actionCounters[HIGH_JUMP] = staticText;
+    actionCounters[ACTION_3] = staticText;
+
+    y += yDelta;
 
     //
 
-    staticText = new UIStaticText(Rect(580, 700, 100, 30));
+    staticText = new UIStaticText(Rect(10, y, 200, 30));
     staticText->SetTextColor(Color::White);
     staticText->SetFont(font);
     staticText->SetMultiline(true);
-    staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_TOP);
-    staticText->SetText(L"ROTATE");
+    staticText->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
+    staticText->SetText(L"Action 4 (Mouse Cursor):");
     AddControl(staticText);
 
-    staticText = new UIStaticText(Rect(685, 700, 50, 30));
+    staticText = new UIStaticText(Rect(215, y, 50, 30));
     staticText->SetTextColor(Color::White);
     staticText->SetFont(font);
     staticText->SetMultiline(true);
@@ -321,19 +332,21 @@ void InputSystemTest::CreateActionsUI()
     staticText->SetText(L"0");
     AddControl(staticText);
 
-    actionCounters[ROTATE_CAMERA] = staticText;
+    actionCounters[ACTION_4] = staticText;
+
+    y += yDelta;
 
     //
 
-    staticText = new UIStaticText(Rect(10, 580, 100, 30));
+    staticText = new UIStaticText(Rect(10, y, 200, 30));
     staticText->SetTextColor(Color::White);
     staticText->SetFont(font);
     staticText->SetMultiline(true);
-    staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_TOP);
-    staticText->SetText(L"AIM");
+    staticText->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
+    staticText->SetText(L"Action 5 (Mouse Cursor, Left Ctrl pressed, Mouse Left Button pressed):");
     AddControl(staticText);
 
-    staticText = new UIStaticText(Rect(115, 580, 50, 30));
+    staticText = new UIStaticText(Rect(215, y, 50, 30));
     staticText->SetTextColor(Color::White);
     staticText->SetFont(font);
     staticText->SetMultiline(true);
@@ -341,7 +354,9 @@ void InputSystemTest::CreateActionsUI()
     staticText->SetText(L"0");
     AddControl(staticText);
 
-    actionCounters[AIM] = staticText;
+    actionCounters[ACTION_5] = staticText;
+
+    y += yDelta;
 
     //
 }
@@ -351,4 +366,48 @@ void InputSystemTest::OnAction(DAVA::Action action)
     UIStaticText* staticTextCounter = actionCounters[action.actionId];
     int counter = std::atoi(UTF8Utils::EncodeToUTF8(staticTextCounter->GetText()).c_str()) + 1;
     staticTextCounter->SetText(UTF8Utils::EncodeToWideString(std::to_string(counter)));
+}
+
+void InputSystemTest::CreateInputListenerUI()
+{
+    ScopedPtr<FTFont> font(FTFont::Create("~res:/Fonts/korinna.ttf"));
+
+    UIButton* startListeningButton = new UIButton(Rect(680, 450, 150, 30));
+    startListeningButton->SetStateFont(0xFF, font);
+    startListeningButton->SetStateFontColor(0xFF, Color::White);
+    startListeningButton->SetDebugDraw(true);
+    startListeningButton->SetStateText(0xFF, L"Start listening for input");
+    startListeningButton->AddEvent(UIButton::EVENT_TOUCH_UP_INSIDE, Message(this, &InputSystemTest::OnInputListenerButtonPressed));
+    AddControl(startListeningButton);
+
+    inputListenerResultField = new UIStaticText(Rect(680, 500, 150, 30));
+    inputListenerResultField->SetTextColor(Color::White);
+    inputListenerResultField->SetFont(font);
+    inputListenerResultField->SetMultiline(true);
+    inputListenerResultField->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
+    inputListenerResultField->SetText(L"");
+    AddControl(inputListenerResultField);
+}
+
+void InputSystemTest::OnInputListenerButtonPressed(DAVA::BaseObject* sender, void* data, void* callerData)
+{
+    GetEngineContext()->actionSystem->GetUserInput(MakeFunction(this, &InputSystemTest::OnInputListeningEnded));
+    inputListenerResultField->SetText(L"Listening...");
+}
+
+void InputSystemTest::OnInputListeningEnded(DAVA::Vector<DAVA::eInputElements> input)
+{
+    std::wstringstream ss;
+    for (size_t i = 0; i < input.size(); ++i)
+    {
+        DAVA::InputElementInfo info = GetInputElementInfo(input[i]);
+        ss << info.name.c_str();
+
+        if (i != input.size() - 1)
+        {
+            ss << " + ";
+        }
+    }
+
+    inputListenerResultField->SetText(ss.str());
 }
