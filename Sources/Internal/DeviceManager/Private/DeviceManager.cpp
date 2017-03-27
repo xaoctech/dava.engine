@@ -26,6 +26,7 @@ namespace DAVA
 DeviceManager::DeviceManager(Private::EngineBackend* engineBackend)
     : impl(new Private::DeviceManagerImpl(this, engineBackend->GetDispatcher()))
 {
+    Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &DeviceManager::HandleEvent));
 }
 
 DeviceManager::~DeviceManager() = default;
@@ -35,7 +36,7 @@ void DeviceManager::UpdateDisplayConfig()
     impl->UpdateDisplayConfig();
 }
 
-void DeviceManager::HandleEvent(const Private::MainDispatcherEvent& e)
+bool DeviceManager::HandleEvent(const Private::MainDispatcherEvent& e)
 {
     using Private::MainDispatcherEvent;
     if (e.type == MainDispatcherEvent::DISPLAY_CONFIG_CHANGED)
@@ -49,7 +50,9 @@ void DeviceManager::HandleEvent(const Private::MainDispatcherEvent& e)
         delete[] displayInfo;
 
         displayConfigChanged.Emit();
+        return true;
     }
+    return false;
 }
 
 void DeviceManager::OnEngineInited()
