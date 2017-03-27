@@ -50,8 +50,11 @@ private:
     InputSystem& operator=(const InputSystem&) = delete;
 
     void Update(float32 frameDelta);
-    void OnAfterUpdate();
+    void EndFrame();
     void HandleInputEvent(UIEvent* uie);
+
+    bool EventHandler(const Private::MainDispatcherEvent& e);
+
     void HandleGamepadMotion(const Private::MainDispatcherEvent& e);
     void HandleGamepadButton(const Private::MainDispatcherEvent& e);
 

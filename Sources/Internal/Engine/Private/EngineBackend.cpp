@@ -433,7 +433,6 @@ void EngineBackend::UpdateWindows(float32 frameDelta)
 void EngineBackend::EndFrame()
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::ENGINE_END_FRAME);
-    context->inputSystem->OnAfterUpdate();
     engine->endFrame.Emit();
     Renderer::EndFrame();
 }
@@ -476,6 +475,7 @@ void EngineBackend::OnWindowDestroyed(Window* window)
 
 void EngineBackend::EventHandler(const MainDispatcherEvent& e)
 {
+    bool isHandled = true;
     switch (e.type)
     {
     case MainDispatcherEvent::FUNCTOR:
@@ -496,28 +496,26 @@ void EngineBackend::EventHandler(const MainDispatcherEvent& e)
     case MainDispatcherEvent::APP_TERMINATE:
         HandleAppTerminate(e);
         break;
-    case MainDispatcherEvent::GAMEPAD_MOTION:
-        context->inputSystem->HandleGamepadMotion(e);
-        break;
-    case MainDispatcherEvent::GAMEPAD_BUTTON_DOWN:
-    case MainDispatcherEvent::GAMEPAD_BUTTON_UP:
-        context->inputSystem->HandleGamepadButton(e);
-        break;
-    case MainDispatcherEvent::GAMEPAD_ADDED:
-        context->inputSystem->HandleGamepadAdded(e);
-        break;
-    case MainDispatcherEvent::GAMEPAD_REMOVED:
-        context->inputSystem->HandleGamepadRemoved(e);
-        break;
-    case MainDispatcherEvent::DISPLAY_CONFIG_CHANGED:
-        context->deviceManager->HandleEvent(e);
-        break;
     default:
-        if (e.window != nullptr)
+        isHandled = false;
+        break;
+    }
+
+    if (!isHandled)
+    {
+        for (const EventFilter& f : eventFilters)
+        {
+            if (f.filter(e))
+            {
+                isHandled = true;
+                break;
+            }
+        }
+
+        if (!isHandled && e.window != nullptr)
         {
             e.window->EventHandler(e);
         }
-        break;
     }
 }
 
@@ -723,6 +721,22 @@ void EngineBackend::DeinitRender(Window* w)
 void EngineBackend::UpdateDisplayConfig()
 {
     context->deviceManager->UpdateDisplayConfig();
+}
+
+void EngineBackend::InstallEventFilter(void* token, const Function<bool(const MainDispatcherEvent&)>& filter)
+{
+    DVASSERT(token != nullptr);
+    DVASSERT(std::find_if(begin(eventFilters), end(eventFilters), [token](const EventFilter& ef) { return ef.token == token; }) == end(eventFilters));
+    eventFilters.push_back(EventFilter{ token, filter });
+}
+
+void EngineBackend::UninstallEventFilter(void* token)
+{
+    auto it = std::find_if(begin(eventFilters), end(eventFilters), [token](const EventFilter& ef) { return ef.token == token; });
+    if (it != end(eventFilters))
+    {
+        eventFilters.erase(it);
+    }
 }
 
 void EngineBackend::CreateSubsystems(const Vector<String>& modules)
