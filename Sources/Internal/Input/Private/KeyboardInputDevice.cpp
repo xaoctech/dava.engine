@@ -17,20 +17,20 @@ KeyboardInputDevice::~KeyboardInputDevice()
     Engine::Instance()->endFrame.Disconnect(endFrameConnectionToken);
 }
 
-bool KeyboardInputDevice::HasControlWithId(uint32 controlId) const
+bool KeyboardInputDevice::SupportsElement(uint32 elementId) const
 {
-    return (controlId >= static_cast<uint32>(eInputControl::KB_FIRST)) && (controlId <= static_cast<uint32>(eInputControl::KB_LAST));
+    return (elementId >= static_cast<uint32>(eInputElements::KB_FIRST)) && (elementId <= static_cast<uint32>(eInputElements::KB_LAST));
 }
 
-eDigitalControlState KeyboardInputDevice::GetDigitalControlState(uint32 controlId) const
+eDigitalElementState KeyboardInputDevice::GetDigitalElementState(uint32 elementId) const
 {
-    DVASSERT(HasControlWithId(controlId));
-    return keys[controlId].GetState();
+    DVASSERT(SupportsElement(elementId));
+    return keys[elementId].GetState();
 }
 
-AnalogControlState KeyboardInputDevice::GetAnalogControlState(uint32 controlId) const
+AnalogElementState KeyboardInputDevice::GetAnalogElementState(uint32 elementId) const
 {
-    DVASSERT(false, "KeyboardInputDevice does not support analog controls");
+    DVASSERT(false, "KeyboardInputDevice does not support analog element");
     return {};
 }
 
@@ -38,16 +38,16 @@ void KeyboardInputDevice::ProcessInputEvent(InputEvent& event)
 {
     if (!event.keyboardEvent.isCharEvent)
     {
-        if ((event.digitalState & eDigitalControlState::PRESSED) != eDigitalControlState::NONE)
+        if ((event.digitalState & eDigitalElementState::PRESSED) != eDigitalElementState::NONE)
         {
-            keys[event.controlId].Press();
+            keys[event.elementId].Press();
         }
         else
         {
-            keys[event.controlId].Release();
+            keys[event.elementId].Release();
         }
 
-        event.digitalState = keys[event.controlId].GetState();
+        event.digitalState = keys[event.elementId].GetState();
     }
 
     // TODO: char event?
@@ -60,7 +60,7 @@ void KeyboardInputDevice::OnEndFrame()
     // Promote JustPressed & JustReleased states to Pressed/Released accordingly
     // TODO: optimize?
 
-    for (int i = 0; i < static_cast<uint32>(eInputControl::KB_COUNT); ++i)
+    for (int i = 0; i < static_cast<uint32>(eInputElements::KB_COUNT); ++i)
     {
         keys[i].OnEndFrame();
     }

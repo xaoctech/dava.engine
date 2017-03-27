@@ -4,7 +4,7 @@
 #include "Base/FastName.h"
 #include "Functional/Signal.h"
 #include "Input/InputDevice.h"
-#include "Input/InputControls.h"
+#include "Input/InputElements.h"
 
 namespace DAVA
 {
@@ -18,7 +18,7 @@ class ActionSystemImpl;
 \defgroup actions Actions
 */
 
-// Maximum number of digital control states which is supported by action system
+// Maximum number of digital elements states which is supported by action system
 // I.e. user can only specify up to MAX_DIGITAL_STATES_COUNT buttons to trigger an action
 #define MAX_DIGITAL_STATES_COUNT 3
 
@@ -35,28 +35,28 @@ struct Action final
     uint32 triggeredDeviceId;
 
     /**
-        If the action was triggered using `AnalogBinding`, this field contains state of the control which triggered the action.
+        If the action was triggered using `AnalogBinding`, this field contains state of the element which triggered the action.
         If the action was triggered using `DigitalBinding`, this field contains value taken from `DigitalBinding::outputAnalogState` field (user-specified).
    */
-    AnalogControlState analogState;
+    AnalogElementState analogState;
 };
 
 /**
     \ingroup actions
-    Helper struct that describes specific digital control's state.
+    Helper struct that describes specific digital element's state.
 */
-struct DigitalControlState final
+struct DigitalElementState final
 {
-    /** Id of the control */
-    eInputControl controlId = eInputControl::NONE;
+    /** Id of the input element */
+    eInputElements elementId = eInputElements::NONE;
 
-    /** State of the control */
-    eDigitalControlState stateMask = eDigitalControlState::NONE;
+    /** State of the input element */
+    eDigitalElementState stateMask = eDigitalElementState::NONE;
 };
 
 /**
     \ingroup actions
-    Describes an action binded to a number of digital controls.
+    Describes an action binded to a number of digital elements.
 */
 struct DigitalBinding final
 {
@@ -64,45 +64,45 @@ struct DigitalBinding final
     FastName actionId;
 
     /**
-        Array of digital control states which are required for the action to be triggered.
+        Array of digital element states which are required for the action to be triggered.
     */
-    Array<DigitalControlState, MAX_DIGITAL_STATES_COUNT> requiredStates;
+    Array<DigitalElementState, MAX_DIGITAL_STATES_COUNT> requiredStates;
 
     /**
         Analog state which will be put into a triggered action.
-        Useful in cases when a button performs the same action as an analog control.
+        Useful in cases when a button performs the same action as an analog element.
         For example if a user uses gamepad's stick for MOVE action (which sends [-1; 1] values for x and y axes), he might also want to bind movement to WASD buttons.
         In this situation, he can specify (0, 1) for W, (-1, 0) for A, (0, -1) for S and (0, 1) for D, thus unifiying input handling code for this action:
 
         \code
         if (action.actionId == MOVE)
         {
-            // Don't care about the way analogControlState was filled
+            // Don't care about the way analogState was filled
             // Just know that it's in a range [-1; 1] for x and y
             Vector2 velocity(action.analogState.x, action.analogState.y);
             Move(velocity);
         }
         \endcode
     */
-    AnalogControlState outputAnalogState;
+    AnalogElementState outputAnalogState;
 };
 
 /**
     \ingroup actions
-    Describes an action binded to an analog control.
-    Additional digital control modifiers can be specified.
-    For example, we can bind an action to shift (digital modifier) + mouse move (analog control).
+    Describes an action binded to an analog element.
+    Additional digital modifiers can be specified.
+    For example, we can bind an action to shift (digital modifier) + mouse move (analog element).
 */
 struct AnalogBinding final
 {
     /** Id of the action to trigger. */
     FastName actionId;
 
-    /** Id of the analog control whose state changes will trigger the action. */
-    eInputControl analogControlId;
+    /** Id of the analog element whose state changes will trigger the action. */
+    eInputElements analogElementId;
 
-    /** Additional digital control states required for the action to trigger. */
-    Array<DigitalControlState, MAX_DIGITAL_STATES_COUNT> requiredDigitalControlStates;
+    /** Additional digital element states required for the action to trigger. */
+    Array<DigitalElementState, MAX_DIGITAL_STATES_COUNT> requiredDigitalElementStates;
 };
 
 /**
@@ -111,10 +111,10 @@ struct AnalogBinding final
 */
 struct ActionSet final
 {
-    /** List of bindings to digital controls. */
+    /** List of bindings to digital elements. */
     Vector<DigitalBinding> digitalBindings;
 
-    /** List of bindings to analog controls. */
+    /** List of bindings to analog elements. */
     Vector<AnalogBinding> analogBindings;
 };
 
@@ -134,13 +134,13 @@ struct ActionSet final
 
         DigitalBinding fireBinding;
         fireBinding.actionId = FIRE;
-        fireBinding.requiredStates[0].controlId = eInputControl::GAMEPAD_X;
-        fireBinding.requiredStates[0].stateMask = eDigitalControlState::PRESSED;
+        fireBinding.requiredStates[0].elementId = eInputElement::GAMEPAD_X;
+        fireBinding.requiredStates[0].stateMask = eDigitalElementState::PRESSED;
         set.digitalBindings.push_back(fireBinding);
 
         AnalogBinding moveBinding;
         moveBinding.actionId = MOVE;
-        moveBinding.analogControlId = eInputControl::GAMEPAD_STICK1;
+        moveBinding.analogElementId = eInputElement::GAMEPAD_STICK1;
         set.analogBindings.push_back(moveBinding);
 
         ActionSystem* actionSystem = GetEngineContext()->actionSystem;
@@ -157,7 +157,7 @@ struct ActionSet final
         }
         else if (action.actionId == MOVE)
         {
-            Vector2 velocity(action.analogControlState.x, action.analogControlState.y);
+            Vector2 velocity(action.analogState.x, action.analogState.y);
             
             // Move a character
         }

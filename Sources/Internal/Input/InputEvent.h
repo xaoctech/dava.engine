@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Input/InputDevice.h"
-#include "Input/InputControls.h"
+#include "Input/InputElements.h"
 
 namespace DAVA
 {
@@ -26,18 +26,18 @@ struct InputEvent
     uint32 deviceId;
 
     /**
-        Device's control Id.
-        Control is a part of a device that can be used for input (like a button, a stick, a wheel).
+        Device's element Id.
+        Input element is a part of a device that can be used for input (like a button, a stick, a wheel).
     */
-    eInputControl controlId;
+    eInputElements elementId;
 
     union
     {
-        /** Digital control's state */
-        eDigitalControlState digitalState;
+        /** Digital element's state */
+        eDigitalElementState digitalState;
 
-        /** Analog control's state */
-        AnalogControlState analogState;
+        /** Analog element's state */
+        AnalogElementState analogState;
     };
 
     // Additional fields for different devices

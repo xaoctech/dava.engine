@@ -2,7 +2,7 @@
 
 #include "Input/InputDevice.h"
 #include "Input/InputEvent.h"
-#include "Input/Private/DigitalControl.h"
+#include "Input/Private/DigitalElement.h"
 
 namespace DAVA
 {
@@ -18,9 +18,9 @@ class MouseInputDevice final : public InputDevice
 public:
     static const InputDeviceType TYPE;
 
-    bool HasControlWithId(uint32 controlId) const override;
-    eDigitalControlState GetDigitalControlState(uint32 controlId) const override;
-    AnalogControlState GetAnalogControlState(uint32 controlId) const override;
+    bool SupportsElement(uint32 elementId) const override;
+    eDigitalElementState GetDigitalElementState(uint32 elementId) const override;
+    AnalogElementState GetAnalogElementState(uint32 elementId) const override;
 
 private:
     MouseInputDevice(uint32 id);
@@ -31,14 +31,14 @@ private:
     void ProcessInputEvent(InputEvent& event);
     void OnEndFrame();
 
-    Private::DigitalControl* GetDigitalControl(DAVA::uint32 controlId);
-    const Private::DigitalControl* GetDigitalControl(DAVA::uint32 controlId) const;
+    Private::DigitalElement* GetDigitalElement(DAVA::uint32 elementId);
+    const Private::DigitalElement* GetDigitalElement(DAVA::uint32 elementId) const;
 
 private:
-    Private::DigitalControl leftButton;
-    Private::DigitalControl rightButton;
-    Private::DigitalControl middleButton;
-    AnalogControlState mousePosition;
+    Private::DigitalElement leftButton;
+    Private::DigitalElement rightButton;
+    Private::DigitalElement middleButton;
+    AnalogElementState mousePosition;
 
     size_t endFrameConnectionToken;
 };

@@ -1,7 +1,7 @@
 #include "Input/MouseInputDevice.h"
 #include "Engine/Engine.h"
 #include "Input/InputSystem.h"
-#include "Input/InputControls.h"
+#include "Input/InputElements.h"
 
 namespace DAVA
 {
@@ -19,42 +19,42 @@ MouseInputDevice::~MouseInputDevice()
     Engine::Instance()->endFrame.Disconnect(endFrameConnectionToken);
 }
 
-bool MouseInputDevice::HasControlWithId(uint32 controlId) const
+bool MouseInputDevice::SupportsElement(uint32 elementId) const
 {
-    return (controlId >= eInputControl::MOUSE_FIRST) && (controlId <= eInputControl::MOUSE_LAST);
+    return (elementId >= eInputElements::MOUSE_FIRST) && (elementId <= eInputElements::MOUSE_LAST);
 }
 
-eDigitalControlState MouseInputDevice::GetDigitalControlState(uint32 controlId) const
+eDigitalElementState MouseInputDevice::GetDigitalElementState(uint32 elementId) const
 {
-    DVASSERT(HasControlWithId(controlId));
-    return GetDigitalControl(controlId)->GetState();
+    DVASSERT(SupportsElement(elementId));
+    return GetDigitalElement(elementId)->GetState();
 }
 
-AnalogControlState MouseInputDevice::GetAnalogControlState(uint32 controlId) const
+AnalogElementState MouseInputDevice::GetAnalogElementState(uint32 elementId) const
 {
-    DVASSERT(controlId == eInputControl::MOUSE_POSITION);
+    DVASSERT(elementId == eInputElements::MOUSE_POSITION);
     return mousePosition;
 }
 
 void MouseInputDevice::ProcessInputEvent(InputEvent& event)
 {
-    if (event.controlId == eInputControl::MOUSE_POSITION)
+    if (event.elementId == eInputElements::MOUSE_POSITION)
     {
         mousePosition = event.analogState;
     }
     else
     {
-        Private::DigitalControl* control = GetDigitalControl(event.controlId);
-        if ((event.digitalState & eDigitalControlState::PRESSED) != eDigitalControlState::NONE)
+        Private::DigitalElement* element = GetDigitalElement(event.elementId);
+        if ((event.digitalState & eDigitalElementState::PRESSED) != eDigitalElementState::NONE)
         {
-            control->Press();
+            element->Press();
         }
         else
         {
-            control->Release();
+            element->Release();
         }
 
-        event.digitalState = control->GetState();
+        event.digitalState = element->GetState();
     }
 
     GetEngineContext()->inputSystem->ProcessInputEvent(event);
@@ -73,22 +73,22 @@ void MouseInputDevice::OnEndFrame()
     }
 }
 
-Private::DigitalControl* MouseInputDevice::GetDigitalControl(DAVA::uint32 controlId)
+Private::DigitalElement* MouseInputDevice::GetDigitalElement(DAVA::uint32 element)
 {
-    return const_cast<Private::DigitalControl*>(static_cast<const MouseInputDevice*>(this)->GetDigitalControl(controlId));
+    return const_cast<Private::DigitalElement*>(static_cast<const MouseInputDevice*>(this)->GetDigitalElement(element));
 }
 
-const Private::DigitalControl* MouseInputDevice::GetDigitalControl(DAVA::uint32 controlId) const
+const Private::DigitalElement* MouseInputDevice::GetDigitalElement(DAVA::uint32 element) const
 {
-    switch (controlId)
+    switch (element)
     {
-    case eInputControl::MOUSE_LBUTTON:
+    case eInputElements::MOUSE_LBUTTON:
         return &leftButton;
 
-    case eInputControl::MOUSE_MBUTTON:
+    case eInputElements::MOUSE_MBUTTON:
         return &middleButton;
 
-    case eInputControl::MOUSE_RBUTTON:
+    case eInputElements::MOUSE_RBUTTON:
         return &rightButton;
 
     default:

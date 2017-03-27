@@ -34,7 +34,7 @@ enum eInputElements : uint32
     KB_HOME,
     KB_END,
     KB_INSERT,
-    KB_DELETE_, // TODO
+    KB_DELETE, // TODO
     KB_LEFT,
     KB_UP,
     KB_RIGHT,

@@ -14,7 +14,7 @@ static size_t GetNonEmptyStatesCount(const Array<DigitalControlState, MAX_DIGITA
     size_t result = 0;
     for (const DigitalControlState& deviceControlState : array)
     {
-        if (deviceControlState.controlId > 0)
+        if (deviceControlState.elementId > 0)
         {
             ++result;
         }
@@ -30,7 +30,7 @@ bool DigitalBindingCompare::operator()(const DigitalBinding& first, const Digita
 
 bool AnalogBindingCompare::operator()(const AnalogBinding& first, const AnalogBinding& second) const
 {
-    return GetNonEmptyStatesCount(first.requiredDigitalControlStates) > GetNonEmptyStatesCount(second.requiredDigitalControlStates);
+    return GetNonEmptyStatesCount(first.requiredDigitalElementStates) > GetNonEmptyStatesCount(second.requiredDigitalElementStates);
 }
 
 ActionSystemImpl::ActionSystemImpl(ActionSystem* actionSystem) : actionSystem(actionSystem)
@@ -90,7 +90,7 @@ bool ActionSystemImpl::CheckDigitalStates(const Array<DigitalControlState, MAX_D
 {
     for (const DigitalControlState& requiredState : states)
     {
-        if (requiredState.controlId == 0)
+        if (requiredState.elementId == 0)
         {
             break;
         }
@@ -100,9 +100,9 @@ bool ActionSystemImpl::CheckDigitalStates(const Array<DigitalControlState, MAX_D
         for (const uint32 deviceId : devices)
         {
             const InputDevice* device = GetEngineContext()->deviceManager->GetInputDevice(deviceId);
-            if (device->HasControlWithId(requiredState.controlId))
+            if (device->SupportsElement(requiredState.elementId))
             {
-                const eDigitalControlState state = device->GetDigitalControlState(requiredState.controlId);
+                const eDigitalElementState state = device->GetDigitalElementState(requiredState.elementId);
 
                 if ((state & requiredState.stateMask) == requiredState.stateMask)
                 {
@@ -154,12 +154,12 @@ bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
         {
             AnalogBinding const& binding = *it;
 
-            if (event.controlId != binding.analogControlId)
+            if (event.elementId != binding.analogElementId)
             {
                 continue;
             }
 
-            const bool triggered = CheckDigitalStates(binding.requiredDigitalControlStates, setBinding.devices);
+            const bool triggered = CheckDigitalStates(binding.requiredDigitalElementStates, setBinding.devices);
 
             if (triggered)
             {

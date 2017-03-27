@@ -528,7 +528,7 @@ void Window::HandleMouseClick(const Private::MainDispatcherEvent& e)
 
     MouseInputDevice* mouse = engineBackend->GetContext()->deviceManager->GetMouse();
 
-    eDigitalControlState keyState = pressed ? eDigitalControlState::PRESSED : eDigitalControlState::RELEASED;
+    eDigitalElementState keyState = pressed ? eDigitalElementState::PRESSED : eDigitalElementState::RELEASED;
 
     InputEvent event;
     event.window = e.window;
@@ -538,11 +538,11 @@ void Window::HandleMouseClick(const Private::MainDispatcherEvent& e)
 
     if (e.mouseEvent.button == eMouseButtons::LEFT)
     {
-        event.controlId = eInputControl::MOUSE_LBUTTON;
+        event.elementId = eInputElements::MOUSE_LBUTTON;
     }
     else if (e.mouseEvent.button == eMouseButtons::RIGHT)
     {
-        event.controlId = eInputControl::MOUSE_RBUTTON;
+        event.elementId = eInputElements::MOUSE_RBUTTON;
     }
 
     event.digitalState = keyState;
@@ -607,7 +607,7 @@ void Window::HandleMouseMove(const Private::MainDispatcherEvent& e)
     event.timestamp = e.timestamp / 1000.0f;
     event.deviceType = MouseInputDevice::TYPE;
     event.deviceId = mouse->GetId();
-    event.controlId = eInputControl::MOUSE_POSITION;
+    event.elementId = eInputElements::MOUSE_POSITION;
 
     event.analogState.x = e.mouseEvent.x;
     event.analogState.y = e.mouseEvent.y;
@@ -697,11 +697,11 @@ void Window::HandleKeyPress(const Private::MainDispatcherEvent& e)
 
     KeyboardInputDevice* keyboardInputDevice = engineBackend->GetContext()->deviceManager->GetKeyboard();
 
-    eDigitalControlState keyState = pressed ? eDigitalControlState::PRESSED : eDigitalControlState::RELEASED;
+    eDigitalElementState keyState = pressed ? eDigitalElementState::PRESSED : eDigitalElementState::RELEASED;
 
     InputEvent inputEvent;
     inputEvent.keyboardEvent.isCharEvent = false;
-    inputEvent.controlId = SystemKeyToDavaKey(e.keyEvent.key);
+    inputEvent.elementId = SystemKeyToDavaKey(e.keyEvent.key);
     inputEvent.deviceId = keyboardInputDevice->GetId();
     inputEvent.deviceType = KeyboardInputDevice::TYPE;
     inputEvent.digitalState = keyState;

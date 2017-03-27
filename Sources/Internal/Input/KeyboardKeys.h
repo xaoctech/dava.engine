@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
-#include "Input/InputControls.h"
+#include "Input/InputElements.h"
 
 namespace DAVA
 {
@@ -9,5 +9,5 @@ namespace DAVA
     \ingroup input
     Translates platform-dependent key code to `eKeyboardKey` value.
 */
-eInputControl SystemKeyToDavaKey(uint32 systemKeyCode);
+eInputElements SystemKeyToDavaKey(uint32 systemKeyCode);
 }

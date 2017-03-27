@@ -10,103 +10,103 @@ namespace DAVA
 {
 // Used for key translation from system to dava
 static const uint32 MAX_TRANSLATOR_KEYS = 512;
-static Array<eInputControl, MAX_TRANSLATOR_KEYS> systemToDavaKeyTranslator;
+static Array<eInputElements, MAX_TRANSLATOR_KEYS> systemToDavaKeyTranslator;
 
 static void InitSystemToDavaKeyTranslator()
 {
-    static_assert(static_cast<size_t>(eInputControl::KB_COUNT) < MAX_TRANSLATOR_KEYS, "Check translator array size");
+    static_assert(static_cast<size_t>(eInputElements::KB_COUNT) < MAX_TRANSLATOR_KEYS, "Check translator array size");
 
-    std::uninitialized_fill(std::begin(systemToDavaKeyTranslator), std::end(systemToDavaKeyTranslator), eInputControl::NONE);
+    std::uninitialized_fill(std::begin(systemToDavaKeyTranslator), std::end(systemToDavaKeyTranslator), eInputElements::NONE);
 
 #if defined(__DAVAENGINE_WINDOWS__)
     // see https://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
 
-    systemToDavaKeyTranslator[VK_LEFT] = eInputControl::KB_LEFT;
-    systemToDavaKeyTranslator[VK_RIGHT] = eInputControl::KB_RIGHT;
-    systemToDavaKeyTranslator[VK_UP] = eInputControl::KB_UP;
-    systemToDavaKeyTranslator[VK_DOWN] = eInputControl::KB_DOWN;
-    systemToDavaKeyTranslator[VK_DELETE] = eInputControl::KB_DELETE_;
-    systemToDavaKeyTranslator[VK_ESCAPE] = eInputControl::KB_ESCAPE;
-    systemToDavaKeyTranslator[VK_BACK] = eInputControl::KB_BACKSPACE;
-    systemToDavaKeyTranslator[VK_RETURN] = eInputControl::KB_ENTER;
+    systemToDavaKeyTranslator[VK_LEFT] = eInputElements::KB_LEFT;
+    systemToDavaKeyTranslator[VK_RIGHT] = eInputElements::KB_RIGHT;
+    systemToDavaKeyTranslator[VK_UP] = eInputElements::KB_UP;
+    systemToDavaKeyTranslator[VK_DOWN] = eInputElements::KB_DOWN;
+    systemToDavaKeyTranslator[VK_DELETE] = eInputElements::KB_DELETE;
+    systemToDavaKeyTranslator[VK_ESCAPE] = eInputElements::KB_ESCAPE;
+    systemToDavaKeyTranslator[VK_BACK] = eInputElements::KB_BACKSPACE;
+    systemToDavaKeyTranslator[VK_RETURN] = eInputElements::KB_ENTER;
 
-    systemToDavaKeyTranslator[256 + VK_LEFT] = eInputControl::KB_LEFT; // extended key
-    systemToDavaKeyTranslator[256 + VK_RIGHT] = eInputControl::KB_RIGHT; // extended key
-    systemToDavaKeyTranslator[256 + VK_UP] = eInputControl::KB_UP; // extended key
-    systemToDavaKeyTranslator[256 + VK_DOWN] = eInputControl::KB_DOWN; // extended key
-    systemToDavaKeyTranslator[256 + VK_DELETE] = eInputControl::KB_DELETE_; // extended key
-    systemToDavaKeyTranslator[256 + VK_RETURN] = eInputControl::KB_NUMPADENTER; // extended key
+    systemToDavaKeyTranslator[256 + VK_LEFT] = eInputElements::KB_LEFT; // extended key
+    systemToDavaKeyTranslator[256 + VK_RIGHT] = eInputElements::KB_RIGHT; // extended key
+    systemToDavaKeyTranslator[256 + VK_UP] = eInputElements::KB_UP; // extended key
+    systemToDavaKeyTranslator[256 + VK_DOWN] = eInputElements::KB_DOWN; // extended key
+    systemToDavaKeyTranslator[256 + VK_DELETE] = eInputElements::KB_DELETE; // extended key
+    systemToDavaKeyTranslator[256 + VK_RETURN] = eInputElements::KB_NUMPADENTER; // extended key
 
-    systemToDavaKeyTranslator[VK_CONTROL] = eInputControl::KB_LCTRL;
-    systemToDavaKeyTranslator[VK_MENU] = eInputControl::KB_LALT;
-    systemToDavaKeyTranslator[VK_SHIFT] = eInputControl::KB_LSHIFT;
-    systemToDavaKeyTranslator[VK_APPS] = eInputControl::KB_APPS;
+    systemToDavaKeyTranslator[VK_CONTROL] = eInputElements::KB_LCTRL;
+    systemToDavaKeyTranslator[VK_MENU] = eInputElements::KB_LALT;
+    systemToDavaKeyTranslator[VK_SHIFT] = eInputElements::KB_LSHIFT;
+    systemToDavaKeyTranslator[VK_APPS] = eInputElements::KB_APPS;
 
-    systemToDavaKeyTranslator[256 + VK_CONTROL] = eInputControl::KB_RCTRL;
-    systemToDavaKeyTranslator[256 + VK_MENU] = eInputControl::KB_RALT;
-    systemToDavaKeyTranslator[256 + VK_SHIFT] = eInputControl::KB_RSHIFT;
-    systemToDavaKeyTranslator[256 + VK_APPS] = eInputControl::KB_APPS; // win api mark this key as extended
+    systemToDavaKeyTranslator[256 + VK_CONTROL] = eInputElements::KB_RCTRL;
+    systemToDavaKeyTranslator[256 + VK_MENU] = eInputElements::KB_RALT;
+    systemToDavaKeyTranslator[256 + VK_SHIFT] = eInputElements::KB_RSHIFT;
+    systemToDavaKeyTranslator[256 + VK_APPS] = eInputElements::KB_APPS; // win api mark this key as extended
 
-    systemToDavaKeyTranslator[256 + VK_NUMLOCK] = eInputControl::KB_NUMLOCK;
-    systemToDavaKeyTranslator[VK_CAPITAL] = eInputControl::KB_CAPSLOCK;
-    systemToDavaKeyTranslator[VK_PAUSE] = eInputControl::KB_PAUSE;
-    systemToDavaKeyTranslator[VK_SCROLL] = eInputControl::KB_SCROLLLOCK;
-    systemToDavaKeyTranslator[256 + VK_SNAPSHOT] = eInputControl::KB_PRINTSCREEN;
-    systemToDavaKeyTranslator[VK_SPACE] = eInputControl::KB_SPACE;
-    systemToDavaKeyTranslator[VK_TAB] = eInputControl::KB_TAB;
-    systemToDavaKeyTranslator[VK_ADD] = eInputControl::KB_ADD;
-    systemToDavaKeyTranslator[VK_SUBTRACT] = eInputControl::KB_SUBTRACT;
+    systemToDavaKeyTranslator[256 + VK_NUMLOCK] = eInputElements::KB_NUMLOCK;
+    systemToDavaKeyTranslator[VK_CAPITAL] = eInputElements::KB_CAPSLOCK;
+    systemToDavaKeyTranslator[VK_PAUSE] = eInputElements::KB_PAUSE;
+    systemToDavaKeyTranslator[VK_SCROLL] = eInputElements::KB_SCROLLLOCK;
+    systemToDavaKeyTranslator[256 + VK_SNAPSHOT] = eInputElements::KB_PRINTSCREEN;
+    systemToDavaKeyTranslator[VK_SPACE] = eInputElements::KB_SPACE;
+    systemToDavaKeyTranslator[VK_TAB] = eInputElements::KB_TAB;
+    systemToDavaKeyTranslator[VK_ADD] = eInputElements::KB_ADD;
+    systemToDavaKeyTranslator[VK_SUBTRACT] = eInputElements::KB_SUBTRACT;
 
-    systemToDavaKeyTranslator[VK_HOME] = eInputControl::KB_HOME;
-    systemToDavaKeyTranslator[VK_END] = eInputControl::KB_END;
-    systemToDavaKeyTranslator[VK_PRIOR] = eInputControl::KB_PGUP;
-    systemToDavaKeyTranslator[VK_NEXT] = eInputControl::KB_PGDN;
-    systemToDavaKeyTranslator[VK_INSERT] = eInputControl::KB_INSERT;
-    systemToDavaKeyTranslator[256 + VK_HOME] = eInputControl::KB_HOME; // extended key
-    systemToDavaKeyTranslator[256 + VK_END] = eInputControl::KB_END; // extended key
-    systemToDavaKeyTranslator[256 + VK_PRIOR] = eInputControl::KB_PGUP; // extended key
-    systemToDavaKeyTranslator[256 + VK_NEXT] = eInputControl::KB_PGDN; // extended key
-    systemToDavaKeyTranslator[256 + VK_INSERT] = eInputControl::KB_INSERT; // extended key
+    systemToDavaKeyTranslator[VK_HOME] = eInputElements::KB_HOME;
+    systemToDavaKeyTranslator[VK_END] = eInputElements::KB_END;
+    systemToDavaKeyTranslator[VK_PRIOR] = eInputElements::KB_PGUP;
+    systemToDavaKeyTranslator[VK_NEXT] = eInputElements::KB_PGDN;
+    systemToDavaKeyTranslator[VK_INSERT] = eInputElements::KB_INSERT;
+    systemToDavaKeyTranslator[256 + VK_HOME] = eInputElements::KB_HOME; // extended key
+    systemToDavaKeyTranslator[256 + VK_END] = eInputElements::KB_END; // extended key
+    systemToDavaKeyTranslator[256 + VK_PRIOR] = eInputElements::KB_PGUP; // extended key
+    systemToDavaKeyTranslator[256 + VK_NEXT] = eInputElements::KB_PGDN; // extended key
+    systemToDavaKeyTranslator[256 + VK_INSERT] = eInputElements::KB_INSERT; // extended key
 
-    systemToDavaKeyTranslator[VK_OEM_PLUS] = eInputControl::KB_EQUALS;
-    systemToDavaKeyTranslator[VK_OEM_MINUS] = eInputControl::KB_MINUS;
-    systemToDavaKeyTranslator[VK_OEM_PERIOD] = eInputControl::KB_PERIOD;
-    systemToDavaKeyTranslator[VK_OEM_COMMA] = eInputControl::KB_COMMA;
-    systemToDavaKeyTranslator[VK_OEM_1] = eInputControl::KB_SEMICOLON;
-    systemToDavaKeyTranslator[VK_OEM_2] = eInputControl::KB_SLASH;
-    systemToDavaKeyTranslator[VK_OEM_3] = eInputControl::KB_GRAVE;
-    systemToDavaKeyTranslator[VK_OEM_4] = eInputControl::KB_LBRACKET;
-    systemToDavaKeyTranslator[VK_OEM_5] = eInputControl::KB_BACKSLASH;
-    systemToDavaKeyTranslator[VK_OEM_6] = eInputControl::KB_RBRACKET;
-    systemToDavaKeyTranslator[VK_OEM_7] = eInputControl::KB_APOSTROPHE;
+    systemToDavaKeyTranslator[VK_OEM_PLUS] = eInputElements::KB_EQUALS;
+    systemToDavaKeyTranslator[VK_OEM_MINUS] = eInputElements::KB_MINUS;
+    systemToDavaKeyTranslator[VK_OEM_PERIOD] = eInputElements::KB_PERIOD;
+    systemToDavaKeyTranslator[VK_OEM_COMMA] = eInputElements::KB_COMMA;
+    systemToDavaKeyTranslator[VK_OEM_1] = eInputElements::KB_SEMICOLON;
+    systemToDavaKeyTranslator[VK_OEM_2] = eInputElements::KB_SLASH;
+    systemToDavaKeyTranslator[VK_OEM_3] = eInputElements::KB_GRAVE;
+    systemToDavaKeyTranslator[VK_OEM_4] = eInputElements::KB_LBRACKET;
+    systemToDavaKeyTranslator[VK_OEM_5] = eInputElements::KB_BACKSLASH;
+    systemToDavaKeyTranslator[VK_OEM_6] = eInputElements::KB_RBRACKET;
+    systemToDavaKeyTranslator[VK_OEM_7] = eInputElements::KB_APOSTROPHE;
 
-    systemToDavaKeyTranslator[VK_OEM_102] = eInputControl::KB_NONUSBACKSLASH;
+    systemToDavaKeyTranslator[VK_OEM_102] = eInputElements::KB_NONUSBACKSLASH;
 
-    const unsigned numFuncKeys = static_cast<unsigned>(eInputControl::KB_F12) - static_cast<unsigned>(eInputControl::KB_F1);
+    const unsigned numFuncKeys = static_cast<unsigned>(eInputElements::KB_F12) - static_cast<unsigned>(eInputElements::KB_F1);
     for (unsigned i = 0; i <= numFuncKeys; i++)
     {
-        unsigned keyValue = static_cast<unsigned>(eInputControl::KB_F1) + i;
-        systemToDavaKeyTranslator[VK_F1 + i] = static_cast<eInputControl>(keyValue);
+        unsigned keyValue = static_cast<unsigned>(eInputElements::KB_F1) + i;
+        systemToDavaKeyTranslator[VK_F1 + i] = static_cast<eInputElements>(keyValue);
     }
 
     // alpha keys
     for (unsigned i = 0; i < 26; ++i)
     {
-        unsigned keyValue = static_cast<unsigned>(eInputControl::KB_KEY_A) + i;
-        systemToDavaKeyTranslator[0x41 + i] = static_cast<eInputControl>(keyValue);
+        unsigned keyValue = static_cast<unsigned>(eInputElements::KB_KEY_A) + i;
+        systemToDavaKeyTranslator[0x41 + i] = static_cast<eInputElements>(keyValue);
     }
 
     // numeric keys & keys at num pad
     for (unsigned i = 0; i < 10; ++i)
     {
-        unsigned keyNum = static_cast<unsigned>(eInputControl::KB_KEY_0) + i;
-        unsigned keyNumpad = static_cast<unsigned>(eInputControl::KB_NUMPAD0) + i;
-        systemToDavaKeyTranslator[0x30 + i] = static_cast<eInputControl>(keyNum);
-        systemToDavaKeyTranslator[0x60 + i] = static_cast<eInputControl>(keyNumpad);
+        unsigned keyNum = static_cast<unsigned>(eInputElements::KB_KEY_0) + i;
+        unsigned keyNumpad = static_cast<unsigned>(eInputElements::KB_NUMPAD0) + i;
+        systemToDavaKeyTranslator[0x30 + i] = static_cast<eInputElements>(keyNum);
+        systemToDavaKeyTranslator[0x60 + i] = static_cast<eInputElements>(keyNumpad);
     }
-    systemToDavaKeyTranslator[VK_MULTIPLY] = eInputControl::KB_MULTIPLY;
-    systemToDavaKeyTranslator[256 + VK_DIVIDE] = eInputControl::KB_DIVIDE; // extended key
-    systemToDavaKeyTranslator[VK_DECIMAL] = eInputControl::KB_DECIMAL;
+    systemToDavaKeyTranslator[VK_MULTIPLY] = eInputElements::KB_MULTIPLY;
+    systemToDavaKeyTranslator[256 + VK_DIVIDE] = eInputElements::KB_DIVIDE; // extended key
+    systemToDavaKeyTranslator[VK_DECIMAL] = eInputElements::KB_DECIMAL;
 #endif
 
 #if defined(__DAVAENGINE_MACOS__)
@@ -496,7 +496,7 @@ static void InitSystemToDavaKeyTranslator()
 #endif
 }
 
-eInputControl SystemKeyToDavaKey(uint32 systemKeyCode)
+eInputElements SystemKeyToDavaKey(uint32 systemKeyCode)
 {
     static bool translatorInitialized = false;
     if (!translatorInitialized)
@@ -511,6 +511,6 @@ eInputControl SystemKeyToDavaKey(uint32 systemKeyCode)
     }
 
     DVASSERT(false, "Wrong system key code");
-    return eInputControl::NONE;
+    return eInputElements::NONE;
 }
 }

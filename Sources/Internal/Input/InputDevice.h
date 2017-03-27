@@ -12,27 +12,27 @@ namespace DAVA
         - Handling input events sent by a platform
         - Storing each input device's state
 
-    A control is a part of a device which can be used for input. For example, a keyboard button, a mouse button, a mouse wheel, gamepad's stick etc.
+    An input element is a part of a device which can be used for input. For example, a keyboard button, a mouse button, a mouse wheel, gamepad's stick etc.
     There are two types of them:
-        - Digital control: basically, a button, which can just be pressed and released.
-        - Analog control: any control whose state can only be described using multiple float values.
+        - Digital element: basically, a button, which can just be pressed and released.
+        - Analog element: any element whose state can only be described using multiple float values.
                           For example, gamepad's stick position can be described using normalized x and y values.
 */
 
 /**
     \ingroup input
-    Enum describing possible states for a digital control.
+    Enum describing possible states for a digital element.
 
     |------------------------------------------------|---------------|---------|---------------|----------|
     |                                                |  JUST_PRESSED | PRESSED | JUST_RELEASED | RELEASED |
     |------------------------------------------------|---------------|---------|---------------|----------|
-    | initial control state                          | -             | -       | -             | +        |
+    | initial element state                          | -             | -       | -             | +        |
     | right after user pressed a button (same frame) | +             | +       | -             | -        |
     | user keeps the button pressed (next frames)    | -             | +       | -             | -        |
     | user released the button (same frame)          | -             | -       | +             | +        |
     | user released the button (next frames)         | -             | -       | -             | +        |
 */
-enum class eDigitalControlState : uint32
+enum class eDigitalElementState : uint32
 {
     // Helper value to use in bitwise operations
     NONE = 0,
@@ -43,16 +43,16 @@ enum class eDigitalControlState : uint32
     RELEASED = 1 << 3
 };
 
-DAVA_DEFINE_ENUM_BITWISE_OPERATORS(eDigitalControlState)
+DAVA_DEFINE_ENUM_BITWISE_OPERATORS(eDigitalElementState)
 
 /**
     \ingroup input    
-	Struct describing analog control state.
+	Struct describing analog element state.
     Meanings of `x`, `y` and `z` values can be different for different devices.
 
     For example, a gamepad's stick defines x and y values in range of [-1; 1] for according axises.
 */
-struct AnalogControlState final
+struct AnalogElementState final
 {
     /** Analog X value */
     float32 x;
@@ -85,21 +85,21 @@ public:
     /** Return unique device id */
     uint32 GetId() const;
 
-    virtual bool HasControlWithId(uint32 controlId) const = 0;
+    virtual bool SupportsElement(uint32 elementId) const = 0;
 
     /**
-        Get digital state of a control with specified `controlId`.
+        Get digital state of an element with specified `elementId`.
 
-        \pre Device should have a digital control with specified `controlId`.
+        \pre Device should have a digital element with specified id. It can be checked with `SupportsElement` method.
     */
-    virtual eDigitalControlState GetDigitalControlState(uint32 controlId) const = 0;
+    virtual eDigitalElementState GetDigitalElementState(uint32 elementId) const = 0;
 
     /**
-        Get an analog control's state with specified `controlId`
+        Get an analog element's state with specified `elementId`
 
-        \pre Device should have an analog control with specified `controlId`
+        \pre Device should have an analog element with specified id.
     */
-    virtual AnalogControlState GetAnalogControlState(uint32 controlId) const = 0;
+    virtual AnalogElementState GetAnalogElementState(uint32 elementId) const = 0;
 
 private:
     const uint32 id;
