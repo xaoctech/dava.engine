@@ -43,8 +43,40 @@ ActionSystemImpl::~ActionSystemImpl()
     // TODO: unsubscribe
 }
 
-void ActionSystemImpl::BindSet(const ActionSet& set, Array<uint32, MAX_DEVICES_COUNT> devices)
+void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)
 {
+    // Check if there are sets which are already binded to any of these devices
+    // Unbind them from these devices if there are
+    if (devices.size() > 0)
+    {
+        auto iter = bindedSets.begin();
+        while (iter != bindedSets.end())
+        {
+            BindedActionSet& bindedSet = *iter;
+
+            // If set is binded to to specific devices
+            if (bindedSet.devices.size() > 0)
+            {
+                // Unbind it
+                for (const uint32 deviceId : devices)
+                {
+                    bindedSet.devices.erase(
+                        std::remove(bindedSet.devices.begin(), bindedSet.devices.end(), deviceId),
+                        bindedSet.devices.end());
+                }
+
+                // If it is not binded to any devices anymore - remove it from the list
+                if (bindedSet.devices.size() == 0)
+                {
+                    iter = bindedSets.erase(iter);
+                    continue;
+                }
+            }
+
+            ++iter;
+        }
+    }
+
     BindedActionSet bindedSet;
     bindedSet.digitalBindings.insert(set.digitalBindings.begin(), set.digitalBindings.end());
     bindedSet.analogBindings.insert(set.analogBindings.begin(), set.analogBindings.end());
@@ -54,7 +86,7 @@ void ActionSystemImpl::BindSet(const ActionSet& set, Array<uint32, MAX_DEVICES_C
 }
 
 // Helper function to check if specified states are active
-bool ActionSystemImpl::CheckDigitalStates(const Array<DigitalControlState, MAX_DIGITAL_STATES_COUNT>& states, const Array<uint32, MAX_DEVICES_COUNT>& devices)
+bool ActionSystemImpl::CheckDigitalStates(const Array<DigitalControlState, MAX_DIGITAL_STATES_COUNT>& states, const Vector<uint32>& devices)
 {
     for (const DigitalControlState& requiredState : states)
     {
@@ -67,11 +99,6 @@ bool ActionSystemImpl::CheckDigitalStates(const Array<DigitalControlState, MAX_D
 
         for (const uint32 deviceId : devices)
         {
-            if (deviceId == 0)
-            {
-                break;
-            }
-
             const InputDevice* device = GetEngineContext()->deviceManager->GetInputDevice(deviceId);
             if (device->HasControlWithId(requiredState.controlId))
             {
@@ -87,7 +114,7 @@ bool ActionSystemImpl::CheckDigitalStates(const Array<DigitalControlState, MAX_D
 
         if (!requiredStateMatches)
         {
-            // At least one state is not in the state which is required, stop
+            // At least one control is not in the state which is required, stop
             return false;
         }
     }
@@ -110,7 +137,7 @@ bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
             {
                 Action action;
                 action.actionId = binding.actionId;
-                action.analogControlState = binding.outputAnalogState;
+                action.analogState = binding.outputAnalogState;
                 action.triggeredDeviceId = event.deviceId;
 
                 actionSystem->ActionTriggered.Emit(action);
@@ -138,7 +165,7 @@ bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
             {
                 Action action;
                 action.actionId = binding.actionId;
-                action.analogControlState = event.analogState;
+                action.analogState = event.analogState;
                 action.triggeredDeviceId = event.deviceId;
 
                 actionSystem->ActionTriggered.Emit(action);

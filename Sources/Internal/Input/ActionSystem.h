@@ -38,12 +38,12 @@ struct Action final
         If the action was triggered using `AnalogBinding`, this field contains state of the control which triggered the action.
         If the action was triggered using `DigitalBinding`, this field contains value taken from `DigitalBinding::outputAnalogState` field (user-specified).
    */
-    AnalogControlState analogControlState;
+    AnalogControlState analogState;
 };
 
 /**
     \ingroup actions
-    Describes specific digital control's state.
+    Helper struct that describes specific digital control's state.
 */
 struct DigitalControlState final
 {
@@ -71,16 +71,15 @@ struct DigitalBinding final
     /**
         Analog state which will be put into a triggered action.
         Useful in cases when a button performs the same action as an analog control.
-        For example if a user uses gamepad's stick for MOVE action (which sends [-1; 1] values for x and y axes),
-        he might also want to bind movement to WASD buttons.
-        In this situation, he can specify (0, 1) for W, (-1, 0) for A, (0, -1) for S and (0, 1) for D, thuis unifiying input handling code for this action:
+        For example if a user uses gamepad's stick for MOVE action (which sends [-1; 1] values for x and y axes), he might also want to bind movement to WASD buttons.
+        In this situation, he can specify (0, 1) for W, (-1, 0) for A, (0, -1) for S and (0, 1) for D, thus unifiying input handling code for this action:
 
         \code
         if (action.actionId == MOVE)
         {
             // Don't care about the way analogControlState was filled
             // Just know that it's in a range [-1; 1] for x and y
-            Vector2 velocity(action.analogControlState.x, action.analogControlState.y);
+            Vector2 velocity(action.analogState.x, action.analogState.y);
             Move(velocity);
         }
         \endcode
@@ -100,7 +99,7 @@ struct AnalogBinding final
     FastName actionId;
 
     /** Id of the analog control whose state changes will trigger the action. */
-    uint32 analogControlId;
+    eInputControl analogControlId;
 
     /** Additional digital control states required for the action to trigger. */
     Array<DigitalControlState, MAX_DIGITAL_STATES_COUNT> requiredDigitalControlStates;
@@ -123,7 +122,7 @@ struct ActionSet final
     \ingroup actions
     Class which is responsible for binding action sets and notifying when action is triggered.
     `BindSet` function is used to bind an action set.
-    `ActionTriggered` is emitted when an action is trigger.
+    `ActionTriggered` is emitted when an action is triggered.
 
     Usage example:
     \code
@@ -135,13 +134,13 @@ struct ActionSet final
 
         DigitalBinding fireBinding;
         fireBinding.actionId = FIRE;
-        fireBinding.requiredStates[0].controlId = GAMEPAD_X;
+        fireBinding.requiredStates[0].controlId = eInputControl::GAMEPAD_X;
         fireBinding.requiredStates[0].stateMask = eDigitalControlState::PRESSED;
         set.digitalBindings.push_back(fireBinding);
 
         AnalogBinding moveBinding;
         moveBinding.actionId = MOVE;
-        moveBinding.analogControlId = GAMEPAD_STICK1;
+        moveBinding.analogControlId = eInputControl::GAMEPAD_STICK1;
         set.analogBindings.push_back(moveBinding);
 
         ActionSystem* actionSystem = GetEngineContext()->actionSystem;
@@ -174,7 +173,7 @@ public:
     /**
         Binds an action set to all the input devices.
         That is, whenever any binding matches its requirements from ANY device, the action will be triggered.
-        Useful for single player game, since we don't want to restrict user to use only concrete list of devices.
+        Useful for single player games.
     */
     void BindSet(const ActionSet& actionSet);
 
