@@ -7,7 +7,7 @@ diff -urNw openssl_source_win32_original/build-vc12.cmd openssl_source_win32/bui
 +
 +set _PLATFORM=x86
 +set _COMPILER=VC-WIN32
-+set OPTS=no-whirlpool no-asm no-cast no-idea no-camellia no-comp no-hw 
++set OPTS=no-whirlpool no-asm no-cast no-idea no-camellia no-hw 
 +
 +if not [%1] == [x64] goto run
 +

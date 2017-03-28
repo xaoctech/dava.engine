@@ -82,14 +82,7 @@ _configure_args = [
     'no-hw',
     'no-engine']
 
-_configure_args_win32 = [
-    'no-whirlpool',
-    'no-asm',
-    'no-cast',
-    'no-idea',
-    'no-camellia',
-    'no-comp',
-    'no-hw']
+_configure_args_win32 = "" # all configure args are in patch_win32.diff
 
 def _build_win32(working_directory_path, root_project_path):
 
@@ -97,7 +90,7 @@ def _build_win32(working_directory_path, root_project_path):
 
     # x86
     source_folder_path_x86 = _download_and_extract(working_directory_path, 'win32_x86')
-    _patch_sources(source_folder_path_x86, 'patch_win32.diff')
+    build_utils.apply_patch(os.path.abspath('patch_win32.diff'), source_folder_path_x86)
 
     build_utils.run_process(['build-vc12.cmd'], process_cwd=source_folder_path_x86, shell=True)
 
@@ -113,7 +106,7 @@ def _build_win32(working_directory_path, root_project_path):
 
     #x64
     source_folder_path_x64 = _download_and_extract(working_directory_path, 'win32_x64')
-    _patch_sources(source_folder_path_x64, 'patch_win32.diff')
+    build_utils.apply_patch(os.path.abspath('patch_win32.diff'), source_folder_path_x64)
 
     build_utils.run_process('build-vc12.cmd x64', process_cwd=source_folder_path_x64, shell=True)
 

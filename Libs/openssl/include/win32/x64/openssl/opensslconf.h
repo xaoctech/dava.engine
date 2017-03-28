@@ -17,9 +17,6 @@ extern "C" {
 #ifndef OPENSSL_NO_CAST
 # define OPENSSL_NO_CAST
 #endif
-#ifndef OPENSSL_NO_COMP
-# define OPENSSL_NO_COMP
-#endif
 #ifndef OPENSSL_NO_EC_NISTP_64_GCC_128
 # define OPENSSL_NO_EC_NISTP_64_GCC_128
 #endif
@@ -91,9 +88,6 @@ extern "C" {
 # endif
 # if defined(OPENSSL_NO_CAST) && !defined(NO_CAST)
 #  define NO_CAST
-# endif
-# if defined(OPENSSL_NO_COMP) && !defined(NO_COMP)
-#  define NO_COMP
 # endif
 # if defined(OPENSSL_NO_EC_NISTP_64_GCC_128) && !defined(NO_EC_NISTP_64_GCC_128)
 #  define NO_EC_NISTP_64_GCC_128
