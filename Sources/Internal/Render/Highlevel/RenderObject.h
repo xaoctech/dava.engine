@@ -14,7 +14,7 @@ namespace DAVA
 const static uint16 INVALID_STATIC_OCCLUSION_INDEX = uint16(-1);
 
 class RenderBatch;
-class RenderObject : public AnimatedObject
+class RenderObject : public BaseObject
 {
 public:
     enum eType : uint32
@@ -83,12 +83,12 @@ public:
     inline RenderBatch* GetRenderBatch(uint32 batchIndex, int32& lodIndex, int32& switchIndex) const;
 
     /**
-		\brief collect render batches and append it to vector by request lods/switches
-		\param[in] requestLodIndex - request lod index. if -1 considering all lods
-        \param[in] requestSwitchIndex - request switch index. if -1 considering all switches
-        \param[in, out] batches vector of RenderBatch'es
-        \param[in] includeShareLods - if true considering request lod and lods with INVALID_INDEX(-1)
-	 */
+     \brief collect render batches and append it to vector by request lods/switches
+     \param[in] requestLodIndex - request lod index. if -1 considering all lods
+     \param[in] requestSwitchIndex - request switch index. if -1 considering all switches
+     \param[in, out] batches vector of RenderBatch'es
+     \param[in] includeShareLods - if true considering request lod and lods with INVALID_INDEX(-1)
+     */
     void CollectRenderBatches(int32 requestLodIndex, int32 requestSwitchIndex, Vector<RenderBatch*>& batches, bool includeShareLods = false) const;
 
     inline uint32 GetActiveRenderBatchCount() const;
@@ -119,6 +119,8 @@ public:
 
     inline void SetWorldTransformPtr(Matrix4* _worldTransform);
     inline Matrix4* GetWorldTransformPtr() const;
+    inline void SetInverseTransform(const Matrix4& _inverseWorldTransform);
+    inline const Matrix4& GetInverseWorldTransform() const;
 
     inline eType GetType()
     {
@@ -165,7 +167,79 @@ public:
     inline void SetLight(uint32 index, Light* light);
     inline Light* GetLight(uint32 index);
 
+    inline void AddVisibilityStructureNode(uint32 nodeValue);
+    inline void RemoveVisibilityStructureNode(uint32 nodeValue);
+    inline uint32 GetVisibilityStructureNode(uint32 index) const;
+    inline bool IsInVisibilityStructureNode(uint32 nodeValue) const;
+    inline uint32 GetVisibilityStructureNodeCount() const;
     uint8 startClippingPlane = 0;
+
+    static const uint32 MAX_VISIBILITY_STRUCTURE_NODE_COUNT = 8;
+    uint32 inVisibilityNodes[MAX_VISIBILITY_STRUCTURE_NODE_COUNT];
+    uint32 inVisibilityNodeCount = 0;
+
+    struct VoxelCoord : public InspBase
+    {
+        VoxelCoord()
+        {
+        }
+        VoxelCoord(uint32 x)
+            : packedCoord(x)
+        {
+        }
+
+        union
+        {
+            struct
+            {
+                uint32 level : 5;
+                uint32 x : 9;
+                uint32 y : 9;
+                uint32 z : 9;
+            };
+            uint32 packedCoord;
+        };
+        uint32 GetLevel() const
+        {
+            return level;
+        };
+        void SetLevel(const uint32& _level)
+        {
+            level = _level;
+        };
+        uint32 GetX() const
+        {
+            return x;
+        };
+        void SetX(const uint32& _x)
+        {
+            x = _x;
+        };
+        uint32 GetY() const
+        {
+            return y;
+        };
+        void SetY(const uint32& _y)
+        {
+            y = _y;
+        };
+        uint32 GetZ() const
+        {
+            return z;
+        };
+        void SetZ(const uint32& _z)
+        {
+            z = _z;
+        };
+
+        INTROSPECTION(VoxelCoord,
+                      PROPERTY("level", "level", GetLevel, SetLevel, I_VIEW | I_EDIT)
+                      PROPERTY("x", "x", GetX, SetX, I_VIEW | I_EDIT)
+                      PROPERTY("y", "y", GetY, SetY, I_VIEW | I_EDIT)
+                      PROPERTY("z", "z", GetZ, SetZ, I_VIEW | I_EDIT)
+                      );
+    };
+    std::vector<VoxelCoord> inVisCopy;
 
     struct IndexedRenderBatch : public InspBase
     {
@@ -195,6 +269,7 @@ protected:
     Light* lights[MAX_LIGHT_COUNT];
     RenderSystem* renderSystem = nullptr;
     Matrix4* worldTransform = nullptr; // temporary - this should me moved directly to matrix uniforms
+    Matrix4 inverseWorldTransform;
     FastName ownerDebugInfo;
     AABBox3 bbox;
     AABBox3 worldBBox;
@@ -204,7 +279,7 @@ protected:
     uint32 flags = DEFAULT_RENDEROBJECT_FLAGS;
     uint32 debugFlags = 0;
     uint32 removeIndex = static_cast<uint32>(-1);
-    uint16 treeNodeIndex = INVALID_TREE_NODE_INDEX;
+    uint16 treeNodeIndex = QuadTree::INVALID_TREE_NODE_INDEX;
     uint16 staticOcclusionIndex = INVALID_STATIC_OCCLUSION_INDEX;
 
 public:
@@ -223,11 +298,14 @@ public:
                          PROPERTY("visibleReflection", "Visible Reflection", GetReflectionVisible, SetReflectionVisible, I_SAVE | I_VIEW | I_EDIT)
                          PROPERTY("visibleRefraction", "Visible Refraction", GetRefractionVisible, SetRefractionVisible, I_SAVE | I_VIEW | I_EDIT)
 
+                         MEMBER(treeNodeIndex, "Tree Node Index", I_SAVE | I_VIEW | I_EDIT)
+                         MEMBER(inVisibilityNodeCount, "Visibility Node Count", I_SAVE | I_VIEW | I_EDIT)
+                         COLLECTION(inVisCopy, "Visibility Nodes", I_SAVE | I_VIEW | I_EDIT)
                          COLLECTION(renderBatchArray, "Render Batch Array", I_SAVE | I_VIEW | I_EDIT)
                          COLLECTION(activeRenderBatchArray, "Render Batch Array", I_VIEW)
                          );
 
-    DAVA_VIRTUAL_REFLECTION(RenderObject, AnimatedObject);
+    DAVA_VIRTUAL_REFLECTION(RenderObject, BaseObject);
 };
 
 inline void RenderObject::SetLight(uint32 index, Light* light)
@@ -292,6 +370,16 @@ inline void RenderObject::SetWorldTransformPtr(Matrix4* _worldTransform)
 inline Matrix4* RenderObject::GetWorldTransformPtr() const
 {
     return worldTransform;
+}
+
+inline void RenderObject::SetInverseTransform(const Matrix4& _inverseWorldTransform)
+{
+    inverseWorldTransform = _inverseWorldTransform;
+}
+
+inline const Matrix4& RenderObject::GetInverseWorldTransform() const
+{
+    return inverseWorldTransform;
 }
 
 inline uint32 RenderObject::GetRenderBatchCount() const
@@ -359,6 +447,46 @@ inline void RenderObject::SetRefractionVisible(bool visible)
         flags |= VISIBLE_REFRACTION;
     else
         flags &= ~VISIBLE_REFRACTION;
+}
+
+inline void RenderObject::AddVisibilityStructureNode(uint32 nodeValue)
+{
+    inVisibilityNodes[inVisibilityNodeCount++] = nodeValue;
+    inVisCopy[inVisibilityNodeCount - 1] = VoxelCoord(nodeValue);
+    DVASSERT(inVisibilityNodeCount <= MAX_VISIBILITY_STRUCTURE_NODE_COUNT);
+}
+
+inline void RenderObject::RemoveVisibilityStructureNode(uint32 nodeValue)
+{
+    DVASSERT(inVisibilityNodeCount <= MAX_VISIBILITY_STRUCTURE_NODE_COUNT);
+    for (uint32 k = 0; k < inVisibilityNodeCount; ++k)
+        if (inVisibilityNodes[k] == nodeValue)
+        {
+            inVisibilityNodes[k] = inVisibilityNodes[inVisibilityNodeCount - 1];
+            inVisCopy[k] = inVisCopy[inVisibilityNodeCount - 1];
+
+            k--;
+            DVASSERT(inVisibilityNodeCount >= 0);
+            inVisibilityNodeCount--;
+        }
+}
+
+inline bool RenderObject::IsInVisibilityStructureNode(uint32 nodeValue) const
+{
+    for (uint32 k = 0; k < inVisibilityNodeCount; ++k)
+        if (inVisibilityNodes[k] == nodeValue)
+            return true;
+    return false;
+}
+
+inline uint32 RenderObject::GetVisibilityStructureNode(uint32 index) const
+{
+    return inVisibilityNodes[index];
+}
+
+inline uint32 RenderObject::GetVisibilityStructureNodeCount() const
+{
+    return inVisibilityNodeCount;
 }
 
 template <>

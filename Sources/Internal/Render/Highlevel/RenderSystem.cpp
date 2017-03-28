@@ -10,7 +10,7 @@
 #include "Render/Highlevel/Frustum.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Light.h"
-#include "Render/Highlevel/SpatialTree.h"
+#include "Render/Highlevel/VisibilityQuadTree.h"
 #include "Render/ShaderCache.h"
 
 #include "Utils/Utils.h"
@@ -292,7 +292,7 @@ void RenderSystem::Update(float32 timeElapsed)
         obj->RecalculateWorldBoundingBox();
 
         FindNearestLights(obj);
-        if (obj->GetTreeNodeIndex() != INVALID_TREE_NODE_INDEX)
+        if (obj->GetTreeNodeIndex() != QuadTree::INVALID_TREE_NODE_INDEX)
             renderHierarchy->ObjectUpdated(obj);
 
         obj->RemoveFlag(RenderObject::NEED_UPDATE | RenderObject::MARKED_FOR_UPDATE);
@@ -320,7 +320,7 @@ void RenderSystem::Update(float32 timeElapsed)
 void RenderSystem::DebugDrawHierarchy(const Matrix4& cameraMatrix)
 {
     if (renderHierarchy)
-        renderHierarchy->DebugDraw(cameraMatrix);
+        renderHierarchy->DebugDraw(cameraMatrix, debugDrawer);
 }
 
 void RenderSystem::Render()

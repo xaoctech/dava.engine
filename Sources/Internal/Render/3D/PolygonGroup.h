@@ -1,8 +1,8 @@
-#pragma once
+#ifndef __DAVAENGINE_POLYGONGROUP_H__
+#define __DAVAENGINE_POLYGONGROUP_H__
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
-#include "Reflection/Reflection.h"
 #include "Scene3D/DataNode.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
 #include "Render/RHI/rhi_Public.h"
@@ -17,6 +17,7 @@ namespace DAVA
  */
 
 class SceneFileV2;
+class GeometryOctTree;
 class PolygonGroup : public DataNode
 {
     DAVA_ENABLE_CLASS_ALLOCATION_TRACKING(ALLOC_POOL_POLYGONGROUP)
@@ -116,6 +117,10 @@ public:
 
     AABBox3 aabbox;
 
+    void GenerateGeometryOctTree();
+    inline GeometryOctTree* GetGeometryOctTree() const;
+    GeometryOctTree* octTree = nullptr;
+
     /*
 		Used for animated meshes to hold original vertexes in array that suitable for fast access
 	 */
@@ -168,8 +173,6 @@ public:
                          //        MEMBER(vertices, "Vertices", INTROSPECTION_SERIALIZABLE)
                          //        MEMBER(indices, "Indices", INTROSPECTION_SERIALIZABLE)
                          )
-
-    DAVA_VIRTUAL_REFLECTION(PolygonGroup, DataNode);
 };
 
 // Static Mesh Implementation
@@ -355,4 +358,11 @@ inline rhi::PrimitiveType PolygonGroup::GetPrimitiveType()
 {
     return primitiveType;
 }
+
+inline GeometryOctTree* PolygonGroup::GetGeometryOctTree() const
+{
+    return octTree;
 }
+};
+
+#endif // __DAVAENGINE_POLYGONGROUPGLES_H__
