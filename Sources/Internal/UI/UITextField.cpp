@@ -5,6 +5,7 @@
 #include "Render/2D/FontManager.h"
 #include "Utils/UTF8Utils.h"
 #include "Logger/Logger.h"
+#include "UI/Update/UIUpdateComponent.h"
 
 #include "Engine/Engine.h"
 
@@ -61,6 +62,7 @@ UITextField::UITextField(const Rect& rect)
     textFieldImpl->SetVisible(false);
 
     SetupDefaults();
+    GetOrCreateComponent<UIUpdateComponent>();
 }
 
 void UITextField::SetupDefaults()
@@ -431,7 +433,6 @@ void UITextField::CopyDataFrom(UIControl* srcControl)
 #if defined(DAVA_TEXTFIELD_USE_STB)
     textFieldImpl->CopyDataFrom(t->textFieldImpl.get());
 #endif
-    isPassword = t->isPassword;
     cursorBlinkingTime = t->cursorBlinkingTime;
     SetText(t->GetText());
     SetRect(t->GetRect());
@@ -445,6 +446,10 @@ void UITextField::CopyDataFrom(UIControl* srcControl)
     SetEnableReturnKeyAutomatically(t->IsEnableReturnKeyAutomatically());
     SetTextUseRtlAlign(t->GetTextUseRtlAlign());
     SetMaxLength(t->GetMaxLength());
+    SetIsPassword(t->IsPassword());
+    SetTextColor(t->GetTextColor());
+    SetTextAlign(t->GetTextAlign());
+    SetRenderToTexture(t->IsRenderToTexture());
 }
 
 void UITextField::SetIsPassword(bool isPassword_)
