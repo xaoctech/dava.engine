@@ -144,6 +144,7 @@ enum eInputElements : uint32
     MOUSE_MBUTTON,
     MOUSE_EXT1BUTTON,
     MOUSE_EXT2BUTTON,
+    MOUSE_WHEEL,
     MOUSE_POSITION,
 
     // Counters

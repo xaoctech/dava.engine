@@ -36,11 +36,11 @@ public:
     void ChangeHandlerDeviceMask(uint32 token, eInputDevices newInputDeviceMask);
     void RemoveHandler(uint32 token);
 
+    void AddHandler(const Function<bool(const InputEvent&)>& handler);
+    void DispatchInputEvent(const InputEvent& inputEvent);
+
     KeyboardDevice& GetKeyboard();
     GamepadDevice& GetGamepadDevice();
-
-    void AddInputEventHandler(const Function<bool(const InputEvent&)>& handler);
-    void ProcessInputEvent(InputEvent const& event);
 
 private:
     InputSystem(Engine* engine);
