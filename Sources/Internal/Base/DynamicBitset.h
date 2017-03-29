@@ -10,7 +10,7 @@ class DynamicBitset
 public:
     enum : pointer_size
     {
-        SHIFT_BITS = StaticLog2<sizeof(pointer_size) * 4>::value,
+        SHIFT_BITS = StaticLog2<sizeof(pointer_size) * 8>::value,
         AND_BITS = (1 << SHIFT_BITS) - 1,
     };
 

@@ -8,6 +8,7 @@
 #include "Scene3D/Components/ComponentHelpers.h"
 
 #include "Classes/Selection/Selection.h"
+#include "Render/Highlevel/GeometryOctTree.h"
 
 using namespace DAVA;
 
@@ -72,6 +73,7 @@ void DebugDrawSystem::Draw(DAVA::Entity* entity)
         DrawWindNode(entity);
         DrawSwitchesWithDifferentLods(entity);
         DrawSoundNode(entity);
+        DrawDebugOctTree(entity);
 
         if (isSelected)
         {
@@ -136,6 +138,51 @@ void DebugDrawSystem::DrawUserNode(DAVA::Entity* entity)
         drawer->DrawLine(center, center + xAxis, DAVA::Color(0.7f, 0, 0, 1.0f));
         drawer->DrawLine(center, center + yAxis, DAVA::Color(0, 0.7f, 0, 1.0f));
         drawer->DrawLine(center, center + zAxis, DAVA::Color(0, 0, 0.7f, 1.0f));
+    }
+}
+
+void DebugDrawSystem::DrawDebugOctTree(DAVA::Entity* entity)
+{
+    SceneEditor2* editorScene = static_cast<SceneEditor2*>(GetScene());
+    RenderHelper* drawer = editorScene->GetRenderSystem()->GetDebugDrawer();
+
+    RenderObject* renderObject = GetRenderObject(entity);
+    if (renderObject == nullptr)
+        return;
+
+    for (uint32 k = 0; k < renderObject->GetActiveRenderBatchCount(); ++k)
+    {
+        RenderBatch* renderBatch = renderObject->GetActiveRenderBatch(k);
+
+        PolygonGroup* pg = renderBatch->GetPolygonGroup();
+        if (pg == nullptr)
+            continue;
+
+        GeometryOctTree* octTree = pg->GetGeometryOctTree();
+        if (octTree == nullptr)
+            continue;
+
+        octTree->DebugDraw(entity->GetWorldTransform(), 0, drawer);
+
+        for (uint32 triangleIndex : octTree->invalidTriangles)
+        {
+            int32 i1, i2, i3;
+            pg->GetIndex(triangleIndex * 3 + 0, i1);
+            pg->GetIndex(triangleIndex * 3 + 1, i2);
+            pg->GetIndex(triangleIndex * 3 + 2, i3);
+
+            Vector3 v1, v2, v3;
+            pg->GetCoord(i1, v1);
+            pg->GetCoord(i2, v2);
+            pg->GetCoord(i3, v3);
+
+            v1 = v1 * (*renderObject->GetWorldTransformPtr());
+            v2 = v2 * (*renderObject->GetWorldTransformPtr());
+            v3 = v3 * (*renderObject->GetWorldTransformPtr());
+            GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawLine(v1, v2, DAVA::Color(0.0f, 0.5f, 1.0f, 1.0f), RenderHelper::eDrawType::DRAW_WIRE_NO_DEPTH);
+            GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawLine(v2, v3, DAVA::Color(0.0f, 0.5f, 1.0f, 1.0f), RenderHelper::eDrawType::DRAW_WIRE_NO_DEPTH);
+            GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawLine(v3, v1, DAVA::Color(0.0f, 0.5f, 1.0f, 1.0f), RenderHelper::eDrawType::DRAW_WIRE_NO_DEPTH);
+        }
     }
 }
 
@@ -307,7 +354,7 @@ void DebugDrawSystem::CollectRenderBatchesRecursively(Entity* entity, RenderBatc
 DAVA::float32 DebugDrawSystem::GetMinimalZ(const RenderBatchesWithTransforms& batches) const
 {
     float32 minZ = AABBOX_INFINITY;
-    for (auto batch : batches)
+    for (const auto& batch : batches)
     {
         PolygonGroup* polygonGroup = batch.first->GetPolygonGroup();
         for (uint32 v = 0, e = polygonGroup->GetVertexCount(); v < e; ++v)
@@ -323,7 +370,7 @@ DAVA::float32 DebugDrawSystem::GetMinimalZ(const RenderBatchesWithTransforms& ba
 void DebugDrawSystem::GetLowestVertexes(const RenderBatchesWithTransforms& batches, DAVA::Vector<DAVA::Vector3>& vertexes) const
 {
     const float32 minZ = GetMinimalZ(batches);
-    for (auto batch : batches)
+    for (const auto& batch : batches)
     {
         float32 scale = std::sqrt(batch.second._20 * batch.second._20 + batch.second._21 * batch.second._21 + batch.second._22 * batch.second._22);
         PolygonGroup* polygonGroup = batch.first->GetPolygonGroup();
@@ -383,4 +430,44 @@ void DebugDrawSystem::DrawSwitchesWithDifferentLods(DAVA::Entity* entity)
         localBox.GetTransformedBox(entity->GetWorldTransform(), worldBox);
         GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawAABox(worldBox, Color(1.0f, 0.f, 0.f, 1.f), RenderHelper::DRAW_WIRE_DEPTH);
     }
+}
+
+void DebugDrawSystem::DrawMeasureLaserComponent(DAVA::Entity* entity)
+{
+    /*
+	TransformComponent * transform = entity->GetComponent<TransformComponent>();
+	MeasureLaserComponent * measureLaser = entity->GetComponent<MeasureLaserComponent>();
+
+	if (!measureLaser) return;
+
+	Vector3 laserStart = transform->GetWorldTransform().GetTranslationVector();
+	Vector3 laserEnd = MultiplyVectorMat3x3(Vector3(1.0f, 0.0f, 0.0f), transform->GetWorldTransform());
+	laserEnd = laserStart + (Normalize(laserEnd) * measureLaser->GetCollisionDistance());
+
+	GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawArrow(laserStart, laserEnd, .75f, DAVA::Color(1.0f, 0.5f, 0.2f, 1.0f), RenderHelper::DRAW_WIRE_DEPTH);
+
+
+	if (measureLaser->GetCollisionDistance() < measureLaser->GetMaxLaserDistance())
+	{
+		if (measureLaser->GetCollision().geometry)
+		{
+			RayTraceCollision & collision = measureLaser->GetCollision();
+			int32 i1, i2, i3;
+			collision.geometry->GetIndex(collision.triangleIndex * 3 + 0, i1);
+			collision.geometry->GetIndex(collision.triangleIndex * 3 + 1, i2);
+			collision.geometry->GetIndex(collision.triangleIndex * 3 + 2, i3);
+
+			Vector3 v1, v2, v3;
+			collision.geometry->GetCoord(i1, v1);
+			collision.geometry->GetCoord(i2, v2);
+			collision.geometry->GetCoord(i3, v3);
+			v1 = v1 * (*collision.renderObject->GetWorldTransformPtr());
+			v2 = v2 * (*collision.renderObject->GetWorldTransformPtr());
+			v3 = v3 * (*collision.renderObject->GetWorldTransformPtr());
+			GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawLine(v1, v2, DAVA::Color(0.0f, 0.5f, 1.0f, 1.0f));
+			GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawLine(v2, v3, DAVA::Color(0.0f, 0.5f, 1.0f, 1.0f));
+			GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawLine(v3, v1, DAVA::Color(0.0f, 0.5f, 1.0f, 1.0f));
+		}
+	}
+	*/
 }
