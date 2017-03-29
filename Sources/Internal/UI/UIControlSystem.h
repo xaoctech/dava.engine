@@ -22,6 +22,7 @@
 namespace DAVA
 {
 struct InputEvent;
+class MouseInputDevice;
 class UIScreen;
 class UISystem;
 class UILayoutSystem;
@@ -341,6 +342,7 @@ private:
 
     UIEvent MakeUIEvent(const InputEvent& inputEvent) const;
     eModifierKeys GetKeyboardModifierKeys() const;
+    eMouseButtons GetFirstPressedMouseButton(MouseInputDevice* mouse) const;
 
 #if defined(__DAVAENGINE_COREV2__)
     friend class Private::EngineBackend;
