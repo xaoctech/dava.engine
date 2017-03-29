@@ -27,7 +27,7 @@ void InputSystemTest::LoadResources()
     CreateInputListenerUI();
 
     Engine::Instance()->beginFrame.Connect(this, &InputSystemTest::OnBeginFrame);
-    GetEngineContext()->inputSystem->AddInputEventHandler(MakeFunction(this, &InputSystemTest::OnInputEvent));
+    GetEngineContext()->inputSystem->AddHandler(MakeFunction(this, &InputSystemTest::OnInputEvent));
     GetEngineContext()->actionSystem->ActionTriggered.Connect(this, &InputSystemTest::OnAction);
 
     ActionSet set;

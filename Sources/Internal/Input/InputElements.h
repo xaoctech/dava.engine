@@ -163,4 +163,10 @@ enum eInputElements : uint32
 };
 
 const InputElementInfo& GetInputElementInfo(eInputElements element);
+
+inline bool IsMouseInputElement(eInputElements element)
+{
+    return eInputElements::MOUSE_FIRST <= element && element <= eInputElements::MOUSE_LAST;
 }
+
+} // namespace DAVA

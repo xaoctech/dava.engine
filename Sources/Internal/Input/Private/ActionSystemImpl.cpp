@@ -36,7 +36,7 @@ bool AnalogBindingCompare::operator()(const AnalogBinding& first, const AnalogBi
 ActionSystemImpl::ActionSystemImpl(ActionSystem* actionSystem)
     : actionSystem(actionSystem)
 {
-    GetEngineContext()->inputSystem->AddInputEventHandler(MakeFunction(this, &ActionSystemImpl::OnInputEvent));
+    GetEngineContext()->inputSystem->AddHandler(MakeFunction(this, &ActionSystemImpl::OnInputEvent));
 }
 
 ActionSystemImpl::~ActionSystemImpl()

@@ -71,6 +71,12 @@ void InputSystem::DispatchInputEvent(const InputEvent& inputEvent)
     {
         handler(inputEvent);
     }
+
+    if (inputEvent.window != nullptr)
+    {
+        UIControlSystem* uiControlSystem = inputEvent.window->GetUIControlSystem();
+        uiControlSystem->HandleInputEvent(inputEvent);
+    }
 }
 
 void InputSystem::Update(float32 frameDelta)

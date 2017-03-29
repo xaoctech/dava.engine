@@ -210,29 +210,24 @@ void Window::Draw()
     context->renderSystem2D->EndFrame();
 }
 
-void Window::EventHandler(const Private::MainDispatcherEvent& e)
+bool Window::EventHandler(const Private::MainDispatcherEvent& e)
 {
     using Private::MainDispatcherEvent;
+    if (e.window != this)
+        return false;
+
     if (MainDispatcherEvent::IsInputEvent(e.type))
     {
         // Skip input events if window does not have focus or pinning switching logic tells to ignore input event
         if (!hasFocus || HandleInputActivation(e))
         {
-            return;
+            return true;
         }
     }
+
+    bool isHandled = true;
     switch (e.type)
     {
-    case MainDispatcherEvent::MOUSE_MOVE:
-        HandleMouseMove(e);
-        break;
-    case MainDispatcherEvent::MOUSE_BUTTON_DOWN:
-    case MainDispatcherEvent::MOUSE_BUTTON_UP:
-        HandleMouseClick(e);
-        break;
-    case MainDispatcherEvent::MOUSE_WHEEL:
-        HandleMouseWheel(e);
-        break;
     case MainDispatcherEvent::TOUCH_DOWN:
     case MainDispatcherEvent::TOUCH_UP:
         HandleTouchClick(e);
@@ -278,8 +273,10 @@ void Window::EventHandler(const Private::MainDispatcherEvent& e)
         HandleVisibleFrameChanged(e);
         break;
     default:
+        isHandled = false;
         break;
     }
+    return isHandled;
 }
 
 void Window::FinishEventHandlingOnCurrentFrame()
@@ -502,117 +499,6 @@ void Window::HandleVisibilityChanged(const Private::MainDispatcherEvent& e)
     visibilityChanged.Emit(this, isVisible);
 
     waitInputActivation = isVisible;
-}
-
-void Window::HandleMouseClick(const Private::MainDispatcherEvent& e)
-{
-    bool pressed = e.type == Private::MainDispatcherEvent::MOUSE_BUTTON_DOWN;
-    eMouseButtons button = e.mouseEvent.button;
-
-    UIEvent uie;
-    uie.window = e.window;
-    uie.phase = pressed ? UIEvent::Phase::BEGAN : UIEvent::Phase::ENDED;
-    uie.isRelative = e.mouseEvent.isRelative;
-    uie.physPoint = e.mouseEvent.isRelative ? Vector2(0.f, 0.f) : Vector2(e.mouseEvent.x, e.mouseEvent.y);
-    uie.device = eInputDevices::MOUSE;
-    uie.timestamp = e.timestamp / 1000.0;
-    uie.mouseButton = button;
-    uie.modifiers = e.mouseEvent.modifierKeys;
-
-    uint32 buttonIndex = static_cast<uint32>(button) - 1;
-    mouseButtonState[buttonIndex] = pressed;
-
-    inputSystem->HandleInputEvent(&uie);
-
-    // New
-
-    MouseInputDevice* mouse = engineBackend->GetContext()->deviceManager->GetMouse();
-
-    eDigitalElementState keyState = pressed ? eDigitalElementState::PRESSED : eDigitalElementState::RELEASED;
-
-    InputEvent event;
-    event.window = e.window;
-    event.timestamp = e.timestamp / 1000.0f;
-    event.deviceType = MouseInputDevice::TYPE;
-    event.deviceId = mouse->GetId();
-
-    if (e.mouseEvent.button == eMouseButtons::LEFT)
-    {
-        event.elementId = eInputElements::MOUSE_LBUTTON;
-    }
-    else if (e.mouseEvent.button == eMouseButtons::RIGHT)
-    {
-        event.elementId = eInputElements::MOUSE_RBUTTON;
-    }
-
-    event.digitalState = keyState;
-
-    mouse->ProcessInputEvent(event);
-}
-
-void Window::HandleMouseWheel(const Private::MainDispatcherEvent& e)
-{
-    UIEvent uie;
-    uie.window = e.window;
-    uie.phase = UIEvent::Phase::WHEEL;
-    uie.physPoint = Vector2(e.mouseEvent.x, e.mouseEvent.y);
-    uie.isRelative = e.mouseEvent.isRelative;
-    uie.device = eInputDevices::MOUSE;
-    uie.timestamp = e.timestamp / 1000.0;
-    uie.wheelDelta = { e.mouseEvent.scrollDeltaX, e.mouseEvent.scrollDeltaY };
-    uie.modifiers = e.mouseEvent.modifierKeys;
-
-    inputSystem->HandleInputEvent(&uie);
-}
-
-void Window::HandleMouseMove(const Private::MainDispatcherEvent& e)
-{
-    UIEvent uie;
-    uie.window = e.window;
-    uie.phase = UIEvent::Phase::MOVE;
-    uie.physPoint = Vector2(e.mouseEvent.x, e.mouseEvent.y);
-    uie.isRelative = e.mouseEvent.isRelative;
-    uie.device = eInputDevices::MOUSE;
-    uie.timestamp = e.timestamp / 1000.0;
-    uie.mouseButton = eMouseButtons::NONE;
-    uie.modifiers = e.mouseEvent.modifierKeys;
-
-    if (mouseButtonState.any())
-    {
-        // Send DRAG phase instead of MOVE for each pressed mouse button
-        uie.phase = UIEvent::Phase::DRAG;
-
-        uint32 firstButton = static_cast<uint32>(eMouseButtons::FIRST);
-        uint32 lastButton = static_cast<uint32>(eMouseButtons::LAST);
-        for (uint32 buttonIndex = firstButton; buttonIndex <= lastButton; ++buttonIndex)
-        {
-            if (mouseButtonState[buttonIndex - 1])
-            {
-                uie.mouseButton = static_cast<eMouseButtons>(buttonIndex);
-                inputSystem->HandleInputEvent(&uie);
-            }
-        }
-    }
-    else
-    {
-        inputSystem->HandleInputEvent(&uie);
-    }
-
-    // New
-
-    MouseInputDevice* mouse = engineBackend->GetContext()->deviceManager->GetMouse();
-
-    InputEvent event;
-    event.window = e.window;
-    event.timestamp = e.timestamp / 1000.0f;
-    event.deviceType = MouseInputDevice::TYPE;
-    event.deviceId = mouse->GetId();
-    event.elementId = eInputElements::MOUSE_POSITION;
-
-    event.analogState.x = e.mouseEvent.x;
-    event.analogState.y = e.mouseEvent.y;
-
-    mouse->ProcessInputEvent(event);
 }
 
 void Window::HandleTouchClick(const Private::MainDispatcherEvent& e)

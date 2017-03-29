@@ -307,7 +307,7 @@ private:
     void Draw();
 
     /// Process main dispatcher events targeting this window
-    void EventHandler(const Private::MainDispatcherEvent& e);
+    bool EventHandler(const Private::MainDispatcherEvent& e);
     /// Do some window specific tasks after all dispatcher events have been processed on current frame,
     /// e.g. initiate processing tasks on window UI thread
     void FinishEventHandlingOnCurrentFrame();
@@ -321,9 +321,6 @@ private:
     void HandleVisibleFrameChanged(const Private::MainDispatcherEvent& e);
     void HandleFocusChanged(const Private::MainDispatcherEvent& e);
     void HandleVisibilityChanged(const Private::MainDispatcherEvent& e);
-    void HandleMouseClick(const Private::MainDispatcherEvent& e);
-    void HandleMouseWheel(const Private::MainDispatcherEvent& e);
-    void HandleMouseMove(const Private::MainDispatcherEvent& e);
     void HandleTouchClick(const Private::MainDispatcherEvent& e);
     void HandleTouchMove(const Private::MainDispatcherEvent& e);
     void HandleTrackpadGesture(const Private::MainDispatcherEvent& e);
@@ -349,9 +346,6 @@ private:
     bool sizeEventsMerged = false; // Flag indicating that all size events are merged on current frame
     eFullscreen fullscreenMode = eFullscreen::Off;
 
-    // Shortcut for eMouseButtons::COUNT
-    static const size_t MOUSE_BUTTON_COUNT = static_cast<size_t>(eMouseButtons::COUNT);
-    std::bitset<MOUSE_BUTTON_COUNT> mouseButtonState;
     eCursorCapture cursorCapture = eCursorCapture::OFF;
     bool cursorVisible = false;
     bool waitInputActivation = false;
