@@ -35,6 +35,7 @@
 #include "Scene3D/Systems/AnimationSystem.h"
 #include "Scene3D/Systems/LandscapeSystem.h"
 #include "Scene3D/Systems/ParticleEffectDebugDrawSystem.h"
+#include "Scene3D/Systems/SlotSystem.h"
 
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
@@ -183,6 +184,7 @@ Scene::Scene(uint32 _systemsMask /* = SCENE_SYSTEM_ALL_MASK */)
     , sceneGlobalMaterial(0)
     , mainCamera(0)
     , drawCamera(0)
+    , slotSystem(nullptr)
 {
     static uint32 idCounter = 0;
     sceneId = ++idCounter;
@@ -344,6 +346,12 @@ void Scene::CreateSystems()
     {
         skeletonSystem = new SkeletonSystem(this);
         AddSystem(skeletonSystem, MAKE_COMPONENT_MASK(Component::SKELETON_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
+    }
+
+    if (SCENE_SYSTEM_SLOT_FLAG & systemsMask)
+    {
+        slotSystem = new SlotSystem(this);
+        AddSystem(slotSystem, MAKE_COMPONENT_MASK(Component::SLOT_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
     }
 
     if (DAVA::Renderer::GetOptions()->IsOptionEnabled(DAVA::RenderOptions::DEBUG_DRAW_STATIC_OCCLUSION) && !staticOcclusionDebugDrawSystem)

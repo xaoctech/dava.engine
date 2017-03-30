@@ -48,6 +48,7 @@ class AnimationSystem;
 class LandscapeSystem;
 class LodSystem;
 class ParticleEffectDebugDrawSystem;
+class SlotSystem;
 
 class UIEvent;
 
@@ -104,6 +105,7 @@ public:
         SCENE_SYSTEM_WAVE_UPDATE_FLAG = 1 << 16,
         SCENE_SYSTEM_SKELETON_UPDATE_FLAG = 1 << 17,
         SCENE_SYSTEM_ANIMATION_FLAG = 1 << 18,
+        SCENE_SYSTEM_SLOT_FLAG = 1 << 19,
 
         SCENE_SYSTEM_ALL_MASK = 0xFFFFFFFF
     };
@@ -166,6 +168,7 @@ public:
     SkeletonSystem* skeletonSystem;
     LandscapeSystem* landscapeSystem;
     ParticleEffectDebugDrawSystem* particleEffectDebugDrawSystem;
+    SlotSystem* slotSystem;
 
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
