@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_UI_CONTROL_SYSTEM_H__
-#define __DAVAENGINE_UI_CONTROL_SYSTEM_H__
+#pragma once
 
 #include "Base/BaseMath.h"
 #include "Base/BaseTypes.h"
@@ -22,6 +21,8 @@
 */
 namespace DAVA
 {
+struct InputEvent;
+class MouseInputDevice;
 class UIScreen;
 class UISystem;
 class UILayoutSystem;
@@ -162,6 +163,9 @@ public:
 	 \brief Sets the current screen to 0 LOL.
 	 */
     void Reset();
+
+    bool HandleInputEvent(const InputEvent& inputEvent);
+
     /**
 	 \brief Calls by the system for input processing.
 	 */
@@ -336,6 +340,10 @@ private:
     bool CheckTimeAndPosition(UIEvent* newEvent);
     int32 CalculatedTapCount(UIEvent* newEvent);
 
+    UIEvent MakeUIEvent(const InputEvent& inputEvent) const;
+    eModifierKeys GetKeyboardModifierKeys() const;
+    eMouseButtons GetFirstPressedMouseButton(MouseInputDevice* mouse) const;
+
 #if defined(__DAVAENGINE_COREV2__)
     friend class Private::EngineBackend;
 #else
@@ -391,6 +399,5 @@ private:
     int32 ui3DViewCount = 0;
     bool needClearMainPass = true;
 };
-};
 
-#endif
+} // namespace DAVA

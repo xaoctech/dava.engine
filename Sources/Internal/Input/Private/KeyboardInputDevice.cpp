@@ -52,7 +52,7 @@ void KeyboardInputDevice::ProcessInputEvent(InputEvent& event)
 
     // TODO: char event?
 
-    GetEngineContext()->inputSystem->ProcessInputEvent(event);
+    GetEngineContext()->inputSystem->DispatchInputEvent(event);
 }
 
 void KeyboardInputDevice::OnEndFrame()

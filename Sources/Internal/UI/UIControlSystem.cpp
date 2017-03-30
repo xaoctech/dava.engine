@@ -24,9 +24,13 @@
 #include "Render/2D/TextBlock.h"
 #include "Platform/DPIHelper.h"
 #include "Platform/DeviceInfo.h"
-#include "Input/InputSystem.h"
 #include "Debug/ProfilerOverlay.h"
+#include "DeviceManager/DeviceManager.h"
 #include "Engine/Engine.h"
+#include "Input/InputEvent.h"
+#include "Input/InputSystem.h"
+#include "Input/KeyboardInputDevice.h"
+#include "Input/MouseInputDevice.h"
 #include "Input/MouseDevice.h"
 
 namespace DAVA
@@ -393,6 +397,17 @@ void UIControlSystem::Draw()
 void UIControlSystem::SwitchInputToControl(uint32 eventID, UIControl* targetControl)
 {
     return inputSystem->SwitchInputToControl(eventID, targetControl);
+}
+
+bool UIControlSystem::HandleInputEvent(const InputEvent& inputEvent)
+{
+    UIEvent uie = MakeUIEvent(inputEvent);
+    if (uie.phase != UIEvent::Phase::ERROR)
+    {
+        OnInput(&uie);
+        return true; // ????
+    }
+    return false;
 }
 
 void UIControlSystem::OnInput(UIEvent* newEvent)
@@ -847,4 +862,103 @@ int32 UIControlSystem::GetUI3DViewCount()
 {
     return ui3DViewCount;
 }
-};
+
+UIEvent UIControlSystem::MakeUIEvent(const InputEvent& inputEvent) const
+{
+    UIEvent uie;
+    uie.phase = UIEvent::Phase::ERROR;
+    uie.timestamp = inputEvent.timestamp;
+    uie.window = inputEvent.window;
+
+    if (IsMouseInputElement(inputEvent.elementId))
+    {
+        uie.device = eInputDevices::MOUSE;
+        uie.mouseButton = eMouseButtons::NONE;
+        uie.isRelative = inputEvent.mouseEvent.isRelative;
+        uie.modifiers = GetKeyboardModifierKeys();
+
+        MouseInputDevice* mouse = GetEngineContext()->deviceManager->GetMouse();
+        AnalogElementState mousePosition = mouse->GetAnalogElementState(eInputElements::MOUSE_POSITION);
+        AnalogElementState mouseWheelDelta = mouse->GetAnalogElementState(eInputElements::MOUSE_WHEEL);
+
+        switch (inputEvent.elementId)
+        {
+        case eInputElements::MOUSE_LBUTTON:
+        case eInputElements::MOUSE_RBUTTON:
+        case eInputElements::MOUSE_MBUTTON:
+        case eInputElements::MOUSE_EXT1BUTTON:
+        case eInputElements::MOUSE_EXT2BUTTON:
+            uie.phase = (inputEvent.digitalState & eDigitalElementState::PRESSED) != eDigitalElementState::NONE ? UIEvent::Phase::BEGAN : UIEvent::Phase::ENDED;
+            uie.mouseButton = static_cast<eMouseButtons>(inputEvent.elementId - eInputElements::MOUSE_LBUTTON + 1);
+            uie.physPoint = { mousePosition.x, mousePosition.y };
+            break;
+        case eInputElements::MOUSE_WHEEL:
+            uie.phase = UIEvent::Phase::WHEEL;
+            uie.physPoint = { mousePosition.x, mousePosition.y };
+            uie.wheelDelta = { mouseWheelDelta.x, mouseWheelDelta.y };
+            break;
+        case eInputElements::MOUSE_POSITION:
+            // TODO: Holy shit, how to make multiple DRAG UIEvents from single inputEvent
+            uie.mouseButton = GetFirstPressedMouseButton(mouse);
+            uie.phase = uie.mouseButton == eMouseButtons::NONE ? UIEvent::Phase::MOVE : UIEvent::Phase::DRAG;
+            uie.physPoint = { mousePosition.x, mousePosition.y };
+            break;
+        default:
+            DVASSERT(0, "Unexpected mouse input element");
+            break;
+        }
+    }
+    return uie;
+}
+
+eModifierKeys UIControlSystem::GetKeyboardModifierKeys() const
+{
+    eModifierKeys modifierKeys = eModifierKeys::NONE;
+    KeyboardInputDevice* keyboard = GetEngineContext()->deviceManager->GetKeyboard();
+    if (keyboard != nullptr)
+    {
+        eDigitalElementState lctrl = keyboard->GetDigitalElementState(eInputElements::KB_LCTRL);
+        eDigitalElementState rctrl = keyboard->GetDigitalElementState(eInputElements::KB_RCTRL);
+        if (((lctrl | rctrl) & eDigitalElementState::PRESSED) == eDigitalElementState::PRESSED)
+        {
+            modifierKeys |= eModifierKeys::CONTROL;
+        }
+
+        eDigitalElementState lshift = keyboard->GetDigitalElementState(eInputElements::KB_LSHIFT);
+        eDigitalElementState rshift = keyboard->GetDigitalElementState(eInputElements::KB_RSHIFT);
+        if (((lshift | rshift) & eDigitalElementState::PRESSED) == eDigitalElementState::PRESSED)
+        {
+            modifierKeys |= eModifierKeys::SHIFT;
+        }
+
+        eDigitalElementState lalt = keyboard->GetDigitalElementState(eInputElements::KB_LALT);
+        eDigitalElementState ralt = keyboard->GetDigitalElementState(eInputElements::KB_RALT);
+        if (((lalt | ralt) & eDigitalElementState::PRESSED) == eDigitalElementState::PRESSED)
+        {
+            modifierKeys |= eModifierKeys::ALT;
+        }
+
+        eDigitalElementState lcmd = keyboard->GetDigitalElementState(eInputElements::KB_LCMD);
+        eDigitalElementState rcmd = keyboard->GetDigitalElementState(eInputElements::KB_RCMD);
+        if (((lcmd | rcmd) & eDigitalElementState::PRESSED) == eDigitalElementState::PRESSED)
+        {
+            modifierKeys |= eModifierKeys::COMMAND;
+        }
+    }
+    return modifierKeys;
+}
+
+eMouseButtons UIControlSystem::GetFirstPressedMouseButton(MouseInputDevice* mouse) const
+{
+    for (uint32 elem = eInputElements::MOUSE_LBUTTON; elem <= eInputElements::MOUSE_EXT2BUTTON; ++elem)
+    {
+        eDigitalElementState state = mouse->GetDigitalElementState(elem);
+        if ((state & eDigitalElementState::PRESSED) == eDigitalElementState::PRESSED)
+        {
+            return static_cast<eMouseButtons>(elem - eInputElements::MOUSE_LBUTTON + 1);
+        }
+    }
+    return eMouseButtons::NONE;
+}
+
+} // namespace DAVA

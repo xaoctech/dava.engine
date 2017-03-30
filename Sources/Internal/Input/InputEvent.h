@@ -47,9 +47,15 @@ struct InputEvent
         bool isCharEvent;
     };
 
+    struct MouseEvent
+    {
+        bool isRelative;
+    };
+
     union
     {
         KeyboardEvent keyboardEvent;
+        MouseEvent mouseEvent;
     };
 };
 }

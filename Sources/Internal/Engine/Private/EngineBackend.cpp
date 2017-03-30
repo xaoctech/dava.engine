@@ -501,7 +501,7 @@ void EngineBackend::EventHandler(const MainDispatcherEvent& e)
         break;
     }
 
-    if (!isHandled)
+    if (!isHandled && (e.window == nullptr || !e.window->EventHandler(e)))
     {
         for (const EventFilter& f : eventFilters)
         {
@@ -510,11 +510,6 @@ void EngineBackend::EventHandler(const MainDispatcherEvent& e)
                 isHandled = true;
                 break;
             }
-        }
-
-        if (!isHandled && e.window != nullptr)
-        {
-            e.window->EventHandler(e);
         }
     }
 }

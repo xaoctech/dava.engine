@@ -1,18 +1,24 @@
 #pragma once
 
+#include "Engine/EngineTypes.h"
 #include "Input/InputDevice.h"
 #include "Input/InputEvent.h"
 #include "Input/Private/DigitalElement.h"
 
 namespace DAVA
 {
+class InputSystem;
+namespace Private
+{
+struct MainDispatcherEvent;
+}
+
 /**
     \ingroup input
     Represents mouse input device.
 */
 class MouseInputDevice final : public InputDevice
 {
-    friend class Window; // For passing input events
     friend class DeviceManager; // For creation
 
 public:
@@ -24,22 +30,24 @@ public:
 
 private:
     MouseInputDevice(uint32 id);
-    ~MouseInputDevice();
+    ~MouseInputDevice() override;
     MouseInputDevice(const MouseInputDevice&) = delete;
-    MouseInputDevice& operator=(const MouseInputDevice&) = delete;
 
-    void ProcessInputEvent(InputEvent& event);
+    bool HandleEvent(const Private::MainDispatcherEvent& e);
+    void HandleMouseClick(const Private::MainDispatcherEvent& e);
+    void HandleMouseWheel(const Private::MainDispatcherEvent& e);
+    void HandleMouseMove(const Private::MainDispatcherEvent& e);
+
     void OnEndFrame();
 
-    Private::DigitalElement* GetDigitalElement(DAVA::uint32 elementId);
-    const Private::DigitalElement* GetDigitalElement(DAVA::uint32 elementId) const;
-
 private:
-    Private::DigitalElement leftButton;
-    Private::DigitalElement rightButton;
-    Private::DigitalElement middleButton;
+    InputSystem* inputSystem = nullptr;
+
+    Private::DigitalElement buttons[static_cast<size_t>(eMouseButtons::COUNT)];
     AnalogElementState mousePosition;
+    AnalogElementState mouseWheelDelta;
 
     size_t endFrameConnectionToken;
 };
-}
+
+} // namespace DAVA

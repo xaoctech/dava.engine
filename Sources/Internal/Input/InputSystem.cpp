@@ -60,6 +60,25 @@ void InputSystem::RemoveHandler(uint32 token)
     }
 }
 
+void InputSystem::AddHandler(const Function<bool(const InputEvent&)>& handler)
+{
+    inputEventHandlers.push_back(handler);
+}
+
+void InputSystem::DispatchInputEvent(const InputEvent& inputEvent)
+{
+    for (auto& handler : inputEventHandlers)
+    {
+        handler(inputEvent);
+    }
+
+    if (inputEvent.window != nullptr)
+    {
+        UIControlSystem* uiControlSystem = inputEvent.window->GetUIControlSystem();
+        uiControlSystem->HandleInputEvent(inputEvent);
+    }
+}
+
 void InputSystem::Update(float32 frameDelta)
 {
     gamepad->Update();
@@ -141,19 +160,6 @@ void InputSystem::HandleGamepadAdded(const Private::MainDispatcherEvent& e)
 void InputSystem::HandleGamepadRemoved(const Private::MainDispatcherEvent& e)
 {
     gamepad->HandleGamepadRemoved(e);
-}
-
-void InputSystem::AddInputEventHandler(const Function<bool(const InputEvent&)>& handler)
-{
-    inputEventHandlers.push_back(handler);
-}
-
-void InputSystem::ProcessInputEvent(InputEvent const& event)
-{
-    for (auto handler : inputEventHandlers)
-    {
-        handler(event);
-    }
 }
 
 } // namespace DAVA

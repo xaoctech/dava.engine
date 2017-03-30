@@ -144,6 +144,7 @@ enum eInputElements : uint32
     MOUSE_MBUTTON,
     MOUSE_EXT1BUTTON,
     MOUSE_EXT2BUTTON,
+    MOUSE_WHEEL,
     MOUSE_POSITION,
 
     // Counters
@@ -162,4 +163,10 @@ enum eInputElements : uint32
 };
 
 const InputElementInfo& GetInputElementInfo(eInputElements element);
+
+inline bool IsMouseInputElement(eInputElements element)
+{
+    return eInputElements::MOUSE_FIRST <= element && element <= eInputElements::MOUSE_LAST;
 }
+
+} // namespace DAVA
