@@ -6,16 +6,21 @@
 #include "FileSystem/YamlNode.h"
 #include "FileSystem/VariantType.h"
 #include "FileSystem/YamlEmitter.h"
+#include "FileSystem/Private/KeyedArchiveReflection.h"
 #include "Reflection/ReflectionRegistrator.h"
 
 #include "Logger/Logger.h"
 
 namespace DAVA
 {
+VariantType PrepareValueForKeyedArchive(const Any& value, VariantType::eVariantType resultType)
+{
+    return PrepareValueForKeyedArchiveImpl(value, resultType);
+}
+
 DAVA_VIRTUAL_REFLECTION_IMPL(KeyedArchive)
 {
-    ReflectionRegistrator<KeyedArchive>::Begin()
-    .Field("objectMap", &KeyedArchive::objectMap)
+    ReflectionRegistrator<KeyedArchive>::Begin(std::make_unique<KeyedArchiveStructureWrapper>())
     .End();
 }
 

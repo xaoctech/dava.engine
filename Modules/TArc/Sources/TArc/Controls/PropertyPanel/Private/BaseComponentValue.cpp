@@ -1,6 +1,5 @@
 #include "TArc/Controls/PropertyPanel/BaseComponentValue.h"
 #include "TArc/Controls/PropertyPanel/Private/ReflectedPropertyModel.h"
-#include "TArc/Controls/PropertyPanel/StaticEditorDrawer.h"
 #include "TArc/Controls/PropertyPanel/PropertyPanelMeta.h"
 #include "TArc/Controls/QtBoxLayouts.h"
 
@@ -206,6 +205,11 @@ const WindowKey& BaseComponentValue::GetWindowKey() const
     return model->wndKey;
 }
 
+DAVA::TArc::DataWrappersProcessor* BaseComponentValue::GetDataProcessor() const
+{
+    return model->GetWrappersProcessor(nodes.front());
+}
+
 void BaseComponentValue::EnsureEditorCreated(const QWidget* parent) const
 {
     if (editorWidget == nullptr)
@@ -221,7 +225,7 @@ void BaseComponentValue::EnsureEditorCreated(const QWidget* parent) const
 
 void BaseComponentValue::EnsureEditorCreated(QWidget* parent)
 {
-    editorWidget = CreateEditorWidget(parent, Reflection::Create(&thisValue), &model->wrappersProcessor);
+    editorWidget = CreateEditorWidget(parent, Reflection::Create(&thisValue), GetDataProcessor());
     editorWidget->ForceUpdate();
     realWidget = editorWidget->ToWidgetCast();
 
@@ -266,7 +270,7 @@ void BaseComponentValue::CreateButtons(QLayout* layout, const M::CommandProducer
         const std::shared_ptr<M::CommandProducer>& cmd = commands[i];
         for (const std::shared_ptr<PropertyNode>& node : nodes)
         {
-            if (cmd->IsApplyable(node->field.ref))
+            if (cmd->IsApplyable(node))
             {
                 createButton = true;
                 break;
@@ -279,7 +283,7 @@ void BaseComponentValue::CreateButtons(QLayout* layout, const M::CommandProducer
             QToolButton* button = new QToolButton(layout->widget());
             button->setIcon(info.icon);
             button->setToolTip(info.tooltip);
-            button->setIconSize(QSize(12, 12));
+            button->setIconSize(toolButtonIconSize);
             button->setAutoRaise(true);
             if (cmd->OnlyForSingleSelection() && nodes.size() > 1)
             {
@@ -332,17 +336,19 @@ void BaseComponentValue::CallButtonAction(const M::CommandProducerHolder* holder
     ModifyExtension::MultiCommandInterface cmdInterface = GetModifyInterface()->GetMultiCommandInterface(info.description, static_cast<uint32>(nodes.size()));
     for (std::shared_ptr<PropertyNode>& node : nodes)
     {
-        if (producer->IsApplyable(node->field.ref))
+        if (producer->IsApplyable(node))
         {
             M::CommandProducer::Params params;
             params.accessor = model->accessor;
             params.invoker = model->invoker;
             params.ui = model->ui;
-            cmdInterface.Exec(producer->CreateCommand(node->field.ref, params));
+            cmdInterface.Exec(producer->CreateCommand(node, params));
         }
     }
     producer->ClearCache();
 }
+
+QSize BaseComponentValue::toolButtonIconSize = QSize(12, 12);
 
 const char* BaseComponentValue::readOnlyFieldName = "isReadOnly";
 

@@ -7,7 +7,6 @@
 #include "TArc/Controls/PropertyPanel/BaseComponentValue.h"
 #include "TArc/Controls/PropertyPanel/Private/ComponentStructureWrapper.h"
 #include "TArc/Controls/PropertyPanel/PropertyPanelMeta.h"
-#include "TArc/Controls/PropertyPanel/StaticEditorDrawer.h"
 
 #include <Reflection/ReflectedMeta.h>
 #include <Reflection/ReflectionRegistrator.h>
@@ -63,7 +62,7 @@ protected:
         return true;
     }
 
-    DAVA::TArc::ControlProxy* CreateEditorWidget(QWidget* parent, const DAVA::Reflection& model, DAVA::TArc::DataWrappersProcessor* wrappersProcessor) const override
+    DAVA::TArc::ControlProxy* CreateEditorWidget(QWidget* parent, const DAVA::Reflection& model, DAVA::TArc::DataWrappersProcessor* wrappersProcessor) override
     {
         DAVA::TArc::ControlDescriptorBuilder<DAVA::TArc::EmptyWidget::Fields> descr;
         return new DAVA::TArc::EmptyWidget(descr, wrappersProcessor, model, parent);
