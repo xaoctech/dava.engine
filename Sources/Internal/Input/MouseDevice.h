@@ -1,55 +1,52 @@
-#ifndef __FRAMEWORK__MOUSECAPTURE_H__
-#define __FRAMEWORK__MOUSECAPTURE_H__
+#pragma once
 
-#include <memory>
-#include "Base/BaseObject.h"
-
-#if !defined(__DAVAENGINE_COREV2__)
+#include "Input/InputDevice.h"
+#include "Input/InputEvent.h"
+#include "Input/Private/DigitalElement.h"
 
 namespace DAVA
 {
-class UIEvent;
-struct MouseDeviceContext;
-class MouseDeviceInterface;
-
-enum class eCaptureMode
+class InputSystem;
+namespace Private
 {
-    OFF = 0, //!< Disable any capturing (send absolute xy)
-    FRAME, //!< Capture system cursor into window rect (send absolute xy)
-    PINING //!<< Capture system cursor on current position (send xy move delta)
-};
+struct MainDispatcherEvent;
+}
 
-class MouseDevice final : public BaseObject
+/**
+    \ingroup input
+    Represents mouse input device.
+*/
+class MouseDevice final : public InputDevice
 {
+    friend class DeviceManager; // For creation
+
 public:
-    MouseDevice();
-    ~MouseDevice();
-    MouseDevice(const MouseDevice&) = delete;
-    MouseDevice& operator=(const MouseDevice&) = delete;
+    bool SupportsElement(uint32 elementId) const override;
+    eDigitalElementState GetDigitalElementState(uint32 elementId) const override;
+    AnalogElementState GetAnalogElementState(uint32 elementId) const override;
 
-    void SetMode(eCaptureMode newMode);
-    eCaptureMode GetMode() const;
-    bool IsPinningEnabled() const;
-    // Deprecated, only for UIControlSystem internal using
-    DAVA_DEPRECATED(bool SkipEvents(const UIEvent* event));
+    eInputElements GetFirstPressedButton() const;
 
 private:
-    void SetSystemMode(eCaptureMode sysMode);
-    MouseDeviceContext* context;
-    MouseDeviceInterface* privateImpl;
+    MouseDevice(uint32 id);
+    ~MouseDevice() override;
+    MouseDevice(const MouseDevice&) = delete;
+
+    bool HandleEvent(const Private::MainDispatcherEvent& e);
+    void HandleMouseClick(const Private::MainDispatcherEvent& e);
+    void HandleMouseWheel(const Private::MainDispatcherEvent& e);
+    void HandleMouseMove(const Private::MainDispatcherEvent& e);
+
+    void OnEndFrame();
+
+private:
+    InputSystem* inputSystem = nullptr;
+
+    Private::DigitalElement buttons[eInputElements::MOUSE_LAST_BUTTON - eInputElements::MOUSE_FIRST_BUTTON + 1];
+    AnalogElementState mousePosition;
+    AnalogElementState mouseWheelDelta;
+
+    size_t endFrameConnectionToken;
 };
 
-class MouseDeviceInterface
-{
-public:
-    virtual void SetMode(eCaptureMode newMode) = 0;
-    virtual void SetCursorInCenter() = 0;
-    virtual bool SkipEvents(const UIEvent* event) = 0;
-    virtual ~MouseDeviceInterface() = default;
-};
-
-} //  namespace DAVA
-
-#endif // !defined(__DAVAENGINE_COREV2__)
-
-#endif //  __FRAMEWORK__MOUSECAPTURE_H__
+} // namespace DAVA

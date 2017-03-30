@@ -36,12 +36,12 @@ bool AnalogBindingCompare::operator()(const AnalogBinding& first, const AnalogBi
 ActionSystemImpl::ActionSystemImpl(ActionSystem* actionSystem)
     : actionSystem(actionSystem)
 {
-    GetEngineContext()->inputSystem->AddHandler(MakeFunction(this, &ActionSystemImpl::OnInputEvent));
+    inputHandlerToken = GetEngineContext()->inputSystem->AddHandler(eInputDeviceTypes::CLASS_ALL, MakeFunction(this, &ActionSystemImpl::OnInputEvent));
 }
 
 ActionSystemImpl::~ActionSystemImpl()
 {
-    // TODO: unsubscribe
+    GetEngineContext()->inputSystem->RemoveHandler(inputHandlerToken);
 }
 
 void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)

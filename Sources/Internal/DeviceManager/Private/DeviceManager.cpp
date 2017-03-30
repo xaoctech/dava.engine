@@ -59,7 +59,7 @@ void DeviceManager::OnEngineInited()
 {
 #if defined(__DAVAENGINE_WINDOWS__) || defined(__DAVAENGINE_MACOS__)
     keyboard = new KeyboardInputDevice(1);
-    mouse = new MouseInputDevice(2);
+    mouse = new MouseDevice(2);
 
     inputDevices.push_back(keyboard);
     inputDevices.push_back(mouse);
@@ -86,7 +86,7 @@ KeyboardInputDevice* DeviceManager::GetKeyboard()
     return keyboard;
 }
 
-MouseInputDevice* DeviceManager::GetMouse()
+MouseDevice* DeviceManager::GetMouse()
 {
     return mouse;
 }

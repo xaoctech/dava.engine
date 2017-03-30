@@ -28,22 +28,32 @@ InputSystem::InputSystem(Engine* engine)
 
 InputSystem::~InputSystem() = default;
 
-uint32 InputSystem::AddHandler(eInputDevices inputDeviceMask, const Function<bool(UIEvent*)>& callback)
+uint32 InputSystem::AddHandler(eInputDeviceTypes inputDeviceMask, const Function<bool(UIEvent*)>& handler)
 {
-    DVASSERT(callback != nullptr);
+    DVASSERT(handler != nullptr);
 
     uint32 token = nextHandlerToken;
     nextHandlerToken += 1;
-    handlers.emplace_back(token, inputDeviceMask, callback);
+    handlers.emplace_back(token, inputDeviceMask, handler);
     return token;
 }
 
-void InputSystem::ChangeHandlerDeviceMask(uint32 token, eInputDevices newInputDeviceMask)
+uint32 InputSystem::AddHandler(eInputDeviceTypes inputDeviceMask, const Function<bool(const InputEvent&)>& handler)
+{
+    DVASSERT(handler != nullptr);
+
+    uint32 token = nextHandlerToken;
+    nextHandlerToken += 1;
+    handlers.emplace_back(token, inputDeviceMask, handler);
+    return token;
+}
+
+void InputSystem::ChangeHandlerDeviceMask(uint32 token, eInputDeviceTypes newInputDeviceMask)
 {
     auto it = std::find_if(begin(handlers), end(handlers), [token](const InputHandler& o) { return o.token == token; });
     if (it != end(handlers))
     {
-        it->inputDeviceMask = newInputDeviceMask;
+        it->deviceMask = newInputDeviceMask;
     }
 }
 
@@ -55,24 +65,27 @@ void InputSystem::RemoveHandler(uint32 token)
     if (it != end(handlers))
     {
         it->token = 0;
-        it->inputDeviceMask = eInputDevices::UNKNOWN;
+        it->deviceMask = eInputDeviceTypes::UNKNOWN;
         pendingHandlerRemoval = true;
+        return;
     }
-}
-
-void InputSystem::AddHandler(const Function<bool(const InputEvent&)>& handler)
-{
-    inputEventHandlers.push_back(handler);
 }
 
 void InputSystem::DispatchInputEvent(const InputEvent& inputEvent)
 {
-    for (auto& handler : inputEventHandlers)
+    bool handled = false;
+    for (const InputHandler& h : handlers)
     {
-        handler(inputEvent);
+        if (h.useRawInputCallback && (h.deviceMask & inputEvent.deviceType) != eInputDeviceTypes::UNKNOWN)
+        {
+            handled |= h.rawInputHandler(inputEvent);
+            if (handled)
+            {
+                break;
+            }
+        }
     }
-
-    if (inputEvent.window != nullptr)
+    if (!handled && inputEvent.window != nullptr)
     {
         UIControlSystem* uiControlSystem = inputEvent.window->GetUIControlSystem();
         uiControlSystem->HandleInputEvent(inputEvent);
@@ -99,9 +112,9 @@ void InputSystem::HandleInputEvent(UIEvent* uie)
     bool handled = false;
     for (const InputHandler& h : handlers)
     {
-        if ((h.inputDeviceMask & uie->device) != eInputDevices::UNKNOWN)
+        if (!h.useRawInputCallback && (h.deviceMask & uie->device) != eInputDeviceTypes::UNKNOWN)
         {
-            handled |= h.callback(uie);
+            handled |= h.uiEventHandler(uie);
             if (handled)
             {
                 break;

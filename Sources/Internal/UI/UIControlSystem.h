@@ -5,6 +5,7 @@
 #include "Base/FastName.h"
 #include "Base/Singleton.h"
 #include "Engine/Private/EnginePrivateFwd.h"
+#include "Input/InputElements.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 
 #include "UI/UIControl.h"
@@ -22,7 +23,7 @@
 namespace DAVA
 {
 struct InputEvent;
-class MouseInputDevice;
+class MouseDevice;
 class UIScreen;
 class UISystem;
 class UILayoutSystem;
@@ -342,7 +343,7 @@ private:
 
     UIEvent MakeUIEvent(const InputEvent& inputEvent) const;
     eModifierKeys GetKeyboardModifierKeys() const;
-    eMouseButtons GetFirstPressedMouseButton(MouseInputDevice* mouse) const;
+    static eMouseButtons TranslateMouseElementToButtons(eInputElements element);
 
 #if defined(__DAVAENGINE_COREV2__)
     friend class Private::EngineBackend;

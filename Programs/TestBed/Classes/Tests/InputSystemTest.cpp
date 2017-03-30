@@ -27,7 +27,7 @@ void InputSystemTest::LoadResources()
     CreateInputListenerUI();
 
     Engine::Instance()->beginFrame.Connect(this, &InputSystemTest::OnBeginFrame);
-    GetEngineContext()->inputSystem->AddHandler(MakeFunction(this, &InputSystemTest::OnInputEvent));
+    rawInputToken = GetEngineContext()->inputSystem->AddHandler(eInputDeviceTypes::CLASS_ALL, MakeFunction(this, &InputSystemTest::OnInputEvent));
     GetEngineContext()->actionSystem->ActionTriggered.Connect(this, &InputSystemTest::OnAction);
 
     ActionSet set;
@@ -74,17 +74,18 @@ void InputSystemTest::LoadResources()
 
 void InputSystemTest::UnloadResources()
 {
+    GetEngineContext()->inputSystem->RemoveHandler(rawInputToken);
     BaseScreen::UnloadResources();
 }
 
 bool InputSystemTest::OnInputEvent(InputEvent const& event)
 {
     UIButton* button = nullptr;
-    if (event.deviceType == KeyboardInputDevice::TYPE)
+    if (event.deviceType == eInputDeviceTypes::KEYBOARD)
     {
         button = keyboardButtons[event.elementId];
     }
-    else if (event.deviceType == MouseInputDevice::TYPE)
+    else if (event.deviceType == eInputDeviceTypes::MOUSE)
     {
         button = mouseButtons[event.elementId];
     }

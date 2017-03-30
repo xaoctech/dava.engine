@@ -589,7 +589,7 @@ void Window::HandleKeyPress(const Private::MainDispatcherEvent& e)
     inputEvent.keyboardEvent.isCharEvent = false;
     inputEvent.elementId = SystemKeyToDavaKey(e.keyEvent.key);
     inputEvent.deviceId = keyboardInputDevice->GetId();
-    inputEvent.deviceType = KeyboardInputDevice::TYPE;
+    inputEvent.deviceType = eInputDeviceTypes::KEYBOARD;
     inputEvent.digitalState = keyState;
     inputEvent.timestamp = e.timestamp / 1000.0;
     inputEvent.window = e.window;

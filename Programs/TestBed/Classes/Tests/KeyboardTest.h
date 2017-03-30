@@ -3,6 +3,11 @@
 #include "Infrastructure/BaseScreen.h"
 
 class TestBed;
+namespace DAVA
+{
+struct InputEvent;
+}
+
 class KeyboardTest : public BaseScreen
 {
 public:
@@ -17,6 +22,7 @@ private:
 
     void ResetCounters();
 
+    bool InputEventHandler(const DAVA::InputEvent& inputEvent);
     bool OnPointerEvent(DAVA::UIEvent* e);
     bool OnKeyboardEvent(DAVA::UIEvent* e);
     bool OnGamepadEvent(DAVA::UIEvent* event);
@@ -38,6 +44,8 @@ private:
     DAVA::uint32 pointerInputToken = 0;
     DAVA::uint32 keyboardInputToken = 0;
     DAVA::uint32 gamepadInputToken = 0;
+
+    DAVA::uint32 rawInputToken = 0;
 
     DAVA::uint32 numKeyboardEvents = 0;
     DAVA::uint32 numKeyDown = 0;

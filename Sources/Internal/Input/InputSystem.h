@@ -32,11 +32,11 @@ public:
     // TODO: remove InputSystem::Instance() method
     static InputSystem* Instance();
 
-    uint32 AddHandler(eInputDevices inputDeviceMask, const Function<bool(UIEvent*)>& callback);
-    void ChangeHandlerDeviceMask(uint32 token, eInputDevices newInputDeviceMask);
+    uint32 AddHandler(eInputDeviceTypes inputDeviceMask, const Function<bool(UIEvent*)>& handler);
+    uint32 AddHandler(eInputDeviceTypes inputDeviceMask, const Function<bool(const InputEvent&)>& handler);
+    void ChangeHandlerDeviceMask(uint32 token, eInputDeviceTypes newInputDeviceMask);
     void RemoveHandler(uint32 token);
 
-    void AddHandler(const Function<bool(const InputEvent&)>& handler);
     void DispatchInputEvent(const InputEvent& inputEvent);
 
     KeyboardDevice& GetKeyboard();
@@ -67,24 +67,34 @@ private:
 
     struct InputHandler
     {
-        InputHandler(uint32 token_, eInputDevices inputDeviceMask_, const Function<bool(UIEvent*)>& callback_);
+        InputHandler(uint32 aToken, eInputDeviceTypes inputDeviceMask, const Function<bool(UIEvent*)>& handler);
+        InputHandler(uint32 aToken, eInputDeviceTypes inputDeviceMask, const Function<bool(const InputEvent&)>& handler);
 
         uint32 token;
-        eInputDevices inputDeviceMask;
-        Function<bool(UIEvent*)> callback;
+        bool useRawInputCallback;
+        eInputDeviceTypes deviceMask;
+        Function<bool(UIEvent*)> uiEventHandler;
+        Function<bool(const InputEvent&)> rawInputHandler;
     };
 
     Vector<InputHandler> handlers;
     uint32 nextHandlerToken = 1;
     bool pendingHandlerRemoval = false;
-
-    Vector<Function<bool(const InputEvent&)>> inputEventHandlers;
 };
 
-inline InputSystem::InputHandler::InputHandler(uint32 token_, eInputDevices inputDeviceMask_, const Function<bool(UIEvent*)>& callback_)
-    : token(token_)
-    , inputDeviceMask(inputDeviceMask_)
-    , callback(callback_)
+inline InputSystem::InputHandler::InputHandler(uint32 aToken, eInputDeviceTypes inputDeviceMask, const Function<bool(UIEvent*)>& handler)
+    : token(aToken)
+    , useRawInputCallback(false)
+    , deviceMask(inputDeviceMask)
+    , uiEventHandler(handler)
+{
+}
+
+inline InputSystem::InputHandler::InputHandler(uint32 aToken, eInputDeviceTypes inputDeviceMask, const Function<bool(const InputEvent&)>& handler)
+    : token(aToken)
+    , useRawInputCallback(true)
+    , deviceMask(inputDeviceMask)
+    , rawInputHandler(handler)
 {
 }
 
