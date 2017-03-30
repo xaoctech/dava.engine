@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_POLYGONGROUP_H__
-#define __DAVAENGINE_POLYGONGROUP_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
@@ -118,7 +117,8 @@ public:
     AABBox3 aabbox;
 
     void GenerateGeometryOctTree();
-    inline GeometryOctTree* GetGeometryOctTree() const;
+    GeometryOctTree* GetGeometryOctTree();
+    GeometryOctTree* GetGeometryOctTree() const;
     GeometryOctTree* octTree = nullptr;
 
     /*
@@ -253,6 +253,7 @@ inline void PolygonGroup::SetJointWeight(int32 vIndex, int32 jointIndex, float32
     *reinterpret_cast<float32*>(reinterpret_cast<uint8*>(jointIdxArray) + vIndex * vertexStride) = float32(boneWeightValue);
     //    uint8 * t = ((uint8*)jointWeightArray) + vIndex * vertexStride;
     //	t[jointIndex] = (uint8)(255 * boneWeightValue);
+    *reinterpret_cast<float32*>(reinterpret_cast<uint8*>(jointWeightArray) + vIndex * vertexStride) = float32(boneWeightValue);
 }
 
 inline void PolygonGroup::SetJointCount(int32 vIndex, int32 jointCount)
@@ -359,10 +360,16 @@ inline rhi::PrimitiveType PolygonGroup::GetPrimitiveType()
     return primitiveType;
 }
 
+inline GeometryOctTree* PolygonGroup::GetGeometryOctTree()
+{
+    if (octTree == nullptr)
+        GenerateGeometryOctTree();
+
+    return octTree;
+}
+
 inline GeometryOctTree* PolygonGroup::GetGeometryOctTree() const
 {
     return octTree;
 }
-};
-
-#endif // __DAVAENGINE_POLYGONGROUPGLES_H__
+}
