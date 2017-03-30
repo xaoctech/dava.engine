@@ -248,6 +248,7 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
 
     std::vector<condition_t>    pending_elif;
     bool                        dcheck_pending  = true;
+    bool                        cmt_block       = false;
 
 
     pending_elif.resize(1);
@@ -262,6 +263,12 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
             else
                 *s = ' ';
         }
+
+        if( s[0] == '/'  &&  s[1] == '*' )
+            cmt_block = true;
+        else if( s[0] == '*'  &&  s[1] == '/' )
+            cmt_block = false;
+
 
         int skipping_line = false;
 
@@ -324,7 +331,7 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
             ++src_line_n;
             dcheck_pending = true;
         }
-        else if( dcheck_pending )
+        else if( dcheck_pending  &&  !cmt_block )
         {
             char* ns1 = s;
 
