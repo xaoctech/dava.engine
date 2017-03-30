@@ -8,7 +8,6 @@
 
 namespace DAVA
 {
-const InputDeviceType MouseDevice::TYPE = 2;
 
 MouseDevice::MouseDevice(uint32 id)
     : InputDevice(id)
@@ -95,7 +94,7 @@ void MouseDevice::HandleMouseClick(const Private::MainDispatcherEvent& e)
     InputEvent inputEvent;
     inputEvent.window = e.window;
     inputEvent.timestamp = e.timestamp / 1000.0f;
-    inputEvent.deviceType = TYPE;
+    inputEvent.deviceType = eInputDeviceTypes::MOUSE;
     inputEvent.deviceId = GetId();
     inputEvent.mouseEvent.isRelative = e.mouseEvent.isRelative;
 
@@ -115,7 +114,7 @@ void MouseDevice::HandleMouseWheel(const Private::MainDispatcherEvent& e)
     InputEvent inputEvent;
     inputEvent.window = e.window;
     inputEvent.timestamp = e.timestamp / 1000.0f;
-    inputEvent.deviceType = TYPE;
+    inputEvent.deviceType = eInputDeviceTypes::MOUSE;
     inputEvent.deviceId = GetId();
     inputEvent.elementId = eInputElements::MOUSE_WHEEL;
     inputEvent.analogState.x = e.mouseEvent.scrollDeltaX;
@@ -137,7 +136,7 @@ void MouseDevice::HandleMouseMove(const Private::MainDispatcherEvent& e)
     InputEvent inputEvent;
     inputEvent.window = e.window;
     inputEvent.timestamp = e.timestamp / 1000.0f;
-    inputEvent.deviceType = TYPE;
+    inputEvent.deviceType = eInputDeviceTypes::MOUSE;
     inputEvent.deviceId = GetId();
     inputEvent.elementId = eInputElements::MOUSE_POSITION;
     inputEvent.analogState.x = e.mouseEvent.x;

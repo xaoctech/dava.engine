@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Engine/EngineTypes.h"
 #include "Input/InputDevice.h"
 #include "Input/InputElements.h"
 
@@ -20,7 +21,7 @@ struct InputEvent
     float64 timestamp;
 
     /** Type of the device */
-    InputDeviceType deviceType;
+    eInputDeviceTypes deviceType;
 
     /** Id of the device */
     uint32 deviceId;
