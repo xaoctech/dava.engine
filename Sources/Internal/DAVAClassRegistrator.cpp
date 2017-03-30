@@ -1,12 +1,13 @@
 #include "DAVAEngine.h"
 #include "DAVAClassRegistrator.h"
 #include "Render/Highlevel/ShadowVolume.h"
+#include "Scene3D/Components/GeoDecalComponent.h"
 
 using namespace DAVA;
 
 void DAVA::RegisterDAVAClasses()
 {
-    //this code do nothing. Needed to compiler generate code from this cpp file
+    // this code do nothing. Needed to compiler generate code from this cpp file
     Logger* log = Logger::Instance();
     if (log)
         log->Log(Logger::LEVEL__DISABLE, "");
@@ -78,3 +79,4 @@ REGISTER_CLASS(PathComponent);
 REGISTER_CLASS(WASDControllerComponent);
 REGISTER_CLASS(RotationControllerComponent);
 REGISTER_CLASS(SnapToLandscapeControllerComponent);
+REGISTER_CLASS(GeoDecalComponent);

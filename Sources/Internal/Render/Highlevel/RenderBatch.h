@@ -76,6 +76,7 @@ public:
 
     rhi::PrimitiveType primitiveType = rhi::PRIMITIVE_TRIANGLELIST;
     uint32 vertexLayoutId = rhi::VertexLayout::InvalidUID;
+    bool debugDrawOctree = false;
 
 private:
     PolygonGroup* dataSource = nullptr;
@@ -104,6 +105,7 @@ public:
 
                          MEMBER(aabbox, "AABBox", I_SAVE | I_VIEW | I_EDIT)
                          MEMBER(material, "Material", I_VIEW | I_EDIT)
+                         MEMBER(debugDrawOctree, "Draw Octree", I_VIEW | I_EDIT)
 
                          PROPERTY("sortingKey", "Key for the sorting inside render layer", GetSortingKey, SetSortingKey, I_SAVE | I_VIEW | I_EDIT));
 

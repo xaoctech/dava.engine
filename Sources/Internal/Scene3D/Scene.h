@@ -48,8 +48,10 @@ class AnimationSystem;
 class LandscapeSystem;
 class LodSystem;
 class ParticleEffectDebugDrawSystem;
+class GeoDecalSystem;
 
 class UIEvent;
+class RenderPass;
 
 /**
     \ingroup scene3d
@@ -58,7 +60,6 @@ class UIEvent;
     Scene have visible hierarchy and invisible root nodes. You can add as many root nodes as you want, and do not visualize them.
     For example you can have multiple scenes, load them to one scene, and show each scene when it will be required. 
  */
-
 class EntityCache
 {
 public:
@@ -75,15 +76,13 @@ protected:
     Map<FilePath, Entity*> cachedEntities;
 };
 
-class RenderPass;
-
 class Scene : public Entity, Observer
 {
 protected:
     virtual ~Scene();
 
 public:
-    enum
+    enum : uint32
     {
         SCENE_SYSTEM_TRANSFORM_FLAG = 1 << 0,
         SCENE_SYSTEM_RENDER_UPDATE_FLAG = 1 << 1,
@@ -95,7 +94,6 @@ public:
         SCENE_SYSTEM_SWITCH_FLAG = 1 << 7,
         SCENE_SYSTEM_SOUND_UPDATE_FLAG = 1 << 8,
         SCENE_SYSTEM_ACTION_UPDATE_FLAG = 1 << 9,
-
         SCENE_SYSTEM_STATIC_OCCLUSION_FLAG = 1 << 11,
         SCENE_SYSTEM_LANDSCAPE_FLAG = 1 << 12,
         SCENE_SYSTEM_FOLIAGE_FLAG = 1 << 13,
@@ -104,6 +102,7 @@ public:
         SCENE_SYSTEM_WAVE_UPDATE_FLAG = 1 << 16,
         SCENE_SYSTEM_SKELETON_UPDATE_FLAG = 1 << 17,
         SCENE_SYSTEM_ANIMATION_FLAG = 1 << 18,
+        SCENE_SYSTEM_GEO_DECAL_FLAG = 1 << 19,
 
         SCENE_SYSTEM_ALL_MASK = 0xFFFFFFFF
     };
@@ -166,6 +165,7 @@ public:
     SkeletonSystem* skeletonSystem;
     LandscapeSystem* landscapeSystem;
     ParticleEffectDebugDrawSystem* particleEffectDebugDrawSystem;
+    GeoDecalSystem* geoDecalSystem = nullptr;
 
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
@@ -179,8 +179,6 @@ public:
     virtual void Update(float32 timeElapsed);
     void Draw() override;
     void SceneDidLoaded() override;
-
-    virtual void SetupTestLighting();
 
     Camera* GetCamera(int32 n);
     void AddCamera(Camera* c);

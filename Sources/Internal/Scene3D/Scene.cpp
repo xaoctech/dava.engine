@@ -35,6 +35,7 @@
 #include "Scene3D/Systems/AnimationSystem.h"
 #include "Scene3D/Systems/LandscapeSystem.h"
 #include "Scene3D/Systems/ParticleEffectDebugDrawSystem.h"
+#include "Scene3D/Systems/GeoDecalSystem.h"
 
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
@@ -346,6 +347,12 @@ void Scene::CreateSystems()
         AddSystem(skeletonSystem, MAKE_COMPONENT_MASK(Component::SKELETON_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
     }
 
+    if (SCENE_SYSTEM_GEO_DECAL_FLAG & systemsMask)
+    {
+        geoDecalSystem = new GeoDecalSystem(this);
+        AddSystem(geoDecalSystem, MAKE_COMPONENT_MASK(Component::GEO_DECAL_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
+    }
+
     if (DAVA::Renderer::GetOptions()->IsOptionEnabled(DAVA::RenderOptions::DEBUG_DRAW_STATIC_OCCLUSION) && !staticOcclusionDebugDrawSystem)
     {
         staticOcclusionDebugDrawSystem = new DAVA::StaticOcclusionDebugDrawSystem(this);
@@ -609,57 +616,6 @@ Camera* Scene::GetCamera(int32 n)
         return cameras[n];
 
     return nullptr;
-}
-
-void Scene::SetupTestLighting()
-{
-#ifdef __DAVAENGINE_IPHONE__
-//	glShadeModel(GL_SMOOTH);
-//	// enable lighting
-//	glEnable(GL_LIGHTING);
-//	glEnable(GL_NORMALIZE);
-//
-//	// deactivate all lights
-//	for (int i=0; i<8; i++)  glDisable(GL_LIGHT0 + i);
-//
-//	// ambiental light to nothing
-//	GLfloat ambientalLight[]= {0.2f, 0.2f, 0.2f, 1.0f};
-//	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientalLight);
-//
-////	GLfloat light_ambient[] = { 0.0f, 0.0f, 0.0f, 1.0f };  // delete
-//	//GLfloat light_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-//	GLfloat light_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-//
-//	GLfloat light_diffuse[4];
-//	light_diffuse[0]=1.0f;
-//	light_diffuse[1]=1.0f;
-//	light_diffuse[2]=1.0f;
-//	light_diffuse[3]=1.0f;
-//
-//	GLfloat lightPos[] = { 0.0f, 0.0f, 1.0f, 0.0f };
-//
-//	// activate this light
-//	glEnable(GL_LIGHT0);
-//
-//	//always position 0,0,0 because light  is moved with transformations
-//	glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
-//
-//	// colors
-//	glLightfv(GL_LIGHT0, GL_AMBIENT, light_diffuse); // now like diffuse color
-//	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
-//	glLightfv(GL_LIGHT0, GL_SPECULAR,light_specular);
-//
-//	//specific values for this light
-//	glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1);
-//	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0);
-//	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0);
-//
-//	//other values
-//	glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 30.0f);
-//	glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 0.0f);
-//	GLfloat spotdirection[] = { 0.0f, 0.0f, -1.0f, 0.0f }; // irrelevant for this light (I guess)
-//	glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, spotdirection); 
-#endif
 }
 
 void Scene::Update(float timeElapsed)
