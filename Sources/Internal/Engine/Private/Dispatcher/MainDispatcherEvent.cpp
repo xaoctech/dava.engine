@@ -262,6 +262,12 @@ MainDispatcherEvent MainDispatcherEvent::CreateWindowCaptureLostEvent(Window* wi
     MainDispatcherEvent e(WINDOW_CAPTURE_LOST, window);
     return e;
 }
+
+MainDispatcherEvent MainDispatcherEvent::CreateInputLanguageChangedEvent()
+{
+    MainDispatcherEvent e(INPUT_LANGUAGE_CHANGED);
+    return e;
+}
 } // namespace Private
 } // namespace DAVA
 

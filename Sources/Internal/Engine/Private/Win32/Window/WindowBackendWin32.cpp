@@ -853,54 +853,16 @@ LRESULT WindowBackend::OnPointerUpdate(uint32 pointerId, int32 x, int32 y)
 
 LRESULT WindowBackend::OnKeyEvent(uint32 key, uint32 scanCode, bool isPressed, bool isExtended, bool isRepeated)
 {
-    // Handle shifts separately to workaround some windows behaviours (see comment inside of OnShiftKeyEvent)
-    if (key == VK_SHIFT)
+    // TODO: reimplement shift buttons workaround
+
+    if (isExtended)
     {
-        return OnShiftKeyEvent();
+        scanCode = 0xE000 | scanCode;
     }
-    else
-    {
-        // Keyboard class implementation uses 256 + keyId for extended keys (e.g. right shift, right alt etc.)
-        if (isExtended)
-        {
-            key |= 0x100;
-        }
-
-        eModifierKeys modifierKeys = GetModifierKeys();
-        MainDispatcherEvent::eType type = isPressed ? MainDispatcherEvent::KEY_DOWN : MainDispatcherEvent::KEY_UP;
-        mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, type, key, modifierKeys, isRepeated));
-        return 0;
-    }
-}
-
-LRESULT WindowBackend::OnShiftKeyEvent()
-{
-    // Windows does not send event with separate WM_KEYUP for second shift if first one is still pressed
-    // So if it's a shift key event, request and store every shift state explicitly
-
-    static const uint32 shiftKeyCodes[2] = { VK_SHIFT, VK_SHIFT | 0x100 };
-
-    const bool lshiftPressed = ::GetKeyState(VK_LSHIFT) & 0x8000 ? true : false;
-    const bool rshiftPressed = ::GetKeyState(VK_RSHIFT) & 0x8000 ? true : false;
-    const bool currentShiftStates[2] = { lshiftPressed, rshiftPressed };
 
     eModifierKeys modifierKeys = GetModifierKeys();
-
-    for (int i = 0; i < 2; ++i)
-    {
-        if (lastShiftStates[i] != currentShiftStates[i])
-        {
-            const MainDispatcherEvent::eType eventType = currentShiftStates[i] ? MainDispatcherEvent::KEY_DOWN : MainDispatcherEvent::KEY_UP;
-            mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, eventType, shiftKeyCodes[i], modifierKeys, false));
-        }
-        else if (currentShiftStates[i] == true)
-        {
-            mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_DOWN, shiftKeyCodes[i], modifierKeys, true));
-        }
-
-        lastShiftStates[i] = currentShiftStates[i];
-    }
-
+    MainDispatcherEvent::eType type = isPressed ? MainDispatcherEvent::KEY_DOWN : MainDispatcherEvent::KEY_UP;
+    mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, type, scanCode, modifierKeys, isRepeated));
     return 0;
 }
 
@@ -956,6 +918,12 @@ bool WindowBackend::OnSysCommand(int sysCommand)
     // Window still can be moved and sized by mouse.
     // Also prevent system menu from showing triggered by keyboard (Alt+Space).
     return sysCommand == SC_MOVE || sysCommand == SC_SIZE || sysCommand == SC_KEYMENU;
+}
+
+LRESULT WindowBackend::OnInputLanguageChanged()
+{
+    mainDispatcher->PostEvent(MainDispatcherEvent::CreateInputLanguageChangedEvent());
+    return 0;
 }
 
 LRESULT WindowBackend::OnDestroy()
@@ -1141,6 +1109,10 @@ LRESULT WindowBackend::WindowProc(UINT message, WPARAM wparam, LPARAM lparam, bo
     else if (message == WM_SYSCOMMAND)
     {
         isHandled = OnSysCommand(static_cast<int>(wparam));
+    }
+    else if (message == WM_INPUTLANGCHANGE)
+    {
+        lresult = OnInputLanguageChanged();
     }
     else
     {

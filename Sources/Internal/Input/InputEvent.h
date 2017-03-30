@@ -35,18 +35,13 @@ struct InputEvent
     union
     {
         /** Digital element's state */
-        eDigitalElementState digitalState;
+        eDigitalElementStates digitalState;
 
         /** Analog element's state */
         AnalogElementState analogState;
     };
 
     // Additional fields for different devices
-
-    struct KeyboardEvent
-    {
-        bool isCharEvent;
-    };
 
     struct MouseEvent
     {
@@ -55,7 +50,6 @@ struct InputEvent
 
     union
     {
-        KeyboardEvent keyboardEvent;
         MouseEvent mouseEvent;
     };
 };

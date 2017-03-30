@@ -12,43 +12,43 @@ class DigitalElement
 public:
     DigitalElement()
     {
-        state = eDigitalElementState::RELEASED;
+        state = eDigitalElementStates::RELEASED;
     }
 
     void Press()
     {
-        if ((state & eDigitalElementState::PRESSED) == eDigitalElementState::NONE)
+        if ((state & eDigitalElementStates::PRESSED) == eDigitalElementStates::NONE)
         {
-            state = eDigitalElementState::PRESSED | eDigitalElementState::JUST_PRESSED;
+            state = eDigitalElementStates::PRESSED | eDigitalElementStates::JUST_PRESSED;
         }
     }
 
     void Release()
     {
-        if ((state & eDigitalElementState::PRESSED) != eDigitalElementState::NONE)
+        if ((state & eDigitalElementStates::PRESSED) != eDigitalElementStates::NONE)
         {
-            state = eDigitalElementState::RELEASED | eDigitalElementState::JUST_RELEASED;
+            state = eDigitalElementStates::RELEASED | eDigitalElementStates::JUST_RELEASED;
         }
     }
 
     void OnEndFrame()
     {
         // Clear JUST_PRESSED and JUST_RELEASED flags
-        state &= ~(eDigitalElementState::JUST_PRESSED | eDigitalElementState::JUST_RELEASED);
+        state &= ~(eDigitalElementStates::JUST_PRESSED | eDigitalElementStates::JUST_RELEASED);
     }
 
-    eDigitalElementState GetState() const
+    eDigitalElementStates GetState() const
     {
         return state;
     }
 
     bool IsPressed() const
     {
-        return (state & eDigitalElementState::PRESSED) == eDigitalElementState::PRESSED;
+        return (state & eDigitalElementStates::PRESSED) == eDigitalElementStates::PRESSED;
     }
 
 private:
-    eDigitalElementState state;
+    eDigitalElementStates state;
 };
 }
 }

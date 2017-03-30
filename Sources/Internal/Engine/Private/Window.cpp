@@ -238,10 +238,6 @@ bool Window::EventHandler(const Private::MainDispatcherEvent& e)
     case MainDispatcherEvent::TRACKPAD_GESTURE:
         HandleTrackpadGesture(e);
         break;
-    case MainDispatcherEvent::KEY_DOWN:
-    case MainDispatcherEvent::KEY_UP:
-        HandleKeyPress(e);
-        break;
     case MainDispatcherEvent::KEY_CHAR:
         HandleKeyChar(e);
         break;
@@ -545,56 +541,6 @@ void Window::HandleTrackpadGesture(const Private::MainDispatcherEvent& e)
     uie.gesture.dy = e.trackpadGestureEvent.deltaY;
 
     inputSystem->HandleInputEvent(&uie);
-}
-
-void Window::HandleKeyPress(const Private::MainDispatcherEvent& e)
-{
-    bool pressed = e.type == Private::MainDispatcherEvent::KEY_DOWN;
-
-    KeyboardDevice& keyboard = inputSystem->GetKeyboard();
-
-    UIEvent uie;
-    uie.window = e.window;
-    uie.key = keyboard.GetDavaKeyForSystemKey(e.keyEvent.key);
-    uie.device = eInputDevices::KEYBOARD;
-    uie.timestamp = e.timestamp / 1000.0;
-    uie.modifiers = e.keyEvent.modifierKeys;
-
-    if (pressed)
-    {
-        uie.phase = e.keyEvent.isRepeated ? UIEvent::Phase::KEY_DOWN_REPEAT : UIEvent::Phase::KEY_DOWN;
-    }
-    else
-    {
-        uie.phase = UIEvent::Phase::KEY_UP;
-    }
-
-    if (pressed)
-    {
-        keyboard.OnKeyPressed(uie.key);
-    }
-    else
-    {
-        keyboard.OnKeyUnpressed(uie.key);
-    }
-    inputSystem->HandleInputEvent(&uie);
-
-    // New
-
-    KeyboardInputDevice* keyboardInputDevice = engineBackend->GetContext()->deviceManager->GetKeyboard();
-
-    eDigitalElementState keyState = pressed ? eDigitalElementState::PRESSED : eDigitalElementState::RELEASED;
-
-    InputEvent inputEvent;
-    inputEvent.keyboardEvent.isCharEvent = false;
-    inputEvent.elementId = SystemKeyToDavaKey(e.keyEvent.key);
-    inputEvent.deviceId = keyboardInputDevice->GetId();
-    inputEvent.deviceType = eInputDeviceTypes::KEYBOARD;
-    inputEvent.digitalState = keyState;
-    inputEvent.timestamp = e.timestamp / 1000.0;
-    inputEvent.window = e.window;
-
-    keyboardInputDevice->ProcessInputEvent(inputEvent);
 }
 
 void Window::HandleKeyChar(const Private::MainDispatcherEvent& e)

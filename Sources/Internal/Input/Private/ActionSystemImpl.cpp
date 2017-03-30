@@ -46,30 +46,30 @@ ActionSystemImpl::~ActionSystemImpl()
 
 void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)
 {
-    // Check if there are sets which are already binded to any of these devices
+    // Check if there are sets which are already bound to any of these devices
     // Unbind them from these devices if there are
     if (devices.size() > 0)
     {
-        auto iter = bindedSets.begin();
-        while (iter != bindedSets.end())
+        auto iter = boundSets.begin();
+        while (iter != boundSets.end())
         {
-            BindedActionSet& bindedSet = *iter;
+            BoundActionSet& boundSet = *iter;
 
-            // If set is binded to to specific devices
-            if (bindedSet.devices.size() > 0)
+            // If set is bound to to specific devices
+            if (boundSet.devices.size() > 0)
             {
                 // Unbind it
                 for (const uint32 deviceId : devices)
                 {
-                    bindedSet.devices.erase(
-                    std::remove(bindedSet.devices.begin(), bindedSet.devices.end(), deviceId),
-                    bindedSet.devices.end());
+                    boundSet.devices.erase(
+                    std::remove(boundSet.devices.begin(), boundSet.devices.end(), deviceId),
+                    boundSet.devices.end());
                 }
 
-                // If it is not binded to any devices anymore - remove it from the list
-                if (bindedSet.devices.size() == 0)
+                // If it is not bound to any devices anymore - remove it from the list
+                if (boundSet.devices.size() == 0)
                 {
-                    iter = bindedSets.erase(iter);
+                    iter = boundSets.erase(iter);
                     continue;
                 }
             }
@@ -78,12 +78,12 @@ void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)
         }
     }
 
-    BindedActionSet bindedSet;
-    bindedSet.digitalBindings.insert(set.digitalBindings.begin(), set.digitalBindings.end());
-    bindedSet.analogBindings.insert(set.analogBindings.begin(), set.analogBindings.end());
-    bindedSet.devices = devices;
+    BoundActionSet boundSet;
+    boundSet.digitalBindings.insert(set.digitalBindings.begin(), set.digitalBindings.end());
+    boundSet.analogBindings.insert(set.analogBindings.begin(), set.analogBindings.end());
+    boundSet.devices = devices;
 
-    bindedSets.push_back(bindedSet);
+    boundSets.push_back(boundSet);
 }
 
 void ActionSystemImpl::GetUserInput(Function<void(Vector<eInputElements>)> callback)
@@ -108,7 +108,7 @@ bool ActionSystemImpl::CheckDigitalStates(const Array<DigitalElementState, MAX_D
             const InputDevice* device = GetEngineContext()->deviceManager->GetInputDevice(deviceId);
             if (device->SupportsElement(requiredState.elementId))
             {
-                const eDigitalElementState state = device->GetDigitalElementState(requiredState.elementId);
+                const eDigitalElementStates state = device->GetDigitalElementState(requiredState.elementId);
 
                 if ((state & requiredState.stateMask) == requiredState.stateMask)
                 {
@@ -135,13 +135,13 @@ bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
     if (userInputCallback != nullptr)
     {
         const InputElementInfo& elementInfo = GetInputElementInfo(event.elementId);
-        if (elementInfo.type == eInputElementType::DIGITAL)
+        if (elementInfo.type == eInputElementTypes::DIGITAL)
         {
-            if ((event.digitalState & eDigitalElementState::JUST_PRESSED) == eDigitalElementState::JUST_PRESSED)
+            if ((event.digitalState & eDigitalElementStates::JUST_PRESSED) == eDigitalElementStates::JUST_PRESSED)
             {
                 listenedInputElements.push_back(event.elementId);
             }
-            else if ((event.digitalState & eDigitalElementState::JUST_RELEASED) == eDigitalElementState::JUST_RELEASED)
+            else if ((event.digitalState & eDigitalElementStates::JUST_RELEASED) == eDigitalElementStates::JUST_RELEASED)
             {
                 if (listenedInputElements.size() != 0)
                 {
@@ -157,9 +157,9 @@ bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
         return false;
     }
 
-    // Handle binded sets
+    // Handle Bound sets
 
-    for (const BindedActionSet& setBinding : bindedSets)
+    for (const BoundActionSet& setBinding : boundSets)
     {
         // Check if any digital action has triggered
         for (auto it = setBinding.digitalBindings.begin(); it != setBinding.digitalBindings.end(); ++it)
@@ -177,12 +177,12 @@ bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
 
                 actionSystem->ActionTriggered.Emit(action);
 
-                return true;
+                return false; // TODO
             }
         }
     }
 
-    for (const BindedActionSet& setBinding : bindedSets)
+    for (const BoundActionSet& setBinding : boundSets)
     {
         // Check if any analog action has triggered
         for (auto it = setBinding.analogBindings.begin(); it != setBinding.analogBindings.end(); ++it)
@@ -205,7 +205,7 @@ bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
 
                 actionSystem->ActionTriggered.Emit(action);
 
-                return true;
+                return false; // TODO
             }
         }
     }

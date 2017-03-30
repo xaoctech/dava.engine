@@ -21,9 +21,9 @@ class MouseDevice final : public InputDevice
     friend class DeviceManager; // For creation
 
 public:
-    bool SupportsElement(uint32 elementId) const override;
-    eDigitalElementState GetDigitalElementState(uint32 elementId) const override;
-    AnalogElementState GetAnalogElementState(uint32 elementId) const override;
+    bool SupportsElement(eInputElements elementId) const override;
+    eDigitalElementStates GetDigitalElementState(eInputElements elementId) const override;
+    AnalogElementState GetAnalogElementState(eInputElements elementId) const override;
 
     eInputElements GetFirstPressedButton() const;
 

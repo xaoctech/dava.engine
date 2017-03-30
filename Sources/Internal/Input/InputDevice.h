@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
+#include "Input/InputElements.h"
 
 namespace DAVA
 {
@@ -32,7 +33,7 @@ namespace DAVA
     | user released the button (same frame)          | -             | -       | +             | +        |
     | user released the button (next frames)         | -             | -       | -             | +        |
 */
-enum class eDigitalElementState : uint32
+enum class eDigitalElementStates : uint32
 {
     // Helper value to use in bitwise operations
     NONE = 0,
@@ -43,7 +44,7 @@ enum class eDigitalElementState : uint32
     RELEASED = 1 << 3
 };
 
-DAVA_DEFINE_ENUM_BITWISE_OPERATORS(eDigitalElementState)
+DAVA_DEFINE_ENUM_BITWISE_OPERATORS(eDigitalElementStates)
 
 /**
     \ingroup input    
@@ -85,21 +86,21 @@ public:
     /** Return unique device id */
     uint32 GetId() const;
 
-    virtual bool SupportsElement(uint32 elementId) const = 0;
+    virtual bool SupportsElement(eInputElements elementId) const = 0;
 
     /**
         Get digital state of an element with specified `elementId`.
 
         \pre Device should have a digital element with specified id. It can be checked with `SupportsElement` method.
     */
-    virtual eDigitalElementState GetDigitalElementState(uint32 elementId) const = 0;
+    virtual eDigitalElementStates GetDigitalElementState(eInputElements elementId) const = 0;
 
     /**
         Get an analog element's state with specified `elementId`
 
         \pre Device should have an analog element with specified id.
     */
-    virtual AnalogElementState GetAnalogElementState(uint32 elementId) const = 0;
+    virtual AnalogElementState GetAnalogElementState(eInputElements elementId) const = 0;
 
 private:
     const uint32 id;

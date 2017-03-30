@@ -8,7 +8,6 @@
 
 namespace DAVA
 {
-
 MouseDevice::MouseDevice(uint32 id)
     : InputDevice(id)
     , inputSystem(GetEngineContext()->inputSystem)
@@ -25,18 +24,18 @@ MouseDevice::~MouseDevice()
     Engine::Instance()->endFrame.Disconnect(endFrameConnectionToken);
 }
 
-bool MouseDevice::SupportsElement(uint32 elementId) const
+bool MouseDevice::SupportsElement(eInputElements elementId) const
 {
     return eInputElements::MOUSE_FIRST <= elementId && elementId <= eInputElements::MOUSE_LAST;
 }
 
-eDigitalElementState MouseDevice::GetDigitalElementState(uint32 elementId) const
+eDigitalElementStates MouseDevice::GetDigitalElementState(eInputElements elementId) const
 {
     DVASSERT(eInputElements::MOUSE_LBUTTON <= elementId && elementId <= eInputElements::MOUSE_EXT2BUTTON);
     return buttons[elementId - eInputElements::MOUSE_LBUTTON].GetState();
 }
 
-AnalogElementState MouseDevice::GetAnalogElementState(uint32 elementId) const
+AnalogElementState MouseDevice::GetAnalogElementState(eInputElements elementId) const
 {
     switch (elementId)
     {
@@ -159,6 +158,7 @@ void MouseDevice::OnEndFrame()
     {
         b.OnEndFrame();
     }
+
     mouseWheelDelta.x = 0.f;
     mouseWheelDelta.y = 0.f;
 }

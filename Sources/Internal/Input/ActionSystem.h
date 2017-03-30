@@ -51,7 +51,7 @@ struct DigitalElementState final
     eInputElements elementId = eInputElements::NONE;
 
     /** State of the input element */
-    eDigitalElementState stateMask = eDigitalElementState::NONE;
+    eDigitalElementStates stateMask = eDigitalElementStates::NONE;
 };
 
 /**
@@ -191,8 +191,12 @@ public:
     */
     void BindSet(const ActionSet& actionSet, uint32 deviceId1, uint32 deviceId2);
 
+    // TODO: move to separate class
     void GetUserInput(Function<void(Vector<eInputElements>)> callback);
 
+    // TODO: unbind all, unbind one etc.
+
+public:
     /** Emits when an action is triggered */
     Signal<Action> ActionTriggered;
 

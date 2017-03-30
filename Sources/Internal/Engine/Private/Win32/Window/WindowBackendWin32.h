@@ -116,6 +116,7 @@ private:
     LRESULT OnSetCursor(LPARAM lparam);
     bool OnClose();
     bool OnSysCommand(int sysCommand);
+    LRESULT OnInputLanguageChanged();
     LRESULT OnDestroy();
     LRESULT WindowProc(UINT message, WPARAM wparam, LPARAM lparam, bool& isHandled);
     static LRESULT CALLBACK WndProcStart(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
