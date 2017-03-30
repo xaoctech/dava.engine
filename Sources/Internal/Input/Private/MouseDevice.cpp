@@ -1,4 +1,4 @@
-#include "Input/MouseInputDevice.h"
+#include "Input/MouseDevice.h"
 
 #include "Engine/Engine.h"
 #include "Engine/Private/EngineBackend.h"
@@ -8,35 +8,35 @@
 
 namespace DAVA
 {
-const InputDeviceType MouseInputDevice::TYPE = 2;
+const InputDeviceType MouseDevice::TYPE = 2;
 
-MouseInputDevice::MouseInputDevice(uint32 id)
+MouseDevice::MouseDevice(uint32 id)
     : InputDevice(id)
     , inputSystem(GetEngineContext()->inputSystem)
 {
     mousePosition.x = mousePosition.y = mousePosition.z = 0.0f;
-    endFrameConnectionToken = Engine::Instance()->endFrame.Connect(this, &MouseInputDevice::OnEndFrame);
-    Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &MouseInputDevice::HandleEvent));
+    endFrameConnectionToken = Engine::Instance()->endFrame.Connect(this, &MouseDevice::OnEndFrame);
+    Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &MouseDevice::HandleEvent));
 }
 
-MouseInputDevice::~MouseInputDevice()
+MouseDevice::~MouseDevice()
 {
     Private::EngineBackend::Instance()->UninstallEventFilter(this);
     Engine::Instance()->endFrame.Disconnect(endFrameConnectionToken);
 }
 
-bool MouseInputDevice::SupportsElement(uint32 elementId) const
+bool MouseDevice::SupportsElement(uint32 elementId) const
 {
     return eInputElements::MOUSE_FIRST <= elementId && elementId <= eInputElements::MOUSE_LAST;
 }
 
-eDigitalElementState MouseInputDevice::GetDigitalElementState(uint32 elementId) const
+eDigitalElementState MouseDevice::GetDigitalElementState(uint32 elementId) const
 {
     DVASSERT(eInputElements::MOUSE_LBUTTON <= elementId && elementId <= eInputElements::MOUSE_EXT2BUTTON);
     return buttons[elementId - eInputElements::MOUSE_LBUTTON].GetState();
 }
 
-AnalogElementState MouseInputDevice::GetAnalogElementState(uint32 elementId) const
+AnalogElementState MouseDevice::GetAnalogElementState(uint32 elementId) const
 {
     switch (elementId)
     {
@@ -50,7 +50,7 @@ AnalogElementState MouseInputDevice::GetAnalogElementState(uint32 elementId) con
     }
 }
 
-bool MouseInputDevice::HandleEvent(const Private::MainDispatcherEvent& e)
+bool MouseDevice::HandleEvent(const Private::MainDispatcherEvent& e)
 {
     using Private::MainDispatcherEvent;
 
@@ -74,7 +74,7 @@ bool MouseInputDevice::HandleEvent(const Private::MainDispatcherEvent& e)
     return isHandled;
 }
 
-void MouseInputDevice::HandleMouseClick(const Private::MainDispatcherEvent& e)
+void MouseDevice::HandleMouseClick(const Private::MainDispatcherEvent& e)
 {
     bool pressed = e.type == Private::MainDispatcherEvent::MOUSE_BUTTON_DOWN;
     eMouseButtons button = e.mouseEvent.button;
@@ -97,7 +97,7 @@ void MouseInputDevice::HandleMouseClick(const Private::MainDispatcherEvent& e)
     inputSystem->DispatchInputEvent(inputEvent);
 }
 
-void MouseInputDevice::HandleMouseWheel(const Private::MainDispatcherEvent& e)
+void MouseDevice::HandleMouseWheel(const Private::MainDispatcherEvent& e)
 {
     InputEvent inputEvent;
     inputEvent.window = e.window;
@@ -119,7 +119,7 @@ void MouseInputDevice::HandleMouseWheel(const Private::MainDispatcherEvent& e)
     inputSystem->DispatchInputEvent(inputEvent);
 }
 
-void MouseInputDevice::HandleMouseMove(const Private::MainDispatcherEvent& e)
+void MouseDevice::HandleMouseMove(const Private::MainDispatcherEvent& e)
 {
     InputEvent inputEvent;
     inputEvent.window = e.window;
@@ -138,7 +138,7 @@ void MouseInputDevice::HandleMouseMove(const Private::MainDispatcherEvent& e)
     inputSystem->DispatchInputEvent(inputEvent);
 }
 
-void MouseInputDevice::OnEndFrame()
+void MouseDevice::OnEndFrame()
 {
     // Promote JustPressed & JustReleased states to Pressed/Released accordingly
     // TODO: optimize?

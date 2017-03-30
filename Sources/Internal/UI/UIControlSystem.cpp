@@ -30,7 +30,7 @@
 #include "Input/InputEvent.h"
 #include "Input/InputSystem.h"
 #include "Input/KeyboardInputDevice.h"
-#include "Input/MouseInputDevice.h"
+#include "Input/MouseDevice.h"
 
 namespace DAVA
 {
@@ -876,7 +876,7 @@ UIEvent UIControlSystem::MakeUIEvent(const InputEvent& inputEvent) const
         uie.isRelative = inputEvent.mouseEvent.isRelative;
         uie.modifiers = GetKeyboardModifierKeys();
 
-        MouseInputDevice* mouse = GetEngineContext()->deviceManager->GetMouse();
+        MouseDevice* mouse = GetEngineContext()->deviceManager->GetMouse();
         AnalogElementState mousePosition = mouse->GetAnalogElementState(eInputElements::MOUSE_POSITION);
         AnalogElementState mouseWheelDelta = mouse->GetAnalogElementState(eInputElements::MOUSE_WHEEL);
 
@@ -947,7 +947,7 @@ eModifierKeys UIControlSystem::GetKeyboardModifierKeys() const
     return modifierKeys;
 }
 
-eMouseButtons UIControlSystem::GetFirstPressedMouseButton(MouseInputDevice* mouse) const
+eMouseButtons UIControlSystem::GetFirstPressedMouseButton(MouseDevice* mouse) const
 {
     for (uint32 elem = eInputElements::MOUSE_LBUTTON; elem <= eInputElements::MOUSE_EXT2BUTTON; ++elem)
     {

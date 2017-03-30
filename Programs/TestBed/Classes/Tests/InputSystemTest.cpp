@@ -84,7 +84,7 @@ bool InputSystemTest::OnInputEvent(InputEvent const& event)
     {
         button = keyboardButtons[event.elementId];
     }
-    else if (event.deviceType == MouseInputDevice::TYPE)
+    else if (event.deviceType == MouseDevice::TYPE)
     {
         button = mouseButtons[event.elementId];
     }
