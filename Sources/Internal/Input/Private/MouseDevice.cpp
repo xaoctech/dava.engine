@@ -13,8 +13,9 @@ const InputDeviceType MouseDevice::TYPE = 2;
 MouseDevice::MouseDevice(uint32 id)
     : InputDevice(id)
     , inputSystem(GetEngineContext()->inputSystem)
+    , mousePosition{}
+    , mouseWheelDelta{}
 {
-    mousePosition.x = mousePosition.y = mousePosition.z = 0.0f;
     endFrameConnectionToken = Engine::Instance()->endFrame.Connect(this, &MouseDevice::OnEndFrame);
     Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &MouseDevice::HandleEvent));
 }
@@ -48,6 +49,18 @@ AnalogElementState MouseDevice::GetAnalogElementState(uint32 elementId) const
         DVASSERT(0, "Invalid elementId");
         return AnalogElementState();
     }
+}
+
+eInputElements MouseDevice::GetFirstPressedButton() const
+{
+    for (uint32 i = eInputElements::MOUSE_FIRST_BUTTON; i <= eInputElements::MOUSE_LAST_BUTTON; ++i)
+    {
+        if (buttons[i - eInputElements::MOUSE_FIRST_BUTTON].IsPressed())
+        {
+            return static_cast<eInputElements>(i);
+        }
+    }
+    return eInputElements::NONE;
 }
 
 bool MouseDevice::HandleEvent(const Private::MainDispatcherEvent& e)
@@ -86,10 +99,10 @@ void MouseDevice::HandleMouseClick(const Private::MainDispatcherEvent& e)
     inputEvent.deviceId = GetId();
     inputEvent.mouseEvent.isRelative = e.mouseEvent.isRelative;
 
-    size_t index = static_cast<size_t>(button) - 1;
+    uint32 index = static_cast<uint32>(button) - 1;
     pressed ? buttons[index].Press() : buttons[index].Release();
     inputEvent.digitalState = buttons[index].GetState();
-    inputEvent.elementId = static_cast<eInputElements>(static_cast<size_t>(eInputElements::MOUSE_LBUTTON) + index);
+    inputEvent.elementId = static_cast<eInputElements>(index + eInputElements::MOUSE_FIRST_BUTTON);
 
     mousePosition.x = e.mouseEvent.x;
     mousePosition.y = e.mouseEvent.y;
@@ -149,7 +162,6 @@ void MouseDevice::OnEndFrame()
     }
     mouseWheelDelta.x = 0.f;
     mouseWheelDelta.y = 0.f;
-    mouseWheelDelta.z = 0.f;
 }
 
 } // namespace DAVA

@@ -5,6 +5,7 @@
 #include "Base/FastName.h"
 #include "Base/Singleton.h"
 #include "Engine/Private/EnginePrivateFwd.h"
+#include "Input/InputElements.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 
 #include "UI/UIControl.h"
@@ -342,7 +343,7 @@ private:
 
     UIEvent MakeUIEvent(const InputEvent& inputEvent) const;
     eModifierKeys GetKeyboardModifierKeys() const;
-    eMouseButtons GetFirstPressedMouseButton(MouseDevice* mouse) const;
+    static eMouseButtons TranslateMouseElementToButtons(eInputElements element);
 
 #if defined(__DAVAENGINE_COREV2__)
     friend class Private::EngineBackend;

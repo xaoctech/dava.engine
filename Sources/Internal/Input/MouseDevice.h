@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Engine/EngineTypes.h"
 #include "Input/InputDevice.h"
 #include "Input/InputEvent.h"
 #include "Input/Private/DigitalElement.h"
@@ -28,6 +27,8 @@ public:
     eDigitalElementState GetDigitalElementState(uint32 elementId) const override;
     AnalogElementState GetAnalogElementState(uint32 elementId) const override;
 
+    eInputElements GetFirstPressedButton() const;
+
 private:
     MouseDevice(uint32 id);
     ~MouseDevice() override;
@@ -43,7 +44,7 @@ private:
 private:
     InputSystem* inputSystem = nullptr;
 
-    Private::DigitalElement buttons[static_cast<size_t>(eMouseButtons::COUNT)];
+    Private::DigitalElement buttons[eInputElements::MOUSE_LAST_BUTTON - eInputElements::MOUSE_FIRST_BUTTON + 1];
     AnalogElementState mousePosition;
     AnalogElementState mouseWheelDelta;
 

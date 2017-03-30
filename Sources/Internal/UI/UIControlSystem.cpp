@@ -898,7 +898,7 @@ UIEvent UIControlSystem::MakeUIEvent(const InputEvent& inputEvent) const
             break;
         case eInputElements::MOUSE_POSITION:
             // TODO: Holy shit, how to make multiple DRAG UIEvents from single inputEvent
-            uie.mouseButton = GetFirstPressedMouseButton(mouse);
+            uie.mouseButton = TranslateMouseElementToButtons(mouse->GetFirstPressedButton());
             uie.phase = uie.mouseButton == eMouseButtons::NONE ? UIEvent::Phase::MOVE : UIEvent::Phase::DRAG;
             uie.physPoint = { mousePosition.x, mousePosition.y };
             break;
@@ -947,17 +947,23 @@ eModifierKeys UIControlSystem::GetKeyboardModifierKeys() const
     return modifierKeys;
 }
 
-eMouseButtons UIControlSystem::GetFirstPressedMouseButton(MouseDevice* mouse) const
+eMouseButtons UIControlSystem::TranslateMouseElementToButtons(eInputElements element)
 {
-    for (uint32 elem = eInputElements::MOUSE_LBUTTON; elem <= eInputElements::MOUSE_EXT2BUTTON; ++elem)
+    switch (element)
     {
-        eDigitalElementState state = mouse->GetDigitalElementState(elem);
-        if ((state & eDigitalElementState::PRESSED) == eDigitalElementState::PRESSED)
-        {
-            return static_cast<eMouseButtons>(elem - eInputElements::MOUSE_LBUTTON + 1);
-        }
+    case eInputElements::MOUSE_LBUTTON:
+        return eMouseButtons::LEFT;
+    case eInputElements::MOUSE_RBUTTON:
+        return eMouseButtons::RIGHT;
+    case eInputElements::MOUSE_MBUTTON:
+        return eMouseButtons::MIDDLE;
+    case eInputElements::MOUSE_EXT1BUTTON:
+        return eMouseButtons::EXTENDED1;
+    case eInputElements::MOUSE_EXT2BUTTON:
+        return eMouseButtons::EXTENDED2;
+    default:
+        return eMouseButtons::NONE;
     }
-    return eMouseButtons::NONE;
 }
 
 } // namespace DAVA

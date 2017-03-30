@@ -42,6 +42,11 @@ public:
         return state;
     }
 
+    bool IsPressed() const
+    {
+        return (state & eDigitalElementState::PRESSED) == eDigitalElementState::PRESSED;
+    }
+
 private:
     eDigitalElementState state;
 };

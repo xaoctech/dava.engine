@@ -147,6 +147,11 @@ enum eInputElements : uint32
     MOUSE_WHEEL,
     MOUSE_POSITION,
 
+    MOUSE_FIRST = MOUSE_LBUTTON,
+    MOUSE_LAST = MOUSE_POSITION,
+    MOUSE_FIRST_BUTTON = MOUSE_LBUTTON,
+    MOUSE_LAST_BUTTON = MOUSE_EXT2BUTTON,
+
     // Counters
 
     FIRST = NONE,
@@ -156,10 +161,6 @@ enum eInputElements : uint32
     KB_FIRST = KB_ESCAPE,
     KB_LAST = KB_F19,
     KB_COUNT = KB_LAST - KB_FIRST + 1,
-
-    MOUSE_FIRST = MOUSE_LBUTTON,
-    MOUSE_LAST = MOUSE_POSITION,
-    MOUSE_COUNT = MOUSE_LAST - MOUSE_FIRST + 1
 };
 
 const InputElementInfo& GetInputElementInfo(eInputElements element);
