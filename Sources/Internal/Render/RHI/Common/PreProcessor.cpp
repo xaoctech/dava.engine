@@ -269,6 +269,17 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
         else if( s[0] == '*'  &&  s[1] == '/' )
             cmt_block = false;
 
+        if( s[0] == '/'  &&  s[1] == '/' )
+        {
+            char*   end = s;
+
+            while( *s  &&  *s != '\n' )
+                ++s;
+            if( *s == 0 )
+                return success;
+            
+            *end = 0;
+        }
 
         int skipping_line = false;
 
