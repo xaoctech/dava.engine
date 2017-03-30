@@ -31,7 +31,6 @@
 #include "Input/InputSystem.h"
 #include "Input/KeyboardInputDevice.h"
 #include "Input/MouseInputDevice.h"
-#include "Input/MouseDevice.h"
 
 namespace DAVA
 {
