@@ -72,7 +72,7 @@ eInputElements KeyboardInputDevice::ConvertVirtualToScancode(eInputElements virt
     return impl->ConvertDavaVirtualToDavaScancode(virtualElement);
 }
 
-void KeyboardInputDevice::CreateAndSendInputEvent(eInputElements scancodeElementId, const Private::DigitalElement& element, Window* window, int64 timestamp)
+void KeyboardInputDevice::CreateAndSendInputEvent(eInputElements elementId, const Private::DigitalElement& element, Window* window, int64 timestamp)
 {
     InputEvent inputEvent;
     inputEvent.window = window;
@@ -80,7 +80,7 @@ void KeyboardInputDevice::CreateAndSendInputEvent(eInputElements scancodeElement
     inputEvent.deviceType = eInputDeviceTypes::KEYBOARD;
     inputEvent.deviceId = GetId();
     inputEvent.digitalState = element.GetState();
-    inputEvent.elementId = scancodeElementId;
+    inputEvent.elementId = elementId;
 
     inputSystem->DispatchInputEvent(inputEvent);
 }
@@ -107,7 +107,8 @@ bool KeyboardInputDevice::HandleEvent(const Private::MainDispatcherEvent& e)
 
         // Send event
 
-        CreateAndSendInputEvent(scancodeElementId, element, e.window, e.timestamp);
+        eInputElements virtualElementId = impl->ConvertDavaScancodeToDavaVirtual(scancodeElementId);
+        CreateAndSendInputEvent(virtualElementId, element, e.window, e.timestamp);
 
         return true;
     }

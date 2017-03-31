@@ -33,6 +33,7 @@
 #include "Job/JobManager.h"
 #include "Input/InputSystem.h"
 #include "Input/ActionSystem.h"
+#include "Input/InputListener.h"
 #include "Logger/Logger.h"
 #include "MemoryManager/MemoryManager.h"
 #include "ModuleManager/ModuleManager.h"
@@ -819,6 +820,8 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
     context->pluginManager = new PluginManager(GetEngine());
     context->analyticsCore = new Analytics::Core;
 
+    context->inputListener = new InputListener();
+
 #ifdef __DAVAENGINE_AUTOTESTING__
     context->autotestingSystem = new AutotestingSystem();
 #endif
@@ -943,6 +946,16 @@ void EngineBackend::DestroySubsystems()
     {
         delete context->dlcManager;
         context->dlcManager = nullptr;
+    }
+    if (context->actionSystem != nullptr)
+    {
+        delete context->actionSystem;
+        context->actionSystem = nullptr;
+    }
+    if (context->inputListener != nullptr)
+    {
+        delete context->inputListener;
+        context->inputListener = nullptr;
     }
     if (context->inputSystem != nullptr)
     {

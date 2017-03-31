@@ -3,6 +3,7 @@
 #include "Engine/Engine.h"
 #include "DeviceManager/DeviceManager.h"
 #include "Utils/UTF8Utils.h"
+#include "Input/InputListener.h"
 
 using namespace DAVA;
 
@@ -98,7 +99,10 @@ void InputSystemTest::UnloadResources()
         SafeRelease(it->second);
     }
 
-    SafeRelease(inputListenerStartButton);
+    SafeRelease(inputListenerDigitalSingleWithoutModifiersButton);
+    SafeRelease(inputListenerDigitalSingleWithModifiersButton);
+    SafeRelease(inputListenerDigitalMultipleAnyButton);
+    SafeRelease(inputListenerAnalogButton);
     SafeRelease(inputListenerResultField);
 
     // TODO: unbind action set
@@ -469,20 +473,44 @@ void InputSystemTest::CreateInputListenerUI()
 {
     ScopedPtr<FTFont> font(FTFont::Create("~res:/Fonts/korinna.ttf"));
 
-    inputListenerStartButton = new UIButton(Rect(680, 450, 150, 30));
-    inputListenerStartButton->SetStateFont(0xFF, font);
-    inputListenerStartButton->SetStateFontColor(0xFF, Color::White);
-    inputListenerStartButton->SetDebugDraw(true);
-    inputListenerStartButton->SetStateText(0xFF, L"Start listening for input");
-    inputListenerStartButton->AddEvent(UIButton::EVENT_TOUCH_UP_INSIDE, Message(this, &InputSystemTest::OnInputListenerButtonPressed));
-    AddControl(inputListenerStartButton);
+    inputListenerDigitalSingleWithoutModifiersButton = new UIButton(Rect(680, 450, 250, 30));
+    inputListenerDigitalSingleWithoutModifiersButton->SetStateFont(0xFF, font);
+    inputListenerDigitalSingleWithoutModifiersButton->SetStateFontColor(0xFF, Color::White);
+    inputListenerDigitalSingleWithoutModifiersButton->SetDebugDraw(true);
+    inputListenerDigitalSingleWithoutModifiersButton->SetStateText(0xFF, L"Listen: digital single without modifiers");
+    inputListenerDigitalSingleWithoutModifiersButton->AddEvent(UIButton::EVENT_TOUCH_UP_INSIDE, Message(this, &InputSystemTest::OnInputListenerButtonPressed));
+    AddControl(inputListenerDigitalSingleWithoutModifiersButton);
 
-    inputListenerResultField = new UIStaticText(Rect(680, 500, 150, 30));
+    inputListenerDigitalSingleWithModifiersButton = new UIButton(Rect(680, 490, 250, 30));
+    inputListenerDigitalSingleWithModifiersButton->SetStateFont(0xFF, font);
+    inputListenerDigitalSingleWithModifiersButton->SetStateFontColor(0xFF, Color::White);
+    inputListenerDigitalSingleWithModifiersButton->SetDebugDraw(true);
+    inputListenerDigitalSingleWithModifiersButton->SetStateText(0xFF, L"Listen: digital single with modifiers");
+    inputListenerDigitalSingleWithModifiersButton->AddEvent(UIButton::EVENT_TOUCH_UP_INSIDE, Message(this, &InputSystemTest::OnInputListenerButtonPressed));
+    AddControl(inputListenerDigitalSingleWithModifiersButton);
+
+    inputListenerDigitalMultipleAnyButton = new UIButton(Rect(680, 530, 250, 30));
+    inputListenerDigitalMultipleAnyButton->SetStateFont(0xFF, font);
+    inputListenerDigitalMultipleAnyButton->SetStateFontColor(0xFF, Color::White);
+    inputListenerDigitalMultipleAnyButton->SetDebugDraw(true);
+    inputListenerDigitalMultipleAnyButton->SetStateText(0xFF, L"Listen: digital multiple any");
+    inputListenerDigitalMultipleAnyButton->AddEvent(UIButton::EVENT_TOUCH_UP_INSIDE, Message(this, &InputSystemTest::OnInputListenerButtonPressed));
+    AddControl(inputListenerDigitalMultipleAnyButton);
+
+    inputListenerAnalogButton = new UIButton(Rect(680, 570, 250, 30));
+    inputListenerAnalogButton->SetStateFont(0xFF, font);
+    inputListenerAnalogButton->SetStateFontColor(0xFF, Color::White);
+    inputListenerAnalogButton->SetDebugDraw(true);
+    inputListenerAnalogButton->SetStateText(0xFF, L"Listen: analog");
+    inputListenerAnalogButton->AddEvent(UIButton::EVENT_TOUCH_UP_INSIDE, Message(this, &InputSystemTest::OnInputListenerButtonPressed));
+    AddControl(inputListenerAnalogButton);
+
+    inputListenerResultField = new UIStaticText(Rect(680, 610, 250, 30));
     inputListenerResultField->SetTextColor(Color::White);
     inputListenerResultField->SetFont(font);
     inputListenerResultField->SetMultiline(true);
-    inputListenerResultField->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
-    inputListenerResultField->SetText(L"");
+    inputListenerResultField->SetTextAlign(ALIGN_HCENTER | ALIGN_VCENTER);
+    inputListenerResultField->SetText(L"Listened input will be shown here");
     AddControl(inputListenerResultField);
 }
 
@@ -514,6 +542,11 @@ eInputElements InputSystemTest::GetVirtualOrScancodeInputElement(eInputElements 
 
 void InputSystemTest::HighlightDigitalButton(DAVA::UIButton* button, DAVA::eDigitalElementStates state)
 {
+    if (button == nullptr)
+    {
+        return;
+    }
+
     if ((state & eDigitalElementStates::PRESSED) != eDigitalElementStates::NONE)
     {
         button->SetDebugDrawColor(Color(0.0f, 1.0f, 0.0f, 1.0f));
@@ -528,10 +561,10 @@ bool InputSystemTest::OnInputEvent(InputEvent const& event)
 {
     if (event.deviceType == eInputDeviceTypes::KEYBOARD)
     {
-        eInputElements virtualCounterpart = GetEngineContext()->deviceManager->GetKeyboard()->ConvertScancodeToVirtual(event.elementId);
+        eInputElements scancodeCounterpart = GetEngineContext()->deviceManager->GetKeyboard()->ConvertVirtualToScancode(event.elementId);
 
-        UIButton* scancodeButton = keyboardButtons[event.elementId];
-        UIButton* virtualButton = keyboardButtons[virtualCounterpart];
+        UIButton* virtualButton = keyboardButtons[event.elementId];
+        UIButton* scancodeButton = keyboardButtons[scancodeCounterpart];
 
         HighlightDigitalButton(scancodeButton, event.digitalState);
         HighlightDigitalButton(virtualButton, event.digitalState);
@@ -552,6 +585,13 @@ bool InputSystemTest::OnInputEvent(InputEvent const& event)
         }
     }
 
+    InputListener* inputListener = GetEngineContext()->inputListener;
+    if (event.elementId == eInputElements::KB_ESCAPE_VIRTUAL && inputListener->IsListening())
+    {
+        inputListener->StopListening();
+        inputListenerResultField->SetText(L"Stopped listening");
+    }
+
     return false;
 }
 
@@ -564,7 +604,25 @@ void InputSystemTest::OnAction(DAVA::Action action)
 
 void InputSystemTest::OnInputListenerButtonPressed(DAVA::BaseObject* sender, void* data, void* callerData)
 {
-    GetEngineContext()->actionSystem->GetUserInput(MakeFunction(this, &InputSystemTest::OnInputListeningEnded));
+    DAVA::eInputListenerModes mode;
+    if (sender == inputListenerDigitalSingleWithoutModifiersButton)
+    {
+        mode = DAVA::eInputListenerModes::DIGITAL_SINGLE_WITHOUT_MODIFIERS;
+    }
+    else if (sender == inputListenerDigitalSingleWithModifiersButton)
+    {
+        mode = DAVA::eInputListenerModes::DIGITAL_SINGLE_WITH_MODIFIERS;
+    }
+    else if (sender == inputListenerDigitalMultipleAnyButton)
+    {
+        mode = DAVA::eInputListenerModes::DIGITAL_MULTIPLE_ANY;
+    }
+    else
+    {
+        mode = DAVA::eInputListenerModes::ANALOG;
+    }
+
+    GetEngineContext()->inputListener->Listen(mode, MakeFunction(this, &InputSystemTest::OnInputListeningEnded));
     inputListenerResultField->SetText(L"Listening...");
 }
 

@@ -40,7 +40,7 @@ private:
     KeyboardInputDevice(const KeyboardInputDevice&) = delete;
     KeyboardInputDevice& operator=(const KeyboardInputDevice&) = delete;
 
-    void CreateAndSendInputEvent(eInputElements scancodeElementId, const Private::DigitalElement& element, Window* window, DAVA::int64 timestamp);
+    void CreateAndSendInputEvent(eInputElements elementId, const Private::DigitalElement& element, Window* window, DAVA::int64 timestamp);
 
     bool HandleEvent(const Private::MainDispatcherEvent& e);
     void OnEndFrame();

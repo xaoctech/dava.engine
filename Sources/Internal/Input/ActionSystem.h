@@ -191,9 +191,6 @@ public:
     */
     void BindSet(const ActionSet& actionSet, uint32 deviceId1, uint32 deviceId2);
 
-    // TODO: move to separate class
-    void GetUserInput(Function<void(Vector<eInputElements>)> callback);
-
     // TODO: unbind all, unbind one etc.
 
 public:
@@ -208,6 +205,5 @@ private:
 
 private:
     Private::ActionSystemImpl* impl = nullptr;
-    ;
 };
 }

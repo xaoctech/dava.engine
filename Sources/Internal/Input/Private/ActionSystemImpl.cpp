@@ -86,11 +86,6 @@ void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)
     boundSets.push_back(boundSet);
 }
 
-void ActionSystemImpl::GetUserInput(Function<void(Vector<eInputElements>)> callback)
-{
-    userInputCallback = callback;
-}
-
 // Helper function to check if specified states are active
 bool ActionSystemImpl::CheckDigitalStates(const Array<DigitalElementState, MAX_DIGITAL_STATES_COUNT>& states, const Vector<uint32>& devices)
 {
@@ -130,33 +125,6 @@ bool ActionSystemImpl::CheckDigitalStates(const Array<DigitalElementState, MAX_D
 
 bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
 {
-    // If user requested user input, process it
-    // Ignore action sets
-    if (userInputCallback != nullptr)
-    {
-        const InputElementInfo& elementInfo = GetInputElementInfo(event.elementId);
-        if (elementInfo.type == eInputElementTypes::DIGITAL)
-        {
-            if ((event.digitalState & eDigitalElementStates::JUST_PRESSED) == eDigitalElementStates::JUST_PRESSED)
-            {
-                listenedInputElements.push_back(event.elementId);
-            }
-            else if ((event.digitalState & eDigitalElementStates::JUST_RELEASED) == eDigitalElementStates::JUST_RELEASED)
-            {
-                if (listenedInputElements.size() != 0)
-                {
-                    userInputCallback(listenedInputElements);
-                    listenedInputElements.clear();
-                    userInputCallback = nullptr;
-                }
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
     // Handle Bound sets
 
     for (const BoundActionSet& setBinding : boundSets)

@@ -291,6 +291,43 @@ inline bool IsMouseInputElement(eInputElements element)
     return eInputElements::MOUSE_FIRST <= element && element <= eInputElements::MOUSE_LAST;
 }
 
+inline bool IsKeyboardInputElement(eInputElements element)
+{
+    return eInputElements::KB_FIRST <= element && element <= eInputElements::KB_LAST;
+}
+
+inline bool IsKeyboardModifierInputElement(eInputElements element)
+{
+    return (element == eInputElements::KB_LSHIFT_VIRTUAL ||
+            element == eInputElements::KB_LCTRL_VIRTUAL ||
+            element == eInputElements::KB_LALT_VIRTUAL ||
+            element == eInputElements::KB_RSHIFT_VIRTUAL ||
+            element == eInputElements::KB_RCTRL_VIRTUAL ||
+            element == eInputElements::KB_RALT_VIRTUAL);
+}
+
+inline bool IsKeyboardSystemInputElement(eInputElements element)
+{
+    return (element == eInputElements::KB_ESCAPE_VIRTUAL ||
+            element == eInputElements::KB_CAPSLOCK_VIRTUAL ||
+            element == eInputElements::KB_LWIN_VIRTUAL ||
+            element == eInputElements::KB_RWIN_VIRTUAL ||
+            element == eInputElements::KB_LCMD_VIRTUAL ||
+            element == eInputElements::KB_RCMD_VIRTUAL ||
+            element == eInputElements::KB_PRINTSCREEN_VIRTUAL ||
+            element == eInputElements::KB_SCROLLLOCK_VIRTUAL ||
+            element == eInputElements::KB_PAUSE_VIRTUAL ||
+            element == eInputElements::KB_INSERT_VIRTUAL ||
+            element == eInputElements::KB_HOME_VIRTUAL ||
+            element == eInputElements::KB_PAGEUP_VIRTUAL ||
+            element == eInputElements::KB_PAGEDOWN_VIRTUAL ||
+            element == eInputElements::KB_DELETE_VIRTUAL ||
+            element == eInputElements::KB_END_VIRTUAL ||
+            element == eInputElements::KB_PAGEDOWN_VIRTUAL ||
+            element == eInputElements::KB_NUMLOCK_VIRTUAL ||
+            element == eInputElements::KB_MENU_VIRTUAL);
+}
+
 /** Get additional information about an element */
 const InputElementInfo& GetInputElementInfo(eInputElements element);
 } // namespace DAVA
