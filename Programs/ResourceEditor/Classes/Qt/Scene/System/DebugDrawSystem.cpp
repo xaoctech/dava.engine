@@ -72,10 +72,10 @@ void DebugDrawSystem::Draw(DAVA::Entity* entity)
         DrawSwitchesWithDifferentLods(entity);
         DrawSoundNode(entity);
         DrawDecals(entity);
+        DrawDebugOctTree(entity);
 
         if (isSelected)
         {
-            DrawDebugOctTree(entity);
             DrawSelectedSoundNode(entity);
         }
 
@@ -161,26 +161,17 @@ void DebugDrawSystem::DrawDebugOctTree(DAVA::Entity* entity)
         if (octTree == nullptr)
             continue;
 
+        const DAVA::Matrix4& wt = entity->GetWorldTransform();
         if (renderBatch->debugDrawOctree)
-            octTree->DebugDraw(entity->GetWorldTransform(), 0, drawer);
+            octTree->DebugDraw(wt, 0, drawer);
 
-        for (DAVA::uint32 triangleIndex : octTree->GetInvalidTriangles())
+        for (const DAVA::GeometryOctTree::Triangle& tri : octTree->GetDebugTriangles())
         {
-            DAVA::int32 i1, i2, i3;
-            pg->GetIndex(triangleIndex * 3 + 0, i1);
-            pg->GetIndex(triangleIndex * 3 + 1, i2);
-            pg->GetIndex(triangleIndex * 3 + 2, i3);
-
-            DAVA::Vector3 v1, v2, v3;
-            pg->GetCoord(i1, v1);
-            pg->GetCoord(i2, v2);
-            pg->GetCoord(i3, v3);
-
-            v1 = v1 * (*renderObject->GetWorldTransformPtr());
-            v2 = v2 * (*renderObject->GetWorldTransformPtr());
-            v3 = v3 * (*renderObject->GetWorldTransformPtr());
-            GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawLine(v1, v2, DAVA::Color(0.0f, 0.5f, 1.0f, 1.0f), DAVA::RenderHelper::eDrawType::DRAW_WIRE_NO_DEPTH);
-            GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawLine(v2, v3, DAVA::Color(0.0f, 0.5f, 1.0f, 1.0f), DAVA::RenderHelper::eDrawType::DRAW_WIRE_NO_DEPTH);
+            DAVA::Vector3 v1 = tri.v1 * entity->GetWorldTransform();
+            DAVA::Vector3 v2 = tri.v2 * entity->GetWorldTransform();
+            DAVA::Vector3 v3 = tri.v3 * entity->GetWorldTransform();
+            GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawLine(v1, v2, DAVA::Color(1.0f, 0.5f, 1.0f, 1.0f), DAVA::RenderHelper::eDrawType::DRAW_WIRE_NO_DEPTH);
+            GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawLine(v2, v3, DAVA::Color(0.5f, 0.5f, 1.0f, 1.0f), DAVA::RenderHelper::eDrawType::DRAW_WIRE_NO_DEPTH);
             GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawLine(v3, v1, DAVA::Color(0.0f, 0.5f, 1.0f, 1.0f), DAVA::RenderHelper::eDrawType::DRAW_WIRE_NO_DEPTH);
         }
     }

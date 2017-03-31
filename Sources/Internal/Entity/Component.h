@@ -49,6 +49,7 @@ public:
         WASD_CONTROLLER_COMPONENT,
         VISIBILITY_CHECK_COMPONENT,
         GEO_DECAL_COMPONENT,
+        GEO_DECAL_RENDER_COMPONENT,
 
         //debug components - note that everything below won't be serialized
         DEBUG_COMPONENTS,
