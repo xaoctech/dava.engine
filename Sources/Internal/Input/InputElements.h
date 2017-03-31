@@ -4,23 +4,15 @@
 
 namespace DAVA
 {
-enum eInputElementTypes
-{
-    DIGITAL,
-    ANALOG
-};
-
-struct InputElementInfo final
-{
-    String name;
-    eInputElementTypes type;
-};
-
+/**
+	List of all supported input elements.
+	An input element is a part of a device which can be used for input. For example, a keyboard button, a mouse button, a mouse wheel, gamepad's stick etc.
+*/
 enum eInputElements : uint32
 {
     NONE = 0,
 
-    // Keyboard virtual
+    // Keyboard virtual keys
 
     KB_1_VIRTUAL,
     KB_2_VIRTUAL,
@@ -130,7 +122,7 @@ enum eInputElements : uint32
     KB_LCMD_VIRTUAL,
     KB_RCMD_VIRTUAL,
 
-    // Keyboard scancodes
+    // Keyboard scancode keys
 
     KB_1_SCANCODE,
     KB_2_SCANCODE,
@@ -274,11 +266,31 @@ enum eInputElements : uint32
     KB_COUNT_VIRTUAL = KB_LAST_VIRTUAL - KB_FIRST_VIRTUAL + 1,
 };
 
-const InputElementInfo& GetInputElementInfo(eInputElements element);
+/** List of input element types. */
+enum eInputElementTypes
+{
+    /** Basically, a button, which can just be pressed and released. */
+    DIGITAL,
+
+    /**
+		Element whose state can only be described using multiple float values.
+		For example, gamepad's stick position can be described using normalized x and y values.
+	*/
+    ANALOG
+};
+
+/** Contains additional information about an element. */
+struct InputElementInfo final
+{
+    String name;
+    eInputElementTypes type;
+};
 
 inline bool IsMouseInputElement(eInputElements element)
 {
     return eInputElements::MOUSE_FIRST <= element && element <= eInputElements::MOUSE_LAST;
 }
 
+/** Get additional information about an element */
+const InputElementInfo& GetInputElementInfo(eInputElements element);
 } // namespace DAVA

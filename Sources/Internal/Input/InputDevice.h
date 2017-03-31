@@ -12,12 +12,6 @@ namespace DAVA
         - Managing input devices (keyboards, mouses, gamepads etc.)
         - Handling input events sent by a platform
         - Storing each input device's state
-
-    An input element is a part of a device which can be used for input. For example, a keyboard button, a mouse button, a mouse wheel, gamepad's stick etc.
-    There are two types of them:
-        - Digital element: basically, a button, which can just be pressed and released.
-        - Analog element: any element whose state can only be described using multiple float values.
-                          For example, gamepad's stick position can be described using normalized x and y values.
 */
 
 /**
@@ -49,7 +43,7 @@ DAVA_DEFINE_ENUM_BITWISE_OPERATORS(eDigitalElementStates)
 /**
     \ingroup input    
 	Struct describing analog element state.
-    Meanings of `x`, `y` and `z` values can be different for different devices.
+    Meanings of `x`, `y` and `z` values can be different for different elements.
 
     For example, a gamepad's stick defines x and y values in range of [-1; 1] for according axises.
 */
@@ -64,9 +58,6 @@ struct AnalogElementState final
     /** Analog Z value */
     float32 z;
 };
-
-// TODO: decide which type is better
-using InputDeviceType = uint32;
 
 /**
     \ingroup input
@@ -86,19 +77,20 @@ public:
     /** Return unique device id */
     uint32 GetId() const;
 
+    /** Return true if element with specified `elementId` is supported by the device (i.e. it's state can be requested) */
     virtual bool SupportsElement(eInputElements elementId) const = 0;
 
     /**
-        Get digital state of an element with specified `elementId`.
+        Get state of a digital element with specified `elementId`.
 
-        \pre Device should have a digital element with specified id. It can be checked with `SupportsElement` method.
+        \pre Device should support specified digital element.
     */
     virtual eDigitalElementStates GetDigitalElementState(eInputElements elementId) const = 0;
 
     /**
-        Get an analog element's state with specified `elementId`
+        Get state of an analog element with specified `elementId`.
 
-        \pre Device should have an analog element with specified id.
+		\pre Device should support specified analog element.
     */
     virtual AnalogElementState GetAnalogElementState(eInputElements elementId) const = 0;
 

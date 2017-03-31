@@ -8,6 +8,7 @@
 
 #include "Engine/Engine.h"
 #include "Input/InputSystem.h"
+#include "Time/SystemTimer.h"
 
 namespace DAVA
 {
@@ -16,19 +17,31 @@ KeyboardInputDevice::KeyboardInputDevice(uint32 id)
     , inputSystem(GetEngineContext()->inputSystem)
     , impl(new Private::KeyboardDeviceImpl())
 {
-    endFrameConnectionToken = Engine::Instance()->endFrame.Connect(this, &KeyboardInputDevice::OnEndFrame);
+    Engine* engine = Engine::Instance();
+    endFrameConnectionToken = engine->endFrame.Connect(this, &KeyboardInputDevice::OnEndFrame);
+    primaryWindowFocusChangedToken = engine->PrimaryWindow()->focusChanged.Connect(this, &KeyboardInputDevice::OnWindowFocusChanged); // TODO: handle all the windows
+
     Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &KeyboardInputDevice::HandleEvent));
 }
 
 KeyboardInputDevice::~KeyboardInputDevice()
 {
-    Engine::Instance()->endFrame.Disconnect(endFrameConnectionToken);
+    Engine* engine = Engine::Instance();
+    engine->endFrame.Disconnect(endFrameConnectionToken);
+    engine->PrimaryWindow()->focusChanged.Disconnect(primaryWindowFocusChangedToken);
+
     Private::EngineBackend::Instance()->UninstallEventFilter(this);
+
+    if (impl != nullptr)
+    {
+        delete impl;
+        impl = nullptr;
+    }
 }
 
 bool KeyboardInputDevice::SupportsElement(eInputElements elementId) const
 {
-    return (elementId >= static_cast<uint32>(eInputElements::KB_FIRST)) && (elementId <= static_cast<uint32>(eInputElements::KB_LAST));
+    return (elementId >= eInputElements::KB_FIRST) && (elementId <= eInputElements::KB_LAST);
 }
 
 eDigitalElementStates KeyboardInputDevice::GetDigitalElementState(eInputElements elementId) const
@@ -49,6 +62,29 @@ AnalogElementState KeyboardInputDevice::GetAnalogElementState(eInputElements ele
     return {};
 }
 
+eInputElements KeyboardInputDevice::ConvertScancodeToVirtual(eInputElements scancodeElement) const
+{
+    return impl->ConvertDavaScancodeToDavaVirtual(scancodeElement);
+}
+
+eInputElements KeyboardInputDevice::ConvertVirtualToScancode(eInputElements virtualElement) const
+{
+    return impl->ConvertDavaVirtualToDavaScancode(virtualElement);
+}
+
+void KeyboardInputDevice::CreateAndSendInputEvent(eInputElements scancodeElementId, const Private::DigitalElement& element, Window* window, int64 timestamp)
+{
+    InputEvent inputEvent;
+    inputEvent.window = window;
+    inputEvent.timestamp = timestamp / 1000.0f;
+    inputEvent.deviceType = eInputDeviceTypes::KEYBOARD;
+    inputEvent.deviceId = GetId();
+    inputEvent.digitalState = element.GetState();
+    inputEvent.elementId = scancodeElementId;
+
+    inputSystem->DispatchInputEvent(inputEvent);
+}
+
 bool KeyboardInputDevice::HandleEvent(const Private::MainDispatcherEvent& e)
 {
     using Private::MainDispatcherEvent;
@@ -57,8 +93,8 @@ bool KeyboardInputDevice::HandleEvent(const Private::MainDispatcherEvent& e)
     {
         // Save state
 
-        eInputElements scancodeElement = impl->ConvertNativeScancodeToDavaScancode(e.keyEvent.key);
-        Private::DigitalElement& element = keys[scancodeElement - eInputElements::KB_FIRST_SCANCODE];
+        eInputElements scancodeElementId = impl->ConvertNativeScancodeToDavaScancode(e.keyEvent.key);
+        Private::DigitalElement& element = keys[scancodeElementId - eInputElements::KB_FIRST_SCANCODE];
 
         if (e.type == MainDispatcherEvent::KEY_DOWN)
         {
@@ -69,17 +105,9 @@ bool KeyboardInputDevice::HandleEvent(const Private::MainDispatcherEvent& e)
             element.Release();
         }
 
-        // Send input event
+        // Send event
 
-        InputEvent inputEvent;
-        inputEvent.window = e.window;
-        inputEvent.timestamp = e.timestamp / 1000.0f;
-        inputEvent.deviceType = eInputDeviceTypes::KEYBOARD;
-        inputEvent.deviceId = GetId();
-        inputEvent.digitalState = element.GetState();
-        inputEvent.elementId = scancodeElement;
-
-        inputSystem->DispatchInputEvent(inputEvent);
+        CreateAndSendInputEvent(scancodeElementId, element, e.window, e.timestamp);
 
         return true;
     }
@@ -100,13 +128,18 @@ void KeyboardInputDevice::OnEndFrame()
     }
 }
 
-eInputElements KeyboardInputDevice::ConvertScancodeToVirtual(eInputElements scancodeElement) const
+void KeyboardInputDevice::OnWindowFocusChanged(DAVA::Window* window, bool focused)
 {
-    return impl->ConvertDavaScancodeToDavaVirtual(scancodeElement);
-}
-
-eInputElements KeyboardInputDevice::ConvertVirtualToScancode(eInputElements virtualElement) const
-{
-    return impl->ConvertDavaVirtualToDavaScancode(virtualElement);
+    if (!focused)
+    {
+        for (int i = 0; i < static_cast<uint32>(eInputElements::KB_COUNT_SCANCODE); ++i)
+        {
+            if (keys[i].IsPressed())
+            {
+                keys[i].Release();
+                CreateAndSendInputEvent(static_cast<eInputElements>(eInputElements::KB_FIRST_SCANCODE + i), keys[i], window, SystemTimer::GetMs());
+            }
+        }
+    }
 }
 }
