@@ -40,7 +40,7 @@ public:
     void RemoveFilter(FastName filter);
 
 private:
-    FastName slotName;
+    FastName slotName = FastName("");
 
     Matrix4 attachmentTransform;
     FilePath configFilePath;

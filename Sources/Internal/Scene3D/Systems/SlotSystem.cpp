@@ -203,9 +203,11 @@ void SlotSystem::RemoveComponent(Entity* entity, Component* component)
     auto iter = slotToLoadedEntity.find(component);
     if (iter != slotToLoadedEntity.end())
     {
-        deletePending.push_back(iter->second);
-
-        loadedEntityToSlot.erase(iter->second);
+        if (iter->second != nullptr)
+        {
+            deletePending.push_back(iter->second);
+            loadedEntityToSlot.erase(iter->second);
+        }
         slotToLoadedEntity.erase(iter);
     }
 }
