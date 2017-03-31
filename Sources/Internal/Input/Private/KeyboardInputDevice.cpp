@@ -2,6 +2,8 @@
 
 #if defined(__DAVAENGINE_WIN32__)
 #include "Input/Private/Win32/KeyboardDeviceImplWin32.h"
+#elif defined(__DAVAENGINE_WIN_UAP__)
+#include "Input/Private/Win10/KeyboardDeviceImplWin10.h"
 #else
 #error "DeviceManager: unknown platform"
 #endif
@@ -138,7 +140,8 @@ void KeyboardInputDevice::OnWindowFocusChanged(DAVA::Window* window, bool focuse
             if (keys[i].IsPressed())
             {
                 keys[i].Release();
-                CreateAndSendInputEvent(static_cast<eInputElements>(eInputElements::KB_FIRST_SCANCODE + i), keys[i], window, SystemTimer::GetMs());
+                eInputElements virtualElementId = impl->ConvertDavaScancodeToDavaVirtual(static_cast<eInputElements>(eInputElements::KB_FIRST_SCANCODE + i));
+                CreateAndSendInputEvent(virtualElementId, keys[i], window, SystemTimer::GetMs());
             }
         }
     }
