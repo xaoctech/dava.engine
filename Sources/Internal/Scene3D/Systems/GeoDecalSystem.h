@@ -27,6 +27,8 @@ private:
         int32 lodIndex = -1;
         int32 switchIndex = -1;
         Vector3 projectionAxis;
+        Matrix4 projectionSpaceTransform;
+        Matrix4 projectionSpaceInverseTransform;
     };
     void BuildDecal(Entity* entity, GeoDecalComponent* component);
     void RemoveCreatedDecals(Entity* entity, GeoDecalComponent* component);

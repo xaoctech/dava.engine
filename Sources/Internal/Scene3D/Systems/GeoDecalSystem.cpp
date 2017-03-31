@@ -94,9 +94,14 @@ void GeoDecalSystem::BuildDecal(Entity* entity, GeoDecalComponent* component)
 
     RenderSystem* rs = GetScene()->GetRenderSystem();
 
+    Vector3 boxCorners[8];
     AABBox3 worldSpaceBox;
     component->GetBoundingBox().GetTransformedBox(entity->GetWorldTransform(), worldSpaceBox);
-    Vector3 worldSpaceBoxProjectionAxis = MultiplyVectorMat3x3(Vector3(0.0f, 0.0f, -1.0f), entity->GetWorldTransform());
+    component->GetBoundingBox().GetCorners(boxCorners);
+
+    Vector3 dir = MultiplyVectorMat3x3(Vector3(0.0f, 0.0f, -1.0f), entity->GetWorldTransform());
+    Vector3 up = MultiplyVectorMat3x3(Vector3(0.0f, -1.0f, 0.0f), entity->GetWorldTransform());
+    Vector3 side = MultiplyVectorMat3x3(Vector3(1.0f, 0.0f, 0.0f), entity->GetWorldTransform());
 
     Vector<RenderObject*> renderObjects;
     rs->GetRenderHierarchy()->GetAllObjectsInBBox(worldSpaceBox, renderObjects);
@@ -106,9 +111,43 @@ void GeoDecalSystem::BuildDecal(Entity* entity, GeoDecalComponent* component)
         if (ro->GetType() != RenderObject::eType::TYPE_MESH)
             continue;
 
+        dir = MultiplyVectorMat3x3(dir, ro->GetInverseWorldTransform());
+        up = MultiplyVectorMat3x3(up, ro->GetInverseWorldTransform());
+        side = MultiplyVectorMat3x3(side, ro->GetInverseWorldTransform());
+
+        Matrix4 view = Matrix4::IDENTITY;
+        view._data[0][0] = side.x;
+        view._data[0][1] = up.x;
+        view._data[0][2] = -dir.x;
+        view._data[1][0] = side.y;
+        view._data[1][1] = up.y;
+        view._data[1][2] = -dir.y;
+        view._data[2][0] = side.z;
+        view._data[2][1] = up.z;
+        view._data[2][2] = -dir.z;
+
         DecalBuildInfo info;
         info.object = ro;
-        info.projectionAxis = MultiplyVectorMat3x3(worldSpaceBoxProjectionAxis, ro->GetInverseWorldTransform());
+
+        Vector3 boxMin = Vector3(+std::numeric_limits<float>::max(), +std::numeric_limits<float>::max(), +std::numeric_limits<float>::max());
+        Vector3 boxMax = Vector3(-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
+        for (uint32 i = 0; i < 8; ++i)
+        {
+            Vector3 worldPos = boxCorners[i] * entity->GetWorldTransform();
+            Vector3 objectPos = worldPos * ro->GetInverseWorldTransform();
+            Vector3 t = MultiplyVectorMat3x3(objectPos, view);
+            boxMin.x = std::min(boxMin.x, t.x);
+            boxMin.y = std::min(boxMin.y, t.y);
+            boxMin.z = std::min(boxMin.z, t.z);
+            boxMax.x = std::max(boxMax.x, t.x);
+            boxMax.y = std::max(boxMax.y, t.y);
+            boxMax.z = std::max(boxMax.z, t.z);
+        }
+        Matrix4 proj;
+        proj.OrthographicProjectionLH(boxMin.x, boxMax.x, boxMin.y, boxMax.y, boxMin.z, boxMax.z, false);
+        info.projectionSpaceTransform = view * proj;
+        info.projectionSpaceTransform.GetInverse(info.projectionSpaceInverseTransform);
+
         worldSpaceBox.GetTransformedBox(ro->GetInverseWorldTransform(), info.box);
 
         for (uint32 i = 0, e = ro->GetRenderBatchCount(); i < e; ++i)
@@ -138,9 +177,21 @@ void GeoDecalSystem::BuildDecal(const DecalBuildInfo& info)
 
         if (Intersection::BoxTriangle(info.box, v[2], v[1], v[0]))
         {
+            v[0] = v[0] * info.projectionSpaceTransform;
+            v[1] = v[1] * info.projectionSpaceTransform;
+            v[2] = v[2] * info.projectionSpaceTransform;
+            const float angleTreshold = -0.087156f; // cos(85deg)
             Vector3 nrm = (v[1] - v[0]).CrossProduct(v[2] - v[0]);
-            if (nrm.DotProduct(info.projectionAxis) < 0.0f)
+            if (nrm.z < angleTreshold)
             {
+                /*
+                v[0].z *= 0.5f;
+                v[1].z *= 0.5f;
+                v[2].z *= 0.5f;
+                */
+                v[0] = v[0] * info.projectionSpaceInverseTransform;
+                v[1] = v[1] * info.projectionSpaceInverseTransform;
+                v[2] = v[2] * info.projectionSpaceInverseTransform;
                 octree->AddDebugTriangle(v[0], v[1], v[2]);
             }
         }

@@ -58,6 +58,9 @@ struct Matrix4
     inline void Identity();
     inline void Zero();
 
+    inline void OrthographicProjectionRH(float32 _l, float32 _r, float32 _t, float32 _b, float32 _zn, float32 _zf, bool zeroBasedClip);
+    inline void OrthographicProjectionLH(float32 _l, float32 _r, float32 _t, float32 _b, float32 _zn, float32 _zf, bool zeroBasedClip);
+
     inline void BuildProjectionFovLH(float32 _fovY, float32 _aspect, float32 _zn, float32 _zf);
     inline void BuildOrthoLH(float32 _l, float32 _r, float32 _t, float32 _b, float32 _zn, float32 _zf);
 
@@ -744,5 +747,37 @@ inline bool Matrix4::operator!=(const Matrix4& _m) const
 template <>
 bool AnyCompare<Matrix4>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2);
 extern template struct AnyCompare<Matrix4>;
+
+inline void Matrix4::OrthographicProjectionLH(float32 left, float32 right, float32 bottom, float32 top, float32 n, float32 f, bool zeroBaseClipRange)
+{
+    Zero();
+
+    data[0] = 2.0f / (right - left);
+    data[5] = 2.0f / (top - bottom);
+    data[10] = -2.0f / (f - n);
+
+    data[12] = -(right + left) / (right - left);
+    data[13] = -(top + bottom) / (top - bottom);
+    data[14] = (f + n) / (f - n);
+
+    data[15] = 1.0f;
+    // TODO : actually use zeroBaseClipRange
+}
+
+inline void Matrix4::OrthographicProjectionRH(float32 left, float32 right, float32 bottom, float32 top, float32 n, float32 f, bool zeroBaseClipRange)
+{
+    Zero();
+
+    data[0] = 2.0f / (right - left);
+    data[5] = 2.0f / (top - bottom);
+    data[10] = -2.0f / (f - n);
+
+    data[12] = -(right + left) / (right - left);
+    data[13] = -(top + bottom) / (top - bottom);
+    data[14] = -(f + n) / (f - n);
+
+    data[15] = 1.0f;
+    // TODO : actually use zeroBaseClipRange
+}
 
 }; // end of namespace DAVA
