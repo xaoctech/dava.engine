@@ -1,10 +1,7 @@
 #include "FileSystem/FileAPIHelper.h"
 #include "Utils/UTF8Utils.h"
-#include "Debug/DVAssert.h"
 #include "Logger/Logger.h"
 
-#include <cstdio>
-#include <sys/types.h>
 #include <sys/stat.h>
 
 namespace DAVA
@@ -30,6 +27,20 @@ FILE* OpenFile(const String& fileName, const String& mode)
 #endif
 }
 
+int32 Close(FILE* f)
+{
+    int32 result = EOF;
+    if (f != nullptr)
+    {
+        result = fclose(f);
+        if (result != 0)
+        {
+            Logger::Error("error during close file stream");
+        }
+    }
+    return result;
+}
+
 int32 RemoveFile(const String& fileName)
 {
 #ifdef __DAVAENGINE_WINDOWS__
@@ -51,6 +62,25 @@ int32 RenameFile(const String& oldFileName, const String& newFileName)
 #endif
 }
 
+static void LogError(int32 errnoCode, const String& fileName, const char* functionName)
+{
+    switch (errnoCode)
+    {
+    case ENOENT:
+        // file not found
+        break;
+    case EINVAL:
+        Logger::Error("Invalid parameter to stat: %s", fileName.c_str());
+        break;
+    default:
+        // Should never be reached.
+        Logger::Error("Unexpected error in func: %s: errno: %s for path: %s",
+                      functionName,
+                      strerror(errnoCode),
+                      fileName.c_str());
+    }
+}
+
 bool IsRegularFile(const String& fileName)
 {
     Stat fileStat;
@@ -66,18 +96,7 @@ bool IsRegularFile(const String& fileName)
         return (0 != (fileStat.st_mode & S_IFREG));
     }
 
-    switch (errno)
-    {
-    case ENOENT:
-        // file not found
-        break;
-    case EINVAL:
-        Logger::Error("Invalid parameter to stat.");
-        break;
-    default:
-        /* Should never be reached. */
-        Logger::Error("Unexpected error in %s: errno = (%d)", __FUNCTION__, static_cast<int32>(errno));
-    }
+    LogError(errno, fileName, __FUNCTION__);
     return false;
 }
 
@@ -96,18 +115,7 @@ bool IsDirectory(const String& dirName)
         return (0 != (fileStat.st_mode & S_IFDIR));
     }
 
-    switch (errno)
-    {
-    case ENOENT:
-        // file not found
-        break;
-    case EINVAL:
-        Logger::Error("Invalid parameter to stat.");
-        break;
-    default:
-        /* Should never be reached. */
-        Logger::Error("Unexpected error in %s: errno = (%d)", __FUNCTION__, static_cast<int32>(errno));
-    }
+    LogError(errno, dirName, __FUNCTION__);
     return false;
 }
 
@@ -125,6 +133,9 @@ uint64 GetFileSize(const String& fileName)
     {
         return static_cast<uint64>(fileStat.st_size);
     }
+
+    LogError(errno, fileName, __FUNCTION__);
+
     return std::numeric_limits<uint64>::max();
 }
 

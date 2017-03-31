@@ -7,6 +7,9 @@
 #include "Animation/LinearPropertyAnimation.h"
 #include "Animation/AnimationManager.h"
 #include "Logger/Logger.h"
+#include "Render/Renderer.h"
+#include "UI/UIScreen.h"
+#include "UI/UIScreenTransition.h"
 
 namespace DAVA
 {
@@ -83,6 +86,45 @@ UIStyleSheetSystem::UIStyleSheetSystem()
 
 UIStyleSheetSystem::~UIStyleSheetSystem()
 {
+}
+
+void UIStyleSheetSystem::Process(DAVA::float32 elapsedTime)
+{
+    if (!Renderer::GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_UI_CONTROL_SYSTEM))
+    {
+        return;
+    }
+
+    CheckDirty();
+
+    if (currentScreenTransition.Valid())
+    {
+        Update(currentScreenTransition.Get());
+    }
+    else if (currentScreen.Valid())
+    {
+        Update(currentScreen.Get());
+    }
+
+    if (popupContainer.Valid())
+    {
+        Update(popupContainer.Get());
+    }
+}
+
+void UIStyleSheetSystem::SetCurrentScreen(const RefPtr<UIScreen>& screen)
+{
+    currentScreen = screen;
+}
+
+void UIStyleSheetSystem::SetCurrentScreenTransition(const RefPtr<UIScreenTransition>& screenTransition)
+{
+    currentScreenTransition = screenTransition;
+}
+
+void UIStyleSheetSystem::SetPopupContainer(const RefPtr<UIControl>& _popupContainer)
+{
+    popupContainer = _popupContainer;
 }
 
 void UIStyleSheetSystem::ProcessControl(UIControl* control, bool styleSheetListChanged /* = false*/)
@@ -257,6 +299,27 @@ void UIStyleSheetSystem::DumpStats()
     }
 }
 
+void UIStyleSheetSystem::Update(UIControl* root)
+{
+    if (!(needUpdate || dirty) || !root)
+        return;
+    UpdateControl(root);
+}
+
+void UIStyleSheetSystem::UpdateControl(UIControl* control)
+{
+    if ((control->IsVisible() || control->GetStyledPropertySet().test(UIStyleSheetPropertyDataBase::Instance()->GetStyleSheetVisiblePropertyIndex()))
+        && control->IsStyleSheetDirty())
+    {
+        ProcessControl(control);
+    }
+
+    for (UIControl* child : control->GetChildren())
+    {
+        UpdateControl(child);
+    }
+}
+
 bool UIStyleSheetSystem::StyleSheetMatchesControl(const UIStyleSheet* styleSheet, const UIControl* control)
 {
 #if STYLESHEET_STATS
@@ -317,9 +380,20 @@ void UIStyleSheetSystem::DoForAllPropertyInstances(UIControl* control, uint32 pr
         break;
     }
     case ePropertyOwner::COMPONENT:
-        if (UIComponent* component = control->GetComponent(descr.group->componentType))
+    {
+        UIComponent* component = control->GetComponent(descr.group->componentType);
+        if (component)
+        {
             action(control, component, descr.memberInfo);
+        }
+        else
+        {
+            const char* componentName = GlobalEnumMap<UIComponent::eType>::Instance()->ToString(descr.group->componentType);
+            const char* controlName = control->GetName().c_str();
+            Logger::Warning("Style sheet can not find component \'%s\' in control \'%s\'", componentName, controlName);
+        }
         break;
+    }
     default:
         DVASSERT(false);
         break;
