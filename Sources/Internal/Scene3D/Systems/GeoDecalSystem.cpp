@@ -158,11 +158,125 @@ void GeoDecalSystem::BuildDecal(Entity* entity, GeoDecalComponent* component)
     }
 }
 
+/*
+ * Code by Matthias taken from
+ * http://codereview.stackexchange.com/questions/131852/high-performance-triangle-axis-aligned-bounding-box-clipping
+ */
+#define PLANE_THICKNESS_EPSILON 0.00001f
+#define MAX_POLYGON_CAPACITY 9
+
+Vector3 Lerp(float t, const Vector3& v1, const Vector3& v2)
+{
+    return v1 * (1.0f - t) + v2 * t;
+}
+
+template <typename T>
+inline int8_t Classify(int8_t sign, Vector3::eAxis axis, const Vector3& c_v, const Vector3& p_v)
+{
+    const double d = sign * (p_v[axis] - c_v[axis]);
+
+    if (d > PLANE_THICKNESS_EPSILON)
+        return 1;
+
+    if (d < -PLANE_THICKNESS_EPSILON)
+        return -1;
+
+    return 0;
+}
+
+template <typename T>
+inline void Clip3D_plane(Vector3* p_vs, uint8_t* nb_p_vs, int8_t sign, Vector3::eAxis axis, const Vector3& c_v)
+{
+    uint8_t nb = (*nb_p_vs);
+    if (nb == 0)
+        return;
+    else if (nb == 1)
+    {
+        *nb_p_vs = 0;
+        return;
+    }
+
+    Vector3 new_p_vs[MAX_POLYGON_CAPACITY];
+    uint8_t k = 0;
+    bool polygonCompletelyOnPlane = true; // polygon is fully located on clipping plane
+
+    Vector3 p_v1 = p_vs[nb - 1];
+    int8_t d1 = Classify<T>(sign, axis, c_v, p_v1);
+    for (uint8_t j = 0; j < nb; ++j)
+    {
+        const Vector3& p_v2 = p_vs[j];
+        int8_t d2 = Classify<T>(sign, axis, c_v, p_v2);
+        if (d2 < 0)
+        {
+            polygonCompletelyOnPlane = false;
+            if (d1 > 0)
+            {
+                const float alpha = (p_v2[axis] - c_v[axis]) / (p_v2[axis] - p_v1[axis]);
+                new_p_vs[k++] = Lerp(alpha, p_v2, p_v1);
+            }
+            else if (d1 == 0 && (k == 0 || new_p_vs[k - 1] != p_v1))
+            {
+                new_p_vs[k++] = p_v1;
+            }
+        }
+        else if (d2 > 0)
+        {
+            polygonCompletelyOnPlane = false;
+            if (d1 < 0)
+            {
+                const float alpha = (p_v2[axis] - c_v[axis]) / (p_v2[axis] - p_v1[axis]);
+                new_p_vs[k++] = Lerp(alpha, p_v2, p_v1);
+            }
+            else if (d1 == 0 && (k == 0 || new_p_vs[k - 1] != p_v1))
+            {
+                new_p_vs[k++] = p_v1;
+            }
+            new_p_vs[k++] = p_v2;
+        }
+        else
+        {
+            if (d1 != 0)
+                new_p_vs[k++] = p_v2;
+        }
+
+        p_v1 = p_v2;
+        d1 = d2;
+    }
+
+    if (polygonCompletelyOnPlane)
+        return;
+
+    *nb_p_vs = k;
+    for (uint8_t j = 0; j < k; ++j)
+        p_vs[j] = new_p_vs[j];
+}
+
+inline void Clip3D_AABB(Vector3* p_vs, uint8_t* nb_p_vs, const AABBox3& clipper)
+{
+    for (uint8_t axis = 0; axis < 3; ++axis)
+    {
+        Clip3D_plane<float>(p_vs, nb_p_vs, 1, static_cast<Vector3::eAxis>(axis), clipper.min);
+        Clip3D_plane<float>(p_vs, nb_p_vs, -1, static_cast<Vector3::eAxis>(axis), clipper.max);
+    }
+}
+
 void GeoDecalSystem::BuildDecal(const DecalBuildInfo& info)
 {
     PolygonGroup* geometry = info.batch->GetPolygonGroup();
     GeometryOctTree* octree = geometry->GetGeometryOctTree();
     octree->CleanDebugTriangles();
+
+    auto clip = [octree, &info](const Vector3& v1, const Vector3& v2, const Vector3& v3) {
+        Vector3 points[MAX_POLYGON_CAPACITY] = { v1, v2, v3 };
+        uint8_t numPoints = 3;
+        Clip3D_AABB(points, &numPoints, AABBox3(Vector3(0, 0, 0), 2.0f));
+
+        for (uint32 i = 0; i < numPoints; ++i)
+            points[i] = points[i] * info.projectionSpaceInverseTransform;
+
+        for (uint32 i = 0; i + 1 < numPoints; ++i)
+            octree->AddDebugTriangle(points[0], points[i], points[i + 1]);
+    };
 
     int32 triangleCount = geometry->GetIndexCount() / 3;
     for (int32 i = 0; i < triangleCount; ++i)
@@ -180,19 +294,10 @@ void GeoDecalSystem::BuildDecal(const DecalBuildInfo& info)
             v[0] = v[0] * info.projectionSpaceTransform;
             v[1] = v[1] * info.projectionSpaceTransform;
             v[2] = v[2] * info.projectionSpaceTransform;
-            const float angleTreshold = -0.087156f; // cos(85deg)
             Vector3 nrm = (v[1] - v[0]).CrossProduct(v[2] - v[0]);
-            if (nrm.z < angleTreshold)
+            if (nrm.z < -std::numeric_limits<float>::epsilon())
             {
-                /*
-                v[0].z *= 0.5f;
-                v[1].z *= 0.5f;
-                v[2].z *= 0.5f;
-                */
-                v[0] = v[0] * info.projectionSpaceInverseTransform;
-                v[1] = v[1] * info.projectionSpaceInverseTransform;
-                v[2] = v[2] * info.projectionSpaceInverseTransform;
-                octree->AddDebugTriangle(v[0], v[1], v[2]);
+                clip(v[0], v[1], v[2]);
             }
         }
     }
