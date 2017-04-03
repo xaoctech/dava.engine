@@ -4,6 +4,8 @@
 #include "Input/Private/Win32/KeyboardDeviceImplWin32.h"
 #elif defined(__DAVAENGINE_WIN_UAP__)
 #include "Input/Private/Win10/KeyboardDeviceImplWin10.h"
+#elif defined(__DAVAENGINE_MACOS__)
+#include "Input/Private/Mac/KeyboardDeviceImplMac.h"
 #else
 #error "DeviceManager: unknown platform"
 #endif
@@ -96,6 +98,8 @@ bool KeyboardInputDevice::HandleEvent(const Private::MainDispatcherEvent& e)
         // Save state
 
         eInputElements scancodeElementId = impl->ConvertNativeScancodeToDavaScancode(e.keyEvent.key);
+        DVASSERT(scancodeElementId != eInputElements::NONE);
+
         Private::DigitalElement& element = keys[scancodeElementId - eInputElements::KB_FIRST_SCANCODE];
 
         if (e.type == MainDispatcherEvent::KEY_DOWN)
