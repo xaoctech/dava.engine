@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Input/InputElements.h"
+#if defined(__DAVAENGINE_ANDROID__)
 
-#if defined(__DAVAENGINE_WIN_UAP__)
+#include "Input/InputElements.h"
 
 namespace DAVA
 {
@@ -11,6 +11,9 @@ namespace Private
 class KeyboardDeviceImpl final
 {
 public:
+    KeyboardDeviceImpl();
+    ~KeyboardDeviceImpl();
+
     eInputElements ConvertNativeScancodeToDavaScancode(uint32 nativeScancode);
     eInputElements ConvertDavaScancodeToDavaVirtual(eInputElements scancodeElement);
     eInputElements ConvertDavaVirtualToDavaScancode(eInputElements virtualElement);
@@ -19,4 +22,4 @@ public:
 } // namespace Private
 } // namespace DAVA
 
-#endif
+#endif // __DAVAENGINE_ANDROID__

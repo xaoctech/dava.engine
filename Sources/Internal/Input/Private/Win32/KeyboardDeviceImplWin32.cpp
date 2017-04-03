@@ -1,11 +1,12 @@
 #include "Input/Private/Win32/KeyboardDeviceImplWin32.h"
 
-#include "Input/Private/KeyboardDeviceImplWinCodes.h"
+#if defined(__DAVAENGINE_WIN32__)
+
 #include "Base/TemplateHelpers.h"
 #include "Debug/DVAssert.h"
 #include "Engine/Engine.h"
-
-#include <Windows.h>
+#include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
+#include "Input/Private/KeyboardDeviceImplWinCodes.h"
 
 namespace DAVA
 {
@@ -308,5 +309,8 @@ void KeyboardDeviceImpl::UpdateVirtualToScancodeMap()
         }
     }
 }
-}
-}
+
+} // namespace Private
+} // namespace DAVA
+
+#endif // __DAVAENGINE_WIN32__

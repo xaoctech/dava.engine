@@ -8,11 +8,13 @@
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
 #include "Engine/Private/Android/AndroidBridge.h"
-#include "Engine/Private/Android/AndroidJavaConst.h"
 #include "Engine/Private/Android/PlatformCoreAndroid.h"
 
 #include "Logger/Logger.h"
 #include "Time/SystemTimer.h"
+
+#include <android/input.h>
+#include <android/keycodes.h>
 
 extern "C"
 {
@@ -355,8 +357,8 @@ void WindowBackend::OnMouseEvent(int32 action, int32 nativeButtonState, float32 
     eModifierKeys modifierKeys = GetModifierKeys(nativeModifierKeys);
     switch (action)
     {
-    case AMotionEvent::ACTION_MOVE:
-    case AMotionEvent::ACTION_HOVER_MOVE:
+    case AMOTION_EVENT_ACTION_MOVE:
+    case AMOTION_EVENT_ACTION_HOVER_MOVE:
         if (lastMouseMoveX != x || lastMouseMoveY != y)
         {
             mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowMouseMoveEvent(window, x, y, modifierKeys, false));
@@ -364,7 +366,7 @@ void WindowBackend::OnMouseEvent(int32 action, int32 nativeButtonState, float32 
             lastMouseMoveY = y;
         }
         break;
-    case AMotionEvent::ACTION_SCROLL:
+    case AMOTION_EVENT_ACTION_SCROLL:
         mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowMouseWheelEvent(window, x, y, deltaX, deltaY, modifierKeys, false));
         break;
     default:
@@ -399,15 +401,15 @@ void WindowBackend::OnTouchEvent(int32 action, int32 touchId, float32 x, float32
     MainDispatcherEvent::eType type = MainDispatcherEvent::TOUCH_DOWN;
     switch (action)
     {
-    case AMotionEvent::ACTION_MOVE:
+    case AMOTION_EVENT_ACTION_MOVE:
         type = MainDispatcherEvent::TOUCH_MOVE;
         break;
-    case AMotionEvent::ACTION_UP:
-    case AMotionEvent::ACTION_POINTER_UP:
+    case AMOTION_EVENT_ACTION_UP:
+    case AMOTION_EVENT_ACTION_POINTER_UP:
         type = MainDispatcherEvent::TOUCH_UP;
         break;
-    case AMotionEvent::ACTION_DOWN:
-    case AMotionEvent::ACTION_POINTER_DOWN:
+    case AMOTION_EVENT_ACTION_DOWN:
+    case AMOTION_EVENT_ACTION_POINTER_DOWN:
         type = MainDispatcherEvent::TOUCH_DOWN;
         break;
     default:
@@ -420,16 +422,16 @@ void WindowBackend::OnTouchEvent(int32 action, int32 touchId, float32 x, float32
 
 void WindowBackend::OnKeyEvent(int32 action, int32 keyCode, int32 unicodeChar, int32 nativeModifierKeys, bool isRepeated)
 {
-    if (keyCode == AKeyEvent::KEYCODE_BACK)
+    if (keyCode == AKEYCODE_BACK)
     {
-        if (action == AKeyEvent::ACTION_UP)
+        if (action == AKEY_EVENT_ACTION_UP)
         {
             mainDispatcher->PostEvent(MainDispatcherEvent(MainDispatcherEvent::BACK_NAVIGATION));
         }
     }
     else
     {
-        bool isPressed = action == AKeyEvent::ACTION_DOWN;
+        bool isPressed = action == AKEY_EVENT_ACTION_DOWN;
         eModifierKeys modifierKeys = GetModifierKeys(nativeModifierKeys);
         MainDispatcherEvent::eType type = isPressed ? MainDispatcherEvent::KEY_DOWN : MainDispatcherEvent::KEY_UP;
         mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, type, keyCode, modifierKeys, isRepeated));
@@ -443,7 +445,7 @@ void WindowBackend::OnKeyEvent(int32 action, int32 keyCode, int32 unicodeChar, i
 
 void WindowBackend::OnGamepadButton(int32 deviceId, int32 action, int32 keyCode)
 {
-    MainDispatcherEvent::eType type = action == AKeyEvent::ACTION_DOWN ? MainDispatcherEvent::GAMEPAD_BUTTON_DOWN : MainDispatcherEvent::GAMEPAD_BUTTON_UP;
+    MainDispatcherEvent::eType type = action == AKEY_EVENT_ACTION_DOWN ? MainDispatcherEvent::GAMEPAD_BUTTON_DOWN : MainDispatcherEvent::GAMEPAD_BUTTON_UP;
     mainDispatcher->PostEvent(MainDispatcherEvent::CreateGamepadButtonEvent(deviceId, type, keyCode));
 }
 
@@ -461,24 +463,24 @@ std::bitset<WindowBackend::MOUSE_BUTTON_COUNT> WindowBackend::GetMouseButtonStat
 {
     std::bitset<MOUSE_BUTTON_COUNT> state;
     // Android supports only three mouse buttons
-    state.set(0, (nativeButtonState & AMotionEvent::BUTTON_PRIMARY) == AMotionEvent::BUTTON_PRIMARY);
-    state.set(1, (nativeButtonState & AMotionEvent::BUTTON_SECONDARY) == AMotionEvent::BUTTON_SECONDARY);
-    state.set(2, (nativeButtonState & AMotionEvent::BUTTON_TERTIARY) == AMotionEvent::BUTTON_TERTIARY);
+    state.set(0, (nativeButtonState & AMOTION_EVENT_BUTTON_PRIMARY) == AMOTION_EVENT_BUTTON_PRIMARY);
+    state.set(1, (nativeButtonState & AMOTION_EVENT_BUTTON_SECONDARY) == AMOTION_EVENT_BUTTON_SECONDARY);
+    state.set(2, (nativeButtonState & AMOTION_EVENT_BUTTON_TERTIARY) == AMOTION_EVENT_BUTTON_TERTIARY);
     return state;
 }
 
 eModifierKeys WindowBackend::GetModifierKeys(int32 nativeModifierKeys)
 {
     eModifierKeys result = eModifierKeys::NONE;
-    if (nativeModifierKeys & AKeyEvent::META_SHIFT_ON)
+    if (nativeModifierKeys & AMETA_SHIFT_ON)
     {
         result |= eModifierKeys::SHIFT;
     }
-    if (nativeModifierKeys & AKeyEvent::META_ALT_ON)
+    if (nativeModifierKeys & AMETA_ALT_ON)
     {
         result |= eModifierKeys::ALT;
     }
-    if (nativeModifierKeys & AKeyEvent::META_CTRL_ON)
+    if (nativeModifierKeys & AMETA_CTRL_ON)
     {
         result |= eModifierKeys::CONTROL;
     }

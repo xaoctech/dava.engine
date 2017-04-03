@@ -3,7 +3,6 @@
 #if defined (__DAVAENGINE_MACOS__)
 
 #include "Input/InputElements.h"
-#include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 
 namespace DAVA
 {
@@ -16,7 +15,8 @@ public:
     eInputElements ConvertDavaScancodeToDavaVirtual(eInputElements scancodeElement);
     eInputElements ConvertDavaVirtualToDavaScancode(eInputElements virtualElement);
 };
-}
-}
+
+} // namespace Private
+} // namespace DAVA
 
 #endif

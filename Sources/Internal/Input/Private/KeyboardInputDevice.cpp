@@ -6,6 +6,8 @@
 #include "Input/Private/Win10/KeyboardDeviceImplWin10.h"
 #elif defined(__DAVAENGINE_MACOS__)
 #include "Input/Private/Mac/KeyboardDeviceImplMac.h"
+#elif defined(__DAVAENGINE_ANDROID__)
+#include "Input/Private/Android/KeyboardDeviceImplAndroid.h"
 #else
 #error "DeviceManager: unknown platform"
 #endif
@@ -150,4 +152,5 @@ void KeyboardInputDevice::OnWindowFocusChanged(DAVA::Window* window, bool focuse
         }
     }
 }
-}
+
+} // namespace DAVA
