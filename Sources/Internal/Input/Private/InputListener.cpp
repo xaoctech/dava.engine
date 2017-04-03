@@ -135,4 +135,5 @@ void InputListener::StopListening()
         result.clear();
     }
 }
-}
+
+} // namespace DAVA

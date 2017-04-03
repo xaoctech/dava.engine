@@ -326,12 +326,6 @@ void InputSystemTest::CreateMouseUI()
     mousePositionButton->SetStateFontColor(0xFF, Color::White);
     mousePositionButton->SetDebugDraw(true);
     mouseButtons[static_cast<uint32>(eInputElements::MOUSE_POSITION)] = mousePositionButton;
-
-    AnalogElementState mousePos = GetEngineContext()->deviceManager->GetMouse()->GetAnalogElementState(eInputElements::MOUSE_POSITION);
-    std::wstringstream ss;
-    ss << mousePos.x << L", " << mousePos.y;
-    mousePositionButton->SetStateText(0xFF, ss.str());
-
     AddControl(mousePositionButton);
 
     UIButton* leftButton = new UIButton(Rect(700, 10, 30, 70));

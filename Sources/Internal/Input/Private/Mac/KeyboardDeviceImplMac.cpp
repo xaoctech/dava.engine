@@ -159,7 +159,8 @@ eInputElements KeyboardDeviceImpl::ConvertDavaVirtualToDavaScancode(eInputElemen
 
     return static_cast<eInputElements>(virtualElement + eInputElements::KB_COUNT_SCANCODE);
 }
-}
-}
+
+} // namespace Private
+} // namespace DAVA
 
 #endif

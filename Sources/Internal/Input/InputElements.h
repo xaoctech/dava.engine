@@ -6,8 +6,8 @@
 namespace DAVA
 {
 /**
-	List of all supported input elements.
-	An input element is a part of a device which can be used for input. For example, a keyboard button, a mouse button, a mouse wheel, gamepad's stick etc.
+    List of all supported input elements.
+    An input element is a part of a device which can be used for input. For example, a keyboard button, a mouse button, a mouse wheel, gamepad's stick etc.
 */
 enum eInputElements : uint32
 {
