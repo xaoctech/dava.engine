@@ -15,32 +15,32 @@ class EngineBackend;
 enum class eInputListenerModes
 {
     /**
-		Listen for a single element which is not a keyboard modifier.
-		Examples: W, left mouse button, etc.
-	*/
+        Listen for a single element which is not a keyboard modifier.
+        Examples: W, left mouse button, etc.
+    */
     DIGITAL_SINGLE_WITHOUT_MODIFIERS,
 
     /**
-		Listen for a single element which is not a keyboard modifier with possible modifiers.
-		Examples: W, Shift + W, Ctrl + right mouse button, etc.
-	*/
+        Listen for a single element which is not a keyboard modifier with possible modifiers.
+        Examples: W, Shift + W, Ctrl + right mouse button, etc.
+    */
     DIGITAL_SINGLE_WITH_MODIFIERS,
 
     /**
-		Listen for sequence of any multiple digital elements.
-	*/
+        Listen for sequence of any multiple digital elements.
+    */
     DIGITAL_MULTIPLE_ANY,
 
     /**
-		Listen for a single analog element input.
-		Examples: mouse move, gamepad's stick.
-	*/
+        Listen for a single analog element input.
+        Examples: mouse move, gamepad's stick.
+    */
     ANALOG,
 };
 
 /**
-	Helper class which is able to capture and report user input.
-	Can be helpful for control settings UI.
+    Helper class which is able to capture and report user input.
+    Can be helpful for control settings UI.
 */
 class InputListener final
 {
@@ -63,9 +63,7 @@ public:
     void StopListening();
 
 private:
-    InputListener()
-    {
-    }
+    InputListener() = default;
     InputListener(const InputListener&) = delete;
     InputListener& operator=(const InputListener&) = delete;
 
@@ -83,4 +81,5 @@ private:
 
     Vector<eInputElements> result;
 };
-}
+
+} // namespace DAVA

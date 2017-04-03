@@ -1,12 +1,14 @@
 #pragma once
 
+#if defined(__DAVAENGINE_WIN32__)
+
 #include "Input/InputElements.h"
-#include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 
 namespace DAVA
 {
 namespace Private
 {
+struct MainDispatcherEvent;
 class KeyboardDeviceImpl final
 {
 public:
@@ -21,5 +23,8 @@ private:
     bool HandleEvent(const Private::MainDispatcherEvent& e);
     void UpdateVirtualToScancodeMap();
 };
-}
-}
+
+} // namespace Private
+} // namespace DAVA
+
+#endif // __DAVAENGINE_WIN32__

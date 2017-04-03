@@ -2,10 +2,10 @@
 
 #if defined(__DAVAENGINE_WIN_UAP__)
 
-#include "Input/Private/KeyboardDeviceImplWinCodes.h"
 #include "Base/TemplateHelpers.h"
 #include "Debug/DVAssert.h"
 #include "Engine/Engine.h"
+#include "Input/Private/KeyboardDeviceImplWinCodes.h"
 
 namespace DAVA
 {
@@ -43,7 +43,8 @@ eInputElements KeyboardDeviceImpl::ConvertDavaVirtualToDavaScancode(eInputElemen
     // Until it's added, ignore any custom layouts
     return static_cast<eInputElements>(virtualElement + eInputElements::KB_COUNT_SCANCODE);
 }
-}
-}
+
+} // namespace Private
+} // namespace DAVA
 
 #endif
