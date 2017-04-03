@@ -526,7 +526,7 @@ eInputElements InputSystemTest::GetVirtualOrScancodeInputElement(eInputElements 
 {
     if (convertToVirtualCounterpart)
     {
-        return static_cast<eInputElements>(scancodeElement - eInputElements::KB_COUNT_VIRTUAL);
+        return static_cast<eInputElements>(scancodeElement - INPUT_ELEMENTS_KB_COUNT_VIRTUAL);
     }
     else
     {
