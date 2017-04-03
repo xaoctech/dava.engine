@@ -4,8 +4,10 @@
 #if defined(__DAVAENGINE_ANDROID__)
 
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
-#include "Engine/Private/Android/AndroidJavaConst.h"
 #include "Input/GamepadDevice.h"
+
+#include <android/input.h>
+#include <android/keycodes.h>
 
 namespace DAVA
 {
@@ -30,32 +32,32 @@ void GamepadDeviceImpl::HandleGamepadMotion(const MainDispatcherEvent& e)
     eGamepadElements element = eGamepadElements::LEFT_THUMBSTICK_X;
     switch (axis)
     {
-    case AMotionEvent::AXIS_X:
+    case AMOTION_EVENT_AXIS_X:
         element = eGamepadElements::LEFT_THUMBSTICK_X;
         break;
-    case AMotionEvent::AXIS_Y:
+    case AMOTION_EVENT_AXIS_Y:
         element = eGamepadElements::LEFT_THUMBSTICK_Y;
         break;
-    case AMotionEvent::AXIS_Z:
-    case AMotionEvent::AXIS_RX:
+    case AMOTION_EVENT_AXIS_Z:
+    case AMOTION_EVENT_AXIS_RX:
         element = eGamepadElements::RIGHT_THUMBSTICK_X;
         break;
-    case AMotionEvent::AXIS_RY:
-    case AMotionEvent::AXIS_RZ:
+    case AMOTION_EVENT_AXIS_RY:
+    case AMOTION_EVENT_AXIS_RZ:
         element = eGamepadElements::RIGHT_THUMBSTICK_Y;
         break;
-    case AMotionEvent::AXIS_LTRIGGER:
-    case AMotionEvent::AXIS_BRAKE:
+    case AMOTION_EVENT_AXIS_LTRIGGER:
+    case AMOTION_EVENT_AXIS_BRAKE:
         element = eGamepadElements::LEFT_TRIGGER;
         break;
-    case AMotionEvent::AXIS_RTRIGGER:
-    case AMotionEvent::AXIS_GAS:
+    case AMOTION_EVENT_AXIS_RTRIGGER:
+    case AMOTION_EVENT_AXIS_GAS:
         element = eGamepadElements::RIGHT_TRIGGER;
         break;
-    case AMotionEvent::AXIS_HAT_X:
+    case AMOTION_EVENT_AXIS_HAT_X:
         element = eGamepadElements::DPAD_X;
         break;
-    case AMotionEvent::AXIS_HAT_Y:
+    case AMOTION_EVENT_AXIS_HAT_Y:
         element = eGamepadElements::DPAD_Y;
         break;
     default:
@@ -67,10 +69,10 @@ void GamepadDeviceImpl::HandleGamepadMotion(const MainDispatcherEvent& e)
     // The same applies to so called 'hats'.
     switch (axis)
     {
-    case AMotionEvent::AXIS_Y:
-    case AMotionEvent::AXIS_RY:
-    case AMotionEvent::AXIS_RZ:
-    case AMotionEvent::AXIS_HAT_Y:
+    case AMOTION_EVENT_AXIS_Y:
+    case AMOTION_EVENT_AXIS_RY:
+    case AMOTION_EVENT_AXIS_RZ:
+    case AMOTION_EVENT_AXIS_HAT_Y:
         value = -value;
         break;
     default:
@@ -94,36 +96,36 @@ void GamepadDeviceImpl::HandleGamepadButton(const MainDispatcherEvent& e)
     eGamepadElements element = eGamepadElements::A;
     switch (button)
     {
-    case AKeyEvent::KEYCODE_DPAD_UP:
+    case AKEYCODE_DPAD_UP:
         element = eGamepadElements::DPAD_Y;
         break;
-    case AKeyEvent::KEYCODE_DPAD_DOWN:
+    case AKEYCODE_DPAD_DOWN:
         element = eGamepadElements::DPAD_Y;
         break;
-    case AKeyEvent::KEYCODE_DPAD_LEFT:
+    case AKEYCODE_DPAD_LEFT:
         element = eGamepadElements::DPAD_X;
         break;
-    case AKeyEvent::KEYCODE_DPAD_RIGHT:
+    case AKEYCODE_DPAD_RIGHT:
         element = eGamepadElements::DPAD_X;
         break;
-    case AKeyEvent::KEYCODE_BUTTON_A:
+    case AKEYCODE_BUTTON_A:
         element = eGamepadElements::A;
         break;
-    case AKeyEvent::KEYCODE_BUTTON_B:
+    case AKEYCODE_BUTTON_B:
         element = eGamepadElements::B;
         break;
-    case AKeyEvent::KEYCODE_BUTTON_X:
+    case AKEYCODE_BUTTON_X:
         element = eGamepadElements::X;
         break;
-    case AKeyEvent::KEYCODE_BUTTON_Y:
+    case AKEYCODE_BUTTON_Y:
         element = eGamepadElements::Y;
         break;
-    case AKeyEvent::KEYCODE_BUTTON_L1:
-    case AKeyEvent::KEYCODE_BUTTON_L2:
+    case AKEYCODE_BUTTON_L1:
+    case AKEYCODE_BUTTON_L2:
         element = eGamepadElements::LEFT_SHOULDER;
         break;
-    case AKeyEvent::KEYCODE_BUTTON_R1:
-    case AKeyEvent::KEYCODE_BUTTON_R2:
+    case AKEYCODE_BUTTON_R1:
+    case AKEYCODE_BUTTON_R2:
         element = eGamepadElements::RIGHT_SHOULDER;
         break;
     default:
@@ -132,7 +134,7 @@ void GamepadDeviceImpl::HandleGamepadButton(const MainDispatcherEvent& e)
 
     // Historically dava.engine normalize dpad presses into a range [-1, 1] where
     // -1 for dpad left or dpad down and 1 for dpad right or dpad up.
-    if (button == AKeyEvent::KEYCODE_DPAD_DOWN || button == AKeyEvent::KEYCODE_DPAD_LEFT)
+    if (button == AKEYCODE_DPAD_DOWN || button == AKEYCODE_DPAD_LEFT)
     {
         value = -value;
     }
