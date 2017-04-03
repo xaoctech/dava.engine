@@ -12,6 +12,8 @@ namespace DAVA
 {
 namespace Private
 {
+// Maps virtual key to win32 native key
+// 0x00 means that key is not mappable (i.e. it is the same on all input layouts)
 static const uint32 davaVirtualMappableToNativeVirtual[] =
 {
   0x00, // KB_1_VIRTUAL
@@ -85,45 +87,47 @@ static const uint32 davaVirtualMappableToNativeVirtual[] =
   VK_SPACE, // KB_SPACE_VIRTUAL
 
   /*
-	0x00, // KB_RALT_VIRTUAL
-	0x00, // KB_RWIN_VIRTUAL
-	0x00, // KB_MENU_VIRTUAL
-	0x00, // KB_RCTRL_VIRTUAL
-	0x00, // KB_RSHIFT_VIRTUAL
-	0x00, // KB_ENTER_VIRTUAL
-	0x00, // KB_PRINTSCREEN_VIRTUAL
-	0x00, // KB_SCROLLLOCK_VIRTUAL
-	0x00, // KB_PAUSE_VIRTUAL
-	0x00, // KB_INSERT_VIRTUAL
-	0x00, // KB_HOME_VIRTUAL
-	0x00, // KB_PAGEUP_VIRTUAL
-	0x00, // KB_DELETE_VIRTUAL
-	0x00, // KB_END_VIRTUAL
-	0x00, // KB_PAGEDOWN_VIRTUAL
-	0x00, // KB_UP_VIRTUAL
-	0x00, // KB_LEFT_VIRTUAL
-	0x00, // KB_DOWN_VIRTUAL
-	0x00, // KB_RIGHT_VIRTUAL
-	0x00, // KB_NUMLOCK_VIRTUAL
-	0x00, // KB_DIVIDE_VIRTUAL
-	0x00, // KB_MULTIPLY_VIRTUAL
-	0x00, // KB_NUMPAD_MINUS_VIRTUAL
-	0x00, // KB_NUMPAD_PLUS_VIRTUAL
-	0x00, // KB_NUMPAD_ENTER_VIRTUAL
-	0x00, // KB_NUMPAD_DELETE_VIRTUAL
-	0x00, // KB_NUMPAD_1_VIRTUAL
-	0x00, // KB_NUMPAD_2_VIRTUAL
-	0x00, // KB_NUMPAD_3_VIRTUAL
-	0x00, // KB_NUMPAD_4_VIRTUAL
-	0x00, // KB_NUMPAD_5_VIRTUAL
-	0x00, // KB_NUMPAD_6_VIRTUAL
-	0x00, // KB_NUMPAD_7_VIRTUAL
-	0x00, // KB_NUMPAD_8_VIRTUAL
-	0x00, // KB_NUMPAD_9_VIRTUAL
-	0x00, // KB_NUMPAD_0_VIRTUAL
-	*/
+    0x00, // KB_RALT_VIRTUAL
+    0x00, // KB_RWIN_VIRTUAL
+    0x00, // KB_MENU_VIRTUAL
+    0x00, // KB_RCTRL_VIRTUAL
+    0x00, // KB_RSHIFT_VIRTUAL
+    0x00, // KB_ENTER_VIRTUAL
+    0x00, // KB_PRINTSCREEN_VIRTUAL
+    0x00, // KB_SCROLLLOCK_VIRTUAL
+    0x00, // KB_PAUSE_VIRTUAL
+    0x00, // KB_INSERT_VIRTUAL
+    0x00, // KB_HOME_VIRTUAL
+    0x00, // KB_PAGEUP_VIRTUAL
+    0x00, // KB_DELETE_VIRTUAL
+    0x00, // KB_END_VIRTUAL
+    0x00, // KB_PAGEDOWN_VIRTUAL
+    0x00, // KB_UP_VIRTUAL
+    0x00, // KB_LEFT_VIRTUAL
+    0x00, // KB_DOWN_VIRTUAL
+    0x00, // KB_RIGHT_VIRTUAL
+    0x00, // KB_NUMLOCK_VIRTUAL
+    0x00, // KB_DIVIDE_VIRTUAL
+    0x00, // KB_MULTIPLY_VIRTUAL
+    0x00, // KB_NUMPAD_MINUS_VIRTUAL
+    0x00, // KB_NUMPAD_PLUS_VIRTUAL
+    0x00, // KB_NUMPAD_ENTER_VIRTUAL
+    0x00, // KB_NUMPAD_DELETE_VIRTUAL
+    0x00, // KB_NUMPAD_1_VIRTUAL
+    0x00, // KB_NUMPAD_2_VIRTUAL
+    0x00, // KB_NUMPAD_3_VIRTUAL
+    0x00, // KB_NUMPAD_4_VIRTUAL
+    0x00, // KB_NUMPAD_5_VIRTUAL
+    0x00, // KB_NUMPAD_6_VIRTUAL
+    0x00, // KB_NUMPAD_7_VIRTUAL
+    0x00, // KB_NUMPAD_8_VIRTUAL
+    0x00, // KB_NUMPAD_9_VIRTUAL
+    0x00, // KB_NUMPAD_0_VIRTUAL
+    */
 };
 
+// Maps virtual key to scancode key
+// Will be updated in UpdateVirtualToScancodeMap method
 static eInputElements davaVirtualToDavaScancode[] =
 {
   eInputElements::KB_1, // KB_1_VIRTUAL
@@ -262,7 +266,7 @@ eInputElements KeyboardDeviceImpl::ConvertNativeScancodeToDavaScancode(uint32 na
 
 eInputElements KeyboardDeviceImpl::ConvertDavaScancodeToDavaVirtual(eInputElements scancodeElement)
 {
-    DVASSERT(scancodeElement >= eInputElements::KB_FIRST_SCANCODE && scancodeElement <= eInputElements::KB_LAST_SCANCODE);
+    DVASSERT(IsKeyboardScancodeInputElement(scancodeElement));
 
     for (size_t i = 0; i < COUNT_OF(davaVirtualToDavaScancode); ++i)
     {
@@ -277,7 +281,7 @@ eInputElements KeyboardDeviceImpl::ConvertDavaScancodeToDavaVirtual(eInputElemen
 
 eInputElements KeyboardDeviceImpl::ConvertDavaVirtualToDavaScancode(eInputElements virtualElement)
 {
-    DVASSERT(virtualElement >= eInputElements::KB_FIRST_VIRTUAL && virtualElement <= eInputElements::KB_LAST_VIRTUAL);
+    DVASSERT(IsKeyboardVirtualInputElement(virtualElement));
 
     return davaVirtualToDavaScancode[virtualElement - KB_FIRST_VIRTUAL];
 }
@@ -287,7 +291,6 @@ bool KeyboardDeviceImpl::HandleEvent(const Private::MainDispatcherEvent& e)
     if (e.type == MainDispatcherEvent::INPUT_LANGUAGE_CHANGED)
     {
         UpdateVirtualToScancodeMap();
-        return true;
     }
 
     return false;

@@ -16,8 +16,6 @@ class KeyboardDeviceImpl;
 /**
     \ingroup input
     Represents keyboard input device.
-
-	This class is responsible for handling all keyboard input elements, both virtual and scancodes.
 */
 class KeyboardInputDevice final : public InputDevice
 {
@@ -28,10 +26,18 @@ public:
     eDigitalElementStates GetDigitalElementState(eInputElements elementId) const override;
     AnalogElementState GetAnalogElementState(eInputElements elementId) const override;
 
-    /** Convert a scancode key to a virtual key according to current keyboard layout */
+    /**
+        Convert a scancode key to a virtual key according to current keyboard layout.
+
+        /note Only Win32 platform supports virtual keys for now.
+    */
     eInputElements ConvertScancodeToVirtual(eInputElements scancodeElement) const;
 
-    /** Convert a virtual key to a scancode key according to current keyboard layout */
+    /**
+        Convert a virtual key to a scancode key according to current keyboard layout.
+
+        /note Only Win32 platform supports virtual keys for now.
+    */
     eInputElements ConvertVirtualToScancode(eInputElements virtualElement) const;
 
 private:
@@ -40,7 +46,7 @@ private:
     KeyboardInputDevice(const KeyboardInputDevice&) = delete;
     KeyboardInputDevice& operator=(const KeyboardInputDevice&) = delete;
 
-    void CreateAndSendInputEvent(eInputElements elementId, const Private::DigitalElement& element, Window* window, DAVA::int64 timestamp);
+    void CreateAndSendInputEvent(eInputElements elementId, const Private::DigitalElement& element, Window* window, DAVA::int64 timestamp) const;
 
     bool HandleEvent(const Private::MainDispatcherEvent& e);
     void OnEndFrame();
@@ -49,8 +55,10 @@ private:
 private:
     InputSystem* inputSystem = nullptr;
     Private::KeyboardDeviceImpl* impl = nullptr;
+
     Array<Private::DigitalElement, static_cast<uint32>(eInputElements::KB_COUNT_SCANCODE)> keys;
+
     size_t endFrameConnectionToken;
     size_t primaryWindowFocusChangedToken;
 };
-}
+} // namespace DAVA

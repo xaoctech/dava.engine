@@ -24,8 +24,11 @@ KeyboardInputDevice::KeyboardInputDevice(uint32 id)
     , impl(new Private::KeyboardDeviceImpl())
 {
     Engine* engine = Engine::Instance();
+
     endFrameConnectionToken = engine->endFrame.Connect(this, &KeyboardInputDevice::OnEndFrame);
-    primaryWindowFocusChangedToken = engine->PrimaryWindow()->focusChanged.Connect(this, &KeyboardInputDevice::OnWindowFocusChanged); // TODO: handle all the windows
+
+    // TODO: handle all the windows
+    primaryWindowFocusChangedToken = engine->PrimaryWindow()->focusChanged.Connect(this, &KeyboardInputDevice::OnWindowFocusChanged);
 
     Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &KeyboardInputDevice::HandleEvent));
 }
@@ -79,7 +82,7 @@ eInputElements KeyboardInputDevice::ConvertVirtualToScancode(eInputElements virt
     return impl->ConvertDavaVirtualToDavaScancode(virtualElement);
 }
 
-void KeyboardInputDevice::CreateAndSendInputEvent(eInputElements elementId, const Private::DigitalElement& element, Window* window, int64 timestamp)
+void KeyboardInputDevice::CreateAndSendInputEvent(eInputElements elementId, const Private::DigitalElement& element, Window* window, int64 timestamp) const
 {
     InputEvent inputEvent;
     inputEvent.window = window;

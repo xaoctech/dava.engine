@@ -19,4 +19,4 @@ public:
 } // namespace Private
 } // namespace DAVA
 
-#endif
+#endif // __DAVAENGINE_WIN_UAP__
