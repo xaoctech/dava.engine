@@ -916,29 +916,29 @@ eModifierKeys UIControlSystem::GetKeyboardModifierKeys() const
     KeyboardInputDevice* keyboard = GetEngineContext()->deviceManager->GetKeyboard();
     if (keyboard != nullptr)
     {
-        eDigitalElementStates lctrl = keyboard->GetDigitalElementState(eInputElements::KB_LCTRL_SCANCODE);
-        eDigitalElementStates rctrl = keyboard->GetDigitalElementState(eInputElements::KB_RCTRL_SCANCODE);
+        eDigitalElementStates lctrl = keyboard->GetDigitalElementState(eInputElements::KB_LCTRL);
+        eDigitalElementStates rctrl = keyboard->GetDigitalElementState(eInputElements::KB_RCTRL);
         if (((lctrl | rctrl) & eDigitalElementStates::PRESSED) == eDigitalElementStates::PRESSED)
         {
             modifierKeys |= eModifierKeys::CONTROL;
         }
 
-        eDigitalElementStates lshift = keyboard->GetDigitalElementState(eInputElements::KB_LSHIFT_SCANCODE);
-        eDigitalElementStates rshift = keyboard->GetDigitalElementState(eInputElements::KB_RSHIFT_SCANCODE);
+        eDigitalElementStates lshift = keyboard->GetDigitalElementState(eInputElements::KB_LSHIFT);
+        eDigitalElementStates rshift = keyboard->GetDigitalElementState(eInputElements::KB_RSHIFT);
         if (((lshift | rshift) & eDigitalElementStates::PRESSED) == eDigitalElementStates::PRESSED)
         {
             modifierKeys |= eModifierKeys::SHIFT;
         }
 
-        eDigitalElementStates lalt = keyboard->GetDigitalElementState(eInputElements::KB_LALT_SCANCODE);
-        eDigitalElementStates ralt = keyboard->GetDigitalElementState(eInputElements::KB_RALT_SCANCODE);
+        eDigitalElementStates lalt = keyboard->GetDigitalElementState(eInputElements::KB_LALT);
+        eDigitalElementStates ralt = keyboard->GetDigitalElementState(eInputElements::KB_RALT);
         if (((lalt | ralt) & eDigitalElementStates::PRESSED) == eDigitalElementStates::PRESSED)
         {
             modifierKeys |= eModifierKeys::ALT;
         }
 
-        eDigitalElementStates lcmd = keyboard->GetDigitalElementState(eInputElements::KB_LCMD_SCANCODE);
-        eDigitalElementStates rcmd = keyboard->GetDigitalElementState(eInputElements::KB_RCMD_SCANCODE);
+        eDigitalElementStates lcmd = keyboard->GetDigitalElementState(eInputElements::KB_LCMD);
+        eDigitalElementStates rcmd = keyboard->GetDigitalElementState(eInputElements::KB_RCMD);
         if (((lcmd | rcmd) & eDigitalElementStates::PRESSED) == eDigitalElementStates::PRESSED)
         {
             modifierKeys |= eModifierKeys::COMMAND;

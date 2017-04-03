@@ -137,178 +137,178 @@ void InputSystemTest::CreateKeyboardUI(WideString header, float32 x, float32 y, 
 
     float32 rightmostX = initialX;
 
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_ESCAPE_SCANCODE, forVirtualkeys), L"ESC", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_F1_SCANCODE, forVirtualkeys), L"F1", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_F2_SCANCODE, forVirtualkeys), L"F2", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_F3_SCANCODE, forVirtualkeys), L"F3", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_F4_SCANCODE, forVirtualkeys), L"F4", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_F5_SCANCODE, forVirtualkeys), L"F5", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_F6_SCANCODE, forVirtualkeys), L"F6", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_F7_SCANCODE, forVirtualkeys), L"F7", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_F8_SCANCODE, forVirtualkeys), L"F8", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_F9_SCANCODE, forVirtualkeys), L"F9", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_F10_SCANCODE, forVirtualkeys), L"F10", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_F11_SCANCODE, forVirtualkeys), L"F11", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_F12_SCANCODE, forVirtualkeys), L"F12", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_ESCAPE, forVirtualkeys), L"ESC", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_F1, forVirtualkeys), L"F1", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_F2, forVirtualkeys), L"F2", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_F3, forVirtualkeys), L"F3", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_F4, forVirtualkeys), L"F4", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_F5, forVirtualkeys), L"F5", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_F6, forVirtualkeys), L"F6", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_F7, forVirtualkeys), L"F7", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_F8, forVirtualkeys), L"F8", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_F9, forVirtualkeys), L"F9", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_F10, forVirtualkeys), L"F10", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_F11, forVirtualkeys), L"F11", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_F12, forVirtualkeys), L"F12", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
 
     rightmostX = std::max(x, rightmostX);
     y += keyboardButtonHeight + 1.0f;
     x = initialX;
 
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_GRAVE_SCANCODE, forVirtualkeys), L"`", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_1_SCANCODE, forVirtualkeys), L"1", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_2_SCANCODE, forVirtualkeys), L"2", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_3_SCANCODE, forVirtualkeys), L"3", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_4_SCANCODE, forVirtualkeys), L"4", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_5_SCANCODE, forVirtualkeys), L"5", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_6_SCANCODE, forVirtualkeys), L"6", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_7_SCANCODE, forVirtualkeys), L"7", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_8_SCANCODE, forVirtualkeys), L"8", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_9_SCANCODE, forVirtualkeys), L"9", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_0_SCANCODE, forVirtualkeys), L"0", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_MINUS_SCANCODE, forVirtualkeys), L"-", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_EQUALS_SCANCODE, forVirtualkeys), L"+", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_BACKSPACE_SCANCODE, forVirtualkeys), L"<-", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_GRAVE, forVirtualkeys), L"`", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_1, forVirtualkeys), L"1", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_2, forVirtualkeys), L"2", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_3, forVirtualkeys), L"3", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_4, forVirtualkeys), L"4", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_5, forVirtualkeys), L"5", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_6, forVirtualkeys), L"6", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_7, forVirtualkeys), L"7", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_8, forVirtualkeys), L"8", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_9, forVirtualkeys), L"9", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_0, forVirtualkeys), L"0", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_MINUS, forVirtualkeys), L"-", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_EQUALS, forVirtualkeys), L"+", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_BACKSPACE, forVirtualkeys), L"<-", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
 
     rightmostX = std::max(x, rightmostX);
     y += keyboardButtonHeight + 1.0f;
     x = initialX;
 
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_TAB_SCANCODE, forVirtualkeys), L"TAB", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_Q_SCANCODE, forVirtualkeys), L"Q", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_W_SCANCODE, forVirtualkeys), L"W", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_E_SCANCODE, forVirtualkeys), L"E", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_R_SCANCODE, forVirtualkeys), L"R", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_T_SCANCODE, forVirtualkeys), L"T", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_Y_SCANCODE, forVirtualkeys), L"Y", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_U_SCANCODE, forVirtualkeys), L"U", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_I_SCANCODE, forVirtualkeys), L"I", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_O_SCANCODE, forVirtualkeys), L"O", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_P_SCANCODE, forVirtualkeys), L"P", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_LBRACKET_SCANCODE, forVirtualkeys), L"{", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_RBRACKET_SCANCODE, forVirtualkeys), L"}", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_ENTER_SCANCODE, forVirtualkeys), L"ENTER", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_TAB, forVirtualkeys), L"TAB", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_Q, forVirtualkeys), L"Q", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_W, forVirtualkeys), L"W", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_E, forVirtualkeys), L"E", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_R, forVirtualkeys), L"R", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_T, forVirtualkeys), L"T", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_Y, forVirtualkeys), L"Y", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_U, forVirtualkeys), L"U", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_I, forVirtualkeys), L"I", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_O, forVirtualkeys), L"O", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_P, forVirtualkeys), L"P", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_LBRACKET, forVirtualkeys), L"{", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_RBRACKET, forVirtualkeys), L"}", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_ENTER, forVirtualkeys), L"ENTER", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
 
     rightmostX = std::max(x, rightmostX);
     y += keyboardButtonHeight + 1.0f;
     x = initialX;
 
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_CAPSLOCK_SCANCODE, forVirtualkeys), L"CAPS", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_A_SCANCODE, forVirtualkeys), L"A", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_S_SCANCODE, forVirtualkeys), L"S", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_D_SCANCODE, forVirtualkeys), L"D", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_F_SCANCODE, forVirtualkeys), L"F", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_G_SCANCODE, forVirtualkeys), L"G", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_H_SCANCODE, forVirtualkeys), L"H", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_J_SCANCODE, forVirtualkeys), L"J", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_K_SCANCODE, forVirtualkeys), L"K", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_L_SCANCODE, forVirtualkeys), L"L", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_SEMICOLON_SCANCODE, forVirtualkeys), L":", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_APOSTROPHE_SCANCODE, forVirtualkeys), L"\"", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_BACKSLASH_SCANCODE, forVirtualkeys), L"\\", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_CAPSLOCK, forVirtualkeys), L"CAPS", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_A, forVirtualkeys), L"A", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_S, forVirtualkeys), L"S", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_D, forVirtualkeys), L"D", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_F, forVirtualkeys), L"F", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_G, forVirtualkeys), L"G", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_H, forVirtualkeys), L"H", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_J, forVirtualkeys), L"J", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_K, forVirtualkeys), L"K", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_L, forVirtualkeys), L"L", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_SEMICOLON, forVirtualkeys), L":", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_APOSTROPHE, forVirtualkeys), L"\"", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_BACKSLASH, forVirtualkeys), L"\\", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
 
     rightmostX = std::max(x, rightmostX);
     y += keyboardButtonHeight + 1.0f;
     x = initialX;
 
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_LSHIFT_SCANCODE, forVirtualkeys), L"SHFT", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NONUSBACKSLASH_SCANCODE, forVirtualkeys), L"\\", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_Z_SCANCODE, forVirtualkeys), L"Z", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_X_SCANCODE, forVirtualkeys), L"X", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_C_SCANCODE, forVirtualkeys), L"C", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_V_SCANCODE, forVirtualkeys), L"V", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_B_SCANCODE, forVirtualkeys), L"B", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_N_SCANCODE, forVirtualkeys), L"N", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_M_SCANCODE, forVirtualkeys), L"M", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_COMMA_SCANCODE, forVirtualkeys), L"<", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_PERIOD_SCANCODE, forVirtualkeys), L">", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_SLASH_SCANCODE, forVirtualkeys), L"?", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_RSHIFT_SCANCODE, forVirtualkeys), L"Shift", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_LSHIFT, forVirtualkeys), L"SHFT", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NONUSBACKSLASH, forVirtualkeys), L"\\", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_Z, forVirtualkeys), L"Z", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_X, forVirtualkeys), L"X", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_C, forVirtualkeys), L"C", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_V, forVirtualkeys), L"V", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_B, forVirtualkeys), L"B", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_N, forVirtualkeys), L"N", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_M, forVirtualkeys), L"M", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_COMMA, forVirtualkeys), L"<", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_PERIOD, forVirtualkeys), L">", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_SLASH, forVirtualkeys), L"?", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_RSHIFT, forVirtualkeys), L"Shift", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
 
     rightmostX = std::max(x, rightmostX);
     y += keyboardButtonHeight + 1.0f;
     x = initialX;
 
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_LCTRL_SCANCODE, forVirtualkeys), L"CTRL", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_LWIN_SCANCODE, forVirtualkeys), L"WIN", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_LALT_SCANCODE, forVirtualkeys), L"ALT", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_SPACE_SCANCODE, forVirtualkeys), L"SPACE", font, &x, y, keyboardButtonWidth * 4, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_RALT_SCANCODE, forVirtualkeys), L"ALT", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_RWIN_SCANCODE, forVirtualkeys), L"WIN", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_MENU_SCANCODE, forVirtualkeys), L"MENU", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_RCTRL_SCANCODE, forVirtualkeys), L"CTRL", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_LCTRL, forVirtualkeys), L"CTRL", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_LWIN, forVirtualkeys), L"WIN", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_LALT, forVirtualkeys), L"ALT", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_SPACE, forVirtualkeys), L"SPACE", font, &x, y, keyboardButtonWidth * 4, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_RALT, forVirtualkeys), L"ALT", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_RWIN, forVirtualkeys), L"WIN", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_MENU, forVirtualkeys), L"MENU", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_RCTRL, forVirtualkeys), L"CTRL", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
 
     const float32 middleSectionStartX = rightmostX + keyboardButtonWidth;
 
     y = initialY;
     x = middleSectionStartX;
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_PRINTSCREEN_SCANCODE, forVirtualkeys), L"PSCR", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_SCROLLLOCK_SCANCODE, forVirtualkeys), L"SCROLLLOCK", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_PAUSE_SCANCODE, forVirtualkeys), L"PAUSE", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_PRINTSCREEN, forVirtualkeys), L"PSCR", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_SCROLLLOCK, forVirtualkeys), L"SCROLLLOCK", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_PAUSE, forVirtualkeys), L"PAUSE", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
 
     rightmostX = std::max(x, rightmostX);
     y += keyboardButtonHeight + 1.0f;
     x = middleSectionStartX;
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_INSERT_SCANCODE, forVirtualkeys), L"INSERT", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_HOME_SCANCODE, forVirtualkeys), L"HOME", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_PAGEUP_SCANCODE, forVirtualkeys), L"PGUP", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_INSERT, forVirtualkeys), L"INSERT", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_HOME, forVirtualkeys), L"HOME", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_PAGEUP, forVirtualkeys), L"PGUP", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
 
     rightmostX = std::max(x, rightmostX);
     y += keyboardButtonHeight + 1.0f;
     x = middleSectionStartX;
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_DELETE_SCANCODE, forVirtualkeys), L"DEL", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_END_SCANCODE, forVirtualkeys), L"END", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_PAGEDOWN_SCANCODE, forVirtualkeys), L"PGDOWN", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_DELETE, forVirtualkeys), L"DEL", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_END, forVirtualkeys), L"END", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_PAGEDOWN, forVirtualkeys), L"PGDOWN", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
 
     rightmostX = std::max(x, rightmostX);
     y += 2.0f * (keyboardButtonHeight + 1.0f);
     x = middleSectionStartX + keyboardButtonWidth + 1.0f;
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_UP_SCANCODE, forVirtualkeys), L"UP", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_UP, forVirtualkeys), L"UP", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
 
     rightmostX = std::max(x, rightmostX);
     y += keyboardButtonHeight + 1.0f;
     x = middleSectionStartX;
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_LEFT_SCANCODE, forVirtualkeys), L"LEFT", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_DOWN_SCANCODE, forVirtualkeys), L"DOWN", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_RIGHT_SCANCODE, forVirtualkeys), L"RIGHT", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_LEFT, forVirtualkeys), L"LEFT", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_DOWN, forVirtualkeys), L"DOWN", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_RIGHT, forVirtualkeys), L"RIGHT", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
 
     const float32 numpadSectionStartX = rightmostX + keyboardButtonWidth;
 
     y = initialY;
     x = numpadSectionStartX;
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMLOCK_SCANCODE, forVirtualkeys), L"NUMLOCK", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_DIVIDE_SCANCODE, forVirtualkeys), L"/", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_MULTIPLY_SCANCODE, forVirtualkeys), L"*", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMPAD_MINUS_SCANCODE, forVirtualkeys), L"-", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMLOCK, forVirtualkeys), L"NUMLOCK", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_DIVIDE, forVirtualkeys), L"/", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_MULTIPLY, forVirtualkeys), L"*", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMPAD_MINUS, forVirtualkeys), L"-", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
 
     rightmostX = std::max(x, rightmostX);
     y += keyboardButtonHeight + 1.0f;
     x = numpadSectionStartX;
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMPAD_7_SCANCODE, forVirtualkeys), L"7", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMPAD_8_SCANCODE, forVirtualkeys), L"8", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMPAD_9_SCANCODE, forVirtualkeys), L"9", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMPAD_PLUS_SCANCODE, forVirtualkeys), L"+", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMPAD_7, forVirtualkeys), L"7", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMPAD_8, forVirtualkeys), L"8", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMPAD_9, forVirtualkeys), L"9", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMPAD_PLUS, forVirtualkeys), L"+", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
 
     rightmostX = std::max(x, rightmostX);
     y += keyboardButtonHeight + 1.0f;
     x = numpadSectionStartX;
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMPAD_4_SCANCODE, forVirtualkeys), L"4", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMPAD_5_SCANCODE, forVirtualkeys), L"5", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMPAD_6_SCANCODE, forVirtualkeys), L"6", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMPAD_4, forVirtualkeys), L"4", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMPAD_5, forVirtualkeys), L"5", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMPAD_6, forVirtualkeys), L"6", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
 
     rightmostX = std::max(x, rightmostX);
     y += keyboardButtonHeight + 1.0f;
     x = numpadSectionStartX;
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMPAD_1_SCANCODE, forVirtualkeys), L"1", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMPAD_2_SCANCODE, forVirtualkeys), L"2", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMPAD_3_SCANCODE, forVirtualkeys), L"3", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMPAD_ENTER_SCANCODE, forVirtualkeys), L"ENTER", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMPAD_1, forVirtualkeys), L"1", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMPAD_2, forVirtualkeys), L"2", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMPAD_3, forVirtualkeys), L"3", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMPAD_ENTER, forVirtualkeys), L"ENTER", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
 
     rightmostX = std::max(x, rightmostX);
     y += keyboardButtonHeight + 1.0f;
     x = numpadSectionStartX;
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMPAD_0_SCANCODE, forVirtualkeys), L"0", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
-    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMPAD_DELETE_SCANCODE, forVirtualkeys), L"DEL", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMPAD_0, forVirtualkeys), L"0", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(GetVirtualOrScancodeInputElement(eInputElements::KB_NUMPAD_DELETE, forVirtualkeys), L"DEL", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
 }
 
 void InputSystemTest::CreateMouseUI()
