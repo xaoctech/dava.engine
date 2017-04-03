@@ -39,7 +39,7 @@ eInputElements KeyboardDeviceImpl::ConvertDavaVirtualToDavaScancode(eInputElemen
 
     // UWP does not support MapVirtualKey nor does it have it's analogue
     // Until it's added, ignore any custom layouts
-    return static_cast<eInputElements>(virtualElement + eInputElements::KB_COUNT_SCANCODE);
+    return static_cast<eInputElements>(virtualElement + eInputElements::KB_COUNT_VIRTUAL);
 }
 }
 }
