@@ -1,5 +1,7 @@
 #include "Input/Private/Win32/KeyboardDeviceImplWin32.h"
 
+#if defined(__DAVAENGINE_WIN_UAP__)
+
 #include "Input/Private/KeyboardDeviceImplWinCodes.h"
 #include "Base/TemplateHelpers.h"
 #include "Debug/DVAssert.h"
@@ -43,3 +45,5 @@ eInputElements KeyboardDeviceImpl::ConvertDavaVirtualToDavaScancode(eInputElemen
 }
 }
 }
+
+#endif

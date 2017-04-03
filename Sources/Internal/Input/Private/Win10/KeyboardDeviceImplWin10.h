@@ -1,7 +1,8 @@
 #pragma once
 
 #include "Input/InputElements.h"
-#include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
+
+#if defined(__DAVAENGINE_WIN_UAP__)
 
 namespace DAVA
 {
@@ -16,3 +17,5 @@ public:
 };
 }
 }
+
+#endif

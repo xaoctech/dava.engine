@@ -1,5 +1,7 @@
 #include "Input/Private/Mac/KeyboardDeviceImplMac.h"
 
+#if defined (__DAVAENGINE_MACOS__)
+
 #include "Base/TemplateHelpers.h"
 #include "Debug/DVAssert.h"
 #include "Engine/Engine.h"
@@ -159,3 +161,5 @@ eInputElements KeyboardDeviceImpl::ConvertDavaVirtualToDavaScancode(eInputElemen
 }
 }
 }
+
+#endif
