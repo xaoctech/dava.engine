@@ -19,8 +19,20 @@ public:
     void RemoveComponent(Entity* entity, Component* component) override;
 
 private:
+    struct DecalBuildInfo
+    {
+        RenderObject* object = nullptr;
+        RenderBatch* batch = nullptr;
+        AABBox3 box;
+        int32 lodIndex = -1;
+        int32 switchIndex = -1;
+        Vector3 projectionAxis;
+        Matrix4 projectionSpaceTransform;
+        Matrix4 projectionSpaceInverseTransform;
+    };
     void BuildDecal(Entity* entity, GeoDecalComponent* component);
-    void RemoveCreatedDecals(GeoDecalComponent* component);
+    void RemoveCreatedDecals(Entity* entity, GeoDecalComponent* component);
+    void BuildDecal(const DecalBuildInfo& info);
 
 private:
     struct GeoDecalCache

@@ -1,7 +1,6 @@
 #include "DAVAEngine.h"
 #include "DAVAClassRegistrator.h"
 #include "Render/Highlevel/ShadowVolume.h"
-#include "Scene3D/Components/GeoDecalComponent.h"
 
 using namespace DAVA;
 
@@ -80,3 +79,4 @@ REGISTER_CLASS(WASDControllerComponent);
 REGISTER_CLASS(RotationControllerComponent);
 REGISTER_CLASS(SnapToLandscapeControllerComponent);
 REGISTER_CLASS(GeoDecalComponent);
+REGISTER_CLASS(GeoDecalRenderComponent);

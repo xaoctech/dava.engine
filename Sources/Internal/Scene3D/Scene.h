@@ -49,6 +49,7 @@ class LandscapeSystem;
 class LodSystem;
 class ParticleEffectDebugDrawSystem;
 class GeoDecalSystem;
+class GeoDecalRenderSystem;
 
 class UIEvent;
 class RenderPass;
@@ -103,11 +104,12 @@ public:
         SCENE_SYSTEM_SKELETON_UPDATE_FLAG = 1 << 17,
         SCENE_SYSTEM_ANIMATION_FLAG = 1 << 18,
         SCENE_SYSTEM_GEO_DECAL_FLAG = 1 << 19,
+        SCENE_SYSTEM_GEO_DECAL_RENDER_FLAG = 1 << 20,
 
         SCENE_SYSTEM_ALL_MASK = 0xFFFFFFFF
     };
 
-    enum eSceneProcessFlags
+    enum eSceneProcessFlags : uint32
     {
         SCENE_SYSTEM_REQUIRE_PROCESS = 1 << 0,
         SCENE_SYSTEM_REQUIRE_INPUT = 1 << 1
@@ -166,6 +168,7 @@ public:
     LandscapeSystem* landscapeSystem;
     ParticleEffectDebugDrawSystem* particleEffectDebugDrawSystem;
     GeoDecalSystem* geoDecalSystem = nullptr;
+    GeoDecalRenderSystem* geoDecalRenderSystem = nullptr;
 
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.

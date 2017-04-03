@@ -122,9 +122,9 @@ public:
     inline void SetInverseTransform(const Matrix4& _inverseWorldTransform);
     inline const Matrix4& GetInverseWorldTransform() const;
 
-    inline eType GetType()
+    inline eType GetType() const
     {
-        return eType(type);
+        return static_cast<eType>(type);
     }
 
     virtual RenderObject* Clone(RenderObject* newObject);
