@@ -247,15 +247,7 @@ void SlotSystem::AttachItemToSlot(Entity* rootEntity, FastName slotName, FastNam
 
 void SlotSystem::AttachItemToSlot(SlotComponent* component, FastName itemName)
 {
-    auto iter = slotToLoadedEntity.find(component);
-    if (iter != slotToLoadedEntity.end())
-    {
-        Entity* slotEntity = component->GetEntity();
-        Entity* loadedEntity = iter->second;
-
-        DVASSERT(slotEntity == loadedEntity->GetParent());
-        slotEntity->RemoveNode(loadedEntity);
-    }
+    UnloadItem(component);
 
     const FilePath& configPath = component->GetConfigFilePath();
     uint32 filtersCount = component->GetFiltersCount();
@@ -299,6 +291,25 @@ void SlotSystem::AttachItemToSlot(SlotComponent* component, FastName itemName)
     }
 }
 
+void SlotSystem::AttachEntityToSlot(SlotComponent* component, Entity* entity)
+{
+    UnloadItem(component);
+
+    TransformComponent* transform = GetTransformComponent(entity);
+    DVASSERT(transform != nullptr);
+    transform->SetLocalTransform(&component->GetAttachmentTransform());
+
+    Entity* parentEntity = component->GetEntity();
+    if (nullptr != externalEntityLoader)
+    {
+        parentEntity->AddNode(entity);
+    }
+    else
+    {
+        externalEntityLoader->AddEntity(parentEntity, entity);
+    }
+}
+
 Entity* SlotSystem::LookUpLoadedEntity(SlotComponent* component)
 {
     DVASSERT(component->GetEntity() != nullptr);
@@ -312,6 +323,19 @@ void SlotSystem::SetScene(Scene* scene)
     if (nullptr != externalEntityLoader)
     {
         externalEntityLoader->SetScene(scene);
+    }
+}
+
+void SlotSystem::UnloadItem(SlotComponent* component)
+{
+    auto iter = slotToLoadedEntity.find(component);
+    if (iter != slotToLoadedEntity.end())
+    {
+        Entity* slotEntity = component->GetEntity();
+        Entity* loadedEntity = iter->second;
+
+        DVASSERT(slotEntity == loadedEntity->GetParent());
+        slotEntity->RemoveNode(loadedEntity);
     }
 }
 

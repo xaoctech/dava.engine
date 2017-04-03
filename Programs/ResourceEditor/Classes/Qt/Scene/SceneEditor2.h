@@ -44,6 +44,7 @@ class FogSettingsChangedReceiver;
 class VisibilityCheckSystem;
 class RECommandStack;
 class EditorSceneSystem;
+class EditorSlotSystem;
 
 class SceneEditor2 : public DAVA::Scene
 {
