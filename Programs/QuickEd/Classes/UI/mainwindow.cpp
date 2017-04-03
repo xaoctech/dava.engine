@@ -1,10 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include "Modules/LegacySupportModule/Private/Document.h"
+#include "Modules/LegacySupportModule/Private/Project.h"
 #include "Render/Texture.h"
 
-#include "UI/FileSystemView/FileSystemDockWidget.h"
 #include "Utils/QtDavaConvertion.h"
 #include "QtTools/Utils/Utils.h"
 
@@ -18,7 +17,6 @@
 #include "QtTools/Utils/Themes/Themes.h"
 #include "UI/Package/PackageModel.h"
 #include "UI/ProjectView.h"
-#include "UI/DocumentGroupView.h"
 
 #include <Base/Result.h>
 
@@ -34,7 +32,7 @@ REGISTER_PREFERENCES_ON_START(MainWindow,
 
 Q_DECLARE_METATYPE(const InspMember*);
 
-MainWindow::MainWindow(QWidget* parent)
+MainWindow::MainWindow(DAVA::TArc::ContextAccessor* accessor, QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow())
 #if defined(__DAVAENGINE_MACOS__)
@@ -42,12 +40,15 @@ MainWindow::MainWindow(QWidget* parent)
 #endif //__DAVAENGINE_MACOS__
 {
     ui->setupUi(this);
+    ui->libraryWidget->SetAccessor(accessor);
+    ui->propertiesWidget->SetAccessor(accessor);
+    ui->packageWidget->SetAccessor(accessor);
+
     setWindowIcon(QIcon(":/icon.ico"));
     DebugTools::ConnectToUI(ui.get());
     SetupViewMenu();
 
     projectView = new ProjectView(this);
-    documentGroupView = new DocumentGroupView(this);
 
     InitEmulationMode();
     ConnectActions();
@@ -55,6 +56,7 @@ MainWindow::MainWindow(QWidget* parent)
     PreferencesStorage::Instance()->RegisterPreferences(this);
 
     connect(ui->packageWidget, &PackageWidget::CurrentIndexChanged, ui->propertiesWidget, &PropertiesWidget::UpdateModel);
+    connect(projectView, &ProjectView::ProjectChanged, ui->propertiesWidget, &PropertiesWidget::SetProject);
 
     qApp->installEventFilter(this);
 }
@@ -64,26 +66,11 @@ MainWindow::~MainWindow()
     PreferencesStorage::Instance()->UnregisterPreferences(this);
 }
 
-bool MainWindow::IsInitialized() const
-{
-    return isInitialized;
-}
-
 void MainWindow::SetEditorTitle(const QString& editorTitle_)
 {
     editorTitle = editorTitle_;
 
     UpdateWindowTitle();
-}
-
-bool MainWindow::event(QEvent* event)
-{
-    if (isInitialized == false && event->type() == QEvent::WindowActivate)
-    {
-        isInitialized = true;
-        initialized.Emit();
-    }
-    return QMainWindow::event(event);
 }
 
 void MainWindow::SetProjectPath(const QString& projectPath_)
@@ -115,10 +102,8 @@ void MainWindow::SetupViewMenu()
     // Setup the common menu actions.
     QList<QAction*> dockWidgetToggleActions;
     dockWidgetToggleActions << ui->propertiesWidget->toggleViewAction()
-                            << ui->fileSystemDockWidget->toggleViewAction()
                             << ui->packageWidget->toggleViewAction()
                             << ui->libraryWidget->toggleViewAction()
-                            << ui->styleSheetInspectorWidget->toggleViewAction()
                             << ui->findWidget->toggleViewAction()
                             << ui->mainToolbar->toggleViewAction()
                             << ui->toolBarGlobal->toggleViewAction();
@@ -207,11 +192,6 @@ MainWindow::ProjectView* MainWindow::GetProjectView() const
 PackageWidget* MainWindow::GetPackageWidget() const
 {
     return ui->packageWidget;
-}
-
-StyleSheetInspectorWidget* MainWindow::GetStyleSheetInspectorWidget() const
-{
-    return ui->styleSheetInspectorWidget;
 }
 
 void MainWindow::OnPreferencesPropertyChanged(const InspMember* member, const VariantType& value)

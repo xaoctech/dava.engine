@@ -42,7 +42,7 @@ void DocumentData::EndBatch()
     commandStack->EndBatch();
 }
 
-const PackageNode* DocumentData::GetPackageNode() const
+PackageNode* DocumentData::GetPackageNode() const
 {
     return package.Get();
 }
@@ -115,6 +115,7 @@ void DocumentData::RefreshLayout()
 void DocumentData::RefreshAllControlProperties()
 {
     package->GetPackageControlsNode()->RefreshControlProperties();
+    package->GetPrototypes()->RefreshControlProperties();
 }
 
 const char* DocumentData::packagePropertyName = "package";
