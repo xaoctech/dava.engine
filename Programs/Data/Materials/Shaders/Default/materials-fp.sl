@@ -253,7 +253,7 @@ fragment_out fp_main( fragment_in input )
     
     
     #if MATERIAL_LIGHTMAP  && VIEW_DIFFUSE
-        half3 textureColor1 = half3(tex2D( lightmap, input.varTexCoord1 ).rgb);
+        half3 textureColor1 = half3(tex2D( lightmap, input.varTexCoord1 ).rgb) * 0.5 + 0.5;
     #endif
     
     
@@ -589,9 +589,9 @@ fragment_out fp_main( fragment_in input )
         output.color = float4(0.01f, 0.0f, 0.0f, 1.0f);
     #endif
 
-    #if (DECAL_DEBUG)
-        output.color = float4(1.0, 0.5, 0.25, 1.0);
-    #endif
+#if (DECAL_DEBUG)
+//    output.color = float4(input.varTexCoord1, 0.25, 1.0);
+#endif
 
     return output;
 }

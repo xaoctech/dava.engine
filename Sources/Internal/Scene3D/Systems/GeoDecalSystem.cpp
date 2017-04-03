@@ -324,11 +324,11 @@ bool GeoDecalSystem::BuildDecal(const DecalBuildInfo& info, DecalRenderBatch& ba
             points[0].point = points[0].point * info.projectionSpaceTransform;
             points[1].point = points[1].point * info.projectionSpaceTransform;
             points[2].point = points[2].point * info.projectionSpaceTransform;
-            /*
-            points[0].point.z = -1.0f;
-            points[1].point.z = -1.0f;
-            points[2].point.z = -1.0f;
-            // */
+
+            points[0].point.z = std::max(-1.0f, points[0].point.z - 0.0333333f);
+            points[1].point.z = std::max(-1.0f, points[1].point.z - 0.0333333f);
+            points[2].point.z = std::max(-1.0f, points[2].point.z - 0.0333333f);
+
             Vector3 nrm = (points[1].point - points[0].point).CrossProduct(points[2].point - points[0].point);
             if (nrm.z < -std::numeric_limits<float>::epsilon())
             {
@@ -371,6 +371,23 @@ bool GeoDecalSystem::BuildDecal(const DecalBuildInfo& info, DecalRenderBatch& ba
     ScopedPtr<NMaterial> material(new NMaterial());
     material->SetFXName(FastName("~res:/Materials/Decal.Debug.material"));
     material->SetMaterialName(FastName("Decal.Debug.material"));
+
+    Texture* lightmap = info.batch->GetMaterial()->GetEffectiveTexture(NMaterialTextureName::TEXTURE_LIGHTMAP);
+    if (lightmap != nullptr)
+        material->AddTexture(NMaterialTextureName::TEXTURE_LIGHTMAP, lightmap);
+
+    GeoDecalComponent* decalComponent = static_cast<GeoDecalComponent*>(info.component);
+    Texture* albedo = Texture::CreateFromFile(decalComponent->GetDecalImage()); //info.component->Get info.batch->GetMaterial()->GetEffectiveTexture(NMaterialTextureName::TEXTURE_ALBEDO);
+    if (albedo != nullptr)
+        material->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, albedo);
+
+    const float32* uvOffset = info.batch->GetMaterial()->GetEffectivePropValue(NMaterialParamName::PARAM_UV_OFFSET);
+    if (uvOffset != nullptr)
+        material->AddProperty(NMaterialParamName::PARAM_UV_OFFSET, uvOffset, rhi::ShaderProp::Type::TYPE_FLOAT2);
+
+    const float32* uvScale = info.batch->GetMaterial()->GetEffectivePropValue(NMaterialParamName::PARAM_UV_SCALE);
+    if (uvScale != nullptr)
+        material->AddProperty(NMaterialParamName::PARAM_UV_SCALE, uvScale, rhi::ShaderProp::Type::TYPE_FLOAT2);
 
     batch.batch = new RenderBatch();
     batch.batch->SetPolygonGroup(poly);
