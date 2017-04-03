@@ -57,11 +57,11 @@ bool DeviceManager::HandleEvent(const Private::MainDispatcherEvent& e)
 
 void DeviceManager::OnEngineInited()
 {
-#if defined(__DAVAENGINE_WINDOWS__) || defined(__DAVAENGINE_MACOS__)
     keyboard = new KeyboardInputDevice(1);
-    mouse = new MouseDevice(2);
-
     inputDevices.push_back(keyboard);
+
+#if defined(__DAVAENGINE_WINDOWS__) || defined(__DAVAENGINE_MACOS__)
+    mouse = new MouseDevice(2);
     inputDevices.push_back(mouse);
 #endif
 }
@@ -75,8 +75,6 @@ InputDevice* DeviceManager::GetInputDevice(uint32 id)
             return device;
         }
     }
-
-    DVASSERT(false);
 
     return nullptr;
 }
