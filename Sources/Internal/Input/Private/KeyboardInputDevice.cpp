@@ -8,6 +8,8 @@
 #include "Input/Private/Mac/KeyboardDeviceImplMac.h"
 #elif defined(__DAVAENGINE_ANDROID__)
 #include "Input/Private/Android/KeyboardDeviceImplAndroid.h"
+#elif defined(__DAVAENGINE_IPHONE__)
+#include "Input/Private/Ios/KeyboardDeviceImplIos.h"
 #else
 #error "DeviceManager: unknown platform"
 #endif
@@ -86,7 +88,7 @@ void KeyboardInputDevice::CreateAndSendInputEvent(eInputElements elementId, cons
 {
     InputEvent inputEvent;
     inputEvent.window = window;
-    inputEvent.timestamp = timestamp / 1000.0f;
+    inputEvent.timestamp = static_cast<float64>(timestamp / 1000.0f);
     inputEvent.deviceType = eInputDeviceTypes::KEYBOARD;
     inputEvent.deviceId = GetId();
     inputEvent.digitalState = element.GetState();

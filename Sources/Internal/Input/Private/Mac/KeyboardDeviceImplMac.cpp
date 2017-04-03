@@ -10,6 +10,8 @@ namespace DAVA
 {
 namespace Private
 {
+// TODO: Virtual keys support
+
 const eInputElements nativeScancodeToDavaScancode[] =
 {
   eInputElements::KB_A_SCANCODE, // 0x00
