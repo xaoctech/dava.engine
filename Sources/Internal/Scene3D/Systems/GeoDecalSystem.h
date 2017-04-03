@@ -21,6 +21,8 @@ public:
 private:
     struct DecalBuildInfo
     {
+        Entity* entity = nullptr;
+        Component* component = nullptr;
         RenderObject* object = nullptr;
         RenderBatch* batch = nullptr;
         AABBox3 box;
@@ -30,17 +32,31 @@ private:
         Matrix4 projectionSpaceTransform;
         Matrix4 projectionSpaceInverseTransform;
     };
+    struct DecalRenderBatch
+    {
+        RefPtr<RenderBatch> batch;
+        int32 lodIndex = -1;
+        int32 switchIndex = -1;
+    };
     void BuildDecal(Entity* entity, GeoDecalComponent* component);
     void RemoveCreatedDecals(Entity* entity, GeoDecalComponent* component);
-    void BuildDecal(const DecalBuildInfo& info);
+    bool BuildDecal(const DecalBuildInfo& info, DecalRenderBatch&);
 
 private:
+    struct GeoDecalCacheEntry
+    {
+        GeoDecalComponent::Config lastValidConfig;
+        RefPtr<RenderObject> renderObject;
+        Vector<RefPtr<RenderBatch>> renderBatches;
+    };
+
     struct GeoDecalCache
     {
         GeoDecalCache() = default;
         GeoDecalCache(Entity* entity);
-        Map<Component*, GeoDecalComponent::Config> lastValidConfig;
+        Map<Component*, GeoDecalCacheEntry> data;
     };
+
     Map<Entity*, GeoDecalCache> decals;
 };
 }
