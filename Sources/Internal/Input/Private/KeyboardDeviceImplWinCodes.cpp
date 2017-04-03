@@ -1,5 +1,4 @@
-#pragma once
-
+#if defined(__DAVAENGINE_WINDOWS__)
 #include "Input/Private/KeyboardDeviceImplWinCodes.h"
 
 namespace DAVA
@@ -198,3 +197,4 @@ const eInputElements nativeScancodeExtToDavaScancode[] =
 };
 }
 }
+#endif

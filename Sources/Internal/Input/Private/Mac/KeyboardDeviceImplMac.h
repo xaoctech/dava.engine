@@ -1,8 +1,9 @@
 #pragma once
 
-#include "Input/InputElements.h"
+#if defined (__DAVAENGINE_MACOS__)
 
-#if defined(__DAVAENGINE_WIN_UAP__)
+#include "Input/InputElements.h"
+#include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 
 namespace DAVA
 {
