@@ -8,12 +8,12 @@ namespace DAVA
 {
 void InputListener::Listen(eInputListenerModes mode, Function<void(Vector<eInputElements>)> callback)
 {
-    Listen(mode, callback, 0, eInputDeviceTypes::UNKNOWN);
+    Listen(mode, callback, 0, eInputDeviceTypes::CLASS_ALL);
 }
 
 void InputListener::Listen(eInputListenerModes mode, Function<void(Vector<eInputElements>)> callback, uint32 deviceId)
 {
-    Listen(mode, callback, deviceId, eInputDeviceTypes::UNKNOWN);
+    Listen(mode, callback, deviceId, eInputDeviceTypes::CLASS_ALL);
 }
 
 void InputListener::Listen(eInputListenerModes mode, Function<void(Vector<eInputElements>)> callback, eInputDeviceTypes deviceTypesMask)
@@ -32,10 +32,7 @@ void InputListener::Listen(eInputListenerModes mode, Function<void(Vector<eInput
     currentDeviceId = deviceId;
     currentDeviceTypesMask = deviceTypesMask;
 
-    if (inputHandlerToken == 0)
-    {
-        inputHandlerToken = GetEngineContext()->inputSystem->AddHandler(eInputDeviceTypes::CLASS_ALL, MakeFunction(this, &InputListener::OnInputEvent));
-    }
+    inputHandlerToken = GetEngineContext()->inputSystem->AddHandler(deviceTypesMask, MakeFunction(this, &InputListener::OnInputEvent));
 }
 
 bool InputListener::OnInputEvent(const InputEvent& e)
@@ -43,13 +40,6 @@ bool InputListener::OnInputEvent(const InputEvent& e)
     // If we're restricted to the specific device,
     // and this event is from different one - ignore it
     if (currentDeviceId > 0 && e.deviceId != currentDeviceId)
-    {
-        return false;
-    }
-
-    // If we're restricted to the specific device types,
-    // and this event is from different one - ignore it
-    if (currentDeviceTypesMask != eInputDeviceTypes::UNKNOWN && (e.deviceType & currentDeviceTypesMask) == eInputDeviceTypes::UNKNOWN)
     {
         return false;
     }
@@ -94,7 +84,7 @@ bool InputListener::OnInputEvent(const InputEvent& e)
             }
             else if ((e.digitalState & eDigitalElementStates::JUST_RELEASED) == eDigitalElementStates::JUST_RELEASED)
             {
-                if (currentMode != eInputListenerModes::ANALOG)
+                if (currentMode == eInputListenerModes::DIGITAL_MULTIPLE_ANY)
                 {
                     // If a button was released, and we're listening for digital sequence, assume it's over
                     finishedListening = true;

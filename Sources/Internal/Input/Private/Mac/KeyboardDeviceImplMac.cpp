@@ -1,6 +1,6 @@
 #include "Input/Private/Mac/KeyboardDeviceImplMac.h"
 
-#if defined (__DAVAENGINE_MACOS__)
+#if defined(__DAVAENGINE_MACOS__)
 
 #include "Base/TemplateHelpers.h"
 #include "Debug/DVAssert.h"

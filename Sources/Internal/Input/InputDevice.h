@@ -29,12 +29,19 @@ namespace DAVA
 */
 enum class eDigitalElementStates : uint32
 {
-    // Helper value to use in bitwise operations
+    /** Helper value to use in bitwise operations */
     NONE = 0,
 
+    /** A button has just been pressed */
     JUST_PRESSED = 1 << 0,
+
+    /** A button is in pressed state */
     PRESSED = 1 << 1,
+
+    /** A button has just been released */
     JUST_RELEASED = 1 << 2,
+
+    /** A button is in a released state */
     RELEASED = 1 << 3
 };
 
@@ -45,7 +52,7 @@ DAVA_DEFINE_ENUM_BITWISE_OPERATORS(eDigitalElementStates)
 	Struct describing analog element state.
     Meanings of `x`, `y` and `z` values can be different for different elements.
 
-    For example, a gamepad's stick defines x and y values in range of [-1; 1] for according axises.
+    For example, a gamepad's stick defines x and y values in range of [-1; 1] for according axes.
 */
 struct AnalogElementState final
 {
@@ -62,7 +69,9 @@ struct AnalogElementState final
 /**
     \ingroup input
     Represents a virtual or a real device used for input.
-    This class is responsible for storing device's state for others to request it when needed.
+    This class is responsible for:
+		- Storing device's state for others to request it when needed
+		- Handling native input events, transforming it to an `InputEvent` and sending it to the `InputSystem`
 */
 class InputDevice
 {
@@ -77,7 +86,9 @@ public:
     /** Return unique device id */
     uint32 GetId() const;
 
-    /** Return true if element with specified `elementId` is supported by the device (i.e. it's state can be requested) */
+    /** Return true if element with specified `elementId` is supported by the device
+		(i.e. it's state can be requested with either `GetDigitalElementState` or `GetAnalogElementState`)
+	*/
     virtual bool SupportsElement(eInputElements elementId) const = 0;
 
     /**

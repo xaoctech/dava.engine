@@ -56,7 +56,7 @@ struct DigitalElementState final
 
 /**
     \ingroup actions
-    Describes an action binded to a number of digital elements.
+    Describes an action bound to a number of digital elements.
 */
 struct DigitalBinding final
 {
@@ -89,7 +89,7 @@ struct DigitalBinding final
 
 /**
     \ingroup actions
-    Describes an action binded to an analog element.
+    Describes an action bound to an analog element.
     Additional digital modifiers can be specified.
     For example, we can bind an action to shift (digital modifier) + mouse move (analog element).
 */

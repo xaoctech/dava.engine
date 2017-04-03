@@ -1,6 +1,6 @@
 #pragma once
 
-#if defined (__DAVAENGINE_MACOS__)
+#if defined(__DAVAENGINE_MACOS__)
 
 #include "Input/InputElements.h"
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"

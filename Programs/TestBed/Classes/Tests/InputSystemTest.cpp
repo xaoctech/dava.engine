@@ -561,10 +561,10 @@ bool InputSystemTest::OnInputEvent(InputEvent const& event)
 {
     if (event.deviceType == eInputDeviceTypes::KEYBOARD)
     {
-        eInputElements scancodeCounterpart = GetEngineContext()->deviceManager->GetKeyboard()->ConvertVirtualToScancode(event.elementId);
+        eInputElements virtualCounterpart = GetEngineContext()->deviceManager->GetKeyboard()->ConvertScancodeToVirtual(event.elementId);
 
-        UIButton* virtualButton = keyboardButtons[event.elementId];
-        UIButton* scancodeButton = keyboardButtons[scancodeCounterpart];
+        UIButton* scancodeButton = keyboardButtons[event.elementId];
+        UIButton* virtualButton = keyboardButtons[virtualCounterpart];
 
         HighlightDigitalButton(scancodeButton, event.digitalState);
         HighlightDigitalButton(virtualButton, event.digitalState);

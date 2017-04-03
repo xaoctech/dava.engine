@@ -63,9 +63,7 @@ public:
     void StopListening();
 
 private:
-    InputListener()
-    {
-    }
+    InputListener() = default;
     InputListener(const InputListener&) = delete;
     InputListener& operator=(const InputListener&) = delete;
 

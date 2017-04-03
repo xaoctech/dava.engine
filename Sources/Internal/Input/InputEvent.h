@@ -26,10 +26,7 @@ struct InputEvent
     /** Id of the device */
     uint32 deviceId;
 
-    /**
-        Device's element Id.
-        Input element is a part of a device that can be used for input (like a button, a stick, a wheel).
-    */
+    /** Id of the element which triggered the event */
     eInputElements elementId;
 
     union

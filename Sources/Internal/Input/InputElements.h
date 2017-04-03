@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
+#include "Debug/DVAssert.h"
 
 namespace DAVA
 {
@@ -10,6 +11,9 @@ namespace DAVA
 */
 enum eInputElements : uint32
 {
+    // Order of elements should not be changed,
+    // since some functions rely on it (i.e. when converting from virtual to scancode keyboard key)
+
     NONE = 0,
 
     // Keyboard virtual keys
@@ -266,7 +270,7 @@ enum eInputElements : uint32
     KB_COUNT_VIRTUAL = KB_LAST_VIRTUAL - KB_FIRST_VIRTUAL + 1,
 };
 
-/** List of input element types. */
+/** List of element types */
 enum eInputElementTypes
 {
     /** Basically, a button, which can just be pressed and released. */
@@ -286,46 +290,64 @@ struct InputElementInfo final
     eInputElementTypes type;
 };
 
+/** Return true if specified `element` is a mouse element */
 inline bool IsMouseInputElement(eInputElements element)
 {
     return eInputElements::MOUSE_FIRST <= element && element <= eInputElements::MOUSE_LAST;
 }
 
+/** Return true if specified `element` is a keyboard element */
 inline bool IsKeyboardInputElement(eInputElements element)
 {
     return eInputElements::KB_FIRST <= element && element <= eInputElements::KB_LAST;
 }
 
-inline bool IsKeyboardModifierInputElement(eInputElements element)
+/** Return true if specified `element` is a virtual keyboard element */
+inline bool IsKeyboardVirtualInputElement(eInputElements element)
 {
-    return (element == eInputElements::KB_LSHIFT_VIRTUAL ||
-            element == eInputElements::KB_LCTRL_VIRTUAL ||
-            element == eInputElements::KB_LALT_VIRTUAL ||
-            element == eInputElements::KB_RSHIFT_VIRTUAL ||
-            element == eInputElements::KB_RCTRL_VIRTUAL ||
-            element == eInputElements::KB_RALT_VIRTUAL);
+    return eInputElements::KB_FIRST_VIRTUAL <= element && element <= eInputElements::KB_LAST_VIRTUAL;
 }
 
+/** Return true if specified `element` is a scancode keyboard element */
+inline bool IsKeyboardScancodeInputElement(eInputElements element)
+{
+    return eInputElements::KB_FIRST_SCANCODE <= element && element <= eInputElements::KB_LAST_SCANCODE;
+}
+
+/** Return true if specified keyboard `element` is a keyboard modifier element */
+inline bool IsKeyboardModifierInputElement(eInputElements element)
+{
+    // Check both virtual and scancodes since these key are not remappable
+    return (element == eInputElements::KB_LSHIFT_VIRTUAL || element == eInputElements::KB_LSHIFT ||
+            element == eInputElements::KB_LCTRL_VIRTUAL || element == eInputElements::KB_LCTRL ||
+            element == eInputElements::KB_LALT_VIRTUAL || element == eInputElements::KB_LALT ||
+            element == eInputElements::KB_RSHIFT_VIRTUAL || element == eInputElements::KB_RSHIFT ||
+            element == eInputElements::KB_RCTRL_VIRTUAL || element == eInputElements::KB_RCTRL ||
+            element == eInputElements::KB_RALT_VIRTUAL || element == eInputElements::KB_RALT);
+}
+
+/** Return true if specified keyboard `element` is a keyboard system element */
 inline bool IsKeyboardSystemInputElement(eInputElements element)
 {
-    return (element == eInputElements::KB_ESCAPE_VIRTUAL ||
-            element == eInputElements::KB_CAPSLOCK_VIRTUAL ||
-            element == eInputElements::KB_LWIN_VIRTUAL ||
-            element == eInputElements::KB_RWIN_VIRTUAL ||
-            element == eInputElements::KB_LCMD_VIRTUAL ||
-            element == eInputElements::KB_RCMD_VIRTUAL ||
-            element == eInputElements::KB_PRINTSCREEN_VIRTUAL ||
-            element == eInputElements::KB_SCROLLLOCK_VIRTUAL ||
-            element == eInputElements::KB_PAUSE_VIRTUAL ||
-            element == eInputElements::KB_INSERT_VIRTUAL ||
-            element == eInputElements::KB_HOME_VIRTUAL ||
-            element == eInputElements::KB_PAGEUP_VIRTUAL ||
-            element == eInputElements::KB_PAGEDOWN_VIRTUAL ||
-            element == eInputElements::KB_DELETE_VIRTUAL ||
-            element == eInputElements::KB_END_VIRTUAL ||
-            element == eInputElements::KB_PAGEDOWN_VIRTUAL ||
-            element == eInputElements::KB_NUMLOCK_VIRTUAL ||
-            element == eInputElements::KB_MENU_VIRTUAL);
+    // Check both virtual and scancodes since these key are not remappable
+    return (element == eInputElements::KB_ESCAPE_VIRTUAL || element == eInputElements::KB_ESCAPE ||
+            element == eInputElements::KB_CAPSLOCK_VIRTUAL || element == eInputElements::KB_CAPSLOCK ||
+            element == eInputElements::KB_LWIN_VIRTUAL || element == eInputElements::KB_LWIN ||
+            element == eInputElements::KB_RWIN_VIRTUAL || element == eInputElements::KB_RWIN ||
+            element == eInputElements::KB_LCMD_VIRTUAL || element == eInputElements::KB_LCMD ||
+            element == eInputElements::KB_RCMD_VIRTUAL || element == eInputElements::KB_RCMD ||
+            element == eInputElements::KB_PRINTSCREEN_VIRTUAL || element == eInputElements::KB_PRINTSCREEN ||
+            element == eInputElements::KB_SCROLLLOCK_VIRTUAL || element == eInputElements::KB_SCROLLLOCK ||
+            element == eInputElements::KB_PAUSE_VIRTUAL || element == eInputElements::KB_PAUSE ||
+            element == eInputElements::KB_INSERT_VIRTUAL || element == eInputElements::KB_INSERT ||
+            element == eInputElements::KB_HOME_VIRTUAL || element == eInputElements::KB_HOME ||
+            element == eInputElements::KB_PAGEUP_VIRTUAL || element == eInputElements::KB_PAGEUP ||
+            element == eInputElements::KB_PAGEDOWN_VIRTUAL || element == eInputElements::KB_PAGEDOWN ||
+            element == eInputElements::KB_DELETE_VIRTUAL || element == eInputElements::KB_DELETE ||
+            element == eInputElements::KB_END_VIRTUAL || element == eInputElements::KB_END ||
+            element == eInputElements::KB_PAGEDOWN_VIRTUAL || element == eInputElements::KB_PAGEDOWN ||
+            element == eInputElements::KB_NUMLOCK_VIRTUAL || element == eInputElements::KB_NUMLOCK ||
+            element == eInputElements::KB_MENU_VIRTUAL || element == eInputElements::KB_MENU);
 }
 
 /** Get additional information about an element */
