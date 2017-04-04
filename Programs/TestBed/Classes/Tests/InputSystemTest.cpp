@@ -580,7 +580,7 @@ bool InputSystemTest::OnInputEvent(InputEvent const& event)
     }
 
     InputListener* inputListener = GetEngineContext()->inputListener;
-    if (event.elementId == eInputElements::KB_ESCAPE_VIRTUAL && inputListener->IsListening())
+    if (event.elementId == eInputElements::KB_ESCAPE && inputListener->IsListening())
     {
         inputListener->StopListening();
         inputListenerResultField->SetText(L"Stopped listening");
