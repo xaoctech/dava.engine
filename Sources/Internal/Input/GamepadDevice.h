@@ -7,6 +7,8 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
 #include "Engine/EngineTypes.h"
+#include "Input/InputDevice.h"
+#include "Input/InputElements.h"
 
 namespace DAVA
 {
@@ -21,20 +23,20 @@ struct MainDispatcherEvent;
     \ingroup input
     Class for working with gamepads.
 */
-class GamepadDevice final : public BaseObject
+class GamepadDevice final : public InputDevice
 {
-    friend class InputSystem;
+    friend class DeviceManager;
     friend class Private::GamepadDeviceImpl;
 
 public:
-    bool IsPresent() const;
     eGamepadProfiles GetProfile() const;
 
-    float32 operator[](eGamepadElements element) const;
-    float32 GetElementState(eGamepadElements element) const;
+    bool SupportsElement(eInputElements elementId) const override;
+    eDigitalElementStates GetDigitalElementState(eInputElements elementId) const override;
+    AnalogElementState GetAnalogElementState(eInputElements elementId) const override;
 
 private:
-    GamepadDevice(InputSystem* inputSystem_);
+    GamepadDevice(uint32 id);
     ~GamepadDevice();
 
     void Update();
@@ -47,34 +49,20 @@ private:
 
     InputSystem* inputSystem = nullptr;
     std::unique_ptr<Private::GamepadDeviceImpl> impl;
-    bool isPresent = false;
     eGamepadProfiles profile = eGamepadProfiles::SIMPLE;
 
-    static const size_t ELEMENT_COUNT = static_cast<size_t>(eGamepadElements::LAST) + 1;
-    float32 elementValues[ELEMENT_COUNT];
-    int64 elementTimestamps[ELEMENT_COUNT];
-    std::bitset<ELEMENT_COUNT> elementChangedMask;
-};
+    static const uint32 BUTTON_COUNT = static_cast<uint32>(eInputElements::GAMEPAD_LAST_BUTTON - eInputElements::GAMEPAD_FIRST_BUTTON + 1);
+    static const uint32 AXIS_COUNT = static_cast<uint32>(eInputElements::GAMEPAD_LAST_AXIS - eInputElements::GAMEPAD_FIRST_AXIS + 1);
+    eDigitalElementStates buttons[BUTTON_COUNT];
+    AnalogElementState axises[AXIS_COUNT];
 
-inline bool GamepadDevice::IsPresent() const
-{
-    return isPresent;
-}
+    std::bitset<BUTTON_COUNT> buttonChangedMask;
+    std::bitset<AXIS_COUNT> axisChangedMask;
+};
 
 inline eGamepadProfiles GamepadDevice::GetProfile() const
 {
     return profile;
-}
-
-inline float32 GamepadDevice::operator[](eGamepadElements element) const
-{
-    const size_t index = static_cast<size_t>(element);
-    return elementValues[index];
-}
-
-inline float32 GamepadDevice::GetElementState(eGamepadElements element) const
-{
-    return (*this)[element];
 }
 
 } // namespace DAVA

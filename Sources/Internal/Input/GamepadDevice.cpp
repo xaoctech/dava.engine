@@ -4,7 +4,10 @@
 
 #include "Input/GamepadDevice.h"
 
+#include "Debug/DVAssert.h"
+#include "Engine/Engine.h"
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
+#include "Input/InputEvent.h"
 #include "Input/InputSystem.h"
 #include "UI/UIEvent.h"
 
@@ -20,50 +23,81 @@
 
 namespace DAVA
 {
-GamepadDevice::GamepadDevice(InputSystem* inputSystem_)
-    : inputSystem(inputSystem_)
+GamepadDevice::GamepadDevice(uint32 id)
+    : InputDevice(id)
+    , inputSystem(GetEngineContext()->inputSystem)
     , impl(new Private::GamepadDeviceImpl(this))
 {
-    std::fill(std::begin(elementValues), std::end(elementValues), float32(0));
-    std::fill(std::begin(elementTimestamps), std::end(elementTimestamps), uint64(0));
+    std::fill(std::begin(buttons), std::end(buttons), eDigitalElementStates::NONE);
+    std::fill(std::begin(axises), std::end(axises), AnalogElementState());
 }
 
 GamepadDevice::~GamepadDevice() = default;
 
+bool GamepadDevice::SupportsElement(eInputElements elementId) const
+{
+    return true;
+}
+
+eDigitalElementStates GamepadDevice::GetDigitalElementState(eInputElements elementId) const
+{
+    DVASSERT(IsGamepadButton(elementId));
+    return buttons[elementId - eInputElements::GAMEPAD_FIRST_BUTTON];
+}
+
+AnalogElementState GamepadDevice::GetAnalogElementState(eInputElements elementId) const
+{
+    DVASSERT(IsGamepadAxis(elementId));
+    return axises[elementId - eInputElements::GAMEPAD_FIRST_AXIS];
+}
+
 void GamepadDevice::Update()
 {
-    if (isPresent)
-    {
-        impl->Update();
-        for (size_t i = 0; i < ELEMENT_COUNT; ++i)
-        {
-            if (elementChangedMask[i])
-            {
-                UIEvent uie;
-                uie.element = static_cast<eGamepadElements>(i);
-                uie.physPoint.x = elementValues[i];
-                uie.point.x = elementValues[i];
-                uie.phase = UIEvent::Phase::JOYSTICK;
-                uie.device = eInputDevices::GAMEPAD;
-                uie.timestamp = elementTimestamps[i] / 1000.0;
+    impl->Update();
 
-                inputSystem->HandleInputEvent(&uie);
-            }
+    for (uint32 i = eInputElements::GAMEPAD_FIRST_BUTTON; i <= eInputElements::GAMEPAD_LAST_BUTTON; ++i)
+    {
+        uint32 index = i - eInputElements::GAMEPAD_FIRST_BUTTON;
+        if (buttonChangedMask[index])
+        {
+            InputEvent inputEvent;
+            inputEvent.window = nullptr;
+            inputEvent.deviceType = eInputDeviceTypes::CLASS_GAMEPAD;
+            inputEvent.deviceId = GetId();
+            inputEvent.elementId = static_cast<eInputElements>(i);
+            inputEvent.digitalState = buttons[index];
+            inputSystem->DispatchInputEvent(inputEvent);
         }
-        elementChangedMask.reset();
     }
+    buttonChangedMask.reset();
+
+    for (uint32 i = eInputElements::GAMEPAD_FIRST_AXIS; i <= eInputElements::GAMEPAD_LAST_AXIS; ++i)
+    {
+        uint32 index = i - eInputElements::GAMEPAD_FIRST_AXIS;
+        if (axisChangedMask[index])
+        {
+            InputEvent inputEvent;
+            inputEvent.window = nullptr;
+            inputEvent.deviceType = eInputDeviceTypes::CLASS_GAMEPAD;
+            inputEvent.deviceId = GetId();
+            inputEvent.elementId = static_cast<eInputElements>(i);
+            inputEvent.analogState = axises[index];
+            inputSystem->DispatchInputEvent(inputEvent);
+        }
+    }
+    axisChangedMask.reset();
 }
 
 void GamepadDevice::HandleGamepadAdded(const Private::MainDispatcherEvent& e)
 {
     uint32 deviceId = e.gamepadEvent.deviceId;
-    isPresent = impl->HandleGamepadAdded(deviceId);
+    impl->HandleGamepadAdded(deviceId);
 }
 
 void GamepadDevice::HandleGamepadRemoved(const Private::MainDispatcherEvent& e)
 {
     uint32 deviceId = e.gamepadEvent.deviceId;
-    isPresent = impl->HandleGamepadRemoved(deviceId);
+    impl->HandleGamepadRemoved(deviceId);
 }
 
 void GamepadDevice::HandleGamepadMotion(const Private::MainDispatcherEvent& e)

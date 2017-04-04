@@ -235,6 +235,28 @@ const InputElementInfo& GetInputElementInfo(eInputElements element)
         info[eInputElements::MOUSE_WHEEL] = { "Mouse wheel", eInputElementTypes::ANALOG };
         info[eInputElements::MOUSE_POSITION] = { "Mouse cursor", eInputElementTypes::ANALOG };
 
+        info[eInputElements::GAMEPAD_START] = { "GAMEPAD_START", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_BACK] = { "GAMEPAD_BACK", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_A] = { "GAMEPAD_A", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_B] = { "GAMEPAD_B", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_X] = { "GAMEPAD_X", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_Y] = { "GAMEPAD_Y", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_DPAD_LEFT] = { "GAMEPAD_DPAD_LEFT", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_DPAD_RIGHT] = { "GAMEPAD_DPAD_RIGHT", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_DPAD_UP] = { "GAMEPAD_DPAD_UP", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_DPAD_DOWN] = { "GAMEPAD_DPAD_DOWN", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_LTHUMB] = { "GAMEPAD_LTHUMB", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_RTHUMB] = { "GAMEPAD_RTHUMB", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_LSHOUDER] = { "GAMEPAD_LSHOUDER", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_RSHOUDER] = { "GAMEPAD_RSHOUDER", eInputElementTypes::DIGITAL };
+
+        info[eInputElements::GAMEPAD_LTRIGGER] = { "GAMEPAD_LTRIGGER", eInputElementTypes::ANALOG };
+        info[eInputElements::GAMEPAD_RTRIGGER] = { "GAMEPAD_RTRIGGER", eInputElementTypes::ANALOG };
+        info[eInputElements::GAMEPAD_LTHUMB_X] = { "GAMEPAD_LTHUMB_X", eInputElementTypes::ANALOG };
+        info[eInputElements::GAMEPAD_LTHUMB_Y] = { "GAMEPAD_LTHUMB_Y", eInputElementTypes::ANALOG };
+        info[eInputElements::GAMEPAD_RTHUMB_X] = { "GAMEPAD_RTHUMB_X", eInputElementTypes::ANALOG };
+        info[eInputElements::GAMEPAD_RTHUMB_Y] = { "GAMEPAD_RTHUMB_Y", eInputElementTypes::ANALOG };
+
         initialized = true;
     }
 

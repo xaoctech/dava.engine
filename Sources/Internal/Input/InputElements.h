@@ -248,10 +248,41 @@ enum eInputElements : uint32
     MOUSE_WHEEL,
     MOUSE_POSITION,
 
+    // Gamepad
+
+    GAMEPAD_START,
+    GAMEPAD_BACK,
+    GAMEPAD_A,
+    GAMEPAD_B,
+    GAMEPAD_X,
+    GAMEPAD_Y,
+    GAMEPAD_DPAD_LEFT,
+    GAMEPAD_DPAD_RIGHT,
+    GAMEPAD_DPAD_UP,
+    GAMEPAD_DPAD_DOWN,
+    GAMEPAD_LTHUMB,
+    GAMEPAD_RTHUMB,
+    GAMEPAD_LSHOUDER,
+    GAMEPAD_RSHOUDER,
+
+    GAMEPAD_LTRIGGER,
+    GAMEPAD_RTRIGGER,
+    GAMEPAD_LTHUMB_X,
+    GAMEPAD_LTHUMB_Y,
+    GAMEPAD_RTHUMB_X,
+    GAMEPAD_RTHUMB_Y,
+
+    GAMEPAD_FIRST = GAMEPAD_START,
+    GAMEPAD_LAST = GAMEPAD_RTHUMB_Y,
+    GAMEPAD_FIRST_BUTTON = GAMEPAD_START,
+    GAMEPAD_LAST_BUTTON = GAMEPAD_RSHOUDER,
+    GAMEPAD_FIRST_AXIS = GAMEPAD_LTRIGGER,
+    GAMEPAD_LAST_AXIS = GAMEPAD_RTHUMB_Y,
+
     // Counters
 
     FIRST = NONE,
-    LAST = MOUSE_POSITION,
+    LAST = GAMEPAD_RTHUMB_Y,
 
     MOUSE_FIRST = MOUSE_LBUTTON,
     MOUSE_LAST = MOUSE_POSITION,
@@ -303,6 +334,18 @@ struct InputElementInfo final
 inline bool IsMouseInputElement(eInputElements element)
 {
     return eInputElements::MOUSE_FIRST <= element && element <= eInputElements::MOUSE_LAST;
+}
+
+/** Return true if specified `element` is a gamepad button element */
+inline bool IsGamepadButton(eInputElements element)
+{
+    return eInputElements::GAMEPAD_FIRST_BUTTON <= element && element <= eInputElements::GAMEPAD_LAST_BUTTON;
+}
+
+/** Return true if specified `element` is a gamepad axis element */
+inline bool IsGamepadAxis(eInputElements element)
+{
+    return eInputElements::GAMEPAD_FIRST_AXIS <= element && element <= eInputElements::GAMEPAD_LAST_AXIS;
 }
 
 /** Return true if specified `element` is a keyboard element */
@@ -361,4 +404,5 @@ inline bool IsKeyboardSystemInputElement(eInputElements element)
 
 /** Get additional information about an element */
 const InputElementInfo& GetInputElementInfo(eInputElements element);
+
 } // namespace DAVA

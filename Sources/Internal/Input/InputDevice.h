@@ -49,7 +49,7 @@ DAVA_DEFINE_ENUM_BITWISE_OPERATORS(eDigitalElementStates)
 
 /**
     \ingroup input    
-	Struct describing analog element state.
+    Struct describing analog element state.
     Meanings of `x`, `y` and `z` values can be different for different elements.
 
     For example, a gamepad's stick defines x and y values in range of [-1; 1] for according axes.
@@ -70,25 +70,22 @@ struct AnalogElementState final
     \ingroup input
     Represents a virtual or a real device used for input.
     This class is responsible for:
-		- Storing device's state for others to request it when needed
-		- Handling native input events, transforming it to an `InputEvent` and sending it to the `InputSystem`
+        - Storing device's state for others to request it when needed
+        - Handling native input events, transforming it to an `InputEvent` and sending it to the `InputSystem`
 */
 class InputDevice
 {
 public:
     /** Create InputDevice instance with specified `id` */
     InputDevice(uint32 id);
-
-    virtual ~InputDevice()
-    {
-    }
+    virtual ~InputDevice() = default;
 
     /** Return unique device id */
     uint32 GetId() const;
 
     /** Return true if element with specified `elementId` is supported by the device
-		(i.e. it's state can be requested with either `GetDigitalElementState` or `GetAnalogElementState`)
-	*/
+        (i.e. it's state can be requested with either `GetDigitalElementState` or `GetAnalogElementState`)
+    */
     virtual bool SupportsElement(eInputElements elementId) const = 0;
 
     /**
@@ -101,7 +98,7 @@ public:
     /**
         Get state of an analog element with specified `elementId`.
 
-		\pre Device should support specified analog element.
+        \pre Device should support specified analog element.
     */
     virtual AnalogElementState GetAnalogElementState(eInputElements elementId) const = 0;
 
@@ -118,4 +115,5 @@ inline uint32 InputDevice::GetId() const
 {
     return id;
 }
-}
+
+} // namespace DAVA
