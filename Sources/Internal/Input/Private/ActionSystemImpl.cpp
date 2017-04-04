@@ -101,14 +101,17 @@ bool ActionSystemImpl::CheckDigitalStates(const Array<DigitalElementState, MAX_D
         for (const uint32 deviceId : devices)
         {
             const InputDevice* device = GetEngineContext()->deviceManager->GetInputDevice(deviceId);
-            if (device->SupportsElement(requiredState.elementId))
+            if (device != nullptr)
             {
-                const eDigitalElementStates state = device->GetDigitalElementState(requiredState.elementId);
-
-                if ((state & requiredState.stateMask) == requiredState.stateMask)
+                if (device->SupportsElement(requiredState.elementId))
                 {
-                    requiredStateMatches = true;
-                    break;
+                    const eDigitalElementStates state = device->GetDigitalElementState(requiredState.elementId);
+
+                    if ((state & requiredState.stateMask) == requiredState.stateMask)
+                    {
+                        requiredStateMatches = true;
+                        break;
+                    }
                 }
             }
         }

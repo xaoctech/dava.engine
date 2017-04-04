@@ -15,15 +15,6 @@ public:
     }
 };
 
-class DummyMerger : public MergeValuesExtension
-{
-public:
-    ReflectedPropertyItem* LookUpItem(const std::shared_ptr<const PropertyNode>& node, const Vector<std::unique_ptr<ReflectedPropertyItem>>& items) const override
-    {
-        return nullptr;
-    }
-};
-
 class DummyEditorComponent : public EditorComponentExtension
 {
 public:
@@ -75,6 +66,8 @@ bool PropertyNode::operator!=(const PropertyNode& other) const
     field.key != field.key;
 }
 
+const int32 PropertyNode::InvalidSortKey = std::numeric_limits<int32>::max();
+
 ChildCreatorExtension::ChildCreatorExtension()
     : ExtensionChain(Type::Instance<ChildCreatorExtension>())
 {
@@ -93,21 +86,6 @@ std::shared_ptr<ChildCreatorExtension> ChildCreatorExtension::CreateDummy()
 void ChildCreatorExtension::SetAllocator(std::shared_ptr<IChildAllocator> allocator_)
 {
     allocator = allocator_;
-}
-
-MergeValuesExtension::MergeValuesExtension()
-    : ExtensionChain(Type::Instance<MergeValuesExtension>())
-{
-}
-
-ReflectedPropertyItem* MergeValuesExtension::LookUpItem(const std::shared_ptr<const PropertyNode>& node, const Vector<std::unique_ptr<ReflectedPropertyItem>>& items) const
-{
-    return GetNext<MergeValuesExtension>()->LookUpItem(node, items);
-}
-
-std::shared_ptr<MergeValuesExtension> MergeValuesExtension::CreateDummy()
-{
-    return std::make_shared<PMEDetails::DummyMerger>();
 }
 
 EditorComponentExtension::EditorComponentExtension()
@@ -207,6 +185,11 @@ void ModifyExtension::MultiCommandInterface::ModifyPropertyValue(const std::shar
 void ModifyExtension::MultiCommandInterface::Exec(std::unique_ptr<DAVA::Command>&& command)
 {
     extension->Exec(std::move(command));
+}
+
+void ModifyExtension::MultiCommandInterface::ProduceCommand(const Reflection::Field& object, const Any& newValue)
+{
+    extension->ProduceCommand(object, newValue);
 }
 
 } // namespace TArc

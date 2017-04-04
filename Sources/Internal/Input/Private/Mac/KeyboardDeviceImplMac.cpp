@@ -10,6 +10,8 @@ namespace DAVA
 {
 namespace Private
 {
+// TODO: Virtual keys support
+
 const eInputElements nativeScancodeToDavaScancode[] =
 {
   eInputElements::KB_A_SCANCODE, // 0x00
@@ -148,16 +150,16 @@ eInputElements KeyboardDeviceImpl::ConvertNativeScancodeToDavaScancode(uint32 na
 
 eInputElements KeyboardDeviceImpl::ConvertDavaScancodeToDavaVirtual(eInputElements scancodeElement)
 {
-    DVASSERT(scancodeElement >= eInputElements::KB_FIRST_SCANCODE && scancodeElement <= eInputElements::KB_LAST_SCANCODE);
+    DVASSERT(IsKeyboardScancodeInputElement(scancodeElement));
 
-    return static_cast<eInputElements>(scancodeElement - eInputElements::KB_COUNT_VIRTUAL);
+    return static_cast<eInputElements>(scancodeElement - INPUT_ELEMENTS_KB_COUNT_VIRTUAL);
 }
 
 eInputElements KeyboardDeviceImpl::ConvertDavaVirtualToDavaScancode(eInputElements virtualElement)
 {
-    DVASSERT(virtualElement >= eInputElements::KB_FIRST_VIRTUAL && virtualElement <= eInputElements::KB_LAST_VIRTUAL);
+    DVASSERT(IsKeyboardVirtualInputElement(virtualElement));
 
-    return static_cast<eInputElements>(virtualElement + eInputElements::KB_COUNT_SCANCODE);
+    return static_cast<eInputElements>(virtualElement + INPUT_ELEMENTS_KB_COUNT_VIRTUAL);
 }
 
 } // namespace Private

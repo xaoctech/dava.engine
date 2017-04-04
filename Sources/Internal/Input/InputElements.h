@@ -125,6 +125,7 @@ enum eInputElements : uint32
     KB_NUMPAD_0_VIRTUAL,
     KB_LCMD_VIRTUAL,
     KB_RCMD_VIRTUAL,
+    KB_BACK_VIRTUAL, // Android only
 
     // Keyboard scancode keys
 
@@ -235,6 +236,7 @@ enum eInputElements : uint32
     KB_NUMPAD_0,
     KB_LCMD,
     KB_RCMD,
+    KB_BACK, // Android only
 
     // Mouse
 
@@ -250,7 +252,6 @@ enum eInputElements : uint32
 
     FIRST = NONE,
     LAST = MOUSE_POSITION,
-    COUNT = LAST - FIRST + 1,
 
     MOUSE_FIRST = MOUSE_LBUTTON,
     MOUSE_LAST = MOUSE_POSITION,
@@ -258,17 +259,25 @@ enum eInputElements : uint32
     MOUSE_LAST_BUTTON = MOUSE_EXT2BUTTON,
 
     KB_FIRST = KB_1_VIRTUAL,
-    KB_LAST = KB_RCMD,
-    KB_COUNT = KB_LAST - KB_FIRST + 1,
+    KB_LAST = KB_BACK,
 
     KB_FIRST_SCANCODE = KB_1,
-    KB_LAST_SCANCODE = KB_RCMD,
-    KB_COUNT_SCANCODE = KB_LAST_SCANCODE - KB_FIRST_SCANCODE + 1,
+    KB_LAST_SCANCODE = KB_BACK,
 
     KB_FIRST_VIRTUAL = KB_1_VIRTUAL,
-    KB_LAST_VIRTUAL = KB_RCMD_VIRTUAL,
-    KB_COUNT_VIRTUAL = KB_LAST_VIRTUAL - KB_FIRST_VIRTUAL + 1,
+    KB_LAST_VIRTUAL = KB_BACK_VIRTUAL
 };
+
+enum
+{
+    INPUT_ELEMENTS_COUNT = eInputElements::LAST - eInputElements::FIRST + 1,
+    INPUT_ELEMENTS_KB_COUNT = eInputElements::KB_LAST - eInputElements::KB_FIRST + 1,
+    INPUT_ELEMENTS_KB_COUNT_SCANCODE = eInputElements::KB_LAST_SCANCODE - eInputElements::KB_FIRST_SCANCODE + 1,
+    INPUT_ELEMENTS_KB_COUNT_VIRTUAL = eInputElements::KB_LAST_VIRTUAL - eInputElements::KB_FIRST_VIRTUAL + 1,
+};
+
+// Each virtual key should have a scancode counterpart
+static_assert(INPUT_ELEMENTS_KB_COUNT_VIRTUAL == INPUT_ELEMENTS_KB_COUNT_SCANCODE, "Amount of virtual keyboard keys does not match amount of scancode keys");
 
 /** List of element types */
 enum eInputElementTypes

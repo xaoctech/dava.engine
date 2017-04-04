@@ -56,7 +56,7 @@ private:
     InputSystem* inputSystem = nullptr;
     Private::KeyboardDeviceImpl* impl = nullptr;
 
-    Array<Private::DigitalElement, static_cast<uint32>(eInputElements::KB_COUNT_SCANCODE)> keys;
+    Array<Private::DigitalElement, static_cast<uint32>(INPUT_ELEMENTS_KB_COUNT_SCANCODE)> keys;
 
     size_t endFrameConnectionToken;
     size_t primaryWindowFocusChangedToken;

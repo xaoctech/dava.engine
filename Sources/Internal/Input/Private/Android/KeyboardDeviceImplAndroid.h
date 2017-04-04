@@ -11,9 +11,6 @@ namespace Private
 class KeyboardDeviceImpl final
 {
 public:
-    KeyboardDeviceImpl();
-    ~KeyboardDeviceImpl();
-
     eInputElements ConvertNativeScancodeToDavaScancode(uint32 nativeScancode);
     eInputElements ConvertDavaScancodeToDavaVirtual(eInputElements scancodeElement);
     eInputElements ConvertDavaVirtualToDavaScancode(eInputElements virtualElement);

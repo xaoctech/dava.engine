@@ -32,6 +32,8 @@ class UIFocusSystem;
 class UIInputSystem;
 class UIScreenshoter;
 class UISoundSystem;
+class UIUpdateSystem;
+
 #if defined(__DAVAENGINE_COREV2__)
 class UIScreenTransition;
 class UIPopup;
@@ -319,6 +321,7 @@ public:
     UIInputSystem* GetInputSystem() const;
     UIFocusSystem* GetFocusSystem() const;
     UISoundSystem* GetSoundSystem() const;
+    UIUpdateSystem* GetUpdateSystem() const;
     UIStyleSheetSystem* GetStyleSheetSystem() const;
     UIScreenshoter* GetScreenshoter();
 
@@ -331,6 +334,7 @@ public:
     void UI3DViewRemoved();
     int32 GetUI3DViewCount();
 
+    void UpdateControl(UIControl* control);
     VirtualCoordinatesSystem* vcs = nullptr; // TODO: Should be completely removed in favor of direct DAVA::Window methods
 
 private:
@@ -357,6 +361,7 @@ private:
     UIInputSystem* inputSystem = nullptr;
     UISoundSystem* soundSystem = nullptr;
     UIScreenshoter* screenshoter = nullptr;
+    UIUpdateSystem* updateSystem = nullptr;
 
     Vector<ScreenSwitchListener*> screenSwitchListeners;
 

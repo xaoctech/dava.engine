@@ -8,6 +8,8 @@
 #include "Input/Private/Mac/KeyboardDeviceImplMac.h"
 #elif defined(__DAVAENGINE_ANDROID__)
 #include "Input/Private/Android/KeyboardDeviceImplAndroid.h"
+#elif defined(__DAVAENGINE_IPHONE__)
+#include "Input/Private/Ios/KeyboardDeviceImplIos.h"
 #else
 #error "DeviceManager: unknown platform"
 #endif
@@ -86,7 +88,7 @@ void KeyboardInputDevice::CreateAndSendInputEvent(eInputElements elementId, cons
 {
     InputEvent inputEvent;
     inputEvent.window = window;
-    inputEvent.timestamp = timestamp / 1000.0f;
+    inputEvent.timestamp = static_cast<float64>(timestamp / 1000.0f);
     inputEvent.deviceType = eInputDeviceTypes::KEYBOARD;
     inputEvent.deviceId = GetId();
     inputEvent.digitalState = element.GetState();
@@ -104,29 +106,28 @@ bool KeyboardInputDevice::HandleEvent(const Private::MainDispatcherEvent& e)
         // Save state
 
         eInputElements scancodeElementId = impl->ConvertNativeScancodeToDavaScancode(e.keyEvent.key);
-        DVASSERT(scancodeElementId != eInputElements::NONE);
-
-        Private::DigitalElement& element = keys[scancodeElementId - eInputElements::KB_FIRST_SCANCODE];
-
-        if (e.type == MainDispatcherEvent::KEY_DOWN)
+        if (scancodeElementId != eInputElements::NONE)
         {
-            element.Press();
+            Private::DigitalElement& element = keys[scancodeElementId - eInputElements::KB_FIRST_SCANCODE];
+
+            if (e.type == MainDispatcherEvent::KEY_DOWN)
+            {
+                element.Press();
+            }
+            else
+            {
+                element.Release();
+            }
+
+            // Send event
+
+            CreateAndSendInputEvent(scancodeElementId, element, e.window, e.timestamp);
+
+            return true;
         }
-        else
-        {
-            element.Release();
-        }
-
-        // Send event
-
-        CreateAndSendInputEvent(scancodeElementId, element, e.window, e.timestamp);
-
-        return true;
     }
-    else
-    {
-        return false;
-    }
+
+    return false;
 }
 
 void KeyboardInputDevice::OnEndFrame()
@@ -134,7 +135,7 @@ void KeyboardInputDevice::OnEndFrame()
     // Promote JustPressed & JustReleased states to Pressed/Released accordingly
     // TODO: optimize?
 
-    for (int i = 0; i < static_cast<uint32>(eInputElements::KB_COUNT_SCANCODE); ++i)
+    for (size_t i = 0; i < INPUT_ELEMENTS_KB_COUNT_SCANCODE; ++i)
     {
         keys[i].OnEndFrame();
     }
@@ -144,7 +145,7 @@ void KeyboardInputDevice::OnWindowFocusChanged(DAVA::Window* window, bool focuse
 {
     if (!focused)
     {
-        for (int i = 0; i < static_cast<uint32>(eInputElements::KB_COUNT_SCANCODE); ++i)
+        for (size_t i = 0; i < INPUT_ELEMENTS_KB_COUNT_SCANCODE; ++i)
         {
             if (keys[i].IsPressed())
             {

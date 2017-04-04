@@ -36,14 +36,14 @@ eInputElements KeyboardDeviceImpl::ConvertDavaScancodeToDavaVirtual(eInputElemen
 {
     DVASSERT(IsKeyboardScancodeInputElement(scancodeElement));
 
-    return static_cast<eInputElements>(scancodeElement - eInputElements::KB_COUNT_VIRTUAL);
+    return static_cast<eInputElements>(scancodeElement - INPUT_ELEMENTS_KB_COUNT_VIRTUAL);
 }
 
 eInputElements KeyboardDeviceImpl::ConvertDavaVirtualToDavaScancode(eInputElements virtualElement)
 {
     DVASSERT(IsKeyboardVirtualInputElement(virtualElement));
 
-    return static_cast<eInputElements>(virtualElement + eInputElements::KB_COUNT_VIRTUAL);
+    return static_cast<eInputElements>(virtualElement + INPUT_ELEMENTS_KB_COUNT_VIRTUAL);
 }
 
 } // namespace Private
