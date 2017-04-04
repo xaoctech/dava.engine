@@ -34,6 +34,12 @@ using namespace DAVA;
 
 DAVA_TESTCLASS (RayMathTest)
 {
+    BEGIN_FILES_COVERED_BY_TESTS()
+    FIND_FILES_IN_TARGET(DavaFramework)
+    DECLARE_COVERED_FILES("AABBox3.cpp")
+    DECLARE_COVERED_FILES("Ray.cpp")
+    END_FILES_COVERED_BY_TESTS()
+
     DAVA_TEST (RayAABBoxCollisionTest)
     {
         {
@@ -346,5 +352,16 @@ DAVA_TESTCLASS (RayMathTest)
         //            }
         //
         //        }
+    }
+
+    DAVA_TEST (TriangleAABBoxFloatPrecisionProblemTest)
+    {
+        AABBox3 box(Vector3(0.0f, 0.0f, 0.0f), Vector3(10.0f, 10.0f, 10.0f));
+
+        Vector3 p0, p1, p2;
+        p0 = Vector3(1.0f, 3.0f, 1.0f);
+        p1 = Vector3(3.0f, 1.0f, 1.0f);
+        p2 = Vector3(1.0f, 1.0f, 3.0f);
+        TEST_VERIFY(Intersection::BoxTriangle(box, p0, p1, p2) == true);
     }
 };

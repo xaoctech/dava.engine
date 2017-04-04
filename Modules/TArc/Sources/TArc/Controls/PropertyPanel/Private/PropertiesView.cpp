@@ -17,6 +17,7 @@
 #include <QTimer>
 #include <QPainter>
 #include <QToolBar>
+#include <QAction>
 #include <QtWidgets/private/qheaderview_p.h>
 
 namespace DAVA

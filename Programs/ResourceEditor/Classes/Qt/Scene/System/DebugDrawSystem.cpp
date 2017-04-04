@@ -170,9 +170,14 @@ void DebugDrawSystem::DrawDebugOctTree(DAVA::Entity* entity)
             DAVA::Vector3 v1 = tri.v1 * entity->GetWorldTransform();
             DAVA::Vector3 v2 = tri.v2 * entity->GetWorldTransform();
             DAVA::Vector3 v3 = tri.v3 * entity->GetWorldTransform();
-            GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawLine(v1, v2, DAVA::Color(1.0f, 0.5f, 1.0f, 1.0f), DAVA::RenderHelper::eDrawType::DRAW_WIRE_NO_DEPTH);
-            GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawLine(v2, v3, DAVA::Color(0.5f, 0.5f, 1.0f, 1.0f), DAVA::RenderHelper::eDrawType::DRAW_WIRE_NO_DEPTH);
-            GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawLine(v3, v1, DAVA::Color(0.0f, 0.5f, 1.0f, 1.0f), DAVA::RenderHelper::eDrawType::DRAW_WIRE_NO_DEPTH);
+            GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawLine(v1, v2, DAVA::Color(1.0f, 0.0f, 0.0f, 1.0f), DAVA::RenderHelper::eDrawType::DRAW_WIRE_NO_DEPTH);
+            GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawLine(v2, v3, DAVA::Color(1.0f, 0.0f, 0.0f, 1.0f), DAVA::RenderHelper::eDrawType::DRAW_WIRE_NO_DEPTH);
+            GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawLine(v3, v1, DAVA::Color(1.0f, 0.0f, 0.0f, 1.0f), DAVA::RenderHelper::eDrawType::DRAW_WIRE_NO_DEPTH);
+        }
+
+        for (const DAVA::AABBox3& box : octTree->GetDebugBoxes())
+        {
+            GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawAABoxTransformed(box, wt, DAVA::Color(0.0f, 1.0f, 0.0f, 1.0f), DAVA::RenderHelper::eDrawType::DRAW_WIRE_NO_DEPTH);
         }
     }
 }
