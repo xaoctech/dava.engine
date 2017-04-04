@@ -228,13 +228,6 @@ bool Window::EventHandler(const Private::MainDispatcherEvent& e)
     bool isHandled = true;
     switch (e.type)
     {
-    case MainDispatcherEvent::TOUCH_DOWN:
-    case MainDispatcherEvent::TOUCH_UP:
-        HandleTouchClick(e);
-        break;
-    case MainDispatcherEvent::TOUCH_MOVE:
-        HandleTouchMove(e);
-        break;
     case MainDispatcherEvent::TRACKPAD_GESTURE:
         HandleTrackpadGesture(e);
         break;
@@ -495,36 +488,6 @@ void Window::HandleVisibilityChanged(const Private::MainDispatcherEvent& e)
     visibilityChanged.Emit(this, isVisible);
 
     waitInputActivation = isVisible;
-}
-
-void Window::HandleTouchClick(const Private::MainDispatcherEvent& e)
-{
-    bool pressed = e.type == Private::MainDispatcherEvent::TOUCH_DOWN;
-
-    UIEvent uie;
-    uie.window = e.window;
-    uie.phase = pressed ? UIEvent::Phase::BEGAN : UIEvent::Phase::ENDED;
-    uie.physPoint = Vector2(e.touchEvent.x, e.touchEvent.y);
-    uie.device = eInputDevices::TOUCH_SURFACE;
-    uie.timestamp = e.timestamp / 1000.0;
-    uie.touchId = e.touchEvent.touchId;
-    uie.modifiers = e.touchEvent.modifierKeys;
-
-    inputSystem->HandleInputEvent(&uie);
-}
-
-void Window::HandleTouchMove(const Private::MainDispatcherEvent& e)
-{
-    UIEvent uie;
-    uie.window = e.window;
-    uie.phase = UIEvent::Phase::DRAG;
-    uie.physPoint = Vector2(e.touchEvent.x, e.touchEvent.y);
-    uie.device = eInputDevices::TOUCH_SURFACE;
-    uie.timestamp = e.timestamp / 1000.0;
-    uie.touchId = e.touchEvent.touchId;
-    uie.modifiers = e.touchEvent.modifierKeys;
-
-    inputSystem->HandleInputEvent(&uie);
 }
 
 void Window::HandleTrackpadGesture(const Private::MainDispatcherEvent& e)

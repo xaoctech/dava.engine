@@ -2,6 +2,8 @@
 
 #if defined(__DAVAENGINE_ANDROID__)
 
+#include "Base/TemplateHelpers.h"
+
 namespace DAVA
 {
 namespace Private
