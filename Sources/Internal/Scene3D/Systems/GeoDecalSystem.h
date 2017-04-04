@@ -31,6 +31,9 @@ private:
         Vector3 projectionAxis;
         Matrix4 projectionSpaceTransform;
         Matrix4 projectionSpaceInverseTransform;
+        float projectionOffset = 1.4f / 100.0f;
+        float perTriangleOffset = 1.4f / 100.0f;
+        float minProjectionAngleCosine = std::cos(85.0f * PI / 180.0f);
     };
     struct DecalRenderBatch
     {
@@ -46,7 +49,6 @@ private:
     struct GeoDecalCacheEntry
     {
         GeoDecalComponent::Config lastValidConfig;
-        RefPtr<RenderObject> renderObject;
         Vector<RefPtr<RenderBatch>> renderBatches;
     };
 

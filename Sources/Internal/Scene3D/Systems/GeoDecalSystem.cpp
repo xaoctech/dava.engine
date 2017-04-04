@@ -89,10 +89,14 @@ void GeoDecalSystem::RemoveCreatedDecals(Entity* entity, GeoDecalComponent* comp
     GeoDecalCacheEntry& decalsForComponent = decalsForEntity.data[component];
 
     for (RefPtr<RenderBatch> batch : decalsForComponent.renderBatches)
-        decalsForComponent.renderObject->RemoveRenderBatch(batch.Get());
-
+    {
+        if (batch->GetRenderObject())
+        {
+            Logger::Info("RO: %08X removed %08X", batch->GetRenderObject(), batch.Get());
+            batch->GetRenderObject()->RemoveRenderBatch(batch.Get());
+        }
+    }
     decalsForComponent.renderBatches.clear();
-    decalsForComponent.renderObject.Set(nullptr);
 }
 
 void GeoDecalSystem::BuildDecal(Entity* entity, GeoDecalComponent* component)
@@ -133,11 +137,6 @@ void GeoDecalSystem::BuildDecal(Entity* entity, GeoDecalComponent* component)
         view._data[2][1] = up.z;
         view._data[2][2] = -dir.z;
 
-        DecalBuildInfo info;
-        info.component = component;
-        info.entity = entity;
-        info.object = ro;
-
         Vector3 boxMin = Vector3(+std::numeric_limits<float>::max(), +std::numeric_limits<float>::max(), +std::numeric_limits<float>::max());
         Vector3 boxMax = Vector3(-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
         for (uint32 i = 0; i < 8; ++i)
@@ -154,6 +153,12 @@ void GeoDecalSystem::BuildDecal(Entity* entity, GeoDecalComponent* component)
         }
         Matrix4 proj;
         proj.OrthographicProjectionLH(boxMin.x, boxMax.x, boxMin.y, boxMax.y, boxMin.z, boxMax.z, false);
+
+        DecalBuildInfo info;
+        info.component = component;
+        info.entity = entity;
+        info.object = ro;
+        info.projectionAxis = dir;
         info.projectionSpaceTransform = view * proj;
         info.projectionSpaceTransform.GetInverse(info.projectionSpaceInverseTransform);
 
@@ -171,10 +176,10 @@ void GeoDecalSystem::BuildDecal(Entity* entity, GeoDecalComponent* component)
                 builtBatches.pop_back();
         }
 
-        decals[entity].data[component].renderObject = ro;
         for (const DecalRenderBatch& info : builtBatches)
         {
             ro->AddRenderBatch(info.batch.Get(), info.lodIndex, info.switchIndex);
+            Logger::Info("RO: %08X added %08X", ro, info.batch.Get());
             decals[entity].data[component].renderBatches.emplace_back(info.batch);
         }
     }
@@ -306,7 +311,7 @@ bool GeoDecalSystem::BuildDecal(const DecalBuildInfo& info, DecalRenderBatch& ba
     int32 triangleCount = geometry->GetIndexCount() / 3;
     for (int32 i = 0; i < triangleCount; ++i)
     {
-        DecalCoord points[MAX_POLYGON_CAPACITY];
+        DecalCoord points[MAX_POLYGON_CAPACITY] = {};
 
         for (int32 j = 0; j < 3; ++j)
         {
@@ -314,39 +319,36 @@ bool GeoDecalSystem::BuildDecal(const DecalBuildInfo& info, DecalRenderBatch& ba
             geometry->GetIndex(3 * i + j, idx);
 
             if (geometry->GetFormat() & EVF_TEXCOORD1)
-                geometry->GetTexcoord(1, 3 * i + j, points[j].texCoord1);
+                geometry->GetTexcoord(1, idx, points[j].texCoord1);
 
             geometry->GetCoord(idx, points[j].point);
         }
 
         if (Intersection::BoxTriangle(info.box, points[2].point, points[1].point, points[0].point))
         {
-            points[0].point = points[0].point * info.projectionSpaceTransform;
-            points[1].point = points[1].point * info.projectionSpaceTransform;
-            points[2].point = points[2].point * info.projectionSpaceTransform;
-
-            points[0].point.z = std::max(-1.0f, points[0].point.z - 0.0333333f);
-            points[1].point.z = std::max(-1.0f, points[1].point.z - 0.0333333f);
-            points[2].point.z = std::max(-1.0f, points[2].point.z - 0.0333333f);
-
             Vector3 nrm = (points[1].point - points[0].point).CrossProduct(points[2].point - points[0].point);
-            if (nrm.z < -std::numeric_limits<float>::epsilon())
+            nrm.Normalize();
+            if (nrm.DotProduct(info.projectionAxis) <= info.minProjectionAngleCosine)
             {
+                Vector3 offset = -info.projectionOffset * info.projectionAxis + info.perTriangleOffset * nrm;
+
                 uint8_t numPoints = 3;
+                points[0].point = points[0].point * info.projectionSpaceTransform;
+                points[1].point = points[1].point * info.projectionSpaceTransform;
+                points[2].point = points[2].point * info.projectionSpaceTransform;
                 Clip3D_AABB(points, &numPoints, clipSpaceBox);
 
                 for (uint32 i = 0; i < numPoints; ++i)
                 {
                     points[i].texCoord0.x = points[i].point.x * 0.5f + 0.5f;
                     points[i].texCoord0.y = points[i].point.y * 0.5f + 0.5f;
-                    points[i].point = points[i].point * info.projectionSpaceInverseTransform;
+                    points[i].point = points[i].point * info.projectionSpaceInverseTransform + offset;
                 }
                 for (uint32 i = 0; i + 2 < numPoints; ++i)
                 {
                     decalGeometry.emplace_back(points[0]);
                     decalGeometry.emplace_back(points[i + 1]);
                     decalGeometry.emplace_back(points[i + 2]);
-                    // octree->AddDebugTriangle(points[0].point, points[i].point, points[i + 1].point);
                 }
             }
         }
@@ -369,8 +371,8 @@ bool GeoDecalSystem::BuildDecal(const DecalBuildInfo& info, DecalRenderBatch& ba
     poly->BuildBuffers();
 
     ScopedPtr<NMaterial> material(new NMaterial());
-    material->SetFXName(FastName("~res:/Materials/Decal.Debug.material"));
-    material->SetMaterialName(FastName("Decal.Debug.material"));
+    material->SetFXName(FastName("~res:/Materials/GeoDecal.material"));
+    material->SetMaterialName(FastName("GeoDecal.material"));
 
     Texture* lightmap = info.batch->GetMaterial()->GetEffectiveTexture(NMaterialTextureName::TEXTURE_LIGHTMAP);
     if (lightmap != nullptr)
