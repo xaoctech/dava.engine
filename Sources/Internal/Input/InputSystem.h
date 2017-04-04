@@ -14,18 +14,15 @@ namespace DAVA
 class Engine;
 class UIEvent;
 class KeyboardDevice;
-class GamepadDevice;
 namespace Private
 {
 class EngineBackend;
-struct MainDispatcherEvent;
 }
 
 class InputSystem final
 {
     friend class Window;
     friend class Private::EngineBackend;
-    friend class GamepadDevice;
 
 public:
     // Temporal method for backward compatibility
@@ -40,7 +37,6 @@ public:
     void DispatchInputEvent(const InputEvent& inputEvent);
 
     KeyboardDevice& GetKeyboard();
-    GamepadDevice& GetGamepadDevice();
 
 private:
     InputSystem(Engine* engine);
@@ -49,21 +45,11 @@ private:
     InputSystem(const InputSystem&) = delete;
     InputSystem& operator=(const InputSystem&) = delete;
 
-    void Update(float32 frameDelta);
     void EndFrame();
     void HandleInputEvent(UIEvent* uie);
 
-    bool EventHandler(const Private::MainDispatcherEvent& e);
-
-    void HandleGamepadMotion(const Private::MainDispatcherEvent& e);
-    void HandleGamepadButton(const Private::MainDispatcherEvent& e);
-
-    void HandleGamepadAdded(const Private::MainDispatcherEvent& e);
-    void HandleGamepadRemoved(const Private::MainDispatcherEvent& e);
-
 private:
     RefPtr<KeyboardDevice> keyboard;
-    RefPtr<GamepadDevice> gamepad;
 
     struct InputHandler
     {
@@ -101,11 +87,6 @@ inline InputSystem::InputHandler::InputHandler(uint32 aToken, eInputDeviceTypes 
 inline KeyboardDevice& InputSystem::GetKeyboard()
 {
     return *keyboard;
-}
-
-inline GamepadDevice& InputSystem::GetGamepadDevice()
-{
-    return *gamepad;
 }
 
 } // namespace DAVA
