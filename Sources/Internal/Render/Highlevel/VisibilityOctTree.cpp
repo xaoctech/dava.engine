@@ -1,6 +1,7 @@
 #include "Render/Highlevel/RenderObject.h"
 #include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/VisibilityOctTree.h"
+#include "Render/Highlevel/GeometryOctTree.h"
 #include "Logger/Logger.h"
 
 namespace DAVA
