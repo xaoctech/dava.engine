@@ -16,10 +16,14 @@
 #include "Input/Private/Android/GamepadDeviceImplAndroid.h"
 #elif defined(__DAVAENGINE_WIN_UAP__)
 #include "Input/Private/Win10/GamepadDeviceImplWin10.h"
+#elif defined(__DAVAENGINE_WIN32__)
+#include "Input/Private/Win32/GamepadDeviceImplWin32.h"
+#elif defined(__DAVAENGINE_MACOS__)
+#include "Input/Private/Mac/GamepadDeviceImplMac.h"
 #elif defined(__DAVAENGINE_IPHONE__)
 #include "Input/Private/Ios/GamepadDeviceImplIos.h"
 #else
-#include "Input/Private/GamepadDeviceImplStub.h"
+#error "GamepadDevice: unknown platform"
 #endif
 
 namespace DAVA

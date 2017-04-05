@@ -3,6 +3,7 @@
 #include "Base/BaseTypes.h"
 
 #if defined(__DAVAENGINE_COREV2__)
+#if defined(__DAVAENGINE_WIN32__)
 
 namespace DAVA
 {
@@ -10,18 +11,12 @@ class GamepadDevice;
 namespace Private
 {
 struct MainDispatcherEvent;
-
-// Dummy GamepadDeviceImpl implementation for platforms that do not support gamepads for now.
 class GamepadDeviceImpl final
 {
 public:
-    GamepadDeviceImpl(GamepadDevice*)
-    {
-    }
+    GamepadDeviceImpl(GamepadDevice* gamepad);
 
-    void Update()
-    {
-    }
+    void Update();
 
     void HandleGamepadMotion(const MainDispatcherEvent&)
     {
@@ -30,17 +25,14 @@ public:
     {
     }
 
-    bool HandleGamepadAdded(uint32)
-    {
-        return false;
-    }
-    bool HandleGamepadRemoved(uint32)
-    {
-        return false;
-    }
+    bool HandleGamepadAdded(uint32 id);
+    bool HandleGamepadRemoved(uint32 id);
+
+    GamepadDevice* gamepadDevice = nullptr;
 };
 
 } // namespace Private
 } // namespace DAVA
 
+#endif // __DAVAENGINE_WIN32__
 #endif // __DAVAENGINE_COREV2__
