@@ -121,7 +121,7 @@ inline GamepadDevice& InputSystem::GetGamepadDevice()
 #include "Input/MouseDevice.h"
 
 /**
-	\defgroup inputsystem	Input System
+    \defgroup inputsystem Input System
 */
 namespace DAVA
 {
@@ -147,8 +147,8 @@ public:
 protected:
     ~InputSystem();
     /**
-	 \brief Don't call this constructor!
-	 */
+     \brief Don't call this constructor!
+     */
     InputSystem();
 
 public:

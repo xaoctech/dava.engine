@@ -1,22 +1,30 @@
 #pragma once
 
 #include "Input/Private/DigitalElement.h"
-#include "Input/InputElements.h"
-#include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 
 namespace DAVA
 {
 class InputSystem;
 
+namespace Private
+{
+struct MainDispatcherEvent;
+}
 /**
-     \ingroup input
-     Represents touch input device.
- */
+    \ingroup input
+    Input device that represents touch screen.
+    It manages all touch input elements (`eInputElements::TOUCH_*`), where TOUCH0 corresponds to the first touch, TOUCH1 corresponds to the second touch etc.
+
+    This device separates touches into two types of elements:
+        - Click elements (`TOUCH_CLICK0`, `TOUCH_CLICK1` etc.) represent digital part (pressed or released states)
+        - Position elements (`TOUCH_POSITION0`, `TOUCH_POSITION1` etc.) represent analog part (position on a screen)
+*/
 class TouchDevice final : public InputDevice
 {
     friend class DeviceManager; // For creation
 
 public:
+    // InputDevice overrides
     bool SupportsElement(eInputElements elementId) const override;
     eDigitalElementStates GetDigitalElementState(eInputElements elementId) const override;
     AnalogElementState GetAnalogElementState(eInputElements elementId) const override;

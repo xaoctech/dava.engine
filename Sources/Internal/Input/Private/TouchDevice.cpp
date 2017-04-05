@@ -1,6 +1,7 @@
 #include "Input/TouchDevice.h"
 
 #include "Engine/Engine.h"
+#include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 #include "Input/InputSystem.h"
 #include "Time/SystemTimer.h"
 
