@@ -77,26 +77,28 @@ void ParticleDebugDrawModule::PostInit()
 
     QWidget* w = new QWidget();
     QtHBoxLayout* layout = new QtHBoxLayout(w);
+    layout->setMargin(0);
+    layout->setSpacing(4);
 
     {
         ControlDescriptorBuilder<CheckBox::Fields> fields;
         fields[CheckBox::Fields::IsReadOnly] = "readOnly";
         fields[CheckBox::Fields::Checked] = "isEnabledProperty";
-        layout->AddWidget(new CheckBox(fields, accessor, DAVA::Reflection::Create(DAVA::ReflectedObject(this)), w));
+        layout->AddControl(new CheckBox(fields, accessor, DAVA::Reflection::Create(DAVA::ReflectedObject(this)), w));
     }
 
     {
         ControlDescriptorBuilder<ComboBox::Fields> fields;
         fields[ComboBox::Fields::IsReadOnly] = "readOnly";
         fields[ComboBox::Fields::Value] = "drawModeProperty";
-        layout->AddWidget(new ComboBox(fields, accessor, DAVA::Reflection::Create(DAVA::ReflectedObject(this)), w));
+        layout->AddControl(new ComboBox(fields, accessor, DAVA::Reflection::Create(DAVA::ReflectedObject(this)), w));
     }
 
     {
         ControlDescriptorBuilder<CheckBox::Fields> fields;
         fields[CheckBox::Fields::IsReadOnly] = "readOnly";
         fields[CheckBox::Fields::Checked] = "drawSelectedProperty";
-        layout->AddWidget(new CheckBox(fields, accessor, DAVA::Reflection::Create(DAVA::ReflectedObject(this)), w));
+        layout->AddControl(new CheckBox(fields, accessor, DAVA::Reflection::Create(DAVA::ReflectedObject(this)), w));
     }
 
     QAction* action = new QAction(nullptr);
