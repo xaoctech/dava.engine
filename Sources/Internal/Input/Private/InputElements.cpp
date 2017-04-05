@@ -10,6 +10,7 @@ const InputElementInfo& GetInputElementInfo(eInputElements element)
     if (!initialized)
     {
         // Keyboard
+
         info[eInputElements::KB_1_VIRTUAL] = { "1", eInputElementTypes::DIGITAL };
         info[eInputElements::KB_2_VIRTUAL] = { "2", eInputElementTypes::DIGITAL };
         info[eInputElements::KB_3_VIRTUAL] = { "3", eInputElementTypes::DIGITAL };
@@ -227,6 +228,7 @@ const InputElementInfo& GetInputElementInfo(eInputElements element)
         info[eInputElements::KB_RCMD] = { "RCmd", eInputElementTypes::DIGITAL };
 
         // Mouse
+
         info[eInputElements::MOUSE_LBUTTON] = { "Mouse left button", eInputElementTypes::DIGITAL };
         info[eInputElements::MOUSE_RBUTTON] = { "Mouse right button", eInputElementTypes::DIGITAL };
         info[eInputElements::MOUSE_MBUTTON] = { "Mouse middle button", eInputElementTypes::DIGITAL };
@@ -234,6 +236,30 @@ const InputElementInfo& GetInputElementInfo(eInputElements element)
         info[eInputElements::MOUSE_EXT2BUTTON] = { "Mouse extended button 2", eInputElementTypes::DIGITAL };
         info[eInputElements::MOUSE_WHEEL] = { "Mouse wheel", eInputElementTypes::ANALOG };
         info[eInputElements::MOUSE_POSITION] = { "Mouse cursor", eInputElementTypes::ANALOG };
+
+        // Touch
+
+        info[eInputElements::TOUCH_CLICK0] = { "Touch 0 click", eInputElementTypes::DIGITAL };
+        info[eInputElements::TOUCH_CLICK1] = { "Touch 1 click", eInputElementTypes::DIGITAL };
+        info[eInputElements::TOUCH_CLICK2] = { "Touch 2 click", eInputElementTypes::DIGITAL };
+        info[eInputElements::TOUCH_CLICK3] = { "Touch 3 click", eInputElementTypes::DIGITAL };
+        info[eInputElements::TOUCH_CLICK4] = { "Touch 4 click", eInputElementTypes::DIGITAL };
+        info[eInputElements::TOUCH_CLICK5] = { "Touch 5 click", eInputElementTypes::DIGITAL };
+        info[eInputElements::TOUCH_CLICK6] = { "Touch 6 click", eInputElementTypes::DIGITAL };
+        info[eInputElements::TOUCH_CLICK7] = { "Touch 7 click", eInputElementTypes::DIGITAL };
+        info[eInputElements::TOUCH_CLICK8] = { "Touch 8 click", eInputElementTypes::DIGITAL };
+        info[eInputElements::TOUCH_CLICK9] = { "Touch 9 click", eInputElementTypes::DIGITAL };
+
+        info[eInputElements::TOUCH_POSITION0] = { "Touch 0 position", eInputElementTypes::ANALOG };
+        info[eInputElements::TOUCH_POSITION1] = { "Touch 1 position", eInputElementTypes::ANALOG };
+        info[eInputElements::TOUCH_POSITION2] = { "Touch 2 position", eInputElementTypes::ANALOG };
+        info[eInputElements::TOUCH_POSITION3] = { "Touch 3 position", eInputElementTypes::ANALOG };
+        info[eInputElements::TOUCH_POSITION4] = { "Touch 4 position", eInputElementTypes::ANALOG };
+        info[eInputElements::TOUCH_POSITION5] = { "Touch 5 position", eInputElementTypes::ANALOG };
+        info[eInputElements::TOUCH_POSITION6] = { "Touch 6 position", eInputElementTypes::ANALOG };
+        info[eInputElements::TOUCH_POSITION7] = { "Touch 7 position", eInputElementTypes::ANALOG };
+        info[eInputElements::TOUCH_POSITION8] = { "Touch 8 position", eInputElementTypes::ANALOG };
+        info[eInputElements::TOUCH_POSITION9] = { "Touch 9 position", eInputElementTypes::ANALOG };
 
         info[eInputElements::GAMEPAD_START] = { "GAMEPAD_START", eInputElementTypes::DIGITAL };
         info[eInputElements::GAMEPAD_BACK] = { "GAMEPAD_BACK", eInputElementTypes::DIGITAL };

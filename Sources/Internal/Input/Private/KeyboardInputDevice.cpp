@@ -15,6 +15,7 @@
 #endif
 
 #include "Engine/Engine.h"
+#include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 #include "Input/InputSystem.h"
 #include "Time/SystemTimer.h"
 
@@ -26,11 +27,8 @@ KeyboardInputDevice::KeyboardInputDevice(uint32 id)
     , impl(new Private::KeyboardDeviceImpl())
 {
     Engine* engine = Engine::Instance();
-
     endFrameConnectionToken = engine->endFrame.Connect(this, &KeyboardInputDevice::OnEndFrame);
-
-    // TODO: handle all the windows
-    primaryWindowFocusChangedToken = engine->PrimaryWindow()->focusChanged.Connect(this, &KeyboardInputDevice::OnWindowFocusChanged);
+    primaryWindowFocusChangedToken = engine->PrimaryWindow()->focusChanged.Connect(this, &KeyboardInputDevice::OnWindowFocusChanged); // TODO: handle all the windows
 
     Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &KeyboardInputDevice::HandleEvent));
 }
@@ -103,28 +101,30 @@ bool KeyboardInputDevice::HandleEvent(const Private::MainDispatcherEvent& e)
 
     if (e.type == MainDispatcherEvent::KEY_DOWN || e.type == MainDispatcherEvent::KEY_UP)
     {
-        // Save state
-
         eInputElements scancodeElementId = impl->ConvertNativeScancodeToDavaScancode(e.keyEvent.key);
-        if (scancodeElementId != eInputElements::NONE)
+        if (scancodeElementId == eInputElements::NONE)
         {
-            Private::DigitalElement& element = keys[scancodeElementId - eInputElements::KB_FIRST_SCANCODE];
-
-            if (e.type == MainDispatcherEvent::KEY_DOWN)
-            {
-                element.Press();
-            }
-            else
-            {
-                element.Release();
-            }
-
-            // Send event
-
-            CreateAndSendInputEvent(scancodeElementId, element, e.window, e.timestamp);
-
-            return true;
+            DVASSERT(false, "Couldn't map native scancode to dava scancode");
+            return false;
         }
+
+        // Update element state
+
+        Private::DigitalElement& element = keys[scancodeElementId - eInputElements::KB_FIRST_SCANCODE];
+        if (e.type == MainDispatcherEvent::KEY_DOWN)
+        {
+            element.Press();
+        }
+        else
+        {
+            element.Release();
+        }
+
+        // Send event
+
+        CreateAndSendInputEvent(scancodeElementId, element, e.window, e.timestamp);
+
+        return true;
     }
 
     return false;
@@ -133,8 +133,6 @@ bool KeyboardInputDevice::HandleEvent(const Private::MainDispatcherEvent& e)
 void KeyboardInputDevice::OnEndFrame()
 {
     // Promote JustPressed & JustReleased states to Pressed/Released accordingly
-    // TODO: optimize?
-
     for (size_t i = 0; i < INPUT_ELEMENTS_KB_COUNT_SCANCODE; ++i)
     {
         keys[i].OnEndFrame();
@@ -143,6 +141,7 @@ void KeyboardInputDevice::OnEndFrame()
 
 void KeyboardInputDevice::OnWindowFocusChanged(DAVA::Window* window, bool focused)
 {
+    // Reset keyboard state when window is unfocused
     if (!focused)
     {
         for (size_t i = 0; i < INPUT_ELEMENTS_KB_COUNT_SCANCODE; ++i)

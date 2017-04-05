@@ -18,7 +18,6 @@ namespace DAVA
     \ingroup input
     Enum describing possible states for a digital element.
 
-    |------------------------------------------------|---------------|---------|---------------|----------|
     |                                                |  JUST_PRESSED | PRESSED | JUST_RELEASED | RELEASED |
     |------------------------------------------------|---------------|---------|---------------|----------|
     | initial element state                          | -             | -       | -             | +        |

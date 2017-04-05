@@ -24,14 +24,16 @@ void InputSystemTest::LoadResources()
 
     // Create UI
     CreateKeyboardUI(L"Scancode keyboard", 20.0f, 20.0f, false);
-    CreateKeyboardUI(L"Virtual key keyboard", 20.0f, 250.0f, true);
+    CreateKeyboardUI(L"Virtual key keyboard", 20.0f, 180.0f, true);
     CreateMouseUI();
+    CreateTouchUI();
     CreateActionsUI();
     CreateInputListenerUI();
 
     // Subscribe to events
     rawInputToken = GetEngineContext()->inputSystem->AddHandler(eInputDeviceTypes::CLASS_ALL, MakeFunction(this, &InputSystemTest::OnInputEvent));
     actionTriggeredToken = GetEngineContext()->actionSystem->ActionTriggered.Connect(this, &InputSystemTest::OnAction);
+    updateToken = Engine::Instance()->update.Connect(this, &InputSystemTest::OnUpdate);
 
     // Bind action set
 
@@ -78,6 +80,7 @@ void InputSystemTest::UnloadResources()
 {
     GetEngineContext()->inputSystem->RemoveHandler(rawInputToken);
     GetEngineContext()->actionSystem->ActionTriggered.Disconnect(actionTriggeredToken);
+    Engine::Instance()->update.Disconnect(updateToken);
 
     for (auto it = keyboardButtons.begin(); it != keyboardButtons.end(); ++it)
     {
@@ -89,7 +92,19 @@ void InputSystemTest::UnloadResources()
         SafeRelease(*it);
     }
 
+    SafeRelease(mouseHeader);
+    SafeRelease(mouseBody);
     for (auto it = mouseButtons.begin(); it != mouseButtons.end(); ++it)
+    {
+        SafeRelease(it->second);
+    }
+
+    SafeRelease(touchHeader);
+    for (auto it = touchClickButtons.begin(); it != touchClickButtons.end(); ++it)
+    {
+        SafeRelease(it->second);
+    }
+    for (auto it = touchMoveButtons.begin(); it != touchMoveButtons.end(); ++it)
     {
         SafeRelease(it->second);
     }
@@ -114,12 +129,12 @@ void InputSystemTest::CreateKeyboardUI(WideString header, float32 x, float32 y, 
 {
     ScopedPtr<FTFont> font(FTFont::Create("~res:/Fonts/korinna.ttf"));
 
-    const float32 keyboardButtonWidth = 25.0f;
-    const float32 keyboardButtonHeight = 25.0f;
+    const float32 keyboardButtonWidth = 20.0f;
+    const float32 keyboardButtonHeight = 20.0f;
 
-    const float32 headerHeight = 20.0f;
+    const float32 headerHeight = 15.0f;
 
-    font->SetSize(11);
+    font->SetSize(10);
 
     UIStaticText* headerText = new UIStaticText(Rect(x, y, 250, headerHeight));
     headerText->SetTextColor(Color::White);
@@ -314,28 +329,38 @@ void InputSystemTest::CreateKeyboardUI(WideString header, float32 x, float32 y, 
 void InputSystemTest::CreateMouseUI()
 {
     ScopedPtr<FTFont> font(FTFont::Create("~res:/Fonts/korinna.ttf"));
+    font->SetSize(10);
 
-    UIButton* mouse = new UIButton(Rect(680, 10, 104, 140));
-    mouse->SetStateFont(0xFF, font);
-    mouse->SetStateFontColor(0xFF, Color::White);
-    mouse->SetDebugDraw(true);
-    AddControl(mouse);
+    const float32 x = 530;
 
-    UIButton* mousePositionButton = new UIButton(Rect(680, 160, 104, 15));
+    mouseHeader = new UIStaticText(Rect(x, 20, 250, 15));
+    mouseHeader->SetTextColor(Color::White);
+    mouseHeader->SetFont(font);
+    mouseHeader->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
+    mouseHeader->SetText(L"Mouse");
+    AddControl(mouseHeader);
+
+    mouseBody = new UIButton(Rect(x, 35, 84, 100));
+    mouseBody->SetStateFont(0xFF, font);
+    mouseBody->SetStateFontColor(0xFF, Color::White);
+    mouseBody->SetDebugDraw(true);
+    AddControl(mouseBody);
+
+    UIButton* mousePositionButton = new UIButton(Rect(x, 140, 84, 15));
     mousePositionButton->SetStateFont(0xFF, font);
     mousePositionButton->SetStateFontColor(0xFF, Color::White);
     mousePositionButton->SetDebugDraw(true);
     mouseButtons[static_cast<uint32>(eInputElements::MOUSE_POSITION)] = mousePositionButton;
     AddControl(mousePositionButton);
 
-    UIButton* leftButton = new UIButton(Rect(700, 10, 30, 70));
+    UIButton* leftButton = new UIButton(Rect(x + 15.0f, 35, 20, 70));
     leftButton->SetStateFont(0xFF, font);
     leftButton->SetStateFontColor(0xFF, Color::White);
     leftButton->SetDebugDraw(true);
     mouseButtons[static_cast<uint32>(eInputElements::MOUSE_LBUTTON)] = leftButton;
     AddControl(leftButton);
 
-    UIButton* rightButton = new UIButton(Rect(732, 10, 30, 70));
+    UIButton* rightButton = new UIButton(Rect(x + 45.0f, 35, 20, 70));
     rightButton->SetStateFont(0xFF, font);
     rightButton->SetStateFontColor(0xFF, Color::White);
     rightButton->SetDebugDraw(true);
@@ -343,12 +368,58 @@ void InputSystemTest::CreateMouseUI()
     AddControl(rightButton);
 }
 
+void InputSystemTest::CreateTouchUI()
+{
+    ScopedPtr<FTFont> font(FTFont::Create("~res:/Fonts/korinna.ttf"));
+    font->SetSize(10);
+
+    float32 x = 530.0f;
+    float32 y = 180.0f;
+
+    touchHeader = new UIStaticText(Rect(x, y, 250, 15));
+    touchHeader->SetTextColor(Color::White);
+    touchHeader->SetFont(font);
+    touchHeader->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
+    touchHeader->SetText(L"Touch");
+    AddControl(touchHeader);
+
+    y += 17.0f;
+
+    const float32 clickButtonSizeX = 22.8f;
+    const float32 clickButtonSizeY = 20.0f;
+    for (size_t i = 0; i < INPUT_ELEMENTS_TOUCH_CLICK_COUNT; ++i)
+    {
+        std::wstringstream ss;
+        ss << i;
+
+        UIButton* touchClickButton = new UIButton(Rect(x, y, clickButtonSizeX, clickButtonSizeY));
+        touchClickButton->SetStateFont(0xFF, font);
+        touchClickButton->SetStateFontColor(0xFF, Color::White);
+        touchClickButton->SetDebugDraw(true);
+        touchClickButton->SetStateText(0xFF, ss.str());
+        touchClickButtons[static_cast<uint32>(eInputElements::TOUCH_FIRST_CLICK + i)] = touchClickButton;
+        AddControl(touchClickButton);
+
+        UIButton* touchMoveButton = new UIButton(Rect(x, y + clickButtonSizeY + 1.0f, clickButtonSizeX, clickButtonSizeY * 2.0f));
+        touchMoveButton->SetStateFont(0xFF, font);
+        touchMoveButton->SetStateFontColor(0xFF, Color::White);
+        touchMoveButton->SetDebugDraw(true);
+        touchMoveButton->SetStateText(0xFF, L"0\n0");
+        touchMoveButton->SetStateTextMultiline(0xFF, true);
+        touchMoveButtons[static_cast<uint32>(eInputElements::TOUCH_FIRST_POSITION + i)] = touchMoveButton;
+        AddControl(touchMoveButton);
+
+        x += clickButtonSizeX + 1.0f;
+    }
+}
+
 void InputSystemTest::CreateActionsUI()
 {
     ScopedPtr<FTFont> font(FTFont::Create("~res:/Fonts/korinna.ttf"));
+    font->SetSize(9.0f);
 
-    float32 y = 450.0f;
-    const float32 yDelta = 60.0f;
+    float32 y = 370.0f;
+    const float32 yDelta = 30.0f;
 
     //
 
@@ -466,8 +537,13 @@ void InputSystemTest::CreateActionsUI()
 void InputSystemTest::CreateInputListenerUI()
 {
     ScopedPtr<FTFont> font(FTFont::Create("~res:/Fonts/korinna.ttf"));
+    font->SetSize(9.0f);
 
-    inputListenerDigitalSingleWithoutModifiersButton = new UIButton(Rect(680, 450, 250, 30));
+    const float32 x = 530.0f;
+    float32 y = 370.0f;
+    const float32 yDelta = 30.0f;
+
+    inputListenerDigitalSingleWithoutModifiersButton = new UIButton(Rect(x, y, 200, 30));
     inputListenerDigitalSingleWithoutModifiersButton->SetStateFont(0xFF, font);
     inputListenerDigitalSingleWithoutModifiersButton->SetStateFontColor(0xFF, Color::White);
     inputListenerDigitalSingleWithoutModifiersButton->SetDebugDraw(true);
@@ -475,7 +551,9 @@ void InputSystemTest::CreateInputListenerUI()
     inputListenerDigitalSingleWithoutModifiersButton->AddEvent(UIButton::EVENT_TOUCH_UP_INSIDE, Message(this, &InputSystemTest::OnInputListenerButtonPressed));
     AddControl(inputListenerDigitalSingleWithoutModifiersButton);
 
-    inputListenerDigitalSingleWithModifiersButton = new UIButton(Rect(680, 490, 250, 30));
+    y += yDelta;
+
+    inputListenerDigitalSingleWithModifiersButton = new UIButton(Rect(x, y, 200, 30));
     inputListenerDigitalSingleWithModifiersButton->SetStateFont(0xFF, font);
     inputListenerDigitalSingleWithModifiersButton->SetStateFontColor(0xFF, Color::White);
     inputListenerDigitalSingleWithModifiersButton->SetDebugDraw(true);
@@ -483,7 +561,9 @@ void InputSystemTest::CreateInputListenerUI()
     inputListenerDigitalSingleWithModifiersButton->AddEvent(UIButton::EVENT_TOUCH_UP_INSIDE, Message(this, &InputSystemTest::OnInputListenerButtonPressed));
     AddControl(inputListenerDigitalSingleWithModifiersButton);
 
-    inputListenerDigitalMultipleAnyButton = new UIButton(Rect(680, 530, 250, 30));
+    y += yDelta;
+
+    inputListenerDigitalMultipleAnyButton = new UIButton(Rect(x, y, 200, 30));
     inputListenerDigitalMultipleAnyButton->SetStateFont(0xFF, font);
     inputListenerDigitalMultipleAnyButton->SetStateFontColor(0xFF, Color::White);
     inputListenerDigitalMultipleAnyButton->SetDebugDraw(true);
@@ -491,7 +571,9 @@ void InputSystemTest::CreateInputListenerUI()
     inputListenerDigitalMultipleAnyButton->AddEvent(UIButton::EVENT_TOUCH_UP_INSIDE, Message(this, &InputSystemTest::OnInputListenerButtonPressed));
     AddControl(inputListenerDigitalMultipleAnyButton);
 
-    inputListenerAnalogButton = new UIButton(Rect(680, 570, 250, 30));
+    y += yDelta;
+
+    inputListenerAnalogButton = new UIButton(Rect(x, y, 200, 30));
     inputListenerAnalogButton->SetStateFont(0xFF, font);
     inputListenerAnalogButton->SetStateFontColor(0xFF, Color::White);
     inputListenerAnalogButton->SetDebugDraw(true);
@@ -499,7 +581,9 @@ void InputSystemTest::CreateInputListenerUI()
     inputListenerAnalogButton->AddEvent(UIButton::EVENT_TOUCH_UP_INSIDE, Message(this, &InputSystemTest::OnInputListenerButtonPressed));
     AddControl(inputListenerAnalogButton);
 
-    inputListenerResultField = new UIStaticText(Rect(680, 610, 250, 30));
+    y += yDelta;
+
+    inputListenerResultField = new UIStaticText(Rect(x, y, 200, 30));
     inputListenerResultField->SetTextColor(Color::White);
     inputListenerResultField->SetFont(font);
     inputListenerResultField->SetMultiline(true);
@@ -562,6 +646,13 @@ bool InputSystemTest::OnInputEvent(InputEvent const& event)
 
         HighlightDigitalButton(scancodeButton, event.digitalState);
         HighlightDigitalButton(virtualButton, event.digitalState);
+
+        InputListener* inputListener = GetEngineContext()->inputListener;
+        if (event.elementId == eInputElements::KB_ESCAPE && inputListener->IsListening())
+        {
+            inputListener->StopListening();
+            inputListenerResultField->SetText(L"Stopped listening");
+        }
     }
     else if (event.deviceType == eInputDeviceTypes::MOUSE)
     {
@@ -578,12 +669,15 @@ bool InputSystemTest::OnInputEvent(InputEvent const& event)
             HighlightDigitalButton(mouseButton, event.digitalState);
         }
     }
-
-    InputListener* inputListener = GetEngineContext()->inputListener;
-    if (event.elementId == eInputElements::KB_ESCAPE && inputListener->IsListening())
+    else if (event.deviceType == eInputDeviceTypes::TOUCH_SURFACE)
     {
-        inputListener->StopListening();
-        inputListenerResultField->SetText(L"Stopped listening");
+        if (IsTouchClickElement(event.elementId))
+        {
+            UIButton* touchButton = touchClickButtons[event.elementId];
+            HighlightDigitalButton(touchButton, event.digitalState);
+        }
+
+        // Position will be changed in Update
     }
 
     return false;
@@ -635,4 +729,25 @@ void InputSystemTest::OnInputListeningEnded(DAVA::Vector<DAVA::eInputElements> i
     }
 
     inputListenerResultField->SetText(ss.str());
+}
+
+void InputSystemTest::OnUpdate(float32 delta)
+{
+    TouchDevice* touch = GetEngineContext()->deviceManager->GetTouch();
+
+    if (touch != nullptr)
+    {
+        for (size_t i = 0; i < INPUT_ELEMENTS_TOUCH_POSITION_COUNT; ++i)
+        {
+            eInputElements elementId = static_cast<eInputElements>(eInputElements::TOUCH_FIRST_POSITION + i);
+
+            UIButton* touchButton = touchMoveButtons[elementId];
+
+            AnalogElementState state = touch->GetAnalogElementState(elementId);
+
+            std::wstringstream ss;
+            ss << static_cast<int>(state.x) << "\n" << static_cast<int>(state.y);
+            touchButton->SetStateText(0xFF, ss.str());
+        }
+    }
 }

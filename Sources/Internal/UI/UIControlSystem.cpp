@@ -33,6 +33,7 @@
 #include "Input/InputSystem.h"
 #include "Input/KeyboardInputDevice.h"
 #include "Input/MouseDevice.h"
+#include "Input/TouchDevice.h"
 
 namespace DAVA
 {
@@ -927,6 +928,33 @@ UIEvent UIControlSystem::MakeUIEvent(const InputEvent& inputEvent) const
             break;
         }
     }
+    else if (IsTouchInputElement(inputEvent.elementId))
+    {
+        uie.device = eInputDevices::TOUCH_SURFACE;
+        uie.modifiers = GetKeyboardModifierKeys();
+
+        const bool isDigitalEvent = IsTouchClickElement(inputEvent.elementId);
+
+        // UIEvent's touch id = touch index + 1 (since 0 means 'no touch' inside of UI system)
+
+        if (isDigitalEvent)
+        {
+            TouchDevice* touchDevice = GetEngineContext()->deviceManager->GetTouch();
+            AnalogElementState analogState = touchDevice->GetAnalogElementState(GetTouchPositionFromClick(inputEvent.elementId));
+
+            uie.phase = (inputEvent.digitalState & eDigitalElementStates::PRESSED) != eDigitalElementStates::NONE ? UIEvent::Phase::BEGAN : UIEvent::Phase::ENDED;
+            uie.physPoint = { analogState.x, analogState.y };
+
+            uie.touchId = inputEvent.elementId - eInputElements::TOUCH_FIRST_CLICK + 1;
+        }
+        else
+        {
+            uie.phase = UIEvent::Phase::DRAG;
+            uie.physPoint = { inputEvent.analogState.x, inputEvent.analogState.y };
+            uie.touchId = inputEvent.elementId - eInputElements::TOUCH_FIRST_POSITION + 1;
+        }
+    }
+
     return uie;
 }
 

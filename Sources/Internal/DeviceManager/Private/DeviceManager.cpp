@@ -129,14 +129,20 @@ void DeviceManager::Update(float32 /*frameDelta*/)
 
 void DeviceManager::OnEngineInited()
 {
+    // TODO: keep track of devices, implement id constants for kb, mouse, touch devices
     Engine::Instance()->update.Connect(this, &DeviceManager::Update);
 
+#if defined(__DAVAENGINE_WINDOWS__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_ANDROID__)
     keyboard = new KeyboardInputDevice(1);
     inputDevices.push_back(keyboard);
 
-#if defined(__DAVAENGINE_WINDOWS__) || defined(__DAVAENGINE_MACOS__)
     mouse = new MouseDevice(2);
     inputDevices.push_back(mouse);
+#endif
+
+#if defined(__DAVAENGINE_WIN_UAP__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+    touch = new TouchDevice(3);
+    inputDevices.push_back(touch);
 #endif
 }
 
@@ -165,6 +171,11 @@ KeyboardInputDevice* DeviceManager::GetKeyboard()
 MouseDevice* DeviceManager::GetMouse()
 {
     return mouse;
+}
+
+TouchDevice* DeviceManager::GetTouch()
+{
+    return touch;
 }
 
 } // namespace DAVA

@@ -6,6 +6,7 @@
 namespace DAVA
 {
 /**
+    \ingroup input
     List of all supported input elements.
     An input element is a part of a device which can be used for input. For example, a keyboard button, a mouse button, a mouse wheel, gamepad's stick etc.
 */
@@ -280,10 +281,34 @@ enum eInputElements : uint32
     GAMEPAD_FIRST_AXIS = GAMEPAD_LTRIGGER,
     GAMEPAD_LAST_AXIS = GAMEPAD_RTHUMB_Y,
 
+    // Touch
+
+    TOUCH_CLICK0,
+    TOUCH_CLICK1,
+    TOUCH_CLICK2,
+    TOUCH_CLICK3,
+    TOUCH_CLICK4,
+    TOUCH_CLICK5,
+    TOUCH_CLICK6,
+    TOUCH_CLICK7,
+    TOUCH_CLICK8,
+    TOUCH_CLICK9,
+
+    TOUCH_POSITION0,
+    TOUCH_POSITION1,
+    TOUCH_POSITION2,
+    TOUCH_POSITION3,
+    TOUCH_POSITION4,
+    TOUCH_POSITION5,
+    TOUCH_POSITION6,
+    TOUCH_POSITION7,
+    TOUCH_POSITION8,
+    TOUCH_POSITION9,
+
     // Counters
 
     FIRST = NONE,
-    LAST = GAMEPAD_RTHUMB_Y,
+    LAST = TOUCH_POSITION9,
 
     MOUSE_FIRST = MOUSE_LBUTTON,
     MOUSE_LAST = MOUSE_POSITION,
@@ -297,7 +322,16 @@ enum eInputElements : uint32
     KB_LAST_SCANCODE = KB_BACK,
 
     KB_FIRST_VIRTUAL = KB_1_VIRTUAL,
-    KB_LAST_VIRTUAL = KB_BACK_VIRTUAL
+    KB_LAST_VIRTUAL = KB_BACK_VIRTUAL,
+
+    TOUCH_FIRST = TOUCH_CLICK0,
+    TOUCH_LAST = TOUCH_POSITION9,
+
+    TOUCH_FIRST_CLICK = TOUCH_CLICK0,
+    TOUCH_LAST_CLICK = TOUCH_CLICK9,
+
+    TOUCH_FIRST_POSITION = TOUCH_POSITION0,
+    TOUCH_LAST_POSITION = TOUCH_POSITION9
 };
 
 enum
@@ -306,32 +340,52 @@ enum
     INPUT_ELEMENTS_KB_COUNT = eInputElements::KB_LAST - eInputElements::KB_FIRST + 1,
     INPUT_ELEMENTS_KB_COUNT_SCANCODE = eInputElements::KB_LAST_SCANCODE - eInputElements::KB_FIRST_SCANCODE + 1,
     INPUT_ELEMENTS_KB_COUNT_VIRTUAL = eInputElements::KB_LAST_VIRTUAL - eInputElements::KB_FIRST_VIRTUAL + 1,
+    INPUT_ELEMENTS_TOUCH_CLICK_COUNT = eInputElements::TOUCH_LAST_CLICK - eInputElements::TOUCH_FIRST_CLICK + 1,
+    INPUT_ELEMENTS_TOUCH_POSITION_COUNT = eInputElements::TOUCH_LAST_POSITION - eInputElements::TOUCH_FIRST_POSITION + 1
 };
 
-// Each virtual key should have a scancode counterpart
+// Each scancode key should have a virtual counterpart
 static_assert(INPUT_ELEMENTS_KB_COUNT_VIRTUAL == INPUT_ELEMENTS_KB_COUNT_SCANCODE, "Amount of virtual keyboard keys does not match amount of scancode keys");
 
-/** List of element types */
+// Each touch should have both _CLICK and _POSITION pieces
+static_assert(INPUT_ELEMENTS_TOUCH_CLICK_COUNT == INPUT_ELEMENTS_TOUCH_POSITION_COUNT, "Amount of touch clicks does not match amount of touch positions");
+
+/**
+    \ingroup input
+    List of element types.
+*/
 enum eInputElementTypes
 {
-    /** Basically, a button, which can just be pressed and released. */
+    /** Button, which can just be pressed and released. */
     DIGITAL,
 
     /**
-		Element whose state can only be described using multiple float values.
-		For example, gamepad's stick position can be described using normalized x and y values.
-	*/
+        Element whose state can only be described using multiple float values.
+        Examples are:
+            - gamepad's stick position can be described using normalized x and y values
+            - touch position can be described using x and y values
+            - mouse wheel delta can be described using single x value
+    */
     ANALOG
 };
 
-/** Contains additional information about an element. */
+/**
+    \ingroup input
+    Contains additional information about an element.
+*/
 struct InputElementInfo final
 {
+    /** Name of the element */
     String name;
+
+    /** Type of the element */
     eInputElementTypes type;
 };
 
-/** Return true if specified `element` is a mouse element */
+/**
+    \ingroup input
+    Return true if specified `element` is a mouse element.
+*/
 inline bool IsMouseInputElement(eInputElements element)
 {
     return eInputElements::MOUSE_FIRST <= element && element <= eInputElements::MOUSE_LAST;
@@ -349,25 +403,37 @@ inline bool IsGamepadAxis(eInputElements element)
     return eInputElements::GAMEPAD_FIRST_AXIS <= element && element <= eInputElements::GAMEPAD_LAST_AXIS;
 }
 
-/** Return true if specified `element` is a keyboard element */
+/**
+    \ingroup input
+    Return true if specified `element` is a keyboard element.
+*/
 inline bool IsKeyboardInputElement(eInputElements element)
 {
     return eInputElements::KB_FIRST <= element && element <= eInputElements::KB_LAST;
 }
 
-/** Return true if specified `element` is a virtual keyboard element */
+/**
+    \ingroup input
+    Return true if specified `element` is a virtual keyboard element.
+*/
 inline bool IsKeyboardVirtualInputElement(eInputElements element)
 {
     return eInputElements::KB_FIRST_VIRTUAL <= element && element <= eInputElements::KB_LAST_VIRTUAL;
 }
 
-/** Return true if specified `element` is a scancode keyboard element */
+/**
+    \ingroup input
+    Return true if specified `element` is a scancode keyboard element.
+*/
 inline bool IsKeyboardScancodeInputElement(eInputElements element)
 {
     return eInputElements::KB_FIRST_SCANCODE <= element && element <= eInputElements::KB_LAST_SCANCODE;
 }
 
-/** Return true if specified keyboard `element` is a keyboard modifier element */
+/**
+    \ingroup input
+    Return true if specified keyboard `element` is a keyboard modifier element.
+*/
 inline bool IsKeyboardModifierInputElement(eInputElements element)
 {
     // Check both virtual and scancodes since these key are not remappable
@@ -379,7 +445,10 @@ inline bool IsKeyboardModifierInputElement(eInputElements element)
             element == eInputElements::KB_RALT_VIRTUAL || element == eInputElements::KB_RALT);
 }
 
-/** Return true if specified keyboard `element` is a keyboard system element */
+/**
+    \ingroup input
+    Return true if specified keyboard `element` is a keyboard 'system' element.
+*/
 inline bool IsKeyboardSystemInputElement(eInputElements element)
 {
     // Check both virtual and scancodes since these key are not remappable
@@ -403,7 +472,49 @@ inline bool IsKeyboardSystemInputElement(eInputElements element)
             element == eInputElements::KB_MENU_VIRTUAL || element == eInputElements::KB_MENU);
 }
 
-/** Get additional information about an element */
+/**
+    \ingroup input
+    Return true if specified `element` is a touch element.
+*/
+inline bool IsTouchInputElement(eInputElements element)
+{
+    return eInputElements::TOUCH_FIRST <= element && element <= eInputElements::TOUCH_LAST;
+}
+
+/**
+    \ingroup input
+    Return true if specified `element` is a touch click element.
+*/
+inline bool IsTouchClickElement(eInputElements element)
+{
+    return eInputElements::TOUCH_FIRST_CLICK <= element && element <= eInputElements::TOUCH_LAST_CLICK;
+}
+
+/**
+    \ingroup input
+    Return true if specified `element` is a touch position element.
+*/
+inline bool IsTouchPositionElement(eInputElements element)
+{
+    return eInputElements::TOUCH_FIRST_POSITION <= element && element <= eInputElements::TOUCH_LAST_POSITION;
+}
+
+/**
+    \ingroup input
+    Return TOUCH_POSITION element for specified click `element.
+    I.e. TOUCH_POSITION3 for TOUCH_CLICK3 etc.
+*/
+inline eInputElements GetTouchPositionFromClick(eInputElements element)
+{
+    DVASSERT(IsTouchClickElement(element));
+
+    return static_cast<eInputElements>(eInputElements::TOUCH_FIRST_POSITION + (element - eInputElements::TOUCH_FIRST_CLICK));
+}
+
+/**
+    \ingroup input
+    Get additional information about an element.
+*/
 const InputElementInfo& GetInputElementInfo(eInputElements element);
 
 } // namespace DAVA
