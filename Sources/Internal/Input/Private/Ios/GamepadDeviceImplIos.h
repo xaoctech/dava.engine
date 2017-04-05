@@ -21,8 +21,8 @@ public:
     GamepadDeviceImpl(GamepadDevice* gamepadDevice);
 
     void Update();
-    void ReadExtendedGamepadElements(GCExtendedGamepad* gamepad, float32 buf[]);
-    void ReadGamepadElements(GCGamepad* gamepad, float32 buf[]);
+    void ReadExtendedGamepadElements(GCExtendedGamepad* gamepad);
+    void ReadGamepadElements(GCGamepad* gamepad);
 
     void HandleGamepadMotion(const MainDispatcherEvent&)
     {

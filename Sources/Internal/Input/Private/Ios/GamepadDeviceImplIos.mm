@@ -6,7 +6,8 @@
 #import <GameController/GameController.h>
 
 #include "Input/GamepadDevice.h"
-#include "Time/SystemTimer.h"
+#include "Input/InputElements.h"
+#include "Input/Private/DigitalElement.h"
 
 namespace DAVA
 {
@@ -19,86 +20,80 @@ GamepadDeviceImpl::GamepadDeviceImpl(GamepadDevice* gamepadDevice)
 
 void GamepadDeviceImpl::Update()
 {
-    float32 readBuf[GamepadDevice::ELEMENT_COUNT];
     if ([controller extendedGamepad])
     {
         GCExtendedGamepad* gamepad = [controller extendedGamepad];
-        ReadExtendedGamepadElements(gamepad, readBuf);
+        ReadExtendedGamepadElements(gamepad);
     }
     else if ([controller gamepad])
     {
         GCGamepad* gamepad = [controller gamepad];
-        ReadGamepadElements(gamepad, readBuf);
+        ReadGamepadElements(gamepad);
     }
+}
 
-    int64 timestamp = SystemTimer::GetMs();
-    for (size_t i = 0; i < GamepadDevice::ELEMENT_COUNT; ++i)
-    {
-        if (gamepadDevice->elementValues[i] != readBuf[i])
+void GamepadDeviceImpl::ReadExtendedGamepadElements(GCExtendedGamepad* gamepad)
+{
+    auto handleButton = [this](eInputElements element, bool pressed) {
+        uint32 index = element - eInputElements::GAMEPAD_FIRST_BUTTON;
+        DigitalInputElement di(gamepadDevice->buttons[index]);
+        if (pressed != di.IsPressed())
         {
-            gamepadDevice->elementValues[i] = readBuf[i];
-            gamepadDevice->elementTimestamps[i] = timestamp;
-            gamepadDevice->elementChangedMask.set(i);
+            gamepadDevice->buttonChangedMask.set(index);
         }
-    }
+        pressed ? di.Press() : di.Release();
+    };
+
+    handleButton(eInputElements::GAMEPAD_A, gamepad.buttonA.isPressed);
+    handleButton(eInputElements::GAMEPAD_B, gamepad.buttonB.isPressed);
+    handleButton(eInputElements::GAMEPAD_X, gamepad.buttonX.isPressed);
+    handleButton(eInputElements::GAMEPAD_Y, gamepad.buttonY.isPressed);
+    handleButton(eInputElements::GAMEPAD_LSHOUDER, gamepad.leftShoulder.isPressed);
+    handleButton(eInputElements::GAMEPAD_RSHOUDER, gamepad.rightShoulder.isPressed);
+    handleButton(eInputElements::GAMEPAD_DPAD_LEFT, gamepad.dpad.left.isPressed);
+    handleButton(eInputElements::GAMEPAD_DPAD_RIGHT, gamepad.dpad.right.isPressed);
+    handleButton(eInputElements::GAMEPAD_DPAD_UP, gamepad.dpad.up.isPressed);
+    handleButton(eInputElements::GAMEPAD_DPAD_DOWN, gamepad.dpad.down.isPressed);
+
+    auto handleAxis = [this](eInputElements element, float32 newValue) {
+        uint32 index = element - eInputElements::GAMEPAD_FIRST_AXIS;
+        if (newValue != gamepadDevice->axises[index].x)
+        {
+            gamepadDevice->axises[index].x = newValue;
+            gamepadDevice->axisChangedMask.set(index);
+        }
+    };
+
+    handleAxis(eInputElements::GAMEPAD_LTHUMB_X, gamepad.leftThumbstick.xAxis.value);
+    handleAxis(eInputElements::GAMEPAD_LTHUMB_Y, gamepad.leftThumbstick.yAxis.value);
+    handleAxis(eInputElements::GAMEPAD_RTHUMB_X, gamepad.rightThumbstick.xAxis.value);
+    handleAxis(eInputElements::GAMEPAD_RTHUMB_Y, gamepad.rightThumbstick.yAxis.value);
+    handleAxis(eInputElements::GAMEPAD_LTRIGGER, gamepad.leftTrigger.value);
+    handleAxis(eInputElements::GAMEPAD_RTRIGGER, gamepad.rightTrigger.value);
 }
 
-void GamepadDeviceImpl::ReadExtendedGamepadElements(GCExtendedGamepad* gamepad, float32 buf[])
+void GamepadDeviceImpl::ReadGamepadElements(GCGamepad* gamepad)
 {
-    buf[static_cast<size_t>(eGamepadElements::A)] = static_cast<float32>(gamepad.buttonA.isPressed);
-    buf[static_cast<size_t>(eGamepadElements::B)] = static_cast<float32>(gamepad.buttonB.isPressed);
-    buf[static_cast<size_t>(eGamepadElements::X)] = static_cast<float32>(gamepad.buttonX.isPressed);
-    buf[static_cast<size_t>(eGamepadElements::Y)] = static_cast<float32>(gamepad.buttonY.isPressed);
+    auto handleButton = [this](eInputElements element, bool pressed) {
+        uint32 index = element - eInputElements::GAMEPAD_FIRST_BUTTON;
+        DigitalInputElement di(gamepadDevice->buttons[index]);
+        if (pressed != di.IsPressed())
+        {
+            gamepadDevice->buttonChangedMask.set(index);
+        }
+        pressed ? di.Press() : di.Release();
+    };
 
-    buf[static_cast<size_t>(eGamepadElements::LEFT_SHOULDER)] = static_cast<float32>(gamepad.leftShoulder.isPressed);
-    buf[static_cast<size_t>(eGamepadElements::RIGHT_SHOULDER)] = static_cast<float32>(gamepad.rightShoulder.isPressed);
-
-    buf[static_cast<size_t>(eGamepadElements::LEFT_THUMBSTICK_X)] = gamepad.leftThumbstick.xAxis.value;
-    buf[static_cast<size_t>(eGamepadElements::LEFT_THUMBSTICK_Y)] = gamepad.leftThumbstick.yAxis.value;
-    buf[static_cast<size_t>(eGamepadElements::RIGHT_THUMBSTICK_X)] = gamepad.rightThumbstick.xAxis.value;
-    buf[static_cast<size_t>(eGamepadElements::RIGHT_THUMBSTICK_Y)] = gamepad.rightThumbstick.yAxis.value;
-
-    buf[static_cast<size_t>(eGamepadElements::LEFT_TRIGGER)] = gamepad.leftTrigger.value;
-    buf[static_cast<size_t>(eGamepadElements::RIGHT_TRIGGER)] = gamepad.rightTrigger.value;
-
-    float32 dpadX = 0.f;
-    float32 dpadY = 0.f;
-    if (gamepad.dpad.left.isPressed)
-        dpadX = -1.f;
-    else if (gamepad.dpad.right.isPressed)
-        dpadX = 1.f;
-    if (gamepad.dpad.down.isPressed)
-        dpadY = -1.f;
-    else if (gamepad.dpad.up.isPressed)
-        dpadY = 1.f;
-
-    buf[static_cast<size_t>(eGamepadElements::DPAD_X)] = dpadX;
-    buf[static_cast<size_t>(eGamepadElements::DPAD_Y)] = dpadY;
-}
-
-void GamepadDeviceImpl::ReadGamepadElements(GCGamepad* gamepad, float32 buf[])
-{
-    buf[static_cast<size_t>(eGamepadElements::A)] = static_cast<float32>(gamepad.buttonA.isPressed);
-    buf[static_cast<size_t>(eGamepadElements::B)] = static_cast<float32>(gamepad.buttonB.isPressed);
-    buf[static_cast<size_t>(eGamepadElements::X)] = static_cast<float32>(gamepad.buttonX.isPressed);
-    buf[static_cast<size_t>(eGamepadElements::Y)] = static_cast<float32>(gamepad.buttonY.isPressed);
-
-    buf[static_cast<size_t>(eGamepadElements::LEFT_SHOULDER)] = static_cast<float32>(gamepad.leftShoulder.isPressed);
-    buf[static_cast<size_t>(eGamepadElements::RIGHT_SHOULDER)] = static_cast<float32>(gamepad.rightShoulder.isPressed);
-
-    float32 dpadX = 0.f;
-    float32 dpadY = 0.f;
-    if (gamepad.dpad.left.isPressed)
-        dpadX = -1.f;
-    else if (gamepad.dpad.right.isPressed)
-        dpadX = 1.f;
-    if (gamepad.dpad.down.isPressed)
-        dpadY = -1.f;
-    else if (gamepad.dpad.up.isPressed)
-        dpadY = 1.f;
-
-    buf[static_cast<size_t>(eGamepadElements::DPAD_X)] = dpadX;
-    buf[static_cast<size_t>(eGamepadElements::DPAD_Y)] = dpadY;
+    handleButton(eInputElements::GAMEPAD_A, gamepad.buttonA.isPressed);
+    handleButton(eInputElements::GAMEPAD_B, gamepad.buttonB.isPressed);
+    handleButton(eInputElements::GAMEPAD_X, gamepad.buttonX.isPressed);
+    handleButton(eInputElements::GAMEPAD_Y, gamepad.buttonY.isPressed);
+    handleButton(eInputElements::GAMEPAD_LSHOUDER, gamepad.leftShoulder.isPressed);
+    handleButton(eInputElements::GAMEPAD_RSHOUDER, gamepad.rightShoulder.isPressed);
+    handleButton(eInputElements::GAMEPAD_DPAD_LEFT, gamepad.dpad.left.isPressed);
+    handleButton(eInputElements::GAMEPAD_DPAD_RIGHT, gamepad.dpad.right.isPressed);
+    handleButton(eInputElements::GAMEPAD_DPAD_UP, gamepad.dpad.up.isPressed);
+    handleButton(eInputElements::GAMEPAD_DPAD_DOWN, gamepad.dpad.down.isPressed);
 }
 
 bool GamepadDeviceImpl::HandleGamepadAdded(uint32 /*id*/)
