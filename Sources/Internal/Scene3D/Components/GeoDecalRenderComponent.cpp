@@ -6,12 +6,22 @@ namespace DAVA
 DAVA_VIRTUAL_REFLECTION_IMPL(GeoDecalRenderComponent)
 {
     ReflectionRegistrator<GeoDecalRenderComponent>::Begin()[M::CantBeCreatedManualyComponent()]
-    .ConstructorByPointer()
     .End();
 }
 
-GeoDecalRenderComponent::GeoDecalRenderComponent()
+GeoDecalRenderComponent::GeoDecalRenderComponent(RenderObject* ro)
+    : renderObject(SafeRetain(ro))
 {
+}
+
+GeoDecalRenderComponent::~GeoDecalRenderComponent()
+{
+    SafeRelease(renderObject);
+}
+
+RenderObject* GeoDecalRenderComponent::GetRenderObject() const
+{
+    return renderObject;
 }
 
 Component* GeoDecalRenderComponent::Clone(Entity* toEntity)

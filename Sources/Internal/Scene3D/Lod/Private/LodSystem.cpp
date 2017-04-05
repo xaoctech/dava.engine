@@ -1,6 +1,7 @@
 #include "Scene3D/Lod/LodSystem.h"
 #include "Debug/DVAssert.h"
 #include "Scene3D/Entity.h"
+#include "Scene3D/Components/GeoDecalRenderComponent.h"
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
@@ -382,6 +383,13 @@ void LodSystem::SetEntityLod(Entity* entity, int32 currentLod)
     if (ro)
     {
         ro->SetLodIndex(currentLod);
+    }
+
+    for (uint32 i = 0, e = entity->GetComponentCount(Component::GEO_DECAL_RENDER_COMPONENT); i < e; ++i)
+    {
+        GeoDecalRenderComponent* decal = static_cast<GeoDecalRenderComponent*>(entity->GetComponent(Component::GEO_DECAL_RENDER_COMPONENT, i));
+        if ((decal != nullptr) && (decal->GetRenderObject() != nullptr))
+            decal->GetRenderObject()->SetLodIndex(currentLod);
     }
 }
 

@@ -22,7 +22,7 @@ private:
     struct DecalBuildInfo
     {
         Entity* entity = nullptr;
-        Component* component = nullptr;
+        GeoDecalComponent* component = nullptr;
         RenderObject* object = nullptr;
         RenderBatch* batch = nullptr;
         AABBox3 box;
@@ -31,34 +31,36 @@ private:
         Vector3 projectionAxis;
         Matrix4 projectionSpaceTransform;
         Matrix4 projectionSpaceInverseTransform;
-        float projectionOffset = 1.4f / 100.0f;
-        float perTriangleOffset = 1.4f / 100.0f;
-        float minProjectionAngleCosine = std::cos(85.0f * PI / 180.0f);
     };
     struct DecalRenderBatch
     {
-        RefPtr<RenderBatch> batch;
+        RenderBatch* batch = nullptr;
         int32 lodIndex = -1;
         int32 switchIndex = -1;
+    };
+    struct RenderableEntity
+    {
+        Entity* entity = nullptr;
+        RenderObject* renderObject = nullptr;
+        RenderableEntity() = default;
+        RenderableEntity(Entity* e, RenderObject* ro)
+            : entity(e)
+            , renderObject(ro)
+        {
+        }
     };
     void BuildDecal(Entity* entity, GeoDecalComponent* component);
     void RemoveCreatedDecals(Entity* entity, GeoDecalComponent* component);
     bool BuildDecal(const DecalBuildInfo& info, DecalRenderBatch&);
+    void GatherRenderableEntitiesInBox(Entity* top, const AABBox3& box, Vector<RenderableEntity>&);
+    void AddAffectedEntity(Entity* sourceEntity, Component* sourceComponent, const RenderableEntity& affected, Vector<DecalRenderBatch>& batches);
 
 private:
     struct GeoDecalCacheEntry
     {
         GeoDecalComponent::Config lastValidConfig;
-        Vector<RefPtr<RenderBatch>> renderBatches;
+        Vector<std::pair<Entity*, GeoDecalRenderComponent*>> createdComponents;
     };
-
-    struct GeoDecalCache
-    {
-        GeoDecalCache() = default;
-        GeoDecalCache(Entity* entity);
-        Map<Component*, GeoDecalCacheEntry> data;
-    };
-
-    Map<Entity*, GeoDecalCache> decals;
+    Map<Component*, GeoDecalCacheEntry> decals;
 };
 }

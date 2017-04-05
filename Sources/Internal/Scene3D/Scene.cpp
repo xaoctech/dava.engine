@@ -357,7 +357,7 @@ void Scene::CreateSystems()
     if (SCENE_SYSTEM_GEO_DECAL_RENDER_FLAG & systemsMask)
     {
         geoDecalRenderSystem = new GeoDecalRenderSystem(this);
-        AddSystem(geoDecalRenderSystem, MAKE_COMPONENT_MASK(Component::GEO_DECAL_RENDER_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
+        AddSystem(geoDecalRenderSystem, MAKE_COMPONENT_MASK(Component::GEO_DECAL_RENDER_COMPONENT), 0);
     }
 
     if (DAVA::Renderer::GetOptions()->IsOptionEnabled(DAVA::RenderOptions::DEBUG_DRAW_STATIC_OCCLUSION) && !staticOcclusionDebugDrawSystem)
