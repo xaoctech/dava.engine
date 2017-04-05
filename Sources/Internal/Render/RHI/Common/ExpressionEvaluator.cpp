@@ -303,7 +303,7 @@ ExpressionEvaluator::evaluate( const char* expression, float* result )
     const char* s    = expression;
     char*       d    = text;
     
-    while( *s )
+    while( *s  &&  *s != '\n'  &&  *s != '\r' )
     {
         if( *s == '='  &&  *(s+1) == '=' )
         { 

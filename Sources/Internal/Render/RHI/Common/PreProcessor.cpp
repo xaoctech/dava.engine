@@ -181,7 +181,8 @@ PreProc::_get_expression( char* txt, char** end ) const
         ++s;
     }
     DVASSERT(*s);
-    *s = 0;
+    if( *s == '\r' )
+        *s = '\0';
 
     while( *s != '\n' )
         ++s;
