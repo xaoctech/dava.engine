@@ -9,6 +9,7 @@
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 #include "Input/InputEvent.h"
 #include "Input/InputSystem.h"
+#include "Input/Private/DigitalElement.h"
 #include "UI/UIEvent.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
@@ -30,9 +31,14 @@ GamepadDevice::GamepadDevice(uint32 id)
 {
     std::fill(std::begin(buttons), std::end(buttons), eDigitalElementStates::NONE);
     std::fill(std::begin(axises), std::end(axises), AnalogElementState());
+
+    endFrameConnectionToken = Engine::Instance()->endFrame.Connect(this, &GamepadDevice::OnEndFrame);
 }
 
-GamepadDevice::~GamepadDevice() = default;
+GamepadDevice::~GamepadDevice()
+{
+    Engine::Instance()->endFrame.Disconnect(endFrameConnectionToken);
+}
 
 bool GamepadDevice::SupportsElement(eInputElements elementId) const
 {
@@ -86,6 +92,14 @@ void GamepadDevice::Update()
         }
     }
     axisChangedMask.reset();
+}
+
+void GamepadDevice::OnEndFrame()
+{
+    for (eDigitalElementStates& d : buttons)
+    {
+        Private::DigitalInputElement(d).OnEndFrame();
+    }
 }
 
 void GamepadDevice::HandleGamepadAdded(const Private::MainDispatcherEvent& e)

@@ -5,6 +5,8 @@
 
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 #include "Input/GamepadDevice.h"
+#include "Input/InputElements.h"
+#include "Input/Private/DigitalElement.h"
 
 #include <android/input.h>
 #include <android/keycodes.h>
@@ -27,38 +29,38 @@ void GamepadDeviceImpl::HandleGamepadMotion(const MainDispatcherEvent& e)
     uint32 axis = e.gamepadEvent.axis;
     float32 value = e.gamepadEvent.value;
 
+    if (axis == AMOTION_EVENT_AXIS_HAT_X || axis == AMOTION_EVENT_AXIS_HAT_Y)
+    {
+        HandleAxisHat(axis, value);
+        return;
+    }
+
     // On game pads with two analog joysticks, axis AXIS_RX is often reinterpreted as absolute X position and
     // axis AXIS_RZ is reinterpreted as absolute Y position of the second joystick instead.
-    eGamepadElements element = eGamepadElements::LEFT_THUMBSTICK_X;
+    eInputElements element = eInputElements::NONE;
     switch (axis)
     {
     case AMOTION_EVENT_AXIS_X:
-        element = eGamepadElements::LEFT_THUMBSTICK_X;
+        element = eInputElements::GAMEPAD_LTHUMB_X;
         break;
     case AMOTION_EVENT_AXIS_Y:
-        element = eGamepadElements::LEFT_THUMBSTICK_Y;
+        element = eInputElements::GAMEPAD_LTHUMB_Y;
         break;
     case AMOTION_EVENT_AXIS_Z:
     case AMOTION_EVENT_AXIS_RX:
-        element = eGamepadElements::RIGHT_THUMBSTICK_X;
+        element = eInputElements::GAMEPAD_RTHUMB_X;
         break;
     case AMOTION_EVENT_AXIS_RY:
     case AMOTION_EVENT_AXIS_RZ:
-        element = eGamepadElements::RIGHT_THUMBSTICK_Y;
+        element = eInputElements::GAMEPAD_RTHUMB_Y;
         break;
     case AMOTION_EVENT_AXIS_LTRIGGER:
     case AMOTION_EVENT_AXIS_BRAKE:
-        element = eGamepadElements::LEFT_TRIGGER;
+        element = eInputElements::GAMEPAD_LTRIGGER;
         break;
     case AMOTION_EVENT_AXIS_RTRIGGER:
     case AMOTION_EVENT_AXIS_GAS:
-        element = eGamepadElements::RIGHT_TRIGGER;
-        break;
-    case AMOTION_EVENT_AXIS_HAT_X:
-        element = eGamepadElements::DPAD_X;
-        break;
-    case AMOTION_EVENT_AXIS_HAT_Y:
-        element = eGamepadElements::DPAD_Y;
+        element = eInputElements::GAMEPAD_RTRIGGER;
         break;
     default:
         return;
@@ -72,79 +74,110 @@ void GamepadDeviceImpl::HandleGamepadMotion(const MainDispatcherEvent& e)
     case AMOTION_EVENT_AXIS_Y:
     case AMOTION_EVENT_AXIS_RY:
     case AMOTION_EVENT_AXIS_RZ:
-    case AMOTION_EVENT_AXIS_HAT_Y:
         value = -value;
         break;
     default:
         break;
     }
 
-    size_t index = static_cast<size_t>(element);
-    if (gamepadDevice->elementValues[index] != value)
+    uint32 index = element - eInputElements::GAMEPAD_FIRST_AXIS;
+    if (gamepadDevice->axises[index].x != value)
     {
-        gamepadDevice->elementValues[index] = value;
-        gamepadDevice->elementTimestamps[index] = e.timestamp;
-        gamepadDevice->elementChangedMask.set(index);
+        gamepadDevice->axises[index].x = value;
+        gamepadDevice->axisChangedMask.set(index);
     }
 }
 
 void GamepadDeviceImpl::HandleGamepadButton(const MainDispatcherEvent& e)
 {
-    float32 value = e.type == MainDispatcherEvent::GAMEPAD_BUTTON_DOWN ? 1.f : 0.f;
-    uint32 button = e.gamepadEvent.button;
-
-    eGamepadElements element = eGamepadElements::A;
-    switch (button)
+    eInputElements element = eInputElements::NONE;
+    switch (e.gamepadEvent.button)
     {
+    case AKEYCODE_BACK:
+        element = eInputElements::GAMEPAD_BACK;
+        break;
     case AKEYCODE_DPAD_UP:
-        element = eGamepadElements::DPAD_Y;
+        element = eInputElements::GAMEPAD_DPAD_UP;
         break;
     case AKEYCODE_DPAD_DOWN:
-        element = eGamepadElements::DPAD_Y;
+        element = eInputElements::GAMEPAD_DPAD_DOWN;
         break;
     case AKEYCODE_DPAD_LEFT:
-        element = eGamepadElements::DPAD_X;
+        element = eInputElements::GAMEPAD_DPAD_LEFT;
         break;
     case AKEYCODE_DPAD_RIGHT:
-        element = eGamepadElements::DPAD_X;
+        element = eInputElements::GAMEPAD_DPAD_RIGHT;
         break;
     case AKEYCODE_BUTTON_A:
-        element = eGamepadElements::A;
+        element = eInputElements::GAMEPAD_A;
         break;
     case AKEYCODE_BUTTON_B:
-        element = eGamepadElements::B;
+        element = eInputElements::GAMEPAD_B;
         break;
     case AKEYCODE_BUTTON_X:
-        element = eGamepadElements::X;
+        element = eInputElements::GAMEPAD_X;
         break;
     case AKEYCODE_BUTTON_Y:
-        element = eGamepadElements::Y;
+        element = eInputElements::GAMEPAD_Y;
         break;
     case AKEYCODE_BUTTON_L1:
     case AKEYCODE_BUTTON_L2:
-        element = eGamepadElements::LEFT_SHOULDER;
+        element = eInputElements::GAMEPAD_LSHOUDER;
         break;
     case AKEYCODE_BUTTON_R1:
     case AKEYCODE_BUTTON_R2:
-        element = eGamepadElements::RIGHT_SHOULDER;
+        element = eInputElements::GAMEPAD_RSHOUDER;
+        break;
+    case AKEYCODE_BUTTON_THUMBL:
+        element = eInputElements::GAMEPAD_LTHUMB;
+        break;
+    case AKEYCODE_BUTTON_THUMBR:
+        element = eInputElements::GAMEPAD_RTHUMB;
+        break;
+    case AKEYCODE_BUTTON_START:
+        element = eInputElements::GAMEPAD_START;
         break;
     default:
         return;
     }
 
-    // Historically dava.engine normalize dpad presses into a range [-1, 1] where
-    // -1 for dpad left or dpad down and 1 for dpad right or dpad up.
-    if (button == AKEYCODE_DPAD_DOWN || button == AKEYCODE_DPAD_LEFT)
-    {
-        value = -value;
-    }
+    bool pressed = e.type == MainDispatcherEvent::GAMEPAD_BUTTON_DOWN;
+    size_t index = element - eInputElements::GAMEPAD_FIRST_BUTTON;
+    DigitalInputElement button(gamepadDevice->buttons[index]);
+    pressed ? button.Press() : button.Release();
+    gamepadDevice->buttonChangedMask.set(index);
+}
 
-    size_t index = static_cast<size_t>(element);
-    if (gamepadDevice->elementValues[index] != value)
+void GamepadDeviceImpl::HandleAxisHat(int axis, float value)
+{
+    // Some controllers report D-pad presses as axis movement AXIS_HAT_X and AXIS_HAT_Y
+
+    static const eInputElements elemX[] = { eInputElements::GAMEPAD_DPAD_LEFT, eInputElements::GAMEPAD_DPAD_RIGHT };
+    static const eInputElements elemY[] = { eInputElements::GAMEPAD_DPAD_UP, eInputElements::GAMEPAD_DPAD_DOWN };
+
+    bool pressed = value != 0.f;
+    const eInputElements* elem = axis == AMOTION_EVENT_AXIS_HAT_X ? elemX : elemY;
+    if (pressed)
     {
-        gamepadDevice->elementValues[index] = value;
-        gamepadDevice->elementTimestamps[index] = e.timestamp;
-        gamepadDevice->elementChangedMask.set(index);
+        uint32 index = elem[value > 0.f] - eInputElements::GAMEPAD_FIRST_BUTTON;
+        DigitalInputElement dpadElem(gamepadDevice->buttons[index]);
+
+        dpadElem.Press();
+        gamepadDevice->buttonChangedMask.set(index);
+    }
+    else
+    {
+        for (uint32 i = 0; i < 2; ++i)
+        {
+            uint32 index = elem[i] - eInputElements::GAMEPAD_FIRST_BUTTON;
+            DigitalInputElement dpadElem(gamepadDevice->buttons[index]);
+            if (dpadElem.IsPressed())
+            {
+                dpadElem.Release();
+                gamepadDevice->buttonChangedMask.set(index);
+                break;
+            }
+        }
     }
 }
 

@@ -20,6 +20,7 @@ public:
 
     void HandleGamepadMotion(const MainDispatcherEvent& e);
     void HandleGamepadButton(const MainDispatcherEvent& e);
+    void HandleAxisHat(int axis, float value);
 
     bool HandleGamepadAdded(uint32 id);
     bool HandleGamepadRemoved(uint32 id);

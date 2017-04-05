@@ -40,6 +40,7 @@ private:
     ~GamepadDevice();
 
     void Update();
+    void OnEndFrame();
 
     void HandleGamepadAdded(const Private::MainDispatcherEvent& e);
     void HandleGamepadRemoved(const Private::MainDispatcherEvent& e);
@@ -58,6 +59,8 @@ private:
 
     std::bitset<BUTTON_COUNT> buttonChangedMask;
     std::bitset<AXIS_COUNT> axisChangedMask;
+
+    size_t endFrameConnectionToken = 0;
 };
 
 inline eGamepadProfiles GamepadDevice::GetProfile() const
