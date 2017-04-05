@@ -4,6 +4,8 @@
 #if defined(__DAVAENGINE_WIN_UAP__)
 
 #include "Input/GamepadDevice.h"
+#include "Input/InputElements.h"
+#include "Input/Private/DigitalElement.h"
 #include "Time/SystemTimer.h"
 
 namespace DAVA
@@ -17,59 +19,58 @@ GamepadDeviceImpl::GamepadDeviceImpl(GamepadDevice* gamepadDevice)
 
 void GamepadDeviceImpl::Update()
 {
-    float32 readBuf[GamepadDevice::ELEMENT_COUNT];
-    ReadElements(readBuf, GamepadDevice::ELEMENT_COUNT);
-
-    int64 timestamp = SystemTimer::GetMs();
-    for (size_t i = 0; i < GamepadDevice::ELEMENT_COUNT; ++i)
-    {
-        if (gamepadDevice->elementValues[i] != readBuf[i])
-        {
-            gamepadDevice->elementValues[i] = readBuf[i];
-            gamepadDevice->elementTimestamps[i] = timestamp;
-            gamepadDevice->elementChangedMask.set(i);
-        }
-    }
-}
-
-void GamepadDeviceImpl::ReadElements(float32 buf[], size_t size)
-{
-    DVASSERT(size == GamepadDevice::ELEMENT_COUNT);
-
     using ::Windows::Gaming::Input::GamepadReading;
     using ::Windows::Gaming::Input::GamepadButtons;
 
-    GamepadReading reading = gamepad->GetCurrentReading();
+    static const struct
+    {
+        GamepadButtons button;
+        eInputElements element;
+    } buttonMask[] = {
+        { GamepadButtons::Menu, eInputElements::GAMEPAD_MENU },
+        { GamepadButtons::A, eInputElements::GAMEPAD_A },
+        { GamepadButtons::B, eInputElements::GAMEPAD_B },
+        { GamepadButtons::X, eInputElements::GAMEPAD_X },
+        { GamepadButtons::Y, eInputElements::GAMEPAD_Y },
+        { GamepadButtons::DPadLeft, eInputElements::GAMEPAD_DPAD_LEFT },
+        { GamepadButtons::DPadRight, eInputElements::GAMEPAD_DPAD_RIGHT },
+        { GamepadButtons::DPadUp, eInputElements::GAMEPAD_DPAD_UP },
+        { GamepadButtons::DPadDown, eInputElements::GAMEPAD_DPAD_DOWN },
+        { GamepadButtons::LeftThumbstick, eInputElements::GAMEPAD_LTHUMB },
+        { GamepadButtons::RightThumbstick, eInputElements::GAMEPAD_RTHUMB },
+        { GamepadButtons::LeftShoulder, eInputElements::GAMEPAD_LSHOUDER },
+        { GamepadButtons::RightShoulder, eInputElements::GAMEPAD_RSHOUDER },
+    };
 
-    buf[static_cast<size_t>(eGamepadElements::A)] = static_cast<float32>((reading.Buttons & GamepadButtons::A) != GamepadButtons::None);
-    buf[static_cast<size_t>(eGamepadElements::B)] = static_cast<float32>((reading.Buttons & GamepadButtons::B) != GamepadButtons::None);
-    buf[static_cast<size_t>(eGamepadElements::X)] = static_cast<float32>((reading.Buttons & GamepadButtons::X) != GamepadButtons::None);
-    buf[static_cast<size_t>(eGamepadElements::Y)] = static_cast<float32>((reading.Buttons & GamepadButtons::Y) != GamepadButtons::None);
+    const GamepadReading reading = gamepad->GetCurrentReading();
 
-    buf[static_cast<size_t>(eGamepadElements::LEFT_SHOULDER)] = static_cast<float32>((reading.Buttons & GamepadButtons::LeftShoulder) != GamepadButtons::None);
-    buf[static_cast<size_t>(eGamepadElements::RIGHT_SHOULDER)] = static_cast<float32>((reading.Buttons & GamepadButtons::RightShoulder) != GamepadButtons::None);
+    for (const auto& x : buttonMask)
+    {
+        uint32 index = x.element - eInputElements::GAMEPAD_FIRST_BUTTON;
+        bool pressed = (reading.Buttons & x.button) != GamepadButtons::None;
+        DigitalInputElement di(gamepadDevice->buttons[index]);
+        if (pressed != di.IsPressed())
+        {
+            gamepadDevice->buttonChangedMask.set(index);
+        }
+        pressed ? di.Press() : di.Release();
+    }
 
-    buf[static_cast<size_t>(eGamepadElements::LEFT_THUMBSTICK_X)] = static_cast<float32>(reading.LeftThumbstickX);
-    buf[static_cast<size_t>(eGamepadElements::LEFT_THUMBSTICK_Y)] = static_cast<float32>(reading.LeftThumbstickY);
-    buf[static_cast<size_t>(eGamepadElements::RIGHT_THUMBSTICK_X)] = static_cast<float32>(reading.RightThumbstickX);
-    buf[static_cast<size_t>(eGamepadElements::RIGHT_THUMBSTICK_Y)] = static_cast<float32>(reading.RightThumbstickY);
+    auto handleAxis = [this](eInputElements element, float32 newValue) {
+        uint32 index = element - eInputElements::GAMEPAD_FIRST_AXIS;
+        if (newValue != gamepadDevice->axises[index].x)
+        {
+            gamepadDevice->axises[index].x = newValue;
+            gamepadDevice->axisChangedMask.set(index);
+        }
+    };
 
-    buf[static_cast<size_t>(eGamepadElements::LEFT_TRIGGER)] = static_cast<float32>(reading.LeftTrigger);
-    buf[static_cast<size_t>(eGamepadElements::RIGHT_TRIGGER)] = static_cast<float32>(reading.RightTrigger);
-
-    float32 dpadX = 0.f;
-    float32 dpadY = 0.f;
-    if ((reading.Buttons & GamepadButtons::DPadLeft) != GamepadButtons::None)
-        dpadX = -1.f;
-    else if ((reading.Buttons & GamepadButtons::DPadRight) != GamepadButtons::None)
-        dpadX = 1.f;
-    if ((reading.Buttons & GamepadButtons::DPadDown) != GamepadButtons::None)
-        dpadY = -1.f;
-    else if ((reading.Buttons & GamepadButtons::DPadUp) != GamepadButtons::None)
-        dpadY = 1.f;
-
-    buf[static_cast<size_t>(eGamepadElements::DPAD_X)] = dpadX;
-    buf[static_cast<size_t>(eGamepadElements::DPAD_Y)] = dpadY;
+    handleAxis(eInputElements::GAMEPAD_LTHUMB_X, static_cast<float32>(reading.LeftThumbstickX));
+    handleAxis(eInputElements::GAMEPAD_LTHUMB_Y, static_cast<float32>(reading.LeftThumbstickY));
+    handleAxis(eInputElements::GAMEPAD_RTHUMB_X, static_cast<float32>(reading.RightThumbstickX));
+    handleAxis(eInputElements::GAMEPAD_RTHUMB_Y, static_cast<float32>(reading.RightThumbstickY));
+    handleAxis(eInputElements::GAMEPAD_LTRIGGER, static_cast<float32>(reading.LeftTrigger));
+    handleAxis(eInputElements::GAMEPAD_RTRIGGER, static_cast<float32>(reading.RightTrigger));
 }
 
 bool GamepadDeviceImpl::HandleGamepadAdded(uint32 /*id*/)

@@ -237,6 +237,7 @@ const InputElementInfo& GetInputElementInfo(eInputElements element)
 
         info[eInputElements::GAMEPAD_START] = { "GAMEPAD_START", eInputElementTypes::DIGITAL };
         info[eInputElements::GAMEPAD_BACK] = { "GAMEPAD_BACK", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_MENU] = { "GAMEPAD_MENU", eInputElementTypes::DIGITAL };
         info[eInputElements::GAMEPAD_A] = { "GAMEPAD_A", eInputElementTypes::DIGITAL };
         info[eInputElements::GAMEPAD_B] = { "GAMEPAD_B", eInputElementTypes::DIGITAL };
         info[eInputElements::GAMEPAD_X] = { "GAMEPAD_X", eInputElementTypes::DIGITAL };

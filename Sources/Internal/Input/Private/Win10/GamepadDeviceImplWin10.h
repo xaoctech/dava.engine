@@ -17,7 +17,6 @@ public:
     GamepadDeviceImpl(GamepadDevice* gamepad);
 
     void Update();
-    void ReadElements(float32 buf[], size_t size);
 
     void HandleGamepadMotion(const MainDispatcherEvent&)
     {
