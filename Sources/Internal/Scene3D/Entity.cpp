@@ -592,7 +592,7 @@ void Entity::Save(KeyedArchive* archive, SerializationContext* serializationCont
     uint32 savedIndex = 0;
     for (uint32 i = 0; i < components.size(); ++i)
     {
-        if (components[i]->GetType() < Component::DEBUG_COMPONENTS)
+        if (components[i]->GetType() < Component::NON_SERIALIZABLE_COMPONENTS)
         {
             //don't save empty custom properties
             if (Component::CUSTOM_PROPERTIES_COMPONENT == i)

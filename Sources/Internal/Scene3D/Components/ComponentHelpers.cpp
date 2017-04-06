@@ -15,6 +15,7 @@
 #include "Scene3D/Components/StaticOcclusionComponent.h"
 #include "Scene3D/Components/SwitchComponent.h"
 #include "Scene3D/Components/GeoDecalComponent.h"
+#include "Scene3D/Components/GeoDecalRenderComponent.h"
 #include "Scene3D/Components/Waypoint/WaypointComponent.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Landscape.h"
@@ -462,13 +463,4 @@ StaticOcclusionDebugDrawComponent* GetStaticOcclusionDebugDrawComponent(const En
     return nullptr;
 }
 
-GeoDecalComponent* GetGeoDecalComponent(const Entity* fromEntity)
-{
-    if (fromEntity)
-    {
-        return (static_cast<GeoDecalComponent*>(fromEntity->GetComponent(Component::GEO_DECAL_COMPONENT)));
-    }
-
-    return nullptr;
-}
 }

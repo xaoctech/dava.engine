@@ -21,6 +21,8 @@ public:
 private:
     struct DecalBuildInfo
     {
+        Entity* entity = nullptr;
+        GeoDecalComponent* component = nullptr;
         RenderObject* object = nullptr;
         RenderBatch* batch = nullptr;
         AABBox3 box;
@@ -30,17 +32,35 @@ private:
         Matrix4 projectionSpaceTransform;
         Matrix4 projectionSpaceInverseTransform;
     };
+    struct DecalRenderBatch
+    {
+        RenderBatch* batch = nullptr;
+        int32 lodIndex = -1;
+        int32 switchIndex = -1;
+    };
+    struct RenderableEntity
+    {
+        Entity* entity = nullptr;
+        RenderObject* renderObject = nullptr;
+        RenderableEntity() = default;
+        RenderableEntity(Entity* e, RenderObject* ro)
+            : entity(e)
+            , renderObject(ro)
+        {
+        }
+    };
     void BuildDecal(Entity* entity, GeoDecalComponent* component);
     void RemoveCreatedDecals(Entity* entity, GeoDecalComponent* component);
-    void BuildDecal(const DecalBuildInfo& info);
+    bool BuildDecal(const DecalBuildInfo& info, DecalRenderBatch&);
+    void GatherRenderableEntitiesInBox(Entity* top, const AABBox3& box, Vector<RenderableEntity>&);
+    void AddAffectedEntity(Entity* sourceEntity, Component* sourceComponent, const RenderableEntity& affected, Vector<DecalRenderBatch>& batches);
 
 private:
-    struct GeoDecalCache
+    struct GeoDecalCacheEntry
     {
-        GeoDecalCache() = default;
-        GeoDecalCache(Entity* entity);
-        Map<Component*, GeoDecalComponent::Config> lastValidConfig;
+        GeoDecalComponent::Config lastValidConfig;
+        Vector<std::pair<Entity*, GeoDecalRenderComponent*>> createdComponents;
     };
-    Map<Entity*, GeoDecalCache> decals;
+    Map<Component*, GeoDecalCacheEntry> decals;
 };
 }

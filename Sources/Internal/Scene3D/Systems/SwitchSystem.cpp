@@ -1,13 +1,14 @@
 #include "Scene3D/Systems/SwitchSystem.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Components/ActionComponent.h"
+#include "Scene3D/Components/GeoDecalRenderComponent.h"
+#include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Components/SwitchComponent.h"
 #include "Debug/DVAssert.h"
 #include "Scene3D/Entity.h"
-#include "Scene3D/Components/SwitchComponent.h"
-#include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Scene.h"
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
-#include "Scene3D/Components/ActionComponent.h"
-#include "Scene3D/Components/ComponentHelpers.h"
 #include "Render/Highlevel/RenderObject.h"
 
 namespace DAVA
@@ -70,6 +71,13 @@ void SwitchSystem::SetSwitchHierarchy(Entity* entity, int32 switchIndex)
     if (ro)
     {
         ro->SetSwitchIndex(switchIndex);
+    }
+
+    for (uint32 i = 0, e = entity->GetComponentCount(Component::GEO_DECAL_RENDER_COMPONENT); i < e; ++i)
+    {
+        GeoDecalRenderComponent* decal = static_cast<GeoDecalRenderComponent*>(entity->GetComponent(Component::GEO_DECAL_RENDER_COMPONENT, i));
+        if ((decal != nullptr) && (decal->GetRenderObject() != nullptr))
+            decal->GetRenderObject()->SetSwitchIndex(switchIndex);
     }
 
     uint32 size = entity->GetChildrenCount();

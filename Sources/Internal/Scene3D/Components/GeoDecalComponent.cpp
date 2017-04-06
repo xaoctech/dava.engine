@@ -41,7 +41,7 @@ void GeoDecalComponent::Deserialize(KeyedArchive* archive, SerializationContext*
     {
         Vector3 center = archive->GetVector3("box.center");
         Vector3 size = 0.5f * archive->GetVector3("box.size", Vector3(1.0f, 1.0f, 1.0f));
-        config.image = archive->GetString("image");
+        config.image = serializationContext->GetScenePath() + archive->GetString("image");
         config.boundingBox = AABBox3(center - size, center + size);
     }
     Component::Deserialize(archive, serializationContext);

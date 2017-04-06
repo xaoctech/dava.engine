@@ -49,13 +49,13 @@ public:
         WASD_CONTROLLER_COMPONENT,
         VISIBILITY_CHECK_COMPONENT,
         GEO_DECAL_COMPONENT,
-        GEO_DECAL_RENDER_COMPONENT,
 
-        //debug components - note that everything below won't be serialized
-        DEBUG_COMPONENTS,
+        NON_SERIALIZABLE_COMPONENTS, // everything below NON_SERIALIZABLE_COMPONENTS won't be serialized
+
         STATIC_OCCLUSION_DEBUG_DRAW_COMPONENT,
         WAYPOINT_COMPONENT,
         EDGE_COMPONENT,
+        GEO_DECAL_RENDER_COMPONENT,
 
         FIRST_USER_DEFINED_COMPONENT = 48,
         COMPONENT_COUNT = 64

@@ -37,6 +37,7 @@ class SnapToLandscapeControllerComponent;
 class StaticOcclusionComponent;
 class StaticOcclusionDebugDrawComponent;
 class GeoDecalComponent;
+class GeoDecalRenderComponent;
 
 bool HasComponent(const Entity* fromEntity, const Component::eType componentType);
 
@@ -51,7 +52,6 @@ SpeedTreeObject* GetSpeedTreeObject(const Entity* fromEntity);
 SnapToLandscapeControllerComponent* GetSnapToLandscapeControllerComponent(const Entity* fromEntity);
 StaticOcclusionComponent* GetStaticOcclusionComponent(const Entity* fromEntity);
 StaticOcclusionDebugDrawComponent* GetStaticOcclusionDebugDrawComponent(const Entity* fromEntity);
-GeoDecalComponent* GetGeoDecalComponent(const Entity* fromEntity);
 
 Light* GetLight(const Entity* fromEntity);
 LightComponent* GetLightComponent(const Entity* fromEntity);
