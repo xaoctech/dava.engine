@@ -49,6 +49,14 @@ AnalogElementState MouseDevice::GetAnalogElementState(eInputElements elementId) 
     }
 }
 
+String MouseDevice::GetElementStringRepresentation(eInputElements elementId) const
+{
+    DVASSERT(SupportsElement(elementId));
+
+    InputElementInfo virtualElementInfo = GetInputElementInfo(elementId);
+    return virtualElementInfo.name;
+}
+
 eInputElements MouseDevice::GetFirstPressedButton() const
 {
     for (uint32 i = eInputElements::MOUSE_FIRST_BUTTON; i <= eInputElements::MOUSE_LAST_BUTTON; ++i)

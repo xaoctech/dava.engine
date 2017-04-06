@@ -555,7 +555,6 @@ public final class DavaActivity extends Activity
                 }
             }
         });
-
     }
 
     public boolean isPaused()

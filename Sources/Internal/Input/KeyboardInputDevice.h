@@ -38,6 +38,7 @@ public:
     bool SupportsElement(eInputElements elementId) const override;
     eDigitalElementStates GetDigitalElementState(eInputElements elementId) const override;
     AnalogElementState GetAnalogElementState(eInputElements elementId) const override;
+    String GetElementStringRepresentation(eInputElements elementId) const override;
 
     /**
         Convert a scancode key to a virtual key according to the current keyboard layout.

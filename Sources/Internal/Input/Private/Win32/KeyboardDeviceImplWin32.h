@@ -19,6 +19,8 @@ public:
     eInputElements ConvertDavaScancodeToDavaVirtual(eInputElements scancodeElement);
     eInputElements ConvertDavaVirtualToDavaScancode(eInputElements virtualElement);
 
+    String GetElementStringRepresentation(eInputElements elementId);
+
 private:
     bool HandleEvent(const Private::MainDispatcherEvent& e);
     void UpdateVirtualToScancodeMap();
