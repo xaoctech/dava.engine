@@ -62,6 +62,12 @@ AnalogElementState GamepadDevice::GetAnalogElementState(eInputElements elementId
     return axises[elementId - eInputElements::GAMEPAD_FIRST_AXIS];
 }
 
+String GamepadDevice::GetElementStringRepresentation(eInputElements elementId) const
+{
+    DVASSERT(SupportsElement(elementId));
+    return GetInputElementInfo(elementId).name;
+}
+
 void GamepadDevice::Update()
 {
     impl->Update();

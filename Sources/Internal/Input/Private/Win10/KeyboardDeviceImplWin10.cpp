@@ -46,6 +46,11 @@ eInputElements KeyboardDeviceImpl::ConvertDavaVirtualToDavaScancode(eInputElemen
     return static_cast<eInputElements>(virtualElement + INPUT_ELEMENTS_KB_COUNT_VIRTUAL);
 }
 
+String KeyboardDeviceImpl::GetElementStringRepresentation(eInputElements elementId)
+{
+    return GetInputElementInfo(elementId).name;
+}
+
 } // namespace Private
 } // namespace DAVA
 
