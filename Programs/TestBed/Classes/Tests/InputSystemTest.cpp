@@ -3,7 +3,6 @@
 #include "Engine/Engine.h"
 #include "DeviceManager/DeviceManager.h"
 #include "Utils/UTF8Utils.h"
-#include "Input/InputListener.h"
 
 using namespace DAVA;
 
@@ -714,13 +713,13 @@ void InputSystemTest::OnInputListenerButtonPressed(DAVA::BaseObject* sender, voi
     inputListenerResultField->SetText(L"Listening...");
 }
 
-void InputSystemTest::OnInputListeningEnded(DAVA::Vector<DAVA::eInputElements> input)
+void InputSystemTest::OnInputListeningEnded(DAVA::Vector<DAVA::SpecificInputElement> input)
 {
     std::wstringstream ss;
     for (size_t i = 0; i < input.size(); ++i)
     {
-        DAVA::InputElementInfo info = GetInputElementInfo(input[i]);
-        ss << info.name.c_str();
+        String repr = GetEngineContext()->deviceManager->GetInputDevice(input[i].deviceId)->GetElementStringRepresentation(input[i].elementId);
+        ss << repr.c_str();
 
         if (i != input.size() - 1)
         {

@@ -72,6 +72,12 @@ AnalogElementState KeyboardInputDevice::GetAnalogElementState(eInputElements ele
     return {};
 }
 
+String KeyboardInputDevice::GetElementStringRepresentation(eInputElements elementId) const
+{
+    DVASSERT(SupportsElement(elementId));
+    return impl->GetElementStringRepresentation(elementId);
+}
+
 eInputElements KeyboardInputDevice::ConvertScancodeToVirtual(eInputElements scancodeElement) const
 {
     return impl->ConvertDavaScancodeToDavaVirtual(scancodeElement);

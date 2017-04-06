@@ -313,6 +313,19 @@ void KeyboardDeviceImpl::UpdateVirtualToScancodeMap()
     }
 }
 
+String KeyboardDeviceImpl::GetElementStringRepresentation(eInputElements elementId)
+{
+    // Win32 supports virtual keys, so map scancode to virtual and return virtual key name
+
+    if (IsKeyboardScancodeInputElement(elementId))
+    {
+        elementId = ConvertDavaScancodeToDavaVirtual(elementId);
+    }
+
+    InputElementInfo virtualElementInfo = GetInputElementInfo(elementId);
+    return virtualElementInfo.name;
+}
+
 } // namespace Private
 } // namespace DAVA
 

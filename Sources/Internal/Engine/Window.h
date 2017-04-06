@@ -50,7 +50,7 @@ class VirtualCoordinatesSystem;
 
     Window has special attribute denoting whether window is primary:
         - primary window is the first Window instance created by dava.engine.
-        - primary window become available to application after `Engine::Init` method has been invoked except `Engine` has been
+        - primary window becomes available to application after `Engine::Init` method has been invoked, except when `Engine` has been
           initialized to run in console mode (`eEngineRunMode::CONSOLE_MODE`).
         - closing primary window leads to application exit.
     Application can get primary window instance through `Engine::PrimaryWindow` method or throught freestanding `GetPrimaryWindow` function.

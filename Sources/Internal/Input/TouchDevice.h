@@ -28,6 +28,7 @@ public:
     bool SupportsElement(eInputElements elementId) const override;
     eDigitalElementStates GetDigitalElementState(eInputElements elementId) const override;
     AnalogElementState GetAnalogElementState(eInputElements elementId) const override;
+    String GetElementStringRepresentation(eInputElements elementId) const override;
 
 private:
     TouchDevice(uint32 id);

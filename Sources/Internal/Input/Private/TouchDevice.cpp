@@ -48,6 +48,14 @@ AnalogElementState TouchDevice::GetAnalogElementState(eInputElements elementId) 
     return positions[elementId - eInputElements::TOUCH_FIRST_POSITION];
 }
 
+String TouchDevice::GetElementStringRepresentation(eInputElements elementId) const
+{
+    DVASSERT(SupportsElement(elementId));
+
+    InputElementInfo virtualElementInfo = GetInputElementInfo(elementId);
+    return virtualElementInfo.name;
+}
+
 bool TouchDevice::HandleEvent(const Private::MainDispatcherEvent& e)
 {
     using Private::MainDispatcherEvent;
