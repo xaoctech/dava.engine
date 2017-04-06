@@ -11,7 +11,7 @@
 #elif defined(__DAVAENGINE_IPHONE__)
 #include "Input/Private/Ios/KeyboardDeviceImplIos.h"
 #else
-#error "DeviceManager: unknown platform"
+#error "KeyboardDevice: unknown platform"
 #endif
 
 #include "Engine/Engine.h"
@@ -56,36 +56,13 @@ bool KeyboardInputDevice::SupportsElement(eInputElements elementId) const
 eDigitalElementStates KeyboardInputDevice::GetDigitalElementState(eInputElements elementId) const
 {
     DVASSERT(SupportsElement(elementId));
-
-    // Since state corresponds to scancode keys, map virtual to scancode if necessary
-    if (IsKeyboardVirtualInputElement(elementId))
-    {
-        elementId = ConvertVirtualToScancode(elementId);
-    }
-
-    return keys[elementId - eInputElements::KB_FIRST_SCANCODE].GetState();
+    return keys[elementId - eInputElements::KB_FIRST].GetState();
 }
 
 AnalogElementState KeyboardInputDevice::GetAnalogElementState(eInputElements elementId) const
 {
     DVASSERT(false, "KeyboardInputDevice does not support analog elements");
     return {};
-}
-
-String KeyboardInputDevice::GetElementStringRepresentation(eInputElements elementId) const
-{
-    DVASSERT(SupportsElement(elementId));
-    return impl->GetElementStringRepresentation(elementId);
-}
-
-eInputElements KeyboardInputDevice::ConvertScancodeToVirtual(eInputElements scancodeElement) const
-{
-    return impl->ConvertDavaScancodeToDavaVirtual(scancodeElement);
-}
-
-eInputElements KeyboardInputDevice::ConvertVirtualToScancode(eInputElements virtualElement) const
-{
-    return impl->ConvertDavaVirtualToDavaScancode(virtualElement);
 }
 
 void KeyboardInputDevice::CreateAndSendInputEvent(eInputElements elementId, const Private::DigitalElement& element, Window* window, int64 timestamp) const
@@ -107,8 +84,8 @@ bool KeyboardInputDevice::HandleEvent(const Private::MainDispatcherEvent& e)
 
     if (e.type == MainDispatcherEvent::KEY_DOWN || e.type == MainDispatcherEvent::KEY_UP)
     {
-        eInputElements scancodeElementId = impl->ConvertNativeScancodeToDavaScancode(e.keyEvent.key);
-        if (scancodeElementId == eInputElements::NONE)
+        eInputElements elementId = impl->ConvertNativeScancodeToDavaScancode(e.keyEvent.key);
+        if (elementId == eInputElements::NONE)
         {
             DVASSERT(false, "Couldn't map native scancode to dava scancode");
             return false;
@@ -116,7 +93,7 @@ bool KeyboardInputDevice::HandleEvent(const Private::MainDispatcherEvent& e)
 
         // Update element state
 
-        Private::DigitalElement& element = keys[scancodeElementId - eInputElements::KB_FIRST_SCANCODE];
+        Private::DigitalElement& element = keys[elementId - eInputElements::KB_FIRST];
         if (e.type == MainDispatcherEvent::KEY_DOWN)
         {
             element.Press();
@@ -128,7 +105,7 @@ bool KeyboardInputDevice::HandleEvent(const Private::MainDispatcherEvent& e)
 
         // Send event
 
-        CreateAndSendInputEvent(scancodeElementId, element, e.window, e.timestamp);
+        CreateAndSendInputEvent(elementId, element, e.window, e.timestamp);
 
         return true;
     }
@@ -139,7 +116,7 @@ bool KeyboardInputDevice::HandleEvent(const Private::MainDispatcherEvent& e)
 void KeyboardInputDevice::OnEndFrame()
 {
     // Promote JustPressed & JustReleased states to Pressed/Released accordingly
-    for (size_t i = 0; i < INPUT_ELEMENTS_KB_COUNT_SCANCODE; ++i)
+    for (size_t i = 0; i < INPUT_ELEMENTS_KB_COUNT; ++i)
     {
         keys[i].OnEndFrame();
     }
@@ -150,15 +127,15 @@ void KeyboardInputDevice::OnWindowFocusChanged(DAVA::Window* window, bool focuse
     // Reset keyboard state when window is unfocused
     if (!focused)
     {
-        for (size_t i = 0; i < INPUT_ELEMENTS_KB_COUNT_SCANCODE; ++i)
+        for (size_t i = 0; i < INPUT_ELEMENTS_KB_COUNT; ++i)
         {
             if (keys[i].IsPressed())
             {
                 keys[i].Release();
 
                 // Generate release event
-                eInputElements scancodeElementId = static_cast<eInputElements>(eInputElements::KB_FIRST_SCANCODE + i);
-                CreateAndSendInputEvent(scancodeElementId, keys[i], window, SystemTimer::GetMs());
+                eInputElements elementId = static_cast<eInputElements>(eInputElements::KB_FIRST + i);
+                CreateAndSendInputEvent(elementId, keys[i], window, SystemTimer::GetMs());
             }
         }
     }

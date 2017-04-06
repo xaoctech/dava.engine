@@ -6,12 +6,13 @@
 #include "Debug/DVAssert.h"
 #include "Engine/Engine.h"
 
+#import <Carbon/Carbon.h>
+
 namespace DAVA
 {
 namespace Private
 {
-// TODO: Virtual keys support
-
+// Native scancode (kVK_* defined in Carbon/HIToolbox/Events.h) to dava scancode
 const eInputElements nativeScancodeToDavaScancode[] =
 {
   eInputElements::KB_A, // 0x00
@@ -145,27 +146,8 @@ const eInputElements nativeScancodeToDavaScancode[] =
 
 eInputElements KeyboardDeviceImpl::ConvertNativeScancodeToDavaScancode(uint32 nativeScancode)
 {
+    DVASSERT(nativeScancode < COUNT_OF(nativeScancodeToDavaScancode));
     return nativeScancodeToDavaScancode[nativeScancode];
-}
-
-eInputElements KeyboardDeviceImpl::ConvertDavaScancodeToDavaVirtual(eInputElements scancodeElement)
-{
-    DVASSERT(IsKeyboardScancodeInputElement(scancodeElement));
-
-    return static_cast<eInputElements>(scancodeElement - INPUT_ELEMENTS_KB_COUNT_VIRTUAL);
-}
-
-eInputElements KeyboardDeviceImpl::ConvertDavaVirtualToDavaScancode(eInputElements virtualElement)
-{
-    DVASSERT(IsKeyboardVirtualInputElement(virtualElement));
-
-    return static_cast<eInputElements>(virtualElement + INPUT_ELEMENTS_KB_COUNT_VIRTUAL);
-}
-
-String KeyboardDeviceImpl::GetElementStringRepresentation(eInputElements elementId)
-{
-    InputElementInfo elementInfo = GetInputElementInfo(elementId);
-    return elementInfo.name;
 }
 
 } // namespace Private

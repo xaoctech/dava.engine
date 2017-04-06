@@ -104,8 +104,6 @@ public:
     */
     virtual AnalogElementState GetAnalogElementState(eInputElements elementId) const = 0;
 
-    virtual String GetElementStringRepresentation(eInputElements elementId) const = 0;
-
 private:
     const uint32 id;
 };

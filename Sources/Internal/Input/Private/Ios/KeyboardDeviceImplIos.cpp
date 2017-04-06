@@ -13,22 +13,6 @@ eInputElements KeyboardDeviceImpl::ConvertNativeScancodeToDavaScancode(uint32 na
     return eInputElements::NONE;
 }
 
-eInputElements KeyboardDeviceImpl::ConvertDavaScancodeToDavaVirtual(eInputElements scancodeElement)
-{
-    return eInputElements::NONE;
-}
-
-eInputElements KeyboardDeviceImpl::ConvertDavaVirtualToDavaScancode(eInputElements virtualElement)
-{
-    return eInputElements::NONE;
-}
-
-String KeyboardDeviceImpl::GetElementStringRepresentation(eInputElements elementId)
-{
-    InputElementInfo elementInfo = GetInputElementInfo(elementId);
-    return elementInfo.name;
-}
-
 } // namespace Private
 } // namespace DAVA
 
