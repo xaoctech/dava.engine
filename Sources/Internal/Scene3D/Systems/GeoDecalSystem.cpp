@@ -210,6 +210,7 @@ void GeoDecalSystem::AddAffectedEntity(Entity* sourceEntity, Component* sourceCo
 bool GeoDecalSystem::BuildDecal(const DecalBuildInfo& info, DecalRenderBatch& batch)
 {
     const AABBox3 clipSpaceBox = AABBox3(Vector3(0.0f, 0.0f, 0.0f), 2.0f);
+    bool isPlanarProjection = info.component->GetMapping() == GeoDecalComponent::Mapping::PLANAR;
 
     PolygonGroup* geometry = info.batch->GetPolygonGroup();
 
@@ -236,10 +237,18 @@ bool GeoDecalSystem::BuildDecal(const DecalBuildInfo& info, DecalRenderBatch& ba
         {
             Vector3 nrm = (points[1].point - points[0].point).CrossProduct(points[2].point - points[0].point);
             nrm.Normalize();
-            if (nrm.DotProduct(info.projectionAxis) < -std::numeric_limits<float>::epsilon())
-            {
-                Vector3 offset = -info.component->GetProjectionOffset() * info.projectionAxis + info.component->GetPerTriangleOffset() * nrm;
 
+            Vector3 offset = info.component->GetPerTriangleOffset() * nrm;
+
+            bool validTriangle = true;
+            if (isPlanarProjection)
+            {
+                offset -= info.component->GetProjectionOffset() * info.projectionAxis;
+                validTriangle = nrm.DotProduct(info.projectionAxis) < -std::numeric_limits<float>::epsilon();
+            }
+
+            if (validTriangle)
+            {
                 uint8_t numPoints = 3;
                 points[0].point = points[0].point * info.projectionSpaceTransform;
                 points[1].point = points[1].point * info.projectionSpaceTransform;
@@ -248,10 +257,30 @@ bool GeoDecalSystem::BuildDecal(const DecalBuildInfo& info, DecalRenderBatch& ba
 
                 for (uint32 i = 0; i < numPoints; ++i)
                 {
-                    points[i].texCoord0.x = points[i].point.x * 0.5f + 0.5f;
-                    points[i].texCoord0.y = points[i].point.y * 0.5f + 0.5f;
+                    Vector3 p = points[i].point;
+
+                    if (info.component->GetMapping() == GeoDecalComponent::Mapping::SPHERICAL)
+                    {
+                        p.Normalize();
+                        points[i].texCoord0.x = (std::atan2(p.y, p.x) + PI) / (2.0f * PI);
+                        points[i].texCoord0.y = (asin(p.z) + 0.5f * PI) / PI;
+                    }
+                    else if (info.component->GetMapping() == GeoDecalComponent::Mapping::CYLINDRICAL)
+                    {
+                        Vector2 c(p.x, p.y);
+                        c.Normalize();
+                        points[i].texCoord0.x = (std::atan2(c.y, c.x) + PI) / (2.0f * PI);
+                        points[i].texCoord0.y = points[i].point.z * 0.5f + 0.5f;
+                    }
+                    else
+                    {
+                        points[i].texCoord0.x = points[i].point.x * 0.5f + 0.5f;
+                        points[i].texCoord0.y = points[i].point.y * 0.5f + 0.5f;
+                    }
+
                     points[i].point = points[i].point * info.projectionSpaceInverseTransform + offset;
                 }
+
                 for (uint32 i = 0; i + 2 < numPoints; ++i)
                 {
                     decalGeometry.emplace_back(points[0]);

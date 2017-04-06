@@ -439,9 +439,36 @@ void DebugDrawSystem::DrawDecals(DAVA::Entity* entity)
         DAVA::Component* component = entity->GetComponent(DAVA::Component::eType::GEO_DECAL_COMPONENT, i);
         DVASSERT(component != nullptr);
 
+        DAVA::RenderHelper::eDrawType dt = DAVA::RenderHelper::eDrawType::DRAW_WIRE_DEPTH;
+        DAVA::Color baseColor(1.0f, 0.5f, 0.25f, 1.0f);
+        DAVA::Color accentColor(1.0f, 1.0f, 0.5f, 1.0f);
+
         DAVA::GeoDecalComponent* decal = static_cast<DAVA::GeoDecalComponent*>(component);
         DAVA::AABBox3 box = decal->GetBoundingBox();
-        drawer->DrawAABoxTransformed(box, entity->GetWorldTransform(), DAVA::Color(1.0f, 0.5f, 0.25f, 1.0f),
-                                     DAVA::RenderHelper::eDrawType::DRAW_WIRE_DEPTH);
+        DAVA::Vector3 boxCenter = box.GetCenter();
+        DAVA::Vector3 boxHalfSize = 0.5f * box.GetSize();
+        DAVA::Vector3 origin = DAVA::Vector3(boxCenter.x, boxCenter.y, box.max.z) * entity->GetWorldTransform();
+        DAVA::Vector3 endPoint = DAVA::Vector3(boxCenter.x, boxCenter.y, box.min.z) * entity->GetWorldTransform();
+
+        DAVA::Vector3 direction = DAVA::MultiplyVectorMat3x3(DAVA::Vector3(0.0f, 0.0f, -1.0f), entity->GetWorldTransform());
+
+        drawer->DrawAABoxTransformed(box, entity->GetWorldTransform(), baseColor, dt);
+
+        if (decal->GetConfig().mapping == DAVA::GeoDecalComponent::Mapping::CYLINDRICAL)
+        {
+            DAVA::Vector3 side = DAVA::Vector3(boxCenter.x - boxHalfSize.x, 0.0f, box.max.z) * entity->GetWorldTransform();
+
+            float radius = (side - origin).Length();
+            drawer->DrawCircle(origin, direction, radius, 32, accentColor, dt);
+            drawer->DrawCircle(endPoint, -direction, radius, 32, accentColor, dt);
+            drawer->DrawLine(origin, side, accentColor);
+        }
+        else if (decal->GetConfig().mapping == DAVA::GeoDecalComponent::Mapping::SPHERICAL)
+        {
+        }
+        else // PLANAR assumed
+        {
+            drawer->DrawArrow(origin, origin + direction, direction.Length(), accentColor, dt);
+        }
     }
 }

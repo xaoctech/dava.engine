@@ -12,10 +12,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(GeoDecalComponent)
     .End();
 }
 
-GeoDecalComponent::GeoDecalComponent()
-{
-}
-
 Component* GeoDecalComponent::Clone(Entity* toEntity)
 {
     GeoDecalComponent* result = new GeoDecalComponent();
@@ -32,6 +28,7 @@ void GeoDecalComponent::Serialize(KeyedArchive* archive, SerializationContext* s
         archive->SetVector3("box.center", config.boundingBox.GetCenter());
         archive->SetVector3("box.size", config.boundingBox.GetSize());
         archive->SetString("image", config.image.GetRelativePathname(serializationContext->GetScenePath()));
+        archive->SetUInt32("mapping", config.mapping);
     }
 }
 
@@ -43,6 +40,7 @@ void GeoDecalComponent::Deserialize(KeyedArchive* archive, SerializationContext*
         Vector3 size = 0.5f * archive->GetVector3("box.size", Vector3(1.0f, 1.0f, 1.0f));
         config.image = serializationContext->GetScenePath() + archive->GetString("image");
         config.boundingBox = AABBox3(center - size, center + size);
+        config.mapping = static_cast<Mapping>(archive->GetUInt32("mapping", Mapping::PLANAR));
     }
     Component::Deserialize(archive, serializationContext);
 }
