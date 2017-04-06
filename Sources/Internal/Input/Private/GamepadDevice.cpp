@@ -128,6 +128,27 @@ void GamepadDevice::HandleGamepadButton(const Private::MainDispatcherEvent& e)
     impl->HandleGamepadButton(e);
 }
 
+void GamepadDevice::HandleButtonPress(eInputElements element, bool pressed)
+{
+    uint32 index = element - eInputElements::GAMEPAD_FIRST_BUTTON;
+    Private::DigitalInputElement di(buttons[index]);
+    if (di.IsPressed() != pressed)
+    {
+        pressed ? di.Press() : di.Release();
+        buttonChangedMask.set(index);
+    }
+}
+
+void GamepadDevice::HandleAxisMovement(eInputElements element, float32 newValue)
+{
+    uint32 index = element - eInputElements::GAMEPAD_FIRST_AXIS;
+    if (newValue != axises[index].x)
+    {
+        axises[index].x = newValue;
+        axisChangedMask.set(index);
+    }
+}
+
 } // namespace DAVA
 
 #else // __DAVAENGINE_COREV2__

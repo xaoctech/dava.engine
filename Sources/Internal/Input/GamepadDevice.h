@@ -48,6 +48,9 @@ private:
     void HandleGamepadMotion(const Private::MainDispatcherEvent& e);
     void HandleGamepadButton(const Private::MainDispatcherEvent& e);
 
+    void HandleButtonPress(eInputElements element, bool pressed);
+    void HandleAxisMovement(eInputElements element, float32 newValue);
+
     InputSystem* inputSystem = nullptr;
     std::unique_ptr<Private::GamepadDeviceImpl> impl;
     eGamepadProfiles profile = eGamepadProfiles::SIMPLE;

@@ -253,7 +253,6 @@ enum eInputElements : uint32
 
     GAMEPAD_START,
     GAMEPAD_BACK,
-    GAMEPAD_MENU,
     GAMEPAD_A,
     GAMEPAD_B,
     GAMEPAD_X,

@@ -4,8 +4,6 @@
 #if defined(__DAVAENGINE_WIN_UAP__)
 
 #include "Input/GamepadDevice.h"
-#include "Input/InputElements.h"
-#include "Input/Private/DigitalElement.h"
 
 namespace DAVA
 {
@@ -21,55 +19,29 @@ void GamepadDeviceImpl::Update()
     using ::Windows::Gaming::Input::GamepadReading;
     using ::Windows::Gaming::Input::GamepadButtons;
 
-    static const struct
-    {
-        GamepadButtons button;
-        eInputElements element;
-    } buttonMask[] = {
-        { GamepadButtons::Menu, eInputElements::GAMEPAD_MENU },
-        { GamepadButtons::A, eInputElements::GAMEPAD_A },
-        { GamepadButtons::B, eInputElements::GAMEPAD_B },
-        { GamepadButtons::X, eInputElements::GAMEPAD_X },
-        { GamepadButtons::Y, eInputElements::GAMEPAD_Y },
-        { GamepadButtons::DPadLeft, eInputElements::GAMEPAD_DPAD_LEFT },
-        { GamepadButtons::DPadRight, eInputElements::GAMEPAD_DPAD_RIGHT },
-        { GamepadButtons::DPadUp, eInputElements::GAMEPAD_DPAD_UP },
-        { GamepadButtons::DPadDown, eInputElements::GAMEPAD_DPAD_DOWN },
-        { GamepadButtons::LeftThumbstick, eInputElements::GAMEPAD_LTHUMB },
-        { GamepadButtons::RightThumbstick, eInputElements::GAMEPAD_RTHUMB },
-        { GamepadButtons::LeftShoulder, eInputElements::GAMEPAD_LSHOUDER },
-        { GamepadButtons::RightShoulder, eInputElements::GAMEPAD_RSHOUDER },
-    };
+    GamepadReading reading = gamepad->GetCurrentReading();
 
-    const GamepadReading reading = gamepad->GetCurrentReading();
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_START, (reading.Buttons & GamepadButtons::Menu) != GamepadButtons::None);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_BACK, (reading.Buttons & GamepadButtons::View) != GamepadButtons::None);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_A, (reading.Buttons & GamepadButtons::A) != GamepadButtons::None);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_B, (reading.Buttons & GamepadButtons::B) != GamepadButtons::None);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_X, (reading.Buttons & GamepadButtons::X) != GamepadButtons::None);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_Y, (reading.Buttons & GamepadButtons::Y) != GamepadButtons::None);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_DPAD_LEFT, (reading.Buttons & GamepadButtons::DPadLeft) != GamepadButtons::None);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_DPAD_RIGHT, (reading.Buttons & GamepadButtons::DPadRight) != GamepadButtons::None);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_DPAD_UP, (reading.Buttons & GamepadButtons::DPadUp) != GamepadButtons::None);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_DPAD_DOWN, (reading.Buttons & GamepadButtons::DPadDown) != GamepadButtons::None);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_LTHUMB, (reading.Buttons & GamepadButtons::LeftThumbstick) != GamepadButtons::None);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_RTHUMB, (reading.Buttons & GamepadButtons::RightThumbstick) != GamepadButtons::None);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_LSHOUDER, (reading.Buttons & GamepadButtons::LeftShoulder) != GamepadButtons::None);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_RSHOUDER, (reading.Buttons & GamepadButtons::RightShoulder) != GamepadButtons::None);
 
-    for (const auto& x : buttonMask)
-    {
-        uint32 index = x.element - eInputElements::GAMEPAD_FIRST_BUTTON;
-        bool pressed = (reading.Buttons & x.button) != GamepadButtons::None;
-        DigitalInputElement di(gamepadDevice->buttons[index]);
-        if (pressed != di.IsPressed())
-        {
-            gamepadDevice->buttonChangedMask.set(index);
-        }
-        pressed ? di.Press() : di.Release();
-    }
-
-    auto handleAxis = [this](eInputElements element, float32 newValue) {
-        uint32 index = element - eInputElements::GAMEPAD_FIRST_AXIS;
-        if (newValue != gamepadDevice->axises[index].x)
-        {
-            gamepadDevice->axises[index].x = newValue;
-            gamepadDevice->axisChangedMask.set(index);
-        }
-    };
-
-    handleAxis(eInputElements::GAMEPAD_LTHUMB_X, static_cast<float32>(reading.LeftThumbstickX));
-    handleAxis(eInputElements::GAMEPAD_LTHUMB_Y, static_cast<float32>(reading.LeftThumbstickY));
-    handleAxis(eInputElements::GAMEPAD_RTHUMB_X, static_cast<float32>(reading.RightThumbstickX));
-    handleAxis(eInputElements::GAMEPAD_RTHUMB_Y, static_cast<float32>(reading.RightThumbstickY));
-    handleAxis(eInputElements::GAMEPAD_LTRIGGER, static_cast<float32>(reading.LeftTrigger));
-    handleAxis(eInputElements::GAMEPAD_RTRIGGER, static_cast<float32>(reading.RightTrigger));
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_LTHUMB_X, static_cast<float32>(reading.LeftThumbstickX));
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_LTHUMB_Y, static_cast<float32>(reading.LeftThumbstickY));
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_RTHUMB_X, static_cast<float32>(reading.RightThumbstickX));
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_RTHUMB_Y, static_cast<float32>(reading.RightThumbstickY));
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_LTRIGGER, static_cast<float32>(reading.LeftTrigger));
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_RTRIGGER, static_cast<float32>(reading.RightTrigger));
 }
 
 bool GamepadDeviceImpl::HandleGamepadAdded(uint32 /*id*/)

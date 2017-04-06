@@ -80,12 +80,7 @@ void GamepadDeviceImpl::HandleGamepadMotion(const MainDispatcherEvent& e)
         break;
     }
 
-    uint32 index = element - eInputElements::GAMEPAD_FIRST_AXIS;
-    if (gamepadDevice->axises[index].x != value)
-    {
-        gamepadDevice->axises[index].x = value;
-        gamepadDevice->axisChangedMask.set(index);
-    }
+    gamepadDevice->HandleAxisMovement(element, value);
 }
 
 void GamepadDeviceImpl::HandleGamepadButton(const MainDispatcherEvent& e)
@@ -142,10 +137,7 @@ void GamepadDeviceImpl::HandleGamepadButton(const MainDispatcherEvent& e)
     }
 
     bool pressed = e.type == MainDispatcherEvent::GAMEPAD_BUTTON_DOWN;
-    size_t index = element - eInputElements::GAMEPAD_FIRST_BUTTON;
-    DigitalInputElement button(gamepadDevice->buttons[index]);
-    pressed ? button.Press() : button.Release();
-    gamepadDevice->buttonChangedMask.set(index);
+    gamepadDevice->HandleButtonPress(element, pressed);
 }
 
 void GamepadDeviceImpl::HandleAxisHat(int axis, float value)

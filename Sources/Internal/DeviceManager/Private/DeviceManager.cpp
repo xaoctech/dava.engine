@@ -104,7 +104,7 @@ void DeviceManager::HandleGamepadAdded(const Private::MainDispatcherEvent& e)
 {
     if (gamepad == nullptr)
     {
-        gamepad = new GamepadDevice(0);
+        gamepad = new GamepadDevice(4);
         gamepad->HandleGamepadAdded(e);
     }
 }

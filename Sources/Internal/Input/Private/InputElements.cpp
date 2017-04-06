@@ -261,9 +261,9 @@ const InputElementInfo& GetInputElementInfo(eInputElements element)
         info[eInputElements::TOUCH_POSITION8] = { "Touch 8 position", eInputElementTypes::ANALOG };
         info[eInputElements::TOUCH_POSITION9] = { "Touch 9 position", eInputElementTypes::ANALOG };
 
+        // Gamepad
         info[eInputElements::GAMEPAD_START] = { "GAMEPAD_START", eInputElementTypes::DIGITAL };
         info[eInputElements::GAMEPAD_BACK] = { "GAMEPAD_BACK", eInputElementTypes::DIGITAL };
-        info[eInputElements::GAMEPAD_MENU] = { "GAMEPAD_MENU", eInputElementTypes::DIGITAL };
         info[eInputElements::GAMEPAD_A] = { "GAMEPAD_A", eInputElementTypes::DIGITAL };
         info[eInputElements::GAMEPAD_B] = { "GAMEPAD_B", eInputElementTypes::DIGITAL };
         info[eInputElements::GAMEPAD_X] = { "GAMEPAD_X", eInputElementTypes::DIGITAL };
