@@ -75,7 +75,7 @@ bool GamepadDeviceImpl::HandleGamepadAdded(uint32 /*id*/)
         if ([controllers count] != 0)
         {
             controller = (__bridge GCController*)CFBridgingRetain([controllers objectAtIndex:0]);
-            gamepadDevice->profile = [controller extendedGamepad] != nil ? eGamepadProfiles::EXTENDED : eGamepadProfiles::SIMPLE;
+            DetermineSupportedElements();
         }
     }
     return controller != nullptr;
@@ -98,6 +98,58 @@ bool GamepadDeviceImpl::HandleGamepadRemoved(uint32 id)
         controller = nullptr;
     }
     return controller != nullptr;
+}
+
+void GamepadDeviceImpl::DetermineSupportedElements()
+{
+    if ([controller extendedGamepad])
+    {
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_START - eInputElements::GAMEPAD_FIRST, false);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_BACK - eInputElements::GAMEPAD_FIRST, false);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_A - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_B - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_X - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_Y - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_DPAD_LEFT - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_DPAD_RIGHT - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_DPAD_UP - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_DPAD_DOWN - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_LTHUMB - eInputElements::GAMEPAD_FIRST, false);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_RTHUMB - eInputElements::GAMEPAD_FIRST, false);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_LSHOUDER - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_RSHOUDER - eInputElements::GAMEPAD_FIRST, true);
+
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_LTRIGGER - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_RTRIGGER - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_LTHUMB_X - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_LTHUMB_Y - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_RTHUMB_X - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_RTHUMB_Y - eInputElements::GAMEPAD_FIRST, true);
+    }
+    else if ([controller gamepad])
+    {
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_START - eInputElements::GAMEPAD_FIRST, false);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_BACK - eInputElements::GAMEPAD_FIRST, false);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_A - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_B - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_X - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_Y - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_DPAD_LEFT - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_DPAD_RIGHT - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_DPAD_UP - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_DPAD_DOWN - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_LTHUMB - eInputElements::GAMEPAD_FIRST, false);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_RTHUMB - eInputElements::GAMEPAD_FIRST, false);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_LSHOUDER - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_RSHOUDER - eInputElements::GAMEPAD_FIRST, true);
+
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_LTRIGGER - eInputElements::GAMEPAD_FIRST, false);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_RTRIGGER - eInputElements::GAMEPAD_FIRST, false);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_LTHUMB_X - eInputElements::GAMEPAD_FIRST, false);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_LTHUMB_Y - eInputElements::GAMEPAD_FIRST, false);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_RTHUMB_X - eInputElements::GAMEPAD_FIRST, false);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_RTHUMB_Y - eInputElements::GAMEPAD_FIRST, false);
+    }
 }
 
 } // namespace Private

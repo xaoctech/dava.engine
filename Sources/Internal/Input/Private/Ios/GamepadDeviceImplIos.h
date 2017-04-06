@@ -34,6 +34,8 @@ public:
     bool HandleGamepadAdded(uint32 id);
     bool HandleGamepadRemoved(uint32 id);
 
+    void DetermineSupportedElements();
+
     GamepadDevice* gamepadDevice = nullptr;
     GCController* controller = nullptr;
 };

@@ -46,7 +46,8 @@ GamepadDevice::~GamepadDevice()
 
 bool GamepadDevice::SupportsElement(eInputElements elementId) const
 {
-    return IsGamepadAxis(elementId) || IsGamepadButton(elementId);
+    DVASSERT(IsGamepadAxis(elementId) || IsGamepadButton(elementId));
+    return supportedElements[elementId - eInputElements::GAMEPAD_FIRST];
 }
 
 eDigitalElementStates GamepadDevice::GetDigitalElementState(eInputElements elementId) const

@@ -25,6 +25,8 @@ public:
     bool HandleGamepadAdded(uint32 id);
     bool HandleGamepadRemoved(uint32 id);
 
+    void DetermineSupportedElements();
+
     GamepadDevice* gamepadDevice = nullptr;
     uint32 gamepadId = 0;
 };

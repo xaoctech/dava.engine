@@ -29,8 +29,6 @@ class GamepadDevice final : public InputDevice
     friend class Private::GamepadDeviceImpl;
 
 public:
-    eGamepadProfiles GetProfile() const;
-
     bool SupportsElement(eInputElements elementId) const override;
     eDigitalElementStates GetDigitalElementState(eInputElements elementId) const override;
     AnalogElementState GetAnalogElementState(eInputElements elementId) const override;
@@ -53,7 +51,6 @@ private:
 
     InputSystem* inputSystem = nullptr;
     std::unique_ptr<Private::GamepadDeviceImpl> impl;
-    eGamepadProfiles profile = eGamepadProfiles::SIMPLE;
 
     static const uint32 BUTTON_COUNT = static_cast<uint32>(eInputElements::GAMEPAD_LAST_BUTTON - eInputElements::GAMEPAD_FIRST_BUTTON + 1);
     static const uint32 AXIS_COUNT = static_cast<uint32>(eInputElements::GAMEPAD_LAST_AXIS - eInputElements::GAMEPAD_FIRST_AXIS + 1);
@@ -62,14 +59,10 @@ private:
 
     std::bitset<BUTTON_COUNT> buttonChangedMask;
     std::bitset<AXIS_COUNT> axisChangedMask;
+    std::bitset<BUTTON_COUNT + AXIS_COUNT> supportedElements;
 
     size_t endFrameConnectionToken = 0;
 };
-
-inline eGamepadProfiles GamepadDevice::GetProfile() const
-{
-    return profile;
-}
 
 } // namespace DAVA
 

@@ -178,7 +178,7 @@ bool GamepadDeviceImpl::HandleGamepadAdded(uint32 id)
     if (gamepadId == 0)
     {
         gamepadId = id;
-        gamepadDevice->profile = eGamepadProfiles::EXTENDED;
+        DetermineSupportedElements();
     }
     return gamepadId != 0;
 }
@@ -190,6 +190,12 @@ bool GamepadDeviceImpl::HandleGamepadRemoved(uint32 id)
         gamepadId = 0;
     }
     return gamepadId != 0;
+}
+
+void GamepadDeviceImpl::DetermineSupportedElements()
+{
+    // Assume that all elements supported
+    gamepadDevice->supportedElements.set();
 }
 
 } // namespace Private
