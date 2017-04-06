@@ -216,11 +216,13 @@ PreProc::_get_identifier( char* txt, char** end ) const
     while( isalnum(*t)  ||  *t == '_'  ) 
         ++t;
     DVASSERT(*t);
-    *t = 0;
+    if( *t != '\n' )
+        *t = '\0';
 
     while( *t != '\n' )
         ++t;
 
+    *t   = '\0';
     *end = t;
     return n;
 }
@@ -456,6 +458,7 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
                     p.do_skip_lines       = !condition;
                     pending_elif.push_back( p );
                     
+                    *s = '\n'; // since it was null'ed in _get_identifier
                     ln = s+1;
                 }
                 else if( strncmp( s+1, "ifndef", 6 ) == 0 )
@@ -469,6 +472,7 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
                     p.do_skip_lines       = !condition;
                     pending_elif.push_back( p );
                     
+                    *s = '\n'; // since it was null'ed in _get_identifier
                     ln = s+1;
                 }
                 else if( strncmp( s+1, "if", 2 ) == 0 )
