@@ -217,15 +217,19 @@ bool GeoDecalSystem::BuildDecal(const DecalBuildInfo& info, DecalRenderBatch& ba
     Vector<DecalCoord> decalGeometry;
     decalGeometry.reserve(geometry->GetIndexCount());
 
-    int32 triangleCount = geometry->GetIndexCount() / 3;
-    for (int32 i = 0; i < triangleCount; ++i)
+    Set<uint32> triangles;
+    geometry->GetGeometryOctTree()->GetTrianglesInBox(info.box, triangles);
+
+    //int32 triangleCount = geometry->GetIndexCount() / 3;
+    // for (int32 i = 0; i < triangleCount; ++i)
+    for (uint32 triangleIndex : triangles)
     {
         DecalCoord points[MAX_CLIPPED_POLYGON_CAPACITY] = {};
 
         for (int32 j = 0; j < 3; ++j)
         {
             int32 idx = 0;
-            geometry->GetIndex(3 * i + j, idx);
+            geometry->GetIndex(3 * triangleIndex + j, idx);
 
             if (geometry->GetFormat() & EVF_TEXCOORD1)
                 geometry->GetTexcoord(1, idx, points[j].texCoord1);
