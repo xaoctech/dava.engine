@@ -51,7 +51,7 @@ enum class eInputListenerModes
 		if (!cancelled)
 		{
 			// Handle captured input,
-			// i.e. bind it to the action system, print it, etc.
+			// e.g. bind it to the action system, print it, etc.
 		}
 	}
 	\endcode
