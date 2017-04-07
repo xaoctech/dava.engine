@@ -2,6 +2,8 @@
 
 #if defined(__DAVAENGINE_IPHONE__)
 
+#include "Utils/UTF8Utils.h"
+
 namespace DAVA
 {
 namespace Private
