@@ -325,12 +325,12 @@ ExpressionEvaluator::evaluate( const char* expression, float* result )
             *d++ = _OpLogicalOr;
             s += 2;
         }
-        else if( _strnicmp( s, "!defined", 8 ) == 0 )
+        else if (strnicmp(s, "!defined", 8) == 0)
         {
             *d++ = _OpNotDefined;
             s += 8+1;
         }
-        else if( _strnicmp( s, "defined", 7 ) == 0 )
+        else if (strnicmp(s, "defined", 7) == 0)
         {
             *d++ = _OpDefined;
             s += 7+1;
@@ -638,8 +638,8 @@ ExpressionEvaluator::get_last_error( char* err_buffer, unsigned err_buffer_size 
         ::memset( buf, ' ', len );
         buf[ len ]               = '\0';
         buf[ _last_error_index ] = '^';
-        
-        _snprintf( err_buffer, err_buffer_size, "%s\n%s\n%s\n", ExprEvalError[_last_error_code], _expression, buf );
+
+        Snprintf(err_buffer, err_buffer_size, "%s\n%s\n%s\n", ExprEvalError[_last_error_code], _expression, buf);
         ret = true;
     }
 
