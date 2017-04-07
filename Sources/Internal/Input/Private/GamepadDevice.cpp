@@ -34,7 +34,7 @@ GamepadDevice::GamepadDevice(uint32 id)
     , impl(new Private::GamepadDeviceImpl(this))
 {
     std::fill(std::begin(buttons), std::end(buttons), eDigitalElementStates::NONE);
-    std::fill(std::begin(axises), std::end(axises), AnalogElementState());
+    std::fill(std::begin(axes), std::end(axes), AnalogElementState());
 
     endFrameConnectionToken = Engine::Instance()->endFrame.Connect(this, &GamepadDevice::OnEndFrame);
 }
@@ -59,7 +59,7 @@ eDigitalElementStates GamepadDevice::GetDigitalElementState(eInputElements eleme
 AnalogElementState GamepadDevice::GetAnalogElementState(eInputElements elementId) const
 {
     DVASSERT(IsGamepadAxis(elementId));
-    return axises[elementId - eInputElements::GAMEPAD_FIRST_AXIS];
+    return axes[elementId - eInputElements::GAMEPAD_FIRST_AXIS];
 }
 
 void GamepadDevice::Update()
@@ -92,7 +92,7 @@ void GamepadDevice::Update()
             inputEvent.deviceType = eInputDeviceTypes::CLASS_GAMEPAD;
             inputEvent.deviceId = GetId();
             inputEvent.elementId = static_cast<eInputElements>(i);
-            inputEvent.analogState = axises[index];
+            inputEvent.analogState = axes[index];
             inputSystem->DispatchInputEvent(inputEvent);
         }
     }
@@ -143,9 +143,9 @@ void GamepadDevice::HandleButtonPress(eInputElements element, bool pressed)
 void GamepadDevice::HandleAxisMovement(eInputElements element, float32 newValue)
 {
     uint32 index = element - eInputElements::GAMEPAD_FIRST_AXIS;
-    if (newValue != axises[index].x)
+    if (newValue != axes[index].x)
     {
-        axises[index].x = newValue;
+        axes[index].x = newValue;
         axisChangedMask.set(index);
     }
 }
