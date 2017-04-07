@@ -43,19 +43,19 @@ GamepadDevice::~GamepadDevice()
 
 bool GamepadDevice::SupportsElement(eInputElements elementId) const
 {
-    DVASSERT(IsGamepadAxis(elementId) || IsGamepadButton(elementId));
+    DVASSERT(IsGamepadAxisInputElement(elementId) || IsGamepadButtonInputElement(elementId));
     return supportedElements[elementId - eInputElements::GAMEPAD_FIRST];
 }
 
 eDigitalElementStates GamepadDevice::GetDigitalElementState(eInputElements elementId) const
 {
-    DVASSERT(IsGamepadButton(elementId));
+    DVASSERT(IsGamepadButtonInputElement(elementId));
     return buttons[elementId - eInputElements::GAMEPAD_FIRST_BUTTON];
 }
 
 AnalogElementState GamepadDevice::GetAnalogElementState(eInputElements elementId) const
 {
-    DVASSERT(IsGamepadAxis(elementId));
+    DVASSERT(IsGamepadAxisInputElement(elementId));
     return axes[elementId - eInputElements::GAMEPAD_FIRST_AXIS];
 }
 
@@ -63,13 +63,14 @@ void GamepadDevice::Update()
 {
     impl->Update();
 
+    Window* window = GetPrimaryWindow();
     for (uint32 i = eInputElements::GAMEPAD_FIRST_BUTTON; i <= eInputElements::GAMEPAD_LAST_BUTTON; ++i)
     {
         uint32 index = i - eInputElements::GAMEPAD_FIRST_BUTTON;
         if (buttonChangedMask[index])
         {
             InputEvent inputEvent;
-            inputEvent.window = nullptr;
+            inputEvent.window = window;
             inputEvent.deviceType = eInputDeviceTypes::CLASS_GAMEPAD;
             inputEvent.deviceId = GetId();
             inputEvent.elementId = static_cast<eInputElements>(i);
@@ -85,7 +86,7 @@ void GamepadDevice::Update()
         if (axisChangedMask[index])
         {
             InputEvent inputEvent;
-            inputEvent.window = nullptr;
+            inputEvent.window = window;
             inputEvent.deviceType = eInputDeviceTypes::CLASS_GAMEPAD;
             inputEvent.deviceId = GetId();
             inputEvent.elementId = static_cast<eInputElements>(i);

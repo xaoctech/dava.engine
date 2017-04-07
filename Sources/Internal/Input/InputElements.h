@@ -264,13 +264,13 @@ inline bool IsMouseInputElement(eInputElements element)
 }
 
 /** Return true if specified `element` is a gamepad button element */
-inline bool IsGamepadButton(eInputElements element)
+inline bool IsGamepadButtonInputElement(eInputElements element)
 {
     return eInputElements::GAMEPAD_FIRST_BUTTON <= element && element <= eInputElements::GAMEPAD_LAST_BUTTON;
 }
 
 /** Return true if specified `element` is a gamepad axis element */
-inline bool IsGamepadAxis(eInputElements element)
+inline bool IsGamepadAxisInputElement(eInputElements element)
 {
     return eInputElements::GAMEPAD_FIRST_AXIS <= element && element <= eInputElements::GAMEPAD_LAST_AXIS;
 }
