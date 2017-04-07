@@ -695,6 +695,13 @@ vertex_out vp_main( vertex_in input )
     output.position.z=0.0;
 #endif
 
+#if (GEO_DECAL)
+    // apply constant bias to prevent z-fighting on decals
+    // possible improvement : calculate offset based on near/far plane
+    // todo : check on different GPUs
+    output.position.z -= output.position.w / 65535.0;
+#endif
+
     return output;
 }
 

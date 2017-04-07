@@ -220,8 +220,6 @@ bool GeoDecalSystem::BuildDecal(const DecalBuildInfo& info, DecalRenderBatch& ba
     Set<uint32> triangles;
     geometry->GetGeometryOctTree()->GetTrianglesInBox(info.box, triangles);
 
-    //int32 triangleCount = geometry->GetIndexCount() / 3;
-    // for (int32 i = 0; i < triangleCount; ++i)
     for (uint32 triangleIndex : triangles)
     {
         DecalCoord points[MAX_CLIPPED_POLYGON_CAPACITY] = {};
@@ -242,55 +240,65 @@ bool GeoDecalSystem::BuildDecal(const DecalBuildInfo& info, DecalRenderBatch& ba
             Vector3 nrm = (points[1].point - points[0].point).CrossProduct(points[2].point - points[0].point);
             nrm.Normalize();
 
-            Vector3 offset = info.component->GetPerTriangleOffset() * nrm;
-
-            bool validTriangle = true;
-            if (isPlanarProjection)
+            if ((info.component->GetMapping() == GeoDecalComponent::Mapping::PLANAR) &&
+                (nrm.DotProduct(info.projectionAxis) >= -std::numeric_limits<float>::epsilon()))
             {
-                offset -= info.component->GetProjectionOffset() * info.projectionAxis;
-                validTriangle = nrm.DotProduct(info.projectionAxis) < -std::numeric_limits<float>::epsilon();
+                // do not place decal on back faces
+                continue;
             }
 
-            if (validTriangle)
-            {
-                uint8_t numPoints = 3;
-                points[0].point = points[0].point * info.projectionSpaceTransform;
-                points[1].point = points[1].point * info.projectionSpaceTransform;
-                points[2].point = points[2].point * info.projectionSpaceTransform;
-                Clip3D_AABB(points, &numPoints, clipSpaceBox);
+            uint8_t numPoints = 3;
+            points[0].point = points[0].point * info.projectionSpaceTransform;
+            points[1].point = points[1].point * info.projectionSpaceTransform;
+            points[2].point = points[2].point * info.projectionSpaceTransform;
 
-                for (uint32 i = 0; i < numPoints; ++i)
+            float minU = 1.0f;
+            float maxU = 0.0f;
+            for (uint32 i = 0; i < numPoints; ++i)
+            {
+                if (info.component->GetMapping() == GeoDecalComponent::Mapping::SPHERICAL)
                 {
                     Vector3 p = points[i].point;
-
-                    if (info.component->GetMapping() == GeoDecalComponent::Mapping::SPHERICAL)
-                    {
-                        p.Normalize();
-                        points[i].texCoord0.x = (std::atan2(p.y, p.x) + PI) / (2.0f * PI);
-                        points[i].texCoord0.y = (asin(p.z) + 0.5f * PI) / PI;
-                    }
-                    else if (info.component->GetMapping() == GeoDecalComponent::Mapping::CYLINDRICAL)
-                    {
-                        Vector2 c(p.x, p.y);
-                        c.Normalize();
-                        points[i].texCoord0.x = (std::atan2(c.y, c.x) + PI) / (2.0f * PI);
-                        points[i].texCoord0.y = points[i].point.z * 0.5f + 0.5f;
-                    }
-                    else
-                    {
-                        points[i].texCoord0.x = points[i].point.x * 0.5f + 0.5f;
-                        points[i].texCoord0.y = points[i].point.y * 0.5f + 0.5f;
-                    }
-
-                    points[i].point = points[i].point * info.projectionSpaceInverseTransform + offset;
+                    p.Normalize();
+                    points[i].texCoord0.x = std::atan2(p.y, p.x);
+                    points[i].texCoord0.y = (asin(p.z) + 0.5f * PI) / PI;
                 }
-
-                for (uint32 i = 0; i + 2 < numPoints; ++i)
+                else if (info.component->GetMapping() == GeoDecalComponent::Mapping::CYLINDRICAL)
                 {
-                    decalGeometry.emplace_back(points[0]);
-                    decalGeometry.emplace_back(points[i + 1]);
-                    decalGeometry.emplace_back(points[i + 2]);
+                    Vector2 c(points[i].point.x, points[i].point.y);
+                    c.Normalize();
+                    points[i].texCoord0.x = std::atan2(c.y, c.x);
+                    points[i].texCoord0.y = points[i].point.z * 0.5f + 0.5f;
                 }
+                else
+                {
+                    points[i].texCoord0.x = points[i].point.x * 0.5f + 0.5f;
+                    points[i].texCoord0.y = points[i].point.y * 0.5f + 0.5f;
+                }
+                minU = std::min(minU, points[i].texCoord0.x);
+                maxU = std::max(maxU, points[i].texCoord0.x);
+            }
+
+            if (!isPlanarProjection)
+            {
+                bool edgeTriangle = std::abs(minU - maxU) >= PI;
+                for (uint32 i = 0; i < numPoints; ++i)
+                {
+                    float wrap = (edgeTriangle && (points[i].texCoord0.x < 0.0f)) ? 2.0f * PI : 0.0f;
+                    points[i].texCoord0.x = (points[i].texCoord0.x + PI + wrap) / (2.0f * PI);
+                }
+            }
+
+            Clip3D_AABB(points, &numPoints, clipSpaceBox);
+
+            for (uint32 i = 0; i < numPoints; ++i)
+                points[i].point = points[i].point * info.projectionSpaceInverseTransform;
+
+            for (uint32 i = 0; i + 2 < numPoints; ++i)
+            {
+                decalGeometry.emplace_back(points[0]);
+                decalGeometry.emplace_back(points[i + 1]);
+                decalGeometry.emplace_back(points[i + 2]);
             }
         }
     }
