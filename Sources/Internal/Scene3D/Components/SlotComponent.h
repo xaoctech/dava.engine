@@ -7,9 +7,11 @@
 #include "FileSystem/FilePath.h"
 #include "Base/Array.h"
 #include "Base/FastName.h"
+#include "Base/IntrospectionBase.h"
 
 namespace DAVA
 {
+class Entity;
 class SlotComponent : public Component
 {
 public:
@@ -38,6 +40,8 @@ public:
     void AddFilter(FastName filter);
     void RemoveFilter(uint32 index);
     void RemoveFilter(FastName filter);
+
+    INTROSPECTION_EXTEND(SlotComponent, Component, nullptr);
 
 private:
     FastName slotName = FastName("");

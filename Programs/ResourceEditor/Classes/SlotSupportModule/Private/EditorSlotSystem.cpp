@@ -1,6 +1,10 @@
 #include "Classes/SlotSupportModule/Private/EditorSlotSystem.h"
 
 #include <Scene3D/Systems/SlotSystem.h>
+#include <Scene3D/Components/SlotComponent.h>
+#include <Scene3D/Scene.h>
+#include <Base/BaseTypes.h>
+#include <Utils/Utils.h>
 
 EditorSlotSystem::EditorSlotSystem(DAVA::Scene* scene)
     : SceneSystem(scene)
@@ -17,8 +21,9 @@ void EditorSlotSystem::RemoveComponent(DAVA::Entity* entity, DAVA::Component* co
     FindAndRemoveExchangingWithLast(entities, entity);
 }
 
-void EditorSlotSystem::Process(float32 timeElapsed)
+void EditorSlotSystem::Process(DAVA::float32 timeElapsed)
 {
+    using namespace DAVA;
     SlotSystem* slotSystem = GetScene()->slotSystem;
     for (Entity* entity : entities)
     {

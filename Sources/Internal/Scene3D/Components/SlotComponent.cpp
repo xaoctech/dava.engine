@@ -1,7 +1,9 @@
 #include "Scene3D/Components/SlotComponent.h"
 
+#include "Scene3D/Entity.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "Reflection/ReflectedMeta.h"
+#include "FileSystem/KeyedArchive.h"
 
 namespace DAVA
 {

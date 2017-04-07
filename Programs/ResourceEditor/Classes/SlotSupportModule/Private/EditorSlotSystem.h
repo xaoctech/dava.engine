@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Entity/SceneSystem.h>
+#include <Base/BaseTypes.h>
 
 class EditorSlotSystem : public DAVA::SceneSystem
 {
@@ -10,8 +11,8 @@ public:
     void AddComponent(DAVA::Entity* entity, DAVA::Component* component) override;
     void RemoveComponent(DAVA::Entity* entity, DAVA::Component* component) override;
 
-    void Process(float32 timeElapsed) override;
+    void Process(DAVA::float32 timeElapsed) override;
 
 private:
-    Vector<DAVA::Entity*> entities;
+    DAVA::Vector<DAVA::Entity*> entities;
 };

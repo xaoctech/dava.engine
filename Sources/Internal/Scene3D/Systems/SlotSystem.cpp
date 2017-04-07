@@ -1,6 +1,11 @@
 #include "Scene3D/Systems/SlotSystem.h"
-#include "Scene3D/Components/SlotComponent.h"
 #include "Scene3D/Scene.h"
+#include "Scene3D/Components/SlotComponent.h"
+#include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Components/TransformComponent.h"
+#include "FileSystem/YamlParser.h"
+#include "FileSystem/YamlNode.h"
+#include "Logger/Logger.h"
 
 namespace DAVA
 {
@@ -45,7 +50,7 @@ void SlotSystem::ItemsCache::LoadYamlConfig(const FilePath& configPath)
         uint32 fieldsCount = currentNode->GetCount();
 
         Item newItem;
-        for (uint32 fieldIndex = 0; fieldIndex < fieldsCount; ++i)
+        for (uint32 fieldIndex = 0; fieldIndex < fieldsCount; ++fieldIndex)
         {
             const YamlNode* fieldNode = currentNode->Get(fieldIndex);
             const String& key = currentNode->GetItemKeyName(fieldIndex);
