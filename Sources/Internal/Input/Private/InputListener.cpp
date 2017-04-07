@@ -6,22 +6,22 @@
 
 namespace DAVA
 {
-void InputListener::Listen(eInputListenerModes mode, Function<void(Vector<InputEvent>)> callback)
+void InputListener::Listen(eInputListenerModes mode, Function<void(bool, Vector<InputEvent>)> callback)
 {
     Listen(mode, callback, 0, eInputDeviceTypes::CLASS_ALL);
 }
 
-void InputListener::Listen(eInputListenerModes mode, Function<void(Vector<InputEvent>)> callback, uint32 deviceId)
+void InputListener::Listen(eInputListenerModes mode, Function<void(bool, Vector<InputEvent>)> callback, uint32 deviceId)
 {
     Listen(mode, callback, deviceId, eInputDeviceTypes::CLASS_ALL);
 }
 
-void InputListener::Listen(eInputListenerModes mode, Function<void(Vector<InputEvent>)> callback, eInputDeviceTypes deviceTypesMask)
+void InputListener::Listen(eInputListenerModes mode, Function<void(bool, Vector<InputEvent>)> callback, eInputDeviceTypes deviceTypesMask)
 {
     Listen(mode, callback, 0, deviceTypesMask);
 }
 
-void InputListener::Listen(eInputListenerModes mode, Function<void(Vector<InputEvent>)> callback, uint32 deviceId, eInputDeviceTypes deviceTypesMask)
+void InputListener::Listen(eInputListenerModes mode, Function<void(bool, Vector<InputEvent>)> callback, uint32 deviceId, eInputDeviceTypes deviceTypesMask)
 {
     DVASSERT(callback != nullptr);
 
@@ -45,50 +45,62 @@ bool InputListener::OnInputEvent(const InputEvent& e)
     }
 
     bool finishedListening = false;
+    bool cancelled = false;
     bool addEventToResult = false;
 
     const InputElementInfo elementInfo = GetInputElementInfo(e.elementId);
     if (elementInfo.type == eInputElementTypes::DIGITAL)
     {
-        const bool isSystemKey = IsKeyboardSystemInputElement(e.elementId);
-
-        // Ignore system keys
-        if (!isSystemKey)
+        // TODO: handle cancelling on gamepads
+        if (e.elementId == eInputElements::KB_ESCAPE)
         {
-            const bool isModifierKey = IsKeyboardModifierInputElement(e.elementId);
+            finishedListening = true;
+            cancelled = true;
+            addEventToResult = false;
+        }
+        else
+        {
+            const bool isSystemKey = IsKeyboardSystemInputElement(e.elementId);
 
-            if ((e.digitalState & eDigitalElementStates::JUST_PRESSED) == eDigitalElementStates::JUST_PRESSED)
+            // Ignore system keys
+            if (!isSystemKey)
             {
-                if (currentMode == eInputListenerModes::DIGITAL_SINGLE_WITHOUT_MODIFIERS)
+                const bool isModifierKey = IsKeyboardModifierInputElement(e.elementId);
+
+                // If button has been pressed
+                if ((e.digitalState & eDigitalElementStates::JUST_PRESSED) == eDigitalElementStates::JUST_PRESSED)
                 {
-                    // Ignore modifiers
-                    if (!isModifierKey)
+                    if (currentMode == eInputListenerModes::DIGITAL_SINGLE_WITHOUT_MODIFIERS)
+                    {
+                        // Ignore modifiers
+                        if (!isModifierKey)
+                        {
+                            addEventToResult = true;
+                            finishedListening = true;
+                        }
+                    }
+                    else if (currentMode == eInputListenerModes::DIGITAL_SINGLE_WITH_MODIFIERS)
                     {
                         addEventToResult = true;
-                        finishedListening = true;
-                    }
-                }
-                else if (currentMode == eInputListenerModes::DIGITAL_SINGLE_WITH_MODIFIERS)
-                {
-                    addEventToResult = true;
 
-                    // Stop listening when first non-modifier key is pressed
-                    if (!isModifierKey)
+                        // Stop listening when first non-modifier key is pressed
+                        if (!isModifierKey)
+                        {
+                            finishedListening = true;
+                        }
+                    }
+                    else if (currentMode == eInputListenerModes::DIGITAL_MULTIPLE_ANY)
                     {
-                        finishedListening = true;
+                        addEventToResult = true;
                     }
                 }
-                else if (currentMode == eInputListenerModes::DIGITAL_MULTIPLE_ANY)
+                else if ((e.digitalState & eDigitalElementStates::JUST_RELEASED) == eDigitalElementStates::JUST_RELEASED)
                 {
-                    addEventToResult = true;
-                }
-            }
-            else if ((e.digitalState & eDigitalElementStates::JUST_RELEASED) == eDigitalElementStates::JUST_RELEASED)
-            {
-                if (currentMode == eInputListenerModes::DIGITAL_MULTIPLE_ANY)
-                {
-                    // If a button was released, and we're listening for digital sequence, assume it's over
-                    finishedListening = true;
+                    if (currentMode == eInputListenerModes::DIGITAL_MULTIPLE_ANY)
+                    {
+                        // If a button was released, and we're listening for digital sequence, assume it's over
+                        finishedListening = true;
+                    }
                 }
             }
         }
@@ -114,7 +126,7 @@ bool InputListener::OnInputEvent(const InputEvent& e)
     // If we're finished listening, invoke callback and reset state
     if (finishedListening)
     {
-        currentCallback(result);
+        currentCallback(cancelled, result);
         StopListening();
     }
 

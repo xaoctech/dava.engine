@@ -40,14 +40,14 @@ enum class eDigitalElementStates : uint32
     /** A button has just been released */
     JUST_RELEASED = 1 << 2,
 
-    /** A button is in a released state */
+    /** A button is in released state */
     RELEASED = 1 << 3
 };
 
 DAVA_DEFINE_ENUM_BITWISE_OPERATORS(eDigitalElementStates)
 
 /**
-    \ingroup input    
+    \ingroup input
     Struct describing analog element state.
     Meanings of `x`, `y` and `z` values can be different for different elements.
 
@@ -78,14 +78,12 @@ public:
     /** Create InputDevice instance with specified `id` */
     InputDevice(uint32 id);
 
-    virtual ~InputDevice()
-    {
-    }
+    virtual ~InputDevice() = default;
 
     /** Return unique device id */
     uint32 GetId() const;
 
-    /** Return `true` if element with specified `elementId` is supported by the device
+    /** Return `true` if an element with specified `elementId` is supported by the device
         (i.e. its state can be requested with either `GetDigitalElementState` or `GetAnalogElementState`)
     */
     virtual bool SupportsElement(eInputElements elementId) const = 0;

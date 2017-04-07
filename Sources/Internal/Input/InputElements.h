@@ -18,6 +18,8 @@ enum eInputElements : uint32
     NONE = 0,
 
     // Keyboard scancode keys
+    // These are named after characters they produce in QWERTY US layout
+    // E.g. KB_W produces 'w' in QWERTY, but 'z' in AZERTY
 
     KB_1,
     KB_2,
@@ -126,7 +128,7 @@ enum eInputElements : uint32
     KB_NUMPAD_0,
     KB_LCMD,
     KB_RCMD,
-    KB_BACK, // Android only
+    KB_BACK, //!< Back button, Android only.
 
     // Mouse
 
@@ -185,6 +187,7 @@ enum eInputElements : uint32
     TOUCH_LAST_POSITION = TOUCH_POSITION9
 };
 
+// Helper values
 enum
 {
     INPUT_ELEMENTS_COUNT = eInputElements::LAST - eInputElements::FIRST + 1,

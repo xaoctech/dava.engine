@@ -41,6 +41,20 @@ enum class eInputListenerModes
 /**
     Helper class which is able to capture and report user input.
     Can be helpful for control settings UI.
+
+	Usage example:
+	\code
+	GetEngineContext()->inputListener->Listen(eInputListenerModes::DIGITAL_SINGLE_WITH_MODIFIERS, MakeFunction(OnInputListeningEnded));
+
+	void OnInputListeningEnded(bool cancelled, DAVA::Vector<DAVA::InputEvent> input)
+	{
+		if (!cancelled)
+		{
+			// Handle captured input,
+			// i.e. bind it to the action system, print it, etc.
+		}
+	}
+	\endcode
 */
 class InputListener final
 {
@@ -48,13 +62,13 @@ class InputListener final
 
 public:
     /** Listen for input in specified `mode`, across all devices */
-    void Listen(eInputListenerModes mode, Function<void(Vector<InputEvent>)> callback);
+    void Listen(eInputListenerModes mode, Function<void(bool, Vector<InputEvent>)> callback);
 
     /** Listen input in specified `mode`, devices other than the one with `deviceId` are ignored */
-    void Listen(eInputListenerModes mode, Function<void(Vector<InputEvent>)> callback, uint32 deviceId);
+    void Listen(eInputListenerModes mode, Function<void(bool, Vector<InputEvent>)> callback, uint32 deviceId);
 
     /** Listen input in specified `mode`, devices with type different from `deviceTypesMask` are ignored */
-    void Listen(eInputListenerModes mode, Function<void(Vector<InputEvent>)> callback, eInputDeviceTypes deviceTypesMask);
+    void Listen(eInputListenerModes mode, Function<void(bool, Vector<InputEvent>)> callback, eInputDeviceTypes deviceTypesMask);
 
     /** Return true if listening is active. */
     bool IsListening() const;
@@ -67,7 +81,7 @@ private:
     InputListener(const InputListener&) = delete;
     InputListener& operator=(const InputListener&) = delete;
 
-    void Listen(eInputListenerModes mode, Function<void(Vector<InputEvent>)> callback, uint32 deviceId, eInputDeviceTypes deviceTypesMask);
+    void Listen(eInputListenerModes mode, Function<void(bool, Vector<InputEvent>)> callback, uint32 deviceId, eInputDeviceTypes deviceTypesMask);
 
     bool OnInputEvent(const InputEvent& e);
 
@@ -75,7 +89,7 @@ private:
     uint32 inputHandlerToken = 0;
 
     eInputListenerModes currentMode;
-    Function<void(Vector<InputEvent>)> currentCallback;
+    Function<void(bool, Vector<InputEvent>)> currentCallback;
     uint32 currentDeviceId;
     eInputDeviceTypes currentDeviceTypesMask;
 
