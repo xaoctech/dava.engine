@@ -36,7 +36,7 @@ WideString KeyboardDeviceImpl::TranslateElementToWideString(eInputElements eleme
     {
         if (nativeScancodeToDavaScancode[i] == elementId)
         {
-            nativeScancode = i;
+            nativeScancode = static_cast<int>(i);
         }
     }
 
@@ -46,14 +46,14 @@ WideString KeyboardDeviceImpl::TranslateElementToWideString(eInputElements eleme
         {
             if (nativeScancodeExtToDavaScancode[i] == elementId)
             {
-                nativeScancode = i;
+                nativeScancode = static_cast<int>(i);
             }
         }
     }
 
     DVASSERT(nativeScancode >= 0);
 
-    wchar_t character = TranslateNativeScancodeToWChar(nativeScancode);
+    wchar_t character = TranslateNativeScancodeToWChar(static_cast<uint32>(nativeScancode));
 
     if (character == 0 || std::iswspace(character))
     {
