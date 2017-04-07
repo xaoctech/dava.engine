@@ -10,8 +10,11 @@ PreProc::DefFileCallback    PreProc::_DefFileCallback;
 //------------------------------------------------------------------------------
 
 PreProc::PreProc(FileCallback* fc)
-  : _file_cb((fc)?fc:&_DefFileCallback),
+    : _file_cb((fc) ? fc : &_DefFileCallback)
+    ,
     _cur_file_name("<buffer>")
+    ,
+    _min_macro_length(DAVA::InvalidIndex)
 {
 }
 
