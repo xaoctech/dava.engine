@@ -13,6 +13,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SlotComponent)
     .ConstructorByPointer()
     .Field("slotName", &SlotComponent::GetSlotName, &SlotComponent::SetSlotName)[M::DisplayName("Name")]
     .Field("configPath", &SlotComponent::GetConfigFilePath, &SlotComponent::SetConfigFilePath)[M::DisplayName("Items list")]
+    .Field("transform", &SlotComponent::GetAttachmentTransform, &SlotComponent::SetAttachmentTransform)[M::DisplayName("Attachment Transform")]
     .End();
 }
 

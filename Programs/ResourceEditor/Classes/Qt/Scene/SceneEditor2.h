@@ -96,6 +96,9 @@ public:
     void AddSystem(DAVA::SceneSystem* sceneSystem, DAVA::uint64 componentFlags, DAVA::uint32 processFlags = 0, DAVA::SceneSystem* insertBeforeSceneForProcess = nullptr, DAVA::SceneSystem* insertBeforeSceneForInput = nullptr) override;
     void RemoveSystem(DAVA::SceneSystem* sceneSystem) override;
 
+    template <typename T>
+    T* LookupEditorSystem();
+
     // save/load
     DAVA::SceneFileV2::eError LoadScene(const DAVA::FilePath& path) override;
     DAVA::SceneFileV2::eError SaveScene(const DAVA::FilePath& pathname, bool saveForGame = false) override;
@@ -210,6 +213,20 @@ private:
         SceneEditor2* editor = nullptr;
     };
 };
+
+template <typename T>
+T* SceneEditor2::LookupEditorSystem()
+{
+    for (EditorSceneSystem* system : editorSystems)
+    {
+        if (dynamic_cast<T*>(system) != nullptr)
+        {
+            return static_cast<T*>(system);
+        }
+    }
+
+    return nullptr;
+}
 
 Q_DECLARE_METATYPE(SceneEditor2*)
 

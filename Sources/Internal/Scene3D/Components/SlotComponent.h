@@ -44,7 +44,7 @@ public:
     INTROSPECTION_EXTEND(SlotComponent, Component, nullptr);
 
 private:
-    FastName slotName = FastName("");
+    FastName slotName;
 
     Matrix4 attachmentTransform;
     FilePath configFilePath;

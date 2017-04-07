@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Command/Command.h>
+
 class RECommandNotificationObject;
 class EditorSceneSystem
 {
@@ -19,6 +21,11 @@ protected:
     }
     virtual void ProcessCommand(const RECommandNotificationObject& commandNotification)
     {
+    }
+
+    virtual std::unique_ptr<DAVA::Command> PrepareForSave(bool saveForGame)
+    {
+        return nullptr;
     }
 
     bool systemIsEnabled = false;
