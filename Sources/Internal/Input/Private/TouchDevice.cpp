@@ -84,7 +84,7 @@ bool TouchDevice::HandleEvent(const Private::MainDispatcherEvent& e)
         analogState.x = e.touchEvent.x;
         analogState.y = e.touchEvent.y;
 
-        // Save native touch id to be able to local correct touch when TOUCH_UP event comes
+        // Save native touch id to be able to locate correct touch when TOUCH_UP event comes
 
         nativeTouchIds[touchIndex] = e.touchEvent.touchId;
 

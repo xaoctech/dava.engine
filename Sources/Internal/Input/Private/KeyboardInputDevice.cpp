@@ -17,7 +17,6 @@
 #include "Engine/Engine.h"
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 #include "Input/InputSystem.h"
-#include "Input/Private/DIElementWrapper.h"
 #include "Time/SystemTimer.h"
 
 namespace DAVA
@@ -26,13 +25,12 @@ KeyboardInputDevice::KeyboardInputDevice(uint32 id)
     : InputDevice(id)
     , inputSystem(GetEngineContext()->inputSystem)
     , impl(new Private::KeyboardDeviceImpl())
-    , keys{}
 {
     Engine* engine = Engine::Instance();
     endFrameConnectionToken = engine->endFrame.Connect(this, &KeyboardInputDevice::OnEndFrame);
     primaryWindowFocusChangedToken = engine->PrimaryWindow()->focusChanged.Connect(this, &KeyboardInputDevice::OnWindowFocusChanged); // TODO: handle all the windows
 
-    Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &KeyboardInputDevice::HandleEvent));
+    Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &KeyboardInputDevice::HandleMainDispatcherEvent));
 }
 
 KeyboardInputDevice::~KeyboardInputDevice()
@@ -58,7 +56,7 @@ bool KeyboardInputDevice::SupportsElement(eInputElements elementId) const
 eDigitalElementStates KeyboardInputDevice::GetDigitalElementState(eInputElements elementId) const
 {
     DVASSERT(SupportsElement(elementId));
-    return keys[elementId - eInputElements::KB_FIRST];
+    return keys[elementId - eInputElements::KB_FIRST].GetState();
 }
 
 AnalogElementState KeyboardInputDevice::GetAnalogElementState(eInputElements elementId) const
@@ -67,20 +65,41 @@ AnalogElementState KeyboardInputDevice::GetAnalogElementState(eInputElements ele
     return {};
 }
 
-void KeyboardInputDevice::CreateAndSendInputEvent(eInputElements elementId, eDigitalElementStates element, Window* window, int64 timestamp) const
+WideString KeyboardInputDevice::TranslateElementToWideString(eInputElements elementId) const
 {
-    InputEvent inputEvent;
-    inputEvent.window = window;
-    inputEvent.timestamp = static_cast<float64>(timestamp / 1000.0f);
-    inputEvent.deviceType = eInputDeviceTypes::KEYBOARD;
-    inputEvent.deviceId = GetId();
-    inputEvent.digitalState = element;
-    inputEvent.elementId = elementId;
-
-    inputSystem->DispatchInputEvent(inputEvent);
+    DVASSERT(SupportsElement(elementId));
+    return impl->TranslateElementToWideString(elementId);
 }
 
-bool KeyboardInputDevice::HandleEvent(const Private::MainDispatcherEvent& e)
+void KeyboardInputDevice::OnEndFrame()
+{
+    // Promote JustPressed & JustReleased states to Pressed/Released accordingly
+    for (size_t i = 0; i < INPUT_ELEMENTS_KB_COUNT; ++i)
+    {
+        keys[i].OnEndFrame();
+    }
+}
+
+void KeyboardInputDevice::OnWindowFocusChanged(DAVA::Window* window, bool focused)
+{
+    // Reset keyboard state when window is unfocused
+    if (!focused)
+    {
+        for (size_t i = 0; i < INPUT_ELEMENTS_KB_COUNT; ++i)
+        {
+            if (keys[i].IsPressed())
+            {
+                keys[i].Release();
+
+                // Generate release event
+                eInputElements elementId = static_cast<eInputElements>(eInputElements::KB_FIRST + i);
+                CreateAndSendInputEvent(elementId, keys[i], window, SystemTimer::GetMs());
+            }
+        }
+    }
+}
+
+bool KeyboardInputDevice::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e)
 {
     using Private::MainDispatcherEvent;
 
@@ -95,7 +114,7 @@ bool KeyboardInputDevice::HandleEvent(const Private::MainDispatcherEvent& e)
 
         // Update element state
 
-        DIElementWrapper element(keys[elementId - eInputElements::KB_FIRST]);
+        Private::DigitalElement& element = keys[elementId - eInputElements::KB_FIRST];
         if (e.type == MainDispatcherEvent::KEY_DOWN)
         {
             element.Press();
@@ -107,7 +126,7 @@ bool KeyboardInputDevice::HandleEvent(const Private::MainDispatcherEvent& e)
 
         // Send event
 
-        CreateAndSendInputEvent(elementId, element.GetState(), e.window, e.timestamp);
+        CreateAndSendInputEvent(elementId, element, e.window, e.timestamp);
 
         return true;
     }
@@ -115,34 +134,17 @@ bool KeyboardInputDevice::HandleEvent(const Private::MainDispatcherEvent& e)
     return false;
 }
 
-void KeyboardInputDevice::OnEndFrame()
+void KeyboardInputDevice::CreateAndSendInputEvent(eInputElements elementId, const Private::DigitalElement& element, Window* window, int64 timestamp) const
 {
-    // Promote JustPressed & JustReleased states to Pressed/Released accordingly
-    for (DIElementWrapper di : keys)
-    {
-        di.OnEndFrame();
-    }
-}
+    InputEvent inputEvent;
+    inputEvent.window = window;
+    inputEvent.timestamp = static_cast<float64>(timestamp / 1000.0f);
+    inputEvent.deviceType = eInputDeviceTypes::KEYBOARD;
+    inputEvent.deviceId = GetId();
+    inputEvent.digitalState = element.GetState();
+    inputEvent.elementId = elementId;
 
-void KeyboardInputDevice::OnWindowFocusChanged(DAVA::Window* window, bool focused)
-{
-    // Reset keyboard state when window is unfocused
-    if (!focused)
-    {
-        int64 timestamp = SystemTimer::GetMs();
-        for (size_t i = 0; i < INPUT_ELEMENTS_KB_COUNT; ++i)
-        {
-            DIElementWrapper d(keys[i]);
-            if (d.IsPressed())
-            {
-                d.Release();
-
-                // Generate release event
-                eInputElements elementId = static_cast<eInputElements>(eInputElements::KB_FIRST + i);
-                CreateAndSendInputEvent(elementId, d.GetState(), window, timestamp);
-            }
-        }
-    }
+    inputSystem->DispatchInputEvent(inputEvent);
 }
 
 } // namespace DAVA

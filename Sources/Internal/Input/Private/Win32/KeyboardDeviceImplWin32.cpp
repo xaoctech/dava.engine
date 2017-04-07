@@ -2,7 +2,11 @@
 
 #if defined(__DAVAENGINE_WIN32__)
 
+#include "Base/TemplateHelpers.h"
 #include "Input/Private/KeyboardDeviceImplWinCodes.h"
+#include "Utils/UTF8Utils.h"
+
+#include <Windows.h>
 
 namespace DAVA
 {
@@ -21,6 +25,31 @@ eInputElements KeyboardDeviceImpl::ConvertNativeScancodeToDavaScancode(uint32 na
     {
         return nativeScancodeToDavaScancode[nonExtendedScancode];
     }
+}
+
+WideString KeyboardDeviceImpl::TranslateElementToWideString(eInputElements elementId)
+{
+    for (size_t nativeScancode = 0; nativeScancode < COUNT_OF(nativeScancodeToDavaScancode); ++nativeScancode)
+    {
+        if (nativeScancodeToDavaScancode[nativeScancode] == elementId)
+        {
+            const uint32 nativeVirtual = MapVirtualKey(nativeScancode, MAPVK_VSC_TO_VK);
+            const wchar_t character = static_cast<wchar_t>(MapVirtualKey(nativeVirtual, MAPVK_VK_TO_CHAR));
+
+            if (character == 0)
+            {
+                // Non printable
+                return UTF8Utils::EncodeToWideString(GetInputElementInfo(elementId).name);
+            }
+            else
+            {
+                return WideString(1, character);
+            }
+        }
+    }
+
+    DVASSERT(false);
+    return WideString(L"");
 }
 
 } // namespace Private
