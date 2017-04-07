@@ -5,6 +5,8 @@
 #include "Base/TemplateHelpers.h"
 #include "Debug/DVAssert.h"
 #include "Engine/Engine.h"
+#include "Utils/UTF8Utils.h"
+#include "Utils/NSStringUtils.h"
 
 #import <Carbon/Carbon.h>
 
@@ -148,6 +150,53 @@ eInputElements KeyboardDeviceImpl::ConvertNativeScancodeToDavaScancode(uint32 na
 {
     DVASSERT(nativeScancode < COUNT_OF(nativeScancodeToDavaScancode));
     return nativeScancodeToDavaScancode[nativeScancode];
+}
+    
+WideString KeyboardDeviceImpl::TranslateElementToWideString(eInputElements elementId)
+{
+    for (size_t i = 0; i < COUNT_OF(nativeScancodeToDavaScancode); ++i)
+    {
+        if (nativeScancodeToDavaScancode[i] == elementId)
+        {
+            // Get ascii capable input source
+            TISInputSourceRef inputSource = TISCopyCurrentASCIICapableKeyboardInputSource();
+            CFDataRef layoutData = (CFDataRef)TISGetInputSourceProperty(inputSource, kTISPropertyUnicodeKeyLayoutData);
+            const UCKeyboardLayout *keyboardLayout = (const UCKeyboardLayout *)CFDataGetBytePtr(layoutData);
+            
+            // Translate key to unicode using selected input source
+            const size_t maxLength = 4;
+            UniChar unicodeString[maxLength];
+            UniCharCount realLength;
+            uint32 deadKeyState;
+            UCKeyTranslate(keyboardLayout,
+                           i,
+                           kUCKeyActionDown,
+                           0,
+                           LMGetKbdType(),
+                           kUCKeyTranslateNoDeadKeysMask,
+                           &deadKeyState,
+                           maxLength,
+                           &realLength,
+                           unicodeString);
+            
+            CFRelease(inputSource);
+            
+            if (realLength == 0)
+            {
+                // Non printable
+                return UTF8Utils::EncodeToWideString(GetInputElementInfo(elementId).name);
+            }
+            else
+            {
+                NSString* string = [NSString stringWithCharacters:unicodeString length:realLength];
+                return WideStringFromNSString(string);
+            }
+        }
+    }
+    
+    
+    DVASSERT(false);
+    return WideString(L"");
 }
 
 } // namespace Private
