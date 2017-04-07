@@ -6,7 +6,7 @@
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 #include "Input/GamepadDevice.h"
 #include "Input/InputElements.h"
-#include "Input/Private/DigitalElement.h"
+#include "Input/Private/DIElementWrapper.h"
 
 #include <android/input.h>
 #include <android/keycodes.h>
@@ -152,7 +152,7 @@ void GamepadDeviceImpl::HandleAxisHat(int axis, float value)
     if (pressed)
     {
         uint32 index = elem[value > 0.f] - eInputElements::GAMEPAD_FIRST_BUTTON;
-        DigitalInputElement dpadElem(gamepadDevice->buttons[index]);
+        DIElementWrapper dpadElem(gamepadDevice->buttons[index]);
 
         dpadElem.Press();
         gamepadDevice->buttonChangedMask.set(index);
@@ -162,7 +162,7 @@ void GamepadDeviceImpl::HandleAxisHat(int axis, float value)
         for (uint32 i = 0; i < 2; ++i)
         {
             uint32 index = elem[i] - eInputElements::GAMEPAD_FIRST_BUTTON;
-            DigitalInputElement dpadElem(gamepadDevice->buttons[index]);
+            DIElementWrapper dpadElem(gamepadDevice->buttons[index]);
             if (dpadElem.IsPressed())
             {
                 dpadElem.Release();

@@ -2,7 +2,6 @@
 
 #include "Input/InputDevice.h"
 #include "Input/InputEvent.h"
-#include "Input/Private/DigitalElement.h"
 
 namespace DAVA
 {
@@ -42,7 +41,7 @@ private:
 private:
     InputSystem* inputSystem = nullptr;
 
-    Private::DigitalElement buttons[eInputElements::MOUSE_LAST_BUTTON - eInputElements::MOUSE_FIRST_BUTTON + 1];
+    eDigitalElementStates buttons[eInputElements::MOUSE_LAST_BUTTON - eInputElements::MOUSE_FIRST_BUTTON + 1];
     AnalogElementState mousePosition;
     AnalogElementState mouseWheelDelta;
 

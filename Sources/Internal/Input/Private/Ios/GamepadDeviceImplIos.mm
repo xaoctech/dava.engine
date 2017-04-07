@@ -7,7 +7,6 @@
 
 #include "Input/GamepadDevice.h"
 #include "Input/InputElements.h"
-#include "Input/Private/DigitalElement.h"
 
 namespace DAVA
 {

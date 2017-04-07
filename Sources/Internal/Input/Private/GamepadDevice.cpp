@@ -7,7 +7,7 @@
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 #include "Input/InputEvent.h"
 #include "Input/InputSystem.h"
-#include "Input/Private/DigitalElement.h"
+#include "Input/Private/DIElementWrapper.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
 #include "Input/Private/Android/GamepadDeviceImplAndroid.h"
@@ -98,9 +98,9 @@ void GamepadDevice::Update()
 
 void GamepadDevice::OnEndFrame()
 {
-    for (eDigitalElementStates& d : buttons)
+    for (DIElementWrapper di : buttons)
     {
-        Private::DigitalInputElement(d).OnEndFrame();
+        di.OnEndFrame();
     }
 }
 
@@ -129,7 +129,7 @@ void GamepadDevice::HandleGamepadButton(const Private::MainDispatcherEvent& e)
 void GamepadDevice::HandleButtonPress(eInputElements element, bool pressed)
 {
     uint32 index = element - eInputElements::GAMEPAD_FIRST_BUTTON;
-    Private::DigitalInputElement di(buttons[index]);
+    DIElementWrapper di(buttons[index]);
     if (di.IsPressed() != pressed)
     {
         pressed ? di.Press() : di.Release();

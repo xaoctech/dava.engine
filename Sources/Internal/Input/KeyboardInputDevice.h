@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Input/Private/DigitalElement.h"
+#include "Input/InputDevice.h"
 
 namespace DAVA
 {
@@ -33,7 +33,7 @@ private:
     KeyboardInputDevice(const KeyboardInputDevice&) = delete;
     KeyboardInputDevice& operator=(const KeyboardInputDevice&) = delete;
 
-    void CreateAndSendInputEvent(eInputElements elementId, const Private::DigitalElement& element, Window* window, DAVA::int64 timestamp) const;
+    void CreateAndSendInputEvent(eInputElements elementId, eDigitalElementStates element, Window* window, DAVA::int64 timestamp) const;
 
     bool HandleEvent(const Private::MainDispatcherEvent& e);
     void OnEndFrame();
@@ -44,7 +44,7 @@ private:
     Private::KeyboardDeviceImpl* impl = nullptr;
 
     // State of each scancode key
-    Array<Private::DigitalElement, static_cast<uint32>(INPUT_ELEMENTS_KB_COUNT)> keys;
+    Array<eDigitalElementStates, static_cast<uint32>(INPUT_ELEMENTS_KB_COUNT)> keys;
 
     size_t endFrameConnectionToken;
     size_t primaryWindowFocusChangedToken;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Input/Private/DigitalElement.h"
+#include "Input/InputDevice.h"
 
 namespace DAVA
 {
@@ -44,7 +44,7 @@ private:
     InputSystem* inputSystem = nullptr;
     size_t endFrameConnectionToken;
 
-    Array<Private::DigitalElement, INPUT_ELEMENTS_TOUCH_CLICK_COUNT> clicks;
+    Array<eDigitalElementStates, INPUT_ELEMENTS_TOUCH_CLICK_COUNT> clicks;
     Array<AnalogElementState, INPUT_ELEMENTS_TOUCH_CLICK_COUNT> positions;
     Array<uint32, INPUT_ELEMENTS_TOUCH_CLICK_COUNT> nativeTouchIds;
 };
