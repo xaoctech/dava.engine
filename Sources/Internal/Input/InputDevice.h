@@ -69,7 +69,6 @@ public:
     /** Create InputDevice instance with specified `id` */
     InputDevice(uint32 id);
     virtual ~InputDevice() = default;
-    virtual ~InputDevice() = default;
 
     /** Return unique device id */
     uint32 GetId() const;
