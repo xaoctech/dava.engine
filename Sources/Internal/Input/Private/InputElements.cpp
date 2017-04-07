@@ -154,27 +154,27 @@ const InputElementInfo& GetInputElementInfo(eInputElements element)
         info[eInputElements::TOUCH_POSITION9] = { "Touch 9 position", eInputElementTypes::ANALOG };
 
         // Gamepad
-        info[eInputElements::GAMEPAD_START] = { "GAMEPAD_START", eInputElementTypes::DIGITAL };
-        info[eInputElements::GAMEPAD_BACK] = { "GAMEPAD_BACK", eInputElementTypes::DIGITAL };
-        info[eInputElements::GAMEPAD_A] = { "GAMEPAD_A", eInputElementTypes::DIGITAL };
-        info[eInputElements::GAMEPAD_B] = { "GAMEPAD_B", eInputElementTypes::DIGITAL };
-        info[eInputElements::GAMEPAD_X] = { "GAMEPAD_X", eInputElementTypes::DIGITAL };
-        info[eInputElements::GAMEPAD_Y] = { "GAMEPAD_Y", eInputElementTypes::DIGITAL };
-        info[eInputElements::GAMEPAD_DPAD_LEFT] = { "GAMEPAD_DPAD_LEFT", eInputElementTypes::DIGITAL };
-        info[eInputElements::GAMEPAD_DPAD_RIGHT] = { "GAMEPAD_DPAD_RIGHT", eInputElementTypes::DIGITAL };
-        info[eInputElements::GAMEPAD_DPAD_UP] = { "GAMEPAD_DPAD_UP", eInputElementTypes::DIGITAL };
-        info[eInputElements::GAMEPAD_DPAD_DOWN] = { "GAMEPAD_DPAD_DOWN", eInputElementTypes::DIGITAL };
-        info[eInputElements::GAMEPAD_LTHUMB] = { "GAMEPAD_LTHUMB", eInputElementTypes::DIGITAL };
-        info[eInputElements::GAMEPAD_RTHUMB] = { "GAMEPAD_RTHUMB", eInputElementTypes::DIGITAL };
-        info[eInputElements::GAMEPAD_LSHOUDER] = { "GAMEPAD_LSHOUDER", eInputElementTypes::DIGITAL };
-        info[eInputElements::GAMEPAD_RSHOUDER] = { "GAMEPAD_RSHOUDER", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_START] = { "Gamepad start", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_BACK] = { "Gamepad back", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_A] = { "Gamepad A", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_B] = { "Gamepad B", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_X] = { "Gamepad X", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_Y] = { "Gamepad Y", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_DPAD_LEFT] = { "Gamepad dpad left", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_DPAD_RIGHT] = { "Gamepad dpad right", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_DPAD_UP] = { "Gamepad dpad up", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_DPAD_DOWN] = { "Gamepad dpad down", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_LTHUMB] = { "Gamepad left thumbstick", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_RTHUMB] = { "Gamepad right thumbstick", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_LSHOUDER] = { "Gamepad lelft shouder", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_RSHOUDER] = { "Gamepad right shouder", eInputElementTypes::DIGITAL };
 
-        info[eInputElements::GAMEPAD_LTRIGGER] = { "GAMEPAD_LTRIGGER", eInputElementTypes::ANALOG };
-        info[eInputElements::GAMEPAD_RTRIGGER] = { "GAMEPAD_RTRIGGER", eInputElementTypes::ANALOG };
-        info[eInputElements::GAMEPAD_LTHUMB_X] = { "GAMEPAD_LTHUMB_X", eInputElementTypes::ANALOG };
-        info[eInputElements::GAMEPAD_LTHUMB_Y] = { "GAMEPAD_LTHUMB_Y", eInputElementTypes::ANALOG };
-        info[eInputElements::GAMEPAD_RTHUMB_X] = { "GAMEPAD_RTHUMB_X", eInputElementTypes::ANALOG };
-        info[eInputElements::GAMEPAD_RTHUMB_Y] = { "GAMEPAD_RTHUMB_Y", eInputElementTypes::ANALOG };
+        info[eInputElements::GAMEPAD_LTRIGGER] = { "Gamepad left trigger", eInputElementTypes::ANALOG };
+        info[eInputElements::GAMEPAD_RTRIGGER] = { "Gamepad right trigger", eInputElementTypes::ANALOG };
+        info[eInputElements::GAMEPAD_LTHUMB_X] = { "Gamepad left thumbstick X", eInputElementTypes::ANALOG };
+        info[eInputElements::GAMEPAD_LTHUMB_Y] = { "Gamepad left thumbstick Y", eInputElementTypes::ANALOG };
+        info[eInputElements::GAMEPAD_RTHUMB_X] = { "Gamepad right thumbstick X", eInputElementTypes::ANALOG };
+        info[eInputElements::GAMEPAD_RTHUMB_Y] = { "Gamepad right thumbstick Y", eInputElementTypes::ANALOG };
 
         initialized = true;
     }
