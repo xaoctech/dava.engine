@@ -50,8 +50,5 @@ private:
 
     // State of each physical key
     Array<Private::DigitalElement, INPUT_ELEMENTS_KB_COUNT> keys;
-
-    size_t endFrameConnectionToken;
-    size_t primaryWindowFocusChangedToken;
 };
 } // namespace DAVA

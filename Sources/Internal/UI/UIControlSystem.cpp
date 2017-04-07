@@ -940,7 +940,7 @@ UIEvent UIControlSystem::MakeUIEvent(const InputEvent& inputEvent) const
         if (isDigitalEvent)
         {
             TouchDevice* touchDevice = GetEngineContext()->deviceManager->GetTouch();
-            AnalogElementState analogState = touchDevice->GetAnalogElementState(GetTouchPositionFromClick(inputEvent.elementId));
+            AnalogElementState analogState = touchDevice->GetAnalogElementState(GetTouchPositionElementFromClickElement(inputEvent.elementId));
 
             uie.phase = (inputEvent.digitalState & eDigitalElementStates::PRESSED) != eDigitalElementStates::NONE ? UIEvent::Phase::BEGAN : UIEvent::Phase::ENDED;
             uie.physPoint = { analogState.x, analogState.y };

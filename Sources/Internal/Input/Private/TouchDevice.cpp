@@ -11,8 +11,8 @@ TouchDevice::TouchDevice(uint32 id)
     : InputDevice(id)
     , inputSystem(GetEngineContext()->inputSystem)
 {
-    endFrameConnectionToken = Engine::Instance()->endFrame.Connect(this, &TouchDevice::OnEndFrame);
-    Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &TouchDevice::HandleEvent));
+    Engine::Instance()->endFrame.Connect(this, &TouchDevice::OnEndFrame);
+    Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &TouchDevice::HandleMainDispatcherEvent));
 
     for (size_t i = 0; i < INPUT_ELEMENTS_TOUCH_POSITION_COUNT; ++i)
     {
@@ -23,7 +23,7 @@ TouchDevice::TouchDevice(uint32 id)
 
 TouchDevice::~TouchDevice()
 {
-    Engine::Instance()->endFrame.Disconnect(endFrameConnectionToken);
+    Engine::Instance()->endFrame.Disconnect(this);
     Private::EngineBackend::Instance()->UninstallEventFilter(this);
 }
 
@@ -37,18 +37,16 @@ bool TouchDevice::SupportsElement(eInputElements elementId) const
 eDigitalElementStates TouchDevice::GetDigitalElementState(eInputElements elementId) const
 {
     DVASSERT(IsTouchClickElement(elementId));
-
     return clicks[elementId - eInputElements::TOUCH_FIRST_CLICK].GetState();
 }
 
 AnalogElementState TouchDevice::GetAnalogElementState(eInputElements elementId) const
 {
     DVASSERT(IsTouchPositionElement(elementId));
-
     return positions[elementId - eInputElements::TOUCH_FIRST_POSITION];
 }
 
-bool TouchDevice::HandleEvent(const Private::MainDispatcherEvent& e)
+bool TouchDevice::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e)
 {
     using Private::MainDispatcherEvent;
 
@@ -97,7 +95,7 @@ bool TouchDevice::HandleEvent(const Private::MainDispatcherEvent& e)
     }
     else if (e.type == MainDispatcherEvent::TOUCH_UP)
     {
-        // Find out index the of touch
+        // Find out index of the touch
 
         int touchIndex = -1;
         for (int i = 0; i < INPUT_ELEMENTS_TOUCH_CLICK_COUNT; ++i)
@@ -168,7 +166,7 @@ bool TouchDevice::HandleEvent(const Private::MainDispatcherEvent& e)
         analogState.x = e.touchEvent.x;
         analogState.y = e.touchEvent.y;
 
-        // Create and send input event
+        // Send input event
 
         inputEvent.analogState = analogState;
         inputEvent.elementId = static_cast<eInputElements>(eInputElements::TOUCH_FIRST_POSITION + touchIndex);

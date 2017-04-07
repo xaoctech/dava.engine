@@ -14,14 +14,14 @@ MouseDevice::MouseDevice(uint32 id)
     , mousePosition{}
     , mouseWheelDelta{}
 {
-    endFrameConnectionToken = Engine::Instance()->endFrame.Connect(this, &MouseDevice::OnEndFrame);
+    Engine::Instance()->endFrame.Connect(this, &MouseDevice::OnEndFrame);
     Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &MouseDevice::HandleEvent));
 }
 
 MouseDevice::~MouseDevice()
 {
     Private::EngineBackend::Instance()->UninstallEventFilter(this);
-    Engine::Instance()->endFrame.Disconnect(endFrameConnectionToken);
+    Engine::Instance()->endFrame.Disconnect(this);
 }
 
 bool MouseDevice::SupportsElement(eInputElements elementId) const

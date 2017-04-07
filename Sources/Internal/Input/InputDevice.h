@@ -85,8 +85,8 @@ public:
     /** Return unique device id */
     uint32 GetId() const;
 
-    /** Return true if element with specified `elementId` is supported by the device
-        (i.e. it's state can be requested with either `GetDigitalElementState` or `GetAnalogElementState`)
+    /** Return `true` if element with specified `elementId` is supported by the device
+        (i.e. its state can be requested with either `GetDigitalElementState` or `GetAnalogElementState`)
     */
     virtual bool SupportsElement(eInputElements elementId) const = 0;
 

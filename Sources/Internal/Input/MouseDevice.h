@@ -45,8 +45,6 @@ private:
     Private::DigitalElement buttons[eInputElements::MOUSE_LAST_BUTTON - eInputElements::MOUSE_FIRST_BUTTON + 1];
     AnalogElementState mousePosition;
     AnalogElementState mouseWheelDelta;
-
-    size_t endFrameConnectionToken;
 };
 
 } // namespace DAVA

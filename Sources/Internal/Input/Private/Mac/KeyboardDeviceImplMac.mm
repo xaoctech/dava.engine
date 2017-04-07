@@ -151,7 +151,7 @@ eInputElements KeyboardDeviceImpl::ConvertNativeScancodeToDavaScancode(uint32 na
     DVASSERT(nativeScancode < COUNT_OF(nativeScancodeToDavaScancode));
     return nativeScancodeToDavaScancode[nativeScancode];
 }
-    
+
 WideString KeyboardDeviceImpl::TranslateElementToWideString(eInputElements elementId)
 {
     for (size_t i = 0; i < COUNT_OF(nativeScancodeToDavaScancode); ++i)
@@ -161,8 +161,8 @@ WideString KeyboardDeviceImpl::TranslateElementToWideString(eInputElements eleme
             // Get ascii capable input source
             TISInputSourceRef inputSource = TISCopyCurrentASCIICapableKeyboardInputSource();
             CFDataRef layoutData = (CFDataRef)TISGetInputSourceProperty(inputSource, kTISPropertyUnicodeKeyLayoutData);
-            const UCKeyboardLayout *keyboardLayout = (const UCKeyboardLayout *)CFDataGetBytePtr(layoutData);
-            
+            const UCKeyboardLayout* keyboardLayout = (const UCKeyboardLayout*)CFDataGetBytePtr(layoutData);
+
             // Translate key to unicode using selected input source
             const size_t maxLength = 4;
             UniChar unicodeString[maxLength];
@@ -178,9 +178,9 @@ WideString KeyboardDeviceImpl::TranslateElementToWideString(eInputElements eleme
                            maxLength,
                            &realLength,
                            unicodeString);
-            
+
             CFRelease(inputSource);
-            
+
             if (realLength == 0)
             {
                 // Non printable
@@ -193,8 +193,7 @@ WideString KeyboardDeviceImpl::TranslateElementToWideString(eInputElements eleme
             }
         }
     }
-    
-    
+
     DVASSERT(false);
     return WideString(L"");
 }

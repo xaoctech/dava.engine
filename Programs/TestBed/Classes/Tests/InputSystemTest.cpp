@@ -30,8 +30,8 @@ void InputSystemTest::LoadResources()
 
     // Subscribe to events
     rawInputToken = GetEngineContext()->inputSystem->AddHandler(eInputDeviceTypes::CLASS_ALL, MakeFunction(this, &InputSystemTest::OnInputEvent));
-    actionTriggeredToken = GetEngineContext()->actionSystem->ActionTriggered.Connect(this, &InputSystemTest::OnAction);
-    updateToken = Engine::Instance()->update.Connect(this, &InputSystemTest::OnUpdate);
+    GetEngineContext()->actionSystem->ActionTriggered.Connect(this, &InputSystemTest::OnAction);
+    Engine::Instance()->update.Connect(this, &InputSystemTest::OnUpdate);
 
     // Bind action set
 
@@ -77,8 +77,8 @@ void InputSystemTest::LoadResources()
 void InputSystemTest::UnloadResources()
 {
     GetEngineContext()->inputSystem->RemoveHandler(rawInputToken);
-    GetEngineContext()->actionSystem->ActionTriggered.Disconnect(actionTriggeredToken);
-    Engine::Instance()->update.Disconnect(updateToken);
+    GetEngineContext()->actionSystem->ActionTriggered.Disconnect(this);
+    Engine::Instance()->update.Disconnect(this);
 
     for (auto it = keyboardButtons.begin(); it != keyboardButtons.end(); ++it)
     {
