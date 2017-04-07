@@ -631,13 +631,6 @@ bool InputSystemTest::OnInputEvent(InputEvent const& event)
         UIButton* scancodeButton = keyboardButtons[event.elementId];
 
         HighlightDigitalButton(scancodeButton, event.digitalState);
-
-        InputListener* inputListener = GetEngineContext()->inputListener;
-        if (event.elementId == eInputElements::KB_ESCAPE && inputListener->IsListening())
-        {
-            inputListener->StopListening();
-            inputListenerResultField->SetText(L"Stopped listening");
-        }
     }
     else if (event.deviceType == eInputDeviceTypes::MOUSE)
     {
@@ -699,29 +692,38 @@ void InputSystemTest::OnInputListenerButtonPressed(DAVA::BaseObject* sender, voi
     inputListenerResultField->SetText(L"Listening...");
 }
 
-void InputSystemTest::OnInputListeningEnded(DAVA::Vector<DAVA::InputEvent> input)
+void InputSystemTest::OnInputListeningEnded(bool cancelled, DAVA::Vector<DAVA::InputEvent> input)
 {
-    std::wstringstream ss;
-    for (size_t i = 0; i < input.size(); ++i)
+    if (cancelled)
     {
-        if (input[i].deviceType == eInputDeviceTypes::KEYBOARD)
-        {
-            WideString repr = GetEngineContext()->deviceManager->GetKeyboard()->TranslateElementToWideString(input[i].elementId);
-            ss << repr;
-        }
-        else
-        {
-            String repr = GetInputElementInfo(input[i].elementId).name;
-            ss << repr.c_str();
-        }
-
-        if (i != input.size() - 1)
-        {
-            ss << " + ";
-        }
+        inputListenerResultField->SetText(L"Stopped listening");
     }
+    else
+    {
+        // Combine input elements into a string
 
-    inputListenerResultField->SetText(ss.str());
+        std::wstringstream wstringStream;
+        for (size_t i = 0; i < input.size(); ++i)
+        {
+            if (input[i].deviceType == eInputDeviceTypes::KEYBOARD)
+            {
+                WideString repr = GetEngineContext()->deviceManager->GetKeyboard()->TranslateElementToWideString(input[i].elementId);
+                wstringStream << repr;
+            }
+            else
+            {
+                String repr = GetInputElementInfo(input[i].elementId).name;
+                wstringStream << repr.c_str();
+            }
+
+            if (i != input.size() - 1)
+            {
+                wstringStream << " + ";
+            }
+        }
+
+        inputListenerResultField->SetText(wstringStream.str());
+    }
 }
 
 void InputSystemTest::OnUpdate(float32 delta)

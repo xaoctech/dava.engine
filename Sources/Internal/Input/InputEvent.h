@@ -2,7 +2,6 @@
 
 #include "Engine/EngineTypes.h"
 #include "Input/InputDevice.h"
-#include "Input/InputElements.h"
 
 namespace DAVA
 {
@@ -31,10 +30,10 @@ struct InputEvent
 
     union
     {
-        /** Digital element's state */
+        /** Digital element's state. Should only be used if element with `elementId` is a digital one */
         eDigitalElementStates digitalState;
 
-        /** Analog element's state */
+        /** Analog element's state. Should only be used if element with `elementId` is an analog one */
         AnalogElementState analogState;
     };
 
