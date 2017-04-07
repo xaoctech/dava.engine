@@ -701,17 +701,17 @@ void InputSystemTest::OnInputListeningEnded(DAVA::Vector<DAVA::InputEvent> input
     std::wstringstream ss;
     for (size_t i = 0; i < input.size(); ++i)
     {
-		if (input[i].deviceType == eInputDeviceTypes::KEYBOARD)
-		{
-			WideString repr = GetEngineContext()->deviceManager->GetKeyboard()->TranslateElementToWideString(input[i].elementId);
-			ss << repr;
-		}
-		else
-		{
-			String repr = GetInputElementInfo(input[i].elementId).name;
-			ss << repr.c_str();
-		}
-		
+        if (input[i].deviceType == eInputDeviceTypes::KEYBOARD)
+        {
+            WideString repr = GetEngineContext()->deviceManager->GetKeyboard()->TranslateElementToWideString(input[i].elementId);
+            ss << repr;
+        }
+        else
+        {
+            String repr = GetInputElementInfo(input[i].elementId).name;
+            ss << repr.c_str();
+        }
+
         if (i != input.size() - 1)
         {
             ss << " + ";

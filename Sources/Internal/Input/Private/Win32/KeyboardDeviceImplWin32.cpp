@@ -12,7 +12,6 @@ namespace DAVA
 {
 namespace Private
 {
-
 eInputElements KeyboardDeviceImpl::ConvertNativeScancodeToDavaScancode(uint32 nativeScancode)
 {
     const bool isExtended = (nativeScancode & 0xE000) == 0xE000;
@@ -30,27 +29,27 @@ eInputElements KeyboardDeviceImpl::ConvertNativeScancodeToDavaScancode(uint32 na
 
 WideString KeyboardDeviceImpl::TranslateElementToWideString(eInputElements elementId)
 {
-	for (size_t i = 0; i < COUNT_OF(nativeScancodeToDavaScancode); ++i)
-	{
-		if (nativeScancodeToDavaScancode[i] == elementId)
-		{
-			const uint32 nativeVirtual = MapVirtualKey(i, MAPVK_VSC_TO_VK);
-			const wchar_t character = static_cast<wchar_t>(MapVirtualKey(nativeVirtual, MAPVK_VK_TO_CHAR));
-			
-			if (character == 0)
-			{
-				// Non printable
-				return UTF8Utils::EncodeToWideString(GetInputElementInfo(elementId).name);
-			}
-			else
-			{
-				return WideString(1, character);
-			}
-		}
-	}
+    for (size_t nativeScancode = 0; nativeScancode < COUNT_OF(nativeScancodeToDavaScancode); ++nativeScancode)
+    {
+        if (nativeScancodeToDavaScancode[nativeScancode] == elementId)
+        {
+            const uint32 nativeVirtual = MapVirtualKey(nativeScancode, MAPVK_VSC_TO_VK);
+            const wchar_t character = static_cast<wchar_t>(MapVirtualKey(nativeVirtual, MAPVK_VK_TO_CHAR));
 
-	DVASSERT(false);
-	return WideString(L"");
+            if (character == 0)
+            {
+                // Non printable
+                return UTF8Utils::EncodeToWideString(GetInputElementInfo(elementId).name);
+            }
+            else
+            {
+                return WideString(1, character);
+            }
+        }
+    }
+
+    DVASSERT(false);
+    return WideString(L"");
 }
 
 } // namespace Private

@@ -27,7 +27,10 @@ public:
     eDigitalElementStates GetDigitalElementState(eInputElements elementId) const override;
     AnalogElementState GetAnalogElementState(eInputElements elementId) const override;
 
-	WideString TranslateElementToWideString(eInputElements elementId) const;
+    /**
+		Translate keyboard key into wide string, using curring keyboard layout.
+	*/
+    WideString TranslateElementToWideString(eInputElements elementId) const;
 
 private:
     KeyboardInputDevice(uint32 id);
@@ -35,11 +38,11 @@ private:
     KeyboardInputDevice(const KeyboardInputDevice&) = delete;
     KeyboardInputDevice& operator=(const KeyboardInputDevice&) = delete;
 
-	void OnEndFrame();
-	void OnWindowFocusChanged(DAVA::Window* window, bool focused);
+    void OnEndFrame();
+    void OnWindowFocusChanged(DAVA::Window* window, bool focused);
 
-	bool HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e);
-	void CreateAndSendInputEvent(eInputElements elementId, const Private::DigitalElement& element, Window* window, DAVA::int64 timestamp) const;
+    bool HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e);
+    void CreateAndSendInputEvent(eInputElements elementId, const Private::DigitalElement& element, Window* window, DAVA::int64 timestamp) const;
 
 private:
     InputSystem* inputSystem = nullptr;
