@@ -34,27 +34,48 @@ WideString KeyboardDeviceImpl::TranslateElementToWideString(eInputElements eleme
         return UTF8Utils::EncodeToWideString(GetInputElementInfo(elementId).name);
     }
 
-    for (size_t nativeScancode = 0; nativeScancode < COUNT_OF(nativeScancodeToDavaScancode); ++nativeScancode)
-    {
-        if (nativeScancodeToDavaScancode[nativeScancode] == elementId)
-        {
-            const uint32 nativeVirtual = DllImport::fnMapVirtualKey(nativeScancode, MAPVK_VSC_TO_VK);
-            const wchar_t character = static_cast<wchar_t>(DllImport::fnMapVirtualKey(nativeVirtual, MAPVK_VK_TO_CHAR));
+    int nativeScancode = -1;
 
-            if (character == 0)
+    for (size_t i = 0; i < COUNT_OF(nativeScancodeToDavaScancode); ++i)
+    {
+        if (nativeScancodeToDavaScancode[i] == elementId)
+        {
+            nativeScancode = i;
+        }
+    }
+
+    if (nativeScancode == -1)
+    {
+        for (size_t i = 0; i < COUNT_OF(nativeScancodeExtToDavaScancode); ++i)
+        {
+            if (nativeScancodeExtToDavaScancode[i] == elementId)
             {
-                // Non printable
-                return UTF8Utils::EncodeToWideString(GetInputElementInfo(elementId).name);
-            }
-            else
-            {
-                return WideString(1, character);
+                nativeScancode = i;
             }
         }
     }
 
-    DVASSERT(false);
-    return WideString(L"");
+    DVASSERT(nativeScancode >= 0);
+
+    wchar_t character = TranslateNativeScancodeToWChar(nativeScancode);
+
+    if (character == 0)
+    {
+        // Non printable
+        return UTF8Utils::EncodeToWideString(GetInputElementInfo(elementId).name);
+    }
+    else
+    {
+        return WideString(1, character);
+    }
+}
+
+wchar_t KeyboardDeviceImpl::TranslateNativeScancodeToWChar(uint32 nativeScancode)
+{
+    const uint32 nativeVirtual = DllImport::fnMapVirtualKey(nativeScancode, MAPVK_VSC_TO_VK);
+    const wchar_t character = static_cast<wchar_t>(DllImport::fnMapVirtualKey(nativeVirtual, MAPVK_VK_TO_CHAR));
+
+    return character;
 }
 
 } // namespace Private
