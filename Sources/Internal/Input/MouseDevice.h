@@ -1,7 +1,7 @@
 #pragma once
 
+#include "Base/Token.h"
 #include "Input/InputDevice.h"
-#include "Input/InputEvent.h"
 
 namespace DAVA
 {
@@ -45,7 +45,7 @@ private:
     AnalogElementState mousePosition;
     AnalogElementState mouseWheelDelta;
 
-    size_t endFrameConnectionToken;
+    Token endFrameConnectionToken;
 };
 
 } // namespace DAVA

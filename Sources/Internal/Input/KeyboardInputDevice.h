@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Base/Token.h"
 #include "Input/InputDevice.h"
 
 namespace DAVA
@@ -28,8 +29,8 @@ public:
     AnalogElementState GetAnalogElementState(eInputElements elementId) const override;
 
     /**
-		Translate keyboard key into wide string, using curring keyboard layout.
-	*/
+        Translate keyboard key into wide string, using curring keyboard layout.
+    */
     WideString TranslateElementToWideString(eInputElements elementId) const;
 
 private:
@@ -42,16 +43,16 @@ private:
     void OnWindowFocusChanged(DAVA::Window* window, bool focused);
 
     bool HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e);
-    void CreateAndSendInputEvent(eInputElements elementId, const Private::DigitalElement& element, Window* window, DAVA::int64 timestamp) const;
+    void CreateAndSendInputEvent(eInputElements elementId, eDigitalElementStates element, Window* window, int64 timestamp) const;
 
 private:
     InputSystem* inputSystem = nullptr;
     Private::KeyboardDeviceImpl* impl = nullptr;
 
     // State of each physical key
-    Array<Private::DigitalElement, INPUT_ELEMENTS_KB_COUNT> keys;
+    Array<eDigitalElementStates, INPUT_ELEMENTS_KB_COUNT> keys;
 
-    size_t endFrameConnectionToken;
-    size_t primaryWindowFocusChangedToken;
+    Token endFrameConnectionToken;
+    Token primaryWindowFocusChangedToken;
 };
 } // namespace DAVA

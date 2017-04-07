@@ -1,10 +1,8 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
-#include "Base/BaseObject.h"
-#include "Engine/EngineTypes.h"
+#include "Base/Token.h"
 #include "Input/InputDevice.h"
-#include "Input/InputElements.h"
 
 #include <bitset>
 
@@ -59,7 +57,7 @@ private:
     std::bitset<AXIS_COUNT> axisChangedMask;
     std::bitset<BUTTON_COUNT + AXIS_COUNT> supportedElements;
 
-    size_t endFrameConnectionToken = 0;
+    Token endFrameConnectionToken;
 };
 
 } // namespace DAVA

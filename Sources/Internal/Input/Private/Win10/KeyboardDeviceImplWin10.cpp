@@ -38,7 +38,7 @@ WideString KeyboardDeviceImpl::TranslateElementToWideString(eInputElements eleme
     {
         if (nativeScancodeToDavaScancode[nativeScancode] == elementId)
         {
-            const uint32 nativeVirtual = DllImport::fnMapVirtualKey(nativeScancode, MAPVK_VSC_TO_VK);
+            const UINT nativeVirtual = DllImport::fnMapVirtualKey(static_cast<UINT>(nativeScancode), MAPVK_VSC_TO_VK);
             const wchar_t character = static_cast<wchar_t>(DllImport::fnMapVirtualKey(nativeVirtual, MAPVK_VK_TO_CHAR));
 
             if (character == 0)

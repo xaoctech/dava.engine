@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Base/Token.h"
 #include "Input/InputDevice.h"
 
 namespace DAVA
@@ -42,7 +43,7 @@ private:
 
 private:
     InputSystem* inputSystem = nullptr;
-    size_t endFrameConnectionToken;
+    Token endFrameConnectionToken;
 
     Array<eDigitalElementStates, INPUT_ELEMENTS_TOUCH_CLICK_COUNT> clicks;
     Array<AnalogElementState, INPUT_ELEMENTS_TOUCH_CLICK_COUNT> positions;

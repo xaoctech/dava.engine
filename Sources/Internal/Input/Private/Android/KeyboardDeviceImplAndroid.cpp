@@ -3,6 +3,7 @@
 #if defined(__DAVAENGINE_ANDROID__)
 
 #include "Base/TemplateHelpers.h"
+#include "Utils/UTF8Utils.h"
 
 namespace DAVA
 {
