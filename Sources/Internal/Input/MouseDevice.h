@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Base/Token.h"
 #include "Input/InputDevice.h"
 
 namespace DAVA
