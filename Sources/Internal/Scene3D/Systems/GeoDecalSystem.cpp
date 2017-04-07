@@ -8,8 +8,14 @@ namespace DAVA
 struct DecalCoord
 {
     Vector3 point;
+    Vector3 normal;
+    Vector3 tangent;
+    Vector3 binormal;
     Vector2 texCoord0;
     Vector2 texCoord1;
+    int32 jointCount = 0;
+    int32 jointIndex = 0;
+    float32 jointWeight = 1.0f;
 };
 void Clip3D_AABB(DecalCoord* p_vs, uint8_t* nb_p_vs, const AABBox3& clipper);
 
@@ -17,6 +23,14 @@ GeoDecalSystem::GeoDecalSystem(Scene* scene)
     : SceneSystem(scene)
 {
     scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::WORLD_TRANSFORM_CHANGED);
+
+    uint32 normalmapData[16] = {
+        0xffff8080, 0xffff8080, 0xffff8080, 0xffff8080,
+        0xffff8080, 0xffff8080, 0xffff8080, 0xffff8080,
+        0xffff8080, 0xffff8080, 0xffff8080, 0xffff8080,
+        0xffff8080, 0xffff8080, 0xffff8080, 0xffff8080,
+    };
+    defaultNormalMap = Texture::CreateFromData(PixelFormat::FORMAT_RGBA8888, reinterpret_cast<uint8*>(normalmapData), 4, 4, false);
 }
 
 void GeoDecalSystem::Process(float32 timeElapsed)
@@ -213,6 +227,7 @@ bool GeoDecalSystem::BuildDecal(const DecalBuildInfo& info, DecalRenderBatch& ba
     bool isPlanarProjection = info.component->GetMapping() == GeoDecalComponent::Mapping::PLANAR;
 
     PolygonGroup* geometry = info.batch->GetPolygonGroup();
+    int32 geometryFormat = geometry->GetFormat();
 
     Vector<DecalCoord> decalGeometry;
     decalGeometry.reserve(geometry->GetIndexCount());
@@ -228,11 +243,22 @@ bool GeoDecalSystem::BuildDecal(const DecalBuildInfo& info, DecalRenderBatch& ba
         {
             int32 idx = 0;
             geometry->GetIndex(3 * triangleIndex + j, idx);
-
-            if (geometry->GetFormat() & EVF_TEXCOORD1)
-                geometry->GetTexcoord(1, idx, points[j].texCoord1);
-
             geometry->GetCoord(idx, points[j].point);
+
+            if (geometryFormat & EVF_TEXCOORD1)
+                geometry->GetTexcoord(1, idx, points[j].texCoord1);
+            if (geometryFormat & EVF_NORMAL)
+                geometry->GetNormal(idx, points[j].normal);
+            if (geometryFormat & EVF_TANGENT)
+                geometry->GetTangent(idx, points[j].tangent);
+            if (geometryFormat & EVF_BINORMAL)
+                geometry->GetBinormal(idx, points[j].binormal);
+            if ((geometryFormat & EVF_JOINTINDEX) || (geometryFormat & EVF_JOINTWEIGHT))
+                geometry->GetJointCount(idx, points[j].jointCount);
+            if (geometryFormat & EVF_JOINTINDEX)
+                geometry->GetJointIndex(idx, points[j].jointIndex);
+            if (geometryFormat & EVF_JOINTWEIGHT)
+                geometry->GetJointWeight(idx, points[j].jointWeight);
         }
 
         if (Intersection::BoxTriangle(info.box, points[2].point, points[1].point, points[0].point))
@@ -307,38 +333,68 @@ bool GeoDecalSystem::BuildDecal(const DecalBuildInfo& info, DecalRenderBatch& ba
         return false;
 
     ScopedPtr<PolygonGroup> poly(new PolygonGroup());
-    poly->AllocateData(EVF_VERTEX | EVF_TEXCOORD0 | EVF_TEXCOORD1, static_cast<uint32>(decalGeometry.size()), static_cast<uint32>(decalGeometry.size()));
+    poly->AllocateData(geometryFormat | EVF_TEXCOORD0, static_cast<uint32>(decalGeometry.size()), static_cast<uint32>(decalGeometry.size()));
     uint32 index = 0;
     for (const DecalCoord& c : decalGeometry)
     {
         poly->SetCoord(index, c.point);
-        poly->SetTexcoord(0, index, c.texCoord0);
-        poly->SetTexcoord(1, index, c.texCoord1);
         poly->SetIndex(index, static_cast<int16>(index));
+        poly->SetTexcoord(0, index, c.texCoord0);
+
+        if (geometryFormat & EVF_TEXCOORD1)
+            poly->SetTexcoord(1, index, c.texCoord1);
+
+        if (geometryFormat & EVF_NORMAL)
+            poly->SetNormal(index, c.normal);
+
+        if (geometryFormat & EVF_TANGENT)
+            poly->SetTangent(index, c.tangent);
+
+        if (geometryFormat & EVF_BINORMAL)
+            poly->SetBinormal(index, c.binormal);
+
+        if ((geometryFormat & EVF_JOINTINDEX) || (geometryFormat & EVF_JOINTWEIGHT))
+            geometry->SetJointCount(index, c.jointCount);
+
+        if (geometryFormat & EVF_JOINTINDEX)
+            geometry->SetJointIndex(index, 0, c.jointIndex);
+
+        if (geometryFormat & EVF_JOINTWEIGHT)
+            geometry->SetJointWeight(index, 0, c.jointWeight);
+
         ++index;
     }
     poly->BuildBuffers();
 
     ScopedPtr<NMaterial> material(new NMaterial());
+    material->SetParent(info.batch->GetMaterial());
     material->SetFXName(FastName("~res:/Materials/GeoDecal.material"));
-    material->SetMaterialName(FastName("GeoDecal.material"));
+    material->SetMaterialName(FastName("GeoDecal"));
 
-    Texture* lightmap = info.batch->GetMaterial()->GetEffectiveTexture(NMaterialTextureName::TEXTURE_LIGHTMAP);
-    if (lightmap != nullptr)
-        material->AddTexture(NMaterialTextureName::TEXTURE_LIGHTMAP, lightmap);
+    const FastName& baseFxName = info.batch->GetMaterial()->GetEffectiveFXName();
+    String fxNameString(baseFxName.c_str());
+    for (char& c : fxNameString)
+        c = static_cast<char>(::tolower(c));
+
+    if (fxNameString.find("lightmap") != String::npos)
+        material->AddFlag(FastName("MATERIAL_LIGHTMAP"), 1);
+
+    if (fxNameString.find("normalizedblinnphong") != String::npos)
+    {
+        material->AddFlag(FastName("NORMALIZED_BLINN_PHONG"), 1);
+
+        if (fxNameString.find("pervertex") != String::npos)
+            material->AddFlag(FastName("VERTEX_LIT"), 1);
+        else
+            material->AddFlag(FastName("PIXEL_LIT"), 1);
+
+        material->AddTexture(NMaterialTextureName::TEXTURE_NORMAL, defaultNormalMap);
+    }
 
     GeoDecalComponent* decalComponent = static_cast<GeoDecalComponent*>(info.component);
     Texture* albedo = Texture::CreateFromFile(decalComponent->GetDecalImage());
     if (albedo != nullptr)
         material->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, albedo);
-
-    const float32* uvOffset = info.batch->GetMaterial()->GetEffectivePropValue(NMaterialParamName::PARAM_UV_OFFSET);
-    if (uvOffset != nullptr)
-        material->AddProperty(NMaterialParamName::PARAM_UV_OFFSET, uvOffset, rhi::ShaderProp::Type::TYPE_FLOAT2);
-
-    const float32* uvScale = info.batch->GetMaterial()->GetEffectivePropValue(NMaterialParamName::PARAM_UV_SCALE);
-    if (uvScale != nullptr)
-        material->AddProperty(NMaterialParamName::PARAM_UV_SCALE, uvScale, rhi::ShaderProp::Type::TYPE_FLOAT2);
 
     batch.batch = new RenderBatch();
     batch.batch->SetPolygonGroup(poly);
@@ -359,10 +415,23 @@ bool GeoDecalSystem::BuildDecal(const DecalBuildInfo& info, DecalRenderBatch& ba
 
 DecalCoord Lerp(float t, const DecalCoord& v1, const DecalCoord& v2)
 {
+    DVASSERT(v1.jointCount == v2.jointCount);
+    DVASSERT(v1.jointIndex == v2.jointIndex);
+
     DecalCoord result;
-    result.point = v1.point * (1.0f - t) + v2.point * t;
-    result.texCoord0 = v1.texCoord0 * (1.0f - t) + v2.texCoord0 * t;
-    result.texCoord1 = v1.texCoord1 * (1.0f - t) + v2.texCoord1 * t;
+    result.jointCount = v1.jointCount;
+    result.jointIndex = v1.jointIndex;
+
+#define LERP_IMPL(var) result.var = v1.var * (1.0f - t) + v2.var * t;
+    LERP_IMPL(point);
+    LERP_IMPL(normal);
+    LERP_IMPL(tangent);
+    LERP_IMPL(binormal);
+    LERP_IMPL(texCoord0);
+    LERP_IMPL(texCoord1);
+    LERP_IMPL(jointWeight);
+#undef LERP_IMPL
+
     return result;
 }
 
@@ -382,9 +451,7 @@ inline int8_t Classify(int8_t sign, Vector3::eAxis axis, const Vector3& c_v, con
 void Clip3D_plane(DecalCoord* p_vs, uint8_t* nb_p_vs, int8_t sign, Vector3::eAxis axis, const Vector3& c_v)
 {
     uint8_t nb = (*nb_p_vs);
-    if (nb == 0)
-        return;
-    else if (nb == 1)
+    if (nb <= 1)
     {
         *nb_p_vs = 0;
         return;

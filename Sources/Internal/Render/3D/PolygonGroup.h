@@ -58,6 +58,10 @@ public:
     inline void GetFlexibility(int32 i, float32& v);
     inline void GetAngle(int32 i, Vector2& v);
 
+    inline void GetJointIndex(int32 vIndex, int32& boneIndexValue) const;
+    inline void GetJointCount(int32 vIndex, int32& jointCount) const;
+    inline void GetJointWeight(int32 vIndex, float32& boneWeightValue) const;
+
     inline rhi::PrimitiveType GetPrimitiveType();
 
     //! Setters
@@ -243,22 +247,32 @@ inline void PolygonGroup::SetJointIndex(int32 vIndex, int32 jointIndex, int32 bo
 {
     DVASSERT(jointIndex >= 0 && jointIndex < 4);
     *reinterpret_cast<float32*>(reinterpret_cast<uint8*>(jointIdxArray) + vIndex * vertexStride) = float32(boneIndexValue);
-    //	uint8 * t = ((uint8*)jointIdxArray) + vIndex * vertexStride;
-    //	t[jointIndex] = boneIndexValue;
 }
 
 inline void PolygonGroup::SetJointWeight(int32 vIndex, int32 jointIndex, float32 boneWeightValue)
 {
     DVASSERT(jointIndex >= 0 && jointIndex < 4);
-    *reinterpret_cast<float32*>(reinterpret_cast<uint8*>(jointIdxArray) + vIndex * vertexStride) = float32(boneWeightValue);
-    //    uint8 * t = ((uint8*)jointWeightArray) + vIndex * vertexStride;
-    //	t[jointIndex] = (uint8)(255 * boneWeightValue);
     *reinterpret_cast<float32*>(reinterpret_cast<uint8*>(jointWeightArray) + vIndex * vertexStride) = float32(boneWeightValue);
 }
 
 inline void PolygonGroup::SetJointCount(int32 vIndex, int32 jointCount)
 {
     jointCountArray[vIndex] = jointCount;
+}
+
+inline void PolygonGroup::GetJointIndex(int32 vIndex, int32& boneIndexValue) const
+{
+    boneIndexValue = static_cast<int32>(*reinterpret_cast<float32*>(reinterpret_cast<uint8*>(jointIdxArray) + vIndex * vertexStride));
+}
+
+inline void PolygonGroup::GetJointWeight(int32 vIndex, float32& boneWeightValue) const
+{
+    boneWeightValue = *reinterpret_cast<float32*>(reinterpret_cast<uint8*>(jointWeightArray) + vIndex * vertexStride);
+}
+
+inline void PolygonGroup::GetJointCount(int32 vIndex, int32& jointCount) const
+{
+    jointCount = jointCountArray[vIndex];
 }
 
 inline void PolygonGroup::SetIndex(int32 i, int16 index)

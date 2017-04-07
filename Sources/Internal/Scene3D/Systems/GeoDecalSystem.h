@@ -62,5 +62,6 @@ private:
         Vector<std::pair<Entity*, GeoDecalRenderComponent*>> createdComponents;
     };
     Map<Component*, GeoDecalCacheEntry> decals;
+    ScopedPtr<Texture> defaultNormalMap;
 };
 }
