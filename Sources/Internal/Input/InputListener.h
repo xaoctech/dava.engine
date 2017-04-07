@@ -38,12 +38,6 @@ enum class eInputListenerModes
     ANALOG,
 };
 
-struct SpecificInputElement
-{
-    uint32 deviceId;
-    eInputElements elementId;
-};
-
 /**
     Helper class which is able to capture and report user input.
     Can be helpful for control settings UI.
@@ -54,13 +48,13 @@ class InputListener final
 
 public:
     /** Listen for input in specified `mode`, across all devices */
-    void Listen(eInputListenerModes mode, Function<void(Vector<SpecificInputElement>)> callback);
+    void Listen(eInputListenerModes mode, Function<void(Vector<InputEvent>)> callback);
 
     /** Listen input in specified `mode`, devices other than the one with `deviceId` are ignored */
-    void Listen(eInputListenerModes mode, Function<void(Vector<SpecificInputElement>)> callback, uint32 deviceId);
+    void Listen(eInputListenerModes mode, Function<void(Vector<InputEvent>)> callback, uint32 deviceId);
 
     /** Listen input in specified `mode`, devices with type different from `deviceTypesMask` are ignored */
-    void Listen(eInputListenerModes mode, Function<void(Vector<SpecificInputElement>)> callback, eInputDeviceTypes deviceTypesMask);
+    void Listen(eInputListenerModes mode, Function<void(Vector<InputEvent>)> callback, eInputDeviceTypes deviceTypesMask);
 
     /** Return true if listening is active. */
     bool IsListening() const;
@@ -73,7 +67,7 @@ private:
     InputListener(const InputListener&) = delete;
     InputListener& operator=(const InputListener&) = delete;
 
-    void Listen(eInputListenerModes mode, Function<void(Vector<SpecificInputElement>)> callback, uint32 deviceId, eInputDeviceTypes deviceTypesMask);
+    void Listen(eInputListenerModes mode, Function<void(Vector<InputEvent>)> callback, uint32 deviceId, eInputDeviceTypes deviceTypesMask);
 
     bool OnInputEvent(const InputEvent& e);
 
@@ -81,11 +75,11 @@ private:
     uint32 inputHandlerToken = 0;
 
     eInputListenerModes currentMode;
-    Function<void(Vector<SpecificInputElement>)> currentCallback;
+    Function<void(Vector<InputEvent>)> currentCallback;
     uint32 currentDeviceId;
     eInputDeviceTypes currentDeviceTypesMask;
 
-    Vector<SpecificInputElement> result;
+    Vector<InputEvent> result;
 };
 
 } // namespace DAVA

@@ -6,22 +6,22 @@
 
 namespace DAVA
 {
-void InputListener::Listen(eInputListenerModes mode, Function<void(Vector<SpecificInputElement>)> callback)
+void InputListener::Listen(eInputListenerModes mode, Function<void(Vector<InputEvent>)> callback)
 {
     Listen(mode, callback, 0, eInputDeviceTypes::CLASS_ALL);
 }
 
-void InputListener::Listen(eInputListenerModes mode, Function<void(Vector<SpecificInputElement>)> callback, uint32 deviceId)
+void InputListener::Listen(eInputListenerModes mode, Function<void(Vector<InputEvent>)> callback, uint32 deviceId)
 {
     Listen(mode, callback, deviceId, eInputDeviceTypes::CLASS_ALL);
 }
 
-void InputListener::Listen(eInputListenerModes mode, Function<void(Vector<SpecificInputElement>)> callback, eInputDeviceTypes deviceTypesMask)
+void InputListener::Listen(eInputListenerModes mode, Function<void(Vector<InputEvent>)> callback, eInputDeviceTypes deviceTypesMask)
 {
     Listen(mode, callback, 0, deviceTypesMask);
 }
 
-void InputListener::Listen(eInputListenerModes mode, Function<void(Vector<SpecificInputElement>)> callback, uint32 deviceId, eInputDeviceTypes deviceTypesMask)
+void InputListener::Listen(eInputListenerModes mode, Function<void(Vector<InputEvent>)> callback, uint32 deviceId, eInputDeviceTypes deviceTypesMask)
 {
     DVASSERT(callback != nullptr);
 
@@ -107,7 +107,7 @@ bool InputListener::OnInputEvent(const InputEvent& e)
     if (addElementToResult)
     {
         handled = true;
-        result.push_back({ e.deviceId, e.elementId });
+        result.push_back(e);
     }
 
     // If we're finished listening, invoke callback and reset state
