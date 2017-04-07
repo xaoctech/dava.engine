@@ -19,6 +19,14 @@ namespace Private
 class EngineBackend;
 }
 
+/**
+    \defgroup input Input
+
+    Input system is a part of the engine which is responsible for:
+    - Managing input devices (keyboards, mouses, gamepads etc.)
+    - Handling input events sent by a platform
+    - Storing each input device's state
+*/
 class InputSystem final
 {
     friend class Window;
@@ -101,9 +109,6 @@ inline KeyboardDevice& InputSystem::GetKeyboard()
 #include "InputCallback.h"
 #include "Input/MouseDevice.h"
 
-/**
-    \defgroup inputsystem Input System
-*/
 namespace DAVA
 {
 class KeyboardDevice;

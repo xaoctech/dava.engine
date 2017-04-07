@@ -6,7 +6,11 @@
 namespace DAVA
 {
 /**
-    \ingroup input
+    \addtogroup input
+    \{
+*/
+
+/**
     List of all supported input elements.
     An input element is a part of a device which can be used for input. For example, a keyboard button, a mouse button, a mouse wheel, gamepad's stick etc.
 */
@@ -126,7 +130,7 @@ enum eInputElements : uint32
     KB_NUMPAD_0,
     KB_LCMD,
     KB_RCMD,
-    KB_BACK, // Android only
+    KB_BACK,
 
     // Mouse
 
@@ -227,10 +231,7 @@ enum
 // Each touch should have both _CLICK and _POSITION pieces
 static_assert(INPUT_ELEMENTS_TOUCH_CLICK_COUNT == INPUT_ELEMENTS_TOUCH_POSITION_COUNT, "Amount of touch clicks does not match amount of touch positions");
 
-/**
-    \ingroup input
-    List of element types.
-*/
+/** List of element types. */
 enum eInputElementTypes
 {
     /** Button, which can just be pressed and released. */
@@ -246,10 +247,7 @@ enum eInputElementTypes
     ANALOG
 };
 
-/**
-    \ingroup input
-    Contains additional information about an element.
-*/
+/** Contains additional information about an input element. */
 struct InputElementInfo final
 {
     /** Name of the element */
@@ -259,10 +257,7 @@ struct InputElementInfo final
     eInputElementTypes type;
 };
 
-/**
-    \ingroup input
-    Return true if specified `element` is a mouse element.
-*/
+/** Return true if specified `element` is a mouse element. */
 inline bool IsMouseInputElement(eInputElements element)
 {
     return eInputElements::MOUSE_FIRST <= element && element <= eInputElements::MOUSE_LAST;
@@ -280,19 +275,13 @@ inline bool IsGamepadAxis(eInputElements element)
     return eInputElements::GAMEPAD_FIRST_AXIS <= element && element <= eInputElements::GAMEPAD_LAST_AXIS;
 }
 
-/**
-    \ingroup input
-    Return true if specified `element` is a keyboard element.
-*/
+/** Return true if specified `element` is a keyboard element. */
 inline bool IsKeyboardInputElement(eInputElements element)
 {
     return eInputElements::KB_FIRST <= element && element <= eInputElements::KB_LAST;
 }
 
-/**
-    \ingroup input
-    Return true if specified keyboard `element` is a keyboard modifier element.
-*/
+/** Return true if specified keyboard `element` is a keyboard modifier element. */
 inline bool IsKeyboardModifierInputElement(eInputElements element)
 {
     return (element == eInputElements::KB_LSHIFT ||
@@ -303,10 +292,7 @@ inline bool IsKeyboardModifierInputElement(eInputElements element)
             element == eInputElements::KB_RALT);
 }
 
-/**
-    \ingroup input
-    Return true if specified keyboard `element` is a keyboard 'system' element.
-*/
+/** Return true if specified keyboard `element` is a keyboard 'system' element. */
 inline bool IsKeyboardSystemInputElement(eInputElements element)
 {
     return (element == eInputElements::KB_ESCAPE ||
@@ -329,38 +315,25 @@ inline bool IsKeyboardSystemInputElement(eInputElements element)
             element == eInputElements::KB_MENU);
 }
 
-/**
-    \ingroup input
-    Return true if specified `element` is a touch element.
-*/
+/** Return true if specified `element` is a touch element. */
 inline bool IsTouchInputElement(eInputElements element)
 {
     return eInputElements::TOUCH_FIRST <= element && element <= eInputElements::TOUCH_LAST;
 }
 
-/**
-    \ingroup input
-    Return true if specified `element` is a touch click element.
-*/
+/** Return true if specified `element` is a touch click element. */
 inline bool IsTouchClickElement(eInputElements element)
 {
     return eInputElements::TOUCH_FIRST_CLICK <= element && element <= eInputElements::TOUCH_LAST_CLICK;
 }
 
-/**
-    \ingroup input
-    Return true if specified `element` is a touch position element.
-*/
+/** Return true if specified `element` is a touch position element. */
 inline bool IsTouchPositionElement(eInputElements element)
 {
     return eInputElements::TOUCH_FIRST_POSITION <= element && element <= eInputElements::TOUCH_LAST_POSITION;
 }
 
-/**
-    \ingroup input
-    Return TOUCH_POSITION element for specified click `element.
-    I.e. TOUCH_POSITION3 for TOUCH_CLICK3 etc.
-*/
+/** Return TOUCH_POSITION element for specified click `element. I.e. TOUCH_POSITION3 for TOUCH_CLICK3 etc. */
 inline eInputElements GetTouchPositionFromClick(eInputElements element)
 {
     DVASSERT(IsTouchClickElement(element));
@@ -368,10 +341,11 @@ inline eInputElements GetTouchPositionFromClick(eInputElements element)
     return static_cast<eInputElements>(eInputElements::TOUCH_FIRST_POSITION + (element - eInputElements::TOUCH_FIRST_CLICK));
 }
 
-/**
-    \ingroup input
-    Get additional information about an element.
-*/
+/** Get additional information about an element. */
 const InputElementInfo& GetInputElementInfo(eInputElements element);
+
+/**
+    \}
+*/
 
 } // namespace DAVA
