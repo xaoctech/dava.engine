@@ -1,8 +1,11 @@
 #include "Infrastructure/TestBed.h"
 #include "Tests/InputSystemTest.h"
-#include "Engine/Engine.h"
-#include "DeviceManager/DeviceManager.h"
-#include "Utils/UTF8Utils.h"
+
+#include <Engine/Engine.h>
+#include <DeviceManager/DeviceManager.h>
+#include <Input/InputListener.h>
+#include <Input/KeyboardInputDevice.h>
+#include <Utils/UTF8Utils.h>
 
 using namespace DAVA;
 

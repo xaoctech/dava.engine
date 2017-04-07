@@ -153,6 +153,29 @@ const InputElementInfo& GetInputElementInfo(eInputElements element)
         info[eInputElements::TOUCH_POSITION8] = { "Touch 8 position", eInputElementTypes::ANALOG };
         info[eInputElements::TOUCH_POSITION9] = { "Touch 9 position", eInputElementTypes::ANALOG };
 
+        // Gamepad
+        info[eInputElements::GAMEPAD_START] = { "Gamepad start", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_BACK] = { "Gamepad back", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_A] = { "Gamepad A", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_B] = { "Gamepad B", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_X] = { "Gamepad X", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_Y] = { "Gamepad Y", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_DPAD_LEFT] = { "Gamepad dpad left", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_DPAD_RIGHT] = { "Gamepad dpad right", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_DPAD_UP] = { "Gamepad dpad up", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_DPAD_DOWN] = { "Gamepad dpad down", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_LTHUMB] = { "Gamepad left thumbstick", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_RTHUMB] = { "Gamepad right thumbstick", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_LSHOUDER] = { "Gamepad lelft shouder", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_RSHOUDER] = { "Gamepad right shouder", eInputElementTypes::DIGITAL };
+
+        info[eInputElements::GAMEPAD_LTRIGGER] = { "Gamepad left trigger", eInputElementTypes::ANALOG };
+        info[eInputElements::GAMEPAD_RTRIGGER] = { "Gamepad right trigger", eInputElementTypes::ANALOG };
+        info[eInputElements::GAMEPAD_LTHUMB_X] = { "Gamepad left thumbstick X", eInputElementTypes::ANALOG };
+        info[eInputElements::GAMEPAD_LTHUMB_Y] = { "Gamepad left thumbstick Y", eInputElementTypes::ANALOG };
+        info[eInputElements::GAMEPAD_RTHUMB_X] = { "Gamepad right thumbstick X", eInputElementTypes::ANALOG };
+        info[eInputElements::GAMEPAD_RTHUMB_Y] = { "Gamepad right thumbstick Y", eInputElementTypes::ANALOG };
+
         initialized = true;
     }
 

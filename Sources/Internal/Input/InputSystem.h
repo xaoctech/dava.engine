@@ -14,18 +14,23 @@ namespace DAVA
 class Engine;
 class UIEvent;
 class KeyboardDevice;
-class GamepadDevice;
 namespace Private
 {
 class EngineBackend;
-struct MainDispatcherEvent;
 }
 
+/**
+    \defgroup input Input
+
+    Input system is a part of the engine which is responsible for:
+    - Managing input devices (keyboards, mouses, gamepads etc.)
+    - Handling input events sent by a platform
+    - Storing each input device's state
+*/
 class InputSystem final
 {
     friend class Window;
     friend class Private::EngineBackend;
-    friend class GamepadDevice;
 
 public:
     // Temporal method for backward compatibility
@@ -40,7 +45,6 @@ public:
     void DispatchInputEvent(const InputEvent& inputEvent);
 
     KeyboardDevice& GetKeyboard();
-    GamepadDevice& GetGamepadDevice();
 
 private:
     InputSystem(Engine* engine);
@@ -49,21 +53,11 @@ private:
     InputSystem(const InputSystem&) = delete;
     InputSystem& operator=(const InputSystem&) = delete;
 
-    void Update(float32 frameDelta);
     void EndFrame();
     void HandleInputEvent(UIEvent* uie);
 
-    bool EventHandler(const Private::MainDispatcherEvent& e);
-
-    void HandleGamepadMotion(const Private::MainDispatcherEvent& e);
-    void HandleGamepadButton(const Private::MainDispatcherEvent& e);
-
-    void HandleGamepadAdded(const Private::MainDispatcherEvent& e);
-    void HandleGamepadRemoved(const Private::MainDispatcherEvent& e);
-
 private:
     RefPtr<KeyboardDevice> keyboard;
-    RefPtr<GamepadDevice> gamepad;
 
     struct InputHandler
     {
@@ -103,11 +97,6 @@ inline KeyboardDevice& InputSystem::GetKeyboard()
     return *keyboard;
 }
 
-inline GamepadDevice& InputSystem::GetGamepadDevice()
-{
-    return *gamepad;
-}
-
 } // namespace DAVA
 
 #else // __DAVAENGINE_COREV2__
@@ -120,9 +109,6 @@ inline GamepadDevice& InputSystem::GetGamepadDevice()
 #include "InputCallback.h"
 #include "Input/MouseDevice.h"
 
-/**
-    \defgroup inputsystem Input System
-*/
 namespace DAVA
 {
 class KeyboardDevice;

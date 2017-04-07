@@ -5,6 +5,7 @@
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 #include "Input/InputElements.h"
 #include "Input/InputSystem.h"
+#include "Input/Private/DIElementWrapper.h"
 
 namespace DAVA
 {
@@ -32,7 +33,7 @@ bool MouseDevice::SupportsElement(eInputElements elementId) const
 eDigitalElementStates MouseDevice::GetDigitalElementState(eInputElements elementId) const
 {
     DVASSERT(eInputElements::MOUSE_LBUTTON <= elementId && elementId <= eInputElements::MOUSE_EXT2BUTTON);
-    return buttons[elementId - eInputElements::MOUSE_LBUTTON].GetState();
+    return buttons[elementId - eInputElements::MOUSE_LBUTTON];
 }
 
 AnalogElementState MouseDevice::GetAnalogElementState(eInputElements elementId) const
@@ -53,7 +54,7 @@ eInputElements MouseDevice::GetFirstPressedButton() const
 {
     for (uint32 i = eInputElements::MOUSE_FIRST_BUTTON; i <= eInputElements::MOUSE_LAST_BUTTON; ++i)
     {
-        if (buttons[i - eInputElements::MOUSE_FIRST_BUTTON].IsPressed())
+        if ((buttons[i - eInputElements::MOUSE_FIRST_BUTTON] & eDigitalElementStates::PRESSED) == eDigitalElementStates::PRESSED)
         {
             return static_cast<eInputElements>(i);
         }
@@ -98,8 +99,9 @@ void MouseDevice::HandleMouseClick(const Private::MainDispatcherEvent& e)
     inputEvent.mouseEvent.isRelative = e.mouseEvent.isRelative;
 
     uint32 index = static_cast<uint32>(button) - 1;
-    pressed ? buttons[index].Press() : buttons[index].Release();
-    inputEvent.digitalState = buttons[index].GetState();
+    DIElementWrapper di(buttons[index]);
+    pressed ? di.Press() : di.Release();
+    inputEvent.digitalState = di.GetState();
     inputEvent.elementId = static_cast<eInputElements>(index + eInputElements::MOUSE_FIRST_BUTTON);
 
     mousePosition.x = e.mouseEvent.x;
@@ -152,11 +154,9 @@ void MouseDevice::HandleMouseMove(const Private::MainDispatcherEvent& e)
 void MouseDevice::OnEndFrame()
 {
     // Promote JustPressed & JustReleased states to Pressed/Released accordingly
-    // TODO: optimize?
-
-    for (Private::DigitalElement& b : buttons)
+    for (DIElementWrapper di : buttons)
     {
-        b.OnEndFrame();
+        di.OnEndFrame();
     }
 
     mouseWheelDelta.x = 0.f;

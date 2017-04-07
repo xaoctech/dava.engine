@@ -5,9 +5,6 @@
 #include <bitset>
 #include "Engine/Private/EnginePrivateFwd.h"
 
-/**
-    \defgroup inputsystem    Input System
-*/
 namespace DAVA
 {
 enum class Key : uint32

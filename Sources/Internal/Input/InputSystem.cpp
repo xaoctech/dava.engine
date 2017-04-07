@@ -4,11 +4,8 @@
 
 #include "Engine/Engine.h"
 #include "Engine/Private/EngineBackend.h"
-#include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 #include "Input/KeyboardDevice.h"
-#include "Input/GamepadDevice.h"
 #include "UI/UIControlSystem.h"
-#include "UI/UIEvent.h"
 
 namespace DAVA
 {
@@ -19,11 +16,8 @@ InputSystem* InputSystem::Instance()
 
 InputSystem::InputSystem(Engine* engine)
     : keyboard(new KeyboardDevice())
-    , gamepad(new GamepadDevice(this))
 {
-    engine->update.Connect(MakeFunction(this, &InputSystem::Update));
     engine->endFrame.Connect(MakeFunction(this, &InputSystem::EndFrame));
-    Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &InputSystem::EventHandler));
 }
 
 InputSystem::~InputSystem() = default;
@@ -92,11 +86,6 @@ void InputSystem::DispatchInputEvent(const InputEvent& inputEvent)
     }
 }
 
-void InputSystem::Update(float32 frameDelta)
-{
-    gamepad->Update();
-}
-
 void InputSystem::EndFrame()
 {
     keyboard->OnFinishFrame();
@@ -126,53 +115,6 @@ void InputSystem::HandleInputEvent(UIEvent* uie)
         UIControlSystem* uiControlSystem = uie->window->GetUIControlSystem();
         uiControlSystem->OnInput(uie);
     }
-}
-
-bool InputSystem::EventHandler(const Private::MainDispatcherEvent& e)
-{
-    using Private::MainDispatcherEvent;
-
-    bool isHandled = true;
-    switch (e.type)
-    {
-    case MainDispatcherEvent::GAMEPAD_MOTION:
-        HandleGamepadMotion(e);
-        break;
-    case MainDispatcherEvent::GAMEPAD_BUTTON_DOWN:
-    case MainDispatcherEvent::GAMEPAD_BUTTON_UP:
-        HandleGamepadButton(e);
-        break;
-    case MainDispatcherEvent::GAMEPAD_ADDED:
-        HandleGamepadAdded(e);
-        break;
-    case MainDispatcherEvent::GAMEPAD_REMOVED:
-        HandleGamepadRemoved(e);
-        break;
-    default:
-        isHandled = false;
-        break;
-    }
-    return isHandled;
-}
-
-void InputSystem::HandleGamepadMotion(const Private::MainDispatcherEvent& e)
-{
-    gamepad->HandleGamepadMotion(e);
-}
-
-void InputSystem::HandleGamepadButton(const Private::MainDispatcherEvent& e)
-{
-    gamepad->HandleGamepadButton(e);
-}
-
-void InputSystem::HandleGamepadAdded(const Private::MainDispatcherEvent& e)
-{
-    gamepad->HandleGamepadAdded(e);
-}
-
-void InputSystem::HandleGamepadRemoved(const Private::MainDispatcherEvent& e)
-{
-    gamepad->HandleGamepadRemoved(e);
 }
 
 } // namespace DAVA

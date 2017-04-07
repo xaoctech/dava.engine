@@ -2,8 +2,13 @@
 
 #if defined(__DAVAENGINE_COREV2__)
 
+#include "Debug/DVAssert.h"
+#include "Engine/Engine.h"
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
+#include "Input/GamepadDevice.h"
+#include "Input/KeyboardInputDevice.h"
+#include "Input/MouseDevice.h"
 
 #if defined(__DAVAENGINE_QT__)
 #include "DeviceManager/Private/Qt/DeviceManagerImplQt.h"
@@ -39,25 +44,93 @@ void DeviceManager::UpdateDisplayConfig()
 bool DeviceManager::HandleEvent(const Private::MainDispatcherEvent& e)
 {
     using Private::MainDispatcherEvent;
-    if (e.type == MainDispatcherEvent::DISPLAY_CONFIG_CHANGED)
+
+    bool isHandled = true;
+    switch (e.type)
     {
-        size_t count = e.displayConfigEvent.count;
-        DisplayInfo* displayInfo = e.displayConfigEvent.displayInfo;
-
-        displays.resize(count);
-        std::move(displayInfo, displayInfo + count, begin(displays));
-
-        delete[] displayInfo;
-
-        displayConfigChanged.Emit();
-        return true;
+    case MainDispatcherEvent::DISPLAY_CONFIG_CHANGED:
+        HandleDisplayConfigChanged(e);
+        break;
+    case MainDispatcherEvent::GAMEPAD_MOTION:
+        HandleGamepadMotion(e);
+        break;
+    case MainDispatcherEvent::GAMEPAD_BUTTON_DOWN:
+    case MainDispatcherEvent::GAMEPAD_BUTTON_UP:
+        HandleGamepadButton(e);
+        break;
+    case MainDispatcherEvent::GAMEPAD_ADDED:
+        HandleGamepadAdded(e);
+        break;
+    case MainDispatcherEvent::GAMEPAD_REMOVED:
+        HandleGamepadRemoved(e);
+        break;
+    default:
+        isHandled = false;
+        break;
     }
-    return false;
+    return isHandled;
+}
+
+void DeviceManager::HandleDisplayConfigChanged(const Private::MainDispatcherEvent& e)
+{
+    size_t count = e.displayConfigEvent.count;
+    DisplayInfo* displayInfo = e.displayConfigEvent.displayInfo;
+
+    displays.resize(count);
+    std::move(displayInfo, displayInfo + count, begin(displays));
+
+    delete[] displayInfo;
+
+    displayConfigChanged.Emit();
+}
+
+void DeviceManager::HandleGamepadMotion(const Private::MainDispatcherEvent& e)
+{
+    if (gamepad != nullptr)
+    {
+        gamepad->HandleGamepadMotion(e);
+    }
+}
+
+void DeviceManager::HandleGamepadButton(const Private::MainDispatcherEvent& e)
+{
+    if (gamepad != nullptr)
+    {
+        gamepad->HandleGamepadButton(e);
+    }
+}
+
+void DeviceManager::HandleGamepadAdded(const Private::MainDispatcherEvent& e)
+{
+    if (gamepad == nullptr)
+    {
+        gamepad = new GamepadDevice(4);
+        gamepad->HandleGamepadAdded(e);
+    }
+}
+
+void DeviceManager::HandleGamepadRemoved(const Private::MainDispatcherEvent& e)
+{
+    if (gamepad != nullptr)
+    {
+        gamepad->HandleGamepadRemoved(e);
+        delete gamepad;
+        gamepad = nullptr;
+    }
+}
+
+void DeviceManager::Update(float32 /*frameDelta*/)
+{
+    if (gamepad != nullptr)
+    {
+        gamepad->Update();
+    }
 }
 
 void DeviceManager::OnEngineInited()
 {
-// TODO: keep track of devices, implement id constants for kb, mouse, touch devices
+    // TODO: keep track of devices, implement id constants for kb, mouse, touch devices
+    Engine::Instance()->update.Connect(this, &DeviceManager::Update);
 
 #if defined(__DAVAENGINE_WINDOWS__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_ANDROID__)
     keyboard = new KeyboardInputDevice(1);
@@ -82,8 +155,12 @@ InputDevice* DeviceManager::GetInputDevice(uint32 id)
             return device;
         }
     }
-
     return nullptr;
+}
+
+GamepadDevice* DeviceManager::GetGamepad()
+{
+    return gamepad;
 }
 
 KeyboardInputDevice* DeviceManager::GetKeyboard()

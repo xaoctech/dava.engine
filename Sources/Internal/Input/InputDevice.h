@@ -6,15 +6,6 @@
 namespace DAVA
 {
 /**
-    \defgroup input Input
-
-    Input system is a part of the engine which is responsible for:
-        - Managing input devices (keyboards, mouses, gamepads etc.)
-        - Handling input events sent by a platform
-        - Storing each input device's state
-*/
-
-/**
     \ingroup input
     Enum describing possible states for a digital element.
 
@@ -77,7 +68,6 @@ class InputDevice
 public:
     /** Create InputDevice instance with specified `id` */
     InputDevice(uint32 id);
-
     virtual ~InputDevice() = default;
 
     /** Return unique device id */
@@ -115,4 +105,5 @@ inline uint32 InputDevice::GetId() const
 {
     return id;
 }
-}
+
+} // namespace DAVA

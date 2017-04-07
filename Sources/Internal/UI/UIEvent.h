@@ -1,20 +1,17 @@
-#ifndef __DAVAENGINE_UI_EVENT_H__
-#define __DAVAENGINE_UI_EVENT_H__
-
-#include "Math/Vector.h"
-#include "Input/KeyboardDevice.h"
-#include "Input/GamepadDevice.h"
+#pragma once
 
 #include "Engine/EngineTypes.h"
+#include "Math/Vector.h"
+#include "Input/KeyboardDevice.h"
 
 namespace DAVA
 {
 class UIControl;
 class Window;
 /**
-\ingroup controlsystem
-\brief User input representation.
-	Represent user input event used in the control system. Contains all input data.
+    \ingroup controlsystem
+    \brief User input representation.
+    Represent user input event used in the control system. Contains all input data.
 */
 class UIEvent
 {
@@ -38,8 +35,8 @@ public:
     };
 
     /**
-	 \enum Input state accordingly to control.
-	 */
+     \enum Input state accordingly to control.
+     */
     enum eControlInputState
     {
         CONTROL_STATE_RELEASED = 0, //!<Input is released
@@ -48,8 +45,8 @@ public:
     };
 
     /**
-	 \ Input can be handled in the different ways.
-	 */
+     \ Input can be handled in the different ways.
+     */
     enum eInputHandledType
     {
         INPUT_NOT_HANDLED = 0, //!<Input is not handled at all.
@@ -137,6 +134,5 @@ public:
     uint32 modifiers = 0;
 #endif
 };
-};
 
-#endif
+} // namespace DAVA

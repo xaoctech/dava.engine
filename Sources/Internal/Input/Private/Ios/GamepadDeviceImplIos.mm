@@ -6,7 +6,7 @@
 #import <GameController/GameController.h>
 
 #include "Input/GamepadDevice.h"
-#include "Time/SystemTimer.h"
+#include "Input/InputElements.h"
 
 namespace DAVA
 {
@@ -19,86 +19,51 @@ GamepadDeviceImpl::GamepadDeviceImpl(GamepadDevice* gamepadDevice)
 
 void GamepadDeviceImpl::Update()
 {
-    float32 readBuf[GamepadDevice::ELEMENT_COUNT];
     if ([controller extendedGamepad])
     {
         GCExtendedGamepad* gamepad = [controller extendedGamepad];
-        ReadExtendedGamepadElements(gamepad, readBuf);
+        ReadExtendedGamepadElements(gamepad);
     }
     else if ([controller gamepad])
     {
         GCGamepad* gamepad = [controller gamepad];
-        ReadGamepadElements(gamepad, readBuf);
-    }
-
-    int64 timestamp = SystemTimer::GetMs();
-    for (size_t i = 0; i < GamepadDevice::ELEMENT_COUNT; ++i)
-    {
-        if (gamepadDevice->elementValues[i] != readBuf[i])
-        {
-            gamepadDevice->elementValues[i] = readBuf[i];
-            gamepadDevice->elementTimestamps[i] = timestamp;
-            gamepadDevice->elementChangedMask.set(i);
-        }
+        ReadGamepadElements(gamepad);
     }
 }
 
-void GamepadDeviceImpl::ReadExtendedGamepadElements(GCExtendedGamepad* gamepad, float32 buf[])
+void GamepadDeviceImpl::ReadExtendedGamepadElements(GCExtendedGamepad* gamepad)
 {
-    buf[static_cast<size_t>(eGamepadElements::A)] = static_cast<float32>(gamepad.buttonA.isPressed);
-    buf[static_cast<size_t>(eGamepadElements::B)] = static_cast<float32>(gamepad.buttonB.isPressed);
-    buf[static_cast<size_t>(eGamepadElements::X)] = static_cast<float32>(gamepad.buttonX.isPressed);
-    buf[static_cast<size_t>(eGamepadElements::Y)] = static_cast<float32>(gamepad.buttonY.isPressed);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_A, gamepad.buttonA.isPressed);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_B, gamepad.buttonB.isPressed);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_X, gamepad.buttonX.isPressed);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_Y, gamepad.buttonY.isPressed);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_LSHOUDER, gamepad.leftShoulder.isPressed);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_RSHOUDER, gamepad.rightShoulder.isPressed);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_DPAD_LEFT, gamepad.dpad.left.isPressed);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_DPAD_RIGHT, gamepad.dpad.right.isPressed);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_DPAD_UP, gamepad.dpad.up.isPressed);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_DPAD_DOWN, gamepad.dpad.down.isPressed);
 
-    buf[static_cast<size_t>(eGamepadElements::LEFT_SHOULDER)] = static_cast<float32>(gamepad.leftShoulder.isPressed);
-    buf[static_cast<size_t>(eGamepadElements::RIGHT_SHOULDER)] = static_cast<float32>(gamepad.rightShoulder.isPressed);
-
-    buf[static_cast<size_t>(eGamepadElements::LEFT_THUMBSTICK_X)] = gamepad.leftThumbstick.xAxis.value;
-    buf[static_cast<size_t>(eGamepadElements::LEFT_THUMBSTICK_Y)] = gamepad.leftThumbstick.yAxis.value;
-    buf[static_cast<size_t>(eGamepadElements::RIGHT_THUMBSTICK_X)] = gamepad.rightThumbstick.xAxis.value;
-    buf[static_cast<size_t>(eGamepadElements::RIGHT_THUMBSTICK_Y)] = gamepad.rightThumbstick.yAxis.value;
-
-    buf[static_cast<size_t>(eGamepadElements::LEFT_TRIGGER)] = gamepad.leftTrigger.value;
-    buf[static_cast<size_t>(eGamepadElements::RIGHT_TRIGGER)] = gamepad.rightTrigger.value;
-
-    float32 dpadX = 0.f;
-    float32 dpadY = 0.f;
-    if (gamepad.dpad.left.isPressed)
-        dpadX = -1.f;
-    else if (gamepad.dpad.right.isPressed)
-        dpadX = 1.f;
-    if (gamepad.dpad.down.isPressed)
-        dpadY = -1.f;
-    else if (gamepad.dpad.up.isPressed)
-        dpadY = 1.f;
-
-    buf[static_cast<size_t>(eGamepadElements::DPAD_X)] = dpadX;
-    buf[static_cast<size_t>(eGamepadElements::DPAD_Y)] = dpadY;
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_LTHUMB_X, gamepad.leftThumbstick.xAxis.value);
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_LTHUMB_Y, gamepad.leftThumbstick.yAxis.value);
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_RTHUMB_X, gamepad.rightThumbstick.xAxis.value);
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_RTHUMB_Y, gamepad.rightThumbstick.yAxis.value);
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_LTRIGGER, gamepad.leftTrigger.value);
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_RTRIGGER, gamepad.rightTrigger.value);
 }
 
-void GamepadDeviceImpl::ReadGamepadElements(GCGamepad* gamepad, float32 buf[])
+void GamepadDeviceImpl::ReadGamepadElements(GCGamepad* gamepad)
 {
-    buf[static_cast<size_t>(eGamepadElements::A)] = static_cast<float32>(gamepad.buttonA.isPressed);
-    buf[static_cast<size_t>(eGamepadElements::B)] = static_cast<float32>(gamepad.buttonB.isPressed);
-    buf[static_cast<size_t>(eGamepadElements::X)] = static_cast<float32>(gamepad.buttonX.isPressed);
-    buf[static_cast<size_t>(eGamepadElements::Y)] = static_cast<float32>(gamepad.buttonY.isPressed);
-
-    buf[static_cast<size_t>(eGamepadElements::LEFT_SHOULDER)] = static_cast<float32>(gamepad.leftShoulder.isPressed);
-    buf[static_cast<size_t>(eGamepadElements::RIGHT_SHOULDER)] = static_cast<float32>(gamepad.rightShoulder.isPressed);
-
-    float32 dpadX = 0.f;
-    float32 dpadY = 0.f;
-    if (gamepad.dpad.left.isPressed)
-        dpadX = -1.f;
-    else if (gamepad.dpad.right.isPressed)
-        dpadX = 1.f;
-    if (gamepad.dpad.down.isPressed)
-        dpadY = -1.f;
-    else if (gamepad.dpad.up.isPressed)
-        dpadY = 1.f;
-
-    buf[static_cast<size_t>(eGamepadElements::DPAD_X)] = dpadX;
-    buf[static_cast<size_t>(eGamepadElements::DPAD_Y)] = dpadY;
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_A, gamepad.buttonA.isPressed);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_B, gamepad.buttonB.isPressed);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_X, gamepad.buttonX.isPressed);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_Y, gamepad.buttonY.isPressed);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_LSHOUDER, gamepad.leftShoulder.isPressed);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_RSHOUDER, gamepad.rightShoulder.isPressed);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_DPAD_LEFT, gamepad.dpad.left.isPressed);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_DPAD_RIGHT, gamepad.dpad.right.isPressed);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_DPAD_UP, gamepad.dpad.up.isPressed);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_DPAD_DOWN, gamepad.dpad.down.isPressed);
 }
 
 bool GamepadDeviceImpl::HandleGamepadAdded(uint32 /*id*/)
@@ -109,7 +74,7 @@ bool GamepadDeviceImpl::HandleGamepadAdded(uint32 /*id*/)
         if ([controllers count] != 0)
         {
             controller = (__bridge GCController*)CFBridgingRetain([controllers objectAtIndex:0]);
-            gamepadDevice->profile = [controller extendedGamepad] != nil ? eGamepadProfiles::EXTENDED : eGamepadProfiles::SIMPLE;
+            DetermineSupportedElements();
         }
     }
     return controller != nullptr;
@@ -132,6 +97,58 @@ bool GamepadDeviceImpl::HandleGamepadRemoved(uint32 id)
         controller = nullptr;
     }
     return controller != nullptr;
+}
+
+void GamepadDeviceImpl::DetermineSupportedElements()
+{
+    if ([controller extendedGamepad])
+    {
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_START - eInputElements::GAMEPAD_FIRST, false);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_BACK - eInputElements::GAMEPAD_FIRST, false);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_A - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_B - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_X - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_Y - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_DPAD_LEFT - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_DPAD_RIGHT - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_DPAD_UP - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_DPAD_DOWN - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_LTHUMB - eInputElements::GAMEPAD_FIRST, false);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_RTHUMB - eInputElements::GAMEPAD_FIRST, false);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_LSHOUDER - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_RSHOUDER - eInputElements::GAMEPAD_FIRST, true);
+
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_LTRIGGER - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_RTRIGGER - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_LTHUMB_X - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_LTHUMB_Y - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_RTHUMB_X - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_RTHUMB_Y - eInputElements::GAMEPAD_FIRST, true);
+    }
+    else if ([controller gamepad])
+    {
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_START - eInputElements::GAMEPAD_FIRST, false);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_BACK - eInputElements::GAMEPAD_FIRST, false);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_A - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_B - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_X - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_Y - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_DPAD_LEFT - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_DPAD_RIGHT - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_DPAD_UP - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_DPAD_DOWN - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_LTHUMB - eInputElements::GAMEPAD_FIRST, false);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_RTHUMB - eInputElements::GAMEPAD_FIRST, false);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_LSHOUDER - eInputElements::GAMEPAD_FIRST, true);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_RSHOUDER - eInputElements::GAMEPAD_FIRST, true);
+
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_LTRIGGER - eInputElements::GAMEPAD_FIRST, false);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_RTRIGGER - eInputElements::GAMEPAD_FIRST, false);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_LTHUMB_X - eInputElements::GAMEPAD_FIRST, false);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_LTHUMB_Y - eInputElements::GAMEPAD_FIRST, false);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_RTHUMB_X - eInputElements::GAMEPAD_FIRST, false);
+        gamepadDevice->supportedElements.set(eInputElements::GAMEPAD_RTHUMB_Y - eInputElements::GAMEPAD_FIRST, false);
+    }
 }
 
 } // namespace Private

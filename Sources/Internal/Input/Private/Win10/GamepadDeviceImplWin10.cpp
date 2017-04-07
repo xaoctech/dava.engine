@@ -4,7 +4,6 @@
 #if defined(__DAVAENGINE_WIN_UAP__)
 
 #include "Input/GamepadDevice.h"
-#include "Time/SystemTimer.h"
 
 namespace DAVA
 {
@@ -17,59 +16,32 @@ GamepadDeviceImpl::GamepadDeviceImpl(GamepadDevice* gamepadDevice)
 
 void GamepadDeviceImpl::Update()
 {
-    float32 readBuf[GamepadDevice::ELEMENT_COUNT];
-    ReadElements(readBuf, GamepadDevice::ELEMENT_COUNT);
-
-    int64 timestamp = SystemTimer::GetMs();
-    for (size_t i = 0; i < GamepadDevice::ELEMENT_COUNT; ++i)
-    {
-        if (gamepadDevice->elementValues[i] != readBuf[i])
-        {
-            gamepadDevice->elementValues[i] = readBuf[i];
-            gamepadDevice->elementTimestamps[i] = timestamp;
-            gamepadDevice->elementChangedMask.set(i);
-        }
-    }
-}
-
-void GamepadDeviceImpl::ReadElements(float32 buf[], size_t size)
-{
-    DVASSERT(size == GamepadDevice::ELEMENT_COUNT);
-
     using ::Windows::Gaming::Input::GamepadReading;
     using ::Windows::Gaming::Input::GamepadButtons;
 
     GamepadReading reading = gamepad->GetCurrentReading();
 
-    buf[static_cast<size_t>(eGamepadElements::A)] = static_cast<float32>((reading.Buttons & GamepadButtons::A) != GamepadButtons::None);
-    buf[static_cast<size_t>(eGamepadElements::B)] = static_cast<float32>((reading.Buttons & GamepadButtons::B) != GamepadButtons::None);
-    buf[static_cast<size_t>(eGamepadElements::X)] = static_cast<float32>((reading.Buttons & GamepadButtons::X) != GamepadButtons::None);
-    buf[static_cast<size_t>(eGamepadElements::Y)] = static_cast<float32>((reading.Buttons & GamepadButtons::Y) != GamepadButtons::None);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_START, (reading.Buttons & GamepadButtons::Menu) != GamepadButtons::None);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_BACK, (reading.Buttons & GamepadButtons::View) != GamepadButtons::None);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_A, (reading.Buttons & GamepadButtons::A) != GamepadButtons::None);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_B, (reading.Buttons & GamepadButtons::B) != GamepadButtons::None);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_X, (reading.Buttons & GamepadButtons::X) != GamepadButtons::None);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_Y, (reading.Buttons & GamepadButtons::Y) != GamepadButtons::None);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_DPAD_LEFT, (reading.Buttons & GamepadButtons::DPadLeft) != GamepadButtons::None);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_DPAD_RIGHT, (reading.Buttons & GamepadButtons::DPadRight) != GamepadButtons::None);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_DPAD_UP, (reading.Buttons & GamepadButtons::DPadUp) != GamepadButtons::None);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_DPAD_DOWN, (reading.Buttons & GamepadButtons::DPadDown) != GamepadButtons::None);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_LTHUMB, (reading.Buttons & GamepadButtons::LeftThumbstick) != GamepadButtons::None);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_RTHUMB, (reading.Buttons & GamepadButtons::RightThumbstick) != GamepadButtons::None);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_LSHOUDER, (reading.Buttons & GamepadButtons::LeftShoulder) != GamepadButtons::None);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_RSHOUDER, (reading.Buttons & GamepadButtons::RightShoulder) != GamepadButtons::None);
 
-    buf[static_cast<size_t>(eGamepadElements::LEFT_SHOULDER)] = static_cast<float32>((reading.Buttons & GamepadButtons::LeftShoulder) != GamepadButtons::None);
-    buf[static_cast<size_t>(eGamepadElements::RIGHT_SHOULDER)] = static_cast<float32>((reading.Buttons & GamepadButtons::RightShoulder) != GamepadButtons::None);
-
-    buf[static_cast<size_t>(eGamepadElements::LEFT_THUMBSTICK_X)] = static_cast<float32>(reading.LeftThumbstickX);
-    buf[static_cast<size_t>(eGamepadElements::LEFT_THUMBSTICK_Y)] = static_cast<float32>(reading.LeftThumbstickY);
-    buf[static_cast<size_t>(eGamepadElements::RIGHT_THUMBSTICK_X)] = static_cast<float32>(reading.RightThumbstickX);
-    buf[static_cast<size_t>(eGamepadElements::RIGHT_THUMBSTICK_Y)] = static_cast<float32>(reading.RightThumbstickY);
-
-    buf[static_cast<size_t>(eGamepadElements::LEFT_TRIGGER)] = static_cast<float32>(reading.LeftTrigger);
-    buf[static_cast<size_t>(eGamepadElements::RIGHT_TRIGGER)] = static_cast<float32>(reading.RightTrigger);
-
-    float32 dpadX = 0.f;
-    float32 dpadY = 0.f;
-    if ((reading.Buttons & GamepadButtons::DPadLeft) != GamepadButtons::None)
-        dpadX = -1.f;
-    else if ((reading.Buttons & GamepadButtons::DPadRight) != GamepadButtons::None)
-        dpadX = 1.f;
-    if ((reading.Buttons & GamepadButtons::DPadDown) != GamepadButtons::None)
-        dpadY = -1.f;
-    else if ((reading.Buttons & GamepadButtons::DPadUp) != GamepadButtons::None)
-        dpadY = 1.f;
-
-    buf[static_cast<size_t>(eGamepadElements::DPAD_X)] = dpadX;
-    buf[static_cast<size_t>(eGamepadElements::DPAD_Y)] = dpadY;
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_LTHUMB_X, static_cast<float32>(reading.LeftThumbstickX));
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_LTHUMB_Y, static_cast<float32>(reading.LeftThumbstickY));
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_RTHUMB_X, static_cast<float32>(reading.RightThumbstickX));
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_RTHUMB_Y, static_cast<float32>(reading.RightThumbstickY));
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_LTRIGGER, static_cast<float32>(reading.LeftTrigger));
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_RTRIGGER, static_cast<float32>(reading.RightTrigger));
 }
 
 bool GamepadDeviceImpl::HandleGamepadAdded(uint32 /*id*/)
@@ -86,7 +58,7 @@ bool GamepadDeviceImpl::HandleGamepadAdded(uint32 /*id*/)
         if (gamepads->Size != 0)
         {
             gamepad = gamepads->GetAt(0);
-            gamepadDevice->profile = eGamepadProfiles::EXTENDED;
+            DetermineSupportedElements();
         }
     }
     return gamepad != nullptr;
@@ -115,6 +87,12 @@ bool GamepadDeviceImpl::HandleGamepadRemoved(uint32 /*id*/)
         gamepad = nullptr;
     }
     return gamepad != nullptr;
+}
+
+void GamepadDeviceImpl::DetermineSupportedElements()
+{
+    // Assume that all elements supported
+    gamepadDevice->supportedElements.set();
 }
 
 } // namespace Private

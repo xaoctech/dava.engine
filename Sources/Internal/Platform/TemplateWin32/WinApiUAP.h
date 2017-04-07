@@ -3,6 +3,7 @@
 
 #include "Base/Platform.h"
 
+#if !defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_WIN_UAP__)
 
 typedef UINT MMRESULT;
@@ -31,3 +32,4 @@ bool IsAvailable(eWinApiPart);
 #endif
 
 #endif // __DAVAENGINE_WINAPI_UAP_H__
+#endif // !__DAVAENGINE_COREV2__

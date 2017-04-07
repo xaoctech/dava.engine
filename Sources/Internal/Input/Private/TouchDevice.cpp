@@ -3,21 +3,23 @@
 #include "Engine/Engine.h"
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 #include "Input/InputSystem.h"
-#include "Time/SystemTimer.h"
+#include "Input/Private/DIElementWrapper.h"
 
 namespace DAVA
 {
 TouchDevice::TouchDevice(uint32 id)
     : InputDevice(id)
     , inputSystem(GetEngineContext()->inputSystem)
+    , clicks{}
+    , positions{}
+    , nativeTouchIds{}
 {
     Engine::Instance()->endFrame.Connect(this, &TouchDevice::OnEndFrame);
     Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &TouchDevice::HandleMainDispatcherEvent));
 
-    for (size_t i = 0; i < INPUT_ELEMENTS_TOUCH_POSITION_COUNT; ++i)
+    for (eDigitalElementStates& e : clicks)
     {
-        positions[i].x = positions[i].y = positions[i].z = 0.0f;
-        nativeTouchIds[i] = 0;
+        e = eDigitalElementStates::RELEASED;
     }
 }
 
@@ -37,7 +39,7 @@ bool TouchDevice::SupportsElement(eInputElements elementId) const
 eDigitalElementStates TouchDevice::GetDigitalElementState(eInputElements elementId) const
 {
     DVASSERT(IsTouchClickElement(elementId));
-    return clicks[elementId - eInputElements::TOUCH_FIRST_CLICK].GetState();
+    return clicks[elementId - eInputElements::TOUCH_FIRST_CLICK];
 }
 
 AnalogElementState TouchDevice::GetAnalogElementState(eInputElements elementId) const
@@ -73,7 +75,7 @@ bool TouchDevice::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& 
 
         // Update digital part
 
-        Private::DigitalElement& digitalElement = clicks[touchIndex];
+        DIElementWrapper digitalElement(clicks[touchIndex]);
         digitalElement.Press();
 
         // Update analog part
@@ -115,7 +117,7 @@ bool TouchDevice::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& 
 
         // Update digital part
 
-        Private::DigitalElement& element = clicks[touchIndex];
+        DIElementWrapper element(clicks[touchIndex]);
         element.Release();
 
         // Reset native id for this touch
@@ -180,9 +182,9 @@ bool TouchDevice::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& 
 void TouchDevice::OnEndFrame()
 {
     // Promote JustPressed & JustReleased states to Pressed/Released accordingly
-    for (size_t i = 0; i < INPUT_ELEMENTS_TOUCH_CLICK_COUNT; ++i)
+    for (DIElementWrapper d : clicks)
     {
-        clicks[i].OnEndFrame();
+        d.OnEndFrame();
     }
 }
 
@@ -190,7 +192,7 @@ int TouchDevice::GetFirstNonUsedTouchIndex() const
 {
     for (int i = 0; i < INPUT_ELEMENTS_TOUCH_CLICK_COUNT; ++i)
     {
-        if ((clicks[i].GetState() & eDigitalElementStates::RELEASED) == eDigitalElementStates::RELEASED)
+        if ((clicks[i] & eDigitalElementStates::RELEASED) == eDigitalElementStates::RELEASED)
         {
             return i;
         }

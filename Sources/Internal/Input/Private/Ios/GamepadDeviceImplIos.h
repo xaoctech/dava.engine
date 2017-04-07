@@ -21,8 +21,8 @@ public:
     GamepadDeviceImpl(GamepadDevice* gamepadDevice);
 
     void Update();
-    void ReadExtendedGamepadElements(GCExtendedGamepad* gamepad, float32 buf[]);
-    void ReadGamepadElements(GCGamepad* gamepad, float32 buf[]);
+    void ReadExtendedGamepadElements(GCExtendedGamepad* gamepad);
+    void ReadGamepadElements(GCGamepad* gamepad);
 
     void HandleGamepadMotion(const MainDispatcherEvent&)
     {
@@ -33,6 +33,8 @@ public:
 
     bool HandleGamepadAdded(uint32 id);
     bool HandleGamepadRemoved(uint32 id);
+
+    void DetermineSupportedElements();
 
     GamepadDevice* gamepadDevice = nullptr;
     GCController* controller = nullptr;
