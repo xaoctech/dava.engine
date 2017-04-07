@@ -27,24 +27,26 @@ public:
     eDigitalElementStates GetDigitalElementState(eInputElements elementId) const override;
     AnalogElementState GetAnalogElementState(eInputElements elementId) const override;
 
+	WideString TranslateElementToWideString(eInputElements elementId) const;
+
 private:
     KeyboardInputDevice(uint32 id);
     ~KeyboardInputDevice();
     KeyboardInputDevice(const KeyboardInputDevice&) = delete;
     KeyboardInputDevice& operator=(const KeyboardInputDevice&) = delete;
 
-    void CreateAndSendInputEvent(eInputElements elementId, const Private::DigitalElement& element, Window* window, DAVA::int64 timestamp) const;
+	void OnEndFrame();
+	void OnWindowFocusChanged(DAVA::Window* window, bool focused);
 
-    bool HandleEvent(const Private::MainDispatcherEvent& e);
-    void OnEndFrame();
-    void OnWindowFocusChanged(DAVA::Window* window, bool focused);
+	bool HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e);
+	void CreateAndSendInputEvent(eInputElements elementId, const Private::DigitalElement& element, Window* window, DAVA::int64 timestamp) const;
 
 private:
     InputSystem* inputSystem = nullptr;
     Private::KeyboardDeviceImpl* impl = nullptr;
 
-    // State of each scancode key
-    Array<Private::DigitalElement, static_cast<uint32>(INPUT_ELEMENTS_KB_COUNT)> keys;
+    // State of each physical key
+    Array<Private::DigitalElement, INPUT_ELEMENTS_KB_COUNT> keys;
 
     size_t endFrameConnectionToken;
     size_t primaryWindowFocusChangedToken;
