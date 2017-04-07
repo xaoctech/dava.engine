@@ -13,6 +13,9 @@ class KeyboardDeviceImpl final
 public:
     eInputElements ConvertNativeScancodeToDavaScancode(uint32 nativeScancode);
     WideString TranslateElementToWideString(eInputElements elementId);
+
+private:
+    wchar_t TranslateNativeScancodeToWChar(uint32 nativeScancode);
 };
 
 } // namespace Private

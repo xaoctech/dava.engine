@@ -45,17 +45,18 @@ bool InputListener::OnInputEvent(const InputEvent& e)
     }
 
     bool finishedListening = false;
-    bool addElementToResult = false;
+    bool addEventToResult = false;
 
     const InputElementInfo elementInfo = GetInputElementInfo(e.elementId);
     if (elementInfo.type == eInputElementTypes::DIGITAL)
     {
         const bool isSystemKey = IsKeyboardSystemInputElement(e.elementId);
-        const bool isModifierKey = IsKeyboardModifierInputElement(e.elementId);
 
         // Ignore system keys
         if (!isSystemKey)
         {
+            const bool isModifierKey = IsKeyboardModifierInputElement(e.elementId);
+
             if ((e.digitalState & eDigitalElementStates::JUST_PRESSED) == eDigitalElementStates::JUST_PRESSED)
             {
                 if (currentMode == eInputListenerModes::DIGITAL_SINGLE_WITHOUT_MODIFIERS)
@@ -63,13 +64,13 @@ bool InputListener::OnInputEvent(const InputEvent& e)
                     // Ignore modifiers
                     if (!isModifierKey)
                     {
-                        addElementToResult = true;
+                        addEventToResult = true;
                         finishedListening = true;
                     }
                 }
                 else if (currentMode == eInputListenerModes::DIGITAL_SINGLE_WITH_MODIFIERS)
                 {
-                    addElementToResult = true;
+                    addEventToResult = true;
 
                     // Stop listening when first non-modifier key is pressed
                     if (!isModifierKey)
@@ -79,7 +80,7 @@ bool InputListener::OnInputEvent(const InputEvent& e)
                 }
                 else if (currentMode == eInputListenerModes::DIGITAL_MULTIPLE_ANY)
                 {
-                    addElementToResult = true;
+                    addEventToResult = true;
                 }
             }
             else if ((e.digitalState & eDigitalElementStates::JUST_RELEASED) == eDigitalElementStates::JUST_RELEASED)
@@ -96,7 +97,7 @@ bool InputListener::OnInputEvent(const InputEvent& e)
     {
         if (currentMode == eInputListenerModes::ANALOG)
         {
-            addElementToResult = true;
+            addEventToResult = true;
             finishedListening = true;
         }
     }
@@ -104,7 +105,7 @@ bool InputListener::OnInputEvent(const InputEvent& e)
     bool handled = false;
 
     // Add to result list if needed
-    if (addElementToResult)
+    if (addEventToResult)
     {
         handled = true;
         result.push_back(e);
@@ -127,7 +128,7 @@ bool InputListener::IsListening() const
 
 void InputListener::StopListening()
 {
-    if (inputHandlerToken > 0)
+    if (IsListening())
     {
         GetEngineContext()->inputSystem->RemoveHandler(inputHandlerToken);
         inputHandlerToken = 0;

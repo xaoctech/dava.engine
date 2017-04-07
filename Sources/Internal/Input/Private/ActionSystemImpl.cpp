@@ -61,9 +61,7 @@ void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)
                 // Unbind it
                 for (const uint32 deviceId : devices)
                 {
-                    boundSet.devices.erase(
-                    std::remove(boundSet.devices.begin(), boundSet.devices.end(), deviceId),
-                    boundSet.devices.end());
+                    boundSet.devices.erase(std::remove(boundSet.devices.begin(), boundSet.devices.end(), deviceId), boundSet.devices.end());
                 }
 
                 // If it is not bound to any devices anymore - remove it from the list
@@ -91,6 +89,7 @@ bool ActionSystemImpl::CheckDigitalStates(const Array<DigitalElementState, MAX_D
 {
     for (const DigitalElementState& requiredState : states)
     {
+        // If it's an empty state, break
         if (requiredState.elementId == 0)
         {
             break;
@@ -128,55 +127,60 @@ bool ActionSystemImpl::CheckDigitalStates(const Array<DigitalElementState, MAX_D
 
 bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
 {
-    // Handle Bound sets
+    InputElementInfo eventElementInfo = GetInputElementInfo(event.elementId);
 
-    for (const BoundActionSet& setBinding : boundSets)
+    if (eventElementInfo.type == eInputElementTypes::ANALOG)
     {
-        // Check if any digital action has triggered
-        for (auto it = setBinding.digitalBindings.begin(); it != setBinding.digitalBindings.end(); ++it)
+        // Check if any analog action has triggered
+        for (const BoundActionSet& setBinding : boundSets)
         {
-            DigitalBinding const& binding = *it;
-
-            const bool triggered = CheckDigitalStates(binding.requiredStates, setBinding.devices);
-
-            if (triggered)
+            for (auto it = setBinding.analogBindings.begin(); it != setBinding.analogBindings.end(); ++it)
             {
-                Action action;
-                action.actionId = binding.actionId;
-                action.analogState = binding.outputAnalogState;
-                action.triggeredDeviceId = event.deviceId;
+                AnalogBinding const& binding = *it;
 
-                actionSystem->ActionTriggered.Emit(action);
+                if (event.elementId != binding.analogElementId)
+                {
+                    continue;
+                }
 
-                return false; // TODO
+                const bool triggered = CheckDigitalStates(binding.requiredDigitalElementStates, setBinding.devices);
+
+                if (triggered)
+                {
+                    Action action;
+                    action.actionId = binding.actionId;
+                    action.analogState = event.analogState;
+                    action.triggeredDeviceId = event.deviceId;
+
+                    actionSystem->ActionTriggered.Emit(action);
+
+                    return false; // TODO
+                }
             }
         }
     }
-
-    for (const BoundActionSet& setBinding : boundSets)
+    else
     {
-        // Check if any analog action has triggered
-        for (auto it = setBinding.analogBindings.begin(); it != setBinding.analogBindings.end(); ++it)
+        // Check if any digital action has triggered
+        for (const BoundActionSet& setBinding : boundSets)
         {
-            AnalogBinding const& binding = *it;
-
-            if (event.elementId != binding.analogElementId)
+            for (auto it = setBinding.digitalBindings.begin(); it != setBinding.digitalBindings.end(); ++it)
             {
-                continue;
-            }
+                DigitalBinding const& binding = *it;
 
-            const bool triggered = CheckDigitalStates(binding.requiredDigitalElementStates, setBinding.devices);
+                const bool triggered = CheckDigitalStates(binding.requiredStates, setBinding.devices);
 
-            if (triggered)
-            {
-                Action action;
-                action.actionId = binding.actionId;
-                action.analogState = event.analogState;
-                action.triggeredDeviceId = event.deviceId;
+                if (triggered)
+                {
+                    Action action;
+                    action.actionId = binding.actionId;
+                    action.analogState = binding.outputAnalogState;
+                    action.triggeredDeviceId = event.deviceId;
 
-                actionSystem->ActionTriggered.Emit(action);
+                    actionSystem->ActionTriggered.Emit(action);
 
-                return false; // TODO
+                    return false; // TODO
+                }
             }
         }
     }
