@@ -289,7 +289,9 @@ inline bool IsKeyboardModifierInputElement(eInputElements element)
             element == eInputElements::KB_LALT ||
             element == eInputElements::KB_RSHIFT ||
             element == eInputElements::KB_RCTRL ||
-            element == eInputElements::KB_RALT);
+            element == eInputElements::KB_RALT ||
+            element == eInputElements::KB_LCMD ||
+            element == eInputElements::KB_RCMD);
 }
 
 /** Return true if specified keyboard `element` is a keyboard 'system' element. */
@@ -299,8 +301,6 @@ inline bool IsKeyboardSystemInputElement(eInputElements element)
             element == eInputElements::KB_CAPSLOCK ||
             element == eInputElements::KB_LWIN ||
             element == eInputElements::KB_RWIN ||
-            element == eInputElements::KB_LCMD ||
-            element == eInputElements::KB_RCMD ||
             element == eInputElements::KB_PRINTSCREEN ||
             element == eInputElements::KB_SCROLLLOCK ||
             element == eInputElements::KB_PAUSE ||
@@ -310,7 +310,6 @@ inline bool IsKeyboardSystemInputElement(eInputElements element)
             element == eInputElements::KB_PAGEDOWN ||
             element == eInputElements::KB_DELETE ||
             element == eInputElements::KB_END ||
-            element == eInputElements::KB_PAGEDOWN ||
             element == eInputElements::KB_NUMLOCK ||
             element == eInputElements::KB_MENU);
 }
@@ -334,7 +333,7 @@ inline bool IsTouchPositionElement(eInputElements element)
 }
 
 /** Return TOUCH_POSITION element for specified click `element. I.e. TOUCH_POSITION3 for TOUCH_CLICK3 etc. */
-inline eInputElements GetTouchPositionFromClick(eInputElements element)
+inline eInputElements GetTouchPositionElementFromClickElement(eInputElements element)
 {
     DVASSERT(IsTouchClickElement(element));
 

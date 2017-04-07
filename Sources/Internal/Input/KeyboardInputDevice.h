@@ -51,8 +51,5 @@ private:
 
     // State of each physical key
     Array<eDigitalElementStates, INPUT_ELEMENTS_KB_COUNT> keys;
-
-    Token endFrameConnectionToken;
-    Token primaryWindowFocusChangedToken;
 };
 } // namespace DAVA

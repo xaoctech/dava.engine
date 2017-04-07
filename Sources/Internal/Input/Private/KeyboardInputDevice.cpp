@@ -28,8 +28,8 @@ KeyboardInputDevice::KeyboardInputDevice(uint32 id)
     , impl(new Private::KeyboardDeviceImpl())
 {
     Engine* engine = Engine::Instance();
-    endFrameConnectionToken = engine->endFrame.Connect(this, &KeyboardInputDevice::OnEndFrame);
-    primaryWindowFocusChangedToken = engine->PrimaryWindow()->focusChanged.Connect(this, &KeyboardInputDevice::OnWindowFocusChanged); // TODO: handle all the windows
+    engine->endFrame.Connect(this, &KeyboardInputDevice::OnEndFrame);
+    engine->PrimaryWindow()->focusChanged.Connect(this, &KeyboardInputDevice::OnWindowFocusChanged); // TODO: handle all the windows
 
     Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &KeyboardInputDevice::HandleMainDispatcherEvent));
 }
@@ -37,8 +37,8 @@ KeyboardInputDevice::KeyboardInputDevice(uint32 id)
 KeyboardInputDevice::~KeyboardInputDevice()
 {
     Engine* engine = Engine::Instance();
-    engine->endFrame.Disconnect(endFrameConnectionToken);
-    engine->PrimaryWindow()->focusChanged.Disconnect(primaryWindowFocusChangedToken);
+    engine->endFrame.Disconnect(this);
+    engine->PrimaryWindow()->focusChanged.Disconnect(this);
 
     Private::EngineBackend::Instance()->UninstallEventFilter(this);
 

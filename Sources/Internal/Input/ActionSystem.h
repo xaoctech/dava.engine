@@ -90,6 +90,7 @@ struct DigitalBinding final
 /**
     \ingroup actions
     Describes an action bound to an analog element.
+
     Additional digital modifiers can be specified.
     For example, we can bind an action to shift (digital modifier) + mouse move (analog element).
 */

@@ -11,6 +11,7 @@ namespace Private
 {
 struct MainDispatcherEvent;
 }
+
 /**
     \ingroup input
     Input device that represents touch screen.
@@ -36,14 +37,13 @@ private:
     TouchDevice(const TouchDevice&) = delete;
     TouchDevice& operator=(const TouchDevice&) = delete;
 
-    bool HandleEvent(const Private::MainDispatcherEvent& e);
+    bool HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e);
     void OnEndFrame();
 
     int GetFirstNonUsedTouchIndex() const;
 
 private:
     InputSystem* inputSystem = nullptr;
-    Token endFrameConnectionToken;
 
     Array<eDigitalElementStates, INPUT_ELEMENTS_TOUCH_CLICK_COUNT> clicks;
     Array<AnalogElementState, INPUT_ELEMENTS_TOUCH_CLICK_COUNT> positions;
