@@ -84,6 +84,11 @@ void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)
     boundSets.push_back(boundSet);
 }
 
+void ActionSystemImpl::UnbindAllSets()
+{
+    boundSets.clear();
+}
+
 // Helper function to check if specified states are active
 bool ActionSystemImpl::CheckDigitalStates(const Array<DigitalElementState, MAX_DIGITAL_STATES_COUNT>& states, const Vector<uint32>& devices)
 {
