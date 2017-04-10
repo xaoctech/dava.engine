@@ -19,9 +19,11 @@ protected:
 
 private:
     void OnResetClick(DAVA::BaseObject* sender, void* data, void* callerData);
+    void OnLogClick(DAVA::BaseObject* sender, void* data, void* callerData);
 
     void ResetCounters();
 
+    bool InputEventLogHandler(const DAVA::InputEvent& inputEvent);
     bool InputEventHandler(const DAVA::InputEvent& inputEvent);
     bool OnPointerEvent(DAVA::UIEvent* e);
     bool OnKeyboardEvent(DAVA::UIEvent* e);
@@ -38,6 +40,7 @@ private:
     DAVA::UIStaticText* previewText = nullptr;
     DAVA::UIStaticText* descriptionText = nullptr;
     DAVA::UIButton* resetButton = nullptr;
+    DAVA::UIButton* logEventsButton = nullptr;
     DAVA::UIControl* redBox = nullptr;
     DAVA::UIControl* gamepad = nullptr;
 
@@ -46,6 +49,7 @@ private:
     DAVA::uint32 gamepadInputToken = 0;
 
     DAVA::uint32 rawInputToken = 0;
+    DAVA::uint32 logHandlerToken = 0;
 
     DAVA::uint32 numKeyboardEvents = 0;
     DAVA::uint32 numKeyDown = 0;
