@@ -43,7 +43,7 @@ private:
     void HandleGamepadButton(const Private::MainDispatcherEvent& e);
 
     void HandleButtonPress(eInputElements element, bool pressed);
-    void HandleAxisMovement(eInputElements element, float32 newValue);
+    void HandleAxisMovement(eInputElements element, float32 newValue, bool horizontal);
 
     InputSystem* inputSystem = nullptr;
     std::unique_ptr<Private::GamepadDeviceImpl> impl;

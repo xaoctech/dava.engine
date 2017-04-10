@@ -44,12 +44,12 @@ void GamepadDeviceImpl::ReadExtendedGamepadElements(GCExtendedGamepad* gamepad)
     gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_DPAD_UP, gamepad.dpad.up.isPressed);
     gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_DPAD_DOWN, gamepad.dpad.down.isPressed);
 
-    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_LTHUMB_X, gamepad.leftThumbstick.xAxis.value);
-    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_LTHUMB_Y, gamepad.leftThumbstick.yAxis.value);
-    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_RTHUMB_X, gamepad.rightThumbstick.xAxis.value);
-    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_RTHUMB_Y, gamepad.rightThumbstick.yAxis.value);
-    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_LTRIGGER, gamepad.leftTrigger.value);
-    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_RTRIGGER, gamepad.rightTrigger.value);
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_AXIS_LTHUMB, gamepad.leftThumbstick.xAxis.value, true);
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_AXIS_LTHUMB, gamepad.leftThumbstick.yAxis.value, false);
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_AXIS_RTHUMB, gamepad.rightThumbstick.xAxis.value, true);
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_AXIS_RTHUMB, gamepad.rightThumbstick.yAxis.value, false);
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_AXIS_LTRIGGER, gamepad.leftTrigger.value, true);
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_AXIS_RTRIGGER, gamepad.rightTrigger.value, true);
 }
 
 void GamepadDeviceImpl::ReadGamepadElements(GCGamepad* gamepad)

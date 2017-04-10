@@ -38,29 +38,32 @@ void GamepadDeviceImpl::HandleGamepadMotion(const MainDispatcherEvent& e)
     // On game pads with two analog joysticks, axis AXIS_RX is often reinterpreted as absolute X position and
     // axis AXIS_RZ is reinterpreted as absolute Y position of the second joystick instead.
     eInputElements element = eInputElements::NONE;
+    bool verticalAxis = false;
     switch (axis)
     {
     case AMOTION_EVENT_AXIS_X:
-        element = eInputElements::GAMEPAD_LTHUMB_X;
+        element = eInputElements::GAMEPAD_AXIS_LTHUMB;
         break;
     case AMOTION_EVENT_AXIS_Y:
-        element = eInputElements::GAMEPAD_LTHUMB_Y;
+        verticalAxis = true;
+        element = eInputElements::GAMEPAD_AXIS_LTHUMB;
         break;
     case AMOTION_EVENT_AXIS_Z:
     case AMOTION_EVENT_AXIS_RX:
-        element = eInputElements::GAMEPAD_RTHUMB_X;
+        element = eInputElements::GAMEPAD_AXIS_RTHUMB;
         break;
     case AMOTION_EVENT_AXIS_RY:
     case AMOTION_EVENT_AXIS_RZ:
-        element = eInputElements::GAMEPAD_RTHUMB_Y;
+        verticalAxis = true;
+        element = eInputElements::GAMEPAD_AXIS_RTHUMB;
         break;
     case AMOTION_EVENT_AXIS_LTRIGGER:
     case AMOTION_EVENT_AXIS_BRAKE:
-        element = eInputElements::GAMEPAD_LTRIGGER;
+        element = eInputElements::GAMEPAD_AXIS_LTRIGGER;
         break;
     case AMOTION_EVENT_AXIS_RTRIGGER:
     case AMOTION_EVENT_AXIS_GAS:
-        element = eInputElements::GAMEPAD_RTRIGGER;
+        element = eInputElements::GAMEPAD_AXIS_RTRIGGER;
         break;
     default:
         return;
@@ -68,7 +71,6 @@ void GamepadDeviceImpl::HandleGamepadMotion(const MainDispatcherEvent& e)
 
     // Android joystick Y-axis position is normalized to a range [-1, 1] where -1 for up or far and 1 for down or near.
     // Historically dava.engine's clients expect Y-axis value -1 for down or near and 1 for up and far so negate Y-axes.
-    // The same applies to so called 'hats'.
     switch (axis)
     {
     case AMOTION_EVENT_AXIS_Y:
@@ -80,7 +82,7 @@ void GamepadDeviceImpl::HandleGamepadMotion(const MainDispatcherEvent& e)
         break;
     }
 
-    gamepadDevice->HandleAxisMovement(element, value);
+    gamepadDevice->HandleAxisMovement(element, value, !verticalAxis);
 }
 
 void GamepadDeviceImpl::HandleGamepadButton(const MainDispatcherEvent& e)

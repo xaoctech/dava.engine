@@ -169,12 +169,10 @@ const InputElementInfo& GetInputElementInfo(eInputElements element)
         info[eInputElements::GAMEPAD_LSHOUDER] = { "Gamepad lelft shouder", eInputElementTypes::DIGITAL };
         info[eInputElements::GAMEPAD_RSHOUDER] = { "Gamepad right shouder", eInputElementTypes::DIGITAL };
 
-        info[eInputElements::GAMEPAD_LTRIGGER] = { "Gamepad left trigger", eInputElementTypes::ANALOG };
-        info[eInputElements::GAMEPAD_RTRIGGER] = { "Gamepad right trigger", eInputElementTypes::ANALOG };
-        info[eInputElements::GAMEPAD_LTHUMB_X] = { "Gamepad left thumbstick X", eInputElementTypes::ANALOG };
-        info[eInputElements::GAMEPAD_LTHUMB_Y] = { "Gamepad left thumbstick Y", eInputElementTypes::ANALOG };
-        info[eInputElements::GAMEPAD_RTHUMB_X] = { "Gamepad right thumbstick X", eInputElementTypes::ANALOG };
-        info[eInputElements::GAMEPAD_RTHUMB_Y] = { "Gamepad right thumbstick Y", eInputElementTypes::ANALOG };
+        info[eInputElements::GAMEPAD_AXIS_LTRIGGER] = { "Gamepad left trigger", eInputElementTypes::ANALOG };
+        info[eInputElements::GAMEPAD_AXIS_RTRIGGER] = { "Gamepad right trigger", eInputElementTypes::ANALOG };
+        info[eInputElements::GAMEPAD_AXIS_LTHUMB] = { "Gamepad left thumbstick axis", eInputElementTypes::ANALOG };
+        info[eInputElements::GAMEPAD_AXIS_RTHUMB] = { "Gamepad right thumbstick axis", eInputElementTypes::ANALOG };
 
         initialized = true;
     }
