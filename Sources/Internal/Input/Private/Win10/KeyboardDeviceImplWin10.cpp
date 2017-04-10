@@ -46,7 +46,7 @@ WideString KeyboardDeviceImpl::TranslateElementToWideString(eInputElements eleme
 
     if (nativeScancode == -1)
     {
-        for (size_t i = 0; i < COUNT_OF(nativeScancodeToDavaScancode); ++i)
+        for (size_t i = 0; i < COUNT_OF(nativeScancodeExtToDavaScancode); ++i)
         {
             if (nativeScancodeExtToDavaScancode[i] == elementId)
             {
