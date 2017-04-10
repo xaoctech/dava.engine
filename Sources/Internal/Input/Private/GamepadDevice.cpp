@@ -140,6 +140,8 @@ void GamepadDevice::HandleButtonPress(eInputElements element, bool pressed)
 
 void GamepadDevice::HandleAxisMovement(eInputElements element, float32 newValue, bool horizontal)
 {
+    // TODO: use some threshold for comparisons below
+
     uint32 index = element - eInputElements::GAMEPAD_FIRST_AXIS;
     if (horizontal)
     {
