@@ -132,7 +132,6 @@ enum eInputElements : uint32
     KB_NUMPAD_0,
     KB_LCMD,
     KB_RCMD,
-    KB_BACK,
 
     // Mouse
 
@@ -203,7 +202,7 @@ enum eInputElements : uint32
     MOUSE_LAST_BUTTON = MOUSE_EXT2BUTTON,
 
     KB_FIRST = KB_1,
-    KB_LAST = KB_BACK,
+    KB_LAST = KB_RCMD,
 
     GAMEPAD_FIRST = GAMEPAD_START,
     GAMEPAD_LAST = GAMEPAD_RTHUMB_Y,

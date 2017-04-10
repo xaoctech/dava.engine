@@ -9,15 +9,14 @@ namespace DAVA
 {
 namespace Private
 {
-// TODO: Virtual keys support
-
+// Taken from https://developer.android.com/reference/android/view/KeyEvent.html
 const eInputElements nativeScancodeToDavaScancode[] =
 {
   eInputElements::NONE, // 0
   eInputElements::NONE, // 1
   eInputElements::NONE, // 2
   eInputElements::NONE, // 3
-  eInputElements::KB_BACK, // 4
+  eInputElements::NONE, // 4
   eInputElements::NONE, // 5
   eInputElements::NONE, // 6
   eInputElements::KB_0, // 7
@@ -175,7 +174,7 @@ const eInputElements nativeScancodeToDavaScancode[] =
   eInputElements::NONE, // 159
   eInputElements::KB_NUMPAD_ENTER, // 160
   eInputElements::KB_EQUALS, // 161
-  /*
+  /* Unused
     eInputElements::NONE, // 162
     eInputElements::NONE, // 163
     eInputElements::NONE, // 164

@@ -67,7 +67,7 @@ bool InputListener::OnInputEvent(const InputEvent& e)
             {
                 const bool isModifierKey = IsKeyboardModifierInputElement(e.elementId);
 
-                // If button has been pressed
+                // If a button has been pressed
                 if ((e.digitalState & eDigitalElementStates::JUST_PRESSED) == eDigitalElementStates::JUST_PRESSED)
                 {
                     if (currentMode == eInputListenerModes::DIGITAL_SINGLE_WITHOUT_MODIFIERS)
@@ -96,11 +96,7 @@ bool InputListener::OnInputEvent(const InputEvent& e)
                 }
                 else if ((e.digitalState & eDigitalElementStates::JUST_RELEASED) == eDigitalElementStates::JUST_RELEASED)
                 {
-                    if (currentMode == eInputListenerModes::DIGITAL_MULTIPLE_ANY)
-                    {
-                        // If a button was released, and we're listening for digital sequence, assume it's over
-                        finishedListening = true;
-                    }
+                    finishedListening = true;
                 }
             }
         }
