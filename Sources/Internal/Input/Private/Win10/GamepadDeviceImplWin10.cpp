@@ -36,12 +36,12 @@ void GamepadDeviceImpl::Update()
     gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_LSHOUDER, (reading.Buttons & GamepadButtons::LeftShoulder) != GamepadButtons::None);
     gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_RSHOUDER, (reading.Buttons & GamepadButtons::RightShoulder) != GamepadButtons::None);
 
-    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_LTHUMB_X, static_cast<float32>(reading.LeftThumbstickX));
-    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_LTHUMB_Y, static_cast<float32>(reading.LeftThumbstickY));
-    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_RTHUMB_X, static_cast<float32>(reading.RightThumbstickX));
-    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_RTHUMB_Y, static_cast<float32>(reading.RightThumbstickY));
-    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_LTRIGGER, static_cast<float32>(reading.LeftTrigger));
-    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_RTRIGGER, static_cast<float32>(reading.RightTrigger));
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_AXIS_LTHUMB, static_cast<float32>(reading.LeftThumbstickX), true);
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_AXIS_LTHUMB, static_cast<float32>(reading.LeftThumbstickY), false);
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_AXIS_RTHUMB, static_cast<float32>(reading.RightThumbstickX), true);
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_AXIS_RTHUMB, static_cast<float32>(reading.RightThumbstickY), false);
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_AXIS_LTRIGGER, static_cast<float32>(reading.LeftTrigger), true);
+    gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_AXIS_RTRIGGER, static_cast<float32>(reading.RightTrigger), true);
 }
 
 bool GamepadDeviceImpl::HandleGamepadAdded(uint32 /*id*/)

@@ -138,13 +138,24 @@ void GamepadDevice::HandleButtonPress(eInputElements element, bool pressed)
     }
 }
 
-void GamepadDevice::HandleAxisMovement(eInputElements element, float32 newValue)
+void GamepadDevice::HandleAxisMovement(eInputElements element, float32 newValue, bool horizontal)
 {
     uint32 index = element - eInputElements::GAMEPAD_FIRST_AXIS;
-    if (newValue != axes[index].x)
+    if (horizontal)
     {
-        axes[index].x = newValue;
-        axisChangedMask.set(index);
+        if (newValue != axes[index].x)
+        {
+            axes[index].x = newValue;
+            axisChangedMask.set(index);
+        }
+    }
+    else
+    {
+        if (newValue != axes[index].y)
+        {
+            axes[index].y = newValue;
+            axisChangedMask.set(index);
+        }
     }
 }
 
