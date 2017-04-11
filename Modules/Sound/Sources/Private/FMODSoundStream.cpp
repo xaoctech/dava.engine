@@ -1,8 +1,6 @@
-#ifdef DAVA_FMOD
 
 #include "FMODSoundStream.h"
-#include "SoundStream.h"
-#include "Sound/FMODSoundStream.h"
+#include "FMODSoundStream.h"
 #include "Sound/SoundSystem.h"
 
 namespace DAVA
@@ -91,5 +89,3 @@ void FMODSoundStream::Pause()
     }
 }
 }
-
-#endif
