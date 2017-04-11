@@ -1,8 +1,6 @@
 #include "Logger/Logger.h"
 #include "FileSystem/FilePath.h"
-#include "Sound/SoundSystem.h"
-
-#ifdef __DAVAENGINE_IPHONE__
+#include "FMODSoundSystem.h"
 
 #include "musicios.h"
 #import <AVFoundation/AVFoundation.h>
@@ -111,9 +109,9 @@
 
 namespace DAVA
 {
-MusicIOSSoundEvent* MusicIOSSoundEvent::CreateMusicEvent(const FilePath& path)
+MusicIOSSoundEvent* MusicIOSSoundEvent::CreateMusicEvent(const FilePath& path, FMODSoundSystem* fmodSoundSystem)
 {
-    MusicIOSSoundEvent* event = new MusicIOSSoundEvent(path);
+    MusicIOSSoundEvent* event = new MusicIOSSoundEvent(path, fmodSoundSystem);
     if (event->Init())
         return event;
 
@@ -124,11 +122,10 @@ MusicIOSSoundEvent* MusicIOSSoundEvent::CreateMusicEvent(const FilePath& path)
     return 0;
 }
 
-MusicIOSSoundEvent::MusicIOSSoundEvent(const FilePath& path)
-    :
-    avSound(0)
-    ,
-    filePath(path)
+MusicIOSSoundEvent::MusicIOSSoundEvent(const FilePath& path, FMODSoundSystem* fmodSoundSystem)
+    : avSound(0)
+    , soundSystem(fmodSoundSystem)
+    , filePath(path)
 {
 }
 
@@ -153,7 +150,7 @@ MusicIOSSoundEvent::~MusicIOSSoundEvent()
     [(AvSound*)avSound release];
     avSound = 0;
 
-    SoundSystem::Instance()->RemoveSoundEventFromGroups(this);
+    soundSystem->RemoveSoundEventFromGroups(this);
 }
 
 bool MusicIOSSoundEvent::Trigger()
@@ -217,8 +214,7 @@ bool MusicIOSSoundEvent::IsActive() const
 
 void MusicIOSSoundEvent::PerformEndCallback()
 {
-    SoundSystem::Instance()->ReleaseOnUpdate(this);
+    soundSystem->ReleaseOnUpdate(this);
     PerformEvent(DAVA::MusicIOSSoundEvent::EVENT_END);
 }
 };
-#endif //#ifdef __DAVAENGINE_IPHONE__
