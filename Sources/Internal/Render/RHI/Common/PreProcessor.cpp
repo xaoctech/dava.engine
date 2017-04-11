@@ -143,7 +143,6 @@ PreProc::_alloc_buffer( unsigned sz )
 
     buf.mem = ::malloc( sz );
 
-//    _buf.append( 1, &buf, 16 );
     _buf.push_back( buf );
     return (char*)(buf.mem);
 }
@@ -690,6 +689,10 @@ PreProc::_process_define( const char* name, const char* value )
         _var.back().val = int(val);
     
         _eval.set_variable( name, val );
+    }
+    else
+    {
+        _report_expr_eval_error(0);
     }
 
     _macro.resize( _macro.size()+1 );
