@@ -208,7 +208,7 @@ inline bool intersect(const Ray& r, double& t, int& id)
     }
     return t < inf;
 }
-Vec radiance(const Ray& r, int depth, unsigned short* Xi)
+/* Vec radiance(const Ray& r, int depth, unsigned short* Xi)
 {
     double t; // distance to intersection
     int id = 0; // id of intersected object
@@ -226,9 +226,13 @@ Vec radiance(const Ray& r, int depth, unsigned short* Xi)
     double p = f.x > f.y && f.x > f.z ? f.x : f.y > f.z ? f.y : f.z; // max refl
     if (++depth > 5)
         if (erand48(Xi) < p)
+        {
             f = f * (1 / p);
+        }
         else
+        {
             return obj.e; //R.R.
+        }
     if (obj.refl == DIFF)
     { // Ideal DIFFUSE reflection
         double r1 = 2 * PI * erand48(Xi), r2 = erand48(Xi), r2s = sqrt(r2);
@@ -280,7 +284,7 @@ int SmallPtMain()
         fprintf(f, "%d %d %d ", toInt(c[i].x), toInt(c[i].y), toInt(c[i].z));
 
     return 0;
-};
+};*/
 
 DAVA_TESTCLASS (GeometryOctTreeTest)
 {
