@@ -1,7 +1,4 @@
-#ifdef DAVA_FMOD
-
-#ifndef __DAVAENGINE_FMOD_FILE_SOUND_EVENT_H__
-#define __DAVAENGINE_FMOD_FILE_SOUND_EVENT_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
@@ -10,7 +7,7 @@
 #include "Base/EventDispatcher.h"
 #include "Sound/SoundEvent.h"
 #include "Concurrency/Mutex.h"
-#include "Sound/FMODUtils.h"
+#include "FMODUtils.h"
 
 namespace FMOD
 {
@@ -21,6 +18,8 @@ class Channel;
 
 namespace DAVA
 {
+class FMODSoundSystem;
+
 class FMODFileSoundEvent : public SoundEvent
 {
 public:
@@ -70,10 +69,10 @@ public:
     };
 
 protected:
-    FMODFileSoundEvent(const FilePath& fileName, uint32 flags, int32 priority);
+    FMODFileSoundEvent(const FilePath& fileName, uint32 flags, int32 priority, FMODSoundSystem* rootSoundSystem);
     virtual ~FMODFileSoundEvent();
 
-    static FMODFileSoundEvent* CreateWithFlags(const FilePath& fileName, uint32 flags, int32 priority = 128);
+    static FMODFileSoundEvent* CreateWithFlags(const FilePath& fileName, uint32 flags, int32 priority, FMODSoundSystem* rootSoundSystem);
 
     static Mutex soundMapMutex;
 
@@ -83,13 +82,11 @@ protected:
     int32 priority;
     uint32 flags;
 
-    FMOD::Sound* fmodSound;
-    FMOD::ChannelGroup* fmodInstanceGroup;
+    FMOD::Sound* fmodSound = nullptr;
+    FMOD::ChannelGroup* fmodInstanceGroup = nullptr;
 
-    friend class SoundSystem;
+    FMODSoundSystem* soundSystem = nullptr;
+
+    friend class FMODSoundSystem;
 };
 };
-
-#endif //__DAVAENGINE_FMOD_FILE_SOUND_EVENT_H__
-
-#endif //DAVA_FMOD
