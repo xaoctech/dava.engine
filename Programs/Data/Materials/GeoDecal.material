@@ -3,7 +3,7 @@ RenderTechnique:
     RenderPass:
         Name: "ForwardPass"
         Shader: "~res:/Materials/Shaders/Default/materials"
-        UniqueDefines: ["MATERIAL_TEXTURE", "MATERIAL_LIGHTMAP", "ALPHABLEND", "GEO_DECAL"]
+        UniqueDefines: ["MATERIAL_TEXTURE", "ALPHABLEND", "GEO_DECAL"]
         RenderState:
             alphaFunc: "CMP_ALWAYS"
             alphaFuncCmpValue: 0.0000

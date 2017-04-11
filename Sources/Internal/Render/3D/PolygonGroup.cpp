@@ -1,6 +1,6 @@
 #include "Render/3D/PolygonGroup.h"
 #include "FileSystem/KeyedArchive.h"
-#include "Render/RenderCallbacks.h"
+#include "Render/Renderer.h"
 #include "Scene3D/SceneFileV2.h"
 #include "Render/Highlevel/GeometryOctTree.h"
 
@@ -36,12 +36,12 @@ PolygonGroup::PolygonGroup()
     , baseVertexArray(0)
     , vertexLayoutId(rhi::VertexLayout::InvalidUID)
 {
-    RenderCallbacks::RegisterResourceRestoreCallback(MakeFunction(this, &PolygonGroup::RestoreBuffers));
+    Renderer::GetSignals().needRestoreResources.Connect(this, &PolygonGroup::RestoreBuffers);
 }
 
 PolygonGroup::~PolygonGroup()
 {
-    RenderCallbacks::UnRegisterResourceRestoreCallback(MakeFunction(this, &PolygonGroup::RestoreBuffers));
+    Renderer::GetSignals().needRestoreResources.Disconnect(this);
     ReleaseData();
     if (vertexBuffer.IsValid())
         rhi::DeleteVertexBuffer(vertexBuffer);
