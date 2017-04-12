@@ -1,15 +1,12 @@
-#ifdef DAVA_FMOD
-
-#ifndef __DAVAENGINE_FMODUTILS_H__
-#define __DAVAENGINE_FMODUTILS_H__
+#pragma once
 
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wold-style-cast"
 #endif
 
-#include <fmod/fmod_event.hpp>
-#include <fmod/fmod_errors.h>
+#include <fmod_event.hpp>
+#include <fmod_errors.h>
 
 #include "Logger/Logger.h"
 
@@ -29,7 +26,3 @@ namespace DAVA
 	} \
 }
 };
-
-#endif //__DAVAENGINE_FMODUTILS_H__
-
-#endif //DAVA_FMOD
