@@ -82,7 +82,9 @@ public:
     const String& GetPermanentName() const;
 
     /** Return registered structure for that type. */
-    const ReflectedStructure* GetStrucutre() const;
+    const ReflectedStructure* GetStructure() const;
+
+    ReflectedStructure* EditStructure() const;
 
     /** Return registered structure for that type. */
     const StructureWrapper* GetStrucutreWrapper() const;

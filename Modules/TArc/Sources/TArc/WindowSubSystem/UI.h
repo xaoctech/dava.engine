@@ -14,11 +14,13 @@
 
 class QWidget;
 class QAction;
+class QMainWindow;
 
 namespace DAVA
 {
 namespace TArc
 {
+class ClientModule;
 class QtReflectionBridge;
 class WindowKey
 {
@@ -143,12 +145,22 @@ struct ModalMessageParams
         Reset = 0x8000
     };
 
+    enum Icon
+    {
+        NoIcon,
+        Information,
+        Warning,
+        Critical,
+        Question
+    };
+
     Q_DECLARE_FLAGS(Buttons, Button);
 
     QString title;
     QString message;
     Buttons buttons = Buttons(Ok | Cancel);
     Button defaultButton = NoButton;
+    Icon icon = NoIcon;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(ModalMessageParams::Buttons);
@@ -162,6 +174,8 @@ public:
     virtual ~UI()
     {
     }
+
+    virtual void DeclareToolbar(const WindowKey& windowKey, const ActionPlacementInfo& toogleToolbarVisibility, const QString& toolbarName) = 0;
 
     virtual void AddView(const WindowKey& windowKey, const PanelKey& panelKey, QWidget* widget) = 0;
     virtual void AddAction(const WindowKey& windowKey, const ActionPlacementInfo& placement, QAction* action) = 0;
@@ -180,6 +194,11 @@ public:
     Signal<> lastWaitDialogWasClosed;
 
     DAVA_DEPRECATED(virtual QWidget* GetWindow(const WindowKey& windowKey) = 0);
+    DAVA_DEPRECATED(virtual void InjectWindow(const WindowKey& windowKey, QMainWindow* window) = 0);
+
+protected:
+    friend class UIProxy;
+    virtual void SetCurrentModule(ClientModule* module) = 0;
 };
 } // namespace TArc
 } // namespace DAVA

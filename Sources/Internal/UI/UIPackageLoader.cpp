@@ -237,7 +237,7 @@ void UIPackageLoader::LoadStyleSheets(const YamlNode* styleSheetsNode, AbstractU
                 {
                     uint32 index = propertyDB->GetStyleSheetPropertyIndex(propertyName);
                     const UIStyleSheetPropertyDescriptor& propertyDescr = propertyDB->GetStyleSheetPropertyByIndex(index);
-                    if (propertyDescr.field_s != nullptr)
+                    if (propertyDescr.field != nullptr)
                     {
                         const YamlNode* propertyNode = properties->Get(propertyIndex);
                         const YamlNode* valueNode = propertyNode;
@@ -246,7 +246,7 @@ void UIPackageLoader::LoadStyleSheets(const YamlNode* styleSheetsNode, AbstractU
 
                         if (valueNode)
                         {
-                            Any value(valueNode->AsAny(propertyDescr.field_s));
+                            Any value(valueNode->AsAny(propertyDescr.field));
 
                             UIStyleSheetProperty property{ index, value };
 
@@ -403,13 +403,10 @@ void UIPackageLoader::LoadControlPropertiesFromYamlNode(UIControl* control, cons
 void UIPackageLoader::LoadComponentPropertiesFromYamlNode(UIControl* control, const YamlNode* node, AbstractUIPackageBuilder* builder)
 {
     Vector<ComponentNode> components = ExtractComponentNodes(node);
-    bool bgProcessed = false;
+    Vector<const Type*> processedComponents;
     for (ComponentNode& nodeDescr : components)
     {
-        if (nodeDescr.type == Type::Instance<UIControlBackground>())
-        {
-            bgProcessed = true;
-        }
+        processedComponents.push_back(nodeDescr.type);
         UIComponent* component = builder->BeginComponentPropertiesSection(nodeDescr.type, nodeDescr.index);
         if (component)
         {
@@ -466,11 +463,16 @@ void UIPackageLoader::LoadComponentPropertiesFromYamlNode(UIControl* control, co
 
         builder->EndComponentPropertiesSection();
     }
-    if (!bgProcessed)
+    /*
+    for (uint32 i = 0; i < UIComponent::COMPONENT_COUNT; ++i)
     {
-        builder->BeginComponentPropertiesSection(Type::Instance<UIControlBackground>(), 0);
-        builder->EndComponentPropertiesSection();
+        if (!processedComponents[i] && control->GetComponentCount(i) > 0)
+        {
+            builder->BeginComponentPropertiesSection(i, 0);
+            builder->EndComponentPropertiesSection();
+        }
     }
+    */
 }
 
 void UIPackageLoader::ProcessLegacyAligns(UIControl* control, const YamlNode* node, AbstractUIPackageBuilder* builder)

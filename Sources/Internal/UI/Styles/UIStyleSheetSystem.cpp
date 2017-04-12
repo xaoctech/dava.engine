@@ -7,6 +7,9 @@
 #include "Animation/LinearPropertyAnimation.h"
 #include "Animation/AnimationManager.h"
 #include "Logger/Logger.h"
+#include "Render/Renderer.h"
+#include "UI/UIScreen.h"
+#include "UI/UIScreenTransition.h"
 
 namespace DAVA
 {
@@ -20,7 +23,7 @@ struct ImmediatePropertySetter
     void operator()(UIControl* control, const Reflection& ref) const
     {
         control->StopAnimations(PROPERTY_ANIMATION_GROUP_OFFSET + propertyIndex);
-        ref.SetValueWithCast(value);
+        ref.SetValue(value);
     }
 
     uint32 propertyIndex;
@@ -49,29 +52,38 @@ struct AnimatedPropertySetter
 
     void operator()(UIControl* control, const Reflection& ref) const
     {
-        if (value.CanGet<Vector2>() && ref.GetValue().CanGet<Vector2>())
+        const Any& refValue = ref.GetValue();
+        const Type* valueType = value.GetType()->Decay();
+        if (valueType == refValue.GetType()->Decay())
         {
-            Animate<Vector2>(control, ref, ref.GetValue().Get<Vector2>(), value.Get<Vector2>());
-        }
-        else if (value.CanGet<Vector3>() && ref.GetValue().CanGet<Vector3>())
-        {
-            Animate<Vector3>(control, ref, ref.GetValue().Get<Vector3>(), value.Get<Vector3>());
-        }
-        else if (value.CanGet<Vector4>() && ref.GetValue().CanGet<Vector4>())
-        {
-            Animate<Vector4>(control, ref, ref.GetValue().Get<Vector4>(), value.Get<Vector4>());
-        }
-        else if (value.CanGet<float32>() && ref.GetValue().CanGet<float32>())
-        {
-            Animate<float32>(control, ref, ref.GetValue().Get<float32>(), value.Get<float32>());
-        }
-        else if (value.CanGet<Color>() && ref.GetValue().CanGet<Color>())
-        {
-            Animate<Color>(control, ref, ref.GetValue().Get<Color>(), value.Get<Color>());
+            if (valueType == Type::Instance<Vector2>())
+            {
+                Animate<Vector2>(control, ref, refValue.Get<Vector2>(), value.Get<Vector2>());
+            }
+            else if (valueType == Type::Instance<Vector3>())
+            {
+                Animate<Vector3>(control, ref, refValue.Get<Vector3>(), value.Get<Vector3>());
+            }
+            else if (valueType == Type::Instance<Vector4>())
+            {
+                Animate<Vector4>(control, ref, refValue.Get<Vector4>(), value.Get<Vector4>());
+            }
+            else if (valueType == Type::Instance<float32>())
+            {
+                Animate<float32>(control, ref, refValue.Get<float32>(), value.Get<float32>());
+            }
+            else if (valueType == Type::Instance<Color>())
+            {
+                Animate<Color>(control, ref, refValue.Get<Color>(), value.Get<Color>());
+            }
+            else
+            {
+                DVASSERT(false, "Non-animatable property");
+            }
         }
         else
         {
-            DVASSERT(false, "Non-animatable property");
+            DVASSERT(false, "Different types");
         }
     }
 
@@ -87,6 +99,45 @@ UIStyleSheetSystem::UIStyleSheetSystem()
 
 UIStyleSheetSystem::~UIStyleSheetSystem()
 {
+}
+
+void UIStyleSheetSystem::Process(DAVA::float32 elapsedTime)
+{
+    if (!Renderer::GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_UI_CONTROL_SYSTEM))
+    {
+        return;
+    }
+
+    CheckDirty();
+
+    if (currentScreenTransition.Valid())
+    {
+        Update(currentScreenTransition.Get());
+    }
+    else if (currentScreen.Valid())
+    {
+        Update(currentScreen.Get());
+    }
+
+    if (popupContainer.Valid())
+    {
+        Update(popupContainer.Get());
+    }
+}
+
+void UIStyleSheetSystem::SetCurrentScreen(const RefPtr<UIScreen>& screen)
+{
+    currentScreen = screen;
+}
+
+void UIStyleSheetSystem::SetCurrentScreenTransition(const RefPtr<UIScreenTransition>& screenTransition)
+{
+    currentScreenTransition = screenTransition;
+}
+
+void UIStyleSheetSystem::SetPopupContainer(const RefPtr<UIControl>& _popupContainer)
+{
+    popupContainer = _popupContainer;
 }
 
 void UIStyleSheetSystem::ProcessControl(UIControl* control, bool styleSheetListChanged /* = false*/)
@@ -261,6 +312,27 @@ void UIStyleSheetSystem::DumpStats()
     }
 }
 
+void UIStyleSheetSystem::Update(UIControl* root)
+{
+    if (!(needUpdate || dirty) || !root)
+        return;
+    UpdateControl(root);
+}
+
+void UIStyleSheetSystem::UpdateControl(UIControl* control)
+{
+    if ((control->IsVisible() || control->GetStyledPropertySet().test(UIStyleSheetPropertyDataBase::Instance()->GetStyleSheetVisiblePropertyIndex()))
+        && control->IsStyleSheetDirty())
+    {
+        ProcessControl(control);
+    }
+
+    for (UIControl* child : control->GetChildren())
+    {
+        UpdateControl(child);
+    }
+}
+
 bool UIStyleSheetSystem::StyleSheetMatchesControl(const UIStyleSheet* styleSheet, const UIControl* control)
 {
 #if STYLESHEET_STATS
@@ -305,23 +377,29 @@ void UIStyleSheetSystem::DoForAllPropertyInstances(UIControl* control, uint32 pr
 
     if (descr.group->componentType == Type::Instance<UIControl>())
     {
-        Reflection cRef = Reflection::Create(&control);
-        Reflection fRef = cRef.GetField(descr.field_s->name);
-        if (fRef.IsValid())
+        Reflection ref = Reflection::Create(ReflectedObject(control));
+        ref = ref.GetField(descr.field->name);
+        if (ref.IsValid())
         {
-            action(control, fRef);
+            action(control, ref);
         }
     }
     else
     {
         if (UIComponent* component = control->GetComponent(descr.group->componentType))
         {
-            Reflection cRef = Reflection::Create(&component);
-            Reflection fRef = cRef.GetField(descr.field_s->name);
-            if (fRef.IsValid())
+            Reflection ref = Reflection::Create(ReflectedObject(component));
+            ref = ref.GetField(descr.field->name);
+            if (ref.IsValid())
             {
-                action(control, fRef);
+                action(control, ref);
             }
+        }
+        else
+        {
+            const char* componentName = descr.group->componentType->GetName();
+            const char* controlName = control->GetName().c_str();
+            Logger::Warning("Style sheet can not find component \'%s\' in control \'%s\'", componentName, controlName);
         }
     }
 }

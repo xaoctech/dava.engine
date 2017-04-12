@@ -127,10 +127,10 @@ bool DefaultUIPackageBuilder::ProcessImportedPackage(const String& packagePath, 
 
     if (!importedPackage)
     {
-        DefaultUIPackageBuilder builder(cache);
-        if (loader->LoadPackage(packagePath, &builder) && builder.GetPackage())
+        std::unique_ptr<DefaultUIPackageBuilder> builder = CreateBuilder(cache);
+        if (loader->LoadPackage(packagePath, builder.get()) && builder->GetPackage())
         {
-            importedPackage = builder.GetPackage();
+            importedPackage = builder->GetPackage();
             cache->PutPackage(packagePath, importedPackage);
         }
     }
@@ -164,7 +164,7 @@ void DefaultUIPackageBuilder::ProcessStyleSheet(const Vector<UIStyleSheetSelecto
 
 UIControl* DefaultUIPackageBuilder::BeginControlWithClass(const FastName& controlName, const String& className)
 {
-    RefPtr<UIControl> control(ObjectFactory::Instance()->New<UIControl>(className));
+    RefPtr<UIControl> control(CreateControlByName(className, className));
 
     if (control.Valid())
     {
@@ -189,7 +189,8 @@ UIControl* DefaultUIPackageBuilder::BeginControlWithClass(const FastName& contro
 
 UIControl* DefaultUIPackageBuilder::BeginControlWithCustomClass(const FastName& controlName, const String& customClassName, const String& className)
 {
-    RefPtr<UIControl> control(ObjectFactory::Instance()->New<UIControl>(customClassName));
+    RefPtr<UIControl> control(CreateControlByName(customClassName, className));
+    DVASSERT(control.Valid());
 
     if (control.Valid())
     {
@@ -203,13 +204,6 @@ UIControl* DefaultUIPackageBuilder::BeginControlWithCustomClass(const FastName& 
             control->SetName(controlName);
         }
     }
-    else
-    {
-        DVASSERT(false);
-        control.Set(ObjectFactory::Instance()->New<UIControl>(className)); // TODO: remove
-    }
-
-    DVASSERT(control.Valid());
 
     controlsStack.push_back(new ControlDescr(control.Get(), true));
     return control.Get();
@@ -240,9 +234,9 @@ UIControl* DefaultUIPackageBuilder::BeginControlWithPrototype(const FastName& co
     RefPtr<UIControl> control;
     if (customClassName)
     {
-        control.Set(ObjectFactory::Instance()->New<UIControl>(*customClassName));
-        control->RemoveAllControls();
+        control = CreateControlByName(*customClassName, "UIControl");
 
+        control->RemoveAllControls();
         control->CopyDataFrom(prototype);
     }
     else
@@ -323,6 +317,7 @@ void DefaultUIPackageBuilder::EndControl(eControlPlace controlPlace)
 
 void DefaultUIPackageBuilder::BeginControlPropertiesSection(const String& name)
 {
+    DVASSERT(currentComponentType == nullptr);
     currentObject = controlsStack.back()->control.Get();
 }
 
@@ -342,11 +337,13 @@ UIComponent* DefaultUIPackageBuilder::BeginComponentPropertiesSection(const Type
         component->Release();
     }
     currentObject = component;
+    currentComponentType = componentType;
     return component;
 }
 
 void DefaultUIPackageBuilder::EndComponentPropertiesSection()
 {
+    currentComponentType = nullptr;
     currentObject = nullptr;
 }
 
@@ -356,13 +353,13 @@ void DefaultUIPackageBuilder::ProcessProperty(const Reflection::Field& field, co
 
     if (currentObject && !value.IsEmpty())
     {
-        FastName name(field.key.Get<String>());
-        if (UIStyleSheetPropertyDataBase::Instance()->IsValidStyleSheetProperty(name))
+        FastName name = field.key.Cast<FastName>();
+        int32 propertyIndex = UIStyleSheetPropertyDataBase::Instance()->FindStyleSheetProperty(currentComponentType, name);
+        if (propertyIndex >= 0)
         {
             UIControl* control = controlsStack.back()->control.Get();
-            control->SetPropertyLocalFlag(UIStyleSheetPropertyDataBase::Instance()->GetStyleSheetPropertyIndex(name), true);
+            control->SetPropertyLocalFlag(propertyIndex, true);
         }
-
         if (name == PROPERTY_NAME_TEXT)
         {
             field.ref.SetValueWithCast(Any(LocalizedUtf8String(value.Cast<String>())));
@@ -389,5 +386,21 @@ UIPackage* DefaultUIPackageBuilder::FindImportedPackageByName(const String& name
         return importedPackages[it->second];
 
     return nullptr;
+}
+
+RefPtr<UIControl> DefaultUIPackageBuilder::CreateControlByName(const String& customClassName, const String& className)
+{
+    RefPtr<UIControl> c(ObjectFactory::Instance()->New<UIControl>(customClassName));
+    if (c == nullptr)
+    {
+        DVASSERT(false);
+        c.Set(ObjectFactory::Instance()->New<UIControl>(className));
+    }
+    return c;
+}
+
+std::unique_ptr<DefaultUIPackageBuilder> DefaultUIPackageBuilder::CreateBuilder(UIPackagesCache* packagesCache)
+{
+    return std::make_unique<DefaultUIPackageBuilder>(packagesCache);
 }
 }

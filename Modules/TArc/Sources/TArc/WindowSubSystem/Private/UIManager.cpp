@@ -55,6 +55,15 @@ static Vector<std::pair<QMessageBox::StandardButton, ModalMessageParams::Button>
   std::make_pair(QMessageBox::Reset, ModalMessageParams::Reset)
 };
 
+static Vector<std::pair<QMessageBox::Icon, ModalMessageParams::Icon>> iconsConvertor =
+{
+  std::make_pair(QMessageBox::NoIcon, ModalMessageParams::NoIcon),
+  std::make_pair(QMessageBox::Information, ModalMessageParams::Information),
+  std::make_pair(QMessageBox::Warning, ModalMessageParams::Warning),
+  std::make_pair(QMessageBox::Critical, ModalMessageParams::Critical),
+  std::make_pair(QMessageBox::Question, ModalMessageParams::Question),
+};
+
 QMessageBox::StandardButton Convert(const ModalMessageParams::Button& button)
 {
     using ButtonNode = std::pair<QMessageBox::StandardButton, ModalMessageParams::Button>;
@@ -94,6 +103,28 @@ ModalMessageParams::Button Convert(const QMessageBox::StandardButton& button)
                              });
 
     DVASSERT(iter != buttonsConvertor.end());
+    return iter->second;
+}
+
+QMessageBox::Icon Convert(const ModalMessageParams::Icon& icon)
+{
+    using IconNode = std::pair<QMessageBox::Icon, ModalMessageParams::Icon>;
+    auto iter = std::find_if(iconsConvertor.begin(), iconsConvertor.end(), [icon](const IconNode& node)
+                             {
+                                 return node.second == icon;
+                             });
+    DVASSERT(iter != iconsConvertor.end());
+    return iter->first;
+}
+
+ModalMessageParams::Icon Convert(const QMessageBox::Icon& icon)
+{
+    using IconNode = std::pair<QMessageBox::Icon, ModalMessageParams::Icon>;
+    auto iter = std::find_if(iconsConvertor.begin(), iconsConvertor.end(), [icon](const IconNode& node)
+                             {
+                                 return node.first == icon;
+                             });
+    DVASSERT(iter != iconsConvertor.end());
     return iter->second;
 }
 
@@ -419,7 +450,16 @@ struct UIManager::Impl : public QObject
     UnorderedMap<WindowKey, UIManagerDetail::MainWindowInfo> windows;
     PropertiesItem propertiesHolder;
     bool initializationFinished = false;
-    DAVA::Set<WaitHandle*> activeWaitDialogues;
+    Set<WaitHandle*> activeWaitDialogues;
+    ClientModule* currentModule = nullptr;
+
+    struct ModuleResources
+    {
+        Vector<QPointer<QAction>> actions;
+        Vector<QPointer<QWidget>> widgets;
+    };
+
+    Map<ClientModule*, ModuleResources> moduleResourcesMap;
 
     Impl(UIManager::Delegate* delegate, PropertiesItem&& givenPropertiesHolder)
         : managerDelegate(delegate)
@@ -455,6 +495,17 @@ struct UIManager::Impl : public QObject
         return iter->second;
     }
 
+    UIManagerDetail::MainWindowInfo* FindWindow(const WindowKey& key)
+    {
+        auto iter = windows.find(key);
+        if (iter == windows.end())
+        {
+            return nullptr;
+        }
+
+        return &iter->second;
+    }
+
     void InitNewWindow(const WindowKey& windowKey, QMainWindow* window)
     {
         window->installEventFilter(this);
@@ -462,10 +513,6 @@ struct UIManager::Impl : public QObject
         FastName appId = windowKey.GetAppID();
         window->setWindowTitle(appId.c_str());
         window->setObjectName(appId.c_str());
-
-        PropertiesItem ph = propertiesHolder.CreateSubHolder(appId.c_str());
-        window->restoreGeometry(ph.Get<QByteArray>(UIManagerDetail::WINDOW_GEOMETRY_KEY));
-        window->restoreState(ph.Get<QByteArray>(UIManagerDetail::WINDOW_STATE_KEY));
     }
 
 protected:
@@ -614,12 +661,34 @@ void UIManager::InitializationFinished()
     impl->initializationFinished = true;
     for (auto& windowIter : impl->windows)
     {
+        QMainWindow* mainWindow = windowIter.second.window;
+        PropertiesItem ph = impl->propertiesHolder.CreateSubHolder(mainWindow->objectName().toStdString());
+        mainWindow->restoreGeometry(ph.Get<QByteArray>(UIManagerDetail::WINDOW_GEOMETRY_KEY));
+        mainWindow->restoreState(ph.Get<QByteArray>(UIManagerDetail::WINDOW_STATE_KEY));
+
         windowIter.second.window->show();
     }
 }
 
+void UIManager::DeclareToolbar(const WindowKey& windowKey, const ActionPlacementInfo& toogleToolbarVisibility, const QString& toolbarName)
+{
+    DVASSERT(impl->currentModule != nullptr);
+    UIManagerDetail::MainWindowInfo& mainWindowInfo = impl->FindOrCreateWindow(windowKey);
+    QToolBar* toolbar = mainWindowInfo.window->findChild<QToolBar*>(toolbarName);
+    if (toolbar == nullptr)
+    {
+        toolbar = new QToolBar(toolbarName, mainWindowInfo.window);
+        toolbar->setObjectName(toolbarName);
+        mainWindowInfo.window->addToolBar(toolbar);
+    }
+
+    AddAction(windowKey, toogleToolbarVisibility, toolbar->toggleViewAction());
+}
+
 void UIManager::AddView(const WindowKey& windowKey, const PanelKey& panelKey, QWidget* widget)
 {
+    DVASSERT(impl->currentModule != nullptr);
+    impl->moduleResourcesMap[impl->currentModule].widgets.push_back(widget);
     DVASSERT(widget != nullptr);
     widget->setObjectName(panelKey.GetViewName());
 
@@ -639,6 +708,9 @@ void UIManager::AddView(const WindowKey& windowKey, const PanelKey& panelKey, QW
 
 void UIManager::AddAction(const WindowKey& windowKey, const ActionPlacementInfo& placement, QAction* action)
 {
+    DVASSERT(impl->currentModule != nullptr);
+    impl->moduleResourcesMap[impl->currentModule].actions.push_back(action);
+
     UIManagerDetail::MainWindowInfo& windowInfo = impl->FindOrCreateWindow(windowKey);
     UIManagerDetail::AddAction(windowInfo, placement, action);
 }
@@ -698,24 +770,29 @@ QString UIManager::GetSaveFileName(const WindowKey& windowKey, const FileDialogP
     QString filePath = QFileDialog::getSaveFileName(windowInfo.window, params.title, dir, params.filters);
     if (!filePath.isEmpty())
     {
-        impl->propertiesHolder.Set(UIManagerDetail::FILE_DIR_KEY, QFileInfo(filePath).absoluteDir());
+        impl->propertiesHolder.Set(UIManagerDetail::FILE_DIR_KEY, QFileInfo(filePath).absoluteFilePath());
     }
     return filePath;
 }
 
 QString UIManager::GetOpenFileName(const WindowKey& windowKey, const FileDialogParams& params)
 {
-    UIManagerDetail::MainWindowInfo& windowInfo = impl->FindOrCreateWindow(windowKey);
+    UIManagerDetail::MainWindowInfo* windowInfo = impl->FindWindow(windowKey);
+    QWidget* parent = nullptr;
+    if (windowInfo != nullptr)
+    {
+        parent = windowInfo->window;
+    }
 
     QString dir = params.dir;
     if (dir.isEmpty())
     {
         dir = impl->propertiesHolder.Get<QString>(UIManagerDetail::FILE_DIR_KEY, dir);
     }
-    QString filePath = QFileDialog::getOpenFileName(windowInfo.window, params.title, dir, params.filters);
+    QString filePath = QFileDialog::getOpenFileName(parent, params.title, dir, params.filters);
     if (!filePath.isEmpty())
     {
-        impl->propertiesHolder.Set(UIManagerDetail::FILE_DIR_KEY, QFileInfo(filePath).absoluteDir());
+        impl->propertiesHolder.Set(UIManagerDetail::FILE_DIR_KEY, QFileInfo(filePath).absoluteFilePath());
     }
     return filePath;
 }
@@ -742,9 +819,15 @@ ModalMessageParams::Button UIManager::ShowModalMessage(const WindowKey& windowKe
 {
     using namespace UIManagerDetail;
     MainWindowInfo& windowInfo = impl->FindOrCreateWindow(windowKey);
+    QMessageBox msgBox(windowInfo.window);
+    msgBox.setWindowTitle(params.title);
+    msgBox.setText(params.message);
+    msgBox.setStandardButtons(Convert(params.buttons));
+    msgBox.setDefaultButton(Convert(params.defaultButton));
+    msgBox.setIcon(Convert(params.icon));
 
-    QMessageBox::StandardButton resultButton = QMessageBox::information(windowInfo.window, params.title, params.message,
-                                                                        Convert(params.buttons), Convert(params.defaultButton));
+    int ret = msgBox.exec();
+    QMessageBox::StandardButton resultButton = static_cast<QMessageBox::StandardButton>(ret);
     return Convert(resultButton);
 }
 
@@ -757,5 +840,45 @@ void UIManager::InjectWindow(const WindowKey& windowKey, QMainWindow* window)
     impl->InitNewWindow(windowKey, window);
     impl->windows.emplace(windowKey, windowInfo);
 }
+
+void UIManager::SetCurrentModule(ClientModule* module)
+{
+    DVASSERT((impl->currentModule == nullptr && module != nullptr) ||
+             (impl->currentModule != nullptr && module == nullptr));
+    impl->currentModule = module;
+}
+
+void UIManager::ModuleDestroyed(ClientModule* module)
+{
+    DVASSERT(impl->currentModule != module);
+    auto iter = impl->moduleResourcesMap.find(module);
+    if (iter != impl->moduleResourcesMap.end())
+    {
+        Impl::ModuleResources& resources = iter->second;
+        for (QPointer<QWidget>& w : resources.widgets)
+        {
+            if (!w.isNull())
+            {
+                delete w.data();
+            }
+        }
+
+        for (QPointer<QAction>& a : resources.actions)
+        {
+            if (!a.isNull())
+            {
+                QWidget* attachedWidget = GetAttachedWidget(a);
+                if (attachedWidget != nullptr)
+                {
+                    delete attachedWidget;
+                }
+                delete a.data();
+            }
+        }
+
+        impl->moduleResourcesMap.erase(iter);
+    }
+}
+
 } // namespace TArc
 } // namespace DAVA

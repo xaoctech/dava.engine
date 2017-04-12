@@ -1,12 +1,6 @@
 #include "PropertiesModel.h"
 
-#include "QtTools/Utils/Utils.h"
-
-#include <QFont>
-#include <QVector2D>
-#include <QVector4D>
-#include "Document/Document.h"
-#include "Ui/QtModelPackageCommandExecutor.h"
+#include "Modules/DocumentsModule/DocumentData.h"
 
 #include "Model/ControlProperties/AbstractProperty.h"
 #include "Model/ControlProperties/RootProperty.h"
@@ -18,42 +12,67 @@
 #include "Utils/QtDavaConvertion.h"
 #include "Utils/StringFormat.h"
 #include "QECommands/ChangePropertyValueCommand.h"
-#include "UI/QtModelPackageCommandExecutor.h"
+#include "QECommands/ChangeStylePropertyCommand.h"
 
-#include "UI/UIControl.h"
+#include <TArc/Core/ContextAccessor.h>
+#include <TArc/Core/FieldBinder.h>
+#include <TArc/DataProcessing/DataContext.h>
 
-#include "QtTools/Updaters/ContinuousUpdater.h"
-#include "QtTools/Utils/Themes/Themes.h"
-#include "QtTools/Utils/Utils.h"
+#include <QtTools/Utils/Themes/Themes.h>
+#include <QtTools/Utils/Utils.h>
+
+#include <Reflection/ReflectedTypeDB.h>
+#include <UI/UIControl.h>
+
+#include <QFont>
+#include <QVector2D>
+#include <QVector4D>
 
 using namespace DAVA;
 
 PropertiesModel::PropertiesModel(QObject* parent)
     : QAbstractItemModel(parent)
-    , continuousUpdater(new ContinuousUpdater(MakeFunction(this, &PropertiesModel::UpdateAllChangedProperties), this, 500))
+    , propertiesUpdater(500)
+    , nodeUpdater(300)
 {
+    propertiesUpdater.SetUpdater(MakeFunction(this, &PropertiesModel::UpdateAllChangedProperties));
+    nodeUpdater.SetUpdater(MakeFunction(this, &PropertiesModel::ResetInternal));
+    nodeUpdater.SetStopper([this]() { return nodeToReset == nullptr; });
 }
 
 PropertiesModel::~PropertiesModel()
 {
     CleanUp();
-    continuousUpdater->Stop();
+    propertiesUpdater.Abort();
+    nodeUpdater.Abort();
 }
 
-void PropertiesModel::Reset(PackageBaseNode* node_, QtModelPackageCommandExecutor* commandExecutor_)
+void PropertiesModel::SetAccessor(DAVA::TArc::ContextAccessor* accessor_)
 {
-    continuousUpdater->Stop();
+    accessor = accessor_;
+    BindFields();
+}
+
+void PropertiesModel::Reset(PackageBaseNode* node_)
+{
+    nodeToReset = node_;
+
+    nodeUpdater.Update();
+}
+
+void PropertiesModel::ResetInternal()
+{
+    propertiesUpdater.Abort();
     beginResetModel();
     CleanUp();
-    commandExecutor = commandExecutor_;
-    controlNode = dynamic_cast<ControlNode*>(node_);
+    controlNode = dynamic_cast<ControlNode*>(nodeToReset);
     if (nullptr != controlNode)
     {
         controlNode->GetRootProperty()->AddListener(this);
         rootProperty = controlNode->GetRootProperty();
     }
 
-    styleSheet = dynamic_cast<StyleSheetNode*>(node_);
+    styleSheet = dynamic_cast<StyleSheetNode*>(nodeToReset);
     if (nullptr != styleSheet)
     {
         styleSheet->GetRootProperty()->AddListener(this);
@@ -304,7 +323,7 @@ void PropertiesModel::UpdateAllChangedProperties()
 void PropertiesModel::PropertyChanged(AbstractProperty* property)
 {
     changedProperties.insert(RefPtr<AbstractProperty>::ConstructWithRetain(property));
-    continuousUpdater->Update();
+    propertiesUpdater.Update();
 }
 
 void PropertiesModel::UpdateProperty(AbstractProperty* property)
@@ -385,37 +404,39 @@ void PropertiesModel::StyleSelectorWasRemoved(StyleSheetSelectorsSection* sectio
 
 void PropertiesModel::ChangeProperty(AbstractProperty* property, const Any& value)
 {
-    DVASSERT(nullptr != commandExecutor);
-    if (nullptr != commandExecutor)
+    DAVA::TArc::DataContext* activeContext = accessor->GetActiveContext();
+    DVASSERT(activeContext != nullptr);
+    DocumentData* documentData = activeContext->GetData<DocumentData>();
+    DVASSERT(documentData != nullptr);
+
+    if (nullptr != controlNode)
     {
-        if (nullptr != controlNode)
-        {
-            commandExecutor->ChangeProperty(controlNode, property, value);
-        }
-        else if (styleSheet)
-        {
-            commandExecutor->ChangeProperty(styleSheet, property, value);
-        }
-        else
-        {
-            DVASSERT(false);
-        }
+        documentData->ExecCommand<ChangePropertyValueCommand>(controlNode, property, value);
+    }
+    else if (styleSheet)
+    {
+        documentData->ExecCommand<ChangeStylePropertyCommand>(styleSheet, property, value);
+    }
+    else
+    {
+        DVASSERT(false);
     }
 }
 
 void PropertiesModel::ResetProperty(AbstractProperty* property)
 {
-    DVASSERT(nullptr != commandExecutor);
-    if (nullptr != commandExecutor)
+    DAVA::TArc::DataContext* activeContext = accessor->GetActiveContext();
+    DVASSERT(activeContext != nullptr);
+    DocumentData* documentData = activeContext->GetData<DocumentData>();
+    DVASSERT(documentData != nullptr);
+
+    if (nullptr != controlNode)
     {
-        if (nullptr != controlNode)
-        {
-            commandExecutor->ResetProperty(controlNode, property);
-        }
-        else
-        {
-            DVASSERT(false);
-        }
+        documentData->ExecCommand<ChangePropertyValueCommand>(controlNode, property, Any());
+    }
+    else
+    {
+        DVASSERT(false);
     }
 }
 
@@ -529,7 +550,15 @@ QString PropertiesModel::makeQVariant(const AbstractProperty* property) const
 
     if (val.CanGet<FastName>())
     {
-        return StringToQString(val.Get<FastName>().c_str());
+        const FastName& fastName = val.Get<FastName>();
+        if (fastName.IsValid())
+        {
+            return StringToQString(fastName.c_str());
+        }
+        else
+        {
+            return QString();
+        }
     }
 
     if (val.CanGet<Vector2>())
@@ -585,6 +614,10 @@ void PropertiesModel::initAny(Any& var, const QVariant& val) const
         DVASSERT(false);
         var = QStringToWideString(val.toString());
     }
+    else if (var.CanGet<FastName>())
+    {
+        var = FastName(val.toString().toStdString());
+    }
     else if (var.CanGet<Vector2>())
     {
         QVector2D vector = val.value<QVector2D>();
@@ -614,4 +647,23 @@ void PropertiesModel::CleanUp()
     controlNode = nullptr;
     styleSheet = nullptr;
     rootProperty = nullptr;
+}
+
+void PropertiesModel::OnPackageChanged(const DAVA::Any& /*package*/)
+{
+    nodeUpdater.Abort();
+}
+
+void PropertiesModel::BindFields()
+{
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    fieldBinder.reset(new FieldBinder(accessor));
+    {
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
+        fieldDescr.fieldName = FastName(DocumentData::packagePropertyName);
+        fieldBinder->BindField(fieldDescr, MakeFunction(this, &PropertiesModel::OnPackageChanged));
+    }
 }

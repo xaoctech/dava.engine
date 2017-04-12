@@ -2,6 +2,7 @@
 #include "UI/UIEvent.h"
 #include "Animation/Animation.h"
 #include "Reflection/ReflectionRegistrator.h"
+#include "UI/Update/UIUpdateComponent.h"
 
 namespace DAVA
 {
@@ -89,6 +90,8 @@ UISpinner::UISpinner(const Rect& rect)
     contentViewport->AddControl(nextContent.Get());
     contentViewport->SetInputEnabled(false);
     contentViewport->SetClipContents(true);
+
+    GetOrCreateComponent<UIUpdateComponent>();
 }
 
 UISpinner::~UISpinner()
@@ -347,7 +350,7 @@ void UISpinner::OnSelectedChanged(bool isSelectedFirst, bool isSelectedLast, boo
     if (isSelectedChanged)
     {
         adapter->DisplaySelectedData(this);
-        PerformEvent(UIControl::EVENT_VALUE_CHANGED);
+        PerformEvent(UIControl::EVENT_VALUE_CHANGED, nullptr);
     }
 }
 

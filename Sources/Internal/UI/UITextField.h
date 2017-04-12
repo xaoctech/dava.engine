@@ -78,12 +78,22 @@ public:
     {
     }
 
-    virtual void OnStartEditing()
+    DAVA_DEPRECATED(virtual void OnStartEditing())
     {
     }
 
-    virtual void OnStopEditing()
+    DAVA_DEPRECATED(virtual void OnStopEditing())
     {
+    }
+
+    virtual void OnStartEditing(UITextField* textField)
+    {
+        OnStartEditing();
+    }
+
+    virtual void OnStopEditing(UITextField* textField)
+    {
+        OnStopEditing();
     }
 };
 
@@ -361,7 +371,7 @@ public:
 
     void SetFontByPresetName(const String& presetName);
 
-    void SystemDraw(const UIGeometricData& geometricData) override;
+    void SystemDraw(const UIGeometricData& geometricData, const DAVA::UIControlBackground* parentBackground) override;
 
     WideString GetVisibleText();
 

@@ -238,7 +238,7 @@ void TextFieldPlatformImpl::SetText(const WideString& text)
 
             if (curText.empty())
             { // Immediately remove sprite image if new text is empty to get rid of some flickering
-                uiTextField->SetSprite(nullptr, 0);
+                uiTextField->RemoveComponent(UIComponent::BACKGROUND_COMPONENT);
             }
         }
     }
@@ -466,9 +466,9 @@ void TextFieldPlatformImpl::nativeOnTextureReady(JNIEnv* env, jintArray pixels, 
             }
             else
             {
-                std::shared_ptr<SigConnectionID> connectionIdPtr = std::make_shared<SigConnectionID>();
-                *connectionIdPtr = Engine::Instance()->resumed.Connect([this, image, connectionIdPtr]() {
-                    Engine::Instance()->resumed.Disconnect(*connectionIdPtr);
+                std::shared_ptr<Token> connectionTokenPtr = std::make_shared<Token>();
+                *connectionTokenPtr = Engine::Instance()->resumed.Connect([this, image, connectionTokenPtr]() {
+                    Engine::Instance()->resumed.Disconnect(*connectionTokenPtr);
                     SetSpriteFromImage(image.Get());
                 });
             }
@@ -480,16 +480,17 @@ void TextFieldPlatformImpl::SetSpriteFromImage(Image* image) const
 {
     if (uiTextField != nullptr)
     {
-        Sprite* sprite = nullptr;
+        RefPtr<Sprite> sprite;
 
         if (image != nullptr)
         {
             const Rect textFieldRect = uiTextField->GetRect();
             RefPtr<Texture> texture(Texture::CreateFromData(FORMAT_RGBA8888, image->GetData(), image->GetWidth(), image->GetHeight(), false));
-            sprite = Sprite::CreateFromTexture(texture.Get(), 0, 0, texture->GetWidth(), texture->GetHeight(), textFieldRect.dx, textFieldRect.dy);
+            sprite.Set(Sprite::CreateFromTexture(texture.Get(), 0, 0, texture->GetWidth(), texture->GetHeight(), textFieldRect.dx, textFieldRect.dy));
         }
 
-        uiTextField->SetSprite(sprite, 0);
+        UIControlBackground* bg = uiTextField->GetOrCreateComponent<UIControlBackground>();
+        bg->SetSprite(sprite.Get(), 0);
     }
 }
 
@@ -505,7 +506,7 @@ void TextFieldPlatformImpl::OnFocusChanged(bool hasFocus)
                 uiTextField->SetFocused();
             }
             uiTextField->StartEdit();
-            uiTextField->SetSprite(nullptr, 0);
+            uiTextField->RemoveComponent(UIComponent::BACKGROUND_COMPONENT);
         }
         else
         {
@@ -516,7 +517,10 @@ void TextFieldPlatformImpl::OnFocusChanged(bool hasFocus)
 
 void TextFieldPlatformImpl::OnKeyboardShown(const Rect& keyboardRect)
 {
-    uiTextField->OnKeyboardShown(keyboardRect);
+    if (nullptr != uiTextField)
+    {
+        uiTextField->OnKeyboardShown(keyboardRect);
+    }
 }
 
 void TextFieldPlatformImpl::OnEnterPressed()

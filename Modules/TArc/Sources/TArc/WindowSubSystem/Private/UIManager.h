@@ -25,6 +25,8 @@ public:
 
     void InitializationFinished();
 
+    void DeclareToolbar(const WindowKey& windowKey, const ActionPlacementInfo& toogleToolbarVisibility, const QString& toolbarName) override;
+
     void AddView(const WindowKey& windowKey, const PanelKey& panelKey, QWidget* widget) override;
     void AddAction(const WindowKey& windowKey, const ActionPlacementInfo& placement, QAction* action) override;
     void RemoveAction(const WindowKey& windowKey, const ActionPlacementInfo& placement) override;
@@ -41,7 +43,11 @@ public:
     bool HasActiveWaitDalogues() const override;
     DAVA_DEPRECATED(QWidget* GetWindow(const WindowKey& windowKey) override);
 
-    void InjectWindow(const WindowKey& windowKey, QMainWindow* window);
+    DAVA_DEPRECATED(void InjectWindow(const WindowKey& windowKey, QMainWindow* window) override);
+    void ModuleDestroyed(ClientModule* module);
+
+protected:
+    void SetCurrentModule(ClientModule* module) override;
 
 private:
     struct Impl;

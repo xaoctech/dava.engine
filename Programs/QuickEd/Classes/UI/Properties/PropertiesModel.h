@@ -1,9 +1,11 @@
-#ifndef __QUICKED_PROPERTIES_MODEL_H__
-#define __QUICKED_PROPERTIES_MODEL_H__
-
-#include "Base/RefPtr.h"
+#pragma once
 
 #include "Model/ControlProperties/PropertyListener.h"
+
+#include <QtTools/Updaters/ContinuousUpdater.h>
+
+#include <Base/RefPtr.h>
+#include <FileSystem/VariantType.h>
 
 #include <QAbstractItemModel>
 #include <QSet>
@@ -11,15 +13,19 @@
 namespace DAVA
 {
 class InspInfo;
+class Any;
+namespace TArc
+{
+class ContextAccessor;
+class FieldBinder;
+}
 }
 
 class AbstractProperty;
 class PackageBaseNode;
 class ControlNode;
 class StyleSheetNode;
-class QtModelPackageCommandExecutor;
 class ComponentPropertiesSection;
-class ContinuousUpdater;
 
 class PropertiesModel : public QAbstractItemModel, private PropertyListener
 {
@@ -30,9 +36,13 @@ public:
     {
         ResetRole = Qt::UserRole + 1
     };
+
     PropertiesModel(QObject* parent = nullptr);
-    virtual ~PropertiesModel();
-    void Reset(PackageBaseNode* node_, QtModelPackageCommandExecutor* commandExecutor_);
+    ~PropertiesModel() override;
+
+    void SetAccessor(DAVA::TArc::ContextAccessor* accessor);
+
+    void Reset(PackageBaseNode* node_);
 
     QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const override;
     QModelIndex parent(const QModelIndex& child) const override;
@@ -53,7 +63,7 @@ signals:
 
 protected:
     void UpdateAllChangedProperties();
-
+    void ResetInternal();
     // PropertyListener
     void PropertyChanged(AbstractProperty* property) override;
     void UpdateProperty(AbstractProperty* property);
@@ -83,13 +93,17 @@ protected:
     void initAny(DAVA::Any& var, const QVariant& val) const;
     void CleanUp();
 
-protected:
+    void OnPackageChanged(const DAVA::Any& package);
+    void BindFields();
+
+    PackageBaseNode* nodeToReset = nullptr;
     ControlNode* controlNode = nullptr;
     StyleSheetNode* styleSheet = nullptr;
     AbstractProperty* rootProperty = nullptr;
-    QtModelPackageCommandExecutor* commandExecutor = nullptr;
     DAVA::Set<DAVA::RefPtr<AbstractProperty>> changedProperties;
-    ContinuousUpdater* continuousUpdater = nullptr;
-};
+    ContinuousUpdater propertiesUpdater;
+    ContinuousUpdater nodeUpdater;
 
-#endif // __QUICKED_PROPERTIES_MODEL_H__
+    DAVA::TArc::ContextAccessor* accessor = nullptr;
+    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
+};
