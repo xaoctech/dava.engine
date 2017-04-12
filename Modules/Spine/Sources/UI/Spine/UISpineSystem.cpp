@@ -30,6 +30,36 @@ void UISpineSystem::OnControlInvisible(UIControl * control)
 
 void UISpineSystem::Process(DAVA::float32 elapsedTime)
 {
+    for(SpineNode& node : nodes)
+    {
+        UISpineComponent* component = node.component;
+        SpineSkeleton* skeleton = node.skeleton;
+
+        skeleton->Update(elapsedTime);
+
+        UIControl* control = component->GetControl();
+        UIControlBackground* bg = control->GetComponent<UIControlBackground>();
+        if (bg)
+        {
+            bg->SetRenderBatch(skeleton->GetRednerBatch());
+        }
+    }
+}
+
+void UISpineSystem::AddNode(UISpineComponent* component)
+{
+    SpineNode node;
+    node.component = component;
+    node.skeleton = new SpineSkeleton();
+    node.skeleton.Load(component->GetSkeletonPath(), component->GetAtlasPath());
+    node.skeleton.onEvent([this, component](const String& event) {
+        onAnimationEvent.Emit(component, event);
+    });
+    nodes.push_back(node);
+}
+
+void UISpineSystem::RemoveNode(UISpineComponent* component)
+{
 }
 
 }
