@@ -1,5 +1,6 @@
-#include "Commands2/Base/RECommandNotificationObject.h"
-#include "Commands2/Base/RECommandIDHandler.h"
+#include "Classes/Commands2/Base/RECommandNotificationObject.h"
+#include "Classes/Commands2/Base/RECommandIDHandler.h"
+#include "Classes/Commands2/RECommandIDs.h"
 
 namespace RECommandNotificationObjectDetail
 {
@@ -48,4 +49,49 @@ bool RECommandNotificationObject::MatchCommandIDs(const DAVA::Vector<DAVA::uint3
 
     const RECommandIDHandler* idHandler = RECommandNotificationObjectDetail::GetIDHandler(this);
     return idHandler->MatchCommandIDs(commandIDVector);
+}
+
+void RECommandNotificationObject::ForEach(const DAVA::Function<void(const RECommand*)>& callback, DAVA::uint32 commandId) const
+{
+    if (command != nullptr && command->GetID() == commandId)
+    {
+        callback(command);
+    }
+
+    auto batchUnpack = [&](const RECommandBatch* batch)
+    {
+        if (batch != nullptr)
+        {
+            for (DAVA::uint32 i = 0; i < batch->Size(); ++i)
+            {
+                const RECommand* command = batch->GetCommand(i);
+                if (command->GetID() == commandId)
+                {
+                    callback(command);
+                }
+            }
+        }
+    };
+
+    batchUnpack(batch);
+}
+
+REDependentCommandsHolder::REDependentCommandsHolder(const RECommandNotificationObject& notifyObject_)
+    : notifyObject(notifyObject_)
+{
+}
+
+void REDependentCommandsHolder::AddPreCommand(std::unique_ptr<DAVA::Command>&& command)
+{
+    preCommands.push_back(std::move(command));
+}
+
+void REDependentCommandsHolder::AddPostCommand(std::unique_ptr<DAVA::Command>&& command)
+{
+    postCommands.push_back(std::move(command));
+}
+
+const RECommandNotificationObject& REDependentCommandsHolder::GetMasterCommandInfo() const
+{
+    return notifyObject;
 }

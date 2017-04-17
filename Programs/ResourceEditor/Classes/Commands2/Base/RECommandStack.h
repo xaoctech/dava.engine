@@ -10,6 +10,8 @@ public:
     RECommandStack();
     ~RECommandStack() override;
 
+    void Exec(std::unique_ptr<DAVA::Command>&& command) override;
+
     void Clear();
     void SetChanged();
     void RemoveCommands(DAVA::uint32 commandId);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <Classes/Commands2/Base/RECommandNotificationObject.h>
 #include "UI/UIEvent.h"
 #include "Scene3D/Scene.h"
 #include "Base/StaticSingleton.h"
@@ -182,6 +183,7 @@ protected:
     DAVA::Vector<EditorSceneSystem*> landscapeEditorSystems;
     DAVA::Vector<DAVA::Entity*> editorEntities;
 
+    void AccumulateDependentCommands(REDependentCommandsHolder& holder);
     void EditorCommandProcess(const RECommandNotificationObject& commandNotification);
 
     void ExtractEditorEntities();
@@ -202,6 +204,8 @@ private:
     {
     public:
         EditorCommandNotify(SceneEditor2* _editor);
+
+        void AccumulateDependentCommands(REDependentCommandsHolder& holder) override;
         void Notify(const RECommandNotificationObject& commandNotification) override;
         void CleanChanged(bool clean) override;
         void CanUndoChanged(bool canUndo) override;

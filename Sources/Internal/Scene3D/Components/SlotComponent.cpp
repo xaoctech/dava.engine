@@ -11,8 +11,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SlotComponent)
 {
     ReflectionRegistrator<SlotComponent>::Begin()
     .ConstructorByPointer()
-    .Field("slotName", &SlotComponent::GetSlotName, &SlotComponent::SetSlotName)[M::DisplayName("Name")]
-    .Field("configPath", &SlotComponent::GetConfigFilePath, &SlotComponent::SetConfigFilePath)[M::DisplayName("Items list")]
+    .Field(SlotNameFieldName.c_str(), &SlotComponent::GetSlotName, &SlotComponent::SetSlotName)[M::DisplayName("Name")]
+    .Field(ConfigPathFieldName.c_str(), &SlotComponent::GetConfigFilePath, &SlotComponent::SetConfigFilePath)[M::DisplayName("Items list")]
     .Field("transform", &SlotComponent::GetAttachmentTransform, &SlotComponent::SetAttachmentTransform)[M::DisplayName("Attachment Transform")]
     .End();
 }
@@ -52,7 +52,7 @@ void SlotComponent::Deserialize(KeyedArchive* archive, SerializationContext* ser
     {
         slotName = archive->GetFastName("sc.slotName");
         attachmentTransform = archive->GetMatrix4("sc.attachmentTransform");
-        configFilePath = FilePath(archive->GetString("sc.configFilePath"));
+        configFilePath = FilePath(serializationContext->GetScenePath() + archive->GetString("sc.configFilePath"));
         actualFiltersCount = archive->GetUInt32("sc.filtersCount");
         for (uint32 i = 0; i < actualFiltersCount; ++i)
         {
@@ -134,5 +134,8 @@ void SlotComponent::RemoveFilter(FastName filter)
         }
     }
 }
+
+const FastName SlotComponent::SlotNameFieldName = FastName("slotName");
+const FastName SlotComponent::ConfigPathFieldName = FastName("configPath");
 
 } // namespace DAVA

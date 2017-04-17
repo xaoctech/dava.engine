@@ -1,28 +1,18 @@
 #include "Classes/Commands2/SlotCommands.h"
 #include "Classes/Commands2/RECommandIDs.h"
-
+#include "Classes/Qt/Scene/SceneEditor2.h"
 #include "Classes/SlotSupportModule/Private/EditorSlotSystem.h"
 
-DetachEntityFromSlot::DetachEntityFromSlot(SceneEditor2* sceneEditor_, DAVA::SlotComponent* slotComponent, DAVA::Entity* entity_)
-    : RECommand(CMDID_DETACH_FROM_SLOT, "Remove item from slot")
+#include <Scene3D/Systems/SlotSystem.h>
+
+AttachEntityToSlot::AttachEntityToSlot(SceneEditor2* sceneEditor_, DAVA::SlotComponent* slotComponent, DAVA::Entity* entity)
+    : RECommand(CMDID_ATTACH_TO_SLOT, "Add item to slot")
     , sceneEditor(sceneEditor_)
     , component(slotComponent)
-    , entity(DAVA::RefPtr<DAVA::Entity>::ConstructWithRetain(entity_))
+    , redoEntity(DAVA::RefPtr<DAVA::Entity>::ConstructWithRetain(entity))
+    , redoEntityInited(true)
 {
-}
-
-void DetachEntityFromSlot::Redo()
-{
-    EditorSlotSystem* system = sceneEditor->LookupEditorSystem<EditorSlotSystem>();
-    DVASSERT(system != nullptr);
-    system->DetachEntity(component, entity.Get());
-}
-
-void DetachEntityFromSlot::Undo()
-{
-    EditorSlotSystem* system = sceneEditor->LookupEditorSystem<EditorSlotSystem>();
-    DVASSERT(system != nullptr);
-    system->AttachEntity(component, entity.Get());
+    undoEntity = DAVA::RefPtr<DAVA::Entity>::ConstructWithRetain(sceneEditor->slotSystem->LookUpLoadedEntity(slotComponent));
 }
 
 AttachEntityToSlot::AttachEntityToSlot(SceneEditor2* sceneEditor_, DAVA::SlotComponent* slotComponent, const DAVA::FastName& itemName_)
@@ -30,7 +20,9 @@ AttachEntityToSlot::AttachEntityToSlot(SceneEditor2* sceneEditor_, DAVA::SlotCom
     , sceneEditor(sceneEditor_)
     , component(slotComponent)
     , itemName(itemName_)
+    , redoEntityInited(false)
 {
+    undoEntity = DAVA::RefPtr<DAVA::Entity>::ConstructWithRetain(sceneEditor->slotSystem->LookUpLoadedEntity(slotComponent));
 }
 
 void AttachEntityToSlot::Redo()
@@ -38,13 +30,22 @@ void AttachEntityToSlot::Redo()
     EditorSlotSystem* system = sceneEditor->LookupEditorSystem<EditorSlotSystem>();
     DVASSERT(system != nullptr);
 
-    if (entity.Get() == nullptr)
+    if (undoEntity.Get() != nullptr)
     {
-        entity = DAVA::RefPtr<DAVA::Entity>::ConstructWithRetain(system->AttachEntity(component, itemName));
+        system->DetachEntity(component, undoEntity.Get());
+    }
+
+    if (redoEntityInited == false)
+    {
+        redoEntity = DAVA::RefPtr<DAVA::Entity>::ConstructWithRetain(system->AttachEntity(component, itemName));
+        redoEntityInited = true;
     }
     else
     {
-        system->AttachEntity(component, entity.Get());
+        if (redoEntity.Get() != nullptr)
+        {
+            system->AttachEntity(component, redoEntity.Get());
+        }
     }
 }
 
@@ -52,5 +53,18 @@ void AttachEntityToSlot::Undo()
 {
     EditorSlotSystem* system = sceneEditor->LookupEditorSystem<EditorSlotSystem>();
     DVASSERT(system != nullptr);
-    system->DetachEntity(component, entity.Get());
+    if (redoEntity.Get() != nullptr)
+    {
+        system->DetachEntity(component, redoEntity.Get());
+    }
+
+    if (undoEntity.Get() != nullptr)
+    {
+        system->AttachEntity(component, undoEntity.Get());
+    }
+}
+
+bool AttachEntityToSlot::IsClean() const
+{
+    return true;
 }

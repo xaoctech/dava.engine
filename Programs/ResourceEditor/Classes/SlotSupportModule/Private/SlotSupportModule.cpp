@@ -1,6 +1,7 @@
 #include "Classes/SlotSupportModule/SlotSupportModule.h"
 #include "Classes/SlotSupportModule/Private/EditorSlotSystem.h"
 #include "Classes/SlotSupportModule/Private/EntityForSlotLoader.h"
+#include "Classes/SlotSupportModule/Private/SlotComponentExtensions.h"
 
 #include "Classes/Interfaces/PropertyPanelInterface.h"
 #include "Classes/SlotSupportModule/Private/EntityForSlotLoader.h"
@@ -23,6 +24,19 @@ public:
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(SlotSupportData, DAVA::TArc::DataNode)
     {
         DAVA::ReflectionRegistrator<SlotSupportData>::Begin()
+        .End();
+    }
+};
+
+class SlotPropertyPanelExtensions : public DAVA::TArc::DataNode
+{
+public:
+    std::shared_ptr<DAVA::TArc::ChildCreatorExtension> childCreator;
+    std::shared_ptr<DAVA::TArc::EditorComponentExtension> editorCreator;
+
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(SlotPropertyPanelExtensions, DAVA::TArc::DataNode)
+    {
+        DAVA::ReflectionRegistrator<SlotPropertyPanelExtensions>::Begin()
         .End();
     }
 };
@@ -71,6 +85,10 @@ void SlotSupportModule::OnInterfaceRegistered(const DAVA::Type* interfaceType)
     if (interfaceType == DAVA::Type::Instance<Interfaces::PropertyPanelInterface>())
     {
         Interfaces::PropertyPanelInterface* propertyPanel = QueryInterface<Interfaces::PropertyPanelInterface>();
+        using namespace SlotSupportModuleDetails;
+        SlotPropertyPanelExtensions* data = GetAccessor()->GetGlobalContext()->GetData<SlotPropertyPanelExtensions>();
+        propertyPanel->RegisterExtension(data->childCreator);
+        propertyPanel->RegisterExtension(data->editorCreator);
     }
 }
 
@@ -79,11 +97,20 @@ void SlotSupportModule::OnBeforeInterfaceUnregistered(const DAVA::Type* interfac
     if (interfaceType == DAVA::Type::Instance<Interfaces::PropertyPanelInterface>())
     {
         Interfaces::PropertyPanelInterface* propertyPanel = QueryInterface<Interfaces::PropertyPanelInterface>();
+        using namespace SlotSupportModuleDetails;
+        SlotPropertyPanelExtensions* data = GetAccessor()->GetGlobalContext()->GetData<SlotPropertyPanelExtensions>();
+        propertyPanel->UnregisterExtension(data->childCreator);
+        propertyPanel->UnregisterExtension(data->editorCreator);
     }
 }
 
 void SlotSupportModule::PostInit()
 {
+    using namespace SlotSupportModuleDetails;
+    SlotPropertyPanelExtensions* extData = new SlotPropertyPanelExtensions();
+    extData->childCreator.reset(new PropertyPanel::SlotComponentChildCreator());
+    extData->editorCreator.reset(new PropertyPanel::SlotComponentEditorCreator());
+    GetAccessor()->GetGlobalContext()->CreateData(std::unique_ptr<DAVA::TArc::DataNode>(extData));
 }
 
 DECL_GUI_MODULE(SlotSupportModule);

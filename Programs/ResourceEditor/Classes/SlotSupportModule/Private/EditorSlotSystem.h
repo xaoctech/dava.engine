@@ -1,6 +1,11 @@
 #pragma once
 
+#include "Classes/Qt/Scene/System/EditorSceneSystem.h"
+
+#include <TArc/Utils/QtConnections.h>
+
 #include <Entity/SceneSystem.h>
+#include <Scene3D/Components/SlotComponent.h>
 #include <Base/BaseTypes.h>
 
 class EditorSlotSystem : public DAVA::SceneSystem,
@@ -14,18 +19,22 @@ public:
     void RegisterEntity(DAVA::Entity* entity) override;
     void UnregisterEntity(DAVA::Entity* entity) override;
 
-    void RegisterComponent(DAVA::Entity* entity, DAVA::Component* component);
-    void UnregisterComponent(DAVA::Entity* entity, DAVA::Component* component);
+    void RegisterComponent(DAVA::Entity* entity, DAVA::Component* component) override;
+    void UnregisterComponent(DAVA::Entity* entity, DAVA::Component* component) override;
 
     void Process(DAVA::float32 timeElapsed) override;
 
 protected:
-    friend class DetachEntityFromSlot;
     friend class AttachEntityToSlot;
+
+    void SetScene(DAVA::Scene* scene) override;
 
     void DetachEntity(DAVA::SlotComponent* component, DAVA::Entity* entity);
     void AttachEntity(DAVA::SlotComponent* component, DAVA::Entity* entity);
     DAVA::Entity* AttachEntity(DAVA::SlotComponent* component, const DAVA::FastName& itemName);
+
+    void AccumulateDependentCommands(REDependentCommandsHolder& holder) override;
+    void ProcessCommand(const RECommandNotificationObject& commandNotification) override;
 
 protected:
     std::unique_ptr<DAVA::Command> PrepareForSave(bool saveForGame) override;
@@ -33,4 +42,5 @@ protected:
 private:
     DAVA::Vector<DAVA::Entity*> entities;
     DAVA::Set<DAVA::Entity*> pendingOnInitialize;
+    DAVA::TArc::QtConnections connections;
 };

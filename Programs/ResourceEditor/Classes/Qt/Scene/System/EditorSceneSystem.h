@@ -3,6 +3,7 @@
 #include <Command/Command.h>
 
 class RECommandNotificationObject;
+class REDependentCommandsHolder;
 class EditorSceneSystem
 {
     friend class SceneEditor2;
@@ -17,6 +18,9 @@ public:
 
 protected:
     virtual void Draw()
+    {
+    }
+    virtual void AccumulateDependentCommands(REDependentCommandsHolder& holder)
     {
     }
     virtual void ProcessCommand(const RECommandNotificationObject& commandNotification)

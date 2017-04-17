@@ -44,6 +44,7 @@ static const DAVA::WideString CREATE_NODE_PARTICLE_EFFECT = L"Particle Effect";
 
 // Properties
 static const DAVA::String EDITOR_REFERENCE_TO_OWNER = "editor.referenceToOwner";
+static const DAVA::String EDITOR_CONST_REFERENCE = "editor.constReferent";
 static const DAVA::String EDITOR_IS_LOCKED = "editor.isLocked";
 static const DAVA::String EDITOR_DO_NOT_REMOVE = "editor.donotremove";
 static const DAVA::String EDITOR_DYNAMIC_LIGHT_ENABLE = "editor.dynamiclight.enable";

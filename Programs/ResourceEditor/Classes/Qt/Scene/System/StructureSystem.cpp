@@ -302,6 +302,7 @@ void StructureSystem::ReloadInternal(InternalMapping& mapping, const DAVA::FileP
                         newEntityInstance->SetLocalTransform(origEntity->GetLocalTransform());
                         newEntityInstance->SetID(origEntity->GetID());
                         newEntityInstance->SetSceneID(origEntity->GetSceneID());
+                        newEntityInstance->SetNotRemovable(origEntity->GetNotRemovable());
                         it->second = newEntityInstance;
 
                         if (saveLightmapSettings)
@@ -326,7 +327,7 @@ void StructureSystem::Add(const DAVA::FilePath& newModelPath, const DAVA::Vector
     SceneEditor2* sceneEditor = (SceneEditor2*)GetScene();
     if (nullptr != sceneEditor)
     {
-        DAVA::ScopedPtr<DAVA::Entity> loadedEntity(Load(newModelPath, true));
+        DAVA::ScopedPtr<DAVA::Entity> loadedEntity(Load(newModelPath));
         if (static_cast<DAVA::Entity*>(loadedEntity) != nullptr)
         {
             DAVA::Vector3 entityPos = pos;
@@ -431,16 +432,9 @@ void StructureSystem::CheckAndMarkSolid(DAVA::Entity* entity)
     }
 }
 
-DAVA::Entity* StructureSystem::Load(const DAVA::FilePath& sc2path, bool storeReference)
+DAVA::Entity* StructureSystem::Load(const DAVA::FilePath& sc2path)
 {
-    DAVA::Entity* result = LoadInternal(sc2path, false);
-    if (result != nullptr && storeReference == true)
-    {
-        DAVA::KeyedArchive* customProps = GetOrCreateCustomProperties(result)->GetArchive();
-        customProps->SetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, sc2path.GetAbsolutePathname());
-    }
-
-    return result;
+    return LoadInternal(sc2path, false);
 }
 
 DAVA::Entity* StructureSystem::LoadInternal(const DAVA::FilePath& sc2path, bool clearCache)

@@ -13,11 +13,11 @@ void SlotSystem::ItemsCache::LoadConfigFile(const FilePath& configPath)
 {
     String extension = configPath.GetExtension();
     std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
-    if (extension == "yaml")
+    if (extension == ".yaml")
     {
         LoadYamlConfig(configPath);
     }
-    else if (extension == "xml")
+    else if (extension == ".xml")
     {
         LoadXmlConfig(configPath);
     }
@@ -62,7 +62,8 @@ void SlotSystem::ItemsCache::LoadYamlConfig(const FilePath& configPath)
                 }
                 else if (key == "Path")
                 {
-                    newItem.scenePath = FilePath(fieldNode->AsString());
+                    String path = fieldNode->AsString();
+                    newItem.scenePath = FilePath(path);
                 }
                 else if (key == "Tag")
                 {
@@ -125,6 +126,26 @@ const SlotSystem::ItemsCache::Item* SlotSystem::ItemsCache::LookUpItem(const Fil
     return &(*itemIter);
 }
 
+Vector<SlotSystem::ItemsCache::Item> SlotSystem::ItemsCache::GetItems(const FilePath& configPath)
+{
+    Vector<Item> result;
+
+    String absolutePath = configPath.GetAbsolutePathname();
+    auto configIter = cachedItems.find(absolutePath);
+    if (configIter == cachedItems.end())
+    {
+        LoadConfigFile(configPath);
+        configIter = cachedItems.find(absolutePath);
+    }
+
+    if (configIter != cachedItems.end())
+    {
+        std::copy(configIter->second.begin(), configIter->second.end(), std::back_inserter(result));
+    }
+
+    return result;
+}
+
 bool SlotSystem::ItemsCache::ItemLess::operator()(const Item& item1, const Item& item2) const
 {
     if (item1.tag != item2.tag)
@@ -158,6 +179,11 @@ SlotSystem::~SlotSystem()
 void SlotSystem::SetSharedCache(RefPtr<ItemsCache> cache)
 {
     sharedCache = cache;
+}
+
+Vector<SlotSystem::ItemsCache::Item> SlotSystem::GetItems(const FilePath& configPath)
+{
+    return sharedCache->GetItems(configPath);
 }
 
 void SlotSystem::SetExternalEntityLoader(RefPtr<ExternalEntityLoader> externalEntityLoader_)
@@ -293,6 +319,8 @@ void SlotSystem::AttachEntityToSlot(SlotComponent* component, Entity* entity)
 {
     UnloadItem(component);
 
+    entity->SetName(component->GetSlotName());
+
     TransformComponent* transform = GetTransformComponent(entity);
     DVASSERT(transform != nullptr);
     transform->SetLocalTransform(&component->GetAttachmentTransform());
@@ -311,14 +339,15 @@ void SlotSystem::AttachEntityToSlot(SlotComponent* component, Entity* entity)
     loadedEntityToSlot[entity] = component;
 }
 
-Entity* SlotSystem::LookUpLoadedEntity(SlotComponent* component)
+Entity* SlotSystem::LookUpLoadedEntity(SlotComponent* component) const
 {
     DVASSERT(component->GetEntity() != nullptr);
-    DVASSERT(slotToLoadedEntity.find(component) != slotToLoadedEntity.end());
-    return slotToLoadedEntity[component];
+    auto iter = slotToLoadedEntity.find(component);
+    DVASSERT(iter != slotToLoadedEntity.end());
+    return iter->second;
 }
 
-SlotComponent* SlotSystem::LookUpSlot(Entity* entity)
+SlotComponent* SlotSystem::LookUpSlot(Entity* entity) const
 {
     auto iter = loadedEntityToSlot.find(entity);
     if (iter != loadedEntityToSlot.end())

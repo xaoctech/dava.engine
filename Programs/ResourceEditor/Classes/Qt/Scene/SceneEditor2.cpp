@@ -567,6 +567,19 @@ void SceneEditor2::Draw()
     }
 }
 
+void SceneEditor2::AccumulateDependentCommands(REDependentCommandsHolder& holder)
+{
+    if (holder.GetMasterCommandInfo().IsEmpty())
+    {
+        return;
+    }
+
+    for (EditorSceneSystem* system : editorSystems)
+    {
+        system->AccumulateDependentCommands(holder);
+    }
+}
+
 void SceneEditor2::EditorCommandProcess(const RECommandNotificationObject& commandNotification)
 {
     if (commandNotification.IsEmpty())
@@ -595,6 +608,14 @@ void SceneEditor2::AddEditorEntity(Entity* editorEntity)
 SceneEditor2::EditorCommandNotify::EditorCommandNotify(SceneEditor2* _editor)
     : editor(_editor)
 {
+}
+
+void SceneEditor2::EditorCommandNotify::AccumulateDependentCommands(REDependentCommandsHolder& holder)
+{
+    if (nullptr != editor)
+    {
+        editor->AccumulateDependentCommands(holder);
+    }
 }
 
 void SceneEditor2::EditorCommandNotify::Notify(const RECommandNotificationObject& commandNotification)

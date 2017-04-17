@@ -13,8 +13,13 @@ public:
     void Redo() override;
     void Undo() override;
 
+    const DAVA::Any& GetOldValue() const;
+    const DAVA::Any& GetNewValue() const;
+    const DAVA::Reflection& GetTarget() const;
+    const DAVA::Any& GetFieldName() const;
+
 private:
     DAVA::Any oldValue;
     DAVA::Any newValue;
-    DAVA::Reflection reflection;
+    DAVA::Reflection::Field field;
 };

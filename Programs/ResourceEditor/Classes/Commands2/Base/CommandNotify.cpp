@@ -34,6 +34,14 @@ void CommandNotifyProvider::SetNotify(CommandNotify* notify)
     }
 }
 
+void CommandNotifyProvider::AccumulateDependentCommands(REDependentCommandsHolder& holder)
+{
+    if (nullptr != curNotify)
+    {
+        curNotify->AccumulateDependentCommands(holder);
+    }
+}
+
 void CommandNotifyProvider::EmitNotify(const RECommandNotificationObject& commandNotification)
 {
     if (nullptr != curNotify)

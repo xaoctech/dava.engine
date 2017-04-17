@@ -43,6 +43,9 @@ public:
 
     INTROSPECTION_EXTEND(SlotComponent, Component, nullptr);
 
+    static const FastName SlotNameFieldName;
+    static const FastName ConfigPathFieldName;
+
 private:
     FastName slotName;
 
