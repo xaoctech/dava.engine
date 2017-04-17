@@ -165,6 +165,7 @@ void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& ho
             DAVA::Entity* entity = scene->slotSystem->LookUpLoadedEntity(component);
             if (fieldName == DAVA::SlotComponent::ConfigPathFieldName)
             {
+                // TO REMOVE
                 bool tankFound = false;
                 for (DAVA::uint32 i = 0; i < component->GetFiltersCount(); ++i)
                 {
@@ -179,16 +180,9 @@ void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& ho
                 {
                     component->AddFilter(DAVA::FastName("Tank"));
                 }
-
-                if (DAVA::GetRenderComponent(entity) == nullptr)
-                {
-                    holder.AddPostCommand(std::make_unique<AttachEntityToSlot>(scene, component, DAVA::FastName("Tank")));
-                }
-                else
-                {
-                    DAVA::RefPtr<DAVA::Entity> newEntity(new DAVA::Entity());
-                    holder.AddPreCommand(std::make_unique<AttachEntityToSlot>(scene, component, newEntity.Get()));
-                }
+                // TO REMOVE
+                DAVA::RefPtr<DAVA::Entity> newEntity(new DAVA::Entity());
+                holder.AddPreCommand(std::make_unique<AttachEntityToSlot>(scene, component, newEntity.Get()));
             }
         }
     };

@@ -54,6 +54,9 @@ private:
     Array<FastName, MAX_FILTERS_COUNT> filters;
     uint32 actualFiltersCount = 0;
 
+    FastName loadedItemName;
+    FastName loadedItemTag;
+
     DAVA_VIRTUAL_REFLECTION(SlotComponent, Component);
 };
 
