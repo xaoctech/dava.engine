@@ -280,7 +280,6 @@ if( WIN )
 
 endif()
 
-
 if( WINUAP ) 
     add_static_libs_win_uap ( "${DAVA_WIN_UAP_LIBRARIES_PATH_COMMON}" LIST_SHARED_LIBRARIES )
 
