@@ -7,6 +7,8 @@
 #include <string.h>
 #include <string.h>
 
+using DAVA::InvalidIndex;
+
 //------------------------------------------------------------------------------
 
 const char* ExpressionEvaluator::_Operators         = "+-*/^!\x01\x02\x03\x04\x06\x07";
@@ -19,7 +21,6 @@ const char  ExpressionEvaluator::_OpFunctionCall    = '\x05';
 const char  ExpressionEvaluator::_OpDefined         = '\x06';
 const char  ExpressionEvaluator::_OpNotDefined      = '\x07';
 
-static const unsigned InvalidIndex = (unsigned)(-1);
 static const float Epsilon = 0.000001f;
 
 static const char* ExprEvalError[]  =
