@@ -19,7 +19,7 @@ class MouseDevice final : public InputDevice
     friend class DeviceManager; // For creation
 
 public:
-    bool SupportsElement(eInputElements elementId) const override;
+    bool IsElementSupported(eInputElements elementId) const override;
     eDigitalElementStates GetDigitalElementState(eInputElements elementId) const override;
     AnalogElementState GetAnalogElementState(eInputElements elementId) const override;
 

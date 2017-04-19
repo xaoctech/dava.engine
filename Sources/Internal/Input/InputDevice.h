@@ -76,7 +76,7 @@ public:
     /** Return `true` if an element with specified `elementId` is supported by the device
         (i.e. its state can be requested with either `GetDigitalElementState` or `GetAnalogElementState`)
     */
-    virtual bool SupportsElement(eInputElements elementId) const = 0;
+    virtual bool IsElementSupported(eInputElements elementId) const = 0;
 
     /**
         Get state of a digital element with specified `elementId`.

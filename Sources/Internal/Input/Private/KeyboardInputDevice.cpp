@@ -49,14 +49,14 @@ KeyboardInputDevice::~KeyboardInputDevice()
     }
 }
 
-bool KeyboardInputDevice::SupportsElement(eInputElements elementId) const
+bool KeyboardInputDevice::IsElementSupported(eInputElements elementId) const
 {
     return IsKeyboardInputElement(elementId);
 }
 
 eDigitalElementStates KeyboardInputDevice::GetDigitalElementState(eInputElements elementId) const
 {
-    DVASSERT(SupportsElement(elementId));
+    DVASSERT(IsElementSupported(elementId));
     return keys[elementId - eInputElements::KB_FIRST];
 }
 
@@ -68,7 +68,7 @@ AnalogElementState KeyboardInputDevice::GetAnalogElementState(eInputElements ele
 
 WideString KeyboardInputDevice::TranslateElementToWideString(eInputElements elementId) const
 {
-    DVASSERT(SupportsElement(elementId));
+    DVASSERT(IsElementSupported(elementId));
     return impl->TranslateElementToWideString(elementId);
 }
 

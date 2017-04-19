@@ -29,7 +29,7 @@ TouchDevice::~TouchDevice()
     Private::EngineBackend::Instance()->UninstallEventFilter(this);
 }
 
-bool TouchDevice::SupportsElement(eInputElements elementId) const
+bool TouchDevice::IsElementSupported(eInputElements elementId) const
 {
     // TODO: honestly check if we support an element with specified id
     // i.e. android can support different amount of touches, iOS supports only up to 5 touches

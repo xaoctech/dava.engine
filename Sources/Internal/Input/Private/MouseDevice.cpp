@@ -25,7 +25,7 @@ MouseDevice::~MouseDevice()
     Engine::Instance()->endFrame.Disconnect(this);
 }
 
-bool MouseDevice::SupportsElement(eInputElements elementId) const
+bool MouseDevice::IsElementSupported(eInputElements elementId) const
 {
     return eInputElements::MOUSE_FIRST <= elementId && elementId <= eInputElements::MOUSE_LAST;
 }

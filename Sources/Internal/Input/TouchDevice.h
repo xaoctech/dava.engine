@@ -26,7 +26,7 @@ class TouchDevice final : public InputDevice
 
 public:
     // InputDevice overrides
-    bool SupportsElement(eInputElements elementId) const override;
+    bool IsElementSupported(eInputElements elementId) const override;
     eDigitalElementStates GetDigitalElementState(eInputElements elementId) const override;
     AnalogElementState GetAnalogElementState(eInputElements elementId) const override;
 

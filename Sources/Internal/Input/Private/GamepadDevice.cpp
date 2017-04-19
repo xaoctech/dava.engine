@@ -41,7 +41,7 @@ GamepadDevice::~GamepadDevice()
     Engine::Instance()->endFrame.Disconnect(endFrameConnectionToken);
 }
 
-bool GamepadDevice::SupportsElement(eInputElements elementId) const
+bool GamepadDevice::IsElementSupported(eInputElements elementId) const
 {
     DVASSERT(IsGamepadAxisInputElement(elementId) || IsGamepadButtonInputElement(elementId));
     return supportedElements[elementId - eInputElements::GAMEPAD_FIRST];
