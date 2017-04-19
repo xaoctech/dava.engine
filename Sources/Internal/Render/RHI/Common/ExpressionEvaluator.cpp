@@ -404,7 +404,7 @@ ExpressionEvaluator::evaluate( const char* expression, float* result )
         {
             offset = _GetVariable( expr );
 
-            strncpy(&var[0], expr, offset);
+            strncpy( &var[0], expr, offset );
             var[offset] = '\0';
             uint32 vhash = DAVA::HashValue_N(var,offset);
 

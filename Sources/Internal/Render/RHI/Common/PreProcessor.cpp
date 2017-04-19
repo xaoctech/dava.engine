@@ -10,10 +10,8 @@ PreProc::DefFileCallback    PreProc::_DefFileCallback;
 //------------------------------------------------------------------------------
 
 PreProc::PreProc(FileCallback* fc)
-    : _file_cb((fc) ? fc : &_DefFileCallback)
-    ,
-    _cur_file_name("<buffer>")
-    ,
+  : _file_cb((fc) ? fc : &_DefFileCallback),
+    _cur_file_name("<buffer>"),
     _min_macro_length(DAVA::InvalidIndex)
 {
 }
@@ -238,7 +236,6 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
     bool        success     = true;
     char*       ln          = text;
     bool        ln_external = false;
-    char*       ln_m0       = nullptr;
     char*       last_s      = nullptr;
     unsigned    line_n      = 1;
     unsigned    src_line_n  = 1;
@@ -614,8 +611,7 @@ PreProc::_process_buffer( char* text, std::vector<Line>* line )
               )
             {
                 s += _min_macro_length-1;
-            }
-    
+            }    
         }
     }
 
