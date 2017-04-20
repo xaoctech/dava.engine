@@ -9,7 +9,6 @@ DAVA_TESTCLASS (PreprocessorTest)
 {
     static bool CompareStringBuffers();
 
-
     DAVA_TEST (TestExpressionEvaluator)
     {
         ExpressionEvaluator ev;
@@ -37,9 +36,9 @@ DAVA_TESTCLASS (PreprocessorTest)
           { "SHADING != SHADING_NONE  &&  !defined RANDOM_BULLSHIT", 1.0f },
           { "!(LIGHTING_ENABLED)", 0.0f },
           { "!(LIGHTING_ENABLED && DARKNESS_ENABLED)", 1.0f }
-#else          
+#else
 //          { "!(LIGHTING_ENABLED && DARKNESS_ENABLED)", 1.0f }
-#endif        
+#endif
         };
 
         ev.set_variable("bla", 13);
@@ -67,111 +66,109 @@ DAVA_TESTCLASS (PreprocessorTest)
             const char* inputFileName;
             const char* resultFileName;
         }
-        test[] = 
+        test[] =
         {
 #if 1
-            { "00-input.txt", "00-output.txt" },
-            { "01-input.txt", "01-output.txt" },
-            { "02-input.txt", "02-output.txt" },
-            { "03-input.txt", "03-output.txt" },
-            { "04-input.txt", "04-output.txt" },
-            { "05-input.txt", "05-output.txt" },
-            { "06-input.txt", "06-output.txt" },
-            { "07-input.txt", "07-output.txt" },
-            { "08-input.txt", "08-output.txt" },
-            { "09-input.txt", "09-output.txt" },
-            { "10-input.txt", "10-output.txt" },
-            { "CC01-input.txt", "CC01-output.txt" },
-            { "CC02-input.txt", "CC02-output.txt" },
-            { "CC03-input.txt", "CC03-output.txt" },
-            { "CC04-input.txt", "CC04-output.txt" }
+          { "00-input.txt", "00-output.txt" },
+          { "01-input.txt", "01-output.txt" },
+          { "02-input.txt", "02-output.txt" },
+          { "03-input.txt", "03-output.txt" },
+          { "04-input.txt", "04-output.txt" },
+          { "05-input.txt", "05-output.txt" },
+          { "06-input.txt", "06-output.txt" },
+          { "07-input.txt", "07-output.txt" },
+          { "08-input.txt", "08-output.txt" },
+          { "09-input.txt", "09-output.txt" },
+          { "10-input.txt", "10-output.txt" },
+          { "CC01-input.txt", "CC01-output.txt" },
+          { "CC02-input.txt", "CC02-output.txt" },
+          { "CC03-input.txt", "CC03-output.txt" },
+          { "CC04-input.txt", "CC04-output.txt" }
 #else
-            { "CC05-input.txt", "CC05-output.txt" }
-#endif        
+          { "CC05-input.txt", "CC05-output.txt" }
+#endif
         };
         static const char* BaseDir = "~res:/TestData/PreProcessor";
 
-
         class
         TestFileCallback
-          : public PreProc::FileCallback
+        : public PreProc::FileCallback
         {
         public:
-                                TestFileCallback( const char* base_dir )
-                                  : _base_dir(base_dir)
-                                {}
+            TestFileCallback(const char* base_dir)
+                : _base_dir(base_dir)
+            {
+            }
 
-            virtual bool        open( const char* file_name )
-                                {
-                                    char    fname[2048];
-                                    
-                                    Snprintf( fname, countof(fname), "%s/%s", _base_dir, file_name );
-                                    _in = DAVA::File::Create( fname, DAVA::File::READ|DAVA::File::OPEN );
+            virtual bool open(const char* file_name)
+            {
+                char fname[2048];
 
-                                    return (_in)  ? true  : false;
-                                }
-            virtual void        close()
-                                {
-                                    DVASSERT(_in);
-                                    _in->Release();
-                                    _in = nullptr;
-                                }
-            virtual unsigned    size() const
-                                {
-                                    return (_in)  ? unsigned(_in->GetSize())  : 0;
-                                }
-            virtual unsigned    read( unsigned max_sz, void* dst )  
-                                { 
-                                    return (_in)  ? _in->Read( dst, max_sz )  : 0; 
-                                }
+                Snprintf(fname, countof(fname), "%s/%s", _base_dir, file_name);
+                _in = DAVA::File::Create(fname, DAVA::File::READ | DAVA::File::OPEN);
+
+                return (_in) ? true : false;
+            }
+            virtual void close()
+            {
+                DVASSERT(_in);
+                _in->Release();
+                _in = nullptr;
+            }
+            virtual unsigned size() const
+            {
+                return (_in) ? unsigned(_in->GetSize()) : 0;
+            }
+            virtual unsigned read(unsigned max_sz, void* dst)
+            {
+                return (_in) ? _in->Read(dst, max_sz) : 0;
+            }
 
         private:
-
-            DAVA::File*         _in;
-            const char* const   _base_dir;
+            DAVA::File* _in;
+            const char* const _base_dir;
         };
 
-
-        for( int i=0; i!=countof(test); ++i )
+        for (int i = 0; i != countof(test); ++i)
         {
-            DAVA::Logger::Info( "pre-proc test %i  \"%s\"...", i, test[i].inputFileName );
+            DAVA::Logger::Info("pre-proc test %i  \"%s\"...", i, test[i].inputFileName);
 
-            TestFileCallback    fc(BaseDir);
-            PreProc             pp(&fc);
-            std::vector<char>   output;
-            char                fname[2048];    Snprintf( fname, countof(fname), "%s/%s", BaseDir, test[i].resultFileName );
-            DAVA::File*         expected_file   = DAVA::File::Create( fname, DAVA::File::READ|DAVA::File::OPEN ); 
-            size_t              expected_sz     = size_t(expected_file->GetSize());
-            char*               expected_data   = (char*)(::malloc( expected_sz + 1 ));
+            TestFileCallback fc(BaseDir);
+            PreProc pp(&fc);
+            std::vector<char> output;
+            char fname[2048];
+            Snprintf(fname, countof(fname), "%s/%s", BaseDir, test[i].resultFileName);
+            DAVA::File* expected_file = DAVA::File::Create(fname, DAVA::File::READ | DAVA::File::OPEN);
+            size_t expected_sz = size_t(expected_file->GetSize());
+            char* expected_data = (char*)(::malloc(expected_sz + 1));
 
-            TEST_VERIFY(pp.process_file( test[i].inputFileName, &output ));
+            TEST_VERIFY(pp.process_file(test[i].inputFileName, &output));
 
-            expected_file->Read( expected_data, expected_sz );
+            expected_file->Read(expected_data, expected_sz);
             expected_data[expected_sz] = 0;
 
             #if 1
             {
-            char    aname[2048] = "~res:/Data/TestData/PreProcessor/";
+                char aname[2048] = "~res:/Data/TestData/PreProcessor/";
 
-            strcat( aname, test[i].resultFileName );
-            strcat( aname, ".actual" );
-            DAVA::File* out = DAVA::File::Create( aname, DAVA::File::CREATE|DAVA::File::WRITE ); 
-            out->Write( &output[0], output.size() );
-            out->Release();
+                strcat(aname, test[i].resultFileName);
+                strcat(aname, ".actual");
+                DAVA::File* out = DAVA::File::Create(aname, DAVA::File::CREATE | DAVA::File::WRITE);
+                out->Write(&output[0], output.size());
+                out->Release();
             }
             #endif
 
             const char* actual_data = &output[0];
-            TEST_VERIFY(output.size()==expected_sz);
-            TEST_VERIFY(strncmp(expected_data,actual_data,output.size())==0);
+            TEST_VERIFY(output.size() == expected_sz);
+            TEST_VERIFY(strncmp(expected_data, actual_data, output.size()) == 0);
 
-            ::free( expected_data );
+            ::free(expected_data);
             expected_file->Release();
-            
-            DAVA::Logger::Info( "  OK" );
-        }
-        
-        DAVA::Logger::Info( "pre-proc tests PASSED" );
-    }
 
+            DAVA::Logger::Info("  OK");
+        }
+
+        DAVA::Logger::Info("pre-proc tests PASSED");
+    }
 };
