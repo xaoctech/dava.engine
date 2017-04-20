@@ -209,7 +209,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1149</width>
+     <width>1205</width>
      <height>21</height>
     </rect>
    </property>
@@ -278,7 +278,7 @@
       <string>Theme</string>
      </property>
     </widget>
-    <widget class="QMenu" name="menuToolbars">
+    <widget class="QMenu" name="Toolbars">
      <property name="title">
       <string>Toolbars</string>
      </property>
@@ -300,7 +300,7 @@
     <addaction name="menuLightView"/>
     <addaction name="separator"/>
     <addaction name="menuTheme"/>
-    <addaction name="menuToolbars"/>
+    <addaction name="Toolbars"/>
     <addaction name="Dock"/>
     <addaction name="separator"/>
     <addaction name="actionShowEditorGizmo"/>
@@ -421,7 +421,6 @@
     <addaction name="actionGridCopy"/>
     <addaction name="actionBatchProcess"/>
     <addaction name="actionCreateTestSkinnedObject"/>
-    <addaction name="actionDeviceList"/>
     <addaction name="actionImageSplitterForNormals"/>
     <addaction name="actionReplaceTextureMipmap"/>
     <addaction name="menuDump"/>
@@ -1795,11 +1794,6 @@
     <string>Create Test Skinned Object</string>
    </property>
   </action>
-  <action name="actionDeviceList">
-   <property name="text">
-    <string>Device List</string>
-   </property>
-  </action>
   <action name="actionWayEditor">
    <property name="checkable">
     <bool>true</bool>
@@ -2029,12 +2023,12 @@
   <customwidget>
    <class>ParticleEditorWidget</class>
    <extends>QWidget</extends>
-   <header>DockParticleEditor/particleeditorwidget.h</header>
+   <header>DockParticleEditor/ParticleEditorWidget.h</header>
   </customwidget>
   <customwidget>
    <class>ParticleTimeLineWidget</class>
    <extends>QWidget</extends>
-   <header>DockParticleEditor/particletimelinewidget.h</header>
+   <header>DockParticleEditor/ParticleTimeLineWidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
