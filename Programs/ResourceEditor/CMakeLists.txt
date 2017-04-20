@@ -40,8 +40,6 @@ find_package( DavaFramework REQUIRED COMPONENTS "Sound"
 
 find_package( QtTools REQUIRED )
 find_package( TArc REQUIRED )
-find_package( LoggerService REQUIRED )
-find_package( MemoryProfilerService REQUIRED )
 find_package( RemoteTool REQUIRED )
 #
 
