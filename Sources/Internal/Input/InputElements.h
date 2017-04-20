@@ -16,8 +16,8 @@ namespace DAVA
 */
 enum eInputElements : uint32
 {
-    // Order of elements should not be changed,
-    // since some functions rely on it
+    // Order of elements and values should not be changed
+    // To provide backward compatibility in case some of these values are saved somewhere (e.g. in a config)
 
     NONE = 0,
 
@@ -135,7 +135,7 @@ enum eInputElements : uint32
 
     // Mouse
 
-    MOUSE_LBUTTON,
+    MOUSE_LBUTTON = 140, // Range from 1 to 139 is reserved for keyboard
     MOUSE_RBUTTON,
     MOUSE_MBUTTON,
     MOUSE_EXT1BUTTON,
@@ -145,7 +145,7 @@ enum eInputElements : uint32
 
     // Gamepad
 
-    GAMEPAD_START,
+    GAMEPAD_START = 160, // Range from 140 to 159 is reserved for mouse
     GAMEPAD_BACK,
     GAMEPAD_A,
     GAMEPAD_B,
@@ -167,7 +167,7 @@ enum eInputElements : uint32
 
     // Touch
 
-    TOUCH_CLICK0,
+    TOUCH_CLICK0 = 200, // Range from 160 to 200 is reserved for gamepad
     TOUCH_CLICK1,
     TOUCH_CLICK2,
     TOUCH_CLICK3,
@@ -222,7 +222,6 @@ enum eInputElements : uint32
 // Helper values
 enum
 {
-    INPUT_ELEMENTS_COUNT = eInputElements::LAST - eInputElements::FIRST + 1,
     INPUT_ELEMENTS_KB_COUNT = eInputElements::KB_LAST - eInputElements::KB_FIRST + 1,
     INPUT_ELEMENTS_MOUSE_BUTTON_COUNT = eInputElements::MOUSE_LAST_BUTTON - eInputElements::MOUSE_FIRST_BUTTON + 1,
     INPUT_ELEMENTS_TOUCH_CLICK_COUNT = eInputElements::TOUCH_LAST_CLICK - eInputElements::TOUCH_FIRST_CLICK + 1,

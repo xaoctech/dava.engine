@@ -4,7 +4,7 @@ namespace DAVA
 {
 const InputElementInfo& GetInputElementInfo(eInputElements element)
 {
-    static InputElementInfo info[INPUT_ELEMENTS_COUNT];
+    static InputElementInfo info[eInputElements::LAST - eInputElements::FIRST + 1];
     static bool initialized = false;
 
     if (!initialized)
