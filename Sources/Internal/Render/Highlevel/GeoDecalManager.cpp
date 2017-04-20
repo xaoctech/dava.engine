@@ -5,22 +5,13 @@ namespace DAVA
 struct GeoDecalManager::DecalBuildInfo
 {
     Mapping mapping = Mapping::PLANAR;
-    RenderObject* object = nullptr;
-    RenderBatch* batch = nullptr;
+    PolygonGroup* polygonGroup = nullptr;
+    NMaterial* material = nullptr;
     AABBox3 box;
-    int32 lodIndex = -1;
-    int32 switchIndex = -1;
     Vector3 projectionAxis;
     Matrix4 projectionSpaceTransform;
     Matrix4 projectionSpaceInverseTransform;
     FilePath image;
-};
-
-struct GeoDecalManager::DecalRenderBatch
-{
-    RenderBatch* batch = nullptr;
-    int32 lodIndex = -1;
-    int32 switchIndex = -1;
 };
 
 struct GeoDecalManager::DecalVertex
@@ -36,7 +27,8 @@ struct GeoDecalManager::DecalVertex
     float32 jointWeight = 1.0f;
 };
 
-GeoDecalManager::GeoDecalManager()
+GeoDecalManager::GeoDecalManager(RenderSystem* rs)
+    : renderSystem(rs)
 {
     uint32 normalmapData[16] = {
         0xffff8080, 0xffff8080, 0xffff8080, 0xffff8080,
@@ -47,11 +39,12 @@ GeoDecalManager::GeoDecalManager()
     defaultNormalMap = Texture::CreateFromData(PixelFormat::FORMAT_RGBA8888, reinterpret_cast<uint8*>(normalmapData), 4, 4, false);
 }
 
-GeoDecalManager::Decal GeoDecalManager::BuildDecals(const DecalConfig& config, const Vector<RenderObject*>& objects)
+GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, RenderObject* ro)
 {
-    uintptr_t decalId = static_cast<uintptr_t>(builtDecals.size() + 1);
+    ++decalCounter;
+
     uintptr_t thisId = reinterpret_cast<uintptr_t>(this);
-    Decal decal = reinterpret_cast<Decal>(decalId ^ thisId);
+    Decal decal = reinterpret_cast<Decal>(decalCounter ^ thisId);
     // todo : use something better for decal id
 
     AABBox3 worldSpaceBox;
@@ -64,86 +57,103 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecals(const DecalConfig& config, c
     Vector3 up = MultiplyVectorMat3x3(Vector3(0.0f, -1.0f, 0.0f), config.worldTransform);
     Vector3 side = MultiplyVectorMat3x3(Vector3(1.0f, 0.0f, 0.0f), config.worldTransform);
 
-    for (RenderObject* ro : objects)
+    dir = MultiplyVectorMat3x3(dir, ro->GetInverseWorldTransform());
+    up = MultiplyVectorMat3x3(up, ro->GetInverseWorldTransform());
+    side = MultiplyVectorMat3x3(side, ro->GetInverseWorldTransform());
+
+    Matrix4 view = Matrix4::IDENTITY;
+    view._data[0][0] = side.x;
+    view._data[0][1] = up.x;
+    view._data[0][2] = -dir.x;
+    view._data[1][0] = side.y;
+    view._data[1][1] = up.y;
+    view._data[1][2] = -dir.y;
+    view._data[2][0] = side.z;
+    view._data[2][1] = up.z;
+    view._data[2][2] = -dir.z;
+
+    Vector3 boxMin = Vector3(+std::numeric_limits<float>::max(), +std::numeric_limits<float>::max(), +std::numeric_limits<float>::max());
+    Vector3 boxMax = Vector3(-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
+    for (uint32 i = 0; i < 8; ++i)
     {
-        dir = MultiplyVectorMat3x3(dir, ro->GetInverseWorldTransform());
-        up = MultiplyVectorMat3x3(up, ro->GetInverseWorldTransform());
-        side = MultiplyVectorMat3x3(side, ro->GetInverseWorldTransform());
+        Vector3 worldPos = boxCorners[i] * config.worldTransform;
+        Vector3 objectPos = worldPos * ro->GetInverseWorldTransform();
+        Vector3 t = MultiplyVectorMat3x3(objectPos, view);
+        boxMin.x = std::min(boxMin.x, t.x);
+        boxMin.y = std::min(boxMin.y, t.y);
+        boxMin.z = std::min(boxMin.z, t.z);
+        boxMax.x = std::max(boxMax.x, t.x);
+        boxMax.y = std::max(boxMax.y, t.y);
+        boxMax.z = std::max(boxMax.z, t.z);
+    }
+    Matrix4 proj;
+    proj.OrthographicProjectionLH(boxMin.x, boxMax.x, boxMin.y, boxMax.y, boxMin.z, boxMax.z, false);
 
-        Matrix4 view = Matrix4::IDENTITY;
-        view._data[0][0] = side.x;
-        view._data[0][1] = up.x;
-        view._data[0][2] = -dir.x;
-        view._data[1][0] = side.y;
-        view._data[1][1] = up.y;
-        view._data[1][2] = -dir.y;
-        view._data[2][0] = side.z;
-        view._data[2][1] = up.z;
-        view._data[2][2] = -dir.z;
+    DecalBuildInfo info;
+    info.projectionAxis = dir;
+    info.projectionSpaceTransform = view * proj;
+    info.projectionSpaceTransform.GetInverse(info.projectionSpaceInverseTransform);
+    info.mapping = config.mapping;
+    info.image = config.image;
 
-        Vector3 boxMin = Vector3(+std::numeric_limits<float>::max(), +std::numeric_limits<float>::max(), +std::numeric_limits<float>::max());
-        Vector3 boxMax = Vector3(-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
-        for (uint32 i = 0; i < 8; ++i)
-        {
-            Vector3 worldPos = boxCorners[i] * config.worldTransform;
-            Vector3 objectPos = worldPos * ro->GetInverseWorldTransform();
-            Vector3 t = MultiplyVectorMat3x3(objectPos, view);
-            boxMin.x = std::min(boxMin.x, t.x);
-            boxMin.y = std::min(boxMin.y, t.y);
-            boxMin.z = std::min(boxMin.z, t.z);
-            boxMax.x = std::max(boxMax.x, t.x);
-            boxMax.y = std::max(boxMax.y, t.y);
-            boxMax.z = std::max(boxMax.z, t.z);
-        }
-        Matrix4 proj;
-        proj.OrthographicProjectionLH(boxMin.x, boxMax.x, boxMin.y, boxMax.y, boxMin.z, boxMax.z, false);
-
-        DecalBuildInfo info;
-        info.object = ro;
-        info.projectionAxis = dir;
-        info.projectionSpaceTransform = view * proj;
-        info.projectionSpaceTransform.GetInverse(info.projectionSpaceInverseTransform);
-        info.mapping = config.mapping;
-        info.image = config.image;
-
-        worldSpaceBox.GetTransformedBox(ro->GetInverseWorldTransform(), info.box);
-
-        Vector<DecalRenderBatch> newBatches;
-        newBatches.reserve(ro->GetRenderBatchCount());
-
+    worldSpaceBox.GetTransformedBox(ro->GetInverseWorldTransform(), info.box);
+    BuiltDecal& builtDecal = builtDecals[decal];
+    {
+        builtDecal.sourceObject = ro;
+        builtDecal.renderObject.ConstructInplace();
         for (uint32 i = 0, e = ro->GetRenderBatchCount(); i < e; ++i)
         {
-            info.batch = ro->GetRenderBatch(i, info.lodIndex, info.switchIndex);
+            int32 lodIndex = -1;
+            int32 switchIndex = -1;
+            RenderBatch* sourceBatch = ro->GetRenderBatch(i, lodIndex, switchIndex);
+            info.polygonGroup = sourceBatch->GetPolygonGroup();
+            info.material = sourceBatch->GetMaterial();
 
-            newBatches.emplace_back();
-            if (!BuildDecal(info, newBatches.back()))
-                newBatches.pop_back();
-        }
-
-        if (newBatches.size() > 0)
-        {
-            builtDecals[decal].batches.emplace_back();
-            DecalBatches& decalBatches = builtDecals[decal].batches.back();
-            decalBatches.object = ro;
-            for (DecalRenderBatch& batch : newBatches)
+            ScopedPtr<RenderBatch> newBatch(new RenderBatch());
+            if (BuildDecal(info, newBatch))
             {
-                decalBatches.batches.emplace_back(batch.batch);
-                ro->AddRenderBatch(batch.batch, batch.lodIndex, batch.switchIndex);
+                builtDecal.renderObject->AddRenderBatch(newBatch, lodIndex, switchIndex);
             }
         }
     }
+    RegisterDecal(decal);
+
     return decal;
+}
+
+void GeoDecalManager::DeleteDecal(Decal decal)
+{
+    UnregisterDecal(decal);
+    builtDecals.erase(decal);
+}
+
+void GeoDecalManager::RegisterDecal(Decal decal)
+{
+    if (builtDecals[decal].renderObject->GetRenderBatchCount() > 0)
+    {
+        renderSystem->RenderPermanent(builtDecals[decal].renderObject.Get());
+        builtDecals[decal].registered = true;
+    }
+}
+
+void GeoDecalManager::UnregisterDecal(Decal decal)
+{
+    if (builtDecals[decal].registered)
+    {
+        renderSystem->RemoveFromRender(builtDecals[decal].renderObject.Get());
+        builtDecals[decal].registered = false;
+    }
 }
 
 #define MAX_CLIPPED_POLYGON_CAPACITY 9
 #define PLANE_THICKNESS_EPSILON 0.00001f
 
-bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, DecalRenderBatch& batch)
+bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBatch)
 {
     const AABBox3 clipSpaceBox = AABBox3(Vector3(0.0f, 0.0f, 0.0f), 2.0f);
     bool isPlanarProjection = info.mapping == Mapping::PLANAR;
 
-    PolygonGroup* geometry = info.batch->GetPolygonGroup();
+    PolygonGroup* geometry = info.polygonGroup;
     int32 geometryFormat = geometry->GetFormat();
 
     Vector<DecalVertex> decalGeometry;
@@ -284,11 +294,11 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, DecalRenderBatch& b
     poly->BuildBuffers();
 
     ScopedPtr<NMaterial> material(new NMaterial());
-    material->SetParent(info.batch->GetMaterial());
+    material->SetParent(info.material);
     material->SetFXName(FastName("~res:/Materials/GeoDecal.material"));
     material->SetMaterialName(FastName("GeoDecal"));
 
-    const FastName& baseFxName = info.batch->GetMaterial()->GetEffectiveFXName();
+    const FastName& baseFxName = info.material->GetEffectiveFXName();
     String fxNameString(baseFxName.c_str());
     for (char& c : fxNameString)
         c = static_cast<char>(::tolower(c));
@@ -312,12 +322,9 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, DecalRenderBatch& b
     if (albedo != nullptr)
         material->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, albedo);
 
-    batch.batch = new RenderBatch();
-    batch.batch->SetPolygonGroup(poly);
-    batch.batch->SetMaterial(material);
-    batch.batch->serializable = false;
-    batch.lodIndex = info.lodIndex;
-    batch.switchIndex = info.switchIndex;
+    dstBatch->SetPolygonGroup(poly);
+    dstBatch->SetMaterial(material);
+    dstBatch->serializable = false;
 
     return true;
 }
@@ -431,17 +438,4 @@ void GeoDecalManager::ClipToBoundingBox(DecalVertex* p_vs, uint8_t* nb_p_vs, con
 #undef MAX_CLIPPED_POLYGON_CAPACITY
 #undef PLANE_THICKNESS_EPSILON
 
-void GeoDecalManager::DeleteDelal(Decal decal)
-{
-    for (DecalBatches& batches : builtDecals[decal].batches)
-    {
-        for (RenderBatch* batch : batches.batches)
-        {
-            batches.object->RemoveRenderBatch(batch);
-        }
-        batches.batches.clear();
-    }
-    builtDecals[decal].batches.clear();
-    builtDecals.erase(decal);
-}
 }

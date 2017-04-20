@@ -58,7 +58,7 @@ private:
     struct GeoDecalCacheEntry
     {
         GeoDecalManager::DecalConfig lastValidConfig;
-        GeoDecalManager::Decal decal;
+        Vector<GeoDecalManager::Decal> decals;
     };
     Map<Component*, GeoDecalCacheEntry> decals;
 };
