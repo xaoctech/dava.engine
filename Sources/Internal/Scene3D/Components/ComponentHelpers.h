@@ -37,7 +37,6 @@ class SnapToLandscapeControllerComponent;
 class StaticOcclusionComponent;
 class StaticOcclusionDebugDrawComponent;
 class GeoDecalComponent;
-class GeoDecalRenderComponent;
 
 bool HasComponent(const Entity* fromEntity, const Component::eType componentType);
 

@@ -49,7 +49,6 @@ class LandscapeSystem;
 class LodSystem;
 class ParticleEffectDebugDrawSystem;
 class GeoDecalSystem;
-class GeoDecalRenderSystem;
 
 class UIEvent;
 class RenderPass;
@@ -168,7 +167,6 @@ public:
     LandscapeSystem* landscapeSystem;
     ParticleEffectDebugDrawSystem* particleEffectDebugDrawSystem;
     GeoDecalSystem* geoDecalSystem = nullptr;
-    GeoDecalRenderSystem* geoDecalRenderSystem = nullptr;
 
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.

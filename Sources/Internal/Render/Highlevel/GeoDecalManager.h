@@ -7,6 +7,7 @@ namespace DAVA
 class RenderSystem;
 class RenderObject;
 class RenderBatch;
+class Texture;
 class GeoDecalManager
 {
 public:
