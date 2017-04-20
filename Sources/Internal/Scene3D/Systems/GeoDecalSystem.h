@@ -3,6 +3,7 @@
 #include "Base/BaseTypes.h"
 #include "Entity/SceneSystem.h"
 #include "Scene3D/Components/GeoDecalComponent.h"
+#include "Render/Highlevel/GeoDecalManager.h"
 
 namespace DAVA
 {
@@ -51,17 +52,14 @@ private:
     };
     void BuildDecal(Entity* entity, GeoDecalComponent* component);
     void RemoveCreatedDecals(Entity* entity, GeoDecalComponent* component);
-    bool BuildDecal(const DecalBuildInfo& info, DecalRenderBatch&);
     void GatherRenderableEntitiesInBox(Entity* top, const AABBox3& box, Vector<RenderableEntity>&);
-    void AddAffectedEntity(Entity* sourceEntity, Component* sourceComponent, const RenderableEntity& affected, Vector<DecalRenderBatch>& batches);
 
 private:
     struct GeoDecalCacheEntry
     {
-        GeoDecalComponent::Config lastValidConfig;
-        Vector<std::pair<Entity*, GeoDecalRenderComponent*>> createdComponents;
+        GeoDecalManager::DecalConfig lastValidConfig;
+        GeoDecalManager::Decal decal;
     };
     Map<Component*, GeoDecalCacheEntry> decals;
-    ScopedPtr<Texture> defaultNormalMap;
 };
 }

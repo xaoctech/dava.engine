@@ -36,12 +36,12 @@ void GeoDecalComponent::Deserialize(KeyedArchive* archive, SerializationContext*
 {
     if (archive)
     {
-        Config localConfig;
+        GeoDecalManager::DecalConfig localConfig;
         Vector3 center = archive->GetVector3("box.center");
         Vector3 size = 0.5f * archive->GetVector3("box.size", Vector3(1.0f, 1.0f, 1.0f));
         localConfig.boundingBox = AABBox3(center - size, center + size);
         localConfig.image = serializationContext->GetScenePath() + archive->GetString("image");
-        localConfig.mapping = static_cast<Mapping>(archive->GetUInt32("mapping", localConfig.mapping));
+        localConfig.mapping = static_cast<GeoDecalManager::Mapping>(archive->GetUInt32("mapping", localConfig.mapping));
         config = localConfig;
     }
     Component::Deserialize(archive, serializationContext);

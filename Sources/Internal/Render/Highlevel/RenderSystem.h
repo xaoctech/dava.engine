@@ -6,6 +6,7 @@
 #include "Entity/SceneSystem.h"
 #include "Render/Highlevel/IRenderUpdatable.h"
 #include "Render/Highlevel/VisibilityQuadTree.h"
+#include "Render/Highlevel/GeoDecalManager.h"
 #include "Render/RenderHelper.h"
 
 namespace DAVA
@@ -104,6 +105,11 @@ public:
         return debugDrawer;
     }
 
+    inline GeoDecalManager* GetGeoDecalManager() const
+    {
+        return geoDecalManager;
+    }
+
 public:
     DAVA_DEPRECATED(rhi::RenderPassConfig& GetMainPassConfig());
 
@@ -129,6 +135,7 @@ private:
     Camera* drawCamera = nullptr;
     NMaterial* globalMaterial = nullptr;
     RenderHelper* debugDrawer = nullptr;
+    GeoDecalManager* geoDecalManager = nullptr;
 
     bool hierarchyInitialized = false;
     bool forceUpdateLights = false;

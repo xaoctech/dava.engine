@@ -23,6 +23,7 @@ RenderSystem::RenderSystem()
     renderHierarchy = new QuadTree(10);
     markedObjects.reserve(100);
     debugDrawer = new RenderHelper();
+    geoDecalManager = new GeoDecalManager;
 }
 
 RenderSystem::~RenderSystem()
@@ -36,6 +37,7 @@ RenderSystem::~RenderSystem()
     SafeDelete(mainRenderPass);
 
     SafeDelete(debugDrawer);
+    SafeDelete(geoDecalManager);
 }
 
 void RenderSystem::RenderPermanent(RenderObject* renderObject)

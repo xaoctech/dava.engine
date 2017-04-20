@@ -21,7 +21,7 @@
 #include "UI/UIWebView.h"
 #include "Render/RHI/rhi_Type.h"
 #include "Render/Highlevel/BillboardRenderObject.h"
-#include "Scene3D/Components/GeoDecalComponent.h"
+#include "Render/Highlevel/GeoDecalManager.h"
 
 using namespace DAVA;
 
@@ -439,9 +439,9 @@ ENUM_DECLARE(BillboardRenderObject::BillboardType)
     ENUM_ADD_DESCR(BillboardRenderObject::BILLBOARD_CYLINDRICAL, "Cylindrical");
 }
 
-ENUM_DECLARE(GeoDecalComponent::Mapping)
+ENUM_DECLARE(GeoDecalManager::Mapping)
 {
-    ENUM_ADD_DESCR(GeoDecalComponent::Mapping::PLANAR, "Planar");
-    ENUM_ADD_DESCR(GeoDecalComponent::Mapping::SPHERICAL, "Spherical");
-    ENUM_ADD_DESCR(GeoDecalComponent::Mapping::CYLINDRICAL, "Cylindrical");
+    ENUM_ADD_DESCR(GeoDecalManager::Mapping::PLANAR, "Planar");
+    ENUM_ADD_DESCR(GeoDecalManager::Mapping::SPHERICAL, "Spherical");
+    ENUM_ADD_DESCR(GeoDecalManager::Mapping::CYLINDRICAL, "Cylindrical");
 }

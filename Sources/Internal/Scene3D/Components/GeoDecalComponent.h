@@ -6,32 +6,12 @@
 #include "Entity/Component.h"
 #include "Base/Introspection.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
+#include "Render/Highlevel/GeoDecalManager.h"
 
 namespace DAVA
 {
 class GeoDecalComponent : public Component
 {
-public:
-    enum Mapping : uint32
-    {
-        PLANAR,
-        SPHERICAL,
-        CYLINDRICAL,
-
-        COUNT
-    };
-
-    struct Config
-    {
-        AABBox3 boundingBox = AABBox3(Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f));
-        Mapping mapping = Mapping::PLANAR;
-        FilePath image;
-
-        bool operator==(const Config&) const;
-        bool operator!=(const Config&) const;
-        void invalidate();
-    };
-
 public:
     IMPLEMENT_COMPONENT_TYPE(GEO_DECAL_COMPONENT);
 
@@ -41,10 +21,10 @@ public:
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
     void Deserialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
 
-    const Config& GetConfig() const;
+    const GeoDecalManager::DecalConfig& GetConfig() const;
 
 private:
-    Config config;
+    GeoDecalManager::DecalConfig config;
 
 public:
 #define IMPL_PROPERTY(T, Name, varName) \
@@ -60,7 +40,7 @@ public:
     INTROSPECTION_EXTEND(GeoDecalComponent, Component,
                          PROPERTY("Bounding Box", "Bounding Box", GetBoundingBox, SetBoundingBox, I_VIEW | I_EDIT | I_SAVE)
                          PROPERTY("Decal image", "Decal image", GetDecalImage, SetDecalImage, I_VIEW | I_EDIT | I_SAVE)
-                         PROPERTY("Texture mapping", InspDesc("Texture mapping", GlobalEnumMap<GeoDecalComponent::Mapping>::Instance()), GetMapping, SetMapping, I_SAVE | I_VIEW | I_EDIT)
+                         PROPERTY("Texture mapping", InspDesc("Texture mapping", GlobalEnumMap<GeoDecalManager::Mapping>::Instance()), GetMapping, SetMapping, I_SAVE | I_VIEW | I_EDIT)
                          )
     DAVA_VIRTUAL_REFLECTION(GeoDecalComponent, Component);
 };
@@ -72,32 +52,14 @@ inline uint32 GeoDecalComponent::GetMapping() const
 
 inline void GeoDecalComponent::SetMapping(uint32 value)
 {
-    DVASSERT(value < Mapping::COUNT);
-    config.mapping = static_cast<Mapping>(value);
+    DVASSERT(value < GeoDecalManager::Mapping::COUNT);
+    config.mapping = static_cast<GeoDecalManager::Mapping>(value);
 }
 
-inline const GeoDecalComponent::Config& GeoDecalComponent::GetConfig() const
+inline const GeoDecalManager::DecalConfig& GeoDecalComponent::GetConfig() const
 {
     return config;
 }
 
-inline bool GeoDecalComponent::Config::operator==(const GeoDecalComponent::Config& r) const
-{
-    return (boundingBox == r.boundingBox) &&
-    (image == r.image) &&
-    (mapping == r.mapping);
-}
 
-inline bool GeoDecalComponent::Config::operator!=(const GeoDecalComponent::Config& r) const
-{
-    return (boundingBox != r.boundingBox) ||
-    (image != r.image) ||
-    (mapping != r.mapping);
-}
-
-inline void GeoDecalComponent::Config::invalidate()
-{
-    boundingBox.Empty();
-    image = FilePath();
-}
 }

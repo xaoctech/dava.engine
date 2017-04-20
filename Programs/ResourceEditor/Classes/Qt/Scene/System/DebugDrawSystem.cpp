@@ -454,7 +454,7 @@ void DebugDrawSystem::DrawDecals(DAVA::Entity* entity)
 
         drawer->DrawAABoxTransformed(box, entity->GetWorldTransform(), baseColor, dt);
 
-        if (decal->GetConfig().mapping == DAVA::GeoDecalComponent::Mapping::CYLINDRICAL)
+        if (decal->GetConfig().mapping == DAVA::GeoDecalManager::Mapping::CYLINDRICAL)
         {
             DAVA::Vector3 side = DAVA::Vector3(boxCenter.x - boxHalfSize.x, 0.0f, box.max.z) * entity->GetWorldTransform();
 
@@ -463,7 +463,7 @@ void DebugDrawSystem::DrawDecals(DAVA::Entity* entity)
             drawer->DrawCircle(endPoint, -direction, radius, 32, accentColor, dt);
             drawer->DrawLine(origin, side, accentColor);
         }
-        else if (decal->GetConfig().mapping == DAVA::GeoDecalComponent::Mapping::SPHERICAL)
+        else if (decal->GetConfig().mapping == DAVA::GeoDecalManager::Mapping::SPHERICAL)
         {
         }
         else // PLANAR assumed
