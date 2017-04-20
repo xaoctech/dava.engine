@@ -7,7 +7,7 @@
 #include "Math/Vector.h"
 using DAVA::Vector3;
 
-#include "Render/RenderCallbacks.h"
+#include "Render/Renderer.h"
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -1054,7 +1054,7 @@ void DbgDraw::_init()
 
     _permanent_text_small = true;
 
-    RenderCallbacks::RegisterResourceRestoreCallback(MakeFunction(this, &DbgDraw::_restore));
+    Renderer::GetSignals().needRestoreResources.Connect(this, &DbgDraw::_restore);
 }
 
 //------------------------------------------------------------------------------
@@ -1071,7 +1071,7 @@ void DbgDraw::_uninit()
         _tri2d_buf.destroy();
         _line2d_buf.destroy();
 
-        RenderCallbacks::UnRegisterResourceRestoreCallback(MakeFunction(this, &DbgDraw::_restore));
+        Renderer::GetSignals().needRestoreResources.Disconnect(this);
 
         _inited = false;
     }

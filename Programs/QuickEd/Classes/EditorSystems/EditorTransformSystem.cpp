@@ -15,6 +15,7 @@
 #include "QECommands/ChangePivotCommand.h"
 
 #include <TArc/Core/ContextAccessor.h>
+#include <TArc/Core/FieldBinder.h>
 
 #include <UI/UIEvent.h>
 #include <UI/UIControl.h>
@@ -97,7 +98,7 @@ const float32 TRANSFORM_EPSILON = 0.0005f;
 
 struct ChangePropertyAction
 {
-    ChangePropertyAction(ControlNode* node_, AbstractProperty* property_, const DAVA::VariantType& value_)
+    ChangePropertyAction(ControlNode* node_, AbstractProperty* property_, const DAVA::Any& value_)
         : node(node_)
         , property(property_)
         , value(value_)
@@ -105,7 +106,7 @@ struct ChangePropertyAction
     }
     ControlNode* node = nullptr;
     AbstractProperty* property = nullptr;
-    DAVA::VariantType value;
+    DAVA::Any value;
 };
 
 //when we get request to add a value (x; y) to position it transforms to:
@@ -156,21 +157,57 @@ void ClampProperty(float32& propertyValue, float32& extraDelta)
     extraDelta += (propertyValue - clampedValue);
     propertyValue = clampedValue;
 }
+
+using DeltaPositionBehavior = Function<void(Vector2& deltaPosition)>;
+
+Vector2 CreateFinalPosition(const UIGeometricData* parentGd, const Vector2& originalPosition, Vector2& mouseDelta, Vector2& extraDelta, DeltaPositionBehavior behavior = DeltaPositionBehavior())
+{
+    //transform mouse delta to control coordinates
+    Vector2 scaledDelta = mouseDelta / parentGd->scale;
+    Vector2 deltaPosition(::Rotate(scaledDelta, -parentGd->angle));
+
+    //add delta from previous move event
+    deltaPosition += extraDelta;
+    extraDelta.SetZero();
+
+    //call behavior if control must magnet somewhere
+    if (behavior)
+    {
+        behavior(deltaPosition);
+    }
+
+    Vector2 finalPosition(originalPosition + deltaPosition);
+    EditorTransformSystemDetail::ClampProperty(finalPosition, extraDelta);
+    return finalPosition;
+};
 }
 
-EditorTransformSystem::EditorTransformSystem(EditorSystemsManager* parent, TArc::ContextAccessor* accessor_)
-    : BaseEditorSystem(parent)
-    , accessor(accessor_)
+EditorTransformSystem::EditorTransformSystem(EditorSystemsManager* parent, TArc::ContextAccessor* accessor)
+    : BaseEditorSystem(parent, accessor)
 {
     systemsManager->activeAreaChanged.Connect(this, &EditorTransformSystem::OnActiveAreaChanged);
-    systemsManager->selectionChanged.Connect(this, &EditorTransformSystem::OnSelectionChanged);
 
+    InitFieldBinder();
     PreferencesStorage::Instance()->RegisterPreferences(this);
 }
 
 EditorTransformSystem::~EditorTransformSystem()
 {
     PreferencesStorage::Instance()->UnregisterPreferences(this);
+}
+
+void EditorTransformSystem::InitFieldBinder()
+{
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    fieldBinder.reset(new FieldBinder(accessor));
+    {
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
+        fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
+        fieldBinder->BindField(fieldDescr, MakeFunction(this, &EditorTransformSystem::OnSelectionChanged));
+    }
 }
 
 void EditorTransformSystem::OnActiveAreaChanged(const HUDAreaInfo& areaInfo)
@@ -189,10 +226,10 @@ void EditorTransformSystem::OnActiveAreaChanged(const HUDAreaInfo& areaInfo)
         DVASSERT(controlGeometricData.size.x >= 0.0f && controlGeometricData.size.y >= 0.0f);
 
         RootProperty* rootProperty = activeControlNode->GetRootProperty();
-        sizeProperty = rootProperty->FindPropertyByName("Size");
-        positionProperty = rootProperty->FindPropertyByName("Position");
-        angleProperty = rootProperty->FindPropertyByName("Angle");
-        pivotProperty = rootProperty->FindPropertyByName("Pivot");
+        sizeProperty = rootProperty->FindPropertyByName("size");
+        positionProperty = rootProperty->FindPropertyByName("position");
+        angleProperty = rootProperty->FindPropertyByName("angle");
+        pivotProperty = rootProperty->FindPropertyByName("pivot");
     }
     else
     {
@@ -279,10 +316,10 @@ void EditorTransformSystem::OnDragStateChanged(EditorSystemsManager::eDragState 
     }
 }
 
-void EditorTransformSystem::OnSelectionChanged(const SelectedNodes& selection)
+void EditorTransformSystem::OnSelectionChanged(const Any& selection)
 {
     selectedControlNodes.clear();
-    for (PackageBaseNode* node : selection)
+    for (PackageBaseNode* node : selection.Cast<SelectedNodes>(SelectedNodes()))
     {
         ControlNode* controlNode = dynamic_cast<ControlNode*>(node);
         if (controlNode != nullptr)
@@ -385,11 +422,11 @@ void EditorTransformSystem::MoveAllSelectedControlsByKeyboard(DAVA::Vector2 delt
         const UIGeometricData* gd = nodeToMove->parentGD;
         float32 angle = gd->angle;
         AbstractProperty* property = nodeToMove->positionProperty;
-        Vector2 originalPosition = property->GetValue().AsVector2();
+        Vector2 originalPosition = property->GetValue().Cast<Vector2>();
 
         Vector2 deltaPosition = EditorTransformSystemDetail::RotateVectorForMove(delta, angle);
         Vector2 finalPosition(originalPosition + deltaPosition);
-        propertiesToChange.emplace_back(node, property, VariantType(finalPosition));
+        propertiesToChange.emplace_back(node, property, Any(finalPosition));
     }
     DataContext* activeContext = accessor->GetActiveContext();
     DVASSERT(activeContext != nullptr);
@@ -403,12 +440,12 @@ void EditorTransformSystem::MoveAllSelectedControlsByKeyboard(DAVA::Vector2 delt
     data->ExecCommand(std::move(command));
 }
 
-void EditorTransformSystem::MoveAllSelectedControlsByMouse(Vector2 delta, bool canAdjust)
+void EditorTransformSystem::MoveAllSelectedControlsByMouse(Vector2 mouseDelta, bool canAdjust)
 {
     using namespace DAVA::TArc;
 
     Vector<EditorTransformSystemDetail::ChangePropertyAction> propertiesToChange;
-    Vector<MagnetLineInfo> magnets;
+
     if (canAdjust)
     {
         //find hovered node alias in nodesToMoveInfos
@@ -425,25 +462,32 @@ void EditorTransformSystem::MoveAllSelectedControlsByMouse(Vector2 delta, bool c
                                      return activeControlNodeHierarchy.find(target) != activeControlNodeHierarchy.end();
                                  });
         DVASSERT(iter != nodesToMoveInfos.end());
-        const MoveInfo* nodeToMoveInfo = iter->get();
-        const UIGeometricData* gd = nodeToMoveInfo->parentGD;
-        ControlNode* node = nodeToMoveInfo->node;
-        AbstractProperty* positionProperty = nodeToMoveInfo->positionProperty;
 
-        Vector2 scaledDelta = delta / gd->scale;
-        Vector2 deltaPosition(::Rotate(scaledDelta, -gd->angle));
+        const MoveInfo* nodeInfo = iter->get();
 
-        deltaPosition += extraDelta;
-        extraDelta.SetZero();
-        deltaPosition = AdjustMoveToNearestBorder(deltaPosition, magnets, gd, node->GetControl());
+        auto deltaPositionBehavior = [this, nodeInfo](Vector2& deltaPosition) {
+            ControlNode* node = nodeInfo->node;
+            const UIGeometricData* gd = nodeInfo->parentGD;
+            UIControl* control = node->GetControl();
+            Vector<MagnetLineInfo> magnets;
+            deltaPosition = AdjustMoveToNearestBorder(deltaPosition, magnets, gd, control);
+            systemsManager->magnetLinesChanged.Emit(magnets);
+        };
+        const UIGeometricData* gd = nodeInfo->parentGD;
 
-        Vector2 originalPosition = positionProperty->GetValue().AsVector2();
-        Vector2 finalPosition(originalPosition + deltaPosition);
-        EditorTransformSystemDetail::ClampProperty(finalPosition, extraDelta);
+        AbstractProperty* positionProperty = nodeInfo->positionProperty;
+        Vector2 originalPosition = positionProperty->GetValue().Cast<Vector2>();
 
-        propertiesToChange.emplace_back(node, positionProperty, VariantType(finalPosition));
-        delta = ::Rotate(finalPosition - originalPosition, gd->angle);
-        delta *= gd->scale;
+        Vector2 finalPosition = EditorTransformSystemDetail::CreateFinalPosition(gd, originalPosition, mouseDelta, extraDelta, deltaPositionBehavior);
+
+        ControlNode* node = nodeInfo->node;
+        propertiesToChange.emplace_back(node, positionProperty, Any(finalPosition));
+
+        //if control will clap it position or will magnet somewhere - it will jump from mouse cursor
+        //and all other selected controls must jump too
+        //in this case we get actual delta in control coordinates and transform it to global
+        mouseDelta = ::Rotate((finalPosition - originalPosition), gd->angle);
+        mouseDelta *= gd->scale;
     }
     for (auto& nodeToMove : nodesToMoveInfos)
     {
@@ -452,20 +496,14 @@ void EditorTransformSystem::MoveAllSelectedControlsByMouse(Vector2 delta, bool c
         {
             continue; //we already move it in this function
         }
-        const UIGeometricData* gd = nodeToMove->parentGD;
-        AbstractProperty* property = nodeToMove->positionProperty;
-
-        Vector2 scaledDelta = delta / gd->scale;
-        Vector2 deltaPosition(::Rotate(scaledDelta, -gd->angle));
-
-        Vector2 originalPosition = property->GetValue().AsVector2();
         DAVA::Vector2& activeExtraDelta = extraDeltaToMoveControls[node];
-        Vector2 finalPosition(originalPosition + deltaPosition + activeExtraDelta);
-        EditorTransformSystemDetail::ClampProperty(finalPosition, activeExtraDelta);
+        AbstractProperty* positionProperty = nodeToMove->positionProperty;
+        Vector2 originalPosition = positionProperty->GetValue().Cast<Vector2>();
+        const UIGeometricData* gd = nodeToMove->parentGD;
+        Vector2 finalPosition = EditorTransformSystemDetail::CreateFinalPosition(gd, originalPosition, mouseDelta, activeExtraDelta);
 
-        propertiesToChange.emplace_back(node, property, VariantType(finalPosition));
+        propertiesToChange.emplace_back(node, positionProperty, Any(finalPosition));
     }
-    systemsManager->magnetLinesChanged.Emit(magnets);
 
     DataContext* activeContext = accessor->GetActiveContext();
     DVASSERT(activeContext != nullptr);
@@ -698,18 +736,18 @@ void EditorTransformSystem::ResizeControl(Vector2 delta, bool withPivot, bool ra
     deltaPosition *= control->GetScale();
     deltaPosition = ::Rotate(deltaPosition, control->GetAngle());
 
-    Vector2 originalSize = sizeProperty->GetValue().AsVector2();
+    Vector2 originalSize = sizeProperty->GetValue().Cast<Vector2>();
     Vector2 finalSize(originalSize + adjustedSize);
-    VariantType sizeValue(finalSize);
+    Any sizeValue(finalSize);
 
-    Vector2 originalPosition = positionProperty->GetValue().AsVector2();
+    Vector2 originalPosition = positionProperty->GetValue().Cast<Vector2>();
     Vector2 finalPosition = originalPosition;
     if (activeControlNode->GetParent() != nullptr && activeControlNode->GetParent()->GetControl() != nullptr)
     {
         finalPosition += deltaPosition;
     }
 
-    VariantType positionValue(finalPosition);
+    Any positionValue(finalPosition);
 
     TArc::DataContext* activeContext = accessor->GetActiveContext();
     DVASSERT(activeContext != nullptr);
@@ -728,7 +766,7 @@ void EditorTransformSystem::ResizeControl(Vector2 delta, bool withPivot, bool ra
 Vector2 EditorTransformSystem::AdjustResizeToMinimumSize(Vector2 deltaSize)
 {
     const Vector2 scaledMinimum(GetMinimumSize() / controlGeometricData.scale);
-    Vector2 origSize = sizeProperty->GetValue().AsVector2();
+    Vector2 origSize = sizeProperty->GetValue().Cast<Vector2>();
 
     Vector2 finalSize(origSize + deltaSize);
     Vector<MagnetLineInfo> magnets;
@@ -865,7 +903,7 @@ void EditorTransformSystem::MovePivot(Vector2 delta)
 
     Vector2 scaledDelta(delta / parentGeometricData.scale);
     Vector2 rotatedDeltaPosition(::Rotate(scaledDelta, -parentGeometricData.angle));
-    Vector2 originalPos(positionProperty->GetValue().AsVector2());
+    Vector2 originalPos(positionProperty->GetValue().Cast<Vector2>());
     Vector2 finalPosition(originalPos + rotatedDeltaPosition);
 
     TArc::DataContext* activeContext = accessor->GetActiveContext();
@@ -874,9 +912,9 @@ void EditorTransformSystem::MovePivot(Vector2 delta)
     std::unique_ptr<ChangePivotCommand> command = data->CreateCommand<ChangePivotCommand>();
     command->AddNodePropertyValue(activeControlNode,
                                   pivotProperty,
-                                  VariantType(pivot),
+                                  Any(pivot),
                                   positionProperty,
-                                  VariantType(finalPosition));
+                                  Any(finalPosition));
     data->ExecCommand(std::move(command));
 }
 
@@ -910,7 +948,7 @@ Vector2 EditorTransformSystem::AdjustPivotToNearestArea(Vector2& delta)
 
     const Vector2 range(pivotMagnetRange / controlSize); //range in pivot coordinates
 
-    Vector2 origPivot = pivotProperty->GetValue().AsVector2();
+    Vector2 origPivot = pivotProperty->GetValue().Cast<Vector2>();
     Vector2 finalPivot(origPivot + deltaPivot + extraDelta);
 
     bool found = false;
@@ -982,7 +1020,7 @@ bool EditorTransformSystem::RotateControl(const Vector2& pos)
 
     deltaAngle += extraDelta.dx;
     extraDelta.SetZero();
-    float32 originalAngle = angleProperty->GetValue().AsFloat();
+    float32 originalAngle = angleProperty->GetValue().Cast<float32>();
 
     float32 finalAngle = AdjustRotateToFixedAngle(deltaAngle, originalAngle);
 
@@ -990,7 +1028,7 @@ bool EditorTransformSystem::RotateControl(const Vector2& pos)
     DVASSERT(activeContext != nullptr);
     DocumentData* data = activeContext->GetData<DocumentData>();
     std::unique_ptr<ChangePropertyValueCommand> command = data->CreateCommand<ChangePropertyValueCommand>();
-    command->AddNodePropertyValue(activeControlNode, angleProperty, VariantType(finalAngle));
+    command->AddNodePropertyValue(activeControlNode, angleProperty, Any(finalAngle));
     data->ExecCommand(std::move(command));
 
     previousMousePos = pos;
@@ -1066,7 +1104,7 @@ void EditorTransformSystem::CorrectNodesToMove()
     {
         ControlNode* node = moveInfo->node;
         UIControl* control = node->GetControl();
-        moveInfo->positionProperty = node->GetRootProperty()->FindPropertyByName("Position");
+        moveInfo->positionProperty = node->GetRootProperty()->FindPropertyByName("position");
         UIControl* parent = control->GetParent();
         DVASSERT(nullptr != parent);
         moveInfo->parentGD = &parent->GetGeometricData();
@@ -1105,7 +1143,7 @@ void EditorTransformSystem::UpdateNeighboursToMove()
 
 void EditorTransformSystem::ClampAngle()
 {
-    float32 angle = angleProperty->GetValue().AsFloat();
+    float32 angle = angleProperty->GetValue().Cast<float32>();
     if (fabs(angle) > 360)
     {
         angle += angle > 0.0f ? EditorTransformSystemDetail::TRANSFORM_EPSILON : -EditorTransformSystemDetail::TRANSFORM_EPSILON;
@@ -1116,7 +1154,7 @@ void EditorTransformSystem::ClampAngle()
     DVASSERT(activeContext != nullptr);
     DocumentData* data = activeContext->GetData<DocumentData>();
     std::unique_ptr<ChangePropertyValueCommand> command = data->CreateCommand<ChangePropertyValueCommand>();
-    command->AddNodePropertyValue(activeControlNode, angleProperty, VariantType(angle));
+    command->AddNodePropertyValue(activeControlNode, angleProperty, Any(angle));
     data->ExecCommand(std::move(command));
 }
 

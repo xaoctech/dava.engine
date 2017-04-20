@@ -2,12 +2,25 @@
 #include "UI/UIControlSystem.h"
 #include "Render/RenderHelper.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
-#include "Time/SystemTimer.h"
+<<<<<<< HEAD
+== == == =
+#include "Render/RHI/Common/PreProcess.h"
+#include "Reflection/ReflectionRegistrator.h"
+>>>>>>> development
+         #include "Time/SystemTimer.h"
 
 namespace DAVA
 {
 List<UIScreen*> UIScreen::appScreens;
 int32 UIScreen::groupIdCounter = -1;
+
+DAVA_VIRTUAL_REFLECTION_IMPL(UIScreen)
+{
+    ReflectionRegistrator<UIScreen>::Begin()
+    .ConstructorByPointer()
+    .DestructorByPointer([](UIScreen* o) { o->Release(); })
+    .End();
+}
 
 UIScreen::UIScreen(const Rect& rect)
     : UIControl(rect)

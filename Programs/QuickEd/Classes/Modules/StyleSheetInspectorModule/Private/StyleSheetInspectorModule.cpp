@@ -5,8 +5,6 @@
 #include <TArc/WindowSubSystem/UI.h>
 #include <TArc/Utils/ModuleCollection.h>
 
-#include <QListWidget>
-
 DAVA_VIRTUAL_REFLECTION_IMPL(StyleSheetInspectorModule)
 {
     DAVA::ReflectionRegistrator<StyleSheetInspectorModule>::Begin()
@@ -26,7 +24,7 @@ void StyleSheetInspectorModule::PostInit()
 
     ContextAccessor* accessor = GetAccessor();
     StyleSheetInspectorWidget* widget = new StyleSheetInspectorWidget(accessor);
-    GetUI()->AddView(QEGlobal::windowKey, panelKey, widget);
+    GetUI()->AddView(DAVA::TArc::mainWindowKey, panelKey, widget);
 }
 
 DECL_GUI_MODULE(StyleSheetInspectorModule);

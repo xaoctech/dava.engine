@@ -17,13 +17,7 @@ public:
     void SetLanguages(const QStringList& availableLangsCodes, const QString& currentLangCode);
     void SetCurrentLanguage(const QString& currentLang);
 
-    void SetResourceDirectory(const QString& path);
-    void SelectFile(const QString& filePath);
-    void FindControls(std::unique_ptr<FindFilter>&& filter);
-
     void SetProjectActionsEnabled(bool enable);
-
-    DocumentGroupView* GetDocumentGroupView();
 
     MainWindow* mainWindow = nullptr;
 
@@ -36,9 +30,6 @@ signals:
     void JumpToPrototype();
     void FindPrototypeInstances();
     void ProjectChanged(Project* project);
-
-    void JumpToControl(const DAVA::FilePath& packagePath, const DAVA::String& controlName);
-    void JumpToPackage(const DAVA::FilePath& packagePath);
 
 public slots:
     void OnProjectChanged(Project* project);

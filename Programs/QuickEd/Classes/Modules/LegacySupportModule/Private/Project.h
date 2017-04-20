@@ -54,7 +54,6 @@ public:
     void SetCurrentLanguage(const QString& newLanguageCode);
 
     const QStringList& GetDefaultPresetNames() const;
-    const FileSystemCache* GetFileSystemCache() const;
 
     EditorFontSystem* GetEditorFontSystem() const;
 
@@ -70,7 +69,6 @@ private:
 
     QString projectDirectory;
     QString projectName;
-    QString uiResourcesPath;
 
     MainWindow::ProjectView* view = nullptr;
     std::unique_ptr<EditorFontSystem> editorFontSystem;

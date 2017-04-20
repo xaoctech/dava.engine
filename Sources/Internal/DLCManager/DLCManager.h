@@ -22,6 +22,7 @@ namespace DAVA
  FilePath folderWithDownloadedPacks = "~doc:/FolderForPacks/";
  String urlToServerSuperpack = "http://server.net/superpack.3.7.0.mali.dvpk";
  DLCManager::Hints hints;
+ hints.logFilePath = "~doc:/UberGame/dlc_manager.log";
  hints.retryConnectMilliseconds = 1000; // retry connect every second
  hints.maxFilesToDownload = 22456; // help download manager to reserve memory better
 
@@ -49,8 +50,6 @@ public:
 
         /** return requested pack name */
         virtual const String& GetRequestedPackName() const = 0;
-        /** recalculate full size with all dependencies */
-        virtual Vector<String> GetDependencies() const = 0;
         /** return size of files within this request without dependencies */
         virtual uint64 GetSize() const = 0;
         /** recalculate current downloaded size without dependencies */
@@ -90,8 +89,12 @@ public:
 	*/
     struct Hints
     {
+        const char* logFilePath = "~doc:/dlc_manager.log"; //!< path for separate log file
         uint32 retryConnectMilliseconds = 5000; //!< try to reconnect to server if `Offline` state default every 5 seconds
         uint32 maxFilesToDownload = 22000; //!< user should fill this value default value average files count in Data
+        uint32 numOfThreadsPerFileDownload = 1; //!< this value passed to DownloadManager
+        uint32 timeoutForDownload = 30; //!< this value passed to DownloadManager
+        uint32 retriesCountForDownload = 3; //!< this value passed to DownloadManager
     };
 
     /** Start complex initialization process. You can call it again if need.
@@ -119,6 +122,8 @@ public:
     /** return nullptr if can't find pack */
     virtual const IRequest* RequestPack(const String& packName) = 0;
 
+    virtual bool IsPackInQueue(const String& packName);
+
     /** Update request queue to first download dependency of selected request
         and then request itself */
     virtual void SetRequestPriority(const IRequest* request) = 0;
@@ -136,5 +141,11 @@ public:
     /** Calculate statistic about downloading progress */
     virtual Progress GetProgress() const = 0;
 };
+
+// HACK to compile current Blitz client
+inline bool DLCManager::IsPackInQueue(const String& packName)
+{
+    return false;
+}
 
 } // end namespace DAVA
