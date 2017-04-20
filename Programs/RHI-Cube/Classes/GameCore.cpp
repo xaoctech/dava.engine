@@ -730,7 +730,7 @@ _TestFile( const char* input_name, const char* output_name )
 
 void GameCore::OnAppStarted()
 {
-<<<<<<< HEAD
+    /*
 ExpressionEvaluator ev;
 ev.set_variable( "bla", 13 );
 const char* expr[] = { "2+2", "bla+7", "(5+3) / (3-1)", "3 + ((1+7)/2) + 1" };
@@ -745,10 +745,8 @@ exit(0);
 
     _TestFile( "input-0.txt", "output-0.txt" );
     exit(0);
-
-=======
+*/
     /*
->>>>>>> DF-12143--mrt
     //    const char * src = "../../Tools/ResourceEditor/Data/Materials/Shaders/Default/materials-vp.sl";
     const char* src = "../../Tools/ResourceEditor/Data/Materials/Shaders/Default/water-fp.sl";
     //    const char * src = "../../Tools/ResourceEditor/Data/Materials/Shaders/ShadowVolume/shadowvolume-vp.sl";
