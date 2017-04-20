@@ -50,8 +50,8 @@ private:
 
     static const uint32 BUTTON_COUNT = static_cast<uint32>(eInputElements::GAMEPAD_LAST_BUTTON - eInputElements::GAMEPAD_FIRST_BUTTON + 1);
     static const uint32 AXIS_COUNT = static_cast<uint32>(eInputElements::GAMEPAD_LAST_AXIS - eInputElements::GAMEPAD_FIRST_AXIS + 1);
-    eDigitalElementStates buttons[BUTTON_COUNT];
-    AnalogElementState axes[AXIS_COUNT];
+    Array<eDigitalElementStates, BUTTON_COUNT> buttons;
+    Array<AnalogElementState, AXIS_COUNT> axes;
 
     std::bitset<BUTTON_COUNT> buttonChangedMask;
     std::bitset<AXIS_COUNT> axisChangedMask;

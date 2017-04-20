@@ -40,7 +40,7 @@ private:
 private:
     InputSystem* inputSystem = nullptr;
 
-    eDigitalElementStates buttons[eInputElements::MOUSE_LAST_BUTTON - eInputElements::MOUSE_FIRST_BUTTON + 1];
+    Array<eDigitalElementStates, INPUT_ELEMENTS_MOUSE_BUTTON_COUNT> buttons;
     AnalogElementState mousePosition;
     AnalogElementState mouseWheelDelta;
 };

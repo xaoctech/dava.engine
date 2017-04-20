@@ -107,7 +107,7 @@ bool ActionSystemImpl::CheckDigitalStates(const Array<DigitalElementState, MAX_D
             const InputDevice* device = GetEngineContext()->deviceManager->GetInputDevice(deviceId);
             if (device != nullptr)
             {
-                if (device->SupportsElement(requiredState.elementId))
+                if (device->IsElementSupported(requiredState.elementId))
                 {
                     const eDigitalElementStates state = device->GetDigitalElementState(requiredState.elementId);
 

@@ -16,11 +16,6 @@ TouchDevice::TouchDevice(uint32 id)
 {
     Engine::Instance()->endFrame.Connect(this, &TouchDevice::OnEndFrame);
     Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &TouchDevice::HandleMainDispatcherEvent));
-
-    for (eDigitalElementStates& e : clicks)
-    {
-        e = eDigitalElementStates::RELEASED;
-    }
 }
 
 TouchDevice::~TouchDevice()

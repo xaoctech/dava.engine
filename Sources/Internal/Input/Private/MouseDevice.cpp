@@ -12,6 +12,7 @@ namespace DAVA
 MouseDevice::MouseDevice(uint32 id)
     : InputDevice(id)
     , inputSystem(GetEngineContext()->inputSystem)
+    , buttons{}
     , mousePosition{}
     , mouseWheelDelta{}
 {

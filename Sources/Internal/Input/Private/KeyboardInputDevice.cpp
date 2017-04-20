@@ -26,6 +26,7 @@ KeyboardInputDevice::KeyboardInputDevice(uint32 id)
     : InputDevice(id)
     , inputSystem(GetEngineContext()->inputSystem)
     , impl(new Private::KeyboardDeviceImpl())
+    , keys{}
 {
     Engine* engine = Engine::Instance();
     engine->endFrame.Connect(this, &KeyboardInputDevice::OnEndFrame);

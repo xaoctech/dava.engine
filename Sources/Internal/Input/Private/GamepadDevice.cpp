@@ -29,10 +29,9 @@ GamepadDevice::GamepadDevice(uint32 id)
     : InputDevice(id)
     , inputSystem(GetEngineContext()->inputSystem)
     , impl(new Private::GamepadDeviceImpl(this))
+    , buttons{}
+    , axes{}
 {
-    std::fill(std::begin(buttons), std::end(buttons), eDigitalElementStates::NONE);
-    std::fill(std::begin(axes), std::end(axes), AnalogElementState());
-
     endFrameConnectionToken = Engine::Instance()->endFrame.Connect(this, &GamepadDevice::OnEndFrame);
 }
 
