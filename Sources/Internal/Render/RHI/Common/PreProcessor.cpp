@@ -434,6 +434,55 @@ PreProc::_process_buffer(char* text, std::vector<Line>* line)
                         ln = t + 1;
                     }
                 }
+                else if (!skipping_line && strncmp(s + 1, "ensuredefined", 13) == 0)
+                {
+                    char* t = s + 1 + 13;
+                    char* n0 = nullptr;
+                    char* n1 = nullptr;
+                    char* v0 = nullptr;
+                    char* v1 = nullptr;
+                    char name[256];
+                    char val[256];
+
+                    while (*t == ' ' || *t == '\t')
+                        ++t;
+                    DVASSERT(*t);
+                    n0 = t;
+                    while (*t != ' ' && *t != '\t')
+                        ++t;
+                    DVASSERT(*t);
+                    n1 = t - 1;
+
+                    while (*t == ' ' || *t == '\t')
+                        ++t;
+                    DVASSERT(*t);
+                    v0 = t;
+                    while (*t != ' ' && *t != '\t' && *t != '\n' && *t != '\r')
+                        ++t;
+                    DVASSERT(*t);
+                    v1 = t - 1;
+
+                    strncpy(name, n0, n1 - n0 + 1);
+                    name[n1 - n0 + 1] = 0;
+
+                    strncpy(val, v0, v1 - v0 + 1);
+                    val[v1 - v0 + 1] = 0;
+
+                    if (!_eval.has_variable(name))
+                        _eval.set_variable(name, float(atof(val)));
+
+                    while (*t && *t != '\n')
+                        ++t;
+                    if (*t == 0)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        s = t;
+                        ln = t + 1;
+                    }
+                }
                 else if (strncmp(s + 1, "ifdef", 5) == 0)
                 {
                     char* name = _get_identifier(s + 1 + 5, &s);
@@ -536,6 +585,10 @@ PreProc::_process_buffer(char* text, std::vector<Line>* line)
                     }
                     else
                         ln = s + 1;
+                }
+                else
+                {
+                    DAVA::Logger::Warning("ignoring unknown pre-processor directive \"%s\"", s + 1);
                 }
 
                 dcheck_pending = true;
