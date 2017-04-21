@@ -1,4 +1,4 @@
-#include "NetLogger.h"
+#include "LoggerService/NetLogger.h"
 #include <Utils/UTF8Utils.h>
 #include <Concurrency/LockGuard.h>
 #include <Network/Base/Endpoint.h>

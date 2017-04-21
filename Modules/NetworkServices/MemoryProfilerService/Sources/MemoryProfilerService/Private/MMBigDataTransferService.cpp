@@ -1,5 +1,5 @@
-#include "MMBigDataTransferService.h"
-#include "MMNetProto.h"
+#include "MemoryProfilerService/MMBigDataTransferService.h"
+#include "MemoryProfilerService/MMNetProto.h"
 
 #include <Functional/Function.h>
 

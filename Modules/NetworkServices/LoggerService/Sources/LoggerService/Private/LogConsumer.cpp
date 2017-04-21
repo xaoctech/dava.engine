@@ -1,4 +1,4 @@
-#include "LogConsumer.h"
+#include "LoggerService/LogConsumer.h"
 #include <Utils/StringFormat.h>
 #include <Network/Base/Endpoint.h>
 

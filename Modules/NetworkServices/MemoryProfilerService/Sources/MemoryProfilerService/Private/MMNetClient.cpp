@@ -1,5 +1,5 @@
-#include "MMNetClient.h"
-#include "MMBigDataTransferService.h"
+#include "MemoryProfilerService/MMNetClient.h"
+#include "MemoryProfilerService/MMBigDataTransferService.h"
 
 #include <Functional/Function.h>
 
