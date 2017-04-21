@@ -23,7 +23,6 @@ public:
     struct DecalConfig
     {
         AABBox3 boundingBox;
-        Matrix4 worldTransform;
         Mapping mapping = Mapping::PLANAR;
         FilePath image;
 
@@ -40,7 +39,7 @@ public:
 public:
     GeoDecalManager(RenderSystem* renderSystem);
 
-    Decal BuildDecal(const DecalConfig& config, RenderObject* object);
+    Decal BuildDecal(const DecalConfig& config, const Matrix4& decalWorldTransform, RenderObject* object);
     void DeleteDecal(Decal decal);
 
 private:

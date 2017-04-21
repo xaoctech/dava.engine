@@ -39,7 +39,7 @@ GeoDecalManager::GeoDecalManager(RenderSystem* rs)
     defaultNormalMap = Texture::CreateFromData(PixelFormat::FORMAT_RGBA8888, reinterpret_cast<uint8*>(normalmapData), 4, 4, false);
 }
 
-GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, RenderObject* ro)
+GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, const Matrix4& decalWorldTransform, RenderObject* ro)
 {
     ++decalCounter;
 
@@ -48,14 +48,14 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, Re
     // todo : use something better for decal id
 
     AABBox3 worldSpaceBox;
-    config.boundingBox.GetTransformedBox(config.worldTransform, worldSpaceBox);
+    config.boundingBox.GetTransformedBox(decalWorldTransform, worldSpaceBox);
 
     Vector3 boxCorners[8];
     config.boundingBox.GetCorners(boxCorners);
 
-    Vector3 dir = MultiplyVectorMat3x3(Vector3(0.0f, 0.0f, -1.0f), config.worldTransform);
-    Vector3 up = MultiplyVectorMat3x3(Vector3(0.0f, -1.0f, 0.0f), config.worldTransform);
-    Vector3 side = MultiplyVectorMat3x3(Vector3(1.0f, 0.0f, 0.0f), config.worldTransform);
+    Vector3 dir = MultiplyVectorMat3x3(Vector3(0.0f, 0.0f, -1.0f), decalWorldTransform);
+    Vector3 up = MultiplyVectorMat3x3(Vector3(0.0f, -1.0f, 0.0f), decalWorldTransform);
+    Vector3 side = MultiplyVectorMat3x3(Vector3(1.0f, 0.0f, 0.0f), decalWorldTransform);
 
     dir = MultiplyVectorMat3x3(dir, ro->GetInverseWorldTransform());
     up = MultiplyVectorMat3x3(up, ro->GetInverseWorldTransform());
@@ -76,7 +76,7 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, Re
     Vector3 boxMax = Vector3(-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
     for (uint32 i = 0; i < 8; ++i)
     {
-        Vector3 worldPos = boxCorners[i] * config.worldTransform;
+        Vector3 worldPos = boxCorners[i] * decalWorldTransform;
         Vector3 objectPos = worldPos * ro->GetInverseWorldTransform();
         Vector3 t = MultiplyVectorMat3x3(objectPos, view);
         boxMin.x = std::min(boxMin.x, t.x);
@@ -101,6 +101,10 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, Re
     {
         builtDecal.sourceObject = ro;
         builtDecal.renderObject.ConstructInplace();
+        builtDecal.renderObject->SetWorldTransformPtr(ro->GetWorldTransformPtr());
+        builtDecal.renderObject->SetInverseTransform(ro->GetInverseWorldTransform());
+        builtDecal.renderObject->SetLodIndex(ro->GetLodIndex());
+        builtDecal.renderObject->SetSwitchIndex(ro->GetSwitchIndex());
         for (uint32 i = 0, e = ro->GetRenderBatchCount(); i < e; ++i)
         {
             int32 lodIndex = -1;

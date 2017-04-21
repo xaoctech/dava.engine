@@ -97,18 +97,18 @@ void GeoDecalSystem::RemoveCreatedDecals(Entity* entity, GeoDecalComponent* comp
     }
 }
 
-void GeoDecalSystem::BuildDecal(Entity* entity, GeoDecalComponent* component)
+void GeoDecalSystem::BuildDecal(Entity* entityWithDecal, GeoDecalComponent* component)
 {
     AABBox3 worldSpaceBox;
-    component->GetBoundingBox().GetTransformedBox(entity->GetWorldTransform(), worldSpaceBox);
+    component->GetBoundingBox().GetTransformedBox(entityWithDecal->GetWorldTransform(), worldSpaceBox);
 
     Vector<RenderableEntity> entities;
-    GatherRenderableEntitiesInBox(entity->GetParent(), worldSpaceBox, entities);
+    GatherRenderableEntitiesInBox(entityWithDecal->GetParent(), worldSpaceBox, entities);
 
     GeoDecalManager* manager = GetScene()->GetRenderSystem()->GetGeoDecalManager();
     for (const RenderableEntity& e : entities)
     {
-        GeoDecalManager::Decal decal = manager->BuildDecal(component->GetConfig(), e.renderObject);
+        GeoDecalManager::Decal decal = manager->BuildDecal(component->GetConfig(), entityWithDecal->GetWorldTransform(), e.renderObject);
         decals[component].decals.emplace_back(decal);
     }
 }
