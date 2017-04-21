@@ -613,15 +613,10 @@ vertex_out vp_main( vertex_in input )
             #endif
 
             #if SPHERICAL_HARMONICS_9
-//                sphericalLightFactor += Y2_2(n) * float3(sphericalHarmonics[3].xyz);
                 sphericalLightFactor += (0.273136 * (n.y * n.x)) * float3(sphericalHarmonics[3].xyz);                
-//                sphericalLightFactor += Y2_1(n) * float3(sphericalHarmonics[3].w,  sphericalHarmonics[4].xy);
                 sphericalLightFactor += (0.273136 * (n.y * n.z)) * float3(sphericalHarmonics[3].w,  sphericalHarmonics[4].xy);                
-//                sphericalLightFactor += Y20(n)  * float3(sphericalHarmonics[4].zw, sphericalHarmonics[5].x);
                 sphericalLightFactor += (0.078847 * (3.0 * n.z * n.z - 1.0)) * float3(sphericalHarmonics[4].zw, sphericalHarmonics[5].x);
-//                sphericalLightFactor += Y21(n)  * float3(sphericalHarmonics[5].yzw);
                 sphericalLightFactor += (0.273136 * (n.z * n.x))  * float3(sphericalHarmonics[5].yzw);
-//                sphericalLightFactor += Y22(n)  * float3(sphericalHarmonics[6].xyz);
                 sphericalLightFactor += (0.136568 * (n.x * n.x - n.y * n.y)) * float3(sphericalHarmonics[6].xyz);
             #endif
 
@@ -635,15 +630,6 @@ vertex_out vp_main( vertex_in input )
 
     output.varVertexColor.xyz = half3(sphericalLightFactor * 2.0);
     output.varVertexColor.w = half(1.0);    
-
-//    #undef A0     
-//    #undef A1     
-
-//    #undef Y2_2
-//    #undef Y2_1
-//    #undef Y20 
-//    #undef Y21 
-//    #undef Y22 
 
 #elif SPEED_TREE_LEAF //legacy for old tree lighting
     
