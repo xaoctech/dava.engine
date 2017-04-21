@@ -55,7 +55,8 @@ DAVA_TESTCLASS (PreprocessorTest)
             bool success = ev.evaluate(data[i].expr, &res);
 
             TEST_VERIFY(success);
-            TEST_VERIFY(abs(res - data[i].result) < 0.000001f)
+            //            TEST_VERIFY(abs(res - data[i].result) < 0.000001f)
+            TEST_VERIFY(FLOAT_EQUAL(res, data[i].result))
         }
     }
 
