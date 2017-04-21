@@ -1,15 +1,15 @@
-#include "Input/KeyboardInputDevice.h"
+#include "Input/Keyboard.h"
 
 #if defined(__DAVAENGINE_WIN32__)
-#include "Input/Private/Win32/KeyboardDeviceImplWin32.h"
+#include "Input/Private/Win32/KeyboardImplWin32.h"
 #elif defined(__DAVAENGINE_WIN_UAP__)
-#include "Input/Private/Win10/KeyboardDeviceImplWin10.h"
+#include "Input/Private/Win10/KeyboardImplWin10.h"
 #elif defined(__DAVAENGINE_MACOS__)
-#include "Input/Private/Mac/KeyboardDeviceImplMac.h"
+#include "Input/Private/Mac/KeyboardImplMac.h"
 #elif defined(__DAVAENGINE_ANDROID__)
-#include "Input/Private/Android/KeyboardDeviceImplAndroid.h"
+#include "Input/Private/Android/KeyboardImplAndroid.h"
 #elif defined(__DAVAENGINE_IPHONE__)
-#include "Input/Private/Ios/KeyboardDeviceImplIos.h"
+#include "Input/Private/Ios/KeyboardImplIos.h"
 #else
 #error "KeyboardDevice: unknown platform"
 #endif
@@ -22,58 +22,52 @@
 
 namespace DAVA
 {
-KeyboardInputDevice::KeyboardInputDevice(uint32 id)
+Keyboard::Keyboard(uint32 id)
     : InputDevice(id)
     , inputSystem(GetEngineContext()->inputSystem)
-    , impl(new Private::KeyboardDeviceImpl())
+    , impl(new Private::KeyboardImpl())
     , keys{}
 {
     Engine* engine = Engine::Instance();
-    engine->endFrame.Connect(this, &KeyboardInputDevice::OnEndFrame);
-    engine->PrimaryWindow()->focusChanged.Connect(this, &KeyboardInputDevice::OnWindowFocusChanged); // TODO: handle all the windows
+    engine->endFrame.Connect(this, &Keyboard::OnEndFrame);
+    engine->PrimaryWindow()->focusChanged.Connect(this, &Keyboard::OnWindowFocusChanged); // TODO: handle all the windows
 
-    Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &KeyboardInputDevice::HandleMainDispatcherEvent));
+    Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &Keyboard::HandleMainDispatcherEvent));
 }
 
-KeyboardInputDevice::~KeyboardInputDevice()
+Keyboard::~Keyboard()
 {
     Engine* engine = Engine::Instance();
     engine->endFrame.Disconnect(this);
     engine->PrimaryWindow()->focusChanged.Disconnect(this);
 
     Private::EngineBackend::Instance()->UninstallEventFilter(this);
-
-    if (impl != nullptr)
-    {
-        delete impl;
-        impl = nullptr;
-    }
 }
 
-bool KeyboardInputDevice::IsElementSupported(eInputElements elementId) const
+bool Keyboard::IsElementSupported(eInputElements elementId) const
 {
     return IsKeyboardInputElement(elementId);
 }
 
-eDigitalElementStates KeyboardInputDevice::GetDigitalElementState(eInputElements elementId) const
+eDigitalElementStates Keyboard::GetDigitalElementState(eInputElements elementId) const
 {
     DVASSERT(IsElementSupported(elementId));
     return keys[elementId - eInputElements::KB_FIRST];
 }
 
-AnalogElementState KeyboardInputDevice::GetAnalogElementState(eInputElements elementId) const
+AnalogElementState Keyboard::GetAnalogElementState(eInputElements elementId) const
 {
     DVASSERT(false, "KeyboardInputDevice does not support analog elements");
     return {};
 }
 
-WideString KeyboardInputDevice::TranslateElementToWideString(eInputElements elementId) const
+WideString Keyboard::TranslateElementToWideString(eInputElements elementId) const
 {
     DVASSERT(IsElementSupported(elementId));
     return impl->TranslateElementToWideString(elementId);
 }
 
-void KeyboardInputDevice::OnEndFrame()
+void Keyboard::OnEndFrame()
 {
     // Promote JustPressed & JustReleased states to Pressed/Released accordingly
     for (DIElementWrapper key : keys)
@@ -82,7 +76,7 @@ void KeyboardInputDevice::OnEndFrame()
     }
 }
 
-void KeyboardInputDevice::OnWindowFocusChanged(DAVA::Window* window, bool focused)
+void Keyboard::OnWindowFocusChanged(DAVA::Window* window, bool focused)
 {
     // Reset keyboard state when window is unfocused
     if (!focused)
@@ -103,7 +97,7 @@ void KeyboardInputDevice::OnWindowFocusChanged(DAVA::Window* window, bool focuse
     }
 }
 
-bool KeyboardInputDevice::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e)
+bool Keyboard::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e)
 {
     using Private::MainDispatcherEvent;
 
@@ -138,7 +132,7 @@ bool KeyboardInputDevice::HandleMainDispatcherEvent(const Private::MainDispatche
     return false;
 }
 
-void KeyboardInputDevice::CreateAndSendInputEvent(eInputElements elementId, eDigitalElementStates element, Window* window, int64 timestamp) const
+void Keyboard::CreateAndSendInputEvent(eInputElements elementId, eDigitalElementStates element, Window* window, int64 timestamp) const
 {
     InputEvent inputEvent;
     inputEvent.window = window;

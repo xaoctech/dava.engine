@@ -7,14 +7,14 @@
 
 namespace DAVA
 {
-class GamepadDevice;
+class Gamepad;
 namespace Private
 {
 struct MainDispatcherEvent;
-class GamepadDeviceImpl final
+class GamepadImpl final
 {
 public:
-    GamepadDeviceImpl(GamepadDevice* gamepad);
+    GamepadImpl(Gamepad* gamepad);
 
     void Update();
 
@@ -30,7 +30,7 @@ public:
 
     void DetermineSupportedElements();
 
-    GamepadDevice* gamepadDevice = nullptr;
+    Gamepad* gamepadDevice = nullptr;
     ::Windows::Gaming::Input::Gamepad ^ gamepad = nullptr;
 };
 

@@ -1,20 +1,20 @@
-#include "Input/Private/Win10/GamepadDeviceImplWin10.h"
+#include "Input/Private/Win10/GamepadImplWin10.h"
 
 #if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_WIN_UAP__)
 
-#include "Input/GamepadDevice.h"
+#include "Input/Gamepad.h"
 
 namespace DAVA
 {
 namespace Private
 {
-GamepadDeviceImpl::GamepadDeviceImpl(GamepadDevice* gamepadDevice)
+GamepadImpl::GamepadImpl(Gamepad* gamepadDevice)
     : gamepadDevice(gamepadDevice)
 {
 }
 
-void GamepadDeviceImpl::Update()
+void GamepadImpl::Update()
 {
     using ::Windows::Gaming::Input::GamepadReading;
     using ::Windows::Gaming::Input::GamepadButtons;
@@ -44,7 +44,7 @@ void GamepadDeviceImpl::Update()
     gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_AXIS_RTRIGGER, static_cast<float32>(reading.RightTrigger), true);
 }
 
-bool GamepadDeviceImpl::HandleGamepadAdded(uint32 /*id*/)
+bool GamepadImpl::HandleGamepadAdded(uint32 /*id*/)
 {
     // Only one connected gamepad is supported by dava.engine for now.
     // So choose first gamepad from gamepad list.
@@ -64,7 +64,7 @@ bool GamepadDeviceImpl::HandleGamepadAdded(uint32 /*id*/)
     return gamepad != nullptr;
 }
 
-bool GamepadDeviceImpl::HandleGamepadRemoved(uint32 /*id*/)
+bool GamepadImpl::HandleGamepadRemoved(uint32 /*id*/)
 {
     // Only one connected gamepad is supported by dava.engine for now.
     // So check whether currently using gamepad is removed
@@ -89,7 +89,7 @@ bool GamepadDeviceImpl::HandleGamepadRemoved(uint32 /*id*/)
     return gamepad != nullptr;
 }
 
-void GamepadDeviceImpl::DetermineSupportedElements()
+void GamepadImpl::DetermineSupportedElements()
 {
     // Assume that all elements supported
     gamepadDevice->supportedElements.set();

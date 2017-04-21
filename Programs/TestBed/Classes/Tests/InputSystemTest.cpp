@@ -4,7 +4,7 @@
 #include <Engine/Engine.h>
 #include <DeviceManager/DeviceManager.h>
 #include <Input/InputListener.h>
-#include <Input/KeyboardInputDevice.h>
+#include <Input/Keyboard.h>
 #include <Utils/UTF8Utils.h>
 
 using namespace DAVA;
@@ -728,7 +728,7 @@ void InputSystemTest::OnInputListeningEnded(bool cancelled, DAVA::Vector<DAVA::I
 
 void InputSystemTest::OnUpdate(float32 delta)
 {
-    TouchDevice* touch = GetEngineContext()->deviceManager->GetTouch();
+    TouchScreen* touch = GetEngineContext()->deviceManager->GetTouchScreen();
 
     if (touch != nullptr)
     {

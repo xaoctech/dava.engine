@@ -1,4 +1,4 @@
-#include "Input/Private/Mac/KeyboardDeviceImplMac.h"
+#include "Input/Private/Mac/KeyboardImplMac.h"
 
 #if defined(__DAVAENGINE_MACOS__)
 
@@ -146,13 +146,13 @@ const eInputElements nativeScancodeToDavaScancode[] =
   eInputElements::KB_UP, // 0x7E
 };
 
-eInputElements KeyboardDeviceImpl::ConvertNativeScancodeToDavaScancode(uint32 nativeScancode)
+eInputElements KeyboardImpl::ConvertNativeScancodeToDavaScancode(uint32 nativeScancode)
 {
     DVASSERT(nativeScancode < COUNT_OF(nativeScancodeToDavaScancode));
     return nativeScancodeToDavaScancode[nativeScancode];
 }
 
-WideString KeyboardDeviceImpl::TranslateElementToWideString(eInputElements elementId)
+WideString KeyboardImpl::TranslateElementToWideString(eInputElements elementId)
 {
     for (size_t i = 0; i < COUNT_OF(nativeScancodeToDavaScancode); ++i)
     {

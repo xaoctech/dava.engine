@@ -1,4 +1,4 @@
-#include "Input/Private/Win32/GamepadDeviceImplWin32.h"
+#include "Input/Private/Win32/GamepadImplWin32.h"
 
 #if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_WIN32__)
@@ -7,21 +7,21 @@ namespace DAVA
 {
 namespace Private
 {
-GamepadDeviceImpl::GamepadDeviceImpl(GamepadDevice* gamepadDevice)
+GamepadImpl::GamepadImpl(Gamepad* gamepadDevice)
     : gamepadDevice(gamepadDevice)
 {
 }
 
-void GamepadDeviceImpl::Update()
+void GamepadImpl::Update()
 {
 }
 
-bool GamepadDeviceImpl::HandleGamepadAdded(uint32 /*id*/)
+bool GamepadImpl::HandleGamepadAdded(uint32 /*id*/)
 {
     return false;
 }
 
-bool GamepadDeviceImpl::HandleGamepadRemoved(uint32 /*id*/)
+bool GamepadImpl::HandleGamepadRemoved(uint32 /*id*/)
 {
     return false;
 }

@@ -20,7 +20,7 @@ struct MainDispatcherEvent;
         - Click elements (`TOUCH_CLICK0`, `TOUCH_CLICK1` etc.) represent digital part (pressed or released states)
         - Position elements (`TOUCH_POSITION0`, `TOUCH_POSITION1` etc.) represent analog part (position on a screen)
 */
-class TouchDevice final : public InputDevice
+class TouchScreen final : public InputDevice
 {
     friend class DeviceManager; // For creation
 
@@ -31,10 +31,10 @@ public:
     AnalogElementState GetAnalogElementState(eInputElements elementId) const override;
 
 private:
-    TouchDevice(uint32 id);
-    ~TouchDevice();
-    TouchDevice(const TouchDevice&) = delete;
-    TouchDevice& operator=(const TouchDevice&) = delete;
+    TouchScreen(uint32 id);
+    ~TouchScreen();
+    TouchScreen(const TouchScreen&) = delete;
+    TouchScreen& operator=(const TouchScreen&) = delete;
 
     bool HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e);
     void OnEndFrame();

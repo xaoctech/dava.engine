@@ -31,9 +31,9 @@
 #include "Engine/Engine.h"
 #include "Input/InputEvent.h"
 #include "Input/InputSystem.h"
-#include "Input/KeyboardInputDevice.h"
-#include "Input/MouseDevice.h"
-#include "Input/TouchDevice.h"
+#include "Input/Keyboard.h"
+#include "Input/Mouse.h"
+#include "Input/TouchScreen.h"
 
 namespace DAVA
 {
@@ -897,7 +897,7 @@ UIEvent UIControlSystem::MakeUIEvent(const InputEvent& inputEvent) const
         uie.isRelative = inputEvent.mouseEvent.isRelative;
         uie.modifiers = GetKeyboardModifierKeys();
 
-        MouseDevice* mouse = GetEngineContext()->deviceManager->GetMouse();
+        Mouse* mouse = GetEngineContext()->deviceManager->GetMouse();
         AnalogElementState mousePosition = mouse->GetAnalogElementState(eInputElements::MOUSE_POSITION);
         AnalogElementState mouseWheelDelta = mouse->GetAnalogElementState(eInputElements::MOUSE_WHEEL);
 
@@ -939,7 +939,7 @@ UIEvent UIControlSystem::MakeUIEvent(const InputEvent& inputEvent) const
 
         if (isDigitalEvent)
         {
-            TouchDevice* touchDevice = GetEngineContext()->deviceManager->GetTouch();
+            TouchScreen* touchDevice = GetEngineContext()->deviceManager->GetTouchScreen();
             AnalogElementState analogState = touchDevice->GetAnalogElementState(GetTouchPositionElementFromClickElement(inputEvent.elementId));
 
             uie.phase = (inputEvent.digitalState & eDigitalElementStates::PRESSED) != eDigitalElementStates::NONE ? UIEvent::Phase::BEGAN : UIEvent::Phase::ENDED;
@@ -961,7 +961,7 @@ UIEvent UIControlSystem::MakeUIEvent(const InputEvent& inputEvent) const
 eModifierKeys UIControlSystem::GetKeyboardModifierKeys() const
 {
     eModifierKeys modifierKeys = eModifierKeys::NONE;
-    KeyboardInputDevice* keyboard = GetEngineContext()->deviceManager->GetKeyboard();
+    Keyboard* keyboard = GetEngineContext()->deviceManager->GetKeyboard();
     if (keyboard != nullptr)
     {
         eDigitalElementStates lctrl = keyboard->GetDigitalElementState(eInputElements::KB_LCTRL);

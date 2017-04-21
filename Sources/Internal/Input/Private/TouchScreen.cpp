@@ -1,4 +1,4 @@
-#include "Input/TouchDevice.h"
+#include "Input/TouchScreen.h"
 
 #include "Engine/Engine.h"
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
@@ -7,43 +7,43 @@
 
 namespace DAVA
 {
-TouchDevice::TouchDevice(uint32 id)
+TouchScreen::TouchScreen(uint32 id)
     : InputDevice(id)
     , inputSystem(GetEngineContext()->inputSystem)
     , clicks{}
     , positions{}
     , nativeTouchIds{}
 {
-    Engine::Instance()->endFrame.Connect(this, &TouchDevice::OnEndFrame);
-    Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &TouchDevice::HandleMainDispatcherEvent));
+    Engine::Instance()->endFrame.Connect(this, &TouchScreen::OnEndFrame);
+    Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &TouchScreen::HandleMainDispatcherEvent));
 }
 
-TouchDevice::~TouchDevice()
+TouchScreen::~TouchScreen()
 {
     Engine::Instance()->endFrame.Disconnect(this);
     Private::EngineBackend::Instance()->UninstallEventFilter(this);
 }
 
-bool TouchDevice::IsElementSupported(eInputElements elementId) const
+bool TouchScreen::IsElementSupported(eInputElements elementId) const
 {
     // TODO: honestly check if we support an element with specified id
     // i.e. android can support different amount of touches, iOS supports only up to 5 touches
     return IsTouchInputElement(elementId);
 }
 
-eDigitalElementStates TouchDevice::GetDigitalElementState(eInputElements elementId) const
+eDigitalElementStates TouchScreen::GetDigitalElementState(eInputElements elementId) const
 {
     DVASSERT(IsTouchClickElement(elementId));
     return clicks[elementId - eInputElements::TOUCH_FIRST_CLICK];
 }
 
-AnalogElementState TouchDevice::GetAnalogElementState(eInputElements elementId) const
+AnalogElementState TouchScreen::GetAnalogElementState(eInputElements elementId) const
 {
     DVASSERT(IsTouchPositionElement(elementId));
     return positions[elementId - eInputElements::TOUCH_FIRST_POSITION];
 }
 
-bool TouchDevice::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e)
+bool TouchScreen::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e)
 {
     using Private::MainDispatcherEvent;
 
@@ -174,7 +174,7 @@ bool TouchDevice::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& 
     return true;
 }
 
-void TouchDevice::OnEndFrame()
+void TouchScreen::OnEndFrame()
 {
     // Promote JustPressed & JustReleased states to Pressed/Released accordingly
     for (DIElementWrapper d : clicks)
@@ -183,7 +183,7 @@ void TouchDevice::OnEndFrame()
     }
 }
 
-int TouchDevice::GetFirstNonUsedTouchIndex() const
+int TouchScreen::GetFirstNonUsedTouchIndex() const
 {
     for (int i = 0; i < INPUT_ELEMENTS_TOUCH_CLICK_COUNT; ++i)
     {

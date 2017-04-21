@@ -12,7 +12,7 @@
 #include "Autotesting/AutotestingSystem.h"
 #include "Input/InputSystem.h"
 #include "Input/InputEvent.h"
-#include "Input/KeyboardInputDevice.h"
+#include "Input/Keyboard.h"
 #include "Logger/Logger.h"
 #include "Time/SystemTimer.h"
 #include "Render/2D/TextBlock.h"

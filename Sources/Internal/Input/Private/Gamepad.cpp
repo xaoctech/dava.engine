@@ -1,4 +1,4 @@
-#include "Input/GamepadDevice.h"
+#include "Input/Gamepad.h"
 
 #include <algorithm>
 
@@ -10,55 +10,55 @@
 #include "Input/Private/DIElementWrapper.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
-#include "Input/Private/Android/GamepadDeviceImplAndroid.h"
+#include "Input/Private/Android/GamepadImplAndroid.h"
 #elif defined(__DAVAENGINE_WIN_UAP__)
-#include "Input/Private/Win10/GamepadDeviceImplWin10.h"
+#include "Input/Private/Win10/GamepadImplWin10.h"
 #elif defined(__DAVAENGINE_WIN32__)
-#include "Input/Private/Win32/GamepadDeviceImplWin32.h"
+#include "Input/Private/Win32/GamepadImplWin32.h"
 #elif defined(__DAVAENGINE_MACOS__)
-#include "Input/Private/Mac/GamepadDeviceImplMac.h"
+#include "Input/Private/Mac/GamepadImplMac.h"
 #elif defined(__DAVAENGINE_IPHONE__)
-#include "Input/Private/Ios/GamepadDeviceImplIos.h"
+#include "Input/Private/Ios/GamepadImplIos.h"
 #else
 #error "GamepadDevice: unknown platform"
 #endif
 
 namespace DAVA
 {
-GamepadDevice::GamepadDevice(uint32 id)
+Gamepad::Gamepad(uint32 id)
     : InputDevice(id)
     , inputSystem(GetEngineContext()->inputSystem)
-    , impl(new Private::GamepadDeviceImpl(this))
+    , impl(new Private::GamepadImpl(this))
     , buttons{}
     , axes{}
 {
-    endFrameConnectionToken = Engine::Instance()->endFrame.Connect(this, &GamepadDevice::OnEndFrame);
+    endFrameConnectionToken = Engine::Instance()->endFrame.Connect(this, &Gamepad::OnEndFrame);
 }
 
-GamepadDevice::~GamepadDevice()
+Gamepad::~Gamepad()
 {
     Engine::Instance()->endFrame.Disconnect(endFrameConnectionToken);
 }
 
-bool GamepadDevice::IsElementSupported(eInputElements elementId) const
+bool Gamepad::IsElementSupported(eInputElements elementId) const
 {
     DVASSERT(IsGamepadAxisInputElement(elementId) || IsGamepadButtonInputElement(elementId));
     return supportedElements[elementId - eInputElements::GAMEPAD_FIRST];
 }
 
-eDigitalElementStates GamepadDevice::GetDigitalElementState(eInputElements elementId) const
+eDigitalElementStates Gamepad::GetDigitalElementState(eInputElements elementId) const
 {
     DVASSERT(IsGamepadButtonInputElement(elementId));
     return buttons[elementId - eInputElements::GAMEPAD_FIRST_BUTTON];
 }
 
-AnalogElementState GamepadDevice::GetAnalogElementState(eInputElements elementId) const
+AnalogElementState Gamepad::GetAnalogElementState(eInputElements elementId) const
 {
     DVASSERT(IsGamepadAxisInputElement(elementId));
     return axes[elementId - eInputElements::GAMEPAD_FIRST_AXIS];
 }
 
-void GamepadDevice::Update()
+void Gamepad::Update()
 {
     impl->Update();
 
@@ -96,7 +96,7 @@ void GamepadDevice::Update()
     axisChangedMask.reset();
 }
 
-void GamepadDevice::OnEndFrame()
+void Gamepad::OnEndFrame()
 {
     for (DIElementWrapper di : buttons)
     {
@@ -104,29 +104,29 @@ void GamepadDevice::OnEndFrame()
     }
 }
 
-void GamepadDevice::HandleGamepadAdded(const Private::MainDispatcherEvent& e)
+void Gamepad::HandleGamepadAdded(const Private::MainDispatcherEvent& e)
 {
     uint32 deviceId = e.gamepadEvent.deviceId;
     impl->HandleGamepadAdded(deviceId);
 }
 
-void GamepadDevice::HandleGamepadRemoved(const Private::MainDispatcherEvent& e)
+void Gamepad::HandleGamepadRemoved(const Private::MainDispatcherEvent& e)
 {
     uint32 deviceId = e.gamepadEvent.deviceId;
     impl->HandleGamepadRemoved(deviceId);
 }
 
-void GamepadDevice::HandleGamepadMotion(const Private::MainDispatcherEvent& e)
+void Gamepad::HandleGamepadMotion(const Private::MainDispatcherEvent& e)
 {
     impl->HandleGamepadMotion(e);
 }
 
-void GamepadDevice::HandleGamepadButton(const Private::MainDispatcherEvent& e)
+void Gamepad::HandleGamepadButton(const Private::MainDispatcherEvent& e)
 {
     impl->HandleGamepadButton(e);
 }
 
-void GamepadDevice::HandleButtonPress(eInputElements element, bool pressed)
+void Gamepad::HandleButtonPress(eInputElements element, bool pressed)
 {
     uint32 index = element - eInputElements::GAMEPAD_FIRST_BUTTON;
     DIElementWrapper di(buttons[index]);
@@ -137,7 +137,7 @@ void GamepadDevice::HandleButtonPress(eInputElements element, bool pressed)
     }
 }
 
-void GamepadDevice::HandleAxisMovement(eInputElements element, float32 newValue, bool horizontal)
+void Gamepad::HandleAxisMovement(eInputElements element, float32 newValue, bool horizontal)
 {
     // TODO: use some threshold for comparisons below
 

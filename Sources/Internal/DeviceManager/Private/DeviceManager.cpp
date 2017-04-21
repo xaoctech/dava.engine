@@ -6,9 +6,9 @@
 #include "Engine/Engine.h"
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
-#include "Input/GamepadDevice.h"
-#include "Input/KeyboardInputDevice.h"
-#include "Input/MouseDevice.h"
+#include "Input/Gamepad.h"
+#include "Input/Keyboard.h"
+#include "Input/Mouse.h"
 
 #if defined(__DAVAENGINE_QT__)
 #include "DeviceManager/Private/Qt/DeviceManagerImplQt.h"
@@ -104,7 +104,7 @@ void DeviceManager::HandleGamepadAdded(const Private::MainDispatcherEvent& e)
 {
     if (gamepad == nullptr)
     {
-        gamepad = new GamepadDevice(4);
+        gamepad = new Gamepad(4);
         gamepad->HandleGamepadAdded(e);
     }
 }
@@ -133,16 +133,16 @@ void DeviceManager::OnEngineInited()
     Engine::Instance()->update.Connect(this, &DeviceManager::Update);
 
 #if defined(__DAVAENGINE_WINDOWS__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_ANDROID__)
-    keyboard = new KeyboardInputDevice(1);
+    keyboard = new Keyboard(1);
     inputDevices.push_back(keyboard);
 
-    mouse = new MouseDevice(2);
+    mouse = new Mouse(2);
     inputDevices.push_back(mouse);
 #endif
 
 #if defined(__DAVAENGINE_WIN_UAP__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-    touch = new TouchDevice(3);
-    inputDevices.push_back(touch);
+    touchScreen = new TouchScreen(3);
+    inputDevices.push_back(touchScreen);
 #endif
 }
 
@@ -158,24 +158,24 @@ InputDevice* DeviceManager::GetInputDevice(uint32 id)
     return nullptr;
 }
 
-GamepadDevice* DeviceManager::GetGamepad()
+Gamepad* DeviceManager::GetGamepad()
 {
     return gamepad;
 }
 
-KeyboardInputDevice* DeviceManager::GetKeyboard()
+Keyboard* DeviceManager::GetKeyboard()
 {
     return keyboard;
 }
 
-MouseDevice* DeviceManager::GetMouse()
+Mouse* DeviceManager::GetMouse()
 {
     return mouse;
 }
 
-TouchDevice* DeviceManager::GetTouch()
+TouchScreen* DeviceManager::GetTouchScreen()
 {
-    return touch;
+    return touchScreen;
 }
 
 } // namespace DAVA

@@ -1,4 +1,4 @@
-#include "Input/Private/Ios/KeyboardDeviceImplIos.h"
+#include "Input/Private/Ios/KeyboardImplIos.h"
 
 #if defined(__DAVAENGINE_IPHONE__)
 
@@ -10,12 +10,12 @@ namespace Private
 {
 // TODO: Implement keyboard on iOS
 
-eInputElements KeyboardDeviceImpl::ConvertNativeScancodeToDavaScancode(uint32 nativeScancode)
+eInputElements KeyboardImpl::ConvertNativeScancodeToDavaScancode(uint32 nativeScancode)
 {
     return eInputElements::NONE;
 }
 
-WideString KeyboardDeviceImpl::TranslateElementToWideString(eInputElements elementId)
+WideString KeyboardImpl::TranslateElementToWideString(eInputElements elementId)
 {
     return UTF8Utils::EncodeToWideString(GetInputElementInfo(elementId).name);
 }

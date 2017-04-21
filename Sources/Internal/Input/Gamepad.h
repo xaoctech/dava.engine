@@ -11,7 +11,7 @@ namespace DAVA
 class InputSystem;
 namespace Private
 {
-class GamepadDeviceImpl;
+class GamepadImpl;
 struct MainDispatcherEvent;
 }
 
@@ -19,10 +19,10 @@ struct MainDispatcherEvent;
     \ingroup input
     Class for working with gamepads.
 */
-class GamepadDevice final : public InputDevice
+class Gamepad final : public InputDevice
 {
     friend class DeviceManager;
-    friend class Private::GamepadDeviceImpl;
+    friend class Private::GamepadImpl;
 
 public:
     bool IsElementSupported(eInputElements elementId) const override;
@@ -30,8 +30,8 @@ public:
     AnalogElementState GetAnalogElementState(eInputElements elementId) const override;
 
 private:
-    GamepadDevice(uint32 id);
-    ~GamepadDevice();
+    Gamepad(uint32 id);
+    ~Gamepad();
 
     void Update();
     void OnEndFrame();
@@ -46,7 +46,7 @@ private:
     void HandleAxisMovement(eInputElements element, float32 newValue, bool horizontal);
 
     InputSystem* inputSystem = nullptr;
-    std::unique_ptr<Private::GamepadDeviceImpl> impl;
+    std::unique_ptr<Private::GamepadImpl> impl;
 
     static const uint32 BUTTON_COUNT = static_cast<uint32>(eInputElements::GAMEPAD_LAST_BUTTON - eInputElements::GAMEPAD_FIRST_BUTTON + 1);
     static const uint32 AXIS_COUNT = static_cast<uint32>(eInputElements::GAMEPAD_LAST_AXIS - eInputElements::GAMEPAD_FIRST_AXIS + 1);

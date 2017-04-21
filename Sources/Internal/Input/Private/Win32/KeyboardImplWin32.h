@@ -1,14 +1,14 @@
 #pragma once
 
-#include "Input/InputElements.h"
+#if defined(__DAVAENGINE_WIN32__)
 
-#if defined(__DAVAENGINE_WIN_UAP__)
+#include "Input/InputElements.h"
 
 namespace DAVA
 {
 namespace Private
 {
-class KeyboardDeviceImpl final
+class KeyboardImpl final
 {
 public:
     eInputElements ConvertNativeScancodeToDavaScancode(uint32 nativeScancode);
@@ -21,4 +21,4 @@ private:
 } // namespace Private
 } // namespace DAVA
 
-#endif // __DAVAENGINE_WIN_UAP__
+#endif // __DAVAENGINE_WIN32__

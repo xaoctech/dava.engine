@@ -7,14 +7,14 @@
 
 namespace DAVA
 {
-class GamepadDevice;
+class Gamepad;
 namespace Private
 {
 struct MainDispatcherEvent;
-class GamepadDeviceImpl final
+class GamepadImpl final
 {
 public:
-    GamepadDeviceImpl(GamepadDevice* gamepad);
+    GamepadImpl(Gamepad* gamepad);
 
     void Update();
 
@@ -28,7 +28,7 @@ public:
     bool HandleGamepadAdded(uint32 id);
     bool HandleGamepadRemoved(uint32 id);
 
-    GamepadDevice* gamepadDevice = nullptr;
+    Gamepad* gamepadDevice = nullptr;
 };
 
 } // namespace Private

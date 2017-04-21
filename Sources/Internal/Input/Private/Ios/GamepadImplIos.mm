@@ -1,23 +1,23 @@
-#include "Input/Private/Ios/GamepadDeviceImplIos.h"
+#include "Input/Private/Ios/GamepadImplIos.h"
 
 #if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_IPHONE__)
 
 #import <GameController/GameController.h>
 
-#include "Input/GamepadDevice.h"
+#include "Input/Gamepad.h"
 #include "Input/InputElements.h"
 
 namespace DAVA
 {
 namespace Private
 {
-GamepadDeviceImpl::GamepadDeviceImpl(GamepadDevice* gamepadDevice)
+GamepadImpl::GamepadImpl(Gamepad* gamepadDevice)
     : gamepadDevice(gamepadDevice)
 {
 }
 
-void GamepadDeviceImpl::Update()
+void GamepadImpl::Update()
 {
     if ([controller extendedGamepad])
     {
@@ -52,7 +52,7 @@ void GamepadDeviceImpl::ReadExtendedGamepadElements(GCExtendedGamepad* gamepad)
     gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_AXIS_RTRIGGER, gamepad.rightTrigger.value, true);
 }
 
-void GamepadDeviceImpl::ReadGamepadElements(GCGamepad* gamepad)
+void GamepadImpl::ReadGamepadElements(GCGamepad* gamepad)
 {
     gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_A, gamepad.buttonA.isPressed);
     gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_B, gamepad.buttonB.isPressed);
@@ -66,7 +66,7 @@ void GamepadDeviceImpl::ReadGamepadElements(GCGamepad* gamepad)
     gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_DPAD_DOWN, gamepad.dpad.down.isPressed);
 }
 
-bool GamepadDeviceImpl::HandleGamepadAdded(uint32 /*id*/)
+bool GamepadImpl::HandleGamepadAdded(uint32 /*id*/)
 {
     if (controller == nullptr)
     {
@@ -80,7 +80,7 @@ bool GamepadDeviceImpl::HandleGamepadAdded(uint32 /*id*/)
     return controller != nullptr;
 }
 
-bool GamepadDeviceImpl::HandleGamepadRemoved(uint32 id)
+bool GamepadImpl::HandleGamepadRemoved(uint32 id)
 {
     bool removed = true;
     for (GCController* c in [GCController controllers])
@@ -99,7 +99,7 @@ bool GamepadDeviceImpl::HandleGamepadRemoved(uint32 id)
     return controller != nullptr;
 }
 
-void GamepadDeviceImpl::DetermineSupportedElements()
+void GamepadImpl::DetermineSupportedElements()
 {
     if ([controller extendedGamepad])
     {

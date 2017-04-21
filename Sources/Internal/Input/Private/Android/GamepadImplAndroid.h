@@ -11,10 +11,10 @@ class GamepadDevice;
 namespace Private
 {
 struct MainDispatcherEvent;
-class GamepadDeviceImpl final
+class GamepadImpl final
 {
 public:
-    GamepadDeviceImpl(GamepadDevice* gamepadDevice);
+    GamepadImpl(GamepadDevice* gamepadDevice);
 
     void Update();
 
@@ -27,7 +27,7 @@ public:
 
     void DetermineSupportedElements();
 
-    GamepadDevice* gamepadDevice = nullptr;
+    Gamepad* gamepadDevice = nullptr;
     uint32 gamepadId = 0;
 };
 

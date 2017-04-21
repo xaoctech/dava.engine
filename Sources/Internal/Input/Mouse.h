@@ -14,7 +14,7 @@ struct MainDispatcherEvent;
     \ingroup input
     Represents mouse input device.
 */
-class MouseDevice final : public InputDevice
+class Mouse final : public InputDevice
 {
     friend class DeviceManager; // For creation
 
@@ -26,9 +26,9 @@ public:
     eInputElements GetFirstPressedButton() const;
 
 private:
-    MouseDevice(uint32 id);
-    ~MouseDevice() override;
-    MouseDevice(const MouseDevice&) = delete;
+    Mouse(uint32 id);
+    ~Mouse() override;
+    Mouse(const Mouse&) = delete;
 
     bool HandleEvent(const Private::MainDispatcherEvent& e);
     void HandleMouseClick(const Private::MainDispatcherEvent& e);

@@ -1,4 +1,4 @@
-#include "Input/Private/Android/GamepadDeviceImplAndroid.h"
+#include "Input/Private/Android/GamepadImplAndroid.h"
 
 #if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_ANDROID__)
@@ -15,16 +15,16 @@ namespace DAVA
 {
 namespace Private
 {
-GamepadDeviceImpl::GamepadDeviceImpl(GamepadDevice* gamepadDevice)
+GamepadImpl::GamepadImpl(Gamepad* gamepadDevice)
     : gamepadDevice(gamepadDevice)
 {
 }
 
-void GamepadDeviceImpl::Update()
+void GamepadImpl::Update()
 {
 }
 
-void GamepadDeviceImpl::HandleGamepadMotion(const MainDispatcherEvent& e)
+void GamepadImpl::HandleGamepadMotion(const MainDispatcherEvent& e)
 {
     uint32 axis = e.gamepadEvent.axis;
     float32 value = e.gamepadEvent.value;
@@ -85,7 +85,7 @@ void GamepadDeviceImpl::HandleGamepadMotion(const MainDispatcherEvent& e)
     gamepadDevice->HandleAxisMovement(element, value, !verticalAxis);
 }
 
-void GamepadDeviceImpl::HandleGamepadButton(const MainDispatcherEvent& e)
+void GamepadImpl::HandleGamepadButton(const MainDispatcherEvent& e)
 {
     eInputElements element = eInputElements::NONE;
     switch (e.gamepadEvent.button)
@@ -142,7 +142,7 @@ void GamepadDeviceImpl::HandleGamepadButton(const MainDispatcherEvent& e)
     gamepadDevice->HandleButtonPress(element, pressed);
 }
 
-void GamepadDeviceImpl::HandleAxisHat(int axis, float value)
+void GamepadImpl::HandleAxisHat(int axis, float value)
 {
     // Some controllers report D-pad presses as axis movement AXIS_HAT_X and AXIS_HAT_Y
 
@@ -175,7 +175,7 @@ void GamepadDeviceImpl::HandleAxisHat(int axis, float value)
     }
 }
 
-bool GamepadDeviceImpl::HandleGamepadAdded(uint32 id)
+bool GamepadImpl::HandleGamepadAdded(uint32 id)
 {
     if (gamepadId == 0)
     {
@@ -185,7 +185,7 @@ bool GamepadDeviceImpl::HandleGamepadAdded(uint32 id)
     return gamepadId != 0;
 }
 
-bool GamepadDeviceImpl::HandleGamepadRemoved(uint32 id)
+bool GamepadImpl::HandleGamepadRemoved(uint32 id)
 {
     if (gamepadId == id)
     {
@@ -194,7 +194,7 @@ bool GamepadDeviceImpl::HandleGamepadRemoved(uint32 id)
     return gamepadId != 0;
 }
 
-void GamepadDeviceImpl::DetermineSupportedElements()
+void GamepadImpl::DetermineSupportedElements()
 {
     // Assume that all elements supported
     gamepadDevice->supportedElements.set();

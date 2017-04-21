@@ -23,7 +23,7 @@
 namespace DAVA
 {
 struct InputEvent;
-class MouseDevice;
+class Mouse;
 class UIScreen;
 class UISystem;
 class UILayoutSystem;

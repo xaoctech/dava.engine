@@ -1,8 +1,8 @@
-#include "Input/Private/Win10/KeyboardDeviceImplWin10.h"
+#include "Input/Private/Win10/KeyboardImplWin10.h"
 
 #if defined(__DAVAENGINE_WIN_UAP__)
 
-#include "Input/Private/KeyboardDeviceImplWinCodes.h"
+#include "Input/Private/KeyboardImplWinCodes.h"
 #include "Base/TemplateHelpers.h"
 #include "Utils/UTF8Utils.h"
 #include "Engine/Private/UWP/DllImportWin10.h"
@@ -11,7 +11,7 @@ namespace DAVA
 {
 namespace Private
 {
-eInputElements KeyboardDeviceImpl::ConvertNativeScancodeToDavaScancode(uint32 nativeScancode)
+eInputElements KeyboardImpl::ConvertNativeScancodeToDavaScancode(uint32 nativeScancode)
 {
     const bool isExtended = (nativeScancode & 0xE000) == 0xE000;
     const uint32 nonExtendedScancode = nativeScancode & 0x00FF;
@@ -26,7 +26,7 @@ eInputElements KeyboardDeviceImpl::ConvertNativeScancodeToDavaScancode(uint32 na
     }
 }
 
-WideString KeyboardDeviceImpl::TranslateElementToWideString(eInputElements elementId)
+WideString KeyboardImpl::TranslateElementToWideString(eInputElements elementId)
 {
     if (DllImport::fnMapVirtualKey == nullptr)
     {
@@ -70,7 +70,7 @@ WideString KeyboardDeviceImpl::TranslateElementToWideString(eInputElements eleme
     }
 }
 
-wchar_t KeyboardDeviceImpl::TranslateNativeScancodeToWChar(uint32 nativeScancode)
+wchar_t KeyboardImpl::TranslateNativeScancodeToWChar(uint32 nativeScancode)
 {
     const uint32 nativeVirtual = DllImport::fnMapVirtualKey(nativeScancode, MAPVK_VSC_TO_VK);
     const wchar_t character = static_cast<wchar_t>(DllImport::fnMapVirtualKey(nativeVirtual, MAPVK_VK_TO_CHAR));

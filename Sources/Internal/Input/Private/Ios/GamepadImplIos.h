@@ -11,14 +11,14 @@ DAVA_FORWARD_DECLARE_OBJC_CLASS(GCGamepad);
 
 namespace DAVA
 {
-class GamepadDevice;
+class Gamepad;
 namespace Private
 {
 struct MainDispatcherEvent;
-class GamepadDeviceImpl final
+class GamepadImpl final
 {
 public:
-    GamepadDeviceImpl(GamepadDevice* gamepadDevice);
+    GamepadImpl(Gamepad* gamepadDevice);
 
     void Update();
     void ReadExtendedGamepadElements(GCExtendedGamepad* gamepad);
@@ -36,7 +36,7 @@ public:
 
     void DetermineSupportedElements();
 
-    GamepadDevice* gamepadDevice = nullptr;
+    Gamepad* gamepadDevice = nullptr;
     GCController* controller = nullptr;
 };
 

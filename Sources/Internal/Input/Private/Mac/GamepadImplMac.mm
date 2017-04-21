@@ -1,4 +1,4 @@
-#include "Input/Private/Mac/GamepadDeviceImplMac.h"
+#include "Input/Private/Mac/GamepadImplMac.h"
 
 #if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_MACOS__)
@@ -7,21 +7,21 @@ namespace DAVA
 {
 namespace Private
 {
-GamepadDeviceImpl::GamepadDeviceImpl(GamepadDevice* gamepadDevice)
+GamepadImpl::GamepadImpl(Gamepad* gamepadDevice)
     : gamepadDevice(gamepadDevice)
 {
 }
 
-void GamepadDeviceImpl::Update()
+void GamepadImpl::Update()
 {
 }
 
-bool GamepadDeviceImpl::HandleGamepadAdded(uint32 /*id*/)
+bool GamepadImpl::HandleAdded(uint32 /*id*/)
 {
     return false;
 }
 
-bool GamepadDeviceImpl::HandleGamepadRemoved(uint32 /*id*/)
+bool GamepadImpl::HandleGamepadRemoved(uint32 /*id*/)
 {
     return false;
 }
