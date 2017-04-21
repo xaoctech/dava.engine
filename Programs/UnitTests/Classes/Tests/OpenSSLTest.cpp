@@ -231,7 +231,11 @@ DAVA_TESTCLASS (OpenSSLTest)
             TEST_VERIFY(res == CURLE_OK);
 
             /* Check for errors */
-            if (res != CURLE_OK)
+            if (res == CURLE_OK)
+            {
+                Logger::Info("OK, curl was able to open https connection!");
+            }
+            else
             {
                 Logger::Error(Format("curl_easy_perform() failed: %s\n", curl_easy_strerror(res)).c_str());
             }
