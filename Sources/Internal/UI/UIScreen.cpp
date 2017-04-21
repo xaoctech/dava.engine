@@ -2,12 +2,8 @@
 #include "UI/UIControlSystem.h"
 #include "Render/RenderHelper.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
-<<<<<<< HEAD
-== == == =
-#include "Render/RHI/Common/PreProcess.h"
 #include "Reflection/ReflectionRegistrator.h"
->>>>>>> development
-         #include "Time/SystemTimer.h"
+#include "Time/SystemTimer.h"
 
 namespace DAVA
 {
