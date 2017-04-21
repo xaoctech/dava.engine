@@ -88,35 +88,35 @@ def _build_win10(working_directory_path, root_project_path):
 
     vc14_solution_file_path = os.path.join(source_folder_path, 'projects/Windows/VC14/lib/libcurl.sln')
 
-    build_utils.build_vs(vc14_solution_file_path, 'LIB Debug', 'Win32', 'libcurl')
-    build_utils.build_vs(vc14_solution_file_path, 'LIB Release', 'Win32', 'libcurl')
-    build_utils.build_vs(vc14_solution_file_path, 'LIB Debug', 'x64', 'libcurl')
-    build_utils.build_vs(vc14_solution_file_path, 'LIB Release', 'x64', 'libcurl')
-    build_utils.build_vs(vc14_solution_file_path, 'LIB Debug', 'ARM', 'libcurl')
-    build_utils.build_vs(vc14_solution_file_path, 'LIB Release', 'ARM', 'libcurl')
+    build_utils.build_vs(vc14_solution_file_path, 'LIB Debug - LIB OpenSSL', 'Win32', 'libcurl')
+    build_utils.build_vs(vc14_solution_file_path, 'LIB Release - LIB OpenSSL', 'Win32', 'libcurl')
+    build_utils.build_vs(vc14_solution_file_path, 'LIB Debug - LIB OpenSSL', 'x64', 'libcurl')
+    build_utils.build_vs(vc14_solution_file_path, 'LIB Release - LIB OpenSSL', 'x64', 'libcurl')
+    build_utils.build_vs(vc14_solution_file_path, 'LIB Debug - LIB OpenSSL', 'ARM', 'libcurl')
+    build_utils.build_vs(vc14_solution_file_path, 'LIB Release - LIB OpenSSL', 'ARM', 'libcurl')
 
     shutil.copyfile(
-        os.path.join(source_folder_path, 'build/Win32/VC14/LIB Debug/libcurld.lib'),
+        os.path.join(source_folder_path, 'build/Win32/VC14/LIB Debug - LIB OpenSSL/libcurld.lib'),
         os.path.join(root_project_path, 'Libs/lib_CMake/win10/Win32/Debug/libcurl.lib'))
 
     shutil.copyfile(
-        os.path.join(source_folder_path, 'build/Win32/VC14/LIB Release/libcurl.lib'),
+        os.path.join(source_folder_path, 'build/Win32/VC14/LIB Release - LIB OpenSSL/libcurl.lib'),
         os.path.join(root_project_path, 'Libs/lib_CMake/win10/Win32/Release/libcurl.lib'))
 
     shutil.copyfile(
-        os.path.join(source_folder_path, 'build/Win64/VC14/LIB Debug/libcurld.lib'),
+        os.path.join(source_folder_path, 'build/Win64/VC14/LIB Debug - LIB OpenSSL/libcurld.lib'),
         os.path.join(root_project_path, 'Libs/lib_CMake/win10/x64/Debug/libcurl.lib'))
 
     shutil.copyfile(
-        os.path.join(source_folder_path, 'build/Win64/VC14/LIB Release/libcurl.lib'),
+        os.path.join(source_folder_path, 'build/Win64/VC14/LIB Release - LIB OpenSSL/libcurl.lib'),
         os.path.join(root_project_path, 'Libs/lib_CMake/win10/x64/Release/libcurl.lib'))
 
     shutil.copyfile(
-        os.path.join(source_folder_path, 'build/ARM/VC14/LIB Debug/libcurld.lib'),
+        os.path.join(source_folder_path, 'build/ARM/VC14/LIB Debug - LIB OpenSSL/libcurld.lib'),
         os.path.join(root_project_path, 'Libs/lib_CMake/win10/arm/Debug/libcurl.lib'))
 
     shutil.copyfile(
-        os.path.join(source_folder_path, 'build/ARM/VC14/LIB Release/libcurl.lib'),
+        os.path.join(source_folder_path, 'build/ARM/VC14/LIB Release - LIB OpenSSL/libcurl.lib'),
         os.path.join(root_project_path, 'Libs/lib_CMake/win10/arm/Release/libcurl.lib'))
 
     _copy_headers(source_folder_path, root_project_path)

@@ -13,4 +13,5 @@ Whats changed:
   CURL_DISABLE_IMAP
   CURL_DISABLE_SMTP
   CURL_DISABLE_GOPHER
-3. Added include directory for OpenSSL - dava.framework/Libs/openssl/win32/<Arch>
+3. Added include directory for OpenSSL
+  dava.framework/Libs/openssl/win32/<Arch>

@@ -198,7 +198,7 @@ DAVA_TESTCLASS (OpenSSLTest)
         if (nullptr != curl)
         {
             curl_easy_setopt(curl, CURLOPT_URL, "https://www.google.com/");
-            curl_easy_setopt(curl, CURLOPT_WRITEDATA, nullptr);
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, 0);
             curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteDummyCallback);
 
 #if 1
