@@ -106,6 +106,11 @@ private:
     : public FileCallback
     {
     public:
+        ~DefFileCallback()
+        {
+            if (_in)
+                _in->Release();
+        }
         virtual bool open(const char* file_name)
         {
             _in = DAVA::File::Create(file_name, DAVA::File::READ | DAVA::File::OPEN);
@@ -127,7 +132,7 @@ private:
         }
 
     private:
-        DAVA::File* _in;
+        DAVA::File* _in = nullptr;
     };
 
     struct
