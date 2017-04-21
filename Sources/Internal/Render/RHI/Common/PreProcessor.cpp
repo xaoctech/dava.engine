@@ -33,6 +33,8 @@ PreProc::process_file(const char* file_name, TextBuf* output)
 
     if (_file_cb->open(file_name))
     {
+        _reset();
+
         unsigned text_sz = _file_cb->size();
         char* text = _alloc_buffer(text_sz + 1);
 
