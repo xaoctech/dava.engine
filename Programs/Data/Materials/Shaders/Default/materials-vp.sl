@@ -55,6 +55,10 @@ vertex_in
     #if FRAME_BLEND
     float texcoord3 : TEXCOORD3;
     #endif
+
+    #if GEO_DECAL
+    float4 geoDecalCoord : TEXCOORD4;
+    #endif
 };
 
 
@@ -120,6 +124,9 @@ vertex_out
         [lowp] float3 varFlowData : TEXCOORD4;
     #endif
 
+    #if GEO_DECAL
+        float2 geoDecalCoord : TEXCOORD4;
+    #endif
 };
 
 
@@ -698,8 +705,9 @@ vertex_out vp_main( vertex_in input )
 #if (GEO_DECAL)
     // apply constant bias to prevent z-fighting on decals
     // possible improvement : calculate offset based on near/far plane
-    // todo : check on different GPUs
+    // todo : check on various GPUs
     output.position.z -= output.position.w / 65535.0;
+    output.geoDecalCoord = input.geoDecalCoord.xy;
 #endif
 
     return output;

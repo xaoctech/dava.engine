@@ -83,6 +83,8 @@ public:
     inline void SetFlexibility(int32 i, const float32& v);
     inline void SetAngle(int32 i, const Vector2& v);
 
+    inline void SetDecalTexcoord(int32 i, const Vector4& v);
+
     inline int32 GetVertexCount();
     inline int32 GetIndexCount();
 
@@ -107,6 +109,7 @@ public:
     float32* jointIdxArray;
     float32* jointWeightArray;
     Vector3** cubeTextureCoordArray;
+    Vector4* decalTexCoordArray = nullptr;
 
     uint32* jointCountArray;
 
@@ -215,6 +218,7 @@ inline void PolygonGroup::SetColor(int32 i, const uint32& _c)
 
 inline void PolygonGroup::SetTexcoord(int32 ti, int32 i, const Vector2& _t)
 {
+    DVASSERT(ti < textureCoordCount);
     Vector2* t = reinterpret_cast<Vector2*>(reinterpret_cast<uint8*>(textureCoordArray[ti]) + i * vertexStride);
     *t = _t;
 }
@@ -223,6 +227,12 @@ inline void PolygonGroup::SetCubeTexcoord(int32 ti, int32 i, const Vector3& _t)
 {
     Vector3* t = reinterpret_cast<Vector3*>(reinterpret_cast<uint8*>(cubeTextureCoordArray[ti]) + i * vertexStride);
     *t = _t;
+}
+
+inline void PolygonGroup::SetDecalTexcoord(int32 i, const Vector4& _v)
+{
+    Vector4* v = reinterpret_cast<Vector4*>(reinterpret_cast<uint8*>(decalTexCoordArray) + i * vertexStride);
+    *v = _v;
 }
 
 inline void PolygonGroup::SetPivot(int32 i, const Vector3& _v)

@@ -209,39 +209,40 @@ void RenderSystem::UnregisterFromUpdate(IRenderUpdatable* updatable)
     }
 }
 
-void RenderSystem::FindNearestLights(RenderObject* renderObject)
+void RenderSystem::UpdateNearestLights(RenderObject* renderObject)
 {
-    Light* nearestLight = 0;
-    float32 squareMinDistance = 10000000.0f;
+    Light* nearestLight = nullptr;
+    float32 squareMinDistance = std::numeric_limits<float>::max();
     Vector3 position = renderObject->GetWorldBoundingBox().GetCenter();
 
-    uint32 size = static_cast<uint32>(lights.size());
-
-    if (1 == size)
+    if (lights.size() == 1)
     {
-        nearestLight = (lights[0] && lights[0]->IsDynamic()) ? lights[0] : NULL;
+        nearestLight = (lights.front() && lights.front()->IsDynamic()) ? lights.front() : nullptr;
     }
     else
     {
-        for (uint32 k = 0; k < size; ++k)
+        for (Light* light : lights)
         {
-            Light* light = lights[k];
-
-            if (!light->IsDynamic())
-                continue;
-
-            const Vector3& lightPosition = light->GetPosition();
-
-            float32 squareDistanceToLight = (position - lightPosition).SquareLength();
-            if ((!nearestLight) || (squareDistanceToLight < squareMinDistance))
+            if (light->IsDynamic())
             {
-                squareMinDistance = squareDistanceToLight;
-                nearestLight = light;
+                const Vector3& lightPosition = light->GetPosition();
+                float32 squareDistanceToLight = (position - lightPosition).SquareLength();
+                if ((!nearestLight) || (squareDistanceToLight < squareMinDistance))
+                {
+                    squareMinDistance = squareDistanceToLight;
+                    nearestLight = light;
+                }
             }
         }
     }
 
     renderObject->SetLight(0, nearestLight);
+
+    RenderObject* decalRenderObject = geoDecalManager->GetDecalRenderObject(renderObject);
+    if (decalRenderObject)
+    {
+        decalRenderObject->SetLight(0, nearestLight);
+    }
 }
 
 void RenderSystem::FindNearestLights()
@@ -249,7 +250,7 @@ void RenderSystem::FindNearestLights()
     size_t size = renderObjectArray.size();
     for (size_t k = 0; k < size; ++k)
     {
-        FindNearestLights(renderObjectArray[k]);
+        UpdateNearestLights(renderObjectArray[k]);
     }
 }
 
@@ -293,7 +294,7 @@ void RenderSystem::Update(float32 timeElapsed)
 
         obj->RecalculateWorldBoundingBox();
 
-        FindNearestLights(obj);
+        UpdateNearestLights(obj);
         if (obj->GetTreeNodeIndex() != QuadTree::INVALID_TREE_NODE_INDEX)
             renderHierarchy->ObjectUpdated(obj);
 

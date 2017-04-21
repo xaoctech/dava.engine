@@ -70,6 +70,13 @@ void SwitchSystem::SetSwitchHierarchy(Entity* entity, int32 switchIndex)
     if (ro)
     {
         ro->SetSwitchIndex(switchIndex);
+
+        GeoDecalManager* decalManager = GetScene()->GetRenderSystem()->GetGeoDecalManager();
+        RenderObject* decalRenderObject = decalManager->GetDecalRenderObject(ro);
+        if (decalRenderObject != nullptr)
+        {
+            decalRenderObject->SetSwitchIndex(switchIndex);
+        }
     }
 
     uint32 size = entity->GetChildrenCount();

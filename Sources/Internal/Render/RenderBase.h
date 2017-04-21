@@ -164,7 +164,7 @@ enum eVertexFormat
     EVF_TEXCOORD3 = 1 << 6,
     EVF_TANGENT = 1 << 7,
     EVF_BINORMAL = 1 << 8,
-    // nine bit skipped cause legacy; for now it unused
+    EVF_DECAL_TEXCOORD = 1 << 9,
     EVF_TIME = 1 << 10,
     EVF_PIVOT = 1 << 11,
     EVF_FLEXIBILITY = 1 << 12,
@@ -175,10 +175,10 @@ enum eVertexFormat
     EVF_CUBETEXCOORD1 = 1 << 17,
     EVF_CUBETEXCOORD2 = 1 << 18,
     EVF_CUBETEXCOORD3 = 1 << 19,
+
     EVF_LOWER_BIT = EVF_VERTEX,
     EVF_HIGHER_BIT = EVF_JOINTWEIGHT,
-    EVF_NEXT_AFTER_HIGHER_BIT
-    = (EVF_HIGHER_BIT << 1),
+    EVF_NEXT_AFTER_HIGHER_BIT = (EVF_HIGHER_BIT << 1),
     EVF_FORCE_DWORD = 0x7fffffff,
 };
 enum
@@ -189,14 +189,10 @@ enum
 inline int32 GetTexCoordCount(int32 vertexFormat)
 {
     int32 ret = 0;
-    for (int32 i = EVF_TEXCOORD0; i < EVF_TEXCOORD3 + 1; i = (i << 1))
-    {
-        if (vertexFormat & i)
-        {
-            ret++;
-        }
-    }
-
+    ret += (vertexFormat & EVF_TEXCOORD0) ? 1 : 0;
+    ret += (vertexFormat & EVF_TEXCOORD1) ? 1 : 0;
+    ret += (vertexFormat & EVF_TEXCOORD2) ? 1 : 0;
+    ret += (vertexFormat & EVF_TEXCOORD3) ? 1 : 0;
     return ret;
 }
 
@@ -231,10 +227,14 @@ inline int32 GetVertexSize(int32 flags)
         size += 2 * sizeof(float32);
     if (flags & EVF_TEXCOORD3)
         size += 2 * sizeof(float32);
+
     if (flags & EVF_TANGENT)
         size += 3 * sizeof(float32);
     if (flags & EVF_BINORMAL)
         size += 3 * sizeof(float32);
+
+    if (flags & EVF_DECAL_TEXCOORD)
+        size += 4 * sizeof(float32);
 
     if (flags & EVF_CUBETEXCOORD0)
         size += 3 * sizeof(float32);
@@ -246,7 +246,7 @@ inline int32 GetVertexSize(int32 flags)
         size += 3 * sizeof(float32);
 
     if (flags & EVF_TIME)
-        size += sizeof(float32);
+        size += 1 * sizeof(float32);
 
     if (flags & EVF_PIVOT)
         size += 3 * sizeof(float32);
@@ -255,8 +255,6 @@ inline int32 GetVertexSize(int32 flags)
     if (flags & EVF_ANGLE_SIN_COS)
         size += 2 * sizeof(float32);
 
-    //    if (flags & EVF_JOINTINDEX) size += 4;
-    //    if (flags & EVF_JOINTWEIGHT) size += 4;
     if (flags & EVF_JOINTINDEX)
         size += 1 * sizeof(float32);
     if (flags & EVF_JOINTWEIGHT)

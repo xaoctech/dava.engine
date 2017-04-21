@@ -22,10 +22,13 @@ struct GeoDecalManager::DecalVertex
     Vector3 binormal;
     Vector2 texCoord0;
     Vector2 texCoord1;
+    Vector4 decalCoord;
     int32 jointCount = 0;
     int32 jointIndex = 0;
     float32 jointWeight = 1.0f;
 };
+
+const GeoDecalManager::Decal GeoDecalManager::InvalidDecal = nullptr;
 
 GeoDecalManager::GeoDecalManager(RenderSystem* rs)
     : renderSystem(rs)
@@ -149,11 +152,51 @@ void GeoDecalManager::UnregisterDecal(Decal decal)
     }
 }
 
+GeoDecalManager::Decal GeoDecalManager::GetDecalForRenderObject(RenderObject* ro) const
+{
+    Decal result = InvalidDecal;
+    for (const auto& i : builtDecals)
+    {
+        if (i.second.sourceObject == ro)
+        {
+            result = i.first;
+            break;
+        }
+    }
+    return result;
+}
+
+RenderObject* GeoDecalManager::GetDecalRenderObject(RenderObject* ro) const
+{
+    RenderObject* result = nullptr;
+    for (const auto& i : builtDecals)
+    {
+        if (i.second.sourceObject == ro)
+        {
+            result = i.second.renderObject.Get();
+            break;
+        }
+    }
+    return result;
+}
+
+RenderObject* GeoDecalManager::GetDecalRenderObject(Decal decal) const
+{
+    auto i = builtDecals.find(decal);
+    return (i == builtDecals.end()) ? nullptr : i->second.renderObject.Get();
+}
+
 #define MAX_CLIPPED_POLYGON_CAPACITY 9
 #define PLANE_THICKNESS_EPSILON 0.00001f
 
 bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBatch)
 {
+    String fxName(info.material->GetEffectiveFXName().c_str());
+    std::transform(fxName.begin(), fxName.end(), fxName.begin(), ::tolower);
+
+    if (fxName.find("shadow") != String::npos)
+        return false;
+
     const AABBox3 clipSpaceBox = AABBox3(Vector3(0.0f, 0.0f, 0.0f), 2.0f);
     bool isPlanarProjection = info.mapping == Mapping::PLANAR;
 
@@ -176,6 +219,8 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBat
             geometry->GetIndex(3 * triangleIndex + j, idx);
             geometry->GetCoord(idx, points[j].point);
 
+            if (geometryFormat & EVF_TEXCOORD0)
+                geometry->GetTexcoord(0, idx, points[j].texCoord0);
             if (geometryFormat & EVF_TEXCOORD1)
                 geometry->GetTexcoord(1, idx, points[j].texCoord1);
             if (geometryFormat & EVF_NORMAL)
@@ -217,23 +262,23 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBat
                 {
                     Vector3 p = points[i].point;
                     p.Normalize();
-                    points[i].texCoord0.x = std::atan2(p.y, p.x);
-                    points[i].texCoord0.y = (asin(p.z) + 0.5f * PI) / PI;
+                    points[i].decalCoord.x = std::atan2(p.y, p.x);
+                    points[i].decalCoord.y = (asin(p.z) + 0.5f * PI) / PI;
                 }
                 else if (info.mapping == Mapping::CYLINDRICAL)
                 {
                     Vector2 c(points[i].point.x, points[i].point.y);
                     c.Normalize();
-                    points[i].texCoord0.x = std::atan2(c.y, c.x);
-                    points[i].texCoord0.y = points[i].point.z * 0.5f + 0.5f;
+                    points[i].decalCoord.x = std::atan2(c.y, c.x);
+                    points[i].decalCoord.y = points[i].point.z * 0.5f + 0.5f;
                 }
                 else
                 {
-                    points[i].texCoord0.x = points[i].point.x * 0.5f + 0.5f;
-                    points[i].texCoord0.y = points[i].point.y * 0.5f + 0.5f;
+                    points[i].decalCoord.x = points[i].point.x * 0.5f + 0.5f;
+                    points[i].decalCoord.y = points[i].point.y * 0.5f + 0.5f;
                 }
-                minU = std::min(minU, points[i].texCoord0.x);
-                maxU = std::max(maxU, points[i].texCoord0.x);
+                minU = std::min(minU, points[i].decalCoord.x);
+                maxU = std::max(maxU, points[i].decalCoord.x);
             }
 
             if (!isPlanarProjection)
@@ -241,8 +286,8 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBat
                 bool edgeTriangle = std::abs(minU - maxU) >= PI;
                 for (uint32 i = 0; i < numPoints; ++i)
                 {
-                    float wrap = (edgeTriangle && (points[i].texCoord0.x < 0.0f)) ? 2.0f * PI : 0.0f;
-                    points[i].texCoord0.x = (points[i].texCoord0.x + PI + wrap) / (2.0f * PI);
+                    float wrap = (edgeTriangle && (points[i].decalCoord.x < 0.0f)) ? 2.0f * PI : 0.0f;
+                    points[i].decalCoord.x = (points[i].decalCoord.x + PI + wrap) / (2.0f * PI);
                 }
             }
 
@@ -264,13 +309,16 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBat
         return false;
 
     ScopedPtr<PolygonGroup> poly(new PolygonGroup());
-    poly->AllocateData(geometryFormat | EVF_TEXCOORD0, static_cast<uint32>(decalGeometry.size()), static_cast<uint32>(decalGeometry.size()));
+    poly->AllocateData(geometryFormat | EVF_DECAL_TEXCOORD, static_cast<uint32>(decalGeometry.size()), static_cast<uint32>(decalGeometry.size()));
     uint32 index = 0;
     for (const DecalVertex& c : decalGeometry)
     {
         poly->SetCoord(index, c.point);
         poly->SetIndex(index, static_cast<int16>(index));
-        poly->SetTexcoord(0, index, c.texCoord0);
+        poly->SetDecalTexcoord(index, c.decalCoord);
+
+        if (geometryFormat & EVF_TEXCOORD0)
+            poly->SetTexcoord(0, index, c.texCoord0);
 
         if (geometryFormat & EVF_TEXCOORD1)
             poly->SetTexcoord(1, index, c.texCoord1);
@@ -302,29 +350,22 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBat
     material->SetFXName(FastName("~res:/Materials/GeoDecal.material"));
     material->SetMaterialName(FastName("GeoDecal"));
 
-    const FastName& baseFxName = info.material->GetEffectiveFXName();
-    String fxNameString(baseFxName.c_str());
-    for (char& c : fxNameString)
-        c = static_cast<char>(::tolower(c));
+    Texture* geoDecalTexture = Texture::CreateFromFile(info.image);
+    material->AddTexture(FastName("geodecal"), geoDecalTexture);
 
-    if (fxNameString.find("lightmap") != String::npos)
-        material->AddFlag(FastName("MATERIAL_LIGHTMAP"), 1);
-
-    if (fxNameString.find("normalizedblinnphong") != String::npos)
+    if (fxName.find("lightmap") != String::npos)
     {
-        material->AddFlag(FastName("NORMALIZED_BLINN_PHONG"), 1);
-
-        if (fxNameString.find("pervertex") != String::npos)
-            material->AddFlag(FastName("VERTEX_LIT"), 1);
-        else
-            material->AddFlag(FastName("PIXEL_LIT"), 1);
-
-        material->AddTexture(NMaterialTextureName::TEXTURE_NORMAL, defaultNormalMap);
+        material->AddFlag(FastName("MATERIAL_LIGHTMAP"), 1);
     }
 
-    Texture* albedo = Texture::CreateFromFile(info.image);
-    if (albedo != nullptr)
-        material->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, albedo);
+    if (fxName.find("normalizedblinnphong") != String::npos)
+    {
+        bool perpixel = fxName.find("pervertex") == String::npos;
+        material->AddFlag(FastName("NORMALIZED_BLINN_PHONG"), 1);
+        material->AddFlag(FastName(perpixel ? "PIXEL_LIT" : "VERTEX_LIT"), 1);
+        // material->AddTexture(NMaterialTextureName::TEXTURE_NORMAL, defaultNormalMap);
+    }
+    material->PreBuildMaterial(PASS_FORWARD);
 
     dstBatch->SetPolygonGroup(poly);
     dstBatch->SetMaterial(material);
@@ -360,6 +401,7 @@ void GeoDecalManager::Lerp(float t, const DecalVertex& v1, const DecalVertex& v2
     LERP_IMPL(binormal);
     LERP_IMPL(texCoord0);
     LERP_IMPL(texCoord1);
+    LERP_IMPL(decalCoord);
     LERP_IMPL(jointWeight);
 #undef LERP_IMPL
 }

@@ -67,9 +67,10 @@ fragment_in
         [lowp] half varTime : TEXCOORD3;
     #endif
 
+    #if GEO_DECAL
+        float2 geoDecalCoord : TEXCOORD4;
+    #endif
 };
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // fprog-output
@@ -78,10 +79,6 @@ fragment_out
 {
     float4 color : SV_TARGET0;
 };
-
-
-
-
 
 #if MATERIAL_TEXTURE
     uniform sampler2D albedo;
@@ -155,6 +152,10 @@ fragment_out
     [material][a] property float4 particleDebugShowAlphaColor =  float4(0.0f, 0.0f, 1.0f, 0.4f);
 #endif
 
+#if (GEO_DECAL)
+    uniform sampler2D geodecal;
+#endif
+
 inline float 
 FresnelShlick( float NdotL, float Cspec )
 {
@@ -184,9 +185,14 @@ fragment_out fp_main( fragment_in input )
     #endif
     
     // FETCH PHASE
-    #if MATERIAL_TEXTURE
+    #if GEO_DECAL
+
+        half4 textureColor0 = half4(tex2D(geodecal, input.geoDecalCoord));
+
+    #elif MATERIAL_TEXTURE
     
         #if PIXEL_LIT || ALPHATEST || ALPHABLEND || VERTEX_LIT
+
             #if FLOWMAP
                 float3 flowData = input.varFlowData;
                 float2 flowDir = float2( tex2D( flowmap, input.varTexCoord0 ).xy) * 2.0 - 1.0;
@@ -218,7 +224,6 @@ fragment_out fp_main( fragment_in input )
             #endif
         #endif
         
-        
         #if FRAME_BLEND
             half4 blendFrameColor = half4(tex2D( albedo, input.varTexCoord1 ));
             half varTime = input.varTime;
@@ -228,7 +233,7 @@ fragment_out fp_main( fragment_in input )
     #elif MATERIAL_SKYBOX
     
         half4 textureColor0 = half4(texCUBE( cubemap, input.varTexCoord0 ));
-    
+   
     #endif
 
 
@@ -246,7 +251,6 @@ fragment_out fp_main( fragment_in input )
         #endif
     #endif
 
-    
     #if MATERIAL_DECAL
         half3 textureColor1 = half3(tex2D( decal, input.varTexCoord1 ).rgb);
     #endif

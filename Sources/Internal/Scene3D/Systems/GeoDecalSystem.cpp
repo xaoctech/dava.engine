@@ -105,10 +105,12 @@ void GeoDecalSystem::BuildDecal(Entity* entityWithDecal, GeoDecalComponent* comp
     Vector<RenderableEntity> entities;
     GatherRenderableEntitiesInBox(entityWithDecal->GetParent(), worldSpaceBox, entities);
 
-    GeoDecalManager* manager = GetScene()->GetRenderSystem()->GetGeoDecalManager();
+    RenderSystem* renderSystem = GetScene()->GetRenderSystem();
+    GeoDecalManager* manager = renderSystem->GetGeoDecalManager();
     for (const RenderableEntity& e : entities)
     {
         GeoDecalManager::Decal decal = manager->BuildDecal(component->GetConfig(), entityWithDecal->GetWorldTransform(), e.renderObject);
+        renderSystem->UpdateNearestLights(manager->GetDecalRenderObject(decal));
         decals[component].decals.emplace_back(decal);
     }
 }

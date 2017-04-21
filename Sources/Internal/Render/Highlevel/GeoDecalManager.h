@@ -36,11 +36,18 @@ public:
         uint32 key = 0xDECAAAAA;
     }*;
 
+    static const Decal InvalidDecal;
+
 public:
     GeoDecalManager(RenderSystem* renderSystem);
 
     Decal BuildDecal(const DecalConfig& config, const Matrix4& decalWorldTransform, RenderObject* object);
     void DeleteDecal(Decal decal);
+
+    Decal GetDecalForRenderObject(RenderObject* ro) const;
+
+    RenderObject* GetDecalRenderObject(RenderObject* ro) const;
+    RenderObject* GetDecalRenderObject(Decal decal) const;
 
 private:
     // this could be moved to public

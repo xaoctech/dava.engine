@@ -83,6 +83,7 @@ public:
     void RemoveLight(Light* light);
     Vector<Light*>& GetLights();
     void SetForceUpdateLights();
+    void UpdateNearestLights(RenderObject* renderObject);
 
     void SetMainRenderTarget(rhi::HTexture color, rhi::HTexture depthStencil, rhi::LoadAction colorLoadAction, const Color& clearColor);
     void SetMainPassProperties(uint32 priority, const Rect& viewport, uint32 width, uint32 height, PixelFormat format);
@@ -115,7 +116,6 @@ public:
 
 private:
     void FindNearestLights();
-    void FindNearestLights(RenderObject* renderObject);
     void AddRenderObject(RenderObject* renderObject);
     void RemoveRenderObject(RenderObject* renderObject);
 

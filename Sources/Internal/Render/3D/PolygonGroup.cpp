@@ -99,6 +99,12 @@ void PolygonGroup::UpdateDataPointersAndStreams()
         baseShift += GetVertexSize(EVF_TEXCOORD3);
         vLayout.AddElement(rhi::VS_TEXCOORD, 3, rhi::VDT_FLOAT, 2);
     }
+    if (vertexFormat & EVF_DECAL_TEXCOORD)
+    {
+        decalTexCoordArray = reinterpret_cast<Vector4*>(meshData + baseShift);
+        baseShift += GetVertexSize(EVF_DECAL_TEXCOORD);
+        vLayout.AddElement(rhi::VS_TEXCOORD, 4, rhi::VDT_FLOAT, 4);
+    }
     if (vertexFormat & EVF_TANGENT)
     {
         tangentArray = reinterpret_cast<Vector3*>(meshData + baseShift);
@@ -178,8 +184,8 @@ void PolygonGroup::AllocateData(int32 _meshFormat, int32 _vertexCount, int32 _in
 
     vertexCount = _vertexCount;
     indexCount = _indexCount;
-    vertexStride = GetVertexSize(_meshFormat);
     vertexFormat = _meshFormat;
+    vertexStride = GetVertexSize(_meshFormat);
     textureCoordCount = GetTexCoordCount(vertexFormat);
     cubeTextureCoordCount = GetCubeTexCoordCount(vertexFormat);
 
@@ -263,6 +269,7 @@ uint32 PolygonGroup::ReleaseGeometryData()
         jointWeightArray = nullptr;
         cubeTextureCoordArray = nullptr;
         jointCountArray = nullptr;
+        decalTexCoordArray = nullptr;
 
         pivotArray = nullptr;
         flexArray = nullptr;
@@ -345,13 +352,6 @@ void PolygonGroup::Save(KeyedArchive* keyedArchive, SerializationContext* serial
     keyedArchive->SetInt32("indexFormat", indexFormat);
     keyedArchive->SetByteArray("indices", reinterpret_cast<uint8*>(indexArray), indexCount * INDEX_FORMAT_SIZE[indexFormat]);
     keyedArchive->SetInt32("cubeTextureCoordCount", cubeTextureCoordCount);
-
-    //    for (int32 k = 0; k < GetVertexCount(); ++k)
-    //    {
-    //        Vector3 normal;
-    //        GetNormal(k, normal);
-    //        Logger::FrameworkDebug("savenorm2: %f %f %f", normal.x, normal.y, normal.z);
-    //    }
 }
 
 void PolygonGroup::LoadPolygonData(KeyedArchive* keyedArchive, SerializationContext* serializationContext, int32 requiredFlags, bool cutUnusedStreams)
