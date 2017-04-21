@@ -56,27 +56,27 @@ def _build_win32(working_directory_path, root_project_path):
 
     vc12_solution_file_path = os.path.join(source_folder_path, 'projects/Windows/VC12/lib/libcurl.sln')
 
-    build_utils.build_vs(vc12_solution_file_path, 'LIB Debug', 'Win32', 'libcurl')
-    build_utils.build_vs(vc12_solution_file_path, 'LIB Release', 'Win32', 'libcurl')
-    build_utils.build_vs(vc12_solution_file_path, 'LIB Debug', 'x64', 'libcurl')
-    build_utils.build_vs(vc12_solution_file_path, 'LIB Release', 'x64', 'libcurl')
+    build_utils.build_vs(vc12_solution_file_path, 'LIB Debug - LIB OpenSSL', 'Win32', 'libcurl')
+    build_utils.build_vs(vc12_solution_file_path, 'LIB Release - LIB OpenSSL', 'Win32', 'libcurl')
+    build_utils.build_vs(vc12_solution_file_path, 'LIB Debug - LIB OpenSSL', 'x64', 'libcurl')
+    build_utils.build_vs(vc12_solution_file_path, 'LIB Release - LIB OpenSSL', 'x64', 'libcurl')
 
     libs_win_root = os.path.join(root_project_path, 'Libs/lib_CMake/win')
 
     shutil.copyfile(
-        os.path.join(source_folder_path,'build/Win32/VC12/LIB Debug/libcurld.lib'),
+        os.path.join(source_folder_path,'build/Win32/VC12/LIB Debug - LIB OpenSSL/libcurld.lib'),
         os.path.join(libs_win_root, 'x86/Debug/libcurl.lib'))
 
     shutil.copyfile(
-        os.path.join(source_folder_path, 'build/Win32/VC12/LIB Release/libcurl.lib'),
+        os.path.join(source_folder_path, 'build/Win32/VC12/LIB Release - LIB OpenSSL/libcurl.lib'),
         os.path.join(libs_win_root, 'x86/Release/libcurl.lib'))
 
     shutil.copyfile(
-        os.path.join(source_folder_path, 'build/Win64/VC12/LIB Debug/libcurld.lib'),
+        os.path.join(source_folder_path, 'build/Win64/VC12/LIB Debug - LIB OpenSSL/libcurld.lib'),
         os.path.join(libs_win_root, 'x64/Debug/libcurl_a_debug.lib'))
 
     shutil.copyfile(
-        os.path.join(source_folder_path, 'build/Win64/VC12/LIB Release/libcurl.lib'),
+        os.path.join(source_folder_path, 'build/Win64/VC12/LIB Release - LIB OpenSSL/libcurl.lib'),
         os.path.join(libs_win_root, 'x64/Release/libcurl_a.lib'))
 
     _copy_headers(source_folder_path, root_project_path)
