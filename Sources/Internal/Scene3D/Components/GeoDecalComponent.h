@@ -30,8 +30,11 @@ public:
 #define IMPL_PROPERTY(T, Name, varName) \
     const T& Get##Name() const { return config.varName; } \
     void Set##Name(const T& value) { config.varName = value; }
-    IMPL_PROPERTY(FilePath, DecalImage, image);
+    IMPL_PROPERTY(FilePath, DecalAlbedo, albedo);
+    IMPL_PROPERTY(FilePath, DecalNormal, normal);
     IMPL_PROPERTY(AABBox3, BoundingBox, boundingBox);
+    IMPL_PROPERTY(Vector2, UVScale, uvScale);
+    IMPL_PROPERTY(Vector2, UVOffset, uvOffset);
 #undef IMPL_PROPERTY
 
     uint32 GetMapping() const;
@@ -39,7 +42,10 @@ public:
 
     INTROSPECTION_EXTEND(GeoDecalComponent, Component,
                          PROPERTY("Bounding Box", "Bounding Box", GetBoundingBox, SetBoundingBox, I_VIEW | I_EDIT | I_SAVE)
-                         PROPERTY("Decal image", "Decal image", GetDecalImage, SetDecalImage, I_VIEW | I_EDIT | I_SAVE)
+                         PROPERTY("Decal albedo", "Decal albedo", GetDecalAlbedo, SetDecalAlbedo, I_VIEW | I_EDIT | I_SAVE)
+                         PROPERTY("Decal normal", "Decal normal", GetDecalNormal, SetDecalNormal, I_VIEW | I_EDIT | I_SAVE)
+                         PROPERTY("UV Scale", "UV Scale", GetUVScale, SetUVScale, I_VIEW | I_EDIT | I_SAVE)
+                         PROPERTY("UV Offset", "UV Offset", GetUVOffset, SetUVOffset, I_VIEW | I_EDIT | I_SAVE)
                          PROPERTY("Texture mapping", InspDesc("Texture mapping", GlobalEnumMap<GeoDecalManager::Mapping>::Instance()), GetMapping, SetMapping, I_SAVE | I_VIEW | I_EDIT)
                          )
     DAVA_VIRTUAL_REFLECTION(GeoDecalComponent, Component);

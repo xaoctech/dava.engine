@@ -24,7 +24,10 @@ public:
     {
         AABBox3 boundingBox;
         Mapping mapping = Mapping::PLANAR;
-        FilePath image;
+        FilePath albedo;
+        FilePath normal;
+        Vector2 uvOffset;
+        Vector2 uvScale = Vector2(1.0f, 1.0f);
 
         bool operator==(const DecalConfig&) const;
         bool operator!=(const DecalConfig&) const;
@@ -73,28 +76,26 @@ private:
 
 private:
     RenderSystem* renderSystem = nullptr;
-    Texture* defaultNormalMap = nullptr;
     Map<Decal, BuiltDecal> builtDecals;
     std::atomic<uintptr_t> decalCounter{ 0 };
 };
 
 inline bool GeoDecalManager::DecalConfig::operator==(const GeoDecalManager::DecalConfig& r) const
 {
-    return (boundingBox == r.boundingBox) &&
-    (image == r.image) &&
-    (mapping == r.mapping);
+    return (boundingBox == r.boundingBox) && (albedo == r.albedo) && (normal == r.normal) && (mapping == r.mapping) &&
+    (uvOffset == r.uvOffset) && (uvScale == r.uvScale);
 }
 
 inline bool GeoDecalManager::DecalConfig::operator!=(const GeoDecalManager::DecalConfig& r) const
 {
-    return (boundingBox != r.boundingBox) ||
-    (image != r.image) ||
-    (mapping != r.mapping);
+    return (boundingBox != r.boundingBox) || (albedo != r.albedo) || (normal != r.normal) || (mapping != r.mapping) ||
+    (uvOffset != r.uvOffset) || (uvScale != r.uvScale);
 }
 
 inline void GeoDecalManager::DecalConfig::invalidate()
 {
     boundingBox.Empty();
-    image = FilePath();
+    albedo = FilePath();
+    normal = FilePath();
 }
 }

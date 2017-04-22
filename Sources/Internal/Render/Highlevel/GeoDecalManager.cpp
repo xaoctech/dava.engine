@@ -2,16 +2,14 @@
 
 namespace DAVA
 {
-struct GeoDecalManager::DecalBuildInfo
+struct GeoDecalManager::DecalBuildInfo : public GeoDecalManager::DecalConfig
 {
-    Mapping mapping = Mapping::PLANAR;
     PolygonGroup* polygonGroup = nullptr;
     NMaterial* material = nullptr;
-    AABBox3 box;
     Vector3 projectionAxis;
     Matrix4 projectionSpaceTransform;
     Matrix4 projectionSpaceInverseTransform;
-    FilePath image;
+    bool useCustomNormal = false;
 };
 
 struct GeoDecalManager::DecalVertex
@@ -33,13 +31,6 @@ const GeoDecalManager::Decal GeoDecalManager::InvalidDecal = nullptr;
 GeoDecalManager::GeoDecalManager(RenderSystem* rs)
     : renderSystem(rs)
 {
-    uint32 normalmapData[16] = {
-        0xffff8080, 0xffff8080, 0xffff8080, 0xffff8080,
-        0xffff8080, 0xffff8080, 0xffff8080, 0xffff8080,
-        0xffff8080, 0xffff8080, 0xffff8080, 0xffff8080,
-        0xffff8080, 0xffff8080, 0xffff8080, 0xffff8080,
-    };
-    defaultNormalMap = Texture::CreateFromData(PixelFormat::FORMAT_RGBA8888, reinterpret_cast<uint8*>(normalmapData), 4, 4, false);
 }
 
 GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, const Matrix4& decalWorldTransform, RenderObject* ro)
@@ -97,9 +88,13 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, co
     info.projectionSpaceTransform = view * proj;
     info.projectionSpaceTransform.GetInverse(info.projectionSpaceInverseTransform);
     info.mapping = config.mapping;
-    info.image = config.image;
+    info.albedo = config.albedo;
+    info.normal = config.normal;
+    info.uvOffset = config.uvOffset;
+    info.uvScale = config.uvScale;
+    info.useCustomNormal = !info.normal.IsEmpty();
 
-    worldSpaceBox.GetTransformedBox(ro->GetInverseWorldTransform(), info.box);
+    worldSpaceBox.GetTransformedBox(ro->GetInverseWorldTransform(), info.boundingBox);
     BuiltDecal& builtDecal = builtDecals[decal];
     {
         builtDecal.sourceObject = ro;
@@ -207,7 +202,7 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBat
     decalGeometry.reserve(geometry->GetIndexCount());
 
     Set<uint32> triangles;
-    geometry->GetGeometryOctTree()->GetTrianglesInBox(info.box, triangles);
+    geometry->GetGeometryOctTree()->GetTrianglesInBox(info.boundingBox, triangles);
 
     for (uint32 triangleIndex : triangles)
     {
@@ -237,7 +232,7 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBat
                 geometry->GetJointWeight(idx, points[j].jointWeight);
         }
 
-        if (Intersection::BoxTriangle(info.box, points[2].point, points[1].point, points[0].point))
+        if (Intersection::BoxTriangle(info.boundingBox, points[2].point, points[1].point, points[0].point))
         {
             Vector3 nrm = (points[1].point - points[0].point).CrossProduct(points[2].point - points[0].point);
             nrm.Normalize();
@@ -294,7 +289,11 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBat
             ClipToBoundingBox(points, &numPoints, clipSpaceBox);
 
             for (uint32 i = 0; i < numPoints; ++i)
+            {
                 points[i].point = points[i].point * info.projectionSpaceInverseTransform;
+                points[i].decalCoord.x = points[i].decalCoord.x * info.uvScale.x + info.uvOffset.x;
+                points[i].decalCoord.y = points[i].decalCoord.y * info.uvScale.y + info.uvOffset.y;
+            }
 
             for (uint32 i = 0; i + 2 < numPoints; ++i)
             {
@@ -318,7 +317,7 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBat
         poly->SetDecalTexcoord(index, c.decalCoord);
 
         if (geometryFormat & EVF_TEXCOORD0)
-            poly->SetTexcoord(0, index, c.texCoord0);
+            poly->SetTexcoord(0, index, info.useCustomNormal ? Vector2(c.decalCoord.x, c.decalCoord.y) : c.texCoord0);
 
         if (geometryFormat & EVF_TEXCOORD1)
             poly->SetTexcoord(1, index, c.texCoord1);
@@ -350,7 +349,7 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBat
     material->SetFXName(FastName("~res:/Materials/GeoDecal.material"));
     material->SetMaterialName(FastName("GeoDecal"));
 
-    Texture* geoDecalTexture = Texture::CreateFromFile(info.image);
+    ScopedPtr<Texture> geoDecalTexture(Texture::CreateFromFile(info.albedo));
     material->AddTexture(FastName("geodecal"), geoDecalTexture);
 
     if (fxName.find("lightmap") != String::npos)
@@ -363,7 +362,12 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBat
         bool perpixel = fxName.find("pervertex") == String::npos;
         material->AddFlag(FastName("NORMALIZED_BLINN_PHONG"), 1);
         material->AddFlag(FastName(perpixel ? "PIXEL_LIT" : "VERTEX_LIT"), 1);
-        // material->AddTexture(NMaterialTextureName::TEXTURE_NORMAL, defaultNormalMap);
+
+        if (info.useCustomNormal)
+        {
+            ScopedPtr<Texture> customNormal(Texture::CreateFromFile(info.normal));
+            material->AddTexture(NMaterialTextureName::TEXTURE_NORMAL, customNormal);
+        }
     }
     material->PreBuildMaterial(PASS_FORWARD);
 

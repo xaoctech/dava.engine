@@ -27,8 +27,11 @@ void GeoDecalComponent::Serialize(KeyedArchive* archive, SerializationContext* s
     {
         archive->SetVector3("box.center", config.boundingBox.GetCenter());
         archive->SetVector3("box.size", config.boundingBox.GetSize());
-        archive->SetString("image", config.image.GetRelativePathname(serializationContext->GetScenePath()));
+        archive->SetString("albedo", config.albedo.GetRelativePathname(serializationContext->GetScenePath()));
+        archive->SetString("normal", config.normal.GetRelativePathname(serializationContext->GetScenePath()));
         archive->SetUInt32("mapping", config.mapping);
+        archive->SetVector2("uvoffset", config.uvOffset);
+        archive->SetVector2("uvscale", config.uvScale);
     }
 }
 
@@ -40,8 +43,11 @@ void GeoDecalComponent::Deserialize(KeyedArchive* archive, SerializationContext*
         Vector3 center = archive->GetVector3("box.center");
         Vector3 size = 0.5f * archive->GetVector3("box.size", Vector3(1.0f, 1.0f, 1.0f));
         localConfig.boundingBox = AABBox3(center - size, center + size);
-        localConfig.image = serializationContext->GetScenePath() + archive->GetString("image");
+        localConfig.albedo = serializationContext->GetScenePath() + archive->GetString("albedo");
+        localConfig.normal = serializationContext->GetScenePath() + archive->GetString("normal");
         localConfig.mapping = static_cast<GeoDecalManager::Mapping>(archive->GetUInt32("mapping", localConfig.mapping));
+        localConfig.uvOffset = archive->GetVector2("uvoffset", Vector2(0.0f, 0.0f));
+        localConfig.uvScale = archive->GetVector2("uvscale", Vector2(1.0f, 1.0f));
         config = localConfig;
     }
     Component::Deserialize(archive, serializationContext);
