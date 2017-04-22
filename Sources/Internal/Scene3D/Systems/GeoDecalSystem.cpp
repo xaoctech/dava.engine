@@ -3,7 +3,6 @@
 
 namespace DAVA
 {
-
 GeoDecalSystem::GeoDecalSystem(Scene* scene)
     : SceneSystem(scene)
 {
@@ -114,5 +113,4 @@ void GeoDecalSystem::BuildDecal(Entity* entityWithDecal, GeoDecalComponent* comp
         decals[component].decals.emplace_back(decal);
     }
 }
-
 }

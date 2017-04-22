@@ -66,6 +66,4 @@ inline const GeoDecalManager::DecalConfig& GeoDecalComponent::GetConfig() const
 {
     return config;
 }
-
-
 }

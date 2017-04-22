@@ -460,5 +460,4 @@ StaticOcclusionDebugDrawComponent* GetStaticOcclusionDebugDrawComponent(const En
 
     return nullptr;
 }
-
 }

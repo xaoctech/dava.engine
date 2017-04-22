@@ -92,7 +92,7 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, co
     info.normal = config.normal;
     info.uvOffset = config.uvOffset;
     info.uvScale = config.uvScale;
-    info.useCustomNormal = !info.normal.IsEmpty();
+    info.useCustomNormal = FileSystem::Instance()->Exists(info.normal);
 
     worldSpaceBox.GetTransformedBox(ro->GetInverseWorldTransform(), info.boundingBox);
     BuiltDecal& builtDecal = builtDecals[decal];
@@ -487,5 +487,4 @@ void GeoDecalManager::ClipToBoundingBox(DecalVertex* p_vs, uint8_t* nb_p_vs, con
 
 #undef MAX_CLIPPED_POLYGON_CAPACITY
 #undef PLANE_THICKNESS_EPSILON
-
 }
