@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_RENDER_RENDERSYSTEM_2D_H__
-#define __DAVAENGINE_RENDER_RENDERSYSTEM_2D_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "Base/Singleton.h"
@@ -116,31 +115,31 @@ private:
                                             float32 maskBase, float32 maskStretchBase, float32 maskStretchMax, float32 maskMax); //unlike in TileData, this method generates actual vertices info along the axis
 };
 
-class RenderSystem2D : public Singleton<RenderSystem2D>
+struct BatchDescriptor
 {
     static const uint32 MAX_TEXTURE_STREAMS_COUNT = 4;
 
-public:
-    struct BatchDescriptor
-    {
-        Color singleColor = Color::White;
-        uint32 vertexCount = 0;
-        uint32 indexCount = 0;
-        const float32* vertexPointer = nullptr;
-        uint32 vertexStride = 0;
-        Array<const float32*, MAX_TEXTURE_STREAMS_COUNT> texCoordPointer = {};
-        uint32 texCoordStride = 0;
-        uint32 texCoordCount = 1;
-        const uint32* colorPointer = nullptr;
-        uint32 colorStride = 0;
-        const uint16* indexPointer = nullptr;
-        NMaterial* material = nullptr;
-        rhi::HTextureSet textureSetHandle;
-        rhi::HSamplerState samplerStateHandle;
-        rhi::PrimitiveType primitiveType = rhi::PRIMITIVE_TRIANGLELIST;
-        Matrix4* worldMatrix = nullptr;
-    };
+    Color singleColor = Color::White;
+    uint32 vertexCount = 0;
+    uint32 indexCount = 0;
+    const float32* vertexPointer = nullptr;
+    uint32 vertexStride = 0;
+    Array<const float32*, MAX_TEXTURE_STREAMS_COUNT> texCoordPointer = {};
+    uint32 texCoordStride = 0;
+    uint32 texCoordCount = 1;
+    const uint32* colorPointer = nullptr;
+    uint32 colorStride = 0;
+    const uint16* indexPointer = nullptr;
+    NMaterial* material = nullptr;
+    rhi::HTextureSet textureSetHandle;
+    rhi::HSamplerState samplerStateHandle;
+    rhi::PrimitiveType primitiveType = rhi::PRIMITIVE_TRIANGLELIST;
+    Matrix4* worldMatrix = nullptr;
+};
 
+class RenderSystem2D : public Singleton<RenderSystem2D>
+{
+public:
     struct RenderTargetPassDescriptor
     {
         rhi::HTexture colorAttachment;
@@ -396,8 +395,8 @@ private:
     uint32 lastCustomMatrixSematic = 0;
     float32 globalTime = 0.f;
 
-    uint32 VBO_STRIDE[MAX_TEXTURE_STREAMS_COUNT + 1];
-    uint32 vertexLayouts2d[MAX_TEXTURE_STREAMS_COUNT + 1];
+    uint32 VBO_STRIDE[BatchDescriptor::MAX_TEXTURE_STREAMS_COUNT + 1];
+    uint32 vertexLayouts2d[BatchDescriptor::MAX_TEXTURE_STREAMS_COUNT + 1];
 
     // Batching errors handling
     enum ErrorFlag
@@ -448,5 +447,3 @@ inline Vector2 RenderSystem2D::GetAlignedVertex(const Vector2& vertex)
 }
 
 } // ns
-
-#endif /* __DAVAENGINE_RENDER_RENDERSYSTEM_2D_H__ */

@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_UI_CONTROL_BACKGROUND_H__
-#define __DAVAENGINE_UI_CONTROL_BACKGROUND_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
@@ -16,6 +15,7 @@ class UIGeometricData;
 struct TiledDrawData;
 struct StretchDrawData;
 struct TiledMultilayerData;
+struct BatchDescriptor;
 class NMaterial;
 
 /**
@@ -45,7 +45,8 @@ public:
         DRAW_STRETCH_VERTICAL, //!<Stretch sprite vertically along the control rect.
         DRAW_STRETCH_BOTH, //!<Stretch sprite along the all control rect.
         DRAW_TILED, //!<Fill control with sprite tiles
-        DRAW_TILED_MULTILAYER //!uses for texture - tiled background (withot stretch caps!), stretch mask and contour using same stratch caps, and full back gradient overlay
+        DRAW_TILED_MULTILAYER, //!uses for texture - tiled background (withot stretch caps!), stretch mask and contour using same stratch caps, and full back gradient overlay
+        DRAW_BATCH
     };
 
     /**
@@ -249,6 +250,9 @@ public:
     void SetMaterial(NMaterial* material);
     NMaterial* GetMaterial() const;
 
+    void SetRenderBatch(BatchDescriptor* batch);
+    BatchDescriptor* GetRenderBatch() const;
+
 protected:
     RefPtr<Sprite> spr;
     int32 align = ALIGN_HCENTER | ALIGN_VCENTER;
@@ -284,6 +288,7 @@ protected:
     Color drawColor;
 
     NMaterial* material = nullptr;
+    BatchDescriptor* batchDescriptor = nullptr;
 #if defined(LOCALIZATION_DEBUG)
     Sprite::DrawState lastDrawState;
 #endif
@@ -337,6 +342,7 @@ inline FilePath UIControlBackground::GetMaskSpritePath() const
         return Sprite::GetPathString(mask.Get());
     return "";
 }
+
 inline void UIControlBackground::SetMaskSpriteFromPath(const FilePath& path)
 {
     if (path != "")
@@ -344,6 +350,7 @@ inline void UIControlBackground::SetMaskSpriteFromPath(const FilePath& path)
     else
         mask.Set(nullptr);
 }
+
 inline void UIControlBackground::SetMaskSprite(Sprite* sprite)
 {
     mask = sprite;
@@ -355,6 +362,7 @@ inline FilePath UIControlBackground::GetDetailSpritePath() const
         return Sprite::GetPathString(detail.Get());
     return "";
 }
+
 inline void UIControlBackground::SetDetailSpriteFromPath(const FilePath& path)
 {
     if (path != "")
@@ -362,6 +370,7 @@ inline void UIControlBackground::SetDetailSpriteFromPath(const FilePath& path)
     else
         detail.Set(nullptr);
 }
+
 inline void UIControlBackground::SetDetailSprite(Sprite* sprite)
 {
     detail = sprite;
@@ -373,6 +382,7 @@ inline FilePath UIControlBackground::GetGradientSpritePath() const
         return Sprite::GetPathString(gradient.Get());
     return "";
 }
+
 inline void UIControlBackground::SetGradientSpriteFromPath(const FilePath& path)
 {
     if (path != "")
@@ -380,6 +390,7 @@ inline void UIControlBackground::SetGradientSpriteFromPath(const FilePath& path)
     else
         gradient.Set(nullptr);
 }
+
 inline void UIControlBackground::SetGradientSprite(Sprite* sprite)
 {
     gradient = sprite;
@@ -391,6 +402,7 @@ inline FilePath UIControlBackground::GetContourSpritePath() const
         return Sprite::GetPathString(contour.Get());
     return "";
 }
+
 inline void UIControlBackground::SetContourSpriteFromPath(const FilePath& path)
 {
     if (path != "")
@@ -398,6 +410,7 @@ inline void UIControlBackground::SetContourSpriteFromPath(const FilePath& path)
     else
         contour.Set(nullptr);
 }
+
 inline void UIControlBackground::SetContourSprite(Sprite* sprite)
 {
     contour = sprite;
@@ -407,10 +420,10 @@ inline eGradientBlendMode UIControlBackground::GetGradientBlendMode() const
 {
     return gradientMode;
 }
+
 inline void UIControlBackground::SetGradientBlendMode(eGradientBlendMode mode)
 {
     gradientMode = mode;
 }
 };
 
-#endif

@@ -511,6 +511,12 @@ void UIControlBackground::Draw(const UIGeometricData& parentGeometricData)
         lastDrawPos = geometricData.position;
         RenderSystem2D::Instance()->DrawTiledMultylayer(mask.Get(), detail.Get(), gradient.Get(), contour.Get(), &drawState, Vector2(leftStretchCap, topStretchCap), geometricData, &tiledMultulayerData, drawColor);
         break;
+    case DRAW_BATCH:
+        if (batchDescriptor)
+        {
+            RenderSystem2D::Instance()->PushBatch(*batchDescriptor);
+        }
+        break;
     default:
         break;
     }
@@ -562,5 +568,15 @@ void UIControlBackground::SetMaterial(NMaterial* _material)
 inline NMaterial* UIControlBackground::GetMaterial() const
 {
     return material;
+}
+
+void UIControlBackground::SetRenderBatch(BatchDescriptor* batch)
+{
+    batchDescriptor = batch;
+}
+
+BatchDescriptor* UIControlBackground::GetRenderBatch() const
+{
+    return batchDescriptor;
 }
 };

@@ -105,7 +105,7 @@ void RenderSystem2D::Init()
     layout.AddElement(rhi::VS_COLOR, 0, rhi::VDT_UINT8N, 4);
     vertexLayouts2d[1] = rhi::VertexLayout::UniqueId(layout);
     VBO_STRIDE[1] = 3 * sizeof(float32) + 2 * sizeof(float32) + 4; //position, uv, color
-    for (uint32 i = 2; i <= MAX_TEXTURE_STREAMS_COUNT; ++i)
+    for (uint32 i = 2; i <= BatchDescriptor::MAX_TEXTURE_STREAMS_COUNT; ++i)
     {
         layout.AddElement(rhi::VS_TEXCOORD, i - 1, rhi::VDT_FLOAT, 2);
         vertexLayouts2d[i] = rhi::VertexLayout::UniqueId(layout);
@@ -697,7 +697,7 @@ void RenderSystem2D::PushBatch(const BatchDescriptor& batchDesc)
         Vector2 uv;
         uint32 color;
         //optional explicit params
-        Vector2 uv_ext[MAX_TEXTURE_STREAMS_COUNT - 1];
+        Vector2 uv_ext[BatchDescriptor::MAX_TEXTURE_STREAMS_COUNT - 1];
     };
 
     uint32 vertexStride = GetVBOStride(currentTexcoordStreamCount);
