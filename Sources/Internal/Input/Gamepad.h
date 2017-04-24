@@ -43,6 +43,7 @@ private:
     void HandleGamepadButton(const Private::MainDispatcherEvent& e);
 
     void HandleButtonPress(eInputElements element, bool pressed);
+    void HandleBackButtonPress(bool pressed);
     void HandleAxisMovement(eInputElements element, float32 newValue, bool horizontal);
 
     InputSystem* inputSystem = nullptr;
@@ -52,6 +53,7 @@ private:
     static const uint32 AXIS_COUNT = static_cast<uint32>(eInputElements::GAMEPAD_LAST_AXIS - eInputElements::GAMEPAD_FIRST_AXIS + 1);
     Array<eDigitalElementStates, BUTTON_COUNT> buttons;
     Array<AnalogElementState, AXIS_COUNT> axes;
+    eDigitalElementStates backButton;
 
     std::bitset<BUTTON_COUNT> buttonChangedMask;
     std::bitset<AXIS_COUNT> axisChangedMask;

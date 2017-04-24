@@ -4,6 +4,8 @@
 
 #include "Debug/DVAssert.h"
 #include "Engine/Engine.h"
+#include "Engine/Private/EngineBackend.h"
+#include "Engine/Private/Dispatcher/MainDispatcher.h"
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 #include "Input/InputEvent.h"
 #include "Input/InputSystem.h"
@@ -134,6 +136,22 @@ void Gamepad::HandleButtonPress(eInputElements element, bool pressed)
     {
         pressed ? di.Press() : di.Release();
         buttonChangedMask.set(index);
+    }
+}
+
+void Gamepad::HandleBackButtonPress(bool pressed)
+{
+    using namespace DAVA::Private;
+
+    DIElementWrapper di(backButton);
+    if (di.IsPressed() != pressed)
+    {
+        pressed ? di.Press() : di.Release();
+
+        if ((backButton & eDigitalElementStates::JUST_PRESSED) == eDigitalElementStates::JUST_PRESSED)
+        {
+            EngineBackend::Instance()->GetDispatcher()->PostEvent(MainDispatcherEvent(MainDispatcherEvent::BACK_NAVIGATION));
+        }
     }
 }
 

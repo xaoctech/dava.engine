@@ -155,7 +155,6 @@ const InputElementInfo& GetInputElementInfo(eInputElements element)
 
         // Gamepad
         info[eInputElements::GAMEPAD_START] = { "Gamepad start", eInputElementTypes::DIGITAL };
-        info[eInputElements::GAMEPAD_BACK] = { "Gamepad back", eInputElementTypes::DIGITAL };
         info[eInputElements::GAMEPAD_A] = { "Gamepad A", eInputElementTypes::DIGITAL };
         info[eInputElements::GAMEPAD_B] = { "Gamepad B", eInputElementTypes::DIGITAL };
         info[eInputElements::GAMEPAD_X] = { "Gamepad X", eInputElementTypes::DIGITAL };

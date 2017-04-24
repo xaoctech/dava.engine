@@ -75,6 +75,9 @@ void InputSystemTest::LoadResources()
     set.analogBindings.push_back(action5);
 
     GetEngineContext()->actionSystem->BindSet(set, 1, 2);
+
+    // Handle back button
+    GetPrimaryWindow()->backNavigation.Connect(this, &InputSystemTest::OnBackNavigation);
 }
 
 void InputSystemTest::UnloadResources()
@@ -121,7 +124,9 @@ void InputSystemTest::UnloadResources()
     SafeRelease(inputListenerAnalogButton);
     SafeRelease(inputListenerResultField);
 
-    // TODO: unbind action set
+    GetEngineContext()->actionSystem->UnbindAllSets();
+
+    GetPrimaryWindow()->backNavigation.Disconnect(this);
 
     BaseScreen::UnloadResources();
 }
@@ -745,4 +750,9 @@ void InputSystemTest::OnUpdate(float32 delta)
             touchButton->SetStateText(0xFF, ss.str());
         }
     }
+}
+
+void InputSystemTest::OnBackNavigation(DAVA::Window* window)
+{
+    Logger::Info("Back navigation");
 }

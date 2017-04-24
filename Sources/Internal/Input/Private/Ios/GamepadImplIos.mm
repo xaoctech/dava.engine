@@ -31,7 +31,7 @@ void GamepadImpl::Update()
     }
 }
 
-void GamepadDeviceImpl::ReadExtendedGamepadElements(GCExtendedGamepad* gamepad)
+void GamepadImpl::ReadExtendedGamepadElements(GCExtendedGamepad* gamepad)
 {
     gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_A, gamepad.buttonA.isPressed);
     gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_B, gamepad.buttonB.isPressed);

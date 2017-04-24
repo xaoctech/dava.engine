@@ -22,7 +22,6 @@ void GamepadImpl::Update()
     GamepadReading reading = gamepad->GetCurrentReading();
 
     gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_START, (reading.Buttons & GamepadButtons::Menu) != GamepadButtons::None);
-    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_BACK, (reading.Buttons & GamepadButtons::View) != GamepadButtons::None);
     gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_A, (reading.Buttons & GamepadButtons::A) != GamepadButtons::None);
     gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_B, (reading.Buttons & GamepadButtons::B) != GamepadButtons::None);
     gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_X, (reading.Buttons & GamepadButtons::X) != GamepadButtons::None);
@@ -42,6 +41,8 @@ void GamepadImpl::Update()
     gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_AXIS_RTHUMB, static_cast<float32>(reading.RightThumbstickY), false);
     gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_AXIS_LTRIGGER, static_cast<float32>(reading.LeftTrigger), true);
     gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_AXIS_RTRIGGER, static_cast<float32>(reading.RightTrigger), true);
+
+    gamepadDevice->HandleBackButtonPress((reading.Buttons & GamepadButtons::View) != GamepadButtons::None);
 }
 
 bool GamepadImpl::HandleGamepadAdded(uint32 /*id*/)

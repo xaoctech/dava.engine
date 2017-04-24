@@ -146,7 +146,6 @@ enum eInputElements : uint32
     // Gamepad
 
     GAMEPAD_START = 160, // Range from 140 to 159 is reserved for mouse
-    GAMEPAD_BACK,
     GAMEPAD_A,
     GAMEPAD_B,
     GAMEPAD_X,

@@ -300,7 +300,7 @@ const eInputElements nativeScancodeToDavaScancode[] =
     */
 };
 
-eInputElements KeyboardDeviceImpl::ConvertNativeScancodeToDavaScancode(uint32 nativeScancode)
+eInputElements KeyboardImpl::ConvertNativeScancodeToDavaScancode(uint32 nativeScancode)
 {
     if (nativeScancode >= COUNT_OF(nativeScancodeToDavaScancode))
     {
@@ -310,7 +310,7 @@ eInputElements KeyboardDeviceImpl::ConvertNativeScancodeToDavaScancode(uint32 na
     return nativeScancodeToDavaScancode[nativeScancode];
 }
 
-WideString KeyboardDeviceImpl::TranslateElementToWideString(eInputElements elementId)
+WideString KeyboardImpl::TranslateElementToWideString(eInputElements elementId)
 {
     return UTF8Utils::EncodeToWideString(GetInputElementInfo(elementId).name);
 }

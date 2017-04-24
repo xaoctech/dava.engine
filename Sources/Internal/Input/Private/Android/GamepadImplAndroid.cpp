@@ -87,6 +87,14 @@ void GamepadImpl::HandleGamepadMotion(const MainDispatcherEvent& e)
 
 void GamepadImpl::HandleGamepadButton(const MainDispatcherEvent& e)
 {
+    bool pressed = e.type == MainDispatcherEvent::GAMEPAD_BUTTON_DOWN;
+
+    if (e.gamepadEvent.button == AKEYCODE_BACK)
+    {
+        gamepadDevice->HandleBackButtonPress(pressed);
+        return;
+    }
+
     eInputElements element = eInputElements::NONE;
     switch (e.gamepadEvent.button)
     {
@@ -138,7 +146,6 @@ void GamepadImpl::HandleGamepadButton(const MainDispatcherEvent& e)
         return;
     }
 
-    bool pressed = e.type == MainDispatcherEvent::GAMEPAD_BUTTON_DOWN;
     gamepadDevice->HandleButtonPress(element, pressed);
 }
 
