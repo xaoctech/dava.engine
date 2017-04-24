@@ -187,7 +187,7 @@ int TouchScreen::GetFirstNonUsedTouchIndex() const
 {
     for (int i = 0; i < INPUT_ELEMENTS_TOUCH_CLICK_COUNT; ++i)
     {
-        if ((clicks[i] & eDigitalElementStates::RELEASED) == eDigitalElementStates::RELEASED)
+        if (clicks[i] == eDigitalElementStates::RELEASED)
         {
             return i;
         }
