@@ -63,6 +63,37 @@ void UISpineSystem::Process(DAVA::float32 elapsedTime)
         UISpineComponent* component = node.component;
         const RefPtr<SpineSkeleton>& skeleton = node.skeleton;
 
+        if (component->IsNeedReload())
+        {
+            skeleton->Load(component->GetSkeletonPath(), component->GetAtlasPath());
+
+            bool modified = component->IsModified();
+            component->SetAnimationsNames(skeleton->GetAvailableAnimationsNames());
+            component->SetModified(modified);
+
+            component->SetNeedReload(false);
+        }
+
+        if (component->IsModified())
+        {
+            switch(component->GetAnimationState())
+            {
+            case UISpineComponent::PLAYED:
+                {
+                    const String& name = component->GetAnimationName();
+                    if (!name.empty())
+                    {
+                        skeleton->SetAnimation(0, name, component->IsLoopedPlayback());
+                    }
+                }
+                break;
+            case UISpineComponent::STOPPED:
+                skeleton->ClearTracks();
+                break;
+            }
+            component->SetModified(false);
+        }
+
         skeleton->Update(elapsedTime);
 
         UIControl* control = component->GetControl();
@@ -83,9 +114,13 @@ void UISpineSystem::AddNode(UISpineComponent* component)
     SpineNode node;
     node.component = component;
     node.skeleton.Set(new SpineSkeleton());
-    node.skeleton->Load(component->GetSkeletonPath(), component->GetAtlasPath());
     node.skeleton->onEvent.Connect([this, component](const String& event) {
+        // System event observer
         onAnimationEvent.Emit(component, event);
+    });
+    node.skeleton->onEvent.Connect([this, component](const String& event) {
+        // Compoent event observer
+        component->onAnimationEvent.Emit(component, event);
     });
     nodes.push_back(node);
 }
