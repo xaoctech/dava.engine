@@ -43,6 +43,7 @@
 #include "Tests/AnyPerformanceTest.h"
 #include "Tests/OverdrawTest.h"
 #include "Tests/WindowTest.h"
+#include "Tests/SpineTest.h"
 //$UNITTEST_INCLUDE
 
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
@@ -337,6 +338,7 @@ void TestBed::RegisterTests()
 #endif
 
     new WindowTest(*this);
+    new SpineTest(*this);
     //$UNITTEST_CTOR
 }
 

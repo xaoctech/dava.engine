@@ -2,7 +2,7 @@
 
 #include "Base/BaseTypes.h"
 #include "UI/Components/UIComponent.h"
-#include "Functional/Function.h"
+#include "Reflection/Reflection.h"
 
 namespace DAVA
 {
@@ -13,9 +13,11 @@ Temporary component for backward compatibility with existing code.
 */
 class UIUpdateComponent : public UIBaseComponent<UIUpdateComponent>
 {
+    DAVA_VIRTUAL_REFLECTION(UIUpdateComponent, UIComponent);
+
 public:
-    UIUpdateComponent() = default;
-    UIUpdateComponent(const UIUpdateComponent& src) = default;
+    UIUpdateComponent();
+    UIUpdateComponent(const UIUpdateComponent& src);
     UIComponent* Clone() const override;
 
     // Notificate what control with this component should
@@ -30,9 +32,6 @@ protected:
 
 private:
     bool updateInvisible = false;
-
-public:
-    INTROSPECTION_EXTEND(UIUpdateComponent, UIComponent, nullptr)
 };
 
 inline void UIUpdateComponent::SetUpdateInvisible(bool value)

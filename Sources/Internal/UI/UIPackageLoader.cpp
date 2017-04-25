@@ -376,11 +376,13 @@ void UIPackageLoader::LoadControl(const YamlNode* node, AbstractUIPackageBuilder
 
 void UIPackageLoader::LoadControlPropertiesFromYamlNode(UIControl* control, const Reflection& ref, const YamlNode* node, AbstractUIPackageBuilder* builder)
 {
+    static const FastName componentsName("components");
+
     Vector<Reflection::Field> fields = ref.GetFields();
     for (const Reflection::Field& field : fields)
     {
-        String name = field.key.Get<String>();
-        if (name == "components")
+        FastName name = field.key.Get<FastName>();
+        if (name == componentsName)
         {
             // TODO: Make loading components by reflection here
             continue;
@@ -389,7 +391,7 @@ void UIPackageLoader::LoadControlPropertiesFromYamlNode(UIControl* control, cons
         Any res;
         if (node)
         {
-            res = ReadAnyFromYamlNode(field.ref, node, name);
+            res = ReadAnyFromYamlNode(field.ref, node, name.c_str());
             if (!res.IsEmpty())
             {
                 builder->BeginControlPropertiesSection(ReflectedTypeDB::GetByType(field.inheritFrom->GetType())->GetPermanentName());
@@ -415,10 +417,12 @@ void UIPackageLoader::LoadComponentPropertiesFromYamlNode(UIControl* control, co
             for (Reflection::Field& field : fields)
             {
                 Any res;
+                FastName name = field.key.Get<FastName>();
+
                 if (nodeDescr.type == Type::Instance<UILinearLayoutComponent>() && version <= LAST_VERSION_WITH_LINEAR_LAYOUT_LEGACY_ORIENTATION)
                 {
-                    FastName name(field.key.Get<String>());
-                    if (nodeDescr.type == Type::Instance<UILinearLayoutComponent>() && name == FastName("orientation"))
+                    static const FastName orientationName("orientation");
+                    if (nodeDescr.type == Type::Instance<UILinearLayoutComponent>() && name == orientationName)
                     {
                         const YamlNode* valueNode = nodeDescr.node->Get(name.c_str());
                         if (valueNode)
@@ -441,7 +445,6 @@ void UIPackageLoader::LoadComponentPropertiesFromYamlNode(UIControl* control, co
                 if (nodeDescr.type == Type::Instance<UIControlBackground>() && version <= LAST_VERSION_WITH_LEGACY_SPRITE_MODIFICATION)
                 {
                     static const FastName propertyName("spriteModification");
-                    const FastName name(field.key.Cast<String>());
                     if (name == propertyName)
                     {
                         const YamlNode* valueNode = nodeDescr.node->Get(name.c_str());
@@ -454,7 +457,7 @@ void UIPackageLoader::LoadComponentPropertiesFromYamlNode(UIControl* control, co
 
                 if (res.IsEmpty())
                 {
-                    res = ReadAnyFromYamlNode(field.ref, nodeDescr.node, field.key.Get<String>());
+                    res = ReadAnyFromYamlNode(field.ref, nodeDescr.node, name.c_str());
                 }
 
                 builder->ProcessProperty(field, res);
@@ -496,8 +499,8 @@ void UIPackageLoader::ProcessLegacyAligns(UIControl* control, const YamlNode* no
             Vector<Reflection::Field> fields = componentRef.GetFields();
             for (const Reflection::Field& field : fields)
             {
-                String name = field.key.Get<String>();
-                Any res = ReadAnyFromYamlNode(field.ref, node, legacyAlignsMap[name]);
+                FastName name = field.key.Get<FastName>();
+                Any res = ReadAnyFromYamlNode(field.ref, node, legacyAlignsMap[name.c_str()]);
                 builder->ProcessProperty(field, res);
             }
         }

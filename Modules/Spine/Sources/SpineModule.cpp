@@ -2,6 +2,7 @@
 #include "UI/Spine/UISpineComponent.h"
 #include "UI/Spine/UISpineSystem.h"
 
+#include <Base/GlobalEnum.h>
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
 #include <Entity/ComponentManager.h>
@@ -9,8 +10,15 @@
 #include <UI/UIControlSystem.h>
 #include <UI/Styles/UIStyleSheetSystem.h>
 
+ENUM_DECLARE(DAVA::UISpineComponent::AnimationState)
+{
+    ENUM_ADD_DESCR(DAVA::UISpineComponent::STOPPED, "Stopped");
+    ENUM_ADD_DESCR(DAVA::UISpineComponent::PLAYED, "Played");
+}
+
 namespace DAVA
 {
+
 SpineModule::SpineModule(Engine * engine)
     : IModule(engine)
 {

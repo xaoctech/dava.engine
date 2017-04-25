@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
+#include "Reflection/Reflection.h"
 #include "UI/Components/UIComponent.h"
-#include "Functional/Function.h"
 
 namespace DAVA
 {
@@ -13,9 +13,11 @@ Temporary component for backward compatibility with existing code.
 */
 class UICustomUpdateDeltaComponent : public UIBaseComponent<UICustomUpdateDeltaComponent>
 {
+    DAVA_VIRTUAL_REFLECTION(UICustomUpdateDeltaComponent, UIComponent);
+
 public:
-    UICustomUpdateDeltaComponent() = default;
-    UICustomUpdateDeltaComponent(const UICustomUpdateDeltaComponent& src) = default;
+    UICustomUpdateDeltaComponent();
+    UICustomUpdateDeltaComponent(const UICustomUpdateDeltaComponent& src);
     UIComponent* Clone() const override;
 
     void SetDelta(float32 delta);
@@ -26,10 +28,6 @@ protected:
 
 private:
     float32 customDelta = 0.f;
-
-public:
-    INTROSPECTION_EXTEND(UICustomUpdateDeltaComponent, UIComponent,
-                         PROPERTY("delta", "Delta", GetDelta, SetDelta, I_SAVE | I_VIEW | I_EDIT))
 };
 
 inline float32 UICustomUpdateDeltaComponent::GetDelta() const
