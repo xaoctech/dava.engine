@@ -1,8 +1,9 @@
 #pragma once
 
-#include <QAbstractItemDelegate>
+#include <QStyledItemDelegate>
 #include <QPersistentModelIndex>
 #include <QHash>
+#include <QSet>
 
 class QTreeView;
 
@@ -12,7 +13,8 @@ namespace TArc
 {
 class ReflectedPropertyModel;
 class BaseComponentValue;
-class PropertiesViewDelegate : public QAbstractItemDelegate
+class PropertiesViewDelegatePrivate;
+class PropertiesViewDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 public:
@@ -34,6 +36,8 @@ private:
     BaseComponentValue* GetComponentValue(const QModelIndex& index) const;
     void AdjustEditorRect(QStyleOptionViewItem& opt) const;
     void UpdateSpanning(const QModelIndex& index, bool isSpanned) const;
+
+    bool eventFilter(QObject* object, QEvent* event) override;
 
 private:
     ReflectedPropertyModel* model = nullptr;

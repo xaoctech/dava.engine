@@ -40,7 +40,7 @@ void ChildCreator::UpdateSubTree(const std::shared_ptr<PropertyNode>& parent)
         newItems = std::move(children);
         for (size_t i = 0; i < newItems.size(); ++i)
         {
-            nodeCreated.Emit(parent, newItems[i], static_cast<int32>(i));
+            nodeCreated.Emit(parent, newItems[i]);
         }
     }
     else
@@ -58,7 +58,7 @@ void ChildCreator::UpdateSubTree(const std::shared_ptr<PropertyNode>& parent)
             std::swap(children, currentChildren);
             for (size_t i = 0; i < currentChildren.size(); ++i)
             {
-                nodeCreated.Emit(parent, currentChildren[i], static_cast<int32>(i));
+                nodeCreated.Emit(parent, currentChildren[i]);
             }
         }
         else
@@ -78,7 +78,7 @@ void ChildCreator::UpdateSubTree(const std::shared_ptr<PropertyNode>& parent)
                 {
                     RemoveNode(currentChildren[i]);
                     std::swap(currentChildren[i], children[i]);
-                    nodeCreated.Emit(parent, currentChildren[i], static_cast<int32>(i));
+                    nodeCreated.Emit(parent, currentChildren[i]);
                 }
             }
         }
@@ -101,6 +101,12 @@ void ChildCreator::RemoveNode(const std::shared_ptr<PropertyNode>& parent)
 void ChildCreator::Clear()
 {
     propertiesIndex.clear();
+}
+
+void ChildCreator::SetDevMode(bool isDevMode)
+{
+    DVASSERT(extensions != nullptr);
+    extensions->SetDevelopertMode(isDevMode);
 }
 
 void ChildCreator::RegisterExtension(const std::shared_ptr<ChildCreatorExtension>& extension)

@@ -4,9 +4,18 @@
 #include "TArc/DataProcessing/DataListener.h"
 #include "TArc/DataProcessing/DataWrappersProcessor.h"
 #include "TArc/Controls/ControlDescriptor.h"
+#include "TArc/WindowSubSystem/QtTArcEvents.h"
+#include "TArc/Utils/ScopedValueGuard.h"
 
 #include <QWidget>
 #include <QObject>
+#include <QCoreApplication>
+
+#define RETURN_IF_MODEL_LOST(x) \
+    if (wrapper.HasData() == false) \
+    {\
+        return (x);\
+    }
 
 namespace DAVA
 {
@@ -97,6 +106,27 @@ protected:
     {
         wrapper = accessor->CreateWrapper(MakeFunction(this, &ControlProxyImpl<TBase>::GetModel));
         wrapper.SetListener(this);
+    }
+
+    bool event(QEvent* e) override
+    {
+        switch (e->type())
+        {
+        case QEvent::FocusIn:
+        case QEvent::FocusOut:
+        case QEvent::KeyPress:
+        case QEvent::KeyRelease:
+        case QEvent::MouseButtonPress:
+        case QEvent::MouseButtonRelease:
+        case QEvent::MouseMove:
+        case QEvent::MouseButtonDblClick:
+            RETURN_IF_MODEL_LOST(false);
+            break;
+        default:
+            break;
+        }
+
+        return TBase::event(e);
     }
 
 protected:

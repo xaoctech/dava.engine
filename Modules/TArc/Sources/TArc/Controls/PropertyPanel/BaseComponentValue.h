@@ -48,21 +48,21 @@ public:
 
     void Init(ReflectedPropertyModel* model);
 
-    void Draw(QWidget* parent, QPainter* painter, const QStyleOptionViewItem& opt);
-    void UpdateGeometry(QWidget* parent, const QStyleOptionViewItem& opt);
-    bool HasHeightForWidth(const QWidget* parent) const;
-    int GetHeightForWidth(const QWidget* parent, int width) const;
-    int GetHeight(const QWidget* parent) const;
+    void Draw(QPainter* painter, const QStyleOptionViewItem& opt);
+    void UpdateGeometry(const QStyleOptionViewItem& opt);
+    bool HasHeightForWidth() const;
+    int GetHeightForWidth(int width) const;
+    int GetHeight() const;
 
-    QWidget* AcquireEditorWidget(QWidget* parent, const QStyleOptionViewItem& option);
-    void ReleaseEditorWidget(QWidget* editor);
+    QWidget* AcquireEditorWidget(const QStyleOptionViewItem& option);
+    void EnsureEditorCreated(QWidget* parent);
 
     QString GetPropertyName() const;
-    FastName GetName() const;
+    FastName GetID() const;
     int32 GetPropertiesNodeCount() const;
     std::shared_ptr<PropertyNode> GetPropertyNode(int32 index) const;
 
-    void HideEditor();
+    void ForceUpdate();
 
     virtual bool IsReadOnly() const;
     virtual bool IsSpannedControl() const;
@@ -101,9 +101,7 @@ protected:
     DataWrappersProcessor* GetDataProcessor() const;
 
 private:
-    void EnsureEditorCreated(const QWidget* parent) const;
-    void EnsureEditorCreated(QWidget* parent);
-    void UpdateEditorGeometry(const QWidget* parent, const QRect& geometry) const;
+    void UpdateEditorGeometry(const QRect& geometry) const;
 
     void CreateButtons(QLayout* layout, const M::CommandProducerHolder* holder, bool isTypeButtons);
 
@@ -115,6 +113,7 @@ private:
     BaseComponentValue* thisValue = nullptr;
     bool isEditorEvent = false;
     Style style;
+    FastName itemID;
 
     QtConnections connections;
 
