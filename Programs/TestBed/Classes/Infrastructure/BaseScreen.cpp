@@ -13,8 +13,6 @@ BaseScreen::BaseScreen(TestBed& app, const DAVA::String& screenName)
 {
     SetName(screenName);
     app.RegisterScreen(this);
-
-    DAVA::GetPrimaryWindow()->backNavigation.Connect(this, &BaseScreen::OnBackNavigation);
 }
 
 void BaseScreen::OnBackNavigation(DAVA::Window* window)
@@ -46,6 +44,8 @@ void BaseScreen::LoadResources()
     }
 
     AddControl(exitButton);
+
+    DAVA::GetPrimaryWindow()->backNavigation.Connect(this, &BaseScreen::OnBackNavigation);
 }
 
 void BaseScreen::UnloadResources()
@@ -53,6 +53,8 @@ void BaseScreen::UnloadResources()
     RemoveAllControls();
 
     SafeRelease(exitButton);
+
+    DAVA::GetPrimaryWindow()->backNavigation.Disconnect(this);
 
     UIScreen::UnloadResources();
 }
