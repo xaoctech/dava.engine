@@ -23,8 +23,12 @@ public:
 
     const GeoDecalManager::DecalConfig& GetConfig() const;
 
+    bool GetRebakeOnTransform() const;
+    void SetRebakeOnTransform(const bool& value);
+
 private:
     GeoDecalManager::DecalConfig config;
+    bool rebakeOnTransform = true;
 
 public:
 #define IMPL_PROPERTY(T, Name, varName) \
@@ -47,6 +51,7 @@ public:
                          PROPERTY("UV Scale", "UV Scale", GetUVScale, SetUVScale, I_VIEW | I_EDIT | I_SAVE)
                          PROPERTY("UV Offset", "UV Offset", GetUVOffset, SetUVOffset, I_VIEW | I_EDIT | I_SAVE)
                          PROPERTY("Texture mapping", InspDesc("Texture mapping", GlobalEnumMap<GeoDecalManager::Mapping>::Instance()), GetMapping, SetMapping, I_SAVE | I_VIEW | I_EDIT)
+                         PROPERTY("Rebake on transform", "Rebake on transform", GetRebakeOnTransform, SetRebakeOnTransform, I_SAVE | I_VIEW | I_EDIT)
                          )
     DAVA_VIRTUAL_REFLECTION(GeoDecalComponent, Component);
 };
@@ -65,5 +70,15 @@ inline void GeoDecalComponent::SetMapping(uint32 value)
 inline const GeoDecalManager::DecalConfig& GeoDecalComponent::GetConfig() const
 {
     return config;
+}
+
+inline bool GeoDecalComponent::GetRebakeOnTransform() const
+{
+    return rebakeOnTransform;
+}
+
+inline void GeoDecalComponent::SetRebakeOnTransform(const bool& value)
+{
+    rebakeOnTransform = value;
 }
 }

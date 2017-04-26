@@ -468,7 +468,7 @@ void DebugDrawSystem::DrawDecals(DAVA::Entity* entity)
         }
         else // PLANAR assumed
         {
-            drawer->DrawArrow(origin, origin + direction, direction.Length(), accentColor, dt);
+            drawer->DrawArrow(origin - direction, origin, 0.25f * direction.Length(), accentColor, dt);
         }
     }
 }

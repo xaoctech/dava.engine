@@ -34,8 +34,11 @@ void GeoDecalSystem::ImmediateEvent(Component* transformComponent, uint32 event)
         Entity* entity = transformComponent->GetEntity();
         for (uint32 i = 0, e = entity->GetComponentCount(Component::GEO_DECAL_COMPONENT); i < e; ++i)
         {
-            Component* component = entity->GetComponent(Component::GEO_DECAL_COMPONENT, i);
-            decals[component].lastValidConfig.invalidate();
+            GeoDecalComponent* component = static_cast<GeoDecalComponent*>(entity->GetComponent(Component::GEO_DECAL_COMPONENT, i));
+            if (component->GetRebakeOnTransform())
+            {
+                decals[component].lastValidConfig.invalidate();
+            }
         }
     }
 }

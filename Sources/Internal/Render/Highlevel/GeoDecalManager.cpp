@@ -257,14 +257,14 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBat
                 {
                     Vector3 p = points[i].point;
                     p.Normalize();
-                    points[i].decalCoord.x = std::atan2(p.y, p.x);
+                    points[i].decalCoord.x = -std::atan2(p.y, p.x);
                     points[i].decalCoord.y = (asin(p.z) + 0.5f * PI) / PI;
                 }
                 else if (info.mapping == Mapping::CYLINDRICAL)
                 {
                     Vector2 c(points[i].point.x, points[i].point.y);
                     c.Normalize();
-                    points[i].decalCoord.x = std::atan2(c.y, c.x);
+                    points[i].decalCoord.x = -std::atan2(c.y, c.x);
                     points[i].decalCoord.y = points[i].point.z * 0.5f + 0.5f;
                 }
                 else
