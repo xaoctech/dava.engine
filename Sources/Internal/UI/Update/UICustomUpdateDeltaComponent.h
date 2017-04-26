@@ -7,10 +7,10 @@
 namespace DAVA
 {
 /**
-Component for UIUpdateSystem that defines which frameDelta will be send to UIControl.
-Temporary component for backward compatibility with existing code.
-**WILL BE CHANGED** after design replays/custom speed logic.
-*/
+ Component for UIUpdateSystem that defines which frameDelta will be send to UIControl.
+ Temporary component for backward compatibility with existing code.
+ **WILL BE CHANGED** after design replays/custom speed logic.
+ */
 class UICustomUpdateDeltaComponent : public UIBaseComponent<UICustomUpdateDeltaComponent>
 {
     DAVA_VIRTUAL_REFLECTION(UICustomUpdateDeltaComponent, UIComponent);
