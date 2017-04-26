@@ -32,8 +32,8 @@ void GamepadImpl::Update()
     gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_DPAD_DOWN, (reading.Buttons & GamepadButtons::DPadDown) != GamepadButtons::None);
     gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_LTHUMB, (reading.Buttons & GamepadButtons::LeftThumbstick) != GamepadButtons::None);
     gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_RTHUMB, (reading.Buttons & GamepadButtons::RightThumbstick) != GamepadButtons::None);
-    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_LSHOUDER, (reading.Buttons & GamepadButtons::LeftShoulder) != GamepadButtons::None);
-    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_RSHOUDER, (reading.Buttons & GamepadButtons::RightShoulder) != GamepadButtons::None);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_LSHOULDER, (reading.Buttons & GamepadButtons::LeftShoulder) != GamepadButtons::None);
+    gamepadDevice->HandleButtonPress(eInputElements::GAMEPAD_RSHOULDER, (reading.Buttons & GamepadButtons::RightShoulder) != GamepadButtons::None);
 
     gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_AXIS_LTHUMB, static_cast<float32>(reading.LeftThumbstickX), true);
     gamepadDevice->HandleAxisMovement(eInputElements::GAMEPAD_AXIS_LTHUMB, static_cast<float32>(reading.LeftThumbstickY), false);

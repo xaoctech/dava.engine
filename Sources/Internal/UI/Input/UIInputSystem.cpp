@@ -1,6 +1,6 @@
 #include "UIInputSystem.h"
 
-#include "UI/UIAnalitycs.h"
+#include "UI/UIAnalytics.h"
 #include "UI/UIControl.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UIEvent.h"
@@ -12,6 +12,8 @@
 #include "UI/Input/UIActionComponent.h"
 
 #include "Input/InputSystem.h"
+
+#include "Engine/Engine.h"
 
 namespace DAVA
 {
@@ -39,14 +41,23 @@ UIInputSystem::UIInputSystem()
     BindGlobalAction(ACTION_FOCUS_PREV, MakeFunction(this, &UIInputSystem::MoveFocusBackward));
 
     BindGlobalAction(ACTION_PERFORM, MakeFunction(this, &UIInputSystem::PerformActionOnFocusedControl));
+
+    GetPrimaryWindow()->backNavigation.Connect(this, &UIInputSystem::OnBackNavigation);
 }
 
 UIInputSystem::~UIInputSystem()
 {
     SafeDelete(focusSystem);
 
-    currentScreen = nullptr; // we are not owner
-    popupContainer = nullptr; // we are not owner
+    GetPrimaryWindow()->backNavigation.Disconnect(this);
+
+    currentScreen = nullptr; // we are not an owner
+    popupContainer = nullptr; // we are not an owner
+}
+
+void UIInputSystem::OnBackNavigation(DAVA::Window* window)
+{
+    Analytics::EmitBackNavigationEvent();
 }
 
 void UIInputSystem::SetCurrentScreen(UIScreen* screen)

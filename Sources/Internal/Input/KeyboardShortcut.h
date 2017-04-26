@@ -4,7 +4,7 @@
 #include "Base/BaseTypes.h"
 #include "Engine/EngineTypes.h"
 
-#include "KeyboardDevice.h"
+#include "Input/InputElements.h"
 
 namespace DAVA
 {
@@ -14,7 +14,7 @@ public:
     KeyboardShortcut();
     KeyboardShortcut(const KeyboardShortcut& shortcut);
 #if defined(__DAVAENGINE_COREV2__)
-    KeyboardShortcut(Key key_, eModifierKeys modifiers_ = eModifierKeys::NONE);
+    KeyboardShortcut(eInputElements key_, eModifierKeys modifiers_ = eModifierKeys::NONE);
 #else
     KeyboardShortcut(Key key, uint32 modifiers = 0);
 #endif
@@ -26,7 +26,7 @@ public:
     bool operator==(const KeyboardShortcut& other) const;
     bool operator!=(const KeyboardShortcut& other) const;
 
-    Key GetKey() const;
+    eInputElements GetKey() const;
 #if defined(__DAVAENGINE_COREV2__)
     eModifierKeys GetModifiers() const;
 #else
@@ -36,7 +36,7 @@ public:
     String ToString() const;
 
 private:
-    Key key = Key::UNKNOWN;
+    eInputElements key = eInputElements::NONE;
 #if defined(__DAVAENGINE_COREV2__)
     eModifierKeys modifiers = eModifierKeys::NONE;
 #else

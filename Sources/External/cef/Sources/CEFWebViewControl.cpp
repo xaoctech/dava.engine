@@ -3,12 +3,14 @@
 
 #include "Engine/Engine.h"
 #include "Input/InputSystem.h"
+#include "Input/Keyboard.h"
 #include "UI/UIEvent.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UIWebView.h"
 #include "CEFWebViewControl.h"
 #include "CEFDavaResourceHandler.h"
 #include "Utils/Utils.h"
+#include "DeviceManager/DeviceManager.h"
 
 namespace DAVA
 {
@@ -393,39 +395,32 @@ const Vector<int32> ModifiersDAVAToCef
 eKeyModifiers GetKeyModifier()
 {
     int32 modifier = 0;
-    KeyboardDevice& keyDevice = InputSystem::Instance()->GetKeyboard();
-    for (Key keyIter = Key::UNKNOWN; keyIter != Key::TOTAL_KEYS_COUNT;)
+
+    Keyboard* keyboard = GetEngineContext()->deviceManager->GetKeyboard();
+    if (keyboard != nullptr)
     {
-        if (keyDevice.IsKeyPressed(keyIter))
+        DigitalElementState lctrl = keyboard->GetDigitalElementState(eInputElements::KB_LCTRL);
+        DigitalElementState rctrl = keyboard->GetDigitalElementState(eInputElements::KB_RCTRL);
+        if (lctrl.IsPressed() || rctrl.IsPressed())
         {
-            switch (keyIter)
-            {
-            case DAVA::Key::LSHIFT:
-                modifier |= static_cast<int32>(eKeyModifiers::SHIFT_DOWN);
-                break;
-            case DAVA::Key::RSHIFT:
-                modifier |= static_cast<int32>(eKeyModifiers::SHIFT_DOWN);
-                break;
-            case DAVA::Key::LCTRL:
-                modifier |= static_cast<int32>(eKeyModifiers::CONTROL_DOWN);
-                break;
-            case DAVA::Key::RCTRL:
-                modifier |= static_cast<int32>(eKeyModifiers::CONTROL_DOWN);
-                break;
-            case DAVA::Key::LALT:
-                modifier |= static_cast<int32>(eKeyModifiers::ALT_DOWN);
-                break;
-            case DAVA::Key::RALT:
-                modifier |= static_cast<int32>(eKeyModifiers::ALT_DOWN);
-                break;
-            case DAVA::Key::CAPSLOCK:
-                break;
-            case DAVA::Key::NUMLOCK:
-                break;
-            }
+            modifier |= static_cast<int32>(eKeyModifiers::CONTROL_DOWN);
         }
-        keyIter = static_cast<Key>(static_cast<int32>(keyIter) + 1);
+
+        DigitalElementState lshift = keyboard->GetDigitalElementState(eInputElements::KB_LSHIFT);
+        DigitalElementState rshift = keyboard->GetDigitalElementState(eInputElements::KB_RSHIFT);
+        if (lshift.IsPressed() || rshift.IsPressed())
+        {
+            modifier |= static_cast<int32>(eKeyModifiers::SHIFT_DOWN);
+        }
+
+        DigitalElementState lalt = keyboard->GetDigitalElementState(eInputElements::KB_LALT);
+        DigitalElementState ralt = keyboard->GetDigitalElementState(eInputElements::KB_RALT);
+        if (lalt.IsPressed() || ralt.IsPressed())
+        {
+            modifier |= static_cast<int32>(eKeyModifiers::ALT_DOWN);
+        }
     }
+
     return static_cast<eKeyModifiers>(modifier);
 }
 
@@ -622,8 +617,8 @@ void CEFWebViewControl::OnKey(UIEvent* input)
     }
     else if (UIEvent::Phase::KEY_DOWN == input->phase || UIEvent::Phase::KEY_UP == input->phase)
     {
-        KeyboardDevice& keyboard = InputSystem::Instance()->GetKeyboard();
-        keyEvent.windows_key_code = keyboard.GetSystemKeyForDavaKey(input->key);
+        Keyboard* keyboard = GetEngineContext()->deviceManager->GetKeyboard();
+        keyEvent.windows_key_code = keyboard->GetElementNativeScancode(input->key);
 
 // TODO: remove this conversion from CorePlatformWin32
 #ifdef __DAVAENGINE_WIN32__

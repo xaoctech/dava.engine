@@ -4,7 +4,6 @@
 
 #include "Engine/Engine.h"
 #include "Engine/Private/EngineBackend.h"
-#include "Input/KeyboardDevice.h"
 #include "UI/UIControlSystem.h"
 
 namespace DAVA
@@ -15,22 +14,11 @@ InputSystem* InputSystem::Instance()
 }
 
 InputSystem::InputSystem(Engine* engine)
-    : keyboard(new KeyboardDevice())
 {
     engine->endFrame.Connect(MakeFunction(this, &InputSystem::EndFrame));
 }
 
 InputSystem::~InputSystem() = default;
-
-uint32 InputSystem::AddHandler(eInputDeviceTypes inputDeviceMask, const Function<bool(UIEvent*)>& handler)
-{
-    DVASSERT(handler != nullptr);
-
-    uint32 token = nextHandlerToken;
-    nextHandlerToken += 1;
-    handlers.emplace_back(token, inputDeviceMask, handler);
-    return token;
-}
 
 uint32 InputSystem::AddHandler(eInputDeviceTypes inputDeviceMask, const Function<bool(const InputEvent&)>& handler)
 {
@@ -88,7 +76,6 @@ void InputSystem::DispatchInputEvent(const InputEvent& inputEvent)
 
 void InputSystem::EndFrame()
 {
-    keyboard->OnFinishFrame();
     if (pendingHandlerRemoval)
     {
         handlers.erase(std::remove_if(begin(handlers), end(handlers), [](const InputHandler& h) { return h.token == 0; }), end(handlers));

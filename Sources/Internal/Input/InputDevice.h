@@ -32,7 +32,7 @@ public:
 
         \pre Device should support specified digital element.
     */
-    virtual eDigitalElementStates GetDigitalElementState(eInputElements elementId) const = 0;
+    virtual DigitalElementState GetDigitalElementState(eInputElements elementId) const = 0;
 
     /**
         Get state of an analog element with specified `elementId`.

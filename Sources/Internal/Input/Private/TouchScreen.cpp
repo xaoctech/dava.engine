@@ -3,7 +3,6 @@
 #include "Engine/Engine.h"
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 #include "Input/InputSystem.h"
-#include "Input/Private/DIElementWrapper.h"
 
 namespace DAVA
 {
@@ -31,7 +30,7 @@ bool TouchScreen::IsElementSupported(eInputElements elementId) const
     return IsTouchInputElement(elementId);
 }
 
-eDigitalElementStates TouchScreen::GetDigitalElementState(eInputElements elementId) const
+DigitalElementState TouchScreen::GetDigitalElementState(eInputElements elementId) const
 {
     DVASSERT(IsTouchClickElement(elementId));
     return clicks[elementId - eInputElements::TOUCH_FIRST_CLICK];
@@ -57,7 +56,7 @@ bool TouchScreen::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& 
     inputEvent.window = e.window;
     inputEvent.timestamp = static_cast<float64>(e.timestamp / 1000.0f);
     inputEvent.deviceType = eInputDeviceTypes::TOUCH_SURFACE;
-    inputEvent.deviceId = GetId();
+    inputEvent.device = this;
 
     if (e.type == MainDispatcherEvent::TOUCH_DOWN)
     {
@@ -70,8 +69,8 @@ bool TouchScreen::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& 
 
         // Update digital part
 
-        DIElementWrapper digitalElement(clicks[touchIndex]);
-        digitalElement.Press();
+        DigitalElementState& touchState = clicks[touchIndex];
+        touchState.Press();
 
         // Update analog part
 
@@ -85,7 +84,7 @@ bool TouchScreen::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& 
 
         // Send input event
 
-        inputEvent.digitalState = digitalElement.GetState();
+        inputEvent.digitalState = touchState;
         inputEvent.elementId = static_cast<eInputElements>(eInputElements::TOUCH_FIRST_CLICK + touchIndex);
 
         inputSystem->DispatchInputEvent(inputEvent);
@@ -112,8 +111,8 @@ bool TouchScreen::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& 
 
         // Update digital part
 
-        DIElementWrapper element(clicks[touchIndex]);
-        element.Release();
+        DigitalElementState& touchState = clicks[touchIndex];
+        touchState.Release();
 
         // Reset native id for this touch
 
@@ -127,7 +126,7 @@ bool TouchScreen::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& 
 
         // Send input event
 
-        inputEvent.digitalState = element.GetState();
+        inputEvent.digitalState = touchState;
         inputEvent.elementId = static_cast<eInputElements>(eInputElements::TOUCH_FIRST_CLICK + touchIndex);
 
         inputSystem->DispatchInputEvent(inputEvent);
@@ -177,9 +176,9 @@ bool TouchScreen::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& 
 void TouchScreen::OnEndFrame()
 {
     // Promote JustPressed & JustReleased states to Pressed/Released accordingly
-    for (DIElementWrapper d : clicks)
+    for (DigitalElementState& touchState : clicks)
     {
-        d.OnEndFrame();
+        touchState.OnEndFrame();
     }
 }
 
@@ -187,7 +186,7 @@ int TouchScreen::GetFirstNonUsedTouchIndex() const
 {
     for (int i = 0; i < INPUT_ELEMENTS_TOUCH_CLICK_COUNT; ++i)
     {
-        if (clicks[i] == eDigitalElementStates::RELEASED)
+        if (clicks[i].IsReleased())
         {
             return i;
         }

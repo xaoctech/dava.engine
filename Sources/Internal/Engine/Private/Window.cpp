@@ -231,9 +231,6 @@ bool Window::EventHandler(const Private::MainDispatcherEvent& e)
     case MainDispatcherEvent::TRACKPAD_GESTURE:
         HandleTrackpadGesture(e);
         break;
-    case MainDispatcherEvent::KEY_CHAR:
-        HandleKeyChar(e);
-        break;
     case MainDispatcherEvent::WINDOW_SIZE_CHANGED:
         HandleSizeChanged(e);
         break;
@@ -450,7 +447,6 @@ bool Window::HandleInputActivation(const Private::MainDispatcherEvent& e)
 void Window::HandleCancelInput(const Private::MainDispatcherEvent& e)
 {
     uiControlSystem->CancelAllInputs();
-    inputSystem->GetKeyboard().ClearAllKeys();
 }
 
 void Window::HandleVisibleFrameChanged(const Private::MainDispatcherEvent& e)
@@ -464,7 +460,6 @@ void Window::HandleFocusChanged(const Private::MainDispatcherEvent& e)
     Logger::FrameworkDebug("=========== WINDOW_FOCUS_CHANGED: state=%s", e.stateEvent.state ? "got_focus" : "lost_focus");
 
     uiControlSystem->CancelAllInputs();
-    inputSystem->GetKeyboard().ClearAllKeys();
     hasFocus = e.stateEvent.state != 0;
     /*if (windowBackend->IsPlatformSupported(SET_CURSOR_CAPTURE))*/ // TODO: Add platfom's caps check
     {
@@ -503,19 +498,6 @@ void Window::HandleTrackpadGesture(const Private::MainDispatcherEvent& e)
     uie.gesture.rotation = e.trackpadGestureEvent.rotation;
     uie.gesture.dx = e.trackpadGestureEvent.deltaX;
     uie.gesture.dy = e.trackpadGestureEvent.deltaY;
-
-    inputSystem->HandleInputEvent(&uie);
-}
-
-void Window::HandleKeyChar(const Private::MainDispatcherEvent& e)
-{
-    UIEvent uie;
-    uie.window = e.window;
-    uie.keyChar = static_cast<char32_t>(e.keyEvent.key);
-    uie.phase = e.keyEvent.isRepeated ? UIEvent::Phase::CHAR_REPEAT : UIEvent::Phase::CHAR;
-    uie.device = eInputDevices::KEYBOARD;
-    uie.timestamp = e.timestamp / 1000.0;
-    uie.modifiers = e.keyEvent.modifierKeys;
 
     inputSystem->HandleInputEvent(&uie);
 }

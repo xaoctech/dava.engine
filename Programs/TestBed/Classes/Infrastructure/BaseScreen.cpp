@@ -1,6 +1,7 @@
 #include "Infrastructure/BaseScreen.h"
 #include "Infrastructure/TestBed.h"
 
+#include <Engine/Engine.h>
 #include <UI/Layouts/UIAnchorComponent.h>
 
 DAVA::int32 BaseScreen::globalScreenId = 1;
@@ -12,20 +13,13 @@ BaseScreen::BaseScreen(TestBed& app, const DAVA::String& screenName)
 {
     SetName(screenName);
     app.RegisterScreen(this);
+
+    DAVA::GetPrimaryWindow()->backNavigation.Connect(this, &BaseScreen::OnBackNavigation);
 }
 
-bool BaseScreen::SystemInput(DAVA::UIEvent* currentInput)
+void BaseScreen::OnBackNavigation(DAVA::Window* window)
 {
-    using namespace DAVA;
-    if ((currentInput->key == Key::BACK) && (currentInput->phase == UIEvent::Phase::KEY_DOWN))
-    {
-        OnExitButton(nullptr, nullptr, nullptr);
-    }
-    else
-    {
-        return UIScreen::SystemInput(currentInput);
-    }
-    return true;
+    OnExitButton(nullptr, nullptr, nullptr);
 }
 
 void BaseScreen::LoadResources()

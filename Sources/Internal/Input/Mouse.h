@@ -20,7 +20,7 @@ class Mouse final : public InputDevice
 
 public:
     bool IsElementSupported(eInputElements elementId) const override;
-    eDigitalElementStates GetDigitalElementState(eInputElements elementId) const override;
+    DigitalElementState GetDigitalElementState(eInputElements elementId) const override;
     AnalogElementState GetAnalogElementState(eInputElements elementId) const override;
 
     eInputElements GetFirstPressedButton() const;
@@ -40,7 +40,7 @@ private:
 private:
     InputSystem* inputSystem = nullptr;
 
-    Array<eDigitalElementStates, INPUT_ELEMENTS_MOUSE_BUTTON_COUNT> buttons;
+    Array<DigitalElementState, INPUT_ELEMENTS_MOUSE_BUTTON_COUNT> buttons;
     AnalogElementState mousePosition;
     AnalogElementState mouseWheelDelta;
 };

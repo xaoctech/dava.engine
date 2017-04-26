@@ -322,11 +322,7 @@ private:
     void HandleVisibleFrameChanged(const Private::MainDispatcherEvent& e);
     void HandleFocusChanged(const Private::MainDispatcherEvent& e);
     void HandleVisibilityChanged(const Private::MainDispatcherEvent& e);
-    void HandleTouchClick(const Private::MainDispatcherEvent& e);
-    void HandleTouchMove(const Private::MainDispatcherEvent& e);
     void HandleTrackpadGesture(const Private::MainDispatcherEvent& e);
-    void HandleKeyPress(const Private::MainDispatcherEvent& e);
-    void HandleKeyChar(const Private::MainDispatcherEvent& e);
     bool HandleInputActivation(const Private::MainDispatcherEvent& e);
 
     void MergeSizeChangedEvents(const Private::MainDispatcherEvent& e);

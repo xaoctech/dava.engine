@@ -39,7 +39,13 @@ bool InputListener::OnInputEvent(const InputEvent& e)
 {
     // If we're restricted to the specific device,
     // and this event is from different one - ignore it
-    if (currentDeviceId > 0 && e.deviceId != currentDeviceId)
+    if (currentDeviceId > 0 && e.device->GetId() != currentDeviceId)
+    {
+        return false;
+    }
+
+    // Ignore keyboard char events
+    if (e.deviceType == eInputDevices::KEYBOARD && e.keyboardEvent.charCode > 0)
     {
         return false;
     }
@@ -68,7 +74,7 @@ bool InputListener::OnInputEvent(const InputEvent& e)
                 const bool isModifierKey = IsKeyboardModifierInputElement(e.elementId);
 
                 // If a button has been pressed
-                if ((e.digitalState & eDigitalElementStates::JUST_PRESSED) == eDigitalElementStates::JUST_PRESSED)
+                if (e.digitalState.IsJustPressed())
                 {
                     if (currentMode == eInputListenerModes::DIGITAL_SINGLE_WITHOUT_MODIFIERS)
                     {
@@ -94,7 +100,7 @@ bool InputListener::OnInputEvent(const InputEvent& e)
                         addEventToResult = true;
                     }
                 }
-                else if ((e.digitalState & eDigitalElementStates::JUST_RELEASED) == eDigitalElementStates::JUST_RELEASED)
+                else if (e.digitalState.IsJustReleased())
                 {
                     finishedListening = true;
                 }

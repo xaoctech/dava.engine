@@ -26,7 +26,7 @@ class Gamepad final : public InputDevice
 
 public:
     bool IsElementSupported(eInputElements elementId) const override;
-    eDigitalElementStates GetDigitalElementState(eInputElements elementId) const override;
+    DigitalElementState GetDigitalElementState(eInputElements elementId) const override;
     AnalogElementState GetAnalogElementState(eInputElements elementId) const override;
 
 private:
@@ -51,9 +51,9 @@ private:
 
     static const uint32 BUTTON_COUNT = static_cast<uint32>(eInputElements::GAMEPAD_LAST_BUTTON - eInputElements::GAMEPAD_FIRST_BUTTON + 1);
     static const uint32 AXIS_COUNT = static_cast<uint32>(eInputElements::GAMEPAD_LAST_AXIS - eInputElements::GAMEPAD_FIRST_AXIS + 1);
-    Array<eDigitalElementStates, BUTTON_COUNT> buttons;
+    Array<DigitalElementState, BUTTON_COUNT> buttons;
     Array<AnalogElementState, AXIS_COUNT> axes;
-    eDigitalElementStates backButton;
+    DigitalElementState backButton;
 
     std::bitset<BUTTON_COUNT> buttonChangedMask;
     std::bitset<AXIS_COUNT> axisChangedMask;

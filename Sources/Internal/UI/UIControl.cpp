@@ -1,7 +1,7 @@
 #include "UI/UIControl.h"
 
 #include "Engine/Engine.h"
-#include "UI/UIAnalitycs.h"
+#include "UI/UIAnalytics.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UIControlPackageContext.h"
 #include "UI/UIControlHelpers.h"

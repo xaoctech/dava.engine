@@ -165,8 +165,8 @@ const InputElementInfo& GetInputElementInfo(eInputElements element)
         info[eInputElements::GAMEPAD_DPAD_DOWN] = { "Gamepad dpad down", eInputElementTypes::DIGITAL };
         info[eInputElements::GAMEPAD_LTHUMB] = { "Gamepad left thumbstick", eInputElementTypes::DIGITAL };
         info[eInputElements::GAMEPAD_RTHUMB] = { "Gamepad right thumbstick", eInputElementTypes::DIGITAL };
-        info[eInputElements::GAMEPAD_LSHOUDER] = { "Gamepad lelft shouder", eInputElementTypes::DIGITAL };
-        info[eInputElements::GAMEPAD_RSHOUDER] = { "Gamepad right shouder", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_LSHOULDER] = { "Gamepad lelft shoulder", eInputElementTypes::DIGITAL };
+        info[eInputElements::GAMEPAD_RSHOULDER] = { "Gamepad right shoulder", eInputElementTypes::DIGITAL };
 
         info[eInputElements::GAMEPAD_AXIS_LTRIGGER] = { "Gamepad left trigger", eInputElementTypes::ANALOG };
         info[eInputElements::GAMEPAD_AXIS_RTRIGGER] = { "Gamepad right trigger", eInputElementTypes::ANALOG };

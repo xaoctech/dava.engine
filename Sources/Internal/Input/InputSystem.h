@@ -13,7 +13,6 @@ namespace DAVA
 {
 class Engine;
 class UIEvent;
-class KeyboardDevice;
 namespace Private
 {
 class EngineBackend;
@@ -37,14 +36,11 @@ public:
     // TODO: remove InputSystem::Instance() method
     static InputSystem* Instance();
 
-    uint32 AddHandler(eInputDeviceTypes inputDeviceMask, const Function<bool(UIEvent*)>& handler);
     uint32 AddHandler(eInputDeviceTypes inputDeviceMask, const Function<bool(const InputEvent&)>& handler);
     void ChangeHandlerDeviceMask(uint32 token, eInputDeviceTypes newInputDeviceMask);
     void RemoveHandler(uint32 token);
 
     void DispatchInputEvent(const InputEvent& inputEvent);
-
-    KeyboardDevice& GetKeyboard();
 
 private:
     InputSystem(Engine* engine);
@@ -57,8 +53,6 @@ private:
     void HandleInputEvent(UIEvent* uie);
 
 private:
-    RefPtr<KeyboardDevice> keyboard;
-
     struct InputHandler
     {
         InputHandler(uint32 aToken, eInputDeviceTypes inputDeviceMask, const Function<bool(UIEvent*)>& handler);
@@ -90,11 +84,6 @@ inline InputSystem::InputHandler::InputHandler(uint32 aToken, eInputDeviceTypes 
     , deviceMask(inputDeviceMask)
     , rawInputHandler(handler)
 {
-}
-
-inline KeyboardDevice& InputSystem::GetKeyboard()
-{
-    return *keyboard;
 }
 
 } // namespace DAVA

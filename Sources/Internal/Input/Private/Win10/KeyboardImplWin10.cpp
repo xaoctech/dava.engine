@@ -26,14 +26,8 @@ eInputElements KeyboardImpl::ConvertNativeScancodeToDavaScancode(uint32 nativeSc
     }
 }
 
-WideString KeyboardImpl::TranslateElementToWideString(eInputElements elementId)
+uint32 KeyboardImpl::ConvertDavaScancodeToNativeScancode(eInputElements elementId)
 {
-    if (DllImport::fnMapVirtualKey == nullptr)
-    {
-        // Return default en name if MapVirtualKey couldn't be imported
-        return UTF8Utils::EncodeToWideString(GetInputElementInfo(elementId).name);
-    }
-
     int nativeScancode = -1;
 
     for (size_t i = 0; i < COUNT_OF(nativeScancodeToDavaScancode); ++i)
@@ -57,6 +51,18 @@ WideString KeyboardImpl::TranslateElementToWideString(eInputElements elementId)
 
     DVASSERT(nativeScancode >= 0);
 
+    return static_cast<uint32>(nativeScancode);
+}
+
+WideString KeyboardImpl::TranslateElementToWideString(eInputElements elementId)
+{
+    if (DllImport::fnMapVirtualKey == nullptr)
+    {
+        // Return default en name if MapVirtualKey couldn't be imported
+        return UTF8Utils::EncodeToWideString(GetInputElementInfo(elementId).name);
+    }
+
+    int nativeScancode = ConvertDavaScancodeToNativeScancode(elementId);
     wchar_t character = TranslateNativeScancodeToWChar(static_cast<uint32>(nativeScancode));
 
     if (character == 0)

@@ -27,7 +27,7 @@ class TouchScreen final : public InputDevice
 public:
     // InputDevice overrides
     bool IsElementSupported(eInputElements elementId) const override;
-    eDigitalElementStates GetDigitalElementState(eInputElements elementId) const override;
+    DigitalElementState GetDigitalElementState(eInputElements elementId) const override;
     AnalogElementState GetAnalogElementState(eInputElements elementId) const override;
 
 private:
@@ -44,7 +44,7 @@ private:
 private:
     InputSystem* inputSystem = nullptr;
 
-    Array<eDigitalElementStates, INPUT_ELEMENTS_TOUCH_CLICK_COUNT> clicks;
+    Array<DigitalElementState, INPUT_ELEMENTS_TOUCH_CLICK_COUNT> clicks;
     Array<AnalogElementState, INPUT_ELEMENTS_TOUCH_CLICK_COUNT> positions;
     Array<uint32, INPUT_ELEMENTS_TOUCH_CLICK_COUNT> nativeTouchIds;
 };

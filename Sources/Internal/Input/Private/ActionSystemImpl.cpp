@@ -9,12 +9,12 @@ namespace Private
 {
 // Calculates number of states in array which are not empty
 // Used for sorting
-static size_t GetNonEmptyStatesCount(const Array<DigitalElementState, MAX_DIGITAL_STATES_COUNT>& array)
+static size_t GetNonEmptyStatesCount(const Array<eInputElements, MAX_DIGITAL_STATES_COUNT>& array)
 {
     size_t result = 0;
-    for (const DigitalElementState& deviceControlState : array)
+    for (const eInputElements elementId : array)
     {
-        if (deviceControlState.elementId > 0)
+        if (elementId != eInputElements::NONE)
         {
             ++result;
         }
@@ -25,12 +25,12 @@ static size_t GetNonEmptyStatesCount(const Array<DigitalElementState, MAX_DIGITA
 
 bool DigitalBindingCompare::operator()(const DigitalBinding& first, const DigitalBinding& second) const
 {
-    return GetNonEmptyStatesCount(first.requiredStates) > GetNonEmptyStatesCount(second.requiredStates);
+    return GetNonEmptyStatesCount(first.digitalElements) > GetNonEmptyStatesCount(second.digitalElements);
 }
 
 bool AnalogBindingCompare::operator()(const AnalogBinding& first, const AnalogBinding& second) const
 {
-    return GetNonEmptyStatesCount(first.requiredDigitalElementStates) > GetNonEmptyStatesCount(second.requiredDigitalElementStates);
+    return GetNonEmptyStatesCount(first.digitalElements) > GetNonEmptyStatesCount(second.digitalElements);
 }
 
 ActionSystemImpl::ActionSystemImpl(ActionSystem* actionSystem)
@@ -90,16 +90,19 @@ void ActionSystemImpl::UnbindAllSets()
 }
 
 // Helper function to check if specified states are active
-bool ActionSystemImpl::CheckDigitalStates(const Array<DigitalElementState, MAX_DIGITAL_STATES_COUNT>& states, const Vector<uint32>& devices)
+bool ActionSystemImpl::CheckDigitalStates(const Array<eInputElements, MAX_DIGITAL_STATES_COUNT>& elements, const Array<DigitalElementState, MAX_DIGITAL_STATES_COUNT>& states, const Vector<uint32>& devices)
 {
-    for (const DigitalElementState& requiredState : states)
+    for (size_t i = 0; i < MAX_DIGITAL_STATES_COUNT; ++i)
     {
+        eInputElements elementId = elements[i];
+
         // If it's an empty state, break
-        if (requiredState.elementId == 0)
+        if (elementId == eInputElements::NONE)
         {
             break;
         }
 
+        const DigitalElementState requiredState = states[i];
         bool requiredStateMatches = false;
 
         for (const uint32 deviceId : devices)
@@ -107,11 +110,10 @@ bool ActionSystemImpl::CheckDigitalStates(const Array<DigitalElementState, MAX_D
             const InputDevice* device = GetEngineContext()->deviceManager->GetInputDevice(deviceId);
             if (device != nullptr)
             {
-                if (device->IsElementSupported(requiredState.elementId))
+                if (device->IsElementSupported(elementId))
                 {
-                    const eDigitalElementStates state = device->GetDigitalElementState(requiredState.elementId);
-
-                    if ((state & requiredState.stateMask) == requiredState.stateMask)
+                    const DigitalElementState state = device->GetDigitalElementState(elementId);
+                    if (state == requiredState)
                     {
                         requiredStateMatches = true;
                         break;
@@ -148,14 +150,14 @@ bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
                     continue;
                 }
 
-                const bool triggered = CheckDigitalStates(binding.requiredDigitalElementStates, setBinding.devices);
+                const bool triggered = CheckDigitalStates(binding.digitalElements, binding.digitalStates, setBinding.devices);
 
                 if (triggered)
                 {
                     Action action;
                     action.actionId = binding.actionId;
                     action.analogState = event.analogState;
-                    action.triggeredDeviceId = event.deviceId;
+                    action.triggeredDevice = event.device;
 
                     actionSystem->ActionTriggered.Emit(action);
 
@@ -166,6 +168,12 @@ bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
     }
     else
     {
+        // Ignore keyboard char events
+        if (event.deviceType == eInputDevices::KEYBOARD && event.keyboardEvent.charCode > 0)
+        {
+            return false;
+        }
+
         // Check if any digital action has triggered
         for (const BoundActionSet& setBinding : boundSets)
         {
@@ -173,14 +181,14 @@ bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
             {
                 DigitalBinding const& binding = *it;
 
-                const bool triggered = CheckDigitalStates(binding.requiredStates, setBinding.devices);
+                const bool triggered = CheckDigitalStates(binding.digitalElements, binding.digitalStates, setBinding.devices);
 
                 if (triggered)
                 {
                     Action action;
                     action.actionId = binding.actionId;
                     action.analogState = binding.outputAnalogState;
-                    action.triggeredDeviceId = event.deviceId;
+                    action.triggeredDevice = event.device;
 
                     actionSystem->ActionTriggered.Emit(action);
 

@@ -25,11 +25,8 @@ private:
 
     bool InputEventLogHandler(const DAVA::InputEvent& inputEvent);
     bool InputEventHandler(const DAVA::InputEvent& inputEvent);
-    bool OnPointerEvent(DAVA::UIEvent* e);
-    bool OnKeyboardEvent(DAVA::UIEvent* e);
-    bool OnGamepadEvent(DAVA::UIEvent* event);
+    bool OnGamepadEvent(const DAVA::InputEvent& e);
 
-    bool OnMouseTouchOrKeyboardEvent(DAVA::UIEvent* currentInput);
     void OnGestureEvent(DAVA::UIEvent* event);
 
     void UpdateGamepadElement(DAVA::String name, bool isVisible);

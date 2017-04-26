@@ -2,7 +2,7 @@
 
 #include "Engine/EngineTypes.h"
 #include "Math/Vector.h"
-#include "Input/KeyboardDevice.h"
+#include "Input/InputElements.h"
 
 namespace DAVA
 {
@@ -106,7 +106,7 @@ public:
 
     union {
         uint32 touchId;
-        Key key;
+        eInputElements key;
         char32_t keyChar; // unicode utf32 char
         eMouseButtons mouseButton;
 #if defined(__DAVAENGINE_COREV2__)

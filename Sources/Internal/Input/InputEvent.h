@@ -19,23 +19,20 @@ struct InputEvent
     /** Event timestamp */
     float64 timestamp;
 
-    /** Type of the device */
+    /** Type of the device that triggered the event */
     eInputDeviceTypes deviceType;
 
-    /** Id of the device */
-    uint32 deviceId;
+    /** Device that triggered the event. This value is never null */
+    InputDevice* device;
 
     /** Id of the element which triggered the event */
     eInputElements elementId;
 
-    union
-    {
-        /** Digital element's state. Should only be used if element with `elementId` is a digital one */
-        eDigitalElementStates digitalState;
+    /** Digital element's state. Should only be used if element with `elementId` is a digital one */
+    DigitalElementState digitalState;
 
-        /** Analog element's state. Should only be used if element with `elementId` is an analog one */
-        AnalogElementState analogState;
-    };
+    /** Analog element's state. Should only be used if element with `elementId` is an analog one */
+    AnalogElementState analogState;
 
     // Additional fields for different devices
 
@@ -44,9 +41,16 @@ struct InputEvent
         bool isRelative;
     };
 
+    struct KeyboardEvent
+    {
+        char32_t charCode;
+        bool charRepeated;
+    };
+
     union
     {
         MouseEvent mouseEvent;
+        KeyboardEvent keyboardEvent;
     };
 };
 }

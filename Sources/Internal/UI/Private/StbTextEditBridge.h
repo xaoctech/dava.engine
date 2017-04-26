@@ -3,7 +3,7 @@
 #include "Base/BaseTypes.h"
 #include "Engine/EngineTypes.h"
 #include "Math/Vector.h"
-#include "Input/KeyboardDevice.h"
+#include "Input/InputElements.h"
 
 namespace DAVA
 {
@@ -79,7 +79,7 @@ public:
     Return true if content of field has been changed.
     */
 #if defined(__DAVAENGINE_COREV2__)
-    virtual bool SendKey(Key key, eModifierKeys modifiers);
+    virtual bool SendKey(eInputElements key, eModifierKeys modifiers);
 #else
     virtual bool SendKey(Key key, uint32 modifiers);
 #endif

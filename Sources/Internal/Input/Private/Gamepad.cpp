@@ -9,7 +9,6 @@
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 #include "Input/InputEvent.h"
 #include "Input/InputSystem.h"
-#include "Input/Private/DIElementWrapper.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
 #include "Input/Private/Android/GamepadImplAndroid.h"
@@ -48,7 +47,7 @@ bool Gamepad::IsElementSupported(eInputElements elementId) const
     return supportedElements[elementId - eInputElements::GAMEPAD_FIRST];
 }
 
-eDigitalElementStates Gamepad::GetDigitalElementState(eInputElements elementId) const
+DigitalElementState Gamepad::GetDigitalElementState(eInputElements elementId) const
 {
     DVASSERT(IsGamepadButtonInputElement(elementId));
     return buttons[elementId - eInputElements::GAMEPAD_FIRST_BUTTON];
@@ -73,7 +72,7 @@ void Gamepad::Update()
             InputEvent inputEvent;
             inputEvent.window = window;
             inputEvent.deviceType = eInputDeviceTypes::CLASS_GAMEPAD;
-            inputEvent.deviceId = GetId();
+            inputEvent.device = this;
             inputEvent.elementId = static_cast<eInputElements>(i);
             inputEvent.digitalState = buttons[index];
             inputSystem->DispatchInputEvent(inputEvent);
@@ -89,7 +88,7 @@ void Gamepad::Update()
             InputEvent inputEvent;
             inputEvent.window = window;
             inputEvent.deviceType = eInputDeviceTypes::CLASS_GAMEPAD;
-            inputEvent.deviceId = GetId();
+            inputEvent.device = this;
             inputEvent.elementId = static_cast<eInputElements>(i);
             inputEvent.analogState = axes[index];
             inputSystem->DispatchInputEvent(inputEvent);
@@ -100,9 +99,9 @@ void Gamepad::Update()
 
 void Gamepad::OnEndFrame()
 {
-    for (DIElementWrapper di : buttons)
+    for (DigitalElementState& buttonState : buttons)
     {
-        di.OnEndFrame();
+        buttonState.OnEndFrame();
     }
 }
 
@@ -131,10 +130,10 @@ void Gamepad::HandleGamepadButton(const Private::MainDispatcherEvent& e)
 void Gamepad::HandleButtonPress(eInputElements element, bool pressed)
 {
     uint32 index = element - eInputElements::GAMEPAD_FIRST_BUTTON;
-    DIElementWrapper di(buttons[index]);
-    if (di.IsPressed() != pressed)
+    DigitalElementState& buttonState = buttons[index];
+    if (buttonState.IsPressed() != pressed)
     {
-        pressed ? di.Press() : di.Release();
+        pressed ? buttonState.Press() : buttonState.Release();
         buttonChangedMask.set(index);
     }
 }
@@ -143,12 +142,12 @@ void Gamepad::HandleBackButtonPress(bool pressed)
 {
     using namespace DAVA::Private;
 
-    DIElementWrapper di(backButton);
+    DigitalElementState& di = backButton;
     if (di.IsPressed() != pressed)
     {
         pressed ? di.Press() : di.Release();
 
-        if ((backButton & eDigitalElementStates::JUST_PRESSED) == eDigitalElementStates::JUST_PRESSED)
+        if (backButton.IsJustPressed())
         {
             EngineBackend::Instance()->GetDispatcher()->PostEvent(MainDispatcherEvent(MainDispatcherEvent::BACK_NAVIGATION));
         }

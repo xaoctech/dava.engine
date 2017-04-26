@@ -31,8 +31,8 @@ struct Action final
     /** Id of the action */
     FastName actionId;
 
-    /** Id of the device whose event triggered the action */
-    uint32 triggeredDeviceId;
+    /** Id of the device whose event triggered the action. This value is never null */
+    InputDevice* triggeredDevice;
 
     /**
         If the action was triggered using `AnalogBinding`, this field contains state of the element which triggered the action.
@@ -43,30 +43,29 @@ struct Action final
 
 /**
     \ingroup actions
-    Helper struct that describes specific digital element's state.
-*/
-struct DigitalElementState final
-{
-    /** Id of the input element */
-    eInputElements elementId = eInputElements::NONE;
-
-    /** State of the input element */
-    eDigitalElementStates stateMask = eDigitalElementStates::NONE;
-};
-
-/**
-    \ingroup actions
     Describes an action bound to a number of digital elements.
 */
 struct DigitalBinding final
 {
+    DigitalBinding()
+    {
+        std::fill(digitalElements.begin(), digitalElements.end(), eInputElements::NONE);
+    }
+
     /** Id of the action to trigger */
     FastName actionId;
 
     /**
-        Array of digital element states which are required for the action to be triggered.
+        Array of digital elements whose specific states (described in `digitalStates` fields) are required for the action to be triggered.
+        digitalElements[i]'s required state is digitalStates[i].
     */
-    Array<DigitalElementState, MAX_DIGITAL_STATES_COUNT> requiredStates;
+    Array<eInputElements, MAX_DIGITAL_STATES_COUNT> digitalElements;
+
+    /**
+        Array of digital element states which are required for the action to be triggered.
+        digitalStates[i] is required state for digitalElements[i].
+    */
+    Array<DigitalElementState, MAX_DIGITAL_STATES_COUNT> digitalStates;
 
     /**
         Analog state which will be put into a triggered action.
@@ -96,14 +95,28 @@ struct DigitalBinding final
 */
 struct AnalogBinding final
 {
+    AnalogBinding()
+    {
+        std::fill(digitalElements.begin(), digitalElements.end(), eInputElements::NONE);
+    }
+
     /** Id of the action to trigger. */
     FastName actionId;
 
     /** Id of the analog element whose state changes will trigger the action. */
     eInputElements analogElementId;
 
-    /** Additional digital element states required for the action to trigger. */
-    Array<DigitalElementState, MAX_DIGITAL_STATES_COUNT> requiredDigitalElementStates;
+    /**
+        Additional digital elements whose specific states (described in `digitalStates` fields) are required for the action to be triggered.
+        digitalElements[i]'s required state is digitalStates[i].
+    */
+    Array<eInputElements, MAX_DIGITAL_STATES_COUNT> digitalElements;
+
+    /**
+        Array of digital element states which are required for the action to be triggered.
+        digitalStates[i] is required state for digitalElements[i].
+    */
+    Array<DigitalElementState, MAX_DIGITAL_STATES_COUNT> digitalStates;
 };
 
 /**
@@ -132,16 +145,18 @@ struct ActionSet final
         // Create and fill action set
 
         ActionSet set;
-
+        
+        // Fire with a gamepad's X button
         DigitalBinding fireBinding;
         fireBinding.actionId = FIRE;
-        fireBinding.requiredStates[0].elementId = eInputElement::GAMEPAD_X;
-        fireBinding.requiredStates[0].stateMask = eDigitalElementState::PRESSED;
+        fireBinding.digitalElements[0] = eInputElements::GAMEPAD_X;
+        fireBinding.digitalStates[0] = DigitalElementState(eDigitalElementStates::PRESSED);
         set.digitalBindings.push_back(fireBinding);
-
+        
+        // Move with left thumb
         AnalogBinding moveBinding;
         moveBinding.actionId = MOVE;
-        moveBinding.analogElementId = eInputElement::GAMEPAD_STICK1;
+        moveBinding.analogElementId = eInputElements::GAMEPAD_AXIS_LTHUMB;
         set.analogBindings.push_back(moveBinding);
 
         ActionSystem* actionSystem = GetEngineContext()->actionSystem;

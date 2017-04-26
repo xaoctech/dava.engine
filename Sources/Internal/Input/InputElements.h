@@ -156,8 +156,8 @@ enum eInputElements : uint32
     GAMEPAD_DPAD_DOWN,
     GAMEPAD_LTHUMB,
     GAMEPAD_RTHUMB,
-    GAMEPAD_LSHOUDER,
-    GAMEPAD_RSHOUDER,
+    GAMEPAD_LSHOULDER,
+    GAMEPAD_RSHOULDER,
 
     GAMEPAD_AXIS_LTRIGGER,
     GAMEPAD_AXIS_RTRIGGER,
@@ -204,7 +204,7 @@ enum eInputElements : uint32
     GAMEPAD_FIRST = GAMEPAD_START,
     GAMEPAD_LAST = GAMEPAD_AXIS_RTHUMB,
     GAMEPAD_FIRST_BUTTON = GAMEPAD_START,
-    GAMEPAD_LAST_BUTTON = GAMEPAD_RSHOUDER,
+    GAMEPAD_LAST_BUTTON = GAMEPAD_RSHOULDER,
     GAMEPAD_FIRST_AXIS = GAMEPAD_AXIS_LTRIGGER,
     GAMEPAD_LAST_AXIS = GAMEPAD_AXIS_RTHUMB,
 
@@ -260,6 +260,12 @@ struct InputElementInfo final
 inline bool IsMouseInputElement(eInputElements element)
 {
     return eInputElements::MOUSE_FIRST <= element && element <= eInputElements::MOUSE_LAST;
+}
+
+/** Return true if specified `element` is a mouse button element. */
+inline bool IsMouseButtonInputElement(eInputElements element)
+{
+    return eInputElements::MOUSE_FIRST_BUTTON <= element && element <= eInputElements::MOUSE_LAST_BUTTON;
 }
 
 /** Return true if specified `element` is a gamepad button element */

@@ -890,7 +890,39 @@ UIEvent UIControlSystem::MakeUIEvent(const InputEvent& inputEvent) const
     uie.timestamp = inputEvent.timestamp;
     uie.window = inputEvent.window;
 
-    if (IsMouseInputElement(inputEvent.elementId))
+    if (inputEvent.deviceType == eInputDeviceTypes::KEYBOARD)
+    {
+        uie.device = eInputDevices::KEYBOARD;
+        uie.key = inputEvent.elementId;
+        uie.modifiers = GetKeyboardModifierKeys();
+
+        if (inputEvent.keyboardEvent.charCode > 0)
+        {
+            uie.phase = inputEvent.keyboardEvent.charRepeated ? UIEvent::Phase::CHAR_REPEAT : UIEvent::Phase::CHAR;
+            uie.keyChar = inputEvent.keyboardEvent.charCode;
+        }
+        else
+        {
+            DigitalElementState keyState = inputEvent.device->GetDigitalElementState(uie.key);
+
+            if (keyState.IsReleased())
+            {
+                uie.phase = UIEvent::Phase::KEY_UP;
+            }
+            else
+            {
+                if (keyState.IsJustPressed())
+                {
+                    uie.phase = UIEvent::Phase::KEY_DOWN;
+                }
+                else
+                {
+                    uie.phase = UIEvent::Phase::KEY_DOWN_REPEAT;
+                }
+            }
+        }
+    }
+    else if (IsMouseInputElement(inputEvent.elementId))
     {
         uie.device = eInputDevices::MOUSE;
         uie.mouseButton = eMouseButtons::NONE;
@@ -908,7 +940,7 @@ UIEvent UIControlSystem::MakeUIEvent(const InputEvent& inputEvent) const
         case eInputElements::MOUSE_MBUTTON:
         case eInputElements::MOUSE_EXT1BUTTON:
         case eInputElements::MOUSE_EXT2BUTTON:
-            uie.phase = (inputEvent.digitalState & eDigitalElementStates::PRESSED) != eDigitalElementStates::NONE ? UIEvent::Phase::BEGAN : UIEvent::Phase::ENDED;
+            uie.phase = inputEvent.digitalState.IsPressed() ? UIEvent::Phase::BEGAN : UIEvent::Phase::ENDED;
             uie.mouseButton = static_cast<eMouseButtons>(inputEvent.elementId - eInputElements::MOUSE_LBUTTON + 1);
             uie.physPoint = { mousePosition.x, mousePosition.y };
             break;
@@ -939,10 +971,9 @@ UIEvent UIControlSystem::MakeUIEvent(const InputEvent& inputEvent) const
 
         if (isDigitalEvent)
         {
-            TouchScreen* touchDevice = GetEngineContext()->deviceManager->GetTouchScreen();
-            AnalogElementState analogState = touchDevice->GetAnalogElementState(GetTouchPositionElementFromClickElement(inputEvent.elementId));
+            AnalogElementState analogState = inputEvent.device->GetAnalogElementState(GetTouchPositionElementFromClickElement(inputEvent.elementId));
 
-            uie.phase = (inputEvent.digitalState & eDigitalElementStates::PRESSED) != eDigitalElementStates::NONE ? UIEvent::Phase::BEGAN : UIEvent::Phase::ENDED;
+            uie.phase = inputEvent.digitalState.IsPressed() ? UIEvent::Phase::BEGAN : UIEvent::Phase::ENDED;
             uie.physPoint = { analogState.x, analogState.y };
 
             uie.touchId = inputEvent.elementId - eInputElements::TOUCH_FIRST_CLICK + 1;
@@ -964,30 +995,30 @@ eModifierKeys UIControlSystem::GetKeyboardModifierKeys() const
     Keyboard* keyboard = GetEngineContext()->deviceManager->GetKeyboard();
     if (keyboard != nullptr)
     {
-        eDigitalElementStates lctrl = keyboard->GetDigitalElementState(eInputElements::KB_LCTRL);
-        eDigitalElementStates rctrl = keyboard->GetDigitalElementState(eInputElements::KB_RCTRL);
-        if (((lctrl | rctrl) & eDigitalElementStates::PRESSED) == eDigitalElementStates::PRESSED)
+        DigitalElementState lctrl = keyboard->GetDigitalElementState(eInputElements::KB_LCTRL);
+        DigitalElementState rctrl = keyboard->GetDigitalElementState(eInputElements::KB_RCTRL);
+        if (lctrl.IsPressed() | rctrl.IsPressed())
         {
             modifierKeys |= eModifierKeys::CONTROL;
         }
 
-        eDigitalElementStates lshift = keyboard->GetDigitalElementState(eInputElements::KB_LSHIFT);
-        eDigitalElementStates rshift = keyboard->GetDigitalElementState(eInputElements::KB_RSHIFT);
-        if (((lshift | rshift) & eDigitalElementStates::PRESSED) == eDigitalElementStates::PRESSED)
+        DigitalElementState lshift = keyboard->GetDigitalElementState(eInputElements::KB_LSHIFT);
+        DigitalElementState rshift = keyboard->GetDigitalElementState(eInputElements::KB_RSHIFT);
+        if (lshift.IsPressed() | rshift.IsPressed())
         {
             modifierKeys |= eModifierKeys::SHIFT;
         }
 
-        eDigitalElementStates lalt = keyboard->GetDigitalElementState(eInputElements::KB_LALT);
-        eDigitalElementStates ralt = keyboard->GetDigitalElementState(eInputElements::KB_RALT);
-        if (((lalt | ralt) & eDigitalElementStates::PRESSED) == eDigitalElementStates::PRESSED)
+        DigitalElementState lalt = keyboard->GetDigitalElementState(eInputElements::KB_LALT);
+        DigitalElementState ralt = keyboard->GetDigitalElementState(eInputElements::KB_RALT);
+        if (lalt.IsPressed() | ralt.IsPressed())
         {
             modifierKeys |= eModifierKeys::ALT;
         }
 
-        eDigitalElementStates lcmd = keyboard->GetDigitalElementState(eInputElements::KB_LCMD);
-        eDigitalElementStates rcmd = keyboard->GetDigitalElementState(eInputElements::KB_RCMD);
-        if (((lcmd | rcmd) & eDigitalElementStates::PRESSED) == eDigitalElementStates::PRESSED)
+        DigitalElementState lcmd = keyboard->GetDigitalElementState(eInputElements::KB_LCMD);
+        DigitalElementState rcmd = keyboard->GetDigitalElementState(eInputElements::KB_RCMD);
+        if (lcmd.IsPressed() | rcmd.IsPressed())
         {
             modifierKeys |= eModifierKeys::COMMAND;
         }

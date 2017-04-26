@@ -17,7 +17,6 @@
 #include "Engine/Engine.h"
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 #include "Input/InputSystem.h"
-#include "Input/Private/DIElementWrapper.h"
 #include "Time/SystemTimer.h"
 
 namespace DAVA
@@ -49,7 +48,7 @@ bool Keyboard::IsElementSupported(eInputElements elementId) const
     return IsKeyboardInputElement(elementId);
 }
 
-eDigitalElementStates Keyboard::GetDigitalElementState(eInputElements elementId) const
+DigitalElementState Keyboard::GetDigitalElementState(eInputElements elementId) const
 {
     DVASSERT(IsElementSupported(elementId));
     return keys[elementId - eInputElements::KB_FIRST];
@@ -67,12 +66,18 @@ WideString Keyboard::TranslateElementToWideString(eInputElements elementId) cons
     return impl->TranslateElementToWideString(elementId);
 }
 
+uint32 Keyboard::GetElementNativeScancode(eInputElements elementId) const
+{
+    DVASSERT(IsElementSupported(elementId));
+    return impl->ConvertDavaScancodeToNativeScancode(elementId);
+}
+
 void Keyboard::OnEndFrame()
 {
     // Promote JustPressed & JustReleased states to Pressed/Released accordingly
-    for (DIElementWrapper key : keys)
+    for (DigitalElementState& keyState : keys)
     {
-        key.OnEndFrame();
+        keyState.OnEndFrame();
     }
 }
 
@@ -84,14 +89,14 @@ void Keyboard::OnWindowFocusChanged(DAVA::Window* window, bool focused)
         int64 timestamp = SystemTimer::GetMs();
         for (size_t i = 0; i < INPUT_ELEMENTS_KB_COUNT; ++i)
         {
-            DIElementWrapper key(keys[i]);
-            if (key.IsPressed())
+            DigitalElementState& keyState = keys[i];
+            if (keyState.IsPressed())
             {
-                key.Release();
+                keyState.Release();
 
                 // Generate release event
                 eInputElements elementId = static_cast<eInputElements>(eInputElements::KB_FIRST + i);
-                CreateAndSendInputEvent(elementId, keys[i], window, timestamp);
+                CreateAndSendKeyInputEvent(elementId, keyState, window, timestamp);
             }
         }
     }
@@ -112,19 +117,25 @@ bool Keyboard::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e)
 
         // Update element state
 
-        DIElementWrapper key(keys[elementId - eInputElements::KB_FIRST]);
+        DigitalElementState& keyState = keys[elementId - eInputElements::KB_FIRST];
         if (e.type == MainDispatcherEvent::KEY_DOWN)
         {
-            key.Press();
+            keyState.Press();
         }
         else
         {
-            key.Release();
+            keyState.Release();
         }
 
         // Send event
 
-        CreateAndSendInputEvent(elementId, key.GetState(), e.window, e.timestamp);
+        CreateAndSendKeyInputEvent(elementId, keyState, e.window, e.timestamp);
+
+        return true;
+    }
+    else if (e.type == MainDispatcherEvent::KEY_CHAR)
+    {
+        CreateAndSendCharInputEvent(e.keyEvent.key, e.keyEvent.isRepeated, e.window, e.timestamp);
 
         return true;
     }
@@ -132,15 +143,32 @@ bool Keyboard::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e)
     return false;
 }
 
-void Keyboard::CreateAndSendInputEvent(eInputElements elementId, eDigitalElementStates element, Window* window, int64 timestamp) const
+void Keyboard::CreateAndSendKeyInputEvent(eInputElements elementId, DigitalElementState state, Window* window, int64 timestamp)
 {
     InputEvent inputEvent;
     inputEvent.window = window;
     inputEvent.timestamp = static_cast<float64>(timestamp / 1000.0f);
     inputEvent.deviceType = eInputDeviceTypes::KEYBOARD;
-    inputEvent.deviceId = GetId();
-    inputEvent.digitalState = element;
+    inputEvent.device = this;
+    inputEvent.digitalState = state;
     inputEvent.elementId = elementId;
+    inputEvent.keyboardEvent.charCode = 0;
+
+    inputSystem->DispatchInputEvent(inputEvent);
+}
+
+void Keyboard::CreateAndSendCharInputEvent(char32_t charCode, bool charRepeated, Window* window, int64 timestamp)
+{
+    DVASSERT(charCode > 0);
+
+    InputEvent inputEvent;
+    inputEvent.window = window;
+    inputEvent.timestamp = static_cast<float64>(timestamp / 1000.0f);
+    inputEvent.deviceType = eInputDeviceTypes::KEYBOARD;
+    inputEvent.device = this;
+    inputEvent.elementId = eInputElements::NONE;
+    inputEvent.keyboardEvent.charCode = charCode;
+    inputEvent.keyboardEvent.charRepeated = charRepeated;
 
     inputSystem->DispatchInputEvent(inputEvent);
 }
