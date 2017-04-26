@@ -544,9 +544,8 @@ void TextFieldPlatformImpl::CreateNativeControl(bool textControl)
     }
     InstallCommonEventHandlers();
 
-    /*
     nativeControl->BorderThickness = Thickness(0.0);
-    nativeControl->Background = ref new SolidColorBrush(Colors::Pink);
+    nativeControl->Background = ref new SolidColorBrush(Colors::Transparent);
     nativeControl->Foreground = ref new SolidColorBrush(Colors::White);
     nativeControl->BorderBrush = ref new SolidColorBrush(Colors::Transparent);
     nativeControl->Padding = Thickness(0.0);
@@ -554,7 +553,6 @@ void TextFieldPlatformImpl::CreateNativeControl(bool textControl)
     nativeControl->MinWidth = 0.0;
     nativeControl->MinHeight = 0.0;
     nativeControl->TabNavigation = KeyboardNavigationMode::Cycle;
-    */
 
     // Native control holder is used to keep text control inside itself to
     // emulate vertical text alignment
@@ -567,7 +565,6 @@ void TextFieldPlatformImpl::CreateNativeControl(bool textControl)
     nativeControlHolder->MinWidth = 0.0;
     nativeControlHolder->MinHeight = 0.0;
     nativeControlHolder->Child = nativeControl;
-
 #if defined(__DAVAENGINE_COREV2__)
     PlatformApi::Win10::AddXamlControl(window, nativeControlHolder);
 #else
@@ -1356,6 +1353,8 @@ Platform::String ^ TextFieldPlatformImpl::xamlTextBoxStyles = LR"(
     <Style x:Key="dava_custom_textbox" TargetType="TextBox">
         <Setter Property="MinWidth" Value="0" />
         <Setter Property="MinHeight" Value="0" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="SelectionHighlightColor" Value="{ThemeResource TextSelectionHighlightColorThemeBrush}" />
         <Setter Property="BorderThickness" Value="0" />
