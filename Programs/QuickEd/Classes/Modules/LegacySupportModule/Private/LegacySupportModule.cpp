@@ -15,7 +15,7 @@
 
 #include <QtTools/Utils/Themes/Themes.h>
 
-#include <Tools/version.h>
+#include <Tools/Version.h>
 #include <DAVAVersion.h>
 
 DAVA_VIRTUAL_REFLECTION_IMPL(LegacySupportModule)
@@ -103,8 +103,8 @@ void LegacySupportModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, 
         else
         {
             //event-based code require selectionChange first, packageChange second and than another selecitonChanged
-            bool selectionWasChanged = std::find(fields.begin(), fields.end(), String(DocumentData::selectionPropertyName)) != fields.end();
-            bool packageWasChanged = std::find(fields.begin(), fields.end(), String(DocumentData::packagePropertyName)) != fields.end();
+            bool selectionWasChanged = std::find(fields.begin(), fields.end(), FastName(DocumentData::selectionPropertyName)) != fields.end();
+            bool packageWasChanged = std::find(fields.begin(), fields.end(), FastName(DocumentData::packagePropertyName)) != fields.end();
 
             if (selectionWasChanged == false && packageWasChanged == false)
             {
