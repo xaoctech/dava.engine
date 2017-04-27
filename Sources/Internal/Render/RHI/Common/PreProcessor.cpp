@@ -202,12 +202,14 @@ PreProc::_get_identifier(char* txt, char** end) const
 
         ++t;
     }
-    DVASSERT(*t);
+    if (*t == '\0')
+        return nullptr;
     n = t;
 
     while (isalnum(*t) || *t == '_')
         ++t;
-    DVASSERT(*t);
+    if (*t == '\0')
+        return nullptr;
     if (*t != '\n')
         *t = '\0';
 
@@ -217,6 +219,71 @@ PreProc::_get_identifier(char* txt, char** end) const
     *t = '\0';
     *end = t;
     return n;
+}
+
+//------------------------------------------------------------------------------
+
+int
+PreProc::_get_name_and_value(char* txt, char** name, char** value, char** end) const
+{
+    // returns:
+    // non-zero when name/value successfully retrieved
+    // zero, if name/value not retieved;
+    // -1, if end-of-file was encountered (name/value successfully retrieved)
+
+    char* t = txt;
+    char* n0 = nullptr;
+    char* n1 = nullptr;
+    char* v0 = nullptr;
+    char* v1 = nullptr;
+
+    while (*t == ' ' || *t == '\t')
+        ++t;
+    if (*t == '\0')
+        return 0;
+    n0 = t;
+    while (*t != ' ' && *t != '\t')
+        ++t;
+    if (*t == '\0')
+        return 0;
+    n1 = t - 1;
+
+    while (*t == ' ' || *t == '\t')
+        ++t;
+    if (*t == '\0')
+        return 0;
+    v0 = t;
+    while (*t != ' ' && *t != '\t' && *t != '\n' && *t != '\r')
+        ++t;
+    if (*t == '\0')
+        return 0;
+    v1 = t - 1;
+
+    *name = n0;
+    *value = v0;
+
+    if (*t != '\0')
+    {
+        if (*t != '\n')
+            *t = '\0';
+
+        while (*t != '\n')
+            ++t;
+        *t = '\0';
+        *end = t;
+
+        *(n1 + 1) = '\0';
+        *(v1 + 1) = '\0';
+
+        return 1;
+    }
+    else
+    {
+        *end = t;
+        *(n1 + 1) = '\0';
+        *(v1 + 1) = '\0';
+        return -1;
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -391,103 +458,62 @@ PreProc::_process_buffer(char* text, std::vector<Line>* line)
                 }
                 else if (!skipping_line && strncmp(s + 1, "define", 6) == 0)
                 {
-                    char* t = s + 1 + 6;
-                    char* n0 = nullptr;
-                    char* n1 = nullptr;
-                    char* v0 = nullptr;
-                    char* v1 = nullptr;
-                    char name[256];
-                    char val[256];
+                    char* name = nullptr;
+                    char* value = nullptr;
+                    int nv = _get_name_and_value(s + 1 + 6, &name, &value, &s);
 
-                    while (*t == ' ' || *t == '\t')
-                        ++t;
-                    DVASSERT(*t);
-                    n0 = t;
-                    while (*t != ' ' && *t != '\t')
-                        ++t;
-                    DVASSERT(*t);
-                    n1 = t - 1;
-
-                    while (*t == ' ' || *t == '\t')
-                        ++t;
-                    DVASSERT(*t);
-                    v0 = t;
-                    while (*t != ' ' && *t != '\t' && *t != '\n' && *t != '\r')
-                        ++t;
-                    DVASSERT(*t);
-                    v1 = t - 1;
-
-                    strncpy(name, n0, n1 - n0 + 1);
-                    name[n1 - n0 + 1] = 0;
-
-                    strncpy(val, v0, v1 - v0 + 1);
-                    val[v1 - v0 + 1] = 0;
-
-                    _process_define(name, val);
-                    while (*t && *t != '\n')
-                        ++t;
-                    if (*t == 0)
+                    if (nv)
                     {
-                        break;
+                        _process_define(name, value);
+
+                        if (nv != -1)
+                        {
+                            *s = '\n'; // since it was null'ed in _get_name_and_value
+                            ln = s + 1;
+                        }
+                        else
+                        {
+                            ln = s;
+                            break;
+                        }
                     }
                     else
                     {
-                        s = t;
-                        ln = t + 1;
+                        break;
                     }
                 }
                 else if (!skipping_line && strncmp(s + 1, "ensuredefined", 13) == 0)
                 {
-                    char* t = s + 1 + 13;
-                    char* n0 = nullptr;
-                    char* n1 = nullptr;
-                    char* v0 = nullptr;
-                    char* v1 = nullptr;
-                    char name[256];
-                    char val[256];
+                    char* name = nullptr;
+                    char* value = nullptr;
+                    int nv = _get_name_and_value(s + 1 + 13, &name, &value, &s);
 
-                    while (*t == ' ' || *t == '\t')
-                        ++t;
-                    DVASSERT(*t);
-                    n0 = t;
-                    while (*t != ' ' && *t != '\t')
-                        ++t;
-                    DVASSERT(*t);
-                    n1 = t - 1;
-
-                    while (*t == ' ' || *t == '\t')
-                        ++t;
-                    DVASSERT(*t);
-                    v0 = t;
-                    while (*t != ' ' && *t != '\t' && *t != '\n' && *t != '\r')
-                        ++t;
-                    DVASSERT(*t);
-                    v1 = t - 1;
-
-                    strncpy(name, n0, n1 - n0 + 1);
-                    name[n1 - n0 + 1] = 0;
-
-                    strncpy(val, v0, v1 - v0 + 1);
-                    val[v1 - v0 + 1] = 0;
-
-                    if (!_eval.has_variable(name))
-                        _eval.set_variable(name, float(atof(val)));
-
-                    while (*t && *t != '\n')
-                        ++t;
-                    if (*t == 0)
+                    if (nv)
                     {
-                        break;
+                        if (!_eval.has_variable(name))
+                            _eval.set_variable(name, float(atof(value)));
+
+                        if (nv != -1)
+                        {
+                            *s = '\n'; // since it was null'ed in _get_name_and_value
+                            ln = s + 1;
+                        }
+                        else
+                        {
+                            ln = s;
+                            break;
+                        }
                     }
                     else
                     {
-                        s = t;
-                        ln = t + 1;
+                        break;
                     }
                 }
                 else if (strncmp(s + 1, "ifdef", 5) == 0)
                 {
                     char* name = _get_identifier(s + 1 + 5, &s);
+                    if (!name)
+                        break;
                     bool condition = _eval.has_variable(name);
                     condition_t p;
 
@@ -502,6 +528,8 @@ PreProc::_process_buffer(char* text, std::vector<Line>* line)
                 else if (strncmp(s + 1, "ifndef", 6) == 0)
                 {
                     char* name = _get_identifier(s + 1 + 6, &s);
+                    if (!name)
+                        break;
                     bool condition = !_eval.has_variable(name);
                     condition_t p;
 
@@ -590,7 +618,8 @@ PreProc::_process_buffer(char* text, std::vector<Line>* line)
                 }
                 else
                 {
-                    DAVA::Logger::Warning("ignoring unknown pre-processor directive \"%s\"", s + 1);
+                    if (!skipping_line)
+                        DAVA::Logger::Warning("ignoring unknown pre-processor directive \"%s\"", s + 1);
                 }
 
                 dcheck_pending = true;
@@ -733,7 +762,7 @@ PreProc::_process_define(const char* name, const char* value)
     }
     else
     {
-        _report_expr_eval_error(0);
+        //        _report_expr_eval_error(0);
     }
 
     _macro.resize(_macro.size() + 1);

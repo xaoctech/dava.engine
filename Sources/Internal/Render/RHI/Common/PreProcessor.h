@@ -65,6 +65,7 @@ private:
 
     char* _get_expression(char* txt, char** end) const;
     char* _get_identifier(char* txt, char** end) const;
+    int _get_name_and_value(char* txt, char** name, char** value, char** end) const;
     void _report_expr_eval_error(unsigned line_n);
 
     struct
