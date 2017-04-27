@@ -268,6 +268,12 @@ inline bool IsMouseButtonInputElement(eInputElements element)
     return eInputElements::MOUSE_FIRST_BUTTON <= element && element <= eInputElements::MOUSE_LAST_BUTTON;
 }
 
+/** Return true if specified `element` is a gamepad element */
+inline bool IsGamepadInputElement(eInputElements element)
+{
+    return eInputElements::GAMEPAD_FIRST <= element && element <= eInputElements::GAMEPAD_LAST;
+}
+
 /** Return true if specified `element` is a gamepad button element */
 inline bool IsGamepadButtonInputElement(eInputElements element)
 {

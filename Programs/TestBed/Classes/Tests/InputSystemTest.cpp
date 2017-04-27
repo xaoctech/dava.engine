@@ -43,21 +43,21 @@ void InputSystemTest::LoadResources()
     DigitalBinding action1;
     action1.actionId = ACTION_1;
     action1.digitalElements[0] = eInputElements::KB_W;
-    action1.digitalStates[0] = DigitalElementState(eDigitalElementStates::PRESSED);
+    action1.digitalStates[0] = DigitalElementState::Pressed();
     set.digitalBindings.push_back(action1);
 
     DigitalBinding action2;
     action2.actionId = ACTION_2;
     action2.digitalElements[0] = eInputElements::KB_SPACE;
-    action2.digitalStates[0] = DigitalElementState(eDigitalElementStates::JUST_PRESSED);
+    action2.digitalStates[0] = DigitalElementState::JustPressed();
     set.digitalBindings.push_back(action2);
 
     DigitalBinding action3;
     action3.actionId = ACTION_3;
     action3.digitalElements[0] = eInputElements::KB_SPACE;
-    action3.digitalStates[0] = DigitalElementState(eDigitalElementStates::JUST_PRESSED);
+    action3.digitalStates[0] = DigitalElementState::JustPressed();
     action3.digitalElements[1] = eInputElements::KB_LSHIFT;
-    action3.digitalStates[1] = DigitalElementState(eDigitalElementStates::PRESSED);
+    action3.digitalStates[1] = DigitalElementState::Pressed();
     set.digitalBindings.push_back(action3);
 
     AnalogBinding action4;
@@ -69,9 +69,9 @@ void InputSystemTest::LoadResources()
     action5.actionId = ACTION_5;
     action5.analogElementId = eInputElements::MOUSE_POSITION;
     action5.digitalElements[0] = eInputElements::MOUSE_LBUTTON;
-    action5.digitalStates[0] = DigitalElementState(eDigitalElementStates::PRESSED);
+    action5.digitalStates[0] = DigitalElementState::Pressed();
     action5.digitalElements[1] = eInputElements::KB_LCTRL;
-    action5.digitalStates[1] = DigitalElementState(eDigitalElementStates::PRESSED);
+    action5.digitalStates[1] = DigitalElementState::Pressed();
     set.analogBindings.push_back(action5);
 
     GetEngineContext()->actionSystem->BindSet(set, 1, 2);

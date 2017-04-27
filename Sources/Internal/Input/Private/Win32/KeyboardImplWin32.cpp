@@ -46,7 +46,7 @@ uint32 KeyboardImpl::ConvertDavaScancodeToNativeScancode(eInputElements elementI
         {
             if (nativeScancodeExtToDavaScancode[i] == elementId)
             {
-                nativeScancode = static_cast<int>(i);
+                nativeScancode = static_cast<int>(i) | 0xE000;
             }
         }
     }

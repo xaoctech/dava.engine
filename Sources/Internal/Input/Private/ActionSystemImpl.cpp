@@ -113,7 +113,7 @@ bool ActionSystemImpl::CheckDigitalStates(const Array<eInputElements, MAX_DIGITA
                 if (device->IsElementSupported(elementId))
                 {
                     const DigitalElementState state = device->GetDigitalElementState(elementId);
-                    if (state == requiredState)
+                    if (CompareDigitalStates(requiredState, state))
                     {
                         requiredStateMatches = true;
                         break;
@@ -130,6 +130,25 @@ bool ActionSystemImpl::CheckDigitalStates(const Array<eInputElements, MAX_DIGITA
     }
 
     return true;
+}
+
+bool ActionSystemImpl::CompareDigitalStates(const DigitalElementState& requiredState, const DigitalElementState& state)
+{
+    // If an action is bound to JustPressed or JustReleased - they should match exactly for an action to be triggered only once
+    // Otherwise just check for 'pressed' flag
+
+    if (requiredState.IsJustPressed())
+    {
+        return state.IsJustPressed();
+    }
+    else if (requiredState.IsJustReleased())
+    {
+        return state.IsJustReleased();
+    }
+    else
+    {
+        return requiredState.IsPressed() == state.IsPressed();
+    }
 }
 
 bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
