@@ -12,16 +12,27 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UISpineComponent)
     .DestructorByPointer([](UISpineComponent* c) { SafeRelease(c); })
     .Field("skeletonPath", &UISpineComponent::GetSkeletonPath, &UISpineComponent::SetSkeletonPath)
     .Field("atlasPath", &UISpineComponent::GetAtlasPath, &UISpineComponent::SetAtlasPath)
-    .Field("animationState", &UISpineComponent::GetAnimationState, &UISpineComponent::SetAnimationState)[M::EnumT<UISpineComponent::AnimationState>()]
-    .Field("animationsNames", &UISpineComponent::GetAnimationsNames, &UISpineComponent::SetAnimationsNames)[M::ReadOnly()]
     .Field("animationName", &UISpineComponent::GetAnimationName, &UISpineComponent::SetAnimationName) // Connect select to animationsNames
+    .Field("animationsNames", &UISpineComponent::GetAnimationsNames, &UISpineComponent::SetAnimationsNames)[M::ReadOnly()]
+    .Field("animationState", &UISpineComponent::GetAnimationState, &UISpineComponent::SetAnimationState)[M::EnumT<UISpineComponent::AnimationState>()]
+    .Field("timeScale", &UISpineComponent::GetTimeScale, &UISpineComponent::SetTimeScale)
     .Field("loopedPlayback", &UISpineComponent::IsLoopedPlayback, &UISpineComponent::SetLoopedPlayback)
+    
+    // TODO: remove
+    .Field("animationsNamesAsString", &UISpineComponent::GetAnimationsNamesAsString, &UISpineComponent::SetAnimationsNamesFromString)
+
     .End();
 }
 
 UISpineComponent::UISpineComponent(const UISpineComponent& copy)
     : skeletonPath(copy.skeletonPath)
     , atlasPath(copy.atlasPath)
+    , animationState(copy.animationState)
+    , animationName(copy.animationName)
+    , animationsNames(copy.animationsNames)
+    , animationLooped(copy.animationLooped)
+    , needReload(true)
+    , modified(true)
 {
 }
 
@@ -79,6 +90,15 @@ void UISpineComponent::SetAnimationsNames(const Vector<String>& names)
     }
 }
 
+void UISpineComponent::SetTimeScale(float32 scale)
+{
+    if (timeScale != scale)
+    {
+        timeScale = scale;
+        modified = true;
+    }
+}
+
 void UISpineComponent::SetLoopedPlayback(bool loop)
 {
     if (animationLooped != loop)
@@ -96,6 +116,24 @@ void UISpineComponent::SetModified(bool modify)
 void UISpineComponent::SetNeedReload(bool reload)
 {
     needReload = reload;
+}
+
+String UISpineComponent::GetAnimationsNamesAsString() const
+{
+    String out;
+    for (const String& s : animationsNames)
+    {
+        if (!out.empty())
+        {
+            out += ", ";
+        }
+        out += s;
+    }
+    return out;
+}
+
+void UISpineComponent::SetAnimationsNamesFromString(const String&)
+{
 }
 
 }

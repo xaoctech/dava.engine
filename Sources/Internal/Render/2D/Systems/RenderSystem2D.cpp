@@ -605,7 +605,7 @@ void RenderSystem2D::PushBatch(const BatchDescriptor& batchDesc)
         {
             needUpdateWorldMatrix = true;
             lastCustomWorldMatrix = *batchDesc.worldMatrix;
-            lastCustomMatrixSematic++;
+            //lastCustomMatrixSematic++;
         }
     }
     else // Not equal
@@ -614,7 +614,7 @@ void RenderSystem2D::PushBatch(const BatchDescriptor& batchDesc)
         if (useCustomWorldMatrix)
         {
             lastCustomWorldMatrix = *batchDesc.worldMatrix;
-            lastCustomMatrixSematic++;
+            //lastCustomMatrixSematic++;
         }
     }
     // End check world matrix
@@ -625,7 +625,7 @@ void RenderSystem2D::PushBatch(const BatchDescriptor& batchDesc)
         Flush();
         if (useCustomWorldMatrix)
         {
-            Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_WORLD, &lastCustomWorldMatrix, static_cast<pointer_size>(lastCustomMatrixSematic));
+            Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_WORLD, &lastCustomWorldMatrix, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
         }
         else
         {

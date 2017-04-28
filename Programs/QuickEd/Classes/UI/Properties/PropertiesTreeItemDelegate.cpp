@@ -84,6 +84,9 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
     propertyNameTypeItemDelegates[PropertyPath("*", "sound-touchUpInside")] = new FMODEventPropertyDelegate(this);
     propertyNameTypeItemDelegates[PropertyPath("*", "sound-touchUpOutside")] = new FMODEventPropertyDelegate(this);
     propertyNameTypeItemDelegates[PropertyPath("*", "sound-touchValueChanged")] = new FMODEventPropertyDelegate(this);
+
+    propertyNameTypeItemDelegates[PropertyPath("Spine", "skeletonPath")] = new ResourceFilePropertyDelegate(".json", "", this);
+    propertyNameTypeItemDelegates[PropertyPath("Spine", "atlasPath")] = new ResourceFilePropertyDelegate(".atlas", "", this);
 }
 
 PropertiesTreeItemDelegate::~PropertiesTreeItemDelegate()

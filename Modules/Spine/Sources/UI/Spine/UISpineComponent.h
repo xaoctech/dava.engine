@@ -41,6 +41,9 @@ public:
     const Vector<String>& GetAnimationsNames() const;
     void SetAnimationsNames(const Vector<String>& names);
 
+    float32 GetTimeScale() const;
+    void SetTimeScale(float32 scale);
+
     bool IsLoopedPlayback() const;
     void SetLoopedPlayback(bool loop);
 
@@ -50,9 +53,10 @@ public:
     bool IsNeedReload() const;
     void SetNeedReload(bool reload);
 
-    Signal<UISpineComponent* /*component*/, const String& /*name*/> onAnimationStart;
-    Signal<UISpineComponent* /*component*/, const String& /*name*/> onAnimationStop;
-    Signal<UISpineComponent* /*component*/, const String& /*event*/> onAnimationEvent;
+    Signal<UISpineComponent* /*component*/, int32 /*trackIndex*/> onAnimationStart;
+    Signal<UISpineComponent* /*component*/, int32 /*trackIndex*/> onAnimationFinish;
+    Signal<UISpineComponent* /*component*/, int32 /*trackIndex*/> onAnimationComplete;
+    Signal<UISpineComponent* /*component*/, int32 /*trackIndex*/, const String& /*event*/> onAnimationEvent;
 
 protected:
     ~UISpineComponent() override;
@@ -66,9 +70,14 @@ private:
     String animationName;
     Vector<String> animationsNames;
     AnimationState animationState = STOPPED;
+    float32 timeScale = 1.f;
     bool needReload = false;
     bool modified = false;
     bool animationLooped = false;
+
+    // TODO: remove
+    String GetAnimationsNamesAsString() const;
+    void SetAnimationsNamesFromString(const String&);
 };
 
 inline const FilePath& UISpineComponent::GetSkeletonPath() const
@@ -111,4 +120,8 @@ inline bool UISpineComponent::IsNeedReload() const
     return needReload;
 }
 
+inline float32 UISpineComponent::GetTimeScale() const
+{
+    return timeScale;
+}
 }
