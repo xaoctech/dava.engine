@@ -739,7 +739,7 @@ PreProc::_process_inplace(char* src_text, TextBuf* output)
 bool
 PreProc::_process_include(const char* file_name, std::vector<PreProc::Line>* line)
 {
-    bool success = true;
+    bool success = false;
 
     if (_file_cb->open(file_name))
     {
@@ -755,6 +755,7 @@ PreProc::_process_include(const char* file_name, std::vector<PreProc::Line>* lin
         _cur_file_name = file_name;
         _process_buffer(text, &_line);
         _cur_file_name = prev_file_name;
+        success = true;
     }
     else
     {
