@@ -174,10 +174,12 @@ DAVA_TESTCLASS (PreprocessorTest)
 
         const char* err_test[] =
         {
-#if 0
-            "E01-input.txt"
+#if 1
+          "E01-input.txt",
+          "E02-input.txt",
+          "E03-input.txt"
 #else
-          "E02-input.txt"
+          "E03-input.txt"
 #endif
         };
 
