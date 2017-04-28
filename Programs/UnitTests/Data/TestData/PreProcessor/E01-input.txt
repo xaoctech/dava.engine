@@ -1,4 +1,4 @@
-IF/ENDIF CORNER-CASE (NO LINES BETWEEN IF AND ENDIF)
+INCLUDE MISSING FILE
 
 #include "some-non-existing-file"
 

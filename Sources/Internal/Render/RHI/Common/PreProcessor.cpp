@@ -242,7 +242,7 @@ PreProc::_get_name_and_value(char* txt, char** name, char** value, char** end) c
     if (*t == '\0')
         return 0;
     n0 = t;
-    while (*t != ' ' && *t != '\t')
+    while (*t != ' ' && *t != '\t' && *t != '\n' && *t != '\r')
         ++t;
     if (*t == '\0')
         return 0;
@@ -464,6 +464,13 @@ PreProc::_process_buffer(char* text, std::vector<Line>* line)
 
                     if (nv)
                     {
+                        if (value[0] == '\0')
+                        {
+                            DAVA::Logger::Error("#define without value not allowed (%s)", name);
+                            success = false;
+                            break;
+                        }
+
                         _process_define(name, value);
 
                         if (nv != -1)
@@ -490,6 +497,13 @@ PreProc::_process_buffer(char* text, std::vector<Line>* line)
 
                     if (nv)
                     {
+                        if (value[0] == '\0')
+                        {
+                            DAVA::Logger::Error("#define without value not allowed (%s)", name);
+                            success = false;
+                            break;
+                        }
+
                         if (!_eval.has_variable(name))
                             _eval.set_variable(name, float(atof(value)));
 

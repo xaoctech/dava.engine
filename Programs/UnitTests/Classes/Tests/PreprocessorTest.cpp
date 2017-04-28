@@ -172,6 +172,27 @@ DAVA_TESTCLASS (PreprocessorTest)
             DAVA::Logger::Info("  OK");
         }
 
+        const char* err_test[] =
+        {
+#if 0
+            "E01-input.txt"
+#else
+          "E02-input.txt"
+#endif
+        };
+
+        for (int i = 0; i != countof(err_test); ++i)
+        {
+            DAVA::Logger::Info("pre-proc error-test %i  \"%s\"...", i, err_test[i]);
+
+            TestFileCallback fc(BaseDir);
+            PreProc pp(&fc);
+            std::vector<char> output;
+
+            TEST_VERIFY(pp.process_file(err_test[i], &output) == false);
+            DAVA::Logger::Info("  OK");
+        }
+
         DAVA::Logger::Info("pre-proc tests PASSED");
     }
 };
