@@ -55,8 +55,23 @@ DAVA_TESTCLASS (PreprocessorTest)
             bool success = ev.evaluate(data[i].expr, &res);
 
             TEST_VERIFY(success);
-            //            TEST_VERIFY(abs(res - data[i].result) < 0.000001f)
             TEST_VERIFY(FLOAT_EQUAL(res, data[i].result))
+        }
+
+        const char* err_expr[] =
+        {
+          "BULLSHIT+2"
+        };
+
+        for (unsigned i = 0; i != countof(err_expr); ++i)
+        {
+            float res = 0;
+            bool success = ev.evaluate(err_expr[i], &res);
+            char err[256] = "";
+
+            TEST_VERIFY(!success);
+            ev.get_last_error(err, countof(err));
+            DAVA::Logger::Info("(expected) expr.eval error : %s", err);
         }
     }
 
