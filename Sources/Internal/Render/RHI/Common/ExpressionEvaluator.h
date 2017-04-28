@@ -16,6 +16,7 @@ public:
     bool evaluate(const char* expression, float* out);
 
     bool set_variable(const char* var, float value);
+    void remove_variable(const char* var);
     void clear_variables();
 
     bool has_variable(const char* name) const;

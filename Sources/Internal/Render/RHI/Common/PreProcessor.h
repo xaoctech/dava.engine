@@ -61,6 +61,7 @@ private:
     bool _process_buffer(char* text, std::vector<Line>* line);
     bool _process_include(const char* file_name, std::vector<Line>* line);
     bool _process_define(const char* name, const char* val);
+    void _undefine(const char* name);
     void _generate_output(TextBuf* output);
 
     char* _get_expression(char* txt, char** end) const;

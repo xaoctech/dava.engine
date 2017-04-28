@@ -509,6 +509,17 @@ PreProc::_process_buffer(char* text, std::vector<Line>* line)
                         break;
                     }
                 }
+                else if (!skipping_line && strncmp(s + 1, "undef", 5) == 0)
+                {
+                    char* name = _get_identifier(s + 1 + 5, &s);
+                    if (!name)
+                        break;
+
+                    _undefine(name);
+
+                    *s = '\n'; // since it was null'ed in _get_identifier
+                    ln = s + 1;
+                }
                 else if (strncmp(s + 1, "ifdef", 5) == 0)
                 {
                     char* name = _get_identifier(s + 1 + 5, &s);
@@ -619,7 +630,16 @@ PreProc::_process_buffer(char* text, std::vector<Line>* line)
                 else
                 {
                     if (!skipping_line)
-                        DAVA::Logger::Warning("ignoring unknown pre-processor directive \"%s\"", s + 1);
+                    {
+                        char* ns1 = s;
+
+                        while (*ns1 && *ns1 != ' ')
+                            ++ns1;
+
+                        *ns1 = 0;
+                        DAVA::Logger::Error("unknown pre-processor directive \"%s\"", s + 1);
+                        break;
+                    }
                 }
 
                 dcheck_pending = true;
@@ -774,6 +794,22 @@ PreProc::_process_define(const char* name, const char* value)
         _min_macro_length = _macro.back().value_len;
 
     return success;
+}
+
+//------------------------------------------------------------------------------
+
+void
+PreProc::_undefine(const char* name)
+{
+    _eval.remove_variable(name);
+    for (std::vector<macro_t>::iterator m = _macro.begin(), m_end = _macro.end(); m != m_end; ++m)
+    {
+        if (strcmp(m->name, name) == 0)
+        {
+            _macro.erase(m);
+            break;
+        }
+    }
 }
 
 //------------------------------------------------------------------------------
