@@ -11,21 +11,10 @@
 #define BLENDING BLENDING_NONE
 #endif
 
-#ifndef ALPHATEST
-#define ALPHATEST 0
-#endif
-
-#ifndef TEXTURED
-#define TEXTURED 0
-#endif
-
-#ifndef ALPHA8
-#define ALPHA8 0
-#endif
-
-#ifndef GRAYSCALE
-#define GRAYSCALE 0
-#endif
+#ensuredefined ALPHATEST 0
+#ensuredefined TEXTURED 0
+#ensuredefined ALPHA8 0
+#ensuredefined GRAYSCALE 0
 
 
 #if BLENDING == BLENDING_ALPHABLEND
