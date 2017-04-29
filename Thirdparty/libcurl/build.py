@@ -214,7 +214,21 @@ def _build_android(working_directory_path, root_project_path):
     install_dir_android_arm = os.path.join(working_directory_path, 'gen/install_android_arm')
     configure_args = [
         '--host=arm-linux-androideabi',
+        '--enable-threaded-resolver',
         '--disable-shared',
+        '--disable-rtsp',
+        '--disable-ftp',
+        '--disable-file',
+        '--disable-ldap',
+        '--disable-ldaps',
+        '--disable-rtsp',
+        '--disable-dict',
+        '--disable-telnet',
+        '--disable-tftp',
+        '--disable-pop3',
+        '--disable-imap',
+        '--disable-smtp',
+        '--disable-gopher',
         '--with-ssl=' + os.path.abspath(
             os.path.join(
                 working_directory_path, '../openssl/gen/install_android_arm/'))]
@@ -240,7 +254,21 @@ def _build_android(working_directory_path, root_project_path):
     install_dir_android_x86 = os.path.join(working_directory_path, 'gen/install_android_x86')
     configure_args = [
         '--host=i686-linux-android',
+        '--enable-threaded-resolver',
         '--disable-shared',
+        '--disable-rtsp',
+        '--disable-ftp',
+        '--disable-file',
+        '--disable-ldap',
+        '--disable-ldaps',
+        '--disable-rtsp',
+        '--disable-dict',
+        '--disable-telnet',
+        '--disable-tftp',
+        '--disable-pop3',
+        '--disable-imap',
+        '--disable-smtp',
+        '--disable-gopher',
         '--with-ssl=' + os.path.abspath(
             os.path.join(
                 working_directory_path,
