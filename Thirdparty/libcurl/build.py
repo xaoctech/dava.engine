@@ -215,6 +215,7 @@ def _build_android(working_directory_path, root_project_path):
     configure_args = [
         '--host=arm-linux-androideabi',
         '--enable-threaded-resolver',
+        '--enable-ipv6',
         '--disable-shared',
         '--disable-rtsp',
         '--disable-ftp',
@@ -255,6 +256,7 @@ def _build_android(working_directory_path, root_project_path):
     configure_args = [
         '--host=i686-linux-android',
         '--enable-threaded-resolver',
+        '--enable-ipv6',
         '--disable-shared',
         '--disable-rtsp',
         '--disable-ftp',
