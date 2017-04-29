@@ -243,18 +243,37 @@ PreProc::_get_name_and_value(char* txt, char** name, char** value, char** end) c
         return 0;
     n0 = t;
     while (*t != ' ' && *t != '\t' && *t != '\n' && *t != '\r')
+    {
+        if (t[0] == '/' && t[1] == '/')
+            return 0;
+
         ++t;
+    }
     if (*t == '\0')
         return 0;
     n1 = t - 1;
 
     while (*t == ' ' || *t == '\t')
+    {
+        if (t[0] == '/' && t[1] == '/')
+            return 0;
+
         ++t;
+    }
     if (*t == '\0')
         return 0;
     v0 = t;
     while (*t != ' ' && *t != '\t' && *t != '\n' && *t != '\r')
+    {
+        if (t[0] == '/' && t[1] == '/')
+        {
+            t[0] = '\0';
+            ++t;
+            break;
+        }
+
         ++t;
+    }
     if (*t == '\0')
         return 0;
     v1 = t - 1;
