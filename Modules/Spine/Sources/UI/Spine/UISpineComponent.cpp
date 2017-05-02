@@ -15,12 +15,10 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UISpineComponent)
     .Field("animationName", &UISpineComponent::GetAnimationName, &UISpineComponent::SetAnimationName) // Connect select to animationsNames
     .Field("animationsNames", &UISpineComponent::GetAnimationsNames, &UISpineComponent::SetAnimationsNames)[M::ReadOnly()]
     .Field("animationState", &UISpineComponent::GetAnimationState, &UISpineComponent::SetAnimationState)[M::EnumT<UISpineComponent::AnimationState>()]
+    .Field("skinName", &UISpineComponent::GetSkinName, &UISpineComponent::SetSkinName) // Connect select to skinsNames
+    .Field("skinsNames", &UISpineComponent::GetSkinsNames, &UISpineComponent::SetSkinsNames)[M::ReadOnly()]
     .Field("timeScale", &UISpineComponent::GetTimeScale, &UISpineComponent::SetTimeScale)
     .Field("loopedPlayback", &UISpineComponent::IsLoopedPlayback, &UISpineComponent::SetLoopedPlayback)
-    
-    // TODO: remove
-    .Field("animationsNamesAsString", &UISpineComponent::GetAnimationsNamesAsString, &UISpineComponent::SetAnimationsNamesFromString)
-
     .End();
 }
 
@@ -118,22 +116,22 @@ void UISpineComponent::SetNeedReload(bool reload)
     needReload = reload;
 }
 
-String UISpineComponent::GetAnimationsNamesAsString() const
+void UISpineComponent::SetSkinName(const String& name)
 {
-    String out;
-    for (const String& s : animationsNames)
+    if (skinName != name)
     {
-        if (!out.empty())
-        {
-            out += ", ";
-        }
-        out += s;
+        skinName = name;
+        modified = true;
     }
-    return out;
 }
 
-void UISpineComponent::SetAnimationsNamesFromString(const String&)
+void UISpineComponent::SetSkinsNames(const Vector<String>& names)
 {
+    if (skinsNames != names)
+    {
+        skinsNames = names;
+        modified = true;
+    }
 }
 
 }

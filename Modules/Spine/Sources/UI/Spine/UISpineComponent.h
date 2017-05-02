@@ -41,6 +41,12 @@ public:
     const Vector<String>& GetAnimationsNames() const;
     void SetAnimationsNames(const Vector<String>& names);
 
+    const String& GetSkinName() const;
+    void SetSkinName(const String& name);
+
+    const Vector<String>& GetSkinsNames() const;
+    void SetSkinsNames(const Vector<String>& names);
+
     float32 GetTimeScale() const;
     void SetTimeScale(float32 scale);
 
@@ -70,14 +76,12 @@ private:
     String animationName;
     Vector<String> animationsNames;
     AnimationState animationState = STOPPED;
+    String skinName;
+    Vector<String> skinsNames;
     float32 timeScale = 1.f;
     bool needReload = false;
     bool modified = false;
     bool animationLooped = false;
-
-    // TODO: remove
-    String GetAnimationsNamesAsString() const;
-    void SetAnimationsNamesFromString(const String&);
 };
 
 inline const FilePath& UISpineComponent::GetSkeletonPath() const
@@ -103,6 +107,16 @@ inline const String& UISpineComponent::GetAnimationName() const
 inline const Vector<String>& UISpineComponent::GetAnimationsNames() const
 {
     return animationsNames;
+}
+
+inline const String& UISpineComponent::GetSkinName() const
+{
+    return skinName;
+}
+
+inline const Vector<String>& UISpineComponent::GetSkinsNames() const
+{
+    return skinsNames;
 }
 
 inline bool UISpineComponent::IsLoopedPlayback() const

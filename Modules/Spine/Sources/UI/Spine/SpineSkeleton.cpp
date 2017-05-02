@@ -206,6 +206,14 @@ void SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath)
         spAnimation* anim = mSkeleton->data->animations[i];
         mAnimations.push_back(String(anim->name));
     }
+
+    mSkins.clear();
+    int32 skinsCount = mSkeleton->data->skinsCount;
+    for (int32 i = 0; i < skinsCount; ++i)
+    {
+        spSkin* skin = mSkeleton->data->skins[i];
+        mSkins.push_back(String(skin->name));
+    }
 }
 
 void SpineSkeleton::Update(const float32 timeElapsed)
@@ -354,8 +362,6 @@ void SpineSkeleton::Update(const float32 timeElapsed)
 
 void SpineSkeleton::ResetSkeleton()
 {
-    Logger::Debug("[SpineSkeleton::ResetSkeleton]");
-
     if (mSkeleton)
     {
         spSkeleton_setToSetupPose(mSkeleton);
@@ -367,23 +373,19 @@ BatchDescriptor* SpineSkeleton::GetRenderBatch() const
     return batchDescriptor;
 }
 
-Vector<String> SpineSkeleton::GetAvailableAnimationsNames() const
+const Vector<String>& SpineSkeleton::GetAvailableAnimationsNames() const
 {
-    Logger::Debug("[SpineSkeleton::GetAvailableAnimationsNames]");
-
     return mAnimations;
 }
 
 SpineTrackEntry* SpineSkeleton::SetAnimation(int32 trackIndex, const String& name, bool loop)
 {
-    Logger::Debug("[SpineSkeleton::SetAnimation] %d, %s, %d", trackIndex, name.c_str(), loop);
-
     if (mSkeleton != nullptr && mState != nullptr)
     {
         spAnimation* animation = spSkeletonData_findAnimation(mSkeleton->data, name.c_str());
         if (!animation)
         {
-            DVASSERT(false, "Animation was not found!");
+            Logger::Error("[SpineSkeleton] Animation '%s' was not found!", name.c_str());
             return nullptr;
         }
         return reinterpret_cast<SpineTrackEntry*>(spAnimationState_setAnimation(mState, trackIndex, animation, loop));
@@ -396,14 +398,12 @@ SpineTrackEntry* SpineSkeleton::SetAnimation(int32 trackIndex, const String& nam
 
 SpineTrackEntry* SpineSkeleton::AddAnimation(int32 trackIndex, const String& name, bool loop, float32 delay)
 {
-    Logger::Debug("[SpineSkeleton::AddAnimation] %d, %s, %d, %f", trackIndex, name.c_str(), loop, delay);
-
     if (mSkeleton != nullptr && mState != nullptr)
     {
         spAnimation* animation = spSkeletonData_findAnimation(mSkeleton->data, name.c_str());
         if (!animation)
         {
-            DVASSERT(false, "Animation was not found!");
+            Logger::Error("[SpineSkeleton] Animation '%s' was not found!", name.c_str());
             return nullptr;
         }
         return reinterpret_cast<SpineTrackEntry*>(spAnimationState_addAnimation(mState, trackIndex, animation, loop, delay));
@@ -416,8 +416,6 @@ SpineTrackEntry* SpineSkeleton::AddAnimation(int32 trackIndex, const String& nam
 
 SpineTrackEntry* SpineSkeleton::GetTrack(int32 trackIndex)
 {
-    Logger::Debug("[SpineSkeleton::GetTrack] %d", trackIndex);
-    
     if (mState != nullptr)
     {
         return reinterpret_cast<SpineTrackEntry*>(spAnimationState_getCurrent(mState, trackIndex));
@@ -430,8 +428,6 @@ SpineTrackEntry* SpineSkeleton::GetTrack(int32 trackIndex)
 
 void SpineSkeleton::SetAnimationMix(const String& fromAnimation, const String& toAnimation, float32 duration)
 {
-    Logger::Debug("[SpineSkeleton::SetAnimationMix] %s, %s, %f", fromAnimation.c_str(), toAnimation.c_str(), duration);
-
     if (mState != nullptr)
     {
         spAnimationStateData_setMixByName(mState->data, fromAnimation.c_str(), toAnimation.c_str(), duration);
@@ -440,8 +436,6 @@ void SpineSkeleton::SetAnimationMix(const String& fromAnimation, const String& t
 
 void SpineSkeleton::ClearTracks()
 {
-    Logger::Debug("[SpineSkeleton::ClearTracks]");
-
     if (mState != nullptr)
     {
         spAnimationState_clearTracks(mState);
@@ -450,8 +444,6 @@ void SpineSkeleton::ClearTracks()
 
 void SpineSkeleton::CleatTrack(int32 trackIndex)
 {
-    Logger::Debug("[SpineSkeleton::CleatTrack] %d", trackIndex);
-
     if (mState != nullptr)
     {
         spAnimationState_clearTrack(mState, trackIndex);
@@ -460,79 +452,43 @@ void SpineSkeleton::CleatTrack(int32 trackIndex)
 
 void SpineSkeleton::SetTimeScale(float32 timeScale)
 {
-    Logger::Debug("[SpineSkeleton::SetTimeScale] %f", timeScale);
-
     mTimeScale = timeScale;
 }
 
 float32 SpineSkeleton::GetTimeScale() const
 {
-    Logger::Debug("[SpineSkeleton::GetTimeScale]");
-
     return mTimeScale;
 }
 
 bool SpineSkeleton::SetSkin(const String& skinName)
 {
-    Logger::Debug("[SpineSkeleton::SetSkin] %s", skinName.c_str());
-
     if (mSkeleton != nullptr)
     {
-        return (spSkeleton_setSkinByName(mSkeleton, skinName.c_str()) != 0);
-
-        if (mWorldVertices != nullptr)
+        int32 skin = spSkeleton_setSkinByName(mSkeleton, skinName.c_str());
+        if (skin != 0)
         {
-            FREE(mWorldVertices);
-            mWorldVertices = nullptr;
-        }
-
-        if (mSkeleton != nullptr)
-        {
-            mWorldVertices = MALLOC(float32, SpinePrivate::maxVerticesCount(mSkeleton));
+            if (mWorldVertices != nullptr)
+            {
+                FREE(mWorldVertices);
+                mWorldVertices = nullptr;
+            }
+            if (mSkeleton != nullptr)
+            {
+                mWorldVertices = MALLOC(float32, SpinePrivate::maxVerticesCount(mSkeleton));
+            }
+            return true;
         }
     }
-    else
-    {
-        return false;
-    }
+    return false;
 }
 
-bool SpineSkeleton::SetSkin(int32 skinNumber)
+const Vector<String>& SpineSkeleton::GetAvailableSkinsNames() const
 {
-    Logger::Debug("[SpineSkeleton::SetSkin] %d", skinNumber);
-
-    if (mSkeleton != nullptr && mSkeleton->data->skinsCount > skinNumber)
-    {
-        spSkeleton_setSkin(mSkeleton, mSkeleton->data->skins[skinNumber]);
-
-        if (mWorldVertices != nullptr)
-        {
-            FREE(mWorldVertices);
-            mWorldVertices = nullptr;
-        }
-
-        if (mSkeleton != nullptr)
-        {
-            mWorldVertices = MALLOC(float32, SpinePrivate::maxVerticesCount(mSkeleton));
-        }
-
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-int32 SpineSkeleton::GetSkinNumber()
-{
-    Logger::Debug("[SpineSkeleton::GetSkinNumber]");
-    return 0;
+    return mSkins;
 }
 
 SpineBone* SpineSkeleton::FindBone(const String& boneName)
 {
-    Logger::Debug("[SpineSkeleton::FindBone] %s", boneName.c_str());
     return nullptr;
 }
 

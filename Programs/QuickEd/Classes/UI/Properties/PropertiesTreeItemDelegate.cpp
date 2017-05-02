@@ -34,6 +34,7 @@
 #include "FontPropertyDelegate.h"
 #include "TablePropertyDelegate.h"
 #include "CompletionsProviderForScrollBar.h"
+#include "CompletionsProviderForUIReflection.h"
 #include "Modules/LegacySupportModule/Private/Project.h"
 
 using namespace DAVA;
@@ -87,6 +88,8 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
 
     propertyNameTypeItemDelegates[PropertyPath("Spine", "skeletonPath")] = new ResourceFilePropertyDelegate(".json", "", this);
     propertyNameTypeItemDelegates[PropertyPath("Spine", "atlasPath")] = new ResourceFilePropertyDelegate(".atlas", "", this);
+    propertyNameTypeItemDelegates[PropertyPath("Spine", "animationName")] = new ComboPropertyDelegate(this, std::make_unique<CompletionsProviderForUIReflection>("animationsNames", "Spine"));
+    propertyNameTypeItemDelegates[PropertyPath("Spine", "skinName")] = new ComboPropertyDelegate(this, std::make_unique<CompletionsProviderForUIReflection>("skinsNames", "Spine"));
 }
 
 PropertiesTreeItemDelegate::~PropertiesTreeItemDelegate()

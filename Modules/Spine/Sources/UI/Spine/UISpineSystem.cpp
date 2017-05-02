@@ -91,27 +91,25 @@ void UISpineSystem::Process(DAVA::float32 elapsedTime)
         {
             skeleton->Load(component->GetSkeletonPath(), component->GetAtlasPath());
 
-            bool modified = component->IsModified();
             component->SetAnimationsNames(skeleton->GetAvailableAnimationsNames());
-            component->SetModified(modified);
-
+            component->SetSkinsNames(skeleton->GetAvailableSkinsNames());
+            
             component->SetNeedReload(false);
         }
 
         if (component->IsModified())
         {
+            skeleton->SetTimeScale(component->GetTimeScale());
+            skeleton->SetSkin(component->GetSkinName());
             switch(component->GetAnimationState())
             {
             case UISpineComponent::PLAYED:
                 {
                     const String& name = component->GetAnimationName();
-                    if (!name.empty())
+                    if (name.empty() || skeleton->SetAnimation(0, name, component->IsLoopedPlayback()) == nullptr)
                     {
-                        if (skeleton->SetAnimation(0, name, component->IsLoopedPlayback()) == nullptr)
-                        {
-                            skeleton->ClearTracks();
-                            skeleton->ResetSkeleton();
-                        }
+                        skeleton->ClearTracks();
+                        skeleton->ResetSkeleton();
                     }
                 }
                 break;
@@ -120,7 +118,6 @@ void UISpineSystem::Process(DAVA::float32 elapsedTime)
                 skeleton->ResetSkeleton();
                 break;
             }
-            skeleton->SetTimeScale(component->GetTimeScale());
             component->SetModified(false);
         }
 
