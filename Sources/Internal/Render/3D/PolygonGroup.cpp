@@ -189,10 +189,19 @@ void PolygonGroup::AllocateData(int32 _meshFormat, int32 _vertexCount, int32 _in
     textureCoordCount = GetTexCoordCount(vertexFormat);
     cubeTextureCoordCount = GetCubeTexCoordCount(vertexFormat);
 
+    DVASSERT(vertexStride * vertexCount > 0);
     meshData = new uint8[vertexStride * vertexCount];
+
+    DVASSERT(indexCount > 0);
     indexArray = new int16[indexCount];
-    textureCoordArray = new Vector2*[textureCoordCount];
-    cubeTextureCoordArray = new Vector3*[cubeTextureCoordCount];
+
+    if (textureCoordCount > 0)
+        textureCoordArray = new Vector2*[textureCoordCount];
+
+    if (cubeTextureCoordCount > 0)
+        cubeTextureCoordArray = new Vector3*[cubeTextureCoordCount];
+
+    DVASSERT(vertexCount == _vertexCount);
 
     UpdateDataPointersAndStreams();
 }

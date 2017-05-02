@@ -183,6 +183,10 @@ void RenderSystem::MarkForUpdate(RenderObject* renderObject)
         flags |= RenderObject::MARKED_FOR_UPDATE;
     }
     renderObject->SetFlags(flags);
+
+    RenderObject* decalObject = geoDecalManager->GetDecalRenderObject(renderObject);
+    if (decalObject != nullptr)
+        MarkForUpdate(decalObject);
 }
 
 void RenderSystem::MarkForUpdate(Light* lightNode)

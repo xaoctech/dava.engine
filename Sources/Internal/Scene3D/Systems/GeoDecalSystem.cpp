@@ -1,5 +1,8 @@
 #include "Scene3D/Systems/GeoDecalSystem.h"
 #include "Render/Highlevel/GeometryOctTree.h"
+#include "Render/Highlevel/SkinnedMesh.h"
+
+#define DAVA_GEODECAL_SYSTEM_DEBUG_RENDER 1
 
 namespace DAVA
 {
@@ -11,7 +14,9 @@ GeoDecalSystem::GeoDecalSystem(Scene* scene)
 
 void GeoDecalSystem::Process(float32 timeElapsed)
 {
-    DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_SWITCH_SYSTEM);
+    DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_GEODECAL_SYSTEM);
+
+    DAVA::RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
 
     for (auto& decal : decals)
     {
@@ -24,6 +29,45 @@ void GeoDecalSystem::Process(float32 timeElapsed)
             BuildDecal(entity, geoDecalComponent);
             decal.second.lastValidConfig = currentConfig;
         }
+#if (DAVA_GEODECAL_SYSTEM_DEBUG_RENDER)
+        {
+            DAVA::Matrix4 transform = decal.first->GetEntity()->GetWorldTransform();
+
+            DAVA::RenderHelper::eDrawType dt = DAVA::RenderHelper::eDrawType::DRAW_WIRE_DEPTH;
+            DAVA::Color baseColor(1.0f, 0.5f, 0.25f, 1.0f);
+            DAVA::Color accentColor(1.0f, 1.0f, 0.5f, 1.0f);
+
+            DAVA::AABBox3 box = geoDecalComponent->GetBoundingBox();
+            DAVA::Vector3 boxCenter = box.GetCenter();
+            DAVA::Vector3 boxHalfSize = 0.5f * box.GetSize();
+
+            DAVA::Vector3 farPoint = DAVA::Vector3(boxCenter.x, boxCenter.y, box.max.z) * transform;
+            DAVA::Vector3 nearPoint = DAVA::Vector3(boxCenter.x, boxCenter.y, box.min.z) * transform;
+
+            DAVA::Vector3 direction = farPoint - nearPoint;
+            direction.Normalize();
+
+            drawer->DrawAABoxTransformed(box, transform, baseColor, dt);
+
+            if (geoDecalComponent->GetConfig().mapping == DAVA::GeoDecalManager::Mapping::CYLINDRICAL)
+            {
+                DAVA::Vector3 side = DAVA::Vector3(boxCenter.x - boxHalfSize.x, 0.0f, box.min.z) * transform;
+
+                float radius = (side - nearPoint).Length();
+                drawer->DrawCircle(nearPoint, direction, radius, 32, accentColor, dt);
+                drawer->DrawCircle(farPoint, -direction, radius, 32, accentColor, dt);
+                drawer->DrawLine(nearPoint, side, accentColor);
+            }
+            else if (geoDecalComponent->GetConfig().mapping == DAVA::GeoDecalManager::Mapping::SPHERICAL)
+            {
+                // no extra debug visualization
+            }
+            else /* planar assumed */
+            {
+                drawer->DrawArrow(nearPoint - direction, nearPoint, 0.25f * direction.Length(), accentColor, dt);
+            }
+        }
+#endif
     }
 }
 
@@ -83,8 +127,11 @@ void GeoDecalSystem::RemoveEntity(Entity* entity)
 void GeoDecalSystem::GatherRenderableEntitiesInBox(Entity* top, const AABBox3& box, Vector<RenderableEntity>& entities)
 {
     RenderObject* object = GetRenderObject(top);
-    if ((object != nullptr) && (object->GetType() == RenderObject::eType::TYPE_MESH) && object->GetWorldBoundingBox().IntersectsWithBox(box))
-        entities.emplace_back(top, object);
+    if ((object != nullptr) && object->GetWorldBoundingBox().IntersectsWithBox(box))
+    {
+        if ((object->GetType() == RenderObject::eType::TYPE_MESH) || (object->GetType() == RenderObject::eType::TYPE_SKINNED_MESH))
+            entities.emplace_back(top, object);
+    }
 
     for (int32 i = 0; i < top->GetChildrenCount(); ++i)
         GatherRenderableEntitiesInBox(top->GetChild(i), box, entities);
@@ -111,9 +158,29 @@ void GeoDecalSystem::BuildDecal(Entity* entityWithDecal, GeoDecalComponent* comp
     GeoDecalManager* manager = renderSystem->GetGeoDecalManager();
     for (const RenderableEntity& e : entities)
     {
+        UpdateCreatedDecalRenderObject(e.entity, e.renderObject, e.renderObject);
+
         GeoDecalManager::Decal decal = manager->BuildDecal(component->GetConfig(), entityWithDecal->GetWorldTransform(), e.renderObject);
-        renderSystem->UpdateNearestLights(manager->GetDecalRenderObject(decal));
         decals[component].decals.emplace_back(decal);
+
+        RenderObject* decalRenderObject = manager->GetDecalRenderObject(decal);
+        UpdateCreatedDecalRenderObject(e.entity, e.renderObject, decalRenderObject);
+    }
+}
+
+void GeoDecalSystem::UpdateCreatedDecalRenderObject(Entity* sourceEntity, RenderObject* sourceObject, RenderObject* builtObject)
+{
+    RenderSystem* renderSystem = GetScene()->GetRenderSystem();
+    renderSystem->UpdateNearestLights(builtObject);
+
+    if (sourceObject->GetType() == RenderObject::TYPE_SKINNED_MESH)
+    {
+        SkeletonComponent* skeletonComponent = GetSkeletonComponent(sourceEntity);
+        if (skeletonComponent != nullptr)
+        {
+            SkinnedMesh* mesh = static_cast<SkinnedMesh*>(sourceObject);
+            GetScene()->skeletonSystem->UpdateSkinnedMesh(skeletonComponent, mesh);
+        }
     }
 }
 }

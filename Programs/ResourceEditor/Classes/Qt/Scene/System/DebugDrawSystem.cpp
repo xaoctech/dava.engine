@@ -439,36 +439,41 @@ void DebugDrawSystem::DrawDecals(DAVA::Entity* entity)
         DAVA::Component* component = entity->GetComponent(DAVA::Component::eType::GEO_DECAL_COMPONENT, i);
         DVASSERT(component != nullptr);
 
+        DAVA::GeoDecalComponent* decal = static_cast<DAVA::GeoDecalComponent*>(component);
+        DAVA::Matrix4 transform = entity->GetWorldTransform();
+
         DAVA::RenderHelper::eDrawType dt = DAVA::RenderHelper::eDrawType::DRAW_WIRE_DEPTH;
         DAVA::Color baseColor(1.0f, 0.5f, 0.25f, 1.0f);
         DAVA::Color accentColor(1.0f, 1.0f, 0.5f, 1.0f);
 
-        DAVA::GeoDecalComponent* decal = static_cast<DAVA::GeoDecalComponent*>(component);
         DAVA::AABBox3 box = decal->GetBoundingBox();
         DAVA::Vector3 boxCenter = box.GetCenter();
         DAVA::Vector3 boxHalfSize = 0.5f * box.GetSize();
-        DAVA::Vector3 origin = DAVA::Vector3(boxCenter.x, boxCenter.y, box.max.z) * entity->GetWorldTransform();
-        DAVA::Vector3 endPoint = DAVA::Vector3(boxCenter.x, boxCenter.y, box.min.z) * entity->GetWorldTransform();
 
-        DAVA::Vector3 direction = DAVA::MultiplyVectorMat3x3(DAVA::Vector3(0.0f, 0.0f, -1.0f), entity->GetWorldTransform());
+        DAVA::Vector3 farPoint = DAVA::Vector3(boxCenter.x, boxCenter.y, box.max.z) * transform;
+        DAVA::Vector3 nearPoint = DAVA::Vector3(boxCenter.x, boxCenter.y, box.min.z) * transform;
 
-        drawer->DrawAABoxTransformed(box, entity->GetWorldTransform(), baseColor, dt);
+        DAVA::Vector3 direction = farPoint - nearPoint;
+        direction.Normalize();
+
+        drawer->DrawAABoxTransformed(box, transform, baseColor, dt);
 
         if (decal->GetConfig().mapping == DAVA::GeoDecalManager::Mapping::CYLINDRICAL)
         {
-            DAVA::Vector3 side = DAVA::Vector3(boxCenter.x - boxHalfSize.x, 0.0f, box.max.z) * entity->GetWorldTransform();
+            DAVA::Vector3 side = DAVA::Vector3(boxCenter.x - boxHalfSize.x, 0.0f, box.min.z) * transform;
 
-            float radius = (side - origin).Length();
-            drawer->DrawCircle(origin, direction, radius, 32, accentColor, dt);
-            drawer->DrawCircle(endPoint, -direction, radius, 32, accentColor, dt);
-            drawer->DrawLine(origin, side, accentColor);
+            float radius = (side - nearPoint).Length();
+            drawer->DrawCircle(nearPoint, direction, radius, 32, accentColor, dt);
+            drawer->DrawCircle(farPoint, -direction, radius, 32, accentColor, dt);
+            drawer->DrawLine(nearPoint, side, accentColor);
         }
         else if (decal->GetConfig().mapping == DAVA::GeoDecalManager::Mapping::SPHERICAL)
         {
+            // no extra debug visualization
         }
-        else // PLANAR assumed
+        else /* planar assumed */
         {
-            drawer->DrawArrow(origin - direction, origin, 0.25f * direction.Length(), accentColor, dt);
+            drawer->DrawArrow(nearPoint - direction, nearPoint, 0.25f * direction.Length(), accentColor, dt);
         }
     }
 }

@@ -11,8 +11,8 @@
 namespace DAVA
 {
 /**
-	\ingroup render_3d
-	\brief Group of polygons with same data type & structure
+    \ingroup render_3d
+    \brief Group of polygons with same data type & structure
  */
 
 class SceneFileV2;
@@ -129,8 +129,8 @@ public:
     GeometryOctTree* octTree = nullptr;
 
     /*
-		Used for animated meshes to hold original vertexes in array that suitable for fast access
-	 */
+        Used for animated meshes to hold original vertexes in array that suitable for fast access
+     */
     void CreateBaseVertexArray();
     Vector3* baseVertexArray;
 
@@ -142,9 +142,9 @@ public:
     uint32 ReleaseGeometryData();
 
     /*
-        Apply matrix to polygon group. If polygon group is used with vertex buffers 
-        you should call BuildBuffers to refresh buffers in memory. 
-        TODO: refresh buffers function??? 
+        Apply matrix to polygon group. If polygon group is used with vertex buffers
+        you should call BuildBuffers to refresh buffers in memory.
+        TODO: refresh buffers function???
      */
     void ApplyMatrix(const Matrix4& matrix);
 
@@ -167,6 +167,9 @@ private:
     void UpdateDataPointersAndStreams();
     void CopyData(const uint8** meshData, uint8** newMeshData, uint32 vertexFormat, uint32 newVertexFormat, uint32 format) const;
 
+    template <class T>
+    void SetVertexData(int32 i, T* basePtr, const T& value);
+
 public:
     INTROSPECTION_EXTEND(PolygonGroup, DataNode,
                          MEMBER(vertexCount, "Vertex Count", I_VIEW | I_SAVE)
@@ -182,87 +185,92 @@ public:
                          )
 };
 
-// Static Mesh Implementation
+template <class T>
+inline void PolygonGroup::SetVertexData(int32 i, T* basePtr, const T& value)
+{
+    DVASSERT(basePtr != nullptr);
+
+    ptrdiff_t baseOffset = reinterpret_cast<uint8*>(basePtr) - meshData;
+    DVASSERT(baseOffset >= 0);
+    DVASSERT(baseOffset < vertexStride);
+
+    uint8* ptr = meshData + baseOffset + i * vertexStride;
+    DVASSERT(ptr < meshData + vertexCount * vertexStride);
+
+    T* typePtr = reinterpret_cast<T*>(ptr);
+    *typePtr = value;
+}
 
 inline void PolygonGroup::SetCoord(int32 i, const Vector3& _v)
 {
-    Vector3* v = reinterpret_cast<Vector3*>(reinterpret_cast<uint8*>(vertexArray) + i * vertexStride);
-    *v = _v;
+    SetVertexData(i, vertexArray, _v);
     aabbox.AddPoint(_v);
 }
 
 inline void PolygonGroup::SetNormal(int32 i, const Vector3& _v)
 {
-    Vector3* v = reinterpret_cast<Vector3*>(reinterpret_cast<uint8*>(normalArray) + i * vertexStride);
-    *v = _v;
-    (*v).Normalize();
+    Vector3 vn = _v;
+    vn.Normalize();
+    SetVertexData(i, normalArray, vn);
 }
 
 inline void PolygonGroup::SetTangent(int32 i, const Vector3& _v)
 {
-    Vector3* v = reinterpret_cast<Vector3*>(reinterpret_cast<uint8*>(tangentArray) + i * vertexStride);
-    *v = _v;
+    SetVertexData(i, tangentArray, _v);
 }
 
 inline void PolygonGroup::SetBinormal(int32 i, const Vector3& _v)
 {
-    Vector3* v = reinterpret_cast<Vector3*>(reinterpret_cast<uint8*>(binormalArray) + i * vertexStride);
-    *v = _v;
+    SetVertexData(i, binormalArray, _v);
 }
 
 inline void PolygonGroup::SetColor(int32 i, const uint32& _c)
 {
-    uint32* c = reinterpret_cast<uint32*>(reinterpret_cast<uint8*>(colorArray) + i * vertexStride);
-    *c = _c;
+    SetVertexData(i, colorArray, _c);
 }
 
 inline void PolygonGroup::SetTexcoord(int32 ti, int32 i, const Vector2& _t)
 {
     DVASSERT(ti < textureCoordCount);
-    Vector2* t = reinterpret_cast<Vector2*>(reinterpret_cast<uint8*>(textureCoordArray[ti]) + i * vertexStride);
-    *t = _t;
+    SetVertexData(i, textureCoordArray[ti], _t);
 }
 
 inline void PolygonGroup::SetCubeTexcoord(int32 ti, int32 i, const Vector3& _t)
 {
-    Vector3* t = reinterpret_cast<Vector3*>(reinterpret_cast<uint8*>(cubeTextureCoordArray[ti]) + i * vertexStride);
-    *t = _t;
+    DVASSERT(ti < cubeTextureCoordCount);
+    SetVertexData(i, cubeTextureCoordArray[ti], _t);
 }
 
 inline void PolygonGroup::SetDecalTexcoord(int32 i, const Vector4& _v)
 {
-    Vector4* v = reinterpret_cast<Vector4*>(reinterpret_cast<uint8*>(decalTexCoordArray) + i * vertexStride);
-    *v = _v;
+    SetVertexData(i, decalTexCoordArray, _v);
 }
 
 inline void PolygonGroup::SetPivot(int32 i, const Vector3& _v)
 {
-    Vector3* v = reinterpret_cast<Vector3*>(reinterpret_cast<uint8*>(pivotArray) + i * vertexStride);
-    *v = _v;
+    SetVertexData(i, pivotArray, _v);
 }
 
 inline void PolygonGroup::SetFlexibility(int32 i, const float32& _v)
 {
-    float32* v = reinterpret_cast<float32*>(reinterpret_cast<uint8*>(flexArray) + i * vertexStride);
-    *v = _v;
+    SetVertexData(i, flexArray, _v);
 }
 
 inline void PolygonGroup::SetAngle(int32 i, const Vector2& _v)
 {
-    Vector2* v = reinterpret_cast<Vector2*>(reinterpret_cast<uint8*>(angleArray) + i * vertexStride);
-    *v = _v;
+    SetVertexData(i, angleArray, _v);
 }
 
-inline void PolygonGroup::SetJointIndex(int32 vIndex, int32 jointIndex, int32 boneIndexValue)
+inline void PolygonGroup::SetJointIndex(int32 i, int32 jointIndex, int32 boneIndexValue)
 {
     DVASSERT(jointIndex >= 0 && jointIndex < 4);
-    *reinterpret_cast<float32*>(reinterpret_cast<uint8*>(jointIdxArray) + vIndex * vertexStride) = float32(boneIndexValue);
+    SetVertexData(i, jointIdxArray, static_cast<float32>(boneIndexValue));
 }
 
-inline void PolygonGroup::SetJointWeight(int32 vIndex, int32 jointIndex, float32 boneWeightValue)
+inline void PolygonGroup::SetJointWeight(int32 i, int32 jointIndex, float32 boneWeightValue)
 {
     DVASSERT(jointIndex >= 0 && jointIndex < 4);
-    *reinterpret_cast<float32*>(reinterpret_cast<uint8*>(jointWeightArray) + vIndex * vertexStride) = float32(boneWeightValue);
+    SetVertexData(i, jointWeightArray, boneWeightValue);
 }
 
 inline void PolygonGroup::SetJointCount(int32 vIndex, int32 jointCount)

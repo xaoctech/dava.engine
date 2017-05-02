@@ -152,10 +152,6 @@ fragment_out
     [material][a] property float4 particleDebugShowAlphaColor =  float4(0.0f, 0.0f, 1.0f, 0.4f);
 #endif
 
-#if (GEO_DECAL)
-    uniform sampler2D geodecal;
-#endif
-
 inline float 
 FresnelShlick( float NdotL, float Cspec )
 {
@@ -187,7 +183,7 @@ fragment_out fp_main( fragment_in input )
     // FETCH PHASE
     #if GEO_DECAL
 
-        half4 textureColor0 = half4(tex2D(geodecal, input.geoDecalCoord));
+        half4 textureColor0 = half4(tex2D(albedo, input.geoDecalCoord));
 
     #elif MATERIAL_TEXTURE
     

@@ -53,6 +53,7 @@ private:
     void BuildDecal(Entity* entity, GeoDecalComponent* component);
     void RemoveCreatedDecals(Entity* entity, GeoDecalComponent* component);
     void GatherRenderableEntitiesInBox(Entity* top, const AABBox3& box, Vector<RenderableEntity>&);
+    void UpdateCreatedDecalRenderObject(Entity* sourceEntity, RenderObject* sourceObject, RenderObject* builtObject);
 
 private:
     struct GeoDecalCacheEntry
