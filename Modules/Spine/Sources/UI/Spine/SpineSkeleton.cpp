@@ -112,9 +112,64 @@ SpineSkeleton::~SpineSkeleton()
     SafeDelete(batchDescriptor);
 }
 
+void SpineSkeleton::ReleaseAtlas()
+{
+    if (mAtlas != nullptr)
+    {
+        spAtlas_dispose(mAtlas);
+        mAtlas = nullptr;
+    }
+
+    if (mTexture)
+    {
+        mTexture = nullptr;
+    }
+
+    if (batchDescriptor)
+    {
+        batchDescriptor->vertexCount = 0;
+    }
+}
+
+void SpineSkeleton::ReleaseSkeleton()
+{
+    if (mSkeleton != nullptr)
+    {
+        spSkeletonData_dispose(mSkeleton->data);
+        spSkeleton_dispose(mSkeleton);
+        mSkeleton = nullptr;
+    }
+
+    if (mWorldVertices != nullptr)
+    {
+        FREE(mWorldVertices);
+        mWorldVertices = nullptr;
+    }
+
+    if (mState != nullptr)
+    {
+        spAnimationStateData_dispose(mState->data);
+        spAnimationState_dispose(mState);
+        mState = nullptr;
+    }
+
+    mAnimations.clear();
+    mSkins.clear();
+
+    for (const auto& bonePair : mBones)
+    {
+        bonePair.second->RemoveFromParent();
+    }
+    mBones.clear();
+
+    if (batchDescriptor)
+    {
+        batchDescriptor->vertexCount = 0;
+    }
+}
+
 void SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath)
 {
-    Logger::Debug("[SpineSkeleton::Load] %s, %s", dataPath.GetAbsolutePathname().c_str(), atlasPath.GetAbsolutePathname().c_str());
     if (!dataPath.Exists() || !atlasPath.Exists())
     {
         return;
@@ -122,52 +177,33 @@ void SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath)
 
     if (mAtlas != nullptr)
     {
-        //ReleaseAtlas();
-        if (mAtlas != nullptr)
-        {
-            spAtlas_dispose(mAtlas);
-            mAtlas = nullptr;
-        }
+        ReleaseAtlas();
     }
 
     mAtlas = spAtlas_createFromFile(atlasPath.GetAbsolutePathname().c_str(), 0);
-    DVASSERT(mAtlas, "Error reading atlas file!");
+    if (mAtlas == nullptr)
+    {
+        //DVASSERT(false, "Error reading atlas file!");
+        Logger::Error("[SpineSkeleton::Load] Error reading atlas file!");
+        return;
+    }
     mTexture = (Texture*)mAtlas->pages[0].rendererObject;
 
     if (mSkeleton != nullptr)
     {
-        //ReleaseJson();
-        if (mSkeleton != nullptr)
-        {
-            spSkeletonData_dispose(mSkeleton->data);
-            spSkeleton_dispose(mSkeleton);
-            mSkeleton = nullptr;
-        }
-
-        if (mWorldVertices != nullptr)
-        {
-            FREE(mWorldVertices);
-            mWorldVertices = nullptr;
-        }
-
-        if (mState != nullptr)
-        {
-            spAnimationStateData_dispose(mState->data);
-            spAnimationState_dispose(mState);
-            mState = nullptr;
-        }
-
-        for (const auto& bonePair : mBones)
-        {
-            bonePair.second->RemoveFromParent();
-        }
-        mBones.clear();
+        ReleaseSkeleton();
     }
 
     spSkeletonJson* json = spSkeletonJson_create(mAtlas);
     json->scale = 1.0f;
     spSkeletonData* skeletonData = spSkeletonJson_readSkeletonDataFile(json, dataPath.GetAbsolutePathname().c_str());
-    DVASSERT(skeletonData, json->error ? json->error : "Error reading skeleton data file!");
+    if (skeletonData == nullptr)
+    {
+        //DVASSERT(false, json->error ? json->error : "Error reading skeleton data file!");
+        Logger::Error("[SpineSkeleton::Load] %s", json->error ? json->error : "Error reading skeleton data file!");
+        spSkeletonJson_dispose(json);
+        return;
+    }
     spSkeletonJson_dispose(json);
     mSkeleton = spSkeleton_create(skeletonData);
 
