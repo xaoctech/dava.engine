@@ -514,7 +514,26 @@ private:
     };
 };
 
-using namespace std::placeholders;
+using std::placeholders::_1;
+using std::placeholders::_2;
+using std::placeholders::_3;
+using std::placeholders::_4;
+using std::placeholders::_5;
+using std::placeholders::_6;
+using std::placeholders::_7;
+using std::placeholders::_8;
+using std::placeholders::_9;
+using std::placeholders::_10;
+using std::placeholders::_11;
+using std::placeholders::_12;
+using std::placeholders::_13;
+using std::placeholders::_14;
+using std::placeholders::_15;
+using std::placeholders::_16;
+using std::placeholders::_17;
+using std::placeholders::_18;
+using std::placeholders::_19;
+using std::placeholders::_20;
 
 template <typename... Args>
 auto Bind(Args&&... args) -> decltype(std::bind(std::forward<Args>(args)...))

@@ -14,6 +14,8 @@
 #include <Utils/Utils.h>
 #include <QObject>
 
+const FastName EditorSlotSystem::emptyItemName = FastName("Empty");
+
 EditorSlotSystem::EditorSlotSystem(DAVA::Scene* scene)
     : SceneSystem(scene)
 {
@@ -120,7 +122,7 @@ void EditorSlotSystem::Process(DAVA::float32 timeElapsed)
             if (loadedEntity == nullptr)
             {
                 DAVA::RefPtr<Entity> newEntity(new Entity());
-                slotSystem->AttachEntityToSlot(component, newEntity.Get());
+                slotSystem->AttachEntityToSlot(component, newEntity.Get(), emptyItemName);
             }
         }
     }
@@ -138,16 +140,25 @@ void EditorSlotSystem::DetachEntity(DAVA::SlotComponent* component, DAVA::Entity
     slotEntity->RemoveNode(entity);
 }
 
-void EditorSlotSystem::AttachEntity(DAVA::SlotComponent* component, DAVA::Entity* entity)
+void EditorSlotSystem::AttachEntity(DAVA::SlotComponent* component, DAVA::Entity* entity, FastName itemName)
 {
     DAVA::SlotSystem* slotSystem = GetScene()->slotSystem;
-    slotSystem->AttachEntityToSlot(component, entity);
+    slotSystem->AttachEntityToSlot(component, entity, itemName);
 }
 
-DAVA::Entity* EditorSlotSystem::AttachEntity(DAVA::SlotComponent* component, const DAVA::FastName& itemName)
+DAVA::Entity* EditorSlotSystem::AttachEntity(DAVA::SlotComponent* component, DAVA::FastName itemName)
 {
     DAVA::SlotSystem* slotSystem = GetScene()->slotSystem;
-    return slotSystem->AttachItemToSlot(component, itemName);
+    if (itemName == emptyItemName)
+    {
+        RefPtr<Entity> newEntity(new Entity());
+        slotSystem->AttachEntityToSlot(component, newEntity.Get(), itemName);
+        return newEntity.Get();
+    }
+    else
+    {
+        return slotSystem->AttachItemToSlot(component, itemName);
+    }
 }
 
 void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& holder)
@@ -165,24 +176,8 @@ void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& ho
             DAVA::Entity* entity = scene->slotSystem->LookUpLoadedEntity(component);
             if (fieldName == DAVA::SlotComponent::ConfigPathFieldName)
             {
-                // TO REMOVE
-                bool tankFound = false;
-                for (DAVA::uint32 i = 0; i < component->GetFiltersCount(); ++i)
-                {
-                    if (component->GetFilter(i) == DAVA::FastName("Tank"))
-                    {
-                        tankFound = true;
-                        break;
-                    }
-                }
-
-                if (tankFound == false)
-                {
-                    component->AddFilter(DAVA::FastName("Tank"));
-                }
-                // TO REMOVE
                 DAVA::RefPtr<DAVA::Entity> newEntity(new DAVA::Entity());
-                holder.AddPreCommand(std::make_unique<AttachEntityToSlot>(scene, component, newEntity.Get()));
+                holder.AddPreCommand(std::make_unique<AttachEntityToSlot>(scene, component, newEntity.Get(), emptyItemName));
             }
         }
     };
@@ -197,7 +192,7 @@ void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& ho
         if (component->GetType() == DAVA::Component::SLOT_COMPONENT)
         {
             DAVA::SlotComponent* slotComponent = static_cast<DAVA::SlotComponent*>(component);
-            holder.AddPreCommand(std::make_unique<AttachEntityToSlot>(scene, slotComponent, nullptr));
+            holder.AddPreCommand(std::make_unique<AttachEntityToSlot>(scene, slotComponent, nullptr, FastName()));
         }
     };
 
@@ -273,7 +268,7 @@ std::unique_ptr<DAVA::Command> EditorSlotSystem::PrepareForSave(bool /*saveForGa
         for (DAVA::uint32 i = 0; i < entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT); ++i)
         {
             DAVA::SlotComponent* component = static_cast<DAVA::SlotComponent*>(entity->GetComponent(DAVA::Component::SLOT_COMPONENT, i));
-            batchCommand->Add(std::make_unique<AttachEntityToSlot>(sceneEditor, component, nullptr));
+            batchCommand->Add(std::make_unique<AttachEntityToSlot>(sceneEditor, component, nullptr, FastName()));
         }
     }
 

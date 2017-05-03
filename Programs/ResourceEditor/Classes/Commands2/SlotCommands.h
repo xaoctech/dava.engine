@@ -13,8 +13,8 @@ class SlotComponent;
 class AttachEntityToSlot : public RECommand
 {
 public:
-    explicit AttachEntityToSlot(SceneEditor2* sceneEditor, DAVA::SlotComponent* slotComponent, DAVA::Entity* entity);
-    explicit AttachEntityToSlot(SceneEditor2* sceneEditor, DAVA::SlotComponent* slotComponent, const DAVA::FastName& itemName);
+    explicit AttachEntityToSlot(SceneEditor2* sceneEditor, DAVA::SlotComponent* slotComponent, DAVA::Entity* entity, FastName itemName);
+    explicit AttachEntityToSlot(SceneEditor2* sceneEditor, DAVA::SlotComponent* slotComponent, DAVA::FastName itemName);
 
     void Redo() override;
     void Undo() override;
@@ -26,6 +26,21 @@ private:
     DAVA::SlotComponent* component = nullptr;
     DAVA::RefPtr<DAVA::Entity> redoEntity;
     DAVA::RefPtr<DAVA::Entity> undoEntity;
-    DAVA::FastName itemName;
+    DAVA::FastName undoItemName;
+    DAVA::FastName redoItemName;
     bool redoEntityInited = false;
+};
+
+class SlotTypeFilterEdit : public RECommand
+{
+public:
+    explicit SlotTypeFilterEdit(DAVA::SlotComponent* slotComponent, DAVA::FastName typeFilter, bool isAddCommand);
+
+    void Redo() override;
+    void Undo() override;
+
+private:
+    DAVA::SlotComponent* slotComponent = nullptr;
+    DAVA::FastName typeFilter;
+    bool isAddCommand = true;
 };

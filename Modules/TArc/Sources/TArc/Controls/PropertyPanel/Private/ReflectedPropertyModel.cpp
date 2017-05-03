@@ -159,10 +159,10 @@ Qt::ItemFlags ReflectedPropertyModel::flags(const QModelIndex& index) const
 {
     DVASSERT(index.isValid());
     Qt::ItemFlags flags = Qt::ItemFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-    if (index.column() == 1)
+    ReflectedPropertyItem* item = MapItem(index);
+    if (item != nullptr)
     {
-        ReflectedPropertyItem* item = MapItem(index);
-        if (item != nullptr)
+        if (index.column() == 1 || item->value->IsSpannedControl() == true)
         {
             std::shared_ptr<const PropertyNode> node = item->GetPropertyNode(0);
             if (!node->field.ref.IsReadonly())

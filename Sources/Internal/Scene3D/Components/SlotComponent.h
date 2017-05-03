@@ -35,11 +35,13 @@ public:
     const FilePath& GetConfigFilePath() const;
     void SetConfigFilePath(const FilePath& path);
 
-    uint32 GetFiltersCount() const;
-    FastName GetFilter(uint32 index) const;
-    void AddFilter(FastName filter);
-    void RemoveFilter(uint32 index);
-    void RemoveFilter(FastName filter);
+    uint32 GetTypeFiltersCount() const;
+    FastName GetTypeFilter(uint32 index) const;
+    void AddTypeFilter(FastName filter);
+    void RemoveTypeFilter(uint32 index);
+    void RemoveTypeFilter(FastName filter);
+
+    FastName GetLoadedItemName() const;
 
     INTROSPECTION_EXTEND(SlotComponent, Component, nullptr);
 
@@ -47,15 +49,15 @@ public:
     static const FastName ConfigPathFieldName;
 
 private:
+    friend class SlotSystem;
     FastName slotName;
 
     Matrix4 attachmentTransform;
     FilePath configFilePath;
-    Array<FastName, MAX_FILTERS_COUNT> filters;
+    Array<FastName, MAX_FILTERS_COUNT> typeFilters;
     uint32 actualFiltersCount = 0;
 
     FastName loadedItemName;
-    FastName loadedItemTag;
 
     DAVA_VIRTUAL_REFLECTION(SlotComponent, Component);
 };

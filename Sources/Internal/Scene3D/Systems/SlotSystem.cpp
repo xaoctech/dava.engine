@@ -4,11 +4,98 @@
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "FileSystem/YamlParser.h"
+#include "FileSystem/XMLParser.h"
 #include "FileSystem/YamlNode.h"
 #include "Logger/Logger.h"
 
 namespace DAVA
 {
+class SlotSystem::ItemsCache::XmlConfigParser : public XMLParserDelegate
+{
+public:
+    XmlConfigParser(Set<SlotSystem::ItemsCache::Item, SlotSystem::ItemsCache::ItemLess>* items);
+
+    void OnElementStarted(const String& elementName, const String& namespaceURI, const String& qualifedName, const Map<String, String>& attributes) override;
+    void OnElementEnded(const String& elementName, const String& namespaceURI, const String& qualifedName) override;
+    void OnFoundCharacters(const String& chars) override;
+
+    bool IsErrorFound() const;
+    bool IsDublicatesFound() const;
+
+private:
+    Set<Item, ItemLess>* items;
+    bool errorFound = false;
+    bool duplicatesFound = false;
+};
+
+SlotSystem::ItemsCache::XmlConfigParser::XmlConfigParser(Set<Item, ItemLess>* items_)
+    : items(items_)
+{
+}
+
+void SlotSystem::ItemsCache::XmlConfigParser::OnElementStarted(const String& elementName, const String& namespaceURI, const String& qualifedName, const Map<String, String>& attributes)
+{
+    String nameKey("Name");
+    String tagKey("Type");
+    String pathKey("Path");
+
+    if (elementName == "item")
+    {
+        Item item;
+        for (const auto& attributeNode : attributes)
+        {
+            const String& key = attributeNode.first;
+            const String& value = attributeNode.second;
+            if (key == nameKey)
+            {
+                item.itemName = FastName(value);
+            }
+            else if (key == tagKey)
+            {
+                item.type = FastName(value);
+            }
+            else if (key == pathKey)
+            {
+                item.scenePath = FilePath(value);
+            }
+            else
+            {
+                if (item.additionalParams.Get() == nullptr)
+                {
+                    item.additionalParams.ConstructInplace();
+                }
+
+                item.additionalParams->SetString(key, value);
+            }
+        }
+
+        if (item.itemName.IsValid() == false || item.scenePath.IsEmpty() == true)
+        {
+            errorFound = true;
+        }
+
+        duplicatesFound |= (items->insert(item).second == false);
+    }
+}
+
+void SlotSystem::ItemsCache::XmlConfigParser::OnElementEnded(const String& elementName, const String& namespaceURI, const String& qualifedName)
+{
+}
+
+void SlotSystem::ItemsCache::XmlConfigParser::OnFoundCharacters(const String& chars)
+{
+}
+
+bool SlotSystem::ItemsCache::XmlConfigParser::IsErrorFound() const
+{
+    return errorFound;
+}
+
+bool SlotSystem::ItemsCache::XmlConfigParser::IsDublicatesFound() const
+{
+    return duplicatesFound;
+}
+
 void SlotSystem::ItemsCache::LoadConfigFile(const FilePath& configPath)
 {
     String extension = configPath.GetExtension();
@@ -39,7 +126,8 @@ void SlotSystem::ItemsCache::LoadYamlConfig(const FilePath& configPath)
         return;
     }
 
-    bool errorReported = false;
+    bool incorrectItemsFound = false;
+    bool duplicatesFound = false;
     Set<Item, ItemLess>& items = cachedItems[configPath.GetAbsolutePathname()];
 
     const DAVA::Vector<DAVA::YamlNode*>& yamlNodes = rootNode->AsVector();
@@ -65,9 +153,9 @@ void SlotSystem::ItemsCache::LoadYamlConfig(const FilePath& configPath)
                     String path = fieldNode->AsString();
                     newItem.scenePath = FilePath(path);
                 }
-                else if (key == "Tag")
+                else if (key == "Type")
                 {
-                    newItem.tag = FastName(fieldNode->AsString());
+                    newItem.type = FastName(fieldNode->AsString());
                 }
                 else
                 {
@@ -81,24 +169,36 @@ void SlotSystem::ItemsCache::LoadYamlConfig(const FilePath& configPath)
             }
         }
 
-        bool isItemValid = newItem.itemName.IsValid() && newItem.tag.IsValid() && newItem.scenePath.IsEmpty() == false;
-        if (isItemValid == false && errorReported == false)
+        bool isItemValid = newItem.itemName.IsValid() && newItem.scenePath.IsEmpty() == false;
+        if (isItemValid == false)
         {
-            Logger::Error("Yaml parsing error. Config file %s, contains incomplete items", configPath.GetAbsolutePathname().c_str());
-            errorReported = true;
+            incorrectItemsFound = true;
         }
         else
         {
-            items.insert(newItem);
+            duplicatesFound |= (items.insert(newItem).second == false);
         }
+    }
+
+    if (incorrectItemsFound == true)
+    {
+        Logger::Error("Yaml parsing error. Config file %s contains incomplete items", configPath.GetAbsolutePathname().c_str());
+    }
+
+    if (duplicatesFound == true)
+    {
+        Logger::Error("Yaml parsing error. Config file %s contains duplicated items", configPath.GetAbsolutePathname().c_str());
     }
 }
 
 void SlotSystem::ItemsCache::LoadXmlConfig(const FilePath& configPath)
 {
+    Set<Item, ItemLess>& items = cachedItems[configPath.GetAbsolutePathname()];
+    ItemsCache::XmlConfigParser parser(&items);
+    XMLParser::ParseFile(configPath, &parser);
 }
 
-const SlotSystem::ItemsCache::Item* SlotSystem::ItemsCache::LookUpItem(const FilePath& configPath, const FastName& itemName, const FastName& tag)
+const SlotSystem::ItemsCache::Item* SlotSystem::ItemsCache::LookUpItem(const FilePath& configPath, FastName itemName)
 {
     String absolutePath = configPath.GetAbsolutePathname();
     auto configIter = cachedItems.find(absolutePath);
@@ -115,7 +215,6 @@ const SlotSystem::ItemsCache::Item* SlotSystem::ItemsCache::LookUpItem(const Fil
 
     Item key;
     key.itemName = itemName;
-    key.tag = tag;
 
     auto itemIter = configIter->second.find(key);
     if (itemIter == configIter->second.end())
@@ -148,11 +247,6 @@ Vector<SlotSystem::ItemsCache::Item> SlotSystem::ItemsCache::GetItems(const File
 
 bool SlotSystem::ItemsCache::ItemLess::operator()(const Item& item1, const Item& item2) const
 {
-    if (item1.tag != item2.tag)
-    {
-        return item1.tag < item2.tag;
-    }
-
     return item1.itemName < item2.itemName;
 }
 
@@ -281,16 +375,25 @@ Entity* SlotSystem::AttachItemToSlot(SlotComponent* component, FastName itemName
     UnloadItem(component);
 
     const FilePath& configPath = component->GetConfigFilePath();
-    uint32 filtersCount = component->GetFiltersCount();
+    uint32 filtersCount = component->GetTypeFiltersCount();
 
-    Entity* resultEntity = nullptr;
-
-    for (uint32 filterIndex = 0; filterIndex < filtersCount; ++filterIndex)
+    const ItemsCache::Item* item = sharedCache->LookUpItem(configPath, itemName);
+#if defined(__DAVAENGINE_DEBUG)
+    uint32 typeFiltersCount = component->GetTypeFiltersCount();
+    bool filterFound = (typeFiltersCount == 0);
+    for (uint32 i = 0; i < component->GetTypeFiltersCount(); ++i)
     {
-        const ItemsCache::Item* item = sharedCache->LookUpItem(configPath, itemName, component->GetFilter(filterIndex));
+        if (component->GetTypeFilter(i) == item->type)
+        {
+            filterFound = true;
+            break;
+        }
+        DVASSERT(filterFound == true);
+#endif
+
+        Entity* loadedEntity = nullptr;
         if (item != nullptr)
         {
-            Entity* loadedEntity = nullptr;
             if (nullptr == externalEntityLoader)
             {
                 loadedEntity = GetScene()->cache.GetClone(item->scenePath);
@@ -300,25 +403,24 @@ Entity* SlotSystem::AttachItemToSlot(SlotComponent* component, FastName itemName
                 loadedEntity = externalEntityLoader->Load(item->scenePath);
             }
 
-            if (loadedEntity == nullptr)
+            if (loadedEntity != nullptr)
+            {
+                AttachEntityToSlot(component, loadedEntity, item->itemName);
+            }
+            else
             {
                 Logger::Error("Couldn't load item %s with path %s into slot", itemName.c_str(), item->scenePath.GetStringValue().c_str());
-                continue;
-            }
-
-            resultEntity = loadedEntity;
-            AttachEntityToSlot(component, loadedEntity);
-            break;
         }
     }
 
-    return resultEntity;
+    return loadedEntity;
 }
 
-void SlotSystem::AttachEntityToSlot(SlotComponent* component, Entity* entity)
+void SlotSystem::AttachEntityToSlot(SlotComponent * component, Entity * entity, FastName itemName)
 {
     UnloadItem(component);
 
+    component->loadedItemName = itemName;
     entity->SetName(component->GetSlotName());
 
     TransformComponent* transform = GetTransformComponent(entity);
@@ -370,6 +472,7 @@ void SlotSystem::SetScene(Scene* scene)
 
 void SlotSystem::UnloadItem(SlotComponent* component)
 {
+    component->loadedItemName = FastName();
     auto iter = slotToLoadedEntity.find(component);
     if (iter != slotToLoadedEntity.end() && iter->second != nullptr)
     {

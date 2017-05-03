@@ -12,6 +12,8 @@ class EditorSlotSystem : public DAVA::SceneSystem,
                          public EditorSceneSystem
 {
 public:
+    static const FastName emptyItemName;
+
     EditorSlotSystem(DAVA::Scene* scene);
 
     void ImmediateEvent(DAVA::Component* component, DAVA::uint32 event) override;
@@ -30,8 +32,8 @@ protected:
     void SetScene(DAVA::Scene* scene) override;
 
     void DetachEntity(DAVA::SlotComponent* component, DAVA::Entity* entity);
-    void AttachEntity(DAVA::SlotComponent* component, DAVA::Entity* entity);
-    DAVA::Entity* AttachEntity(DAVA::SlotComponent* component, const DAVA::FastName& itemName);
+    void AttachEntity(DAVA::SlotComponent* component, DAVA::Entity* entity, DAVA::FastName itemName);
+    DAVA::Entity* AttachEntity(DAVA::SlotComponent* component, DAVA::FastName itemName);
 
     void AccumulateDependentCommands(REDependentCommandsHolder& holder) override;
     void ProcessCommand(const RECommandNotificationObject& commandNotification) override;

@@ -5,24 +5,29 @@
 
 #include <Scene3D/Systems/SlotSystem.h>
 
-AttachEntityToSlot::AttachEntityToSlot(SceneEditor2* sceneEditor_, DAVA::SlotComponent* slotComponent, DAVA::Entity* entity)
+AttachEntityToSlot::AttachEntityToSlot(SceneEditor2* sceneEditor_, DAVA::SlotComponent* slotComponent, DAVA::Entity* entity, FastName itemName)
     : RECommand(CMDID_ATTACH_TO_SLOT, "Add item to slot")
     , sceneEditor(sceneEditor_)
     , component(slotComponent)
     , redoEntity(DAVA::RefPtr<DAVA::Entity>::ConstructWithRetain(entity))
+    , redoItemName(itemName)
     , redoEntityInited(true)
 {
     undoEntity = DAVA::RefPtr<DAVA::Entity>::ConstructWithRetain(sceneEditor->slotSystem->LookUpLoadedEntity(slotComponent));
+    undoItemName = slotComponent->GetLoadedItemName();
 }
 
-AttachEntityToSlot::AttachEntityToSlot(SceneEditor2* sceneEditor_, DAVA::SlotComponent* slotComponent, const DAVA::FastName& itemName_)
+AttachEntityToSlot::AttachEntityToSlot(SceneEditor2* sceneEditor_, DAVA::SlotComponent* slotComponent, DAVA::FastName itemName)
     : RECommand(CMDID_ATTACH_TO_SLOT, "Add item to slot")
     , sceneEditor(sceneEditor_)
     , component(slotComponent)
-    , itemName(itemName_)
+    , redoItemName(itemName)
     , redoEntityInited(false)
 {
+    DVASSERT(redoItemName.IsValid());
+
     undoEntity = DAVA::RefPtr<DAVA::Entity>::ConstructWithRetain(sceneEditor->slotSystem->LookUpLoadedEntity(slotComponent));
+    undoItemName = slotComponent->GetLoadedItemName();
 }
 
 void AttachEntityToSlot::Redo()
@@ -37,21 +42,19 @@ void AttachEntityToSlot::Redo()
 
     if (redoEntityInited == false)
     {
-        redoEntity = DAVA::RefPtr<DAVA::Entity>::ConstructWithRetain(system->AttachEntity(component, itemName));
+        redoEntity = DAVA::RefPtr<DAVA::Entity>::ConstructWithRetain(system->AttachEntity(component, redoItemName));
         if (redoEntity.Get() == nullptr)
         {
-            DAVA::Logger::Error("Couldn't load item %s to slot %s", itemName.c_str(), component->GetSlotName().c_str());
+            DAVA::Logger::Error("Couldn't load item %s to slot %s", redoItemName.c_str(), component->GetSlotName().c_str());
             redoEntity.ConstructInplace();
-            system->AttachEntity(component, redoEntity.Get());
+            redoItemName = EditorSlotSystem::emptyItemName;
         }
         redoEntityInited = true;
     }
-    else
+
+    if (redoEntity.Get() != nullptr)
     {
-        if (redoEntity.Get() != nullptr)
-        {
-            system->AttachEntity(component, redoEntity.Get());
-        }
+        system->AttachEntity(component, redoEntity.Get(), redoItemName);
     }
 }
 
@@ -66,11 +69,57 @@ void AttachEntityToSlot::Undo()
 
     if (undoEntity.Get() != nullptr)
     {
-        system->AttachEntity(component, undoEntity.Get());
+        system->AttachEntity(component, undoEntity.Get(), undoItemName);
     }
 }
 
 bool AttachEntityToSlot::IsClean() const
 {
     return true;
+}
+
+SlotTypeFilterEdit::SlotTypeFilterEdit(DAVA::SlotComponent* slotComponent_, DAVA::FastName typeFilter_, bool isAddCommand_)
+    : RECommand(CMDID_EDIT_SLOT_FILTERS, "Edit slot filters")
+    , slotComponent(slotComponent_)
+    , typeFilter(typeFilter_)
+    , isAddCommand(isAddCommand_)
+{
+    if (isAddCommand == false)
+    {
+        bool filterFound = false;
+        for (uint32 i = 0; i < slotComponent->GetTypeFiltersCount(); ++i)
+        {
+            if (slotComponent->GetTypeFilter(i) == typeFilter)
+            {
+                filterFound = true;
+                break;
+            }
+        }
+
+        DVASSERT(filterFound == true);
+    }
+}
+
+void SlotTypeFilterEdit::Redo()
+{
+    if (isAddCommand == true)
+    {
+        slotComponent->AddTypeFilter(typeFilter);
+    }
+    else
+    {
+        slotComponent->RemoveTypeFilter(typeFilter);
+    }
+}
+
+void SlotTypeFilterEdit::Undo()
+{
+    if (isAddCommand == false)
+    {
+        slotComponent->AddTypeFilter(typeFilter);
+    }
+    else
+    {
+        slotComponent->RemoveTypeFilter(typeFilter);
+    }
 }

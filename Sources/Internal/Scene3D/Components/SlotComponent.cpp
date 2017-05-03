@@ -24,7 +24,7 @@ Component* SlotComponent::Clone(Entity* toEntity)
     clone->slotName = slotName;
     clone->attachmentTransform = attachmentTransform;
     clone->configFilePath = configFilePath;
-    clone->filters = filters;
+    clone->typeFilters = typeFilters;
 
     return clone;
 }
@@ -38,10 +38,10 @@ void SlotComponent::Serialize(KeyedArchive* archive, SerializationContext* seria
         archive->SetFastName("sc.slotName", slotName);
         archive->SetMatrix4("sc.attachmentTransform", attachmentTransform);
         archive->SetString("sc.configFilePath", configFilePath.GetRelativePathname(serializationContext->GetScenePath()));
-        archive->SetUInt32("sc.filtersCount", actualFiltersCount);
+        archive->SetUInt32("sc.typeFiltersCount", actualFiltersCount);
         for (uint32 i = 0; i < actualFiltersCount; ++i)
         {
-            archive->SetFastName(Format("sc.filter_%u", i), filters[i]);
+            archive->SetFastName(Format("sc.typeFilter_%u", i), typeFilters[i]);
         }
     }
 }
@@ -53,10 +53,10 @@ void SlotComponent::Deserialize(KeyedArchive* archive, SerializationContext* ser
         slotName = archive->GetFastName("sc.slotName");
         attachmentTransform = archive->GetMatrix4("sc.attachmentTransform");
         configFilePath = FilePath(serializationContext->GetScenePath() + archive->GetString("sc.configFilePath"));
-        actualFiltersCount = archive->GetUInt32("sc.filtersCount");
+        actualFiltersCount = archive->GetUInt32("sc.typeFiltersCount");
         for (uint32 i = 0; i < actualFiltersCount; ++i)
         {
-            filters[i] = archive->GetFastName(Format("sc.filter_%u", i));
+            typeFilters[i] = archive->GetFastName(Format("sc.typeFilter_%u", i));
         }
     }
 
@@ -93,46 +93,51 @@ void SlotComponent::SetConfigFilePath(const FilePath& path)
     configFilePath = path;
 }
 
-uint32 SlotComponent::GetFiltersCount() const
+uint32 SlotComponent::GetTypeFiltersCount() const
 {
     return actualFiltersCount;
 }
 
-FastName SlotComponent::GetFilter(uint32 index) const
+FastName SlotComponent::GetTypeFilter(uint32 index) const
 {
     DVASSERT(index < actualFiltersCount);
-    return filters[index];
+    return typeFilters[index];
 }
 
-void SlotComponent::AddFilter(FastName filter)
+void SlotComponent::AddTypeFilter(FastName filter)
 {
     DVASSERT(actualFiltersCount < MAX_FILTERS_COUNT);
 #ifdef __DAVAENGINE_DEBUG__
     for (uint32 i = 0; i < actualFiltersCount; ++i)
     {
-        DVASSERT(filters[i] != filter);
+        DVASSERT(typeFilters[i] != filter);
     }
 #endif
-    filters[actualFiltersCount++] = filter;
+    typeFilters[actualFiltersCount++] = filter;
 }
 
-void SlotComponent::RemoveFilter(uint32 index)
+void SlotComponent::RemoveTypeFilter(uint32 index)
 {
     DVASSERT(actualFiltersCount > 0 && index < actualFiltersCount);
-    std::copy(filters.begin() + index + 1, filters.end(), filters.begin() + index);
+    std::copy(typeFilters.begin() + index + 1, typeFilters.end(), typeFilters.begin() + index);
     --actualFiltersCount;
 }
 
-void SlotComponent::RemoveFilter(FastName filter)
+void SlotComponent::RemoveTypeFilter(FastName filter)
 {
     for (uint32 i = 0; i < actualFiltersCount; ++i)
     {
-        if (filters[i] == filter)
+        if (typeFilters[i] == filter)
         {
-            RemoveFilter(i);
+            RemoveTypeFilter(i);
             break;
         }
     }
+}
+
+DAVA::FastName SlotComponent::GetLoadedItemName() const
+{
+    return loadedItemName;
 }
 
 const FastName SlotComponent::SlotNameFieldName = FastName("slotName");
