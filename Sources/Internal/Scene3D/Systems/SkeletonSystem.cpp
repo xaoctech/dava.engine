@@ -160,14 +160,12 @@ void SkeletonSystem::UpdateSkinnedMesh(SkeletonComponent* component, SkinnedMesh
 
     RenderSystem* renderSystem = GetScene()->renderSystem;
     GeoDecalManager* decalManager = renderSystem->GetGeoDecalManager();
-
-    RenderObject* decalRenderObject = decalManager->GetDecalRenderObject(skinnedMeshObject);
-    if ((decalRenderObject != nullptr) && (decalRenderObject->GetType() == RenderObject::TYPE_SKINNED_MESH))
-    {
+    decalManager->EnumerateDecalRenderObjects(skinnedMeshObject, [component, &resBox](RenderObject* decalRenderObject) {
+        DVASSERT(decalRenderObject->GetType() == RenderObject::TYPE_SKINNED_MESH);
         SkinnedMesh* decalMesh = static_cast<SkinnedMesh*>(decalRenderObject);
         decalMesh->SetJointsPtr(component->resultPositions.data(), component->resultQuaternions.data(), component->targetJointsCount);
         decalMesh->SetObjectSpaceBoundingBox(resBox);
-    }
+    });
 
     renderSystem->MarkForUpdate(skinnedMeshObject);
 }

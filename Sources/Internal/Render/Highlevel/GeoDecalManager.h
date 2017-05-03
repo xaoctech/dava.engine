@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
+#include "Functional/Function.h"
 #include <atomic>
 
 namespace DAVA
@@ -17,6 +18,7 @@ public:
         PLANAR,
         SPHERICAL,
         CYLINDRICAL,
+
         COUNT
     };
 
@@ -47,10 +49,8 @@ public:
     Decal BuildDecal(const DecalConfig& config, const Matrix4& decalWorldTransform, RenderObject* object);
     void DeleteDecal(Decal decal);
 
-    Decal GetDecalForRenderObject(RenderObject* ro) const;
-
-    RenderObject* GetDecalRenderObject(RenderObject* ro) const;
     RenderObject* GetDecalRenderObject(Decal decal) const;
+    void EnumerateDecalRenderObjects(RenderObject* ro, Function<void(RenderObject*)> func) const;
 
 private:
     // this could be moved to public

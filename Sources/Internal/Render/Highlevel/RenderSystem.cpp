@@ -184,9 +184,9 @@ void RenderSystem::MarkForUpdate(RenderObject* renderObject)
     }
     renderObject->SetFlags(flags);
 
-    RenderObject* decalObject = geoDecalManager->GetDecalRenderObject(renderObject);
-    if (decalObject != nullptr)
-        MarkForUpdate(decalObject);
+    geoDecalManager->EnumerateDecalRenderObjects(renderObject, [this](RenderObject* decalRenderObject) {
+        MarkForUpdate(decalRenderObject);
+    });
 }
 
 void RenderSystem::MarkForUpdate(Light* lightNode)
@@ -242,11 +242,9 @@ void RenderSystem::UpdateNearestLights(RenderObject* renderObject)
 
     renderObject->SetLight(0, nearestLight);
 
-    RenderObject* decalRenderObject = geoDecalManager->GetDecalRenderObject(renderObject);
-    if (decalRenderObject)
-    {
+    geoDecalManager->EnumerateDecalRenderObjects(renderObject, [nearestLight](RenderObject* decalRenderObject) {
         decalRenderObject->SetLight(0, nearestLight);
-    }
+    });
 }
 
 void RenderSystem::FindNearestLights()

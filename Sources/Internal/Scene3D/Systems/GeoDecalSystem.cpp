@@ -2,7 +2,7 @@
 #include "Render/Highlevel/GeometryOctTree.h"
 #include "Render/Highlevel/SkinnedMesh.h"
 
-#define DAVA_GEODECAL_SYSTEM_DEBUG_RENDER 1
+#define DAVA_GEODECAL_SYSTEM_DEBUG_RENDER 0
 
 namespace DAVA
 {
@@ -158,29 +158,30 @@ void GeoDecalSystem::BuildDecal(Entity* entityWithDecal, GeoDecalComponent* comp
     GeoDecalManager* manager = renderSystem->GetGeoDecalManager();
     for (const RenderableEntity& e : entities)
     {
-        UpdateCreatedDecalRenderObject(e.entity, e.renderObject, e.renderObject);
+        SkeletonComponent* skeletonComponent = GetSkeletonComponent(e.entity);
+        bool isValidSkinnedMesh = (e.renderObject->GetType() == RenderObject::TYPE_SKINNED_MESH) && (skeletonComponent != nullptr);
 
-        GeoDecalManager::Decal decal = manager->BuildDecal(component->GetConfig(), entityWithDecal->GetWorldTransform(), e.renderObject);
-        decals[component].decals.emplace_back(decal);
-
-        RenderObject* decalRenderObject = manager->GetDecalRenderObject(decal);
-        UpdateCreatedDecalRenderObject(e.entity, e.renderObject, decalRenderObject);
-    }
-}
-
-void GeoDecalSystem::UpdateCreatedDecalRenderObject(Entity* sourceEntity, RenderObject* sourceObject, RenderObject* builtObject)
-{
-    RenderSystem* renderSystem = GetScene()->GetRenderSystem();
-    renderSystem->UpdateNearestLights(builtObject);
-
-    if (sourceObject->GetType() == RenderObject::TYPE_SKINNED_MESH)
-    {
-        SkeletonComponent* skeletonComponent = GetSkeletonComponent(sourceEntity);
-        if (skeletonComponent != nullptr)
+        if (isValidSkinnedMesh)
         {
-            SkinnedMesh* mesh = static_cast<SkinnedMesh*>(sourceObject);
+            // update mesh before creating decal in order to have valid skinning
+            SkinnedMesh* mesh = static_cast<SkinnedMesh*>(e.renderObject);
             GetScene()->skeletonSystem->UpdateSkinnedMesh(skeletonComponent, mesh);
         }
+
+        GeoDecalManager::Decal decal = manager->BuildDecal(component->GetConfig(), entityWithDecal->GetWorldTransform(), e.renderObject);
+        RenderObject* decalRenderObject = manager->GetDecalRenderObject(decal);
+        decals[component].decals.emplace_back(decal);
+
+        if (isValidSkinnedMesh)
+        {
+            // update mesh after creating decal in order to update decal skining
+            SkinnedMesh* sourceMesh = static_cast<SkinnedMesh*>(e.renderObject);
+            SkinnedMesh* decalMesh = static_cast<SkinnedMesh*>(decalRenderObject);
+            decalMesh->SetJointsPtr(sourceMesh->GetPositionArray(), sourceMesh->GetQuaternionArray(), sourceMesh->GetJointsArraySize());
+        }
+
+        // update decal lights
+        GetScene()->GetRenderSystem()->UpdateNearestLights(decalRenderObject);
     }
 }
 }

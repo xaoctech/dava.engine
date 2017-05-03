@@ -1,4 +1,5 @@
 #include "Render/Highlevel/GeoDecalManager.h"
+#include "Render/Highlevel/Mesh.h"
 
 namespace DAVA
 {
@@ -111,11 +112,12 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, co
     }
 
     worldSpaceBox.GetTransformedBox(ro->GetInverseWorldTransform(), info.boundingBox);
+
     BuiltDecal& builtDecal = builtDecals[decal];
     {
         if (ro->GetType() == RenderObject::TYPE_MESH)
         {
-            builtDecal.renderObject.Set(new RenderObject());
+            builtDecal.renderObject.Set(new Mesh());
         }
         else if (ro->GetType() == RenderObject::TYPE_SKINNED_MESH)
         {
@@ -125,6 +127,7 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, co
         {
             DVASSERT(0, "Invalid RenderObject type");
         }
+        builtDecal.renderObject->SetOwnerDebugInfo(FastName("Decal"));
         builtDecal.renderObject->SetWorldTransformPtr(ro->GetWorldTransformPtr());
         builtDecal.renderObject->SetInverseTransform(ro->GetInverseWorldTransform());
         builtDecal.renderObject->SetLodIndex(ro->GetLodIndex());
@@ -175,32 +178,13 @@ void GeoDecalManager::UnregisterDecal(Decal decal)
     }
 }
 
-GeoDecalManager::Decal GeoDecalManager::GetDecalForRenderObject(RenderObject* ro) const
+void GeoDecalManager::EnumerateDecalRenderObjects(RenderObject* ro, Function<void(RenderObject*)> func) const
 {
-    Decal result = InvalidDecal;
     for (const auto& i : builtDecals)
     {
-        if (i.second.sourceObject == ro)
-        {
-            result = i.first;
-            break;
-        }
+        if ((i.second.sourceObject == ro) && (i.second.renderObject->GetRenderBatchCount() > 0))
+            func(i.second.renderObject.Get());
     }
-    return result;
-}
-
-RenderObject* GeoDecalManager::GetDecalRenderObject(RenderObject* ro) const
-{
-    RenderObject* result = nullptr;
-    for (const auto& i : builtDecals)
-    {
-        if (i.second.sourceObject == ro)
-        {
-            result = i.second.renderObject.Get();
-            break;
-        }
-    }
-    return result;
 }
 
 RenderObject* GeoDecalManager::GetDecalRenderObject(Decal decal) const
@@ -217,7 +201,6 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBat
     String fxName(info.material->GetEffectiveFXName().c_str());
     std::transform(fxName.begin(), fxName.end(), fxName.begin(), ::tolower);
 
-    DVASSERT(info.polygonGroup);
     if ((fxName.find("shadow") != String::npos) || (info.polygonGroup == nullptr))
         return false;
 
