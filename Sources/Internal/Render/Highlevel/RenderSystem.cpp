@@ -184,10 +184,6 @@ void RenderSystem::MarkForUpdate(RenderObject* renderObject)
         flags |= RenderObject::MARKED_FOR_UPDATE;
     }
     renderObject->SetFlags(flags);
-
-    geoDecalManager->EnumerateDecalRenderObjects(renderObject, [this](RenderObject* decal) {
-        MarkForUpdate(decal);
-    });
 }
 
 void RenderSystem::MarkForUpdate(Light* lightNode)
@@ -305,8 +301,6 @@ void RenderSystem::Update(float32 timeElapsed)
         forceUpdateLights = false;
         movedLights.clear();
     }
-
-    geoDecalManager->SyncDecals(GeoDecalManager::SYNC_ALL);
 
     uint32 size = static_cast<uint32>(objectsForUpdate.size());
     for (uint32 i = 0; i < size; ++i)

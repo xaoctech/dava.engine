@@ -115,21 +115,6 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, co
 
     BuiltDecal& builtDecal = builtDecals[decal];
     {
-        if (ro->GetType() == RenderObject::TYPE_MESH)
-        {
-            builtDecal.renderObject.Set(new Mesh());
-        }
-        else if (ro->GetType() == RenderObject::TYPE_SKINNED_MESH)
-        {
-            builtDecal.renderObject.Set(new SkinnedMesh());
-        }
-        else
-        {
-            DVASSERT(0, "Invalid RenderObject type");
-        }
-        builtDecal.renderObject->SetOwnerDebugInfo(FastName("Decal"));
-        builtDecal.renderObject->SetWorldTransformPtr(ro->GetWorldTransformPtr());
-        builtDecal.renderObject->SetInverseTransform(ro->GetInverseWorldTransform());
         builtDecal.sourceObject = ro;
 
         for (uint32 i = 0, e = ro->GetRenderBatchCount(); i < e; ++i)
@@ -143,10 +128,9 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, co
             ScopedPtr<RenderBatch> newBatch(new RenderBatch());
             if (BuildDecal(info, newBatch))
             {
-                builtDecal.renderObject->AddRenderBatch(newBatch, lodIndex, switchIndex);
+                builtDecal.batches.emplace_back(newBatch, lodIndex, switchIndex);
             }
         }
-        SyncRenderObjects(builtDecal.sourceObject.Get(), builtDecal.renderObject.Get(), GeoDecalManager::SYNC_ALL);
     }
     RegisterDecal(decal);
 
@@ -161,79 +145,20 @@ void GeoDecalManager::DeleteDecal(Decal decal)
 
 void GeoDecalManager::RegisterDecal(Decal decal)
 {
-    if (builtDecals[decal].renderObject->GetRenderBatchCount() > 0)
-    {
-        renderSystem->RenderPermanent(builtDecals[decal].renderObject.Get());
-        builtDecals[decal].registered = true;
-    }
+    DVASSERT(builtDecals.count(decal) > 0);
+
+    const BuiltDecal& builtDecal = builtDecals[decal];
+    for (const BatchWithOptions& batch : builtDecal.batches)
+        builtDecal.sourceObject->AddDynamicRenderBatch(batch.batch.Get(), batch.lodIndex, batch.switchIndex);
 }
 
 void GeoDecalManager::UnregisterDecal(Decal decal)
 {
-    if (builtDecals[decal].registered)
-    {
-        renderSystem->RemoveFromRender(builtDecals[decal].renderObject.Get());
-        builtDecals[decal].registered = false;
-    }
-}
+    DVASSERT(builtDecals.count(decal) > 0);
 
-void GeoDecalManager::EnumerateDecalRenderObjects(RenderObject* ro, Function<void(RenderObject*)> func) const
-{
-    for (const auto& i : builtDecals)
-    {
-        if ((i.second.sourceObject == ro) && (i.second.renderObject->GetRenderBatchCount() > 0))
-            func(i.second.renderObject.Get());
-    }
-}
-
-void GeoDecalManager::SyncDecalsWithRenderObject(RenderObject* ro, uint32 fields)
-{
-    for (const auto& i : builtDecals)
-    {
-        if (i.second.sourceObject == ro)
-            SyncRenderObjects(ro, i.second.renderObject.Get(), fields);
-    }
-}
-
-void GeoDecalManager::SyncDecals(uint32 fields)
-{
-    for (const auto& i : builtDecals)
-    {
-        SyncRenderObjects(i.second.renderObject.Get(), i.second.renderObject.Get(), fields);
-    }
-}
-
-void GeoDecalManager::SyncRenderObjects(RenderObject* source, RenderObject* decal, uint32 fields)
-{
-    if (fields & SYNC_FLAGS)
-        decal->SetFlags(source->GetFlags());
-
-    if (fields & SYNC_LOD)
-        decal->SetLodIndex(source->GetLodIndex());
-
-    if (fields & SYNC_SWITCH)
-        decal->SetSwitchIndex(source->GetSwitchIndex());
-
-    if (fields & SYNC_LIGHTS)
-    {
-        for (uint32 i = 0; i < RenderObject::MAX_LIGHT_COUNT; ++i)
-            decal->SetLight(i, source->GetLight(i));
-    }
-
-    if ((fields & SYNC_SKELETON) && (source->GetType() == RenderObject::TYPE_SKINNED_MESH))
-    {
-        DVASSERT(decal->GetType() == RenderObject::TYPE_SKINNED_MESH);
-        SkinnedMesh* sourceMesh = static_cast<SkinnedMesh*>(source);
-        SkinnedMesh* decalMesh = static_cast<SkinnedMesh*>(decal);
-        decalMesh->SetJointsPtr(sourceMesh->GetPositionArray(), sourceMesh->GetQuaternionArray(), sourceMesh->GetJointsArraySize());
-        decalMesh->SetObjectSpaceBoundingBox(sourceMesh->GetObjectSpaceBoundingBox());
-    }
-}
-
-RenderObject* GeoDecalManager::GetDecalRenderObject(Decal decal) const
-{
-    auto i = builtDecals.find(decal);
-    return (i == builtDecals.end()) ? nullptr : i->second.renderObject.Get();
+    const BuiltDecal& builtDecal = builtDecals[decal];
+    for (const BatchWithOptions& batch : builtDecal.batches)
+        builtDecal.sourceObject->RemoveDynamicRenderBatch(batch.batch.Get());
 }
 
 #define MAX_CLIPPED_POLYGON_CAPACITY 9
