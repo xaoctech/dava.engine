@@ -488,6 +488,9 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
         scaleVelocityFactor = scaleVelocityFactorNode->AsFloat();
     }
 
+    flowSpeed = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("flowSpeed"));
+    flowOffset = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("flowOffset"));
+
     life = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("life"));
     lifeVariation = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("lifeVariation"));
 
@@ -655,6 +658,8 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
         loopEndTime = loopEndTimeNode->AsFloat();
 
     /*validate all time depended property lines*/
+    UpdatePropertyLineOnLoad(flowSpeed.Get(), startTime, endTime);
+    UpdatePropertyLineOnLoad(flowOffset.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(life.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(lifeVariation.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(number.Get(), startTime, endTime);
@@ -766,6 +771,8 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
     layerNode->Add("scaleVelocityBase", scaleVelocityBase);
     layerNode->Add("scaleVelocityFactor", scaleVelocityFactor);
 
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "flowSpeed", this->flowSpeed);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "flowOffset", this->flowOffset);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "life", this->life);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "lifeVariation", this->lifeVariation);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "number", this->number);
@@ -851,6 +858,8 @@ void ParticleLayer::SaveForcesToYamlNode(YamlNode* layerNode)
 
 void ParticleLayer::GetModifableLines(List<ModifiablePropertyLineBase*>& modifiables)
 {
+    PropertyLineHelper::AddIfModifiable(flowSpeed.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(flowOffset.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(life.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(lifeVariation.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(number.Get(), modifiables);
