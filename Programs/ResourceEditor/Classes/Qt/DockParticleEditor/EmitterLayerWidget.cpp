@@ -165,20 +165,6 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
 
     mainBox->addLayout(spriteHBox);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     enableFlowCheckBox = new QCheckBox("Enable flowmap");
     mainBox->addWidget(enableFlowCheckBox);
     connect(enableFlowCheckBox,
@@ -187,30 +173,6 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
         SLOT(OnFlowPropertiesChanged()));
     CreateFlowmapLayoutWidget();
     mainBox->addWidget(flowLayoutWidget);
-    // testCB = new QCheckBox("hide show layout");
-    // mainBox->addWidget(testCB);
-    // connect(testCB,
-    //     SIGNAL(stateChanged(int)),
-    //     this,
-    //     SLOT(OnValueChanged()));
-    // test = new QWidget();
-    // QVBoxLayout* qvbl = new QVBoxLayout(test);
-    // QPushButton* qpb1 = new QPushButton("tst1");
-    // QPushButton* qpb2 = new QPushButton("tst2");
-    // qvbl->addWidget(qpb1);
-    // qvbl->addWidget(qpb2);
-    // mainBox->addWidget(test);
-
-
-
-
-
-
-
-
-
-
-
 
     connect(spriteBtn, SIGNAL(clicked(bool)), this, SLOT(OnSpriteBtn()));
     connect(spriteFolderBtn, SIGNAL(clicked(bool)), this, SLOT(OnSpriteFolderBtn()));
@@ -588,34 +550,12 @@ void EmitterLayerWidget::OnSpriteBtn()
 void EmitterLayerWidget::OnSpriteFolderBtn()
 {
     OnChangeFolderButton(layer->spritePath, spritePathLabel, std::bind(&EmitterLayerWidget::OnSpritePathEdited, this, std::placeholders::_1));
-    /*if (layer->spritePath.IsEmpty())
-    {
-        return;
-    }
-
-    QString startPath = QString::fromStdString(layer->spritePath.GetDirectory().GetStringValue());
-    startPath = EmitterLayerWidgetDetails::ConvertSpritePathToPSD(startPath);
-
-    QString spriteName = QString::fromStdString(layer->spritePath.GetBasename());
-
-    QString selectedPath = FileDialog::getExistingDirectory(nullptr, QString("Select particle sprites directory"), startPath);
-    if (selectedPath.isEmpty())
-    {
-        return;
-    }
-    selectedPath += "/";
-    selectedPath += spriteName;
-
-    spritePathLabel->setText(selectedPath);
-
-    OnSpritePathEdited(selectedPath);*/
 }
 
 void EmitterLayerWidget::OnValueChanged()
 {
     if (blockSignals)
         return;
-
 
     DAVA::PropLineWrapper<DAVA::float32> propLife;
     DAVA::PropLineWrapper<DAVA::float32> propLifeVariation;
@@ -858,6 +798,7 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     scaleVelocityFactorLabel->setVisible(scaleVelocityVisible);
     scaleVelocityFactorSpinBox->setVisible(scaleVelocityVisible);
 
+    enableFlowCheckBox->setChecked(layer->enableFlow);
     flowLayoutWidget->setVisible(enableFlowCheckBox->isChecked());
 
     isLoopedCheckBox->setChecked(layer->isLooped);
@@ -894,20 +835,11 @@ void EmitterLayerWidget::Update(bool updateMinimized)
 
     frameBlendingCheckBox->setChecked(layer->enableFrameBlend);
 
-
-
-
-
-
     // FLOW_STUFF
     flowSpeedTimeLine->Init(0, 1.0f, updateMinimized);
     flowSpeedTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowSpeed)).GetProps(), Qt::red, "flow speed");
     flowOffsetTimeLine->Init(0, 1.0f, updateMinimized);
     flowOffsetTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowOffset)).GetProps(), Qt::red, "flow offset");
-
-
-
-
 
     //LAYER_LIFE, LAYER_LIFE_VARIATION,
     lifeTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
@@ -1224,16 +1156,33 @@ void EmitterLayerWidget::OnChangeFolderButton(const DAVA::FilePath& initialFileP
     pathEditFunc(selectedPath);
 }
 
-void EmitterLayerWidget::UpdateTooltip()
+void EmitterLayerWidget::CheckPath(const QString& text)
 {
-    QFontMetrics fm = spritePathLabel->fontMetrics();
-    if (fm.width(spritePathLabel->text()) >= spritePathLabel->width())
+    ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+    DVASSERT(data != nullptr);
+    const DAVA::FilePath& particlesGfxPath = data->GetParticlesGfxPath();
+    const DAVA::FilePath spritePath = text.toStdString();
+    const DAVA::String relativePathForParticlesPath = spritePath.GetRelativePathname(particlesGfxPath);
+
+    if (relativePathForParticlesPath.find("../") != DAVA::String::npos)
     {
-        spritePathLabel->setToolTip(spritePathLabel->text());
+        QString message = QString("You've opened particle sprite from incorrect path (%1).\n Correct one is %2.").arg(QString::fromStdString(spritePath.GetDirectory().GetAbsolutePathname())).arg(QString::fromStdString(particlesGfxPath.GetAbsolutePathname()));
+
+        QMessageBox msgBox(QMessageBox::Warning, "Warning", message);
+        msgBox.exec();
+    }
+}
+
+void EmitterLayerWidget::UpdateTooltip(QLineEdit* label)
+{
+    QFontMetrics fm = label->fontMetrics();
+    if (fm.width(label->text()) >= label->width())
+    {
+        label->setToolTip(label->text());
     }
     else
     {
-        spritePathLabel->setToolTip("");
+        label->setToolTip("");
     }
 }
 
@@ -1246,9 +1195,10 @@ bool EmitterLayerWidget::eventFilter(QObject* o, QEvent* e)
         return true;
     }
 
-    if (e->type() == QEvent::Resize && qobject_cast<QLineEdit*>(o))
+    QLineEdit* label = qobject_cast<QLineEdit*>(o);
+    if (e->type() == QEvent::Resize && label != nullptr)
     {
-        UpdateTooltip();
+        UpdateTooltip(label);
         return true;
     }
 
@@ -1257,121 +1207,34 @@ bool EmitterLayerWidget::eventFilter(QObject* o, QEvent* e)
 
 void EmitterLayerWidget::OnSpritePathChanged(const QString& text)
 {
-    UpdateTooltip();
+    UpdateTooltip(spritePathLabel);
 }
 
 void EmitterLayerWidget::OnSpritePathEdited(const QString& text)
 {
-    ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
-    DVASSERT(data != nullptr);
-    const DAVA::FilePath& particlesGfxPath = data->GetParticlesGfxPath();
-    const DAVA::FilePath spritePath = text.toStdString();
-    const DAVA::String relativePathForParticlesPath = spritePath.GetRelativePathname(particlesGfxPath);
-
-    if (relativePathForParticlesPath.find("../") != DAVA::String::npos)
-    {
-        QString message = QString("You've opened particle sprite from incorrect path (%1).\n Correct one is %2.").arg(QString::fromStdString(spritePath.GetDirectory().GetAbsolutePathname())).arg(QString::fromStdString(particlesGfxPath.GetAbsolutePathname()));
-
-        QMessageBox msgBox(QMessageBox::Warning, "Warning", message);
-        msgBox.exec();
-    }
-
+    CheckPath(text);
     OnLayerMaterialValueChanged();
 }
 
 void EmitterLayerWidget::OnFlowSpritePathEdited(const QString& text)
 {
-    ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
-    DVASSERT(data != nullptr);
-    const DAVA::FilePath& particlesGfxPath = data->GetParticlesGfxPath();
-    const DAVA::FilePath spritePath = text.toStdString();
-    const DAVA::String relativePathForParticlesPath = spritePath.GetRelativePathname(particlesGfxPath);
-
-    if (relativePathForParticlesPath.find("../") != DAVA::String::npos)
-    {
-        QString message = QString("You've opened particle sprite from incorrect path (%1).\n Correct one is %2.").arg(QString::fromStdString(spritePath.GetDirectory().GetAbsolutePathname())).arg(QString::fromStdString(particlesGfxPath.GetAbsolutePathname()));
-
-        QMessageBox msgBox(QMessageBox::Warning, "Warning", message);
-        msgBox.exec();
-    }
-
+    CheckPath(text);
     OnFlowPropertiesChanged();
 }
 
-// TODO: merge with SpriteBtn().
 void EmitterLayerWidget::OnFlowSpriteBtn()
 {
     OnChangeSpriteButton(layer->flowmapPath, flowSpritePathLabel, QString("Open flow texture"), std::bind(&EmitterLayerWidget::OnFlowSpritePathEdited, this, std::placeholders::_1));
-    /*QString startPath;
-    if (layer->flowmapPath.IsEmpty())
-    {
-        ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
-        DVASSERT(data != nullptr);
-        startPath = QString::fromStdString(data->GetParticlesGfxPath().GetAbsolutePathname());
-    }
-    else
-    {
-        startPath = QString::fromStdString(layer->spritePath.GetDirectory().GetStringValue());
-        startPath = EmitterLayerWidgetDetails::ConvertSpritePathToPSD(startPath);
-    }
-
-    QString selectedPath = FileDialog::getOpenFileName(nullptr, QString("Open flow texture"), startPath, QString("Sprite File (*.psd)"));
-    std::string s = selectedPath.toStdString();
-    if (selectedPath.isEmpty())
-    {
-        return;
-    }
-
-    selectedPath.truncate(selectedPath.lastIndexOf('.'));
-    s = selectedPath.toStdString();
-    if (selectedPath == flowSpritePathLabel->text())
-    {
-        return;
-    }
-    s = selectedPath.toStdString();
-    flowSpritePathLabel->setText(selectedPath);
-
-    OnFlowSpritePathEdited(selectedPath);*/
 }
 
 void EmitterLayerWidget::OnFlowFolderBtn()
 {
     OnChangeFolderButton(layer->flowmapPath, flowSpritePathLabel, std::bind(&EmitterLayerWidget::OnFlowSpritePathEdited, this, std::placeholders::_1));
-    /* if (layer->flowmapPath.IsEmpty())
-    {
-        return;
-    }
-
-    QString startPath = QString::fromStdString(layer->flowmapPath.GetDirectory().GetStringValue());
-    startPath = EmitterLayerWidgetDetails::ConvertSpritePathToPSD(startPath);
-
-    QString spriteName = QString::fromStdString(layer->flowmapPath.GetBasename());
-
-    QString selectedPath = FileDialog::getExistingDirectory(nullptr, QString("Select particle sprites directory"), startPath);
-    if (selectedPath.isEmpty())
-    {
-        return;
-    }
-    selectedPath += "/";
-    selectedPath += spriteName;
-
-    flowSpritePathLabel->setText(selectedPath);
-
-    OnSpritePathEdited(selectedPath); */
 }
 
 void EmitterLayerWidget::OnFlowTexturePathChanged(const QString& text)
 {
-    // TODO: updateTooltip().
-    QFontMetrics fm = flowSpritePathLabel->fontMetrics();
-    if (fm.width(flowSpritePathLabel->text()) >= flowSpritePathLabel->width())
-    {
-        flowSpritePathLabel->setToolTip(flowSpritePathLabel->text());
-    }
-    else
-    {
-        flowSpritePathLabel->setToolTip("");
-    }
+    UpdateTooltip(flowSpritePathLabel);
 }
 
 void EmitterLayerWidget::FillLayerTypes()

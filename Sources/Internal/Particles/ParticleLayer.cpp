@@ -59,7 +59,7 @@ eBlendMode GetBlendModeByName(const String& blendStr)
 
 /*end of legacy compatibility code*/
 
-ParticleLayer::ParticleLayer() : flowSpeed(nullptr), flowOffset(nullptr)
+ParticleLayer::ParticleLayer() : flowSpeed(nullptr), flowOffset(nullptr), enableFlow(false)
 {
     life = 0;
     lifeVariation = 0;
@@ -212,6 +212,8 @@ ParticleLayer* ParticleLayer::Clone()
     dstLayer->innerEmitterPath = innerEmitterPath;
 
     dstLayer->layerName = layerName;
+
+    dstLayer->enableFlow = enableFlow;
 
     dstLayer->blending = blending;
     dstLayer->enableFog = enableFog;
@@ -422,6 +424,13 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
         FilePath spritePath = configPath.GetDirectory() + spriteNode->AsString();
         SetSprite(spritePath);
     }
+    const YamlNode* flowmapNode = node->Get("flowmap");
+    if (flowmapNode && !flowmapNode->AsString().empty())
+    {
+        FilePath flowPath = configPath.GetDirectory() + flowmapNode->AsString();
+        SetFlowmap(flowPath);
+    }
+
     if (pivotPointNode)
     {
         Vector2 _pivot = pivotPointNode->AsPoint();
@@ -615,6 +624,11 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
     {
         enableFog = fogNode->AsBool();
     }
+    const YamlNode* enableFlowNode = node->Get("enableFlow");
+    if (enableFlowNode)
+    {
+        enableFlow = enableFlowNode->AsBool();
+    }
 
     const YamlNode* frameBlendNode = node->Get("enableFrameBlend");
     if (frameBlendNode)
@@ -763,7 +777,17 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "sprite", relativePath);
     }
 
+    FilePath flowSavePath = flowmapPath; // TODO!!!!!!!!!!! ^^^^^^^
+    if (!flowSavePath.IsEmpty())
+    {
+        flowSavePath.TruncateExtension();
+        String relativePath = flowSavePath.GetRelativePathname(configPath.GetDirectory());
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "flowmap", relativePath);
+    }
+
     layerNode->Add("blending", blending);
+
+    layerNode->Add("enableFlow", enableFlow);
 
     layerNode->Add("enableFog", enableFog);
     layerNode->Add("enableFrameBlend", enableFrameBlend);
