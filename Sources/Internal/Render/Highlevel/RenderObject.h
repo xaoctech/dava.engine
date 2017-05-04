@@ -51,8 +51,9 @@ public:
     };
 
     static const uint32 VISIBILITY_CRITERIA = VISIBLE | VISIBLE_STATIC_OCCLUSION | VISIBLE_QUALITY;
-    const static uint32 CLIPPING_VISIBILITY_CRITERIA = VISIBLE | VISIBLE_STATIC_OCCLUSION | VISIBLE_QUALITY;
+    static const uint32 CLIPPING_VISIBILITY_CRITERIA = VISIBLE | VISIBLE_STATIC_OCCLUSION | VISIBLE_QUALITY;
     static const uint32 SERIALIZATION_CRITERIA = VISIBLE | VISIBLE_REFLECTION | VISIBLE_REFRACTION | ALWAYS_CLIPPING_VISIBLE;
+    static const uint32 MAX_LIGHT_COUNT = 2;
 
 protected:
     virtual ~RenderObject();
@@ -75,6 +76,9 @@ public:
 
     void SetRenderBatchLODIndex(uint32 batchIndex, int32 newLodIndex);
     void SetRenderBatchSwitchIndex(uint32 batchIndex, int32 newSwitchIndex);
+
+    void AddDynamicRenderBatch(RenderBatch* batch, int32 lodIndex, int32 switchIndex);
+    void RemoveDynamicRenderBatch(RenderBatch* batch);
 
     virtual void RecalcBoundingBox();
 
@@ -247,6 +251,15 @@ public:
         int32 lodIndex = -2;
         int32 switchIndex = -1;
 
+        IndexedRenderBatch() = default;
+        IndexedRenderBatch(RenderBatch* rb, int32 l, int32 s)
+            :
+            renderBatch(rb)
+            , lodIndex(l)
+            , switchIndex(s)
+        {
+        }
+
         bool operator==(const IndexedRenderBatch& other) const;
 
         INTROSPECTION(IndexedRenderBatch,
@@ -258,13 +271,15 @@ public:
     };
 
 protected:
+    void InternalAddRenderBatchToCollection(Vector<IndexedRenderBatch>& dest, RenderBatch* batch, int32 lodIndex, int32 switchIndex);
+    void InternalRemoveRenderBatchFromCollection(Vector<IndexedRenderBatch>& collection, RenderBatch* batch);
     void UpdateActiveRenderBatches();
 
     static const int32 DEFAULT_RENDEROBJECT_FLAGS = eFlags::VISIBLE | eFlags::VISIBLE_STATIC_OCCLUSION | eFlags::VISIBLE_QUALITY;
-    static const uint32 MAX_LIGHT_COUNT = 2;
 
 protected:
     Vector<IndexedRenderBatch> renderBatchArray;
+    Vector<IndexedRenderBatch> dynamicBatchArray;
     Vector<RenderBatch*> activeRenderBatchArray;
     Light* lights[MAX_LIGHT_COUNT];
     RenderSystem* renderSystem = nullptr;
@@ -301,8 +316,9 @@ public:
                          MEMBER(treeNodeIndex, "Tree Node Index", I_SAVE | I_VIEW | I_EDIT)
                          MEMBER(inVisibilityNodeCount, "Visibility Node Count", I_SAVE | I_VIEW | I_EDIT)
                          COLLECTION(inVisCopy, "Visibility Nodes", I_SAVE | I_VIEW | I_EDIT)
-                         COLLECTION(renderBatchArray, "Render Batch Array", I_SAVE | I_VIEW | I_EDIT)
-                         COLLECTION(activeRenderBatchArray, "Render Batch Array", I_VIEW)
+                         COLLECTION(renderBatchArray, "Render Batches", I_SAVE | I_VIEW | I_EDIT)
+                         COLLECTION(dynamicBatchArray, "Dynamic Batches", I_SAVE | I_VIEW | I_EDIT)
+                         COLLECTION(activeRenderBatchArray, "Active Batches", I_VIEW)
                          );
 
     DAVA_VIRTUAL_REFLECTION(RenderObject, BaseObject);

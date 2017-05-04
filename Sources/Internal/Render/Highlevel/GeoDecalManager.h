@@ -22,6 +22,17 @@ public:
         COUNT
     };
 
+    enum SyncFields : uint32
+    {
+        SYNC_FLAGS = 1 << 0,
+        SYNC_LOD = 1 << 1,
+        SYNC_SWITCH = 1 << 2,
+        SYNC_LIGHTS = 1 << 3,
+        SYNC_SKELETON = 1 << 4,
+
+        SYNC_ALL = 0xFFFFFFFF
+    };
+
     struct DecalConfig
     {
         AABBox3 boundingBox;
@@ -49,14 +60,10 @@ public:
     Decal BuildDecal(const DecalConfig& config, const Matrix4& decalWorldTransform, RenderObject* object);
     void DeleteDecal(Decal decal);
 
-    RenderObject* GetDecalRenderObject(Decal decal) const;
+    void SyncDecals(uint32 fields = SYNC_ALL);
     void EnumerateDecalRenderObjects(RenderObject* ro, Function<void(RenderObject*)> func) const;
 
 private:
-    // this could be moved to public
-    void RegisterDecal(Decal decal);
-    void UnregisterDecal(Decal decal);
-
     struct DecalVertex;
     struct DecalBuildInfo;
 
@@ -67,8 +74,14 @@ private:
         bool registered = false;
     };
 
-    bool BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBatch);
+    void SyncDecalsWithRenderObject(RenderObject* ro, uint32 fields);
 
+    RenderObject* GetDecalRenderObject(Decal decal) const;
+
+    void RegisterDecal(Decal decal);
+    void UnregisterDecal(Decal decal);
+    void SyncRenderObjects(RenderObject* source, RenderObject* decal, uint32 fields);
+    bool BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBatch);
     void ClipToPlane(DecalVertex* p_vs, uint8_t* nb_p_vs, int8_t sign, Vector3::eAxis axis, const Vector3& c_v);
     void ClipToBoundingBox(DecalVertex* p_vs, uint8_t* nb_p_vs, const AABBox3& clipper);
     int8_t Classify(int8_t sign, Vector3::eAxis axis, const Vector3& c_v, const DecalVertex& p_v);

@@ -382,11 +382,6 @@ void LodSystem::SetEntityLod(Entity* entity, int32 currentLod)
     if (ro)
     {
         ro->SetLodIndex(currentLod);
-
-        GeoDecalManager* decalManager = GetScene()->GetRenderSystem()->GetGeoDecalManager();
-        decalManager->EnumerateDecalRenderObjects(ro, [currentLod](RenderObject* decalRenderObject) {
-            decalRenderObject->SetLodIndex(currentLod);
-        });
     }
 }
 

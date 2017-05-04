@@ -982,7 +982,7 @@ void Landscape::FlushQueue()
 
         DAVA_PROFILER_GPU_RENDER_BATCH(batch, ProfilerGPUMarkerName::LANDSCAPE);
 
-        activeRenderBatchArray.push_back(batch);
+        activeRenderBatchArray.emplace_back(batch);
 
         queueIndexCount -= allocatedIndices;
         indicesPtr += allocatedIndices;
@@ -1190,7 +1190,7 @@ void Landscape::DrawLandscapeInstancing()
 
         renderBatchArray[0].renderBatch->instanceBuffer = instanceDataBuffer->buffer;
         renderBatchArray[0].renderBatch->instanceCount = patchesToRender;
-        activeRenderBatchArray.push_back(renderBatchArray[0].renderBatch);
+        activeRenderBatchArray.emplace_back(renderBatchArray[0].renderBatch);
 
         instanceDataPtr = static_cast<uint8*>(rhi::MapVertexBuffer(instanceDataBuffer->buffer, 0, patchesToRender * instanceDataSize));
 

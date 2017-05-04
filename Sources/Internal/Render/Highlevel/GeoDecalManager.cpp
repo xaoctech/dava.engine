@@ -130,8 +130,6 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, co
         builtDecal.renderObject->SetOwnerDebugInfo(FastName("Decal"));
         builtDecal.renderObject->SetWorldTransformPtr(ro->GetWorldTransformPtr());
         builtDecal.renderObject->SetInverseTransform(ro->GetInverseWorldTransform());
-        builtDecal.renderObject->SetLodIndex(ro->GetLodIndex());
-        builtDecal.renderObject->SetSwitchIndex(ro->GetSwitchIndex());
         builtDecal.sourceObject = ro;
 
         for (uint32 i = 0, e = ro->GetRenderBatchCount(); i < e; ++i)
@@ -148,6 +146,7 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, co
                 builtDecal.renderObject->AddRenderBatch(newBatch, lodIndex, switchIndex);
             }
         }
+        SyncRenderObjects(builtDecal.sourceObject.Get(), builtDecal.renderObject.Get(), GeoDecalManager::SYNC_ALL);
     }
     RegisterDecal(decal);
 
@@ -184,6 +183,50 @@ void GeoDecalManager::EnumerateDecalRenderObjects(RenderObject* ro, Function<voi
     {
         if ((i.second.sourceObject == ro) && (i.second.renderObject->GetRenderBatchCount() > 0))
             func(i.second.renderObject.Get());
+    }
+}
+
+void GeoDecalManager::SyncDecalsWithRenderObject(RenderObject* ro, uint32 fields)
+{
+    for (const auto& i : builtDecals)
+    {
+        if (i.second.sourceObject == ro)
+            SyncRenderObjects(ro, i.second.renderObject.Get(), fields);
+    }
+}
+
+void GeoDecalManager::SyncDecals(uint32 fields)
+{
+    for (const auto& i : builtDecals)
+    {
+        SyncRenderObjects(i.second.renderObject.Get(), i.second.renderObject.Get(), fields);
+    }
+}
+
+void GeoDecalManager::SyncRenderObjects(RenderObject* source, RenderObject* decal, uint32 fields)
+{
+    if (fields & SYNC_FLAGS)
+        decal->SetFlags(source->GetFlags());
+
+    if (fields & SYNC_LOD)
+        decal->SetLodIndex(source->GetLodIndex());
+
+    if (fields & SYNC_SWITCH)
+        decal->SetSwitchIndex(source->GetSwitchIndex());
+
+    if (fields & SYNC_LIGHTS)
+    {
+        for (uint32 i = 0; i < RenderObject::MAX_LIGHT_COUNT; ++i)
+            decal->SetLight(i, source->GetLight(i));
+    }
+
+    if ((fields & SYNC_SKELETON) && (source->GetType() == RenderObject::TYPE_SKINNED_MESH))
+    {
+        DVASSERT(decal->GetType() == RenderObject::TYPE_SKINNED_MESH);
+        SkinnedMesh* sourceMesh = static_cast<SkinnedMesh*>(source);
+        SkinnedMesh* decalMesh = static_cast<SkinnedMesh*>(decal);
+        decalMesh->SetJointsPtr(sourceMesh->GetPositionArray(), sourceMesh->GetQuaternionArray(), sourceMesh->GetJointsArraySize());
+        decalMesh->SetObjectSpaceBoundingBox(sourceMesh->GetObjectSpaceBoundingBox());
     }
 }
 

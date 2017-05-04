@@ -169,19 +169,7 @@ void GeoDecalSystem::BuildDecal(Entity* entityWithDecal, GeoDecalComponent* comp
         }
 
         GeoDecalManager::Decal decal = manager->BuildDecal(component->GetConfig(), entityWithDecal->GetWorldTransform(), e.renderObject);
-        RenderObject* decalRenderObject = manager->GetDecalRenderObject(decal);
         decals[component].decals.emplace_back(decal);
-
-        if (isValidSkinnedMesh)
-        {
-            // update mesh after creating decal in order to update decal skining
-            SkinnedMesh* sourceMesh = static_cast<SkinnedMesh*>(e.renderObject);
-            SkinnedMesh* decalMesh = static_cast<SkinnedMesh*>(decalRenderObject);
-            decalMesh->SetJointsPtr(sourceMesh->GetPositionArray(), sourceMesh->GetQuaternionArray(), sourceMesh->GetJointsArraySize());
-        }
-
-        // update decal lights
-        GetScene()->GetRenderSystem()->UpdateNearestLights(decalRenderObject);
     }
 }
 }

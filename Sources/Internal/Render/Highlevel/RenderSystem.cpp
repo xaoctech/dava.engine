@@ -176,6 +176,7 @@ void RenderSystem::MarkForUpdate(RenderObject* renderObject)
     uint32 flags = renderObject->GetFlags();
     if (flags & RenderObject::MARKED_FOR_UPDATE)
         return;
+
     flags |= RenderObject::NEED_UPDATE;
     if ((flags & RenderObject::CLIPPING_VISIBILITY_CRITERIA) == RenderObject::CLIPPING_VISIBILITY_CRITERIA)
     {
@@ -184,8 +185,8 @@ void RenderSystem::MarkForUpdate(RenderObject* renderObject)
     }
     renderObject->SetFlags(flags);
 
-    geoDecalManager->EnumerateDecalRenderObjects(renderObject, [this](RenderObject* decalRenderObject) {
-        MarkForUpdate(decalRenderObject);
+    geoDecalManager->EnumerateDecalRenderObjects(renderObject, [this](RenderObject* decal) {
+        MarkForUpdate(decal);
     });
 }
 
@@ -241,10 +242,6 @@ void RenderSystem::UpdateNearestLights(RenderObject* renderObject)
     }
 
     renderObject->SetLight(0, nearestLight);
-
-    geoDecalManager->EnumerateDecalRenderObjects(renderObject, [nearestLight](RenderObject* decalRenderObject) {
-        decalRenderObject->SetLight(0, nearestLight);
-    });
 }
 
 void RenderSystem::FindNearestLights()
@@ -288,20 +285,15 @@ void RenderSystem::Update(float32 timeElapsed)
         hierarchyInitialized = true;
     }
 
-    int32 objectBoxesUpdated = 0;
-    Vector<RenderObject*>::iterator end = markedObjects.end();
-    for (Vector<RenderObject*>::iterator it = markedObjects.begin(); it != end; ++it)
+    for (RenderObject* obj : markedObjects)
     {
-        RenderObject* obj = *it;
-
         obj->RecalculateWorldBoundingBox();
-
         UpdateNearestLights(obj);
+
         if (obj->GetTreeNodeIndex() != QuadTree::INVALID_TREE_NODE_INDEX)
             renderHierarchy->ObjectUpdated(obj);
 
         obj->RemoveFlag(RenderObject::NEED_UPDATE | RenderObject::MARKED_FOR_UPDATE);
-        objectBoxesUpdated++;
     }
     markedObjects.clear();
 
@@ -310,10 +302,11 @@ void RenderSystem::Update(float32 timeElapsed)
     if (movedLights.size() > 0 || forceUpdateLights)
     {
         FindNearestLights();
-
         forceUpdateLights = false;
         movedLights.clear();
     }
+
+    geoDecalManager->SyncDecals(GeoDecalManager::SYNC_ALL);
 
     uint32 size = static_cast<uint32>(objectsForUpdate.size());
     for (uint32 i = 0; i < size; ++i)
