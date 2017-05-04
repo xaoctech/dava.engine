@@ -48,7 +48,7 @@ const EmitterLayerWidget::BlendPreset EmitterLayerWidget::blendPresetsMap[] =
   { DAVA::BLENDING_ALPHA_ADDITIVE, "Alpha additive" },
   { DAVA::BLENDING_SOFT_ADDITIVE, "Soft additive" },
   /*{BLEND_DST_COLOR, BLEND_ZERO, "Multiplicative"},
-	{BLEND_DST_COLOR, BLEND_SRC_COLOR, "2x Multiplicative"}*/
+    {BLEND_DST_COLOR, BLEND_SRC_COLOR, "2x Multiplicative"}*/
 };
 
 EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
@@ -164,6 +164,53 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     spriteHBox->addLayout(spriteVBox);
 
     mainBox->addLayout(spriteHBox);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    enableFlowCheckBox = new QCheckBox("Enable flowmap");
+    mainBox->addWidget(enableFlowCheckBox);
+    connect(enableFlowCheckBox,
+        SIGNAL(stateChanged(int)),
+        this,
+        SLOT(OnFlowPropertiesChanged()));
+    CreateFlowmapLayoutWidget();
+    mainBox->addWidget(flowLayoutWidget);
+    // testCB = new QCheckBox("hide show layout");
+    // mainBox->addWidget(testCB);
+    // connect(testCB,
+    //     SIGNAL(stateChanged(int)),
+    //     this,
+    //     SLOT(OnValueChanged()));
+    // test = new QWidget();
+    // QVBoxLayout* qvbl = new QVBoxLayout(test);
+    // QPushButton* qpb1 = new QPushButton("tst1");
+    // QPushButton* qpb2 = new QPushButton("tst2");
+    // qvbl->addWidget(qpb1);
+    // qvbl->addWidget(qpb2);
+    // mainBox->addWidget(test);
+
+
+
+
+
+
+
+
+
+
+
 
     connect(spriteBtn, SIGNAL(clicked(bool)), this, SLOT(OnSpriteBtn()));
     connect(spriteFolderBtn, SIGNAL(clicked(bool)), this, SLOT(OnSpriteFolderBtn()));
@@ -466,6 +513,8 @@ void EmitterLayerWidget::RestoreVisualState(DAVA::KeyedArchive* visualStateProps
     animSpeedOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ANIM_SPEED_OVER_LIFE_PROPS"));
     alphaOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ALPHA_OVER_LIFE_PROPS"));
     angleTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ANGLE"));
+    flowSpeedTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_FLOW_SPEED_PROPS"));
+    flowOffsetTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_FLOW_OFFSET_PROPS"));
 }
 
 void EmitterLayerWidget::StoreVisualState(DAVA::KeyedArchive* visualStateProps)
@@ -521,43 +570,25 @@ void EmitterLayerWidget::StoreVisualState(DAVA::KeyedArchive* visualStateProps)
     props->DeleteAllKeys();
     angleTimeLine->GetVisualState(props);
     visualStateProps->SetArchive("LAYER_ANGLE", props);
+
+    props->DeleteAllKeys();
+    flowSpeedTimeLine->GetVisualState(props);
+    visualStateProps->SetArchive("LAYER_FLOW_SPEED_PROPS", props);
+
+    props->DeleteAllKeys();
+    flowOffsetTimeLine->GetVisualState(props);
+    visualStateProps->SetArchive("LAYER_FLOW_OFFSET_PROPS", props);
 }
 
 void EmitterLayerWidget::OnSpriteBtn()
 {
-    QString startPath;
-    if (layer->spritePath.IsEmpty())
-    {
-        ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
-        DVASSERT(data != nullptr);
-        startPath = QString::fromStdString(data->GetParticlesGfxPath().GetAbsolutePathname());
-    }
-    else
-    {
-        startPath = QString::fromStdString(layer->spritePath.GetDirectory().GetStringValue());
-        startPath = EmitterLayerWidgetDetails::ConvertSpritePathToPSD(startPath);
-    }
-
-    QString selectedPath = FileDialog::getOpenFileName(nullptr, QString("Open particle sprite"), startPath, QString("Sprite File (*.psd)"));
-    if (selectedPath.isEmpty())
-    {
-        return;
-    }
-
-    selectedPath.truncate(selectedPath.lastIndexOf('.'));
-    if (selectedPath == spritePathLabel->text())
-    {
-        return;
-    }
-
-    spritePathLabel->setText(selectedPath);
-
-    OnSpritePathEdited(selectedPath);
+    OnChangeSpriteButton(layer->spritePath, spritePathLabel, QString("Open particle sprite"), std::bind(&EmitterLayerWidget::OnSpritePathEdited, this, std::placeholders::_1));
 }
 
 void EmitterLayerWidget::OnSpriteFolderBtn()
 {
-    if (layer->spritePath.IsEmpty())
+    OnChangeFolderButton(layer->spritePath, spritePathLabel, std::bind(&EmitterLayerWidget::OnSpritePathEdited, this, std::placeholders::_1));
+    /*if (layer->spritePath.IsEmpty())
     {
         return;
     }
@@ -577,13 +608,14 @@ void EmitterLayerWidget::OnSpriteFolderBtn()
 
     spritePathLabel->setText(selectedPath);
 
-    OnSpritePathEdited(selectedPath);
+    OnSpritePathEdited(selectedPath);*/
 }
 
 void EmitterLayerWidget::OnValueChanged()
 {
     if (blockSignals)
         return;
+
 
     DAVA::PropLineWrapper<DAVA::float32> propLife;
     DAVA::PropLineWrapper<DAVA::float32> propLifeVariation;
@@ -733,6 +765,31 @@ void EmitterLayerWidget::OnLayerMaterialValueChanged()
     emit ValueChanged();
 }
 
+
+
+void EmitterLayerWidget::OnFlowPropertiesChanged()
+{
+    if (blockSignals)
+        return;
+
+    DAVA::PropLineWrapper<DAVA::float32> propFlowSpeed;
+    flowSpeedTimeLine->GetValue(0, propFlowSpeed.GetPropsPtr());
+
+    DAVA::PropLineWrapper<DAVA::float32> propFlowOffset;
+    flowOffsetTimeLine->GetValue(0, propFlowOffset.GetPropsPtr());
+
+    QString path = flowSpritePathLabel->text();
+    path = EmitterLayerWidgetDetails::ConvertPSDPathToSprite(path);
+    const DAVA::FilePath spritePath(path.toStdString());
+
+    DVASSERT(GetActiveScene() != nullptr);
+    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeFlowProperties(layer, spritePath, enableFlowCheckBox->isChecked(), propFlowSpeed.GetPropLine(), propFlowOffset.GetPropLine())));
+
+    UpdateFlowmapSprite();
+
+    emit ValueChanged();
+}
+
 void EmitterLayerWidget::OnLodsChanged()
 {
     if (blockSignals)
@@ -767,6 +824,17 @@ void EmitterLayerWidget::OnSpriteUpdateTimerExpired()
 
         spriteUpdateTimer->stop();
     }
+    if (flowSpriteUpdateTexturesStack.size() > 0 && rhi::SyncObjectSignaled(flowSpriteUpdateTexturesStack.top().first))
+    {
+        DAVA::ScopedPtr<DAVA::Image> image(flowSpriteUpdateTexturesStack.top().second->CreateImageFromMemory());
+        flowSpriteLabel->setPixmap(QPixmap::fromImage(ImageTools::FromDavaImage(image)));
+
+        while (!flowSpriteUpdateTexturesStack.empty())
+        {
+            SafeRelease(flowSpriteUpdateTexturesStack.top().second);
+            flowSpriteUpdateTexturesStack.pop();
+        }
+    }
 }
 
 void EmitterLayerWidget::Update(bool updateMinimized)
@@ -790,6 +858,8 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     scaleVelocityFactorLabel->setVisible(scaleVelocityVisible);
     scaleVelocityFactorSpinBox->setVisible(scaleVelocityVisible);
 
+    flowLayoutWidget->setVisible(enableFlowCheckBox->isChecked());
+
     isLoopedCheckBox->setChecked(layer->isLooped);
 
     for (DAVA::int32 i = 0; i < DAVA::LodComponent::MAX_LOD_LAYERS; ++i)
@@ -800,6 +870,7 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     degradeStrategyComboBox->setCurrentIndex(static_cast<DAVA::int32>(layer->degradeStrategy));
 
     UpdateLayerSprite();
+    UpdateFlowmapSprite();
 
     //particle orientation
     cameraFacingCheckBox->setChecked(layer->particleOrientation & DAVA::ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING);
@@ -822,6 +893,21 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     fogCheckBox->setChecked(layer->enableFog);
 
     frameBlendingCheckBox->setChecked(layer->enableFrameBlend);
+
+
+
+
+
+
+    // FLOW_STUFF
+    flowSpeedTimeLine->Init(0, 1.0f, updateMinimized);
+    flowSpeedTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowSpeed)).GetProps(), Qt::red, "flow speed");
+    flowOffsetTimeLine->Init(0, 1.0f, updateMinimized);
+    flowOffsetTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowOffset)).GetProps(), Qt::red, "flow offset");
+
+
+
+
 
     //LAYER_LIFE, LAYER_LIFE_VARIATION,
     lifeTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
@@ -990,6 +1076,154 @@ void EmitterLayerWidget::UpdateLayerSprite()
     }
 }
 
+void EmitterLayerWidget::UpdateFlowmapSprite()
+{
+    if (layer->flowmap && !layer->flowmapPath.IsEmpty())
+    {
+        DAVA::RenderSystem2D::RenderTargetPassDescriptor desc;
+        DAVA::Texture* dstTex = DAVA::Texture::CreateFBO(SPRITE_SIZE, SPRITE_SIZE, DAVA::FORMAT_RGBA8888);
+        desc.colorAttachment = dstTex->handle;
+        desc.depthAttachment = dstTex->handleDepthStencil;
+        desc.width = dstTex->GetWidth();
+        desc.height = dstTex->GetHeight();
+        desc.clearTarget = true;
+        desc.transformVirtualToPhysical = false;
+        desc.clearColor = DAVA::Color::Clear;
+        DAVA::RenderSystem2D::Instance()->BeginRenderTargetPass(desc);
+        {
+            DAVA::Sprite::DrawState drawState = {};
+            drawState.SetScaleSize(SPRITE_SIZE, SPRITE_SIZE, layer->flowmap->GetWidth(), layer->flowmap->GetHeight());
+            DAVA::RenderSystem2D::Instance()->Draw(layer->flowmap, &drawState, DAVA::Color::White);
+        }
+        DAVA::RenderSystem2D::Instance()->EndRenderTargetPass();
+        flowSpriteUpdateTexturesStack.push({ rhi::GetCurrentFrameSyncObject(), dstTex });
+        spriteUpdateTimer->start(0);
+
+        QString path = QString::fromStdString(layer->flowmapPath.GetAbsolutePathname());
+        path = EmitterLayerWidgetDetails::ConvertSpritePathToPSD(path);
+        flowSpritePathLabel->setText(path);
+    }
+    else
+    {
+        flowSpriteLabel->setPixmap(QPixmap());
+        flowSpritePathLabel->setText("");
+    }
+}
+
+void EmitterLayerWidget::CreateFlowmapLayoutWidget()
+{
+    flowLayoutWidget = new QWidget();
+    QVBoxLayout* flowMainLayout = new QVBoxLayout(flowLayoutWidget);
+
+    QHBoxLayout* flowTextureHBox2 = new QHBoxLayout();
+    flowTextureBtn = new QPushButton("Set flow texture", this);
+    flowTextureBtn->setMinimumHeight(30);
+    flowTextureFolderBtn = new QPushButton("Change flow texure folder", this);
+    flowTextureFolderBtn->setMinimumHeight(30);
+    flowTextureHBox2->addWidget(flowTextureBtn);
+    flowTextureHBox2->addWidget(flowTextureFolderBtn);
+
+    QVBoxLayout* flowTextureVBox = new QVBoxLayout();
+    flowSpritePathLabel = new QLineEdit(this);
+    flowSpritePathLabel->setReadOnly(false);
+    flowTextureVBox->addLayout(flowTextureHBox2);
+    flowTextureVBox->addWidget(flowSpritePathLabel);
+
+    QHBoxLayout* flowTextureHBox = new QHBoxLayout();
+    flowSpriteLabel = new QLabel(this);
+    flowSpriteLabel->setMinimumSize(SPRITE_SIZE, SPRITE_SIZE);
+    flowTextureHBox->addWidget(flowSpriteLabel);
+    flowTextureHBox->addLayout(flowTextureVBox);
+
+    flowMainLayout->addLayout(flowTextureHBox);
+
+    enableNoiseCheckBox = new QCheckBox("Enable noise");
+    connect(enableNoiseCheckBox,
+        SIGNAL(stateChanged(int)),
+        this,
+        SLOT(OnFlowPropertiesChanged()));
+
+    QVBoxLayout* timelineVBox = new QVBoxLayout();
+    flowSpeedTimeLine = new TimeLineWidget(this);
+    connect(flowSpeedTimeLine,
+        SIGNAL(ValueChanged()),
+        this,
+        SLOT(OnFlowPropertiesChanged()));
+    timelineVBox->addWidget(flowSpeedTimeLine);
+    flowOffsetTimeLine = new TimeLineWidget(this);
+    connect(flowOffsetTimeLine,
+        SIGNAL(ValueChanged()),
+        this,
+        SLOT(OnFlowPropertiesChanged()));
+    timelineVBox->addWidget(flowOffsetTimeLine);
+    flowMainLayout->addLayout(timelineVBox);
+
+    connect(flowTextureBtn, SIGNAL(clicked(bool)), this, SLOT(OnFlowSpriteBtn()));
+    connect(flowTextureFolderBtn, SIGNAL(clicked(bool)), this, SLOT(OnFlowFolderBtn()));
+    connect(flowSpritePathLabel, SIGNAL(textChanged(const QString&)), this, SLOT(OnFlowTexturePathChanged(const QString&)));
+    connect(flowSpritePathLabel, SIGNAL(textEdited(const QString&)), this, SLOT(OnFlowSpritePathEdited(const QString&)));
+    flowSpritePathLabel->installEventFilter(this);
+}
+
+void EmitterLayerWidget::OnChangeSpriteButton(const DAVA::FilePath& initialFilePath, QLineEdit* spriteLabel, QString&& caption, DAVA::Function<void(const QString&)> pathEditFunc)
+{
+    QString startPath;
+    if (initialFilePath.IsEmpty())
+    {
+        ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+        DVASSERT(data != nullptr);
+        startPath = QString::fromStdString(data->GetParticlesGfxPath().GetAbsolutePathname());
+    }
+    else
+    {
+        startPath = QString::fromStdString(initialFilePath.GetDirectory().GetStringValue());
+        startPath = EmitterLayerWidgetDetails::ConvertSpritePathToPSD(startPath);
+    }
+
+    QString selectedPath = FileDialog::getOpenFileName(nullptr, caption, startPath, QString("Sprite File (*.psd)"));
+    std::string s = selectedPath.toStdString();
+    if (selectedPath.isEmpty())
+    {
+        return;
+    }
+
+    selectedPath.truncate(selectedPath.lastIndexOf('.'));
+    s = selectedPath.toStdString();
+    if (selectedPath == spriteLabel->text())
+    {
+        return;
+    }
+    s = selectedPath.toStdString();
+    spriteLabel->setText(selectedPath);
+
+    pathEditFunc(selectedPath);
+}
+
+void EmitterLayerWidget::OnChangeFolderButton(const DAVA::FilePath& initialFilePath, QLineEdit* pathLabel, DAVA::Function<void(const QString&)> pathEditFunc)
+{
+    if (initialFilePath.IsEmpty())
+    {
+        return;
+    }
+
+    QString startPath = QString::fromStdString(initialFilePath.GetDirectory().GetStringValue());
+    startPath = EmitterLayerWidgetDetails::ConvertSpritePathToPSD(startPath);
+
+    QString spriteName = QString::fromStdString(initialFilePath.GetBasename());
+
+    QString selectedPath = FileDialog::getExistingDirectory(nullptr, QString("Select particle sprites directory"), startPath);
+    if (selectedPath.isEmpty())
+    {
+        return;
+    }
+    selectedPath += "/";
+    selectedPath += spriteName;
+
+    pathLabel->setText(selectedPath);
+
+    pathEditFunc(selectedPath);
+}
+
 void EmitterLayerWidget::UpdateTooltip()
 {
     QFontMetrics fm = spritePathLabel->fontMetrics();
@@ -1045,6 +1279,101 @@ void EmitterLayerWidget::OnSpritePathEdited(const QString& text)
     OnLayerMaterialValueChanged();
 }
 
+void EmitterLayerWidget::OnFlowSpritePathEdited(const QString& text)
+{
+    ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+    DVASSERT(data != nullptr);
+    const DAVA::FilePath& particlesGfxPath = data->GetParticlesGfxPath();
+    const DAVA::FilePath spritePath = text.toStdString();
+    const DAVA::String relativePathForParticlesPath = spritePath.GetRelativePathname(particlesGfxPath);
+
+    if (relativePathForParticlesPath.find("../") != DAVA::String::npos)
+    {
+        QString message = QString("You've opened particle sprite from incorrect path (%1).\n Correct one is %2.").arg(QString::fromStdString(spritePath.GetDirectory().GetAbsolutePathname())).arg(QString::fromStdString(particlesGfxPath.GetAbsolutePathname()));
+
+        QMessageBox msgBox(QMessageBox::Warning, "Warning", message);
+        msgBox.exec();
+    }
+
+    OnFlowPropertiesChanged();
+}
+
+// TODO: merge with SpriteBtn().
+void EmitterLayerWidget::OnFlowSpriteBtn()
+{
+    OnChangeSpriteButton(layer->flowmapPath, flowSpritePathLabel, QString("Open flow texture"), std::bind(&EmitterLayerWidget::OnFlowSpritePathEdited, this, std::placeholders::_1));
+    /*QString startPath;
+    if (layer->flowmapPath.IsEmpty())
+    {
+        ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+        DVASSERT(data != nullptr);
+        startPath = QString::fromStdString(data->GetParticlesGfxPath().GetAbsolutePathname());
+    }
+    else
+    {
+        startPath = QString::fromStdString(layer->spritePath.GetDirectory().GetStringValue());
+        startPath = EmitterLayerWidgetDetails::ConvertSpritePathToPSD(startPath);
+    }
+
+    QString selectedPath = FileDialog::getOpenFileName(nullptr, QString("Open flow texture"), startPath, QString("Sprite File (*.psd)"));
+    std::string s = selectedPath.toStdString();
+    if (selectedPath.isEmpty())
+    {
+        return;
+    }
+
+    selectedPath.truncate(selectedPath.lastIndexOf('.'));
+    s = selectedPath.toStdString();
+    if (selectedPath == flowSpritePathLabel->text())
+    {
+        return;
+    }
+    s = selectedPath.toStdString();
+    flowSpritePathLabel->setText(selectedPath);
+
+    OnFlowSpritePathEdited(selectedPath);*/
+}
+
+void EmitterLayerWidget::OnFlowFolderBtn()
+{
+    OnChangeFolderButton(layer->flowmapPath, flowSpritePathLabel, std::bind(&EmitterLayerWidget::OnFlowSpritePathEdited, this, std::placeholders::_1));
+    /* if (layer->flowmapPath.IsEmpty())
+    {
+        return;
+    }
+
+    QString startPath = QString::fromStdString(layer->flowmapPath.GetDirectory().GetStringValue());
+    startPath = EmitterLayerWidgetDetails::ConvertSpritePathToPSD(startPath);
+
+    QString spriteName = QString::fromStdString(layer->flowmapPath.GetBasename());
+
+    QString selectedPath = FileDialog::getExistingDirectory(nullptr, QString("Select particle sprites directory"), startPath);
+    if (selectedPath.isEmpty())
+    {
+        return;
+    }
+    selectedPath += "/";
+    selectedPath += spriteName;
+
+    flowSpritePathLabel->setText(selectedPath);
+
+    OnSpritePathEdited(selectedPath); */
+}
+
+void EmitterLayerWidget::OnFlowTexturePathChanged(const QString& text)
+{
+    // TODO: updateTooltip().
+    QFontMetrics fm = flowSpritePathLabel->fontMetrics();
+    if (fm.width(flowSpritePathLabel->text()) >= flowSpritePathLabel->width())
+    {
+        flowSpritePathLabel->setToolTip(flowSpritePathLabel->text());
+    }
+    else
+    {
+        flowSpritePathLabel->setToolTip("");
+    }
+}
+
 void EmitterLayerWidget::FillLayerTypes()
 {
     DAVA::int32 layerTypes = sizeof(layerTypeMap) / sizeof(*layerTypeMap);
@@ -1070,6 +1399,9 @@ DAVA::int32 EmitterLayerWidget::LayerTypeToIndex(DAVA::ParticleLayer::eType laye
 
 void EmitterLayerWidget::SetSuperemitterMode(bool isSuperemitter)
 {
+    enableFlowCheckBox->setVisible(!isSuperemitter);
+    flowLayoutWidget->setVisible(!isSuperemitter && enableFlowCheckBox->isChecked());
+
     // Sprite has no sense for Superemitter.
     spriteBtn->setVisible(!isSuperemitter);
     spriteFolderBtn->setVisible(!isSuperemitter);

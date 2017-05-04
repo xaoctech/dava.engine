@@ -59,7 +59,7 @@ eBlendMode GetBlendModeByName(const String& blendStr)
 
 /*end of legacy compatibility code*/
 
-ParticleLayer::ParticleLayer()
+ParticleLayer::ParticleLayer() : flowSpeed(nullptr), flowOffset(nullptr)
 {
     life = 0;
     lifeVariation = 0;
@@ -131,6 +131,12 @@ ParticleLayer::~ParticleLayer()
 ParticleLayer* ParticleLayer::Clone()
 {
     ParticleLayer* dstLayer = new ParticleLayer();
+
+    if (flowSpeed)
+        dstLayer->flowSpeed.Set(flowSpeed->Clone());
+
+    if (flowOffset)
+        dstLayer->flowOffset.Set(flowOffset->Clone());
 
     if (life)
         dstLayer->life.Set(life->Clone());
@@ -238,6 +244,8 @@ ParticleLayer* ParticleLayer::Clone()
     dstLayer->scaleVelocityFactor = scaleVelocityFactor;
 
     dstLayer->spritePath = spritePath;
+    dstLayer->flowmapPath = flowmapPath;
+    dstLayer->enableFlow = enableFlow;
     dstLayer->activeLODS = activeLODS;
     dstLayer->isLong = isLong;
 
@@ -341,6 +349,8 @@ void ParticleLayer::UpdateLayerTime(float32 startTime, float32 endTime)
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(spinVariation).Get(), startTime, translateTime, endTime);
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(angle).Get(), startTime, translateTime, endTime);
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(angleVariation).Get(), startTime, translateTime, endTime);
+    UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(flowSpeed).Get(), startTime, translateTime, endTime);
+    UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(flowOffset).Get(), startTime, translateTime, endTime);
 }
 
 void ParticleLayer::SetSprite(const FilePath& path)
@@ -358,6 +368,13 @@ void ParticleLayer::SetPivotPoint(Vector2 pivot)
     layerPivotPoint = pivot;
     layerPivotSizeOffsets = Vector2(1 + std::abs(layerPivotPoint.x), 1 + std::abs(layerPivotPoint.y));
     layerPivotSizeOffsets *= 0.5f;
+}
+
+void ParticleLayer::SetFlowmap(const FilePath& spritePath_)
+{
+    flowmapPath = spritePath_;
+    if (type != TYPE_SUPEREMITTER_PARTICLES)
+        flowmap.reset(Sprite::Create(flowmapPath));
 }
 
 void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* node, bool preserveInheritPosition)

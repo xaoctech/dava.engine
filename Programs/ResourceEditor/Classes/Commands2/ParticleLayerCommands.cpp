@@ -50,3 +50,48 @@ DAVA::ParticleLayer* CommandChangeLayerMaterialProperties::GetLayer() const
 {
     return layer;
 }
+
+CommandChangeFlowProperties::CommandChangeFlowProperties(ParticleLayer* layer_, const FilePath& spritePath, bool enableFlow, RefPtr<PropertyLine<float32>> flowSpeed, RefPtr<PropertyLine<float32>> flowOffset)
+    :RECommand(CMDID_PARTICLE_LAYER_CHANGED_FLOW_VALUES, "Change Flow Properties")
+    , layer(layer_)
+{
+    newParams.spritePath = spritePath;
+    newParams.enableFlow = enableFlow;
+    newParams.flowSpeed = flowSpeed;
+    newParams.flowOffset = flowOffset;
+
+    DVASSERT(layer != nullptr);
+    if (layer != nullptr)
+    {
+        oldParams.spritePath = layer->spritePath;
+        oldParams.enableFlow = layer->enableFlow;
+        oldParams.flowSpeed = layer->flowSpeed;
+        oldParams.flowOffset = layer->flowOffset;
+    }
+}
+
+void CommandChangeFlowProperties::Undo()
+{
+    ApplyParams(oldParams);
+}
+
+void CommandChangeFlowProperties::Redo()
+{
+    ApplyParams(newParams);
+}
+
+DAVA::ParticleLayer* CommandChangeFlowProperties::GetLayer() const
+{
+    return layer;
+}
+
+void CommandChangeFlowProperties::ApplyParams(FlowParams& params)
+{
+    if (layer != nullptr)
+    {
+        layer->enableFlow = params.enableFlow;
+        layer->SetFlowmap(params.spritePath);
+        PropertyLineHelper::SetValueLine(layer->flowSpeed, params.flowSpeed);
+        PropertyLineHelper::SetValueLine(layer->flowOffset, params.flowOffset);
+    }
+}

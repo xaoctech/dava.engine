@@ -38,7 +38,30 @@ private:
     DAVA::ParticleLayer* layer = nullptr;
 };
 
+class CommandChangeFlowProperties : public RECommand
+{
+public:
+    CommandChangeFlowProperties(DAVA::ParticleLayer* layer_, const DAVA::FilePath& spritePath, bool enableFlow, RefPtr<PropertyLine<float32>> flowSpeed, RefPtr<PropertyLine<float32>> flowOffset);
 
+    void Undo() override;
+    void Redo() override;
 
+    DAVA::ParticleLayer* GetLayer() const;
+
+private:
+    struct FlowParams
+    {
+        DAVA::FilePath spritePath;
+        bool enableFlow = false;
+        DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> flowSpeed;
+        DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> flowOffset;
+    };
+
+    void ApplyParams(FlowParams& params);
+
+    FlowParams newParams;
+    FlowParams oldParams;
+    DAVA::ParticleLayer* layer = nullptr;
+};
 
 #endif //__PARTICLE_LAYER_COMMANDS_H__
