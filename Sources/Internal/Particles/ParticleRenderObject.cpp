@@ -102,19 +102,19 @@ void ParticleRenderObject::PrepareRenderData(Camera* camera)
         if (itGroupStart->material != itGroupCurr->material)
         {
             /*currMaterial = currGroup.material;
-			renderGroupCount++;
-			if (renderGroupCache.size()<renderGroupCount)
-			{
-				currRenderGroup = new ParticleRenderGroup();
-				currRenderGroup->renderBatch = new RenderBatch();
+            renderGroupCount++;
+            if (renderGroupCache.size()<renderGroupCount)
+            {
+                currRenderGroup = new ParticleRenderGroup();
+                currRenderGroup->renderBatch = new RenderBatch();
                 currRenderGroup->renderBatch->SetSortingOffset(sortingOffset);
-				renderGroupCache.push_back(currRenderGroup);
-			}	
-			else
-				currRenderGroup=renderGroupCache[renderGroupCount-1];
-			currRenderGroup->currParticlesCount = 0;
-			currRenderGroup->enableFrameBlend = currGroup.layer->enableFrameBlend;
-			currRenderGroup->renderBatch->SetMaterial(currMaterial);*/
+                renderGroupCache.push_back(currRenderGroup);
+            }	
+            else
+                currRenderGroup=renderGroupCache[renderGroupCount-1];
+            currRenderGroup->currParticlesCount = 0;
+            currRenderGroup->enableFrameBlend = currGroup.layer->enableFrameBlend;
+            currRenderGroup->renderBatch->SetMaterial(currMaterial);*/
 
             AppendParticleGroup(itGroupStart, itGroupCurr, particlesInGroup, currCamDirection, basisVectors);
             itGroupStart = itGroupCurr;

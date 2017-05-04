@@ -26,15 +26,15 @@ public:
     ParticleRenderObject(ParticleEffectData* effect);
     ~ParticleRenderObject();
 
-    virtual void PrepareToRender(Camera* camera);
+    void PrepareToRender(Camera* camera) override;
 
     void SetSortingOffset(uint32 offset);
 
-    virtual void BindDynamicParameters(Camera* camera);
-    virtual void RecalcBoundingBox()
+    void BindDynamicParameters(Camera* camera) override;
+    void RecalcBoundingBox() override
     {
     }
-    virtual void RecalculateWorldBoundingBox()
+    void RecalculateWorldBoundingBox() override
     {
         worldBBox = bbox;
     }
