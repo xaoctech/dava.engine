@@ -3,6 +3,7 @@
 #include "Render/Renderer.h"
 #include "Scene3D/SceneFileV2.h"
 #include "Render/Highlevel/GeometryOctTree.h"
+#include "Logger/Logger.h"
 
 namespace DAVA
 {
