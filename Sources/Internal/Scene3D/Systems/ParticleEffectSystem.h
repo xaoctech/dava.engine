@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_SCENE3D_PARTICLEEFFECTSYSTEM_H__
-#define __DAVAENGINE_SCENE3D_PARTICLEEFFECTSYSTEM_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "Scene3D/Systems/BaseProcessSystem.h"
@@ -58,13 +57,46 @@ private:
     Vector<ParticleEffectComponent*> activeComponents;
 
 private: //materials stuff
+    struct MaterialData
+    {
+        Texture* texture = nullptr;
+        bool enableFog = false;
+        bool enableFrameBlend = false;
+        Texture* flowmap = nullptr;
+        bool enableFlow = false;
+
+        eBlending blending = BLENDING_ALPHABLEND;
+
+        MaterialData(Texture* texture_, bool enableFog_, bool enableFrameBlend_, Texture* flowmap_, bool enableFlow_, eBlending blending_)
+            : texture(texture_)
+            , enableFog(enableFog_)
+            , enableFrameBlend(enableFrameBlend_)
+            , flowmap(flowmap_)
+            , enableFlow(enableFlow_)
+            , blending(blending_)
+        {
+        }
+
+        bool operator ==(const MaterialData& rhs)
+        {
+            return texture == rhs.texture
+                && enableFog == rhs.enableFog
+                && enableFrameBlend == rhs.enableFrameBlend
+                && flowmap == rhs.flowmap
+                && enableFlow == rhs.enableFlow
+                && blending == rhs.blending;
+        }
+    };
+
     NMaterial* particleBaseMaterial;
+    Vector<std::pair<MaterialData, NMaterial*>> prebultMaterialsVector;
     Map<uint64, NMaterial*> materialMap;
-    NMaterial* GetMaterial(Texture* texture, bool enableFog, bool enableFrameBlend, eBlending blending);
+    NMaterial* GetMaterial(MaterialData&& materialData);
 
     bool allowLodDegrade;
 
     bool is2DMode;
+
 };
 
 inline const Map<uint64, NMaterial*>& ParticleEffectSystem::GetMaterialInstances() const
@@ -81,5 +113,3 @@ inline bool ParticleEffectSystem::GetAllowLodDegrade() const
     return allowLodDegrade;
 }
 };
-
-#endif //__DAVAENGINE_SCENE3D_PARTICLEEFFECTSYSTEM_H__

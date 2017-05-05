@@ -84,6 +84,7 @@ public:
     static const FastName TEXTURE_TANGENTSPACE;
     static const FastName TEXTURE_DECALMASK;
     static const FastName TEXTURE_DECALTEXTURE;
+    static const FastName TEXTURE_FLOW;
 
     static const FastName TEXTURE_DYNAMIC_REFLECTION;
     static const FastName TEXTURE_DYNAMIC_REFRACTION;
@@ -172,6 +173,7 @@ public:
     static const FastName FLAG_SKINNING;
 
     static const FastName FLAG_FLOWMAP_SKY;
+    static const FastName FLAG_PARTICLES_FLOWMAP;
 
     static const FastName FLAG_LIGHTMAPONLY;
     static const FastName FLAG_TEXTUREONLY; //VI: this flag is for backward compatibility with old materials. See FLAG_ALBEDOONLY

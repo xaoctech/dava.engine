@@ -9,6 +9,7 @@
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Lod/LodComponent.h"
 #include "Render/Material/NMaterialNames.h"
+#include "Render/RHI/rhi_ShaderSource.h"
 #include "Particles/ParticleRenderObject.h"
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
@@ -18,48 +19,45 @@
 
 namespace DAVA
 {
-NMaterial* ParticleEffectSystem::GetMaterial(Texture* texture, bool enableFog, bool enableFrameBlend, eBlending blending)
+NMaterial* ParticleEffectSystem::GetMaterial(MaterialData&& materialData)
 {
-    if (!texture) //for superemitter particles eg
+    if (!materialData.texture) //for superemitter particles eg
         return nullptr;
 
-    uint64 materialKey = blending;
-    if (enableFog)
-        materialKey += 1 << 4;
-    if (enableFrameBlend)
-        materialKey += 1 << 5;
-    materialKey += static_cast<uint32>(texture->handle) << 6; //-V629 uint32->uint64 is ok
-
-    Map<uint64, NMaterial*>::iterator it = materialMap.find(materialKey);
-    if (it != materialMap.end()) //return existing
+    for (int i = 0; i < prebultMaterialsVector.size(); ++i)
     {
-        return (*it).second;
+        if (prebultMaterialsVector[i].first == materialData)
+            return prebultMaterialsVector[i].second;
     }
-    else //create new
+
+    NMaterial* material = new NMaterial();
+    material->SetParent(particleBaseMaterial);
+
+    if (materialData.enableFrameBlend)
+        material->AddFlag(NMaterialFlagName::FLAG_FRAME_BLEND, 1);
+
+    if ((!materialData.enableFog) || (is2DMode)) //inverse logic to suspend vertex fog inherited from global material
     {
-        NMaterial* material = new NMaterial();
-        material->SetParent(particleBaseMaterial);
-
-        if (enableFrameBlend)
-            material->AddFlag(NMaterialFlagName::FLAG_FRAME_BLEND, 1);
-
-        if ((!enableFog) || (is2DMode)) //inverse logic to suspend vertex fog inherited from global material
-        {
-            material->AddFlag(NMaterialFlagName::FLAG_VERTEXFOG, 0);
-        }
-
-        if (is2DMode)
-            material->AddFlag(NMaterialFlagName::FLAG_FORCE_2D_MODE, 1);
-
-        material->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, texture);
-        material->AddFlag(NMaterialFlagName::FLAG_BLENDING, blending);
-
-        materialMap[materialKey] = material;
-
-        material->PreBuildMaterial(PASS_FORWARD);
-
-        return material;
+        material->AddFlag(NMaterialFlagName::FLAG_VERTEXFOG, 0);
     }
+
+    if (is2DMode)
+        material->AddFlag(NMaterialFlagName::FLAG_FORCE_2D_MODE, 1);
+
+    if (materialData.enableFlow)
+    {
+        material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_FLOWMAP, 1);
+        material->AddTexture(NMaterialTextureName::TEXTURE_FLOW, materialData.flowmap);
+    }
+
+    material->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, materialData.texture);
+    material->AddFlag(NMaterialFlagName::FLAG_BLENDING, materialData.blending);
+
+    prebultMaterialsVector.push_back(std::make_pair(materialData, material));
+
+    material->PreBuildMaterial(PASS_FORWARD);
+
+    return material;
 }
 
 ParticleEffectSystem::ParticleEffectSystem(Scene* scene, bool _is2DMode)
@@ -94,7 +92,7 @@ void ParticleEffectSystem::SetGlobalMaterial(NMaterial* material)
     const static uint32 FRAME_BLEND_MASK = 1;
     const static uint32 FOG_MASK = 2;
     const static uint32 BLEND_SHIFT = 2;
-    for (uint32 i = 0; i < 12; i++)
+    for (uint32 i = 0; i < 12; i++) // TODO^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     {
         bool enableFrameBlend = (i & FRAME_BLEND_MASK) == FRAME_BLEND_MASK;
         bool enableFog = (i & FOG_MASK) == FOG_MASK;
@@ -120,7 +118,8 @@ void ParticleEffectSystem::PrebuildMaterials(ParticleEffectComponent* component)
         {
             if (layer->sprite && (layer->type != ParticleLayer::TYPE_SUPEREMITTER_PARTICLES))
             {
-                GetMaterial(layer->sprite->GetTexture(0), layer->enableFog, layer->enableFrameBlend, layer->blending);
+                DAVA::Texture* flowmap = layer->flowmap.get() != nullptr ? layer->flowmap->GetTexture(0) : nullptr;
+                GetMaterial({ layer->sprite->GetTexture(0), layer->enableFog, layer->enableFrameBlend, flowmap, layer->enableFlow, layer->blending });
             }
         }
     }
@@ -145,7 +144,8 @@ void ParticleEffectSystem::RunEmitter(ParticleEffectComponent* effect, ParticleE
 
         if (layer->sprite && (layer->type != ParticleLayer::TYPE_SUPEREMITTER_PARTICLES))
         {
-            group.material = GetMaterial(layer->sprite->GetTexture(0), layer->enableFog, layer->enableFrameBlend, layer->blending);
+            DAVA::Texture* flowmap = layer->flowmap.get() != nullptr ? layer->flowmap->GetTexture(0) : nullptr;
+            group.material = GetMaterial({ layer->sprite->GetTexture(0), layer->enableFog, layer->enableFrameBlend, flowmap, layer->enableFlow, layer->blending });
         }
 
         effect->effectData.groups.push_back(group);
@@ -510,8 +510,19 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
 
             if (group.layer->enableFlow && group.layer->flowmap)
             {
-                current->flowOffset = 0.2f;
-                current->flowSpeed = 0.2f;
+                NMaterial* mat = group.material;
+                if (mat != nullptr)
+                {
+                    float32 flowSpeed = 0.0f;
+                    float32 flowOffset = 0.0f;
+                    if (group.layer->flowSpeed != nullptr)
+                        flowSpeed = group.layer->flowSpeed->GetValue(overLifeTime);
+                    if (group.layer->flowOffset != nullptr)
+                        flowOffset = group.layer->flowOffset->GetValue(overLifeTime);
+
+                    current->flowSpeed = flowSpeed;
+                    current->flowOffset = flowOffset;
+                }
             }
 
             prev = current;

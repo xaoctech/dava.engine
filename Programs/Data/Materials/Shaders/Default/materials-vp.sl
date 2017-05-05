@@ -21,8 +21,12 @@ vertex_in
         #endif
     #endif
 
-    #if MATERIAL_DECAL || ( MATERIAL_LIGHTMAP  && VIEW_DIFFUSE ) || FRAME_BLEND || ALPHA_MASK
+    #if MATERIAL_DECAL || ( MATERIAL_LIGHTMAP  && VIEW_DIFFUSE ) || ALPHA_MASK
     float2 texcoord1 : TEXCOORD1;
+    #endif
+
+    #if FRAME_BLEND
+    float3 texcoord1 : TEXCOORD1; // uv1.xy + time
     #endif
 
     #if VERTEX_COLOR
@@ -50,10 +54,6 @@ vertex_in
     
     #if WIND_ANIMATION
     float texcoord5 : TEXCOORD5;
-    #endif
-
-    #if FRAME_BLEND
-    float texcoord3 : TEXCOORD3;
     #endif
 };
 
@@ -676,19 +676,16 @@ vertex_out vp_main( vertex_in input )
 
 
 #if MATERIAL_DECAL || ( MATERIAL_LIGHTMAP  && VIEW_DIFFUSE ) || FRAME_BLEND || ALPHA_MASK
-    
-    #if SETUP_LIGHTMAP        
-        output.varTexCoord1 = input.texcoord1;
-    #elif ( MATERIAL_LIGHTMAP  && VIEW_DIFFUSE )
-        output.varTexCoord1 = uvScale*input.texcoord1 + uvOffset;
+    #if ( MATERIAL_LIGHTMAP && VIEW_DIFFUSE )
+        output.varTexCoord1 = uvScale*input.texcoord1.xy + uvOffset;
     #else
-        output.varTexCoord1 = input.texcoord1;
+        output.varTexCoord1 = input.texcoord1.xy;
     #endif
 #endif
 
 
 #if FRAME_BLEND
-    output.varTime = input.texcoord3;
+    output.varTime = input.texcoord1.z;
 #endif
 
 #if FORCE_2D_MODE
@@ -697,7 +694,3 @@ vertex_out vp_main( vertex_in input )
 
     return output;
 }
-
-
-
-

@@ -17,9 +17,9 @@ ParticleRenderObject::ParticleRenderObject(ParticleEffectData* effect)
     layout.AddElement(rhi::VS_TEXCOORD, 0, rhi::VDT_FLOAT, 2);
     layout.AddElement(rhi::VS_COLOR, 0, rhi::VDT_UINT8N, 4);
     regularVertexLayoutId = rhi::VertexLayout::UniqueId(layout);
-    layout.AddElement(rhi::VS_TEXCOORD, 1, rhi::VDT_FLOAT, 2);
-    layout.AddElement(rhi::VS_TEXCOORD, 3, rhi::VDT_FLOAT, 1);
+    layout.AddElement(rhi::VS_TEXCOORD, 1, rhi::VDT_FLOAT, 3);
     frameBlendVertexLayoutId = rhi::VertexLayout::UniqueId(layout);
+
 
     type = RenderObject::TYPE_PARTICLE_EMITTER;
 }
@@ -145,8 +145,7 @@ struct ParticleVertex
     Vector3 pos;
     Vector2 uv;
     uint32 color;
-    Vector2 uv1;
-    float32 time;
+    Vector3 uv1AndTime;
 };
 
 //void ParticleRenderObject::AppendParticleGroup(const ParticleGroup &group, ParticleRenderGroup *renderGroup, const Vector3& cameraDirection)
@@ -186,7 +185,7 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
 
     uint32 vertexStride = (3 + 2 + 1) * sizeof(float); //vertex*3 + texcoord*2 + color * 1;
     if (begin->layer->enableFrameBlend)
-        vertexStride += (2 + 1) * sizeof(float); //texcoord2 * 2 + time * 1;
+        vertexStride += (3) * sizeof(float); //texcoord2 * 3;
 
     uint32 verteciesToAllocate = particlesCount * 4;
     DynamicBufferAllocator::AllocResultVB target = DynamicBufferAllocator::AllocateVertexBuffer(vertexStride, verteciesToAllocate);
@@ -297,9 +296,9 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
 
                     for (int32 i = 0; i < 4; i++)
                     {
-                        verts[i]->uv1.x = *(pT++);
-                        verts[i]->uv1.y = *(pT++);
-                        verts[i]->time = current->animTime;
+                        verts[i]->uv1AndTime.x = *(pT++);
+                        verts[i]->uv1AndTime.y = *(pT++);
+                        verts[i]->uv1AndTime.z = current->animTime;
                     }
                 }
                 currpos += particleStride;
