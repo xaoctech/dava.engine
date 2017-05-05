@@ -21,7 +21,7 @@ namespace DAVA
 NMaterial* ParticleEffectSystem::GetMaterial(Texture* texture, bool enableFog, bool enableFrameBlend, eBlending blending)
 {
     if (!texture) //for superemitter particles eg
-        return NULL;
+        return nullptr;
 
     uint64 materialKey = blending;
     if (enableFog)
@@ -76,6 +76,7 @@ ParticleEffectSystem::ParticleEffectSystem(Scene* scene, bool _is2DMode)
     particleBaseMaterial = new NMaterial();
     particleBaseMaterial->SetFXName(NMaterialName::PARTICLES);
 }
+
 ParticleEffectSystem::~ParticleEffectSystem()
 {
     for (Map<uint64, NMaterial *>::iterator it = materialMap.begin(), e = materialMap.end(); it != e; ++it)
@@ -139,11 +140,13 @@ void ParticleEffectSystem::RunEmitter(ParticleEffectComponent* effect, ParticleE
         group.spawnPosition = spawnPosition;
         group.visibleLod = isLodActive;
         group.positionSource = positionSource;
-        group.loopLyaerStartTime = group.layer->startTime;
+        group.loopLayerStartTime = group.layer->startTime;
         group.loopDuration = group.layer->endTime;
 
         if (layer->sprite && (layer->type != ParticleLayer::TYPE_SUPEREMITTER_PARTICLES))
+        {
             group.material = GetMaterial(layer->sprite->GetTexture(0), layer->enableFog, layer->enableFrameBlend, layer->blending);
+        }
 
         effect->effectData.groups.push_back(group);
     }
@@ -221,6 +224,7 @@ void ParticleEffectSystem::AddEntity(Entity* entity)
     ParticleEffectComponent* effect = static_cast<ParticleEffectComponent*>(entity->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
     PrebuildMaterials(effect);
 }
+
 void ParticleEffectSystem::AddComponent(Entity* entity, Component* component)
 {
     ParticleEffectComponent* effect = static_cast<ParticleEffectComponent*>(component);
@@ -233,6 +237,7 @@ void ParticleEffectSystem::RemoveEntity(Entity* entity)
     if (effect && effect->state != ParticleEffectComponent::STATE_STOPPED)
         RemoveFromActive(effect);
 }
+
 void ParticleEffectSystem::RemoveComponent(Entity* entity, Component* component)
 {
     ParticleEffectComponent* effect = static_cast<ParticleEffectComponent*>(component);
@@ -349,12 +354,12 @@ void ParticleEffectSystem::UpdateActiveLod(ParticleEffectComponent* effect)
                     delete current;
                     current = next;
                 }
-                group.head = NULL;
+                group.head = nullptr;
             }
             else if (group.layer->degradeStrategy == ParticleLayer::DEGRADE_CUT_PARTICLES)
             {
                 Particle* current = group.head;
-                Particle* prev = NULL;
+                Particle* prev = nullptr;
                 int32 i = 0;
                 while (current)
                 {
@@ -404,9 +409,9 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
         if ((!group.finishingGroup) && (group.layer->isLooped) && (currLoopTime > group.loopDuration)) //restart loop
         {
             group.loopStartTime = group.time;
-            group.loopLyaerStartTime = group.layer->deltaTime + group.layer->deltaVariation * static_cast<float32>(Random::Instance()->RandFloat());
-            group.loopDuration = group.loopLyaerStartTime + (group.layer->endTime - group.layer->startTime) + group.layer->loopVariation * static_cast<float32>(Random::Instance()->RandFloat());
-            currLoopTime = 0;
+            group.loopLayerStartTime = group.layer->deltaTime + group.layer->deltaVariation * static_cast<float32>(Random::Instance()->RandFloat());
+            group.loopDuration = group.loopLayerStartTime + (group.layer->endTime - group.layer->startTime) + group.layer->loopVariation * static_cast<float32>(Random::Instance()->RandFloat());
+            currLoopTime = 0; 
         }
 
         //prepare forces as they will now actually change in time even for already generated particles
@@ -428,14 +433,14 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
             }
         }
         Particle* current = group.head;
-        Particle* prev = 0;
+        Particle* prev = nullptr;
         while (current)
         {
             current->life += dt;
             if (current->life >= current->lifeTime)
             {
                 Particle* next = current->next;
-                if (prev == 0)
+                if (prev == nullptr)
                     group.head = next;
                 else
                     prev->next = next;
@@ -454,6 +459,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
             if (group.layer->spinOverLife)
                 currSpinOverLife = group.layer->spinOverLife->GetValue(overLifeTime);
             current->angle += current->spin * currSpinOverLife * dt;
+
             if (forcesCount)
             {
                 Vector3 acceleration;
@@ -501,11 +507,18 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
                     }
                 }
             }
+
+            if (group.layer->enableFlow && group.layer->flowmap)
+            {
+                current->flowOffset = 0.2f;
+                current->flowSpeed = 0.2f;
+            }
+
             prev = current;
             current = current->next;
         }
         bool allowParticleGeneration = !group.finishingGroup;
-        allowParticleGeneration &= (currLoopTime > group.loopLyaerStartTime);
+        allowParticleGeneration &= (currLoopTime > group.loopLayerStartTime);
         allowParticleGeneration &= group.visibleLod;
         if (allowParticleGeneration)
         {
@@ -625,6 +638,9 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleEffectComponent* eff
     {
         particle->frame = static_cast<int32>(static_cast<float32>(Random::Instance()->RandFloat()) * static_cast<float32>(group.layer->sprite->GetFrameCount()));
     }
+
+    particle->flowSpeed = 0.2f;
+    particle->flowOffset = 0.2f;
 
     PrepareEmitterParameters(particle, group, worldTransform);
 

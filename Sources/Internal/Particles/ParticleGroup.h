@@ -22,7 +22,7 @@ struct ParticleGroup
 
     float32 time = 0.0f;
     float32 loopStartTime = 0.0f;
-    float32 loopLyaerStartTime = 0.0f;
+    float32 loopLayerStartTime = 0.0f;
     float32 loopDuration = 0.0f;
     float32 particlesToGenerate = 0.0f;
 
