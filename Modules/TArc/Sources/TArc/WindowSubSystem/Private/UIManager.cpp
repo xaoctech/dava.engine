@@ -461,6 +461,8 @@ struct UIManager::Impl : public QObject
     Array<Function<void(const PanelKey&, const WindowKey&, QWidget*)>, PanelKey::TypesCount> addFunctions;
     UnorderedMap<WindowKey, UIManagerDetail::MainWindowInfo> windows;
     PropertiesItem propertiesHolder;
+    ContextAccessor* accessor = nullptr;
+
     bool initializationFinished = false;
     Set<WaitHandle*> activeWaitDialogues;
     ClientModule* currentModule = nullptr;
@@ -474,9 +476,10 @@ struct UIManager::Impl : public QObject
 
     Map<ClientModule*, ModuleResources> moduleResourcesMap;
 
-    Impl(UIManager::Delegate* delegate, PropertiesItem&& givenPropertiesHolder)
+    Impl(ContextAccessor* accessor_, UIManager::Delegate* delegate, PropertiesItem&& givenPropertiesHolder)
         : managerDelegate(delegate)
         , propertiesHolder(std::move(givenPropertiesHolder))
+        , accessor(accessor_)
     {
         addFunctions[PanelKey::DockPanel] = MakeFunction(this, &UIManager::Impl::AddDockPanel);
         addFunctions[PanelKey::CentralPanel] = MakeFunction(this, &UIManager::Impl::AddCentralPanel);
@@ -575,7 +578,10 @@ protected:
         DVASSERT(dockPanelInfo.title.isEmpty() == false, "Provide correct value of DockPanelInfo::title");
         const QString& text = dockPanelInfo.title;
 
-        QDockWidget* dockWidget = new QDockWidget(text, mainWindow);
+        DockPanel::Params params;
+        params.accessor = accessor;
+        params.descriptors = dockPanelInfo.descriptors;
+        DockPanel* dockWidget = new DockPanel(params, text, mainWindow);
         dockWidget->setObjectName(text);
 
         QAction* dockWidgetAction = dockWidget->toggleViewAction();
@@ -663,8 +669,8 @@ protected:
     }
 };
 
-UIManager::UIManager(Delegate* delegate, PropertiesItem&& holder)
-    : impl(new Impl(delegate, std::move(holder)))
+UIManager::UIManager(ContextAccessor* accessor, Delegate* delegate, PropertiesItem&& holder)
+    : impl(new Impl(accessor, delegate, std::move(holder)))
 {
 }
 

@@ -479,7 +479,7 @@ public:
         Impl::OnLoopStarted();
 
         PlatformApi::Qt::GetApplication()->setWindowIcon(QIcon(":/icons/appIcon.ico"));
-        uiManager.reset(new UIManager(this, propertiesHolder->CreateSubHolder("UIManager")));
+        uiManager.reset(new UIManager(this, this, propertiesHolder->CreateSubHolder("UIManager")));
         DVASSERT(controllerModule != nullptr, "Controller Module hasn't been registered");
         for (std::unique_ptr<ClientModule>& module : modules)
         {

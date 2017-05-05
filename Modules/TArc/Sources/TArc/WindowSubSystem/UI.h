@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TArc/DataProcessing/DataWrapper.h"
+#include "TArc/DataProcessing/Common.h"
 
 #include <Functional/Function.h>
 #include <Base/Result.h>
@@ -79,6 +80,13 @@ struct DockPanelInfo
     ActionPlacementInfo actionPlacementInfo;
     bool tabbed = true;
     Qt::DockWidgetArea area = Qt::RightDockWidgetArea;
+
+    enum class Fields
+    {
+        Title, // QString
+        IsActive // bool
+    };
+    Map<Fields, FieldDescriptor> descriptors;
 };
 
 struct CentralPanelInfo
