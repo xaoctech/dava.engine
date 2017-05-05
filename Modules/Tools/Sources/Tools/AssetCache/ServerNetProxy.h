@@ -21,6 +21,7 @@ public:
 
     virtual void OnAddToCache(Net::IChannel* channel, const CacheItemKey& key, CachedItemValue&& value) = 0;
     virtual void OnRequestedFromCache(Net::IChannel* channel, const CacheItemKey& key) = 0;
+    virtual void OnChunkRequestedFromCache(Net::IChannel* channel, const CacheItemKey& key, uint32 chunkNumber) = 0;
     virtual void OnRemoveFromCache(Net::IChannel* channel, const CacheItemKey& key) = 0;
     virtual void OnClearCache(Net::IChannel* channel) = 0;
     virtual void OnWarmingUp(Net::IChannel* channel, const CacheItemKey& key) = 0;
@@ -46,7 +47,8 @@ public:
     bool SendAddedToCache(Net::IChannel* channel, const CacheItemKey& key, bool added);
     bool SendRemovedFromCache(Net::IChannel* channel, const CacheItemKey& key, bool removed);
     bool SendCleared(Net::IChannel* channel, bool cleared);
-    bool SendData(Net::IChannel* channel, const CacheItemKey& key, const CachedItemValue& value);
+    bool SendDataInfo(Net::IChannel* channel, const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks);
+    bool SendChunk(Net::IChannel* channel, const CacheItemKey& key, uint32 chunkNumber, const Vector<uint8>& chunkData);
     bool SendStatus(Net::IChannel* channel);
 
     //Net::IChannelListener

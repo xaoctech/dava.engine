@@ -52,12 +52,18 @@ public:
     static void PacketSent(const uint8* buffer, size_t length);
 
 protected:
-    CachePacket(ePacketID type, bool createBuffer);
+    enum eBufferCreateMode
+    {
+         CREATE_SENDING_BUFFER,
+         DO_NOT_CREATE_SENDING_BUFFER
+    };
+
+    CachePacket(ePacketID type, eBufferCreateMode);
 
     static std::unique_ptr<CachePacket> CreateByType(ePacketID type);
 
     void WriteHeader(File* file) const;
-    virtual bool Load(File* file) = 0;
+    virtual bool DeserializeFromBuffer(File* buffer) = 0;
 
 public:
     ePacketID type = PACKET_UNKNOWN;
@@ -67,176 +73,174 @@ private:
     static Map<const uint8*, ScopedPtr<DynamicMemoryFile>> sendingPackets;
 };
 
+//////////////////////////////////////////////////////////////////////////
 class AddRequestPacket : public CachePacket
 {
 public:
-    AddRequestPacket()
-        : CachePacket(PACKET_ADD_REQUEST, false)
-    {
-    }
+    AddRequestPacket();
     AddRequestPacket(const CacheItemKey& key, const CachedItemValue& value);
 
 protected:
-    bool Load(File* file) override;
+    bool DeserializeFromBuffer(File* file) override;
 
 public:
     CacheItemKey key;
     CachedItemValue value;
 };
 
+//////////////////////////////////////////////////////////////////////////
 class AddResponsePacket : public CachePacket
 {
 public:
-    AddResponsePacket()
-        : CachePacket(PACKET_ADD_RESPONSE, false)
-    {
-    }
+    AddResponsePacket();
     AddResponsePacket(const CacheItemKey& key, bool added);
 
 protected:
-    bool Load(File* file) override;
+    bool DeserializeFromBuffer(File* file) override;
 
 public:
     CacheItemKey key;
     bool added = false;
 };
 
+//////////////////////////////////////////////////////////////////////////
 class GetRequestPacket : public CachePacket
 {
 public:
-    GetRequestPacket()
-        : CachePacket(PACKET_GET_REQUEST, false)
-    {
-    }
+    GetRequestPacket();
     GetRequestPacket(const CacheItemKey& key);
 
 protected:
-    bool Load(File* file) override;
+    bool DeserializeFromBuffer(File* buffer) override;
 
 public:
     CacheItemKey key;
 };
 
+//////////////////////////////////////////////////////////////////////////
 class GetResponsePacket : public CachePacket
 {
 public:
-    GetResponsePacket()
-        : CachePacket(PACKET_GET_RESPONSE, false)
-    {
-    }
-    GetResponsePacket(const CacheItemKey& key, const CachedItemValue& value);
+    GetResponsePacket();
+    GetResponsePacket(const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks);
 
 protected:
-    bool Load(File* file) override;
+    bool DeserializeFromBuffer(File* file) override;
 
 public:
     CacheItemKey key;
-    CachedItemValue value;
+    uint64 dataSize = 0;
+    uint32 numOfChunks = 0;
 };
 
+//////////////////////////////////////////////////////////////////////////
+class GetChunkRequestPacket : public CachePacket
+{
+public:
+    GetChunkRequestPacket();
+    GetChunkRequestPacket(const CacheItemKey& key, uint32 chunkNumber);
+
+protected:
+    bool DeserializeFromBuffer(File* file) override;
+
+public:
+    CacheItemKey key;
+    uint32 chunkNumber = 0;
+};
+
+//////////////////////////////////////////////////////////////////////////
+class GetChunkResponsePacket : public CachePacket
+{
+public:
+    GetChunkResponsePacket();
+    GetChunkResponsePacket(const CacheItemKey& key, uint32 chunkNumber, const Vector<uint8>& chunkData);
+
+protected:
+    bool DeserializeFromBuffer(File* file) override;
+
+public:
+    CacheItemKey key;
+    uint32 chunkNumber = 0;
+    Vector<uint8> chunkData;
+};
+
+//////////////////////////////////////////////////////////////////////////
 class WarmupRequestPacket : public CachePacket
 {
 public:
-    WarmupRequestPacket()
-        : CachePacket(PACKET_WARMING_UP_REQUEST, false)
-    {
-    }
+    WarmupRequestPacket();
     WarmupRequestPacket(const CacheItemKey& key);
 
 protected:
-    bool Load(File* file) override;
+    bool DeserializeFromBuffer(File* file) override;
 
 public:
     CacheItemKey key;
 };
 
+//////////////////////////////////////////////////////////////////////////
 struct StatusRequestPacket : public CachePacket
 {
-    StatusRequestPacket()
-        : CachePacket(PACKET_STATUS_REQUEST, true)
-    {
-        WriteHeader(serializationBuffer);
-    }
+    StatusRequestPacket();
 
 protected:
-    bool Load(File* file) override
-    {
-        return true;
-    }
+    bool DeserializeFromBuffer(File* file) override;
 };
 
+//////////////////////////////////////////////////////////////////////////
 struct StatusResponsePacket : public CachePacket
 {
-    StatusResponsePacket()
-        : CachePacket(PACKET_STATUS_RESPONSE, true)
-    {
-        WriteHeader(serializationBuffer);
-    }
+    StatusResponsePacket();
 
 protected:
-    bool Load(File* file) override
-    {
-        return true;
-    }
+    bool DeserializeFromBuffer(File* file) override;
 };
 
+//////////////////////////////////////////////////////////////////////////
 struct RemoveRequestPacket : public CachePacket
 {
-    RemoveRequestPacket()
-        : CachePacket(PACKET_REMOVE_REQUEST, false)
-    {
-    }
+    RemoveRequestPacket();
     RemoveRequestPacket(const CacheItemKey& key);
 
 protected:
-    bool Load(File* file) override;
+    bool DeserializeFromBuffer(File* file) override;
 
 public:
     CacheItemKey key;
 };
 
+//////////////////////////////////////////////////////////////////////////
 class RemoveResponsePacket : public CachePacket
 {
 public:
-    RemoveResponsePacket()
-        : CachePacket(PACKET_REMOVE_RESPONSE, false)
-    {
-    }
+    RemoveResponsePacket();
     RemoveResponsePacket(const CacheItemKey& key, bool removed);
 
 protected:
-    bool Load(File* file) override;
+    bool DeserializeFromBuffer(File* file) override;
 
 public:
     CacheItemKey key;
     bool removed = false;
 };
 
+//////////////////////////////////////////////////////////////////////////
 struct ClearRequestPacket : public CachePacket
 {
-    ClearRequestPacket()
-        : CachePacket(PACKET_CLEAR_REQUEST, true)
-    {
-        WriteHeader(serializationBuffer);
-    }
+    ClearRequestPacket();
 
 protected:
-    bool Load(File* file) override
-    {
-        return true;
-    }
+    bool DeserializeFromBuffer(File* file) override;
 };
 
+//////////////////////////////////////////////////////////////////////////
 struct ClearResponsePacket : public CachePacket
 {
-    ClearResponsePacket()
-        : CachePacket(PACKET_CLEAR_RESPONSE, false)
-    {
-    }
+    ClearResponsePacket();
     ClearResponsePacket(bool cleared);
 
 protected:
-    bool Load(File* file) override;
+    bool DeserializeFromBuffer(File* file) override;
 
 public:
     bool cleared = false;

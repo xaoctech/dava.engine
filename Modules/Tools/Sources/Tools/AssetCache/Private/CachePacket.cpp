@@ -9,9 +9,31 @@ namespace DAVA
 namespace AssetCache
 {
 const uint16 PACKET_HEADER = 0xACCA;
-const uint8 PACKET_VERSION = 2;
+const uint8 PACKET_VERSION = 3;
 
 Map<const uint8*, ScopedPtr<DynamicMemoryFile>> CachePacket::sendingPackets;
+
+namespace CachePacketDetails
+{
+bool ReadFromBuffer(File* buffer, CacheItemKey& key)
+{
+    const uint32 keySize = static_cast<uint32>(key.size());
+    return (buffer->Read(key.data(), keySize) == keySize);
+};
+
+template <class T>
+bool ReadFromBuffer(File* buffer, T& value)
+{
+    return (buffer->Read(&value) == sizeof(value));
+};
+
+bool ReadFromBuffer(File* buffer, Vector<uint8>& data, uint32 dataSize)
+{
+    data.resize(dataSize);
+    return (buffer->Read(data.data(), dataSize) == dataSize);
+};
+
+}
 
 bool CachePacket::SendTo(Net::IChannel* channel)
 {
@@ -63,7 +85,7 @@ CachePacket::CreateResult CachePacket::Create(const uint8* rawdata, uint32 lengt
         return ERR_INCORRECT_DATA;
     }
 
-    bool loaded = packet->Load(buffer);
+    bool loaded = packet->DeserializeFromBuffer(buffer);
     if (!loaded)
     {
         Logger::Error("[CachePacket::%s] Cannot load packet (type: %d)", __FUNCTION__, header.packetType);
@@ -86,6 +108,10 @@ std::unique_ptr<CachePacket> CachePacket::CreateByType(ePacketID type)
         return std::unique_ptr<CachePacket>(new GetRequestPacket());
     case PACKET_GET_RESPONSE:
         return std::unique_ptr<CachePacket>(new GetResponsePacket());
+    case PACKET_GET_CHUNK_REQUEST:
+        return std::unique_ptr<CachePacket>(new GetChunkRequestPacket());
+    case PACKET_GET_CHUNK_RESPONSE:
+        return std::unique_ptr<CachePacket>(new GetChunkResponsePacket());
     case PACKET_WARMING_UP_REQUEST:
         return std::unique_ptr<CachePacket>(new WarmupRequestPacket());
     case PACKET_STATUS_REQUEST:
@@ -110,11 +136,11 @@ std::unique_ptr<CachePacket> CachePacket::CreateByType(ePacketID type)
     return nullptr;
 }
 
-CachePacket::CachePacket(ePacketID type_, bool createBuffer)
+CachePacket::CachePacket(ePacketID type_, eBufferCreateMode mode)
     : type(type_)
     , serializationBuffer(nullptr)
 {
-    if (createBuffer)
+    if (mode == CREATE_SENDING_BUFFER)
     {
         serializationBuffer.reset(DynamicMemoryFile::Create(File::CREATE | File::WRITE));
     }
@@ -126,8 +152,9 @@ void CachePacket::WriteHeader(File* file) const
     file->Write(&header);
 }
 
+//////////////////////////////////////////////////////////////////////////
 AddRequestPacket::AddRequestPacket(const CacheItemKey& key_, const CachedItemValue& value_)
-    : CachePacket(PACKET_ADD_REQUEST, true)
+    : CachePacket(PACKET_ADD_REQUEST, CREATE_SENDING_BUFFER)
 {
     WriteHeader(serializationBuffer);
 
@@ -135,14 +162,21 @@ AddRequestPacket::AddRequestPacket(const CacheItemKey& key_, const CachedItemVal
     value_.Serialize(serializationBuffer);
 }
 
-bool AddRequestPacket::Load(File* file)
+AddRequestPacket::AddRequestPacket()
+    : CachePacket(PACKET_ADD_REQUEST, DO_NOT_CREATE_SENDING_BUFFER)
+{
+
+}
+
+bool AddRequestPacket::DeserializeFromBuffer(File* file)
 {
     const uint32 keySize = static_cast<uint32>(key.size());
     return ((file->Read(key.data(), keySize) == keySize) && value.Deserialize(file));
 }
 
+//////////////////////////////////////////////////////////////////////////
 AddResponsePacket::AddResponsePacket(const CacheItemKey& key_, bool added_)
-    : CachePacket(PACKET_ADD_RESPONSE, true)
+    : CachePacket(PACKET_ADD_RESPONSE, CREATE_SENDING_BUFFER)
 {
     WriteHeader(serializationBuffer);
 
@@ -150,70 +184,177 @@ AddResponsePacket::AddResponsePacket(const CacheItemKey& key_, bool added_)
     serializationBuffer->Write(&added_, sizeof(added_));
 }
 
-bool AddResponsePacket::Load(File* file)
+AddResponsePacket::AddResponsePacket()
+    : CachePacket(PACKET_ADD_RESPONSE, DO_NOT_CREATE_SENDING_BUFFER)
+{
+}
+
+bool AddResponsePacket::DeserializeFromBuffer(File* file)
 {
     const uint32 keySize = static_cast<uint32>(key.size());
     return ((file->Read(key.data(), keySize) == keySize) && (file->Read(&added) == sizeof(added)));
 }
 
+//////////////////////////////////////////////////////////////////////////
 GetRequestPacket::GetRequestPacket(const CacheItemKey& key_)
-    : CachePacket(PACKET_GET_REQUEST, true)
+    : CachePacket(PACKET_GET_REQUEST, CREATE_SENDING_BUFFER)
+{
+    WriteHeader(serializationBuffer);
+    serializationBuffer->Write(key_.data(), static_cast<uint32>(key_.size()));
+}
+
+GetRequestPacket::GetRequestPacket()
+    : CachePacket(PACKET_GET_REQUEST, DO_NOT_CREATE_SENDING_BUFFER)
+{
+    // packet that is created on destination side
+}
+
+bool GetRequestPacket::DeserializeFromBuffer(File* buffer)
+{
+    return CachePacketDetails::ReadFromBuffer(buffer, key);
+}
+
+//////////////////////////////////////////////////////////////////////////
+GetResponsePacket::GetResponsePacket(const CacheItemKey& key_, uint64 dataSize, uint32 numOfChunks)
+    : CachePacket(PACKET_GET_RESPONSE, CREATE_SENDING_BUFFER)
+{
+    WriteHeader(serializationBuffer);
+    serializationBuffer->Write(key_.data(), static_cast<uint32>(key_.size()));
+    serializationBuffer->Write(&dataSize, sizeof(dataSize));
+    serializationBuffer->Write(&numOfChunks, sizeof(numOfChunks));
+}
+
+GetResponsePacket::GetResponsePacket()
+    : CachePacket(PACKET_GET_RESPONSE, DO_NOT_CREATE_SENDING_BUFFER)
+{
+}
+
+bool GetResponsePacket::DeserializeFromBuffer(File* buffer)
+{
+    using namespace CachePacketDetails;
+    return (ReadFromBuffer(buffer, key)
+        && ReadFromBuffer(buffer, dataSize)
+        && ReadFromBuffer(buffer, numOfChunks));
+}
+
+//////////////////////////////////////////////////////////////////////////
+GetChunkRequestPacket::GetChunkRequestPacket(const CacheItemKey& key_, uint32 chunkNumber)
+    : CachePacket(PACKET_GET_CHUNK_REQUEST, CREATE_SENDING_BUFFER)
 {
     WriteHeader(serializationBuffer);
 
     serializationBuffer->Write(key_.data(), static_cast<uint32>(key_.size()));
+    serializationBuffer->Write(&chunkNumber, sizeof(chunkNumber));
 }
 
-bool GetRequestPacket::Load(File* file)
+GetChunkRequestPacket::GetChunkRequestPacket()
+    : CachePacket(PACKET_GET_CHUNK_REQUEST, DO_NOT_CREATE_SENDING_BUFFER)
 {
-    const uint32 keySize = static_cast<uint32>(key.size());
-    return (file->Read(key.data(), keySize) == keySize);
 }
 
-GetResponsePacket::GetResponsePacket(const CacheItemKey& key_, const CachedItemValue& value_)
-    : CachePacket(PACKET_GET_RESPONSE, true)
+bool GetChunkRequestPacket::DeserializeFromBuffer(File* buffer)
+{
+    using namespace CachePacketDetails;
+    return ReadFromBuffer(buffer, key) && ReadFromBuffer(buffer, chunkNumber);
+}
+
+//////////////////////////////////////////////////////////////////////////
+GetChunkResponsePacket::GetChunkResponsePacket(const CacheItemKey& key, uint32 chunkNumber, const Vector<uint8>& chunkData)
+    : CachePacket(PACKET_GET_CHUNK_RESPONSE, CREATE_SENDING_BUFFER)
 {
     WriteHeader(serializationBuffer);
 
-    serializationBuffer->Write(key_.data(), static_cast<uint32>(key_.size()));
-    value_.Serialize(serializationBuffer);
+    uint32 keySize = static_cast<uint32>(key.size());
+    uint32 chunkDataSize = static_cast<uint32>(chunkData.size());
+
+    serializationBuffer->Write(key.data(), keySize);
+    serializationBuffer->Write(&chunkNumber, sizeof(chunkNumber));
+    serializationBuffer->Write(&chunkDataSize, sizeof(chunkDataSize));
+    serializationBuffer->Write(chunkData.data(), chunkDataSize);
 }
 
-bool GetResponsePacket::Load(File* file)
+GetChunkResponsePacket::GetChunkResponsePacket()
+    : CachePacket(PACKET_GET_CHUNK_RESPONSE, DO_NOT_CREATE_SENDING_BUFFER)
 {
-    const uint32 keySize = static_cast<uint32>(key.size());
-    return ((file->Read(key.data(), keySize) == keySize) && value.Deserialize(file));
 }
 
+bool GetChunkResponsePacket::DeserializeFromBuffer(File* buffer)
+{
+    using namespace CachePacketDetails;
+
+    uint32 chunkDataSize = 0;
+    return (ReadFromBuffer(buffer, key)
+        && ReadFromBuffer(buffer, chunkNumber)
+        && ReadFromBuffer(buffer, chunkDataSize)
+        && ReadFromBuffer(buffer, chunkData, chunkDataSize));
+}
+
+//////////////////////////////////////////////////////////////////////////
 WarmupRequestPacket::WarmupRequestPacket(const CacheItemKey& key_)
-    : CachePacket(PACKET_WARMING_UP_REQUEST, true)
+    : CachePacket(PACKET_WARMING_UP_REQUEST, CREATE_SENDING_BUFFER)
 {
     WriteHeader(serializationBuffer);
 
     serializationBuffer->Write(key_.data(), static_cast<uint32>(key_.size()));
 }
 
-bool WarmupRequestPacket::Load(File* file)
+WarmupRequestPacket::WarmupRequestPacket()
+    : CachePacket(PACKET_WARMING_UP_REQUEST, DO_NOT_CREATE_SENDING_BUFFER)
+{
+}
+
+bool WarmupRequestPacket::DeserializeFromBuffer(File* file)
 {
     const uint32 keySize = static_cast<uint32>(key.size());
     return (file->Read(key.data(), keySize) == keySize);
 }
 
+//////////////////////////////////////////////////////////////////////////
+StatusRequestPacket::StatusRequestPacket()
+    : CachePacket(PACKET_STATUS_REQUEST, CREATE_SENDING_BUFFER)
+{
+    WriteHeader(serializationBuffer);
+}
+
+bool StatusRequestPacket::DeserializeFromBuffer(File* file)
+{
+    return true;
+}
+
+//////////////////////////////////////////////////////////////////////////
+StatusResponsePacket::StatusResponsePacket()
+    : CachePacket(PACKET_STATUS_RESPONSE, CREATE_SENDING_BUFFER)
+{
+    WriteHeader(serializationBuffer);
+}
+
+bool StatusResponsePacket::DeserializeFromBuffer(File* file)
+{
+    return true;
+}
+
+//////////////////////////////////////////////////////////////////////////
 RemoveRequestPacket::RemoveRequestPacket(const CacheItemKey& key_)
-    : CachePacket(PACKET_REMOVE_REQUEST, true)
+    : CachePacket(PACKET_REMOVE_REQUEST, CREATE_SENDING_BUFFER)
 {
     WriteHeader(serializationBuffer);
     serializationBuffer->Write(key_.data(), static_cast<uint32>(key_.size()));
 }
 
-bool RemoveRequestPacket::Load(File* file)
+RemoveRequestPacket::RemoveRequestPacket()
+    : CachePacket(PACKET_REMOVE_REQUEST, DO_NOT_CREATE_SENDING_BUFFER)
+{
+}
+
+bool RemoveRequestPacket::DeserializeFromBuffer(File* file)
 {
     const uint32 keySize = static_cast<uint32>(key.size());
     return (file->Read(key.data(), keySize) == keySize);
 }
 
+//////////////////////////////////////////////////////////////////////////
 RemoveResponsePacket::RemoveResponsePacket(const CacheItemKey& key_, bool removed_)
-    : CachePacket(PACKET_REMOVE_RESPONSE, true)
+    : CachePacket(PACKET_REMOVE_RESPONSE, CREATE_SENDING_BUFFER)
 {
     WriteHeader(serializationBuffer);
 
@@ -221,20 +362,43 @@ RemoveResponsePacket::RemoveResponsePacket(const CacheItemKey& key_, bool remove
     serializationBuffer->Write(&removed_, sizeof(removed_));
 }
 
-bool RemoveResponsePacket::Load(File* file)
+RemoveResponsePacket::RemoveResponsePacket()
+    : CachePacket(PACKET_REMOVE_RESPONSE, DO_NOT_CREATE_SENDING_BUFFER)
+{
+}
+
+bool RemoveResponsePacket::DeserializeFromBuffer(File* file)
 {
     const uint32 keySize = static_cast<uint32>(key.size());
     return ((file->Read(key.data(), keySize) == keySize) && (file->Read(&removed) == sizeof(removed)));
 }
 
+//////////////////////////////////////////////////////////////////////////
+ClearRequestPacket::ClearRequestPacket()
+    : CachePacket(PACKET_CLEAR_REQUEST, CREATE_SENDING_BUFFER)
+{
+    WriteHeader(serializationBuffer);
+}
+
+bool ClearRequestPacket::DeserializeFromBuffer(File* file)
+{
+    return true;
+}
+
+//////////////////////////////////////////////////////////////////////////
 ClearResponsePacket::ClearResponsePacket(bool cleared_)
-    : CachePacket(PACKET_CLEAR_RESPONSE, true)
+    : CachePacket(PACKET_CLEAR_RESPONSE, CREATE_SENDING_BUFFER)
 {
     WriteHeader(serializationBuffer);
     serializationBuffer->Write(&cleared_, sizeof(cleared_));
 }
 
-bool ClearResponsePacket::Load(File* file)
+ClearResponsePacket::ClearResponsePacket()
+    : CachePacket(PACKET_CLEAR_RESPONSE, DO_NOT_CREATE_SENDING_BUFFER)
+{
+}
+
+bool ClearResponsePacket::DeserializeFromBuffer(File* file)
 {
     return ((file->Read(&cleared) == sizeof(cleared)));
 }

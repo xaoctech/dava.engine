@@ -67,6 +67,12 @@ void ServerNetProxy::OnPacketReceived(Net::IChannel* channel, const void* packet
                 listener->OnRequestedFromCache(channel, p->key);
                 return;
             }
+            case PACKET_GET_CHUNK_REQUEST:
+            {
+                GetChunkRequestPacket* p = static_cast<GetChunkRequestPacket*>(packet.get());
+                listener->OnChunkRequestedFromCache(channel, p->key, p->chunkNumber);
+                return;
+            }
             case PACKET_REMOVE_REQUEST:
             {
                 RemoveRequestPacket* p = static_cast<RemoveRequestPacket*>(packet.get());
@@ -149,11 +155,22 @@ bool ServerNetProxy::SendCleared(Net::IChannel* channel, bool cleared)
     return false;
 }
 
-bool ServerNetProxy::SendData(Net::IChannel* channel, const CacheItemKey& key, const CachedItemValue& value)
+bool ServerNetProxy::SendDataInfo(Net::IChannel* channel, const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks)
 {
     if (channel)
     {
-        GetResponsePacket packet(key, value);
+        GetResponsePacket packet(key, dataSize, numOfChunks);
+        return packet.SendTo(channel);
+    }
+
+    return false;
+}
+
+bool ServerNetProxy::SendChunk(Net::IChannel* channel, const CacheItemKey& key, uint32 chunkNumber, const Vector<uint8>& chunkData)
+{
+    if (channel)
+    {
+        GetChunkResponsePacket packet(key, chunkNumber, chunkData);
         return packet.SendTo(channel);
     }
 

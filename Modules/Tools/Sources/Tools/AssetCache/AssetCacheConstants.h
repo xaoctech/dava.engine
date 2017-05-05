@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_ASSET_CACHE_CONSTANTS_H__
-#define __DAVAENGINE_ASSET_CACHE_CONSTANTS_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 
@@ -18,8 +17,12 @@ enum ePacketID : uint8
     PACKET_UNKNOWN = 0,
     PACKET_ADD_REQUEST,
     PACKET_ADD_RESPONSE,
+    PACKET_ADD_CHUNK_REQUEST,
+    PACKET_ADD_CHUNK_RESPONSE,
     PACKET_GET_REQUEST,
     PACKET_GET_RESPONSE,
+    PACKET_GET_CHUNK_REQUEST,
+    PACKET_GET_CHUNK_RESPONSE,
     PACKET_WARMING_UP_REQUEST,
     //    PACKET_WARMING_UP_RESPONSE, // We don't need send response right now. Left it in code for better reading
     PACKET_STATUS_REQUEST,
@@ -43,12 +46,13 @@ enum class Error : int32
     CANNOT_CONNECT,
     SERVER_ERROR,
     NOT_FOUND_ON_SERVER,
-    READ_FILES,
+    READ_FILES_ERROR,
     ADDRESS_RESOLVER_FAILED,
     CANNOT_SEND_REQUEST,
     CORRUPTED_DATA,
     UNSUPPORTED_VERSION,
     UNEXPECTED_PACKET,
+    WRONG_CHUNK,
 
     ERRORS_COUNT,
 };
@@ -57,5 +61,3 @@ String ErrorToString(Error error);
 
 } // end of namespace AssetCache
 } // end of namespace DAVA
-
-#endif // __DAVAENGINE_ASSET_CACHE_CONSTANTS_H__

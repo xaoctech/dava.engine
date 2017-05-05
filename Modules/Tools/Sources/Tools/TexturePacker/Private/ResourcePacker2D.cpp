@@ -146,7 +146,7 @@ void ResourcePacker2D::PackResources(const Vector<eGPUFamily>& forGPUs)
         }
     }
 
-    RecursiveTreeWalk(inputGfxDirectory, outputGfxDirectory, packAlgorithms);
+    PackRecursively(inputGfxDirectory, outputGfxDirectory, packAlgorithms);
 
     // Put latest md5 after convertation
     RecalculateDirMD5(outputGfxDirectory, processDirectoryPath + gfxDirName + ".md5", true);
@@ -283,7 +283,7 @@ uint32 ResourcePacker2D::GetMaxTextureSize() const
     return maxTextureSize;
 }
 
-void ResourcePacker2D::RecursiveTreeWalk(const FilePath& inputPath, const FilePath& outputPath, const Vector<PackingAlgorithm>& packAlgorithms, const Vector<String>& passedFlags)
+void ResourcePacker2D::PackRecursively(const FilePath& inputPath, const FilePath& outputPath, const Vector<PackingAlgorithm>& packAlgorithms, const Vector<String>& passedFlags)
 {
     DVASSERT(inputPath.IsDirectoryPathname() && outputPath.IsDirectoryPathname());
 
@@ -393,7 +393,30 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath& inputPath, const FilePa
 
                 ReadMD5FromFile(processDir + "params.md5", digest);
                 cacheKey.SetSecondaryKey(digest);
+
+                //assetCacheWorker.StartGetFilesTask(cacheKey, inputPath, outputPath);
             }
+
+//             spritesheetWorker.StartPackTask();
+// 
+//             workerDoneEvent.Wait();
+// 
+//             if (spritesheetWorker.IsTaskDone())
+//             {
+// 
+//                 bool needAddFilesToCache = (IsUsingCache() && assetCacheWorker.GetStatus() == NOT_FOUND_IN_CACHE);
+//                 {
+//                     assetCacheWorker.CancelTask();
+//                     assetCacheWorker.StartAddFilesTask(cacheKey, inputPath, outputPath);
+//                     workerDoneEvent.Wait();
+//                 }
+//             }
+//             else
+//             {
+//                 spritesheetWorker.CancelTask();
+//                 assetCacheWorker.retrievedData.ExportToFolder(outputPath);
+//             }
+
 
             bool needRepack = (false == GetFilesFromCache(cacheKey, inputPath, outputPath));
             if (needRepack)
@@ -541,7 +564,7 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath& inputPath, const FilePa
                     FilePath output = outputPath + filename;
                     output.MakeDirectoryPathname();
 
-                    RecursiveTreeWalk(input, output, packAlgorithms, flagsToPass);
+                    PackRecursively(input, output, packAlgorithms, flagsToPass);
                 }
             }
         }

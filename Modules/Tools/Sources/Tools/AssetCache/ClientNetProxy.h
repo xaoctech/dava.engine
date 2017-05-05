@@ -27,7 +27,8 @@ public:
 
     virtual void OnClientProxyStateChanged(){};
     virtual void OnAddedToCache(const CacheItemKey& key, bool added){};
-    virtual void OnReceivedFromCache(const CacheItemKey& key, const CachedItemValue& value){};
+    virtual void OnReceivedFromCache(const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks){};
+    virtual void OnReceivedFromCache(const CacheItemKey& key, uint32 chunkNumber, const Vector<uint8>& chunkData){};
     virtual void OnRemovedFromCache(const CacheItemKey& key, bool removed){};
     virtual void OnCacheCleared(bool cleared){};
     virtual void OnServerStatusReceived(){};
@@ -52,7 +53,9 @@ public:
     // requests to sent on server
     bool RequestServerStatus();
     bool RequestAddData(const CacheItemKey& key, const CachedItemValue& value);
+    bool RequestAddNextChunk();
     bool RequestData(const CacheItemKey& key);
+    bool RequestGetNextChunk(const CacheItemKey& key, uint32 chunkNumber);
     bool RequestWarmingUp(const CacheItemKey& key);
     bool RequestRemoveData(const CacheItemKey& key);
     bool RequestClearCache();
