@@ -29,6 +29,10 @@ vertex_in
     float3 texcoord1 : TEXCOORD1; // uv1.xy + time
     #endif
 
+    #if PARTICLES_FLOWMAP
+    float2 texcoord2 : TEXCOORD2; // Flow speed and flow offset.
+    #endif
+
     #if VERTEX_COLOR
         float4 color0 : COLOR0;
     #endif
@@ -116,7 +120,7 @@ vertex_out
         [lowp] half varTime : TEXCOORD3;
     #endif
 
-    #if FLOWMAP
+    #if FLOWMAP || PARTICLES_FLOWMAP
         [lowp] float3 varFlowData : TEXCOORD4;
     #endif
 
@@ -228,7 +232,7 @@ vertex_out
 [auto][a] property float4x4 worldMatrix;
 #endif
 
-#if WAVE_ANIMATION || TEXTURE0_ANIMATION_SHIFT || FLOWMAP
+#if WAVE_ANIMATION || TEXTURE0_ANIMATION_SHIFT || FLOWMAP || PARTICLES_FLOWMAP
 [auto][a] property float globalTime;
 #endif
 
@@ -323,11 +327,18 @@ vertex_out vp_main( vertex_in input )
     float4 inVertexColor = input.color0;
     #endif
 
-#if FLOWMAP
-    float scaledTime = globalTime * flowAnimSpeed;
+#if FLOWMAP || PARTICLES_FLOWMAP
+    #if FLOWMAP
+        float flowSpeed = flowAnimSpeed;
+        float flowOffset = flowAnimOffset;
+    #else
+        float flowSpeed = input.texcoord2.x;
+        float flowOffset = input.texcoord2.y;
+    #endif
+    float scaledTime = globalTime * flowSpeed;
     float2 flowPhases = frac(float2(scaledTime, scaledTime+0.5))-float2(0.5, 0.5);
     float flowBlend = abs(flowPhases.x*2.0);
-    output.varFlowData = float3(flowPhases * flowAnimOffset, flowBlend);
+    output.varFlowData = float3(flowPhases * flowOffset, flowBlend);
 #endif
 
 #if MATERIAL_SKYBOX

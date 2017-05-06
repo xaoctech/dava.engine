@@ -51,7 +51,7 @@ fragment_in
         float3 varToCameraVec : TEXCOORD7;
     #endif
     
-    #if FLOWMAP
+    #if FLOWMAP || PARTICLES_FLOWMAP
         float3 varFlowData : TEXCOORD4;
     #endif
 
@@ -105,7 +105,7 @@ fragment_out
     uniform sampler2D lightmap;
 #endif
 
-#if FLOWMAP
+#if FLOWMAP || PARTICLES_FLOWMAP
     uniform sampler2D flowmap;
 #endif
 
@@ -187,7 +187,7 @@ fragment_out fp_main( fragment_in input )
     #if MATERIAL_TEXTURE
     
         #if PIXEL_LIT || ALPHATEST || ALPHABLEND || VERTEX_LIT
-            #if FLOWMAP
+            #if FLOWMAP || PARTICLES_FLOWMAP
                 float3 flowData = input.varFlowData;
                 float2 flowDir = float2( tex2D( flowmap, input.varTexCoord0 ).xy) * 2.0 - 1.0;
                 half4 flowSample1 = half4(tex2D( albedo, input.varTexCoord0 + flowDir*flowData.x));
@@ -201,7 +201,7 @@ fragment_out fp_main( fragment_in input )
                 textureColor0.a *= FP_A8(tex2D( alphamask, input.varTexCoord1 ));
             #endif          
         #else
-            #if FLOWMAP
+            #if FLOWMAP || PARTICLES_FLOWMAP
                 float3 flowData = input.varFlowData;
                 float2 flowDir = float2(tex2D( flowmap, input.varTexCoord0 ).xy) * 2.0 - 1.0;
                 half3 flowSample1 = half3( tex2D( albedo, input.varTexCoord0 + flowDir*flowData.x).rgb );
