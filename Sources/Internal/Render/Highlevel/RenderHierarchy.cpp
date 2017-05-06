@@ -3,6 +3,7 @@
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Frustum.h"
 #include "Render/Highlevel/Landscape.h"
+#include "Render/Highlevel/GeometryOctTree.h"
 
 namespace DAVA
 {

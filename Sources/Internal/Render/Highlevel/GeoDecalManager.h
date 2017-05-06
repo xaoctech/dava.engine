@@ -1,7 +1,9 @@
 #pragma once
 
-#include "Base/BaseTypes.h"
+#include "Base/RefPtr.h"
 #include "Functional/Function.h"
+#include "FileSystem/FilePath.h"
+#include "Math/AABBox3.h"
 #include <atomic>
 
 namespace DAVA
@@ -58,13 +60,7 @@ private:
         RefPtr<RenderBatch> batch;
         int32 lodIndex = -1;
         int32 switchIndex = -1;
-
-        BatchWithOptions(RenderBatch* b, int32 l, int32 s)
-            : batch(SafeRetain(b))
-            , lodIndex(l)
-            , switchIndex(s)
-        {
-        }
+        BatchWithOptions(RenderBatch* b, int32 l, int32 s);
     };
     struct BuiltDecal
     {

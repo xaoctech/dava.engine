@@ -1,6 +1,12 @@
 #include "Scene3D/Systems/GeoDecalSystem.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Systems/SkeletonSystem.h"
+#include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Scene.h"
 #include "Render/Highlevel/GeometryOctTree.h"
 #include "Render/Highlevel/SkinnedMesh.h"
+#include "Debug/ProfilerCPU.h"
+#include "Debug/ProfilerMarkerNames.h"
 
 #define DAVA_GEODECAL_SYSTEM_DEBUG_RENDER 0
 
@@ -165,7 +171,8 @@ void GeoDecalSystem::BuildDecal(Entity* entityWithDecal, GeoDecalComponent* comp
         {
             // update mesh before creating decal in order to have valid skinning
             SkinnedMesh* mesh = static_cast<SkinnedMesh*>(e.renderObject);
-            GetScene()->skeletonSystem->UpdateSkinnedMesh(skeletonComponent, mesh);
+            Scene* scene = GetScene();
+            scene->skeletonSystem->UpdateSkinnedMesh(skeletonComponent, mesh);
         }
 
         GeoDecalManager::Decal decal = manager->BuildDecal(component->GetConfig(), entityWithDecal->GetWorldTransform(), e.renderObject);

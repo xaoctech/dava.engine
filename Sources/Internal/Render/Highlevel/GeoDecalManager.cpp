@@ -1,5 +1,6 @@
 #include "Render/Highlevel/GeoDecalManager.h"
-#include "Render/Highlevel/Mesh.h"
+#include "Render/Highlevel/SkinnedMesh.h"
+#include "FileSystem/FileSystem.h"
 
 namespace DAVA
 {
@@ -349,7 +350,6 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBat
     {
         material->AddFlag(FastName("MATERIAL_LIGHTMAP"), 1);
     }
-    //*
     if (isBlinnFongMaterial)
     {
         bool perpixel = fxName.find("pervertex") == String::npos;
@@ -363,8 +363,6 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBat
             material->AddTexture(NMaterialTextureName::TEXTURE_NORMAL, customNormal);
         }
     }
-    // */
-    material->PreBuildMaterial(PASS_FORWARD);
     dstBatch->SetMaterial(material);
     dstBatch->serializable = false;
 
@@ -477,4 +475,11 @@ void GeoDecalManager::ClipToBoundingBox(DecalVertex* p_vs, uint8_t* nb_p_vs, con
 
 #undef MAX_CLIPPED_POLYGON_CAPACITY
 #undef PLANE_THICKNESS_EPSILON
+
+GeoDecalManager::BatchWithOptions::BatchWithOptions(RenderBatch* b, int32 l, int32 s)
+    : batch(SafeRetain(b))
+    , lodIndex(l)
+    , switchIndex(s)
+{
+}
 }
