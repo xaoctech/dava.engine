@@ -25,6 +25,15 @@ ParticleRenderObject::ParticleRenderObject(ParticleEffectData* effect)
     flowVertexLayoutId = rhi::VertexLayout::UniqueId(layout);
 
     type = RenderObject::TYPE_PARTICLE_EMITTER;
+
+    uint32 key = 1 << static_cast<uint32>(eParticlePropsOffsets::REGULAR);
+    layoutMap[key] = regularVertexLayoutId;
+    key |= 1 << static_cast<uint32>(eParticlePropsOffsets::FRAME_BLEND);
+    layoutMap[key] = frameBlendVertexLayoutId;
+    key |= 1 << static_cast<uint32>(eParticlePropsOffsets::FLOW);
+    layoutMap[key] = frameBlendFlowVertexLayoutId;
+    key &= ~(1 << static_cast<uint32>(eParticlePropsOffsets::FRAME_BLEND));
+    layoutMap[key] = flowVertexLayoutId;
 }
 
 ParticleRenderObject::~ParticleRenderObject()
@@ -152,6 +161,14 @@ int32 ParticleRenderObject::CalculateParticleCount(const ParticleGroup& group)
     return group.activeParticleCount * basisCount;
 }
 
+uint32 ParticleRenderObject::SelectLayout(const ParticleLayer& layer)
+{
+    uint32 key = 1 << static_cast<uint32>(eParticlePropsOffsets::REGULAR);
+    key |= static_cast<uint32>(layer.enableFrameBlend) << static_cast<uint32>(eParticlePropsOffsets::FRAME_BLEND);
+    key |= static_cast<uint32>(layer.enableFlow) << static_cast<uint32>(eParticlePropsOffsets::FLOW);
+    return layoutMap[key];
+}
+
 void ParticleRenderObject::AppendRenderBatch(NMaterial* material, uint32 particlesCount, uint32 vertexLayout, const DynamicBufferAllocator::AllocResultVB& vBuffer)
 {
     DVASSERT(particlesCount);
@@ -186,9 +203,11 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
     if (!particlesCount)
         return; //hmmm?
 
-    uint32 vertexStride = (3 + 2 + 1) * sizeof(float); //vertex*3 + texcoord*2 + color * 1;
+    uint32 vertexStride = (3 + 2 + 1) * sizeof(float); // vertex*3 + texcoord0*2 + color * 1;
     if (begin->layer->enableFrameBlend)
-        vertexStride += (3) * sizeof(float); //texcoord2 * 3;
+        vertexStride += (3) * sizeof(float); // texcoord1 * 3;
+    if (begin->layer->enableFlow)
+        vertexStride += (2) * sizeof(float); // texcoord2 speed and offset
 
     uint32 verteciesToAllocate = particlesCount * 4;
     DynamicBufferAllocator::AllocResultVB target = DynamicBufferAllocator::AllocateVertexBuffer(vertexStride, verteciesToAllocate);
@@ -233,7 +252,7 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
             {
                 if (verteciesAppended + 4 > target.allocatedVertices)
                 {
-                    uint32 vLayout = group.layer->enableFrameBlend ? frameBlendVertexLayoutId : regularVertexLayoutId;
+                    uint32 vLayout = SelectLayout(*group.layer);
                     AppendRenderBatch(group.material, verteciesAppended / 4, vLayout, target);
                     verteciesToAllocate -= verteciesAppended;
                     verteciesAppended = 0;
@@ -327,7 +346,7 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
 
     if (verteciesAppended)
     {
-        AppendRenderBatch(begin->material, verteciesAppended / 4, begin->layer->enableFrameBlend ? frameBlendVertexLayoutId : regularVertexLayoutId, target);
+        AppendRenderBatch(begin->material, verteciesAppended / 4, SelectLayout(*begin->layer), target);
     }
 }
 

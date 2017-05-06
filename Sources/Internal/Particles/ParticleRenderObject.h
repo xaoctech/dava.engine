@@ -11,6 +11,8 @@ class VertexLayout;
 
 namespace DAVA
 {
+struct ParticleLayer;
+
 class ParticleRenderObject : public RenderObject
 {
     ParticleEffectData* effectData;
@@ -44,12 +46,21 @@ public:
     }
 
 private:
+    enum eParticlePropsOffsets
+    {
+        REGULAR = 0,
+        FRAME_BLEND,
+        FLOW
+    };
+
     void GenerateRegularLayout(rhi::VertexLayout& layout);
     int32 CalculateParticleCount(const ParticleGroup& group);
+    uint32 SelectLayout(const ParticleLayer& layer);
 
     uint32 regularVertexLayoutId = 0;
     uint32 frameBlendVertexLayoutId = 0;
     uint32 flowVertexLayoutId = 0;
     uint32 frameBlendFlowVertexLayoutId = 0;
+    Map<uint32, uint32> layoutMap;
 };
 }
