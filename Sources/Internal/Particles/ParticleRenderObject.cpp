@@ -17,11 +17,11 @@ ParticleRenderObject::ParticleRenderObject(ParticleEffectData* effect)
     regularVertexLayoutId = rhi::VertexLayout::UniqueId(layout);
     layout.AddElement(rhi::VS_TEXCOORD, 1, rhi::VDT_FLOAT, 3);
     frameBlendVertexLayoutId = rhi::VertexLayout::UniqueId(layout);
-    layout.AddElement(rhi::VS_TEXCOORD, 2, rhi::VDT_FLOAT, 2);
+    layout.AddElement(rhi::VS_TEXCOORD, 2, rhi::VDT_FLOAT, 4);
     frameBlendFlowVertexLayoutId = rhi::VertexLayout::UniqueId(layout);
 
     GenerateRegularLayout(layout);
-    layout.AddElement(rhi::VS_TEXCOORD, 2, rhi::VDT_FLOAT, 2);
+    layout.AddElement(rhi::VS_TEXCOORD, 2, rhi::VDT_FLOAT, 4);
     flowVertexLayoutId = rhi::VertexLayout::UniqueId(layout);
 
     type = RenderObject::TYPE_PARTICLE_EMITTER;
@@ -207,7 +207,7 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
     if (begin->layer->enableFrameBlend)
         vertexStride += (3) * sizeof(float); // texcoord1 * 3;
     if (begin->layer->enableFlow)
-        vertexStride += (2) * sizeof(float); // texcoord2 speed and offset
+        vertexStride += (2 + 2) * sizeof(float); // texcoord2.xy + speed and offset
 
     uint32 verteciesToAllocate = particlesCount * 4;
     DynamicBufferAllocator::AllocResultVB target = DynamicBufferAllocator::AllocateVertexBuffer(vertexStride, verteciesToAllocate);
@@ -328,14 +328,18 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
                     }
                     ptrOffset += 3;
                 }
-                if (begin->layer->enableFlow)
+                if (begin->layer->enableFlow && begin->layer->flowmap.get() != nullptr)
                 {
-                    for (int32 i = 0; i < 4; i++) // VS_TEXCOORD2 x - speed, y - offset.
+                    // todo:: mmmm frameblend?
+                    float32* flowUV = group.layer->flowmap->GetTextureVerts(current->frame);
+                    for (int32 i = 0; i < 4; i++) // VS_TEXCOORD2.xy, z - speed, w - offset.
                     {
-                        verts[i][ptrOffset] = current->flowSpeed;
-                        verts[i][ptrOffset + 1] = current->flowOffset;
+                        verts[i][ptrOffset + 0] = flowUV[i * 2];
+                        verts[i][ptrOffset + 1] = flowUV[i * 2 + 1];
+                        verts[i][ptrOffset + 2] = current->flowSpeed;
+                        verts[i][ptrOffset + 3] = current->flowOffset;
                     }
-                    ptrOffset += 2;
+                    ptrOffset += 4;
                 }
                 currpos += particleStride;
                 verteciesAppended += 4;

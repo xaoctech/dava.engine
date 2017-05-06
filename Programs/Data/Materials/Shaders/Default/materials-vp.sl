@@ -30,7 +30,7 @@ vertex_in
     #endif
 
     #if PARTICLES_FLOWMAP
-    float2 texcoord2 : TEXCOORD2; // Flow speed and flow offset.
+        float4 texcoord2 : TEXCOORD2; // Flow speed and flow offset.
     #endif
 
     #if VERTEX_COLOR
@@ -88,8 +88,11 @@ vertex_out
     #if TILED_DECAL_MASK
     float2 varDecalTileTexCoord : TEXCOORD2;
     #endif
-    
-    
+
+    #if PARTICLES_FLOWMAP
+        float2 varParticleFlowTexCoord : TEXCOORD2;
+    #endif
+
     #if VERTEX_LIT
         [lowp] half varDiffuseColor : COLOR0;
         #if BLINN_PHONG
@@ -332,9 +335,11 @@ vertex_out vp_main( vertex_in input )
         float flowSpeed = flowAnimSpeed;
         float flowOffset = flowAnimOffset;
     #else
-        float flowSpeed = input.texcoord2.x;
-        float flowOffset = input.texcoord2.y;
+        float flowSpeed = input.texcoord2.z;
+        float flowOffset = input.texcoord2.w;
+        output.varParticleFlowTexCoord = input.texcoord2.xy;
     #endif
+
     float scaledTime = globalTime * flowSpeed;
     float2 flowPhases = frac(float2(scaledTime, scaledTime+0.5))-float2(0.5, 0.5);
     float flowBlend = abs(flowPhases.x*2.0);

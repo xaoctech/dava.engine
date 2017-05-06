@@ -31,6 +31,9 @@ fragment_in
     #if MATERIAL_DETAIL
         half2 varDetailTexCoord : TEXCOORD2;
     #endif
+    #if PARTICLES_FLOWMAP
+        float2 varParticleFlowTexCoord : TEXCOORD2;
+    #endif
 
     #if VERTEX_LIT
 
@@ -188,8 +191,13 @@ fragment_out fp_main( fragment_in input )
     
         #if PIXEL_LIT || ALPHATEST || ALPHABLEND || VERTEX_LIT
             #if FLOWMAP || PARTICLES_FLOWMAP
+                #if FLOWMAP
+                    float2 flowtc = input.varTexCoord0;
+                #else
+                    float2 flowtc = input.varParticleFlowTexCoord;
+                #endif
                 float3 flowData = input.varFlowData;
-                float2 flowDir = float2( tex2D( flowmap, input.varTexCoord0 ).xy) * 2.0 - 1.0;
+                float2 flowDir = float2( tex2D( flowmap, flowtc ).xy) * 2.0 - 1.0;
                 half4 flowSample1 = half4(tex2D( albedo, input.varTexCoord0 + flowDir*flowData.x));
                 half4 flowSample2 = half4(tex2D( albedo, input.varTexCoord0 + flowDir*flowData.y));
                 half4 textureColor0 = lerp(flowSample1, flowSample2, half(flowData.z) );
@@ -202,8 +210,13 @@ fragment_out fp_main( fragment_in input )
             #endif          
         #else
             #if FLOWMAP || PARTICLES_FLOWMAP
+                #if FLOWMAP
+                    float2 flowtc = input.varTexCoord0;
+                #else
+                    float2 flowtc = input.varParticleFlowTexCoord;
+                #endif
                 float3 flowData = input.varFlowData;
-                float2 flowDir = float2(tex2D( flowmap, input.varTexCoord0 ).xy) * 2.0 - 1.0;
+                float2 flowDir = float2(tex2D( flowmap, flowtc ).xy) * 2.0 - 1.0;
                 half3 flowSample1 = half3( tex2D( albedo, input.varTexCoord0 + flowDir*flowData.x).rgb );
                 half3 flowSample2 = half3( tex2D( albedo, input.varTexCoord0 + flowDir*flowData.y).rgb );
                 half3 textureColor0 = lerp(flowSample1, flowSample2, half(flowData.z) );
