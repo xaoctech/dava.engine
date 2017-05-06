@@ -13,13 +13,16 @@ ParticleRenderObject::ParticleRenderObject(ParticleEffectData* effect)
     //may be this is good place to determine 2d mode?
 
     rhi::VertexLayout layout;
-    layout.AddElement(rhi::VS_POSITION, 0, rhi::VDT_FLOAT, 3);
-    layout.AddElement(rhi::VS_TEXCOORD, 0, rhi::VDT_FLOAT, 2);
-    layout.AddElement(rhi::VS_COLOR, 0, rhi::VDT_UINT8N, 4);
+    GenerateRegularLayout(layout);
     regularVertexLayoutId = rhi::VertexLayout::UniqueId(layout);
     layout.AddElement(rhi::VS_TEXCOORD, 1, rhi::VDT_FLOAT, 3);
     frameBlendVertexLayoutId = rhi::VertexLayout::UniqueId(layout);
+    layout.AddElement(rhi::VS_TEXCOORD, 2, rhi::VDT_FLOAT, 2);
+    frameBlendFlowVertexLayoutId = rhi::VertexLayout::UniqueId(layout);
 
+    GenerateRegularLayout(layout);
+    layout.AddElement(rhi::VS_TEXCOORD, 2, rhi::VDT_FLOAT, 2);
+    flowVertexLayoutId = rhi::VertexLayout::UniqueId(layout);
 
     type = RenderObject::TYPE_PARTICLE_EMITTER;
 }
@@ -125,6 +128,15 @@ void ParticleRenderObject::PrepareRenderData(Camera* camera)
     if (itGroupStart != effectData->groups.end())
         AppendParticleGroup(itGroupStart, effectData->groups.end(), particlesInGroup, currCamDirection, basisVectors);
 }
+
+void ParticleRenderObject::GenerateRegularLayout(rhi::VertexLayout& layout)
+{
+    layout = {};
+    layout.AddElement(rhi::VS_POSITION, 0, rhi::VDT_FLOAT, 3);
+    layout.AddElement(rhi::VS_TEXCOORD, 0, rhi::VDT_FLOAT, 2);
+    layout.AddElement(rhi::VS_COLOR, 0, rhi::VDT_UINT8N, 4);
+}
+
 int32 ParticleRenderObject::CalculateParticleCount(const ParticleGroup& group)
 {
     int32 basisCount = 0;
@@ -140,15 +152,6 @@ int32 ParticleRenderObject::CalculateParticleCount(const ParticleGroup& group)
     return group.activeParticleCount * basisCount;
 }
 
-struct ParticleVertex
-{
-    Vector3 pos;
-    Vector2 uv;
-    uint32 color;
-    Vector3 uv1AndTime;
-};
-
-//void ParticleRenderObject::AppendParticleGroup(const ParticleGroup &group, ParticleRenderGroup *renderGroup, const Vector3& cameraDirection)
 void ParticleRenderObject::AppendRenderBatch(NMaterial* material, uint32 particlesCount, uint32 vertexLayout, const DynamicBufferAllocator::AllocResultVB& vBuffer)
 {
     DVASSERT(particlesCount);
@@ -239,11 +242,11 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
                     currpos = target.data;
                 }
 
-                ParticleVertex* verts[4];
-                verts[0] = reinterpret_cast<ParticleVertex*>(currpos);
-                verts[1] = reinterpret_cast<ParticleVertex*>(currpos + vertexStride);
-                verts[2] = reinterpret_cast<ParticleVertex*>(currpos + 2 * vertexStride);
-                verts[3] = reinterpret_cast<ParticleVertex*>(currpos + 3 * vertexStride);
+                float32* verts[4];
+                verts[0] = reinterpret_cast<float32*>(currpos);
+                verts[1] = reinterpret_cast<float32*>(currpos + vertexStride);
+                verts[2] = reinterpret_cast<float32*>(currpos + 2 * vertexStride);
+                verts[3] = reinterpret_cast<float32*>(currpos + 3 * vertexStride);
 
                 Vector3 ex = basisVectors[basises[i] * 2];
                 Vector3 ey = basisVectors[basises[i] * 2 + 1];
@@ -270,17 +273,21 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
                 Vector3 particlePosition = current->position;
                 if (group.layer->inheritPosition)
                     particlePosition += effectData->infoSources[group.positionSource].position;
-                verts[0]->pos = particlePosition + left + bot;
-                verts[1]->pos = particlePosition + right + bot;
-                verts[2]->pos = particlePosition + left + top;
-                verts[3]->pos = particlePosition + right + top;
-
+                Array<Vector3, 4> quadPos = { particlePosition + left + bot, particlePosition + right + bot, particlePosition + left + top, particlePosition + right + top };
+                uint32 ptrOffset = 0;
+                
                 for (int32 i = 0; i < 4; i++)
                 {
-                    verts[i]->uv.x = pT[i * 2];
-                    verts[i]->uv.y = pT[i * 2 + 1];
-                    verts[i]->color = color;
+                    verts[i][ptrOffset + 0] = quadPos[i].x; // Position xyz.
+                    verts[i][ptrOffset + 1] = quadPos[i].y;
+                    verts[i][ptrOffset + 2] = quadPos[i].z;
+
+                    verts[i][ptrOffset + 3] = pT[i * 2]; // VS_TEXCOORD0 xy + color.
+                    verts[i][ptrOffset + 4] = pT[i * 2 + 1];
+                    uint32* cp = reinterpret_cast<uint32*>(verts[i]) + (ptrOffset + 5);
+                    *cp = color;
                 }
+                ptrOffset += 6;
 
                 if (begin->layer->enableFrameBlend)
                 {
@@ -294,12 +301,22 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
                     }
                     float32* pT = group.layer->sprite->GetTextureVerts(nextFrame);
 
-                    for (int32 i = 0; i < 4; i++)
+                    for (int32 i = 0; i < 4; i++) // VS_TEXCOORD1 xy + time.
                     {
-                        verts[i]->uv1AndTime.x = *(pT++);
-                        verts[i]->uv1AndTime.y = *(pT++);
-                        verts[i]->uv1AndTime.z = current->animTime;
+                        verts[i][ptrOffset] = *(pT++);
+                        verts[i][ptrOffset + 1] = *(pT++);
+                        verts[i][ptrOffset + 2] = current->animTime;
                     }
+                    ptrOffset += 3;
+                }
+                if (begin->layer->enableFlow)
+                {
+                    for (int32 i = 0; i < 4; i++) // VS_TEXCOORD2 x - speed, y - offset.
+                    {
+                        verts[i][ptrOffset] = current->flowSpeed;
+                        verts[i][ptrOffset + 1] = current->flowOffset;
+                    }
+                    ptrOffset += 2;
                 }
                 currpos += particleStride;
                 verteciesAppended += 4;

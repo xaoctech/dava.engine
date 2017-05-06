@@ -1,9 +1,13 @@
-#ifndef __DAVAENGINE_PARTICLE_RENDER_OBJECT_H_
-#define __DAVAENGINE_PARTICLE_RENDER_OBJECT_H_
+#pragma once
 
 #include "ParticleGroup.h"
 #include "Render/Highlevel/RenderObject.h"
 #include "Render/DynamicBufferAllocator.h"
+
+namespace rhi
+{
+class VertexLayout;
+};
 
 namespace DAVA
 {
@@ -40,10 +44,12 @@ public:
     }
 
 private:
+    void GenerateRegularLayout(rhi::VertexLayout& layout);
     int32 CalculateParticleCount(const ParticleGroup& group);
 
-    uint32 regularVertexLayoutId, frameBlendVertexLayoutId;
+    uint32 regularVertexLayoutId = 0;
+    uint32 frameBlendVertexLayoutId = 0;
+    uint32 flowVertexLayoutId = 0;
+    uint32 frameBlendFlowVertexLayoutId = 0;
 };
 }
-
-#endif
