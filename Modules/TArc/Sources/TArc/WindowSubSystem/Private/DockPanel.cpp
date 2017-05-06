@@ -38,7 +38,6 @@ void DockPanel::Setup()
     }
 
     QObject::connect(this, &QDockWidget::visibilityChanged, [this](bool isVisible) {
-        qDebug() << "Visibility changed " << isVisible;
         isActive = isVisible;
         SetValue(DockPanelInfo::Fields::IsActive, isVisible);
     });

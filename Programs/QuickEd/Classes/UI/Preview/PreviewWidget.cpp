@@ -7,7 +7,6 @@
 
 #include "Ruler/RulerWidget.h"
 #include "Ruler/RulerController.h"
-#include "UI/Find/Widgets/FindInDocumentWidget.h"
 #include "UI/Package/PackageMimeData.h"
 #include "UI/QtModelPackageCommandExecutor.h"
 #include "Model/PackageHierarchy/PackageNode.h"
@@ -103,11 +102,6 @@ float PreviewWidget::GetScaleFromComboboxText() const
     float scaleValue = curTextValue.toFloat(&ok);
     DVASSERT(ok, "can not parse text to float");
     return scaleValue / 100.0f;
-}
-
-FindInDocumentWidget* PreviewWidget::GetFindInDocumentWidget()
-{
-    return findInDocumentWidget;
 }
 
 void PreviewWidget::CreateActions()
@@ -378,37 +372,34 @@ void PreviewWidget::InitUI()
     tabBar->setUsesScrollButtons(true);
     gridLayout->addWidget(tabBar, 0, 0, 1, 4);
 
-    findInDocumentWidget = new FindInDocumentWidget(this);
-    gridLayout->addWidget(findInDocumentWidget, 1, 0, 1, 4);
-
     horizontalRuler = new RulerWidget(this);
     horizontalRuler->SetRulerOrientation(Qt::Horizontal);
 
-    gridLayout->addWidget(horizontalRuler, 2, 1, 1, 2);
+    gridLayout->addWidget(horizontalRuler, 1, 1, 1, 2);
 
     verticalRuler = new RulerWidget(this);
     verticalRuler->SetRulerOrientation(Qt::Vertical);
-    gridLayout->addWidget(verticalRuler, 3, 0, 1, 1);
+    gridLayout->addWidget(verticalRuler, 2, 0, 1, 1);
 
     QSizePolicy expandingPolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     renderWidget->setSizePolicy(expandingPolicy);
-    gridLayout->addWidget(renderWidget, 3, 1, 1, 2);
+    gridLayout->addWidget(renderWidget, 2, 1, 1, 2);
 
     verticalScrollBar = new QScrollBar(this);
     verticalScrollBar->setOrientation(Qt::Vertical);
 
-    gridLayout->addWidget(verticalScrollBar, 3, 3, 1, 1);
+    gridLayout->addWidget(verticalScrollBar, 2, 3, 1, 1);
 
     scaleCombo = new QComboBox(this);
     scaleCombo->setEditable(true);
 
-    gridLayout->addWidget(scaleCombo, 4, 1, 1, 1);
+    gridLayout->addWidget(scaleCombo, 3, 1, 1, 1);
 
     horizontalScrollBar = new QScrollBar(this);
     horizontalScrollBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
     horizontalScrollBar->setOrientation(Qt::Horizontal);
 
-    gridLayout->addWidget(horizontalScrollBar, 4, 2, 1, 1);
+    gridLayout->addWidget(horizontalScrollBar, 3, 2, 1, 1);
 
     gridLayout->setMargin(0.0f);
 }

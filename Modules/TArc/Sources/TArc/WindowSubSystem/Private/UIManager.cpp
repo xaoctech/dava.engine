@@ -483,6 +483,7 @@ struct UIManager::Impl : public QObject
     {
         addFunctions[PanelKey::DockPanel] = MakeFunction(this, &UIManager::Impl::AddDockPanel);
         addFunctions[PanelKey::CentralPanel] = MakeFunction(this, &UIManager::Impl::AddCentralPanel);
+        addFunctions[PanelKey::OverCentralPanel] = MakeFunction(this, &UIManager::Impl::AddOverCentralPanel);
     }
 
     ~Impl()
@@ -575,14 +576,12 @@ protected:
 
     QDockWidget* CreateDockWidget(const DockPanelInfo& dockPanelInfo, UIManagerDetail::MainWindowInfo& mainWindowInfo, QMainWindow* mainWindow)
     {
-        DVASSERT(dockPanelInfo.title.isEmpty() == false, "Provide correct value of DockPanelInfo::title");
         const QString& text = dockPanelInfo.title;
 
         DockPanel::Params params;
         params.accessor = accessor;
         params.descriptors = dockPanelInfo.descriptors;
         DockPanel* dockWidget = new DockPanel(params, text, mainWindow);
-        dockWidget->setObjectName(text);
 
         QAction* dockWidgetAction = dockWidget->toggleViewAction();
 
@@ -601,6 +600,8 @@ protected:
         QMainWindow* mainWindow = mainWindowInfo.window;
         DVASSERT(mainWindow != nullptr);
         QDockWidget* newDockWidget = CreateDockWidget(info, mainWindowInfo, mainWindow);
+        DVASSERT(key.GetViewName().isEmpty() == false, "Provide correct value of PanelKey::viewName");
+        newDockWidget->setObjectName(key.GetViewName());
         newDockWidget->layout()->setContentsMargins(0, 0, 0, 0);
         newDockWidget->setAllowedAreas(Qt::AllDockWidgetAreas);
 
@@ -666,6 +667,16 @@ protected:
         }
 
         tabWidget->addTab(widget, widget->objectName());
+    }
+
+    void AddOverCentralPanel(const PanelKey& key, const WindowKey& windowKey, QWidget* widget)
+    {
+        UIManagerDetail::MainWindowInfo& mainWindowInfo = FindOrCreateWindow(windowKey);
+        QMainWindow* mainWindow = mainWindowInfo.window;
+        QWidget* centralWidget = mainWindow->centralWidget();
+
+        const OverCentralPanelInfo& info = key.GetInfo().Get<OverCentralPanelInfo>();
+        new OverlayWidget(info, widget, centralWidget);
     }
 };
 
