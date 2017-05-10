@@ -491,7 +491,11 @@ PreProc::_process_buffer(char* text, std::vector<Line>* line)
                             break;
                         }
 
-                        _process_define(name, value);
+                        if (!_process_define(name, value))
+                        {
+                            success = false;
+                            break;
+                        }
 
                         if (nv != -1)
                         {
@@ -804,7 +808,25 @@ PreProc::_process_include(const char* file_name, std::vector<PreProc::Line>* lin
 bool
 PreProc::_process_define(const char* name, const char* value)
 {
-    bool success = false;
+    bool name_valid = true;
+
+    if (!(isalpha(name[0]) || name[0] == '_'))
+        name_valid = false;
+    for (const char* n = name; *n; ++n)
+    {
+        if (!(isalnum(name[0]) || name[0] == '_'))
+        {
+            name_valid = false;
+            break;
+        }
+    }
+
+    if (!name_valid)
+    {
+        DAVA::Logger::Error("invalid identifier \"%s\"", name);
+        return false;
+    }
+
     float val;
 
     if (_eval.evaluate(value, &val))
@@ -828,7 +850,7 @@ PreProc::_process_define(const char* name, const char* value)
     if (_macro.back().value_len < _min_macro_length)
         _min_macro_length = _macro.back().value_len;
 
-    return success;
+    return true;
 }
 
 //------------------------------------------------------------------------------
