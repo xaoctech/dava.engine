@@ -51,22 +51,22 @@ DAVA::ParticleLayer* CommandChangeLayerMaterialProperties::GetLayer() const
     return layer;
 }
 
-CommandChangeFlowProperties::CommandChangeFlowProperties(ParticleLayer* layer_, const FilePath& spritePath, bool enableFlow, RefPtr<PropertyLine<float32>> flowSpeed, RefPtr<PropertyLine<float32>> flowOffset)
+CommandChangeFlowProperties::CommandChangeFlowProperties(ParticleLayer* layer_, const FilePath& spritePath, bool enableFlow, RefPtr<PropertyLine<float32>> flowSpeedOverLife, RefPtr<PropertyLine<float32>> flowOffsetOverLife)
     :RECommand(CMDID_PARTICLE_LAYER_CHANGED_FLOW_VALUES, "Change Flow Properties")
     , layer(layer_)
 {
     newParams.spritePath = spritePath;
     newParams.enableFlow = enableFlow;
-    newParams.flowSpeed = flowSpeed;
-    newParams.flowOffset = flowOffset;
+    newParams.flowSpeedOverLife = flowSpeedOverLife;
+    newParams.flowOffsetOverLife = flowOffsetOverLife;
 
     DVASSERT(layer != nullptr);
     if (layer != nullptr)
     {
         oldParams.spritePath = layer->spritePath;
         oldParams.enableFlow = layer->enableFlow;
-        oldParams.flowSpeed = layer->flowSpeed;
-        oldParams.flowOffset = layer->flowOffset;
+        oldParams.flowSpeedOverLife = layer->flowSpeedOverLife;
+        oldParams.flowOffsetOverLife = layer->flowOffsetOverLife;
     }
 }
 
@@ -91,7 +91,60 @@ void CommandChangeFlowProperties::ApplyParams(FlowParams& params)
     {
         layer->enableFlow = params.enableFlow;
         layer->SetFlowmap(params.spritePath);
-        PropertyLineHelper::SetValueLine(layer->flowSpeed, params.flowSpeed);
-        PropertyLineHelper::SetValueLine(layer->flowOffset, params.flowOffset);
+        PropertyLineHelper::SetValueLine(layer->flowSpeedOverLife, params.flowSpeedOverLife);
+        PropertyLineHelper::SetValueLine(layer->flowOffsetOverLife, params.flowOffsetOverLife);
+    }
+}
+
+CommandChangeNoiseProperties::CommandChangeNoiseProperties(DAVA::ParticleLayer* layer, const DAVA::FilePath& noisePath, bool enableNoise, bool isNoiseAffectFlow, RefPtr<PropertyLine<float32>> noiseScale, bool useNoiseScroll, RefPtr<PropertyLine<float32>> noiseUScrollSpeed, RefPtr<PropertyLine<float32>> noiseVScrollSpeed)
+    : RECommand(CMDID_PARTICLE_LAYER_CHANGED_NOISE_VALUES, "Change Noise Properties")
+{
+    newParams.noisePath = noisePath;
+    newParams.enableNoise = enableNoise;
+    newParams.isNoiseAffectFlow = isNoiseAffectFlow;
+    newParams.noiseScale = noiseScale;
+    newParams.useNoiseScroll = useNoiseScroll;
+    newParams.noiseUScrollSpeed = noiseUScrollSpeed;
+    newParams.noiseVScrollSpeed = noiseVScrollSpeed;
+
+    DVASSERT(layer != nullptr);
+    if (layer != nullptr)
+    {
+        oldParams.noisePath = layer->noisePath;
+        oldParams.enableNoise = layer->enableNoise;
+        oldParams.isNoiseAffectFlow = layer->isNoiseAffectFlow;
+        oldParams.noiseScale = layer->noiseScale;
+        oldParams.useNoiseScroll = layer->useNoiseScroll;
+        oldParams.noiseUScrollSpeed = layer->noiseUScrollSpeed;
+        oldParams.noiseVScrollSpeed = layer->noiseVScrollSpeed;
+    }
+}
+
+void CommandChangeNoiseProperties::Undo()
+{
+    ApplyParams(oldParams);
+}
+
+void CommandChangeNoiseProperties::Redo()
+{
+    ApplyParams(newParams);
+}
+
+DAVA::ParticleLayer* CommandChangeNoiseProperties::GetLayer() const
+{
+    return layer;
+}
+
+void CommandChangeNoiseProperties::ApplyParams(NoiseParams& params)
+{
+    if (layer != nullptr)
+    {
+        layer->enableNoise = params.enableNoise;
+        layer->isNoiseAffectFlow = params.isNoiseAffectFlow;
+        layer->useNoiseScroll = params.useNoiseScroll;
+        layer->SetNoise(params.noisePath);
+        PropertyLineHelper::SetValueLine(layer->noiseScale, params.noiseScale);
+        PropertyLineHelper::SetValueLine(layer->noiseUScrollSpeed, params.noiseUScrollSpeed);
+        PropertyLineHelper::SetValueLine(layer->noiseVScrollSpeed, params.noiseVScrollSpeed);
     }
 }

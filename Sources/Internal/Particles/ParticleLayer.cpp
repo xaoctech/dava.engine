@@ -59,7 +59,7 @@ eBlendMode GetBlendModeByName(const String& blendStr)
 
 /*end of legacy compatibility code*/
 
-ParticleLayer::ParticleLayer() : flowSpeed(nullptr), flowOffset(nullptr), enableFlow(false)
+ParticleLayer::ParticleLayer() : flowSpeedOverLife(nullptr), flowOffsetOverLife(nullptr), enableFlow(false), enableNoise(false), isNoiseAffectFlow(false), useNoiseScroll(false), noiseScale(nullptr), noiseUScrollSpeed(nullptr), noiseVScrollSpeed(nullptr)
 {
     life = 0;
     lifeVariation = 0;
@@ -132,11 +132,20 @@ ParticleLayer* ParticleLayer::Clone()
 {
     ParticleLayer* dstLayer = new ParticleLayer();
 
-    if (flowSpeed)
-        dstLayer->flowSpeed.Set(flowSpeed->Clone());
+    if (flowSpeedOverLife)
+        dstLayer->flowSpeedOverLife.Set(flowSpeedOverLife->Clone());
 
-    if (flowOffset)
-        dstLayer->flowOffset.Set(flowOffset->Clone());
+    if (flowOffsetOverLife)
+        dstLayer->flowOffsetOverLife.Set(flowOffsetOverLife->Clone());
+
+    if (noiseScale)
+        dstLayer->noiseScale.Set(noiseScale->Clone());
+
+    if (noiseUScrollSpeed)
+        dstLayer->noiseUScrollSpeed.Set(noiseUScrollSpeed->Clone());
+
+    if (noiseVScrollSpeed)
+        dstLayer->noiseVScrollSpeed.Set(noiseVScrollSpeed->Clone());
 
     if (life)
         dstLayer->life.Set(life->Clone());
@@ -214,6 +223,10 @@ ParticleLayer* ParticleLayer::Clone()
     dstLayer->layerName = layerName;
 
     dstLayer->enableFlow = enableFlow;
+
+    dstLayer->enableNoise = enableNoise;
+    dstLayer->isNoiseAffectFlow = isNoiseAffectFlow;
+    dstLayer->useNoiseScroll = useNoiseScroll;
 
     dstLayer->blending = blending;
     dstLayer->enableFog = enableFog;
@@ -351,14 +364,16 @@ void ParticleLayer::UpdateLayerTime(float32 startTime, float32 endTime)
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(spinVariation).Get(), startTime, translateTime, endTime);
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(angle).Get(), startTime, translateTime, endTime);
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(angleVariation).Get(), startTime, translateTime, endTime);
-    UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(flowSpeed).Get(), startTime, translateTime, endTime);
-    UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(flowOffset).Get(), startTime, translateTime, endTime);
+    UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(flowSpeedOverLife).Get(), startTime, translateTime, endTime);
+    UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(flowOffsetOverLife).Get(), startTime, translateTime, endTime);
+    UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(noiseScale).Get(), startTime, translateTime, endTime);
+    UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(noiseUScrollSpeed).Get(), startTime, translateTime, endTime);
+    UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(noiseVScrollSpeed).Get(), startTime, translateTime, endTime);
 }
 
 void ParticleLayer::SetSprite(const FilePath& path)
 {
     spritePath = path;
-
     if (type != TYPE_SUPEREMITTER_PARTICLES)
     {
         sprite.reset(Sprite::Create(spritePath));
@@ -377,6 +392,11 @@ void ParticleLayer::SetFlowmap(const FilePath& spritePath_)
     flowmapPath = spritePath_;
     if (type != TYPE_SUPEREMITTER_PARTICLES)
         flowmap.reset(Sprite::Create(flowmapPath));
+}
+
+void ParticleLayer::SetNoise(const FilePath& noisePath)
+{
+
 }
 
 void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* node, bool preserveInheritPosition)
@@ -497,8 +517,12 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
         scaleVelocityFactor = scaleVelocityFactorNode->AsFloat();
     }
 
-    flowSpeed = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("flowSpeed"));
-    flowOffset = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("flowOffset"));
+    flowSpeedOverLife = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("flowSpeed"));
+    flowOffsetOverLife = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("flowOffset"));
+
+    noiseScale = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("noiseScale"));
+    noiseUScrollSpeed = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("noiseUScrollSpeed"));
+    noiseVScrollSpeed = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("noiseVScrollSpeed"));
 
     life = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("life"));
     lifeVariation = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("lifeVariation"));
@@ -630,6 +654,24 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
         enableFlow = enableFlowNode->AsBool();
     }
 
+    const YamlNode* enableNoiseNode = node->Get("enableNoise");
+    if (enableNoiseNode)
+    {
+        enableNoise = enableNoiseNode->AsBool();
+    }
+
+    const YamlNode* isNoiseAffectFlowNode = node->Get("isNoiseAffectFlow");
+    if (isNoiseAffectFlowNode)
+    {
+        isNoiseAffectFlow = isNoiseAffectFlowNode->AsBool();
+    }
+
+    const YamlNode* useNoiseScrollNode = node->Get("useNoiseScroll");
+    if (useNoiseScrollNode)
+    {
+        useNoiseScroll = useNoiseScrollNode->AsBool();
+    }
+
     const YamlNode* frameBlendNode = node->Get("enableFrameBlend");
     if (frameBlendNode)
     {
@@ -672,18 +714,28 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
         loopEndTime = loopEndTimeNode->AsFloat();
 
     /*validate all time depended property lines*/
-    UpdatePropertyLineOnLoad(flowSpeed.Get(), startTime, endTime);
-    UpdatePropertyLineOnLoad(flowOffset.Get(), startTime, endTime);
+    UpdatePropertyLineOnLoad(flowSpeedOverLife.Get(), startTime, endTime);
+    UpdatePropertyLineOnLoad(flowOffsetOverLife.Get(), startTime, endTime);
+
+    UpdatePropertyLineOnLoad(noiseScale.Get(), startTime, endTime);
+    UpdatePropertyLineOnLoad(noiseUScrollSpeed.Get(), startTime, endTime);
+    UpdatePropertyLineOnLoad(noiseVScrollSpeed.Get(), startTime, endTime);
+
     UpdatePropertyLineOnLoad(life.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(lifeVariation.Get(), startTime, endTime);
+
     UpdatePropertyLineOnLoad(number.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(numberVariation.Get(), startTime, endTime);
+
     UpdatePropertyLineOnLoad(size.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(sizeVariation.Get(), startTime, endTime);
+
     UpdatePropertyLineOnLoad(velocity.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(velocityVariation.Get(), startTime, endTime);
+
     UpdatePropertyLineOnLoad(spin.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(spinVariation.Get(), startTime, endTime);
+
     UpdatePropertyLineOnLoad(angle.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(angleVariation.Get(), startTime, endTime);
 
@@ -789,14 +841,23 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
 
     layerNode->Add("enableFlow", enableFlow);
 
+    layerNode->Add("enableNoise", enableNoise);
+    layerNode->Add("isNoiseAffectFlow", isNoiseAffectFlow);
+    layerNode->Add("useNoiseScroll", useNoiseScroll);
+
     layerNode->Add("enableFog", enableFog);
     layerNode->Add("enableFrameBlend", enableFrameBlend);
 
     layerNode->Add("scaleVelocityBase", scaleVelocityBase);
     layerNode->Add("scaleVelocityFactor", scaleVelocityFactor);
 
-    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "flowSpeed", this->flowSpeed);
-    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "flowOffset", this->flowOffset);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "flowSpeed", this->flowSpeedOverLife);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "flowOffset", this->flowOffsetOverLife);
+
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "noiseScale", this->noiseScale);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "noiseUScrollSpeed", this->noiseUScrollSpeed);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "noiseVScrollSpeed", this->noiseVScrollSpeed);
+
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "life", this->life);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "lifeVariation", this->lifeVariation);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "number", this->number);
@@ -882,8 +943,11 @@ void ParticleLayer::SaveForcesToYamlNode(YamlNode* layerNode)
 
 void ParticleLayer::GetModifableLines(List<ModifiablePropertyLineBase*>& modifiables)
 {
-    PropertyLineHelper::AddIfModifiable(flowSpeed.Get(), modifiables);
-    PropertyLineHelper::AddIfModifiable(flowOffset.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(flowSpeedOverLife.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(flowOffsetOverLife.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(noiseScale.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(noiseUScrollSpeed.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(noiseVScrollSpeed.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(life.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(lifeVariation.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(number.Get(), modifiables);
