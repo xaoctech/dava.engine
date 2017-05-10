@@ -77,10 +77,9 @@ ParticleEffectSystem::ParticleEffectSystem(Scene* scene, bool _is2DMode)
 
 ParticleEffectSystem::~ParticleEffectSystem()
 {
-    for (Map<uint64, NMaterial *>::iterator it = materialMap.begin(), e = materialMap.end(); it != e; ++it)
-    {
-        SafeRelease(it->second);
-    }
+    for (auto& it : prebultMaterialsVector)
+        SafeRelease(it.second);
+
     SafeRelease(particleBaseMaterial);
 }
 
@@ -513,15 +512,15 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
                 NMaterial* mat = group.material;
                 if (mat != nullptr)
                 {
-                    float32 flowSpeed = 0.0f;
-                    float32 flowOffset = 0.0f;
-                    if (group.layer->flowSpeed != nullptr)
-                        flowSpeed = group.layer->flowSpeed->GetValue(overLifeTime);
-                    if (group.layer->flowOffset != nullptr)
-                        flowOffset = group.layer->flowOffset->GetValue(overLifeTime);
+                    float32 flowSpeedOverLife = 0.0f;
+                    float32 flowOffsetOverLife = 0.0f;
+                    if (group.layer->flowSpeedOverLife != nullptr)
+                        flowSpeedOverLife = group.layer->flowSpeedOverLife->GetValue(overLifeTime);
+                    if (group.layer->flowOffsetOverLife != nullptr)
+                        flowOffsetOverLife = group.layer->flowOffsetOverLife->GetValue(overLifeTime);
 
-                    current->flowSpeed = flowSpeed;
-                    current->flowOffset = flowOffset;
+                    current->flowSpeedOverLife = flowSpeedOverLife;
+                    current->flowOffsetOverLife = flowOffsetOverLife;
                 }
             }
 
@@ -650,8 +649,8 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleEffectComponent* eff
         particle->frame = static_cast<int32>(static_cast<float32>(Random::Instance()->RandFloat()) * static_cast<float32>(group.layer->sprite->GetFrameCount()));
     }
 
-    particle->flowSpeed = 0.2f;
-    particle->flowOffset = 0.2f;
+    particle->flowSpeedOverLife = 0.2f;
+    particle->flowOffsetOverLife = 0.2f;
 
     PrepareEmitterParameters(particle, group, worldTransform);
 

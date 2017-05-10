@@ -336,8 +336,8 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
                     {
                         verts[i][ptrOffset + 0] = flowUV[i * 2];
                         verts[i][ptrOffset + 1] = flowUV[i * 2 + 1];
-                        verts[i][ptrOffset + 2] = current->flowSpeed;
-                        verts[i][ptrOffset + 3] = current->flowOffset;
+                        verts[i][ptrOffset + 2] = current->flowSpeedOverLife;
+                        verts[i][ptrOffset + 3] = current->flowOffsetOverLife;
                     }
                     ptrOffset += 4;
                 }
