@@ -51,15 +51,11 @@ DAVA::ParticleLayer* CommandChangeLayerMaterialProperties::GetLayer() const
     return layer;
 }
 
-CommandChangeFlowProperties::CommandChangeFlowProperties(ParticleLayer* layer_, const FilePath& spritePath, bool enableFlow, RefPtr<PropertyLine<float32>> flowSpeedOverLife, RefPtr<PropertyLine<float32>> flowOffsetOverLife)
+CommandChangeFlowProperties::CommandChangeFlowProperties(ParticleLayer* layer_, CommandChangeFlowProperties::FlowParams&& params)
     :RECommand(CMDID_PARTICLE_LAYER_CHANGED_FLOW_VALUES, "Change Flow Properties")
     , layer(layer_)
+    , newParams(params)
 {
-    newParams.spritePath = spritePath;
-    newParams.enableFlow = enableFlow;
-    newParams.flowSpeedOverLife = flowSpeedOverLife;
-    newParams.flowOffsetOverLife = flowOffsetOverLife;
-
     DVASSERT(layer != nullptr);
     if (layer != nullptr)
     {

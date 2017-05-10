@@ -40,14 +40,6 @@ private:
 class CommandChangeFlowProperties : public RECommand
 {
 public:
-    CommandChangeFlowProperties(DAVA::ParticleLayer* layer_, const DAVA::FilePath& spritePath, bool enableFlow, RefPtr<PropertyLine<float32>> flowSpeedOverLife, RefPtr<PropertyLine<float32>> flowOffsetOverLife);
-
-    void Undo() override;
-    void Redo() override;
-
-    DAVA::ParticleLayer* GetLayer() const;
-
-private:
     struct FlowParams
     {
         DAVA::FilePath spritePath;
@@ -56,6 +48,14 @@ private:
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> flowOffsetOverLife;
     };
 
+    CommandChangeFlowProperties(DAVA::ParticleLayer* layer_, FlowParams&& flowParameters);
+
+    void Undo() override;
+    void Redo() override;
+
+    DAVA::ParticleLayer* GetLayer() const;
+
+private:
     void ApplyParams(FlowParams& params);
 
     FlowParams newParams;
