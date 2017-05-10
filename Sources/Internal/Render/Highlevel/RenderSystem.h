@@ -118,6 +118,7 @@ private:
     void FindNearestLights();
     void AddRenderObject(RenderObject* renderObject);
     void RemoveRenderObject(RenderObject* renderObject);
+    void PrebuildMaterial(NMaterial* material);
 
 private:
     friend class RenderPass;
