@@ -26,6 +26,11 @@ public:
     // false, when no error occured (err_buffer is not changed)
     bool get_last_error(char* err_buffer, unsigned err_buffer_size);
 
+    typedef float (*FuncImpl)(float arg);
+
+    static bool RegisterFunction(const char* name, FuncImpl impl);
+    static void RegisterCommonFunctions();
+
 private:
     struct SyntaxTreeNode;
 
@@ -39,6 +44,8 @@ private:
     std::vector<SyntaxTreeNode> _node;
 
     std::unordered_map<uint32, float> _var;
+
+    static std::unordered_map<uint32, FuncImpl> _FuncImpl;
 
     mutable unsigned _last_error_code;
     mutable unsigned _last_error_index;

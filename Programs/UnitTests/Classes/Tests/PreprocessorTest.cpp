@@ -5,6 +5,11 @@
 
 #include <malloc.h>
 
+static float EV_OneMore(float x)
+{
+    return x + 1.0f;
+}
+
 DAVA_TESTCLASS (PreprocessorTest)
 {
     static bool CompareStringBuffers();
@@ -35,7 +40,10 @@ DAVA_TESTCLASS (PreprocessorTest)
           { "defined RANDOM_BULLSHIT", 0.0f },
           { "SHADING != SHADING_NONE  &&  !defined RANDOM_BULLSHIT", 1.0f },
           { "!(LIGHTING_ENABLED)", 0.0f },
-          { "!(LIGHTING_ENABLED && DARKNESS_ENABLED)", 1.0f }
+          { "!(LIGHTING_ENABLED && DARKNESS_ENABLED)", 1.0f },
+          { "abs(-7)", 7.0f },
+          { "one_more(4)", 5.0f },
+          { "one_more(one_more(4))", 6.0f }
 #else
 //          { "!(LIGHTING_ENABLED && DARKNESS_ENABLED)", 1.0f }
 #endif
@@ -49,6 +57,9 @@ DAVA_TESTCLASS (PreprocessorTest)
         ev.set_variable("LIGHTING_ENABLED", 1);
         ev.set_variable("DARKNESS_ENABLED", 0);
         ev.set_variable("DARKNESS_DISABLED", 0);
+        ExpressionEvaluator::RegisterCommonFunctions();
+        ExpressionEvaluator::RegisterFunction("one_more", &EV_OneMore);
+
         for (unsigned i = 0; i != countof(data); ++i)
         {
             float res = 0;

@@ -6,6 +6,7 @@
 
 #include <string.h>
 #include <string.h>
+#include <math.h>
 
 using DAVA::InvalidIndex;
 
@@ -39,6 +40,7 @@ ExpressionEvaluator::SyntaxTreeNode
     unsigned expr_index; // for error reporting
 
     char operation;
+    FuncImpl func = nullptr;
 
     SyntaxTreeNode()
         : operand(0.0f)
@@ -58,12 +60,13 @@ ExpressionEvaluator::SyntaxTreeNode
         , right_i(InvalidIndex)
         , expr_index(index)
         , operation(op){};
-    SyntaxTreeNode(char op, uint8_t func_code, unsigned index)
+    SyntaxTreeNode(char op, FuncImpl f, unsigned index)
         : operand(0.0f)
         , left_i(InvalidIndex)
         , right_i(InvalidIndex)
         , expr_index(index)
-        , operation(op){};
+        , operation(op)
+        , func(f){};
 };
 
 //------------------------------------------------------------------------------
@@ -205,9 +208,9 @@ ExpressionEvaluator::_Evaluate(const SyntaxTreeNode* node, float* out, unsigned*
                             *out = (fabs(y) > Epsilon) ? 0.0f : 1.0f;
                             break;
 
-                            //                        case _OpFunctionCall :
-                            //                            *out = func[node->function_code](y);
-                            //                            break;
+                        case _OpFunctionCall:
+                            *out = (node->func)(y);
+                            break;
                         }
                     }
                     else
@@ -415,7 +418,7 @@ ExpressionEvaluator::evaluate(const char* expression, float* result)
             negate_operand_value = false;
             invert_operand_value = false;
         }
-        // process variables
+        // process variables/functions
         else if (isalpha(*expr))
         {
             offset = _GetVariable(expr);
@@ -423,33 +426,30 @@ ExpressionEvaluator::evaluate(const char* expression, float* result)
             strncpy(&var[0], expr, offset);
             var[offset] = '\0';
             uint32 vhash = DAVA::HashValue_N(var, offset);
+            std::unordered_map<uint32_t, FuncImpl>::iterator func = _FuncImpl.find(vhash);
 
-            if (_var.find(vhash) != _var.end())
+            if (func != _FuncImpl.end())
             {
-                float value = _var[vhash];
-                if (negate_operand_value)
-                    value = -value;
-                if (invert_operand_value)
-                    value = (fabs(value) > Epsilon) ? 0.0f : 1.0f;
-
-                if (_operator_stack.size() && _operator_stack.back().operation == _OpDefined)
-                    value = 1.0f;
-                if (_operator_stack.size() && _operator_stack.back().operation == _OpNotDefined)
-                    value = 0.0f;
-
-                _node_stack.push_back(unsigned(_node.size()));
-                _node.push_back(SyntaxTreeNode(value, unsigned(expr - text)));
-
-                last_token_operand = true;
-                negate_operand_value = false;
-                invert_operand_value = false;
+                _operator_stack.push_back(SyntaxTreeNode(_OpFunctionCall, func->second, expr - text));
+                last_token_operand = false;
             }
             else
             {
-                if (_operator_stack.size() && (_operator_stack.back().operation == _OpDefined || _operator_stack.back().operation == _OpNotDefined))
+                if (_var.find(vhash) != _var.end())
                 {
+                    float value = _var[vhash];
+                    if (negate_operand_value)
+                        value = -value;
+                    if (invert_operand_value)
+                        value = (fabs(value) > Epsilon) ? 0.0f : 1.0f;
+
+                    if (_operator_stack.size() && _operator_stack.back().operation == _OpDefined)
+                        value = 1.0f;
+                    if (_operator_stack.size() && _operator_stack.back().operation == _OpNotDefined)
+                        value = 0.0f;
+
                     _node_stack.push_back(unsigned(_node.size()));
-                    _node.push_back(SyntaxTreeNode((_operator_stack.back().operation == _OpDefined) ? 0.0f : 1.0f, InvalidIndex));
+                    _node.push_back(SyntaxTreeNode(value, unsigned(expr - text)));
 
                     last_token_operand = true;
                     negate_operand_value = false;
@@ -457,10 +457,22 @@ ExpressionEvaluator::evaluate(const char* expression, float* result)
                 }
                 else
                 {
-                    // undefined symbol
-                    _last_error_code = 3;
-                    _last_error_index = unsigned(expr - text);
-                    return false;
+                    if (_operator_stack.size() && (_operator_stack.back().operation == _OpDefined || _operator_stack.back().operation == _OpNotDefined))
+                    {
+                        _node_stack.push_back(unsigned(_node.size()));
+                        _node.push_back(SyntaxTreeNode((_operator_stack.back().operation == _OpDefined) ? 0.0f : 1.0f, InvalidIndex));
+
+                        last_token_operand = true;
+                        negate_operand_value = false;
+                        invert_operand_value = false;
+                    }
+                    else
+                    {
+                        // undefined symbol
+                        _last_error_code = 3;
+                        _last_error_index = unsigned(expr - text);
+                        return false;
+                    }
                 }
             }
         }
@@ -565,7 +577,7 @@ ExpressionEvaluator::evaluate(const char* expression, float* result)
 
                 _operator_stack.pop_back();
             }
-            /*
+
             // check if it was function call
             if( (_operator_stack.size() != 0) && (_operator_stack.back().operation == _OpFunctionCall) )
             {
@@ -577,7 +589,7 @@ ExpressionEvaluator::evaluate(const char* expression, float* result)
 
                 _operator_stack.pop_back();
             }
-*/
+
             last_token_operand = false;
 
             offset = 1;
@@ -667,3 +679,38 @@ ExpressionEvaluator::get_last_error(char* err_buffer, unsigned err_buffer_size)
 
     return ret;
 }
+
+bool ExpressionEvaluator::RegisterFunction(const char* name, FuncImpl impl)
+{
+    bool success = false;
+    uint32 func_id = DAVA::HashValue_N(name, uint32(strlen(name)));
+
+    if (_FuncImpl.find(func_id) == _FuncImpl.end())
+    {
+        _FuncImpl[func_id] = impl;
+        success = true;
+    }
+
+    return success;
+}
+
+static float EV_Sin(float x)
+{
+    return ::sinf(x);
+}
+static float EV_Cos(float x)
+{
+    return ::cosf(x);
+}
+static float EV_Abs(float x)
+{
+    return ::fabs(x);
+}
+void ExpressionEvaluator::RegisterCommonFunctions()
+{
+    ExpressionEvaluator::RegisterFunction("sin", &EV_Sin);
+    ExpressionEvaluator::RegisterFunction("cos", &EV_Cos);
+    ExpressionEvaluator::RegisterFunction("abs", &EV_Abs);
+}
+
+std::unordered_map<uint32, ExpressionEvaluator::FuncImpl> ExpressionEvaluator::_FuncImpl;
