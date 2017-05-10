@@ -164,6 +164,7 @@ PreProc::_get_expression(char* txt, char** end) const
         }
         else if (s[0] == '*' && s[1] == '/')
         {
+            DVASSERT(cmt);
             cmt = false;
             s[0] = ' ';
             s[1] = ' ';
