@@ -94,8 +94,10 @@ void RenderSystem::RemoveRenderObject(RenderObject* renderObject)
         UnregisterBatch(batch);
     }
 
+    geoDecalManager->RemoveRenderObject(renderObject);
     renderHierarchy->RemoveRenderObject(renderObject);
-    renderObject->SetRenderSystem(0);
+
+    renderObject->SetRenderSystem(nullptr);
 }
 
 void RenderSystem::RegisterBatch(RenderBatch* batch)

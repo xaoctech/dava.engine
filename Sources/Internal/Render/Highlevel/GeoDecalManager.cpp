@@ -31,6 +31,46 @@ struct GeoDecalManager::DecalVertex
     int32 jointIndex = 0;
 };
 
+class GeoDecalRenderBatchProvider : public RenderBatchProvider
+{
+public:
+    ~GeoDecalRenderBatchProvider()
+    {
+        for (const RenderBatchWithOptions& b : batches)
+        {
+            RenderBatch* renderBatch = b.renderBatch;
+            SafeRelease(renderBatch);
+        }
+    }
+
+    const Vector<RenderBatchWithOptions> GetRenderBatches() const
+    {
+        return batches;
+    }
+
+    template <class... A>
+    void EmplaceRenderBatch(A&&... args)
+    {
+        batches.emplace_back(std::forward<A>(args)...);
+        SafeRetain(batches.back().renderBatch);
+    }
+
+private:
+    Vector<RenderBatchWithOptions> batches;
+
+public:
+    INTROSPECTION(GeoDecalRenderBatchProvider,
+                  COLLECTION(batches, "Render Batches", I_SAVE | I_VIEW | I_EDIT)
+                  );
+    DAVA_VIRTUAL_REFLECTION(GeoDecalRenderBatchProvider, RenderBatchProvider);
+};
+
+DAVA_VIRTUAL_REFLECTION_IMPL(GeoDecalRenderBatchProvider)
+{
+    ReflectionRegistrator<GeoDecalRenderBatchProvider>::Begin()
+    .End();
+}
+
 const GeoDecalManager::Decal GeoDecalManager::InvalidDecal = nullptr;
 
 GeoDecalManager::GeoDecalManager(RenderSystem* rs)
@@ -116,7 +156,10 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, co
 
     BuiltDecal& builtDecal = builtDecals[decal];
     {
-        builtDecal.sourceObject = ro;
+        GeoDecalRenderBatchProvider* decalBatchProvider = new GeoDecalRenderBatchProvider();
+
+        builtDecal.batchProvider.Set(decalBatchProvider);
+        builtDecal.sourceObject.Set(SafeRetain(ro));
 
         for (uint32 i = 0, e = ro->GetRenderBatchCount(); i < e; ++i)
         {
@@ -129,7 +172,7 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, co
             ScopedPtr<RenderBatch> newBatch(new RenderBatch());
             if (BuildDecal(info, newBatch))
             {
-                builtDecal.batches.emplace_back(newBatch, lodIndex, switchIndex);
+                decalBatchProvider->EmplaceRenderBatch(newBatch, lodIndex, switchIndex);
             }
         }
     }
@@ -149,8 +192,7 @@ void GeoDecalManager::RegisterDecal(Decal decal)
     DVASSERT(builtDecals.count(decal) > 0);
 
     const BuiltDecal& builtDecal = builtDecals[decal];
-    for (const BatchWithOptions& batch : builtDecal.batches)
-        builtDecal.sourceObject->AddDynamicRenderBatch(batch.batch.Get(), batch.lodIndex, batch.switchIndex);
+    builtDecal.sourceObject->AddRenderBatchProvider(builtDecal.batchProvider.Get());
 }
 
 void GeoDecalManager::UnregisterDecal(Decal decal)
@@ -158,8 +200,18 @@ void GeoDecalManager::UnregisterDecal(Decal decal)
     DVASSERT(builtDecals.count(decal) > 0);
 
     const BuiltDecal& builtDecal = builtDecals[decal];
-    for (const BatchWithOptions& batch : builtDecal.batches)
-        builtDecal.sourceObject->RemoveDynamicRenderBatch(batch.batch.Get());
+    builtDecal.sourceObject->RemoveRenderBatchProvider(builtDecal.batchProvider.Get());
+}
+
+void GeoDecalManager::RemoveRenderObject(RenderObject* ro)
+{
+    for (const auto& b : builtDecals)
+    {
+        if (b.second.sourceObject == ro)
+        {
+            UnregisterDecal(b.first);
+        }
+    }
 }
 
 #define MAX_CLIPPED_POLYGON_CAPACITY 9
@@ -476,10 +528,4 @@ void GeoDecalManager::ClipToBoundingBox(DecalVertex* p_vs, uint8_t* nb_p_vs, con
 #undef MAX_CLIPPED_POLYGON_CAPACITY
 #undef PLANE_THICKNESS_EPSILON
 
-GeoDecalManager::BatchWithOptions::BatchWithOptions(RenderBatch* b, int32 l, int32 s)
-    : batch(SafeRetain(b))
-    , lodIndex(l)
-    , switchIndex(s)
-{
-}
 }

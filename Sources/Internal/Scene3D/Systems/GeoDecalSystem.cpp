@@ -150,6 +150,7 @@ void GeoDecalSystem::RemoveCreatedDecals(Entity* entity, GeoDecalComponent* comp
     {
         manager->DeleteDecal(decal);
     }
+    decals[component].decals.clear();
 }
 
 void GeoDecalSystem::BuildDecal(Entity* entityWithDecal, GeoDecalComponent* component)

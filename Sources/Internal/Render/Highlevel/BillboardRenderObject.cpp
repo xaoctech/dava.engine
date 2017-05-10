@@ -20,7 +20,7 @@ BillboardRenderObject::BillboardRenderObject()
 void BillboardRenderObject::RecalcBoundingBox()
 {
     bbox = AABBox3();
-    for (const IndexedRenderBatch& i : renderBatchArray)
+    for (const RenderBatchWithOptions& i : renderBatchArray)
     {
         RenderBatch* batch = i.renderBatch;
         bbox.AddAABBox(batch->GetBoundingBox());

@@ -193,8 +193,9 @@ void Landscape::ReleaseGeometryData()
     DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
 
     ////General
-    for (IndexedRenderBatch& batch : renderBatchArray)
+    for (RenderBatchWithOptions& batch : renderBatchArray)
         batch.renderBatch->Release();
+
     renderBatchArray.clear();
     activeRenderBatchArray.clear();
 

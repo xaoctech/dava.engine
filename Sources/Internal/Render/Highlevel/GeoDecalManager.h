@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Base/RefPtr.h"
 #include "Functional/Function.h"
 #include "FileSystem/FilePath.h"
 #include "Math/AABBox3.h"
@@ -8,10 +7,11 @@
 
 namespace DAVA
 {
+class Texture;
 class RenderSystem;
 class RenderObject;
 class RenderBatch;
-class Texture;
+class RenderBatchProvider;
 class GeoDecalManager
 {
 public:
@@ -49,23 +49,22 @@ public:
     GeoDecalManager(RenderSystem* renderSystem);
 
     Decal BuildDecal(const DecalConfig& config, const Matrix4& decalWorldTransform, RenderObject* object);
+
     void DeleteDecal(Decal decal);
+
+    /*
+     * Removes all decals associated with provided RenderObject
+     */
+    void RemoveRenderObject(RenderObject*);
 
 private:
     struct DecalVertex;
     struct DecalBuildInfo;
 
-    struct BatchWithOptions
-    {
-        RefPtr<RenderBatch> batch;
-        int32 lodIndex = -1;
-        int32 switchIndex = -1;
-        BatchWithOptions(RenderBatch* b, int32 l, int32 s);
-    };
     struct BuiltDecal
     {
         RefPtr<RenderObject> sourceObject = RefPtr<RenderObject>(nullptr);
-        Vector<BatchWithOptions> batches;
+        RefPtr<RenderBatchProvider> batchProvider = RefPtr<RenderBatchProvider>(nullptr);
     };
 
     void RegisterDecal(Decal decal);

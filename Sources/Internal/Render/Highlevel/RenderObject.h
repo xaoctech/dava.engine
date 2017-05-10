@@ -14,6 +14,48 @@ namespace DAVA
 const static uint16 INVALID_STATIC_OCCLUSION_INDEX = uint16(-1);
 
 class RenderBatch;
+
+struct RenderBatchWithOptions : public InspBase
+{
+    RenderBatch* renderBatch = nullptr;
+    int32 lodIndex = -2;
+    int32 switchIndex = -1;
+
+    RenderBatchWithOptions() = default;
+
+    RenderBatchWithOptions(const RenderBatchWithOptions& r) = default;
+
+    RenderBatchWithOptions(RenderBatch* rb, int32 l, int32 s)
+        : renderBatch(rb)
+        , lodIndex(l)
+        , switchIndex(s)
+    {
+    }
+
+    bool operator==(const RenderBatchWithOptions& other) const;
+
+    INTROSPECTION(RenderBatchWithOptions,
+                  MEMBER(renderBatch, "Render Batch", I_SAVE | I_VIEW)
+                  MEMBER(lodIndex, "Lod Index", I_SAVE | I_VIEW)
+                  MEMBER(switchIndex, "Switch Index", I_SAVE | I_VIEW)
+                  );
+
+    DAVA_VIRTUAL_REFLECTION(RenderBatchWithOptions, InspBase);
+};
+
+class RenderBatchProvider : public BaseObject
+{
+public:
+    virtual ~RenderBatchProvider()
+    {
+    }
+    virtual const Vector<RenderBatchWithOptions> GetRenderBatches() const = 0;
+
+public:
+    INTROSPECTION(RenderBatchProvider, NULL);
+    DAVA_VIRTUAL_REFLECTION(RenderBatchProvider, BaseObject);
+};
+
 class RenderObject : public BaseObject
 {
 public:
@@ -77,8 +119,8 @@ public:
     void SetRenderBatchLODIndex(uint32 batchIndex, int32 newLodIndex);
     void SetRenderBatchSwitchIndex(uint32 batchIndex, int32 newSwitchIndex);
 
-    void AddDynamicRenderBatch(RenderBatch* batch, int32 lodIndex, int32 switchIndex);
-    void RemoveDynamicRenderBatch(RenderBatch* batch);
+    void AddRenderBatchProvider(RenderBatchProvider*);
+    void RemoveRenderBatchProvider(RenderBatchProvider*);
 
     virtual void RecalcBoundingBox();
 
@@ -245,41 +287,19 @@ public:
     };
     std::vector<VoxelCoord> inVisCopy;
 
-    struct IndexedRenderBatch : public InspBase
-    {
-        RenderBatch* renderBatch = nullptr;
-        int32 lodIndex = -2;
-        int32 switchIndex = -1;
-
-        IndexedRenderBatch() = default;
-        IndexedRenderBatch(RenderBatch* rb, int32 l, int32 s)
-            :
-            renderBatch(rb)
-            , lodIndex(l)
-            , switchIndex(s)
-        {
-        }
-
-        bool operator==(const IndexedRenderBatch& other) const;
-
-        INTROSPECTION(IndexedRenderBatch,
-                      MEMBER(renderBatch, "Render Batch", I_SAVE | I_VIEW)
-                      MEMBER(lodIndex, "Lod Index", I_SAVE | I_VIEW)
-                      MEMBER(switchIndex, "Switch Index", I_SAVE | I_VIEW));
-
-        DAVA_VIRTUAL_REFLECTION(IndexedRenderBatch, InspBase);
-    };
-
 protected:
-    void InternalAddRenderBatchToCollection(Vector<IndexedRenderBatch>& dest, RenderBatch* batch, int32 lodIndex, int32 switchIndex);
-    void InternalRemoveRenderBatchFromCollection(Vector<IndexedRenderBatch>& collection, RenderBatch* batch);
+    void UpdateAddedRenderBatch(RenderBatch* batch);
+    void UpdateRemovedRenderBatch(RenderBatch* batch);
+    void InternalAddRenderBatchToCollection(Vector<RenderBatchWithOptions>& dest, RenderBatch* batch, int32 lodIndex, int32 switchIndex);
+    void InternalRemoveRenderBatchFromCollection(Vector<RenderBatchWithOptions>& collection, RenderBatch* batch);
+    void UpdateActiveRenderBatchesFromCollection(const Vector<RenderBatchWithOptions>& collection);
     void UpdateActiveRenderBatches();
 
     static const int32 DEFAULT_RENDEROBJECT_FLAGS = eFlags::VISIBLE | eFlags::VISIBLE_STATIC_OCCLUSION | eFlags::VISIBLE_QUALITY;
 
 protected:
-    Vector<IndexedRenderBatch> renderBatchArray;
-    Vector<IndexedRenderBatch> dynamicBatchArray;
+    Vector<RenderBatchWithOptions> renderBatchArray;
+    Vector<RenderBatchProvider*> renderBatchProviders;
     Vector<RenderBatch*> activeRenderBatchArray;
     Light* lights[MAX_LIGHT_COUNT];
     RenderSystem* renderSystem = nullptr;
@@ -317,7 +337,7 @@ public:
                          MEMBER(inVisibilityNodeCount, "Visibility Node Count", I_SAVE | I_VIEW | I_EDIT)
                          COLLECTION(inVisCopy, "Visibility Nodes", I_SAVE | I_VIEW | I_EDIT)
                          COLLECTION(renderBatchArray, "Render Batches", I_SAVE | I_VIEW | I_EDIT)
-                         COLLECTION(dynamicBatchArray, "Dynamic Batches", I_SAVE | I_VIEW | I_EDIT)
+                         COLLECTION(renderBatchProviders, "Render Batch Providers", I_SAVE | I_VIEW | I_EDIT)
                          COLLECTION(activeRenderBatchArray, "Active Batches", I_VIEW)
                          );
 
@@ -412,7 +432,7 @@ inline RenderBatch* RenderObject::GetRenderBatch(uint32 batchIndex) const
 
 inline RenderBatch* RenderObject::GetRenderBatch(uint32 batchIndex, int32& _lodIndex, int32& _switchIndex) const
 {
-    const IndexedRenderBatch& irb = renderBatchArray[batchIndex];
+    const RenderBatchWithOptions& irb = renderBatchArray[batchIndex];
     _lodIndex = irb.lodIndex;
     _switchIndex = irb.switchIndex;
 
@@ -506,6 +526,7 @@ inline uint32 RenderObject::GetVisibilityStructureNodeCount() const
 }
 
 template <>
-bool AnyCompare<RenderObject::IndexedRenderBatch>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2);
-extern template struct AnyCompare<RenderObject::IndexedRenderBatch>;
+bool AnyCompare<RenderBatchWithOptions>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2);
+
+extern template struct AnyCompare<RenderBatchWithOptions>;
 }
