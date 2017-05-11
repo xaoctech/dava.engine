@@ -367,7 +367,7 @@ void AssetCacheClient::OnReceivedFromCache(const AssetCache::CacheItemKey& key, 
             request.result = AssetCache::Error::NO_ERRORS;
             getFilesRequest.chunksOverall = numOfChunks;
             getFilesRequest.bytesRemaining = static_cast<size_t>(dataSize);
-            getFilesRequest.receivedData.resize(dataSize);
+            getFilesRequest.receivedData.resize(getFilesRequest.bytesRemaining);
             Logger::Debug("Received info: %u bytes, %u chunks", dataSize, numOfChunks);
         }
 
