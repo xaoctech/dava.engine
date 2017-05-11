@@ -205,9 +205,10 @@ DAVA_TESTCLASS (PreprocessorTest)
 #if 1
           "E01-input.txt",
           "E02-input.txt",
-          "E03-input.txt"
+          "E03-input.txt",
+          "E04-input.txt"
 #else
-          "E03-input.txt"
+          "E04-input.txt"
 #endif
         };
 
