@@ -177,7 +177,7 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     enableNoiseCheckBox = new QCheckBox("Enable noise");
     mainBox->addWidget(enableNoiseCheckBox);
     connect(enableNoiseCheckBox,
-        SIGNAL(stateChaged(int)),
+        SIGNAL(stateChanged(int)),
         this,
         SLOT(OnNoisePropertiesChanged()));
     CreateNoiseLayoutWidget();
@@ -484,10 +484,9 @@ void EmitterLayerWidget::RestoreVisualState(DAVA::KeyedArchive* visualStateProps
     animSpeedOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ANIM_SPEED_OVER_LIFE_PROPS"));
     alphaOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ALPHA_OVER_LIFE_PROPS"));
     angleTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ANGLE"));
-    flowSpeedAndOffsetOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_FLOW_SPEED_PROPS"));
+    flowSpeedAndOffsetOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_FLOW_SPEED_OFFSET_PROPS"));
     noiseScaleTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_SCALE_PROPS"));
-    noiseUScrollSpeedTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_U_SCROLL_SPEED"));
-    noiseVScrollSpeedTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_V_SCROLL_SPEED"));
+    noiseUVScrollSpeedTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_UV_SCROLL_SPEED"));
 }
 
 void EmitterLayerWidget::StoreVisualState(DAVA::KeyedArchive* visualStateProps)
@@ -546,19 +545,15 @@ void EmitterLayerWidget::StoreVisualState(DAVA::KeyedArchive* visualStateProps)
 
     props->DeleteAllKeys();
     flowSpeedAndOffsetOverLifeTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_FLOW_SPEED_PROPS", props);
+    visualStateProps->SetArchive("LAYER_FLOW_SPEED_OFFSET_PROPS", props);
 
     props->DeleteAllKeys();
     noiseScaleTimeLine->GetVisualState(props);
     visualStateProps->SetArchive("LAYER_NOISE_SCALE_PROPS", props);
 
     props->DeleteAllKeys();
-    noiseUScrollSpeedTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_NOISE_U_SCROLL_SPEED", props);
-
-    props->DeleteAllKeys();
-    noiseVScrollSpeedTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_NOISE_V_SCROLL_SPEED", props);
+    noiseUVScrollSpeedTimeLine->GetVisualState(props);
+    visualStateProps->SetArchive("LAYER_NOISE_UV_SCROLL_SPEED", props);
 }
 
 void EmitterLayerWidget::OnSpriteBtn()
@@ -724,8 +719,6 @@ void EmitterLayerWidget::OnLayerMaterialValueChanged()
     emit ValueChanged();
 }
 
-
-
 void EmitterLayerWidget::OnFlowPropertiesChanged()
 {
     if (blockSignals)
@@ -763,16 +756,26 @@ void EmitterLayerWidget::OnNoisePropertiesChanged()
     noiseScaleTimeLine->GetValue(0, propNoiseScale.GetPropsPtr());
 
     DAVA::PropLineWrapper<DAVA::float32> propNoiseUScrollSpeed;
-    noiseUScrollSpeedTimeLine->GetValue(0, propNoiseUScrollSpeed.GetPropsPtr());
+    noiseUVScrollSpeedTimeLine->GetValue(0, propNoiseUScrollSpeed.GetPropsPtr());
 
     DAVA::PropLineWrapper<DAVA::float32> propNoiseVScrollSpeed;
-    noiseVScrollSpeedTimeLine->GetValue(0, propNoiseVScrollSpeed.GetPropsPtr());
+    noiseUVScrollSpeedTimeLine->GetValue(1, propNoiseVScrollSpeed.GetPropsPtr());
 
     QString path = noiseSpritePathLabel->text();
+    path = EmitterLayerWidgetDetails::ConvertPSDPathToSprite(path);
     const DAVA::FilePath noisePath(path.toStdString());
 
+    CommandChangeNoiseProperties::NoiseParams params;
+    params.noisePath = noisePath;
+    params.enableNoise = enableNoiseCheckBox->isChecked();
+    params.isNoiseAffectFlow = isNoiseAffectFlowCheckBox->isChecked();
+    params.noiseScale = propNoiseScale.GetPropLine();
+    params.useNoiseScroll = enableNoiseScrollCheckBox->isChecked();
+    params.noiseUScrollSpeed = propNoiseUScrollSpeed.GetPropLine();
+    params.noiseVScrollSpeed = propNoiseVScrollSpeed.GetPropLine();
+
     DVASSERT(GetActiveScene() != nullptr);
-//    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeNoiseProperties(layer, noisePath, enableNoiseCheckBox->isChecked(), isNoiseAffectFlowCheckBox->isChecked(), propNoiseScale.GetPropLine(), useNoiseScrollCheckBox->isChecked(), propNoiseUScrollSpeed.GetPropLine(), propNoiseVScrollSpeed.GetPropLine())));
+    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeNoiseProperties(layer, std::move(params))));
 
     UpdateNoiseSprite();
 
@@ -798,9 +801,9 @@ void EmitterLayerWidget::OnLodsChanged()
 
 void EmitterLayerWidget::OnSpriteUpdateTimerExpired()
 {
-    DVASSERT(!spriteUpdateTexturesStack.empty());
+    // DVASSERT(!spriteUpdateTexturesStack.empty());
 
-    if (rhi::SyncObjectSignaled(spriteUpdateTexturesStack.top().first))
+    if (spriteUpdateTexturesStack.size() > 0 && rhi::SyncObjectSignaled(spriteUpdateTexturesStack.top().first))
     {
         DAVA::ScopedPtr<DAVA::Image> image(spriteUpdateTexturesStack.top().second->CreateImageFromMemory());
         spriteLabel->setPixmap(QPixmap::fromImage(ImageTools::FromDavaImage(image)));
@@ -823,6 +826,21 @@ void EmitterLayerWidget::OnSpriteUpdateTimerExpired()
             SafeRelease(flowSpriteUpdateTexturesStack.top().second);
             flowSpriteUpdateTexturesStack.pop();
         }
+
+        spriteUpdateTimer->stop();
+    }
+    if (noiseSpriteUpdateTexturesStack.size() > 0 && rhi::SyncObjectSignaled(noiseSpriteUpdateTexturesStack.top().first))
+    {
+        DAVA::ScopedPtr<DAVA::Image> image(noiseSpriteUpdateTexturesStack.top().second->CreateImageFromMemory());
+        noiseSpriteLabel->setPixmap(QPixmap::fromImage(ImageTools::FromDavaImage(image)));
+
+        while (!noiseSpriteUpdateTexturesStack.empty())
+        {
+            SafeRelease(noiseSpriteUpdateTexturesStack.top().second);
+            noiseSpriteUpdateTexturesStack.pop();
+        }
+
+        spriteUpdateTimer->stop();
     }
 }
 
@@ -850,6 +868,12 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     enableFlowCheckBox->setChecked(layer->enableFlow);
     flowLayoutWidget->setVisible(enableFlowCheckBox->isChecked());
 
+    enableNoiseScrollCheckBox->setChecked(layer->useNoiseScroll);
+
+    enableNoiseCheckBox->setChecked(layer->enableNoise);
+    noiseLayoutWidget->setVisible(enableNoiseCheckBox->isChecked());
+
+
     isLoopedCheckBox->setChecked(layer->isLooped);
 
     for (DAVA::int32 i = 0; i < DAVA::LodComponent::MAX_LOD_LAYERS; ++i)
@@ -861,6 +885,7 @@ void EmitterLayerWidget::Update(bool updateMinimized)
 
     UpdateLayerSprite();
     UpdateFlowmapSprite();
+    UpdateNoiseSprite();
 
     //particle orientation
     cameraFacingCheckBox->setChecked(layer->particleOrientation & DAVA::ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING);
@@ -892,10 +917,9 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     // NOISE_STUFF
     noiseScaleTimeLine->Init(0.0f, 1.0f, updateMinimized);
     noiseScaleTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseScale)).GetProps(), Qt::red, "noise scale");
-    noiseUScrollSpeedTimeLine->Init(0.0f, 1.0f, updateMinimized);
-    noiseUScrollSpeedTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseUScrollSpeed)).GetProps(), Qt::red, "noise u scroll speed");
-    noiseVScrollSpeedTimeLine->Init(0.0f, 1.0f, updateMinimized);
-    noiseVScrollSpeedTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseVScrollSpeed)).GetProps(), Qt::red, "noise v scroll speed");
+    noiseUVScrollSpeedTimeLine->Init(0.0f, 1.0f, updateMinimized);
+    noiseUVScrollSpeedTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseUScrollSpeed)).GetProps(), Qt::red, "noise u scroll speed");
+    noiseUVScrollSpeedTimeLine->AddLine(1, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseVScrollSpeed)).GetProps(), Qt::green, "noise v scroll speed");
 
     //LAYER_LIFE, LAYER_LIFE_VARIATION,
     lifeTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
@@ -1031,41 +1055,22 @@ void EmitterLayerWidget::Update(bool updateMinimized)
 
 void EmitterLayerWidget::UpdateLayerSprite()
 {
-    if (layer->sprite && !layer->spritePath.IsEmpty())
-    {
-        DAVA::RenderSystem2D::RenderTargetPassDescriptor desc;
-        DAVA::Texture* dstTex = DAVA::Texture::CreateFBO(SPRITE_SIZE, SPRITE_SIZE, DAVA::FORMAT_RGBA8888);
-        desc.colorAttachment = dstTex->handle;
-        desc.depthAttachment = dstTex->handleDepthStencil;
-        desc.width = dstTex->GetWidth();
-        desc.height = dstTex->GetHeight();
-        desc.clearTarget = true;
-        desc.transformVirtualToPhysical = false;
-        desc.clearColor = DAVA::Color::Clear;
-        DAVA::RenderSystem2D::Instance()->BeginRenderTargetPass(desc);
-        {
-            DAVA::Sprite::DrawState drawState = {};
-            drawState.SetScaleSize(SPRITE_SIZE, SPRITE_SIZE, layer->sprite->GetWidth(), layer->sprite->GetHeight());
-            DAVA::RenderSystem2D::Instance()->Draw(layer->sprite, &drawState, DAVA::Color::White);
-        }
-        DAVA::RenderSystem2D::Instance()->EndRenderTargetPass();
-        spriteUpdateTexturesStack.push({ rhi::GetCurrentFrameSyncObject(), dstTex });
-        spriteUpdateTimer->start(0);
-
-        QString path = QString::fromStdString(layer->spritePath.GetAbsolutePathname());
-        path = EmitterLayerWidgetDetails::ConvertSpritePathToPSD(path);
-        spritePathLabel->setText(path);
-    }
-    else
-    {
-        spriteLabel->setPixmap(QPixmap());
-        spritePathLabel->setText("");
-    }
+    UpdateEditorTexture(layer->sprite, layer->spritePath, spritePathLabel, spriteLabel, spriteUpdateTexturesStack);
 }
 
 void EmitterLayerWidget::UpdateFlowmapSprite()
 {
-    if (layer->flowmap && !layer->flowmapPath.IsEmpty())
+    UpdateEditorTexture(layer->flowmap, layer->flowmapPath, flowSpritePathLabel, flowSpriteLabel, flowSpriteUpdateTexturesStack);
+}
+
+void EmitterLayerWidget::UpdateNoiseSprite()
+{
+    UpdateEditorTexture(layer->noise, layer->noisePath, noiseSpritePathLabel, noiseSpriteLabel, noiseSpriteUpdateTexturesStack);
+}
+
+void EmitterLayerWidget::UpdateEditorTexture(DAVA::Sprite* sprite, DAVA::FilePath& filePath, QLineEdit* pathLabel, QLabel* spriteLabel, DAVA::Stack<std::pair<rhi::HSyncObject, DAVA::Texture*>>& textureStack)
+{
+    if (sprite && !filePath.IsEmpty())
     {
         DAVA::RenderSystem2D::RenderTargetPassDescriptor desc;
         DAVA::Texture* dstTex = DAVA::Texture::CreateFBO(SPRITE_SIZE, SPRITE_SIZE, DAVA::FORMAT_RGBA8888);
@@ -1079,27 +1084,22 @@ void EmitterLayerWidget::UpdateFlowmapSprite()
         DAVA::RenderSystem2D::Instance()->BeginRenderTargetPass(desc);
         {
             DAVA::Sprite::DrawState drawState = {};
-            drawState.SetScaleSize(SPRITE_SIZE, SPRITE_SIZE, layer->flowmap->GetWidth(), layer->flowmap->GetHeight());
-            DAVA::RenderSystem2D::Instance()->Draw(layer->flowmap, &drawState, DAVA::Color::White);
+            drawState.SetScaleSize(SPRITE_SIZE, SPRITE_SIZE, sprite->GetWidth(), sprite->GetHeight());
+            DAVA::RenderSystem2D::Instance()->Draw(sprite, &drawState, DAVA::Color::White);
         }
         DAVA::RenderSystem2D::Instance()->EndRenderTargetPass();
-        flowSpriteUpdateTexturesStack.push({ rhi::GetCurrentFrameSyncObject(), dstTex });
+        textureStack.push({ rhi::GetCurrentFrameSyncObject(), dstTex });
         spriteUpdateTimer->start(0);
 
-        QString path = QString::fromStdString(layer->flowmapPath.GetAbsolutePathname());
+        QString path = QString::fromStdString(filePath.GetAbsolutePathname());
         path = EmitterLayerWidgetDetails::ConvertSpritePathToPSD(path);
-        flowSpritePathLabel->setText(path);
+        pathLabel->setText(path);
     }
     else
     {
-        flowSpriteLabel->setPixmap(QPixmap());
-        flowSpritePathLabel->setText("");
+        spriteLabel->setPixmap(QPixmap());
+        pathLabel->setText("");
     }
-}
-
-void EmitterLayerWidget::UpdateNoiseSprite()
-{
-
 }
 
 void EmitterLayerWidget::CreateFlowmapLayoutWidget()
@@ -1209,23 +1209,15 @@ void EmitterLayerWidget::CreateNoiseLayoutWidget()
         SLOT(OnNoisePropertiesChanged()));
     noiseMainLayout->addWidget(enableNoiseScrollCheckBox);
 
-    noiseUvScrollLayoutWidget = new QWidget();
-    QVBoxLayout* noiseUvScrollMainLayout = new QVBoxLayout(noiseUvScrollLayoutWidget);
-    noiseUScrollSpeedTimeLine = new TimeLineWidget(this);
-    connect(noiseUScrollSpeedTimeLine,
+    QVBoxLayout* noiseUvScrollLayout = new QVBoxLayout();
+    noiseUVScrollSpeedTimeLine = new TimeLineWidget(this);
+    connect(noiseUVScrollSpeedTimeLine,
         SIGNAL(ValueChanged()),
         this,
         SLOT(OnNoisePropertiesChanged()));
-    noiseUvScrollMainLayout->addWidget(noiseUScrollSpeedTimeLine);
 
-    noiseVScrollSpeedTimeLine = new TimeLineWidget(this);
-    connect(noiseVScrollSpeedTimeLine,
-        SIGNAL(ValueChanged()),
-        this,
-        SLOT(OnNoisePropertiesChanged()));
-    noiseUvScrollMainLayout->addWidget(noiseVScrollSpeedTimeLine);
-
-    noiseMainLayout->addLayout(noiseUvScrollMainLayout);
+    noiseUvScrollLayout->addWidget(noiseUVScrollSpeedTimeLine);
+    noiseMainLayout->addLayout(noiseUvScrollLayout);
 
     connect(noiseTextureBtn, SIGNAL(clicked(bool)), this, SLOT(OnNoiseSpriteBtn()));
     connect(noiseTextureFolderBtn, SIGNAL(clicked(bool)), this, SLOT(OnNoiseSpriteBtn()));
@@ -1361,6 +1353,7 @@ void EmitterLayerWidget::OnFlowSpritePathEdited(const QString& text)
 
 void EmitterLayerWidget::OnNoiseSpritePathEdited(const QString& text)
 {
+    CheckPath(text);
     OnNoisePropertiesChanged();
 }
 
@@ -1386,8 +1379,6 @@ void EmitterLayerWidget::OnNoiseSpriteBtn()
 
 void EmitterLayerWidget::OnNoiseFolderBtn()
 {
-
-    // Maybe not do it.
     OnChangeFolderButton(layer->noisePath, noiseSpritePathLabel, std::bind(&EmitterLayerWidget::OnNoiseSpritePathEdited, this, std::placeholders::_1));
 }
 
@@ -1423,6 +1414,9 @@ void EmitterLayerWidget::SetSuperemitterMode(bool isSuperemitter)
 {
     enableFlowCheckBox->setVisible(!isSuperemitter);
     flowLayoutWidget->setVisible(!isSuperemitter && enableFlowCheckBox->isChecked());
+
+    enableNoiseCheckBox->setVisible(!isSuperemitter);
+    noiseLayoutWidget->setVisible(!isSuperemitter && enableNoiseCheckBox->isChecked());
 
     // Sprite has no sense for Superemitter.
     spriteBtn->setVisible(!isSuperemitter);

@@ -61,31 +61,31 @@ eBlendMode GetBlendModeByName(const String& blendStr)
 
 ParticleLayer::ParticleLayer() : flowSpeedOverLife(nullptr), flowOffsetOverLife(nullptr), enableFlow(false), enableNoise(false), isNoiseAffectFlow(false), useNoiseScroll(false), noiseScale(nullptr), noiseUScrollSpeed(nullptr), noiseVScrollSpeed(nullptr)
 {
-    life = 0;
-    lifeVariation = 0;
+    life = nullptr;
+    lifeVariation = nullptr;
 
-    number = 0;
-    numberVariation = 0;
+    number = nullptr;
+    numberVariation = nullptr;
 
-    size = 0;
-    sizeVariation = 0;
+    size = nullptr;
+    sizeVariation = nullptr;
 
-    velocity = 0;
-    velocityVariation = 0;
-    velocityOverLife = 0;
+    velocity = nullptr;
+    velocityVariation = nullptr;
+    velocityOverLife = nullptr;
 
-    spin = 0;
-    spinVariation = 0;
-    spinOverLife = 0;
-    animSpeedOverLife = 0;
+    spin = nullptr;
+    spinVariation = nullptr;
+    spinOverLife = nullptr;
+    animSpeedOverLife = nullptr;
     randomSpinDirection = false;
 
-    colorOverLife = 0;
-    colorRandom = 0;
-    alphaOverLife = 0;
+    colorOverLife = nullptr;
+    colorRandom = nullptr;
+    alphaOverLife = nullptr;
 
-    angle = 0;
-    angleVariation = 0;
+    angle = nullptr;
+    angleVariation = nullptr;
 
     blending = BLENDING_ALPHABLEND;
     enableFog = true;
@@ -263,6 +263,9 @@ ParticleLayer* ParticleLayer::Clone()
     dstLayer->enableFlow = enableFlow;
     dstLayer->activeLODS = activeLODS;
     dstLayer->isLong = isLong;
+    dstLayer->noisePath = noisePath;
+    dstLayer->enableNoise = enableNoise;
+    dstLayer->useNoiseScroll = useNoiseScroll;
 
     return dstLayer;
 }
@@ -394,9 +397,11 @@ void ParticleLayer::SetFlowmap(const FilePath& spritePath_)
         flowmap.reset(Sprite::Create(flowmapPath));
 }
 
-void ParticleLayer::SetNoise(const FilePath& noisePath)
+void ParticleLayer::SetNoise(const FilePath& noisePath_)
 {
-
+    noisePath = noisePath_;
+    if (type != TYPE_SUPEREMITTER_PARTICLES)
+        noise.reset(Sprite::Create(noisePath));
 }
 
 void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* node, bool preserveInheritPosition)
@@ -449,6 +454,12 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
     {
         FilePath flowPath = configPath.GetDirectory() + flowmapNode->AsString();
         SetFlowmap(flowPath);
+    }
+    const YamlNode* noiseNode = node->Get("noise");
+    if (noiseNode && !noiseNode->AsString().empty())
+    {
+        FilePath noisePath = configPath.GetDirectory() + noiseNode->AsString();
+        SetNoise(noisePath);
     }
 
     if (pivotPointNode)
@@ -835,6 +846,14 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
         flowSavePath.TruncateExtension();
         String relativePath = flowSavePath.GetRelativePathname(configPath.GetDirectory());
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "flowmap", relativePath);
+    }
+
+    FilePath noiseSavePath = noisePath;
+    if (!noiseSavePath.IsEmpty())
+    {
+        noiseSavePath.TruncateExtension();
+        String relativePath = noiseSavePath.GetRelativePathname(configPath.GetDirectory());
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "noise", relativePath);
     }
 
     layerNode->Add("blending", blending);

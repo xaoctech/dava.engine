@@ -92,17 +92,11 @@ void CommandChangeFlowProperties::ApplyParams(FlowParams& params)
     }
 }
 
-CommandChangeNoiseProperties::CommandChangeNoiseProperties(DAVA::ParticleLayer* layer, const DAVA::FilePath& noisePath, bool enableNoise, bool isNoiseAffectFlow, RefPtr<PropertyLine<float32>> noiseScale, bool useNoiseScroll, RefPtr<PropertyLine<float32>> noiseUScrollSpeed, RefPtr<PropertyLine<float32>> noiseVScrollSpeed)
+CommandChangeNoiseProperties::CommandChangeNoiseProperties(DAVA::ParticleLayer* layer_, NoiseParams&& params)
     : RECommand(CMDID_PARTICLE_LAYER_CHANGED_NOISE_VALUES, "Change Noise Properties")
+    , layer(layer_)
+    , newParams(params)
 {
-    newParams.noisePath = noisePath;
-    newParams.enableNoise = enableNoise;
-    newParams.isNoiseAffectFlow = isNoiseAffectFlow;
-    newParams.noiseScale = noiseScale;
-    newParams.useNoiseScroll = useNoiseScroll;
-    newParams.noiseUScrollSpeed = noiseUScrollSpeed;
-    newParams.noiseVScrollSpeed = noiseVScrollSpeed;
-
     DVASSERT(layer != nullptr);
     if (layer != nullptr)
     {

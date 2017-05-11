@@ -340,18 +340,17 @@ void EditorParticlesSystem::ProcessCommand(const RECommandNotificationObject& co
         }
         case CMDID_PARTICLE_LAYER_CHANGED_MATERIAL_VALUES:
         {
-            RestartParticleEffects();
-
-            const CommandChangeLayerMaterialProperties* cmd = static_cast<const CommandChangeLayerMaterialProperties*>(command);
-            SceneSignals::Instance()->EmitParticleLayerValueChanged(activeScene, cmd->GetLayer());
+            EmitValueChanged<CommandChangeLayerMaterialProperties>(command, activeScene);
             break;
         }
         case CMDID_PARTICLE_LAYER_CHANGED_FLOW_VALUES:
         {
-            RestartParticleEffects();
-
-            const CommandChangeFlowProperties* cmd = static_cast<const CommandChangeFlowProperties*>(command);
-            SceneSignals::Instance()->EmitParticleLayerValueChanged(activeScene, cmd->GetLayer());
+            EmitValueChanged<CommandChangeFlowProperties>(command, activeScene);
+            break;
+        }
+        case CMDID_PARTICLE_LAYER_CHANGED_NOISE_VALUES:
+        {
+            EmitValueChanged<CommandChangeNoiseProperties>(command, activeScene);
             break;
         }
 
@@ -437,7 +436,7 @@ void EditorParticlesSystem::ProcessCommand(const RECommandNotificationObject& co
 
     static const DAVA::Vector<DAVA::uint32> commandIDs =
     {
-      CMDID_PARTICLE_EMITTER_UPDATE, CMDID_PARTICLE_LAYER_UPDATE, CMDID_PARTICLE_LAYER_CHANGED_MATERIAL_VALUES, CMDID_PARTICLE_LAYER_CHANGED_FLOW_VALUES,
+      CMDID_PARTICLE_EMITTER_UPDATE, CMDID_PARTICLE_LAYER_UPDATE, CMDID_PARTICLE_LAYER_CHANGED_MATERIAL_VALUES, CMDID_PARTICLE_LAYER_CHANGED_FLOW_VALUES, CMDID_PARTICLE_LAYER_CHANGED_NOISE_VALUES,
       CMDID_PARTILCE_LAYER_UPDATE_TIME, CMDID_PARTICLE_LAYER_UPDATE_ENABLED, CMDID_PARTICLE_FORCE_UPDATE,
       CMDID_PARTICLE_EFFECT_START_STOP, CMDID_PARTICLE_EFFECT_RESTART, CMDID_PARTICLE_EMITTER_LOAD_FROM_YAML,
       CMDID_PARTICLE_EMITTER_SAVE_TO_YAML,

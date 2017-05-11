@@ -66,14 +66,6 @@ private:
 class CommandChangeNoiseProperties : public RECommand
 {
 public:
-    CommandChangeNoiseProperties(DAVA::ParticleLayer* layer, const DAVA::FilePath& noisePath, bool enableNoise, bool isNoiseAffectFlow, RefPtr<PropertyLine<float32>> noiseScale, bool useNoiseScroll, RefPtr<PropertyLine<float32>> noiseUScrollSpeed, RefPtr<PropertyLine<float32>> noiseVScrollSpeed);
-
-    void Undo() override;
-    void Redo() override;
-
-    DAVA::ParticleLayer* GetLayer() const;
-
-private:
     struct NoiseParams
     {
         DAVA::FilePath noisePath;
@@ -84,6 +76,15 @@ private:
         RefPtr<PropertyLine<float32>> noiseUScrollSpeed;
         RefPtr<PropertyLine<float32>> noiseVScrollSpeed;
     };
+
+    CommandChangeNoiseProperties(DAVA::ParticleLayer* layer, NoiseParams&& params);
+
+    void Undo() override;
+    void Redo() override;
+
+    DAVA::ParticleLayer* GetLayer() const;
+
+private:
 
     void ApplyParams(NoiseParams& params);
 
