@@ -76,6 +76,10 @@ private:
     int8_t Classify(int8_t sign, Vector3::eAxis axis, const Vector3& c_v, const DecalVertex& p_v);
     void Lerp(float t, const DecalVertex& v1, const DecalVertex& v2, DecalVertex& result);
 
+    void GetStaticMeshGeometry(const DecalBuildInfo& info, Vector<DecalVertex>&);
+    void GetSkinnedMeshGeometry(const DecalBuildInfo& info, Vector<DecalVertex>&);
+    void AddVerticesToGeometry(const DecalBuildInfo& info, DecalVertex* points, Vector<DecalVertex>& decalGeometry);
+
 private:
     RenderSystem* renderSystem = nullptr;
     Map<Decal, BuiltDecal> builtDecals;

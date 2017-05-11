@@ -92,6 +92,8 @@ public:
 
     inline void SetPrimitiveType(rhi::PrimitiveType type);
 
+    inline void GetTriangleIndices(int32 firstIndex, int16 indices[3]);
+
     int32 vertexCount;
     int32 indexCount;
     int32 textureCoordCount;
@@ -403,5 +405,12 @@ inline GeometryOctTree* PolygonGroup::GetGeometryOctTree()
 inline GeometryOctTree* PolygonGroup::GetGeometryOctTree() const
 {
     return octTree;
+}
+
+inline void PolygonGroup::GetTriangleIndices(int32 firstIndex, int16 indices[3])
+{
+    indices[0] = indexArray[firstIndex];
+    indices[1] = indexArray[firstIndex + 1];
+    indices[2] = indexArray[firstIndex + 2];
 }
 }

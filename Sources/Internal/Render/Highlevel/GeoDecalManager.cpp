@@ -29,6 +29,28 @@ struct GeoDecalManager::DecalVertex
     Vector2 texCoord1;
     Vector4 decalCoord;
     int32 jointIndex = 0;
+
+    DecalVertex(const DecalVertex& r)
+    {
+        memcpy(this, &r, sizeof(DecalVertex));
+    }
+
+    DecalVertex(DecalVertex&& r)
+    {
+        memcpy(this, &r, sizeof(DecalVertex));
+    }
+
+    DecalVertex& operator=(const DecalVertex& r)
+    {
+        memcpy(this, &r, sizeof(DecalVertex));
+        return *this;
+    }
+
+    DecalVertex& operator=(DecalVertex&& r)
+    {
+        memcpy(this, &r, sizeof(DecalVertex));
+        return *this;
+    }
 };
 
 class GeoDecalRenderBatchProvider : public RenderBatchProvider
@@ -217,6 +239,157 @@ void GeoDecalManager::RemoveRenderObject(RenderObject* ro)
 #define MAX_CLIPPED_POLYGON_CAPACITY 9
 #define PLANE_THICKNESS_EPSILON 0.00001f
 
+void GeoDecalManager::AddVerticesToGeometry(const DecalBuildInfo& info, DecalVertex* points, Vector<DecalVertex>& decalGeometry)
+{
+    const AABBox3 clipSpaceBox = AABBox3(Vector3(0.0f, 0.0f, 0.0f), 2.0f);
+
+    uint8_t numPoints = 3;
+    points[0].actualPoint = points[0].actualPoint * info.projectionSpaceTransform;
+    points[1].actualPoint = points[1].actualPoint * info.projectionSpaceTransform;
+    points[2].actualPoint = points[2].actualPoint * info.projectionSpaceTransform;
+
+    float minU = 1.0f;
+    float maxU = 0.0f;
+    for (uint32 i = 0; i < numPoints; ++i)
+    {
+        if (info.mapping == Mapping::SPHERICAL)
+        {
+            Vector3 p = points[i].actualPoint;
+            p.Normalize();
+            points[i].decalCoord.x = -std::atan2(p.y, p.x);
+            points[i].decalCoord.y = (asin(p.z) + 0.5f * PI) / PI;
+        }
+        else if (info.mapping == Mapping::CYLINDRICAL)
+        {
+            Vector2 c(points[i].actualPoint.x, points[i].actualPoint.y);
+            c.Normalize();
+            points[i].decalCoord.x = -std::atan2(c.y, c.x);
+            points[i].decalCoord.y = points[i].actualPoint.z * 0.5f + 0.5f;
+        }
+        else
+        {
+            points[i].decalCoord.x = points[i].actualPoint.x * 0.5f + 0.5f;
+            points[i].decalCoord.y = points[i].actualPoint.y * 0.5f + 0.5f;
+        }
+        minU = std::min(minU, points[i].decalCoord.x);
+        maxU = std::max(maxU, points[i].decalCoord.x);
+    }
+
+    if (info.mapping != Mapping::PLANAR)
+    {
+        bool edgeTriangle = std::abs(minU - maxU) >= PI;
+        for (uint32 i = 0; i < numPoints; ++i)
+        {
+            float wrap = (edgeTriangle && (points[i].decalCoord.x < 0.0f)) ? 2.0f * PI : 0.0f;
+            points[i].decalCoord.x = (points[i].decalCoord.x + PI + wrap) / (2.0f * PI);
+        }
+    }
+
+    ClipToBoundingBox(points, &numPoints, clipSpaceBox);
+
+    for (uint32 i = 0; i < numPoints; ++i)
+    {
+        points[i].decalCoord.x = points[i].decalCoord.x * info.uvScale.x + info.uvOffset.x;
+        points[i].decalCoord.y = points[i].decalCoord.y * info.uvScale.y + info.uvOffset.y;
+    }
+
+    for (uint32 i = 0; i + 2 < numPoints; ++i)
+    {
+        decalGeometry.emplace_back(points[0]);
+        decalGeometry.emplace_back(points[i + 1]);
+        decalGeometry.emplace_back(points[i + 2]);
+    }
+}
+
+void GeoDecalManager::GetStaticMeshGeometry(const DecalBuildInfo& info, Vector<DecalVertex>& decalGeometry)
+{
+    char decalVertexData[MAX_CLIPPED_POLYGON_CAPACITY * sizeof(DecalVertex)];
+    DecalVertex* points = reinterpret_cast<DecalVertex*>(decalVertexData);
+
+    Vector<uint16> triangles;
+    info.polygonGroup->GetGeometryOctTree()->GetTrianglesInBox(info.boundingBox, triangles);
+
+    int32 geometryFormat = info.polygonGroup->GetFormat();
+
+    for (uint16 triangleIndex : triangles)
+    {
+        int16 idx[3];
+        info.polygonGroup->GetTriangleIndices(3 * triangleIndex, idx);
+        for (uint16 j = 0; j < 3; ++j)
+        {
+            info.polygonGroup->GetCoord(idx[j], points[j].originalPoint);
+            if (geometryFormat & EVF_TEXCOORD0)
+                info.polygonGroup->GetTexcoord(0, idx[j], points[j].texCoord0);
+            if (geometryFormat & EVF_TEXCOORD1)
+                info.polygonGroup->GetTexcoord(1, idx[j], points[j].texCoord1);
+            if (geometryFormat & EVF_NORMAL)
+                info.polygonGroup->GetNormal(idx[j], points[j].normal);
+            if (geometryFormat & EVF_TANGENT)
+                info.polygonGroup->GetTangent(idx[j], points[j].tangent);
+            if (geometryFormat & EVF_BINORMAL)
+                info.polygonGroup->GetBinormal(idx[j], points[j].binormal);
+            points[j].actualPoint = points[j].originalPoint;
+        }
+
+        Vector3 nrm = (points[1].actualPoint - points[0].actualPoint).CrossProduct(points[2].actualPoint - points[0].actualPoint);
+        nrm.Normalize();
+        if ((info.mapping != Mapping::PLANAR) || (nrm.DotProduct(info.projectionAxis) < -std::numeric_limits<float>::epsilon()))
+        {
+            AddVerticesToGeometry(info, points, decalGeometry);
+        }
+    }
+}
+
+void GeoDecalManager::GetSkinnedMeshGeometry(const DecalBuildInfo& info, Vector<DecalVertex>& decalGeometry)
+{
+    const AABBox3 clipSpaceBox = AABBox3(Vector3(0.0f, 0.0f, 0.0f), 2.0f);
+
+    char decalVertexData[MAX_CLIPPED_POLYGON_CAPACITY * sizeof(DecalVertex)];
+    DecalVertex* points = reinterpret_cast<DecalVertex*>(decalVertexData);
+
+    int32 geometryFormat = info.polygonGroup->GetFormat();
+    uint32 triangleCount = static_cast<uint32>(info.polygonGroup->GetVertexCount() / 3);
+    for (uint32 triangleIndex = 0; triangleIndex < triangleCount; ++triangleIndex)
+    {
+        int16 idx[3];
+        info.polygonGroup->GetTriangleIndices(3 * triangleIndex, idx);
+        for (int32 j = 0; j < 3; ++j)
+        {
+            info.polygonGroup->GetCoord(idx[j], points[j].originalPoint);
+
+            if (geometryFormat & EVF_TEXCOORD0)
+                info.polygonGroup->GetTexcoord(0, idx[j], points[j].texCoord0);
+            if (geometryFormat & EVF_TEXCOORD1)
+                info.polygonGroup->GetTexcoord(1, idx[j], points[j].texCoord1);
+            if (geometryFormat & EVF_NORMAL)
+                info.polygonGroup->GetNormal(idx[j], points[j].normal);
+            if (geometryFormat & EVF_TANGENT)
+                info.polygonGroup->GetTangent(idx[j], points[j].tangent);
+            if (geometryFormat & EVF_BINORMAL)
+                info.polygonGroup->GetBinormal(idx[j], points[j].binormal);
+
+            info.polygonGroup->GetJointIndex(idx[j], points[j].jointIndex);
+            DVASSERT(points[j].jointIndex < info.jointCount);
+
+            Vector4 weightedVertexPosition = info.jointPositions[points[j].jointIndex];
+            Vector4 weightedVertexQuaternion = info.jointQuaternions[points[j].jointIndex];
+            Vector3 tmpVec = 2.0f * weightedVertexQuaternion.GetVector3().CrossProduct(points[j].originalPoint);
+            points[j].actualPoint = weightedVertexPosition.GetVector3() + weightedVertexPosition.w *
+            (points[j].originalPoint + weightedVertexQuaternion.w * tmpVec + weightedVertexQuaternion.GetVector3().CrossProduct(tmpVec));
+        }
+
+        if (Intersection::BoxTriangle(info.boundingBox, points[2].actualPoint, points[1].actualPoint, points[0].actualPoint))
+        {
+            Vector3 nrm = (points[1].actualPoint - points[0].actualPoint).CrossProduct(points[2].actualPoint - points[0].actualPoint);
+            nrm.Normalize();
+            if ((info.mapping != Mapping::PLANAR) || (nrm.DotProduct(info.projectionAxis) < -std::numeric_limits<float>::epsilon()))
+            {
+                AddVerticesToGeometry(info, points, decalGeometry);
+            }
+        }
+    }
+}
+
 bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBatch)
 {
     String fxName(info.material->GetEffectiveFXName().c_str());
@@ -225,123 +398,17 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBat
     if ((fxName.find("shadow") != String::npos) || (info.polygonGroup == nullptr))
         return false;
 
-    const AABBox3 clipSpaceBox = AABBox3(Vector3(0.0f, 0.0f, 0.0f), 2.0f);
-
-    PolygonGroup* sourcePolygonGroup = info.polygonGroup;
-    int32 geometryFormat = sourcePolygonGroup->GetFormat();
+    int32 geometryFormat = info.polygonGroup->GetFormat();
 
     Vector<DecalVertex> decalGeometry;
-    decalGeometry.reserve(sourcePolygonGroup->GetIndexCount());
-
-    for (int32 triangleIndex = 0; triangleIndex < sourcePolygonGroup->GetIndexCount() / 3; ++triangleIndex)
+    decalGeometry.reserve(info.polygonGroup->GetIndexCount());
+    if ((geometryFormat & EVF_JOINTINDEX) == EVF_JOINTINDEX)
     {
-        DecalVertex points[MAX_CLIPPED_POLYGON_CAPACITY] = {};
-
-        for (int32 j = 0; j < 3; ++j)
-        {
-            int32 idx = 0;
-            sourcePolygonGroup->GetIndex(3 * triangleIndex + j, idx);
-            sourcePolygonGroup->GetCoord(idx, points[j].originalPoint);
-
-            if (geometryFormat & EVF_TEXCOORD0)
-                sourcePolygonGroup->GetTexcoord(0, idx, points[j].texCoord0);
-            if (geometryFormat & EVF_TEXCOORD1)
-                sourcePolygonGroup->GetTexcoord(1, idx, points[j].texCoord1);
-            if (geometryFormat & EVF_NORMAL)
-                sourcePolygonGroup->GetNormal(idx, points[j].normal);
-            if (geometryFormat & EVF_TANGENT)
-                sourcePolygonGroup->GetTangent(idx, points[j].tangent);
-            if (geometryFormat & EVF_BINORMAL)
-                sourcePolygonGroup->GetBinormal(idx, points[j].binormal);
-
-            if (geometryFormat & EVF_JOINTINDEX)
-            {
-                sourcePolygonGroup->GetJointIndex(idx, points[j].jointIndex);
-                DVASSERT(points[j].jointIndex < info.jointCount);
-
-                Vector4 weightedVertexPosition = info.jointPositions[points[j].jointIndex];
-                Vector4 weightedVertexQuaternion = info.jointQuaternions[points[j].jointIndex];
-
-                Vector3 tmpVec = 2.0f * weightedVertexQuaternion.GetVector3().CrossProduct(points[j].originalPoint);
-                points[j].actualPoint = weightedVertexPosition.GetVector3() + weightedVertexPosition.w *
-                (points[j].originalPoint + weightedVertexQuaternion.w * tmpVec + weightedVertexQuaternion.GetVector3().CrossProduct(tmpVec));
-            }
-            else
-            {
-                points[j].actualPoint = points[j].originalPoint;
-            }
-        }
-
-        if (Intersection::BoxTriangle(info.boundingBox, points[2].actualPoint, points[1].actualPoint, points[0].actualPoint))
-        {
-            Vector3 nrm = (points[1].actualPoint - points[0].actualPoint).CrossProduct(points[2].actualPoint - points[0].actualPoint);
-            nrm.Normalize();
-
-            if ((info.mapping == Mapping::PLANAR) && (nrm.DotProduct(info.projectionAxis) >= -std::numeric_limits<float>::epsilon()))
-            {
-                // do not place decal on back faces
-                continue;
-            }
-
-            uint8_t numPoints = 3;
-            points[0].actualPoint = points[0].actualPoint * info.projectionSpaceTransform;
-            points[1].actualPoint = points[1].actualPoint * info.projectionSpaceTransform;
-            points[2].actualPoint = points[2].actualPoint * info.projectionSpaceTransform;
-
-            float minU = 1.0f;
-            float maxU = 0.0f;
-            for (uint32 i = 0; i < numPoints; ++i)
-            {
-                if (info.mapping == Mapping::SPHERICAL)
-                {
-                    Vector3 p = points[i].actualPoint;
-                    p.Normalize();
-                    points[i].decalCoord.x = -std::atan2(p.y, p.x);
-                    points[i].decalCoord.y = (asin(p.z) + 0.5f * PI) / PI;
-                }
-                else if (info.mapping == Mapping::CYLINDRICAL)
-                {
-                    Vector2 c(points[i].actualPoint.x, points[i].actualPoint.y);
-                    c.Normalize();
-                    points[i].decalCoord.x = -std::atan2(c.y, c.x);
-                    points[i].decalCoord.y = points[i].actualPoint.z * 0.5f + 0.5f;
-                }
-                else
-                {
-                    points[i].decalCoord.x = points[i].actualPoint.x * 0.5f + 0.5f;
-                    points[i].decalCoord.y = points[i].actualPoint.y * 0.5f + 0.5f;
-                }
-                minU = std::min(minU, points[i].decalCoord.x);
-                maxU = std::max(maxU, points[i].decalCoord.x);
-            }
-
-            if (info.mapping != Mapping::PLANAR)
-            {
-                bool edgeTriangle = std::abs(minU - maxU) >= PI;
-                for (uint32 i = 0; i < numPoints; ++i)
-                {
-                    float wrap = (edgeTriangle && (points[i].decalCoord.x < 0.0f)) ? 2.0f * PI : 0.0f;
-                    points[i].decalCoord.x = (points[i].decalCoord.x + PI + wrap) / (2.0f * PI);
-                }
-            }
-
-            ClipToBoundingBox(points, &numPoints, clipSpaceBox);
-
-            for (uint32 i = 0; i < numPoints; ++i)
-            {
-                // points[i].actualPoint = points[i].actualPoint * info.projectionSpaceInverseTransform;
-                points[i].decalCoord.x = points[i].decalCoord.x * info.uvScale.x + info.uvOffset.x;
-                points[i].decalCoord.y = points[i].decalCoord.y * info.uvScale.y + info.uvOffset.y;
-                // points[i].originalPoint = points[i].actualPoint;
-            }
-
-            for (uint32 i = 0; i + 2 < numPoints; ++i)
-            {
-                decalGeometry.emplace_back(points[0]);
-                decalGeometry.emplace_back(points[i + 1]);
-                decalGeometry.emplace_back(points[i + 2]);
-            }
-        }
+        GetSkinnedMeshGeometry(info, decalGeometry);
+    }
+    else
+    {
+        GetStaticMeshGeometry(info, decalGeometry);
     }
 
     if (decalGeometry.empty())
@@ -438,7 +505,7 @@ void GeoDecalManager::Lerp(float t, const DecalVertex& v1, const DecalVertex& v2
 {
     result.jointIndex = (t >= 0.5f) ? v2.jointIndex : v1.jointIndex;
 
-#define LERP_IMPL(var) result.var = v1.var * (1.0f - t) + v2.var * t;
+#define LERP_IMPL(var) result.var = v1.var + (v2.var - v1.var) * t;
     LERP_IMPL(actualPoint);
     LERP_IMPL(originalPoint);
     LERP_IMPL(normal);
@@ -459,7 +526,9 @@ void GeoDecalManager::ClipToPlane(DecalVertex* p_vs, uint8_t* nb_p_vs, int8_t si
         return;
     }
 
-    DecalVertex new_p_vs[MAX_CLIPPED_POLYGON_CAPACITY];
+    char new_p_vs_data[MAX_CLIPPED_POLYGON_CAPACITY * sizeof(DecalVertex)];
+    DecalVertex* new_p_vs = reinterpret_cast<DecalVertex*>(new_p_vs_data);
+
     uint8_t k = 0;
     bool polygonCompletelyOnPlane = true; // polygon is fully located on clipping plane
 
@@ -527,5 +596,4 @@ void GeoDecalManager::ClipToBoundingBox(DecalVertex* p_vs, uint8_t* nb_p_vs, con
 
 #undef MAX_CLIPPED_POLYGON_CAPACITY
 #undef PLANE_THICKNESS_EPSILON
-
 }
