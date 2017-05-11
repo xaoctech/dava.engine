@@ -16,7 +16,8 @@ public:
     void OnRemoteDisconnecting();
 
     //ServerNetProxyListener
-    void OnAddToCache(DAVA::Net::IChannel* channel, const DAVA::AssetCache::CacheItemKey& key, DAVA::AssetCache::CachedItemValue&& value) override;
+    void OnAddToCache(DAVA::Net::IChannel* channel, const DAVA::AssetCache::CacheItemKey& key, DAVA::uint64 dataSize, DAVA::uint32 numOfChunks) override;
+    void OnAddChunkToCache(DAVA::Net::IChannel* channel, const DAVA::AssetCache::CacheItemKey& key, DAVA::uint32 chunkNumber, const DAVA::Vector<DAVA::uint8>& chunkData) override;
     void OnRequestedFromCache(DAVA::Net::IChannel* channel, const DAVA::AssetCache::CacheItemKey& key) override;
     void OnChunkRequestedFromCache(DAVA::Net::IChannel* channel, const DAVA::AssetCache::CacheItemKey& key, DAVA::uint32 chunkNumber) override;
     void OnRemoveFromCache(DAVA::Net::IChannel* channel, const DAVA::AssetCache::CacheItemKey& key) override;
@@ -27,6 +28,7 @@ public:
 
     //ClientNetProxyListener
     void OnClientProxyStateChanged() override;
+    void OnAddedToCache(const DAVA::AssetCache::CacheItemKey& key, bool added);
     void OnReceivedFromCache(const DAVA::AssetCache::CacheItemKey& key, DAVA::uint64 dataSize, DAVA::uint32 numOfChunks) override;
     void OnReceivedFromCache(const DAVA::AssetCache::CacheItemKey& key, DAVA::uint32 chunkNumber, const DAVA::Vector<DAVA::uint8>& chunkData) override;
 
@@ -43,8 +45,8 @@ private:
         struct ClientStatus
         {
             ClientStatus(DataRequestStatus status = DataRequestStatus::READY)
+                : status(status)
             {
-                status = status;
             }
             DataRequestStatus status = DataRequestStatus::READY;
             DAVA::uint32 waitingChunk = 0;
@@ -63,12 +65,23 @@ private:
 
     struct AddDataTask
     {
+        DAVA::AssetCache::CacheItemKey key;
+        DAVA::Net::IChannel* channel;
         DAVA::ScopedPtr<DAVA::DynamicMemoryFile> receivedData;
+
         size_t bytesReceived = 0;
-        size_t bytesRemaining = 0;
+        size_t bytesOverall = 0;
         DAVA::uint32 chunksReceived = 0;
         DAVA::uint32 chunksOverall = 0;
     };
+
+    struct RemoteAddDataTask
+    {
+        DAVA::ScopedPtr<DAVA::DynamicMemoryFile> serializedData;
+        DAVA::uint32 chunksSent = 0;
+        DAVA::uint32 chunksOverall = 0;
+    };
+    using RemoteAddTasksMap = DAVA::UnorderedMap<DAVA::AssetCache::CacheItemKey, RemoteAddDataTask>;
 
     struct WarmupTask
     {
@@ -79,20 +92,16 @@ private:
         DAVA::AssetCache::CacheItemKey key;
     };
 
-    //     struct RemoteAddTask
-    //     {
-    //         DAVA::UnorderedSet<DAVA::Net::IChannel*> clients;
-    //         DAVA::DynamicMemoryFile serializedData;
-    //     };
-
 private:
     bool IsRemoteServerConnected() const;
 
-    void AddWarmupTask(const DAVA::AssetCache::CacheItemKey& key);
-
+    DAVA::List<AddDataTask>::iterator GetOrCreateAddTask(DAVA::Net::IChannel* channel, const DAVA::AssetCache::CacheItemKey& key);
     GetTasksMap::iterator GetOrCreateGetTask(const DAVA::AssetCache::CacheItemKey& key);
     void RequestNextChunk(GetTasksMap::iterator it);
-    void SendChunkToClients(GetTasksMap::iterator& taskIt, DAVA::uint32 chunkNumber, const DAVA::Vector<DAVA::uint8>& chunk);
+    void SendInfoToClients(GetTasksMap::iterator taskIt);
+    void SendChunkToClients(GetTasksMap::iterator taskIt, DAVA::uint32 chunkNumber, const DAVA::Vector<DAVA::uint8>& chunk);
+    bool SendAddInfoToRemote(RemoteAddTasksMap::iterator taskIt);
+    bool SendAddChunkToRemote(RemoteAddTasksMap::iterator taskIt);
     void CancelGetTask(GetTasksMap::iterator it);
     void CancelRemoteTasks();
     void RemoveClientFromTasks(DAVA::Net::IChannel* clientChannel);
@@ -105,8 +114,8 @@ private:
     CacheDB* dataBase = nullptr;
 
     GetTasksMap getDataTasks;
-    DAVA::UnorderedMap<DAVA::AssetCache::CacheItemKey, AddDataTask> clientAddTasks;
-    //DAVA::UnorderedMap<DAVA::AssetCache::CacheItemKey, RemoteAddTask> remoteAddTasks;
+    DAVA::List<AddDataTask> addDataTasks;
     DAVA::List<WarmupTask> warmupTasks;
+    RemoteAddTasksMap remoteAddDataTasks;
     DAVA::String serverName;
 };

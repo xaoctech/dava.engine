@@ -1,9 +1,12 @@
 #pragma once
 
-#include "AssetCache.h"
-#include "Base/Introspection.h"
-#include "Preferences/PreferencesRegistrator.h"
 #include <atomic>
+
+#include "Tools/AssetCache/AssetCache.h"
+
+#include <Base/Introspection.h>
+#include <Preferences/PreferencesRegistrator.h>
+#include <FileSystem/DynamicMemoryFile.h>
 
 namespace DAVA
 {
@@ -109,6 +112,25 @@ private:
         }
     };
 
+    struct AddFilesRequest
+    {
+        AddFilesRequest()
+        {
+            Reset();
+        }
+
+        void Reset()
+        {
+            serializedData = DynamicMemoryFile::Create(File::CREATE | File::WRITE | File::READ);
+            chunksSent = 0;
+            chunksOverall = 0;
+        }
+
+        ScopedPtr<DynamicMemoryFile> serializedData;
+        uint32 chunksSent = 0;
+        uint32 chunksOverall = 0;
+    };
+
     AssetCache::ClientNetProxy client;
 
     uint64 timeoutMs = 60u * 1000u;
@@ -117,6 +139,7 @@ private:
     Mutex connectEstablishLocker;
     Request request;
     GetFilesRequest getFilesRequest;
+    AddFilesRequest addFilesRequest;
 
     std::atomic<bool> isActive;
 };

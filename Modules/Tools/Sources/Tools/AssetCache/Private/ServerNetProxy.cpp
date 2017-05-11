@@ -58,7 +58,13 @@ void ServerNetProxy::OnPacketReceived(Net::IChannel* channel, const void* packet
             case PACKET_ADD_REQUEST:
             {
                 AddRequestPacket* p = static_cast<AddRequestPacket*>(packet.get());
-                listener->OnAddToCache(channel, p->key, std::forward<CachedItemValue>(p->value));
+                listener->OnAddToCache(channel, p->key, p->dataSize, p->numOfChunks);
+                return;
+            }
+            case PACKET_ADD_CHUNK_REQUEST:
+            {
+                AddChunkRequestPacket* p = static_cast<AddChunkRequestPacket*>(packet.get());
+                listener->OnAddChunkToCache(channel, p->key, p->chunkNumber, p->chunkData);
                 return;
             }
             case PACKET_GET_REQUEST:

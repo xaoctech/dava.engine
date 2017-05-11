@@ -102,6 +102,8 @@ std::unique_ptr<CachePacket> CachePacket::CreateByType(ePacketID type)
     {
     case PACKET_ADD_REQUEST:
         return std::unique_ptr<CachePacket>(new AddRequestPacket());
+    case PACKET_ADD_CHUNK_REQUEST:
+        return std::unique_ptr<CachePacket>(new AddChunkRequestPacket());
     case PACKET_ADD_RESPONSE:
         return std::unique_ptr<CachePacket>(new AddResponsePacket());
     case PACKET_GET_REQUEST:
@@ -153,25 +155,79 @@ void CachePacket::WriteHeader(File* file) const
 }
 
 //////////////////////////////////////////////////////////////////////////
-AddRequestPacket::AddRequestPacket(const CacheItemKey& key_, const CachedItemValue& value_)
-    : CachePacket(PACKET_ADD_REQUEST, CREATE_SENDING_BUFFER)
+DataInfoPacket::DataInfoPacket(ePacketID packetId, const CacheItemKey& key_, uint64 dataSize, uint32 numOfChunks)
+    : CachePacket(packetId, CREATE_SENDING_BUFFER)
+{
+    WriteHeader(serializationBuffer);
+    serializationBuffer->Write(key_.data(), static_cast<uint32>(key_.size()));
+    serializationBuffer->Write(&dataSize, sizeof(dataSize));
+    serializationBuffer->Write(&numOfChunks, sizeof(numOfChunks));
+}
+
+DataInfoPacket::DataInfoPacket(ePacketID packetId)
+    : CachePacket(packetId, DO_NOT_CREATE_SENDING_BUFFER)
+{
+}
+
+bool DataInfoPacket::DeserializeFromBuffer(File* buffer)
+{
+    using namespace CachePacketDetails;
+    return (ReadFromBuffer(buffer, key)
+        && ReadFromBuffer(buffer, dataSize)
+        && ReadFromBuffer(buffer, numOfChunks));
+}
+
+//////////////////////////////////////////////////////////////////////////
+DataChunkPacket::DataChunkPacket(ePacketID packetId, const CacheItemKey& key, uint32 chunkNumber, const Vector<uint8>& chunkData)
+    : CachePacket(packetId, CREATE_SENDING_BUFFER)
 {
     WriteHeader(serializationBuffer);
 
-    serializationBuffer->Write(key_.data(), static_cast<uint32>(key_.size()));
-    value_.Serialize(serializationBuffer);
+    uint32 keySize = static_cast<uint32>(key.size());
+    uint32 chunkDataSize = static_cast<uint32>(chunkData.size());
+
+    serializationBuffer->Write(key.data(), keySize);
+    serializationBuffer->Write(&chunkNumber, sizeof(chunkNumber));
+    serializationBuffer->Write(&chunkDataSize, sizeof(chunkDataSize));
+    serializationBuffer->Write(chunkData.data(), chunkDataSize);
+}
+
+DataChunkPacket::DataChunkPacket(ePacketID packetId)
+    : CachePacket(packetId, DO_NOT_CREATE_SENDING_BUFFER)
+{
+}
+
+bool DataChunkPacket::DeserializeFromBuffer(File* buffer)
+{
+    using namespace CachePacketDetails;
+
+    uint32 chunkDataSize = 0;
+    return (ReadFromBuffer(buffer, key)
+        && ReadFromBuffer(buffer, chunkNumber)
+        && ReadFromBuffer(buffer, chunkDataSize)
+        && ReadFromBuffer(buffer, chunkData, chunkDataSize));
+}
+
+//////////////////////////////////////////////////////////////////////////
+AddRequestPacket::AddRequestPacket(const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks)
+    : DataInfoPacket(PACKET_ADD_REQUEST, key, dataSize, numOfChunks)
+{
 }
 
 AddRequestPacket::AddRequestPacket()
-    : CachePacket(PACKET_ADD_REQUEST, DO_NOT_CREATE_SENDING_BUFFER)
+    : DataInfoPacket(PACKET_ADD_REQUEST)
 {
-
 }
 
-bool AddRequestPacket::DeserializeFromBuffer(File* file)
+//////////////////////////////////////////////////////////////////////////
+AddChunkRequestPacket::AddChunkRequestPacket(const CacheItemKey& key, uint32 chunkNumber, const Vector<uint8>& chunkData)
+    : DataChunkPacket(PACKET_ADD_CHUNK_REQUEST, key, chunkNumber, chunkData)
 {
-    const uint32 keySize = static_cast<uint32>(key.size());
-    return ((file->Read(key.data(), keySize) == keySize) && value.Deserialize(file));
+}
+
+AddChunkRequestPacket::AddChunkRequestPacket()
+    : DataChunkPacket(PACKET_ADD_CHUNK_REQUEST)
+{
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -215,26 +271,14 @@ bool GetRequestPacket::DeserializeFromBuffer(File* buffer)
 }
 
 //////////////////////////////////////////////////////////////////////////
-GetResponsePacket::GetResponsePacket(const CacheItemKey& key_, uint64 dataSize, uint32 numOfChunks)
-    : CachePacket(PACKET_GET_RESPONSE, CREATE_SENDING_BUFFER)
+GetResponsePacket::GetResponsePacket(const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks)
+    : DataInfoPacket(PACKET_GET_RESPONSE, key, dataSize, numOfChunks)
 {
-    WriteHeader(serializationBuffer);
-    serializationBuffer->Write(key_.data(), static_cast<uint32>(key_.size()));
-    serializationBuffer->Write(&dataSize, sizeof(dataSize));
-    serializationBuffer->Write(&numOfChunks, sizeof(numOfChunks));
 }
 
 GetResponsePacket::GetResponsePacket()
-    : CachePacket(PACKET_GET_RESPONSE, DO_NOT_CREATE_SENDING_BUFFER)
+    : DataInfoPacket(PACKET_GET_RESPONSE)
 {
-}
-
-bool GetResponsePacket::DeserializeFromBuffer(File* buffer)
-{
-    using namespace CachePacketDetails;
-    return (ReadFromBuffer(buffer, key)
-        && ReadFromBuffer(buffer, dataSize)
-        && ReadFromBuffer(buffer, numOfChunks));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -260,33 +304,13 @@ bool GetChunkRequestPacket::DeserializeFromBuffer(File* buffer)
 
 //////////////////////////////////////////////////////////////////////////
 GetChunkResponsePacket::GetChunkResponsePacket(const CacheItemKey& key, uint32 chunkNumber, const Vector<uint8>& chunkData)
-    : CachePacket(PACKET_GET_CHUNK_RESPONSE, CREATE_SENDING_BUFFER)
+    : DataChunkPacket(PACKET_GET_CHUNK_RESPONSE, key, chunkNumber, chunkData)
 {
-    WriteHeader(serializationBuffer);
-
-    uint32 keySize = static_cast<uint32>(key.size());
-    uint32 chunkDataSize = static_cast<uint32>(chunkData.size());
-
-    serializationBuffer->Write(key.data(), keySize);
-    serializationBuffer->Write(&chunkNumber, sizeof(chunkNumber));
-    serializationBuffer->Write(&chunkDataSize, sizeof(chunkDataSize));
-    serializationBuffer->Write(chunkData.data(), chunkDataSize);
 }
 
 GetChunkResponsePacket::GetChunkResponsePacket()
-    : CachePacket(PACKET_GET_CHUNK_RESPONSE, DO_NOT_CREATE_SENDING_BUFFER)
+    : DataChunkPacket(PACKET_GET_CHUNK_RESPONSE)
 {
-}
-
-bool GetChunkResponsePacket::DeserializeFromBuffer(File* buffer)
-{
-    using namespace CachePacketDetails;
-
-    uint32 chunkDataSize = 0;
-    return (ReadFromBuffer(buffer, key)
-        && ReadFromBuffer(buffer, chunkNumber)
-        && ReadFromBuffer(buffer, chunkDataSize)
-        && ReadFromBuffer(buffer, chunkData, chunkDataSize));
 }
 
 //////////////////////////////////////////////////////////////////////////

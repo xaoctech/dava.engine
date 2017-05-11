@@ -19,7 +19,8 @@ class ServerNetProxyListener
 public:
     virtual ~ServerNetProxyListener() = default;
 
-    virtual void OnAddToCache(Net::IChannel* channel, const CacheItemKey& key, CachedItemValue&& value) = 0;
+    virtual void OnAddToCache(Net::IChannel* channel, const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks) = 0;
+    virtual void OnAddChunkToCache(Net::IChannel* channel, const CacheItemKey& key, uint32 chunkNumber, const Vector<uint8>& chunkData) = 0;
     virtual void OnRequestedFromCache(Net::IChannel* channel, const CacheItemKey& key) = 0;
     virtual void OnChunkRequestedFromCache(Net::IChannel* channel, const CacheItemKey& key, uint32 chunkNumber) = 0;
     virtual void OnRemoveFromCache(Net::IChannel* channel, const CacheItemKey& key) = 0;

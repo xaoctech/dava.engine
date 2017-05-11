@@ -52,8 +52,8 @@ public:
 
     // requests to sent on server
     bool RequestServerStatus();
-    bool RequestAddData(const CacheItemKey& key, const CachedItemValue& value);
-    bool RequestAddNextChunk();
+    bool RequestAddData(const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks);
+    bool RequestAddNextChunk(const CacheItemKey& key, uint32 chunkNumber, const Vector<uint8>& chunkData);
     bool RequestData(const CacheItemKey& key);
     bool RequestGetNextChunk(const CacheItemKey& key, uint32 chunkNumber);
     bool RequestWarmingUp(const CacheItemKey& key);

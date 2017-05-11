@@ -1,4 +1,5 @@
 #include "Tools/AssetCache/AssetCacheClient.h"
+#include "Tools/AssetCache/ChunkSplitter.h"
 
 #include <FileSystem/FileSystem.h>
 #include <Concurrency/LockGuard.h>
@@ -106,22 +107,54 @@ AssetCache::Error AssetCacheClient::CheckStatusSynchronously()
 
 AssetCache::Error AssetCacheClient::AddToCacheSynchronously(const AssetCache::CacheItemKey& key, const AssetCache::CachedItemValue& value)
 {
+    uint64 dataSize = 0;
+    uint32 chunksOverall = 0;
     {
         LockGuard<Mutex> guard(requestLocker);
         request = Request(AssetCache::PACKET_ADD_REQUEST, key);
+        value.Serialize(addFilesRequest.serializedData);
+        dataSize = addFilesRequest.serializedData->GetSize();
+        chunksOverall = AssetCache::ChunkSplitter::GetNumberOfChunks(dataSize);
+        addFilesRequest.chunksSent = 0;
     }
 
     AssetCache::Error resultCode = AssetCache::Error::CANNOT_SEND_REQUEST;
 
-    bool requestSent = client.RequestAddData(key, value);
+    bool requestSent = client.RequestAddData(key, dataSize, chunksOverall);
     if (requestSent)
     {
         resultCode = WaitRequest();
     }
 
+    if (resultCode == AssetCache::Error::NO_ERRORS)
     {
-        LockGuard<Mutex> guard(requestLocker);
-        request.Reset();
+        for (uint32 currentChunk = 0; currentChunk < chunksOverall; ++currentChunk)
+        {
+            Vector<uint8> chunkData;
+            {
+                LockGuard<Mutex> guard(requestLocker);
+                request = Request(AssetCache::PACKET_ADD_CHUNK_REQUEST, key);
+                chunkData = AssetCache::ChunkSplitter::GetChunk(addFilesRequest.serializedData->GetDataVector(), currentChunk);
+            }
+
+            resultCode = AssetCache::Error::CANNOT_SEND_REQUEST;
+
+            bool requestSent = client.RequestAddNextChunk(key, currentChunk, chunkData);
+            if (requestSent)
+            {
+                resultCode = WaitRequest();
+            }
+
+            {
+                LockGuard<Mutex> guard(requestLocker);
+                request.Reset();
+            }
+
+            if (resultCode != AssetCache::Error::NO_ERRORS)
+            {
+                break;
+            }
+        }
     }
 
     return resultCode;
@@ -307,7 +340,7 @@ void AssetCacheClient::OnServerStatusReceived()
 void AssetCacheClient::OnAddedToCache(const AssetCache::CacheItemKey& key, bool added)
 {
     LockGuard<Mutex> guard(requestLocker);
-    if (request.requestID == AssetCache::PACKET_ADD_REQUEST && request.key == key)
+    if ((request.requestID == AssetCache::PACKET_ADD_REQUEST || request.requestID == AssetCache::PACKET_ADD_CHUNK_REQUEST) && request.key == key)
     {
         request.result = (added) ? AssetCache::Error::NO_ERRORS : AssetCache::Error::SERVER_ERROR;
         request.recieved = true;
