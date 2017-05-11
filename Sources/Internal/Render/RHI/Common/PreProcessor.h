@@ -15,14 +15,14 @@ public:
     PreProc(FileCallback* fc = nullptr);
     ~PreProc();
 
-    bool process_file(const char* file_name, TextBuf* output);
-    bool process_inplace(char* src_text, TextBuf* output);
-    bool process(const char* src_text, TextBuf* output);
-    void clear();
+    bool ProcessFile(const char* file_name, TextBuf* output);
+    bool ProcessInplace(char* src_text, TextBuf* output);
+    bool Process(const char* src_text, TextBuf* output);
+    void Clear();
 
-    bool add_define(const char* name, const char* value);
+    bool AddDefine(const char* name, const char* value);
 
-    void dump() const;
+    void Dump() const;
 
 public:
     class
@@ -33,21 +33,10 @@ public:
         {
         }
 
-        virtual bool open(const char* /*file_name*/)
-        {
-            return false;
-        }
-        virtual void close()
-        {
-        }
-        virtual unsigned size() const
-        {
-            return 0;
-        }
-        virtual unsigned read(unsigned /*max_sz*/, void* /*dst*/)
-        {
-            return 0;
-        }
+        virtual bool Open(const char* /*file_name*/) = 0;
+        virtual void Close() = 0;
+        virtual unsigned Size() const = 0;
+        virtual unsigned Read(unsigned /*max_sz*/, void* /*dst*/) = 0;
     };
 
 private:
@@ -55,19 +44,19 @@ private:
     struct Buffer;
     struct Var;
 
-    void _reset();
-    char* _alloc_buffer(unsigned sz);
-    bool _process_inplace(char* src_text, TextBuf* output);
-    bool _process_buffer(char* text, std::vector<Line>* line);
-    bool _process_include(const char* file_name, std::vector<Line>* line);
-    bool _process_define(const char* name, const char* val);
-    void _undefine(const char* name);
-    void _generate_output(TextBuf* output);
+    void Reset();
+    char* AllocBuffer(unsigned sz);
+    bool ProcessInplaceInternal(char* src_text, TextBuf* output);
+    bool ProcessBuffer(char* text, std::vector<Line>* line);
+    bool ProcessInclude(const char* file_name, std::vector<Line>* line);
+    bool ProcessDefine(const char* name, const char* val);
+    void Undefine(const char* name);
+    void GenerateOutput(TextBuf* output);
 
-    char* _get_expression(char* txt, char** end) const;
-    char* _get_identifier(char* txt, char** end) const;
-    int _get_name_and_value(char* txt, char** name, char** value, char** end) const;
-    void _report_expr_eval_error(unsigned line_n);
+    char* GetExpression(char* txt, char** end) const;
+    char* GetIdentifier(char* txt, char** end) const;
+    int GetNameAndValue(char* txt, char** name, char** value, char** end) const;
+    void ReportExprEvalError(unsigned line_n);
 
     struct
     Line
@@ -95,46 +84,46 @@ private:
         int val;
     };
 
-    std::vector<Buffer> _buf;
-    std::vector<Line> _line;
-    std::vector<Var> _var;
-    ExpressionEvaluator _eval;
+    std::vector<Buffer> buffer;
+    std::vector<Line> line;
+    std::vector<Var> variable;
+    ExpressionEvaluator evaluator;
 
-    FileCallback* _file_cb;
-    const char* _cur_file_name;
+    FileCallback* fileCB;
+    const char* curFileName;
 
     class
-    DefFileCallback
+    DefaultFileCallback
     : public FileCallback
     {
     public:
-        ~DefFileCallback()
+        ~DefaultFileCallback()
         {
-            if (_in)
-                _in->Release();
+            if (in)
+                in->Release();
         }
-        virtual bool open(const char* file_name)
+        virtual bool Open(const char* file_name)
         {
-            _in = DAVA::File::Create(file_name, DAVA::File::READ | DAVA::File::OPEN);
-            return (_in) ? true : false;
+            in = DAVA::File::Create(file_name, DAVA::File::READ | DAVA::File::OPEN);
+            return (in) ? true : false;
         }
-        virtual void close()
+        virtual void Close()
         {
-            DVASSERT(_in);
-            _in->Release();
-            _in = nullptr;
+            DVASSERT(in);
+            in->Release();
+            in = nullptr;
         }
-        virtual unsigned size() const
+        virtual unsigned Size() const
         {
-            return (_in) ? unsigned(_in->GetSize()) : 0;
+            return (in) ? unsigned(in->GetSize()) : 0;
         }
-        virtual unsigned read(unsigned max_sz, void* dst)
+        virtual unsigned Read(unsigned max_sz, void* dst)
         {
-            return (_in) ? _in->Read(dst, max_sz) : 0;
+            return (in) ? in->Read(dst, max_sz) : 0;
         }
 
     private:
-        DAVA::File* _in = nullptr;
+        DAVA::File* in = nullptr;
     };
 
     struct
@@ -146,8 +135,8 @@ private:
         unsigned value_len;
     };
 
-    std::vector<macro_t> _macro;
-    unsigned _min_macro_length;
+    std::vector<macro_t> macro;
+    unsigned minMacroLength;
 
-    static DefFileCallback _DefFileCallback;
+    static DefaultFileCallback DefFileCallback;
 };

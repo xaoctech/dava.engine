@@ -14,18 +14,18 @@ public:
     ExpressionEvaluator();
     ~ExpressionEvaluator();
 
-    bool evaluate(const char* expression, float32* out);
+    bool Evaluate(const char* expression, float32* out);
 
-    bool set_variable(const char* var, float32 value);
-    void remove_variable(const char* var);
-    void clear_variables();
+    bool SetVariable(const char* var, float32 value);
+    void RemoveVariable(const char* var);
+    void ClearVariables();
 
-    bool has_variable(const char* name) const;
+    bool HasVariable(const char* name) const;
 
     // returns
     // true, if there was error and fills provided buffer with error message
     // false, when no error occured (err_buffer is not changed)
-    bool get_last_error(char* err_buffer, uint32 err_buffer_size);
+    bool GetLastError(char* err_buffer, uint32 err_buffer_size);
 
     typedef float32 (*FuncImpl)(float32 arg);
 
@@ -35,31 +35,31 @@ public:
 private:
     struct SyntaxTreeNode;
 
-    void _reset();
-    void _PopConnectPush();
-    bool _Evaluate(const SyntaxTreeNode* node, float32* out, uint32* err_code, uint32* err_index);
+    void Reset();
+    void PopConnectPush();
+    bool EvaluateInternal(const SyntaxTreeNode* node, float32* out, uint32* err_code, uint32* err_index);
 
-    char* _expression;
-    std::vector<SyntaxTreeNode> _operator_stack;
-    std::vector<uint32> _node_stack;
-    std::vector<SyntaxTreeNode> _node;
+    char* expressionText;
+    std::vector<SyntaxTreeNode> operatorStack;
+    std::vector<uint32> nodeStack;
+    std::vector<SyntaxTreeNode> nodeArray;
 
-    std::unordered_map<uint32, float32> _var;
+    std::unordered_map<uint32, float32> varMap;
 
-    static std::unordered_map<uint32, FuncImpl> _FuncImpl;
+    static std::unordered_map<uint32, FuncImpl> FuncImplMap;
 
-    mutable uint32 _last_error_code;
-    mutable uint32 _last_error_index;
+    mutable uint32 lastErrorCode;
+    mutable uint32 lastErrorIndex;
 
-    static uint32 _Priority(char operation);
+    static uint32 OperationPriority(char operation);
 
-    static const char* _Operators;
-    static const char _OpEqual;
-    static const char _OpNotEqual;
-    static const char _OpLogicalAnd;
-    static const char _OpLogicalOr;
-    static const char _OpLogicalNot;
-    static const char _OpFunctionCall;
-    static const char _OpDefined;
-    static const char _OpNotDefined;
+    static const char* Operators;
+    static const char OpEqual;
+    static const char OpNotEqual;
+    static const char OpLogicalAnd;
+    static const char OpLogicalOr;
+    static const char OpLogicalNot;
+    static const char OpFunctionCall;
+    static const char OpDefined;
+    static const char OpNotDefined;
 };

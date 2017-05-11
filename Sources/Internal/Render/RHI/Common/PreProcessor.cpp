@@ -4,16 +4,16 @@
 #include "Base/BaseTypes.h"
 #include "rhi_Utils.h"
 
-PreProc::DefFileCallback PreProc::_DefFileCallback;
+PreProc::DefaultFileCallback PreProc::DefFileCallback;
 
 //------------------------------------------------------------------------------
 
 PreProc::PreProc(FileCallback* fc)
-    : _file_cb((fc) ? fc : &_DefFileCallback)
+    : fileCB((fc) ? fc : &DefFileCallback)
     ,
-    _cur_file_name("<buffer>")
+    curFileName("<buffer>")
     ,
-    _min_macro_length(DAVA::InvalidIndex)
+    minMacroLength(DAVA::InvalidIndex)
 {
 }
 
@@ -21,31 +21,31 @@ PreProc::PreProc(FileCallback* fc)
 
 PreProc::~PreProc()
 {
-    clear();
+    Clear();
 }
 
 //------------------------------------------------------------------------------
 
 bool
-PreProc::process_file(const char* file_name, TextBuf* output)
+PreProc::ProcessFile(const char* file_name, TextBuf* output)
 {
     bool success = false;
 
-    if (_file_cb->open(file_name))
+    if (fileCB->Open(file_name))
     {
-        _reset();
+        Reset();
 
-        unsigned text_sz = _file_cb->size();
-        char* text = _alloc_buffer(text_sz + 1);
+        unsigned text_sz = fileCB->Size();
+        char* text = AllocBuffer(text_sz + 1);
 
-        _file_cb->read(text_sz, text);
+        fileCB->Read(text_sz, text);
         text[text_sz] = 0;
-        _file_cb->close();
+        fileCB->Close();
 
-        _cur_file_name = "<buffer>";
-        if (_process_buffer(text, &_line))
+        curFileName = "<buffer>";
+        if (ProcessBuffer(text, &line))
         {
-            _generate_output(output);
+            GenerateOutput(output);
             success = true;
         }
     }
@@ -56,27 +56,27 @@ PreProc::process_file(const char* file_name, TextBuf* output)
 //------------------------------------------------------------------------------
 
 bool
-PreProc::process_inplace(char* src_text, TextBuf* output)
+PreProc::ProcessInplace(char* src_text, TextBuf* output)
 {
-    _reset();
-    return _process_inplace(src_text, output);
+    Reset();
+    return ProcessInplaceInternal(src_text, output);
 }
 
 //------------------------------------------------------------------------------
 
 bool
-PreProc::process(const char* src_text, TextBuf* output)
+PreProc::Process(const char* src_text, TextBuf* output)
 {
-    _reset();
+    Reset();
 
     bool success = false;
-    char* text = _alloc_buffer(unsigned(strlen(src_text)) + 1);
+    char* text = AllocBuffer(unsigned(strlen(src_text)) + 1);
 
     strcpy(text, src_text);
 
-    if (_process_inplace(text, output))
+    if (ProcessInplaceInternal(text, output))
     {
-        _generate_output(output);
+        GenerateOutput(output);
         success = true;
     }
 
@@ -86,63 +86,63 @@ PreProc::process(const char* src_text, TextBuf* output)
 //------------------------------------------------------------------------------
 
 void
-PreProc::clear()
+PreProc::Clear()
 {
-    _reset();
-    _min_macro_length = DAVA::InvalidIndex;
-    _macro.clear();
+    Reset();
+    minMacroLength = DAVA::InvalidIndex;
+    macro.clear();
 }
 
 //------------------------------------------------------------------------------
 
 bool
-PreProc::add_define(const char* name, const char* value)
+PreProc::AddDefine(const char* name, const char* value)
 {
-    return _process_define(name, value);
+    return ProcessDefine(name, value);
 }
 
 //------------------------------------------------------------------------------
 
 void
-PreProc::dump() const
+PreProc::Dump() const
 {
-    for (unsigned i = 0; i != _line.size(); ++i)
+    for (unsigned i = 0; i != line.size(); ++i)
     {
-        DAVA::Logger::Info("%04u | %s", _line[i].line_n, _line[i].text);
+        DAVA::Logger::Info("%04u | %s", line[i].line_n, line[i].text);
     }
 }
 
 //------------------------------------------------------------------------------
 
 void
-PreProc::_reset()
+PreProc::Reset()
 {
-    _line.clear();
+    line.clear();
 
-    for (unsigned b = 0; b != _buf.size(); ++b)
-        ::free(_buf[b].mem);
-    _buf.clear();
+    for (unsigned b = 0; b != buffer.size(); ++b)
+        ::free(buffer[b].mem);
+    buffer.clear();
 
-    _cur_file_name = "<buffer>";
+    curFileName = "<buffer>";
 }
 
 //------------------------------------------------------------------------------
 
 char*
-PreProc::_alloc_buffer(unsigned sz)
+PreProc::AllocBuffer(unsigned sz)
 {
     Buffer buf;
 
     buf.mem = ::malloc(sz);
 
-    _buf.push_back(buf);
+    buffer.push_back(buf);
     return (char*)(buf.mem);
 }
 
 //------------------------------------------------------------------------------
 
 inline char*
-PreProc::_get_expression(char* txt, char** end) const
+PreProc::GetExpression(char* txt, char** end) const
 {
     char* e = txt;
     char* s = txt;
@@ -188,7 +188,7 @@ PreProc::_get_expression(char* txt, char** end) const
 //------------------------------------------------------------------------------
 
 char*
-PreProc::_get_identifier(char* txt, char** end) const
+PreProc::GetIdentifier(char* txt, char** end) const
 {
     char* t = txt;
     char* n = nullptr;
@@ -225,7 +225,7 @@ PreProc::_get_identifier(char* txt, char** end) const
 //------------------------------------------------------------------------------
 
 int
-PreProc::_get_name_and_value(char* txt, char** name, char** value, char** end) const
+PreProc::GetNameAndValue(char* txt, char** name, char** value, char** end) const
 {
     // returns:
     // non-zero when name/value successfully retrieved
@@ -309,7 +309,7 @@ PreProc::_get_name_and_value(char* txt, char** name, char** value, char** end) c
 //------------------------------------------------------------------------------
 
 bool
-PreProc::_process_buffer(char* text, std::vector<Line>* line)
+PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
 {
     bool success = true;
     char* ln = text;
@@ -409,7 +409,7 @@ PreProc::_process_buffer(char* text, std::vector<Line>* line)
         if (*s == '\n')
         {
             *s = 0;
-            line->push_back(Line(ln, line_n));
+            line_->push_back(Line(ln, line_n));
 
             if (ln_external)
             {
@@ -459,7 +459,7 @@ PreProc::_process_buffer(char* text, std::vector<Line>* line)
 
                     strncpy(fname, f0, f1 - f0 + 1);
                     fname[f1 - f0 + 1] = 0;
-                    if (!_process_include(fname, line))
+                    if (!ProcessInclude(fname, line_))
                     {
                         return false;
                     }
@@ -480,7 +480,7 @@ PreProc::_process_buffer(char* text, std::vector<Line>* line)
                 {
                     char* name = nullptr;
                     char* value = nullptr;
-                    int nv = _get_name_and_value(s + 1 + 6, &name, &value, &s);
+                    int nv = GetNameAndValue(s + 1 + 6, &name, &value, &s);
 
                     if (nv)
                     {
@@ -491,7 +491,7 @@ PreProc::_process_buffer(char* text, std::vector<Line>* line)
                             break;
                         }
 
-                        if (!_process_define(name, value))
+                        if (!ProcessDefine(name, value))
                         {
                             success = false;
                             break;
@@ -517,7 +517,7 @@ PreProc::_process_buffer(char* text, std::vector<Line>* line)
                 {
                     char* name = nullptr;
                     char* value = nullptr;
-                    int nv = _get_name_and_value(s + 1 + 13, &name, &value, &s);
+                    int nv = GetNameAndValue(s + 1 + 13, &name, &value, &s);
 
                     if (nv)
                     {
@@ -528,8 +528,8 @@ PreProc::_process_buffer(char* text, std::vector<Line>* line)
                             break;
                         }
 
-                        if (!_eval.has_variable(name))
-                            _eval.set_variable(name, float(atof(value)));
+                        if (!evaluator.HasVariable(name))
+                            evaluator.SetVariable(name, float(atof(value)));
 
                         if (nv != -1)
                         {
@@ -549,21 +549,21 @@ PreProc::_process_buffer(char* text, std::vector<Line>* line)
                 }
                 else if (!skipping_line && strncmp(s + 1, "undef", 5) == 0)
                 {
-                    char* name = _get_identifier(s + 1 + 5, &s);
+                    char* name = GetIdentifier(s + 1 + 5, &s);
                     if (!name)
                         break;
 
-                    _undefine(name);
+                    Undefine(name);
 
                     *s = '\n'; // since it was null'ed in _get_identifier
                     ln = s + 1;
                 }
                 else if (strncmp(s + 1, "ifdef", 5) == 0)
                 {
-                    char* name = _get_identifier(s + 1 + 5, &s);
+                    char* name = GetIdentifier(s + 1 + 5, &s);
                     if (!name)
                         break;
-                    bool condition = _eval.has_variable(name);
+                    bool condition = evaluator.HasVariable(name);
                     condition_t p;
 
                     p.original_condition = condition;
@@ -576,10 +576,10 @@ PreProc::_process_buffer(char* text, std::vector<Line>* line)
                 }
                 else if (strncmp(s + 1, "ifndef", 6) == 0)
                 {
-                    char* name = _get_identifier(s + 1 + 6, &s);
+                    char* name = GetIdentifier(s + 1 + 6, &s);
                     if (!name)
                         break;
-                    bool condition = !_eval.has_variable(name);
+                    bool condition = !evaluator.HasVariable(name);
                     condition_t p;
 
                     p.original_condition = condition;
@@ -592,12 +592,12 @@ PreProc::_process_buffer(char* text, std::vector<Line>* line)
                 }
                 else if (strncmp(s + 1, "if", 2) == 0)
                 {
-                    char* e = _get_expression(s + 1 + 2, &s);
+                    char* e = GetExpression(s + 1 + 2, &s);
                     float v = 0;
 
-                    if (!_eval.evaluate(e, &v))
+                    if (!evaluator.Evaluate(e, &v))
                     {
-                        _report_expr_eval_error(src_line_n);
+                        ReportExprEvalError(src_line_n);
                         return false;
                     }
 
@@ -612,12 +612,12 @@ PreProc::_process_buffer(char* text, std::vector<Line>* line)
                 }
                 else if (strncmp(s + 1, "elif", 4) == 0)
                 {
-                    char* e = _get_expression(s + 1 + 4, &s);
+                    char* e = GetExpression(s + 1 + 4, &s);
                     float v = 0;
 
-                    if (!_eval.evaluate(e, &v))
+                    if (!evaluator.Evaluate(e, &v))
                     {
-                        _report_expr_eval_error(src_line_n);
+                        ReportExprEvalError(src_line_n);
                         return false;
                     }
 
@@ -706,25 +706,25 @@ PreProc::_process_buffer(char* text, std::vector<Line>* line)
                 restore_nl = true;
             }
 
-            for (unsigned m = 0; m != _macro.size(); ++m)
+            for (unsigned m = 0; m != macro.size(); ++m)
             {
-                char* t = strstr(s, _macro[m].name);
+                char* t = strstr(s, macro[m].name);
 
                 if (t)
                 {
                     size_t sz = ln_end - ln;
-                    char* l = _alloc_buffer(sz + _macro[m].value_len + 1);
+                    char* l = AllocBuffer(sz + macro[m].value_len + 1);
 
                     size_t l1 = t - ln;
 
                     strncpy(l, ln, l1);
-                    strncpy(l + l1, _macro[m].value, _macro[m].value_len);
-                    strncpy(l + l1 + _macro[m].value_len, t + _macro[m].name_len, sz - (l1 + _macro[m].name_len));
-                    l[l1 + _macro[m].value_len + sz - (l1 + _macro[m].name_len)] = '\n';
-                    l[l1 + _macro[m].value_len + sz - (l1 + _macro[m].name_len) + 1] = '\0';
+                    strncpy(l + l1, macro[m].value, macro[m].value_len);
+                    strncpy(l + l1 + macro[m].value_len, t + macro[m].name_len, sz - (l1 + macro[m].name_len));
+                    l[l1 + macro[m].value_len + sz - (l1 + macro[m].name_len)] = '\n';
+                    l[l1 + macro[m].value_len + sz - (l1 + macro[m].name_len) + 1] = '\0';
 
                     ln = l;
-                    s = l + l1 + _macro[m].value_len;
+                    s = l + l1 + macro[m].value_len;
 
                     if (!ln_external)
                     {
@@ -741,17 +741,17 @@ PreProc::_process_buffer(char* text, std::vector<Line>* line)
                 *ln_end = '\n';
 
             if (!macro_expanded
-                && _min_macro_length != DAVA::InvalidIndex
-                && s + _min_macro_length < ln_end
+                && minMacroLength != DAVA::InvalidIndex
+                && s + minMacroLength < ln_end
                 )
             {
-                s += _min_macro_length - 1;
+                s += minMacroLength - 1;
             }
         }
     }
 
     if (ln[0])
-        line->push_back(Line(ln, line_n));
+        line_->push_back(Line(ln, line_n));
 
     return success;
 }
@@ -759,13 +759,13 @@ PreProc::_process_buffer(char* text, std::vector<Line>* line)
 //------------------------------------------------------------------------------
 
 bool
-PreProc::_process_inplace(char* src_text, TextBuf* output)
+PreProc::ProcessInplaceInternal(char* src_text, TextBuf* output)
 {
     bool success = false;
 
-    if (_process_buffer(src_text, &_line))
+    if (ProcessBuffer(src_text, &line))
     {
-        _generate_output(output);
+        GenerateOutput(output);
         success = true;
     }
 
@@ -775,24 +775,24 @@ PreProc::_process_inplace(char* src_text, TextBuf* output)
 //------------------------------------------------------------------------------
 
 bool
-PreProc::_process_include(const char* file_name, std::vector<PreProc::Line>* line)
+PreProc::ProcessInclude(const char* file_name, std::vector<PreProc::Line>* line_)
 {
     bool success = false;
 
-    if (_file_cb->open(file_name))
+    if (fileCB->Open(file_name))
     {
-        unsigned text_sz = _file_cb->size();
-        char* text = _alloc_buffer(text_sz + 1);
+        unsigned text_sz = fileCB->Size();
+        char* text = AllocBuffer(text_sz + 1);
 
-        _file_cb->read(text_sz, text);
+        fileCB->Read(text_sz, text);
         text[text_sz] = 0;
-        _file_cb->close();
+        fileCB->Close();
 
-        const char* prev_file_name = _cur_file_name;
+        const char* prev_file_name = curFileName;
 
-        _cur_file_name = file_name;
-        _process_buffer(text, &_line);
-        _cur_file_name = prev_file_name;
+        curFileName = file_name;
+        ProcessBuffer(text, &line);
+        curFileName = prev_file_name;
         success = true;
     }
     else
@@ -806,7 +806,7 @@ PreProc::_process_include(const char* file_name, std::vector<PreProc::Line>* lin
 //------------------------------------------------------------------------------
 
 bool
-PreProc::_process_define(const char* name, const char* value)
+PreProc::ProcessDefine(const char* name, const char* value)
 {
     bool name_valid = true;
 
@@ -829,26 +829,26 @@ PreProc::_process_define(const char* name, const char* value)
 
     float val;
 
-    if (_eval.evaluate(value, &val))
+    if (evaluator.Evaluate(value, &val))
     {
-        _var.push_back(Var());
-        strcpy(_var.back().name, name);
-        _var.back().val = int(val);
+        variable.push_back(Var());
+        strcpy(variable.back().name, name);
+        variable.back().val = int(val);
 
-        _eval.set_variable(name, val);
+        evaluator.SetVariable(name, val);
     }
     else
     {
         //        _report_expr_eval_error(0);
     }
 
-    _macro.resize(_macro.size() + 1);
-    strncpy(_macro.back().name, name, countof(_macro.back().name));
-    strncpy(_macro.back().value, value, countof(_macro.back().value));
-    _macro.back().name_len = strlen(name);
-    _macro.back().value_len = strlen(value);
-    if (_macro.back().value_len < _min_macro_length)
-        _min_macro_length = _macro.back().value_len;
+    macro.resize(macro.size() + 1);
+    strncpy(macro.back().name, name, countof(macro.back().name));
+    strncpy(macro.back().value, value, countof(macro.back().value));
+    macro.back().name_len = strlen(name);
+    macro.back().value_len = strlen(value);
+    if (macro.back().value_len < minMacroLength)
+        minMacroLength = macro.back().value_len;
 
     return true;
 }
@@ -856,14 +856,14 @@ PreProc::_process_define(const char* name, const char* value)
 //------------------------------------------------------------------------------
 
 void
-PreProc::_undefine(const char* name)
+PreProc::Undefine(const char* name)
 {
-    _eval.remove_variable(name);
-    for (std::vector<macro_t>::iterator m = _macro.begin(), m_end = _macro.end(); m != m_end; ++m)
+    evaluator.RemoveVariable(name);
+    for (std::vector<macro_t>::iterator m = macro.begin(), m_end = macro.end(); m != m_end; ++m)
     {
         if (strcmp(m->name, name) == 0)
         {
-            _macro.erase(m);
+            macro.erase(m);
             break;
         }
     }
@@ -872,12 +872,12 @@ PreProc::_undefine(const char* name)
 //------------------------------------------------------------------------------
 
 void
-PreProc::_generate_output(TextBuf* output)
+PreProc::GenerateOutput(TextBuf* output)
 {
     static const char* endl = "\r\n";
 
     output->clear();
-    for (std::vector<Line>::const_iterator l = _line.begin(), l_end = _line.end(); l != l_end; ++l)
+    for (std::vector<Line>::const_iterator l = line.begin(), l_end = line.end(); l != l_end; ++l)
     {
         unsigned sz = unsigned(strlen(l->text));
 
@@ -889,10 +889,10 @@ PreProc::_generate_output(TextBuf* output)
 //------------------------------------------------------------------------------
 
 void
-PreProc::_report_expr_eval_error(unsigned line_n)
+PreProc::ReportExprEvalError(unsigned line_n)
 {
     char err[256];
 
-    _eval.get_last_error(err, countof(err));
-    DAVA::Logger::Error("%s  : %u  %s", _cur_file_name, line_n, err);
+    evaluator.GetLastError(err, countof(err));
+    DAVA::Logger::Error("%s  : %u  %s", curFileName, line_n, err);
 }

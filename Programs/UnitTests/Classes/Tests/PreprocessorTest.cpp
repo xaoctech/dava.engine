@@ -49,21 +49,21 @@ DAVA_TESTCLASS (PreprocessorTest)
 #endif
         };
 
-        ev.set_variable("bla", 13);
-        ev.set_variable("SHADING_NONE", 0);
-        ev.set_variable("SHADING_PERVERTEX", 1);
-        ev.set_variable("SHADING_PERPIXEL", 2);
-        ev.set_variable("SHADING", 1);
-        ev.set_variable("LIGHTING_ENABLED", 1);
-        ev.set_variable("DARKNESS_ENABLED", 0);
-        ev.set_variable("DARKNESS_DISABLED", 0);
+        ev.SetVariable("bla", 13);
+        ev.SetVariable("SHADING_NONE", 0);
+        ev.SetVariable("SHADING_PERVERTEX", 1);
+        ev.SetVariable("SHADING_PERPIXEL", 2);
+        ev.SetVariable("SHADING", 1);
+        ev.SetVariable("LIGHTING_ENABLED", 1);
+        ev.SetVariable("DARKNESS_ENABLED", 0);
+        ev.SetVariable("DARKNESS_DISABLED", 0);
         ExpressionEvaluator::RegisterCommonFunctions();
         ExpressionEvaluator::RegisterFunction("one_more", &EV_OneMore);
 
         for (unsigned i = 0; i != countof(data); ++i)
         {
             float res = 0;
-            bool success = ev.evaluate(data[i].expr, &res);
+            bool success = ev.Evaluate(data[i].expr, &res);
 
             TEST_VERIFY(success);
             TEST_VERIFY(FLOAT_EQUAL(res, data[i].result))
@@ -77,11 +77,11 @@ DAVA_TESTCLASS (PreprocessorTest)
         for (unsigned i = 0; i != countof(err_expr); ++i)
         {
             float res = 0;
-            bool success = ev.evaluate(err_expr[i], &res);
+            bool success = ev.Evaluate(err_expr[i], &res);
             char err[256] = "";
 
             TEST_VERIFY(!success);
-            ev.get_last_error(err, countof(err));
+            ev.GetLastError(err, countof(err));
             DAVA::Logger::Info("(expected) expr.eval error : %s", err);
         }
     }
@@ -131,7 +131,7 @@ DAVA_TESTCLASS (PreprocessorTest)
             {
             }
 
-            virtual bool open(const char* file_name)
+            virtual bool Open(const char* file_name)
             {
                 char fname[2048];
 
@@ -140,17 +140,17 @@ DAVA_TESTCLASS (PreprocessorTest)
 
                 return (_in) ? true : false;
             }
-            virtual void close()
+            virtual void Close()
             {
                 DVASSERT(_in);
                 _in->Release();
                 _in = nullptr;
             }
-            virtual unsigned size() const
+            virtual unsigned Size() const
             {
                 return (_in) ? unsigned(_in->GetSize()) : 0;
             }
-            virtual unsigned read(unsigned max_sz, void* dst)
+            virtual unsigned Read(unsigned max_sz, void* dst)
             {
                 return (_in) ? _in->Read(dst, max_sz) : 0;
             }
@@ -173,7 +173,7 @@ DAVA_TESTCLASS (PreprocessorTest)
             size_t expected_sz = size_t(expected_file->GetSize());
             char* expected_data = (char*)(::malloc(expected_sz + 1));
 
-            TEST_VERIFY(pp.process_file(test[i].inputFileName, &output));
+            TEST_VERIFY(pp.ProcessFile(test[i].inputFileName, &output));
 
             expected_file->Read(expected_data, expected_sz);
             expected_data[expected_sz] = 0;
@@ -220,7 +220,7 @@ DAVA_TESTCLASS (PreprocessorTest)
             PreProc pp(&fc);
             std::vector<char> output;
 
-            TEST_VERIFY(pp.process_file(err_test[i], &output) == false);
+            TEST_VERIFY(pp.ProcessFile(err_test[i], &output) == false);
             DAVA::Logger::Info("  OK");
         }
 

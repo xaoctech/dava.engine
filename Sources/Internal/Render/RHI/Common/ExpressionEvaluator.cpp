@@ -13,15 +13,15 @@ using DAVA::float32;
 
 //------------------------------------------------------------------------------
 
-const char* ExpressionEvaluator::_Operators = "+-*/^!\x01\x02\x03\x04\x06\x07";
-const char ExpressionEvaluator::_OpEqual = '\x01';
-const char ExpressionEvaluator::_OpNotEqual = '\x02';
-const char ExpressionEvaluator::_OpLogicalAnd = '\x03';
-const char ExpressionEvaluator::_OpLogicalOr = '\x04';
-const char ExpressionEvaluator::_OpLogicalNot = '\x08';
-const char ExpressionEvaluator::_OpFunctionCall = '\x05';
-const char ExpressionEvaluator::_OpDefined = '\x06';
-const char ExpressionEvaluator::_OpNotDefined = '\x07';
+const char* ExpressionEvaluator::Operators = "+-*/^!\x01\x02\x03\x04\x06\x07";
+const char ExpressionEvaluator::OpEqual = '\x01';
+const char ExpressionEvaluator::OpNotEqual = '\x02';
+const char ExpressionEvaluator::OpLogicalAnd = '\x03';
+const char ExpressionEvaluator::OpLogicalOr = '\x04';
+const char ExpressionEvaluator::OpLogicalNot = '\x08';
+const char ExpressionEvaluator::OpFunctionCall = '\x05';
+const char ExpressionEvaluator::OpDefined = '\x06';
+const char ExpressionEvaluator::OpNotDefined = '\x07';
 
 static const float32 Epsilon = 0.000001f;
 
@@ -73,9 +73,9 @@ ExpressionEvaluator::SyntaxTreeNode
 //------------------------------------------------------------------------------
 
 ExpressionEvaluator::ExpressionEvaluator()
-    : _expression(nullptr)
+    : expressionText(nullptr)
 {
-    _reset();
+    Reset();
 }
 
 //------------------------------------------------------------------------------
@@ -87,43 +87,43 @@ ExpressionEvaluator::~ExpressionEvaluator()
 //------------------------------------------------------------------------------
 
 void
-ExpressionEvaluator::_reset()
+ExpressionEvaluator::Reset()
 {
-    _operator_stack.clear();
-    _node_stack.clear();
-    _node.clear();
+    operatorStack.clear();
+    nodeStack.clear();
+    nodeArray.clear();
 
-    if (_expression)
+    if (expressionText)
     {
-        ::free(_expression);
+        ::free(expressionText);
     }
 
-    _last_error_code = 0;
-    _last_error_index = 0;
+    lastErrorCode = 0;
+    lastErrorIndex = 0;
 }
 
 //------------------------------------------------------------------------------
 
 void
-ExpressionEvaluator::_PopConnectPush()
+ExpressionEvaluator::PopConnectPush()
 {
-    _operator_stack.back().right_i = _node_stack.back();
-    _node_stack.pop_back();
-    if (_operator_stack.back().operation != _OpDefined && _operator_stack.back().operation != _OpNotDefined)
+    operatorStack.back().right_i = nodeStack.back();
+    nodeStack.pop_back();
+    if (operatorStack.back().operation != OpDefined && operatorStack.back().operation != OpNotDefined)
     {
-        _operator_stack.back().left_i = _node_stack.back();
-        _node_stack.pop_back();
+        operatorStack.back().left_i = nodeStack.back();
+        nodeStack.pop_back();
     }
 
-    _node_stack.push_back(uint32(_node.size()));
-    _node.push_back(_operator_stack.back());
-    _operator_stack.pop_back();
+    nodeStack.push_back(uint32(nodeArray.size()));
+    nodeArray.push_back(operatorStack.back());
+    operatorStack.pop_back();
 }
 
 //------------------------------------------------------------------------------
 
 bool
-ExpressionEvaluator::_Evaluate(const SyntaxTreeNode* node, float32* out, uint32* err_code, uint32* err_index)
+ExpressionEvaluator::EvaluateInternal(const SyntaxTreeNode* node, float32* out, uint32* err_code, uint32* err_index)
 {
     DVASSERT(out);
     *out = 0;
@@ -132,15 +132,15 @@ ExpressionEvaluator::_Evaluate(const SyntaxTreeNode* node, float32* out, uint32*
     {
         if (node->operation)
         {
-            if (((node->operation == _OpFunctionCall || node->operation == _OpLogicalNot || node->operation == _OpDefined || node->operation == _OpNotDefined) && node->right_i != InvalidIndex) // for funcs only right arg makes sense
+            if (((node->operation == OpFunctionCall || node->operation == OpLogicalNot || node->operation == OpDefined || node->operation == OpNotDefined) && node->right_i != InvalidIndex) // for funcs only right arg makes sense
                 || (node->left_i != InvalidIndex && node->right_i != InvalidIndex) // for normal ops - binary operator is assumed
                 )
             {
-                if (node->operation == _OpDefined)
+                if (node->operation == OpDefined)
                 {
                     float32 val;
 
-                    if (_Evaluate((&_node[0]) + node->right_i, &val, err_code, err_index))
+                    if (EvaluateInternal((&nodeArray[0]) + node->right_i, &val, err_code, err_index))
                     {
                         *out = (val == 0.0f) ? 0.0f : 1.0f;
                     }
@@ -149,11 +149,11 @@ ExpressionEvaluator::_Evaluate(const SyntaxTreeNode* node, float32* out, uint32*
                         return false; // error code and index already filled
                     }
                 }
-                else if (node->operation == _OpNotDefined)
+                else if (node->operation == OpNotDefined)
                 {
                     float32 val;
 
-                    if (_Evaluate((&_node[0]) + node->right_i, &val, err_code, err_index))
+                    if (EvaluateInternal((&nodeArray[0]) + node->right_i, &val, err_code, err_index))
                     {
                         *out = (val == 0.0f) ? 0.0f : 1.0f;
                     }
@@ -166,8 +166,8 @@ ExpressionEvaluator::_Evaluate(const SyntaxTreeNode* node, float32* out, uint32*
                 {
                     float32 x, y;
 
-                    if ((node->left_i == InvalidIndex || _Evaluate((&_node[0]) + node->left_i, &x, err_code, err_index))
-                        && _Evaluate((&_node[0]) + node->right_i, &y, err_code, err_index)
+                    if ((node->left_i == InvalidIndex || EvaluateInternal((&nodeArray[0]) + node->left_i, &x, err_code, err_index))
+                        && EvaluateInternal((&nodeArray[0]) + node->right_i, &y, err_code, err_index)
                         )
                     {
                         switch (node->operation)
@@ -189,27 +189,27 @@ ExpressionEvaluator::_Evaluate(const SyntaxTreeNode* node, float32* out, uint32*
                             *out = pow(x, y);
                             break;
 
-                        case _OpEqual:
+                        case OpEqual:
                             *out = fabs(x - y) < Epsilon ? 1.0f : 0.0f;
                             break;
 
-                        case _OpNotEqual:
+                        case OpNotEqual:
                             *out = fabs(x - y) < Epsilon ? 0.0f : 1.0f;
                             break;
 
-                        case _OpLogicalAnd:
+                        case OpLogicalAnd:
                             *out = (fabs(x) > Epsilon && fabs(y) > Epsilon) ? 1.0f : 0.0f;
                             break;
 
-                        case _OpLogicalOr:
+                        case OpLogicalOr:
                             *out = (fabs(x) > Epsilon || fabs(y) > Epsilon) ? 1.0f : 0.0f;
                             break;
 
-                        case _OpLogicalNot:
+                        case OpLogicalNot:
                             *out = (fabs(y) > Epsilon) ? 0.0f : 1.0f;
                             break;
 
-                        case _OpFunctionCall:
+                        case OpFunctionCall:
                             *out = (node->func)(y);
                             break;
                         }
@@ -277,7 +277,7 @@ _GetVariable(const char* expression)
 //------------------------------------------------------------------------------
 
 uint32
-ExpressionEvaluator::_Priority(char operation)
+ExpressionEvaluator::OperationPriority(char operation)
 {
     uint32 ret = 0;
 
@@ -285,10 +285,10 @@ ExpressionEvaluator::_Priority(char operation)
     {
     case '!':
         ret += 2;
-    case _OpDefined:
-    case _OpNotDefined:
+    case OpDefined:
+    case OpNotDefined:
         ret += 3;
-    case _OpLogicalNot:
+    case OpLogicalNot:
         ret += 3;
     case '^':
         ++ret;
@@ -298,12 +298,12 @@ ExpressionEvaluator::_Priority(char operation)
     case '+':
     case '-':
         ++ret;
-    case _OpEqual:
-    case _OpNotEqual:
-    case _OpLogicalAnd:
-    case _OpLogicalOr:
+    case OpEqual:
+    case OpNotEqual:
+    case OpLogicalAnd:
+    case OpLogicalOr:
         ++ret;
-    case _OpFunctionCall:
+    case OpFunctionCall:
         ++ret;
     }
 
@@ -313,7 +313,7 @@ ExpressionEvaluator::_Priority(char operation)
 //------------------------------------------------------------------------------
 
 bool
-ExpressionEvaluator::evaluate(const char* expression, float32* result)
+ExpressionEvaluator::Evaluate(const char* expression, float32* result)
 {
     uint32 len = uint32(strlen(expression));
     char* text = (char*)(::malloc(len + 1));
@@ -328,32 +328,32 @@ ExpressionEvaluator::evaluate(const char* expression, float32* result)
     {
         if (*s == '=' && *(s + 1) == '=')
         {
-            *d++ = _OpEqual;
+            *d++ = OpEqual;
             s += 2;
         }
         else if (*s == '!' && *(s + 1) == '=')
         {
-            *d++ = _OpNotEqual;
+            *d++ = OpNotEqual;
             s += 2;
         }
         else if (*s == '&' && *(s + 1) == '&')
         {
-            *d++ = _OpLogicalAnd;
+            *d++ = OpLogicalAnd;
             s += 2;
         }
         else if (*s == '|' && *(s + 1) == '|')
         {
-            *d++ = _OpLogicalOr;
+            *d++ = OpLogicalOr;
             s += 2;
         }
         else if (strnicmp(s, "!defined", 8) == 0)
         {
-            *d++ = _OpNotDefined;
+            *d++ = OpNotDefined;
             s += 8 + 1;
         }
         else if (strnicmp(s, "defined", 7) == 0)
         {
-            *d++ = _OpDefined;
+            *d++ = OpDefined;
             s += 7 + 1;
         }
         else if (*s == '!')
@@ -364,7 +364,7 @@ ExpressionEvaluator::evaluate(const char* expression, float32* result)
 
             if (*ns1 == '(')
             {
-                *d++ = _OpLogicalNot;
+                *d++ = OpLogicalNot;
                 s += 1;
             }
             else
@@ -379,8 +379,8 @@ ExpressionEvaluator::evaluate(const char* expression, float32* result)
     }
     *d = '\0';
 
-    _reset();
-    _expression = text;
+    Reset();
+    expressionText = text;
 
     // build expr.tree
 
@@ -412,8 +412,8 @@ ExpressionEvaluator::evaluate(const char* expression, float32* result)
             if (invert_operand_value)
                 node.operand = (fabs(node.operand) > Epsilon) ? 0.0f : 1.0f;
 
-            _node_stack.push_back(uint32(_node.size()));
-            _node.push_back(node);
+            nodeStack.push_back(uint32(nodeArray.size()));
+            nodeArray.push_back(node);
 
             last_token_operand = true;
             negate_operand_value = false;
@@ -427,30 +427,30 @@ ExpressionEvaluator::evaluate(const char* expression, float32* result)
             strncpy(&var[0], expr, offset);
             var[offset] = '\0';
             uint32 vhash = DAVA::HashValue_N(var, offset);
-            std::unordered_map<uint32_t, FuncImpl>::iterator func = _FuncImpl.find(vhash);
+            std::unordered_map<uint32_t, FuncImpl>::iterator func = FuncImplMap.find(vhash);
 
-            if (func != _FuncImpl.end())
+            if (func != FuncImplMap.end())
             {
-                _operator_stack.push_back(SyntaxTreeNode(_OpFunctionCall, func->second, expr - text));
+                operatorStack.push_back(SyntaxTreeNode(OpFunctionCall, func->second, expr - text));
                 last_token_operand = false;
             }
             else
             {
-                if (_var.find(vhash) != _var.end())
+                if (varMap.find(vhash) != varMap.end())
                 {
-                    float32 value = _var[vhash];
+                    float32 value = varMap[vhash];
                     if (negate_operand_value)
                         value = -value;
                     if (invert_operand_value)
                         value = (fabs(value) > Epsilon) ? 0.0f : 1.0f;
 
-                    if (_operator_stack.size() && _operator_stack.back().operation == _OpDefined)
+                    if (operatorStack.size() && operatorStack.back().operation == OpDefined)
                         value = 1.0f;
-                    if (_operator_stack.size() && _operator_stack.back().operation == _OpNotDefined)
+                    if (operatorStack.size() && operatorStack.back().operation == OpNotDefined)
                         value = 0.0f;
 
-                    _node_stack.push_back(uint32(_node.size()));
-                    _node.push_back(SyntaxTreeNode(value, uint32(expr - text)));
+                    nodeStack.push_back(uint32(nodeArray.size()));
+                    nodeArray.push_back(SyntaxTreeNode(value, uint32(expr - text)));
 
                     last_token_operand = true;
                     negate_operand_value = false;
@@ -458,10 +458,10 @@ ExpressionEvaluator::evaluate(const char* expression, float32* result)
                 }
                 else
                 {
-                    if (_operator_stack.size() && (_operator_stack.back().operation == _OpDefined || _operator_stack.back().operation == _OpNotDefined))
+                    if (operatorStack.size() && (operatorStack.back().operation == OpDefined || operatorStack.back().operation == OpNotDefined))
                     {
-                        _node_stack.push_back(uint32(_node.size()));
-                        _node.push_back(SyntaxTreeNode((_operator_stack.back().operation == _OpDefined) ? 0.0f : 1.0f, InvalidIndex));
+                        nodeStack.push_back(uint32(nodeArray.size()));
+                        nodeArray.push_back(SyntaxTreeNode((operatorStack.back().operation == OpDefined) ? 0.0f : 1.0f, InvalidIndex));
 
                         last_token_operand = true;
                         negate_operand_value = false;
@@ -470,21 +470,21 @@ ExpressionEvaluator::evaluate(const char* expression, float32* result)
                     else
                     {
                         // undefined symbol
-                        _last_error_code = 3;
-                        _last_error_index = uint32(expr - text);
+                        lastErrorCode = 3;
+                        lastErrorIndex = uint32(expr - text);
                         return false;
                     }
                 }
             }
         }
-        else if (*expr == _OpLogicalNot)
+        else if (*expr == OpLogicalNot)
         {
-            _operator_stack.push_back(SyntaxTreeNode(_OpLogicalNot, expr - text));
+            operatorStack.push_back(SyntaxTreeNode(OpLogicalNot, expr - text));
             last_token_operand = false;
             offset = 1;
         }
         // process operators
-        else if (strchr(_Operators, *expr))
+        else if (strchr(Operators, *expr))
         {
             if (*expr == '-' && !last_token_operand)
             {
@@ -502,31 +502,31 @@ ExpressionEvaluator::evaluate(const char* expression, float32* result)
                 continue;
             }
 
-            if (_operator_stack.size() == 0
-                || _Priority(_operator_stack.back().operation) < _Priority(*expr)
+            if (operatorStack.size() == 0
+                || OperationPriority(operatorStack.back().operation) < OperationPriority(*expr)
                 )
             {
-                _operator_stack.push_back(SyntaxTreeNode(*expr, uint32(expr - text)));
+                operatorStack.push_back(SyntaxTreeNode(*expr, uint32(expr - text)));
             }
             else
             {
                 // we need to clear stack from higher priority operators
                 // and from the same-priority ( we calculate left part first )
-                while (_operator_stack.size() != 0
-                       && _Priority(_operator_stack.back().operation) >= _Priority(*expr)
+                while (operatorStack.size() != 0
+                       && OperationPriority(operatorStack.back().operation) >= OperationPriority(*expr)
                        )
                 {
-                    if (_node_stack.size() < 2 && _operator_stack.back().operation != _OpDefined && _operator_stack.back().operation != _OpNotDefined)
+                    if (nodeStack.size() < 2 && operatorStack.back().operation != OpDefined && operatorStack.back().operation != OpNotDefined)
                     {
                         // not enough operands
-                        _last_error_code = 1;
-                        _last_error_index = _operator_stack.back().expr_index;
+                        lastErrorCode = 1;
+                        lastErrorIndex = operatorStack.back().expr_index;
                         return false;
                     }
-                    _PopConnectPush();
+                    PopConnectPush();
                 }
 
-                _operator_stack.push_back(SyntaxTreeNode(*expr, uint32(expr - text)));
+                operatorStack.push_back(SyntaxTreeNode(*expr, uint32(expr - text)));
             }
 
             last_token_operand = false;
@@ -536,7 +536,7 @@ ExpressionEvaluator::evaluate(const char* expression, float32* result)
         // process parenthesis
         else if (*expr == '(')
         {
-            _operator_stack.push_back(SyntaxTreeNode(*expr, uint32(expr - text)));
+            operatorStack.push_back(SyntaxTreeNode(*expr, uint32(expr - text)));
             offset = 1;
 
             last_token_operand = false;
@@ -544,51 +544,51 @@ ExpressionEvaluator::evaluate(const char* expression, float32* result)
         else if (*expr == ')')
         {
             // find open parentesis
-            while ((_operator_stack.size() != 0) && (_operator_stack.back().operation != '('))
+            while ((operatorStack.size() != 0) && (operatorStack.back().operation != '('))
             {
-                if (_node_stack.size() < 2)
+                if (nodeStack.size() < 2)
                 {
                     // not enough operands
-                    _last_error_code = 1;
-                    _last_error_index = _operator_stack.back().expr_index;
+                    lastErrorCode = 1;
+                    lastErrorIndex = operatorStack.back().expr_index;
                     return false;
                 }
-                _PopConnectPush();
+                PopConnectPush();
             }
 
             // check that stack  didn't run out
-            if (_operator_stack.size() == 0)
+            if (operatorStack.size() == 0)
             {
                 //parenthesis are unbalanced
-                _last_error_code = 2;
-                _last_error_index = uint32(expr - text);
+                lastErrorCode = 2;
+                lastErrorIndex = uint32(expr - text);
                 return false;
             }
 
-            _operator_stack.pop_back();
+            operatorStack.pop_back();
 
             // check if it was logical-NOT in form !(some-expression)
-            if ((_operator_stack.size() != 0) && (_operator_stack.back().operation == _OpLogicalNot))
+            if ((operatorStack.size() != 0) && (operatorStack.back().operation == OpLogicalNot))
             {
-                _operator_stack.back().right_i = _node_stack.back();
-                _node_stack.pop_back();
+                operatorStack.back().right_i = nodeStack.back();
+                nodeStack.pop_back();
 
-                _node_stack.push_back(_node.size());
-                _node.push_back(_operator_stack.back());
+                nodeStack.push_back(nodeArray.size());
+                nodeArray.push_back(operatorStack.back());
 
-                _operator_stack.pop_back();
+                operatorStack.pop_back();
             }
 
             // check if it was function call
-            if( (_operator_stack.size() != 0) && (_operator_stack.back().operation == _OpFunctionCall) )
+            if ((operatorStack.size() != 0) && (operatorStack.back().operation == OpFunctionCall))
             {
-                _operator_stack.back().right_i = _node_stack.back();
-                _node_stack.pop_back();
+                operatorStack.back().right_i = nodeStack.back();
+                nodeStack.pop_back();
 
-                _node_stack.push_back( _node.size() );
-                _node.push_back( _operator_stack.back() );
+                nodeStack.push_back(nodeArray.size());
+                nodeArray.push_back(operatorStack.back());
 
-                _operator_stack.pop_back();
+                operatorStack.pop_back();
             }
 
             last_token_operand = false;
@@ -603,78 +603,78 @@ ExpressionEvaluator::evaluate(const char* expression, float32* result)
         expr += offset;
     }
 
-    while (_operator_stack.size() != 0)
+    while (operatorStack.size() != 0)
     {
-        if (_operator_stack.back().operation == '(')
+        if (operatorStack.back().operation == '(')
         {
             //parenthesis are unbalanced
-            _last_error_code = 2;
-            _last_error_index = _operator_stack.back().expr_index;
+            lastErrorCode = 2;
+            lastErrorIndex = operatorStack.back().expr_index;
             return false;
         }
-        else if (_node_stack.size() < 2 && _operator_stack.back().operation != _OpDefined && _operator_stack.back().operation != _OpNotDefined)
+        else if (nodeStack.size() < 2 && operatorStack.back().operation != OpDefined && operatorStack.back().operation != OpNotDefined)
         {
             // not enough operands
-            _last_error_code = 1;
-            _last_error_index = _operator_stack.back().expr_index;
+            lastErrorCode = 1;
+            lastErrorIndex = operatorStack.back().expr_index;
             return false;
         }
 
-        _PopConnectPush();
+        PopConnectPush();
     }
 
-    return _Evaluate((&_node[0]) + _node_stack.back(), result, &_last_error_code, &_last_error_index);
+    return EvaluateInternal((&nodeArray[0]) + nodeStack.back(), result, &lastErrorCode, &lastErrorIndex);
 }
 
 bool
-ExpressionEvaluator::set_variable(const char* var, float32 value)
+ExpressionEvaluator::SetVariable(const char* var, float32 value)
 {
     bool success = false;
     uint32 var_id = DAVA::HashValue_N(var, uint32(strlen(var)));
 
-    _var[var_id] = value;
+    varMap[var_id] = value;
 
     return success;
 }
 
 void
-ExpressionEvaluator::remove_variable(const char* var)
+ExpressionEvaluator::RemoveVariable(const char* var)
 {
     uint32 var_id = DAVA::HashValue_N(var, uint32(strlen(var)));
 
-    _var.erase(var_id);
+    varMap.erase(var_id);
 }
 
 bool
-ExpressionEvaluator::has_variable(const char* name) const
+ExpressionEvaluator::HasVariable(const char* name) const
 {
     bool success = false;
     uint32 var_id = DAVA::HashValue_N(name, uint32(strlen(name)));
 
-    return _var.find(var_id) != _var.end();
+    return varMap.find(var_id) != varMap.end();
 }
 
 void
-ExpressionEvaluator::clear_variables()
+ExpressionEvaluator::ClearVariables()
 {
-    _var.clear();
+    varMap.clear();
 }
 
 bool
-ExpressionEvaluator::get_last_error(char* err_buffer, uint32 err_buffer_size)
+ExpressionEvaluator::GetLastError(char* err_buffer, uint32 err_buffer_size)
 {
     bool ret = false;
 
-    if (_last_error_code)
+    if (lastErrorCode)
     {
-        uint32 len = uint32(::strlen(_expression));
+        uint32 len = uint32(::strlen(expressionText));
         char buf[2048];
 
         ::memset(buf, ' ', len);
         buf[len] = '\0';
-        buf[_last_error_index] = '^';
+        buf[lastErrorIndex] = '^';
 
-        Snprintf(err_buffer, err_buffer_size, "%s\n%s\n%s\n", ExprEvalError[_last_error_code], _expression, buf);
+        Snprintf(err_buffer, err_buffer_size, "%s\n%s\n%s\n", ExprEvalError[lastErrorCode], expressionText, buf);
         ret = true;
     }
 
@@ -686,9 +686,9 @@ bool ExpressionEvaluator::RegisterFunction(const char* name, FuncImpl impl)
     bool success = false;
     uint32 func_id = DAVA::HashValue_N(name, uint32(strlen(name)));
 
-    if (_FuncImpl.find(func_id) == _FuncImpl.end())
+    if (FuncImplMap.find(func_id) == FuncImplMap.end())
     {
-        _FuncImpl[func_id] = impl;
+        FuncImplMap[func_id] = impl;
         success = true;
     }
 
@@ -714,4 +714,4 @@ void ExpressionEvaluator::RegisterCommonFunctions()
     ExpressionEvaluator::RegisterFunction("abs", &EV_Abs);
 }
 
-std::unordered_map<uint32, ExpressionEvaluator::FuncImpl> ExpressionEvaluator::_FuncImpl;
+std::unordered_map<uint32, ExpressionEvaluator::FuncImpl> ExpressionEvaluator::FuncImplMap;
