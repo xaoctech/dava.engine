@@ -32,7 +32,6 @@ bool ReadFromBuffer(File* buffer, Vector<uint8>& data, uint32 dataSize)
     data.resize(dataSize);
     return (buffer->Read(data.data(), dataSize) == dataSize);
 };
-
 }
 
 bool CachePacket::SendTo(Net::IChannel* channel)
@@ -173,8 +172,8 @@ bool DataInfoPacket::DeserializeFromBuffer(File* buffer)
 {
     using namespace CachePacketDetails;
     return (ReadFromBuffer(buffer, key)
-        && ReadFromBuffer(buffer, dataSize)
-        && ReadFromBuffer(buffer, numOfChunks));
+            && ReadFromBuffer(buffer, dataSize)
+            && ReadFromBuffer(buffer, numOfChunks));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -203,9 +202,9 @@ bool DataChunkPacket::DeserializeFromBuffer(File* buffer)
 
     uint32 chunkDataSize = 0;
     return (ReadFromBuffer(buffer, key)
-        && ReadFromBuffer(buffer, chunkNumber)
-        && ReadFromBuffer(buffer, chunkDataSize)
-        && ReadFromBuffer(buffer, chunkData, chunkDataSize));
+            && ReadFromBuffer(buffer, chunkNumber)
+            && ReadFromBuffer(buffer, chunkDataSize)
+            && ReadFromBuffer(buffer, chunkData, chunkDataSize));
 }
 
 //////////////////////////////////////////////////////////////////////////

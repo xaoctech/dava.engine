@@ -11,4 +11,3 @@ Vector<uint8> GetChunk(const Vector<uint8>& dataVector, uint32 chunkNumber);
 }
 } // namespace AssetCache
 } // namespace DAVA
-

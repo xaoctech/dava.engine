@@ -20,10 +20,10 @@ uint32 GetNumberOfChunks(uint64 overallSize)
 
 Vector<uint8> GetChunk(const Vector<uint8>& dataVector, uint32 chunkNumber)
 {
-    uint64 firstByte = chunkNumber * CHUNK_SIZE_IN_BYTES;
+    size_t firstByte = static_cast<size_t>(chunkNumber * CHUNK_SIZE_IN_BYTES);
     if (firstByte < dataVector.size())
     {
-        uint64 beyondLastByte = std::min(static_cast<uint64>(dataVector.size()), firstByte + CHUNK_SIZE_IN_BYTES);
+        size_t beyondLastByte = std::min(dataVector.size(), static_cast<size_t>(firstByte + CHUNK_SIZE_IN_BYTES));
         return Vector<uint8>(dataVector.begin() + firstByte, dataVector.begin() + beyondLastByte);
     }
     else
@@ -31,7 +31,6 @@ Vector<uint8> GetChunk(const Vector<uint8>& dataVector, uint32 chunkNumber)
         return Vector<uint8>();
     }
 }
-
 }
 } // namespace AssetCache
 } // namespace DAVA

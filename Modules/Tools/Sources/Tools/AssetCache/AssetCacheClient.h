@@ -93,7 +93,7 @@ private:
         bool processingRequest = false;
     };
 
-	Dispatcher<Function<void()>> dispatcher;
+    Dispatcher<Function<void()>> dispatcher;
 
     struct GetFilesRequest
     {

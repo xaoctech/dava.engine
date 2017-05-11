@@ -397,26 +397,25 @@ void ResourcePacker2D::PackRecursively(const FilePath& inputPath, const FilePath
                 //assetCacheWorker.StartGetFilesTask(cacheKey, inputPath, outputPath);
             }
 
-//             spritesheetWorker.StartPackTask();
-// 
-//             workerDoneEvent.Wait();
-// 
-//             if (spritesheetWorker.IsTaskDone())
-//             {
-// 
-//                 bool needAddFilesToCache = (IsUsingCache() && assetCacheWorker.GetStatus() == NOT_FOUND_IN_CACHE);
-//                 {
-//                     assetCacheWorker.CancelTask();
-//                     assetCacheWorker.StartAddFilesTask(cacheKey, inputPath, outputPath);
-//                     workerDoneEvent.Wait();
-//                 }
-//             }
-//             else
-//             {
-//                 spritesheetWorker.CancelTask();
-//                 assetCacheWorker.retrievedData.ExportToFolder(outputPath);
-//             }
-
+            //             spritesheetWorker.StartPackTask();
+            //
+            //             workerDoneEvent.Wait();
+            //
+            //             if (spritesheetWorker.IsTaskDone())
+            //             {
+            //
+            //                 bool needAddFilesToCache = (IsUsingCache() && assetCacheWorker.GetStatus() == NOT_FOUND_IN_CACHE);
+            //                 {
+            //                     assetCacheWorker.CancelTask();
+            //                     assetCacheWorker.StartAddFilesTask(cacheKey, inputPath, outputPath);
+            //                     workerDoneEvent.Wait();
+            //                 }
+            //             }
+            //             else
+            //             {
+            //                 spritesheetWorker.CancelTask();
+            //                 assetCacheWorker.retrievedData.ExportToFolder(outputPath);
+            //             }
 
             bool needRepack = (false == GetFilesFromCache(cacheKey, inputPath, outputPath));
             if (needRepack)

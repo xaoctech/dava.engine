@@ -54,8 +54,8 @@ public:
 protected:
     enum eBufferCreateMode
     {
-         CREATE_SENDING_BUFFER,
-         DO_NOT_CREATE_SENDING_BUFFER
+        CREATE_SENDING_BUFFER,
+        DO_NOT_CREATE_SENDING_BUFFER
     };
 
     CachePacket(ePacketID type, eBufferCreateMode);

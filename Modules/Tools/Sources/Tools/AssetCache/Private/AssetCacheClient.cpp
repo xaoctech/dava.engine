@@ -225,9 +225,9 @@ AssetCache::Error AssetCacheClient::RequestFromCacheSynchronously(const AssetCac
             else
             {
                 Logger::Error("Packet was not completely transferred. Chunks %u/%u, bytes remaining: %u",
-                    getFilesRequest.chunksReceived,
-                    getFilesRequest.chunksOverall,
-                    getFilesRequest.bytesRemaining);
+                              getFilesRequest.chunksReceived,
+                              getFilesRequest.chunksOverall,
+                              getFilesRequest.bytesRemaining);
                 resultCode = AssetCache::Error::CORRUPTED_DATA;
             }
         }
@@ -366,7 +366,7 @@ void AssetCacheClient::OnReceivedFromCache(const AssetCache::CacheItemKey& key, 
         {
             request.result = AssetCache::Error::NO_ERRORS;
             getFilesRequest.chunksOverall = numOfChunks;
-            getFilesRequest.bytesRemaining = dataSize;
+            getFilesRequest.bytesRemaining = static_cast<size_t>(dataSize);
             getFilesRequest.receivedData.resize(dataSize);
             Logger::Debug("Received info: %u bytes, %u chunks", dataSize, numOfChunks);
         }
