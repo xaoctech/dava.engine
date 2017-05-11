@@ -539,17 +539,24 @@ void CommandBufferDX9_t::Execute()
                     }
                 }
 
-                if ((passCfg.depthStencilBuffer.texture != rhi::InvalidHandle && passCfg.depthStencilBuffer.texture != rhi::DefaultDepthBuffer)
-                    || passCfg.UsingMSAA()
-                    )
-                {
-                    DVASSERT(_D3D9_DepthBuf == nullptr);
-                    _D3D9_Device->GetDepthStencilSurface(&_D3D9_DepthBuf);
+                _D3D9_Device->GetDepthStencilSurface(&_D3D9_DepthBuf);
 
-                    if (passCfg.UsingMSAA())
-                        TextureDX9::SetAsDepthStencil(passCfg.depthStencilBuffer.multisampleTexture);
-                    else
+                bool hasDepthBuf = true;
+                if (passCfg.UsingMSAA() && passCfg.depthStencilBuffer.multisampleTexture != rhi::InvalidHandle)
+                {
+                    TextureDX9::SetAsDepthStencil(passCfg.depthStencilBuffer.multisampleTexture);
+                }
+                else if (passCfg.depthStencilBuffer.texture != rhi::DefaultDepthBuffer)
+                {
+                    if (passCfg.depthStencilBuffer.texture != rhi::InvalidHandle)
+                    {
                         TextureDX9::SetAsDepthStencil(passCfg.depthStencilBuffer.texture);
+                    }
+                    else
+                    {
+                        DX9_CALL(_D3D9_Device->SetDepthStencilSurface(NULL), "SetDepthStencilSurface");
+                        hasDepthBuf = false;
+                    }
                 }
 
                 IDirect3DSurface9* rt = nullptr;
@@ -570,12 +577,15 @@ void CommandBufferDX9_t::Execute()
                 }
 
                 bool clear_color = passCfg.colorBuffer[0].loadAction == LOADACTION_CLEAR;
-                bool clear_depth = passCfg.depthStencilBuffer.loadAction == LOADACTION_CLEAR;
+                bool clear_depth = hasDepthBuf && (passCfg.depthStencilBuffer.loadAction == LOADACTION_CLEAR);
 
                 DX9_CALL(_D3D9_Device->BeginScene(), "BeginScene");
 
                 if (clear_color || clear_depth)
                 {
+                    _D3D9_Device->SetViewport(&def_viewport);
+                    _D3D9_Device->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
+
                     DWORD flags = 0;
                     int r = int(passCfg.colorBuffer[0].clearColor[0] * 255.0f);
                     int g = int(passCfg.colorBuffer[0].clearColor[1] * 255.0f);

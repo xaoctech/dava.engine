@@ -26,17 +26,6 @@ static const DAVA::FastName TILEMASK_EDTIOR_TEXTURE_TOOL("toolTexture");
 
 static const DAVA::FastName TILEMASK_EDITOR_MATERIAL_PASS("2d");
 
-namespace TilemaskEditorSystemDetail
-{
-const std::array<DAVA::float32, 6 * (3 + 2)> buffer = // 6 vertecies by 5 floats: vec3 position, vec2 tex coord
-{ { -1.f, -1.f, 0.f, 0.f, 0.f,
-    -1.f, 1.f, 0.f, 0.f, 1.f,
-    1.f, 1.f, 0.f, 1.f, 1.f,
-    -1.f, -1.f, 0.f, 0.f, 0.f,
-    1.f, 1.f, 0.f, 1.f, 1.f,
-    1.f, -1.f, 0.f, 1.f, 0.f } };
-}
-
 TilemaskEditorSystem::TilemaskEditorSystem(DAVA::Scene* scene)
     : LandscapeEditorSystem(scene, "~res:/ResourceEditor/LandscapeEditor/Tools/cursor/cursor.png")
     , curToolSize(0)
@@ -64,12 +53,7 @@ TilemaskEditorSystem::TilemaskEditorSystem(DAVA::Scene* scene)
 
     editorMaterial->PreBuildMaterial(TILEMASK_EDITOR_MATERIAL_PASS);
 
-    quadBuffer = rhi::CreateVertexBuffer(static_cast<DAVA::uint32>(TilemaskEditorSystemDetail::buffer.size() * sizeof(DAVA::float32)));
-    rhi::UpdateVertexBuffer(quadBuffer, TilemaskEditorSystemDetail::buffer.data(), 0, static_cast<DAVA::uint32>(TilemaskEditorSystemDetail::buffer.size() * sizeof(DAVA::float32)));
-    DAVA::Renderer::GetSignals().needRestoreResources.Connect(this, &TilemaskEditorSystem::UpdateVertexBuffer);
-
     quadPacket.vertexStreamCount = 1;
-    quadPacket.vertexStream[0] = quadBuffer;
     quadPacket.vertexCount = 6;
     quadPacket.primitiveType = rhi::PRIMITIVE_TRIANGLELIST;
     quadPacket.primitiveCount = 2;
@@ -88,9 +72,6 @@ TilemaskEditorSystem::TilemaskEditorSystem(DAVA::Scene* scene)
 
 TilemaskEditorSystem::~TilemaskEditorSystem()
 {
-    DAVA::Renderer::GetSignals().needRestoreResources.Disconnect(this);
-    rhi::DeleteVertexBuffer(quadBuffer);
-
     SafeRelease(editorMaterial);
 
     SafeRelease(toolImageTexture);
@@ -334,6 +315,12 @@ void TilemaskEditorSystem::SetTileTexture(DAVA::uint32 tileTexture)
 
 void TilemaskEditorSystem::UpdateBrushTool()
 {
+    struct QuadVertex
+    {
+        Vector3 position;
+        Vector2 texCoord;
+    };
+
     if (drawingType == TILEMASK_DRAW_COPY_PASTE && (copyPasteFrom == DAVA::Vector2(-1.f, -1.f)))
         return;
 
@@ -352,6 +339,39 @@ void TilemaskEditorSystem::UpdateBrushTool()
 
     editorMaterial->PreBuildMaterial(TILEMASK_EDITOR_MATERIAL_PASS);
     editorMaterial->BindParams(quadPacket);
+
+    DynamicBufferAllocator::AllocResultVB quadBuffer = DynamicBufferAllocator::AllocateVertexBuffer(sizeof(QuadVertex), 4);
+    QuadVertex* quadVertices = reinterpret_cast<QuadVertex*>(quadBuffer.data);
+
+    quadVertices[0].position = Vector3(-1.f, -1.f, .0f);
+    quadVertices[1].position = Vector3(-1.f, 1.f, .0f);
+    quadVertices[2].position = Vector3(1.f, -1.f, .0f);
+    quadVertices[3].position = Vector3(1.f, 1.f, .0f);
+
+    if (rhi::DeviceCaps().isCenterPixelMapping)
+    {
+        const float32 pixelOffset = 1.f / srcTexture->GetWidth();
+        for (uint32 i = 0; i < 4; ++i)
+        {
+            quadVertices[i].position.x -= pixelOffset;
+            quadVertices[i].position.y -= pixelOffset;
+        }
+    }
+
+    if (rhi::DeviceCaps().isUpperLeftRTOrigin)
+    {
+        for (uint32 i = 0; i < 4; ++i)
+            quadVertices[i].position.y = -quadVertices[i].position.y;
+    }
+
+    quadVertices[0].texCoord = Vector2(0.f, 0.f);
+    quadVertices[1].texCoord = Vector2(0.f, 1.f);
+    quadVertices[2].texCoord = Vector2(1.f, 0.f);
+    quadVertices[3].texCoord = Vector2(1.f, 1.f);
+
+    quadPacket.vertexStream[0] = quadBuffer.buffer;
+    quadPacket.baseVertex = quadBuffer.baseVertex;
+    quadPacket.indexBuffer = DynamicBufferAllocator::AllocateQuadListIndexBuffer(1);
 
     rhi::HPacketList pList;
     rhi::HRenderPass pass = rhi::AllocateRenderPass(passConf, 1, &pList);
@@ -491,14 +511,6 @@ void TilemaskEditorSystem::Draw()
     {
         CreateUndoPoint();
         needCreateUndo = false;
-    }
-}
-
-void TilemaskEditorSystem::UpdateVertexBuffer()
-{
-    if (rhi::NeedRestoreVertexBuffer(quadBuffer))
-    {
-        rhi::UpdateVertexBuffer(quadBuffer, TilemaskEditorSystemDetail::buffer.data(), 0, static_cast<DAVA::uint32>(TilemaskEditorSystemDetail::buffer.size() * sizeof(DAVA::float32)));
     }
 }
 
