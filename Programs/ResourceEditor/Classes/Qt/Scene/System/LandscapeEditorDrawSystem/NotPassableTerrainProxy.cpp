@@ -120,7 +120,7 @@ void NotPassableTerrainProxy::UpdateTexture(DAVA::Heightmap* heightmap, const DA
     ///////////////////////////////
 
     DAVA::Matrix4 projMatrix;
-    projMatrix.glOrtho(0.0f, static_cast<DAVA::float32>(notPassableTexture->GetWidth()), 0.0f, static_cast<DAVA::float32>(notPassableTexture->GetHeight()), -1.0f, 1.0f, false);
+    projMatrix.glOrtho(0.0f, static_cast<DAVA::float32>(notPassableTexture->GetWidth()), 0.0f, static_cast<DAVA::float32>(notPassableTexture->GetHeight()), -1.0f, 1.0f, rhi::DeviceCaps().isZeroBaseClipRange);
 
     DAVA::Renderer::GetDynamicBindings().SetDynamicParam(DAVA::DynamicBindings::PARAM_WORLD, &DAVA::Matrix4::IDENTITY, reinterpret_cast<DAVA::pointer_size>(&DAVA::Matrix4::IDENTITY));
     DAVA::Renderer::GetDynamicBindings().SetDynamicParam(DAVA::DynamicBindings::PARAM_VIEW, &DAVA::Matrix4::IDENTITY, reinterpret_cast<DAVA::pointer_size>(&DAVA::Matrix4::IDENTITY));
