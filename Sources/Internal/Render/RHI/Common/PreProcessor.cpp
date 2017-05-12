@@ -26,8 +26,7 @@ PreProc::~PreProc()
 
 //------------------------------------------------------------------------------
 
-bool
-PreProc::ProcessFile(const char* file_name, TextBuf* output)
+bool PreProc::ProcessFile(const char* file_name, TextBuf* output)
 {
     bool success = false;
 
@@ -55,8 +54,7 @@ PreProc::ProcessFile(const char* file_name, TextBuf* output)
 
 //------------------------------------------------------------------------------
 
-bool
-PreProc::ProcessInplace(char* src_text, TextBuf* output)
+bool PreProc::ProcessInplace(char* src_text, TextBuf* output)
 {
     Reset();
     return ProcessInplaceInternal(src_text, output);
@@ -64,8 +62,7 @@ PreProc::ProcessInplace(char* src_text, TextBuf* output)
 
 //------------------------------------------------------------------------------
 
-bool
-PreProc::Process(const char* src_text, TextBuf* output)
+bool PreProc::Process(const char* src_text, TextBuf* output)
 {
     Reset();
 
@@ -85,8 +82,7 @@ PreProc::Process(const char* src_text, TextBuf* output)
 
 //------------------------------------------------------------------------------
 
-void
-PreProc::Clear()
+void PreProc::Clear()
 {
     Reset();
     minMacroLength = DAVA::InvalidIndex;
@@ -95,16 +91,14 @@ PreProc::Clear()
 
 //------------------------------------------------------------------------------
 
-bool
-PreProc::AddDefine(const char* name, const char* value)
+bool PreProc::AddDefine(const char* name, const char* value)
 {
     return ProcessDefine(name, value);
 }
 
 //------------------------------------------------------------------------------
 
-void
-PreProc::Dump() const
+void PreProc::Dump() const
 {
     for (unsigned i = 0; i != line.size(); ++i)
     {
@@ -114,8 +108,7 @@ PreProc::Dump() const
 
 //------------------------------------------------------------------------------
 
-void
-PreProc::Reset()
+void PreProc::Reset()
 {
     line.clear();
 
@@ -128,8 +121,7 @@ PreProc::Reset()
 
 //------------------------------------------------------------------------------
 
-char*
-PreProc::AllocBuffer(unsigned sz)
+char* PreProc::AllocBuffer(unsigned sz)
 {
     Buffer buf;
 
@@ -141,8 +133,7 @@ PreProc::AllocBuffer(unsigned sz)
 
 //------------------------------------------------------------------------------
 
-inline char*
-PreProc::GetExpression(char* txt, char** end) const
+inline char* PreProc::GetExpression(char* txt, char** end) const
 {
     char* e = txt;
     char* s = txt;
@@ -187,8 +178,7 @@ PreProc::GetExpression(char* txt, char** end) const
 
 //------------------------------------------------------------------------------
 
-char*
-PreProc::GetIdentifier(char* txt, char** end) const
+char* PreProc::GetIdentifier(char* txt, char** end) const
 {
     char* t = txt;
     char* n = nullptr;
@@ -224,8 +214,7 @@ PreProc::GetIdentifier(char* txt, char** end) const
 
 //------------------------------------------------------------------------------
 
-int
-PreProc::GetNameAndValue(char* txt, char** name, char** value, char** end) const
+int PreProc::GetNameAndValue(char* txt, char** name, char** value, char** end) const
 {
     // returns:
     // non-zero when name/value successfully retrieved
@@ -308,8 +297,7 @@ PreProc::GetNameAndValue(char* txt, char** name, char** value, char** end) const
 
 //------------------------------------------------------------------------------
 
-bool
-PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
+bool PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
 {
     bool success = true;
     char* ln = text;
@@ -758,8 +746,7 @@ PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
 
 //------------------------------------------------------------------------------
 
-bool
-PreProc::ProcessInplaceInternal(char* src_text, TextBuf* output)
+bool PreProc::ProcessInplaceInternal(char* src_text, TextBuf* output)
 {
     bool success = false;
 
@@ -774,8 +761,7 @@ PreProc::ProcessInplaceInternal(char* src_text, TextBuf* output)
 
 //------------------------------------------------------------------------------
 
-bool
-PreProc::ProcessInclude(const char* file_name, std::vector<PreProc::Line>* line_)
+bool PreProc::ProcessInclude(const char* file_name, std::vector<PreProc::Line>* line_)
 {
     bool success = false;
 
@@ -805,8 +791,7 @@ PreProc::ProcessInclude(const char* file_name, std::vector<PreProc::Line>* line_
 
 //------------------------------------------------------------------------------
 
-bool
-PreProc::ProcessDefine(const char* name, const char* value)
+bool PreProc::ProcessDefine(const char* name, const char* value)
 {
     bool name_valid = true;
 
@@ -855,8 +840,7 @@ PreProc::ProcessDefine(const char* name, const char* value)
 
 //------------------------------------------------------------------------------
 
-void
-PreProc::Undefine(const char* name)
+void PreProc::Undefine(const char* name)
 {
     evaluator.RemoveVariable(name);
     for (std::vector<macro_t>::iterator m = macro.begin(), m_end = macro.end(); m != m_end; ++m)
@@ -871,8 +855,7 @@ PreProc::Undefine(const char* name)
 
 //------------------------------------------------------------------------------
 
-void
-PreProc::GenerateOutput(TextBuf* output)
+void PreProc::GenerateOutput(TextBuf* output)
 {
     static const char* endl = "\r\n";
 
@@ -888,8 +871,7 @@ PreProc::GenerateOutput(TextBuf* output)
 
 //------------------------------------------------------------------------------
 
-void
-PreProc::ReportExprEvalError(unsigned line_n)
+void PreProc::ReportExprEvalError(unsigned line_n)
 {
     char err[256];
 

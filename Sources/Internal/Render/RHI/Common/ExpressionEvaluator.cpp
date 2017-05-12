@@ -30,8 +30,7 @@ static const char* ExprEvalError[] =
   "", "one of operands is missed", "unmatched parenthesis", "unknown symbol"
 };
 
-struct
-ExpressionEvaluator::SyntaxTreeNode
+struct ExpressionEvaluator::SyntaxTreeNode
 {
     float32 operand;
 
@@ -86,8 +85,7 @@ ExpressionEvaluator::~ExpressionEvaluator()
 
 //------------------------------------------------------------------------------
 
-void
-ExpressionEvaluator::Reset()
+void ExpressionEvaluator::Reset()
 {
     operatorStack.clear();
     nodeStack.clear();
@@ -104,8 +102,7 @@ ExpressionEvaluator::Reset()
 
 //------------------------------------------------------------------------------
 
-void
-ExpressionEvaluator::PopConnectPush()
+void ExpressionEvaluator::PopConnectPush()
 {
     operatorStack.back().right_i = nodeStack.back();
     nodeStack.pop_back();
@@ -122,8 +119,7 @@ ExpressionEvaluator::PopConnectPush()
 
 //------------------------------------------------------------------------------
 
-bool
-ExpressionEvaluator::EvaluateInternal(const SyntaxTreeNode* node, float32* out, uint32* err_code, uint32* err_index)
+bool ExpressionEvaluator::EvaluateInternal(const SyntaxTreeNode* node, float32* out, uint32* err_code, uint32* err_index)
 {
     DVASSERT(out);
     *out = 0;
@@ -239,8 +235,7 @@ ExpressionEvaluator::EvaluateInternal(const SyntaxTreeNode* node, float32* out, 
 
 //------------------------------------------------------------------------------
 
-static inline uint32
-_GetOperand(const char* expression, float32* operand)
+static inline uint32 _GetOperand(const char* expression, float32* operand)
 {
     uint32 ret = 0;
     const char* expr = expression;
@@ -259,8 +254,7 @@ _GetOperand(const char* expression, float32* operand)
 
 //------------------------------------------------------------------------------
 
-static inline uint32
-_GetVariable(const char* expression)
+static inline uint32 _GetVariable(const char* expression)
 {
     uint32 ret = 0;
     const char* expr = expression;
@@ -276,8 +270,7 @@ _GetVariable(const char* expression)
 
 //------------------------------------------------------------------------------
 
-uint32
-ExpressionEvaluator::OperationPriority(char operation)
+uint32 ExpressionEvaluator::OperationPriority(char operation)
 {
     uint32 ret = 0;
 
@@ -312,8 +305,7 @@ ExpressionEvaluator::OperationPriority(char operation)
 
 //------------------------------------------------------------------------------
 
-bool
-ExpressionEvaluator::Evaluate(const char* expression, float32* result)
+bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
 {
     uint32 len = uint32(strlen(expression));
     char* text = (char*)(::malloc(len + 1));
@@ -626,8 +618,7 @@ ExpressionEvaluator::Evaluate(const char* expression, float32* result)
     return EvaluateInternal((&nodeArray[0]) + nodeStack.back(), result, &lastErrorCode, &lastErrorIndex);
 }
 
-bool
-ExpressionEvaluator::SetVariable(const char* var, float32 value)
+bool ExpressionEvaluator::SetVariable(const char* var, float32 value)
 {
     bool success = false;
     uint32 var_id = DAVA::HashValue_N(var, uint32(strlen(var)));
@@ -637,16 +628,14 @@ ExpressionEvaluator::SetVariable(const char* var, float32 value)
     return success;
 }
 
-void
-ExpressionEvaluator::RemoveVariable(const char* var)
+void ExpressionEvaluator::RemoveVariable(const char* var)
 {
     uint32 var_id = DAVA::HashValue_N(var, uint32(strlen(var)));
 
     varMap.erase(var_id);
 }
 
-bool
-ExpressionEvaluator::HasVariable(const char* name) const
+bool ExpressionEvaluator::HasVariable(const char* name) const
 {
     bool success = false;
     uint32 var_id = DAVA::HashValue_N(name, uint32(strlen(name)));
@@ -654,14 +643,12 @@ ExpressionEvaluator::HasVariable(const char* name) const
     return varMap.find(var_id) != varMap.end();
 }
 
-void
-ExpressionEvaluator::ClearVariables()
+void ExpressionEvaluator::ClearVariables()
 {
     varMap.clear();
 }
 
-bool
-ExpressionEvaluator::GetLastError(char* err_buffer, uint32 err_buffer_size)
+bool ExpressionEvaluator::GetLastError(char* err_buffer, uint32 err_buffer_size)
 {
     bool ret = false;
 

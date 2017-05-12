@@ -7,8 +7,7 @@
 using DAVA::uint32;
 using DAVA::float32;
 
-class
-ExpressionEvaluator
+class ExpressionEvaluator
 {
 public:
     ExpressionEvaluator();
