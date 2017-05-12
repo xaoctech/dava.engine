@@ -1,6 +1,7 @@
 #include "Render/Highlevel/GeoDecalManager.h"
 #include "Render/Highlevel/SkinnedMesh.h"
 #include "Render/Highlevel/GeometryOctTree.h"
+#include "Render/Highlevel/RenderObject.h"
 #include "Reflection/Reflection.h"
 #include "FileSystem/FileSystem.h"
 
