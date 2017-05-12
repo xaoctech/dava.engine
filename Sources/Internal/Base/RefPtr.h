@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base/Any.h"
+#include "Base/BaseObject.h"
 
 namespace DAVA
 {
