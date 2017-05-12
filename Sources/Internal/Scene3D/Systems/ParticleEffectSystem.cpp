@@ -50,6 +50,17 @@ NMaterial* ParticleEffectSystem::GetMaterial(MaterialData&& materialData)
         material->AddTexture(NMaterialTextureName::TEXTURE_FLOW, materialData.flowmap);
     }
 
+    if (materialData.enableNoise)
+    {
+        material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_NOISE, 1);
+        material->AddTexture(NMaterialTextureName::TEXTURE_NOISE, materialData.noise);
+
+        if (materialData.enableNoiseUVScroll)
+            material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_NOISE_SCROLL, 1);
+        if (materialData.isNoiseAffectFlow)
+            material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_NOISE_AFFECT_FLOW, 1);
+    }
+
     material->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, materialData.texture);
     material->AddFlag(NMaterialFlagName::FLAG_BLENDING, materialData.blending);
 
@@ -118,7 +129,18 @@ void ParticleEffectSystem::PrebuildMaterials(ParticleEffectComponent* component)
             if (layer->sprite && (layer->type != ParticleLayer::TYPE_SUPEREMITTER_PARTICLES))
             {
                 DAVA::Texture* flowmap = layer->flowmap.get() != nullptr ? layer->flowmap->GetTexture(0) : nullptr;
-                GetMaterial({ layer->sprite->GetTexture(0), layer->enableFog, layer->enableFrameBlend, flowmap, layer->enableFlow, layer->blending });
+                DAVA::Texture* noise = layer->noise.get() != nullptr ? layer->noise->GetTexture(0) : nullptr;
+                ParticleEffectSystem::MaterialData matData = {};
+                matData.texture = layer->sprite->GetTexture(0);
+                matData.enableFog = layer->enableFog;
+                matData.enableFrameBlend = layer->enableFrameBlend;
+                matData.flowmap = flowmap;
+                matData.enableFlow = layer->enableFlow;
+                matData.enableNoise = layer->enableNoise;
+                matData.isNoiseAffectFlow = layer->isNoiseAffectFlow;
+                matData.noise = noise;
+
+                GetMaterial(std::move(matData));
             }
         }
     }
@@ -144,7 +166,17 @@ void ParticleEffectSystem::RunEmitter(ParticleEffectComponent* effect, ParticleE
         if (layer->sprite && (layer->type != ParticleLayer::TYPE_SUPEREMITTER_PARTICLES))
         {
             DAVA::Texture* flowmap = layer->flowmap.get() != nullptr ? layer->flowmap->GetTexture(0) : nullptr;
-            group.material = GetMaterial({ layer->sprite->GetTexture(0), layer->enableFog, layer->enableFrameBlend, flowmap, layer->enableFlow, layer->blending });
+            DAVA::Texture* noise = layer->noise.get() != nullptr ? layer->noise->GetTexture(0) : nullptr;
+            ParticleEffectSystem::MaterialData matData = {};
+            matData.texture = layer->sprite->GetTexture(0);
+            matData.enableFog = layer->enableFog;
+            matData.enableFrameBlend = layer->enableFrameBlend;
+            matData.flowmap = flowmap;
+            matData.enableFlow = layer->enableFlow;
+            matData.enableNoise = layer->enableNoise;
+            matData.isNoiseAffectFlow = layer->isNoiseAffectFlow;
+            matData.noise = noise;
+            group.material = GetMaterial(std::move(matData));
         }
 
         effect->effectData.groups.push_back(group);
@@ -509,19 +541,31 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
 
             if (group.layer->enableFlow && group.layer->flowmap)
             {
-                NMaterial* mat = group.material;
-                if (mat != nullptr)
-                {
-                    float32 flowSpeedOverLife = 0.0f;
-                    float32 flowOffsetOverLife = 0.0f;
-                    if (group.layer->flowSpeedOverLife != nullptr)
-                        flowSpeedOverLife = group.layer->flowSpeedOverLife->GetValue(overLifeTime);
-                    if (group.layer->flowOffsetOverLife != nullptr)
-                        flowOffsetOverLife = group.layer->flowOffsetOverLife->GetValue(overLifeTime);
+                float32 flowSpeedOverLife = 0.0f;
+                float32 flowOffsetOverLife = 0.0f;
+                if (group.layer->flowSpeedOverLife != nullptr)
+                    flowSpeedOverLife = group.layer->flowSpeedOverLife->GetValue(overLifeTime);
+                if (group.layer->flowOffsetOverLife != nullptr)
+                    flowOffsetOverLife = group.layer->flowOffsetOverLife->GetValue(overLifeTime);
 
-                    current->flowSpeedOverLife = flowSpeedOverLife;
-                    current->flowOffsetOverLife = flowOffsetOverLife;
-                }
+                current->flowSpeedOverLife = flowSpeedOverLife;
+                current->flowOffsetOverLife = flowOffsetOverLife;
+            }
+            if (group.layer->enableNoise && group.layer->noise)
+            {
+                float32 noiseScale = 0.0f;
+                float32 noiseUScrollSpeed = 0.0f;
+                float32 noiseVScrollSpeed = 0.0f;
+                if (group.layer->noiseScale != nullptr)
+                    noiseScale = group.layer->noiseScale->GetValue(overLifeTime);
+                if (group.layer->noiseUScrollSpeed != nullptr)
+                    noiseUScrollSpeed = group.layer->noiseUScrollSpeed->GetValue(overLifeTime);
+                if (group.layer->noiseVScrollSpeed != nullptr)
+                    noiseVScrollSpeed = group.layer->noiseVScrollSpeed->GetValue(overLifeTime);
+
+                current->noiseScale = noiseScale;
+                current->noiseUScrollSpeed = noiseUScrollSpeed;
+                current->noiseVScrollSpeed = noiseVScrollSpeed;
             }
 
             prev = current;

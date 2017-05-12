@@ -48,12 +48,33 @@ public:
 private:
     enum eParticlePropsOffsets
     {
-        REGULAR = 0,
-        FRAME_BLEND,
-        FLOW
+        FRAME_BLEND = 0,
+        FLOW,
+        NOISE,
+        NOISE_SCROLL
     };
 
-    void GenerateRegularLayout(rhi::VertexLayout& layout);
+    struct LayoutElement
+    {
+        rhi::VertexSemantics usage;
+        uint32 usageIndex = 0;
+        rhi::VertexDataType type;
+        uint32 dimension = 0;
+
+        LayoutElement() = default;
+
+        LayoutElement(rhi::VertexSemantics usage_, uint32 usageIndex_, rhi::VertexDataType type_, uint32 dimension_)
+            : usage(usage_)
+            , usageIndex(usageIndex_)
+            , type(type_)
+            , dimension(dimension_)
+        {
+        }
+    };
+    Map<uint32, LayoutElement> layoutsData;
+
+    uint32 GetVertexStride(ParticleLayer* layer);
+    void GenerateBaseLayout(rhi::VertexLayout& layout);
     int32 CalculateParticleCount(const ParticleGroup& group);
     uint32 SelectLayout(const ParticleLayer& layer);
 

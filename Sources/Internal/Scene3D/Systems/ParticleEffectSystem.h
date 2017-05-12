@@ -20,18 +20,12 @@ public:
         bool enableFrameBlend = false;
         Texture* flowmap = nullptr;
         bool enableFlow = false;
+        bool enableNoise = false;
+        bool isNoiseAffectFlow = false;
+        bool enableNoiseUVScroll = false;
+        Texture* noise = nullptr;
 
         eBlending blending = BLENDING_ALPHABLEND;
-
-        MaterialData(Texture* texture_, bool enableFog_, bool enableFrameBlend_, Texture* flowmap_, bool enableFlow_, eBlending blending_)
-            : texture(texture_)
-            , enableFog(enableFog_)
-            , enableFrameBlend(enableFrameBlend_)
-            , flowmap(flowmap_)
-            , enableFlow(enableFlow_)
-            , blending(blending_)
-        {
-        }
 
         bool operator ==(const MaterialData& rhs)
         {
@@ -40,6 +34,10 @@ public:
                 && enableFrameBlend == rhs.enableFrameBlend
                 && flowmap == rhs.flowmap
                 && enableFlow == rhs.enableFlow
+                && enableNoise == rhs.enableNoise
+                && isNoiseAffectFlow == rhs.isNoiseAffectFlow
+                && enableNoiseUVScroll == rhs.enableNoiseUVScroll
+                && noise == rhs.noise
                 && blending == rhs.blending;
         }
     };

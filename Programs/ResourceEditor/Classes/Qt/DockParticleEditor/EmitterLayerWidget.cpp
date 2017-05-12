@@ -770,7 +770,7 @@ void EmitterLayerWidget::OnNoisePropertiesChanged()
     params.enableNoise = enableNoiseCheckBox->isChecked();
     params.isNoiseAffectFlow = isNoiseAffectFlowCheckBox->isChecked();
     params.noiseScale = propNoiseScale.GetPropLine();
-    params.useNoiseScroll = enableNoiseScrollCheckBox->isChecked();
+    params.enableNoiseScroll = enableNoiseScrollCheckBox->isChecked();
     params.noiseUScrollSpeed = propNoiseUScrollSpeed.GetPropLine();
     params.noiseVScrollSpeed = propNoiseVScrollSpeed.GetPropLine();
 
@@ -868,7 +868,7 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     enableFlowCheckBox->setChecked(layer->enableFlow);
     flowLayoutWidget->setVisible(enableFlowCheckBox->isChecked());
 
-    enableNoiseScrollCheckBox->setChecked(layer->useNoiseScroll);
+    enableNoiseScrollCheckBox->setChecked(layer->enableNoiseScroll);
 
     enableNoiseCheckBox->setChecked(layer->enableNoise);
     noiseLayoutWidget->setVisible(enableNoiseCheckBox->isChecked());

@@ -10,30 +10,29 @@ ParticleRenderObject::ParticleRenderObject(ParticleEffectData* effect)
 {
     AddFlag(RenderObject::CUSTOM_PREPARE_TO_RENDER);
 
-    //may be this is good place to determine 2d mode?
+    layoutsData[1 << FRAME_BLEND] = { rhi::VS_TEXCOORD, 1, rhi::VDT_FLOAT, 3 };
+    layoutsData[1 << FLOW] = { rhi::VS_TEXCOORD, 2, rhi::VDT_FLOAT, 4 }; // uv, speed, offset
+    layoutsData[1 << NOISE] = { rhi::VS_TEXCOORD, 3, rhi::VDT_FLOAT, 3 }; // uv, scale
+    layoutsData[1 << NOISE_SCROLL] = { rhi::VS_TEXCOORD, 4, rhi::VDT_FLOAT, 2 }; // scroll speed
 
-    rhi::VertexLayout layout;
-    GenerateRegularLayout(layout);
-    regularVertexLayoutId = rhi::VertexLayout::UniqueId(layout);
-    layout.AddElement(rhi::VS_TEXCOORD, 1, rhi::VDT_FLOAT, 3);
-    frameBlendVertexLayoutId = rhi::VertexLayout::UniqueId(layout);
-    layout.AddElement(rhi::VS_TEXCOORD, 2, rhi::VDT_FLOAT, 4);
-    frameBlendFlowVertexLayoutId = rhi::VertexLayout::UniqueId(layout);
+    rhi::VertexLayout baseLayout; // We always have position, texcoord0 and color.
+    GenerateBaseLayout(baseLayout);
 
-    GenerateRegularLayout(layout);
-    layout.AddElement(rhi::VS_TEXCOORD, 2, rhi::VDT_FLOAT, 4);
-    flowVertexLayoutId = rhi::VertexLayout::UniqueId(layout);
+    for (uint32 i = 0; i <= 15; ++i) // All variance of types is 15 - 1111
+    {
+        rhi::VertexLayout layout = baseLayout;
+        for (uint32 j = 0; j < 4; j++) // Check all bits.
+        {
+            if ((i >> j) & 1)
+            {
+                LayoutElement& element = layoutsData[1 << j];
+                layout.AddElement(element.usage, element.usageIndex, element.type, element.dimension);
+            }
+        }
+        layoutMap[i] = rhi::VertexLayout::UniqueId(layout);
+    }
 
     type = RenderObject::TYPE_PARTICLE_EMITTER;
-
-    uint32 key = 1 << static_cast<uint32>(eParticlePropsOffsets::REGULAR);
-    layoutMap[key] = regularVertexLayoutId;
-    key |= 1 << static_cast<uint32>(eParticlePropsOffsets::FRAME_BLEND);
-    layoutMap[key] = frameBlendVertexLayoutId;
-    key |= 1 << static_cast<uint32>(eParticlePropsOffsets::FLOW);
-    layoutMap[key] = frameBlendFlowVertexLayoutId;
-    key &= ~(1 << static_cast<uint32>(eParticlePropsOffsets::FRAME_BLEND));
-    layoutMap[key] = flowVertexLayoutId;
 }
 
 ParticleRenderObject::~ParticleRenderObject()
@@ -113,21 +112,6 @@ void ParticleRenderObject::PrepareRenderData(Camera* camera)
 
         if (itGroupStart->material != itGroupCurr->material)
         {
-            /*currMaterial = currGroup.material;
-            renderGroupCount++;
-            if (renderGroupCache.size()<renderGroupCount)
-            {
-                currRenderGroup = new ParticleRenderGroup();
-                currRenderGroup->renderBatch = new RenderBatch();
-                currRenderGroup->renderBatch->SetSortingOffset(sortingOffset);
-                renderGroupCache.push_back(currRenderGroup);
-            }	
-            else
-                currRenderGroup=renderGroupCache[renderGroupCount-1];
-            currRenderGroup->currParticlesCount = 0;
-            currRenderGroup->enableFrameBlend = currGroup.layer->enableFrameBlend;
-            currRenderGroup->renderBatch->SetMaterial(currMaterial);*/
-
             AppendParticleGroup(itGroupStart, itGroupCurr, particlesInGroup, currCamDirection, basisVectors);
             itGroupStart = itGroupCurr;
             particlesInGroup = 0;
@@ -138,7 +122,21 @@ void ParticleRenderObject::PrepareRenderData(Camera* camera)
         AppendParticleGroup(itGroupStart, effectData->groups.end(), particlesInGroup, currCamDirection, basisVectors);
 }
 
-void ParticleRenderObject::GenerateRegularLayout(rhi::VertexLayout& layout)
+uint32 ParticleRenderObject::GetVertexStride(ParticleLayer* layer)
+{
+    uint32 vertexStride = (3 + 2 + 1) * sizeof(float); // vertex*3 + texcoord0*2 + color * 1;
+    if (layer->enableFrameBlend)
+        vertexStride += (3) * sizeof(float); // texcoord1 * 3;
+    if (layer->enableFlow)
+        vertexStride += (2 + 2) * sizeof(float); // texcoord2.xy + speed and offset
+    if (layer->enableNoise)
+        vertexStride += (2 + 1) * sizeof(float); // texcoord.xy + noise scale
+    if (layer->enableNoiseScroll)
+        vertexStride += 2 * sizeof(float); // uv scroll
+    return vertexStride;
+}
+
+void ParticleRenderObject::GenerateBaseLayout(rhi::VertexLayout& layout)
 {
     layout = {};
     layout.AddElement(rhi::VS_POSITION, 0, rhi::VDT_FLOAT, 3);
@@ -163,9 +161,10 @@ int32 ParticleRenderObject::CalculateParticleCount(const ParticleGroup& group)
 
 uint32 ParticleRenderObject::SelectLayout(const ParticleLayer& layer)
 {
-    uint32 key = 1 << static_cast<uint32>(eParticlePropsOffsets::REGULAR);
-    key |= static_cast<uint32>(layer.enableFrameBlend) << static_cast<uint32>(eParticlePropsOffsets::FRAME_BLEND);
+    uint32 key = static_cast<uint32>(layer.enableFrameBlend) << static_cast<uint32>(eParticlePropsOffsets::FRAME_BLEND);
     key |= static_cast<uint32>(layer.enableFlow) << static_cast<uint32>(eParticlePropsOffsets::FLOW);
+    key |= static_cast<uint32>(layer.enableNoise) << static_cast<uint32>(eParticlePropsOffsets::NOISE);
+    key |= static_cast<uint32>(layer.enableNoiseScroll) << static_cast<uint32>(eParticlePropsOffsets::NOISE_SCROLL);
     return layoutMap[key];
 }
 
@@ -203,11 +202,7 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
     if (!particlesCount)
         return; //hmmm?
 
-    uint32 vertexStride = (3 + 2 + 1) * sizeof(float); // vertex*3 + texcoord0*2 + color * 1;
-    if (begin->layer->enableFrameBlend)
-        vertexStride += (3) * sizeof(float); // texcoord1 * 3;
-    if (begin->layer->enableFlow)
-        vertexStride += (2 + 2) * sizeof(float); // texcoord2.xy + speed and offset
+    uint32 vertexStride = GetVertexStride(begin->layer); // If you change vertex layout, don't forget to change the stride.
 
     uint32 verteciesToAllocate = particlesCount * 4;
     DynamicBufferAllocator::AllocResultVB target = DynamicBufferAllocator::AllocateVertexBuffer(vertexStride, verteciesToAllocate);
@@ -340,6 +335,26 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
                         verts[i][ptrOffset + 3] = current->flowOffsetOverLife;
                     }
                     ptrOffset += 4;
+                }
+                if (begin->layer->enableNoise)
+                {
+                    static const Array<Vector2, 4> arr = { { Vector2(0.0f, 0.0f), Vector2(1.0f, 0.0f), Vector2(0.0f, 1.0f), Vector2(1.0f, 1.0f) } };
+                    for (int32 i = 0; i < 4; ++i)
+                    {
+                        verts[i][ptrOffset + 0] = arr[i].x; // VS_TEXCOORD0 xy + color.
+                        verts[i][ptrOffset + 1] = arr[i].y;
+                        verts[i][ptrOffset + 2] = current->noiseScale;
+                    }
+                    ptrOffset += 3;
+                    if (begin->layer->enableNoiseScroll)
+                    {
+                        for (int32 i = 0; i < 4; ++i)
+                        {
+                            verts[i][ptrOffset + 0] = current->noiseUScrollSpeed;
+                            verts[i][ptrOffset + 1] = current->noiseVScrollSpeed;
+                        }
+                        ptrOffset += 2;
+                    }
                 }
                 currpos += particleStride;
                 verteciesAppended += 4;

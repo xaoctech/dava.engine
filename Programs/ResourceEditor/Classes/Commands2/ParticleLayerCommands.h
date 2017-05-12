@@ -72,7 +72,7 @@ public:
         bool enableNoise = false;
         bool isNoiseAffectFlow = false;
         RefPtr<PropertyLine<float32>> noiseScale;
-        bool useNoiseScroll = false; 
+        bool enableNoiseScroll = false; 
         RefPtr<PropertyLine<float32>> noiseUScrollSpeed;
         RefPtr<PropertyLine<float32>> noiseVScrollSpeed;
     };

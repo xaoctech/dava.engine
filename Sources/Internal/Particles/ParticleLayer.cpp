@@ -59,7 +59,7 @@ eBlendMode GetBlendModeByName(const String& blendStr)
 
 /*end of legacy compatibility code*/
 
-ParticleLayer::ParticleLayer() : flowSpeedOverLife(nullptr), flowOffsetOverLife(nullptr), enableFlow(false), enableNoise(false), isNoiseAffectFlow(false), useNoiseScroll(false), noiseScale(nullptr), noiseUScrollSpeed(nullptr), noiseVScrollSpeed(nullptr)
+ParticleLayer::ParticleLayer() : flowSpeedOverLife(nullptr), flowOffsetOverLife(nullptr), enableFlow(false), enableNoise(false), isNoiseAffectFlow(false), enableNoiseScroll(false), noiseScale(nullptr), noiseUScrollSpeed(nullptr), noiseVScrollSpeed(nullptr)
 {
     life = nullptr;
     lifeVariation = nullptr;
@@ -226,7 +226,7 @@ ParticleLayer* ParticleLayer::Clone()
 
     dstLayer->enableNoise = enableNoise;
     dstLayer->isNoiseAffectFlow = isNoiseAffectFlow;
-    dstLayer->useNoiseScroll = useNoiseScroll;
+    dstLayer->enableNoiseScroll = enableNoiseScroll;
 
     dstLayer->blending = blending;
     dstLayer->enableFog = enableFog;
@@ -265,7 +265,7 @@ ParticleLayer* ParticleLayer::Clone()
     dstLayer->isLong = isLong;
     dstLayer->noisePath = noisePath;
     dstLayer->enableNoise = enableNoise;
-    dstLayer->useNoiseScroll = useNoiseScroll;
+    dstLayer->enableNoiseScroll = enableNoiseScroll;
 
     return dstLayer;
 }
@@ -680,7 +680,7 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
     const YamlNode* useNoiseScrollNode = node->Get("useNoiseScroll");
     if (useNoiseScrollNode)
     {
-        useNoiseScroll = useNoiseScrollNode->AsBool();
+        enableNoiseScroll = useNoiseScrollNode->AsBool();
     }
 
     const YamlNode* frameBlendNode = node->Get("enableFrameBlend");
@@ -862,7 +862,7 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
 
     layerNode->Add("enableNoise", enableNoise);
     layerNode->Add("isNoiseAffectFlow", isNoiseAffectFlow);
-    layerNode->Add("useNoiseScroll", useNoiseScroll);
+    layerNode->Add("useNoiseScroll", enableNoiseScroll);
 
     layerNode->Add("enableFog", enableFog);
     layerNode->Add("enableFrameBlend", enableFrameBlend);
