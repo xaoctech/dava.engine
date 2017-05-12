@@ -163,7 +163,7 @@ ID3D11InputLayout* PipelineStateDX11_t::CreateInputLayout(const VertexLayout& la
 ID3D11InputLayout* PipelineStateDX11_t::CreateCompatibleInputLayout(const VertexLayout& vbLayout, const VertexLayout& vprogLayout, const void* code, uint32 code_sz)
 {
     ID3D11InputLayout* vdecl = nullptr;
-    D3D11_INPUT_ELEMENT_DESC elem[32];
+    D3D11_INPUT_ELEMENT_DESC elem[32] = {};
     uint32 elemCount = 0;
 
     DVASSERT(vbLayout.ElementCount() < countof(elem));
@@ -282,6 +282,15 @@ ID3D11InputLayout* PipelineStateDX11_t::CreateCompatibleInputLayout(const Vertex
         }
         else
         {
+            Logger::Error("Incompatible vertex layout. Missing element %s%d of type %s", VertexSemanticsName(vprogLayout.ElementSemantics(i)),
+                          vprogLayout.ElementSemanticsIndex(i), VertexDataTypeName(vprogLayout.ElementDataType(i)));
+
+            Logger::Error("Program:");
+            vprogLayout.Dump();
+
+            Logger::Error("VertexBuffer:");
+            vbLayout.Dump();
+
             DVASSERT(!"kaboom!");
         }
 

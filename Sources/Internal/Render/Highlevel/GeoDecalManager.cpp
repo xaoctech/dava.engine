@@ -80,19 +80,7 @@ public:
 
 private:
     Vector<RenderBatchWithOptions> batches;
-
-public:
-    INTROSPECTION(GeoDecalRenderBatchProvider,
-                  COLLECTION(batches, "Render Batches", I_SAVE | I_VIEW | I_EDIT)
-                  );
-    DAVA_VIRTUAL_REFLECTION(GeoDecalRenderBatchProvider, RenderBatchProvider);
 };
-
-DAVA_VIRTUAL_REFLECTION_IMPL(GeoDecalRenderBatchProvider)
-{
-    ReflectionRegistrator<GeoDecalRenderBatchProvider>::Begin()
-    .End();
-}
 
 const GeoDecalManager::Decal GeoDecalManager::InvalidDecal = nullptr;
 
@@ -393,13 +381,26 @@ void GeoDecalManager::GetSkinnedMeshGeometry(const DecalBuildInfo& info, Vector<
 
 bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBatch)
 {
+    if (info.polygonGroup == nullptr)
+        return false;
+
     String fxName(info.material->GetEffectiveFXName().c_str());
     std::transform(fxName.begin(), fxName.end(), fxName.begin(), ::tolower);
 
-    if ((fxName.find("shadow") != String::npos) || (info.polygonGroup == nullptr))
-        return false;
+    static const String InvalidMaterialsForDecal[] = { "shadow", "sky", "silhouette" };
+    for (const String& m : InvalidMaterialsForDecal)
+    {
+        if (fxName.find(m) != String::npos)
+        {
+            // Logger::Warning("Material ignored for decal: %s", fxName.c_str());
+            return false;
+        }
+    }
 
     int32 geometryFormat = info.polygonGroup->GetFormat();
+
+    if (fxName.find("alphatest"))
+        geometryFormat = geometryFormat;
 
     Vector<DecalVertex> decalGeometry;
     decalGeometry.reserve(info.polygonGroup->GetIndexCount());
