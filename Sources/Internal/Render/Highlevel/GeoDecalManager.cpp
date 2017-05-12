@@ -1,5 +1,6 @@
 #include "Render/Highlevel/GeoDecalManager.h"
 #include "Render/Highlevel/SkinnedMesh.h"
+#include "Reflection/Reflection.h"
 #include "FileSystem/FileSystem.h"
 
 namespace DAVA
