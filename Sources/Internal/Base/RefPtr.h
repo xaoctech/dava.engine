@@ -1,7 +1,5 @@
-#ifndef __DAVA_REF_PTR_H__
-#define __DAVA_REF_PTR_H__
+#pragma once
 
-#include "Base/BaseObject.h"
 #include "Base/Any.h"
 
 namespace DAVA
@@ -11,9 +9,7 @@ template <class T>
 class RefPtr
 {
 public:
-    RefPtr()
-    {
-    }
+    RefPtr() = default;
 
     explicit RefPtr(T* p)
         : _ptr(p)
@@ -25,19 +21,23 @@ public:
     {
         T* tmp_ptr = _ptr;
         _ptr = p;
-        SafeRelease(tmp_ptr);
+
+        if (tmp_ptr)
+            tmp_ptr->Release();
     }
 
     ~RefPtr()
     {
-        SafeRelease(_ptr);
+        if (_ptr)
+            _ptr->Release();
     }
 
     RefPtr(const RefPtr<T>& rp)
     {
         _ptr = rp._ptr;
 
-        SafeRetain(_ptr);
+        if (_ptr)
+            _ptr->Retain();
     }
 
     template <class Other>
@@ -45,7 +45,8 @@ public:
     {
         _ptr = rp.Get();
 
-        SafeRetain(_ptr);
+        if (_ptr)
+            _ptr->Retain();
     }
 
     static RefPtr<T> ConstructWithRetain(T* p)
@@ -85,8 +86,13 @@ public:
 
         T* tmp_ptr = _ptr;
         _ptr = ptr;
-        SafeRetain(_ptr);
-        SafeRelease(tmp_ptr);
+
+        if (_ptr)
+            _ptr->Retain();
+
+        if (tmp_ptr)
+            tmp_ptr->Release();
+
         return *this;
     }
 
@@ -102,6 +108,7 @@ public:
     {
         return *_ptr;
     }
+
     T* operator->() const
     {
         return _ptr;
@@ -119,7 +126,6 @@ public:
     {
         return ptr == rp._ptr;
     }
-
     bool operator!=(const RefPtr& rp) const
     {
         return _ptr != rp._ptr;
@@ -134,7 +140,7 @@ public:
     }
     bool operator!() const // Enables "if (!sp) ..."
     {
-        return _ptr == 0;
+        return _ptr == nullptr;
     }
 
     template <typename... Arg>
@@ -158,8 +164,9 @@ private:
 public:
     operator Tester*() const
     {
-        if (!_ptr)
-            return 0;
+        if (_ptr == nullptr)
+            return nullptr;
+
         static Tester test;
         return &test;
     }
@@ -175,8 +182,12 @@ private:
 
         T* tmp_ptr = _ptr;
         _ptr = rp.Get();
-        SafeRetain(_ptr);
-        SafeRelease(tmp_ptr);
+
+        if (_ptr)
+            _ptr->Retain();
+
+        if (tmp_ptr)
+            tmp_ptr->Release();
     }
 };
 
@@ -190,6 +201,4 @@ struct AnyCompare<RefPtr<T>>
         return s1 == s2;
     }
 };
-} // ns
-
-#endif // __DAVA_REF_PTR_H__
+}
