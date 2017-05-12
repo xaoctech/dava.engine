@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Base/RefPtr.h"
 #include "Functional/Function.h"
 #include "FileSystem/FilePath.h"
 #include "Math/AABBox3.h"
