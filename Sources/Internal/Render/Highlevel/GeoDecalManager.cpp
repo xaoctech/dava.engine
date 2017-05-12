@@ -1,5 +1,6 @@
 #include "Render/Highlevel/GeoDecalManager.h"
 #include "Render/Highlevel/SkinnedMesh.h"
+#include "Render/Highlevel/GeometryOctTree.h"
 #include "Reflection/Reflection.h"
 #include "FileSystem/FileSystem.h"
 
@@ -387,7 +388,7 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBat
     String fxName(info.material->GetEffectiveFXName().c_str());
     std::transform(fxName.begin(), fxName.end(), fxName.begin(), ::tolower);
 
-    static const String InvalidMaterialsForDecal[] = { "shadow", "sky", "silhouette" };
+    static const String InvalidMaterialsForDecal[] = { "shadow", "silhouette" };
     for (const String& m : InvalidMaterialsForDecal)
     {
         if (fxName.find(m) != String::npos)
@@ -398,9 +399,6 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBat
     }
 
     int32 geometryFormat = info.polygonGroup->GetFormat();
-
-    if (fxName.find("alphatest"))
-        geometryFormat = geometryFormat;
 
     Vector<DecalVertex> decalGeometry;
     decalGeometry.reserve(info.polygonGroup->GetIndexCount());
