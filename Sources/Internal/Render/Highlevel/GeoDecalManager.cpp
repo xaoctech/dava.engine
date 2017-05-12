@@ -56,6 +56,29 @@ struct GeoDecalManager::DecalVertex
     }
 };
 
+GeoDecalManager::BuiltDecal::BuiltDecal(const BuiltDecal& r)
+    : sourceObject(SafeRetain(r.sourceObject))
+    , batchProvider(SafeRetain(r.batchProvider))
+{
+}
+
+GeoDecalManager::BuiltDecal& GeoDecalManager::BuiltDecal::operator=(const BuiltDecal& r)
+{
+    SafeRelease(sourceObject);
+    sourceObject = SafeRetain(r.sourceObject);
+
+    SafeRelease(batchProvider);
+    batchProvider = SafeRetain(r.batchProvider);
+
+    return *this;
+}
+
+GeoDecalManager::BuiltDecal::~BuiltDecal()
+{
+    SafeRelease(sourceObject);
+    SafeRelease(batchProvider);
+}
+
 class GeoDecalRenderBatchProvider : public RenderBatchProvider
 {
 public:
@@ -170,9 +193,8 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, co
     BuiltDecal& builtDecal = builtDecals[decal];
     {
         GeoDecalRenderBatchProvider* decalBatchProvider = new GeoDecalRenderBatchProvider();
-
-        builtDecal.batchProvider.Set(decalBatchProvider);
-        builtDecal.sourceObject.Set(SafeRetain(ro));
+        builtDecal.batchProvider = decalBatchProvider;
+        builtDecal.sourceObject = SafeRetain(ro);
 
         for (uint32 i = 0, e = ro->GetRenderBatchCount(); i < e; ++i)
         {
@@ -205,7 +227,7 @@ void GeoDecalManager::RegisterDecal(Decal decal)
     DVASSERT(builtDecals.count(decal) > 0);
 
     const BuiltDecal& builtDecal = builtDecals[decal];
-    builtDecal.sourceObject->AddRenderBatchProvider(builtDecal.batchProvider.Get());
+    builtDecal.sourceObject->AddRenderBatchProvider(builtDecal.batchProvider);
 }
 
 void GeoDecalManager::UnregisterDecal(Decal decal)
@@ -213,7 +235,7 @@ void GeoDecalManager::UnregisterDecal(Decal decal)
     DVASSERT(builtDecals.count(decal) > 0);
 
     const BuiltDecal& builtDecal = builtDecals[decal];
-    builtDecal.sourceObject->RemoveRenderBatchProvider(builtDecal.batchProvider.Get());
+    builtDecal.sourceObject->RemoveRenderBatchProvider(builtDecal.batchProvider);
 }
 
 void GeoDecalManager::RemoveRenderObject(RenderObject* ro)

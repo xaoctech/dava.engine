@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Base/RefPtr.h"
 #include "Functional/Function.h"
 #include "FileSystem/FilePath.h"
 #include "Math/AABBox3.h"
@@ -64,8 +63,16 @@ private:
 
     struct BuiltDecal
     {
-        RefPtr<RenderObject> sourceObject = RefPtr<RenderObject>(nullptr);
-        RefPtr<RenderBatchProvider> batchProvider = RefPtr<RenderBatchProvider>(nullptr);
+        RenderObject* sourceObject = nullptr;
+        RenderBatchProvider* batchProvider = nullptr;
+
+        BuiltDecal() = default;
+        BuiltDecal(const BuiltDecal& r);
+        BuiltDecal& operator=(const BuiltDecal&);
+        ~BuiltDecal();
+
+        BuiltDecal(BuiltDecal&&) = delete;
+        BuiltDecal& operator=(BuiltDecal&&) = delete;
     };
 
     void RegisterDecal(Decal decal);
