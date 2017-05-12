@@ -7,7 +7,6 @@ DAVA_TESTCLASS (DateTimeTest)
 {
     DAVA_TEST (TestFunction)
     {
-/*
         TEST_VERIFY(FormatDateTime(DateTime(1970, 0, 1, 0, 0, 0, 0)) == "1970-00-01 00:00:00+0");
 
         TEST_VERIFY(FormatDateTime(DateTime(2001, 1, 1, 0, 0, 0, 3 * 3600)) == "2001-01-01 00:00:00+10800");
@@ -111,7 +110,6 @@ DAVA_TESTCLASS (DateTimeTest)
 
             ls->SetCurrentLocale(previousLocale);
         }
-*/
     }
 
     void PrintDateTimeContent(const DateTime& inputTime)
