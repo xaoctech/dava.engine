@@ -349,6 +349,23 @@ void SlotSystem::Process(float32 timeElapsed)
 
         deletePending.clear();
     }
+
+    for (auto& node : slotToLoadedEntity)
+    {
+        if (node.second == nullptr)
+        {
+            continue;
+        }
+
+        DVASSERT(node.first->GetType() == Component::SLOT_COMPONENT);
+        SlotComponent* slot = static_cast<SlotComponent*>(node.first);
+
+        Matrix4 slotTransform = GetJointTransform(slot);
+        slotTransform *= slot->attachmentTransform;
+        TransformComponent* transformComponent = GetTransformComponent(node.second);
+        DVASSERT(transformComponent != nullptr);
+        transformComponent->SetLocalTransform(&slotTransform);
+    }
 }
 
 void SlotSystem::AttachItemToSlot(Entity* rootEntity, FastName slotName, FastName itemName)
@@ -423,10 +440,6 @@ void SlotSystem::AttachEntityToSlot(SlotComponent * component, Entity * entity, 
     component->loadedItemName = itemName;
     entity->SetName(component->GetSlotName());
 
-    TransformComponent* transform = GetTransformComponent(entity);
-    DVASSERT(transform != nullptr);
-    transform->SetLocalTransform(&component->GetAttachmentTransform());
-
     Entity* parentEntity = component->GetEntity();
     if (nullptr == externalEntityLoader)
     {
@@ -459,6 +472,26 @@ SlotComponent* SlotSystem::LookUpSlot(Entity* entity) const
     }
 
     return nullptr;
+}
+
+Matrix4 SlotSystem::GetJointTransform(SlotComponent * component) const
+{
+    Matrix4 jointTransform;
+    FastName boneName = component->GetJointName();
+    if (boneName.IsValid())
+    {
+        SkeletonComponent* skeleton = GetSkeletonComponent(component->GetEntity());
+        DVASSERT(skeleton != nullptr);
+        uint16 jointId = skeleton->GetJointId(boneName);
+        DVASSERT(jointId != SkeletonComponent::INVALID_JOINT_INDEX);
+        const SkeletonComponent::JointTransform& transform = skeleton->GetObjectSpaceTransform(jointId);
+        jointTransform = transform.orientation.GetMatrix();
+        jointTransform.SetTranslationVector(transform.position);
+
+        jointTransform *= Matrix4::MakeScale(Vector3(transform.scale, transform.scale, transform.scale));
+    }
+
+    return jointTransform;
 }
 
 void SlotSystem::SetScene(Scene* scene)

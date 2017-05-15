@@ -143,11 +143,12 @@ void DeveloperTools::OnDebugCreateTestSkinnedObject()
     }
 
     polygonGroup->SetPrimitiveType(rhi::PRIMITIVE_LINELIST);
+    polygonGroup->BuildBuffers();
 
     ScopedPtr<NMaterial> material(new NMaterial());
     material->SetMaterialName(FastName("DebugSkeleton"));
     material->SetFXName(NMaterialName::DECAL_OPAQUE);
-    material->SetFlag(NMaterialFlagName::FLAG_SKINNING, 1);
+    material->AddFlag(NMaterialFlagName::FLAG_SKINNING, 1);
 
     ScopedPtr<RenderBatch> renderBatch(new RenderBatch());
     renderBatch->SetMaterial(material);

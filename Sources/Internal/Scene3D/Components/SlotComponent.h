@@ -32,6 +32,9 @@ public:
     const Matrix4& GetAttachmentTransform() const;
     void SetAttachmentTransform(const Matrix4& transform);
 
+    const FastName& GetJointName() const;
+    void SetBoneName(const FastName& boneName);
+
     const FilePath& GetConfigFilePath() const;
     void SetConfigFilePath(const FilePath& path);
 
@@ -47,12 +50,14 @@ public:
 
     static const FastName SlotNameFieldName;
     static const FastName ConfigPathFieldName;
+    static const FastName AttchementToJointFieldName;
 
 private:
     friend class SlotSystem;
     FastName slotName;
 
     Matrix4 attachmentTransform;
+    FastName attachementToJoint;
     FilePath configFilePath;
     Array<FastName, MAX_FILTERS_COUNT> typeFilters;
     uint32 actualFiltersCount = 0;

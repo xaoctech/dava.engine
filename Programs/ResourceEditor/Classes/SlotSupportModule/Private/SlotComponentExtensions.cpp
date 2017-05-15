@@ -70,7 +70,7 @@ public:
         descr[ListView::Fields::ValueList] = "filtersList";
         descr[ListView::Fields::CurrentValue] = "currentFilter";
         ListView* filtersControl = new ListView(descr, wrappersProcessor, model, parent);
-        filtersControl->ToWidgetCast()->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
+        filtersControl->ToWidgetCast()->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
         w->AddControl(filtersControl);
 
         Widget* buttonsBar = new Widget(w->ToWidgetCast());
@@ -194,6 +194,168 @@ private:
         .End();
     }
 };
+
+class SlotJointComponentValue : public BaseSlotComponentValue
+{
+public:
+    DAVA::Any GetMultipleValue() const override
+    {
+        return DAVA::Any();
+    }
+
+    bool IsValidValueToSet(const DAVA::Any& newValue, const DAVA::Any& currentValue) const override
+    {
+        return false;
+    }
+
+    DAVA::TArc::ControlProxy* CreateEditorWidget(QWidget* parent, const DAVA::Reflection& model, DAVA::TArc::DataWrappersProcessor* wrappersProcessor) override
+    {
+        using namespace DAVA::TArc;
+
+        ControlDescriptorBuilder<ComboBox::Fields> descr;
+        descr[ComboBox::Fields::Enumerator] = "itemsList";
+        descr[ComboBox::Fields::Value] = "currentJoint";
+        descr[ComboBox::Fields::IsReadOnly] = BaseComponentValue::readOnlyFieldName;
+        ComboBox* combo = new ComboBox(descr, wrappersProcessor, model, parent);
+        return combo;
+    }
+
+private:
+    static const DAVA::String DetachItemName;
+    const DAVA::Set<DAVA::String>& GetJoints() const
+    {
+        joints.clear();
+        joints.emplace(DetachItemName);
+        ForEachSlotComponent([&](DAVA::SlotComponent* component, bool isFirst)
+                             {
+                                 if (isFirst == true)
+                                 {
+                                     DAVA::SkeletonComponent* skeleton = GetSkeletonComponent(component->GetEntity());
+                                     if (skeleton != nullptr)
+                                     {
+                                         for (uint16 i = 0; i < skeleton->GetJointsCount(); ++i)
+                                         {
+                                             joints.insert(skeleton->GetJointName(i).c_str());
+                                         }
+                                     }
+                                 }
+                                 else
+                                 {
+                                     DAVA::Set<DAVA::String> jointIntersection;
+                                     DAVA::SkeletonComponent* skeleton = GetSkeletonComponent(component->GetEntity());
+                                     if (skeleton != nullptr)
+                                     {
+                                         for (uint16 i = 0; i < skeleton->GetJointsCount(); ++i)
+                                         {
+                                             jointIntersection.insert(skeleton->GetJointName(i).c_str());
+                                         }
+                                     }
+
+                                     std::swap(joints, jointIntersection);
+                                 }
+                                 return true;
+                             });
+
+        return joints;
+    }
+
+    DAVA::Any GetCurrentJoint() const
+    {
+        DAVA::FastName result(DAVA::TArc::MultipleValuesString);
+
+        ForEachSlotComponent([&](DAVA::SlotComponent* component, bool isFirst)
+                             {
+                                 if (isFirst == true)
+                                 {
+                                     result = component->GetJointName();
+                                 }
+                                 else
+                                 {
+                                     DAVA::FastName jointName = component->GetJointName();
+                                     if (jointName != result)
+                                     {
+                                         result = DAVA::FastName(DAVA::TArc::MultipleValuesString);
+                                         return false;
+                                     }
+                                 }
+
+                                 return true;
+                             });
+
+        if (result.IsValid() == false)
+        {
+            return DAVA::Any(DetachItemName);
+        }
+
+        return DAVA::Any(DAVA::String(result.c_str()));
+    }
+
+    void SetCurrentJoint(const DAVA::Any& jointName)
+    {
+        if (jointName.IsEmpty())
+        {
+            return;
+        }
+
+        DAVA::String v = jointName.Cast<DAVA::String>();
+        DAVA::Any newValue = DAVA::FastName(v);
+        if (v == DetachItemName)
+        {
+            newValue = DAVA::FastName();
+        }
+
+        std::shared_ptr<DAVA::TArc::ModifyExtension> ext = GetModifyInterface();
+        DAVA::TArc::ModifyExtension::MultiCommandInterface cmdInterface = ext->GetMultiCommandInterface("Attach to joint", static_cast<DAVA::uint32>(nodes.size()));
+        ForEachSlotComponent([&](SlotComponent* component, bool isFirst)
+                             {
+                                 DAVA::Reflection slotReflection = DAVA::Reflection::Create(DAVA::ReflectedObject(component));
+                                 DAVA::Reflection jointNameField = slotReflection.GetField(SlotComponent::AttchementToJointFieldName);
+                                 DVASSERT(jointNameField.IsValid() == true);
+                                 DAVA::Reflection::Field f;
+                                 f.key = SlotComponent::AttchementToJointFieldName;
+                                 f.ref = jointNameField;
+                                 cmdInterface.ProduceCommand(f, newValue);
+                                 ;
+                                 return true;
+                             });
+    }
+
+    bool IsReadOnly() const override
+    {
+        if (BaseComponentValue::IsReadOnly() == true)
+        {
+            return true;
+        }
+
+        bool result = true;
+        ForEachSlotComponent([&](DAVA::SlotComponent* component, bool isFirst)
+                             {
+                                 DAVA::SkeletonComponent* skeleton = GetSkeletonComponent(component->GetEntity());
+                                 if (isFirst == true)
+                                 {
+                                     result = skeleton == nullptr;
+                                 }
+                                 else
+                                 {
+                                     result &= skeleton == nullptr;
+                                 }
+                                 return result;
+                             });
+        return result;
+    }
+
+    mutable DAVA::Set<DAVA::String> joints;
+
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(SlotJointComponentValue, BaseSlotComponentValue)
+    {
+        DAVA::ReflectionRegistrator<SlotJointComponentValue>::Begin()
+        .Field("itemsList", &SlotJointComponentValue::GetJoints, nullptr)
+        .Field("currentJoint", &SlotJointComponentValue::GetCurrentJoint, &SlotJointComponentValue::SetCurrentJoint)
+        .End();
+    }
+};
+
+const DAVA::String SlotJointComponentValue::DetachItemName = DAVA::String("< Detached >");
 
 class SlotPreviewComponentValue : public BaseSlotComponentValue
 {
@@ -372,7 +534,8 @@ private:
 void SlotComponentChildCreator::ExposeChildren(const std::shared_ptr<DAVA::TArc::PropertyNode>& parent, DAVA::Vector<std::shared_ptr<DAVA::TArc::PropertyNode>>& children) const
 {
     if (parent->propertyType == SlotPreviewProperty ||
-        parent->propertyType == SlotTypeFilters)
+        parent->propertyType == SlotTypeFilters ||
+        parent->propertyType == SlotJointAttachment)
     {
         return;
     }
@@ -382,6 +545,17 @@ void SlotComponentChildCreator::ExposeChildren(const std::shared_ptr<DAVA::TArc:
     const DAVA::ReflectedType* slotComponentType = DAVA::ReflectedTypeDB::Get<DAVA::SlotComponent>();
     if (fieldType == slotComponentType)
     {
+        auto iter = std::find_if(children.rbegin(), children.rend(), [](const std::shared_ptr<DAVA::TArc::PropertyNode>& node)
+                                 {
+                                     return node->field.key.Cast<FastName>() == SlotComponent::AttchementToJointFieldName;
+                                 });
+
+        DVASSERT(iter != children.rend());
+        std::shared_ptr<DAVA::TArc::PropertyNode> jointAttachmentNode = *iter;
+        jointAttachmentNode->propertyType = SlotJointAttachment;
+        jointAttachmentNode->field.ref = parent->field.ref;
+        jointAttachmentNode->cachedValue = parent->cachedValue;
+
         {
             DAVA::Reflection::Field f;
             f.key = DAVA::FastName("TypeFilters");
@@ -410,6 +584,11 @@ std::unique_ptr<DAVA::TArc::BaseComponentValue> SlotComponentEditorCreator::GetE
     if (node->propertyType == SlotPreviewProperty)
     {
         return std::make_unique<SlotPreviewComponentValue>();
+    }
+
+    if (node->propertyType == SlotJointAttachment)
+    {
+        return std::make_unique<SlotJointComponentValue>();
     }
 
     return EditorComponentExtension::GetEditor(node);

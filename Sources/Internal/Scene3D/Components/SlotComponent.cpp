@@ -14,6 +14,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SlotComponent)
     .Field(SlotNameFieldName.c_str(), &SlotComponent::GetSlotName, &SlotComponent::SetSlotName)[M::DisplayName("Name")]
     .Field(ConfigPathFieldName.c_str(), &SlotComponent::GetConfigFilePath, &SlotComponent::SetConfigFilePath)[M::DisplayName("Items list")]
     .Field("transform", &SlotComponent::GetAttachmentTransform, &SlotComponent::SetAttachmentTransform)[M::DisplayName("Attachment Transform")]
+    .Field(AttchementToJointFieldName.c_str(), &SlotComponent::GetJointName, &SlotComponent::SetBoneName)[M::DisplayName("Attached to joint")]
     .End();
 }
 
@@ -37,6 +38,10 @@ void SlotComponent::Serialize(KeyedArchive* archive, SerializationContext* seria
     {
         archive->SetFastName("sc.slotName", slotName);
         archive->SetMatrix4("sc.attachmentTransform", attachmentTransform);
+        if (attachementToJoint.IsValid())
+        {
+            archive->SetFastName("sc.attachmentToBone", attachementToJoint);
+        }
         archive->SetString("sc.configFilePath", configFilePath.GetRelativePathname(serializationContext->GetScenePath()));
         archive->SetUInt32("sc.typeFiltersCount", actualFiltersCount);
         for (uint32 i = 0; i < actualFiltersCount; ++i)
@@ -52,6 +57,7 @@ void SlotComponent::Deserialize(KeyedArchive* archive, SerializationContext* ser
     {
         slotName = archive->GetFastName("sc.slotName");
         attachmentTransform = archive->GetMatrix4("sc.attachmentTransform");
+        attachementToJoint = archive->GetFastName("sc.attachmentToBone");
         configFilePath = FilePath(serializationContext->GetScenePath() + archive->GetString("sc.configFilePath"));
         actualFiltersCount = archive->GetUInt32("sc.typeFiltersCount");
         for (uint32 i = 0; i < actualFiltersCount; ++i)
@@ -81,6 +87,16 @@ const DAVA::Matrix4& SlotComponent::GetAttachmentTransform() const
 void SlotComponent::SetAttachmentTransform(const Matrix4& transform)
 {
     attachmentTransform = transform;
+}
+
+const FastName& SlotComponent::GetJointName() const
+{
+    return attachementToJoint;
+}
+
+void SlotComponent::SetBoneName(const FastName& boneName)
+{
+    attachementToJoint = boneName;
 }
 
 const DAVA::FilePath& SlotComponent::GetConfigFilePath() const
@@ -142,5 +158,6 @@ DAVA::FastName SlotComponent::GetLoadedItemName() const
 
 const FastName SlotComponent::SlotNameFieldName = FastName("slotName");
 const FastName SlotComponent::ConfigPathFieldName = FastName("configPath");
+const FastName SlotComponent::AttchementToJointFieldName = FastName("attachedToJoint");
 
 } // namespace DAVA

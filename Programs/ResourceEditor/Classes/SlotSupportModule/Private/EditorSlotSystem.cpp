@@ -14,7 +14,7 @@
 #include <Utils/Utils.h>
 #include <QObject>
 
-const FastName EditorSlotSystem::emptyItemName = FastName("Empty");
+const DAVA::FastName EditorSlotSystem::emptyItemName = DAVA::FastName("Empty");
 
 EditorSlotSystem::EditorSlotSystem(DAVA::Scene* scene)
     : SceneSystem(scene)
@@ -29,7 +29,11 @@ void EditorSlotSystem::ImmediateEvent(DAVA::Component* component, DAVA::uint32 e
         DAVA::SlotComponent* slotComponent = GetScene()->slotSystem->LookUpSlot(entity);
         if (slotComponent != nullptr)
         {
-            slotComponent->SetAttachmentTransform(entity->GetLocalTransform());
+            DAVA::Matrix4 jointTranfsorm = GetScene()->slotSystem->GetJointTransform(slotComponent);
+            bool inverseSuccessed = jointTranfsorm.Inverse();
+            DVASSERT(inverseSuccessed);
+            DAVA::Matrix4 attachmentTransform = jointTranfsorm * entity->GetLocalTransform();
+            slotComponent->SetAttachmentTransform(attachmentTransform);
         }
     }
 }
