@@ -137,6 +137,7 @@ void ParticleEffectSystem::PrebuildMaterials(ParticleEffectComponent* component)
                 matData.flowmap = flowmap;
                 matData.enableFlow = layer->enableFlow;
                 matData.enableNoise = layer->enableNoise;
+                matData.enableNoiseUVScroll = layer->enableNoiseScroll;
                 matData.isNoiseAffectFlow = layer->isNoiseAffectFlow;
                 matData.noise = noise;
 
@@ -174,6 +175,7 @@ void ParticleEffectSystem::RunEmitter(ParticleEffectComponent* effect, ParticleE
             matData.flowmap = flowmap;
             matData.enableFlow = layer->enableFlow;
             matData.enableNoise = layer->enableNoise;
+            matData.enableNoiseUVScroll = layer->enableNoiseScroll;
             matData.isNoiseAffectFlow = layer->isNoiseAffectFlow;
             matData.noise = noise;
             group.material = GetMaterial(std::move(matData));

@@ -64,7 +64,11 @@ fragment_in
 
     #if VERTEX_FOG
         [lowp] half4 varFog : TEXCOORD5;
-    #endif           
+    #endif
+
+    #if PARTICLES_NOISE
+        float3 varNoiseData : TEXCOORD6; // Noise uv and scale.
+    #endif
 
     #if FRAME_BLEND
         [lowp] half varTime : TEXCOORD3;
@@ -102,6 +106,10 @@ fragment_out
 
 #if MATERIAL_DETAIL
     uniform sampler2D detail;
+#endif
+
+#if PARTICLES_NOISE
+    uniform sampler2D noiseTex;
 #endif
 
 #if MATERIAL_LIGHTMAP  && VIEW_DIFFUSE
@@ -197,18 +205,27 @@ fragment_out fp_main( fragment_in input )
                     float2 flowtc = input.varParticleFlowTexCoord;
                 #endif
                 float3 flowData = input.varFlowData;
-                float2 flowDir = float2( tex2D( flowmap, flowtc ).xy) * 2.0 - 1.0;
+                float2 flowDir = float2(tex2D( flowmap, flowtc ).xy) * 2.0 - 1.0;
+                #if PARTICLES_NOISE && PARTICLES_NOISE_AFFECT_FLOW
+                    flowDir *= tex2D(noiseTex, input.varNoiseData.xy).r * input.varNoiseData.z;
+                #endif
                 half4 flowSample1 = half4(tex2D( albedo, input.varTexCoord0 + flowDir*flowData.x));
                 half4 flowSample2 = half4(tex2D( albedo, input.varTexCoord0 + flowDir*flowData.y));
                 half4 textureColor0 = lerp(flowSample1, flowSample2, half(flowData.z) );
             #else
-                half4 textureColor0 = half4(tex2D( albedo, input.varTexCoord0 ));
+                float2 albedoUv = input.varTexCoord0;
+                #if PARTICLES_NOISE
+                    float noiseSample = tex2D(noiseTex, input.varNoiseData.xy).r * 2.0f - 1.0f;
+                    noiseSample *= input.varNoiseData.z;
+                    albedoUv += float2(noiseSample, noiseSample);
+                #endif
+                half4 textureColor0 = half4(tex2D( albedo, albedoUv ));
             #endif
             
             #if ALPHA_MASK 
                 textureColor0.a *= FP_A8(tex2D( alphamask, input.varTexCoord1 ));
-            #endif          
-        #else
+            #endif
+          #else
             #if FLOWMAP || PARTICLES_FLOWMAP
                 #if FLOWMAP
                     float2 flowtc = input.varTexCoord0;
@@ -230,20 +247,17 @@ fragment_out fp_main( fragment_in input )
                 
             #endif
         #endif
-        
-        
+
+
         #if FRAME_BLEND
             half4 blendFrameColor = half4(tex2D( albedo, input.varTexCoord1 ));
             half varTime = input.varTime;
             textureColor0 = lerp( textureColor0, blendFrameColor, varTime );
         #endif
-    
-    #elif MATERIAL_SKYBOX
-    
-        half4 textureColor0 = half4(texCUBE( cubemap, input.varTexCoord0 ));
-    
-    #endif
 
+    #elif MATERIAL_SKYBOX
+        half4 textureColor0 = half4(texCUBE( cubemap, input.varTexCoord0 ));
+    #endif
 
     #if MATERIAL_TEXTURE
         #if ALPHATEST

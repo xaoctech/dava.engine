@@ -873,6 +873,7 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     enableNoiseCheckBox->setChecked(layer->enableNoise);
     noiseLayoutWidget->setVisible(enableNoiseCheckBox->isChecked());
 
+    isNoiseAffectFlowCheckBox->setVisible(enableFlowCheckBox->isChecked() && enableNoiseCheckBox->isChecked());
 
     isLoopedCheckBox->setChecked(layer->isLooped);
 

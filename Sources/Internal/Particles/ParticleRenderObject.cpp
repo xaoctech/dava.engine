@@ -338,11 +338,11 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
                 }
                 if (begin->layer->enableNoise)
                 {
-                    static const Array<Vector2, 4> arr = { { Vector2(0.0f, 0.0f), Vector2(1.0f, 0.0f), Vector2(0.0f, 1.0f), Vector2(1.0f, 1.0f) } };
+                    float32* noiseUV = group.layer->noise->GetTextureVerts(current->frame);
                     for (int32 i = 0; i < 4; ++i)
                     {
-                        verts[i][ptrOffset + 0] = arr[i].x; // VS_TEXCOORD0 xy + color.
-                        verts[i][ptrOffset + 1] = arr[i].y;
+                        verts[i][ptrOffset + 0] = noiseUV[i * 2]; // VS_TEXCOORD0 xy + color.
+                        verts[i][ptrOffset + 1] = noiseUV[i * 2 + 1];
                         verts[i][ptrOffset + 2] = current->noiseScale;
                     }
                     ptrOffset += 3;

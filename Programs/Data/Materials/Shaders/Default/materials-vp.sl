@@ -33,6 +33,14 @@ vertex_in
         float4 texcoord2 : TEXCOORD2; // Flow speed and flow offset.
     #endif
 
+    #if PARTICLES_NOISE
+        float3 texcoord3 : TEXCOORD3; // Noise uv and scale.
+    #endif
+
+    #if PARTICLES_NOISE_SCROLL
+        float2 texcoord4 : TEXCOORD4; // Noise scroll speed.
+    #endif
+
     #if VERTEX_COLOR
         float4 color0 : COLOR0;
     #endif
@@ -118,6 +126,9 @@ vertex_out
         [lowp] half4 varFog : TEXCOORD5;
     #endif
 
+    #if PARTICLES_NOISE
+        float3 varNoiseData : TEXCOORD6; // Noise uv and scale.
+    #endif
 
     #if FRAME_BLEND
         [lowp] half varTime : TEXCOORD3;
@@ -235,7 +246,7 @@ vertex_out
 [auto][a] property float4x4 worldMatrix;
 #endif
 
-#if WAVE_ANIMATION || TEXTURE0_ANIMATION_SHIFT || FLOWMAP || PARTICLES_FLOWMAP
+#if WAVE_ANIMATION || TEXTURE0_ANIMATION_SHIFT || FLOWMAP || PARTICLES_FLOWMAP || PARTICLES_NOISE_SCROLL
 [auto][a] property float globalTime;
 #endif
 
@@ -344,6 +355,14 @@ vertex_out vp_main( vertex_in input )
     float2 flowPhases = frac(float2(scaledTime, scaledTime+0.5))-float2(0.5, 0.5);
     float flowBlend = abs(flowPhases.x*2.0);
     output.varFlowData = float3(flowPhases * flowOffset, flowBlend);
+#endif
+
+#if PARTICLES_NOISE
+    output.varNoiseData = input.texcoord3.xyz;
+    #if PARTICLES_NOISE_SCROLL
+        output.varNoiseData.x += globalTime * input.texcoord4.x;
+        output.varNoiseData.y += globalTime * input.texcoord4.y;
+    #endif
 #endif
 
 #if MATERIAL_SKYBOX
