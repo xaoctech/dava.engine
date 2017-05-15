@@ -12,7 +12,7 @@ class EditorSlotSystem : public DAVA::SceneSystem,
                          public EditorSceneSystem
 {
 public:
-    static const FastName emptyItemName;
+    static const DAVA::FastName emptyItemName;
 
     EditorSlotSystem(DAVA::Scene* scene);
 

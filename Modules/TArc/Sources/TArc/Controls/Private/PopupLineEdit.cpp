@@ -7,17 +7,17 @@ namespace DAVA
 {
 namespace TArc
 {
-PopupLineEdit::PopupLineEdit(const ControlDescriptorBuilder<LineEdit::Fields>& fields, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent)
+PopupLineEdit::PopupLineEdit(const LineEdit::Params& params, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent)
     : QWidget(parent, Qt::Popup)
 {
-    edit = new LineEdit(fields, wrappersProcessor, model, this);
+    edit = new LineEdit(params, wrappersProcessor, model, this);
     SetupControl();
 }
 
-PopupLineEdit::PopupLineEdit(const ControlDescriptorBuilder<LineEdit::Fields>& fields, ContextAccessor* accessor, Reflection model, QWidget* parent)
+PopupLineEdit::PopupLineEdit(const LineEdit::Params& params, ContextAccessor* accessor, Reflection model, QWidget* parent)
     : QWidget(parent, Qt::Popup)
 {
-    edit = new LineEdit(fields, accessor, model, this);
+    edit = new LineEdit(params, accessor, model, this);
     SetupControl();
 }
 

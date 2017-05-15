@@ -2,6 +2,8 @@
 #include "Classes/PropertyPanel/PropertyPanelCommon.h"
 #include "Classes/Commands2/SlotCommands.h"
 #include "Classes/Qt/Scene/SceneEditor2.h"
+#include "Classes/SceneManager/SceneData.h"
+#include "Classes/SlotSupportModule/Private/EditorSlotSystem.h"
 
 #include <TArc/Controls/CommonStrings.h>
 #include <TArc/Controls/ComboBox.h>
@@ -15,20 +17,23 @@
 
 #include <QtTools/WidgetHelpers/SharedIcon.h>
 
+#include <Scene3D/Systems/SlotSystem.h>
 #include <FileSystem/FilePath.h>
 #include <Base/BaseTypes.h>
+
+#include <QHBoxLayout>
 
 namespace PropertyPanel
 {
 class BaseSlotComponentValue : public DAVA::TArc::BaseComponentValue
 {
 protected:
-    void ForEachSlotComponent(const DAVA::Function<bool(SlotComponent*, bool)>& fn) const
+    void ForEachSlotComponent(const DAVA::Function<bool(DAVA::SlotComponent*, bool)>& fn) const
     {
         for (size_t i = 0; i < nodes.size(); ++i)
         {
             std::shared_ptr<DAVA::TArc::PropertyNode> node = nodes[i];
-            SlotComponent* component = node->cachedValue.Cast<SlotComponent*>(nullptr);
+            DAVA::SlotComponent* component = node->cachedValue.Cast<DAVA::SlotComponent*>(nullptr);
             DVASSERT(component != nullptr);
             if (fn(component, i == 0) == false)
             {
@@ -66,10 +71,11 @@ public:
         layout->setContentsMargins(0, 2, 2, 2);
         w->SetLayout(layout);
 
-        ControlDescriptorBuilder<ListView::Fields> descr;
-        descr[ListView::Fields::ValueList] = "filtersList";
-        descr[ListView::Fields::CurrentValue] = "currentFilter";
-        ListView* filtersControl = new ListView(descr, wrappersProcessor, model, parent);
+        ListView::Params params(GetAccessor(), GetUI(), GetWindowKey());
+        params.fields[ListView::Fields::ValueList] = "filtersList";
+        params.fields[ListView::Fields::CurrentValue] = "currentFilter";
+
+        ListView* filtersControl = new ListView(params, wrappersProcessor, model, parent);
         filtersControl->ToWidgetCast()->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
         w->AddControl(filtersControl);
 
@@ -78,23 +84,23 @@ public:
         w->AddControl(buttonsBar);
 
         {
-            ControlDescriptorBuilder<ReflectedButton::Fields> descr;
-            descr[ReflectedButton::Fields::AutoRaise] = "autoRise";
-            descr[ReflectedButton::Fields::Icon] = "addButtonIcon";
-            descr[ReflectedButton::Fields::ToolTip] = "addButtonTooltip";
-            descr[ReflectedButton::Fields::Clicked] = "addTypeFilter";
-            ReflectedButton* addButton = new ReflectedButton(descr, wrappersProcessor, model, w->ToWidgetCast());
+            ReflectedButton::Params params(GetAccessor(), GetUI(), GetWindowKey());
+            params.fields[ReflectedButton::Fields::AutoRaise] = "autoRise";
+            params.fields[ReflectedButton::Fields::Icon] = "addButtonIcon";
+            params.fields[ReflectedButton::Fields::ToolTip] = "addButtonTooltip";
+            params.fields[ReflectedButton::Fields::Clicked] = "addTypeFilter";
+            ReflectedButton* addButton = new ReflectedButton(params, wrappersProcessor, model, w->ToWidgetCast());
             buttonsBar->AddControl(addButton);
         }
 
         {
-            ControlDescriptorBuilder<ReflectedButton::Fields> descr;
-            descr[ReflectedButton::Fields::AutoRaise] = "autoRise";
-            descr[ReflectedButton::Fields::Icon] = "removeButtonIcon";
-            descr[ReflectedButton::Fields::ToolTip] = "removeButtonTooltip";
-            descr[ReflectedButton::Fields::Enabled] = "removeButtonEnabled";
-            descr[ReflectedButton::Fields::Clicked] = "removeTypeFilter";
-            ReflectedButton* addButton = new ReflectedButton(descr, wrappersProcessor, model, w->ToWidgetCast());
+            ReflectedButton::Params params(GetAccessor(), GetUI(), GetWindowKey());
+            params.fields[ReflectedButton::Fields::AutoRaise] = "autoRise";
+            params.fields[ReflectedButton::Fields::Icon] = "removeButtonIcon";
+            params.fields[ReflectedButton::Fields::ToolTip] = "removeButtonTooltip";
+            params.fields[ReflectedButton::Fields::Enabled] = "removeButtonEnabled";
+            params.fields[ReflectedButton::Fields::Clicked] = "removeTypeFilter";
+            ReflectedButton* addButton = new ReflectedButton(params, wrappersProcessor, model, w->ToWidgetCast());
             buttonsBar->AddControl(addButton);
         }
 
@@ -107,9 +113,9 @@ private:
         DAVA::Set<DAVA::FastName> intersection;
         ForEachSlotComponent([&](DAVA::SlotComponent* component, bool isFirst) {
             DAVA::Set<DAVA::FastName> currentIntersection;
-            for (uint32 i = 0; i < component->GetTypeFiltersCount(); ++i)
+            for (DAVA::uint32 i = 0; i < component->GetTypeFiltersCount(); ++i)
             {
-                FastName filter = component->GetTypeFilter(i);
+                DAVA::FastName filter = component->GetTypeFilter(i);
                 if (intersection.empty() == true || intersection.count(filter) > 0)
                 {
                     currentIntersection.insert(component->GetTypeFilter(i));
@@ -121,7 +127,7 @@ private:
         });
 
         filters.clear();
-        std::transform(intersection.begin(), intersection.end(), std::inserter(filters, filters.end()), DAVA::Bind(&FastName::c_str, DAVA::_1));
+        std::transform(intersection.begin(), intersection.end(), std::inserter(filters, filters.end()), DAVA::Bind(&DAVA::FastName::c_str, DAVA::_1));
         return filters;
     }
 
@@ -129,12 +135,12 @@ private:
     {
         using namespace DAVA::TArc;
 
-        ControlDescriptorBuilder<LineEdit::Fields> descr;
-        descr[LineEdit::Fields::Text] = "addFilterPopupText";
-        descr[LineEdit::Fields::PlaceHolder] = "filterEditPlaceholder";
+        LineEdit::Params params(GetAccessor(), GetUI(), GetWindowKey());
+        params.fields[LineEdit::Fields::Text] = "addFilterPopupText";
+        params.fields[LineEdit::Fields::PlaceHolder] = "filterEditPlaceholder";
 
         DAVA::Reflection popupModel = DAVA::Reflection::Create(DAVA::ReflectedObject(this));
-        DAVA::TArc::PopupLineEdit* popupLineEdit = new DAVA::TArc::PopupLineEdit(descr, GetDataProcessor(), popupModel, realWidget);
+        DAVA::TArc::PopupLineEdit* popupLineEdit = new DAVA::TArc::PopupLineEdit(params, GetDataProcessor(), popupModel, realWidget);
         popupLineEdit->Show(realWidget->parentWidget()->mapToGlobal(realWidget->geometry().topLeft()));
     }
 
@@ -142,7 +148,7 @@ private:
     {
         DAVA::FastName filterToRemove(currentFilter);
         DAVA::String descr = DAVA::Format("Remove type filter: %s", currentFilter.c_str());
-        DAVA::TArc::ModifyExtension::MultiCommandInterface cmdInterface = GetModifyInterface()->GetMultiCommandInterface(descr, static_cast<uint32>(nodes.size()));
+        DAVA::TArc::ModifyExtension::MultiCommandInterface cmdInterface = GetModifyInterface()->GetMultiCommandInterface(descr, static_cast<DAVA::uint32>(nodes.size()));
         ForEachSlotComponent([&](DAVA::SlotComponent* component, bool isFirst)
                              {
                                  cmdInterface.Exec(std::make_unique<SlotTypeFilterEdit>(component, filterToRemove, false));
@@ -164,7 +170,7 @@ private:
 
         DAVA::FastName filterToAdd(filterName);
         DAVA::String descr = DAVA::Format("Add type filter: %s", currentFilter.c_str());
-        DAVA::TArc::ModifyExtension::MultiCommandInterface cmdInterface = GetModifyInterface()->GetMultiCommandInterface(descr, static_cast<uint32>(nodes.size()));
+        DAVA::TArc::ModifyExtension::MultiCommandInterface cmdInterface = GetModifyInterface()->GetMultiCommandInterface(descr, static_cast<DAVA::uint32>(nodes.size()));
         ForEachSlotComponent([&](DAVA::SlotComponent* component, bool isFirst)
                              {
                                  cmdInterface.Exec(std::make_unique<SlotTypeFilterEdit>(component, filterToAdd, true));
@@ -212,11 +218,11 @@ public:
     {
         using namespace DAVA::TArc;
 
-        ControlDescriptorBuilder<ComboBox::Fields> descr;
-        descr[ComboBox::Fields::Enumerator] = "itemsList";
-        descr[ComboBox::Fields::Value] = "currentJoint";
-        descr[ComboBox::Fields::IsReadOnly] = BaseComponentValue::readOnlyFieldName;
-        ComboBox* combo = new ComboBox(descr, wrappersProcessor, model, parent);
+        ComboBox::Params params(GetAccessor(), GetUI(), GetWindowKey());
+        params.fields[ComboBox::Fields::Enumerator] = "itemsList";
+        params.fields[ComboBox::Fields::Value] = "currentJoint";
+        params.fields[ComboBox::Fields::IsReadOnly] = BaseComponentValue::readOnlyFieldName;
+        ComboBox* combo = new ComboBox(params, wrappersProcessor, model, parent);
         return combo;
     }
 
@@ -233,7 +239,7 @@ private:
                                      DAVA::SkeletonComponent* skeleton = GetSkeletonComponent(component->GetEntity());
                                      if (skeleton != nullptr)
                                      {
-                                         for (uint16 i = 0; i < skeleton->GetJointsCount(); ++i)
+                                         for (DAVA::uint16 i = 0; i < skeleton->GetJointsCount(); ++i)
                                          {
                                              joints.insert(skeleton->GetJointName(i).c_str());
                                          }
@@ -245,7 +251,7 @@ private:
                                      DAVA::SkeletonComponent* skeleton = GetSkeletonComponent(component->GetEntity());
                                      if (skeleton != nullptr)
                                      {
-                                         for (uint16 i = 0; i < skeleton->GetJointsCount(); ++i)
+                                         for (DAVA::uint16 i = 0; i < skeleton->GetJointsCount(); ++i)
                                          {
                                              jointIntersection.insert(skeleton->GetJointName(i).c_str());
                                          }
@@ -306,13 +312,13 @@ private:
 
         std::shared_ptr<DAVA::TArc::ModifyExtension> ext = GetModifyInterface();
         DAVA::TArc::ModifyExtension::MultiCommandInterface cmdInterface = ext->GetMultiCommandInterface("Attach to joint", static_cast<DAVA::uint32>(nodes.size()));
-        ForEachSlotComponent([&](SlotComponent* component, bool isFirst)
+        ForEachSlotComponent([&](DAVA::SlotComponent* component, bool isFirst)
                              {
                                  DAVA::Reflection slotReflection = DAVA::Reflection::Create(DAVA::ReflectedObject(component));
-                                 DAVA::Reflection jointNameField = slotReflection.GetField(SlotComponent::AttchementToJointFieldName);
+                                 DAVA::Reflection jointNameField = slotReflection.GetField(DAVA::SlotComponent::AttchementToJointFieldName);
                                  DVASSERT(jointNameField.IsValid() == true);
                                  DAVA::Reflection::Field f;
-                                 f.key = SlotComponent::AttchementToJointFieldName;
+                                 f.key = DAVA::SlotComponent::AttchementToJointFieldName;
                                  f.ref = jointNameField;
                                  cmdInterface.ProduceCommand(f, newValue);
                                  ;
@@ -374,11 +380,11 @@ public:
     {
         using namespace DAVA::TArc;
 
-        ControlDescriptorBuilder<ComboBox::Fields> descr;
-        descr[ComboBox::Fields::Enumerator] = "itemsList";
-        descr[ComboBox::Fields::Value] = "currentPreviewItem";
-        descr[ComboBox::Fields::IsReadOnly] = "previewItemReadOnly";
-        ComboBox* combo = new ComboBox(descr, wrappersProcessor, model, parent);
+        ComboBox::Params params(GetAccessor(), GetUI(), GetWindowKey());
+        params.fields[ComboBox::Fields::Enumerator] = "itemsList";
+        params.fields[ComboBox::Fields::Value] = "currentPreviewItem";
+        params.fields[ComboBox::Fields::IsReadOnly] = "previewItemReadOnly";
+        ComboBox* combo = new ComboBox(params, wrappersProcessor, model, parent);
         return combo;
     }
 
@@ -391,7 +397,7 @@ private:
             if (isFirst == true)
             {
                 currentConfig = DAVA::Any(component->GetConfigFilePath());
-                for (uint32 i = 0; i < component->GetTypeFiltersCount(); ++i)
+                for (DAVA::uint32 i = 0; i < component->GetTypeFiltersCount(); ++i)
                 {
                     currentFilters.insert(component->GetTypeFilter(i));
                 }
@@ -404,7 +410,7 @@ private:
                 }
 
                 DAVA::Set<DAVA::FastName> filtersIntersection;
-                for (uint32 i = 0; i < component->GetTypeFiltersCount(); ++i)
+                for (DAVA::uint32 i = 0; i < component->GetTypeFiltersCount(); ++i)
                 {
                     DAVA::FastName typeFilter = component->GetTypeFilter(i);
                     if (currentFilters.count(typeFilter) > 0)
@@ -428,7 +434,7 @@ private:
 
     size_t GetCurrentItemIndex() const
     {
-        FastName item = GetLoadedItemInfo();
+        DAVA::FastName item = GetLoadedItemInfo();
         auto iter = std::find(itemsList.begin(), itemsList.end(), item);
         if (iter == itemsList.end())
         {
@@ -443,12 +449,12 @@ private:
     {
         using namespace DAVA::TArc;
 
-        FastName itemName = itemsList[index];
+        DAVA::FastName itemName = itemsList[index];
         DAVA::RefPtr<SceneEditor2> scene = GetAccessor()->GetActiveContext()->GetData<SceneData>()->GetScene();
 
         std::shared_ptr<ModifyExtension> extension = GetModifyInterface();
         ModifyExtension::MultiCommandInterface cmdInterface = extension->GetMultiCommandInterface("Load preview item to slot", static_cast<DAVA::uint32>(nodes.size()));
-        ForEachSlotComponent([&](SlotComponent* component, bool) {
+        ForEachSlotComponent([&](DAVA::SlotComponent* component, bool) {
             cmdInterface.Exec(std::make_unique<AttachEntityToSlot>(scene.Get(), component, itemName));
             return true;
         });
@@ -462,18 +468,18 @@ private:
         return configPath.CanGet<DAVA::FilePath>() == false;
     }
 
-    FastName GetLoadedItemInfo() const
+    DAVA::FastName GetLoadedItemInfo() const
     {
-        FastName item;
-        ForEachSlotComponent([&](SlotComponent* component, bool isFirst) {
-            FastName loadedItem = component->GetLoadedItemName();
+        DAVA::FastName item;
+        ForEachSlotComponent([&](DAVA::SlotComponent* component, bool isFirst) {
+            DAVA::FastName loadedItem = component->GetLoadedItemName();
             if (isFirst == true)
             {
                 item = loadedItem;
             }
             else if (item != loadedItem)
             {
-                item = FastName(DAVA::TArc::MultipleValuesString);
+                item = DAVA::FastName(DAVA::TArc::MultipleValuesString);
                 return false;
             }
 
@@ -489,14 +495,14 @@ private:
 
         itemsList.clear();
         itemsList.push_back(EditorSlotSystem::emptyItemName);
-        FastName item = GetLoadedItemInfo();
+        DAVA::FastName item = GetLoadedItemInfo();
         if (configPath.CanGet<DAVA::FilePath>() == true)
         {
-            FilePath path = configPath.Get<FilePath>();
-            RefPtr<SceneEditor2> scene = GetAccessor()->GetActiveContext()->GetData<SceneData>()->GetScene();
+            DAVA::FilePath path = configPath.Get<DAVA::FilePath>();
+            DAVA::RefPtr<SceneEditor2> scene = GetAccessor()->GetActiveContext()->GetData<SceneData>()->GetScene();
 
-            Vector<SlotSystem::ItemsCache::Item> items = scene->slotSystem->GetItems(path);
-            for (const SlotSystem::ItemsCache::Item& item : items)
+            Vector<DAVA::SlotSystem::ItemsCache::Item> items = scene->slotSystem->GetItems(path);
+            for (const DAVA::SlotSystem::ItemsCache::Item& item : items)
             {
                 if (filters.empty() == true || filters.count(item.type) > 0)
                 {
@@ -547,7 +553,7 @@ void SlotComponentChildCreator::ExposeChildren(const std::shared_ptr<DAVA::TArc:
     {
         auto iter = std::find_if(children.rbegin(), children.rend(), [](const std::shared_ptr<DAVA::TArc::PropertyNode>& node)
                                  {
-                                     return node->field.key.Cast<FastName>() == SlotComponent::AttchementToJointFieldName;
+                                     return node->field.key.Cast<DAVA::FastName>() == DAVA::SlotComponent::AttchementToJointFieldName;
                                  });
 
         DVASSERT(iter != children.rend());
@@ -560,7 +566,7 @@ void SlotComponentChildCreator::ExposeChildren(const std::shared_ptr<DAVA::TArc:
             DAVA::Reflection::Field f;
             f.key = DAVA::FastName("TypeFilters");
             f.ref = parent->field.ref;
-            std::shared_ptr<DAVA::TArc::PropertyNode> previewNode = allocator->CreatePropertyNode(parent, std::move(f), static_cast<int32>(children.size()), SlotTypeFilters);
+            std::shared_ptr<DAVA::TArc::PropertyNode> previewNode = allocator->CreatePropertyNode(parent, std::move(f), static_cast<DAVA::int32>(children.size()), SlotTypeFilters);
             children.push_back(previewNode);
         }
 
@@ -568,7 +574,7 @@ void SlotComponentChildCreator::ExposeChildren(const std::shared_ptr<DAVA::TArc:
             DAVA::Reflection::Field f;
             f.key = DAVA::FastName("Loaded item");
             f.ref = parent->field.ref;
-            std::shared_ptr<DAVA::TArc::PropertyNode> previewNode = allocator->CreatePropertyNode(parent, std::move(f), static_cast<int32>(children.size()), SlotPreviewProperty);
+            std::shared_ptr<DAVA::TArc::PropertyNode> previewNode = allocator->CreatePropertyNode(parent, std::move(f), static_cast<DAVA::int32>(children.size()), SlotPreviewProperty);
             children.push_back(previewNode);
         }
     }

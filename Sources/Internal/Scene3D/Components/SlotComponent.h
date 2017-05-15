@@ -5,6 +5,7 @@
 #include "Reflection/Reflection.h"
 
 #include "FileSystem/FilePath.h"
+#include "Math/Matrix4.h"
 #include "Base/Array.h"
 #include "Base/FastName.h"
 #include "Base/IntrospectionBase.h"

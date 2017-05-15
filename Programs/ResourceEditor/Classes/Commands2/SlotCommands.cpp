@@ -5,7 +5,7 @@
 
 #include <Scene3D/Systems/SlotSystem.h>
 
-AttachEntityToSlot::AttachEntityToSlot(SceneEditor2* sceneEditor_, DAVA::SlotComponent* slotComponent, DAVA::Entity* entity, FastName itemName)
+AttachEntityToSlot::AttachEntityToSlot(SceneEditor2* sceneEditor_, DAVA::SlotComponent* slotComponent, DAVA::Entity* entity, DAVA::FastName itemName)
     : RECommand(CMDID_ATTACH_TO_SLOT, "Add item to slot")
     , sceneEditor(sceneEditor_)
     , component(slotComponent)
@@ -87,7 +87,7 @@ SlotTypeFilterEdit::SlotTypeFilterEdit(DAVA::SlotComponent* slotComponent_, DAVA
     if (isAddCommand == false)
     {
         bool filterFound = false;
-        for (uint32 i = 0; i < slotComponent->GetTypeFiltersCount(); ++i)
+        for (DAVA::uint32 i = 0; i < slotComponent->GetTypeFiltersCount(); ++i)
         {
             if (slotComponent->GetTypeFilter(i) == typeFilter)
             {

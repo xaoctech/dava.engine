@@ -144,7 +144,7 @@ void EditorSlotSystem::DetachEntity(DAVA::SlotComponent* component, DAVA::Entity
     slotEntity->RemoveNode(entity);
 }
 
-void EditorSlotSystem::AttachEntity(DAVA::SlotComponent* component, DAVA::Entity* entity, FastName itemName)
+void EditorSlotSystem::AttachEntity(DAVA::SlotComponent* component, DAVA::Entity* entity, DAVA::FastName itemName)
 {
     DAVA::SlotSystem* slotSystem = GetScene()->slotSystem;
     slotSystem->AttachEntityToSlot(component, entity, itemName);
@@ -155,7 +155,7 @@ DAVA::Entity* EditorSlotSystem::AttachEntity(DAVA::SlotComponent* component, DAV
     DAVA::SlotSystem* slotSystem = GetScene()->slotSystem;
     if (itemName == emptyItemName)
     {
-        RefPtr<Entity> newEntity(new Entity());
+        DAVA::RefPtr<DAVA::Entity> newEntity(new DAVA::Entity());
         slotSystem->AttachEntityToSlot(component, newEntity.Get(), itemName);
         return newEntity.Get();
     }
@@ -196,7 +196,7 @@ void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& ho
         if (component->GetType() == DAVA::Component::SLOT_COMPONENT)
         {
             DAVA::SlotComponent* slotComponent = static_cast<DAVA::SlotComponent*>(component);
-            holder.AddPreCommand(std::make_unique<AttachEntityToSlot>(scene, slotComponent, nullptr, FastName()));
+            holder.AddPreCommand(std::make_unique<AttachEntityToSlot>(scene, slotComponent, nullptr, DAVA::FastName()));
         }
     };
 
@@ -238,7 +238,7 @@ void EditorSlotSystem::ProcessCommand(const RECommandNotificationObject& command
 void EditorSlotSystem::SetScene(DAVA::Scene* scene)
 {
     {
-        Scene* currentScene = GetScene();
+        DAVA::Scene* currentScene = GetScene();
         if (currentScene != nullptr)
         {
             currentScene->eventSystem->UnregisterSystemForEvent(this, DAVA::EventSystem::LOCAL_TRANSFORM_CHANGED);
@@ -248,7 +248,7 @@ void EditorSlotSystem::SetScene(DAVA::Scene* scene)
     SceneSystem::SetScene(scene);
 
     {
-        Scene* currentScene = GetScene();
+        DAVA::Scene* currentScene = GetScene();
         if (currentScene != nullptr)
         {
             currentScene->eventSystem->RegisterSystemForEvent(this, DAVA::EventSystem::LOCAL_TRANSFORM_CHANGED);
@@ -272,7 +272,7 @@ std::unique_ptr<DAVA::Command> EditorSlotSystem::PrepareForSave(bool /*saveForGa
         for (DAVA::uint32 i = 0; i < entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT); ++i)
         {
             DAVA::SlotComponent* component = static_cast<DAVA::SlotComponent*>(entity->GetComponent(DAVA::Component::SLOT_COMPONENT, i));
-            batchCommand->Add(std::make_unique<AttachEntityToSlot>(sceneEditor, component, nullptr, FastName()));
+            batchCommand->Add(std::make_unique<AttachEntityToSlot>(sceneEditor, component, nullptr, DAVA::FastName()));
         }
     }
 

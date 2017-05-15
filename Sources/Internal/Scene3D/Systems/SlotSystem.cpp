@@ -3,6 +3,7 @@
 #include "Scene3D/Components/SlotComponent.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/TransformComponent.h"
+#include "Scene3D/Components/SkeletonComponent.h"
 #include "FileSystem/YamlParser.h"
 #include "FileSystem/XMLParser.h"
 #include "FileSystem/YamlNode.h"

@@ -10,8 +10,8 @@ namespace TArc
 class PopupLineEdit : public QWidget
 {
 public:
-    PopupLineEdit(const ControlDescriptorBuilder<LineEdit::Fields>& fields, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent = nullptr);
-    PopupLineEdit(const ControlDescriptorBuilder<LineEdit::Fields>& fields, ContextAccessor* accessor, Reflection model, QWidget* parent = nullptr);
+    PopupLineEdit(const LineEdit::Params& params, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent = nullptr);
+    PopupLineEdit(const LineEdit::Params& params, ContextAccessor* accessor, Reflection model, QWidget* parent = nullptr);
     ~PopupLineEdit();
 
     void Show(const QPoint& position);
