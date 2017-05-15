@@ -70,7 +70,7 @@ public:
     {
         DAVA::FilePath noisePath;
         bool enableNoise = false;
-        RefPtr<PropertyLine<float32>> noiseScale;
+        RefPtr<PropertyLine<float32>> noiseScaleOverLife;
         bool enableNoiseScroll = false; 
         RefPtr<PropertyLine<float32>> noiseUScrollSpeed;
         RefPtr<PropertyLine<float32>> noiseVScrollSpeed;
