@@ -15,7 +15,7 @@ class GeoDecalComponent : public Component
 public:
     IMPLEMENT_COMPONENT_TYPE(GEO_DECAL_COMPONENT);
 
-    GeoDecalComponent() = default;
+    GeoDecalComponent();
 
     Component* Clone(Entity* toEntity) override;
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
@@ -26,14 +26,17 @@ public:
     bool GetRebakeOnTransform() const;
     void SetRebakeOnTransform(const bool& value);
 
+    void GetDataNodes(Set<DataNode*>& dataNodes) override;
+
 private:
+    ScopedPtr<NMaterial> dataNodeMaterial = ScopedPtr<NMaterial>(new NMaterial());
     GeoDecalManager::DecalConfig config;
     bool rebakeOnTransform = true;
 
 public:
 #define IMPL_PROPERTY(T, Name, varName) \
     const T& Get##Name() const { return config.varName; } \
-    void Set##Name(const T& value) { config.varName = value; }
+    void Set##Name(const T& value) { config.varName = value; ConfigChanged(); }
     IMPL_PROPERTY(FilePath, DecalAlbedo, albedo);
     IMPL_PROPERTY(FilePath, DecalNormal, normal);
     IMPL_PROPERTY(AABBox3, BoundingBox, boundingBox);
@@ -43,6 +46,7 @@ public:
 
     uint32 GetMapping() const;
     void SetMapping(uint32 value);
+    void ConfigChanged();
 
     INTROSPECTION_EXTEND(GeoDecalComponent, Component,
                          PROPERTY("Bounding Box", "Bounding Box", GetBoundingBox, SetBoundingBox, I_VIEW | I_EDIT | I_SAVE)

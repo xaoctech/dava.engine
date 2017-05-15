@@ -10,6 +10,8 @@
 #include "Scene3D/Components/GeoDecalComponent.h"
 #include "Render/Highlevel/GeometryOctTree.h"
 
+#define DAVA_ALLOW_OCTREE_DEBUG 0
+
 DAVA::float32 DebugDrawSystem::HANGING_OBJECTS_HEIGHT = 0.001f;
 
 DebugDrawSystem::DebugDrawSystem(DAVA::Scene* scene)
@@ -142,6 +144,7 @@ void DebugDrawSystem::DrawUserNode(DAVA::Entity* entity)
 
 void DebugDrawSystem::DrawDebugOctTree(DAVA::Entity* entity)
 {
+#if (DAVA_ALLOW_OCTREE_DEBUG)
     SceneEditor2* editorScene = static_cast<SceneEditor2*>(GetScene());
     DAVA::RenderHelper* drawer = editorScene->GetRenderSystem()->GetDebugDrawer();
 
@@ -180,6 +183,7 @@ void DebugDrawSystem::DrawDebugOctTree(DAVA::Entity* entity)
             GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawAABoxTransformed(box, wt, DAVA::Color(0.0f, 1.0f, 0.0f, 1.0f), DAVA::RenderHelper::eDrawType::DRAW_WIRE_NO_DEPTH);
         }
     }
+#endif
 }
 
 void DebugDrawSystem::DrawLightNode(DAVA::Entity* entity)

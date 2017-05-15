@@ -323,8 +323,6 @@ void PolygonGroup::BuildBuffers()
     DVASSERT(vertexBuffer);
     indexBuffer = rhi::CreateIndexBuffer(ibDesc);
     DVASSERT(indexBuffer);
-
-    GenerateGeometryOctTree();
 };
 
 void PolygonGroup::GenerateGeometryOctTree()

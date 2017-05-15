@@ -12,11 +12,23 @@ DAVA_VIRTUAL_REFLECTION_IMPL(GeoDecalComponent)
     .End();
 }
 
+GeoDecalComponent::GeoDecalComponent()
+{
+    char materialName[256] = {};
+    sprintf(materialName, "decal_material_%p", this);
+
+    ScopedPtr<Texture> defaultTexture(Texture::CreatePink());
+    dataNodeMaterial->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, defaultTexture.get());
+    dataNodeMaterial->AddTexture(NMaterialTextureName::TEXTURE_NORMAL, defaultTexture.get());
+    dataNodeMaterial->SetMaterialName(FastName(materialName));
+}
+
 Component* GeoDecalComponent::Clone(Entity* toEntity)
 {
     GeoDecalComponent* result = new GeoDecalComponent();
     result->SetEntity(toEntity);
     result->config = config;
+    result->ConfigChanged();
     return result;
 }
 
@@ -52,7 +64,21 @@ void GeoDecalComponent::Deserialize(KeyedArchive* archive, SerializationContext*
         localConfig.uvOffset = archive->GetVector2("uvoffset", Vector2(0.0f, 0.0f));
         localConfig.uvScale = archive->GetVector2("uvscale", Vector2(1.0f, 1.0f));
         config = localConfig;
+        ConfigChanged();
     }
     Component::Deserialize(archive, serializationContext);
+}
+
+void GeoDecalComponent::GetDataNodes(Set<DataNode*>& dataNodes)
+{
+    dataNodes.insert(dataNodeMaterial.get());
+}
+
+void GeoDecalComponent::ConfigChanged()
+{
+    ScopedPtr<Texture> albedoTexture(Texture::CreateFromFile(config.albedo));
+    ScopedPtr<Texture> normalTexture(Texture::CreateFromFile(config.normal));
+    dataNodeMaterial->SetTexture(NMaterialTextureName::TEXTURE_ALBEDO, albedoTexture);
+    dataNodeMaterial->SetTexture(NMaterialTextureName::TEXTURE_NORMAL, normalTexture);
 }
 }

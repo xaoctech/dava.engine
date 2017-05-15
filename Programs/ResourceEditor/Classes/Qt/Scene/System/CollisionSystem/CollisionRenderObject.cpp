@@ -33,11 +33,8 @@ CollisionRenderObject::CollisionRenderObject(DAVA::Entity* entity, btCollisionWo
         int batchSwitchIndex = 0;
         DAVA::RenderBatch* batch = renderObject->GetRenderBatch(i, batchLodIndex, batchSwitchIndex);
 
-        if (batch->serializable && (batchLodIndex == bestLodIndex) && (batchSwitchIndex == curSwitchIndex))
+        if ((batchLodIndex == bestLodIndex) && (batchSwitchIndex == curSwitchIndex))
         {
-            if (!batch->serializable)
-                printf(".");
-
             DAVA::PolygonGroup* pg = batch->GetPolygonGroup();
             if (pg != nullptr)
             {

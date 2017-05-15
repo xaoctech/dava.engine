@@ -77,7 +77,6 @@ public:
     rhi::PrimitiveType primitiveType = rhi::PRIMITIVE_TRIANGLELIST;
     uint32 vertexLayoutId = rhi::VertexLayout::InvalidUID;
     bool debugDrawOctree = false;
-    bool serializable = true;
 
 private:
     PolygonGroup* dataSource = nullptr;
