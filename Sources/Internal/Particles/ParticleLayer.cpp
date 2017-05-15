@@ -59,7 +59,7 @@ eBlendMode GetBlendModeByName(const String& blendStr)
 
 /*end of legacy compatibility code*/
 
-ParticleLayer::ParticleLayer() : flowSpeedOverLife(nullptr), flowOffsetOverLife(nullptr), enableFlow(false), enableNoise(false), isNoiseAffectFlow(false), enableNoiseScroll(false), noiseScale(nullptr), noiseUScrollSpeed(nullptr), noiseVScrollSpeed(nullptr)
+ParticleLayer::ParticleLayer() : flowSpeedOverLife(nullptr), flowOffsetOverLife(nullptr), enableFlow(false), enableNoise(false), enableNoiseScroll(false), noiseScale(nullptr), noiseUScrollSpeed(nullptr), noiseVScrollSpeed(nullptr)
 {
     life = nullptr;
     lifeVariation = nullptr;
@@ -225,7 +225,6 @@ ParticleLayer* ParticleLayer::Clone()
     dstLayer->enableFlow = enableFlow;
 
     dstLayer->enableNoise = enableNoise;
-    dstLayer->isNoiseAffectFlow = isNoiseAffectFlow;
     dstLayer->enableNoiseScroll = enableNoiseScroll;
 
     dstLayer->blending = blending;
@@ -671,12 +670,6 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
         enableNoise = enableNoiseNode->AsBool();
     }
 
-    const YamlNode* isNoiseAffectFlowNode = node->Get("isNoiseAffectFlow");
-    if (isNoiseAffectFlowNode)
-    {
-        isNoiseAffectFlow = isNoiseAffectFlowNode->AsBool();
-    }
-
     const YamlNode* useNoiseScrollNode = node->Get("useNoiseScroll");
     if (useNoiseScrollNode)
     {
@@ -861,7 +854,6 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
     layerNode->Add("enableFlow", enableFlow);
 
     layerNode->Add("enableNoise", enableNoise);
-    layerNode->Add("isNoiseAffectFlow", isNoiseAffectFlow);
     layerNode->Add("useNoiseScroll", enableNoiseScroll);
 
     layerNode->Add("enableFog", enableFog);

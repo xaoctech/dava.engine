@@ -159,7 +159,6 @@ const FastName NMaterialFlagName::FLAG_FLOWMAP_SKY = FastName("FLOWMAP_SKY");
 const FastName NMaterialFlagName::FLAG_PARTICLES_FLOWMAP = FastName("PARTICLES_FLOWMAP");
 const FastName NMaterialFlagName::FLAG_PARTICLES_NOISE = FastName("PARTICLES_NOISE");
 const FastName NMaterialFlagName::FLAG_PARTICLES_NOISE_SCROLL = FastName("PARTICLES_NOISE_SCROLL");
-const FastName NMaterialFlagName::FLAG_PARTICLES_NOISE_AFFECT_FLOW = FastName("PARTICLES_NOISE_AFFECT_FLOW");
 
 const FastName NMaterialFlagName::FLAG_LIGHTMAPONLY = FastName("MATERIAL_VIEW_LIGHTMAP_ONLY");
 const FastName NMaterialFlagName::FLAG_TEXTUREONLY = FastName("MATERIAL_VIEW_TEXTURE_ONLY");

@@ -102,7 +102,6 @@ CommandChangeNoiseProperties::CommandChangeNoiseProperties(DAVA::ParticleLayer* 
     {
         oldParams.noisePath = layer->noisePath;
         oldParams.enableNoise = layer->enableNoise;
-        oldParams.isNoiseAffectFlow = layer->isNoiseAffectFlow;
         oldParams.noiseScale = layer->noiseScale;
         oldParams.enableNoiseScroll = layer->enableNoiseScroll;
         oldParams.noiseUScrollSpeed = layer->noiseUScrollSpeed;
@@ -130,7 +129,6 @@ void CommandChangeNoiseProperties::ApplyParams(NoiseParams& params)
     if (layer != nullptr)
     {
         layer->enableNoise = params.enableNoise;
-        layer->isNoiseAffectFlow = params.isNoiseAffectFlow;
         layer->enableNoiseScroll = params.enableNoiseScroll;
         layer->SetNoise(params.noisePath);
         PropertyLineHelper::SetValueLine(layer->noiseScale, params.noiseScale);

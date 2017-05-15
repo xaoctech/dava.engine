@@ -768,7 +768,6 @@ void EmitterLayerWidget::OnNoisePropertiesChanged()
     CommandChangeNoiseProperties::NoiseParams params;
     params.noisePath = noisePath;
     params.enableNoise = enableNoiseCheckBox->isChecked();
-    params.isNoiseAffectFlow = isNoiseAffectFlowCheckBox->isChecked();
     params.noiseScale = propNoiseScale.GetPropLine();
     params.enableNoiseScroll = enableNoiseScrollCheckBox->isChecked();
     params.noiseUScrollSpeed = propNoiseUScrollSpeed.GetPropLine();
@@ -872,8 +871,6 @@ void EmitterLayerWidget::Update(bool updateMinimized)
 
     enableNoiseCheckBox->setChecked(layer->enableNoise);
     noiseLayoutWidget->setVisible(enableNoiseCheckBox->isChecked());
-
-    isNoiseAffectFlowCheckBox->setVisible(enableFlowCheckBox->isChecked() && enableNoiseCheckBox->isChecked());
 
     isLoopedCheckBox->setChecked(layer->isLooped);
 
@@ -1157,14 +1154,6 @@ void EmitterLayerWidget::CreateNoiseLayoutWidget()
     noiseLayoutWidget = new QWidget();
     QVBoxLayout* noiseMainLayout = new QVBoxLayout(noiseLayoutWidget);
 
-    isNoiseAffectFlowCheckBox = new QCheckBox("Is noise affect flow");
-    mainBox->addWidget(isNoiseAffectFlowCheckBox);
-    connect(isNoiseAffectFlowCheckBox,
-        SIGNAL(stateChanged(int)),
-        this,
-        SLOT(OnNoisePropertiesChanged()));
-    noiseMainLayout->addWidget(isNoiseAffectFlowCheckBox);
-
     QHBoxLayout* noiseTextureHBox2 = new QHBoxLayout();
     noiseTextureBtn = new QPushButton("Set noise texture", this);
     noiseTextureBtn->setMinimumHeight(30);
@@ -1194,12 +1183,6 @@ void EmitterLayerWidget::CreateNoiseLayoutWidget()
         this,
         SLOT(OnNoisePropertiesChanged()));
     timelineVBox->addWidget(noiseScaleTimeLine);
-    //flowOffsetOverLifeTimeLine = new TimeLineWidget(this);
-    //connect(flowOffsetOverLifeTimeLine,
-    //    SIGNAL(ValueChanged()),
-    //    this,
-    //    SLOT(OnFlowPropertiesChanged()));
-    //timelineVBox->addWidget(flowOffsetOverLifeTimeLine);
     noiseMainLayout->addLayout(timelineVBox);
 
     enableNoiseScrollCheckBox = new QCheckBox("Use noise scroll");

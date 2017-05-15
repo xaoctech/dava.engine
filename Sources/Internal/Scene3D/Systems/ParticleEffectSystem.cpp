@@ -57,8 +57,6 @@ NMaterial* ParticleEffectSystem::GetMaterial(MaterialData&& materialData)
 
         if (materialData.enableNoiseUVScroll)
             material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_NOISE_SCROLL, 1);
-        if (materialData.isNoiseAffectFlow)
-            material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_NOISE_AFFECT_FLOW, 1);
     }
 
     material->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, materialData.texture);
@@ -138,7 +136,6 @@ void ParticleEffectSystem::PrebuildMaterials(ParticleEffectComponent* component)
                 matData.enableFlow = layer->enableFlow;
                 matData.enableNoise = layer->enableNoise;
                 matData.enableNoiseUVScroll = layer->enableNoiseScroll;
-                matData.isNoiseAffectFlow = layer->isNoiseAffectFlow;
                 matData.noise = noise;
 
                 GetMaterial(std::move(matData));
@@ -176,7 +173,6 @@ void ParticleEffectSystem::RunEmitter(ParticleEffectComponent* effect, ParticleE
             matData.enableFlow = layer->enableFlow;
             matData.enableNoise = layer->enableNoise;
             matData.enableNoiseUVScroll = layer->enableNoiseScroll;
-            matData.isNoiseAffectFlow = layer->isNoiseAffectFlow;
             matData.noise = noise;
             group.material = GetMaterial(std::move(matData));
         }

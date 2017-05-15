@@ -206,7 +206,7 @@ fragment_out fp_main( fragment_in input )
                 #endif
                 float3 flowData = input.varFlowData;
                 float2 flowDir = float2(tex2D( flowmap, flowtc ).xy) * 2.0 - 1.0;
-                #if PARTICLES_NOISE && PARTICLES_NOISE_AFFECT_FLOW
+                #if PARTICLES_NOISE
                     flowDir *= tex2D(noiseTex, input.varNoiseData.xy).r * input.varNoiseData.z;
                 #endif
                 half4 flowSample1 = half4(tex2D( albedo, input.varTexCoord0 + flowDir*flowData.x));
