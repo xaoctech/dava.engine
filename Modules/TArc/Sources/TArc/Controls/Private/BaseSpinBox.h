@@ -28,8 +28,9 @@ public:
         Range
     };
 
-    BaseSpinBox(const ControlDescriptor& descriptor, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent);
-    BaseSpinBox(const ControlDescriptor& descriptor, ContextAccessor* accessor, Reflection model, QWidget* parent);
+    using BaseParams = typename ControlProxyImpl<TBase>::BaseParams;
+    BaseSpinBox(const BaseParams& params, const ControlDescriptor& descriptor, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent);
+    BaseSpinBox(const BaseParams& params, const ControlDescriptor& descriptor, ContextAccessor* accessor, Reflection model, QWidget* parent);
 
 protected:
     bool event(QEvent* e) override;

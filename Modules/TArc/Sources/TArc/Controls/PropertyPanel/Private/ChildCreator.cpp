@@ -7,6 +7,38 @@ namespace DAVA
 {
 namespace TArc
 {
+namespace ChildCreatorDetail
+{
+enum EqualResult
+{
+    FullyEqual,
+    ValueChanged,
+    NotEqual
+};
+EqualResult CheckEqualWithCacheUpdating(const std::shared_ptr<PropertyNode>& sourceChild, const std::shared_ptr<PropertyNode>& newChild)
+{
+    if (sourceChild->propertyType == newChild->propertyType &&
+        sourceChild->idPostfix == newChild->idPostfix &&
+        sourceChild->sortKey == newChild->sortKey &&
+        sourceChild->field.ref.GetValueObject() == newChild->field.ref.GetValueObject() &&
+        sourceChild->field.key == newChild->field.key)
+    {
+        if (sourceChild->cachedValue == newChild->cachedValue)
+        {
+            return FullyEqual;
+        }
+
+        if (sourceChild->field.ref.HasFields() == false && newChild->field.ref.HasFields() == false)
+        {
+            sourceChild->cachedValue = newChild->cachedValue;
+            return ValueChanged;
+        }
+    }
+
+    return NotEqual;
+}
+}
+
 ChildCreator::ChildCreator()
     : extensions(ChildCreatorExtension::CreateDummy())
     , allocator(CreateDefaultAllocator())
@@ -65,20 +97,28 @@ void ChildCreator::UpdateSubTree(const std::shared_ptr<PropertyNode>& parent)
         {
             for (size_t i = 0; i < children.size(); ++i)
             {
-                bool isEqual = false;
+                ChildCreatorDetail::EqualResult result = ChildCreatorDetail::NotEqual;
                 try
                 {
-                    isEqual = *children[i] == *currentChildren[i];
+                    result = ChildCreatorDetail::CheckEqualWithCacheUpdating(currentChildren[i], children[i]);
                 }
                 catch (const Exception& e)
                 {
                     Logger::Debug(e.what());
                 }
-                if (isEqual == false)
+
+                switch (result)
                 {
+                case ChildCreatorDetail::ValueChanged:
+                    dataChanged.Emit(currentChildren[i]);
+                    break;
+                case ChildCreatorDetail::NotEqual:
                     RemoveNode(currentChildren[i]);
                     std::swap(currentChildren[i], children[i]);
                     nodeCreated.Emit(parent, currentChildren[i]);
+                    break;
+                default:
+                    break;
                 }
             }
         }

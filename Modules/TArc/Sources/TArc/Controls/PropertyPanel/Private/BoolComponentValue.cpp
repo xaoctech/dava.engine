@@ -6,6 +6,8 @@
 #include <Reflection/ReflectionRegistrator.h>
 #include <Reflection/ReflectedMeta.h>
 
+#include <QDebug>
+
 namespace DAVA
 {
 namespace TArc
@@ -34,11 +36,11 @@ bool BoolComponentValue::IsValidValueToSet(const Any& newValue, const Any& curre
 
 ControlProxy* BoolComponentValue::CreateEditorWidget(QWidget* parent, const Reflection& model, DataWrappersProcessor* wrappersProcessor)
 {
-    ControlDescriptorBuilder<CheckBox::Fields> descr;
-    descr[CheckBox::Fields::Checked] = "bool";
-    descr[CheckBox::Fields::TextHint] = "textHint";
-    descr[CheckBox::Fields::IsReadOnly] = readOnlyFieldName;
-    return new CheckBox(descr, wrappersProcessor, model, parent);
+    CheckBox::Params params(GetAccessor(), GetUI(), GetWindowKey());
+    params.fields[CheckBox::Fields::Checked] = "bool";
+    params.fields[CheckBox::Fields::TextHint] = "textHint";
+    params.fields[CheckBox::Fields::IsReadOnly] = readOnlyFieldName;
+    return new CheckBox(params, wrappersProcessor, model, parent);
 }
 
 String BoolComponentValue::GetTextHint() const

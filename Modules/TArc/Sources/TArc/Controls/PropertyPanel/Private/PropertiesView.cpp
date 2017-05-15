@@ -186,6 +186,16 @@ protected:
         QTreeView::mouseReleaseEvent(event);
     }
 
+    bool edit(const QModelIndex& index, EditTrigger trigger, QEvent* event) override
+    {
+        if (trigger == SelectedClicked)
+        {
+            return QTreeView::edit(index, QAbstractItemView::EditKeyPressed, event);
+        }
+
+        return QTreeView::edit(index, trigger, event);
+    }
+
 private:
     PropertiesViewDetail::PropertiesHeaderView* headerView = nullptr;
     bool isInFavoritesEdit = false;
@@ -224,6 +234,7 @@ PropertiesView::PropertiesView(const Params& params_)
 
     QObject::connect(view, &QTreeView::expanded, this, &PropertiesView::OnExpanded);
     QObject::connect(view, &QTreeView::collapsed, this, &PropertiesView::OnCollapsed);
+    QObject::connect(view->selectionModel(), &QItemSelectionModel::currentChanged, this, &PropertiesView::OnCurrentChanged);
 
     model->SetDeveloperMode(params.isInDevMode);
 }
@@ -286,16 +297,16 @@ void PropertiesView::SetupUI()
 
     Reflection thisModel = Reflection::Create(ReflectedObject(this));
     {
-        ControlDescriptorBuilder<ComboBox::Fields> descr;
-        descr[ComboBox::Fields::Value] = "viewMode";
-        ComboBox* comboBox = new ComboBox(descr, params.accessor, thisModel, toolBar);
+        ComboBox::Params controlParams(params.accessor, params.ui, params.wndKey);
+        controlParams.fields[ComboBox::Fields::Value] = "viewMode";
+        ComboBox* comboBox = new ComboBox(controlParams, params.accessor, thisModel, toolBar);
         toolBar->addWidget(comboBox->ToWidgetCast());
     }
 
     {
-        ControlDescriptorBuilder<CheckBox::Fields> descr;
-        descr[CheckBox::Fields::Checked] = "devMode";
-        CheckBox* checkBox = new CheckBox(descr, params.accessor, thisModel, toolBar);
+        CheckBox::Params controlParams(params.accessor, params.ui, params.wndKey);
+        controlParams.fields[CheckBox::Fields::Checked] = "devMode";
+        CheckBox* checkBox = new CheckBox(controlParams, params.accessor, thisModel, toolBar);
         toolBar->addWidget(checkBox->ToWidgetCast());
     }
 
@@ -328,6 +339,8 @@ void PropertiesView::OnColumnResized(int columnIndex, int oldSize, int newSize)
 
 void PropertiesView::Update(UpdatePolicy policy)
 {
+    ScopedValueGuard<bool> guard(isModelUpdate, true);
+
     switch (policy)
     {
     case DAVA::TArc::PropertiesView::FullUpdate:
@@ -342,6 +355,19 @@ void PropertiesView::Update(UpdatePolicy policy)
     }
 
     UpdateExpanded();
+    QModelIndex currentIndex = model->LookIndex(currentIndexPath);
+    if (currentIndex.isValid())
+    {
+        QModelIndex viewCurrent = view->currentIndex();
+        if (currentIndex.row() != viewCurrent.row() || currentIndex.internalPointer() != viewCurrent.internalPointer())
+        {
+            view->setCurrentIndex(currentIndex);
+        }
+    }
+    else
+    {
+        view->clearSelection();
+    }
 }
 
 void PropertiesView::UpdateExpanded()
@@ -422,6 +448,14 @@ void PropertiesView::UpdateViewRootIndex()
     }
 
     view->setRootIndex(newRootIndex);
+}
+
+void PropertiesView::OnCurrentChanged(const QModelIndex& index, const QModelIndex& prev)
+{
+    if (isModelUpdate == false)
+    {
+        currentIndexPath = model->GetIndexPath(index);
+    }
 }
 
 } // namespace TArc

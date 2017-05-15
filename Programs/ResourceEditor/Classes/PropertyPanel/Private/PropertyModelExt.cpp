@@ -143,10 +143,10 @@ protected:
         layout->addWidget(nonConstThis->toolButton.data());
         nonConstThis->connections.AddConnection(nonConstThis->toolButton.data(), &QToolButton::clicked, MakeFunction(nonConstThis, &ComponentCreatorComponentValue::AddComponent));
 
-        ControlDescriptorBuilder<ComboBox::Fields> descr;
-        descr[ComboBox::Fields::Enumerator] = "types";
-        descr[ComboBox::Fields::Value] = "currentType";
-        w->AddControl(new ComboBox(descr, wrappersProcessor, model, w->ToWidgetCast()));
+        ComboBox::Params params(GetAccessor(), GetUI(), GetWindowKey());
+        params.fields[ComboBox::Fields::Enumerator] = "types";
+        params.fields[ComboBox::Fields::Value] = "currentType";
+        w->AddControl(new ComboBox(params, wrappersProcessor, model, w->ToWidgetCast()));
 
         return w;
     }
@@ -317,7 +317,7 @@ void EntityChildCreator::ExposeChildren(const std::shared_ptr<DAVA::TArc::Proper
 
                     DAVA::Reflection::Field f(permanentName, Reflection(ref), nullptr);
                     std::shared_ptr<PropertyNode> node = allocator->CreatePropertyNode(parent, std::move(f), static_cast<size_t>(type), PropertyNode::RealProperty);
-                    node->idPostfix = FastName(Format("%s_%u", permanentName.c_str(), componentIndex));
+                    node->idPostfix = FastName(Format("%u", componentIndex));
                     children.push_back(node);
                 }
             }
