@@ -484,9 +484,26 @@ void EmitterLayerWidget::RestoreVisualState(DAVA::KeyedArchive* visualStateProps
     animSpeedOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ANIM_SPEED_OVER_LIFE_PROPS"));
     alphaOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ALPHA_OVER_LIFE_PROPS"));
     angleTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ANGLE"));
-    flowSpeedAndOffsetOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_FLOW_SPEED_OFFSET_PROPS"));
+
+    flowSpeedTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_FLOW_SPEED_PROPS"));
+    flowSpeedVariationTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_FLOW_SPEED_VARIATION_PROPS"));
+    flowSpeedOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_FLOW_SPEED_OVER_LIFE_PROPS"));
+
+    flowOffsetTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_FLOW_OFFSET_PROPS"));
+    flowOffsetVariationTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_FLOW_OFFSET_VARIATION_PROPS"));
+    flowOffsetOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_FLOW_OFFSET_OVER_LIFE_PROPS"));
+
+    noiseScaleTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_SCALE_PROPS"));
+    noiseScaleVariationTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_SCALE_VARIATION_PROPS"));
     noiseScaleOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_SCALE_PROPS"));
-    noiseUVScrollSpeedOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_UV_SCROLL_SPEED"));
+
+    noiseUScrollSpeedTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_U_SCROLL_SPEED_PROPS"));
+    noiseUScrollSpeedVariationTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_U_SCROLL_SPEED_VARIATION_PROPS"));
+    noiseUScrollSpeedOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_U_SCROLL_SPEED_OVER_LIFE"));
+
+    noiseVScrollSpeedTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_V_SCROLL_SPEED_PROPS"));
+    noiseVScrollSpeedVariationTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_V_SCROLL_SPEED_VARIATION_PROPS"));
+    noiseVScrollSpeedOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_V_SCROLL_SPEED_OVER_LIFE"));
 }
 
 void EmitterLayerWidget::StoreVisualState(DAVA::KeyedArchive* visualStateProps)
@@ -544,16 +561,64 @@ void EmitterLayerWidget::StoreVisualState(DAVA::KeyedArchive* visualStateProps)
     visualStateProps->SetArchive("LAYER_ANGLE", props);
 
     props->DeleteAllKeys();
-    flowSpeedAndOffsetOverLifeTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_FLOW_SPEED_OFFSET_PROPS", props);
+    flowSpeedTimeLine->GetVisualState(props);
+    visualStateProps->SetArchive("LAYER_FLOW_SPEED_PROPS", props);
 
     props->DeleteAllKeys();
-    noiseScaleOverLifeTimeLine->GetVisualState(props);
+    flowSpeedVariationTimeLine->GetVisualState(props);
+    visualStateProps->SetArchive("LAYER_FLOW_SPEED_VARIATION_PROPS", props);
+
+    props->DeleteAllKeys();
+    flowSpeedOverLifeTimeLine->GetVisualState(props);
+    visualStateProps->SetArchive("LAYER_FLOW_SPEED_OVER_LIFE_PROPS", props);
+
+    props->DeleteAllKeys();
+    flowOffsetTimeLine->GetVisualState(props);
+    visualStateProps->SetArchive("LAYER_FLOW_OFFSET_PROPS", props);
+
+    props->DeleteAllKeys();
+    flowOffsetVariationTimeLine->GetVisualState(props);
+    visualStateProps->SetArchive("LAYER_FLOW_OFFSET_VARIATION_PROPS", props);
+
+    props->DeleteAllKeys();
+    flowOffsetOverLifeTimeLine->GetVisualState(props);
+    visualStateProps->SetArchive("LAYER_FLOW_OFFSET_OVER_LIFE_PROPS", props);
+
+    props->DeleteAllKeys();
+    noiseScaleTimeLine->GetVisualState(props);
     visualStateProps->SetArchive("LAYER_NOISE_SCALE_PROPS", props);
 
     props->DeleteAllKeys();
-    noiseUVScrollSpeedOverLifeTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_NOISE_UV_SCROLL_SPEED", props);
+    noiseScaleVariationTimeLine->GetVisualState(props);
+    visualStateProps->SetArchive("LAYER_NOISE_SCALE_VARIATION_PROPS", props);
+
+    props->DeleteAllKeys();
+    noiseScaleOverLifeTimeLine->GetVisualState(props);
+    visualStateProps->SetArchive("LAYER_NOISE_SCALE_OVER_LIFE_PROPS", props);
+
+    props->DeleteAllKeys();
+    noiseUScrollSpeedTimeLine->GetVisualState(props);
+    visualStateProps->SetArchive("LAYER_NOISE_U_SCROLL_SPEED_PROPS", props);
+
+    props->DeleteAllKeys();
+    noiseUScrollSpeedVariationTimeLine->GetVisualState(props);
+    visualStateProps->SetArchive("LAYER_NOISE_U_SCROLL_SPEED_VARIATION_PROPS", props);
+
+    props->DeleteAllKeys();
+    noiseUScrollSpeedOverLifeTimeLine->GetVisualState(props);
+    visualStateProps->SetArchive("LAYER_NOISE_U_SCROLL_SPEED_OVER_LIFE_PROPS", props);
+
+    props->DeleteAllKeys();
+    noiseVScrollSpeedTimeLine->GetVisualState(props);
+    visualStateProps->SetArchive("LAYER_NOISE_V_SCROLL_SPEED_PROPS", props);
+
+    props->DeleteAllKeys();
+    noiseVScrollSpeedVariationTimeLine->GetVisualState(props);
+    visualStateProps->SetArchive("LAYER_NOISE_V_SCROLL_SPEED_VARIATION_PROPS", props);
+
+    props->DeleteAllKeys();
+    noiseVScrollSpeedOverLifeTimeLine->GetVisualState(props);
+    visualStateProps->SetArchive("LAYER_NOISE_V_SCROLL_SPEED_OVER_LIFE_PROPS", props);
 }
 
 void EmitterLayerWidget::OnSpriteBtn()
@@ -724,11 +789,23 @@ void EmitterLayerWidget::OnFlowPropertiesChanged()
     if (blockSignals)
         return;
 
-    DAVA::PropLineWrapper<DAVA::float32> propFlowSpeedOffsetOverLife;
-    flowSpeedAndOffsetOverLifeTimeLine->GetValue(0, propFlowSpeedOffsetOverLife.GetPropsPtr());
+    DAVA::PropLineWrapper<DAVA::float32> propFlowSpeed;
+    flowSpeedTimeLine->GetValue(0, propFlowSpeed.GetPropsPtr());
+
+    DAVA::PropLineWrapper<DAVA::float32> propFlowSpeedVariation;
+    flowSpeedVariationTimeLine->GetValue(0, propFlowSpeedVariation.GetPropsPtr());
+
+    DAVA::PropLineWrapper<DAVA::float32> propFlowSpeedOverLife;
+    flowSpeedOverLifeTimeLine->GetValue(0, propFlowSpeedOverLife.GetPropsPtr());
+
+    DAVA::PropLineWrapper<DAVA::float32> propFlowOffset;
+    flowOffsetTimeLine->GetValue(0, propFlowOffset.GetPropsPtr());
+
+    DAVA::PropLineWrapper<DAVA::float32> propFlowOffsetVariation;
+    flowOffsetVariationTimeLine->GetValue(0, propFlowOffsetVariation.GetPropsPtr());
 
     DAVA::PropLineWrapper<DAVA::float32> propFlowOffsetOverLife;
-    flowSpeedAndOffsetOverLifeTimeLine->GetValue(1, propFlowOffsetOverLife.GetPropsPtr());
+    flowOffsetOverLifeTimeLine->GetValue(0, propFlowOffsetOverLife.GetPropsPtr());
 
     QString path = flowSpritePathLabel->text();
     path = EmitterLayerWidgetDetails::ConvertPSDPathToSprite(path);
@@ -738,7 +815,11 @@ void EmitterLayerWidget::OnFlowPropertiesChanged()
     CommandChangeFlowProperties::FlowParams params;
     params.spritePath = spritePath;
     params.enableFlow = enableFlowCheckBox->isChecked();
-    params.flowSpeedOverLife = propFlowSpeedOffsetOverLife.GetPropLine();
+    params.flowSpeed = propFlowSpeed.GetPropLine();
+    params.flowSpeedVariation = propFlowSpeedVariation.GetPropLine();
+    params.flowSpeedOverLife = propFlowSpeedOverLife.GetPropLine();
+    params.flowOffset = propFlowOffset.GetPropLine();
+    params.flowOffsetVariation = propFlowOffsetVariation.GetPropLine();
     params.flowOffsetOverLife = propFlowOffsetOverLife.GetPropLine();
     GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeFlowProperties(layer, std::move(params))));
 
@@ -752,15 +833,36 @@ void EmitterLayerWidget::OnNoisePropertiesChanged()
     if (blockSignals)
         return;
 
+    // Scale.
+    DAVA::PropLineWrapper<DAVA::float32> propNoiseScale;
+    noiseScaleTimeLine->GetValue(0, propNoiseScale.GetPropsPtr());
+
+    DAVA::PropLineWrapper<DAVA::float32> propNoiseScaleVariation;
+    noiseScaleVariationTimeLine->GetValue(0, propNoiseScaleVariation.GetPropsPtr());
+
     DAVA::PropLineWrapper<DAVA::float32> propNoiseScaleOverLife;
     noiseScaleOverLifeTimeLine->GetValue(0, propNoiseScaleOverLife.GetPropsPtr());
 
+    // U scroll speed. 
     DAVA::PropLineWrapper<DAVA::float32> propNoiseUScrollSpeed;
-    noiseUVScrollSpeedOverLifeTimeLine->GetValue(0, propNoiseUScrollSpeed.GetPropsPtr());
+    noiseUScrollSpeedTimeLine->GetValue(0, propNoiseUScrollSpeed.GetPropsPtr());
 
+    DAVA::PropLineWrapper<DAVA::float32> propNoiseUScrollSpeedVariation;
+    noiseUScrollSpeedVariationTimeLine->GetValue(0, propNoiseUScrollSpeedVariation.GetPropsPtr());
+
+    DAVA::PropLineWrapper<DAVA::float32> propNoiseUScrollSpeedOverLife;
+    noiseUScrollSpeedOverLifeTimeLine->GetValue(0, propNoiseUScrollSpeedOverLife.GetPropsPtr());
+
+    // V scroll speed. 
     DAVA::PropLineWrapper<DAVA::float32> propNoiseVScrollSpeed;
-    noiseUVScrollSpeedOverLifeTimeLine->GetValue(1, propNoiseVScrollSpeed.GetPropsPtr());
+    noiseVScrollSpeedTimeLine->GetValue(0, propNoiseVScrollSpeed.GetPropsPtr());
 
+    DAVA::PropLineWrapper<DAVA::float32> propNoiseVScrollSpeedVariation;
+    noiseVScrollSpeedVariationTimeLine->GetValue(0, propNoiseVScrollSpeedVariation.GetPropsPtr());
+
+    DAVA::PropLineWrapper<DAVA::float32> propNoiseVScrollSpeedOverLife;
+    noiseVScrollSpeedOverLifeTimeLine->GetValue(0, propNoiseVScrollSpeedOverLife.GetPropsPtr());
+    
     QString path = noiseSpritePathLabel->text();
     path = EmitterLayerWidgetDetails::ConvertPSDPathToSprite(path);
     const DAVA::FilePath noisePath(path.toStdString());
@@ -768,10 +870,21 @@ void EmitterLayerWidget::OnNoisePropertiesChanged()
     CommandChangeNoiseProperties::NoiseParams params;
     params.noisePath = noisePath;
     params.enableNoise = enableNoiseCheckBox->isChecked();
+
+    params.noiseScale = propNoiseScale.GetPropLine();
+    params.noiseScaleVariation = propNoiseScaleVariation.GetPropLine();
     params.noiseScaleOverLife = propNoiseScaleOverLife.GetPropLine();
+
     params.enableNoiseScroll = enableNoiseScrollCheckBox->isChecked();
-    params.noiseUScrollSpeedOverLife = propNoiseUScrollSpeed.GetPropLine();
-    params.noiseVScrollSpeedOverLife = propNoiseVScrollSpeed.GetPropLine();
+    params.noiseUScrollSpeed = propNoiseUScrollSpeed.GetPropLine();
+    params.noiseUScrollSpeedVariation = propNoiseUScrollSpeedVariation.GetPropLine();
+    params.noiseUScrollSpeedOverLife = propNoiseUScrollSpeedOverLife.GetPropLine();
+
+    params.enableNoiseScroll = enableNoiseScrollCheckBox->isChecked();
+    params.noiseVScrollSpeed = propNoiseVScrollSpeed.GetPropLine();
+    params.noiseVScrollSpeedVariation = propNoiseVScrollSpeedVariation.GetPropLine();
+    params.noiseVScrollSpeedOverLife = propNoiseVScrollSpeedOverLife.GetPropLine();
+
 
     DVASSERT(GetActiveScene() != nullptr);
     GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeNoiseProperties(layer, std::move(params))));
@@ -908,16 +1021,51 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     frameBlendingCheckBox->setChecked(layer->enableFrameBlend);
 
     // FLOW_STUFF
-    flowSpeedAndOffsetOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
-    flowSpeedAndOffsetOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowSpeedOverLife)).GetProps(), Qt::red, "flow speed over life");
-    flowSpeedAndOffsetOverLifeTimeLine->AddLine(1, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowOffsetOverLife)).GetProps(), Qt::green, "flow offset over life");
+    flowSpeedTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
+    flowSpeedTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowSpeed)).GetProps(), Qt::red, "flow speed");
+
+    flowSpeedVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
+    flowSpeedVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowSpeedVariation)).GetProps(), Qt::red, "flow speed variation");
+
+    flowSpeedOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
+    flowSpeedOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowSpeedOverLife)).GetProps(), Qt::red, "flow speed over life");
+
+    flowOffsetTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
+    flowOffsetTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowOffset)).GetProps(), Qt::red, "flow offset");
+
+    flowOffsetVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
+    flowOffsetVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowOffsetVariation)).GetProps(), Qt::red, "flow offset variation");
+
+    flowOffsetOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
+    flowOffsetOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowOffsetOverLife)).GetProps(), Qt::red, "flow offset over life");
 
     // NOISE_STUFF
+    noiseScaleTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
+    noiseScaleTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseScale)).GetProps(), Qt::red, "noise scale");
+
+    noiseScaleVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
+    noiseScaleVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseScaleVariation)).GetProps(), Qt::red, "noise scale variation");
+
     noiseScaleOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
-    noiseScaleOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseScaleOverLife)).GetProps(), Qt::red, "noise scale");
-    noiseUVScrollSpeedOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
-    noiseUVScrollSpeedOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseUScrollSpeedOverLife)).GetProps(), Qt::red, "noise u scroll speed");
-    noiseUVScrollSpeedOverLifeTimeLine->AddLine(1, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseVScrollSpeedOverLife)).GetProps(), Qt::green, "noise v scroll speed");
+    noiseScaleOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseScaleOverLife)).GetProps(), Qt::red, "noise scale over life");
+
+    noiseUScrollSpeedTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
+    noiseUScrollSpeedTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseUScrollSpeed)).GetProps(), Qt::red, "noise u scroll speed");
+
+    noiseUScrollSpeedVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
+    noiseUScrollSpeedVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseUScrollSpeedVariation)).GetProps(), Qt::red, "noise u scroll speed variation");
+
+    noiseUScrollSpeedOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
+    noiseUScrollSpeedOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseUScrollSpeedOverLife)).GetProps(), Qt::red, "noise u scroll speed over life");
+
+    noiseVScrollSpeedTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
+    noiseVScrollSpeedTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseVScrollSpeed)).GetProps(), Qt::red, "noise v scroll speed");
+
+    noiseVScrollSpeedVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
+    noiseVScrollSpeedVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseVScrollSpeedVariation)).GetProps(), Qt::red, "noise v scroll speed variation");
+
+    noiseVScrollSpeedOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
+    noiseVScrollSpeedOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseVScrollSpeedOverLife)).GetProps(), Qt::red, "noise v scroll speed over life");
 
     //LAYER_LIFE, LAYER_LIFE_VARIATION,
     lifeTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
@@ -1127,20 +1275,51 @@ void EmitterLayerWidget::CreateFlowmapLayoutWidget()
 
     flowMainLayout->addLayout(flowTextureHBox);
 
-    QVBoxLayout* timelineVBox = new QVBoxLayout();
-    flowSpeedAndOffsetOverLifeTimeLine = new TimeLineWidget(this);
-    connect(flowSpeedAndOffsetOverLifeTimeLine,
+    QVBoxLayout* flowVBox = new QVBoxLayout();
+    flowSpeedTimeLine = new TimeLineWidget(this);
+    connect(flowSpeedTimeLine,
         SIGNAL(ValueChanged()),
         this,
         SLOT(OnFlowPropertiesChanged()));
-    timelineVBox->addWidget(flowSpeedAndOffsetOverLifeTimeLine);
-    // flowOffsetOverLifeTimeLine = new TimeLineWidget(this);
-    // connect(flowOffsetOverLifeTimeLine,
-    //     SIGNAL(ValueChanged()),
-    //     this,
-    //     SLOT(OnFlowPropertiesChanged()));
-    // timelineVBox->addWidget(flowOffsetOverLifeTimeLine);
-    flowMainLayout->addLayout(timelineVBox);
+    flowVBox->addWidget(flowSpeedTimeLine);
+
+    flowSpeedVariationTimeLine = new TimeLineWidget(this);
+    connect(flowSpeedVariationTimeLine,
+        SIGNAL(ValueChanged()),
+        this,
+        SLOT(OnFlowPropertiesChanged()));
+    flowVBox->addWidget(flowSpeedVariationTimeLine);
+
+    flowSpeedOverLifeTimeLine = new TimeLineWidget(this);
+    connect(flowSpeedOverLifeTimeLine,
+        SIGNAL(ValueChanged()),
+        this,
+        SLOT(OnFlowPropertiesChanged()));
+    flowVBox->addWidget(flowSpeedOverLifeTimeLine);
+
+    // Offset.
+    flowOffsetTimeLine = new TimeLineWidget(this);
+    connect(flowOffsetTimeLine,
+        SIGNAL(ValueChanged()),
+        this,
+        SLOT(OnFlowPropertiesChanged()));
+    flowVBox->addWidget(flowOffsetTimeLine);
+
+    flowOffsetVariationTimeLine = new TimeLineWidget(this);
+    connect(flowOffsetVariationTimeLine,
+        SIGNAL(ValueChanged()),
+        this,
+        SLOT(OnFlowPropertiesChanged()));
+    flowVBox->addWidget(flowOffsetVariationTimeLine);
+
+    flowOffsetOverLifeTimeLine = new TimeLineWidget(this);
+    connect(flowOffsetOverLifeTimeLine,
+        SIGNAL(ValueChanged()),
+        this,
+        SLOT(OnFlowPropertiesChanged()));
+    flowVBox->addWidget(flowOffsetOverLifeTimeLine);
+
+    flowMainLayout->addLayout(flowVBox);
 
     connect(flowTextureBtn, SIGNAL(clicked(bool)), this, SLOT(OnFlowSpriteBtn()));
     connect(flowTextureFolderBtn, SIGNAL(clicked(bool)), this, SLOT(OnFlowFolderBtn()));
@@ -1177,12 +1356,27 @@ void EmitterLayerWidget::CreateNoiseLayoutWidget()
     noiseMainLayout->addLayout(noiseTextureHBox);
 
     QVBoxLayout* timelineVBox = new QVBoxLayout();
+    noiseScaleTimeLine = new TimeLineWidget(this);
+    connect(noiseScaleTimeLine,
+        SIGNAL(ValueChanged()),
+        this,
+        SLOT(OnNoisePropertiesChanged()));
+    timelineVBox->addWidget(noiseScaleTimeLine);
+
+    noiseScaleVariationTimeLine = new TimeLineWidget(this);
+    connect(noiseScaleVariationTimeLine,
+        SIGNAL(ValueChanged()),
+        this,
+        SLOT(OnNoisePropertiesChanged()));
+    timelineVBox->addWidget(noiseScaleVariationTimeLine);
+
     noiseScaleOverLifeTimeLine = new TimeLineWidget(this);
     connect(noiseScaleOverLifeTimeLine,
         SIGNAL(ValueChanged()),
         this,
         SLOT(OnNoisePropertiesChanged()));
     timelineVBox->addWidget(noiseScaleOverLifeTimeLine);
+
     noiseMainLayout->addLayout(timelineVBox);
 
     enableNoiseScrollCheckBox = new QCheckBox("Use noise scroll");
@@ -1194,13 +1388,48 @@ void EmitterLayerWidget::CreateNoiseLayoutWidget()
     noiseMainLayout->addWidget(enableNoiseScrollCheckBox);
 
     QVBoxLayout* noiseUvScrollLayout = new QVBoxLayout();
-    noiseUVScrollSpeedOverLifeTimeLine = new TimeLineWidget(this);
-    connect(noiseUVScrollSpeedOverLifeTimeLine,
+    noiseUScrollSpeedTimeLine = new TimeLineWidget(this);
+    connect(noiseUScrollSpeedTimeLine,
         SIGNAL(ValueChanged()),
         this,
         SLOT(OnNoisePropertiesChanged()));
+    noiseUvScrollLayout->addWidget(noiseUScrollSpeedTimeLine);
 
-    noiseUvScrollLayout->addWidget(noiseUVScrollSpeedOverLifeTimeLine);
+    noiseUScrollSpeedVariationTimeLine = new TimeLineWidget(this);
+    connect(noiseUScrollSpeedVariationTimeLine,
+        SIGNAL(ValueChanged()),
+        this,
+        SLOT(OnNoisePropertiesChanged()));
+    noiseUvScrollLayout->addWidget(noiseUScrollSpeedVariationTimeLine);
+
+    noiseUScrollSpeedOverLifeTimeLine = new TimeLineWidget(this);
+    connect(noiseUScrollSpeedOverLifeTimeLine,
+        SIGNAL(ValueChanged()),
+        this,
+        SLOT(OnNoisePropertiesChanged()));
+    noiseUvScrollLayout->addWidget(noiseUScrollSpeedOverLifeTimeLine);
+
+    noiseVScrollSpeedTimeLine = new TimeLineWidget(this);
+    connect(noiseVScrollSpeedTimeLine,
+        SIGNAL(ValueChanged()),
+        this,
+        SLOT(OnNoisePropertiesChanged()));
+    noiseUvScrollLayout->addWidget(noiseVScrollSpeedTimeLine);
+
+    noiseVScrollSpeedVariationTimeLine = new TimeLineWidget(this);
+    connect(noiseVScrollSpeedVariationTimeLine,
+        SIGNAL(ValueChanged()),
+        this,
+        SLOT(OnNoisePropertiesChanged()));
+    noiseUvScrollLayout->addWidget(noiseVScrollSpeedVariationTimeLine);
+
+    noiseVScrollSpeedOverLifeTimeLine = new TimeLineWidget(this);
+    connect(noiseVScrollSpeedOverLifeTimeLine,
+        SIGNAL(ValueChanged()),
+        this,
+        SLOT(OnNoisePropertiesChanged()));
+    noiseUvScrollLayout->addWidget(noiseVScrollSpeedOverLifeTimeLine);
+
     noiseMainLayout->addLayout(noiseUvScrollLayout);
 
     connect(noiseTextureBtn, SIGNAL(clicked(bool)), this, SLOT(OnNoiseSpriteBtn()));
