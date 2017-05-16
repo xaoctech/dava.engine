@@ -2,6 +2,8 @@
 #include "Scene3D/Entity.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "Reflection/ReflectedMeta.h"
+#include "Render/Material/NMaterial.h"
+#include "Render/Material/NMaterialNames.h"
 
 namespace DAVA
 {
