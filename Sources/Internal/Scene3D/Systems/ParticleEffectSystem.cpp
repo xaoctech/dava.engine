@@ -556,10 +556,10 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
                 float32 noiseVScrollSpeed = 0.0f;
                 if (group.layer->noiseScaleOverLife != nullptr)
                     noiseScale = group.layer->noiseScaleOverLife->GetValue(overLifeTime);
-                if (group.layer->noiseUScrollSpeed != nullptr)
-                    noiseUScrollSpeed = group.layer->noiseUScrollSpeed->GetValue(overLifeTime);
-                if (group.layer->noiseVScrollSpeed != nullptr)
-                    noiseVScrollSpeed = group.layer->noiseVScrollSpeed->GetValue(overLifeTime);
+                if (group.layer->noiseUScrollSpeedOverLife != nullptr)
+                    noiseUScrollSpeed = group.layer->noiseUScrollSpeedOverLife->GetValue(overLifeTime);
+                if (group.layer->noiseVScrollSpeedOverLife != nullptr)
+                    noiseVScrollSpeed = group.layer->noiseVScrollSpeedOverLife->GetValue(overLifeTime);
 
                 current->noiseScale = noiseScale;
                 current->noiseUScrollSpeed = noiseUScrollSpeed;

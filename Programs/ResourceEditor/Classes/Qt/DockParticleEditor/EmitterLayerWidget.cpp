@@ -486,7 +486,7 @@ void EmitterLayerWidget::RestoreVisualState(DAVA::KeyedArchive* visualStateProps
     angleTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ANGLE"));
     flowSpeedAndOffsetOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_FLOW_SPEED_OFFSET_PROPS"));
     noiseScaleOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_SCALE_PROPS"));
-    noiseUVScrollSpeedTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_UV_SCROLL_SPEED"));
+    noiseUVScrollSpeedOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_UV_SCROLL_SPEED"));
 }
 
 void EmitterLayerWidget::StoreVisualState(DAVA::KeyedArchive* visualStateProps)
@@ -552,7 +552,7 @@ void EmitterLayerWidget::StoreVisualState(DAVA::KeyedArchive* visualStateProps)
     visualStateProps->SetArchive("LAYER_NOISE_SCALE_PROPS", props);
 
     props->DeleteAllKeys();
-    noiseUVScrollSpeedTimeLine->GetVisualState(props);
+    noiseUVScrollSpeedOverLifeTimeLine->GetVisualState(props);
     visualStateProps->SetArchive("LAYER_NOISE_UV_SCROLL_SPEED", props);
 }
 
@@ -756,10 +756,10 @@ void EmitterLayerWidget::OnNoisePropertiesChanged()
     noiseScaleOverLifeTimeLine->GetValue(0, propNoiseScaleOverLife.GetPropsPtr());
 
     DAVA::PropLineWrapper<DAVA::float32> propNoiseUScrollSpeed;
-    noiseUVScrollSpeedTimeLine->GetValue(0, propNoiseUScrollSpeed.GetPropsPtr());
+    noiseUVScrollSpeedOverLifeTimeLine->GetValue(0, propNoiseUScrollSpeed.GetPropsPtr());
 
     DAVA::PropLineWrapper<DAVA::float32> propNoiseVScrollSpeed;
-    noiseUVScrollSpeedTimeLine->GetValue(1, propNoiseVScrollSpeed.GetPropsPtr());
+    noiseUVScrollSpeedOverLifeTimeLine->GetValue(1, propNoiseVScrollSpeed.GetPropsPtr());
 
     QString path = noiseSpritePathLabel->text();
     path = EmitterLayerWidgetDetails::ConvertPSDPathToSprite(path);
@@ -770,8 +770,8 @@ void EmitterLayerWidget::OnNoisePropertiesChanged()
     params.enableNoise = enableNoiseCheckBox->isChecked();
     params.noiseScaleOverLife = propNoiseScaleOverLife.GetPropLine();
     params.enableNoiseScroll = enableNoiseScrollCheckBox->isChecked();
-    params.noiseUScrollSpeed = propNoiseUScrollSpeed.GetPropLine();
-    params.noiseVScrollSpeed = propNoiseVScrollSpeed.GetPropLine();
+    params.noiseUScrollSpeedOverLife = propNoiseUScrollSpeed.GetPropLine();
+    params.noiseVScrollSpeedOverLife = propNoiseVScrollSpeed.GetPropLine();
 
     DVASSERT(GetActiveScene() != nullptr);
     GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeNoiseProperties(layer, std::move(params))));
@@ -915,9 +915,9 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     // NOISE_STUFF
     noiseScaleOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
     noiseScaleOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseScaleOverLife)).GetProps(), Qt::red, "noise scale");
-    noiseUVScrollSpeedTimeLine->Init(0.0f, 1.0f, updateMinimized);
-    noiseUVScrollSpeedTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseUScrollSpeed)).GetProps(), Qt::red, "noise u scroll speed");
-    noiseUVScrollSpeedTimeLine->AddLine(1, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseVScrollSpeed)).GetProps(), Qt::green, "noise v scroll speed");
+    noiseUVScrollSpeedOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
+    noiseUVScrollSpeedOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseUScrollSpeedOverLife)).GetProps(), Qt::red, "noise u scroll speed");
+    noiseUVScrollSpeedOverLifeTimeLine->AddLine(1, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseVScrollSpeedOverLife)).GetProps(), Qt::green, "noise v scroll speed");
 
     //LAYER_LIFE, LAYER_LIFE_VARIATION,
     lifeTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
@@ -1194,13 +1194,13 @@ void EmitterLayerWidget::CreateNoiseLayoutWidget()
     noiseMainLayout->addWidget(enableNoiseScrollCheckBox);
 
     QVBoxLayout* noiseUvScrollLayout = new QVBoxLayout();
-    noiseUVScrollSpeedTimeLine = new TimeLineWidget(this);
-    connect(noiseUVScrollSpeedTimeLine,
+    noiseUVScrollSpeedOverLifeTimeLine = new TimeLineWidget(this);
+    connect(noiseUVScrollSpeedOverLifeTimeLine,
         SIGNAL(ValueChanged()),
         this,
         SLOT(OnNoisePropertiesChanged()));
 
-    noiseUvScrollLayout->addWidget(noiseUVScrollSpeedTimeLine);
+    noiseUvScrollLayout->addWidget(noiseUVScrollSpeedOverLifeTimeLine);
     noiseMainLayout->addLayout(noiseUvScrollLayout);
 
     connect(noiseTextureBtn, SIGNAL(clicked(bool)), this, SLOT(OnNoiseSpriteBtn()));

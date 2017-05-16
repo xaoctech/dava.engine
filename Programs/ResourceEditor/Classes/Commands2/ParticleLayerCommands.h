@@ -70,10 +70,16 @@ public:
     {
         DAVA::FilePath noisePath;
         bool enableNoise = false;
+        RefPtr<PropertyLine<float32>> noiseScale;
+        RefPtr<PropertyLine<float32>> noiseScaleVariation;
         RefPtr<PropertyLine<float32>> noiseScaleOverLife;
         bool enableNoiseScroll = false; 
         RefPtr<PropertyLine<float32>> noiseUScrollSpeed;
+        RefPtr<PropertyLine<float32>> noiseUScrollSpeedVariation;
+        RefPtr<PropertyLine<float32>> noiseUScrollSpeedOverLife;
         RefPtr<PropertyLine<float32>> noiseVScrollSpeed;
+        RefPtr<PropertyLine<float32>> noiseVScrollSpeedVariation;
+        RefPtr<PropertyLine<float32>> noiseVScrollSpeedOverLife;
     };
 
     CommandChangeNoiseProperties(DAVA::ParticleLayer* layer, NoiseParams&& params);

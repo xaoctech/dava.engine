@@ -102,10 +102,16 @@ CommandChangeNoiseProperties::CommandChangeNoiseProperties(DAVA::ParticleLayer* 
     {
         oldParams.noisePath = layer->noisePath;
         oldParams.enableNoise = layer->enableNoise;
+        oldParams.noiseScale = layer->noiseScale;
+        oldParams.noiseScaleVariation = layer->noiseScaleVariation;
         oldParams.noiseScaleOverLife = layer->noiseScaleOverLife;
         oldParams.enableNoiseScroll = layer->enableNoiseScroll;
         oldParams.noiseUScrollSpeed = layer->noiseUScrollSpeed;
+        oldParams.noiseUScrollSpeedVariation = layer->noiseUScrollSpeedVariation;
+        oldParams.noiseUScrollSpeedOverLife = layer->noiseUScrollSpeedOverLife;
         oldParams.noiseVScrollSpeed = layer->noiseVScrollSpeed;
+        oldParams.noiseVScrollSpeedVariation = layer->noiseVScrollSpeedVariation;
+        oldParams.noiseVScrollSpeedOverLife = layer->noiseVScrollSpeedOverLife;
     }
 }
 
@@ -131,8 +137,14 @@ void CommandChangeNoiseProperties::ApplyParams(NoiseParams& params)
         layer->enableNoise = params.enableNoise;
         layer->enableNoiseScroll = params.enableNoiseScroll;
         layer->SetNoise(params.noisePath);
+        PropertyLineHelper::SetValueLine(layer->noiseScale, params.noiseScale);
+        PropertyLineHelper::SetValueLine(layer->noiseScaleVariation, params.noiseScaleVariation);
         PropertyLineHelper::SetValueLine(layer->noiseScaleOverLife, params.noiseScaleOverLife);
         PropertyLineHelper::SetValueLine(layer->noiseUScrollSpeed, params.noiseUScrollSpeed);
+        PropertyLineHelper::SetValueLine(layer->noiseUScrollSpeedVariation, params.noiseUScrollSpeedVariation);
+        PropertyLineHelper::SetValueLine(layer->noiseUScrollSpeedOverLife, params.noiseUScrollSpeedOverLife);
         PropertyLineHelper::SetValueLine(layer->noiseVScrollSpeed, params.noiseVScrollSpeed);
+        PropertyLineHelper::SetValueLine(layer->noiseVScrollSpeedVariation, params.noiseVScrollSpeedVariation);
+        PropertyLineHelper::SetValueLine(layer->noiseVScrollSpeedOverLife, params.noiseVScrollSpeedOverLife);
     }
 }
