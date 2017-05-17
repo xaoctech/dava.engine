@@ -56,25 +56,14 @@ struct GeoDecalManager::DecalVertex
     }
 };
 
-GeoDecalManager::BuiltDecal::BuiltDecal(const BuiltDecal& r)
-    : sourceObject(SafeRetain(r.sourceObject))
-    , batchProvider(SafeRetain(r.batchProvider))
+GeoDecalManager::BuiltDecal::BuiltDecal(RenderObject* ro)
+    : sourceObject(SafeRetain(ro))
 {
-}
-
-GeoDecalManager::BuiltDecal& GeoDecalManager::BuiltDecal::operator=(const BuiltDecal& r)
-{
-    SafeRelease(sourceObject);
-    sourceObject = SafeRetain(r.sourceObject);
-
-    SafeRelease(batchProvider);
-    batchProvider = SafeRetain(r.batchProvider);
-
-    return *this;
 }
 
 GeoDecalManager::BuiltDecal::~BuiltDecal()
 {
+    DVASSERT(batchProvider->GetRetainCount() == 1);
     SafeRelease(sourceObject);
     SafeRelease(batchProvider);
 }
@@ -190,11 +179,10 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, co
 
     worldSpaceBox.GetTransformedBox(ro->GetInverseWorldTransform(), info.boundingBox);
 
-    BuiltDecal& builtDecal = builtDecals[decal];
+    BuiltDecal& builtDecal = builtDecals.emplace(std::make_pair(decal, ro)).first->second;
     {
         GeoDecalRenderBatchProvider* decalBatchProvider = new GeoDecalRenderBatchProvider();
         builtDecal.batchProvider = decalBatchProvider;
-        builtDecal.sourceObject = SafeRetain(ro);
 
         for (uint32 i = 0, e = ro->GetRenderBatchCount(); i < e; ++i)
         {
@@ -300,26 +288,28 @@ void GeoDecalManager::AddVerticesToGeometry(const DecalBuildInfo& info, DecalVer
 
     ClipToBoundingBox(points, &numPoints, clipSpaceBox);
 
-    for (uint32 i = 0; i < numPoints; ++i)
+    if (numPoints >= 3)
     {
-        points[i].decalCoord.x = points[i].decalCoord.x * info.uvScale.x + info.uvOffset.x;
-        points[i].decalCoord.y = points[i].decalCoord.y * info.uvScale.y + info.uvOffset.y;
-    }
-
-    size_t offset = buffer.size();
-    buffer.resize(offset + 3 * (numPoints - 2) * sizeof(DecalVertex));
-    DecalVertex* decalVertexPtr = reinterpret_cast<DecalVertex*>(buffer.data() + offset);
-    for (uint32 i = 0; i + 2 < numPoints; ++i)
-    {
-        *decalVertexPtr++ = points[0];
-        *decalVertexPtr++ = points[i + 1];
-        *decalVertexPtr++ = points[i + 2];
+        for (uint32 i = 0; i < numPoints; ++i)
+        {
+            points[i].decalCoord.x = points[i].decalCoord.x * info.uvScale.x + info.uvOffset.x;
+            points[i].decalCoord.y = points[i].decalCoord.y * info.uvScale.y + info.uvOffset.y;
+        }
+        size_t offset = buffer.size();
+        buffer.resize(offset + 3 * (numPoints - 2) * sizeof(DecalVertex));
+        DecalVertex* decalVertexPtr = reinterpret_cast<DecalVertex*>(buffer.data() + offset);
+        for (uint32 i = 0; i + 2 < numPoints; ++i)
+        {
+            *decalVertexPtr++ = points[0];
+            *decalVertexPtr++ = points[i + 1];
+            *decalVertexPtr++ = points[i + 2];
+        }
     }
 }
 
 void GeoDecalManager::GetStaticMeshGeometry(const DecalBuildInfo& info, Vector<uint8>& buffer)
 {
-    char decalVertexData[MAX_CLIPPED_POLYGON_CAPACITY * sizeof(DecalVertex)];
+    char decalVertexData[MAX_CLIPPED_POLYGON_CAPACITY * sizeof(DecalVertex)] = {};
     DecalVertex* points = reinterpret_cast<DecalVertex*>(decalVertexData);
 
     Set<uint16> triangles;
@@ -531,16 +521,8 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBat
 
 int8_t GeoDecalManager::Classify(int8_t sign, Vector3::eAxis axis, const Vector3& c_v, const DecalVertex& p_v)
 {
-    int8_t ret = 0;
     float32 d = static_cast<float>(sign) * (p_v.actualPoint[axis] - c_v[axis]);
-
-    if (d > PLANE_THICKNESS_EPSILON)
-        ret = 1;
-
-    if (d < -PLANE_THICKNESS_EPSILON)
-        ret = -1;
-
-    return 0;
+    return static_cast<int>(d > PLANE_THICKNESS_EPSILON) - static_cast<int>(d < -PLANE_THICKNESS_EPSILON);
 }
 
 void GeoDecalManager::Lerp(float t, const DecalVertex& v1, const DecalVertex& v2, DecalVertex& result)
