@@ -67,12 +67,11 @@ private:
         RenderBatchProvider* batchProvider = nullptr;
 
         BuiltDecal() = default;
-        BuiltDecal(RenderObject* sourceObject);
+        BuiltDecal(BuiltDecal&&);
+        BuiltDecal& operator=(BuiltDecal&&);
         ~BuiltDecal();
 
-        BuiltDecal(BuiltDecal&&) = delete;
         BuiltDecal(const BuiltDecal& r) = delete;
-        BuiltDecal& operator=(BuiltDecal&&) = delete;
         BuiltDecal& operator=(const BuiltDecal&) = delete;
     };
 

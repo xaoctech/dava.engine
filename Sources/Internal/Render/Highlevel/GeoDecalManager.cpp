@@ -56,9 +56,21 @@ struct GeoDecalManager::DecalVertex
     }
 };
 
-GeoDecalManager::BuiltDecal::BuiltDecal(RenderObject* ro)
-    : sourceObject(SafeRetain(ro))
+GeoDecalManager::BuiltDecal::BuiltDecal(BuiltDecal&& r)
+    : sourceObject(r.sourceObject)
+    , batchProvider(r.batchProvider)
 {
+    r.sourceObject = nullptr;
+    r.batchProvider = nullptr;
+}
+
+GeoDecalManager::BuiltDecal& GeoDecalManager::BuiltDecal::operator=(BuiltDecal&& r)
+{
+    sourceObject = r.sourceObject;
+    batchProvider = r.batchProvider;
+    r.sourceObject = nullptr;
+    r.batchProvider = nullptr;
+    return *this;
 }
 
 GeoDecalManager::BuiltDecal::~BuiltDecal()
@@ -183,9 +195,10 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, co
 
     worldSpaceBox.GetTransformedBox(ro->GetInverseWorldTransform(), info.boundingBox);
 
-    BuiltDecal& builtDecal = builtDecals.emplace(decal, ro).first->second;
+    BuiltDecal& builtDecal = builtDecals[decal];
     {
         GeoDecalRenderBatchProvider* decalBatchProvider = new GeoDecalRenderBatchProvider();
+        builtDecal.sourceObject = SafeRetain(ro);
         builtDecal.batchProvider = decalBatchProvider;
 
         for (uint32 i = 0, e = ro->GetRenderBatchCount(); i < e; ++i)

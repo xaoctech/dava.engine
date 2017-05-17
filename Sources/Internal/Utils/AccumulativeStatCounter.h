@@ -11,6 +11,7 @@ public:
     {
         AccumulativeStatCounter::operator+=(1.0f);
     }
+
     void operator++(int)
     {
         AccumulativeStatCounter::operator+=(1.0f);
@@ -19,7 +20,7 @@ public:
     void operator+=(float32 nextValue)
     {
         count++;
-        average = (average * (float32)(count - 1) + nextValue) / (float32)count;
+        average = (average * static_cast<float32>(count - 1) + nextValue) / static_cast<float32>(count);
     }
 
     uint32 count = 0;
