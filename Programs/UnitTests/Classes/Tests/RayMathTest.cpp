@@ -298,8 +298,7 @@ DAVA_TESTCLASS (RayMathTest)
         p0 = Vector3(1500.0f, 5.0f, 5.0f);
         p1 = Vector3(10.0001f, 5.0f, 5.0f);
         p2 = Vector3(10.0001f, 5.0f, 5.0f);
-        TEST_VERIFY(Intersection::BoxTriangle(box, p0, p1, p2) == true);
-        // technically it's outside the box but it's too close, so because of float math it counts as inside
+        TEST_VERIFY(Intersection::BoxTriangle(box, p0, p1, p2) == false);
 
         p0 = Vector3(20.0f, 5.0f, 5.0f);
         p1 = Vector3(10.0001f, 5.0f, 5.0f);

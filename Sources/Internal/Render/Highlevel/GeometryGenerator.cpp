@@ -146,10 +146,9 @@ public:
         }
 
         AABBox3 boundingBox;
-        uint32 size = (uint32)vertices.size();
-        for (uint32 k = 0; k < size; ++k)
+        for (const Vector3& v : vertices)
         {
-            boundingBox.AddPoint(vertices[k]);
+            boundingBox.AddPoint(v);
         }
 
         verticesOut = vertices;
