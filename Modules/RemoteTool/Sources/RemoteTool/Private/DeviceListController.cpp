@@ -3,9 +3,13 @@
 #include "RemoteTool/Private/DeviceLogController/DeviceLogController.h"
 #include "RemoteTool/Private/MemoryTool/MemProfController.h"
 
+#include <LoggerService/ServiceInfo.h>
+#include <MemoryProfilerService/ServiceInfo.h>
+
 #include <Logger/Logger.h>
 #include <Network/NetworkCommon.h>
 #include <Network/PeerDesription.h>
+#include <Network/ServicesProvider.h>
 
 #include <QDebug>
 #include <QStandardItemModel>
@@ -13,9 +17,7 @@
 #include <QTreeView>
 #include <QUuid>
 #include <QMessageBox>
-
-#include <LoggerService/ServiceInfo.h>
-#include <MemoryProfilerService/ServiceInfo.h>
+#include <QTimer>
 
 DeviceListController::DeviceListController(QObject* parent)
     : QObject(parent)
@@ -81,26 +83,29 @@ void DeviceListController::OnDeviceDiscover(const QString& addr)
 
     // addr should be in form ipaddress:port, port is optional and by default is 9999
 
-    uint16 port = NetCore::DEFAULT_TCP_ANNOUNCE_PORT;
+    std::pair<uint16, uint16> portsRange;
+
     bool valid = true;
     int delimeter = addr.indexOf(QChar(':'));
     if (delimeter > 0)
     {
-        port = addr.mid(delimeter + 1).toUShort(&valid);
+        portsRange.first = addr.mid(delimeter + 1).toUShort(&valid);
+        portsRange.second = portsRange.first;
     }
+    else
+    {
+        portsRange = ServicesProvider::GetPortsRange();
+    }
+
     if (valid)
     {
         String ipaddrPart = addr.mid(0, delimeter).toStdString().c_str();
-
         IPAddress ipaddr = IPAddress::FromString(ipaddrPart);
         valid = !ipaddr.IsUnspecified();
         if (valid)
         {
-            Endpoint endp(ipaddr, port);
-            if (!NetCore::Instance()->TryDiscoverDevice(endp))
-            {
-                Logger::Warning("Device discoverer is busy now, try later");
-            }
+            DiscoverOnRange(ipaddr, portsRange);
+            return;
         }
     }
 
@@ -152,7 +157,7 @@ void DeviceListController::DeleteLogger(DAVA::Net::IChannelListener*, void* cont
     }
 }
 
-DAVA::Net::IChannelListener* DeviceListController::CreateMemProfiler(DAVA::uint32 serviceId, void* context)
+DAVA::Net::IChannelListener* DeviceListController::CreateMemProfiler(DAVA::Net::ServiceID serviceId, void* context)
 {
     int row = static_cast<int>(reinterpret_cast<intptr_t>(context));
     if (model != NULL && 0 <= row && row < model->rowCount())
@@ -509,4 +514,48 @@ bool DeviceListController::AlreadyInModel(const DAVA::Net::Endpoint& endp, const
         }
     }
     return false;
+}
+
+void DeviceListController::DiscoverOnRange(const DAVA::Net::IPAddress& addr, const std::pair<uint16, uint16>& range)
+{
+    ipAddr = addr;
+    portsRange = range;
+    currentPort = portsRange.first;
+    attempts = 0;
+    DiscoverOnCurrentPort();
+}
+
+void DeviceListController::DiscoverOnCurrentPort()
+{
+    using namespace DAVA;
+    using namespace DAVA::Net;
+
+    static uint32 maxAttempts = 2;
+    if (attempts++ > maxAttempts)
+    {
+        DiscoverNext();
+        return;
+    }
+
+    Endpoint endp(ipAddr, currentPort);
+    if (NetCore::Instance()->TryDiscoverDevice(endp))
+    {
+        DiscoverNext();
+        return;
+    }
+    else
+    {
+        static int reattempt_period_msec = 500;
+        QTimer::singleShot(reattempt_period_msec, this, &DeviceListController::DiscoverOnCurrentPort);
+    }
+}
+
+void DeviceListController::DiscoverNext()
+{
+    ++currentPort;
+    attempts = 0;
+    if (currentPort <= portsRange.second)
+    {
+        DiscoverOnCurrentPort();
+    }
 }

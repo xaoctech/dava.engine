@@ -54,8 +54,6 @@ public:
 
     // Method invoked when announce packet arrived
     void DiscoverCallback(size_t buflen, const void* buffer, const DAVA::Net::Endpoint& endpoint);
-    // Method invoked when all network controllers were stopped
-    void AllStopped();
 
 private slots:
     void OnConnectButtonPressed();
@@ -77,6 +75,10 @@ private:
     // Check whether device already has been discovered
     bool AlreadyInModel(const DAVA::Net::Endpoint& endp, const DAVA::String& appName) const;
 
+    void DiscoverOnRange(const DAVA::Net::IPAddress& ipAddr, const std::pair<DAVA::uint16, DAVA::uint16>& portsRange);
+    void DiscoverOnCurrentPort();
+    void DiscoverNext();
+
 private:
     QPointer<QStandardItemModel> model;
     QPointer<DeviceListWidget> view;
@@ -86,6 +88,11 @@ private:
 
     DAVA::Net::ServiceCreatorDispatched profilerServiceCreatorAsync;
     DAVA::Net::ServiceDeleterDispatched profilerServiceDeleterAsync;
+
+    DAVA::Net::IPAddress ipAddr;
+    std::pair<DAVA::uint16, DAVA::uint16> portsRange;
+    DAVA::uint16 currentPort = 0;
+    DAVA::uint32 attempts = 0;
 
 private:
     static QStandardItem* CreateDeviceItem(const DAVA::Net::Endpoint& endp, const DAVA::Net::PeerDescription& peerDescr);

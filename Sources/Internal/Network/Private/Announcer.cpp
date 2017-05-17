@@ -68,8 +68,7 @@ void Announcer::DoStart()
         errorA = acceptor.StartListen(MakeFunction(this, &Announcer::AcceptorHandleConnect));
     }
 
-    // Restart only if both UDP socket and TCP acceptor failed
-    if (error != 0 && errorA != 0 && false == isTerminating)
+    if ((error != 0 || errorA != 0) && false == isTerminating)
     {
         status = START_FAILED;
         DoStop();
@@ -82,7 +81,10 @@ void Announcer::DoStart()
 
 void Announcer::DoStop()
 {
-    status = NOT_STARTED;
+    if (status != START_FAILED)
+    {
+        status = NOT_STARTED;
+    }
 
     if (socket.IsOpen() && !socket.IsClosing())
     {
