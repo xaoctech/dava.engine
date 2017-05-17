@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+using namespace DAVA;
+
 #define RAND48_SEED_0 (0x330e)
 #define RAND48_SEED_1 (0xabcd)
 #define RAND48_SEED_2 (0x1234)
