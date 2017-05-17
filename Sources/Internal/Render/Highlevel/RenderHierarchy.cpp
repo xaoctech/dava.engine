@@ -79,7 +79,7 @@ bool LinearRenderHierarchy::RayTrace(const Ray3& ray, RayTraceCollision& collisi
         }
     }
 
-    avgBoxRayTestCount += (float32)size;
+    avgBoxRayTestCount += static_cast<float32>(size);
 
     bool intersectionFound = false;
     float32 closestT = 1.0f;
