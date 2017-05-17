@@ -3,6 +3,8 @@
 #include "Commands2/Base/RECommand.h"
 #include "Render/RenderBase.h"
 #include "FileSystem/FilePath.h"
+#include "Base/RefPtr.h"
+#include "Particles/ParticlePropertyLine.h"
 
 namespace DAVA
 {
@@ -74,16 +76,16 @@ public:
     {
         DAVA::FilePath noisePath;
         bool enableNoise = false;
-        RefPtr<PropertyLine<float32>> noiseScale;
-        RefPtr<PropertyLine<float32>> noiseScaleVariation;
-        RefPtr<PropertyLine<float32>> noiseScaleOverLife;
+        DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> noiseScale;
+        DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> noiseScaleVariation;
+        DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> noiseScaleOverLife;
         bool enableNoiseScroll = false; 
-        RefPtr<PropertyLine<float32>> noiseUScrollSpeed;
-        RefPtr<PropertyLine<float32>> noiseUScrollSpeedVariation;
-        RefPtr<PropertyLine<float32>> noiseUScrollSpeedOverLife;
-        RefPtr<PropertyLine<float32>> noiseVScrollSpeed;
-        RefPtr<PropertyLine<float32>> noiseVScrollSpeedVariation;
-        RefPtr<PropertyLine<float32>> noiseVScrollSpeedOverLife;
+        DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> noiseUScrollSpeed;
+        DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> noiseUScrollSpeedVariation;
+        DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> noiseUScrollSpeedOverLife;
+        DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> noiseVScrollSpeed;
+        DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> noiseVScrollSpeedVariation;
+        DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> noiseVScrollSpeedOverLife;
     };
 
     CommandChangeNoiseProperties(DAVA::ParticleLayer* layer, NoiseParams&& params);

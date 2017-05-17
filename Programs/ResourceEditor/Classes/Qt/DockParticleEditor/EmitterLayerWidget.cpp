@@ -984,6 +984,7 @@ void EmitterLayerWidget::Update(bool updateMinimized)
 
     enableNoiseCheckBox->setChecked(layer->enableNoise);
     noiseLayoutWidget->setVisible(enableNoiseCheckBox->isChecked());
+    noiseScrollWidget->setVisible(enableNoiseCheckBox->isChecked() && enableNoiseScrollCheckBox->isChecked());
 
     isLoopedCheckBox->setChecked(layer->isLooped);
 
@@ -1387,7 +1388,10 @@ void EmitterLayerWidget::CreateNoiseLayoutWidget()
         SLOT(OnNoisePropertiesChanged()));
     noiseMainLayout->addWidget(enableNoiseScrollCheckBox);
 
-    QVBoxLayout* noiseUvScrollLayout = new QVBoxLayout();
+    noiseScrollWidget = new QWidget();
+    noiseScrollWidget->setVisible(true);
+    QVBoxLayout* noiseUvScrollLayout = new QVBoxLayout(noiseScrollWidget);
+    noiseMainLayout->addWidget(noiseScrollWidget);
     noiseUScrollSpeedTimeLine = new TimeLineWidget(this);
     connect(noiseUScrollSpeedTimeLine,
         SIGNAL(ValueChanged()),
@@ -1429,8 +1433,6 @@ void EmitterLayerWidget::CreateNoiseLayoutWidget()
         this,
         SLOT(OnNoisePropertiesChanged()));
     noiseUvScrollLayout->addWidget(noiseVScrollSpeedOverLifeTimeLine);
-
-    noiseMainLayout->addLayout(noiseUvScrollLayout);
 
     connect(noiseTextureBtn, SIGNAL(clicked(bool)), this, SLOT(OnNoiseSpriteBtn()));
     connect(noiseTextureFolderBtn, SIGNAL(clicked(bool)), this, SLOT(OnNoiseSpriteBtn()));
