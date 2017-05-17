@@ -23,7 +23,7 @@ RenderSystem::RenderSystem()
     renderHierarchy = new QuadTree(10);
     markedObjects.reserve(100);
     debugDrawer = new RenderHelper();
-    geoDecalManager = new GeoDecalManager(this);
+    geoDecalManager = new GeoDecalManager();
 }
 
 RenderSystem::~RenderSystem()

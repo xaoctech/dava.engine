@@ -46,10 +46,10 @@ public:
     static const Decal InvalidDecal;
 
 public:
-    GeoDecalManager(RenderSystem* renderSystem);
+    GeoDecalManager() = default;
+    ~GeoDecalManager();
 
     Decal BuildDecal(const DecalConfig& config, const Matrix4& decalWorldTransform, RenderObject* object);
-
     void DeleteDecal(Decal decal);
 
     /*
@@ -90,7 +90,6 @@ private:
     void AddVerticesToGeometry(const DecalBuildInfo& info, DecalVertex* points, Vector<uint8>& buffer);
 
 private:
-    RenderSystem* renderSystem = nullptr;
     Map<Decal, BuiltDecal> builtDecals;
     std::atomic<uintptr_t> decalCounter{ 0 };
 };

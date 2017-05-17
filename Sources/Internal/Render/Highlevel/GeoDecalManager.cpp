@@ -98,9 +98,13 @@ private:
 
 const GeoDecalManager::Decal GeoDecalManager::InvalidDecal = nullptr;
 
-GeoDecalManager::GeoDecalManager(RenderSystem* rs)
-    : renderSystem(rs)
+GeoDecalManager::~GeoDecalManager()
 {
+    for (auto& d : builtDecals)
+    {
+        UnregisterDecal(d.first);
+    }
+    builtDecals.clear();
 }
 
 GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, const Matrix4& decalWorldTransform, RenderObject* ro)
@@ -179,7 +183,7 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, co
 
     worldSpaceBox.GetTransformedBox(ro->GetInverseWorldTransform(), info.boundingBox);
 
-    BuiltDecal& builtDecal = builtDecals.emplace(std::make_pair(decal, ro)).first->second;
+    BuiltDecal& builtDecal = builtDecals.emplace(decal, ro).first->second;
     {
         GeoDecalRenderBatchProvider* decalBatchProvider = new GeoDecalRenderBatchProvider();
         builtDecal.batchProvider = decalBatchProvider;

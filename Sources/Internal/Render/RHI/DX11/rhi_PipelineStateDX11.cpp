@@ -282,13 +282,13 @@ ID3D11InputLayout* PipelineStateDX11_t::CreateCompatibleInputLayout(const Vertex
         }
         else
         {
-            Logger::Error("Incompatible vertex layout. Missing element %s%d of type %s", VertexSemanticsName(vprogLayout.ElementSemantics(i)),
-                          vprogLayout.ElementSemanticsIndex(i), VertexDataTypeName(vprogLayout.ElementDataType(i)));
+            DAVA::Logger::Error("Incompatible vertex layout. Missing element %s%d of type %s", VertexSemanticsName(vprogLayout.ElementSemantics(i)),
+                                vprogLayout.ElementSemanticsIndex(i), VertexDataTypeName(vprogLayout.ElementDataType(i)));
 
-            Logger::Error("Program:");
+            DAVA::Logger::Error("Program:");
             vprogLayout.Dump();
 
-            Logger::Error("VertexBuffer:");
+            DAVA::Logger::Error("VertexBuffer:");
             vbLayout.Dump();
 
             DVASSERT(!"kaboom!");
