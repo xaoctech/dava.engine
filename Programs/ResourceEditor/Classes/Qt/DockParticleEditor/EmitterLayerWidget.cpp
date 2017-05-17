@@ -1025,47 +1025,47 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     flowSpeedTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowSpeed)).GetProps(), Qt::red, "flow speed");
 
     flowSpeedVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
-    flowSpeedVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowSpeedVariation)).GetProps(), Qt::red, "flow speed variation");
+    flowSpeedVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowSpeedVariation)).GetProps(), Qt::green, "flow speed variation");
 
     flowSpeedOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
-    flowSpeedOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowSpeedOverLife)).GetProps(), Qt::red, "flow speed over life");
+    flowSpeedOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowSpeedOverLife)).GetProps(), Qt::blue, "flow speed over life");
 
     flowOffsetTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
     flowOffsetTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowOffset)).GetProps(), Qt::red, "flow offset");
 
     flowOffsetVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
-    flowOffsetVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowOffsetVariation)).GetProps(), Qt::red, "flow offset variation");
+    flowOffsetVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowOffsetVariation)).GetProps(), Qt::green, "flow offset variation");
 
     flowOffsetOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
-    flowOffsetOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowOffsetOverLife)).GetProps(), Qt::red, "flow offset over life");
+    flowOffsetOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowOffsetOverLife)).GetProps(), Qt::blue, "flow offset over life");
 
     // NOISE_STUFF
     noiseScaleTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
     noiseScaleTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseScale)).GetProps(), Qt::red, "noise scale");
 
     noiseScaleVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
-    noiseScaleVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseScaleVariation)).GetProps(), Qt::red, "noise scale variation");
+    noiseScaleVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseScaleVariation)).GetProps(), Qt::green, "noise scale variation");
 
     noiseScaleOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
-    noiseScaleOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseScaleOverLife)).GetProps(), Qt::red, "noise scale over life");
+    noiseScaleOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseScaleOverLife)).GetProps(), Qt::blue, "noise scale over life");
 
     noiseUScrollSpeedTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
     noiseUScrollSpeedTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseUScrollSpeed)).GetProps(), Qt::red, "noise u scroll speed");
 
     noiseUScrollSpeedVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
-    noiseUScrollSpeedVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseUScrollSpeedVariation)).GetProps(), Qt::red, "noise u scroll speed variation");
+    noiseUScrollSpeedVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseUScrollSpeedVariation)).GetProps(), Qt::green, "noise u scroll speed variation");
 
     noiseUScrollSpeedOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
-    noiseUScrollSpeedOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseUScrollSpeedOverLife)).GetProps(), Qt::red, "noise u scroll speed over life");
+    noiseUScrollSpeedOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseUScrollSpeedOverLife)).GetProps(), Qt::blue, "noise u scroll speed over life");
 
     noiseVScrollSpeedTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
     noiseVScrollSpeedTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseVScrollSpeed)).GetProps(), Qt::red, "noise v scroll speed");
 
     noiseVScrollSpeedVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
-    noiseVScrollSpeedVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseVScrollSpeedVariation)).GetProps(), Qt::red, "noise v scroll speed variation");
+    noiseVScrollSpeedVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseVScrollSpeedVariation)).GetProps(), Qt::green, "noise v scroll speed variation");
 
     noiseVScrollSpeedOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
-    noiseVScrollSpeedOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseVScrollSpeedOverLife)).GetProps(), Qt::red, "noise v scroll speed over life");
+    noiseVScrollSpeedOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseVScrollSpeedOverLife)).GetProps(), Qt::blue, "noise v scroll speed over life");
 
     //LAYER_LIFE, LAYER_LIFE_VARIATION,
     lifeTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
