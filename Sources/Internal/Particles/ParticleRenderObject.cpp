@@ -331,8 +331,8 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
                     {
                         verts[i][ptrOffset + 0] = flowUV[i * 2];
                         verts[i][ptrOffset + 1] = flowUV[i * 2 + 1];
-                        verts[i][ptrOffset + 2] = current->flowSpeedOverLife;
-                        verts[i][ptrOffset + 3] = current->flowOffsetOverLife;
+                        verts[i][ptrOffset + 2] = current->currFlowSpeed;
+                        verts[i][ptrOffset + 3] = current->currFlowOffset;
                     }
                     ptrOffset += 4;
                 }
@@ -343,15 +343,15 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
                     {
                         verts[i][ptrOffset + 0] = noiseUV[i * 2]; // VS_TEXCOORD0 xy + color.
                         verts[i][ptrOffset + 1] = noiseUV[i * 2 + 1];
-                        verts[i][ptrOffset + 2] = current->noiseScale;
+                        verts[i][ptrOffset + 2] = current->currNoiseScale;
                     }
                     ptrOffset += 3;
                     if (begin->layer->enableNoiseScroll)
                     {
                         for (int32 i = 0; i < 4; ++i)
                         {
-                            verts[i][ptrOffset + 0] = current->noiseUScrollSpeed;
-                            verts[i][ptrOffset + 1] = current->noiseVScrollSpeed;
+                            verts[i][ptrOffset + 0] = current->currNoiseUScrollSpeed;
+                            verts[i][ptrOffset + 1] = current->currNoiseVScrollSpeed;
                         }
                         ptrOffset += 2;
                     }

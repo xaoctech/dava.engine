@@ -137,6 +137,7 @@ void ParticleEffectSystem::PrebuildMaterials(ParticleEffectComponent* component)
                 matData.enableNoise = layer->enableNoise;
                 matData.enableNoiseUVScroll = layer->enableNoiseScroll;
                 matData.noise = noise;
+                matData.blending = layer->blending;
 
                 GetMaterial(std::move(matData));
             }
@@ -174,6 +175,7 @@ void ParticleEffectSystem::RunEmitter(ParticleEffectComponent* effect, ParticleE
             matData.enableNoise = layer->enableNoise;
             matData.enableNoiseUVScroll = layer->enableNoiseScroll;
             matData.noise = noise;
+            matData.blending = layer->blending;
             group.material = GetMaterial(std::move(matData));
         }
 
@@ -539,31 +541,19 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
 
             if (group.layer->enableFlow && group.layer->flowmap)
             {
-                float32 flowSpeedOverLife = 0.0f;
-                float32 flowOffsetOverLife = 0.0f;
                 if (group.layer->flowSpeedOverLife != nullptr)
-                    flowSpeedOverLife = group.layer->flowSpeedOverLife->GetValue(overLifeTime);
+                    current->currFlowSpeed = current->baseFlowSpeed * group.layer->flowSpeedOverLife->GetValue(overLifeTime);
                 if (group.layer->flowOffsetOverLife != nullptr)
-                    flowOffsetOverLife = group.layer->flowOffsetOverLife->GetValue(overLifeTime);
-
-                current->flowSpeedOverLife = flowSpeedOverLife;
-                current->flowOffsetOverLife = flowOffsetOverLife;
+                    current->currFlowOffset = current->baseFlowOffset * group.layer->flowOffsetOverLife->GetValue(overLifeTime);
             }
             if (group.layer->enableNoise && group.layer->noise)
             {
-                float32 noiseScale = 0.0f;
-                float32 noiseUScrollSpeed = 0.0f;
-                float32 noiseVScrollSpeed = 0.0f;
                 if (group.layer->noiseScaleOverLife != nullptr)
-                    noiseScale = group.layer->noiseScaleOverLife->GetValue(overLifeTime);
+                    current->currNoiseScale = current->baseNoiseScale * group.layer->noiseScaleOverLife->GetValue(overLifeTime);
                 if (group.layer->noiseUScrollSpeedOverLife != nullptr)
-                    noiseUScrollSpeed = group.layer->noiseUScrollSpeedOverLife->GetValue(overLifeTime);
+                    current->currNoiseUScrollSpeed = current->baseNoiseUScrollSpeed * group.layer->noiseUScrollSpeedOverLife->GetValue(overLifeTime);
                 if (group.layer->noiseVScrollSpeedOverLife != nullptr)
-                    noiseVScrollSpeed = group.layer->noiseVScrollSpeedOverLife->GetValue(overLifeTime);
-
-                current->noiseScale = noiseScale;
-                current->noiseUScrollSpeed = noiseUScrollSpeed;
-                current->noiseVScrollSpeed = noiseVScrollSpeed;
+                    current->currNoiseVScrollSpeed = current->baseNoiseVScrollSpeed * group.layer->noiseVScrollSpeedOverLife->GetValue(overLifeTime);
             }
 
             prev = current;
@@ -655,6 +645,43 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleEffectComponent* eff
     if (group.layer->lifeVariation)
         particle->lifeTime += (group.layer->lifeVariation->GetValue(currLoopTime) * static_cast<float32>(Random::Instance()->RandFloat()));
 
+
+    // Flow.
+    particle->baseFlowSpeed = 0.0f;
+    if (group.layer->flowSpeed)
+        particle->baseFlowSpeed += group.layer->flowSpeed->GetValue(currLoopTime);
+    if (group.layer->flowSpeedVariation)
+        particle->baseFlowSpeed += (group.layer->flowSpeedVariation->GetValue(currLoopTime) * static_cast<float32>(Random::Instance()->RandFloat()));
+    particle->currFlowSpeed = particle->baseFlowSpeed;
+
+    particle->baseFlowOffset = 0.0f;
+    if (group.layer->flowOffset)
+        particle->baseFlowOffset += group.layer->flowOffset->GetValue(currLoopTime);
+    if (group.layer->flowOffsetVariation)
+        particle->baseFlowOffset += (group.layer->flowOffsetVariation->GetValue(currLoopTime) * static_cast<float32>(Random::Instance()->RandFloat()));
+    particle->currFlowOffset = particle->baseFlowOffset;
+
+    // Noise.
+    particle->baseNoiseScale = 0.0f;
+    if (group.layer->noiseScale)
+        particle->baseNoiseScale += group.layer->noiseScale->GetValue(currLoopTime);
+    if (group.layer->noiseScaleVariation)
+        particle->baseNoiseScale += (group.layer->noiseScaleVariation->GetValue(currLoopTime) * static_cast<float32>(Random::Instance()->RandFloat()));
+    particle->currNoiseScale = particle->baseNoiseScale;
+
+    particle->baseNoiseUScrollSpeed = 0.0f;
+    if (group.layer->noiseUScrollSpeed)
+        particle->baseNoiseUScrollSpeed += group.layer->noiseUScrollSpeed->GetValue(currLoopTime);
+    if (group.layer->noiseUScrollSpeedVariation)
+        particle->baseNoiseUScrollSpeed += (group.layer->noiseUScrollSpeedVariation->GetValue(currLoopTime) * static_cast<float32>(Random::Instance()->RandFloat()));
+    particle->currNoiseUScrollSpeed = particle->baseNoiseUScrollSpeed;
+
+    particle->baseNoiseVScrollSpeed = 0.0f;
+    if (group.layer->noiseVScrollSpeed)
+        particle->baseNoiseVScrollSpeed += group.layer->noiseVScrollSpeed->GetValue(currLoopTime);
+    if (group.layer->noiseVScrollSpeedVariation)
+        particle->baseNoiseVScrollSpeed += (group.layer->noiseVScrollSpeedVariation->GetValue(currLoopTime) * static_cast<float32>(Random::Instance()->RandFloat()));
+    particle->currNoiseVScrollSpeed = particle->baseNoiseVScrollSpeed;
     // size
     particle->baseSize = Vector2(1.0f, 1.0f);
     if (group.layer->size)
@@ -691,8 +718,6 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleEffectComponent* eff
         particle->frame = static_cast<int32>(static_cast<float32>(Random::Instance()->RandFloat()) * static_cast<float32>(group.layer->sprite->GetFrameCount()));
     }
 
-    particle->flowSpeedOverLife = 0.2f;
-    particle->flowOffsetOverLife = 0.2f;
 
     PrepareEmitterParameters(particle, group, worldTransform);
 
