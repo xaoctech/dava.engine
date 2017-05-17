@@ -62,21 +62,20 @@ void VisibilityOctTree::DetermineBoxBoundsInVoxels(RenderObject* renderObject, u
     }
 
     // object is inside
-    Vector3 relativeMin = (objectWorldBBox.min - worldBBox.min) / (worldBBox.max - worldBBox.min) * (float)(oneAxisMaxPosition);
-    Vector3 relativeMax = (objectWorldBBox.max - worldBBox.min) / (worldBBox.max - worldBBox.min) * (float)(oneAxisMaxPosition);
+    Vector3 relativeMin = (objectWorldBBox.min - worldBBox.min) / (worldBBox.max - worldBBox.min) * static_cast<float>(oneAxisMaxPosition);
+    Vector3 relativeMax = (objectWorldBBox.max - worldBBox.min) / (worldBBox.max - worldBBox.min) * static_cast<float>(oneAxisMaxPosition);
 
     level = maxSubdivisionLevel - 1;
-    float32 currentAxisMaxPosition = (float32)oneAxisMaxPosition;
+    float32 currentAxisMaxPosition = static_cast<float32>(oneAxisMaxPosition);
 
     while (1)
     {
-        voxelMin[0] = (uint32)Clamp(relativeMin.x, 0.0f, currentAxisMaxPosition - 1.0f);
-        voxelMin[1] = (uint32)Clamp(relativeMin.y, 0.0f, currentAxisMaxPosition - 1.0f);
-        voxelMin[2] = (uint32)Clamp(relativeMin.z, 0.0f, currentAxisMaxPosition - 1.0f);
-
-        voxelMax[0] = (uint32)Clamp(relativeMax.x, 0.0f, currentAxisMaxPosition - 1.0f);
-        voxelMax[1] = (uint32)Clamp(relativeMax.y, 0.0f, currentAxisMaxPosition - 1.0f);
-        voxelMax[2] = (uint32)Clamp(relativeMax.z, 0.0f, currentAxisMaxPosition - 1.0f);
+        voxelMin[0] = static_cast<uint32>(Clamp(relativeMin.x, 0.0f, currentAxisMaxPosition - 1.0f));
+        voxelMin[1] = static_cast<uint32>(Clamp(relativeMin.y, 0.0f, currentAxisMaxPosition - 1.0f));
+        voxelMin[2] = static_cast<uint32>(Clamp(relativeMin.z, 0.0f, currentAxisMaxPosition - 1.0f));
+        voxelMax[0] = static_cast<uint32>(Clamp(relativeMax.x, 0.0f, currentAxisMaxPosition - 1.0f));
+        voxelMax[1] = static_cast<uint32>(Clamp(relativeMax.y, 0.0f, currentAxisMaxPosition - 1.0f));
+        voxelMax[2] = static_cast<uint32>(Clamp(relativeMax.z, 0.0f, currentAxisMaxPosition - 1.0f));
 
         uint32 voxelsAffected = (voxelMax[2] - voxelMin[2] + 1) * (voxelMax[1] - voxelMin[1] + 1) * (voxelMax[0] - voxelMin[0] + 1);
         if (voxelsAffected <= 2)
@@ -105,13 +104,12 @@ void VisibilityOctTree::DetermineBoxBoundsInVoxels(RenderObject* renderObject, u
         -------------
     */
     uint32 levelDiff = maxSubdivisionLevel - 1 - level;
-    Vector3 checkMin((float)(voxelMin[0] << levelDiff) / (float)oneAxisMaxPosition,
-                     (float)(voxelMin[1] << levelDiff) / (float)oneAxisMaxPosition,
-                     (float)(voxelMin[2] << levelDiff) / (float)oneAxisMaxPosition);
-
-    Vector3 checkMax((float)((voxelMax[0] + 1) << levelDiff) / (float)oneAxisMaxPosition,
-                     (float)((voxelMax[1] + 1) << levelDiff) / (float)oneAxisMaxPosition,
-                     (float)((voxelMax[2] + 1) << levelDiff) / (float)oneAxisMaxPosition);
+    Vector3 checkMin(static_cast<float>(voxelMin[0] << levelDiff) / static_cast<float>(oneAxisMaxPosition),
+                     static_cast<float>(voxelMin[1] << levelDiff) / static_cast<float>(oneAxisMaxPosition),
+                     static_cast<float>(voxelMin[2] << levelDiff) / static_cast<float>(oneAxisMaxPosition));
+    Vector3 checkMax(static_cast<float>((voxelMax[0] + 1) << levelDiff) / static_cast<float>(oneAxisMaxPosition),
+                     static_cast<float>((voxelMax[1] + 1) << levelDiff) / static_cast<float>(oneAxisMaxPosition),
+                     static_cast<float>((voxelMax[2] + 1) << levelDiff) / static_cast<float>(oneAxisMaxPosition));
 
     checkMin *= (worldBBox.max - worldBBox.min);
     checkMin += worldBBox.min;
@@ -162,7 +160,7 @@ void VisibilityOctTree::RemoveRenderObject(RenderObject* renderObject)
 
     uint32 index = FindAndRemoveExchangingWithLast(roIndices, renderObject);
     roIndices[index]->SetTreeNodeIndex(index);
-    DVASSERT(index != (uint32)(-1));
+    DVASSERT(index != static_cast<uint32>(-1));
 }
 
 void VisibilityOctTree::ObjectUpdated(RenderObject* renderObject)
@@ -224,7 +222,7 @@ void VisibilityOctTree::Clip(Camera* _camera, Vector<RenderObject*>& visibilityA
 
     InternalClip(rootCoord, worldBBox, 0x3f, visibilityArray);
 
-    uint32 size = (uint32)roIndices.size();
+    uint32 size = static_cast<uint32>(roIndices.size());
     for (uint32 k = 0; k < size; ++k)
         if (visibleObjects.At(k))
         {
@@ -311,9 +309,9 @@ void VisibilityOctTree::InternalClip(VoxelCoord voxelCoord, const AABBox3& nodeB
                 uint32 ydiv = (childBitIndex >> 1) & 1;
                 uint32 zdiv = (childBitIndex >> 2) & 1;
 
-                Vector3 childBoxMin(nodeBox.min.x + halfBox.x * (float32)xdiv,
-                                    nodeBox.min.y + halfBox.y * (float32)ydiv,
-                                    nodeBox.min.z + halfBox.z * (float32)zdiv);
+                Vector3 childBoxMin(nodeBox.min.x + halfBox.x * static_cast<float>(xdiv),
+                                    nodeBox.min.y + halfBox.y * static_cast<float>(ydiv),
+                                    nodeBox.min.z + halfBox.z * static_cast<float>(zdiv));
 
                 AABBox3 childBox(childBoxMin, childBoxMin + halfBox);
 
@@ -436,7 +434,7 @@ bool VisibilityOctTree::RayTrace(const Ray3& ray, RayTraceCollision& collision)
 
     localRayBoxTraceCount = 0;
     BroadPhaseCollisions(ray, broadPhaseCollisions);
-    avgBoxRayTestCount += (float32)localRayBoxTraceCount;
+    avgBoxRayTestCount += static_cast<float>(localRayBoxTraceCount);
     // TODO: Remove duplication of this code in SpatialTree and RenderHierarchy
     bool intersectionFound = false;
     float32 closestT = FLOAT_MAX;
@@ -550,9 +548,9 @@ void VisibilityOctTree::InternalDebugDraw(VoxelCoord voxelCoord, const Matrix4& 
 
                 if ((currentNode.children >> childBitIndex) & 1)
                 {
-                    Vector3 childBoxMin(boundingBox.min.x + halfBox.x * (float32)xdiv,
-                                        boundingBox.min.y + halfBox.y * (float32)ydiv,
-                                        boundingBox.min.z + halfBox.z * (float32)zdiv);
+                    Vector3 childBoxMin(boundingBox.min.x + halfBox.x * static_cast<float>(xdiv),
+                                        boundingBox.min.y + halfBox.y * static_cast<float>(ydiv),
+                                        boundingBox.min.z + halfBox.z * static_cast<float>(zdiv));
                     //Logger::Debug(Format("Start: %d %d %d", xdiv, ydiv, zdiv).c_str());
 
                     AABBox3 childBox(childBoxMin, childBoxMin + halfBox);
@@ -674,7 +672,7 @@ void VisibilityOctTree::InternalRemoveRenderObject(RenderObject* renderObject, V
 
     std::vector<RenderObject*>& leafArray = leafs[node.leafIndex];
 
-    int32 size = (int32)leafArray.size();
+    int32 size = static_cast<int32>(leafArray.size());
     for (int32 k = 0; k < size; ++k)
         if (leafArray[k] == renderObject)
         {
