@@ -246,7 +246,7 @@ void VisibilityOctTree::InternalClip(VoxelCoord voxelCoord, const AABBox3& nodeB
 
     if (clipMask)
     {
-        uint8 startClippingPlane = (uint8)currentNode.startClippingPlane;
+        uint8 startClippingPlane = static_cast<uint8>(currentNode.startClippingPlane);
         frustumRes = frustum->Classify(nodeBox, clipMask, startClippingPlane);
         currentNode.startClippingPlane = startClippingPlane;
         if (frustumRes == Frustum::EFR_OUTSIDE)
