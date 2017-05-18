@@ -168,18 +168,18 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     enableFlowCheckBox = new QCheckBox("Enable flowmap");
     mainBox->addWidget(enableFlowCheckBox);
     connect(enableFlowCheckBox,
-        SIGNAL(stateChanged(int)),
-        this,
-        SLOT(OnFlowPropertiesChanged()));
+            SIGNAL(stateChanged(int)),
+            this,
+            SLOT(OnFlowPropertiesChanged()));
     CreateFlowmapLayoutWidget();
     mainBox->addWidget(flowLayoutWidget);
 
     enableNoiseCheckBox = new QCheckBox("Enable noise");
     mainBox->addWidget(enableNoiseCheckBox);
     connect(enableNoiseCheckBox,
-        SIGNAL(stateChanged(int)),
-        this,
-        SLOT(OnNoisePropertiesChanged()));
+            SIGNAL(stateChanged(int)),
+            this,
+            SLOT(OnNoisePropertiesChanged()));
     CreateNoiseLayoutWidget();
     mainBox->addWidget(noiseLayoutWidget);
 
@@ -864,7 +864,7 @@ void EmitterLayerWidget::OnNoisePropertiesChanged()
     DAVA::PropLineWrapper<DAVA::float32> propNoiseScaleOverLife;
     noiseScaleOverLifeTimeLine->GetValue(0, propNoiseScaleOverLife.GetPropsPtr());
 
-    // U scroll speed. 
+    // U scroll speed.
     DAVA::PropLineWrapper<DAVA::float32> propNoiseUScrollSpeed;
     noiseUScrollSpeedTimeLine->GetValue(0, propNoiseUScrollSpeed.GetPropsPtr());
 
@@ -874,7 +874,7 @@ void EmitterLayerWidget::OnNoisePropertiesChanged()
     DAVA::PropLineWrapper<DAVA::float32> propNoiseUScrollSpeedOverLife;
     noiseUScrollSpeedOverLifeTimeLine->GetValue(0, propNoiseUScrollSpeedOverLife.GetPropsPtr());
 
-    // V scroll speed. 
+    // V scroll speed.
     DAVA::PropLineWrapper<DAVA::float32> propNoiseVScrollSpeed;
     noiseVScrollSpeedTimeLine->GetValue(0, propNoiseVScrollSpeed.GetPropsPtr());
 
@@ -883,7 +883,7 @@ void EmitterLayerWidget::OnNoisePropertiesChanged()
 
     DAVA::PropLineWrapper<DAVA::float32> propNoiseVScrollSpeedOverLife;
     noiseVScrollSpeedOverLifeTimeLine->GetValue(0, propNoiseVScrollSpeedOverLife.GetPropsPtr());
-    
+
     QString path = noiseSpritePathLabel->text();
     path = EmitterLayerWidgetDetails::ConvertPSDPathToSprite(path);
     const DAVA::FilePath noisePath(path.toStdString());
@@ -905,7 +905,6 @@ void EmitterLayerWidget::OnNoisePropertiesChanged()
     params.noiseVScrollSpeed = propNoiseVScrollSpeed.GetPropLine();
     params.noiseVScrollSpeedVariation = propNoiseVScrollSpeedVariation.GetPropLine();
     params.noiseVScrollSpeedOverLife = propNoiseVScrollSpeedOverLife.GetPropLine();
-
 
     DVASSERT(GetActiveScene() != nullptr);
     GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeNoiseProperties(layer, std::move(params))));
@@ -1008,13 +1007,11 @@ void EmitterLayerWidget::Update(bool updateMinimized)
         REGlobal::ShowNotification(params);
     }
 
-
     bool fresToAlphaVisible = layer->useFresnelToAlpha;
     fresnelBiasLabel->setVisible(fresToAlphaVisible);
     fresnelBiasSpinBox->setVisible(fresToAlphaVisible);
     fresnelPowerLabel->setVisible(fresToAlphaVisible);
     fresnelPowerSpinBox->setVisible(fresToAlphaVisible);
-
 
     enableFlowCheckBox->setChecked(layer->enableFlow);
     flowLayoutWidget->setVisible(enableFlowCheckBox->isChecked());
@@ -1318,45 +1315,45 @@ void EmitterLayerWidget::CreateFlowmapLayoutWidget()
     QVBoxLayout* flowVBox = new QVBoxLayout();
     flowSpeedTimeLine = new TimeLineWidget(this);
     connect(flowSpeedTimeLine,
-        SIGNAL(ValueChanged()),
-        this,
-        SLOT(OnFlowPropertiesChanged()));
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnFlowPropertiesChanged()));
     flowVBox->addWidget(flowSpeedTimeLine);
 
     flowSpeedVariationTimeLine = new TimeLineWidget(this);
     connect(flowSpeedVariationTimeLine,
-        SIGNAL(ValueChanged()),
-        this,
-        SLOT(OnFlowPropertiesChanged()));
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnFlowPropertiesChanged()));
     flowVBox->addWidget(flowSpeedVariationTimeLine);
 
     flowSpeedOverLifeTimeLine = new TimeLineWidget(this);
     connect(flowSpeedOverLifeTimeLine,
-        SIGNAL(ValueChanged()),
-        this,
-        SLOT(OnFlowPropertiesChanged()));
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnFlowPropertiesChanged()));
     flowVBox->addWidget(flowSpeedOverLifeTimeLine);
 
     // Offset.
     flowOffsetTimeLine = new TimeLineWidget(this);
     connect(flowOffsetTimeLine,
-        SIGNAL(ValueChanged()),
-        this,
-        SLOT(OnFlowPropertiesChanged()));
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnFlowPropertiesChanged()));
     flowVBox->addWidget(flowOffsetTimeLine);
 
     flowOffsetVariationTimeLine = new TimeLineWidget(this);
     connect(flowOffsetVariationTimeLine,
-        SIGNAL(ValueChanged()),
-        this,
-        SLOT(OnFlowPropertiesChanged()));
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnFlowPropertiesChanged()));
     flowVBox->addWidget(flowOffsetVariationTimeLine);
 
     flowOffsetOverLifeTimeLine = new TimeLineWidget(this);
     connect(flowOffsetOverLifeTimeLine,
-        SIGNAL(ValueChanged()),
-        this,
-        SLOT(OnFlowPropertiesChanged()));
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnFlowPropertiesChanged()));
     flowVBox->addWidget(flowOffsetOverLifeTimeLine);
 
     flowMainLayout->addLayout(flowVBox);
@@ -1398,23 +1395,23 @@ void EmitterLayerWidget::CreateNoiseLayoutWidget()
     QVBoxLayout* timelineVBox = new QVBoxLayout();
     noiseScaleTimeLine = new TimeLineWidget(this);
     connect(noiseScaleTimeLine,
-        SIGNAL(ValueChanged()),
-        this,
-        SLOT(OnNoisePropertiesChanged()));
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnNoisePropertiesChanged()));
     timelineVBox->addWidget(noiseScaleTimeLine);
 
     noiseScaleVariationTimeLine = new TimeLineWidget(this);
     connect(noiseScaleVariationTimeLine,
-        SIGNAL(ValueChanged()),
-        this,
-        SLOT(OnNoisePropertiesChanged()));
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnNoisePropertiesChanged()));
     timelineVBox->addWidget(noiseScaleVariationTimeLine);
 
     noiseScaleOverLifeTimeLine = new TimeLineWidget(this);
     connect(noiseScaleOverLifeTimeLine,
-        SIGNAL(ValueChanged()),
-        this,
-        SLOT(OnNoisePropertiesChanged()));
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnNoisePropertiesChanged()));
     timelineVBox->addWidget(noiseScaleOverLifeTimeLine);
 
     noiseMainLayout->addLayout(timelineVBox);
@@ -1422,9 +1419,9 @@ void EmitterLayerWidget::CreateNoiseLayoutWidget()
     enableNoiseScrollCheckBox = new QCheckBox("Use noise scroll");
     mainBox->addWidget(enableNoiseScrollCheckBox);
     connect(enableNoiseScrollCheckBox,
-        SIGNAL(stateChanged(int)),
-        this,
-        SLOT(OnNoisePropertiesChanged()));
+            SIGNAL(stateChanged(int)),
+            this,
+            SLOT(OnNoisePropertiesChanged()));
     noiseMainLayout->addWidget(enableNoiseScrollCheckBox);
 
     noiseScrollWidget = new QWidget();
@@ -1433,44 +1430,44 @@ void EmitterLayerWidget::CreateNoiseLayoutWidget()
     noiseMainLayout->addWidget(noiseScrollWidget);
     noiseUScrollSpeedTimeLine = new TimeLineWidget(this);
     connect(noiseUScrollSpeedTimeLine,
-        SIGNAL(ValueChanged()),
-        this,
-        SLOT(OnNoisePropertiesChanged()));
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnNoisePropertiesChanged()));
     noiseUvScrollLayout->addWidget(noiseUScrollSpeedTimeLine);
 
     noiseUScrollSpeedVariationTimeLine = new TimeLineWidget(this);
     connect(noiseUScrollSpeedVariationTimeLine,
-        SIGNAL(ValueChanged()),
-        this,
-        SLOT(OnNoisePropertiesChanged()));
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnNoisePropertiesChanged()));
     noiseUvScrollLayout->addWidget(noiseUScrollSpeedVariationTimeLine);
 
     noiseUScrollSpeedOverLifeTimeLine = new TimeLineWidget(this);
     connect(noiseUScrollSpeedOverLifeTimeLine,
-        SIGNAL(ValueChanged()),
-        this,
-        SLOT(OnNoisePropertiesChanged()));
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnNoisePropertiesChanged()));
     noiseUvScrollLayout->addWidget(noiseUScrollSpeedOverLifeTimeLine);
 
     noiseVScrollSpeedTimeLine = new TimeLineWidget(this);
     connect(noiseVScrollSpeedTimeLine,
-        SIGNAL(ValueChanged()),
-        this,
-        SLOT(OnNoisePropertiesChanged()));
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnNoisePropertiesChanged()));
     noiseUvScrollLayout->addWidget(noiseVScrollSpeedTimeLine);
 
     noiseVScrollSpeedVariationTimeLine = new TimeLineWidget(this);
     connect(noiseVScrollSpeedVariationTimeLine,
-        SIGNAL(ValueChanged()),
-        this,
-        SLOT(OnNoisePropertiesChanged()));
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnNoisePropertiesChanged()));
     noiseUvScrollLayout->addWidget(noiseVScrollSpeedVariationTimeLine);
 
     noiseVScrollSpeedOverLifeTimeLine = new TimeLineWidget(this);
     connect(noiseVScrollSpeedOverLifeTimeLine,
-        SIGNAL(ValueChanged()),
-        this,
-        SLOT(OnNoisePropertiesChanged()));
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnNoisePropertiesChanged()));
     noiseUvScrollLayout->addWidget(noiseVScrollSpeedOverLifeTimeLine);
 
     connect(noiseTextureBtn, SIGNAL(clicked(bool)), this, SLOT(OnNoiseSpriteBtn()));
@@ -1486,9 +1483,9 @@ QLayout* EmitterLayerWidget::CreateFresnelToAlphaLayout()
     fresnelToAlphaCheckbox = new QCheckBox("Fresnel to alpha");
     longFresLayout->addWidget(fresnelToAlphaCheckbox);
     connect(fresnelToAlphaCheckbox,
-        SIGNAL(stateChanged(int)),
-        this,
-        SLOT(OnFresnelToAlphaChanged()));
+            SIGNAL(stateChanged(int)),
+            this,
+            SLOT(OnFresnelToAlphaChanged()));
 
     fresnelBiasSpinBox = new EventFilterDoubleSpinBox();
     fresnelBiasSpinBox->setMinimum(0);

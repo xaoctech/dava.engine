@@ -27,18 +27,18 @@ public:
 
         eBlending blending = BLENDING_ALPHABLEND;
 
-        bool operator ==(const MaterialData& rhs)
+        bool operator==(const MaterialData& rhs)
         {
             return texture == rhs.texture
-                && enableFog == rhs.enableFog
-                && enableFrameBlend == rhs.enableFrameBlend
-                && flowmap == rhs.flowmap
-                && enableFlow == rhs.enableFlow
-                && enableNoise == rhs.enableNoise
-                && isNoiseAffectFlow == rhs.isNoiseAffectFlow
-                && enableNoiseUVScroll == rhs.enableNoiseUVScroll
-                && noise == rhs.noise
-                && blending == rhs.blending;
+            && enableFog == rhs.enableFog
+            && enableFrameBlend == rhs.enableFrameBlend
+            && flowmap == rhs.flowmap
+            && enableFlow == rhs.enableFlow
+            && enableNoise == rhs.enableNoise
+            && isNoiseAffectFlow == rhs.isNoiseAffectFlow
+            && enableNoiseUVScroll == rhs.enableNoiseUVScroll
+            && noise == rhs.noise
+            && blending == rhs.blending;
         }
     };
 
@@ -62,7 +62,7 @@ public:
     inline void SetAllowLodDegrade(bool allowDegrade);
     inline bool GetAllowLodDegrade() const;
 
-    inline const  Vector<std::pair<MaterialData, NMaterial*>>& GetMaterialInstances() const;
+    inline const Vector<std::pair<MaterialData, NMaterial*>>& GetMaterialInstances() const;
 
     void PrebuildMaterials(ParticleEffectComponent* component);
 
@@ -86,7 +86,6 @@ private:
     Vector<ParticleEffectComponent*> activeComponents;
 
 private: //materials stuff
-
     NMaterial* particleBaseMaterial;
     Vector<std::pair<MaterialData, NMaterial*>> prebultMaterialsVector;
     NMaterial* GetMaterial(MaterialData&& materialData);
@@ -94,7 +93,6 @@ private: //materials stuff
     bool allowLodDegrade;
 
     bool is2DMode;
-
 };
 
 inline const Vector<std::pair<ParticleEffectSystem::MaterialData, NMaterial*>>& ParticleEffectSystem::GetMaterialInstances() const

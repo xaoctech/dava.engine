@@ -59,7 +59,7 @@ eBlendMode GetBlendModeByName(const String& blendStr)
 
 /*end of legacy compatibility code*/
 
-ParticleLayer::ParticleLayer() 
+ParticleLayer::ParticleLayer()
     : flowSpeed(nullptr)
     , flowSpeedVariation(nullptr)
     , flowSpeedOverLife(nullptr)

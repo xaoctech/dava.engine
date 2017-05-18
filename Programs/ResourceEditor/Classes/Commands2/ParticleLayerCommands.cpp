@@ -52,7 +52,7 @@ DAVA::ParticleLayer* CommandChangeLayerMaterialProperties::GetLayer() const
 }
 
 CommandChangeFlowProperties::CommandChangeFlowProperties(ParticleLayer* layer_, CommandChangeFlowProperties::FlowParams&& params)
-    :RECommand(CMDID_PARTICLE_LAYER_CHANGED_FLOW_VALUES, "Change Flow Properties")
+    : RECommand(CMDID_PARTICLE_LAYER_CHANGED_FLOW_VALUES, "Change Flow Properties")
     , layer(layer_)
     , newParams(params)
 {
@@ -92,7 +92,7 @@ void CommandChangeFlowProperties::ApplyParams(FlowParams& params)
         layer->enableFlow = params.enableFlow;
         layer->SetFlowmap(params.spritePath);
         PropertyLineHelper::SetValueLine(layer->flowSpeed, params.flowSpeed);
-        PropertyLineHelper::SetValueLine(layer->flowSpeedVariation , params.flowSpeedVariation);
+        PropertyLineHelper::SetValueLine(layer->flowSpeedVariation, params.flowSpeedVariation);
         PropertyLineHelper::SetValueLine(layer->flowSpeedOverLife, params.flowSpeedOverLife);
         PropertyLineHelper::SetValueLine(layer->flowOffset, params.flowOffset);
         PropertyLineHelper::SetValueLine(layer->flowOffsetVariation, params.flowOffsetVariation);

@@ -442,7 +442,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
             group.loopStartTime = group.time;
             group.loopLayerStartTime = group.layer->deltaTime + group.layer->deltaVariation * static_cast<float32>(Random::Instance()->RandFloat());
             group.loopDuration = group.loopLayerStartTime + (group.layer->endTime - group.layer->startTime) + group.layer->loopVariation * static_cast<float32>(Random::Instance()->RandFloat());
-            currLoopTime = 0; 
+            currLoopTime = 0;
         }
 
         //prepare forces as they will now actually change in time even for already generated particles
@@ -645,7 +645,6 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleEffectComponent* eff
     if (group.layer->lifeVariation)
         particle->lifeTime += (group.layer->lifeVariation->GetValue(currLoopTime) * static_cast<float32>(Random::Instance()->RandFloat()));
 
-
     // Flow.
     particle->baseFlowSpeed = 0.0f;
     if (group.layer->flowSpeed)
@@ -723,7 +722,6 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleEffectComponent* eff
     {
         particle->frame = static_cast<int32>(static_cast<float32>(Random::Instance()->RandFloat()) * static_cast<float32>(group.layer->sprite->GetFrameCount()));
     }
-
 
     PrepareEmitterParameters(particle, group, worldTransform);
 

@@ -289,7 +289,7 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
                     particlePosition += effectData->infoSources[group.positionSource].position;
                 Array<Vector3, 4> quadPos = { particlePosition + left + bot, particlePosition + right + bot, particlePosition + left + top, particlePosition + right + top };
                 uint32 ptrOffset = 0;
-                
+
                 for (int32 i = 0; i < 4; i++)
                 {
                     verts[i][ptrOffset + 0] = quadPos[i].x; // Position xyz.

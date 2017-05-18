@@ -79,7 +79,7 @@ public:
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> noiseScale;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> noiseScaleVariation;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> noiseScaleOverLife;
-        bool enableNoiseScroll = false; 
+        bool enableNoiseScroll = false;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> noiseUScrollSpeed;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> noiseUScrollSpeedVariation;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> noiseUScrollSpeedOverLife;
