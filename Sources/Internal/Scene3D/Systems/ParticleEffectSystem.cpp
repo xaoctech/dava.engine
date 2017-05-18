@@ -682,6 +682,12 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleEffectComponent* eff
     if (group.layer->noiseVScrollSpeedVariation)
         particle->baseNoiseVScrollSpeed += (group.layer->noiseVScrollSpeedVariation->GetValue(currLoopTime) * static_cast<float32>(Random::Instance()->RandFloat()));
     particle->currNoiseVScrollSpeed = particle->baseNoiseVScrollSpeed;
+
+    if (group.layer->useFresnelToAlpha)
+    {
+        particle->fresnelToAlphaPower = group.layer->fresnelToAlphaPower;
+        particle->fresnelToAlphaBias = group.layer->fresnelToAlphaBias;
+    }
     // size
     particle->baseSize = Vector2(1.0f, 1.0f);
     if (group.layer->size)

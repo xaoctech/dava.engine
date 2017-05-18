@@ -8,8 +8,8 @@
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Project/ProjectManagerData.h"
 
-#include "TArc/DataProcessing/DataContext.h"
-#include "QtTools/FileDialogs/FileDialog.h"
+#include <TArc/DataProcessing/DataContext.h>
+#include <QtTools/FileDialogs/FileDialog.h>
 
 #include <QHBoxLayout>
 #include <QGraphicsWidget>
@@ -260,6 +260,9 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
 
     mainBox->addLayout(orientationLayout);
 
+    fresnelToAlphaLabel = new QLabel(this);
+    fresnelToAlphaLabel->setText("Fresnel to alpha");
+    mainBox->addWidget(layerTypeLabel);
     mainBox->addLayout(CreateFresnelToAlphaLayout());
 
     blendOptionsLabel = new QLabel("Blending Options");
@@ -758,7 +761,7 @@ void EmitterLayerWidget::OnValueChanged()
     GetActiveScene()->Exec(std::move(updateLayerCmd));
     GetActiveScene()->MarkAsChanged();
 
-    Update(false);
+    // Update(false);
     if (superemitterStatusChanged)
     {
         if (!GetEffect(activeScene)->IsStopped())
@@ -994,6 +997,17 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     scaleVelocityBaseSpinBox->setVisible(scaleVelocityVisible);
     scaleVelocityFactorLabel->setVisible(scaleVelocityVisible);
     scaleVelocityFactorSpinBox->setVisible(scaleVelocityVisible);
+
+    fresnelToAlphaCheckbox->setChecked(layer->useFresnelToAlpha);
+    if (layer->particleOrientation & DAVA::ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING && layer->useFresnelToAlpha)
+    {
+        DAVA::TArc::NotificationParams params;
+        params.message.message = "The check boxes Fresnel to alpha and Camera facing are both set.";
+        params.message.type = ::Result::RESULT_WARNING;
+        params.title = "Particle system warning.";
+        REGlobal::ShowNotification(params);
+    }
+
 
     bool fresToAlphaVisible = layer->useFresnelToAlpha;
     fresnelBiasLabel->setVisible(fresToAlphaVisible);
@@ -1691,6 +1705,7 @@ void EmitterLayerWidget::SetSuperemitterMode(bool isSuperemitter)
     enableNoiseCheckBox->setVisible(!isSuperemitter);
     noiseLayoutWidget->setVisible(!isSuperemitter && enableNoiseCheckBox->isChecked());
 
+    fresnelToAlphaLabel->setVisible(!isSuperemitter);
     fresnelToAlphaCheckbox->setVisible(!isSuperemitter);
     bool fresToAlphaVisible = !isSuperemitter && fresnelToAlphaCheckbox->isChecked();
     fresnelBiasLabel->setVisible(fresToAlphaVisible);

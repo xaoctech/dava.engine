@@ -29,6 +29,7 @@ DAVA::TArc::ContextAccessor* GetAccessor();
 
 DAVA::TArc::DataWrapper CreateDataWrapper(const DAVA::ReflectedType* type);
 DAVA::TArc::ModalMessageParams::Button ShowModalMessage(const DAVA::TArc::ModalMessageParams& params);
+void ShowNotification(const DAVA::TArc::NotificationParams& params);
 
 template <typename T>
 T* GetDataNode()

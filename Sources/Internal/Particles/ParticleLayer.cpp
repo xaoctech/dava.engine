@@ -300,6 +300,9 @@ ParticleLayer* ParticleLayer::Clone()
     dstLayer->enableFlow = enableFlow;
     dstLayer->activeLODS = activeLODS;
     dstLayer->isLong = isLong;
+    dstLayer->useFresnelToAlpha = useFresnelToAlpha;
+    dstLayer->fresnelToAlphaBias = fresnelToAlphaBias;
+    dstLayer->fresnelToAlphaPower = fresnelToAlphaPower;
     dstLayer->noisePath = noisePath;
     dstLayer->enableNoise = enableNoise;
     dstLayer->enableNoiseScroll = enableNoiseScroll;
@@ -486,6 +489,16 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
     {
         isLong = longNode->AsBool();
     }
+
+    const YamlNode* useFresToAlphaNode = node->Get("useFresToAlpha");
+    if (useFresToAlphaNode)
+        useFresnelToAlpha = useFresToAlphaNode->AsBool();
+    const YamlNode* fresToAlphaBiasNode = node->Get("fresToAlphaBias");
+    if (fresToAlphaBiasNode)
+        fresnelToAlphaBias = fresToAlphaBiasNode->AsFloat();
+    const YamlNode* fresToAlphaPowerNode = node->Get("fresToAlphaPower");
+    if (fresToAlphaPowerNode)
+        fresnelToAlphaPower = fresToAlphaPowerNode->AsFloat();
 
     const YamlNode* pivotPointNode = node->Get("pivotPoint");
 
@@ -891,6 +904,10 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "isLong", isLong);
 
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<Vector2>(layerNode, "pivotPoint", layerPivotPoint);
+
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "useFresToAlpha", useFresnelToAlpha);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "fresToAlphaBias", fresnelToAlphaBias);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "fresToAlphaPower", fresnelToAlphaPower);
 
     // Truncate an extension of the sprite file.
     FilePath savePath = spritePath;
