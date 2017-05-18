@@ -2,6 +2,12 @@
 
 #include <Reflection/ReflectionRegistrator.h>
 
+ENUM_DECLARE(DAVA::UISpineComponent::AnimationState)
+{
+    ENUM_ADD_DESCR(DAVA::UISpineComponent::STOPPED, "Stopped");
+    ENUM_ADD_DESCR(DAVA::UISpineComponent::PLAYED, "Played");
+}
+
 namespace DAVA
 {
 

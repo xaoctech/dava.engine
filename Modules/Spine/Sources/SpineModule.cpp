@@ -1,4 +1,5 @@
 #include "SpineModule.h"
+#include "UI/Spine/UISpineBonesComponent.h"
 #include "UI/Spine/UISpineComponent.h"
 #include "UI/Spine/UISpineSystem.h"
 
@@ -10,12 +11,6 @@
 #include <UI/UIControlSystem.h>
 #include <UI/Styles/UIStyleSheetSystem.h>
 
-ENUM_DECLARE(DAVA::UISpineComponent::AnimationState)
-{
-    ENUM_ADD_DESCR(DAVA::UISpineComponent::STOPPED, "Stopped");
-    ENUM_ADD_DESCR(DAVA::UISpineComponent::PLAYED, "Played");
-}
-
 namespace DAVA
 {
 
@@ -23,14 +18,17 @@ SpineModule::SpineModule(Engine * engine)
     : IModule(engine)
 {
     DAVA_REFLECTION_REGISTER_CUSTOM_PERMANENT_NAME(UISpineComponent, "Spine");
+    DAVA_REFLECTION_REGISTER_CUSTOM_PERMANENT_NAME(UISpineBonesComponent, "SpineBones");
 }
 
 void SpineModule::Init()
 {
     const Engine* engine = Engine::Instance();
     const EngineContext* context = engine->GetContext();
+
     ComponentManager* cm = context->componentManager;
     cm->RegisterComponent<UISpineComponent>();
+    cm->RegisterComponent<UISpineBonesComponent>();
 
     UIControlSystem* cs = context->uiControlSystem;
     cs->AddSystem(std::make_unique<UISpineSystem>(), cs->GetStyleSheetSystem());
@@ -40,6 +38,7 @@ void SpineModule::Shutdown()
 {
     const Engine* engine = Engine::Instance();
     const EngineContext* context = engine->GetContext();
+
     UIControlSystem* cs = context->uiControlSystem;
     cs->RemoveSystem(cs->GetSystem<UISpineSystem>());
 }

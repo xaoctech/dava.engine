@@ -156,12 +156,6 @@ void SpineSkeleton::ReleaseSkeleton()
     mAnimations.clear();
     mSkins.clear();
 
-    for (const auto& bonePair : mBones)
-    {
-        bonePair.second->RemoveFromParent();
-    }
-    mBones.clear();
-
     if (batchDescriptor)
     {
         batchDescriptor->vertexCount = 0;
@@ -525,7 +519,7 @@ const Vector<String>& SpineSkeleton::GetAvailableSkinsNames() const
 
 SpineBone* SpineSkeleton::FindBone(const String& boneName)
 {
-    return nullptr;
+    return reinterpret_cast<SpineBone*>(spSkeleton_findBone(mSkeleton, boneName.c_str()));
 }
 
 }

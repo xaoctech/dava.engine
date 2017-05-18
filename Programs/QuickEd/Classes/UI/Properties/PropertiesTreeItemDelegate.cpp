@@ -90,6 +90,7 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
     propertyNameTypeItemDelegates[PropertyPath("Spine", "atlasPath")] = new ResourceFilePropertyDelegate(".atlas", "", this);
     propertyNameTypeItemDelegates[PropertyPath("Spine", "animationName")] = new ComboPropertyDelegate(this, std::make_unique<CompletionsProviderForUIReflection>("animationsNames", "Spine"));
     propertyNameTypeItemDelegates[PropertyPath("Spine", "skinName")] = new ComboPropertyDelegate(this, std::make_unique<CompletionsProviderForUIReflection>("skinsNames", "Spine"));
+    propertyNameTypeItemDelegates[PropertyPath("SpineBones", "bonesBinds")] = new TablePropertyDelegate(QList<QString>({ "Bone", "Control" }), this);
 }
 
 PropertiesTreeItemDelegate::~PropertiesTreeItemDelegate()

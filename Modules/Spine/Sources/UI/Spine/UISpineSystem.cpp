@@ -1,4 +1,6 @@
 #include "UI/Spine/UISpineSystem.h"
+
+#include "UI/Spine/UISpineBonesComponent.h"
 #include "UI/Spine/UISpineComponent.h"
 #include "UI/Spine/SpineSkeleton.h"
 
@@ -6,6 +8,7 @@
 #include <UI/UIControl.h>
 #include <UI/UIControlBackground.h>
 #include <UI/Components/UIComponent.h>
+#include <UI/Layouts/UILayoutSourceRectComponent.h>
 
 #include <spine/spine.h>
 
@@ -40,16 +43,13 @@ void UISpineSystem::RegisterComponent(UIControl* control, UIComponent* component
     {
         AddNode(static_cast<UISpineComponent*>(component));
     }
+    else if (component->GetType() == Type::Instance<UISpineBonesComponent>())
+    {
+        BindBones(static_cast<UISpineBonesComponent*>(component));
+    }
     else if (component->GetType() == Type::Instance<UIControlBackground>())
     {
-        auto it = std::find_if(nodes.begin(), nodes.end(), [control](const SpineNode& node) {
-            return node.component->GetControl() == control;
-        });
-        if (it != nodes.end())
-        {
-            UIControlBackground* bg = static_cast<UIControlBackground*>(component);
-            bg->SetRenderBatch(it->skeleton->GetRenderBatch());
-        }
+        BindBackground(static_cast<UIControlBackground*>(component));
     }
 }
 
@@ -59,16 +59,13 @@ void UISpineSystem::UnregisterComponent(UIControl* control, UIComponent* compone
     {
         RemoveNode(static_cast<UISpineComponent*>(component));
     }
+    else if (component->GetType() == Type::Instance<UISpineBonesComponent>())
+    {
+        UnbindBones(static_cast<UISpineBonesComponent*>(component));
+    }
     else if (component->GetType() == Type::Instance<UIControlBackground>())
     {
-        auto it = std::find_if(nodes.begin(), nodes.end(), [control](const SpineNode& node) {
-            return node.component->GetControl() == control;
-        });
-        if (it != nodes.end())
-        {
-            UIControlBackground* bg = static_cast<UIControlBackground*>(component);
-            bg->SetRenderBatch(nullptr);
-        }
+        UnbindBackground(static_cast<UIControlBackground*>(component));
     }
 }
 
@@ -82,31 +79,33 @@ void UISpineSystem::OnControlInvisible(UIControl * control)
 
 void UISpineSystem::Process(DAVA::float32 elapsedTime)
 {
-    for(SpineNode& node : nodes)
+    for(auto& pair : nodes)
     {
-        UISpineComponent* component = node.component;
+        SpineNode& node = pair.second;
+        RefPtr<UISpineComponent>& spine = node.spine;
+        RefPtr<UISpineBonesComponent>& bones = node.bones;
         const RefPtr<SpineSkeleton>& skeleton = node.skeleton;
 
-        if (component->IsNeedReload())
+        if (spine->IsNeedReload())
         {
-            skeleton->Load(component->GetSkeletonPath(), component->GetAtlasPath());
+            skeleton->Load(spine->GetSkeletonPath(), spine->GetAtlasPath());
 
-            component->SetAnimationsNames(skeleton->GetAvailableAnimationsNames());
-            component->SetSkinsNames(skeleton->GetAvailableSkinsNames());
+            spine->SetAnimationsNames(skeleton->GetAvailableAnimationsNames());
+            spine->SetSkinsNames(skeleton->GetAvailableSkinsNames());
             
-            component->SetNeedReload(false);
+            spine->SetNeedReload(false);
         }
 
-        if (component->IsModified())
+        if (spine->IsModified())
         {
-            skeleton->SetTimeScale(component->GetTimeScale());
-            skeleton->SetSkin(component->GetSkinName());
-            switch(component->GetAnimationState())
+            skeleton->SetTimeScale(spine->GetTimeScale());
+            skeleton->SetSkin(spine->GetSkinName());
+            switch(spine->GetAnimationState())
             {
             case UISpineComponent::PLAYED:
                 {
-                    const String& name = component->GetAnimationName();
-                    if (name.empty() || skeleton->SetAnimation(0, name, component->IsLoopedPlayback()) == nullptr)
+                    const String& name = spine->GetAnimationName();
+                    if (name.empty() || skeleton->SetAnimation(0, name, spine->IsLoopedPlayback()) == nullptr)
                     {
                         skeleton->ClearTracks();
                         skeleton->ResetSkeleton();
@@ -118,10 +117,37 @@ void UISpineSystem::Process(DAVA::float32 elapsedTime)
                 skeleton->ResetSkeleton();
                 break;
             }
-            component->SetModified(false);
+            spine->SetModified(false);
         }
 
         skeleton->Update(elapsedTime);
+
+        if (bones)
+        {
+            for (auto& bonePair : bones->GetBinds())
+            {
+                spBone* bone = reinterpret_cast<spBone*>(skeleton->FindBone(bonePair.first));
+                //DVASSERT(bone != nullptr, "Bone was not found!");
+                if (bone)
+                {
+                    UIControl* boneControl = pair.first->FindByPath(bonePair.second);
+                    //DVASSERT(boneControl != nullptr, "Control was not found!");
+                    if (boneControl)
+                    {
+                        UILayoutSourceRectComponent* lsrc = boneControl->GetComponent<UILayoutSourceRectComponent>();
+                        if (lsrc)
+                        {
+                            lsrc->SetPosition(Vector2(bone->worldX, -bone->worldY));
+                        }
+
+                        boneControl->SetPosition(Vector2(bone->worldX, -bone->worldY));
+                        boneControl->SetAngleInDegrees(-bone->rotation);
+                        boneControl->SetScale(Vector2(bone->scaleX, bone->scaleY));
+                        //boneControl->UpdateLayout();
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -130,9 +156,9 @@ void UISpineSystem::AddNode(UISpineComponent* component)
     DVASSERT(component);
 
     SpineNode node;
-    node.component = component;
-    node.component->SetModified(true);
-    node.component->SetNeedReload(true);
+    node.spine = component;
+    node.spine->SetModified(true);
+    node.spine->SetNeedReload(true);
 
     node.skeleton.Set(new SpineSkeleton());
     node.skeleton->onStart.Connect([this, component](int32 trackIndex) {
@@ -154,34 +180,89 @@ void UISpineSystem::AddNode(UISpineComponent* component)
         onAnimationEvent.Emit(component, trackIndex, event);
     });
 
+    nodes[component->GetControl()] = node;
+
     // Bind background if exists
     UIControlBackground* bg = component->GetControl()->GetComponent<UIControlBackground>();
     if (bg)
     {
-        bg->SetDrawType(UIControlBackground::DRAW_BATCH);
-        bg->SetRenderBatch(node.skeleton->GetRenderBatch());
+        BindBackground(bg);
     }
 
-    nodes.push_back(node);
+    // Bind bones if exists
+    UISpineBonesComponent* bones = component->GetControl()->GetComponent<UISpineBonesComponent>();
+    if (bones)
+    {
+        BindBones(bones);
+    }
 }
 
 void UISpineSystem::RemoveNode(UISpineComponent* component)
 {
     DVASSERT(component);
 
-    auto it = std::find_if(nodes.begin(), nodes.end(), [component](const SpineNode& node) {
-        return node.component == component;
-    });
-
+    auto it = nodes.find(component->GetControl());
     if (it != nodes.end())
     {
-        UIControl* ctrl = it->component->GetControl();
-        UIControlBackground* bg = ctrl->GetComponent<UIControlBackground>();
-        if (bg)
+        SpineNode& node = it->second;
+
+        if (node.bg)
         {
-            bg->SetRenderBatch(nullptr);
+            node.bg->SetRenderBatch(nullptr);
         }
+
+        if (node.bones)
+        {
+
+        }
+
         nodes.erase(it, nodes.end());
+    }
+}
+
+void UISpineSystem::BindBones(UISpineBonesComponent * bones)
+{
+    auto it = nodes.find(bones->GetControl());
+    if (it != nodes.end())
+    {
+        SpineNode& node = it->second;
+        DVASSERT(node.bones == nullptr);
+        node.bones = bones;
+    }
+}
+
+void UISpineSystem::UnbindBones(UISpineBonesComponent * bones)
+{
+    auto it = nodes.find(bones->GetControl());
+    if (it != nodes.end())
+    {
+        SpineNode& node = it->second;
+        DVASSERT(node.bones == bones);
+        node.bones.Set(nullptr);
+    }
+}
+
+void UISpineSystem::BindBackground(UIControlBackground * bg)
+{
+    auto it = nodes.find(bg->GetControl());
+    if (it != nodes.end())
+    {
+        SpineNode& node = it->second;
+        DVASSERT(node.bg == nullptr);
+        node.bg = bg;
+        node.bg->SetRenderBatch(node.skeleton->GetRenderBatch());
+    }
+}
+
+void UISpineSystem::UnbindBackground(UIControlBackground * bg)
+{
+    auto it = nodes.find(bg->GetControl());
+    if (it != nodes.end())
+    {
+        SpineNode& node = it->second;
+        DVASSERT(node.bg == bg);
+        node.bg->SetRenderBatch(nullptr);
+        node.bg.Set(nullptr);
     }
 }
 
