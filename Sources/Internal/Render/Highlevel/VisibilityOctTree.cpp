@@ -141,7 +141,7 @@ void VisibilityOctTree::AddRenderObject(RenderObject* renderObject)
             }
 
     roIndices.push_back(renderObject);
-    renderObject->SetTreeNodeIndex((uint16)(roIndices.size() - 1));
+    renderObject->SetTreeNodeIndex(static_cast<uint16>(roIndices.size() - 1));
     visibleObjects.Resize(static_cast<uint32>(roIndices.size()));
 }
 
@@ -226,7 +226,7 @@ void VisibilityOctTree::Clip(Camera* _camera, Vector<RenderObject*>& visibilityA
     for (uint32 k = 0; k < size; ++k)
         if (visibleObjects.At(k))
         {
-            DVASSERT((uint16)k == roIndices[k]->GetTreeNodeIndex());
+            DVASSERT(static_cast<uint16>(k) == roIndices[k]->GetTreeNodeIndex());
             visibilityArray.push_back(roIndices[k]);
 #if defined(__DAVAENGINE_RENDERSTATS__)
             ++Renderer::GetRenderStats().visibleRenderObjects;
