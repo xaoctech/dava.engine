@@ -143,36 +143,6 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     connect(scaleVelocityFactorSpinBox, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
     mainBox->addLayout(longLayout);
 
-    QHBoxLayout* longFresLayout = new QHBoxLayout();
-    fresnelToAlphaCheckbox = new QCheckBox("Fresnel to alpha");
-    longFresLayout->addWidget(fresnelToAlphaCheckbox);
-    connect(fresnelToAlphaCheckbox,
-        SIGNAL(stateChanged(int)),
-        this,
-        SLOT(OnFresnelToAlphaChanged()));
-
-    fresnelBiasSpinBox = new EventFilterDoubleSpinBox();
-    fresnelBiasSpinBox->setMinimum(0);
-    fresnelBiasSpinBox->setMaximum(1);
-    fresnelBiasSpinBox->setSingleStep(0.001);
-    fresnelBiasSpinBox->setDecimals(4);
-
-    fresnelPowerSpinBox = new EventFilterDoubleSpinBox();
-    fresnelPowerSpinBox->setMinimum(0);
-    fresnelPowerSpinBox->setMaximum(50);
-    fresnelPowerSpinBox->setSingleStep(1);
-    fresnelPowerSpinBox->setDecimals(4);
-
-    fresnelBiasLabel = new QLabel("Fresnel to alpha bias:");
-    fresnelPowerLabel = new QLabel("Fresnel to alpha power:");
-    longFresLayout->addWidget(fresnelPowerLabel);
-    longFresLayout->addWidget(fresnelPowerSpinBox);
-    longFresLayout->addWidget(fresnelBiasLabel);
-    longFresLayout->addWidget(fresnelBiasSpinBox);
-    connect(fresnelPowerSpinBox, SIGNAL(valueChanged(double)), this, SLOT(OnFresnelToAlphaChanged()));
-    connect(fresnelBiasSpinBox, SIGNAL(valueChanged(double)), this, SLOT(OnFresnelToAlphaChanged()));
-    mainBox->addLayout(longFresLayout);
-
     QHBoxLayout* spriteHBox2 = new QHBoxLayout;
     spriteBtn = new QPushButton("Set sprite", this);
     spriteBtn->setMinimumHeight(30);
@@ -289,6 +259,8 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     connect(worldAlignCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
 
     mainBox->addLayout(orientationLayout);
+
+    mainBox->addLayout(CreateFresnelToAlphaLayout());
 
     blendOptionsLabel = new QLabel("Blending Options");
     mainBox->addWidget(blendOptionsLabel);
@@ -1494,6 +1466,39 @@ void EmitterLayerWidget::CreateNoiseLayoutWidget()
     noiseSpritePathLabel->installEventFilter(this);
 }
 
+QLayout* EmitterLayerWidget::CreateFresnelToAlphaLayout()
+{
+    QHBoxLayout* longFresLayout = new QHBoxLayout();
+    fresnelToAlphaCheckbox = new QCheckBox("Fresnel to alpha");
+    longFresLayout->addWidget(fresnelToAlphaCheckbox);
+    connect(fresnelToAlphaCheckbox,
+        SIGNAL(stateChanged(int)),
+        this,
+        SLOT(OnFresnelToAlphaChanged()));
+
+    fresnelBiasSpinBox = new EventFilterDoubleSpinBox();
+    fresnelBiasSpinBox->setMinimum(0);
+    fresnelBiasSpinBox->setMaximum(1);
+    fresnelBiasSpinBox->setSingleStep(0.001);
+    fresnelBiasSpinBox->setDecimals(4);
+
+    fresnelPowerSpinBox = new EventFilterDoubleSpinBox();
+    fresnelPowerSpinBox->setMinimum(0);
+    fresnelPowerSpinBox->setMaximum(50);
+    fresnelPowerSpinBox->setSingleStep(1);
+    fresnelPowerSpinBox->setDecimals(4);
+
+    fresnelBiasLabel = new QLabel("Fresnel to alpha bias:");
+    fresnelPowerLabel = new QLabel("Fresnel to alpha power:");
+    longFresLayout->addWidget(fresnelPowerLabel);
+    longFresLayout->addWidget(fresnelPowerSpinBox);
+    longFresLayout->addWidget(fresnelBiasLabel);
+    longFresLayout->addWidget(fresnelBiasSpinBox);
+    connect(fresnelPowerSpinBox, SIGNAL(valueChanged(double)), this, SLOT(OnFresnelToAlphaChanged()));
+    connect(fresnelBiasSpinBox, SIGNAL(valueChanged(double)), this, SLOT(OnFresnelToAlphaChanged()));
+    return longFresLayout;
+}
+
 void EmitterLayerWidget::OnChangeSpriteButton(const DAVA::FilePath& initialFilePath, QLineEdit* spriteLabel, QString&& caption, DAVA::Function<void(const QString&)> pathEditFunc)
 {
     QString startPath;
@@ -1685,6 +1690,13 @@ void EmitterLayerWidget::SetSuperemitterMode(bool isSuperemitter)
 
     enableNoiseCheckBox->setVisible(!isSuperemitter);
     noiseLayoutWidget->setVisible(!isSuperemitter && enableNoiseCheckBox->isChecked());
+
+    fresnelToAlphaCheckbox->setVisible(!isSuperemitter);
+    bool fresToAlphaVisible = !isSuperemitter && fresnelToAlphaCheckbox->isChecked();
+    fresnelBiasLabel->setVisible(fresToAlphaVisible);
+    fresnelBiasSpinBox->setVisible(fresToAlphaVisible);
+    fresnelPowerLabel->setVisible(fresToAlphaVisible);
+    fresnelPowerSpinBox->setVisible(fresToAlphaVisible);
 
     // Sprite has no sense for Superemitter.
     spriteBtn->setVisible(!isSuperemitter);
