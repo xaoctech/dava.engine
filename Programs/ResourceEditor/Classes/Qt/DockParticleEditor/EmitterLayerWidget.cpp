@@ -7,6 +7,7 @@
 #include "ImageTools/ImageTools.h"
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Project/ProjectManagerData.h"
+#include "Base/Result.h"
 
 #include <TArc/DataProcessing/DataContext.h>
 #include <QtTools/FileDialogs/FileDialog.h>
@@ -1002,7 +1003,7 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     {
         DAVA::TArc::NotificationParams params;
         params.message.message = "The check boxes Fresnel to alpha and Camera facing are both set.";
-        params.message.type = ::Result::RESULT_WARNING;
+        params.message.type = DAVA::Result::RESULT_WARNING;
         params.title = "Particle system warning.";
         REGlobal::ShowNotification(params);
     }
