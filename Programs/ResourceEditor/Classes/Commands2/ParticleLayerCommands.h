@@ -96,10 +96,34 @@ public:
     DAVA::ParticleLayer* GetLayer() const;
 
 private:
-
     void ApplyParams(NoiseParams& params);
 
     NoiseParams newParams;
     NoiseParams oldParams;
+    DAVA::ParticleLayer* layer = nullptr;
+};
+
+class CommandChangeFresnelToAlphaProperties : public RECommand
+{
+public:
+    struct FresnelToAlphaParams
+    {
+        bool useFresnelToAlpha = false;
+        DAVA::float32 fresnelToAlphaBias = 0.0f;
+        DAVA::float32 fresnelToAlphaPower = 0.0f;
+    };
+
+    CommandChangeFresnelToAlphaProperties(DAVA::ParticleLayer* layer, FresnelToAlphaParams&& params);
+
+    void Undo() override;
+    void Redo() override;
+
+    DAVA::ParticleLayer* GetLayer() const;
+
+private:
+    void ApplyParams(FresnelToAlphaParams& params);
+
+    FresnelToAlphaParams newParams;
+    FresnelToAlphaParams oldParams;
     DAVA::ParticleLayer* layer = nullptr;
 };

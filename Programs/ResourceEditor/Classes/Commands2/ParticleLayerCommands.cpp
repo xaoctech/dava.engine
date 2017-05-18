@@ -156,3 +156,42 @@ void CommandChangeNoiseProperties::ApplyParams(NoiseParams& params)
         PropertyLineHelper::SetValueLine(layer->noiseVScrollSpeedOverLife, params.noiseVScrollSpeedOverLife);
     }
 }
+
+CommandChangeFresnelToAlphaProperties::CommandChangeFresnelToAlphaProperties(DAVA::ParticleLayer* layer_, FresnelToAlphaParams&& params)
+    : RECommand(CMDID_PARTICLE_LAYER_CHANGED_FRES_TO_ALPHA_VALUES, "Change Fresnel to Alpha Properties")
+    , layer(layer_)
+    , newParams(params)
+{
+    DVASSERT(layer != nullptr);
+    if (layer != nullptr)
+    {
+        oldParams.useFresnelToAlpha = layer->useFresnelToAlpha;
+        oldParams.fresnelToAlphaPower = layer->fresnelToAlphaPower;
+        oldParams.fresnelToAlphaBias = layer->fresnelToAlphaBias;
+    }
+}
+
+void CommandChangeFresnelToAlphaProperties::Undo()
+{
+    ApplyParams(oldParams);
+}
+
+void CommandChangeFresnelToAlphaProperties::Redo()
+{
+    ApplyParams(newParams);
+}
+
+DAVA::ParticleLayer* CommandChangeFresnelToAlphaProperties::GetLayer() const
+{
+    return layer;
+}
+
+void CommandChangeFresnelToAlphaProperties::ApplyParams(FresnelToAlphaParams& params)
+{
+    if (layer != nullptr)
+    {
+        layer->useFresnelToAlpha = params.useFresnelToAlpha;
+        layer->fresnelToAlphaBias = params.fresnelToAlphaBias;
+        layer->fresnelToAlphaPower = params.fresnelToAlphaPower;
+    }
+}

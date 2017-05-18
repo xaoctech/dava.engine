@@ -143,6 +143,36 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     connect(scaleVelocityFactorSpinBox, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
     mainBox->addLayout(longLayout);
 
+    QHBoxLayout* longFresLayout = new QHBoxLayout();
+    fresnelToAlphaCheckbox = new QCheckBox("Fresnel to alpha");
+    longFresLayout->addWidget(fresnelToAlphaCheckbox);
+    connect(fresnelToAlphaCheckbox,
+        SIGNAL(stateChanged(int)),
+        this,
+        SLOT(OnFresnelToAlphaChanged()));
+
+    fresnelBiasSpinBox = new EventFilterDoubleSpinBox();
+    fresnelBiasSpinBox->setMinimum(0);
+    fresnelBiasSpinBox->setMaximum(1);
+    fresnelBiasSpinBox->setSingleStep(0.001);
+    fresnelBiasSpinBox->setDecimals(4);
+
+    fresnelPowerSpinBox = new EventFilterDoubleSpinBox();
+    fresnelPowerSpinBox->setMinimum(0);
+    fresnelPowerSpinBox->setMaximum(50);
+    fresnelPowerSpinBox->setSingleStep(1);
+    fresnelPowerSpinBox->setDecimals(4);
+
+    fresnelBiasLabel = new QLabel("Fresnel to alpha bias:");
+    fresnelPowerLabel = new QLabel("Fresnel to alpha power:");
+    longFresLayout->addWidget(fresnelPowerLabel);
+    longFresLayout->addWidget(fresnelPowerSpinBox);
+    longFresLayout->addWidget(fresnelBiasLabel);
+    longFresLayout->addWidget(fresnelBiasSpinBox);
+    connect(fresnelPowerSpinBox, SIGNAL(valueChanged(double)), this, SLOT(OnFresnelToAlphaChanged()));
+    connect(fresnelBiasSpinBox, SIGNAL(valueChanged(double)), this, SLOT(OnFresnelToAlphaChanged()));
+    mainBox->addLayout(longFresLayout);
+
     QHBoxLayout* spriteHBox2 = new QHBoxLayout;
     spriteBtn = new QPushButton("Set sprite", this);
     spriteBtn->setMinimumHeight(30);
@@ -765,6 +795,22 @@ void EmitterLayerWidget::OnValueChanged()
     emit ValueChanged();
 }
 
+void EmitterLayerWidget::OnFresnelToAlphaChanged()
+{
+    if (blockSignals)
+        return;
+
+    DVASSERT(GetActiveScene() != nullptr);
+    CommandChangeFresnelToAlphaProperties::FresnelToAlphaParams params;
+    params.useFresnelToAlpha = fresnelToAlphaCheckbox->isChecked();
+    params.fresnelToAlphaPower = static_cast<DAVA::float32>(fresnelPowerSpinBox->value());
+    params.fresnelToAlphaBias = static_cast<DAVA::float32>(fresnelBiasSpinBox->value());
+
+    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeFresnelToAlphaProperties(layer, std::move(params))));
+
+    emit ValueChanged();
+}
+
 void EmitterLayerWidget::OnLayerMaterialValueChanged()
 {
     if (blockSignals)
@@ -976,6 +1022,13 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     scaleVelocityBaseSpinBox->setVisible(scaleVelocityVisible);
     scaleVelocityFactorLabel->setVisible(scaleVelocityVisible);
     scaleVelocityFactorSpinBox->setVisible(scaleVelocityVisible);
+
+    bool fresToAlphaVisible = layer->useFresnelToAlpha;
+    fresnelBiasLabel->setVisible(fresToAlphaVisible);
+    fresnelBiasSpinBox->setVisible(fresToAlphaVisible);
+    fresnelPowerLabel->setVisible(fresToAlphaVisible);
+    fresnelPowerSpinBox->setVisible(fresToAlphaVisible);
+
 
     enableFlowCheckBox->setChecked(layer->enableFlow);
     flowLayoutWidget->setVisible(enableFlowCheckBox->isChecked());
