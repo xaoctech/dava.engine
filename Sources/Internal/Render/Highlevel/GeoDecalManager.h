@@ -79,14 +79,14 @@ private:
     void UnregisterDecal(Decal decal);
 
     bool BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBatch);
-    void ClipToPlane(DecalVertex* p_vs, uint8_t* nb_p_vs, int8_t sign, Vector3::eAxis axis, const Vector3& c_v);
-    void ClipToBoundingBox(DecalVertex* p_vs, uint8_t* nb_p_vs, const AABBox3& clipper);
-    int8_t Classify(int8_t sign, Vector3::eAxis axis, const Vector3& c_v, const DecalVertex& p_v);
+    void ClipToPlane(DecalVertex* p_vs, DecalVertex* p_vs_out, uint32* nb_p_vs, int32 sign, Vector3::eAxis axis, const Vector3& c_v);
+    void ClipToBoundingBox(DecalVertex* p_vs, DecalVertex* p_out, uint32* nb_p_vs, const AABBox3& clipper);
+    int32 Classify(int32 sign, Vector3::eAxis axis, const Vector3& c_v, const DecalVertex& p_v);
     void Lerp(float t, const DecalVertex& v1, const DecalVertex& v2, DecalVertex& result);
 
     void GetStaticMeshGeometry(const DecalBuildInfo& info, Vector<uint8>& buffer);
     void GetSkinnedMeshGeometry(const DecalBuildInfo& info, Vector<uint8>& buffer);
-    void AddVerticesToGeometry(const DecalBuildInfo& info, DecalVertex* points, Vector<uint8>& buffer);
+    void AddVerticesToGeometry(const DecalBuildInfo& info, DecalVertex* points, DecalVertex* points_tmp, Vector<uint8>& buffer);
 
 private:
     Map<Decal, BuiltDecal> builtDecals;

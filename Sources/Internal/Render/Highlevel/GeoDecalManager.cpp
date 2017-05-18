@@ -257,11 +257,11 @@ void GeoDecalManager::RemoveRenderObject(RenderObject* ro)
 #define MAX_CLIPPED_POLYGON_CAPACITY 9
 #define PLANE_THICKNESS_EPSILON 0.00001f
 
-void GeoDecalManager::AddVerticesToGeometry(const DecalBuildInfo& info, DecalVertex* points, Vector<uint8>& buffer)
+void GeoDecalManager::AddVerticesToGeometry(const DecalBuildInfo& info, DecalVertex* points, DecalVertex* points_tmp, Vector<uint8>& buffer)
 {
     const AABBox3 clipSpaceBox = AABBox3(Vector3(0.0f, 0.0f, 0.0f), 2.0f);
 
-    uint8_t numPoints = 3;
+    uint32_t numPoints = 3;
     points[0].actualPoint = points[0].actualPoint * info.projectionSpaceTransform;
     points[1].actualPoint = points[1].actualPoint * info.projectionSpaceTransform;
     points[2].actualPoint = points[2].actualPoint * info.projectionSpaceTransform;
@@ -303,7 +303,7 @@ void GeoDecalManager::AddVerticesToGeometry(const DecalBuildInfo& info, DecalVer
         }
     }
 
-    ClipToBoundingBox(points, &numPoints, clipSpaceBox);
+    ClipToBoundingBox(points, points_tmp, &numPoints, clipSpaceBox);
 
     if (numPoints >= 3)
     {
@@ -329,7 +329,11 @@ void GeoDecalManager::GetStaticMeshGeometry(const DecalBuildInfo& info, Vector<u
     char decalVertexData[MAX_CLIPPED_POLYGON_CAPACITY * sizeof(DecalVertex)] = {};
     DecalVertex* points = reinterpret_cast<DecalVertex*>(decalVertexData);
 
-    Set<uint16> triangles;
+    char decalVertexData_tmp[MAX_CLIPPED_POLYGON_CAPACITY * sizeof(DecalVertex)] = {};
+    DecalVertex* points_tmp = reinterpret_cast<DecalVertex*>(decalVertexData_tmp);
+
+    Vector<uint16> triangles;
+    triangles.reserve(512);
     info.polygonGroup->GetGeometryOctTree()->GetTrianglesInBox(info.boundingBox, triangles);
 
     int32 geometryFormat = info.polygonGroup->GetFormat();
@@ -345,6 +349,12 @@ void GeoDecalManager::GetStaticMeshGeometry(const DecalBuildInfo& info, Vector<u
         points[1].actualPoint = points[1].originalPoint;
         points[2].actualPoint = points[2].originalPoint;
 
+        if (geometryFormat & EVF_TEXCOORD0)
+        {
+            info.polygonGroup->GetTexcoord(0, idx[0], points[0].texCoord0);
+            info.polygonGroup->GetTexcoord(0, idx[1], points[1].texCoord0);
+            info.polygonGroup->GetTexcoord(0, idx[2], points[2].texCoord0);
+        }
         if (geometryFormat & EVF_TEXCOORD1)
         {
             info.polygonGroup->GetTexcoord(1, idx[0], points[0].texCoord1);
@@ -372,7 +382,7 @@ void GeoDecalManager::GetStaticMeshGeometry(const DecalBuildInfo& info, Vector<u
         Vector3 nrm = (points[1].actualPoint - points[0].actualPoint).CrossProduct(points[2].actualPoint - points[0].actualPoint);
         if ((info.mapping != Mapping::PLANAR) || (nrm.DotProduct(info.projectionAxis) < -std::numeric_limits<float>::epsilon()))
         {
-            AddVerticesToGeometry(info, points, buffer);
+            AddVerticesToGeometry(info, points, points_tmp, buffer);
         }
     }
 }
@@ -383,6 +393,8 @@ void GeoDecalManager::GetSkinnedMeshGeometry(const DecalBuildInfo& info, Vector<
 
     char decalVertexData[MAX_CLIPPED_POLYGON_CAPACITY * sizeof(DecalVertex)];
     DecalVertex* points = reinterpret_cast<DecalVertex*>(decalVertexData);
+    char decalVertexData_tmp[MAX_CLIPPED_POLYGON_CAPACITY * sizeof(DecalVertex)];
+    DecalVertex* points_tmp = reinterpret_cast<DecalVertex*>(decalVertexData_tmp);
 
     int32 geometryFormat = info.polygonGroup->GetFormat();
     uint32 triangleCount = static_cast<uint32>(info.polygonGroup->GetVertexCount() / 3);
@@ -421,7 +433,7 @@ void GeoDecalManager::GetSkinnedMeshGeometry(const DecalBuildInfo& info, Vector<
             nrm.Normalize();
             if ((info.mapping != Mapping::PLANAR) || (nrm.DotProduct(info.projectionAxis) < -std::numeric_limits<float>::epsilon()))
             {
-                AddVerticesToGeometry(info, points, buffer);
+                AddVerticesToGeometry(info, points, points_tmp, buffer);
             }
         }
     }
@@ -536,7 +548,7 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBat
     return true;
 }
 
-int8_t GeoDecalManager::Classify(int8_t sign, Vector3::eAxis axis, const Vector3& c_v, const DecalVertex& p_v)
+int32_t GeoDecalManager::Classify(int32_t sign, Vector3::eAxis axis, const Vector3& c_v, const DecalVertex& p_v)
 {
     float32 d = static_cast<float>(sign) * (p_v.actualPoint[axis] - c_v[axis]);
     return static_cast<int>(d > PLANE_THICKNESS_EPSILON) - static_cast<int>(d < -PLANE_THICKNESS_EPSILON);
@@ -558,39 +570,39 @@ void GeoDecalManager::Lerp(float t, const DecalVertex& v1, const DecalVertex& v2
 #undef LERP_IMPL
 }
 
-void GeoDecalManager::ClipToPlane(DecalVertex* p_vs, uint8_t* nb_p_vs, int8_t sign, Vector3::eAxis axis, const Vector3& c_v)
+void GeoDecalManager::ClipToPlane(DecalVertex* p_vs, DecalVertex* new_p_vs, uint32_t* nb_p_vs, int32_t sign, Vector3::eAxis axis, const Vector3& c_v)
 {
-    uint8_t nb = (*nb_p_vs);
+    uint32_t nb = *nb_p_vs;
     if (nb <= 1)
     {
         *nb_p_vs = 0;
         return;
     }
 
-    char new_p_vs_data[MAX_CLIPPED_POLYGON_CAPACITY * sizeof(DecalVertex)];
-    DecalVertex* new_p_vs = reinterpret_cast<DecalVertex*>(new_p_vs_data);
-
-    uint8_t k = 0;
+    uint32_t k = 0;
+    float fsign = static_cast<float>(sign);
     bool polygonCompletelyOnPlane = true; // polygon is fully located on clipping plane
 
-    DecalVertex p_v1 = p_vs[nb - 1];
-    int8_t d1 = Classify(sign, axis, c_v, p_v1);
-    for (uint8_t j = 0; j < nb; ++j)
+    const DecalVertex* p_v1 = &(p_vs[nb - 1]);
+    float32 d1f = fsign * (p_v1->actualPoint[axis] - c_v[axis]);
+    int32_t d1 = static_cast<int>(d1f > PLANE_THICKNESS_EPSILON) - static_cast<int>(d1f < -PLANE_THICKNESS_EPSILON);
+    for (uint32_t j = 0; j < nb; ++j)
     {
         const DecalVertex& p_v2 = p_vs[j];
-        int8_t d2 = Classify(sign, axis, c_v, p_v2);
+        float32 d2f = fsign * (p_v2.actualPoint[axis] - c_v[axis]);
+        int32_t d2 = static_cast<int>(d2f > PLANE_THICKNESS_EPSILON) - static_cast<int>(d2f < -PLANE_THICKNESS_EPSILON);
         if (d2 < 0)
         {
             polygonCompletelyOnPlane = false;
             if (d1 > 0)
             {
-                const float alpha = (p_v2.actualPoint[axis] - c_v[axis]) / (p_v2.actualPoint[axis] - p_v1.actualPoint[axis]);
-                Lerp(alpha, p_v2, p_v1, new_p_vs[k]);
+                const float alpha = (p_v2.actualPoint[axis] - c_v[axis]) / (p_v2.actualPoint[axis] - p_v1->actualPoint[axis]);
+                Lerp(alpha, p_v2, *p_v1, new_p_vs[k]);
                 ++k;
             }
-            else if (d1 == 0 && (k == 0 || new_p_vs[k - 1].actualPoint != p_v1.actualPoint))
+            else if (d1 == 0 && (k == 0 || new_p_vs[k - 1].actualPoint != p_v1->actualPoint))
             {
-                new_p_vs[k++] = p_v1;
+                new_p_vs[k++] = *p_v1;
             }
         }
         else if (d2 > 0)
@@ -598,41 +610,39 @@ void GeoDecalManager::ClipToPlane(DecalVertex* p_vs, uint8_t* nb_p_vs, int8_t si
             polygonCompletelyOnPlane = false;
             if (d1 < 0)
             {
-                const float alpha = (p_v2.actualPoint[axis] - c_v[axis]) / (p_v2.actualPoint[axis] - p_v1.actualPoint[axis]);
-                Lerp(alpha, p_v2, p_v1, new_p_vs[k]);
+                const float alpha = (p_v2.actualPoint[axis] - c_v[axis]) / (p_v2.actualPoint[axis] - p_v1->actualPoint[axis]);
+                Lerp(alpha, p_v2, *p_v1, new_p_vs[k]);
                 ++k;
             }
-            else if (d1 == 0 && (k == 0 || new_p_vs[k - 1].actualPoint != p_v1.actualPoint))
+            else if (d1 == 0 && (k == 0 || new_p_vs[k - 1].actualPoint != p_v1->actualPoint))
             {
-                new_p_vs[k++] = p_v1;
+                new_p_vs[k++] = *p_v1;
             }
             new_p_vs[k++] = p_v2;
         }
-        else
+        else if (d1 != 0)
         {
-            if (d1 != 0)
-                new_p_vs[k++] = p_v2;
+            new_p_vs[k++] = p_v2;
         }
 
-        p_v1 = p_v2;
+        p_v1 = &p_v2;
         d1 = d2;
     }
 
-    if (polygonCompletelyOnPlane)
-        return;
-
-    *nb_p_vs = k;
-    for (uint8_t j = 0; j < k; ++j)
-        p_vs[j] = new_p_vs[j];
+    if (!polygonCompletelyOnPlane)
+    {
+        *nb_p_vs = k;
+    }
 }
 
-void GeoDecalManager::ClipToBoundingBox(DecalVertex* p_vs, uint8_t* nb_p_vs, const AABBox3& clipper)
+void GeoDecalManager::ClipToBoundingBox(DecalVertex* p_vs, DecalVertex* p_out, uint32_t* nb_p_vs, const AABBox3& clipper)
 {
-    for (uint8_t axis = 0; axis < 3; ++axis)
-    {
-        ClipToPlane(p_vs, nb_p_vs, 1, static_cast<Vector3::eAxis>(axis), clipper.min);
-        ClipToPlane(p_vs, nb_p_vs, -1, static_cast<Vector3::eAxis>(axis), clipper.max);
-    }
+    ClipToPlane(p_vs, p_out, nb_p_vs, 1, Vector3::eAxis::AXIS_X, clipper.min);
+    ClipToPlane(p_out, p_vs, nb_p_vs, -1, Vector3::eAxis::AXIS_X, clipper.max);
+    ClipToPlane(p_vs, p_out, nb_p_vs, 1, Vector3::eAxis::AXIS_Y, clipper.min);
+    ClipToPlane(p_out, p_vs, nb_p_vs, -1, Vector3::eAxis::AXIS_Y, clipper.max);
+    ClipToPlane(p_vs, p_out, nb_p_vs, 1, Vector3::eAxis::AXIS_Z, clipper.min);
+    ClipToPlane(p_out, p_vs, nb_p_vs, -1, Vector3::eAxis::AXIS_Z, clipper.max);
 }
 
 #undef MAX_CLIPPED_POLYGON_CAPACITY
