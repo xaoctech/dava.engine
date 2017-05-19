@@ -24,6 +24,7 @@ public:
         bool isNoiseAffectFlow = false;
         bool enableNoiseUVScroll = false;
         Texture* noise = nullptr;
+        bool useFresnelToAlpha = false;
 
         eBlending blending = BLENDING_ALPHABLEND;
 
@@ -38,6 +39,7 @@ public:
             && isNoiseAffectFlow == rhs.isNoiseAffectFlow
             && enableNoiseUVScroll == rhs.enableNoiseUVScroll
             && noise == rhs.noise
+            && useFresnelToAlpha == rhs.useFresnelToAlpha
             && blending == rhs.blending;
         }
     };

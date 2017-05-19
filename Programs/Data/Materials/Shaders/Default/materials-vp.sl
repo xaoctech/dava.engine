@@ -62,7 +62,9 @@ vertex_in
     #endif
     #endif
 
-
+    #if FLAG_PARTICLES_FRES_TO_ALPHA
+        float texcoord5 : TEXCOORD5;  // fresnel.
+    #endif
     
     #if WIND_ANIMATION
     float texcoord5 : TEXCOORD5;
@@ -126,9 +128,17 @@ vertex_out
         [lowp] half4 varFog : TEXCOORD5;
     #endif
 
+    // This makes me cry  =(
     #if PARTICLES_NOISE
-        float3 varNoiseData : TEXCOORD6; // Noise uv and scale.
-    #endif
+        #if FLAG_PARTICLES_FRES_TO_ALPHA
+            float4 varTexcoord6 : TEXCOORD6; // Noise uv and scale. Fres a.
+        #else
+            float3 varTexcoord6 : TEXCOORD6; // Noise uv and scale.
+        #endif
+    #elif FLAG_PARTICLES_FRES_TO_ALPHA
+        float varTexcoord6 : TEXCOORD6; // Fres a.
+    #endif 
+
 
     #if FRAME_BLEND
         [lowp] half varTime : TEXCOORD3;
@@ -358,10 +368,10 @@ vertex_out vp_main( vertex_in input )
 #endif
 
 #if PARTICLES_NOISE
-    output.varNoiseData = input.texcoord3.xyz;
+    output.varTexcoord6.xyz = input.texcoord3.xyz;
     #if PARTICLES_NOISE_SCROLL
-        output.varNoiseData.x += globalTime * input.texcoord4.x;
-        output.varNoiseData.y += globalTime * input.texcoord4.y;
+        output.varTexcoord6.x += globalTime * input.texcoord4.x;
+        output.varTexcoord6.y += globalTime * input.texcoord4.y;
     #endif
 #endif
 
@@ -518,6 +528,13 @@ vertex_out vp_main( vertex_in input )
     
 #endif // VERTEX_LIT
 
+#if FLAG_PARTICLES_FRES_TO_ALPHA
+    #if PARTICLES_NOISE
+        output.varTexcoord6.w = input.texcoord5.x;
+    #else
+        output.varTexcoord6 = input.texcoord5.x;
+    #endif 
+#endif
 
 #if PIXEL_LIT
 

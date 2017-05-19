@@ -14,16 +14,20 @@ ParticleRenderObject::ParticleRenderObject(ParticleEffectData* effect)
     layoutsData[1 << FLOW] = { rhi::VS_TEXCOORD, 2, rhi::VDT_FLOAT, 4 }; // uv, speed, offset
     layoutsData[1 << NOISE] = { rhi::VS_TEXCOORD, 3, rhi::VDT_FLOAT, 3 }; // uv, scale
     layoutsData[1 << NOISE_SCROLL] = { rhi::VS_TEXCOORD, 4, rhi::VDT_FLOAT, 2 }; // scroll speed
+    layoutsData[1 << FRESNEL_TO_ALPHA] = { rhi::VS_TEXCOORD, 5, rhi::VDT_FLOAT, 3 }; // ndotv inv fresnel bias and pow.
+
+    uint16 numBits = static_cast<uint16>(layoutsData.size());
 
     rhi::VertexLayout baseLayout; // We always have position, texcoord0 and color.
     GenerateBaseLayout(baseLayout);
 
-    for (uint32 i = 0; i <= 15; ++i) // All variance of types is 15 - 1111
+    uint32 maxCount = (1 << numBits) - 1;
+    for (uint32 i = 0; i <= maxCount; ++i)
     {
         rhi::VertexLayout layout = baseLayout;
-        for (uint32 j = 0; j < 4; j++) // Check all bits.
+        for (uint32 j = 0; j < numBits; j++)
         {
-            if ((i >> j) & 1)
+            if (i & (1 << j))
             {
                 LayoutElement& element = layoutsData[1 << j];
                 layout.AddElement(element.usage, element.usageIndex, element.type, element.dimension);
@@ -112,14 +116,14 @@ void ParticleRenderObject::PrepareRenderData(Camera* camera)
 
         if (itGroupStart->material != itGroupCurr->material)
         {
-            AppendParticleGroup(itGroupStart, itGroupCurr, particlesInGroup, currCamDirection, basisVectors);
+            AppendParticleGroup(itGroupStart, itGroupCurr, particlesInGroup, camera, basisVectors);
             itGroupStart = itGroupCurr;
             particlesInGroup = 0;
         }
         particlesInGroup += CalculateParticleCount(*itGroupCurr);
     }
     if (itGroupStart != effectData->groups.end())
-        AppendParticleGroup(itGroupStart, effectData->groups.end(), particlesInGroup, currCamDirection, basisVectors);
+        AppendParticleGroup(itGroupStart, effectData->groups.end(), particlesInGroup, camera, basisVectors);
 }
 
 uint32 ParticleRenderObject::GetVertexStride(ParticleLayer* layer)
@@ -133,6 +137,8 @@ uint32 ParticleRenderObject::GetVertexStride(ParticleLayer* layer)
         vertexStride += (2 + 1) * sizeof(float); // texcoord.xy + noise scale
     if (layer->enableNoiseScroll)
         vertexStride += 2 * sizeof(float); // uv scroll
+    if (layer->useFresnelToAlpha)
+        vertexStride += 3 * sizeof(float); // ndotvinv+ power + bias
     return vertexStride;
 }
 
@@ -165,6 +171,7 @@ uint32 ParticleRenderObject::SelectLayout(const ParticleLayer& layer)
     key |= static_cast<uint32>(layer.enableFlow) << static_cast<uint32>(eParticlePropsOffsets::FLOW);
     key |= static_cast<uint32>(layer.enableNoise) << static_cast<uint32>(eParticlePropsOffsets::NOISE);
     key |= static_cast<uint32>(layer.enableNoiseScroll) << static_cast<uint32>(eParticlePropsOffsets::NOISE_SCROLL);
+    key |= static_cast<uint32>(layer.useFresnelToAlpha) << static_cast<uint32>(eParticlePropsOffsets::FRESNEL_TO_ALPHA);
     return layoutMap[key];
 }
 
@@ -197,7 +204,7 @@ void ParticleRenderObject::AppendRenderBatch(NMaterial* material, uint32 particl
     currRenderBatchId++;
 }
 
-void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator begin, List<ParticleGroup>::iterator end, uint32 particlesCount, const Vector3& cameraDirection, Vector3* basisVectors)
+void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator begin, List<ParticleGroup>::iterator end, uint32 particlesCount, Camera* camera, Vector3* basisVectors)
 {
     if (!particlesCount)
         return; //hmmm?
@@ -269,7 +276,7 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
                 {
                     ey = current->speed;
                     float32 vel = ey.Length();
-                    ex = ey.CrossProduct(cameraDirection);
+                    ex = ey.CrossProduct(camera->GetDirection());
                     ex.Normalize();
                     ey *= (group.layer->scaleVelocityBase / vel + group.layer->scaleVelocityFactor); //optimized ex=(svBase+svFactor*vel)/vel
                 }
@@ -278,6 +285,17 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
                 Vector3 right = -left;
                 Vector3 top = ey * (-cos_angle) + ex * sin_angle;
                 Vector3 bot = -top;
+
+                float32 fresnelToAlpha = 0.0f;
+                if (begin->layer->useFresnelToAlpha)
+                {
+                    Vector3 viewNormal;
+                    float32 dot = 0.0f;
+                    viewNormal = left.CrossProduct(top);
+                    dot = camera->GetDirection().DotProduct(viewNormal);
+                    dot = 1.0f - Abs(dot);
+                    fresnelToAlpha = FresnelShlick(dot, current->fresnelToAlphaBias, current->fresnelToAlphaPower);
+                }
 
                 left *= 0.5f * current->currSize.x * (1 + group.layer->layerPivotPoint.x);
                 right *= 0.5f * current->currSize.x * (1 - group.layer->layerPivotPoint.x);
@@ -355,6 +373,16 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
                         }
                         ptrOffset += 2;
                     }
+                }
+                if (begin->layer->useFresnelToAlpha)
+                {
+                    for (int32 i = 0; i < 4; ++i)
+                    {
+                        verts[i][ptrOffset + 0] = fresnelToAlpha;
+                        verts[i][ptrOffset + 1] = fresnelToAlpha;
+                        verts[i][ptrOffset + 2] = fresnelToAlpha;
+                    }
+                    ptrOffset += 3;
                 }
                 currpos += particleStride;
                 verteciesAppended += 4;

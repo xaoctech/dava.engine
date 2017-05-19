@@ -59,6 +59,11 @@ NMaterial* ParticleEffectSystem::GetMaterial(MaterialData&& materialData)
             material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_NOISE_SCROLL, 1);
     }
 
+    if (materialData.useFresnelToAlpha)
+    {
+        material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_FRES_TO_ALPHA, 1);
+    }
+
     material->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, materialData.texture);
     material->AddFlag(NMaterialFlagName::FLAG_BLENDING, materialData.blending);
 
@@ -137,6 +142,7 @@ void ParticleEffectSystem::PrebuildMaterials(ParticleEffectComponent* component)
                 matData.enableNoise = layer->enableNoise;
                 matData.enableNoiseUVScroll = layer->enableNoiseScroll;
                 matData.noise = noise;
+                matData.useFresnelToAlpha = layer->useFresnelToAlpha;
                 matData.blending = layer->blending;
 
                 GetMaterial(std::move(matData));
@@ -175,7 +181,9 @@ void ParticleEffectSystem::RunEmitter(ParticleEffectComponent* effect, ParticleE
             matData.enableNoise = layer->enableNoise;
             matData.enableNoiseUVScroll = layer->enableNoiseScroll;
             matData.noise = noise;
+            matData.useFresnelToAlpha = layer->useFresnelToAlpha;
             matData.blending = layer->blending;
+
             group.material = GetMaterial(std::move(matData));
         }
 

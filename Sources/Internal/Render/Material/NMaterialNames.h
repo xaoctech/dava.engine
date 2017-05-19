@@ -177,6 +177,7 @@ public:
     static const FastName FLAG_PARTICLES_FLOWMAP;
     static const FastName FLAG_PARTICLES_NOISE;
     static const FastName FLAG_PARTICLES_NOISE_SCROLL;
+    static const FastName FLAG_PARTICLES_FRES_TO_ALPHA;
 
     static const FastName FLAG_LIGHTMAPONLY;
     static const FastName FLAG_TEXTUREONLY; //VI: this flag is for backward compatibility with old materials. See FLAG_ALBEDOONLY

@@ -12,6 +12,7 @@ class VertexLayout;
 namespace DAVA
 {
 struct ParticleLayer;
+class Camera;
 
 class ParticleRenderObject : public RenderObject
 {
@@ -20,7 +21,7 @@ class ParticleRenderObject : public RenderObject
     Vector<RenderBatch*> renderBatchCache;
 
     //void AppendParticleGroup(const ParticleGroup &group, ParticleRenderGroup *renderGroup, const Vector3& cameraDirection);
-    void AppendParticleGroup(List<ParticleGroup>::iterator begin, List<ParticleGroup>::iterator end, uint32 particlesCount, const Vector3& cameraDirection, Vector3* basisVectors);
+    void AppendParticleGroup(List<ParticleGroup>::iterator begin, List<ParticleGroup>::iterator end, uint32 particlesCount, Camera* camera, Vector3* basisVectors);
     void AppendRenderBatch(NMaterial* material, uint32 particlesCount, uint32 vertexLayout, const DynamicBufferAllocator::AllocResultVB& vBuffer);
     void PrepareRenderData(Camera* camera);
     Vector<uint16> indices;
@@ -51,7 +52,8 @@ private:
         FRAME_BLEND = 0,
         FLOW,
         NOISE,
-        NOISE_SCROLL
+        NOISE_SCROLL,
+        FRESNEL_TO_ALPHA
     };
 
     struct LayoutElement
@@ -83,5 +85,12 @@ private:
     uint32 flowVertexLayoutId = 0;
     uint32 frameBlendFlowVertexLayoutId = 0;
     Map<uint32, uint32> layoutMap;
+
+    float FresnelShlick(float32 nDotVInv, float32 bias, float32 power);
 };
+
+inline float ParticleRenderObject::FresnelShlick(float32 nDotVInv, float32 bias, float32 power)
+{
+    return bias + (1.0f - bias) * pow(1.0f - nDotVInv, power);
+}
 }

@@ -66,9 +66,15 @@ fragment_in
         [lowp] half4 varFog : TEXCOORD5;
     #endif
 
-    #if PARTICLES_NOISE
-        float3 varNoiseData : TEXCOORD6; // Noise uv and scale.
-    #endif
+     #if PARTICLES_NOISE
+        #if FLAG_PARTICLES_FRES_TO_ALPHA
+            float4 varTexcoord6 : TEXCOORD6; // Noise uv and scale. Fres a.
+        #else
+            float3 varTexcoord6 : TEXCOORD6; // Noise uv and scale.
+        #endif
+    #elif FLAG_PARTICLES_FRES_TO_ALPHA
+        float varTexcoord6 : TEXCOORD6; // Fres a.
+    #endif 
 
     #if FRAME_BLEND
         [lowp] half varTime : TEXCOORD3;
@@ -207,7 +213,7 @@ fragment_out fp_main( fragment_in input )
                 float3 flowData = input.varFlowData;
                 float2 flowDir = float2(tex2D( flowmap, flowtc ).xy) * 2.0 - 1.0;
                 #if PARTICLES_NOISE
-                    flowDir *= tex2D(noiseTex, input.varNoiseData.xy).r * input.varNoiseData.z;
+                    flowDir *= tex2D(noiseTex, input.varTexcoord6.xy).r * input.varTexcoord6.z;
                 #endif
                 half4 flowSample1 = half4(tex2D( albedo, input.varTexCoord0 + flowDir*flowData.x));
                 half4 flowSample2 = half4(tex2D( albedo, input.varTexCoord0 + flowDir*flowData.y));
@@ -215,8 +221,8 @@ fragment_out fp_main( fragment_in input )
             #else
                 float2 albedoUv = input.varTexCoord0;
                 #if PARTICLES_NOISE
-                    float noiseSample = tex2D(noiseTex, input.varNoiseData.xy).r * 2.0f - 1.0f;
-                    noiseSample *= input.varNoiseData.z;
+                    float noiseSample = tex2D(noiseTex, input.varTexcoord6.xy).r * 2.0f - 1.0f;
+                    noiseSample *= input.varTexcoord6.z;
                     albedoUv += float2(noiseSample, noiseSample);
                 #endif
                 half4 textureColor0 = half4(tex2D( albedo, albedoUv ));
@@ -594,11 +600,15 @@ fragment_out fp_main( fragment_in input )
         output.color *= flatColor;
     #endif
 
-
-
-
     
-    
+    #if FLAG_PARTICLES_FRES_TO_ALPHA
+        #if PARTICLES_NOISE
+            output.color.a *= input.varTexcoord6.w;
+        #else
+            output.color.a *= input.varTexcoord6.x;
+        #endif
+    #endif
+
     #if VERTEX_FOG
         #if !FRAMEBUFFER_FETCH
             //VI: fog equation is inside of color equation for framebuffer fetch

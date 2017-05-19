@@ -262,8 +262,8 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     mainBox->addLayout(orientationLayout);
 
     fresnelToAlphaLabel = new QLabel(this);
-    fresnelToAlphaLabel->setText("Fresnel to alpha");
-    mainBox->addWidget(layerTypeLabel);
+    fresnelToAlphaLabel->setText("Fresnel to alpha:");
+    mainBox->addWidget(fresnelToAlphaLabel);
     mainBox->addLayout(CreateFresnelToAlphaLayout());
 
     blendOptionsLabel = new QLabel("Blending Options");
@@ -999,6 +999,9 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     scaleVelocityFactorSpinBox->setVisible(scaleVelocityVisible);
 
     fresnelToAlphaCheckbox->setChecked(layer->useFresnelToAlpha);
+    fresnelBiasSpinBox->setValue(layer->fresnelToAlphaBias);
+    fresnelPowerSpinBox->setValue(layer->fresnelToAlphaPower);
+
     if (layer->particleOrientation & DAVA::ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING && layer->useFresnelToAlpha)
     {
         DAVA::TArc::NotificationParams params;
