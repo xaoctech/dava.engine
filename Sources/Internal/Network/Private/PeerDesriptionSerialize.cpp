@@ -255,7 +255,6 @@ bool PeerDescription::ExtractAppName(const void* srcBuffer, size_t buflen, Strin
         || buflen < sizeof(SerializedHeader) + sizeof(SerializedGeneralInfo)
         || false == ValidateHeader(header, buflen))
     {
-        DVASSERT(false, "wrong buffer");
         return false;
     }
 
