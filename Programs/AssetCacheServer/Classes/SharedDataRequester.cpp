@@ -130,7 +130,7 @@ void SharedDataRequester::OnAddServerFinished()
     ServerID serverID = SharedDataParser::ParseAddReply(reply->readAll());
     if (serverID != NullServerID)
     {
-        DAVA::Logger::Info("Server is shared: poolID %u serverID %u name %s", shareRequestParams.poolID, serverID, shareRequestParams.name);
+        DAVA::Logger::Info("Server is shared: poolID %u serverID %u name %s", shareRequestParams.poolID, serverID, shareRequestParams.name.c_str());
         emit ServerShared(shareRequestParams.poolID, serverID, shareRequestParams.name);
     }
 }
