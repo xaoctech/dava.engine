@@ -1,6 +1,9 @@
 #include "UI/Spine/UISpineComponent.h"
 
+#include "UI/Spine/UISpineSystem.h"
+
 #include <Reflection/ReflectionRegistrator.h>
+#include <UI/UIControlSystem.h>
 
 ENUM_DECLARE(DAVA::UISpineComponent::AnimationState)
 {
@@ -35,12 +38,28 @@ UISpineComponent::UISpineComponent(const UISpineComponent& copy)
     , animationName(copy.animationName)
     , animationsNames(copy.animationsNames)
     , animationLooped(copy.animationLooped)
-    , needReload(true)
-    , modified(true)
 {
 }
 
 UISpineComponent::~UISpineComponent() = default;
+
+void UISpineComponent::Modify(bool needReload)
+{
+    UIControl* control = GetControl();
+    UIControlSystem* scene = control->GetScene();
+    if (scene)
+    {
+        UISpineSingleComponent* spineSingle = scene->GetSingleComponent<UISpineSingleComponent>();
+        if (spineSingle)
+        {
+            spineSingle->spineModified.insert(control);
+            if (needReload)
+            {
+                spineSingle->spineNeedReload.insert(control);
+            }
+        }
+    }
+}
 
 UISpineComponent* UISpineComponent::Clone() const
 {
@@ -52,8 +71,10 @@ void UISpineComponent::SetSkeletonPath(const FilePath& path)
     if (skeletonPath != path)
     {
         skeletonPath = path;
-        needReload = true;
-        modified = true;
+
+        Modify(true);
+        //needReload = true;
+        //modified = true;
     }
 }
 
@@ -62,8 +83,10 @@ void UISpineComponent::SetAtlasPath(const FilePath& path)
     if (atlasPath != path)
     {
         atlasPath = path;
-        needReload = true;
-        modified = true;
+        
+        Modify(true);
+        //needReload = true;
+        //modified = true;
     }
 }
 
@@ -72,7 +95,9 @@ void UISpineComponent::SetAnimationState(const AnimationState& state)
     if (animationState != state)
     {
         animationState = state;
-        modified = true;
+
+        Modify();
+        //modified = true;
     }
 }
 
@@ -81,7 +106,9 @@ void UISpineComponent::SetAnimationName(const String& name)
     if (animationName != name)
     {
         animationName = name;
-        modified = true;
+
+        Modify();
+        //modified = true;
     }
 }
 
@@ -90,7 +117,9 @@ void UISpineComponent::SetAnimationsNames(const Vector<String>& names)
     if (animationsNames != names)
     {
         animationsNames = names;
-        modified = true;
+
+        Modify();
+        //modified = true;
     }
 }
 
@@ -99,7 +128,9 @@ void UISpineComponent::SetTimeScale(float32 scale)
     if (timeScale != scale)
     {
         timeScale = scale;
-        modified = true;
+
+        Modify();
+        //modified = true;
     }
 }
 
@@ -108,18 +139,10 @@ void UISpineComponent::SetLoopedPlayback(bool loop)
     if (animationLooped != loop)
     {
         animationLooped = loop;
-        modified = true;
+
+        Modify();
+        //modified = true;
     }
-}
-
-void UISpineComponent::SetModified(bool modify)
-{
-    modified = modify;
-}
-
-void UISpineComponent::SetNeedReload(bool reload)
-{
-    needReload = reload;
 }
 
 void UISpineComponent::SetSkinName(const String& name)
@@ -127,7 +150,9 @@ void UISpineComponent::SetSkinName(const String& name)
     if (skinName != name)
     {
         skinName = name;
-        modified = true;
+        
+        Modify();
+        //modified = true;
     }
 }
 
@@ -136,7 +161,9 @@ void UISpineComponent::SetSkinsNames(const Vector<String>& names)
     if (skinsNames != names)
     {
         skinsNames = names;
-        modified = true;
+        
+        Modify();
+        //modified = true;
     }
 }
 

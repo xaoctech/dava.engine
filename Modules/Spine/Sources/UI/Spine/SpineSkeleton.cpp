@@ -102,6 +102,48 @@ int32 maxVerticesCount(spSkeleton* mSkeleton)
 
 }
 
+SpineBone::SpineBone(spBone* bone)
+    : bonePtr(bone)
+{
+    DVASSERT(bonePtr);
+}
+
+SpineBone::~SpineBone() = default;
+
+bool SpineBone::IsValid() const
+{
+    return bonePtr != nullptr;
+}
+
+Vector2 SpineBone::GetPosition() const
+{
+    if (bonePtr)
+    {
+        return Vector2(bonePtr->worldX, -bonePtr->worldY);
+    }
+    return Vector2();
+}
+
+Vector2 SpineBone::GetScale() const
+{
+    if (bonePtr)
+    {
+        return Vector2(bonePtr->scaleX, bonePtr->scaleY);
+    }
+    return Vector2();
+}
+
+float32 SpineBone::GetAngle() const
+{
+    if (bonePtr)
+    {
+        return float32(-bonePtr->rotation);
+    }
+    return 0.f;
+}
+
+
+
 SpineSkeleton::SpineSkeleton()
 {
     batchDescriptor = new BatchDescriptor();
@@ -517,9 +559,13 @@ const Vector<String>& SpineSkeleton::GetAvailableSkinsNames() const
     return mSkins;
 }
 
-SpineBone* SpineSkeleton::FindBone(const String& boneName)
+RefPtr<SpineBone> SpineSkeleton::FindBone(const String& boneName)
 {
-    return reinterpret_cast<SpineBone*>(spSkeleton_findBone(mSkeleton, boneName.c_str()));
+    if (mSkeleton)
+    {
+        return RefPtr<SpineBone>::Construct(spSkeleton_findBone(mSkeleton, boneName.c_str()));
+    }
+    return RefPtr<SpineBone>();
 }
 
 }

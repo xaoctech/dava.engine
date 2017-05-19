@@ -1,6 +1,7 @@
 #ifndef __DAVAENGINE_UI_CONTROL_SYSTEM_H__
 #define __DAVAENGINE_UI_CONTROL_SYSTEM_H__
 
+#include "Base/Any.h"
 #include "Base/BaseMath.h"
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
@@ -14,6 +15,7 @@
 #include "UI/UIScreenTransition.h"
 #include "UI/UIPopup.h"
 #endif
+#include "UI/Components/UISingleComponent.h"
 
 #define FRAME_SKIP 5
 
@@ -320,6 +322,23 @@ public:
     UIStyleSheetSystem* GetStyleSheetSystem() const;
     UIScreenshoter* GetScreenshoter();
 
+    template <typename T>
+    void AddSingleComponent(UISingleComponent* single)
+    {
+        singleComponents[Type::Instance<T>()] = single;
+    }
+
+    template <typename T>
+    T* GetSingleComponent() const
+    {
+        auto it = singleComponents.find(Type::Instance<T>());
+        if (it != singleComponents.end())
+        {
+            return static_cast<T*>(it->second);
+        }
+        return nullptr;
+    }
+
     void SetClearColor(const Color& clearColor);
     void SetUseClearPass(bool useClearPass);
 
@@ -353,6 +372,8 @@ private:
     UISoundSystem* soundSystem = nullptr;
     UIScreenshoter* screenshoter = nullptr;
     UIUpdateSystem* updateSystem = nullptr;
+
+    Map<const Type*, UISingleComponent*> singleComponents;
 
     Vector<ScreenSwitchListener*> screenSwitchListeners;
 

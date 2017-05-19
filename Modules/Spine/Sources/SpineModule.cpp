@@ -1,4 +1,5 @@
 #include "SpineModule.h"
+
 #include "UI/Spine/UISpineBonesComponent.h"
 #include "UI/Spine/UISpineComponent.h"
 #include "UI/Spine/UISpineSystem.h"
@@ -32,6 +33,8 @@ void SpineModule::Init()
 
     UIControlSystem* cs = context->uiControlSystem;
     cs->AddSystem(std::make_unique<UISpineSystem>(), cs->GetStyleSheetSystem());
+
+    cs->AddSingleComponent<UISpineSingleComponent>(new UISpineSingleComponent());
 }
 
 void SpineModule::Shutdown()

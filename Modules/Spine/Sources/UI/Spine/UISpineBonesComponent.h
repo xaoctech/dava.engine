@@ -32,11 +32,18 @@ protected:
 
     const String& GetBindsAsString() const;
     void SetBindsFromString(const String& bindsStr);
-    void MakeBindsString();
 
 private:
     Vector<std::pair<String, String>> bonesBinds;
     String cachedBindsString;
+
+    void MakeBindsString();
+    void Modify();
+};
+
+struct UISpineBonesShared
+{
+    Set<UISpineBonesComponent*> modified;
 };
 
 inline const Vector<std::pair<String, String>>& UISpineBonesComponent::GetBinds() const

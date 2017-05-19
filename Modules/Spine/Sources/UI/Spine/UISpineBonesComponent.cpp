@@ -1,6 +1,9 @@
 #include "UI/Spine/UISpineBonesComponent.h"
 
+#include "UI/Spine/UISpineSystem.h"
+
 #include <Reflection/ReflectionRegistrator.h>
+#include <UI/UIControlSystem.h>
 #include <Utils/Utils.h>
 
 namespace DAVA
@@ -37,6 +40,9 @@ void UISpineBonesComponent::SetBinds(const Vector<std::pair<String, String>>& bi
     {
         bonesBinds = binds;
         MakeBindsString();
+
+        Modify();
+        //isModified = true;
     }
 }
 
@@ -54,6 +60,9 @@ void UISpineBonesComponent::SetBindsFromString(const String& bindsStr)
             bonesBinds.emplace_back(keyVal.size() > 0 ? keyVal[0] : "", keyVal.size() > 1 ? keyVal[1] : "");
         }
         MakeBindsString();
+
+        Modify();
+        //isModified = true;
     }
 }
 
@@ -74,6 +83,21 @@ void UISpineBonesComponent::MakeBindsString()
         stream << boneBind.first << "," << boneBind.second;
     }
     cachedBindsString = stream.str();
+
+}
+
+void UISpineBonesComponent::Modify()
+{
+    UIControl* control = GetControl();
+    UIControlSystem* scene = control->GetScene();
+    if (scene)
+    {
+        UISpineSingleComponent* spineSingle = scene->GetSingleComponent<UISpineSingleComponent>();
+        if (spineSingle)
+        {
+            spineSingle->spineBonesModified.insert(control);
+        }
+    }
 }
 
 }

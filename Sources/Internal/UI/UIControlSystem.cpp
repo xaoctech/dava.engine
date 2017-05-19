@@ -65,6 +65,7 @@ UIControlSystem::UIControlSystem()
     screenshoter = new UIScreenshoter();
 
     popupContainer.Set(new UIControl(Rect(0, 0, 1, 1)));
+    popupContainer->SetScene(this);
     popupContainer->SetName("UIControlSystem_popupContainer");
     popupContainer->SetInputEnabled(false);
     popupContainer->InvokeActive(UIControl::eViewState::VISIBLE);
@@ -111,11 +112,13 @@ UIControlSystem::~UIControlSystem()
     layoutSystem->SetCurrentScreenTransition(RefPtr<UIScreenTransition>());
 
     popupContainer->InvokeInactive();
+    popupContainer->SetScene(nullptr);
     popupContainer = nullptr;
 
     if (currentScreen.Valid())
     {
         currentScreen->InvokeInactive();
+        currentScreen->SetScene(nullptr);
         currentScreen = nullptr;
     }
 
@@ -268,6 +271,7 @@ void UIControlSystem::ProcessScreenLogic()
         if (currentScreen)
         {
             currentScreen->InvokeInactive();
+            currentScreen->SetScene(nullptr);
 
             RefPtr<UIScreen> prevScreen = currentScreen;
             currentScreen = nullptr;
@@ -294,6 +298,7 @@ void UIControlSystem::ProcessScreenLogic()
 
         if (currentScreen)
         {
+            currentScreen->SetScene(this);
             currentScreen->InvokeActive(UIControl::eViewState::VISIBLE);
         }
         inputSystem->SetCurrentScreen(currentScreen.Get());
@@ -310,6 +315,7 @@ void UIControlSystem::ProcessScreenLogic()
             LockInput();
 
             currentScreenTransition = nextScreenTransitionProcessed;
+            currentScreenTransition->SetScene(this);
             currentScreenTransition->InvokeActive(UIControl::eViewState::VISIBLE);
             styleSheetSystem->SetCurrentScreenTransition(currentScreenTransition);
             layoutSystem->SetCurrentScreenTransition(currentScreenTransition);
@@ -326,6 +332,7 @@ void UIControlSystem::ProcessScreenLogic()
         if (currentScreenTransition->IsComplete())
         {
             currentScreenTransition->InvokeInactive();
+            currentScreenTransition->SetScene(nullptr);
 
             RefPtr<UIScreenTransition> prevScreenTransitionProcessed = currentScreenTransition;
             currentScreenTransition = nullptr;
@@ -368,6 +375,14 @@ void UIControlSystem::Update()
     for (auto& system : systems)
     {
         system->Process(timeElapsed);
+    }
+
+    for (auto& pairs : singleComponents)
+    {
+        if (pairs.second)
+        {
+            pairs.second->Clear();
+        }
     }
 
     RenderSystem2D::RenderTargetPassDescriptor newDescr = RenderSystem2D::Instance()->GetMainTargetDescriptor();

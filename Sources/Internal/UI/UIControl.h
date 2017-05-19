@@ -532,6 +532,8 @@ public:
      */
     void SetState(int32 state);
 
+    UIControlSystem* GetScene() const;
+
     /**
      \brief Returns control parent.
      \returns if control hasn't parent returns NULL.
@@ -979,6 +981,8 @@ private:
     FastName name;
     Vector2 pivot; //!<control pivot. Top left control corner by default.
 
+    UIControlSystem* scene = nullptr;
+
     UIControl* parent;
     List<UIControl*> children;
 
@@ -1028,6 +1032,8 @@ protected:
     Color debugDrawColor;
 
     eDebugDrawPivotMode drawPivotPointMode;
+
+    void SetScene(UIControlSystem* scene);
 
     void SetParent(UIControl* newParent);
 

@@ -53,12 +53,6 @@ public:
     bool IsLoopedPlayback() const;
     void SetLoopedPlayback(bool loop);
 
-    bool IsModified() const;
-    void SetModified(bool modify);
-
-    bool IsNeedReload() const;
-    void SetNeedReload(bool reload);
-
     Signal<UISpineComponent* /*component*/, int32 /*trackIndex*/> onAnimationStart;
     Signal<UISpineComponent* /*component*/, int32 /*trackIndex*/> onAnimationFinish;
     Signal<UISpineComponent* /*component*/, int32 /*trackIndex*/> onAnimationComplete;
@@ -79,9 +73,9 @@ private:
     String skinName;
     Vector<String> skinsNames;
     float32 timeScale = 1.f;
-    bool needReload = false;
-    bool modified = false;
     bool animationLooped = false;
+
+    void Modify(bool needReload = false);
 };
 
 inline const FilePath& UISpineComponent::GetSkeletonPath() const
@@ -122,16 +116,6 @@ inline const Vector<String>& UISpineComponent::GetSkinsNames() const
 inline bool UISpineComponent::IsLoopedPlayback() const
 {
     return animationLooped;
-}
-
-inline bool UISpineComponent::IsModified() const
-{
-    return modified;
-}
-
-inline bool UISpineComponent::IsNeedReload() const
-{
-    return needReload;
 }
 
 inline float32 UISpineComponent::GetTimeScale() const
