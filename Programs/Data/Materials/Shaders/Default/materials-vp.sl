@@ -37,10 +37,6 @@ vertex_in
         float3 texcoord3 : TEXCOORD3; // Noise uv and scale.
     #endif
 
-    #if PARTICLES_NOISE_SCROLL
-        float2 texcoord4 : TEXCOORD4; // Noise scroll speed.
-    #endif
-
     #if VERTEX_COLOR
         float4 color0 : COLOR0;
     #endif
@@ -62,7 +58,7 @@ vertex_in
     #endif
     #endif
 
-    #if FLAG_PARTICLES_FRES_TO_ALPHA
+    #if PARTICLES_FRES_TO_ALPHA
         float texcoord5 : TEXCOORD5;  // fresnel.
     #endif
     
@@ -130,12 +126,12 @@ vertex_out
 
     // This makes me cry  =(
     #if PARTICLES_NOISE
-        #if FLAG_PARTICLES_FRES_TO_ALPHA
+        #if PARTICLES_FRES_TO_ALPHA
             float4 varTexcoord6 : TEXCOORD6; // Noise uv and scale. Fres a.
         #else
             float3 varTexcoord6 : TEXCOORD6; // Noise uv and scale.
         #endif
-    #elif FLAG_PARTICLES_FRES_TO_ALPHA
+    #elif PARTICLES_FRES_TO_ALPHA
         float varTexcoord6 : TEXCOORD6; // Fres a.
     #endif 
 
@@ -256,7 +252,7 @@ vertex_out
 [auto][a] property float4x4 worldMatrix;
 #endif
 
-#if WAVE_ANIMATION || TEXTURE0_ANIMATION_SHIFT || FLOWMAP || PARTICLES_FLOWMAP || PARTICLES_NOISE_SCROLL
+#if WAVE_ANIMATION || TEXTURE0_ANIMATION_SHIFT || FLOWMAP || PARTICLES_FLOWMAP
 [auto][a] property float globalTime;
 #endif
 
@@ -369,10 +365,6 @@ vertex_out vp_main( vertex_in input )
 
 #if PARTICLES_NOISE
     output.varTexcoord6.xyz = input.texcoord3.xyz;
-    #if PARTICLES_NOISE_SCROLL
-        output.varTexcoord6.x += globalTime * input.texcoord4.x;
-        output.varTexcoord6.y += globalTime * input.texcoord4.y;
-    #endif
 #endif
 
 #if MATERIAL_SKYBOX
@@ -528,7 +520,7 @@ vertex_out vp_main( vertex_in input )
     
 #endif // VERTEX_LIT
 
-#if FLAG_PARTICLES_FRES_TO_ALPHA
+#if PARTICLES_FRES_TO_ALPHA
     #if PARTICLES_NOISE
         output.varTexcoord6.w = input.texcoord5.x;
     #else

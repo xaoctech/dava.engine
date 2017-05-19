@@ -52,7 +52,6 @@ private:
         FRAME_BLEND = 0,
         FLOW,
         NOISE,
-        NOISE_SCROLL,
         FRESNEL_TO_ALPHA
     };
 

@@ -67,12 +67,12 @@ fragment_in
     #endif
 
      #if PARTICLES_NOISE
-        #if FLAG_PARTICLES_FRES_TO_ALPHA
+        #if PARTICLES_FRES_TO_ALPHA
             float4 varTexcoord6 : TEXCOORD6; // Noise uv and scale. Fres a.
         #else
             float3 varTexcoord6 : TEXCOORD6; // Noise uv and scale.
         #endif
-    #elif FLAG_PARTICLES_FRES_TO_ALPHA
+    #elif PARTICLES_FRES_TO_ALPHA
         float varTexcoord6 : TEXCOORD6; // Fres a.
     #endif 
 
@@ -601,7 +601,7 @@ fragment_out fp_main( fragment_in input )
     #endif
 
     
-    #if FLAG_PARTICLES_FRES_TO_ALPHA
+    #if PARTICLES_FRES_TO_ALPHA
         #if PARTICLES_NOISE
             output.color.a *= input.varTexcoord6.w;
         #else

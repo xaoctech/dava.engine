@@ -22,7 +22,6 @@ public:
         bool enableFlow = false;
         bool enableNoise = false;
         bool isNoiseAffectFlow = false;
-        bool enableNoiseUVScroll = false;
         Texture* noise = nullptr;
         bool useFresnelToAlpha = false;
 
@@ -37,7 +36,6 @@ public:
             && enableFlow == rhs.enableFlow
             && enableNoise == rhs.enableNoise
             && isNoiseAffectFlow == rhs.isNoiseAffectFlow
-            && enableNoiseUVScroll == rhs.enableNoiseUVScroll
             && noise == rhs.noise
             && useFresnelToAlpha == rhs.useFresnelToAlpha
             && blending == rhs.blending;

@@ -54,9 +54,6 @@ NMaterial* ParticleEffectSystem::GetMaterial(MaterialData&& materialData)
     {
         material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_NOISE, 1);
         material->AddTexture(NMaterialTextureName::TEXTURE_NOISE, materialData.noise);
-
-        if (materialData.enableNoiseUVScroll)
-            material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_NOISE_SCROLL, 1);
     }
 
     if (materialData.useFresnelToAlpha)
@@ -140,7 +137,6 @@ void ParticleEffectSystem::PrebuildMaterials(ParticleEffectComponent* component)
                 matData.flowmap = flowmap;
                 matData.enableFlow = layer->enableFlow;
                 matData.enableNoise = layer->enableNoise;
-                matData.enableNoiseUVScroll = layer->enableNoiseScroll;
                 matData.noise = noise;
                 matData.useFresnelToAlpha = layer->useFresnelToAlpha;
                 matData.blending = layer->blending;
@@ -179,7 +175,6 @@ void ParticleEffectSystem::RunEmitter(ParticleEffectComponent* effect, ParticleE
             matData.flowmap = flowmap;
             matData.enableFlow = layer->enableFlow;
             matData.enableNoise = layer->enableNoise;
-            matData.enableNoiseUVScroll = layer->enableNoiseScroll;
             matData.noise = noise;
             matData.useFresnelToAlpha = layer->useFresnelToAlpha;
             matData.blending = layer->blending;

@@ -1,6 +1,7 @@
 #include "ParticleRenderObject.h"
-#include "Render/Renderer.h"
+
 #include "Render/DynamicBufferAllocator.h"
+#include "Render/Renderer.h"
 
 namespace DAVA
 {
@@ -13,8 +14,6 @@ ParticleRenderObject::ParticleRenderObject(ParticleEffectData* effect)
     layoutsData[1 << FRAME_BLEND] = { rhi::VS_TEXCOORD, 1, rhi::VDT_FLOAT, 3 };
     layoutsData[1 << FLOW] = { rhi::VS_TEXCOORD, 2, rhi::VDT_FLOAT, 4 }; // uv, speed, offset
     layoutsData[1 << NOISE] = { rhi::VS_TEXCOORD, 3, rhi::VDT_FLOAT, 3 }; // uv, scale
-    layoutsData[1 << NOISE_SCROLL] = { rhi::VS_TEXCOORD, 4, rhi::VDT_FLOAT, 2 }; // scroll speed
-    // todo ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ scroll in cpp
     layoutsData[1 << FRESNEL_TO_ALPHA] = { rhi::VS_TEXCOORD, 5, rhi::VDT_FLOAT, 1 }; // fres.
 
     uint16 numBits = static_cast<uint16>(layoutsData.size());
@@ -135,11 +134,7 @@ uint32 ParticleRenderObject::GetVertexStride(ParticleLayer* layer)
     if (layer->enableFlow)
         vertexStride += (2 + 2) * sizeof(float); // texcoord2.xy + speed and offset
     if (layer->enableNoise)
-    {
         vertexStride += (2 + 1) * sizeof(float); // texcoord.xy + noise scale
-        if (layer->enableNoiseScroll)
-            vertexStride += 2 * sizeof(float); // uv scroll
-    }
     if (layer->useFresnelToAlpha)
         vertexStride += (1) * sizeof(float); // fres
     return vertexStride;
@@ -173,9 +168,6 @@ uint32 ParticleRenderObject::SelectLayout(const ParticleLayer& layer)
     uint32 key = static_cast<uint32>(layer.enableFrameBlend) << static_cast<uint32>(eParticlePropsOffsets::FRAME_BLEND);
     key |= static_cast<uint32>(layer.enableFlow) << static_cast<uint32>(eParticlePropsOffsets::FLOW);
     key |= static_cast<uint32>(layer.enableNoise) << static_cast<uint32>(eParticlePropsOffsets::NOISE);
-    if (layer.enableNoise)
-        key |= static_cast<uint32>(layer.enableNoiseScroll) << static_cast<uint32>(eParticlePropsOffsets::NOISE_SCROLL);
-
     key |= static_cast<uint32>(layer.useFresnelToAlpha) << static_cast<uint32>(eParticlePropsOffsets::FRESNEL_TO_ALPHA);
     return layoutMap[key];
 }
@@ -367,17 +359,13 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
                         verts[i][ptrOffset + 0] = noiseUV[i * 2]; // VS_TEXCOORD0 xy + color.
                         verts[i][ptrOffset + 1] = noiseUV[i * 2 + 1];
                         verts[i][ptrOffset + 2] = current->currNoiseScale;
+                        if (begin->layer->enableNoiseScroll)
+                        {
+                            verts[i][ptrOffset + 0] += current->currNoiseUScrollSpeed * current->life;
+                            verts[i][ptrOffset + 1] += current->currNoiseVScrollSpeed * current->life;
+                        }
                     }
                     ptrOffset += 3;
-                    if (begin->layer->enableNoiseScroll)
-                    {
-                        for (int32 i = 0; i < 4; ++i)
-                        {
-                            verts[i][ptrOffset + 0] = current->currNoiseUScrollSpeed;
-                            verts[i][ptrOffset + 1] = current->currNoiseVScrollSpeed;
-                        }
-                        ptrOffset += 2;
-                    }
                 }
                 if (begin->layer->useFresnelToAlpha)
                 {

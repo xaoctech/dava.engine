@@ -260,10 +260,6 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     connect(worldAlignCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
 
     mainBox->addLayout(orientationLayout);
-
-    fresnelToAlphaLabel = new QLabel(this);
-    fresnelToAlphaLabel->setText("Fresnel to alpha:");
-    mainBox->addWidget(fresnelToAlphaLabel);
     mainBox->addLayout(CreateFresnelToAlphaLayout());
 
     blendOptionsLabel = new QLabel("Blending Options");
@@ -1484,6 +1480,7 @@ void EmitterLayerWidget::CreateNoiseLayoutWidget()
 QLayout* EmitterLayerWidget::CreateFresnelToAlphaLayout()
 {
     QHBoxLayout* longFresLayout = new QHBoxLayout();
+    longFresLayout->setContentsMargins(0, 10, 0, 0);
     fresnelToAlphaCheckbox = new QCheckBox("Fresnel to alpha");
     longFresLayout->addWidget(fresnelToAlphaCheckbox);
     connect(fresnelToAlphaCheckbox,
@@ -1494,14 +1491,14 @@ QLayout* EmitterLayerWidget::CreateFresnelToAlphaLayout()
     fresnelBiasSpinBox = new EventFilterDoubleSpinBox();
     fresnelBiasSpinBox->setMinimum(0);
     fresnelBiasSpinBox->setMaximum(1);
-    fresnelBiasSpinBox->setSingleStep(0.001);
-    fresnelBiasSpinBox->setDecimals(4);
+    fresnelBiasSpinBox->setSingleStep(0.01);
+    fresnelBiasSpinBox->setDecimals(3);
 
     fresnelPowerSpinBox = new EventFilterDoubleSpinBox();
     fresnelPowerSpinBox->setMinimum(0);
     fresnelPowerSpinBox->setMaximum(50);
     fresnelPowerSpinBox->setSingleStep(1);
-    fresnelPowerSpinBox->setDecimals(4);
+    fresnelPowerSpinBox->setDecimals(0);
 
     fresnelBiasLabel = new QLabel("Fresnel to alpha bias:");
     fresnelPowerLabel = new QLabel("Fresnel to alpha power:");
@@ -1706,7 +1703,6 @@ void EmitterLayerWidget::SetSuperemitterMode(bool isSuperemitter)
     enableNoiseCheckBox->setVisible(!isSuperemitter);
     noiseLayoutWidget->setVisible(!isSuperemitter && enableNoiseCheckBox->isChecked());
 
-    fresnelToAlphaLabel->setVisible(!isSuperemitter);
     fresnelToAlphaCheckbox->setVisible(!isSuperemitter);
     bool fresToAlphaVisible = !isSuperemitter && fresnelToAlphaCheckbox->isChecked();
     fresnelBiasLabel->setVisible(fresToAlphaVisible);
