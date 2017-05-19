@@ -530,8 +530,8 @@ void DeviceListController::DiscoverOnCurrentPort()
     using namespace DAVA;
     using namespace DAVA::Net;
 
-    static uint32 maxAttempts = 2;
-    if (attempts++ > maxAttempts)
+    static const uint32 MAX_ATTEMPTS = 2;
+    if (attempts++ > MAX_ATTEMPTS)
     {
         DiscoverNext();
         return;
@@ -545,8 +545,8 @@ void DeviceListController::DiscoverOnCurrentPort()
     }
     else
     {
-        static int reattempt_period_msec = 500;
-        QTimer::singleShot(reattempt_period_msec, this, &DeviceListController::DiscoverOnCurrentPort);
+        static const int REATTEMPT_PERIOD_MSEC = 500;
+        QTimer::singleShot(REATTEMPT_PERIOD_MSEC, this, &DeviceListController::DiscoverOnCurrentPort);
     }
 }
 
