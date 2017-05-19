@@ -1,12 +1,12 @@
 #pragma once
 
-#include <atomic>
-
 #include "Tools/AssetCache/AssetCache.h"
 
 #include <Base/Introspection.h>
 #include <Preferences/PreferencesRegistrator.h>
 #include <FileSystem/DynamicMemoryFile.h>
+
+#include <atomic>
 
 namespace DAVA
 {

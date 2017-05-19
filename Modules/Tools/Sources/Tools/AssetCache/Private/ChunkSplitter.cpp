@@ -10,12 +10,7 @@ const uint32 CHUNK_SIZE_IN_BYTES = 1 * 1024 * 1024;
 
 uint32 GetNumberOfChunks(uint64 overallSize)
 {
-    uint32 res = static_cast<uint32>(overallSize / CHUNK_SIZE_IN_BYTES);
-    if (overallSize % CHUNK_SIZE_IN_BYTES)
-    {
-        ++res;
-    }
-    return res;
+    return static_cast<uint32>((overallSize + CHUNK_SIZE_IN_BYTES - 1) / CHUNK_SIZE_IN_BYTES);
 }
 
 Vector<uint8> GetChunk(const Vector<uint8>& dataVector, uint32 chunkNumber)

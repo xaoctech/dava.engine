@@ -304,7 +304,7 @@ AssetCache::Error AssetCacheClient::WaitRequest()
         uint64 deltaTime = SystemTimer::GetMs() - startTime;
         if (((timeoutMs > 0) && (deltaTime > timeoutMs)) && (currentRequest.recieved == false) && (currentRequest.processingRequest == false))
         {
-            Logger::Debug("Operation timeout: (%lld ms)", timeoutMs);
+            Logger::FrameworkDebug("Operation timeout: (%lld ms)", timeoutMs);
             return AssetCache::Error::OPERATION_TIMEOUT;
         }
     }
@@ -368,7 +368,7 @@ void AssetCacheClient::OnReceivedFromCache(const AssetCache::CacheItemKey& key, 
             getFilesRequest.chunksOverall = numOfChunks;
             getFilesRequest.bytesRemaining = static_cast<size_t>(dataSize);
             getFilesRequest.receivedData.resize(getFilesRequest.bytesRemaining);
-            Logger::Debug("Received info: %u bytes, %u chunks", dataSize, numOfChunks);
+            Logger::FrameworkDebug("Received info: %u bytes, %u chunks", dataSize, numOfChunks);
         }
 
         request.recieved = true;
@@ -407,7 +407,7 @@ void AssetCacheClient::OnReceivedFromCache(const AssetCache::CacheItemKey& key, 
             getFilesRequest.bytesReceived += chunkData.size();
             getFilesRequest.bytesRemaining -= chunkData.size();
             ++(getFilesRequest.chunksReceived);
-            Logger::Debug("Chunk #%u received: %u bytes. Overall received %u, remaining %u", chunkNumber, chunkData.size(), getFilesRequest.bytesReceived, getFilesRequest.bytesRemaining);
+            Logger::FrameworkDebug("Chunk #%u received: %u bytes. Overall received %u, remaining %u", chunkNumber, chunkData.size(), getFilesRequest.bytesReceived, getFilesRequest.bytesRemaining);
         }
 
         request.recieved = true;

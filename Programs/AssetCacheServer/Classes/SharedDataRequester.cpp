@@ -127,10 +127,10 @@ void SharedDataRequester::OnAddServerFinished()
         return;
     }
 
-    //DAVA::Logger::Debug("add shared done");
     ServerID serverID = SharedDataParser::ParseAddReply(reply->readAll());
     if (serverID != NullServerID)
     {
+        DAVA::Logger::Info("Server is shared: poolID %u serverID %u name %s", shareRequestParams.poolID, serverID, shareRequestParams.name);
         emit ServerShared(shareRequestParams.poolID, serverID, shareRequestParams.name);
     }
 }
@@ -162,6 +162,6 @@ void SharedDataRequester::OnRemoveServerFinished()
         return;
     }
 
-    //DAVA::Logger::Debug("Remove shared done");
+    DAVA::Logger::Info("Server is unshared");
     emit ServerUnshared();
 }

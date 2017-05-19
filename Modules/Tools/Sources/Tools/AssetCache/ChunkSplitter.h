@@ -1,3 +1,5 @@
+#pragma once
+
 #include <Base/BaseTypes.h>
 
 namespace DAVA
