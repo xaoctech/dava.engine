@@ -416,8 +416,8 @@ void ViewSceneScreen::OnButtonReloadShaders(DAVA::BaseObject* caller, void* para
             material->InvalidateRenderVariants();
         }
 
-        const Map<uint64, NMaterial*>& particleInstances = scene->particleEffectSystem->GetMaterialInstances();
-        for (auto material : particleInstances)
+        const auto particleInstances = scene->particleEffectSystem->GetMaterialInstances();
+        for (auto& material : particleInstances)
         {
             material.second->InvalidateRenderVariants();
         }
