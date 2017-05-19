@@ -7,6 +7,7 @@
 #include <MemoryProfilerService/ServiceInfo.h>
 
 #include <Logger/Logger.h>
+#include <Base/TemplateHelpers.h>
 #include <Network/NetworkCommon.h>
 #include <Network/PeerDesription.h>
 #include <Network/ServicesProvider.h>
