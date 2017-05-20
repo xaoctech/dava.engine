@@ -426,10 +426,12 @@ void WindowBackend::OnKeyEvent(int32 action, int32 keyCode, int32 unicodeChar, i
 {
     if (keyCode == AKeyEvent::KEYCODE_BACK)
     {
-        if (action == AKeyEvent::ACTION_UP)
+        if (backButtonDown && (action == AKeyEvent::ACTION_UP))
         {
             mainDispatcher->PostEvent(MainDispatcherEvent(MainDispatcherEvent::BACK_NAVIGATION));
         }
+
+        backButtonDown = action == AKeyEvent::ACTION_DOWN;
     }
     else
     {

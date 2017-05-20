@@ -105,6 +105,8 @@ private:
 
     bool firstTimeSurfaceChanged = true;
 
+    bool backButtonDown = false;
+
     // Friends
     friend struct AndroidBridge;
 };

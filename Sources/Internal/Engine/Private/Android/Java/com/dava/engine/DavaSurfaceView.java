@@ -248,6 +248,11 @@ final class DavaSurfaceView extends SurfaceView
     @Override
     public boolean onKey(View v, int keyCode, KeyEvent event)
     {
+        if (!hasWindowFocus())
+        {
+            return false;
+        }
+        
         int source = event.getSource();
         int action = event.getAction();
 
