@@ -376,21 +376,22 @@ bool TimeLineWidget::SortPoints(const DAVA::Vector2& i, const DAVA::Vector2& j)
     return (i.x < j.x);
 }
 
-void TimeLineWidget::Init(DAVA::float32 minT, DAVA::float32 maxT, bool updateSizeState, bool aliasLinePoint, bool allowDeleteLine, bool integer)
+void TimeLineWidget::Init(DAVA::float32 minT, DAVA::float32 maxT, bool updateSizeState, bool aliasLinePoint, bool allowDeleteLine, bool integer, DAVA::int32 valueDecimalsPrecision)
 {
     lines.clear();
 
     this->updateSizeState = updateSizeState;
     this->aliasLinePoint = aliasLinePoint;
     this->allowDeleteLine = allowDeleteLine;
+    this->valueDecimalsPrecision = valueDecimalsPrecision;
 
     this->isInteger = integer;
     ScrollZoomWidget::Init(minT, maxT);
 }
 
-void TimeLineWidget::Init(DAVA::float32 minT, DAVA::float32 maxT, DAVA::float32 generalMinT, DAVA::float32 generalMaxT, bool updateSizeState, bool aliasLinePoint, bool allowDeleteLine, bool integer)
+void TimeLineWidget::Init(DAVA::float32 minT, DAVA::float32 maxT, DAVA::float32 generalMinT, DAVA::float32 generalMaxT, bool updateSizeState, bool aliasLinePoint, bool allowDeleteLine, bool integer, DAVA::int32 valueDecimalsPrecision_)
 {
-    Init(minT, maxT, updateSizeState, aliasLinePoint, allowDeleteLine, integer);
+    Init(minT, maxT, updateSizeState, aliasLinePoint, allowDeleteLine, integer, valueDecimalsPrecision_);
     this->minTime = minT;
     this->maxTime = maxT;
     this->generalMinTime = generalMinT;
@@ -531,8 +532,8 @@ void TimeLineWidget::UpdateLimits()
             newMaxValue = DAVA::Max(iter->second.line[i].y, newMaxValue);
             newMinValue = DAVA::Min(iter->second.line[i].y, newMinValue);
             /*
-			maxTime = Max(iter->second.line[i].x, maxTime);
-			minTime = Min(iter->second.line[i].x, minTime);*/
+            maxTime = Max(iter->second.line[i].x, maxTime);
+            minTime = Min(iter->second.line[i].x, minTime);*/
         }
     }
 
@@ -721,14 +722,14 @@ QRect TimeLineWidget::GetGraphRect() const
     QRect graphRect = this->rect();
     graphRect.setX(graphRect.x() + 40);
     /*if (IsLegendEmpty())
-		graphRect.setY(graphRect.y() + 5);
-	else
-		graphRect.setY(graphRect.y() + 2 + LEGEND_WIDTH);
+        graphRect.setY(graphRect.y() + 5);
+    else
+        graphRect.setY(graphRect.y() + 2 + LEGEND_WIDTH);
     graphRect.setWidth(graphRect.width() - 5);
-	if (sizeState == SizeStateMinimized)
-		graphRect.setHeight(0);
-	else
-		graphRect.setHeight(graphRect.height() - 30);*/
+    if (sizeState == SizeStateMinimized)
+        graphRect.setHeight(0);
+    else
+        graphRect.setHeight(graphRect.height() - 30);*/
 
     graphRect.setWidth(graphRect.width() - 5);
     graphRect.setY(GetLegendHeight());
@@ -1057,17 +1058,17 @@ void TimeLineWidget::leaveEvent(QEvent*)
 QRect TimeLineWidget::GetLineEnableRect(DAVA::uint32 lineId) const
 {
     /*uint32 lineCount = 0;
-	for (LINES_MAP::const_iterator iter = lines.begin(); iter != lines.end(); ++iter, ++lineCount)
-	{
-		if (iter->first == lineId)
-			break;
-	}
-	
-	QRect graphRect = GetGraphRect();
-	int rectSize = 10;
-	QRect lineEnableRect(0, 0, rectSize, rectSize);
-	lineEnableRect.translate(graphRect.left() + 50 + rectSize * 2 * lineCount, this->rect().bottom() - 15);
-	return lineEnableRect;*/
+    for (LINES_MAP::const_iterator iter = lines.begin(); iter != lines.end(); ++iter, ++lineCount)
+    {
+        if (iter->first == lineId)
+            break;
+    }
+    
+    QRect graphRect = GetGraphRect();
+    int rectSize = 10;
+    QRect lineEnableRect(0, 0, rectSize, rectSize);
+    lineEnableRect.translate(graphRect.left() + 50 + rectSize * 2 * lineCount, this->rect().bottom() - 15);
+    return lineEnableRect;*/
 
     DAVA::uint32 lineCount = 0;
     for (LINES_MAP::const_iterator iter = lines.begin(); iter != lines.end(); ++iter, ++lineCount)
@@ -1089,8 +1090,8 @@ int TimeLineWidget::GetLegendHeight() const
 QRect TimeLineWidget::GetLineDrawRect() const
 {
     /*	QRect graphRect = GetGraphRect();
-	QRect lineDrawRect(0, 0, 40, 10);
-	lineDrawRect.translate(graphRect.left() + 5, this->rect().bottom() - 15);*/
+    QRect lineDrawRect(0, 0, 40, 10);
+    lineDrawRect.translate(graphRect.left() + 5, this->rect().bottom() - 15);*/
 
     QRect lineDrawRect(5, 2, 40, LEGEND_WIDTH);
     return lineDrawRect;
@@ -1225,7 +1226,7 @@ void TimeLineWidget::ChangePointValueDialog(DAVA::uint32 pointId, DAVA::int32 li
     if (iter->second.line.size() <= pointId)
         return;
 
-    SetPointValueDlg dialog(iter->second.line[pointId].x, minTime, maxTime, iter->second.line[pointId].y, minValueLimit, maxValueLimit, this, isInteger);
+    SetPointValueDlg dialog(iter->second.line[pointId].x, minTime, maxTime, iter->second.line[pointId].y, minValueLimit, maxValueLimit, this, isInteger, valueDecimalsPrecision);
     if (dialog.exec())
     {
         DAVA::float32 value = dialog.GetValue();
@@ -1365,7 +1366,7 @@ void TimeLineWidget::SetYLegendMark(const QString& value)
 }
 
 SetPointValueDlg::SetPointValueDlg(DAVA::float32 time, DAVA::float32 minTime, DAVA::float32 maxTime, DAVA::float32 value,
-                                   DAVA::float32 minValue, DAVA::float32 maxValue, QWidget* parent, bool integer)
+                                   DAVA::float32 minValue, DAVA::float32 maxValue, QWidget* parent, bool integer, DAVA::int32 valueDecimalsPrecision)
     : QDialog(parent)
     , isInteger(integer)
 {
@@ -1397,7 +1398,7 @@ SetPointValueDlg::SetPointValueDlg(DAVA::float32 time, DAVA::float32 minTime, DA
     btnBox->addWidget(btnCancel);
     btnBox->addWidget(btnOk);
     mainBox->addLayout(btnBox);
-
+    
     timeSpin->setMinimum(minTime);
     timeSpin->setMaximum(maxTime);
     timeSpin->setValue(time);
@@ -1412,6 +1413,7 @@ SetPointValueDlg::SetPointValueDlg(DAVA::float32 time, DAVA::float32 minTime, DA
     }
     else
     {
+        valueSpin->setDecimals(valueDecimalsPrecision);
         valueSpin->setMinimum(minValue);
         valueSpin->setMaximum(maxValue);
         valueSpin->setValue(value);

@@ -35,6 +35,9 @@ static const DAVA::uint32 SPRITE_SIZE = 60;
 static const DAVA::float32 ANGLE_MIN_LIMIT_DEGREES = -360.0f;
 static const DAVA::float32 ANGLE_MAX_LIMIT_DEGREES = 360.0f;
 
+static const DAVA::int32 NOISE_PRECISION_DIGITS = 4;
+static const DAVA::int32 FLOW_PRECISION_DIGITS = 4;
+
 const EmitterLayerWidget::LayerTypeMap EmitterLayerWidget::layerTypeMap[] =
 {
   { DAVA::ParticleLayer::TYPE_SINGLE_PARTICLE, "Single Particle" },
@@ -1042,32 +1045,32 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     frameBlendingCheckBox->setChecked(layer->enableFrameBlend);
 
     // FLOW_STUFF
-    flowSpeedTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
+    flowSpeedTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, FLOW_PRECISION_DIGITS);
     flowSpeedTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowSpeed)).GetProps(), Qt::red, "flow speed");
 
-    flowSpeedVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
+    flowSpeedVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, FLOW_PRECISION_DIGITS);
     flowSpeedVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowSpeedVariation)).GetProps(), Qt::green, "flow speed variation");
 
-    flowSpeedOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
+    flowSpeedOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized, false, true, false, FLOW_PRECISION_DIGITS);
     flowSpeedOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowSpeedOverLife)).GetProps(), Qt::blue, "flow speed over life");
 
-    flowOffsetTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
+    flowOffsetTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, FLOW_PRECISION_DIGITS);
     flowOffsetTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowOffset)).GetProps(), Qt::red, "flow offset");
 
-    flowOffsetVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
+    flowOffsetVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, FLOW_PRECISION_DIGITS);
     flowOffsetVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowOffsetVariation)).GetProps(), Qt::green, "flow offset variation");
 
-    flowOffsetOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
+    flowOffsetOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized, false, true, false, FLOW_PRECISION_DIGITS);
     flowOffsetOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowOffsetOverLife)).GetProps(), Qt::blue, "flow offset over life");
 
     // NOISE_STUFF
-    noiseScaleTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
+    noiseScaleTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, NOISE_PRECISION_DIGITS);
     noiseScaleTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseScale)).GetProps(), Qt::red, "noise scale");
 
-    noiseScaleVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
+    noiseScaleVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, NOISE_PRECISION_DIGITS);
     noiseScaleVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseScaleVariation)).GetProps(), Qt::green, "noise scale variation");
 
-    noiseScaleOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
+    noiseScaleOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized, false, true, false, NOISE_PRECISION_DIGITS);
     noiseScaleOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseScaleOverLife)).GetProps(), Qt::blue, "noise scale over life");
 
     noiseUVScrollSpeedTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
