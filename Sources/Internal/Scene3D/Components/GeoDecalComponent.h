@@ -14,9 +14,15 @@ namespace DAVA
 class GeoDecalComponent : public Component
 {
 public:
+    enum : uint32
+    {
+        SuppressMaterialCreation = 1 << 0
+    };
+
+public:
     IMPLEMENT_COMPONENT_TYPE(GEO_DECAL_COMPONENT);
 
-    GeoDecalComponent();
+    GeoDecalComponent(uint32 flags = 0);
 
     Component* Clone(Entity* toEntity) override;
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
@@ -30,7 +36,7 @@ public:
     void GetDataNodes(Set<DataNode*>& dataNodes) override;
 
 private:
-    ScopedPtr<NMaterial> dataNodeMaterial = ScopedPtr<NMaterial>(new NMaterial());
+    ScopedPtr<NMaterial> dataNodeMaterial;
     GeoDecalManager::DecalConfig config;
     bool rebakeOnTransform = true;
 

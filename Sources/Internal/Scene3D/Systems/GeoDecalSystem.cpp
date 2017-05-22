@@ -18,12 +18,8 @@ GeoDecalSystem::GeoDecalSystem(Scene* scene)
     scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::WORLD_TRANSFORM_CHANGED);
 }
 
-void GeoDecalSystem::Process(float32 timeElapsed)
+void GeoDecalSystem::BakeDecals()
 {
-    DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_GEODECAL_SYSTEM);
-
-    DAVA::RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
-
     for (auto& decal : decals)
     {
         GeoDecalComponent* geoDecalComponent = static_cast<GeoDecalComponent*>(decal.first);
@@ -35,46 +31,57 @@ void GeoDecalSystem::Process(float32 timeElapsed)
             BuildDecal(entity, geoDecalComponent);
             decal.second.lastValidConfig = currentConfig;
         }
-#if (DAVA_GEODECAL_SYSTEM_DEBUG_RENDER)
-        {
-            DAVA::Matrix4 transform = decal.first->GetEntity()->GetWorldTransform();
-
-            DAVA::RenderHelper::eDrawType dt = DAVA::RenderHelper::eDrawType::DRAW_WIRE_DEPTH;
-            DAVA::Color baseColor(1.0f, 0.5f, 0.25f, 1.0f);
-            DAVA::Color accentColor(1.0f, 1.0f, 0.5f, 1.0f);
-
-            DAVA::AABBox3 box = geoDecalComponent->GetBoundingBox();
-            DAVA::Vector3 boxCenter = box.GetCenter();
-            DAVA::Vector3 boxHalfSize = 0.5f * box.GetSize();
-
-            DAVA::Vector3 farPoint = DAVA::Vector3(boxCenter.x, boxCenter.y, box.max.z) * transform;
-            DAVA::Vector3 nearPoint = DAVA::Vector3(boxCenter.x, boxCenter.y, box.min.z) * transform;
-
-            DAVA::Vector3 direction = farPoint - nearPoint;
-            direction.Normalize();
-
-            drawer->DrawAABoxTransformed(box, transform, baseColor, dt);
-
-            if (geoDecalComponent->GetConfig().mapping == DAVA::GeoDecalManager::Mapping::CYLINDRICAL)
-            {
-                DAVA::Vector3 side = DAVA::Vector3(boxCenter.x - boxHalfSize.x, 0.0f, box.min.z) * transform;
-
-                float radius = (side - nearPoint).Length();
-                drawer->DrawCircle(nearPoint, direction, radius, 32, accentColor, dt);
-                drawer->DrawCircle(farPoint, -direction, radius, 32, accentColor, dt);
-                drawer->DrawLine(nearPoint, side, accentColor);
-            }
-            else if (geoDecalComponent->GetConfig().mapping == DAVA::GeoDecalManager::Mapping::SPHERICAL)
-            {
-                // no extra debug visualization
-            }
-            else /* planar assumed */
-            {
-                drawer->DrawArrow(nearPoint - direction, nearPoint, 0.25f * direction.Length(), accentColor, dt);
-            }
-        }
-#endif
     }
+}
+
+void GeoDecalSystem::Process(float32 timeElapsed)
+{
+    DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_GEODECAL_SYSTEM);
+
+    BakeDecals();
+
+#if (DAVA_GEODECAL_SYSTEM_DEBUG_RENDER)
+    DAVA::RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
+    for (auto& decal : decals)
+    {
+        GeoDecalComponent* geoDecalComponent = static_cast<GeoDecalComponent*>(decal.first);
+        DAVA::Matrix4 transform = decal.first->GetEntity()->GetWorldTransform();
+
+        DAVA::RenderHelper::eDrawType dt = DAVA::RenderHelper::eDrawType::DRAW_WIRE_DEPTH;
+        DAVA::Color baseColor(1.0f, 0.5f, 0.25f, 1.0f);
+        DAVA::Color accentColor(1.0f, 1.0f, 0.5f, 1.0f);
+
+        DAVA::AABBox3 box = geoDecalComponent->GetBoundingBox();
+        DAVA::Vector3 boxCenter = box.GetCenter();
+        DAVA::Vector3 boxHalfSize = 0.5f * box.GetSize();
+
+        DAVA::Vector3 farPoint = DAVA::Vector3(boxCenter.x, boxCenter.y, box.max.z) * transform;
+        DAVA::Vector3 nearPoint = DAVA::Vector3(boxCenter.x, boxCenter.y, box.min.z) * transform;
+
+        DAVA::Vector3 direction = farPoint - nearPoint;
+        direction.Normalize();
+
+        drawer->DrawAABoxTransformed(box, transform, baseColor, dt);
+
+        if (geoDecalComponent->GetConfig().mapping == DAVA::GeoDecalManager::Mapping::CYLINDRICAL)
+        {
+            DAVA::Vector3 side = DAVA::Vector3(boxCenter.x - boxHalfSize.x, 0.0f, box.min.z) * transform;
+
+            float radius = (side - nearPoint).Length();
+            drawer->DrawCircle(nearPoint, direction, radius, 32, accentColor, dt);
+            drawer->DrawCircle(farPoint, -direction, radius, 32, accentColor, dt);
+            drawer->DrawLine(nearPoint, side, accentColor);
+        }
+        else if (geoDecalComponent->GetConfig().mapping == DAVA::GeoDecalManager::Mapping::SPHERICAL)
+        {
+            // no extra debug visualization
+        }
+        else /* planar assumed */
+        {
+            drawer->DrawArrow(nearPoint - direction, nearPoint, 0.25f * direction.Length(), accentColor, dt);
+        }
+    }
+#endif
 }
 
 void GeoDecalSystem::ImmediateEvent(Component* transformComponent, uint32 event)

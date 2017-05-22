@@ -12,6 +12,8 @@ class GeoDecalSystem : public SceneSystem
 public:
     GeoDecalSystem(Scene* scene);
 
+    void BakeDecals();
+
     void Process(float32 timeElapsed) override;
     void ImmediateEvent(Component* component, uint32 event) override;
     void AddEntity(Entity* entity) override;

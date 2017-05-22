@@ -6,6 +6,14 @@
 
 namespace DAVA
 {
+Texture* GetSharedPinkTexture()
+{
+    Texture* staticTexture = nullptr;
+    if (staticTexture == nullptr)
+        staticTexture = Texture::CreatePink();
+    return SafeRetain(staticTexture);
+}
+
 DAVA_VIRTUAL_REFLECTION_IMPL(GeoDecalComponent)
 {
     ReflectionRegistrator<GeoDecalComponent>::Begin()[M::CantBeCreatedManualyComponent()]
@@ -13,15 +21,18 @@ DAVA_VIRTUAL_REFLECTION_IMPL(GeoDecalComponent)
     .End();
 }
 
-GeoDecalComponent::GeoDecalComponent()
+GeoDecalComponent::GeoDecalComponent(uint32 flags)
 {
-    char materialName[256] = {};
-    sprintf(materialName, "decal_material_%p", this);
+    if ((flags & SuppressMaterialCreation) == 0)
+    {
+        char materialName[256] = {};
+        sprintf(materialName, "Geo_Decal_Material_%p", reinterpret_cast<void*>(this));
 
-    ScopedPtr<Texture> defaultTexture(Texture::CreatePink());
-    dataNodeMaterial->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, defaultTexture.get());
-    dataNodeMaterial->AddTexture(NMaterialTextureName::TEXTURE_NORMAL, defaultTexture.get());
-    dataNodeMaterial->SetMaterialName(FastName(materialName));
+        dataNodeMaterial.reset(new NMaterial());
+        dataNodeMaterial->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, GetSharedPinkTexture());
+        dataNodeMaterial->AddTexture(NMaterialTextureName::TEXTURE_NORMAL, GetSharedPinkTexture());
+        dataNodeMaterial->SetMaterialName(FastName(materialName));
+    }
 }
 
 Component* GeoDecalComponent::Clone(Entity* toEntity)
@@ -72,14 +83,18 @@ void GeoDecalComponent::Deserialize(KeyedArchive* archive, SerializationContext*
 
 void GeoDecalComponent::GetDataNodes(Set<DataNode*>& dataNodes)
 {
-    dataNodes.insert(dataNodeMaterial.get());
+    if (dataNodeMaterial.get() != nullptr)
+        dataNodes.insert(dataNodeMaterial.get());
 }
 
 void GeoDecalComponent::ConfigChanged()
 {
-    ScopedPtr<Texture> albedoTexture(Texture::CreateFromFile(config.albedo));
-    ScopedPtr<Texture> normalTexture(Texture::CreateFromFile(config.normal));
-    dataNodeMaterial->SetTexture(NMaterialTextureName::TEXTURE_ALBEDO, albedoTexture);
-    dataNodeMaterial->SetTexture(NMaterialTextureName::TEXTURE_NORMAL, normalTexture);
+    if (dataNodeMaterial.get() != nullptr)
+    {
+        ScopedPtr<Texture> albedoTexture(Texture::CreateFromFile(config.albedo));
+        ScopedPtr<Texture> normalTexture(Texture::CreateFromFile(config.normal));
+        dataNodeMaterial->SetTexture(NMaterialTextureName::TEXTURE_ALBEDO, albedoTexture);
+        dataNodeMaterial->SetTexture(NMaterialTextureName::TEXTURE_NORMAL, normalTexture);
+    }
 }
 }

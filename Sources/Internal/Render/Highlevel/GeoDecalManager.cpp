@@ -2,6 +2,7 @@
 #include "Render/Highlevel/SkinnedMesh.h"
 #include "Render/Highlevel/GeometryOctTree.h"
 #include "Render/Highlevel/RenderObject.h"
+#include "Render/Highlevel/RenderPassNames.h"
 #include "Reflection/Reflection.h"
 #include "FileSystem/FileSystem.h"
 
@@ -397,7 +398,7 @@ void GeoDecalManager::GetSkinnedMeshGeometry(const DecalBuildInfo& info, Vector<
     DecalVertex* points_tmp = reinterpret_cast<DecalVertex*>(decalVertexData_tmp);
 
     int32 geometryFormat = info.polygonGroup->GetFormat();
-    uint32 triangleCount = static_cast<uint32>(info.polygonGroup->GetVertexCount() / 3);
+    uint32 triangleCount = static_cast<uint32>(info.polygonGroup->GetIndexCount() / 3);
     for (uint32 triangleIndex = 0; triangleIndex < triangleCount; ++triangleIndex)
     {
         int16 idx[3];
@@ -430,7 +431,6 @@ void GeoDecalManager::GetSkinnedMeshGeometry(const DecalBuildInfo& info, Vector<
         if (Intersection::BoxTriangle(info.boundingBox, points[2].actualPoint, points[1].actualPoint, points[0].actualPoint))
         {
             Vector3 nrm = (points[1].actualPoint - points[0].actualPoint).CrossProduct(points[2].actualPoint - points[0].actualPoint);
-            nrm.Normalize();
             if ((info.mapping != Mapping::PLANAR) || (nrm.DotProduct(info.projectionAxis) < -std::numeric_limits<float>::epsilon()))
             {
                 AddVerticesToGeometry(info, points, points_tmp, buffer);
@@ -544,6 +544,8 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBat
             material->AddTexture(NMaterialTextureName::TEXTURE_NORMAL, customNormal);
         }
     }
+
+    material->PreBuildMaterial(PASS_FORWARD);
     dstBatch->SetMaterial(material);
     return true;
 }

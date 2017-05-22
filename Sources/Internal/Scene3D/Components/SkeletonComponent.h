@@ -68,13 +68,14 @@ public:
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
     void Deserialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
 
-    inline void SetJointPosition(uint16 jointId, const Vector3& position);
-    inline void SetJointOrientation(uint16 jointId, const Quaternion& orientation);
-    inline void SetJointScale(uint16 jointId, float32 scale);
+    void SetJointPosition(uint16 jointId, const Vector3& position);
+    void SetJointOrientation(uint16 jointId, const Quaternion& orientation);
+    void SetJointScale(uint16 jointId, float32 scale);
 
-    inline uint16 GetJointId(const FastName& name) const;
+    uint16 GetJointId(const FastName& name) const;
+    uint16 GetJointsCount() const;
 
-    inline uint16 GetJointsCount() const;
+    const Vector<JointConfig>& GetConfigJoints() const;
 
     SkeletonComponent();
     ~SkeletonComponent();
@@ -177,6 +178,11 @@ inline SkeletonComponent::JointTransform SkeletonComponent::JointTransform::GetI
     res.position = -res.orientation.ApplyToVectorFast(position) * res.scale;
 
     return res;
+}
+
+inline const Vector<SkeletonComponent::JointConfig>& SkeletonComponent::GetConfigJoints() const
+{
+    return configJoints;
 }
 
 } //ns
