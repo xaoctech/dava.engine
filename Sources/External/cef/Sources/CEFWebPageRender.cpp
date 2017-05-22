@@ -1,11 +1,12 @@
 #include "CEFWebPageRender.h"
 #include "Platform/DeviceInfo.h"
-#include "Platform/SystemTimer.h"
-#include "Render/RenderCallbacks.h"
+#include "Render/Renderer.h"
 #include "Render/TextureDescriptor.h"
+#include "Time/SystemTimer.h"
 #include "UI/UIControlSystem.h"
 
-#include "Engine/EngineModule.h"
+#include "Engine/Engine.h"
+#include "Engine/Win32/PlatformApi.h"
 
 namespace DAVA
 {
@@ -27,14 +28,14 @@ struct CEFColor
 };
 
 #if defined(__DAVAENGINE_COREV2__)
-CEFWebPageRender::CEFWebPageRender(Window* w)
+CEFWebPageRender::CEFWebPageRender(Window* w, float32 k)
     : contentBackground(new UIControlBackground)
     , window(w)
+    , scale(k)
 {
     ConnectToSignals();
 
-    auto restoreFunc = MakeFunction(this, &CEFWebPageRender::RestoreTexture);
-    RenderCallbacks::RegisterResourceRestoreCallback(std::move(restoreFunc));
+    Renderer::GetSignals().needRestoreResources.Connect(this, &CEFWebPageRender::RestoreTexture);
 
     contentBackground->SetDrawType(UIControlBackground::DRAW_STRETCH_BOTH);
     contentBackground->SetColor(Color::White);
@@ -46,8 +47,7 @@ CEFWebPageRender::CEFWebPageRender()
 {
     ConnectToSignals();
 
-    auto restoreFunc = MakeFunction(this, &CEFWebPageRender::RestoreTexture);
-    RenderCallbacks::RegisterResourceRestoreCallback(std::move(restoreFunc));
+    Renderer::GetSignals().needRestoreResources.Connect(this, &CEFWebPageRender::RestoreTexture);
 
     contentBackground->SetDrawType(UIControlBackground::DRAW_STRETCH_BOTH);
     contentBackground->SetColor(Color::White);
@@ -59,8 +59,7 @@ CEFWebPageRender::~CEFWebPageRender()
 {
     DisconnectFromSignals();
 
-    auto restoreFunc = MakeFunction(this, &CEFWebPageRender::RestoreTexture);
-    RenderCallbacks::UnRegisterResourceRestoreCallback(std::move(restoreFunc));
+    Renderer::GetSignals().needRestoreResources.Disconnect(this);
 
     ShutDown();
 }
@@ -68,44 +67,38 @@ CEFWebPageRender::~CEFWebPageRender()
 void CEFWebPageRender::ConnectToSignals()
 {
 #if defined(__DAVAENGINE_COREV2__)
-    auto focusChanged = [this](Window*, bool isFocused) -> void
-    {
-        if (!isFocused)
-        {
-            ResetCursor();
-        }
-    };
-    auto windowDestroyed = [this](Window* w) -> void {
+    Engine::Instance()->windowDestroyed.Connect(this, [this](Window* w) -> void {
         if (w == window)
         {
             DisconnectFromSignals();
         }
-    };
-    windowDestroyedConnection = Engine::Instance()->windowDestroyed.Connect(windowDestroyed);
-    focusConnection = window->focusChanged.Connect(focusChanged);
-#else
-    auto focusChanged = [this](bool isFocused) -> void
+    });
+
+    window->focusChanged.Connect(this, [this](Window*, bool isFocused) -> void
     {
         if (!isFocused)
         {
             ResetCursor();
         }
-    };
-    focusConnection = Core::Instance()->focusChanged.Connect(focusChanged);
+    });
+#else
+    Core::Instance()->focusChanged.Connect(this, [this](bool isFocused) -> void
+    {
+        if (!isFocused)
+        {
+            ResetCursor();
+        }
+    });
 #endif
 }
 
 void CEFWebPageRender::DisconnectFromSignals()
 {
 #if defined(__DAVAENGINE_COREV2__)
-    if (windowDestroyedConnection != 0)
-        Engine::Instance()->windowDestroyed.Disconnect(windowDestroyedConnection);
-    if (focusConnection != 0)
-        window->focusChanged.Disconnect(focusConnection);
-    windowDestroyedConnection = 0;
-    focusConnection = 0;
+    Engine::Instance()->windowDestroyed.Disconnect(this);
+    window->focusChanged.Disconnect(this);
 #else
-    Core::Instance()->focusChanged.Disconnect(focusConnection);
+    Core::Instance()->focusChanged.Disconnect(this);
 #endif
 }
 
@@ -166,18 +159,37 @@ void CEFWebPageRender::ShutDown()
     imageData.clear();
 }
 
+#if defined(__DAVAENGINE_COREV2__)
+void CEFWebPageRender::SetScale(float32 k)
+{
+    scale = k;
+}
+#endif
+
 void CEFWebPageRender::ResetCursor()
 {
     if (currentCursorType != CursorType::CT_POINTER)
     {
         currentCursorType = CursorType::CT_POINTER;
+#if defined(__DAVAENGINE_COREV2__)
+        SetCursor(nullptr);
+#else
         SetCursor(GetDefaultCursor());
+#endif
     }
 }
 
 bool CEFWebPageRender::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect)
 {
+#if defined(__DAVAENGINE_COREV2__)
+    VirtualCoordinatesSystem* vcs = window->GetUIControlSystem()->vcs;
+    Rect phrect = vcs->ConvertVirtualToPhysical(logicalViewRect);
+    phrect.dx /= scale;
+    phrect.dy /= scale;
+    rect = CefRect(0, 0, static_cast<int>(phrect.dx), static_cast<int>(phrect.dy));
+#else
     rect = CefRect(0, 0, static_cast<int>(logicalViewRect.dx), static_cast<int>(logicalViewRect.dy));
+#endif
     return true;
 }
 
@@ -186,7 +198,11 @@ bool CEFWebPageRender::GetScreenInfo(CefRefPtr<CefBrowser> browser, CefScreenInf
     VirtualCoordinatesSystem* vcs = UIControlSystem::Instance()->vcs;
     Rect phrect = vcs->ConvertVirtualToPhysical(logicalViewRect);
 
+#if defined(__DAVAENGINE_COREV2__)
+    screen_info.device_scale_factor = scale;
+#else
     screen_info.device_scale_factor = phrect.dx / logicalViewRect.dx;
+#endif
     screen_info.depth = 32;
     screen_info.depth_per_component = 8;
     screen_info.is_monochrome = 0;
@@ -285,14 +301,17 @@ void CEFWebPageRender::OnCursorChange(CefRefPtr<CefBrowser> browser,
 
 #if defined(__DAVAENGINE_WIN32__)
 
+#if !defined(__DAVAENGINE_COREV2__)
 CefCursorHandle CEFWebPageRender::GetDefaultCursor()
 {
     return LoadCursor(NULL, IDC_ARROW);
 }
+#endif
 
 void CEFWebPageRender::SetCursor(CefCursorHandle cursor)
 {
 #if defined(__DAVAENGINE_COREV2__)
+    PlatformApi::Win32::SetWindowCursor(window, cursor);
 #else
     HWND wnd = static_cast<HWND>(Core::Instance()->GetNativeView());
     SetClassLongPtr(wnd, GCLP_HCURSOR, reinterpret_cast<LONG_PTR>(cursor));

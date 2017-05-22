@@ -3,8 +3,10 @@
 #include "Debug/DVAssert.h"
 #include <cstdarg>
 #include <array>
+#include <ctime>
 
 #include "Utils/Utils.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {
@@ -35,8 +37,7 @@ String ConvertCFormatListToString(const char8* format, va_list pargs)
         }
         // do you really want to print 1Mb with one call may be your format
         // string incorrect?
-        DVASSERT_MSG(dynamicbuf.size() < 1024 * 1024,
-                     DAVA::Format("format: {%s}", format).c_str());
+        DVASSERT(dynamicbuf.size() < 1024 * 1024, Format("format: {%s}", format).c_str());
 
         dynamicbuf.resize(dynamicbuf.size() * 2);
     }
@@ -109,7 +110,7 @@ Logger::eLogLevel Logger::GetLogLevel() const
     return logLevel;
 }
 
-const char8* Logger::GetLogLevelString(eLogLevel ll) const
+const char8* Logger::GetLogLevelString(eLogLevel ll)
 {
 #ifndef __DAVAENGINE_WINDOWS__
     static_assert(logLevelString.size() == LEVEL__DISABLE,
@@ -118,7 +119,7 @@ const char8* Logger::GetLogLevelString(eLogLevel ll) const
     return logLevelString[ll];
 }
 
-Logger::eLogLevel Logger::GetLogLevelFromString(const char8* ll) const
+Logger::eLogLevel Logger::GetLogLevelFromString(const char8* ll)
 {
     for (size_t i = 0; i < logLevelString.size(); ++i)
     {
@@ -266,6 +267,18 @@ void Logger::ErrorToFile(const FilePath& customLogFileName, const char8* text, .
     }
 }
 
+void Logger::LogToFile(const FilePath& customLogFileName, eLogLevel ll, const char8* text, ...)
+{
+    Logger* log = Logger::Instance();
+    if (nullptr != log)
+    {
+        va_list vl;
+        va_start(vl, text);
+        log->Logv(customLogFileName, ll, text, vl);
+        va_end(vl);
+    }
+}
+
 void Logger::AddCustomOutput(DAVA::LoggerOutput* lo)
 {
     Logger* log = Logger::Instance();
@@ -387,14 +400,12 @@ void Logger::FileLog(const FilePath& customLogFileName, eLogLevel ll, const char
         {
             Array<char8, 128> prefix;
 
-#if defined(__DAVAENGINE_WIN_UAP__)
-            SYSTEMTIME st;
-            GetSystemTime(&st);
-            // then convert st to your precision needs
-            snprintf(&prefix[0], prefix.size(), "- %d:%d:%d %d", st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
-            file->Write(prefix.data(), static_cast<uint32>(strlen(prefix.data())));
-#endif
-            snprintf(&prefix[0], prefix.size(), "[%s] ", GetLogLevelString(ll));
+            time_t timestamp = time(nullptr); //Time in UTC format
+            int32 seconds = timestamp % 60;
+            int32 minutes = (timestamp / 60) % 60;
+            int32 hours = (timestamp / (60 * 60)) % 24;
+
+            Snprintf(&prefix[0], prefix.size(), "%02d:%02d:%02d [%s] ", hours, minutes, seconds, GetLogLevelString(ll));
             file->Write(prefix.data(), static_cast<uint32>(strlen(prefix.data())));
             file->Write(text, static_cast<uint32>(strlen(text)));
         }

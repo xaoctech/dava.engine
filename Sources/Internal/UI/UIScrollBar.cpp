@@ -1,11 +1,24 @@
 #include "UI/UIScrollBar.h"
 #include "UI/UIEvent.h"
 #include "UI/UIControlHelpers.h"
+#include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
 {
 //use these names for children controls to define UIScrollBar in .yaml
 static const FastName UISCROLLBAR_SLIDER_NAME("slider");
+
+DAVA_VIRTUAL_REFLECTION_IMPL(UIScrollBar)
+{
+    ReflectionRegistrator<UIScrollBar>::Begin()
+    .ConstructorByPointer()
+    .DestructorByPointer([](UIScrollBar* o) { o->Release(); })
+    .Field("orientation", &UIScrollBar::GetOrientation, &UIScrollBar::SetOrientation)
+    [
+    M::EnumT<eScrollOrientation>()
+    ]
+    .End();
+}
 
 UIScrollBar::UIScrollBar(const Rect& rect, eScrollOrientation requiredOrientation)
     : UIControl(rect)
@@ -25,18 +38,6 @@ UIScrollBar::~UIScrollBar()
 void UIScrollBar::SetDelegate(UIScrollBarDelegate* newDelegate)
 {
     delegate = newDelegate;
-}
-
-const String UIScrollBar::GetDelegatePath(const UIControl* rootControl) const
-{
-    if (delegate)
-    {
-        return delegate->GetDelegateControlPath(rootControl);
-    }
-    else
-    {
-        return "";
-    }
 }
 
 UIControl* UIScrollBar::GetSlider()

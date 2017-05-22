@@ -1,5 +1,5 @@
 #include "UI/UIYamlLoader.h"
-#include "Platform/SystemTimer.h"
+#include "Time/SystemTimer.h"
 #include "FileSystem/YamlNode.h"
 #include "FileSystem/YamlEmitter.h"
 #include "FileSystem/YamlParser.h"
@@ -9,6 +9,7 @@
 #include "Render/2D/TextBlock.h"
 #include "Render/2D/FTFont.h"
 #include "Utils/Utils.h"
+#include "Logger/Logger.h"
 
 namespace DAVA
 {
@@ -60,7 +61,7 @@ YamlNode* UIYamlLoader::CreateRootNode(const FilePath& yamlPathname)
 
 void UIYamlLoader::LoadFontsFromNode(const YamlNode* rootNode)
 {
-    for (MultiMap<String, YamlNode*>::const_iterator t = rootNode->AsMap().begin(); t != rootNode->AsMap().end(); ++t)
+    for (auto t = rootNode->AsMap().begin(); t != rootNode->AsMap().end(); ++t)
     {
         YamlNode* node = t->second;
 

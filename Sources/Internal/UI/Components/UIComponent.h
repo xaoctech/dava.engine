@@ -2,6 +2,9 @@
 #define __DAVAENGINE_UI_COMPONENT_H__
 
 #include "Base/BaseObject.h"
+#include "Math/Math2D.h"
+#include "Reflection/Reflection.h"
+#include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
 {
@@ -9,6 +12,8 @@ class UIControl;
 
 class UIComponent : public BaseObject
 {
+    DAVA_VIRTUAL_REFLECTION(UIComponent, BaseObject);
+
 public:
     enum eType
     {
@@ -18,6 +23,9 @@ public:
         IGNORE_LAYOUT_COMPONENT,
         SIZE_POLICY_COMPONENT,
         ANCHOR_COMPONENT,
+        LAYOUT_SOURCE_RECT_COMPONENT,
+        LAYOUT_ISOLATION_COMPONENT,
+        BACKGROUND_COMPONENT,
         MODAL_INPUT_COMPONENT,
         FOCUS_COMPONENT,
         FOCUS_GROUP_COMPONENT,
@@ -25,6 +33,15 @@ public:
         TAB_ORDER_COMPONENT,
         ACTION_COMPONENT,
         ACTION_BINDING_COMPONENT,
+        SCROLL_BAR_DELEGATE_COMPONENT,
+        SCROLL_COMPONENT,
+        SOUND_COMPONENT,
+        SOUND_VALUE_FILTER_COMPONENT,
+        UPDATE_COMPONENT,
+        CUSTOM_UPDATE_DELTA_COMPONENT,
+        RICH_CONTENT_COMPONENT,
+        RICH_CONTENT_OBJECT_COMPONENT,
+        SCENE_COMPONENT,
 
         COMPONENT_COUNT
     };
@@ -32,11 +49,11 @@ public:
 public:
     UIComponent();
     UIComponent(const UIComponent& src);
-    virtual ~UIComponent();
 
     UIComponent& operator=(const UIComponent& src);
 
     static UIComponent* CreateByType(uint32 componentType);
+    static RefPtr<UIComponent> SafeCreateByType(uint32 componentType);
     static bool IsMultiple(uint32 componentType);
 
     virtual uint32 GetType() const = 0;
@@ -46,6 +63,11 @@ public:
 
     virtual UIComponent* Clone() const = 0;
 
+    RefPtr<UIComponent> SafeClone() const;
+
+protected:
+    virtual ~UIComponent();
+
 private:
     UIControl* control;
 };
@@ -53,6 +75,12 @@ private:
 template <uint32 TYPE>
 class UIBaseComponent : public UIComponent
 {
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(UIBaseComponent<TYPE>, UIComponent)
+    {
+        ReflectionRegistrator<UIBaseComponent<TYPE>>::Begin()
+        .End();
+    }
+
 public:
     static const uint32 C_TYPE = TYPE;
 

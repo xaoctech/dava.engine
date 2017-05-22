@@ -4,14 +4,12 @@
 
 #if defined(__DAVAENGINE_IPHONE__)
 
-#include "Engine/iOS/WindowNativeServiceiOS.h"
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
 #include "Engine/Private/iOS/PlatformCoreiOS.h"
 #include "Engine/Private/iOS/Window/WindowNativeBridgeiOS.h"
 
-#include "Logger/Logger.h"
-#include "Platform/SystemTimer.h"
+#include "Time/SystemTimer.h"
 
 namespace DAVA
 {
@@ -21,17 +19,16 @@ WindowBackend::WindowBackend(EngineBackend* engineBackend, Window* window)
     : engineBackend(engineBackend)
     , window(window)
     , mainDispatcher(engineBackend->GetDispatcher())
-    , uiDispatcher(MakeFunction(this, &WindowBackend::UIEventHandler))
-    , bridge(new WindowNativeBridge(this))
-    , nativeService(new WindowNativeService(bridge.get()))
+    , uiDispatcher(MakeFunction(this, &WindowBackend::UIEventHandler), MakeFunction(this, &WindowBackend::TriggerPlatformEvents))
+    , bridge(new WindowNativeBridge(this, engineBackend->GetOptions()))
 {
 }
 
 WindowBackend::~WindowBackend()
 {
     PlatformCore* core = engineBackend->GetPlatformCore();
-    core->didBecomeResignActive.Disconnect(sigidAppBecomeOrResignActive);
-    core->didEnterForegroundBackground.Disconnect(sigidAppDidEnterForegroundOrBackground);
+    core->didBecomeResignActive.Disconnect(appBecomeOrResignActiveToken);
+    core->didEnterForegroundBackground.Disconnect(appDidEnterForegroundOrBackgroundToken);
 }
 
 void* WindowBackend::GetHandle() const
@@ -45,10 +42,8 @@ bool WindowBackend::Create()
     if (bridge->CreateWindow())
     {
         PlatformCore* core = engineBackend->GetPlatformCore();
-        sigidAppBecomeOrResignActive = core->didBecomeResignActive.Connect(bridge.get(),
-                                                                           &WindowNativeBridge::ApplicationDidBecomeOrResignActive);
-        sigidAppDidEnterForegroundOrBackground = core->didEnterForegroundBackground.Connect(bridge.get(),
-                                                                                            &WindowNativeBridge::ApplicationDidEnterForegroundOrBackground);
+        appBecomeOrResignActiveToken = core->didBecomeResignActive.Connect(bridge.get(), &WindowNativeBridge::ApplicationDidBecomeOrResignActive);
+        appDidEnterForegroundOrBackgroundToken = core->didEnterForegroundBackground.Connect(bridge.get(), &WindowNativeBridge::ApplicationDidEnterForegroundOrBackground);
         return true;
     }
     return false;
@@ -68,13 +63,18 @@ void WindowBackend::Close(bool appIsTerminating)
     {
         // If application is terminating then send event as if window has been destroyed.
         // Engine ensures that Close with appIsTerminating with true value is always called on termination.
-        mainDispatcher->SendEvent(MainDispatcherEvent::CreateWindowDestroyedEvent(window));
+        mainDispatcher->SendEvent(MainDispatcherEvent::CreateWindowDestroyedEvent(window), MainDispatcher::eSendPolicy::IMMEDIATE_EXECUTION);
     }
 }
 
 void WindowBackend::SetTitle(const String& title)
 {
     // iOS window does not have title
+}
+
+void WindowBackend::SetMinimumSize(Size2f /*size*/)
+{
+    // Minimum size does not apply to iOS window
 }
 
 void WindowBackend::SetFullscreen(eFullscreen /*newMode*/)
@@ -87,6 +87,11 @@ void WindowBackend::RunAsyncOnUIThread(const Function<void()>& task)
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateFunctorEvent(task));
 }
 
+void WindowBackend::RunAndWaitOnUIThread(const Function<void()>& task)
+{
+    uiDispatcher.SendEvent(UIDispatcherEvent::CreateFunctorEvent(task));
+}
+
 bool WindowBackend::IsWindowReadyForRender() const
 {
     return GetHandle() != nullptr;
@@ -94,12 +99,22 @@ bool WindowBackend::IsWindowReadyForRender() const
 
 void WindowBackend::TriggerPlatformEvents()
 {
-    bridge->TriggerPlatformEvents();
+    if (uiDispatcher.HasEvents())
+    {
+        bridge->TriggerPlatformEvents();
+    }
 }
 
 void WindowBackend::ProcessPlatformEvents()
 {
     uiDispatcher.ProcessEvents();
+}
+
+void WindowBackend::SetSurfaceScaleAsync(const float32 scale)
+{
+    DVASSERT(scale > 0.0f && scale <= 1.0f);
+
+    uiDispatcher.PostEvent(UIDispatcherEvent::CreateSetSurfaceScaleEvent(scale));
 }
 
 void WindowBackend::SetCursorCapture(eCursorCapture mode)
@@ -121,6 +136,9 @@ void WindowBackend::UIEventHandler(const UIDispatcherEvent& e)
     // case UIDispatcherEvent::RESIZE_WINDOW:
     case UIDispatcherEvent::FUNCTOR:
         e.functor();
+        break;
+    case UIDispatcherEvent::SET_SURFACE_SCALE:
+        bridge->SetSurfaceScale(e.setSurfaceScaleEvent.scale);
         break;
     default:
         break;

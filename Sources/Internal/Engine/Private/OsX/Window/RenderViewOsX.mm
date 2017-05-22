@@ -6,6 +6,7 @@
 // TODO: plarform defines
 #elif defined(__DAVAENGINE_MACOS__)
 
+#import <AppKit/NSScreen.h>
 #import <AppKit/NSOpenGL.h>
 #import <AppKit/NSTrackingArea.h>
 #import <OpenGL/OpenGL.h>
@@ -16,7 +17,7 @@
 
 @implementation RenderView
 
-- (id)initWithFrame:(NSRect)frameRect andBridge:(DAVA::Private::WindowNativeBridge*)nativeBridge;
+- (id)initWithBridge:(DAVA::Private::WindowNativeBridge*)nativeBridge;
 {
     bridge = nativeBridge;
 
@@ -38,9 +39,7 @@
 
     // Create non-fullscreen pixel format.
     NSOpenGLPixelFormat* pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:attrs];
-    self = [super initWithFrame:frameRect pixelFormat:pixelFormat];
-    // Enable retina resolution
-    [self setWantsBestResolutionOpenGLSurface:YES];
+    self = [super initWithFrame:NSMakeRect(0, 0, 10.f, 10.f) pixelFormat:pixelFormat];
 
     // Prepare tracking area to receive messages:
     //  - mouseEntered and mouseExited, used with mouse capture handling

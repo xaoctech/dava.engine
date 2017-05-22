@@ -1,6 +1,7 @@
 #include "Base/Platform.h"
 #include "Logger/Logger.h"
 #include "Debug/DVAssert.h"
+#include "Concurrency/Mutex.h"
 #include "Concurrency/LockGuard.h"
 
 #ifdef __DAVAENGINE_ANDROID__
@@ -104,7 +105,7 @@ void android_gl_init(void* _window)
         //worst case only 16 bit depth buffer
         eglChooseConfig(_display, d16s8ConfigAttribs, &_config, 1, &numConfigs);
     }
-    DVASSERT_MSG(_config != nullptr, "Can't set GL configuration");
+    DVASSERT(_config != nullptr, "Can't set GL configuration");
 
     eglGetConfigAttrib(_display, _config, EGL_NATIVE_VISUAL_ID, &_format);
 
@@ -124,13 +125,14 @@ void android_gl_reset(void* _window, GLint width, GLint height)
 {
     DAVA::LockGuard<DAVA::Mutex> guard(surfaceMutex);
 
-    _nativeWindow = static_cast<ANativeWindow*>(_window);
-    if (nullptr != _nativeWindow || backingWidth != width || backingHeight != height)
+    ANativeWindow* nativeWindow = static_cast<ANativeWindow*>(_window);
+    if (nullptr != nativeWindow && (_nativeWindow != nativeWindow || backingWidth != width || backingHeight != height))
     {
         needRecreateSurface = true;
         backingWidth = width;
         backingHeight = height;
     }
+    _nativeWindow = nativeWindow;
 }
 
 bool android_gl_checkSurface()

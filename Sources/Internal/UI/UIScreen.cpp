@@ -1,13 +1,23 @@
 #include "UI/UIScreen.h"
 #include "UI/UIControlSystem.h"
 #include "Render/RenderHelper.h"
-#include "Platform/SystemTimer.h"
-#include <Render/2D/Systems/RenderSystem2D.h>
+#include "Render/2D/Systems/RenderSystem2D.h"
+#include "Render/RHI/Common/PreProcess.h"
+#include "Reflection/ReflectionRegistrator.h"
+#include "Time/SystemTimer.h"
 
 namespace DAVA
 {
 List<UIScreen*> UIScreen::appScreens;
 int32 UIScreen::groupIdCounter = -1;
+
+DAVA_VIRTUAL_REFLECTION_IMPL(UIScreen)
+{
+    ReflectionRegistrator<UIScreen>::Begin()
+    .ConstructorByPointer()
+    .DestructorByPointer([](UIScreen* o) { o->Release(); })
+    .End();
+}
 
 UIScreen::UIScreen(const Rect& rect)
     : UIControl(rect)
@@ -17,7 +27,6 @@ UIScreen::UIScreen(const Rect& rect)
     appScreens.push_back(this);
     groupIdCounter--;
     isLoaded = false;
-    fillBorderOrder = FILL_BORDER_AFTER_DRAW;
 }
 
 UIScreen::~UIScreen()
@@ -39,65 +48,12 @@ void UIScreen::SystemScreenSizeChanged(const Rect& newFullScreenRect)
     UIControl::SystemScreenSizeChanged(newFullScreenRect);
 }
 
-void UIScreen::SetFillBorderOrder(UIScreen::eFillBorderOrder fillOrder)
-{
-    fillBorderOrder = fillOrder;
-}
-
-void UIScreen::SystemDraw(const UIGeometricData& geometricData)
-{
-    if (fillBorderOrder == FILL_BORDER_BEFORE_DRAW)
-    {
-        FillScreenBorders(geometricData);
-        UIControl::SystemDraw(geometricData);
-    }
-    else if (fillBorderOrder == FILL_BORDER_AFTER_DRAW)
-    {
-        UIControl::SystemDraw(geometricData);
-        FillScreenBorders(geometricData);
-    }
-    else
-    {
-        UIControl::SystemDraw(geometricData);
-    }
-}
-
-void UIScreen::FillScreenBorders(const UIGeometricData& geometricData)
-{
-    static auto drawColor(Color::Black);
-
-    UIGeometricData drawData;
-    drawData.position = relativePosition;
-    drawData.size = size;
-    drawData.pivotPoint = GetPivotPoint();
-    drawData.scale = scale;
-    drawData.angle = angle;
-    drawData.AddGeometricData(geometricData);
-
-    Rect drawRect = drawData.GetUnrotatedRect();
-    Rect fullRect = UIControlSystem::Instance()->vcs->GetFullScreenVirtualRect();
-    Vector2 virtualSize = Vector2(static_cast<float32>(UIControlSystem::Instance()->vcs->GetVirtualScreenSize().dx),
-                                  static_cast<float32>(UIControlSystem::Instance()->vcs->GetVirtualScreenSize().dy));
-    if (fullRect.x < 0)
-    {
-        auto rect1 = Rect(fullRect.x, 0, -fullRect.x, virtualSize.y);
-        RenderSystem2D::Instance()->FillRect(rect1, drawColor);
-        auto rect2 = Rect(fullRect.dx - fullRect.x, 0, fullRect.x, virtualSize.y);
-        RenderSystem2D::Instance()->FillRect(rect2, drawColor);
-    }
-    else
-    {
-        auto rect1 = Rect(0, fullRect.y, virtualSize.x + 1, -fullRect.y);
-        RenderSystem2D::Instance()->FillRect(rect1, drawColor);
-        auto rect2 = Rect(0, fullRect.dy, virtualSize.x + 1, -fullRect.y);
-        RenderSystem2D::Instance()->FillRect(rect2, drawColor);
-    }
-}
-
 void UIScreen::LoadGroup()
 {
     //Logger::FrameworkDebug("load group started");
-    //uint64 loadGroupStart = SystemTimer::Instance()->AbsoluteMS();
+    //uint64 loadGroupStart = SystemTimer::GetMs();
+    ShaderPreprocessScope preprocessScope;
+
     if (groupId < 0)
     {
         if (isLoaded)
@@ -119,7 +75,7 @@ void UIScreen::LoadGroup()
             }
         }
     }
-    //uint64 loadGroupEnd = SystemTimer::Instance()->AbsoluteMS();
+    //uint64 loadGroupEnd = SystemTimer::GetMs();
     //Logger::FrameworkDebug("load group finished: %lld", loadGroupEnd - loadGroupStart);
 }
 

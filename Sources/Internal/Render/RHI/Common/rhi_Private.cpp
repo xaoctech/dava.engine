@@ -17,6 +17,9 @@
 #else
 #endif
 
+#include "../NullRenderer/rhi_NullRenderer.h"
+
+#include "Logger/Logger.h"
 #include "Core/Core.h"
 #include "Concurrency/Spinlock.h"
 #include "Concurrency/Thread.h"
@@ -81,6 +84,13 @@ bool ApiIsSupported(Api api)
         supported = true;
         #endif
         break;
+
+    case RHI_NULL_RENDERER:
+        supported = true;
+        break;
+
+    default:
+        DVASSERT(!"kaboom!"); // to shut up goddamn warning
     }
 
     return supported;
@@ -116,9 +126,13 @@ void InitializeImplementation(Api api, const InitParam& param)
 #endif //#if !(TARGET_IPHONE_SIMULATOR==1)
 #endif
 
+    case RHI_NULL_RENDERER:
+        nullRenderer_Initialize(param);
+        break;
+
     default:
     {
-        DVASSERT_MSG(false, "Unsupported rendering api");
+        DVASSERT(false, "Unsupported rendering api");
     }
     }
 }
@@ -222,14 +236,14 @@ Handle Create(const Descriptor& desc)
 #endif
 }
 
-void Delete(Handle vb)
+void Delete(Handle vb, bool forceExecute)
 {
     if (vb != rhi::InvalidHandle)
     {
         #if defined(DAVA_MEMORY_PROFILING_ENABLE)
         DAVA_MEMORY_PROFILER_GPU_DEALLOC(vb, DAVA::ALLOC_GPU_RDO_VERTEX);        
         #endif
-        (*_Impl.impl_VertexBuffer_Delete)(vb);
+        (*_Impl.impl_VertexBuffer_Delete)(vb, forceExecute);
     }
 }
 
@@ -274,14 +288,14 @@ Handle Create(const Descriptor& desc)
 #endif
 }
 
-void Delete(Handle ib)
+void Delete(Handle ib, bool forceExecute)
 {
     if (ib != InvalidHandle)
     {
         #if defined(DAVA_MEMORY_PROFILING_ENABLE)
         DAVA_MEMORY_PROFILER_GPU_DEALLOC(ib, DAVA::ALLOC_GPU_RDO_INDEX);        
         #endif
-        (*_Impl.impl_IndexBuffer_Delete)(ib);
+        (*_Impl.impl_IndexBuffer_Delete)(ib, forceExecute);
     }
 }
 
@@ -337,7 +351,7 @@ bool IsReady(Handle buf, uint32 objectIndex)
     return (*_Impl.impl_QueryBuffer_ObjectIsReady)(buf, objectIndex);
 }
 
-int Value(Handle buf, uint32 objectIndex)
+int32 Value(Handle buf, uint32 objectIndex)
 {
     return (*_Impl.impl_QueryBuffer_Value)(buf, objectIndex);
 }
@@ -413,14 +427,14 @@ Handle Create(const Texture::Descriptor& desc)
 #endif
 }
 
-void Delete(Handle tex)
+void Delete(Handle tex, bool forceExecute)
 {
     if (tex != InvalidHandle)
     {
         #if defined(DAVA_MEMORY_PROFILING_ENABLE)
         DAVA_MEMORY_PROFILER_GPU_DEALLOC(tex, DAVA::ALLOC_GPU_TEXTURE);    
         #endif
-        (*_Impl.impl_Texture_Delete)(tex);
+        (*_Impl.impl_Texture_Delete)(tex, forceExecute);
     }
 }
 
@@ -470,47 +484,12 @@ Handle CreateFragmentConstBuffer(Handle ps, uint32 bufIndex)
     return (*_Impl.impl_PipelineState_CreateFragmentConstBuffer)(ps, bufIndex);
 }
 
-uint32 VertexConstBufferCount(Handle ps)
-{
-    return (*_Impl.impl_PipelineState_VertexConstBufferCount)(ps);
-}
-
-uint32 VertexConstCount(Handle ps, uint32 bufIndex)
-{
-    return (*_Impl.impl_PipelineState_VertexConstCount)(ps, bufIndex);
-}
-
-bool GetVertexConstInfo(Handle ps, uint32 bufIndex, uint32 maxCount, ProgConstInfo* info)
-{
-    return (*_Impl.impl_PipelineState_GetVertexConstInfo)(ps, bufIndex, maxCount, info);
-}
-
-uint32 FragmentConstBufferCount(Handle ps)
-{
-    return (*_Impl.impl_PipelineState_FragmentConstBufferCount)(ps);
-}
-
-uint32 FragmentConstCount(Handle ps, uint32 bufIndex)
-{
-    return (*_Impl.impl_PipelineState_FragmentConstCount)(ps, bufIndex);
-}
-
-bool GetFragmentConstInfo(Handle ps, uint32 bufIndex, uint32 maxCount, ProgConstInfo* info)
-{
-    return (*_Impl.impl_PipelineState_GetFragmentConstInfo)(ps, bufIndex, maxCount, info);
-}
-
 } // namespace PipelineState
 
 //////////////////////////////////////////////////////////////////////////
 
 namespace ConstBuffer
 {
-uint32 ConstCount(Handle cb)
-{
-    return (*_Impl.impl_ConstBuffer_ConstCount)(cb);
-}
-
 bool SetConst(Handle cb, uint32 constIndex, uint32 constCount, const float* data)
 {
     return (*_Impl.impl_ConstBuffer_SetConst)(cb, constIndex, constCount, data);

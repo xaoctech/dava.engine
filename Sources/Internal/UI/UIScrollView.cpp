@@ -2,10 +2,21 @@
 #include "UI/UIScrollViewContainer.h"
 #include "UI/ScrollHelper.h"
 #include "UI/UIControlHelpers.h"
+#include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
 {
 static const FastName UISCROLL_VIEW_CONTAINER_NAME("scrollContainerControl");
+
+DAVA_VIRTUAL_REFLECTION_IMPL(UIScrollView)
+{
+    ReflectionRegistrator<UIScrollView>::Begin()
+    .ConstructorByPointer()
+    .DestructorByPointer([](UIScrollView* o) { o->Release(); })
+    .Field("autoUpdate", &UIScrollView::IsAutoUpdate, &UIScrollView::SetAutoUpdate)
+    .Field("centerContent", &UIScrollView::IsCenterContent, &UIScrollView::SetCenterContent)
+    .End();
+}
 
 UIScrollView::UIScrollView(const Rect& rect)
     : UIControl(rect)
@@ -353,7 +364,7 @@ float32 UIScrollView::GetParameterForScrollBar(UIScrollBar* forScrollBar, const 
         return vectorParam.y;
     }
 
-    DVASSERT_MSG(false, "Unknown orientation!")
+    DVASSERT(false, "Unknown orientation!");
     return 0.0f;
 }
 
@@ -459,11 +470,6 @@ void UIScrollView::ScrollToPosition(const Vector2& pos, float32 timeSec)
 {
     scrollHorizontal->ScrollToPosition(pos.x, timeSec);
     scrollVertical->ScrollToPosition(pos.y, timeSec);
-}
-
-const String UIScrollView::GetDelegateControlPath(const UIControl* rootControl) const
-{
-    return UIControlHelpers::GetControlPath(this, rootControl);
 }
 
 bool UIScrollView::IsAutoUpdate() const

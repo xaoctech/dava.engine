@@ -15,10 +15,6 @@ namespace rhi
 class PerfQueryDX9_t
 {
 public:
-    struct Desc
-    {
-    };
-
     IDirect3DQuery9* query = nullptr;
     uint64 timestamp = 0;
     uint64 freq = 0;
@@ -42,8 +38,8 @@ PerfQueryFrameDX9* NextPerfQueryFrame();
 }
 //==============================================================================
 
-typedef ResourcePool<PerfQueryDX9_t, RESOURCE_PERFQUERY, PerfQueryDX9_t::Desc, false> PerfQueryDX9Pool;
-RHI_IMPL_POOL(PerfQueryDX9_t, RESOURCE_PERFQUERY, PerfQueryDX9_t::Desc, false);
+typedef ResourcePool<PerfQueryDX9_t, RESOURCE_PERFQUERY, PerfQuery::Descriptor, false> PerfQueryDX9Pool;
+RHI_IMPL_POOL(PerfQueryDX9_t, RESOURCE_PERFQUERY, PerfQuery::Descriptor, false);
 
 DAVA::Mutex perfQueryFramePoolSyncDX9;
 DAVA::List<PerfQueryDX9::PerfQueryFrameDX9*> pendingPerfQueryFrameDX9;
@@ -65,7 +61,7 @@ static Handle dx9_PerfQuery_Create()
         perfQuery->isReady = 0;
         perfQuery->isValid = 0;
 
-        DVASSERT(perfQuery->query == nullptr)
+        DVASSERT(perfQuery->query == nullptr);
     }
 
     return handle;
@@ -78,7 +74,7 @@ static void dx9_PerfQuery_Delete(Handle handle)
     if (perfQuery)
     {
         DX9Command cmd = { DX9Command::RELEASE, { uint64_t(&perfQuery->query) } };
-        ExecDX9(&cmd, 1, false);
+        ExecDX9(&cmd, 1, true);
         perfQuery->query = nullptr;
     }
 
@@ -153,26 +149,31 @@ void IssueTimestampQuery(Handle handle)
 void BeginMeasurment()
 {
     DVASSERT(currentPerfQueryFrameDX9 == nullptr);
-    currentPerfQueryFrameDX9 = NextPerfQueryFrame();
 
-    if (!currentPerfQueryFrameDX9->disjointQuery)
-        _D3D9_Device->CreateQuery(D3DQUERYTYPE_TIMESTAMPDISJOINT, &(currentPerfQueryFrameDX9->disjointQuery));
+    if (DeviceCaps().isPerfQuerySupported)
+    {
+        currentPerfQueryFrameDX9 = NextPerfQueryFrame();
 
-    if (!currentPerfQueryFrameDX9->freqQuery)
-        _D3D9_Device->CreateQuery(D3DQUERYTYPE_TIMESTAMPFREQ, &(currentPerfQueryFrameDX9->freqQuery));
+        if (!currentPerfQueryFrameDX9->disjointQuery)
+            _D3D9_Device->CreateQuery(D3DQUERYTYPE_TIMESTAMPDISJOINT, &(currentPerfQueryFrameDX9->disjointQuery));
 
-    currentPerfQueryFrameDX9->disjointQuery->Issue(D3DISSUE_BEGIN);
-    currentPerfQueryFrameDX9->freqQuery->Issue(D3DISSUE_END);
+        if (!currentPerfQueryFrameDX9->freqQuery)
+            _D3D9_Device->CreateQuery(D3DQUERYTYPE_TIMESTAMPFREQ, &(currentPerfQueryFrameDX9->freqQuery));
+
+        currentPerfQueryFrameDX9->disjointQuery->Issue(D3DISSUE_BEGIN);
+        currentPerfQueryFrameDX9->freqQuery->Issue(D3DISSUE_END);
+    }
 }
 
 void EndMeasurment()
 {
-    DVASSERT(currentPerfQueryFrameDX9);
+    if (currentPerfQueryFrameDX9)
+    {
+        currentPerfQueryFrameDX9->disjointQuery->Issue(D3DISSUE_END);
 
-    currentPerfQueryFrameDX9->disjointQuery->Issue(D3DISSUE_END);
-
-    pendingPerfQueryFrameDX9.push_back(currentPerfQueryFrameDX9);
-    currentPerfQueryFrameDX9 = nullptr;
+        pendingPerfQueryFrameDX9.push_back(currentPerfQueryFrameDX9);
+        currentPerfQueryFrameDX9 = nullptr;
+    }
 }
 
 void SetupDispatch(Dispatch* dispatch)

@@ -2,8 +2,9 @@
 #include "Debug/DVAssert.h"
 #include "Utils/Utils.h"
 #include "Utils/StringFormat.h"
-#include "Platform/SystemTimer.h"
+#include "Time/SystemTimer.h"
 #include "FileSystem/File.h"
+#include "FileSystem/FilePath.h"
 #include "FileSystem/FileSystem.h"
 #include "Core/Core.h"
 #include "Render/Shader.h"
@@ -110,9 +111,11 @@ Sprite* Sprite::GetSpriteFromMap(const FilePath& pathname)
 {
     Sprite* ret = NULL;
 
+    FilePath path = pathname;
+
     spriteMapMutex.Lock();
 
-    SpriteMap::iterator it = spriteMap.find(FILEPATH_MAP_KEY(pathname));
+    SpriteMap::iterator it = spriteMap.find(FILEPATH_MAP_KEY(path));
     if (it != spriteMap.end())
     {
         Sprite* spr = it->second;
@@ -189,9 +192,10 @@ void Sprite::InitFromFile(File* file)
 
         FilePath tp = pathName.GetDirectory() + String(textureCharName);
         Texture* testTexture = Texture::CreateFromFile(tp);
+
         textures[k] = testTexture;
         textureNames[k] = tp;
-        DVASSERT_MSG(textures[k], "ERROR: Texture loading failed" /* + pathName*/);
+        DVASSERT(textures[k], "ERROR: Texture loading failed" /* + pathName*/);
     }
 
     int32 width, height;
@@ -273,7 +277,18 @@ void Sprite::InitFromFile(File* file)
 
 Sprite* Sprite::Create(const FilePath& spriteName)
 {
-    Sprite* spr = PureCreate(spriteName, NULL);
+    String extension = spriteName.GetExtension();
+
+    Sprite* spr = nullptr;
+    if (!extension.empty() && TextureDescriptor::IsSourceTextureExtension(extension))
+    {
+        spr = CreateFromSourceFile(spriteName);
+    }
+    else
+    {
+        spr = PureCreate(spriteName, NULL);
+    }
+
     if (!spr)
     {
         Texture* pinkTexture = Texture::CreatePink();
@@ -289,7 +304,7 @@ Sprite* Sprite::CreateFromTexture(Texture* fromTexture, int32 xOffset, int32 yOf
 {
     DVASSERT(fromTexture);
     Sprite* spr = new Sprite();
-    DVASSERT_MSG(spr, "Render Target Sprite Creation failed");
+    DVASSERT(spr, "Render Target Sprite Creation failed");
     spr->InitFromTexture(fromTexture, xOffset, yOffset, sprWidth, sprHeight, -1, -1, contentScaleIncluded);
     return spr;
 }
@@ -298,7 +313,7 @@ Sprite* Sprite::CreateFromTexture(Texture* fromTexture, int32 textureRegionOffse
 {
     DVASSERT(fromTexture);
     Sprite* spr = new Sprite();
-    DVASSERT_MSG(spr, "Render Target Sprite Creation failed");
+    DVASSERT(spr, "Render Target Sprite Creation failed");
     spr->InitFromTexture(fromTexture, textureRegionOffsetX, textureRegionOffsetY, sprWidth, sprHeight, textureRegionWidth, textureRegionHeigth, false, spriteName);
     return spr;
 }
@@ -365,7 +380,6 @@ String Sprite::GetPathString(const Sprite* sprite)
     String pathName;
     if (!path.IsEmpty())
     {
-        path.TruncateExtension();
         pathName = path.GetFrameworkPath();
     }
     return pathName;
@@ -667,21 +681,17 @@ void Sprite::PrepareForNewSize()
     if (relativePathname.IsEmpty())
         return;
 
-    String pathname = relativePathname.GetAbsolutePathname();
-
-    int32 pos = int32(pathname.find(UIControlSystem::Instance()->vcs->GetResourceFolder(UIControlSystem::Instance()->vcs->GetBaseResourceIndex())));
-    String scaledName = pathname.substr(0, pos) + UIControlSystem::Instance()->vcs->GetResourceFolder(UIControlSystem::Instance()->vcs->GetDesirableResourceIndex()) + pathname.substr(pos + UIControlSystem::Instance()->vcs->GetResourceFolder(UIControlSystem::Instance()->vcs->GetBaseResourceIndex()).length());
-
-    Logger::FrameworkDebug("Seraching for file: %s", scaledName.c_str());
-
-    File* fp = File::Create(scaledName, File::READ | File::OPEN);
-
-    if (!fp)
+    // Check if sprite exists by trying to open it.
+    // If file doesn't exists preparation can't be continued
     {
-        Logger::FrameworkDebug("Can't find file: %s", scaledName.c_str());
-        return;
+        int resIndex = 0;
+
+        File* fp = GetSpriteFile(relativePathname, resIndex);
+        if (fp == nullptr)
+            return;
+
+        SafeRelease(fp);
     }
-    SafeRelease(fp);
 
     Vector2 tempPivotPoint = defaultPivotPoint;
 
@@ -711,7 +721,7 @@ void Sprite::PrepareForNewSize()
 
     clipPolygon = 0;
 
-    PureCreate(pathname.substr(0, pathname.length() - 4), this);
+    PureCreate(relativePathname, this);
     //TODO: следующая строка кода написада здесь только до тех времен
     //		пока defaultPivotPoint не начнет задаваться прямо в спрайте,
     //		но возможно это навсегда.
@@ -739,7 +749,7 @@ void Sprite::ValidateForSize()
         (*it)->PrepareForNewSize();
     }
     Logger::FrameworkDebug("----------- Sprites validation for new resolution DONE  --------------");
-    //	Texture::DumpTextures();
+    // Texture::DumpTextures();
 }
 
 void Sprite::DumpSprites()

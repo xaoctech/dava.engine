@@ -5,6 +5,8 @@
 #include "Base/BaseMath.h"
 #include "Base/FastName.h"
 
+#include "Reflection/ReflectedStructure.h"
+
 namespace DAVA
 {
 class KeyedArchive;
@@ -77,10 +79,12 @@ public:
     Rect AsRect() const;
 
     //These functions work only if type of node is map
-    const MultiMap<String, YamlNode*>& AsMap() const;
+    const UnorderedMap<String, YamlNode*>& AsMap() const;
     VariantType AsVariantType() const;
 
     VariantType AsVariantType(const InspMember* insp) const;
+    Any AsAny(const ReflectedStructure::Field* field) const;
+    Any AsAny(const Reflection& ref) const;
 
     //These functions work only if type of node is array or map
     uint32 GetCount() const;
@@ -150,6 +154,7 @@ public:
     // Remove node value from map
     void RemoveNodeFromMap(const String& name);
     eStringRepresentation GetStringRepresentation() const;
+    void SetStringRepresentation(eStringRepresentation rep);
     eArrayRepresentation GetArrayRepresentation() const;
     eMapRepresentation GetMapRepresentation() const;
     eStringRepresentation GetMapKeyRepresentation() const;
@@ -197,7 +202,7 @@ private:
 
     struct ObjectMap
     {
-        MultiMap<String, YamlNode*> ordered;
+        UnorderedMap<String, YamlNode*> ordered;
         Vector<std::pair<String, YamlNode*>> unordered;
         eMapRepresentation style;
         eStringRepresentation keyStyle;

@@ -150,9 +150,9 @@ bool GraphicInternalFont::InitFromConfig(const DAVA::FilePath& path)
     if (distanceFieldFont)
         this->isDistanceFieldFont = distanceFieldFont->AsBool();
 
-    const MultiMap<String, YamlNode*> charsMap = charsNode->AsMap();
-    MultiMap<String, YamlNode*>::const_iterator charsMapEnd = charsMap.end();
-    for (MultiMap<String, YamlNode*>::const_iterator iter = charsMap.begin(); iter != charsMapEnd; ++iter)
+    const UnorderedMap<String, YamlNode*>& charsMap = charsNode->AsMap();
+    auto charsMapEnd = charsMap.end();
+    for (auto iter = charsMap.begin(); iter != charsMapEnd; ++iter)
     {
         char16 charId = atoi(iter->first.c_str());
         CharDescription charDescription;
@@ -172,7 +172,7 @@ bool GraphicInternalFont::InitFromConfig(const DAVA::FilePath& path)
     const YamlNode* kerningNode = configNode->Get("kerning");
     if (kerningNode)
     {
-        const MultiMap<String, YamlNode*> kerningMap = kerningNode->AsMap();
+        const UnorderedMap<String, YamlNode*>& kerningMap = kerningNode->AsMap();
         for (auto iter = kerningMap.begin(); iter != kerningMap.end(); ++iter)
         {
             int32 charId = atoi(iter->first.c_str());
@@ -180,7 +180,7 @@ bool GraphicInternalFont::InitFromConfig(const DAVA::FilePath& path)
             if (charIter == chars.end())
                 continue;
 
-            const MultiMap<String, YamlNode*> charKerningMap = iter->second->AsMap();
+            const UnorderedMap<String, YamlNode*>& charKerningMap = iter->second->AsMap();
             for (auto i = charKerningMap.begin(); i != charKerningMap.end(); ++i)
             {
                 int32 secondCharId = atoi(i->first.c_str());
@@ -321,7 +321,7 @@ Font::StringMetrics GraphicFont::DrawStringToBuffer(const WideString& str,
             }
             else
             {
-                DVASSERT_MSG(false, "Font should contain .notDef character!");
+                DVASSERT(false, "Font should contain .notDef character!");
                 continue;
             }
         }
@@ -410,9 +410,9 @@ Font::StringMetrics GraphicFont::DrawStringToBuffer(const WideString& str,
     metrics.drawRect.dx += -metrics.drawRect.x + 1;
     metrics.drawRect.dy += -metrics.drawRect.y + 1;
 
-    metrics.height = int32(std::ceil(lastY));
-    metrics.width = int32(std::ceil(lastX));
-    metrics.baseline = yOffset + int32(fontInternal->baselineHeight);
+    metrics.height = lastY;
+    metrics.width = lastX;
+    metrics.baseline = yOffset + fontInternal->baselineHeight;
     return metrics;
 }
 

@@ -2,13 +2,17 @@
 #define __DAVAENGINE_UI_SIZE_POLICY_COMPONENT_H__
 
 #include "UI/Components/UIComponent.h"
+#include "Reflection/Reflection.h"
 
 namespace DAVA
 {
 class UIControl;
+class LayoutFormula;
 
 class UISizePolicyComponent : public UIBaseComponent<UIComponent::SIZE_POLICY_COMPONENT>
 {
+    DAVA_VIRTUAL_REFLECTION(UISizePolicyComponent, UIBaseComponent<UIComponent::SIZE_POLICY_COMPONENT>);
+
 public:
     enum eSizePolicy
     {
@@ -19,7 +23,8 @@ public:
         PERCENT_OF_FIRST_CHILD,
         PERCENT_OF_LAST_CHILD,
         PERCENT_OF_CONTENT,
-        PERCENT_OF_PARENT
+        PERCENT_OF_PARENT,
+        FORMULA
     };
 
 public:
@@ -47,6 +52,9 @@ public:
     float32 GetHorizontalMaxValue() const;
     void SetHorizontalMaxValue(float32 value);
 
+    String GetHorizontalFormula() const;
+    void SetHorizontalFormula(const String& formula);
+
     eSizePolicy GetVerticalPolicy() const;
     void SetVerticalPolicy(eSizePolicy policy);
 
@@ -59,20 +67,20 @@ public:
     float32 GetVerticalMaxValue() const;
     void SetVerticalMaxValue(float32 value);
 
+    String GetVerticalFormula() const;
+    void SetVerticalFormula(const String& formula);
+
     eSizePolicy GetPolicyByAxis(int32 axis) const;
     float32 GetValueByAxis(int32 axis) const;
     float32 GetMinValueByAxis(int32 axis) const;
     float32 GetMaxValueByAxis(int32 axis) const;
 
+    LayoutFormula* GetFormula(int32 axis) const;
+    void RemoveFormula(int32 axis);
+
     bool IsDependsOnChildren(int32 axis) const;
 
 private:
-    int32 GetHorizontalPolicyAsInt() const;
-    void SetHorizontalPolicyFromInt(int32 policy);
-
-    int32 GetVerticalPolicyAsInt() const;
-    void SetVerticalPolicyFromInt(int32 policy);
-
     void SetLayoutDirty();
 
 private:
@@ -82,21 +90,11 @@ private:
         float32 value;
         float32 min;
         float32 max;
+        std::unique_ptr<LayoutFormula> formula;
     };
 
 private:
     Array<AxisPolicy, Vector2::AXIS_COUNT> policy;
-
-public:
-    INTROSPECTION_EXTEND(UISizePolicyComponent, UIComponent,
-                         PROPERTY("horizontalPolicy", InspDesc("Horizontal Policy", GlobalEnumMap<eSizePolicy>::Instance()), GetHorizontalPolicyAsInt, SetHorizontalPolicyFromInt, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("horizontalValue", "Horizontal Value", GetHorizontalValue, SetHorizontalValue, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("horizontalMin", "Horizontal Min Size", GetHorizontalMinValue, SetHorizontalMinValue, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("horizontalMax", "Horizontal Max Size", GetHorizontalMaxValue, SetHorizontalMaxValue, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("verticalPolicy", InspDesc("Vertical Policy", GlobalEnumMap<eSizePolicy>::Instance()), GetVerticalPolicyAsInt, SetVerticalPolicyFromInt, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("verticalValue", "Vertical Value", GetVerticalValue, SetVerticalValue, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("verticalMin", "Vertical Min Size", GetVerticalMinValue, SetVerticalMinValue, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("verticalMax", "Vertical Max Size", GetVerticalMaxValue, SetVerticalMaxValue, I_SAVE | I_VIEW | I_EDIT))
 };
 }
 

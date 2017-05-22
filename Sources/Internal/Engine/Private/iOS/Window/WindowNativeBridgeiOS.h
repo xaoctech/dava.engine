@@ -8,6 +8,7 @@
 
 #include "Engine/EngineTypes.h"
 #include "Engine/Private/EnginePrivateFwd.h"
+#include "FileSystem/KeyedArchive.h"
 
 @class UIWindow;
 @class UIView;
@@ -16,6 +17,8 @@
 @class RenderView;
 @class RenderViewController;
 @class NativeViewPool;
+@class VisibleFrameObserver;
+@class ObjectiveCInteropWindow;
 
 namespace DAVA
 {
@@ -28,14 +31,14 @@ namespace Private
 //
 // iOS window unions several Objective-C classes (UIView subclass,
 // UIViewController subclass, etc) and each of these classes
-// receive some kind of system notfications or events. WindowNativeBridge
+// receives some kind of system notfications or events. WindowNativeBridge
 // combines all window-related logic and processes events from Objective-C classes.
 // Objective-C classes only forward its notifications to WindowNativeBridge.
 //
-// WindowNativeBridge is friend of iOS's WindowBackend
+// WindowNativeBridge is a friend of iOS's WindowBackend
 struct WindowNativeBridge final
 {
-    WindowNativeBridge(WindowBackend* windowBackend);
+    WindowNativeBridge(WindowBackend* windowBackend, const KeyedArchive* engineOptions);
     ~WindowNativeBridge();
 
     void* GetHandle() const;
@@ -51,6 +54,8 @@ struct WindowNativeBridge final
 
     UIView* GetUIViewFromPool(const char8* className);
     void ReturnUIViewToPool(UIView* view);
+
+    void SetSurfaceScale(const float32 scale);
 
     //////////////////////////////////////////////////////////////////////////
     // Notifications from RenderViewController
@@ -73,6 +78,11 @@ struct WindowNativeBridge final
     RenderView* renderView = nullptr;
     RenderViewController* renderViewController = nullptr;
     NativeViewPool* nativeViewPool = nullptr;
+    VisibleFrameObserver* visibleFrameObserver = nullptr;
+    ObjectiveCInteropWindow* objcInterop = nullptr;
+    float32 dpi = 0.f;
+
+    const KeyedArchive* engineOptions = nullptr;
 };
 
 } // namespace Private

@@ -1,5 +1,5 @@
-#include "Scene3D/Scene.h"
 
+#include "Scene3D/Scene.h"
 #include "Render/Texture.h"
 #include "Render/3D/StaticMesh.h"
 #include "Render/Image/Image.h"
@@ -7,7 +7,7 @@
 #include "Render/RenderOptions.h"
 #include "Render/MipmapReplacer.h"
 
-#include "Platform/SystemTimer.h"
+#include "Time/SystemTimer.h"
 #include "FileSystem/FileSystem.h"
 
 #include "Scene3D/SceneFileV2.h"
@@ -27,13 +27,14 @@
 #include "Scene3D/Systems/UpdateSystem.h"
 #include "Scene3D/Systems/LightUpdateSystem.h"
 #include "Scene3D/Systems/SwitchSystem.h"
-#include "Scene3D/Systems/SoundUpdateSystem.h"
 #include "Scene3D/Systems/ActionUpdateSystem.h"
 #include "Scene3D/Systems/WindSystem.h"
 #include "Scene3D/Systems/WaveSystem.h"
 #include "Scene3D/Systems/SkeletonSystem.h"
 #include "Scene3D/Systems/AnimationSystem.h"
 #include "Scene3D/Systems/LandscapeSystem.h"
+#include "Scene3D/Systems/SoundUpdateSystem.h"
+#include "Scene3D/Systems/ParticleEffectDebugDrawSystem.h"
 
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
@@ -176,6 +177,7 @@ Scene::Scene(uint32 _systemsMask /* = SCENE_SYSTEM_ALL_MASK */)
     , windSystem(0)
     , animationSystem(0)
     , staticOcclusionDebugDrawSystem(0)
+    , particleEffectDebugDrawSystem(0)
     , systemsMask(_systemsMask)
     , maxEntityIDCounter(0)
     , sceneGlobalMaterial(0)
@@ -343,6 +345,18 @@ void Scene::CreateSystems()
         skeletonSystem = new SkeletonSystem(this);
         AddSystem(skeletonSystem, MAKE_COMPONENT_MASK(Component::SKELETON_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
     }
+
+    if (DAVA::Renderer::GetOptions()->IsOptionEnabled(DAVA::RenderOptions::DEBUG_DRAW_STATIC_OCCLUSION) && !staticOcclusionDebugDrawSystem)
+    {
+        staticOcclusionDebugDrawSystem = new DAVA::StaticOcclusionDebugDrawSystem(this);
+        AddSystem(staticOcclusionDebugDrawSystem, MAKE_COMPONENT_MASK(DAVA::Component::STATIC_OCCLUSION_COMPONENT), 0, renderUpdateSystem);
+    }
+
+    if (DAVA::Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DEBUG_DRAW_PARTICLES) && particleEffectDebugDrawSystem == nullptr)
+    {
+        particleEffectDebugDrawSystem = new ParticleEffectDebugDrawSystem(this);
+        AddSystem(particleEffectDebugDrawSystem, 0);
+    }
 }
 
 Scene::~Scene()
@@ -451,42 +465,49 @@ void Scene::UnregisterComponent(Entity* entity, Component* component)
     }
 }
 
-void Scene::AddSystem(SceneSystem* sceneSystem, uint64 componentFlags, uint32 processFlags /*= 0*/, SceneSystem* insertBeforeSceneForProcess /* = nullptr */)
+void Scene::AddSystem(SceneSystem* sceneSystem, uint64 componentFlags, uint32 processFlags /*= 0*/, SceneSystem* insertBeforeSceneForProcess /* = nullptr */, SceneSystem* insertBeforeSceneForInput /* = nullptr*/)
 {
     sceneSystem->SetRequiredComponents(componentFlags);
     //Set<SceneSystem*> & systemSetForType = componentTypeMapping.GetValue(componentFlags);
     //systemSetForType.insert(sceneSystem);
     systems.push_back(sceneSystem);
 
-    if (processFlags & SCENE_SYSTEM_REQUIRE_PROCESS)
+    auto insertSystemBefore = [sceneSystem](Vector<SceneSystem*>& container, SceneSystem* beforeThisSystem)
     {
-        bool wasInsertedForUpdate = false;
-        if (insertBeforeSceneForProcess)
+        if (beforeThisSystem != nullptr)
         {
-            Vector<SceneSystem*>::iterator itEnd = systemsToProcess.end();
-            for (Vector<SceneSystem*>::iterator it = systemsToProcess.begin(); it != itEnd; ++it)
+            Vector<SceneSystem*>::iterator itEnd = container.end();
+            for (Vector<SceneSystem*>::iterator it = container.begin(); it != itEnd; ++it)
             {
-                if (insertBeforeSceneForProcess == (*it))
+                if (beforeThisSystem == (*it))
                 {
-                    systemsToProcess.insert(it, sceneSystem);
-                    wasInsertedForUpdate = true;
-                    break;
+                    container.insert(it, sceneSystem);
+                    return true;
                 }
             }
         }
         else
         {
-            systemsToProcess.push_back(sceneSystem);
-            wasInsertedForUpdate = true;
+            container.push_back(sceneSystem);
+            return true;
         }
-        DVASSERT(wasInsertedForUpdate);
+
+        return false;
+    };
+
+    if (processFlags & SCENE_SYSTEM_REQUIRE_PROCESS)
+    {
+        bool wasInsertedForProcess = insertSystemBefore(systemsToProcess, insertBeforeSceneForProcess);
+        DVASSERT(wasInsertedForProcess);
     }
 
     if (processFlags & SCENE_SYSTEM_REQUIRE_INPUT)
     {
-        systemsToInput.push_back(sceneSystem);
+        bool wasInsertedForInput = insertSystemBefore(systemsToInput, insertBeforeSceneForInput);
+        DVASSERT(wasInsertedForInput);
     }
 
+    sceneSystem->SetScene(this);
     RegisterEntitiesInSystemRecursively(sceneSystem, this);
 }
 
@@ -497,7 +518,15 @@ void Scene::RemoveSystem(SceneSystem* sceneSystem)
     RemoveSystem(systemsToProcess, sceneSystem);
     RemoveSystem(systemsToInput, sceneSystem);
 
-    DVVERIFY(RemoveSystem(systems, sceneSystem));
+    bool removed = RemoveSystem(systems, sceneSystem);
+    if (removed)
+    {
+        sceneSystem->SetScene(nullptr);
+    }
+    else
+    {
+        DVASSERT(false, "Failed to remove system from scene");
+    }
 }
 
 bool Scene::RemoveSystem(Vector<SceneSystem*>& storage, SceneSystem* system)
@@ -604,7 +633,7 @@ void Scene::Update(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_UPDATE)
 
-    uint64 time = SystemTimer::Instance()->AbsoluteMS();
+    uint64 time = SystemTimer::GetMs();
 
     size_t size = systemsToProcess.size();
     for (size_t k = 0; k < size; ++k)
@@ -629,7 +658,8 @@ void Scene::Update(float32 timeElapsed)
         }
     }
 
-    updateTime = SystemTimer::Instance()->AbsoluteMS() - time;
+    updateTime = SystemTimer::GetMs() - time;
+    sceneGlobalTime += timeElapsed;
 }
 
 void Scene::Draw()
@@ -649,14 +679,17 @@ void Scene::Draw()
 
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_SHADOW_COLOR, shadowDataPtr, reinterpret_cast<pointer_size>(shadowDataPtr));
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_WATER_CLEAR_COLOR, waterDataPtr, reinterpret_cast<pointer_size>(waterDataPtr));
+    Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_GLOBAL_TIME, &sceneGlobalTime, reinterpret_cast<pointer_size>(&sceneGlobalTime));
 
-    uint64 time = SystemTimer::Instance()->AbsoluteMS();
+    uint64 time = SystemTimer::GetMs();
 
     renderSystem->Render();
 
+    if (particleEffectDebugDrawSystem != nullptr)
+        particleEffectDebugDrawSystem->Draw();
     //foliageSystem->DebugDrawVegetation();
 
-    drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
+    drawTime = SystemTimer::GetMs() - time;
 }
 
 void Scene::SceneDidLoaded()
@@ -827,6 +860,11 @@ AnimationSystem* Scene::GetAnimationSystem() const
     return animationSystem;
 }
 
+ParticleEffectDebugDrawSystem* Scene::GetParticleEffectDebugDrawSystem() const
+{
+    return particleEffectDebugDrawSystem;
+}
+
 /*void Scene::Save(KeyedArchive * archive)
 {
     // Perform refactoring and add Matrix4, Vector4 types to VariantType and KeyedArchive
@@ -910,11 +948,17 @@ void Scene::OnSceneReady(Entity* rootNode)
 
 void Scene::Input(DAVA::UIEvent* event)
 {
-    size_t size = systemsToInput.size();
-    for (size_t k = 0; k < size; ++k)
+    for (SceneSystem* system : systemsToInput)
     {
-        SceneSystem* system = systemsToInput[k];
         system->Input(event);
+    }
+}
+
+void Scene::InputCancelled(UIEvent* event)
+{
+    for (SceneSystem* system : systemsToInput)
+    {
+        system->InputCancelled(event);
     }
 }
 
@@ -936,6 +980,17 @@ void Scene::HandleEvent(Observable* observable)
     {
         RemoveSystem(staticOcclusionDebugDrawSystem);
         SafeDelete(staticOcclusionDebugDrawSystem);
+    }
+
+    if (DAVA::Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DEBUG_DRAW_PARTICLES) && particleEffectDebugDrawSystem == nullptr)
+    {
+        particleEffectDebugDrawSystem = new ParticleEffectDebugDrawSystem(this);
+        AddSystem(particleEffectDebugDrawSystem, 0);
+    }
+    else if (!DAVA::Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DEBUG_DRAW_PARTICLES) && particleEffectDebugDrawSystem != nullptr)
+    {
+        RemoveSystem(particleEffectDebugDrawSystem);
+        SafeDelete(particleEffectDebugDrawSystem);
     }
 }
 

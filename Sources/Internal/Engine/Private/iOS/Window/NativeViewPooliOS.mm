@@ -25,7 +25,7 @@
 {
     for (std::pair<UIView*, bool> pair : pool)
     {
-        DVASSERT_MSG(pair.second == false, "Someone did not return view back to pool");
+        DVASSERT(pair.second == false, "Someone did not return view back to pool");
         [pair.first release];
     }
     [super dealloc];
@@ -48,7 +48,7 @@
     }
 
     Class viewClass = NSClassFromString(viewClassName);
-    UIView* newView = [[[viewClass alloc] init] retain];
+    UIView* newView = [[viewClass alloc] init];
     pool.emplace_back(newView, true);
     return newView;
 }
@@ -63,7 +63,7 @@
             return;
         }
     }
-    DVASSERT_MSG(false, "You try to return view that never been in pool");
+    DVASSERT(false, "You've tried to return a view that has never been in the pool");
 }
 
 @end

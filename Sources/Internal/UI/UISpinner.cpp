@@ -1,6 +1,8 @@
 #include "UISpinner.h"
 #include "UI/UIEvent.h"
 #include "Animation/Animation.h"
+#include "Reflection/ReflectionRegistrator.h"
+#include "UI/Update/UIUpdateComponent.h"
 
 namespace DAVA
 {
@@ -14,6 +16,14 @@ static const int32 UISPINNER_MOVE_ANIMATION_TRACK = 10;
 static const float32 UISPINNER_X_UNDEFINED = 10000;
 static const float32 UISPINNER_SLIDE_GESTURE_SPEED = 20.f;
 static const float32 UISPINNER_SLIDE_GESTURE_TIME = 0.1f;
+
+DAVA_VIRTUAL_REFLECTION_IMPL(UISpinner)
+{
+    ReflectionRegistrator<UISpinner>::Begin()
+    .ConstructorByPointer()
+    .DestructorByPointer([](UISpinner* o) { o->Release(); })
+    .End();
+}
 
 void SpinnerAdapter::AddObserver(SelectionObserver* anObserver)
 {
@@ -58,8 +68,8 @@ void SpinnerAdapter::DisplaySelectedData(UISpinner* spinner)
 UISpinner::UISpinner(const Rect& rect)
     : UIControl(rect)
     , adapter(nullptr)
-    , buttonNext(new UIButton())
-    , buttonPrevious(new UIButton())
+    , buttonNext(new UIControl())
+    , buttonPrevious(new UIControl())
     , content(new UIControl())
     , nextContent(new UIControl())
     , contentViewport(new UIControl())
@@ -80,6 +90,8 @@ UISpinner::UISpinner(const Rect& rect)
     contentViewport->AddControl(nextContent.Get());
     contentViewport->SetInputEnabled(false);
     contentViewport->SetClipContents(true);
+
+    GetOrCreateComponent<UIUpdateComponent>();
 }
 
 UISpinner::~UISpinner()
@@ -258,11 +270,11 @@ void UISpinner::AddControl(UIControl* control)
 
     if (control->GetName() == UISPINNER_BUTTON_NEXT_NAME && control != buttonNext.Get())
     {
-        buttonNext = DynamicTypeCheck<UIButton*>(control);
+        buttonNext = control;
     }
     else if (control->GetName() == UISPINNER_BUTTON_PREVIOUS_NAME && control != buttonPrevious.Get())
     {
-        buttonPrevious = DynamicTypeCheck<UIButton*>(control);
+        buttonPrevious = control;
     }
 }
 
@@ -338,7 +350,7 @@ void UISpinner::OnSelectedChanged(bool isSelectedFirst, bool isSelectedLast, boo
     if (isSelectedChanged)
     {
         adapter->DisplaySelectedData(this);
-        PerformEvent(UIControl::EVENT_VALUE_CHANGED);
+        PerformEvent(UIControl::EVENT_VALUE_CHANGED, nullptr);
     }
 }
 

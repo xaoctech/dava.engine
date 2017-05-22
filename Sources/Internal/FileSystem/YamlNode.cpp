@@ -3,12 +3,15 @@
 #include "FileSystem/KeyedArchive.h"
 #include "Utils/Utils.h"
 #include "Utils/UTF8Utils.h"
+#include "Utils/StringFormat.h"
+#include "Base/Type.h"
+#include "Reflection/ReflectedTypeDB.h"
 
 namespace DAVA
 {
 static const String EMPTY_STRING = "";
 static const Vector<YamlNode*> EMPTY_VECTOR;
-static const MultiMap<String, YamlNode*> EMPTY_MAP = MultiMap<String, YamlNode*>();
+static const UnorderedMap<String, YamlNode*> EMPTY_MAP = UnorderedMap<String, YamlNode*>();
 
 YamlNode* YamlNode::CreateStringNode()
 {
@@ -76,8 +79,8 @@ YamlNode::~YamlNode()
     break;
     case TYPE_MAP:
     {
-        MultiMap<String, YamlNode *>::iterator iter = objectMap->ordered.begin(),
-                                               end = objectMap->ordered.end();
+        UnorderedMap<String, YamlNode *>::iterator iter = objectMap->ordered.begin(),
+                                                   end = objectMap->ordered.end();
         for (; iter != end; ++iter)
         {
             SafeRelease(iter->second);
@@ -307,9 +310,9 @@ VariantType YamlNode::AsVariantType() const
 {
     VariantType retValue;
 
-    const MultiMap<String, YamlNode*>& mapFromNode = AsMap();
+    const UnorderedMap<String, YamlNode*>& mapFromNode = AsMap();
 
-    for (MultiMap<String, YamlNode*>::const_iterator it = mapFromNode.begin(); it != mapFromNode.end(); ++it)
+    for (auto it = mapFromNode.begin(); it != mapFromNode.end(); ++it)
     {
         const String& innerTypeName = it->first;
 
@@ -517,9 +520,161 @@ VariantType YamlNode::AsVariantType(const InspMember* insp) const
         return VariantType(AsVector4());
     else if (insp->Type() == MetaInfo::Instance<FilePath>())
         return VariantType(FilePath(AsString()));
+    else if (insp->Type() == MetaInfo::Instance<FastName>())
+        return VariantType(AsFastName());
 
     DVASSERT(false);
     return VariantType();
+}
+
+Any YamlNode::AsAny(const ReflectedStructure::Field* field) const
+{
+    // TODO: Make better
+    const Type* type = field->valueWrapper->GetType(ReflectedObject())->Decay();
+    if (field->meta)
+    {
+        const M::Enum* emeta = field->meta->GetMeta<M::Enum>();
+        if (nullptr != emeta)
+        {
+            int32 val = 0;
+            if (GetType() == TYPE_STRING)
+            {
+                if (emeta->GetEnumMap()->ToValue(AsString().c_str(), val))
+                {
+                    return Any(val).ReinterpretCast(type);
+                }
+            }
+            DVASSERT(false);
+        }
+
+        const M::Flags* fmeta = field->meta->GetMeta<M::Flags>();
+        if (nullptr != fmeta)
+        {
+            int32 val = 0;
+            const uint32 count = GetCount();
+            for (uint32 i = 0; i < count; i++)
+            {
+                const YamlNode* flagNode = Get(i);
+                int32 flag = 0;
+                if (fmeta->GetFlagsMap()->ToValue(flagNode->AsString().c_str(), flag))
+                {
+                    val |= flag;
+                }
+                else
+                {
+                    DVASSERT(false);
+                }
+            }
+            return Any(val).ReinterpretCast(type);
+        }
+    }
+    else if (type == Type::Instance<bool>())
+        return Any(AsBool());
+    else if (type == Type::Instance<int32>())
+        return Any(AsInt32());
+    else if (type == Type::Instance<uint32>())
+        return Any(AsUInt32());
+    else if (type == Type::Instance<int64>())
+        return Any(AsInt64());
+    else if (type == Type::Instance<uint64>())
+        return Any(AsUInt64());
+    else if (type == Type::Instance<float32>())
+        return Any(AsFloat());
+    else if (type == Type::Instance<FastName>())
+        return Any(AsFastName());
+    else if (type == Type::Instance<String>())
+        return Any(AsString());
+    else if (type == Type::Instance<WideString>())
+        return Any(AsWString());
+    else if (type == Type::Instance<Vector2>())
+        return Any(AsVector2());
+    else if (type == Type::Instance<Vector3>())
+        return Any(AsVector3());
+    else if (type == Type::Instance<Vector4>())
+        return Any(AsVector4());
+    else if (type == Type::Instance<Color>())
+        return Any(AsColor());
+    else if (type == Type::Instance<Rect>())
+        return Any(AsRect());
+    else if (type == Type::Instance<FilePath>())
+        return Any(FilePath(AsString()));
+
+    DVASSERT(false);
+    return Any();
+}
+
+Any YamlNode::AsAny(const Reflection& ref) const
+{
+    // TODO: Make better
+    const Type* type = ref.GetValueType()->Decay();
+    const M::Enum* emeta = ref.GetMeta<M::Enum>();
+    const M::Flags* fmeta = ref.GetMeta<M::Flags>();
+
+    if (nullptr != emeta)
+    {
+        int32 val = 0;
+        const M::Enum* emeta = ref.GetMeta<M::Enum>();
+        if (GetType() == TYPE_STRING)
+        {
+            if (emeta->GetEnumMap()->ToValue(AsString().c_str(), val))
+            {
+                return Any(val);
+            }
+        }
+        DVASSERT(false);
+    }
+    else if (nullptr != fmeta)
+    {
+        int32 val = 0;
+        const uint32 count = GetCount();
+        for (uint32 i = 0; i < count; i++)
+        {
+            const YamlNode* flagNode = Get(i);
+            int32 flag = 0;
+            if (fmeta->GetFlagsMap()->ToValue(flagNode->AsString().c_str(), flag))
+            {
+                val |= flag;
+            }
+            else
+            {
+                DVASSERT(false);
+            }
+        }
+        return Any(val);
+    }
+    else if (type == Type::Instance<bool>())
+        return Any(AsBool());
+    else if (type == Type::Instance<int32>())
+        return Any(AsInt32());
+    else if (type == Type::Instance<uint32>())
+        return Any(AsUInt32());
+    else if (type == Type::Instance<int64>())
+        return Any(AsInt64());
+    else if (type == Type::Instance<uint64>())
+        return Any(AsUInt64());
+    else if (type == Type::Instance<float32>())
+        return Any(AsFloat());
+    else if (type == Type::Instance<FastName>())
+        return Any(AsFastName());
+    else if (type == Type::Instance<String>())
+        return Any(AsString());
+    else if (type == Type::Instance<WideString>())
+        return Any(AsWString());
+    else if (type == Type::Instance<Vector2>())
+        return Any(AsVector2());
+    else if (type == Type::Instance<Vector3>())
+        return Any(AsVector3());
+    else if (type == Type::Instance<Vector4>())
+        return Any(AsVector4());
+    else if (type == Type::Instance<Color>())
+        return Any(AsColor());
+    else if (type == Type::Instance<Rect>())
+        return Any(AsRect());
+    else if (type == Type::Instance<FilePath>())
+        return Any(FilePath(AsString()));
+
+    DVASSERT(false);
+    return Any();
 }
 
 const Vector<YamlNode*>& YamlNode::AsVector() const
@@ -531,7 +686,7 @@ const Vector<YamlNode*>& YamlNode::AsVector() const
     return EMPTY_VECTOR;
 }
 
-const MultiMap<String, YamlNode*>& YamlNode::AsMap() const
+const UnorderedMap<String, YamlNode*>& YamlNode::AsMap() const
 {
     DVASSERT(GetType() == TYPE_MAP);
     if (GetType() == TYPE_MAP)
@@ -568,7 +723,7 @@ const YamlNode* YamlNode::Get(const String& name) const
     //DVASSERT(GetType() == TYPE_MAP);
     if (GetType() == TYPE_MAP)
     {
-        MultiMap<String, YamlNode*>::const_iterator iter = objectMap->ordered.find(name);
+        auto iter = objectMap->ordered.find(name);
         if (iter != objectMap->ordered.end())
         {
             return iter->second;
@@ -593,18 +748,12 @@ struct EqualToFirst
 void YamlNode::RemoveNodeFromMap(const String& name)
 {
     DVASSERT(GetType() == TYPE_MAP);
-    MultiMap<String, YamlNode *>::iterator begin = objectMap->ordered.lower_bound(name),
-                                           end = objectMap->ordered.upper_bound(name);
-    if (begin == end)
+    auto iter = objectMap->ordered.find(name);
+    if (iter == objectMap->ordered.end())
         return;
 
-    MultiMap<String, YamlNode*>::iterator it = begin;
-    for (; it != end; ++it)
-    {
-        SafeRelease(it->second);
-    }
-
-    objectMap->ordered.erase(begin, end);
+    SafeRelease(iter->second);
+    objectMap->ordered.erase(iter);
 
     Vector<std::pair<String, YamlNode*>>& array = objectMap->unordered;
     array.erase(std::remove_if(array.begin(), array.end(), EqualToFirst(name)), array.end());
@@ -613,6 +762,12 @@ YamlNode::eStringRepresentation YamlNode::GetStringRepresentation() const
 {
     DVASSERT(GetType() == TYPE_STRING);
     return objectString->style;
+}
+
+void YamlNode::SetStringRepresentation(eStringRepresentation rep)
+{
+    DVASSERT(GetType() == TYPE_STRING);
+    objectString->style = rep;
 }
 
 YamlNode::eArrayRepresentation YamlNode::GetArrayRepresentation() const
@@ -641,7 +796,8 @@ bool YamlNode::GetMapOrderRepresentation() const
 
 void YamlNode::InternalSetToString(const VariantType& varType)
 {
-    DVVERIFY(InitStringFromVariantType(varType));
+    const bool initResult = InitStringFromVariantType(varType);
+    DVASSERT(initResult);
 }
 
 void YamlNode::InternalSetToString(const String& value)
@@ -689,6 +845,7 @@ void YamlNode::InternalAddNodeToMap(const String& name, YamlNode* node, bool rew
         RemoveNodeFromMap(name);
     }
 
+    DVASSERT(objectMap->ordered.find(name) == objectMap->ordered.end(), Format("YamlNode::InternalAddNodeToMap: map must have the unique key, \"%s\" is already there!", name.c_str()).c_str());
     objectMap->ordered.insert(std::pair<String, YamlNode*>(name, node));
     objectMap->unordered.push_back(std::pair<String, YamlNode*>(name, node));
 }
@@ -821,7 +978,14 @@ bool YamlNode::InitStringFromVariantType(const VariantType& varType)
     break;
     case VariantType::TYPE_FASTNAME:
     {
-        InternalSetString(varType.AsFastName().c_str(), SR_DOUBLE_QUOTED_REPRESENTATION);
+        if (varType.AsFastName().IsValid())
+        {
+            InternalSetString(varType.AsFastName().c_str(), SR_DOUBLE_QUOTED_REPRESENTATION);
+        }
+        else
+        {
+            InternalSetString("", SR_DOUBLE_QUOTED_REPRESENTATION);
+        }
     }
     break;
 
@@ -930,19 +1094,22 @@ YamlNode* YamlNode::CreateNodeFromVariantType(const VariantType& varType)
     case TYPE_STRING:
     {
         node = CreateStringNode();
-        DVVERIFY(node->InitStringFromVariantType(varType));
+        const bool initResult = node->InitStringFromVariantType(varType);
+        DVASSERT(initResult);
     }
     break;
     case TYPE_ARRAY:
     {
         node = CreateArrayNode();
-        DVVERIFY(node->InitArrayFromVariantType(varType));
+        const bool initResult = node->InitArrayFromVariantType(varType);
+        DVASSERT(initResult);
     }
     break;
     case TYPE_MAP:
     {
         node = CreateMapNode();
-        DVVERIFY(node->InitMapFromVariantType(varType));
+        const bool initResult = node->InitMapFromVariantType(varType);
+        DVASSERT(initResult);
     }
     break;
     }

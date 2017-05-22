@@ -5,7 +5,6 @@
 #if defined(__DAVAENGINE_ANDROID__)
 
 #include "Engine/Window.h"
-#include "Engine/Android/WindowNativeServiceAndroid.h"
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
 #include "Engine/Private/Android/AndroidBridge.h"
@@ -13,7 +12,7 @@
 #include "Engine/Private/Android/PlatformCoreAndroid.h"
 
 #include "Logger/Logger.h"
-#include "Platform/SystemTimer.h"
+#include "Time/SystemTimer.h"
 
 extern "C"
 {
@@ -95,6 +94,13 @@ JNIEXPORT void JNICALL Java_com_dava_engine_DavaSurfaceView_nativeSurfaceViewOnG
     wbackend->OnGamepadMotion(deviceId, axis, value);
 }
 
+JNIEXPORT void JNICALL Java_com_dava_engine_DavaSurfaceView_nativeSurfaceViewOnVisibleFrameChanged(JNIEnv* env, jclass jclazz, jlong windowBackendPointer, jint x, jint y, jint w, jint h)
+{
+    using DAVA::Private::WindowBackend;
+    WindowBackend* wbackend = reinterpret_cast<WindowBackend*>(static_cast<uintptr_t>(windowBackendPointer));
+    wbackend->OnVisibleFrameChanged(x, y, w, h);
+}
+
 } // extern "C"
 
 namespace DAVA
@@ -105,8 +111,7 @@ WindowBackend::WindowBackend(EngineBackend* engineBackend, Window* window)
     : engineBackend(engineBackend)
     , window(window)
     , mainDispatcher(engineBackend->GetDispatcher())
-    , uiDispatcher(MakeFunction(this, &WindowBackend::UIEventHandler))
-    , nativeService(new WindowNativeService(this))
+    , uiDispatcher(MakeFunction(this, &WindowBackend::UIEventHandler), MakeFunction(this, &WindowBackend::TriggerPlatformEvents))
 {
 }
 
@@ -134,7 +139,7 @@ void WindowBackend::Close(bool appIsTerminating)
         // true value is always called on termination.
         if (surfaceView != nullptr)
         {
-            mainDispatcher->SendEvent(MainDispatcherEvent::CreateWindowDestroyedEvent(window));
+            mainDispatcher->SendEvent(MainDispatcherEvent::CreateWindowDestroyedEvent(window), MainDispatcher::eSendPolicy::IMMEDIATE_EXECUTION);
 
             JNIEnv* env = JNI::GetEnv();
             env->DeleteGlobalRef(surfaceView);
@@ -154,9 +159,19 @@ void WindowBackend::SetTitle(const String& title)
     // Android window does not have title
 }
 
+void WindowBackend::SetMinimumSize(Size2f /*size*/)
+{
+    // Minimum size does not apply to android
+}
+
 void WindowBackend::RunAsyncOnUIThread(const Function<void()>& task)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateFunctorEvent(task));
+}
+
+void WindowBackend::RunAndWaitOnUIThread(const Function<void()>& task)
+{
+    uiDispatcher.SendEvent(UIDispatcherEvent::CreateFunctorEvent(task));
 }
 
 bool WindowBackend::IsWindowReadyForRender() const
@@ -175,23 +190,41 @@ void WindowBackend::TriggerPlatformEvents()
         catch (const JNI::Exception& e)
         {
             Logger::Error("WindowBackend::TriggerPlatformEvents failed: %s", e.what());
-            DVASSERT_MSG(false, e.what());
+            DVASSERT(false, e.what());
         }
     }
+}
+
+void WindowBackend::SetSurfaceScaleAsync(const float32 scale)
+{
+    DVASSERT(scale > 0.0f && scale <= 1.0f);
+
+    uiDispatcher.PostEvent(UIDispatcherEvent::CreateSetSurfaceScaleEvent(scale));
+}
+
+void WindowBackend::DoSetSurfaceScale(const float32 scale)
+{
+    surfaceScale = scale;
+
+    const float32 surfaceWidth = windowWidth * scale;
+    const float32 surfaceHeight = windowHeight * scale;
+    mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowSizeChangedEvent(window, windowWidth, windowHeight, surfaceWidth, surfaceHeight, surfaceScale, dpi, eFullscreen::On));
 }
 
 jobject WindowBackend::CreateNativeControl(const char8* controlClassName, void* backendPointer)
 {
     jobject object = nullptr;
+
     try
     {
-        jstring className = JNI::CStrToJavaString(controlClassName);
+        JNI::LocalRef<jstring> className = JNI::CStrToJavaString(controlClassName);
         object = createNativeControl(surfaceView, className, reinterpret_cast<jlong>(backendPointer));
     }
     catch (const JNI::Exception& e)
     {
         Logger::Error("[WindowBackend::CreateNativeControl] failed to create native control %s: %s", controlClassName, e.what());
     }
+
     return object;
 }
 
@@ -211,6 +244,9 @@ void WindowBackend::UIEventHandler(const UIDispatcherEvent& e)
     {
     case UIDispatcherEvent::FUNCTOR:
         e.functor();
+        break;
+    case UIDispatcherEvent::SET_SURFACE_SCALE:
+        DoSetSurfaceScale(e.setSurfaceScaleEvent.scale);
         break;
     default:
         break;
@@ -247,20 +283,23 @@ void WindowBackend::SurfaceCreated(JNIEnv* env, jobject surfaceViewInstance)
     }
 }
 
-void WindowBackend::SurfaceChanged(JNIEnv* env, jobject surface, int32 width, int32 height, int32 surfaceWidth, int32 surfaceHeight, int32 dpi)
+void WindowBackend::SurfaceChanged(JNIEnv* env, jobject surface, int32 width, int32 height, int32 surfaceWidth, int32 surfaceHeight, int32 displayDpi)
 {
     {
         ANativeWindow* nativeWindow = ANativeWindow_fromSurface(env, surface);
 
-        MainDispatcherEvent e(MainDispatcherEvent::FUNCTOR);
-        e.functor = [this, nativeWindow]() {
+        mainDispatcher->PostEvent(MainDispatcherEvent::CreateFunctorEvent([this, nativeWindow]() {
             ReplaceAndroidNativeWindow(nativeWindow);
-        };
-        mainDispatcher->PostEvent(e);
+        }));
     }
 
-    float32 w = static_cast<float32>(width);
-    float32 h = static_cast<float32>(height);
+    const float previousWindowWidth = windowWidth;
+    const float previousWindowHeight = windowHeight;
+
+    windowWidth = static_cast<float32>(width);
+    windowHeight = static_cast<float32>(height);
+    dpi = static_cast<float32>(displayDpi);
+
     if (firstTimeSurfaceChanged)
     {
         uiDispatcher.LinkToCurrentThread();
@@ -274,25 +313,40 @@ void WindowBackend::SurfaceChanged(JNIEnv* env, jobject surface, int32 width, in
         catch (const JNI::Exception& e)
         {
             Logger::Error("[WindowBackend] failed to init java bridge: %s", e.what());
-            DVASSERT_MSG(false, e.what());
+            DVASSERT(false, e.what());
         }
 
-        mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowCreatedEvent(window, w, h, surfaceWidth, surfaceHeight, dpi, eFullscreen::On));
+        mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowCreatedEvent(window, windowWidth, windowHeight, surfaceWidth, surfaceHeight, dpi, eFullscreen::On));
+        mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowVisibilityChangedEvent(window, true));
+        mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowFocusChangedEvent(window, true));
+
         firstTimeSurfaceChanged = false;
     }
     else
     {
-        mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowSizeChangedEvent(window, w, h, surfaceWidth, surfaceHeight, eFullscreen::On));
+        // If surface size has changed, post sizeChanged event
+        // Otherwise we should reset renderer since surface has been recreated
+
+        if (!FLOAT_EQUAL(previousWindowWidth, windowWidth) || !FLOAT_EQUAL(previousWindowHeight, windowHeight))
+        {
+            // Do not use passed surfaceWidth & surfaceHeight, instead calculate it based on current scale factor
+            // To handle cases when a surface has been recreated with original size (e.g. when switched to another app and returned back)
+            mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowSizeChangedEvent(window, windowWidth, windowHeight, windowWidth * surfaceScale, windowHeight * surfaceScale, surfaceScale, dpi, eFullscreen::On));
+        }
+        else
+        {
+            mainDispatcher->PostEvent(MainDispatcherEvent::CreateFunctorEvent([this]() {
+                engineBackend->ResetRenderer(this->window, !this->IsWindowReadyForRender());
+            }));
+        }
     }
 }
 
 void WindowBackend::SurfaceDestroyed()
 {
-    MainDispatcherEvent e(MainDispatcherEvent::FUNCTOR);
-    e.functor = [this]() {
+    mainDispatcher->PostEvent(MainDispatcherEvent::CreateFunctorEvent([this]() {
         ReplaceAndroidNativeWindow(nullptr);
-    };
-    mainDispatcher->PostEvent(e);
+    }));
 }
 
 void WindowBackend::ProcessProperties()
@@ -400,6 +454,11 @@ void WindowBackend::OnGamepadButton(int32 deviceId, int32 action, int32 keyCode)
 void WindowBackend::OnGamepadMotion(int32 deviceId, int32 axis, float32 value)
 {
     mainDispatcher->PostEvent(MainDispatcherEvent::CreateGamepadMotionEvent(deviceId, axis, value));
+}
+
+void WindowBackend::OnVisibleFrameChanged(int32 x, int32 y, int32 width, int32 height)
+{
+    mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowVisibleFrameChangedEvent(window, x, y, width, height));
 }
 
 std::bitset<WindowBackend::MOUSE_BUTTON_COUNT> WindowBackend::GetMouseButtonState(int32 nativeButtonState)

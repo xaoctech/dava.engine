@@ -1,5 +1,4 @@
 #include "UI/UISlider.h"
-#include "UI/UIButton.h"
 #include "Render/RenderHelper.h"
 #include "Base/ObjectFactory.h"
 #include "Utils/Utils.h"
@@ -7,17 +6,28 @@
 #include "UI/UIEvent.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
 #include "UI/UIControlSystem.h"
+#include "Reflection/ReflectionRegistrator.h"
+
 namespace DAVA
 {
 // Use these names for children buttons to define UISlider in .yaml
-static const FastName UISLIDER_THUMB_SPRITE_CONTROL_NAME("thumbSpriteControl");
-static const FastName UISLIDER_MIN_SPRITE_CONTROL_NAME("minSpriteControl");
-static const FastName UISLIDER_MAX_SPRITE_CONTROL_NAME("maxSpriteControl");
+const FastName UISlider::THUMB_SPRITE_CONTROL_NAME("thumbSpriteControl");
+const FastName UISlider::MIN_SPRITE_CONTROL_NAME("minSpriteControl");
+const FastName UISlider::MAX_SPRITE_CONTROL_NAME("maxSpriteControl");
+
+DAVA_VIRTUAL_REFLECTION_IMPL(UISlider)
+{
+    ReflectionRegistrator<UISlider>::Begin()
+    .ConstructorByPointer()
+    .DestructorByPointer([](UISlider* o) { o->Release(); })
+    .Field("minValue", &UISlider::GetMinValue, &UISlider::SetMinValue)
+    .Field("maxValue", &UISlider::GetMaxValue, &UISlider::SetMaxValue)
+    .Field("value", &UISlider::GetValue, &UISlider::SetValue)
+    .End();
+}
 
 UISlider::UISlider(const Rect& rect)
     : UIControl(rect)
-    , minBackground(NULL)
-    , maxBackground(NULL)
     , thumbButton(NULL)
 {
     SetInputEnabled(true, false);
@@ -29,15 +39,14 @@ UISlider::UISlider(const Rect& rect)
     maxValue = 1.0f;
     currentValue = 0.5f;
 
-    minBackground = new UIControlBackground();
-    maxBackground = new UIControlBackground();
     InitThumb();
 }
 
 void UISlider::InitThumb()
 {
     thumbButton = new UIControl(Rect(0, 0, 40.f, 40.f));
-    thumbButton->SetName(UISLIDER_THUMB_SPRITE_CONTROL_NAME);
+    thumbButton->SetName(UISlider::THUMB_SPRITE_CONTROL_NAME);
+    thumbButton->GetOrCreateComponent<UIControlBackground>();
     AddControl(thumbButton);
 
     thumbButton->SetInputEnabled(false);
@@ -47,14 +56,15 @@ void UISlider::InitThumb()
     SetValue(currentValue);
 }
 
-void UISlider::InitInactiveParts(Sprite* spr)
+void UISlider::InitInactiveParts(UIControl* thumb)
 {
-    if (NULL == spr)
+    UIControlBackground* bg = thumb->GetComponent<UIControlBackground>();
+    if (bg == nullptr || bg->GetSprite() == nullptr)
     {
         return;
     }
 
-    leftInactivePart = rightInactivePart = static_cast<int32>((spr->GetWidth() / 2.0f));
+    leftInactivePart = rightInactivePart = static_cast<int32>((bg->GetSprite()->GetWidth() / 2.0f));
 }
 
 void UISlider::SetThumb(UIControl* newThumb)
@@ -68,7 +78,7 @@ void UISlider::SetThumb(UIControl* newThumb)
     SafeRelease(thumbButton);
 
     thumbButton = SafeRetain(newThumb);
-    thumbButton->SetName(UISLIDER_THUMB_SPRITE_CONTROL_NAME);
+    thumbButton->SetName(UISlider::THUMB_SPRITE_CONTROL_NAME);
     thumbButton->SetInputEnabled(false);
 
     thumbButton->relativePosition.y = size.y * 0.5f;
@@ -81,8 +91,6 @@ void UISlider::SetThumb(UIControl* newThumb)
 
 UISlider::~UISlider()
 {
-    SafeRelease(minBackground);
-    SafeRelease(maxBackground);
     SafeRelease(thumbButton);
 }
 
@@ -108,7 +116,7 @@ void UISlider::SetValue(float32 value)
 
     if (needSendEvent)
     {
-        PerformEvent(EVENT_VALUE_CHANGED);
+        PerformEvent(EVENT_VALUE_CHANGED, nullptr);
     }
 }
 
@@ -162,7 +170,7 @@ void UISlider::AddControl(UIControl* control)
     // Synchronize the pointers to the thumb each time new control is added.
     UIControl::AddControl(control);
 
-    if (control->GetName() == UISLIDER_THUMB_SPRITE_CONTROL_NAME && thumbButton != control)
+    if (control->GetName() == UISlider::THUMB_SPRITE_CONTROL_NAME && thumbButton != control)
     {
         SafeRelease(thumbButton);
         thumbButton = SafeRetain(control);
@@ -209,51 +217,17 @@ void UISlider::Input(UIEvent* currentInput)
     {
         if (oldVal != currentValue)
         {
-            PerformEventWithData(EVENT_VALUE_CHANGED, currentInput);
+            PerformEventWithData(EVENT_VALUE_CHANGED, currentInput, currentInput);
         }
     }
     else if (currentInput->phase == UIEvent::Phase::ENDED)
     {
         /* if not continuos always perform event because last move position almost always the same as end pos */
-        PerformEventWithData(EVENT_VALUE_CHANGED, currentInput);
+        PerformEventWithData(EVENT_VALUE_CHANGED, currentInput, currentInput);
     }
 
     RecalcButtonPos();
     currentInput->SetInputHandledType(UIEvent::INPUT_HANDLED_HARD); // Drag is handled - see please DF-2508.
-}
-
-void UISlider::Draw(const UIGeometricData& geometricData)
-{
-    const Rect& aRect = thumbButton->GetGeometricData().GetUnrotatedRect();
-    float32 clipPointAbsolute = aRect.x + aRect.dx * 0.5f;
-
-    Rect fullVirtualScreen = UIControlSystem::Instance()->vcs->GetFullScreenVirtualRect();
-    float32 screenXMin = fullVirtualScreen.x;
-    float32 screenXMax = fullVirtualScreen.x + fullVirtualScreen.dx;
-    float32 screenYMin = 0.f;
-    float32 screenYMax = static_cast<float32>(UIControlSystem::Instance()->vcs->GetVirtualScreenSize().dy);
-
-    if (minBackground)
-    {
-        minBackground->SetParentColor(GetBackground()->GetDrawColor());
-        RenderSystem2D::Instance()->PushClip();
-        RenderSystem2D::Instance()->IntersectClipRect(Rect(screenXMin, screenYMin, clipPointAbsolute - screenXMin, screenYMax));
-        minBackground->Draw(geometricData);
-        RenderSystem2D::Instance()->PopClip();
-    }
-    if (maxBackground)
-    {
-        maxBackground->SetParentColor(GetBackground()->GetDrawColor());
-        RenderSystem2D::Instance()->PushClip();
-        RenderSystem2D::Instance()->IntersectClipRect(Rect(clipPointAbsolute, screenYMin, screenXMax - clipPointAbsolute, screenYMax));
-        maxBackground->Draw(geometricData);
-        RenderSystem2D::Instance()->PopClip();
-    }
-
-    if (!minBackground && !maxBackground)
-    {
-        UIControl::Draw(geometricData);
-    }
 }
 
 void UISlider::SetSize(const DAVA::Vector2& newSize)
@@ -293,18 +267,6 @@ void UISlider::CopyDataFrom(UIControl* srcControl)
 
     currentValue = t->currentValue;
 
-    SafeRelease(minBackground);
-    if (t->minBackground)
-    {
-        minBackground = t->minBackground->Clone();
-    }
-
-    SafeRelease(maxBackground);
-    if (t->maxBackground)
-    {
-        maxBackground = t->maxBackground->Clone();
-    }
-
     relTouchPoint = t->relTouchPoint;
 }
 
@@ -312,54 +274,12 @@ void UISlider::AttachToSubcontrols()
 {
     if (!thumbButton)
     {
-        thumbButton = FindByName(UISLIDER_THUMB_SPRITE_CONTROL_NAME);
+        thumbButton = FindByName(UISlider::THUMB_SPRITE_CONTROL_NAME);
         DVASSERT(thumbButton);
         thumbButton->Retain();
     }
 
-    InitInactiveParts(thumbButton->GetBackground()->GetSprite());
-}
-
-int32 UISlider::GetBackgroundComponentsCount() const
-{
-    return BACKGROUND_COMPONENTS_COUNT;
-}
-
-UIControlBackground* UISlider::GetBackgroundComponent(int32 index) const
-{
-    switch (index)
-    {
-    case 0:
-        return GetBackground();
-
-    case 1:
-        return minBackground;
-
-    case 2:
-        return maxBackground;
-
-    default:
-        DVASSERT(false);
-        return NULL;
-    }
-}
-
-UIControlBackground* UISlider::CreateBackgroundComponent(int32 index) const
-{
-    DVASSERT(0 <= index && index < BACKGROUND_COMPONENTS_COUNT);
-    return new UIControlBackground();
-}
-
-void UISlider::SetBackgroundComponent(int32 index, UIControlBackground* bg)
-{
-    DVASSERT(false);
-}
-
-String UISlider::GetBackgroundComponentName(int32 index) const
-{
-    DVASSERT(0 <= index && index < BACKGROUND_COMPONENTS_COUNT);
-    static const String names[BACKGROUND_COMPONENTS_COUNT] = { "Background", "min", "max" };
-    return names[index];
+    InitInactiveParts(thumbButton);
 }
 
 } // ns

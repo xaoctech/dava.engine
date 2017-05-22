@@ -14,7 +14,7 @@ set( NAME_MODULE ${DAVA_LIBRARY} )
 set( MODULE_TYPE STATIC )#INLINE STATIC DYNAMIC 
 
 set( EXTERNAL_MODULES_WIN           ${DAVA_EXTERNAL_DIR}/cef )
-set( EXTERNAL_MODULES                     ${DAVA_MODULES_DIR}/SampleModule )
+set( EXTERNAL_MODULES               ${DAVA_MODULES_DIR}/SampleModule )
 
 set( INCLUDES_PRIVATE               ${DAVA_ENGINE_DIR} 
                                     ${DAVA_THIRD_PARTY_INCLUDES_PATH}  )
@@ -76,7 +76,9 @@ set( STATIC_LIBRARIES_WINUAP_DEBUG  ${DAVA_STATIC_LIBRARIES_WINUAP_DEBUG} )
 
 set( DYNAMIC_LIBRARIES_WIN32        ${DAVA_DYNAMIC_LIBRARIES_WIN32})
 set( DYNAMIC_LIBRARIES_WIN64        ${DAVA_DYNAMIC_LIBRARIES_WIN64} )
-                               
+  
+set( DYNAMIC_LIBRARIES_ANDROID      ${DAVA_DYNAMIC_LIBRARIES_ANDROID} )
+
 set( SRC_FOLDERS                    "." )
  
 set( MODULE_MANAGER_TEMPLATE        ModuleManager/ModuleManager.in )
@@ -100,8 +102,6 @@ set( UNITY_IGNORE_LIST              "Internal/Autotesting"
 
 set( UNITY_IGNORE_LIST_APPLE        "DataStorage/Apple/ICloudKeyValue.cpp"
                                     "TemplateMacOS/CoreMacOSPlatformBase.cpp"
-                                    "Notification/LocalNotificationIOS.cpp"
-                                    "Notification/LocalNotificationMac.cpp"
                                     "Concurrency/ThreadPosix.cpp"
                                     "Render/Texture.cpp" 
                                     "Render/RHI/GLES2"
@@ -155,6 +155,16 @@ endif()
 
 if (DAVA_PLATFORM_QT)
     find_package(QT5 REQUIRED Core Gui Widgets QuickWidgets Network)
+
+    list( APPEND DEFINITIONS    -D__DAVAENGINE_QT__
+                                -DDISABLE_NATIVE_WEBVIEW
+                                -DDISABLE_NATIVE_TEXTFIELD
+                                -DDISABLE_NATIVE_MOVIEVIEW )
+
+endif()
+
+if (NOT DEPLOY)
+    list( APPEND DEFINITIONS -DLOCAL_FRAMEWORK_SOURCE_PATH="${DAVA_ROOT_DIR}" )
 endif()
 
 setup_main_module()

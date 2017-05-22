@@ -22,6 +22,8 @@ class Font;
 
 class UIButton : public UIControl
 {
+    DAVA_VIRTUAL_REFLECTION(UIButton, UIControl);
+
 public:
     /**
      \brief Creates button with requested size and position.
@@ -144,15 +146,6 @@ public:
      \param[in] Fitting option.
      */
     virtual void SetStateFittingOption(int32 state, int32 fittingOption);
-    /**
-     \brief This method is invalid for the UIButton. Don't try to call this method.
-     */
-    void SetBackground(UIControlBackground* newBg) override;
-    /**
-     \brief Returns UIControlBackground object actual for the current button state.
-     \returns background used currently for draw.
-     */
-    UIControlBackground* GetBackground() const override;
 
     /**
      \brief Sets background what will be used for draw of the requested states.
@@ -237,18 +230,6 @@ public:
     */
     virtual void SetStateTextMultilineBySymbol(int32 state, bool value);
     /**
-     \brief Sets background margins for the requested states.
-     \param[in] state state text bit mask to set value for.
-     \param[in] margins the margins.
-     */
-    virtual void SetStateMargins(int32 state, const UIControlBackground::UIMargins* margins);
-    /**
-     \brief Sets text margins for the requested states.
-     \param[in] state state text bit mask to set value for.
-     \param[in] margins the margins.
-     */
-    virtual void SetStateTextMargins(int32 state, const UIControlBackground::UIMargins* margins);
-    /**
      \brief Sets text control what will be used for the requested states.
         UIStaticText is cloned inside button.
      \param[in] state state bit mask to set value for.
@@ -258,7 +239,6 @@ public:
 
     void Input(UIEvent* currentInput) override;
 
-    void SystemDraw(const UIGeometricData& geometricData) override; // Internal method used by ControlSystem
     void Draw(const UIGeometricData& geometricData) override;
 
     void SetParentColor(const Color& parentColor) override;
@@ -270,6 +250,8 @@ public:
      Will create the background once only and then cache it.
      */
     virtual void CreateBackgroundForState(int32 state);
+
+    using UIControl::GetBackground; //need to avoid name hiding
 
 protected:
     virtual ~UIButton();
@@ -295,7 +277,6 @@ public:
     UIControlBackground* stateBacks[DRAW_STATE_COUNT];
     UIStaticText* stateTexts[DRAW_STATE_COUNT];
 
-    UIControlBackground* selectedBackground;
     UIStaticText* selectedTextBlock;
 
     int32 oldControlState;
@@ -306,8 +287,6 @@ public:
     static eButtonDrawState GetStateReplacer(eButtonDrawState drawState);
 
 private:
-    friend class UIButtonMetadata;
-
     eButtonDrawState GetActualBackgroundState(eButtonDrawState drawState) const;
     UIControlBackground* GetActualBackgroundForState(int32 state) const;
     UIControlBackground* GetBackground(eButtonDrawState drawState) const
@@ -342,22 +321,6 @@ private:
     void UpdateStateTextControlSize();
 
 public:
-    int32 GetBackgroundComponentsCount() const override;
-    UIControlBackground* GetBackgroundComponent(int32 index) const override;
-    UIControlBackground* CreateBackgroundComponent(int32 index) const override;
-    void SetBackgroundComponent(int32 index, UIControlBackground* bg) override;
-    String GetBackgroundComponentName(int32 index) const override;
-
-    int32 GetInternalControlsCount() const override;
-    UIControl* GetInternalControl(int32 index) const override;
-    UIControl* CreateInternalControl(int32 index) const override;
-    void SetInternalControl(int32 index, UIControl* control) override;
-    String GetInternalControlName(int32 index) const override;
-    String GetInternalControlDescriptions() const override;
-
-    INTROSPECTION_EXTEND(UIButton, UIControl,
-                         nullptr
-                         )
 };
 };
 

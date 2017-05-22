@@ -6,11 +6,25 @@
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 
+#include "Reflection/ReflectionRegistrator.h"
+#include "Reflection/ReflectedMeta.h"
+
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(AnimationComponent)
+{
+    ReflectionRegistrator<AnimationComponent>::Begin()[M::CantBeCreatedManualyComponent()]
+    .ConstructorByPointer()
+    .Field("repeatsCount", &AnimationComponent::repeatsCount)[M::DisplayName("Repeats Count")]
+    .Field("isPlaying", &AnimationComponent::GetIsPlaying, &AnimationComponent::SetIsPlaying)[M::DisplayName("Is Playing")]
+    .Field("animationTimeScale", &AnimationComponent::animationTimeScale)[M::DisplayName("Animation Time Scale")]
+    .End();
+}
+
 AnimationComponent::AnimationComponent()
     : animation(NULL)
     , time(0.0f)
+    , animationTimeScale(1.0f)
     , frameIndex(0)
     , repeatsCount(1)
     , currRepeatsCont(0)
@@ -29,9 +43,11 @@ Component* AnimationComponent::Clone(Entity* toEntity)
     newAnimation->SetEntity(toEntity);
 
     newAnimation->time = time;
+    newAnimation->animationTimeScale = animationTimeScale;
     newAnimation->animation = SafeRetain(animation);
     newAnimation->repeatsCount = repeatsCount;
     newAnimation->currRepeatsCont = 0;
+    newAnimation->playbackComplete = playbackComplete;
     newAnimation->state = STATE_STOPPED; //for another state we need add this one to AnimationSystem
 
     return newAnimation;
@@ -45,6 +61,7 @@ void AnimationComponent::Serialize(KeyedArchive* archive, SerializationContext* 
     {
         archive->SetVariant("animation", VariantType(animation->GetNodeID()));
         archive->SetUInt32("repeatsCount", repeatsCount);
+        archive->SetFloat("animationTimeScale", animationTimeScale);
     }
 }
 
@@ -59,6 +76,7 @@ void AnimationComponent::Deserialize(KeyedArchive* archive, SerializationContext
             animation = SafeRetain(newAnimation);
         }
         repeatsCount = archive->GetUInt32("repeatsCount", 1);
+        animationTimeScale = archive->GetFloat("animationTimeScale", 1.0f);
     }
 
     Component::Deserialize(archive, sceneFile);
@@ -108,5 +126,20 @@ void AnimationComponent::Stop()
         return;
     GlobalEventSystem::Instance()->Event(this, EventSystem::STOP_ANIMATION);
     animationTransform.Identity();
+}
+
+void AnimationComponent::MoveAnimationToTheLastFrame()
+{
+    GlobalEventSystem::Instance()->Event(this, EventSystem::MOVE_ANIMATION_TO_THE_LAST_FRAME);
+}
+
+void AnimationComponent::MoveAnimationToTheFirstFrame()
+{
+    GlobalEventSystem::Instance()->Event(this, EventSystem::MOVE_ANIMATION_TO_THE_FIRST_FRAME);
+}
+
+void AnimationComponent::SetPlaybackCompleteCallback(Function<void(const AnimationComponent* const)> callback)
+{
+    playbackComplete = callback;
 }
 };

@@ -36,14 +36,22 @@ struct WindowNativeBridge final
     WindowNativeBridge(WindowBackend* windowBackend);
     ~WindowNativeBridge();
 
+    enum class SizeChangingReason
+    {
+        WindowSurfaceChanged,
+        WindowDpiChanged
+    };
+
     bool CreateWindow(float32 x, float32 y, float32 width, float32 height);
     void ResizeWindow(float32 width, float32 height);
     void CloseWindow();
     void SetTitle(const char8* title);
+    void SetMinimumSize(float32 width, float32 height);
     void SetFullscreen(eFullscreen newMode);
     float32 GetDpi();
 
     void TriggerPlatformEvents();
+    void HandleSizeChanging(SizeChangingReason reason);
 
     void ApplicationDidHideUnhide(bool hidden);
 
@@ -52,8 +60,6 @@ struct WindowNativeBridge final
     void WindowDidBecomeKey();
     void WindowDidResignKey();
     void WindowDidResize();
-    //void WindowWillStartLiveResize();
-    //void WindowDidEndLiveResize();
     void WindowDidChangeScreen();
     bool WindowShouldClose();
     void WindowWillClose();
@@ -76,6 +82,7 @@ struct WindowNativeBridge final
     static eModifierKeys GetModifierKeys(NSEvent* theEvent);
     static eMouseButtons GetMouseButton(NSEvent* theEvent);
 
+    void SetSurfaceScale(const float32 scale);
     //////////////////////////////////////////////////////////////////////////
 
     WindowBackend* windowBackend = nullptr;
@@ -89,13 +96,23 @@ struct WindowNativeBridge final
     bool isAppHidden = false;
     bool isMiniaturized = false;
     bool isFullscreen;
+    bool isVisible = false;
+
     uint32 lastModifierFlags = 0; // Saved NSEvent.modifierFlags to detect Shift, Alt presses
 
 private:
-    void SetSystemCursorVisible(bool visible);
     void SetSystemCursorCapture(bool capture);
+    void UpdateSystemCursorVisible();
+
+    float32 surfaceScale = 1.0f;
 
     eCursorCapture captureMode = eCursorCapture::OFF;
+    // bug when cursor in hide state (could not be hide)
+    // Steps:
+    // minimalized application, press on appIcon in appBar,
+    // don't moveout mouse pointer from appBar some seconds,
+    // return pointer inside application, call [NsCursor hide] not work
+    bool cursorInside = true;
     bool mouseVisible = true;
     // If mouse pointer was outside window rectangle when enabling pinning mode then
     // mouse clicks are forwarded to other windows and our application loses focus.

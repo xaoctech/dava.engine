@@ -16,7 +16,7 @@ struct InitParam;
 namespace VertexBuffer
 {
 Handle Create(const VertexBuffer::Descriptor& desc);
-void Delete(Handle vb);
+void Delete(Handle vb, bool forceExecute = false);
 
 bool Update(Handle vb, const void* data, uint32 offset = 0, uint32 size = 0);
 
@@ -33,7 +33,7 @@ bool NeedRestore(Handle vb);
 namespace IndexBuffer
 {
 Handle Create(const IndexBuffer::Descriptor& desc);
-void Delete(Handle ib);
+void Delete(Handle ib, bool forceExecute = false);
 
 bool Update(Handle ib, const void* data, uint32 offset = 0, uint32 size = 0);
 
@@ -55,7 +55,7 @@ void Delete(Handle buf);
 
 bool BufferIsReady(Handle buf);
 bool IsReady(Handle buf, uint32 objectIndex);
-int Value(Handle buf, uint32 objectIndex);
+int32 Value(Handle buf, uint32 objectIndex);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -77,7 +77,7 @@ uint64 Value(Handle query);
 namespace Texture
 {
 Handle Create(const Descriptor& desc);
-void Delete(Handle tex);
+void Delete(Handle tex, bool forceExecute = false);
 
 void* Map(Handle tex, unsigned level = 0, TextureFace face = TEXTURE_FACE_NEGATIVE_X);
 void Unmap(Handle tex);
@@ -96,20 +96,10 @@ Handle Create(const Descriptor& desc);
 void Delete(Handle ps);
 Handle CreateVertexConstBuffer(Handle ps, uint32 bufIndex);
 Handle CreateFragmentConstBuffer(Handle ps, uint32 bufIndex);
-
-uint32 VertexConstBufferCount(Handle ps);
-uint32 VertexConstCount(Handle ps, uint32 bufIndex);
-bool GetVertexConstInfo(Handle ps, uint32 bufIndex, uint32 maxCount, ProgConstInfo* info);
-
-uint32 FragmentConstBufferCount(Handle ps);
-uint32 FragmentConstCount(Handle ps, uint32 bufIndex);
-bool GetFragmentConstInfo(Handle ps, uint32 bufIndex, uint32 maxCount, ProgConstInfo* info);
-
 } // namespace PipelineState
 
 namespace ConstBuffer
 {
-uint32 ConstCount(Handle cb);
 bool SetConst(Handle cb, uint32 constIndex, uint32 constCount, const float* data);
 bool SetConst(Handle cb, uint32 constIndex, uint32 constSubIndex, const float* data, uint32 dataCount);
 void Delete(Handle cb);
@@ -198,6 +188,7 @@ void ResetBlock();
 
 void InitializeImplementation(Api api, const InitParam& param);
 void UninitializeImplementation();
+void ReportError(const InitParam&, RenderingError);
 
 struct RenderDeviceCaps;
 namespace MutableDeviceCaps

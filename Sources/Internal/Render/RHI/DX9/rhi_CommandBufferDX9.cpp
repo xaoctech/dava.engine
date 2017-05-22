@@ -14,7 +14,7 @@ using DAVA::Logger;
 #include "Debug/ProfilerMarkerNames.h"
 #include "Concurrency/Thread.h"
 #include "Concurrency/Semaphore.h"
-#include "Platform/SystemTimer.h"
+#include "Time/SystemTimer.h"
 
 #include "../Common/SoftwareCommandBuffer.h"
 #include "../Common/RenderLoop.h"
@@ -24,6 +24,10 @@ using DAVA::Logger;
 #include <vector>
 #include <atomic>
 #include <thread>
+
+#if defined(DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME)
+#define DAVA_DISABLE_CLEAR_ON_RESET 1
+#endif
 
 namespace rhi
 {
@@ -508,34 +512,44 @@ void CommandBufferDX9_t::Execute()
         {
             if (isFirstInPass)
             {
-                const RenderPassConfig::ColorBuffer& color0 = passCfg.colorBuffer[0];
-                if ((color0.texture != rhi::InvalidHandle) || passCfg.UsingMSAA())
+                _D3D9_Device->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
+                _D3D9_TargetCount = 0;
+                for (unsigned i = 0; i != countof(passCfg.colorBuffer); ++i)
                 {
-                    DVASSERT(_D3D9_BackBuf == nullptr);
-                    _D3D9_Device->GetRenderTarget(0, &_D3D9_BackBuf);
-
-                    Handle targetTexture = color0.texture;
-                    if (passCfg.UsingMSAA())
+                    if (passCfg.colorBuffer[i].texture != rhi::InvalidHandle || passCfg.UsingMSAA())
                     {
-                        DVASSERT(color0.multisampleTexture != InvalidHandle);
-                        targetTexture = color0.multisampleTexture;
+                        if (i == 0)
+                        {
+                            DVASSERT(_D3D9_BackBuf == nullptr);
+                            _D3D9_Device->GetRenderTarget(0, &_D3D9_BackBuf);
+
+                            if (passCfg.UsingMSAA())
+                                TextureDX9::SetAsRenderTarget(passCfg.colorBuffer[i].multisampleTexture, i);
+                        }
+
+                        if (!passCfg.UsingMSAA())
+                            TextureDX9::SetAsRenderTarget(passCfg.colorBuffer[i].texture, i);
+                        ++_D3D9_TargetCount;
                     }
-                    TextureDX9::SetAsRenderTarget(targetTexture);
+
+                    if (passCfg.colorBuffer[i].texture == rhi::InvalidHandle && i == 0)
+                    {
+                        _D3D9_TargetCount = 1;
+                        break;
+                    }
                 }
 
-                bool renderToDepth = (passCfg.depthStencilBuffer.texture != rhi::InvalidHandle) && (passCfg.depthStencilBuffer.texture != DefaultDepthBuffer);
-                if (renderToDepth || passCfg.UsingMSAA())
+                if ((passCfg.depthStencilBuffer.texture != rhi::InvalidHandle && passCfg.depthStencilBuffer.texture != rhi::DefaultDepthBuffer)
+                    || passCfg.UsingMSAA()
+                    )
                 {
                     DVASSERT(_D3D9_DepthBuf == nullptr);
                     _D3D9_Device->GetDepthStencilSurface(&_D3D9_DepthBuf);
 
-                    Handle targetDepthStencil = passCfg.depthStencilBuffer.texture;
                     if (passCfg.UsingMSAA())
-                    {
-                        DVASSERT(passCfg.depthStencilBuffer.multisampleTexture != InvalidHandle);
-                        targetDepthStencil = passCfg.depthStencilBuffer.multisampleTexture;
-                    }
-                    TextureDX9::SetAsDepthStencil(targetDepthStencil);
+                        TextureDX9::SetAsDepthStencil(passCfg.depthStencilBuffer.multisampleTexture);
+                    else
+                        TextureDX9::SetAsDepthStencil(passCfg.depthStencilBuffer.texture);
                 }
 
                 IDirect3DSurface9* rt = nullptr;
@@ -594,14 +608,10 @@ void CommandBufferDX9_t::Execute()
 
                 DX9_CALL(_D3D9_Device->EndScene(), "EndScene");
 
-                if (passCfg.colorBuffer[0].storeAction == rhi::STOREACTION_RESOLVE)
+                for (unsigned t = 0; t != MAX_RENDER_TARGET_COUNT; ++t)
                 {
-                    TextureDX9::ResolveMultisampling(passCfg.colorBuffer[0].multisampleTexture, passCfg.colorBuffer[0].texture);
-                }
-
-                if (passCfg.colorBuffer[1].storeAction == rhi::STOREACTION_RESOLVE)
-                {
-                    TextureDX9::ResolveMultisampling(passCfg.colorBuffer[1].multisampleTexture, passCfg.colorBuffer[1].texture);
+                    if (passCfg.colorBuffer[t].storeAction == rhi::STOREACTION_RESOLVE)
+                        TextureDX9::ResolveMultisampling(passCfg.colorBuffer[t].multisampleTexture, passCfg.colorBuffer[t].texture);
                 }
 
                 if (_D3D9_BackBuf)
@@ -616,6 +626,10 @@ void CommandBufferDX9_t::Execute()
                     _D3D9_DepthBuf->Release();
                     _D3D9_DepthBuf = nullptr;
                 }
+
+                for (unsigned i = 1; i != _D3D9_TargetCount; ++i)
+                    _D3D9_Device->SetRenderTarget(i, NULL);
+                _D3D9_TargetCount = 1;
             }
         }
         break;
@@ -958,7 +972,7 @@ void CommandBufferDX9_t::Execute()
         break;
         default:
             Logger::Error("unsupported command: %d", cmd->type);
-            DVASSERT_MSG(false, "unsupported command");
+            DVASSERT(false, "unsupported command");
         }
 
         if (--immediate_cmd_ttw <= 0)
@@ -1014,7 +1028,7 @@ static void _DX9_RejectFrame(const CommonImpl::Frame& frame)
         TextureDX9::LogUnrestoredBacktraces();
         VertexBufferDX9::LogUnrestoredBacktraces();
         IndexBufferDX9::LogUnrestoredBacktraces();
-        DVASSERT_MSG(0, "Failed to restore all resources in time.");
+        DVASSERT(0, "Failed to restore all resources in time.");
     }
 #endif
 }
@@ -1141,6 +1155,7 @@ void _DX9_ResetBlock()
     PerfQueryDX9::ReleaseAll();
     QueryBufferDX9::ReleaseAll();
 
+    bool resetNotified = false;
     for (;;)
     {
         HRESULT hr = _D3D9_Device->TestCooperativeLevel();
@@ -1156,21 +1171,25 @@ void _DX9_ResetBlock()
             {
                 break;
             }
-
+            resetNotified = false;
             Logger::Error("[DX9 RESET] Failed to reset device (%08X) : %s", hr, D3D9ErrorText(hr));
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
-        else
+        else if (!resetNotified)
         {
             Logger::Error("[DX9 RESET] Can't reset now (%08X) : %s", hr, D3D9ErrorText(hr));
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            resetNotified = true;
         }
-        //clear buffer
-        DX9_CALL(_D3D9_Device->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_RGBA(0, 0, 0, 1), 1.0, 0), "Clear");
-        _D3D9_Device->Present(NULL, NULL, NULL, NULL);
-
-        _DX9_FramesWithRestoreAttempt = 0;
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
+
+    Logger::Info("[DX9 RESET] reset succeeded ...");
+#if !defined(DAVA_DISABLE_CLEAR_ON_RESET)
+    //clear buffer
+    DX9_CALL(_D3D9_Device->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_RGBA(0, 0, 0, 1), 1.0, 0), "Clear");
+    _D3D9_Device->Present(NULL, NULL, NULL, NULL);
+#endif
+
+    _DX9_FramesWithRestoreAttempt = 0;
 
     TextureDX9::ReCreateAll();
     VertexBufferDX9::ReCreateAll();
@@ -1188,6 +1207,8 @@ void _DX9_ResetBlock()
 
 static void _DX9_ExecImmediateCommand(CommonImpl::ImmediateCommand* command)
 {
+    DAVA_PROFILER_CPU_SCOPE(DAVA::ProfilerCPUMarkerName::RHI_EXECUTE_IMMEDIATE_CMDS);
+
 #if 1
     #define CHECK_HR(hr) \
     if (FAILED(hr)) \
@@ -1619,7 +1640,7 @@ static void _DX9_ExecImmediateCommand(CommonImpl::ImmediateCommand* command)
                     };
                     if (timestamp)
                     {
-                        *reinterpret_cast<uint64*>(arg[0]) = DAVA::SystemTimer::Instance()->GetAbsoluteUs();
+                        *reinterpret_cast<uint64*>(arg[0]) = DAVA::SystemTimer::GetUs();
 
                         while (S_FALSE == disjointQuery->GetData(&disjoint, sizeof(bool), D3DGETDATA_FLUSH))
                         {
@@ -1657,12 +1678,12 @@ static void _DX9_ExecImmediateCommand(CommonImpl::ImmediateCommand* command)
 
 //------------------------------------------------------------------------------
 
-void ExecDX9(DX9Command* command, uint32 cmdCount, bool forceImmediate)
+void ExecDX9(DX9Command* command, uint32 cmdCount, bool forceExecute)
 {
     CommonImpl::ImmediateCommand cmd;
     cmd.cmdData = command;
     cmd.cmdCount = cmdCount;
-    cmd.forceImmediate = forceImmediate;
+    cmd.forceExecute = forceExecute;
     RenderLoop::IssueImmediateCommand(&cmd);
 }
 

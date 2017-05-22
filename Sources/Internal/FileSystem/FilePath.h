@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
+#include "Base/Any.h"
 
 namespace DAVA
 {
@@ -77,23 +78,23 @@ public:
         */
     String GetAbsolutePathname() const;
 
-#ifdef __DAVAENGINE_WINDOWS__
+#if defined(__DAVAENGINE_WINDOWS__)
     using NativeStringType = WideString;
 #else
     using NativeStringType = String;
-#endif // __DAVAENGINE_WINDOWS__
-
+#endif
     /**
         \brief Function to retrieve pathname
         \returns pathname value in native string type
         */
-    NativeStringType GetNativeAbsolutePathname() const;
+    DAVA_DEPRECATED(NativeStringType GetNativeAbsolutePathname() const);
 
     /**
         \brief Function to create an object from native string
         \returns FilePath object
+		deprecated - always use String with utf8 on all platforms
         */
-    static FilePath FromNativeString(const NativeStringType& path);
+    DAVA_DEPRECATED(static FilePath FromNativeString(const NativeStringType& path));
 
     /**
         \brief Function to retrieve filename from pathname. Filename for path "/Users/Folder/image.png" is "image.png".
@@ -258,7 +259,9 @@ public:
     int32 Compare(const FilePath& right) const;
 
     static bool IsAbsolutePathname(const String& pathname);
-    static String AddPath(const FilePath& folder, const String& addition);
+
+    /** Return normalized concat of specified 'path' and 'addition', i.e. AddPath("abc", "def") => "abcdef" */
+    static String AddPath(const FilePath& path, const String& addition);
 
 private:
     void Initialize(const String& pathname);
@@ -300,4 +303,9 @@ inline FilePath::ePathType FilePath::GetType() const
 {
     return pathType;
 }
+
+template <>
+bool AnyCompare<FilePath>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2);
+extern template struct AnyCompare<FilePath>;
+
 } // end namespace DAVA

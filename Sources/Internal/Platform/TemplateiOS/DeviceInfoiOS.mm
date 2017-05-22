@@ -6,6 +6,7 @@
 #include "Utils/StringFormat.h"
 #import "Utils/NSStringUtils.h"
 #include "Base/GlobalEnum.h"
+#include "Base/TemplateHelpers.h"
 
 #import <UIKit/UIDevice.h>
 #import <UIKit/UIKit.h>
@@ -19,38 +20,49 @@
 
 namespace DAVA
 {
-struct DeviceInfoPrivate::DeviceInfoObjcBridge final
+static NSString* CarrierToCarrierName(CTCarrier* carrier)
 {
-    void OnCarrierChange(CTCarrier* carrier)
+    // Returns autorelease object
+
+    NSString* result = [NSString string];
+    if (carrier != nil)
     {
-        NSString* newCarrier = [carrier carrierName];
-        if (![newCarrier isEqualToString:carrierName])
+        NSString* carrierName = [carrier carrierName];
+        if (carrierName != nil)
         {
-            carrierName = [carrier carrierName];
-            DeviceInfo::carrierNameChanged.Emit(StringFromNSString(carrierName));
+            result = [[carrierName retain] autorelease];
         }
     }
-    CTTelephonyNetworkInfo* telephonyNetworkInfo = nullptr;
-    NSString* carrierName = nullptr;
-};
+
+    return result;
+}
 
 DeviceInfoPrivate::DeviceInfoPrivate()
-    : bridge(new DeviceInfoObjcBridge)
 {
-    bridge->telephonyNetworkInfo = [[CTTelephonyNetworkInfo alloc] init];
-    CTCarrier* phoneCarrier = [bridge->telephonyNetworkInfo subscriberCellularProvider];
-    bridge->carrierName = [phoneCarrier carrierName];
-    if (bridge->carrierName == nil)
+    telephonyNetworkInfo = [[CTTelephonyNetworkInfo alloc] init];
+
+    CTCarrier* phoneCarrier = [telephonyNetworkInfo subscriberCellularProvider];
+
+    lastCarrierName = [CarrierToCarrierName(phoneCarrier) retain];
+
+    telephonyNetworkInfo.subscriberCellularProviderDidUpdateNotifier =
+    ^(CTCarrier* carrier)
     {
-        bridge->carrierName = @"";
-    }
-    bridge->telephonyNetworkInfo.subscriberCellularProviderDidUpdateNotifier = [this](CTCarrier* carrier) {
-        bridge->OnCarrierChange(carrier);
+      NSString* newCarrierName = CarrierToCarrierName(carrier);
+      if (![lastCarrierName isEqualToString:newCarrierName])
+      {
+          [lastCarrierName release];
+          lastCarrierName = [newCarrierName retain];
+
+          DeviceInfo::carrierNameChanged.Emit(StringFromNSString(lastCarrierName));
+      }
     };
 }
 
 DeviceInfoPrivate::~DeviceInfoPrivate()
 {
+    [telephonyNetworkInfo release];
+    [lastCarrierName release];
 }
 
 DeviceInfo::ePlatform DeviceInfoPrivate::GetPlatform()
@@ -210,6 +222,10 @@ String DeviceInfoPrivate::GetModel()
             model = "iPad Pro WiFi";
         if ([modelName hasPrefix:@"iPad6,8"])
             model = "iPad Pro Cellular";
+        if ([modelName hasPrefix:@"iPad6,11"])
+            model = "iPad 5th gen WiFi";
+        if ([modelName hasPrefix:@"iPad6,12"])
+            model = "iPad 5th gen Cellular";
 
         // iPod
         if ([modelName hasPrefix:@"iPod1,1"])
@@ -421,7 +437,7 @@ bool DeviceInfoPrivate::IsTouchPresented()
 
 String DeviceInfoPrivate::GetCarrierName()
 {
-    return StringFromNSString(bridge->carrierName);
+    return StringFromNSString(lastCarrierName);
 }
 }
 #endif

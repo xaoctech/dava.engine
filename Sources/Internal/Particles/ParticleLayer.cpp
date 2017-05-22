@@ -3,6 +3,7 @@
 #include "Utils/StringFormat.h"
 #include "Render/Image/Image.h"
 #include "FileSystem/FileSystem.h"
+#include "Logger/Logger.h"
 
 namespace DAVA
 {
@@ -59,8 +60,6 @@ eBlendMode GetBlendModeByName(const String& blendStr)
 /*end of legacy compatibility code*/
 
 ParticleLayer::ParticleLayer()
-    : sprite(0)
-    , innerEmitter(NULL)
 {
     life = 0;
     lifeVariation = 0;

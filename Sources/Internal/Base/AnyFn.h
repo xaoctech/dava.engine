@@ -2,10 +2,7 @@
 
 #include <tuple>
 #include "Base/Type.h"
-#include "Base/BaseTypes.h"
-#include "Base/Exception.h"
 #include "Base/Any.h"
-#include "Base/Private/AutoStorage.h"
 
 namespace DAVA
 {
@@ -49,13 +46,13 @@ public:
         Params& Set();
 
         template <typename... Args>
-        Params& SetArgs();
+        Params& SetArgs(const Type* retType = nullptr);
 
         template <typename Ret, typename... Args>
         static Params From();
 
         template <typename... Args>
-        static Params FromArgs();
+        static Params FromArgs(const Type* retType = nullptr);
 
         const Type* retType;
         Vector<const Type*> argsType;

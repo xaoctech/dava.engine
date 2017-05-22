@@ -18,6 +18,7 @@
 #include "Scene3D/Components/SwitchComponent.h"
 #include "Scene3D/Components/UserComponent.h"
 
+#include "Logger/Logger.h"
 #include "Utils/StringFormat.h"
 #include "FileSystem/FileSystem.h"
 #include "Base/ObjectFactory.h"
@@ -1133,7 +1134,6 @@ void SceneFileV2::RemoveDeprecatedMaterialFlags(Entity* node)
         uint32 batchCount = ro->GetRenderBatchCount();
         for (uint32 ri = 0; ri < batchCount; ++ri)
         {
-            int32 flagValue = 0;
             RenderBatch* batch = ro->GetRenderBatch(ri);
             NMaterial* material = batch->GetMaterial();
 
@@ -1182,7 +1182,6 @@ void SceneFileV2::ConvertAlphatestValueMaterials(Entity* node)
         uint32 batchCount = ro->GetRenderBatchCount();
         for (uint32 ri = 0; ri < batchCount; ++ri)
         {
-            int32 flagValue = 0;
             RenderBatch* batch = ro->GetRenderBatch(ri);
             NMaterial* material = batch->GetMaterial();
 

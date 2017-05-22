@@ -6,8 +6,6 @@
 #include "Platform/TemplateWin32/MouseDeviceWin32.h"
 #include "Platform/TemplateWin32/MouseDeviceWinUAP.h"
 
-#include "Engine/EngineModule.h"
-
 #if !defined(__DAVAENGINE_COREV2__)
 
 namespace DAVA
@@ -81,17 +79,23 @@ MouseDevice::MouseDevice()
         }
     };
 #if defined(__DAVAENGINE_COREV2__)
-    Window* primaryWindow = Engine::Instance()->PrimaryWindow();
-    primaryWindow->focusChanged.Connect(focusChanged);
+    Window* primaryWindow = GetPrimaryWindow();
+    primaryWindow->focusChanged.Connect(this, focusChanged);
     context->focused = primaryWindow->HasFocus();
 #else
-    Core::Instance()->focusChanged.Connect(focusChanged);
+    Core::Instance()->focusChanged.Connect(this, focusChanged);
     context->focused = Core::Instance()->IsFocused();
 #endif
 }
 
 MouseDevice::~MouseDevice()
 {
+#if defined(__DAVAENGINE_COREV2__)
+    GetPrimaryWindow()->focusChanged.Disconnect(this);
+#else
+    Core::Instance()->focusChanged.Disconnect(this);
+#endif
+
     delete context;
     delete privateImpl;
 }
@@ -147,21 +151,13 @@ bool MouseDevice::SkipEvents(const UIEvent* event)
     }
     if (context->deferredCapture)
     {
-#if defined(__DAVAENGINE_COREV2__)
         if (event->device != eInputDevices::MOUSE && context->focused)
-#else
-        if (event->device != UIEvent::Device::MOUSE && context->focused)
-#endif
         {
             SetSystemMode(eCaptureMode::PINING);
             context->deferredCapture = false;
             return false;
         }
-#if defined(__DAVAENGINE_COREV2__)
         else if ((event->device == eInputDevices::MOUSE) && (event->phase == UIEvent::Phase::ENDED))
-#else
-        else if ((event->device == UIEvent::Device::MOUSE) && (event->phase == UIEvent::Phase::ENDED))
-#endif
         {
             bool inRect = true;
 #if defined(__DAVAENGINE_COREV2__)

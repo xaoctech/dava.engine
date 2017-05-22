@@ -3,7 +3,9 @@
 #include "mongodb/mongo.h"
 #include "mongodb/gridfs.h"
 
+#include "Logger/Logger.h"
 #include "Utils/Utils.h"
+#include "Utils/UTF8Utils.h"
 #include "Utils/StringFormat.h"
 
 #include "FileSystem/KeyedArchive.h"
@@ -402,8 +404,8 @@ bool MongodbClient::KeyedArchiveToDBObject(KeyedArchive* archive, MongodbObject*
     if (!outObject->IsFinished())
     {
         //copy data from archive into db object
-        KeyedArchive::UnderlyingMap archiveData = archive->GetArchieveData();
-        for (KeyedArchive::UnderlyingMap::iterator it = archiveData.begin(); it != archiveData.end(); ++it)
+        const KeyedArchive::UnderlyingMap& archiveData = archive->GetArchieveData();
+        for (auto it = archiveData.begin(); it != archiveData.end(); ++it)
         {
             MongodbClient::WriteData(outObject, it->first, it->second);
         }
@@ -473,6 +475,28 @@ void MongodbClient::ReadData(KeyedArchive* archive, void* bsonObj)
             ReadData(subArchive, &sub);
             archive->SetArchive(key, subArchive);
             SafeRelease(subArchive);
+            break;
+        }
+
+        case BSON_NULL:
+        {
+            Logger::Warning("[MongodbClient::ReadData] Get NULL type by key: %s", key.c_str());
+            break;
+        }
+
+        case BSON_DATE:
+        {
+            int oneSecond = 1000;
+            time_t rawTime = static_cast<time_t>(bson_iterator_date(&it) / oneSecond);
+            tm tms = { 0 };
+#if defined(__DAVAENGINE_WINDOWS__)
+            gmtime_s(&tms, &rawTime);
+#else // __DAVAENGINE_WINDOWS__
+            gmtime_r(&rawTime, &tms);
+#endif // __DAVAENGINE_WINDOWS__
+            Array<char8, 50> buf = { { 0 } };
+            strftime(buf.data(), buf.size(), "%d.%b.%Y_%H-%M-%S", &tms);
+            archive->SetString(key, String(buf.data()));
             break;
         }
 
@@ -551,7 +575,7 @@ void MongodbClient::WriteData(MongodbObject* mongoObj, const String& key, Varian
         break;
         case VariantType::TYPE_WIDE_STRING:
         {
-            mongoObj->AddString(key, WStringToString(value->AsWideString()));
+            mongoObj->AddString(key, UTF8Utils::EncodeToUTF8(value->AsWideString()));
         }
         break;
         case VariantType::TYPE_BYTE_ARRAY:

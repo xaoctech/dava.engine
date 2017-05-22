@@ -2,6 +2,9 @@
 #include <cmath>
 
 #include "Vector.h"
+#include "Math/Math2D.h"
+
+#include "Base/Any.h"
 
 namespace DAVA
 {
@@ -20,6 +23,7 @@ struct Rect
     inline Rect(float32 _x, float32 _y, float32 _dx, float32 _dy);
     inline Rect(const Rect& rect);
     inline Rect(const Vector2& point, const Vector2& size);
+    inline Rect(const Size2f& size);
 
     inline bool PointInside(const Vector2& point) const;
     inline Rect Intersection(const Rect& rect) const;
@@ -76,6 +80,14 @@ inline Rect::Rect(const Vector2& point, const Vector2& size)
     y = point.y;
     dx = size.x;
     dy = size.y;
+}
+
+inline Rect::Rect(const Size2f& size)
+{
+    x = 0;
+    y = 0;
+    dx = size.dx;
+    dy = size.dy;
 }
 
 inline bool Rect::PointInside(const Vector2& point) const
@@ -261,5 +273,9 @@ inline Rect Rect::operator-(const Vector2& pt) const
 {
     return Rect(x - pt.x, y - pt.y, dx, dy);
 }
+
+template <>
+bool AnyCompare<Rect>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2);
+extern template struct AnyCompare<Rect>;
 
 }; // end of namespace DAVA

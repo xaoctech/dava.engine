@@ -1,17 +1,88 @@
-#if defined(__DAVAENGINE_COREV2__)
-
 #pragma once
 
 #include "Base/BaseTypes.h"
+
+#if defined(__DAVAENGINE_COREV2__)
+
 #include "Functional/Functional.h"
 
 #include "Engine/EngineTypes.h"
 #include "Engine/EngineContext.h"
-#include "Engine/Private/EnginePrivateFwd.h"
+#include "Engine/PlatformApi.h"
+#include "Engine/Window.h"
+
+/**
+    \defgroup engine Engine
+*/
+
+#include "Render/RHI/rhi_Type.h"
 
 namespace DAVA
 {
 class KeyedArchive;
+class Window;
+namespace Private
+{
+class EngineBackend;
+}
+
+/**
+    \ingroup engine
+    Utility function to get engine context.
+
+    Behaviour is undefined when called before `Engine` instantiated or after 'Engine::cleanup' signal emited.
+    Another but longer way to get context is to call `Engine::Instance()->GetContext()`.
+*/
+const EngineContext* GetEngineContext();
+
+/**
+    \ingroup engine
+    Utility function to get primary window.
+
+    Behaviour is undefined when called before `Engine` instantiated or after 'Engine::cleanup' signal has emited.
+    Return `nullptr` if called before `Engine::Init` or if `Engine` has been initialized with `eEngineRunMode::CONSOLE_MODE` mode.
+    Another but longer way to get primary window is to call `Engine::Instance()->PrimaryWindow()`.
+*/
+Window* GetPrimaryWindow();
+
+/**
+    \ingroup engine
+    Utility function to run asynchronous task on DAVA main thread.
+
+    Behaviour is undefined when called after `Engine::cleanup` signal has emited.
+*/
+void RunOnMainThreadAsync(const Function<void()>& task);
+
+/**
+    \ingroup engine
+    Utility function to run task on DAVA main thread and wait its completion blocking caller thread.
+
+    This function should not be called before `Engine::Run` is executed since it can lead to deadlock.
+    Behaviour is undefined when called after `Engine::cleanup` signal has emited.
+*/
+void RunOnMainThread(const Function<void()>& task);
+
+/**
+    \ingroup engine
+    Utility function to run asynchronous task on UI thread belonging to primary window.
+
+    Behaviour is undefined:
+        - if Engine is initialized with console run mode.
+        - if called before `Engine::Init` method which create instance of primary window.
+        - if called after `Engine::windowDestroyed` signal emited for primary window.
+*/
+void RunOnUIThreadAsync(const Function<void()>& task);
+
+/**
+    \ingroup engine
+    Utility function to run task on UI thread belonging to primary window and wait its completion blocking caller thread.
+
+    Behaviour is undefined:
+        - if Engine is initialized with console run mode.
+        - if called before `Engine::windowCreated` signal emited for primary window.
+        - if called after `Engine::windowDestroyed` signal emited for primary window.
+*/
+void RunOnUIThread(const Function<void()>& task);
 
 /**
     \ingroup engine
@@ -83,9 +154,32 @@ public:
     Engine(const Engine&) = delete;
     Engine& operator=(const Engine&) = delete;
 
-    EngineContext* GetContext() const;
-    NativeService* GetNativeService() const;
+    /**
+        Get engine context which holds all DAVA subsystems.
+
+        Subsystems become available after `Engine::Init` call, which subsystems are available depends on
+        Engine's run mode (see `eEngineRunMode`), target platform (android, win32, etc).
+        The following subsystems are available immediately after Engine class creation:
+            - Logger
+            - FileSystem
+            - DeviceManager
+    */
+    const EngineContext* GetContext() const;
+
+    /**
+        Return primary window if any.
+
+        Primary window is non null except in the following cases:
+            - before `Engine::Init` call,
+            - Engine was initialized with `eEngineRunMode::CONSOLE_MODE` mode,
+            - after receiving signal `Engine::windowDestroyed` for primary window.
+    */
     Window* PrimaryWindow() const;
+
+    /**
+        Return currently existing windows, including the primary one.
+    */
+    const Vector<Window*>& GetWindows() const;
 
     eEngineRunMode GetRunMode() const;
     bool IsStandaloneGUIMode() const;
@@ -102,7 +196,7 @@ public:
             - as console application (eEngineRunMode::CONSOLE_MODE)
             - as GUI application embedded into other framework (eEngineRunMode::GUI_EMBEDDED)
     
-        Application may list dava.engine's modules (subsystems) which she wants to use during execution. List may be empty.
+        Application may list dava.engine's modules (subsystems) which it wants to use during execution. The list may be empty.
         For now application may choose to create only several subsystems:
             - DownloadManager
             - JobManager
@@ -151,9 +245,14 @@ public:
     int Run();
 
     /**
-        Quit application with given exit code.
+        Request to quit application with given exit code.
+
+        Application should use traditional exit code values: zero for success, positive values for failure.
+        Performed asynchronously, dava.engine closes all windows then emits signals `gameLoopStopped` and `cleanup`.
+
+        \note Not all platforms allow to specify exit code, but leave this ability for symmetry.
     */
-    void Quit(int exitCode = 0);
+    void QuitAsync(int exitCode);
 
     /**
         Set handler which is invoked when user is trying to close window or application.
@@ -161,7 +260,7 @@ public:
         Handler can prevent window/application closing by returning false. This ability is
         supported only on desktop platforms: win32 and macOS.
         Typical usage is to return false in handler to prevent immediate window/app closing
-        and show dialog asking user whether she wants to close window/app. If she chooses to
+        and show dialog asking user whether he wants to close window/app. If he chooses to
         close window/app then application should call Window::Close or Engine::Quit.
         Handler is only invoked if window/app is closing by user request: by pressing Alt+F4 or
         by clicking mouse on window close button or by pressing Cmd+Q on macOS.
@@ -174,18 +273,6 @@ public:
                        otherwise user is trying to close specified window.
     */
     void SetCloseRequestHandler(const Function<bool(Window*)>& handler);
-
-    /**
-        Run given task in DAVA main thread context without waiting task execution.
-        This method can be called from any thread.
-    */
-    void RunAsyncOnMainThread(const Function<void()>& task);
-
-    /**
-        Run given task in DAVA main thread context and block calling thread until task is executed.
-        This method can be called from any thread.
-    */
-    void RunAndWaitOnMainThread(const Function<void()>& task);
 
     const KeyedArchive* GetOptions() const;
 
@@ -216,19 +303,39 @@ public:
     */
     Vector<char*> GetCommandLineAsArgv() const;
 
+    /**
+        Return value indicating if an app is in suspended state.
+        You can also use `suspended` and `resumed` signals to keep track of this value.
+
+        \note Only these platforms support suspending: Win10, iOS, Android.
+    */
+    bool IsSuspended() const;
+
+    /**
+        Set value indicating if screen timeout is enabled.
+        If value is `true`, screens will dim some time after last user interaction (if it's enabled in system settings),
+        otherwise screens will stay active even if there's no input.
+        By default, timeout is enabled.
+    */
+    void SetScreenTimeoutEnabled(bool enabled);
+
 public:
     Signal<> gameLoopStarted; //!< Emited just before entring game loop. Note: native windows are not created yet and renderer is not initialized.
-    Signal<> gameLoopStopped; //!< Emited after exiting game loop, application should terminate.
+    Signal<> gameLoopStopped; //!< Emited after exiting game loop, application should prepare to terminate.
     Signal<> cleanup; //!< Last signal emited by Engine, after this signal dava.engine is dead.
     Signal<Window*> windowCreated; //!< Emited when native window is created and renderer is initialized.
-    Signal<Window*> windowDestroyed; //!< Emited when native window is destroyed. After this signal no one should use window.
-    Signal<> beginFrame;
-    Signal<float32> update; //!< Emited on each frame. Note: rendering should be performed on Window::update signal.
-    Signal<> draw;
-    Signal<> endFrame;
+    Signal<Window*> windowDestroyed; //!< Emited just before native window is destroyed. After this signal no one should use window.
+    Signal<> beginFrame; //!< Emited at the beginning of frame when application is in foreground.
+    Signal<float32> update; //!< Emited on each frame when application is in foreground (not suspended). Note: rendering should be performed on `Window::update`, `Window::draw` signals.
+    Signal<> endFrame; //!< Emited at the end of frame when application is in foreground.
+    Signal<float32> backgroundUpdate; //!< Emited on each frame when application is suspended.
     Signal<> suspended; //!< Emited when application has entered suspended state. This signal is fired only on platforms
-    //!< that support suspending: UWP, iOS, Android. Rendering is stopped but update signal is emited if system permits.
+    //!< that support suspending: Win10, iOS, Android. Rendering is stopped but `backgroundUpdate` signal is emited if system permits.
     Signal<> resumed; //!< Emited when application exits suspended state.
+
+    Signal<rhi::RenderingError> renderingError; //!< Emited when rendering is not possible anymore, can be invoked from any thread.
+    //!< Application should be gracefully closed (with optional message to user depending on error value)
+    //!< Ignoring this signal or continuing work after it may lead to undefined behaviour
 
 private:
     Private::EngineBackend* engineBackend = nullptr;

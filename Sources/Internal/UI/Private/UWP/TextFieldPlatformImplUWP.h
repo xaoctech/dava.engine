@@ -7,18 +7,17 @@
 #include "Base/BaseTypes.h"
 #include "Math/Rect.h"
 #include "Math/Color.h"
-#include "Concurrency/Mutex.h"
 
 namespace DAVA
 {
 class Color;
 class Sprite;
+class Texture;
 class UIGeometricData;
 class UITextField;
 class UITextFieldDelegate;
-#if defined(__DAVAENGINE_COREV2__)
 class Window;
-#else
+#if !defined(__DAVAENGINE_COREV2__)
 class CorePlatformWinUAP;
 #endif
 
@@ -47,6 +46,7 @@ class TextFieldPlatformImpl : public std::enable_shared_from_this<TextFieldPlatf
         int32 keyboardType = 0;
         int32 caretPosition = 0;
         float32 fontSize = 0.0f;
+        float32 virtualFontSize = 0.0f;
 
         bool anyPropertyChanged : 1;
         bool rectChanged : 1;
@@ -99,6 +99,8 @@ public:
     void CloseKeyboard();
 
     void UpdateRect(const Rect& rect);
+
+    void SetRect(const Rect& rect);
 
     void SetText(const WideString& text);
     void GetText(WideString& text) const;
@@ -168,7 +170,7 @@ private:
     Rect VirtualToWindow(const Rect& srcRect) const;
     Rect WindowToVirtual(const Rect& srcRect) const;
     void RenderToTexture(bool moveOffScreenOnCompletion);
-    Sprite* CreateSpriteFromPreviewData(uint8* imageData, int32 width, int32 height) const;
+    Sprite* CreateSpriteFromPreviewData(uint8* imageData, uint32 width, uint32 height);
 
 private: // Event handlers
     void OnKeyDown(Windows::UI::Xaml::Input::KeyRoutedEventArgs ^ args);
@@ -181,8 +183,11 @@ private: // Event handlers
     void OnSelectionChanged();
 
     // Onscreen keyboard events
-    void OnKeyboardHiding(Windows::UI::ViewManagement::InputPaneVisibilityEventArgs ^ args);
     void OnKeyboardShowing(Windows::UI::ViewManagement::InputPaneVisibilityEventArgs ^ args);
+
+    // Signal handlers
+    void OnWindowSizeChanged(Window* w, Size2f windowSize, Size2f surfaceSize);
+    void OnWindowDestroyed(Window* w);
 
 private:
 #if defined(__DAVAENGINE_COREV2__)
@@ -201,7 +206,9 @@ private:
 
     // Tokens to unsubscribe from touch keyboard event handlers
     Windows::Foundation::EventRegistrationToken tokenKeyboardShowing;
+#if !defined(__DAVAENGINE_COREV2__)
     Windows::Foundation::EventRegistrationToken tokenKeyboardHiding;
+#endif
 
     bool ignoreTextChange = false;
     bool waitRenderToTextureComplete = false; // If flag is set do not move native control offscreen to get rid of some flickering
@@ -215,6 +222,11 @@ private:
     WideString lastProgrammaticText;
     TextFieldProperties properties;
     bool programmaticTextChange = false;
+
+#if defined(__DAVAENGINE_COREV2__)
+    Texture* texture = nullptr;
+    Sprite* sprite = nullptr;
+#endif
 
     static Windows::UI::Xaml::Style ^ customTextBoxStyle;
     static Windows::UI::Xaml::Style ^ customPasswordBoxStyle;

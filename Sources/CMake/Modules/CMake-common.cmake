@@ -1,7 +1,7 @@
 # Only interpret ``if()`` arguments as variables or keywords when unquoted.
-if(NOT (CMAKE_VERSION VERSION_LESS 3.1))
+#if(NOT (CMAKE_VERSION VERSION_LESS 3.1))
     cmake_policy(SET CMP0054 NEW)
-endif()
+#endif()
 
 function (append_property KEY_PROP  VALUE)
     GET_PROPERTY(PROP_LIST_VALUE GLOBAL PROPERTY ${KEY_PROP} )
@@ -44,6 +44,21 @@ include ( CMakeDependentOption )
 include ( CMakeParseArguments  )
 include ( UnityBuild           )
 include ( Coverage             )
+include ( ModuleHelper         )
+
+#
+macro ( dava_add_definitions DAVA_DEFINITIONS )
+    append_property( GLOBAL_DEFINITIONS "${DAVA_DEFINITIONS};${ARGN}" )
+endmacro ()
+
+#
+macro ( set_subsystem_console )
+    if( WIN32 )
+        set_target_properties ( ${PROJECT_NAME} PROPERTIES LINK_FLAGS_DEBUG   "/SUBSYSTEM:CONSOLE" )
+        set_target_properties ( ${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:CONSOLE" )
+        set_target_properties ( ${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELWITHDEBINFO "/SUBSYSTEM:CONSOLE" )
+    endif()
+endmacro ()
 
 #
 macro ( set_project_files_properties FILES_LIST )
@@ -75,6 +90,129 @@ macro (enable_pch)
         endforeach ()
     endif ()
 endmacro ()
+#
+macro( processing_mix_data_dependencies DEPENDENT_TARGET_LIST )
+
+    if( TARGET DATA_COPY_${PROJECT_NAME}  )
+        foreach (TARGET_NAME ${DEPENDENT_TARGET_LIST})
+            if( TARGET ${TARGET_NAME} )
+                add_dependencies( ${TARGET_NAME} DATA_COPY_${PROJECT_NAME} )
+            endif()
+        endforeach ()
+    endif()
+endmacro ()
+#
+macro( processing_mix_data )
+    cmake_parse_arguments ( ARG "NOT_DATA_COPY"  "" "" ${ARGN} )
+
+    load_property( PROPERTY_LIST MIX_APP_DATA )
+    if( ANDROID )
+        set( MIX_APP_DIR ${CMAKE_BINARY_DIR}/assets )
+        set( DAVA_DEBUGGER_WORKING_DIRECTORY ${MIX_APP_DIR} )
+    elseif( WINDOWS_UAP )
+        set( MIX_APP_DIR ${CMAKE_CURRENT_BINARY_DIR}/MixResources )
+    elseif( DEPLOY )
+        if( NOT DEPLOY_DIR_DATA )
+            if( MACOS AND NOT MAC_DISABLE_BUNDLE)
+                set( DEPLOY_DIR_DATA ${DEPLOY_DIR}/${PROJECT_NAME}.app/Contents/Resources )
+            elseif( IOS )
+                set( DEPLOY_DIR_DATA ${DEPLOY_DIR}/${PROJECT_NAME}.app )                
+            else()
+                set( DEPLOY_DIR_DATA ${DEPLOY_DIR} )
+            endif()
+        endif()
+
+        set( MIX_APP_DIR ${DEPLOY_DIR_DATA} )     
+    else()
+
+        if( NOT MIX_APP_DIR )
+            set( MIX_APP_DIR ${CMAKE_CURRENT_BINARY_DIR}/MixResources )
+        endif()
+
+        set( DAVA_DEBUGGER_WORKING_DIRECTORY ${MIX_APP_DIR} )
+    endif()
+    
+    get_filename_component( MIX_APP_DIR ${MIX_APP_DIR} ABSOLUTE )
+
+    if( NOT ARG_NOT_DATA_COPY )
+        add_custom_target ( DATA_COPY_${PROJECT_NAME} )
+    endif()
+
+    foreach( ITEM ${MIX_APP_DATA} )
+
+        string(FIND ${ITEM} "=>" SYMBOL_FOUND)
+        if (${SYMBOL_FOUND} MATCHES -1)
+            string( REGEX REPLACE " " "" ITEM ${ITEM} )
+            string( REGEX REPLACE "=" ";" ITEM ${ITEM} )
+            list(GET ITEM 0 GROUP_PATH )
+            list(GET ITEM 1 DATA_PATH )
+
+            get_filename_component( DATA_PATH ${DATA_PATH} ABSOLUTE )
+            execute_process( COMMAND ${CMAKE_COMMAND} -E make_directory ${MIX_APP_DIR}/${GROUP_PATH} )
+            if( NOT ARG_NOT_DATA_COPY )
+                if( WINDOWS_UAP )
+                    execute_process( COMMAND ${CMAKE_COMMAND} -E copy_directory ${DATA_PATH} ${MIX_APP_DIR}/${GROUP_PATH} )                
+                endif()
+                ADD_CUSTOM_COMMAND( TARGET DATA_COPY_${PROJECT_NAME}  
+                   COMMAND ${CMAKE_COMMAND} -E copy_directory
+                   ${DATA_PATH} 
+                   ${MIX_APP_DIR}/${GROUP_PATH}
+                )
+            endif()
+
+        else()
+            string( REGEX REPLACE " " "" ITEM ${ITEM} )
+            string( REGEX REPLACE "=>" ";" ITEM ${ITEM} )
+            list(GET ITEM 0 FILE_PATH )
+            list(GET ITEM 1 DATA_PATH )
+
+            if( NOT ARG_NOT_DATA_COPY )
+                get_filename_component(FILE_NAME ${FILE_PATH} NAME)
+
+                execute_process( COMMAND ${CMAKE_COMMAND} -E rename ${MIX_APP_DIR}/${FILE_PATH} ${MIX_APP_DIR}/${DATA_PATH}/${FILE_NAME} )
+            endif()
+
+        endif()
+
+    endforeach()
+
+
+    if( WINDOWS_UAP )
+
+        file(GLOB LIST_FOLDER_ITEM  "${MIX_APP_DIR}/*" )
+        foreach( ITEM ${LIST_FOLDER_ITEM} )
+            if( IS_DIRECTORY ${ITEM} )
+                set( APP_DATA ${ITEM} ${APP_DATA} )
+            endif()
+        endforeach()
+
+    elseif( NOT DEPLOY )
+        file(GLOB LIST_FOLDER_ITEM  "${MIX_APP_DIR}/*" )
+        foreach( ITEM ${LIST_FOLDER_ITEM} )
+            if( IS_DIRECTORY ${ITEM} )
+
+                if( MAC_DISABLE_BUNDLE AND MACOS)                    
+                    get_filename_component( FOLDER_NAME ${ITEM}  NAME     )
+                    foreach( CONFIGURATION ${CMAKE_CONFIGURATION_TYPES} )
+                        foreach( TMP_DATA_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CONFIGURATION} ${CMAKE_CURRENT_BINARY_DIR}/${CONFIGURATION}/Contents/Resources )
+                            execute_process( COMMAND ${CMAKE_COMMAND} -E make_directory  ${TMP_DATA_DIR} )
+                            if( NOT EXISTS ${TMP_DATA_DIR}/${FOLDER_NAME} )
+                                execute_process( COMMAND ln -s ${MIX_APP_DIR}/${FOLDER_NAME} ${TMP_DATA_DIR}/${FOLDER_NAME}  )
+                            endif()
+                        endforeach()
+                    endforeach()
+                else()
+                    list( APPEND RESOURCES_LIST  ${ITEM}  )
+                endif()
+            endif()
+        endforeach()
+    endif()
+
+    if( NOT ARG_NOT_DATA_COPY )
+        reset_property ( MIX_APP_DATA )
+    endif()
+
+endmacro ()
 
 macro(grab_libs OUTPUT_LIST_VAR LIB_LIST EXCLUDE_LIBS ADDITIONAL_LIBS)
     set(OUTPUT_LIST "")
@@ -88,7 +226,6 @@ macro(grab_libs OUTPUT_LIST_VAR LIB_LIST EXCLUDE_LIBS ADDITIONAL_LIBS)
     list (APPEND OUTPUT_LIST ${${ADDITIONAL_LIBS}})
     set(${OUTPUT_LIST_VAR} ${OUTPUT_LIST})
 endmacro()
-
 
 ##
 #in
@@ -554,9 +691,10 @@ endmacro()
 
 #
 
-function (reset_property KEY_PROP )
-    SET_PROPERTY(GLOBAL PROPERTY ${KEY_PROP} )
-endfunction()
+macro (reset_property KEY_PROP )
+    set( ${KEY_PROP} )
+    SET_PROPERTY(GLOBAL PROPERTY ${KEY_PROP}  )
+endmacro()
 
 macro( load_property  )
     cmake_parse_arguments (ARG "" "" "PROPERTY_LIST" ${ARGN})
@@ -584,6 +722,8 @@ endmacro()
 macro ( add_content_win_uap_single CONTENT_DIR )
 
     #get all files from it and add to SRC
+    set( CONTENT_LIST)
+    set( CONTENT_LIST_TMP)
     file ( GLOB_RECURSE CONTENT_LIST_TMP "${CONTENT_DIR}/*")
     
     #check svn dir (it happens)
@@ -763,13 +903,6 @@ macro( convert_graphics )
     if( NOT ARG_PARAM_PACKER AND DEPLOY )
         set( ARG_PARAM_PACKER  "-teamcity" )
     endif()
-
-    execute_process( COMMAND ${PYTHON_EXECUTABLE} ${DAVA_SCRIPTS_FILES_PATH}/convert_graphics.py 
-                                    --pathDataSource=${CMAKE_CURRENT_LIST_DIR}/DataSource 
-                                    --pathDava=${DAVA_ROOT_DIR} 
-                                    --clearData=${ARG_CLEAR}
-                                    --paramPacker=${ARG_PARAM_PACKER}
-                                   )
 
 endmacro()
 

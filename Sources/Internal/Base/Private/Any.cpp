@@ -2,7 +2,14 @@
 
 namespace DAVA
 {
-bool Any::LoadValue(void* data, const Type* type_)
+Any Any::ReinterpretCast(const Type* type) const
+{
+    Any ret(*this);
+    ret.type = type;
+    return ret;
+}
+
+bool Any::LoadData(void* data, const Type* type_)
 {
     type = type_;
 
@@ -21,7 +28,7 @@ bool Any::LoadValue(void* data, const Type* type_)
     return false;
 }
 
-bool Any::StoreValue(void* data, size_t size) const
+bool Any::StoreData(void* data, size_t size) const
 {
     if (nullptr != type && size >= type->GetSize())
     {
@@ -66,6 +73,7 @@ bool Any::operator==(const Any& any) const
 
     if (type != any.type)
     {
+        // DVASSERT(false, "Comparing Any with different types");
         return false;
     }
 

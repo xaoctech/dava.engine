@@ -2,6 +2,7 @@ package com.dava.engine;
 
 import android.graphics.Rect;
 import android.graphics.PixelFormat;
+import android.os.Build;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -10,7 +11,10 @@ import android.widget.FrameLayout;
 import java.util.LinkedList;
 import java.util.List;
 
-class DavaKeyboardState implements ViewTreeObserver.OnGlobalLayoutListener
+import android.util.Log;
+
+class DavaKeyboardState extends DavaActivity.ActivityListenerImpl
+                        implements DavaGlobalLayoutState.GlobalLayoutListener
 {
     public interface KeyboardStateListener
     {
@@ -18,56 +22,31 @@ class DavaKeyboardState implements ViewTreeObserver.OnGlobalLayoutListener
         void onKeyboardClosed();
     }
 
-    private View contentView = null;
-    private FrameLayout layout = null;
     private boolean isKeyboardOpen = false;
     private Rect keyboardRect = new Rect();
     private List<KeyboardStateListener> listeners = new LinkedList<KeyboardStateListener>();
 
-    void start()
+    DavaKeyboardState()
     {
-        if (layout == null)
-        {
-            contentView = DavaActivity.instance().findViewById(android.R.id.content);
-            WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-                        0,
-                        WindowManager.LayoutParams.MATCH_PARENT,
-                        WindowManager.LayoutParams.TYPE_APPLICATION_PANEL,
-                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-                                | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                                | WindowManager.LayoutParams.FLAG_FULLSCREEN
-                                | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
-                        PixelFormat.TRANSPARENT);
-            params.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE;
-            params.packageName = DavaActivity.instance().getApplication().getPackageName();
-            params.gravity = Gravity.LEFT | Gravity.TOP;
-            params.token = contentView.getWindowToken();
-
-            layout = new FrameLayout(DavaActivity.instance());
-            DavaActivity.instance().getWindowManager().addView(layout, params);
-
-            layout.getViewTreeObserver().addOnGlobalLayoutListener(this);
-        }
+        onResume();
     }
 
-    void stop()
+    // DavaActivity.ActivityListener interface
+    @Override
+    public void onResume()
     {
-        if (layout != null)
-        {
-            layout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            DavaActivity.instance().getWindowManager().removeView(layout);
+        DavaActivity.instance().globalLayoutState.addGlobalLayoutListener(this);
+    }
 
-            keyboardRect.left = 0;
-            keyboardRect.top = 0;
-            keyboardRect.right = 0;
-            keyboardRect.bottom = 0;
-            isKeyboardOpen = false;
+    @Override
+    public void onPause()
+    {
+        DavaActivity.instance().globalLayoutState.removeGlobalLayoutListener(this);
 
-            layout = null;
-            contentView = null;
+        keyboardRect.setEmpty();
+        isKeyboardOpen = false;
 
-            emitKeyboardClosed();
-        }
+        emitKeyboardClosed();
     }
 
     public Rect keyboardRect()
@@ -94,23 +73,20 @@ class DavaKeyboardState implements ViewTreeObserver.OnGlobalLayoutListener
     }
 
     @Override
-    public void onGlobalLayout()
+    public void onVisibleFrameChanged(Rect visibleFrame)
     {
-        Rect rc = new Rect();
-        layout.getWindowVisibleDisplayFrame(rc);
-
-        int viewHeight = layout.getRootView().getHeight();
+        int viewHeight = DavaActivity.instance().getWindow().getDecorView().getHeight();
         int heightThreshold = viewHeight / 4;  
-        int dy = viewHeight - rc.height();
+        int dy = viewHeight - visibleFrame.height();
 
         if (dy > heightThreshold)
         {
             if (!isKeyboardOpen)
             {
-                keyboardRect.left = rc.left;
-                keyboardRect.top = rc.bottom;
-                keyboardRect.right = rc.right;
-                keyboardRect.bottom = rc.bottom + dy;
+                keyboardRect.left = visibleFrame.left;
+                keyboardRect.top = visibleFrame.bottom;
+                keyboardRect.right = visibleFrame.right;
+                keyboardRect.bottom = visibleFrame.bottom + dy;
 
                 isKeyboardOpen = true;
                 emitKeyboardOpened();

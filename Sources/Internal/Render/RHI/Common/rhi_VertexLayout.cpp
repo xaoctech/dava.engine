@@ -4,6 +4,8 @@
 #include "Base/BaseTypes.h"
 #include "Logger/Logger.h"
 #include "FileSystem/File.h"
+#include "rhi_Utils.h"
+#include <atomic>
 
 using DAVA::uint32;
 using DAVA::uint16;
@@ -241,59 +243,39 @@ VertexLayout& VertexLayout::operator=(const VertexLayout& src)
 
 //==============================================================================
 
-struct VertexLayoutInfo
-{
-    uint32 uid;
-    VertexLayout layout;
-};
-
-static std::vector<VertexLayoutInfo> UniqueVertexLayout;
-static uint32 LastUID = 0;
+static const uint32 UniqueVertexLayoutCapacity = 1024;
+static std::atomic<uint32> UniqueVertexLayoutLastIdentifier(0);
+static VertexLayout UniqueVertexLayout[UniqueVertexLayoutCapacity] = {};
 
 //------------------------------------------------------------------------------
 
 const VertexLayout* VertexLayout::Get(uint32 uid)
 {
-    const VertexLayout* layout = nullptr;
+    DVASSERT(uid < UniqueVertexLayoutCapacity);
 
-    for (std::vector<VertexLayoutInfo>::iterator i = UniqueVertexLayout.begin(), i_end = UniqueVertexLayout.end(); i != i_end; ++i)
-    {
-        if (i->uid == uid)
-        {
-            layout = &(i->layout); // CRAP: returning pointer to data inside std::vector
-            break;
-        }
-    }
+    if (uid == InvalidUID)
+        return nullptr;
 
-    return layout;
+    if (uid <= UniqueVertexLayoutLastIdentifier)
+        return UniqueVertexLayout + uid;
+
+    DAVA::Logger::Error("rhi::VertexLayout::Get(%u) failed, UniqueVertexLayoutSize: %u", uid, UniqueVertexLayoutLastIdentifier.load(std::memory_order_relaxed));
+    return nullptr;
 }
 
 //------------------------------------------------------------------------------
 
 uint32 VertexLayout::UniqueId(const VertexLayout& layout)
 {
-    uint32 uid = InvalidUID;
-
-    for (std::vector<VertexLayoutInfo>::iterator i = UniqueVertexLayout.begin(), i_end = UniqueVertexLayout.end(); i != i_end; ++i)
+    for (uint32 i = 1, e = UniqueVertexLayoutLastIdentifier; i <= e; ++i)
     {
-        if (i->layout == layout)
-        {
-            uid = i->uid;
-            break;
-        }
+        if (UniqueVertexLayout[i] == layout)
+            return i;
     }
 
-    if (uid == InvalidUID)
-    {
-        VertexLayoutInfo info;
-
-        info.uid = ++LastUID;
-        info.layout = layout;
-
-        UniqueVertexLayout.push_back(info);
-        uid = info.uid;
-    }
-
+    uint32 uid = ++UniqueVertexLayoutLastIdentifier;
+    DVASSERT(uid < UniqueVertexLayoutCapacity);
+    UniqueVertexLayout[uid] = layout;
     return uid;
 }
 
@@ -401,9 +383,11 @@ bool VertexLayout::Load(DAVA::File* in)
 #define READ_CHECK(exp) if (!(exp)) { return false; }
 
     READ_CHECK(in->Read(&_elem_count) == sizeof(_elem_count));
+    READ_CHECK(_elem_count <= countof(_elem));
     READ_CHECK(in->Read(&_elem, _elem_count * sizeof(Element)) == _elem_count * sizeof(Element));
 
     READ_CHECK(in->Read(&_stream_count) == sizeof(_stream_count));
+    READ_CHECK(_stream_count <= countof(_stream));
     READ_CHECK(in->Read(&_stream, _stream_count * sizeof(Stream)) == _stream_count * sizeof(Stream));
     
 #undef READ_CHECK

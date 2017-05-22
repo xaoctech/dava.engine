@@ -8,8 +8,6 @@
 #include "Render/PixelFormatDescriptor.h"
 #include "Sound/SoundSystem.h"
 #include "FileSystem/StreamBuffer.h"
-#include "Sound/FMODUtils.h"
-#include "fmod.h"
 #include "Concurrency/ConditionVariable.h"
 #include "Concurrency/Mutex.h"
 
@@ -129,9 +127,9 @@ private:
     void ClearBuffers();
     void CloseMovie();
 
-    void VideoDecodingThread(BaseObject* caller, void* callerData, void* userData);
-    void AudioDecodingThread(BaseObject* caller, void* callerData, void* userData);
-    void ReadingThread(BaseObject* caller, void* callerData, void* userData);
+    void VideoDecodingThread();
+    void AudioDecodingThread();
+    void ReadingThread();
     void SortPacketsByVideoAndAudio(AV::AVPacket* packet);
 
     FilePath moviePath;
@@ -146,7 +144,6 @@ private:
     bool isVideoSubsystemInited = false;
     bool isAudioSubsystemInited = false;
 
-    FMOD_CREATESOUNDEXINFO exinfo;
     AV::AVFormatContext* movieContext = nullptr;
 
     Thread* audioDecodingThread = nullptr;

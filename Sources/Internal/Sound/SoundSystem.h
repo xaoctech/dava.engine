@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_SOUND_SYSTEM_H__
-#define __DAVAENGINE_SOUND_SYSTEM_H__
+#pragma once
 
 #include "Base/Singleton.h"
 #include "Base/BaseTypes.h"
@@ -12,137 +11,71 @@
 #include "Concurrency/Mutex.h"
 #include "Sound/SoundStream.h"
 
-#ifdef DAVA_FMOD
-namespace FMOD
-{
-class EventGroup;
-class System;
-class EventSystem;
-class EventProject;
-class ChannelGroup;
-};
-#endif
-
 namespace DAVA
 {
-
-#ifdef DAVA_FMOD
-class FMODFileSoundEvent;
-class FMODSoundEvent;
-#endif
-
 class Engine;
 class Component;
 class SoundSystem : public Singleton<SoundSystem>
 {
-    static Mutex soundGroupsMutex;
-
 public:
-#if defined(__DAVAENGINE_COREV2__)
     SoundSystem(Engine* e);
     Engine* engine = nullptr;
-    size_t sigUpdateId = 0;
-#else
-    SoundSystem();
-#endif
-    ~SoundSystem();
 
-    SoundStream* CreateSoundStream(SoundStreamDelegate* streamDelegate, uint32 channelsCount);
+    virtual ~SoundSystem();
 
-    SoundEvent* CreateSoundEventByID(const FastName& eventName, const FastName& groupName);
-    SoundEvent* CreateSoundEventFromFile(const FilePath& fileName, const FastName& groupName, uint32 createFlags = SoundEvent::SOUND_EVENT_CREATE_DEFAULT, int32 priority = 128);
+    virtual SoundStream* CreateSoundStream(SoundStreamDelegate* streamDelegate, uint32 channelsCount);
 
-    void SerializeEvent(const SoundEvent* sEvent, KeyedArchive* toArchive);
-    SoundEvent* DeserializeEvent(KeyedArchive* archive);
-    SoundEvent* CloneEvent(const SoundEvent* sEvent);
+    virtual SoundEvent* CreateSoundEventByID(const FastName& eventName, const FastName& groupName);
+    virtual SoundEvent* CreateSoundEventFromFile(const FilePath& fileName, const FastName& groupName, uint32 createFlags = SoundEvent::SOUND_EVENT_CREATE_DEFAULT, int32 priority = 128);
 
-    void Update(float32 timeElapsed);
-    void Suspend();
-    void Resume();
-    void Mute(bool value);
+    virtual void SerializeEvent(const SoundEvent* sEvent, KeyedArchive* toArchive);
+    virtual SoundEvent* DeserializeEvent(KeyedArchive* archive);
+    virtual SoundEvent* CloneEvent(const SoundEvent* sEvent);
 
-    void SetCurrentLocale(const String& langID);
-    String GetCurrentLocale() const;
+    virtual void Mute(bool value);
 
-    void SetListenerPosition(const Vector3& position);
-    void SetListenerOrientation(const Vector3& forward, const Vector3& left);
+    virtual void SetCurrentLocale(const String& langID);
+    virtual String GetCurrentLocale() const;
 
-    void SetGroupVolume(const FastName& groupName, float32 volume);
-    float32 GetGroupVolume(const FastName& groupName);
+    virtual void SetListenerPosition(const Vector3& position);
+    virtual void SetListenerOrientation(const Vector3& forward, const Vector3& left);
 
-    void InitFromQualitySettings();
+    virtual void SetAllGroupsVolume(float32 volume);
+    virtual void SetGroupVolume(const FastName& groupName, float32 volume);
+    virtual float32 GetGroupVolume(const FastName& groupName) const;
 
-    void SetDebugMode(bool debug = true);
-    bool IsDebugModeOn() const;
+    virtual void SetAllGroupsSpeed(float32 speed);
+    virtual void SetGroupSpeed(const FastName& groupName, float32 speed);
+    virtual float32 GetGroupSpeed(const FastName& groupName) const;
 
-protected:
-    void ParseSFXConfig(const FilePath& configPath);
+    virtual void InitFromQualitySettings();
 
-#ifdef DAVA_FMOD
-protected:
-    struct SoundGroup
-    {
-        SoundGroup()
-            : volume(1.f)
-        {
-        }
+    virtual void SetDebugMode(bool debug = true);
+    virtual bool IsDebugModeOn() const;
 
-        FastName name;
-        float32 volume;
-        Vector<SoundEvent*> events;
-    };
+    virtual bool IsSystemMusicPlaying();
+
+    virtual void DuckSystemMusic(bool duck);
 
 public:
-    void LoadFEV(const FilePath& filePath);
-    void UnloadFEV(const FilePath& filePath);
-    void UnloadFMODProjects();
+    virtual void LoadFEV(const FilePath& filePath);
+    virtual void UnloadFEV(const FilePath& filePath);
+    virtual void UnloadFMODProjects();
 
-    void PreloadFMODEventGroupData(const String& groupName);
-    void ReleaseFMODEventGroupData(const String& groupName);
-    void ReleaseAllEventWaveData();
+    virtual void PreloadFMODEventGroupData(const String& groupName);
+    virtual void ReleaseFMODEventGroupData(const String& groupName);
+    virtual void ReleaseAllEventWaveData();
 
-    void GetAllEventsNames(Vector<String>& names);
+    virtual void GetAllEventsNames(Vector<String>& names);
 
-    uint32 GetMemoryUsageBytes() const;
-    float32 GetTotalCPUUsage() const;
-    int32 GetChannelsUsed() const;
-    int32 GetChannelsMax() const;
-
-#ifdef __DAVAENGINE_IPHONE__
-    bool IsSystemMusicPlaying();
-    void DuckSystemMusic(bool duck);
-#endif
+    virtual uint32 GetMemoryUsageBytes() const;
+    virtual float32 GetTotalCPUUsage() const;
+    virtual int32 GetChannelsUsed() const;
+    virtual int32 GetChannelsMax() const;
 
 protected:
-    void GetGroupEventsNamesRecursive(FMOD::EventGroup* group, String& currNamePath, Vector<String>& names);
-
-    void AddSoundEventToGroup(const FastName& groupName, SoundEvent* event);
-    void RemoveSoundEventFromGroups(SoundEvent* event);
-
-    void ReleaseOnUpdate(SoundEvent* sound);
-
-    FastName FindGroupByEvent(const SoundEvent* soundEvent);
-
-    Vector<SoundEvent*> soundsToReleaseOnUpdate;
-
-    FMOD::System* fmodSystem = nullptr;
-    FMOD::EventSystem* fmodEventSystem = nullptr;
-
-    FMOD::ChannelGroup* masterChannelGroup = nullptr;
-    FMOD::ChannelGroup* masterEventChannelGroup = nullptr;
-
-    Vector<SoundGroup> soundGroups;
-    Map<FilePath, FMOD::EventProject*> projectsMap;
-
-    Vector<String> toplevelGroups;
-
-    friend class FMODFileSoundEvent;
-    friend class FMODSoundEvent;
-#ifdef __DAVAENGINE_IPHONE__
-    friend class MusicIOSSoundEvent;
-#endif
-#endif
-};
+    virtual void ParseSFXConfig(const FilePath& configPath);
 };
 
-#endif //__DAVAENGINE_SOUND_SYSTEM_H__
+SoundSystem* CreateSoundSystem(Engine* e);
+};

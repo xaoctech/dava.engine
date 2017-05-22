@@ -16,8 +16,10 @@
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
 #include "Scene3D/Components/SwitchComponent.h"
+#include "Scene3D/Private/EntityHelpers.h"
 #include "Utils/Random.h"
 #include "Scene3D/Components/ComponentHelpers.h"
+#include "Reflection/ReflectionRegistrator.h"
 #include <functional>
 
 namespace DAVA
@@ -27,6 +29,20 @@ namespace DAVA
 const char* Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME = "editor.isSolid";
 const char* Entity::SCENE_NODE_IS_LOCKED_PROPERTY_NAME = "editor.isLocked";
 const char* Entity::SCENE_NODE_IS_NOT_REMOVABLE_PROPERTY_NAME = "editor.isNotRemovable";
+
+DAVA_VIRTUAL_REFLECTION_IMPL(Entity)
+{
+    ReflectionRegistrator<Entity>::Begin()
+    .DestructorByPointer([](Entity* e) { DAVA::SafeRelease(e); })
+    .Field("ID", &Entity::GetID, &Entity::SetID)[M::ReadOnly()]
+    .Field("Name", &Entity::GetName, static_cast<void (Entity::*)(const FastName&)>(&Entity::SetName))
+    .Field("Flags", &Entity::flags)[M::FlagsT<Entity::EntityFlags>()]
+    .Field("Visible", &Entity::GetVisible, &Entity::SetVisible)[M::ValueDescription(&VisibleValueDescription)]
+    .Field(componentFieldString, &Entity::components)
+    .End();
+}
+
+const char* Entity::componentFieldString = "Components";
 
 Entity::Entity()
 {
@@ -292,7 +308,7 @@ Entity* Entity::Clone(Entity* dstNode)
 {
     if (!dstNode)
     {
-        DVASSERT_MSG(IsPointerToExactClass<Entity>(this), "Can clone only Entity");
+        DVASSERT(IsPointerToExactClass<Entity>(this), "Can clone only Entity");
         dstNode = new Entity();
     }
 

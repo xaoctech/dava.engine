@@ -3,6 +3,7 @@
 
 #include "Base/BaseTypes.h"
 #include "UI/UIControl.h"
+#include "Reflection/Reflection.h"
 
 #define MINIMUM_SLIDER_SIZE 30
 
@@ -19,14 +20,12 @@ public:
     virtual float32 TotalAreaSize(UIScrollBar* forScrollBar) = 0;
     virtual float32 ViewPosition(UIScrollBar* forScrollBar) = 0;
     virtual void OnViewPositionChanged(UIScrollBar* byScrollBar, float32 newPosition) = 0;
-    virtual const String GetDelegateControlPath(const UIControl* rootControl) const
-    {
-        return String();
-    }; // TODO!! TEMP SOLUTION, CHECK WITH AUTHOR!
 };
 
 class UIScrollBar : public UIControl
 { //TODO: add top and bottom buttons
+    DAVA_VIRTUAL_REFLECTION(UIScrollBar, UIControl);
+
 public:
     enum eScrollOrientation
     {
@@ -42,7 +41,6 @@ public:
     UIScrollBar(const Rect& rect = Rect(), eScrollOrientation requiredOrientation = ORIENTATION_VERTICAL);
 
     void SetDelegate(UIScrollBarDelegate* newDelegate);
-    const String GetDelegatePath(const UIControl* rootControl) const;
     UIControl* GetSlider();
 
     void Draw(const UIGeometricData& geometricData) override;
@@ -75,11 +73,6 @@ private:
     Vector2 startOffset;
 
     float32 GetValidSliderSize(float32 size);
-
-public:
-    INTROSPECTION_EXTEND(UIScrollBar, UIControl,
-                         PROPERTY("orientation", InspDesc("Bar orientation", GlobalEnumMap<UIScrollBar::eScrollOrientation>::Instance()), GetOrientation, SetOrientation, I_SAVE | I_VIEW | I_EDIT)
-                         );
 };
 };
 

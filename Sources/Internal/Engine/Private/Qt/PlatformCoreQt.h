@@ -29,22 +29,17 @@ public:
     void PrepareToQuit();
     void Quit();
 
+    void SetScreenTimeoutEnabled(bool enabled);
+
     QApplication* GetApplication();
-    NativeService* GetNativeService();
     RenderWidget* GetRenderWidget();
 
 private:
     EngineBackend& engineBackend;
     WindowBackend* primaryWindowBackend = nullptr;
-    std::unique_ptr<NativeService> nativeService;
 
     Signal<bool> applicationFocusChanged;
 };
-
-inline NativeService* PlatformCore::GetNativeService()
-{
-    return nativeService.get();
-}
 
 } // namespace Private
 } // namespace DAVA

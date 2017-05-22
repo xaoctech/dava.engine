@@ -47,6 +47,7 @@ class SkeletonSystem;
 class AnimationSystem;
 class LandscapeSystem;
 class LodSystem;
+class ParticleEffectDebugDrawSystem;
 
 class UIEvent;
 
@@ -133,7 +134,7 @@ public:
      */
     void UnregisterComponent(Entity* entity, Component* component);
 
-    virtual void AddSystem(SceneSystem* sceneSystem, uint64 componentFlags, uint32 processFlags = 0, SceneSystem* insertBeforeSceneForProcess = nullptr);
+    virtual void AddSystem(SceneSystem* sceneSystem, uint64 componentFlags, uint32 processFlags = 0, SceneSystem* insertBeforeSceneForProcess = nullptr, SceneSystem* insertBeforeSceneForInput = nullptr);
     virtual void RemoveSystem(SceneSystem* sceneSystem);
 
     //virtual void ImmediateEvent(Entity * entity, uint32 componentType, uint32 event);
@@ -164,6 +165,7 @@ public:
     StaticOcclusionDebugDrawSystem* staticOcclusionDebugDrawSystem;
     SkeletonSystem* skeletonSystem;
     LandscapeSystem* landscapeSystem;
+    ParticleEffectDebugDrawSystem* particleEffectDebugDrawSystem;
 
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
@@ -204,6 +206,7 @@ public:
     EventSystem* GetEventSystem() const;
     RenderSystem* GetRenderSystem() const;
     AnimationSystem* GetAnimationSystem() const;
+    ParticleEffectDebugDrawSystem* GetParticleEffectDebugDrawSystem() const;
 
     virtual SceneFileV2::eError LoadScene(const DAVA::FilePath& pathname);
     virtual SceneFileV2::eError SaveScene(const DAVA::FilePath& pathname, bool saveForGame = false);
@@ -216,6 +219,7 @@ public:
     void OnSceneReady(Entity* rootNode);
 
     void Input(UIEvent* event);
+    void InputCancelled(UIEvent* event);
 
     /**
         \brief This functions activate and deactivate scene systems
@@ -246,6 +250,8 @@ protected:
 
     uint32 systemsMask;
     uint32 maxEntityIDCounter;
+
+    float32 sceneGlobalTime = 0.f;
 
     Vector<Camera*> cameras;
 

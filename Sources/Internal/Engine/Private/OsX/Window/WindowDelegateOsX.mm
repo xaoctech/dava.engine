@@ -45,14 +45,6 @@
     bridge->WindowDidResize();
 }
 
-- (void)windowWillStartLiveResize:(NSNotification*)notification
-{
-}
-
-- (void)windowDidEndLiveResize:(NSNotification*)notification
-{
-}
-
 - (void)windowDidChangeScreen:(NSNotification*)notification
 {
     bridge->WindowDidChangeScreen();
@@ -77,7 +69,6 @@
 {
     bridge->WindowWillExitFullScreen();
 }
-
 @end
 
 #endif // __DAVAENGINE_MACOS__

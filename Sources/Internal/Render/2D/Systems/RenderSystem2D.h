@@ -32,6 +32,7 @@ struct TiledDrawData
     void GenerateTransformData();
 
     Sprite* sprite;
+    Texture* texture;
     int32 frame;
     Vector2 size;
     Vector2 stretchCap;
@@ -50,11 +51,13 @@ struct StretchDrawData
     uint32 GetVertexInTrianglesCount() const;
 
     Sprite* sprite;
+    Texture* texture;
     int32 frame;
     Vector2 size;
     int32 type;
     Vector2 stretchCap;
     Matrix3 transformMatr;
+    bool usePerPixelAccuracy;
 };
 
 struct TiledMultilayerData
@@ -74,6 +77,11 @@ struct TiledMultilayerData
     Sprite* detail = nullptr;
     Sprite* gradient = nullptr;
     Sprite* contour = nullptr;
+
+    Texture* mask_texture = nullptr;
+    Texture* detail_texture = nullptr;
+    Texture* gradient_texture = nullptr;
+    Texture* contour_texture = nullptr;
 
     Vector2 size;
     Vector2 stretchCap;
@@ -161,6 +169,7 @@ public:
 
     static NMaterial* DEFAULT_2D_COLOR_MATERIAL;
     static NMaterial* DEFAULT_2D_TEXTURE_MATERIAL;
+    static NMaterial* DEFAULT_2D_TEXTURE_PREMULTIPLIED_ALPHA_MATERIAL;
     static NMaterial* DEFAULT_2D_TEXTURE_ADDITIVE_MATERIAL;
     static NMaterial* DEFAULT_2D_TEXTURE_NOBLEND_MATERIAL;
     static NMaterial* DEFAULT_2D_TEXTURE_ALPHA8_MATERIAL;
@@ -217,6 +226,7 @@ public:
     void ScreenSizeChanged();
 
     void SetSpriteClipping(bool clipping);
+    bool GetSpriteClipping() const;
 
     void BeginRenderTargetPass(Texture* target, bool needClear = true, const Color& clearColor = Color::Clear, int32 priority = PRIORITY_SERVICE_2D);
     void BeginRenderTargetPass(const RenderTargetPassDescriptor&);
@@ -373,8 +383,8 @@ private:
 
     bool spriteClipping = true;
 
-    uint8* currentVertexBuffer = nullptr;
-    uint16* currentIndexBuffer = nullptr;
+    Vector<uint8> currentVertexBuffer;
+    Vector<uint16> currentIndexBuffer;
     rhi::Packet currentPacket;
     uint32 currentTexcoordStreamCount = 1; //1 is for default draw
     uint32 currentIndexBase = 0;
@@ -385,6 +395,7 @@ private:
     Matrix4 lastCustomWorldMatrix;
     bool lastUsedCustomWorldMatrix = false;
     uint32 lastCustomMatrixSematic = 0;
+    float32 globalTime = 0.f;
 
     uint32 VBO_STRIDE[MAX_TEXTURE_STREAMS_COUNT + 1];
     uint32 vertexLayouts2d[MAX_TEXTURE_STREAMS_COUNT + 1];

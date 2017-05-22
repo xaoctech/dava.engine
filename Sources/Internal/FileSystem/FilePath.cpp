@@ -4,9 +4,11 @@
 #include "Utils/Utils.h"
 #include "Utils/StringFormat.h"
 #include "Utils/UTF8Utils.h"
+#include "Logger/Logger.h"
 
 #if defined(__DAVAENGINE_MACOS__)
 #include <pwd.h>
+#include <unistd.h>
 #endif
 
 namespace DAVA
@@ -105,7 +107,7 @@ String GetResourceDirName(const String& arch, const String& dirName, const Strin
     return result;
 }
 #endif
-    
+
 #if defined(__DAVAENGINE_WINDOWS__)
 void FilePath::InitializeBundleName()
 {
@@ -344,7 +346,7 @@ void FilePath::Initialize(const String& _pathname)
     else
     {
         Logger::FrameworkDebug("[FilePath::Initialize] FilePath was initialized from relative path name (%s)", _pathname.c_str());
-        
+
 #if defined(__DAVAENGINE_ANDROID__)
         absolutePathname = pathname;
 #else //#if defined(__DAVAENGINE_ANDROID__)
@@ -373,21 +375,19 @@ String FilePath::GetAbsolutePathname() const
     return absolutePathname;
 }
 
-#ifdef __DAVAENGINE_WINDOWS__
-
+#if defined(__DAVAENGINE_WINDOWS__)
 FilePath::NativeStringType FilePath::GetNativeAbsolutePathname() const
 {
-    return UTF8Utils::EncodeToWideString(GetAbsolutePathname());
+    String str = GetAbsolutePathname();
+    return UTF8Utils::EncodeToWideString(str);
 }
 
 FilePath FilePath::FromNativeString(const NativeStringType& path)
 {
-    String name = UTF8Utils::EncodeToUTF8(path);
-    return FilePath(name);
+    String str = UTF8Utils::EncodeToUTF8(path);
+    return FilePath(str);
 }
-
 #else
-
 FilePath::NativeStringType FilePath::GetNativeAbsolutePathname() const
 {
     return GetAbsolutePathname();
@@ -397,8 +397,7 @@ FilePath FilePath::FromNativeString(const NativeStringType& path)
 {
     return FilePath(path);
 }
-
-#endif // __DAVAENGINE_WINDOWS__
+#endif
 
 String FilePath::ResolveResourcesPath() const
 {
@@ -473,7 +472,7 @@ bool FilePath::operator==(const FilePath& path) const
 
 bool FilePath::operator!=(const FilePath& path) const
 {
-    return absolutePathname != path.absolutePathname;
+    return !(*this == path);
 }
 
 bool FilePath::IsDirectoryPathname() const
@@ -677,6 +676,20 @@ String FilePath::GetSystemPathname(const String& pathname, const ePathType pType
     return NormalizePathname(retPath);
 }
 
+struct IsPathStartingWith
+{
+    const String& start;
+    IsPathStartingWith(const String& p)
+        : start(p)
+    {
+    }
+    bool operator()(const FilePath& p) const
+    {
+        const String& path = p.GetStringValue();
+        return start.find(path) == 0;
+    }
+};
+
 String FilePath::GetFrameworkPath() const
 {
     if (PATH_IN_RESOURCES == pathType)
@@ -692,6 +705,17 @@ String FilePath::GetFrameworkPath() const
     if (!pathInDoc.empty())
     {
         return pathInDoc;
+    }
+
+    // search starting from last added directories
+    auto it = std::find_if(rbegin(resourceFolders), rend(resourceFolders),
+                           IsPathStartingWith(absolutePathname));
+
+    if (it != rend(resourceFolders))
+    {
+        const String& s = it->GetStringValue();
+        String copy = absolutePathname;
+        return copy.replace(0, s.size(), "~res:/");
     }
 
     DVASSERT(false);
@@ -864,13 +888,13 @@ bool FilePath::IsAbsolutePathname(const String& pathname)
     return false;
 }
 
-String FilePath::AddPath(const FilePath& folder, const String& addition)
+String FilePath::AddPath(const FilePath& path, const String& addition)
 {
-    if (folder.IsEmpty())
+    if (path.IsEmpty())
         return NormalizePathname(addition);
 
-    String absPathname = folder.absolutePathname + addition;
-    if (folder.pathType == PATH_IN_RESOURCES && absPathname.find("~res:") == 0)
+    String absPathname = path.absolutePathname + addition;
+    if (path.pathType == PATH_IN_RESOURCES && absPathname.find("~res:") == 0)
     {
         const String frameworkPath = GetSystemPathname("~res:/", PATH_IN_RESOURCES) + "Data";
         absPathname = NormalizePathname(frameworkPath + absPathname.substr(5));
@@ -898,7 +922,7 @@ FilePath::ePathType FilePath::GetPathType(const String& pathname)
     {
         return PATH_IN_RESOURCES;
     }
-    
+
 #if defined(__DAVAENGINE_ANDROID__) && defined(USE_LOCAL_RESOURCES)
     if (0 == pathname.find("~zip:"))
     {
@@ -955,5 +979,11 @@ String FilePath::AsURL() const
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 
     return ("file://" + path);
+}
+
+template <>
+bool AnyCompare<FilePath>::IsEqual(const Any& v1, const Any& v2)
+{
+    return v1.Get<FilePath>() == v2.Get<FilePath>();
 }
 }

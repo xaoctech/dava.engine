@@ -1,13 +1,16 @@
+#include "Base/BaseTypes.h"
+
 #if defined(__DAVAENGINE_COREV2__)
 
-#include "Base/BaseTypes.h"
+#include "Base/Platform.h"
 #include "Utils/Utils.h"
 #include "Utils/UTF8Utils.h"
 
 #if defined(__DAVAENGINE_WINDOWS__)
-#include <windows.h>
 #include <shellapi.h>
 #endif
+
+#include <sstream>
 
 namespace DAVA
 {
@@ -55,11 +58,15 @@ Vector<String> GetCommandArgs(int argc, char* argv[])
 
 Vector<String> GetCommandArgs(const String& cmdline)
 {
-    // TODO: manually break command line into args
+    //TODO: correctly break command line into args
     Vector<String> cmdargs;
-    if (cmdline.empty())
+    if (!cmdline.empty())
     {
-        cmdargs.push_back(cmdline);
+        std::istringstream stream(cmdline);
+
+        String token;
+        while (std::getline(stream, token, ' '))
+            cmdargs.push_back(token);
     }
     return cmdargs;
 }
@@ -90,7 +97,7 @@ Vector<String> GetCommandArgs()
 Vector<String> GetCommandArgs()
 {
     LPWSTR cmdline = ::GetCommandLineW();
-    return GetCommandArgs(WStringToString(cmdline));
+    return GetCommandArgs(UTF8Utils::EncodeToUTF8(cmdline));
 }
 
 #endif

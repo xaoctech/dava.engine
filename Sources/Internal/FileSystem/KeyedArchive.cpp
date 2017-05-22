@@ -6,9 +6,19 @@
 #include "FileSystem/YamlNode.h"
 #include "FileSystem/VariantType.h"
 #include "FileSystem/YamlEmitter.h"
+#include "Reflection/ReflectionRegistrator.h"
+
+#include "Logger/Logger.h"
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(KeyedArchive)
+{
+    ReflectionRegistrator<KeyedArchive>::Begin()
+    .Field("objectMap", &KeyedArchive::objectMap)
+    .End();
+}
+
 KeyedArchive::KeyedArchive()
 {
 }
@@ -74,7 +84,7 @@ bool KeyedArchive::Load(File* archive)
                 SafeDelete(value);
                 return false;
             }
-
+            DeleteKey(key.AsString());
             objectMap[key.AsString()] = value;
         }
         return true;
@@ -113,7 +123,7 @@ bool KeyedArchive::Load(File* archive)
             SafeDelete(value);
             return false;
         }
-
+        DeleteKey(key.AsString());
         objectMap[key.AsString()] = value;
     }
     return true;
