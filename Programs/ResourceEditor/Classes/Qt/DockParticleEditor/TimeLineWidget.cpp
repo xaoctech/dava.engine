@@ -1398,7 +1398,7 @@ SetPointValueDlg::SetPointValueDlg(DAVA::float32 time, DAVA::float32 minTime, DA
     btnBox->addWidget(btnCancel);
     btnBox->addWidget(btnOk);
     mainBox->addLayout(btnBox);
-    
+
     timeSpin->setMinimum(minTime);
     timeSpin->setMaximum(maxTime);
     timeSpin->setValue(time);

@@ -285,7 +285,7 @@ void SceneDumper::ProcessSprite(DAVA::Sprite* sprite, DAVA::Set<DAVA::FilePath>&
 
     if (sprite == nullptr)
         return;
-    
+
     FilePath psdPath = ReplaceInString(sprite->GetRelativePathname().GetAbsolutePathname(), "/Data/", "/DataSource/");
     psdPath.ReplaceExtension(".psd");
     links.insert(psdPath);
