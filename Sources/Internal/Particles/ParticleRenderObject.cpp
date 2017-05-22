@@ -351,7 +351,7 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
                     }
                     ptrOffset += 4;
                 }
-                if (begin->layer->enableNoise)
+                if (begin->layer->enableNoise && begin->layer->noise.get() != nullptr)
                 {
                     float32* noiseUV = group.layer->noise->GetTextureVerts(current->frame);
                     for (int32 i = 0; i < 4; ++i)

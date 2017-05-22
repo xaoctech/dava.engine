@@ -44,13 +44,13 @@ NMaterial* ParticleEffectSystem::GetMaterial(MaterialData&& materialData)
     if (is2DMode)
         material->AddFlag(NMaterialFlagName::FLAG_FORCE_2D_MODE, 1);
 
-    if (materialData.enableFlow)
+    if (materialData.enableFlow && materialData.flowmap != nullptr)
     {
         material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_FLOWMAP, 1);
         material->AddTexture(NMaterialTextureName::TEXTURE_FLOW, materialData.flowmap);
     }
 
-    if (materialData.enableNoise)
+    if (materialData.enableNoise && materialData.noise != nullptr)
     {
         material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_NOISE, 1);
         material->AddTexture(NMaterialTextureName::TEXTURE_NOISE, materialData.noise);

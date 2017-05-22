@@ -304,17 +304,24 @@ void SceneSaver::CopyEmitter(ParticleEmitter* emitter)
         }
         else
         {
-            Sprite* sprite = layers[i]->sprite;
-            if (!sprite)
-                continue;
-
-            FilePath psdPath = ReplaceInString(sprite->GetRelativePathname().GetAbsolutePathname(), "/Data/", "/DataSource/");
-            psdPath.ReplaceExtension(".psd");
-            sceneUtils.AddFile(psdPath);
-
-            effectFolders.insert(psdPath.GetDirectory());
+            ProcessSprite(layers[i]->sprite);
+            ProcessSprite(layers[i]->flowmap);
+            ProcessSprite(layers[i]->noise);
         }
     }
+}
+
+void SceneSaver::ProcessSprite(DAVA::Sprite* sprite)
+{
+    using namespace DAVA;
+    if (sprite == nullptr)
+        return;
+
+    FilePath psdPath = ReplaceInString(sprite->GetRelativePathname().GetAbsolutePathname(), "/Data/", "/DataSource/");
+    psdPath.ReplaceExtension(".psd");
+    sceneUtils.AddFile(psdPath);
+
+    effectFolders.insert(psdPath.GetDirectory());
 }
 
 Set<FilePath> SceneSaver::EnumAlternativeEmittersFilepaths(const FilePath& originalFilepath) const

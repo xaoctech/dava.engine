@@ -283,6 +283,8 @@ ParticleLayer* ParticleLayer::Clone()
     dstLayer->type = type;
     dstLayer->degradeStrategy = degradeStrategy;
     dstLayer->sprite = sprite;
+    dstLayer->flowmap = flowmap;
+    dstLayer->noise = noise;
     dstLayer->layerPivotPoint = layerPivotPoint;
     dstLayer->layerPivotSizeOffsets = layerPivotSizeOffsets;
 
