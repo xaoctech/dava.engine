@@ -152,19 +152,7 @@ void UIControl::SetScene(UIControlSystem* scene_)
     {
         return;
     }
-
-    if (scene)
-    {
-        scene->UnregisterControl(this);
-    }
-
     scene = scene_;
-
-    if (scene)
-    {
-        scene->RegisterControl(this);
-    }
-
     for (auto child : children)
     {
         child->SetScene(scene);

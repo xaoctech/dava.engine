@@ -34,7 +34,7 @@ void SpineModule::Init()
     UIControlSystem* cs = context->uiControlSystem;
     cs->AddSystem(std::make_unique<UISpineSystem>(), cs->GetStyleSheetSystem());
 
-    cs->AddSingleComponent<UISpineSingleComponent>(new UISpineSingleComponent());
+    cs->AddSingleComponent(std::make_unique<UISpineSingleComponent>());
 }
 
 void SpineModule::Shutdown()

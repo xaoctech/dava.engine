@@ -322,19 +322,17 @@ public:
     UIStyleSheetSystem* GetStyleSheetSystem() const;
     UIScreenshoter* GetScreenshoter();
 
-    template <typename T>
-    void AddSingleComponent(UISingleComponent* single)
-    {
-        singleComponents[Type::Instance<T>()] = single;
-    }
+    void AddSingleComponent(std::unique_ptr<UISingleComponent> single);
 
     template <typename T>
     T* GetSingleComponent() const
     {
-        auto it = singleComponents.find(Type::Instance<T>());
-        if (it != singleComponents.end())
+        for (auto& c : singleComponents)
         {
-            return static_cast<T*>(it->second);
+            if (IsPointerToExactClass<T>(c.get()))
+            {
+                return static_cast<T*>(c.get());
+            }
         }
         return nullptr;
     }
@@ -366,14 +364,13 @@ private:
 #endif
 
     Vector<std::unique_ptr<UISystem>> systems;
+    Vector<std::unique_ptr<UISingleComponent>> singleComponents;
     UILayoutSystem* layoutSystem = nullptr;
     UIStyleSheetSystem* styleSheetSystem = nullptr;
     UIInputSystem* inputSystem = nullptr;
     UISoundSystem* soundSystem = nullptr;
     UIScreenshoter* screenshoter = nullptr;
     UIUpdateSystem* updateSystem = nullptr;
-
-    Map<const Type*, UISingleComponent*> singleComponents;
 
     Vector<ScreenSwitchListener*> screenSwitchListeners;
 

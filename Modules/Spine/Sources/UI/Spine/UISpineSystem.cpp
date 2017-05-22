@@ -4,14 +4,12 @@
 #include "UI/Spine/UISpineComponent.h"
 #include "UI/Spine/SpineSkeleton.h"
 
-#include <Engine/Engine.h>
-#include <Engine/EngineContext.h>
 #include <Render/2D/Systems/RenderSystem2D.h>
+#include <UI/Components/UIComponent.h>
+#include <UI/Layouts/UILayoutSourceRectComponent.h>
 #include <UI/UIControl.h>
 #include <UI/UIControlBackground.h>
 #include <UI/UIControlSystem.h>
-#include <UI/Components/UIComponent.h>
-#include <UI/Layouts/UILayoutSourceRectComponent.h>
 
 #include <spine/spine.h>
 
@@ -82,7 +80,7 @@ void UISpineSystem::OnControlInvisible(UIControl * control)
 
 void UISpineSystem::Process(DAVA::float32 elapsedTime)
 {
-    UISpineSingleComponent* spineSingle = Engine::Instance()->GetContext()->uiControlSystem->GetSingleComponent<UISpineSingleComponent>();
+    UISpineSingleComponent* spineSingle = GetScene()->GetSingleComponent<UISpineSingleComponent>();
 
     for (UIControl* c : spineSingle->spineNeedReload)
     {
@@ -172,15 +170,6 @@ void UISpineSystem::Process(DAVA::float32 elapsedTime)
     }
 }
 
-void UISpineSystem::BuildBoneLinks(UIControl * control)
-{
-    auto it = nodes.find(control);
-    if (it != nodes.end())
-    {
-        BuildBoneLinks(it->second);
-    }
-}
-
 void UISpineSystem::AddNode(UISpineComponent* component)
 {
     DVASSERT(component);
@@ -209,7 +198,7 @@ void UISpineSystem::AddNode(UISpineComponent* component)
 
     nodes[component->GetControl()] = node;
 
-    UISpineSingleComponent* spineSingle = Engine::Instance()->GetContext()->uiControlSystem->GetSingleComponent<UISpineSingleComponent>();
+    UISpineSingleComponent* spineSingle = GetScene()->GetSingleComponent<UISpineSingleComponent>();
     spineSingle->spineModified.insert(component->GetControl());
     spineSingle->spineNeedReload.insert(component->GetControl());
 
@@ -260,7 +249,7 @@ void UISpineSystem::BindBones(UISpineBonesComponent * bones)
         DVASSERT(node.bones == nullptr);
         node.bones = bones;
 
-        UISpineSingleComponent* spineSingle = Engine::Instance()->GetContext()->uiControlSystem->GetSingleComponent<UISpineSingleComponent>();
+        UISpineSingleComponent* spineSingle = GetScene()->GetSingleComponent<UISpineSingleComponent>();
         spineSingle->spineBonesModified.insert(bones->GetControl());
     }
 }
@@ -274,7 +263,7 @@ void UISpineSystem::UnbindBones(UISpineBonesComponent * bones)
         DVASSERT(node.bones == bones);
         node.bones.Set(nullptr);
 
-        UISpineSingleComponent* spineSingle = Engine::Instance()->GetContext()->uiControlSystem->GetSingleComponent<UISpineSingleComponent>();
+        UISpineSingleComponent* spineSingle = GetScene()->GetSingleComponent<UISpineSingleComponent>();
         spineSingle->spineBonesModified.insert(bones->GetControl());
     }
 }

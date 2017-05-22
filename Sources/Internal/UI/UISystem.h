@@ -4,8 +4,9 @@
 
 namespace DAVA
 {
-class UIControl;
 class UIComponent;
+class UIControl;
+class UIControlSystem;
 
 class UISystem
 {
@@ -21,5 +22,16 @@ public:
     virtual void OnControlInvisible(UIControl* control){};
 
     virtual void Process(DAVA::float32 elapsedTime){};
+
+    void SetScene(UIControlSystem* scene);
+    UIControlSystem* GetScene() const;
+
+private:
+    UIControlSystem* scene = nullptr;
 };
+
+inline UIControlSystem* UISystem::GetScene() const
+{
+    return scene;
+}
 }

@@ -377,12 +377,9 @@ void UIControlSystem::Update()
         system->Process(timeElapsed);
     }
 
-    for (auto& pairs : singleComponents)
+    for (auto& components : singleComponents)
     {
-        if (pairs.second)
-        {
-            pairs.second->Clear();
-        }
+        components->Clear();
     }
 
     RenderSystem2D::RenderTargetPassDescriptor newDescr = RenderSystem2D::Instance()->GetMainTargetDescriptor();
@@ -765,6 +762,7 @@ void UIControlSystem::UnregisterComponent(UIControl* control, UIComponent* compo
 
 void UIControlSystem::AddSystem(std::unique_ptr<UISystem> system, const UISystem* insertBeforeSystem)
 {
+    system->SetScene(this);
     if (insertBeforeSystem)
     {
         auto insertIt = std::find_if(systems.begin(), systems.end(),
@@ -793,6 +791,7 @@ std::unique_ptr<UISystem> UIControlSystem::RemoveSystem(const UISystem* system)
     {
         std::unique_ptr<UISystem> systemPtr(it->release());
         systems.erase(it);
+        systemPtr->SetScene(nullptr);
         return systemPtr;
     }
 
@@ -832,6 +831,11 @@ UIUpdateSystem* UIControlSystem::GetUpdateSystem() const
 UIScreenshoter* UIControlSystem::GetScreenshoter()
 {
     return screenshoter;
+}
+
+void UIControlSystem::AddSingleComponent(std::unique_ptr<UISingleComponent> single)
+{
+    singleComponents.push_back(std::move(single));
 }
 
 void UIControlSystem::SetClearColor(const DAVA::Color& clearColor)
