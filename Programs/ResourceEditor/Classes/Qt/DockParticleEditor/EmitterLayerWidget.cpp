@@ -1092,7 +1092,7 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     lifeTimeLine->SetMinLimits(0.0f);
 
     //LAYER_NUMBER, LAYER_NUMBER_VARIATION,
-    numberTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, true);
+    numberTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true);
     numberTimeLine->SetMinLimits(0);
     numberTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->number)).GetProps(), Qt::blue, "number");
     numberTimeLine->AddLine(1, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->numberVariation)).GetProps(), Qt::darkGreen, "number variation");
