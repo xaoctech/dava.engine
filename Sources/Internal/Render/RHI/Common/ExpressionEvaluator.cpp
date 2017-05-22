@@ -94,6 +94,7 @@ void ExpressionEvaluator::Reset()
     if (expressionText)
     {
         ::free(expressionText);
+        expressionText = nullptr;
     }
 
     lastErrorCode = 0;

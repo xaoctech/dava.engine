@@ -566,7 +566,7 @@ void Core::SystemAppStarted()
     {
         rhi::ShaderSourceCache::Load("~doc:/ShaderSource.bin");
         Core::Instance()->CreateRenderer();
-//        RenderSystem2D::Instance()->Init();
+        RenderSystem2D::Instance()->Init();
         core->OnAppStarted();
     }
 
