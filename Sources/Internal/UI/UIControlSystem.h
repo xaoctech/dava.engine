@@ -33,6 +33,7 @@ class UIInputSystem;
 class UIScreenshoter;
 class UISoundSystem;
 class UIUpdateSystem;
+class UIRenderSystem;
 
 #if defined(__DAVAENGINE_COREV2__)
 class UIScreenTransition;
@@ -70,20 +71,6 @@ protected:
     UIControlSystem();
 
 public:
-    /* 
-       Player + 6 ally bots. All visible on the screen
-    Old measures:
-    UIControlSystem::inputs: 309
-    UIControlSystem::updates: 310
-    UIControlSystem::draws: 310
-
-    New measures:
-    UIControlSystem::inputs: 42
-    */
-    int32 updateCounter;
-    int32 drawCounter;
-    int32 inputCounter;
-
     /**
 	 \brief Sets the requested screen as current.
 		Screen will be seted only on the next frame.
@@ -177,10 +164,22 @@ public:
     void Update();
 
     /**
+     \brief Calls update logic for specific control. Used to make screenshoots.
+        Not recommended to use in common code.
+     */
+    void ForceUpdateControl(float32 timeElapsed, UIControl* control);
+
+    /**
 	 \brief Calls every frame by the system for draw.
 		Draws all controls hierarchy to the screen.
 	 */
     void Draw();
+
+    /**
+     \brief Calls draw logic for specific control. Used to make screenshoots.
+        Not recommended to use in common code.
+     */
+    void ForceDrawControl(UIControl* control);
 
     //	void SetTransitionType(int newTransitionType);
 
@@ -203,21 +202,6 @@ public:
 	 \returns exclusive input locker
 	 */
     UIControl* GetExclusiveInputLocker() const;
-
-    /**
-	 \brief Returns base geometric data seted in the system.
-		Base GeometricData is usually has parameters looks a like:
-		baseGeometricData.position = Vector2(0, 0);
-		baseGeometricData.size = Vector2(0, 0);
-		baseGeometricData.pivotPoint = Vector2(0, 0);
-		baseGeometricData.scale = Vector2(1.0f, 1.0f);
-		baseGeometricData.angle = 0;
-		But system can change this parameters for the 
-		specific device capabilities.
-	 
-	 \returns GeometricData uset for the base draw
-	 */
-    const UIGeometricData& GetBaseGeometricData() const;
 
     /**
 	 \brief Sets input with the requested ID to the required control.
@@ -314,14 +298,6 @@ public:
         return nullptr;
     }
 
-    UILayoutSystem* GetLayoutSystem() const;
-    UIInputSystem* GetInputSystem() const;
-    UIFocusSystem* GetFocusSystem() const;
-    UISoundSystem* GetSoundSystem() const;
-    UIUpdateSystem* GetUpdateSystem() const;
-    UIStyleSheetSystem* GetStyleSheetSystem() const;
-    UIScreenshoter* GetScreenshoter();
-
     void AddSingleComponent(std::unique_ptr<UISingleComponent> single);
 
     template <typename T>
@@ -337,16 +313,16 @@ public:
         return nullptr;
     }
 
-    void SetClearColor(const Color& clearColor);
-    void SetUseClearPass(bool useClearPass);
+    UILayoutSystem* GetLayoutSystem() const;
+    UIInputSystem* GetInputSystem() const;
+    UIFocusSystem* GetFocusSystem() const;
+    UISoundSystem* GetSoundSystem() const;
+    UIUpdateSystem* GetUpdateSystem() const;
+    UIStyleSheetSystem* GetStyleSheetSystem() const;
+    UIRenderSystem* GetRenderSystem() const;
 
     void SetDoubleTapSettings(float32 time, float32 inch);
 
-    void UI3DViewAdded();
-    void UI3DViewRemoved();
-    int32 GetUI3DViewCount();
-
-    void UpdateControl(UIControl* control);
     VirtualCoordinatesSystem* vcs = nullptr; // TODO: Should be completely removed in favor of direct DAVA::Window methods
 
 private:
@@ -369,8 +345,8 @@ private:
     UIStyleSheetSystem* styleSheetSystem = nullptr;
     UIInputSystem* inputSystem = nullptr;
     UISoundSystem* soundSystem = nullptr;
-    UIScreenshoter* screenshoter = nullptr;
     UIUpdateSystem* updateSystem = nullptr;
+    UIRenderSystem* renderSystem = nullptr;
 
     Vector<ScreenSwitchListener*> screenSwitchListeners;
 
@@ -385,7 +361,6 @@ private:
     int32 screenLockCount = 0;
     int32 frameSkip = 0;
 
-    UIGeometricData baseGeometricData;
     Rect fullscreenRect;
 
     bool removeCurrentScreen = false;
@@ -410,9 +385,6 @@ private:
         bool lastClickEnded = false;
     };
     LastClickData lastClickData;
-
-    int32 ui3DViewCount = 0;
-    bool needClearMainPass = true;
 };
 };
 

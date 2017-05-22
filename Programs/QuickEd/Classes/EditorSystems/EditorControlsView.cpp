@@ -17,6 +17,8 @@
 #include <Base/Introspection.h>
 #include <UI/UIControl.h>
 #include <UI/Layouts/UILayoutIsolationComponent.h>
+#include <UI/UIControlSystem.h>
+#include <UI/Layouts/UILayoutSystem.h>
 #include <Base/BaseTypes.h>
 
 using namespace DAVA;
@@ -193,10 +195,10 @@ class BackgroundController final
 {
 public:
     BackgroundController(UIControl* nestedControl);
-    ~BackgroundController() = default;
+    ~BackgroundController();
     UIControl* GetGridControl() const;
     bool IsNestedControl(const UIControl* control) const;
-    void RecalculateBackgroundProperties(ControlNode* node);
+    void RecalculateBackgroundProperties(DAVA::UIControl* control);
     void ControlWasRemoved(ControlNode* node, ControlsContainerNode* from);
     void ControlWasAdded(ControlNode* node, ControlsContainerNode* /*destination*/, int /*index*/);
     void UpdateCounterpoise();
@@ -208,7 +210,7 @@ public:
 
 private:
     void CalculateTotalRect(Rect& totalRect, Vector2& rootControlPosition) const;
-    void FitGridIfParentIsNested(PackageBaseNode* node);
+    void FitGridIfParentIsNested(DAVA::UIControl* control);
     RefPtr<UIControl> gridControl;
     RefPtr<UIControl> counterpoiseControl;
     RefPtr<UIControl> positionHolderControl;
@@ -233,6 +235,11 @@ BackgroundController::BackgroundController(UIControl* nestedControl_)
     nestedControl->GetOrCreateComponent(Type::Instance<UILayoutIsolationComponent>());
 }
 
+BackgroundController::~BackgroundController()
+{
+    nestedControl->RemoveComponent<UILayoutIsolationComponent>();
+}
+
 UIControl* BackgroundController::GetGridControl() const
 {
     return gridControl.Get();
@@ -243,20 +250,20 @@ bool BackgroundController::IsNestedControl(const UIControl* control) const
     return control == nestedControl;
 }
 
-void BackgroundController::RecalculateBackgroundProperties(ControlNode* node)
+void BackgroundController::RecalculateBackgroundProperties(DAVA::UIControl* control)
 {
-    if (node->GetControl() == nestedControl)
+    if (control == nestedControl)
     {
         UpdateCounterpoise();
     }
-    FitGridIfParentIsNested(node);
+    FitGridIfParentIsNested(control);
 }
 
 namespace
 {
 void CalculateTotalRectImpl(UIControl* control, Rect& totalRect, Vector2& rootControlPosition, const UIGeometricData& gd)
 {
-    if (!control->GetVisibilityFlag())
+    if (!control->GetVisibilityFlag() || control->IsHiddenForDebug())
     {
         return;
     }
@@ -334,12 +341,12 @@ void BackgroundController::ControlWasRemoved(ControlNode* node, ControlsContaine
     {
         return;
     }
-    FitGridIfParentIsNested(from);
+    FitGridIfParentIsNested(from->GetControl());
 }
 
 void BackgroundController::ControlWasAdded(ControlNode* /*node*/, ControlsContainerNode* destination, int /*index*/)
 {
-    FitGridIfParentIsNested(destination);
+    FitGridIfParentIsNested(destination->GetControl());
 }
 
 void BackgroundController::UpdateCounterpoise()
@@ -360,12 +367,12 @@ void BackgroundController::UpdateCounterpoise()
     counterpoiseControl->SetPosition(-angeledPosition + gd.pivotPoint);
 }
 
-void BackgroundController::FitGridIfParentIsNested(PackageBaseNode* node)
+void BackgroundController::FitGridIfParentIsNested(UIControl* control)
 {
-    PackageBaseNode* parent = node;
-    while (nullptr != parent)
+    UIControl* parent = control;
+    while (parent != nullptr)
     {
-        if (parent->GetControl() == nestedControl) //we change child in the nested control
+        if (parent == nestedControl) //we change child in the nested control
         {
             AdjustToNestedControl();
             contentSizeChanged.Emit();
@@ -393,11 +400,15 @@ EditorControlsView::EditorControlsView(UIControl* canvasParent_, EditorSystemsMa
     controlsCanvas->SetName(FastName("controls canvas"));
 
     InitFieldBinder();
+
+    UIControlSystem::Instance()->GetLayoutSystem()->AddListener(this);
 }
 
 EditorControlsView::~EditorControlsView()
 {
     canvasParent->RemoveControl(controlsCanvas.Get());
+
+    UIControlSystem::Instance()->GetLayoutSystem()->RemoveListener(this);
 }
 
 void EditorControlsView::InitFieldBinder()
@@ -466,8 +477,25 @@ void EditorControlsView::ControlPropertyWasChanged(ControlNode* node, AbstractPr
         {
             for (auto& iter : gridControls)
             {
-                iter->RecalculateBackgroundProperties(node);
+                iter->RecalculateBackgroundProperties(node->GetControl());
             }
+        }
+    }
+}
+
+void EditorControlsView::OnControlLayouted(UIControl* control)
+{
+    if (controlsCanvas->GetParent() == nullptr) //detached canvas
+    {
+        DVASSERT(false);
+        return;
+    }
+
+    if (systemsManager->GetDragState() != EditorSystemsManager::Transform)
+    {
+        for (std::unique_ptr<BackgroundController>& bc : gridControls)
+        {
+            bc->RecalculateBackgroundProperties(control);
         }
     }
 }

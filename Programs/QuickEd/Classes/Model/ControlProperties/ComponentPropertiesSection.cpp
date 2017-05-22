@@ -6,6 +6,9 @@
 #include <UI/UIControl.h>
 #include <UI/Layouts/UILayoutIsolationComponent.h>
 #include <UI/Layouts/UILayoutSourceRectComponent.h>
+#include <UI/Render/UISceneComponent.h>
+#include <UI/RichContent/UIRichContentObjectComponent.h>
+#include <UI/Scroll/UIScrollComponent.h>
 #include <Utils/StringFormat.h>
 #include <Reflection/ReflectedMeta.h>
 #include <Reflection/ReflectedTypeDB.h>
@@ -46,7 +49,7 @@ ComponentPropertiesSection::ComponentPropertiesSection(DAVA::UIControl* control_
         {
             String name = field.key.Get<FastName>().c_str();
             const IntrospectionProperty* sourceProp = sourceSection == nullptr ? nullptr : sourceSection->FindChildPropertyByName(name);
-            IntrospectionProperty* prop = new IntrospectionProperty(component, type_, name.c_str(), field.ref, sourceProp, cloneType);
+            IntrospectionProperty* prop = IntrospectionProperty::Create(component, type_, name.c_str(), field.ref, sourceProp, cloneType);
             AddProperty(prop);
             SafeRelease(prop);
         }
@@ -62,9 +65,11 @@ ComponentPropertiesSection::~ComponentPropertiesSection()
 
 bool ComponentPropertiesSection::IsHiddenComponent(const Type* type)
 {
-    return
-    type == Type::Instance<UILayoutIsolationComponent>() ||
-    type == Type::Instance<UILayoutSourceRectComponent>();
+    return (type == Type::Instance<UILayoutIsolationComponent>() ||
+            type == Type::Instance<UILayoutSourceRectComponent>() ||
+            type == Type::Instance<UIScrollComponent>() ||
+            type == Type::Instance<UIRichContentObjectComponent>() ||
+            type == Type::Instance<UISceneComponent>());
 }
 
 UIComponent* ComponentPropertiesSection::GetComponent() const

@@ -9,9 +9,10 @@ using namespace DAVA;
 
 AcceptsInputFilter::AcceptsInputFilter()
 {
+    static FastName noInput("noInput");
+
     for (const auto& field : ReflectedTypeDB::Get<UIControl>()->GetStructure()->fields)
     {
-        static FastName noInput("noInput");
         if (field->name == noInput)
         {
             refMember = field.get();
@@ -19,12 +20,12 @@ AcceptsInputFilter::AcceptsInputFilter()
     }
 }
 
-bool AcceptsInputFilter::CanAcceptPackage(const PackageInformation* package) const
+FindFilter::ePackageStatus AcceptsInputFilter::AcceptPackage(const PackageInformation* package) const
 {
-    return true;
+    return PACKAGE_CAN_ACCEPT_CONTROLS;
 }
 
-bool AcceptsInputFilter::CanAcceptControl(const ControlInformation* control) const
+bool AcceptsInputFilter::AcceptControl(const ControlInformation* control) const
 {
     const Any& noInput = control->GetControlPropertyValue(*refMember);
     if (noInput.CanCast<bool>())

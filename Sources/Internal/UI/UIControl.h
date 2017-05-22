@@ -69,6 +69,9 @@ class UIControl : public AnimatedObject
     friend class UILayoutSystem; // Need for isIteratorCorrupted. See UILayoutSystem::UpdateControl.
 
     DAVA_VIRTUAL_REFLECTION(UIControl, AnimatedObject);
+    // Need for isIteratorCorrupted. See UILayoutSystem::UpdateControl.
+    friend class UILayoutSystem;
+    friend class UIRenderSystem;
 
 public:
     /**
@@ -786,24 +789,18 @@ public:
     void SetDebugDrawColor(const Color& color);
     const Color& GetDebugDrawColor() const;
 
+    bool IsHiddenForDebug() const;
+    void SetHiddenForDebug(bool hidden);
+
     /**
      \brief Set the draw pivot point mode for the control.
      \param[in] mode draw pivot point mode
      \param[in] hierarchic Is value need to be changed in all control children.
      */
     void SetDrawPivotPointMode(eDebugDrawPivotMode mode, bool hierarchic = false);
+    eDebugDrawPivotMode GetDrawPivotPointMode() const;
 
 public:
-    /**
-     \brief Calls on every frame to process controls drawing.
-        Firstly this method calls Draw() for the curent control. When SystemDraw() called for the every control child.
-        And at the end DrawAfterChilds() called for current control.
-        Internal method used by ControlSystem.
-        Can be overridden to adjust draw hierarchy.
-     \param[in] geometricData Parent geometric data.
-     */
-    virtual void SystemDraw(const UIGeometricData& geometricData, const DAVA::UIControlBackground* parentBackground); // Internal method used by ControlSystem
-
     /**
      \brief set parent draw color into control
      \param[in] parentColor draw color of parent background.
@@ -987,9 +984,8 @@ private:
     List<UIControl*> children;
 
     DAVA_DEPRECATED(bool isUpdated = false);
-    DAVA_DEPRECATED(void SystemUpdate(float32 timeElapsed));
     // Need for old implementation of SystemUpdate.
-    friend class UIScreenshoter;
+    friend class UIUpdateSystem;
 
 public:
     //TODO: store geometric data in UIGeometricData
@@ -1006,6 +1002,7 @@ protected:
     bool exclusiveInput : 1;
     bool isInputProcessed : 1;
     bool visible : 1;
+    bool hiddenForDebug : 1;
     bool clipContents : 1;
     bool debugDrawEnabled : 1;
     bool multiInput : 1;
@@ -1044,9 +1041,6 @@ protected:
     void UnregisterInputProcessor();
     void UnregisterInputProcessors(int32 processorsCount);
 
-    void DrawDebugRect(const UIGeometricData& geometricData, bool useAlpha = false);
-    void DrawPivotPoint(const Rect& drawRect);
-
 private:
     int32 tag = 0;
     eViewState viewState = eViewState::INACTIVE;
@@ -1081,6 +1075,13 @@ public:
 
     /** Remove component with specified 'runtimeType' at specified 'index'. */
     void RemoveComponent(int32 runtimeType, uint32 index = 0);
+
+    /** Remove UIComponent with specified type 'T' at specified 'index'. */
+    template <class T>
+    void RemoveComponent(int32 index = 0)
+    {
+        RemoveComponent(T::GetStaticRuntimeType(), index);
+    }
 
     /** Remove all components. */
     void RemoveAllComponents();

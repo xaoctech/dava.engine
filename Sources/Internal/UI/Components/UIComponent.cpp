@@ -1,5 +1,6 @@
 #include "UI/Components/UIComponent.h"
 #include "UI/UIControl.h"
+
 #include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
@@ -35,7 +36,6 @@ UIComponent* UIComponent::CreateByType(const Type* componentType)
     if (isUIComponent)
     {
         const ReflectedType* reflType = ReflectedTypeDB::GetByType(componentType);
-
         Any obj = reflType->CreateObject(ReflectedType::CreatePolicy::ByPointer);
         return obj.Cast<UIComponent*>();
     }

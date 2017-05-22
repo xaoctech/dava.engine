@@ -73,7 +73,7 @@ bool UIPackageLoader::LoadPackage(const FilePath& packagePath, AbstractUIPackage
     YamlNode* rootNode = parser->GetRootNode();
     if (!rootNode) //empty yaml equal to empty UIPackage
     {
-        builder->BeginPackage(packagePath);
+        builder->BeginPackage(packagePath, UIPackage::CURRENT_VERSION);
         builder->EndPackage();
         return true;
     }
@@ -99,7 +99,7 @@ bool UIPackageLoader::LoadPackage(const YamlNode* rootNode, const FilePath& pack
         return false;
     }
 
-    builder->BeginPackage(packagePath);
+    builder->BeginPackage(packagePath, packageVersion);
 
     const YamlNode* importedPackagesNode = rootNode->Get("ImportedPackages");
     if (importedPackagesNode)
@@ -387,11 +387,12 @@ void UIPackageLoader::LoadControlPropertiesFromYamlNode(const ReflectedType* ref
 
     if (ref->GetStructure())
     {
+        static FastName componentsName("components");
+
         const Vector<std::unique_ptr<ReflectedStructure::Field>>& fields = ref->GetStructure()->fields;
         for (const std::unique_ptr<ReflectedStructure::Field>& field : fields)
         {
-            const FastName& name = field->name;
-            if (name == componentsName)
+            if (field->name == componentsName)
             {
                 // TODO: Make loading components by reflection here
                 continue;
@@ -400,7 +401,7 @@ void UIPackageLoader::LoadControlPropertiesFromYamlNode(const ReflectedType* ref
             Any res;
             if (node)
             {
-                res = ReadAnyFromYamlNode(field.get(), node, name);
+                res = ReadAnyFromYamlNode(field.get(), node, field->name);
                 if (!res.IsEmpty())
                 {
                     builder->BeginControlPropertiesSection(ref->GetPermanentName());
