@@ -3,7 +3,7 @@
 #include "Render/RHI/Common/rhi_Utils.h"
 #include "Logger/Logger.h"
 
-#include <malloc.h>
+#include <stdlib.h>
 
 static float EV_OneMore(float x)
 {
@@ -171,7 +171,7 @@ DAVA_TESTCLASS (PreprocessorTest)
             Snprintf(fname, countof(fname), "%s/%s", BaseDir, test[i].resultFileName);
             DAVA::File* expected_file = DAVA::File::Create(fname, DAVA::File::READ | DAVA::File::OPEN);
             size_t expected_sz = size_t(expected_file->GetSize());
-            char* expected_data = (char*)(::malloc(expected_sz + 1));
+            char* expected_data = reinterpret_cast<char*>(::malloc(expected_sz + 1));
 
             TEST_VERIFY(pp.ProcessFile(test[i].inputFileName, &output));
 
