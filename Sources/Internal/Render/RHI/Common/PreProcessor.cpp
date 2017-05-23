@@ -367,7 +367,7 @@ bool PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
             {
                 char* ns1 = s;
 
-                while (*ns1 && *ns1 == ' ' || *ns1 == '\t')
+                while (*ns1 && (*ns1 == ' ' || *ns1 == '\t'))
                     ++ns1;
                 if (*ns1 == 0)
                 {
@@ -414,7 +414,7 @@ bool PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
         {
             char* ns1 = s;
 
-            while (*ns1 && *ns1 == ' ' || *ns1 == '\t')
+            while (*ns1 && (*ns1 == ' ' || *ns1 == '\t'))
                 ++ns1;
             if (*ns1 == 0)
             {
