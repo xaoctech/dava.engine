@@ -592,7 +592,7 @@ void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bo
         }
 
         DAVA::RenderObject* renderObject = DAVA::GetRenderObject(entity);
-        if ((result.isValid == false) && (renderObject != nullptr) && entity->IsLodMain(0))
+        if ((result.isValid == false) && (renderObject != nullptr))
         {
             DAVA::RenderObject::eType objType = renderObject->GetType();
             if (objType == DAVA::RenderObject::TYPE_BILLBOARD)
