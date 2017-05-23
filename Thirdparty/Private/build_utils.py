@@ -579,7 +579,9 @@ def build_and_copy_libraries_macos_cmake(
         project_name, target_name,
         built_lib_name_release,
         result_lib_name_release,
-        cmake_additional_args = [], target_lib_subdir=''):
+        cmake_additional_args = [],
+        target_lib_subdir='',
+        output_libs_path='Libs/lib_CMake'):
     build_folder_macos = os.path.join(gen_folder_path, 'build_macos')
 
     cmake_generate_build_xcode(build_folder_macos, source_folder_path, build_config.get_cmake_generator_macos(), project_name, target_name, cmake_additional_args)
@@ -589,7 +591,7 @@ def build_and_copy_libraries_macos_cmake(
 
     lib_path_macos_release = os.path.join(build_folder_macos, os.path.join(target_lib_subdir, 'Release', built_lib_name_release))
 
-    shutil.copyfile(lib_path_macos_release, os.path.join(root_project_path, os.path.join('Libs/lib_CMake/mac', result_lib_name_release)))
+    shutil.copyfile(lib_path_macos_release, os.path.join(mkpath(root_project_path, output_libs_path, 'mac'), result_lib_name_release))
 
     return build_folder_macos
 
@@ -599,7 +601,8 @@ def build_and_copy_libraries_ios_cmake(
         project_name, target_name,
         built_lib_name_release,
         result_lib_name_release,
-        cmake_additional_args = []):
+        cmake_additional_args = [],
+        output_libs_path='Libs/lib_CMake'):
     build_folder_ios = os.path.join(gen_folder_path, 'build_ios')
 
     toolchain_filepath = os.path.join(root_project_path, 'Sources/CMake/Toolchains/ios.toolchain.cmake')
@@ -612,7 +615,7 @@ def build_and_copy_libraries_ios_cmake(
 
     lib_path_ios_release = os.path.join(build_folder_ios, os.path.join('Release-iphoneos', built_lib_name_release))
 
-    shutil.copyfile(lib_path_ios_release, os.path.join(root_project_path, os.path.join('Libs/lib_CMake/ios', result_lib_name_release)))
+    shutil.copyfile(lib_path_ios_release, os.path.join(mkpath(root_project_path, output_libs_path, 'ios'), result_lib_name_release))
 
     return build_folder_ios
 
@@ -622,7 +625,8 @@ def build_and_copy_libraries_android_cmake(
         built_lib_name_release,
         result_lib_name_release,
         arm_abi='armeabi-v7a',
-        cmake_additional_args = []):
+        cmake_additional_args = [],
+        output_libs_path='Libs/lib_CMake'):
     build_android_armeabiv7a_folder = os.path.join(gen_folder_path, 'build_android_armeabiv7a')
     build_android_x86_folder = os.path.join(gen_folder_path, 'build_android_x86')
 
@@ -638,13 +642,19 @@ def build_and_copy_libraries_android_cmake(
     lib_path_android_armeabiv7a = os.path.join(build_android_armeabiv7a_folder, built_lib_name_release)
     lib_path_android_x86 = os.path.join(build_android_x86_folder, built_lib_name_release)
 
-    shutil.copyfile(lib_path_android_armeabiv7a, os.path.join(root_project_path, os.path.join('Libs/lib_CMake/android/armeabi-v7a', result_lib_name_release)))
-    shutil.copyfile(lib_path_android_x86, os.path.join(root_project_path, os.path.join('Libs/lib_CMake/android/x86', result_lib_name_release)))
+    shutil.copyfile(lib_path_android_armeabiv7a, os.path.join(mkpath(root_project_path, output_libs_path, 'android', 'armeabi-v7a'), result_lib_name_release))
+    shutil.copyfile(lib_path_android_x86, os.path.join(mkpath(root_project_path, output_libs_path, 'android', 'x86'), result_lib_name_release))
 
     return (build_android_x86_folder, build_android_armeabiv7a_folder)
 
 
-def build_with_autotools(source_folder_path, configure_args, install_dir, env=None, configure_exec_name='configure', make_exec_name='make', postclean=True):
+def build_with_autotools(source_folder_path,
+        configure_args,
+        install_dir,
+        env=None,
+        configure_exec_name='configure',
+        make_exec_name='make',
+        postclean=True):
     if isinstance(configure_exec_name, list):
         if sys.platform == 'win32':
             cmd = list(configure_exec_name)

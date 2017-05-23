@@ -94,7 +94,8 @@ def _build_macos(working_directory_path, root_project_path):
         root_project_path,
         'Project.xcodeproj', 'spine-c',
         'libspine-c.a',
-        'spine.a')
+        'spine.a',
+        output_libs_path='Modules/Spine/Libs/lib')
 
     _copy_headers(source_folder_path, root_project_path)
 
@@ -109,7 +110,8 @@ def _build_ios(working_directory_path, root_project_path):
         root_project_path,
         'Project.xcodeproj', 'spine-c',
         'libspine-c.a',
-        'spine.a')
+        'spine.a',
+        output_libs_path='Modules/Spine/Libs/lib')
 
     _copy_headers(source_folder_path, root_project_path)
 
@@ -123,7 +125,8 @@ def _build_android(working_directory_path, root_project_path):
         source_folder_path,
         root_project_path,
         'libspine-c.a',
-        'spine.a')
+        'spine.a',
+        output_libs_path='Modules/Spine/Libs/lib')
 
     _copy_headers(source_folder_path, root_project_path)
 
