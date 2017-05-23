@@ -128,6 +128,8 @@ DAVA_TESTCLASS (PreprocessorTest)
         public:
             TestFileCallback(const char* base_dir)
                 : _base_dir(base_dir)
+                ,
+                _in(nullptr)
             {
             }
 
@@ -137,6 +139,7 @@ DAVA_TESTCLASS (PreprocessorTest)
 
                 Snprintf(fname, countof(fname), "%s/%s", _base_dir, file_name);
                 _in = DAVA::File::Create(fname, DAVA::File::READ | DAVA::File::OPEN);
+                DVASSERT(_in);
 
                 return (_in) ? true : false;
             }
@@ -170,6 +173,7 @@ DAVA_TESTCLASS (PreprocessorTest)
             char fname[2048];
             Snprintf(fname, countof(fname), "%s/%s", BaseDir, test[i].resultFileName);
             DAVA::File* expected_file = DAVA::File::Create(fname, DAVA::File::READ | DAVA::File::OPEN);
+            DVASSERT(expected_file);
             size_t expected_sz = size_t(expected_file->GetSize());
             char* expected_data = reinterpret_cast<char*>(::malloc(expected_sz + 1));
 
