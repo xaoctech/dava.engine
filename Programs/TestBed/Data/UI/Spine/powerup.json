@@ -1,12 +1,12 @@
 {
-"skeleton": { "hash": "vWXX1UvOcFyYRCPI3N7JQReXQAA", "spine": "3.5.51", "width": 413.19, "height": 194.07, "images": "./images/" },
+"skeleton": { "hash": "DRH0bKbb0s4lzWxWdYTHHpv4S4I", "spine": "3.5.51", "width": 413.19, "height": 195.71, "images": "./images/" },
 "bones": [
 	{ "name": "root" },
-	{ "name": "powerup", "parent": "root", "x": 2.3, "y": -30.35 },
+	{ "name": "powerup", "parent": "root", "x": 1.48, "y": 134.02 },
 	{ "name": "tokenRoot", "parent": "powerup", "x": -0.47, "y": 56.14 },
 	{ "name": "left wing", "parent": "tokenRoot", "x": -91.06, "y": 7.8 },
 	{ "name": "right wing", "parent": "tokenRoot", "x": 86.82, "y": 7.12 },
-	{ "name": "stars", "parent": "root", "x": 1.23, "y": 28.52 },
+	{ "name": "stars", "parent": "root", "x": 1.23, "y": 191.25 },
 	{ "name": "star", "parent": "stars", "x": 2.84, "y": 4.76 },
 	{ "name": "star1", "parent": "stars", "x": -2.2, "y": -2.04 },
 	{ "name": "star2", "parent": "stars", "x": -1.37, "y": -4.16 },

@@ -28,7 +28,7 @@ def build_for_target(target, working_directory_path, root_project_path):
 
 
 def get_download_url():
-    return 'https://github.com/EsotericSoftware/spine-runtimes/archive/3.5.51.zip'
+    return 'https://github.com/EsotericSoftware/spine-runtimes/archive/3.4.02.zip'
 
 
 def _download_and_extract(working_directory_path):
@@ -38,7 +38,7 @@ def _download_and_extract(working_directory_path):
             url,
             working_directory_path,
             source_folder_path,
-            'spine-runtimes-3.5.51')
+            'spine-runtimes-3.4.02')
     return os.path.join(source_folder_path, 'spine-c')
 
 

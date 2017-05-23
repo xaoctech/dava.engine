@@ -269,7 +269,6 @@ void SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath)
     };
 
     mState->listener = animationCallback;
-    mNeedInitialize = true;
 
     mAnimations.clear();
     int32 animCount = mSkeleton->data->animationsCount;
@@ -286,41 +285,23 @@ void SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath)
         spSkin* skin = mSkeleton->data->skins[i];
         mSkins.push_back(String(skin->name));
     }
+
+    // Init initial state
+    spSkeleton_update(mSkeleton, 0);
+    spAnimationState_update(mState, 0);
+    spAnimationState_apply(mState, mSkeleton);
+    spSkeleton_updateWorldTransform(mSkeleton);
 }
 
 void SpineSkeleton::Update(const float32 timeElapsed)
 {
-    if (!mSkeleton || !mState || !mAtlas) return;
-
-    if (mAtlas->pages[0].rendererObject)
-    {
-        mTexture = reinterpret_cast<Texture*>(mAtlas->pages[0].rendererObject);
-    }
-
-    if (mNeedInitialize)
-    {
-        mNeedInitialize = false;
-        spSkeleton_update(mSkeleton, 0);
-        spAnimationState_update(mState, 0);
-        spAnimationState_apply(mState, mSkeleton);
-        spSkeleton_updateWorldTransform(mSkeleton);
-    }
+    if (!mSkeleton || !mState)
+        return;
 
     spSkeleton_update(mSkeleton, timeElapsed * mTimeScale);
     spAnimationState_update(mState, timeElapsed * mTimeScale);
     spAnimationState_apply(mState, mSkeleton);
     spSkeleton_updateWorldTransform(mSkeleton);
-
-    //for (const auto & bonePair : mBones)
-    //{
-    //    auto bone = spSkeleton_findBone(mSkeleton, bonePair.first.c_str());
-    //    DVASSERT(bone != nullptr, "Bone was not found!");
-    //    auto boneControl = bonePair.second;
-    //    boneControl->SetPosition(Vector2(bone->worldX, -bone->worldY));
-    //    boneControl->SetAngleInDegrees(-bone->rotation);
-    //    boneControl->SetScale(Vector2(bone->scaleX, bone->scaleY));
-    //    boneControl->UpdateLayout();
-    //}
 
     // Draw
     if (!mSkeleton || !mState || !mTexture) return;
@@ -358,6 +339,16 @@ void SpineSkeleton::Update(const float32 timeElapsed)
         mColors.clear();
     };
 
+    auto switchTexture = [&](Texture* texture)
+    {
+        if (texture != mTexture)
+        {
+            pushBatch();
+            clearData();
+            mTexture = texture;
+        }
+    };
+
     for (int32 i = 0, n = mSkeleton->slotsCount; i < n; i++)
     {
         spSlot* slot = mSkeleton->drawOrder[i];
@@ -376,6 +367,9 @@ void SpineSkeleton::Update(const float32 timeElapsed)
             {
                 spRegionAttachment* attachment = (spRegionAttachment*)slot->attachment;
                 spRegionAttachment_computeWorldVertices(attachment, slot->bone, mWorldVertices);
+
+                switchTexture(reinterpret_cast<Texture*>(reinterpret_cast<spAtlasRegion*>(attachment->rendererObject)->page->rendererObject));
+
                 uvs = attachment->uvs;
                 verticesCount = SpinePrivate::QUAD_VERTICES_COUNT;
                 triangles = SpinePrivate::QUAD_TRIANGLES;
@@ -386,6 +380,9 @@ void SpineSkeleton::Update(const float32 timeElapsed)
             {
                 spMeshAttachment* attachment = (spMeshAttachment*)slot->attachment;
                 spMeshAttachment_computeWorldVertices(attachment, slot, mWorldVertices);
+
+                switchTexture(reinterpret_cast<Texture*>(reinterpret_cast<spAtlasRegion*>(attachment->rendererObject)->page->rendererObject));
+
                 uvs = attachment->uvs;
                 verticesCount = attachment->trianglesCount * 3;
                 triangles = attachment->triangles;
@@ -402,8 +399,11 @@ void SpineSkeleton::Update(const float32 timeElapsed)
             int32 verticesCountFinal = verticesCount / SpinePrivate::VERTICES_COMPONENTS_COUNT;
             for (int32 i = 0; i < verticesCountFinal; ++i)
             {
-                mPolygon.AddPoint(Vector2(mWorldVertices[i * SpinePrivate::VERTICES_COMPONENTS_COUNT], -mWorldVertices[i * SpinePrivate::VERTICES_COMPONENTS_COUNT + 1]));
-                mUVs.push_back(Vector2(uvs[i * SpinePrivate::VERTICES_COMPONENTS_COUNT], uvs[i * SpinePrivate::VERTICES_COMPONENTS_COUNT + 1]));
+                Vector2 point(mWorldVertices[i * SpinePrivate::VERTICES_COMPONENTS_COUNT], -mWorldVertices[i * SpinePrivate::VERTICES_COMPONENTS_COUNT + 1]);
+                Vector2 uv(uvs[i * SpinePrivate::VERTICES_COMPONENTS_COUNT], uvs[i * SpinePrivate::VERTICES_COMPONENTS_COUNT + 1]);
+
+                mPolygon.AddPoint(point);
+                mUVs.push_back(uv);
                 mColors.push_back(color.GetRGBA());
             }
             for (int32 i = 0; i < trianglesCount; i++)
@@ -462,10 +462,7 @@ SpineTrackEntry* SpineSkeleton::SetAnimation(int32 trackIndex, const String& nam
         }
         return reinterpret_cast<SpineTrackEntry*>(spAnimationState_setAnimation(mState, trackIndex, animation, loop));
     }
-    else
-    {
-        return nullptr;
-    }
+    return nullptr;
 }
 
 SpineTrackEntry* SpineSkeleton::AddAnimation(int32 trackIndex, const String& name, bool loop, float32 delay)
@@ -480,10 +477,7 @@ SpineTrackEntry* SpineSkeleton::AddAnimation(int32 trackIndex, const String& nam
         }
         return reinterpret_cast<SpineTrackEntry*>(spAnimationState_addAnimation(mState, trackIndex, animation, loop, delay));
     }
-    else
-    {
-        return nullptr;
-    }
+    return nullptr;
 }
 
 SpineTrackEntry* SpineSkeleton::GetTrack(int32 trackIndex)
@@ -492,10 +486,7 @@ SpineTrackEntry* SpineSkeleton::GetTrack(int32 trackIndex)
     {
         return reinterpret_cast<SpineTrackEntry*>(spAnimationState_getCurrent(mState, trackIndex));
     }
-    else
-    {
-        return nullptr;
-    }
+    return nullptr;
 }
 
 void SpineSkeleton::SetAnimationMix(const String& fromAnimation, const String& toAnimation, float32 duration)
