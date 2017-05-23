@@ -18,6 +18,7 @@ class Message;
 class UIComponent;
 class UIControlFamily;
 class UIControlPackageContext;
+class UIControlSystem;
 
 #define CONTROL_TOUCH_AREA 15
 

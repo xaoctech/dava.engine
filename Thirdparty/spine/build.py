@@ -90,10 +90,10 @@ def _build_macos(working_directory_path, root_project_path):
 
     build_utils.build_and_copy_libraries_macos_cmake(
         os.path.join(working_directory_path, 'gen'),
-        source_folder_paths['spine_c'],
+        source_folder_path,
         root_project_path,
-        'spine_c.xcodeproj', 'spine_c',
-        'spine.a',
+        'Project.xcodeproj', 'spine-c',
+        'libspine-c.a',
         'spine.a')
 
     _copy_headers(source_folder_path, root_project_path)
@@ -107,8 +107,8 @@ def _build_ios(working_directory_path, root_project_path):
         os.path.join(working_directory_path, 'gen'),
         source_folder_path,
         root_project_path,
-        'spine_c.xcodeproj', 'spine_c',
-        'spine.a',
+        'Project.xcodeproj', 'spine-c',
+        'libspine-c.a',
         'spine.a')
 
     _copy_headers(source_folder_path, root_project_path)
@@ -122,10 +122,10 @@ def _build_android(working_directory_path, root_project_path):
         os.path.join(working_directory_path, 'gen'),
         source_folder_path,
         root_project_path,
-        'spine.a',
+        'libspine-c.a',
         'spine.a')
 
-    _copy_headers(source_folder_paths['lua'], root_project_path)
+    _copy_headers(source_folder_path, root_project_path)
 
 
 def _copy_headers(source_folder_path, root_project_path):
