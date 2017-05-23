@@ -41,6 +41,11 @@ Keyboard::~Keyboard()
     engine->PrimaryWindow()->focusChanged.Disconnect(this);
 
     Private::EngineBackend::Instance()->UninstallEventFilter(this);
+    
+    if (impl != nullptr)
+    {
+        delete impl;
+    }
 }
 
 bool Keyboard::IsElementSupported(eInputElements elementId) const

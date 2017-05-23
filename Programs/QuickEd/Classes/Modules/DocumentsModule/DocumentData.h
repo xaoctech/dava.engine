@@ -33,6 +33,7 @@ public:
     void ExecCommand(Arguments&&... args);
 
     const SelectedNodes& GetSelectedNodes() const;
+    const SortedControlNodeSet& GetDisplayedRootControls() const;
 
     QString GetName() const;
     QString GetPackageAbsolutePath() const;
@@ -50,22 +51,25 @@ public:
     DAVA_DEPRECATED(void RefreshLayout());
     DAVA_DEPRECATED(void RefreshAllControlProperties());
 
-    static const char* packagePropertyName;
-    static const char* canSavePropertyName;
-    static const char* canUndoPropertyName;
-    static const char* canRedoPropertyName;
-    static const char* undoTextPropertyName;
-    static const char* redoTextPropertyName;
-    static const char* selectionPropertyName;
+    static DAVA::FastName packagePropertyName;
+    static DAVA::FastName canSavePropertyName;
+    static DAVA::FastName canUndoPropertyName;
+    static DAVA::FastName canRedoPropertyName;
+    static DAVA::FastName undoTextPropertyName;
+    static DAVA::FastName redoTextPropertyName;
+    static DAVA::FastName selectionPropertyName;
+    static DAVA::FastName displayedRootControlsPropertyName;
 
 private:
     friend class DocumentsModule;
 
     void SetSelectedNodes(const SelectedNodes& selection);
+    void SetDisplayedRootControls(const SortedControlNodeSet& controls);
 
     DAVA::RefPtr<PackageNode> package;
     std::unique_ptr<DAVA::CommandStack> commandStack;
     SelectionContainer selection;
+    SortedControlNodeSet displayedRootControls;
 
     bool documentExists = true;
 

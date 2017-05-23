@@ -16,7 +16,7 @@ void GamepadImpl::Update()
 {
 }
 
-bool GamepadImpl::HandleAdded(uint32 /*id*/)
+bool GamepadImpl::HandleGamepadAdded(uint32 /*id*/)
 {
     return false;
 }

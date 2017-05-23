@@ -64,20 +64,14 @@ public:
     bool IsDynamicVerticalSpacing() const;
     void SetDynamicVerticalSpacing(bool dynamic);
 
-    float32 GetPaddingByAxis(int32 axis);
-    float32 GetSpacingByAxis(int32 axis);
+    float32 GetPaddingByAxis(int32 axis) const;
+    float32 GetSpacingByAxis(int32 axis) const;
 
     bool IsUseRtl() const;
     void SetUseRtl(bool use);
 
     bool IsSkipInvisibleControls() const;
     void SetSkipInvisibleControls(bool skip);
-
-private:
-    int32 GetOrientationAsInt() const;
-    void SetOrientationFromInt(int32 orientation);
-
-    void SetLayoutDirty();
 
 private:
     enum eFlags
@@ -93,6 +87,12 @@ private:
         FLAG_IS_RIGHT_TO_LEFT,
         FLAG_COUNT
     };
+
+    int32 GetOrientationAsInt() const;
+    void SetOrientationFromInt(int32 orientation);
+
+    void SetLayoutDirty();
+    void SetFlag(eFlags flag, bool enabled);
 
     Array<float32, Vector2::AXIS_COUNT> padding;
     Array<float32, Vector2::AXIS_COUNT> spacing;

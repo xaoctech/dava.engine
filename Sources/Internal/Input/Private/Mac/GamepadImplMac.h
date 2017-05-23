@@ -14,7 +14,7 @@ struct MainDispatcherEvent;
 class GamepadImpl final
 {
 public:
-    GamepadDeviceImpl(GamepadDevice* gamepad);
+    GamepadImpl(Gamepad* gamepad);
 
     void Update();
 

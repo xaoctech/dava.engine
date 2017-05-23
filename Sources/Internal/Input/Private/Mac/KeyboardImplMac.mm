@@ -151,6 +151,23 @@ eInputElements KeyboardImpl::ConvertNativeScancodeToDavaScancode(uint32 nativeSc
     DVASSERT(nativeScancode < COUNT_OF(nativeScancodeToDavaScancode));
     return nativeScancodeToDavaScancode[nativeScancode];
 }
+    
+uint32 KeyboardImpl::ConvertDavaScancodeToNativeScancode(eInputElements elementId)
+{
+    int nativeScancode = -1;
+    
+    for (size_t i = 0; i < COUNT_OF(nativeScancodeToDavaScancode); ++i)
+    {
+        if (nativeScancodeToDavaScancode[i] == elementId)
+        {
+            nativeScancode = static_cast<int>(i);
+        }
+    }
+    
+    DVASSERT(nativeScancode >= 0);
+    
+    return static_cast<uint32>(nativeScancode);
+}
 
 WideString KeyboardImpl::TranslateElementToWideString(eInputElements elementId)
 {

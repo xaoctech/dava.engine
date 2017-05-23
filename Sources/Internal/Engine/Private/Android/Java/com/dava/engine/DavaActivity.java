@@ -1,7 +1,10 @@
 package com.dava.engine;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.Application;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -122,14 +125,14 @@ public final class DavaActivity extends Activity
     private static final String META_TAG_BOOT_CLASSES = "com.dava.engine.BootClasses";
 
     private static DavaActivity activitySingleton;
-    private static boolean nativeInitialized = false; 
     private static Thread nativeThread; // Thread where native C++ code is running
-    private static int nativeThreadId; //
-    private static int uiThreadId;
+    private static int nativeThreadId; // C++ native thread id
+    private static int uiThreadId; // UI thread id
 
     protected boolean isStopped = true; // Activity is stopped after onStop and before onStart
-    protected boolean isPaused = true; // Activity is paused after onPause and before onResume
+    protected boolean isPaused = false; // Activity is paused after onPause and before onResume
     protected boolean isFocused = false;
+    protected boolean isEngineRunning = false; // Engine has entered Run method in c++ thread and ready to pump MainDispatcher events
     
     protected String externalFilesDir;
     protected String internalFilesDir;
@@ -138,9 +141,9 @@ public final class DavaActivity extends Activity
     protected String cmdline;
 
     protected DavaCommandHandler commandHandler = new DavaCommandHandler();
-    protected DavaKeyboardState keyboardState = new DavaKeyboardState();
-    protected DavaGamepadManager gamepadManager = new DavaGamepadManager();
-    protected DavaGlobalLayoutState globalLayoutState = new DavaGlobalLayoutState();
+    protected DavaKeyboardState keyboardState = null;
+    protected DavaGamepadManager gamepadManager = null;
+    protected DavaGlobalLayoutState globalLayoutState = null;
 
     // List of class instances created during bootstrap (using meta-tag in AndroidManifest)
     protected LinkedList<Object> bootstrapObjects = new LinkedList<Object>();
@@ -149,6 +152,7 @@ public final class DavaActivity extends Activity
     private DavaSplashView splashView;
     private ViewGroup layout;
     private ArrayList<ActivityListener> activityListeners = new ArrayList<ActivityListener>();
+    private ArrayList<ActivityResultArgs> savedActivityResultArgs = null; // Saved arguments coming from onActivityResult (possible multiple calls)
 
     private static final int ON_ACTIVITY_CREATE = 0;
     private static final int ON_ACTIVITY_START = 1;
@@ -234,9 +238,37 @@ public final class DavaActivity extends Activity
         return activitySingleton.gamepadManager;
     }
 
+    private void restart()
+    {
+        try {
+            Intent intent = new Intent(this, DavaActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            int pendingIntentId = 223344;
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, pendingIntentId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+            AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+            alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + 100, pendingIntent);
+            System.exit(0);
+        } catch (Exception e) {
+            Log.e(LOG_TAG, String.format("DavaActivity.restart failed: %s", e.toString()));
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+        if (activitySingleton != null)
+        {
+            // dava.engine's is tightly bound to Activity lifecycle events. But in some cases on some devices Activity.onDestroy
+            // does not arrive when Activity is removed by system from memory while application with loaded shared libraries is
+            // still running. Later system may recreate Activity and Activity.onCreate handler tries to initialize again already
+            // running dava.engine and game which may lead to crash or unpredictable behaviour.
+            // Solution is to restart application.
+            Log.e(LOG_TAG, "DavaActivity.onCreate: restarting");
+            activitySingleton = null;
+            restart();
+        }
+
         Log.d(LOG_TAG, "DavaActivity.onCreate");
 
         activitySingleton = this;
@@ -262,12 +294,19 @@ public final class DavaActivity extends Activity
         Bitmap splashViewBitmap =  loadSplashViewBitmap();
         splashView = new DavaSplashView(this, splashViewBitmap);
 
+        // #1 create splash view
         layout = new FrameLayout(this);
         layout.addView(splashView);
         setContentView(layout);
 
-        // Load library modules and create class instances specified under meta-data tag in AndroidManifest.xml
+        // #2 Load library modules and create class instances specified under meta-data tag in AndroidManifest.xml
         bootstrap();
+
+        // #3 Initialize engine and run its onCreate method
+        nativeInitializeEngine(externalFilesDir, internalFilesDir, sourceDir, packageName, cmdline);
+        long nativePrimaryWindowBackend = nativeOnCreate(this);
+        // Create primary DavaSurfaceView in advance but add to view hierarchy later when DavaSplashView will do its work
+        primarySurfaceView = new DavaSurfaceView(getApplication(), nativePrimaryWindowBackend);
 
         notifyListeners(ON_ACTIVITY_CREATE, savedInstanceState);
 
@@ -298,39 +337,39 @@ public final class DavaActivity extends Activity
         return splashViewBitmap;
     }
     
-    private void startNativeInitialization() {
-        nativeInitializeEngine(externalFilesDir, internalFilesDir, sourceDir, packageName, cmdline);
-        nativeInitialized = true;
-
-        long primaryWindowBackendPointer = nativeOnCreate(this);
-        primarySurfaceView = new DavaSurfaceView(getApplication(), primaryWindowBackendPointer);
+    private void continueOnCreate()
+    {
+        // #4 add primary DavaSurfaceView to view hierarchy
         layout.addView(primarySurfaceView);
 
+        gamepadManager = new DavaGamepadManager();
         registerActivityListener(gamepadManager);
+
+        globalLayoutState = new DavaGlobalLayoutState();
         registerActivityListener(globalLayoutState);
+
+        keyboardState = new DavaKeyboardState();
         registerActivityListener(keyboardState);
     }
-    
-    protected void onFinishCollectDeviceInfo()
+
+    protected void onSplashFinishedCollectingDeviceInfo()
     {
-        runOnUiThread(new Runnable(){
+        // On some devices step #1 can cause this callback
+        // to be synchronously invoked. In this case onCreate hasn't
+        // been finished yet. To ensure that we call `continueOnCreate`
+        // only when onCreate is finished we must put Runnable into commandHandler
+        // and it will be run on next java-message-queue processing step.
+        commandHandler.post(new Runnable(){
             @Override
             public void run() {
-                startNativeInitialization();
-                // now wait till SurfaceView will be created to continue
+                continueOnCreate();
             }
         });
     }
-    
+
     void onFinishCreatingMainWindowSurface()
     {
-        runOnUiThread(new Runnable(){
-            @Override
-            public void run() {
-                startNativeThreadIfNotRunning();
-                handleResume();
-            }
-        });
+        startNativeThreadIfNotRunning();
     }
 
     @Override
@@ -351,6 +390,7 @@ public final class DavaActivity extends Activity
         super.onResume();
 
         handleResume();
+        notifyListeners(ON_ACTIVITY_RESUME, null);
     }
 
     @Override
@@ -360,6 +400,7 @@ public final class DavaActivity extends Activity
         super.onPause();
 
         handlePause();
+        notifyListeners(ON_ACTIVITY_PAUSE, null);
     }
 
     @Override
@@ -391,7 +432,7 @@ public final class DavaActivity extends Activity
         notifyListeners(ON_ACTIVITY_DESTROY, null);
         activityListeners.clear();
 
-        if (nativeInitialized)
+        if (isEngineRunning)
         {
             Log.d(LOG_TAG, "DavaActivity.nativeOnDestroy");
             nativeOnDestroy();
@@ -482,7 +523,24 @@ public final class DavaActivity extends Activity
         args.requestCode = requestCode;
         args.resultCode = resultCode;
         args.data = data;
-        notifyListeners(ON_ACTIVITY_RESULT, args);
+        if (isEngineRunning)
+        {
+            notifyListeners(ON_ACTIVITY_RESULT, args);
+        }
+        else
+        {
+            // Save arguments and notify listeners later when Engine will enter Run method.
+            // Reason: onActivityResult can be called before native thread has started, e.g.:
+            //  - application starts Google Services activity,
+            //  - user puts application into background (presses Home button),
+            //  - system silently kill application to free some memory,
+            //  - onActivityResult is invoked before c++ thread has started.
+            if (savedActivityResultArgs == null)
+            {
+                savedActivityResultArgs = new ArrayList<ActivityResultArgs>();
+            }
+            savedActivityResultArgs.add(args);
+        }
     }
 
     @Override
@@ -563,6 +621,28 @@ public final class DavaActivity extends Activity
         });
     }
 
+    // Invoked from c++ thread and tells that Engine has entered Run method
+    private void notifyEngineRunning()
+    {
+        runOnUiThread(new Runnable()
+        {
+            @Override public void run()
+            {
+                isEngineRunning = true;
+
+                // Notify about onActivityResult if it has occured (see comments in onActivityResult method)
+                if (savedActivityResultArgs != null)
+                {
+                    for (ActivityResultArgs args : savedActivityResultArgs)
+                    {
+                        notifyListeners(ON_ACTIVITY_RESULT, args);
+                    }
+                    savedActivityResultArgs = null;
+                }
+            }
+        });
+    }
+
     public boolean isPaused()
     {
         return isPaused;
@@ -580,25 +660,26 @@ public final class DavaActivity extends Activity
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    private void handleResume()
+    void handleResume()
     {
-        if (primarySurfaceView != null && isNativeThreadRunning())
+        if (primarySurfaceView.isSurfaceReady() && isPaused && isFocused)
         {
-            if (isPaused && isFocused)
-            {
-                isPaused = false;
-                nativeOnResume();
-                notifyListeners(ON_ACTIVITY_RESUME, null);
-            }
+            Log.d(LOG_TAG, "DavaActivity.handleResume");
+
+            isPaused = false;
+            nativeOnResume();
+            primarySurfaceView.onResume();
         }
     }
 
-    private void handlePause()
+    void handlePause()
     {
-        if (!isPaused)
+        if (primarySurfaceView.isSurfaceReady() && !isPaused)
         {
+            Log.d(LOG_TAG, "DavaActivity.handlePause");
+
             isPaused = true;
-            notifyListeners(ON_ACTIVITY_PAUSE, null);
+            primarySurfaceView.onPause();
             nativeOnPause();
         }
     }
@@ -697,6 +778,25 @@ public final class DavaActivity extends Activity
             Log.e(LOG_TAG, String.format("DavaActivity: get metadata for '%s' failed: %s", key, e.toString()));
         }
         return null;
+    }
+
+    void setScreenTimeoutEnabled(final boolean enabled)
+    {
+        runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run() 
+            {
+                if (enabled)
+                {
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                }
+                else
+                {
+                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                }
+            }
+        });
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////

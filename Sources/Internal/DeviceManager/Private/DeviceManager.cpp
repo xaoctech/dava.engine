@@ -41,6 +41,11 @@ void DeviceManager::UpdateDisplayConfig()
     impl->UpdateDisplayConfig();
 }
 
+float32 DeviceManager::GetCpuTemperature() const
+{
+    return impl->GetCpuTemperature();
+}
+
 bool DeviceManager::HandleEvent(const Private::MainDispatcherEvent& e)
 {
     using Private::MainDispatcherEvent;

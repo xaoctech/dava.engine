@@ -50,8 +50,6 @@ public:
 
         /** return requested pack name */
         virtual const String& GetRequestedPackName() const = 0;
-        /** recalculate full size with all dependencies */
-        virtual Vector<String> GetDependencies() const = 0;
         /** return size of files within this request without dependencies */
         virtual uint64 GetSize() const = 0;
         /** recalculate current downloaded size without dependencies */
@@ -75,6 +73,8 @@ public:
     Signal<size_t, size_t> initializeFinished;
     /** signal per user request */
     Signal<const IRequest&> requestUpdated;
+    /** signal just before start loading request */
+    Signal<const IRequest&> requestStartLoading;
     /**
 	    Tells that some file error occurred during downloading process.
 	    First parameter is a full path to the file which couldn't be created or written,
@@ -94,6 +94,11 @@ public:
         const char* logFilePath = "~doc:/dlc_manager.log"; //!< path for separate log file
         uint32 retryConnectMilliseconds = 5000; //!< try to reconnect to server if `Offline` state default every 5 seconds
         uint32 maxFilesToDownload = 22000; //!< user should fill this value default value average files count in Data
+        uint32 numOfThreadsPerFileDownload = 1; //!< this value passed to DownloadManager
+        uint32 timeoutForDownload = 30; //!< this value passed to DownloadManager
+        uint32 retriesCountForDownload = 3; //!< this value passed to DownloadManager
+        uint32 downloaderMaxHandles = 4; //!< play with any values you like from 1 to max open file per process
+        uint32 downloaderChankBufSize = 1024 * 1024; //!< 1Mb RAM buffer for one handle, you can set any value in bytes
     };
 
     /** Start complex initialization process. You can call it again if need.

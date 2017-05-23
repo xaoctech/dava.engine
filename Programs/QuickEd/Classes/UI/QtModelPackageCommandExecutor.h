@@ -16,6 +16,7 @@ class CommandStack;
 namespace TArc
 {
 class ContextAccessor;
+class UI;
 }
 }
 
@@ -35,7 +36,7 @@ class ComponentPropertiesSection;
 class QtModelPackageCommandExecutor
 {
 public:
-    QtModelPackageCommandExecutor(DAVA::TArc::ContextAccessor* accessor);
+    QtModelPackageCommandExecutor(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui);
 
     void AddImportedPackagesIntoPackage(const DAVA::Vector<DAVA::FilePath> packagePaths, const PackageNode* package);
     void RemoveImportedPackagesFromPackage(const DAVA::Vector<PackageNode*>& importedPackage, const PackageNode* package);
@@ -64,7 +65,7 @@ public:
     void MoveStyles(const DAVA::Vector<StyleSheetNode*>& nodes, StyleSheetsNode* dest, DAVA::int32 destIndex);
 
     void Remove(const DAVA::Vector<ControlNode*>& controls, const DAVA::Vector<StyleSheetNode*>& styles);
-    DAVA::Vector<PackageBaseNode*> Paste(PackageNode* root, PackageBaseNode* dest, DAVA::int32 destIndex, const DAVA::String& data);
+    SelectedNodes Paste(PackageNode* root, PackageBaseNode* dest, DAVA::int32 destIndex, const DAVA::String& data);
 
 private:
     void AddImportedPackageIntoPackageImpl(PackageNode* importedPackage, const PackageNode* package);
@@ -79,4 +80,5 @@ private:
     ProjectData* GetProjectData() const;
 
     DAVA::TArc::ContextAccessor* accessor = nullptr;
+    DAVA::TArc::UI* ui = nullptr;
 };

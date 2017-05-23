@@ -216,15 +216,17 @@ void WindowBackend::DoSetSurfaceScale(const float32 scale)
 jobject WindowBackend::CreateNativeControl(const char8* controlClassName, void* backendPointer)
 {
     jobject object = nullptr;
+
     try
     {
-        jstring className = JNI::CStrToJavaString(controlClassName);
+        JNI::LocalRef<jstring> className = JNI::CStrToJavaString(controlClassName);
         object = createNativeControl(surfaceView, className, reinterpret_cast<jlong>(backendPointer));
     }
     catch (const JNI::Exception& e)
     {
         Logger::Error("[WindowBackend::CreateNativeControl] failed to create native control %s: %s", controlClassName, e.what());
     }
+
     return object;
 }
 
@@ -317,6 +319,8 @@ void WindowBackend::SurfaceChanged(JNIEnv* env, jobject surface, int32 width, in
         }
 
         mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowCreatedEvent(window, windowWidth, windowHeight, surfaceWidth, surfaceHeight, dpi, eFullscreen::On));
+        mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowVisibilityChangedEvent(window, true));
+        mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowFocusChangedEvent(window, true));
 
         firstTimeSurfaceChanged = false;
     }
