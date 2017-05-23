@@ -857,7 +857,11 @@ void PreProc::Undefine(const char* name)
 
 void PreProc::GenerateOutput(TextBuf* output)
 {
+    #if defined(__DAVAENGINE_ANDROID__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
+    static const char* endl = "\n";
+    #else
     static const char* endl = "\r\n";
+    #endif
 
     output->clear();
     for (std::vector<Line>::const_iterator l = line.begin(), l_end = line.end(); l != l_end; ++l)
