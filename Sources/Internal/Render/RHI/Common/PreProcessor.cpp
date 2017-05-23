@@ -350,7 +350,7 @@ bool PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
 
         int skipping_line = false;
 
-        for (size_t i = pending_elif.size() - 1; i >= 0; --i)
+        for (int i = int(pending_elif.size()) - 1; i >= 0; --i)
         {
             if (pending_elif[i].do_skip_lines)
             {

@@ -175,7 +175,7 @@ DAVA_TESTCLASS (PreprocessorTest)
 
             TEST_VERIFY(pp.ProcessFile(test[i].inputFileName, &output));
 
-            expected_file->Read(expected_data, expected_sz);
+            expected_file->Read(expected_data, uint32(expected_sz));
             expected_data[expected_sz] = 0;
 
             #if 1
@@ -185,7 +185,7 @@ DAVA_TESTCLASS (PreprocessorTest)
                 strcat(aname, test[i].resultFileName);
                 strcat(aname, ".actual");
                 DAVA::File* out = DAVA::File::Create(aname, DAVA::File::CREATE | DAVA::File::WRITE);
-                out->Write(&output[0], output.size());
+                out->Write(&output[0], uint32(output.size()));
                 out->Release();
             }
             #endif
