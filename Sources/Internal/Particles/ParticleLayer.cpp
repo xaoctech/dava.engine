@@ -62,10 +62,8 @@ eBlendMode GetBlendModeByName(const String& blendStr)
 ParticleLayer::ParticleLayer()
     : flowSpeed(nullptr)
     , flowSpeedVariation(nullptr)
-    , flowSpeedOverLife(nullptr)
     , flowOffset(nullptr)
     , flowOffsetVariation(nullptr)
-    , flowOffsetOverLife(nullptr)
     , enableFlow(false)
     , enableNoise(false)
     , enableNoiseScroll(false)
@@ -154,15 +152,11 @@ ParticleLayer* ParticleLayer::Clone()
         dstLayer->flowSpeed.Set(flowSpeed->Clone());
     if (flowSpeedVariation)
         dstLayer->flowSpeedVariation.Set(flowSpeedVariation->Clone());
-    if (flowSpeedOverLife)
-        dstLayer->flowSpeedOverLife.Set(flowSpeedOverLife->Clone());
 
     if (flowOffset)
         dstLayer->flowOffset.Set(flowOffset->Clone());
     if (flowOffsetVariation)
         dstLayer->flowOffsetVariation.Set(flowOffsetVariation->Clone());
-    if (flowOffsetOverLife)
-        dstLayer->flowOffsetOverLife.Set(flowOffsetOverLife->Clone());
 
     if (noiseScale)
         dstLayer->noiseScale.Set(noiseScale->Clone());
@@ -411,10 +405,8 @@ void ParticleLayer::UpdateLayerTime(float32 startTime, float32 endTime)
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(angleVariation).Get(), startTime, translateTime, endTime);
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(flowSpeed).Get(), startTime, translateTime, endTime);
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(flowSpeedVariation).Get(), startTime, translateTime, endTime);
-    UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(flowSpeedOverLife).Get(), startTime, translateTime, endTime);
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(flowOffset).Get(), startTime, translateTime, endTime);
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(flowOffsetVariation).Get(), startTime, translateTime, endTime);
-    UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(flowOffsetOverLife).Get(), startTime, translateTime, endTime);
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(noiseScale).Get(), startTime, translateTime, endTime);
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(noiseScaleVariation).Get(), startTime, translateTime, endTime);
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(noiseScaleOverLife).Get(), startTime, translateTime, endTime);
@@ -592,10 +584,8 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
 
     flowSpeed = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("flowSpeed"));
     flowSpeedVariation = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("flowSpeedVariation"));
-    flowSpeedOverLife = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("flowSpeedOverLife"));
     flowOffset = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("flowOffset"));
     flowOffsetVariation = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("flowOffsetVariation"));
-    flowOffsetOverLife = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("flowOffsetOverLife"));
 
     noiseScale = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("noiseScale"));
     noiseScaleVariation = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("noiseScaleVariation"));
@@ -793,10 +783,8 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
     /*validate all time depended property lines*/
     UpdatePropertyLineOnLoad(flowSpeed.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(flowSpeedVariation.Get(), startTime, endTime);
-    UpdatePropertyLineOnLoad(flowSpeedOverLife.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(flowOffset.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(flowOffsetVariation.Get(), startTime, endTime);
-    UpdatePropertyLineOnLoad(flowOffsetOverLife.Get(), startTime, endTime);
 
     UpdatePropertyLineOnLoad(noiseScale.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(noiseScaleVariation.Get(), startTime, endTime);
@@ -849,7 +837,7 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
             innerEmitterPath = configPath.GetDirectory() + relativePath;
             if (innerEmitterPath == configPath) // prevent recursion
             {
-                Logger::Error("Atempt to load inner emitter from super emitter's config will cause recursion");
+                Logger::Error("Attempt to load inner emitter from super emitter's config will cause recursion");
             }
             else
             {
@@ -951,10 +939,8 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
 
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "flowSpeed", this->flowSpeed);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "flowSpeedVariation", this->flowSpeedVariation);
-    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "flowSpeedOverLife", this->flowSpeedOverLife);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "flowOffset", this->flowOffset);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "flowOffsetVariation", this->flowOffsetVariation);
-    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "flowOffsetOverLife", this->flowOffsetOverLife);
 
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "noiseScale", this->noiseScale);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "noiseScaleVariation", this->noiseScaleVariation);
@@ -1053,10 +1039,8 @@ void ParticleLayer::GetModifableLines(List<ModifiablePropertyLineBase*>& modifia
 {
     PropertyLineHelper::AddIfModifiable(flowSpeed.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(flowSpeedVariation.Get(), modifiables);
-    PropertyLineHelper::AddIfModifiable(flowSpeedOverLife.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(flowOffset.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(flowOffsetVariation.Get(), modifiables);
-    PropertyLineHelper::AddIfModifiable(flowOffsetOverLife.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(noiseScale.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(noiseScaleVariation.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(noiseScaleOverLife.Get(), modifiables);

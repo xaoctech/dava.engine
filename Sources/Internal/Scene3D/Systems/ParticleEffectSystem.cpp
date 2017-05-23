@@ -555,13 +555,6 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
                 }
             }
 
-            if (group.layer->enableFlow && group.layer->flowmap)
-            {
-                if (group.layer->flowSpeedOverLife != nullptr)
-                    current->currFlowSpeed = current->baseFlowSpeed * group.layer->flowSpeedOverLife->GetValue(overLifeTime);
-                if (group.layer->flowOffsetOverLife != nullptr)
-                    current->currFlowOffset = current->baseFlowOffset * group.layer->flowOffsetOverLife->GetValue(overLifeTime);
-            }
             if (group.layer->enableNoise && group.layer->noise)
             {
                 if (group.layer->noiseScaleOverLife != nullptr)

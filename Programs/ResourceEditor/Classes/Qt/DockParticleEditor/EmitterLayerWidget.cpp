@@ -492,11 +492,9 @@ void EmitterLayerWidget::RestoreVisualState(DAVA::KeyedArchive* visualStateProps
 
     flowSpeedTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_FLOW_SPEED_PROPS"));
     flowSpeedVariationTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_FLOW_SPEED_VARIATION_PROPS"));
-    flowSpeedOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_FLOW_SPEED_OVER_LIFE_PROPS"));
 
     flowOffsetTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_FLOW_OFFSET_PROPS"));
     flowOffsetVariationTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_FLOW_OFFSET_VARIATION_PROPS"));
-    flowOffsetOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_FLOW_OFFSET_OVER_LIFE_PROPS"));
 
     noiseScaleTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_SCALE_PROPS"));
     noiseScaleVariationTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_SCALE_VARIATION_PROPS"));
@@ -570,20 +568,12 @@ void EmitterLayerWidget::StoreVisualState(DAVA::KeyedArchive* visualStateProps)
     visualStateProps->SetArchive("LAYER_FLOW_SPEED_VARIATION_PROPS", props);
 
     props->DeleteAllKeys();
-    flowSpeedOverLifeTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_FLOW_SPEED_OVER_LIFE_PROPS", props);
-
-    props->DeleteAllKeys();
     flowOffsetTimeLine->GetVisualState(props);
     visualStateProps->SetArchive("LAYER_FLOW_OFFSET_PROPS", props);
 
     props->DeleteAllKeys();
     flowOffsetVariationTimeLine->GetVisualState(props);
     visualStateProps->SetArchive("LAYER_FLOW_OFFSET_VARIATION_PROPS", props);
-
-    props->DeleteAllKeys();
-    flowOffsetOverLifeTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_FLOW_OFFSET_OVER_LIFE_PROPS", props);
 
     props->DeleteAllKeys();
     noiseScaleTimeLine->GetVisualState(props);
@@ -800,17 +790,11 @@ void EmitterLayerWidget::OnFlowPropertiesChanged()
     DAVA::PropLineWrapper<DAVA::float32> propFlowSpeedVariation;
     flowSpeedVariationTimeLine->GetValue(0, propFlowSpeedVariation.GetPropsPtr());
 
-    DAVA::PropLineWrapper<DAVA::float32> propFlowSpeedOverLife;
-    flowSpeedOverLifeTimeLine->GetValue(0, propFlowSpeedOverLife.GetPropsPtr());
-
     DAVA::PropLineWrapper<DAVA::float32> propFlowOffset;
     flowOffsetTimeLine->GetValue(0, propFlowOffset.GetPropsPtr());
 
     DAVA::PropLineWrapper<DAVA::float32> propFlowOffsetVariation;
     flowOffsetVariationTimeLine->GetValue(0, propFlowOffsetVariation.GetPropsPtr());
-
-    DAVA::PropLineWrapper<DAVA::float32> propFlowOffsetOverLife;
-    flowOffsetOverLifeTimeLine->GetValue(0, propFlowOffsetOverLife.GetPropsPtr());
 
     QString path = flowSpritePathLabel->text();
     path = EmitterLayerWidgetDetails::ConvertPSDPathToSprite(path);
@@ -822,10 +806,8 @@ void EmitterLayerWidget::OnFlowPropertiesChanged()
     params.enableFlow = enableFlowCheckBox->isChecked();
     params.flowSpeed = propFlowSpeed.GetPropLine();
     params.flowSpeedVariation = propFlowSpeedVariation.GetPropLine();
-    params.flowSpeedOverLife = propFlowSpeedOverLife.GetPropLine();
     params.flowOffset = propFlowOffset.GetPropLine();
     params.flowOffsetVariation = propFlowOffsetVariation.GetPropLine();
-    params.flowOffsetOverLife = propFlowOffsetOverLife.GetPropLine();
     GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeFlowProperties(layer, std::move(params))));
 
     UpdateFlowmapSprite();
@@ -1051,17 +1033,11 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     flowSpeedVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, FLOW_PRECISION_DIGITS);
     flowSpeedVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowSpeedVariation)).GetProps(), Qt::green, "flow speed variation");
 
-    flowSpeedOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized, false, true, false, FLOW_PRECISION_DIGITS);
-    flowSpeedOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowSpeedOverLife)).GetProps(), Qt::blue, "flow speed over life");
-
     flowOffsetTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, FLOW_PRECISION_DIGITS);
     flowOffsetTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowOffset)).GetProps(), Qt::red, "flow offset");
 
     flowOffsetVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, FLOW_PRECISION_DIGITS);
     flowOffsetVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowOffsetVariation)).GetProps(), Qt::green, "flow offset variation");
-
-    flowOffsetOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized, false, true, false, FLOW_PRECISION_DIGITS);
-    flowOffsetOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowOffsetOverLife)).GetProps(), Qt::blue, "flow offset over life");
 
     // NOISE_STUFF
     noiseScaleTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, NOISE_PRECISION_DIGITS);
@@ -1308,13 +1284,6 @@ void EmitterLayerWidget::CreateFlowmapLayoutWidget()
             SLOT(OnFlowPropertiesChanged()));
     flowVBox->addWidget(flowSpeedVariationTimeLine);
 
-    flowSpeedOverLifeTimeLine = new TimeLineWidget(this);
-    connect(flowSpeedOverLifeTimeLine,
-            SIGNAL(ValueChanged()),
-            this,
-            SLOT(OnFlowPropertiesChanged()));
-    flowVBox->addWidget(flowSpeedOverLifeTimeLine);
-
     // Offset.
     flowOffsetTimeLine = new TimeLineWidget(this);
     connect(flowOffsetTimeLine,
@@ -1329,13 +1298,6 @@ void EmitterLayerWidget::CreateFlowmapLayoutWidget()
             this,
             SLOT(OnFlowPropertiesChanged()));
     flowVBox->addWidget(flowOffsetVariationTimeLine);
-
-    flowOffsetOverLifeTimeLine = new TimeLineWidget(this);
-    connect(flowOffsetOverLifeTimeLine,
-            SIGNAL(ValueChanged()),
-            this,
-            SLOT(OnFlowPropertiesChanged()));
-    flowVBox->addWidget(flowOffsetOverLifeTimeLine);
 
     flowMainLayout->addLayout(flowVBox);
 

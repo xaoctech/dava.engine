@@ -48,10 +48,8 @@ public:
         bool enableFlow = false;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> flowSpeed;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> flowSpeedVariation;
-        DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> flowSpeedOverLife;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> flowOffset;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> flowOffsetVariation;
-        DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> flowOffsetOverLife;
     };
 
     CommandChangeFlowProperties(DAVA::ParticleLayer* layer_, FlowParams&& flowParameters);
