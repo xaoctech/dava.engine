@@ -859,8 +859,10 @@ void PreProc::GenerateOutput(TextBuf* output)
 {
     #if defined(__DAVAENGINE_ANDROID__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
     static const char* endl = "\n";
+    static const int endl_sz = 1;
     #else
     static const char* endl = "\r\n";
+    static const int endl_sz = 2;
     #endif
 
     output->clear();
@@ -869,7 +871,7 @@ void PreProc::GenerateOutput(TextBuf* output)
         unsigned sz = unsigned(strlen(l->text));
 
         output->insert(output->end(), l->text, l->text + sz);
-        output->insert(output->end(), endl, endl + 2);
+        output->insert(output->end(), endl, endl + endl_sz);
     }
 }
 
