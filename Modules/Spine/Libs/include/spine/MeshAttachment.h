@@ -41,41 +41,42 @@ extern "C" {
 #endif
 
 typedef struct spMeshAttachment spMeshAttachment;
-struct spMeshAttachment {
-	spVertexAttachment super;
+struct spMeshAttachment
+{
+    spVertexAttachment super;
 
-	void* rendererObject;
-	int regionOffsetX, regionOffsetY; /* Pixels stripped from the bottom left, unrotated. */
-	int regionWidth, regionHeight; /* Unrotated, stripped pixel size. */
-	int regionOriginalWidth, regionOriginalHeight; /* Unrotated, unstripped pixel size. */
-	float regionU, regionV, regionU2, regionV2;
-	int/*bool*/regionRotate;
+    void* rendererObject;
+    int regionOffsetX, regionOffsetY; /* Pixels stripped from the bottom left, unrotated. */
+    int regionWidth, regionHeight; /* Unrotated, stripped pixel size. */
+    int regionOriginalWidth, regionOriginalHeight; /* Unrotated, unstripped pixel size. */
+    float regionU, regionV, regionU2, regionV2;
+    int /*bool*/ regionRotate;
 
-	const char* path;
+    const char* path;
 
-	float* regionUVs;
-	float* uvs;
+    float* regionUVs;
+    float* uvs;
 
-	int trianglesCount;
-	unsigned short* triangles;
+    int trianglesCount;
+    unsigned short* triangles;
 
-	float r, g, b, a;
+    float r, g, b, a;
 
-	int hullLength;
+    int hullLength;
 
-	spMeshAttachment* const parentMesh;
-	int/*bool*/inheritDeform;
+    spMeshAttachment* const parentMesh;
+    int /*bool*/ inheritDeform;
 
-	/* Nonessential. */
-	int edgesCount;
-	int* edges;
-	float width, height;
+    /* Nonessential. */
+    int edgesCount;
+    int* edges;
+    float width, height;
 };
 
-spMeshAttachment* spMeshAttachment_create (const char* name);
-void spMeshAttachment_updateUVs (spMeshAttachment* self);
-void spMeshAttachment_computeWorldVertices (spMeshAttachment* self, spSlot* slot, float* worldVertices);
-void spMeshAttachment_setParentMesh (spMeshAttachment* self, spMeshAttachment* parentMesh);
+spMeshAttachment* spMeshAttachment_create(const char* name);
+void spMeshAttachment_updateUVs(spMeshAttachment* self);
+void spMeshAttachment_computeWorldVertices(spMeshAttachment* self, spSlot* slot, float* worldVertices);
+void spMeshAttachment_setParentMesh(spMeshAttachment* self, spMeshAttachment* parentMesh);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spMeshAttachment MeshAttachment;

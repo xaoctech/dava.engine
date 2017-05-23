@@ -40,31 +40,41 @@ extern "C" {
 
 struct spSkeleton;
 
-typedef struct spTransformConstraint {
-	spTransformConstraintData* const data;
-	int bonesCount;
-	spBone** const bones;
-	spBone* target;
-	float rotateMix, translateMix, scaleMix, shearMix;
+typedef struct spTransformConstraint
+{
+    spTransformConstraintData* const data;
+    int bonesCount;
+    spBone** const bones;
+    spBone* target;
+    float rotateMix, translateMix, scaleMix, shearMix;
 
 #ifdef __cplusplus
-	spTransformConstraint() :
-		data(0),
-		bonesCount(0),
-		bones(0),
-		target(0),
-		rotateMix(0),
-		translateMix(0),
-		scaleMix(0),
-		shearMix(0) {
-	}
+    spTransformConstraint()
+        :
+        data(0)
+        ,
+        bonesCount(0)
+        ,
+        bones(0)
+        ,
+        target(0)
+        ,
+        rotateMix(0)
+        ,
+        translateMix(0)
+        ,
+        scaleMix(0)
+        ,
+        shearMix(0)
+    {
+    }
 #endif
 } spTransformConstraint;
 
-spTransformConstraint* spTransformConstraint_create (spTransformConstraintData* data, const struct spSkeleton* skeleton);
-void spTransformConstraint_dispose (spTransformConstraint* self);
+spTransformConstraint* spTransformConstraint_create(spTransformConstraintData* data, const struct spSkeleton* skeleton);
+void spTransformConstraint_dispose(spTransformConstraint* self);
 
-void spTransformConstraint_apply (spTransformConstraint* self);
+void spTransformConstraint_apply(spTransformConstraint* self);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spTransformConstraint TransformConstraint;

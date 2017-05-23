@@ -39,43 +39,48 @@ extern "C" {
 
 struct spSkeleton;
 
-typedef struct spSkin {
-	const char* const name;
+typedef struct spSkin
+{
+    const char* const name;
 
 #ifdef __cplusplus
-	spSkin() :
-		name(0) {
-	}
+    spSkin()
+        :
+        name(0)
+    {
+    }
 #endif
 } spSkin;
 
 /* Private structs, needed by Skeleton */
 typedef struct _Entry _Entry;
-struct _Entry {
-	int slotIndex;
-	const char* name;
-	spAttachment* attachment;
-	_Entry* next;
+struct _Entry
+{
+    int slotIndex;
+    const char* name;
+    spAttachment* attachment;
+    _Entry* next;
 };
 
-typedef struct {
-	spSkin super;
-	_Entry* entries;
+typedef struct
+{
+    spSkin super;
+    _Entry* entries;
 } _spSkin;
 
-spSkin* spSkin_create (const char* name);
-void spSkin_dispose (spSkin* self);
+spSkin* spSkin_create(const char* name);
+void spSkin_dispose(spSkin* self);
 
 /* The Skin owns the attachment. */
-void spSkin_addAttachment (spSkin* self, int slotIndex, const char* name, spAttachment* attachment);
+void spSkin_addAttachment(spSkin* self, int slotIndex, const char* name, spAttachment* attachment);
 /* Returns 0 if the attachment was not found. */
-spAttachment* spSkin_getAttachment (const spSkin* self, int slotIndex, const char* name);
+spAttachment* spSkin_getAttachment(const spSkin* self, int slotIndex, const char* name);
 
 /* Returns 0 if the slot or attachment was not found. */
-const char* spSkin_getAttachmentName (const spSkin* self, int slotIndex, int attachmentIndex);
+const char* spSkin_getAttachmentName(const spSkin* self, int slotIndex, int attachmentIndex);
 
 /** Attach each attachment in this skin if the corresponding attachment in oldSkin is currently attached. */
-void spSkin_attachAll (const spSkin* self, struct spSkeleton* skeleton, const spSkin* oldspSkin);
+void spSkin_attachAll(const spSkin* self, struct spSkeleton* skeleton, const spSkin* oldspSkin);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spSkin Skin;

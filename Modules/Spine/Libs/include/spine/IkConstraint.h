@@ -40,38 +40,47 @@ extern "C" {
 
 struct spSkeleton;
 
-typedef struct spIkConstraint {
-	spIkConstraintData* const data;
-	
-	int bonesCount;
-	spBone** bones;
-	
-	spBone* target;
-	int bendDirection;
-	float mix;
+typedef struct spIkConstraint
+{
+    spIkConstraintData* const data;
 
-	int level;
+    int bonesCount;
+    spBone** bones;
+
+    spBone* target;
+    int bendDirection;
+    float mix;
+
+    int level;
 
 #ifdef __cplusplus
-	spIkConstraint() :
-		data(0),
-		bonesCount(0),
-		bones(0),
-		target(0),
-		bendDirection(0),
-		mix(0),
-		level(0) {
-	}
+    spIkConstraint()
+        :
+        data(0)
+        ,
+        bonesCount(0)
+        ,
+        bones(0)
+        ,
+        target(0)
+        ,
+        bendDirection(0)
+        ,
+        mix(0)
+        ,
+        level(0)
+    {
+    }
 #endif
 } spIkConstraint;
 
-spIkConstraint* spIkConstraint_create (spIkConstraintData* data, const struct spSkeleton* skeleton);
-void spIkConstraint_dispose (spIkConstraint* self);
+spIkConstraint* spIkConstraint_create(spIkConstraintData* data, const struct spSkeleton* skeleton);
+void spIkConstraint_dispose(spIkConstraint* self);
 
-void spIkConstraint_apply (spIkConstraint* self);
+void spIkConstraint_apply(spIkConstraint* self);
 
-void spIkConstraint_apply1 (spBone* bone, float targetX, float targetY, float alpha);
-void spIkConstraint_apply2 (spBone* parent, spBone* child, float targetX, float targetY, int bendDirection, float alpha);
+void spIkConstraint_apply1(spBone* bone, float targetX, float targetY, float alpha);
+void spIkConstraint_apply2(spBone* parent, spBone* child, float targetX, float targetY, int bendDirection, float alpha);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spIkConstraint IkConstraint;

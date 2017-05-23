@@ -40,28 +40,36 @@ extern "C" {
 #endif
 
 typedef enum {
-	SP_VERTEX_X1 = 0, SP_VERTEX_Y1, SP_VERTEX_X2, SP_VERTEX_Y2, SP_VERTEX_X3, SP_VERTEX_Y3, SP_VERTEX_X4, SP_VERTEX_Y4
+    SP_VERTEX_X1 = 0,
+    SP_VERTEX_Y1,
+    SP_VERTEX_X2,
+    SP_VERTEX_Y2,
+    SP_VERTEX_X3,
+    SP_VERTEX_Y3,
+    SP_VERTEX_X4,
+    SP_VERTEX_Y4
 } spVertexIndex;
 
-typedef struct spRegionAttachment {
-	spAttachment super;
-	const char* path;
-	float x, y, scaleX, scaleY, rotation, width, height;
-	float r, g, b, a;
+typedef struct spRegionAttachment
+{
+    spAttachment super;
+    const char* path;
+    float x, y, scaleX, scaleY, rotation, width, height;
+    float r, g, b, a;
 
-	void* rendererObject;
-	int regionOffsetX, regionOffsetY; /* Pixels stripped from the bottom left, unrotated. */
-	int regionWidth, regionHeight; /* Unrotated, stripped pixel size. */
-	int regionOriginalWidth, regionOriginalHeight; /* Unrotated, unstripped pixel size. */
+    void* rendererObject;
+    int regionOffsetX, regionOffsetY; /* Pixels stripped from the bottom left, unrotated. */
+    int regionWidth, regionHeight; /* Unrotated, stripped pixel size. */
+    int regionOriginalWidth, regionOriginalHeight; /* Unrotated, unstripped pixel size. */
 
-	float offset[8];
-	float uvs[8];
+    float offset[8];
+    float uvs[8];
 } spRegionAttachment;
 
-spRegionAttachment* spRegionAttachment_create (const char* name);
-void spRegionAttachment_setUVs (spRegionAttachment* self, float u, float v, float u2, float v2, int/*bool*/rotate);
-void spRegionAttachment_updateOffset (spRegionAttachment* self);
-void spRegionAttachment_computeWorldVertices (spRegionAttachment* self, spBone* bone, float* vertices);
+spRegionAttachment* spRegionAttachment_create(const char* name);
+void spRegionAttachment_setUVs(spRegionAttachment* self, float u, float v, float u2, float v2, int /*bool*/ rotate);
+void spRegionAttachment_updateOffset(spRegionAttachment* self);
+void spRegionAttachment_computeWorldVertices(spRegionAttachment* self, spBone* bone, float* vertices);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spVertexIndex VertexIndex;

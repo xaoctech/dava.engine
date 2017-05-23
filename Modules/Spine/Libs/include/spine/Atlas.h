@@ -38,49 +38,50 @@ extern "C" {
 typedef struct spAtlas spAtlas;
 
 typedef enum {
-	SP_ATLAS_UNKNOWN_FORMAT,
-	SP_ATLAS_ALPHA,
-	SP_ATLAS_INTENSITY,
-	SP_ATLAS_LUMINANCE_ALPHA,
-	SP_ATLAS_RGB565,
-	SP_ATLAS_RGBA4444,
-	SP_ATLAS_RGB888,
-	SP_ATLAS_RGBA8888
+    SP_ATLAS_UNKNOWN_FORMAT,
+    SP_ATLAS_ALPHA,
+    SP_ATLAS_INTENSITY,
+    SP_ATLAS_LUMINANCE_ALPHA,
+    SP_ATLAS_RGB565,
+    SP_ATLAS_RGBA4444,
+    SP_ATLAS_RGB888,
+    SP_ATLAS_RGBA8888
 } spAtlasFormat;
 
 typedef enum {
-	SP_ATLAS_UNKNOWN_FILTER,
-	SP_ATLAS_NEAREST,
-	SP_ATLAS_LINEAR,
-	SP_ATLAS_MIPMAP,
-	SP_ATLAS_MIPMAP_NEAREST_NEAREST,
-	SP_ATLAS_MIPMAP_LINEAR_NEAREST,
-	SP_ATLAS_MIPMAP_NEAREST_LINEAR,
-	SP_ATLAS_MIPMAP_LINEAR_LINEAR
+    SP_ATLAS_UNKNOWN_FILTER,
+    SP_ATLAS_NEAREST,
+    SP_ATLAS_LINEAR,
+    SP_ATLAS_MIPMAP,
+    SP_ATLAS_MIPMAP_NEAREST_NEAREST,
+    SP_ATLAS_MIPMAP_LINEAR_NEAREST,
+    SP_ATLAS_MIPMAP_NEAREST_LINEAR,
+    SP_ATLAS_MIPMAP_LINEAR_LINEAR
 } spAtlasFilter;
 
 typedef enum {
-	SP_ATLAS_MIRROREDREPEAT,
-	SP_ATLAS_CLAMPTOEDGE,
-	SP_ATLAS_REPEAT
+    SP_ATLAS_MIRROREDREPEAT,
+    SP_ATLAS_CLAMPTOEDGE,
+    SP_ATLAS_REPEAT
 } spAtlasWrap;
 
 typedef struct spAtlasPage spAtlasPage;
-struct spAtlasPage {
-	const spAtlas* atlas;
-	const char* name;
-	spAtlasFormat format;
-	spAtlasFilter minFilter, magFilter;
-	spAtlasWrap uWrap, vWrap;
+struct spAtlasPage
+{
+    const spAtlas* atlas;
+    const char* name;
+    spAtlasFormat format;
+    spAtlasFilter minFilter, magFilter;
+    spAtlasWrap uWrap, vWrap;
 
-	void* rendererObject;
-	int width, height;
+    void* rendererObject;
+    int width, height;
 
-	spAtlasPage* next;
+    spAtlasPage* next;
 };
 
-spAtlasPage* spAtlasPage_create (spAtlas* atlas, const char* name);
-void spAtlasPage_dispose (spAtlasPage* self);
+spAtlasPage* spAtlasPage_create(spAtlas* atlas, const char* name);
+void spAtlasPage_dispose(spAtlasPage* self);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spAtlasFormat AtlasFormat;
@@ -113,25 +114,26 @@ typedef spAtlasPage AtlasPage;
 /**/
 
 typedef struct spAtlasRegion spAtlasRegion;
-struct spAtlasRegion {
-	const char* name;
-	int x, y, width, height;
-	float u, v, u2, v2;
-	int offsetX, offsetY;
-	int originalWidth, originalHeight;
-	int index;
-	int/*bool*/rotate;
-	int/*bool*/flip;
-	int* splits;
-	int* pads;
+struct spAtlasRegion
+{
+    const char* name;
+    int x, y, width, height;
+    float u, v, u2, v2;
+    int offsetX, offsetY;
+    int originalWidth, originalHeight;
+    int index;
+    int /*bool*/ rotate;
+    int /*bool*/ flip;
+    int* splits;
+    int* pads;
 
-	spAtlasPage* page;
+    spAtlasPage* page;
 
-	spAtlasRegion* next;
+    spAtlasRegion* next;
 };
 
-spAtlasRegion* spAtlasRegion_create ();
-void spAtlasRegion_dispose (spAtlasRegion* self);
+spAtlasRegion* spAtlasRegion_create();
+void spAtlasRegion_dispose(spAtlasRegion* self);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spAtlasRegion AtlasRegion;
@@ -141,21 +143,22 @@ typedef spAtlasRegion AtlasRegion;
 
 /**/
 
-struct spAtlas {
-	spAtlasPage* pages;
-	spAtlasRegion* regions;
+struct spAtlas
+{
+    spAtlasPage* pages;
+    spAtlasRegion* regions;
 
-	void* rendererObject;
+    void* rendererObject;
 };
 
 /* Image files referenced in the atlas file will be prefixed with dir. */
-spAtlas* spAtlas_create (const char* data, int length, const char* dir, void* rendererObject);
+spAtlas* spAtlas_create(const char* data, int length, const char* dir, void* rendererObject);
 /* Image files referenced in the atlas file will be prefixed with the directory containing the atlas file. */
-spAtlas* spAtlas_createFromFile (const char* path, void* rendererObject);
-void spAtlas_dispose (spAtlas* atlas);
+spAtlas* spAtlas_createFromFile(const char* path, void* rendererObject);
+void spAtlas_dispose(spAtlas* atlas);
 
 /* Returns 0 if the region was not found. */
-spAtlasRegion* spAtlas_findRegion (const spAtlas* self, const char* name);
+spAtlasRegion* spAtlas_findRegion(const spAtlas* self, const char* name);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spAtlas Atlas;

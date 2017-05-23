@@ -40,63 +40,85 @@ extern "C" {
 struct spSkeleton;
 
 typedef struct spBone spBone;
-struct spBone {
-	spBoneData* const data;
-	struct spSkeleton* const skeleton;
-	spBone* const parent;
-	int childrenCount;
-	spBone** const children;
-	float x, y, rotation, scaleX, scaleY, shearX, shearY;
-	float appliedRotation;
+struct spBone
+{
+    spBoneData* const data;
+    struct spSkeleton* const skeleton;
+    spBone* const parent;
+    int childrenCount;
+    spBone** const children;
+    float x, y, rotation, scaleX, scaleY, shearX, shearY;
+    float appliedRotation;
 
-	float const a, b, worldX;
-	float const c, d, worldY;
-	float const worldSignX, worldSignY;
+    float const a, b, worldX;
+    float const c, d, worldY;
+    float const worldSignX, worldSignY;
 
-	int/*bool*/ sorted;
+    int /*bool*/ sorted;
 
 #ifdef __cplusplus
-	spBone() :
-		data(0),
-		skeleton(0),
-		parent(0),
-		childrenCount(0), children(0),
-		x(0), y(0), rotation(0), scaleX(0), scaleY(0),
-		appliedRotation(0),
+    spBone()
+        :
+        data(0)
+        ,
+        skeleton(0)
+        ,
+        parent(0)
+        ,
+        childrenCount(0)
+        , children(0)
+        ,
+        x(0)
+        , y(0)
+        , rotation(0)
+        , scaleX(0)
+        , scaleY(0)
+        ,
+        appliedRotation(0)
+        ,
 
-		a(0), b(0), worldX(0),
-		c(0), d(0), worldY(0),
-		worldSignX(0), worldSignY(0),
-		
-		sorted(0) {
-	}
+        a(0)
+        , b(0)
+        , worldX(0)
+        ,
+        c(0)
+        , d(0)
+        , worldY(0)
+        ,
+        worldSignX(0)
+        , worldSignY(0)
+        ,
+
+        sorted(0)
+    {
+    }
 #endif
 };
 
-void spBone_setYDown (int/*bool*/yDown);
-int/*bool*/spBone_isYDown ();
+void spBone_setYDown(int /*bool*/ yDown);
+int /*bool*/ spBone_isYDown();
 
 /* @param parent May be 0. */
-spBone* spBone_create (spBoneData* data, struct spSkeleton* skeleton, spBone* parent);
-void spBone_dispose (spBone* self);
+spBone* spBone_create(spBoneData* data, struct spSkeleton* skeleton, spBone* parent);
+void spBone_dispose(spBone* self);
 
-void spBone_setToSetupPose (spBone* self);
+void spBone_setToSetupPose(spBone* self);
 
-void spBone_updateWorldTransform (spBone* self);
-void spBone_updateWorldTransformWith (spBone* self, float x, float y, float rotation, float scaleX, float scaleY, float shearX, float shearY);
+void spBone_updateWorldTransform(spBone* self);
+void spBone_updateWorldTransformWith(spBone* self, float x, float y, float rotation, float scaleX, float scaleY, float shearX, float shearY);
 
-float spBone_getWorldRotationX (spBone* self);
-float spBone_getWorldRotationY (spBone* self);
-float spBone_getWorldScaleX (spBone* self);
-float spBone_getWorldScaleY (spBone* self);
+float spBone_getWorldRotationX(spBone* self);
+float spBone_getWorldRotationY(spBone* self);
+float spBone_getWorldScaleX(spBone* self);
+float spBone_getWorldScaleY(spBone* self);
 
-float spBone_worldToLocalRotationX (spBone* self);
-float spBone_worldToLocalRotationY (spBone* self);
-void spBone_rotateWorld (spBone* self, float degrees);
-void spBone_updateLocalTransform (spBone* self);
+float spBone_worldToLocalRotationX(spBone* self);
+float spBone_worldToLocalRotationY(spBone* self);
+void spBone_rotateWorld(spBone* self, float degrees);
+void spBone_updateLocalTransform(spBone* self);
 
-void spBone_worldToLocal (spBone* self, float worldX, float worldY, float* localX, float* localY);
-void spBone_localToWorld (spBone* self, float localX, float localY, float* worldX, float* worldY);
+void spBone_worldToLocal(spBone* self, float worldX, float worldY, float* localX, float* localY);
+void spBone_localToWorld(spBone* self, float localX, float localY, float* worldX, float* worldY);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spBone Bone;

@@ -38,34 +38,48 @@ extern "C" {
 #endif
 
 typedef enum {
-	SP_BLEND_MODE_NORMAL, SP_BLEND_MODE_ADDITIVE, SP_BLEND_MODE_MULTIPLY, SP_BLEND_MODE_SCREEN
+    SP_BLEND_MODE_NORMAL,
+    SP_BLEND_MODE_ADDITIVE,
+    SP_BLEND_MODE_MULTIPLY,
+    SP_BLEND_MODE_SCREEN
 } spBlendMode;
 
-typedef struct spSlotData {
-	const int index;
-	const char* const name;
-	const spBoneData* const boneData;
-	const char* attachmentName;
-	float r, g, b, a;
-	spBlendMode blendMode;
+typedef struct spSlotData
+{
+    const int index;
+    const char* const name;
+    const spBoneData* const boneData;
+    const char* attachmentName;
+    float r, g, b, a;
+    spBlendMode blendMode;
 
 #ifdef __cplusplus
-	spSlotData() :
-		index(0),
-		name(0),
-		boneData(0),
-		attachmentName(0),
-		r(0), g(0), b(0), a(0),
-		blendMode(SP_BLEND_MODE_NORMAL) {
-	}
+    spSlotData()
+        :
+        index(0)
+        ,
+        name(0)
+        ,
+        boneData(0)
+        ,
+        attachmentName(0)
+        ,
+        r(0)
+        , g(0)
+        , b(0)
+        , a(0)
+        ,
+        blendMode(SP_BLEND_MODE_NORMAL)
+    {
+    }
 #endif
 } spSlotData;
 
-spSlotData* spSlotData_create (const int index, const char* name, spBoneData* boneData);
-void spSlotData_dispose (spSlotData* self);
+spSlotData* spSlotData_create(const int index, const char* name, spBoneData* boneData);
+void spSlotData_dispose(spSlotData* self);
 
 /* @param attachmentName May be 0 for no setup pose attachment. */
-void spSlotData_setAttachmentName (spSlotData* self, const char* attachmentName);
+void spSlotData_setAttachmentName(spSlotData* self, const char* attachmentName);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spBlendMode BlendMode;

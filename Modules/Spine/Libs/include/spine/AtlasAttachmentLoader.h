@@ -38,12 +38,13 @@
 extern "C" {
 #endif
 
-typedef struct spAtlasAttachmentLoader {
-	spAttachmentLoader super;
-	spAtlas* atlas;
+typedef struct spAtlasAttachmentLoader
+{
+    spAttachmentLoader super;
+    spAtlas* atlas;
 } spAtlasAttachmentLoader;
 
-spAtlasAttachmentLoader* spAtlasAttachmentLoader_create (spAtlas* atlas);
+spAtlasAttachmentLoader* spAtlasAttachmentLoader_create(spAtlas* atlas);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spAtlasAttachmentLoader AtlasAttachmentLoader;
