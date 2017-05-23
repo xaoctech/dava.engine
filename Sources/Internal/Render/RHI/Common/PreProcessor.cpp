@@ -128,7 +128,7 @@ char* PreProc::AllocBuffer(unsigned sz)
     buf.mem = ::malloc(sz);
 
     buffer.push_back(buf);
-    return (char*)(buf.mem);
+    return reinterpret_cast<char*>(buf.mem);
 }
 
 //------------------------------------------------------------------------------
