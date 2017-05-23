@@ -309,7 +309,7 @@ uint32 ExpressionEvaluator::OperationPriority(char operation)
 bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
 {
     uint32 len = uint32(strlen(expression));
-    char* text = (char*)(::malloc(len + 1));
+    char* text = reinterpret_cast<char*>(::malloc(len + 1));
 
     DVASSERT(result);
     DVASSERT(len > 0);
