@@ -270,7 +270,8 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
 
     presetLabel = new QLabel("Preset");
 
-    presetComboBox = new QComboBox();
+    presetComboBox = new WheellIgnorantComboBox();
+    presetComboBox->setFocusPolicy(Qt::StrongFocus);
     DAVA::int32 presetsCount = sizeof(blendPresetsMap) / sizeof(BlendPreset);
     for (DAVA::int32 i = 0; i < presetsCount; i++)
     {
@@ -1716,4 +1717,20 @@ void EmitterLayerWidget::OnLayerValueChanged()
     }
 
     blockSignals = false;
+}
+
+WheellIgnorantComboBox::WheellIgnorantComboBox(QWidget* parent /*= 0*/) : QComboBox(parent)
+{
+}
+
+bool WheellIgnorantComboBox::event(QEvent* e)
+{
+    if (e->type() == QEvent::Wheel)
+    {
+        if (this->hasFocus() == false)
+        {
+            return false;
+        }
+    }
+    return QComboBox::event(e);
 }

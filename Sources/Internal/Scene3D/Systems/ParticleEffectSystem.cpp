@@ -559,10 +559,20 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
             {
                 if (group.layer->noiseScaleOverLife != nullptr)
                     current->currNoiseScale = current->baseNoiseScale * group.layer->noiseScaleOverLife->GetValue(overLifeTime);
+                
+                DAVA::float32 overLifeScale = 1.0f;
                 if (group.layer->noiseUScrollSpeedOverLife != nullptr)
-                    current->currNoiseUScrollSpeed = current->baseNoiseUScrollSpeed * group.layer->noiseUScrollSpeedOverLife->GetValue(overLifeTime);
+                {
+                    overLifeScale = group.layer->noiseUScrollSpeedOverLife->GetValue(overLifeTime);
+                }
+                current->currNoiseUOffset += current->baseNoiseUScrollSpeed * overLifeScale * time;
+
+                overLifeScale = 1.0f;
                 if (group.layer->noiseVScrollSpeedOverLife != nullptr)
-                    current->currNoiseVScrollSpeed = current->baseNoiseVScrollSpeed * group.layer->noiseVScrollSpeedOverLife->GetValue(overLifeTime);
+                {
+                    overLifeScale = group.layer->noiseVScrollSpeedOverLife->GetValue(overLifeTime);
+                }
+                current->currNoiseVOffset += current->baseNoiseVScrollSpeed * overLifeScale * time;
             }
 
             prev = current;
@@ -682,14 +692,14 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleEffectComponent* eff
         particle->baseNoiseUScrollSpeed += group.layer->noiseUScrollSpeed->GetValue(currLoopTime);
     if (group.layer->noiseUScrollSpeedVariation)
         particle->baseNoiseUScrollSpeed += (group.layer->noiseUScrollSpeedVariation->GetValue(currLoopTime) * static_cast<float32>(Random::Instance()->RandFloat()));
-    particle->currNoiseUScrollSpeed = particle->baseNoiseUScrollSpeed;
+    particle->currNoiseUOffset = particle->baseNoiseUScrollSpeed;
 
     particle->baseNoiseVScrollSpeed = 0.0f;
     if (group.layer->noiseVScrollSpeed)
         particle->baseNoiseVScrollSpeed += group.layer->noiseVScrollSpeed->GetValue(currLoopTime);
     if (group.layer->noiseVScrollSpeedVariation)
         particle->baseNoiseVScrollSpeed += (group.layer->noiseVScrollSpeedVariation->GetValue(currLoopTime) * static_cast<float32>(Random::Instance()->RandFloat()));
-    particle->currNoiseVScrollSpeed = particle->baseNoiseVScrollSpeed;
+    particle->currNoiseVOffset = particle->baseNoiseVScrollSpeed;
 
     if (group.layer->useFresnelToAlpha)
     {

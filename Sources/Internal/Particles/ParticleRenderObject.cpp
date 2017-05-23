@@ -361,8 +361,8 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
                         verts[i][ptrOffset + 2] = current->currNoiseScale;
                         if (begin->layer->enableNoiseScroll)
                         {
-                            verts[i][ptrOffset + 0] += current->currNoiseUScrollSpeed * current->life;
-                            verts[i][ptrOffset + 1] += current->currNoiseVScrollSpeed * current->life;
+                            verts[i][ptrOffset + 0] += current->currNoiseUOffset;
+                            verts[i][ptrOffset + 1] += current->currNoiseVOffset;
                         }
                     }
                     ptrOffset += 3;
