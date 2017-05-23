@@ -227,8 +227,10 @@ void EditorSlotSystem::ProcessCommand(const RECommandNotificationObject& command
         {
             DAVA::Entity* entity = object.GetPtr<DAVA::Entity>();
             DAVA::SlotComponent* component = scene->slotSystem->LookUpSlot(entity);
-            DVASSERT(component != nullptr);
-            component->SetSlotName(entity->GetName());
+            if (component != nullptr)
+            {
+                component->SetSlotName(entity->GetName());
+            }
         }
     };
 
