@@ -559,7 +559,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
             {
                 if (group.layer->noiseScaleOverLife != nullptr)
                     current->currNoiseScale = current->baseNoiseScale * group.layer->noiseScaleOverLife->GetValue(overLifeTime);
-                
+
                 DAVA::float32 overLifeScale = 1.0f;
                 if (group.layer->noiseUScrollSpeedOverLife != nullptr)
                 {

@@ -1719,7 +1719,8 @@ void EmitterLayerWidget::OnLayerValueChanged()
     blockSignals = false;
 }
 
-WheellIgnorantComboBox::WheellIgnorantComboBox(QWidget* parent /*= 0*/) : QComboBox(parent)
+WheellIgnorantComboBox::WheellIgnorantComboBox(QWidget* parent /*= 0*/)
+    : QComboBox(parent)
 {
 }
 
