@@ -424,7 +424,7 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
 
             if (func != FuncImplMap.end())
             {
-                operatorStack.push_back(SyntaxTreeNode(OpFunctionCall, func->second, expr - text));
+                operatorStack.push_back(SyntaxTreeNode(OpFunctionCall, func->second, uint32(expr - text)));
                 last_token_operand = false;
             }
             else
@@ -472,7 +472,7 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
         }
         else if (*expr == OpLogicalNot)
         {
-            operatorStack.push_back(SyntaxTreeNode(OpLogicalNot, expr - text));
+            operatorStack.push_back(SyntaxTreeNode(OpLogicalNot, uint32(expr - text)));
             last_token_operand = false;
             offset = 1;
         }
@@ -566,7 +566,7 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
                 operatorStack.back().right_i = nodeStack.back();
                 nodeStack.pop_back();
 
-                nodeStack.push_back(nodeArray.size());
+                nodeStack.push_back(uint32(nodeArray.size()));
                 nodeArray.push_back(operatorStack.back());
 
                 operatorStack.pop_back();
@@ -578,7 +578,7 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
                 operatorStack.back().right_i = nodeStack.back();
                 nodeStack.pop_back();
 
-                nodeStack.push_back(nodeArray.size());
+                nodeStack.push_back(uint32(nodeArray.size()));
                 nodeArray.push_back(operatorStack.back());
 
                 operatorStack.pop_back();

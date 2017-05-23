@@ -350,7 +350,7 @@ bool PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
 
         int skipping_line = false;
 
-        for (int i = pending_elif.size() - 1; i >= 0; --i)
+        for (size_t i = pending_elif.size() - 1; i >= 0; --i)
         {
             if (pending_elif[i].do_skip_lines)
             {
@@ -701,7 +701,7 @@ bool PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
                 if (t)
                 {
                     size_t sz = ln_end - ln;
-                    char* l = AllocBuffer(sz + macro[m].value_len + 1);
+                    char* l = AllocBuffer(unsigned(sz) + macro[m].value_len + 1);
 
                     size_t l1 = t - ln;
 
@@ -830,8 +830,8 @@ bool PreProc::ProcessDefine(const char* name, const char* value)
     macro.resize(macro.size() + 1);
     strncpy(macro.back().name, name, countof(macro.back().name));
     strncpy(macro.back().value, value, countof(macro.back().value));
-    macro.back().name_len = strlen(name);
-    macro.back().value_len = strlen(value);
+    macro.back().name_len = unsigned(strlen(name));
+    macro.back().value_len = unsigned(strlen(value));
     if (macro.back().value_len < minMacroLength)
         minMacroLength = macro.back().value_len;
 
