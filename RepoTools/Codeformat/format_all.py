@@ -32,19 +32,25 @@ if os.name == 'nt':
     execName = 'clang-format.exe'
 else:
     execName = 'clang-format'
-sources = ['../../Sources/Internal', '../../Modules', '../../Programs']
 
+sources = ['../../Sources/Internal', '../../Modules', '../../Programs']
+exclude = ['*/Libs/*']
+extensions = ['cpp', 'h', 'mm']
 
 def main():
     pool = multiprocessing.Pool()
     fileList = []
     for source in sources:
-        for root, dirnames, filenames in os.walk(source):
-            for ext in ['cpp', 'h', 'mm']:
+        for root, dirnames, filenames in os.walk(os.path.join(start_dir, source)):
+            root = os.path.abspath(root)
+            if True in [fnmatch.fnmatch(root, x) for x in exclude]:
+                # Skip directories from exclude patterns list
+                continue
+            for ext in extensions:
                 for filename in fnmatch.filter(filenames, '*.'+ext):
                     fileList.append(os.path.join(root, filename))
     pool.map(process, fileList)
-       
+
 if __name__ == '__main__':
     multiprocessing.freeze_support() #here if program needs to be frozen
     main()  # execute this only when run directly, not when imported!
