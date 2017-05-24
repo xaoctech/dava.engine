@@ -31,8 +31,9 @@ public:
     AnalogElementState GetAnalogElementState(eInputElements elementId) const override;
 
 private:
-    TouchScreen(uint32 id);
+    explicit TouchScreen(uint32 id);
     ~TouchScreen();
+
     TouchScreen(const TouchScreen&) = delete;
     TouchScreen& operator=(const TouchScreen&) = delete;
 

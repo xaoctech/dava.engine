@@ -30,7 +30,7 @@ public:
     AnalogElementState GetAnalogElementState(eInputElements elementId) const override;
 
 private:
-    Gamepad(uint32 id);
+    explicit Gamepad(uint32 id);
     ~Gamepad();
 
     void Update();

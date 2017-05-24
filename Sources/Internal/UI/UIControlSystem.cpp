@@ -1018,5 +1018,4 @@ eMouseButtons UIControlSystem::TranslateMouseElementToButtons(eInputElements ele
         return eMouseButtons::NONE;
     }
 }
-
 };

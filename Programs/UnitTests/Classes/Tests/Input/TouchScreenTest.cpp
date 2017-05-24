@@ -21,6 +21,7 @@ DAVA_TESTCLASS (TouchScreenTestClass)
         TouchScreen* touchscreen = GetEngineContext()->deviceManager->GetTouchScreen();
         if (touchscreen == nullptr)
         {
+            Logger::Info("Skipping TouchScreenSupportedElementsTest since there is no touch screen");
             return;
         }
 
@@ -38,6 +39,7 @@ DAVA_TESTCLASS (TouchScreenTestClass)
         TouchScreen* touchscreen = GetEngineContext()->deviceManager->GetTouchScreen();
         if (touchscreen == nullptr)
         {
+            Logger::Info("Skipping TouchScreenDefaultStateTest since there is no touch screen");
             return;
         }
 
@@ -74,6 +76,7 @@ DAVA_TESTCLASS (TouchScreenTestClass)
         TouchScreen* touchscreen = GetEngineContext()->deviceManager->GetTouchScreen();
         if (touchscreen == nullptr)
         {
+            Logger::Info("Skipping TouchScreenSingleTouchEventHandlingTest since there is no touch screen");
             touchScreenEventHandlingTestFinished = true;
             return;
         }
@@ -81,7 +84,45 @@ DAVA_TESTCLASS (TouchScreenTestClass)
 
     DAVA_TEST (TouchScreenMultiTouchEventHandlingTest)
     {
-        // TODO
+        using namespace DAVA::Private;
+
+        TouchScreen* touchscreen = GetEngineContext()->deviceManager->GetTouchScreen();
+        if (touchscreen == nullptr)
+        {
+            Logger::Info("Skipping TouchScreenMultiTouchEventHandlingTest since there is no touch screen");
+            return;
+        }
+
+        Window* primaryWindow = GetPrimaryWindow();
+        MainDispatcher* dispatcher = EngineBackend::Instance()->GetDispatcher();
+
+        std::vector<eInputElements> elementsThatShouldBePressed;
+
+        // Press all ten touches and check their states
+        for (uint32 i = eInputElements::TOUCH_CLICK0; i <= eInputElements::TOUCH_CLICK9; ++i)
+        {
+            eInputElements currentTouch = static_cast<eInputElements>(i);
+            dispatcher->SendEvent(MainDispatcherEvent::CreateWindowTouchEvent(primaryWindow, MainDispatcherEvent::TOUCH_DOWN, i, 0.0f, 0.0f, eModifierKeys::NONE));
+            elementsThatShouldBePressed.push_back(currentTouch);
+            CheckMultipleState(touchscreen, elementsThatShouldBePressed, DigitalElementState::JustPressed());
+        }
+
+        // Release fifth touch and check that it's state changed to JustReleased, and others haven't changed
+        dispatcher->SendEvent(MainDispatcherEvent::CreateWindowTouchEvent(primaryWindow, MainDispatcherEvent::TOUCH_UP, static_cast<uint32>(eInputElements::TOUCH_CLICK5), 0.0f, 0.0f, eModifierKeys::NONE));
+        elementsThatShouldBePressed.erase(elementsThatShouldBePressed.begin() + 5);
+        CheckMultipleState(touchscreen, elementsThatShouldBePressed, DigitalElementState::JustPressed(), { eInputElements::TOUCH_CLICK5 }, DigitalElementState::JustReleased());
+
+        // Send fifth touch press again and check that all elements are pressed again
+        dispatcher->SendEvent(MainDispatcherEvent::CreateWindowTouchEvent(primaryWindow, MainDispatcherEvent::TOUCH_DOWN, static_cast<uint32>(eInputElements::TOUCH_CLICK5), 0.0f, 0.0f, eModifierKeys::NONE));
+        elementsThatShouldBePressed.push_back(eInputElements::TOUCH_CLICK5);
+        CheckMultipleState(touchscreen, elementsThatShouldBePressed, DigitalElementState::JustPressed());
+
+        // Release all
+        for (uint32 i = eInputElements::TOUCH_CLICK0; i <= eInputElements::TOUCH_CLICK9; ++i)
+        {
+            eInputElements currentTouch = static_cast<eInputElements>(i);
+            dispatcher->SendEvent(MainDispatcherEvent::CreateWindowTouchEvent(primaryWindow, MainDispatcherEvent::TOUCH_UP, i, 0.0f, 0.0f, eModifierKeys::NONE));
+        }
     }
 
     void CheckSingleState(TouchScreen * touchScreen, eInputElements requiredElement, DigitalElementState requiredState)
@@ -103,6 +144,36 @@ DAVA_TESTCLASS (TouchScreenTestClass)
         }
     }
 
+    void CheckMultipleState(TouchScreen * touchScreen, std::vector<eInputElements> requiredElements1, DigitalElementState requiredState1, std::vector<eInputElements> requiredElements2 = {}, DigitalElementState requiredState2 = DigitalElementState::Released())
+    {
+        // All elements should be in released state, `requiredElements` must be in `requiredState`
+        for (uint32 i = static_cast<uint32>(eInputElements::TOUCH_FIRST_CLICK); i <= static_cast<uint32>(eInputElements::TOUCH_LAST_CLICK); ++i)
+        {
+            eInputElements element = static_cast<eInputElements>(i);
+            DigitalElementState state = touchScreen->GetDigitalElementState(element);
+
+            if (std::find(requiredElements1.begin(), requiredElements1.end(), element) != requiredElements1.end())
+            {
+                TEST_VERIFY(state == requiredState1);
+            }
+            else if (std::find(requiredElements2.begin(), requiredElements2.end(), element) != requiredElements2.end())
+            {
+                TEST_VERIFY(state == requiredState2);
+            }
+            else
+            {
+                TEST_VERIFY(state.IsReleased() && !state.IsJustReleased());
+            }
+        }
+    }
+
+    enum class EventHandlingTestState
+    {
+        INITIAL,
+        SENT_TOUCH_DOWN,
+        SENT_TOUCH_UP
+    };
+
     void Update(float32 timeElapsed, const String& testName) override
     {
         if (testName == "TouchScreenSingleTouchEventHandlingTest" && !touchScreenEventHandlingTestFinished)
@@ -110,8 +181,10 @@ DAVA_TESTCLASS (TouchScreenTestClass)
             using namespace DAVA::Private;
 
             TouchScreen* touchscreen = GetEngineContext()->deviceManager->GetTouchScreen();
+            Window* primaryWindow = GetPrimaryWindow();
+            MainDispatcher* dispatcher = EngineBackend::Instance()->GetDispatcher();
 
-            if (!waitingForFirstFrame && !waitingForSecondFrame)
+            if (eventHandlingTestState == EventHandlingTestState::INITIAL)
             {
                 // Check that click is released
                 // Send TOUCH_DOWN and check that button is just pressed, position is correct
@@ -127,8 +200,7 @@ DAVA_TESTCLASS (TouchScreenTestClass)
 
                 const float32 initialTouchX = 32.0f;
                 const float32 initialTouchY = 51.3f;
-                Window* primaryWindow = GetPrimaryWindow();
-                MainDispatcher* dispatcher = EngineBackend::Instance()->GetDispatcher();
+
                 dispatcher->SendEvent(MainDispatcherEvent::CreateWindowTouchEvent(primaryWindow, MainDispatcherEvent::TOUCH_DOWN, static_cast<uint32>(eInputElements::TOUCH_CLICK0), initialTouchX, initialTouchY, eModifierKeys::NONE));
 
                 DigitalElementState currentElementStateAfterEvent = touchscreen->GetDigitalElementState(eInputElements::TOUCH_CLICK0);
@@ -142,9 +214,9 @@ DAVA_TESTCLASS (TouchScreenTestClass)
                 currentElementPositionAfterEvent = touchscreen->GetAnalogElementState(eInputElements::TOUCH_POSITION0);
                 TEST_VERIFY(currentElementPositionAfterEvent.x == moveTouchX && currentElementPositionAfterEvent.y == moveTouchY && currentElementPositionAfterEvent.z == 0.0f);
 
-                waitingForFirstFrame = true;
+                eventHandlingTestState = EventHandlingTestState::SENT_TOUCH_DOWN;
             }
-            else if (waitingForFirstFrame)
+            else if (eventHandlingTestState == EventHandlingTestState::SENT_TOUCH_DOWN)
             {
                 // Check that click is pressed
                 // Send TOUCH_UP and check that click is just released
@@ -153,8 +225,6 @@ DAVA_TESTCLASS (TouchScreenTestClass)
                 DigitalElementState currentElementStateBeforeEvent = touchscreen->GetDigitalElementState(eInputElements::TOUCH_CLICK0);
                 CheckSingleState(touchscreen, eInputElements::TOUCH_CLICK0, DigitalElementState::Pressed());
 
-                Window* primaryWindow = GetPrimaryWindow();
-                MainDispatcher* dispatcher = EngineBackend::Instance()->GetDispatcher();
                 dispatcher->SendEvent(MainDispatcherEvent::CreateWindowTouchEvent(primaryWindow, MainDispatcherEvent::TOUCH_UP, static_cast<uint32>(eInputElements::TOUCH_CLICK0), 0.0f, 0.0f, eModifierKeys::NONE));
 
                 DigitalElementState currentElementStateAfterEvent = touchscreen->GetDigitalElementState(eInputElements::TOUCH_CLICK0);
@@ -162,10 +232,9 @@ DAVA_TESTCLASS (TouchScreenTestClass)
                 AnalogElementState currentElementPositionAfterEvent = touchscreen->GetAnalogElementState(eInputElements::TOUCH_POSITION0);
                 TEST_VERIFY(currentElementPositionAfterEvent.x == 0.0f && currentElementPositionAfterEvent.y == 0.0f && currentElementPositionAfterEvent.z == 0.0f);
 
-                waitingForFirstFrame = false;
-                waitingForSecondFrame = true;
+                eventHandlingTestState = EventHandlingTestState::SENT_TOUCH_UP;
             }
-            else if (waitingForSecondFrame)
+            else if (eventHandlingTestState == EventHandlingTestState::SENT_TOUCH_UP)
             {
                 // Check that click is released
                 // Finish
@@ -174,8 +243,6 @@ DAVA_TESTCLASS (TouchScreenTestClass)
                 CheckSingleState(touchscreen, eInputElements::TOUCH_CLICK0, DigitalElementState::Released());
 
                 touchScreenEventHandlingTestFinished = true;
-
-                waitingForSecondFrame = false;
             }
         }
     }
@@ -194,7 +261,6 @@ DAVA_TESTCLASS (TouchScreenTestClass)
 
 private:
     // TouchScreenEventHandlingTest variables
-    bool waitingForFirstFrame = false; // Button has been pressed, wait for the next frame to check that its status has changed
-    bool waitingForSecondFrame = false; // Button has been released, wait for the next frame to check that its status has changed
+    EventHandlingTestState eventHandlingTestState = EventHandlingTestState::INITIAL;
     bool touchScreenEventHandlingTestFinished = false;
 };

@@ -26,7 +26,7 @@ public:
     eInputElements GetFirstPressedButton() const;
 
 private:
-    Mouse(uint32 id);
+    explicit Mouse(uint32 id);
     ~Mouse() override;
     Mouse(const Mouse&) = delete;
 

@@ -16,7 +16,8 @@ class InputDevice
 {
 public:
     /** Create InputDevice instance with specified `id` */
-    InputDevice(uint32 id);
+    explicit InputDevice(uint32 id);
+
     virtual ~InputDevice() = default;
 
     /** Return unique device id */

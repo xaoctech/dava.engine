@@ -88,7 +88,7 @@ const eInputElements nativeScancodeToDavaScancode[] =
   eInputElements::NONE, // 0x44
   eInputElements::KB_NUMPAD_PLUS, // 0x45
   eInputElements::NONE, // 0x46
-  eInputElements::NONE, // 0x47
+  eInputElements::KB_NUMLOCK, // 0x47
   eInputElements::NONE, // 0x48
   eInputElements::NONE, // 0x49
   eInputElements::NONE, // 0x4A
@@ -122,19 +122,19 @@ const eInputElements nativeScancodeToDavaScancode[] =
   eInputElements::NONE, // 0x66
   eInputElements::KB_F11, // 0x67
   eInputElements::NONE, // 0x68
-  eInputElements::NONE, // 0x69
+  eInputElements::KB_PRINTSCREEN, // 0x69
   eInputElements::NONE, // 0x6A
   eInputElements::NONE, // 0x6B
   eInputElements::NONE, // 0x6C
   eInputElements::KB_F10, // 0x6D
-  eInputElements::NONE, // 0x6E
+  eInputElements::KB_MENU, // 0x6E
   eInputElements::KB_F12, // 0x6F
   eInputElements::NONE, // 0x70
   eInputElements::NONE, // 0x71
-  eInputElements::NONE, // 0x72
+  eInputElements::KB_INSERT, // 0x72
   eInputElements::KB_HOME, // 0x73
   eInputElements::KB_PAGEUP, // 0x74
-  eInputElements::NONE, // 0x75
+  eInputElements::KB_DELETE, // 0x75
   eInputElements::KB_F4, // 0x76
   eInputElements::KB_END, // 0x77
   eInputElements::KB_F2, // 0x78
@@ -151,11 +151,11 @@ eInputElements KeyboardImpl::ConvertNativeScancodeToDavaScancode(uint32 nativeSc
     DVASSERT(nativeScancode < COUNT_OF(nativeScancodeToDavaScancode));
     return nativeScancodeToDavaScancode[nativeScancode];
 }
-    
+
 uint32 KeyboardImpl::ConvertDavaScancodeToNativeScancode(eInputElements elementId)
 {
     int nativeScancode = -1;
-    
+
     for (size_t i = 0; i < COUNT_OF(nativeScancodeToDavaScancode); ++i)
     {
         if (nativeScancodeToDavaScancode[i] == elementId)
@@ -163,9 +163,9 @@ uint32 KeyboardImpl::ConvertDavaScancodeToNativeScancode(eInputElements elementI
             nativeScancode = static_cast<int>(i);
         }
     }
-    
+
     DVASSERT(nativeScancode >= 0);
-    
+
     return static_cast<uint32>(nativeScancode);
 }
 

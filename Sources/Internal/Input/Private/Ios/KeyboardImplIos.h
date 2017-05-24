@@ -12,6 +12,7 @@ class KeyboardImpl final
 {
 public:
     eInputElements ConvertNativeScancodeToDavaScancode(uint32 nativeScancode);
+    uint32 ConvertDavaScancodeToNativeScancode(eInputElements nativeScancode);
     WideString TranslateElementToWideString(eInputElements elementId);
 };
 

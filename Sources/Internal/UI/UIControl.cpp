@@ -1181,7 +1181,7 @@ bool UIControl::SystemProcessInput(UIEvent* currentInput)
                         bool isPointInside = IsPointInside(currentInput->point, true);
                         eEventType event = isPointInside ? EVENT_TOUCH_UP_INSIDE : EVENT_TOUCH_UP_OUTSIDE;
 
-                        // TODO Analytics::EmitUIEvent(this, event, currentInput);
+// TODO Analytics::EmitUIEvent(this, event, currentInput);
 
 #ifdef __DAVAENGINE_AUTOTESTING__
                         AutotestingSystem::Instance()->OnRecordClickControl(this);

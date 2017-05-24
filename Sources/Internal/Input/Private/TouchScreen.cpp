@@ -25,20 +25,18 @@ TouchScreen::~TouchScreen()
 
 bool TouchScreen::IsElementSupported(eInputElements elementId) const
 {
-    // TODO: honestly check if we support an element with specified id
-    // i.e. android can support different amount of touches, iOS supports only up to 5 touches
     return IsTouchInputElement(elementId);
 }
 
 DigitalElementState TouchScreen::GetDigitalElementState(eInputElements elementId) const
 {
-    DVASSERT(IsTouchClickElement(elementId));
+    DVASSERT(IsTouchClickElement(elementId) && IsElementSupported(elementId));
     return clicks[elementId - eInputElements::TOUCH_FIRST_CLICK];
 }
 
 AnalogElementState TouchScreen::GetAnalogElementState(eInputElements elementId) const
 {
-    DVASSERT(IsTouchPositionElement(elementId));
+    DVASSERT(IsTouchPositionElement(elementId) && IsElementSupported(elementId));
     return positions[elementId - eInputElements::TOUCH_FIRST_POSITION];
 }
 
@@ -46,7 +44,9 @@ bool TouchScreen::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& 
 {
     using Private::MainDispatcherEvent;
 
-    if (e.type != MainDispatcherEvent::TOUCH_DOWN && e.type != MainDispatcherEvent::TOUCH_UP && e.type != MainDispatcherEvent::TOUCH_MOVE)
+    if (e.type != MainDispatcherEvent::TOUCH_DOWN &&
+        e.type != MainDispatcherEvent::TOUCH_UP &&
+        e.type != MainDispatcherEvent::TOUCH_MOVE)
     {
         return false;
     }

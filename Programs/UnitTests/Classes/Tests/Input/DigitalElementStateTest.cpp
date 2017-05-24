@@ -8,7 +8,7 @@ DAVA_TESTCLASS (DigitalElementStateTestClass)
 {
     DAVA_TEST (DigitalElementStateTest)
     {
-        // Check ctors
+        // Check creation
 
         DigitalElementState stateReleased;
         TEST_VERIFY(stateReleased.IsReleased());

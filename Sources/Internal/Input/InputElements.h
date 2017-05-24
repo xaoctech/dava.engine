@@ -231,7 +231,7 @@ enum
 static_assert(INPUT_ELEMENTS_TOUCH_CLICK_COUNT == INPUT_ELEMENTS_TOUCH_POSITION_COUNT, "Amount of touch clicks does not match amount of touch positions");
 
 /** List of element types. */
-enum eInputElementTypes
+enum class eInputElementTypes
 {
     /** Button, which can just be pressed and released. */
     DIGITAL,

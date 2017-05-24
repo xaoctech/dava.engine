@@ -15,6 +15,11 @@ eInputElements KeyboardImpl::ConvertNativeScancodeToDavaScancode(uint32 nativeSc
     return eInputElements::NONE;
 }
 
+uint32 KeyboardImpl::ConvertDavaScancodeToNativeScancode(eInputElements nativeScancode)
+{
+    return 0;
+}
+
 WideString KeyboardImpl::TranslateElementToWideString(eInputElements elementId)
 {
     return UTF8Utils::EncodeToWideString(GetInputElementInfo(elementId).name);
