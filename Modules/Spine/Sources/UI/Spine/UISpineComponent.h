@@ -7,7 +7,6 @@
 
 namespace DAVA
 {
-
 class UISpineComponent : public UIBaseComponent<UISpineComponent>
 {
     DAVA_VIRTUAL_REFLECTION(UISpineComponent, UIComponent);

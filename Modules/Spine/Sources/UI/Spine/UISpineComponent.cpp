@@ -13,7 +13,6 @@ ENUM_DECLARE(DAVA::UISpineComponent::AnimationState)
 
 namespace DAVA
 {
-
 DAVA_VIRTUAL_REFLECTION_IMPL(UISpineComponent)
 {
     ReflectionRegistrator<UISpineComponent>::Begin()
@@ -83,7 +82,7 @@ void UISpineComponent::SetAtlasPath(const FilePath& path)
     if (atlasPath != path)
     {
         atlasPath = path;
-        
+
         Modify(true);
         //needReload = true;
         //modified = true;
@@ -150,7 +149,7 @@ void UISpineComponent::SetSkinName(const String& name)
     if (skinName != name)
     {
         skinName = name;
-        
+
         Modify();
         //modified = true;
     }
@@ -161,10 +160,9 @@ void UISpineComponent::SetSkinsNames(const Vector<String>& names)
     if (skinsNames != names)
     {
         skinsNames = names;
-        
+
         Modify();
         //modified = true;
     }
 }
-
 }

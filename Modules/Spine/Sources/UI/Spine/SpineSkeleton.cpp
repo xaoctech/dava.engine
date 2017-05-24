@@ -40,10 +40,10 @@ void _spAtlasPage_disposeTexture(spAtlasPage* self)
 char* _spUtil_readFile(const char* path, int* length)
 {
     using namespace DAVA;
-    File * fp = File::Create(path, File::READ | File::OPEN);
+    File* fp = File::Create(path, File::READ | File::OPEN);
     DVASSERT(fp != nullptr, "Failed to read file!");
     *length = static_cast<uint32>(fp->GetSize());
-    char * bytes = MALLOC(char, *length);
+    char* bytes = MALLOC(char, *length);
     fp->Read(bytes, *length);
     fp->Release();
 
@@ -52,10 +52,8 @@ char* _spUtil_readFile(const char* path, int* length)
 
 namespace DAVA
 {
-
 namespace SpinePrivate
 {
-
 static const uint16 QUAD_TRIANGLES[6] = { 0, 1, 2, 2, 3, 0 };
 static const int32 QUAD_VERTICES_COUNT = 8;
 static const int32 QUAD_TRIANGLES_COUNT = 6;
@@ -78,7 +76,8 @@ int32 maxVerticesCount(spSkeleton* mSkeleton)
     for (int32 i = 0, n = mSkeleton->slotsCount; i < n; i++)
     {
         spSlot* slot = mSkeleton->drawOrder[i];
-        if (!slot->attachment) continue;
+        if (!slot->attachment)
+            continue;
 
         switch (slot->attachment->type)
         {
@@ -99,7 +98,6 @@ int32 maxVerticesCount(spSkeleton* mSkeleton)
 
     return max;
 }
-
 }
 
 SpineBone::SpineBone(spBone* bone)
@@ -141,8 +139,6 @@ float32 SpineBone::GetAngle() const
     }
     return 0.f;
 }
-
-
 
 SpineSkeleton::SpineSkeleton()
 {
@@ -304,18 +300,19 @@ void SpineSkeleton::Update(const float32 timeElapsed)
     spSkeleton_updateWorldTransform(mSkeleton);
 
     // Draw
-    if (!mSkeleton || !mState || !mTexture) return;
+    if (!mSkeleton || !mState || !mTexture)
+        return;
 
     Matrix3 transformMtx;
     //geometricData.BuildTransformMatrix(transformMtx);
-    
+
     auto pushBatch = [&]()
     {
         mPolygon.Transform(transformMtx);
 
         BatchDescriptor batch;
         batch.singleColor = Color::White;
-        batch.material = RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL;// background->GetMaterial();
+        batch.material = RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL; // background->GetMaterial();
         batch.vertexCount = static_cast<uint32>(mPolygon.GetPointCount());
         batch.indexCount = static_cast<uint32>(mSpriteClippedIndecex.size());
         batch.vertexStride = SpinePrivate::VERTICES_COMPONENTS_COUNT;
@@ -393,7 +390,7 @@ void SpineSkeleton::Update(const float32 timeElapsed)
                 DVASSERT(false, "Error: Wrong spine-attachment type!");
                 break;
             }
-            
+
             //color *= background->GetDrawColor();
 
             int32 verticesCountFinal = verticesCount / SpinePrivate::VERTICES_COMPONENTS_COUNT;
@@ -558,5 +555,4 @@ RefPtr<SpineBone> SpineSkeleton::FindBone(const String& boneName)
     }
     return RefPtr<SpineBone>();
 }
-
 }

@@ -8,7 +8,6 @@
 
 namespace DAVA
 {
-
 DAVA_VIRTUAL_REFLECTION_IMPL(UISpineBonesComponent)
 {
     ReflectionRegistrator<UISpineBonesComponent>::Begin()
@@ -83,7 +82,6 @@ void UISpineBonesComponent::MakeBindsString()
         stream << boneBind.first << "," << boneBind.second;
     }
     cachedBindsString = stream.str();
-
 }
 
 void UISpineBonesComponent::Modify()
@@ -99,5 +97,4 @@ void UISpineBonesComponent::Modify()
         }
     }
 }
-
 }

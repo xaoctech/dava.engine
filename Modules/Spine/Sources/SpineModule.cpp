@@ -14,8 +14,7 @@
 
 namespace DAVA
 {
-
-SpineModule::SpineModule(Engine * engine)
+SpineModule::SpineModule(Engine* engine)
     : IModule(engine)
 {
     DAVA_REFLECTION_REGISTER_CUSTOM_PERMANENT_NAME(UISpineComponent, "Spine");

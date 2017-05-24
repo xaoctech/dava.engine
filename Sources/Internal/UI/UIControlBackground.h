@@ -426,4 +426,3 @@ inline void UIControlBackground::SetGradientBlendMode(eGradientBlendMode mode)
     gradientMode = mode;
 }
 };
-

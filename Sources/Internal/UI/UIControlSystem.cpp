@@ -396,17 +396,17 @@ void UIControlSystem::Update()
 
     if (Renderer::GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_UI_CONTROL_SYSTEM))
     {
-    float32 timeElapsed = SystemTimer::GetFrameDelta();
+        float32 timeElapsed = SystemTimer::GetFrameDelta();
 
-    for (auto& system : systems)
-    {
-        system->Process(timeElapsed);
-    }
+        for (auto& system : systems)
+        {
+            system->Process(timeElapsed);
+        }
 
-    for (auto& components : singleComponents)
-    {
-        components->Clear();
-    }
+        for (auto& components : singleComponents)
+        {
+            components->Clear();
+        }
     }
 }
 

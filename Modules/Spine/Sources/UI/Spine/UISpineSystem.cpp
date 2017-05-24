@@ -15,12 +15,11 @@
 
 namespace DAVA
 {
-
 UISpineSystem::UISpineSystem() = default;
 
 UISpineSystem::~UISpineSystem() = default;
 
-void UISpineSystem::RegisterControl(UIControl * control)
+void UISpineSystem::RegisterControl(UIControl* control)
 {
     UISpineComponent* component = control->GetComponent<UISpineComponent>();
     if (component)
@@ -29,7 +28,7 @@ void UISpineSystem::RegisterControl(UIControl * control)
     }
 }
 
-void UISpineSystem::UnregisterControl(UIControl * control)
+void UISpineSystem::UnregisterControl(UIControl* control)
 {
     UISpineComponent* component = control->GetComponent<UISpineComponent>();
     if (component)
@@ -70,11 +69,11 @@ void UISpineSystem::UnregisterComponent(UIControl* control, UIComponent* compone
     }
 }
 
-void UISpineSystem::OnControlVisible(UIControl * control)
+void UISpineSystem::OnControlVisible(UIControl* control)
 {
 }
 
-void UISpineSystem::OnControlInvisible(UIControl * control)
+void UISpineSystem::OnControlInvisible(UIControl* control)
 {
 }
 
@@ -138,7 +137,7 @@ void UISpineSystem::Process(DAVA::float32 elapsedTime)
             {
                 BuildBoneLinks(node);
             }
-            else if(!node.boneLinks.empty())
+            else if (!node.boneLinks.empty())
             {
                 node.boneLinks.clear();
             }
@@ -240,7 +239,7 @@ void UISpineSystem::RemoveNode(UISpineComponent* component)
     }
 }
 
-void UISpineSystem::BindBones(UISpineBonesComponent * bones)
+void UISpineSystem::BindBones(UISpineBonesComponent* bones)
 {
     auto it = nodes.find(bones->GetControl());
     if (it != nodes.end())
@@ -254,7 +253,7 @@ void UISpineSystem::BindBones(UISpineBonesComponent * bones)
     }
 }
 
-void UISpineSystem::UnbindBones(UISpineBonesComponent * bones)
+void UISpineSystem::UnbindBones(UISpineBonesComponent* bones)
 {
     auto it = nodes.find(bones->GetControl());
     if (it != nodes.end())
@@ -268,7 +267,7 @@ void UISpineSystem::UnbindBones(UISpineBonesComponent * bones)
     }
 }
 
-void UISpineSystem::BindBackground(UIControlBackground * bg)
+void UISpineSystem::BindBackground(UIControlBackground* bg)
 {
     auto it = nodes.find(bg->GetControl());
     if (it != nodes.end())
@@ -280,7 +279,7 @@ void UISpineSystem::BindBackground(UIControlBackground * bg)
     }
 }
 
-void UISpineSystem::UnbindBackground(UIControlBackground * bg)
+void UISpineSystem::UnbindBackground(UIControlBackground* bg)
 {
     auto it = nodes.find(bg->GetControl());
     if (it != nodes.end())
@@ -322,5 +321,4 @@ void UISpineSingleComponent::Clear()
     spineNeedReload.clear();
     spineBonesModified.clear();
 }
-
 }

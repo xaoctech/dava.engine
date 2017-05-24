@@ -6,7 +6,6 @@
 
 namespace DAVA
 {
-
 class UISpineBonesComponent : public UIBaseComponent<UISpineBonesComponent>
 {
     DAVA_VIRTUAL_REFLECTION(UISpineBonesComponent, UIComponent);
@@ -55,5 +54,4 @@ inline const String& UISpineBonesComponent::GetBindsAsString() const
 {
     return cachedBindsString;
 }
-
 }
