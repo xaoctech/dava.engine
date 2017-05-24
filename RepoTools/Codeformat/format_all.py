@@ -41,7 +41,7 @@ def main():
     pool = multiprocessing.Pool()
     fileList = []
     for source in sources:
-        for root, dirnames, filenames in os.walk(os.path.join(start_dir, source)):
+        for root, dirnames, filenames in os.walk(source):
             root = os.path.abspath(root)
             if True in [fnmatch.fnmatch(root, x) for x in exclude]:
                 # Skip directories from exclude patterns list
