@@ -805,6 +805,7 @@ void EmitterLayerWidget::OnFlowPropertiesChanged()
     CommandChangeFlowProperties::FlowParams params;
     params.spritePath = spritePath;
     params.enableFlow = enableFlowCheckBox->isChecked();
+    params.enabelFlowAnimation = enableFlowAnimationCheckBox->isChecked();
     params.flowSpeed = propFlowSpeed.GetPropLine();
     params.flowSpeedVariation = propFlowSpeedVariation.GetPropLine();
     params.flowOffset = propFlowOffset.GetPropLine();
@@ -984,7 +985,9 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     fresnelPowerSpinBox->setVisible(fresToAlphaVisible);
 
     enableFlowCheckBox->setChecked(layer->enableFlow);
+    enableFlowAnimationCheckBox->setChecked(layer->enableFlowAnimation);
     flowLayoutWidget->setVisible(enableFlowCheckBox->isChecked());
+    flowSettingsLayoutWidget->setVisible(enableFlowCheckBox->isChecked() && !enableFlowAnimationCheckBox->isChecked());
 
     enableNoiseScrollCheckBox->setChecked(layer->enableNoiseScroll);
 
@@ -1270,7 +1273,18 @@ void EmitterLayerWidget::CreateFlowmapLayoutWidget()
 
     flowMainLayout->addLayout(flowTextureHBox);
 
-    QVBoxLayout* flowVBox = new QVBoxLayout();
+    enableFlowAnimationCheckBox = new QCheckBox("Enable flowmap animation");
+    mainBox->addWidget(enableFlowAnimationCheckBox);
+    connect(enableFlowAnimationCheckBox,
+        SIGNAL(stateChanged(int)),
+        this,
+        SLOT(OnFlowPropertiesChanged()));
+    flowMainLayout->addWidget(enableFlowAnimationCheckBox);
+
+    flowSettingsLayoutWidget = new QWidget();
+    flowMainLayout->addWidget(flowSettingsLayoutWidget);
+
+    QVBoxLayout* flowVBox = new QVBoxLayout(flowSettingsLayoutWidget);
     flowSpeedTimeLine = new TimeLineWidget(this);
     connect(flowSpeedTimeLine,
             SIGNAL(ValueChanged()),
@@ -1299,8 +1313,6 @@ void EmitterLayerWidget::CreateFlowmapLayoutWidget()
             this,
             SLOT(OnFlowPropertiesChanged()));
     flowVBox->addWidget(flowOffsetVariationTimeLine);
-
-    flowMainLayout->addLayout(flowVBox);
 
     connect(flowTextureBtn, SIGNAL(clicked(bool)), this, SLOT(OnFlowSpriteBtn()));
     connect(flowTextureFolderBtn, SIGNAL(clicked(bool)), this, SLOT(OnFlowFolderBtn()));

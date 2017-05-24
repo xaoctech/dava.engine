@@ -157,6 +157,7 @@ const FastName NMaterialFlagName::FLAG_SKINNING = FastName("SKINNING");
 
 const FastName NMaterialFlagName::FLAG_FLOWMAP_SKY = FastName("FLOWMAP_SKY");
 const FastName NMaterialFlagName::FLAG_PARTICLES_FLOWMAP = FastName("PARTICLES_FLOWMAP");
+const FastName NMaterialFlagName::FLAG_PARTICLES_FLOWMAP_ANIMATION = FastName("PARTICLES_FLOWMAP_ANIMATION");
 const FastName NMaterialFlagName::FLAG_PARTICLES_NOISE = FastName("PARTICLES_NOISE");
 const FastName NMaterialFlagName::FLAG_PARTICLES_FRES_TO_ALPHA = FastName("PARTICLES_FRES_TO_ALPHA");
 

@@ -61,6 +61,11 @@ NMaterial* ParticleEffectSystem::GetMaterial(MaterialData&& materialData)
         material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_FRES_TO_ALPHA, 1);
     }
 
+    if (materialData.enableFlowAnimation)
+    {
+        material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_FLOWMAP_ANIMATION, 1);
+    }
+
     material->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, materialData.texture);
     material->AddFlag(NMaterialFlagName::FLAG_BLENDING, materialData.blending);
 
@@ -104,14 +109,16 @@ void ParticleEffectSystem::SetGlobalMaterial(NMaterial* material)
     const static uint32 FRES_TO_ALPHA_MASK = 1 << 2;
     const static uint32 NOISE_MASK = 1 << 3;
     const static uint32 FLOWMAP_MASK = 1 << 4;
-    const static uint32 BLEND_SHIFT = 5;
-    for (uint32 i = 0; i < 96; i++)
+    const static uint32 FLOWMAP_ANIMATION_MASK = 1 << 5;
+    const static uint32 BLEND_SHIFT = 6;
+    for (uint32 i = 0; i < 192; i++)
     {
         bool enableFrameBlend = (i & FRAME_BLEND_MASK) == FRAME_BLEND_MASK;
         bool enableFog = (i & FOG_MASK) == FOG_MASK;
         bool enableFresToAlpha = (i & FRES_TO_ALPHA_MASK) == FRES_TO_ALPHA_MASK;
         bool enableNoise = (i & NOISE_MASK) == NOISE_MASK;
         bool enableFlow = (i & FLOWMAP_MASK) == FLOWMAP_MASK;
+        bool enableFlowAnimation = (i & FLOWMAP_ANIMATION_MASK) == FLOWMAP_ANIMATION_MASK;
         uint32 blending = (i >> BLEND_SHIFT) + 1;
 
         ScopedPtr<NMaterial> material(new NMaterial());
@@ -127,6 +134,8 @@ void ParticleEffectSystem::SetGlobalMaterial(NMaterial* material)
             material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_NOISE, 1);
         if (enableFlow)
             material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_FLOWMAP, 1);
+        if (enableFlowAnimation)
+            material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_FLOWMAP_ANIMATION, 1);
 
         material->AddFlag(NMaterialFlagName::FLAG_BLENDING, blending);
         material->PreCacheFX();
@@ -148,6 +157,7 @@ void ParticleEffectSystem::PrebuildMaterials(ParticleEffectComponent* component)
                 matData.enableFog = layer->enableFog;
                 matData.enableFrameBlend = layer->enableFrameBlend;
                 matData.flowmap = flowmap;
+                matData.enableFlowAnimation = layer->enableFlowAnimation;
                 matData.enableFlow = layer->enableFlow;
                 matData.enableNoise = layer->enableNoise;
                 matData.noise = noise;
@@ -186,6 +196,7 @@ void ParticleEffectSystem::RunEmitter(ParticleEffectComponent* effect, ParticleE
             matData.enableFog = layer->enableFog;
             matData.enableFrameBlend = layer->enableFrameBlend;
             matData.flowmap = flowmap;
+            matData.enableFlowAnimation = layer->enableFlowAnimation;
             matData.enableFlow = layer->enableFlow;
             matData.enableNoise = layer->enableNoise;
             matData.noise = noise;

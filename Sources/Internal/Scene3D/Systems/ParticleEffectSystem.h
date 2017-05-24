@@ -20,6 +20,7 @@ public:
         bool enableFrameBlend = false;
         Texture* flowmap = nullptr;
         bool enableFlow = false;
+        bool enableFlowAnimation = false;
         bool enableNoise = false;
         bool isNoiseAffectFlow = false;
         Texture* noise = nullptr;
@@ -34,6 +35,7 @@ public:
             && enableFrameBlend == rhs.enableFrameBlend
             && flowmap == rhs.flowmap
             && enableFlow == rhs.enableFlow
+            && enableFlowAnimation == rhs.enableFlowAnimation
             && enableNoise == rhs.enableNoise
             && isNoiseAffectFlow == rhs.isNoiseAffectFlow
             && noise == rhs.noise

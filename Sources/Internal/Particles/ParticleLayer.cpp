@@ -65,6 +65,7 @@ ParticleLayer::ParticleLayer()
     , flowOffset(nullptr)
     , flowOffsetVariation(nullptr)
     , enableFlow(false)
+    , enableFlowAnimation(false)
     , enableNoise(false)
     , enableNoiseScroll(false)
     , noiseScale(nullptr)
@@ -255,6 +256,7 @@ ParticleLayer* ParticleLayer::Clone()
     dstLayer->layerName = layerName;
 
     dstLayer->enableFlow = enableFlow;
+    dstLayer->enableFlowAnimation = enableFlowAnimation;
 
     dstLayer->enableNoise = enableNoise;
     dstLayer->enableNoiseScroll = enableNoiseScroll;
@@ -293,7 +295,6 @@ ParticleLayer* ParticleLayer::Clone()
 
     dstLayer->spritePath = spritePath;
     dstLayer->flowmapPath = flowmapPath;
-    dstLayer->enableFlow = enableFlow;
     dstLayer->activeLODS = activeLODS;
     dstLayer->isLong = isLong;
     dstLayer->useFresnelToAlpha = useFresnelToAlpha;
@@ -726,6 +727,11 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
     {
         enableFlow = enableFlowNode->AsBool();
     }
+    const YamlNode* enableFlowAnimationNode = node->Get("enableFlowAnimation");
+    if (enableFlowAnimationNode)
+    {
+        enableFlowAnimation = enableFlowAnimationNode->AsBool();
+    }
 
     const YamlNode* enableNoiseNode = node->Get("enableNoise");
     if (enableNoiseNode)
@@ -927,6 +933,7 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
     layerNode->Add("blending", blending);
 
     layerNode->Add("enableFlow", enableFlow);
+    layerNode->Add("enableFlowAnimation", enableFlowAnimation);
 
     layerNode->Add("enableNoise", enableNoise);
     layerNode->Add("useNoiseScroll", enableNoiseScroll);

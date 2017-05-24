@@ -61,6 +61,7 @@ CommandChangeFlowProperties::CommandChangeFlowProperties(ParticleLayer* layer_, 
     {
         oldParams.spritePath = layer->spritePath;
         oldParams.enableFlow = layer->enableFlow;
+        oldParams.enabelFlowAnimation = layer->enableFlowAnimation;
         oldParams.flowSpeed = layer->flowSpeed;
         oldParams.flowSpeedVariation = layer->flowSpeedVariation;
         oldParams.flowOffset = layer->flowOffset;
@@ -88,6 +89,7 @@ void CommandChangeFlowProperties::ApplyParams(FlowParams& params)
     if (layer != nullptr)
     {
         layer->enableFlow = params.enableFlow;
+        layer->enableFlowAnimation = params.enabelFlowAnimation;
         layer->SetFlowmap(params.spritePath);
         PropertyLineHelper::SetValueLine(layer->flowSpeed, params.flowSpeed);
         PropertyLineHelper::SetValueLine(layer->flowSpeedVariation, params.flowSpeedVariation);

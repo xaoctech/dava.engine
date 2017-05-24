@@ -175,6 +175,7 @@ public:
 
     static const FastName FLAG_FLOWMAP_SKY;
     static const FastName FLAG_PARTICLES_FLOWMAP;
+    static const FastName FLAG_PARTICLES_FLOWMAP_ANIMATION;
     static const FastName FLAG_PARTICLES_NOISE;
     static const FastName FLAG_PARTICLES_FRES_TO_ALPHA;
 

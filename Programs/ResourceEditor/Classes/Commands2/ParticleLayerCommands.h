@@ -46,6 +46,7 @@ public:
     {
         DAVA::FilePath spritePath;
         bool enableFlow = false;
+        bool enabelFlowAnimation = false;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> flowSpeed;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> flowSpeedVariation;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> flowOffset;
