@@ -151,10 +151,6 @@ inline void RenderBatch::BindGeometryData(rhi::Packet& packet)
 {
     if (dataSource)
     {
-        if (dataSource->vertexBuffer == rhi::InvalidHandle)
-        {
-            dataSource->BuildBuffers();
-        }
         packet.vertexStreamCount = 1;
         packet.vertexStream[0] = dataSource->vertexBuffer;
         packet.vertexStream[1] = rhi::HVertexBuffer();
