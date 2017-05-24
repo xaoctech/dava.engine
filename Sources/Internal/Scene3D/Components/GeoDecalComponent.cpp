@@ -16,12 +16,29 @@ Texture* GetSharedPinkTexture()
 
 DAVA_VIRTUAL_REFLECTION_IMPL(GeoDecalComponent)
 {
-    ReflectionRegistrator<GeoDecalComponent>::Begin()[M::CantBeCreatedManualyComponent()]
+    ReflectionRegistrator<GeoDecalComponent>::Begin()
     .ConstructorByPointer()
+    .Field("boundingBox", &GeoDecalComponent::GetBoundingBox, &GeoDecalComponent::SetBoundingBox)[M::DisplayName("Bounding Box")]
+    .Field("decalAlbedo", &GeoDecalComponent::GetDecalAlbedo, &GeoDecalComponent::SetDecalAlbedo)[M::DisplayName("Decal albedo")]
+    .Field("decalNormal", &GeoDecalComponent::GetDecalNormal, &GeoDecalComponent::SetDecalNormal)[M::DisplayName("Decal normal")]
+    .Field("textureMapping", &GeoDecalComponent::GetMapping, &GeoDecalComponent::SetMapping)[M::DisplayName("Texture mapping"), M::EnumT<GeoDecalManager::Mapping>()]
+    .Field("uvScale", &GeoDecalComponent::GetUVScale, &GeoDecalComponent::SetUVScale)[M::DisplayName("UV Scale")]
+    .Field("uvOffset", &GeoDecalComponent::GetUVOffset, &GeoDecalComponent::SetUVOffset)[M::DisplayName("UV Offset")]
+    .Field("rebakeOnTransform", &GeoDecalComponent::GetRebakeOnTransform, &GeoDecalComponent::SetRebakeOnTransform)[M::DisplayName("Rebake on transform")]
     .End();
 }
 
+GeoDecalComponent::GeoDecalComponent()
+{
+    init(0);
+}
+
 GeoDecalComponent::GeoDecalComponent(uint32 flags)
+{
+    init(flags);
+}
+
+void GeoDecalComponent::init(uint32 flags)
 {
     if ((flags & SuppressMaterialCreation) == 0)
     {
@@ -29,8 +46,6 @@ GeoDecalComponent::GeoDecalComponent(uint32 flags)
         sprintf(materialName, "Geo_Decal_Material_%p", reinterpret_cast<void*>(this));
 
         dataNodeMaterial.reset(new NMaterial());
-        dataNodeMaterial->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, GetSharedPinkTexture());
-        dataNodeMaterial->AddTexture(NMaterialTextureName::TEXTURE_NORMAL, GetSharedPinkTexture());
         dataNodeMaterial->SetMaterialName(FastName(materialName));
     }
 }
@@ -89,12 +104,25 @@ void GeoDecalComponent::GetDataNodes(Set<DataNode*>& dataNodes)
 
 void GeoDecalComponent::ConfigChanged()
 {
-    if (dataNodeMaterial.get() != nullptr)
+    if (dataNodeMaterial.get() == nullptr)
+        return;
+
+    if (FileSystem::Instance()->Exists(config.albedo))
     {
         ScopedPtr<Texture> albedoTexture(Texture::CreateFromFile(config.albedo));
+        if (dataNodeMaterial->HasLocalTexture(NMaterialTextureName::TEXTURE_ALBEDO))
+            dataNodeMaterial->SetTexture(NMaterialTextureName::TEXTURE_ALBEDO, albedoTexture);
+        else
+            dataNodeMaterial->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, albedoTexture);
+    }
+
+    if (FileSystem::Instance()->Exists(config.normal))
+    {
         ScopedPtr<Texture> normalTexture(Texture::CreateFromFile(config.normal));
-        dataNodeMaterial->SetTexture(NMaterialTextureName::TEXTURE_ALBEDO, albedoTexture);
-        dataNodeMaterial->SetTexture(NMaterialTextureName::TEXTURE_NORMAL, normalTexture);
+        if (dataNodeMaterial->HasLocalTexture(NMaterialTextureName::TEXTURE_NORMAL))
+            dataNodeMaterial->SetTexture(NMaterialTextureName::TEXTURE_NORMAL, normalTexture);
+        else
+            dataNodeMaterial->AddTexture(NMaterialTextureName::TEXTURE_NORMAL, normalTexture);
     }
 }
 }

@@ -166,7 +166,7 @@ void GeoDecalSystem::BuildDecal(Entity* entityWithDecal, GeoDecalComponent* comp
     component->GetBoundingBox().GetTransformedBox(entityWithDecal->GetWorldTransform(), worldSpaceBox);
 
     Vector<RenderableEntity> entities;
-    GatherRenderableEntitiesInBox(entityWithDecal->GetParent(), worldSpaceBox, entities);
+    GatherRenderableEntitiesInBox(entityWithDecal->GetScene(), worldSpaceBox, entities);
 
     RenderSystem* renderSystem = GetScene()->GetRenderSystem();
     GeoDecalManager* manager = renderSystem->GetGeoDecalManager();
