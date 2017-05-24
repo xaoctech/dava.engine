@@ -3,6 +3,7 @@
 #include "Reflection/ReflectionRegistrator.h"
 #include "Reflection/ReflectedMeta.h"
 #include "Render/Material/NMaterialNames.h"
+#include "FileSystem/FileSystem.h"
 
 namespace DAVA
 {
