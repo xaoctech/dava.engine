@@ -43,7 +43,7 @@ def main():
     for source in sources:
         for root, dirnames, filenames in os.walk(source):
             root = os.path.abspath(root)
-            if True in [fnmatch.fnmatch(root, x) for x in exclude]:
+            if any((fnmatch.fnmatch(root, x) for x in exclude)):
                 # Skip directories from exclude patterns list
                 continue
             for ext in extensions:
