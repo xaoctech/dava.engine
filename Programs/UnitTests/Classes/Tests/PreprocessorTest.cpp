@@ -139,7 +139,6 @@ DAVA_TESTCLASS (PreprocessorTest)
 
                 Snprintf(fname, countof(fname), "%s/%s", _base_dir, file_name);
                 _in = DAVA::File::Create(fname, DAVA::File::READ | DAVA::File::OPEN);
-                DVASSERT(_in);
 
                 return (_in) ? true : false;
             }
