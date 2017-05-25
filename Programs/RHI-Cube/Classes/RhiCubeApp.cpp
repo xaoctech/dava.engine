@@ -1,34 +1,278 @@
-#include "GameCore.h"
-    
+#include "RhiCubeApp.h"
+
     #include "Render/RHI/rhi_Public.h"
     #include "Render/RHI/Common/rhi_Private.h"
     #include "Render/RHI/Common/dbg_StatSet.h"
     #include "Render/RHI/rhi_ShaderCache.h"
     #include "Render/RHI/rhi_ShaderSource.h"
 
-    #include "Render/RHI/Common/PreProcess.h"
-    #include "Render/RHI/Common/PreProcessor.h"
-    #include "Render/RHI/Common/rhi_Utils.h"
-
-#include "Render/RenderBase.h"
+    #include "Engine/Engine.h"
+    #include "Render/RenderBase.h"
 
     #include "Render/RHI/dbg_Draw.h"
 
     #include "FileSystem/DynamicMemoryFile.h"
-    #include "Time/SystemTimer.h"
 
 using namespace DAVA;
 
-GameCore::GameCore()
-    : inited(false)
+RhiCubeApp::RhiCubeApp(DAVA::Engine& engine)
+{
+    engine.gameLoopStarted.Connect(this, &RhiCubeApp::OnAppStarted);
+    engine.windowCreated.Connect(this, &RhiCubeApp::OnWindowCreated);
+    engine.gameLoopStopped.Connect(this, &RhiCubeApp::OnAppFinished);
+    engine.suspended.Connect(this, &RhiCubeApp::OnSuspend);
+    engine.resumed.Connect(this, &RhiCubeApp::OnResume);
+    engine.beginFrame.Connect(this, &RhiCubeApp::BeginFrame);
+    engine.endFrame.Connect(this, &RhiCubeApp::EndFrame);
+
+    inited = false;
+}
+
+void RhiCubeApp::OnAppStarted()
+{
+/*
+    //    const char * src = "../../Tools/ResourceEditor/Data/Materials/Shaders/Default/materials-vp.sl";
+    const char* src = "../../Tools/ResourceEditor/Data/Materials/Shaders/Default/water-fp.sl";
+    //    const char * src = "../../Tools/ResourceEditor/Data/Materials/Shaders/ShadowVolume/shadowvolume-vp.sl";
+    File* file = File::Create(src, File::OPEN | File::READ);
+
+    if (file)
+    {
+        rhi::ShaderSource vp(src);
+        unsigned sz = file->GetSize();
+        char buf[64 * 1024];
+
+        DVASSERT(sz < sizeof(buf));
+        file->Read(buf, sz);
+        buf[sz] = '\0';
+
+        std::vector<std::string> defines;
+
+//        defines.push_back( "VERTEX_LIT" );
+//        defines.push_back( "1" );
+//        defines.push_back( "NORMALIZED_BLINN_PHONG" );
+//        defines.push_back( "1" );        
+
+        
+//        defines.push_back("FOG_LINEAR");defines.push_back("1");
+//        defines.push_back("SKINNING");defines.push_back("1");
+//        defines.push_back("VERTEX_FOG");defines.push_back("1");
+
+        defines.push_back("PIXEL_LIT");
+        defines.push_back("1");
+        defines.push_back("REAL_REFLECTION");
+        defines.push_back("1");
+
+        if (vp.Construct(rhi::PROG_FRAGMENT, buf, defines))
+        {
+            //            vp.InlineFunctions();
+            vp.GetSourceCode(rhi::HostApi());
+            vp.Dump();
+        }
+    }
+*/
+/*
+{
+    File*   file = File::CreateFromSystemPath( "../../Tools/ResourceEditor/Data/Materials/Shaders/Default/materials-vp.cg", File::OPEN|File::READ );
+    
+    if( file )
+    {
+        rhi::ShaderSource   vp;
+        uint32              sz = file->GetSize();
+        char                buf[64*1024];
+
+        DVASSERT(sz < sizeof(buf));
+        file->Read( buf, sz );
+        buf[sz] = '\0';
+
+
+        std::vector<std::string>    defines;
+        
+        defines.push_back( "VERTEX_LIT" );
+        defines.push_back( "1" );
+        if( vp.Construct( rhi::PROG_VERTEX, buf, defines ) )
+        {
+            vp.Dump();
+        }
+    }
+}
+{
+    File*   file = File::CreateFromSystemPath( "../../Tools/ResourceEditor/Data/Materials/Shaders/Default/materials-fp.cg", File::OPEN|File::READ );
+    
+    if( file )
+    {
+        rhi::ShaderSource   fp;
+        uint32              sz = file->GetSize();
+        char                buf[64*1024];
+
+        DVASSERT(sz < sizeof(buf));
+        file->Read( buf, sz );
+        buf[sz] = '\0';
+
+
+        std::vector<std::string>    defines;
+        
+        defines.push_back( "VERTEX_LIT" );
+        defines.push_back( "1" );
+        if( fp.Construct( rhi::PROG_FRAGMENT, buf, defines ) )
+        {
+            fp.Dump();
+        }
+    }
+}
+*/
+
+    #if defined(__DAVAENGINE_WIN32__)
+/*    
+    {
+        KeyedArchive* opt = new KeyedArchive();
+        char title[128] = "RHI Cube  -  ";
+
+        switch (rhi::HostApi())
+        {
+        case rhi::RHI_DX9:
+            strcat(title, "DX9");
+            break;
+        case rhi::RHI_DX11:
+            strcat(title, "DX11");
+            break;
+        case rhi::RHI_GLES2:
+            strcat(title, "GL");
+            break;
+        }
+
+        opt->SetInt32("fullscreen", 0);
+        opt->SetInt32("bpp", 32);
+        opt->SetString(String("title"), String(title));
+
+        DAVA::Core::Instance()->SetOptions(opt);
+    }
+*/
+    #endif
+}
+
+void RhiCubeApp::OnWindowCreated(DAVA::Window* w)
+{
+    const char* src = "test-vp.sl";
+
+    File* file = File::Create(src, File::OPEN | File::READ);
+
+    if (file)
+    {
+        rhi::ShaderSource vp(src);
+        unsigned sz = unsigned(file->GetSize());
+        char buf[64 * 1024];
+
+        DVASSERT(sz < sizeof(buf));
+        file->Read(buf, sz);
+        buf[sz] = '\0';
+
+        std::vector<std::string> defines;
+
+        if (vp.Construct(rhi::PROG_VERTEX, buf, defines))
+        {
+            vp.GetSourceCode(rhi::HostApi());
+            vp.Dump();
+        }
+    }
+    exit(0);
+
+    DbgDraw::EnsureInited();
+
+    //SetupTriangle();
+    SetupCube();
+    //SetupInstancedCube();
+    //    SetupTank();
+    rtInit();
+    mrtInit();
+
+    inited = true;
+}
+
+void RhiCubeApp::OnAppFinished()
 {
 }
 
-GameCore::~GameCore()
+void RhiCubeApp::OnSuspend()
 {
 }
 
-void GameCore::SetupTriangle()
+void RhiCubeApp::OnResume()
+{
+}
+
+void RhiCubeApp::BeginFrame()
+{
+}
+
+void RhiCubeApp::Draw(DAVA::Window* window)
+{
+    if (!inited)
+        return;
+
+    //    sceneRenderTest->Render();
+    //rhiDraw();
+    //manticoreDraw();
+    //DrawInstancedCube();
+    //rtDraw();
+    mrtDraw();
+    //    visibilityTestDraw();
+}
+
+void
+RhiCubeApp::EndFrame()
+{
+    //    SCOPED_NAMED_TIMING("GameCore::EndFrame");
+    rhi::Present();
+
+    // rendering stats
+    /*
+    {
+        const unsigned id[] =
+        {
+          rhi::stat_DIP,
+          rhi::stat_DP,
+          rhi::stat_SET_PS,
+          rhi::stat_SET_CB,
+          rhi::stat_SET_TEX
+        };
+        unsigned max_nl = 0;
+
+        for (unsigned i = 0; i != countof(id); ++i)
+        {
+            unsigned l = strlen(StatSet::StatFullName(id[i]));
+
+            if (l > max_nl)
+                max_nl = l;
+        }
+
+        const int w = VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dx;
+        const int h = VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dy;
+        const int x0 = w - 230;
+        const int x1 = x0 + (max_nl + 1) * (DbgDraw::SmallCharW + 1);
+        const int lh = DbgDraw::SmallCharH + 2;
+        int y = h - 200;
+
+        DbgDraw::SetSmallTextSize();
+        for (unsigned i = 0; i != countof(id); ++i, y += lh)
+        {
+            //        const uint32_t  clr = (i&0x1) ? Color4f(0.4f,0.4f,0.8f,1) : Color4f(0.4f,0.4f,1.0f,1);
+            const uint32_t clr = 0xFFFFFFFF;
+
+            //        DbgDraw::FilledRect2D( x0-8, y, x0+50*(DbgDraw::SmallCharW+1), y+lh );
+            DbgDraw::Text2D(x0, y, clr, StatSet::StatFullName(id[i]));
+            DbgDraw::Text2D(x1, y, clr, "= %u", StatSet::StatValue(id[i]));
+        }
+    }
+*/
+}
+
+void
+RhiCubeApp::CreateDocumentsFolder()
+{
+}
+
+void RhiCubeApp::SetupTriangle()
 {
     triangle.vb = rhi::HVertexBuffer(rhi::VertexBuffer::Create(3 * sizeof(VertexP)));
     triangle.v_cnt = 3;
@@ -105,7 +349,7 @@ void GameCore::SetupTriangle()
     triangle.fp_const = rhi::HConstBuffer(rhi::PipelineState::CreateFragmentConstBuffer(triangle.ps, 0));
 }
 
-void GameCore::SetupCube()
+void RhiCubeApp::SetupCube()
 {
     //    cube.vb = rhi::VertexBuffer::Create( 3*2*6*sizeof(VertexPNT_ex) );
     cube.vb = rhi::HVertexBuffer(rhi::VertexBuffer::Create(3 * 2 * 6 * sizeof(VertexPNT)));
@@ -338,7 +582,7 @@ void GameCore::SetupCube()
     cube_angle = 0;
 }
 
-void GameCore::rtInit()
+void RhiCubeApp::rtInit()
 {
     rtQuad.vb = rhi::HVertexBuffer(rhi::VertexBuffer::Create(3 * 2 * sizeof(VertexPT)));
 
@@ -444,7 +688,7 @@ void GameCore::rtInit()
     rtQuadBatch0.textureSet = rhi::AcquireTextureSet(tsDesc);
 }
 
-void GameCore::mrtInit()
+void RhiCubeApp::mrtInit()
 {
     cube_mrt.vb = cube.vb;
     cube_mrt.v_cnt = cube.v_cnt;
@@ -585,7 +829,7 @@ void GameCore::mrtInit()
     rtQuadBatch3.textureSet = rhi::AcquireTextureSet(tsDesc);
 }
 
-void GameCore::SetupTank()
+void RhiCubeApp::SetupTank()
 {
     SceneFileV2* sceneFile = new SceneFileV2();
     sceneFile->EnableDebugLog(false);
@@ -673,253 +917,7 @@ void GameCore::SetupTank()
     rhi::Handle tex;*/
 }
 
-static void
-_TestFile(const char* input_name, const char* output_name)
-{
-    PreProc pp;
-    std::vector<char> output;
-    //    StopWatch   sw;
-    uint64 pp_time;
-    uint64 mcpp_time;
-    uint64 t0;
-    DAVA::SystemTimer timer;
-
-    t0 = timer.GetUs();
-    if (pp.process_file(input_name, &output))
-    {
-        pp_time = timer.GetUs() - t0;
-
-        DAVA::File* out = DAVA::File::Create(output_name, DAVA::File::WRITE | DAVA::File::CREATE);
-
-        if (out)
-        {
-            out->Write(&(output[0]), output.size());
-            out->Release();
-        }
-    }
-
-    {
-        t0 = timer.GetUs();
-        DAVA::File* in = DAVA::File::Create(input_name, DAVA::File::READ | DAVA::File::OPEN);
-
-        if (in)
-        {
-            uint64 input_sz = in->GetSize();
-            char* input = (char*)::malloc(input_sz);
-            std::string output;
-            const char* argv[128];
-            unsigned argc = 0;
-            ShaderPreprocessScope crap;
-
-            in->Read(input, input_sz);
-            SetPreprocessCurFile(input_name);
-            PreProcessText(input, argv, argc, &output);
-            ::free(input);
-            in->Release();
-
-            mcpp_time = timer.GetUs() - t0;
-        }
-    }
-
-    DAVA::Logger::Info("%s", input_name);
-    DAVA::Logger::Info("  pp time   = %i us", int(pp_time));
-    DAVA::Logger::Info("  mcpp time = %i us", int(mcpp_time));
-}
-
-void GameCore::OnAppStarted()
-{
-    /*
-ExpressionEvaluator ev;
-ev.set_variable( "bla", 13 );
-const char* expr[] = { "2+2", "bla+7", "(5+3) / (3-1)", "3 + ((1+7)/2) + 1" };
-for( unsigned i=0; i!=countof(expr); ++i )
-{
-    float   res = 0;
-
-    if( ev.evaluate( expr[i], &res ) )
-        DAVA::Logger::Info( "%s = %.1f", expr[i], res );
-}
-exit(0);
-
-    _TestFile( "input-0.txt", "output-0.txt" );
-    exit(0);
-*/
-    /*
-    //    const char * src = "../../Tools/ResourceEditor/Data/Materials/Shaders/Default/materials-vp.sl";
-    const char* src = "../../Tools/ResourceEditor/Data/Materials/Shaders/Default/water-fp.sl";
-    //    const char * src = "../../Tools/ResourceEditor/Data/Materials/Shaders/ShadowVolume/shadowvolume-vp.sl";
-    File* file = File::Create(src, File::OPEN | File::READ);
-
-    if (file)
-    {
-        rhi::ShaderSource vp(src);
-        unsigned sz = file->GetSize();
-        char buf[64 * 1024];
-
-        DVASSERT(sz < sizeof(buf));
-        file->Read(buf, sz);
-        buf[sz] = '\0';
-
-        std::vector<std::string> defines;
-
-//        defines.push_back( "VERTEX_LIT" );
-//        defines.push_back( "1" );
-//        defines.push_back( "NORMALIZED_BLINN_PHONG" );
-//        defines.push_back( "1" );        
-
-        
-//        defines.push_back("FOG_LINEAR");defines.push_back("1");
-//        defines.push_back("SKINNING");defines.push_back("1");
-//        defines.push_back("VERTEX_FOG");defines.push_back("1");
-
-        defines.push_back("PIXEL_LIT");
-        defines.push_back("1");
-        defines.push_back("REAL_REFLECTION");
-        defines.push_back("1");
-
-        if (vp.Construct(rhi::PROG_FRAGMENT, buf, defines))
-        {
-            //            vp.InlineFunctions();
-            vp.GetSourceCode(rhi::HostApi());
-            vp.Dump();
-        }
-    }
-*/
-    /*
-{
-    File*   file = File::CreateFromSystemPath( "../../Tools/ResourceEditor/Data/Materials/Shaders/Default/materials-vp.cg", File::OPEN|File::READ );
-    
-    if( file )
-    {
-        rhi::ShaderSource   vp;
-        uint32              sz = file->GetSize();
-        char                buf[64*1024];
-
-        DVASSERT(sz < sizeof(buf));
-        file->Read( buf, sz );
-        buf[sz] = '\0';
-
-
-        std::vector<std::string>    defines;
-        
-        defines.push_back( "VERTEX_LIT" );
-        defines.push_back( "1" );
-        if( vp.Construct( rhi::PROG_VERTEX, buf, defines ) )
-        {
-            vp.Dump();
-        }
-    }
-}
-{
-    File*   file = File::CreateFromSystemPath( "../../Tools/ResourceEditor/Data/Materials/Shaders/Default/materials-fp.cg", File::OPEN|File::READ );
-    
-    if( file )
-    {
-        rhi::ShaderSource   fp;
-        uint32              sz = file->GetSize();
-        char                buf[64*1024];
-
-        DVASSERT(sz < sizeof(buf));
-        file->Read( buf, sz );
-        buf[sz] = '\0';
-
-
-        std::vector<std::string>    defines;
-        
-        defines.push_back( "VERTEX_LIT" );
-        defines.push_back( "1" );
-        if( fp.Construct( rhi::PROG_FRAGMENT, buf, defines ) )
-        {
-            fp.Dump();
-        }
-    }
-}
-*/
-
-    DbgDraw::EnsureInited();
-    
-    #if defined(__DAVAENGINE_WIN32__)
-    {
-        KeyedArchive* opt = new KeyedArchive();
-        char title[128] = "RHI Cube  -  ";
-
-        switch (rhi::HostApi())
-        {
-        case rhi::RHI_DX9:
-            strcat(title, "DX9");
-            break;
-        case rhi::RHI_DX11:
-            strcat(title, "DX11");
-            break;
-        case rhi::RHI_GLES2:
-            strcat(title, "GL");
-            break;
-        }
-
-        opt->SetInt32("fullscreen", 0);
-        opt->SetInt32("bpp", 32);
-        opt->SetString(String("title"), String(title));
-
-        DAVA::Core::Instance()->SetOptions(opt);
-    }
-    #endif
-
-    //SetupTriangle();
-    SetupCube();
-    //SetupInstancedCube();
-    //    SetupTank();
-    rtInit();
-    mrtInit();
-
-    inited = true;
-}
-
-void GameCore::OnAppFinished()
-{
-    DbgDraw::Uninitialize();
-    //-    rhi::Uninitialize();
-}
-
-void GameCore::OnSuspend()
-{
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-    ApplicationCore::OnSuspend();
-#endif
-}
-
-void GameCore::OnResume()
-{
-    ApplicationCore::OnResume();
-}
-
-
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-void GameCore::OnDeviceLocked()
-{
-    Core::Instance()->Quit();
-}
-
-void GameCore::OnBackground()
-{
-}
-
-void GameCore::OnForeground()
-{
-    ApplicationCore::OnForeground();
-}
-
-#endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
-
-void GameCore::Update(float32 timeElapsed)
-{
-    //    sceneRenderTest->Update(timeElapsed);
-}
-
-void GameCore::BeginFrame()
-{
-}
-
-void GameCore::DrawTank()
+void RhiCubeApp::DrawTank()
 {
     /*
     rhi::RenderPassConfig   pass_desc;
@@ -976,7 +974,7 @@ void GameCore::DrawTank()
 */
 }
 
-void GameCore::SetupInstancedCube()
+void RhiCubeApp::SetupInstancedCube()
 {
     icube.vb = rhi::HVertexBuffer(rhi::VertexBuffer::Create(3 * 2 * 6 * sizeof(VertexPNT)));
 
@@ -1161,7 +1159,7 @@ void GameCore::SetupInstancedCube()
     icube_angle = 0;
 }
 
-void GameCore::DrawInstancedCube()
+void RhiCubeApp::DrawInstancedCube()
 {
 //    SCOPED_NAMED_TIMING("app-draw");
     #define USE_SECOND_CB 1
@@ -1170,13 +1168,14 @@ void GameCore::DrawInstancedCube()
     float clr[4] = { 1.0f, 0.6f, 0.0f, 1.0f };
     Matrix4 view;
     Matrix4 projection;
+    VirtualCoordinatesSystem* vcs = DAVA::UIControlSystem::Instance()->vcs;
 
     StatSet::ResetAll();
 
     projection.Identity();
-    view.BuildProjectionFovLH(75.0f, float(VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dx) / float(VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dy), 1.0f, 1000.0f);
+    view.BuildProjectionFovLH(75.0f, float(vcs->GetPhysicalScreenSize().dx) / float(vcs->GetPhysicalScreenSize().dy), 1.0f, 1000.0f);
 
-    DbgDraw::SetScreenSize(VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dx, VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dy);
+    DbgDraw::SetScreenSize(vcs->GetPhysicalScreenSize().dx, vcs->GetPhysicalScreenSize().dy);
 
     {
         char title[128] = "RHI Cube  -  ";
@@ -1236,7 +1235,7 @@ void GameCore::DrawInstancedCube()
     //world *= Matrix4::MakeScale(Vector3(0.5f, 0.5f, 0.5f));
 
     view_proj.Identity();
-    view_proj.BuildProjectionFovLH(75.0f, float(VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dx) / float(VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dy), 1.0f, 1000.0f);
+    view_proj.BuildProjectionFovLH(75.0f, float(vcs->GetPhysicalScreenSize().dx) / float(vcs->GetPhysicalScreenSize().dy), 1.0f, 1000.0f);
 
     //    rhi::ConstBuffer::SetConst(icube.fp_const, 0, 1, clr);
     rhi::ConstBuffer::SetConst(icube.vp_const[0], 0, 4, view_proj.data);
@@ -1306,23 +1305,9 @@ void GameCore::DrawInstancedCube()
     #undef USE_SECOND_CB
 }
 
-void GameCore::Draw()
+void RhiCubeApp::rhiDraw()
 {
-    if (!inited)
-        return;
-
-    //    sceneRenderTest->Render();
-    //rhiDraw();
-    //manticoreDraw();
-    //DrawInstancedCube();
-    //rtDraw();
-    mrtDraw();
-    //    visibilityTestDraw();
-}
-
-void GameCore::rhiDraw()
-{
-//    SCOPED_NAMED_TIMING("GameCore::Draw");
+//    SCOPED_NAMED_TIMING("RhiCubeApp::Draw");
 //-    ApplicationCore::BeginFrame();
 
 #define DRAW_TANK 0
@@ -1440,7 +1425,7 @@ void GameCore::rhiDraw()
     #undef USE_SECOND_CB
 }
 
-void GameCore::manticoreDraw()
+void RhiCubeApp::manticoreDraw()
 {
 //    SCOPED_NAMED_TIMING("app-draw");
     #define USE_SECOND_CB 0
@@ -1449,13 +1434,14 @@ void GameCore::manticoreDraw()
     float clr[4] = { 1.0f, 0.6f, 0.0f, 1.0f };
     Matrix4 view;
     Matrix4 projection;
+    VirtualCoordinatesSystem* vcs = DAVA::UIControlSystem::Instance()->vcs;
 
     StatSet::ResetAll();
 
     projection.Identity();
-    view.BuildProjectionFovLH(75.0f, float(VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dx) / float(VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dy), 1.0f, 1000.0f);
+    view.BuildProjectionFovLH(75.0f, float(vcs->GetPhysicalScreenSize().dx) / float(vcs->GetPhysicalScreenSize().dy), 1.0f, 1000.0f);
 
-    DbgDraw::SetScreenSize(VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dx, VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dy);
+    DbgDraw::SetScreenSize(vcs->GetPhysicalScreenSize().dx, vcs->GetPhysicalScreenSize().dy);
 
     {
         char title[128] = "RHI Cube  -  ";
@@ -1566,7 +1552,7 @@ void GameCore::manticoreDraw()
     //world *= Matrix4::MakeScale(Vector3(0.5f, 0.5f, 0.5f));
 
     view_proj.Identity();
-    view_proj.BuildProjectionFovLH(75.0f, float(VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dx) / float(VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dy), 1.0f, 1000.0f);
+    view_proj.BuildProjectionFovLH(75.0f, float(vcs->GetPhysicalScreenSize().dx) / float(vcs->GetPhysicalScreenSize().dy), 1.0f, 1000.0f);
 
     rhi::ConstBuffer::SetConst(cube.fp_const, 0, 1, clr);
     rhi::ConstBuffer::SetConst(cube.vp_const[0], 0, 4, view_proj.data);
@@ -1638,7 +1624,7 @@ void GameCore::manticoreDraw()
     #undef USE_SECOND_CB
 }
 
-void GameCore::visibilityTestDraw()
+void RhiCubeApp::visibilityTestDraw()
 {
     rhi::RenderPassConfig pass_desc;
     float clr[4] = { 1.0f, 0.6f, 0.0f, 1.0f };
@@ -1647,13 +1633,14 @@ void GameCore::visibilityTestDraw()
     static bool visiblityTestDone = false;
     static int visiblityTestRepeatTTW = 0;
     static rhi::HQueryBuffer visibilityBuffer(rhi::InvalidHandle);
+    VirtualCoordinatesSystem* vcs = DAVA::UIControlSystem::Instance()->vcs;
 
     StatSet::ResetAll();
 
     projection.Identity();
-    view.BuildProjectionFovLH(75.0f, float(VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dx) / float(VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dy), 1.0f, 1000.0f);
+    view.BuildProjectionFovLH(75.0f, float(vcs->GetPhysicalScreenSize().dx) / float(vcs->GetPhysicalScreenSize().dy), 1.0f, 1000.0f);
 
-    DbgDraw::SetScreenSize(VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dx, VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dy);
+    DbgDraw::SetScreenSize(vcs->GetPhysicalScreenSize().dx, vcs->GetPhysicalScreenSize().dy);
 
     {
         char title[128] = "RHI Cube  -  ";
@@ -1734,7 +1721,7 @@ void GameCore::visibilityTestDraw()
     //world *= Matrix4::MakeScale(Vector3(0.5f, 0.5f, 0.5f));
 
     view_proj.Identity();
-    view_proj.BuildProjectionFovLH(75.0f, float(VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dx) / float(VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dy), 1.0f, 1000.0f);
+    view_proj.BuildProjectionFovLH(75.0f, float(vcs->GetPhysicalScreenSize().dx) / float(vcs->GetPhysicalScreenSize().dy), 1.0f, 1000.0f);
 
     rhi::ConstBuffer::SetConst(cube.fp_const, 0, 1, clr);
     rhi::ConstBuffer::SetConst(cube.vp_const[0], 0, 4, view_proj.data);
@@ -1789,7 +1776,7 @@ void GameCore::visibilityTestDraw()
     }
 }
 
-void GameCore::rtDraw()
+void RhiCubeApp::rtDraw()
 {
     #define USE_SECOND_CB 1
     #define USE_RT 1
@@ -1830,6 +1817,7 @@ void GameCore::rtDraw()
 
         Matrix4 world;
         Matrix4 view_proj;
+        VirtualCoordinatesSystem* vcs = DAVA::UIControlSystem::Instance()->vcs;
 
         world.Identity();
         world.CreateRotation(Vector3(0, 1, 0), cube_angle);
@@ -1838,7 +1826,7 @@ void GameCore::rtDraw()
         //world *= Matrix4::MakeScale(Vector3(0.5f, 0.5f, 0.5f));
 
         view_proj.Identity();
-        view_proj.BuildProjectionFovLH(75.0f, float(VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dx) / float(VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dy), 1.0f, 1000.0f);
+        view_proj.BuildProjectionFovLH(75.0f, float(vcs->GetPhysicalScreenSize().dx) / float(vcs->GetPhysicalScreenSize().dy), 1.0f, 1000.0f);
 
         rhi::ConstBuffer::SetConst(cube.fp_const, 0, 1, clr);
         rhi::ConstBuffer::SetConst(cube.vp_const[0], 0, 4, view_proj.data);
@@ -1901,6 +1889,7 @@ void GameCore::rtDraw()
     #if USE_RT
     {
         rhi::RenderPassConfig pass_desc;
+        VirtualCoordinatesSystem* vcs = DAVA::UIControlSystem::Instance()->vcs;
 
         pass_desc.colorBuffer[0].loadAction = rhi::LOADACTION_CLEAR;
         pass_desc.colorBuffer[0].storeAction = rhi::STOREACTION_STORE;
@@ -1919,7 +1908,7 @@ void GameCore::rtDraw()
 
         Matrix4 world;
         Matrix4 view_proj;
-        float ratio = float(VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dx) / float(VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dy);
+        float ratio = float(vcs->GetPhysicalScreenSize().dx) / float(vcs->GetPhysicalScreenSize().dy);
 
         world = Matrix4::MakeRotation(Vector3(0, 1, 0), (30.0f * 3.1415f / 180.0f)) * Matrix4::MakeScale(Vector3(ratio, 1, 1));
         world.SetTranslationVector(Vector3(-2, 0, 15));
@@ -1941,10 +1930,12 @@ void GameCore::rtDraw()
     #undef USE_RT
 }
 
-void GameCore::mrtDraw()
+void RhiCubeApp::mrtDraw()
 {
     #define USE_SECOND_CB 0
     #define USE_RT 1
+
+    VirtualCoordinatesSystem* vcs = DAVA::UIControlSystem::Instance()->vcs;
 
     // draw scene into render-target
     {
@@ -1998,7 +1989,7 @@ void GameCore::mrtDraw()
         rhi::RenderPass::Begin(pass);
         rhi::BeginPacketList(pl[0]);
 
-        uint64 cube_t1 = SystemTimer::Instance()->AbsoluteMS();
+        uint64 cube_t1 = SystemTimer::GetMs();
         uint64 dt = cube_t1 - cube_t0;
 
         cube_angle += 0.001f * float(dt) * (30.0f * 3.1415f / 180.0f);
@@ -2014,7 +2005,7 @@ void GameCore::mrtDraw()
         //world *= Matrix4::MakeScale(Vector3(0.5f, 0.5f, 0.5f));
 
         view_proj.Identity();
-        view_proj.BuildProjectionFovLH(75.0f, float(VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dx) / float(VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dy), 1.0f, 1000.0f);
+        view_proj.BuildProjectionFovLH(75.0f, float(vcs->GetPhysicalScreenSize().dx) / float(vcs->GetPhysicalScreenSize().dy), 1.0f, 1000.0f);
 
         rhi::ConstBuffer::SetConst(cube_mrt.fp_const, 0, 1, clr);
         rhi::ConstBuffer::SetConst(cube_mrt.vp_const[0], 0, 4, view_proj.data);
@@ -2095,7 +2086,7 @@ void GameCore::mrtDraw()
 
         Matrix4 world;
         Matrix4 view_proj;
-        float ratio = float(VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dx) / float(VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dy);
+        float ratio = float(vcs->GetPhysicalScreenSize().dx) / float(vcs->GetPhysicalScreenSize().dy);
 
         // target-0
         {
@@ -2144,54 +2135,7 @@ void GameCore::mrtDraw()
     #undef USE_RT
 }
 
-void GameCore::EndFrame()
-{
-    //    SCOPED_NAMED_TIMING("GameCore::EndFrame");
-    rhi::Present();
-
-    // rendering stats
-    /*
-    {
-        const unsigned id[] =
-        {
-          rhi::stat_DIP,
-          rhi::stat_DP,
-          rhi::stat_SET_PS,
-          rhi::stat_SET_CB,
-          rhi::stat_SET_TEX
-        };
-        unsigned max_nl = 0;
-
-        for (unsigned i = 0; i != countof(id); ++i)
-        {
-            unsigned l = strlen(StatSet::StatFullName(id[i]));
-
-            if (l > max_nl)
-                max_nl = l;
-        }
-
-        const int w = VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dx;
-        const int h = VirtualCoordinatesSystem::Instance()->GetPhysicalScreenSize().dy;
-        const int x0 = w - 230;
-        const int x1 = x0 + (max_nl + 1) * (DbgDraw::SmallCharW + 1);
-        const int lh = DbgDraw::SmallCharH + 2;
-        int y = h - 200;
-
-        DbgDraw::SetSmallTextSize();
-        for (unsigned i = 0; i != countof(id); ++i, y += lh)
-        {
-            //        const uint32_t  clr = (i&0x1) ? Color4f(0.4f,0.4f,0.8f,1) : Color4f(0.4f,0.4f,1.0f,1);
-            const uint32_t clr = 0xFFFFFFFF;
-
-            //        DbgDraw::FilledRect2D( x0-8, y, x0+50*(DbgDraw::SmallCharW+1), y+lh );
-            DbgDraw::Text2D(x0, y, clr, StatSet::StatFullName(id[i]));
-            DbgDraw::Text2D(x1, y, clr, "= %u", StatSet::StatValue(id[i]));
-        }
-    }
-*/
-}
-
-void GameCore::ScreenShotCallback(uint32 width, uint32 height, const void* rgba)
+void RhiCubeApp::ScreenShotCallback(uint32 width, uint32 height, const void* rgba)
 {
     DAVA::Logger::Info("saving screenshot");
 
@@ -2206,4 +2150,65 @@ void GameCore::ScreenShotCallback(uint32 width, uint32 height, const void* rgba)
         img->Save(fname);
         DAVA::Logger::Info("saved screenshot \"%s\"", fname);
     }
+}
+
+DAVA::KeyedArchive* CreateOptions()
+{
+    DAVA::KeyedArchive* appOptions = new DAVA::KeyedArchive();
+
+    appOptions->SetInt32("shader_const_buffer_size", 4 * 1024 * 1024);
+
+    appOptions->SetInt32("max_index_buffer_count", 3 * 1024);
+    appOptions->SetInt32("max_vertex_buffer_count", 3 * 1024);
+    appOptions->SetInt32("max_const_buffer_count", 16 * 1024);
+    appOptions->SetInt32("max_texture_count", 2048);
+    appOptions->SetInt32("max_texture_set_count", 2048);
+    appOptions->SetInt32("max_sampler_state_count", 128);
+    appOptions->SetInt32("max_pipeline_state_count", 1024);
+    appOptions->SetInt32("max_depthstencil_state_count", 256);
+    appOptions->SetInt32("max_render_pass_count", 64);
+    appOptions->SetInt32("max_command_buffer_count", 64);
+    appOptions->SetInt32("max_packet_list_count", 64);
+
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+    appOptions->SetInt32("renderer", rhi::RHI_GLES2);
+    //appOptions->SetInt32("renderer", rhi::RHI_METAL);
+    appOptions->SetInt32("rhi_threaded_frame_count", 1);
+    appOptions->SetBool("iPhone_autodetectScreenScaleFactor", true);
+
+#elif defined(__DAVAENGINE_WIN_UAP__)
+    appOptions->SetInt32("bpp", 32);
+    appOptions->SetInt32("renderer", rhi::RHI_DX11);
+    appOptions->SetInt32("rhi_threaded_frame_count", 1);
+
+#else
+#if defined(__DAVAENGINE_WIN32__)
+    //appOptions->SetInt32("renderer", rhi::RHI_DX9);
+    //appOptions->SetInt32("renderer", rhi::RHI_DX9);
+    appOptions->SetInt32("renderer", rhi::RHI_GLES2);
+    appOptions->SetInt32("rhi_threaded_frame_count", 1);
+#elif defined(__DAVAENGINE_MACOS__)
+    appOptions->SetInt32("renderer", rhi::RHI_GLES2);
+#endif
+
+    //appOptions->SetInt("fullscreen.width",    1280);
+    //appOptions->SetInt("fullscreen.height", 800);
+
+    appOptions->SetInt32("bpp", 32);
+#endif
+
+    return appOptions;
+}
+
+int DAVAMain(DAVA::Vector<DAVA::String> cmdline)
+{
+    DAVA::Vector<DAVA::String> modules =
+    {
+      "JobManager"
+    };
+    DAVA::Engine e;
+    e.Init(DAVA::eEngineRunMode::GUI_STANDALONE, modules, CreateOptions());
+
+    RhiCubeApp app(e);
+    return e.Run();
 }
