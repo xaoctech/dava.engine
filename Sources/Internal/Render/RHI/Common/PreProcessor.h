@@ -6,8 +6,7 @@
 
 typedef std::vector<char> TextBuf;
 
-class
-PreProc
+class PreProc
 {
 public:
     class FileCallback;
@@ -25,8 +24,7 @@ public:
     void Dump() const;
 
 public:
-    class
-    FileCallback
+    class FileCallback
     {
     public:
         virtual ~FileCallback()
@@ -58,8 +56,7 @@ private:
     int GetNameAndValue(char* txt, char** name, char** value, char** end) const;
     void ReportExprEvalError(unsigned line_n);
 
-    struct
-    Line
+    struct Line
     {
         char* text;
         unsigned line_n;
@@ -71,14 +68,12 @@ private:
         }
     };
 
-    struct
-    Buffer
+    struct Buffer
     {
         void* mem;
     };
 
-    struct
-    Var
+    struct Var
     {
         char name[64];
         int val;
@@ -92,8 +87,7 @@ private:
     FileCallback* fileCB;
     const char* curFileName;
 
-    class
-    DefaultFileCallback
+    class DefaultFileCallback
     : public FileCallback
     {
     public:
@@ -126,8 +120,7 @@ private:
         DAVA::File* in = nullptr;
     };
 
-    struct
-    macro_t
+    struct macro_t
     {
         char name[128];
         char value[128];
