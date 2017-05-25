@@ -4,7 +4,6 @@
 #include "Base/FastName.h"
 #include "Functional/Signal.h"
 #include "Input/InputDevice.h"
-#include "Input/InputElements.h"
 
 namespace DAVA
 {
@@ -19,15 +18,17 @@ class ActionSystemImpl;
 */
 
 /**
-    \ingroup actions
-    Describes an action triggered by `ActionSystem`.
+    \addtogroup actions
+    \{
 */
+
+/** Describes an action triggered by the `ActionSystem`. */
 struct Action final
 {
     /** Id of the action */
     FastName actionId;
 
-    /** Id of the device whose event triggered the action. This value is never null */
+    /** Id of the device whose event triggered the action. This field is always non-null. */
     InputDevice* triggeredDevice;
 
     /**
@@ -41,13 +42,10 @@ struct Action final
 struct DigitalBinding;
 struct AnalogBinding;
 
-/**
-    \ingroup actions
-    Specified list of bindings for action system.
-*/
+/**  Specifies list of bindings for action system. */
 struct ActionSet final
 {
-    /** Name of the set */
+    /** Name of the set. */
     String name;
 
     /** List of bindings to digital elements. */
@@ -58,12 +56,11 @@ struct ActionSet final
 };
 
 /**
-    \ingroup actions
-    Class which is responsible for binding action sets and notifying when action is triggered.
+    Class which is responsible for binding action sets and notifying when an action is triggered.
     `BindSet` function is used to bind an action set.
     `ActionTriggered` is emitted when an action is triggered.
 
-    Usage example:
+    Below is the example of binding a set with two actions and handling these actions:
     \code
     void OnEnterBattle()
     {
@@ -72,20 +69,21 @@ struct ActionSet final
         ActionSet set;
         
         // Fire with a gamepad's X button
+        // Will be triggered continuously as user holds a X button, since we bind to Pressed state
         DigitalBinding fireBinding;
         fireBinding.actionId = FIRE;
         fireBinding.digitalElements[0] = eInputElements::GAMEPAD_X;
-        fireBinding.digitalStates[0] = DigitalElementState(eDigitalElementStates::PRESSED);
+        fireBinding.digitalStates[0] = DigitalElementState::Pressed();
         set.digitalBindings.push_back(fireBinding);
         
         // Move with left thumb
+        // Will be triggered whenever thumb's position changes
         AnalogBinding moveBinding;
         moveBinding.actionId = MOVE;
         moveBinding.analogElementId = eInputElements::GAMEPAD_AXIS_LTHUMB;
         set.analogBindings.push_back(moveBinding);
 
         ActionSystem* actionSystem = GetEngineContext()->actionSystem;
-
         actionSystem->BindSet(set);
         actionSystem->ActionTriggered.Connect(&OnAction);
     }
@@ -103,7 +101,6 @@ struct ActionSet final
             // Move a character
         }
     }
-
     \endcode
 */
 class ActionSystem final
@@ -111,25 +108,17 @@ class ActionSystem final
     friend class Private::EngineBackend; // For creation
 
 public:
-    /**
-        Binds an action set to a specific device. If there's already a set binded to the same device, it will be replaced by the new one.
-        All binding requirements will be checked only on this device.
-        Useful for local multiplayer setup, since we can bind one set to a gamepad-1 and another set to a gamepad-2.
-    */
+    /** Binds an action set to a specific device. */
     void BindSet(const ActionSet& actionSet, uint32 deviceId);
 
-    /**
-        Binds an action set to two devices. If there's already a set binded to a device, it will be replaced by the new one.
-        All binding requirements will be checked only on these devices.
-        Can be used to bind a set to a keyboard and mouse in local multiplayer setup.
-    */
+    /** Binds an action set to two specific devices (e.g. to a keyboard and a mouse). */
     void BindSet(const ActionSet& actionSet, uint32 deviceId1, uint32 deviceId2);
 
     /** Unbind all the sets. */
     void UnbindAllSets();
 
 public:
-    /** Emits when an action is triggered */
+    /** Emits when an action is triggered. */
     Signal<Action> ActionTriggered;
 
 public:
@@ -147,10 +136,7 @@ private:
     Private::ActionSystemImpl* impl = nullptr;
 };
 
-/**
-    \ingroup actions
-    Describes an action bound to a number of digital elements.
-*/
+/** Describes an action bound to a number of digital elements. */
 struct DigitalBinding final
 {
     DigitalBinding()
@@ -158,7 +144,7 @@ struct DigitalBinding final
         std::fill(digitalElements.begin(), digitalElements.end(), eInputElements::NONE);
     }
 
-    /** Id of the action to trigger */
+    /** Id of the action to trigger. */
     FastName actionId;
 
     /**
@@ -169,7 +155,7 @@ struct DigitalBinding final
 
     /**
         Array of digital element states which are required for the action to be triggered.
-        digitalStates[i] is required state for digitalElements[i].
+        digitalStates[i] is a required state for digitalElements[i].
     */
     Array<DigitalElementState, ActionSystem::MAX_DIGITAL_STATES_COUNT> digitalStates;
 
@@ -193,7 +179,6 @@ struct DigitalBinding final
 };
 
 /**
-    \ingroup actions
     Describes an action bound to an analog element.
 
     Additional digital modifiers can be specified.
@@ -224,4 +209,8 @@ struct AnalogBinding final
     */
     Array<DigitalElementState, ActionSystem::MAX_DIGITAL_STATES_COUNT> digitalStates;
 };
+
+/**
+    \}
+*/
 }

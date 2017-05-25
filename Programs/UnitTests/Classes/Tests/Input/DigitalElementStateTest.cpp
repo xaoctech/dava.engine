@@ -72,7 +72,7 @@ DAVA_TESTCLASS (DigitalElementStateTestClass)
         TEST_VERIFY(state.IsJustReleased());
         TEST_VERIFY(!state.IsPressed());
         TEST_VERIFY(!state.IsJustPressed());
-        
+
         // OnEndFrame -> released
         state.OnEndFrame();
         TEST_VERIFY(state.IsReleased());

@@ -23,6 +23,16 @@ TouchScreen::~TouchScreen()
     Private::EngineBackend::Instance()->UninstallEventFilter(this);
 }
 
+DigitalElementState TouchScreen::GetTouchStateByIndex(size_t i) const
+{
+    return GetDigitalElementState(static_cast<eInputElements>(eInputElements::TOUCH_FIRST_CLICK + i));
+}
+
+AnalogElementState TouchScreen::GetTouchPositionByIndex(size_t i) const
+{
+    return GetAnalogElementState(static_cast<eInputElements>(eInputElements::TOUCH_FIRST_POSITION + i));
+}
+
 bool TouchScreen::IsElementSupported(eInputElements elementId) const
 {
     return IsTouchInputElement(elementId);
@@ -30,13 +40,13 @@ bool TouchScreen::IsElementSupported(eInputElements elementId) const
 
 DigitalElementState TouchScreen::GetDigitalElementState(eInputElements elementId) const
 {
-    DVASSERT(IsTouchClickElement(elementId) && IsElementSupported(elementId));
+    DVASSERT(IsTouchClickInputElement(elementId) && IsElementSupported(elementId));
     return clicks[elementId - eInputElements::TOUCH_FIRST_CLICK];
 }
 
 AnalogElementState TouchScreen::GetAnalogElementState(eInputElements elementId) const
 {
-    DVASSERT(IsTouchPositionElement(elementId) && IsElementSupported(elementId));
+    DVASSERT(IsTouchPositionInputElement(elementId) && IsElementSupported(elementId));
     return positions[elementId - eInputElements::TOUCH_FIRST_POSITION];
 }
 

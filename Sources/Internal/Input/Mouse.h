@@ -13,6 +13,7 @@ struct MainDispatcherEvent;
 
 /**
     \ingroup input
+    
     Represents mouse input device.
 */
 class Mouse final : public InputDevice
@@ -20,16 +21,45 @@ class Mouse final : public InputDevice
     friend class DeviceManager; // For creation
 
 public:
+    /**
+        Return state of a left button.
+
+        \note It's essentialy a shorter and more readable placeholder for `GetDigitalElementState(eInputElements::MOUSE_LBUTTON)`.
+    */
+    DigitalElementState GetLeftButtonState() const;
+
+    /**
+        Return state of a right button.
+
+        \note It's essentialy a shorter and more readable placeholder for `GetDigitalElementState(eInputElements::MOUSE_RBUTTON)`.
+    */
+    DigitalElementState GetRightButtonState() const;
+
+    /**
+        Return state of a middle button.
+
+        \note It's essentialy a shorter and more readable placeholder for `GetDigitalElementState(eInputElements::MOUSE_MBUTTON)`.
+    */
+    DigitalElementState GetMiddleButtonState() const;
+
+    /**
+        Return mouse position.
+
+        \note It's essentialy a shorter and more readable placeholder for `GetAnalogElementState(eInputElements::MOUSE_POSITION)`.
+    */
+    AnalogElementState GetPosition() const;
+
+    /**
+        Return first button which is pressed right now, in this order: left, right, middle, ext1, ext2.
+        If all buttons are released, eInputElements::NONE will be returned.
+    */
+    eInputElements GetFirstPressedButton() const;
+
     // InputDevice overrides
+
     bool IsElementSupported(eInputElements elementId) const override;
     DigitalElementState GetDigitalElementState(eInputElements elementId) const override;
     AnalogElementState GetAnalogElementState(eInputElements elementId) const override;
-
-    /**
-        Return first button element which is pressed right now.
-        If all buttons are released, return eInputElements::NONE.
-    */
-    eInputElements GetFirstPressedButton() const;
 
 private:
     explicit Mouse(uint32 id);

@@ -56,8 +56,8 @@ DAVA_TESTCLASS (InputElementsTestClass)
             TEST_VERIFY(!IsGamepadButtonInputElement(element));
             TEST_VERIFY(!IsGamepadAxisInputElement(element));
             TEST_VERIFY(!IsTouchInputElement(element));
-            TEST_VERIFY(!IsTouchClickElement(element));
-            TEST_VERIFY(!IsTouchPositionElement(element));
+            TEST_VERIFY(!IsTouchClickInputElement(element));
+            TEST_VERIFY(!IsTouchPositionInputElement(element));
         }
 
         // Mouse
@@ -78,8 +78,8 @@ DAVA_TESTCLASS (InputElementsTestClass)
             TEST_VERIFY(!IsGamepadButtonInputElement(element));
             TEST_VERIFY(!IsGamepadAxisInputElement(element));
             TEST_VERIFY(!IsTouchInputElement(element));
-            TEST_VERIFY(!IsTouchClickElement(element));
-            TEST_VERIFY(!IsTouchPositionElement(element));
+            TEST_VERIFY(!IsTouchClickInputElement(element));
+            TEST_VERIFY(!IsTouchPositionInputElement(element));
         }
 
         InputElementInfo mouseWheelInfo = GetInputElementInfo(eInputElements::MOUSE_WHEEL);
@@ -94,8 +94,8 @@ DAVA_TESTCLASS (InputElementsTestClass)
         TEST_VERIFY(!IsGamepadButtonInputElement(eInputElements::MOUSE_WHEEL));
         TEST_VERIFY(!IsGamepadAxisInputElement(eInputElements::MOUSE_WHEEL));
         TEST_VERIFY(!IsTouchInputElement(eInputElements::MOUSE_WHEEL));
-        TEST_VERIFY(!IsTouchClickElement(eInputElements::MOUSE_WHEEL));
-        TEST_VERIFY(!IsTouchPositionElement(eInputElements::MOUSE_WHEEL));
+        TEST_VERIFY(!IsTouchClickInputElement(eInputElements::MOUSE_WHEEL));
+        TEST_VERIFY(!IsTouchPositionInputElement(eInputElements::MOUSE_WHEEL));
 
         InputElementInfo mousePositionInfo = GetInputElementInfo(eInputElements::MOUSE_POSITION);
         TEST_VERIFY(!mousePositionInfo.name.empty());
@@ -109,8 +109,8 @@ DAVA_TESTCLASS (InputElementsTestClass)
         TEST_VERIFY(!IsGamepadButtonInputElement(eInputElements::MOUSE_POSITION));
         TEST_VERIFY(!IsGamepadAxisInputElement(eInputElements::MOUSE_POSITION));
         TEST_VERIFY(!IsTouchInputElement(eInputElements::MOUSE_POSITION));
-        TEST_VERIFY(!IsTouchClickElement(eInputElements::MOUSE_POSITION));
-        TEST_VERIFY(!IsTouchPositionElement(eInputElements::MOUSE_POSITION));
+        TEST_VERIFY(!IsTouchClickInputElement(eInputElements::MOUSE_POSITION));
+        TEST_VERIFY(!IsTouchPositionInputElement(eInputElements::MOUSE_POSITION));
 
         // Gamepad
 
@@ -130,8 +130,8 @@ DAVA_TESTCLASS (InputElementsTestClass)
             TEST_VERIFY(IsGamepadButtonInputElement(element));
             TEST_VERIFY(!IsGamepadAxisInputElement(element));
             TEST_VERIFY(!IsTouchInputElement(element));
-            TEST_VERIFY(!IsTouchClickElement(element));
-            TEST_VERIFY(!IsTouchPositionElement(element));
+            TEST_VERIFY(!IsTouchClickInputElement(element));
+            TEST_VERIFY(!IsTouchPositionInputElement(element));
         }
 
         for (uint32 i = static_cast<uint32>(eInputElements::GAMEPAD_FIRST_AXIS); i <= static_cast<uint32>(eInputElements::GAMEPAD_LAST_AXIS); ++i)
@@ -150,8 +150,8 @@ DAVA_TESTCLASS (InputElementsTestClass)
             TEST_VERIFY(!IsGamepadButtonInputElement(element));
             TEST_VERIFY(IsGamepadAxisInputElement(element));
             TEST_VERIFY(!IsTouchInputElement(element));
-            TEST_VERIFY(!IsTouchClickElement(element));
-            TEST_VERIFY(!IsTouchPositionElement(element));
+            TEST_VERIFY(!IsTouchClickInputElement(element));
+            TEST_VERIFY(!IsTouchPositionInputElement(element));
         }
 
         // Touch screen
@@ -172,8 +172,8 @@ DAVA_TESTCLASS (InputElementsTestClass)
             TEST_VERIFY(!IsGamepadButtonInputElement(element));
             TEST_VERIFY(!IsGamepadAxisInputElement(element));
             TEST_VERIFY(IsTouchInputElement(element));
-            TEST_VERIFY(IsTouchClickElement(element));
-            TEST_VERIFY(!IsTouchPositionElement(element));
+            TEST_VERIFY(IsTouchClickInputElement(element));
+            TEST_VERIFY(!IsTouchPositionInputElement(element));
 
             TEST_VERIFY(GetTouchPositionElementFromClickElement(element) == static_cast<eInputElements>(eInputElements::TOUCH_FIRST_POSITION + (i - eInputElements::TOUCH_FIRST_CLICK)));
         }
@@ -194,8 +194,8 @@ DAVA_TESTCLASS (InputElementsTestClass)
             TEST_VERIFY(!IsGamepadButtonInputElement(element));
             TEST_VERIFY(!IsGamepadAxisInputElement(element));
             TEST_VERIFY(IsTouchInputElement(element));
-            TEST_VERIFY(!IsTouchClickElement(element));
-            TEST_VERIFY(IsTouchPositionElement(element));
+            TEST_VERIFY(!IsTouchClickInputElement(element));
+            TEST_VERIFY(IsTouchPositionInputElement(element));
         }
     }
 };

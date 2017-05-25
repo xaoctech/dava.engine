@@ -49,6 +49,23 @@ Keyboard::~Keyboard()
     }
 }
 
+DigitalElementState Keyboard::GetKeyState(eInputElements key) const
+{
+    return GetDigitalElementState(key);
+}
+
+WideString Keyboard::TranslateElementToWideString(eInputElements elementId) const
+{
+    DVASSERT(IsElementSupported(elementId));
+    return impl->TranslateElementToWideString(elementId);
+}
+
+uint32 Keyboard::GetKeyNativeScancode(eInputElements elementId) const
+{
+    DVASSERT(IsElementSupported(elementId));
+    return impl->ConvertDavaScancodeToNativeScancode(elementId);
+}
+
 bool Keyboard::IsElementSupported(eInputElements elementId) const
 {
     return IsKeyboardInputElement(elementId);
@@ -64,18 +81,6 @@ AnalogElementState Keyboard::GetAnalogElementState(eInputElements elementId) con
 {
     DVASSERT(false, "KeyboardInputDevice does not support analog elements");
     return {};
-}
-
-WideString Keyboard::TranslateElementToWideString(eInputElements elementId) const
-{
-    DVASSERT(IsElementSupported(elementId));
-    return impl->TranslateElementToWideString(elementId);
-}
-
-uint32 Keyboard::GetElementNativeScancode(eInputElements elementId) const
-{
-    DVASSERT(IsElementSupported(elementId));
-    return impl->ConvertDavaScancodeToNativeScancode(elementId);
 }
 
 void Keyboard::OnEndFrame()

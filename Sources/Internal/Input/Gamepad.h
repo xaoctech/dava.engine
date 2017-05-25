@@ -18,6 +18,7 @@ struct MainDispatcherEvent;
 
 /**
     \ingroup input
+
     Class for working with gamepads.
 */
 class Gamepad final : public InputDevice
@@ -26,7 +27,10 @@ class Gamepad final : public InputDevice
     friend class Private::GamepadImpl;
 
 public:
+    // TODO: helper methods for accessing buttons and analog elements
+
     // InputDevice overrides
+
     bool IsElementSupported(eInputElements elementId) const override;
     DigitalElementState GetDigitalElementState(eInputElements elementId) const override;
     AnalogElementState GetAnalogElementState(eInputElements elementId) const override;

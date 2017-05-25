@@ -649,7 +649,7 @@ bool InputSystemTest::OnInputEvent(InputEvent const& event)
     }
     else if (event.deviceType == eInputDeviceTypes::TOUCH_SURFACE)
     {
-        if (IsTouchClickElement(event.elementId))
+        if (IsTouchClickInputElement(event.elementId))
         {
             UIButton* touchButton = touchClickButtons[event.elementId];
             HighlightDigitalButton(touchButton, event.digitalState);

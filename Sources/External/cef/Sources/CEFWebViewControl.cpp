@@ -618,7 +618,7 @@ void CEFWebViewControl::OnKey(UIEvent* input)
     else if (UIEvent::Phase::KEY_DOWN == input->phase || UIEvent::Phase::KEY_UP == input->phase)
     {
         Keyboard* keyboard = GetEngineContext()->deviceManager->GetKeyboard();
-        keyEvent.windows_key_code = keyboard->GetElementNativeScancode(input->key);
+        keyEvent.windows_key_code = keyboard->GetKeyNativeScancode(input->key);
 
 // TODO: remove this conversion from CorePlatformWin32
 #ifdef __DAVAENGINE_WIN32__

@@ -11,6 +11,11 @@ namespace Private
 class EngineBackend;
 }
 
+/**
+    \addtogroup input
+\{
+*/
+
 /** Describes input listening modes */
 enum class eInputListenerModes
 {
@@ -61,13 +66,13 @@ class InputListener final
     friend class Private::EngineBackend;
 
 public:
-    /** Listen for input in specified `mode`, across all devices */
+    /** Listen for input in specified `mode`, across all devices. */
     void Listen(eInputListenerModes mode, Function<void(bool, Vector<InputEvent>)> callback);
 
-    /** Listen input in specified `mode`, devices other than the one with `deviceId` are ignored */
+    /** Listen input in specified `mode`, devices other than the one with `deviceId` are ignored. */
     void Listen(eInputListenerModes mode, Function<void(bool, Vector<InputEvent>)> callback, uint32 deviceId);
 
-    /** Listen input in specified `mode`, devices with type different from `deviceTypesMask` are ignored */
+    /** Listen input in specified `mode`, devices with type different from `deviceTypesMask` are ignored. */
     void Listen(eInputListenerModes mode, Function<void(bool, Vector<InputEvent>)> callback, eInputDeviceTypes deviceTypesMask);
 
     /** Return true if listening is active. */
@@ -95,5 +100,9 @@ private:
 
     Vector<InputEvent> result;
 };
+
+/**
+    \}
+*/
 
 } // namespace DAVA

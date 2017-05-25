@@ -12,12 +12,16 @@ namespace DAVA
 
 /**
     List of all supported input elements.
+
     An input element is a part of a device which can be used for input. For example, a keyboard button, a mouse button, a mouse wheel, gamepad's stick etc.
+    Number values used in this enum are safe to be saved in order to be restored later (e.g. in a config file).
+
+    These values can be tested for different properties using functions defined below (i.e. what device type it belongs to, is it a button or not, etc.).
 */
 enum eInputElements : uint32
 {
     // Order of elements and values should not be changed
-    // To provide backward compatibility in case some of these values are saved somewhere (e.g. in a config)
+    // To provide backward compatibility in case some of these values are saved somewhere
 
     NONE = 0,
 
@@ -236,13 +240,7 @@ enum class eInputElementTypes
     /** Button, which can just be pressed and released. */
     DIGITAL,
 
-    /**
-        Element whose state can only be described using multiple float values.
-        Examples are:
-            - gamepad's stick position can be described using normalized x and y values
-            - touch position can be described using x and y values
-            - mouse wheel delta can be described using single x value
-    */
+    /** Element whose state can only be described using multiple float values. */
     ANALOG
 };
 
@@ -332,13 +330,13 @@ inline bool IsTouchInputElement(eInputElements element)
 }
 
 /** Return true if specified `element` is a touch click element. */
-inline bool IsTouchClickElement(eInputElements element)
+inline bool IsTouchClickInputElement(eInputElements element)
 {
     return eInputElements::TOUCH_FIRST_CLICK <= element && element <= eInputElements::TOUCH_LAST_CLICK;
 }
 
 /** Return true if specified `element` is a touch position element. */
-inline bool IsTouchPositionElement(eInputElements element)
+inline bool IsTouchPositionInputElement(eInputElements element)
 {
     return eInputElements::TOUCH_FIRST_POSITION <= element && element <= eInputElements::TOUCH_LAST_POSITION;
 }
@@ -346,7 +344,7 @@ inline bool IsTouchPositionElement(eInputElements element)
 /** Return TOUCH_POSITION element for specified click `element. I.e. TOUCH_POSITION3 for TOUCH_CLICK3 etc. */
 inline eInputElements GetTouchPositionElementFromClickElement(eInputElements element)
 {
-    DVASSERT(IsTouchClickElement(element));
+    DVASSERT(IsTouchClickInputElement(element));
 
     return static_cast<eInputElements>(eInputElements::TOUCH_FIRST_POSITION + (element - eInputElements::TOUCH_FIRST_CLICK));
 }

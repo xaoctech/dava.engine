@@ -13,19 +13,32 @@ struct MainDispatcherEvent;
 
 /**
     \ingroup input
-    Input device that represents touch screen.
-    It manages all touch input elements (`eInputElements::TOUCH_*`), where TOUCH0 corresponds to the first touch, TOUCH1 corresponds to the second touch etc.
 
-    This device separates touches into two types of elements:
-        - Click elements (`TOUCH_CLICK0`, `TOUCH_CLICK1` etc.) represent digital part (pressed or released states)
-        - Position elements (`TOUCH_POSITION0`, `TOUCH_POSITION1` etc.) represent analog part (position on a screen)
+    Input device that represents touch screen.
 */
 class TouchScreen final : public InputDevice
 {
     friend class DeviceManager; // For creation
 
 public:
+    /**
+        Return state of an i-th touch (i.e. if it's pressed, just pressed, released or just released).
+        
+        \note It's essentialy a shorter and more readable placeholder for `GetDigitalElementState(eInputElements:TOUCH_CLICK{i})`.
+        \pre Index `i` should be in range of [0, 9].
+    */
+    DigitalElementState GetTouchStateByIndex(size_t i) const;
+
+    /**
+        Return position of an i-th touch. If a touch with this index is not active, zeroes are returned.
+
+        \note It's essentialy a shorter and more readable placeholder for `GetAnalogElementState(eInputElements:TOUCH_POSITION{i})`.
+        \pre Index `i` should be in range of [0, 9].
+    */
+    AnalogElementState GetTouchPositionByIndex(size_t i) const;
+
     // InputDevice overrides
+
     bool IsElementSupported(eInputElements elementId) const override;
     DigitalElementState GetDigitalElementState(eInputElements elementId) const override;
     AnalogElementState GetAnalogElementState(eInputElements elementId) const override;
