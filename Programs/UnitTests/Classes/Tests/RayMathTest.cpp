@@ -37,7 +37,6 @@ DAVA_TESTCLASS (RayMathTest)
     BEGIN_FILES_COVERED_BY_TESTS()
     FIND_FILES_IN_TARGET(DavaFramework)
     DECLARE_COVERED_FILES("AABBox3.cpp")
-    DECLARE_COVERED_FILES("Ray.cpp")
     END_FILES_COVERED_BY_TESTS()
 
     DAVA_TEST (AABBox3Test)
@@ -145,6 +144,22 @@ DAVA_TESTCLASS (RayMathTest)
                 TEST_VERIFY(Intersection::RayBox(rayOpt, box, tMin, tMax) == true);
                 TEST_VERIFY(FLOAT_EQUAL(tMin, results[k][0]));
                 TEST_VERIFY(FLOAT_EQUAL(tMax, results[k][1]));
+            }
+
+            const std::pair<Vector3, Vector3> segmentsTest[] =
+            {
+              { Vector3(-2.0f, 0.0f, 0.0f), Vector3(+2.0f, 0.0f, 0.0f) },
+              { Vector3(0.0f, -2.0f, 0.0f), Vector3(0.0f, +2.0f, 0.0f) },
+              { Vector3(0.0f, 0.0f, -2.0f), Vector3(0.0f, 0.0f, +2.0f) },
+
+              { Vector3(-2.0f, -2.0f, -2.0f), Vector3(2.0f, 2.0f, 2.0f) },
+              { Vector3(2.0f, 2.0f, 2.0f), Vector3(-2.0f, -2.0f, -2.0f) },
+            };
+            for (uint32 i = 0, e = static_cast<uint32_t>(sizeof(segmentsTest) / sizeof(segmentsTest[0])); i < e; ++i)
+            {
+                float32 tMin = 0.0f;
+                float32 tMax = 0.0f;
+                TEST_VERIFY(Intersection::SegmentBox(segmentsTest[i].first, segmentsTest[i].second, box, tMin, tMax) == true);
             }
         }
         {
