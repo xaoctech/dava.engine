@@ -11,6 +11,7 @@ const ParticleLayer::LayerTypeNamesInfo ParticleLayer::layerTypeNamesInfoMap[] =
 {
   { TYPE_SINGLE_PARTICLE, "single" },
   { TYPE_PARTICLES, "particles" },
+  { TYPE_PARTICLE_STRIPE, "particlesStripe" },
   { TYPE_SUPEREMITTER_PARTICLES, "superEmitter" }
 };
 
@@ -148,6 +149,12 @@ ParticleLayer::~ParticleLayer()
 ParticleLayer* ParticleLayer::Clone()
 {
     ParticleLayer* dstLayer = new ParticleLayer();
+
+    dstLayer->stripeLifetime = stripeLifetime;
+    dstLayer->stripeRate = stripeRate;
+    dstLayer->stripeSpeed = stripeSpeed;
+    dstLayer->stripeStartSize = stripeStartSize;
+    dstLayer->stripeSizeOverLife = stripeSizeOverLife;
 
     if (flowSpeed)
         dstLayer->flowSpeed.Set(flowSpeed->Clone());
@@ -451,6 +458,37 @@ void ParticleLayer::SetNoise(const FilePath& noisePath_)
 
 void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* node, bool preserveInheritPosition)
 {
+    stripeLifetime = 0.0f;
+    const YamlNode* stripeLifetimeNode = node->Get("stripeLifetime");
+    if (stripeLifetimeNode)
+    {
+        stripeLifetime = stripeLifetimeNode->AsFloat();
+    }
+    stripeRate = 0.0f;
+    const YamlNode* stripeRateNode = node->Get("stripeRate");
+    if (stripeRateNode)
+    {
+        stripeRate = stripeRateNode->AsFloat();
+    }
+    stripeSpeed = 0.0f;
+    const YamlNode* stripeSpeedNote = node->Get("stripeSpeed");
+    if (stripeSpeedNote)
+    {
+        stripeSpeed = stripeSpeedNote->AsFloat();
+    }
+    stripeStartSize = 0.0f;
+    const YamlNode* stripeStartSizeNode = node->Get("stripeStartSize");
+    if (stripeStartSizeNode)
+    {
+        stripeStartSize = stripeStartSizeNode->AsFloat();
+    }
+    stripeSizeOverLife = 0.0f;
+    const YamlNode* stripeSizeOverLifeNode = node->Get("stripeSizeOverLife");
+    if (stripeSizeOverLifeNode)
+    {
+        stripeSizeOverLife = stripeSizeOverLifeNode->AsFloat();
+    }
+
     // format processing
     int32 format = 0;
     const YamlNode* formatNode = node->Get("effectFormat");
@@ -890,6 +928,12 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
     YamlNode* layerNode = new YamlNode(YamlNode::TYPE_MAP);
     String layerNodeName = Format("layer%d", layerIndex);
     parentNode->AddNodeToMap(layerNodeName, layerNode);
+
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeLifetime", stripeLifetime);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeRate", stripeRate);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeSpeed", stripeSpeed);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeStartSize", stripeStartSize);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeSizeOverLife", stripeSizeOverLife);
 
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "name", layerName);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "type", "layer");

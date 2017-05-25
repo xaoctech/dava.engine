@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_PARTICLE_GROUP_H_
-#define __DAVAENGINE_PARTICLE_GROUP_H_
+#pragma once
 
 #include "ParticleEmitter.h"
 #include "ParticleLayer.h"
@@ -42,5 +41,3 @@ struct ParticleEffectData
     List<ParticleGroup> groups;
 };
 }
-
-#endif

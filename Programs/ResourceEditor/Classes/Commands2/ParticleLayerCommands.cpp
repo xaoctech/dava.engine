@@ -193,3 +193,46 @@ void CommandChangeFresnelToAlphaProperties::ApplyParams(FresnelToAlphaParams& pa
         layer->fresnelToAlphaPower = params.fresnelToAlphaPower;
     }
 }
+
+CommandChangeParticlesStripeProperties::CommandChangeParticlesStripeProperties(DAVA::ParticleLayer* layer_, StripeParams&& params)
+    : RECommand(CMDID_PARTICLE_LAYER_CHANGED_STRIPE_VALUES, "Change Stripe Properties")
+    , layer(layer_)
+    , newParams(params)
+{
+    DVASSERT(layer != nullptr);
+    if (layer != nullptr)
+    {
+        oldParams.lifetime = layer->stripeLifetime;
+        oldParams.rate = layer->stripeRate;
+        oldParams.speed = layer->stripeSpeed;
+        oldParams.startSize = layer->stripeStartSize;
+        oldParams.sizeOverLife = layer->stripeSizeOverLife;
+    }
+}
+
+void CommandChangeParticlesStripeProperties::Undo()
+{
+    ApplyParams(oldParams);
+}
+
+void CommandChangeParticlesStripeProperties::Redo()
+{
+    ApplyParams(newParams);
+}
+
+DAVA::ParticleLayer* CommandChangeParticlesStripeProperties::GetLayer() const
+{
+    return layer;
+}
+
+void CommandChangeParticlesStripeProperties::ApplyParams(StripeParams& params)
+{
+    if (layer != nullptr)
+    {
+        layer->stripeLifetime = params.lifetime;
+        layer->stripeRate = params.rate;
+        layer->stripeSpeed = params.speed;
+        layer->stripeStartSize = params.startSize;
+        layer->stripeSizeOverLife = params.sizeOverLife;
+    }
+}

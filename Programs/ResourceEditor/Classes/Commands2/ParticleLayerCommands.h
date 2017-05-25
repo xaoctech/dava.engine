@@ -126,3 +126,30 @@ private:
     FresnelToAlphaParams oldParams;
     DAVA::ParticleLayer* layer = nullptr;
 };
+
+class CommandChangeParticlesStripeProperties : public RECommand
+{
+public:
+    struct StripeParams // TODO: all structs settings to layer.
+    {
+        float32 speed;
+        float32 rate;
+        float32 lifetime;
+        float32 startSize;
+        float32 sizeOverLife;
+    };
+
+    CommandChangeParticlesStripeProperties(DAVA::ParticleLayer* layer, StripeParams&& params);
+
+    void Undo() override;
+    void Redo() override;
+
+    DAVA::ParticleLayer* GetLayer() const;
+
+private:
+    void ApplyParams(StripeParams& params);
+
+    StripeParams newParams;
+    StripeParams oldParams;
+    DAVA::ParticleLayer* layer = nullptr;
+};

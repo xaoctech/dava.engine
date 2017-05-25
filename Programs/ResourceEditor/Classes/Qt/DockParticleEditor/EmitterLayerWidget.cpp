@@ -42,6 +42,7 @@ const EmitterLayerWidget::LayerTypeMap EmitterLayerWidget::layerTypeMap[] =
 {
   { DAVA::ParticleLayer::TYPE_SINGLE_PARTICLE, "Single Particle" },
   { DAVA::ParticleLayer::TYPE_PARTICLES, "Particles" },
+  { DAVA::ParticleLayer::TYPE_PARTICLE_STRIPE, "Particle Stripe"},
   { DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES, "SuperEmitter" }
 };
 
@@ -64,6 +65,8 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     layerNameLineEdit = new QLineEdit();
     mainBox->addWidget(layerNameLineEdit);
     connect(layerNameLineEdit, SIGNAL(editingFinished()), this, SLOT(OnValueChanged()));
+
+    mainBox->addLayout(CreateStripeLayout());
 
     QVBoxLayout* lodsLayout = new QVBoxLayout();
     QLabel* lodsLabel = new QLabel("Active in LODs", this);
@@ -736,6 +739,16 @@ void EmitterLayerWidget::OnValueChanged()
     GetActiveScene()->Exec(std::move(updateLayerCmd));
     GetActiveScene()->MarkAsChanged();
 
+    if (layer->particleOrientation & DAVA::ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING && layer->useFresnelToAlpha)
+    {
+        DAVA::TArc::NotificationParams params;
+        params.message.message = "The check boxes Fresnel to alpha and Camera facing are both set.";
+        params.message.type = DAVA::Result::RESULT_WARNING;
+        params.title = "Particle system warning.";
+        REGlobal::ShowNotification(params);
+    }
+
+
     // Update(false);
     if (superemitterStatusChanged)
     {
@@ -757,6 +770,16 @@ void EmitterLayerWidget::OnFresnelToAlphaChanged()
     params.fresnelToAlphaBias = static_cast<DAVA::float32>(fresnelBiasSpinBox->value());
 
     GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeFresnelToAlphaProperties(layer, std::move(params))));
+
+
+    if (layer->particleOrientation & DAVA::ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING && layer->useFresnelToAlpha)
+    {
+        DAVA::TArc::NotificationParams params;
+        params.message.message = "The check boxes Fresnel to alpha and Camera facing are both set.";
+        params.message.type = DAVA::Result::RESULT_WARNING;
+        params.title = "Particle system warning.";
+        REGlobal::ShowNotification(params);
+    }
 
     emit ValueChanged();
 }
@@ -813,6 +836,23 @@ void EmitterLayerWidget::OnFlowPropertiesChanged()
     GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeFlowProperties(layer, std::move(params))));
 
     UpdateFlowmapSprite();
+
+    emit ValueChanged();
+}
+
+void EmitterLayerWidget::OnStripePropertiesChanged()
+{
+    if (blockSignals)
+        return;
+
+    DVASSERT(GetActiveScene() != nullptr);
+    CommandChangeParticlesStripeProperties::StripeParams params;
+    params.lifetime = static_cast<float32>(stripeLifetimeSpin->value());
+    params.rate = static_cast<float32>(stripeRateSpin->value());
+    params.speed = static_cast<float32>(stripeSpeedSpin->value());
+    params.startSize = static_cast<float32>(stripeStartSizeSpin->value());
+    params.sizeOverLife = static_cast<float32>(stripeSizeOverLifeSpin->value());
+    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeParticlesStripeProperties(layer, std::move(params))));
 
     emit ValueChanged();
 }
@@ -969,14 +1009,11 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     fresnelBiasSpinBox->setValue(layer->fresnelToAlphaBias);
     fresnelPowerSpinBox->setValue(layer->fresnelToAlphaPower);
 
-    if (layer->particleOrientation & DAVA::ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING && layer->useFresnelToAlpha)
-    {
-        DAVA::TArc::NotificationParams params;
-        params.message.message = "The check boxes Fresnel to alpha and Camera facing are both set.";
-        params.message.type = DAVA::Result::RESULT_WARNING;
-        params.title = "Particle system warning.";
-        REGlobal::ShowNotification(params);
-    }
+    stripeSpeedSpin->setValue(layer->stripeSpeed);
+    stripeLifetimeSpin->setValue(layer->stripeLifetime);
+    stripeRateSpin->setValue(layer->stripeRate);
+    stripeStartSizeSpin->setValue(layer->stripeStartSize);
+    stripeSizeOverLifeSpin->setValue(layer->stripeSizeOverLife);
 
     bool fresToAlphaVisible = layer->useFresnelToAlpha;
     fresnelBiasLabel->setVisible(fresToAlphaVisible);
@@ -1410,6 +1447,71 @@ void EmitterLayerWidget::CreateNoiseLayoutWidget()
     connect(noiseSpritePathLabel, SIGNAL(textChanged(const QString&)), this, SLOT(OnNoiseTexturePathChanged(const QString&)));
     connect(noiseSpritePathLabel, SIGNAL(textEdited(const QString&)), this, SLOT(OnNoiseSpritePathEdited(const QString&)));
     noiseSpritePathLabel->installEventFilter(this);
+}
+
+QLayout* EmitterLayerWidget::CreateStripeLayout()
+{
+    QHBoxLayout* longStripeLayout = new QHBoxLayout();
+    longStripeLayout->setContentsMargins(0, 10, 0, 0);
+
+    stripeLifetimeSpin = new EventFilterDoubleSpinBox();
+    stripeLifetimeSpin->setMinimum(-100);
+    stripeLifetimeSpin->setMaximum(100);
+    stripeLifetimeSpin->setSingleStep(0.01);
+    stripeLifetimeSpin->setDecimals(4);
+
+    stripeRateSpin = new EventFilterDoubleSpinBox();
+    stripeRateSpin->setMinimum(-100);
+    stripeRateSpin->setMaximum(100);
+    stripeRateSpin->setSingleStep(0.01);
+    stripeRateSpin->setDecimals(4);
+
+    stripeSpeedSpin = new EventFilterDoubleSpinBox();
+    stripeSpeedSpin->setMinimum(-100);
+    stripeSpeedSpin->setMaximum(100);
+    stripeSpeedSpin->setSingleStep(0.01);
+    stripeSpeedSpin->setDecimals(4);
+
+    stripeStartSizeSpin = new EventFilterDoubleSpinBox();
+    stripeStartSizeSpin->setMinimum(-100);
+    stripeStartSizeSpin->setMaximum(100);
+    stripeStartSizeSpin->setSingleStep(0.01);
+    stripeStartSizeSpin->setDecimals(4);
+
+    stripeSizeOverLifeSpin = new EventFilterDoubleSpinBox();
+    stripeSizeOverLifeSpin->setMinimum(-100);
+    stripeSizeOverLifeSpin->setMaximum(100);
+    stripeSizeOverLifeSpin->setSingleStep(0.01);
+    stripeSizeOverLifeSpin->setDecimals(4);
+
+
+    stripeLabel = new QLabel("Stripe ---> ");
+    stripeLifetimeLabel = new QLabel("Lifetime->");
+    stripeRateLabel = new QLabel("Rate->");
+    stripeSpeedLabel = new QLabel("Speed->");
+    stripeStartSizeLabel = new QLabel("Strt sz->");
+    stripeSizeOverLifeLabel = new QLabel("Sz ovr life->");
+
+    longStripeLayout->addWidget(stripeLabel);
+    longStripeLayout->addWidget(stripeStartSizeLabel);
+    longStripeLayout->addWidget(stripeStartSizeSpin);
+    longStripeLayout->addWidget(stripeSizeOverLifeLabel);
+    longStripeLayout->addWidget(stripeSizeOverLifeSpin);
+
+    longStripeLayout->addWidget(stripeSpeedLabel);
+    longStripeLayout->addWidget(stripeSpeedSpin);
+    longStripeLayout->addWidget(stripeLifetimeLabel);
+    longStripeLayout->addWidget(stripeLifetimeSpin);
+    longStripeLayout->addWidget(stripeRateLabel);
+    longStripeLayout->addWidget(stripeRateSpin);
+
+    connect(stripeSpeedSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
+    connect(stripeLifetimeSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
+    connect(stripeRateSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
+    connect(stripeStartSizeSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
+    connect(stripeSizeOverLifeSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
+
+    return longStripeLayout;
 }
 
 QLayout* EmitterLayerWidget::CreateFresnelToAlphaLayout()
