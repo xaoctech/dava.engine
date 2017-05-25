@@ -6,7 +6,6 @@ namespace DAVA
 {
 struct AccumulativeStatCounter
 {
-public:
     void operator++()
     {
         AccumulativeStatCounter::operator+=(1.0f);

@@ -495,16 +495,19 @@ inline void RenderObject::AddVisibilityStructureNode(uint32 nodeValue)
 inline void RenderObject::RemoveVisibilityStructureNode(uint32 nodeValue)
 {
     DVASSERT(inVisibilityNodeCount <= MAX_VISIBILITY_STRUCTURE_NODE_COUNT);
+
     for (uint32 k = 0; k < inVisibilityNodeCount; ++k)
+    {
         if (inVisibilityNodes[k] == nodeValue)
         {
             inVisibilityNodes[k] = inVisibilityNodes[inVisibilityNodeCount - 1];
             inVisCopy[k] = inVisCopy[inVisibilityNodeCount - 1];
-
             k--;
-            DVASSERT(inVisibilityNodeCount >= 0);
+
+            DVASSERT(inVisibilityNodeCount > 0);
             inVisibilityNodeCount--;
         }
+    }
 }
 
 inline bool RenderObject::IsInVisibilityStructureNode(uint32 nodeValue) const
