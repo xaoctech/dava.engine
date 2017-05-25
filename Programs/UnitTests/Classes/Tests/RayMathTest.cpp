@@ -40,6 +40,49 @@ DAVA_TESTCLASS (RayMathTest)
     DECLARE_COVERED_FILES("Ray.cpp")
     END_FILES_COVERED_BY_TESTS()
 
+    DAVA_TEST (AABBox3Test)
+    {
+        AABBox3 emptyBox;
+        Vector3 center(0.0f, 0.0f, 0.0f);
+        float largeBoxSize = 10.0f;
+        float smallBoxSize = 1.0f;
+        AABBox3 largeBox(center, largeBoxSize);
+        AABBox3 smallBox(center, smallBoxSize);
+
+        TEST_VERIFY(largeBox.IntersectsWithBox(smallBox));
+        TEST_VERIFY(smallBox.IntersectsWithBox(smallBox));
+        TEST_VERIFY(smallBox.IntersectsWithBox(smallBox));
+        TEST_VERIFY(emptyBox.IsEmpty() == true);
+        TEST_VERIFY(smallBox.IsEmpty() == false);
+
+        TEST_VERIFY(largeBox.IsInside(center));
+        TEST_VERIFY(smallBox.IsInside(center));
+
+        TEST_VERIFY(largeBox.IsInside(smallBox) == true);
+        TEST_VERIFY(smallBox.IsInside(largeBox) == false);
+
+        Vector3 testCenter = largeBox.GetCenter();
+        TEST_VERIFY(FLOAT_EQUAL(center.x, testCenter.x) && FLOAT_EQUAL(center.y, testCenter.y) && FLOAT_EQUAL(center.z, testCenter.z));
+
+        Vector3 testSize = largeBox.GetSize();
+        TEST_VERIFY(FLOAT_EQUAL(largeBoxSize, testSize.x) && FLOAT_EQUAL(largeBoxSize, testSize.y) && FLOAT_EQUAL(largeBoxSize, testSize.z));
+
+        {
+            AABBox3 testBox(center, largeBoxSize);
+            TEST_VERIFY(testBox == largeBox);
+            TEST_VERIFY(testBox != smallBox);
+        }
+
+        AABBox3 transformedBox;
+        smallBox.GetTransformedBox(Matrix4::MakeRotation(Vector3::UnitX, PI / 2.0f), transformedBox);
+        TEST_VERIFY(FLOAT_EQUAL(transformedBox.min.x, smallBox.min.x));
+        TEST_VERIFY(FLOAT_EQUAL(transformedBox.min.y, smallBox.min.y));
+        TEST_VERIFY(FLOAT_EQUAL(transformedBox.min.z, smallBox.min.z));
+        TEST_VERIFY(FLOAT_EQUAL(transformedBox.max.x, smallBox.max.x));
+        TEST_VERIFY(FLOAT_EQUAL(transformedBox.max.y, smallBox.max.y));
+        TEST_VERIFY(FLOAT_EQUAL(transformedBox.max.z, smallBox.max.z));
+    }
+
     DAVA_TEST (RayAABBoxCollisionTest)
     {
         {
