@@ -201,6 +201,11 @@ bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
             {
                 DigitalBinding const& binding = *it;
 
+                if (std::find(binding.digitalElements.begin(), binding.digitalElements.end(), event.elementId) == binding.digitalElements.end())
+                {
+                    continue;
+                }
+
                 const bool triggered = CheckDigitalStates(binding.digitalElements, binding.digitalStates, setBinding.devices);
 
                 if (triggered)

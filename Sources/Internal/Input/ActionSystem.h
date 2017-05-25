@@ -112,13 +112,6 @@ class ActionSystem final
 
 public:
     /**
-        Binds an action set to all the input devices.
-        That is, whenever any binding matches its requirements from ANY device, the action will be triggered.
-        Useful for single player games.
-    */
-    void BindSet(const ActionSet& actionSet);
-
-    /**
         Binds an action set to a specific device. If there's already a set binded to the same device, it will be replaced by the new one.
         All binding requirements will be checked only on this device.
         Useful for local multiplayer setup, since we can bind one set to a gamepad-1 and another set to a gamepad-2.
