@@ -18,10 +18,6 @@ class ActionSystemImpl;
 \defgroup actions Actions
 */
 
-// Maximum number of digital elements states which is supported by action system
-// I.e. user can only specify up to MAX_DIGITAL_STATES_COUNT buttons to trigger an action
-#define MAX_DIGITAL_STATES_COUNT 3
-
 /**
     \ingroup actions
     Describes an action triggered by `ActionSystem`.
@@ -41,83 +37,9 @@ struct Action final
     AnalogElementState analogState;
 };
 
-/**
-    \ingroup actions
-    Describes an action bound to a number of digital elements.
-*/
-struct DigitalBinding final
-{
-    DigitalBinding()
-    {
-        std::fill(digitalElements.begin(), digitalElements.end(), eInputElements::NONE);
-    }
-
-    /** Id of the action to trigger */
-    FastName actionId;
-
-    /**
-        Array of digital elements whose specific states (described in `digitalStates` fields) are required for the action to be triggered.
-        digitalElements[i]'s required state is digitalStates[i].
-    */
-    Array<eInputElements, MAX_DIGITAL_STATES_COUNT> digitalElements;
-
-    /**
-        Array of digital element states which are required for the action to be triggered.
-        digitalStates[i] is required state for digitalElements[i].
-    */
-    Array<DigitalElementState, MAX_DIGITAL_STATES_COUNT> digitalStates;
-
-    /**
-        Analog state which will be put into a triggered action.
-        Useful in cases when a button performs the same action as an analog element.
-        For example if a user uses gamepad's stick for MOVE action (which sends [-1; 1] values for x and y axes), he might also want to bind movement to WASD buttons.
-        In this situation, he can specify (0, 1) for W, (-1, 0) for A, (0, -1) for S and (0, 1) for D, thus unifiying input handling code for this action:
-
-        \code
-        if (action.actionId == MOVE)
-        {
-            // Don't care about the way analogState was filled
-            // Just know that it's in a range [-1; 1] for x and y
-            Vector2 velocity(action.analogState.x, action.analogState.y);
-            Move(velocity);
-        }
-        \endcode
-    */
-    AnalogElementState outputAnalogState;
-};
-
-/**
-    \ingroup actions
-    Describes an action bound to an analog element.
-
-    Additional digital modifiers can be specified.
-    For example, we can bind an action to shift (digital modifier) + mouse move (analog element).
-*/
-struct AnalogBinding final
-{
-    AnalogBinding()
-    {
-        std::fill(digitalElements.begin(), digitalElements.end(), eInputElements::NONE);
-    }
-
-    /** Id of the action to trigger. */
-    FastName actionId;
-
-    /** Id of the analog element whose state changes will trigger the action. */
-    eInputElements analogElementId;
-
-    /**
-        Additional digital elements whose specific states (described in `digitalStates` fields) are required for the action to be triggered.
-        digitalElements[i]'s required state is digitalStates[i].
-    */
-    Array<eInputElements, MAX_DIGITAL_STATES_COUNT> digitalElements;
-
-    /**
-        Array of digital element states which are required for the action to be triggered.
-        digitalStates[i] is required state for digitalElements[i].
-    */
-    Array<DigitalElementState, MAX_DIGITAL_STATES_COUNT> digitalStates;
-};
+// Forward declare these two since they use MAX_DIGITAL_STATES_COUNT from ActionSystem class
+struct DigitalBinding;
+struct AnalogBinding;
 
 /**
     \ingroup actions
@@ -125,6 +47,9 @@ struct AnalogBinding final
 */
 struct ActionSet final
 {
+    /** Name of the set */
+    String name;
+
     /** List of bindings to digital elements. */
     Vector<DigitalBinding> digitalBindings;
 
@@ -214,6 +139,11 @@ public:
     /** Emits when an action is triggered */
     Signal<Action> ActionTriggered;
 
+public:
+    // Maximum number of digital elements states which is supported by action system
+    // I.e. user can only specify up to MAX_DIGITAL_STATES_COUNT buttons to trigger an action
+    static const size_t MAX_DIGITAL_STATES_COUNT = 3;
+
 private:
     ActionSystem();
     ~ActionSystem();
@@ -222,5 +152,83 @@ private:
 
 private:
     Private::ActionSystemImpl* impl = nullptr;
+};
+
+/**
+    \ingroup actions
+    Describes an action bound to a number of digital elements.
+*/
+struct DigitalBinding final
+{
+    DigitalBinding()
+    {
+        std::fill(digitalElements.begin(), digitalElements.end(), eInputElements::NONE);
+    }
+
+    /** Id of the action to trigger */
+    FastName actionId;
+
+    /**
+        Array of digital elements whose specific states (described in `digitalStates` fields) are required for the action to be triggered.
+        digitalElements[i]'s required state is digitalStates[i].
+    */
+    Array<eInputElements, ActionSystem::MAX_DIGITAL_STATES_COUNT> digitalElements;
+
+    /**
+        Array of digital element states which are required for the action to be triggered.
+        digitalStates[i] is required state for digitalElements[i].
+    */
+    Array<DigitalElementState, ActionSystem::MAX_DIGITAL_STATES_COUNT> digitalStates;
+
+    /**
+        Analog state which will be put into a triggered action.
+        Useful in cases when a button performs the same action as an analog element.
+        For example if a user uses gamepad's stick for MOVE action (which sends [-1; 1] values for x and y axes), he might also want to bind movement to WASD buttons.
+        In this situation, he can specify (0, 1) for W, (-1, 0) for A, (0, -1) for S and (0, 1) for D, thus unifiying input handling code for this action:
+
+        \code
+        if (action.actionId == MOVE)
+        {
+            // Don't care about the way analogState was filled
+            // Just know that it's in a range [-1; 1] for x and y
+            Vector2 velocity(action.analogState.x, action.analogState.y);
+            Move(velocity);
+        }
+        \endcode
+    */
+    AnalogElementState outputAnalogState;
+};
+
+/**
+    \ingroup actions
+    Describes an action bound to an analog element.
+
+    Additional digital modifiers can be specified.
+    For example, we can bind an action to shift (digital modifier) + mouse move (analog element).
+*/
+struct AnalogBinding final
+{
+    AnalogBinding()
+    {
+        std::fill(digitalElements.begin(), digitalElements.end(), eInputElements::NONE);
+    }
+
+    /** Id of the action to trigger. */
+    FastName actionId;
+
+    /** Id of the analog element whose state changes will trigger the action. */
+    eInputElements analogElementId;
+
+    /**
+        Additional digital elements whose specific states (described in `digitalStates` fields) are required for the action to be triggered.
+        digitalElements[i]'s required state is digitalStates[i].
+    */
+    Array<eInputElements, ActionSystem::MAX_DIGITAL_STATES_COUNT> digitalElements;
+
+    /**
+        Array of digital element states which are required for the action to be triggered.
+        digitalStates[i] is required state for digitalElements[i].
+    */
+    Array<DigitalElementState, ActionSystem::MAX_DIGITAL_STATES_COUNT> digitalStates;
 };
 }

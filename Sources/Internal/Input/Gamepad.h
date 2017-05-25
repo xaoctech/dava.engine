@@ -9,6 +9,7 @@
 namespace DAVA
 {
 class InputSystem;
+
 namespace Private
 {
 class GamepadImpl;
@@ -25,6 +26,7 @@ class Gamepad final : public InputDevice
     friend class Private::GamepadImpl;
 
 public:
+    // InputDevice overrides
     bool IsElementSupported(eInputElements elementId) const override;
     DigitalElementState GetDigitalElementState(eInputElements elementId) const override;
     AnalogElementState GetAnalogElementState(eInputElements elementId) const override;

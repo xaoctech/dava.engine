@@ -9,7 +9,7 @@ namespace Private
 {
 // Calculates number of states in array which are not empty
 // Used for sorting
-static size_t GetNonEmptyStatesCount(const Array<eInputElements, MAX_DIGITAL_STATES_COUNT>& array)
+static size_t GetNonEmptyStatesCount(const Array<eInputElements, ActionSystem::MAX_DIGITAL_STATES_COUNT>& array)
 {
     size_t result = 0;
     for (const eInputElements elementId : array)
@@ -77,6 +77,7 @@ void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)
     }
 
     BoundActionSet boundSet;
+    boundSet.name = set.name;
     boundSet.digitalBindings.insert(set.digitalBindings.begin(), set.digitalBindings.end());
     boundSet.analogBindings.insert(set.analogBindings.begin(), set.analogBindings.end());
     boundSet.devices = devices;
@@ -90,9 +91,9 @@ void ActionSystemImpl::UnbindAllSets()
 }
 
 // Helper function to check if specified states are active
-bool ActionSystemImpl::CheckDigitalStates(const Array<eInputElements, MAX_DIGITAL_STATES_COUNT>& elements, const Array<DigitalElementState, MAX_DIGITAL_STATES_COUNT>& states, const Vector<uint32>& devices)
+bool ActionSystemImpl::CheckDigitalStates(const Array<eInputElements, ActionSystem::MAX_DIGITAL_STATES_COUNT>& elements, const Array<DigitalElementState, ActionSystem::MAX_DIGITAL_STATES_COUNT>& states, const Vector<uint32>& devices)
 {
-    for (size_t i = 0; i < MAX_DIGITAL_STATES_COUNT; ++i)
+    for (size_t i = 0; i < ActionSystem::MAX_DIGITAL_STATES_COUNT; ++i)
     {
         eInputElements elementId = elements[i];
 

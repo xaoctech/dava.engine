@@ -60,7 +60,7 @@ DAVA_TESTCLASS (TouchScreenTestClass)
 
     DAVA_TEST (TouchScreenSingleTouchEventHandlingTest)
     {
-        // Check event handling by the touch screen, for the first touch:
+        // Check event handling by the touch screen, using single touch:
         //   - Check that initial state is released
         //   - Imitate platform sending TOUCH_DOWN event
         //   - Check that click state has changed to just pressed, position has changed to the correct one
@@ -77,13 +77,19 @@ DAVA_TESTCLASS (TouchScreenTestClass)
         if (touchscreen == nullptr)
         {
             Logger::Info("Skipping TouchScreenSingleTouchEventHandlingTest since there is no touch screen");
-            touchScreenEventHandlingTestFinished = true;
+            eventHandlingTestState = EventHandlingTestState::FINISHED;
             return;
         }
     }
 
     DAVA_TEST (TouchScreenMultiTouchEventHandlingTest)
     {
+        // Check event handling by the touch screen, using multiple touches:
+        //   - Check that initial state is released for each touch
+        //   - Send TOUCH_DOWN for each touch, check that state has changed to just pressed
+        //   - Send TOUCH_UP for one touch, check that state has changed to just released
+        //   - Send TOUCH_DOWN for this touch again, check that all are just pressed again
+
         using namespace DAVA::Private;
 
         TouchScreen* touchscreen = GetEngineContext()->deviceManager->GetTouchScreen();
@@ -125,9 +131,9 @@ DAVA_TESTCLASS (TouchScreenTestClass)
         }
     }
 
+    // Check that all elements are in released state, except `requiredElement` that should be in `requiredState`
     void CheckSingleState(TouchScreen * touchScreen, eInputElements requiredElement, DigitalElementState requiredState)
     {
-        // All elements should be in released state, `requiredElement` must be in `requiredState`
         for (uint32 i = static_cast<uint32>(eInputElements::TOUCH_FIRST_CLICK); i <= static_cast<uint32>(eInputElements::TOUCH_LAST_CLICK); ++i)
         {
             eInputElements element = static_cast<eInputElements>(i);
@@ -144,9 +150,10 @@ DAVA_TESTCLASS (TouchScreenTestClass)
         }
     }
 
+    // Check that all elements are in released state,
+    // except `requiredElements1` and `requiredElements2` that should be in `requiredState1` and `requiredState2` accordingly
     void CheckMultipleState(TouchScreen * touchScreen, std::vector<eInputElements> requiredElements1, DigitalElementState requiredState1, std::vector<eInputElements> requiredElements2 = {}, DigitalElementState requiredState2 = DigitalElementState::Released())
     {
-        // All elements should be in released state, `requiredElements` must be in `requiredState`
         for (uint32 i = static_cast<uint32>(eInputElements::TOUCH_FIRST_CLICK); i <= static_cast<uint32>(eInputElements::TOUCH_LAST_CLICK); ++i)
         {
             eInputElements element = static_cast<eInputElements>(i);
@@ -171,12 +178,13 @@ DAVA_TESTCLASS (TouchScreenTestClass)
     {
         INITIAL,
         SENT_TOUCH_DOWN,
-        SENT_TOUCH_UP
+        SENT_TOUCH_UP,
+        FINISHED
     };
 
     void Update(float32 timeElapsed, const String& testName) override
     {
-        if (testName == "TouchScreenSingleTouchEventHandlingTest" && !touchScreenEventHandlingTestFinished)
+        if (testName == "TouchScreenSingleTouchEventHandlingTest" && eventHandlingTestState != EventHandlingTestState::FINISHED)
         {
             using namespace DAVA::Private;
 
@@ -242,7 +250,7 @@ DAVA_TESTCLASS (TouchScreenTestClass)
                 DigitalElementState currentElementState = touchscreen->GetDigitalElementState(eInputElements::TOUCH_CLICK0);
                 CheckSingleState(touchscreen, eInputElements::TOUCH_CLICK0, DigitalElementState::Released());
 
-                touchScreenEventHandlingTestFinished = true;
+                eventHandlingTestState = EventHandlingTestState::FINISHED;
             }
         }
     }
@@ -255,12 +263,11 @@ DAVA_TESTCLASS (TouchScreenTestClass)
         }
         else
         {
-            return touchScreenEventHandlingTestFinished;
+            return eventHandlingTestState == EventHandlingTestState::FINISHED;
         }
     }
 
 private:
     // TouchScreenEventHandlingTest variables
     EventHandlingTestState eventHandlingTestState = EventHandlingTestState::INITIAL;
-    bool touchScreenEventHandlingTestFinished = false;
 };
