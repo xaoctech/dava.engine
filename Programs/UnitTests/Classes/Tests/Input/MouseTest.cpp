@@ -251,7 +251,7 @@ DAVA_TESTCLASS (MouseTestClass)
                 AnalogElementState initialState = mouse->GetAnalogElementState(eInputElements::MOUSE_WHEEL);
                 TEST_VERIFY(initialState.x == 0.0f && initialState.y == 0.0f);
 
-                const float32 posX = 251.11;
+                const float32 posX = 251.11f;
                 const float32 posY = 8.23f;
                 const float32 wheelDeltaX = 0.17f;
                 const float32 wheelDeltaY = 5.79f;

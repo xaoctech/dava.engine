@@ -939,7 +939,7 @@ UIEvent UIControlSystem::MakeUIEvent(const InputEvent& inputEvent) const
         uie.device = eInputDevices::TOUCH_SURFACE;
         uie.modifiers = GetKeyboardModifierKeys();
 
-        const bool isDigitalEvent = IsTouchClickElement(inputEvent.elementId);
+        const bool isDigitalEvent = IsTouchClickInputElement(inputEvent.elementId);
 
         // UIEvent's touch id = touch index + 1 (since 0 means 'no touch' inside of UI system)
 
