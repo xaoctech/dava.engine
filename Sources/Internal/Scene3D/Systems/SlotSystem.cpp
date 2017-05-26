@@ -396,7 +396,7 @@ Entity* SlotSystem::AttachItemToSlot(SlotComponent* component, FastName itemName
     uint32 filtersCount = component->GetTypeFiltersCount();
 
     const ItemsCache::Item* item = sharedCache->LookUpItem(configPath, itemName);
-#if defined(__DAVAENGINE_DEBUG)
+#if defined(__DAVAENGINE_DEBUG__)
     uint32 typeFiltersCount = component->GetTypeFiltersCount();
     bool filterFound = (typeFiltersCount == 0);
     for (uint32 i = 0; i < component->GetTypeFiltersCount(); ++i)
@@ -406,28 +406,29 @@ Entity* SlotSystem::AttachItemToSlot(SlotComponent* component, FastName itemName
             filterFound = true;
             break;
         }
-        DVASSERT(filterFound == true);
+    }
+    DVASSERT(filterFound == true);
 #endif
 
-        Entity* loadedEntity = nullptr;
-        if (item != nullptr)
+    Entity* loadedEntity = nullptr;
+    if (item != nullptr)
+    {
+        if (nullptr == externalEntityLoader)
         {
-            if (nullptr == externalEntityLoader)
-            {
-                loadedEntity = GetScene()->cache.GetClone(item->scenePath);
-            }
-            else
-            {
-                loadedEntity = externalEntityLoader->Load(item->scenePath);
-            }
+            loadedEntity = GetScene()->cache.GetClone(item->scenePath);
+        }
+        else
+        {
+            loadedEntity = externalEntityLoader->Load(item->scenePath);
+        }
 
-            if (loadedEntity != nullptr)
-            {
-                AttachEntityToSlot(component, loadedEntity, item->itemName);
-            }
-            else
-            {
-                Logger::Error("Couldn't load item %s with path %s into slot", itemName.c_str(), item->scenePath.GetStringValue().c_str());
+        if (loadedEntity != nullptr)
+        {
+            AttachEntityToSlot(component, loadedEntity, item->itemName);
+        }
+        else
+        {
+            Logger::Error("Couldn't load item %s with path %s into slot", itemName.c_str(), item->scenePath.GetStringValue().c_str());
         }
     }
 
@@ -437,6 +438,9 @@ Entity* SlotSystem::AttachItemToSlot(SlotComponent* component, FastName itemName
 void SlotSystem::AttachEntityToSlot(SlotComponent * component, Entity * entity, FastName itemName)
 {
     UnloadItem(component);
+    DVASSERT(component->GetEntity() != nullptr);
+    DVASSERT(component->GetEntity()->GetScene() != GetScene());
+    DVASSERT(slotToLoadedEntity.count(component) > 0);
 
     component->loadedItemName = itemName;
     entity->SetName(component->GetSlotName());
