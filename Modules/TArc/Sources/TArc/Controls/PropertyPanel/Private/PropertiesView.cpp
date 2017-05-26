@@ -2,6 +2,8 @@
 #include "TArc/Controls/PropertyPanel/Private/ReflectedPropertyModel.h"
 #include "TArc/Controls/PropertyPanel/Private/PropertiesViewDelegate.h"
 #include "TArc/Controls/ComboBox.h"
+#include "TArc/Controls/CheckBox.h"
+#include "TArc/WindowSubSystem/UI.h"
 #include "TArc/Core/ContextAccessor.h"
 #include "TArc/Utils/ScopedValueGuard.h"
 
@@ -18,6 +20,7 @@
 #include <QPainter>
 #include <QToolBar>
 #include <QAction>
+#include <QPersistentModelIndex>
 #include <QtWidgets/private/qheaderview_p.h>
 
 namespace DAVA
@@ -27,6 +30,7 @@ namespace TArc
 namespace PropertiesViewDetail
 {
 const char* SeparatorPositionKey = "SeparatorPosition";
+const char* isFavoritesViewOnlyKey = "isFavoritesViewOnly";
 const int ToolBarHeight = 34;
 const int FavoritesStarSpaceWidth = 20;
 
@@ -60,6 +64,14 @@ private:
     bool isInFavoritesEdit = false;
 };
 
+String DeveloperModeDescription(const Any& v)
+{
+    if (v.Get<bool>() == true)
+        return "Developer mode on";
+    else
+        return "Developer mode off";
+}
+
 } // namespace PropertiesViewDetail
 
 class PropertiesView::PropertiesTreeView : public QTreeView
@@ -71,6 +83,7 @@ public:
         headerView = new PropertiesViewDetail::PropertiesHeaderView(Qt::Horizontal, this);
         setHeader(headerView);
         headerView->setStretchLastSection(true);
+        setMouseTracking(true);
     }
 
     void setModel(QAbstractItemModel* model) override
@@ -130,8 +143,15 @@ protected:
         {
             bool isFavotire = propertiesModel->IsFavorite(index);
             QRect iconRect = QRect(options.rect.x(), options.rect.y(), PropertiesViewDetail::FavoritesStarSpaceWidth, options.rect.height());
-            const char* iconPath = isFavotire == true ? ":/QtIcons/star.png" : ":/QtIcons/star_empty.png";
-            SharedIcon(iconPath).paint(painter, iconRect);
+
+            if (isFavotire)
+            {
+                SharedIcon(":/QtIcons/star.png").paint(painter, iconRect);
+            }
+            else if (propertiesModel->IsInFavoriteHierarchy(index) == false)
+            {
+                SharedIcon(":/QtIcons/star_empty.png").paint(painter, iconRect);
+            }
         }
     }
 
@@ -155,14 +175,36 @@ protected:
                     {
                         propertiesModel->RemoveFavorite(index);
                     }
-                    else
+                    else if (propertiesModel->IsInFavoriteHierarchy(index) == false)
                     {
                         propertiesModel->AddFavorite(index);
                     }
+
+                    viewport()->update();
                 }
             }
         }
         QTreeView::mouseReleaseEvent(event);
+    }
+
+    bool edit(const QModelIndex& index, EditTrigger trigger, QEvent* event) override
+    {
+        if (trigger == SelectedClicked)
+        {
+            return QTreeView::edit(index, QAbstractItemView::EditKeyPressed, event);
+        }
+
+        return QTreeView::edit(index, trigger, event);
+    }
+
+    void rowsInserted(const QModelIndex& index, int start, int end) override
+    {
+        QTreeView::rowsInserted(index, start, end);
+        for (int i = start; i <= end; ++i)
+        {
+            QModelIndex insertedIndex = index.child(i, 0);
+            setFirstColumnSpanned(i, index, propertiesModel->IsEditorSpanned(insertedIndex));
+        }
     }
 
 private:
@@ -175,6 +217,7 @@ DAVA_REFLECTION_IMPL(PropertiesView)
 {
     ReflectionRegistrator<PropertiesView>::Begin()
     .Field("viewMode", &PropertiesView::GetViewMode, &PropertiesView::SetViewMode)[M::EnumT<eViewMode>()]
+    .Field("devMode", &PropertiesView::IsInDeveloperMode, &PropertiesView::SetDeveloperMode)[M::ValueDescription(&PropertiesViewDetail::DeveloperModeDescription)]
     .End();
 }
 
@@ -198,8 +241,13 @@ PropertiesView::PropertiesView(const Params& params_)
     view->setColumnWidth(0, columnWidth);
 
     model->LoadState(viewItem);
+    viewMode = static_cast<eViewMode>(viewItem.Get(PropertiesViewDetail::isFavoritesViewOnlyKey, static_cast<int32>(VIEW_MODE_NORMAL)));
+
     QObject::connect(view, &QTreeView::expanded, this, &PropertiesView::OnExpanded);
     QObject::connect(view, &QTreeView::collapsed, this, &PropertiesView::OnCollapsed);
+    QObject::connect(view->selectionModel(), &QItemSelectionModel::currentChanged, this, &PropertiesView::OnCurrentChanged);
+
+    model->SetDeveloperMode(params.isInDevMode);
 }
 
 PropertiesView::~PropertiesView()
@@ -212,6 +260,7 @@ PropertiesView::~PropertiesView()
 
     PropertiesItem viewSettings = params.accessor->CreatePropertiesNode(params.settingsNodeName);
     viewSettings.Set(PropertiesViewDetail::SeparatorPositionKey, view->columnWidth(0));
+    viewSettings.Set(PropertiesViewDetail::isFavoritesViewOnlyKey, static_cast<int32>(viewMode));
 
     model->SaveState(viewSettings);
 }
@@ -257,10 +306,20 @@ void PropertiesView::SetupUI()
     toolBar->addAction(favoriteModeAction);
     connections.AddConnection(favoriteModeAction, &QAction::toggled, MakeFunction(this, &PropertiesView::OnFavoritesEditChanged));
 
-    ControlDescriptorBuilder<ComboBox::Fields> descr;
-    descr[ComboBox::Fields::Value] = "viewMode";
-    ComboBox* comboBox = new ComboBox(descr, params.accessor, Reflection::Create(ReflectedObject(this)), toolBar);
-    toolBar->addWidget(comboBox->ToWidgetCast());
+    Reflection thisModel = Reflection::Create(ReflectedObject(this));
+    {
+        ComboBox::Params controlParams(params.accessor, params.ui, params.wndKey);
+        controlParams.fields[ComboBox::Fields::Value] = "viewMode";
+        ComboBox* comboBox = new ComboBox(controlParams, params.accessor, thisModel, toolBar);
+        toolBar->addWidget(comboBox->ToWidgetCast());
+    }
+
+    {
+        CheckBox::Params controlParams(params.accessor, params.ui, params.wndKey);
+        controlParams.fields[CheckBox::Fields::Checked] = "devMode";
+        CheckBox* checkBox = new CheckBox(controlParams, params.accessor, thisModel, toolBar);
+        toolBar->addWidget(checkBox->ToWidgetCast());
+    }
 
     QHeaderView* headerView = view->header();
     connections.AddConnection(headerView, &QHeaderView::sectionResized, MakeFunction(this, &PropertiesView::OnColumnResized));
@@ -268,14 +327,17 @@ void PropertiesView::SetupUI()
 
 void PropertiesView::OnObjectsChanged(const Any& objects)
 {
+    view->setRootIndex(QModelIndex());
     if (objects.IsEmpty())
     {
         model->SetObjects(Vector<Reflection>());
-        return;
     }
-
-    DVASSERT(objects.CanCast<Vector<Reflection>>());
-    model->SetObjects(objects.Cast<Vector<Reflection>>());
+    else
+    {
+        DVASSERT(objects.CanCast<Vector<Reflection>>());
+        model->SetObjects(objects.Cast<Vector<Reflection>>());
+    }
+    UpdateViewRootIndex();
     UpdateExpanded();
 }
 
@@ -283,14 +345,13 @@ void PropertiesView::OnColumnResized(int columnIndex, int oldSize, int newSize)
 {
     PropertiesViewDelegate* d = qobject_cast<PropertiesViewDelegate*>(view->itemDelegate());
     DVASSERT(d != nullptr);
-    if (d->UpdateSizeHints(columnIndex, newSize) == true)
-    {
-        model->HideEditors();
-    }
+    d->UpdateSizeHints(columnIndex, newSize);
 }
 
 void PropertiesView::Update(UpdatePolicy policy)
 {
+    ScopedValueGuard<bool> guard(isModelUpdate, true);
+
     switch (policy)
     {
     case DAVA::TArc::PropertiesView::FullUpdate:
@@ -305,12 +366,25 @@ void PropertiesView::Update(UpdatePolicy policy)
     }
 
     UpdateExpanded();
+    QModelIndex currentIndex = model->LookIndex(currentIndexPath);
+    if (currentIndex.isValid())
+    {
+        QModelIndex viewCurrent = view->currentIndex();
+        if (currentIndex.row() != viewCurrent.row() || currentIndex.internalPointer() != viewCurrent.internalPointer())
+        {
+            view->setCurrentIndex(currentIndex);
+        }
+    }
+    else
+    {
+        view->clearSelection();
+    }
 }
 
 void PropertiesView::UpdateExpanded()
 {
     ScopedValueGuard<bool> guard(isExpandUpdate, true);
-    QModelIndexList expandedList = model->GetExpandedList();
+    QModelIndexList expandedList = model->GetExpandedList(view->rootIndex());
     foreach (const QModelIndex& index, expandedList)
     {
         view->expand(index);
@@ -321,7 +395,6 @@ void PropertiesView::OnExpanded(const QModelIndex& index)
 {
     SCOPED_VALUE_GUARD(bool, isExpandUpdate, true, void());
     model->SetExpanded(true, index);
-    model->HideEditors();
 
     QModelIndexList expandedList = model->GetExpandedChildren(index);
     foreach (const QModelIndex& index, expandedList)
@@ -334,7 +407,6 @@ void PropertiesView::OnCollapsed(const QModelIndex& index)
 {
     SCOPED_VALUE_GUARD(bool, isExpandUpdate, true, void());
     model->SetExpanded(false, index);
-    model->HideEditors();
 }
 
 void PropertiesView::OnFavoritesEditChanged(bool isChecked)
@@ -344,14 +416,57 @@ void PropertiesView::OnFavoritesEditChanged(bool isChecked)
 
 PropertiesView::eViewMode PropertiesView::GetViewMode() const
 {
-    return model->IsFavoriteOnly() == true ? VIEW_MODE_FAVORITES_ONLY : VIEW_MODE_NORMAL;
+    return viewMode;
 }
 
 void PropertiesView::SetViewMode(PropertiesView::eViewMode mode)
 {
-    model->SetFavoriteOnly(mode == VIEW_MODE_FAVORITES_ONLY);
-    model->HideEditors();
+    view->setRootIndex(QModelIndex());
+    viewMode = mode;
+    UpdateViewRootIndex();
     UpdateExpanded();
+}
+
+bool PropertiesView::IsInDeveloperMode() const
+{
+    return model->IsDeveloperMode();
+}
+
+void PropertiesView::SetDeveloperMode(bool isDevMode)
+{
+    if (isDevMode == true)
+    {
+        ModalMessageParams p;
+        p.defaultButton = ModalMessageParams::Cancel;
+        p.icon = ModalMessageParams::Warning;
+        p.title = "Switch to developer mode";
+        p.message = "You are trying to switch into developer mode. It can be unsafe.\nAre you sure?";
+        if (params.ui->ShowModalMessage(DAVA::TArc::mainWindowKey, p) == ModalMessageParams::Cancel)
+        {
+            return;
+        }
+    }
+
+    model->SetDeveloperMode(isDevMode);
+}
+
+void PropertiesView::UpdateViewRootIndex()
+{
+    QModelIndex newRootIndex = model->GetRegularRootIndex();
+    if (viewMode == VIEW_MODE_FAVORITES_ONLY)
+    {
+        newRootIndex = model->GetFavoriteRootIndex();
+    }
+
+    view->setRootIndex(newRootIndex);
+}
+
+void PropertiesView::OnCurrentChanged(const QModelIndex& index, const QModelIndex& prev)
+{
+    if (isModelUpdate == false)
+    {
+        currentIndexPath = model->GetIndexPath(index);
+    }
 }
 
 } // namespace TArc
