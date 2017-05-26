@@ -1,4 +1,5 @@
 #include "ExpressionEvaluator.h"
+#include "rhi_Utils.h"
 
 #include "Debug/DVAssert.h"
 #include "Logger/Logger.h"
@@ -417,7 +418,8 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
         {
             offset = _GetVariable(expr);
 
-            strncpy(&var[0], expr, offset);
+            DVASSERT(offset < countof(var) - 1);
+            strncpy(var, expr, offset);
             var[offset] = '\0';
             uint32 vhash = DAVA::HashValue_N(var, offset);
             std::unordered_map<uint32_t, FuncImpl>::iterator func = FuncImplMap.find(vhash);
@@ -658,6 +660,7 @@ bool ExpressionEvaluator::GetLastError(char* err_buffer, uint32 err_buffer_size)
         uint32 len = uint32(::strlen(expressionText));
         char buf[2048];
 
+        DVASSERT(len < countof(buf) - 1);
         ::memset(buf, ' ', len);
         buf[len] = '\0';
         buf[lastErrorIndex] = '^';
