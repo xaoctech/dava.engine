@@ -41,14 +41,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(PathComponent)
 //== Waypoint ==
 PathComponent::Waypoint::Waypoint()
     : name(FastName(""))
+    , properties(new KeyedArchive())
 {
-    properties = NULL;
-}
-
-PathComponent::Waypoint::Waypoint(bool withProperties)
-    : name(FastName(""))
-{
-    properties = new KeyedArchive();
 }
 
 PathComponent::Waypoint::~Waypoint()
@@ -96,12 +90,8 @@ void PathComponent::Waypoint::RemoveEdge(PathComponent::Edge* edge)
 
 //== Edge ==
 PathComponent::Edge::Edge()
+    : properties(new KeyedArchive())
 {
-}
-
-PathComponent::Edge::Edge(bool withProperties)
-{
-    properties = new KeyedArchive();
 }
 
 PathComponent::Edge::~Edge()
@@ -242,7 +232,7 @@ void PathComponent::Serialize(KeyedArchive* archive, SerializationContext* seria
                 wpArchieve->SetFastName("name", wp->name);
                 wpArchieve->SetVector3("position", wp->position);
                 wpArchieve->SetBool("isStarting", wp->isStarting);
-                if (wp->GetProperties() && wp->GetProperties()->Count() > 0)
+                if (wp->GetProperties())
                 {
                     wpArchieve->SetArchive("properties", wp->GetProperties());
                 }
@@ -254,7 +244,7 @@ void PathComponent::Serialize(KeyedArchive* archive, SerializationContext* seria
                     Edge* edge = wp->edges[e];
 
                     KeyedArchive* edgeArchieve = new KeyedArchive();
-                    if (edge->GetProperties() && edge->GetProperties()->Count() > 0)
+                    if (edge->GetProperties())
                     {
                         edgeArchieve->SetArchive("properties", edge->GetProperties());
                     }
@@ -405,11 +395,9 @@ void PathComponent::ExtractPoint(Waypoint* point)
     {
         Waypoint* wp = waypoints[w];
 
-        uint32 edgesCount = static_cast<uint32>(wp->edges.size());
-        for (uint32 e = 0; e < edgesCount; ++e)
+        for (Edge* e : wp->edges)
         {
-            Edge* edge = wp->edges[e];
-            DVASSERT(edge->destination != point);
+            DVASSERT(e->destination != point);
         }
 
         if (wp == point)

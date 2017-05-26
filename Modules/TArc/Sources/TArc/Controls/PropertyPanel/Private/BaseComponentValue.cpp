@@ -1,11 +1,14 @@
 #include "TArc/Controls/PropertyPanel/BaseComponentValue.h"
 #include "TArc/Controls/PropertyPanel/Private/ReflectedPropertyModel.h"
+#include "TArc/Controls/PropertyPanel/Private/WidgetRenderHelper.h"
 #include "TArc/Controls/PropertyPanel/PropertyPanelMeta.h"
+#include "TArc/Controls/ReflectedButton.h"
 #include "TArc/Controls/QtBoxLayouts.h"
 
 #include "TArc/DataProcessing/DataWrappersProcessor.h"
 #include "TArc/Utils/ScopedValueGuard.h"
 #include "TArc/Utils/ReflectionHelpers.h"
+#include "TArc/Qt/QtSize.h"
 
 #include <Engine/PlatformApi.h>
 #include <Reflection/ReflectionRegistrator.h>
@@ -16,14 +19,87 @@
 #include <QStyle>
 #include <QStyleOption>
 #include <QPainter>
-#include <QToolButton>
-#include <QPainter>
 #include <QDebug>
 
 namespace DAVA
 {
 namespace TArc
 {
+class BaseComponentValue::ButtonModel
+{
+public:
+    ButtonModel(BaseComponentValue* valueComponent, std::shared_ptr<M::CommandProducer> cmd_)
+        : value(valueComponent)
+        , cmd(cmd_)
+    {
+        commandInfo = cmd->GetInfo();
+    }
+
+private:
+    bool IsEnabled() const
+    {
+        return cmd->OnlyForSingleSelection() == false || value->nodes.size() == 1;
+    }
+
+    bool IsVisible() const
+    {
+        for (const std::shared_ptr<PropertyNode>& node : value->nodes)
+        {
+            if (cmd->IsApplyable(node))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    const QIcon& GetIcon() const
+    {
+        return commandInfo.icon;
+    }
+
+    QSize GetIconSize() const
+    {
+        return BaseComponentValue::toolButtonIconSize;
+    }
+
+    const QString& GetToolTip() const
+    {
+        return commandInfo.tooltip;
+    }
+
+    bool IsAutoRise() const
+    {
+        return false;
+    }
+
+    void Invoke()
+    {
+        value->CallButtonAction(cmd);
+    }
+
+private:
+    BaseComponentValue* value;
+    std::shared_ptr<M::CommandProducer> cmd;
+    M::CommandProducer::Info commandInfo;
+
+    DAVA_REFLECTION(ButtonModel);
+};
+
+DAVA_REFLECTION_IMPL(BaseComponentValue::ButtonModel)
+{
+    ReflectionRegistrator<ButtonModel>::Begin()
+    .Field("isEnabled", &ButtonModel::IsEnabled, nullptr)
+    .Field("isVisible", &ButtonModel::IsVisible, nullptr)
+    .Field("icon", &ButtonModel::GetIcon, nullptr)
+    .Field("iconSize", &ButtonModel::GetIconSize, nullptr)
+    .Field("toolTip", &ButtonModel::GetToolTip, nullptr)
+    .Field("autoRise", &ButtonModel::IsAutoRise, nullptr)
+    .Method("invoke", &ButtonModel::Invoke)
+    .End();
+}
+
 BaseComponentValue::BaseComponentValue()
 {
     thisValue = this;
@@ -33,6 +109,10 @@ BaseComponentValue::~BaseComponentValue()
 {
     if (editorWidget != nullptr)
     {
+        if (buttonsLayout != nullptr)
+        {
+            buttonsLayout->TearDown();
+        }
         editorWidget->TearDown();
         editorWidget = nullptr;
 
@@ -55,7 +135,12 @@ void BaseComponentValue::Draw(QPainter* painter, const QStyleOptionViewItem& opt
     UpdateEditorGeometry(opt.rect);
     bool isOpacue = realWidget->testAttribute(Qt::WA_NoSystemBackground);
     realWidget->setAttribute(Qt::WA_NoSystemBackground, true);
-    QPixmap pxmap = realWidget->grab();
+    // Original QWidget::grab has a bug. It doesn't take into consideration screen's "devicePixelRatio"
+    // So i had to write my own implementation of grab method.
+    // To get access to private parts of QWidget i had to "reinterpret_cast" realWidget to my helper.
+    // It will be same until WidgetRenderHelper does not have any data, only one method.
+    WidgetRenderHelper* renderHelper = reinterpret_cast<WidgetRenderHelper*>(realWidget);
+    QPixmap pxmap = renderHelper->davaGrab(painter->device()->devicePixelRatioF(), realWidget->rect());
     realWidget->setAttribute(Qt::WA_NoSystemBackground, isOpacue);
     painter->drawPixmap(opt.rect, pxmap);
 }
@@ -139,6 +224,16 @@ bool BaseComponentValue::IsReadOnly() const
 bool BaseComponentValue::IsSpannedControl() const
 {
     return false;
+}
+
+bool BaseComponentValue::RepaintOnUpdateRequire() const
+{
+    return false;
+}
+
+bool BaseComponentValue::IsVisible() const
+{
+    return realWidget != nullptr && realWidget->isVisible();
 }
 
 const BaseComponentValue::Style& BaseComponentValue::GetStyle() const
@@ -271,17 +366,19 @@ void BaseComponentValue::EnsureEditorCreated(QWidget* parent)
     bool realProperty = nodes.front()->propertyType == PropertyNode::RealProperty;
     if (realProperty == true && (fieldProducer != nullptr || typeProducer != nullptr))
     {
-        QWidget* boxWidget = new QWidget(parent);
-        QtHBoxLayout* layout = new QtHBoxLayout(boxWidget);
+        QtHBoxLayout* layout = new QtHBoxLayout();
+        buttonsLayout = new Widget(parent);
+        buttonsLayout->SetLayout(layout);
         layout->setMargin(0);
         layout->setSpacing(1);
 
-        CreateButtons(layout, typeProducer, true);
-        CreateButtons(layout, fieldProducer, false);
+        CreateButtons(buttonsLayout, typeProducer);
+        CreateButtons(buttonsLayout, fieldProducer);
         layout->addWidget(realWidget);
-        boxWidget->setFocusProxy(realWidget);
-        boxWidget->setFocusPolicy(realWidget->focusPolicy());
-        realWidget = boxWidget;
+        QWidget* buttonsLayoutWidget = buttonsLayout->ToWidgetCast();
+        buttonsLayoutWidget->setFocusProxy(realWidget);
+        buttonsLayoutWidget->setFocusPolicy(realWidget->focusPolicy());
+        realWidget = buttonsLayoutWidget;
     }
 }
 
@@ -300,7 +397,7 @@ void BaseComponentValue::UpdateEditorGeometry(const QRect& geometry) const
     }
 }
 
-void BaseComponentValue::CreateButtons(QLayout* layout, const M::CommandProducerHolder* holder, bool isTypeButtons)
+void BaseComponentValue::CreateButtons(Widget* widget, const M::CommandProducerHolder* holder)
 {
     if (holder == nullptr)
     {
@@ -310,71 +407,27 @@ void BaseComponentValue::CreateButtons(QLayout* layout, const M::CommandProducer
     const Vector<std::shared_ptr<M::CommandProducer>>& commands = holder->GetCommandProducers();
     for (size_t i = 0; i < commands.size(); ++i)
     {
-        bool createButton = false;
-        const std::shared_ptr<M::CommandProducer>& cmd = commands[i];
-        for (const std::shared_ptr<PropertyNode>& node : nodes)
-        {
-            if (cmd->IsApplyable(node))
-            {
-                createButton = true;
-                break;
-            }
-        }
+        std::unique_ptr<ButtonModel> modelObject = std::make_unique<ButtonModel>(this, commands[i]);
+        Reflection model = Reflection::Create(ReflectedObject(modelObject.get()));
+        buttonModels.push_back(std::move(modelObject));
 
-        if (createButton == true)
-        {
-            M::CommandProducer::Info info = cmd->GetInfo();
-            QToolButton* button = new QToolButton(layout->widget());
-            button->setIcon(info.icon);
-            button->setToolTip(info.tooltip);
-            button->setIconSize(toolButtonIconSize);
-            button->setAutoRaise(false);
-            button->setFocusPolicy(Qt::StrongFocus);
-            if (cmd->OnlyForSingleSelection() && nodes.size() > 1)
-            {
-                button->setEnabled(false);
-            }
-
-            if (isTypeButtons == true)
-            {
-                connections.AddConnection(button, &QToolButton::clicked, [this, i]()
-                                          {
-                                              OnTypeButtonClicked(static_cast<int32>(i));
-                                          });
-            }
-            else
-            {
-                connections.AddConnection(button, &QToolButton::clicked, [this, i]()
-                                          {
-                                              OnFieldButtonClicked(static_cast<int32>(i));
-                                          });
-            }
-
-            layout->addWidget(button);
-        }
+        ReflectedButton::Params p(GetAccessor(), GetUI(), GetWindowKey());
+        p.fields[ReflectedButton::Fields::Enabled] = "isEnabled";
+        p.fields[ReflectedButton::Fields::Visible] = "isVisible";
+        p.fields[ReflectedButton::Fields::Icon] = "icon";
+        p.fields[ReflectedButton::Fields::IconSize] = "iconSize";
+        p.fields[ReflectedButton::Fields::Tooltip] = "toolTip";
+        p.fields[ReflectedButton::Fields::AutoRaise] = "autoRise"; // false
+        p.fields[ReflectedButton::Fields::Clicked] = "invoke";
+        ReflectedButton* button = new ReflectedButton(p, GetDataProcessor(), model, widget->ToWidgetCast());
+        button->ForceUpdate();
+        button->ToWidgetCast()->setFocusPolicy(Qt::StrongFocus);
+        widget->AddControl(button);
     }
 }
 
-void BaseComponentValue::OnFieldButtonClicked(int32 index)
+void BaseComponentValue::CallButtonAction(std::shared_ptr<M::CommandProducer> producer)
 {
-    const M::CommandProducerHolder* holder = nodes.front()->field.ref.GetMeta<M::CommandProducerHolder>();
-    CallButtonAction(holder, index);
-}
-
-void BaseComponentValue::OnTypeButtonClicked(int32 index)
-{
-    const M::CommandProducerHolder* holder = GetTypeMeta<M::CommandProducerHolder>(nodes.front()->cachedValue);
-    DVASSERT(holder);
-    CallButtonAction(holder, index);
-}
-
-void BaseComponentValue::CallButtonAction(const M::CommandProducerHolder* holder, int32 index)
-{
-    DVASSERT(holder != nullptr);
-    const Vector<std::shared_ptr<M::CommandProducer>>& producers = holder->GetCommandProducers();
-    DVASSERT(index < static_cast<size_t>(producers.size()));
-
-    std::shared_ptr<M::CommandProducer> producer = producers[index];
     M::CommandProducer::Info info = producer->GetInfo();
     producer->CreateCache(model->accessor);
 

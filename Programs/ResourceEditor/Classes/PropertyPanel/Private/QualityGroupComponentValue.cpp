@@ -188,6 +188,11 @@ QualityGroupComponentValue::QualityGroupComponentValue()
     }
 }
 
+bool QualityGroupComponentValue::RepaintOnUpdateRequire() const
+{
+    return true;
+}
+
 DAVA::Any QualityGroupComponentValue::GetMultipleValue() const
 {
     return DAVA::Any();
@@ -267,7 +272,7 @@ size_t QualityGroupComponentValue::GetModelTypeIndex() const
         }
     }
 
-    isDifferentGroups = false;
+    isDifferentModelTypes = false;
     if (modelType.IsValid() == false)
     {
         return 0;

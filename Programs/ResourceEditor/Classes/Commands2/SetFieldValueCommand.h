@@ -15,8 +15,7 @@ public:
 
     const DAVA::Any& GetOldValue() const;
     const DAVA::Any& GetNewValue() const;
-    const DAVA::Reflection& GetTarget() const;
-    const DAVA::Any& GetFieldName() const;
+    const DAVA::Reflection::Field& GetField() const;
 
 private:
     DAVA::Any oldValue;

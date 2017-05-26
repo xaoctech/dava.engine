@@ -48,7 +48,7 @@ public:
     RemoveGuard(ReflectedPropertyModel* model_, ReflectedPropertyItem* item)
         : model(model_)
     {
-        if (item->GetChildCount() > 1)
+        if (item->GetPropertyNodesCount() > 1)
         {
             return;
         }
@@ -220,6 +220,7 @@ void ReflectedPropertyModel::Update()
 #if defined(REPORT_UPDATE_TIME)
     Logger::Debug(" === ReflectedPropertyModel::Update : %d for %d objects ===", static_cast<int32>(SystemTimer::GetMs() - start), rootItem->GetPropertyNodesCount());
 #endif
+    EmitDataChangedSignals();
 }
 
 void ReflectedPropertyModel::Update(ReflectedPropertyItem* item)
@@ -282,6 +283,8 @@ void ReflectedPropertyModel::UpdateFast()
 #if defined(REPORT_UPDATE_TIME)
     Logger::Debug(" === ReflectedPropertyModel::UpdateFast : %d ===", static_cast<int32>(SystemTimer::GetMs() - start));
 #endif
+
+    EmitDataChangedSignals();
 }
 
 void ReflectedPropertyModel::SetObjects(Vector<Reflection> objects)
@@ -294,6 +297,7 @@ void ReflectedPropertyModel::SetObjects(Vector<Reflection> objects)
     {
         nodeToItem.clear();
         nodeToFavorite.clear();
+        repaintRequire.clear();
         beginResetModel();
         rootItem->RemoveChildren();
         favoritesController.Reset();
@@ -319,6 +323,7 @@ void ReflectedPropertyModel::SetObjects(Vector<Reflection> objects)
     objects.clear();
 
     Update();
+    EmitDataChangedSignals();
 }
 
 void ReflectedPropertyModel::OnChildAdded(const std::shared_ptr<PropertyNode>& parent, const std::shared_ptr<PropertyNode>& node)
@@ -342,10 +347,15 @@ void ReflectedPropertyModel::OnChildAdded(const std::shared_ptr<PropertyNode>& p
         InsertGuard guard(this, parentItem, childPosition, childPosition);
         childItem = parentItem->CreateChild(std::move(valueComponent), childPosition, node->sortKey);
         childItem->AddPropertyNode(node);
+        if (childItem->value->RepaintOnUpdateRequire())
+        {
+            repaintRequire.insert(childItem);
+        }
     }
 
     auto newNode = nodeToItem.emplace(node, childItem);
     DVASSERT(newNode.second);
+    dataChangedNodes.insert(node);
 }
 
 void ReflectedPropertyModel::OnChildRemoved(const std::shared_ptr<PropertyNode>& node)
@@ -360,33 +370,55 @@ void ReflectedPropertyModel::OnChildRemoved(const std::shared_ptr<PropertyNode>&
     if (needRemove)
     {
         item->parent->RemoveChild(item->position);
+        repaintRequire.erase(item);
     }
 
     if (needRemove == true)
     {
         nodeToItem.erase(node);
     }
+
+    dataChangedNodes.erase(node);
 }
 
 void ReflectedPropertyModel::OnDataChange(const std::shared_ptr<PropertyNode>& node)
 {
-    auto emitSignal = [&](const QModelIndex& index)
+    dataChangedNodes.insert(node);
+}
+
+void ReflectedPropertyModel::EmitDataChangedSignals()
+{
+    DAVA::Set<QModelIndex> indexesSet;
+    for (const std::shared_ptr<PropertyNode>& node : dataChangedNodes)
+    {
+        {
+            auto iter = nodeToItem.find(node);
+            DVASSERT(iter != nodeToItem.end());
+            indexesSet.insert(MapItem(iter->second));
+        }
+
+        {
+            auto iter = nodeToFavorite.find(node);
+            if (iter != nodeToFavorite.end())
+            {
+                indexesSet.insert(MapItem(iter->second));
+            }
+        }
+    }
+    dataChangedNodes.clear();
+
+    for (ReflectedPropertyItem* item : repaintRequire)
+    {
+        if (item->value->IsVisible() == false)
+        {
+            indexesSet.insert(MapItem(item));
+        }
+    }
+
+    for (const QModelIndex& index : indexesSet)
     {
         QModelIndex valueColumnIndex = index.sibling(index.row(), 1);
         emit dataChanged(index, valueColumnIndex);
-    };
-    {
-        auto iter = nodeToItem.find(node);
-        DVASSERT(iter != nodeToItem.end());
-        emitSignal(MapItem(iter->second));
-    }
-
-    {
-        auto iter = nodeToFavorite.find(node);
-        if (iter != nodeToFavorite.end())
-        {
-            emitSignal(MapItem(iter->second));
-        }
     }
 }
 
@@ -422,6 +454,11 @@ void ReflectedPropertyModel::OnFavoritedAdded(const std::shared_ptr<PropertyNode
         childItem = parentItem->CreateChild(std::move(valueComponent), childPosition, node->sortKey);
         childItem->SetFavorite(isRoot);
         childItem->AddPropertyNode(node, FastName(id));
+
+        if (childItem->value->RepaintOnUpdateRequire())
+        {
+            repaintRequire.insert(childItem);
+        }
     }
 
     auto newNode = nodeToFavorite.emplace(node, childItem);
@@ -440,6 +477,7 @@ void ReflectedPropertyModel::OnFavoritedRemoved(const std::shared_ptr<PropertyNo
     if (item->GetPropertyNodesCount() == 0)
     {
         item->parent->RemoveChild(item->position);
+        repaintRequire.erase(item);
     }
 
     if (unfavorited == true)
@@ -662,6 +700,11 @@ void ReflectedPropertyModel::SetDeveloperMode(bool isDevMode)
     {
         iter.second->SetDevelopertMode(isDevMode);
     }
+}
+
+bool ReflectedPropertyModel::IsEditorSpanned(const QModelIndex& index) const
+{
+    return MapItem(index)->value->IsSpannedControl();
 }
 
 QModelIndex ReflectedPropertyModel::GetRegularRootIndex() const

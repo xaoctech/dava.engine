@@ -125,7 +125,8 @@ void PathSystem::AddEntity(DAVA::Entity* entity)
 
     // extract color data from custom properties for old scenes
     DAVA::PathComponent* pc = GetPathComponent(entity);
-    if (pc && pc->GetColor() == DAVA::Color())
+    DVASSERT(pc != nullptr);
+    if (pc->GetColor() == DAVA::Color())
     {
         DAVA::KeyedArchive* props = GetCustomPropertiesArchieve(entity);
         if (props && props->IsKeyExists(PathSystemDetail::PATH_COLOR_PROP_NAME))
@@ -135,16 +136,12 @@ void PathSystem::AddEntity(DAVA::Entity* entity)
         }
     }
 
-    if (isEditingEnabled == true && pc != nullptr)
+    if (isEditingEnabled == true)
     {
         entitiesForExpand.insert(entity);
     }
 
-    for (DAVA::uint32 i = 0; i < entity->GetComponentCount(DAVA::Component::PATH_COMPONENT); ++i)
-    {
-        InitPathComponent(static_cast<DAVA::PathComponent*>(entity->GetComponent(DAVA::Component::PATH_COMPONENT, i)));
-    }
-
+    InitPathComponent(pc);
     pathes.push_back(entity);
 }
 
@@ -153,7 +150,7 @@ void PathSystem::RemoveEntity(DAVA::Entity* entity)
     DAVA::PathComponent* pc = GetPathComponent(entity);
     if (isEditingEnabled == true && pc != nullptr)
     {
-        entitiesForCollapse.insert(entity);
+        entitiesForCollapse.emplace(entity, pc->GetName());
     }
 
     DAVA::FindAndRemoveExchangingWithLast(pathes, entity);
@@ -171,16 +168,12 @@ void PathSystem::RemoveEntity(DAVA::Entity* entity)
     }
 }
 
-void PathSystem::AddComponent(DAVA::Entity* entity, DAVA::Component* component)
-{
-    InitPathComponent(static_cast<DAVA::PathComponent*>(component));
-}
-
 void PathSystem::WillClone(DAVA::Entity* originalEntity)
 {
-    if (isEditingEnabled && GetPathComponent(originalEntity) != nullptr)
+    DAVA::PathComponent* pc = GetPathComponent(originalEntity);
+    if (isEditingEnabled && pc != nullptr)
     {
-        CollapsePathEntity(originalEntity);
+        CollapsePathEntity(originalEntity, pc->GetName());
     }
 }
 
@@ -222,16 +215,18 @@ void PathSystem::OnEdgeRemoved(DAVA::PathComponent* path, DAVA::PathComponent::W
 
 void PathSystem::OnWaypointDeleted(DAVA::PathComponent* path, DAVA::PathComponent::Waypoint* waypoint)
 {
-    DVASSERT(entityCache.count(waypoint) > 0);
-    entityCache.erase(waypoint);
+    size_t erasedCount = entityCache.erase(waypoint);
+    DVASSERT(erasedCount > 0);
 }
 
 void PathSystem::OnEdgeDeleted(DAVA::PathComponent* path, DAVA::PathComponent::Waypoint* waypoint, DAVA::PathComponent::Edge* edge)
 {
-    DVASSERT(edgeComponentCache.count(edge) > 0);
     auto iter = edgeComponentCache.find(edge);
-    SafeDelete(iter->second);
-    edgeComponentCache.erase(iter);
+    if (iter != edgeComponentCache.end())
+    {
+        SafeDelete(iter->second);
+        edgeComponentCache.erase(iter);
+    }
 }
 
 void PathSystem::Draw()
@@ -364,9 +359,9 @@ void PathSystem::InitPathComponent(DAVA::PathComponent* component)
 
 void PathSystem::Process(DAVA::float32 timeElapsed)
 {
-    for (DAVA::Entity* entityToCollapse : entitiesForCollapse)
+    for (const auto& node : entitiesForCollapse)
     {
-        CollapsePathEntity(entityToCollapse);
+        CollapsePathEntity(node.first, node.second);
     }
     entitiesForCollapse.clear();
 
@@ -384,7 +379,7 @@ void PathSystem::Process(DAVA::float32 timeElapsed)
 
         for (auto entity : currentSelection.ObjectsOfType<DAVA::Entity>())
         {
-            if (entity->GetComponent(DAVA::Component::PATH_COMPONENT) != nullptr)
+            if (GetPathComponent(entity) != nullptr)
             {
                 currentPath = entity;
                 break;
@@ -440,16 +435,18 @@ void PathSystem::EnablePathEdit(bool enable)
     isEditingEnabled = enable;
     if (enable)
     {
-        for (auto path : pathes)
+        for (DAVA::Entity* pathEntity : pathes)
         {
-            entitiesForExpand.insert(path);
+            entitiesForExpand.insert(pathEntity);
         }
     }
     else
     {
-        for (auto path : pathes)
+        for (DAVA::Entity* pathEntity : pathes)
         {
-            entitiesForCollapse.insert(path);
+            DAVA::PathComponent* path = GetPathComponent(pathEntity);
+            DVASSERT(path != nullptr);
+            entitiesForCollapse.emplace(pathEntity, path->GetName());
         }
     }
 }
@@ -485,6 +482,11 @@ void PathSystem::ExpandPathEntity(DAVA::Entity* pathEntity)
             {
                 value.entity.ConstructInplace();
                 value.entity->SetName(waypoint->name);
+                if (waypoint->IsStarting())
+                {
+                    value.entity->SetNotRemovable(true);
+                }
+
                 WaypointComponent* wpComponent = new WaypointComponent();
                 wpComponent->Init(path, waypoint);
                 value.entity->AddComponent(wpComponent);
@@ -504,18 +506,23 @@ void PathSystem::ExpandPathEntity(DAVA::Entity* pathEntity)
     for (int32 i = 0; i < pathEntity->GetChildrenCount(); ++i)
     {
         Entity* child = pathEntity->GetChild(i);
-        for (uint32 waypointIndex = 0; waypointIndex < child->GetComponentCount(Component::WAYPOINT_COMPONENT); ++waypointIndex)
+        WaypointComponent* component = GetWaypointComponent(child);
+        if (component == nullptr)
         {
-            WaypointComponent* component = static_cast<WaypointComponent*>(child->GetComponent(Component::WAYPOINT_COMPONENT, waypointIndex));
+            continue;
+        }
 
-            WaypointKey key;
-            key.path = component->GetPath();
-            key.waypoint = component->GetWaypoint();
+        WaypointKey key;
+        key.path = component->GetPath();
+        key.waypoint = component->GetWaypoint();
 
-            MappingValue value;
-            value.entity = RefPtr<Entity>::ConstructWithRetain(child);
+        MappingValue value;
+        value.entity = RefPtr<Entity>::ConstructWithRetain(child);
 
-            waypointToEntity.emplace(key, value);
+        waypointToEntity.emplace(key, value);
+        if (entityCache.count(key.waypoint) == 0)
+        {
+            entityCache[key.waypoint] = value.entity;
         }
 
         for (uint32 edgeIndex = 0; edgeIndex < child->GetComponentCount(Component::EDGE_COMPONENT); ++edgeIndex)
@@ -534,44 +541,42 @@ void PathSystem::ExpandPathEntity(DAVA::Entity* pathEntity)
         }
     }
 
-    for (uint32 pathIndex = 0; pathIndex < pathEntity->GetComponentCount(Component::PATH_COMPONENT); ++pathIndex)
+    PathComponent* path = GetPathComponent(pathEntity);
+    DVASSERT(path != nullptr);
+    for (PathComponent::Waypoint* waypoint : path->GetPoints())
     {
-        PathComponent* path = static_cast<PathComponent*>(pathEntity->GetComponent(Component::PATH_COMPONENT, pathIndex));
-        for (PathComponent::Waypoint* waypoint : path->GetPoints())
+        lookUpWaypointEntity(path, waypoint);
+
+        for (PathComponent::Edge* edge : waypoint->edges)
         {
-            lookUpWaypointEntity(path, waypoint);
+            EdgeKey edgeKey;
+            edgeKey.path = path;
+            edgeKey.edge = edge;
 
-            for (PathComponent::Edge* edge : waypoint->edges)
+            EdgeMappingValue& value = edgeToEntity[edgeKey];
+            value.existsInSourceData = true;
+            if (value.component == nullptr)
             {
-                EdgeKey edgeKey;
-                edgeKey.path = path;
-                edgeKey.edge = edge;
-
-                EdgeMappingValue& value = edgeToEntity[edgeKey];
-                value.existsInSourceData = true;
-                if (value.component == nullptr)
+                RefPtr<Entity> srcWaypointEntity = lookUpWaypointEntity(path, waypoint);
+                value.entity = srcWaypointEntity;
+                auto iter = edgeComponentCache.find(edge);
+                if (iter != edgeComponentCache.end())
                 {
-                    RefPtr<Entity> srcWaypointEntity = lookUpWaypointEntity(path, waypoint);
-                    value.entity = srcWaypointEntity;
-                    auto iter = edgeComponentCache.find(edge);
-                    if (iter != edgeComponentCache.end())
-                    {
-                        value.component = iter->second;
-                        DVASSERT(value.component->GetPath() == path);
-                        DVASSERT(value.component->GetEdge() == edge);
-                        edgeComponentCache.erase(edge);
-                    }
-                    else
-                    {
-                        value.component = new EdgeComponent();
-                        value.component->Init(path, edge);
-                    }
-                    value.entity->AddComponent(value.component);
+                    value.component = iter->second;
+                    DVASSERT(value.component->GetPath() == path);
+                    DVASSERT(value.component->GetEdge() == edge);
+                    edgeComponentCache.erase(edge);
                 }
-
-                RefPtr<Entity> destinationEntity = lookUpWaypointEntity(path, edge->destination);
-                value.component->SetNextEntity(destinationEntity.Get());
+                else
+                {
+                    value.component = new EdgeComponent();
+                    value.component->Init(path, edge);
+                }
+                value.entity->AddComponent(value.component);
             }
+
+            RefPtr<Entity> destinationEntity = lookUpWaypointEntity(path, edge->destination);
+            value.component->SetNextEntity(destinationEntity.Get());
         }
     }
 
@@ -604,20 +609,11 @@ void PathSystem::ExpandPathEntity(DAVA::Entity* pathEntity)
     entitiesToRemove.clear();
 }
 
-void PathSystem::CollapsePathEntity(DAVA::Entity* pathEntity)
+void PathSystem::CollapsePathEntity(DAVA::Entity* pathEntity, DAVA::FastName pathName)
 {
     using namespace DAVA;
 
     SceneEditor2* sceneEditor = static_cast<SceneEditor2*>(GetScene());
-
-    uint32 pathComponentCount = pathEntity->GetComponentCount(DAVA::Component::PATH_COMPONENT);
-    Set<FastName> pathNames;
-    for (DAVA::uint32 i = 0; i < pathComponentCount; ++i)
-    {
-        PathComponent* pathComponent = static_cast<DAVA::PathComponent*>(pathEntity->GetComponent(DAVA::Component::PATH_COMPONENT, i));
-        DVASSERT(pathComponent);
-        pathNames.insert(pathComponent->GetName());
-    }
 
     Vector<Entity*> edgeChildren;
     pathEntity->GetChildEntitiesWithComponent(edgeChildren, Component::EDGE_COMPONENT);
@@ -646,7 +642,7 @@ void PathSystem::CollapsePathEntity(DAVA::Entity* pathEntity)
     for (Entity* wpEntity : children)
     {
         WaypointComponent* wpComponent = GetWaypointComponent(wpEntity);
-        if (pathNames.count(wpComponent->GetPathName()) > 0)
+        if (pathName == wpComponent->GetPathName())
         {
             DVASSERT(entityCache.count(wpComponent->GetWaypoint()) > 0);
             pathEntity->RemoveNode(wpEntity);
