@@ -590,10 +590,17 @@ void MSLGenerator::OutputStatements(int indent, HLSLStatement* statement)
                             const char* mtl_fp_semantic;
                         } attr[] =
                         {
-                          { "POSITION", rhi::VATTR_POSITION, "position", "" },
-                          { "SV_POSITION", rhi::VATTR_POSITION, "position", "" },
-                          { "NORMAL", rhi::VATTR_NORMAL, "normal", "" },
-                          { "NORMAL", rhi::VATTR_NORMAL, "normal", "" },
+                          { "POSITION", rhi::VATTR_POSITION_0, "position0", "" },
+                          { "POSITION0", rhi::VATTR_POSITION_1, "position0", "" },
+                          { "POSITION1", rhi::VATTR_POSITION_1, "position1", "" },
+                          { "POSITION2", rhi::VATTR_POSITION_2, "position2", "" },
+                          { "POSITION3", rhi::VATTR_POSITION_3, "position3", "" },
+                          { "SV_POSITION", rhi::VATTR_POSITION_0, "position", "" },
+                          { "NORMAL", rhi::VATTR_NORMAL_0, "normal0", "" },
+                          { "NORMAL0", rhi::VATTR_NORMAL_0, "normal0", "" },
+                          { "NORMAL1", rhi::VATTR_NORMAL_1, "normal1", "" },
+                          { "NORMAL2", rhi::VATTR_NORMAL_2, "normal2", "" },
+                          { "NORMAL3", rhi::VATTR_NORMAL_3, "normal3", "" },
                           { "TEXCOORD", rhi::VATTR_TEXCOORD_0, "texcoord0", "" },
                           { "TEXCOORD0", rhi::VATTR_TEXCOORD_0, "texcoord0", "" },
                           { "TEXCOORD1", rhi::VATTR_TEXCOORD_1, "texcoord1", "" },
