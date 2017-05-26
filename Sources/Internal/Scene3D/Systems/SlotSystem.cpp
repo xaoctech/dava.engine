@@ -439,7 +439,7 @@ void SlotSystem::AttachEntityToSlot(SlotComponent * component, Entity * entity, 
 {
     UnloadItem(component);
     DVASSERT(component->GetEntity() != nullptr);
-    DVASSERT(component->GetEntity()->GetScene() != GetScene());
+    DVASSERT(component->GetEntity()->GetScene() == GetScene());
     DVASSERT(slotToLoadedEntity.count(component) > 0);
 
     component->loadedItemName = itemName;

@@ -171,8 +171,9 @@ void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& ho
     auto changeSlotvisitor = [&](const RECommand* command)
     {
         const SetFieldValueCommand* cmd = static_cast<const SetFieldValueCommand*>(command);
-        DAVA::ReflectedObject object = cmd->GetTarget().GetParentValueObject();
-        DAVA::FastName fieldName = cmd->GetFieldName().Cast<DAVA::FastName>(DAVA::FastName(""));
+        const DAVA::Reflection::Field& field = cmd->GetField();
+        DAVA::ReflectedObject object = field.ref.GetDirectObject();
+        DAVA::FastName fieldName = field.key.Cast<DAVA::FastName>(DAVA::FastName(""));
         const DAVA::ReflectedType* type = object.GetReflectedType();
         if (type == DAVA::ReflectedTypeDB::Get<DAVA::SlotComponent>())
         {
@@ -209,8 +210,9 @@ void EditorSlotSystem::ProcessCommand(const RECommandNotificationObject& command
     auto visitor = [&](const RECommand* command)
     {
         const SetFieldValueCommand* cmd = static_cast<const SetFieldValueCommand*>(command);
-        DAVA::ReflectedObject object = cmd->GetTarget().GetParentValueObject();
-        DAVA::FastName fieldName = cmd->GetFieldName().Cast<DAVA::FastName>(DAVA::FastName(""));
+        const DAVA::Reflection::Field& field = cmd->GetField();
+        DAVA::ReflectedObject object = field.ref.GetDirectObject();
+        DAVA::FastName fieldName = field.key.Cast<DAVA::FastName>(DAVA::FastName(""));
         const DAVA::ReflectedType* type = object.GetReflectedType();
         if (type == DAVA::ReflectedTypeDB::Get<DAVA::SlotComponent>())
         {

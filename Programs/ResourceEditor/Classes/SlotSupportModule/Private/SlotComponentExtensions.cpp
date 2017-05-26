@@ -87,7 +87,7 @@ public:
             ReflectedButton::Params params(GetAccessor(), GetUI(), GetWindowKey());
             params.fields[ReflectedButton::Fields::AutoRaise] = "autoRise";
             params.fields[ReflectedButton::Fields::Icon] = "addButtonIcon";
-            params.fields[ReflectedButton::Fields::ToolTip] = "addButtonTooltip";
+            params.fields[ReflectedButton::Fields::Tooltip] = "addButtonTooltip";
             params.fields[ReflectedButton::Fields::Clicked] = "addTypeFilter";
             ReflectedButton* addButton = new ReflectedButton(params, wrappersProcessor, model, w->ToWidgetCast());
             buttonsBar->AddControl(addButton);
@@ -97,7 +97,7 @@ public:
             ReflectedButton::Params params(GetAccessor(), GetUI(), GetWindowKey());
             params.fields[ReflectedButton::Fields::AutoRaise] = "autoRise";
             params.fields[ReflectedButton::Fields::Icon] = "removeButtonIcon";
-            params.fields[ReflectedButton::Fields::ToolTip] = "removeButtonTooltip";
+            params.fields[ReflectedButton::Fields::Tooltip] = "removeButtonTooltip";
             params.fields[ReflectedButton::Fields::Enabled] = "removeButtonEnabled";
             params.fields[ReflectedButton::Fields::Clicked] = "removeTypeFilter";
             ReflectedButton* addButton = new ReflectedButton(params, wrappersProcessor, model, w->ToWidgetCast());
