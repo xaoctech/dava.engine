@@ -1,6 +1,7 @@
-#include "PropertiesWidget.h"
 #include "ui_PropertiesWidget.h"
-#include "PropertiesModel.h"
+#include "UI/Properties/PropertiesWidget.h"
+#include "UI/Properties/PropertiesModel.h"
+#include "UI/Properties/PropertiesWidgetData.h"
 
 #include "Modules/DocumentsModule/DocumentData.h"
 #include "Modules/LegacySupportModule/Private/Project.h"
@@ -14,7 +15,8 @@
 #include "Model/PackageHierarchy/ControlNode.h"
 #include "Model/PackageHierarchy/StyleSheetNode.h"
 
-#include <TArc/Core/FieldBinder.h>
+#include <TArc/WindowSubSystem/UI.h>
+#include <TArc/Core/ContextAccessor.h>
 
 #include <UI/Components/UIComponent.h>
 #include <UI/UIControl.h>
@@ -44,8 +46,13 @@ String GetPathFromIndex(QModelIndex index)
 
 PropertiesWidget::PropertiesWidget(QWidget* parent)
     : QDockWidget(parent)
+    , nodeUpdater(300)
 {
     setupUi(this);
+
+    nodeUpdater.SetUpdater(MakeFunction(this, &PropertiesWidget::UpdateModelInternal));
+    nodeUpdater.SetStopper([this]() { return selectedNode == nullptr; });
+
     propertiesModel = new PropertiesModel(treeView);
     propertiesItemsDelegate = new PropertiesTreeItemDelegate(this);
     treeView->setModel(propertiesModel);
@@ -74,12 +81,24 @@ PropertiesWidget::PropertiesWidget(QWidget* parent)
     UpdateModel(nullptr);
 }
 
-PropertiesWidget::~PropertiesWidget() = default;
+PropertiesWidget::~PropertiesWidget()
+{
+    nodeUpdater.Abort();
+}
 
 void PropertiesWidget::SetAccessor(DAVA::TArc::ContextAccessor* accessor_)
 {
     accessor = accessor_;
+
+    documentDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<DocumentData>());
+    documentDataWrapper.SetListener(this);
+
     propertiesModel->SetAccessor(accessor);
+}
+
+void PropertiesWidget::SetUI(DAVA::TArc::UI* ui_)
+{
+    ui = ui_;
 }
 
 void PropertiesWidget::SetProject(const Project* project)
@@ -89,7 +108,7 @@ void PropertiesWidget::SetProject(const Project* project)
 
 void PropertiesWidget::OnAddComponent(QAction* action)
 {
-    QtModelPackageCommandExecutor executor(accessor);
+    QtModelPackageCommandExecutor executor(accessor, ui);
     DVASSERT(accessor->GetActiveContext() != nullptr);
     const RootProperty* rootProperty = DAVA::DynamicTypeCheck<const RootProperty*>(propertiesModel->GetRootProperty());
 
@@ -112,7 +131,7 @@ void PropertiesWidget::OnAddComponent(QAction* action)
 
 void PropertiesWidget::OnRemove()
 {
-    QtModelPackageCommandExecutor executor(accessor);
+    QtModelPackageCommandExecutor executor(accessor, ui);
     DVASSERT(accessor->GetActiveContext() != nullptr);
 
     QModelIndexList indices = treeView->selectionModel()->selectedIndexes();
@@ -155,7 +174,7 @@ void PropertiesWidget::OnRemove()
 
 void PropertiesWidget::OnAddStyleProperty(QAction* action)
 {
-    QtModelPackageCommandExecutor executor(accessor);
+    QtModelPackageCommandExecutor executor(accessor, ui);
     DVASSERT(accessor->GetActiveContext() != nullptr);
 
     uint32 propertyIndex = action->data().toUInt();
@@ -171,7 +190,7 @@ void PropertiesWidget::OnAddStyleProperty(QAction* action)
 
 void PropertiesWidget::OnAddStyleSelector()
 {
-    QtModelPackageCommandExecutor executor(accessor);
+    QtModelPackageCommandExecutor executor(accessor, ui);
     DVASSERT(accessor->GetActiveContext() != nullptr);
     executor.AddStyleSelector(DynamicTypeCheck<StyleSheetNode*>(selectedNode));
 }
@@ -298,12 +317,17 @@ void PropertiesWidget::UpdateModel(PackageBaseNode* node)
     {
         return;
     }
+    selectedNode = node;
+    nodeUpdater.Update();
+}
+
+void PropertiesWidget::UpdateModelInternal()
+{
     if (nullptr != selectedNode)
     {
         auto index = treeView->indexAt(QPoint(0, 0));
         lastTopIndexPath = GetPathFromIndex(index);
     }
-    selectedNode = node;
     propertiesModel->Reset(selectedNode);
     bool isControl = dynamic_cast<ControlNode*>(selectedNode) != nullptr;
     bool isStyle = dynamic_cast<StyleSheetNode*>(selectedNode) != nullptr;
@@ -312,8 +336,7 @@ void PropertiesWidget::UpdateModel(PackageBaseNode* node)
     addStyleSelectorAction->setEnabled(isStyle);
     removeAction->setEnabled(false);
 
-    //delay long time work with view
-    QMetaObject::invokeMethod(this, "OnModelUpdated", Qt::QueuedConnection);
+    OnModelUpdated();
 }
 
 void PropertiesWidget::UpdateActions()
@@ -346,22 +369,113 @@ void PropertiesWidget::ApplyExpanding()
     }
 }
 
-void PropertiesWidget::OnPackageChanged(const DAVA::Any& package)
-{
-    treeView->setEnabled(package.CanGet<PackageNode*>() && (package.Get<PackageNode*>() != nullptr));
-}
-
-void PropertiesWidget::BindFields()
+void PropertiesWidget::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
 {
     using namespace DAVA;
     using namespace DAVA::TArc;
 
-    fieldBinder.reset(new FieldBinder(accessor));
-
+    bool hasData = wrapper.HasData();
+    treeView->setEnabled(hasData);
+    if (hasData == false)
     {
-        FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-        fieldDescr.fieldName = FastName(DocumentData::packagePropertyName);
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &PropertiesWidget::OnPackageChanged));
+        UpdateModel(nullptr);
+        return;
+    }
+
+    bool selectionWasChanged = std::find(fields.begin(), fields.end(), DocumentData::selectionPropertyName) != fields.end();
+    bool packageWasChanged = std::find(fields.begin(), fields.end(), DocumentData::packagePropertyName) != fields.end();
+
+    if (packageWasChanged && selectionWasChanged)
+    {
+        //clear last cached value because next selected value will be delayed
+        UpdateModel(nullptr);
+    }
+    if (selectionWasChanged)
+    {
+        //prepare selection
+        Any selectionData = documentDataWrapper.GetFieldValue(DocumentData::selectionPropertyName);
+        SelectedNodes selection = selectionData.Cast<SelectedNodes>(SelectedNodes());
+        for (auto iter = selection.begin(); iter != selection.end();)
+        {
+            PackageBaseNode* node = *iter;
+            PackageBaseNode* parent = node->GetParent();
+            if (parent == nullptr || parent->GetParent() == nullptr)
+            {
+                iter = selection.erase(iter);
+            }
+            else
+            {
+                ++iter;
+            }
+        }
+        DataContext* activeContext = accessor->GetActiveContext();
+        DVASSERT(activeContext != nullptr);
+        PropertiesWidgetData* widgetData = activeContext->GetData<PropertiesWidgetData>();
+
+        SelectedNodes& cachedSelection = widgetData->cachedSelection;
+        List<PackageBaseNode*>& selectionHistory = widgetData->selectionHistory;
+
+        if (selection.empty())
+        {
+            selectionHistory.clear();
+            cachedSelection.clear();
+            UpdateModel(nullptr);
+            return;
+        }
+
+        SortedPackageBaseNodeSet newSelection(CompareByLCA);
+        std::set_difference(selection.begin(),
+                            selection.end(),
+                            cachedSelection.begin(),
+                            cachedSelection.end(),
+                            std::inserter(newSelection, newSelection.end()));
+
+        if (newSelection.empty())
+        {
+            SelectedNodes removedSelection;
+            std::set_difference(cachedSelection.begin(),
+                                cachedSelection.end(),
+                                selection.begin(),
+                                selection.end(),
+                                std::inserter(removedSelection, removedSelection.end()));
+
+            for (PackageBaseNode* node : removedSelection)
+            {
+                selectionHistory.remove(node);
+            }
+            UpdateModel(selectionHistory.back());
+        }
+        else
+        {
+            //take any node from new selection. If this node is higher than cached selection top node, display properties for most top node from new selection
+            //otherwise if this node is lower than cached selection bottom node, display properties for most bottom node from new selection
+            PackageBaseNode* newSelectedNode = *newSelection.begin();
+            DVASSERT(newSelectedNode != nullptr);
+
+            bool selectionAddedToTop = true;
+            if (cachedSelection.empty() == false)
+            {
+                PackageBaseNode* cachedTopNode = *cachedSelection.begin();
+                selectionAddedToTop = CompareByLCA(newSelectedNode, cachedTopNode);
+            }
+
+            if (selectionAddedToTop)
+            {
+                for (auto reverseIter = newSelection.rbegin(); reverseIter != newSelection.rend(); ++reverseIter)
+                {
+                    selectionHistory.push_back(*reverseIter);
+                }
+                UpdateModel(newSelectedNode);
+            }
+            else
+            {
+                for (PackageBaseNode* node : newSelection)
+                {
+                    selectionHistory.push_back(node);
+                }
+                UpdateModel(*newSelection.rbegin());
+            }
+        }
+        cachedSelection = selection;
     }
 }

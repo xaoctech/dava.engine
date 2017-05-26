@@ -21,6 +21,7 @@
 #include "UI/UIWebView.h"
 #include "Render/RHI/rhi_Type.h"
 #include "Render/Highlevel/BillboardRenderObject.h"
+#include "Utils/BiDiHelper.h"
 
 using namespace DAVA;
 
@@ -240,6 +241,14 @@ ENUM_DECLARE(TextBlock::eUseRtlAlign)
     ENUM_ADD_DESCR(TextBlock::RTL_USE_BY_SYSTEM, "USE_BY_SYSTEM");
 };
 
+ENUM_DECLARE(BiDiHelper::Direction)
+{
+    ENUM_ADD_DESCR(BiDiHelper::RTL, "RTL");
+    ENUM_ADD_DESCR(BiDiHelper::LTR, "LTR");
+    ENUM_ADD_DESCR(BiDiHelper::NEUTRAL, "NEUTRAL");
+    ENUM_ADD_DESCR(BiDiHelper::MIXED, "MIXED");
+};
+
 ENUM_DECLARE(UIList::eListOrientation)
 {
     ENUM_ADD_DESCR(UIList::ORIENTATION_VERTICAL, "ORIENTATION_VERTICAL");
@@ -345,6 +354,9 @@ ENUM_DECLARE(UIComponent::eType)
     ENUM_ADD_DESCR(UIComponent::SOUND_VALUE_FILTER_COMPONENT, "SoundValueFilter");
     ENUM_ADD_DESCR(UIComponent::UPDATE_COMPONENT, "Update");
     ENUM_ADD_DESCR(UIComponent::CUSTOM_UPDATE_DELTA_COMPONENT, "CustomDeltaUpdate");
+    ENUM_ADD_DESCR(UIComponent::RICH_CONTENT_COMPONENT, "RichContent");
+    ENUM_ADD_DESCR(UIComponent::RICH_CONTENT_OBJECT_COMPONENT, "RichContentObject");
+    ENUM_ADD_DESCR(UIComponent::SCENE_COMPONENT, "SceneComponent");
 };
 
 ENUM_DECLARE(UISizePolicyComponent::eSizePolicy)
@@ -357,6 +369,7 @@ ENUM_DECLARE(UISizePolicyComponent::eSizePolicy)
     ENUM_ADD_DESCR(UISizePolicyComponent::PERCENT_OF_LAST_CHILD, "PercentOfLastChild");
     ENUM_ADD_DESCR(UISizePolicyComponent::PERCENT_OF_CONTENT, "PercentOfContent");
     ENUM_ADD_DESCR(UISizePolicyComponent::PERCENT_OF_PARENT, "PercentOfParent");
+    ENUM_ADD_DESCR(UISizePolicyComponent::FORMULA, "Formula");
 };
 
 ENUM_DECLARE(UILinearLayoutComponent::eOrientation)
