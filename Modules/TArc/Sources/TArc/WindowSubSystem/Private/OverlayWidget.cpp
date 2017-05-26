@@ -17,6 +17,7 @@ OverlayWidget::OverlayWidget(const OverCentralPanelInfo& info, QWidget* content_
     setFrameShadow(QFrame::Sunken);
     setFrameShape(QFrame::Panel);
     setLineWidth(2);
+    setFocusProxy(content);
 
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->setMargin(4);
@@ -43,6 +44,10 @@ bool OverlayWidget::eventFilter(QObject* obj, QEvent* e)
                                     {
                                         setVisible(isVisible);
                                         UpdateGeometry();
+                                        if (isVisible == true)
+                                        {
+                                            activateWindow();
+                                        }
                                     });
             return true;
         }

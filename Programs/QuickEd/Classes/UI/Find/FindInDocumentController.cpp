@@ -8,7 +8,7 @@
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/UI.h>
 #include <TArc/WindowSubSystem/QtAction.h>
-#include <TArc/WindowSubSystem/BindCornerGeomProcessors.h>
+#include <TArc/WindowSubSystem/AlignedGeometryProcessor.h>
 #include <QApplication>
 
 FindInDocumentController::FindInDocumentController(DAVA::TArc::UI* ui, DAVA::TArc::ContextAccessor* accessor_)
@@ -23,7 +23,7 @@ FindInDocumentController::FindInDocumentController(DAVA::TArc::UI* ui, DAVA::TAr
     findInDocumentWidget = new FindInDocumentWidget();
     findInDocumentWidget->show();
     OverCentralPanelInfo info;
-    info.geometryProcessor.reset(new BindCornerGeomProcessor(BindCornerGeomProcessor::Corner::TopRight, QPoint(30, 60)));
+    info.geometryProcessor.reset(new AlignedGeometryProcessor(static_cast<DAVA::eAlign>(DAVA::ALIGN_TOP | DAVA::ALIGN_RIGHT), QPoint(30, 60)));
     PanelKey key("FindInDocuments", info);
     ui->AddView(DAVA::TArc::mainWindowKey, key, findInDocumentWidget);
 
@@ -70,13 +70,11 @@ FindInDocumentController::FindInDocumentController(DAVA::TArc::UI* ui, DAVA::TAr
     findResultsUpdater.SetStopper([this]() {
         return context.filter == nullptr;
     });
-
-    //DAVA::TArc::HideOverCentralPanel(findInDocumentWidget);
 }
 
 void FindInDocumentController::ShowFindInDocumentWidget()
 {
-    TArc::DataContext* activeContext = accessor->GetActiveContext();
+    DAVA::TArc::DataContext* activeContext = accessor->GetActiveContext();
     if (activeContext != nullptr)
     {
         findInDocumentWidget->Reset();
