@@ -113,7 +113,6 @@ void UWPApplication::InstallEventHandlers()
     using namespace ::Windows::Foundation;
     using namespace ::Windows::UI::Xaml;
     using namespace ::Windows::UI::Core;
-    using namespace ::Windows::Gaming::Input;
     using namespace ::Windows::Phone::UI::Input;
     using namespace ::Windows::Graphics::Display;
 
@@ -127,8 +126,8 @@ void UWPApplication::InstallEventHandlers()
         HardwareButtons::BackPressed += ref new EventHandler<BackPressedEventArgs^>(this, &UWPApplication::OnBackPressed);
     }
 
-    Gamepad::GamepadAdded += ref new EventHandler<Gamepad^>(this, &UWPApplication::OnGamepadAdded);
-    Gamepad::GamepadRemoved += ref new EventHandler<Gamepad^>(this, &UWPApplication::OnGamepadRemoved);
+    ::Windows::Gaming::Input::Gamepad::GamepadAdded += ref new EventHandler<::Windows::Gaming::Input::Gamepad^>(this, &UWPApplication::OnGamepadAdded);
+    ::Windows::Gaming::Input::Gamepad::GamepadRemoved += ref new EventHandler<::Windows::Gaming::Input::Gamepad^>(this, &UWPApplication::OnGamepadRemoved);
 
     DisplayInformation^ displayInformation = DisplayInformation::GetForCurrentView();
     displayInformation->DpiChanged += ref new TypedEventHandler<DisplayInformation^, Object^>(this, &UWPApplication::OnDpiChanged);

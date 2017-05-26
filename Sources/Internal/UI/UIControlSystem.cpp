@@ -969,29 +969,29 @@ eModifierKeys UIControlSystem::GetKeyboardModifierKeys() const
     Keyboard* keyboard = GetEngineContext()->deviceManager->GetKeyboard();
     if (keyboard != nullptr)
     {
-        DigitalElementState lctrl = keyboard->GetDigitalElementState(eInputElements::KB_LCTRL);
-        DigitalElementState rctrl = keyboard->GetDigitalElementState(eInputElements::KB_RCTRL);
+        DigitalElementState lctrl = keyboard->GetKeyState(eInputElements::KB_LCTRL);
+        DigitalElementState rctrl = keyboard->GetKeyState(eInputElements::KB_RCTRL);
         if (lctrl.IsPressed() | rctrl.IsPressed())
         {
             modifierKeys |= eModifierKeys::CONTROL;
         }
 
-        DigitalElementState lshift = keyboard->GetDigitalElementState(eInputElements::KB_LSHIFT);
-        DigitalElementState rshift = keyboard->GetDigitalElementState(eInputElements::KB_RSHIFT);
+        DigitalElementState lshift = keyboard->GetKeyState(eInputElements::KB_LSHIFT);
+        DigitalElementState rshift = keyboard->GetKeyState(eInputElements::KB_RSHIFT);
         if (lshift.IsPressed() | rshift.IsPressed())
         {
             modifierKeys |= eModifierKeys::SHIFT;
         }
 
-        DigitalElementState lalt = keyboard->GetDigitalElementState(eInputElements::KB_LALT);
-        DigitalElementState ralt = keyboard->GetDigitalElementState(eInputElements::KB_RALT);
+        DigitalElementState lalt = keyboard->GetKeyState(eInputElements::KB_LALT);
+        DigitalElementState ralt = keyboard->GetKeyState(eInputElements::KB_RALT);
         if (lalt.IsPressed() | ralt.IsPressed())
         {
             modifierKeys |= eModifierKeys::ALT;
         }
 
-        DigitalElementState lcmd = keyboard->GetDigitalElementState(eInputElements::KB_LCMD);
-        DigitalElementState rcmd = keyboard->GetDigitalElementState(eInputElements::KB_RCMD);
+        DigitalElementState lcmd = keyboard->GetKeyState(eInputElements::KB_LCMD);
+        DigitalElementState rcmd = keyboard->GetKeyState(eInputElements::KB_RCMD);
         if (lcmd.IsPressed() | rcmd.IsPressed())
         {
             modifierKeys |= eModifierKeys::COMMAND;

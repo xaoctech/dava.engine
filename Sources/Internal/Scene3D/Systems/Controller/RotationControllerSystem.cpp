@@ -127,7 +127,7 @@ void RotationControllerSystem::Input(UIEvent* event)
                         Keyboard* keyboard = GetEngineContext()->deviceManager->GetKeyboard();
                         if (keyboard != nullptr)
                         {
-                            if (keyboard->GetDigitalElementState(eInputElements::KB_LALT).IsPressed() || keyboard->GetDigitalElementState(eInputElements::KB_RALT).IsPressed())
+                            if (keyboard->GetKeyState(eInputElements::KB_LALT).IsPressed() || keyboard->GetKeyState(eInputElements::KB_RALT).IsPressed())
                             {
                                 RotatePositionAroundPoint(camera, rotationPoint);
                             }

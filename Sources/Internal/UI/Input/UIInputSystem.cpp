@@ -41,23 +41,14 @@ UIInputSystem::UIInputSystem()
     BindGlobalAction(ACTION_FOCUS_PREV, MakeFunction(this, &UIInputSystem::MoveFocusBackward));
 
     BindGlobalAction(ACTION_PERFORM, MakeFunction(this, &UIInputSystem::PerformActionOnFocusedControl));
-
-    GetPrimaryWindow()->backNavigation.Connect(this, &UIInputSystem::OnBackNavigation);
 }
 
 UIInputSystem::~UIInputSystem()
 {
     SafeDelete(focusSystem);
 
-    GetPrimaryWindow()->backNavigation.Disconnect(this);
-
     currentScreen = nullptr; // we are not an owner
     popupContainer = nullptr; // we are not an owner
-}
-
-void UIInputSystem::OnBackNavigation(DAVA::Window* window)
-{
-    Analytics::EmitBackNavigationEvent();
 }
 
 void UIInputSystem::SetCurrentScreen(UIScreen* screen)

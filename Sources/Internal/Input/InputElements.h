@@ -192,6 +192,10 @@ enum eInputElements : uint32
     TOUCH_POSITION8,
     TOUCH_POSITION9,
 
+    // This element is used for sending UIEvent indicating back navigation
+    // TODO: make clients to use Window::backNavigation event only!
+    BACK = 240, // Range from 200 to 239 is reserved for touch screen
+
     // Counters
 
     FIRST = NONE,

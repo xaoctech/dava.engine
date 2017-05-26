@@ -629,6 +629,14 @@ void EngineBackend::HandleBackNavigation(const MainDispatcherEvent& e)
 {
     // TODO: Handle different windows
     primaryWindow->backNavigation.Emit(primaryWindow);
+
+    UIEvent uie;
+    uie.window = primaryWindow;
+    uie.key = eInputElements::BACK;
+    uie.phase = UIEvent::Phase::KEY_DOWN;
+    uie.device = eInputDevices::KEYBOARD;
+    uie.timestamp = e.timestamp / 1000.0;
+    context->inputSystem->HandleInputEvent(&uie);
 }
 
 void EngineBackend::HandleUserCloseRequest(const MainDispatcherEvent& e)
