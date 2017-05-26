@@ -1,5 +1,6 @@
 #pragma once
 
+#include "TArc/WindowSubSystem/QtTArcEvents.h"
 #include <QEvent>
 
 namespace DAVA
@@ -9,11 +10,6 @@ namespace TArc
 class QtOverlayWidgetVisibilityChange : public QEvent
 {
 public:
-    enum
-    {
-        OverlayWidgetVisibilityChange = QEvent::User + 5000
-    };
-
     QtOverlayWidgetVisibilityChange(bool isVisible_);
 
     bool IsVisible() const;
@@ -23,7 +19,7 @@ private:
 };
 
 inline QtOverlayWidgetVisibilityChange::QtOverlayWidgetVisibilityChange(bool isVisible_)
-    : QEvent(static_cast<QEvent::Type>(OverlayWidgetVisibilityChange))
+    : QEvent(static_cast<QEvent::Type>(EventsTable::OverlayWidgetVisibilityChange))
     , isVisible(isVisible_)
 {
 }

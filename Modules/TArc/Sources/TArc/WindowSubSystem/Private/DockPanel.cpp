@@ -54,6 +54,10 @@ void DockPanel::OnTitleChanged(const Any& v)
         QString newTitle = v.Cast<QString>();
         setWindowTitle(newTitle);
     }
+    else
+    {
+        setWindowTitle("");
+    }
 }
 
 void DockPanel::OnActiveStateChanged(const Any& v)

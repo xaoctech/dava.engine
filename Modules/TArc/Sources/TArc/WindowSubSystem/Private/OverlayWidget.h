@@ -21,7 +21,7 @@ private:
     void UpdateGeometry();
 
 private:
-    std::shared_ptr<IGeometryProcessor> geomProccessor;
+    std::shared_ptr<IGeometryProcessor> geometryProccessor;
     QtDelayedExecutor executor;
     QWidget* content = nullptr;
 };

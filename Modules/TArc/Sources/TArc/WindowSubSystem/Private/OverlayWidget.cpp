@@ -1,5 +1,6 @@
 #include "TArc/WindowSubSystem/Private/OverlayWidget.h"
 #include "TArc/WindowSubSystem/Private/QtEvents.h"
+#include "TArc/WindowSubSystem//QtTArcEvents.h"
 
 #include <QHBoxLayout>
 #include <QKeyEvent>
@@ -10,7 +11,7 @@ namespace TArc
 {
 OverlayWidget::OverlayWidget(const OverCentralPanelInfo& info, QWidget* content_, QWidget* parent)
     : QFrame(parent)
-    , geomProccessor(info.geometryProcessor)
+    , geometryProccessor(info.geometryProcessor)
     , content(content_)
 {
     setWindowFlags(static_cast<Qt::WindowFlags>(Qt::FramelessWindowHint | Qt::Tool));
@@ -37,7 +38,7 @@ bool OverlayWidget::eventFilter(QObject* obj, QEvent* e)
     QEvent::Type t = e->type();
     if (obj == content)
     {
-        if (t == QtOverlayWidgetVisibilityChange::OverlayWidgetVisibilityChange)
+        if (t == QT_EVENT_TYPE(EventsTable::OverlayWidgetVisibilityChange))
         {
             bool isVisible = static_cast<QtOverlayWidgetVisibilityChange*>(e)->IsVisible();
             executor.DelayedExecute([this, isVisible]()
@@ -67,7 +68,7 @@ bool OverlayWidget::eventFilter(QObject* obj, QEvent* e)
 void OverlayWidget::UpdateGeometry()
 {
     QWidget* parentW = parentWidget();
-    QRect r = geomProccessor->GetWidgetGeometry(parentWidget(), content);
+    QRect r = geometryProccessor->GetWidgetGeometry(parentWidget(), content);
 
     QPoint pivot = parentW->mapToGlobal(r.topLeft());
     move(pivot);

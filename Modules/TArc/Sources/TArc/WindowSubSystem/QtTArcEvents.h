@@ -11,6 +11,7 @@ namespace TArc
 enum class EventsTable : DAVA::int32
 {
     Start = static_cast<DAVA::int32>(QtToolsEventsTable::End),
+    OverlayWidgetVisibilityChange,
     End
 };
 } // namespace TArc
