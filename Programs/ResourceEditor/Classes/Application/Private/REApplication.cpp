@@ -126,9 +126,19 @@ void REApplication::Init(const DAVA::EngineContext* engineContext)
     DAVA::QualitySettingsSystem::Instance()->SetMetalPreview(true);
     DAVA::QualitySettingsSystem::Instance()->SetRuntimeQualitySwitching(true);
 
-    DAVA::FilePath documentsFolder = engineContext->fileSystem->GetCurrentDocumentsDirectory() + "ResourceEditor/";
-    engineContext->fileSystem->CreateDirectory(documentsFolder, true);
+    DAVA::FilePath documentsFolder = "c:/Dava Engine/ResourceEditor/";
+    DAVA::FileSystem::eCreateDirectoryResult createResult = engineContext->fileSystem->CreateDirectory(documentsFolder, true);
+    auto copyDocumentsFromOldFolder = [&]
+    {
+        if (createResult != DAVA::FileSystem::DIRECTORY_EXISTS)
+        {
+            DAVA::FilePath documentsOldFolder = engineContext->fileSystem->GetCurrentDocumentsDirectory() + "ResourceEditor/";
+            engineContext->fileSystem->RecursiveCopy(documentsOldFolder, documentsFolder);
+        }
+    };
+    copyDocumentsFromOldFolder(); // todo: remove function some versions after
     engineContext->fileSystem->SetCurrentDocumentsDirectory(documentsFolder);
+
     engineContext->logger->SetLogFilename("ResourceEditor.txt");
 
     settingsManager = new SettingsManager();

@@ -69,8 +69,25 @@ void QEApplication::Init(const DAVA::EngineContext* engineContext)
     PVRConverter::Instance()->SetPVRTexTool(pvrTexToolPath);
 
     FileSystem* fs = engineContext->fileSystem;
-    fs->SetCurrentDocumentsDirectory(fs->GetUserDocumentsPath() + "QuickEd/");
-    fs->CreateDirectory(fs->GetCurrentDocumentsDirectory(), true);
+
+#ifdef __DAVAENGINE_MACOS__
+    FilePath documentsDirectory = "QuickEd/";
+#else
+    FilePath documentsDirectory = context->fileSystem->GetCurrentDocumentsDirectory() + "QuickEd/";
+#endif
+    DAVA::FileSystem::eCreateDirectoryResult createResult = engineContext->fileSystem->CreateDirectory(documentsDirectory, true);
+
+    auto copyFromOldFolder = [&]
+    {
+        if (createResult != DAVA::FileSystem::DIRECTORY_EXISTS)
+        {
+            DAVA::FilePath documentsOldFolder = fs->GetUserDocumentsPath() + "QuickEd/";
+            engineContext->fileSystem->RecursiveCopy(documentsOldFolder, documentsDirectory);
+        }
+    };
+    copyFromOldFolder(); // todo: remove function some versions after
+    engineContext->fileSystem->SetCurrentDocumentsDirectory(documentsDirectory);
+
     engineContext->logger->SetLogFilename("QuickEd.txt");
 
     ParticleEmitter::FORCE_DEEP_CLONE = true;

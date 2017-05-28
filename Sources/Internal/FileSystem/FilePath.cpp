@@ -183,7 +183,7 @@ FilePath FilePath::FilepathInDocuments(const String& relativePathname)
     return FilepathInDocuments(relativePathname.c_str());
 }
 
-bool FilePath::StartsWith(const FilePath& basePath)
+bool FilePath::StartsWith(const FilePath& basePath) const
 {
     DVASSERT(!basePath.IsEmpty());
     String baseStr = basePath.GetAbsolutePathname();

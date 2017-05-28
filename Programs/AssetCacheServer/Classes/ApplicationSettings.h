@@ -121,7 +121,11 @@ public:
     void Save() const;
     void Load();
 
+    void LoadFromOldPath(); // todo: remove some versions later
+
     bool IsFirstLaunch() const;
+
+    static DAVA::FilePath GetDefaultFolder();
 
     const DAVA::FilePath& GetFolder() const;
     void SetFolder(const DAVA::FilePath& folder);

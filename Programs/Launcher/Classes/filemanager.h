@@ -31,9 +31,9 @@ public:
     bool MoveLauncherRecursively(const QString& pathOut, const QString& pathIn) const;
 
     QString GetFilesDirectory() const;
+    static QString GetDocumentsDirectory();
 
     static QString GetFileNameFromURL(const QString& url);
-    static QString GetDocumentsDirectory();
     static bool DeleteDirectory(const QString& path);
     static void MakeDirectory(const QString& path);
 
@@ -46,10 +46,9 @@ signals:
 private:
     using EntireList = QList<QPair<QFileInfo, QString>>;
 
-    QString GetDefaultFilesDirectory() const;
-
     QStringList OwnDirectories() const;
     EntireList CreateEntireList(const QString& pathOut, const QString& pathIn) const;
 
     QString filesDirectory;
+    static QString documentsDirectory;
 };

@@ -45,7 +45,7 @@ void SavePreferences(FileManager* fileManager, ConfigDownloader* configDownloade
     rootObject[PreferencesDialogDetails::autorefreshTimeoutKey] = refresher->GetTimeout();
 
     QJsonDocument document(rootObject);
-    QString filePath = FileManager::GetDocumentsDirectory() + PreferencesDialogDetails::settingsFileName;
+    QString filePath = fileManager->GetDocumentsDirectory() + PreferencesDialogDetails::settingsFileName;
     QFile settingsFile(filePath);
     if (settingsFile.open(QFile::WriteOnly | QFile::Truncate))
     {
@@ -59,7 +59,7 @@ void SavePreferences(FileManager* fileManager, ConfigDownloader* configDownloade
 
 void LoadPreferences(FileManager* fileManager, ConfigDownloader* configDownloader, BAManagerClient* commandListener, ConfigRefresher* refresher)
 {
-    QString filePath = FileManager::GetDocumentsDirectory() + PreferencesDialogDetails::settingsFileName;
+    QString filePath = fileManager->GetDocumentsDirectory() + PreferencesDialogDetails::settingsFileName;
     QFile settingsFile(filePath);
     QJsonDocument document;
     if (settingsFile.exists())

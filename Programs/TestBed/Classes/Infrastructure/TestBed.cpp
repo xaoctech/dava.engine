@@ -161,7 +161,18 @@ TestBed::TestBed(Engine& engine)
         w->SetSizeAsync({ 1024.f, 768.f });
     }
 
-    engine.GetContext()->settings->Load("~res:/EngineSettings.yaml");
+    const EngineContext* context = engine.GetContext();
+    FileSystem* fileSystem = context->fileSystem;
+
+#ifdef __DAVAENGINE_MACOS__
+    FilePath documentsDirectory = "TestBed/";
+#else
+    FilePath documentsDirectory = fileSystem->GetCurrentDocumentsDirectory() + "TestBed/";
+#endif
+    fileSystem->CreateDirectory(documentsDirectory, true);
+    fileSystem->SetCurrentDocumentsDirectory(documentsDirectory);
+
+    context->settings->Load("~res:/EngineSettings.yaml");
 }
 
 void TestBed::OnGameLoopStarted()

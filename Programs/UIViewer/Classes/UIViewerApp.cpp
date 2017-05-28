@@ -136,6 +136,15 @@ int DAVAMain(DAVA::Vector<DAVA::String> cmdline)
     };
     DAVA::Engine e;
     e.Init(DAVA::eEngineRunMode::GUI_STANDALONE, modules, CreateOptions());
+    DAVA::FileSystem* fileSystem = e.GetContext()->fileSystem;
+
+#ifdef __DAVAENGINE_MACOS__
+    DAVA::FilePath documentsDirectory = "UIViewer/";
+#else
+    DAVA::FilePath documentsDirectory = fileSystem->GetCurrentDocumentsDirectory() + "UIViewer/";
+#endif
+    fileSystem->CreateDirectory(documentsDirectory, true);
+    fileSystem->SetCurrentDocumentsDirectory(documentsDirectory);
 
     UIViewerApp app(e);
     return e.Run();

@@ -78,6 +78,16 @@ int DAVAMain(Vector<String> cmdline)
     Engine e;
     e.Init(eEngineRunMode::GUI_STANDALONE, modules, appOptions);
 
+    FileSystem* fileSystem = e.GetContext()->fileSystem;
+
+#ifdef __DAVAENGINE_MACOS__
+    FilePath documentsDirectory = "TestBed/";
+#else
+    FilePath documentsDirectory = fileSystem->GetCurrentDocumentsDirectory() + "TestBed/";
+#endif
+    fileSystem->CreateDirectory(documentsDirectory, true);
+    fileSystem->SetCurrentDocumentsDirectory(documentsDirectory);
+
     GameCore g(e);
     e.Run();
     return 0;

@@ -88,7 +88,7 @@ void UIViewScreen::SetupEnvironment()
 
     //All this settings should be transfered from QuickEd
 
-    FilePath projectPath("~doc:/UIViewer/Project/");
+    FilePath projectPath("~doc:/Project/");
     FilePath::AddResourcesFolder(projectPath);
 
     String locale = "en";
@@ -146,7 +146,7 @@ void UIViewScreen::ClearEnvironment()
 {
     using namespace DAVA;
 
-    FilePath projectPath("~doc:/UIViewer/Project/");
+    FilePath projectPath("~doc:/Project/");
     FilePath::RemoveResourcesFolder(projectPath);
 }
 

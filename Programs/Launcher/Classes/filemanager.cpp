@@ -72,16 +72,28 @@ bool MoveEntry(const QFileInfo& fileInfo, const QString& newFilePath)
 }
 } //namespace FileManagerDetails
 
+QString FileManager::documentsDirectory;
+
 QString FileManager::GetDocumentsDirectory()
 {
-    QString docDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/DAVALauncher/";
-    MakeDirectory(docDir);
-    return docDir;
+    return documentsDirectory;
 }
 
 FileManager::FileManager(QObject* parent /*= nullptr*/)
     : QObject(parent)
 {
+    documentsDirectory = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/DAVAProject/Launcher/";
+    if (!QDir(documentsDirectory).exists())
+    {
+        QString oldDocDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/DAVALauncher/";
+        if (QDir(oldDocDir).exists())
+        {
+            QDir r;
+            r.rename(oldDocDir, documentsDirectory);
+        }
+    }
+    MakeDirectory(documentsDirectory);
+
     //init dir with default value
     filesDirectory = GetLauncherDirectory();
 #ifdef Q_OS_MAC
