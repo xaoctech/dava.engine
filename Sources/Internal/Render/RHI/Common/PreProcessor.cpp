@@ -141,6 +141,9 @@ inline char* PreProc::GetExpression(char* txt, char** end) const
 
     while (*s != '\n' && *s != '\r')
     {
+        if (*s == 0)
+            return nullptr;
+
         if (s[0] == '/')
         {
             if (s[1] == '/')
@@ -167,10 +170,18 @@ inline char* PreProc::GetExpression(char* txt, char** end) const
     }
     DVASSERT(*s);
     if (*s == '\r')
+    {
         *s = '\0';
+        ++s;
+    }
 
     while (*s != '\n')
+    {
+        if (*s == 0)
+            return nullptr;
+
         ++s;
+    }
 
     *end = s;
     return e;
@@ -186,6 +197,9 @@ char* PreProc::GetIdentifier(char* txt, char** end) const
 
     while (!cmt && !(isalnum(*t) || *t == '_'))
     {
+        if (*t == '\0')
+            return nullptr;
+
         if (t[0] == '/' && t[1] == '*')
             cmt = true;
         else if (t[0] == '*' && t[1] == '/')
@@ -202,10 +216,18 @@ char* PreProc::GetIdentifier(char* txt, char** end) const
     if (*t == '\0')
         return nullptr;
     if (*t != '\n')
+    {
         *t = '\0';
+        ++t;
+    }
 
     while (*t != '\n')
+    {
+        if (*t == '\0')
+            return nullptr;
+
         ++t;
+    }
 
     *t = '\0';
     *end = t;
@@ -381,7 +403,7 @@ bool PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
 
             if (do_skip)
             {
-                while (*s != '\n')
+                while (*s && *s != '\n')
                     ++s;
 
                 if (*s == 0)
@@ -583,6 +605,9 @@ bool PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
                     char* e = GetExpression(s + 1 + 2, &s);
                     float v = 0;
 
+                    if (!e)
+                        return false;
+
                     if (!evaluator.Evaluate(e, &v))
                     {
                         ReportExprEvalError(src_line_n);
@@ -602,6 +627,9 @@ bool PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
                 {
                     char* e = GetExpression(s + 1 + 4, &s);
                     float v = 0;
+
+                    if (!e)
+                        return false;
 
                     if (!evaluator.Evaluate(e, &v))
                     {
