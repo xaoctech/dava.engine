@@ -6,22 +6,22 @@
 
 namespace DAVA
 {
-void InputListener::Listen(eInputListenerModes mode, Function<void(bool, Vector<InputEvent>)> callback)
+void InputListener::Listen(eInputListenerModes mode, Function<void(bool, const Vector<InputEvent>&)> callback)
 {
     Listen(mode, callback, 0, eInputDeviceTypes::CLASS_ALL);
 }
 
-void InputListener::Listen(eInputListenerModes mode, Function<void(bool, Vector<InputEvent>)> callback, uint32 deviceId)
+void InputListener::Listen(eInputListenerModes mode, Function<void(bool, const Vector<InputEvent>&)> callback, uint32 deviceId)
 {
     Listen(mode, callback, deviceId, eInputDeviceTypes::CLASS_ALL);
 }
 
-void InputListener::Listen(eInputListenerModes mode, Function<void(bool, Vector<InputEvent>)> callback, eInputDeviceTypes deviceTypesMask)
+void InputListener::Listen(eInputListenerModes mode, Function<void(bool, const Vector<InputEvent>&)> callback, eInputDeviceTypes deviceTypesMask)
 {
     Listen(mode, callback, 0, deviceTypesMask);
 }
 
-void InputListener::Listen(eInputListenerModes mode, Function<void(bool, Vector<InputEvent>)> callback, uint32 deviceId, eInputDeviceTypes deviceTypesMask)
+void InputListener::Listen(eInputListenerModes mode, Function<void(bool, const Vector<InputEvent>&)> callback, uint32 deviceId, eInputDeviceTypes deviceTypesMask)
 {
     DVASSERT(callback != nullptr);
 
