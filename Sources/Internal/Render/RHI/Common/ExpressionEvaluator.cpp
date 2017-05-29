@@ -28,7 +28,15 @@ static const float32 Epsilon = 0.000001f;
 
 static const char* ExprEvalError[] =
 {
-  "", "one of operands is missed", "unmatched parenthesis", "unknown symbol"
+  "", "one of operands is missing", "unmatched parenthesis", "unknown symbol"
+};
+
+enum
+{
+    EXPRERR_NONE = 0,
+    EXPRERR_MISSING_OPERAND = 1,
+    EXPRERR_UNMATCHED_PARENTHESIS = 2,
+    EXPRERR_UNKNOWN_SYMBOL = 3
 };
 
 struct ExpressionEvaluator::SyntaxTreeNode
@@ -98,7 +106,7 @@ void ExpressionEvaluator::Reset()
         expressionText = nullptr;
     }
 
-    lastErrorCode = 0;
+    lastErrorCode = EXPRERR_NONE;
     lastErrorIndex = 0;
 }
 
@@ -464,8 +472,7 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
                     }
                     else
                     {
-                        // undefined symbol
-                        lastErrorCode = 3;
+                        lastErrorCode = EXPRERR_UNKNOWN_SYMBOL;
                         lastErrorIndex = uint32(expr - text);
                         return false;
                     }
@@ -513,8 +520,7 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
                 {
                     if (nodeStack.size() < 2 && operatorStack.back().operation != OpDefined && operatorStack.back().operation != OpNotDefined)
                     {
-                        // not enough operands
-                        lastErrorCode = 1;
+                        lastErrorCode = EXPRERR_MISSING_OPERAND;
                         lastErrorIndex = operatorStack.back().expr_index;
                         return false;
                     }
@@ -543,8 +549,7 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
             {
                 if (nodeStack.size() < 2)
                 {
-                    // not enough operands
-                    lastErrorCode = 1;
+                    lastErrorCode = EXPRERR_MISSING_OPERAND;
                     lastErrorIndex = operatorStack.back().expr_index;
                     return false;
                 }
@@ -554,8 +559,7 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
             // check that stack  didn't run out
             if (operatorStack.size() == 0)
             {
-                //parenthesis are unbalanced
-                lastErrorCode = 2;
+                lastErrorCode = EXPRERR_UNMATCHED_PARENTHESIS;
                 lastErrorIndex = uint32(expr - text);
                 return false;
             }
@@ -602,15 +606,13 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
     {
         if (operatorStack.back().operation == '(')
         {
-            //parenthesis are unbalanced
-            lastErrorCode = 2;
+            lastErrorCode = EXPRERR_UNMATCHED_PARENTHESIS;
             lastErrorIndex = operatorStack.back().expr_index;
             return false;
         }
         else if (nodeStack.size() < 2 && operatorStack.back().operation != OpDefined && operatorStack.back().operation != OpNotDefined)
         {
-            // not enough operands
-            lastErrorCode = 1;
+            lastErrorCode = EXPRERR_MISSING_OPERAND;
             lastErrorIndex = operatorStack.back().expr_index;
             return false;
         }
@@ -660,6 +662,7 @@ bool ExpressionEvaluator::GetLastError(char* err_buffer, uint32 err_buffer_size)
         uint32 len = uint32(::strlen(expressionText));
         char buf[2048];
 
+        //        DVASSERT(lastErrorCode<countof(ExprEvalError))
         DVASSERT(len < countof(buf) - 1);
         ::memset(buf, ' ', len);
         buf[len] = '\0';
