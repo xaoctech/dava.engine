@@ -3,7 +3,9 @@
 #include "Classes/Qt/Scene/SceneEditor2.h"
 #include "Classes/SlotSupportModule/Private/EditorSlotSystem.h"
 
+#include <Scene3D/Entity.h>
 #include <Scene3D/Systems/SlotSystem.h>
+#include <Scene3D/Components/SlotComponent.h>
 
 AttachEntityToSlot::AttachEntityToSlot(SceneEditor2* sceneEditor_, DAVA::SlotComponent* slotComponent, DAVA::Entity* entity, DAVA::FastName itemName)
     : RECommand(CMDID_ATTACH_TO_SLOT, "Add item to slot")

@@ -43,8 +43,7 @@ void PopupLineEdit::Show(const QRect& geometry)
 
 bool PopupLineEdit::eventFilter(QObject* obj, QEvent* e)
 {
-    DVASSERT(obj == edit->ToWidgetCast());
-    if (e->type() == QEvent::KeyRelease)
+    if (e->type() == QEvent::KeyPress)
     {
         QKeyEvent* keyEvent = static_cast<QKeyEvent*>(e);
         if (keyEvent->matches(QKeySequence::Cancel))
@@ -54,12 +53,12 @@ bool PopupLineEdit::eventFilter(QObject* obj, QEvent* e)
         else if (keyEvent->key() == Qt::Key_Enter ||
                  keyEvent->key() == Qt::Key_Return)
         {
-            deleteLater();
+            close();
         }
     }
     if (e->type() == QEvent::FocusOut)
     {
-        deleteLater();
+        close();
     }
 
     return false;
@@ -72,6 +71,7 @@ void PopupLineEdit::SetupControl()
     layout->addWidget(edit->ToWidgetCast());
 
     edit->ToWidgetCast()->installEventFilter(this);
+    installEventFilter(this);
 }
 
 } // namespace TArc

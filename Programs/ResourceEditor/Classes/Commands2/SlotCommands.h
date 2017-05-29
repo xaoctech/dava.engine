@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Classes/Commands2/Base/RECommand.h"
+
+#include <Base/FastName.h>
 #include <Base/RefPtr.h>
 
 class SceneEditor2;

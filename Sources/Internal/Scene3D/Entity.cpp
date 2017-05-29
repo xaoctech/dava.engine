@@ -40,7 +40,7 @@ FastName Entity::EntityNameFieldName = FastName("Name");
 
 DAVA_VIRTUAL_REFLECTION_IMPL(Entity)
 {
-    ReflectionRegistrator<Entity>::Begin()
+    ReflectionRegistrator<Entity>::Begin()[M::Tooltip(EntityNameFieldName.c_str())]
     .DestructorByPointer([](Entity* e) { DAVA::SafeRelease(e); })
     .Field("ID", &Entity::GetID, &Entity::SetID)[M::ReadOnly()]
     .Field(EntityNameFieldName.c_str(), &Entity::GetName, static_cast<void (Entity::*)(const FastName&)>(&Entity::SetName))

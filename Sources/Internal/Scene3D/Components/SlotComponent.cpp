@@ -9,11 +9,11 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(SlotComponent)
 {
-    ReflectionRegistrator<SlotComponent>::Begin()
+    ReflectionRegistrator<SlotComponent>::Begin()[M::Tooltip(SlotNameFieldName.c_str())]
     .ConstructorByPointer()
     .Field(SlotNameFieldName.c_str(), &SlotComponent::GetSlotName, &SlotComponent::SetSlotName)[M::DisplayName("Name")]
     .Field(ConfigPathFieldName.c_str(), &SlotComponent::GetConfigFilePath, &SlotComponent::SetConfigFilePath)[M::DisplayName("Items list")]
-    .Field("transform", &SlotComponent::GetAttachmentTransform, &SlotComponent::SetAttachmentTransform)[M::DisplayName("Attachment Transform")]
+    .Field("transform", &SlotComponent::GetAttachmentTransform, &SlotComponent::SetAttachmentTransform)[M::DisplayName("Attachment Transform"), M::DeveloperModeOnly()]
     .Field(AttchementToJointFieldName.c_str(), &SlotComponent::GetJointName, &SlotComponent::SetBoneName)[M::DisplayName("Attached to joint")]
     .End();
 }

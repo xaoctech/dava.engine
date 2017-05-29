@@ -559,12 +559,17 @@ void SlotComponentChildCreator::ExposeChildren(const std::shared_ptr<DAVA::TArc:
         DVASSERT(iter != children.rend());
         std::shared_ptr<DAVA::TArc::PropertyNode> jointAttachmentNode = *iter;
         jointAttachmentNode->propertyType = SlotJointAttachment;
+        const DAVA::M::DisplayName* displayNameMeta = jointAttachmentNode->field.ref.GetMeta<DAVA::M::DisplayName>();
+        if (displayNameMeta != nullptr)
+        {
+            jointAttachmentNode->field.key = displayNameMeta->displayName;
+        }
         jointAttachmentNode->field.ref = parent->field.ref;
         jointAttachmentNode->cachedValue = parent->cachedValue;
 
         {
             DAVA::Reflection::Field f;
-            f.key = DAVA::FastName("TypeFilters");
+            f.key = DAVA::FastName("Type Filters");
             f.ref = parent->field.ref;
             std::shared_ptr<DAVA::TArc::PropertyNode> previewNode = allocator->CreatePropertyNode(parent, std::move(f), static_cast<DAVA::int32>(children.size()), SlotTypeFilters);
             children.push_back(previewNode);
