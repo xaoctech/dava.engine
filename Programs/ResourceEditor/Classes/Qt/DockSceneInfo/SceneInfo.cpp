@@ -360,9 +360,9 @@ void SceneInfo::CollectParticlesData()
             Vector<ParticleLayer*>& layers = effect->GetEmitterInstance(i)->GetEmitter()->layers;
             for (uint32 lay = 0; lay < layers.size(); ++lay)
             {
-                ProcessParticleSprite(layers[i]->sprite, sprites);
-                ProcessParticleSprite(layers[i]->flowmap, sprites);
-                ProcessParticleSprite(layers[i]->noise, sprites);
+                ProcessParticleSprite(layers[lay]->sprite, sprites);
+                ProcessParticleSprite(layers[lay]->flowmap, sprites);
+                ProcessParticleSprite(layers[lay]->noise, sprites);
             }
         }
     }
