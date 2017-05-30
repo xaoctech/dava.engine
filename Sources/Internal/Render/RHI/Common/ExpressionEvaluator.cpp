@@ -287,12 +287,12 @@ uint32 ExpressionEvaluator::OperationPriority(char operation)
     switch (operation)
     {
     case '!':
-        ret += 2;
+        ++ret;
     case OpDefined:
     case OpNotDefined:
-        ret += 3;
+        ++ret;
     case OpLogicalNot:
-        ret += 3;
+        ++ret;
     case '^':
         ++ret;
     case '*':
