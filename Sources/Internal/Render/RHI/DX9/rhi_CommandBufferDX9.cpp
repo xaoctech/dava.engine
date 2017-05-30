@@ -524,11 +524,11 @@ void CommandBufferDX9_t::Execute()
                             _D3D9_Device->GetRenderTarget(0, &_D3D9_BackBuf);
 
                             if (passCfg.UsingMSAA())
-                                TextureDX9::SetAsRenderTarget(passCfg.colorBuffer[i].multisampleTexture, i);
+                                TextureDX9::SetAsRenderTarget(passCfg.colorBuffer[i].multisampleTexture, i, passCfg.colorBuffer[i].textureFace);
                         }
 
                         if (!passCfg.UsingMSAA())
-                            TextureDX9::SetAsRenderTarget(passCfg.colorBuffer[i].texture, i);
+                            TextureDX9::SetAsRenderTarget(passCfg.colorBuffer[i].texture, i, passCfg.colorBuffer[i].textureFace);
                         ++_D3D9_TargetCount;
                     }
 
@@ -1136,7 +1136,7 @@ static void _DX9_ExecuteQueuedCommands(const CommonImpl::Frame& frame)
 bool _DX9_PresentBuffer()
 {
     bool result = true;
-    HRESULT hr = _D3D9_Device->Present(NULL, NULL, NULL, NULL);
+    HRESULT hr = _D3D9_Device->Present(_DX9_PresentRectPtr, _DX9_PresentRectPtr, NULL, NULL);
     if (FAILED(hr))
     {
         if (hr == D3DERR_DEVICELOST)
@@ -1196,7 +1196,7 @@ void _DX9_ResetBlock()
 #if !defined(DAVA_DISABLE_CLEAR_ON_RESET)
     //clear buffer
     DX9_CALL(_D3D9_Device->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_RGBA(0, 0, 0, 1), 1.0, 0), "Clear");
-    _D3D9_Device->Present(NULL, NULL, NULL, NULL);
+    _D3D9_Device->Present(_DX9_PresentRectPtr, _DX9_PresentRectPtr, NULL, NULL);
 #endif
 
     _DX9_FramesWithRestoreAttempt = 0;
@@ -1360,6 +1360,15 @@ static void _DX9_ExecImmediateCommand(CommonImpl::ImmediateCommand* command)
             IDirect3DTexture9* tex = *((IDirect3DTexture9**)(arg[0]));
             DVASSERT(*(IDirect3DSurface9**)(arg[2]) == nullptr);
             cmd->retval = tex->GetSurfaceLevel(UINT(arg[1]), (IDirect3DSurface9**)(arg[2]));
+            CHECK_HR(cmd->retval);
+        }
+        break;
+
+        case DX9Command::GET_CUBE_SURFACE_LEVEL:
+        {
+            IDirect3DCubeTexture9* tex = *((IDirect3DCubeTexture9**)(arg[0]));
+            DVASSERT(*(IDirect3DSurface9**)(arg[3]) == nullptr);
+            cmd->retval = tex->GetCubeMapSurface(D3DCUBEMAP_FACES(arg[1]), UINT(arg[2]), (IDirect3DSurface9**)(arg[3]));
             CHECK_HR(cmd->retval);
         }
         break;

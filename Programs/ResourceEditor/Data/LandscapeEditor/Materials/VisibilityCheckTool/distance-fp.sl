@@ -42,14 +42,14 @@ float DecodeFloat(float4 encoded)
     return encoded.x;
 }
 
-float ComputeOcclusion(float4 sampledDistance, float actualDistance)
+float ComputeOcclusion(float4 smpDistance, float actDistance)
 {
-    float Ex_2 = sampledDistance.x * sampledDistance.x;
-    float E_x2 = sampledDistance.y;
+    float Ex_2 = smpDistance.x * smpDistance.x;
+    float E_x2 = smpDistance.y;
     float variance = E_x2 - Ex_2;
-    float mD = sampledDistance.x - actualDistance;
+    float mD = smpDistance.x - actDistance;
     float p = variance / (variance + mD * mD);
-    return max(p, float(actualDistance <= sampledDistance.x)); 
+    return max(p, float(actDistance <= smpDistance.x)); 
 }
 
 #if defined(DECODE_DISTANCE)

@@ -23,6 +23,7 @@ struct TextureDX9_t : public ResourceImpl<TextureDX9_t, Texture::Descriptor>
     IDirect3DTexture9* tex9 = nullptr;
     IDirect3DCubeTexture9* cubetex9 = nullptr;
     IDirect3DSurface9* surf9 = nullptr;
+    IDirect3DSurface9* cubesurf9[6];
     IDirect3DTexture9* rt_tex9 = nullptr;
     IDirect3DSurface9* rt_surf9 = nullptr;
 
@@ -59,6 +60,8 @@ bool TextureDX9_t::Create(const Texture::Descriptor& desc, bool forceExecute)
     DVASSERT(desc.levelCount);
     bool success = false;
     UpdateCreationDesc(desc);
+
+    memset(cubesurf9, 0, sizeof(cubesurf9));
 
     D3DFORMAT fmt = DX9_TextureFormat(desc.format);
     DWORD usage = (desc.isRenderTarget) ? D3DUSAGE_RENDERTARGET : 0;
@@ -216,6 +219,17 @@ bool TextureDX9_t::Create(const Texture::Descriptor& desc, bool forceExecute)
                     cmd2[1].func = DX9Command::NOP;
 
                 ExecDX9(cmd2, countof(cmd2), forceExecute);
+
+                if (desc.isRenderTarget)
+                {
+                    DX9Command cmd3[6];
+                    for (DAVA::uint32 f = 0; f != 6; ++f)
+                    {
+                        cmd3[f] = { DX9Command::GET_CUBE_SURFACE_LEVEL, { uint64(&cubetex9), uint64(textureFaceToD3DFace[f]), 0, uint64(&cubesurf9[f]) } };
+                    }
+                    ExecDX9(cmd3, 6, forceExecute);
+                }
+
                 success = true;
             }
             else
@@ -236,7 +250,7 @@ void TextureDX9_t::Destroy(bool forceExecute)
 {
     DVASSERT(!isMapped);
 
-    DX9Command cmd[] =
+    DX9Command cmd[6 + 6] =
     {
       { rt_surf9 ? DX9Command::RELEASE : DX9Command::NOP, { uint64_t(&rt_surf9) } },
       { rt_tex9 ? DX9Command::RELEASE : DX9Command::NOP, { uint64_t(&rt_tex9) } },
@@ -245,6 +259,9 @@ void TextureDX9_t::Destroy(bool forceExecute)
       { tex9 ? DX9Command::RELEASE : DX9Command::NOP, { uint64_t(&tex9) } },
       { basetex9 ? DX9Command::RELEASE : DX9Command::NOP, { uint64_t(&basetex9) } },
     };
+
+    for (DAVA::uint32 i = 0; i < 6; ++i)
+        cmd[6 + i] = { cubesurf9[i] ? DX9Command::RELEASE : DX9Command::NOP, { uint64(&cubesurf9[i]) } };
 
     bool cancelRecreate = true;
     for (size_t i = 0; i < countof(cmd); ++i)
@@ -268,6 +285,7 @@ void TextureDX9_t::Destroy(bool forceExecute)
     basetex9 = nullptr;
     rt_surf9 = nullptr;
     rt_tex9 = nullptr;
+    memset(cubesurf9, 0, sizeof(cubesurf9));
 
     if (!RecreatePending() && (mappedData != nullptr))
     {
@@ -498,7 +516,7 @@ void SetToRHI(Handle tex, unsigned unit_i)
     self->lastUnit = unit_i;
 }
 
-void SetAsRenderTarget(Handle tex, unsigned target_i)
+void SetAsRenderTarget(Handle tex, unsigned target_i, TextureFace face)
 {
     TextureDX9_t* self = TextureDX9Pool::Get(tex);
 
@@ -508,7 +526,14 @@ void SetAsRenderTarget(Handle tex, unsigned target_i)
         self->lastUnit = DAVA::InvalidIndex;
     }
 
-    DX9_CALL(_D3D9_Device->SetRenderTarget(target_i, self->surf9), "SetRenderTarget");
+    if (self->surf9)
+    {
+        DX9_CALL(_D3D9_Device->SetRenderTarget(target_i, self->surf9), "SetRenderTarget");
+    }
+    else
+    {
+        DX9_CALL(_D3D9_Device->SetRenderTarget(target_i, self->cubesurf9[face]), "SetRenderTarget");
+    }
 }
 
 void SetAsDepthStencil(Handle tex)

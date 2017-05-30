@@ -898,6 +898,7 @@ Texture* Texture::CreateFBO(const Texture::FBODescriptor& fboDesc)
     {
         descriptor.isRenderTarget = false;
         descriptor.format = rhi::TEXTURE_FORMAT_D24S8;
+        descriptor.type = rhi::TEXTURE_TYPE_2D;
         tx->handleDepthStencil = rhi::CreateTexture(descriptor);
     }
 
