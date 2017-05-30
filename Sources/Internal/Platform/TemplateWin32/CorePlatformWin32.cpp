@@ -70,7 +70,7 @@ int Core::RunCmdTool(int argc, char* argv[], AppHandle handle)
     core->EnableConsoleMode();
     core->CreateSingletons();
 
-    Logger::Instance()->EnableConsoleMode();
+    GetEngineContext()->logger->EnableConsoleMode();
 
     FrameworkDidLaunched();
     FrameworkWillTerminate();
@@ -279,8 +279,8 @@ bool CoreWin32Platform::CreateWin32Window(HINSTANCE hInstance)
         Logger::Info("system not supported touch input");
     }
 
-    UIControlSystem::Instance()->vcs->SetInputScreenAreaSize(currentMode.width, currentMode.height);
-    UIControlSystem::Instance()->vcs->SetPhysicalScreenSize(currentMode.width, currentMode.height);
+    GetEngineContext()->uiControlSystem->vcs->SetInputScreenAreaSize(currentMode.width, currentMode.height);
+    GetEngineContext()->uiControlSystem->vcs->SetPhysicalScreenSize(currentMode.width, currentMode.height);
 
     return true;
 }
@@ -313,7 +313,7 @@ void CoreWin32Platform::ClearMouseButtons()
         {
             e.mouseButton = static_cast<eMouseButtons>(mouseButton);
 
-            UIControlSystem::Instance()->OnInput(&e);
+            GetEngineContext()->uiControlSystem->OnInput(&e);
         }
     }
 
@@ -478,8 +478,8 @@ bool CoreWin32Platform::SetScreenMode(eScreenMode screenMode)
         }
 
         Logger::FrameworkDebug("[CoreWin32Platform] toggle mode: %d x %d isFullscreen: %d", currentMode.width, currentMode.height, isFullscreen);
-        UIControlSystem::Instance()->vcs->SetInputScreenAreaSize(currentMode.width, currentMode.height);
-        UIControlSystem::Instance()->vcs->SetPhysicalScreenSize(currentMode.width, currentMode.height);
+        GetEngineContext()->uiControlSystem->vcs->SetInputScreenAreaSize(currentMode.width, currentMode.height);
+        GetEngineContext()->uiControlSystem->vcs->SetPhysicalScreenSize(currentMode.width, currentMode.height);
     }
     return true;
 }
@@ -549,7 +549,7 @@ void CoreWin32Platform::OnMouseMove(int32 x, int32 y)
             {
                 e.mouseButton = static_cast<eMouseButtons>(buttonIndex);
                 e.phase = UIEvent::Phase::DRAG;
-                UIControlSystem::Instance()->OnInput(&e);
+                GetEngineContext()->uiControlSystem->OnInput(&e);
             }
         }
     }
@@ -557,7 +557,7 @@ void CoreWin32Platform::OnMouseMove(int32 x, int32 y)
     {
         e.mouseButton = eMouseButtons::NONE;
         e.phase = UIEvent::Phase::MOVE;
-        UIControlSystem::Instance()->OnInput(&e);
+        GetEngineContext()->uiControlSystem->OnInput(&e);
     }
 }
 
@@ -571,7 +571,7 @@ void CoreWin32Platform::OnMouseWheel(int32 wheelDeltaX, int32 wheelDeltaY, int32
     e.modifiers = GetKeyboardModifiers();
     e.wheelDelta = { static_cast<float32>(wheelDeltaX), static_cast<float32>(wheelDeltaY) };
 
-    UIControlSystem::Instance()->OnInput(&e);
+    GetEngineContext()->uiControlSystem->OnInput(&e);
 }
 
 void CoreWin32Platform::OnMouseClick(UIEvent::Phase phase, eMouseButtons button, int32 x, int32 y)
@@ -591,7 +591,7 @@ void CoreWin32Platform::OnMouseClick(UIEvent::Phase phase, eMouseButtons button,
     e.timestamp = (SystemTimer::GetMs() / 1000.0);
     e.modifiers = GetKeyboardModifiers();
 
-    UIControlSystem::Instance()->OnInput(&e);
+    GetEngineContext()->uiControlSystem->OnInput(&e);
 
     bool isAnyButtonDownAfter = mouseButtonState.any();
 
@@ -615,7 +615,7 @@ void CoreWin32Platform::OnTouchEvent(UIEvent::Phase phase, eInputDevices deviceI
     newTouch.timestamp = (SystemTimer::GetMs() / 1000.0);
     newTouch.modifiers = GetKeyboardModifiers();
 
-    UIControlSystem::Instance()->OnInput(&newTouch);
+    GetEngineContext()->uiControlSystem->OnInput(&newTouch);
 }
 
 void CoreWin32Platform::OnGetMinMaxInfo(MINMAXINFO* minmaxInfo)
@@ -969,7 +969,7 @@ LRESULT CALLBACK CoreWin32Platform::WndProc(HWND hWnd, UINT message, WPARAM wPar
         ev.timestamp = (SystemTimer::GetMs() / 1000.0);
         ev.modifiers = GetKeyboardModifiers();
 
-        UIControlSystem::Instance()->OnInput(&ev);
+        GetEngineContext()->uiControlSystem->OnInput(&ev);
         keyboard.OnKeyUnpressed(ev.key);
         // Do not pass message to DefWindowProc to prevent system from sending WM_SYSCOMMAND when Alt is pressed
         return 0;
@@ -1006,7 +1006,7 @@ LRESULT CALLBACK CoreWin32Platform::WndProc(HWND hWnd, UINT message, WPARAM wPar
         ev.timestamp = (SystemTimer::GetMs() / 1000.0);
         ev.modifiers = GetKeyboardModifiers();
 
-        UIControlSystem::Instance()->OnInput(&ev);
+        GetEngineContext()->uiControlSystem->OnInput(&ev);
 
         keyboard.OnKeyPressed(ev.key);
     };
@@ -1028,7 +1028,7 @@ LRESULT CALLBACK CoreWin32Platform::WndProc(HWND hWnd, UINT message, WPARAM wPar
         ev.timestamp = (SystemTimer::GetMs() / 1000.0);
         ev.modifiers = GetKeyboardModifiers();
 
-        UIControlSystem::Instance()->OnInput(&ev);
+        GetEngineContext()->uiControlSystem->OnInput(&ev);
     }
     break;
 

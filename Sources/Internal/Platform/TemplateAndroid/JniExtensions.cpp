@@ -62,8 +62,8 @@ JNIEnv* JniExtension::GetEnvironment() const
 
 Rect JniExtension::V2P(const Rect& srcRect) const
 {
-    Vector2 offset = UIControlSystem::Instance()->vcs->GetPhysicalDrawOffset();
-    Rect rect = UIControlSystem::Instance()->vcs->ConvertVirtualToPhysical(srcRect);
+    Vector2 offset = GetEngineContext()->uiControlSystem->vcs->GetPhysicalDrawOffset();
+    Rect rect = GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysical(srcRect);
 
     rect += offset;
     return rect;

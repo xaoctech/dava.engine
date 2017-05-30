@@ -1,9 +1,9 @@
-#include <Utils/UTF8Utils.h>
-#include <Concurrency/LockGuard.h>
-
-#include <Network/Base/Endpoint.h>
-
 #include "NetLogger.h"
+
+#include <Concurrency/LockGuard.h>
+#include <Engine/Engine.h>
+#include <Network/Base/Endpoint.h>
+#include <Utils/UTF8Utils.h>
 
 namespace DAVA
 {
@@ -85,7 +85,7 @@ void NetLogger::SendNextRecord()
     if (IsChannelOpen() && true == GetFirstMessage(record))
     {
         String timeStr = TimestampToString(record.timestamp);
-        const char* levelStr = Logger::Instance()->GetLogLevelString(record.level);
+        const char* levelStr = GetEngineContext()->logger->GetLogLevelString(record.level);
 
         size_t n = timeStr.size() + 1 + strlen(levelStr) + 1 + record.message.size();
         char8* buf = new char8[n + 1]; // this will be deleted in OnChannelSendComplete callback

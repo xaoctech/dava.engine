@@ -29,7 +29,7 @@
         window = nullptr;
 #else
         DAVA::float32 divider = DAVA::Core::Instance()->GetScreenScaleFactor();
-        DAVA::Size2i physicalScreenSize = DAVA::UIControlSystem::Instance()->vcs->GetPhysicalScreenSize();
+        DAVA::Size2i physicalScreenSize = DAVA::GetEngineContext()->uiControlSystem->vcs->GetPhysicalScreenSize();
 
         self.bounds = CGRectMake(0.0f, 0.0f, physicalScreenSize.dx / divider, physicalScreenSize.dy / divider);
         self.center = CGPointMake(physicalScreenSize.dx / 2.f / divider, physicalScreenSize.dy / 2.f / divider);
@@ -68,7 +68,7 @@
 {
     window = w;
 
-    DAVA::Size2i inputScreenSize = DAVA::UIControlSystem::Instance()->vcs->GetInputScreenSize();
+    DAVA::Size2i inputScreenSize = DAVA::GetEngineContext()->uiControlSystem->vcs->GetInputScreenSize();
 
     self.bounds = CGRectMake(0.0f, 0.0f, inputScreenSize.dx, inputScreenSize.dy);
     self.center = CGPointMake(inputScreenSize.dx / 2.f, inputScreenSize.dy / 2.f);
@@ -80,8 +80,8 @@
     cppTextField = tf;
     if (tf)
     {
-        DAVA::Rect physicalRect = DAVA::UIControlSystem::Instance()->vcs->ConvertVirtualToPhysical(tf->GetRect());
-        DAVA::Vector2 physicalOffset = DAVA::UIControlSystem::Instance()->vcs->GetPhysicalDrawOffset();
+        DAVA::Rect physicalRect = DAVA::GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysical(tf->GetRect());
+        DAVA::Vector2 physicalOffset = DAVA::GetEngineContext()->uiControlSystem->vcs->GetPhysicalDrawOffset();
         CGRect nativeRect = CGRectMake((physicalRect.x + physicalOffset.x),
                                        (physicalRect.y + physicalOffset.y),
                                        physicalRect.dx,
@@ -99,9 +99,9 @@
 {
     if (cppTextField)
     {
-        if (DAVA::UIControlSystem::Instance()->GetFocusedControl() != cppTextField)
+        if (DAVA::GetEngineContext()->uiControlSystem->GetFocusedControl() != cppTextField)
         {
-            DAVA::UIControlSystem::Instance()->SetFocusedControl(cppTextField);
+            DAVA::GetEngineContext()->uiControlSystem->SetFocusedControl(cppTextField);
         }
         if (!cppTextField->IsEditing())
         {
@@ -124,9 +124,9 @@
 {
     if (cppTextField)
     {
-        if (DAVA::UIControlSystem::Instance()->GetFocusedControl() != cppTextField)
+        if (DAVA::GetEngineContext()->uiControlSystem->GetFocusedControl() != cppTextField)
         {
-            DAVA::UIControlSystem::Instance()->SetFocusedControl(cppTextField);
+            DAVA::GetEngineContext()->uiControlSystem->SetFocusedControl(cppTextField);
         }
         if (!cppTextField->IsEditing())
         {
@@ -629,10 +629,10 @@
 
     // Recalculate to virtual coordinates.
     DAVA::Vector2 keyboardOrigin(keyboardFrame.origin.x, keyboardFrame.origin.y);
-    keyboardOrigin = DAVA::UIControlSystem::Instance()->vcs->ConvertInputToVirtual(keyboardOrigin);
+    keyboardOrigin = DAVA::GetEngineContext()->uiControlSystem->vcs->ConvertInputToVirtual(keyboardOrigin);
 
     DAVA::Vector2 keyboardSize(keyboardFrame.size.width, keyboardFrame.size.height);
-    keyboardSize = DAVA::UIControlSystem::Instance()->vcs->ConvertInputToVirtual(keyboardSize);
+    keyboardSize = DAVA::GetEngineContext()->uiControlSystem->vcs->ConvertInputToVirtual(keyboardSize);
 
     cppTextField->OnKeyboardShown(DAVA::Rect(keyboardOrigin, keyboardSize));
 }

@@ -132,7 +132,7 @@ InputSystem::InputSystem()
     keyboard = new KeyboardDevice();
     gamepad = new GamepadDevice();
     mouse = new MouseDevice();
-    AddInputCallback(InputCallback(UIControlSystem::Instance(), &UIControlSystem::OnInput, INPUT_DEVICE_KEYBOARD));
+    AddInputCallback(InputCallback(GetEngineContext()->uiControlSystem, &UIControlSystem::OnInput, INPUT_DEVICE_KEYBOARD));
     pinCursor = false;
 }
 

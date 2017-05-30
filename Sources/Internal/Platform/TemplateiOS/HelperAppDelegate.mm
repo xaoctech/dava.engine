@@ -79,8 +79,8 @@ public:
             }
         }
 
-        DAVA::UIControlSystem::Instance()->vcs->SetInputScreenAreaSize(width, height);
-        DAVA::UIControlSystem::Instance()->vcs->SetPhysicalScreenSize(physicalWidth, physicalHeight);
+        DAVA::GetEngineContext()->uiControlSystem->vcs->SetInputScreenAreaSize(width, height);
+        DAVA::GetEngineContext()->uiControlSystem->vcs->SetPhysicalScreenSize(physicalWidth, physicalHeight);
 
         rendererParams.window = [renderView layer];
         rendererParams.width = physicalWidth;
@@ -241,9 +241,9 @@ DAVA::int64 goBackgroundTime = 0;
     DAVA::Core::Instance()->SystemAppFinished();
     NSLog(@"System release started");
 
-    if (DAVA::Logger::Instance())
+    if (DAVA::GetEngineContext()->logger)
     {
-        DAVA::Logger::Instance()->SetLogFilename("");
+        DAVA::GetEngineContext()->logger->SetLogFilename("");
     }
 
     //	DAVA::Core::Instance()->ReleaseSingletons();

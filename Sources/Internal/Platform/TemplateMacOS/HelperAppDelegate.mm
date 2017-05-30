@@ -116,8 +116,8 @@ extern void FrameworkWillTerminate();
 
     // Wait job completion before releasing singletons
     // But client should stop its jobs in GameCore::OnAppFinished or in FrameworkWillTerminate
-    JobManager::Instance()->WaitWorkerJobs();
-    JobManager::Instance()->WaitMainJobs();
+    GetEngineContext()->jobManager->WaitWorkerJobs();
+    GetEngineContext()->jobManager->WaitMainJobs();
 
     Core::Instance()->ReleaseSingletons();
 

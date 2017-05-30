@@ -38,8 +38,8 @@ public:
                                      static_cast<float32>(VirtualCoordinatesSystem::Instance()->GetVirtualScreenSize().dx),
                                      static_cast<float32>(VirtualCoordinatesSystem::Instance()->GetVirtualScreenSize().dy)
 #else
-                                     static_cast<float32>(UIControlSystem::Instance()->vcs->GetVirtualScreenSize().dx),
-                                     static_cast<float32>(UIControlSystem::Instance()->vcs->GetVirtualScreenSize().dy)
+                                     static_cast<float32>(GetEngineContext()->uiControlSystem->vcs->GetVirtualScreenSize().dx),
+                                     static_cast<float32>(GetEngineContext()->uiControlSystem->vcs->GetVirtualScreenSize().dy)
 #endif
                                      ));
 

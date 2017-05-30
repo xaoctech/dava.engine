@@ -136,7 +136,7 @@
 
 - (void)webView:(UIWebView*)webView didFailLoadWithError:(NSError*)error
 {
-    DAVA::Logger::Instance()->Error("WebView error: %s", [[error description] UTF8String]);
+    DAVA::GetEngineContext()->logger->Error("WebView error: %s", [[error description] UTF8String]);
     if (delegate && self->webView)
     {
         delegate->PageLoaded(self->webView);
@@ -481,7 +481,7 @@ void WebViewControl::ExecuteJScript(const String& scriptString)
 
 void WebViewControl::SetRect(const Rect& rect)
 {
-    Rect r = UIControlSystem::Instance()->vcs->ConvertVirtualToInput(rect);
+    Rect r = GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToInput(rect);
     [bridge->nativeWebView setFrame:CGRectMake(r.x, r.y, r.dx, r.dy)];
 }
 

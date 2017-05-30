@@ -401,14 +401,14 @@ EditorControlsView::EditorControlsView(UIControl* canvasParent_, EditorSystemsMa
 
     InitFieldBinder();
 
-    UIControlSystem::Instance()->GetLayoutSystem()->AddListener(this);
+    GetEngineContext()->uiControlSystem->GetLayoutSystem()->AddListener(this);
 }
 
 EditorControlsView::~EditorControlsView()
 {
     canvasParent->RemoveControl(controlsCanvas.Get());
 
-    UIControlSystem::Instance()->GetLayoutSystem()->RemoveListener(this);
+    GetEngineContext()->uiControlSystem->GetLayoutSystem()->RemoveListener(this);
 }
 
 void EditorControlsView::InitFieldBinder()

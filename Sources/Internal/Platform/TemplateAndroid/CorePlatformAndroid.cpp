@@ -34,8 +34,8 @@ AndroidSystemDelegate::AndroidSystemDelegate(JavaVM* vm)
 
 Core::eDeviceFamily Core::GetDeviceFamily()
 {
-    float32 width = UIControlSystem::Instance()->vcs->GetPhysicalScreenSize().dx;
-    float32 height = UIControlSystem::Instance()->vcs->GetPhysicalScreenSize().dy;
+    float32 width = GetEngineContext()->uiControlSystem->vcs->GetPhysicalScreenSize().dx;
+    float32 height = GetEngineContext()->uiControlSystem->vcs->GetPhysicalScreenSize().dy;
     float32 dpi = GetScreenDPI();
 
     float32 inches = sqrt((width * width) + (height * height)) / dpi;
@@ -118,9 +118,9 @@ void CorePlatformAndroid::ApplyPendingViewSize()
 
     DeviceInfo::InitializeScreenInfo();
 
-    UIControlSystem::Instance()->vcs->SetInputScreenAreaSize(pendingWidth, pendingHeight);
-    UIControlSystem::Instance()->vcs->SetPhysicalScreenSize(backbufferWidth, backbufferHeight);
-    UIControlSystem::Instance()->vcs->ScreenSizeChanged();
+    GetEngineContext()->uiControlSystem->vcs->SetInputScreenAreaSize(pendingWidth, pendingHeight);
+    GetEngineContext()->uiControlSystem->vcs->SetPhysicalScreenSize(backbufferWidth, backbufferHeight);
+    GetEngineContext()->uiControlSystem->vcs->ScreenSizeChanged();
 
     Logger::Debug("[CorePlatformAndroid::ApplyPendingViewSize] out");
     Logger::FrameworkDebug("[CorePlatformAndroid::UpdateScreenMode] done");
@@ -353,7 +353,7 @@ void CorePlatformAndroid::OnInput(Vector<UIEvent>& allInputs)
     {
         for (auto& e : allInputs)
         {
-            UIControlSystem::Instance()->OnInput(&e);
+            GetEngineContext()->uiControlSystem->OnInput(&e);
         }
     }
 }

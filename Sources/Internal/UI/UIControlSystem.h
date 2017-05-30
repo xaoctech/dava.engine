@@ -4,7 +4,6 @@
 #include "Base/BaseMath.h"
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
-#include "Base/Singleton.h"
 #include "Engine/Private/EnginePrivateFwd.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 
@@ -59,15 +58,8 @@ public:
 		Also ControlSystem processed all user input events to the controls.
 	 */
 
-class UIControlSystem : public Singleton<UIControlSystem>
+class UIControlSystem final
 {
-protected:
-    ~UIControlSystem();
-    /**
-	 \brief Don't call this constructor!
-	 */
-    UIControlSystem();
-
 public:
     /**
 	 \brief Sets the requested screen as current.
@@ -309,6 +301,10 @@ public:
     VirtualCoordinatesSystem* vcs = nullptr; // TODO: Should be completely removed in favor of direct DAVA::Window methods
 
 private:
+    UIControlSystem();
+    ~UIControlSystem();
+    void Init();
+
     void ProcessScreenLogic();
 
     void NotifyListenersWillSwitch(UIScreen* screen);

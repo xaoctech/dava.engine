@@ -78,7 +78,7 @@ int Core::RunCmdTool(int argc, char* argv[], AppHandle handle)
     core->EnableConsoleMode();
     core->CreateSingletons();
 
-    Logger::Instance()->EnableConsoleMode();
+    GetEngineContext()->logger->EnableConsoleMode();
 
     FrameworkDidLaunched();
     FrameworkWillTerminate();

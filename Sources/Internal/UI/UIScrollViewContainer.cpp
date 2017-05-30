@@ -218,7 +218,7 @@ bool UIScrollViewContainer::SystemInput(UIEvent* currentTouch)
             }
             if (currentTouch->touchLocker != this && currentScroll)
             {
-                UIControlSystem::Instance()->SwitchInputToControl(mainTouch, this);
+                GetEngineContext()->uiControlSystem->SwitchInputToControl(mainTouch, this);
             }
             Input(currentTouch);
         }

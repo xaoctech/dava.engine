@@ -63,15 +63,6 @@ UIControlSystem::UIControlSystem()
     vcs->virtualSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
     vcs->physicalSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
 
-    popupContainer.Set(new UIControl(Rect(0, 0, 1, 1)));
-    popupContainer->SetName("UIControlSystem_popupContainer");
-    popupContainer->SetInputEnabled(false);
-    popupContainer->InvokeActive(UIControl::eViewState::VISIBLE);
-    inputSystem->SetPopupContainer(popupContainer.Get());
-    styleSheetSystem->SetPopupContainer(popupContainer);
-    layoutSystem->SetPopupContainer(popupContainer);
-    renderSystem->SetPopupContainer(popupContainer);
-
 #if !defined(__DAVAENGINE_COREV2__)
     // calculate default radius
     if (DeviceInfo::IsHIDConnected(DeviceInfo::eHIDType::HID_TOUCH_TYPE))
@@ -129,6 +120,18 @@ UIControlSystem::~UIControlSystem()
 
     systems.clear();
     SafeDelete(vcs);
+}
+
+void UIControlSystem::Init()
+{
+    popupContainer.Set(new UIControl(Rect(0, 0, 1, 1)));
+    popupContainer->SetName("UIControlSystem_popupContainer");
+    popupContainer->SetInputEnabled(false);
+    popupContainer->InvokeActive(UIControl::eViewState::VISIBLE);
+    inputSystem->SetPopupContainer(popupContainer.Get());
+    styleSheetSystem->SetPopupContainer(popupContainer);
+    layoutSystem->SetPopupContainer(popupContainer);
+    renderSystem->SetPopupContainer(popupContainer);
 }
 
 void UIControlSystem::SetScreen(UIScreen* _nextScreen, UIScreenTransition* _transition)
@@ -419,7 +422,7 @@ void UIControlSystem::SwitchInputToControl(uint32 eventID, UIControl* targetCont
 
 void UIControlSystem::OnInput(UIEvent* newEvent)
 {
-    newEvent->point = UIControlSystem::Instance()->vcs->ConvertInputToVirtual(newEvent->physPoint);
+    newEvent->point = GetEngineContext()->uiControlSystem->vcs->ConvertInputToVirtual(newEvent->physPoint);
     newEvent->tapCount = CalculatedTapCount(newEvent);
 
     if (Replay::IsPlayback())

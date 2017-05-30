@@ -59,10 +59,10 @@ JNIEXPORT void JNICALL Java_com_dava_framework_JNITextField_TextFieldKeyboardSho
 {
     // Recalculate to virtual coordinates.
     DAVA::Vector2 keyboardOrigin(x, y);
-    keyboardOrigin = DAVA::UIControlSystem::Instance()->vcs->ConvertInputToVirtual(keyboardOrigin);
+    keyboardOrigin = DAVA::GetEngineContext()->uiControlSystem->vcs->ConvertInputToVirtual(keyboardOrigin);
 
     DAVA::Vector2 keyboardSize(dx, dy);
-    keyboardSize = DAVA::UIControlSystem::Instance()->vcs->ConvertInputToVirtual(keyboardSize);
+    keyboardSize = DAVA::GetEngineContext()->uiControlSystem->vcs->ConvertInputToVirtual(keyboardSize);
 
     DAVA::TextFieldPlatformImpl::TextFieldKeyboardShown(id, DAVA::Rect(keyboardOrigin, keyboardSize));
 }

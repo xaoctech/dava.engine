@@ -54,7 +54,7 @@ JniTextField::JniTextField(uint32_t id)
 
 void JniTextField::Create(Rect controlRect)
 {
-    Rect rect = UIControlSystem::Instance()->vcs->ConvertVirtualToInput(controlRect);
+    Rect rect = GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToInput(controlRect);
 
     rect.dx = std::max(0.0f, rect.dx);
     rect.dy = std::max(0.0f, rect.dy);
@@ -69,7 +69,7 @@ void JniTextField::Destroy()
 
 void JniTextField::UpdateRect(const Rect& controlRect)
 {
-    Rect rect = UIControlSystem::Instance()->vcs->ConvertVirtualToInput(controlRect);
+    Rect rect = GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToInput(controlRect);
 
     rect.dx = std::max(0.0f, rect.dx);
     rect.dy = std::max(0.0f, rect.dy);
@@ -92,7 +92,7 @@ void JniTextField::SetTextColor(float r, float g, float b, float a)
 
 void JniTextField::SetFontSize(float size)
 {
-    setFontSize(id, UIControlSystem::Instance()->vcs->ConvertVirtualToInputY(size));
+    setFontSize(id, GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToInputY(size));
 }
 
 void JniTextField::SetIsPassword(bool isPassword)
@@ -499,15 +499,15 @@ void TextFieldPlatformImpl::TextFieldFocusChanged(bool hasFocus)
     {
         if (hasFocus)
         {
-            if (DAVA::UIControlSystem::Instance()->GetFocusedControl() != textField && FocusHelpers::CanFocusControl(textField))
+            if (DAVA::GetEngineContext()->uiControlSystem->GetFocusedControl() != textField && FocusHelpers::CanFocusControl(textField))
             {
-                DAVA::UIControlSystem::Instance()->SetFocusedControl(textField);
+                DAVA::GetEngineContext()->uiControlSystem->SetFocusedControl(textField);
             }
             textField->StartEdit();
         }
         else
         {
-            if (DAVA::UIControlSystem::Instance()->GetFocusedControl() == textField)
+            if (DAVA::GetEngineContext()->uiControlSystem->GetFocusedControl() == textField)
             {
                 textField->StopEdit();
             }

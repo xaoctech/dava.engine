@@ -425,12 +425,12 @@ void PackageNode::RefreshPackageStylesAndLayout(bool includeImportedPackages)
     RebuildStyleSheets();
     for (int32 i = 0; i < packageControlsNode->GetCount(); i++)
     {
-        UIControlSystem::Instance()->GetStyleSheetSystem()->ProcessControl(packageControlsNode->Get(i)->GetControl(), true);
+        GetEngineContext()->uiControlSystem->GetStyleSheetSystem()->ProcessControl(packageControlsNode->Get(i)->GetControl(), true);
         NotifyPropertyChanged(packageControlsNode->Get(i));
     }
     for (int32 i = 0; i < prototypes->GetCount(); i++)
     {
-        UIControlSystem::Instance()->GetStyleSheetSystem()->ProcessControl(prototypes->Get(i)->GetControl(), true);
+        GetEngineContext()->uiControlSystem->GetStyleSheetSystem()->ProcessControl(prototypes->Get(i)->GetControl(), true);
         NotifyPropertyChanged(prototypes->Get(i));
     }
 }

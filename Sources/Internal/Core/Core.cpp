@@ -224,7 +224,7 @@ void Core::CreateSingletons()
         /*
             Disable all debug initialization messages in console mode
          */
-        Logger::Instance()->SetLogLevel(Logger::LEVEL_INFO);
+        GetEngineContext()->logger->SetLogLevel(Logger::LEVEL_INFO);
     }
 
     DeviceInfo::InitializeScreenInfo();
@@ -318,9 +318,9 @@ void Core::ReleaseSingletons()
     LocalNotificationController::Instance()->Release();
     PerformanceSettings::Instance()->Release();
     UIScreenManager::Instance()->Release();
-    UIControlSystem::Instance()->Release();
+    GetEngineContext()->uiControlSystem->Release();
     FontManager::Instance()->Release();
-    AnimationManager::Instance()->Release();
+    GetEngineContext()->animationManager->Release();
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
     Accelerometer::Instance()->Release();
 //SoundSystem::Instance()->Release();
@@ -338,10 +338,10 @@ void Core::ReleaseSingletons()
     DownloadManager::Instance()->Release();
 
     InputSystem::Instance()->Release();
-    JobManager::Instance()->Release();
+    GetEngineContext()->jobManager->Release();
     VersionInfo::Instance()->Release();
     AllocatorFactory::Instance()->Release();
-    Logger::Instance()->Release();
+    GetEngineContext()->logger->Release();
 
 #ifdef __DAVAENGINE_ANDROID__
     AssetsManagerAndroid::Instance()->Release();
@@ -554,9 +554,9 @@ void Core::SystemAppStarted()
 {
     Logger::Info("Core::SystemAppStarted in");
 
-    if (UIControlSystem::Instance()->vcs->WasScreenSizeChanged())
+    if (GetEngineContext()->uiControlSystem->vcs->WasScreenSizeChanged())
     {
-        UIControlSystem::Instance()->vcs->ScreenSizeChanged();
+        GetEngineContext()->uiControlSystem->vcs->ScreenSizeChanged();
         /*  Question to Hottych: Does it really necessary here?
             RenderManager::Instance()->SetRenderOrientation(Core::Instance()->GetScreenOrientation());
          */
@@ -637,7 +637,7 @@ void Core::SystemProcessFrame()
 
 #if !defined(__DAVAENGINE_WIN32__) && !defined(__DAVAENGINE_WIN_UAP__) && !defined(__DAVAENGINE_MACOS__)
         // recalc frame inside begin / end frame
-        VirtualCoordinatesSystem* vsc = UIControlSystem::Instance()->vcs;
+        VirtualCoordinatesSystem* vsc = GetEngineContext()->uiControlSystem->vcs;
         if (vsc->WasScreenSizeChanged())
         {
             vsc->ScreenSizeChanged();
@@ -653,7 +653,7 @@ void Core::SystemProcessFrame()
         }
         if (Replay::IsPlayback())
         {
-            UIControlSystem::Instance()->ReplayEvents();
+            GetEngineContext()->uiControlSystem->ReplayEvents();
             frameDelta = Replay::Instance()->PlayFrameTime();
             if (Replay::IsPlayback()) //can be unset in previous string
             {
@@ -665,7 +665,7 @@ void Core::SystemProcessFrame()
         DownloadManager::Instance()->Update();
         static_cast<DLCManagerImpl*>(dlcManager.get())->Update(frameDelta);
 
-        JobManager::Instance()->Update();
+        GetEngineContext()->jobManager->Update();
 
         updated.Emit(frameDelta);
         core->Update(frameDelta);
@@ -719,7 +719,7 @@ void Core::GoForeground()
 
 void Core::FocusLost()
 {
-    UIControlSystem::Instance()->CancelAllInputs();
+    GetEngineContext()->uiControlSystem->CancelAllInputs();
     InputSystem::Instance()->GetKeyboard().ClearAllKeys();
     if (core)
     {
@@ -832,7 +832,7 @@ void Core::InitWindowSize(void* nativeView, float32 width, float32 height, float
     rendererParams.scaleX = screenMetrics.scaleX * screenMetrics.userScale;
     rendererParams.scaleY = screenMetrics.scaleY * screenMetrics.userScale;
 
-    VirtualCoordinatesSystem* virtSystem = UIControlSystem::Instance()->vcs;
+    VirtualCoordinatesSystem* virtSystem = GetEngineContext()->uiControlSystem->vcs;
     virtSystem->SetInputScreenAreaSize(static_cast<int32>(screenMetrics.width), static_cast<int32>(screenMetrics.height));
     virtSystem->SetPhysicalScreenSize(static_cast<int32>(rendererParams.width), static_cast<int32>(rendererParams.height));
     virtSystem->EnableReloadResourceOnResize(true);
@@ -878,7 +878,7 @@ void Core::ApplyWindowSize()
         params.window = screenMetrics.nativeView;
         Renderer::Reset(params);
 
-        VirtualCoordinatesSystem* virtSystem = UIControlSystem::Instance()->vcs;
+        VirtualCoordinatesSystem* virtSystem = GetEngineContext()->uiControlSystem->vcs;
         virtSystem->SetInputScreenAreaSize(static_cast<int32>(screenMetrics.width), static_cast<int32>(screenMetrics.height));
         virtSystem->SetPhysicalScreenSize(physicalWidth, physicalHeight);
         virtSystem->ScreenSizeChanged();

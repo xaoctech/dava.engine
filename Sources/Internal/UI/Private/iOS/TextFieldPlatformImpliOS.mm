@@ -165,7 +165,7 @@ void TextFieldPlatformImpl::SetTextColor(const DAVA::Color& color)
 
 void TextFieldPlatformImpl::SetFontSize(float size)
 {
-    float scaledSize = UIControlSystem::Instance()->vcs->ConvertVirtualToInputX(size);
+    float scaledSize = GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToInputX(size);
 
     UIView* view = bridge->textFieldHolder->textCtrl;
     UIFont* font = [UIFont systemFontOfSize:scaledSize];
@@ -384,7 +384,7 @@ void TextFieldPlatformImpl::HideField()
 
 void TextFieldPlatformImpl::UpdateNativeRect(const Rect& virtualRect, int xOffset)
 {
-    Rect r = UIControlSystem::Instance()->vcs->ConvertVirtualToInput(virtualRect);
+    Rect r = GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToInput(virtualRect);
     [bridge->textFieldHolder->textCtrl setFrame:CGRectMake(r.x + xOffset, r.y, r.dx, r.dy)];
 }
 

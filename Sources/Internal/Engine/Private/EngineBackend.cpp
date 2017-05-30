@@ -65,9 +65,28 @@
 
 namespace DAVA
 {
+EngineContext** GetEngineContextPtr()
+{
+    static EngineContext* staticPtr = nullptr;
+    if (Private::EngineBackend::Instance())
+    {
+        staticPtr = Private::EngineBackend::Instance()->GetContext();
+    }
+    return &staticPtr;
+}
+
+namespace Private
+{
+void SetEngineContext(EngineContext* context)
+{
+    EngineContext** contextPtr = GetEngineContextPtr();
+    *contextPtr = context;
+}
+}
+
 const EngineContext* GetEngineContext()
 {
-    return Private::EngineBackend::Instance()->GetContext();
+    return *GetEngineContextPtr();
 }
 
 Window* GetPrimaryWindow()
@@ -326,8 +345,6 @@ void EngineBackend::OnEngineCleanup()
     SafeDelete(platformCore);
 
     DAVA_MEMORY_PROFILER_FINISH();
-
-    Logger::Info("EngineBackend::OnEngineCleanup: leave");
 }
 
 void EngineBackend::DoEvents()
@@ -768,12 +785,15 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
     context->renderSystem2D = new RenderSystem2D();
 
     context->uiControlSystem = new UIControlSystem();
+    context->uiControlSystem->Init();
+
     context->animationManager = new AnimationManager();
     context->fontManager = new FontManager();
 
     context->typeDB = TypeDB::GetLocalDB();
     context->fastNameDB = FastNameDB::GetLocalDB();
     context->reflectedTypeDB = ReflectedTypeDB::GetLocalDB();
+    context->objectFactory = ObjectFactory::Instance();
 
 #if defined(__DAVAENGINE_ANDROID__)
     context->assetsManager = new AssetsManagerAndroid(AndroidBridge::GetApplicationPath());
@@ -895,15 +915,19 @@ void EngineBackend::DestroySubsystems()
 
     SafeRelease(context->localNotificationController);
     SafeRelease(context->uiScreenManager);
-    SafeRelease(context->uiControlSystem);
+    if (context->uiControlSystem)
+    {
+        delete context->uiControlSystem;
+        context->uiControlSystem = nullptr;
+    }
     SafeRelease(context->fontManager);
-    SafeRelease(context->animationManager);
+    SafeDelete(context->animationManager);
     SafeRelease(context->renderSystem2D);
     SafeRelease(context->performanceSettings);
     SafeRelease(context->random);
     SafeRelease(context->allocatorFactory);
     SafeRelease(context->versionInfo);
-    SafeRelease(context->jobManager);
+    SafeDelete(context->jobManager);
     SafeRelease(context->localizationSystem);
     SafeRelease(context->downloadManager);
     SafeRelease(context->soundSystem);
@@ -927,7 +951,7 @@ void EngineBackend::DestroySubsystems()
         context->deviceManager = nullptr;
     }
     SafeDelete(context->componentManager);
-    SafeRelease(context->logger);
+    SafeDelete(context->logger);
 }
 
 void EngineBackend::OnRenderingError(rhi::RenderingError err, void* param)

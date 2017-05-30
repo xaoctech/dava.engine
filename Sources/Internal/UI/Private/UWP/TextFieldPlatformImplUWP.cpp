@@ -410,7 +410,7 @@ void TextFieldPlatformImpl::SetFontSize(float32 virtualFontSize)
 #if defined(__DAVAENGINE_COREV2__)
     VirtualCoordinatesSystem* vcs = window->GetUIControlSystem()->vcs;
 #else
-    VirtualCoordinatesSystem* vcs = UIControlSystem::Instance()->vcs;
+    VirtualCoordinatesSystem* vcs = GetEngineContext()->uiControlSystem->vcs;
 #endif
     properties.fontSize = vcs->ConvertVirtualToInputX(virtualFontSize);
     properties.virtualFontSize = virtualFontSize;
@@ -762,7 +762,7 @@ void TextFieldPlatformImpl::OnGotFocus()
             // one of the following occurs:
             // 1. click on text field in multiline mode as it is always shown on screen
             // 2. tab navigation
-            UIControl* curFocused = UIControlSystem::Instance()->GetFocusedControl();
+            UIControl* curFocused = GetEngineContext()->uiControlSystem->GetFocusedControl();
             if (curFocused != uiTextField && FocusHelpers::CanFocusControl(uiTextField))
             {
                 uiTextField->SetFocused();
@@ -1239,7 +1239,7 @@ Rect TextFieldPlatformImpl::VirtualToWindow(const Rect& srcRect) const
 #if defined(__DAVAENGINE_COREV2__)
     VirtualCoordinatesSystem* vcs = window->GetUIControlSystem()->vcs;
 #else
-    VirtualCoordinatesSystem* vcs = UIControlSystem::Instance()->vcs;
+    VirtualCoordinatesSystem* vcs = GetEngineContext()->uiControlSystem->vcs;
 #endif
     return vcs->ConvertVirtualToInput(srcRect);
 }
@@ -1249,7 +1249,7 @@ Rect TextFieldPlatformImpl::WindowToVirtual(const Rect& srcRect) const
 #if defined(__DAVAENGINE_COREV2__)
     VirtualCoordinatesSystem* vcs = window->GetUIControlSystem()->vcs;
 #else
-    VirtualCoordinatesSystem* vcs = UIControlSystem::Instance()->vcs;
+    VirtualCoordinatesSystem* vcs = GetEngineContext()->uiControlSystem->vcs;
 #endif
     return vcs->ConvertInputToVirtual(srcRect);
 }

@@ -93,7 +93,7 @@ void MovieViewControl::OpenMovie(const FilePath& moviePath, const OpenMovieParam
 
 void MovieViewControl::SetRect(const Rect& rect)
 {
-    Rect r = UIControlSystem::Instance()->vcs->ConvertVirtualToInput(rect);
+    Rect r = GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToInput(rect);
     [[bridge->moviePlayer view] setFrame:CGRectMake(r.x, r.y, r.dx, r.dy)];
 }
 

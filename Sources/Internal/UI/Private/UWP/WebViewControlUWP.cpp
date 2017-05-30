@@ -619,7 +619,7 @@ Rect WebViewControl::VirtualToWindow(const Rect& srcRect) const
 #if defined(__DAVAENGINE_COREV2__)
     VirtualCoordinatesSystem* vcs = window->GetUIControlSystem()->vcs;
 #else
-    VirtualCoordinatesSystem* vcs = UIControlSystem::Instance()->vcs;
+    VirtualCoordinatesSystem* vcs = GetEngineContext()->uiControlSystem->vcs;
 #endif
     return vcs->ConvertVirtualToInput(srcRect);
 }

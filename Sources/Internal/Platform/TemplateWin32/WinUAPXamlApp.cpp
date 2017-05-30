@@ -645,7 +645,7 @@ void WinUAPXamlApp::OnSwapChainPanelPointerWheel(Platform::Object ^ /*sender*/, 
         ev.device = ToDavaDeviceId(type);
         ev.physPoint = physPoint;
         ev.timestamp = (SystemTimer::GetMs() / 1000.0);
-        UIControlSystem::Instance()->OnInput(&ev);
+        GetEngineContext()->uiControlSystem->OnInput(&ev);
     });
 }
 
@@ -701,7 +701,7 @@ void WinUAPXamlApp::OnAcceleratorKeyActivated(Windows::UI::Core::CoreDispatcher 
         uiEvent.modifiers = modifiers;
         uiEvent.key = keyboard.GetDavaKeyForSystemKey(key);
         uiEvent.timestamp = (SystemTimer::GetMs() / 1000.0);
-        UIControlSystem::Instance()->OnInput(&uiEvent);
+        GetEngineContext()->uiControlSystem->OnInput(&uiEvent);
 
         switch (uiEvent.phase)
         {
@@ -738,7 +738,7 @@ void WinUAPXamlApp::OnChar(Windows::UI::Core::CoreWindow ^ sender, Windows::UI::
         {
             ev.phase = UIEvent::Phase::CHAR;
         }
-        UIControlSystem::Instance()->OnInput(&ev);
+        GetEngineContext()->uiControlSystem->OnInput(&ev);
     });
 }
 
@@ -815,7 +815,7 @@ void WinUAPXamlApp::DAVATouchEvent(UIEvent::Phase phase, float32 x, float32 y, i
     newTouch.device = device;
     newTouch.modifiers = modifiers;
     newTouch.timestamp = (SystemTimer::GetMs() / 1000.0);
-    UIControlSystem::Instance()->OnInput(&newTouch);
+    GetEngineContext()->uiControlSystem->OnInput(&newTouch);
 }
 
 DeviceInfo::ScreenInfo WinUAPXamlApp::ObtainScreenInfo()
@@ -1088,11 +1088,11 @@ void WinUAPXamlApp::SendBackKeyEvents()
         ev.modifiers = modifiers;
         ev.timestamp = (SystemTimer::GetMs() / 1000.0);
 
-        UIControlSystem::Instance()->OnInput(&ev);
+        GetEngineContext()->uiControlSystem->OnInput(&ev);
         InputSystem::Instance()->GetKeyboard().OnKeyPressed(Key::BACK);
 
         ev.phase = UIEvent::Phase::KEY_UP;
-        UIControlSystem::Instance()->OnInput(&ev);
+        GetEngineContext()->uiControlSystem->OnInput(&ev);
         InputSystem::Instance()->GetKeyboard().OnKeyUnpressed(Key::BACK);
     });
 }

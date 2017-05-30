@@ -703,7 +703,7 @@ void KeyboardDevice::ClearAllKeys()
 {
     currentFrameKeyStatus.reset();
 
-    UIControlSystem* uiControlSys = UIControlSystem::Instance();
+    UIControlSystem* uiControlSys = GetEngineContext()->uiControlSystem;
     if (uiControlSys != nullptr)
     {
         UIEvent e;

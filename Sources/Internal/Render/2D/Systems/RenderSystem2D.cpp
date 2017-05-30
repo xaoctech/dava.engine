@@ -354,15 +354,15 @@ void RenderSystem2D::ScreenSizeChanged()
 {
     Matrix4 glTranslate, glScale;
 
-    Vector2 scale = UIControlSystem::Instance()->vcs->ConvertVirtualToPhysical(Vector2(1.f, 1.f));
-    Vector2 realDrawOffset = UIControlSystem::Instance()->vcs->GetPhysicalDrawOffset();
+    Vector2 scale = GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysical(Vector2(1.f, 1.f));
+    Vector2 realDrawOffset = GetEngineContext()->uiControlSystem->vcs->GetPhysicalDrawOffset();
 
     glTranslate.glTranslate(realDrawOffset.x, realDrawOffset.y, 0.0f);
     glScale.glScale(scale.x, scale.y, 1.0f);
 
     actualVirtualToPhysicalMatrix = glScale * glTranslate;
-    actualPhysicalToVirtualScale.x = UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualX(1.0f);
-    actualPhysicalToVirtualScale.y = UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualY(1.0f);
+    actualPhysicalToVirtualScale.x = GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtualX(1.0f);
+    actualPhysicalToVirtualScale.y = GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtualY(1.0f);
     if (GetActiveTargetDescriptor().transformVirtualToPhysical)
     {
         currentVirtualToPhysicalMatrix = actualVirtualToPhysicalMatrix;
@@ -394,7 +394,7 @@ void RenderSystem2D::IntersectClipRect(const Rect& rect)
 {
     if (currentClip.dx < 0 || currentClip.dy < 0)
     {
-        VirtualCoordinatesSystem* vcs = UIControlSystem::Instance()->vcs;
+        VirtualCoordinatesSystem* vcs = GetEngineContext()->uiControlSystem->vcs;
         const RenderTargetPassDescriptor& descr = GetActiveTargetDescriptor();
         Rect screen(0.0f, 0.0f,
                     (descr.width == 0 ? vcs->GetVirtualScreenSize().dx : vcs->ConvertPhysicalToVirtualX(float32(descr.width))),
@@ -463,11 +463,11 @@ bool RenderSystem2D::IsPreparedSpriteOnScreen(Sprite::DrawState* drawState)
     const RenderTargetPassDescriptor& descr = GetActiveTargetDescriptor();
     if (int32(clipRect.dx) == -1)
     {
-        clipRect.dx = static_cast<float32>(descr.width == 0 ? UIControlSystem::Instance()->vcs->GetVirtualScreenSize().dx : descr.width);
+        clipRect.dx = static_cast<float32>(descr.width == 0 ? GetEngineContext()->uiControlSystem->vcs->GetVirtualScreenSize().dx : descr.width);
     }
     if (int32(clipRect.dy) == -1)
     {
-        clipRect.dy = static_cast<float32>(descr.height == 0 ? UIControlSystem::Instance()->vcs->GetVirtualScreenSize().dy : descr.height);
+        clipRect.dy = static_cast<float32>(descr.height == 0 ? GetEngineContext()->uiControlSystem->vcs->GetVirtualScreenSize().dy : descr.height);
     }
 
     float32 left = Min(Min(spriteTempVertices[0], spriteTempVertices[2]), Min(spriteTempVertices[4], spriteTempVertices[6]));
@@ -1009,11 +1009,11 @@ void RenderSystem2D::Draw(Sprite* sprite, Sprite::DrawState* drawState, const Co
         {
             if (sprite->type == Sprite::SPRITE_FROM_FILE)
             {
-                virtualTexSize = UIControlSystem::Instance()->vcs->ConvertResourceToVirtual(virtualTexSize, sprite->GetResourceSizeIndex());
+                virtualTexSize = GetEngineContext()->uiControlSystem->vcs->ConvertResourceToVirtual(virtualTexSize, sprite->GetResourceSizeIndex());
             }
             else if (!sprite->textureInVirtualSpace)
             {
-                virtualTexSize = UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtual(virtualTexSize);
+                virtualTexSize = GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtual(virtualTexSize);
             }
         }
         float32 adjWidth = 1.f / virtualTexSize.x;
@@ -1777,7 +1777,7 @@ void RenderSystem2D::DrawTexture(Texture* texture, NMaterial* material, const Co
         destRect.dy = static_cast<float32>(descr.height == 0 ? Renderer::GetFramebufferHeight() : descr.height);
         if (descr.transformVirtualToPhysical)
         {
-            destRect = UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtual(destRect);
+            destRect = GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtual(destRect);
         }
     }
 
@@ -1798,11 +1798,11 @@ void TiledDrawData::GenerateTileData()
 
     Vector<Vector3> cellsWidth;
     GenerateAxisData(size.x, sprite->GetRectOffsetValueForFrame(frame, Sprite::ACTIVE_WIDTH),
-                     UIControlSystem::Instance()->vcs->ConvertResourceToVirtualX(float32(texture->GetWidth()), sprite->GetResourceSizeIndex()), stretchCap.x, cellsWidth);
+                     GetEngineContext()->uiControlSystem->vcs->ConvertResourceToVirtualX(float32(texture->GetWidth()), sprite->GetResourceSizeIndex()), stretchCap.x, cellsWidth);
 
     Vector<Vector3> cellsHeight;
     GenerateAxisData(size.y, sprite->GetRectOffsetValueForFrame(frame, Sprite::ACTIVE_HEIGHT),
-                     UIControlSystem::Instance()->vcs->ConvertResourceToVirtualY(float32(texture->GetHeight()), sprite->GetResourceSizeIndex()), stretchCap.y, cellsHeight);
+                     GetEngineContext()->uiControlSystem->vcs->ConvertResourceToVirtualY(float32(texture->GetHeight()), sprite->GetResourceSizeIndex()), stretchCap.y, cellsHeight);
 
     uint32 vertexLimitPerUnit = MAX_VERTICES - (MAX_VERTICES % 4); // Round for 4 vertexes
     uint32 indexLimitPerUnit = vertexLimitPerUnit / 4 * 6;
@@ -2053,7 +2053,7 @@ void StretchDrawData::GenerateStretchData()
     const Vector2 uvPos(sprite->GetRectOffsetValueForFrame(frame, Sprite::X_POSITION_IN_TEXTURE) / textureSize.x,
                         sprite->GetRectOffsetValueForFrame(frame, Sprite::Y_POSITION_IN_TEXTURE) / textureSize.y);
 
-    VirtualCoordinatesSystem* vcs = UIControlSystem::Instance()->vcs;
+    VirtualCoordinatesSystem* vcs = GetEngineContext()->uiControlSystem->vcs;
 
     Vector2 value(sprite->GetRectOffsetValueForFrame(frame, Sprite::ACTIVE_WIDTH),
                   sprite->GetRectOffsetValueForFrame(frame, Sprite::ACTIVE_HEIGHT));

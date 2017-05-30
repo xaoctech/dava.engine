@@ -43,8 +43,8 @@ void ApplicationCore::Update(float32 timeElapsed)
 #endif
 
     SoundSystem::Instance()->Update(timeElapsed);
-    AnimationManager::Instance()->Update(timeElapsed);
-    UIControlSystem::Instance()->Update();
+    GetEngineContext()->animationManager->Update(timeElapsed);
+    GetEngineContext()->uiControlSystem->Update();
     
 #if defined(__DAVAENGINE_STEAM__)
     Steam::Update();
@@ -67,7 +67,7 @@ void ApplicationCore::Draw()
 
     RenderSystem2D::Instance()->BeginFrame();
 
-    UIControlSystem::Instance()->Draw();
+    GetEngineContext()->uiControlSystem->Draw();
 #ifdef __DAVAENGINE_AUTOTESTING__
     AutotestingSystem::Instance()->Draw();
 #endif

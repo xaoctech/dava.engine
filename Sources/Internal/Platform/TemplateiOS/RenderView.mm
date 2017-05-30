@@ -68,7 +68,7 @@ static DAVA::uint32 KEYBOARD_FPS_LIMIT = 20;
         }
 
         //        DAVA::RenderManager::Instance()->SetRenderContextId(DAVA::EglGetCurrentContext());
-        DAVA::Size2i physicalScreen = DAVA::UIControlSystem::Instance()->vcs->GetPhysicalScreenSize();
+        DAVA::Size2i physicalScreen = DAVA::GetEngineContext()->uiControlSystem->vcs->GetPhysicalScreenSize();
         //        DAVA::RenderManager::Instance()->Init(physicalScreen.dx, physicalScreen.dy);
         //        DAVA::RenderManager::Instance()->DetectRenderingCapabilities();
         //        DAVA::RenderSystem2D::Instance()->Init();
@@ -233,7 +233,7 @@ void MoveTouchsToVector(void* inTouches, DAVA::Vector<DAVA::UIEvent>* outTouches
     MoveTouchsToVector(active, &activeTouches);
     for (auto& t : activeTouches)
     {
-        DAVA::UIControlSystem::Instance()->OnInput(&t);
+        DAVA::GetEngineContext()->uiControlSystem->OnInput(&t);
     }
 }
 

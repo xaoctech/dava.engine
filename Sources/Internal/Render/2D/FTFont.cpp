@@ -341,13 +341,13 @@ Font::StringMetrics FTInternalFont::DrawString(const WideString& str, void* buff
 
     bool drawNondefGlyph = Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DRAW_NONDEF_GLYPH);
 
-    size = UIControlSystem::Instance()->vcs->ConvertVirtualToPhysicalY(size); // increase size for high dpi screens
+    size = GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalY(size); // increase size for high dpi screens
     if (!contentScaleIncluded)
     {
-        bufWidth = int32(UIControlSystem::Instance()->vcs->ConvertVirtualToPhysicalX(float32(bufWidth)));
-        bufHeight = int32(UIControlSystem::Instance()->vcs->ConvertVirtualToPhysicalY(float32(bufHeight)));
-        offsetY = int32(UIControlSystem::Instance()->vcs->ConvertVirtualToPhysicalY(float32(offsetY)));
-        offsetX = int32(UIControlSystem::Instance()->vcs->ConvertVirtualToPhysicalX(float32(offsetX)));
+        bufWidth = int32(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalX(float32(bufWidth)));
+        bufHeight = int32(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalY(float32(bufHeight)));
+        offsetY = int32(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalY(float32(offsetY)));
+        offsetX = int32(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalX(float32(offsetX)));
     }
 
     FT_Size ft_size = nullptr;
@@ -443,7 +443,7 @@ Font::StringMetrics FTInternalFont::DrawString(const WideString& str, void* buff
             if (charSizes)
             {
                 float32 charSize = float32(advances[i].x) * ftToPixelScale; // Convert to pixels
-                charSize = UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualX(charSize); // Convert to virtual space
+                charSize = GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtualX(charSize); // Convert to virtual space
                 charSizes->push_back(charSize);
             }
 
@@ -548,13 +548,13 @@ Font::StringMetrics FTInternalFont::DrawString(const WideString& str, void* buff
 
     if (!contentScaleIncluded)
     {
-        metrics.drawRect.x = int32(std::floor(UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualX(float32(metrics.drawRect.x))));
-        metrics.drawRect.y = int32(std::floor(UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualY(float32(metrics.drawRect.y))));
-        metrics.drawRect.dx = int32(std::ceil(UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualX(float32(metrics.drawRect.dx))));
-        metrics.drawRect.dy = int32(std::ceil(UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualY(float32(metrics.drawRect.dy))));
-        metrics.baseline = UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualX(metrics.baseline);
-        metrics.height = UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualY(metrics.height);
-        metrics.width = UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualX(totalWidth);
+        metrics.drawRect.x = int32(std::floor(GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtualX(float32(metrics.drawRect.x))));
+        metrics.drawRect.y = int32(std::floor(GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtualY(float32(metrics.drawRect.y))));
+        metrics.drawRect.dx = int32(std::ceil(GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtualX(float32(metrics.drawRect.dx))));
+        metrics.drawRect.dy = int32(std::ceil(GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtualY(float32(metrics.drawRect.dy))));
+        metrics.baseline = GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtualX(metrics.baseline);
+        metrics.height = GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtualY(metrics.height);
+        metrics.width = GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtualX(totalWidth);
     }
     else
     {
@@ -571,14 +571,14 @@ bool FTInternalFont::IsCharAvaliable(char16 ch)
 
 uint32 FTInternalFont::GetFontHeight(float32 size, float32 ascendScale, float32 descendScale)
 {
-    size = UIControlSystem::Instance()->vcs->ConvertVirtualToPhysicalY(size); // increase size for high dpi screens
+    size = GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalY(size); // increase size for high dpi screens
     FT_Size ft_size = nullptr;
     if (ftm->LookupSize(this, size, &ft_size) == FT_Err_Ok)
     {
         int32 faceBboxYMin = int32(FT_MulFix_Wrapper(ft_size->face->bbox.yMin, ft_size->metrics.y_scale) * descendScale); // draw offset
         int32 faceBboxYMax = int32(FT_MulFix_Wrapper(ft_size->face->bbox.yMax, ft_size->metrics.y_scale) * ascendScale); // baseline
         float32 height = std::ceil((faceBboxYMax - faceBboxYMin) * ftToPixelScale);
-        return uint32(std::ceil(UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualX(height))); // cover height to virtual coordinates back
+        return uint32(std::ceil(GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtualX(height))); // cover height to virtual coordinates back
     }
     return 0;
 }

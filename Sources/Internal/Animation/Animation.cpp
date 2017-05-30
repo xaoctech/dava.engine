@@ -1,5 +1,6 @@
 #include "Animation/Animation.h"
 #include "Animation/AnimationManager.h"
+#include "Engine/Engine.h"
 #include "Logger/Logger.h"
 
 namespace DAVA
@@ -14,7 +15,7 @@ Animation::Animation(AnimatedObject* _owner, float32 _animationTimeLength, Inter
     next = 0;
     repeatCount = 0;
     timeMultiplier = 1.f;
-    AnimationManager::Instance()->AddAnimation(this);
+    GetEngineContext()->animationManager->AddAnimation(this);
 }
 
 Animation::Animation(AnimatedObject* _owner, float32 _animationTimeLength, Interpolation::FuncType _interpolationFuncType, int32 _defaultState)
@@ -24,7 +25,7 @@ Animation::Animation(AnimatedObject* _owner, float32 _animationTimeLength, Inter
 
 Animation::~Animation()
 {
-    AnimationManager::Instance()->RemoveAnimation(this);
+    GetEngineContext()->animationManager->RemoveAnimation(this);
 }
 
 void Animation::Reset()
@@ -37,7 +38,7 @@ void Animation::Reset()
 void Animation::Start(int32 _groupId)
 {
     //#ifdef ANIMATIONS_DEBUG
-    //	if(AnimationManager::Instance()->IsAnimationLoggerEnabled())
+    //	if(GetEngineContext()->animationManager->IsAnimationLoggerEnabled())
     //	{
     //		Logger::FrameworkDebug("ANIMATION LOGGER: Animation::Start 0x%x    for owner 0x%x", (int)this, (int)owner);
     //	}
@@ -46,7 +47,7 @@ void Animation::Start(int32 _groupId)
     Reset();
     groupId = _groupId;
 
-    Animation* prevAnimation = AnimationManager::Instance()->FindLastAnimation(owner, groupId);
+    Animation* prevAnimation = GetEngineContext()->animationManager->FindLastAnimation(owner, groupId);
 
     if (!prevAnimation || (prevAnimation == this))
     {
@@ -58,7 +59,7 @@ void Animation::Start(int32 _groupId)
     {
         //Logger::FrameworkDebug("add to queue");
         //#ifdef ANIMATIONS_DEBUG
-        //		if(AnimationManager::Instance()->IsAnimationLoggerEnabled())
+        //		if(GetEngineContext()->animationManager->IsAnimationLoggerEnabled())
         //		{
         //			Logger::FrameworkDebug("ANIMATION LOGGER: Animation::Set animation 0x%x as next for 0x%x   for owner 0x%x", (int)this, (int)prevAnimation, (int)owner);
         //		}
@@ -149,7 +150,7 @@ void Animation::Update(float32 timeElapsed)
 void Animation::OnStart()
 {
     //#ifdef ANIMATIONS_DEBUG
-    //	if(AnimationManager::Instance()->IsAnimationLoggerEnabled())
+    //	if(GetEngineContext()->animationManager->IsAnimationLoggerEnabled())
     //	{
     //		Logger::FrameworkDebug("ANIMATION LOGGER: Animation::OnStart 0x%x    for owner 0x%x", (int)this, (int)owner);
     //	}
@@ -160,14 +161,14 @@ void Animation::OnStart()
 void Animation::OnStop()
 {
     //#ifdef ANIMATIONS_DEBUG
-    //	if(AnimationManager::Instance()->IsAnimationLoggerEnabled())
+    //	if(GetEngineContext()->animationManager->IsAnimationLoggerEnabled())
     //	{
     //		Logger::FrameworkDebug("ANIMATION LOGGER: Animation::OnStop 0x%x    for owner 0x%x", (int)this, (int)owner);
     //	}
     //#endif
     PerformEvent(EVENT_ANIMATION_END);
     //#ifdef ANIMATIONS_DEBUG
-    //	if(AnimationManager::Instance()->IsAnimationLoggerEnabled())
+    //	if(GetEngineContext()->animationManager->IsAnimationLoggerEnabled())
     //	{
     //		Logger::FrameworkDebug("ANIMATION LOGGER: Animation::OnStop DONE 0x%x    for owner 0x%x", (int)this, (int)owner);
     //	}

@@ -2,7 +2,6 @@
 #define __DAVAENGINE_JOB_MANAGER_H__
 
 #include "Base/BaseTypes.h"
-#include "Base/Singleton.h"
 #include "Base/Message.h"
 #include "Functional/Function.h"
 #include "Base/FastName.h"
@@ -15,7 +14,7 @@
 namespace DAVA
 {
 class Engine;
-class JobManager : public Singleton<JobManager>
+class JobManager
 {
 public:
     /*! Available types of main-thread job. */

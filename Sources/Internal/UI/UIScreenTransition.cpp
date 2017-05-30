@@ -43,7 +43,7 @@ void UIScreenTransition::CreateRenderTargets()
         return;
     }
 
-    VirtualCoordinatesSystem* vcs = UIControlSystem::Instance()->vcs;
+    VirtualCoordinatesSystem* vcs = GetEngineContext()->uiControlSystem->vcs;
 
     Size2i physicalTargetSize = vcs->GetPhysicalScreenSize();
 
@@ -78,7 +78,7 @@ void UIScreenTransition::SetSourceScreen(UIControl* prevScreen, bool updateScree
 {
     DVASSERT(renderTargetPrevScreen && renderTargetNextScreen);
 
-    UIScreenshoter* screenshoter = UIControlSystem::Instance()->GetRenderSystem()->GetScreenshoter();
+    UIScreenshoter* screenshoter = GetEngineContext()->uiControlSystem->GetRenderSystem()->GetScreenshoter();
     screenshoter->MakeScreenshot(prevScreen, renderTargetPrevScreen->GetTexture(), true, updateScreen);
 }
 
@@ -86,7 +86,7 @@ void UIScreenTransition::SetDestinationScreen(UIControl* nextScreen, bool update
 {
     DVASSERT(renderTargetPrevScreen && renderTargetNextScreen);
 
-    UIScreenshoter* screenshoter = UIControlSystem::Instance()->GetRenderSystem()->GetScreenshoter();
+    UIScreenshoter* screenshoter = GetEngineContext()->uiControlSystem->GetRenderSystem()->GetScreenshoter();
     screenshoter->MakeScreenshot(nextScreen, renderTargetNextScreen->GetTexture(), true, updateScreen);
 }
 
@@ -121,7 +121,7 @@ void UIScreenTransition::Draw(const UIGeometricData& geometricData)
         RenderSystem2D::Instance()->Draw(renderTargetPrevScreen, &drawState, Color::White);
 
         drawState.SetScale(0.5f, 1.0f);
-        drawState.SetPosition((UIControlSystem::Instance()->vcs->GetFullScreenVirtualRect().dx) / 2.0f, 0);
+        drawState.SetPosition((GetEngineContext()->uiControlSystem->vcs->GetFullScreenVirtualRect().dx) / 2.0f, 0);
 
         RenderSystem2D::Instance()->Draw(renderTargetNextScreen, &drawState, Color::White);
     }

@@ -24,7 +24,7 @@ using namespace DAVA;
 void DAVA::RegisterDAVAClasses()
 {
     //this code do nothing. Needed to compiler generate code from this cpp file
-    Logger* log = Logger::Instance();
+    Logger* log = GetEngineContext()->logger;
     if (log)
         log->Log(Logger::LEVEL__DISABLE, "");
 }

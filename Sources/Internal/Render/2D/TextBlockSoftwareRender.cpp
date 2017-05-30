@@ -126,18 +126,18 @@ Font::StringMetrics TextBlockSoftwareRender::DrawTextML(const WideString& drawTe
     if (textBlock->cacheUseJustify)
     {
         metrics = ftFont->DrawStringToBuffer(buf, x, y,
-                                             -textBlock->cacheOx + int32(UIControlSystem::Instance()->vcs->ConvertVirtualToPhysicalX(float32(xOffset))),
-                                             -textBlock->cacheOy + int32(UIControlSystem::Instance()->vcs->ConvertVirtualToPhysicalY(float32(yOffset))),
-                                             int32(std::ceil(UIControlSystem::Instance()->vcs->ConvertVirtualToPhysicalX(float32(w)))),
-                                             int32(std::ceil(UIControlSystem::Instance()->vcs->ConvertVirtualToPhysicalY(float32(lineSize)))),
+                                             -textBlock->cacheOx + int32(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalX(float32(xOffset))),
+                                             -textBlock->cacheOy + int32(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalY(float32(yOffset))),
+                                             int32(std::ceil(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalX(float32(w)))),
+                                             int32(std::ceil(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalY(float32(lineSize)))),
                                              drawText,
                                              true);
     }
     else
     {
         metrics = ftFont->DrawStringToBuffer(buf, x, y,
-                                             -textBlock->cacheOx + int32(UIControlSystem::Instance()->vcs->ConvertVirtualToPhysicalX(float32(xOffset))),
-                                             -textBlock->cacheOy + int32(UIControlSystem::Instance()->vcs->ConvertVirtualToPhysicalY(float32(yOffset))),
+                                             -textBlock->cacheOx + int32(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalX(float32(xOffset))),
+                                             -textBlock->cacheOy + int32(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalY(float32(yOffset))),
                                              0,
                                              0,
                                              drawText,

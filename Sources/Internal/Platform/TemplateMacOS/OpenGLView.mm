@@ -272,7 +272,7 @@ void ConvertNSEventToUIEvent(NSOpenGLView* glview, NSEvent* curEvent, UIEvent& e
 
     for (auto& t : touches)
     {
-        UIControlSystem::Instance()->OnInput(&t);
+        GetEngineContext()->uiControlSystem->OnInput(&t);
     }
     touches.clear();
 }
@@ -288,7 +288,7 @@ void ConvertNSEventToUIEvent(NSOpenGLView* glview, NSEvent* curEvent, UIEvent& e
 
     ConvertNSEventToUIEvent(self, theEvent, ev, DAVA::UIEvent::Phase::WHEEL);
 
-    UIControlSystem::Instance()->OnInput(&ev);
+    GetEngineContext()->uiControlSystem->OnInput(&ev);
 }
 
 - (void)magnifyWithEvent:(NSEvent*)event
@@ -306,7 +306,7 @@ void ConvertNSEventToUIEvent(NSOpenGLView* glview, NSEvent* curEvent, UIEvent& e
     ev.gesture.rotation = 0.f;
     ev.phase = DAVA::UIEvent::Phase::GESTURE;
 
-    UIControlSystem::Instance()->OnInput(&ev);
+    GetEngineContext()->uiControlSystem->OnInput(&ev);
 }
 
 - (void)rotateWithEvent:(NSEvent*)event
@@ -324,7 +324,7 @@ void ConvertNSEventToUIEvent(NSOpenGLView* glview, NSEvent* curEvent, UIEvent& e
     ev.gesture.rotation = [event rotation];
     ev.phase = DAVA::UIEvent::Phase::GESTURE;
 
-    UIControlSystem::Instance()->OnInput(&ev);
+    GetEngineContext()->uiControlSystem->OnInput(&ev);
 }
 
 - (void)swipeWithEvent:(NSEvent*)event
@@ -342,7 +342,7 @@ void ConvertNSEventToUIEvent(NSOpenGLView* glview, NSEvent* curEvent, UIEvent& e
     ev.gesture.rotation = 0.f;
     ev.phase = DAVA::UIEvent::Phase::GESTURE;
 
-    UIControlSystem::Instance()->OnInput(&ev);
+    GetEngineContext()->uiControlSystem->OnInput(&ev);
 }
 
 - (void)mouseMoved:(NSEvent*)theEvent
@@ -415,7 +415,7 @@ static int32 oldModifersFlags = 0;
         ev.key = davaKey;
         ev.modifiers = davaModifiers;
 
-        UIControlSystem::Instance()->OnInput(&ev);
+        GetEngineContext()->uiControlSystem->OnInput(&ev);
     }
     // not send char event to be consistent with Windows
     for (uint32 i = 0; i < charsLength; ++i)
@@ -435,7 +435,7 @@ static int32 oldModifersFlags = 0;
         ev.keyChar = static_cast<char16>(ch);
         ev.modifiers = davaModifiers;
 
-        UIControlSystem::Instance()->OnInput(&ev);
+        GetEngineContext()->uiControlSystem->OnInput(&ev);
     }
     keyboard.OnKeyPressed(davaKey);
 }
@@ -455,7 +455,7 @@ static int32 oldModifersFlags = 0;
     ev.device = eInputDevices::KEYBOARD;
     ev.modifiers = davaModifiers;
 
-    UIControlSystem::Instance()->OnInput(&ev);
+    GetEngineContext()->uiControlSystem->OnInput(&ev);
 
     keyboard.OnKeyUnpressed(ev.key);
 }
@@ -517,7 +517,7 @@ static int32 oldModifersFlags = 0;
             {
                 ev.phase = UIEvent::Phase::KEY_DOWN;
 
-                UIControlSystem::Instance()->OnInput(&ev);
+                GetEngineContext()->uiControlSystem->OnInput(&ev);
 
                 keyboard.OnKeyPressed(ev.key);
             }
@@ -525,7 +525,7 @@ static int32 oldModifersFlags = 0;
             {
                 ev.phase = UIEvent::Phase::KEY_UP;
 
-                UIControlSystem::Instance()->OnInput(&ev);
+                GetEngineContext()->uiControlSystem->OnInput(&ev);
 
                 keyboard.OnKeyUnpressed(ev.key);
             }

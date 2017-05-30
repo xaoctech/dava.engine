@@ -61,7 +61,7 @@ void DetachCurrentThreadFromJVM()
 
 Rect V2I(const Rect& srcRect)
 {
-    return UIControlSystem::Instance()->vcs->ConvertVirtualToInput(srcRect);
+    return GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToInput(srcRect);
 }
 
 DAVA::String ToString(const jstring jniString)
