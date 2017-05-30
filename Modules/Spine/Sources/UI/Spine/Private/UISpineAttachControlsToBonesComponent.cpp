@@ -20,7 +20,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UISpineAttachControlsToBonesComponent)
 UISpineAttachControlsToBonesComponent::UISpineAttachControlsToBonesComponent() = default;
 
 UISpineAttachControlsToBonesComponent::UISpineAttachControlsToBonesComponent(const UISpineAttachControlsToBonesComponent& src)
-    : UIBaseComponent(src)
+    : UIComponent(src)
     , bonesBinds(src.bonesBinds)
     , cachedBindsString(src.cachedBindsString)
 {

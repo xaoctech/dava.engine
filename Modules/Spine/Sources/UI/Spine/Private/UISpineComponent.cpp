@@ -31,7 +31,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UISpineComponent)
 }
 
 UISpineComponent::UISpineComponent(const UISpineComponent& copy)
-    : skeletonPath(copy.skeletonPath)
+    : UIComponent(copy)
+    , skeletonPath(copy.skeletonPath)
     , atlasPath(copy.atlasPath)
     , animationState(copy.animationState)
     , animationName(copy.animationName)

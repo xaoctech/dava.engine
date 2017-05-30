@@ -7,9 +7,10 @@
 
 namespace DAVA
 {
-class UISpineComponent : public UIBaseComponent<UISpineComponent>
+class UISpineComponent : public UIComponent
 {
     DAVA_VIRTUAL_REFLECTION(UISpineComponent, UIComponent);
+    IMPLEMENT_UI_COMPONENT(UISpineComponent);
 
 public:
     enum AnimationState
