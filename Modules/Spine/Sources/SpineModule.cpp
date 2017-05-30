@@ -1,6 +1,6 @@
 #include "SpineModule.h"
 
-#include "UI/Spine/UISpineBonesComponent.h"
+#include "UI/Spine/UISpineAttachControlsToBonesComponent.h"
 #include "UI/Spine/UISpineComponent.h"
 #include "UI/Spine/UISpineSystem.h"
 
@@ -9,16 +9,16 @@
 #include <Engine/EngineContext.h>
 #include <Entity/ComponentManager.h>
 #include <Reflection/ReflectionRegistrator.h>
-#include <UI/UIControlSystem.h>
 #include <UI/Styles/UIStyleSheetSystem.h>
+#include <UI/UIControlSystem.h>
 
 namespace DAVA
 {
 SpineModule::SpineModule(Engine* engine)
     : IModule(engine)
 {
-    DAVA_REFLECTION_REGISTER_CUSTOM_PERMANENT_NAME(UISpineComponent, "Spine");
-    DAVA_REFLECTION_REGISTER_CUSTOM_PERMANENT_NAME(UISpineBonesComponent, "SpineBones");
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UISpineComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UISpineAttachControlsToBonesComponent);
 }
 
 void SpineModule::Init()
@@ -28,11 +28,10 @@ void SpineModule::Init()
 
     ComponentManager* cm = context->componentManager;
     cm->RegisterComponent<UISpineComponent>();
-    cm->RegisterComponent<UISpineBonesComponent>();
+    cm->RegisterComponent<UISpineAttachControlsToBonesComponent>();
 
     UIControlSystem* cs = context->uiControlSystem;
     cs->AddSystem(std::make_unique<UISpineSystem>(), cs->GetStyleSheetSystem());
-
     cs->AddSingleComponent(std::make_unique<UISpineSingleComponent>());
 }
 
@@ -43,5 +42,6 @@ void SpineModule::Shutdown()
 
     UIControlSystem* cs = context->uiControlSystem;
     cs->RemoveSystem(cs->GetSystem<UISpineSystem>());
+    cs->RemoveSingleComponent(cs->GetSingleComponent<UISpineSingleComponent>());
 }
 }

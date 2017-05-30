@@ -804,6 +804,21 @@ void UIControlSystem::AddSingleComponent(std::unique_ptr<UISingleComponent> sing
     singleComponents.push_back(std::move(single));
 }
 
+std::unique_ptr<UISingleComponent> UIControlSystem::RemoveSingleComponent(const UISingleComponent* singleComponent)
+{
+    auto it = std::find_if(singleComponents.begin(), singleComponents.end(),
+                           [singleComponent](const std::unique_ptr<UISingleComponent>& ptr) {
+                               return ptr.get() == singleComponent;
+                           });
+    if (it != singleComponents.end())
+    {
+        std::unique_ptr<UISingleComponent> ptr(it->release());
+        singleComponents.erase(it);
+        return ptr;
+    }
+    return nullptr;
+}
+
 UILayoutSystem* UIControlSystem::GetLayoutSystem() const
 {
     return layoutSystem;

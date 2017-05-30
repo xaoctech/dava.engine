@@ -1,8 +1,8 @@
 #include "UI/Spine/UISpineSystem.h"
 
-#include "UI/Spine/UISpineBonesComponent.h"
+#include "UI/Spine/Private/SpineSkeleton.h"
+#include "UI/Spine/UISpineAttachControlsToBonesComponent.h"
 #include "UI/Spine/UISpineComponent.h"
-#include "UI/Spine/SpineSkeleton.h"
 
 #include <Render/2D/Systems/RenderSystem2D.h>
 #include <UI/Components/UIComponent.h>
@@ -43,9 +43,9 @@ void UISpineSystem::RegisterComponent(UIControl* control, UIComponent* component
     {
         AddNode(static_cast<UISpineComponent*>(component));
     }
-    else if (component->GetType() == Type::Instance<UISpineBonesComponent>())
+    else if (component->GetType() == Type::Instance<UISpineAttachControlsToBonesComponent>())
     {
-        BindBones(static_cast<UISpineBonesComponent*>(component));
+        BindBones(static_cast<UISpineAttachControlsToBonesComponent*>(component));
     }
     else if (component->GetType() == Type::Instance<UIControlBackground>())
     {
@@ -59,9 +59,9 @@ void UISpineSystem::UnregisterComponent(UIControl* control, UIComponent* compone
     {
         RemoveNode(static_cast<UISpineComponent*>(component));
     }
-    else if (component->GetType() == Type::Instance<UISpineBonesComponent>())
+    else if (component->GetType() == Type::Instance<UISpineAttachControlsToBonesComponent>())
     {
-        UnbindBones(static_cast<UISpineBonesComponent*>(component));
+        UnbindBones(static_cast<UISpineAttachControlsToBonesComponent*>(component));
     }
     else if (component->GetType() == Type::Instance<UIControlBackground>())
     {
@@ -77,7 +77,7 @@ void UISpineSystem::OnControlInvisible(UIControl* control)
 {
 }
 
-void UISpineSystem::Process(DAVA::float32 elapsedTime)
+void UISpineSystem::Process(float32 elapsedTime)
 {
     UISpineSingleComponent* spineSingle = GetScene()->GetSingleComponent<UISpineSingleComponent>();
 
@@ -202,7 +202,7 @@ void UISpineSystem::AddNode(UISpineComponent* component)
     spineSingle->spineNeedReload.insert(component->GetControl());
 
     // Bind bones if exists
-    UISpineBonesComponent* bones = component->GetControl()->GetComponent<UISpineBonesComponent>();
+    UISpineAttachControlsToBonesComponent* bones = component->GetControl()->GetComponent<UISpineAttachControlsToBonesComponent>();
     if (bones)
     {
         BindBones(bones);
@@ -235,11 +235,11 @@ void UISpineSystem::RemoveNode(UISpineComponent* component)
             node.boneLinks.clear();
         }
 
-        nodes.erase(it, nodes.end());
+        nodes.erase(it);
     }
 }
 
-void UISpineSystem::BindBones(UISpineBonesComponent* bones)
+void UISpineSystem::BindBones(UISpineAttachControlsToBonesComponent* bones)
 {
     auto it = nodes.find(bones->GetControl());
     if (it != nodes.end())
@@ -253,7 +253,7 @@ void UISpineSystem::BindBones(UISpineBonesComponent* bones)
     }
 }
 
-void UISpineSystem::UnbindBones(UISpineBonesComponent* bones)
+void UISpineSystem::UnbindBones(UISpineAttachControlsToBonesComponent* bones)
 {
     auto it = nodes.find(bones->GetControl());
     if (it != nodes.end())
@@ -299,14 +299,14 @@ void UISpineSystem::BuildBoneLinks(SpineNode& node)
         UIControl* root = node.bones->GetControl();
         for (auto& bonePair : node.bones->GetBinds())
         {
-            RefPtr<SpineBone> bone = node.skeleton->FindBone(bonePair.first);
+            std::shared_ptr<SpineBone> bone = node.skeleton->FindBone(bonePair.boneName);
             if (bone)
             {
-                UIControl* boneControl = root->FindByPath(bonePair.second);
+                UIControl* boneControl = root->FindByPath(bonePair.controlPath);
                 if (boneControl)
                 {
                     BoneLink link;
-                    link.bone = bone;
+                    link.bone = std::move(bone);
                     link.control = boneControl;
                     node.boneLinks.push_back(std::move(link));
                 }

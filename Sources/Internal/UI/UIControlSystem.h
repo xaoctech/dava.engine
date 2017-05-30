@@ -299,6 +299,7 @@ public:
     }
 
     void AddSingleComponent(std::unique_ptr<UISingleComponent> single);
+    std::unique_ptr<UISingleComponent> RemoveSingleComponent(const UISingleComponent* singleComponent);
 
     template <typename T>
     T* GetSingleComponent() const

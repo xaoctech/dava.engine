@@ -70,10 +70,7 @@ void UISpineComponent::SetSkeletonPath(const FilePath& path)
     if (skeletonPath != path)
     {
         skeletonPath = path;
-
         Modify(true);
-        //needReload = true;
-        //modified = true;
     }
 }
 
@@ -82,10 +79,7 @@ void UISpineComponent::SetAtlasPath(const FilePath& path)
     if (atlasPath != path)
     {
         atlasPath = path;
-
         Modify(true);
-        //needReload = true;
-        //modified = true;
     }
 }
 
@@ -94,9 +88,7 @@ void UISpineComponent::SetAnimationState(const AnimationState& state)
     if (animationState != state)
     {
         animationState = state;
-
-        Modify();
-        //modified = true;
+        Modify(false);
     }
 }
 
@@ -105,9 +97,7 @@ void UISpineComponent::SetAnimationName(const String& name)
     if (animationName != name)
     {
         animationName = name;
-
-        Modify();
-        //modified = true;
+        Modify(false);
     }
 }
 
@@ -116,9 +106,7 @@ void UISpineComponent::SetAnimationsNames(const Vector<String>& names)
     if (animationsNames != names)
     {
         animationsNames = names;
-
-        Modify();
-        //modified = true;
+        Modify(false);
     }
 }
 
@@ -127,9 +115,7 @@ void UISpineComponent::SetTimeScale(float32 scale)
     if (timeScale != scale)
     {
         timeScale = scale;
-
-        Modify();
-        //modified = true;
+        Modify(false);
     }
 }
 
@@ -138,9 +124,7 @@ void UISpineComponent::SetLoopedPlayback(bool loop)
     if (animationLooped != loop)
     {
         animationLooped = loop;
-
-        Modify();
-        //modified = true;
+        Modify(false);
     }
 }
 
@@ -149,9 +133,7 @@ void UISpineComponent::SetSkinName(const String& name)
     if (skinName != name)
     {
         skinName = name;
-
-        Modify();
-        //modified = true;
+        Modify(false);
     }
 }
 
@@ -160,9 +142,7 @@ void UISpineComponent::SetSkinsNames(const Vector<String>& names)
     if (skinsNames != names)
     {
         skinsNames = names;
-
-        Modify();
-        //modified = true;
+        Modify(false);
     }
 }
 }

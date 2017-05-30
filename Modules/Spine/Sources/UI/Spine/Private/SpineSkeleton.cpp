@@ -1,4 +1,4 @@
-#include "UI/Spine/SpineSkeleton.h"
+#include "UI/Spine/Private/SpineSkeleton.h"
 
 #include <Debug/DVAssert.h>
 #include <FileSystem/File.h>
@@ -61,7 +61,7 @@ static const int32 VERTICES_COMPONENTS_COUNT = 2;
 static const int32 TEXTURE_COMPONENTS_COUNT = 2;
 static const int32 COLOR_STRIDE = 1;
 
-int32 maxVerticesCount(spSkeleton* mSkeleton)
+int32 MaxVerticesCount(spSkeleton* mSkeleton)
 {
     int32 max = 0;
 
@@ -100,17 +100,16 @@ int32 maxVerticesCount(spSkeleton* mSkeleton)
 }
 }
 
+SpineTrackEntry::SpineTrackEntry(spTrackEntry* track)
+    : trackPtr(track)
+{
+    DVASSERT(trackPtr);
+}
+
 SpineBone::SpineBone(spBone* bone)
     : bonePtr(bone)
 {
     DVASSERT(bonePtr);
-}
-
-SpineBone::~SpineBone() = default;
-
-bool SpineBone::IsValid() const
-{
-    return bonePtr != nullptr;
 }
 
 Vector2 SpineBone::GetPosition() const
@@ -239,7 +238,7 @@ void SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath)
     spSkeletonJson_dispose(json);
     mSkeleton = spSkeleton_create(skeletonData);
 
-    mWorldVertices = MALLOC(float32, SpinePrivate::maxVerticesCount(mSkeleton));
+    mWorldVertices = MALLOC(float32, SpinePrivate::MaxVerticesCount(mSkeleton));
 
     mState = spAnimationState_create(spAnimationStateData_create(mSkeleton->data));
     DVASSERT(mState != nullptr);
@@ -447,7 +446,7 @@ const Vector<String>& SpineSkeleton::GetAvailableAnimationsNames() const
     return mAnimations;
 }
 
-SpineTrackEntry* SpineSkeleton::SetAnimation(int32 trackIndex, const String& name, bool loop)
+std::shared_ptr<SpineTrackEntry> SpineSkeleton::SetAnimation(int32 trackIndex, const String& name, bool loop)
 {
     if (mSkeleton != nullptr && mState != nullptr)
     {
@@ -457,12 +456,12 @@ SpineTrackEntry* SpineSkeleton::SetAnimation(int32 trackIndex, const String& nam
             Logger::Error("[SpineSkeleton] Animation '%s' was not found!", name.c_str());
             return nullptr;
         }
-        return reinterpret_cast<SpineTrackEntry*>(spAnimationState_setAnimation(mState, trackIndex, animation, loop));
+        return std::make_shared<SpineTrackEntry>(spAnimationState_setAnimation(mState, trackIndex, animation, loop));
     }
     return nullptr;
 }
 
-SpineTrackEntry* SpineSkeleton::AddAnimation(int32 trackIndex, const String& name, bool loop, float32 delay)
+std::shared_ptr<SpineTrackEntry> SpineSkeleton::AddAnimation(int32 trackIndex, const String& name, bool loop, float32 delay)
 {
     if (mSkeleton != nullptr && mState != nullptr)
     {
@@ -472,16 +471,16 @@ SpineTrackEntry* SpineSkeleton::AddAnimation(int32 trackIndex, const String& nam
             Logger::Error("[SpineSkeleton] Animation '%s' was not found!", name.c_str());
             return nullptr;
         }
-        return reinterpret_cast<SpineTrackEntry*>(spAnimationState_addAnimation(mState, trackIndex, animation, loop, delay));
+        return std::make_shared<SpineTrackEntry>(spAnimationState_addAnimation(mState, trackIndex, animation, loop, delay));
     }
     return nullptr;
 }
 
-SpineTrackEntry* SpineSkeleton::GetTrack(int32 trackIndex)
+std::shared_ptr<SpineTrackEntry> SpineSkeleton::GetTrack(int32 trackIndex)
 {
     if (mState != nullptr)
     {
-        return reinterpret_cast<SpineTrackEntry*>(spAnimationState_getCurrent(mState, trackIndex));
+        return std::make_shared<SpineTrackEntry>(spAnimationState_getCurrent(mState, trackIndex));
     }
     return nullptr;
 }
@@ -534,7 +533,7 @@ bool SpineSkeleton::SetSkin(const String& skinName)
             }
             if (mSkeleton != nullptr)
             {
-                mWorldVertices = MALLOC(float32, SpinePrivate::maxVerticesCount(mSkeleton));
+                mWorldVertices = MALLOC(float32, SpinePrivate::MaxVerticesCount(mSkeleton));
             }
             return true;
         }
@@ -547,12 +546,12 @@ const Vector<String>& SpineSkeleton::GetAvailableSkinsNames() const
     return mSkins;
 }
 
-RefPtr<SpineBone> SpineSkeleton::FindBone(const String& boneName)
+std::shared_ptr<SpineBone> SpineSkeleton::FindBone(const String& boneName)
 {
     if (mSkeleton)
     {
-        return RefPtr<SpineBone>::Construct(spSkeleton_findBone(mSkeleton, boneName.c_str()));
+        return std::make_shared<SpineBone>(spSkeleton_findBone(mSkeleton, boneName.c_str()));
     }
-    return RefPtr<SpineBone>();
+    return nullptr;
 }
 }
