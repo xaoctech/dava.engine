@@ -1,7 +1,6 @@
 #pragma once
 #include "Reflection/Reflection.h"
 #include "Reflection/ReflectedTypeDB.h"
-#include "UI/Components/UIComponent.h"
 
 namespace DAVA
 {
@@ -20,6 +19,7 @@ After registration, UIComponent can be created through UIComponent::CreateByType
 UIComponent registration also introduces 'runtimeType' (just integer) for UIComponent. 
 'runtimeType' can be used for UIComponents management in UIControl along with its' Type. 'runtimeType' is typically used for optimization (for example, indeces in array). You cannot rely on actual 'runtimeType' value between launches of the application.
 */
+class UIComponent;
 class ComponentManager
 {
 public:
@@ -52,11 +52,10 @@ void ComponentManager::RegisterComponent()
     bool isUIComponent = std::is_base_of<UIComponent, T>::value;
     if (isUIComponent)
     {
-        T::runtimeType = runtimeComponentsCount;
-        T::reflectionType = Type::Instance<T>();
-        typeToRuntimeType[T::reflectionType] = runtimeComponentsCount;
+        const Type* reflectionType = Type::Instance<T>();
+        typeToRuntimeType[reflectionType] = runtimeComponentsCount;
 
-        sortedTypes.push_back(T::reflectionType);
+        sortedTypes.push_back(reflectionType);
         std::sort(sortedTypes.begin(), sortedTypes.end(),
                   [](const Type*& a, const Type*& b) -> bool
                   {

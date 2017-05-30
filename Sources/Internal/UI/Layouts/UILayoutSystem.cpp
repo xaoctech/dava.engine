@@ -81,9 +81,9 @@ void UILayoutSystem::UnregisterControl(UIControl* control)
 
 void UILayoutSystem::UnregisterComponent(UIControl* control, UIComponent* component)
 {
-    if (component->GetType() == Type::Instance<UISizePolicyComponent>())
+    UISizePolicyComponent* sizePolicyComponent = CastIfEqual<UISizePolicyComponent*>(component);
+    if (sizePolicyComponent != nullptr)
     {
-        UISizePolicyComponent* sizePolicyComponent = DynamicTypeCheck<UISizePolicyComponent*>(component);
         for (int32 axis = Vector2::AXIS_X; axis < Vector2::AXIS_COUNT; axis++)
         {
             LayoutFormula* formula = sizePolicyComponent->GetFormula(axis);
@@ -234,7 +234,7 @@ void UILayoutSystem::RemoveListener(UILayoutSystemListener* listener)
 UIControl* UILayoutSystem::FindNotDependentOnChildrenControl(UIControl* control) const
 {
     UIControl* result = control;
-    while (result->GetParent() != nullptr && result->GetComponentCount(Type::Instance<UILayoutIsolationComponent>()) == 0)
+    while (result->GetParent() != nullptr && result->GetComponentCount<UILayoutIsolationComponent>() == 0)
     {
         UISizePolicyComponent* sizePolicy = result->GetParent()->GetComponent<UISizePolicyComponent>();
         if ((sizePolicy != nullptr && (sizePolicy->IsDependsOnChildren(Vector2::AXIS_X) || sizePolicy->IsDependsOnChildren(Vector2::AXIS_Y))) ||
@@ -248,7 +248,7 @@ UIControl* UILayoutSystem::FindNotDependentOnChildrenControl(UIControl* control)
         }
     }
 
-    if (result->GetParent() != nullptr && result->GetComponentCount(Type::Instance<UILayoutIsolationComponent>()) == 0)
+    if (result->GetParent() != nullptr && result->GetComponentCount<UILayoutIsolationComponent>() == 0)
     {
         result = result->GetParent();
     }
@@ -309,7 +309,7 @@ void UILayoutSystem::CollectControlChildren(UIControl* control, int32 parentInde
 
     for (UIControl* child : children)
     {
-        if (child->GetComponentCount(Type::Instance<UILayoutIsolationComponent>()) == 0)
+        if (child->GetComponentCount<UILayoutIsolationComponent>() == 0)
         {
             layoutData.emplace_back(ControlLayoutData(child));
             childrenCount++;
@@ -323,7 +323,7 @@ void UILayoutSystem::CollectControlChildren(UIControl* control, int32 parentInde
     {
         for (UIControl* child : children)
         {
-            if (child->GetComponentCount(Type::Instance<UILayoutIsolationComponent>()) == 0)
+            if (child->GetComponentCount<UILayoutIsolationComponent>() == 0)
             {
                 CollectControlChildren(child, index, recursive);
                 index++;

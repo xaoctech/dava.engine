@@ -883,6 +883,7 @@ void EngineBackend::DestroySubsystems()
     {
         context->pluginManager->UnloadPlugins();
         delete context->pluginManager;
+        context->pluginManager = nullptr;
     }
     if (context->jobManager != nullptr)
     {
@@ -913,11 +914,7 @@ void EngineBackend::DestroySubsystems()
         context->inputSystem = nullptr;
     }
 
-    if (context->netCore != nullptr)
-    {
-        context->netCore->Release();
-        context->netCore = nullptr;
-    }
+    SafeRelease(context->netCore);
 
 #if defined(__DAVAENGINE_ANDROID__)
     SafeRelease(context->assetsManager);
