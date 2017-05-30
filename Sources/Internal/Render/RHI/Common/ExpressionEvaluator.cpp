@@ -360,6 +360,8 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
         }
         else if (*s == '!')
         {
+            // replace '!' with op-code only for brace-enclosed sub-expressions;
+            // regular 'logical not' case handled during building expr.tree
             const char* ns1 = s + 1;
             while (*ns1 && (*ns1 == ' ' || *ns1 == '\t'))
                 ++ns1;
