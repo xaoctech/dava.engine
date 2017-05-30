@@ -16,6 +16,9 @@ public:
 
     DAVA::Entity* Load(const DAVA::FilePath& path) override;
     void AddEntity(DAVA::Entity* parent, DAVA::Entity* child) override;
+    void Process(DAVA::float32 delta) override
+    {
+    }
 
 private:
     DAVA::TArc::ContextAccessor* accessor = nullptr;

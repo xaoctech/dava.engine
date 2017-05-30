@@ -4,6 +4,7 @@
 #include "Classes/Commands2/SetFieldValueCommand.h"
 #include "Classes/Commands2/RemoveComponentCommand.h"
 #include "Classes/Commands2/Base/RECommandNotificationObject.h"
+#include "Classes/Selection/Selection.h"
 #include "Classes/Qt/Scene/SceneSignals.h"
 
 #include <Scene3D/Systems/SlotSystem.h>
@@ -51,7 +52,7 @@ void EditorSlotSystem::UnregisterEntity(DAVA::Entity* entity)
 {
     if (entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT) > 0)
     {
-        FindAndRemoveExchangingWithLast(entities, entity);
+        DAVA::FindAndRemoveExchangingWithLast(entities, entity);
         pendingOnInitialize.erase(entity);
     }
 }
@@ -63,6 +64,9 @@ void EditorSlotSystem::RegisterComponent(DAVA::Entity* entity, DAVA::Component* 
         pendingOnInitialize.insert(entity);
         if (entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT) == 1)
         {
+#if defined(__DAVAENGINE_DEBUG__)
+            DVASSERT(std::find(entities.begin(), entities.end(), entity) == entities.end());
+#endif
             entities.push_back(entity);
         }
     }
@@ -74,7 +78,7 @@ void EditorSlotSystem::UnregisterComponent(DAVA::Entity* entity, DAVA::Component
     {
         if (entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT) == 1)
         {
-            FindAndRemoveExchangingWithLast(entities, entity);
+            DAVA::FindAndRemoveExchangingWithLast(entities, entity);
             pendingOnInitialize.erase(entity);
         }
     }
@@ -147,12 +151,21 @@ void EditorSlotSystem::DetachEntity(DAVA::SlotComponent* component, DAVA::Entity
 void EditorSlotSystem::AttachEntity(DAVA::SlotComponent* component, DAVA::Entity* entity, DAVA::FastName itemName)
 {
     DAVA::SlotSystem* slotSystem = GetScene()->slotSystem;
+    Selection::Lock();
     slotSystem->AttachEntityToSlot(component, entity, itemName);
+    Selection::Unlock();
 }
 
 DAVA::Entity* EditorSlotSystem::AttachEntity(DAVA::SlotComponent* component, DAVA::FastName itemName)
 {
+    Selection::Lock();
+    SCOPE_EXIT
+    {
+        Selection::Unlock();
+    };
+
     DAVA::SlotSystem* slotSystem = GetScene()->slotSystem;
+    DAVA::Entity* result = nullptr;
     if (itemName == emptyItemName)
     {
         DAVA::RefPtr<DAVA::Entity> newEntity(new DAVA::Entity());
@@ -168,7 +181,7 @@ DAVA::Entity* EditorSlotSystem::AttachEntity(DAVA::SlotComponent* component, DAV
 void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& holder)
 {
     SceneEditor2* scene = static_cast<SceneEditor2*>(GetScene());
-    auto changeSlotvisitor = [&](const RECommand* command)
+    auto changeSlotVisitor = [&](const RECommand* command)
     {
         const SetFieldValueCommand* cmd = static_cast<const SetFieldValueCommand*>(command);
         const DAVA::Reflection::Field& field = cmd->GetField();
@@ -188,7 +201,7 @@ void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& ho
     };
 
     const RECommandNotificationObject& commandInfo = holder.GetMasterCommandInfo();
-    commandInfo.ForEach(changeSlotvisitor, CMDID_REFLECTED_FIELD_MODIFY);
+    commandInfo.ForEach(changeSlotVisitor, CMDID_REFLECTED_FIELD_MODIFY);
 
     auto removeSlotVisitor = [&](const RECommand* command)
     {

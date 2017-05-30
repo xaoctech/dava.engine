@@ -53,8 +53,7 @@ void AttachEntityToSlot::Redo()
         }
         redoEntityInited = true;
     }
-
-    if (redoEntity.Get() != nullptr)
+    else if (redoEntity.Get() != nullptr)
     {
         system->AttachEntity(component, redoEntity.Get(), redoItemName);
     }

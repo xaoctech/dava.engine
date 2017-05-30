@@ -61,7 +61,7 @@ void SlotSupportModule::OnContextCreated(DAVA::TArc::DataContext* context)
     slotSupportData->system.reset(new EditorSlotSystem(scene.Get()));
 
     scene->AddSystem(slotSupportData->system.get(), 0, Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
-    scene->slotSystem->SetExternalEntityLoader(RefPtr<SlotSystem::ExternalEntityLoader>(new EntityForSlotLoader(GetAccessor())));
+    scene->slotSystem->SetExternalEntityLoader(std::shared_ptr<SlotSystem::ExternalEntityLoader>(new EntityForSlotLoader(GetAccessor())));
 }
 
 void SlotSupportModule::OnContextDeleted(DAVA::TArc::DataContext* context)
@@ -73,7 +73,6 @@ void SlotSupportModule::OnContextDeleted(DAVA::TArc::DataContext* context)
         RefPtr<SceneEditor2> scene = data->GetScene();
 
         SlotSupportModuleDetails::SlotSupportData* slotSupportData = context->GetData<SlotSupportModuleDetails::SlotSupportData>();
-        scene->slotSystem->SetExternalEntityLoader(RefPtr<SlotSystem::ExternalEntityLoader>());
         scene->RemoveSystem(slotSupportData->system.get());
     }
 

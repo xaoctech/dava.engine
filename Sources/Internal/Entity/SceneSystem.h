@@ -2,13 +2,20 @@
 
 #include "Base/BaseTypes.h"
 
+/**
+    \defgroup systems Systems
+*/
+
 namespace DAVA
 {
 class Entity;
 class Scene;
 class Component;
 class UIEvent;
-
+/**
+    \ingroup systems
+    \brief Base class of systems.
+*/
 class SceneSystem
 {
 public:

@@ -4,6 +4,7 @@
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/SkeletonComponent.h"
+#include "Scene3D/Systems/Private/AsyncSlotExternalLoader.h"
 #include "FileSystem/YamlParser.h"
 #include "FileSystem/XMLParser.h"
 #include "FileSystem/YamlNode.h"
@@ -37,7 +38,7 @@ SlotSystem::ItemsCache::XmlConfigParser::XmlConfigParser(Set<Item, ItemLess>* it
 void SlotSystem::ItemsCache::XmlConfigParser::OnElementStarted(const String& elementName, const String& namespaceURI, const String& qualifedName, const Map<String, String>& attributes)
 {
     String nameKey("Name");
-    String tagKey("Type");
+    String typeKey("Type");
     String pathKey("Path");
 
     if (elementName == "item")
@@ -51,7 +52,7 @@ void SlotSystem::ItemsCache::XmlConfigParser::OnElementStarted(const String& ele
             {
                 item.itemName = FastName(value);
             }
-            else if (key == tagKey)
+            else if (key == typeKey)
             {
                 item.type = FastName(value);
             }
@@ -109,12 +110,16 @@ void SlotSystem::ItemsCache::LoadConfigFile(const FilePath& configPath)
     {
         LoadXmlConfig(configPath);
     }
+    else
+    {
+        Logger::Error("Unknown slot config file extension %s", configPath.GetAbsolutePathname());
+    }
 }
 
 void SlotSystem::ItemsCache::LoadYamlConfig(const FilePath& configPath)
 {
-    YamlParser* parser = YamlParser::Create(configPath);
-    if (parser == nullptr)
+    ScopedPtr<YamlParser> parser(YamlParser::Create(configPath));
+    if (!parser)
     {
         Logger::Error("Couldn't parse yaml file %s", configPath.GetAbsolutePathname().c_str());
         return;
@@ -127,15 +132,18 @@ void SlotSystem::ItemsCache::LoadYamlConfig(const FilePath& configPath)
         return;
     }
 
+    String nameKey("Name");
+    String typeKey("Type");
+    String pathKey("Path");
+
     bool incorrectItemsFound = false;
     bool duplicatesFound = false;
     Set<Item, ItemLess>& items = cachedItems[configPath.GetAbsolutePathname()];
 
     const DAVA::Vector<DAVA::YamlNode*>& yamlNodes = rootNode->AsVector();
     size_t propertiesCount = yamlNodes.size();
-    for (size_t i = 0; i < propertiesCount; ++i)
+    for (YamlNode* currentNode : yamlNodes)
     {
-        YamlNode* currentNode = yamlNodes[i];
         uint32 fieldsCount = currentNode->GetCount();
 
         Item newItem;
@@ -145,16 +153,16 @@ void SlotSystem::ItemsCache::LoadYamlConfig(const FilePath& configPath)
             const String& key = currentNode->GetItemKeyName(fieldIndex);
             if (fieldNode->GetType() == YamlNode::TYPE_STRING)
             {
-                if (key == "Name" && fieldNode->GetType() == YamlNode::TYPE_STRING)
+                if (key == nameKey && fieldNode->GetType() == YamlNode::TYPE_STRING)
                 {
                     newItem.itemName = FastName(fieldNode->AsString());
                 }
-                else if (key == "Path")
+                else if (key == pathKey)
                 {
                     String path = fieldNode->AsString();
                     newItem.scenePath = FilePath(path);
                 }
-                else if (key == "Type")
+                else if (key == typeKey)
                 {
                     newItem.type = FastName(fieldNode->AsString());
                 }
@@ -229,6 +237,10 @@ const SlotSystem::ItemsCache::Item* SlotSystem::ItemsCache::LookUpItem(const Fil
 Vector<SlotSystem::ItemsCache::Item> SlotSystem::ItemsCache::GetItems(const FilePath& configPath)
 {
     Vector<Item> result;
+    if (configPath.IsEmpty())
+    {
+        return result;
+    }
 
     String absolutePath = configPath.GetAbsolutePathname();
     auto configIter = cachedItems.find(absolutePath);
@@ -263,6 +275,7 @@ void SlotSystem::ExternalEntityLoader::SetScene(Scene* scene)
 SlotSystem::SlotSystem(Scene* scene)
     : SceneSystem(scene)
     , sharedCache(new ItemsCache())
+    , externalEntityLoader(new AsyncSlotExternalLoader())
 {
     deletePending.reserve(4);
 }
@@ -271,7 +284,7 @@ SlotSystem::~SlotSystem()
 {
 }
 
-void SlotSystem::SetSharedCache(RefPtr<ItemsCache> cache)
+void SlotSystem::SetSharedCache(std::shared_ptr<ItemsCache> cache)
 {
     sharedCache = cache;
 }
@@ -281,13 +294,13 @@ Vector<SlotSystem::ItemsCache::Item> SlotSystem::GetItems(const FilePath& config
     return sharedCache->GetItems(configPath);
 }
 
-void SlotSystem::SetExternalEntityLoader(RefPtr<ExternalEntityLoader> externalEntityLoader_)
+void SlotSystem::SetExternalEntityLoader(std::shared_ptr<ExternalEntityLoader> externalEntityLoader_)
 {
+    DVASSERT(externalEntityLoader_ != nullptr);
+    DVASSERT(externalEntityLoader != nullptr);
+    externalEntityLoader->SetScene(nullptr);
     externalEntityLoader = externalEntityLoader_;
-    if (nullptr != externalEntityLoader)
-    {
-        externalEntityLoader->SetScene(GetScene());
-    }
+    externalEntityLoader->SetScene(GetScene());
 }
 
 void SlotSystem::UnregisterEntity(Entity* entity)
@@ -367,6 +380,9 @@ void SlotSystem::Process(float32 timeElapsed)
         DVASSERT(transformComponent != nullptr);
         transformComponent->SetLocalTransform(&slotTransform);
     }
+
+    DVASSERT(externalEntityLoader != nullptr);
+    externalEntityLoader->Process(timeElapsed);
 }
 
 void SlotSystem::AttachItemToSlot(Entity* rootEntity, FastName slotName, FastName itemName)
@@ -413,15 +429,8 @@ Entity* SlotSystem::AttachItemToSlot(SlotComponent* component, FastName itemName
     Entity* loadedEntity = nullptr;
     if (item != nullptr)
     {
-        if (nullptr == externalEntityLoader)
-        {
-            loadedEntity = GetScene()->cache.GetClone(item->scenePath);
-        }
-        else
-        {
-            loadedEntity = externalEntityLoader->Load(item->scenePath);
-        }
-
+        DVASSERT(externalEntityLoader != nullptr);
+        loadedEntity = externalEntityLoader->Load(item->scenePath);
         if (loadedEntity != nullptr)
         {
             AttachEntityToSlot(component, loadedEntity, item->itemName);
@@ -435,7 +444,7 @@ Entity* SlotSystem::AttachItemToSlot(SlotComponent* component, FastName itemName
     return loadedEntity;
 }
 
-void SlotSystem::AttachEntityToSlot(SlotComponent * component, Entity * entity, FastName itemName)
+void SlotSystem::AttachEntityToSlot(SlotComponent* component, Entity* entity, FastName itemName)
 {
     UnloadItem(component);
     DVASSERT(component->GetEntity() != nullptr);
@@ -446,14 +455,7 @@ void SlotSystem::AttachEntityToSlot(SlotComponent * component, Entity * entity, 
     entity->SetName(component->GetSlotName());
 
     Entity* parentEntity = component->GetEntity();
-    if (nullptr == externalEntityLoader)
-    {
-        parentEntity->AddNode(entity);
-    }
-    else
-    {
-        externalEntityLoader->AddEntity(parentEntity, entity);
-    }
+    externalEntityLoader->AddEntity(parentEntity, entity);
 
     slotToLoadedEntity[component] = entity;
     loadedEntityToSlot[entity] = component;
@@ -479,7 +481,7 @@ SlotComponent* SlotSystem::LookUpSlot(Entity* entity) const
     return nullptr;
 }
 
-Matrix4 SlotSystem::GetJointTransform(SlotComponent * component) const
+Matrix4 SlotSystem::GetJointTransform(SlotComponent* component) const
 {
     Matrix4 jointTransform;
     FastName boneName = component->GetJointName();

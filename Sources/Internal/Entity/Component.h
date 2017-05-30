@@ -8,6 +8,10 @@
 #include "MemoryManager/MemoryProfiler.h"
 #include "Reflection/Reflection.h"
 
+/**
+    \defgroup components Component
+*/
+
 namespace DAVA
 {
 class Entity;

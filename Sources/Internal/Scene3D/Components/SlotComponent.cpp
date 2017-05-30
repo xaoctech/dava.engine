@@ -14,7 +14,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SlotComponent)
     .Field(SlotNameFieldName.c_str(), &SlotComponent::GetSlotName, &SlotComponent::SetSlotName)[M::DisplayName("Name")]
     .Field(ConfigPathFieldName.c_str(), &SlotComponent::GetConfigFilePath, &SlotComponent::SetConfigFilePath)[M::DisplayName("Items list")]
     .Field("transform", &SlotComponent::GetAttachmentTransform, &SlotComponent::SetAttachmentTransform)[M::DisplayName("Attachment Transform"), M::DeveloperModeOnly()]
-    .Field(AttchementToJointFieldName.c_str(), &SlotComponent::GetJointName, &SlotComponent::SetBoneName)[M::DisplayName("Attached to joint")]
+    .Field(AttchementToJointFieldName.c_str(), &SlotComponent::GetJointName, &SlotComponent::SetJointName)[M::DisplayName("Attached to joint")]
     .End();
 }
 
@@ -76,6 +76,7 @@ FastName SlotComponent::GetSlotName() const
 
 void SlotComponent::SetSlotName(FastName name)
 {
+    DVASSERT(name.IsValid() == true);
     slotName = name;
 }
 
@@ -94,9 +95,9 @@ const FastName& SlotComponent::GetJointName() const
     return attachementToJoint;
 }
 
-void SlotComponent::SetBoneName(const FastName& boneName)
+void SlotComponent::SetJointName(const FastName& jointName)
 {
-    attachementToJoint = boneName;
+    attachementToJoint = jointName;
 }
 
 const DAVA::FilePath& SlotComponent::GetConfigFilePath() const
