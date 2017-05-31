@@ -108,7 +108,7 @@ void KeyedArchiveReplaceValueCommand::Undo()
 {
     if (nullptr != archive && archive->IsKeyExists(key))
     {
-        archive->SetVariantWithoutRealloc(key, oldVal);
+        archive->SetVariant(key, oldVal);
     }
 }
 
@@ -116,6 +116,6 @@ void KeyedArchiveReplaceValueCommand::Redo()
 {
     if (nullptr != archive && archive->IsKeyExists(key))
     {
-        archive->SetVariantWithoutRealloc(key, newVal);
+        archive->SetVariant(key, newVal);
     }
 }
