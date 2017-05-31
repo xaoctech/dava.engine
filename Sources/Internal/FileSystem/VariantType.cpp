@@ -87,6 +87,15 @@ VariantType::VariantType(const VariantType& var)
     SetVariant(var);
 }
 
+VariantType::VariantType(VariantType&& value)
+    : type(TYPE_NONE)
+    , pointerValue(nullptr)
+{
+    type = value.type;
+    int64Value = value.int64Value;
+    value.type = TYPE_NONE;
+}
+
 VariantType::VariantType(bool value)
     : pointerValue(nullptr)
 {
@@ -1622,6 +1631,15 @@ bool VariantType::operator!=(const VariantType& other) const
 VariantType& VariantType::operator=(const VariantType& other)
 {
     SetVariant(other);
+    return *this;
+}
+
+VariantType& VariantType::operator=(VariantType&& other)
+{
+    type = other.type;
+    int64Value = other.int64Value;
+    other.type = TYPE_NONE;
+
     return *this;
 }
 

@@ -26,13 +26,16 @@ using namespace DAVA;
 #define MATRIX3MAPID "mapNameMatrix3"
 #define MATRIX4MAPID "mapNameMatrix4"
 #define KEYEDARCHMAPID "mapNameKArch"
+#define TESTKEY "testKey"
 
 DAVA_TESTCLASS (KeyedArchiveYamlTest)
 {
     RefPtr<KeyedArchive> loadedArchive;
+    RefPtr<KeyedArchive> testArchive;
 
     KeyedArchiveYamlTest()
         : loadedArchive(new KeyedArchive())
+        , testArchive(new KeyedArchive())
     {
     }
 
@@ -73,5 +76,20 @@ DAVA_TESTCLASS (KeyedArchiveYamlTest)
         TEST_VERIFY(*loadedArchive->GetVariant(MATRIX3MAPID) == *loadedArchiveFromGeneratedFile->GetVariant(MATRIX3MAPID));
         TEST_VERIFY(*loadedArchive->GetVariant(MATRIX4MAPID) == *loadedArchiveFromGeneratedFile->GetVariant(MATRIX4MAPID));
         TEST_VERIFY(*loadedArchive->GetVariant(KEYEDARCHMAPID) == *loadedArchiveFromGeneratedFile->GetVariant(KEYEDARCHMAPID));
+
+        testArchive->SetFloat(TESTKEY, 999.0f);
+        const VariantType* variantFloatPtr = testArchive->GetVariant(TESTKEY);
+
+        testArchive->SetString(TESTKEY, "test string");
+        const VariantType* variantStringPtr = testArchive->GetVariant(TESTKEY);
+
+        VariantType variant;
+        variant.SetBool(false);
+        testArchive->SetVariant(TESTKEY, std::move(variant));
+        const VariantType* variantPtr = testArchive->GetVariant(TESTKEY);
+
+        TEST_VERIFY(variantFloatPtr == variantStringPtr);
+        TEST_VERIFY(variantPtr == variantStringPtr);
+        TEST_VERIFY(variant.GetType() == VariantType::TYPE_NONE);
     }
 };
