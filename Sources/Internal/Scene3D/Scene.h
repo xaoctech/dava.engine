@@ -49,6 +49,7 @@ class LandscapeSystem;
 class LodSystem;
 class ParticleEffectDebugDrawSystem;
 class SlotSystem;
+class TransformSingleComponent;
 
 class UIEvent;
 
@@ -169,6 +170,8 @@ public:
     LandscapeSystem* landscapeSystem = nullptr;
     ParticleEffectDebugDrawSystem* particleEffectDebugDrawSystem = nullptr;
     SlotSystem* slotSystem = nullptr;
+
+    TransformSingleComponent* transformSingleComponent = nullptr;
 
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
