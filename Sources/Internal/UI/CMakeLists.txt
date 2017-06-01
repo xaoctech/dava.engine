@@ -13,6 +13,7 @@ set( HPP_FILES *.h
     Formula/*.h
     Formula/Private/*.h
     RichContent/*.h
+    Text/*.h
     Render/*.h
     )
 
@@ -31,6 +32,7 @@ set( CPP_FILES *.cpp
     Formula/*.cpp
     Formula/Private/*.cpp
     RichContent/*.cpp
+    Text/*.cpp
     Render/*.cpp
     )
 

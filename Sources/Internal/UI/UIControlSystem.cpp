@@ -31,6 +31,7 @@
 #include "Engine/Engine.h"
 #include "Input/MouseDevice.h"
 #include "UI/RichContent/UIRichContentSystem.h"
+#include "UI/Text/UITextSystem.h"
 
 namespace DAVA
 {
@@ -40,6 +41,7 @@ UIControlSystem::UIControlSystem()
     AddSystem(std::make_unique<UIUpdateSystem>());
     AddSystem(std::make_unique<UIRichContentSystem>());
     AddSystem(std::make_unique<UIStyleSheetSystem>());
+    AddSystem(std::make_unique<UITextSystem>());
     AddSystem(std::make_unique<UILayoutSystem>());
     AddSystem(std::make_unique<UIScrollSystem>());
     AddSystem(std::make_unique<UIScrollBarLinkSystem>());

@@ -14,6 +14,7 @@
 #include "UI/Layouts/UISizePolicyComponent.h"
 #include "UI/Layouts/UILinearLayoutComponent.h"
 #include "UI/Layouts/UIFlowLayoutComponent.h"
+#include "UI/Text/UIStaticTextComponent.h"
 #include "UI/Focus/UIFocusComponent.h"
 #include "UI/UIEvent.h"
 #include "Input/KeyboardShortcut.h"
@@ -220,6 +221,21 @@ ENUM_DECLARE(eSpriteModification)
     ENUM_ADD_DESCR(eSpriteModification::ESM_VFLIP, "FLIP_VERTICAL");
 };
 
+ENUM_DECLARE(UIStaticTextComponent::eTextMultiline)
+{
+    ENUM_ADD_DESCR(UIStaticTextComponent::MULTILINE_DISABLED, "MULTILINE_DISABLED");
+    ENUM_ADD_DESCR(UIStaticTextComponent::MULTILINE_ENABLED, "MULTILINE_ENABLED");
+    ENUM_ADD_DESCR(UIStaticTextComponent::MULTILINE_ENABLED_BY_SYMBOL, "MULTILINE_ENABLED_BY_SYMBOL");
+};
+
+ENUM_DECLARE(UIStaticTextComponent::eTextFitting)
+{
+    ENUM_ADD_DESCR(UIStaticTextComponent::FITTING_DEFAULT, "FITTING_DEFAULT");
+    ENUM_ADD_DESCR(UIStaticTextComponent::FITTING_ENLARGE, "FITTING_ENLARGE");
+    ENUM_ADD_DESCR(UIStaticTextComponent::FITTING_REDUCE, "FITTING_REDUCE");
+    ENUM_ADD_DESCR(UIStaticTextComponent::FITTING_POINTS, "FITTING_POINTS");
+};
+
 ENUM_DECLARE(UIStaticText::eMultiline)
 {
     ENUM_ADD_DESCR(UIStaticText::MULTILINE_DISABLED, "MULTILINE_DISABLED");
@@ -359,6 +375,7 @@ ENUM_DECLARE(UIComponent::eType)
     ENUM_ADD_DESCR(UIComponent::SCENE_COMPONENT, "SceneComponent");
     ENUM_ADD_DESCR(UIComponent::DEBUG_RENDER_COMPONENT, "DebugRender");
     ENUM_ADD_DESCR(UIComponent::CLIP_CONTENT_COMPONENT, "ClipContent");
+    ENUM_ADD_DESCR(UIComponent::STATIC_TEXT_COMPONENT, "StaticText");
 };
 
 ENUM_DECLARE(UISizePolicyComponent::eSizePolicy)
