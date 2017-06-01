@@ -172,8 +172,61 @@ void UIStaticTextComponent::SetForceBiDiSupportEnabled(bool value)
     forceBiDiSupport = value;
     modified = true;
 }
+
 bool UIStaticTextComponent::IsForceBiDiSupportEnabled() const
 {
     return forceBiDiSupport;
+}
+
+void UIStaticTextComponent::SetParentColor(const Color& parentColor_)
+{
+    parentColor = parentColor_;
+    modified = true;
+}
+
+Color UIStaticTextComponent::GetParentColor()
+{
+    return parentColor;
+}
+
+void UIStaticTextComponent::Draw(const UIGeometricData& geometricData)
+{
+    if (internalDrawer.Valid())
+    {
+        internalDrawer->Draw(geometricData);
+    }
+}
+
+void UIStaticTextComponent::CreateDrawer()
+{
+    UIControl* control = GetControl();
+    DVASSERT(control, "Invalid control poiner!");
+    internalDrawer = new UIStaticTextDrawer(control, this);
+}
+
+void UIStaticTextComponent::DestroyDrawer()
+{
+    DVASSERT(internalDrawer.Valid(), "Invalid control poiner!");
+    internalDrawer = nullptr;
+}
+
+void UIStaticTextComponent::SetModified(bool value)
+{
+    modified = value;
+}
+
+bool UIStaticTextComponent::IsModified() const
+{
+    return modified;
+}
+
+void UIStaticTextComponent::SetRequestedTextRectSize(const Vector2& value)
+{
+    requestedTextRectSize = value;
+}
+
+DAVA::Vector2 UIStaticTextComponent::GetRequestedTextRectSize() const
+{
+    return requestedTextRectSize;
 }
 };

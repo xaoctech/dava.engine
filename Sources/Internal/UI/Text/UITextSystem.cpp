@@ -15,7 +15,6 @@ namespace DAVA
 void UITextSystem::Process(float32 elapsedTime)
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::UI_TEXT_SYSTEM);
-    // TODO
 }
 
 void UITextSystem::RegisterControl(UIControl* control)
@@ -24,7 +23,7 @@ void UITextSystem::RegisterControl(UIControl* control)
     UIStaticTextComponent* component = control->GetComponent<UIStaticTextComponent>();
     if (component)
     {
-        // AddLink(component);
+        component->CreateDrawer();
     }
 }
 
@@ -33,7 +32,7 @@ void UITextSystem::UnregisterControl(UIControl* control)
     UIStaticTextComponent* component = control->GetComponent<UIStaticTextComponent>();
     if (component)
     {
-        // RemoveLink(component);
+        component->DestroyDrawer();
     }
 
     UISystem::UnregisterControl(control);
@@ -45,7 +44,7 @@ void UITextSystem::RegisterComponent(UIControl* control, UIComponent* component)
 
     if (component->GetType() == UIStaticTextComponent::C_TYPE)
     {
-        // AddLink(static_cast<UIStaticTextComponent*>(component));
+        (static_cast<UIStaticTextComponent*>(component))->CreateDrawer();
     }
 }
 
@@ -53,7 +52,7 @@ void UITextSystem::UnregisterComponent(UIControl* control, UIComponent* componen
 {
     if (component->GetType() == UIStaticTextComponent::C_TYPE)
     {
-        // RemoveLink(static_cast<UIStaticTextComponent*>(component));
+        (static_cast<UIStaticTextComponent*>(component))->DestroyDrawer();
     }
 
     UISystem::UnregisterComponent(control, component);

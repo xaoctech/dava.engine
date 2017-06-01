@@ -5,10 +5,12 @@
 #include "Render/2D/TextBlock.h"
 #include "UI/Components/UIComponent.h"
 #include "UI/UIControl.h"
+#include "UIStaticTextDrawer.h"
 
 namespace DAVA
 {
 class UIControl;
+class UIStaticTextDrawer;
 
 class UIStaticTextComponent : public UIBaseComponent<UIComponent::STATIC_TEXT_COMPONENT>
 {
@@ -74,6 +76,20 @@ public:
     bool IsForceBiDiSupportEnabled() const;
     void SetForceBiDiSupportEnabled(bool value);
 
+    ////////////////////////
+
+    void SetParentColor(const Color& parentColor);
+    Color GetParentColor();
+    void Draw(const UIGeometricData& geometricData);
+    void CreateDrawer();
+    void DestroyDrawer();
+
+    void SetModified(bool value);
+    bool IsModified() const;
+
+    void SetRequestedTextRectSize(const Vector2& value);
+    Vector2 GetRequestedTextRectSize() const;
+
 protected:
     int32 align = eAlign::ALIGN_HCENTER | eAlign::ALIGN_VCENTER;
     String text;
@@ -88,6 +104,10 @@ protected:
     TextBlock::eUseRtlAlign useRtlAlign = TextBlock::eUseRtlAlign::RTL_DONT_USE;
     bool forceBiDiSupport = false;
 
+    // internal
+    Vector2 requestedTextRectSize = Vector2::Zero;
     bool modified = true;
+    Color parentColor;
+    RefPtr<UIStaticTextDrawer> internalDrawer;
 };
 }

@@ -22,6 +22,7 @@
 #include "UI/Render/UIRenderSystem.h"
 #include "UI/Sound/UISoundSystem.h"
 #include "UI/Styles/UIStyleSheetSystem.h"
+#include "UI/Text/UIStaticTextComponent.h"
 #include "UI/UIAnalitycs.h"
 #include "UI/UIControlHelpers.h"
 #include "UI/UIControlPackageContext.h"
@@ -958,6 +959,11 @@ void UIControl::SetParentColor(const Color& parentColor)
     {
         bg->SetParentColor(parentColor);
     }
+    UIStaticTextComponent* txt = GetComponent<UIStaticTextComponent>();
+    if (txt)
+    {
+        txt->SetParentColor(parentColor);
+    }
 }
 
 bool UIControl::IsPointInside(const Vector2& _point, bool expandWithFocus /* = false*/) const
@@ -1336,6 +1342,11 @@ void UIControl::Draw(const UIGeometricData& geometricData)
     if (bg)
     {
         bg->Draw(geometricData);
+    }
+    UIStaticTextComponent* txt = GetComponent<UIStaticTextComponent>();
+    if (txt)
+    {
+        txt->Draw(geometricData);
     }
 }
 
