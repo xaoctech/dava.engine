@@ -253,6 +253,18 @@ void Scene::CreateSystems()
         AddSystem(animationSystem, MAKE_COMPONENT_MASK(Component::ANIMATION_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
     }
 
+    if (SCENE_SYSTEM_SKELETON_UPDATE_FLAG & systemsMask)
+    {
+        skeletonSystem = new SkeletonSystem(this);
+        AddSystem(skeletonSystem, MAKE_COMPONENT_MASK(Component::SKELETON_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
+    }
+
+    if (SCENE_SYSTEM_SLOT_FLAG & systemsMask)
+    {
+        slotSystem = new SlotSystem(this);
+        AddSystem(slotSystem, MAKE_COMPONENT_MASK(Component::SLOT_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
+    }
+
     if (SCENE_SYSTEM_TRANSFORM_FLAG & systemsMask)
     {
         transformSystem = new TransformSystem(this);
@@ -344,18 +356,6 @@ void Scene::CreateSystems()
     {
         waveSystem = new WaveSystem(this);
         AddSystem(waveSystem, MAKE_COMPONENT_MASK(Component::WAVE_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
-    }
-
-    if (SCENE_SYSTEM_SKELETON_UPDATE_FLAG & systemsMask)
-    {
-        skeletonSystem = new SkeletonSystem(this);
-        AddSystem(skeletonSystem, MAKE_COMPONENT_MASK(Component::SKELETON_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
-    }
-
-    if (SCENE_SYSTEM_SLOT_FLAG & systemsMask)
-    {
-        slotSystem = new SlotSystem(this);
-        AddSystem(slotSystem, MAKE_COMPONENT_MASK(Component::SLOT_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
     }
 
     if (DAVA::Renderer::GetOptions()->IsOptionEnabled(DAVA::RenderOptions::DEBUG_DRAW_STATIC_OCCLUSION) && !staticOcclusionDebugDrawSystem)

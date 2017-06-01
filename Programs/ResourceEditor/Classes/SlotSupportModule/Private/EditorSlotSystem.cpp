@@ -9,6 +9,7 @@
 
 #include <Scene3D/Systems/SlotSystem.h>
 #include <Scene3D/Components/SlotComponent.h>
+#include <Scene3D/Components/SingleComponents/TransformSingleComponent.h>
 #include <Scene3D/Scene.h>
 #include <Base/BaseTypes.h>
 
@@ -20,23 +21,6 @@ const DAVA::FastName EditorSlotSystem::emptyItemName = DAVA::FastName("Empty");
 EditorSlotSystem::EditorSlotSystem(DAVA::Scene* scene)
     : SceneSystem(scene)
 {
-}
-
-void EditorSlotSystem::ImmediateEvent(DAVA::Component* component, DAVA::uint32 event)
-{
-    if (event == DAVA::EventSystem::LOCAL_TRANSFORM_CHANGED)
-    {
-        DAVA::Entity* entity = component->GetEntity();
-        DAVA::SlotComponent* slotComponent = GetScene()->slotSystem->LookUpSlot(entity);
-        if (slotComponent != nullptr)
-        {
-            DAVA::Matrix4 jointTranfsorm = GetScene()->slotSystem->GetJointTransform(slotComponent);
-            bool inverseSuccessed = jointTranfsorm.Inverse();
-            DVASSERT(inverseSuccessed);
-            DAVA::Matrix4 attachmentTransform = jointTranfsorm * entity->GetLocalTransform();
-            slotComponent->SetAttachmentTransform(attachmentTransform);
-        }
-    }
 }
 
 void EditorSlotSystem::RegisterEntity(DAVA::Entity* entity)
@@ -119,7 +103,8 @@ void EditorSlotSystem::Process(DAVA::float32 timeElapsed)
         }
     }
 
-    SlotSystem* slotSystem = GetScene()->slotSystem;
+    Scene* scene = GetScene();
+    SlotSystem* slotSystem = scene->slotSystem;
     for (Entity* entity : pendingOnInitialize)
     {
         uint32 slotCount = entity->GetComponentCount(Component::SLOT_COMPONENT);
@@ -136,6 +121,21 @@ void EditorSlotSystem::Process(DAVA::float32 timeElapsed)
     }
 
     pendingOnInitialize.clear();
+
+    for (DAVA::Entity* entity : scene->transformSingleComponent->localTransformChanged)
+    {
+        SlotComponent* slot = scene->slotSystem->LookUpSlot(entity);
+        if (slot == nullptr)
+        {
+            continue;
+        }
+
+        DAVA::Matrix4 jointTranfsorm = scene->slotSystem->GetJointTransform(slot);
+        bool inverseSuccessed = jointTranfsorm.Inverse();
+        DVASSERT(inverseSuccessed);
+        DAVA::Matrix4 attachmentTransform = jointTranfsorm * entity->GetLocalTransform();
+        slot->SetAttachmentTransform(attachmentTransform);
+    }
 }
 
 void EditorSlotSystem::DetachEntity(DAVA::SlotComponent* component, DAVA::Entity* entity)
@@ -250,27 +250,6 @@ void EditorSlotSystem::ProcessCommand(const RECommandNotificationObject& command
     };
 
     commandNotification.ForEach(visitor, CMDID_REFLECTED_FIELD_MODIFY);
-}
-
-void EditorSlotSystem::SetScene(DAVA::Scene* scene)
-{
-    {
-        DAVA::Scene* currentScene = GetScene();
-        if (currentScene != nullptr)
-        {
-            currentScene->eventSystem->UnregisterSystemForEvent(this, DAVA::EventSystem::LOCAL_TRANSFORM_CHANGED);
-        }
-    }
-
-    SceneSystem::SetScene(scene);
-
-    {
-        DAVA::Scene* currentScene = GetScene();
-        if (currentScene != nullptr)
-        {
-            currentScene->eventSystem->RegisterSystemForEvent(this, DAVA::EventSystem::LOCAL_TRANSFORM_CHANGED);
-        }
-    }
 }
 
 std::unique_ptr<DAVA::Command> EditorSlotSystem::PrepareForSave(bool /*saveForGame*/)

@@ -265,7 +265,16 @@ bool SlotSystem::ItemsCache::ItemLess::operator()(const Item& item1, const Item&
 
 void SlotSystem::ExternalEntityLoader::SetScene(Scene* scene)
 {
+    if (scene == nullptr)
+    {
+        Reset();
+    }
     this->scene = scene;
+}
+
+void SlotSystem::ExternalEntityLoader::AddEntity(Entity* parent, Entity* child)
+{
+    parent->AddNode(child);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -282,6 +291,8 @@ SlotSystem::SlotSystem(Scene* scene)
 
 SlotSystem::~SlotSystem()
 {
+    DVASSERT(externalEntityLoader != nullptr);
+    externalEntityLoader->Reset();
 }
 
 void SlotSystem::SetSharedCache(std::shared_ptr<ItemsCache> cache)
@@ -305,11 +316,22 @@ void SlotSystem::SetExternalEntityLoader(std::shared_ptr<ExternalEntityLoader> e
 
 void SlotSystem::UnregisterEntity(Entity* entity)
 {
-    auto iter = loadedEntityToSlot.find(entity);
-    if (iter != loadedEntityToSlot.end())
+    FindAndRemoveExchangingWithLast(deletePending, entity);
+
+    auto loadedIter = std::find(loadedEntities.begin(), loadedEntities.end(), entity);
+    if (loadedIter != loadedEntities.end())
     {
-        slotToLoadedEntity[iter->second] = nullptr;
-        loadedEntityToSlot.erase(iter);
+        DVASSERT(components.size() == states.size());
+        DVASSERT(components.size() >= loadedEntities.size());
+
+        size_t index = std::distance(loadedEntities.begin(), loadedIter);
+        size_t loadedLastIndex = loadedEntities.size() - 1;
+        states[index] = eSlotState::NOT_LOADED;
+        std::swap(components[index], components[loadedLastIndex]);
+        std::swap(loadedEntities[index], loadedEntities[loadedLastIndex]);
+        std::swap(states[index], states[loadedLastIndex]);
+
+        loadedEntities.pop_back();
     }
     SceneSystem::UnregisterEntity(entity);
 }
@@ -334,51 +356,47 @@ void SlotSystem::RemoveEntity(Entity* entity)
 
 void SlotSystem::AddComponent(Entity* entity, Component* component)
 {
-    slotToLoadedEntity[component] = nullptr;
+    DVASSERT(component->GetType() == Component::SLOT_COMPONENT);
+    components.push_back(static_cast<SlotComponent*>(component));
+    states.push_back(eSlotState::NOT_LOADED);
 }
 
 void SlotSystem::RemoveComponent(Entity* entity, Component* component)
 {
-    auto iter = slotToLoadedEntity.find(component);
-    if (iter != slotToLoadedEntity.end())
+    DVASSERT(component->GetType() == Component::SLOT_COMPONENT);
+    size_t index = GetComponentIndex(static_cast<SlotComponent*>(component));
+    size_t lastIndex = components.size() - 1;
+    DVASSERT(components.size() == states.size());
+
+    std::swap(components[index], components[lastIndex]);
+    std::swap(states[index], states[lastIndex]);
+    components.pop_back();
+    states.pop_back();
+
+    if (index < loadedEntities.size())
     {
-        if (iter->second != nullptr)
-        {
-            deletePending.push_back(iter->second);
-            loadedEntityToSlot.erase(iter->second);
-        }
-        slotToLoadedEntity.erase(iter);
+        deletePending.push_back(loadedEntities[index]);
+        std::swap(loadedEntities[index], loadedEntities[loadedEntities.size() - 1]);
+        loadedEntities.pop_back();
     }
 }
 
 void SlotSystem::Process(float32 timeElapsed)
 {
-    if (deletePending.empty() == false)
+    Vector<Entity*> deletePendingCopy = deletePending;
+    deletePending.clear();
+    if (deletePendingCopy.empty() == false)
     {
-        for (Entity* e : deletePending)
+        for (Entity* e : deletePendingCopy)
         {
             Entity* parent = e->GetParent();
             parent->RemoveNode(e);
         }
-
-        deletePending.clear();
     }
 
-    for (auto& node : slotToLoadedEntity)
+    for (size_t i = 0; i < loadedEntities.size(); ++i)
     {
-        if (node.second == nullptr)
-        {
-            continue;
-        }
-
-        DVASSERT(node.first->GetType() == Component::SLOT_COMPONENT);
-        SlotComponent* slot = static_cast<SlotComponent*>(node.first);
-
-        Matrix4 slotTransform = GetJointTransform(slot);
-        slotTransform *= slot->attachmentTransform;
-        TransformComponent* transformComponent = GetTransformComponent(node.second);
-        DVASSERT(transformComponent != nullptr);
-        transformComponent->SetLocalTransform(&slotTransform);
+        loadedEntities[i]->SetLocalTransform(GetResultTranform(components[i]));
     }
 
     DVASSERT(externalEntityLoader != nullptr);
@@ -426,22 +444,45 @@ Entity* SlotSystem::AttachItemToSlot(SlotComponent* component, FastName itemName
     DVASSERT(filterFound == true);
 #endif
 
-    Entity* loadedEntity = nullptr;
-    if (item != nullptr)
+    if (item == nullptr)
     {
-        DVASSERT(externalEntityLoader != nullptr);
-        loadedEntity = externalEntityLoader->Load(item->scenePath);
-        if (loadedEntity != nullptr)
-        {
-            AttachEntityToSlot(component, loadedEntity, item->itemName);
-        }
-        else
-        {
-            Logger::Error("Couldn't load item %s with path %s into slot", itemName.c_str(), item->scenePath.GetStringValue().c_str());
-        }
+        Logger::Error("Couldn't find item %s in config file %s for slot %s: ", itemName.c_str(),
+                      component->GetConfigFilePath().GetAbsolutePathname().c_str(),
+                      component->GetSlotName().c_str());
+        size_t index = GetComponentIndex(component);
+        states[index] = eSlotState::LOADING_FAILED;
+        return nullptr;
     }
 
-    return loadedEntity;
+    Entity* slotRootEntity = new Entity();
+    DVASSERT(externalEntityLoader != nullptr);
+    externalEntityLoader->Load(RefPtr<Entity>::ConstructWithRetain(slotRootEntity), item->scenePath, [this, component, itemName](String&& message)
+                               {
+                                   auto iter = std::find(components.begin(), components.end(), component);
+                                   if (iter == components.end())
+                                   {
+                                       return;
+                                   }
+
+                                   size_t index = std::distance(components.begin(), iter);
+                                   // if index >= loadedEntities.size(), root for loaded item has been already remove from scene
+                                   if (index < loadedEntities.size())
+                                   {
+                                       if (message.empty() == false)
+                                       {
+                                           // "Component" was found in "components". This means that component still in system and pointer is valid
+                                           Logger::Error("Loading item %s to slot %s failed: ", itemName.c_str(), component->GetSlotName(), message.c_str());
+                                           states[index] = eSlotState::LOADING_FAILED;
+                                       }
+                                       else
+                                       {
+                                           states[index] = eSlotState::LOADED;
+                                       }
+                                   }
+                               });
+    externalEntityLoader->AddEntity(component->GetEntity(), slotRootEntity);
+    AttachEntityToSlotImpl(component, slotRootEntity, item->itemName, eSlotState::LOADING);
+    return slotRootEntity;
 }
 
 void SlotSystem::AttachEntityToSlot(SlotComponent* component, Entity* entity, FastName itemName)
@@ -449,33 +490,36 @@ void SlotSystem::AttachEntityToSlot(SlotComponent* component, Entity* entity, Fa
     UnloadItem(component);
     DVASSERT(component->GetEntity() != nullptr);
     DVASSERT(component->GetEntity()->GetScene() == GetScene());
-    DVASSERT(slotToLoadedEntity.count(component) > 0);
-
-    component->loadedItemName = itemName;
-    entity->SetName(component->GetSlotName());
 
     Entity* parentEntity = component->GetEntity();
     externalEntityLoader->AddEntity(parentEntity, entity);
-
-    slotToLoadedEntity[component] = entity;
-    loadedEntityToSlot[entity] = component;
+    AttachEntityToSlotImpl(component, entity, itemName, eSlotState::LOADED);
 }
 
 Entity* SlotSystem::LookUpLoadedEntity(SlotComponent* component) const
 {
-    DVASSERT(component->GetEntity() != nullptr);
-    auto iter = slotToLoadedEntity.find(component);
-    DVASSERT(iter != slotToLoadedEntity.end());
-    return iter->second;
+    DVASSERT(components.size() == states.size());
+    DVASSERT(components.size() >= loadedEntities.size());
+
+    size_t index = GetComponentIndex(component);
+    ;
+    if (index < loadedEntities.size())
+    {
+        return loadedEntities[index];
+    }
+
+    return nullptr;
 }
 
 SlotComponent* SlotSystem::LookUpSlot(Entity* entity) const
 {
-    auto iter = loadedEntityToSlot.find(entity);
-    if (iter != loadedEntityToSlot.end())
+    DVASSERT(components.size() == states.size());
+    DVASSERT(components.size() >= loadedEntities.size());
+
+    auto iter = std::find(loadedEntities.begin(), loadedEntities.end(), entity);
+    if (iter != loadedEntities.end())
     {
-        DVASSERT(iter->second->GetType() == Component::SLOT_COMPONENT);
-        return static_cast<SlotComponent*>(iter->second);
+        return components[std::distance(loadedEntities.begin(), iter)];
     }
 
     return nullptr;
@@ -483,6 +527,7 @@ SlotComponent* SlotSystem::LookUpSlot(Entity* entity) const
 
 Matrix4 SlotSystem::GetJointTransform(SlotComponent* component) const
 {
+    DVASSERT(component->GetEntity()->GetScene() == GetScene());
     Matrix4 jointTransform;
     FastName boneName = component->GetJointName();
     if (boneName.IsValid())
@@ -501,6 +546,28 @@ Matrix4 SlotSystem::GetJointTransform(SlotComponent* component) const
     return jointTransform;
 }
 
+DAVA::Matrix4 SlotSystem::GetResultTranform(SlotComponent* component) const
+{
+    DVASSERT(component->GetEntity()->GetScene() == GetScene());
+    FastName boneName = component->GetJointName();
+    if (boneName.IsValid())
+    {
+        SkeletonComponent* skeleton = GetSkeletonComponent(component->GetEntity());
+        DVASSERT(skeleton != nullptr);
+        uint16 jointId = skeleton->GetJointId(boneName);
+        DVASSERT(jointId != SkeletonComponent::INVALID_JOINT_INDEX);
+        const SkeletonComponent::JointTransform& transform = skeleton->GetObjectSpaceTransform(jointId);
+        Matrix4 jointTransform = transform.orientation.GetMatrix();
+        jointTransform.SetTranslationVector(transform.position);
+
+        jointTransform *= Matrix4::MakeScale(Vector3(transform.scale, transform.scale, transform.scale));
+
+        return jointTransform * component->GetAttachmentTransform();
+    }
+
+    return component->GetAttachmentTransform();
+}
+
 void SlotSystem::SetScene(Scene* scene)
 {
     SceneSystem::SetScene(scene);
@@ -510,18 +577,47 @@ void SlotSystem::SetScene(Scene* scene)
     }
 }
 
+void SlotSystem::AttachEntityToSlotImpl(SlotComponent* component, Entity* entity, FastName itemName, SlotSystem::eSlotState state)
+{
+    component->loadedItemName = itemName;
+    entity->SetName(component->GetSlotName());
+
+    size_t index = GetComponentIndex(component);
+    DVASSERT(index >= loadedEntities.size());
+
+    size_t targetIndex = loadedEntities.size();
+    loadedEntities.push_back(entity);
+    states[targetIndex] = state;
+    std::swap(components[index], components[targetIndex]);
+    std::swap(states[index], states[targetIndex]);
+}
+
 void SlotSystem::UnloadItem(SlotComponent* component)
 {
     component->loadedItemName = FastName();
-    auto iter = slotToLoadedEntity.find(component);
-    if (iter != slotToLoadedEntity.end() && iter->second != nullptr)
+    size_t index = GetComponentIndex(component);
+    if (index < loadedEntities.size())
     {
-        Entity* slotEntity = component->GetEntity();
-        Entity* loadedEntity = iter->second;
+        deletePending.push_back(loadedEntities[index]);
+        RemoveExchangingWithLast(loadedEntities, index);
+        states[index] = eSlotState::NOT_LOADED;
 
-        DVASSERT(slotEntity == loadedEntity->GetParent());
-        slotEntity->RemoveNode(loadedEntity);
+        std::swap(components[index], components[loadedEntities.size()]);
+        std::swap(states[index], states[loadedEntities.size()]);
     }
+}
+
+SlotSystem::eSlotState SlotSystem::GetSlotState(const SlotComponent* component) const
+{
+    return states[GetComponentIndex(component)];
+}
+
+size_t SlotSystem::GetComponentIndex(const SlotComponent* component) const
+{
+    auto iter = std::find(components.begin(), components.end(), component);
+    DVASSERT(iter != components.end(), "[SlotSystem::GetSlotState] Input component doesn't atteched to current scene");
+
+    return std::distance(components.begin(), iter);
 }
 
 } // namespace DAVA

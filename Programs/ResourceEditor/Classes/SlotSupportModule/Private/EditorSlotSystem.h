@@ -16,7 +16,7 @@ public:
 
     EditorSlotSystem(DAVA::Scene* scene);
 
-    void ImmediateEvent(DAVA::Component* component, DAVA::uint32 event) override;
+    //void ImmediateEvent(DAVA::Component* component, DAVA::uint32 event) override;
 
     void RegisterEntity(DAVA::Entity* entity) override;
     void UnregisterEntity(DAVA::Entity* entity) override;
@@ -28,8 +28,6 @@ public:
 
 protected:
     friend class AttachEntityToSlot;
-
-    void SetScene(DAVA::Scene* scene) override;
 
     void DetachEntity(DAVA::SlotComponent* component, DAVA::Entity* entity);
     void AttachEntity(DAVA::SlotComponent* component, DAVA::Entity* entity, DAVA::FastName itemName);

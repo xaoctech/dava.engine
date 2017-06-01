@@ -14,12 +14,14 @@ class EntityForSlotLoader : public DAVA::SlotSystem::ExternalEntityLoader
 public:
     EntityForSlotLoader(DAVA::TArc::ContextAccessor* accessor);
 
-    DAVA::Entity* Load(const DAVA::FilePath& path) override;
+    void Load(DAVA::RefPtr<DAVA::Entity> rootEntity, const DAVA::FilePath& path, const DAVA::Function<void(DAVA::String&&)>& finishCallback) override;
     void AddEntity(DAVA::Entity* parent, DAVA::Entity* child) override;
-    void Process(DAVA::float32 delta) override
-    {
-    }
+    void Process(DAVA::float32 delta) override;
+
+protected:
+    void Reset() override;
 
 private:
     DAVA::TArc::ContextAccessor* accessor = nullptr;
+    DAVA::Vector<DAVA::Function<void(DAVA::String&&)>> callbacks;
 };
