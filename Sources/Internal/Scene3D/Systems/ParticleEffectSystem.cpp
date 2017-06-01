@@ -594,7 +594,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
         allowParticleGeneration &= group.visibleLod;
         if (allowParticleGeneration)
         {
-            if (group.layer->type == ParticleLayer::TYPE_SINGLE_PARTICLE)
+            if (group.layer->type == ParticleLayer::TYPE_SINGLE_PARTICLE || group.layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE)
             {
                 if (!group.head)
                 {

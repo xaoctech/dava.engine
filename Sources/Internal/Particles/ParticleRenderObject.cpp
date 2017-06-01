@@ -2,6 +2,7 @@
 
 #include "Render/DynamicBufferAllocator.h"
 #include "Render/Renderer.h"
+#include "Time/SystemTimer.h"
 
 namespace DAVA
 {
@@ -51,6 +52,9 @@ void ParticleRenderObject::PrepareToRender(Camera* camera)
 {
     if (!Renderer::GetOptions()->IsOptionEnabled(RenderOptions::PARTICLES_PREPARE_BUFFERS))
         return;
+
+    float dt = SystemTimer::GetFrameDelta();
+    float time = SystemTimer::GetFrameTimestamp();
 
     PrepareRenderData(camera);
 
@@ -114,16 +118,86 @@ void ParticleRenderObject::PrepareRenderData(Camera* camera)
         if ((!group.material) || (!group.head) || (group.layer->isDisabled) || (!group.layer->sprite))
             continue; //if no material was set up, or empty group, or layer rendering is disabled or sprite is removed - don't draw anyway
 
-        if (itGroupStart->material != itGroupCurr->material)
+        bool isLayerTypesNotTheSame = CheckIfSimpleParticle(itGroupStart->layer) != CheckIfSimpleParticle(itGroupCurr->layer);
+        
+        if (itGroupStart->material != itGroupCurr->material || isLayerTypesNotTheSame)
         {
-            AppendParticleGroup(itGroupStart, itGroupCurr, particlesInGroup, camera->GetDirection(), basisVectors);
+            if (CheckIfSimpleParticle(itGroupStart->layer))
+                AppendParticleGroup(itGroupStart, itGroupCurr, particlesInGroup, camera->GetDirection(), basisVectors);
+            else
+                AppendStripeParticle(itGroupStart, effectData->groups.end(), particlesInGroup, camera->GetDirection(), basisVectors);
             itGroupStart = itGroupCurr;
             particlesInGroup = 0;
         }
         particlesInGroup += CalculateParticleCount(*itGroupCurr);
     }
     if (itGroupStart != effectData->groups.end())
-        AppendParticleGroup(itGroupStart, effectData->groups.end(), particlesInGroup, camera->GetDirection(), basisVectors);
+    {
+        if (CheckIfSimpleParticle(itGroupStart->layer))
+            AppendParticleGroup(itGroupStart, effectData->groups.end(), particlesInGroup, camera->GetDirection(), basisVectors);
+        else
+            AppendStripeParticle(itGroupStart, effectData->groups.end(), particlesInGroup, camera->GetDirection(), basisVectors);
+    }
+}
+
+void ParticleRenderObject::UpdateStripe(Particle* particle, ParticleLayer* layer, Vector3* basisVectors)
+{
+    float dt = SystemTimer::GetFrameDelta();
+    float time = SystemTimer::GetFrameTimestamp();
+    auto& it = stripes.insert(std::make_pair(particle, StripeData()));
+    StripeData& data = it.first->second;
+    data.baseNode.position = particle->position;
+
+    data.spawnTimer += dt;
+    float32 spawnTime = 1.0f / layer->stripeRate;
+    bool shouldInsert = data.spawnTimer > spawnTime;
+    if (shouldInsert)
+        data.spawnTimer -= spawnTime;
+
+    for (auto& stripe : stripes)
+    {
+        StripeData& data = stripe.second;
+        for (auto& nodesMap : data.strpeNodes)
+        {
+            List<StripeNode>& nodes = nodesMap.second;
+            if (shouldInsert)
+                nodes.emplace_front(0.0f, data.baseNode.position, data.baseNode.speed, data.baseNode.right);
+
+            auto nodeIter = nodes.begin();
+            while (nodeIter != nodes.end())
+            {
+                nodeIter->lifeime += dt;
+                nodeIter->position += Vector3(0.0f, 0.0f, 1.0f) * layer->stripeSpeed * dt;
+                if (nodeIter->lifeime >= layer->stripeLifetime)
+                    nodes.erase(nodeIter++);
+                else
+                    ++nodeIter;
+            }
+        }
+    }
+
+    int32 basisCount = 0;
+    int32 basises[4]; //4 basises max per particle
+    bool worldAlign = (layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_WORLD_ALIGN) != 0;
+    if (layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING)
+        basises[basisCount++] = 0;
+    if (layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_X_FACING)
+        basises[basisCount++] = worldAlign ? 4 : 1;
+    if (layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_Y_FACING)
+        basises[basisCount++] = worldAlign ? 5 : 2;
+    if (layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_Z_FACING)
+        basises[basisCount++] = worldAlign ? 6 : 3;
+
+    for (int32 i = 0; i < basisCount; i++)
+    {
+        List<StripeNode>& currentNodes = data.strpeNodes.insert(std::make_pair(basises[i], List<StripeNode>())).first->second;
+        if (currentNodes.size() == 0)
+            continue;
+
+        Vector3 ex = basisVectors[basises[i] * 2];
+        for (auto& node : currentNodes)
+            node.right = ex;
+    }
 }
 
 uint32 ParticleRenderObject::GetVertexStride(ParticleLayer* layer)
@@ -172,9 +246,14 @@ uint32 ParticleRenderObject::SelectLayout(const ParticleLayer& layer)
     return layoutMap[key];
 }
 
-void ParticleRenderObject::AppendRenderBatch(NMaterial* material, uint32 particlesCount, uint32 vertexLayout, const DynamicBufferAllocator::AllocResultVB& vBuffer)
+void ParticleRenderObject::AppendRenderBatch(NMaterial* material, uint32 indexCount, uint32 vertexLayout, const DynamicBufferAllocator::AllocResultVB& vBuffer)
 {
-    DVASSERT(particlesCount);
+    AppendRenderBatch(material, indexCount, vertexLayout, vBuffer, DynamicBufferAllocator::AllocateQuadListIndexBuffer(indexCount));
+}
+
+void ParticleRenderObject::AppendRenderBatch(NMaterial* material, uint32 indexCount, uint32 vertexLayout, const DynamicBufferAllocator::AllocResultVB& vBuffer, const rhi::HIndexBuffer iBuffer)
+{
+    DVASSERT(indexCount);
 
     //now we need to create batch
     if (currRenderBatchId >= renderBatchCache.size())
@@ -193,8 +272,8 @@ void ParticleRenderObject::AppendRenderBatch(NMaterial* material, uint32 particl
     targetBatch->vertexCount = vBuffer.allocatedVertices;
     targetBatch->vertexBase = vBuffer.baseVertex;
 
-    targetBatch->indexCount = particlesCount * 6;
-    targetBatch->indexBuffer = DynamicBufferAllocator::AllocateQuadListIndexBuffer(particlesCount);
+    targetBatch->indexCount = indexCount;
+    targetBatch->indexBuffer = iBuffer;
     targetBatch->startIndex = 0;
     targetBatch->vertexLayoutId = vertexLayout;
     activeRenderBatchArray.push_back(targetBatch);
@@ -236,6 +315,8 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
         Particle* current = group.head;
         while (current)
         {
+            UpdateStripe(current, group.layer, basisVectors);
+
             float32* pT = group.layer->sprite->GetTextureVerts(current->frame);
             Color currColor = current->color;
             if (group.layer->colorOverLife)
@@ -252,7 +333,7 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
                 if (verteciesAppended + 4 > target.allocatedVertices)
                 {
                     uint32 vLayout = SelectLayout(*group.layer);
-                    AppendRenderBatch(group.material, verteciesAppended / 4, vLayout, target);
+                    AppendRenderBatch(group.material, verteciesAppended / 4 * 6, vLayout, target);
                     verteciesToAllocate -= verteciesAppended;
                     verteciesAppended = 0;
 
@@ -384,7 +465,139 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
 
     if (verteciesAppended)
     {
-        AppendRenderBatch(begin->material, verteciesAppended / 4, SelectLayout(*begin->layer), target);
+        AppendRenderBatch(begin->material, verteciesAppended / 4 * 6, SelectLayout(*begin->layer), target);
+    }
+}
+
+void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator begin, List<ParticleGroup>::iterator end, uint32 particlesCount, const Vector3& cameraDirection, Vector3* basisVectors)
+{
+    if (!particlesCount)
+        return; //hmmm?
+
+    float dt = SystemTimer::GetFrameDelta();
+    float time = SystemTimer::GetFrameTimestamp();
+
+    uint32 vertexStride = GetVertexStride(begin->layer); // If you change vertex layout, don't forget to change the stride.
+
+    uint32 verteciesAppended = 0;
+    uint32 particleStride = vertexStride * 4;
+    for (auto it = begin; it != end; ++it)
+    {
+        const ParticleGroup& group = *it;
+        if ((!group.material) || (!group.head) || (group.layer->isDisabled) || (!group.layer->sprite))
+            continue; //if no material was set up, or empty group, or layer rendering is disabled or sprite is removed - don't draw anyway
+
+                      //prepare basis indexes
+        int32 basisCount = 0;
+        int32 basises[4]; //4 basises max per particle
+        bool worldAlign = (group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_WORLD_ALIGN) != 0;
+        if (group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING)
+            basises[basisCount++] = 0;
+        if (group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_X_FACING)
+            basises[basisCount++] = worldAlign ? 4 : 1;
+        if (group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_Y_FACING)
+            basises[basisCount++] = worldAlign ? 5 : 2;
+        if (group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_Z_FACING)
+            basises[basisCount++] = worldAlign ? 6 : 3;
+
+        Particle* currentParticle = group.head;
+        while (currentParticle)
+        {
+            UpdateStripe(currentParticle, group.layer, basisVectors);
+
+            float32* pT = group.layer->sprite->GetTextureVerts(currentParticle->frame);
+            Color currColor = currentParticle->color;
+            if (group.layer->colorOverLife)
+                currColor = group.layer->colorOverLife->GetValue(currentParticle->life / currentParticle->lifeTime);
+            if (group.layer->alphaOverLife)
+                currColor.a = group.layer->alphaOverLife->GetValue(currentParticle->life / currentParticle->lifeTime);
+            uint32 color = rhi::NativeColorRGBA(currColor.r, currColor.g, currColor.b, Min(currColor.a, 1.0f));
+
+            StripeData& data = stripes.insert(std::make_pair(currentParticle, StripeData())).first->second;
+            StripeNode& base = data.baseNode;
+            uint32 iCount = 0;
+            for (int32 i = 0; i < basisCount; i++)
+            {
+                List<StripeNode>& nodeList = data.strpeNodes.insert(std::make_pair(basises[i], List<StripeNode>())).first->second;
+                if (nodeList.size() == 0)
+                    continue;
+                Vector3 basisVector = nodeList.front().right;
+
+                int32 vCount = static_cast<int32>((nodeList.size() + 1) * 2);
+                DynamicBufferAllocator::AllocResultVB vb = DynamicBufferAllocator::AllocateVertexBuffer(vertexStride, vCount);
+                iCount = (vCount - 2) * 3;
+                DynamicBufferAllocator::AllocResultIB ib = DynamicBufferAllocator::AllocateIndexBuffer(iCount);
+                Vector3 left = base.position + basisVector * group.layer->stripeStartSize * 0.5f;
+                Vector3 right = base.position - basisVector * group.layer->stripeStartSize * 0.5f;
+                Vector2 uv1(time*group.layer->stripeUScrollSpeed, time*group.layer->stripeVScrollSpeed);
+                Vector2 uv2(time*group.layer->stripeUScrollSpeed + 1.0f, time*group.layer->stripeVScrollSpeed);
+                float* current = reinterpret_cast<float*>(vb.data);
+                uint32 col = rhi::NativeColorRGBA(currentParticle->color.r, currentParticle->color.g, currentParticle->color.b, currentParticle->color.a);
+                float32* color = reinterpret_cast<float32*>(&col);
+                *(current++) = left.x;
+                *(current++) = left.y;
+                *(current++) = left.z;
+                *(current++) = uv1.x;
+                *(current++) = uv1.y;
+                *(current++) = *color;
+
+                *(current++) = right.x;
+                *(current++) = right.y;
+                *(current++) = right.z;
+                *(current++) = uv2.x;
+                *(current++) = uv2.y;
+                *(current++) = *color;
+
+                StripeNode* prevNode = &base;
+                float32 distance = 0.0f;
+                for (auto& node : nodeList)
+                {
+                    float32 lv = node.lifeime / group.layer->stripeLifetime;
+                    float32 size = Lerp(group.layer->stripeStartSize, group.layer->stripeSizeOverLife, lv);
+                    left = node.position + basisVector * size * 0.5f;
+                    right = node.position - basisVector * size * 0.5f;
+
+                    float32 alpha = Lerp(1.0f, group.layer->stripeAlphaOverLife, lv);
+                    col = rhi::NativeColorRGBA(currentParticle->color.r, currentParticle->color.g, currentParticle->color.b, currentParticle->color.a * alpha);
+
+
+                    distance += (prevNode->position - node.position).Length();
+                    float32 v = distance * group.layer->stripeTextureTile + time*group.layer->stripeVScrollSpeed;
+                    uv1.y = v;
+                    uv2.y = v;
+                    *(current++) = left.x;
+                    *(current++) = left.y;
+                    *(current++) = left.z;
+                    *(current++) = uv1.x;
+                    *(current++) = uv1.y;
+                    *(current++) = *color;
+
+                    *(current++) = right.x;
+                    *(current++) = right.y;
+                    *(current++) = right.z;
+                    *(current++) = uv2.x;
+                    *(current++) = uv2.y;
+                    *(current++) = *color;
+
+                    prevNode = &node;
+                }
+                uint16* currentI = ib.data;
+                for (uint32 i = 0; i < static_cast<uint32>(nodeList.size()); ++i)
+                {
+                    uint32 twoI = i * 2;
+                    *(currentI++) = twoI + 0;
+                    *(currentI++) = twoI + 3;
+                    *(currentI++) = twoI + 1;
+
+                    *(currentI++) = twoI + 0;
+                    *(currentI++) = twoI + 2;
+                    *(currentI++) = twoI + 3;
+                }
+
+                AppendRenderBatch(begin->material, iCount, SelectLayout(*begin->layer), vb, ib.buffer);
+            }
+            currentParticle = currentParticle->next;
+        }
     }
 }
 

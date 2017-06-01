@@ -202,11 +202,15 @@ CommandChangeParticlesStripeProperties::CommandChangeParticlesStripeProperties(D
     DVASSERT(layer != nullptr);
     if (layer != nullptr)
     {
-        oldParams.lifetime = layer->stripeLifetime;
-        oldParams.rate = layer->stripeRate;
-        oldParams.speed = layer->stripeSpeed;
-        oldParams.startSize = layer->stripeStartSize;
-        oldParams.sizeOverLife = layer->stripeSizeOverLife;
+        oldParams.stripeLifetime = layer->stripeLifetime;
+        oldParams.stripeRate = layer->stripeRate;
+        oldParams.stripeSpeed = layer->stripeSpeed;
+        oldParams.stripeStartSize = layer->stripeStartSize;
+        oldParams.stripeSizeOverLife = layer->stripeSizeOverLife;
+        oldParams.stripeTextureTile = layer->stripeTextureTile;
+        oldParams.stripeUScrollSpeed = layer->stripeUScrollSpeed;
+        oldParams.stripeVScrollSpeed = layer->stripeVScrollSpeed;
+        oldParams.stripeAlphaOverLife = layer->stripeAlphaOverLife;
     }
 }
 
@@ -229,10 +233,14 @@ void CommandChangeParticlesStripeProperties::ApplyParams(StripeParams& params)
 {
     if (layer != nullptr)
     {
-        layer->stripeLifetime = params.lifetime;
-        layer->stripeRate = params.rate;
-        layer->stripeSpeed = params.speed;
-        layer->stripeStartSize = params.startSize;
-        layer->stripeSizeOverLife = params.sizeOverLife;
+        layer->stripeLifetime = params.stripeLifetime;
+        layer->stripeRate = params.stripeRate;
+        layer->stripeSpeed = params.stripeSpeed;
+        layer->stripeStartSize = params.stripeStartSize;
+        layer->stripeSizeOverLife = params.stripeSizeOverLife;
+        layer->stripeTextureTile = params.stripeTextureTile;
+        layer->stripeUScrollSpeed = params.stripeUScrollSpeed;
+        layer->stripeVScrollSpeed = params.stripeVScrollSpeed;
+        layer->stripeAlphaOverLife = params.stripeAlphaOverLife;
     }
 }

@@ -42,7 +42,7 @@ struct ParticleVertex
 
 
 void ParticleStripeRenderObject::PrepareToRender(Camera* camera)
-{/*
+{
     static Vector3 basisVector;
     activeRenderBatchArray.clear();
 
@@ -175,7 +175,7 @@ void ParticleStripeRenderObject::PrepareToRender(Camera* camera)
     batch->startIndex = 0;
     batch->vertexLayoutId = layout;
 
-    activeRenderBatchArray.push_back(batch);*/
+    activeRenderBatchArray.push_back(batch);
 }
 
 void ParticleStripeRenderObject::BindDynamicParameters(Camera* camera)
