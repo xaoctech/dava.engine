@@ -6,6 +6,9 @@ namespace DAVA
 {
 class Engine;
 
+/** Spine module.
+Register UI systems and components for work with Spine.
+*/
 class SpineModule : public IModule
 {
 public:

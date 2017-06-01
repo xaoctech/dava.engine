@@ -4,6 +4,7 @@
 #include "UI/Spine/Private/SpineTrackEntry.h"
 
 #include <Debug/DVAssert.h>
+#include <Logger/Logger.h>
 #include <Render/2D/Systems/RenderSystem2D.h>
 #include <UI/UIControl.h>
 

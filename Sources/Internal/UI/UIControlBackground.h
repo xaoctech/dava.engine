@@ -37,7 +37,7 @@ public:
      */
     enum eDrawType
     {
-        DRAW_ALIGNED = 0, //!<Align sprite inside ronctrol rect.
+        DRAW_ALIGNED = 0, //!<Align sprite inside control rect.
         DRAW_SCALE_TO_RECT, //!<Scale sprite along the all control rect.
         DRAW_SCALE_PROPORTIONAL, //!<Scale sprite to fit both width and height into the control rect but with keeping sprite proportions.
         DRAW_SCALE_PROPORTIONAL_ONE, //!<Scale sprite to fit width or height into control rect but with keeping sprite proportions.
@@ -47,11 +47,11 @@ public:
         DRAW_STRETCH_BOTH, //!<Stretch sprite along the all control rect.
         DRAW_TILED, //!<Fill control with sprite tiles
         DRAW_TILED_MULTILAYER, //!uses for texture - tiled background (withot stretch caps!), stretch mask and contour using same stratch caps, and full back gradient overlay
-        DRAW_BATCH
+        DRAW_BATCH //<! Draw specified BatchDescriptor.
     };
 
     /**
-     \enum Type of the color inheritnce from the parent control.
+     \enum Type of the color inheritance from the parent control.
      */
     enum eColorInheritType
     {
@@ -219,7 +219,7 @@ public:
     virtual void Draw(const UIGeometricData& geometricData);
 
     /**
-     \brief Creates the absoulutely identic copy of the background.
+     \brief Creates the absolutely identical copy of the background.
      \returns UIControlBackground copy
      */
     UIControlBackground* Clone() const override;
