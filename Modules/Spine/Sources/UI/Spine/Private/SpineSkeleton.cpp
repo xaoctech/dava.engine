@@ -1,54 +1,13 @@
 #include "UI/Spine/Private/SpineSkeleton.h"
 
+#include "UI/Spine/Private/SpineBone.h"
+#include "UI/Spine/Private/SpineTrackEntry.h"
+
 #include <Debug/DVAssert.h>
-#include <FileSystem/File.h>
-#include <Logger/Logger.h>
-#include <Render/Texture.h>
 #include <Render/2D/Systems/RenderSystem2D.h>
-#include <Render/Image/Image.h>
-#include <Render/Image/ImageSystem.h>
 #include <UI/UIControl.h>
 
 #include <spine/spine.h>
-#include <spine/extension.h>
-
-void _spAtlasPage_createTexture(spAtlasPage* self, const char* path)
-{
-    using namespace DAVA;
-    FilePath imagePath = path;
-    Vector<Image*> images;
-    ImageSystem::Load(imagePath, images);
-    DVASSERT(images.size() > 0 && images[0] != nullptr, "Failed to load image!");
-    Texture* texture = Texture::CreateFromData(images[0], 0);
-    images[0]->Release();
-    DVASSERT(texture, "Failed to create texture!");
-    self->rendererObject = texture;
-    self->width = texture->GetWidth();
-    self->height = texture->GetHeight();
-}
-
-void _spAtlasPage_disposeTexture(spAtlasPage* self)
-{
-    using namespace DAVA;
-    if (self->rendererObject)
-    {
-        static_cast<Texture*>(self->rendererObject)->Release();
-        self->rendererObject = nullptr;
-    }
-}
-
-char* _spUtil_readFile(const char* path, int* length)
-{
-    using namespace DAVA;
-    File* fp = File::Create(path, File::READ | File::OPEN);
-    DVASSERT(fp != nullptr, "Failed to read file!");
-    *length = static_cast<uint32>(fp->GetSize());
-    char* bytes = MALLOC(char, *length);
-    fp->Read(bytes, *length);
-    fp->Release();
-
-    return bytes;
-}
 
 namespace DAVA
 {
@@ -61,7 +20,7 @@ static const int32 VERTICES_COMPONENTS_COUNT = 2;
 static const int32 TEXTURE_COMPONENTS_COUNT = 2;
 static const int32 COLOR_STRIDE = 1;
 
-int32 MaxVerticesCount(spSkeleton* mSkeleton)
+int32 MaxVerticesCount(spSkeleton* skeleton)
 {
     int32 max = 0;
 
@@ -73,9 +32,9 @@ int32 MaxVerticesCount(spSkeleton* mSkeleton)
         }
     };
 
-    for (int32 i = 0, n = mSkeleton->slotsCount; i < n; i++)
+    for (int32 i = 0, n = skeleton->slotsCount; i < n; i++)
     {
-        spSlot* slot = mSkeleton->drawOrder[i];
+        spSlot* slot = skeleton->drawOrder[i];
         if (!slot->attachment)
             continue;
 
@@ -100,45 +59,6 @@ int32 MaxVerticesCount(spSkeleton* mSkeleton)
 }
 }
 
-SpineTrackEntry::SpineTrackEntry(spTrackEntry* track)
-    : trackPtr(track)
-{
-    DVASSERT(trackPtr);
-}
-
-SpineBone::SpineBone(spBone* bone)
-    : bonePtr(bone)
-{
-    DVASSERT(bonePtr);
-}
-
-Vector2 SpineBone::GetPosition() const
-{
-    if (bonePtr)
-    {
-        return Vector2(bonePtr->worldX, -bonePtr->worldY);
-    }
-    return Vector2();
-}
-
-Vector2 SpineBone::GetScale() const
-{
-    if (bonePtr)
-    {
-        return Vector2(bonePtr->scaleX, bonePtr->scaleY);
-    }
-    return Vector2();
-}
-
-float32 SpineBone::GetAngle() const
-{
-    if (bonePtr)
-    {
-        return float32(-bonePtr->rotation);
-    }
-    return 0.f;
-}
-
 SpineSkeleton::SpineSkeleton()
 {
     batchDescriptor = new BatchDescriptor();
@@ -151,15 +71,15 @@ SpineSkeleton::~SpineSkeleton()
 
 void SpineSkeleton::ReleaseAtlas()
 {
-    if (mAtlas != nullptr)
+    if (atlas != nullptr)
     {
-        spAtlas_dispose(mAtlas);
-        mAtlas = nullptr;
+        spAtlas_dispose(atlas);
+        atlas = nullptr;
     }
 
-    if (mTexture)
+    if (currentTexture)
     {
-        mTexture = nullptr;
+        currentTexture = nullptr;
     }
 
     if (batchDescriptor)
@@ -170,28 +90,28 @@ void SpineSkeleton::ReleaseAtlas()
 
 void SpineSkeleton::ReleaseSkeleton()
 {
-    if (mSkeleton != nullptr)
+    if (skeleton != nullptr)
     {
-        spSkeletonData_dispose(mSkeleton->data);
-        spSkeleton_dispose(mSkeleton);
-        mSkeleton = nullptr;
+        spSkeletonData_dispose(skeleton->data);
+        spSkeleton_dispose(skeleton);
+        skeleton = nullptr;
     }
 
-    if (mWorldVertices != nullptr)
+    if (worldVertices != nullptr)
     {
-        FREE(mWorldVertices);
-        mWorldVertices = nullptr;
+        SafeDeleteArray(worldVertices);
+        worldVertices = nullptr;
     }
 
-    if (mState != nullptr)
+    if (state != nullptr)
     {
-        spAnimationStateData_dispose(mState->data);
-        spAnimationState_dispose(mState);
-        mState = nullptr;
+        spAnimationStateData_dispose(state->data);
+        spAnimationState_dispose(state);
+        state = nullptr;
     }
 
-    mAnimations.clear();
-    mSkins.clear();
+    animationsNames.clear();
+    skinsNames.clear();
 
     if (batchDescriptor)
     {
@@ -201,48 +121,62 @@ void SpineSkeleton::ReleaseSkeleton()
 
 void SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath)
 {
+    if (atlas != nullptr)
+    {
+        ReleaseAtlas();
+    }
+    if (skeleton != nullptr)
+    {
+        ReleaseSkeleton();
+    }
+
     if (!dataPath.Exists() || !atlasPath.Exists())
     {
         return;
     }
 
-    if (mAtlas != nullptr)
+    atlas = spAtlas_createFromFile(atlasPath.GetAbsolutePathname().c_str(), 0);
+    if (atlas == nullptr)
     {
-        ReleaseAtlas();
-    }
-
-    mAtlas = spAtlas_createFromFile(atlasPath.GetAbsolutePathname().c_str(), 0);
-    if (mAtlas == nullptr)
-    {
-        //DVASSERT(false, "Error reading atlas file!");
         Logger::Error("[SpineSkeleton::Load] Error reading atlas file!");
         return;
     }
-    mTexture = (Texture*)mAtlas->pages[0].rendererObject;
+    currentTexture = (Texture*)atlas->pages[0].rendererObject;
 
-    if (mSkeleton != nullptr)
-    {
-        ReleaseSkeleton();
-    }
-
-    spSkeletonJson* json = spSkeletonJson_create(mAtlas);
+    spSkeletonJson* json = spSkeletonJson_create(atlas);
     json->scale = 1.0f;
     spSkeletonData* skeletonData = spSkeletonJson_readSkeletonDataFile(json, dataPath.GetAbsolutePathname().c_str());
     if (skeletonData == nullptr)
     {
-        //DVASSERT(false, json->error ? json->error : "Error reading skeleton data file!");
         Logger::Error("[SpineSkeleton::Load] %s", json->error ? json->error : "Error reading skeleton data file!");
         spSkeletonJson_dispose(json);
+        if (atlas != nullptr)
+        {
+            ReleaseAtlas();
+        }
         return;
     }
     spSkeletonJson_dispose(json);
-    mSkeleton = spSkeleton_create(skeletonData);
+    skeleton = spSkeleton_create(skeletonData);
 
-    mWorldVertices = MALLOC(float32, SpinePrivate::MaxVerticesCount(mSkeleton));
+    worldVertices = new float32[SpinePrivate::MaxVerticesCount(skeleton)];
 
-    mState = spAnimationState_create(spAnimationStateData_create(mSkeleton->data));
-    DVASSERT(mState != nullptr);
-    mState->rendererObject = this;
+    state = spAnimationState_create(spAnimationStateData_create(skeleton->data));
+    DVASSERT(state != nullptr);
+    if (state == nullptr)
+    {
+        Logger::Error("[SpineSkeleton::Load] %s", "Error creating animation state!");
+        if (atlas != nullptr)
+        {
+            ReleaseAtlas();
+        }
+        if (skeleton != nullptr)
+        {
+            ReleaseSkeleton();
+        }
+        return;
+    }
+    state->rendererObject = this;
 
     auto animationCallback = [](spAnimationState* state, int32 trackIndex, spEventType type, spEvent* event, int32 loopCount)
     {
@@ -263,43 +197,43 @@ void SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath)
         }
     };
 
-    mState->listener = animationCallback;
+    state->listener = animationCallback;
 
-    mAnimations.clear();
-    int32 animCount = mSkeleton->data->animationsCount;
+    animationsNames.clear();
+    int32 animCount = skeleton->data->animationsCount;
     for (int32 i = 0; i < animCount; ++i)
     {
-        spAnimation* anim = mSkeleton->data->animations[i];
-        mAnimations.push_back(String(anim->name));
+        spAnimation* anim = skeleton->data->animations[i];
+        animationsNames.push_back(String(anim->name));
     }
 
-    mSkins.clear();
-    int32 skinsCount = mSkeleton->data->skinsCount;
+    skinsNames.clear();
+    int32 skinsCount = skeleton->data->skinsCount;
     for (int32 i = 0; i < skinsCount; ++i)
     {
-        spSkin* skin = mSkeleton->data->skins[i];
-        mSkins.push_back(String(skin->name));
+        spSkin* skin = skeleton->data->skins[i];
+        skinsNames.push_back(String(skin->name));
     }
 
     // Init initial state
-    spSkeleton_update(mSkeleton, 0);
-    spAnimationState_update(mState, 0);
-    spAnimationState_apply(mState, mSkeleton);
-    spSkeleton_updateWorldTransform(mSkeleton);
+    spSkeleton_update(skeleton, 0);
+    spAnimationState_update(state, 0);
+    spAnimationState_apply(state, skeleton);
+    spSkeleton_updateWorldTransform(skeleton);
 }
 
 void SpineSkeleton::Update(const float32 timeElapsed)
 {
-    if (!mSkeleton || !mState)
+    if (!skeleton || !state)
         return;
 
-    spSkeleton_update(mSkeleton, timeElapsed * mTimeScale);
-    spAnimationState_update(mState, timeElapsed * mTimeScale);
-    spAnimationState_apply(mState, mSkeleton);
-    spSkeleton_updateWorldTransform(mSkeleton);
+    spSkeleton_update(skeleton, timeElapsed * timeScale);
+    spAnimationState_update(state, timeElapsed * timeScale);
+    spAnimationState_apply(state, skeleton);
+    spSkeleton_updateWorldTransform(skeleton);
 
     // Draw
-    if (!mSkeleton || !mState || !mTexture)
+    if (!skeleton || !state || !currentTexture)
         return;
 
     Matrix3 transformMtx;
@@ -307,47 +241,47 @@ void SpineSkeleton::Update(const float32 timeElapsed)
 
     auto pushBatch = [&]()
     {
-        mPolygon.Transform(transformMtx);
+        verticesPolygon.Transform(transformMtx);
 
         BatchDescriptor batch;
         batch.singleColor = Color::White;
         batch.material = RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL; // background->GetMaterial();
-        batch.vertexCount = static_cast<uint32>(mPolygon.GetPointCount());
-        batch.indexCount = static_cast<uint32>(mSpriteClippedIndecex.size());
+        batch.vertexCount = static_cast<uint32>(verticesPolygon.GetPointCount());
+        batch.indexCount = static_cast<uint32>(clippedIndecex.size());
         batch.vertexStride = SpinePrivate::VERTICES_COMPONENTS_COUNT;
         batch.texCoordStride = SpinePrivate::TEXTURE_COMPONENTS_COUNT;
-        batch.vertexPointer = (float32*)mPolygon.GetPoints();
-        batch.texCoordPointer[0] = (float32*)mUVs.data();
-        batch.textureSetHandle = mTexture->singleTextureSet;
-        batch.samplerStateHandle = mTexture->samplerStateHandle;
-        batch.indexPointer = mSpriteClippedIndecex.data();
+        batch.vertexPointer = (float32*)verticesPolygon.GetPoints();
+        batch.texCoordPointer[0] = (float32*)verticesUVs.data();
+        batch.textureSetHandle = currentTexture->singleTextureSet;
+        batch.samplerStateHandle = currentTexture->samplerStateHandle;
+        batch.indexPointer = clippedIndecex.data();
         batch.colorStride = SpinePrivate::COLOR_STRIDE;
-        batch.colorPointer = mColors.data();
+        batch.colorPointer = verticesColors.data();
 
         batchDescriptor->operator=(batch);
     };
 
     auto clearData = [&]()
     {
-        mPolygon.Clear();
-        mUVs.clear();
-        mSpriteClippedIndecex.clear();
-        mColors.clear();
+        verticesPolygon.Clear();
+        verticesUVs.clear();
+        clippedIndecex.clear();
+        verticesColors.clear();
     };
 
     auto switchTexture = [&](Texture* texture)
     {
-        if (texture != mTexture)
+        if (texture != currentTexture)
         {
             pushBatch();
             clearData();
-            mTexture = texture;
+            currentTexture = texture;
         }
     };
 
-    for (int32 i = 0, n = mSkeleton->slotsCount; i < n; i++)
+    for (int32 i = 0, n = skeleton->slotsCount; i < n; i++)
     {
-        spSlot* slot = mSkeleton->drawOrder[i];
+        spSlot* slot = skeleton->drawOrder[i];
         Color color(slot->r, slot->g, slot->b, slot->a);
         if (slot->attachment)
         {
@@ -355,14 +289,14 @@ void SpineSkeleton::Update(const float32 timeElapsed)
             int32 verticesCount = 0;
             const uint16* triangles = nullptr;
             int32 trianglesCount = 0;
-            uint16 startIndex = mPolygon.GetPointCount();
+            uint16 startIndex = verticesPolygon.GetPointCount();
 
             switch (slot->attachment->type)
             {
             case SP_ATTACHMENT_REGION:
             {
                 spRegionAttachment* attachment = (spRegionAttachment*)slot->attachment;
-                spRegionAttachment_computeWorldVertices(attachment, slot->bone, mWorldVertices);
+                spRegionAttachment_computeWorldVertices(attachment, slot->bone, worldVertices);
 
                 switchTexture(reinterpret_cast<Texture*>(reinterpret_cast<spAtlasRegion*>(attachment->rendererObject)->page->rendererObject));
 
@@ -375,7 +309,7 @@ void SpineSkeleton::Update(const float32 timeElapsed)
             case SP_ATTACHMENT_MESH:
             {
                 spMeshAttachment* attachment = (spMeshAttachment*)slot->attachment;
-                spMeshAttachment_computeWorldVertices(attachment, slot, mWorldVertices);
+                spMeshAttachment_computeWorldVertices(attachment, slot, worldVertices);
 
                 switchTexture(reinterpret_cast<Texture*>(reinterpret_cast<spAtlasRegion*>(attachment->rendererObject)->page->rendererObject));
 
@@ -390,38 +324,27 @@ void SpineSkeleton::Update(const float32 timeElapsed)
                 break;
             }
 
-            //color *= background->GetDrawColor();
+            // TODO: mix colors from control
+            // TODO: store slot color for bone
 
             int32 verticesCountFinal = verticesCount / SpinePrivate::VERTICES_COMPONENTS_COUNT;
             for (int32 i = 0; i < verticesCountFinal; ++i)
             {
-                Vector2 point(mWorldVertices[i * SpinePrivate::VERTICES_COMPONENTS_COUNT], -mWorldVertices[i * SpinePrivate::VERTICES_COMPONENTS_COUNT + 1]);
+                Vector2 point(worldVertices[i * SpinePrivate::VERTICES_COMPONENTS_COUNT], -worldVertices[i * SpinePrivate::VERTICES_COMPONENTS_COUNT + 1]);
                 Vector2 uv(uvs[i * SpinePrivate::VERTICES_COMPONENTS_COUNT], uvs[i * SpinePrivate::VERTICES_COMPONENTS_COUNT + 1]);
 
-                mPolygon.AddPoint(point);
-                mUVs.push_back(uv);
-                mColors.push_back(color.GetRGBA());
+                verticesPolygon.AddPoint(point);
+                verticesUVs.push_back(uv);
+                verticesColors.push_back(color.GetRGBA());
             }
             for (int32 i = 0; i < trianglesCount; i++)
             {
-                mSpriteClippedIndecex.push_back(startIndex + triangles[i]);
+                clippedIndecex.push_back(startIndex + triangles[i]);
             }
         }
-
-        //for (const auto & bonePair : mBones)
-        //{
-        //    if (slot->bone->data->name == bonePair.first)
-        //    {
-        //        pushBatch();
-        //        clearData();
-        //        bonePair.second->GetBackground()->SetColor(Color(r, g, b, a));
-        //        bonePair.second->SetVisibilityFlag(false); // will be restored in SystemDraw
-        //        break;
-        //    }
-        //}
     }
 
-    if (mPolygon.GetPointCount() > 0)
+    if (verticesPolygon.GetPointCount() > 0)
     {
         pushBatch();
         clearData();
@@ -430,9 +353,9 @@ void SpineSkeleton::Update(const float32 timeElapsed)
 
 void SpineSkeleton::ResetSkeleton()
 {
-    if (mSkeleton)
+    if (skeleton)
     {
-        spSkeleton_setToSetupPose(mSkeleton);
+        spSkeleton_setToSetupPose(skeleton);
     }
 }
 
@@ -443,97 +366,93 @@ BatchDescriptor* SpineSkeleton::GetRenderBatch() const
 
 const Vector<String>& SpineSkeleton::GetAvailableAnimationsNames() const
 {
-    return mAnimations;
+    return animationsNames;
 }
 
 std::shared_ptr<SpineTrackEntry> SpineSkeleton::SetAnimation(int32 trackIndex, const String& name, bool loop)
 {
-    if (mSkeleton != nullptr && mState != nullptr)
+    if (skeleton != nullptr && state != nullptr)
     {
-        spAnimation* animation = spSkeletonData_findAnimation(mSkeleton->data, name.c_str());
+        spAnimation* animation = spSkeletonData_findAnimation(skeleton->data, name.c_str());
         if (!animation)
         {
             Logger::Error("[SpineSkeleton] Animation '%s' was not found!", name.c_str());
             return nullptr;
         }
-        return std::make_shared<SpineTrackEntry>(spAnimationState_setAnimation(mState, trackIndex, animation, loop));
+        return std::make_shared<SpineTrackEntry>(spAnimationState_setAnimation(state, trackIndex, animation, loop));
     }
     return nullptr;
 }
 
 std::shared_ptr<SpineTrackEntry> SpineSkeleton::AddAnimation(int32 trackIndex, const String& name, bool loop, float32 delay)
 {
-    if (mSkeleton != nullptr && mState != nullptr)
+    if (skeleton != nullptr && state != nullptr)
     {
-        spAnimation* animation = spSkeletonData_findAnimation(mSkeleton->data, name.c_str());
+        spAnimation* animation = spSkeletonData_findAnimation(skeleton->data, name.c_str());
         if (!animation)
         {
             Logger::Error("[SpineSkeleton] Animation '%s' was not found!", name.c_str());
             return nullptr;
         }
-        return std::make_shared<SpineTrackEntry>(spAnimationState_addAnimation(mState, trackIndex, animation, loop, delay));
+        return std::make_shared<SpineTrackEntry>(spAnimationState_addAnimation(state, trackIndex, animation, loop, delay));
     }
     return nullptr;
 }
 
 std::shared_ptr<SpineTrackEntry> SpineSkeleton::GetTrack(int32 trackIndex)
 {
-    if (mState != nullptr)
+    if (state != nullptr)
     {
-        return std::make_shared<SpineTrackEntry>(spAnimationState_getCurrent(mState, trackIndex));
+        return std::make_shared<SpineTrackEntry>(spAnimationState_getCurrent(state, trackIndex));
     }
     return nullptr;
 }
 
 void SpineSkeleton::SetAnimationMix(const String& fromAnimation, const String& toAnimation, float32 duration)
 {
-    if (mState != nullptr)
+    if (state != nullptr)
     {
-        spAnimationStateData_setMixByName(mState->data, fromAnimation.c_str(), toAnimation.c_str(), duration);
+        spAnimationStateData_setMixByName(state->data, fromAnimation.c_str(), toAnimation.c_str(), duration);
     }
 }
 
 void SpineSkeleton::ClearTracks()
 {
-    if (mState != nullptr)
+    if (state != nullptr)
     {
-        spAnimationState_clearTracks(mState);
+        spAnimationState_clearTracks(state);
     }
 }
 
 void SpineSkeleton::CleatTrack(int32 trackIndex)
 {
-    if (mState != nullptr)
+    if (state != nullptr)
     {
-        spAnimationState_clearTrack(mState, trackIndex);
+        spAnimationState_clearTrack(state, trackIndex);
     }
 }
 
-void SpineSkeleton::SetTimeScale(float32 timeScale)
+void SpineSkeleton::SetTimeScale(float32 timeScale_)
 {
-    mTimeScale = timeScale;
+    timeScale = timeScale_;
 }
 
 float32 SpineSkeleton::GetTimeScale() const
 {
-    return mTimeScale;
+    return timeScale;
 }
 
 bool SpineSkeleton::SetSkin(const String& skinName)
 {
-    if (mSkeleton != nullptr)
+    if (skeleton != nullptr)
     {
-        int32 skin = spSkeleton_setSkinByName(mSkeleton, skinName.c_str());
+        int32 skin = spSkeleton_setSkinByName(skeleton, skinName.c_str());
         if (skin != 0)
         {
-            if (mWorldVertices != nullptr)
+            SafeDeleteArray(worldVertices);
+            if (skeleton != nullptr)
             {
-                FREE(mWorldVertices);
-                mWorldVertices = nullptr;
-            }
-            if (mSkeleton != nullptr)
-            {
-                mWorldVertices = MALLOC(float32, SpinePrivate::MaxVerticesCount(mSkeleton));
+                worldVertices = new float32[SpinePrivate::MaxVerticesCount(skeleton)];
             }
             return true;
         }
@@ -541,16 +460,25 @@ bool SpineSkeleton::SetSkin(const String& skinName)
     return false;
 }
 
+String SpineSkeleton::GetSkinName() const
+{
+    if (skeleton != nullptr && skeleton->skin != nullptr)
+    {
+        return String(skeleton->skin->name);
+    }
+    return String();
+}
+
 const Vector<String>& SpineSkeleton::GetAvailableSkinsNames() const
 {
-    return mSkins;
+    return skinsNames;
 }
 
 std::shared_ptr<SpineBone> SpineSkeleton::FindBone(const String& boneName)
 {
-    if (mSkeleton)
+    if (skeleton)
     {
-        return std::make_shared<SpineBone>(spSkeleton_findBone(mSkeleton, boneName.c_str()));
+        return std::make_shared<SpineBone>(spSkeleton_findBone(skeleton, boneName.c_str()));
     }
     return nullptr;
 }

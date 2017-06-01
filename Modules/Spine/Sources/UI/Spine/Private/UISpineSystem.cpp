@@ -1,8 +1,11 @@
 #include "UI/Spine/UISpineSystem.h"
 
 #include "UI/Spine/Private/SpineSkeleton.h"
+#include "UI/Spine/Private/SpineBone.h"
+#include "UI/Spine/Private/SpineTrackEntry.h"
 #include "UI/Spine/UISpineAttachControlsToBonesComponent.h"
 #include "UI/Spine/UISpineComponent.h"
+#include "UI/Spine/UISpineSingleComponent.h"
 
 #include <Render/2D/Systems/RenderSystem2D.h>
 #include <UI/Components/UIComponent.h>
@@ -106,7 +109,11 @@ void UISpineSystem::Process(float32 elapsedTime)
             SpineNode& node = it->second;
 
             node.skeleton->SetTimeScale(node.spine->GetTimeScale());
-            node.skeleton->SetSkin(node.spine->GetSkinName());
+            if (!node.skeleton->SetSkin(node.spine->GetSkinName()))
+            {
+                // Skin not found, restore current skin's name
+                node.spine->SetSkinName(node.skeleton->GetSkinName());
+            }
             switch (node.spine->GetAnimationState())
             {
             case UISpineComponent::PLAYED:
@@ -116,6 +123,8 @@ void UISpineSystem::Process(float32 elapsedTime)
                 {
                     node.skeleton->ClearTracks();
                     node.skeleton->ResetSkeleton();
+                    // Skin not found, clear animation's name
+                    node.spine->SetSkinName("");
                 }
             }
             break;
@@ -313,12 +322,5 @@ void UISpineSystem::BuildBoneLinks(SpineNode& node)
             }
         }
     }
-}
-
-void UISpineSingleComponent::Clear()
-{
-    spineModified.clear();
-    spineNeedReload.clear();
-    spineBonesModified.clear();
 }
 }

@@ -1,5 +1,6 @@
 #include "UI/Spine/UISpineAttachControlsToBonesComponent.h"
 
+#include "UI/Spine/UISpineSingleComponent.h"
 #include "UI/Spine/UISpineSystem.h"
 
 #include <Reflection/ReflectionRegistrator.h>
