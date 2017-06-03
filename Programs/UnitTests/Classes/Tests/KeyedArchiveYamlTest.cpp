@@ -26,6 +26,12 @@ using namespace DAVA;
 #define MATRIX3MAPID "mapNameMatrix3"
 #define MATRIX4MAPID "mapNameMatrix4"
 #define KEYEDARCHMAPID "mapNameKArch"
+#define INT8MAPID "mapNameInt8"
+#define UINT8MAPID "mapNameUInt8"
+#define INT16MAPID "mapNameInt16"
+#define UINT16MAPID "mapNameUInt16"
+#define FLOAT64MAPID "mapNameFloat64"
+#define COLORMAPID "mapNameColor"
 #define TESTKEY "testKey"
 
 DAVA_TESTCLASS (KeyedArchiveYamlTest)
@@ -76,6 +82,11 @@ DAVA_TESTCLASS (KeyedArchiveYamlTest)
         TEST_VERIFY(*loadedArchive->GetVariant(MATRIX3MAPID) == *loadedArchiveFromGeneratedFile->GetVariant(MATRIX3MAPID));
         TEST_VERIFY(*loadedArchive->GetVariant(MATRIX4MAPID) == *loadedArchiveFromGeneratedFile->GetVariant(MATRIX4MAPID));
         TEST_VERIFY(*loadedArchive->GetVariant(KEYEDARCHMAPID) == *loadedArchiveFromGeneratedFile->GetVariant(KEYEDARCHMAPID));
+        TEST_VERIFY(*loadedArchive->GetVariant(INT8MAPID) == *loadedArchiveFromGeneratedFile->GetVariant(INT8MAPID));
+        TEST_VERIFY(*loadedArchive->GetVariant(UINT8MAPID) == *loadedArchiveFromGeneratedFile->GetVariant(UINT8MAPID));
+        TEST_VERIFY(*loadedArchive->GetVariant(INT16MAPID) == *loadedArchiveFromGeneratedFile->GetVariant(INT16MAPID));
+        TEST_VERIFY(*loadedArchive->GetVariant(UINT16MAPID) == *loadedArchiveFromGeneratedFile->GetVariant(UINT16MAPID));
+        TEST_VERIFY(*loadedArchive->GetVariant(COLORMAPID) == *loadedArchiveFromGeneratedFile->GetVariant(COLORMAPID));
 
         testArchive->SetFloat(TESTKEY, 999.0f);
         const VariantType* variantFloatPtr = testArchive->GetVariant(TESTKEY);
