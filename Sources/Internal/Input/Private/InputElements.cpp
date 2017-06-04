@@ -199,7 +199,7 @@ const InputElementInfo& GetInputElementInfo(eInputElements element)
     else
     {
         DVASSERT(false);
-        static const InputElementInfo emptyInfo;
+        static InputElementInfo emptyInfo;
         return emptyInfo;
     }
 }

@@ -82,10 +82,10 @@ DAVA_TESTCLASS (DigitalElementStateTestClass)
 
         // Check comparisons
 
-        TEST_VERIFY(stateReleased == stateReleased);
-        TEST_VERIFY(stateJustReleased == stateJustReleased);
-        TEST_VERIFY(statePressed == statePressed);
-        TEST_VERIFY(stateJustPressed == stateJustPressed);
+        TEST_VERIFY(stateReleased == stateReleased); //-V501
+        TEST_VERIFY(stateJustReleased == stateJustReleased); //-V501
+        TEST_VERIFY(statePressed == statePressed); //-V501
+        TEST_VERIFY(stateJustPressed == stateJustPressed); //-V501
 
         TEST_VERIFY(stateReleased != statePressed);
         TEST_VERIFY(statePressed != stateReleased);
