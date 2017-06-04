@@ -169,7 +169,7 @@ uint32 KeyboardImpl::ConvertDavaScancodeToNativeScancode(eInputElements elementI
     return static_cast<uint32>(nativeScancode);
 }
 
-WideString KeyboardImpl::TranslateElementToWideString(eInputElements elementId)
+String KeyboardImpl::TranslateElementToUTF8String(eInputElements elementId)
 {
     for (size_t i = 0; i < COUNT_OF(nativeScancodeToDavaScancode); ++i)
     {
@@ -206,7 +206,7 @@ WideString KeyboardImpl::TranslateElementToWideString(eInputElements elementId)
             else
             {
                 NSString* string = [NSString stringWithCharacters:unicodeString length:realLength];
-                return WideStringFromNSString(string);
+                return StringFromNSString(string);
             }
         }
     }

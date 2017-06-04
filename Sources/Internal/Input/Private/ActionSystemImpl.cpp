@@ -154,6 +154,11 @@ bool ActionSystemImpl::CompareDigitalStates(const DigitalElementState& requiredS
 
 bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
 {
+    if (event.deviceType == eInputDeviceTypes::KEYBOARD && event.keyboardEvent.charCode > 0)
+    {
+        return false;
+    }
+
     InputElementInfo eventElementInfo = GetInputElementInfo(event.elementId);
 
     if (eventElementInfo.type == eInputElementTypes::ANALOG)

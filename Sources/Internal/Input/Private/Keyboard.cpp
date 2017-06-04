@@ -54,10 +54,10 @@ DigitalElementState Keyboard::GetKeyState(eInputElements key) const
     return GetDigitalElementState(key);
 }
 
-WideString Keyboard::TranslateElementToWideString(eInputElements elementId) const
+String Keyboard::TranslateElementToUTF8String(eInputElements elementId) const
 {
     DVASSERT(IsElementSupported(elementId));
-    return impl->TranslateElementToWideString(elementId);
+    return impl->TranslateElementToUTF8String(elementId);
 }
 
 uint32 Keyboard::GetKeyNativeScancode(eInputElements elementId) const

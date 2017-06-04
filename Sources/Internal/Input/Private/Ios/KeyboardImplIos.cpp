@@ -20,9 +20,9 @@ uint32 KeyboardImpl::ConvertDavaScancodeToNativeScancode(eInputElements nativeSc
     return 0;
 }
 
-WideString KeyboardImpl::TranslateElementToWideString(eInputElements elementId)
+String KeyboardImpl::TranslateElementToUTF8String(eInputElements elementId)
 {
-    return UTF8Utils::EncodeToWideString(GetInputElementInfo(elementId).name);
+    return GetInputElementInfo(elementId).name;
 }
 
 } // namespace Private

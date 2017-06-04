@@ -56,7 +56,7 @@ uint32 KeyboardImpl::ConvertDavaScancodeToNativeScancode(eInputElements elementI
     return static_cast<uint32>(nativeScancode);
 }
 
-WideString KeyboardImpl::TranslateElementToWideString(eInputElements elementId)
+String KeyboardImpl::TranslateElementToUTF8String(eInputElements elementId)
 {
     uint32 nativeScancode = ConvertDavaScancodeToNativeScancode(elementId);
     wchar_t character = TranslateNativeScancodeToWChar(nativeScancode);
@@ -64,11 +64,11 @@ WideString KeyboardImpl::TranslateElementToWideString(eInputElements elementId)
     if (character == 0 || std::iswspace(character))
     {
         // Non printable
-        return UTF8Utils::EncodeToWideString(GetInputElementInfo(elementId).name);
+        return GetInputElementInfo(elementId).name;
     }
     else
     {
-        return WideString(1, character);
+        return UTF8Utils::EncodeToUTF8(WideString(1, character));
     }
 }
 

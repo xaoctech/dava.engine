@@ -13,7 +13,7 @@ class KeyboardImpl final
 public:
     eInputElements ConvertNativeScancodeToDavaScancode(uint32 nativeScancode);
     uint32 ConvertDavaScancodeToNativeScancode(eInputElements nativeScancode);
-    WideString TranslateElementToWideString(eInputElements elementId);
+    String TranslateElementToUTF8String(eInputElements elementId);
 
 private:
     wchar_t TranslateNativeScancodeToWChar(uint32 nativeScancode);

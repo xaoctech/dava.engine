@@ -702,27 +702,27 @@ void InputSystemTest::OnInputListeningEnded(bool cancelled, DAVA::Vector<DAVA::I
     {
         // Combine input elements into a string
 
-        std::wstringstream wstringStream;
+        std::stringstream stringStream;
         for (size_t i = 0; i < input.size(); ++i)
         {
             if (input[i].deviceType == eInputDeviceTypes::KEYBOARD)
             {
-                WideString repr = GetEngineContext()->deviceManager->GetKeyboard()->TranslateElementToWideString(input[i].elementId);
-                wstringStream << repr;
+                String repr = GetEngineContext()->deviceManager->GetKeyboard()->TranslateElementToUTF8String(input[i].elementId);
+                stringStream << repr;
             }
             else
             {
                 String repr = GetInputElementInfo(input[i].elementId).name;
-                wstringStream << repr.c_str();
+                stringStream << repr.c_str();
             }
 
             if (i != input.size() - 1)
             {
-                wstringStream << " + ";
+                stringStream << " + ";
             }
         }
 
-        inputListenerResultField->SetText(wstringStream.str());
+        inputListenerResultField->SetUtf8Text(stringStream.str());
     }
 }
 
