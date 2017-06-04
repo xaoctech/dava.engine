@@ -853,16 +853,53 @@ LRESULT WindowBackend::OnPointerUpdate(uint32 pointerId, int32 x, int32 y)
 
 LRESULT WindowBackend::OnKeyEvent(uint32 key, uint32 scanCode, bool isPressed, bool isExtended, bool isRepeated)
 {
-    // TODO: reimplement shift buttons workaround
-
-    if (isExtended)
+    // Handle shifts separately to workaround some windows behaviours (see comment inside of OnShiftKeyEvent)
+    if (key == VK_SHIFT)
     {
-        scanCode = 0xE000 | scanCode;
+        return OnShiftKeyEvent();
     }
+    else
+    {
+        if (isExtended)
+        {
+            scanCode = 0xE000 | scanCode;
+        }
+
+        eModifierKeys modifierKeys = GetModifierKeys();
+        MainDispatcherEvent::eType type = isPressed ? MainDispatcherEvent::KEY_DOWN : MainDispatcherEvent::KEY_UP;
+        mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, type, scanCode, modifierKeys, isRepeated));
+        return 0;
+    }
+}
+
+LRESULT WindowBackend::OnShiftKeyEvent()
+{
+    // Windows does not send event with separate WM_KEYUP for second shift if first one is still pressed
+    // So if it's a shift key event, request and store every shift state explicitly
+
+    static const uint32 shiftKeyScancodes[2] = { 0x2A, 0x36 };
+
+    const bool lshiftPressed = ::GetKeyState(VK_LSHIFT) & 0x8000 ? true : false;
+    const bool rshiftPressed = ::GetKeyState(VK_RSHIFT) & 0x8000 ? true : false;
+    const bool currentShiftStates[2] = { lshiftPressed, rshiftPressed };
 
     eModifierKeys modifierKeys = GetModifierKeys();
-    MainDispatcherEvent::eType type = isPressed ? MainDispatcherEvent::KEY_DOWN : MainDispatcherEvent::KEY_UP;
-    mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, type, scanCode, modifierKeys, isRepeated));
+
+    for (int i = 0; i < 2; ++i)
+    {
+        if (lastShiftStates[i] != currentShiftStates[i])
+        {
+            const MainDispatcherEvent::eType eventType = currentShiftStates[i] ? MainDispatcherEvent::KEY_DOWN : MainDispatcherEvent::KEY_UP;
+            mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, eventType, shiftKeyScancodes[i], modifierKeys, false));
+        }
+        else if (currentShiftStates[i] == true)
+        {
+            mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_DOWN, shiftKeyScancodes[i], modifierKeys, true));
+        }
+
+        lastShiftStates[i] = currentShiftStates[i];
+    }
+
     return 0;
 }
 

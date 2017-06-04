@@ -291,24 +291,63 @@ void WindowNativeBridge::OnAcceleratorKeyActivated(::Windows::UI::Core::CoreDisp
     case CoreAcceleratorKeyEventType::KeyUp:
     case CoreAcceleratorKeyEventType::SystemKeyUp:
     {
-        // TODO: Return shift key workaround (probably inside of KeyboardDevice)
-
-        eModifierKeys modifierKeys = GetModifierKeys();
-        CorePhysicalKeyStatus status = arg->KeyStatus;
-        uint32 key = status.ScanCode;
-
-        if (status.IsExtendedKey)
+        // Handle shifts separately to workaround some windows behaviours (see comment inside of OnShiftKeyActivated)
+        if (arg->VirtualKey == VirtualKey::Shift)
         {
-            key |= 0xE000;
+            OnShiftKeyActivated();
         }
+        else
+        {
+            eModifierKeys modifierKeys = GetModifierKeys();
+            CorePhysicalKeyStatus status = arg->KeyStatus;
+            uint32 key = status.ScanCode;
 
-        MainDispatcherEvent::eType type = isPressed ? MainDispatcherEvent::KEY_DOWN : MainDispatcherEvent::KEY_UP;
-        mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, type, key, modifierKeys, status.WasKeyDown));
+            if (status.IsExtendedKey)
+            {
+                key |= 0xE000;
+            }
+
+            MainDispatcherEvent::eType type = isPressed ? MainDispatcherEvent::KEY_DOWN : MainDispatcherEvent::KEY_UP;
+            mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, type, key, modifierKeys, status.WasKeyDown));
+        }
 
         break;
     }
     default:
         break;
+    }
+}
+
+void WindowNativeBridge::OnShiftKeyActivated()
+{
+    // Windows does not send event with separate keyup for second shift if first one is still pressed
+    // So if it's a shift key event, request and store every shift state explicitly
+
+    using ::Windows::System::VirtualKey;
+    using namespace ::Windows::UI::Core;
+
+    static const uint32 shiftKeyScancodes[2] = { 0x2A, 0x36 };
+
+    CoreWindow ^ coreWindow = xamlWindow->CoreWindow;
+    const bool lshiftPressed = static_cast<bool>(coreWindow->GetKeyState(VirtualKey::LeftShift) & CoreVirtualKeyStates::Down);
+    const bool rshiftPressed = static_cast<bool>(coreWindow->GetKeyState(VirtualKey::RightShift) & CoreVirtualKeyStates::Down);
+    const bool currentShiftStates[2] = { lshiftPressed, rshiftPressed };
+
+    eModifierKeys modifierKeys = GetModifierKeys();
+
+    for (int i = 0; i < 2; ++i)
+    {
+        if (lastShiftStates[i] != currentShiftStates[i])
+        {
+            const MainDispatcherEvent::eType eventType = currentShiftStates[i] ? MainDispatcherEvent::KEY_DOWN : MainDispatcherEvent::KEY_UP;
+            mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, eventType, shiftKeyScancodes[i], modifierKeys, false));
+        }
+        else if (currentShiftStates[i] == true)
+        {
+            mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_DOWN, shiftKeyScancodes[i], modifierKeys, true));
+        }
+
+        lastShiftStates[i] = currentShiftStates[i];
     }
 }
 
