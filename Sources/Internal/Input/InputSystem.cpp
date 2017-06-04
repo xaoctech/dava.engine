@@ -15,7 +15,7 @@ InputSystem* InputSystem::Instance()
 
 InputSystem::InputSystem(Engine* engine)
 {
-    engine->endFrame.Connect(MakeFunction(this, &InputSystem::EndFrame));
+    engine->endFrame.Connect(this, &InputSystem::EndFrame);
 }
 
 InputSystem::~InputSystem() = default;
