@@ -2,6 +2,7 @@
 #define __DAVAENGINE_SEMAPHORE_LITE_H__
 
 #include "Semaphore.h"
+#include "Base/BaseTypes.h"
 #include "Debug/DVAssert.h"
 #include <atomic>
 

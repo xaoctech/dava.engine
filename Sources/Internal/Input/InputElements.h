@@ -139,7 +139,7 @@ enum eInputElements : uint32
 
     // Mouse
 
-    MOUSE_LBUTTON = 140, // Range from 1 to 139 is reserved for keyboard
+    MOUSE_LBUTTON = 1024, // Range from 1 to 1023 is reserved for keyboard
     MOUSE_RBUTTON,
     MOUSE_MBUTTON,
     MOUSE_EXT1BUTTON,
@@ -149,7 +149,7 @@ enum eInputElements : uint32
 
     // Gamepad
 
-    GAMEPAD_START = 160, // Range from 140 to 159 is reserved for mouse
+    GAMEPAD_START = 1024 * 2, // Range from 1024 to 2047 is reserved for mouse
     GAMEPAD_A,
     GAMEPAD_B,
     GAMEPAD_X,
@@ -170,7 +170,7 @@ enum eInputElements : uint32
 
     // Touch
 
-    TOUCH_CLICK0 = 200, // Range from 160 to 200 is reserved for gamepad
+    TOUCH_CLICK0 = 1024 * 3, // Range from 2048 to 3071 is reserved for gamepad
     TOUCH_CLICK1,
     TOUCH_CLICK2,
     TOUCH_CLICK3,
@@ -194,7 +194,7 @@ enum eInputElements : uint32
 
     // This element is used for sending UIEvent indicating back navigation
     // TODO: make clients to use Window::backNavigation event only!
-    BACK = 240, // Range from 200 to 239 is reserved for touch screen
+    BACK = 1024 * 4, // Range from 3071 to 4095 is reserved for touch screen
 
     // Counters
 
