@@ -469,6 +469,12 @@ public:
 
     static const char* GenKeyFromIndex(uint32 index);
 
+    /**
+     \brief Assignment operator
+     \returns Returns reference to this
+     */
+    KeyedArchive& operator=(const KeyedArchive& arc);
+
 private:
     template <typename T, typename M>
     void SetVariant(const String& key, const T& value, M SetVariantMethod)
