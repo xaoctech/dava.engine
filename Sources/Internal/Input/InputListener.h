@@ -51,7 +51,7 @@ enum class eInputListenerModes
 	\code
 	GetEngineContext()->inputListener->Listen(eInputListenerModes::DIGITAL_SINGLE_WITH_MODIFIERS, MakeFunction(OnInputListeningEnded));
 
-	void OnInputListeningEnded(bool cancelled, DAVA::Vector<DAVA::InputEvent> input)
+	void OnInputListeningEnded(bool cancelled, const DAVA::Vector<DAVA::InputEvent>& input)
 	{
 		if (!cancelled)
 		{
