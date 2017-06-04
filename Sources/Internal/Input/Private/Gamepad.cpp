@@ -41,6 +41,91 @@ Gamepad::~Gamepad()
     Engine::Instance()->endFrame.Disconnect(endFrameConnectionToken);
 }
 
+DigitalElementState Gamepad::GetStartButtonState() const
+{
+    return GetDigitalElementState(eInputElements::GAMEPAD_START);
+}
+
+DigitalElementState Gamepad::GetAButtonState() const
+{
+    return GetDigitalElementState(eInputElements::GAMEPAD_A);
+}
+
+DigitalElementState Gamepad::GetBButtonState() const
+{
+    return GetDigitalElementState(eInputElements::GAMEPAD_B);
+}
+
+DigitalElementState Gamepad::GetXButtonState() const
+{
+    return GetDigitalElementState(eInputElements::GAMEPAD_X);
+}
+
+DigitalElementState Gamepad::GetYButtonState() const
+{
+    return GetDigitalElementState(eInputElements::GAMEPAD_Y);
+}
+
+DigitalElementState Gamepad::GetLeftDPadButtonState() const
+{
+    return GetDigitalElementState(eInputElements::GAMEPAD_DPAD_LEFT);
+}
+
+DigitalElementState Gamepad::GetRightDPadButtonState() const
+{
+    return GetDigitalElementState(eInputElements::GAMEPAD_DPAD_RIGHT);
+}
+
+DigitalElementState Gamepad::GetUpDPadButtonState() const
+{
+    return GetDigitalElementState(eInputElements::GAMEPAD_DPAD_UP);
+}
+
+DigitalElementState Gamepad::GetDownDPadButtonState() const
+{
+    return GetDigitalElementState(eInputElements::GAMEPAD_DPAD_DOWN);
+}
+
+DigitalElementState Gamepad::GetLeftThumbButtonState() const
+{
+    return GetDigitalElementState(eInputElements::GAMEPAD_LTHUMB);
+}
+
+DigitalElementState Gamepad::GetRightThumbButtonState() const
+{
+    return GetDigitalElementState(eInputElements::GAMEPAD_RTHUMB);
+}
+
+DigitalElementState Gamepad::GetLeftShoulderButtonState() const
+{
+    return GetDigitalElementState(eInputElements::GAMEPAD_LSHOULDER);
+}
+
+DigitalElementState Gamepad::GetRightShoulderButtonState() const
+{
+    return GetDigitalElementState(eInputElements::GAMEPAD_RSHOULDER);
+}
+
+AnalogElementState Gamepad::GetLeftTriggerAxis() const
+{
+    return GetAnalogElementState(eInputElements::GAMEPAD_AXIS_LTRIGGER);
+}
+
+AnalogElementState Gamepad::GetRightTriggerAxis() const
+{
+    return GetAnalogElementState(eInputElements::GAMEPAD_AXIS_RTRIGGER);
+}
+
+AnalogElementState Gamepad::GetLeftThumbAxis() const
+{
+    return GetAnalogElementState(eInputElements::GAMEPAD_AXIS_LTHUMB);
+}
+
+AnalogElementState Gamepad::GetRightThumbAxis() const
+{
+    return GetAnalogElementState(eInputElements::GAMEPAD_AXIS_RTHUMB);
+}
+
 bool Gamepad::IsElementSupported(eInputElements elementId) const
 {
     DVASSERT(IsGamepadAxisInputElement(elementId) || IsGamepadButtonInputElement(elementId));

@@ -23,11 +23,128 @@ struct MainDispatcherEvent;
 */
 class Gamepad final : public InputDevice
 {
-    friend class DeviceManager;
+    friend class DeviceManager; // For creation
     friend class Private::GamepadImpl;
 
 public:
-    // TODO: helper methods for accessing buttons and analog elements
+    /**
+        Return state of a start button.
+
+        \note It's essentialy a shorter and more readable placeholder for `GetDigitalElementState(eInputElements::GAMEPAD_START)`.
+     */
+    DigitalElementState GetStartButtonState() const;
+
+    /**
+        Return state of an A button.
+
+        \note It's essentialy a shorter and more readable placeholder for `GetDigitalElementState(eInputElements::GAMEPAD_A)`.
+     */
+    DigitalElementState GetAButtonState() const;
+
+    /**
+        Return state of a B button.
+
+        \note It's essentialy a shorter and more readable placeholder for `GetDigitalElementState(eInputElements::GAMEPAD_B)`.
+     */
+    DigitalElementState GetBButtonState() const;
+
+    /**
+        Return state of a X button.
+
+        \note It's essentialy a shorter and more readable placeholder for `GetDigitalElementState(eInputElements::GAMEPAD_X)`.
+     */
+    DigitalElementState GetXButtonState() const;
+
+    /**
+        Return state of an Y button.
+
+        \note It's essentialy a shorter and more readable placeholder for `GetDigitalElementState(eInputElements::GAMEPAD_Y)`.
+     */
+    DigitalElementState GetYButtonState() const;
+
+    /**
+        Return state of a DPad left button.
+
+        \note It's essentialy a shorter and more readable placeholder for `GetDigitalElementState(eInputElements::GAMEPAD_DPAD_LEFT)`.
+     */
+    DigitalElementState GetLeftDPadButtonState() const;
+
+    /**
+        Return state of a DPad right button.
+
+        \note It's essentialy a shorter and more readable placeholder for `GetDigitalElementState(eInputElements::GAMEPAD_DPAD_RIGHT)`.
+     */
+    DigitalElementState GetRightDPadButtonState() const;
+
+    /**
+        Return state of a DPad up button.
+
+        \note It's essentialy a shorter and more readable placeholder for `GetDigitalElementState(eInputElements::GAMEPAD_DPAD_UP)`.
+     */
+    DigitalElementState GetUpDPadButtonState() const;
+
+    /**
+        Return state of a DPad down button.
+
+        \note It's essentialy a shorter and more readable placeholder for `GetDigitalElementState(eInputElements::GAMEPAD_DPAD_DOWN)`.
+     */
+    DigitalElementState GetDownDPadButtonState() const;
+
+    /**
+        Return state of a left thumb button.
+
+        \note It's essentialy a shorter and more readable placeholder for `GetDigitalElementState(eInputElements::GAMEPAD_LTHUMB)`.
+     */
+    DigitalElementState GetLeftThumbButtonState() const;
+
+    /**
+        Return state of a right thumb button.
+
+        \note It's essentialy a shorter and more readable placeholder for `GetDigitalElementState(eInputElements::GAMEPAD_RTHUMB)`.
+     */
+    DigitalElementState GetRightThumbButtonState() const;
+
+    /**
+        Return state of a left shoulder button.
+
+        \note It's essentialy a shorter and more readable placeholder for `GetDigitalElementState(eInputElements::GAMEPAD_LSHOULDER)`.
+     */
+    DigitalElementState GetLeftShoulderButtonState() const;
+
+    /**
+        Return state of a right shoulder button.
+
+        \note It's essentialy a shorter and more readable placeholder for `GetDigitalElementState(eInputElements::GAMEPAD_RSHOULDER)`.
+     */
+    DigitalElementState GetRightShoulderButtonState() const;
+
+    /**
+        Return left trigger position.
+
+        \note It's essentialy a shorter and more readable placeholder for `GetAnalogElementState(eInputElements::GAMEPAD_AXIS_LTRIGGER)`.
+     */
+    AnalogElementState GetLeftTriggerAxis() const;
+
+    /**
+        Return right trigger position.
+
+        \note It's essentialy a shorter and more readable placeholder for `GetAnalogElementState(eInputElements::GAMEPAD_AXIS_RTRIGGER)`.
+     */
+    AnalogElementState GetRightTriggerAxis() const;
+
+    /**
+        Return left thumb position.
+
+        \note It's essentialy a shorter and more readable placeholder for `GetAnalogElementState(eInputElements::GAMEPAD_AXIS_LTHUMB)`.
+     */
+    AnalogElementState GetLeftThumbAxis() const;
+
+    /**
+        Return right thumb position.
+
+        \note It's essentialy a shorter and more readable placeholder for `GetAnalogElementState(eInputElements::GAMEPAD_AXIS_RTHUMB)`.
+     */
+    AnalogElementState GetRightThumbAxis() const;
 
     // InputDevice overrides
 
