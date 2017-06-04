@@ -4,6 +4,8 @@
 
 #include <Math/MathHelpers.h>
 #include <Render/2D/Sprite.h>
+#include <Input/Keyboard.h>
+#include <DeviceManager/DeviceManager.h>
 #include <UI/Layouts/UIAnchorComponent.h>
 #include <UI/Update/UIUpdateComponent.h>
 
@@ -470,19 +472,22 @@ void ViewSceneScreen::ProcessUserInput(DAVA::float32 timeElapsed)
     {
         using namespace DAVA;
 
-        KeyboardDevice& keyboard = InputSystem::Instance()->GetKeyboard();
-        //     if (keyboard.IsKeyPressed(Key::NUMPAD6))
-        //         cursorPosition.x += timeElapsed / 16.f;
-        //     if (keyboard.IsKeyPressed(Key::NUMPAD4))
-        //         cursorPosition.x -= timeElapsed / 16.f;
-        //     if (keyboard.IsKeyPressed(Key::NUMPAD8))
-        //         cursorPosition.y += timeElapsed / 16.f;
-        //     if (keyboard.IsKeyPressed(Key::NUMPAD2))
-        //         cursorPosition.y -= timeElapsed / 16.f;
-        if (keyboard.IsKeyPressed(Key::SPACE))
-            wasdSystem->SetMoveSpeed(30.f);
-        else
-            wasdSystem->SetMoveSpeed(10.f);
+        Keyboard* keyboard = GetEngineContext()->deviceManager->GetKeyboard();
+        if (keyboard != nullptr)
+        {
+            //     if (keyboard.IsKeyPressed(Key::NUMPAD6))
+            //         cursorPosition.x += timeElapsed / 16.f;
+            //     if (keyboard.IsKeyPressed(Key::NUMPAD4))
+            //         cursorPosition.x -= timeElapsed / 16.f;
+            //     if (keyboard.IsKeyPressed(Key::NUMPAD8))
+            //         cursorPosition.y += timeElapsed / 16.f;
+            //     if (keyboard.IsKeyPressed(Key::NUMPAD2))
+            //         cursorPosition.y -= timeElapsed / 16.f;
+            if (keyboard->GetKeyState(eInputElements::KB_SPACE).IsPressed())
+                wasdSystem->SetMoveSpeed(30.f);
+            else
+                wasdSystem->SetMoveSpeed(10.f);
+        }
 
         Camera* camera = scene->GetDrawCamera();
         Vector2 joypadPos = moveJoyPAD->GetDigitalPosition();
