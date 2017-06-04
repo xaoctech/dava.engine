@@ -201,7 +201,7 @@ String KeyboardImpl::TranslateElementToUTF8String(eInputElements elementId)
             if (realLength == 0)
             {
                 // Non printable
-                return UTF8Utils::EncodeToWideString(GetInputElementInfo(elementId).name);
+                return GetInputElementInfo(elementId).name;
             }
             else
             {
@@ -212,7 +212,7 @@ String KeyboardImpl::TranslateElementToUTF8String(eInputElements elementId)
     }
 
     DVASSERT(false);
-    return WideString(L"");
+    return String("");
 }
 
 } // namespace Private
