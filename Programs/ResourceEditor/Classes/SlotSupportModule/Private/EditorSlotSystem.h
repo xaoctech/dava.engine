@@ -16,13 +16,11 @@ public:
 
     EditorSlotSystem(DAVA::Scene* scene);
 
-    //void ImmediateEvent(DAVA::Component* component, DAVA::uint32 event) override;
+    void AddEntity(DAVA::Entity* entity) override;
+    void RemoveEntity(DAVA::Entity* entity) override;
 
-    void RegisterEntity(DAVA::Entity* entity) override;
-    void UnregisterEntity(DAVA::Entity* entity) override;
-
-    void RegisterComponent(DAVA::Entity* entity, DAVA::Component* component) override;
-    void UnregisterComponent(DAVA::Entity* entity, DAVA::Component* component) override;
+    void AddComponent(DAVA::Entity* entity, DAVA::Component* component) override;
+    void RemoveComponent(DAVA::Entity* entity, DAVA::Component* component) override;
 
     void Process(DAVA::float32 timeElapsed) override;
 

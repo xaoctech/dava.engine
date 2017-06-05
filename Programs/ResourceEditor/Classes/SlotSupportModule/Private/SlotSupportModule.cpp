@@ -60,7 +60,7 @@ void SlotSupportModule::OnContextCreated(DAVA::TArc::DataContext* context)
     context->CreateData(std::unique_ptr<DAVA::TArc::DataNode>(slotSupportData));
     slotSupportData->system.reset(new EditorSlotSystem(scene.Get()));
 
-    scene->AddSystem(slotSupportData->system.get(), 0, Scene::SCENE_SYSTEM_REQUIRE_PROCESS, scene->slotSystem);
+    scene->AddSystem(slotSupportData->system.get(), MAKE_COMPONENT_MASK(Component::SLOT_COMPONENT), Scene::SCENE_SYSTEM_REQUIRE_PROCESS, scene->slotSystem);
     scene->slotSystem->SetExternalEntityLoader(std::shared_ptr<SlotSystem::ExternalEntityLoader>(new EntityForSlotLoader(GetAccessor())));
 }
 

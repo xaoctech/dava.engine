@@ -23,48 +23,40 @@ EditorSlotSystem::EditorSlotSystem(DAVA::Scene* scene)
 {
 }
 
-void EditorSlotSystem::RegisterEntity(DAVA::Entity* entity)
+void EditorSlotSystem::AddEntity(DAVA::Entity* entity)
 {
-    if (entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT) > 0)
+    DVASSERT(entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT) > 0);
+    entities.push_back(entity);
+    pendingOnInitialize.insert(entity);
+}
+
+void EditorSlotSystem::RemoveEntity(DAVA::Entity* entity)
+{
+    DVASSERT(entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT) > 0);
+    DAVA::FindAndRemoveExchangingWithLast(entities, entity);
+    pendingOnInitialize.erase(entity);
+}
+
+void EditorSlotSystem::AddComponent(DAVA::Entity* entity, DAVA::Component* component)
+{
+    DVASSERT(component->GetType() == DAVA::Component::SLOT_COMPONENT);
+    pendingOnInitialize.insert(entity);
+    if (entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT) == 1)
     {
+#if defined(__DAVAENGINE_DEBUG__)
+        DVASSERT(std::find(entities.begin(), entities.end(), entity) == entities.end());
+#endif
         entities.push_back(entity);
-        pendingOnInitialize.insert(entity);
     }
 }
 
-void EditorSlotSystem::UnregisterEntity(DAVA::Entity* entity)
+void EditorSlotSystem::RemoveComponent(DAVA::Entity* entity, DAVA::Component* component)
 {
-    if (entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT) > 0)
+    DVASSERT(component->GetType() == DAVA::Component::SLOT_COMPONENT);
+    if (entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT) == 1)
     {
         DAVA::FindAndRemoveExchangingWithLast(entities, entity);
         pendingOnInitialize.erase(entity);
-    }
-}
-
-void EditorSlotSystem::RegisterComponent(DAVA::Entity* entity, DAVA::Component* component)
-{
-    if (component->GetType() == DAVA::Component::SLOT_COMPONENT)
-    {
-        pendingOnInitialize.insert(entity);
-        if (entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT) == 1)
-        {
-#if defined(__DAVAENGINE_DEBUG__)
-            DVASSERT(std::find(entities.begin(), entities.end(), entity) == entities.end());
-#endif
-            entities.push_back(entity);
-        }
-    }
-}
-
-void EditorSlotSystem::UnregisterComponent(DAVA::Entity* entity, DAVA::Component* component)
-{
-    if (component->GetType() == DAVA::Component::SLOT_COMPONENT)
-    {
-        if (entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT) == 1)
-        {
-            DAVA::FindAndRemoveExchangingWithLast(entities, entity);
-            pendingOnInitialize.erase(entity);
-        }
     }
 }
 
