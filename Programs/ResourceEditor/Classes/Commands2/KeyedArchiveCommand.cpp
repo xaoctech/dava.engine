@@ -99,23 +99,3 @@ void KeyeadArchiveSetValueCommand::Redo()
     }
 }
 
-KeyedArchiveReplaceValueCommand::KeyedArchiveReplaceValueCommand(DAVA::KeyedArchive* archive, const DAVA::String& key, const DAVA::VariantType& val)
-    : KeyeadArchiveSetValueCommand(archive, key, val)
-{
-}
-
-void KeyedArchiveReplaceValueCommand::Undo()
-{
-    if (nullptr != archive && archive->IsKeyExists(key))
-    {
-        archive->SetVariant(key, oldVal);
-    }
-}
-
-void KeyedArchiveReplaceValueCommand::Redo()
-{
-    if (nullptr != archive && archive->IsKeyExists(key))
-    {
-        archive->SetVariant(key, newVal);
-    }
-}

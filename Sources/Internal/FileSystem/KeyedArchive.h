@@ -288,7 +288,6 @@ public:
 		\brief Function to set variable in archive. Variant value is copying inside this method
 		\param[in] key string key
 		\param[in] value we want to set for this key
-        TODO : This method should be removed after KeyedArchive starts store VariantType by value
 	 */
     void SetVariant(const String& key, const VariantType& value);
     void SetVariant(const String& key, VariantType&& value);
@@ -477,12 +476,12 @@ public:
 
 private:
     template <typename T, typename M>
-    void SetVariant(const String& key, const T& value, M SetVariantMethod)
+    void SetVariant(const String& key, const T& value, M setVariantMethod)
     {
         auto iter = objectMap.find(key);
         if (iter != objectMap.end())
         {
-            (iter->second->*SetVariantMethod)(value);
+            (iter->second->*setVariantMethod)(value);
         }
         else
         {

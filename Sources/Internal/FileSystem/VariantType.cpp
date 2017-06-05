@@ -76,20 +76,15 @@ const Array<VariantType::PairTypeName, VariantType::TYPES_COUNT> VariantType::va
 } };
 
 VariantType::VariantType()
-    : type(TYPE_NONE)
-    , pointerValue(nullptr)
 {
 }
 
 VariantType::VariantType(const VariantType& var)
-    : pointerValue(nullptr)
 {
     SetVariant(var);
 }
 
 VariantType::VariantType(VariantType&& value)
-    : type(TYPE_NONE)
-    , pointerValue(nullptr)
 {
     type = value.type;
     int64Value = value.int64Value;
@@ -97,175 +92,125 @@ VariantType::VariantType(VariantType&& value)
 }
 
 VariantType::VariantType(bool value)
-    : type(TYPE_NONE)
-    , pointerValue(nullptr)
 {
     SetBool(value);
 }
 
 VariantType::VariantType(int8 value)
-    : type(TYPE_NONE)
-    , pointerValue(nullptr)
 {
     SetInt8(value);
 }
 
 VariantType::VariantType(uint8 value)
-    : type(TYPE_NONE)
-    , pointerValue(nullptr)
 {
     SetUInt8(value);
 }
 
 VariantType::VariantType(int16 value)
-    : type(TYPE_NONE)
-    , pointerValue(nullptr)
 {
     SetInt16(value);
 }
 VariantType::VariantType(uint16 value)
-    : type(TYPE_NONE)
-    , pointerValue(nullptr)
 {
     SetUInt16(value);
 }
 
 VariantType::VariantType(int32 value)
-    : type(TYPE_NONE)
-    , pointerValue(nullptr)
 {
     SetInt32(value);
 }
 
 VariantType::VariantType(uint32 value)
-    : type(TYPE_NONE)
-    , pointerValue(nullptr)
 {
     SetUInt32(value);
 }
 
 VariantType::VariantType(float32 value)
-    : type(TYPE_NONE)
-    , pointerValue(nullptr)
 {
     SetFloat(value);
 }
 
 VariantType::VariantType(float64 value)
-    : type(TYPE_NONE)
-    , pointerValue(nullptr)
 {
     SetFloat64(value);
 }
 
 VariantType::VariantType(const String& value)
-    : type(TYPE_NONE)
-    , pointerValue(nullptr)
 {
     SetString(value);
 }
 
 VariantType::VariantType(const WideString& value)
-    : type(TYPE_NONE)
-    , pointerValue(nullptr)
 {
     SetString(UTF8Utils::EncodeToUTF8(value));
 }
 
 VariantType::VariantType(const uint8* _array, int32 arraySizeInBytes)
-    : type(TYPE_NONE)
-    , pointerValue(nullptr)
 {
     SetByteArray(_array, arraySizeInBytes);
 }
 
 VariantType::VariantType(KeyedArchive* archive)
-    : type(TYPE_NONE)
-    , pointerValue(nullptr)
 {
     SetKeyedArchive(archive);
 }
 
 VariantType::VariantType(const int64& value)
-    : type(TYPE_NONE)
-    , pointerValue(nullptr)
 {
     SetInt64(value);
 }
 
 VariantType::VariantType(const uint64& value)
-    : type(TYPE_NONE)
-    , pointerValue(nullptr)
 {
     SetUInt64(value);
 }
 
 VariantType::VariantType(const Vector2& value)
-    : type(TYPE_NONE)
-    , pointerValue(nullptr)
 {
     SetVector2(value);
 }
 
 VariantType::VariantType(const Vector3& value)
-    : type(TYPE_NONE)
-    , pointerValue(nullptr)
 {
     SetVector3(value);
 }
 
 VariantType::VariantType(const Vector4& value)
-    : type(TYPE_NONE)
-    , pointerValue(nullptr)
 {
     SetVector4(value);
 }
 
 VariantType::VariantType(const Matrix2& value)
-    : type(TYPE_NONE)
-    , pointerValue(nullptr)
 {
     SetMatrix2(value);
 }
 
 VariantType::VariantType(const Matrix3& value)
-    : type(TYPE_NONE)
-    , pointerValue(nullptr)
 {
     SetMatrix3(value);
 }
 
 VariantType::VariantType(const Matrix4& value)
-    : type(TYPE_NONE)
-    , pointerValue(nullptr)
 {
     SetMatrix4(value);
 }
 
 VariantType::VariantType(const Color& value)
-    : type(TYPE_NONE)
-    , pointerValue(nullptr)
 {
     SetColor(value);
 }
 
 VariantType::VariantType(const FastName& value)
-    : type(TYPE_NONE)
-    , pointerValue(nullptr)
 {
     SetFastName(value);
 }
 
 VariantType::VariantType(const AABBox3& value)
-    : type(TYPE_NONE)
-    , pointerValue(nullptr)
 {
     SetAABBox3(value);
 }
 
 VariantType::VariantType(const FilePath& value)
-    : type(TYPE_NONE)
-    , pointerValue(nullptr)
 {
     SetFilePath(value);
 }
@@ -306,7 +251,7 @@ void VariantType::SetInt16(int16 value)
 {
     ReleasePointerIfNotCurrentType(TYPE_INT16);
     type = TYPE_INT16;
-    floatValue = value;
+    int16Value = value;
 }
 
 void VariantType::SetUInt16(uint16 value)
@@ -360,13 +305,12 @@ void VariantType::SetByteArray(const uint8* array, int32 arraySizeInBytes)
         ReleasePointer();
         auto vec = new Vector<uint8>(array, array + arraySizeInBytes);
         pointerValue = static_cast<void*>(vec);
+        type = TYPE_BYTE_ARRAY;
     }
     else
     {
         (static_cast<Vector<uint8>*>(pointerValue))->assign(array, array + arraySizeInBytes);
     }
-
-    type = TYPE_BYTE_ARRAY;
 }
 
 void VariantType::SetKeyedArchive(KeyedArchive* archive)
@@ -375,7 +319,7 @@ void VariantType::SetKeyedArchive(KeyedArchive* archive)
     {
         ReleasePointer();
 
-        if (archive)
+        if (nullptr != archive)
         {
             pointerValue = new KeyedArchive(*archive);
         }
@@ -383,12 +327,13 @@ void VariantType::SetKeyedArchive(KeyedArchive* archive)
         {
             pointerValue = new KeyedArchive();
         }
+        type = TYPE_KEYED_ARCHIVE;
     }
     else
     {
         KeyedArchive* pointerKeyedArchive = static_cast<KeyedArchive*>(pointerValue);
 
-        if (archive)
+        if (nullptr != archive)
         {
             *pointerKeyedArchive = *archive;
         }
@@ -397,8 +342,6 @@ void VariantType::SetKeyedArchive(KeyedArchive* archive)
             pointerKeyedArchive->DeleteAllKeys();
         }
     }
-
-    type = TYPE_KEYED_ARCHIVE;
 }
 
 void VariantType::SetInt64(const int64& value)
