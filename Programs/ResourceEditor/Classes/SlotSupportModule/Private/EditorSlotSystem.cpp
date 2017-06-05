@@ -106,8 +106,16 @@ void EditorSlotSystem::Process(DAVA::float32 timeElapsed)
             Entity* loadedEntity = slotSystem->LookUpLoadedEntity(component);
             if (loadedEntity == nullptr)
             {
-                DAVA::RefPtr<Entity> newEntity(new Entity());
-                slotSystem->AttachEntityToSlot(component, newEntity.Get(), emptyItemName);
+                Vector<SlotSystem::ItemsCache::Item> items = slotSystem->GetItems(component->GetConfigFilePath());
+                if (items.empty())
+                {
+                    DAVA::RefPtr<Entity> newEntity(new Entity());
+                    slotSystem->AttachEntityToSlot(component, newEntity.Get(), emptyItemName);
+                }
+                else
+                {
+                    slotSystem->AttachItemToSlot(component, items.front().itemName);
+                }
             }
         }
     }
