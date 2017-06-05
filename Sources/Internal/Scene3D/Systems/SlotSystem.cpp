@@ -471,7 +471,7 @@ Entity* SlotSystem::AttachItemToSlot(SlotComponent* component, FastName itemName
                                        if (message.empty() == false)
                                        {
                                            // "Component" was found in "components". This means that component still in system and pointer is valid
-                                           Logger::Error("Loading item %s to slot %s failed: ", itemName.c_str(), component->GetSlotName(), message.c_str());
+                                           Logger::Error("Loading item %s to slot %s failed: %s", itemName.c_str(), component->GetSlotName(), message.c_str());
                                            states[index] = eSlotState::LOADING_FAILED;
                                        }
                                        else
