@@ -69,10 +69,10 @@ DAVA_TESTCLASS (SlotSystemTests)
             SlotComponent* alfaComponent = new SlotComponent();
             alfaComponent->SetSlotName(FastName("TestSlot"));
             alfaComponent->SetConfigFilePath(FilePath("~res:/TestData/SlotSystemTest/slotConfig.yaml"));
-            alfaComponent->SetAttachmentTransform(Matrix4::MakeRotation(Vector3(1.0f, 0.0f, 0.5f), 0.3f) * Matrix4::MakeTranslation(Vector3(30.0f, 25.0f, 0.0f)));
             aEntity->AddComponent(alfaComponent);
             components.push_back(alfaComponent);
             testScene->AddNode(aEntity.Get());
+            testScene->slotSystem->SetAttachmentTransform(alfaComponent, Matrix4::MakeRotation(Vector3(1.0f, 0.0f, 0.5f), 0.3f) * Matrix4::MakeTranslation(Vector3(30.0f, 25.0f, 0.0f)));
 
         }
 
@@ -83,17 +83,17 @@ DAVA_TESTCLASS (SlotSystemTests)
             SlotComponent* betaComponent = new SlotComponent();
             betaComponent->SetSlotName(FastName("TestSlot"));
             betaComponent->SetConfigFilePath(FilePath("~res:/TestData/SlotSystemTest/slotConfig.xml"));
-            betaComponent->SetAttachmentTransform(Matrix4::MakeRotation(Vector3(1.0f, 0.0f, 0.5f), 0.3f) * Matrix4::MakeTranslation(Vector3(35.0f, 25.0f, 0.0f)));
             bEntity->AddComponent(betaComponent);
             components.push_back(betaComponent);
 
             SlotComponent* gammaComponent = new SlotComponent();
             gammaComponent->SetSlotName(FastName("SecondTestSlot"));
             gammaComponent->SetConfigFilePath(FilePath("~res:/TestData/SlotSystemTest/slotConfig.xml"));
-            gammaComponent->SetAttachmentTransform(Matrix4::MakeRotation(Vector3(2.0f, 0.0f, 0.5f), 0.3f) * Matrix4::MakeTranslation(Vector3(35.0f, 25.0f, 0.0f)));
             bEntity->AddComponent(gammaComponent);
             components.push_back(gammaComponent);
             testScene->AddNode(bEntity.Get());
+            testScene->slotSystem->SetAttachmentTransform(betaComponent, Matrix4::MakeRotation(Vector3(1.0f, 0.0f, 0.5f), 0.3f) * Matrix4::MakeTranslation(Vector3(35.0f, 25.0f, 0.0f)));
+            testScene->slotSystem->SetAttachmentTransform(gammaComponent, Matrix4::MakeRotation(Vector3(2.0f, 0.0f, 0.5f), 0.3f) * Matrix4::MakeTranslation(Vector3(35.0f, 25.0f, 0.0f)));
         }
 
         for (SlotComponent* component : components)
@@ -124,9 +124,9 @@ DAVA_TESTCLASS (SlotSystemTests)
         SlotComponent* alfaComponent = new SlotComponent();
         alfaComponent->SetSlotName(FastName("TestSlot"));
         alfaComponent->SetConfigFilePath(FilePath("~res:/TestData/SlotSystemTest/slotConfig.yaml"));
-        alfaComponent->SetAttachmentTransform(Matrix4::MakeRotation(Vector3(1.0f, 0.0f, 0.5f), 0.3f) * Matrix4::MakeTranslation(Vector3(30.0f, 25.0f, 0.0f)));
         aEntity->AddComponent(alfaComponent);
         testScene->AddNode(aEntity.Get());
+        testScene->slotSystem->SetAttachmentTransform(alfaComponent, Matrix4::MakeRotation(Vector3(1.0f, 0.0f, 0.5f), 0.3f) * Matrix4::MakeTranslation(Vector3(30.0f, 25.0f, 0.0f)));
 
         testScene->slotSystem->AttachItemToSlot(testScene.Get(), FastName("TestSlot"), FastName("TestItem1"));
 
@@ -147,9 +147,9 @@ DAVA_TESTCLASS (SlotSystemTests)
         SlotComponent* alfaComponent = new SlotComponent();
         alfaComponent->SetSlotName(FastName("TestSlot"));
         alfaComponent->SetConfigFilePath(FilePath("~res:/TestData/SlotSystemTest/slotConfig.yaml"));
-        alfaComponent->SetAttachmentTransform(Matrix4::MakeRotation(Vector3(1.0f, 0.0f, 0.5f), 0.3f) * Matrix4::MakeTranslation(Vector3(30.0f, 25.0f, 0.0f)));
         aEntity->AddComponent(alfaComponent);
         testScene->AddNode(aEntity.Get());
+        testScene->slotSystem->SetAttachmentTransform(alfaComponent, Matrix4::MakeRotation(Vector3(1.0f, 0.0f, 0.5f), 0.3f) * Matrix4::MakeTranslation(Vector3(30.0f, 25.0f, 0.0f)));
 
         testScene->slotSystem->AttachItemToSlot(testScene.Get(), FastName("TestSlot"), FastName("TestItem1"));
 
@@ -168,9 +168,9 @@ DAVA_TESTCLASS (SlotSystemTests)
         SlotComponent* alfaComponent = new SlotComponent();
         alfaComponent->SetSlotName(FastName("TestSlot"));
         alfaComponent->SetConfigFilePath(FilePath("~res:/TestData/SlotSystemTest/slotConfig.yaml"));
-        alfaComponent->SetAttachmentTransform(Matrix4::MakeRotation(Vector3(1.0f, 0.0f, 0.5f), 0.3f) * Matrix4::MakeTranslation(Vector3(30.0f, 25.0f, 0.0f)));
         aEntity->AddComponent(alfaComponent);
         testScene->AddNode(aEntity.Get());
+        testScene->slotSystem->SetAttachmentTransform(alfaComponent, Matrix4::MakeRotation(Vector3(1.0f, 0.0f, 0.5f), 0.3f) * Matrix4::MakeTranslation(Vector3(30.0f, 25.0f, 0.0f)));
 
         testScene->slotSystem->AttachItemToSlot(testScene.Get(), FastName("TestSlot"), FastName("TestItem1"));
 
@@ -198,7 +198,8 @@ DAVA_TESTCLASS (SlotSystemTests)
             Entity* aEntity = testScene->GetChild(0);
             TEST_VERIFY(aEntity->GetComponentCount(Component::SLOT_COMPONENT) == 1);
             SlotComponent* alfaComponent = static_cast<SlotComponent*>(aEntity->GetComponent(Component::SLOT_COMPONENT, 0));
-            TEST_VERIFY(testScene->slotSystem->GetSlotState(alfaComponent) == SlotSystem::eSlotState::NOT_LOADED);
+            SlotSystem::eSlotState state = testScene->slotSystem->GetSlotState(alfaComponent);
+            TEST_VERIFY(state == SlotSystem::eSlotState::NOT_LOADED || state == SlotSystem::eSlotState::LOADED);
         }
         else if (testName == "RemoveSlotWhileLoadingTest")
         {
