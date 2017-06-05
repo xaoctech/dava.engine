@@ -717,10 +717,12 @@ void EngineBackend::InitRenderer(Window* w)
 
     rhi::ShaderSourceCache::Load("~doc:/ShaderSource.bin");
     Renderer::Initialize(renderer, rendererParams);
+#if 1
     context->renderSystem2D->Init();
 
     if (options->GetBool("init_imgui"))
         ImGui::Initialize();
+#endif
 }
 
 void EngineBackend::ResetRenderer(Window* w, bool resetToNull)
