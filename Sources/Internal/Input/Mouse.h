@@ -50,6 +50,13 @@ public:
     AnalogElementState GetPosition() const;
 
     /**
+        Return mouse wheel delta.
+
+        \note It's essentialy a shorter and more readable placeholder for `GetAnalogElementState(eInputElements::MOUSE_WHEEL)`.
+    */
+    AnalogElementState GetWheelDelta() const;
+
+    /**
         Return first button which is pressed right now, in this order: left, right, middle, ext1, ext2.
         If all buttons are released, eInputElements::NONE will be returned.
     */

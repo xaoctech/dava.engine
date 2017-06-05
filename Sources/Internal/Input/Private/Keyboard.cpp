@@ -97,20 +97,39 @@ void Keyboard::OnWindowFocusChanged(DAVA::Window* window, bool focused)
     // Reset keyboard state when window is unfocused
     if (!focused)
     {
-        int64 timestamp = SystemTimer::GetMs();
-        for (size_t i = 0; i < INPUT_ELEMENTS_KB_COUNT; ++i)
-        {
-            DigitalElementState& keyState = keys[i];
-            if (keyState.IsPressed())
-            {
-                keyState.Release();
+        ResetState(window);
+    }
+}
 
-                // Generate release event
-                eInputElements elementId = static_cast<eInputElements>(eInputElements::KB_FIRST + i);
-                CreateAndSendKeyInputEvent(elementId, keyState, window, timestamp);
-            }
+void Keyboard::ResetState(Window* window)
+{
+    int64 timestamp = SystemTimer::GetMs();
+    for (size_t i = 0; i < INPUT_ELEMENTS_KB_COUNT; ++i)
+    {
+        DigitalElementState& keyState = keys[i];
+        if (keyState.IsPressed())
+        {
+            keyState.Release();
+
+            // Generate release event
+            eInputElements elementId = static_cast<eInputElements>(eInputElements::KB_FIRST + i);
+            CreateAndSendKeyInputEvent(elementId, keyState, window, timestamp);
         }
     }
+}
+
+void Keyboard::OnKeyPressed(eInputElements element, Window* window, int64 timestamp)
+{
+    DigitalElementState& keyState = keys[element - eInputElements::KB_FIRST];
+    keyState.Press();
+    CreateAndSendKeyInputEvent(element, keyState, window, timestamp);
+}
+
+void Keyboard::OnKeyReleased(eInputElements element, Window* window, int64 timestamp)
+{
+    DigitalElementState& keyState = keys[element - eInputElements::KB_FIRST];
+    keyState.Release();
+    CreateAndSendKeyInputEvent(element, keyState, window, timestamp);
 }
 
 bool Keyboard::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e)
@@ -128,19 +147,14 @@ bool Keyboard::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e)
 
         // Update element state
 
-        DigitalElementState& keyState = keys[elementId - eInputElements::KB_FIRST];
         if (e.type == MainDispatcherEvent::KEY_DOWN)
         {
-            keyState.Press();
+            OnKeyPressed(elementId, e.window, e.timestamp);
         }
         else
         {
-            keyState.Release();
+            OnKeyReleased(elementId, e.window, e.timestamp);
         }
-
-        // Send event
-
-        CreateAndSendKeyInputEvent(elementId, keyState, e.window, e.timestamp);
 
         return true;
     }

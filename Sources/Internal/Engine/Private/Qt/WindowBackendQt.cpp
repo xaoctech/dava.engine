@@ -5,18 +5,22 @@
 
 #if defined(__DAVAENGINE_QT__)
 
+#include "Engine/Engine.h"
 #include "Engine/Window.h"
 #include "Engine/EngineContext.h"
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
 #include "Engine/Private/Qt/WindowBackendQt.h"
 
-#include "Input/InputSystem.h"
-#include "Render/RHI/rhi_Public.h"
+#include "DeviceManager/DeviceManager.h"
 
-#include "Logger/Logger.h"
 #include "Input/InputSystem.h"
+#include "Input/Keyboard.h"
+
+#include "Render/RHI/rhi_Public.h"
+#include "Logger/Logger.h"
 #include "UI/UIEvent.h"
+#include "Time/SystemTimer.h"
 #include "Debug/DVAssert.h"
 
 #include <QApplication>
@@ -28,12 +32,12 @@ namespace DAVA
 class DavaQtApplyModifier
 {
 public:
-    void operator()(DAVA::KeyboardDevice& keyboard, const Qt::KeyboardModifiers& currentModifiers, Qt::KeyboardModifier qtModifier, DAVA::Key davaModifier)
+    void operator()(DAVA::Keyboard* keyboard, const Qt::KeyboardModifiers& currentModifiers, Qt::KeyboardModifier qtModifier, DAVA::eInputElements davaModifier)
     {
         if (true == (currentModifiers.testFlag(qtModifier)))
-            keyboard.OnKeyPressed(davaModifier);
+            keyboard->OnKeyPressed(davaModifier, GetPrimaryWindow(), SystemTimer::GetMs());
         else
-            keyboard.OnKeyUnpressed(davaModifier);
+            keyboard->OnKeyReleased(davaModifier, GetPrimaryWindow(), SystemTimer::GetMs());
     }
 };
 
@@ -231,11 +235,14 @@ void WindowBackend::OnFrame()
     // we miss key down event, so we have to check for SHIFT, ALT, CTRL
     // read about same problem http://stackoverflow.com/questions/23193038/how-to-detect-global-key-sequence-press-in-qt
     Qt::KeyboardModifiers modifiers = qApp->queryKeyboardModifiers();
-    KeyboardDevice& keyboard = engineBackend->GetContext()->inputSystem->GetKeyboard();
-    DavaQtApplyModifier mod;
-    mod(keyboard, modifiers, Qt::AltModifier, Key::LALT);
-    mod(keyboard, modifiers, Qt::ShiftModifier, Key::LSHIFT);
-    mod(keyboard, modifiers, Qt::ControlModifier, Key::LCTRL);
+    Keyboard* keyboard = GetEngineContext()->deviceManager->GetKeyboard();
+    if (keyboard != nullptr)
+    {
+        DavaQtApplyModifier mod;
+        mod(keyboard, modifiers, Qt::AltModifier, eInputElements::KB_LALT);
+        mod(keyboard, modifiers, Qt::ShiftModifier, eInputElements::KB_LSHIFT);
+        mod(keyboard, modifiers, Qt::ControlModifier, eInputElements::KB_LCTRL);
+    }
 
     engineBackend->OnFrame();
 }

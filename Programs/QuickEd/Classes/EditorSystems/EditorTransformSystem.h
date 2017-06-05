@@ -4,7 +4,7 @@
 #include "Math/Vector.h"
 #include "UI/UIControl.h"
 #include "Preferences/PreferencesRegistrator.h"
-#include "Input/KeyboardDevice.h"
+#include "Input/InputElements.h"
 #include "EditorSystems/BaseEditorSystem.h"
 #include "EditorSystems/EditorSystemsManager.h"
 
@@ -50,7 +50,7 @@ private:
     void OnSelectionChanged(const DAVA::Any& selection);
     void OnActiveAreaChanged(const HUDAreaInfo& areaInfo);
 
-    void ProcessKey(DAVA::Key key);
+    void ProcessKey(DAVA::eInputElements key);
     void ProcessDrag(const DAVA::Vector2& point);
 
     void ResizeControl(DAVA::Vector2 delta, bool withPivot, bool rateably);

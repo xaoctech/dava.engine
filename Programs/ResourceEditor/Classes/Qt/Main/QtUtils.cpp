@@ -16,6 +16,11 @@
 #include "QtTools/ConsoleWidget/PointerSerializer.h"
 
 #include "DAVAEngine.h"
+
+#include <Engine/Engine.h>
+#include <DeviceManager/DeviceManager.h>
+#include <Input/Keyboard.h>
+
 #include <QProcess>
 
 using namespace DAVA;
@@ -71,14 +76,15 @@ WideString SizeInBytesToWideString(float32 size)
     return UTF8Utils::EncodeToWideString(SizeInBytesToString(size));
 }
 
-bool IsKeyModificatorPressed(Key key)
+bool IsKeyModificatorPressed(eInputElements key)
 {
-    return InputSystem::Instance()->GetKeyboard().IsKeyPressed(key);
+    Keyboard* keyboard = GetEngineContext()->deviceManager->GetKeyboard();
+    return keyboard != nullptr && keyboard->GetKeyState(key).IsPressed();
 }
 
 bool IsKeyModificatorsPressed()
 {
-    return (IsKeyModificatorPressed(Key::LSHIFT) || IsKeyModificatorPressed(Key::LCTRL) || IsKeyModificatorPressed(Key::LALT));
+    return (IsKeyModificatorPressed(eInputElements::KB_LSHIFT) || IsKeyModificatorPressed(eInputElements::KB_LCTRL) || IsKeyModificatorPressed(eInputElements::KB_LALT));
 }
 
 int ShowQuestion(const String& header, const String& question, int buttons, int defaultButton)

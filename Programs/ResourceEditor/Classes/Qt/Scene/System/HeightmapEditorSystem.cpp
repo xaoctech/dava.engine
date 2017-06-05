@@ -240,7 +240,7 @@ void HeightmapEditorSystem::UpdateBrushTool(DAVA::float32 timeElapsed)
                 koef = -koef;
             }
 
-            if (IsKeyModificatorPressed(DAVA::Key::LALT))
+            if (IsKeyModificatorPressed(DAVA::eInputElements::KB_LALT))
             {
                 koef = -koef;
             }

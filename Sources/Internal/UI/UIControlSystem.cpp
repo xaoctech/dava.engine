@@ -904,8 +904,8 @@ UIEvent UIControlSystem::MakeUIEvent(const InputEvent& inputEvent) const
         uie.modifiers = GetKeyboardModifierKeys();
 
         Mouse* mouse = GetEngineContext()->deviceManager->GetMouse();
-        AnalogElementState mousePosition = mouse->GetAnalogElementState(eInputElements::MOUSE_POSITION);
-        AnalogElementState mouseWheelDelta = mouse->GetAnalogElementState(eInputElements::MOUSE_WHEEL);
+        AnalogElementState mousePosition = mouse->GetPosition();
+        AnalogElementState mouseWheelDelta = mouse->GetWheelDelta();
 
         switch (inputEvent.elementId)
         {
