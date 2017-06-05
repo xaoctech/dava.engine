@@ -5,6 +5,7 @@
 #include <Engine/Window.h>
 #include <DeviceManager/DeviceManager.h>
 #include <Input/InputSystem.h>
+#include <UI/Render/UIDebugRenderComponent.h>
 
 using namespace DAVA;
 
@@ -30,7 +31,7 @@ void FullscreenTest::LoadResources()
     ScopedPtr<UIButton> btn(new UIButton(Rect(10, y, 150, 50)));
     btn->SetStateFont(0xFF, font);
     btn->SetStateText(0xFF, L"Windowed");
-    btn->SetDebugDraw(true);
+    btn->GetOrCreateComponent<UIDebugRenderComponent>();
     btn->SetTag(0);
     btn->SetStateFontColor(UIButton::STATE_PRESSED_INSIDE, Color(0.0f, 1.0f, 0.0f, 1.0f));
     btn->AddEvent(UIButton::EVENT_TOUCH_DOWN, Message(this, &FullscreenTest::OnSelectModeClick));
@@ -39,7 +40,7 @@ void FullscreenTest::LoadResources()
     btn.reset(new UIButton(Rect(170, y, 150, 50)));
     btn->SetStateFont(0xFF, font);
     btn->SetStateText(0xFF, L"Fullsreen");
-    btn->SetDebugDraw(true);
+    btn->GetOrCreateComponent<UIDebugRenderComponent>();
     btn->SetTag(1);
     btn->SetStateFontColor(UIButton::STATE_PRESSED_INSIDE, Color(0.0f, 1.0f, 0.0f, 1.0f));
     btn->AddEvent(UIButton::EVENT_TOUCH_DOWN, Message(this, &FullscreenTest::OnSelectModeClick));
@@ -49,7 +50,7 @@ void FullscreenTest::LoadResources()
     btn.reset(new UIButton(Rect(520, y, 80, 50)));
     btn->SetStateFont(0xFF, font);
     btn->SetStateText(0xFF, L"Refresh");
-    btn->SetDebugDraw(true);
+    btn->GetOrCreateComponent<UIDebugRenderComponent>();
     btn->SetTag(99);
     btn->SetStateFontColor(UIButton::STATE_PRESSED_INSIDE, Color(0.0f, 1.0f, 0.0f, 1.0f));
     btn->AddEvent(UIButton::EVENT_TOUCH_DOWN, Message(this, &FullscreenTest::OnSelectModeClick));
@@ -66,7 +67,7 @@ void FullscreenTest::LoadResources()
     btn.reset(new UIButton(Rect(10, y, 150, 50)));
     btn->SetStateFont(0xFF, font);
     btn->SetStateText(0xFF, L"Toggle Mouse Visibility");
-    btn->SetDebugDraw(true);
+    btn->GetOrCreateComponent<UIDebugRenderComponent>();
     btn->SetTag(0);
     btn->SetStateFontColor(UIButton::STATE_PRESSED_INSIDE, Color(0.0f, 1.0f, 0.0f, 1.0f));
     btn->AddEvent(UIButton::EVENT_TOUCH_DOWN, Message(this, &FullscreenTest::OnPinningClick));
@@ -75,7 +76,7 @@ void FullscreenTest::LoadResources()
     btn.reset(new UIButton(Rect(170, y, 150, 50)));
     btn->SetStateFont(0xFF, font);
     btn->SetStateText(0xFF, L"Toggle Mouse Pinning");
-    btn->SetDebugDraw(true);
+    btn->GetOrCreateComponent<UIDebugRenderComponent>();
     btn->SetTag(1);
     btn->SetStateFontColor(UIButton::STATE_PRESSED_INSIDE, Color(0.0f, 1.0f, 0.0f, 1.0f));
     btn->AddEvent(UIButton::EVENT_TOUCH_DOWN, Message(this, &FullscreenTest::OnPinningClick));
@@ -97,7 +98,7 @@ void FullscreenTest::LoadResources()
 
     // UI3DView test
     ui3dview = new UI3DView(Rect(10, y, 320, 240));
-    ui3dview->SetDebugDraw(true);
+    ui3dview->GetOrCreateComponent<UIDebugRenderComponent>();
 
     ScopedPtr<Scene> scene(new Scene());
     scene->LoadScene("~res:/3d/Objects/monkey.sc2");
@@ -129,7 +130,7 @@ void FullscreenTest::LoadResources()
     viewScalePlus = new UIButton(Rect(340, y, 145, 50));
     viewScalePlus->SetStateFont(0xFF, font);
     viewScalePlus->SetStateText(0xFF, L"3dView FBO Scale +0.1");
-    viewScalePlus->SetDebugDraw(true);
+    viewScalePlus->GetOrCreateComponent<UIDebugRenderComponent>();
     viewScalePlus->SetTag(0);
     viewScalePlus->SetDisabled(true);
     viewScalePlus->SetStateFontColor(UIButton::STATE_DISABLED, Color(0.5f, 0.5f, 0.5f, 0.5f));
@@ -150,7 +151,7 @@ void FullscreenTest::LoadResources()
     viewScaleMinus = new UIButton(Rect(340, y, 145, 50));
     viewScaleMinus->SetStateFont(0xFF, font);
     viewScaleMinus->SetStateText(0xFF, L"3dView FBO Scale -0.1");
-    viewScaleMinus->SetDebugDraw(true);
+    viewScaleMinus->GetOrCreateComponent<UIDebugRenderComponent>();
     viewScaleMinus->SetTag(1);
     viewScaleMinus->SetDisabled(true);
     viewScaleMinus->SetStateFontColor(UIButton::STATE_DISABLED, Color(0.5f, 0.5f, 0.5f, 0.5f));
@@ -163,7 +164,7 @@ void FullscreenTest::LoadResources()
     btn.reset(new UIButton(Rect(10, y, 150, 40)));
     btn->SetStateFont(0xFF, font);
     btn->SetStateText(0xFF, L"3dView FBO On");
-    btn->SetDebugDraw(true);
+    btn->GetOrCreateComponent<UIDebugRenderComponent>();
     btn->SetTag(2);
     btn->SetStateFontColor(UIButton::STATE_DISABLED, Color(0.5f, 0.5f, 0.5f, 0.5f));
     btn->SetStateFontColor(UIButton::STATE_PRESSED_INSIDE, Color(0.0f, 1.0f, 0.0f, 1.0f));
@@ -173,7 +174,7 @@ void FullscreenTest::LoadResources()
     btn.reset(new UIButton(Rect(170, y, 150, 40)));
     btn->SetStateFont(0xFF, font);
     btn->SetStateText(0xFF, L"3dView FBO Off");
-    btn->SetDebugDraw(true);
+    btn->GetOrCreateComponent<UIDebugRenderComponent>();
     btn->SetTag(3);
     btn->SetStateFontColor(UIButton::STATE_DISABLED, Color(0.5f, 0.5f, 0.5f, 0.5f));
     btn->SetStateFontColor(UIButton::STATE_PRESSED_INSIDE, Color(0.0f, 1.0f, 0.0f, 1.0f));
@@ -188,7 +189,7 @@ void FullscreenTest::LoadResources()
     btn.reset(new UIButton(Rect(500, y, 145, 50)));
     btn->SetStateFont(0xFF, font);
     btn->SetStateText(0xFF, L"Whole Scale +0.1");
-    btn->SetDebugDraw(true);
+    btn->GetOrCreateComponent<UIDebugRenderComponent>();
     btn->SetStateFontColor(UIButton::STATE_PRESSED_INSIDE, Color(0.0f, 1.0f, 0.0f, 1.0f));
     btn->AddEvent(UIButton::EVENT_TOUCH_UP_INSIDE, Message(this, &FullscreenTest::OnMulUp));
     AddControl(btn);
@@ -206,7 +207,7 @@ void FullscreenTest::LoadResources()
     btn.reset(new UIButton(Rect(500, y, 145, 50)));
     btn->SetStateFont(0xFF, font);
     btn->SetStateText(0xFF, L"Whole Scale -0.1");
-    btn->SetDebugDraw(true);
+    btn->GetOrCreateComponent<UIDebugRenderComponent>();
     btn->SetStateFontColor(UIButton::STATE_PRESSED_INSIDE, Color(0.0f, 1.0f, 0.0f, 1.0f));
     btn->AddEvent(UIButton::EVENT_TOUCH_UP_INSIDE, Message(this, &FullscreenTest::OnMulDown));
     AddControl(btn);
