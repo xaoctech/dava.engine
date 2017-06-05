@@ -75,7 +75,6 @@ uniform samplerCUBE cubemap;
 
 #endif
 
-
 fragment_out fp_main(fragment_in input)
 {
     fragment_out output;
@@ -90,7 +89,7 @@ fragment_out fp_main(fragment_in input)
 
 #elif defined(DECODE_DISTANCE)
 
-    float4 sampledDistance = texCUBE(cubemap, input.directionFromPoint);
+    float4 sampledDistance = texCUBE(cubemap, normalize(input.directionFromPoint));
     float actualDistance = length(input.directionFromPoint);
     float occluded = ComputeOcclusion(sampledDistance, actualDistance);
     
@@ -124,14 +123,18 @@ fragment_out fp_main(fragment_in input)
 
 #elif DEBUG_2D
     
-    float phi = input.texCoord.x * 2.0 * _PI;
-    float theta = (1.0 - input.texCoord.y) * _PI - _PI / 2.0;
-    float3 direction = float3(cos(phi) * cos(theta), sin(phi) * cos(theta), sin(theta));
-    float2 sampledDistance = texCUBE(cubemap, direction).xy;
-    sampledDistance.y = sqrt(sampledDistance.y);
+	//texCoord.x == 0.0  -> +X
+	//texCoord.x == 0.25 -> +Y
+	//texCoord.y == 0.0  -> +Z
+    float theta = input.texCoord.x * 2.0 * _PI;
+	float phi = input.texCoord.y * _PI;
+    float3 lookUpDirection = float3( sin(phi) * cos(theta), sin(phi) * sin(theta), cos(phi) );
+	
+    float2 sampledDistance = texCUBE(cubemap, lookUpDirection).xy;
+	sampledDistance.y = sqrt(sampledDistance.y);
     sampledDistance = 1.0 - exp(-0.05 * sampledDistance);
         
-    output.color = float4(sampledDistance, 0.0, 1.0);
+    output.color = float4(sampledDistance.xy, 0.0, 1.0);
 
 #else
 #   error Undefined

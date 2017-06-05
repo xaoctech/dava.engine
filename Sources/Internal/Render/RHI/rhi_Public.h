@@ -78,6 +78,7 @@ struct RenderDeviceCaps
     bool isFramebufferFetchSupported = false;
     bool isUpperLeftRTOrigin = false;
     bool isZeroBaseClipRange = false;
+    bool isCubemapCoordinateSystemLH = false;
     bool isCenterPixelMapping = false;
     bool isInstancingSupported = false;
     bool isPerfQuerySupported = false;

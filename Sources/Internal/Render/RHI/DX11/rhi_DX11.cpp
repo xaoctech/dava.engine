@@ -65,6 +65,7 @@ void dx11_InitCaps()
     MutableDeviceCaps::Get().isVertexTextureUnitsSupported = (dx11.usedFeatureLevel >= D3D_FEATURE_LEVEL_10_0);
     MutableDeviceCaps::Get().isUpperLeftRTOrigin = true;
     MutableDeviceCaps::Get().isZeroBaseClipRange = true;
+    MutableDeviceCaps::Get().isCubemapCoordinateSystemLH = true;
     MutableDeviceCaps::Get().isCenterPixelMapping = false;
     MutableDeviceCaps::Get().isInstancingSupported = (dx11.usedFeatureLevel >= D3D_FEATURE_LEVEL_9_2);
     MutableDeviceCaps::Get().isPerfQuerySupported = (dx11.usedFeatureLevel >= D3D_FEATURE_LEVEL_9_2);
