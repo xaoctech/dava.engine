@@ -254,7 +254,7 @@ int PreProc::GetNameAndValue(char* txt, char** name, char** value, char** end) c
     if (*t == '\0')
         return 0;
     n0 = t;
-    while (*t != ' ' && *t != '\t' && *t != '\n' && *t != '\r')
+    while (*t && *t != ' ' && *t != '\t' && *t != '\n' && *t != '\r')
     {
         if (t[0] == '/' && t[1] == '/')
             return 0;
@@ -275,7 +275,7 @@ int PreProc::GetNameAndValue(char* txt, char** name, char** value, char** end) c
     if (*t == '\0')
         return 0;
     v0 = t;
-    while (*t != ' ' && *t != '\t' && *t != '\n' && *t != '\r')
+    while (*t && *t != ' ' && *t != '\t' && *t != '\n' && *t != '\r')
     {
         if (t[0] == '/' && t[1] == '/')
         {
@@ -299,7 +299,11 @@ int PreProc::GetNameAndValue(char* txt, char** name, char** value, char** end) c
             *t = '\0';
 
         while (*t != '\n')
+        {
+            if (*t == 0)
+                return 0;
             ++t;
+        }
         *t = '\0';
         *end = t;
 
@@ -456,13 +460,19 @@ bool PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
                     char* f1 = nullptr;
 
                     while (*t != '\"')
+                    {
+                        if (*t == 0)
+                            return false;
                         ++t;
-                    DVASSERT(*t);
+                    }
                     f0 = t + 1;
                     ++t;
                     while (*t != '\"')
+                    {
+                        if (*t == 0)
+                            return false;
                         ++t;
-                    DVASSERT(*t);
+                    }
                     f1 = t - 1;
 
                     char fname[256];
@@ -475,7 +485,12 @@ bool PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
                     }
 
                     while (*t != '\n')
+                    {
+                        if (*t == 0)
+                            return false;
                         ++t;
+                    }
+
                     if (*t == 0)
                     {
                         break;
@@ -656,8 +671,9 @@ bool PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
                 {
                     pending_elif.back().do_skip_lines = pending_elif.back().effective_condition;
 
-                    while (*s != '\n')
+                    while (*s && *s != '\n')
                         ++s;
+
                     if (*s == 0)
                     {
                         ln[0] = 0;
