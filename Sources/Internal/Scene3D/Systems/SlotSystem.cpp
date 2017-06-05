@@ -327,8 +327,10 @@ void SlotSystem::UnregisterEntity(Entity* entity)
         uint32 index = static_cast<uint32>(std::distance(nodes.begin(), loadedIter));
         if (index < loadedItemsCount)
         {
-            SetState(*loadedIter, eSlotState::NOT_LOADED);
-            ResetFlag(*loadedIter, SlotNode::ATTACHMENT_TRANSFORM_CHANGED);
+            SlotNode& node = nodes[index];
+            SetState(node, eSlotState::NOT_LOADED);
+            ResetFlag(node, SlotNode::ATTACHMENT_TRANSFORM_CHANGED);
+            node.loadedEnity = nullptr;
             std::swap(nodes[index], nodes[loadedItemsCount - 1]);
             --loadedItemsCount;
         }
