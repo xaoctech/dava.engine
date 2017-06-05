@@ -112,7 +112,7 @@ void SlotSystem::ItemsCache::LoadConfigFile(const FilePath& configPath)
     }
     else
     {
-        Logger::Error("Unknown slot config file extension %s", configPath.GetAbsolutePathname());
+        Logger::Error("Unknown slot config file extension %s", configPath.GetAbsolutePathname().c_str());
     }
 }
 
