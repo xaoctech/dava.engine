@@ -17,7 +17,7 @@ class EngineBackend;
 */
 
 /** Describes input listening modes */
-enum class eInputListenerModes
+enum class eInputBindingListenerModes
 {
     /**
         Listen for a single element which is not a keyboard modifier.
@@ -40,7 +40,7 @@ enum class eInputListenerModes
         Listen for a single analog element input.
         Examples: mouse move, gamepad's stick.
     */
-    ANALOG,
+    ANALOG
 };
 
 /**
@@ -61,19 +61,19 @@ enum class eInputListenerModes
 	}
 	\endcode
 */
-class InputListener final
+class InputBindingListener final
 {
     friend class Private::EngineBackend;
 
 public:
     /** Listen for input in specified `mode`, across all devices. */
-    void Listen(eInputListenerModes mode, Function<void(bool, const Vector<InputEvent>&)> callback);
+    void Listen(eInputBindingListenerModes mode, Function<void(bool, const Vector<InputEvent>&)> callback);
 
     /** Listen input in specified `mode`, devices other than the one with `deviceId` are ignored. */
-    void Listen(eInputListenerModes mode, Function<void(bool, const Vector<InputEvent>&)> callback, uint32 deviceId);
+    void Listen(eInputBindingListenerModes mode, Function<void(bool, const Vector<InputEvent>&)> callback, uint32 deviceId);
 
     /** Listen input in specified `mode`, devices with type different from `deviceTypesMask` are ignored. */
-    void Listen(eInputListenerModes mode, Function<void(bool, const Vector<InputEvent>&)> callback, eInputDeviceTypes deviceTypesMask);
+    void Listen(eInputBindingListenerModes mode, Function<void(bool, const Vector<InputEvent>&)> callback, eInputDeviceTypes deviceTypesMask);
 
     /** Return true if listening is active. */
     bool IsListening() const;
@@ -82,18 +82,18 @@ public:
     void StopListening();
 
 private:
-    InputListener() = default;
-    InputListener(const InputListener&) = delete;
-    InputListener& operator=(const InputListener&) = delete;
+    InputBindingListener() = default;
+    InputBindingListener(const InputBindingListener&) = delete;
+    InputBindingListener& operator=(const InputBindingListener&) = delete;
 
-    void Listen(eInputListenerModes mode, Function<void(bool, const Vector<InputEvent>&)> callback, uint32 deviceId, eInputDeviceTypes deviceTypesMask);
+    void Listen(eInputBindingListenerModes mode, Function<void(bool, const Vector<InputEvent>&)> callback, uint32 deviceId, eInputDeviceTypes deviceTypesMask);
 
     bool OnInputEvent(const InputEvent& e);
 
 private:
     uint32 inputHandlerToken = 0;
 
-    eInputListenerModes currentMode;
+    eInputBindingListenerModes currentMode;
     Function<void(bool, const Vector<InputEvent>&)> currentCallback;
     uint32 currentDeviceId;
     eInputDeviceTypes currentDeviceTypesMask;

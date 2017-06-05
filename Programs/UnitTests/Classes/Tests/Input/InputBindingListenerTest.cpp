@@ -12,7 +12,7 @@
 
 using namespace DAVA;
 
-DAVA_TESTCLASS (InputListenerTestClass)
+DAVA_TESTCLASS (InputBindingListenerTestClass)
 {
     void OnListeningEnded(bool cancelled, const Vector<InputEvent>& result)
     {
@@ -28,9 +28,9 @@ DAVA_TESTCLASS (InputListenerTestClass)
         lastCallbackResult.clear();
     }
 
-    DAVA_TEST (InputListenerDigitalSingleWithoutModifiersTest)
+    DAVA_TEST (InputBindingListenerDigitalSingleWithoutModifiersTest)
     {
-        InputListener* listener = GetEngineContext()->inputListener;
+        InputBindingListener* listener = GetEngineContext()->inputListener;
 
         Keyboard* kb = GetEngineContext()->deviceManager->GetKeyboard();
         if (kb == nullptr)
@@ -50,7 +50,7 @@ DAVA_TESTCLASS (InputListenerTestClass)
             // All devices
 
             // Test single non-modifer key press
-            listener->Listen(eInputListenerModes::DIGITAL_SINGLE_WITHOUT_MODIFIERS, MakeFunction(this, &InputListenerTestClass::OnListeningEnded));
+            listener->Listen(eInputBindingListenerModes::DIGITAL_SINGLE_WITHOUT_MODIFIERS, MakeFunction(this, &InputBindingListenerTestClass::OnListeningEnded));
             TEST_VERIFY(listener->IsListening());
             SendKeyboardKeyDown(kb, eInputElements::KB_O);
             TEST_VERIFY(callbackCounter == 1);
@@ -62,7 +62,7 @@ DAVA_TESTCLASS (InputListenerTestClass)
             TEST_VERIFY(!listener->IsListening());
 
             // Test modifier + non-modifier key press, only second key should be registered
-            listener->Listen(eInputListenerModes::DIGITAL_SINGLE_WITHOUT_MODIFIERS, MakeFunction(this, &InputListenerTestClass::OnListeningEnded));
+            listener->Listen(eInputBindingListenerModes::DIGITAL_SINGLE_WITHOUT_MODIFIERS, MakeFunction(this, &InputBindingListenerTestClass::OnListeningEnded));
             TEST_VERIFY(listener->IsListening());
             SendKeyboardKeyDown(kb, eInputElements::KB_LALT);
             SendKeyboardKeyDown(kb, eInputElements::KB_Z);
@@ -76,7 +76,7 @@ DAVA_TESTCLASS (InputListenerTestClass)
             TEST_VERIFY(!listener->IsListening());
 
             // Test mouse move + modifier + mouse button key press, only mouse button should be registered
-            listener->Listen(eInputListenerModes::DIGITAL_SINGLE_WITHOUT_MODIFIERS, MakeFunction(this, &InputListenerTestClass::OnListeningEnded));
+            listener->Listen(eInputBindingListenerModes::DIGITAL_SINGLE_WITHOUT_MODIFIERS, MakeFunction(this, &InputBindingListenerTestClass::OnListeningEnded));
             TEST_VERIFY(listener->IsListening());
             SendKeyboardKeyDown(kb, eInputElements::KB_LALT);
             SendMouseMove(mouse, 0.0f, 0.0f);
@@ -95,7 +95,7 @@ DAVA_TESTCLASS (InputListenerTestClass)
             // Only keyboard device, by id
 
             // Test single non-modifer key press
-            listener->Listen(eInputListenerModes::DIGITAL_SINGLE_WITHOUT_MODIFIERS, MakeFunction(this, &InputListenerTestClass::OnListeningEnded), kb->GetId());
+            listener->Listen(eInputBindingListenerModes::DIGITAL_SINGLE_WITHOUT_MODIFIERS, MakeFunction(this, &InputBindingListenerTestClass::OnListeningEnded), kb->GetId());
             TEST_VERIFY(listener->IsListening());
             SendKeyboardKeyDown(kb, eInputElements::KB_O);
             TEST_VERIFY(callbackCounter == 1);
@@ -107,7 +107,7 @@ DAVA_TESTCLASS (InputListenerTestClass)
             TEST_VERIFY(!listener->IsListening());
 
             // Test mouse move + modifier + mouse button key press + non-modifier keyboard key press, only last key should be registered
-            listener->Listen(eInputListenerModes::DIGITAL_SINGLE_WITHOUT_MODIFIERS, MakeFunction(this, &InputListenerTestClass::OnListeningEnded), kb->GetId());
+            listener->Listen(eInputBindingListenerModes::DIGITAL_SINGLE_WITHOUT_MODIFIERS, MakeFunction(this, &InputBindingListenerTestClass::OnListeningEnded), kb->GetId());
             TEST_VERIFY(listener->IsListening());
             SendKeyboardKeyDown(kb, eInputElements::KB_LALT);
             SendMouseMove(mouse, 0.0f, 0.0f);
@@ -128,7 +128,7 @@ DAVA_TESTCLASS (InputListenerTestClass)
             // Only keyboard device, by type
 
             // Test single non-modifer key press
-            listener->Listen(eInputListenerModes::DIGITAL_SINGLE_WITHOUT_MODIFIERS, MakeFunction(this, &InputListenerTestClass::OnListeningEnded), eInputDeviceTypes::CLASS_KEYBOARD);
+            listener->Listen(eInputBindingListenerModes::DIGITAL_SINGLE_WITHOUT_MODIFIERS, MakeFunction(this, &InputBindingListenerTestClass::OnListeningEnded), eInputDeviceTypes::CLASS_KEYBOARD);
             TEST_VERIFY(listener->IsListening());
             SendKeyboardKeyDown(kb, eInputElements::KB_O);
             TEST_VERIFY(callbackCounter == 1);
@@ -140,7 +140,7 @@ DAVA_TESTCLASS (InputListenerTestClass)
             TEST_VERIFY(!listener->IsListening());
 
             // Test mouse move + modifier + mouse button key press + non-modifier keyboard key press, only last key should be registered
-            listener->Listen(eInputListenerModes::DIGITAL_SINGLE_WITHOUT_MODIFIERS, MakeFunction(this, &InputListenerTestClass::OnListeningEnded), eInputDeviceTypes::CLASS_KEYBOARD);
+            listener->Listen(eInputBindingListenerModes::DIGITAL_SINGLE_WITHOUT_MODIFIERS, MakeFunction(this, &InputBindingListenerTestClass::OnListeningEnded), eInputDeviceTypes::CLASS_KEYBOARD);
             TEST_VERIFY(listener->IsListening());
             SendKeyboardKeyDown(kb, eInputElements::KB_LALT);
             SendMouseMove(mouse, 0.0f, 0.0f);
@@ -158,9 +158,9 @@ DAVA_TESTCLASS (InputListenerTestClass)
         }
     }
 
-    DAVA_TEST (InputListenerDigitalSingleWithModifiersTest)
+    DAVA_TEST (InputBindingListenerDigitalSingleWithModifiersTest)
     {
-        InputListener* listener = GetEngineContext()->inputListener;
+        InputBindingListener* listener = GetEngineContext()->inputListener;
 
         Keyboard* kb = GetEngineContext()->deviceManager->GetKeyboard();
         if (kb == nullptr)
@@ -180,7 +180,7 @@ DAVA_TESTCLASS (InputListenerTestClass)
             // All devices
 
             // Test single non-modifer key press
-            listener->Listen(eInputListenerModes::DIGITAL_SINGLE_WITH_MODIFIERS, MakeFunction(this, &InputListenerTestClass::OnListeningEnded));
+            listener->Listen(eInputBindingListenerModes::DIGITAL_SINGLE_WITH_MODIFIERS, MakeFunction(this, &InputBindingListenerTestClass::OnListeningEnded));
             TEST_VERIFY(listener->IsListening());
             SendKeyboardKeyDown(kb, eInputElements::KB_O);
             TEST_VERIFY(callbackCounter == 1);
@@ -192,7 +192,7 @@ DAVA_TESTCLASS (InputListenerTestClass)
             TEST_VERIFY(!listener->IsListening());
 
             // Test modifier + non-modifier key press, both should be registered
-            listener->Listen(eInputListenerModes::DIGITAL_SINGLE_WITH_MODIFIERS, MakeFunction(this, &InputListenerTestClass::OnListeningEnded));
+            listener->Listen(eInputBindingListenerModes::DIGITAL_SINGLE_WITH_MODIFIERS, MakeFunction(this, &InputBindingListenerTestClass::OnListeningEnded));
             TEST_VERIFY(listener->IsListening());
             SendKeyboardKeyDown(kb, eInputElements::KB_LALT);
             SendKeyboardKeyDown(kb, eInputElements::KB_Z);
@@ -207,7 +207,7 @@ DAVA_TESTCLASS (InputListenerTestClass)
             TEST_VERIFY(!listener->IsListening());
 
             // Test mouse move + modifier + mouse button key press, move should be ignored
-            listener->Listen(eInputListenerModes::DIGITAL_SINGLE_WITH_MODIFIERS, MakeFunction(this, &InputListenerTestClass::OnListeningEnded));
+            listener->Listen(eInputBindingListenerModes::DIGITAL_SINGLE_WITH_MODIFIERS, MakeFunction(this, &InputBindingListenerTestClass::OnListeningEnded));
             TEST_VERIFY(listener->IsListening());
             SendKeyboardKeyDown(kb, eInputElements::KB_LALT);
             SendMouseMove(mouse, 0.0f, 0.0f);
@@ -224,9 +224,9 @@ DAVA_TESTCLASS (InputListenerTestClass)
         }
     }
 
-    DAVA_TEST (InputListenerDigitalAnyTest)
+    DAVA_TEST (InputBindingListenerDigitalAnyTest)
     {
-        InputListener* listener = GetEngineContext()->inputListener;
+        InputBindingListener* listener = GetEngineContext()->inputListener;
 
         Keyboard* kb = GetEngineContext()->deviceManager->GetKeyboard();
         if (kb == nullptr)
@@ -246,7 +246,7 @@ DAVA_TESTCLASS (InputListenerTestClass)
             // All devices
 
             // Test single non-modifer key press
-            listener->Listen(eInputListenerModes::DIGITAL_MULTIPLE_ANY, MakeFunction(this, &InputListenerTestClass::OnListeningEnded));
+            listener->Listen(eInputBindingListenerModes::DIGITAL_MULTIPLE_ANY, MakeFunction(this, &InputBindingListenerTestClass::OnListeningEnded));
             TEST_VERIFY(listener->IsListening());
             SendKeyboardKeyDown(kb, eInputElements::KB_O);
             TEST_VERIFY(callbackCounter == 0); // Since we're listening for any number of keys, callback shouldn't be invoked yet
@@ -259,7 +259,7 @@ DAVA_TESTCLASS (InputListenerTestClass)
             TEST_VERIFY(!listener->IsListening());
 
             // Test modifier + non-modifier key press, both should be registered
-            listener->Listen(eInputListenerModes::DIGITAL_MULTIPLE_ANY, MakeFunction(this, &InputListenerTestClass::OnListeningEnded));
+            listener->Listen(eInputBindingListenerModes::DIGITAL_MULTIPLE_ANY, MakeFunction(this, &InputBindingListenerTestClass::OnListeningEnded));
             TEST_VERIFY(listener->IsListening());
             SendKeyboardKeyDown(kb, eInputElements::KB_LALT);
             SendKeyboardKeyDown(kb, eInputElements::KB_Z);
@@ -275,7 +275,7 @@ DAVA_TESTCLASS (InputListenerTestClass)
             TEST_VERIFY(!listener->IsListening());
 
             // Test mouse move + modifier + two mouse button key presses, move should be ignored, others should be registered
-            listener->Listen(eInputListenerModes::DIGITAL_MULTIPLE_ANY, MakeFunction(this, &InputListenerTestClass::OnListeningEnded));
+            listener->Listen(eInputBindingListenerModes::DIGITAL_MULTIPLE_ANY, MakeFunction(this, &InputBindingListenerTestClass::OnListeningEnded));
             TEST_VERIFY(listener->IsListening());
             SendKeyboardKeyDown(kb, eInputElements::KB_LALT);
             SendMouseMove(mouse, 0.0f, 0.0f);

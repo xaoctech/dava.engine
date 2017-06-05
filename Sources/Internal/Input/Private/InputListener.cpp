@@ -6,22 +6,22 @@
 
 namespace DAVA
 {
-void InputListener::Listen(eInputListenerModes mode, Function<void(bool, const Vector<InputEvent>&)> callback)
+void InputBindingListener::Listen(eInputBindingListenerModes mode, Function<void(bool, const Vector<InputEvent>&)> callback)
 {
     Listen(mode, callback, 0, eInputDeviceTypes::CLASS_ALL);
 }
 
-void InputListener::Listen(eInputListenerModes mode, Function<void(bool, const Vector<InputEvent>&)> callback, uint32 deviceId)
+void InputBindingListener::Listen(eInputBindingListenerModes mode, Function<void(bool, const Vector<InputEvent>&)> callback, uint32 deviceId)
 {
     Listen(mode, callback, deviceId, eInputDeviceTypes::CLASS_ALL);
 }
 
-void InputListener::Listen(eInputListenerModes mode, Function<void(bool, const Vector<InputEvent>&)> callback, eInputDeviceTypes deviceTypesMask)
+void InputBindingListener::Listen(eInputBindingListenerModes mode, Function<void(bool, const Vector<InputEvent>&)> callback, eInputDeviceTypes deviceTypesMask)
 {
     Listen(mode, callback, 0, deviceTypesMask);
 }
 
-void InputListener::Listen(eInputListenerModes mode, Function<void(bool, const Vector<InputEvent>&)> callback, uint32 deviceId, eInputDeviceTypes deviceTypesMask)
+void InputBindingListener::Listen(eInputBindingListenerModes mode, Function<void(bool, const Vector<InputEvent>&)> callback, uint32 deviceId, eInputDeviceTypes deviceTypesMask)
 {
     DVASSERT(callback != nullptr);
 
@@ -32,10 +32,10 @@ void InputListener::Listen(eInputListenerModes mode, Function<void(bool, const V
     currentDeviceId = deviceId;
     currentDeviceTypesMask = deviceTypesMask;
 
-    inputHandlerToken = GetEngineContext()->inputSystem->AddHandler(deviceTypesMask, MakeFunction(this, &InputListener::OnInputEvent));
+    inputHandlerToken = GetEngineContext()->inputSystem->AddHandler(deviceTypesMask, MakeFunction(this, &InputBindingListener::OnInputEvent));
 }
 
-bool InputListener::OnInputEvent(const InputEvent& e)
+bool InputBindingListener::OnInputEvent(const InputEvent& e)
 {
     // If we're restricted to the specific device,
     // and this event is from different one - ignore it
@@ -76,7 +76,7 @@ bool InputListener::OnInputEvent(const InputEvent& e)
                 // If a button has been pressed
                 if (e.digitalState.IsJustPressed())
                 {
-                    if (currentMode == eInputListenerModes::DIGITAL_SINGLE_WITHOUT_MODIFIERS)
+                    if (currentMode == eInputBindingListenerModes::DIGITAL_SINGLE_WITHOUT_MODIFIERS)
                     {
                         // Ignore modifiers
                         if (!isModifierKey)
@@ -85,7 +85,7 @@ bool InputListener::OnInputEvent(const InputEvent& e)
                             finishedListening = true;
                         }
                     }
-                    else if (currentMode == eInputListenerModes::DIGITAL_SINGLE_WITH_MODIFIERS)
+                    else if (currentMode == eInputBindingListenerModes::DIGITAL_SINGLE_WITH_MODIFIERS)
                     {
                         addEventToResult = true;
 
@@ -95,7 +95,7 @@ bool InputListener::OnInputEvent(const InputEvent& e)
                             finishedListening = true;
                         }
                     }
-                    else if (currentMode == eInputListenerModes::DIGITAL_MULTIPLE_ANY)
+                    else if (currentMode == eInputBindingListenerModes::DIGITAL_MULTIPLE_ANY)
                     {
                         addEventToResult = true;
                     }
@@ -109,7 +109,7 @@ bool InputListener::OnInputEvent(const InputEvent& e)
     }
     else
     {
-        if (currentMode == eInputListenerModes::ANALOG)
+        if (currentMode == eInputBindingListenerModes::ANALOG)
         {
             addEventToResult = true;
             finishedListening = true;
@@ -135,12 +135,12 @@ bool InputListener::OnInputEvent(const InputEvent& e)
     return handled;
 }
 
-bool InputListener::IsListening() const
+bool InputBindingListener::IsListening() const
 {
     return inputHandlerToken > 0;
 }
 
-void InputListener::StopListening()
+void InputBindingListener::StopListening()
 {
     if (IsListening())
     {

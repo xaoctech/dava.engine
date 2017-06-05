@@ -671,22 +671,22 @@ void InputSystemTest::OnAction(DAVA::Action action)
 
 void InputSystemTest::OnInputListenerButtonPressed(DAVA::BaseObject* sender, void* data, void* callerData)
 {
-    DAVA::eInputListenerModes mode;
+    DAVA::eInputBindingListenerModes mode;
     if (sender == inputListenerDigitalSingleWithoutModifiersButton)
     {
-        mode = DAVA::eInputListenerModes::DIGITAL_SINGLE_WITHOUT_MODIFIERS;
+        mode = DAVA::eInputBindingListenerModes::DIGITAL_SINGLE_WITHOUT_MODIFIERS;
     }
     else if (sender == inputListenerDigitalSingleWithModifiersButton)
     {
-        mode = DAVA::eInputListenerModes::DIGITAL_SINGLE_WITH_MODIFIERS;
+        mode = DAVA::eInputBindingListenerModes::DIGITAL_SINGLE_WITH_MODIFIERS;
     }
     else if (sender == inputListenerDigitalMultipleAnyButton)
     {
-        mode = DAVA::eInputListenerModes::DIGITAL_MULTIPLE_ANY;
+        mode = DAVA::eInputBindingListenerModes::DIGITAL_MULTIPLE_ANY;
     }
     else
     {
-        mode = DAVA::eInputListenerModes::ANALOG;
+        mode = DAVA::eInputBindingListenerModes::ANALOG;
     }
 
     GetEngineContext()->inputListener->Listen(mode, MakeFunction(this, &InputSystemTest::OnInputListeningEnded));

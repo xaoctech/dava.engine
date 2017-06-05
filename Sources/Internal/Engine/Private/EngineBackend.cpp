@@ -858,7 +858,7 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
     context->pluginManager = new PluginManager(GetEngine());
     context->analyticsCore = new Analytics::Core;
 
-    context->inputListener = new InputListener();
+    context->inputListener = new InputBindingListener();
 
 #ifdef __DAVAENGINE_AUTOTESTING__
     context->autotestingSystem = new AutotestingSystem();
