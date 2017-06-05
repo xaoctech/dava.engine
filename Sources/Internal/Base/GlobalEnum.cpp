@@ -230,9 +230,10 @@ ENUM_DECLARE(UIStaticTextComponent::eTextMultiline)
 
 ENUM_DECLARE(UIStaticTextComponent::eTextFitting)
 {
-    ENUM_ADD_DESCR(UIStaticTextComponent::FITTING_DEFAULT, "FITTING_DEFAULT");
+    ENUM_ADD_DESCR(UIStaticTextComponent::FITTING_NONE, "FITTING_NONE");
     ENUM_ADD_DESCR(UIStaticTextComponent::FITTING_ENLARGE, "FITTING_ENLARGE");
     ENUM_ADD_DESCR(UIStaticTextComponent::FITTING_REDUCE, "FITTING_REDUCE");
+    ENUM_ADD_DESCR(UIStaticTextComponent::FITTING_FILL, "FITTING_FILL");
     ENUM_ADD_DESCR(UIStaticTextComponent::FITTING_POINTS, "FITTING_POINTS");
 };
 

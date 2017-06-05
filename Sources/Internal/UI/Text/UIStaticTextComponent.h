@@ -25,9 +25,10 @@ public:
     };
     enum eTextFitting
     {
-        FITTING_DEFAULT = 0,
+        FITTING_NONE = 0,
         FITTING_ENLARGE,
         FITTING_REDUCE,
+        FITTING_FILL, // ENLARGE | REDUCE
         FITTING_POINTS
     };
 
@@ -95,7 +96,7 @@ protected:
     String text;
     String fontName;
     eTextMultiline multiline = eTextMultiline::MULTILINE_DISABLED;
-    eTextFitting fitting = eTextFitting::FITTING_DEFAULT;
+    eTextFitting fitting = eTextFitting::FITTING_NONE;
     Color color = Color::White;
     UIControlBackground::eColorInheritType colorInheritType = UIControlBackground::COLOR_IGNORE_PARENT;
     Vector2 shadowOffset = Vector2(0.f, 0.f);

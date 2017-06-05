@@ -73,7 +73,7 @@ void UIStaticTextDrawer::applyModifications()
         switch (component->GetFitting())
         {
         default:
-        case UIStaticTextComponent::eTextFitting::FITTING_DEFAULT:
+        case UIStaticTextComponent::eTextFitting::FITTING_NONE:
             textBlock->SetFittingOption(0);
             break;
         case UIStaticTextComponent::eTextFitting::FITTING_ENLARGE:
@@ -81,6 +81,9 @@ void UIStaticTextDrawer::applyModifications()
             break;
         case UIStaticTextComponent::eTextFitting::FITTING_REDUCE:
             textBlock->SetFittingOption(TextBlock::eFitType::FITTING_REDUCE);
+            break;
+        case UIStaticTextComponent::eTextFitting::FITTING_FILL:
+            textBlock->SetFittingOption(TextBlock::eFitType::FITTING_REDUCE | TextBlock::eFitType::FITTING_ENLARGE);
             break;
         case UIStaticTextComponent::eTextFitting::FITTING_POINTS:
             textBlock->SetFittingOption(TextBlock::eFitType::FITTING_POINTS);

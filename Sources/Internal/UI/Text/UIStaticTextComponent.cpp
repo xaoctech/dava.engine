@@ -9,17 +9,17 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIStaticTextComponent)
     .ConstructorByPointer()
     .DestructorByPointer([](UIStaticTextComponent* o) { o->Release(); })
     .Field("align", &UIStaticTextComponent::GetAlign, &UIStaticTextComponent::SetAlign)[M::FlagsT<eAlign>()]
-    .Field("text", &UIStaticTextComponent::GetText, &UIStaticTextComponent::SetText)
-    .Field("fontName", &UIStaticTextComponent::GetFontName, &UIStaticTextComponent::SetFontName)
-    .Field("multiline", &UIStaticTextComponent::GetMultiline, &UIStaticTextComponent::SetMultiline)[M::EnumT<eTextMultiline>()]
-    .Field("fitting", &UIStaticTextComponent::GetFitting, &UIStaticTextComponent::SetFitting)[M::EnumT<eTextFitting>()]
     .Field("color", &UIStaticTextComponent::GetColor, &UIStaticTextComponent::SetColor)
     .Field("colorInheritType", &UIStaticTextComponent::GetColorInheritType, &UIStaticTextComponent::SetColorInheritType)[M::EnumT<UIControlBackground::eColorInheritType>()]
-    .Field("shadowOffset", &UIStaticTextComponent::GetShadowOffset, &UIStaticTextComponent::SetShadowOffset)
-    .Field("shadowColor", &UIStaticTextComponent::GetShadowColor, &UIStaticTextComponent::SetShadowColor)
-    .Field("perPixelAccuracyType", &UIStaticTextComponent::GetPerPixelAccuracyType, &UIStaticTextComponent::SetPerPixelAccuracyType)[M::EnumT<UIControlBackground::ePerPixelAccuracyType>()]
-    .Field("useRtlAlign", &UIStaticTextComponent::GetUseRtlAlign, &UIStaticTextComponent::SetUseRtlAlign)[M::EnumT<TextBlock::eUseRtlAlign>()]
+    .Field("fitting", &UIStaticTextComponent::GetFitting, &UIStaticTextComponent::SetFitting)[M::EnumT<eTextFitting>()]
+    .Field("fontName", &UIStaticTextComponent::GetFontName, &UIStaticTextComponent::SetFontName)
     .Field("forceBiDiSupport", &UIStaticTextComponent::IsForceBiDiSupportEnabled, &UIStaticTextComponent::SetForceBiDiSupportEnabled)
+    .Field("multiline", &UIStaticTextComponent::GetMultiline, &UIStaticTextComponent::SetMultiline)[M::EnumT<eTextMultiline>()]
+    .Field("perPixelAccuracyType", &UIStaticTextComponent::GetPerPixelAccuracyType, &UIStaticTextComponent::SetPerPixelAccuracyType)[M::EnumT<UIControlBackground::ePerPixelAccuracyType>()]
+    .Field("shadowColor", &UIStaticTextComponent::GetShadowColor, &UIStaticTextComponent::SetShadowColor)
+    .Field("shadowOffset", &UIStaticTextComponent::GetShadowOffset, &UIStaticTextComponent::SetShadowOffset)
+    .Field("text", &UIStaticTextComponent::GetText, &UIStaticTextComponent::SetText)
+    .Field("useRtlAlign", &UIStaticTextComponent::GetUseRtlAlign, &UIStaticTextComponent::SetUseRtlAlign)[M::EnumT<TextBlock::eUseRtlAlign>()]
     .End();
 }
 
