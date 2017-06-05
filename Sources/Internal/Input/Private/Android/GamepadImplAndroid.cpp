@@ -4,9 +4,8 @@
 #if defined(__DAVAENGINE_ANDROID__)
 
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
-#include "Input/GamepadDevice.h"
+#include "Input/Gamepad.h"
 #include "Input/InputElements.h"
-#include "Input/Private/DIElementWrapper.h"
 
 #include <android/input.h>
 #include <android/keycodes.h>
@@ -98,9 +97,6 @@ void GamepadImpl::HandleGamepadButton(const MainDispatcherEvent& e)
     eInputElements element = eInputElements::NONE;
     switch (e.gamepadEvent.button)
     {
-    case AKEYCODE_BACK:
-        element = eInputElements::GAMEPAD_BACK;
-        break;
     case AKEYCODE_DPAD_UP:
         element = eInputElements::GAMEPAD_DPAD_UP;
         break;
@@ -127,11 +123,11 @@ void GamepadImpl::HandleGamepadButton(const MainDispatcherEvent& e)
         break;
     case AKEYCODE_BUTTON_L1:
     case AKEYCODE_BUTTON_L2:
-        element = eInputElements::GAMEPAD_LSHOUDER;
+        element = eInputElements::GAMEPAD_LSHOULDER;
         break;
     case AKEYCODE_BUTTON_R1:
     case AKEYCODE_BUTTON_R2:
-        element = eInputElements::GAMEPAD_RSHOUDER;
+        element = eInputElements::GAMEPAD_RSHOULDER;
         break;
     case AKEYCODE_BUTTON_THUMBL:
         element = eInputElements::GAMEPAD_LTHUMB;
@@ -161,7 +157,7 @@ void GamepadImpl::HandleAxisHat(int axis, float value)
     if (pressed)
     {
         uint32 index = elem[value > 0.f] - eInputElements::GAMEPAD_FIRST_BUTTON;
-        DIElementWrapper dpadElem(gamepadDevice->buttons[index]);
+        DigitalElementState& dpadElem(gamepadDevice->buttons[index]);
 
         dpadElem.Press();
         gamepadDevice->buttonChangedMask.set(index);
@@ -171,7 +167,7 @@ void GamepadImpl::HandleAxisHat(int axis, float value)
         for (uint32 i = 0; i < 2; ++i)
         {
             uint32 index = elem[i] - eInputElements::GAMEPAD_FIRST_BUTTON;
-            DIElementWrapper dpadElem(gamepadDevice->buttons[index]);
+            DigitalElementState& dpadElem(gamepadDevice->buttons[index]);
             if (dpadElem.IsPressed())
             {
                 dpadElem.Release();

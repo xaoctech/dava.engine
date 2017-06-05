@@ -124,7 +124,7 @@ const eInputElements nativeScancodeToDavaScancode[] =
   eInputElements::NONE, // 109
   eInputElements::NONE, // 110
   eInputElements::KB_ESCAPE, // 111
-  eInputElements::NONE, // 112
+  eInputElements::KB_DELETE, // 112
   eInputElements::KB_LCTRL, // 113
   eInputElements::KB_RCTRL, // 114
   eInputElements::KB_CAPSLOCK, // 115
@@ -132,7 +132,7 @@ const eInputElements nativeScancodeToDavaScancode[] =
   eInputElements::KB_LCMD, // 117
   eInputElements::KB_RCMD, // 118
   eInputElements::NONE, // 119
-  eInputElements::NONE, // 120
+  eInputElements::KB_PRINTSCREEN, // 120
   eInputElements::KB_PAUSE, // 121
   eInputElements::KB_HOME, // 122
   eInputElements::KB_END, // 123
@@ -308,6 +308,23 @@ eInputElements KeyboardImpl::ConvertNativeScancodeToDavaScancode(uint32 nativeSc
     }
 
     return nativeScancodeToDavaScancode[nativeScancode];
+}
+
+uint32 KeyboardImpl::ConvertDavaScancodeToNativeScancode(eInputElements elementId)
+{
+    int nativeScancode = -1;
+
+    for (size_t i = 0; i < COUNT_OF(nativeScancodeToDavaScancode); ++i)
+    {
+        if (nativeScancodeToDavaScancode[i] == elementId)
+        {
+            nativeScancode = static_cast<int>(i);
+        }
+    }
+
+    DVASSERT(nativeScancode >= 0);
+
+    return static_cast<uint32>(nativeScancode);
 }
 
 String KeyboardImpl::TranslateElementToUTF8String(eInputElements elementId)

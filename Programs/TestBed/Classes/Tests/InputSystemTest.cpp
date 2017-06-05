@@ -6,6 +6,7 @@
 #include <Input/InputListener.h>
 #include <Input/Keyboard.h>
 #include <Utils/UTF8Utils.h>
+#include <UI/Render/UIDebugRenderComponent.h>
 
 using namespace DAVA;
 
@@ -344,27 +345,27 @@ void InputSystemTest::CreateMouseUI()
     mouseBody = new UIButton(Rect(x, 35, 84, 100));
     mouseBody->SetStateFont(0xFF, font);
     mouseBody->SetStateFontColor(0xFF, Color::White);
-    mouseBody->SetDebugDraw(true);
+    mouseBody->GetOrCreateComponent<UIDebugRenderComponent>();
     AddControl(mouseBody);
 
     UIButton* mousePositionButton = new UIButton(Rect(x, 140, 84, 15));
     mousePositionButton->SetStateFont(0xFF, font);
     mousePositionButton->SetStateFontColor(0xFF, Color::White);
-    mousePositionButton->SetDebugDraw(true);
+    mousePositionButton->GetOrCreateComponent<UIDebugRenderComponent>();
     mouseButtons[static_cast<uint32>(eInputElements::MOUSE_POSITION)] = mousePositionButton;
     AddControl(mousePositionButton);
 
     UIButton* leftButton = new UIButton(Rect(x + 15.0f, 35, 20, 70));
     leftButton->SetStateFont(0xFF, font);
     leftButton->SetStateFontColor(0xFF, Color::White);
-    leftButton->SetDebugDraw(true);
+    leftButton->GetOrCreateComponent<UIDebugRenderComponent>();
     mouseButtons[static_cast<uint32>(eInputElements::MOUSE_LBUTTON)] = leftButton;
     AddControl(leftButton);
 
     UIButton* rightButton = new UIButton(Rect(x + 45.0f, 35, 20, 70));
     rightButton->SetStateFont(0xFF, font);
     rightButton->SetStateFontColor(0xFF, Color::White);
-    rightButton->SetDebugDraw(true);
+    rightButton->GetOrCreateComponent<UIDebugRenderComponent>();
     mouseButtons[static_cast<uint32>(eInputElements::MOUSE_RBUTTON)] = rightButton;
     AddControl(rightButton);
 }
@@ -396,7 +397,7 @@ void InputSystemTest::CreateTouchUI()
         UIButton* touchClickButton = new UIButton(Rect(x, y, clickButtonSizeX, clickButtonSizeY));
         touchClickButton->SetStateFont(0xFF, font);
         touchClickButton->SetStateFontColor(0xFF, Color::White);
-        touchClickButton->SetDebugDraw(true);
+        touchClickButton->GetOrCreateComponent<UIDebugRenderComponent>();
         touchClickButton->SetStateText(0xFF, ss.str());
         touchClickButtons[static_cast<uint32>(eInputElements::TOUCH_FIRST_CLICK + i)] = touchClickButton;
         AddControl(touchClickButton);
@@ -404,7 +405,7 @@ void InputSystemTest::CreateTouchUI()
         UIButton* touchMoveButton = new UIButton(Rect(x, y + clickButtonSizeY + 1.0f, clickButtonSizeX, clickButtonSizeY * 2.0f));
         touchMoveButton->SetStateFont(0xFF, font);
         touchMoveButton->SetStateFontColor(0xFF, Color::White);
-        touchMoveButton->SetDebugDraw(true);
+        touchMoveButton->GetOrCreateComponent<UIDebugRenderComponent>();
         touchMoveButton->SetStateText(0xFF, L"0\n0");
         touchMoveButton->SetStateTextMultiline(0xFF, true);
         touchMoveButtons[static_cast<uint32>(eInputElements::TOUCH_FIRST_POSITION + i)] = touchMoveButton;
@@ -547,7 +548,7 @@ void InputSystemTest::CreateInputListenerUI()
     inputListenerDigitalSingleWithoutModifiersButton = new UIButton(Rect(x, y, 200, 30));
     inputListenerDigitalSingleWithoutModifiersButton->SetStateFont(0xFF, font);
     inputListenerDigitalSingleWithoutModifiersButton->SetStateFontColor(0xFF, Color::White);
-    inputListenerDigitalSingleWithoutModifiersButton->SetDebugDraw(true);
+    inputListenerDigitalSingleWithoutModifiersButton->GetOrCreateComponent<UIDebugRenderComponent>();
     inputListenerDigitalSingleWithoutModifiersButton->SetStateText(0xFF, L"Listen: digital single without modifiers");
     inputListenerDigitalSingleWithoutModifiersButton->AddEvent(UIButton::EVENT_TOUCH_UP_INSIDE, Message(this, &InputSystemTest::OnInputListenerButtonPressed));
     AddControl(inputListenerDigitalSingleWithoutModifiersButton);
@@ -557,7 +558,7 @@ void InputSystemTest::CreateInputListenerUI()
     inputListenerDigitalSingleWithModifiersButton = new UIButton(Rect(x, y, 200, 30));
     inputListenerDigitalSingleWithModifiersButton->SetStateFont(0xFF, font);
     inputListenerDigitalSingleWithModifiersButton->SetStateFontColor(0xFF, Color::White);
-    inputListenerDigitalSingleWithModifiersButton->SetDebugDraw(true);
+    inputListenerDigitalSingleWithModifiersButton->GetOrCreateComponent<UIDebugRenderComponent>();
     inputListenerDigitalSingleWithModifiersButton->SetStateText(0xFF, L"Listen: digital single with modifiers");
     inputListenerDigitalSingleWithModifiersButton->AddEvent(UIButton::EVENT_TOUCH_UP_INSIDE, Message(this, &InputSystemTest::OnInputListenerButtonPressed));
     AddControl(inputListenerDigitalSingleWithModifiersButton);
@@ -567,7 +568,7 @@ void InputSystemTest::CreateInputListenerUI()
     inputListenerDigitalMultipleAnyButton = new UIButton(Rect(x, y, 200, 30));
     inputListenerDigitalMultipleAnyButton->SetStateFont(0xFF, font);
     inputListenerDigitalMultipleAnyButton->SetStateFontColor(0xFF, Color::White);
-    inputListenerDigitalMultipleAnyButton->SetDebugDraw(true);
+    inputListenerDigitalMultipleAnyButton->GetOrCreateComponent<UIDebugRenderComponent>();
     inputListenerDigitalMultipleAnyButton->SetStateText(0xFF, L"Listen: digital multiple any");
     inputListenerDigitalMultipleAnyButton->AddEvent(UIButton::EVENT_TOUCH_UP_INSIDE, Message(this, &InputSystemTest::OnInputListenerButtonPressed));
     AddControl(inputListenerDigitalMultipleAnyButton);
@@ -577,7 +578,7 @@ void InputSystemTest::CreateInputListenerUI()
     inputListenerAnalogButton = new UIButton(Rect(x, y, 200, 30));
     inputListenerAnalogButton->SetStateFont(0xFF, font);
     inputListenerAnalogButton->SetStateFontColor(0xFF, Color::White);
-    inputListenerAnalogButton->SetDebugDraw(true);
+    inputListenerAnalogButton->GetOrCreateComponent<UIDebugRenderComponent>();
     inputListenerAnalogButton->SetStateText(0xFF, L"Listen: analog");
     inputListenerAnalogButton->AddEvent(UIButton::EVENT_TOUCH_UP_INSIDE, Message(this, &InputSystemTest::OnInputListenerButtonPressed));
     AddControl(inputListenerAnalogButton);
@@ -599,7 +600,7 @@ void InputSystemTest::CreateKeyboardUIButton(eInputElements key, WideString text
     button->SetStateFont(0xFF, font);
     button->SetStateFontColor(0xFF, Color::White);
     button->SetStateText(0xFF, text);
-    button->SetDebugDraw(true);
+    button->GetOrCreateComponent<UIDebugRenderComponent>();
 
     keyboardButtons[static_cast<uint32>(key)] = button;
     AddControl(button);
@@ -616,11 +617,11 @@ void InputSystemTest::HighlightDigitalButton(DAVA::UIButton* button, DAVA::Digit
 
     if (state.IsPressed())
     {
-        button->SetDebugDrawColor(Color(0.0f, 1.0f, 0.0f, 1.0f));
+        button->GetOrCreateComponent<UIDebugRenderComponent>()->SetDrawColor(Color(0.0f, 1.0f, 0.0f, 1.0f));
     }
     else
     {
-        button->SetDebugDrawColor(Color(1.0f, 0.0f, 0.0f, 1.0f));
+        button->GetOrCreateComponent<UIDebugRenderComponent>()->SetDrawColor(Color(1.0f, 0.0f, 0.0f, 1.0f));
     }
 }
 
