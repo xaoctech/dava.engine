@@ -1,4 +1,7 @@
 #include "Scene3D/Systems/ParticleEffectSystem.h"
+
+#include <limits>
+
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Particles/ParticleEmitter.h"
@@ -587,7 +590,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
             }
 
             if (group.layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE)
-                UpdateStripe(current, group.layer, deltaTime);
+                UpdateStripe(current, group.layer, deltaTime, bbox);
 
             prev = current;
             current = current->next;
@@ -650,7 +653,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
     effect->effectRenderObject->SetAABBox(bbox);
 }
 
-void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleLayer* layer, float32 dt)
+void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleLayer* layer, float32 dt, AABBox3& bbox)
 {
     StripeData& data = particle->stripe;
     data.baseNode.position = particle->position;
@@ -658,16 +661,21 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleLayer* layer
     data.spawnTimer += dt;
     float32 spawnTime = 1.0f / layer->stripeRate;
     bool shouldInsert = data.spawnTimer > spawnTime;
+    float32 radius = Max(layer->stripeStartSize, layer->stripeSizeOverLife);
+
     if (shouldInsert)
     {
         data.spawnTimer -= spawnTime;
         data.strpeNodes.emplace_front(0.0f, data.baseNode.position, data.baseNode.speed);
     }
+
     auto nodeIter = data.strpeNodes.begin();
     while (nodeIter != data.strpeNodes.end())
     {
         nodeIter->lifeime += dt;
         nodeIter->position += Vector3(0.0f, 0.0f, 1.0f) * layer->stripeSpeed * dt;
+        AddParticleToBBox(nodeIter->position, radius, bbox);
+
         if (nodeIter->lifeime >= layer->stripeLifetime)
             data.strpeNodes.erase(nodeIter++);
         else
