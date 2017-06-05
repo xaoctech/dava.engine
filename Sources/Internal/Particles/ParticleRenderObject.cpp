@@ -186,6 +186,48 @@ uint32 ParticleRenderObject::SelectLayout(const ParticleLayer& layer)
     return layoutMap[key];
 }
 
+void ParticleRenderObject::UpdateStripeVertex(float32*& dataPtr, Vector3& position, Vector2& uv, float32* color, ParticleLayer* layer, Particle* particle, float32 fresToAlpha)
+{
+    *dataPtr++ = position.x;
+    *dataPtr++ = position.y;
+    *dataPtr++ = position.z;
+
+    *dataPtr++ = uv.x;
+    *dataPtr++ = uv.y;
+
+    *dataPtr++ = *color;
+
+    if (layer->enableFrameBlend)
+    {
+        *dataPtr++ = uv.x;
+        *dataPtr++ = uv.y;
+        *dataPtr++ = 0.0f;
+    }
+    if (layer->enableFlow && layer->flowmap.get() != nullptr)
+    {
+        *dataPtr++ = uv.x;
+        *dataPtr++ = uv.y;
+        *dataPtr++ = particle->currFlowSpeed;
+        *dataPtr++ = particle->currFlowOffset;
+    }
+    if (layer->enableNoise && layer->noise.get() != nullptr)
+    {
+        *dataPtr++ = uv.x;
+        if (layer->enableNoiseScroll)
+            *(dataPtr - 1) += particle->currNoiseUOffset;
+
+        *dataPtr++ = uv.y;
+        if (layer->enableNoiseScroll)
+            *(dataPtr - 1) += particle->currNoiseVOffset;
+
+        *dataPtr++ = particle->currNoiseScale;
+    }
+    if (layer->useFresnelToAlpha)
+    {
+        *dataPtr++ = fresToAlpha;
+    }
+}
+
 void ParticleRenderObject::AppendRenderBatch(NMaterial* material, uint32 indexCount, uint32 vertexLayout, const DynamicBufferAllocator::AllocResultVB& vBuffer)
 {
     AppendRenderBatch(material, indexCount, vertexLayout, vBuffer, DynamicBufferAllocator::AllocateQuadListIndexBuffer(indexCount));
@@ -444,7 +486,6 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                 currColor = group.layer->colorOverLife->GetValue(currentParticle->life / currentParticle->lifeTime);
             if (group.layer->alphaOverLife)
                 currColor.a = group.layer->alphaOverLife->GetValue(currentParticle->life / currentParticle->lifeTime);
-            uint32 color = rhi::NativeColorRGBA(currColor.r, currColor.g, currColor.b, Min(currColor.a, 1.0f));
 
             StripeData& data = currentParticle->stripe;
             StripeNode& base = data.baseNode;
@@ -454,8 +495,19 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
             {
                 if (nodes.size() == 0)
                     return;
-
                 Vector3 basisVector = basisVectors[basises[i] * 2];
+
+                float32 fresnelToAlpha = 0.0f;
+                if (begin->layer->useFresnelToAlpha)
+                {
+                    Vector3 viewNormal;
+                    float32 dot = 0.0f;
+                    viewNormal = Vector3(basisVector.y, -basisVector.x, 0.0f); // basisVector.CrossProduct(Vector3(0.0f, 0.0f, 1.0f));
+                    viewNormal.Normalize();
+                    dot = cameraDirection.DotProduct(viewNormal);
+                    dot = 1.0f - Abs(dot);
+                    fresnelToAlpha = FresnelShlick(dot, currentParticle->fresnelToAlphaBias, currentParticle->fresnelToAlphaPower);
+                }
 
                 int32 vCount = static_cast<int32>((nodes.size() + 1) * 2);
                 DynamicBufferAllocator::AllocResultVB vb = DynamicBufferAllocator::AllocateVertexBuffer(vertexStride, vCount);
@@ -465,26 +517,12 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                 Vector3 right = base.position - basisVector * group.layer->stripeStartSize * 0.5f;
                 Vector2 uv1(currentParticle->life * group.layer->stripeUScrollSpeed, currentParticle->life * group.layer->stripeVScrollSpeed);
                 Vector2 uv2(currentParticle->life * group.layer->stripeUScrollSpeed + 1.0f, currentParticle->life * group.layer->stripeVScrollSpeed);
-                float* current = reinterpret_cast<float*>(vb.data);
-                uint32 col = rhi::NativeColorRGBA(currentParticle->color.r, currentParticle->color.g, currentParticle->color.b, currentParticle->color.a);
+                float* dataPtr = reinterpret_cast<float*>(vb.data);
+
+                uint32 col = rhi::NativeColorRGBA(currColor.r, currColor.g, currColor.b, Clamp(currColor.a, 0.0f, 1.0f));
                 float32* color = reinterpret_cast<float32*>(&col);
-                *(current++) = left.x;
-                *(current++) = left.y;
-                *(current++) = left.z;
-
-                *(current++) = uv1.x;
-                *(current++) = uv1.y;
-
-                *(current++) = *color;
-
-                *(current++) = right.x;
-                *(current++) = right.y;
-                *(current++) = right.z;
-
-                *(current++) = uv2.x;
-                *(current++) = uv2.y;
-
-                *(current++) = *color;
+                UpdateStripeVertex(dataPtr, left, uv1, color, group.layer, currentParticle, fresnelToAlpha);
+                UpdateStripeVertex(dataPtr, right, uv2, color, group.layer, currentParticle, fresnelToAlpha);
 
                 StripeNode* prevNode = &base;
                 float32 distance = 0.0f;
@@ -496,30 +534,15 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                     right = node.position - basisVector * size * 0.5f;
 
                     float32 alpha = Lerp(1.0f, group.layer->stripeAlphaOverLife, lv);
-                    col = rhi::NativeColorRGBA(currentParticle->color.r, currentParticle->color.g, currentParticle->color.b, currentParticle->color.a * alpha);
-
+                    col = rhi::NativeColorRGBA(currColor.r, currColor.g, currColor.b, Clamp(currColor.a * alpha, 0.0f, 1.0f));
 
                     distance += (prevNode->position - node.position).Length();
                     float32 v = distance * group.layer->stripeTextureTile + currentParticle->life * group.layer->stripeVScrollSpeed;
                     uv1.y = v;
                     uv2.y = v;
-                    *(current++) = left.x;
-                    *(current++) = left.y;
-                    *(current++) = left.z;
 
-                    *(current++) = uv1.x;
-                    *(current++) = uv1.y;
-
-                    *(current++) = *color;
-
-                    *(current++) = right.x;
-                    *(current++) = right.y;
-                    *(current++) = right.z;
-
-                    *(current++) = uv2.x;
-                    *(current++) = uv2.y;
-
-                    *(current++) = *color;
+                    UpdateStripeVertex(dataPtr, left, uv1, color, group.layer, currentParticle, fresnelToAlpha);
+                    UpdateStripeVertex(dataPtr, right, uv2, color, group.layer, currentParticle, fresnelToAlpha);
 
                     prevNode = &node;
                 }

@@ -82,6 +82,7 @@ private:
     void GenerateBaseLayout(rhi::VertexLayout& layout);
     int32 CalculateParticleCount(const ParticleGroup& group);
     uint32 SelectLayout(const ParticleLayer& layer);
+    void UpdateStripeVertex(float32*& current, Vector3& position, Vector2& uv, float32* color, ParticleLayer* layer, Particle* particle, float32 fresToAlpha);
 
     uint32 regularVertexLayoutId = 0;
     uint32 frameBlendVertexLayoutId = 0;
