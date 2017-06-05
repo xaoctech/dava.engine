@@ -430,6 +430,16 @@ Entity* SlotSystem::AttachItemToSlot(SlotComponent* component, FastName itemName
     uint32 filtersCount = component->GetTypeFiltersCount();
 
     const ItemsCache::Item* item = sharedCache->LookUpItem(configPath, itemName);
+    if (item == nullptr)
+    {
+        Logger::Error("Couldn't find item %s in config file %s for slot %s: ", itemName.c_str(),
+                      component->GetConfigFilePath().GetAbsolutePathname().c_str(),
+                      component->GetSlotName().c_str());
+        size_t index = GetComponentIndex(component);
+        states[index] = eSlotState::LOADING_FAILED;
+        return nullptr;
+    }
+    
 #if defined(__DAVAENGINE_DEBUG__)
     uint32 typeFiltersCount = component->GetTypeFiltersCount();
     bool filterFound = (typeFiltersCount == 0);
@@ -443,16 +453,6 @@ Entity* SlotSystem::AttachItemToSlot(SlotComponent* component, FastName itemName
     }
     DVASSERT(filterFound == true);
 #endif
-
-    if (item == nullptr)
-    {
-        Logger::Error("Couldn't find item %s in config file %s for slot %s: ", itemName.c_str(),
-                      component->GetConfigFilePath().GetAbsolutePathname().c_str(),
-                      component->GetSlotName().c_str());
-        size_t index = GetComponentIndex(component);
-        states[index] = eSlotState::LOADING_FAILED;
-        return nullptr;
-    }
 
     Entity* slotRootEntity = new Entity();
     DVASSERT(externalEntityLoader != nullptr);
@@ -471,7 +471,7 @@ Entity* SlotSystem::AttachItemToSlot(SlotComponent* component, FastName itemName
                                        if (message.empty() == false)
                                        {
                                            // "Component" was found in "components". This means that component still in system and pointer is valid
-                                           Logger::Error("Loading item %s to slot %s failed: %s", itemName.c_str(), component->GetSlotName(), message.c_str());
+                                           Logger::Error("Loading item %s to slot %s failed: %s", itemName.c_str(), component->GetSlotName().c_str(), message.c_str());
                                            states[index] = eSlotState::LOADING_FAILED;
                                        }
                                        else
