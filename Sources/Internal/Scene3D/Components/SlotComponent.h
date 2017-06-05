@@ -72,8 +72,6 @@ public:
 
     /** Get attachment transform */
     const Matrix4& GetAttachmentTransform() const;
-    /** Set attachment transform */
-    void SetAttachmentTransform(const Matrix4& transform);
 
     /** Get name of joint in SkeletonComponent of this Entity that slot attached to. If slot doesn't attached to joint return value is invalid */
     const FastName& GetJointName() const;
@@ -102,6 +100,8 @@ public:
 
 private:
     friend class SlotSystem;
+    void SetAttachmentTransform(const Matrix4& transform);
+
     FastName slotName;
 
     Matrix4 attachmentTransform;
