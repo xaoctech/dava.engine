@@ -83,8 +83,9 @@ protected:
     void RunEmitter(ParticleEffectComponent* effect, ParticleEmitter* emitter, const Vector3& spawnPosition, int32 positionSource = 0);
 
 private:
-    Map<String, float32> globalExternalValues;
+    void UpdateStripe(Particle* particle, ParticleLayer* layer, float32 dt);
 
+    Map<String, float32> globalExternalValues;
     Vector<ParticleEffectComponent*> activeComponents;
 
 private: //materials stuff

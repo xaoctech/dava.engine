@@ -27,7 +27,6 @@ class ParticleRenderObject : public RenderObject
     void AppendRenderBatch(NMaterial* material, uint32 particlesCount, uint32 vertexLayout, const DynamicBufferAllocator::AllocResultVB& vBuffer, const rhi::HIndexBuffer iBuffer);
     void PrepareRenderData(Camera* camera);
     bool CheckIfSimpleParticle(ParticleLayer* layer) const;
-    void UpdateStripe(Particle* particle, ParticleLayer* layer, Vector3* basisVectors);
 
     Vector<uint16> indices;
     uint32 sortingOffset;
@@ -77,31 +76,6 @@ private:
         {
         }
     };
-
-    struct StripeNode
-    {
-        float32 lifeime = 0.0f;
-        Vector3 position = {};
-        Vector3 speed = {};
-        Vector3 right = {};
-
-        StripeNode(float32 lifetime_, Vector3 position_, Vector3 speed_, Vector3 right_)
-            : lifeime(lifetime_)
-            , position(position_)
-            , speed(speed_)
-            , right(right_)
-        {}
-
-        StripeNode()
-        {}
-    };
-    struct StripeData
-    {
-        Map<int32, List<StripeNode>> strpeNodes; // 1 stripe for basis.
-        StripeNode baseNode = {};
-        float32 spawnTimer = 0;
-    };
-    Map<Particle*, StripeData> stripes;
     Map<uint32, LayoutElement> layoutsData;
 
     uint32 GetVertexStride(ParticleLayer* layer);

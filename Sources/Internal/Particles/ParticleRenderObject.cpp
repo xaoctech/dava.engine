@@ -140,66 +140,6 @@ void ParticleRenderObject::PrepareRenderData(Camera* camera)
     }
 }
 
-void ParticleRenderObject::UpdateStripe(Particle* particle, ParticleLayer* layer, Vector3* basisVectors)
-{
-    float dt = SystemTimer::GetFrameDelta();
-    float time = SystemTimer::GetFrameTimestamp();
-    auto& it = stripes.insert(std::make_pair(particle, StripeData()));
-    StripeData& data = it.first->second;
-    data.baseNode.position = particle->position;
-
-    data.spawnTimer += dt;
-    float32 spawnTime = 1.0f / layer->stripeRate;
-    bool shouldInsert = data.spawnTimer > spawnTime;
-    if (shouldInsert)
-        data.spawnTimer -= spawnTime;
-
-    for (auto& stripe : stripes)
-    {
-        StripeData& data = stripe.second;
-        for (auto& nodesMap : data.strpeNodes)
-        {
-            List<StripeNode>& nodes = nodesMap.second;
-            if (shouldInsert)
-                nodes.emplace_front(0.0f, data.baseNode.position, data.baseNode.speed, data.baseNode.right);
-
-            auto nodeIter = nodes.begin();
-            while (nodeIter != nodes.end())
-            {
-                nodeIter->lifeime += dt;
-                nodeIter->position += Vector3(0.0f, 0.0f, 1.0f) * layer->stripeSpeed * dt;
-                if (nodeIter->lifeime >= layer->stripeLifetime)
-                    nodes.erase(nodeIter++);
-                else
-                    ++nodeIter;
-            }
-        }
-    }
-
-    int32 basisCount = 0;
-    int32 basises[4]; //4 basises max per particle
-    bool worldAlign = (layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_WORLD_ALIGN) != 0;
-    if (layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING)
-        basises[basisCount++] = 0;
-    if (layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_X_FACING)
-        basises[basisCount++] = worldAlign ? 4 : 1;
-    if (layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_Y_FACING)
-        basises[basisCount++] = worldAlign ? 5 : 2;
-    if (layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_Z_FACING)
-        basises[basisCount++] = worldAlign ? 6 : 3;
-
-    for (int32 i = 0; i < basisCount; i++)
-    {
-        List<StripeNode>& currentNodes = data.strpeNodes.insert(std::make_pair(basises[i], List<StripeNode>())).first->second;
-        if (currentNodes.size() == 0)
-            continue;
-
-        Vector3 ex = basisVectors[basises[i] * 2];
-        for (auto& node : currentNodes)
-            node.right = ex;
-    }
-}
-
 uint32 ParticleRenderObject::GetVertexStride(ParticleLayer* layer)
 {
     uint32 vertexStride = (3 + 2 + 1) * sizeof(float); // vertex*3 + texcoord0*2 + color * 1;
@@ -315,8 +255,6 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
         Particle* current = group.head;
         while (current)
         {
-            UpdateStripe(current, group.layer, basisVectors);
-
             float32* pT = group.layer->sprite->GetTextureVerts(current->frame);
             Color currColor = current->color;
             if (group.layer->colorOverLife)
@@ -474,9 +412,6 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
     if (!particlesCount)
         return; //hmmm?
 
-    float dt = SystemTimer::GetFrameDelta();
-    float time = SystemTimer::GetFrameTimestamp();
-
     uint32 vertexStride = GetVertexStride(begin->layer); // If you change vertex layout, don't forget to change the stride.
 
     uint32 verteciesAppended = 0;
@@ -503,8 +438,6 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
         Particle* currentParticle = group.head;
         while (currentParticle)
         {
-            UpdateStripe(currentParticle, group.layer, basisVectors);
-
             float32* pT = group.layer->sprite->GetTextureVerts(currentParticle->frame);
             Color currColor = currentParticle->color;
             if (group.layer->colorOverLife)
@@ -513,44 +446,49 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                 currColor.a = group.layer->alphaOverLife->GetValue(currentParticle->life / currentParticle->lifeTime);
             uint32 color = rhi::NativeColorRGBA(currColor.r, currColor.g, currColor.b, Min(currColor.a, 1.0f));
 
-            StripeData& data = stripes.insert(std::make_pair(currentParticle, StripeData())).first->second;
+            StripeData& data = currentParticle->stripe;
             StripeNode& base = data.baseNode;
+            List<StripeNode>& nodes = data.strpeNodes;
             uint32 iCount = 0;
             for (int32 i = 0; i < basisCount; i++)
             {
-                List<StripeNode>& nodeList = data.strpeNodes.insert(std::make_pair(basises[i], List<StripeNode>())).first->second;
-                if (nodeList.size() == 0)
-                    continue;
-                Vector3 basisVector = nodeList.front().right;
+                if (nodes.size() == 0)
+                    return;
 
-                int32 vCount = static_cast<int32>((nodeList.size() + 1) * 2);
+                Vector3 basisVector = basisVectors[basises[i] * 2];
+
+                int32 vCount = static_cast<int32>((nodes.size() + 1) * 2);
                 DynamicBufferAllocator::AllocResultVB vb = DynamicBufferAllocator::AllocateVertexBuffer(vertexStride, vCount);
                 iCount = (vCount - 2) * 3;
                 DynamicBufferAllocator::AllocResultIB ib = DynamicBufferAllocator::AllocateIndexBuffer(iCount);
                 Vector3 left = base.position + basisVector * group.layer->stripeStartSize * 0.5f;
                 Vector3 right = base.position - basisVector * group.layer->stripeStartSize * 0.5f;
-                Vector2 uv1(time*group.layer->stripeUScrollSpeed, time*group.layer->stripeVScrollSpeed);
-                Vector2 uv2(time*group.layer->stripeUScrollSpeed + 1.0f, time*group.layer->stripeVScrollSpeed);
+                Vector2 uv1(currentParticle->life * group.layer->stripeUScrollSpeed, currentParticle->life * group.layer->stripeVScrollSpeed);
+                Vector2 uv2(currentParticle->life * group.layer->stripeUScrollSpeed + 1.0f, currentParticle->life * group.layer->stripeVScrollSpeed);
                 float* current = reinterpret_cast<float*>(vb.data);
                 uint32 col = rhi::NativeColorRGBA(currentParticle->color.r, currentParticle->color.g, currentParticle->color.b, currentParticle->color.a);
                 float32* color = reinterpret_cast<float32*>(&col);
                 *(current++) = left.x;
                 *(current++) = left.y;
                 *(current++) = left.z;
+
                 *(current++) = uv1.x;
                 *(current++) = uv1.y;
+
                 *(current++) = *color;
 
                 *(current++) = right.x;
                 *(current++) = right.y;
                 *(current++) = right.z;
+
                 *(current++) = uv2.x;
                 *(current++) = uv2.y;
+
                 *(current++) = *color;
 
                 StripeNode* prevNode = &base;
                 float32 distance = 0.0f;
-                for (auto& node : nodeList)
+                for (auto& node : nodes)
                 {
                     float32 lv = node.lifeime / group.layer->stripeLifetime;
                     float32 size = Lerp(group.layer->stripeStartSize, group.layer->stripeSizeOverLife, lv);
@@ -562,27 +500,31 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
 
 
                     distance += (prevNode->position - node.position).Length();
-                    float32 v = distance * group.layer->stripeTextureTile + time*group.layer->stripeVScrollSpeed;
+                    float32 v = distance * group.layer->stripeTextureTile + currentParticle->life * group.layer->stripeVScrollSpeed;
                     uv1.y = v;
                     uv2.y = v;
                     *(current++) = left.x;
                     *(current++) = left.y;
                     *(current++) = left.z;
+
                     *(current++) = uv1.x;
                     *(current++) = uv1.y;
+
                     *(current++) = *color;
 
                     *(current++) = right.x;
                     *(current++) = right.y;
                     *(current++) = right.z;
+
                     *(current++) = uv2.x;
                     *(current++) = uv2.y;
+
                     *(current++) = *color;
 
                     prevNode = &node;
                 }
                 uint16* currentI = ib.data;
-                for (uint32 i = 0; i < static_cast<uint32>(nodeList.size()); ++i)
+                for (uint32 i = 0; i < static_cast<uint32>(nodes.size()); ++i)
                 {
                     uint32 twoI = i * 2;
                     *(currentI++) = twoI + 0;

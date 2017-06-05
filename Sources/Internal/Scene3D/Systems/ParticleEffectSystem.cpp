@@ -440,9 +440,9 @@ void ParticleEffectSystem::UpdateActiveLod(ParticleEffectComponent* effect)
     }
 }
 
-void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32 time, float32 shortEffectTime)
+void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32 deltaTime, float32 shortEffectTime)
 {
-    effect->time += time;
+    effect->time += deltaTime;
     const Matrix4* worldTransformPtr;
     if (GetScene())
         worldTransformPtr = &effect->GetEntity()->GetWorldTransform();
@@ -457,7 +457,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
     {
         ParticleGroup& group = *it;
         group.activeParticleCount = 0;
-        float32 dt = group.emitter->shortEffect ? shortEffectTime : time;
+        float32 dt = group.emitter->shortEffect ? shortEffectTime : deltaTime;
         group.time += dt;
         float32 groupEndTime = group.layer->isLooped ? group.layer->loopEndTime : group.layer->endTime;
         float32 currLoopTime = group.time - group.loopStartTime;
@@ -576,15 +576,18 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
                 {
                     overLifeScale = group.layer->noiseUScrollSpeedOverLife->GetValue(overLifeTime);
                 }
-                current->currNoiseUOffset += current->baseNoiseUScrollSpeed * overLifeScale * time;
+                current->currNoiseUOffset += current->baseNoiseUScrollSpeed * overLifeScale * deltaTime;
 
                 overLifeScale = 1.0f;
                 if (group.layer->noiseVScrollSpeedOverLife != nullptr)
                 {
                     overLifeScale = group.layer->noiseVScrollSpeedOverLife->GetValue(overLifeTime);
                 }
-                current->currNoiseVOffset += current->baseNoiseVScrollSpeed * overLifeScale * time;
+                current->currNoiseVOffset += current->baseNoiseVScrollSpeed * overLifeScale * deltaTime;
             }
+
+            if (group.layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE)
+                UpdateStripe(current, group.layer, deltaTime);
 
             prev = current;
             current = current->next;
@@ -645,6 +648,31 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
         bbox = AABBox3(pos, pos);
     }
     effect->effectRenderObject->SetAABBox(bbox);
+}
+
+void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleLayer* layer, float32 dt)
+{
+    StripeData& data = particle->stripe;
+    data.baseNode.position = particle->position;
+
+    data.spawnTimer += dt;
+    float32 spawnTime = 1.0f / layer->stripeRate;
+    bool shouldInsert = data.spawnTimer > spawnTime;
+    if (shouldInsert)
+    {
+        data.spawnTimer -= spawnTime;
+        data.strpeNodes.emplace_front(0.0f, data.baseNode.position, data.baseNode.speed);
+    }
+    auto nodeIter = data.strpeNodes.begin();
+    while (nodeIter != data.strpeNodes.end())
+    {
+        nodeIter->lifeime += dt;
+        nodeIter->position += Vector3(0.0f, 0.0f, 1.0f) * layer->stripeSpeed * dt;
+        if (nodeIter->lifeime >= layer->stripeLifetime)
+            data.strpeNodes.erase(nodeIter++);
+        else
+            ++nodeIter;
+    }
 }
 
 void ParticleEffectSystem::AddParticleToBBox(const Vector3& position, float radius, AABBox3& bbox)
