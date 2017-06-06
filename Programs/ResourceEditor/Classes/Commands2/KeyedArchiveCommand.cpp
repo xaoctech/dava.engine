@@ -98,4 +98,3 @@ void KeyeadArchiveSetValueCommand::Redo()
         archive->SetVariant(key, newVal);
     }
 }
-
