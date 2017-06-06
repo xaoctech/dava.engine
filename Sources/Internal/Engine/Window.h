@@ -299,7 +299,7 @@ public:
     Signal<Window*, float32> update; //!< Emitted on each frame if window is visible.
     Signal<Window*> draw; //!< Emited after `update` signal after `UIControlSystem::Draw`
     Signal<Window*, Rect /*visibleFrameRect*/> visibleFrameChanged; //!< Emitted when window visible frame changed (showed virtual keyboard over window).
-    Signal<Window*> backNavigation; //!< Emitted when user presses a back button.
+    Signal<Window*> backNavigation; //!< Emitted when user presses a back button or its alternative (like Win + Backspace on UWP).
 
 private:
     /// Initialize platform specific render params, e.g. acquire/release context functions for Qt platform
