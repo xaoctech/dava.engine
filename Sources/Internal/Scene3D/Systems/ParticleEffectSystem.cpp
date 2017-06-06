@@ -512,16 +512,21 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
             group.activeParticleCount++;
 
             float32 overLifeTime = current->life / current->lifeTime;
-            float32 currVelocityOverLife = 1.0f;
-            if (group.layer->velocityOverLife)
-                currVelocityOverLife = group.layer->velocityOverLife->GetValue(overLifeTime);
-            current->position += current->speed * (currVelocityOverLife * dt);
+
+            if (group.layer->type != ParticleLayer::TYPE_PARTICLE_STRIPE)
+            {
+                float32 currVelocityOverLife = 1.0f;
+                if (group.layer->velocityOverLife)
+                    currVelocityOverLife = group.layer->velocityOverLife->GetValue(overLifeTime);
+                current->position += current->speed * (currVelocityOverLife * dt);
+            }
+
             float32 currSpinOverLife = 1;
             if (group.layer->spinOverLife)
                 currSpinOverLife = group.layer->spinOverLife->GetValue(overLifeTime);
             current->angle += current->spin * currSpinOverLife * dt;
 
-            if (forcesCount)
+            if (forcesCount && group.layer->type != ParticleLayer::TYPE_PARTICLE_STRIPE)
             {
                 Vector3 acceleration;
                 for (int32 i = 0; i < forcesCount; ++i)
@@ -590,7 +595,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
             }
 
             if (group.layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE)
-                UpdateStripe(current, group.layer, deltaTime, bbox);
+                UpdateStripe(current, group.layer, deltaTime, bbox, currForceValues);
 
             prev = current;
             current = current->next;
@@ -653,10 +658,11 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
     effect->effectRenderObject->SetAABBox(bbox);
 }
 
-void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleLayer* layer, float32 dt, AABBox3& bbox)
+void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleLayer* layer, float32 dt, AABBox3& bbox, Vector<Vector3>& currForceValues)
 {
     StripeData& data = particle->stripe;
     data.baseNode.position = particle->position;
+    data.baseNode.speed = particle->speed;
 
     data.spawnTimer += dt;
     float32 spawnTime = 1.0f / layer->stripeRate;
@@ -670,10 +676,28 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleLayer* layer
     }
 
     auto nodeIter = data.strpeNodes.begin();
+    int32 forcesCount = static_cast<int32>(currForceValues.size());
+
     while (nodeIter != data.strpeNodes.end())
     {
         nodeIter->lifeime += dt;
-        nodeIter->position += Vector3(0.0f, 0.0f, 1.0f) * layer->stripeSpeed * dt;
+        float32 overLife = nodeIter->lifeime / layer->stripeLifetime;
+
+        float32 currVelocityOverLife = 1.0f;
+        if (layer->velocityOverLife)
+            currVelocityOverLife = layer->velocityOverLife->GetValue(overLife);
+        nodeIter->position += nodeIter->speed * (currVelocityOverLife * dt);
+
+
+        if (forcesCount > 0)
+        {
+            Vector3 acceleration;
+            for (int32 i = 0; i < forcesCount; ++i)
+            {
+                acceleration += (layer->forces[i]->forceOverLife) ? (currForceValues[i] * layer->forces[i]->forceOverLife->GetValue(overLife)) : currForceValues[i];
+            }
+            nodeIter->speed += acceleration * dt;
+        }
         AddParticleToBBox(nodeIter->position, radius, bbox);
 
         if (nodeIter->lifeime >= layer->stripeLifetime)
