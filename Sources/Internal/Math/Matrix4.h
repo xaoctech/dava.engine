@@ -58,26 +58,10 @@ struct Matrix4
     inline void Identity();
     inline void Zero();
 
-    inline void BuildProjectionFovLH(float32 _fovY, float32 _aspect, float32 _zn, float32 _zf);
-    inline void BuildOrthoLH(float32 _l, float32 _r, float32 _t, float32 _b, float32 _zn, float32 _zf);
+    inline void BuildOrtho(float32 left, float32 right, float32 bottom, float32 top, float32 near, float32 far, bool zeroBaseClipRange);
+    inline void BuildPerspective(float32 left, float32 right, float32 bottom, float32 top, float32 near, float32 far, bool zeroBaseClipRange);
 
-    /*
-        Convenience functions to simplify movement to own matrices. 
-        Temporary solution. 
-     */
-    void glOrtho(float32 left, float32 right, float32 bottom, float32 top, float32 near, float32 far, bool zeroBaseClipRange);
-    void glFrustum(float32 left, float32 right, float32 bottom, float32 top, float32 near, float32 far, bool zeroBaseClipRange);
-
-    void glRotate(float32 angle, float32 x, float32 y, float32 z);
-    void glTranslate(float32 x, float32 y, float32 z);
-    void glScale(float32 x, float32 y, float32 z);
-
-    inline void BuildLookAtMatrixLH(const Vector3& _position,
-                                    const Vector3& _target,
-                                    const Vector3& _up);
-    inline void BuildLookAtMatrixRH(const Vector3& _position,
-                                    const Vector3& _target,
-                                    const Vector3& _up);
+    inline void BuildLookAtMatrix(const Vector3& _position, const Vector3& _target, const Vector3& _up);
 
     inline void Transpose();
 
@@ -142,10 +126,6 @@ inline Vector2 MultiplyVectorMat2x2(const Vector2& _v, const Matrix4& _m);
 
 inline Matrix4::Matrix4()
 {
-    // 	_00 = 0; _01 = 0; _02 = 0; _03 = 0;
-    // 	_10 = 0; _11 = 0; _12 = 0; _13 = 0;
-    // 	_20 = 0; _21 = 0; _22 = 0; _23 = 0;
-    // 	_30 = 0; _31 = 0; _32 = 0; _33 = 0;
     Identity();
 }
 
@@ -174,10 +154,6 @@ inline Matrix4::Matrix4(float32 _D00, float32 _D01, float32 _D02, float32 _D03,
 
 inline Matrix4::Matrix4(const Matrix4& m)
 {
-    // 	_00 = m._00; _01 = m._01; _02 = m._02; _03 = m._03;
-    // 	_10 = m._10; _11 = m._11; _12 = m._12; _13 = m._13;
-    // 	_20 = m._20; _21 = m._21; _22 = m._22; _23 = m._23;
-    // 	_30 = m._30; _31 = m._31; _32 = m._32; _33 = m._33;
     *this = m;
 }
 
@@ -203,10 +179,6 @@ inline Matrix4::Matrix4(const Matrix3& m)
 
 inline Matrix4& Matrix4::operator=(const Matrix4& m)
 {
-    // 	_00 = m._00; _01 = m._01; _02 = m._02; _03 = m._03;
-    // 	_10 = m._10; _11 = m._11; _12 = m._12; _13 = m._13;
-    // 	_20 = m._20; _21 = m._21; _22 = m._22; _23 = m._23;
-    // 	_30 = m._30; _31 = m._31; _32 = m._32; _33 = m._33;
     Memcpy(data, m.data, 16 * sizeof(float32));
     return *this;
 }
@@ -248,185 +220,88 @@ inline void Matrix4::Identity()
 
 inline void Matrix4::Zero()
 {
-    // 	data[0] = 0; data[1] = 0; data[2] = 0; data[3] = 0;
-    // 	data[4] = 0; data[5] = 0; data[6] = 0; data[7] = 0;
-    // 	data[8] = 0; data[9] = 0; data[10] = 0; data[11] = 0;
-    // 	data[12] = 0; data[13] = 0; data[14] = 0; data[15] = 0;
     Memset(data, 0, 16 * sizeof(float32));
 }
 
-inline void Matrix4::BuildProjectionFovLH(float32 _fovY, float32 _aspect, float32 _zn, float32 _zf)
+inline void Matrix4::BuildOrtho(float32 left, float32 right, float32 bottom, float32 top, float32 n, float32 f, bool zeroBaseClipRange)
 {
-    // DX9 formula
-    Zero();
+    float32 r_l = right - left;
+    float32 t_b = top - bottom;
+    float32 f_n = f - n;
+    float32 tx = -(right + left) / (right - left);
+    float32 ty = -(top + bottom) / (top - bottom);
+    float32 tz = -(f + n) / (f - n);
 
-    float32 sinF2 = std::sin(_fovY / 2.0f);
-    float32 cosF2 = std::cos(_fovY / 2.0f);
+    data[0] = 2.0f / r_l;
+    data[1] = 0.0f;
+    data[2] = 0.0f;
+    data[3] = 0.0f;
 
-    float h = cosF2 / sinF2;
-    float w = h / _aspect;
+    data[4] = 0.0f;
+    data[5] = 2.0f / t_b;
+    data[6] = 0.0f;
+    data[7] = 0.0f;
 
-    _data[0][0] = w;
-    _data[1][1] = h;
-    _data[2][2] = _zf / (_zf - _zn);
-    _data[3][2] = (-_zn * _zf) / (_zf - _zn);
-    _data[2][3] = 1.0f;
+    data[8] = 0.0f;
+    data[9] = 0.0f;
+    data[10] = -2.0f / f_n;
+    data[11] = 0.0f;
+
+    //RHI_COMPLETE - update it to zero based clip range
+
+    data[12] = tx;
+    data[13] = ty;
+    data[14] = tz;
+    data[15] = 1.0f;
 }
 
-inline void Matrix4::BuildOrthoLH(float32 _l, float32 _r, float32 _b, float32 _t, float32 _zn, float32 _zf)
+inline void Matrix4::BuildPerspective(float32 l, float32 r, float32 b, float32 t, float32 n, float32 f, bool zeroBaseClipRange)
 {
-    // DX9 formula
-    Zero();
+    float32 r_l = r - l;
+    float32 t_b = t - b;
+    float32 f_n = f - n;
 
-    _data[0][0] = 2.0f / (_r - _l);
-    _data[1][1] = 2.0f / (_t - _b);
-    _data[2][2] = 1 / (_zf - _zn);
+    data[0] = 2.0f * n / r_l;
+    data[4] = 0.0f;
+    data[8] = (r + l) / (r - l);
+    data[12] = 0.0f;
 
-    _data[3][2] = (_zn) / (_zn - _zf);
-    _data[3][0] = (_l + _r) / (_l - _r);
-    _data[3][1] = (_b + _t) / (_b - _t);
-    _data[3][3] = 1.0f;
+    data[1] = 0.0f;
+    data[5] = 2.0f * n / t_b;
+    data[9] = (t + b) / (t - b);
+    data[13] = 0.0f;
+
+    data[2] = 0.0f;
+    data[6] = 0.0f;
+    if (zeroBaseClipRange)
+    {
+        data[10] = -f / f_n;
+        data[14] = -f * n / f_n;
+    }
+    else
+    {
+        data[10] = -(f + n) / f_n;
+        data[14] = -2 * f * n / f_n;
+    }
+
+    data[3] = 0;
+    data[7] = 0;
+    data[11] = -1;
+    data[15] = 0;
 }
 
-inline void Matrix4::BuildLookAtMatrixLH(
-const Vector3& _position,
-const Vector3& _target,
-const Vector3& _up)
+inline void Matrix4::BuildLookAtMatrix(const Vector3& _position, const Vector3& _target, const Vector3& _up)
 {
-    //
-    //	float32 m[16];
-    //    float32 x[3], y[3], z[3];
-    //    float32 mag;
-    //
-    //    /* Make rotation matrix */
-    //
-    //    /* Z vector */
-    //    z[0] = eye.x - center.x;
-    //    z[1] = eye.y - center.y;
-    //    z[2] = eye.z - center.z;
-    //    mag = sqrt(z[0] * z[0] + z[1] * z[1] + z[2] * z[2]);
-    //    if (mag) {          /* mpichler, 19950515 */
-    //        z[0] /= mag;
-    //        z[1] /= mag;
-    //        z[2] /= mag;
-    //    }
-    //
-    //    /* Y vector */
-    //    y[0] = up.x;
-    //    y[1] = up.y;
-    //    y[2] = up.z;
-    //
-    //    /* X vector = Y cross Z */
-    //    x[0] = y[1] * z[2] - y[2] * z[1];
-    //    x[1] = -y[0] * z[2] + y[2] * z[0];
-    //    x[2] = y[0] * z[1] - y[1] * z[0];
-    //
-    //    /* Recompute Y = Z cross X */
-    //    y[0] = z[1] * x[2] - z[2] * x[1];
-    //    y[1] = -z[0] * x[2] + z[2] * x[0];
-    //    y[2] = z[0] * x[1] - z[1] * x[0];
-    //
-    //    /* mpichler, 19950515 */
-    //    /* cross product gives area of parallelogram, which is < 1.0 for
-    //     * non-perpendicular unit-length vectors; so normalize x, y here
-    //     */
-    //
-    //    mag = sqrt(x[0] * x[0] + x[1] * x[1] + x[2] * x[2]);
-    //    if (mag) {
-    //        x[0] /= mag;
-    //        x[1] /= mag;
-    //        x[2] /= mag;
-    //    }
-    //
-    //    mag = sqrt(y[0] * y[0] + y[1] * y[1] + y[2] * y[2]);
-    //    if (mag) {
-    //        y[0] /= mag;
-    //        y[1] /= mag;
-    //        y[2] /= mag;
-    //    }
-    //
-    //#define M(row,col)  m[col*4+row]
-    //    M(0, 0) = x[0];
-    //    M(0, 1) = x[1];
-    //    M(0, 2) = x[2];
-    //    M(0, 3) = 0.0;
-    //    M(1, 0) = y[0];
-    //    M(1, 1) = y[1];
-    //    M(1, 2) = y[2];
-    //    M(1, 3) = 0.0;
-    //    M(2, 0) = z[0];
-    //    M(2, 1) = z[1];
-    //    M(2, 2) = z[2];
-    //    M(2, 3) = 0.0;
-    //    M(3, 0) = 0.0;
-    //    M(3, 1) = 0.0;
-    //    M(3, 2) = 0.0;
-    //    M(3, 3) = 1.0;
-    //#undef M
-    //
-    //	for (int32 k = 0; k < 16; ++k)
-    //		data[k] = m[k];
-    //
-    //	Matrix4 translation;
-    //	translation.CreateTranslation(- eye);
-    //	*this = *this * translation;
+    Vector3 vz = _position - _target;
+    vz.Normalize();
 
-    Vector3 left, forward, up;
+    Vector3 vx = CrossProduct(_up, vz);
+    vx.Normalize();
 
-    forward = _target - _position;
-    forward.Normalize();
-
-    left = CrossProduct(_up, forward);
-    left.Normalize();
-
-    up = CrossProduct(forward, left);
-    up.Normalize();
+    Vector3 vy = CrossProduct(vz, vx);
+    vy.Normalize();
 
     Identity();
-
-    Vector3& vx = left;
-    Vector3& vy = up;
-    Vector3& vz = forward;
-
-    _data[0][0] = vx.x;
-    _data[1][0] = vx.y;
-    _data[2][0] = vx.z;
-    _data[3][0] = -_position.DotProduct(vx);
-
-    _data[0][1] = vy.x;
-    _data[1][1] = vy.y;
-    _data[2][1] = vy.z;
-    _data[3][1] = -_position.DotProduct(vy);
-
-    _data[0][2] = vz.x;
-    _data[1][2] = vz.y;
-    _data[2][2] = vz.z;
-    _data[3][2] = -_position.DotProduct(vz);
-
-    //*this = *this * translation;
-}
-
-inline void Matrix4::BuildLookAtMatrixRH(
-const Vector3& _position,
-const Vector3& _target,
-const Vector3& _up)
-{
-    Vector3 left, forward, up;
-
-    forward = _position - _target;
-    forward.Normalize();
-
-    left = CrossProduct(_up, forward);
-    left.Normalize();
-
-    up = CrossProduct(forward, left);
-    up.Normalize();
-
-    Identity();
-
-    Vector3& vx = left;
-    Vector3& vy = up;
-    Vector3& vz = forward;
 
     _data[0][0] = vx.x;
     _data[1][0] = vx.y;

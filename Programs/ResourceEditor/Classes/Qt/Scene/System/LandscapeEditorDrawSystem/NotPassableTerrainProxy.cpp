@@ -127,11 +127,11 @@ void NotPassableTerrainProxy::UpdateTexture(DAVA::Heightmap* heightmap, const DA
     DAVA::Matrix4 projMatrix;
     if (!rhi::DeviceCaps().isUpperLeftRTOrigin)
     {
-        projMatrix.glOrtho(0.0f, textureSize.dx, 0.0f, textureSize.dy, -1.0f, 1.0f, rhi::DeviceCaps().isZeroBaseClipRange);
+        projMatrix.BuildOrtho(0.0f, textureSize.dx, 0.0f, textureSize.dy, -1.0f, 1.0f, rhi::DeviceCaps().isZeroBaseClipRange);
     }
     else
     {
-        projMatrix.glOrtho(0.0f, textureSize.dx, textureSize.dy, 0.0f, -1.0f, 1.0f, rhi::DeviceCaps().isZeroBaseClipRange);
+        projMatrix.BuildOrtho(0.0f, textureSize.dx, textureSize.dy, 0.0f, -1.0f, 1.0f, rhi::DeviceCaps().isZeroBaseClipRange);
     }
 
     DAVA::Renderer::GetDynamicBindings().SetDynamicParam(DAVA::DynamicBindings::PARAM_WORLD, &DAVA::Matrix4::IDENTITY, reinterpret_cast<DAVA::pointer_size>(&DAVA::Matrix4::IDENTITY));
