@@ -29,7 +29,7 @@ struct TextureDX9_t : public ResourceImpl<TextureDX9_t, Texture::Descriptor>
 
     uint32 lastUnit = DAVA::InvalidIndex;
     uint32 mappedLevel = 0;
-    TextureFace mappedFace = TextureFace(-1);
+    TextureFace mappedFace = TEXTURE_FACE_NONE;
     void* mappedData = nullptr;
     bool isMapped = false;
 };
@@ -343,6 +343,7 @@ dx9_Texture_Map(Handle tex, unsigned level, TextureFace face)
     if (self->cubetex9)
     {
         DVASSERT(!self->CreationDesc().isRenderTarget);
+        DVASSERT(face != TEXTURE_FACE_NONE);
 
         D3DCUBEMAP_FACES f = textureFaceToD3DFace[face];
         DX9Command cmd = { DX9Command::READ_CUBETEXTURE_LEVEL, { uint64_t(&self->cubetex9), level, face, data_sz, format, uint64(self->mappedData) } };
@@ -459,6 +460,7 @@ dx9_Texture_Update(Handle tex, const void* data, uint32 level, TextureFace face)
 
     if (self->cubetex9)
     {
+        DVASSERT(face != TEXTURE_FACE_NONE);
         D3DCUBEMAP_FACES f = textureFaceToD3DFace[face];
         DX9Command cmd = { DX9Command::UPDATE_CUBETEXTURE_LEVEL, { uint64_t(&self->cubetex9), level, f, uint64(data), data_sz, self->CreationDesc().format } };
         ExecDX9(&cmd, 1, false);
@@ -530,8 +532,9 @@ void SetAsRenderTarget(Handle tex, unsigned target_i, TextureFace face)
     {
         DX9_CALL(_D3D9_Device->SetRenderTarget(target_i, self->surf9), "SetRenderTarget");
     }
-    else
+    else //cubemap
     {
+        DVASSERT(face != TEXTURE_FACE_NONE);
         DX9_CALL(_D3D9_Device->SetRenderTarget(target_i, self->cubesurf9[face]), "SetRenderTarget");
     }
 }
