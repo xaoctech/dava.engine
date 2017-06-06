@@ -11,6 +11,7 @@
 #include <Network/NetworkCommon.h>
 #include <Network/PeerDesription.h>
 #include <Network/ServicesProvider.h>
+#include <Utils/StringFormat.h>
 
 #include <QDebug>
 #include <QStandardItemModel>
@@ -37,8 +38,7 @@ DeviceListController::DeviceListController(QObject* parent)
     NetCore::Instance()->RegisterService(MEMORY_PROFILER_SERVICE_ID, MakeFunction(&profilerServiceCreatorAsync, &ServiceCreatorDispatched::ServiceCreatorCall), MakeFunction(&profilerServiceDeleterAsync, &ServiceDeleterDispatched::ServiceDeleterCall), "Memory profiler");
 
     // Create controller for discovering remote devices
-    Endpoint endpoint(NetCore::defaultAnnounceMulticastGroup, NetCore::DEFAULT_UDP_ANNOUNCE_PORT);
-    NetCore::Instance()->CreateDiscoverer(endpoint, DAVA::MakeFunction(this, &DeviceListController::DiscoverCallback));
+    CreateDiscovererController();
 }
 
 DeviceListController::~DeviceListController()
@@ -95,7 +95,7 @@ void DeviceListController::OnDeviceDiscover(const QString& addr)
     }
     else
     {
-        portsRange = ServicesProvider::GetPortsRange();
+        portsRange = ServicesProvider::GetTcpPortsRange();
     }
 
     if (valid)
@@ -115,6 +115,22 @@ void DeviceListController::OnDeviceDiscover(const QString& addr)
         QMessageBox::critical(view, "Invalid input", "Expected input: xxx.xxx.xxx.xxx[:port]\n"
                                                      "   xxx.xxx.xxx.xxx - destination IP address\n"
                                                      "   port - optional port, default is 9998");
+    }
+}
+
+void DeviceListController::CreateDiscovererController()
+{
+    using namespace DAVA::Net;
+    Endpoint endpoint(NetCore::defaultAnnounceMulticastGroup, NetCore::DEFAULT_UDP_ANNOUNCE_PORT);
+    discovererControllerId = NetCore::Instance()->CreateDiscoverer(endpoint, DAVA::MakeFunction(this, &DeviceListController::DiscoverCallback));
+}
+
+void DeviceListController::DestroyDiscovererController()
+{
+    if (discovererControllerId != DAVA::Net::NetCore::INVALID_TRACK_ID)
+    {
+        DAVA::Net::NetCore::Instance()->DestroyControllerBlocked(discovererControllerId);
+        discovererControllerId = DAVA::Net::NetCore::INVALID_TRACK_ID;
     }
 }
 
@@ -492,6 +508,7 @@ void DeviceListController::DiscoverCallback(size_t buflen, const void* buffer, c
         DAVA::Net::PeerDescription peer;
         if (peer.Deserialize(buffer, buflen) > 0)
         {
+            DAVA::Logger::FrameworkDebug("Endpoint %s will be added to device list", endpoint.ToString().c_str());
             QStandardItem* item = CreateDeviceItem(endpoint, peer);
             model->appendRow(item);
             if (view)
@@ -522,7 +539,8 @@ void DeviceListController::DiscoverOnRange(const DAVA::Net::IPAddress& addr, con
     ipAddr = addr;
     portsRange = range;
     currentPort = portsRange.first;
-    attempts = 0;
+    waitingForStartIterations = 0;
+    closingPreviousDiscoverIterations = 0;
     DiscoverOnCurrentPort();
 }
 
@@ -531,32 +549,84 @@ void DeviceListController::DiscoverOnCurrentPort()
     using namespace DAVA;
     using namespace DAVA::Net;
 
-    const uint32 MAX_ATTEMPTS = 2;
-    if (attempts++ > MAX_ATTEMPTS)
-    {
-        DiscoverNext();
-        return;
-    }
-
     Endpoint endp(ipAddr, currentPort);
-    if (NetCore::Instance()->TryDiscoverDevice(endp))
+
+    NetCore::DiscoverStartResult startResult = NetCore::Instance()->TryDiscoverDevice(endp);
+    switch (startResult)
     {
-        DiscoverNext();
+    case NetCore::CONTROLLER_NOT_CREATED:
+    {
+        Logger::Error("Discoverer was not created");
         return;
     }
-    else
+    case NetCore::CONTROLLER_NOT_STARTED_YET:
     {
-        const int REATTEMPT_PERIOD_MSEC = 500;
-        QTimer::singleShot(REATTEMPT_PERIOD_MSEC, this, &DeviceListController::DiscoverOnCurrentPort);
+        static uint32 MAX_WAITING_FOR_START_ITERATIONS = 2;
+        ++waitingForStartIterations;
+
+        if (waitingForStartIterations >= MAX_WAITING_FOR_START_ITERATIONS)
+        {
+            Logger::Error("Controller is not started");
+            return;
+        }
+        else
+        {
+            DiscoverOnCurrentPortLater();
+            return;
+        }
+    }
+    case NetCore::DISCOVER_STARTED:
+    {
+        DiscoverNext(START_LATER);
+        return;
+    }
+    case NetCore::CLOSING_PREVIOUS_DISCOVER:
+    {
+        static uint32 MAX_CLOSING_PREVIOUS_DISCOVER_ITERATIONS = 2;
+        ++closingPreviousDiscoverIterations;
+        if (closingPreviousDiscoverIterations >= MAX_CLOSING_PREVIOUS_DISCOVER_ITERATIONS)
+        {
+            DAVA::Logger::FrameworkDebug("Restarting discoverer");
+            DestroyDiscovererController();
+            CreateDiscovererController();
+            closingPreviousDiscoverIterations = 0;
+            DiscoverOnCurrentPortLater();
+            return;
+        }
+        else
+        {
+            DiscoverOnCurrentPortLater();
+            return;
+        }
+    }
+    default:
+    {
+        DVASSERT(false, Format("Unknown type: %u", startResult).c_str());
+        return;
+    }
     }
 }
 
-void DeviceListController::DiscoverNext()
+void DeviceListController::DiscoverOnCurrentPortLater()
+{
+    const int REATTEMPT_PERIOD_MSEC = 1500;
+    QTimer::singleShot(REATTEMPT_PERIOD_MSEC, this, &DeviceListController::DiscoverOnCurrentPort);
+}
+
+void DeviceListController::DiscoverNext(DeviceListController::DiscoverStartParam param)
 {
     ++currentPort;
-    attempts = 0;
+    waitingForStartIterations = 0;
+    closingPreviousDiscoverIterations = 0;
     if (currentPort <= portsRange.second)
     {
-        DiscoverOnCurrentPort();
+        if (param == START_IMMEDIATELY)
+        {
+            DiscoverOnCurrentPort();
+        }
+        else
+        {
+            DiscoverOnCurrentPortLater();
+        }
     }
 }

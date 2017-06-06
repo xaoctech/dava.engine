@@ -342,7 +342,7 @@ void NetCore::Finish(bool waitForFinished)
 #endif
 }
 
-bool NetCore::TryDiscoverDevice(const Endpoint& endpoint)
+NetCore::DiscoverStartResult NetCore::TryDiscoverDevice(const Endpoint& endpoint)
 {
 #if !defined(DAVA_NETWORK_DISABLE)
     if (discovererId != INVALID_TRACK_ID)
@@ -354,12 +354,19 @@ bool NetCore::TryDiscoverDevice(const Endpoint& endpoint)
             // Variable is named in honor of big fan and donater of tanks - Sergey Demidov
             // And this man assures that cast below is valid, so do not worry, guys
             Discoverer* SergeyDemidov = static_cast<Discoverer*>(*it);
-            return SergeyDemidov->TryDiscoverDevice(endpoint);
+            return (SergeyDemidov->TryDiscoverDevice(endpoint) ? DISCOVER_STARTED : CLOSING_PREVIOUS_DISCOVER);
+        }
+        else
+        {
+            return CONTROLLER_NOT_STARTED_YET;
         }
     }
-    return false;
+    else
+    {
+        return CONTROLLER_NOT_CREATED;
+    }    
 #else
-    return true;
+    return DISCOVER_STARTED;
 #endif
 }
 

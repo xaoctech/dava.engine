@@ -5,6 +5,7 @@
 #ifdef WITH_SCENE_PERFORMANCE_TESTS
 #include <GridTest.h>
 #endif
+#include <Tools/NetworkHelpers/ChannelListenerDispatched.h>
 
 #include <Network/ServicesProvider.h>
 #include <DAVAEngine.h>
@@ -51,16 +52,16 @@ public:
     void EndFrame();
 
 private:
-    void CreateDocumentsFolder();
-
     ViewSceneScreen* viewSceneScreen = nullptr;
     PerformanceResultsScreen* performanceResultsScreen = nullptr;
 
     SceneViewerData data;
 
     std::shared_ptr<DAVA::Net::NetService> netLogger;
+    std::shared_ptr<DAVA::Net::IChannelListener> netLoggerDispatched;
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
     std::shared_ptr<DAVA::Net::NetService> memprofServer;
+    std::shared_ptr<DAVA::Net::IChannelListener> memprofServerDispatched;
 #endif
     std::unique_ptr<DAVA::Net::ServicesProvider> servicesProvider;
 };

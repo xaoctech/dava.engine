@@ -62,6 +62,9 @@ private slots:
     void OnDeviceDiscover(const QString& addr);
 
 private:
+    void CreateDiscovererController();
+    void DestroyDiscovererController();
+
     void ConnectDeviceInternal(QModelIndex& index, size_t ifIndex);
     void DisonnectDeviceInternal(QModelIndex& index);
 
@@ -75,9 +78,15 @@ private:
     // Check whether device already has been discovered
     bool AlreadyInModel(const DAVA::Net::Endpoint& endp, const DAVA::String& appName) const;
 
+    enum DiscoverStartParam
+    {
+        START_IMMEDIATELY,
+        START_LATER
+    };
     void DiscoverOnRange(const DAVA::Net::IPAddress& ipAddr, const std::pair<DAVA::uint16, DAVA::uint16>& portsRange);
     void DiscoverOnCurrentPort();
-    void DiscoverNext();
+    void DiscoverOnCurrentPortLater();
+    void DiscoverNext(DiscoverStartParam = START_IMMEDIATELY);
 
 private:
     QPointer<QStandardItemModel> model;
@@ -91,8 +100,11 @@ private:
 
     DAVA::Net::IPAddress ipAddr;
     std::pair<DAVA::uint16, DAVA::uint16> portsRange;
+    uintptr_t discovererControllerId = DAVA::Net::NetCore::INVALID_TRACK_ID;
     DAVA::uint16 currentPort = 0;
-    DAVA::uint32 attempts = 0;
+    DAVA::uint32 waitingForStartIterations = 0;
+    DAVA::uint32 closingPreviousDiscoverIterations = 0;
+    DAVA::Net::NetCore::DiscoverStartResult previousStartResult = DAVA::Net::NetCore::DISCOVER_STARTED;
 
 private:
     static QStandardItem* CreateDeviceItem(const DAVA::Net::Endpoint& endp, const DAVA::Net::PeerDescription& peerDescr);
