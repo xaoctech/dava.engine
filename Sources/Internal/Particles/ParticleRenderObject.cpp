@@ -513,8 +513,9 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                 DynamicBufferAllocator::AllocResultVB vb = DynamicBufferAllocator::AllocateVertexBuffer(vertexStride, vCount);
                 iCount = (vCount - 2) * 3;
                 DynamicBufferAllocator::AllocResultIB ib = DynamicBufferAllocator::AllocateIndexBuffer(iCount);
-                Vector3 left = base.position + basisVector * group.layer->stripeStartSize * 0.5f;
-                Vector3 right = base.position - basisVector * group.layer->stripeStartSize * 0.5f;
+
+                Vector3 left = base.position + data.inheritPositionOffset + basisVector * group.layer->stripeStartSize * 0.5f;
+                Vector3 right = base.position + data.inheritPositionOffset - basisVector * group.layer->stripeStartSize * 0.5f;
                 Vector2 uv1(currentParticle->life * group.layer->stripeUScrollSpeed, currentParticle->life * group.layer->stripeVScrollSpeed);
                 Vector2 uv2(currentParticle->life * group.layer->stripeUScrollSpeed + 1.0f, currentParticle->life * group.layer->stripeVScrollSpeed);
                 float* dataPtr = reinterpret_cast<float*>(vb.data);
@@ -530,8 +531,8 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                 {
                     float32 lv = node.lifeime / group.layer->stripeLifetime;
                     float32 size = Lerp(group.layer->stripeStartSize, group.layer->stripeSizeOverLife, lv);
-                    left = node.position + basisVector * size * 0.5f;
-                    right = node.position - basisVector * size * 0.5f;
+                    left = node.position + data.inheritPositionOffset + basisVector * size * 0.5f;
+                    right = node.position + data.inheritPositionOffset - basisVector * size * 0.5f;
 
                     float32 alpha = Lerp(1.0f, group.layer->stripeAlphaOverLife, lv);
                     col = rhi::NativeColorRGBA(currColor.r, currColor.g, currColor.b, Clamp(currColor.a * alpha, 0.0f, 1.0f));

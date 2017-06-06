@@ -348,6 +348,14 @@ void ParticleEffectSystem::Process(float32 timeElapsed)
         if (effect->state == ParticleEffectComponent::STATE_STARTING)
         {
             RunEffect(effect);
+
+            if (effect->simulateFromTime > EPSILON)
+            {
+                uint32 frames = static_cast<uint32>(effect->simulateFromTime * 30.0f);
+                static const float32 delta = 0.0333f;
+                for (uint32 i = 0; i < frames; ++i)
+                    UpdateEffect(effect, delta, delta);
+            }
         }
 
         if (effect->isPaused)
@@ -595,7 +603,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
             }
 
             if (group.layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE)
-                UpdateStripe(current, group.layer, deltaTime, bbox, currForceValues);
+                UpdateStripe(current, effect->effectData, group, deltaTime, bbox, currForceValues);
 
             prev = current;
             current = current->next;
@@ -658,10 +666,17 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
     effect->effectRenderObject->SetAABBox(bbox);
 }
 
-void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleLayer* layer, float32 dt, AABBox3& bbox, Vector<Vector3>& currForceValues)
+void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& effectData, ParticleGroup& group, float32 dt, AABBox3& bbox, Vector<Vector3>& currForceValues)
 {
+    ParticleLayer* layer = group.layer;
     StripeData& data = particle->stripe;
     data.baseNode.position = particle->position;
+    if (layer->inheritPosition)
+    {
+        data.inheritPositionOffset = effectData.infoSources[group.positionSource].position; // TODO: checkbox for both options.
+        //data.baseNode.position = effectData.infoSources[group.positionSource].position;
+    }
+
     data.baseNode.speed = particle->speed;
 
     data.spawnTimer += dt;
@@ -688,7 +703,6 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleLayer* layer
             currVelocityOverLife = layer->velocityOverLife->GetValue(overLife);
         nodeIter->position += nodeIter->speed * (currVelocityOverLife * dt);
 
-
         if (forcesCount > 0)
         {
             Vector3 acceleration;
@@ -698,7 +712,10 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleLayer* layer
             }
             nodeIter->speed += acceleration * dt;
         }
-        AddParticleToBBox(nodeIter->position, radius, bbox);
+        if (layer->inheritPosition)
+            AddParticleToBBox(nodeIter->position + effectData.infoSources[group.positionSource].position, radius, bbox);
+        else
+            AddParticleToBBox(nodeIter->position, radius, bbox);
 
         if (nodeIter->lifeime >= layer->stripeLifetime)
             data.strpeNodes.erase(nodeIter++);
@@ -841,6 +858,7 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleEffectComponent* eff
         if (innerEmitter)
             RunEmitter(effect, innerEmitter, Vector3(0, 0, 0), particle->positionTarget);
     }
+
     return particle;
 }
 
