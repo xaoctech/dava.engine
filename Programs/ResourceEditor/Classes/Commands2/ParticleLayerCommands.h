@@ -141,6 +141,7 @@ public:
         DAVA::float32 stripeUScrollSpeed;
         DAVA::float32 stripeVScrollSpeed;
         DAVA::float32 stripeAlphaOverLife;
+        bool stripeInheritPositionForBase;
     };
 
     CommandChangeParticlesStripeProperties(DAVA::ParticleLayer* layer, StripeParams&& params);

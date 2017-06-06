@@ -856,6 +856,7 @@ void EmitterLayerWidget::OnStripePropertiesChanged()
     params.stripeUScrollSpeed = static_cast<DAVA::float32>(stripeUScrollSpeedSpin->value());
     params.stripeVScrollSpeed = static_cast<DAVA::float32>(stripeVScrollSpeedSpin->value());
     params.stripeAlphaOverLife = static_cast<DAVA::float32>(stripeAlphaOverLifeSpin->value());
+    params.stripeInheritPositionForBase = stripeInheritPositionForBaseCheckBox->isChecked();
     GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeParticlesStripeProperties(layer, std::move(params))));
 
     emit ValueChanged();
@@ -1022,6 +1023,7 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     stripeUScrollSpeedSpin->setValue(layer->stripeUScrollSpeed);
     stripeVScrollSpeedSpin->setValue(layer->stripeVScrollSpeed);
     stripeAlphaOverLifeSpin->setValue(layer->stripeAlphaOverLife);
+    stripeInheritPositionForBaseCheckBox->setChecked(layer->stripeInheritPositionForBase);
 
     bool fresToAlphaVisible = layer->useFresnelToAlpha;
     fresnelBiasLabel->setVisible(fresToAlphaVisible);
@@ -1461,6 +1463,13 @@ QLayout* EmitterLayerWidget::CreateStripeLayout()
 {
     QVBoxLayout* vertStripeLayout = new QVBoxLayout();
     vertStripeLayout->setContentsMargins(0, 10, 0, 0);
+
+    stripeInheritPositionForBaseCheckBox = new QCheckBox("Valera");
+    vertStripeLayout->addWidget(stripeInheritPositionForBaseCheckBox);
+    connect(stripeInheritPositionForBaseCheckBox,
+        SIGNAL(stateChanged(int)),
+        this,
+        SLOT(OnStripePropertiesChanged()));
 
     QHBoxLayout* longStripeLayout = new QHBoxLayout();
 

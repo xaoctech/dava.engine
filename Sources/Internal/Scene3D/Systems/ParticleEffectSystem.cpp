@@ -673,9 +673,10 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
     data.baseNode.position = particle->position;
     if (layer->inheritPosition)
     {
-        data.inheritPositionOffset = effectData.infoSources[group.positionSource].position; // TODO: checkbox for both options.
-        //data.baseNode.position = effectData.infoSources[group.positionSource].position;
+        data.inheritPositionOffset = effectData.infoSources[group.positionSource].position;
     }
+    if (layer->stripeInheritPositionForBase)
+        data.baseNode.position = effectData.infoSources[group.positionSource].position;
 
     data.baseNode.speed = particle->speed;
 

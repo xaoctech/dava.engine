@@ -276,6 +276,7 @@ ParticleLayer* ParticleLayer::Clone()
     dstLayer->enableFog = enableFog;
     dstLayer->enableFrameBlend = enableFrameBlend;
     dstLayer->inheritPosition = inheritPosition;
+    dstLayer->stripeInheritPositionForBase = stripeInheritPositionForBase;
     dstLayer->startTime = startTime;
     dstLayer->endTime = endTime;
 
@@ -891,6 +892,9 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
     {
         inheritPosition = inheritPositionNode->AsBool();
     }
+    const YamlNode* stripeInheritPositionForBaseNode = node->Get("stripeInheritPositionForBase");
+    if (stripeInheritPositionForBaseNode)
+        stripeInheritPositionForBase = stripeInheritPositionForBaseNode->AsBool();
 
     // Load the Inner Emitter parameters.
     const YamlNode* innerEmitterPathNode = node->Get("innerEmitterPath");
@@ -1076,6 +1080,7 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "loopEndTime", this->loopEndTime);
 
     layerNode->Set("inheritPosition", inheritPosition);
+    layerNode->Set("stripeInheritPositionForBase", stripeInheritPositionForBase);
 
     layerNode->Set("particleOrientation", particleOrientation);
 
