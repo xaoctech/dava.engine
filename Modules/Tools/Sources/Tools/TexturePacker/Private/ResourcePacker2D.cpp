@@ -439,7 +439,7 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath& inputPath, const FilePa
                         shouldAcceptFile = defFile->LoadPSD(fullname, processDir, maxTextureSize,
                                                             withAlpha, useLayerNames, verbose);
                     }
-                    else if (isLightmapsPacking && fullname.IsEqualToExtension(".png"))
+                    else if (fullname.IsEqualToExtension(".png"))
                     {
                         shouldAcceptFile = true;
                         defFile->LoadPNG(fullname, processDir);

@@ -24,11 +24,16 @@ void SpineTest::LoadResources()
     UIControlBackground* bg = ctrl->GetOrCreateComponent<UIControlBackground>();
     if (bg)
     {
+        bg->SetDrawType(UIControlBackground::DRAW_BATCH);
     }
 
     UISpineComponent* sc = ctrl->GetOrCreateComponent<UISpineComponent>();
     if (sc)
     {
+        sc->SetSkeletonPath("~res:/UI/Spine/spineboy.json");
+        sc->SetAtlasPath("~res:/Gfx/Spine/spineboy.atlas");
+        sc->SetAnimationName("walk");
+        sc->SetAnimationState(UISpineComponent::PLAYED);
     }
 
     AddControl(ctrl.Get());
