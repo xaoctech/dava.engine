@@ -344,6 +344,6 @@ bool NeedInvertProjection(const RenderPassConfig& passDesc)
 
     bool isCubemapRT = (passDesc.colorBuffer[0].textureFace != TEXTURE_FACE_NONE) || (passDesc.colorBuffer[1].textureFace != TEXTURE_FACE_NONE);
 
-    return (isRT && !DeviceCaps().isUpperLeftRTOrigin && !isCubemapRT) || (isCubemapRT && DeviceCaps().isCubemapCoordinateSystemLH);
+    return isRT && ((!DeviceCaps().isUpperLeftRTOrigin && !isCubemapRT) || (isCubemapRT && DeviceCaps().isUpperLeftRTOrigin));
 }
 }

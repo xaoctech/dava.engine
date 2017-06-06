@@ -260,7 +260,6 @@ void metal_Initialize(const InitParam& param)
     MutableDeviceCaps::Get().isVertexTextureUnitsSupported = true;
     MutableDeviceCaps::Get().isZeroBaseClipRange = true;
     MutableDeviceCaps::Get().isUpperLeftRTOrigin = true;
-    MutableDeviceCaps::Get().isCubemapCoordinateSystemLH = true;
     MutableDeviceCaps::Get().isCenterPixelMapping = false;
     MutableDeviceCaps::Get().isInstancingSupported = true;
     MutableDeviceCaps::Get().maxAnisotropy = 16;

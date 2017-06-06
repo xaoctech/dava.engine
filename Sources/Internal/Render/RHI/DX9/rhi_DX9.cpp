@@ -252,7 +252,6 @@ void dx9_InitCaps(const AdapterInfo& adapterInfo)
     MutableDeviceCaps::Get().isInstancingSupported = true;
     MutableDeviceCaps::Get().isUpperLeftRTOrigin = true;
     MutableDeviceCaps::Get().isZeroBaseClipRange = true;
-    MutableDeviceCaps::Get().isCubemapCoordinateSystemLH = true;
     MutableDeviceCaps::Get().isCenterPixelMapping = true;
     MutableDeviceCaps::Get().maxTextureSize = DAVA::Min(caps.MaxTextureWidth, caps.MaxTextureHeight);
 
