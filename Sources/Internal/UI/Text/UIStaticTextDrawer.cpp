@@ -53,7 +53,7 @@ UIStaticTextDrawer::UIStaticTextDrawer(UIControl* control_, UIStaticTextComponen
     shadowBg->SetPerPixelAccuracyType(component->GetPerPixelAccuracyType());
 }
 
-void UIStaticTextDrawer::applyModifications()
+void UIStaticTextDrawer::ApplyComponentData()
 {
     if (component->IsModified())
     {
@@ -157,25 +157,18 @@ void UIStaticTextDrawer::PrepareSprite()
     }
 }
 
-Rect UIStaticTextDrawer::CalculateTextBlockRect(const UIGeometricData& geometricData) const
-{
-    Rect resultRect(geometricData.position, geometricData.size);
-    return resultRect;
-}
-
 void UIStaticTextDrawer::Draw(const UIGeometricData& geometricData)
 {
     DVASSERT(control == component->GetControl(), "Invalid control poiner!");
 
-    applyModifications();
+    ApplyComponentData();
 
     if (component->GetText().empty())
     {
-        // TODO not required?
-        // UIControl::Draw(geometricData);
         return;
     }
-    Rect textBlockRect = CalculateTextBlockRect(geometricData);
+
+    Rect textBlockRect(geometricData.position, geometricData.size);
     if (textBlock->GetFont() && textBlock->GetFont()->GetFontType() == Font::TYPE_DISTANCE)
     {
         // Correct rect and setup position and scale for distance fonts

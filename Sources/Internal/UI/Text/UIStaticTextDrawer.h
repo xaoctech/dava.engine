@@ -32,19 +32,16 @@ public:
 
     UIStaticTextDrawer(UIControl* control_, UIStaticTextComponent* component_);
 
-    Rect CalculateTextBlockRect(const UIGeometricData& geometricData) const;
     void Draw(const UIGeometricData& geometricData);
 
 private:
     UIStaticTextDrawer& operator=(const UIStaticTextDrawer&) = delete;
 
     void PrepareSprite();
-    void applyModifications();
+    void ApplyComponentData();
 
 protected:
     ~UIStaticTextDrawer() override = default;
-
-    // Rect CalculateTextBlockRect(const UIGeometricData& geometricData) const;
 
     RefPtr<UIControl> control;
     RefPtr<UIStaticTextComponent> component;

@@ -5,7 +5,6 @@
 #include "Render/2D/TextBlock.h"
 #include "UI/Components/UIComponent.h"
 #include "UI/UIControl.h"
-#include "UIStaticTextDrawer.h"
 
 namespace DAVA
 {
@@ -40,6 +39,8 @@ public:
     UIStaticTextComponent(const UIStaticTextComponent& src);
     UIStaticTextComponent* Clone() const override;
     UIStaticTextComponent& operator=(const UIStaticTextComponent&) = delete;
+
+    //  Persistent properties:
 
     void SetAlign(int32 _align);
     int32 GetAlign() const;
@@ -77,19 +78,23 @@ public:
     bool IsForceBiDiSupportEnabled() const;
     void SetForceBiDiSupportEnabled(bool value);
 
-    ////////////////////////
-
-    void SetParentColor(const Color& parentColor);
-    Color GetParentColor();
-    void Draw(const UIGeometricData& geometricData);
-    void CreateDrawer();
-    void DestroyDrawer();
+    // Helper properties:
 
     void SetModified(bool value);
     bool IsModified() const;
 
+    // Legacy:
+
+    void SetInternalDrawer(UIStaticTextDrawer*);
+    UIStaticTextDrawer* GetInternalDrawer();
+
+    void SetParentColor(const Color& parentColor);
+    Color GetParentColor();
+
     void SetRequestedTextRectSize(const Vector2& value);
     Vector2 GetRequestedTextRectSize() const;
+
+    void Draw(const UIGeometricData& geometricData);
 
 protected:
     int32 align = eAlign::ALIGN_HCENTER | eAlign::ALIGN_VCENTER;
@@ -105,10 +110,13 @@ protected:
     TextBlock::eUseRtlAlign useRtlAlign = TextBlock::eUseRtlAlign::RTL_DONT_USE;
     bool forceBiDiSupport = false;
 
-    // internal
-    Vector2 requestedTextRectSize = Vector2::Zero;
     bool modified = true;
+
+    // Legacy
+
     Color parentColor;
-    RefPtr<UIStaticTextDrawer> internalDrawer;
+    Vector2 requestedTextRectSize = Vector2::Zero;
+
+    UIStaticTextDrawer* internalDrawer;
 };
 }

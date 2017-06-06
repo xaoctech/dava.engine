@@ -15,6 +15,25 @@ namespace DAVA
 void UITextSystem::Process(float32 elapsedTime)
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::UI_TEXT_SYSTEM);
+
+    // // Remove empty links
+    // if (!links.empty())
+    // {
+    //     links.erase(std::remove_if(links.begin(), links.end(), [](const Link& l) {
+    //                     return l.component == nullptr;
+    //                 }),
+    //                 links.end());
+    // }
+
+    // // Process links
+    // for (Link& l : links)
+    // {
+    //     if (l.component && l.component->IsModified())
+    //     {
+    //         l.component->internalDrawer->SystemProcess();
+    //         l.component->SetModified(false);
+    //     }
+    // }
 }
 
 void UITextSystem::RegisterControl(UIControl* control)
@@ -23,7 +42,7 @@ void UITextSystem::RegisterControl(UIControl* control)
     UIStaticTextComponent* component = control->GetComponent<UIStaticTextComponent>();
     if (component)
     {
-        component->CreateDrawer();
+        AddLink(component);
     }
 }
 
@@ -32,7 +51,7 @@ void UITextSystem::UnregisterControl(UIControl* control)
     UIStaticTextComponent* component = control->GetComponent<UIStaticTextComponent>();
     if (component)
     {
-        component->DestroyDrawer();
+        RemoveLink(component);
     }
 
     UISystem::UnregisterControl(control);
@@ -44,7 +63,7 @@ void UITextSystem::RegisterComponent(UIControl* control, UIComponent* component)
 
     if (component->GetType() == UIStaticTextComponent::C_TYPE)
     {
-        (static_cast<UIStaticTextComponent*>(component))->CreateDrawer();
+        AddLink(static_cast<UIStaticTextComponent*>(component));
     }
 }
 
@@ -52,9 +71,39 @@ void UITextSystem::UnregisterComponent(UIControl* control, UIComponent* componen
 {
     if (component->GetType() == UIStaticTextComponent::C_TYPE)
     {
-        (static_cast<UIStaticTextComponent*>(component))->DestroyDrawer();
+        RemoveLink(static_cast<UIStaticTextComponent*>(component));
     }
 
     UISystem::UnregisterComponent(control, component);
 }
+
+void UITextSystem::AddLink(UIStaticTextComponent* component)
+{
+    DVASSERT(component);
+    UIStaticTextDrawer* drawer = new UIStaticTextDrawer(component->GetControl(), component);
+    component->SetInternalDrawer(drawer);
+    component->SetModified(true);
+    // links.emplace_back(component);
+}
+
+void UITextSystem::RemoveLink(UIStaticTextComponent* component)
+{
+    DVASSERT(component);
+    UIStaticTextDrawer* drawer = component->GetInternalDrawer();
+    component->SetInternalDrawer(nullptr);
+    SafeRelease(drawer);
+
+    // auto findIt = std::find_if(links.begin(), links.end(), [&component](const Link& l) {
+    //     return l.component == component;
+    // });
+    // if (findIt != links.end())
+    // {
+    //     findIt->component = nullptr; // mark link for delete
+    // }
+}
+
+// UISystem::Link::Link(UIStaticTextComponent* c)
+//     : component(c)
+// {
+// }
 }

@@ -1,0 +1,268 @@
+Header:
+    version: "16"
+Prototypes:
+-   class: "UIControl"
+    name: "StaticTextComponentTest"
+    position: [0.000000, 0.000000]
+    size: [288.000000, 155.000000]
+    noInput: true
+    components:
+        LinearLayout: {}
+        SizePolicy:
+            horizontalPolicy: "PercentOfParent"
+            verticalPolicy: "PercentOfParent"
+    children:
+    -   class: "UIStaticText"
+        name: "UIStaticText"
+        position: [0.000000, 0.000000]
+        size: [144.000000, 155.000000]
+        classes: "text1 text-color-white"
+        textcolorInheritType: "COLOR_IGNORE_PARENT"
+        text: "MULTILINE: DISABLED, FITTING: NONE"
+        font: "DroidSansMono_18"
+        components:
+            SizePolicy:
+                horizontalPolicy: "PercentOfParent"
+                verticalPolicy: "PercentOfParent"
+            Anchor:
+                topAnchorEnabled: true
+                bottomAnchorEnabled: true
+    -   class: "UIControl"
+        name: "Component"
+        position: [144.000000, 0.000000]
+        size: [144.000000, 155.000000]
+        noInput: true
+        components:
+            SizePolicy:
+                horizontalPolicy: "PercentOfParent"
+                verticalPolicy: "PercentOfParent"
+            Anchor:
+                topAnchorEnabled: true
+                bottomAnchorEnabled: true
+            StaticText:
+                fontName: "DroidSansMono_18"
+                text: "MULTILINE: DISABLED, FITTING: NONE"
+Controls:
+-   class: "UIControl"
+    name: "NoMultilineTest"
+    position: [0.000000, 0.000000]
+    size: [533.000000, 385.000000]
+    noInput: true
+    components:
+        LinearLayout:
+            orientation: "TopDown"
+    children:
+    -   prototype: "StaticTextComponentTest"
+        name: "FittingNone"
+        children:
+        -   path: "UIStaticText"
+            text: "MULTILINE: DISABLED, FITTING: NONE"
+        -   path: "Component"
+            position: [266.500000, 0.000000]
+            components:
+                StaticText:
+                    text: "MULTILINE: DISABLED, FITTING: NONE"
+    -   prototype: "StaticTextComponentTest"
+        name: "FittingEnlarge"
+        position: [0.000000, 77.000000]
+        children:
+        -   path: "UIStaticText"
+            fitting: ["ENLARGE"]
+            text: "MULTILINE: DISABLED, FITTING: ENLARGE"
+        -   path: "Component"
+            components:
+                StaticText:
+                    fitting: "FITTING_ENLARGE"
+                    text: "MULTILINE: DISABLED, FITTING: ENLARGE"
+    -   prototype: "StaticTextComponentTest"
+        name: "FittingReduce"
+        position: [0.000000, 154.000000]
+        children:
+        -   path: "UIStaticText"
+            fitting: ["REDUCE"]
+            text: "MULTILINE: DISABLED, FITTING: REDUCE"
+        -   path: "Component"
+            components:
+                StaticText:
+                    fitting: "FITTING_REDUCE"
+                    text: "MULTILINE: DISABLED, FITTING: REDUCE"
+    -   prototype: "StaticTextComponentTest"
+        name: "FittingFill"
+        position: [0.000000, 231.000000]
+        children:
+        -   path: "UIStaticText"
+            fitting: ["ENLARGE", "REDUCE"]
+            text: "MULTILINE: DISABLED, FITTING: REDUCE|ENLARGE"
+        -   path: "Component"
+            components:
+                StaticText:
+                    fitting: "FITTING_FILL"
+                    text: "MULTILINE: DISABLED, FITTING: REDUCE|ENLARGE"
+    -   prototype: "StaticTextComponentTest"
+        name: "FittingPoints"
+        position: [0.000000, 308.000000]
+        children:
+        -   path: "UIStaticText"
+            fitting: ["POINTS"]
+            text: "MULTILINE: DISABLED, FITTING: POINTS"
+        -   path: "Component"
+            components:
+                StaticText:
+                    fitting: "FITTING_POINTS"
+                    text: "MULTILINE: DISABLED, FITTING: POINTS"
+-   class: "UIControl"
+    name: "MultilineTest"
+    position: [0.000000, 0.000000]
+    size: [310.000000, 299.000000]
+    noInput: true
+    components:
+        LinearLayout:
+            orientation: "TopDown"
+    children:
+    -   prototype: "StaticTextComponentTest"
+        name: "FittingNone"
+        position: [0.000000, 0.000000]
+        children:
+        -   path: "UIStaticText"
+            multiline: "MULTILINE_ENABLED"
+            text: "MULTILINE: DISABLED, FITTING: NONE"
+        -   path: "Component"
+            position: [155.000000, 0.000000]
+            components:
+                StaticText:
+                    multiline: "MULTILINE_ENABLED"
+                    text: "MULTILINE: DISABLED, FITTING: NONE"
+    -   prototype: "StaticTextComponentTest"
+        name: "FittingEnlarge"
+        position: [0.000000, 59.799999]
+        children:
+        -   path: "UIStaticText"
+            multiline: "MULTILINE_ENABLED"
+            fitting: ["ENLARGE"]
+            text: "MULTILINE: DISABLED, FITTING: ENLARGE"
+        -   path: "Component"
+            components:
+                StaticText:
+                    fitting: "FITTING_ENLARGE"
+                    multiline: "MULTILINE_ENABLED"
+                    text: "MULTILINE: DISABLED, FITTING: ENLARGE"
+    -   prototype: "StaticTextComponentTest"
+        name: "FittingReduce"
+        position: [0.000000, 119.599998]
+        children:
+        -   path: "UIStaticText"
+            multiline: "MULTILINE_ENABLED"
+            fitting: ["REDUCE"]
+            text: "MULTILINE: DISABLED, FITTING: REDUCE"
+        -   path: "Component"
+            components:
+                StaticText:
+                    fitting: "FITTING_REDUCE"
+                    multiline: "MULTILINE_ENABLED"
+                    text: "MULTILINE: DISABLED, FITTING: REDUCE"
+    -   prototype: "StaticTextComponentTest"
+        name: "FittingFill"
+        position: [0.000000, 179.399994]
+        children:
+        -   path: "UIStaticText"
+            multiline: "MULTILINE_ENABLED"
+            fitting: ["ENLARGE", "REDUCE"]
+            text: "MULTILINE: DISABLED, FITTING: REDUCE|ENLARGE"
+        -   path: "Component"
+            components:
+                StaticText:
+                    fitting: "FITTING_FILL"
+                    multiline: "MULTILINE_ENABLED"
+                    text: "MULTILINE: DISABLED, FITTING: REDUCE|ENLARGE"
+    -   prototype: "StaticTextComponentTest"
+        name: "FittingPoints"
+        position: [0.000000, 239.199997]
+        children:
+        -   path: "UIStaticText"
+            multiline: "MULTILINE_ENABLED"
+            fitting: ["POINTS"]
+            text: "MULTILINE: DISABLED, FITTING: POINTS"
+        -   path: "Component"
+            components:
+                StaticText:
+                    fitting: "FITTING_POINTS"
+                    multiline: "MULTILINE_ENABLED"
+                    text: "MULTILINE: DISABLED, FITTING: POINTS"
+-   class: "UIControl"
+    name: "MultilineBySymbolTest"
+    position: [0.000000, 0.000000]
+    size: [232.000000, 297.000000]
+    noInput: true
+    components:
+        LinearLayout:
+            orientation: "TopDown"
+    children:
+    -   prototype: "StaticTextComponentTest"
+        name: "FittingNone"
+        position: [0.000000, 0.000000]
+        children:
+        -   path: "UIStaticText"
+            multiline: "MULTILINE_ENABLED_BY_SYMBOL"
+            text: "MULTILINE: DISABLED, FITTING: NONE"
+        -   path: "Component"
+            position: [116.000000, 0.000000]
+            components:
+                StaticText:
+                    multiline: "MULTILINE_ENABLED_BY_SYMBOL"
+                    text: "MULTILINE: DISABLED, FITTING: NONE"
+    -   prototype: "StaticTextComponentTest"
+        name: "FittingEnlarge"
+        position: [0.000000, 59.400002]
+        children:
+        -   path: "UIStaticText"
+            multiline: "MULTILINE_ENABLED_BY_SYMBOL"
+            fitting: ["ENLARGE"]
+            text: "MULTILINE: DISABLED, FITTING: ENLARGE"
+        -   path: "Component"
+            components:
+                StaticText:
+                    fitting: "FITTING_ENLARGE"
+                    multiline: "MULTILINE_ENABLED_BY_SYMBOL"
+                    text: "MULTILINE: DISABLED, FITTING: ENLARGE"
+    -   prototype: "StaticTextComponentTest"
+        name: "FittingReduce"
+        position: [0.000000, 118.800003]
+        children:
+        -   path: "UIStaticText"
+            multiline: "MULTILINE_ENABLED_BY_SYMBOL"
+            fitting: ["REDUCE"]
+            text: "MULTILINE: DISABLED, FITTING: REDUCE"
+        -   path: "Component"
+            components:
+                StaticText:
+                    fitting: "FITTING_REDUCE"
+                    multiline: "MULTILINE_ENABLED_BY_SYMBOL"
+                    text: "MULTILINE: DISABLED, FITTING: REDUCE"
+    -   prototype: "StaticTextComponentTest"
+        name: "FittingFill"
+        position: [0.000000, 178.200012]
+        children:
+        -   path: "UIStaticText"
+            multiline: "MULTILINE_ENABLED_BY_SYMBOL"
+            fitting: ["ENLARGE", "REDUCE"]
+            text: "MULTILINE: DISABLED, FITTING: REDUCE|ENLARGE"
+        -   path: "Component"
+            components:
+                StaticText:
+                    fitting: "FITTING_FILL"
+                    multiline: "MULTILINE_ENABLED_BY_SYMBOL"
+                    text: "MULTILINE: DISABLED, FITTING: REDUCE|ENLARGE"
+    -   prototype: "StaticTextComponentTest"
+        name: "FittingPoints"
+        position: [0.000000, 237.600006]
+        children:
+        -   path: "UIStaticText"
+            multiline: "MULTILINE_ENABLED_BY_SYMBOL"
+            fitting: ["POINTS"]
+            text: "MULTILINE: DISABLED, FITTING: POINTS"
+        -   path: "Component"
+            components:
+                StaticText:
+                    fitting: "FITTING_POINTS"
+                    multiline: "MULTILINE_ENABLED_BY_SYMBOL"
+                    text: "MULTILINE: DISABLED, FITTING: POINTS"
