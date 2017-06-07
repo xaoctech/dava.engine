@@ -50,7 +50,7 @@ private:
     InputSystem& operator=(const InputSystem&) = delete;
 
     void EndFrame();
-    void HandleInputEvent(UIEvent* uie);
+    void HandleInputEvent(UIEvent* uie); // TODO: remove this after finishing input system (it is used now for gestures and back button)
 
 private:
     struct InputHandler
