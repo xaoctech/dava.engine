@@ -523,37 +523,8 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
 
             if (group.layer->type != ParticleLayer::TYPE_PARTICLE_STRIPE)
             {
-                float32 currVelocityOverLife = 1.0f;
-                if (group.layer->velocityOverLife)
-                    currVelocityOverLife = group.layer->velocityOverLife->GetValue(overLifeTime);
-                current->position += current->speed * (currVelocityOverLife * dt);
+                UpdateNonStripeParticleData(effect, current, group, overLifeTime, forcesCount, currForceValues, dt, bbox);
             }
-
-            float32 currSpinOverLife = 1;
-            if (group.layer->spinOverLife)
-                currSpinOverLife = group.layer->spinOverLife->GetValue(overLifeTime);
-            current->angle += current->spin * currSpinOverLife * dt;
-
-            if (forcesCount && group.layer->type != ParticleLayer::TYPE_PARTICLE_STRIPE)
-            {
-                Vector3 acceleration;
-                for (int32 i = 0; i < forcesCount; ++i)
-                {
-                    acceleration += (group.layer->forces[i]->forceOverLife) ? (currForceValues[i] * group.layer->forces[i]->forceOverLife->GetValue(overLifeTime)) : currForceValues[i];
-                }
-                current->speed += acceleration * dt;
-            }
-
-            if (group.layer->sizeOverLifeXY)
-            {
-                current->currSize = current->baseSize * group.layer->sizeOverLifeXY->GetValue(overLifeTime);
-                Vector2 pivotSize = current->currSize * group.layer->layerPivotSizeOffsets;
-                current->currRadius = pivotSize.Length();
-            }
-            if (group.layer->inheritPosition)
-                AddParticleToBBox(current->position + effect->effectData.infoSources[group.positionSource].position, current->currRadius, bbox);
-            else
-                AddParticleToBBox(current->position, current->currRadius, bbox);
 
             if (group.layer->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
             {
@@ -561,26 +532,6 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
                 effect->effectData.infoSources[current->positionTarget].size = current->currSize;
             }
 
-            if (group.layer->frameOverLifeEnabled && group.layer->sprite)
-            {
-                float32 animDelta = group.layer->frameOverLifeFPS;
-                if (group.layer->animSpeedOverLife)
-                    animDelta *= group.layer->animSpeedOverLife->GetValue(overLifeTime);
-                current->animTime += animDelta * dt;
-
-                while (current->animTime > 1.0f)
-                {
-                    current->frame++;
-                    current->animTime -= 1.0f;
-                    if (current->frame >= group.layer->sprite->GetFrameCount())
-                    {
-                        if (group.layer->loopSpriteAnimation)
-                            current->frame = 0;
-                        else
-                            current->frame = group.layer->sprite->GetFrameCount() - 1;
-                    }
-                }
-            }
 
             if (group.layer->enableNoise && group.layer->noise)
             {
@@ -861,6 +812,61 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleEffectComponent* eff
     }
 
     return particle;
+}
+
+void ParticleEffectSystem::UpdateNonStripeParticleData(ParticleEffectComponent* effect, Particle* particle, const ParticleGroup& group, float32 overLife, int32 forcesCount, Vector<Vector3>& currForceValues, float32 dt, AABBox3& bbox)
+{
+    float32 currVelocityOverLife = 1.0f;
+    if (group.layer->velocityOverLife)
+        currVelocityOverLife = group.layer->velocityOverLife->GetValue(overLife);
+    particle->position += particle->speed * (currVelocityOverLife * dt);
+
+    float32 currSpinOverLife = 1;
+    if (group.layer->spinOverLife)
+        currSpinOverLife = group.layer->spinOverLife->GetValue(overLife);
+    particle->angle += particle->spin * currSpinOverLife * dt;
+
+    if (forcesCount && group.layer->type)
+    {
+        Vector3 acceleration;
+        for (int32 i = 0; i < forcesCount; ++i)
+        {
+            acceleration += (group.layer->forces[i]->forceOverLife) ? (currForceValues[i] * group.layer->forces[i]->forceOverLife->GetValue(overLife)) : currForceValues[i];
+        }
+        particle->speed += acceleration * dt;
+    }
+
+    if (group.layer->sizeOverLifeXY)
+    {
+        particle->currSize = particle->baseSize * group.layer->sizeOverLifeXY->GetValue(overLife);
+        Vector2 pivotSize = particle->currSize * group.layer->layerPivotSizeOffsets;
+        particle->currRadius = pivotSize.Length();
+    }
+    if (group.layer->inheritPosition)
+        AddParticleToBBox(particle->position + effect->effectData.infoSources[group.positionSource].position, particle->currRadius, bbox);
+    else
+        AddParticleToBBox(particle->position, particle->currRadius, bbox);
+
+    if (group.layer->frameOverLifeEnabled && group.layer->sprite)
+    {
+        float32 animDelta = group.layer->frameOverLifeFPS;
+        if (group.layer->animSpeedOverLife)
+            animDelta *= group.layer->animSpeedOverLife->GetValue(overLife);
+        particle->animTime += animDelta * dt;
+
+        while (particle->animTime > 1.0f)
+        {
+            particle->frame++;
+            particle->animTime -= 1.0f;
+            if (particle->frame >= group.layer->sprite->GetFrameCount())
+            {
+                if (group.layer->loopSpriteAnimation)
+                    particle->frame = 0;
+                else
+                    particle->frame = group.layer->sprite->GetFrameCount() - 1;
+            }
+        }
+    }
 }
 
 void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, ParticleGroup& group, const Matrix4& worldTransform)

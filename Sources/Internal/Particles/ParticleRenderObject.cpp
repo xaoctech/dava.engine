@@ -179,7 +179,8 @@ int32 ParticleRenderObject::CalculateParticleCount(const ParticleGroup& group)
 
 uint32 ParticleRenderObject::SelectLayout(const ParticleLayer& layer)
 {
-    uint32 key = static_cast<uint32>(layer.enableFrameBlend && layer.type != ParticleLayer::TYPE_PARTICLE_STRIPE) << static_cast<uint32>(eParticlePropsOffsets::FRAME_BLEND);
+    uint32 isFramBlendEnabled = static_cast<uint32>(layer.enableFrameBlend && layer.type != ParticleLayer::TYPE_PARTICLE_STRIPE);
+    uint32 key = isFramBlendEnabled << static_cast<uint32>(eParticlePropsOffsets::FRAME_BLEND);
     key |= static_cast<uint32>(layer.enableFlow) << static_cast<uint32>(eParticlePropsOffsets::FLOW);
     key |= static_cast<uint32>(layer.enableNoise) << static_cast<uint32>(eParticlePropsOffsets::NOISE);
     key |= static_cast<uint32>(layer.useFresnelToAlpha) << static_cast<uint32>(eParticlePropsOffsets::FRESNEL_TO_ALPHA);
