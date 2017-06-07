@@ -26,7 +26,7 @@ void _spAtlasPage_createTexture(spAtlasPage* self, const char* path_)
             path = FilePath::CreateWithNewExtension(path, ".tex");
             if (!path.Exists())
             {
-                Logger::Error("Spine atlas texture file '%s' not found!", path.GetAbsolutePathname());
+                Logger::Error("Spine atlas texture file '%s' not found!", path_ != nullptr ? path_ : "nullptr");
                 return;
             }
         }

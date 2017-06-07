@@ -50,7 +50,7 @@ int32 MaxVerticesCount(spSkeleton* skeleton)
         }
         case SP_ATTACHMENT_MESH:
         {
-            checkIsMax(((spMeshAttachment*)slot->attachment)->trianglesCount * 3);
+            checkIsMax(reinterpret_cast<spMeshAttachment*>(slot->attachment)->trianglesCount * 3);
             break;
         }
         default:
@@ -167,7 +167,7 @@ void SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath_)
         Logger::Error("[SpineSkeleton::Load] Error reading atlas file!");
         return;
     }
-    currentTexture = (Texture*)atlas->pages[0].rendererObject;
+    currentTexture = reinterpret_cast<Texture*>(atlas->pages[0].rendererObject);
 
     spSkeletonData* skeletonData = nullptr;
     String dataLoadingError = "Error reading skeleton data file!";
@@ -321,8 +321,8 @@ void SpineSkeleton::Update(const float32 timeElapsed)
         batch.indexCount = static_cast<uint32>(clippedIndecex.size());
         batch.vertexStride = SpinePrivate::VERTICES_COMPONENTS_COUNT;
         batch.texCoordStride = SpinePrivate::TEXTURE_COMPONENTS_COUNT;
-        batch.vertexPointer = (float32*)verticesPolygon.GetPoints();
-        batch.texCoordPointer[0] = (float32*)verticesUVs.data();
+        batch.vertexPointer = reinterpret_cast<float32*>(verticesPolygon.GetPoints());
+        batch.texCoordPointer[0] = reinterpret_cast<float32*>(verticesUVs.data());
         batch.textureSetHandle = currentTexture->singleTextureSet;
         batch.samplerStateHandle = currentTexture->samplerStateHandle;
         batch.indexPointer = clippedIndecex.data();
@@ -366,7 +366,7 @@ void SpineSkeleton::Update(const float32 timeElapsed)
             {
             case SP_ATTACHMENT_REGION:
             {
-                spRegionAttachment* attachment = (spRegionAttachment*)slot->attachment;
+                spRegionAttachment* attachment = reinterpret_cast<spRegionAttachment*>(slot->attachment);
                 spRegionAttachment_computeWorldVertices(attachment, slot->bone, worldVertices);
 
                 switchTexture(reinterpret_cast<Texture*>(reinterpret_cast<spAtlasRegion*>(attachment->rendererObject)->page->rendererObject));
@@ -379,7 +379,7 @@ void SpineSkeleton::Update(const float32 timeElapsed)
             }
             case SP_ATTACHMENT_MESH:
             {
-                spMeshAttachment* attachment = (spMeshAttachment*)slot->attachment;
+                spMeshAttachment* attachment = reinterpret_cast<spMeshAttachment*>(slot->attachment);
                 spMeshAttachment_computeWorldVertices(attachment, slot, worldVertices);
 
                 switchTexture(reinterpret_cast<Texture*>(reinterpret_cast<spAtlasRegion*>(attachment->rendererObject)->page->rendererObject));
