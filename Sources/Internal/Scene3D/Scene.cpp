@@ -37,6 +37,8 @@
 #include "Scene3D/Systems/ParticleEffectDebugDrawSystem.h"
 #include "Scene3D/Systems/GeoDecalSystem.h"
 
+#include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
+
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
 #include "Concurrency/Thread.h"
@@ -254,6 +256,8 @@ void Scene::CreateSystems()
     {
         transformSystem = new TransformSystem(this);
         AddSystem(transformSystem, MAKE_COMPONENT_MASK(Component::TRANSFORM_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
+
+        transformSingleComponent = new TransformSingleComponent;
     }
 
     if (SCENE_SYSTEM_LOD_FLAG & systemsMask)
@@ -407,6 +411,8 @@ Scene::~Scene()
         SafeDelete(systems[k]);
     systems.clear();
 
+    SafeDelete(transformSingleComponent);
+
     systemsToProcess.clear();
     systemsToInput.clear();
     cache.ClearAll();
@@ -433,6 +439,11 @@ void Scene::RegisterEntity(Entity* entity)
 
 void Scene::UnregisterEntity(Entity* entity)
 {
+    if (transformSingleComponent)
+    {
+        transformSingleComponent->EraseEntity(entity);
+    }
+
     for (auto& system : systems)
     {
         system->UnregisterEntity(entity);
@@ -645,6 +656,11 @@ void Scene::Update(float timeElapsed)
         {
             system->Process(timeElapsed);
         }
+    }
+
+    if (transformSingleComponent)
+    {
+        transformSingleComponent->Clear();
     }
 
     updateTime = SystemTimer::GetMs() - time;

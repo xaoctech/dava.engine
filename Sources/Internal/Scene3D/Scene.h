@@ -49,6 +49,7 @@ class LandscapeSystem;
 class LodSystem;
 class ParticleEffectDebugDrawSystem;
 class GeoDecalSystem;
+class TransformSingleComponent;
 
 class UIEvent;
 class RenderPass;
@@ -167,6 +168,8 @@ public:
     LandscapeSystem* landscapeSystem;
     ParticleEffectDebugDrawSystem* particleEffectDebugDrawSystem;
     GeoDecalSystem* geoDecalSystem = nullptr;
+
+    TransformSingleComponent* transformSingleComponent = nullptr;
 
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.

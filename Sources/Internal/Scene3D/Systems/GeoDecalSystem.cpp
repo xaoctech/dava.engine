@@ -15,7 +15,6 @@ namespace DAVA
 GeoDecalSystem::GeoDecalSystem(Scene* scene)
     : SceneSystem(scene)
 {
-    scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::WORLD_TRANSFORM_CHANGED);
 }
 
 void GeoDecalSystem::BakeDecals()
@@ -37,6 +36,25 @@ void GeoDecalSystem::BakeDecals()
 void GeoDecalSystem::Process(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_GEODECAL_SYSTEM);
+
+    TransformSingleComponent* tsc = GetScene()->transformSingleComponent;
+    for (auto& pair : tsc->worldTransformChanged.map)
+    {
+        if (pair.first->GetComponentsCount(Component::GEO_DECAL_COMPONENT) > 0)
+        {
+            for (Entity* entity : pair.second)
+            {
+                for (uint32 i = 0, e = entity->GetComponentCount(Component::GEO_DECAL_COMPONENT); i < e; ++i)
+                {
+                    GeoDecalComponent* component = static_cast<GeoDecalComponent*>(entity->GetComponent(Component::GEO_DECAL_COMPONENT, i));
+                    if (component->GetRebakeOnTransform())
+                    {
+                        decals[component].lastValidConfig.invalidate();
+                    }
+                }
+            }
+        }
+    }
 
     BakeDecals();
 
@@ -82,22 +100,6 @@ void GeoDecalSystem::Process(float32 timeElapsed)
         }
     }
 #endif
-}
-
-void GeoDecalSystem::ImmediateEvent(Component* transformComponent, uint32 event)
-{
-    if (event == EventSystem::WORLD_TRANSFORM_CHANGED)
-    {
-        Entity* entity = transformComponent->GetEntity();
-        for (uint32 i = 0, e = entity->GetComponentCount(Component::GEO_DECAL_COMPONENT); i < e; ++i)
-        {
-            GeoDecalComponent* component = static_cast<GeoDecalComponent*>(entity->GetComponent(Component::GEO_DECAL_COMPONENT, i));
-            if (component->GetRebakeOnTransform())
-            {
-                decals[component].lastValidConfig.invalidate();
-            }
-        }
-    }
 }
 
 void GeoDecalSystem::AddComponent(Entity* entity, Component* component)
