@@ -158,19 +158,23 @@ void UISpineSystem::Process(float32 elapsedTime)
         SpineNode& node = pair.second;
         const RefPtr<UISpineComponent>& spine = node.spine;
         const RefPtr<SpineSkeleton>& skeleton = node.skeleton;
+        const Vector2 pivotPoint = node.spine->GetControl()->GetPivotPoint();
 
+        skeleton->SetOriginOffset(pivotPoint);
         skeleton->Update(elapsedTime);
 
         for (const BoneLink& link : node.boneLinks)
         {
-            // TODO: Discuss with d_belskiy other workflow with UILayoutSourceRectComponent
+            const Vector2 positionWithPivot = link.bone->GetPosition() + pivotPoint;
+
+            // TODO: Discuss with d_belskiy about other workflow with UILayoutSourceRectComponent
             UILayoutSourceRectComponent* lsrc = link.control->GetComponent<UILayoutSourceRectComponent>();
             if (lsrc)
             {
-                lsrc->SetPosition(link.bone->GetPosition());
+                lsrc->SetPosition(positionWithPivot);
             }
 
-            link.control->SetPosition(link.bone->GetPosition());
+            link.control->SetPosition(positionWithPivot);
             link.control->SetAngleInDegrees(link.bone->GetAngle());
             link.control->SetScale(link.bone->GetScale());
             link.control->UpdateLayout();

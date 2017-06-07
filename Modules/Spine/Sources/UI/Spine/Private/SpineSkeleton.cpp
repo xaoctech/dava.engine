@@ -6,7 +6,9 @@
 #include <Debug/DVAssert.h>
 #include <Logger/Logger.h>
 #include <Render/2D/Systems/RenderSystem2D.h>
+#include <Render/2D/Systems/VirtualCoordinatesSystem.h>
 #include <UI/UIControl.h>
+#include <UI/UIControlSystem.h>
 
 #include <spine/spine.h>
 
@@ -57,6 +59,27 @@ int32 MaxVerticesCount(spSkeleton* skeleton)
     }
 
     return max;
+}
+
+FilePath GetScaledName(const FilePath& path)
+{
+    String pathname;
+    if (FilePath::PATH_IN_RESOURCES == path.GetType())
+        pathname = path.GetFrameworkPath(); //as we can have several res folders we should work with 'FrameworkPath' instead of 'AbsolutePathname'
+    else
+        pathname = path.GetAbsolutePathname();
+
+    VirtualCoordinatesSystem* virtualCoordsSystem = UIControlSystem::Instance()->vcs;
+    const String baseGfxFolderName = virtualCoordsSystem->GetResourceFolder(virtualCoordsSystem->GetBaseResourceIndex());
+    String::size_type pos = pathname.find(baseGfxFolderName);
+    if (String::npos != pos)
+    {
+        const String& desirableGfxFolderName = virtualCoordsSystem->GetResourceFolder(virtualCoordsSystem->GetDesirableResourceIndex());
+        pathname.replace(pos, baseGfxFolderName.length(), desirableGfxFolderName);
+        return FilePath(pathname);
+    }
+
+    return path;
 }
 }
 
@@ -120,7 +143,7 @@ void SpineSkeleton::ReleaseSkeleton()
     }
 }
 
-void SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath)
+void SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath_)
 {
     if (atlas != nullptr)
     {
@@ -130,6 +153,8 @@ void SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath)
     {
         ReleaseSkeleton();
     }
+
+    FilePath atlasPath = SpinePrivate::GetScaledName(atlasPath_);
 
     if (!dataPath.Exists() || !atlasPath.Exists())
     {
@@ -144,20 +169,65 @@ void SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath)
     }
     currentTexture = (Texture*)atlas->pages[0].rendererObject;
 
-    spSkeletonJson* json = spSkeletonJson_create(atlas);
-    json->scale = 1.0f;
-    spSkeletonData* skeletonData = spSkeletonJson_readSkeletonDataFile(json, dataPath.GetAbsolutePathname().c_str());
+    spSkeletonData* skeletonData = nullptr;
+    String dataLoadingError = "Error reading skeleton data file!";
+
+    if (dataPath.IsEqualToExtension(".json"))
+    {
+        spSkeletonJson* json = spSkeletonJson_create(atlas);
+        if (json != nullptr)
+        {
+            json->scale = 1.f;
+            try
+            {
+                skeletonData = spSkeletonJson_readSkeletonDataFile(json, dataPath.GetAbsolutePathname().c_str());
+                if (json->error)
+                {
+                    dataLoadingError = json->error;
+                }
+            }
+            catch (...)
+            {
+                // Skip Spine internal error while parsing data file
+                dataLoadingError = "Internal unhandled error while parsing data file!";
+            }
+            spSkeletonJson_dispose(json);
+        }
+    }
+    else if (dataPath.IsEqualToExtension(".skel"))
+    {
+        spSkeletonBinary* binary = spSkeletonBinary_create(atlas);
+        if (binary != nullptr)
+        {
+            binary->scale = 1.f;
+            try
+            {
+                skeletonData = spSkeletonBinary_readSkeletonDataFile(binary, dataPath.GetAbsolutePathname().c_str());
+                if (binary->error)
+                {
+                    dataLoadingError = binary->error;
+                }
+            }
+            catch (...)
+            {
+                // Skip Spine internal error while parsing data file
+                dataLoadingError = "Internal unhandled error while parsing data file!";
+            }
+
+            spSkeletonBinary_dispose(binary);
+        }
+    }
+
     if (skeletonData == nullptr)
     {
-        Logger::Error("[SpineSkeleton::Load] %s", json->error ? json->error : "Error reading skeleton data file!");
-        spSkeletonJson_dispose(json);
+        Logger::Error("[SpineSkeleton::Load] %s", dataLoadingError.c_str());
         if (atlas != nullptr)
         {
             ReleaseAtlas();
         }
         return;
     }
-    spSkeletonJson_dispose(json);
+
     skeleton = spSkeleton_create(skeletonData);
 
     worldVertices = new float32[SpinePrivate::MaxVerticesCount(skeleton)];
@@ -358,6 +428,24 @@ void SpineSkeleton::ResetSkeleton()
     {
         spSkeleton_setToSetupPose(skeleton);
     }
+}
+
+void SpineSkeleton::SetOriginOffset(const Vector2& offset)
+{
+    if (skeleton)
+    {
+        skeleton->x = offset.x;
+        skeleton->y = -offset.y;
+    }
+}
+
+Vector2 SpineSkeleton::GetSkeletonOriginOffset() const
+{
+    if (skeleton)
+    {
+        return Vector2(skeleton->x, -skeleton->y);
+    }
+    return Vector2();
 }
 
 BatchDescriptor* SpineSkeleton::GetRenderBatch() const

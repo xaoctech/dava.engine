@@ -61,8 +61,10 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
     anyItemDelegates[Type::Instance<bool>()] = new BoolPropertyDelegate(this);
     anyItemDelegates[Type::Instance<Vector4>()] = new Vector4PropertyDelegate(this);
 
-    const QString& gfxExtension = Project::GetGraphicsFileExtension();
-    const QString& particleExtension = Project::Get3dFileExtension();
+    const QList<QString> gfxExtensions{ Project::GetGraphicsFileExtension() };
+    const QList<QString> particleExtensions{ Project::Get3dFileExtension() };
+    const QList<QString> spineSkeletonExtensions{ ".json", ".skel" };
+    const QList<QString> spineAtlasExtensions{ ".atlas" };
 
     QStringList formulaCompletions;
     formulaCompletions << "childrenSum"
@@ -77,20 +79,20 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
                        << "max(parent, childrenSum)";
 
     propertyNameTypeItemDelegates[PropertyPath("*", "actions")] = new TablePropertyDelegate(QList<QString>({ "Action", "Shortcut" }), this);
-    propertyNameTypeItemDelegates[PropertyPath("*", "sprite")] = new ResourceFilePropertyDelegate(gfxExtension, "/Gfx/", this);
-    propertyNameTypeItemDelegates[PropertyPath("*", "mask")] = new ResourceFilePropertyDelegate(gfxExtension, "/Gfx/", this);
-    propertyNameTypeItemDelegates[PropertyPath("*", "detail")] = new ResourceFilePropertyDelegate(gfxExtension, "/Gfx/", this);
-    propertyNameTypeItemDelegates[PropertyPath("*", "gradient")] = new ResourceFilePropertyDelegate(gfxExtension, "/Gfx/", this);
-    propertyNameTypeItemDelegates[PropertyPath("*", "contour")] = new ResourceFilePropertyDelegate(gfxExtension, "/Gfx/", this);
-    propertyNameTypeItemDelegates[PropertyPath("*", "effectPath")] = new ResourceFilePropertyDelegate(particleExtension, "/3d/", this);
+    propertyNameTypeItemDelegates[PropertyPath("*", "sprite")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this);
+    propertyNameTypeItemDelegates[PropertyPath("*", "mask")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this);
+    propertyNameTypeItemDelegates[PropertyPath("*", "detail")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this);
+    propertyNameTypeItemDelegates[PropertyPath("*", "gradient")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this);
+    propertyNameTypeItemDelegates[PropertyPath("*", "contour")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this);
+    propertyNameTypeItemDelegates[PropertyPath("*", "effectPath")] = new ResourceFilePropertyDelegate(particleExtensions, "/3d/", this);
     propertyNameTypeItemDelegates[PropertyPath("*", "font")] = new FontPropertyDelegate(this);
     propertyNameTypeItemDelegates[PropertyPath("ScrollBarDelegate", "delegate")] = new ComboPropertyDelegate(this, std::make_unique<CompletionsProviderForScrollBar>());
 
-    propertyNameTypeItemDelegates[PropertyPath("*", "bg-sprite")] = new ResourceFilePropertyDelegate(gfxExtension, "/Gfx/", this);
-    propertyNameTypeItemDelegates[PropertyPath("*", "bg-mask")] = new ResourceFilePropertyDelegate(gfxExtension, "/Gfx/", this);
-    propertyNameTypeItemDelegates[PropertyPath("*", "bg-detail")] = new ResourceFilePropertyDelegate(gfxExtension, "/Gfx/", this);
-    propertyNameTypeItemDelegates[PropertyPath("*", "bg-gradient")] = new ResourceFilePropertyDelegate(gfxExtension, "/Gfx/", this);
-    propertyNameTypeItemDelegates[PropertyPath("*", "bg-contour")] = new ResourceFilePropertyDelegate(gfxExtension, "/Gfx/", this);
+    propertyNameTypeItemDelegates[PropertyPath("*", "bg-sprite")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this);
+    propertyNameTypeItemDelegates[PropertyPath("*", "bg-mask")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this);
+    propertyNameTypeItemDelegates[PropertyPath("*", "bg-detail")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this);
+    propertyNameTypeItemDelegates[PropertyPath("*", "bg-gradient")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this);
+    propertyNameTypeItemDelegates[PropertyPath("*", "bg-contour")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this);
     propertyNameTypeItemDelegates[PropertyPath("*", "text-font")] = new FontPropertyDelegate(this);
 
     propertyNameTypeItemDelegates[PropertyPath("RichContent", "aliases")] = new TablePropertyDelegate(QList<QString>({ "Alias", "Xml" }), this);
@@ -103,8 +105,8 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
     propertyNameTypeItemDelegates[PropertyPath("SizePolicy", "horizontalFormula")] = new ComboPropertyDelegate(this, std::make_unique<PredefinedCompletionsProvider>(formulaCompletions));
     propertyNameTypeItemDelegates[PropertyPath("SizePolicy", "verticalFormula")] = new ComboPropertyDelegate(this, std::make_unique<PredefinedCompletionsProvider>(formulaCompletions));
 
-    propertyNameTypeItemDelegates[PropertyPath("UISpineComponent", "skeletonPath")] = new ResourceFilePropertyDelegate(".json", "", this);
-    propertyNameTypeItemDelegates[PropertyPath("UISpineComponent", "atlasPath")] = new ResourceFilePropertyDelegate(".atlas", "", this);
+    propertyNameTypeItemDelegates[PropertyPath("UISpineComponent", "skeletonPath")] = new ResourceFilePropertyDelegate(spineSkeletonExtensions, "", this);
+    propertyNameTypeItemDelegates[PropertyPath("UISpineComponent", "atlasPath")] = new ResourceFilePropertyDelegate(spineAtlasExtensions, "/Gfx/", this);
     propertyNameTypeItemDelegates[PropertyPath("UISpineComponent", "animationName")] = new ComboPropertyDelegate(this, std::make_unique<CompletionsProviderForUIReflection>("animationsNames", "UISpineComponent"));
     propertyNameTypeItemDelegates[PropertyPath("UISpineComponent", "skinName")] = new ComboPropertyDelegate(this, std::make_unique<CompletionsProviderForUIReflection>("skinsNames", "UISpineComponent"));
     propertyNameTypeItemDelegates[PropertyPath("UISpineAttachControlsToBonesComponent", "bonesBinds")] = new TablePropertyDelegate(QList<QString>({ "Bone", "Control" }), this);

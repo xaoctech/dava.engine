@@ -422,6 +422,7 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath& inputPath, const FilePa
                 }
 
                 DefinitionFile::Collection definitionFileList;
+                Vector<FilePath> justCopyList;
                 definitionFileList.reserve(fileList->GetCount());
                 for (uint32 fi = 0; fi < fileList->GetCount() && running; ++fi)
                 {
@@ -447,6 +448,10 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath& inputPath, const FilePa
                     else if (fullname.IsEqualToExtension(".pngdef"))
                     {
                         shouldAcceptFile = defFile->LoadPNGDef(fullname, processDir);
+                    }
+                    else if (!IsFileIgnoredByName(ignoredFileNames, fullname.GetFilename()))
+                    {
+                        justCopyList.push_back(fullname);
                     }
 
                     if (shouldAcceptFile == false)
@@ -492,6 +497,16 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath& inputPath, const FilePa
                     if (!currentErrors.empty())
                     {
                         errors.insert(currentErrors.begin(), currentErrors.end());
+                    }
+                }
+
+                if (!justCopyList.empty())
+                {
+                    for (FilePath& path : justCopyList)
+                    {
+                        FilePath destPath(path);
+                        destPath.ReplaceDirectory(outputPath);
+                        FileSystem::Instance()->CopyFile(path, destPath);
                     }
                 }
 

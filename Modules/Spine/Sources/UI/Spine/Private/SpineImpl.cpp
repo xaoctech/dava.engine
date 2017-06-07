@@ -83,10 +83,14 @@ char* _spUtil_readFile(const char* path, int* length)
     using namespace DAVA;
     File* fp = File::Create(path, File::READ | File::OPEN);
     DVASSERT(fp != nullptr, "Failed to read file!");
-    *length = static_cast<uint32>(fp->GetSize());
-    char* bytes = MALLOC(char, *length);
-    fp->Read(bytes, *length);
-    fp->Release();
-
-    return bytes;
+    if (fp != nullptr)
+    {
+        *length = static_cast<uint32>(fp->GetSize());
+        char* bytes = MALLOC(char, *length);
+        fp->Read(bytes, *length);
+        fp->Release();
+        return bytes;
+    }
+    *length = 0;
+    return nullptr;
 }

@@ -518,7 +518,7 @@ void UIControlBackground::Draw(const UIGeometricData& parentGeometricData)
         {
             //NOTE: correct affine transformations
             Matrix4 offsetMatrix;
-            offsetMatrix.glTranslate(geometricData.size.dx * 0.5f, geometricData.size.dy * 0.5f, 0.f);
+            offsetMatrix.glTranslate(-geometricData.pivotPoint.x, -geometricData.pivotPoint.y, 0.f);
 
             Matrix4 rotateMatrix;
             rotateMatrix.glRotate(RadToDeg(geometricData.angle), 0.f, 0.f, 1.f);
