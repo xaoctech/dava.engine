@@ -61,6 +61,7 @@ struct Matrix4
     inline void BuildOrtho(float32 left, float32 right, float32 bottom, float32 top, float32 near, float32 far, bool zeroBaseClipRange);
     inline void BuildPerspective(float32 left, float32 right, float32 bottom, float32 top, float32 near, float32 far, bool zeroBaseClipRange);
 
+    //! build look-at matrix for right-handed coordinate system (engine use RH coordinates)
     inline void BuildLookAtMatrix(const Vector3& _position, const Vector3& _target, const Vector3& _up);
 
     inline void Transpose();
@@ -75,14 +76,14 @@ struct Matrix4
     inline static Matrix4 MakeRotation(const Vector3& axis, float32 angleInRadians);
     inline static Matrix4 MakeScale(const Vector3& scaleVector);
 
-    //! create translation matrix
-    inline void CreateTranslation(const Vector3& vector);
+    //! build translation matrix
+    inline void BuildTranslation(const Vector3& vector);
 
-    //! create rotation matrix
-    inline void CreateRotation(const Vector3& axis, float32 angleInRadians);
+    //! build rotation matrix
+    inline void BuildRotation(const Vector3& axis, float32 angleInRadians);
 
-    //! create scale matrix
-    inline void CreateScale(const Vector3& vector);
+    //! build scale matrix
+    inline void BuildScale(const Vector3& vector);
 
     inline Vector3 GetTranslationVector() const;
     inline void SetTranslationVector(const Vector3& vector);
@@ -487,7 +488,7 @@ inline const Matrix4& Matrix4::operator*=(const Matrix4& m)
     return *this;
 }
 
-inline void Matrix4::CreateRotation(const Vector3& r, float32 angleInRadians)
+inline void Matrix4::BuildRotation(const Vector3& r, float32 angleInRadians)
 {
     float32 cosA = std::cos(angleInRadians);
     float32 sinA = std::sin(angleInRadians);
@@ -505,7 +506,7 @@ inline void Matrix4::CreateRotation(const Vector3& r, float32 angleInRadians)
     _data[2][2] = cosA + (1 - cosA) * r.z * r.z;
 }
 
-inline void Matrix4::CreateTranslation(const Vector3& _v)
+inline void Matrix4::BuildTranslation(const Vector3& _v)
 {
     Identity();
     SetTranslationVector(_v);
@@ -531,7 +532,7 @@ inline Vector3 Matrix4::GetScaleVector() const
     return Vector3(xAxis.Length(), yAxis.Length(), zAxis.Length());
 }
 
-inline void Matrix4::CreateScale(const Vector3& _v)
+inline void Matrix4::BuildScale(const Vector3& _v)
 {
     Identity();
     _00 = _v.x;
@@ -542,21 +543,21 @@ inline void Matrix4::CreateScale(const Vector3& _v)
 inline Matrix4 Matrix4::MakeTranslation(const Vector3& translationVector)
 {
     Matrix4 result;
-    result.CreateTranslation(translationVector);
+    result.BuildTranslation(translationVector);
     return result;
 }
 
 inline Matrix4 Matrix4::MakeRotation(const Vector3& axis, float32 angleInRadians)
 {
     Matrix4 result;
-    result.CreateRotation(axis, angleInRadians);
+    result.BuildRotation(axis, angleInRadians);
     return result;
 }
 
 inline Matrix4 Matrix4::MakeScale(const Vector3& scaleVector)
 {
     Matrix4 result;
-    result.CreateScale(scaleVector);
+    result.BuildScale(scaleVector);
     return result;
 }
 

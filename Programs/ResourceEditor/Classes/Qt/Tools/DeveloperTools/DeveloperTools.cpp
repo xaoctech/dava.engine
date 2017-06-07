@@ -44,7 +44,7 @@ void DeveloperTools::OnDebugFunctionsGridCopy()
             for (uint32 y = 0; y < 10; ++y)
             {
                 Matrix4 translation;
-                translation.CreateTranslation(Vector3(x * xshift, y * yshift, z * zshift));
+                translation.BuildTranslation(Vector3(x * xshift, y * yshift, z * zshift));
 
                 Matrix4 newMatrix = matrix * translation;
                 Entity* clonedEntity = entity->Clone();

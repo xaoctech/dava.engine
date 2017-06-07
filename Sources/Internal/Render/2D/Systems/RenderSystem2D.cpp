@@ -357,8 +357,8 @@ void RenderSystem2D::ScreenSizeChanged()
     Vector2 scale = UIControlSystem::Instance()->vcs->ConvertVirtualToPhysical(Vector2(1.f, 1.f));
     Vector2 realDrawOffset = UIControlSystem::Instance()->vcs->GetPhysicalDrawOffset();
 
-    translateMx.CreateTranslation(Vector3(realDrawOffset.x, realDrawOffset.y, 0.0f));
-    scaleMx.CreateScale(Vector3(scale.x, scale.y, 1.0f));
+    translateMx.BuildTranslation(Vector3(realDrawOffset.x, realDrawOffset.y, 0.0f));
+    scaleMx.BuildScale(Vector3(scale.x, scale.y, 1.0f));
 
     actualVirtualToPhysicalMatrix = scaleMx * translateMx;
     actualPhysicalToVirtualScale.x = UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualX(1.0f);
