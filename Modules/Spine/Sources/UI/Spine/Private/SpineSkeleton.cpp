@@ -145,17 +145,10 @@ void SpineSkeleton::ReleaseSkeleton()
 
 void SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath_)
 {
-    if (atlas != nullptr)
-    {
-        ReleaseAtlas();
-    }
-    if (skeleton != nullptr)
-    {
-        ReleaseSkeleton();
-    }
+    ReleaseAtlas();
+    ReleaseSkeleton();
 
     FilePath atlasPath = SpinePrivate::GetScaledName(atlasPath_);
-
     if (!dataPath.Exists() || !atlasPath.Exists())
     {
         return;
@@ -218,38 +211,34 @@ void SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath_)
         }
     }
 
+    DVASSERT(skeletonData != nullptr);
     if (skeletonData == nullptr)
     {
         Logger::Error("[SpineSkeleton::Load] %s", dataLoadingError.c_str());
-        if (atlas != nullptr)
-        {
-            ReleaseAtlas();
-        }
+        ReleaseAtlas();
         return;
     }
 
     skeleton = spSkeleton_create(skeletonData);
-
-    worldVertices = new float32[SpinePrivate::MaxVerticesCount(skeleton)];
+    DVASSERT(skeleton != nullptr);
+    if (skeleton == nullptr)
+    {
+        Logger::Error("[SpineSkeleton::Load] Create skeleton failure!");
+        ReleaseAtlas();
+        return;
+    }
 
     state = spAnimationState_create(spAnimationStateData_create(skeleton->data));
     DVASSERT(state != nullptr);
     if (state == nullptr)
     {
         Logger::Error("[SpineSkeleton::Load] %s", "Error creating animation state!");
-        if (atlas != nullptr)
-        {
-            ReleaseAtlas();
-        }
-        if (skeleton != nullptr)
-        {
-            ReleaseSkeleton();
-        }
+        ReleaseAtlas();
+        ReleaseSkeleton();
         return;
     }
-    state->rendererObject = this;
 
-    auto animationCallback = [](spAnimationState* state, int32 trackIndex, spEventType type, spEvent* event, int32 loopCount)
+    state->listener = [](spAnimationState* state, int32 trackIndex, spEventType type, spEvent* event, int32 loopCount)
     {
         switch (type)
         {
@@ -267,8 +256,9 @@ void SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath_)
             break;
         }
     };
+    state->rendererObject = this;
 
-    state->listener = animationCallback;
+    worldVertices = new float32[SpinePrivate::MaxVerticesCount(skeleton)];
 
     animationsNames.clear();
     int32 animCount = skeleton->data->animationsCount;
