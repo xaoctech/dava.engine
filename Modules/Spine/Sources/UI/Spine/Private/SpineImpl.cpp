@@ -85,8 +85,8 @@ char* _spUtil_readFile(const char* path, int* length)
     DVASSERT(fp != nullptr, "Failed to read file!");
     if (fp != nullptr)
     {
-        *length = static_cast<uint32>(fp->GetSize());
-        char* bytes = MALLOC(char, *length);
+        *length = static_cast<int>(fp->GetSize());
+        char* bytes = reinterpret_cast<char*>(MALLOC(char, *length));
         fp->Read(bytes, *length);
         fp->Release();
         return bytes;
