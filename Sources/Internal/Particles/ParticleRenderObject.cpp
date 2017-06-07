@@ -143,7 +143,7 @@ void ParticleRenderObject::PrepareRenderData(Camera* camera)
 uint32 ParticleRenderObject::GetVertexStride(ParticleLayer* layer)
 {
     uint32 vertexStride = (3 + 2 + 1) * sizeof(float); // vertex*3 + texcoord0*2 + color * 1;
-    if (layer->enableFrameBlend)
+    if (layer->enableFrameBlend && layer->type != ParticleLayer::TYPE_PARTICLE_STRIPE)
         vertexStride += (3) * sizeof(float); // texcoord1 * 3;
     if (layer->enableFlow)
         vertexStride += (2 + 2) * sizeof(float); // texcoord2.xy + speed and offset
@@ -179,7 +179,7 @@ int32 ParticleRenderObject::CalculateParticleCount(const ParticleGroup& group)
 
 uint32 ParticleRenderObject::SelectLayout(const ParticleLayer& layer)
 {
-    uint32 key = static_cast<uint32>(layer.enableFrameBlend) << static_cast<uint32>(eParticlePropsOffsets::FRAME_BLEND);
+    uint32 key = static_cast<uint32>(layer.enableFrameBlend && layer.type != ParticleLayer::TYPE_PARTICLE_STRIPE) << static_cast<uint32>(eParticlePropsOffsets::FRAME_BLEND);
     key |= static_cast<uint32>(layer.enableFlow) << static_cast<uint32>(eParticlePropsOffsets::FLOW);
     key |= static_cast<uint32>(layer.enableNoise) << static_cast<uint32>(eParticlePropsOffsets::NOISE);
     key |= static_cast<uint32>(layer.useFresnelToAlpha) << static_cast<uint32>(eParticlePropsOffsets::FRESNEL_TO_ALPHA);
@@ -197,12 +197,6 @@ void ParticleRenderObject::UpdateStripeVertex(float32*& dataPtr, Vector3& positi
 
     *dataPtr++ = *color;
 
-    if (layer->enableFrameBlend)
-    {
-        *dataPtr++ = uv.x;
-        *dataPtr++ = uv.y;
-        *dataPtr++ = 0.0f;
-    }
     if (layer->enableFlow && layer->flowmap.get() != nullptr)
     {
         *dataPtr++ = uv.x;

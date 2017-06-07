@@ -197,7 +197,7 @@ void ParticleEffectSystem::RunEmitter(ParticleEffectComponent* effect, ParticleE
             ParticleEffectSystem::MaterialData matData = {};
             matData.texture = layer->sprite->GetTexture(0);
             matData.enableFog = layer->enableFog;
-            matData.enableFrameBlend = layer->enableFrameBlend;
+            matData.enableFrameBlend = layer->enableFrameBlend && layer->type != ParticleLayer::TYPE_PARTICLE_STRIPE;
             matData.flowmap = flowmap;
             matData.enableFlowAnimation = layer->enableFlowAnimation;
             matData.enableFlow = layer->enableFlow;
