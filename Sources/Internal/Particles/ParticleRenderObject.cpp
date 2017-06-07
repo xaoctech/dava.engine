@@ -509,8 +509,12 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                 iCount = (vCount - 2) * 3;
                 DynamicBufferAllocator::AllocResultIB ib = DynamicBufferAllocator::AllocateIndexBuffer(iCount);
 
-                Vector3 left = base.position + data.inheritPositionOffset + basisVector * group.layer->stripeStartSize * 0.5f;
-                Vector3 right = base.position + data.inheritPositionOffset - basisVector * group.layer->stripeStartSize * 0.5f;
+                float32 size = group.layer->stripeStartSize * 0.5f;
+                if (group.layer->stripeSizeOverLifeProp)
+                    size *= group.layer->stripeSizeOverLifeProp->GetValue(0.0f);
+                Vector3 scaledBasis = basisVector * size;
+                Vector3 left = base.position + data.inheritPositionOffset + scaledBasis;
+                Vector3 right = base.position + data.inheritPositionOffset - scaledBasis;
                 Vector2 uv1(currentParticle->life * group.layer->stripeUScrollSpeed, currentParticle->life * group.layer->stripeVScrollSpeed);
                 Vector2 uv2(currentParticle->life * group.layer->stripeUScrollSpeed + 1.0f, currentParticle->life * group.layer->stripeVScrollSpeed);
                 float* dataPtr = reinterpret_cast<float*>(vb.data);
@@ -525,9 +529,12 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                 for (auto& node : nodes)
                 {
                     float32 overLifeTime = node.lifeime / group.layer->stripeLifetime;
-                    float32 size = group.layer->stripeStartSize * group.layer->stripeSizeOverLifeProp->GetValue(overLifeTime);
-                    left = node.position + data.inheritPositionOffset + basisVector * size * 0.5f;
-                    right = node.position + data.inheritPositionOffset - basisVector * size * 0.5f;
+                    size = group.layer->stripeStartSize * 0.5f;
+                    if (group.layer->stripeSizeOverLifeProp)
+                        size *= group.layer->stripeSizeOverLifeProp->GetValue(overLifeTime);
+                    scaledBasis = basisVector * size;
+                    left = node.position + data.inheritPositionOffset + scaledBasis;
+                    right = node.position + data.inheritPositionOffset - scaledBasis;
 
                     float32 alpha = Lerp(1.0f, group.layer->stripeAlphaOverLife, overLifeTime);
                     col = rhi::NativeColorRGBA(currColor.r, currColor.g, currColor.b, Clamp(currColor.a * alpha, 0.0f, 1.0f));
