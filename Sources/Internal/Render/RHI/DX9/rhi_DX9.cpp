@@ -129,12 +129,12 @@ static void dx9_Reset(const ResetParam& param)
 {
     bool paramsChanged = false;
 
+    _DX9_ResetParamsMutex.Lock();
     if (_DX9_PresentRectPtr)
     {
         _DX9_PresentRectPtr->right = param.width;
         _DX9_PresentRectPtr->bottom = param.height;
 
-        _DX9_ResetParamsMutex.Lock();
         if (param.width > _DX9_PresentParam.BackBufferWidth || param.height > _DX9_PresentParam.BackBufferHeight)
         {
             _DX9_PresentParam.BackBufferWidth = DAVA::Max(UINT(param.width), _DX9_PresentParam.BackBufferWidth);
@@ -142,11 +142,9 @@ static void dx9_Reset(const ResetParam& param)
 
             paramsChanged = true;
         }
-        _DX9_ResetParamsMutex.Unlock();
     }
     else
     {
-        _DX9_ResetParamsMutex.Lock();
         UINT interval = (param.vsyncEnabled) ? D3DPRESENT_INTERVAL_ONE : D3DPRESENT_INTERVAL_IMMEDIATE;
         if (param.width != _DX9_PresentParam.BackBufferWidth
             || param.height != _DX9_PresentParam.BackBufferHeight
@@ -161,8 +159,8 @@ static void dx9_Reset(const ResetParam& param)
 
             paramsChanged = true;
         }
-        _DX9_ResetParamsMutex.Unlock();
     }
+    _DX9_ResetParamsMutex.Unlock();
 
     if (paramsChanged)
         RenderLoop::SetResetPending();

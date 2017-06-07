@@ -209,7 +209,8 @@ bool TextureDX9_t::Create(const Texture::Descriptor& desc, bool forceExecute)
             {
                 tex9 = nullptr;
 
-                DX9Command cmd2[] =
+                uint32 cmd2Count = 2;
+                DX9Command cmd2[2 + 6] =
                 {
                   { DX9Command::QUERY_INTERFACE, { uint64_t(&cubetex9), uint64_t(&IID_IDirect3DBaseTexture9), uint64(&basetex9) } },
                   { DX9Command::SET_TEXTURE_AUTOGEN_FILTER_TYPE, { uint64_t(cubetex9), D3DTEXF_LINEAR } }
@@ -218,17 +219,16 @@ bool TextureDX9_t::Create(const Texture::Descriptor& desc, bool forceExecute)
                 if (!auto_mip)
                     cmd2[1].func = DX9Command::NOP;
 
-                ExecDX9(cmd2, countof(cmd2), forceExecute);
-
                 if (desc.isRenderTarget)
                 {
-                    DX9Command cmd3[6];
                     for (DAVA::uint32 f = 0; f != 6; ++f)
                     {
-                        cmd3[f] = { DX9Command::GET_CUBE_SURFACE_LEVEL, { uint64(&cubetex9), uint64(textureFaceToD3DFace[f]), 0, uint64(&cubesurf9[f]) } };
+                        cmd2[cmd2Count] = { DX9Command::GET_CUBE_SURFACE_LEVEL, { uint64(&cubetex9), uint64(textureFaceToD3DFace[f]), 0, uint64(&cubesurf9[f]) } };
+                        ++cmd2Count;
                     }
-                    ExecDX9(cmd3, 6, forceExecute);
                 }
+
+                ExecDX9(cmd2, cmd2Count, forceExecute);
 
                 success = true;
             }

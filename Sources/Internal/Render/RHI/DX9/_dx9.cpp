@@ -21,7 +21,7 @@ IDirect3DSurface9* _D3D9_DepthBuf = nullptr;
 InitParam _DX9_InitParam;
 D3DPRESENT_PARAMETERS _DX9_PresentParam;
 RECT _DX9_PresentRect;
-PRECT _DX9_PresentRectPtr = NULL;
+PRECT _DX9_PresentRectPtr = nullptr;
 DAVA::Mutex _DX9_ResetParamsMutex;
 
 const char* D3D9ErrorText(HRESULT hr)
