@@ -507,6 +507,8 @@ void EmitterLayerWidget::RestoreVisualState(DAVA::KeyedArchive* visualStateProps
     noiseUVScrollSpeedTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_UV_SCROLL_SPEED_PROPS"));
     noiseUVScrollSpeedVariationTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_UV_SCROLL_SPEED_VARIATION_PROPS"));
     noiseUVScrollSpeedOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_UV_SCROLL_SPEED_OVER_LIFE"));
+
+    stripeSizeOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_STRIPE_SIZE_OVER_LIFE_TIME_PROPS"));
 }
 
 void EmitterLayerWidget::StoreVisualState(DAVA::KeyedArchive* visualStateProps)
@@ -602,6 +604,10 @@ void EmitterLayerWidget::StoreVisualState(DAVA::KeyedArchive* visualStateProps)
     props->DeleteAllKeys();
     noiseUVScrollSpeedOverLifeTimeLine->GetVisualState(props);
     visualStateProps->SetArchive("LAYER_NOISE_UV_SCROLL_SPEED_OVER_LIFE_PROPS", props);
+
+    props->DeleteAllKeys();
+    stripeSizeOverLifeTimeLine->GetVisualState(props);
+    visualStateProps->SetArchive("LAYER_STRIPE_SIZE_OVER_LIFE_TIME_PROPS", props);
 }
 
 void EmitterLayerWidget::OnSpriteBtn()
@@ -846,6 +852,9 @@ void EmitterLayerWidget::OnStripePropertiesChanged()
         return;
 
     DVASSERT(GetActiveScene() != nullptr);
+    DAVA::PropLineWrapper<DAVA::float32> propStripeSizeOverLife;
+    stripeSizeOverLifeTimeLine->GetValue(0.0f, propStripeSizeOverLife.GetPropsPtr());
+
     CommandChangeParticlesStripeProperties::StripeParams params;
     params.stripeLifetime = static_cast<DAVA::float32>(stripeLifetimeSpin->value());
     params.stripeRate = static_cast<DAVA::float32>(stripeRateSpin->value());
@@ -857,6 +866,7 @@ void EmitterLayerWidget::OnStripePropertiesChanged()
     params.stripeVScrollSpeed = static_cast<DAVA::float32>(stripeVScrollSpeedSpin->value());
     params.stripeAlphaOverLife = static_cast<DAVA::float32>(stripeAlphaOverLifeSpin->value());
     params.stripeInheritPositionForBase = stripeInheritPositionForBaseCheckBox->isChecked();
+    params.stripeSizeOverLifeProp = propStripeSizeOverLife.GetPropLine();
     GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeParticlesStripeProperties(layer, std::move(params))));
 
     emit ValueChanged();
@@ -1076,6 +1086,9 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     fogCheckBox->setChecked(layer->enableFog);
 
     frameBlendingCheckBox->setChecked(layer->enableFrameBlend);
+
+    stripeSizeOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
+    stripeSizeOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->stripeSizeOverLifeProp)).GetProps(), Qt::red, "stripe size over life prop");
 
     // FLOW_STUFF
     flowSpeedTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, FLOW_PRECISION_DIGITS);
@@ -1463,6 +1476,13 @@ QLayout* EmitterLayerWidget::CreateStripeLayout()
 {
     QVBoxLayout* vertStripeLayout = new QVBoxLayout();
     vertStripeLayout->setContentsMargins(0, 10, 0, 0);
+
+    stripeSizeOverLifeTimeLine = new TimeLineWidget(this);
+    connect(stripeSizeOverLifeTimeLine,
+        SIGNAL(ValueChanged()),
+        this,
+        SLOT(OnStripePropertiesChanged()));
+    vertStripeLayout->addWidget(stripeSizeOverLifeTimeLine);
 
     stripeInheritPositionForBaseCheckBox = new QCheckBox("Valera");
     vertStripeLayout->addWidget(stripeInheritPositionForBaseCheckBox);

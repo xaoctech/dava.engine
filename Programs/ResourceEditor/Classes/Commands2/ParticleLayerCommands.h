@@ -142,6 +142,7 @@ public:
         DAVA::float32 stripeVScrollSpeed;
         DAVA::float32 stripeAlphaOverLife;
         bool stripeInheritPositionForBase;
+        DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> stripeSizeOverLifeProp;
     };
 
     CommandChangeParticlesStripeProperties(DAVA::ParticleLayer* layer, StripeParams&& params);

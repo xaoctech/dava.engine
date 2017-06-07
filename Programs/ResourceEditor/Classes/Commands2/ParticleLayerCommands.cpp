@@ -212,6 +212,7 @@ CommandChangeParticlesStripeProperties::CommandChangeParticlesStripeProperties(D
         oldParams.stripeVScrollSpeed = layer->stripeVScrollSpeed;
         oldParams.stripeAlphaOverLife = layer->stripeAlphaOverLife;
         oldParams.stripeInheritPositionForBase = layer->stripeInheritPositionForBase;
+        oldParams.stripeSizeOverLifeProp = layer->stripeSizeOverLifeProp;
     }
 }
 
@@ -244,5 +245,6 @@ void CommandChangeParticlesStripeProperties::ApplyParams(StripeParams& params)
         layer->stripeVScrollSpeed = params.stripeVScrollSpeed;
         layer->stripeAlphaOverLife = params.stripeAlphaOverLife;
         layer->stripeInheritPositionForBase = params.stripeInheritPositionForBase;
+        PropertyLineHelper::SetValueLine(layer->stripeSizeOverLifeProp, params.stripeSizeOverLifeProp);
     }
 }
