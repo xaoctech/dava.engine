@@ -27,9 +27,13 @@ class InputSystem;
 class UIControlSystem;
 class VirtualCoordinatesSystem;
 
+/** Describes input handling modes for `Window` class */
 enum class eInputHandlingModes
 {
+    /** Window handles input only when focused */
     HANDLE_ONLY_WHEN_FOCUSED,
+
+    /** Window handles input in both focused and unfocused states */
     HANDLE_ALWAYS
 };
 
@@ -290,6 +294,11 @@ public:
     */
     bool GetCursorVisibility() const;
 
+    /**
+        Set input handling mode.
+
+        By default, eInputHandlingModes::HANDLE_ONLY_WHEN_FOCUSED is used.
+    */
     void SetInputHandlingMode(eInputHandlingModes mode);
 
     /** Get Window's UIControlSystem */
