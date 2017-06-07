@@ -1,6 +1,7 @@
 #include "Logger/TeamcityOutput.h"
 #include "Engine/Engine.h"
 #include "Utils/Utils.h"
+#include "Engine/Engine.h"
 
 #include <iostream>
 
