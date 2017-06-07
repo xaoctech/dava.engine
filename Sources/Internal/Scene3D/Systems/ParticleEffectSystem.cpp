@@ -634,7 +634,7 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
     data.spawnTimer += dt;
     float32 spawnTime = 1.0f / layer->stripeRate;
     bool shouldInsert = data.spawnTimer > spawnTime;
-    float32 radius = Max(layer->stripeStartSize, layer->stripeSizeOverLife);
+    float32 radius = layer->stripeStartSize * layer->CalculateMaxStripeSizeOverLife();
 
     if (shouldInsert)
     {

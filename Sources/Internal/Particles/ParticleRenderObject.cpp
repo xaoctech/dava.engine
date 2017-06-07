@@ -524,12 +524,12 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                 float32 distance = 0.0f;
                 for (auto& node : nodes)
                 {
-                    float32 lv = node.lifeime / group.layer->stripeLifetime;
-                    float32 size = Lerp(group.layer->stripeStartSize, group.layer->stripeSizeOverLife, lv);
+                    float32 overLifeTime = node.lifeime / group.layer->stripeLifetime;
+                    float32 size = group.layer->stripeStartSize * group.layer->stripeSizeOverLifeProp->GetValue(overLifeTime);
                     left = node.position + data.inheritPositionOffset + basisVector * size * 0.5f;
                     right = node.position + data.inheritPositionOffset - basisVector * size * 0.5f;
 
-                    float32 alpha = Lerp(1.0f, group.layer->stripeAlphaOverLife, lv);
+                    float32 alpha = Lerp(1.0f, group.layer->stripeAlphaOverLife, overLifeTime);
                     col = rhi::NativeColorRGBA(currColor.r, currColor.g, currColor.b, Clamp(currColor.a * alpha, 0.0f, 1.0f));
 
                     distance += (prevNode->position - node.position).Length();
