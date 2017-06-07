@@ -9,7 +9,7 @@
 namespace DAVA
 {
 class UIControl;
-class UIStaticTextDrawer;
+class UIStaticTextState;
 
 class UIStaticTextComponent : public UIBaseComponent<UIComponent::STATIC_TEXT_COMPONENT>
 {
@@ -85,16 +85,11 @@ public:
 
     // Legacy:
 
-    void SetInternalDrawer(UIStaticTextDrawer*);
-    UIStaticTextDrawer* GetInternalDrawer();
-
-    void SetParentColor(const Color& parentColor);
-    Color GetParentColor();
+    void SetState(UIStaticTextState*);
+    UIStaticTextState* GetState() const;
 
     void SetRequestedTextRectSize(const Vector2& value);
     Vector2 GetRequestedTextRectSize() const;
-
-    void Draw(const UIGeometricData& geometricData);
 
 protected:
     int32 align = eAlign::ALIGN_HCENTER | eAlign::ALIGN_VCENTER;
@@ -112,11 +107,11 @@ protected:
 
     bool modified = true;
 
+    UIStaticTextState* state;
+
     // Legacy
 
-    Color parentColor;
     Vector2 requestedTextRectSize = Vector2::Zero;
 
-    UIStaticTextDrawer* internalDrawer;
 };
 }

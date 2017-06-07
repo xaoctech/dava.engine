@@ -137,7 +137,15 @@ void UIRenderSystem::RenderControlHierarhy(UIControl* control, const UIGeometric
         renderSystem2D->IntersectClipRect(unrotatedRect); //anyway it doesn't work with rotation
     }
 
-    control->Draw(drawData);
+    const UIStaticTextComponent* txt = control->GetComponent<UIStaticTextComponent>();
+    if (txt)
+    {
+        RenderText(control, txt, drawData, parentColor);
+    }
+    else
+    {
+        control->Draw(drawData);
+    }
 
     const UIControlBackground* bg = control->GetComponent<UIControlBackground>();
     const UIControlBackground* parentBgForChild = bg ? bg : parentBackground;
@@ -215,5 +223,12 @@ void UIRenderSystem::RenderPivotPoint(const UIDebugRenderComponent* component, c
     lineStartPoint.x -= PIVOT_POINT_MARK_HALF_LINE_LENGTH;
     lineEndPoint.x += PIVOT_POINT_MARK_HALF_LINE_LENGTH;
     renderSystem2D->DrawLine(lineStartPoint, lineEndPoint, drawColor);
+}
+
+void UIRenderSystem::RenderText(const UIControl* control, const UIStaticTextComponent* component, const UIGeometricData& geometricData, const Color& parentColor)
+{
+    UIStaticTextState* state = component->GetState();
+    DVASSERT(state, "Empty text comonent state!");
+    state->Draw(geometricData, parentColor);
 }
 }

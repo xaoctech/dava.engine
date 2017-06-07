@@ -1,4 +1,4 @@
-#include "UIStaticTextDrawer.h"
+#include "UIStaticTextState.h"
 #include "UIStaticTextComponent.h"
 
 #include "UI/UIControl.h"
@@ -25,16 +25,16 @@ namespace DAVA
 {
 
 #if defined(LOCALIZATION_DEBUG)
-const float32 UIStaticTextDrawer::LOCALIZATION_RESERVED_PORTION = 0.6f;
-const Color UIStaticTextDrawer::HIGHLIGHT_COLORS[] = { DAVA::Color(1.0f, 0.0f, 0.0f, 0.4f),
-                                                       DAVA::Color(0.0f, 0.0f, 1.0f, 0.4f),
-                                                       DAVA::Color(1.0f, 1.0f, 0.0f, 0.4f),
-                                                       DAVA::Color(1.0f, 1.0f, 1.0f, 0.4f),
-                                                       DAVA::Color(1.0f, 0.0f, 1.0f, 0.4f),
-                                                       DAVA::Color(0.0f, 1.0f, 0.0f, 0.4f) };
+const float32 UIStaticTextState::LOCALIZATION_RESERVED_PORTION = 0.6f;
+const Color UIStaticTextState::HIGHLIGHT_COLORS[] = { DAVA::Color(1.0f, 0.0f, 0.0f, 0.4f),
+                                                      DAVA::Color(0.0f, 0.0f, 1.0f, 0.4f),
+                                                      DAVA::Color(1.0f, 1.0f, 0.0f, 0.4f),
+                                                      DAVA::Color(1.0f, 1.0f, 1.0f, 0.4f),
+                                                      DAVA::Color(1.0f, 0.0f, 1.0f, 0.4f),
+                                                      DAVA::Color(0.0f, 1.0f, 0.0f, 0.4f) };
 #endif
 
-UIStaticTextDrawer::UIStaticTextDrawer(UIControl* control_, UIStaticTextComponent* component_)
+UIStaticTextState::UIStaticTextState(UIControl* control_, UIStaticTextComponent* component_)
 {
     control = control_;
     component = component_;
@@ -53,12 +53,18 @@ UIStaticTextDrawer::UIStaticTextDrawer(UIControl* control_, UIStaticTextComponen
     shadowBg->SetPerPixelAccuracyType(component->GetPerPixelAccuracyType());
 }
 
-void UIStaticTextDrawer::ApplyComponentData()
+UIStaticTextState::~UIStaticTextState()
+{
+    SafeRelease(textBlock);
+    SafeRelease(shadowBg);
+    SafeRelease(textBg);
+}
+
+void UIStaticTextState::ApplyComponentData()
 {
     if (component->IsModified())
     {
-        shadowBg->SetParentColor(component->GetParentColor());
-        textBg->SetParentColor(component->GetParentColor());
+        component->SetModified(false);
 
         textBg->SetColorInheritType(component->GetColorInheritType());
         textBg->SetPerPixelAccuracyType(component->GetPerPixelAccuracyType());
@@ -123,14 +129,12 @@ void UIStaticTextDrawer::ApplyComponentData()
         if (textBlock->NeedCalculateCacheParams())
         {
             control->SetLayoutDirty();
-            PrepareSprite(); //TODO is it need?
         }
 
-        component->SetModified(false);
     }
 }
 
-void UIStaticTextDrawer::PrepareSprite()
+void UIStaticTextState::PrepareSprite()
 {
     if (textBlock->IsSpriteReady())
     {
@@ -157,11 +161,14 @@ void UIStaticTextDrawer::PrepareSprite()
     }
 }
 
-void UIStaticTextDrawer::Draw(const UIGeometricData& geometricData)
+void UIStaticTextState::Draw(const UIGeometricData& geometricData, const Color& parentColor)
 {
     DVASSERT(control == component->GetControl(), "Invalid control poiner!");
 
     ApplyComponentData();
+
+    shadowBg->SetParentColor(parentColor);
+    textBg->SetParentColor(parentColor);
 
     if (component->GetText().empty())
     {
@@ -184,9 +191,6 @@ void UIStaticTextDrawer::Draw(const UIGeometricData& geometricData)
     PrepareSprite();
     textBg->SetAlign(textBlock->GetVisualAlign());
 
-    // TODO not required?
-    // UIControl::Draw(geometricData);
-
     UIGeometricData textGeomData;
     textGeomData.position = textBlock->GetSpriteOffset();
     textGeomData.size = control->GetSize();
@@ -207,11 +211,11 @@ void UIStaticTextDrawer::Draw(const UIGeometricData& geometricData)
     }
 
     textBlock->Draw(textBg->GetDrawColor());
-  
+
+    textBg->Draw(textGeomData);
     
 #if defined(LOCALIZATION_DEBUG)
     UIGeometricData elementGeomData;
-    textBg->Draw(textGeomData);
     const Sprite::DrawState& lastDrawStae = textBg->GetLastDrawState();
     elementGeomData.position = lastDrawStae.position;
     elementGeomData.angle = lastDrawStae.angle;
@@ -228,14 +232,13 @@ void UIStaticTextDrawer::Draw(const UIGeometricData& geometricData)
         DrawLocalizationErrors(geometricData, elementGeomData);
     }
 #else
-    textBg->Draw(textGeomData);
 #endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #if defined(LOCALIZATION_DEBUG)
-void UIStaticTextDrawer::DrawLocalizationErrors(const UIGeometricData& geometricData, const UIGeometricData& elementGeomData) const
+void UIStaticTextState::DrawLocalizationErrors(const UIGeometricData& geometricData, const UIGeometricData& elementGeomData) const
 {
     TextBlockSoftwareRender* rendereTextBlock = dynamic_cast<TextBlockSoftwareRender*>(textBlock->GetRenderer());
     if (rendereTextBlock != NULL)
@@ -278,7 +281,7 @@ void UIStaticTextDrawer::DrawLocalizationErrors(const UIGeometricData& geometric
         }
     }
 }
-void UIStaticTextDrawer::DrawLocalizationDebug(const UIGeometricData& textGeomData) const
+void UIStaticTextState::DrawLocalizationDebug(const UIGeometricData& textGeomData) const
 {
     if (warningColor != NONE && Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DRAW_LOCALIZATION_WARINGS))
     {
@@ -310,7 +313,7 @@ void UIStaticTextDrawer::DrawLocalizationDebug(const UIGeometricData& textGeomDa
         RenderSystem2D::Instance()->DrawLine(polygon.GetPoints()[0], polygon.GetPoints()[2], color);
     }
 }
-void UIStaticTextDrawer::RecalculateDebugColoring()
+void UIStaticTextState::RecalculateDebugColoring()
 {
     warningColor = NONE;
     lineBreakError = NONE;

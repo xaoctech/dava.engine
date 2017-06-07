@@ -1,5 +1,5 @@
 #include "UIStaticTextComponent.h"
-#include "UIStaticTextDrawer.h"
+#include "UIStaticTextState.h"
 #include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
@@ -189,26 +189,15 @@ bool UIStaticTextComponent::IsModified() const
     return modified;
 }
 
-void UIStaticTextComponent::SetInternalDrawer(UIStaticTextDrawer* internalDrawer_)
+void UIStaticTextComponent::SetState(UIStaticTextState* state_)
 {
-    internalDrawer = internalDrawer_;
+    state = state_;
     modified = true;
 }
 
-UIStaticTextDrawer* UIStaticTextComponent::GetInternalDrawer()
+UIStaticTextState* UIStaticTextComponent::GetState() const
 {
-    return internalDrawer;
-}
-
-void UIStaticTextComponent::SetParentColor(const Color& parentColor_)
-{
-    parentColor = parentColor_;
-    modified = true;
-}
-
-Color UIStaticTextComponent::GetParentColor()
-{
-    return parentColor;
+    return state;
 }
 
 void UIStaticTextComponent::SetRequestedTextRectSize(const Vector2& value)
@@ -221,11 +210,4 @@ DAVA::Vector2 UIStaticTextComponent::GetRequestedTextRectSize() const
     return requestedTextRectSize;
 }
 
-void UIStaticTextComponent::Draw(const UIGeometricData& geometricData)
-{
-    if (internalDrawer)
-    {
-        internalDrawer->Draw(geometricData);
-    }
-}
 };

@@ -266,3 +266,151 @@ Controls:
                     fitting: "FITTING_POINTS"
                     multiline: "MULTILINE_ENABLED_BY_SYMBOL"
                     text: "MULTILINE: DISABLED, FITTING: POINTS"
+-   class: "UIControl"
+    name: "ShadowText"
+    position: [0.000000, 0.000000]
+    size: [524.000000, 168.000000]
+    children:
+    -   prototype: "StaticTextComponentTest"
+        name: "StaticTextComponentTest"
+        children:
+        -   path: "UIStaticText"
+            shadowoffset: [3.000000, 3.000000]
+            shadowcolor: [0.000000, 1.000000, 0.000000, 1.000000]
+            multiline: "MULTILINE_ENABLED"
+            text: "MULTILINE:ENABLED, FITTING: NONE"
+        -   path: "Component"
+            components:
+                StaticText:
+                    multiline: "MULTILINE_ENABLED"
+                    shadowColor: [0.000000, 1.000000, 0.000000, 1.000000]
+                    shadowOffset: [3.000000, 3.000000]
+                    text: "MULTILINE:ENABLED, FITTING: NONE"
+-   class: "UIControl"
+    name: "ParentColorText"
+    position: [0.000000, 0.000000]
+    size: [524.000000, 304.000000]
+    components:
+        LinearLayout:
+            orientation: "TopDown"
+    children:
+    -   prototype: "StaticTextComponentTest"
+        name: "StaticTextComponentTest"
+        position: [0.000000, 0.000000]
+        components:
+            Background:
+                color: [0.533333, 0.533333, 0.533333, 0.533333]
+        children:
+        -   path: "UIStaticText"
+            textColor: [1.000000, 1.000000, 0.000000, 1.000000]
+            textcolorInheritType: "COLOR_MULTIPLY_ON_PARENT"
+            shadowoffset: [0.000000, 0.000000]
+            shadowcolor: [0.000000, 0.000000, 0.000000, 1.000000]
+            multiline: "MULTILINE_ENABLED"
+            text: "MULTILINE:ENABLED, FITTING: NONE"
+        -   path: "Component"
+            components:
+                StaticText:
+                    color: [1.000000, 1.000000, 0.000000, 1.000000]
+                    colorInheritType: "COLOR_MULTIPLY_ON_PARENT"
+                    multiline: "MULTILINE_ENABLED"
+                    shadowColor: [0.000000, 0.000000, 0.000000, 1.000000]
+                    shadowOffset: [0.000000, 0.000000]
+                    text: "MULTILINE:ENABLED, FITTING: NONE"
+    -   prototype: "StaticTextComponentTest"
+        name: "StaticTextComponentTest"
+        position: [0.000000, 60.799999]
+        components:
+            Background:
+                color: [0.533333, 0.533333, 0.533333, 0.533333]
+        children:
+        -   path: "UIStaticText"
+            textColor: [1.000000, 1.000000, 0.000000, 1.000000]
+            textcolorInheritType: "COLOR_ADD_TO_PARENT"
+            shadowoffset: [0.000000, 0.000000]
+            shadowcolor: [0.000000, 0.000000, 0.000000, 1.000000]
+            multiline: "MULTILINE_ENABLED"
+            text: "MULTILINE:ENABLED, FITTING: NONE"
+        -   path: "Component"
+            position: [262.000000, 0.000000]
+            components:
+                StaticText:
+                    color: [1.000000, 1.000000, 0.000000, 1.000000]
+                    colorInheritType: "COLOR_ADD_TO_PARENT"
+                    multiline: "MULTILINE_ENABLED"
+                    shadowColor: [0.000000, 0.000000, 0.000000, 1.000000]
+                    shadowOffset: [0.000000, 0.000000]
+                    text: "MULTILINE:ENABLED, FITTING: NONE"
+    -   prototype: "StaticTextComponentTest"
+        name: "StaticTextComponentTest"
+        position: [0.000000, 121.599998]
+        components:
+            Background:
+                color: [0.533333, 0.533333, 0.533333, 0.533333]
+        children:
+        -   path: "UIStaticText"
+            textColor: [1.000000, 1.000000, 0.000000, 1.000000]
+            textcolorInheritType: "COLOR_REPLACE_TO_PARENT"
+            shadowoffset: [0.000000, 0.000000]
+            shadowcolor: [0.000000, 0.000000, 0.000000, 1.000000]
+            multiline: "MULTILINE_ENABLED"
+            text: "MULTILINE:ENABLED, FITTING: NONE"
+        -   path: "Component"
+            position: [262.000000, 0.000000]
+            components:
+                StaticText:
+                    color: [1.000000, 1.000000, 0.000000, 1.000000]
+                    colorInheritType: "COLOR_REPLACE_TO_PARENT"
+                    multiline: "MULTILINE_ENABLED"
+                    shadowColor: [0.000000, 0.000000, 0.000000, 1.000000]
+                    shadowOffset: [0.000000, 0.000000]
+                    text: "MULTILINE:ENABLED, FITTING: NONE"
+    -   prototype: "StaticTextComponentTest"
+        name: "StaticTextComponentTest"
+        position: [0.000000, 182.399994]
+        components:
+            Background:
+                color: [0.533333, 0.533333, 0.533333, 0.533333]
+        children:
+        -   path: "UIStaticText"
+            textColor: [1.000000, 1.000000, 0.000000, 1.000000]
+            textcolorInheritType: "COLOR_MULTIPLY_ALPHA_ONLY"
+            shadowoffset: [0.000000, 0.000000]
+            shadowcolor: [0.000000, 0.000000, 0.000000, 1.000000]
+            multiline: "MULTILINE_ENABLED"
+            text: "MULTILINE:ENABLED, FITTING: NONE"
+        -   path: "Component"
+            position: [262.000000, 0.000000]
+            components:
+                StaticText:
+                    color: [1.000000, 1.000000, 0.000000, 1.000000]
+                    colorInheritType: "COLOR_MULTIPLY_ALPHA_ONLY"
+                    multiline: "MULTILINE_ENABLED"
+                    shadowColor: [0.000000, 0.000000, 0.000000, 1.000000]
+                    shadowOffset: [0.000000, 0.000000]
+                    text: "MULTILINE:ENABLED, FITTING: NONE"
+    -   prototype: "StaticTextComponentTest"
+        name: "StaticTextComponentTest"
+        position: [0.000000, 243.199997]
+        components:
+            Background:
+                color: [0.533333, 0.533333, 0.533333, 0.533333]
+                colorInherit: "COLOR_REPLACE_ALPHA_ONLY"
+        children:
+        -   path: "UIStaticText"
+            textColor: [1.000000, 1.000000, 0.000000, 1.000000]
+            textcolorInheritType: "COLOR_REPLACE_ALPHA_ONLY"
+            shadowoffset: [0.000000, 0.000000]
+            shadowcolor: [0.000000, 0.000000, 0.000000, 1.000000]
+            multiline: "MULTILINE_ENABLED"
+            text: "MULTILINE:ENABLED, FITTING: NONE"
+        -   path: "Component"
+            position: [262.000000, 0.000000]
+            components:
+                StaticText:
+                    color: [1.000000, 1.000000, 0.000000, 1.000000]
+                    colorInheritType: "COLOR_REPLACE_ALPHA_ONLY"
+                    multiline: "MULTILINE_ENABLED"
+                    shadowColor: [0.000000, 0.000000, 0.000000, 1.000000]
+                    shadowOffset: [0.000000, 0.000000]
+                    text: "MULTILINE:ENABLED, FITTING: NONE"

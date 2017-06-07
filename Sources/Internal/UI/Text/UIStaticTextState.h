@@ -11,7 +11,7 @@ namespace DAVA
 class UIControl;
 class UIStaticTextComponent;
 
-class UIStaticTextDrawer : public BaseObject
+class UIStaticTextState : public BaseObject
 {
 public:
 
@@ -30,40 +30,25 @@ public:
     static const float32 LOCALIZATION_RESERVED_PORTION;
 #endif
 
-    UIStaticTextDrawer(UIControl* control_, UIStaticTextComponent* component_);
+    UIStaticTextState(UIControl* control_, UIStaticTextComponent* component_);
 
-    void Draw(const UIGeometricData& geometricData);
+    void Draw(const UIGeometricData& geometricData, const Color& parentColor);
 
 private:
-    UIStaticTextDrawer& operator=(const UIStaticTextDrawer&) = delete;
+    UIStaticTextState& operator=(const UIStaticTextState&) = delete;
 
     void PrepareSprite();
     void ApplyComponentData();
 
 protected:
-    ~UIStaticTextDrawer() override = default;
+    ~UIStaticTextState() override;
 
     RefPtr<UIControl> control;
     RefPtr<UIStaticTextComponent> component;
 
-    RefPtr<TextBlock> textBlock;
-    RefPtr<UIControlBackground> textBg;
-    RefPtr<UIControlBackground> shadowBg;
-
-//inline TextBlock* GetTextBlock()
-//{
-//    return textBlock;
-//}
-
-//inline UIControlBackground* GetTextBackground() const
-//{
-//    return textBg;
-//};
-//inline UIControlBackground* GetShadowBackground() const
-//{
-//    return shadowBg;
-//};
-
+    TextBlock* textBlock;
+    UIControlBackground* textBg;
+    UIControlBackground* shadowBg;
 
 #if defined(LOCALIZATION_DEBUG)
     void DrawLocalizationDebug(const UIGeometricData& textGeomData) const;

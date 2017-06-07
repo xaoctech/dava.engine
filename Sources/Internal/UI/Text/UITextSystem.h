@@ -23,16 +23,8 @@ public:
     void Process(float32 elapsedTime) override;
 
 private:
-    // struct Link final
-    // {
-    //     Link(UIRichContentComponent* c);
-
-    //     UIStaticTextComponent* component = nullptr;
-    // };
 
     void AddLink(UIStaticTextComponent* component);
     void RemoveLink(UIStaticTextComponent* component);
-
-    // Vector<Link> links;
 };
 }

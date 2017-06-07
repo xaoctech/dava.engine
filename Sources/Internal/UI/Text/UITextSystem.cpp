@@ -15,25 +15,6 @@ namespace DAVA
 void UITextSystem::Process(float32 elapsedTime)
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::UI_TEXT_SYSTEM);
-
-    // // Remove empty links
-    // if (!links.empty())
-    // {
-    //     links.erase(std::remove_if(links.begin(), links.end(), [](const Link& l) {
-    //                     return l.component == nullptr;
-    //                 }),
-    //                 links.end());
-    // }
-
-    // // Process links
-    // for (Link& l : links)
-    // {
-    //     if (l.component && l.component->IsModified())
-    //     {
-    //         l.component->internalDrawer->SystemProcess();
-    //         l.component->SetModified(false);
-    //     }
-    // }
 }
 
 void UITextSystem::RegisterControl(UIControl* control)
@@ -80,30 +61,15 @@ void UITextSystem::UnregisterComponent(UIControl* control, UIComponent* componen
 void UITextSystem::AddLink(UIStaticTextComponent* component)
 {
     DVASSERT(component);
-    UIStaticTextDrawer* drawer = new UIStaticTextDrawer(component->GetControl(), component);
-    component->SetInternalDrawer(drawer);
-    component->SetModified(true);
-    // links.emplace_back(component);
+    UIStaticTextState* drawer = new UIStaticTextState(component->GetControl(), component);
+    component->SetState(drawer);
 }
 
 void UITextSystem::RemoveLink(UIStaticTextComponent* component)
 {
     DVASSERT(component);
-    UIStaticTextDrawer* drawer = component->GetInternalDrawer();
-    component->SetInternalDrawer(nullptr);
-    SafeRelease(drawer);
-
-    // auto findIt = std::find_if(links.begin(), links.end(), [&component](const Link& l) {
-    //     return l.component == component;
-    // });
-    // if (findIt != links.end())
-    // {
-    //     findIt->component = nullptr; // mark link for delete
-    // }
+    UIStaticTextState* state = component->GetState();
+    component->SetState(nullptr);
+    SafeRelease(state);
 }
-
-// UISystem::Link::Link(UIStaticTextComponent* c)
-//     : component(c)
-// {
-// }
 }
