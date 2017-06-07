@@ -74,6 +74,8 @@ DAVA_TESTCLASS (MouseTestClass)
             buttonsEventHandlingTestState = ButtonsEventHandlingTestState::FINISHED;
             return;
         }
+
+        GetPrimaryWindow()->SetInputHandlingMode(eInputHandlingModes::HANDLE_ALWAYS);
     }
 
     DAVA_TEST (MouseWheelEventHandlingTest)
@@ -92,6 +94,8 @@ DAVA_TESTCLASS (MouseTestClass)
             wheelEventHandlingTestState = WheelEventHandlingTestState::FINISHED;
             return;
         }
+
+        GetPrimaryWindow()->SetInputHandlingMode(eInputHandlingModes::HANDLE_ALWAYS);
     }
 
     DAVA_TEST (MousePositionEventHandlingTest)
@@ -110,6 +114,8 @@ DAVA_TESTCLASS (MouseTestClass)
         Window* primaryWindow = GetPrimaryWindow();
         MainDispatcher* dispatcher = EngineBackend::Instance()->GetDispatcher();
 
+        primaryWindow->SetInputHandlingMode(eInputHandlingModes::HANDLE_ALWAYS);
+
         float32 newX = 241.01f;
         float32 newY = 7.05f;
         dispatcher->SendEvent(MainDispatcherEvent::CreateWindowMouseMoveEvent(primaryWindow, newX, newY, eModifierKeys::NONE, false));
@@ -127,6 +133,8 @@ DAVA_TESTCLASS (MouseTestClass)
         dispatcher->SendEvent(MainDispatcherEvent::CreateWindowMouseMoveEvent(primaryWindow, newX, newY, eModifierKeys::NONE, false));
         mousePos = mouse->GetAnalogElementState(eInputElements::MOUSE_POSITION);
         TEST_VERIFY(mousePos.x == newX && mousePos.y == newY);
+
+        primaryWindow->SetInputHandlingMode(eInputHandlingModes::HANDLE_ONLY_WHEN_FOCUSED);
     }
 
     void CheckSingleState(Mouse * mouse, eInputElements requiredElement, DigitalElementState requiredState)
@@ -232,6 +240,7 @@ DAVA_TESTCLASS (MouseTestClass)
                 if (currentElement > eInputElements::MOUSE_LAST_BUTTON)
                 {
                     buttonsEventHandlingTestState = ButtonsEventHandlingTestState::FINISHED;
+                    primaryWindow->SetInputHandlingMode(eInputHandlingModes::HANDLE_ONLY_WHEN_FOCUSED);
                 }
                 else
                 {
@@ -272,6 +281,8 @@ DAVA_TESTCLASS (MouseTestClass)
                 TEST_VERIFY(currentState.x == 0.0f && currentState.y == 0.0f);
 
                 wheelEventHandlingTestState = WheelEventHandlingTestState::FINISHED;
+
+                primaryWindow->SetInputHandlingMode(eInputHandlingModes::HANDLE_ONLY_WHEN_FOCUSED);
             }
         }
     }

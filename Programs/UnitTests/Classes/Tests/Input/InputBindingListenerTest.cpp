@@ -46,6 +46,8 @@ DAVA_TESTCLASS (InputBindingListenerTestClass)
             return;
         }
 
+        GetPrimaryWindow()->SetInputHandlingMode(eInputHandlingModes::HANDLE_ALWAYS);
+
         {
             // All devices
 
@@ -156,6 +158,8 @@ DAVA_TESTCLASS (InputBindingListenerTestClass)
             ResetCallbaksState();
             TEST_VERIFY(!listener->IsListening());
         }
+
+        GetPrimaryWindow()->SetInputHandlingMode(eInputHandlingModes::HANDLE_ONLY_WHEN_FOCUSED);
     }
 
     DAVA_TEST (InputBindingListenerDigitalSingleWithModifiersTest)
@@ -175,6 +179,8 @@ DAVA_TESTCLASS (InputBindingListenerTestClass)
             Logger::Info("Skipping InputListenerDigitalSingleWithModifiersTest since there is no mouse device");
             return;
         }
+
+        GetPrimaryWindow()->SetInputHandlingMode(eInputHandlingModes::HANDLE_ALWAYS);
 
         {
             // All devices
@@ -222,6 +228,8 @@ DAVA_TESTCLASS (InputBindingListenerTestClass)
             ResetCallbaksState();
             TEST_VERIFY(!listener->IsListening());
         }
+
+        GetPrimaryWindow()->SetInputHandlingMode(eInputHandlingModes::HANDLE_ONLY_WHEN_FOCUSED);
     }
 
     DAVA_TEST (InputBindingListenerDigitalAnyTest)
@@ -241,6 +249,8 @@ DAVA_TESTCLASS (InputBindingListenerTestClass)
             Logger::Info("Skipping InputListenerDigitalAnyTest since there is no mouse device");
             return;
         }
+
+        GetPrimaryWindow()->SetInputHandlingMode(eInputHandlingModes::HANDLE_ALWAYS);
 
         {
             // All devices
@@ -294,6 +304,8 @@ DAVA_TESTCLASS (InputBindingListenerTestClass)
             ResetCallbaksState();
             TEST_VERIFY(!listener->IsListening());
         }
+
+        GetPrimaryWindow()->SetInputHandlingMode(eInputHandlingModes::HANDLE_ONLY_WHEN_FOCUSED);
     }
 
     // TODO: other modes

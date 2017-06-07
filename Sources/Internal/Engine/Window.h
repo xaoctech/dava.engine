@@ -27,6 +27,12 @@ class InputSystem;
 class UIControlSystem;
 class VirtualCoordinatesSystem;
 
+enum class eInputHandlingModes
+{
+    HANDLE_ONLY_WHEN_FOCUSED,
+    HANDLE_ALWAYS
+};
+
 /**
     \ingroup engine
     The `Window` class represents an abstract window - rectangular area on display application can draw at.
@@ -284,6 +290,8 @@ public:
     */
     bool GetCursorVisibility() const;
 
+    void SetInputHandlingMode(eInputHandlingModes mode);
+
     /** Get Window's UIControlSystem */
     UIControlSystem* GetUIControlSystem() const;
 
@@ -352,6 +360,8 @@ private:
     float32 surfaceWidth = 0.0f; //!< Window rendering surface width.
     float32 surfaceHeight = 0.0f; //!< Window rendering surface height.
     float32 surfaceScale = 1.0f; //!< Window rendering surface scale.
+
+    eInputHandlingModes inputHandlingMode = eInputHandlingModes::HANDLE_ONLY_WHEN_FOCUSED;
 };
 
 inline bool Window::IsPrimary() const

@@ -179,6 +179,11 @@ bool Window::GetCursorVisibility() const
     return cursorVisible && cursorCapture != eCursorCapture::PINNING;
 }
 
+void Window::SetInputHandlingMode(eInputHandlingModes mode)
+{
+    inputHandlingMode = mode;
+}
+
 void Window::Update(float32 frameDelta)
 {
     update.Emit(this, frameDelta);
@@ -219,7 +224,7 @@ bool Window::EventHandler(const Private::MainDispatcherEvent& e)
     if (MainDispatcherEvent::IsInputEvent(e.type))
     {
         // Skip input events if window does not have focus or pinning switching logic tells to ignore input event
-        if (!hasFocus || HandleInputActivation(e))
+        if ((inputHandlingMode == eInputHandlingModes::HANDLE_ONLY_WHEN_FOCUSED && !hasFocus) || HandleInputActivation(e))
         {
             return true;
         }

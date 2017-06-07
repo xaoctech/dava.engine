@@ -70,7 +70,11 @@ void InputSystem::DispatchInputEvent(const InputEvent& inputEvent)
     if (!handled && inputEvent.window != nullptr)
     {
         UIControlSystem* uiControlSystem = inputEvent.window->GetUIControlSystem();
-        uiControlSystem->HandleInputEvent(inputEvent);
+
+        if (uiControlSystem != nullptr)
+        {
+            uiControlSystem->HandleInputEvent(inputEvent);
+        }
     }
 }
 

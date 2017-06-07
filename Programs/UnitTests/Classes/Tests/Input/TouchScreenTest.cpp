@@ -80,6 +80,8 @@ DAVA_TESTCLASS (TouchScreenTestClass)
             eventHandlingTestState = EventHandlingTestState::FINISHED;
             return;
         }
+
+        GetPrimaryWindow()->SetInputHandlingMode(eInputHandlingModes::HANDLE_ALWAYS);
     }
 
     DAVA_TEST (TouchScreenMultiTouchEventHandlingTest)
@@ -101,6 +103,8 @@ DAVA_TESTCLASS (TouchScreenTestClass)
 
         Window* primaryWindow = GetPrimaryWindow();
         MainDispatcher* dispatcher = EngineBackend::Instance()->GetDispatcher();
+
+        primaryWindow->SetInputHandlingMode(eInputHandlingModes::HANDLE_ALWAYS);
 
         std::vector<eInputElements> elementsThatShouldBePressed;
 
@@ -129,6 +133,8 @@ DAVA_TESTCLASS (TouchScreenTestClass)
             eInputElements currentTouch = static_cast<eInputElements>(i);
             dispatcher->SendEvent(MainDispatcherEvent::CreateWindowTouchEvent(primaryWindow, MainDispatcherEvent::TOUCH_UP, i, 0.0f, 0.0f, eModifierKeys::NONE));
         }
+
+        primaryWindow->SetInputHandlingMode(eInputHandlingModes::HANDLE_ONLY_WHEN_FOCUSED);
     }
 
     // Check that all elements are in released state, except `requiredElement` that should be in `requiredState`
@@ -251,6 +257,8 @@ DAVA_TESTCLASS (TouchScreenTestClass)
                 CheckSingleState(touchscreen, eInputElements::TOUCH_CLICK0, DigitalElementState::Released());
 
                 eventHandlingTestState = EventHandlingTestState::FINISHED;
+
+                primaryWindow->SetInputHandlingMode(eInputHandlingModes::HANDLE_ONLY_WHEN_FOCUSED);
             }
         }
     }
