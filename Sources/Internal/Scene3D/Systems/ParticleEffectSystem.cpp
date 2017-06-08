@@ -554,7 +554,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
             }
 
             if (group.layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE)
-                UpdateStripe(current, effect->effectData, group, deltaTime, bbox, currForceValues);
+                UpdateStripe(current, effect->effectData, group, deltaTime, bbox, currForceValues, forcesCount);
 
             prev = current;
             current = current->next;
@@ -617,7 +617,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
     effect->effectRenderObject->SetAABBox(bbox);
 }
 
-void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& effectData, ParticleGroup& group, float32 dt, AABBox3& bbox, Vector<Vector3>& currForceValues)
+void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& effectData, ParticleGroup& group, float32 dt, AABBox3& bbox, Vector<Vector3>& currForceValues, int32 forcesCount)
 {
     ParticleLayer* layer = group.layer;
     StripeData& data = particle->stripe;
@@ -643,7 +643,6 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
     }
 
     auto nodeIter = data.strpeNodes.begin();
-    int32 forcesCount = static_cast<int32>(currForceValues.size());
 
     while (nodeIter != data.strpeNodes.end())
     {
@@ -826,7 +825,7 @@ void ParticleEffectSystem::UpdateNonStripeParticleData(ParticleEffectComponent* 
         currSpinOverLife = group.layer->spinOverLife->GetValue(overLife);
     particle->angle += particle->spin * currSpinOverLife * dt;
 
-    if (forcesCount && group.layer->type)
+    if (forcesCount)
     {
         Vector3 acceleration;
         for (int32 i = 0; i < forcesCount; ++i)
