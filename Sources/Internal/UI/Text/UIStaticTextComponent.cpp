@@ -249,4 +249,18 @@ UIStaticTextState* UIStaticTextComponent::GetState() const
 {
     return state;
 }
+
+// Backward compatibility method
+Vector2 UIStaticTextComponent::GetContentPreferredSize(const Vector2& constraints) const
+{
+    DVASSERT(state);
+    return state->GetTextBlock()->GetPreferredSizeForWidth(constraints.x);
+}
+
+// Backward compatibility method
+bool UIStaticTextComponent::IsHeightDependsOnWidth() const
+{
+    DVASSERT(state);
+    return state->GetTextBlock()->GetMultiline();
+}
 };

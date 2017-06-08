@@ -21,12 +21,14 @@
 #include "UI/Render/UIClipContentComponent.h"
 #include "UI/Render/UIRenderSystem.h"
 #include "UI/Sound/UISoundSystem.h"
+#include "UI/Text/UIStaticTextComponent.h"
 #include "UI/Styles/UIStyleSheetSystem.h"
 #include "UI/UIAnalitycs.h"
 #include "UI/UIControlHelpers.h"
 #include "UI/UIControlPackageContext.h"
 #include "UI/UIControlSystem.h"
 #include "Utils/StringFormat.h"
+
 
 #ifdef __DAVAENGINE_AUTOTESTING__
 #include "Autotesting/AutotestingSystem.h"
@@ -529,6 +531,11 @@ void UIControl::SetScaledRect(const Rect& rect, bool rectInAbsoluteCoordinates /
 
 Vector2 UIControl::GetContentPreferredSize(const Vector2& constraints) const
 {
+    UIStaticTextComponent* txt = GetComponent<UIStaticTextComponent>();
+    if (txt)
+    {
+        return txt->GetContentPreferredSize(constraints);
+    }
     UIControlBackground* bg = GetComponent<UIControlBackground>();
     if (bg != nullptr && bg->GetSprite() != nullptr)
     {
@@ -549,6 +556,11 @@ Vector2 UIControl::GetContentPreferredSize(const Vector2& constraints) const
 
 bool UIControl::IsHeightDependsOnWidth() const
 {
+    UIStaticTextComponent* txt = GetComponent<UIStaticTextComponent>();
+    if (txt)
+    {
+        return txt->IsHeightDependsOnWidth();
+    }
     UIControlBackground* bg = GetComponent<UIControlBackground>();
     if (bg == nullptr || bg->GetSprite() == nullptr)
     {

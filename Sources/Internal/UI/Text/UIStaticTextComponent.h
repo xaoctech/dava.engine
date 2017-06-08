@@ -86,10 +86,15 @@ public:
     void SetModified(bool value);
     bool IsModified() const;
 
+    // Backward compatibility methods
+
+    Vector2 GetContentPreferredSize(const Vector2& constraints) const;
+    bool IsHeightDependsOnWidth() const;
+
+protected:
     void SetState(UIStaticTextState*);
     UIStaticTextState* GetState() const;
 
-protected:
     int32 align = eAlign::ALIGN_HCENTER | eAlign::ALIGN_VCENTER;
     String text;
     String fontName;
@@ -103,11 +108,14 @@ protected:
     TextBlock::eUseRtlAlign useRtlAlign = TextBlock::eUseRtlAlign::RTL_DONT_USE;
     bool forceBiDiSupport = false;
 
+    Vector2 requestedTextRectSize = Vector2::Zero;
+
     bool modified = true;
 
     UIStaticTextState* state;
 
-    Vector2 requestedTextRectSize = Vector2::Zero;
-
+    // Friends
+    friend class UITextSystem;
+    friend class UIRenderSystem;
 };
 }
