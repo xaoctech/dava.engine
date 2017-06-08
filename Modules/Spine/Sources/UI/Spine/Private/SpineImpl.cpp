@@ -86,7 +86,18 @@ char* _spUtil_readFile(const char* path, int* length)
     if (fp != nullptr)
     {
         *length = static_cast<int>(fp->GetSize());
-        char* bytes = reinterpret_cast<char*>(MALLOC(char, *length));
+
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wold-style-cast"
+#endif
+
+        char* bytes = MALLOC(char, *length);
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+
         fp->Read(bytes, *length);
         fp->Release();
         return bytes;
