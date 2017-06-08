@@ -101,6 +101,6 @@ inline float ParticleRenderObject::FresnelShlick(float32 nDotVInv, float32 bias,
 inline bool ParticleRenderObject::CheckIfSimpleParticle(ParticleLayer* layer) const
 {
     return layer->type == ParticleLayer::eType::TYPE_PARTICLES
-        || layer->type == ParticleLayer::eType::TYPE_SINGLE_PARTICLE;
+    || layer->type == ParticleLayer::eType::TYPE_SINGLE_PARTICLE;
 }
 }

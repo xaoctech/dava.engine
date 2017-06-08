@@ -532,7 +532,6 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
                 effect->effectData.infoSources[current->positionTarget].size = current->currSize;
             }
 
-
             if (group.layer->enableNoise && group.layer->noise)
             {
                 if (group.layer->noiseScaleOverLife != nullptr)

@@ -42,7 +42,7 @@ const EmitterLayerWidget::LayerTypeMap EmitterLayerWidget::layerTypeMap[] =
 {
   { DAVA::ParticleLayer::TYPE_SINGLE_PARTICLE, "Single Particle" },
   { DAVA::ParticleLayer::TYPE_PARTICLES, "Particles" },
-  { DAVA::ParticleLayer::TYPE_PARTICLE_STRIPE, "Particle Stripe"},
+  { DAVA::ParticleLayer::TYPE_PARTICLE_STRIPE, "Particle Stripe" },
   { DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES, "SuperEmitter" }
 };
 
@@ -754,7 +754,6 @@ void EmitterLayerWidget::OnValueChanged()
         REGlobal::ShowNotification(params);
     }
 
-
     // Update(false);
     if (superemitterStatusChanged)
     {
@@ -776,7 +775,6 @@ void EmitterLayerWidget::OnFresnelToAlphaChanged()
     params.fresnelToAlphaBias = static_cast<DAVA::float32>(fresnelBiasSpinBox->value());
 
     GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeFresnelToAlphaProperties(layer, std::move(params))));
-
 
     if (layer->particleOrientation & DAVA::ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING && layer->useFresnelToAlpha)
     {
@@ -1337,9 +1335,9 @@ void EmitterLayerWidget::CreateFlowmapLayoutWidget()
     enableFlowAnimationCheckBox = new QCheckBox("Enable flowmap animation");
     mainBox->addWidget(enableFlowAnimationCheckBox);
     connect(enableFlowAnimationCheckBox,
-        SIGNAL(stateChanged(int)),
-        this,
-        SLOT(OnFlowPropertiesChanged()));
+            SIGNAL(stateChanged(int)),
+            this,
+            SLOT(OnFlowPropertiesChanged()));
     flowMainLayout->addWidget(enableFlowAnimationCheckBox);
 
     flowSettingsLayoutWidget = new QWidget();
@@ -1482,24 +1480,24 @@ QLayout* EmitterLayerWidget::CreateStripeLayout()
 
     stripeColorOverLifeGradient = new GradientPickerWidget(this);
     connect(stripeColorOverLifeGradient,
-        SIGNAL(ValueChanged()),
-        this,
-        SLOT(OnStripePropertiesChanged()));
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnStripePropertiesChanged()));
     vertStripeLayout->addWidget(stripeColorOverLifeGradient);
 
     stripeSizeOverLifeTimeLine = new TimeLineWidget(this);
     connect(stripeSizeOverLifeTimeLine,
-        SIGNAL(ValueChanged()),
-        this,
-        SLOT(OnStripePropertiesChanged()));
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnStripePropertiesChanged()));
     vertStripeLayout->addWidget(stripeSizeOverLifeTimeLine);
 
     stripeInheritPositionForBaseCheckBox = new QCheckBox("Inherit position. Affect only base verts.");
     vertStripeLayout->addWidget(stripeInheritPositionForBaseCheckBox);
     connect(stripeInheritPositionForBaseCheckBox,
-        SIGNAL(stateChanged(int)),
-        this,
-        SLOT(OnStripePropertiesChanged()));
+            SIGNAL(stateChanged(int)),
+            this,
+            SLOT(OnStripePropertiesChanged()));
 
     stripeLifetimeSpin = new EventFilterDoubleSpinBox();
     stripeLifetimeSpin->setMinimum(-100);
@@ -1540,7 +1538,6 @@ QLayout* EmitterLayerWidget::CreateStripeLayout()
     vertStripeLayout->addWidget(stripeTexTileLabel);
     vertStripeLayout->addWidget(stripeTextureTileSpin);
 
-    
     stripeUScrollSpeedSpin = new EventFilterDoubleSpinBox();
     stripeUScrollSpeedSpin->setMinimum(-100);
     stripeUScrollSpeedSpin->setMaximum(100);
@@ -1893,7 +1890,6 @@ void EmitterLayerWidget::OnLayerValueChanged()
 
 void EmitterLayerWidget::SetStripeParticleMode(bool isStripeParticle)
 {
-    
 }
 
 WheellIgnorantComboBox::WheellIgnorantComboBox(QWidget* parent /*= 0*/)

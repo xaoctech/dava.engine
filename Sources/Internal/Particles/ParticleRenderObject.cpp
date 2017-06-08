@@ -119,7 +119,7 @@ void ParticleRenderObject::PrepareRenderData(Camera* camera)
             continue; //if no material was set up, or empty group, or layer rendering is disabled or sprite is removed - don't draw anyway
 
         bool isLayerTypesNotTheSame = CheckIfSimpleParticle(itGroupStart->layer) != CheckIfSimpleParticle(itGroupCurr->layer);
-        
+
         if (itGroupStart->material != itGroupCurr->material || isLayerTypesNotTheSame)
         {
             if (CheckIfSimpleParticle(itGroupStart->layer))
@@ -459,7 +459,7 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
         if ((!group.material) || (!group.head) || (group.layer->isDisabled) || (!group.layer->sprite))
             continue; //if no material was set up, or empty group, or layer rendering is disabled or sprite is removed - don't draw anyway
 
-                      //prepare basis indexes
+        //prepare basis indexes
         int32 basisCount = 0;
         int32 basises[4]; //4 basises max per particle
         bool worldAlign = (group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_WORLD_ALIGN) != 0;
