@@ -519,7 +519,11 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                 Vector2 uv2(currentParticle->life * group.layer->stripeUScrollSpeed + 1.0f, currentParticle->life * group.layer->stripeVScrollSpeed);
                 float* dataPtr = reinterpret_cast<float*>(vb.data);
 
-                uint32 col = rhi::NativeColorRGBA(currColor.r, currColor.g, currColor.b, Clamp(currColor.a, 0.0f, 1.0f));
+                Color colOverLife = Color::White;
+                if (group.layer->stripeColorOverLife)
+                    colOverLife = group.layer->stripeColorOverLife->GetValue(0.0f);
+
+                uint32 col = rhi::NativeColorRGBA(Saturate(currColor.r * colOverLife.r), Saturate(currColor.g * colOverLife.g), Saturate(currColor.b * colOverLife.b), Saturate(currColor.a * colOverLife.a));
                 float32* color = reinterpret_cast<float32*>(&col);
                 UpdateStripeVertex(dataPtr, left, uv1, color, group.layer, currentParticle, fresnelToAlpha);
                 UpdateStripeVertex(dataPtr, right, uv2, color, group.layer, currentParticle, fresnelToAlpha);
@@ -536,8 +540,11 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                     left = node.position + data.inheritPositionOffset + scaledBasis;
                     right = node.position + data.inheritPositionOffset - scaledBasis;
 
-                    float32 alpha = Lerp(1.0f, group.layer->stripeAlphaOverLife, overLifeTime);
-                    col = rhi::NativeColorRGBA(currColor.r, currColor.g, currColor.b, Clamp(currColor.a * alpha, 0.0f, 1.0f));
+                    colOverLife = Color::White;
+                    if (group.layer->stripeColorOverLife)
+                        colOverLife = group.layer->stripeColorOverLife->GetValue(overLifeTime);
+
+                    col = rhi::NativeColorRGBA(Saturate(currColor.r * colOverLife.r), Saturate(currColor.g * colOverLife.g), Saturate(currColor.b * colOverLife.b), Saturate(currColor.a * colOverLife.a));
 
                     distance += (prevNode->position - node.position).Length();
                     float32 v = distance * group.layer->stripeTextureTile + currentParticle->life * group.layer->stripeVScrollSpeed;

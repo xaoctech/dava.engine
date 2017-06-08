@@ -855,6 +855,9 @@ void EmitterLayerWidget::OnStripePropertiesChanged()
     DAVA::PropLineWrapper<DAVA::float32> propStripeSizeOverLife;
     stripeSizeOverLifeTimeLine->GetValue(0.0f, propStripeSizeOverLife.GetPropsPtr());
 
+    DAVA::PropLineWrapper<DAVA::Color> propStripeColorOverLife;
+    stripeColorOverLifeGradient->GetValues(propStripeColorOverLife.GetPropsPtr());
+
     CommandChangeParticlesStripeProperties::StripeParams params;
     params.stripeLifetime = static_cast<DAVA::float32>(stripeLifetimeSpin->value());
     params.stripeRate = static_cast<DAVA::float32>(stripeRateSpin->value());
@@ -867,6 +870,7 @@ void EmitterLayerWidget::OnStripePropertiesChanged()
     params.stripeAlphaOverLife = static_cast<DAVA::float32>(stripeAlphaOverLifeSpin->value());
     params.stripeInheritPositionForBase = stripeInheritPositionForBaseCheckBox->isChecked();
     params.stripeSizeOverLifeProp = propStripeSizeOverLife.GetPropLine();
+    params.stripeColorOverLife = propStripeColorOverLife.GetPropLine();
     GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeParticlesStripeProperties(layer, std::move(params))));
 
     emit ValueChanged();
@@ -1089,6 +1093,9 @@ void EmitterLayerWidget::Update(bool updateMinimized)
 
     stripeSizeOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
     stripeSizeOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->stripeSizeOverLifeProp)).GetProps(), Qt::red, "stripe size over life prop");
+
+    stripeColorOverLifeGradient->Init(0, 1, "stripe color over life");
+    stripeColorOverLifeGradient->SetValues(DAVA::PropLineWrapper<DAVA::Color>(DAVA::PropertyLineHelper::GetValueLine(layer->stripeColorOverLife)).GetProps());
 
     // FLOW_STUFF
     flowSpeedTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, FLOW_PRECISION_DIGITS);
@@ -1476,6 +1483,13 @@ QLayout* EmitterLayerWidget::CreateStripeLayout()
 {
     QVBoxLayout* vertStripeLayout = new QVBoxLayout();
     vertStripeLayout->setContentsMargins(0, 10, 0, 0);
+
+    stripeColorOverLifeGradient = new GradientPickerWidget(this);
+    connect(stripeColorOverLifeGradient,
+        SIGNAL(ValueChanged()),
+        this,
+        SLOT(OnStripePropertiesChanged()));
+    vertStripeLayout->addWidget(stripeColorOverLifeGradient);
 
     stripeSizeOverLifeTimeLine = new TimeLineWidget(this);
     connect(stripeSizeOverLifeTimeLine,
@@ -1915,6 +1929,11 @@ void EmitterLayerWidget::OnLayerValueChanged()
     }
 
     blockSignals = false;
+}
+
+void EmitterLayerWidget::SetStripeParticleMode(bool isStripeParticle)
+{
+    
 }
 
 WheellIgnorantComboBox::WheellIgnorantComboBox(QWidget* parent /*= 0*/)

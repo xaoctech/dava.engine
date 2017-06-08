@@ -167,6 +167,8 @@ void ParticleEditorWidget::UpdateWidgetsForLayer()
 
     bool isSuperemitter = (emitterLayerWidget->GetLayer()->type == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES);
     emitterLayerWidget->SetSuperemitterMode(isSuperemitter);
+    bool isStripeParticle = (emitterLayerWidget->GetLayer()->type == DAVA::ParticleLayer::TYPE_PARTICLE_STRIPE);
+    emitterLayerWidget->SetStripeParticleMode(isStripeParticle);
 }
 
 void ParticleEditorWidget::HandleEmitterSelected(SceneEditor2* scene, DAVA::ParticleEffectComponent* effect, DAVA::ParticleEmitterInstance* emitter, bool forceUpdate)

@@ -143,6 +143,7 @@ public:
         DAVA::float32 stripeAlphaOverLife;
         bool stripeInheritPositionForBase;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> stripeSizeOverLifeProp;
+        DAVA::RefPtr<DAVA::PropertyLine<DAVA::Color>> stripeColorOverLife;
     };
 
     CommandChangeParticlesStripeProperties(DAVA::ParticleLayer* layer, StripeParams&& params);

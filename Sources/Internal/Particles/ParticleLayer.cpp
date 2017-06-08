@@ -79,6 +79,7 @@ ParticleLayer::ParticleLayer()
     , noiseVScrollSpeedVariation(nullptr)
     , noiseVScrollSpeedOverLife(nullptr)
     , stripeSizeOverLifeProp(nullptr)
+    , stripeColorOverLife(nullptr)
 {
     life = nullptr;
     lifeVariation = nullptr;
@@ -163,6 +164,9 @@ ParticleLayer* ParticleLayer::Clone()
 
     if (stripeSizeOverLifeProp)
         dstLayer->stripeSizeOverLifeProp.Set(stripeSizeOverLifeProp->Clone());
+
+    if (stripeColorOverLife)
+        dstLayer->stripeColorOverLife.Set(stripeColorOverLife->Clone());
 
     if (flowSpeed)
         dstLayer->flowSpeed.Set(flowSpeed->Clone());
@@ -469,6 +473,8 @@ void ParticleLayer::SetNoise(const FilePath& noisePath_)
 void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* node, bool preserveInheritPosition)
 {
     stripeSizeOverLifeProp = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("stripeSizeOverLifeProp"));
+    stripeColorOverLife = PropertyLineYamlReader::CreatePropertyLine<Color>(node->Get("stripeColorOverLife"));
+
     stripeLifetime = 0.0f;
     const YamlNode* stripeLifetimeNode = node->Get("stripeLifetime");
     if (stripeLifetimeNode)
@@ -970,6 +976,7 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
     parentNode->AddNodeToMap(layerNodeName, layerNode);
 
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "stripeSizeOverLifeProp", stripeSizeOverLifeProp);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<Color>(layerNode, "stripeColorOverLife", stripeColorOverLife);
 
     PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeLifetime", stripeLifetime);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeRate", stripeRate);
@@ -1136,6 +1143,7 @@ void ParticleLayer::SaveForcesToYamlNode(YamlNode* layerNode)
 void ParticleLayer::GetModifableLines(List<ModifiablePropertyLineBase*>& modifiables)
 {
     PropertyLineHelper::AddIfModifiable(stripeSizeOverLifeProp.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(stripeColorOverLife.Get(), modifiables);
 
     PropertyLineHelper::AddIfModifiable(flowSpeed.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(flowSpeedVariation.Get(), modifiables);

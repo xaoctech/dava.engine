@@ -213,6 +213,7 @@ CommandChangeParticlesStripeProperties::CommandChangeParticlesStripeProperties(D
         oldParams.stripeAlphaOverLife = layer->stripeAlphaOverLife;
         oldParams.stripeInheritPositionForBase = layer->stripeInheritPositionForBase;
         oldParams.stripeSizeOverLifeProp = layer->stripeSizeOverLifeProp;
+        oldParams.stripeColorOverLife = layer->stripeColorOverLife;
     }
 }
 
@@ -246,5 +247,6 @@ void CommandChangeParticlesStripeProperties::ApplyParams(StripeParams& params)
         layer->stripeAlphaOverLife = params.stripeAlphaOverLife;
         layer->stripeInheritPositionForBase = params.stripeInheritPositionForBase;
         PropertyLineHelper::SetValueLine(layer->stripeSizeOverLifeProp, params.stripeSizeOverLifeProp);
+        PropertyLineHelper::SetValueLine(layer->stripeColorOverLife, params.stripeColorOverLife);
     }
 }
