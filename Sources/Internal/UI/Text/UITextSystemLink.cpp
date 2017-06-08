@@ -1,34 +1,16 @@
-#include "UIStaticTextState.h"
+#include "UITextSystemLink.h"
 #include "UIStaticTextComponent.h"
 
 #include "UI/UIControl.h"
-#include "UI/Layouts/LayoutFormula.h"
-#include "Math/Vector.h"
-
-#include "Utils/Utils.h"
-#include "Base/ObjectFactory.h"
-#include "Utils/StringFormat.h"
-#include "FileSystem/LocalizationSystem.h"
-#include "Render/2D/FontManager.h"
-#include "Render/2D/Systems/RenderSystem2D.h"
-#include "Animation/LinearAnimation.h"
-#include "Utils/StringUtils.h"
-#include "Render/2D/TextBlockSoftwareRender.h"
-#include "Render/RenderHelper.h"
-#include "UI/UIControlSystem.h"
-#include "Job/JobManager.h"
 #include "Utils/UTF8Utils.h"
-#include "Reflection/ReflectionRegistrator.h"
-#include "Math\Math2D.h"
 
 namespace DAVA
 {
-
-
-UIStaticTextState::UIStaticTextState(UIControl* control_, UIStaticTextComponent* component_)
+UITextSystemLink::UITextSystemLink(UIControl* control_, UIStaticTextComponent* component_)
 {
     control = control_;
     component = component_;
+
     Rect rect = control->GetRect();
     control->SetInputEnabled(false, false);
     textBlock = TextBlock::Create(Vector2(rect.dx, rect.dy));
@@ -44,14 +26,14 @@ UIStaticTextState::UIStaticTextState(UIControl* control_, UIStaticTextComponent*
     shadowBg->SetPerPixelAccuracyType(component->GetPerPixelAccuracyType());
 }
 
-UIStaticTextState::~UIStaticTextState()
+UITextSystemLink::~UITextSystemLink()
 {
     SafeRelease(textBlock);
     SafeRelease(shadowBg);
     SafeRelease(textBg);
 }
 
-void UIStaticTextState::ApplyComponentData()
+void UITextSystemLink::ApplyData()
 {
     DVASSERT(control == component->GetControl(), "Invalid control poiner!");
 
@@ -123,7 +105,6 @@ void UIStaticTextState::ApplyComponentData()
         {
             control->SetLayoutDirty();
         }
-
     }
 }
 };

@@ -9,7 +9,7 @@
 namespace DAVA
 {
 class UIControl;
-class UIStaticTextState;
+class UITextSystemLink;
 
 class UIStaticTextComponent : public UIBaseComponent<UIComponent::STATIC_TEXT_COMPONENT>
 {
@@ -92,8 +92,8 @@ public:
     bool IsHeightDependsOnWidth() const;
 
 protected:
-    void SetState(UIStaticTextState*);
-    UIStaticTextState* GetState() const;
+    void SetLink(UITextSystemLink* link);
+    UITextSystemLink* GetLink() const;
 
     int32 align = eAlign::ALIGN_HCENTER | eAlign::ALIGN_VCENTER;
     String text;
@@ -112,7 +112,7 @@ protected:
 
     bool modified = true;
 
-    UIStaticTextState* state;
+    UITextSystemLink* link;
 
     // Friends
     friend class UITextSystem;

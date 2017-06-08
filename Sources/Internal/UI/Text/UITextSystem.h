@@ -8,6 +8,7 @@ namespace DAVA
 {
 class UIControl;
 class UIStaticTextComponent;
+class UITextSystemLink;
 
 class UITextSystem final : public UISystem
 {
@@ -23,16 +24,10 @@ public:
     void Process(float32 elapsedTime) override;
 
 private:
-    struct Link final
-    {
-        Link(UIStaticTextComponent* c);
-
-        UIStaticTextComponent* component = nullptr;
-    };
 
     void AddLink(UIStaticTextComponent* component);
     void RemoveLink(UIStaticTextComponent* component);
 
-    Vector<Link> links;
+    Vector<UITextSystemLink*> links;
 };
 }

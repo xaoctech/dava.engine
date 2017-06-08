@@ -11,10 +11,10 @@ namespace DAVA
 class UIControl;
 class UIStaticTextComponent;
 
-class UIStaticTextState : public BaseObject
+class UITextSystemLink : public BaseObject
 {
 public:
-    UIStaticTextState(UIControl* control_, UIStaticTextComponent* component_);
+    UITextSystemLink(UIControl* control_, UIStaticTextComponent* component_);
 
     inline TextBlock* GetTextBlock() const
     {
@@ -31,14 +31,13 @@ public:
         return shadowBg;
     }
 
-    void PrepareSprite();
-    void ApplyComponentData();
+    void ApplyData();
 
 private:
-    UIStaticTextState& operator=(const UIStaticTextState&) = delete;
+    UITextSystemLink& operator=(const UITextSystemLink&) = delete;
 
 protected:
-    ~UIStaticTextState() override;
+    ~UITextSystemLink() override;
 
     UIControl* control;
     UIStaticTextComponent* component;
@@ -47,5 +46,6 @@ protected:
     UIControlBackground* textBg;
     UIControlBackground* shadowBg;
 
+    friend class UITextSystem;
 };
 }

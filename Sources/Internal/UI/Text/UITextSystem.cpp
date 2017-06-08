@@ -1,14 +1,11 @@
 #include "UITextSystem.h"
 
 #include "UIStaticTextComponent.h"
-
 #include "Concurrency/Thread.h"
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
 #include "Entity/Component.h"
-#include "Render/Renderer.h"
 #include "UI/UIControl.h"
-#include "UI/UIScreen.h"
 
 namespace DAVA
 {
@@ -19,21 +16,21 @@ void UITextSystem::Process(float32 elapsedTime)
     // Remove empty links
     if (!links.empty())
     {
-        links.erase(std::remove_if(links.begin(), links.end(), [](const Link& l) {
-                        return l.component == nullptr;
+        links.erase(std::remove_if(links.begin(), links.end(), [](const UITextSystemLink* l) {
+                        return l == nullptr;
                     }),
                     links.end());
     }
 
     // Process links
-    for (Link& l : links)
+    for (UITextSystemLink* l : links)
     {
-        if (l.component && l.component->IsModified())
+        if (l != nullptr && l->component->IsModified())
         {
-            UIStaticTextState* state = l.component->GetState();
+            UITextSystemLink* state = l->component->GetLink();
             DVASSERT(state);
-            state->ApplyComponentData();
-            l.component->SetModified(false);
+            state->ApplyData();
+            l->component->SetModified(false);
         }
     }
 }
@@ -82,28 +79,33 @@ void UITextSystem::UnregisterComponent(UIControl* control, UIComponent* componen
 void UITextSystem::AddLink(UIStaticTextComponent* component)
 {
     DVASSERT(component);
-    UIStaticTextState* state = new UIStaticTextState(component->GetControl(), component);
-    component->SetState(state);
-    links.emplace_back(component);
+    UITextSystemLink* link = new UITextSystemLink(component->GetControl(), component);
+    component->SetLink(link);
+    links.emplace_back(link);
 }
 
 void UITextSystem::RemoveLink(UIStaticTextComponent* component)
 {
     DVASSERT(component);
-    auto findIt = std::find_if(links.begin(), links.end(), [&component](const Link& l) {
-        return l.component == component;
+    UITextSystemLink* link = component->GetLink();
+    for (UITextSystemLink*& l : links)
+    {
+        if (l == link)
+        {
+            l = nullptr;
+            break;
+        }
+    }
+    auto findIt = std::find_if(links.begin(), links.end(), [&link](const UITextSystemLink* l) {
+        //return l != nullptr && l->component == component;
+        return l == link;
     });
     if (findIt != links.end())
     {
-        findIt->component = nullptr; // mark link for delete
+        (*findIt) = nullptr; // mark link for delete
     }
-    UIStaticTextState* state = component->GetState();
-    component->SetState(nullptr);
-    SafeRelease(state);
+    component->SetLink(nullptr);
+    SafeRelease(link);
 }
 
-UITextSystem::Link::Link(UIStaticTextComponent* c)
-    : component(c)
-{
-}
 }

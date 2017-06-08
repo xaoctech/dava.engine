@@ -1,6 +1,6 @@
 #include "UIStaticTextComponent.h"
 #include "Reflection/ReflectionRegistrator.h"
-#include "UIStaticTextState.h"
+#include "UITextSystemLink.h"
 
 namespace DAVA
 {
@@ -239,28 +239,28 @@ bool UIStaticTextComponent::IsModified() const
     return modified;
 }
 
-void UIStaticTextComponent::SetState(UIStaticTextState* state_)
+void UIStaticTextComponent::SetLink(UITextSystemLink* value)
 {
-    state = state_;
+    link = value;
     modified = true;
 }
 
-UIStaticTextState* UIStaticTextComponent::GetState() const
+UITextSystemLink* UIStaticTextComponent::GetLink() const
 {
-    return state;
+    return link;
 }
 
 // Backward compatibility method
 Vector2 UIStaticTextComponent::GetContentPreferredSize(const Vector2& constraints) const
 {
-    DVASSERT(state);
-    return state->GetTextBlock()->GetPreferredSizeForWidth(constraints.x);
+    DVASSERT(link);
+    return link->GetTextBlock()->GetPreferredSizeForWidth(constraints.x);
 }
 
 // Backward compatibility method
 bool UIStaticTextComponent::IsHeightDependsOnWidth() const
 {
-    DVASSERT(state);
-    return state->GetTextBlock()->GetMultiline();
+    DVASSERT(link);
+    return link->GetTextBlock()->GetMultiline();
 }
 };
