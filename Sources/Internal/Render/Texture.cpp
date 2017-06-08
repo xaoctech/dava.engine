@@ -394,7 +394,7 @@ void Texture::SetMinMagFilter(rhi::TextureFilter minFilter, rhi::TextureFilter m
 
 void Texture::GenerateMipmaps()
 {
-    DVASSERT("Mipmap generation on fly is not supported anymore!");
+    DVASSERT(0, "Mipmap generation on fly is not supported anymore!");
 }
 
 Texture* Texture::CreateFromImage(TextureDescriptor* descriptor, eGPUFamily gpu)

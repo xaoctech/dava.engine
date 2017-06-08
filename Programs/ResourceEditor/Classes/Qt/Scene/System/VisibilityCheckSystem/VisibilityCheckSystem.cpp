@@ -31,6 +31,7 @@ DAVA::Texture* CubemapRenderTargetAtIndex(DAVA::uint32 index)
         const DAVA::PixelFormatDescriptor& pfd = DAVA::PixelFormatDescriptor::GetPixelFormatDescriptor(VisibilityCheckRenderer::TEXTURE_FORMAT);
         DVASSERT(rhi::TextureFormatSupported(pfd.format, rhi::PROG_FRAGMENT));
         cubemapPool[index] = DAVA::Texture::CreateFBO(CUBEMAP_SIZE, CUBEMAP_SIZE, VisibilityCheckRenderer::TEXTURE_FORMAT, true, rhi::TEXTURE_TYPE_CUBE);
+        cubemapPool[index]->SetMinMagFilter(rhi::TextureFilter::TEXFILTER_LINEAR, rhi::TextureFilter::TEXFILTER_LINEAR, rhi::TextureMipFilter::TEXMIPFILTER_NONE);
     }
     return cubemapPool[index];
 }
