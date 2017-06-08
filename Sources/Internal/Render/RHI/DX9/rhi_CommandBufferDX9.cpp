@@ -1611,7 +1611,7 @@ static void _DX9_ExecImmediateCommand(CommonImpl::ImmediateCommand* command)
 
         case DX9Command::RELEASE:
         {
-            IUnknown* ptr = *(IUnknown**)(arg[0]);
+            IUnknown* ptr = *(reinterpret_cast<IUnknown**>(arg[0]));
             cmd->retval = ptr->Release();
         }
         break;
