@@ -215,6 +215,23 @@ void UIStaticTextState::Draw(const UIGeometricData& geometricData, const Color& 
     textBg->Draw(textGeomData);
     
 #if defined(LOCALIZATION_DEBUG)
+
+    if (Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DRAW_LINEBREAK_ERRORS) || Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DRAW_LOCALIZATION_WARINGS))
+    {
+        DrawLocalizationDebug(geometricData);
+    }
+    if (Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DRAW_LOCALIZATION_ERRORS))
+    {
+        DrawLocalizationErrors(geometricData);
+    }
+#endif
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#if defined(LOCALIZATION_DEBUG)
+void UIStaticTextState::DrawLocalizationErrors(const UIGeometricData& geometricData) const
+{
     UIGeometricData elementGeomData;
     const Sprite::DrawState& lastDrawStae = textBg->GetLastDrawState();
     elementGeomData.position = lastDrawStae.position;
@@ -222,24 +239,6 @@ void UIStaticTextState::Draw(const UIGeometricData& geometricData, const Color& 
     elementGeomData.scale = lastDrawStae.scale;
     elementGeomData.pivotPoint = lastDrawStae.pivotPoint;
 
-    if (Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DRAW_LINEBREAK_ERRORS) || Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DRAW_LOCALIZATION_WARINGS))
-    {
-        RecalculateDebugColoring();
-        DrawLocalizationDebug(geometricData);
-    }
-    if (Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DRAW_LOCALIZATION_ERRORS))
-    {
-        DrawLocalizationErrors(geometricData, elementGeomData);
-    }
-#else
-#endif
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-#if defined(LOCALIZATION_DEBUG)
-void UIStaticTextState::DrawLocalizationErrors(const UIGeometricData& geometricData, const UIGeometricData& elementGeomData) const
-{
     TextBlockSoftwareRender* rendereTextBlock = dynamic_cast<TextBlockSoftwareRender*>(textBlock->GetRenderer());
     if (rendereTextBlock != NULL)
     {
@@ -283,40 +282,10 @@ void UIStaticTextState::DrawLocalizationErrors(const UIGeometricData& geometricD
 }
 void UIStaticTextState::DrawLocalizationDebug(const UIGeometricData& textGeomData) const
 {
-    if (warningColor != NONE && Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DRAW_LOCALIZATION_WARINGS))
-    {
-        DAVA::Polygon2 polygon;
-        textGeomData.GetPolygon(polygon);
-        RenderSystem2D::Instance()->DrawPolygon(polygon, true, HIGHLIGHT_COLORS[warningColor]);
-    }
-    if (lineBreakError != NONE && Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DRAW_LINEBREAK_ERRORS))
-    {
-        DAVA::Polygon2 polygon;
-        textGeomData.GetPolygon(polygon);
-        RenderSystem2D::Instance()->FillPolygon(polygon, HIGHLIGHT_COLORS[lineBreakError]);
-    }
-    if (textBlock->GetFittingOption() != 0 && Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DRAW_LOCALIZATION_WARINGS))
-    {
-        Color color = HIGHLIGHT_COLORS[WHITE];
-        if (textBlock->GetFittingOptionUsed() != 0)
-        {
-            if (textBlock->GetFittingOptionUsed() & TextBlock::FITTING_REDUCE)
-                color = HIGHLIGHT_COLORS[RED];
-            if (textBlock->GetFittingOptionUsed() & TextBlock::FITTING_ENLARGE)
-                color = HIGHLIGHT_COLORS[YELLOW];
-            if (textBlock->GetFittingOptionUsed() & TextBlock::FITTING_POINTS)
-                color = HIGHLIGHT_COLORS[BLUE];
-        }
-        DAVA::Polygon2 polygon;
-        textGeomData.GetPolygon(polygon);
-        DVASSERT(polygon.GetPointCount() == 4);
-        RenderSystem2D::Instance()->DrawLine(polygon.GetPoints()[0], polygon.GetPoints()[2], color);
-    }
-}
-void UIStaticTextState::RecalculateDebugColoring()
-{
-    warningColor = NONE;
-    lineBreakError = NONE;
+    // void UIStaticTextState::RecalculateDebugColoring()
+    // {
+    DebugHighliteColor warningColor = NONE;
+    DebugHighliteColor lineBreakError = NONE;
     if (textBlock->GetFont() == NULL)
         return;
 
@@ -349,6 +318,37 @@ void UIStaticTextState::RecalculateDebugColoring()
                 lineBreakError = RED;
             }
         }
+    }
+    // }
+
+    if (warningColor != NONE && Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DRAW_LOCALIZATION_WARINGS))
+    {
+        DAVA::Polygon2 polygon;
+        textGeomData.GetPolygon(polygon);
+        RenderSystem2D::Instance()->DrawPolygon(polygon, true, HIGHLIGHT_COLORS[warningColor]);
+    }
+    if (lineBreakError != NONE && Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DRAW_LINEBREAK_ERRORS))
+    {
+        DAVA::Polygon2 polygon;
+        textGeomData.GetPolygon(polygon);
+        RenderSystem2D::Instance()->FillPolygon(polygon, HIGHLIGHT_COLORS[lineBreakError]);
+    }
+    if (textBlock->GetFittingOption() != 0 && Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DRAW_LOCALIZATION_WARINGS))
+    {
+        Color color = HIGHLIGHT_COLORS[WHITE];
+        if (textBlock->GetFittingOptionUsed() != 0)
+        {
+            if (textBlock->GetFittingOptionUsed() & TextBlock::FITTING_REDUCE)
+                color = HIGHLIGHT_COLORS[RED];
+            if (textBlock->GetFittingOptionUsed() & TextBlock::FITTING_ENLARGE)
+                color = HIGHLIGHT_COLORS[YELLOW];
+            if (textBlock->GetFittingOptionUsed() & TextBlock::FITTING_POINTS)
+                color = HIGHLIGHT_COLORS[BLUE];
+        }
+        DAVA::Polygon2 polygon;
+        textGeomData.GetPolygon(polygon);
+        DVASSERT(polygon.GetPointCount() == 4);
+        RenderSystem2D::Instance()->DrawLine(polygon.GetPoints()[0], polygon.GetPoints()[2], color);
     }
 }
 

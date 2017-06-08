@@ -52,11 +52,7 @@ protected:
 
 #if defined(LOCALIZATION_DEBUG)
     void DrawLocalizationDebug(const UIGeometricData& textGeomData) const;
-    void DrawLocalizationErrors(const UIGeometricData& textGeomData, const UIGeometricData& elementGeomData) const;
-    void RecalculateDebugColoring();
-
-    DebugHighliteColor warningColor;
-    DebugHighliteColor lineBreakError;
+    void DrawLocalizationErrors(const UIGeometricData& textGeomData) const;
 #endif
 };
 }
