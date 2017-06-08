@@ -400,7 +400,7 @@ DAVA::uint32 SceneInfo::GetTrianglesForNotLODEntityRecursive(DAVA::Entity* entit
             PolygonGroup* pg = rb->GetPolygonGroup();
             if (pg)
             {
-                triangles += (pg->GetIndexCount() / 3);
+                triangles += pg->GetPrimitiveCount();
             }
         }
     }
@@ -600,7 +600,8 @@ void SceneInfo::OnCommmandExecuted(SceneEditor2* scene, const RECommandNotificat
     static const DAVA::Vector<DAVA::uint32> commandIDs =
     {
       CMDID_MATERIAL_CHANGE_CURRENT_CONFIG, CMDID_MATERIAL_CREATE_CONFIG,
-      CMDID_MATERIAL_REMOVE_TEXTURE, CMDID_INSP_MEMBER_MODIFY, CMDID_INSP_DYNAMIC_MODIFY
+      CMDID_MATERIAL_REMOVE_TEXTURE, CMDID_INSP_MEMBER_MODIFY, CMDID_INSP_DYNAMIC_MODIFY,
+      CMDID_REFLECTED_FIELD_MODIFY
     };
 
     if (commandNotification.MatchCommandIDs(commandIDs))

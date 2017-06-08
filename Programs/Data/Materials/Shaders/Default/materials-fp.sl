@@ -29,7 +29,7 @@ fragment_in
         float2 varDecalTileTexCoord : TEXCOORD2;
     #endif
     #if MATERIAL_DETAIL
-        half2 varDetailTexCoord : TEXCOORD2;
+        float2 varDetailTexCoord : TEXCOORD2;
     #endif
     #if PARTICLES_FLOWMAP
         float2 varParticleFlowTexCoord : TEXCOORD2;
@@ -128,6 +128,10 @@ fragment_out
 
 #if MATERIAL_TEXTURE && ALPHATEST && ALPHATESTVALUE
     [material][a] property float alphatestThreshold           = 0.0;
+#endif
+
+#if MATERIAL_TEXTURE && ALPHASTEPVALUE && ALPHABLEND
+    [material][a] property float alphaStepValue               = 0.5;
 #endif
 
 #if PIXEL_LIT
@@ -277,6 +281,12 @@ fragment_out fp_main( fragment_in input )
                 if( alpha < 0.5 ) discard;
             #endif
         #endif
+        
+        #if ALPHASTEPVALUE && ALPHABLEND
+            textureColor0.a = half(step(alphaStepValue, float(textureColor0.a)));
+        #endif
+        #endif
+        
     #endif
 
     
@@ -592,7 +602,7 @@ fragment_out fp_main( fragment_in input )
     #endif
 
     
-    #if VERTEX_COLOR || SPEED_TREE_LEAF || SPHERICAL_LIT
+    #if VERTEX_COLOR || SPEED_TREE_OBJECT || SPHERICAL_LIT
         output.color *= float4(input.varVertexColor);
     #endif
         
