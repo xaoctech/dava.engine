@@ -86,7 +86,7 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
 
     QHBoxLayout* lodsDegradeLayout = new QHBoxLayout();
     lodsDegradeLayout->addWidget(new QLabel("Lod0 degrade strategy"));
-    degradeStrategyComboBox = new QComboBox();
+    degradeStrategyComboBox = new WheellIgnorantComboBox();
     degradeStrategyComboBox->addItem("Keep everything");
     degradeStrategyComboBox->addItem("Reduce particles");
     degradeStrategyComboBox->addItem("Clear");
@@ -99,7 +99,7 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     layerTypeLabel->setText("Layer type");
     mainBox->addWidget(layerTypeLabel);
 
-    layerTypeComboBox = new QComboBox(this);
+    layerTypeComboBox = new WheellIgnorantComboBox(this);
     FillLayerTypes();
     mainBox->addWidget(layerTypeComboBox);
     connect(layerTypeComboBox,
