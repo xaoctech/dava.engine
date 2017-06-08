@@ -154,9 +154,7 @@ ParticleLayer* ParticleLayer::Clone()
 
     dstLayer->stripeLifetime = stripeLifetime;
     dstLayer->stripeRate = stripeRate;
-    dstLayer->stripeSpeed = stripeSpeed;
     dstLayer->stripeStartSize = stripeStartSize;
-    dstLayer->stripeSizeOverLife = stripeSizeOverLife;
     dstLayer->stripeTextureTile = stripeTextureTile;
     dstLayer->stripeUScrollSpeed = stripeUScrollSpeed;
     dstLayer->stripeVScrollSpeed = stripeVScrollSpeed;
@@ -487,23 +485,11 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
     {
         stripeRate = stripeRateNode->AsFloat();
     }
-    stripeSpeed = 0.0f;
-    const YamlNode* stripeSpeedNote = node->Get("stripeSpeed");
-    if (stripeSpeedNote)
-    {
-        stripeSpeed = stripeSpeedNote->AsFloat();
-    }
     stripeStartSize = 0.0f;
     const YamlNode* stripeStartSizeNode = node->Get("stripeStartSize");
     if (stripeStartSizeNode)
     {
         stripeStartSize = stripeStartSizeNode->AsFloat();
-    }
-    stripeSizeOverLife = 0.0f;
-    const YamlNode* stripeSizeOverLifeNode = node->Get("stripeSizeOverLife");
-    if (stripeSizeOverLifeNode)
-    {
-        stripeSizeOverLife = stripeSizeOverLifeNode->AsFloat();
     }
     stripeTextureTile = 1.0f;
     const YamlNode* stripeTextureTileNode = node->Get("stripeTextureTile");
@@ -522,12 +508,6 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
     if (stripeVScrollSpeedNode)
     {
         stripeVScrollSpeed = stripeVScrollSpeedNode->AsFloat();
-    }
-    stripeAlphaOverLife = 1.0f;
-    const YamlNode* stripeAlphaOverLifeNode = node->Get("stripeAlphaOverLife");
-    if (stripeAlphaOverLifeNode)
-    {
-        stripeAlphaOverLife = stripeAlphaOverLifeNode->AsFloat();
     }
 
     // format processing
@@ -980,13 +960,10 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
 
     PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeLifetime", stripeLifetime);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeRate", stripeRate);
-    PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeSpeed", stripeSpeed);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeStartSize", stripeStartSize);
-    PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeSizeOverLife", stripeSizeOverLife);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeTextureTile", stripeTextureTile);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeUScrollSpeed", stripeUScrollSpeed);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeVScrollSpeed", stripeVScrollSpeed);
-    PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeAlphaOverLife", stripeAlphaOverLife);
 
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "name", layerName);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "type", "layer");

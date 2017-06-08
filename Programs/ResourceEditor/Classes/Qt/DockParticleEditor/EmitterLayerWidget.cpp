@@ -861,13 +861,10 @@ void EmitterLayerWidget::OnStripePropertiesChanged()
     CommandChangeParticlesStripeProperties::StripeParams params;
     params.stripeLifetime = static_cast<DAVA::float32>(stripeLifetimeSpin->value());
     params.stripeRate = static_cast<DAVA::float32>(stripeRateSpin->value());
-    params.stripeSpeed = static_cast<DAVA::float32>(stripeSpeedSpin->value());
     params.stripeStartSize = static_cast<DAVA::float32>(stripeStartSizeSpin->value());
-    params.stripeSizeOverLife = static_cast<DAVA::float32>(stripeSizeOverLifeSpin->value());
     params.stripeTextureTile = static_cast<DAVA::float32>(stripeTextureTileSpin->value());
     params.stripeUScrollSpeed = static_cast<DAVA::float32>(stripeUScrollSpeedSpin->value());
     params.stripeVScrollSpeed = static_cast<DAVA::float32>(stripeVScrollSpeedSpin->value());
-    params.stripeAlphaOverLife = static_cast<DAVA::float32>(stripeAlphaOverLifeSpin->value());
     params.stripeInheritPositionForBase = stripeInheritPositionForBaseCheckBox->isChecked();
     params.stripeSizeOverLifeProp = propStripeSizeOverLife.GetPropLine();
     params.stripeColorOverLife = propStripeColorOverLife.GetPropLine();
@@ -1028,15 +1025,12 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     fresnelBiasSpinBox->setValue(layer->fresnelToAlphaBias);
     fresnelPowerSpinBox->setValue(layer->fresnelToAlphaPower);
 
-    stripeSpeedSpin->setValue(layer->stripeSpeed);
     stripeLifetimeSpin->setValue(layer->stripeLifetime);
     stripeRateSpin->setValue(layer->stripeRate);
     stripeStartSizeSpin->setValue(layer->stripeStartSize);
-    stripeSizeOverLifeSpin->setValue(layer->stripeSizeOverLife);
     stripeTextureTileSpin->setValue(layer->stripeTextureTile);
     stripeUScrollSpeedSpin->setValue(layer->stripeUScrollSpeed);
     stripeVScrollSpeedSpin->setValue(layer->stripeVScrollSpeed);
-    stripeAlphaOverLifeSpin->setValue(layer->stripeAlphaOverLife);
     stripeInheritPositionForBaseCheckBox->setChecked(layer->stripeInheritPositionForBase);
 
     bool fresToAlphaVisible = layer->useFresnelToAlpha;
@@ -1482,7 +1476,9 @@ void EmitterLayerWidget::CreateNoiseLayoutWidget()
 QLayout* EmitterLayerWidget::CreateStripeLayout()
 {
     QVBoxLayout* vertStripeLayout = new QVBoxLayout();
-    vertStripeLayout->setContentsMargins(0, 10, 0, 0);
+    vertStripeLayout->setContentsMargins(0, 20, 0, 20);
+    stripeLabel = new QLabel("Stripe Settings:");
+    vertStripeLayout->addWidget(stripeLabel);
 
     stripeColorOverLifeGradient = new GradientPickerWidget(this);
     connect(stripeColorOverLifeGradient,
@@ -1498,14 +1494,12 @@ QLayout* EmitterLayerWidget::CreateStripeLayout()
         SLOT(OnStripePropertiesChanged()));
     vertStripeLayout->addWidget(stripeSizeOverLifeTimeLine);
 
-    stripeInheritPositionForBaseCheckBox = new QCheckBox("Valera");
+    stripeInheritPositionForBaseCheckBox = new QCheckBox("Inherit position. Affect only base verts.");
     vertStripeLayout->addWidget(stripeInheritPositionForBaseCheckBox);
     connect(stripeInheritPositionForBaseCheckBox,
         SIGNAL(stateChanged(int)),
         this,
         SLOT(OnStripePropertiesChanged()));
-
-    QHBoxLayout* longStripeLayout = new QHBoxLayout();
 
     stripeLifetimeSpin = new EventFilterDoubleSpinBox();
     stripeLifetimeSpin->setMinimum(-100);
@@ -1519,23 +1513,11 @@ QLayout* EmitterLayerWidget::CreateStripeLayout()
     stripeRateSpin->setSingleStep(0.01);
     stripeRateSpin->setDecimals(4);
 
-    stripeSpeedSpin = new EventFilterDoubleSpinBox();
-    stripeSpeedSpin->setMinimum(-100);
-    stripeSpeedSpin->setMaximum(100);
-    stripeSpeedSpin->setSingleStep(0.01);
-    stripeSpeedSpin->setDecimals(4);
-
     stripeStartSizeSpin = new EventFilterDoubleSpinBox();
     stripeStartSizeSpin->setMinimum(-100);
     stripeStartSizeSpin->setMaximum(100);
     stripeStartSizeSpin->setSingleStep(0.01);
     stripeStartSizeSpin->setDecimals(4);
-
-    stripeSizeOverLifeSpin = new EventFilterDoubleSpinBox();
-    stripeSizeOverLifeSpin->setMinimum(-100);
-    stripeSizeOverLifeSpin->setMaximum(100);
-    stripeSizeOverLifeSpin->setSingleStep(0.01);
-    stripeSizeOverLifeSpin->setDecimals(4);
 
     stripeTextureTileSpin = new EventFilterDoubleSpinBox();
     stripeTextureTileSpin->setMinimum(-100);
@@ -1543,31 +1525,22 @@ QLayout* EmitterLayerWidget::CreateStripeLayout()
     stripeTextureTileSpin->setSingleStep(0.01);
     stripeTextureTileSpin->setDecimals(4);
 
+    stripeLifetimeLabel = new QLabel("Lifetime:");
+    stripeRateLabel = new QLabel("Rate:");
+    stripeStartSizeLabel = new QLabel("Start sz:");
+    stripeTexTileLabel = new QLabel("Texture tile:");
 
-    stripeLabel = new QLabel("Stripe ---> ");
-    stripeLifetimeLabel = new QLabel("Lifetime->");
-    stripeRateLabel = new QLabel("Rate->");
-    stripeSpeedLabel = new QLabel("Speed->");
-    stripeStartSizeLabel = new QLabel("Strt sz->");
-    stripeSizeOverLifeLabel = new QLabel("Sz ovr life->");
-    stripeTexTileLabel = new QLabel("tile->");
+    vertStripeLayout->addWidget(stripeStartSizeLabel);
+    vertStripeLayout->addWidget(stripeStartSizeSpin);
 
-    longStripeLayout->addWidget(stripeLabel);
-    longStripeLayout->addWidget(stripeStartSizeLabel);
-    longStripeLayout->addWidget(stripeStartSizeSpin);
-    longStripeLayout->addWidget(stripeSizeOverLifeLabel);
-    longStripeLayout->addWidget(stripeSizeOverLifeSpin);
+    vertStripeLayout->addWidget(stripeLifetimeLabel);
+    vertStripeLayout->addWidget(stripeLifetimeSpin);
+    vertStripeLayout->addWidget(stripeRateLabel);
+    vertStripeLayout->addWidget(stripeRateSpin);
+    vertStripeLayout->addWidget(stripeTexTileLabel);
+    vertStripeLayout->addWidget(stripeTextureTileSpin);
 
-    longStripeLayout->addWidget(stripeSpeedLabel);
-    longStripeLayout->addWidget(stripeSpeedSpin);
-    longStripeLayout->addWidget(stripeLifetimeLabel);
-    longStripeLayout->addWidget(stripeLifetimeSpin);
-    longStripeLayout->addWidget(stripeRateLabel);
-    longStripeLayout->addWidget(stripeRateSpin);
-    longStripeLayout->addWidget(stripeTexTileLabel);
-    longStripeLayout->addWidget(stripeTextureTileSpin);
-
-    QHBoxLayout* longStripeLayout2 = new QHBoxLayout();
+    
     stripeUScrollSpeedSpin = new EventFilterDoubleSpinBox();
     stripeUScrollSpeedSpin->setMinimum(-100);
     stripeUScrollSpeedSpin->setMaximum(100);
@@ -1580,35 +1553,22 @@ QLayout* EmitterLayerWidget::CreateStripeLayout()
     stripeVScrollSpeedSpin->setSingleStep(0.01);
     stripeVScrollSpeedSpin->setDecimals(4);
 
-    stripeAlphaOverLifeSpin = new EventFilterDoubleSpinBox();
-    stripeAlphaOverLifeSpin->setMinimum(-100);
-    stripeAlphaOverLifeSpin->setMaximum(100);
-    stripeAlphaOverLifeSpin->setSingleStep(0.01);
-    stripeAlphaOverLifeSpin->setDecimals(4);
-
     stripeUScrollSpeedLabel = new QLabel("U scroll");
     stripeVScrollSpeedLabel = new QLabel("V scroll");
-    stripeAlphaOverLifeLabel = new QLabel("Alpha over life");
 
-    longStripeLayout2->addWidget(stripeUScrollSpeedLabel);
-    longStripeLayout2->addWidget(stripeUScrollSpeedSpin);
-    longStripeLayout2->addWidget(stripeVScrollSpeedLabel);
-    longStripeLayout2->addWidget(stripeVScrollSpeedSpin);
-    longStripeLayout2->addWidget(stripeAlphaOverLifeLabel);
-    longStripeLayout2->addWidget(stripeAlphaOverLifeSpin);
+    vertStripeLayout->addWidget(stripeUScrollSpeedLabel);
+    vertStripeLayout->addWidget(stripeUScrollSpeedSpin);
+    vertStripeLayout->addWidget(stripeVScrollSpeedLabel);
+    vertStripeLayout->addWidget(stripeVScrollSpeedSpin);
 
-    connect(stripeSpeedSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
     connect(stripeLifetimeSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
     connect(stripeRateSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
     connect(stripeStartSizeSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
-    connect(stripeSizeOverLifeSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
+
     connect(stripeTextureTileSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
     connect(stripeUScrollSpeedSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
     connect(stripeVScrollSpeedSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
-    connect(stripeAlphaOverLifeSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
 
-    vertStripeLayout->addLayout(longStripeLayout);
-    vertStripeLayout->addLayout(longStripeLayout2);
     return vertStripeLayout;
 }
 
