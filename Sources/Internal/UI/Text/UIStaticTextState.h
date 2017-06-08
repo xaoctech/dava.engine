@@ -14,31 +14,28 @@ class UIStaticTextComponent;
 class UIStaticTextState : public BaseObject
 {
 public:
-
-#if defined(LOCALIZATION_DEBUG)
-    static const Color HIGHLIGHT_COLORS[];
-    enum DebugHighliteColor
-    {
-        RED = 0,
-        BLUE,
-        YELLOW,
-        WHITE,
-        MAGENTA,
-        GREEN,
-        NONE
-    };
-    static const float32 LOCALIZATION_RESERVED_PORTION;
-#endif
-
     UIStaticTextState(UIControl* control_, UIStaticTextComponent* component_);
 
-    void Draw(const UIGeometricData& geometricData, const Color& parentColor);
+    inline TextBlock* GetTextBlock() const
+    {
+        return textBlock;
+    }
 
-private:
-    UIStaticTextState& operator=(const UIStaticTextState&) = delete;
+    inline UIControlBackground* GetTextBackground() const
+    {
+        return textBg;
+    }
+
+    inline UIControlBackground* GetShadowBackground() const
+    {
+        return shadowBg;
+    }
 
     void PrepareSprite();
     void ApplyComponentData();
+
+private:
+    UIStaticTextState& operator=(const UIStaticTextState&) = delete;
 
 protected:
     ~UIStaticTextState() override;
@@ -50,9 +47,5 @@ protected:
     UIControlBackground* textBg;
     UIControlBackground* shadowBg;
 
-#if defined(LOCALIZATION_DEBUG)
-    void DrawLocalizationDebug(const UIGeometricData& textGeomData) const;
-    void DrawLocalizationErrors(const UIGeometricData& textGeomData) const;
-#endif
 };
 }
