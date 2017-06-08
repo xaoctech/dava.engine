@@ -12,8 +12,10 @@
 
 namespace DAVA
 {
+static void RenderText_PrepareSprite(const UIStaticTextState* state);
 
 #if defined(LOCALIZATION_DEBUG)
+static void RenderText_Debug(const UIStaticTextState* state, const UIGeometricData& textGeomData);
 static void RenderText_DrawLocalizationDebug(const UIStaticTextState* state, const UIGeometricData& textGeomData);
 static void RenderText_DrawLocalizationErrors(const UIStaticTextState* state, const UIGeometricData& geometricData);
 #endif
@@ -235,11 +237,12 @@ void UIRenderSystem::RenderText(const UIControl* control, const UIStaticTextComp
 {
     UIStaticTextState* state = component->GetState();
     DVASSERT(state, "Empty text comonent state!");
+
     UIControlBackground* textBg = state->GetTextBackground();
     UIControlBackground* shadowBg = state->GetShadowBackground();
     TextBlock* textBlock = state->GetTextBlock();
 
-    state->ApplyComponentData();
+    // state->ApplyComponentData();
 
     shadowBg->SetParentColor(parentColor);
     textBg->SetParentColor(parentColor);
@@ -262,7 +265,9 @@ void UIRenderSystem::RenderText(const UIControl* control, const UIStaticTextComp
     textBlock->SetRectSize(textBlockRect.GetSize());
     textBlock->SetPosition(textBlockRect.GetPosition());
     textBlock->PreDraw();
-    state->PrepareSprite();
+
+    RenderText_PrepareSprite(state);
+
     textBg->SetAlign(textBlock->GetVisualAlign());
 
     UIGeometricData textGeomData;
@@ -287,17 +292,41 @@ void UIRenderSystem::RenderText(const UIControl* control, const UIStaticTextComp
     textBlock->Draw(textBg->GetDrawColor());
 
     textBg->Draw(textGeomData);
-
+     
 #if defined(LOCALIZATION_DEBUG)
-    if (Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DRAW_LINEBREAK_ERRORS) || Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DRAW_LOCALIZATION_WARINGS))
-    {
-        RenderText_DrawLocalizationDebug(state, geometricData);
-    }
-    if (Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DRAW_LOCALIZATION_ERRORS))
-    {
-        RenderText_DrawLocalizationErrors(state, geometricData);
-    }
+    RenderText_Debug(state, geometricData);
 #endif
+}
+
+static void RenderText_PrepareSprite(const UIStaticTextState* state)
+{
+    UIControlBackground* textBg = state->GetTextBackground();
+    UIControlBackground* shadowBg = state->GetShadowBackground();
+    TextBlock* textBlock = state->GetTextBlock();
+
+    if (textBlock->IsSpriteReady())
+    {
+        Sprite* sprite = textBlock->GetSprite();
+        shadowBg->SetSprite(sprite, 0);
+        textBg->SetSprite(sprite, 0);
+
+        Texture* tex = sprite->GetTexture();
+        if (tex && tex->GetFormat() == FORMAT_A8)
+        {
+            textBg->SetMaterial(RenderSystem2D::DEFAULT_2D_TEXTURE_ALPHA8_MATERIAL);
+            shadowBg->SetMaterial(RenderSystem2D::DEFAULT_2D_TEXTURE_ALPHA8_MATERIAL);
+        }
+        else
+        {
+            textBg->SetMaterial(RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL);
+            shadowBg->SetMaterial(RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL);
+        }
+    }
+    else
+    {
+        shadowBg->SetSprite(NULL, 0);
+        textBg->SetSprite(NULL, 0);
+    }
 }
 
 
@@ -320,6 +349,18 @@ static const Color HIGHLIGHT_COLORS[] = { DAVA::Color(1.0f, 0.0f, 0.0f, 0.4f),
                                           DAVA::Color(1.0f, 1.0f, 1.0f, 0.4f),
                                           DAVA::Color(1.0f, 0.0f, 1.0f, 0.4f),
                                           DAVA::Color(0.0f, 1.0f, 0.0f, 0.4f) };
+
+static void RenderText_Debug(const UIStaticTextState* state, const UIGeometricData& geometricData)
+{
+    if (Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DRAW_LINEBREAK_ERRORS) || Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DRAW_LOCALIZATION_WARINGS))
+    {
+        RenderText_DrawLocalizationDebug(state, geometricData);
+    }
+    if (Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DRAW_LOCALIZATION_ERRORS))
+    {
+        RenderText_DrawLocalizationErrors(state, geometricData);
+    }
+}
 
 static void RenderText_DrawLocalizationDebug(const UIStaticTextState* state, const UIGeometricData& textGeomData)
 {

@@ -40,8 +40,8 @@ private:
 protected:
     ~UIStaticTextState() override;
 
-    RefPtr<UIControl> control;
-    RefPtr<UIStaticTextComponent> component;
+    UIControl* control;
+    UIStaticTextComponent* component;
 
     TextBlock* textBlock;
     UIControlBackground* textBg;

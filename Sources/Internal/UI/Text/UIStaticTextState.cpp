@@ -126,31 +126,4 @@ void UIStaticTextState::ApplyComponentData()
 
     }
 }
-
-void UIStaticTextState::PrepareSprite()
-{
-    if (textBlock->IsSpriteReady())
-    {
-        Sprite* sprite = textBlock->GetSprite();
-        shadowBg->SetSprite(sprite, 0);
-        textBg->SetSprite(sprite, 0);
-
-        Texture* tex = sprite->GetTexture();
-        if (tex && tex->GetFormat() == FORMAT_A8)
-        {
-            textBg->SetMaterial(RenderSystem2D::DEFAULT_2D_TEXTURE_ALPHA8_MATERIAL);
-            shadowBg->SetMaterial(RenderSystem2D::DEFAULT_2D_TEXTURE_ALPHA8_MATERIAL);
-        }
-        else
-        {
-            textBg->SetMaterial(RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL);
-            shadowBg->SetMaterial(RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL);
-        }
-    }
-    else
-    {
-        shadowBg->SetSprite(NULL, 0);
-        textBg->SetSprite(NULL, 0);
-    }
-}
 };
