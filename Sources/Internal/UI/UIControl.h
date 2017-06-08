@@ -984,7 +984,6 @@ protected:
 
     EventDispatcher* eventDispatcher;
 
-
     void SetScene(UIControlSystem* scene);
     void SetParent(UIControl* newParent);
 
