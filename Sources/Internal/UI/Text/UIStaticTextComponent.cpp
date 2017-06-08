@@ -1,6 +1,6 @@
 #include "UIStaticTextComponent.h"
-#include "UIStaticTextState.h"
 #include "Reflection/ReflectionRegistrator.h"
+#include "UIStaticTextState.h"
 
 namespace DAVA
 {
@@ -47,10 +47,13 @@ UIStaticTextComponent* UIStaticTextComponent::Clone() const
     return new UIStaticTextComponent(*this);
 }
 
-void UIStaticTextComponent::SetAlign(int32 _align)
+void UIStaticTextComponent::SetAlign(int32 value)
 {
-    align = _align;
-    modified = true;
+    if (align != value)
+    {
+        align = value;
+        modified = true;
+    }
 }
 
 int32 UIStaticTextComponent::GetAlign() const
@@ -58,10 +61,13 @@ int32 UIStaticTextComponent::GetAlign() const
     return align;
 }
 
-void UIStaticTextComponent::SetText(const String& text_)
+void UIStaticTextComponent::SetText(const String& value)
 {
-    text = text_;
-    modified = true;
+    if (text != value)
+    {
+        text = value;
+        modified = true;
+    }
 }
 
 String UIStaticTextComponent::GetText() const
@@ -69,10 +75,13 @@ String UIStaticTextComponent::GetText() const
     return text;
 }
 
-void UIStaticTextComponent::SetFitting(eTextFitting fitting_)
+void UIStaticTextComponent::SetFitting(eTextFitting value)
 {
-    fitting = fitting_;
-    modified = true;
+    if (fitting != value)
+    {
+        fitting = value;
+        modified = true;
+    }
 }
 
 UIStaticTextComponent::eTextFitting UIStaticTextComponent::GetFitting() const
@@ -80,10 +89,13 @@ UIStaticTextComponent::eTextFitting UIStaticTextComponent::GetFitting() const
     return fitting;
 }
 
-void UIStaticTextComponent::SetFontName(const String& fontName_)
+void UIStaticTextComponent::SetFontName(const String& value)
 {
-    fontName = fontName_;
-    modified = true;
+    if (fontName != value)
+    {
+        fontName = value;
+        modified = true;
+    }
 }
 
 String UIStaticTextComponent::GetFontName() const
@@ -91,10 +103,13 @@ String UIStaticTextComponent::GetFontName() const
     return fontName;
 }
 
-void UIStaticTextComponent::SetColor(const Color& color_)
+void UIStaticTextComponent::SetColor(const Color& value)
 {
-    color = color_;
-    modified = true;
+    if (color != value)
+    {
+        color = value;
+        modified = true;
+    }
 }
 
 const Color& UIStaticTextComponent::GetColor() const
@@ -102,10 +117,13 @@ const Color& UIStaticTextComponent::GetColor() const
     return color;
 }
 
-void UIStaticTextComponent::SetMultiline(eTextMultiline multiline_)
+void UIStaticTextComponent::SetMultiline(eTextMultiline value)
 {
-    multiline = multiline_;
-    modified = true;
+    if (multiline != value)
+    {
+        multiline = value;
+        modified = true;
+    }
 }
 
 UIStaticTextComponent::eTextMultiline UIStaticTextComponent::GetMultiline() const
@@ -113,10 +131,13 @@ UIStaticTextComponent::eTextMultiline UIStaticTextComponent::GetMultiline() cons
     return multiline;
 }
 
-void UIStaticTextComponent::SetColorInheritType(UIControlBackground::eColorInheritType type)
+void UIStaticTextComponent::SetColorInheritType(UIControlBackground::eColorInheritType value)
 {
-    colorInheritType = type;
-    modified = true;
+    if (colorInheritType != value)
+    {
+        colorInheritType = value;
+        modified = true;
+    }
 }
 
 UIControlBackground::eColorInheritType UIStaticTextComponent::GetColorInheritType() const
@@ -124,10 +145,13 @@ UIControlBackground::eColorInheritType UIStaticTextComponent::GetColorInheritTyp
     return colorInheritType;
 }
 
-void UIStaticTextComponent::SetShadowOffset(const Vector2& offset)
+void UIStaticTextComponent::SetShadowOffset(const Vector2& value)
 {
-    shadowOffset = offset;
-    modified = true;
+    if (shadowOffset != value)
+    {
+        shadowOffset = value;
+        modified = true;
+    }
 }
 
 const Vector2& UIStaticTextComponent::GetShadowOffset() const
@@ -135,10 +159,13 @@ const Vector2& UIStaticTextComponent::GetShadowOffset() const
     return shadowOffset;
 }
 
-void UIStaticTextComponent::SetShadowColor(const Color& color_)
+void UIStaticTextComponent::SetShadowColor(const Color& value)
 {
-    shadowColor = color_;
-    modified = true;
+    if (shadowColor != value)
+    {
+        shadowColor = value;
+        modified = true;
+    }
 }
 
 const Color& UIStaticTextComponent::GetShadowColor() const
@@ -146,10 +173,13 @@ const Color& UIStaticTextComponent::GetShadowColor() const
     return shadowColor;
 }
 
-void UIStaticTextComponent::SetPerPixelAccuracyType(UIControlBackground::ePerPixelAccuracyType type)
+void UIStaticTextComponent::SetPerPixelAccuracyType(UIControlBackground::ePerPixelAccuracyType value)
 {
-    perPixelAccuracyType = type;
-    modified = true;
+    if (perPixelAccuracyType != value)
+    {
+        perPixelAccuracyType = value;
+        modified = true;
+    }
 }
 
 UIControlBackground::ePerPixelAccuracyType UIStaticTextComponent::GetPerPixelAccuracyType() const
@@ -157,10 +187,13 @@ UIControlBackground::ePerPixelAccuracyType UIStaticTextComponent::GetPerPixelAcc
     return perPixelAccuracyType;
 }
 
-void UIStaticTextComponent::SetUseRtlAlign(TextBlock::eUseRtlAlign useRtlAlign_)
+void UIStaticTextComponent::SetUseRtlAlign(TextBlock::eUseRtlAlign value)
 {
-    useRtlAlign = useRtlAlign_;
-    modified = true;
+    if (useRtlAlign != value)
+    {
+        useRtlAlign = value;
+        modified = true;
+    }
 }
 
 TextBlock::eUseRtlAlign UIStaticTextComponent::GetUseRtlAlign() const
@@ -170,8 +203,25 @@ TextBlock::eUseRtlAlign UIStaticTextComponent::GetUseRtlAlign() const
 
 void UIStaticTextComponent::SetForceBiDiSupportEnabled(bool value)
 {
-    forceBiDiSupport = value;
-    modified = true;
+    if (forceBiDiSupport != value)
+    {
+        forceBiDiSupport = value;
+        modified = true;
+    }
+}
+
+void UIStaticTextComponent::SetRequestedTextRectSize(const Vector2& value)
+{
+    if (requestedTextRectSize != value)
+    {
+        requestedTextRectSize = value;
+        modified = true;
+    }
+}
+
+DAVA::Vector2 UIStaticTextComponent::GetRequestedTextRectSize() const
+{
+    return requestedTextRectSize;
 }
 
 bool UIStaticTextComponent::IsForceBiDiSupportEnabled() const
@@ -199,15 +249,4 @@ UIStaticTextState* UIStaticTextComponent::GetState() const
 {
     return state;
 }
-
-void UIStaticTextComponent::SetRequestedTextRectSize(const Vector2& value)
-{
-    requestedTextRectSize = value;
-}
-
-DAVA::Vector2 UIStaticTextComponent::GetRequestedTextRectSize() const
-{
-    return requestedTextRectSize;
-}
-
 };

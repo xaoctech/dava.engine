@@ -80,16 +80,14 @@ public:
 
     // Helper properties:
 
+    void SetRequestedTextRectSize(const Vector2& value);
+    Vector2 GetRequestedTextRectSize() const;
+
     void SetModified(bool value);
     bool IsModified() const;
 
-    // Legacy:
-
     void SetState(UIStaticTextState*);
     UIStaticTextState* GetState() const;
-
-    void SetRequestedTextRectSize(const Vector2& value);
-    Vector2 GetRequestedTextRectSize() const;
 
 protected:
     int32 align = eAlign::ALIGN_HCENTER | eAlign::ALIGN_VCENTER;
@@ -108,8 +106,6 @@ protected:
     bool modified = true;
 
     UIStaticTextState* state;
-
-    // Legacy
 
     Vector2 requestedTextRectSize = Vector2::Zero;
 
