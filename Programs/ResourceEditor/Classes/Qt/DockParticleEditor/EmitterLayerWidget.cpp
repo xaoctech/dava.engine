@@ -66,8 +66,6 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     mainBox->addWidget(layerNameLineEdit);
     connect(layerNameLineEdit, SIGNAL(editingFinished()), this, SLOT(OnValueChanged()));
 
-    mainBox->addLayout(CreateStripeLayout());
-
     QVBoxLayout* lodsLayout = new QVBoxLayout();
     QLabel* lodsLabel = new QLabel("Active in LODs", this);
     lodsLayout->addWidget(lodsLabel);
@@ -295,6 +293,9 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     fogCheckBox = new QCheckBox("Enable fog");
     connect(fogCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnLayerMaterialValueChanged()));
     mainBox->addWidget(fogCheckBox);
+
+    CreateStripeLayoutWidget();
+    mainBox->addWidget(stripeLayoutWidget);
 
     lifeTimeLine = new TimeLineWidget(this);
     InitWidget(lifeTimeLine);
@@ -1084,45 +1085,45 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     frameBlendingCheckBox->setChecked(layer->enableFrameBlend);
 
     stripeSizeOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
-    stripeSizeOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->stripeSizeOverLifeProp)).GetProps(), Qt::red, "stripe size over life prop");
+    stripeSizeOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->stripeSizeOverLifeProp)).GetProps(), Qt::red, "Stripe edge size over life");
 
-    stripeColorOverLifeGradient->Init(0, 1, "stripe color over life");
+    stripeColorOverLifeGradient->Init(0, 1, "Stripe vertex color over life");
     stripeColorOverLifeGradient->SetValues(DAVA::PropLineWrapper<DAVA::Color>(DAVA::PropertyLineHelper::GetValueLine(layer->stripeColorOverLife)).GetProps());
 
     // FLOW_STUFF
     flowSpeedTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, FLOW_PRECISION_DIGITS);
-    flowSpeedTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowSpeed)).GetProps(), Qt::red, "flow speed");
+    flowSpeedTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowSpeed)).GetProps(), Qt::red, "Flow speed");
 
     flowSpeedVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, FLOW_PRECISION_DIGITS);
-    flowSpeedVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowSpeedVariation)).GetProps(), Qt::green, "flow speed variation");
+    flowSpeedVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowSpeedVariation)).GetProps(), Qt::green, "Flow speed variation");
 
     flowOffsetTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, FLOW_PRECISION_DIGITS);
-    flowOffsetTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowOffset)).GetProps(), Qt::red, "flow offset");
+    flowOffsetTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowOffset)).GetProps(), Qt::red, "Flow offset");
 
     flowOffsetVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, FLOW_PRECISION_DIGITS);
-    flowOffsetVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowOffsetVariation)).GetProps(), Qt::green, "flow offset variation");
+    flowOffsetVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowOffsetVariation)).GetProps(), Qt::green, "Flow offset variation");
 
     // NOISE_STUFF
     noiseScaleTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, NOISE_PRECISION_DIGITS);
-    noiseScaleTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseScale)).GetProps(), Qt::red, "noise scale");
+    noiseScaleTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseScale)).GetProps(), Qt::red, "Noise scale");
 
     noiseScaleVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, NOISE_PRECISION_DIGITS);
-    noiseScaleVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseScaleVariation)).GetProps(), Qt::green, "noise scale variation");
+    noiseScaleVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseScaleVariation)).GetProps(), Qt::green, "Noise scale variation");
 
     noiseScaleOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized, false, true, false, NOISE_PRECISION_DIGITS);
-    noiseScaleOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseScaleOverLife)).GetProps(), Qt::blue, "noise scale over life");
+    noiseScaleOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseScaleOverLife)).GetProps(), Qt::blue, "Noise scale over life");
 
     noiseUVScrollSpeedTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
-    noiseUVScrollSpeedTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseUScrollSpeed)).GetProps(), Qt::red, "noise U scroll speed");
-    noiseUVScrollSpeedTimeLine->AddLine(1, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseVScrollSpeed)).GetProps(), Qt::green, "noise V scroll speed");
+    noiseUVScrollSpeedTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseUScrollSpeed)).GetProps(), Qt::red, "Noise U scroll speed");
+    noiseUVScrollSpeedTimeLine->AddLine(1, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseVScrollSpeed)).GetProps(), Qt::green, "Noise V scroll speed");
 
     noiseUVScrollSpeedVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
-    noiseUVScrollSpeedVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseUScrollSpeedVariation)).GetProps(), Qt::red, "noise U scroll speed variation");
-    noiseUVScrollSpeedVariationTimeLine->AddLine(1, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseVScrollSpeedVariation)).GetProps(), Qt::green, "noise V scroll speed variation");
+    noiseUVScrollSpeedVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseUScrollSpeedVariation)).GetProps(), Qt::red, "Noise U scroll speed variation");
+    noiseUVScrollSpeedVariationTimeLine->AddLine(1, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseVScrollSpeedVariation)).GetProps(), Qt::green, "Noise V scroll speed variation");
 
     noiseUVScrollSpeedOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
-    noiseUVScrollSpeedOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseUScrollSpeedOverLife)).GetProps(), Qt::red, "noise U scroll speed over life");
-    noiseUVScrollSpeedOverLifeTimeLine->AddLine(1, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseVScrollSpeedOverLife)).GetProps(), Qt::green, "noise V scroll speed over life");
+    noiseUVScrollSpeedOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseUScrollSpeedOverLife)).GetProps(), Qt::red, "Noise U scroll speed over life");
+    noiseUVScrollSpeedOverLifeTimeLine->AddLine(1, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseVScrollSpeedOverLife)).GetProps(), Qt::green, "Noise V scroll speed over life");
 
     //LAYER_LIFE, LAYER_LIFE_VARIATION,
     lifeTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
@@ -1471,9 +1472,10 @@ void EmitterLayerWidget::CreateNoiseLayoutWidget()
     noiseSpritePathLabel->installEventFilter(this);
 }
 
-QLayout* EmitterLayerWidget::CreateStripeLayout()
+void EmitterLayerWidget::CreateStripeLayoutWidget()
 {
-    QVBoxLayout* vertStripeLayout = new QVBoxLayout();
+    stripeLayoutWidget = new QWidget();
+    QVBoxLayout* vertStripeLayout = new QVBoxLayout(stripeLayoutWidget);
     vertStripeLayout->setContentsMargins(0, 20, 0, 20);
     stripeLabel = new QLabel("Stripe Settings:");
     vertStripeLayout->addWidget(stripeLabel);
@@ -1487,10 +1489,9 @@ QLayout* EmitterLayerWidget::CreateStripeLayout()
 
     stripeSizeOverLifeTimeLine = new TimeLineWidget(this);
     connect(stripeSizeOverLifeTimeLine,
-            SIGNAL(ValueChanged()),
-            this,
-            SLOT(OnStripePropertiesChanged()));
-    vertStripeLayout->addWidget(stripeSizeOverLifeTimeLine);
+        SIGNAL(ValueChanged()),
+        this,
+        SLOT(OnStripePropertiesChanged()));
 
     stripeInheritPositionForBaseCheckBox = new QCheckBox("Inherit position. Affect only base verts.");
     vertStripeLayout->addWidget(stripeInheritPositionForBaseCheckBox);
@@ -1523,13 +1524,15 @@ QLayout* EmitterLayerWidget::CreateStripeLayout()
     stripeTextureTileSpin->setSingleStep(0.01);
     stripeTextureTileSpin->setDecimals(4);
 
-    stripeLifetimeLabel = new QLabel("Lifetime:");
+    stripeLifetimeLabel = new QLabel("Edge lifetime:");
     stripeRateLabel = new QLabel("Rate:");
-    stripeStartSizeLabel = new QLabel("Start sz:");
+    stripeStartSizeLabel = new QLabel("Start size:");
     stripeTexTileLabel = new QLabel("Texture tile:");
 
     vertStripeLayout->addWidget(stripeStartSizeLabel);
     vertStripeLayout->addWidget(stripeStartSizeSpin);
+
+    vertStripeLayout->addWidget(stripeSizeOverLifeTimeLine);
 
     vertStripeLayout->addWidget(stripeLifetimeLabel);
     vertStripeLayout->addWidget(stripeLifetimeSpin);
@@ -1565,8 +1568,6 @@ QLayout* EmitterLayerWidget::CreateStripeLayout()
     connect(stripeTextureTileSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
     connect(stripeUScrollSpeedSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
     connect(stripeVScrollSpeedSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
-
-    return vertStripeLayout;
 }
 
 QLayout* EmitterLayerWidget::CreateFresnelToAlphaLayout()
@@ -1787,10 +1788,20 @@ DAVA::int32 EmitterLayerWidget::LayerTypeToIndex(DAVA::ParticleLayer::eType laye
     return 0;
 }
 
-void EmitterLayerWidget::SetSuperemitterMode(bool isSuperemitter)
+void EmitterLayerWidget::SetLayerMode(bool isSuperemitter, bool isStripe)
 {
+    sizeTimeLine->setVisible(!isStripe);
+    sizeVariationTimeLine->setVisible(!isStripe);
+    sizeOverLifeTimeLine->setVisible(!isStripe);
+    angleTimeLine->setVisible(!isStripe);
+
+    spinTimeLine->setVisible(!isStripe);
+    spinOverLifeTimeLine->setVisible(!isStripe);
+
     enableFlowCheckBox->setVisible(!isSuperemitter);
     flowLayoutWidget->setVisible(!isSuperemitter && enableFlowCheckBox->isChecked());
+
+    stripeLayoutWidget->setVisible(!isSuperemitter && isStripe);
 
     enableNoiseCheckBox->setVisible(!isSuperemitter);
     noiseLayoutWidget->setVisible(!isSuperemitter && enableNoiseCheckBox->isChecked());
@@ -1813,20 +1824,20 @@ void EmitterLayerWidget::SetSuperemitterMode(bool isSuperemitter)
     colorOverLifeGradient->setVisible(!isSuperemitter);
     alphaOverLifeTimeLine->setVisible(!isSuperemitter);
 
-    frameOverlifeCheckBox->setVisible(!isSuperemitter);
-    frameOverlifeFPSSpin->setVisible(!isSuperemitter);
-    frameOverlifeFPSLabel->setVisible(!isSuperemitter);
-    randomFrameOnStartCheckBox->setVisible(!isSuperemitter);
-    loopSpriteAnimationCheckBox->setVisible(!isSuperemitter);
-    animSpeedOverLifeTimeLine->setVisible(!isSuperemitter);
+    frameOverlifeCheckBox->setVisible(!isSuperemitter && !isStripe);
+    frameOverlifeFPSSpin->setVisible(!isSuperemitter && !isStripe);
+    frameOverlifeFPSLabel->setVisible(!isSuperemitter && !isStripe);
+    randomFrameOnStartCheckBox->setVisible(!isSuperemitter && !isStripe);
+    loopSpriteAnimationCheckBox->setVisible(!isSuperemitter && !isStripe);
+    animSpeedOverLifeTimeLine->setVisible(!isSuperemitter && !isStripe);
 
     // The Pivot Point must be hidden for Superemitter mode.
-    pivotPointLabel->setVisible(!isSuperemitter);
-    pivotPointXSpinBox->setVisible(!isSuperemitter);
-    pivotPointXSpinBoxLabel->setVisible(!isSuperemitter);
-    pivotPointYSpinBox->setVisible(!isSuperemitter);
-    pivotPointYSpinBoxLabel->setVisible(!isSuperemitter);
-    pivotPointResetButton->setVisible(!isSuperemitter);
+    pivotPointLabel->setVisible(!isSuperemitter && !isStripe);
+    pivotPointXSpinBox->setVisible(!isSuperemitter && !isStripe);
+    pivotPointXSpinBoxLabel->setVisible(!isSuperemitter && !isStripe);
+    pivotPointYSpinBox->setVisible(!isSuperemitter && !isStripe);
+    pivotPointYSpinBoxLabel->setVisible(!isSuperemitter && !isStripe);
+    pivotPointResetButton->setVisible(!isSuperemitter && !isStripe);
 
     //particle orientation would be set up in inner emitter layers
     particleOrientationLabel->setVisible(!isSuperemitter);
@@ -1841,7 +1852,7 @@ void EmitterLayerWidget::SetSuperemitterMode(bool isSuperemitter)
     presetLabel->setVisible(!isSuperemitter);
     presetComboBox->setVisible(!isSuperemitter);
     fogCheckBox->setVisible(!isSuperemitter);
-    frameBlendingCheckBox->setVisible(!isSuperemitter);
+    frameBlendingCheckBox->setVisible(!isSuperemitter && !isStripe);
 
     // Some controls are however specific for this mode only - display and update them.
     innerEmitterLabel->setVisible(isSuperemitter);
@@ -1886,10 +1897,6 @@ void EmitterLayerWidget::OnLayerValueChanged()
     }
 
     blockSignals = false;
-}
-
-void EmitterLayerWidget::SetStripeParticleMode(bool isStripeParticle)
-{
 }
 
 WheellIgnorantComboBox::WheellIgnorantComboBox(QWidget* parent /*= 0*/)
