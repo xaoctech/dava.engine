@@ -7,7 +7,7 @@
 #include <DeviceManager/DeviceManager.h>
 #include <Input/Keyboard.h>
 #include <Input/Mouse.h>
-#include <Input/InputListener.h>
+#include <Input/InputBindingListener.h>
 #include <Logger/Logger.h>
 
 using namespace DAVA;

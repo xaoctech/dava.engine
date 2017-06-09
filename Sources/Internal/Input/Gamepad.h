@@ -16,6 +16,9 @@ class GamepadImpl;
 struct MainDispatcherEvent;
 }
 
+// TODO: Add unit tests for Gamepad class
+// TODO: Add support for multiple gamepads in device manager
+
 /**
     \ingroup input
 

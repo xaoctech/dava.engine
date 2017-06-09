@@ -29,6 +29,8 @@ enum eInputElements : uint32
     // These are named after characters they produce in QWERTY US layout
     // E.g. KB_W produces 'w' in QWERTY, but 'z' in AZERTY
 
+    // TODO: add support for virtual keys in addition to scancode keys we have now
+
     KB_1,
     KB_2,
     KB_3,
@@ -355,6 +357,8 @@ inline eInputElements GetTouchPositionElementFromClickElement(eInputElements ele
 
 /** Get additional information about an element. */
 const InputElementInfo& GetInputElementInfo(eInputElements element);
+
+// TODO: add glyphs api (i.e. getting element's `image` representation)
 
 /**
     \}

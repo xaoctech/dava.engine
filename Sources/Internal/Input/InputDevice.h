@@ -5,6 +5,9 @@
 
 namespace DAVA
 {
+
+// TODO: add support for virtual (i.e. user defined) devices
+
 /**
     \ingroup input
 
