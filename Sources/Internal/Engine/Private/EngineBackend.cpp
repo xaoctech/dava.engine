@@ -125,7 +125,7 @@ EngineBackend::EngineBackend(const Vector<String>& cmdargs)
     //  - Logger, to log messages on startup
     //  - FileSystem, to load config files with init options
     //  - DeviceManager, to check what hatdware is available
-    context->logger = new Logger;
+    context->logger = new Logger();
     context->settings = new EngineSettings();
     context->fileSystem = new FileSystem;
     FilePath::InitializeBundleName();
@@ -580,14 +580,11 @@ void EngineBackend::HandleAppTerminate(const MainDispatcherEvent& e)
     {
         appIsTerminating = true;
 
-        // Usually windows send blocking event about destruction and aliveWindows can be
-        // modified while iterating over windows, so use such while construction.
-        auto it = aliveWindows.begin();
-        while (it != aliveWindows.end())
+        // WindowBackend::Close can lead to removing a window from aliveWindows list (inside of OnWindowDestroyed)
+        // So copy the vector and iterate over the copy to avoid dealing with invalid iterators
+        std::vector<Window*> aliveWindowsCopy = aliveWindows;
+        for (Window* w : aliveWindowsCopy)
         {
-            Window* w = *it;
-            ++it;
-
             // Directly call Close for WindowBackend to tell important information that application is terminating
             GetWindowBackend(w)->Close(true);
         }
@@ -999,9 +996,10 @@ void EngineBackend::DestroySubsystems()
         delete context->deviceManager;
         context->deviceManager = nullptr;
     }
+
     if (context->logger != nullptr)
     {
-        context->logger->Release();
+        delete context->logger;
         context->logger = nullptr;
     }
 }
