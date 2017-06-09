@@ -6,6 +6,7 @@
 #include "Entity/Component.h"
 #include "UI/UIControl.h"
 #include "UIStaticTextComponent.h"
+#include "UITextSystemLink.h"
 
 namespace DAVA
 {

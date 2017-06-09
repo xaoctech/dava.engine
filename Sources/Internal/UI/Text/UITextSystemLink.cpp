@@ -3,6 +3,7 @@
 
 #include "UI/UIControl.h"
 #include "Utils/UTF8Utils.h"
+#include "Render/2D/FontManager.h"
 
 namespace DAVA
 {
