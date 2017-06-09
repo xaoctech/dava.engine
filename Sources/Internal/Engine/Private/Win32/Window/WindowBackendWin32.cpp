@@ -862,6 +862,8 @@ LRESULT WindowBackend::OnKeyEvent(uint32 key, uint32 scanCode, bool isPressed, b
     {
         if (isExtended)
         {
+            // Windows uses 0xE000 mask throughout its API to distinguish between extended and non-extended keys
+            // So, follow this convention and use the same mask
             scanCode = 0xE000 | scanCode;
         }
 
@@ -877,6 +879,7 @@ LRESULT WindowBackend::OnShiftKeyEvent()
     // Windows does not send event with separate WM_KEYUP for second shift if first one is still pressed
     // So if it's a shift key event, request and store every shift state explicitly
 
+    // These are left and right shift scancodes, taken from https://msdn.microsoft.com/en-us/library/aa299374(v=vs.60).aspx
     static const uint32 shiftKeyScancodes[2] = { 0x2A, 0x36 };
 
     const bool lshiftPressed = ::GetKeyState(VK_LSHIFT) & 0x8000 ? true : false;

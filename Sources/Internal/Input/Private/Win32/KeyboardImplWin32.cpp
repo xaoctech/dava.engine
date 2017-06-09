@@ -15,6 +15,9 @@ namespace Private
 {
 eInputElements KeyboardImpl::ConvertNativeScancodeToDavaScancode(uint32 nativeScancode)
 {
+    // Windows uses 0xE000 mask throughout its API to distinguish between extended and non-extended keys
+    // We follow this convention and use the same mask
+
     const bool isExtended = (nativeScancode & 0xE000) == 0xE000;
     const uint32 nonExtendedScancode = nativeScancode & 0x00FF;
 

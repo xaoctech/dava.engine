@@ -6,6 +6,7 @@
 namespace DAVA
 {
 // TODO: add support for virtual (i.e. user defined) devices
+// TODO: think about adding functions to engine context to get specific input devices: e.g. `DAVA::Context::GetKeyboard()` instead of `GetEngineContext()->deviceManager->GetKeyboard()`
 
 /**
     \ingroup input

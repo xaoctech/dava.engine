@@ -304,6 +304,8 @@ void WindowNativeBridge::OnAcceleratorKeyActivated(::Windows::UI::Core::CoreDisp
 
             if (status.IsExtendedKey)
             {
+                // Windows uses 0xE000 mask throughout its API to distinguish between extended and non-extended keys
+                // So, follow this convention and use the same mask
                 key |= 0xE000;
             }
 
@@ -326,6 +328,7 @@ void WindowNativeBridge::OnShiftKeyActivated()
     using ::Windows::System::VirtualKey;
     using namespace ::Windows::UI::Core;
 
+    // These are left and right shift scancodes, taken from https://msdn.microsoft.com/en-us/library/aa299374(v=vs.60).aspx
     static const uint32 shiftKeyScancodes[2] = { 0x2A, 0x36 };
 
     CoreWindow ^ coreWindow = xamlWindow->CoreWindow;

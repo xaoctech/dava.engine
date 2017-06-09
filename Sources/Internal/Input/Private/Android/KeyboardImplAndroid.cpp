@@ -10,6 +10,7 @@ namespace DAVA
 namespace Private
 {
 // Taken from https://developer.android.com/reference/android/view/KeyEvent.html
+// or https://android.googlesource.com/platform/frameworks/native/+/master/include/android/keycodes.h
 const eInputElements nativeScancodeToDavaScancode[] =
 {
   eInputElements::NONE, // 0
@@ -174,7 +175,7 @@ const eInputElements nativeScancodeToDavaScancode[] =
   eInputElements::NONE, // 159
   eInputElements::KB_NUMPAD_ENTER, // 160
   eInputElements::KB_EQUALS, // 161
-  /* Unused
+  /* There are 283 keycodes in android, the ones below are unused right now
     eInputElements::NONE, // 162
     eInputElements::NONE, // 163
     eInputElements::NONE, // 164
