@@ -2,6 +2,7 @@
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/SkeletonSystem.h"
 #include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
 #include "Scene3D/Scene.h"
 #include "Render/Highlevel/GeometryOctTree.h"
 #include "Render/Highlevel/SkinnedMesh.h"
