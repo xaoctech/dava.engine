@@ -78,6 +78,7 @@ private:
     struct DataRemoteAddTask
     {
         DAVA::ScopedPtr<DAVA::DynamicMemoryFile> serializedData;
+        bool infoSent = false;
         DAVA::uint32 chunksSent = 0;
         DAVA::uint32 chunksOverall = 0;
     };
@@ -118,4 +119,5 @@ private:
     DAVA::List<DataWarmupTask> dataWarmupTasks;
     DataRemoteAddMap dataRemoteAddTasks;
     DAVA::String serverName;
+    bool hasIncomingRequestsRecently = false; // any incoming request has been received after last lazy update
 };

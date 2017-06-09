@@ -112,6 +112,7 @@ AssetCache::Error AssetCacheClient::AddToCacheSynchronously(const AssetCache::Ca
     {
         LockGuard<Mutex> guard(requestLocker);
         request = Request(AssetCache::PACKET_ADD_REQUEST, key);
+        addFilesRequest.Reset();
         value.Serialize(addFilesRequest.serializedData);
         dataSize = addFilesRequest.serializedData->GetSize();
         chunksOverall = AssetCache::ChunkSplitter::GetNumberOfChunks(dataSize);
@@ -221,6 +222,12 @@ AssetCache::Error AssetCacheClient::RequestFromCacheSynchronously(const AssetCac
             {
                 ScopedPtr<DynamicMemoryFile> f(DynamicMemoryFile::Create(std::move(getFilesRequest.receivedData), File::OPEN | File::READ, "receivedData"));
                 value->Deserialize(f);
+
+                const AssetCache::CachedItemValue::Description& description = value->GetDescription();
+                Logger::Info("Data got from cache. Generated %s on machine %s (%s)",
+                             description.creationDate.c_str(),
+                             description.machineName.c_str(),
+                             description.comment.c_str());
             }
             else
             {

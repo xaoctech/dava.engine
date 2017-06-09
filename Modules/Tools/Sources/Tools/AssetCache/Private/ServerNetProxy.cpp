@@ -103,7 +103,7 @@ void ServerNetProxy::OnPacketReceived(Net::IChannel* channel, const void* packet
             }
             default:
             {
-                Logger::Error("[AssetCache::ServerNetProxy::%s] Unexpected packet type: %d", __FUNCTION__, packet->type);
+                Logger::Error("%s: Unexpected packet type: %d", __FUNCTION__, packet->type);
                 break;
             }
             }
@@ -111,7 +111,7 @@ void ServerNetProxy::OnPacketReceived(Net::IChannel* channel, const void* packet
     }
     else
     {
-        Logger::Error("[AssetCache::ServerNetProxy::%s] Empty packet is received.", __FUNCTION__);
+        Logger::Error("%s: Empty packet is received.", __FUNCTION__);
     }
 }
 

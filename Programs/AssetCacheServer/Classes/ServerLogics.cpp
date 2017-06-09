@@ -18,11 +18,14 @@ void ServerLogics::Init(DAVA::AssetCache::ServerNetProxy* server_, const DAVA::S
 
 void ServerLogics::OnAddToCache(DAVA::Net::IChannel* channel, const DAVA::AssetCache::CacheItemKey& key, DAVA::uint64 dataSize, DAVA::uint32 numOfChunks)
 {
+    hasIncomingRequestsRecently = true;
+
     DAVA::List<DataAddTask>::iterator it = GetOrCreateAddTask(channel, key);
     DataAddTask& task = *it;
 
     auto DiscardTask = [&]()
     {
+        DAVA::Logger::Debug("Sending 'add data info failed' response");
         serverProxy->SendAddedToCache(channel, key, false);
         dataAddTasks.erase(it);
     };
@@ -57,12 +60,14 @@ void ServerLogics::OnAddToCache(DAVA::Net::IChannel* channel, const DAVA::AssetC
     task.bytesOverall = dataSize;
     task.chunksOverall = numOfChunks;
 
-    DAVA::Logger::Debug("Sending OK response");
+    DAVA::Logger::Debug("Sending 'add data info OK' response");
     serverProxy->SendAddedToCache(channel, key, true);
 }
 
 void ServerLogics::OnAddChunkToCache(DAVA::Net::IChannel* channel, const DAVA::AssetCache::CacheItemKey& key, DAVA::uint32 chunkNumber, const DAVA::Vector<DAVA::uint8>& chunkData)
 {
+    hasIncomingRequestsRecently = true;
+
     using namespace DAVA;
 
     DAVA::List<DataAddTask>::iterator it = GetOrCreateAddTask(channel, key);
@@ -70,6 +75,7 @@ void ServerLogics::OnAddChunkToCache(DAVA::Net::IChannel* channel, const DAVA::A
 
     auto DiscardTask = [&]()
     {
+        DAVA::Logger::Debug("Sending 'add data chunk failed' response");
         serverProxy->SendAddedToCache(channel, key, false);
         dataAddTasks.erase(it);
     };
@@ -200,6 +206,8 @@ ServerLogics::DataGetMap::iterator ServerLogics::GetOrCreateGetTask(const DAVA::
 
 void ServerLogics::OnRequestedFromCache(DAVA::Net::IChannel* clientChannel, const DAVA::AssetCache::CacheItemKey& key)
 {
+    hasIncomingRequestsRecently = true;
+
     DAVA::Logger::Debug("Receiving get data request: key %s", Brief(key).c_str());
     DataGetMap::iterator taskIter = GetOrCreateGetTask(key);
     if (taskIter != dataGetTasks.end())
@@ -226,6 +234,8 @@ void ServerLogics::OnRequestedFromCache(DAVA::Net::IChannel* clientChannel, cons
 
 void ServerLogics::OnChunkRequestedFromCache(DAVA::Net::IChannel* clientChannel, const DAVA::AssetCache::CacheItemKey& key, DAVA::uint32 chunkNumber)
 {
+    hasIncomingRequestsRecently = true;
+
     using namespace DAVA;
     Logger::Debug("Receiving chunk #%u request, key %s", chunkNumber, Brief(key).c_str());
 
@@ -279,6 +289,8 @@ void ServerLogics::OnChunkRequestedFromCache(DAVA::Net::IChannel* clientChannel,
 
 void ServerLogics::OnRemoveFromCache(DAVA::Net::IChannel* channel, const DAVA::AssetCache::CacheItemKey& key)
 {
+    hasIncomingRequestsRecently = true;
+
     if ((nullptr != serverProxy) && (nullptr != dataBase) && (nullptr != channel))
     {
         DAVA::Logger::Debug("Receiving remove from cache: key %s, channel %p", Brief(key).c_str(), channel);
@@ -290,6 +302,8 @@ void ServerLogics::OnRemoveFromCache(DAVA::Net::IChannel* channel, const DAVA::A
 
 void ServerLogics::OnClearCache(DAVA::Net::IChannel* channel)
 {
+    hasIncomingRequestsRecently = true;
+
     DAVA::Logger::Debug("Receiving clearing of cache from channel %p", channel);
     dataBase->ClearStorage();
     DAVA::Logger::Debug("Sending storage is cleared");
@@ -307,6 +321,8 @@ void ServerLogics::OnWarmingUp(DAVA::Net::IChannel* channel, const DAVA::AssetCa
 
 void ServerLogics::OnStatusRequested(DAVA::Net::IChannel* channel)
 {
+    hasIncomingRequestsRecently = true;
+
     DAVA::Logger::Debug("Received status request from channel %p", channel);
     serverProxy->SendStatus(channel);
 }
@@ -334,6 +350,8 @@ void ServerLogics::OnClientProxyStateChanged()
 
 void ServerLogics::OnReceivedFromCache(const DAVA::AssetCache::CacheItemKey& key, DAVA::uint64 dataSize, DAVA::uint32 numOfChunks)
 {
+    hasIncomingRequestsRecently = true;
+
     auto Error = [&](const char* err)
     {
         DAVA::Logger::Error("Wrong data info response: %s. Key %s", err, Brief(key).c_str());
@@ -378,6 +396,8 @@ void ServerLogics::OnReceivedFromCache(const DAVA::AssetCache::CacheItemKey& key
 
 void ServerLogics::OnReceivedFromCache(const DAVA::AssetCache::CacheItemKey& key, DAVA::uint32 chunkNumber, const DAVA::Vector<DAVA::uint8>& chunkData)
 {
+    hasIncomingRequestsRecently = true;
+
     using namespace DAVA;
 
     auto Error = [&](const char* err, DataGetMap::iterator taskIter)
@@ -456,21 +476,26 @@ void ServerLogics::OnReceivedFromCache(const DAVA::AssetCache::CacheItemKey& key
     SendChunkToClients(taskIter, chunkNumber, chunkData);
 }
 
-void ServerLogics::OnAddedToCache(const DAVA::AssetCache::CacheItemKey& key, bool added)
+void ServerLogics::OnAddedToCache(const DAVA::AssetCache::CacheItemKey& key, bool received)
 {
-    DAVA::Logger::Debug("Receiving response: info/chunk was %s to remote cache", (added ? "added" : "not added"));
+    DAVA::Logger::Debug("Receiving response: info/chunk was %s by the remote cache", (received ? "received" : "not received"));
     DataRemoteAddMap::iterator itTask = dataRemoteAddTasks.find(key);
     if (itTask != dataRemoteAddTasks.end())
     {
         DataRemoteAddTask& task = itTask->second;
-        if (++task.chunksSent == task.chunksOverall)
+
+        if (!task.infoSent)
+        {
+            task.infoSent = true;
+        }
+        else if (++task.chunksSent == task.chunksOverall)
         {
             DAVA::Logger::Debug("All chunks are sent. Removing remote add task");
             dataRemoteAddTasks.erase(itTask);
             return;
         }
 
-        if (added)
+        if (received)
         {
             bool sentOk = SendAddChunkToRemote(itTask);
             if (!sentOk)
@@ -481,7 +506,7 @@ void ServerLogics::OnAddedToCache(const DAVA::AssetCache::CacheItemKey& key, boo
         }
         else
         {
-            DAVA::Logger::Debug("Chunk was not added to remote cache. Removing task");
+            DAVA::Logger::Debug("Chunk/info was not added to remote cache. Removing task");
             dataRemoteAddTasks.erase(itTask);
             return;
         }
@@ -559,6 +584,7 @@ bool ServerLogics::SendAddInfoToRemote(DataRemoteAddMap::iterator taskIt)
         AssetCache::CachedItemValue& value = entry->GetValue();
         value.Serialize(task.serializedData);
         uint64 dataSize = task.serializedData->GetSize();
+        task.infoSent = false;
         task.chunksSent = 0;
         task.chunksOverall = AssetCache::ChunkSplitter::GetNumberOfChunks(dataSize);
         DAVA::Logger::Debug("Sending add data info to remote: %u bytes %u chunks", dataSize, task.chunksOverall);
@@ -668,26 +694,28 @@ void ServerLogics::ProcessLazyTasks()
 {
     if (IsRemoteServerConnected())
     {
-        for (DataWarmupTask& task : dataWarmupTasks)
+        if (!hasIncomingRequestsRecently)
         {
-            DAVA::Logger::Debug("Sending warm-up request, key %s", Brief(task.key).c_str());
-            clientProxy->RequestWarmingUp(task.key);
-        }
-        dataWarmupTasks.clear();
-
-        for (DataRemoteAddMap::iterator it = dataRemoteAddTasks.begin(); it != dataRemoteAddTasks.end();)
-        {
-            if (it->second.chunksOverall == 0)
+            for (DataWarmupTask& task : dataWarmupTasks)
             {
-                bool sentOk = SendAddInfoToRemote(it);
-                if (!sentOk)
+                DAVA::Logger::Debug("Sending warm-up request, key %s", Brief(task.key).c_str());
+                clientProxy->RequestWarmingUp(task.key);
+            }
+            dataWarmupTasks.clear();
+
+            auto firstRemoteDataTask = dataRemoteAddTasks.begin();
+            if (firstRemoteDataTask != dataRemoteAddTasks.end())
+            {
+                DataRemoteAddTask& task = firstRemoteDataTask->second;
+                if (!task.infoSent)
                 {
-                    auto itDel = it++;
-                    dataRemoteAddTasks.erase(itDel);
-                    continue;
+                    bool sentOk = SendAddInfoToRemote(firstRemoteDataTask);
+                    if (!sentOk)
+                    {
+                        dataRemoteAddTasks.erase(firstRemoteDataTask);
+                    }
                 }
             }
-            ++it;
         }
     }
     else
@@ -695,6 +723,8 @@ void ServerLogics::ProcessLazyTasks()
         dataWarmupTasks.clear();
         dataRemoteAddTasks.clear();
     }
+
+    hasIncomingRequestsRecently = false;
 }
 
 void ServerLogics::Update()

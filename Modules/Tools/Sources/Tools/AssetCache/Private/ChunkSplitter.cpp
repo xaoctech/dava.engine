@@ -6,7 +6,7 @@ namespace AssetCache
 {
 namespace ChunkSplitter
 {
-const uint32 CHUNK_SIZE_IN_BYTES = 1 * 1024 * 1024;
+const uint32 CHUNK_SIZE_IN_BYTES = 5 * 1024 * 1024;
 
 uint32 GetNumberOfChunks(uint64 overallSize)
 {

@@ -116,12 +116,13 @@ private:
     {
         AddFilesRequest()
         {
+            serializedData = DynamicMemoryFile::Create(File::CREATE | File::WRITE | File::READ);
             Reset();
         }
 
         void Reset()
         {
-            serializedData = DynamicMemoryFile::Create(File::CREATE | File::WRITE | File::READ);
+            serializedData->Truncate(0);
             chunksSent = 0;
             chunksOverall = 0;
         }
