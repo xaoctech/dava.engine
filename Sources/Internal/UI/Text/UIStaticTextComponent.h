@@ -24,11 +24,11 @@ public:
     };
     enum eTextFitting
     {
-        FITTING_NONE = 0,
-        FITTING_ENLARGE,
-        FITTING_REDUCE,
-        FITTING_FILL, // ENLARGE | REDUCE
-        FITTING_POINTS
+        FITTING_NONE = 0x0,
+        FITTING_ENLARGE = 0x1,
+        FITTING_REDUCE = 0x2,
+        FITTING_FILL = 0x3, // ENLARGE | REDUCE
+        FITTING_POINTS = 0x4
     };
 
 protected:
