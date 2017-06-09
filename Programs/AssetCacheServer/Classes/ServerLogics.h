@@ -12,6 +12,7 @@ class ServerLogics : public DAVA::AssetCache::ServerNetProxyListener,
 public:
     void Init(DAVA::AssetCache::ServerNetProxy* server, const DAVA::String& serverName, DAVA::AssetCache::ClientNetProxy* client, CacheDB* dataBase);
     void Update();
+    void LazyUpdate();
 
     void OnRemoteDisconnecting();
 

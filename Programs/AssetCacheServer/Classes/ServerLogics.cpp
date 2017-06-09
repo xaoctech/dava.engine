@@ -729,12 +729,15 @@ void ServerLogics::ProcessLazyTasks()
 
 void ServerLogics::Update()
 {
-    ProcessLazyTasks();
-
     if (dataBase)
     {
         dataBase->Update();
     }
+}
+
+void ServerLogics::LazyUpdate()
+{
+    ProcessLazyTasks();
 }
 
 bool ServerLogics::IsRemoteServerConnected() const
