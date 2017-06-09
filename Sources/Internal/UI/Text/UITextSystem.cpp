@@ -1,11 +1,11 @@
 #include "UITextSystem.h"
 
-#include "UIStaticTextComponent.h"
 #include "Concurrency/Thread.h"
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
 #include "Entity/Component.h"
 #include "UI/UIControl.h"
+#include "UIStaticTextComponent.h"
 
 namespace DAVA
 {
@@ -23,14 +23,11 @@ void UITextSystem::Process(float32 elapsedTime)
     }
 
     // Process links
-    for (UITextSystemLink* l : links)
+    for (UITextSystemLink* link : links)
     {
-        if (l != nullptr && l->component->IsModified())
+        if (link != nullptr && link->component->IsModified())
         {
-            UITextSystemLink* state = l->component->GetLink();
-            DVASSERT(state);
-            state->ApplyData();
-            l->component->SetModified(false);
+            link->ApplyData();
         }
     }
 }
@@ -105,7 +102,7 @@ void UITextSystem::RemoveLink(UIStaticTextComponent* component)
         (*findIt) = nullptr; // mark link for delete
     }
     component->SetLink(nullptr);
-    SafeRelease(link);
+    delete link;
 }
 
 }

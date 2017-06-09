@@ -1,20 +1,19 @@
 #pragma once
 
-#include "UI/Components/UIComponent.h"
-#include "Reflection/Reflection.h"
 #include "Base/BaseTypes.h"
-#include "UI/UIControl.h"
+#include "Reflection/Reflection.h"
 #include "Render/2D/TextBlock.h"
+#include "UI/Components/UIComponent.h"
+#include "UI/UIControl.h"
 
 namespace DAVA
 {
 class UIControl;
 class UIStaticTextComponent;
 
-class UITextSystemLink : public BaseObject
+class UITextSystemLink final
 {
 public:
-    UITextSystemLink(UIControl* control_, UIStaticTextComponent* component_);
 
     inline TextBlock* GetTextBlock() const
     {
@@ -31,13 +30,14 @@ public:
         return shadowBg;
     }
 
-    void ApplyData();
 
 private:
     UITextSystemLink& operator=(const UITextSystemLink&) = delete;
 
-protected:
-    ~UITextSystemLink() override;
+    UITextSystemLink(UIControl* control_, UIStaticTextComponent* component_);
+    ~UITextSystemLink();
+
+    void ApplyData();
 
     UIControl* control;
     UIStaticTextComponent* component;
@@ -46,6 +46,7 @@ protected:
     UIControlBackground* textBg;
     UIControlBackground* shadowBg;
 
+    // Friends
     friend class UITextSystem;
 };
 }
