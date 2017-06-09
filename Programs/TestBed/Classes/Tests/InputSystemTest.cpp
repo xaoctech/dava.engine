@@ -5,6 +5,7 @@
 #include <DeviceManager/DeviceManager.h>
 #include <Input/InputBindingListener.h>
 #include <Input/Keyboard.h>
+#include <Input/Mouse.h>
 #include <Utils/UTF8Utils.h>
 #include <UI/Render/UIDebugRenderComponent.h>
 
@@ -25,8 +26,10 @@ void InputSystemTest::LoadResources()
 {
     BaseScreen::LoadResources();
 
+    const EngineContext* context = GetEngineContext();
+
     // Create UI
-    CreateKeyboardUI(L"Scancode keyboard", 20.0f, 20.0f);
+    CreateKeyboardUI("Scancode keyboard", 20.0f, 20.0f);
     CreateMouseUI();
     CreateTouchUI();
     CreateActionsUI();
@@ -34,7 +37,7 @@ void InputSystemTest::LoadResources()
 
     // Subscribe to events
     rawInputToken = GetEngineContext()->inputSystem->AddHandler(eInputDeviceTypes::CLASS_ALL, MakeFunction(this, &InputSystemTest::OnInputEvent));
-    GetEngineContext()->actionSystem->ActionTriggered.Connect(this, &InputSystemTest::OnAction);
+    context->actionSystem->ActionTriggered.Connect(this, &InputSystemTest::OnAction);
     Engine::Instance()->update.Connect(this, &InputSystemTest::OnUpdate);
 
     // Bind action set
@@ -75,7 +78,12 @@ void InputSystemTest::LoadResources()
     action5.digitalStates[1] = DigitalElementState::Pressed();
     set.analogBindings.push_back(action5);
 
-    GetEngineContext()->actionSystem->BindSet(set, 1, 2);
+    Keyboard* keyboard = context->deviceManager->GetKeyboard();
+    Mouse* mouse = context->deviceManager->GetMouse();
+    if (keyboard != nullptr && mouse != nullptr)
+    {
+        context->actionSystem->BindSet(set, keyboard->GetId(), mouse->GetId());
+    }
 }
 
 void InputSystemTest::UnloadResources()
@@ -127,7 +135,7 @@ void InputSystemTest::UnloadResources()
     BaseScreen::UnloadResources();
 }
 
-void InputSystemTest::CreateKeyboardUI(WideString header, float32 x, float32 y)
+void InputSystemTest::CreateKeyboardUI(String header, float32 x, float32 y)
 {
     ScopedPtr<FTFont> font(FTFont::Create("~res:/Fonts/DejaVuSans.ttf"));
 
@@ -142,7 +150,7 @@ void InputSystemTest::CreateKeyboardUI(WideString header, float32 x, float32 y)
     headerText->SetTextColor(Color::White);
     headerText->SetFont(font);
     headerText->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
-    headerText->SetText(header);
+    headerText->SetUtf8Text(header);
     AddControl(headerText);
 
     keyboardsHeaders.push_back(headerText);
@@ -339,7 +347,7 @@ void InputSystemTest::CreateMouseUI()
     mouseHeader->SetTextColor(Color::White);
     mouseHeader->SetFont(font);
     mouseHeader->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
-    mouseHeader->SetText(L"Mouse");
+    mouseHeader->SetUtf8Text("Mouse");
     AddControl(mouseHeader);
 
     mouseBody = new UIButton(Rect(x, 35, 84, 100));
@@ -382,7 +390,7 @@ void InputSystemTest::CreateTouchUI()
     touchHeader->SetTextColor(Color::White);
     touchHeader->SetFont(font);
     touchHeader->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
-    touchHeader->SetText(L"Touch");
+    touchHeader->SetUtf8Text("Touch");
     AddControl(touchHeader);
 
     y += 17.0f;
@@ -430,7 +438,7 @@ void InputSystemTest::CreateActionsUI()
     staticText->SetFont(font);
     staticText->SetMultiline(true);
     staticText->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
-    staticText->SetText(L"Action 1 (W pressed):");
+    staticText->SetUtf8Text("Action 1 (W pressed):");
     AddControl(staticText);
 
     staticText = new UIStaticText(Rect(215, y, 50, 30));
@@ -438,7 +446,7 @@ void InputSystemTest::CreateActionsUI()
     staticText->SetFont(font);
     staticText->SetMultiline(true);
     staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_TOP);
-    staticText->SetText(L"0");
+    staticText->SetUtf8Text("0");
     AddControl(staticText);
 
     actionCounters[ACTION_1] = staticText;
@@ -452,7 +460,7 @@ void InputSystemTest::CreateActionsUI()
     staticText->SetFont(font);
     staticText->SetMultiline(true);
     staticText->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
-    staticText->SetText(L"Action 2 (Space just pressed):");
+    staticText->SetUtf8Text("Action 2 (Space just pressed):");
     AddControl(staticText);
 
     staticText = new UIStaticText(Rect(215, y, 50, 30));
@@ -460,7 +468,7 @@ void InputSystemTest::CreateActionsUI()
     staticText->SetFont(font);
     staticText->SetMultiline(true);
     staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_TOP);
-    staticText->SetText(L"0");
+    staticText->SetUtf8Text("0");
     AddControl(staticText);
 
     actionCounters[ACTION_2] = staticText;
@@ -474,7 +482,7 @@ void InputSystemTest::CreateActionsUI()
     staticText->SetFont(font);
     staticText->SetMultiline(true);
     staticText->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
-    staticText->SetText(L"Action 3 (Left Shift pressed, Space just pressed):");
+    staticText->SetUtf8Text("Action 3 (Left Shift pressed, Space just pressed):");
     AddControl(staticText);
 
     staticText = new UIStaticText(Rect(215, y, 50, 30));
@@ -482,7 +490,7 @@ void InputSystemTest::CreateActionsUI()
     staticText->SetFont(font);
     staticText->SetMultiline(true);
     staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_TOP);
-    staticText->SetText(L"0");
+    staticText->SetUtf8Text("0");
     AddControl(staticText);
 
     actionCounters[ACTION_3] = staticText;
@@ -496,7 +504,7 @@ void InputSystemTest::CreateActionsUI()
     staticText->SetFont(font);
     staticText->SetMultiline(true);
     staticText->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
-    staticText->SetText(L"Action 4 (Mouse Cursor):");
+    staticText->SetUtf8Text("Action 4 (Mouse Cursor):");
     AddControl(staticText);
 
     staticText = new UIStaticText(Rect(215, y, 50, 30));
@@ -504,7 +512,7 @@ void InputSystemTest::CreateActionsUI()
     staticText->SetFont(font);
     staticText->SetMultiline(true);
     staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_TOP);
-    staticText->SetText(L"0");
+    staticText->SetUtf8Text("0");
     AddControl(staticText);
 
     actionCounters[ACTION_4] = staticText;
@@ -518,7 +526,7 @@ void InputSystemTest::CreateActionsUI()
     staticText->SetFont(font);
     staticText->SetMultiline(true);
     staticText->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
-    staticText->SetText(L"Action 5 (Mouse Cursor, Left Ctrl pressed, Mouse Left Button pressed):");
+    staticText->SetUtf8Text("Action 5 (Mouse Cursor, Left Ctrl pressed, Mouse Left Button pressed):");
     AddControl(staticText);
 
     staticText = new UIStaticText(Rect(215, y, 50, 30));
@@ -526,7 +534,7 @@ void InputSystemTest::CreateActionsUI()
     staticText->SetFont(font);
     staticText->SetMultiline(true);
     staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_TOP);
-    staticText->SetText(L"0");
+    staticText->SetUtf8Text("0");
     AddControl(staticText);
 
     actionCounters[ACTION_5] = staticText;
@@ -590,7 +598,7 @@ void InputSystemTest::CreateInputListenerUI()
     inputListenerResultField->SetFont(font);
     inputListenerResultField->SetMultiline(true);
     inputListenerResultField->SetTextAlign(ALIGN_HCENTER | ALIGN_VCENTER);
-    inputListenerResultField->SetText(L"Listened input will be shown here");
+    inputListenerResultField->SetUtf8Text("Listened input will be shown here");
     AddControl(inputListenerResultField);
 }
 
@@ -690,14 +698,14 @@ void InputSystemTest::OnInputListenerButtonPressed(DAVA::BaseObject* sender, voi
     }
 
     GetEngineContext()->inputListener->Listen(mode, MakeFunction(this, &InputSystemTest::OnInputListeningEnded));
-    inputListenerResultField->SetText(L"Listening...");
+    inputListenerResultField->SetUtf8Text("Listening...");
 }
 
 void InputSystemTest::OnInputListeningEnded(bool cancelled, DAVA::Vector<DAVA::InputEvent> input)
 {
     if (cancelled)
     {
-        inputListenerResultField->SetText(L"Stopped listening");
+        inputListenerResultField->SetUtf8Text("Stopped listening");
     }
     else
     {

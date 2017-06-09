@@ -501,7 +501,7 @@ void Window::HandleVisibilityChanged(const Private::MainDispatcherEvent& e)
 void Window::HandleTrackpadGesture(const Private::MainDispatcherEvent& e)
 {
     // TODO: move gestures to the new input system
-    
+
     UIEvent uie;
     uie.window = e.window;
     uie.timestamp = e.timestamp / 1000.0;

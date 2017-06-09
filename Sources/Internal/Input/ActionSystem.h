@@ -55,6 +55,8 @@ struct ActionSet final
     Vector<AnalogBinding> analogBindings;
 };
 
+// TODO: do we need fabric methods for easier creation of Digital/Analog binding instances?
+
 /**
     Class which is responsible for binding action sets and notifying when an action is triggered.
     `BindSet` function is used to bind an action set.
