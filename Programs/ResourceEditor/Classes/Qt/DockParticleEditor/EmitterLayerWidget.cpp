@@ -1794,6 +1794,7 @@ void EmitterLayerWidget::SetLayerMode(bool isSuperemitter, bool isStripe)
     sizeVariationTimeLine->setVisible(!isStripe);
     sizeOverLifeTimeLine->setVisible(!isStripe);
     angleTimeLine->setVisible(!isStripe);
+    randomSpinDirectionCheckBox->setVisible(!isStripe);
 
     spinTimeLine->setVisible(!isStripe);
     spinOverLifeTimeLine->setVisible(!isStripe);
