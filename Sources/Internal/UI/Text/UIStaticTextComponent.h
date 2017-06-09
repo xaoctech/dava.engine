@@ -91,7 +91,7 @@ public:
     Vector2 GetContentPreferredSize(const Vector2& constraints) const;
     bool IsHeightDependsOnWidth() const;
 
-protected:
+private:
     void SetLink(UITextSystemLink* link);
     UITextSystemLink* GetLink() const;
 

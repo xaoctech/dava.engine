@@ -242,8 +242,6 @@ void UIRenderSystem::RenderText(const UIControl* control, const UIStaticTextComp
     UIControlBackground* shadowBg = link->GetShadowBackground();
     TextBlock* textBlock = link->GetTextBlock();
 
-    // link->ApplyComponentData();
-
     shadowBg->SetParentColor(parentColor);
     textBg->SetParentColor(parentColor);
 
