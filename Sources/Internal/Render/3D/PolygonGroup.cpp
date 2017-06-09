@@ -7,6 +7,19 @@
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(PolygonGroup)
+{
+    ReflectionRegistrator<PolygonGroup>::Begin()
+    .Field("vertexCount", &PolygonGroup::vertexCount)[M::ReadOnly(), M::DisplayName("Vertex Count")]
+    .Field("indexCount", &PolygonGroup::indexCount)[M::ReadOnly(), M::DisplayName("Index Count")]
+    .Field("primitiveCount", &PolygonGroup::primitiveCount)[M::ReadOnly(), M::DisplayName("Primitive Count")]
+    .Field("textureCoordCount", &PolygonGroup::textureCoordCount)[M::ReadOnly(), M::DisplayName("Texture Coord Count")]
+    .Field("vertexStride", &PolygonGroup::vertexStride)[M::ReadOnly(), M::DisplayName("Vertex Stride")]
+    .Field("vertexFormat", &PolygonGroup::vertexFormat)[M::ReadOnly(), M::DisplayName("Vertex Format"), M::FlagsT<eVertexFormat>()]
+    .Field("indexFormat", &PolygonGroup::indexFormat)[M::ReadOnly(), M::DisplayName("Index Format"), M::EnumT<eIndexFormat>()]
+    .End();
+}
+
 PolygonGroup::PolygonGroup()
     : DataNode()
     , vertexCount(0)
@@ -118,6 +131,30 @@ void PolygonGroup::UpdateDataPointersAndStreams()
         baseShift += GetVertexSize(EVF_BINORMAL);
         vLayout.AddElement(rhi::VS_BINORMAL, 0, rhi::VDT_FLOAT, 3);
     }
+    if (vertexFormat & EVF_PIVOT4)
+    {
+        pivot4Array = reinterpret_cast<Vector4*>(meshData + baseShift);
+        baseShift += GetVertexSize(EVF_PIVOT4);
+        vLayout.AddElement(rhi::VS_TEXCOORD, 4, rhi::VDT_FLOAT, 4);
+    }
+    if (vertexFormat & EVF_PIVOT_DEPRECATED)
+    {
+        pivotArray = reinterpret_cast<Vector3*>(meshData + baseShift);
+        baseShift += GetVertexSize(EVF_PIVOT_DEPRECATED);
+        vLayout.AddElement(rhi::VS_TEXCOORD, 4, rhi::VDT_FLOAT, 3);
+    }
+    if (vertexFormat & EVF_FLEXIBILITY)
+    {
+        flexArray = reinterpret_cast<float32*>(meshData + baseShift);
+        baseShift += GetVertexSize(EVF_FLEXIBILITY);
+        vLayout.AddElement(rhi::VS_TEXCOORD, 5, rhi::VDT_FLOAT, 1);
+    }
+    if (vertexFormat & EVF_ANGLE_SIN_COS)
+    {
+        angleArray = reinterpret_cast<Vector2*>(meshData + baseShift);
+        baseShift += GetVertexSize(EVF_ANGLE_SIN_COS);
+        vLayout.AddElement(rhi::VS_TEXCOORD, 6, rhi::VDT_FLOAT, 2);
+    }
     if (vertexFormat & EVF_JOINTINDEX)
     {
         jointIdxArray = reinterpret_cast<float32*>(meshData + baseShift);
@@ -157,29 +194,11 @@ void PolygonGroup::UpdateDataPointersAndStreams()
         baseShift += GetVertexSize(EVF_CUBETEXCOORD3);
         vLayout.AddElement(rhi::VS_TEXCOORD, 3, rhi::VDT_FLOAT, 3);
     }
-    if (vertexFormat & EVF_PIVOT)
-    {
-        pivotArray = reinterpret_cast<Vector3*>(meshData + baseShift);
-        baseShift += GetVertexSize(EVF_PIVOT);
-        vLayout.AddElement(rhi::VS_TEXCOORD, 3, rhi::VDT_FLOAT, 3);
-    }
-    if (vertexFormat & EVF_FLEXIBILITY)
-    {
-        flexArray = reinterpret_cast<float32*>(meshData + baseShift);
-        baseShift += GetVertexSize(EVF_FLEXIBILITY);
-        vLayout.AddElement(rhi::VS_TEXCOORD, 5, rhi::VDT_FLOAT, 1);
-    }
-    if (vertexFormat & EVF_ANGLE_SIN_COS)
-    {
-        angleArray = reinterpret_cast<Vector2*>(meshData + baseShift);
-        baseShift += GetVertexSize(EVF_ANGLE_SIN_COS);
-        vLayout.AddElement(rhi::VS_TEXCOORD, 4, rhi::VDT_FLOAT, 2);
-    }
 
     vertexLayoutId = rhi::VertexLayout::UniqueId(vLayout);
 }
 
-void PolygonGroup::AllocateData(int32 _meshFormat, int32 _vertexCount, int32 _indexCount)
+void PolygonGroup::AllocateData(int32 _meshFormat, int32 _vertexCount, int32 _indexCount, int32 _primitiveCount)
 {
     DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
 
@@ -191,6 +210,10 @@ void PolygonGroup::AllocateData(int32 _meshFormat, int32 _vertexCount, int32 _in
     cubeTextureCoordCount = GetCubeTexCoordCount(vertexFormat);
 
     DVASSERT(vertexStride * vertexCount > 0);
+    DVASSERT(_primitiveCount >= 0 && _primitiveCount <= int32(CalculatePrimitiveCount(indexCount, primitiveType)));
+
+    primitiveCount = (_primitiveCount == 0) ? CalculatePrimitiveCount(indexCount, primitiveType) : _primitiveCount;
+
     meshData = new uint8[vertexStride * vertexCount];
 
     DVASSERT(indexCount > 0);
@@ -356,6 +379,7 @@ void PolygonGroup::Save(KeyedArchive* keyedArchive, SerializationContext* serial
     keyedArchive->SetInt32("indexCount", indexCount);
     keyedArchive->SetInt32("textureCoordCount", textureCoordCount);
     keyedArchive->SetInt32("rhi_primitiveType", primitiveType);
+    keyedArchive->SetInt32("primitiveCount", primitiveCount);
 
     keyedArchive->SetInt32("packing", PACKING_NONE);
     keyedArchive->SetByteArray("vertices", meshData, vertexCount * vertexStride);
@@ -374,6 +398,7 @@ void PolygonGroup::LoadPolygonData(KeyedArchive* keyedArchive, SerializationCont
     indexCount = keyedArchive->GetInt32("indexCount");
     textureCoordCount = keyedArchive->GetInt32("textureCoordCount");
     primitiveType = rhi::PrimitiveType(keyedArchive->GetInt32("rhi_primitiveType", rhi::PRIMITIVE_TRIANGLELIST));
+    primitiveCount = keyedArchive->GetInt32("primitiveCount", CalculatePrimitiveCount(indexCount, primitiveType));
     cubeTextureCoordCount = keyedArchive->GetInt32("cubeTextureCoordCount");
 
     int32 formatPacking = keyedArchive->GetInt32("packing");
@@ -389,6 +414,13 @@ void PolygonGroup::LoadPolygonData(KeyedArchive* keyedArchive, SerializationCont
         const uint8* archiveData = keyedArchive->GetByteArray("vertices");
 
         int32 resFormat = cutUnusedStreams ? requiredFlags : (vertexFormat | requiredFlags);
+
+        if ((vertexFormat & EVF_PIVOT_DEPRECATED) && (requiredFlags & EVF_PIVOT4))
+        {
+            resFormat |= EVF_PIVOT_DEPRECATED;
+            resFormat &= ~EVF_PIVOT4;
+        }
+
         DVASSERT(resFormat);
         if (vertexFormat != resFormat) //not all streams in data are required or present - smart copy
         {
@@ -406,6 +438,13 @@ void PolygonGroup::LoadPolygonData(KeyedArchive* keyedArchive, SerializationCont
                     CopyData(&src, &dst, vertexFormat, resFormat, mask);
                 }
             }
+
+            if (resFormat & EVF_PIVOT_DEPRECATED)
+            {
+                resFormat &= ~EVF_PIVOT_DEPRECATED;
+                resFormat |= EVF_PIVOT4;
+            }
+
             vertexFormat = resFormat;
             vertexStride = newVertexStride;
             textureCoordCount = GetTexCoordCount(vertexFormat);
@@ -457,7 +496,7 @@ void PolygonGroup::RecalcAABBox()
     }
 }
 
-void PolygonGroup::CopyData(const uint8** meshData, uint8** newMeshData, uint32 vertexFormat, uint32 newVertexFormat, uint32 format) const
+void PolygonGroup::CopyData(const uint8** meshData, uint8** newMeshData, uint32 vertexFormat, uint32 newVertexFormat, uint32 format)
 {
     DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
 
