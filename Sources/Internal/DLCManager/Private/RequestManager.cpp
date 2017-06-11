@@ -36,6 +36,7 @@ void RequestManager::Update()
 
         if (request->IsDownloaded())
         {
+            callSignal = true; // we need to inform on empty pack too
             Pop();
             if (!Empty())
             {
@@ -59,10 +60,15 @@ void RequestManager::Update()
 
         if (callSignal)
         {
-            packManager.requestUpdated.Emit(*request);
-            for (PackRequest* r : nextDependentPacks)
+            // if error happened and no space on device, requesting
+            // may be already be disabled, so we need check it out
+            if (packManager.IsRequestingEnabled())
             {
-                packManager.requestUpdated.Emit(*r);
+                packManager.requestUpdated.Emit(*request);
+                for (PackRequest* r : nextDependentPacks)
+                {
+                    packManager.requestUpdated.Emit(*r);
+                }
             }
         }
     }
