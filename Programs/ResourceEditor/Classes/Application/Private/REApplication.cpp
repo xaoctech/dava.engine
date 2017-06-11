@@ -126,17 +126,27 @@ void REApplication::Init(const DAVA::EngineContext* engineContext)
     DAVA::QualitySettingsSystem::Instance()->SetMetalPreview(true);
     DAVA::QualitySettingsSystem::Instance()->SetRuntimeQualitySwitching(true);
 
-    DAVA::FilePath documentsFolder = "c:/Dava Engine/ResourceEditor/";
-    DAVA::FileSystem::eCreateDirectoryResult createResult = engineContext->fileSystem->CreateDirectory(documentsFolder, true);
+    DAVA::FileSystem* fileSystem = engineContext->fileSystem;
+#ifdef __DAVAENGINE_MACOS__
+    DAVA::FilePath documentsFolder = fileSystem->GetApplicationSupportPath() + "ResourceEditor/";
+#else
+    DAVA::FilePath documentsFolder = fileSystem->GetEngineDocumentsPath() + "ResourceEditor/"
+#endif
+
+    DAVA::FileSystem::eCreateDirectoryResult createResult = fileSystem->CreateDirectory(documentsFolder, true);
+    
+#ifdef __DAVAENGINE_MACOS__
     auto copyDocumentsFromOldFolder = [&]
     {
         if (createResult != DAVA::FileSystem::DIRECTORY_EXISTS)
         {
-            DAVA::FilePath documentsOldFolder = engineContext->fileSystem->GetCurrentDocumentsDirectory() + "ResourceEditor/";
-            engineContext->fileSystem->RecursiveCopy(documentsOldFolder, documentsFolder);
+            DAVA::FilePath documentsOldFolder = fileSystem->GetCurrentDocumentsDirectory() + "ResourceEditor/";
+            fileSystem->RecursiveCopy(documentsOldFolder, documentsFolder);
         }
     };
     copyDocumentsFromOldFolder(); // todo: remove function some versions after
+#endif
+    
     engineContext->fileSystem->SetCurrentDocumentsDirectory(documentsFolder);
 
     engineContext->logger->SetLogFilename("ResourceEditor.txt");

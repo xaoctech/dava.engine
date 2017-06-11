@@ -139,9 +139,9 @@ int DAVAMain(DAVA::Vector<DAVA::String> cmdline)
     DAVA::FileSystem* fileSystem = e.GetContext()->fileSystem;
 
 #ifdef __DAVAENGINE_MACOS__
-    DAVA::FilePath documentsDirectory = "UIViewer/";
+    DAVA::FilePath documentsDirectory = fileSystem->GetApplicationSupportPath() + "UIViewer/";
 #else
-    DAVA::FilePath documentsDirectory = fileSystem->GetCurrentDocumentsDirectory() + "UIViewer/";
+    DAVA::FilePath documentsDirectory = fileSystem->GetEngineDocumentsPath() + "UIViewer/";
 #endif
     fileSystem->CreateDirectory(documentsDirectory, true);
     fileSystem->SetCurrentDocumentsDirectory(documentsDirectory);

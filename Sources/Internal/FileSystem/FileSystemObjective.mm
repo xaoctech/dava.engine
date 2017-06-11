@@ -16,6 +16,14 @@ const FilePath FileSystem::GetUserDocumentsPath()
     return FilePath(String([filePath cStringUsingEncoding:NSUTF8StringEncoding]));
 }
 
+const FilePath FileSystem::GetApplicationSupportPath()
+{
+    NSArray* paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
+    NSString* bundlePath = [paths objectAtIndex:0];
+    NSString* filePath = [bundlePath stringByAppendingString:@"/Dava Engine/"];
+    return FilePath(String([filePath cStringUsingEncoding:NSUTF8StringEncoding]));
+}
+
 const FilePath FileSystem::GetPublicDocumentsPath()
 {
     return "/Users/Shared/";

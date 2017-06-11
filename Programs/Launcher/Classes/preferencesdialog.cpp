@@ -91,7 +91,15 @@ void LoadPreferences(FileManager* fileManager, ConfigDownloader* configDownloade
     QJsonValue filesDirValue = rootObject[PreferencesDialogDetails::filesDirectoryKey];
     if (filesDirValue.isString())
     {
-        fileManager->SetFilesDirectory(filesDirValue.toString());
+        QString filesDir = filesDirValue.toString();
+        fileManager->SetFilesDirectory(filesDir);
+        
+#ifdef __DAVAENGINE_MACOS__
+        if (filesDir.startsWith(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)))
+        {
+            ErrorMessenger::ShowErrorMessage(ErrorMessenger::ERROR_FILE, QObject::tr("Storage path is located inside of '%1'\nIt's recommended to relocate storage outside of this path").arg(filesDir));
+        }
+#endif
     }
 
     QJsonValue protocolKeyValue = rootObject[PreferencesDialogDetails::launcherProtocolKey];

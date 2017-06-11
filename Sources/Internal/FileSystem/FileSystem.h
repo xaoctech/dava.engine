@@ -121,6 +121,12 @@ public:
          \brief Function to set current documents directory to default
      */
     virtual void SetDefaultDocumentsDirectory();
+    
+    /**
+         \brief Function to retrieve DAVA engine applications documents path
+         \returns engine documents path
+     */
+    static const FilePath GetEngineDocumentsPath();
 
     /**
          \brief Function to retrieve user's documents path
@@ -134,12 +140,17 @@ public:
      */
     virtual const FilePath GetPublicDocumentsPath();
 
-#if defined(__DAVAENGINE_APPLE__)
+#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
     /**
         \brief Function to retrieve user’s home path
         \returns user’s home path
     */
     const FilePath GetHomePath();
+    
+    /**
+        function to retrieve ~/Library/Application Support/Dava Engine/ path for current user
+    */
+    const FilePath GetApplicationSupportPath();
 #endif
 
     /**

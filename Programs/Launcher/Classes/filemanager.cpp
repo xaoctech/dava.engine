@@ -1,5 +1,8 @@
 #include "filemanager.h"
 #include "errormessenger.h"
+
+#include <QtHelpers/HelperFunctions.h>
+
 #include <QDesktopServices>
 #include <QCoreApplication>
 #include <QDir>
@@ -82,14 +85,17 @@ QString FileManager::GetDocumentsDirectory()
 FileManager::FileManager(QObject* parent /*= nullptr*/)
     : QObject(parent)
 {
+#ifdef __DAVAENGINE_MACOS__
+    documentsDirectory = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/Dava Engine/Launcher/";
+#else
     documentsDirectory = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/DAVAProject/Launcher/";
+#endif
     if (!QDir(documentsDirectory).exists())
     {
         QString oldDocDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/DAVALauncher/";
         if (QDir(oldDocDir).exists())
         {
-            QDir r;
-            r.rename(oldDocDir, documentsDirectory);
+            QtHelpers::CopyRecursively(oldDocDir, documentsDirectory);
         }
     }
     MakeDirectory(documentsDirectory);

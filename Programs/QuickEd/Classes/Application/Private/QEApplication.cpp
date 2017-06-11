@@ -71,9 +71,9 @@ void QEApplication::Init(const DAVA::EngineContext* engineContext)
     FileSystem* fs = engineContext->fileSystem;
 
 #ifdef __DAVAENGINE_MACOS__
-    FilePath documentsDirectory = "QuickEd/";
+    FilePath documentsDirectory = fs->GetApplicationSupportPath() + "QuickEd/";
 #else
-    FilePath documentsDirectory = context->fileSystem->GetCurrentDocumentsDirectory() + "QuickEd/";
+    FilePath documentsDirectory = fs->GetEngineDocumentsPath() + "QuickEd/";
 #endif
     DAVA::FileSystem::eCreateDirectoryResult createResult = engineContext->fileSystem->CreateDirectory(documentsDirectory, true);
 

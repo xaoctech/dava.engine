@@ -4,6 +4,7 @@
 #include <QStringList>
 #include <QProcess>
 #include <QDir>
+#include <QDirIterator>
 
 namespace QtHelpers
 {
@@ -34,5 +35,34 @@ void InvokeInAutoreleasePool(std::function<void()> function)
     function();
 }
 #endif
+
+void CopyRecursively(const QString& fromDir, const QString& toDir)
+{
+    QDir().mkpath(toDir);
+ 
+    QString toDirWithSlash = toDir;
+    if (!toDirWithSlash.endsWith('/'))
+    {
+        toDirWithSlash.append('/');
+    }
+
+    QDirIterator it(fromDir, QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+    while (it.hasNext())
+    {
+        it.next();
+        
+        QFileInfo fileInfo = it.fileInfo();
+        QString dest = toDirWithSlash + fileInfo.fileName();
+        
+        if (fileInfo.isDir())
+        {
+            CopyRecursively(fileInfo.absoluteFilePath(), dest);
+        }
+        else
+        {
+            QFile::copy(fileInfo.absoluteFilePath(), dest);
+        }
+    }
+}
 
 } // namespace QtHelpers

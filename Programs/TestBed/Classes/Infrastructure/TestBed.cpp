@@ -165,9 +165,9 @@ TestBed::TestBed(Engine& engine)
     FileSystem* fileSystem = context->fileSystem;
 
 #ifdef __DAVAENGINE_MACOS__
-    FilePath documentsDirectory = "TestBed/";
+    FilePath documentsDirectory = fileSystem->GetApplicationSupportPath() + "TestBed/";
 #else
-    FilePath documentsDirectory = fileSystem->GetCurrentDocumentsDirectory() + "TestBed/";
+    FilePath documentsDirectory = fileSystem->GetEngineDocumentsPath() + "TestBed/";
 #endif
     fileSystem->CreateDirectory(documentsDirectory, true);
     fileSystem->SetCurrentDocumentsDirectory(documentsDirectory);

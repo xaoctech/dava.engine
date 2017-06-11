@@ -81,9 +81,9 @@ int DAVAMain(Vector<String> cmdline)
     FileSystem* fileSystem = e.GetContext()->fileSystem;
 
 #ifdef __DAVAENGINE_MACOS__
-    FilePath documentsDirectory = "TestBed/";
+    FilePath documentsDirectory = fileSystem->GetApplicationSupportPath() + "UnitTests/";
 #else
-    FilePath documentsDirectory = fileSystem->GetCurrentDocumentsDirectory() + "TestBed/";
+    FilePath documentsDirectory = fileSystem->GetEngineDocumentsPath() + "UnitTests/";
 #endif
     fileSystem->CreateDirectory(documentsDirectory, true);
     fileSystem->SetCurrentDocumentsDirectory(documentsDirectory);
