@@ -336,7 +336,7 @@ vertex_out vp_main( vertex_in input )
     #endif
     #endif
     #if WIND_ANIMATION
-    float inFlexibility = input.texcoord5;
+    float inFlexibility = input.flexibility;
     #endif
 
     #if VERTEX_COLOR
