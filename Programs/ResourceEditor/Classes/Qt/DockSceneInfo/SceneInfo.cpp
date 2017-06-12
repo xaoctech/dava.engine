@@ -363,6 +363,7 @@ void SceneInfo::CollectParticlesData()
                 ProcessParticleSprite(layers[lay]->sprite, sprites);
                 ProcessParticleSprite(layers[lay]->flowmap, sprites);
                 ProcessParticleSprite(layers[lay]->noise, sprites);
+                ProcessParticleSprite(layers[lay]->alphaRemapSprite, sprites);
             }
         }
     }

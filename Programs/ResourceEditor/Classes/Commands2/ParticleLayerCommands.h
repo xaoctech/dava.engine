@@ -157,3 +157,28 @@ private:
     StripeParams oldParams;
     DAVA::ParticleLayer* layer = nullptr;
 };
+
+class CommandChangeAlphaRemapProperties : public RECommand
+{
+public:
+    struct AlphaRemapParams
+    {
+        DAVA::FilePath alphaRemapPath;
+        bool enableAlphaRemap = false;
+        DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> alphaRemapOverLife;
+    };
+
+    CommandChangeAlphaRemapProperties(DAVA::ParticleLayer* layer, AlphaRemapParams&& params);
+
+    void Undo() override;
+    void Redo() override;
+
+    DAVA::ParticleLayer* GetLayer() const;
+
+private:
+    void ApplyParams(AlphaRemapParams& params);
+
+    AlphaRemapParams newParams;
+    AlphaRemapParams oldParams;
+    DAVA::ParticleLayer* layer = nullptr;
+};

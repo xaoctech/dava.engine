@@ -80,6 +80,8 @@ ParticleLayer::ParticleLayer()
     , noiseVScrollSpeedOverLife(nullptr)
     , stripeSizeOverLifeProp(nullptr)
     , stripeColorOverLife(nullptr)
+    , enableAlphaRemap(false)
+    , alphaRemapOverLife(nullptr)
 {
     life = nullptr;
     lifeVariation = nullptr;
@@ -299,6 +301,7 @@ ParticleLayer* ParticleLayer::Clone()
     dstLayer->sprite = sprite;
     dstLayer->flowmap = flowmap;
     dstLayer->noise = noise;
+    dstLayer->alphaRemapSprite = alphaRemapSprite;
     dstLayer->layerPivotPoint = layerPivotPoint;
     dstLayer->layerPivotSizeOffsets = layerPivotSizeOffsets;
 
@@ -321,6 +324,11 @@ ParticleLayer* ParticleLayer::Clone()
     dstLayer->noisePath = noisePath;
     dstLayer->enableNoise = enableNoise;
     dstLayer->enableNoiseScroll = enableNoiseScroll;
+
+    dstLayer->alphaRemapPath = alphaRemapPath;
+    if (alphaRemapOverLife)
+        dstLayer->alphaRemapOverLife.Set(alphaRemapOverLife->Clone());
+    dstLayer->enableAlphaRemap = enableAlphaRemap;
 
     return dstLayer;
 }
@@ -436,6 +444,7 @@ void ParticleLayer::UpdateLayerTime(float32 startTime, float32 endTime)
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(noiseVScrollSpeedVariation).Get(), startTime, translateTime, endTime);
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(noiseVScrollSpeedOverLife).Get(), startTime, translateTime, endTime);
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(stripeSizeOverLifeProp).Get(), startTime, translateTime, endTime);
+    UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(alphaRemapOverLife).Get(), startTime, translateTime, endTime);
 }
 
 void ParticleLayer::SetSprite(const FilePath& path)
@@ -466,6 +475,13 @@ void ParticleLayer::SetNoise(const FilePath& noisePath_)
     noisePath = noisePath_;
     if (type != TYPE_SUPEREMITTER_PARTICLES)
         noise.reset(Sprite::Create(noisePath));
+}
+
+void ParticleLayer::SetAlphaRemap(const FilePath& spritePath_)
+{
+    alphaRemapPath = spritePath_;
+    if (type != TYPE_SUPEREMITTER_PARTICLES)
+        alphaRemapSprite.reset(Sprite::Create(alphaRemapPath));
 }
 
 void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* node, bool preserveInheritPosition)
@@ -575,6 +591,12 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
         FilePath noisePath = configPath.GetDirectory() + noiseNode->AsString();
         SetNoise(noisePath);
     }
+    const YamlNode* alphaRemapNode = node->Get("alphaRemap");
+    if (alphaRemapNode && !alphaRemapNode->AsString().empty())
+    {
+        FilePath alphaRemapPath = configPath.GetDirectory() + alphaRemapNode->AsString();
+        SetAlphaRemap(alphaRemapPath);
+    }
 
     if (pivotPointNode)
     {
@@ -641,6 +663,8 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
     {
         scaleVelocityFactor = scaleVelocityFactorNode->AsFloat();
     }
+
+    alphaRemapOverLife = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("alphaRemapOverLife"));
 
     flowSpeed = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("flowSpeed"));
     flowSpeedVariation = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("flowSpeedVariation"));
@@ -804,6 +828,12 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
         enableNoiseScroll = useNoiseScrollNode->AsBool();
     }
 
+    const YamlNode* enableAlphaRemapNode = node->Get("enableAlphaRemap");
+    if (enableAlphaRemapNode)
+    {
+        enableAlphaRemap = enableAlphaRemapNode->AsBool();
+    }
+
     const YamlNode* frameBlendNode = node->Get("enableFrameBlend");
     if (frameBlendNode)
     {
@@ -847,6 +877,8 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
 
     /*validate all time depended property lines*/
     UpdatePropertyLineOnLoad(stripeSizeOverLifeProp.Get(), startTime, endTime);
+
+    UpdatePropertyLineOnLoad(alphaRemapOverLife.Get(), startTime, endTime);
 
     UpdatePropertyLineOnLoad(flowSpeed.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(flowSpeedVariation.Get(), startTime, endTime);
@@ -1004,6 +1036,16 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "noise", relativePath);
     }
 
+    FilePath alphaRemapSavePath = alphaRemapPath;
+    if (!alphaRemapSavePath.IsEmpty())
+    {
+        alphaRemapSavePath.TruncateExtension();
+        String relativePath = alphaRemapSavePath.GetRelativePathname(configPath.GetDirectory());
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "alphaRemap", relativePath);
+    }
+
+    layerNode->Add("enableAlphaRemap", enableAlphaRemap);
+
     layerNode->Add("blending", blending);
 
     layerNode->Add("enableFlow", enableFlow);
@@ -1017,6 +1059,8 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
 
     layerNode->Add("scaleVelocityBase", scaleVelocityBase);
     layerNode->Add("scaleVelocityFactor", scaleVelocityFactor);
+
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "alphaRemapOverLife", this->alphaRemapOverLife);
 
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "flowSpeed", this->flowSpeed);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "flowSpeedVariation", this->flowSpeedVariation);
@@ -1121,6 +1165,8 @@ void ParticleLayer::GetModifableLines(List<ModifiablePropertyLineBase*>& modifia
 {
     PropertyLineHelper::AddIfModifiable(stripeSizeOverLifeProp.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(stripeColorOverLife.Get(), modifiables);
+
+    PropertyLineHelper::AddIfModifiable(alphaRemapOverLife.Get(), modifiables);
 
     PropertyLineHelper::AddIfModifiable(flowSpeed.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(flowSpeedVariation.Get(), modifiables);

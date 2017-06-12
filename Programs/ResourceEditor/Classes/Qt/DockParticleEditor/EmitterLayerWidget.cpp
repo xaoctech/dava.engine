@@ -188,6 +188,12 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     CreateNoiseLayoutWidget();
     mainBox->addWidget(noiseLayoutWidget);
 
+    enableAlphaRemapCheckBox = new QCheckBox("Enable alpha remap");
+    mainBox->addWidget(enableAlphaRemapCheckBox);
+    connect(enableAlphaRemapCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnAlphaRemapPropertiesChanged()));
+    CreateAlphaRemapLayoutWidget();
+    mainBox->addWidget(alphaRemapLayoutWidget);
+
     connect(spriteBtn, SIGNAL(clicked(bool)), this, SLOT(OnSpriteBtn()));
     connect(spriteFolderBtn, SIGNAL(clicked(bool)), this, SLOT(OnSpriteFolderBtn()));
     connect(spritePathLabel, SIGNAL(textChanged(const QString&)), this, SLOT(OnSpritePathChanged(const QString&)));
@@ -510,6 +516,8 @@ void EmitterLayerWidget::RestoreVisualState(DAVA::KeyedArchive* visualStateProps
     noiseUVScrollSpeedOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_UV_SCROLL_SPEED_OVER_LIFE"));
 
     stripeSizeOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_STRIPE_SIZE_OVER_LIFE_TIME_PROPS"));
+
+    alphaRemapOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ALPHA_REMAP"));
 }
 
 void EmitterLayerWidget::StoreVisualState(DAVA::KeyedArchive* visualStateProps)
@@ -609,6 +617,10 @@ void EmitterLayerWidget::StoreVisualState(DAVA::KeyedArchive* visualStateProps)
     props->DeleteAllKeys();
     stripeSizeOverLifeTimeLine->GetVisualState(props);
     visualStateProps->SetArchive("LAYER_STRIPE_SIZE_OVER_LIFE_TIME_PROPS", props);
+
+    props->DeleteAllKeys();
+    alphaRemapOverLifeTimeLine->GetVisualState(props);
+    visualStateProps->SetArchive("LAYER_ALPHA_REMAP", props);
 }
 
 void EmitterLayerWidget::OnSpriteBtn()
@@ -937,6 +949,30 @@ void EmitterLayerWidget::OnNoisePropertiesChanged()
     emit ValueChanged();
 }
 
+void EmitterLayerWidget::OnAlphaRemapPropertiesChanged()
+{
+    if (blockSignals)
+        return;
+    DAVA::PropLineWrapper<DAVA::float32> propAlphaRemapOverLife;
+    alphaRemapOverLifeTimeLine->GetValue(0, propAlphaRemapOverLife.GetPropsPtr());
+
+    QString path = alphaRemapSpritePathLabel->text();
+    path = EmitterLayerWidgetDetails::ConvertPSDPathToSprite(path);
+    const DAVA::FilePath alphaPath(path.toStdString());
+
+    CommandChangeAlphaRemapProperties::AlphaRemapParams params;
+    params.alphaRemapOverLife = propAlphaRemapOverLife.GetPropLine();
+    params.enableAlphaRemap = enableAlphaRemapCheckBox->isChecked();
+    params.alphaRemapPath = alphaPath;
+
+    DVASSERT(GetActiveScene() != nullptr);
+    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeAlphaRemapProperties(layer, std::move(params))));
+
+    UpdateAlphaRemapSprite();
+
+    emit ValueChanged();
+}
+
 void EmitterLayerWidget::OnLodsChanged()
 {
     if (blockSignals)
@@ -997,6 +1033,19 @@ void EmitterLayerWidget::OnSpriteUpdateTimerExpired()
 
         spriteUpdateTimer->stop();
     }
+    if (alphaRemapSpriteUpdateTexturesStack.size() > 0 && rhi::SyncObjectSignaled(alphaRemapSpriteUpdateTexturesStack.top().first))
+    {
+        DAVA::ScopedPtr<DAVA::Image> image(alphaRemapSpriteUpdateTexturesStack.top().second->CreateImageFromMemory());
+        alphaRemapSpriteLabel->setPixmap(QPixmap::fromImage(ImageTools::FromDavaImage(image)));
+
+        while (!alphaRemapSpriteUpdateTexturesStack.empty())
+        {
+            SafeRelease(alphaRemapSpriteUpdateTexturesStack.top().second);
+            alphaRemapSpriteUpdateTexturesStack.pop();
+        }
+
+        spriteUpdateTimer->stop();
+    }
 }
 
 void EmitterLayerWidget::Update(bool updateMinimized)
@@ -1049,6 +1098,9 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     noiseLayoutWidget->setVisible(enableNoiseCheckBox->isChecked());
     noiseScrollWidget->setVisible(enableNoiseCheckBox->isChecked() && enableNoiseScrollCheckBox->isChecked());
 
+    enableAlphaRemapCheckBox->setChecked(layer->enableAlphaRemap);
+    alphaRemapLayoutWidget->setVisible(enableAlphaRemapCheckBox->isChecked());
+
     isLoopedCheckBox->setChecked(layer->isLooped);
 
     for (DAVA::int32 i = 0; i < DAVA::LodComponent::MAX_LOD_LAYERS; ++i)
@@ -1061,6 +1113,7 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     UpdateLayerSprite();
     UpdateFlowmapSprite();
     UpdateNoiseSprite();
+    UpdateAlphaRemapSprite();
 
     //particle orientation
     cameraFacingCheckBox->setChecked(layer->particleOrientation & DAVA::ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING);
@@ -1124,6 +1177,9 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     noiseUVScrollSpeedOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
     noiseUVScrollSpeedOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseUScrollSpeedOverLife)).GetProps(), Qt::red, "Noise U scroll speed over life");
     noiseUVScrollSpeedOverLifeTimeLine->AddLine(1, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseVScrollSpeedOverLife)).GetProps(), Qt::green, "Noise V scroll speed over life");
+
+    alphaRemapOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
+    alphaRemapOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->alphaRemapOverLife)).GetProps(), Qt::red, "Alpha remap over life");
 
     //LAYER_LIFE, LAYER_LIFE_VARIATION,
     lifeTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
@@ -1270,6 +1326,11 @@ void EmitterLayerWidget::UpdateFlowmapSprite()
 void EmitterLayerWidget::UpdateNoiseSprite()
 {
     UpdateEditorTexture(layer->noise, layer->noisePath, noiseSpritePathLabel, noiseSpriteLabel, noiseSpriteUpdateTexturesStack);
+}
+
+void EmitterLayerWidget::UpdateAlphaRemapSprite()
+{
+    UpdateEditorTexture(layer->alphaRemapSprite, layer->alphaRemapPath, alphaRemapSpritePathLabel, alphaRemapSpriteLabel, alphaRemapSpriteUpdateTexturesStack);
 }
 
 void EmitterLayerWidget::UpdateEditorTexture(DAVA::Sprite* sprite, DAVA::FilePath& filePath, QLineEdit* pathLabel, QLabel* spriteLabel, DAVA::Stack<std::pair<rhi::HSyncObject, DAVA::Texture*>>& textureStack)
@@ -1570,6 +1631,49 @@ void EmitterLayerWidget::CreateStripeLayoutWidget()
     connect(stripeVScrollSpeedSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
 }
 
+void EmitterLayerWidget::CreateAlphaRemapLayoutWidget()
+{
+    alphaRemapLayoutWidget = new QWidget();
+    QVBoxLayout* alphaRemapMainLayout = new QVBoxLayout(alphaRemapLayoutWidget);
+
+    QHBoxLayout* alphaTextureHBox2 = new QHBoxLayout();
+    alphaRemapTextureBtn = new QPushButton("Set alpha remap texture", this);
+    alphaRemapTextureBtn->setMinimumHeight(30);
+    alphaRemapTextureFolderBtn = new QPushButton("Change alpha remap texture folder", this);
+    alphaRemapTextureFolderBtn->setMinimumHeight(30);
+    alphaTextureHBox2->addWidget(alphaRemapTextureBtn);
+    alphaTextureHBox2->addWidget(alphaRemapTextureFolderBtn);
+
+    QVBoxLayout* alphaRemapTextureVBox = new QVBoxLayout();
+    alphaRemapSpritePathLabel = new QLineEdit(this);
+    alphaRemapSpritePathLabel->setReadOnly(false);
+    alphaRemapTextureVBox->addLayout(alphaTextureHBox2);
+    alphaRemapTextureVBox->addWidget(alphaRemapSpritePathLabel);
+
+    QHBoxLayout* alphaTextureHBox = new QHBoxLayout();
+    alphaRemapSpriteLabel = new QLabel(this);
+    alphaRemapSpriteLabel->setMinimumSize(SPRITE_SIZE, SPRITE_SIZE);
+    alphaTextureHBox->addWidget(alphaRemapSpriteLabel);
+    alphaTextureHBox->addLayout(alphaRemapTextureVBox);
+
+    alphaRemapMainLayout->addLayout(alphaTextureHBox);
+
+    QVBoxLayout* alphaVBox = new QVBoxLayout(flowSettingsLayoutWidget);
+    alphaRemapOverLifeTimeLine = new TimeLineWidget(this);
+    connect(alphaRemapOverLifeTimeLine,
+        SIGNAL(ValueChanged()),
+        this,
+        SLOT(OnAlphaRemapPropertiesChanged()));
+    alphaVBox->addWidget(alphaRemapOverLifeTimeLine);
+    alphaRemapMainLayout->addLayout(alphaVBox);
+
+    connect(alphaRemapTextureBtn, SIGNAL(clicked(bool)), this, SLOT(OnAlphaRemapBtn()));
+    connect(alphaRemapTextureFolderBtn, SIGNAL(clicked(bool)), this, SLOT(OnAlphaRemapFolderBtn()));
+    connect(alphaRemapSpritePathLabel, SIGNAL(textChanged(const QString&)), this, SLOT(OnAlphaRemapTexturePathChanged(const QString&)));
+    connect(alphaRemapSpritePathLabel, SIGNAL(textEdited(const QString&)), this, SLOT(OnAlphaRemapSpritePathEdited(const QString&)));
+    alphaRemapSpritePathLabel->installEventFilter(this);
+}
+
 QLayout* EmitterLayerWidget::CreateFresnelToAlphaLayout()
 {
     QHBoxLayout* longFresLayout = new QHBoxLayout();
@@ -1735,6 +1839,12 @@ void EmitterLayerWidget::OnNoiseSpritePathEdited(const QString& text)
     OnNoisePropertiesChanged();
 }
 
+void EmitterLayerWidget::OnAlphaRemapSpritePathEdited(const QString& text)
+{
+    CheckPath(text);
+    OnAlphaRemapPropertiesChanged();
+}
+
 void EmitterLayerWidget::OnFlowSpriteBtn()
 {
     OnChangeSpriteButton(layer->flowmapPath, flowSpritePathLabel, QString("Open flow texture"), std::bind(&EmitterLayerWidget::OnFlowSpritePathEdited, this, std::placeholders::_1));
@@ -1763,6 +1873,21 @@ void EmitterLayerWidget::OnNoiseFolderBtn()
 void EmitterLayerWidget::OnNoiseTexturePathChanged(const QString& text)
 {
     UpdateTooltip(noiseSpritePathLabel);
+}
+
+void EmitterLayerWidget::OnAlphaRemapBtn()
+{
+    OnChangeSpriteButton(layer->alphaRemapPath, alphaRemapSpritePathLabel, QString("Open alpha remap texture"), std::bind(&EmitterLayerWidget::OnAlphaRemapSpritePathEdited, this, std::placeholders::_1));
+}
+
+void EmitterLayerWidget::OnAlphaRemapFolderBtn()
+{
+    OnChangeFolderButton(layer->alphaRemapPath, alphaRemapSpritePathLabel, std::bind(&EmitterLayerWidget::OnAlphaRemapSpritePathEdited, this, std::placeholders::_1));
+}
+
+void EmitterLayerWidget::OnAlphaRemapTexturePathChanged(const QString& text)
+{
+    UpdateTooltip(alphaRemapSpritePathLabel);
 }
 
 void EmitterLayerWidget::FillLayerTypes()
@@ -1806,6 +1931,9 @@ void EmitterLayerWidget::SetLayerMode(bool isSuperemitter, bool isStripe)
 
     enableNoiseCheckBox->setVisible(!isSuperemitter);
     noiseLayoutWidget->setVisible(!isSuperemitter && enableNoiseCheckBox->isChecked());
+
+    enableAlphaRemapCheckBox->setVisible(!isSuperemitter);
+    alphaRemapLayoutWidget->setVisible(!isSuperemitter && enableAlphaRemapCheckBox->isChecked());
 
     fresnelToAlphaCheckbox->setVisible(!isSuperemitter);
     bool fresToAlphaVisible = !isSuperemitter && fresnelToAlphaCheckbox->isChecked();

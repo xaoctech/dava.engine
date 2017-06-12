@@ -244,3 +244,42 @@ void CommandChangeParticlesStripeProperties::ApplyParams(StripeParams& params)
         PropertyLineHelper::SetValueLine(layer->stripeColorOverLife, params.stripeColorOverLife);
     }
 }
+
+CommandChangeAlphaRemapProperties::CommandChangeAlphaRemapProperties(DAVA::ParticleLayer* layer_, AlphaRemapParams&& params)
+    : RECommand(CMDID_PARTICLE_LAYER_CHANGED_ALPHA_REMAP, "Change Alpha Remap Properties")
+    , layer(layer_)
+    , newParams(params)
+{
+    DVASSERT(layer != nullptr);
+    if (layer != nullptr)
+    {
+        oldParams.alphaRemapOverLife = layer->alphaRemapOverLife;
+        oldParams.alphaRemapPath = layer->alphaRemapPath;
+        oldParams.enableAlphaRemap = layer->enableAlphaRemap;
+    }
+}
+
+void CommandChangeAlphaRemapProperties::Undo()
+{
+    ApplyParams(oldParams);
+}
+
+void CommandChangeAlphaRemapProperties::Redo()
+{
+    ApplyParams(newParams);
+}
+
+DAVA::ParticleLayer* CommandChangeAlphaRemapProperties::GetLayer() const
+{
+    return layer;
+}
+
+void CommandChangeAlphaRemapProperties::ApplyParams(AlphaRemapParams& params)
+{
+    if (layer != nullptr)
+    {
+        layer->alphaRemapOverLife = params.alphaRemapOverLife;
+        layer->SetAlphaRemap(params.alphaRemapPath);
+        layer->enableAlphaRemap = params.enableAlphaRemap;
+    }
+}

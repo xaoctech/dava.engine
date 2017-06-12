@@ -275,6 +275,7 @@ void SceneDumper::DumpEmitter(DAVA::ParticleEmitterInstance* instance, DAVA::Set
             ProcessSprite(layer->sprite, links, gfxFolders);
             ProcessSprite(layer->flowmap, links, gfxFolders);
             ProcessSprite(layer->noise, links, gfxFolders);
+            ProcessSprite(layer->alphaRemapSprite, links, gfxFolders);
         }
     }
 }

@@ -307,6 +307,7 @@ void SceneSaver::CopyEmitter(ParticleEmitter* emitter)
             ProcessSprite(layers[i]->sprite);
             ProcessSprite(layers[i]->flowmap);
             ProcessSprite(layers[i]->noise);
+            ProcessSprite(layers[i]->alphaRemapSprite);
         }
     }
 }
