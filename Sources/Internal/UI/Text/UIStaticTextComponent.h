@@ -1,19 +1,18 @@
 #pragma once
 
-#include "Base/BaseTypes.h"
 #include "Reflection/Reflection.h"
 #include "Render/2D/TextBlock.h"
 #include "UI/Components/UIComponent.h"
-#include "UI/UIControl.h"
+#include "UI/UIControlBackground.h"
 
 namespace DAVA
 {
 class UIControl;
 class UITextSystemLink;
 
-class UIStaticTextComponent : public UIBaseComponent<UIComponent::STATIC_TEXT_COMPONENT>
+class UIStaticTextComponent : public UIBaseComponent<UIComponent::TEXT_COMPONENT>
 {
-    DAVA_VIRTUAL_REFLECTION(UIStaticTextComponent, UIBaseComponent<UIComponent::STATIC_TEXT_COMPONENT>);
+    DAVA_VIRTUAL_REFLECTION(UIStaticTextComponent, UIBaseComponent<UIComponent::TEXT_COMPONENT>);
 
 public:
     enum eTextMultiline
@@ -24,11 +23,11 @@ public:
     };
     enum eTextFitting
     {
-        FITTING_NONE = 0x0,
-        FITTING_ENLARGE = 0x1,
-        FITTING_REDUCE = 0x2,
-        FITTING_FILL = 0x3, // ENLARGE | REDUCE
-        FITTING_POINTS = 0x4
+        FITTING_NONE = 0,
+        FITTING_ENLARGE,
+        FITTING_REDUCE,
+        FITTING_FILL, // ENLARGE | REDUCE
+        FITTING_POINTS
     };
 
 protected:

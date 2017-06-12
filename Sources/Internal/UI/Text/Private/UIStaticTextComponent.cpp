@@ -1,4 +1,4 @@
-#include "UIStaticTextComponent.h"
+#include "UI/Text/UIStaticTextComponent.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "UITextSystemLink.h"
 

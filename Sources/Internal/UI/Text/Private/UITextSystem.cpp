@@ -1,11 +1,11 @@
-#include "UITextSystem.h"
+#include "UI/Text/UITextSystem.h"
 
 #include "Concurrency/Thread.h"
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
 #include "Entity/Component.h"
+#include "UI/Text/UIStaticTextComponent.h"
 #include "UI/UIControl.h"
-#include "UIStaticTextComponent.h"
 #include "UITextSystemLink.h"
 
 namespace DAVA
@@ -105,5 +105,4 @@ void UITextSystem::RemoveLink(UIStaticTextComponent* component)
     component->SetLink(nullptr);
     delete link;
 }
-
 }

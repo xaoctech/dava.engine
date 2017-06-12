@@ -376,7 +376,7 @@ ENUM_DECLARE(UIComponent::eType)
     ENUM_ADD_DESCR(UIComponent::SCENE_COMPONENT, "SceneComponent");
     ENUM_ADD_DESCR(UIComponent::DEBUG_RENDER_COMPONENT, "DebugRender");
     ENUM_ADD_DESCR(UIComponent::CLIP_CONTENT_COMPONENT, "ClipContent");
-    ENUM_ADD_DESCR(UIComponent::STATIC_TEXT_COMPONENT, "StaticText");
+    ENUM_ADD_DESCR(UIComponent::TEXT_COMPONENT, "Text");
 };
 
 ENUM_DECLARE(UISizePolicyComponent::eSizePolicy)

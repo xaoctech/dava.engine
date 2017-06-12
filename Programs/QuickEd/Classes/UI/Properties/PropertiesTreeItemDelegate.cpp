@@ -83,7 +83,6 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
     propertyNameTypeItemDelegates[PropertyPath("*", "contour")] = new ResourceFilePropertyDelegate(gfxExtension, "/Gfx/", this);
     propertyNameTypeItemDelegates[PropertyPath("*", "effectPath")] = new ResourceFilePropertyDelegate(particleExtension, "/3d/", this);
     propertyNameTypeItemDelegates[PropertyPath("*", "font")] = new FontPropertyDelegate(this);
-    propertyNameTypeItemDelegates[PropertyPath("*", "fontName")] = new FontPropertyDelegate(this);
     propertyNameTypeItemDelegates[PropertyPath("ScrollBarDelegate", "delegate")] = new ComboPropertyDelegate(this, std::make_unique<CompletionsProviderForScrollBar>());
 
     propertyNameTypeItemDelegates[PropertyPath("*", "bg-sprite")] = new ResourceFilePropertyDelegate(gfxExtension, "/Gfx/", this);
@@ -102,6 +101,8 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
 
     propertyNameTypeItemDelegates[PropertyPath("SizePolicy", "horizontalFormula")] = new ComboPropertyDelegate(this, std::make_unique<PredefinedCompletionsProvider>(formulaCompletions));
     propertyNameTypeItemDelegates[PropertyPath("SizePolicy", "verticalFormula")] = new ComboPropertyDelegate(this, std::make_unique<PredefinedCompletionsProvider>(formulaCompletions));
+
+    propertyNameTypeItemDelegates[PropertyPath("Text", "fontName")] = new FontPropertyDelegate(this);
 }
 
 PropertiesTreeItemDelegate::~PropertiesTreeItemDelegate()

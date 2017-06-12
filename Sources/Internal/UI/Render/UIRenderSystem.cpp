@@ -3,7 +3,7 @@
 #include "Debug/ProfilerMarkerNames.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
 #include "Render/2D/TextBlock.h"
-#include "UI/Text/UITextSystemLink.h"
+#include "UI/Text/Private/UITextSystemLink.h"
 #include "UI/Text/UIStaticTextComponent.h"
 #include "UI/Render/UIClipContentComponent.h"
 #include "UI/Render/UIDebugRenderComponent.h"

@@ -1,5 +1,5 @@
 #include "UITextSystemLink.h"
-#include "UIStaticTextComponent.h"
+#include "UI/Text/UIStaticTextComponent.h"
 
 #include "UI/UIControl.h"
 #include "Utils/UTF8Utils.h"

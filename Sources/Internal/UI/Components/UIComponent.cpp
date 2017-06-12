@@ -143,7 +143,7 @@ UIComponent* UIComponent::CreateByType(uint32 componentType)
     case CLIP_CONTENT_COMPONENT:
         return new UIClipContentComponent();
 
-    case STATIC_TEXT_COMPONENT:
+    case TEXT_COMPONENT:
         return new UIStaticTextComponent();
 
     default:

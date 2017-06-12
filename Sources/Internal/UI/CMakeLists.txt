@@ -33,6 +33,7 @@ set( CPP_FILES *.cpp
     Formula/Private/*.cpp
     RichContent/*.cpp
     Text/*.cpp
+    Text/Private/*.cpp
     Render/*.cpp
     )
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
-#include "Base/RefPtr.h"
 #include "UI/UISystem.h"
 
 namespace DAVA
