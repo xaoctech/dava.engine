@@ -130,7 +130,7 @@ void REApplication::Init(const DAVA::EngineContext* engineContext)
 #ifdef __DAVAENGINE_MACOS__
     DAVA::FilePath documentsFolder = fileSystem->GetApplicationSupportPath() + "ResourceEditor/";
 #else
-    DAVA::FilePath documentsFolder = fileSystem->GetEngineDocumentsPath() + "ResourceEditor/"
+    DAVA::FilePath documentsFolder = fileSystem->GetEngineDocumentsPath() + "ResourceEditor/";
 #endif
 
     DAVA::FileSystem::eCreateDirectoryResult createResult = fileSystem->CreateDirectory(documentsFolder, true);
@@ -146,7 +146,7 @@ void REApplication::Init(const DAVA::EngineContext* engineContext)
     };
     copyDocumentsFromOldFolder(); // todo: remove function some versions after
 #endif
-    
+
     engineContext->fileSystem->SetCurrentDocumentsDirectory(documentsFolder);
 
     engineContext->logger->SetLogFilename("ResourceEditor.txt");

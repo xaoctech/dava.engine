@@ -5,6 +5,7 @@
 #include "Debug/DVAssertDefaultHandlers.h"
 #include "Engine/Engine.h"
 #include "FileSystem/KeyedArchive.h"
+#include "FileSystem/FileSystem.h"
 #include "Logger/Logger.h"
 #include "Logger/TeamCityTestsOutput.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"

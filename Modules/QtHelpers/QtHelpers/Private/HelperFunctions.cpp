@@ -74,7 +74,7 @@ QString GetApplicationDirPath()
 void CopyRecursively(const QString& fromDir, const QString& toDir)
 {
     QDir().mkpath(toDir);
- 
+
     QString toDirWithSlash = toDir;
     if (!toDirWithSlash.endsWith('/'))
     {
@@ -85,10 +85,10 @@ void CopyRecursively(const QString& fromDir, const QString& toDir)
     while (it.hasNext())
     {
         it.next();
-        
+
         QFileInfo fileInfo = it.fileInfo();
         QString dest = toDirWithSlash + fileInfo.fileName();
-        
+
         if (fileInfo.isDir())
         {
             CopyRecursively(fileInfo.absoluteFilePath(), dest);

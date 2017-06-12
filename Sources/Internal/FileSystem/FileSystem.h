@@ -121,7 +121,7 @@ public:
          \brief Function to set current documents directory to default
      */
     virtual void SetDefaultDocumentsDirectory();
-    
+
     /**
          \brief Function to retrieve DAVA engine applications documents path
          \returns engine documents path
@@ -146,7 +146,7 @@ public:
         \returns user’s home path
     */
     const FilePath GetHomePath();
-    
+
     /**
         function to retrieve ~/Library/Application Support/Dava Engine/ path for current user
     */
