@@ -78,6 +78,7 @@ const FastName NMaterialTextureName::TEXTURE_DECALMASK("decalmask");
 const FastName NMaterialTextureName::TEXTURE_DECALTEXTURE("decaltexture");
 const FastName NMaterialTextureName::TEXTURE_FLOW("flowmap");
 const FastName NMaterialTextureName::TEXTURE_NOISE("noiseTex");
+const FastName NMaterialTextureName::TEXTURE_ALPHA_REMAP("alphaRemapTex");
 
 const FastName NMaterialTextureName::TEXTURE_DYNAMIC_REFLECTION("dynamicReflection");
 const FastName NMaterialTextureName::TEXTURE_DYNAMIC_REFRACTION("dynamicRefraction");
@@ -163,6 +164,7 @@ const FastName NMaterialFlagName::FLAG_PARTICLES_FLOWMAP = FastName("PARTICLES_F
 const FastName NMaterialFlagName::FLAG_PARTICLES_FLOWMAP_ANIMATION = FastName("PARTICLES_FLOWMAP_ANIMATION");
 const FastName NMaterialFlagName::FLAG_PARTICLES_NOISE = FastName("PARTICLES_NOISE");
 const FastName NMaterialFlagName::FLAG_PARTICLES_FRES_TO_ALPHA = FastName("PARTICLES_FRES_TO_ALPHA");
+const FastName NMaterialFlagName::FLAG_PARTICLES_ALPHA_REMAP = FastName("PARTICLES_APHA_REMAP");
 
 const FastName NMaterialFlagName::FLAG_LIGHTMAPONLY = FastName("MATERIAL_VIEW_LIGHTMAP_ONLY");
 const FastName NMaterialFlagName::FLAG_TEXTUREONLY = FastName("MATERIAL_VIEW_TEXTURE_ONLY");

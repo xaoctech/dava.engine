@@ -76,8 +76,10 @@ fragment_in
         float varTexcoord6 : TEXCOORD6; // Fres a.
     #endif 
 
-    #if FRAME_BLEND
-        [lowp] half varTime : TEXCOORD3;
+    #if FRAME_BLEND && PARTICLES_APHA_REMAP
+        half2 varTexcoord3 : TEXCOORD3;
+    #elif FRAME_BLEND || PARTICLES_APHA_REMAP
+        half varTexcoord3 : TEXCOORD3;
     #endif
 
 };
@@ -116,6 +118,10 @@ fragment_out
 
 #if PARTICLES_NOISE
     uniform sampler2D noiseTex;
+#endif
+
+#if PARTICLES_APHA_REMAP
+    uniform sampler2D alphaRemapTex;
 #endif
 
 #if MATERIAL_LIGHTMAP  && VIEW_DIFFUSE
@@ -235,6 +241,19 @@ fragment_out fp_main( fragment_in input )
             #if ALPHA_MASK 
                 textureColor0.a *= FP_A8(tex2D( alphamask, input.varTexCoord1 ));
             #endif
+
+            #if PARTICLES_APHA_REMAP
+                half v;
+                #if FRAME_BLEND
+                    v = input.varTexcoord3.y;
+                #else
+                    v = input.varTexcoord3.x;
+                #endif
+                half u = half(textureColor0.a);
+                float4 remap = tex2D(alphaRemapTex, float2(u, v));
+                textureColor0.a = remap.r;
+            #endif
+
           #else
             #if FLOWMAP || PARTICLES_FLOWMAP
                 #if FLOWMAP
@@ -261,7 +280,7 @@ fragment_out fp_main( fragment_in input )
 
         #if FRAME_BLEND
             half4 blendFrameColor = half4(tex2D( albedo, input.varTexCoord1 ));
-            half varTime = input.varTime;
+            half varTime = input.varTexcoord3.x;
             textureColor0 = lerp( textureColor0, blendFrameColor, varTime );
         #endif
 

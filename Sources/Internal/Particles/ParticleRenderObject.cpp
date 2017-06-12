@@ -16,6 +16,7 @@ ParticleRenderObject::ParticleRenderObject(ParticleEffectData* effect)
     layoutsData[1 << FLOW] = { rhi::VS_TEXCOORD, 2, rhi::VDT_FLOAT, 4 }; // uv, speed, offset
     layoutsData[1 << NOISE] = { rhi::VS_TEXCOORD, 3, rhi::VDT_FLOAT, 3 }; // uv, scale
     layoutsData[1 << FRESNEL_TO_ALPHA] = { rhi::VS_TEXCOORD, 5, rhi::VDT_FLOAT, 1 }; // fres.
+    layoutsData[1 << ALPHA_REMAP] = { rhi::VS_TEXCOORD, 6, rhi::VDT_FLOAT, 1 }; // fres.
 
     uint16 numBits = static_cast<uint16>(layoutsData.size());
 
@@ -151,6 +152,8 @@ uint32 ParticleRenderObject::GetVertexStride(ParticleLayer* layer)
         vertexStride += (2 + 1) * sizeof(float); // texcoord.xy + noise scale
     if (layer->useFresnelToAlpha)
         vertexStride += (1) * sizeof(float); // fres
+    if (layer->enableAlphaRemap)
+        vertexStride += (1) * sizeof(float);
     return vertexStride;
 }
 
@@ -184,6 +187,7 @@ uint32 ParticleRenderObject::SelectLayout(const ParticleLayer& layer)
     key |= static_cast<uint32>(layer.enableFlow) << static_cast<uint32>(eParticlePropsOffsets::FLOW);
     key |= static_cast<uint32>(layer.enableNoise) << static_cast<uint32>(eParticlePropsOffsets::NOISE);
     key |= static_cast<uint32>(layer.useFresnelToAlpha) << static_cast<uint32>(eParticlePropsOffsets::FRESNEL_TO_ALPHA);
+    key |= static_cast<uint32>(layer.enableAlphaRemap) << static_cast<uint32>(eParticlePropsOffsets::ALPHA_REMAP);
     return layoutMap[key];
 }
 
@@ -220,6 +224,10 @@ void ParticleRenderObject::UpdateStripeVertex(float32*& dataPtr, Vector3& positi
     if (layer->useFresnelToAlpha)
     {
         *dataPtr++ = fresToAlpha;
+    }
+    if (layer->enableAlphaRemap)
+    {
+        *dataPtr++ = particle->alphaRemap;
     }
 }
 
@@ -428,6 +436,14 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
                     for (int32 i = 0; i < 4; ++i)
                     {
                         verts[i][ptrOffset + 0] = fresnelToAlpha;
+                    }
+                    ptrOffset++;
+                }
+                if (begin->layer->enableAlphaRemap)
+                {
+                    for (int32 i = 0; i < 4; ++i)
+                    {
+                        verts[i][ptrOffset + 0] = current->alphaRemap;
                     }
                     ptrOffset++;
                 }

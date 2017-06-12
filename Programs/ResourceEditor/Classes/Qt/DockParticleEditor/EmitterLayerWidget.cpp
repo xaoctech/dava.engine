@@ -1550,9 +1550,9 @@ void EmitterLayerWidget::CreateStripeLayoutWidget()
 
     stripeSizeOverLifeTimeLine = new TimeLineWidget(this);
     connect(stripeSizeOverLifeTimeLine,
-        SIGNAL(ValueChanged()),
-        this,
-        SLOT(OnStripePropertiesChanged()));
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnStripePropertiesChanged()));
 
     stripeInheritPositionForBaseCheckBox = new QCheckBox("Inherit position. Affect only base verts.");
     vertStripeLayout->addWidget(stripeInheritPositionForBaseCheckBox);
@@ -1661,9 +1661,9 @@ void EmitterLayerWidget::CreateAlphaRemapLayoutWidget()
     QVBoxLayout* alphaVBox = new QVBoxLayout(flowSettingsLayoutWidget);
     alphaRemapOverLifeTimeLine = new TimeLineWidget(this);
     connect(alphaRemapOverLifeTimeLine,
-        SIGNAL(ValueChanged()),
-        this,
-        SLOT(OnAlphaRemapPropertiesChanged()));
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnAlphaRemapPropertiesChanged()));
     alphaVBox->addWidget(alphaRemapOverLifeTimeLine);
     alphaRemapMainLayout->addLayout(alphaVBox);
 

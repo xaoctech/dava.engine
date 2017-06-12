@@ -62,6 +62,10 @@ vertex_in
         float texcoord5 : TEXCOORD5;  // fresnel.
     #endif
 
+    #if PARTICLES_APHA_REMAP
+        float texcoord6 : TEXCOORD6;
+    #endif
+
     #if WIND_ANIMATION
     float flexibility : TEXCOORD5;
     #endif
@@ -136,8 +140,10 @@ vertex_out
     #endif 
 
 
-    #if FRAME_BLEND
-        [lowp] half varTime : TEXCOORD3;
+    #if FRAME_BLEND && PARTICLES_APHA_REMAP
+        half2 varTexcoord3 : TEXCOORD3;
+    #elif FRAME_BLEND || PARTICLES_APHA_REMAP
+        half varTexcoord3 : TEXCOORD3;
     #endif
 
     #if FLOWMAP || PARTICLES_FLOWMAP
@@ -713,8 +719,14 @@ vertex_out vp_main( vertex_in input )
 
 
 #if FRAME_BLEND
-    output.varTime = input.texcoord1.z;
+    output.varTexcoord3.x = input.texcoord1.z;
+    #if PARTICLES_APHA_REMAP
+        output.varTexcoord3.y = input.texcoord6.x;
+    #endif
+#elif PARTICLES_APHA_REMAP
+    output.varTexcoord3.x = input.texcoord6.x;
 #endif
+
 
 #if FORCE_2D_MODE
     output.position.z=0.0;

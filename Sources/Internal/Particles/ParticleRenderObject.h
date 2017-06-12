@@ -56,7 +56,8 @@ private:
         FRAME_BLEND = 0,
         FLOW,
         NOISE,
-        FRESNEL_TO_ALPHA
+        FRESNEL_TO_ALPHA,
+        ALPHA_REMAP
     };
 
     struct LayoutElement

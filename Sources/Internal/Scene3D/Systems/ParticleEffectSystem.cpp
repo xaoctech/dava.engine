@@ -69,6 +69,12 @@ NMaterial* ParticleEffectSystem::GetMaterial(MaterialData&& materialData)
         material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_FLOWMAP_ANIMATION, 1);
     }
 
+    if (materialData.enableAlphaRemap && materialData.alphaRemapTexture)
+    {
+        material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_ALPHA_REMAP, 1);
+        material->AddTexture(NMaterialTextureName::TEXTURE_ALPHA_REMAP, materialData.alphaRemapTexture);
+    }
+
     material->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, materialData.texture);
     material->AddFlag(NMaterialFlagName::FLAG_BLENDING, materialData.blending);
 
@@ -113,8 +119,9 @@ void ParticleEffectSystem::SetGlobalMaterial(NMaterial* material)
     const static uint32 NOISE_MASK = 1 << 3;
     const static uint32 FLOWMAP_MASK = 1 << 4;
     const static uint32 FLOWMAP_ANIMATION_MASK = 1 << 5;
-    const static uint32 BLEND_SHIFT = 6;
-    for (uint32 i = 0; i < 192; i++)
+    const static uint32 ENABLE_ALPHA_REMAP_MASK = 1 << 6;
+    const static uint32 BLEND_SHIFT = 7;
+    for (uint32 i = 0; i < 384; i++)
     {
         bool enableFrameBlend = (i & FRAME_BLEND_MASK) == FRAME_BLEND_MASK;
         bool enableFog = (i & FOG_MASK) == FOG_MASK;
@@ -122,6 +129,7 @@ void ParticleEffectSystem::SetGlobalMaterial(NMaterial* material)
         bool enableNoise = (i & NOISE_MASK) == NOISE_MASK;
         bool enableFlow = (i & FLOWMAP_MASK) == FLOWMAP_MASK;
         bool enableFlowAnimation = (i & FLOWMAP_ANIMATION_MASK) == FLOWMAP_ANIMATION_MASK;
+        bool enableAlphaRemap = (i & ENABLE_ALPHA_REMAP_MASK) == ENABLE_ALPHA_REMAP_MASK;
         uint32 blending = (i >> BLEND_SHIFT) + 1;
 
         ScopedPtr<NMaterial> material(new NMaterial());
@@ -139,6 +147,8 @@ void ParticleEffectSystem::SetGlobalMaterial(NMaterial* material)
             material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_FLOWMAP, 1);
         if (enableFlowAnimation)
             material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_FLOWMAP_ANIMATION, 1);
+        if (enableAlphaRemap)
+            material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_ALPHA_REMAP, 1);
 
         material->AddFlag(NMaterialFlagName::FLAG_BLENDING, blending);
         material->PreCacheFX();
@@ -155,6 +165,7 @@ void ParticleEffectSystem::PrebuildMaterials(ParticleEffectComponent* component)
             {
                 DAVA::Texture* flowmap = layer->flowmap.get() != nullptr ? layer->flowmap->GetTexture(0) : nullptr;
                 DAVA::Texture* noise = layer->noise.get() != nullptr ? layer->noise->GetTexture(0) : nullptr;
+                DAVA::Texture* alphaRemap = layer->alphaRemapSprite.get() != nullptr ? layer->alphaRemapSprite->GetTexture(0) : nullptr;
                 ParticleEffectSystem::MaterialData matData = {};
                 matData.texture = layer->sprite->GetTexture(0);
                 matData.enableFog = layer->enableFog;
@@ -166,6 +177,8 @@ void ParticleEffectSystem::PrebuildMaterials(ParticleEffectComponent* component)
                 matData.noise = noise;
                 matData.useFresnelToAlpha = layer->useFresnelToAlpha;
                 matData.blending = layer->blending;
+                matData.enableAlphaRemap = layer->enableAlphaRemap;
+                matData.alphaRemapTexture = alphaRemap;
 
                 GetMaterial(std::move(matData));
             }
@@ -194,6 +207,7 @@ void ParticleEffectSystem::RunEmitter(ParticleEffectComponent* effect, ParticleE
         {
             DAVA::Texture* flowmap = layer->flowmap.get() != nullptr ? layer->flowmap->GetTexture(0) : nullptr;
             DAVA::Texture* noise = layer->noise.get() != nullptr ? layer->noise->GetTexture(0) : nullptr;
+            DAVA::Texture* alphaRemap = layer->alphaRemapSprite.get() != nullptr ? layer->alphaRemapSprite->GetTexture(0) : nullptr;
             ParticleEffectSystem::MaterialData matData = {};
             matData.texture = layer->sprite->GetTexture(0);
             matData.enableFog = layer->enableFog;
@@ -205,6 +219,8 @@ void ParticleEffectSystem::RunEmitter(ParticleEffectComponent* effect, ParticleE
             matData.noise = noise;
             matData.useFresnelToAlpha = layer->useFresnelToAlpha;
             matData.blending = layer->blending;
+            matData.enableAlphaRemap = layer->enableAlphaRemap;
+            matData.alphaRemapTexture = alphaRemap;
 
             group.material = GetMaterial(std::move(matData));
         }
@@ -551,6 +567,9 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
                 }
                 current->currNoiseVOffset += current->baseNoiseVScrollSpeed * overLifeScale * deltaTime;
             }
+
+            if (group.layer->enableAlphaRemap && group.layer->alphaRemapSprite && group.layer->alphaRemapOverLife != nullptr)
+                current->alphaRemap = group.layer->alphaRemapOverLife->GetValue(overLifeTime);
 
             if (group.layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE)
                 UpdateStripe(current, effect->effectData, group, deltaTime, bbox, currForceValues, forcesCount);

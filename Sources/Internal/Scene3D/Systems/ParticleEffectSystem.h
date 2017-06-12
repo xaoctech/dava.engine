@@ -25,6 +25,8 @@ public:
         bool isNoiseAffectFlow = false;
         Texture* noise = nullptr;
         bool useFresnelToAlpha = false;
+        Texture* alphaRemapTexture = nullptr;
+        bool enableAlphaRemap = false;
 
         eBlending blending = BLENDING_ALPHABLEND;
 
@@ -40,7 +42,9 @@ public:
             && isNoiseAffectFlow == rhs.isNoiseAffectFlow
             && noise == rhs.noise
             && useFresnelToAlpha == rhs.useFresnelToAlpha
-            && blending == rhs.blending;
+            && blending == rhs.blending
+            && enableAlphaRemap == rhs.enableAlphaRemap
+            && alphaRemapTexture == rhs.alphaRemapTexture;
         }
     };
 
