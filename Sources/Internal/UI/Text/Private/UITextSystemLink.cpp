@@ -1,5 +1,5 @@
 #include "UITextSystemLink.h"
-#include "UI/Text/UIStaticTextComponent.h"
+#include "UI/Text/UITextComponent.h"
 
 #include "UI/UIControl.h"
 #include "Utils/UTF8Utils.h"
@@ -7,7 +7,7 @@
 
 namespace DAVA
 {
-UITextSystemLink::UITextSystemLink(UIControl* control_, UIStaticTextComponent* component_)
+UITextSystemLink::UITextSystemLink(UIControl* control_, UITextComponent* component_)
 {
     control = control_;
     component = component_;
@@ -55,19 +55,19 @@ void UITextSystemLink::ApplyData()
         switch (component->GetFitting())
         {
         default:
-        case UIStaticTextComponent::eTextFitting::FITTING_NONE:
+        case UITextComponent::eTextFitting::FITTING_NONE:
             textBlock->SetFittingOption(0);
             break;
-        case UIStaticTextComponent::eTextFitting::FITTING_ENLARGE:
+        case UITextComponent::eTextFitting::FITTING_ENLARGE:
             textBlock->SetFittingOption(TextBlock::eFitType::FITTING_ENLARGE);
             break;
-        case UIStaticTextComponent::eTextFitting::FITTING_REDUCE:
+        case UITextComponent::eTextFitting::FITTING_REDUCE:
             textBlock->SetFittingOption(TextBlock::eFitType::FITTING_REDUCE);
             break;
-        case UIStaticTextComponent::eTextFitting::FITTING_FILL:
+        case UITextComponent::eTextFitting::FITTING_FILL:
             textBlock->SetFittingOption(TextBlock::eFitType::FITTING_REDUCE | TextBlock::eFitType::FITTING_ENLARGE);
             break;
-        case UIStaticTextComponent::eTextFitting::FITTING_POINTS:
+        case UITextComponent::eTextFitting::FITTING_POINTS:
             textBlock->SetFittingOption(TextBlock::eFitType::FITTING_POINTS);
             break;
         }
@@ -87,13 +87,13 @@ void UITextSystemLink::ApplyData()
         switch (component->GetMultiline())
         {
         default:
-        case UIStaticTextComponent::eTextMultiline::MULTILINE_DISABLED:
+        case UITextComponent::eTextMultiline::MULTILINE_DISABLED:
             textBlock->SetMultiline(false, false);
             break;
-        case UIStaticTextComponent::eTextMultiline::MULTILINE_ENABLED:
+        case UITextComponent::eTextMultiline::MULTILINE_ENABLED:
             textBlock->SetMultiline(true, false);
             break;
-        case UIStaticTextComponent::eTextMultiline::MULTILINE_ENABLED_BY_SYMBOL:
+        case UITextComponent::eTextMultiline::MULTILINE_ENABLED_BY_SYMBOL:
             textBlock->SetMultiline(true, true);
             break;
         }

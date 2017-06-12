@@ -4,7 +4,7 @@
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
 #include "Entity/Component.h"
-#include "UI/Text/UIStaticTextComponent.h"
+#include "UI/Text/UITextComponent.h"
 #include "UI/UIControl.h"
 #include "UITextSystemLink.h"
 
@@ -36,7 +36,7 @@ void UITextSystem::Process(float32 elapsedTime)
 void UITextSystem::RegisterControl(UIControl* control)
 {
     UISystem::RegisterControl(control);
-    UIStaticTextComponent* component = control->GetComponent<UIStaticTextComponent>();
+    UITextComponent* component = control->GetComponent<UITextComponent>();
     if (component)
     {
         AddLink(component);
@@ -45,7 +45,7 @@ void UITextSystem::RegisterControl(UIControl* control)
 
 void UITextSystem::UnregisterControl(UIControl* control)
 {
-    UIStaticTextComponent* component = control->GetComponent<UIStaticTextComponent>();
+    UITextComponent* component = control->GetComponent<UITextComponent>();
     if (component)
     {
         RemoveLink(component);
@@ -58,23 +58,23 @@ void UITextSystem::RegisterComponent(UIControl* control, UIComponent* component)
 {
     UISystem::RegisterComponent(control, component);
 
-    if (component->GetType() == UIStaticTextComponent::C_TYPE)
+    if (component->GetType() == UITextComponent::C_TYPE)
     {
-        AddLink(static_cast<UIStaticTextComponent*>(component));
+        AddLink(static_cast<UITextComponent*>(component));
     }
 }
 
 void UITextSystem::UnregisterComponent(UIControl* control, UIComponent* component)
 {
-    if (component->GetType() == UIStaticTextComponent::C_TYPE)
+    if (component->GetType() == UITextComponent::C_TYPE)
     {
-        RemoveLink(static_cast<UIStaticTextComponent*>(component));
+        RemoveLink(static_cast<UITextComponent*>(component));
     }
 
     UISystem::UnregisterComponent(control, component);
 }
 
-void UITextSystem::AddLink(UIStaticTextComponent* component)
+void UITextSystem::AddLink(UITextComponent* component)
 {
     DVASSERT(component);
     UITextSystemLink* link = new UITextSystemLink(component->GetControl(), component);
@@ -82,7 +82,7 @@ void UITextSystem::AddLink(UIStaticTextComponent* component)
     links.emplace_back(link);
 }
 
-void UITextSystem::RemoveLink(UIStaticTextComponent* component)
+void UITextSystem::RemoveLink(UITextComponent* component)
 {
     DVASSERT(component);
     UITextSystemLink* link = component->GetLink();

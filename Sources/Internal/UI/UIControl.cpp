@@ -21,7 +21,7 @@
 #include "UI/Render/UIClipContentComponent.h"
 #include "UI/Render/UIRenderSystem.h"
 #include "UI/Sound/UISoundSystem.h"
-#include "UI/Text/UIStaticTextComponent.h"
+#include "UI/Text/UITextComponent.h"
 #include "UI/Styles/UIStyleSheetSystem.h"
 #include "UI/UIAnalitycs.h"
 #include "UI/UIControlHelpers.h"
@@ -531,7 +531,7 @@ void UIControl::SetScaledRect(const Rect& rect, bool rectInAbsoluteCoordinates /
 
 Vector2 UIControl::GetContentPreferredSize(const Vector2& constraints) const
 {
-    UIStaticTextComponent* txt = GetComponent<UIStaticTextComponent>();
+    UITextComponent* txt = GetComponent<UITextComponent>();
     if (txt)
     {
         return txt->GetContentPreferredSize(constraints);
@@ -556,7 +556,7 @@ Vector2 UIControl::GetContentPreferredSize(const Vector2& constraints) const
 
 bool UIControl::IsHeightDependsOnWidth() const
 {
-    UIStaticTextComponent* txt = GetComponent<UIStaticTextComponent>();
+    UITextComponent* txt = GetComponent<UITextComponent>();
     if (txt)
     {
         return txt->IsHeightDependsOnWidth();

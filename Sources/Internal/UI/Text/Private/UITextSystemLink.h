@@ -3,7 +3,7 @@
 namespace DAVA
 {
 class UIControl;
-class UIStaticTextComponent;
+class UITextComponent;
 class TextBlock;
 class UIControlBackground;
 
@@ -17,13 +17,13 @@ public:
 private:
     UITextSystemLink& operator=(const UITextSystemLink&) = delete;
 
-    UITextSystemLink(UIControl* control_, UIStaticTextComponent* component_);
+    UITextSystemLink(UIControl* control_, UITextComponent* component_);
     ~UITextSystemLink();
 
     void ApplyData();
 
     UIControl* control;
-    UIStaticTextComponent* component;
+    UITextComponent* component;
 
     TextBlock* textBlock;
     UIControlBackground* textBg;

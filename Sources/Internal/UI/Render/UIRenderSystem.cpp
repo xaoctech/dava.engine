@@ -4,7 +4,7 @@
 #include "Render/2D/Systems/RenderSystem2D.h"
 #include "Render/2D/TextBlock.h"
 #include "UI/Text/Private/UITextSystemLink.h"
-#include "UI/Text/UIStaticTextComponent.h"
+#include "UI/Text/UITextComponent.h"
 #include "UI/Render/UIClipContentComponent.h"
 #include "UI/Render/UIDebugRenderComponent.h"
 #include "UI/Render/UISceneComponent.h"
@@ -148,7 +148,7 @@ void UIRenderSystem::RenderControlHierarhy(UIControl* control, const UIGeometric
         renderSystem2D->IntersectClipRect(unrotatedRect); //anyway it doesn't work with rotation
     }
 
-    const UIStaticTextComponent* txt = control->GetComponent<UIStaticTextComponent>();
+    const UITextComponent* txt = control->GetComponent<UITextComponent>();
     if (txt)
     {
         RenderText(control, txt, drawData, parentColor);
@@ -236,7 +236,7 @@ void UIRenderSystem::RenderPivotPoint(const UIDebugRenderComponent* component, c
     renderSystem2D->DrawLine(lineStartPoint, lineEndPoint, drawColor);
 }
 
-void UIRenderSystem::RenderText(const UIControl* control, const UIStaticTextComponent* component, const UIGeometricData& geometricData, const Color& parentColor)
+void UIRenderSystem::RenderText(const UIControl* control, const UITextComponent* component, const UIGeometricData& geometricData, const Color& parentColor)
 {
     UITextSystemLink* link = component->GetLink();
     DVASSERT(link, "Empty text comonent link!");

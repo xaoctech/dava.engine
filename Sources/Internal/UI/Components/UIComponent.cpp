@@ -25,7 +25,7 @@
 #include "UI/Scroll/UIScrollComponent.h"
 #include "UI/Sound/UISoundComponent.h"
 #include "UI/Sound/UISoundValueFilterComponent.h"
-#include "UI/Text/UIStaticTextComponent.h"
+#include "UI/Text/UITextComponent.h"
 #include "UI/Update/UICustomUpdateDeltaComponent.h"
 #include "UI/Update/UIUpdateComponent.h"
 #include "Utils/StringFormat.h"
@@ -144,7 +144,7 @@ UIComponent* UIComponent::CreateByType(uint32 componentType)
         return new UIClipContentComponent();
 
     case TEXT_COMPONENT:
-        return new UIStaticTextComponent();
+        return new UITextComponent();
 
     default:
         DVASSERT(false, Format("Can't create component with type %d", componentType).c_str());
