@@ -296,7 +296,10 @@ int PreProc::GetNameAndValue(char* txt, char** name, char** value, char** end) c
     if (*t != '\0')
     {
         if (*t != '\n')
+        {
             *t = '\0';
+            ++t;
+        }
 
         while (*t != '\n')
         {
