@@ -277,7 +277,6 @@ fragment_out fp_main( fragment_in input )
             #endif
         #endif
 
-
         #if FRAME_BLEND
             half4 blendFrameColor = half4(tex2D( albedo, input.varTexCoord1 ));
             half varTime = input.varTexcoord3.x;

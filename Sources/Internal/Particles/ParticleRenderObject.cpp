@@ -505,7 +505,6 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
             if (group.layer->alphaOverLife)
                 currColor.a = group.layer->alphaOverLife->GetValue(currentParticle->life / currentParticle->lifeTime);
 
-
             StripeNode& base = data.baseNode;
             List<StripeNode>& nodes = data.strpeNodes;
             uint32 iCount = 0;

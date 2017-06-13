@@ -1561,15 +1561,15 @@ void EmitterLayerWidget::CreateStripeLayoutWidget()
 
     stripeSizeOverLifeTimeLine = new TimeLineWidget(this);
     connect(stripeSizeOverLifeTimeLine,
-        SIGNAL(ValueChanged()),
-        this,
-        SLOT(OnStripePropertiesChanged()));
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnStripePropertiesChanged()));
 
     stripeTextureTileTimeLine = new TimeLineWidget(this);
     connect(stripeTextureTileTimeLine,
-        SIGNAL(ValueChanged()),
-        this,
-        SLOT(OnStripePropertiesChanged()));
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnStripePropertiesChanged()));
 
     stripeInheritPositionForBaseCheckBox = new QCheckBox("Inherit position. Affect only base verts.");
     vertStripeLayout->addWidget(stripeInheritPositionForBaseCheckBox);
