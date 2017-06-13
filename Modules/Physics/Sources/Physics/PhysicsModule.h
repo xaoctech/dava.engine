@@ -27,6 +27,7 @@ public:
     bool IsInitialized() const;
 
     physx::PxPhysics* GetPhysics() const;
+    physx::PxFoundation* GetFoundation() const;
     physx::PxScene* CreateScene(const PhysicsSceneConfig& config) const;
 
 private:

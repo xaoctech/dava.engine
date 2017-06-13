@@ -10,6 +10,9 @@
 #include "Scene3D/SceneFileV2.h"
 #include "Scene3D/SceneFile/VersionInfo.h"
 #include "Base/Observer.h"
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+#include <Physics/Private/PhysicsSystem.h>
+#endif
 
 namespace DAVA
 {
@@ -106,6 +109,9 @@ public:
         SCENE_SYSTEM_SKELETON_UPDATE_FLAG = 1 << 17,
         SCENE_SYSTEM_ANIMATION_FLAG = 1 << 18,
 
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+        SCENE_SYSTEM_PHYSICS_FLAG = 1 << 22, // Generalize system flag
+#endif
         SCENE_SYSTEM_ALL_MASK = 0xFFFFFFFF
     };
 
@@ -167,6 +173,9 @@ public:
     SkeletonSystem* skeletonSystem;
     LandscapeSystem* landscapeSystem;
     ParticleEffectDebugDrawSystem* particleEffectDebugDrawSystem;
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+    PhysicsSystem* physicsSystem = nullptr;
+#endif
 
     TransformSingleComponent* transformSingleComponent = nullptr;
 

@@ -251,6 +251,14 @@ void Scene::CreateSystems()
         AddSystem(animationSystem, MAKE_COMPONENT_MASK(Component::ANIMATION_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
     }
 
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+    if (SCENE_SYSTEM_PHYSICS_FLAG & systemsMask)
+    {
+        physicsSystem = new PhysicsSystem(this);
+        AddSystem(physicsSystem, 0, SCENE_SYSTEM_REQUIRE_PROCESS);
+    }
+#endif
+
     if (SCENE_SYSTEM_TRANSFORM_FLAG & systemsMask)
     {
         transformSystem = new TransformSystem(this);

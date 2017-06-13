@@ -127,6 +127,11 @@ physx::PxPhysics* Physics::GetPhysics() const
     return physics;
 }
 
+physx::PxFoundation* Physics::GetFoundation() const
+{
+    return foundation;
+}
+
 physx::PxScene* Physics::CreateScene(const PhysicsSceneConfig& config) const
 {
     using namespace physx;
