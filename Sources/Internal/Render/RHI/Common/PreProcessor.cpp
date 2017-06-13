@@ -687,8 +687,8 @@ bool PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
                 }
                 else if (strncmp(s + 1, "endif", 5) == 0)
                 {
-                    pending_elif.pop_back();
                     DVASSERT(pending_elif.size());
+                    pending_elif.pop_back();
 
                     while (*s && *s != '\n')
                         ++s;
