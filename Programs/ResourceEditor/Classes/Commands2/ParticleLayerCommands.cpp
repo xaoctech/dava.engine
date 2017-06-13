@@ -236,10 +236,10 @@ void CommandChangeParticlesStripeProperties::ApplyParams(StripeParams& params)
         layer->stripeLifetime = params.stripeLifetime;
         layer->stripeRate = params.stripeRate;
         layer->stripeStartSize = params.stripeStartSize;
-        layer->stripeTextureTile = params.stripeTextureTile;
         layer->stripeUScrollSpeed = params.stripeUScrollSpeed;
         layer->stripeVScrollSpeed = params.stripeVScrollSpeed;
         layer->stripeInheritPositionForBase = params.stripeInheritPositionForBase;
+        PropertyLineHelper::SetValueLine(layer->stripeTextureTile, params.stripeTextureTile);
         PropertyLineHelper::SetValueLine(layer->stripeSizeOverLifeProp, params.stripeSizeOverLifeProp);
         PropertyLineHelper::SetValueLine(layer->stripeColorOverLife, params.stripeColorOverLife);
     }

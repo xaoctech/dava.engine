@@ -570,7 +570,10 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                     col = rhi::NativeColorRGBA(Saturate(currColor.r * colOverLife.r), Saturate(currColor.g * colOverLife.g), Saturate(currColor.b * colOverLife.b), Saturate(currColor.a * colOverLife.a));
 
                     distance += (prevNode->position - node.position).Length();
-                    float32 v = distance * group.layer->stripeTextureTile + currentParticle->life * group.layer->stripeVScrollSpeed;
+                    float32 tile = 1.0f;
+                    if (group.layer->stripeTextureTile)
+                        tile = group.layer->stripeTextureTile->GetValue(overLifeTime);
+                    float32 v = distance * tile + currentParticle->life * group.layer->stripeVScrollSpeed;
                     uv1.y = v;
                     uv2.y = v;
 

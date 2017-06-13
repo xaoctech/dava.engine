@@ -37,6 +37,7 @@ static const DAVA::float32 ANGLE_MAX_LIMIT_DEGREES = 360.0f;
 
 static const DAVA::int32 NOISE_PRECISION_DIGITS = 4;
 static const DAVA::int32 FLOW_PRECISION_DIGITS = 4;
+static const DAVA::int32 STRIPE_TILE_PRECISION_DIGITS = 4;
 
 const EmitterLayerWidget::LayerTypeMap EmitterLayerWidget::layerTypeMap[] =
 {
@@ -516,6 +517,7 @@ void EmitterLayerWidget::RestoreVisualState(DAVA::KeyedArchive* visualStateProps
     noiseUVScrollSpeedOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_UV_SCROLL_SPEED_OVER_LIFE"));
 
     stripeSizeOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_STRIPE_SIZE_OVER_LIFE_TIME_PROPS"));
+    stripeTextureTileTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_STRIPE_TILE_PROPS"));
 
     alphaRemapOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ALPHA_REMAP"));
 }
@@ -617,6 +619,10 @@ void EmitterLayerWidget::StoreVisualState(DAVA::KeyedArchive* visualStateProps)
     props->DeleteAllKeys();
     stripeSizeOverLifeTimeLine->GetVisualState(props);
     visualStateProps->SetArchive("LAYER_STRIPE_SIZE_OVER_LIFE_TIME_PROPS", props);
+
+    props->DeleteAllKeys();
+    stripeTextureTileTimeLine->GetVisualState(props);
+    visualStateProps->SetArchive("LAYER_STRIPE_TILE_PROPS", props);
 
     props->DeleteAllKeys();
     alphaRemapOverLifeTimeLine->GetVisualState(props);
@@ -866,6 +872,9 @@ void EmitterLayerWidget::OnStripePropertiesChanged()
     DAVA::PropLineWrapper<DAVA::float32> propStripeSizeOverLife;
     stripeSizeOverLifeTimeLine->GetValue(0.0f, propStripeSizeOverLife.GetPropsPtr());
 
+    DAVA::PropLineWrapper<DAVA::float32> propStripeTileOverLife;
+    stripeTextureTileTimeLine->GetValue(0.0f, propStripeTileOverLife.GetPropsPtr());
+
     DAVA::PropLineWrapper<DAVA::Color> propStripeColorOverLife;
     stripeColorOverLifeGradient->GetValues(propStripeColorOverLife.GetPropsPtr());
 
@@ -873,10 +882,10 @@ void EmitterLayerWidget::OnStripePropertiesChanged()
     params.stripeLifetime = static_cast<DAVA::float32>(stripeLifetimeSpin->value());
     params.stripeRate = static_cast<DAVA::float32>(stripeRateSpin->value());
     params.stripeStartSize = static_cast<DAVA::float32>(stripeStartSizeSpin->value());
-    params.stripeTextureTile = static_cast<DAVA::float32>(stripeTextureTileSpin->value());
     params.stripeUScrollSpeed = static_cast<DAVA::float32>(stripeUScrollSpeedSpin->value());
     params.stripeVScrollSpeed = static_cast<DAVA::float32>(stripeVScrollSpeedSpin->value());
     params.stripeInheritPositionForBase = stripeInheritPositionForBaseCheckBox->isChecked();
+    params.stripeTextureTile = propStripeTileOverLife.GetPropLine();
     params.stripeSizeOverLifeProp = propStripeSizeOverLife.GetPropLine();
     params.stripeColorOverLife = propStripeColorOverLife.GetPropLine();
     GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeParticlesStripeProperties(layer, std::move(params))));
@@ -1076,7 +1085,6 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     stripeLifetimeSpin->setValue(layer->stripeLifetime);
     stripeRateSpin->setValue(layer->stripeRate);
     stripeStartSizeSpin->setValue(layer->stripeStartSize);
-    stripeTextureTileSpin->setValue(layer->stripeTextureTile);
     stripeUScrollSpeedSpin->setValue(layer->stripeUScrollSpeed);
     stripeVScrollSpeedSpin->setValue(layer->stripeVScrollSpeed);
     stripeInheritPositionForBaseCheckBox->setChecked(layer->stripeInheritPositionForBase);
@@ -1139,6 +1147,9 @@ void EmitterLayerWidget::Update(bool updateMinimized)
 
     stripeSizeOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
     stripeSizeOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->stripeSizeOverLifeProp)).GetProps(), Qt::red, "Stripe edge size over life");
+
+    stripeTextureTileTimeLine->Init(0.0f, 1.0f, updateMinimized, false, true, false, STRIPE_TILE_PRECISION_DIGITS);
+    stripeTextureTileTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->stripeTextureTile)).GetProps(), Qt::red, "Stripe texture tile over life");
 
     stripeColorOverLifeGradient->Init(0, 1, "Stripe vertex color over life");
     stripeColorOverLifeGradient->SetValues(DAVA::PropLineWrapper<DAVA::Color>(DAVA::PropertyLineHelper::GetValueLine(layer->stripeColorOverLife)).GetProps());
@@ -1550,9 +1561,15 @@ void EmitterLayerWidget::CreateStripeLayoutWidget()
 
     stripeSizeOverLifeTimeLine = new TimeLineWidget(this);
     connect(stripeSizeOverLifeTimeLine,
-            SIGNAL(ValueChanged()),
-            this,
-            SLOT(OnStripePropertiesChanged()));
+        SIGNAL(ValueChanged()),
+        this,
+        SLOT(OnStripePropertiesChanged()));
+
+    stripeTextureTileTimeLine = new TimeLineWidget(this);
+    connect(stripeTextureTileTimeLine,
+        SIGNAL(ValueChanged()),
+        this,
+        SLOT(OnStripePropertiesChanged()));
 
     stripeInheritPositionForBaseCheckBox = new QCheckBox("Inherit position. Affect only base verts.");
     vertStripeLayout->addWidget(stripeInheritPositionForBaseCheckBox);
@@ -1578,29 +1595,20 @@ void EmitterLayerWidget::CreateStripeLayoutWidget()
     stripeStartSizeSpin->setMaximum(100);
     stripeStartSizeSpin->setSingleStep(0.01);
     stripeStartSizeSpin->setDecimals(4);
-
-    stripeTextureTileSpin = new EventFilterDoubleSpinBox();
-    stripeTextureTileSpin->setMinimum(-100);
-    stripeTextureTileSpin->setMaximum(100);
-    stripeTextureTileSpin->setSingleStep(0.01);
-    stripeTextureTileSpin->setDecimals(4);
-
     stripeLifetimeLabel = new QLabel("Edge lifetime:");
     stripeRateLabel = new QLabel("Rate:");
     stripeStartSizeLabel = new QLabel("Start size:");
-    stripeTexTileLabel = new QLabel("Texture tile:");
 
     vertStripeLayout->addWidget(stripeStartSizeLabel);
     vertStripeLayout->addWidget(stripeStartSizeSpin);
 
     vertStripeLayout->addWidget(stripeSizeOverLifeTimeLine);
+    vertStripeLayout->addWidget(stripeTextureTileTimeLine);
 
     vertStripeLayout->addWidget(stripeLifetimeLabel);
     vertStripeLayout->addWidget(stripeLifetimeSpin);
     vertStripeLayout->addWidget(stripeRateLabel);
     vertStripeLayout->addWidget(stripeRateSpin);
-    vertStripeLayout->addWidget(stripeTexTileLabel);
-    vertStripeLayout->addWidget(stripeTextureTileSpin);
 
     stripeUScrollSpeedSpin = new EventFilterDoubleSpinBox();
     stripeUScrollSpeedSpin->setMinimum(-100);
@@ -1626,7 +1634,7 @@ void EmitterLayerWidget::CreateStripeLayoutWidget()
     connect(stripeRateSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
     connect(stripeStartSizeSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
 
-    connect(stripeTextureTileSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
+    connect(stripeTextureTileTimeLine, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
     connect(stripeUScrollSpeedSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
     connect(stripeVScrollSpeedSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
 }

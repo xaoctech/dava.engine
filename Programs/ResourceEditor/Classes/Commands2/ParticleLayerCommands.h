@@ -135,10 +135,10 @@ public:
         DAVA::float32 stripeRate;
         DAVA::float32 stripeLifetime;
         DAVA::float32 stripeStartSize;
-        DAVA::float32 stripeTextureTile;
         DAVA::float32 stripeUScrollSpeed;
         DAVA::float32 stripeVScrollSpeed;
         bool stripeInheritPositionForBase;
+        DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> stripeTextureTile;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> stripeSizeOverLifeProp;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::Color>> stripeColorOverLife;
     };

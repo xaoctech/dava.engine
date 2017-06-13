@@ -79,6 +79,7 @@ ParticleLayer::ParticleLayer()
     , noiseVScrollSpeedVariation(nullptr)
     , noiseVScrollSpeedOverLife(nullptr)
     , stripeSizeOverLifeProp(nullptr)
+    , stripeTextureTile(nullptr)
     , stripeColorOverLife(nullptr)
     , enableAlphaRemap(false)
     , alphaRemapOverLife(nullptr)
@@ -157,13 +158,15 @@ ParticleLayer* ParticleLayer::Clone()
     dstLayer->stripeLifetime = stripeLifetime;
     dstLayer->stripeRate = stripeRate;
     dstLayer->stripeStartSize = stripeStartSize;
-    dstLayer->stripeTextureTile = stripeTextureTile;
     dstLayer->stripeUScrollSpeed = stripeUScrollSpeed;
     dstLayer->stripeVScrollSpeed = stripeVScrollSpeed;
     dstLayer->alphaOverLife = alphaOverLife;
 
     if (stripeSizeOverLifeProp)
         dstLayer->stripeSizeOverLifeProp.Set(stripeSizeOverLifeProp->Clone());
+
+    if (stripeTextureTile)
+        dstLayer->stripeTextureTile.Set(stripeTextureTile->Clone());
 
     if (stripeColorOverLife)
         dstLayer->stripeColorOverLife.Set(stripeColorOverLife->Clone());
@@ -444,6 +447,7 @@ void ParticleLayer::UpdateLayerTime(float32 startTime, float32 endTime)
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(noiseVScrollSpeedVariation).Get(), startTime, translateTime, endTime);
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(noiseVScrollSpeedOverLife).Get(), startTime, translateTime, endTime);
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(stripeSizeOverLifeProp).Get(), startTime, translateTime, endTime);
+    UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(stripeTextureTile).Get(), startTime, translateTime, endTime);
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(alphaRemapOverLife).Get(), startTime, translateTime, endTime);
 }
 
@@ -487,6 +491,7 @@ void ParticleLayer::SetAlphaRemap(const FilePath& spritePath_)
 void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* node, bool preserveInheritPosition)
 {
     stripeSizeOverLifeProp = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("stripeSizeOverLifeProp"));
+    stripeTextureTile = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("stripeTextureTileOverLife"));
     stripeColorOverLife = PropertyLineYamlReader::CreatePropertyLine<Color>(node->Get("stripeColorOverLife"));
 
     stripeLifetime = 0.0f;
@@ -506,12 +511,6 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
     if (stripeStartSizeNode)
     {
         stripeStartSize = stripeStartSizeNode->AsFloat();
-    }
-    stripeTextureTile = 1.0f;
-    const YamlNode* stripeTextureTileNode = node->Get("stripeTextureTile");
-    if (stripeTextureTileNode)
-    {
-        stripeTextureTile = stripeTextureTileNode->AsFloat();
     }
     stripeUScrollSpeed = 0.0f;
     const YamlNode* stripeUScrollSpeedNode = node->Get("stripeUScrollSpeed");
@@ -988,12 +987,12 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
     parentNode->AddNodeToMap(layerNodeName, layerNode);
 
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "stripeSizeOverLifeProp", stripeSizeOverLifeProp);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "stripeTextureTileOverLife", stripeTextureTile);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<Color>(layerNode, "stripeColorOverLife", stripeColorOverLife);
 
     PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeLifetime", stripeLifetime);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeRate", stripeRate);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeStartSize", stripeStartSize);
-    PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeTextureTile", stripeTextureTile);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeUScrollSpeed", stripeUScrollSpeed);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeVScrollSpeed", stripeVScrollSpeed);
 
@@ -1164,6 +1163,7 @@ void ParticleLayer::SaveForcesToYamlNode(YamlNode* layerNode)
 void ParticleLayer::GetModifableLines(List<ModifiablePropertyLineBase*>& modifiables)
 {
     PropertyLineHelper::AddIfModifiable(stripeSizeOverLifeProp.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(stripeTextureTile.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(stripeColorOverLife.Get(), modifiables);
 
     PropertyLineHelper::AddIfModifiable(alphaRemapOverLife.Get(), modifiables);
