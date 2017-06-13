@@ -572,7 +572,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
                 current->alphaRemap = group.layer->alphaRemapOverLife->GetValue(overLifeTime);
 
             if (group.layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE)
-                UpdateStripe(current, effect->effectData, group, deltaTime, bbox, currForceValues, forcesCount);
+                UpdateStripe(current, effect->effectData, group, deltaTime, bbox, currForceValues, forcesCount, group.layer->IsLodActive(effect->activeLodLevel));
 
             prev = current;
             current = current->next;
@@ -635,11 +635,12 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
     effect->effectRenderObject->SetAABBox(bbox);
 }
 
-void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& effectData, ParticleGroup& group, float32 dt, AABBox3& bbox, Vector<Vector3>& currForceValues, int32 forcesCount)
+void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& effectData, ParticleGroup& group, float32 dt, AABBox3& bbox, Vector<Vector3>& currForceValues, int32 forcesCount, bool isActive)
 {
     ParticleLayer* layer = group.layer;
     StripeData& data = particle->stripe;
     data.baseNode.position = particle->position;
+    data.isActive = isActive;
     if (layer->inheritPosition)
     {
         data.inheritPositionOffset = effectData.infoSources[group.positionSource].position;

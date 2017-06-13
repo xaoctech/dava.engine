@@ -491,6 +491,13 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
         Particle* currentParticle = group.head;
         while (currentParticle)
         {
+            StripeData& data = currentParticle->stripe;
+            if (!data.isActive)
+            {
+                currentParticle = currentParticle->next;
+                continue;
+            }
+
             float32* pT = group.layer->sprite->GetTextureVerts(currentParticle->frame);
             Color currColor = currentParticle->color;
             if (group.layer->colorOverLife)
@@ -498,7 +505,7 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
             if (group.layer->alphaOverLife)
                 currColor.a = group.layer->alphaOverLife->GetValue(currentParticle->life / currentParticle->lifeTime);
 
-            StripeData& data = currentParticle->stripe;
+
             StripeNode& base = data.baseNode;
             List<StripeNode>& nodes = data.strpeNodes;
             uint32 iCount = 0;
