@@ -253,20 +253,18 @@ void VisibilityCheckSystem::Draw()
 
     if (enableDebug)
     {
-        DAVA::Rect dstRect = DAVA::Rect(0.0f, 0.0f, 0.0f, static_cast<DAVA::float32>(stateCache.viewportSize.dy / VCSInternal::CUBEMAPS_POOL_SIZE));
-        dstRect.dx = 2.0f * dstRect.dy;
+        Texture* cubemap = VCSInternal::CubemapRenderTargetAtIndex(0);
+        if (cubemap)
+            DAVA::RenderSystem2D::Instance()->DrawTexture(cubemap, debugMaterial, DAVA::Color::White, DAVA::Rect(2.0f, 2.0f, float32(stateCache.viewportSize.dx) - 4.f, 512.f));
 
-        if (dstRect.dx > static_cast<DAVA::float32>(stateCache.viewportSize.dx))
-        {
-            dstRect.dx = static_cast<DAVA::float32>(stateCache.viewportSize.dx);
-            dstRect.dy = 0.5f * dstRect.dx;
-        }
+        if (renderer.renderTarget)
+            DAVA::RenderSystem2D::Instance()->DrawTexture(renderer.renderTarget, DAVA::RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL, DAVA::Color::White, DAVA::Rect(2.f, 516.f, 256.f, 256.f));
 
-        for (DAVA::uint32 cm = 0; cm < VCSInternal::CUBEMAPS_POOL_SIZE; ++cm)
-        {
-            DAVA::RenderSystem2D::Instance()->DrawTexture(VCSInternal::CubemapRenderTargetAtIndex(cm), debugMaterial, DAVA::Color::White, dstRect);
-            dstRect.y += dstRect.dy;
-        }
+        if (renderer.fixedFrame)
+            DAVA::RenderSystem2D::Instance()->DrawTexture(renderer.fixedFrame, DAVA::RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL, DAVA::Color::White, DAVA::Rect(260.f, 516.f, 256.f, 256.f));
+
+        if (renderer.reprojectionTexture)
+            DAVA::RenderSystem2D::Instance()->DrawTexture(renderer.reprojectionTexture, DAVA::RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL, DAVA::Color::White, DAVA::Rect(520.f, 516.f, 256.f, 256.f));
     }
 }
 

@@ -67,7 +67,10 @@ uniform sampler2D fixedFrameDistances;
 uniform sampler2D currentFrame;
 
 [material][a] property float2 viewportSize;
+[material][a] property float2 pixelOffset;
 [material][a] property float currentFrameCompleteness;
+
+[auto][instance] property float projectionFlip;
 
 #elif defined(DEBUG_2D)
 
@@ -101,22 +104,27 @@ fragment_out fp_main(fragment_in input)
 
 #elif defined(REPROJECTION)
 
-    float2 vpCoords = 0.5 + 0.5 * input.viewportCoords.xy / input.viewportCoords.w;
+    float2 vpCoords = input.viewportCoords.xy / input.viewportCoords.w;
+	vpCoords.y *= -projectionFlip;
+	vpCoords = 0.5 + 0.5 * vpCoords;
     float2 vp = viewportSize * vpCoords;
 
     float cx = float(int(vp.x) / 4);
     float cy = float(int(vp.y) / 4);
-    float4 checkboard = float4(0.25 * fmod(cx + fmod(cy, 2.0), 2.0));
+    float4 checkboard = 0.25 * fmod(cx + fmod(cy, 2.0), 2.0);
 
-    float3 reprojectedUVW = 0.5 + 0.5 * input.reprojectedCoords.xyz / input.reprojectedCoords.w;
-    float4 sampledColor = tex2D(fixedFrame, reprojectedUVW.xy);
+    float3 reprojectedUVW = input.reprojectedCoords.xyz / input.reprojectedCoords.w;
+	float2 fixedFrameFetch = 0.5 + 0.5 * (float2(reprojectedUVW.x, -projectionFlip * reprojectedUVW.y)) + pixelOffset / viewportSize;
+    reprojectedUVW = 0.5 + 0.5 * reprojectedUVW;
+	
+    float4 sampledColor = tex2D(fixedFrame, fixedFrameFetch);
     float4 currentColor = lerp(checkboard, tex2D(currentFrame, vpCoords), currentFrameCompleteness);
 
     float actualDistance = input.distanceToOrigin;
-    float sampledDistance = DecodeFloat(tex2D(fixedFrameDistances, reprojectedUVW.xy));
+    float sampledDistance = DecodeFloat(tex2D(fixedFrameDistances, fixedFrameFetch));
     float visibleInProjection = 1.0 - float(abs(actualDistance / sampledDistance - 1.0) > MAGIC_TRESHOLD_2);
 
-    float3 rpClamped = clamp(reprojectedUVW, float3(0.0), float3(1.0));
+    float3 rpClamped = clamp(reprojectedUVW, 0.0, 1.0);
     float insideProjection = float((rpClamped.x == reprojectedUVW.x) && (rpClamped.y == reprojectedUVW.y) && (rpClamped.z == reprojectedUVW.z));
 
     output.color = lerp(currentColor, sampledColor, insideProjection * visibleInProjection);
