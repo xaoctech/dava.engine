@@ -1,0 +1,11 @@
+Header:
+    version: "16"
+Controls:
+-   class: "UIControl"
+    name: "NewText"
+    size: [32.000000, 32.000000]
+-   class: "UIStaticText"
+    name: "OldText"
+    size: [32.000000, 32.000000]
+CustomData:
+    Guides: {}

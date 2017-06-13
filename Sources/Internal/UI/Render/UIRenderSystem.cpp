@@ -3,6 +3,7 @@
 #include "Debug/ProfilerMarkerNames.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
 #include "Render/2D/TextBlock.h"
+#include "Render/2D/TextBlockSoftwareRender.h"
 #include "UI/Text/Private/UITextSystemLink.h"
 #include "UI/Text/UITextComponent.h"
 #include "UI/Render/UIClipContentComponent.h"
@@ -440,7 +441,7 @@ static void RenderText_DrawLocalizationErrors(const UITextSystemLink* link, cons
     TextBlock* textBlock = link->GetTextBlock();
 
     UIGeometricData elementGeomData;
-    const Sprite::Drawlink& lastDrawStae = textBg->GetLastDrawlink();
+    const Sprite::DrawState& lastDrawStae = textBg->GetLastDrawState();
     elementGeomData.position = lastDrawStae.position;
     elementGeomData.angle = lastDrawStae.angle;
     elementGeomData.scale = lastDrawStae.scale;
