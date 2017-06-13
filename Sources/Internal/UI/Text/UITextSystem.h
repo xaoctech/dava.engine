@@ -9,6 +9,11 @@ class UIControl;
 class UITextComponent;
 class UITextSystemLink;
 
+/** 
+    Text component support system. 
+    Manage component internal structure.
+    \sa UITextComponent 
+*/
 class UITextSystem final : public UISystem
 {
 public:
