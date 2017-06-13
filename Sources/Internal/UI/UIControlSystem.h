@@ -76,7 +76,7 @@ public:
 	 \param[in] Screen you want to set as current
 	 \param[in] Transition you want to use for the screen setting.
 	 */
-    void SetScreen(UIScreen* newMainControl, UIScreenTransition* transition = 0);
+    void SetScreen(UIScreen* newMainControl);
 
     /**
 	 \brief Sets the requested screen as current.
@@ -107,8 +107,6 @@ public:
 	 \returns popup container
 	 */
     UIControl* GetPopupContainer() const;
-
-    UIScreenTransition* GetScreenTransition() const;
 
     /**
 	 \brief Disabled all controls inputs.
@@ -334,8 +332,6 @@ private:
 
     RefPtr<UIScreen> currentScreen;
     RefPtr<UIScreen> nextScreen;
-    RefPtr<UIScreenTransition> nextScreenTransition;
-    RefPtr<UIScreenTransition> currentScreenTransition;
     RefPtr<UIControl> popupContainer;
     Set<UIPopup*> popupsToRemove;
 

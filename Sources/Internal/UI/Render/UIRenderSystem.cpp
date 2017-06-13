@@ -42,7 +42,7 @@ void UIRenderSystem::OnControlInvisible(UIControl* control)
 void UIRenderSystem::Process(float32 elapsedTime)
 {
     RenderSystem2D::RenderTargetPassDescriptor newDescr = renderSystem2D->GetMainTargetDescriptor();
-    newDescr.clearTarget = (ui3DViewCount == 0 || currentScreenTransition.Valid()) && needClearMainPass;
+    newDescr.clearTarget = ui3DViewCount == 0 && needClearMainPass;
     renderSystem2D->SetMainTargetDescriptor(newDescr);
 }
 
@@ -50,11 +50,7 @@ void UIRenderSystem::Render()
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::UI_RENDER_SYSTEM);
 
-    if (currentScreenTransition.Valid())
-    {
-        RenderControlHierarhy(currentScreenTransition.Get(), baseGeometricData, nullptr);
-    }
-    else if (currentScreen.Valid())
+    if (currentScreen.Valid())
     {
         RenderControlHierarhy(currentScreen.Get(), baseGeometricData, nullptr);
     }
@@ -104,11 +100,6 @@ void UIRenderSystem::SetUseClearPass(bool useClearPass)
 void UIRenderSystem::SetCurrentScreen(const RefPtr<UIScreen>& _screen)
 {
     currentScreen = _screen;
-}
-
-void UIRenderSystem::SetCurrentScreenTransition(const RefPtr<UIScreenTransition>& _screenTransition)
-{
-    currentScreenTransition = _screenTransition;
 }
 
 void UIRenderSystem::SetPopupContainer(const RefPtr<UIControl>& _popupContainer)

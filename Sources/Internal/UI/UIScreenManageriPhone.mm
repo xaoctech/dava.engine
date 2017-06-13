@@ -76,7 +76,7 @@ void UIScreenManager::SetFirst(int screenId)
     }
 }
 
-void UIScreenManager::SetScreen(int screenId, UIScreenTransition* transition)
+void UIScreenManager::SetScreen(int screenId)
 {
     Screen& screen = screens[screenId];
     if (screen.type == Screen::TYPE_CONTROLLER)
@@ -106,7 +106,7 @@ void UIScreenManager::SetScreen(int screenId, UIScreenTransition* transition)
         }
         activeScreenId = screenId;
 
-        UIControlSystem::Instance()->SetScreen((UIScreen*)screen.value, transition);
+        UIControlSystem::Instance()->SetScreen((UIScreen*)screen.value);
     }
 }
 

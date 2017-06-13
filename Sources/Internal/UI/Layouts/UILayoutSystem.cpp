@@ -54,11 +54,7 @@ void UILayoutSystem::Process(float32 elapsedTime)
     if (!needUpdate)
         return;
 
-    if (currentScreenTransition.Valid())
-    {
-        ProcessControlHierarhy(currentScreenTransition.Get());
-    }
-    else if (currentScreen.Valid())
+    if (currentScreen.Valid())
     {
         ProcessControlHierarhy(currentScreen.Get());
     }
@@ -121,11 +117,6 @@ void UILayoutSystem::ForceProcessControl(float32 elapsedTime, UIControl* control
 void UILayoutSystem::SetCurrentScreen(const RefPtr<UIScreen>& screen)
 {
     currentScreen = screen;
-}
-
-void UILayoutSystem::SetCurrentScreenTransition(const RefPtr<UIScreenTransition>& screenTransition)
-{
-    currentScreenTransition = screenTransition;
 }
 
 void UILayoutSystem::SetPopupContainer(const RefPtr<UIControl>& _popupContainer)

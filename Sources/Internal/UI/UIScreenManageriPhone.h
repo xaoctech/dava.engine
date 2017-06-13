@@ -17,7 +17,7 @@ public:
     void SetGLControllerId(int glController);
 
     void SetFirst(int screenId);
-    void SetScreen(int screenId, UIScreenTransition* transition = 0);
+    void SetScreen(int screenId);
     void ResetScreen();
 
     UIScreen* GetScreen(int screenId);
