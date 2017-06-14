@@ -254,9 +254,9 @@ void VisibilityCheckSystem::Draw()
 
     if (enableDebug)
     {
-        Texture* cubemap = VCSInternal::CubemapRenderTargetAtIndex(0);
+        DAVA::Texture* cubemap = VCSInternal::CubemapRenderTargetAtIndex(0);
         if (cubemap)
-            DAVA::RenderSystem2D::Instance()->DrawTexture(cubemap, debugMaterial, DAVA::Color::White, DAVA::Rect(2.0f, 2.0f, float32(stateCache.viewportSize.dx) - 4.f, 512.f));
+            DAVA::RenderSystem2D::Instance()->DrawTexture(cubemap, debugMaterial, DAVA::Color::White, DAVA::Rect(2.0f, 2.0f, DAVA::float32(stateCache.viewportSize.dx) - 4.f, 512.f));
 
         if (renderer.renderTarget)
             DAVA::RenderSystem2D::Instance()->DrawTexture(renderer.renderTarget, DAVA::RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL, DAVA::Color::White, DAVA::Rect(2.f, 516.f, 256.f, 256.f));
