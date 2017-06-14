@@ -8,7 +8,7 @@
 
 namespace DAVA
 {
-const FilePath FileSystem::GetApplicationSupportPath()
+FilePath GetApplicationSupportPath()
 {
     NSArray* paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
     NSString* bundlePath = [paths objectAtIndex:0];

@@ -1,4 +1,5 @@
 #include "DocDirSetup/DocDirSetup.h"
+#include "ApplicationSupportPath.h"
 
 namespace DAVA
 {
@@ -12,13 +13,10 @@ FilePath GetEngineDocumentsPath()
 }
 } // namespace Details
 
-/**
-return ~/Library/Application Support/DAVAEngine/<appName>/
-*/
 FilePath GetApplicationDocDirectory(FileSystem* fs, const String& appName)
 {
 #if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
-    return Deatils::GetApplicationSupportPath() + appName + "/";
+    return GetApplicationSupportPath() + appName + "/";
 #else
     return Details::GetEngineDocumentsPath() + appName + "/";
 #endif
