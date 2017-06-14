@@ -137,7 +137,7 @@ void REApplication::Init(const DAVA::EngineContext* engineContext)
         if (createResult != DAVA::FileSystem::DIRECTORY_EXISTS)
         {
             DAVA::FilePath documentsOldFolder = fileSystem->GetCurrentDocumentsDirectory() + "ResourceEditor/";
-            DAVA::FilePath documentsNewFolder = DocumentsDirectorySetup::GetApplicationDocDirectory(fs, "ResourceEditor");
+            DAVA::FilePath documentsNewFolder = DAVA::DocumentsDirectorySetup::GetApplicationDocDirectory(fileSystem, "ResourceEditor");
             fileSystem->RecursiveCopy(documentsOldFolder, documentsNewFolder);
         }
     };
