@@ -60,7 +60,7 @@ void UITextSystem::RegisterComponent(UIControl* control, UIComponent* component)
 
     if (component->GetType() == UITextComponent::C_TYPE)
     {
-        AddLink(static_cast<UITextComponent*>(component));
+        AddLink(DAVA::DynamicTypeCheck<UITextComponent*>(component));
     }
 }
 
@@ -68,7 +68,7 @@ void UITextSystem::UnregisterComponent(UIControl* control, UIComponent* componen
 {
     if (component->GetType() == UITextComponent::C_TYPE)
     {
-        RemoveLink(static_cast<UITextComponent*>(component));
+        RemoveLink(DAVA::DynamicTypeCheck<UITextComponent*>(component));
     }
 
     UISystem::UnregisterComponent(control, component);
@@ -77,6 +77,7 @@ void UITextSystem::UnregisterComponent(UIControl* control, UIComponent* componen
 void UITextSystem::AddLink(UITextComponent* component)
 {
     DVASSERT(component);
+    DVASSERT(component->GetLink() == nullptr);
     UITextSystemLink* link = new UITextSystemLink(component->GetControl(), component);
     component->SetLink(link);
     links.emplace_back(link);
@@ -86,23 +87,20 @@ void UITextSystem::RemoveLink(UITextComponent* component)
 {
     DVASSERT(component);
     UITextSystemLink* link = component->GetLink();
-    for (UITextSystemLink*& l : links)
-    {
-        if (l == link)
-        {
-            l = nullptr;
-            break;
-        }
-    }
+    DVASSERT(component->GetLink());
+
     auto findIt = std::find_if(links.begin(), links.end(), [&link](const UITextSystemLink* l) {
-        //return l != nullptr && l->component == component;
         return l == link;
     });
     if (findIt != links.end())
     {
         (*findIt) = nullptr; // mark link for delete
+        component->SetLink(nullptr);
+        delete link;
     }
-    component->SetLink(nullptr);
-    delete link;
+    else
+    {
+        DVASSERT("Text component link not found in system list!");
+    }
 }
 }
