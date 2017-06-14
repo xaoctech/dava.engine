@@ -27,7 +27,7 @@ private:
     UITextSystemLink& operator=(const UITextSystemLink&) = delete;
 
     UITextSystemLink(UIControl* control_, UITextComponent* component_);
-    ~UITextSystemLink();
+    ~UITextSystemLink() = default;
 
     /** Apply component properties changes to internal TextBlock and UIControlBackground objects. */
     void ApplyData();
@@ -35,9 +35,9 @@ private:
     UIControl* control;
     UITextComponent* component;
 
-    TextBlock* textBlock;
-    UIControlBackground* textBg;
-    UIControlBackground* shadowBg;
+    RefPtr<TextBlock> textBlock;
+    RefPtr<UIControlBackground> textBg;
+    RefPtr<UIControlBackground> shadowBg;
 
     // Friends
     friend class UITextSystem;
@@ -45,16 +45,16 @@ private:
 
 TextBlock* UITextSystemLink::GetTextBlock() const
 {
-    return textBlock;
+    return textBlock.Get();
 }
 
 UIControlBackground* UITextSystemLink::GetTextBackground() const
 {
-    return textBg;
+    return textBg.Get();
 }
 
 UIControlBackground* UITextSystemLink::GetShadowBackground() const
 {
-    return shadowBg;
+    return shadowBg.Get();
 }
 }

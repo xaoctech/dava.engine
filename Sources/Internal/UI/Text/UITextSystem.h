@@ -20,7 +20,7 @@ class UITextSystem final : public UISystem
 {
 public:
     UITextSystem() = default;
-    ~UITextSystem() override = default;
+    ~UITextSystem() override;
 
     void RegisterControl(UIControl* control) override;
     void UnregisterControl(UIControl* control) override;

@@ -14,24 +14,17 @@ UITextSystemLink::UITextSystemLink(UIControl* control_, UITextComponent* compone
 
     Rect rect = control->GetRect();
     control->SetInputEnabled(false, false);
-    textBlock = TextBlock::Create(Vector2(rect.dx, rect.dy));
+    textBlock.Set(TextBlock::Create(Vector2(rect.dx, rect.dy)));
 
-    textBg = new UIControlBackground();
+    textBg.Set(new UIControlBackground());
     textBg->SetDrawType(UIControlBackground::DRAW_ALIGNED);
     textBg->SetColorInheritType(component->GetColorInheritType());
     textBg->SetPerPixelAccuracyType(component->GetPerPixelAccuracyType());
 
-    shadowBg = new UIControlBackground();
+    shadowBg.Set(new UIControlBackground());
     shadowBg->SetDrawType(UIControlBackground::DRAW_ALIGNED);
     shadowBg->SetColorInheritType(component->GetColorInheritType());
     shadowBg->SetPerPixelAccuracyType(component->GetPerPixelAccuracyType());
-}
-
-UITextSystemLink::~UITextSystemLink()
-{
-    SafeRelease(textBlock);
-    SafeRelease(shadowBg);
-    SafeRelease(textBg);
 }
 
 void UITextSystemLink::ApplyData()

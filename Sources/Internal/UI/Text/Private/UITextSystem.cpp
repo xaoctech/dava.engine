@@ -10,6 +10,15 @@
 
 namespace DAVA
 {
+UITextSystem::~UITextSystem()
+{
+    for (UITextSystemLink* link : links)
+    {
+        // System expect that all components already removed via UnregisterComponent and UnregisterControl.
+        DVASSERT(link == nullptr, "Unexpected system state! List of links must be empty!");
+    }
+}
+
 void UITextSystem::Process(float32 elapsedTime)
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::UI_TEXT_SYSTEM);
@@ -80,7 +89,7 @@ void UITextSystem::AddLink(UITextComponent* component)
     DVASSERT(component->GetLink() == nullptr);
     UITextSystemLink* link = new UITextSystemLink(component->GetControl(), component);
     component->SetLink(link);
-    links.emplace_back(link);
+    links.push_back(link);
 }
 
 void UITextSystem::RemoveLink(UITextComponent* component)

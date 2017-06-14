@@ -3,9 +3,11 @@
 #include <UI/DefaultUIPackageBuilder.h>
 #include <UI/Text/UITextComponent.h>
 #include <UI/Text/UITextSystem.h>
+#include <UI/Text/Private/UITextSystemLink.h>
 #include <UI/UIControlSystem.h>
 #include <UI/UIPackageLoader.h>
 #include <UI/UIScreen.h>
+#include "Utils/UTF8Utils.h"
 
 #include "UnitTests/UnitTests.h"
 
@@ -79,8 +81,10 @@ DAVA_TESTCLASS (UITextSystemTest)
         TEST_VERIFY(orig->GetLink());
 
         UpdateSystem();
+
         UITextSystem* sys = UIControlSystem::Instance()->GetSystem<UITextSystem>();
         auto linksCount = sys->links.size();
+        TEST_VERIFY(linksCount > 0);
 
         RefPtr<UITextComponent>
         copy(orig->Clone());
@@ -138,8 +142,32 @@ DAVA_TESTCLASS (UITextSystemTest)
         TEST_VERIFY(orig->GetUseRtlAlign() == copy->GetUseRtlAlign());
         TEST_VERIFY(orig->IsForceBiDiSupportEnabled() == copy->IsForceBiDiSupportEnabled());
 
-        copy->SetText("4321");
+		copy->SetText("4321");
         TEST_VERIFY(orig->GetText() != copy->GetText());
     }
 
+	DAVA_TEST (UpdateTextBlockTest)
+    {
+        const String str1 = "123";
+        const String str2 = "54321";
+
+        RefPtr<UITextComponent> orig;
+        orig = newControl->GetComponent<UITextComponent>();
+		orig->SetText(str1);
+
+        newControl->RemoveComponent(orig.Get());
+        RefPtr<UITextComponent> copy(orig->Clone());
+        newControl->AddComponent(copy.Get());
+
+		UpdateSystem();
+        TEST_VERIFY(copy->GetLink()->GetTextBlock()->GetText() == UTF8Utils::EncodeToWideString(str1));
+
+        copy->SetText(str2);
+        TEST_VERIFY(copy->GetText() == str2);
+        TEST_VERIFY(copy->GetLink()->GetTextBlock()->GetText() == UTF8Utils::EncodeToWideString(str1));
+        TEST_VERIFY(orig->GetText() != copy->GetText());
+        
+		UpdateSystem();
+        TEST_VERIFY(copy->GetLink()->GetTextBlock()->GetText() == UTF8Utils::EncodeToWideString(str2));
+    }
 };
