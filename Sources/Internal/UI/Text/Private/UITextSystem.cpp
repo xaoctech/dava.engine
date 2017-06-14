@@ -26,10 +26,7 @@ void UITextSystem::Process(float32 elapsedTime)
     // Remove empty links
     if (!links.empty())
     {
-        links.erase(std::remove_if(links.begin(), links.end(), [](const UITextSystemLink* l) {
-                        return l == nullptr;
-                    }),
-                    links.end());
+        links.erase(std::remove(links.begin(), links.end(), nullptr), links.end());
     }
 
     // Process links
@@ -98,9 +95,7 @@ void UITextSystem::RemoveLink(UITextComponent* component)
     UITextSystemLink* link = component->GetLink();
     DVASSERT(component->GetLink());
 
-    auto findIt = std::find_if(links.begin(), links.end(), [&link](const UITextSystemLink* l) {
-        return l == link;
-    });
+    auto findIt = std::find(links.begin(), links.end(), link);
     if (findIt != links.end())
     {
         (*findIt) = nullptr; // mark link for delete
@@ -109,7 +104,7 @@ void UITextSystem::RemoveLink(UITextComponent* component)
     }
     else
     {
-        DVASSERT("Text component link not found in system list!");
+        DVASSERT(0 && "Text component link not found in system list!");
     }
 }
 }

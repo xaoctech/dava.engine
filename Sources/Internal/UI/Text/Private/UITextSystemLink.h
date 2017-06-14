@@ -17,11 +17,11 @@ class UITextSystemLink final
 {
 public:
     /** Text parser and renderer. */
-    inline TextBlock* GetTextBlock() const;
+    TextBlock* GetTextBlock() const;
     /** Text layer representation for render. */
-    inline UIControlBackground* GetTextBackground() const;
+    UIControlBackground* GetTextBackground() const;
     /** Text shadow layer representation for render. */
-    inline UIControlBackground* GetShadowBackground() const;
+    UIControlBackground* GetShadowBackground() const;
 
 private:
     UITextSystemLink& operator=(const UITextSystemLink&) = delete;
@@ -43,17 +43,17 @@ private:
     friend class UITextSystem;
 };
 
-TextBlock* UITextSystemLink::GetTextBlock() const
+inline TextBlock* UITextSystemLink::GetTextBlock() const
 {
     return textBlock.Get();
 }
 
-UIControlBackground* UITextSystemLink::GetTextBackground() const
+inline UIControlBackground* UITextSystemLink::GetTextBackground() const
 {
     return textBg.Get();
 }
 
-UIControlBackground* UITextSystemLink::GetShadowBackground() const
+inline UIControlBackground* UITextSystemLink::GetShadowBackground() const
 {
     return shadowBg.Get();
 }

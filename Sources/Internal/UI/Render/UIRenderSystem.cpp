@@ -150,14 +150,11 @@ void UIRenderSystem::RenderControlHierarhy(UIControl* control, const UIGeometric
         renderSystem2D->IntersectClipRect(unrotatedRect); //anyway it doesn't work with rotation
     }
 
+    control->Draw(drawData);
     const UITextComponent* txt = control->GetComponent<UITextComponent>();
     if (txt)
     {
         RenderText(control, txt, drawData, parentColor);
-    }
-    else
-    {
-        control->Draw(drawData);
     }
 
     const UIControlBackground* bg = control->GetComponent<UIControlBackground>();
