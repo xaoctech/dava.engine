@@ -45,7 +45,7 @@ endif()
 
 find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS} )
 find_package( EmbeddedWebServer REQUIRED )
-
+find_package( DocDirSetup REQUIRED )
 
 include_directories   ( "Classes" )
 include_directories   ( "Classes/Infrastructure" )

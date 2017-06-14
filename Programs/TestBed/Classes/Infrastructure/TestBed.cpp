@@ -1,5 +1,7 @@
 #include "Infrastructure/TestBed.h"
 
+#include <DocDirSetup/DocDirSetup.h>
+
 #include <Engine/Engine.h>
 #include <Engine/EngineSettings.h>
 #include <Render/RHI/rhi_Public.h>
@@ -164,13 +166,7 @@ TestBed::TestBed(Engine& engine)
     const EngineContext* context = engine.GetContext();
     FileSystem* fileSystem = context->fileSystem;
 
-#ifdef __DAVAENGINE_MACOS__
-    FilePath documentsDirectory = fileSystem->GetApplicationSupportPath() + "TestBed/";
-#else
-    FilePath documentsDirectory = fileSystem->GetEngineDocumentsPath() + "TestBed/";
-#endif
-    fileSystem->CreateDirectory(documentsDirectory, true);
-    fileSystem->SetCurrentDocumentsDirectory(documentsDirectory);
+    DocumentsDirectorySetup::SetApplicationDocDirectory(fileSystem, "TestBed");
 
     context->settings->Load("~res:/EngineSettings.yaml");
 }

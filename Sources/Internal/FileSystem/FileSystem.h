@@ -123,12 +123,6 @@ public:
     virtual void SetDefaultDocumentsDirectory();
 
     /**
-         \brief Function to retrieve DAVA engine applications documents path
-         \returns engine documents path
-     */
-    static const FilePath GetEngineDocumentsPath();
-
-    /**
          \brief Function to retrieve user's documents path
          \returns user's documents path
      */
@@ -146,11 +140,6 @@ public:
         \returns user’s home path
     */
     const FilePath GetHomePath();
-
-    /**
-        function to retrieve ~/Library/Application Support/Dava Engine/ path for current user
-    */
-    const FilePath GetApplicationSupportPath();
 #endif
 
     /**

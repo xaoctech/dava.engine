@@ -13,6 +13,7 @@ dava_add_definitions (
 
 find_package( QT5           REQUIRED )
 find_package( DavaFramework REQUIRED )
+find_package( DocDirSetup REQUIRED )
 
 if ( NOT WIN32 OR WINDOWS_UAP )
     message( FATAL_ERROR "This util can be built only on Windows Desktop platform" )

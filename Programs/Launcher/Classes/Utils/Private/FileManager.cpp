@@ -86,7 +86,7 @@ FileManager::FileManager(QObject* parent /*= nullptr*/)
     : QObject(parent)
 {
 #ifdef Q_OS_MAC
-    documentsDirectory = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/Dava Engine/Launcher/";
+    documentsDirectory = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/DAVAEngine/Launcher/";
 #else
     documentsDirectory = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/DAVAProject/Launcher/";
 #endif

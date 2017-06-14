@@ -8,7 +8,9 @@ include               ( CMake-common )
 
 set ( DAVA_COREV2 1 )
 dava_add_definitions  ( -D__DAVAENGINE_COREV2__ )
+
 find_package          ( DavaTools REQUIRED )
+find_package          ( DocDirSetup REQUIRED )
 
 dava_add_definitions  ( -DCONSOLE )
 find_package          ( DavaFramework REQUIRED COMPONENTS DAVA_DISABLE_AUTOTESTS )

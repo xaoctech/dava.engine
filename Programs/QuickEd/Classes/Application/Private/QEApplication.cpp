@@ -6,6 +6,8 @@
 #include <TArc/Core/Core.h>
 #include <TArc/Utils/ModuleCollection.h>
 
+#include <DocDirSetup/DocDirSetup.h>
+
 #include <Render/Renderer.h>
 #include <Tools/TextureCompression/PVRConverter.h>
 #include <Particles/ParticleEmitter.h>
@@ -70,23 +72,18 @@ void QEApplication::Init(const DAVA::EngineContext* engineContext)
 
     FileSystem* fs = engineContext->fileSystem;
 
-#ifdef __DAVAENGINE_MACOS__
-    FilePath documentsDirectory = fs->GetApplicationSupportPath() + "QuickEd/";
-#else
-    FilePath documentsDirectory = fs->GetEngineDocumentsPath() + "QuickEd/";
-#endif
-    DAVA::FileSystem::eCreateDirectoryResult createResult = engineContext->fileSystem->CreateDirectory(documentsDirectory, true);
-
     auto copyFromOldFolder = [&]
     {
+        FileSystem::eCreateDirectoryResult createResult = DocumentsDirectorySetup::CreateApplicationDocDirectory(fs, "QuickEd");
         if (createResult != DAVA::FileSystem::DIRECTORY_EXISTS)
         {
             DAVA::FilePath documentsOldFolder = fs->GetUserDocumentsPath() + "QuickEd/";
-            engineContext->fileSystem->RecursiveCopy(documentsOldFolder, documentsDirectory);
+            DAVA::FilePath documentsNewFolder = DocumentsDirectorySetup::GetApplicationDocDirectory(fs, "QuickEd");
+            engineContext->fileSystem->RecursiveCopy(documentsOldFolder, documentsNewFolder);
         }
     };
     copyFromOldFolder(); // todo: remove function some versions after
-    engineContext->fileSystem->SetCurrentDocumentsDirectory(documentsDirectory);
+    DocumentsDirectorySetup::SetApplicationDocDirectory(fs, "QuickEd");
 
     engineContext->logger->SetLogFilename("QuickEd.txt");
 

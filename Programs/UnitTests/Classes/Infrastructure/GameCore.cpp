@@ -1,5 +1,7 @@
 #include "Infrastructure/GameCore.h"
 
+#include <DocDirSetup/DocDirSetup.h>
+
 #include "CommandLine/CommandLineParser.h"
 #include "Debug/DVAssert.h"
 #include "Debug/DVAssertDefaultHandlers.h"
@@ -81,13 +83,7 @@ int DAVAMain(Vector<String> cmdline)
 
     FileSystem* fileSystem = e.GetContext()->fileSystem;
 
-#ifdef __DAVAENGINE_MACOS__
-    FilePath documentsDirectory = fileSystem->GetApplicationSupportPath() + "UnitTests/";
-#else
-    FilePath documentsDirectory = fileSystem->GetEngineDocumentsPath() + "UnitTests/";
-#endif
-    fileSystem->CreateDirectory(documentsDirectory, true);
-    fileSystem->SetCurrentDocumentsDirectory(documentsDirectory);
+    DAVA::DocumentsDirectorySetup::SetApplicationDocDirectory(fileSystem, "UnitTests");
 
     GameCore g(e);
     e.Run();

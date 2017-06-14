@@ -32,6 +32,7 @@ dava_add_definitions       (
 find_package( QT5 REQUIRED )
 find_package( DavaTools REQUIRED )
 find_package( QtHelpers REQUIRED )
+find_package( DocDirSetup REQUIRED )
 
 find_package( DavaFramework REQUIRED COMPONENTS "Sound"
                                                 DAVA_PLATFORM_QT 

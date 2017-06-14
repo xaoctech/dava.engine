@@ -11,6 +11,7 @@ dava_add_definitions ( -D__DAVAENGINE_COREV2__ )
 
 find_package( DavaFramework REQUIRED COMPONENTS DAVA_DISABLE_AUTOTESTS "Sound" )
 find_package( ScenePerformanceTests REQUIRED )
+find_package( DocDirSetup REQUIRED )
 
 include_directories   ( "Classes" )
 
