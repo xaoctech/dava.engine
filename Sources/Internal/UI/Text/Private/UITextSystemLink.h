@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Base/RefPtr.h"
+
 namespace DAVA
 {
 class UIControl;

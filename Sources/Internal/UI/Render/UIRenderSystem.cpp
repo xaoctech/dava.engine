@@ -17,13 +17,16 @@
 
 namespace DAVA
 {
-static void RenderText_PrepareSprite(const UITextSystemLink* link);
+namespace RenderTextDetails
+{
+static void PrepareSprite(const UITextSystemLink* link);
 
 #if defined(LOCALIZATION_DEBUG)
-static void RenderText_Debug(const UITextSystemLink* link, const UIGeometricData& textGeomData);
-static void RenderText_DrawLocalizationDebug(const UITextSystemLink* link, const UIGeometricData& textGeomData);
-static void RenderText_DrawLocalizationErrors(const UITextSystemLink* link, const UIGeometricData& geometricData);
+static void DrawDebug(const UITextSystemLink* link, const UIGeometricData& textGeomData);
+static void DrawLocalizationDebug(const UITextSystemLink* link, const UIGeometricData& textGeomData);
+static void DrawLocalizationErrors(const UITextSystemLink* link, const UIGeometricData& geometricData);
 #endif
+}
 
 UIRenderSystem::UIRenderSystem(RenderSystem2D* renderSystem2D_)
     : renderSystem2D(renderSystem2D_)
@@ -266,7 +269,7 @@ void UIRenderSystem::RenderText(const UIControl* control, const UITextComponent*
     textBlock->SetPosition(textBlockRect.GetPosition());
     textBlock->PreDraw();
 
-    RenderText_PrepareSprite(link);
+    RenderTextDetails::PrepareSprite(link);
 
     textBg->SetAlign(textBlock->GetVisualAlign());
 
@@ -294,11 +297,13 @@ void UIRenderSystem::RenderText(const UIControl* control, const UITextComponent*
     textBg->Draw(textGeomData);
      
 #if defined(LOCALIZATION_DEBUG)
-    RenderText_Debug(link, geometricData);
+    RenderTextDetails::DrawDebug(link, geometricData);
 #endif
 }
 
-static void RenderText_PrepareSprite(const UITextSystemLink* link)
+namespace RenderTextDetails
+{
+static void PrepareSprite(const UITextSystemLink* link)
 {
     UIControlBackground* textBg = link->GetTextBackground();
     UIControlBackground* shadowBg = link->GetShadowBackground();
@@ -350,19 +355,19 @@ static const Color HIGHLIGHT_COLORS[] = { DAVA::Color(1.0f, 0.0f, 0.0f, 0.4f),
                                           DAVA::Color(1.0f, 0.0f, 1.0f, 0.4f),
                                           DAVA::Color(0.0f, 1.0f, 0.0f, 0.4f) };
 
-static void RenderText_Debug(const UITextSystemLink* link, const UIGeometricData& geometricData)
+static void DrawDebug(const UITextSystemLink* link, const UIGeometricData& geometricData)
 {
     if (Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DRAW_LINEBREAK_ERRORS) || Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DRAW_LOCALIZATION_WARINGS))
     {
-        RenderText_DrawLocalizationDebug(link, geometricData);
+        DrawLocalizationDebug(link, geometricData);
     }
     if (Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DRAW_LOCALIZATION_ERRORS))
     {
-        RenderText_DrawLocalizationErrors(link, geometricData);
+        DrawLocalizationErrors(link, geometricData);
     }
 }
 
-static void RenderText_DrawLocalizationDebug(const UITextSystemLink* link, const UIGeometricData& textGeomData)
+static void DrawLocalizationDebug(const UITextSystemLink* link, const UIGeometricData& textGeomData)
 {
     TextBlock* textBlock = link->GetTextBlock();
 
@@ -433,7 +438,7 @@ static void RenderText_DrawLocalizationDebug(const UITextSystemLink* link, const
     }
 }
 
-static void RenderText_DrawLocalizationErrors(const UITextSystemLink* link, const UIGeometricData& geometricData)
+static void DrawLocalizationErrors(const UITextSystemLink* link, const UIGeometricData& geometricData)
 {
     UIControlBackground* textBg = link->GetTextBackground();
     TextBlock* textBlock = link->GetTextBlock();
@@ -488,4 +493,5 @@ static void RenderText_DrawLocalizationErrors(const UITextSystemLink* link, cons
 }
 
 #endif
+}
 }
