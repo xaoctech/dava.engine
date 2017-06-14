@@ -3,6 +3,8 @@
 #include "Base/BaseTypes.h"
 #include "UI/UISystem.h"
 
+struct UITextSystemTest;
+
 namespace DAVA
 {
 class UIControl;
@@ -32,5 +34,7 @@ private:
     void RemoveLink(UITextComponent* component);
 
     Vector<UITextSystemLink*> links;
+
+    friend struct UITextSystemTest;
 };
 }

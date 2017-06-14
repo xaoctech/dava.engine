@@ -13,6 +13,7 @@
 #include "UI/UIScreen.h"
 #include "UI/UIScreenTransition.h"
 #include "UI/UIScreenshoter.h"
+#include "Utils/StringUtils.h"
 
 namespace DAVA
 {

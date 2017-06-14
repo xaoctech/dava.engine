@@ -28,13 +28,6 @@ DAVA_TESTCLASS (UITextSystemTest)
         UIControlSystem::Instance()->SetScreen(screen.Get());
         UIControlSystem::Instance()->Update();
 
-        // DefaultUIPackageBuilder pkgBuilder;
-        // bool loaded = UIPackageLoader().LoadPackage("~res:/UI/UITextTest.yaml", &pkgBuilder);		
-		// DVASSERT(loaded);
-        
-		// newControl = pkgBuilder.GetPackage()->GetControl("NewText");
-        // DVASSERT(newControl.Get() != nullptr);
-
         newControl = new UIControl();
 
         screen->AddControl(newControl.Get());
@@ -51,11 +44,22 @@ DAVA_TESTCLASS (UITextSystemTest)
         sys->Process(0.f);
     }
 
-    DAVA_TEST(UpdateTest)
+    DAVA_TEST (LoadYamlTest)
+    {
+        DefaultUIPackageBuilder pkgBuilder;
+        bool loaded = UIPackageLoader().LoadPackage("~res:/UI/UITextTest.yaml", &pkgBuilder);
+        DVASSERT(loaded);
+
+        RefPtr<UIControl> control;
+		control = pkgBuilder.GetPackage()->GetControl("NewText");
+        TEST_VERIFY(control.Get() != nullptr);
+    }
+
+    DAVA_TEST (UpdateTest)
     {
         const String testData = R"(
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc elementum lectus quis mauris molestie, sed consectetur risus dictum. Ut mattis ornare magna, nec interdum nunc interdum nec. 
-            )";
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc elementum lectus quis mauris molestie, sed consectetur risus dictum. Ut mattis ornare magna, nec interdum nunc interdum nec. 
+        )";
         UITextComponent* c = newControl->GetOrCreateComponent<UITextComponent>();
         DVASSERT(c);
         c->SetText(testData);
@@ -63,11 +67,42 @@ DAVA_TESTCLASS (UITextSystemTest)
         TEST_VERIFY(c->IsModified() == true);
 
         UpdateSystem();
-        
-        TEST_VERIFY(c->IsModified() == false);        
+
+        TEST_VERIFY(c->IsModified() == false);
     }
 
-	DAVA_TEST(CloneTest)
+    DAVA_TEST (AddRemoveTest)
+    {
+        RefPtr<UITextComponent> orig;
+        orig = newControl->GetComponent<UITextComponent>();
+
+        TEST_VERIFY(orig->GetLink());
+
+        UpdateSystem();
+        UITextSystem* sys = UIControlSystem::Instance()->GetSystem<UITextSystem>();
+        auto linksCount = sys->links.size();
+
+        RefPtr<UITextComponent>
+        copy(orig->Clone());
+        TEST_VERIFY(orig->GetLink() != nullptr);
+        TEST_VERIFY(copy->GetLink() == nullptr);
+
+        newControl->RemoveComponent(orig.Get());
+        TEST_VERIFY(orig->GetLink() == nullptr);
+        TEST_VERIFY(copy->GetLink() == nullptr);
+
+        UpdateSystem();
+        TEST_VERIFY(linksCount - 1 == sys->links.size());
+
+        newControl->AddComponent(copy.Get());
+        TEST_VERIFY(orig->GetLink() == nullptr);
+        TEST_VERIFY(copy->GetLink() != nullptr);
+
+        UpdateSystem();
+        TEST_VERIFY(linksCount == sys->links.size());
+    }
+
+    DAVA_TEST (CloneTest)
     {
         RefPtr<UITextComponent> orig;
         orig = newControl->GetComponent<UITextComponent>();
@@ -102,8 +137,9 @@ DAVA_TESTCLASS (UITextSystemTest)
         TEST_VERIFY(orig->GetPerPixelAccuracyType() == copy->GetPerPixelAccuracyType());
         TEST_VERIFY(orig->GetUseRtlAlign() == copy->GetUseRtlAlign());
         TEST_VERIFY(orig->IsForceBiDiSupportEnabled() == copy->IsForceBiDiSupportEnabled());
-		
-    }
 
+        copy->SetText("4321");
+        TEST_VERIFY(orig->GetText() != copy->GetText());
+    }
 
 };
