@@ -34,7 +34,5 @@ private:
     void RemoveLink(UITextComponent* component);
 
     Vector<UITextSystemLink*> links;
-
-    friend struct UITextSystemTest;
 };
 }

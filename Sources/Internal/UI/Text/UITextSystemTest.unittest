@@ -83,8 +83,6 @@ DAVA_TESTCLASS (UITextSystemTest)
         UpdateSystem();
 
         UITextSystem* sys = UIControlSystem::Instance()->GetSystem<UITextSystem>();
-        auto linksCount = sys->links.size();
-        TEST_VERIFY(linksCount > 0);
 
         RefPtr<UITextComponent>
         copy(orig->Clone());
@@ -96,14 +94,12 @@ DAVA_TESTCLASS (UITextSystemTest)
         TEST_VERIFY(copy->GetLink() == nullptr);
 
         UpdateSystem();
-        TEST_VERIFY(linksCount - 1 == sys->links.size());
 
         newControl->AddComponent(copy.Get());
         TEST_VERIFY(orig->GetLink() == nullptr);
         TEST_VERIFY(copy->GetLink() != nullptr);
 
         UpdateSystem();
-        TEST_VERIFY(linksCount == sys->links.size());
     }
 
     DAVA_TEST (CloneTest)
