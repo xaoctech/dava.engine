@@ -333,6 +333,7 @@ ParticleLayer* ParticleLayer::Clone()
     if (alphaRemapOverLife)
         dstLayer->alphaRemapOverLife.Set(alphaRemapOverLife->Clone());
     dstLayer->enableAlphaRemap = enableAlphaRemap;
+    dstLayer->alphaRemapLoopCount = alphaRemapLoopCount;
 
     return dstLayer;
 }
@@ -657,6 +658,13 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
     if (scaleVelocityFactorNode)
     {
         scaleVelocityFactor = scaleVelocityFactorNode->AsFloat();
+    }
+
+    alphaRemapLoopCount = 1.0f;
+    const YamlNode* alphaRemapLoopCountNode = node->Get("alphaRemapLoopCount");
+    if (alphaRemapLoopCountNode)
+    {
+        alphaRemapLoopCount = alphaRemapLoopCountNode->AsFloat();
     }
 
     alphaRemapOverLife = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("alphaRemapOverLife"));
@@ -1010,6 +1018,7 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
     PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "fresToAlphaBias", fresnelToAlphaBias);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "fresToAlphaPower", fresnelToAlphaPower);
 
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "alphaRemapLoopCount", alphaRemapLoopCount);
     // Truncate an extension of the sprite file.
     FilePath savePath = spritePath;
     if (!savePath.IsEmpty())

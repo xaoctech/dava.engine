@@ -166,6 +166,7 @@ public:
     {
         DAVA::FilePath alphaRemapPath;
         bool enableAlphaRemap = false;
+        DAVA::float32 alphaRemapLoopCount = 1.0f;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> alphaRemapOverLife;
     };
 

@@ -973,6 +973,7 @@ void EmitterLayerWidget::OnAlphaRemapPropertiesChanged()
     CommandChangeAlphaRemapProperties::AlphaRemapParams params;
     params.alphaRemapOverLife = propAlphaRemapOverLife.GetPropLine();
     params.enableAlphaRemap = enableAlphaRemapCheckBox->isChecked();
+    params.alphaRemapLoopCount = static_cast<DAVA::float32>(alphaRemapLoopCountSpin->value());
     params.alphaRemapPath = alphaPath;
 
     DVASSERT(GetActiveScene() != nullptr);
@@ -1109,6 +1110,7 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     noiseScrollWidget->setVisible(enableNoiseCheckBox->isChecked() && enableNoiseScrollCheckBox->isChecked());
 
     enableAlphaRemapCheckBox->setChecked(layer->enableAlphaRemap);
+    alphaRemapLoopCountSpin->setValue(layer->alphaRemapLoopCount);
     alphaRemapLayoutWidget->setVisible(enableAlphaRemapCheckBox->isChecked());
 
     isLoopedCheckBox->setChecked(layer->isLooped);
@@ -1697,10 +1699,23 @@ void EmitterLayerWidget::CreateAlphaRemapLayoutWidget()
     alphaVBox->addWidget(alphaRemapOverLifeTimeLine);
     alphaRemapMainLayout->addLayout(alphaVBox);
 
+    alphaRemapLoopCountSpin = new EventFilterDoubleSpinBox();
+    alphaRemapLoopCountSpin->setMinimum(1);
+    alphaRemapLoopCountSpin->setMaximum(50);
+    alphaRemapLoopCountSpin->setSingleStep(1);
+    alphaRemapLoopCountSpin->setDecimals(0);
+
+    alphaRemapLoopLabel = new QLabel("Loop count");
+    QHBoxLayout* alphaHBox = new QHBoxLayout();
+    alphaHBox->addWidget(alphaRemapLoopLabel);
+    alphaHBox->addWidget(alphaRemapLoopCountSpin);
+    alphaRemapMainLayout->addLayout(alphaHBox);
+
     connect(alphaRemapTextureBtn, SIGNAL(clicked(bool)), this, SLOT(OnAlphaRemapBtn()));
     connect(alphaRemapTextureFolderBtn, SIGNAL(clicked(bool)), this, SLOT(OnAlphaRemapFolderBtn()));
     connect(alphaRemapSpritePathLabel, SIGNAL(textChanged(const QString&)), this, SLOT(OnAlphaRemapTexturePathChanged(const QString&)));
     connect(alphaRemapSpritePathLabel, SIGNAL(textEdited(const QString&)), this, SLOT(OnAlphaRemapSpritePathEdited(const QString&)));
+    connect(alphaRemapLoopCountSpin, SIGNAL(valueChanged(double)), this, SLOT(OnAlphaRemapPropertiesChanged()));
     alphaRemapSpritePathLabel->installEventFilter(this);
 }
 

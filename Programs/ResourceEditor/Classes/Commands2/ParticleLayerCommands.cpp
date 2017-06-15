@@ -258,6 +258,7 @@ CommandChangeAlphaRemapProperties::CommandChangeAlphaRemapProperties(DAVA::Parti
         oldParams.alphaRemapOverLife = layer->alphaRemapOverLife;
         oldParams.alphaRemapPath = layer->alphaRemapPath;
         oldParams.enableAlphaRemap = layer->enableAlphaRemap;
+        oldParams.alphaRemapLoopCount = layer->alphaRemapLoopCount;
     }
 }
 
@@ -283,5 +284,6 @@ void CommandChangeAlphaRemapProperties::ApplyParams(AlphaRemapParams& params)
         layer->alphaRemapOverLife = params.alphaRemapOverLife;
         layer->SetAlphaRemap(params.alphaRemapPath);
         layer->enableAlphaRemap = params.enableAlphaRemap;
+        layer->alphaRemapLoopCount = params.alphaRemapLoopCount;
     }
 }

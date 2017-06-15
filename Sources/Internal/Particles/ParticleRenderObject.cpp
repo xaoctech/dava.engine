@@ -54,9 +54,6 @@ void ParticleRenderObject::PrepareToRender(Camera* camera)
     if (!Renderer::GetOptions()->IsOptionEnabled(RenderOptions::PARTICLES_PREPARE_BUFFERS))
         return;
 
-    float dt = SystemTimer::GetFrameDelta();
-    float time = SystemTimer::GetFrameTimestamp();
-
     PrepareRenderData(camera);
 
     if (!Renderer::GetOptions()->IsOptionEnabled(RenderOptions::PARTICLES_DRAW))

@@ -581,7 +581,11 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
             }
 
             if (group.layer->enableAlphaRemap && group.layer->alphaRemapSprite && group.layer->alphaRemapOverLife != nullptr)
-                current->alphaRemap = group.layer->alphaRemapOverLife->GetValue(overLifeTime);
+            {
+                float32 lookup = overLifeTime * group.layer->alphaRemapLoopCount;
+                float32 intPart;
+                current->alphaRemap = group.layer->alphaRemapOverLife->GetValue(modff(lookup, &intPart));
+            }
 
             if (group.layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE)
                 UpdateStripe(current, effect->effectData, group, deltaTime, bbox, currForceValues, forcesCount, group.layer->IsLodActive(effect->activeLodLevel));
