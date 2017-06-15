@@ -550,7 +550,7 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                 }
                 else
                 {
-                    uv1 = Vector3(startU , startV, 0.0f);
+                    uv1 = Vector3(startU, startV, 0.0f);
                     uv2 = Vector3(startU + 1.0f, startV, 0.0f);
                 }
 

@@ -1598,9 +1598,9 @@ void EmitterLayerWidget::CreateStripeLayoutWidget()
     stripeUsePerspectiveMappingCheckBox = new QCheckBox("Use perspective mapping.");
     vertStripeLayout->addWidget(stripeUsePerspectiveMappingCheckBox);
     connect(stripeUsePerspectiveMappingCheckBox,
-        SIGNAL(stateChanged(int)),
-        this,
-        SLOT(OnStripePropertiesChanged()));
+            SIGNAL(stateChanged(int)),
+            this,
+            SLOT(OnStripePropertiesChanged()));
 
     stripeLifetimeSpin = new EventFilterDoubleSpinBox();
     stripeLifetimeSpin->setMinimum(-100);

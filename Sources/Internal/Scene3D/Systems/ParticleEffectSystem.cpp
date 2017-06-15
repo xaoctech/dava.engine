@@ -189,7 +189,7 @@ void ParticleEffectSystem::PrebuildMaterials(ParticleEffectComponent* component)
                 matData.blending = layer->blending;
                 matData.enableAlphaRemap = layer->enableAlphaRemap;
                 matData.alphaRemapTexture = alphaRemap;
-                matData.usePerpMapping = layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE;
+                matData.usePerpMapping = layer->usePerspectiveMapping;
 
                 GetMaterial(std::move(matData));
             }
@@ -232,7 +232,7 @@ void ParticleEffectSystem::RunEmitter(ParticleEffectComponent* effect, ParticleE
             matData.blending = layer->blending;
             matData.enableAlphaRemap = layer->enableAlphaRemap;
             matData.alphaRemapTexture = alphaRemap;
-            matData.usePerpMapping = layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE;
+            matData.usePerpMapping = layer->usePerspectiveMapping;
 
             group.material = GetMaterial(std::move(matData));
         }
