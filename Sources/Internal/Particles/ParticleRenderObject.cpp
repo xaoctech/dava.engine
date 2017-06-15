@@ -15,8 +15,8 @@ ParticleRenderObject::ParticleRenderObject(ParticleEffectData* effect)
     layoutsData[1 << FRAME_BLEND] = { rhi::VS_TEXCOORD, 1, rhi::VDT_FLOAT, 3 };
     layoutsData[1 << FLOW] = { rhi::VS_TEXCOORD, 2, rhi::VDT_FLOAT, 4 }; // uv, speed, offset
     layoutsData[1 << NOISE] = { rhi::VS_TEXCOORD, 3, rhi::VDT_FLOAT, 3 }; // uv, scale
-    layoutsData[1 << FRESNEL_TO_ALPHA] = { rhi::VS_TEXCOORD, 5, rhi::VDT_FLOAT, 1 }; // fres.
-    layoutsData[1 << ALPHA_REMAP] = { rhi::VS_TEXCOORD, 6, rhi::VDT_FLOAT, 1 }; // fres.
+    layoutsData[1 << FRESNEL_TO_ALPHA] = { rhi::VS_TEXCOORD, 5, rhi::VDT_FLOAT, 1 }; // fres. TODO: join with remap and proj.
+    layoutsData[1 << ALPHA_REMAP_PERP_MAPPING] = { rhi::VS_TEXCOORD, 6, rhi::VDT_FLOAT, 2 }; // remap.
 
     uint16 numBits = static_cast<uint16>(layoutsData.size());
 
@@ -152,8 +152,8 @@ uint32 ParticleRenderObject::GetVertexStride(ParticleLayer* layer)
         vertexStride += (2 + 1) * sizeof(float); // texcoord.xy + noise scale
     if (layer->useFresnelToAlpha)
         vertexStride += (1) * sizeof(float); // fres
-    if (layer->enableAlphaRemap)
-        vertexStride += (1) * sizeof(float);
+    if (layer->enableAlphaRemap || layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE)
+        vertexStride += (2) * sizeof(float);
     return vertexStride;
 }
 
@@ -187,11 +187,11 @@ uint32 ParticleRenderObject::SelectLayout(const ParticleLayer& layer)
     key |= static_cast<uint32>(layer.enableFlow) << static_cast<uint32>(eParticlePropsOffsets::FLOW);
     key |= static_cast<uint32>(layer.enableNoise) << static_cast<uint32>(eParticlePropsOffsets::NOISE);
     key |= static_cast<uint32>(layer.useFresnelToAlpha) << static_cast<uint32>(eParticlePropsOffsets::FRESNEL_TO_ALPHA);
-    key |= static_cast<uint32>(layer.enableAlphaRemap) << static_cast<uint32>(eParticlePropsOffsets::ALPHA_REMAP);
+    key |= static_cast<uint32>(layer.enableAlphaRemap || layer.type == ParticleLayer::TYPE_PARTICLE_STRIPE) << static_cast<uint32>(eParticlePropsOffsets::ALPHA_REMAP_PERP_MAPPING);
     return layoutMap[key];
 }
 
-void ParticleRenderObject::UpdateStripeVertex(float32*& dataPtr, Vector3& position, Vector2& uv, float32* color, ParticleLayer* layer, Particle* particle, float32 fresToAlpha)
+void ParticleRenderObject::UpdateStripeVertex(float32*& dataPtr, Vector3& position, Vector3& uv, float32* color, ParticleLayer* layer, Particle* particle, float32 fresToAlpha)
 {
     *dataPtr++ = position.x;
     *dataPtr++ = position.y;
@@ -225,10 +225,8 @@ void ParticleRenderObject::UpdateStripeVertex(float32*& dataPtr, Vector3& positi
     {
         *dataPtr++ = fresToAlpha;
     }
-    if (layer->enableAlphaRemap)
-    {
-        *dataPtr++ = particle->alphaRemap;
-    }
+    *dataPtr++ = particle->alphaRemap;
+    *dataPtr++ = uv.z;
 }
 
 void ParticleRenderObject::AppendRenderBatch(NMaterial* material, uint32 indexCount, uint32 vertexLayout, const DynamicBufferAllocator::AllocResultVB& vBuffer)
@@ -444,8 +442,9 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
                     for (int32 i = 0; i < 4; ++i)
                     {
                         verts[i][ptrOffset + 0] = current->alphaRemap;
+                        verts[i][ptrOffset + 1] = 0.0f;
                     }
-                    ptrOffset++;
+                    ptrOffset += 2;
                 }
                 currpos += particleStride;
                 verteciesAppended += 4;
@@ -535,10 +534,15 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                 if (group.layer->stripeSizeOverLifeProp)
                     size *= group.layer->stripeSizeOverLifeProp->GetValue(0.0f);
                 Vector3 scaledBasis = basisVector * size;
+                float32 fullEdgeSize = size + size;
                 Vector3 left = base.position + data.inheritPositionOffset + scaledBasis;
                 Vector3 right = base.position + data.inheritPositionOffset - scaledBasis;
-                Vector2 uv1(currentParticle->life * group.layer->stripeUScrollSpeed, currentParticle->life * group.layer->stripeVScrollSpeed);
-                Vector2 uv2(currentParticle->life * group.layer->stripeUScrollSpeed + 1.0f, currentParticle->life * group.layer->stripeVScrollSpeed);
+
+                float32 startU = currentParticle->life * group.layer->stripeUScrollSpeed;
+                float32 startV = currentParticle->life * group.layer->stripeVScrollSpeed;
+
+                Vector3 uv1(startU * fullEdgeSize, startV * fullEdgeSize, fullEdgeSize);
+                Vector3 uv2((startU + 1.0f) * fullEdgeSize, startV * fullEdgeSize, fullEdgeSize);
                 float* dataPtr = reinterpret_cast<float*>(vb.data);
 
                 Color colOverLife = Color::White;
@@ -558,6 +562,7 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                     size = group.layer->stripeStartSize * 0.5f;
                     if (group.layer->stripeSizeOverLifeProp)
                         size *= group.layer->stripeSizeOverLifeProp->GetValue(overLifeTime);
+                    fullEdgeSize = size + size;
                     scaledBasis = basisVector * size;
                     left = node.position + data.inheritPositionOffset + scaledBasis;
                     right = node.position + data.inheritPositionOffset - scaledBasis;
@@ -572,9 +577,13 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                     float32 tile = 1.0f;
                     if (group.layer->stripeTextureTile)
                         tile = group.layer->stripeTextureTile->GetValue(overLifeTime);
-                    float32 v = distance * tile + currentParticle->life * group.layer->stripeVScrollSpeed;
+                    float32 v = (distance * tile + currentParticle->life * group.layer->stripeVScrollSpeed) * fullEdgeSize;
+                    uv1.x = startU * fullEdgeSize;
                     uv1.y = v;
+                    uv1.z = fullEdgeSize;
+                    uv2.x = (startU + 1.0f) * fullEdgeSize;
                     uv2.y = v;
+                    uv2.z = fullEdgeSize;
 
                     UpdateStripeVertex(dataPtr, left, uv1, color, group.layer, currentParticle, fresnelToAlpha);
                     UpdateStripeVertex(dataPtr, right, uv2, color, group.layer, currentParticle, fresnelToAlpha);

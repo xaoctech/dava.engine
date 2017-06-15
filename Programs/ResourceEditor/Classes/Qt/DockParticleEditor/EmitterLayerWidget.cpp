@@ -1932,8 +1932,8 @@ void EmitterLayerWidget::SetLayerMode(bool isSuperemitter, bool isStripe)
     spinTimeLine->setVisible(!isStripe);
     spinOverLifeTimeLine->setVisible(!isStripe);
 
-    enableFlowCheckBox->setVisible(!isSuperemitter);
-    flowLayoutWidget->setVisible(!isSuperemitter && enableFlowCheckBox->isChecked());
+    enableFlowCheckBox->setVisible(!isSuperemitter && !isStripe);
+    flowLayoutWidget->setVisible(!isSuperemitter && enableFlowCheckBox->isChecked() && !isStripe);
 
     stripeLayoutWidget->setVisible(!isSuperemitter && isStripe);
 

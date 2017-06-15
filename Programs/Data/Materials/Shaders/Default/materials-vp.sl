@@ -62,8 +62,8 @@ vertex_in
         float texcoord5 : TEXCOORD5;  // fresnel.
     #endif
 
-    #if PARTICLES_APHA_REMAP
-        float texcoord6 : TEXCOORD6;
+    #if PARTICLES_APHA_REMAP || PARTICLES_PERSPECTIVE_MAPPING
+        float2 texcoord6 : TEXCOORD6;
     #endif
 
     #if WIND_ANIMATION
@@ -84,7 +84,11 @@ vertex_out
     #if MATERIAL_SKYBOX
     float3 varTexCoord0 : TEXCOORD0;
     #elif MATERIAL_TEXTURE || TILED_DECAL_MASK
-    float2 varTexCoord0 : TEXCOORD0;
+        #if PARTICLES_PERSPECTIVE_MAPPING
+            float3 varTexCoord0 : TEXCOORD0;
+        #else
+            float2 varTexCoord0 : TEXCOORD0;
+        #endif
     #endif
 
     #if MATERIAL_DECAL || ( MATERIAL_LIGHTMAP  && VIEW_DIFFUSE ) || FRAME_BLEND || ALPHA_MASK
@@ -681,23 +685,26 @@ vertex_out vp_main( vertex_in input )
 #endif
 
 #if MATERIAL_SKYBOX || MATERIAL_TEXTURE || TILED_DECAL_MASK
-    output.varTexCoord0 = input.texcoord0;
+    output.varTexCoord0.xy = input.texcoord0;
+    #if PARTICLES_PERSPECTIVE_MAPPING
+        output.varTexCoord0.z = input.texcoord6.y;
+    #endif
 #endif    
 
 #if MATERIAL_TEXTURE
     #if TEXTURE0_SHIFT_ENABLED
-        output.varTexCoord0 += texture0Shift;
+        output.varTexCoord0.xy += texture0Shift;
     #endif
 
         
     #if TEXTURE0_ANIMATION_SHIFT
-        output.varTexCoord0 += frac(tex0ShiftPerSecond * globalTime);
+        output.varTexCoord0.xy += frac(tex0ShiftPerSecond * globalTime);
     #endif
 
 #endif
 
 #if TILED_DECAL_MASK
-    float2 resDecalTexCoord = output.varTexCoord0 * decalTileCoordScale + decalTileCoordOffset;    
+    float2 resDecalTexCoord = output.varTexCoord0.xy * decalTileCoordScale + decalTileCoordOffset;    
     #if TILE_DECAL_ROTATION
         resDecalTexCoord = float2(resDecalTexCoord.x+resDecalTexCoord.y, resDecalTexCoord.y-resDecalTexCoord.x);
     #endif
@@ -705,7 +712,7 @@ vertex_out vp_main( vertex_in input )
 #endif
     
 #if MATERIAL_DETAIL
-    output.varDetailTexCoord = output.varTexCoord0 * detailTileCoordScale;
+    output.varDetailTexCoord = output.varTexCoord0.xy * detailTileCoordScale;
 #endif
 
 

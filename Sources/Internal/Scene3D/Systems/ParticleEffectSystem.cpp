@@ -75,6 +75,11 @@ NMaterial* ParticleEffectSystem::GetMaterial(MaterialData&& materialData)
         material->AddTexture(NMaterialTextureName::TEXTURE_ALPHA_REMAP, materialData.alphaRemapTexture);
     }
 
+    if (materialData.usePerpMapping)
+    {
+        material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_PERSPECTIVE_MAPPING, 1);
+    }
+
     material->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, materialData.texture);
     material->AddFlag(NMaterialFlagName::FLAG_BLENDING, materialData.blending);
 
@@ -120,8 +125,9 @@ void ParticleEffectSystem::SetGlobalMaterial(NMaterial* material)
     const static uint32 FLOWMAP_MASK = 1 << 4;
     const static uint32 FLOWMAP_ANIMATION_MASK = 1 << 5;
     const static uint32 ENABLE_ALPHA_REMAP_MASK = 1 << 6;
-    const static uint32 BLEND_SHIFT = 7;
-    for (uint32 i = 0; i < 384; i++)
+    const static uint32 PERP_MAPPING_MASK = 1 << 7;
+    const static uint32 BLEND_SHIFT = 8;
+    for (uint32 i = 0; i < 768; i++)
     {
         bool enableFrameBlend = (i & FRAME_BLEND_MASK) == FRAME_BLEND_MASK;
         bool enableFog = (i & FOG_MASK) == FOG_MASK;
@@ -130,6 +136,8 @@ void ParticleEffectSystem::SetGlobalMaterial(NMaterial* material)
         bool enableFlow = (i & FLOWMAP_MASK) == FLOWMAP_MASK;
         bool enableFlowAnimation = (i & FLOWMAP_ANIMATION_MASK) == FLOWMAP_ANIMATION_MASK;
         bool enableAlphaRemap = (i & ENABLE_ALPHA_REMAP_MASK) == ENABLE_ALPHA_REMAP_MASK;
+        bool perpMapping = (i & PERP_MAPPING_MASK) == PERP_MAPPING_MASK;
+
         uint32 blending = (i >> BLEND_SHIFT) + 1;
 
         ScopedPtr<NMaterial> material(new NMaterial());
@@ -149,6 +157,8 @@ void ParticleEffectSystem::SetGlobalMaterial(NMaterial* material)
             material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_FLOWMAP_ANIMATION, 1);
         if (enableAlphaRemap)
             material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_ALPHA_REMAP, 1);
+        if (perpMapping)
+            material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_PERSPECTIVE_MAPPING, 1);
 
         material->AddFlag(NMaterialFlagName::FLAG_BLENDING, blending);
         material->PreCacheFX();
@@ -179,6 +189,7 @@ void ParticleEffectSystem::PrebuildMaterials(ParticleEffectComponent* component)
                 matData.blending = layer->blending;
                 matData.enableAlphaRemap = layer->enableAlphaRemap;
                 matData.alphaRemapTexture = alphaRemap;
+                matData.usePerpMapping = layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE;
 
                 GetMaterial(std::move(matData));
             }
@@ -221,6 +232,7 @@ void ParticleEffectSystem::RunEmitter(ParticleEffectComponent* effect, ParticleE
             matData.blending = layer->blending;
             matData.enableAlphaRemap = layer->enableAlphaRemap;
             matData.alphaRemapTexture = alphaRemap;
+            matData.usePerpMapping = layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE;
 
             group.material = GetMaterial(std::move(matData));
         }

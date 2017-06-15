@@ -27,6 +27,7 @@ public:
         bool useFresnelToAlpha = false;
         Texture* alphaRemapTexture = nullptr;
         bool enableAlphaRemap = false;
+        bool usePerpMapping = false;
 
         eBlending blending = BLENDING_ALPHABLEND;
 
@@ -44,7 +45,8 @@ public:
             && useFresnelToAlpha == rhs.useFresnelToAlpha
             && blending == rhs.blending
             && enableAlphaRemap == rhs.enableAlphaRemap
-            && alphaRemapTexture == rhs.alphaRemapTexture;
+            && alphaRemapTexture == rhs.alphaRemapTexture
+            && usePerpMapping == rhs.usePerpMapping;
         }
     };
 

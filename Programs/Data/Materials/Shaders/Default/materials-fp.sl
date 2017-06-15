@@ -8,13 +8,11 @@
 fragment_in
 {    
     #if MATERIAL_TEXTURE
-        
-        #if TEXTURE0_ANIMATION_SHIFT
-        float2 varTexCoord0 : TEXCOORD0;
+        #if PARTICLES_PERSPECTIVE_MAPPING
+            float3 varTexCoord0 : TEXCOORD0;
         #else
-        float2 varTexCoord0 : TEXCOORD0;
+            float2 varTexCoord0 : TEXCOORD0;
         #endif
-
     #elif MATERIAL_SKYBOX
         
         float3 varTexCoord0 : TEXCOORD0;
@@ -199,7 +197,7 @@ FresnelShlickVec3( float NdotL, float3 Cspec )
 
 
 ////////////////////////////////////////////////////////////////////////////////
-//
+//  
 
 fragment_out fp_main( fragment_in input )
 {
@@ -216,7 +214,7 @@ fragment_out fp_main( fragment_in input )
         #if PIXEL_LIT || ALPHATEST || ALPHABLEND || VERTEX_LIT
             #if FLOWMAP || PARTICLES_FLOWMAP
                 #if FLOWMAP
-                    float2 flowtc = input.varTexCoord0;
+                    float2 flowtc = input.varTexCoord0.xy;
                 #else
                     float2 flowtc = input.varParticleFlowTexCoord;
                 #endif
@@ -225,32 +223,38 @@ fragment_out fp_main( fragment_in input )
                 #if PARTICLES_NOISE
                     flowDir *= tex2D(noiseTex, input.varTexcoord6.xy).r * input.varTexcoord6.z;
                 #endif
-                half4 flowSample1 = half4(tex2D( albedo, input.varTexCoord0 + flowDir*flowData.x));
-                half4 flowSample2 = half4(tex2D( albedo, input.varTexCoord0 + flowDir*flowData.y));
+                half4 flowSample1 = half4(tex2D( albedo, input.varTexCoord0.xy + flowDir*flowData.x));
+                half4 flowSample2 = half4(tex2D( albedo, input.varTexCoord0.xy + flowDir*flowData.y));
                 half4 textureColor0 = lerp(flowSample1, flowSample2, half(flowData.z) );
             #else
-                float2 albedoUv = input.varTexCoord0;
+                float2 albedoUv = input.varTexCoord0.xy;
                 #if PARTICLES_NOISE
-                    float noiseSample = tex2D(noiseTex, input.varTexcoord6.xy).r * 2.0f - 1.0f;
+                    #if PARTICLES_PERSPECTIVE_MAPPING
+                        float noiseSample = tex2D(noiseTex, input.varTexcoord6.xy / input.varTexCoord0.z).r * 2.0f - 1.0f;
+                        noiseSample *= input.varTexCoord0.z;
+                    #else
+                        float noiseSample = tex2D(noiseTex, input.varTexcoord6.xy).r * 2.0f - 1.0f;
+                    #endif
                     noiseSample *= input.varTexcoord6.z;
-                    albedoUv += float2(noiseSample, noiseSample);
+                    albedoUv.xy += float2(noiseSample, noiseSample);
                 #endif
-                half4 textureColor0 = half4(tex2D( albedo, albedoUv ));
+                #if PARTICLES_PERSPECTIVE_MAPPING
+                    half4 textureColor0 = half4(tex2D( albedo, albedoUv / input.varTexCoord0.z ));
+                #else
+                    half4 textureColor0 = half4(tex2D( albedo, albedoUv ));
+                #endif
             #endif
-            
+
             #if ALPHA_MASK 
                 textureColor0.a *= FP_A8(tex2D( alphamask, input.varTexCoord1 ));
             #endif
 
             #if PARTICLES_APHA_REMAP
-                half v;
                 #if FRAME_BLEND
-                    v = input.varTexcoord3.y;
+                    float4 remap = tex2D(alphaRemapTex, float2(half(textureColor0.a), input.varTexcoord3.y));
                 #else
-                    v = input.varTexcoord3.x;
+                    float4 remap = tex2D(alphaRemapTex, float2(half(textureColor0.a), input.varTexcoord3.x));
                 #endif
-                half u = half(textureColor0.a);
-                float4 remap = tex2D(alphaRemapTex, float2(u, v));
                 textureColor0.a = remap.r;
             #endif
 
