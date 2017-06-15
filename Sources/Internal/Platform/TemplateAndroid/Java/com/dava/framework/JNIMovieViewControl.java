@@ -164,8 +164,10 @@ public class JNIMovieViewControl {
 					relLayoutParams.alignWithParent = true;
 					
 					RelativeLayout relativeLayout = new RelativeLayout(activity);
-					relativeLayout.setId(1984); // to find layout in DDMS
 					relativeLayout.addView(videoView, relLayoutParams);
+
+					// for debug purpose, to find layout in DDMS
+					// relativeLayout.setId(1984); 
 					
 					control.layout = relativeLayout;
 					control.videoView = videoView;

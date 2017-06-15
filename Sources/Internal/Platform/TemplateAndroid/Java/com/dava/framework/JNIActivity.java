@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.fmod.FMODAudioDevice;
-
 import android.app.Activity;
 import android.os.PowerManager;
 import android.content.Context;
@@ -44,8 +42,6 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 
     private JNIAccelerometer accelerometer = null;
     private View splashView = null;
-    
-    private FMODAudioDevice fmodDevice = new FMODAudioDevice();
     
     private InputManagerCompat inputManager = null;
     
@@ -307,8 +303,7 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
     {
         Log.d(JNIConst.LOG_TAG, "[Activity::onStart] in");
         super.onStart();
-        fmodDevice.start();
-        
+
         if (isFocused)
         {
             // we not lost focus, it can happen if 
@@ -490,7 +485,6 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
             }
         });
         
-        fmodDevice.stop();
         super.onStop();
         
         // The activity is no longer visible (it is now "stopped")

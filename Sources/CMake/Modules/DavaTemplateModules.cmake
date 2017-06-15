@@ -168,6 +168,23 @@ macro( modules_tree_info_execute )
     execute_process( COMMAND ${CMAKE_COMMAND} -G${CMAKE_GENERATOR} ${TMP_CMAKE_MODULE_INFO} -DMODULES_TREE_INFO=true -D${DAVA_PLATFORM_CURENT}=true ${CUSTOM_VALUE} ${CUSTOM_VALUE_2} ${CUSTOM_VALUE_3}
                      WORKING_DIRECTORY ${TMP_CMAKE_MODULE_INFO_BUILD} )
 
+    get_cmake_property(CACHE_VARS CACHE_VARIABLES)
+    foreach(CACHE_VAR ${CACHE_VARS})
+        get_property(CACHE_VAR_HELPSTRING CACHE ${CACHE_VAR} PROPERTY HELPSTRING)
+        get_property(CACHE_VAR_TYPE CACHE ${CACHE_VAR} PROPERTY TYPE)
+        if(CACHE_VAR_TYPE STREQUAL "UNINITIALIZED")
+          set(CACHE_VAR_TYPE)
+        else()
+          set(CACHE_VAR_TYPE :${CACHE_VAR_TYPE})
+        endif()
+        list(APPEND CMAKE_ARGS "-D${CACHE_VAR}${CACHE_VAR_TYPE}=${${CACHE_VAR}}")
+    endforeach()
+
+    message("1111")
+    message("${CMAKE_COMMAND}")
+
+#-DANDROID_ABI=${ANDROID_ABI} -DANDROID_NDK=${ANDROID_NDK} -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${CMAKE_LIBRARY_OUTPUT_DIRECTORY} #-DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM} -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE} -DANDROID_NATIVE_API_LEVEL=${ANDROID_NATIVE_API_LEVEL} #-DANDROID_STL_FORCE_FEATURES=${ANDROID_STL_FORCE_FEATURES} -DANDROID_STL=${ANDROID_STL} -DCMAKE_BUILD_TYPE=${DCMAKE_BUILD_TYPE} #-DANDROID_CUSTOM_BUILD=${ANDROID_CUSTOM_BUILD}
+
     include( ${TMP_CMAKE_MODULE_INFO}/ModulesInfo.cmake )
 
 endmacro()
@@ -414,11 +431,11 @@ macro( setup_main_module )
         get_property( MAIN_MODULES_FIND_FIRST_CALL_LIST GLOBAL PROPERTY MAIN_MODULES_FIND_FIRST_CALL_LIST )
 
         if( NOT MAIN_MODULES_FIND_FIRST_CALL_LIST )            
-            modules_tree_info_execute()
+            #modules_tree_info_execute()
         endif()
 
         if( MODULE_MANAGER_TEMPLATE )            
-            generated_initialization_module_code()
+            #generated_initialization_module_code()
         endif()
 
         list( APPEND MAIN_MODULES_FIND_FIRST_CALL_LIST "call" )

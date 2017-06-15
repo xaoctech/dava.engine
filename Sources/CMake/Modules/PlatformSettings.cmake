@@ -32,14 +32,14 @@ else()
 endif()
 
 if     ( ANDROID )
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -fno-standalone-debug" )
-    set( CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -mfloat-abi=softfp -mfpu=neon -frtti" )
-    set( CMAKE_ECLIPSE_MAKE_ARGUMENTS -j8 )
-    
-    if ( ANDROID_STRIP_EXPORTS )
-        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden" )
-    endif ()
-
+#    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -fno-standalone-debug" )
+#    set( CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -mfloat-abi=softfp -mfpu=neon -frtti" )
+#    set( CMAKE_ECLIPSE_MAKE_ARGUMENTS -j8 )
+#    
+#    if ( ANDROID_STRIP_EXPORTS )
+#        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden" )
+#    endif ()
+#
 elseif ( IOS     )
     set( CMAKE_CXX_FLAGS_DEBUG    "${CMAKE_CXX_FLAGS} -O0" )
     set( CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS} -O3" )
@@ -135,140 +135,140 @@ if( NOT DISABLE_DEBUG )
 endif  ()
 
 ##
-if( WARNING_DISABLE)
-
-    if( WIN32 )
-        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W0" )
-    elseif( APPLE )
-        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w" )
-    endif()
-
-
-elseif( WARNINGS_AS_ERRORS )
-
-
-    if( ANDROID OR MACOS)
-        set( LOCAL_DISABLED_WARNINGS "-Werror " ) 
-    endif()
-
-    set( LOCAL_DISABLED_WARNINGS "${LOCAL_DISABLED_WARNINGS}\
-        -Weverything \
-        -Wno-c++98-compat-pedantic \
-        -Wno-newline-eof \
-        -Wno-gnu-anonymous-struct \
-        -Wno-nested-anon-types \
-        -Wno-float-equal \
-        -Wno-extra-semi \
-        -Wno-unused-parameter \
-        -Wno-shadow \
-        -Wno-exit-time-destructors \
-        -Wno-documentation \
-        -Wno-global-constructors \
-        -Wno-padded \
-        -Wno-weak-vtables \
-        -Wno-variadic-macros \
-        -Wno-deprecated-register \
-        -Wno-sign-conversion \
-        -Wno-sign-compare \
-        -Wno-format-nonliteral \
-        -Wno-cast-align \
-        -Wno-conversion \
-        -Wno-zero-length-array \
-        -Wno-switch-enum \
-        -Wno-c99-extensions \
-        -Wno-missing-prototypes \
-        -Wno-missing-field-initializers \
-        -Wno-conditional-uninitialized \
-        -Wno-covered-switch-default \
-        -Wno-deprecated \
-        -Wno-unused-macros \
-        -Wno-disabled-macro-expansion \
-        -Wno-undef \
-        -Wno-char-subscripts \
-        -Wno-unneeded-internal-declaration \
-        -Wno-unused-variable \
-        -Wno-used-but-marked-unused \
-        -Wno-missing-variable-declarations \
-        -Wno-gnu-statement-expression \
-        -Wno-missing-braces \
-        -Wno-reorder \
-        -Wno-implicit-fallthrough \
-        -Wno-ignored-qualifiers \
-        -Wno-shift-sign-overflow \
-        -Wno-mismatched-tags \
-        -Wno-missing-noreturn \
-        -Wno-consumed \
-        -Wno-sometimes-uninitialized \
-        -Wno-delete-non-virtual-dtor \
-        -Wno-header-hygiene \
-        -Wno-unknown-warning-option \
-        -Wno-reserved-id-macro \
-        -Wno-documentation-pedantic \
-        -Wno-unused-local-typedef \
-        -Wno-nullable-to-nonnull-conversion \
-        -Wno-super-class-method-mismatch \
-        -Wno-nonnull \
-        -Wno-gnu-zero-variadic-macro-arguments")
-
-## temporary disabled warnings for MacOS. They will be fixed and removed from this list in near future
-    if( MACOS )
-        set( LOCAL_DISABLED_WARNINGS "${LOCAL_DISABLED_WARNINGS} \
-            -Wno-double-promotion \
-            -Wno-old-style-cast \
-            -Wno-packed \
-            -Wno-pessimizing-move \
-            -Wno-partial-availability \
-            -Wno-#warnings \
-            \
-            -Wno-unused-private-field \
-            -Wno-objc-method-access \
-            -Wno-undefined-reinterpret-cast \
-            -Wno-range-loop-analysis \
-            -Wno-potentially-evaluated-expression \
-            -Wno-overloaded-virtual \
-            -Wno-format-pedantic \
-            -Wno-shift-negative-value \
-            -Wno-return-stack-address \
-            -Wno-undefined-func-template \
-            -Wno-comma \
-        ")
-    endif()
-
-
-    if( ANDROID )
-        set( LOCAL_DISABLED_WARNINGS "${LOCAL_DISABLED_WARNINGS} \
-            -Wno-reserved-id-macro \
-            -Wno-unused-local-typedef \
-            -Wno-unknown-pragmas")
-        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LOCAL_DISABLED_WARNINGS}" ) # warnings as errors
-    elseif( APPLE )
-        set( LOCAL_DISABLED_WARNINGS "${LOCAL_DISABLED_WARNINGS} \
-            -Wno-padded \
-            -Wno-covered-switch-default \
-            -Wno-cstring-format-directive \
-            -Wno-duplicate-enum \
-            -Wno-infinite-recursion \
-            -Wno-objc-interface-ivars \
-            -Wno-direct-ivar-access \
-            -Wno-objc-missing-property-synthesis \
-            -Wno-over-aligned \
-            -Wno-unused-exception-parameter \
-            -Wno-idiomatic-parentheses \
-            -Wno-vla-extension \
-            -Wno-vla \
-            -Wno-overriding-method-mismatch \
-            -Wno-method-signatures \
-            -Wno-receiver-forward-class \
-            -Wno-semicolon-before-method-body \
-            -Wno-reserved-id-macro \
-            -Wno-import-preprocessor-directive-pedantic" )
-
-        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LOCAL_DISABLED_WARNINGS}" ) # warnings as errors
-    elseif( WIN32 )
-        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX" )
-    endif()
-
-endif()
+#if( WARNING_DISABLE)
+#
+#    if( WIN32 )
+#        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W0" )
+#    elseif( APPLE )
+#        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w" )
+#    endif()
+#
+#
+#elseif( WARNINGS_AS_ERRORS )
+#
+#
+#    if( ANDROID OR MACOS)
+#        set( LOCAL_DISABLED_WARNINGS "-Werror " ) 
+#    endif()
+#
+#    set( LOCAL_DISABLED_WARNINGS "${LOCAL_DISABLED_WARNINGS}\
+#        -Weverything \
+#        -Wno-c++98-compat-pedantic \
+#        -Wno-newline-eof \
+#        -Wno-gnu-anonymous-struct \
+#        -Wno-nested-anon-types \
+#        -Wno-float-equal \
+#        -Wno-extra-semi \
+#        -Wno-unused-parameter \
+#        -Wno-shadow \
+#        -Wno-exit-time-destructors \
+#        -Wno-documentation \
+#        -Wno-global-constructors \
+#        -Wno-padded \
+#        -Wno-weak-vtables \
+#        -Wno-variadic-macros \
+#        -Wno-deprecated-register \
+#        -Wno-sign-conversion \
+#        -Wno-sign-compare \
+#        -Wno-format-nonliteral \
+#        -Wno-cast-align \
+#        -Wno-conversion \
+#        -Wno-zero-length-array \
+#        -Wno-switch-enum \
+#        -Wno-c99-extensions \
+#        -Wno-missing-prototypes \
+#        -Wno-missing-field-initializers \
+#        -Wno-conditional-uninitialized \
+#        -Wno-covered-switch-default \
+#        -Wno-deprecated \
+#        -Wno-unused-macros \
+#        -Wno-disabled-macro-expansion \
+#        -Wno-undef \
+#        -Wno-char-subscripts \
+#        -Wno-unneeded-internal-declaration \
+#        -Wno-unused-variable \
+#        -Wno-used-but-marked-unused \
+#        -Wno-missing-variable-declarations \
+#        -Wno-gnu-statement-expression \
+#        -Wno-missing-braces \
+#        -Wno-reorder \
+#        -Wno-implicit-fallthrough \
+#        -Wno-ignored-qualifiers \
+#        -Wno-shift-sign-overflow \
+#        -Wno-mismatched-tags \
+#        -Wno-missing-noreturn \
+#        -Wno-consumed \
+#        -Wno-sometimes-uninitialized \
+#        -Wno-delete-non-virtual-dtor \
+#        -Wno-header-hygiene \
+#        -Wno-unknown-warning-option \
+#        -Wno-reserved-id-macro \
+#        -Wno-documentation-pedantic \
+#        -Wno-unused-local-typedef \
+#        -Wno-nullable-to-nonnull-conversion \
+#        -Wno-super-class-method-mismatch \
+#        -Wno-nonnull \
+#        -Wno-gnu-zero-variadic-macro-arguments")
+#
+### temporary disabled warnings for MacOS. They will be fixed and removed from this list in near future
+#    if( MACOS )
+#        set( LOCAL_DISABLED_WARNINGS "${LOCAL_DISABLED_WARNINGS} \
+#            -Wno-double-promotion \
+#            -Wno-old-style-cast \
+#            -Wno-packed \
+#            -Wno-pessimizing-move \
+#            -Wno-partial-availability \
+#            -Wno-#warnings \
+#            \
+#            -Wno-unused-private-field \
+#            -Wno-objc-method-access \
+#            -Wno-undefined-reinterpret-cast \
+#            -Wno-range-loop-analysis \
+#            -Wno-potentially-evaluated-expression \
+#            -Wno-overloaded-virtual \
+#            -Wno-format-pedantic \
+#            -Wno-shift-negative-value \
+#            -Wno-return-stack-address \
+#            -Wno-undefined-func-template \
+#            -Wno-comma \
+#        ")
+#    endif()
+#
+#
+#    if( ANDROID )
+#        set( LOCAL_DISABLED_WARNINGS "${LOCAL_DISABLED_WARNINGS} \
+#            -Wno-reserved-id-macro \
+#            -Wno-unused-local-typedef \
+#            -Wno-unknown-pragmas")
+#        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LOCAL_DISABLED_WARNINGS}" ) # warnings as errors
+#    elseif( APPLE )
+#        set( LOCAL_DISABLED_WARNINGS "${LOCAL_DISABLED_WARNINGS} \
+#            -Wno-padded \
+#            -Wno-covered-switch-default \
+#            -Wno-cstring-format-directive \
+#            -Wno-duplicate-enum \
+#            -Wno-infinite-recursion \
+#            -Wno-objc-interface-ivars \
+#            -Wno-direct-ivar-access \
+#            -Wno-objc-missing-property-synthesis \
+#            -Wno-over-aligned \
+#            -Wno-unused-exception-parameter \
+#            -Wno-idiomatic-parentheses \
+#            -Wno-vla-extension \
+#            -Wno-vla \
+#            -Wno-overriding-method-mismatch \
+#            -Wno-method-signatures \
+#            -Wno-receiver-forward-class \
+#            -Wno-semicolon-before-method-body \
+#            -Wno-reserved-id-macro \
+#            -Wno-import-preprocessor-directive-pedantic" )
+#
+#        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LOCAL_DISABLED_WARNINGS}" ) # warnings as errors
+#    elseif( WIN32 )
+#        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX" )
+#    endif()
+#
+#endif()
 
 
 ##
