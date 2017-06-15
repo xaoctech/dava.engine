@@ -1,5 +1,8 @@
 #include "Physics/PhysicsModule.h"
+#include "Physics/PhysicsComponent.h"
 #include "Physics/Private/PhysicsMath.h"
+#include "Physics/Private/Actors/PhysicsStaticActor.h"
+#include "Physics/Private/Actors/PhysicsDynamicActor.h"
 
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
@@ -48,7 +51,76 @@ void ReleasePvd()
     DVASSERT(fn.IsValid() == true);
     fn.Invoke();
 }
+
+void CopyBaseFields(physx::PxBase* src, physx::PxBase* dst)
+{
+    DVASSERT(src != nullptr);
+    DVASSERT(dst != nullptr);
+
+    DVASSERT(src->getConcreteType() == dst->getConcreteType());
+    dst->setBaseFlags(src->getBaseFlags());
 }
+
+void CopyActorFields(physx::PxActor* src, physx::PxActor* dst)
+{
+    CopyBaseFields(src, dst);
+    DVASSERT(src->getType() == dst->getType());
+
+    dst->setName(src->getName());
+    dst->setActorFlags(src->getActorFlags());
+    dst->setDominanceGroup(src->getDominanceGroup());
+    dst->setClientBehaviorFlags(src->getClientBehaviorFlags());
+}
+
+void CopyRigidBodyFields(physx::PxRigidBody* src, physx::PxRigidBody* dst)
+{
+    CopyActorFields(src, dst);
+
+    dst->setCMassLocalPose(src->getCMassLocalPose());
+    dst->setMass(src->getMass());
+    dst->setMassSpaceInertiaTensor(src->getMassSpaceInertiaTensor());
+
+    dst->setLinearVelocity(src->getLinearVelocity());
+    dst->setAngularVelocity(src->getAngularVelocity());
+
+    dst->setRigidBodyFlags(src->getRigidBodyFlags());
+    dst->setMinCCDAdvanceCoefficient(src->getMinCCDAdvanceCoefficient());
+    dst->setMaxDepenetrationVelocity(src->getMaxDepenetrationVelocity());
+    dst->setMaxContactImpulse(src->getMaxContactImpulse());
+}
+
+void CopyRigidStaticFields(physx::PxRigidStatic* src, physx::PxRigidStatic* dst)
+{
+    CopyActorFields(src, dst);
+}
+
+void CopyRigidDynamicFields(physx::PxRigidDynamic* src, physx::PxRigidDynamic* dst)
+{
+    CopyRigidBodyFields(src, dst);
+
+    dst->setLinearDamping(src->getLinearDamping());
+    dst->setAngularDamping(src->getAngularDamping());
+    dst->setMaxAngularVelocity(src->getMaxAngularVelocity());
+
+    dst->setSleepThreshold(src->getSleepThreshold());
+    dst->setStabilizationThreshold(src->getStabilizationThreshold());
+    dst->setRigidDynamicLockFlags(src->getRigidDynamicLockFlags());
+    if (src->getActorFlags().isSet(physx::PxActorFlag::eDISABLE_SIMULATION) == false)
+    {
+        dst->setWakeCounter(src->getWakeCounter());
+    }
+
+    {
+        physx::PxU32 minPositionIters = 1;
+        physx::PxU32 minVelocityIters = 1;
+        src->getSolverIterationCounts(minPositionIters, minVelocityIters);
+        dst->setSolverIterationCounts(minPositionIters, minVelocityIters);
+    }
+
+    dst->setContactReportThreshold(src->getContactReportThreshold());
+}
+}
+
 class Physics::PhysicsAllocator : public physx::PxAllocatorCallback
 {
 public:
@@ -106,6 +178,8 @@ void Physics::Init()
     physics = PxCreateBasePhysics(PX_PHYSICS_VERSION, *foundation, PxTolerancesScale(), true, pvd);
     DVASSERT(physics);
     PxRegisterHeightFields(*physics);
+
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PhysicsComponent);
 }
 
 void Physics::Shutdown()
@@ -152,6 +226,81 @@ physx::PxScene* Physics::CreateScene(const PhysicsSceneConfig& config) const
     DVASSERT(scene);
 
     return scene;
+}
+
+PhysicsActor* Physics::CloneActor(PhysicsActor* actor, void* userData) const
+{
+    if (actor == nullptr)
+    {
+        return nullptr;
+    }
+
+    physx::PxRigidActor* pxActor = actor->GetPxActor();
+    PhysicsActor* resultActor = nullptr;
+    switch (pxActor->getConcreteType())
+    {
+    case physx::PxConcreteType::eRIGID_STATIC:
+        resultActor = new PhysicsStaticActor(ClonePxActor(pxActor, userData));
+        break;
+    case physx::PxConcreteType::eRIGID_DYNAMIC:
+        resultActor = new PhysicsDynamicActor(ClonePxActor(pxActor, userData));
+        break;
+    default:
+        DVASSERT(false);
+        break;
+    }
+    return resultActor;
+}
+
+PhysicsActor* Physics::CreateStaticActor(void* userData) const
+{
+    physx::PxRigidStatic* actor = physics->createRigidStatic(physx::PxTransform(physx::PxIDENTITY::PxIdentity));
+    actor->userData = userData;
+    return new PhysicsStaticActor(actor);
+}
+
+PhysicsActor* Physics::CreateDynamicActor(void* userData) const
+{
+    physx::PxRigidDynamic* actor = physics->createRigidDynamic(physx::PxTransform(physx::PxIDENTITY::PxIdentity));
+    actor->userData = userData;
+    return new PhysicsDynamicActor(actor);
+}
+
+physx::PxRigidActor* Physics::ClonePxActor(physx::PxRigidActor* actor, void* userData) const
+{
+    DVASSERT(actor);
+
+    physx::PxRigidActor* result = nullptr;
+
+    switch (actor->getConcreteType())
+    {
+    case physx::PxConcreteType::eRIGID_STATIC:
+    {
+        physx::PxRigidStatic* staticActor = actor->is<physx::PxRigidStatic>();
+        DVASSERT(staticActor != nullptr);
+
+        physx::PxRigidStatic* resultStatic = physics->createRigidStatic(staticActor->getGlobalPose());
+        CopyRigidStaticFields(staticActor, resultStatic);
+        result = resultStatic;
+    }
+    break;
+    case physx::PxConcreteType::eRIGID_DYNAMIC:
+    {
+        physx::PxRigidDynamic* dynamicActor = actor->is<physx::PxRigidDynamic>();
+        DVASSERT(dynamicActor != nullptr);
+
+        physx::PxRigidDynamic* resultStatic = physics->createRigidDynamic(dynamicActor->getGlobalPose());
+        CopyRigidDynamicFields(dynamicActor, resultStatic);
+        result = resultStatic;
+    }
+    break;
+    default:
+        DVASSERT(false);
+        break;
+    }
+
+    result->userData = userData;
+    return result;
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(Physics)

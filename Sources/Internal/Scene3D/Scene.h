@@ -110,7 +110,7 @@ public:
         SCENE_SYSTEM_ANIMATION_FLAG = 1 << 18,
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-        SCENE_SYSTEM_PHYSICS_FLAG = 1 << 22, // Generalize system flag
+        SCENE_SYSTEM_PHYSICS_FLAG = 1 << 19, // Generalize system flag
 #endif
         SCENE_SYSTEM_ALL_MASK = 0xFFFFFFFF
     };
