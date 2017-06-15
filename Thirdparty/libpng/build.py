@@ -32,8 +32,8 @@ def build_for_target(target, working_directory_path, root_project_path):
 
 
 def get_download_info():
-    return {'win32': 'https://sourceforge.net/projects/libpng/files/libpng16/1.6.25/lpng1625.zip',
-            'others': 'https://sourceforge.net/projects/libpng/files/libpng16/1.6.25/libpng-1.6.25.tar.gz'}
+    return {'win32': 'https://sourceforge.net/projects/libpng/files/libpng16/older-releases/1.6.23/lpng1623.zip',
+            'others': 'https://sourceforge.net/projects/libpng/files/libpng16/older-releases/1.6.23/libpng-1.6.23.tar.gz'}
 
 
 def _download_and_extract(working_directory_path):

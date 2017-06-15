@@ -28,7 +28,7 @@ def build_for_target(target, working_directory_path, root_project_path):
 
 
 def get_download_info():
-    return 'https://www.sqlite.org/2016/sqlite-amalgamation-3140200.zip'
+    return 'https://www.sqlite.org/2016/sqlite-amalgamation-3130000.zip'
 
 
 def _download_and_extract(working_directory_path):

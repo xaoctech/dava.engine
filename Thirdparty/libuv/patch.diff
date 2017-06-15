@@ -1,0 +1,16 @@
+--- ./libuv_source_original/Makefile.am 2016-05-17 00:22:19.000000000 +0300
++++ ./libuv_source/Makefile.am  2017-03-09 18:18:48.000000000 +0300
+@@ -289,11 +289,9 @@
+ endif
+ 
+ if ANDROID
+-include_HEADERS += include/android-ifaddrs.h \
+-                   include/pthread-barrier.h
++include_HEADERS += include/android-ifaddrs.h
+ libuv_la_SOURCES += src/unix/android-ifaddrs.c \
+-                    src/unix/pthread-fixes.c \
+-                    src/unix/pthread-barrier.c
++                    src/unix/pthread-fixes.c
+ endif
+ 
+ if DARWIN

@@ -139,12 +139,16 @@ def _build_android(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
     _patch_sources(source_folder_path, working_directory_path)
 
-    install_dir_android_arm = os.path.join(
-        working_directory_path, 'gen/install_android_arm')
     build_utils.run_process(['autoreconf', '-i'], process_cwd=source_folder_path)
-    env=build_utils.get_autotools_android_arm_env(root_project_path)
+
+    # ARM
+    toolchain_path_arm = os.path.join(working_directory_path, 'gen/ndk_toolchain_arm')
+    build_utils.android_ndk_make_toolchain(root_project_path, 'arm', toolchain_path_arm)
+
+    env = build_utils.get_autotools_android_arm_env(toolchain_path_arm)
     env['CFLAGS'] += ' -DNDEBUG'
     env['CPPFLAGS'] += ' -DNDEBUG'
+    install_dir_android_arm = os.path.join(working_directory_path, 'gen/install_android_arm')
     build_utils.build_with_autotools(
         source_folder_path,
         ['--host=arm-linux-androideabi',
@@ -153,15 +157,21 @@ def _build_android(working_directory_path, root_project_path):
         install_dir_android_arm,
         env=env)
 
-    install_dir_android_x86 = os.path.join(
-        working_directory_path, 'gen/install_android_x86')
+    # x86
+    toolchain_path_x86 = os.path.join(working_directory_path, 'gen/ndk_toolchain_x86')
+    build_utils.android_ndk_make_toolchain(root_project_path, 'x86', toolchain_path_x86)
+
+    env = build_utils.get_autotools_android_x86_env(toolchain_path_x86)
+    env['CFLAGS'] += ' -DNDEBUG'
+    env['CPPFLAGS'] += ' -DNDEBUG'
+    install_dir_android_x86 = os.path.join(working_directory_path, 'gen/install_android_x86')
     build_utils.build_with_autotools(
         source_folder_path,
         ['--host=i686-linux-android',
          '--disable-shared',
          '--enable-static'],
         install_dir_android_x86,
-        env=build_utils.get_autotools_android_x86_env(root_project_path))
+        env=env)
 
     libs_android_root = os.path.join(
         root_project_path, 'Libs/lib_CMake/android')
