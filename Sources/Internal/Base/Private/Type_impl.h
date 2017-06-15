@@ -181,6 +181,11 @@ inline bool Type::IsEnum() const
     return flags.test(static_cast<size_t>(eTypeFlag::isEnum));
 }
 
+inline bool Type::IsAbstract() const
+{
+    return flags.test(static_cast<size_t>(eTypeFlag::isAbstract));
+}
+
 inline Type::SeedCastOP Type::GetSeedCastOP() const
 {
     return seedCastOP;
@@ -234,6 +239,7 @@ Type* Type::Init()
     type.flags.set(isIntegral, std::is_integral<T>::value);
     type.flags.set(isFloatingPoint, std::is_floating_point<T>::value);
     type.flags.set(isEnum, std::is_enum<T>::value);
+    type.flags.set(isAbstract, std::is_abstract<T>::value);
 
     auto condSeed = std::integral_constant<bool, needSeed>();
     type.seedCastOP = TypeDetail::GetCastIfSeed<T>(condSeed);

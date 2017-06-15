@@ -12,7 +12,7 @@ namespace physx
 class PxFoundation;
 class PxPhysics;
 class PxScene;
-class PxRigidActor;
+class PxActor;
 }
 
 namespace DAVA
@@ -32,13 +32,9 @@ public:
     physx::PxFoundation* GetFoundation() const;
     physx::PxScene* CreateScene(const PhysicsSceneConfig& config) const;
 
-    PhysicsActor* CloneActor(PhysicsActor* actor, void* userData) const;
-
-    PhysicsActor* CreateStaticActor(void* userData) const;
-    PhysicsActor* CreateDynamicActor(void* userData) const;
-
-private:
-    physx::PxRigidActor* ClonePxActor(physx::PxRigidActor* actor, void* userData) const;
+    physx::PxActor* ClonePxActor(physx::PxActor* actor, void* userData) const;
+    physx::PxActor* CreateStaticActor() const;
+    physx::PxActor* CreateDynamicActor() const;
 
 private:
     physx::PxFoundation* foundation = nullptr;

@@ -49,6 +49,11 @@ public:
         WASD_CONTROLLER_COMPONENT,
         VISIBILITY_CHECK_COMPONENT,
 
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+        STATIC_BODY_COMPONENT,
+        DYNAMIC_BODY_COMPONENT,
+#endif
+
         //debug components - note that everything below won't be serialized
         DEBUG_COMPONENTS,
         STATIC_OCCLUSION_DEBUG_DRAW_COMPONENT,

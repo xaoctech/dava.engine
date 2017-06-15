@@ -1,5 +1,4 @@
 #include "Physics/Private/PhysicsSystem.h"
-#include "Physics/PhysicsActor.h"
 #include "Physics/PhysicsModule.h"
 #include "Physics/PhysicsConfigs.h"
 #include "Physics/PhysicsComponent.h"
@@ -41,6 +40,10 @@ PhysicsSystem::PhysicsSystem(Scene* scene)
 
 PhysicsSystem::~PhysicsSystem()
 {
+    if (isSimulationRunning)
+    {
+        FetchResults(true);
+    }
     DVASSERT(simulationBlock != nullptr);
 
     const EngineContext* ctx = GetEngineContext();
@@ -48,27 +51,39 @@ PhysicsSystem::~PhysicsSystem()
     physx::PxAllocatorCallback& allocator = physics->GetFoundation()->getAllocatorCallback();
     allocator.deallocate(simulationBlock);
     simulationBlock = nullptr;
+    physicsScene->release();
 }
 
 void PhysicsSystem::RegisterEntity(Entity* entity)
 {
-    for (uint32 i = 0; i < entity->GetComponentCount(Component::PHYSICS_COMPONENT); ++i)
+    for (uint32 i = 0; i < entity->GetComponentCount(Component::STATIC_BODY_COMPONENT); ++i)
     {
-        RegisterComponent(entity, entity->GetComponent(Component::PHYSICS_COMPONENT, i));
+        RegisterComponent(entity, entity->GetComponent(Component::STATIC_BODY_COMPONENT, i));
+    }
+
+    for (uint32 i = 0; i < entity->GetComponentCount(Component::DYNAMIC_BODY_COMPONENT); ++i)
+    {
+        RegisterComponent(entity, entity->GetComponent(Component::DYNAMIC_BODY_COMPONENT, i));
     }
 }
 
 void PhysicsSystem::UnregisterEntity(Entity* entity)
 {
-    for (uint32 i = 0; i < entity->GetComponentCount(Component::PHYSICS_COMPONENT); ++i)
+    for (uint32 i = 0; i < entity->GetComponentCount(Component::STATIC_BODY_COMPONENT); ++i)
     {
-        UnregisterComponent(entity, entity->GetComponent(Component::PHYSICS_COMPONENT, i));
+        UnregisterComponent(entity, entity->GetComponent(Component::STATIC_BODY_COMPONENT, i));
+    }
+
+    for (uint32 i = 0; i < entity->GetComponentCount(Component::DYNAMIC_BODY_COMPONENT); ++i)
+    {
+        UnregisterComponent(entity, entity->GetComponent(Component::DYNAMIC_BODY_COMPONENT, i));
     }
 }
 
 void PhysicsSystem::RegisterComponent(Entity* entity, Component* component)
 {
-    if (component->GetType() == Component::PHYSICS_COMPONENT)
+    uint32 componentType = component->GetType();
+    if (componentType == Component::STATIC_BODY_COMPONENT || componentType == Component::DYNAMIC_BODY_COMPONENT)
     {
         pendingAddComponents.push_back(static_cast<PhysicsComponent*>(component));
     }
@@ -76,7 +91,8 @@ void PhysicsSystem::RegisterComponent(Entity* entity, Component* component)
 
 void PhysicsSystem::UnregisterComponent(Entity* entity, Component* component)
 {
-    if (component->GetType() == Component::PHYSICS_COMPONENT)
+    uint32 componentType = component->GetType();
+    if (componentType == Component::STATIC_BODY_COMPONENT || componentType == Component::DYNAMIC_BODY_COMPONENT)
     {
         PhysicsComponent* physicsComponent = static_cast<PhysicsComponent*>(component);
         auto addIter = std::find(pendingAddComponents.begin(), pendingAddComponents.end(), physicsComponent);
@@ -90,6 +106,9 @@ void PhysicsSystem::UnregisterComponent(Entity* entity, Component* component)
             DVASSERT(iter != components.end());
             RemoveExchangingWithLast(components, std::distance(components.begin(), iter));
         }
+
+        physicsScene->removeActor(*physicsComponent->GetPxActor());
+        physicsComponent->ReleasePxActor();
     }
 }
 
@@ -103,8 +122,20 @@ void PhysicsSystem::Process(float32 timeElapsed)
     Physics* physics = GetEngineContext()->moduleManager->GetModule<Physics>();
     for (PhysicsComponent* component : pendingAddComponents)
     {
-        component->actor = physics->CreateStaticActor(component);
-        physicsScene->addActor(*(component->actor->GetPxActor()));
+        uint32 componentType = component->GetType();
+        physx::PxActor* createdActor = nullptr;
+        if (componentType == Component::STATIC_BODY_COMPONENT)
+        {
+            createdActor = physics->CreateStaticActor();
+        }
+        else
+        {
+            DVASSERT(componentType == Component::DYNAMIC_BODY_COMPONENT);
+            createdActor = physics->CreateDynamicActor();
+        }
+
+        component->SetPxActor(createdActor);
+        physicsScene->addActor(*(component->GetPxActor()));
         components.push_back(component);
     }
     pendingAddComponents.clear();

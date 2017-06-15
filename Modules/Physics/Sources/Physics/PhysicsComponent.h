@@ -16,20 +16,26 @@ namespace DAVA
 class Entity;
 class KeyedArchive;
 class SerializationContext;
-class PhysicsActor;
 
 class PhysicsComponent : public Component
 {
 public:
-    uint32 GetType() const override;
-    Component* Clone(Entity* toEntity) override;
-
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
     void Deserialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
 
+    physx::PxActor* GetPxActor() const;
+
+protected:
+#if defined(__DAVAENGINE_DEBUG__)
+    virtual void CheckActorType() const = 0;
+#endif
+
+    physx::PxActor* actor = nullptr;
+
 private:
     friend class PhysicsSystem;
-    PhysicsActor* actor = nullptr;
+    void SetPxActor(physx::PxActor* actor);
+    void ReleasePxActor();
 
     DAVA_VIRTUAL_REFLECTION(PhysicsComponent, Component);
 };

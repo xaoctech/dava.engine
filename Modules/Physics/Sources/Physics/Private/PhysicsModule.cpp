@@ -1,8 +1,7 @@
 #include "Physics/PhysicsModule.h"
-#include "Physics/PhysicsComponent.h"
+#include "Physics/StaticBodyComponent.h"
+#include "Physics/DynamicBodyComponent.h"
 #include "Physics/Private/PhysicsMath.h"
-#include "Physics/Private/Actors/PhysicsStaticActor.h"
-#include "Physics/Private/Actors/PhysicsDynamicActor.h"
 
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
@@ -179,7 +178,8 @@ void Physics::Init()
     DVASSERT(physics);
     PxRegisterHeightFields(*physics);
 
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PhysicsComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(StaticBodyComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(DynamicBodyComponent);
 }
 
 void Physics::Shutdown()
@@ -228,49 +228,11 @@ physx::PxScene* Physics::CreateScene(const PhysicsSceneConfig& config) const
     return scene;
 }
 
-PhysicsActor* Physics::CloneActor(PhysicsActor* actor, void* userData) const
-{
-    if (actor == nullptr)
-    {
-        return nullptr;
-    }
-
-    physx::PxRigidActor* pxActor = actor->GetPxActor();
-    PhysicsActor* resultActor = nullptr;
-    switch (pxActor->getConcreteType())
-    {
-    case physx::PxConcreteType::eRIGID_STATIC:
-        resultActor = new PhysicsStaticActor(ClonePxActor(pxActor, userData));
-        break;
-    case physx::PxConcreteType::eRIGID_DYNAMIC:
-        resultActor = new PhysicsDynamicActor(ClonePxActor(pxActor, userData));
-        break;
-    default:
-        DVASSERT(false);
-        break;
-    }
-    return resultActor;
-}
-
-PhysicsActor* Physics::CreateStaticActor(void* userData) const
-{
-    physx::PxRigidStatic* actor = physics->createRigidStatic(physx::PxTransform(physx::PxIDENTITY::PxIdentity));
-    actor->userData = userData;
-    return new PhysicsStaticActor(actor);
-}
-
-PhysicsActor* Physics::CreateDynamicActor(void* userData) const
-{
-    physx::PxRigidDynamic* actor = physics->createRigidDynamic(physx::PxTransform(physx::PxIDENTITY::PxIdentity));
-    actor->userData = userData;
-    return new PhysicsDynamicActor(actor);
-}
-
-physx::PxRigidActor* Physics::ClonePxActor(physx::PxRigidActor* actor, void* userData) const
+physx::PxActor* Physics::ClonePxActor(physx::PxActor* actor, void* userData) const
 {
     DVASSERT(actor);
 
-    physx::PxRigidActor* result = nullptr;
+    physx::PxActor* result = nullptr;
 
     switch (actor->getConcreteType())
     {
@@ -301,6 +263,16 @@ physx::PxRigidActor* Physics::ClonePxActor(physx::PxRigidActor* actor, void* use
 
     result->userData = userData;
     return result;
+}
+
+physx::PxActor* Physics::CreateStaticActor() const
+{
+    return physics->createRigidStatic(physx::PxTransform(physx::PxIDENTITY::PxIdentity));
+}
+
+physx::PxActor* Physics::CreateDynamicActor() const
+{
+    return physics->createRigidDynamic(physx::PxTransform(physx::PxIDENTITY::PxIdentity));
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(Physics)
