@@ -244,15 +244,28 @@ void HUDSystem::ProcessInput(UIEvent* currentInput)
     }
 }
 
-void HUDSystem::OnHighlightNode(const ControlNode* node)
+void HUDSystem::OnHighlightNode(ControlNode* node)
 {
+    using namespace DAVA::TArc;
+
     if (hoveredNodeControl != nullptr)
     {
         hudControl->RemoveControl(hoveredNodeControl.Get());
         hoveredNodeControl.Set(nullptr);
     }
+
     if (node != nullptr)
     {
+        DataContext* activeContext = accessor->GetActiveContext();
+        DVASSERT(activeContext != nullptr);
+        DocumentData* documentData = activeContext->GetData<DocumentData>();
+        const SelectedNodes& selectedNodes = documentData->GetSelectedNodes();
+
+        if (selectedNodes.find(node) != selectedNodes.end())
+        {
+            return;
+        }
+
         UIControl* targetControl = node->GetControl();
         hoveredNodeControl = CreateHUDRect(node);
         hudControl->AddControl(hoveredNodeControl.Get());
@@ -261,7 +274,7 @@ void HUDSystem::OnHighlightNode(const ControlNode* node)
 
 void HUDSystem::OnMagnetLinesChanged(const Vector<MagnetLineInfo>& magnetLines)
 {
-    static const float32 axtraSizeValue = 50.0f;
+    static const float32 extraSizeValue = 50.0f;
     DVASSERT(magnetControls.size() == magnetTargetControls.size());
 
     const size_type magnetsSize = magnetControls.size();
@@ -309,7 +322,6 @@ void HUDSystem::OnMagnetLinesChanged(const Vector<MagnetLineInfo>& magnetLines)
     {
         const MagnetLineInfo& line = magnetLines.at(i);
         const auto& gd = line.gd;
-
         auto linePos = line.rect.GetPosition();
         auto lineSize = line.rect.GetSize();
 
@@ -320,7 +332,7 @@ void HUDSystem::OnMagnetLinesChanged(const Vector<MagnetLineInfo>& magnetLines)
 
         UIControl* lineControl = magnetControls.at(i).Get();
         float32 angle = line.gd->angle;
-        Vector2 extraSize(line.axis == Vector2::AXIS_X ? axtraSizeValue : 0.0f, line.axis == Vector2::AXIS_Y ? axtraSizeValue : 0.0f);
+        Vector2 extraSize(line.axis == Vector2::AXIS_X ? extraSizeValue : 0.0f, line.axis == Vector2::AXIS_Y ? extraSizeValue : 0.0f);
         Vector2 extraPos = ::Rotate(extraSize, angle) / 2.0f;
         Rect lineRect(Vector2(linePos + gdPos) - extraPos, lineSize + extraSize);
         lineControl->SetRect(lineRect);

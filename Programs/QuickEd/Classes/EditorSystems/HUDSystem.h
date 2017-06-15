@@ -37,7 +37,7 @@ private:
     void OnDisplayStateChanged(EditorSystemsManager::eDisplayState currentState, EditorSystemsManager::eDisplayState previousState) override;
 
     void OnSelectionChanged(const DAVA::Any& selection);
-    void OnHighlightNode(const ControlNode* node);
+    void OnHighlightNode(ControlNode* node);
 
     void OnMagnetLinesChanged(const DAVA::Vector<MagnetLineInfo>& magnetLines);
     void ClearMagnetLines();
