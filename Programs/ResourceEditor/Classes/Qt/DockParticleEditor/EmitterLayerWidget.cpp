@@ -1149,9 +1149,11 @@ void EmitterLayerWidget::Update(bool updateMinimized)
 
     stripeSizeOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
     stripeSizeOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->stripeSizeOverLifeProp)).GetProps(), Qt::red, "Stripe edge size over life");
+    stripeSizeOverLifeTimeLine->EnableLock(true);
 
     stripeTextureTileTimeLine->Init(0.0f, 1.0f, updateMinimized, false, true, false, STRIPE_TILE_PRECISION_DIGITS);
     stripeTextureTileTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->stripeTextureTile)).GetProps(), Qt::red, "Stripe texture tile over life");
+    stripeTextureTileTimeLine->EnableLock(true);
 
     stripeColorOverLifeGradient->Init(0, 1, "Stripe vertex color over life");
     stripeColorOverLifeGradient->SetValues(DAVA::PropLineWrapper<DAVA::Color>(DAVA::PropertyLineHelper::GetValueLine(layer->stripeColorOverLife)).GetProps());
@@ -1159,40 +1161,51 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     // FLOW_STUFF
     flowSpeedTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, FLOW_PRECISION_DIGITS);
     flowSpeedTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowSpeed)).GetProps(), Qt::red, "Flow speed");
+    flowSpeedTimeLine->EnableLock(true);
 
     flowSpeedVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, FLOW_PRECISION_DIGITS);
     flowSpeedVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowSpeedVariation)).GetProps(), Qt::green, "Flow speed variation");
+    flowSpeedVariationTimeLine->EnableLock(true);
 
     flowOffsetTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, FLOW_PRECISION_DIGITS);
     flowOffsetTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowOffset)).GetProps(), Qt::red, "Flow offset");
+    flowOffsetTimeLine->EnableLock(true);
 
     flowOffsetVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, FLOW_PRECISION_DIGITS);
     flowOffsetVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowOffsetVariation)).GetProps(), Qt::green, "Flow offset variation");
+    flowOffsetVariationTimeLine->EnableLock(true);
 
     // NOISE_STUFF
     noiseScaleTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, NOISE_PRECISION_DIGITS);
     noiseScaleTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseScale)).GetProps(), Qt::red, "Noise scale");
+    noiseScaleTimeLine->EnableLock(true);
 
     noiseScaleVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, NOISE_PRECISION_DIGITS);
     noiseScaleVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseScaleVariation)).GetProps(), Qt::green, "Noise scale variation");
+    noiseScaleVariationTimeLine->EnableLock(true);
 
     noiseScaleOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized, false, true, false, NOISE_PRECISION_DIGITS);
     noiseScaleOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseScaleOverLife)).GetProps(), Qt::blue, "Noise scale over life");
+    noiseScaleOverLifeTimeLine->EnableLock(true);
 
     noiseUVScrollSpeedTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
     noiseUVScrollSpeedTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseUScrollSpeed)).GetProps(), Qt::red, "Noise U scroll speed");
     noiseUVScrollSpeedTimeLine->AddLine(1, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseVScrollSpeed)).GetProps(), Qt::green, "Noise V scroll speed");
+    noiseUVScrollSpeedTimeLine->EnableLock(true);
 
     noiseUVScrollSpeedVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
     noiseUVScrollSpeedVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseUScrollSpeedVariation)).GetProps(), Qt::red, "Noise U scroll speed variation");
     noiseUVScrollSpeedVariationTimeLine->AddLine(1, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseVScrollSpeedVariation)).GetProps(), Qt::green, "Noise V scroll speed variation");
+    noiseUVScrollSpeedVariationTimeLine->EnableLock(true);
 
     noiseUVScrollSpeedOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
     noiseUVScrollSpeedOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseUScrollSpeedOverLife)).GetProps(), Qt::red, "Noise U scroll speed over life");
     noiseUVScrollSpeedOverLifeTimeLine->AddLine(1, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseVScrollSpeedOverLife)).GetProps(), Qt::green, "Noise V scroll speed over life");
+    noiseUVScrollSpeedOverLifeTimeLine->EnableLock(true);
 
     alphaRemapOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
     alphaRemapOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->alphaRemapOverLife)).GetProps(), Qt::red, "Alpha remap over life");
+    alphaRemapOverLifeTimeLine->EnableLock(true);
 
     //LAYER_LIFE, LAYER_LIFE_VARIATION,
     lifeTimeLine->Init(layer->startTime, lifeTime, updateMinimized);

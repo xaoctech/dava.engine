@@ -440,16 +440,11 @@ void ParticleLayer::UpdateLayerTime(float32 startTime, float32 endTime)
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(flowOffsetVariation).Get(), startTime, translateTime, endTime);
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(noiseScale).Get(), startTime, translateTime, endTime);
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(noiseScaleVariation).Get(), startTime, translateTime, endTime);
-    UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(noiseScaleOverLife).Get(), startTime, translateTime, endTime);
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(noiseUScrollSpeed).Get(), startTime, translateTime, endTime);
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(noiseUScrollSpeedVariation).Get(), startTime, translateTime, endTime);
-    UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(noiseUScrollSpeedOverLife).Get(), startTime, translateTime, endTime);
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(noiseVScrollSpeed).Get(), startTime, translateTime, endTime);
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(noiseVScrollSpeedVariation).Get(), startTime, translateTime, endTime);
-    UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(noiseVScrollSpeedOverLife).Get(), startTime, translateTime, endTime);
-    UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(stripeSizeOverLifeProp).Get(), startTime, translateTime, endTime);
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(stripeTextureTile).Get(), startTime, translateTime, endTime);
-    UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(alphaRemapOverLife).Get(), startTime, translateTime, endTime);
 }
 
 void ParticleLayer::SetSprite(const FilePath& path)
