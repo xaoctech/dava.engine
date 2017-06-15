@@ -430,8 +430,9 @@ void MSLGenerator::OutputExpression(HLSLExpression* expression)
         bool sampler_call = false;
         bool sampler_lod = String_Equal(name, "tex2Dlod");
         bool sampler_cmp = String_Equal(name, "tex2Dcmp");
+        bool sampler_prj = String_Equal(name, "tex2Dproj");
 
-        if (String_Equal(name, "tex2D") || String_Equal(name, "tex2Dcmp") || String_Equal(name, "tex2Dlod") || String_Equal(name, "texCUBE"))
+        if (String_Equal(name, "tex2D") || String_Equal(name, "tex2Dproj") || String_Equal(name, "tex2Dcmp") || String_Equal(name, "tex2Dlod") || String_Equal(name, "texCUBE"))
         {
             sampler_call = true;
         }
@@ -463,6 +464,21 @@ void MSLGenerator::OutputExpression(HLSLExpression* expression)
                     }
                     writer.Write(")");
                 }
+            }
+            else if (sampler_prj)
+            {
+                DVASSERT(functionCall->argument->nodeType == HLSLNodeType_IdentifierExpression);
+                HLSLIdentifierExpression* identifier = static_cast<HLSLIdentifierExpression*>(functionCall->argument);
+                DVASSERT(IsSamplerType(identifier->expressionType) && identifier->global);
+
+                HLSLExpression* expr = identifier->nextExpression;
+                writer.Write("%s_texture.sample( %s_sampler, (", identifier->name, identifier->name);
+                OutputExpression(expr);
+                writer.Write(").xy / (");
+                OutputExpression(expr);
+                writer.Write(").w ");
+
+                writer.Write(")");
             }
             else if (sampler_cmp)
             {
