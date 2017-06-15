@@ -885,6 +885,7 @@ void EmitterLayerWidget::OnStripePropertiesChanged()
     params.stripeUScrollSpeed = static_cast<DAVA::float32>(stripeUScrollSpeedSpin->value());
     params.stripeVScrollSpeed = static_cast<DAVA::float32>(stripeVScrollSpeedSpin->value());
     params.stripeInheritPositionForBase = stripeInheritPositionForBaseCheckBox->isChecked();
+    params.usePerspectiveMapping = stripeUsePerspectiveMappingCheckBox->isChecked();
     params.stripeTextureTile = propStripeTileOverLife.GetPropLine();
     params.stripeSizeOverLifeProp = propStripeSizeOverLife.GetPropLine();
     params.stripeColorOverLife = propStripeColorOverLife.GetPropLine();
@@ -1088,6 +1089,7 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     stripeUScrollSpeedSpin->setValue(layer->stripeUScrollSpeed);
     stripeVScrollSpeedSpin->setValue(layer->stripeVScrollSpeed);
     stripeInheritPositionForBaseCheckBox->setChecked(layer->stripeInheritPositionForBase);
+    stripeUsePerspectiveMappingCheckBox->setChecked(layer->usePerspectiveMapping);
 
     bool fresToAlphaVisible = layer->useFresnelToAlpha;
     fresnelBiasLabel->setVisible(fresToAlphaVisible);
@@ -1578,6 +1580,13 @@ void EmitterLayerWidget::CreateStripeLayoutWidget()
             this,
             SLOT(OnStripePropertiesChanged()));
 
+    stripeUsePerspectiveMappingCheckBox = new QCheckBox("Use perspective mapping.");
+    vertStripeLayout->addWidget(stripeUsePerspectiveMappingCheckBox);
+    connect(stripeUsePerspectiveMappingCheckBox,
+        SIGNAL(stateChanged(int)),
+        this,
+        SLOT(OnStripePropertiesChanged()));
+
     stripeLifetimeSpin = new EventFilterDoubleSpinBox();
     stripeLifetimeSpin->setMinimum(-100);
     stripeLifetimeSpin->setMaximum(100);
@@ -1666,7 +1675,7 @@ void EmitterLayerWidget::CreateAlphaRemapLayoutWidget()
 
     alphaRemapMainLayout->addLayout(alphaTextureHBox);
 
-    QVBoxLayout* alphaVBox = new QVBoxLayout(flowSettingsLayoutWidget);
+    QVBoxLayout* alphaVBox = new QVBoxLayout();
     alphaRemapOverLifeTimeLine = new TimeLineWidget(this);
     connect(alphaRemapOverLifeTimeLine,
             SIGNAL(ValueChanged()),

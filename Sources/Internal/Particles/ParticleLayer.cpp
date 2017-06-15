@@ -288,6 +288,7 @@ ParticleLayer* ParticleLayer::Clone()
     dstLayer->enableFrameBlend = enableFrameBlend;
     dstLayer->inheritPosition = inheritPosition;
     dstLayer->stripeInheritPositionForBase = stripeInheritPositionForBase;
+    dstLayer->usePerspectiveMapping = usePerspectiveMapping;
     dstLayer->startTime = startTime;
     dstLayer->endTime = endTime;
 
@@ -921,6 +922,10 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
     if (stripeInheritPositionForBaseNode)
         stripeInheritPositionForBase = stripeInheritPositionForBaseNode->AsBool();
 
+    const YamlNode* usePerspectiveMappingNode = node->Get("usePerspectiveMapping");
+    if (usePerspectiveMappingNode)
+        usePerspectiveMapping = usePerspectiveMappingNode->AsBool();
+
     // Load the Inner Emitter parameters.
     const YamlNode* innerEmitterPathNode = node->Get("innerEmitterPath");
     if ((type == TYPE_SUPEREMITTER_PARTICLES) && innerEmitterPathNode)
@@ -1118,6 +1123,7 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
 
     layerNode->Set("inheritPosition", inheritPosition);
     layerNode->Set("stripeInheritPositionForBase", stripeInheritPositionForBase);
+    layerNode->Set("usePerspectiveMapping", usePerspectiveMapping);
 
     layerNode->Set("particleOrientation", particleOrientation);
 
