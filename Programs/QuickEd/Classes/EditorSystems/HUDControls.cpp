@@ -319,7 +319,14 @@ void SetupHUDMagnetRectControl(UIControl* parentControl)
     {
         FrameControl::eBorder border = static_cast<FrameControl::eBorder>(i);
         RefPtr<UIControl> control(HUDControlsDetails::CreateFrameBorderControl(border));
-        SetupHUDMagnetLineControl(control.Get());
+
+        UIControlBackground* background = control->GetOrCreateComponent<UIControlBackground>();
+        background->SetPerPixelAccuracyType(UIControlBackground::PER_PIXEL_ACCURACY_ENABLED);
+        ScopedPtr<Sprite> sprite(Sprite::CreateFromSourceFile("~res:/QuickEd/UI/HUDControls/MagnetLine/MagnetLine.png"));
+        background->SetSprite(sprite, 0);
+        background->SetDrawType(UIControlBackground::DRAW_TILED);
+        control->SetName("magnet rect border");
+
         control->SetName(FastName(String("border of magnet rect")));
         parentControl->AddControl(control.Get());
     }
