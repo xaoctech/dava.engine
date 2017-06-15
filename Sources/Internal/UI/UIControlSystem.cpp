@@ -126,6 +126,8 @@ UIControlSystem::~UIControlSystem()
         currentScreen = nullptr;
     }
 
+    lastClickData.touchLocker = nullptr;
+
     soundSystem = nullptr;
     inputSystem = nullptr;
     styleSheetSystem = nullptr;
@@ -464,6 +466,11 @@ void UIControlSystem::OnInput(UIEvent* newEvent)
             Replay::Instance()->RecordEvent(newEvent);
         }
         inputSystem->HandleEvent(newEvent);
+        // Store last 'touchLocker' reference.
+        if (newEvent->touchLocker)
+        {
+            lastClickData.touchLocker = newEvent->touchLocker;
+        }
     } // end if frameSkip <= 0
 }
 
@@ -474,6 +481,10 @@ void UIControlSystem::CancelInput(UIEvent* touch)
 
 void UIControlSystem::CancelAllInputs()
 {
+    lastClickData.touchLocker = nullptr;
+    lastClickData.tapCount = 0;
+    lastClickData.lastClickEnded = false;
+
     inputSystem->CancelAllInputs();
 }
 
@@ -668,7 +679,10 @@ int32 UIControlSystem::CalculatedTapCount(UIEvent* newEvent)
         // only if last event ended
         if (lastClickData.lastClickEnded)
         {
-            if (CheckTimeAndPosition(newEvent))
+            // Make addditional 'IsPointInside' check for correct double tap detection.
+            // Event point must be in previously tapped control rect.
+            UIControl* lastTouchLocker = lastClickData.touchLocker.Get();
+            if (CheckTimeAndPosition(newEvent) && (lastTouchLocker == nullptr || lastTouchLocker->IsPointInside(newEvent->point)))
             {
                 tapCount = lastClickData.tapCount + 1;
             }
