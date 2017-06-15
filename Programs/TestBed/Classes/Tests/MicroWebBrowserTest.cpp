@@ -13,24 +13,13 @@ void MicroWebBrowserTest::LoadResources()
     DVASSERT(font);
     font->SetSize(14);
 
-    Rect webViewRect = GetRect();
-    webViewRect.x = 5.0f;
-    webViewRect.y = 5.0f;
-    webViewRect.dx -= webViewRect.x * 2.0f;
-    webViewRect.dy *= 0.85f;
+    Rect screenRect = GetRect();
 
-    webView.Set(new UIWebView(webViewRect));
-    webView->SetVisibilityFlag(true);
-    webView->SetRenderToTexture(true);
-    webView->GetOrCreateComponent<UIDebugRenderComponent>();
-    webView->SetInputEnabled(true);
-    webView->GetOrCreateComponent<UIFocusComponent>();
-    AddControl(webView.Get());
-
-    Rect textFieldRect = webViewRect;
-    textFieldRect.y += webViewRect.dy + 10.0f;
-    textFieldRect.dy = 22.0f;
-    textFieldRect.dx -= 210.0f;
+    Rect textFieldRect;
+    textFieldRect.x = 10.0f;
+    textFieldRect.y = 10.0f;
+    textFieldRect.dx = screenRect.dx - 210.0f;
+    textFieldRect.dy = 50.0f;
 
     textField.Set(new UITextField(textFieldRect));
     textField->SetFont(font);
@@ -52,6 +41,20 @@ void MicroWebBrowserTest::LoadResources()
     loadPage->GetOrCreateComponent<UIDebugRenderComponent>();
     loadPage->AddEvent(UIButton::EVENT_TOUCH_DOWN, Message(this, &MicroWebBrowserTest::OnLoadPage));
     AddControl(loadPage);
+
+    Rect webViewRect;
+    webViewRect.x = textFieldRect.x;
+    webViewRect.y = textFieldRect.y + textFieldRect.dy + 5.0f;
+    webViewRect.dx = (loadPageRect.x + loadPageRect.dx) - webViewRect.x;
+    webViewRect.dy = screenRect.dy * 0.8f;
+
+    webView.Set(new UIWebView(webViewRect));
+    webView->SetVisibilityFlag(true);
+    webView->SetRenderToTexture(true);
+    webView->GetOrCreateComponent<UIDebugRenderComponent>();
+    webView->SetInputEnabled(true);
+    webView->GetOrCreateComponent<UIFocusComponent>();
+    AddControl(webView.Get());
 
     BaseScreen::LoadResources();
 }
