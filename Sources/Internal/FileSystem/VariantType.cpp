@@ -291,11 +291,11 @@ void VariantType::SetFloat64(float64 value)
 
 void VariantType::SetString(const String& value)
 {
-    SetAllocatedMemoryValue(TYPE_STRING, value);
+    SetValueWithAllocation(TYPE_STRING, value);
 }
 void VariantType::SetWideString(const WideString& value)
 {
-    SetAllocatedMemoryValue(TYPE_STRING, String(UTF8Utils::EncodeToUTF8(value)));
+    SetValueWithAllocation(TYPE_STRING, String(UTF8Utils::EncodeToUTF8(value)));
 }
 
 void VariantType::SetByteArray(const uint8* array, int32 arraySizeInBytes)
@@ -360,51 +360,51 @@ void VariantType::SetUInt64(const uint64& value)
 
 void VariantType::SetVector2(const Vector2& value)
 {
-    SetAllocatedMemoryValue(TYPE_VECTOR2, value);
+    SetValueWithAllocation(TYPE_VECTOR2, value);
 }
 
 void VariantType::SetVector3(const Vector3& value)
 {
-    SetAllocatedMemoryValue(TYPE_VECTOR3, value);
+    SetValueWithAllocation(TYPE_VECTOR3, value);
 }
 
 void VariantType::SetVector4(const Vector4& value)
 {
-    SetAllocatedMemoryValue(TYPE_VECTOR4, value);
+    SetValueWithAllocation(TYPE_VECTOR4, value);
 }
 
 void VariantType::SetMatrix2(const Matrix2& value)
 {
-    SetAllocatedMemoryValue(TYPE_MATRIX2, value);
+    SetValueWithAllocation(TYPE_MATRIX2, value);
 }
 
 void VariantType::SetMatrix3(const Matrix3& value)
 {
-    SetAllocatedMemoryValue(TYPE_MATRIX3, value);
+    SetValueWithAllocation(TYPE_MATRIX3, value);
 }
 void VariantType::SetMatrix4(const Matrix4& value)
 {
-    SetAllocatedMemoryValue(TYPE_MATRIX4, value);
+    SetValueWithAllocation(TYPE_MATRIX4, value);
 }
 
 void VariantType::SetColor(const DAVA::Color& value)
 {
-    SetAllocatedMemoryValue(TYPE_COLOR, value);
+    SetValueWithAllocation(TYPE_COLOR, value);
 }
 
 void VariantType::SetFastName(const DAVA::FastName& value)
 {
-    SetAllocatedMemoryValue(TYPE_FASTNAME, value);
+    SetValueWithAllocation(TYPE_FASTNAME, value);
 }
 
 void VariantType::SetAABBox3(const DAVA::AABBox3& value)
 {
-    SetAllocatedMemoryValue(TYPE_AABBOX3, value);
+    SetValueWithAllocation(TYPE_AABBOX3, value);
 }
 
 void VariantType::SetFilePath(const FilePath& value)
 {
-    SetAllocatedMemoryValue(TYPE_FILEPATH, value);
+    SetValueWithAllocation(TYPE_FILEPATH, value);
 }
 
 void VariantType::SetVariant(const VariantType& var)
