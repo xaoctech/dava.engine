@@ -132,6 +132,12 @@ void SlotSystem::ItemsCache::LoadYamlConfig(const FilePath& configPath)
         return;
     }
 
+    if (rootNode->GetType() != YamlNode::eType::TYPE_ARRAY)
+    {
+        Logger::Error("Incorrect file format: %s", configPath.GetAbsolutePathname().c_str());
+        return;
+    }
+
     String nameKey("Name");
     String typeKey("Type");
     String pathKey("Path");
@@ -198,6 +204,11 @@ void SlotSystem::ItemsCache::LoadYamlConfig(const FilePath& configPath)
     {
         Logger::Error("Yaml parsing error. Config file %s contains duplicated items", configPath.GetAbsolutePathname().c_str());
     }
+
+    if (items.empty() == true)
+    {
+        Logger::Error("Yaml parsing error. No one item was found. File format probably incorrect %s", configPath.GetAbsolutePathname().c_str());
+    }
 }
 
 void SlotSystem::ItemsCache::LoadXmlConfig(const FilePath& configPath)
@@ -205,6 +216,11 @@ void SlotSystem::ItemsCache::LoadXmlConfig(const FilePath& configPath)
     Set<Item, ItemLess>& items = cachedItems[configPath.GetAbsolutePathname()];
     ItemsCache::XmlConfigParser parser(&items);
     XMLParser::ParseFile(configPath, &parser);
+
+    if (items.empty() == true)
+    {
+        Logger::Error("XML parsing error. No one item was found. File format probably incorrect %s", configPath.GetAbsolutePathname().c_str());
+    }
 }
 
 const SlotSystem::ItemsCache::Item* SlotSystem::ItemsCache::LookUpItem(const FilePath& configPath, FastName itemName)
