@@ -52,7 +52,7 @@ RefPtr<ControlContainer> CreateControlContainer(HUDAreaInfo::eArea area)
     case HUDAreaInfo::BOTTOM_RIGHT_AREA:
         return RefPtr<ControlContainer>(new FrameRectControl(area));
     case HUDAreaInfo::FRAME_AREA:
-        return RefPtr<ControlContainer>(new FrameControl());
+        return RefPtr<ControlContainer>(new FrameControl(FrameControl::SELECTION));
     default:
         DVASSERT(!"unacceptable value of area");
         return RefPtr<ControlContainer>(nullptr);
@@ -219,6 +219,7 @@ void HUDSystem::ProcessInput(UIEvent* currentInput)
                 point.y += size.y;
                 size.y *= -1.0f;
             }
+
             selectionRectControl->SetRect(Rect(point, size));
             systemsManager->selectionRectChanged.Emit(selectionRectControl->GetAbsoluteRect());
         }
@@ -267,7 +268,7 @@ void HUDSystem::OnHighlightNode(ControlNode* node)
         }
 
         UIControl* targetControl = node->GetControl();
-        hoveredNodeControl = CreateHUDRect(node);
+        hoveredNodeControl = CreateHighlightRect(node);
         hudControl->AddControl(hoveredNodeControl.Get());
     }
 }
@@ -437,7 +438,7 @@ void HUDSystem::OnDragStateChanged(EditorSystemsManager::eDragState currentState
     {
     case EditorSystemsManager::SelectByRect:
         DVASSERT(selectionRectControl.Valid() == false);
-        selectionRectControl.Set(new FrameControl());
+        selectionRectControl.Set(new FrameControl(FrameControl::SELECTION_RECT));
         hudControl->AddControl(selectionRectControl.Get());
         break;
     case EditorSystemsManager::Transform:

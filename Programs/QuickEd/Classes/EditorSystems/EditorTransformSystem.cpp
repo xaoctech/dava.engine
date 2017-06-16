@@ -20,6 +20,8 @@
 
 #include <UI/UIEvent.h>
 #include <UI/UIControl.h>
+#include <Preferences/PreferencesRegistrator.h>
+#include <Preferences/PreferencesStorage.h>
 
 using namespace DAVA;
 

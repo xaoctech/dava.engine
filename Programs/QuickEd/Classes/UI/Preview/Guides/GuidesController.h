@@ -50,8 +50,8 @@ private:
 
 public:
     INTROSPECTION(GuidesControllerPreferences,
-                  PROPERTY("guideColor", "Rulers/guide color", GetGuidesColor, SetGuidesColor, DAVA::I_SAVE | DAVA::I_VIEW | DAVA::I_EDIT | DAVA::I_PREFERENCE)
-                  PROPERTY("previewGuideColor", "Rulers/preview guide color", GetPreviewGuideColor, SetPreviewGuideColor, DAVA::I_SAVE | DAVA::I_VIEW | DAVA::I_EDIT | DAVA::I_PREFERENCE)
+                  PROPERTY("guideColor", "User graphic/guide color", GetGuidesColor, SetGuidesColor, DAVA::I_SAVE | DAVA::I_VIEW | DAVA::I_EDIT | DAVA::I_PREFERENCE)
+                  PROPERTY("previewGuideColor", "User graphic/preview guide color", GetPreviewGuideColor, SetPreviewGuideColor, DAVA::I_SAVE | DAVA::I_VIEW | DAVA::I_EDIT | DAVA::I_PREFERENCE)
                   )
 };
 
