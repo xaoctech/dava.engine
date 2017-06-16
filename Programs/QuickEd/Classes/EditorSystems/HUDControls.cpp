@@ -71,7 +71,7 @@ HUDControlsPreferences::HUDControlsPreferences()
 #endif //IMPL_PREFERENCE
 
 #define IMPL_PREFERENCE(T, pref) \
-    T HUDControlsPreferences::##pref; \
+    T HUDControlsPreferences::pref; \
     T HUDControlsPreferences::Get##pref() const \
     { \
         return pref; \
