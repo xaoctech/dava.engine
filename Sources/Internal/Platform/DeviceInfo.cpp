@@ -5,7 +5,7 @@
 #elif defined(__DAVAENGINE_MACOS__)
     #include "Platform/TemplateMacOS/DeviceInfoMacOS.h"
 #elif defined(__DAVAENGINE_ANDROID__)
-    #include "Platform/TemplateAndroid/DeviceInfoAndroid.h"
+    #include "Engine/Private/Android/DeviceInfoAndroid.h"
 #elif defined(__DAVAENGINE_WIN32__)
     #include "Platform/TemplateWin32/DeviceInfoWin32.h"
 #elif defined(__DAVAENGINE_WIN_UAP__)

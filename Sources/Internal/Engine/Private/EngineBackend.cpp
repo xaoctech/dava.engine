@@ -57,7 +57,7 @@
 #include "UI/UIControlSystem.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
-#include "Platform/TemplateAndroid/AssetsManagerAndroid.h"
+#include "Engine/Private/Android/AssetsManagerAndroid.h"
 #include "Engine/Private/Android/AndroidBridge.h"
 #endif
 

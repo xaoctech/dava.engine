@@ -2,17 +2,23 @@
 
 #if defined(__DAVAENGINE_ANDROID__)
 
+#include "Engine/Engine.h"
 #include "Utils/Utils.h"
 #include "DeviceInfoAndroid.h"
-#include "ExternC/AndroidLayer.h"
-#include "Platform/TemplateAndroid/CorePlatformAndroid.h"
 #include "Render/Renderer.h"
 #include <unistd.h>
+
+JNIEXPORT void JNICALL Java_com_dava_framework_PhoneStateListener_OnCarrierNameChanged(JNIEnv* env, jobject jclazz)
+{
+    DAVA::RunOnMainThreadAsync([]() {
+        DAVA::DeviceInfo::carrierNameChanged.Emit(DAVA::DeviceInfo::GetCarrierName());
+    });
+}
 
 namespace DAVA
 {
 DeviceInfoPrivate::DeviceInfoPrivate()
-    : jniDeviceInfo("com/dava/framework/JNIDeviceInfo")
+    : jniDeviceInfo("com/dava/engine/DeviceInfo")
 {
     jgetVersion = jniDeviceInfo.GetStaticMethod<jstring>("GetVersion");
     jgetManufacturer = jniDeviceInfo.GetStaticMethod<jstring>("GetManufacturer");
@@ -240,7 +246,7 @@ int32 DeviceInfoPrivate::GetSignalStrength(int32 networkType)
 DeviceInfo::StorageInfo DeviceInfoPrivate::GetInternalStorageInfo()
 {
     JNIEnv* env = JNI::GetEnv();
-    jmethodID mid = env->GetStaticMethodID(jniDeviceInfo, "GetInternalStorageInfo", "()Lcom/dava/framework/JNIDeviceInfo$StorageInfo;");
+    jmethodID mid = env->GetStaticMethodID(jniDeviceInfo, "GetInternalStorageInfo", "()Lcom/dava/engine/DeviceInfo$StorageInfo;");
 
     DeviceInfo::StorageInfo info;
 
@@ -273,7 +279,7 @@ DeviceInfo::StorageInfo DeviceInfoPrivate::GetPrimaryExternalStorageInfo()
 
     JNIEnv* env = JNI::GetEnv();
 
-    jmethodID mid = env->GetStaticMethodID(jniDeviceInfo, "GetPrimaryExternalStorageInfo", "()Lcom/dava/framework/JNIDeviceInfo$StorageInfo;");
+    jmethodID mid = env->GetStaticMethodID(jniDeviceInfo, "GetPrimaryExternalStorageInfo", "()Lcom/dava/engine/DeviceInfo$StorageInfo;");
 
     if (mid)
     {
@@ -295,7 +301,7 @@ List<DeviceInfo::StorageInfo> DeviceInfoPrivate::GetSecondaryExternalStoragesLis
 
     JNIEnv* env = JNI::GetEnv();
 
-    jmethodID mid = env->GetStaticMethodID(jniDeviceInfo, "GetSecondaryExternalStoragesList", "()[Lcom/dava/framework/JNIDeviceInfo$StorageInfo;");
+    jmethodID mid = env->GetStaticMethodID(jniDeviceInfo, "GetSecondaryExternalStoragesList", "()[Lcom/dava/engine/DeviceInfo$StorageInfo;");
 
     if (mid)
     {

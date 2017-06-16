@@ -1,14 +1,9 @@
-package com.dava.framework;
+package com.dava.engine;
 
-import com.dava.engine.DavaActivity;
-
-import android.app.Activity;
-import android.content.SharedPreferences;
-
-public class JNISharedPreferences {
-	
-	SharedPreferences preferences = null;
-	SharedPreferences.Editor editor = null;
+public class SharedPreferences
+{
+	android.content.SharedPreferences preferences = null;
+	android.content.SharedPreferences.Editor editor = null;
 	static String name = "DavaPreferences";
 
 	public static String GetName()
@@ -18,19 +13,13 @@ public class JNISharedPreferences {
 	
 	public static Object GetSharedPreferences()
 	{
-		JNISharedPreferences self = new JNISharedPreferences();
+		SharedPreferences self = new SharedPreferences();
 		return self;
 	}
 
-	public JNISharedPreferences()
+	public SharedPreferences()
 	{
-		// TODO: Just use DavaActivity when CoreV1 is removed
-		Activity activity = JNIActivity.GetActivity();
-		if (activity == null)
-		{
-			activity = DavaActivity.instance();
-		}
-
+		DavaActivity activity = DavaActivity.instance();
 		preferences = activity.getSharedPreferences(name, 0);
 		editor = preferences.edit();
 	}
