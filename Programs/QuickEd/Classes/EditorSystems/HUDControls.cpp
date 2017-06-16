@@ -12,10 +12,6 @@ using namespace DAVA;
 
 namespace HUDControlsDetails
 {
-const Vector2 PIVOT_CONTROL_SIZE(15.0f, 15.0f);
-const Vector2 FRAME_RECT_SIZE(10.0f, 10.0f);
-const Vector2 ROTATE_CONTROL_SIZE(15.0f, 15);
-
 RefPtr<UIControl> CreateFrameBorderControl(FrameControl::eBorder border)
 {
     RefPtr<UIControl> control(new UIControl(Rect(1.0f, 1.0f, 1.0f, 1.0f)));
@@ -152,6 +148,20 @@ FrameControl::FrameControl(eType type_)
     , type(type_)
 {
     SetName(FastName("Frame Control"));
+
+    switch (type)
+    {
+    case SELECTION:
+        lineThickness = 1.0f;
+        break;
+    case HIGHLIGHT:
+        lineThickness = 2.0f;
+        break;
+    default:
+        DVASSERT(false, "set line thickness please");
+        break;
+    }
+
     for (uint32 i = 0; i < eBorder::COUNT; ++i)
     {
         FrameControl::eBorder border = static_cast<FrameControl::eBorder>(i);
@@ -190,18 +200,6 @@ void FrameControl::InitFromGD(const UIGeometricData& gd)
 
 Rect FrameControl::GetSubControlRect(const DAVA::Rect& rect, eBorder border) const
 {
-    float32 lineThickness;
-    switch (type)
-    {
-    case SELECTION:
-        lineThickness = 1.0f;
-        break;
-    case HIGHLIGHT:
-        lineThickness = 2.0f;
-    default:
-        break;
-    }
-
     switch (border)
     {
     case TOP:
@@ -223,7 +221,28 @@ FrameRectControl::FrameRectControl(const HUDAreaInfo::eArea area_)
 {
     SetName(FastName("Frame Rect Control"));
     UIControlBackground* background = GetOrCreateComponent<UIControlBackground>();
-    ScopedPtr<Sprite> sprite(Sprite::CreateFromSourceFile("~res:/QuickEd/UI/HUDControls/Rect.png", true, false));
+    FilePath spritePath;
+    switch (area)
+    {
+    case HUDAreaInfo::TOP_LEFT_AREA:
+    case HUDAreaInfo::TOP_RIGHT_AREA:
+    case HUDAreaInfo::BOTTOM_LEFT_AREA:
+    case HUDAreaInfo::BOTTOM_RIGHT_AREA:
+        spritePath = "~res:/QuickEd/UI/HUDControls/CornerRect.png";
+        rectSize = Vector2(8.0f, 8.0f);
+        break;
+    case HUDAreaInfo::TOP_CENTER_AREA:
+    case HUDAreaInfo::BOTTOM_CENTER_AREA:
+    case HUDAreaInfo::CENTER_LEFT_AREA:
+    case HUDAreaInfo::CENTER_RIGHT_AREA:
+        spritePath = "~res:/QuickEd/UI/HUDControls/BorderRect.png";
+        rectSize = Vector2(8.0f, 8.0f);
+        break;
+    default:
+        DVASSERT(false, "invalid area passed to FrameRectControl");
+        break;
+    }
+    ScopedPtr<Sprite> sprite(Sprite::CreateFromSourceFile(spritePath, true, false));
     background->SetSprite(sprite, 0);
     background->SetDrawType(UIControlBackground::DRAW_SCALE_TO_RECT);
     background->SetPerPixelAccuracyType(UIControlBackground::PER_PIXEL_ACCURACY_ENABLED);
@@ -231,7 +250,7 @@ FrameRectControl::FrameRectControl(const HUDAreaInfo::eArea area_)
 
 void FrameRectControl::InitFromGD(const UIGeometricData& gd)
 {
-    Rect subRect(Vector2(), HUDControlsDetails::FRAME_RECT_SIZE);
+    Rect subRect(Vector2(), rectSize);
     Rect parentRect(Vector2(0.0f, 0.0f), gd.size * gd.scale);
     subRect.SetCenter(GetPos(parentRect));
     SetRect(subRect);
@@ -276,7 +295,7 @@ PivotPointControl::PivotPointControl()
 
 void PivotPointControl::InitFromGD(const UIGeometricData& gd)
 {
-    Rect rect(Vector2(), HUDControlsDetails::PIVOT_CONTROL_SIZE);
+    Rect rect(Vector2(), Vector2(15.0f, 15.0f));
     rect.SetCenter(gd.pivotPoint * gd.scale);
     SetRect(rect);
 }
@@ -294,11 +313,12 @@ RotateControl::RotateControl()
 
 void RotateControl::InitFromGD(const UIGeometricData& gd)
 {
-    Rect rect(Vector2(0.0f, 0.0f), HUDControlsDetails::ROTATE_CONTROL_SIZE);
+    const DAVA::Vector2 rectSize(15.0f, 15.0f);
+    Rect rect(Vector2(0.0f, 0.0f), rectSize);
     Rect controlRect(Vector2(0.0f, 0.0f), gd.size * gd.scale);
 
     const int margin = 5;
-    rect.SetCenter(Vector2(controlRect.dx / 2.0f, controlRect.GetPosition().y - HUDControlsDetails::ROTATE_CONTROL_SIZE.y - margin));
+    rect.SetCenter(Vector2(controlRect.dx / 2.0f, controlRect.GetPosition().y - rectSize.y - margin));
 
     SetRect(rect);
 }

@@ -81,7 +81,7 @@ HUDSystem::HUD::HUD(ControlNode* node_, HUDSystem* hudSystem)
     if (node->GetParent() != nullptr && node->GetParent()->GetControl() != nullptr)
     {
         areas.reserve(HUDAreaInfo::AREAS_COUNT);
-        for (int area = HUDAreaInfo::AREAS_BEGIN; area != HUDAreaInfo::AREAS_COUNT; ++area)
+        for (int area = HUDAreaInfo::AREAS_COUNT - 1; area >= HUDAreaInfo::AREAS_BEGIN; --area)
         {
             if ((hudSystem->showPivot == false && area == HUDAreaInfo::PIVOT_POINT_AREA) ||
                 (hudSystem->showRotate == false && area == HUDAreaInfo::ROTATE_AREA))
