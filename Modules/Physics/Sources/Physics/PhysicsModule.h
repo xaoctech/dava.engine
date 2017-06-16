@@ -13,6 +13,8 @@ class PxFoundation;
 class PxPhysics;
 class PxScene;
 class PxActor;
+class PxShape;
+class PxMaterial;
 }
 
 namespace DAVA
@@ -36,9 +38,15 @@ public:
     physx::PxActor* CreateStaticActor() const;
     physx::PxActor* CreateDynamicActor() const;
 
+    physx::PxShape* CreateBoxShape(bool exclusive) const;
+
+    physx::PxMaterial* GetDefaultMaterial() const;
+
 private:
     physx::PxFoundation* foundation = nullptr;
     physx::PxPhysics* physics = nullptr;
+
+    mutable physx::PxMaterial* defaultMaterial = nullptr;
 
     class PhysicsAllocator;
     PhysicsAllocator* allocator = nullptr;

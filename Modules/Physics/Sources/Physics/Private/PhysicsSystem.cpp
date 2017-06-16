@@ -2,6 +2,7 @@
 #include "Physics/PhysicsModule.h"
 #include "Physics/PhysicsConfigs.h"
 #include "Physics/PhysicsComponent.h"
+#include "Physics/CollisionComponent.h"
 
 #include <Scene3D/Entity.h>
 #include <Entity/Component.h>
@@ -19,6 +20,25 @@
 
 namespace DAVA
 {
+namespace PhysicsSystemDetail
+{
+template <typename T>
+void EraseComponent(T* component, Vector<T*>& pendingComponents, Vector<T*>& components)
+{
+    auto addIter = std::find(pendingComponents.begin(), pendingComponents.end(), component);
+    if (addIter != pendingComponents.end())
+    {
+        RemoveExchangingWithLast(pendingComponents, std::distance(pendingComponents.begin(), addIter));
+    }
+    else
+    {
+        auto iter = std::find(components.begin(), components.end(), component);
+        DVASSERT(iter != components.end());
+        RemoveExchangingWithLast(components, std::distance(components.begin(), iter));
+    }
+}
+} // namespace
+
 PhysicsSystem::PhysicsSystem(Scene* scene)
     : SceneSystem(scene)
 {
@@ -56,28 +76,32 @@ PhysicsSystem::~PhysicsSystem()
 
 void PhysicsSystem::RegisterEntity(Entity* entity)
 {
-    for (uint32 i = 0; i < entity->GetComponentCount(Component::STATIC_BODY_COMPONENT); ++i)
+    auto processEntity = [this](Entity* entity, uint32 componentType)
     {
-        RegisterComponent(entity, entity->GetComponent(Component::STATIC_BODY_COMPONENT, i));
-    }
+        for (uint32 i = 0; i < entity->GetComponentCount(componentType); ++i)
+        {
+            RegisterComponent(entity, entity->GetComponent(componentType, i));
+        }
+    };
 
-    for (uint32 i = 0; i < entity->GetComponentCount(Component::DYNAMIC_BODY_COMPONENT); ++i)
-    {
-        RegisterComponent(entity, entity->GetComponent(Component::DYNAMIC_BODY_COMPONENT, i));
-    }
+    processEntity(entity, Component::STATIC_BODY_COMPONENT);
+    processEntity(entity, Component::DYNAMIC_BODY_COMPONENT);
+    processEntity(entity, Component::COLLISION_COMPONENT);
 }
 
 void PhysicsSystem::UnregisterEntity(Entity* entity)
 {
-    for (uint32 i = 0; i < entity->GetComponentCount(Component::STATIC_BODY_COMPONENT); ++i)
+    auto processEntity = [this](Entity* entity, uint32 componentType)
     {
-        UnregisterComponent(entity, entity->GetComponent(Component::STATIC_BODY_COMPONENT, i));
-    }
+        for (uint32 i = 0; i < entity->GetComponentCount(componentType); ++i)
+        {
+            UnregisterComponent(entity, entity->GetComponent(componentType, i));
+        }
+    };
 
-    for (uint32 i = 0; i < entity->GetComponentCount(Component::DYNAMIC_BODY_COMPONENT); ++i)
-    {
-        UnregisterComponent(entity, entity->GetComponent(Component::DYNAMIC_BODY_COMPONENT, i));
-    }
+    processEntity(entity, Component::STATIC_BODY_COMPONENT);
+    processEntity(entity, Component::DYNAMIC_BODY_COMPONENT);
+    processEntity(entity, Component::COLLISION_COMPONENT);
 }
 
 void PhysicsSystem::RegisterComponent(Entity* entity, Component* component)
@@ -85,7 +109,12 @@ void PhysicsSystem::RegisterComponent(Entity* entity, Component* component)
     uint32 componentType = component->GetType();
     if (componentType == Component::STATIC_BODY_COMPONENT || componentType == Component::DYNAMIC_BODY_COMPONENT)
     {
-        pendingAddComponents.push_back(static_cast<PhysicsComponent*>(component));
+        pendingAddPhysicsComponents.push_back(static_cast<PhysicsComponent*>(component));
+    }
+
+    if (componentType == Component::COLLISION_COMPONENT)
+    {
+        pendingAddCollisionComponents.push_back(static_cast<CollisionComponent*>(component));
     }
 }
 
@@ -95,20 +124,41 @@ void PhysicsSystem::UnregisterComponent(Entity* entity, Component* component)
     if (componentType == Component::STATIC_BODY_COMPONENT || componentType == Component::DYNAMIC_BODY_COMPONENT)
     {
         PhysicsComponent* physicsComponent = static_cast<PhysicsComponent*>(component);
-        auto addIter = std::find(pendingAddComponents.begin(), pendingAddComponents.end(), physicsComponent);
-        if (addIter != pendingAddComponents.end())
-        {
-            RemoveExchangingWithLast(pendingAddComponents, std::distance(pendingAddComponents.begin(), addIter));
-        }
-        else
-        {
-            auto iter = std::find(components.begin(), components.end(), physicsComponent);
-            DVASSERT(iter != components.end());
-            RemoveExchangingWithLast(components, std::distance(components.begin(), iter));
-        }
+        PhysicsSystemDetail::EraseComponent(physicsComponent, pendingAddPhysicsComponents, physicsComponents);
 
-        physicsScene->removeActor(*physicsComponent->GetPxActor());
-        physicsComponent->ReleasePxActor();
+        physx::PxRigidActor* actor = physicsComponent->GetPxActor()->is<physx::PxRigidActor>();
+        if (actor != nullptr)
+        {
+            physx::PxU32 shapesCount = actor->getNbShapes();
+            Vector<physx::PxShape*> shapes(shapesCount, nullptr);
+            actor->getShapes(shapes.data(), shapesCount);
+
+            for (physx::PxShape* shape : shapes)
+            {
+                DVASSERT(shape != nullptr);
+                actor->detachShape(*shape);
+            }
+
+            physicsScene->removeActor(*physicsComponent->GetPxActor());
+            physicsComponent->ReleasePxActor();
+        }
+    }
+
+    if (componentType == Component::COLLISION_COMPONENT)
+    {
+        CollisionComponent* collisionComponent = static_cast<CollisionComponent*>(component);
+        PhysicsSystemDetail::EraseComponent(collisionComponent, pendingAddCollisionComponents, collisionComponents);
+
+        physx::PxShape* shape = collisionComponent->GetPxShape();
+        if (shape != nullptr)
+        {
+            physx::PxRigidActor* actor = shape->getActor();
+            if (actor != nullptr)
+            {
+                actor->detachShape(*shape);
+            }
+            collisionComponent->ReleasePxShape();
+        }
     }
 }
 
@@ -120,7 +170,7 @@ void PhysicsSystem::Process(float32 timeElapsed)
     }
 
     Physics* physics = GetEngineContext()->moduleManager->GetModule<Physics>();
-    for (PhysicsComponent* component : pendingAddComponents)
+    for (PhysicsComponent* component : pendingAddPhysicsComponents)
     {
         uint32 componentType = component->GetType();
         physx::PxActor* createdActor = nullptr;
@@ -135,10 +185,46 @@ void PhysicsSystem::Process(float32 timeElapsed)
         }
 
         component->SetPxActor(createdActor);
+
+        Entity* entity = component->GetEntity();
+        for (uint32 i = 0; i < entity->GetComponentCount(Component::COLLISION_COMPONENT); ++i)
+        {
+            CollisionComponent* collision = static_cast<CollisionComponent*>(entity->GetComponent(Component::COLLISION_COMPONENT, i));
+            physx::PxShape* shape = collision->GetPxShape();
+            if (shape != nullptr)
+            {
+                physx::PxRigidActor* rigidActor = createdActor->is<physx::PxRigidActor>();
+                rigidActor->attachShape(*shape);
+            }
+        }
+
         physicsScene->addActor(*(component->GetPxActor()));
-        components.push_back(component);
+        physicsComponents.push_back(component);
     }
-    pendingAddComponents.clear();
+    pendingAddPhysicsComponents.clear();
+
+    auto attachShapeFn = [](physx::PxShape* shape, PhysicsComponent* component)
+    {
+        if (component != nullptr)
+        {
+            physx::PxRigidActor* actor = component->GetPxActor()->is<physx::PxRigidActor>();
+            DVASSERT(actor != nullptr);
+            actor->attachShape(*shape);
+        }
+    };
+
+    for (CollisionComponent* component : pendingAddCollisionComponents)
+    {
+        physx::PxShape* shape = physics->CreateBoxShape(true);
+        component->SetPxShape(shape);
+
+        Entity* entity = component->GetEntity();
+        attachShapeFn(shape, static_cast<PhysicsComponent*>(entity->GetComponent(Component::STATIC_BODY_COMPONENT, 0)));
+        attachShapeFn(shape, static_cast<PhysicsComponent*>(entity->GetComponent(Component::DYNAMIC_BODY_COMPONENT, 0)));
+
+        collisionComponents.push_back(component);
+    }
+    pendingAddCollisionComponents.clear();
 
     if (isSimulationEnabled == false)
     {

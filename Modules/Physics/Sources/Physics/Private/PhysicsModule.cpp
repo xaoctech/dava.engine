@@ -1,6 +1,7 @@
 #include "Physics/PhysicsModule.h"
 #include "Physics/StaticBodyComponent.h"
 #include "Physics/DynamicBodyComponent.h"
+#include "Physics/CollisionComponent.h"
 #include "Physics/Private/PhysicsMath.h"
 
 #include <Engine/Engine.h>
@@ -180,6 +181,7 @@ void Physics::Init()
 
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(StaticBodyComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(DynamicBodyComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(CollisionComponent);
 }
 
 void Physics::Shutdown()
@@ -273,6 +275,21 @@ physx::PxActor* Physics::CreateStaticActor() const
 physx::PxActor* Physics::CreateDynamicActor() const
 {
     return physics->createRigidDynamic(physx::PxTransform(physx::PxIDENTITY::PxIdentity));
+}
+
+physx::PxShape* Physics::CreateBoxShape(bool exclusive) const
+{
+    return physics->createShape(physx::PxBoxGeometry(10.0f, 10.0f, 10.0f), *GetDefaultMaterial(), exclusive);
+}
+
+physx::PxMaterial* Physics::GetDefaultMaterial() const
+{
+    if (defaultMaterial == nullptr)
+    {
+        defaultMaterial = physics->createMaterial(0.5f, 0.5f, 1.f);
+    }
+
+    return defaultMaterial;
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(Physics)

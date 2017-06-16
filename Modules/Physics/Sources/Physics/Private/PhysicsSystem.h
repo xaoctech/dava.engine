@@ -11,6 +11,7 @@ namespace DAVA
 {
 class Scene;
 class PhysicsComponent;
+class CollisionComponent;
 
 class PhysicsSystem : public SceneSystem
 {
@@ -40,7 +41,10 @@ private:
     bool isSimulationRunning = false;
     physx::PxScene* physicsScene = nullptr;
 
-    Vector<PhysicsComponent*> components;
-    Vector<PhysicsComponent*> pendingAddComponents;
+    Vector<PhysicsComponent*> physicsComponents;
+    Vector<PhysicsComponent*> pendingAddPhysicsComponents;
+
+    Vector<CollisionComponent*> collisionComponents;
+    Vector<CollisionComponent*> pendingAddCollisionComponents;
 };
 } // namespace DAVA
