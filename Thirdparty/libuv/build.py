@@ -179,7 +179,7 @@ def _build_ios(working_directory_path, root_project_path):
 
 def _build_android(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
-    _patch_sources(working_directory_path)
+    #_patch_sources(working_directory_path)
 
     # ARM
     toolchain_path_arm = os.path.join(working_directory_path, 'gen/ndk_toolchain_arm')
