@@ -120,6 +120,8 @@ UIControlSystem::~UIControlSystem()
         currentScreen = nullptr;
     }
 
+    lastClickData.touchLocker = nullptr;
+
     soundSystem = nullptr;
     inputSystem = nullptr;
     styleSheetSystem = nullptr;
@@ -462,6 +464,10 @@ void UIControlSystem::CancelInput(UIEvent* touch)
 
 void UIControlSystem::CancelAllInputs()
 {
+    lastClickData.touchLocker = nullptr;
+    lastClickData.tapCount = 0;
+    lastClickData.lastClickEnded = false;
+
     inputSystem->CancelAllInputs();
 }
 
