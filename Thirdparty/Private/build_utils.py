@@ -192,8 +192,17 @@ def cmake_generate_build_ndk(output_folder_path, src_folder_path, android_ndk_pa
         os.makedirs(output_folder_path)
 
     cmake_path = os.path.join(android_ndk_path, '../cmake/3.6.3155560/bin/cmake')
-    print(cmake_path)
-    cmd = [cmake_path, '-DCMAKE_SYSTEM_NAME=Android', '-DCMAKE_SYSTEM_VERSION=' + build_config.get_android_api_version(), '-DCMAKE_ANDROID_STL_TYPE=' + build_config.get_android_stl(), '-DCMAKE_ANDROID_NDK=' + android_ndk_path, '-DCMAKE_BUILD_TYPE=Release', '-DCMAKE_ANDROID_ARCH_ABI=' + abi]
+    cmake_toolchain = os.path.join(android_ndk_path, 'build/cmake/android.toolchain.cmake')
+
+    cmd = [cmake_path, 
+        '-DANDROID_PLATFORM=' + build_config.get_android_platform(),
+        '-DANDROID_STL=' + build_config.get_android_stl(),
+        '-DANDROID_ARM_NEON=TRUE',
+        '-DANDROID_ABI=' + abi,
+        '-GAndroid Gradle - Unix Makefiles',
+        '-DCMAKE_TOOLCHAIN_FILE=' + cmake_toolchain,
+        '-DCMAKE_BUILD_TYPE=Release']
+
     if (sys.platform == 'win32'):
         cmd.extend(['-G', 'MinGW Makefiles', '-DCMAKE_MAKE_PROGRAM=' + os.path.join(android_ndk_path, 'prebuilt\\windows-x86_64\\bin\\make.exe')])
     cmd.extend(cmake_additional_args)
@@ -204,7 +213,7 @@ def cmake_generate_build_ndk(output_folder_path, src_folder_path, android_ndk_pa
         print_verbose(line)
     sp.wait()
 
-    sp = subprocess.Popen(['cmake', '--build', '.'], stdout=subprocess.PIPE, cwd=output_folder_path)
+    sp = subprocess.Popen([cmake_path, '--build', '.'], stdout=subprocess.PIPE, cwd=output_folder_path)
     for line in sp.stdout:
         print_verbose(line)
     sp.wait()
@@ -328,7 +337,7 @@ def android_ndk_make_toolchain(root_project_path, arch, install_dir):
 
     exec_path = os.path.join(android_ndk_root, 'build/tools')
 
-    cmd = ['python', 'make_standalone_toolchain.py', '--arch=' + arch, '--api=' + build_config.get_android_api_version(), '--install-dir=' + install_dir]
+    cmd = ['python', 'make_standalone_toolchain.py', '--unified-headers', '--arch=' + arch, '--api=' + build_config.get_android_api_version(), '--stl=' + build_config.get_android_stl(), '--install-dir=' + install_dir]
     run_process(cmd, process_cwd=exec_path)
 
 
