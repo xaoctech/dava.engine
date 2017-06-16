@@ -30,8 +30,13 @@ public:
     void SetSimulationEnabled(bool isEnabled);
     bool IsSimulationEnabled() const;
 
+    void SetDrawDebugInfo(bool drawDebugInfo);
+    bool IsDrawDebugInfo() const;
+
 private:
     bool FetchResults(bool block);
+
+    void DrawDebugInfo();
 
 private:
     void* simulationBlock = nullptr;
@@ -46,5 +51,7 @@ private:
 
     Vector<CollisionComponent*> collisionComponents;
     Vector<CollisionComponent*> pendingAddCollisionComponents;
+
+    bool drawDebugInfo = false;
 };
 } // namespace DAVA

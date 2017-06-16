@@ -3,6 +3,7 @@
 #include "Physics/PhysicsConfigs.h"
 #include "Physics/PhysicsComponent.h"
 #include "Physics/CollisionComponent.h"
+#include "Physics/Private/PhysicsMath.h"
 
 #include <Scene3D/Entity.h>
 #include <Entity/Component.h>
@@ -10,11 +11,16 @@
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
 #include <ModuleManager/ModuleManager.h>
+#include <Scene3D/Scene.h>
+#include <Render/Highlevel/RenderSystem.h>
+#include <Render/RenderHelper.h>
 #include <FileSystem/KeyedArchive.h>
 #include <Utils/Utils.h>
 
 #include <physx/PxScene.h>
 #include <physx/PxRigidActor.h>
+#include <physx/PxRigidDynamic.h>
+#include <physx/common/PxRenderBuffer.h>
 #include <PxShared/foundation/PxAllocatorCallback.h>
 #include <PxShared/foundation/PxFoundation.h>
 
@@ -56,6 +62,7 @@ PhysicsSystem::PhysicsSystem(Scene* scene)
     sceneConfig.gravity = options->GetVector3("physics.gravity", Vector3(0, 0, -9.81f));
     sceneConfig.threadCount = options->GetUInt32("physics.threadCount", 2);
     physicsScene = physics->CreateScene(sceneConfig);
+    SetDrawDebugInfo(true);
 }
 
 PhysicsSystem::~PhysicsSystem()
@@ -169,6 +176,8 @@ void PhysicsSystem::Process(float32 timeElapsed)
         isSimulationRunning = false;
     }
 
+    DrawDebugInfo();
+
     Physics* physics = GetEngineContext()->moduleManager->GetModule<Physics>();
     for (PhysicsComponent* component : pendingAddPhysicsComponents)
     {
@@ -205,12 +214,9 @@ void PhysicsSystem::Process(float32 timeElapsed)
 
     auto attachShapeFn = [](physx::PxShape* shape, PhysicsComponent* component)
     {
-        if (component != nullptr)
-        {
-            physx::PxRigidActor* actor = component->GetPxActor()->is<physx::PxRigidActor>();
-            DVASSERT(actor != nullptr);
-            actor->attachShape(*shape);
-        }
+        physx::PxRigidActor* actor = component->GetPxActor()->is<physx::PxRigidActor>();
+        DVASSERT(actor != nullptr);
+        actor->attachShape(*shape);
     };
 
     for (CollisionComponent* component : pendingAddCollisionComponents)
@@ -219,8 +225,26 @@ void PhysicsSystem::Process(float32 timeElapsed)
         component->SetPxShape(shape);
 
         Entity* entity = component->GetEntity();
-        attachShapeFn(shape, static_cast<PhysicsComponent*>(entity->GetComponent(Component::STATIC_BODY_COMPONENT, 0)));
-        attachShapeFn(shape, static_cast<PhysicsComponent*>(entity->GetComponent(Component::DYNAMIC_BODY_COMPONENT, 0)));
+        PhysicsComponent* staticBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::STATIC_BODY_COMPONENT, 0));
+        if (staticBodyComponent != nullptr)
+        {
+            attachShapeFn(shape, staticBodyComponent);
+        }
+        else
+        {
+            PhysicsComponent* dynamicBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::DYNAMIC_BODY_COMPONENT, 0));
+            if (dynamicBodyComponent != nullptr)
+            {
+                attachShapeFn(shape, dynamicBodyComponent);
+                physx::PxRigidDynamic* dynamicActor = dynamicBodyComponent->GetPxActor()->is<physx::PxRigidDynamic>();
+                DVASSERT(dynamicActor != nullptr);
+                if (dynamicActor->getActorFlags().isSet(physx::PxActorFlag::eDISABLE_SIMULATION) == false &&
+                    dynamicActor->getRigidBodyFlags().isSet(physx::PxRigidBodyFlag::eKINEMATIC) == false)
+                {
+                    dynamicActor->wakeUp();
+                }
+            }
+        }
 
         collisionComponents.push_back(component);
     }
@@ -258,10 +282,71 @@ bool PhysicsSystem::IsSimulationEnabled() const
     return isSimulationEnabled;
 }
 
+void PhysicsSystem::SetDrawDebugInfo(bool drawDebugInfo_)
+{
+    drawDebugInfo = drawDebugInfo_;
+    physx::PxReal enabled = drawDebugInfo == true ? 1.0f : 0.0f;
+    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_SHAPES, enabled);
+    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_STATIC, enabled);
+    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_DYNAMIC, enabled);
+    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_AABBS, enabled);
+    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eACTOR_AXES, 10.0f * enabled);
+    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eWORLD_AXES, enabled);
+    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eSCALE, enabled);
+
+    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eBODY_MASS_AXES, enabled);
+    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eBODY_LIN_VELOCITY, enabled);
+    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eBODY_ANG_VELOCITY, enabled);
+    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eCONTACT_POINT, enabled);
+    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eCONTACT_NORMAL, enabled);
+    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eCONTACT_FORCE, enabled);
+}
+
+bool PhysicsSystem::IsDrawDebugInfo() const
+{
+    return drawDebugInfo;
+}
+
 bool PhysicsSystem::FetchResults(bool block)
 {
     DVASSERT(isSimulationRunning);
     return physicsScene->fetchResults(block);
+}
+
+void PhysicsSystem::DrawDebugInfo()
+{
+    if (IsDrawDebugInfo() == false)
+    {
+        return;
+    }
+
+    RenderHelper* renderHelper = GetScene()->GetRenderSystem()->GetDebugDrawer();
+    const physx::PxRenderBuffer& rb = physicsScene->getRenderBuffer();
+    const physx::PxDebugLine* lines = rb.getLines();
+    for (physx::PxU32 i = 0; i < rb.getNbLines(); ++i)
+    {
+        const physx::PxDebugLine& line = lines[i];
+        renderHelper->DrawLine(PhysicsMath::PxVec3ToVector3(line.pos0), PhysicsMath::PxVec3ToVector3(line.pos1),
+                               PhysicsMath::PxColorToColor(line.color0));
+    }
+
+    const physx::PxDebugTriangle* triangles = rb.getTriangles();
+    for (physx::PxU32 i = 0; i < rb.getNbTriangles(); ++i)
+    {
+        const physx::PxDebugTriangle& triangle = triangles[i];
+        Polygon3 polygon;
+        polygon.AddPoint(PhysicsMath::PxVec3ToVector3(triangle.pos0));
+        polygon.AddPoint(PhysicsMath::PxVec3ToVector3(triangle.pos1));
+        polygon.AddPoint(PhysicsMath::PxVec3ToVector3(triangle.pos2));
+        renderHelper->DrawPolygon(polygon, PhysicsMath::PxColorToColor(triangle.color0), RenderHelper::DRAW_WIRE_DEPTH);
+    }
+
+    const physx::PxDebugPoint* points = rb.getPoints();
+    for (physx::PxU32 i = 0; i < rb.getNbPoints(); ++i)
+    {
+        const physx::PxDebugPoint& point = points[i];
+        renderHelper->DrawIcosahedron(PhysicsMath::PxVec3ToVector3(point.pos), 5.0f, PhysicsMath::PxColorToColor(point.color), RenderHelper::DRAW_WIRE_DEPTH);
+    }
 }
 
 } // namespace DAVA
