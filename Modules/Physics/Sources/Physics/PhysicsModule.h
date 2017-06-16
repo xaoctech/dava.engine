@@ -29,9 +29,9 @@ public:
     void Shutdown() override;
 
     bool IsInitialized() const;
+    void* Allocate(size_t size, const char* typeName, const char* filename, int line);
+    void Deallocate(void* ptr);
 
-    physx::PxPhysics* GetPhysics() const;
-    physx::PxFoundation* GetFoundation() const;
     physx::PxScene* CreateScene(const PhysicsSceneConfig& config) const;
 
     physx::PxActor* ClonePxActor(physx::PxActor* actor, void* userData) const;

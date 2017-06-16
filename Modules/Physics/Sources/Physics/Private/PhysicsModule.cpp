@@ -198,14 +198,14 @@ bool Physics::IsInitialized() const
     return foundation != nullptr && physics != nullptr;
 }
 
-physx::PxPhysics* Physics::GetPhysics() const
+void* Physics::Allocate(size_t size, const char* typeName, const char* filename, int line)
 {
-    return physics;
+    return allocator->allocate(size, typeName, filename, line);
 }
 
-physx::PxFoundation* Physics::GetFoundation() const
+void Physics::Deallocate(void* ptr)
 {
-    return foundation;
+    allocator->deallocate(ptr);
 }
 
 physx::PxScene* Physics::CreateScene(const PhysicsSceneConfig& config) const

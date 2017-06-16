@@ -55,8 +55,7 @@ PhysicsSystem::PhysicsSystem(Scene* scene)
 
     const EngineContext* ctx = GetEngineContext();
     Physics* physics = ctx->moduleManager->GetModule<Physics>();
-    physx::PxAllocatorCallback& allocator = physics->GetFoundation()->getAllocatorCallback();
-    simulationBlock = allocator.allocate(simulationBlockSize, "SimulationBlock", __FILE__, __LINE__);
+    simulationBlock = physics->Allocate(simulationBlockSize, "SimulationBlock", __FILE__, __LINE__);
 
     PhysicsSceneConfig sceneConfig;
     sceneConfig.gravity = options->GetVector3("physics.gravity", Vector3(0, 0, -9.81f));
@@ -75,8 +74,7 @@ PhysicsSystem::~PhysicsSystem()
 
     const EngineContext* ctx = GetEngineContext();
     Physics* physics = ctx->moduleManager->GetModule<Physics>();
-    physx::PxAllocatorCallback& allocator = physics->GetFoundation()->getAllocatorCallback();
-    allocator.deallocate(simulationBlock);
+    physics->Deallocate(simulationBlock);
     simulationBlock = nullptr;
     physicsScene->release();
 }

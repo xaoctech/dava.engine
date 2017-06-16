@@ -254,6 +254,7 @@ void TestBed::OnWindowCreated(DAVA::Window* w)
 
 void TestBed::OnWindowDestroyed(DAVA::Window* w)
 {
+    UIScreenManager::Instance()->ResetScreen();
     Logger::Error("****** TestBed::OnWindowDestroyed");
 }
 
