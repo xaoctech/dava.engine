@@ -228,63 +228,90 @@ const String& VariantType::GetTypeName() const
 
 void VariantType::SetBool(bool value)
 {
-    ReleasePointerIfNotCurrentType(TYPE_BOOLEAN);
+    if (TYPE_BOOLEAN != type)
+    {
+        ReleasePointer();
+    }
     type = TYPE_BOOLEAN;
     boolValue = value;
 }
 
 void VariantType::SetInt8(int8 value)
 {
-    ReleasePointerIfNotCurrentType(TYPE_INT8);
+    if (TYPE_INT8 != type)
+    {
+        ReleasePointer();
+    }
     type = TYPE_INT8;
     int8Value = value;
 }
 
 void VariantType::SetUInt8(uint8 value)
 {
-    ReleasePointerIfNotCurrentType(TYPE_UINT8);
+    if (TYPE_UINT8 != type)
+    {
+        ReleasePointer();
+    }
     type = TYPE_UINT8;
     uint8Value = value;
 }
 
 void VariantType::SetInt16(int16 value)
 {
-    ReleasePointerIfNotCurrentType(TYPE_INT16);
+    if (TYPE_INT16 != type)
+    {
+        ReleasePointer();
+    }
     type = TYPE_INT16;
     int16Value = value;
 }
 
 void VariantType::SetUInt16(uint16 value)
 {
-    ReleasePointerIfNotCurrentType(TYPE_UINT16);
+    if (TYPE_UINT16 != type)
+    {
+        ReleasePointer();
+    }
     type = TYPE_UINT16;
     uint16Value = value;
 }
 
 void VariantType::SetInt32(int32 value)
 {
-    ReleasePointerIfNotCurrentType(TYPE_INT32);
+    if (TYPE_INT32 != type)
+    {
+        ReleasePointer();
+    }
     type = TYPE_INT32;
     int32Value = value;
 }
 
 void VariantType::SetUInt32(uint32 value)
 {
-    ReleasePointerIfNotCurrentType(TYPE_UINT32);
+    if (TYPE_UINT32 != type)
+    {
+        ReleasePointer();
+    }
     type = TYPE_UINT32;
     uint32Value = value;
 }
 
 void VariantType::SetFloat(float32 value)
 {
-    ReleasePointerIfNotCurrentType(TYPE_FLOAT);
+    if (TYPE_FLOAT != type)
+    {
+        ReleasePointer();
+    }
     type = TYPE_FLOAT;
     floatValue = value;
 }
 
 void VariantType::SetFloat64(float64 value)
 {
-    ReleasePointerIfNotCurrentType(TYPE_FLOAT64);
+    if (TYPE_FLOAT64 != type)
+    {
+        ReleasePointer();
+    }
     type = TYPE_FLOAT64;
     float64Value = value;
 }
@@ -346,14 +373,20 @@ void VariantType::SetKeyedArchive(KeyedArchive* archive)
 
 void VariantType::SetInt64(const int64& value)
 {
-    ReleasePointerIfNotCurrentType(TYPE_INT64);
+    if (TYPE_INT64 != type)
+    {
+        ReleasePointer();
+    }
     type = TYPE_INT64;
     int64Value = value;
 }
 
 void VariantType::SetUInt64(const uint64& value)
 {
-    ReleasePointerIfNotCurrentType(TYPE_UINT64);
+    if (TYPE_UINT64 != type)
+    {
+        ReleasePointer();
+    }
     type = TYPE_UINT64;
     uint64Value = value;
 }
