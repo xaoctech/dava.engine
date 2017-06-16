@@ -444,24 +444,24 @@ void UIStaticText::SetFontByPresetName(const String& presetName)
 
 int32 UIStaticText::GetTextColorInheritType() const
 {
-    return GetTextBackground()->GetColorInheritType();
+    return textBg->GetColorInheritType();
 }
 
 void UIStaticText::SetTextColorInheritType(int32 type)
 {
-    GetTextBackground()->SetColorInheritType(static_cast<UIControlBackground::eColorInheritType>(type));
-    GetShadowBackground()->SetColorInheritType(static_cast<UIControlBackground::eColorInheritType>(type));
+    textBg->SetColorInheritType(static_cast<UIControlBackground::eColorInheritType>(type));
+    shadowBg->SetColorInheritType(static_cast<UIControlBackground::eColorInheritType>(type));
 }
 
 int32 UIStaticText::GetTextPerPixelAccuracyType() const
 {
-    return GetTextBackground()->GetPerPixelAccuracyType();
+    return textBg->GetPerPixelAccuracyType();
 }
 
 void UIStaticText::SetTextPerPixelAccuracyType(int32 type)
 {
-    GetTextBackground()->SetPerPixelAccuracyType(static_cast<UIControlBackground::ePerPixelAccuracyType>(type));
-    GetShadowBackground()->SetPerPixelAccuracyType(static_cast<UIControlBackground::ePerPixelAccuracyType>(type));
+    textBg->SetPerPixelAccuracyType(static_cast<UIControlBackground::ePerPixelAccuracyType>(type));
+    shadowBg->SetPerPixelAccuracyType(static_cast<UIControlBackground::ePerPixelAccuracyType>(type));
 }
 
 int32 UIStaticText::GetMultilineType() const

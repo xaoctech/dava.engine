@@ -278,8 +278,7 @@ void UIButton::SetStateTextColorInheritType(int32 state, UIControlBackground::eC
         if (state & 0x01)
         {
             UIStaticText* staticText = GetOrCreateTextBlock(static_cast<eButtonDrawState>(i));
-            staticText->GetTextBackground()->SetColorInheritType(colorInheritType);
-            staticText->GetShadowBackground()->SetColorInheritType(colorInheritType);
+            staticText->SetTextColorInheritType(colorInheritType);
         }
 
         state >>= 1;
@@ -293,8 +292,7 @@ void UIButton::SetStateTextPerPixelAccuracyType(int32 state, UIControlBackground
         if (state & 0x01)
         {
             UIStaticText* staticText = GetOrCreateTextBlock(static_cast<eButtonDrawState>(i));
-            staticText->GetTextBackground()->SetPerPixelAccuracyType(pixelAccuracyType);
-            staticText->GetShadowBackground()->SetPerPixelAccuracyType(pixelAccuracyType);
+            staticText->SetTextPerPixelAccuracyType(pixelAccuracyType);
         }
 
         state >>= 1;
