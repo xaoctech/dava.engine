@@ -1,5 +1,3 @@
-#ifdef ENABLE_FULL_DLC_MANAGER_TEST
-
 #include <fstream>
 
 #include <DLCManager/DLCManager.h>
@@ -12,11 +10,12 @@
 #include <EmbeddedWebServer.h>
 
 #include "UnitTests/UnitTests.h"
+#include <Platform/DeviceInfo.h>
 
-#ifndef __DAVAENGINE_WIN_UAP__
+#if !defined(__DAVAENGINE_WIN_UAP__) && !defined(__DAVAENGINE_IOS__)
 
 DAVA::FilePath documentRootDir;
-const char* const localPort = "8181";
+const char* const localPort = "8282";
 
 struct FSMTest02
 {
@@ -28,8 +27,8 @@ struct FSMTest02
     };
     State state = WaitInitializationFinished;
     DAVA::float32 time = 0.0f;
-    DAVA::float32 waitSecondConnect = 3.0f;
-    const DAVA::float32 timeout = 60.f;
+    DAVA::float32 waitSecondConnect = 10.0f;
+    const DAVA::float32 timeout = 120.f;
     DAVA::DLCManager::Progress progressAfterInit;
 
     void Cleanup(DAVA::DLCManager& dlcManager)
@@ -85,7 +84,6 @@ struct FSMTest02
         break;
         case WaitSecondConnectAttempt:
         {
-            // TODO how to check second connect attempt?
             TEST_VERIFY(dlcManager.IsInitialized());
 
             TEST_VERIFY(dlcManager.IsRequestingEnabled());
@@ -203,7 +201,9 @@ DAVA_TESTCLASS (DLCManagerFullTest)
 #else
             const char* cant_write_dir = "/"; // root dir
 #endif
-            dlcManager.Initialize(cant_write_dir, "http://127.0.0.1:8181/superpack_for_unittests.dvpk", DLCManager::Hints());
+            char fullUrl[1024] = { 0 };
+            sprintf(fullUrl, "http://127.0.0.1:%s/superpack_for_unittests.dvpk", localPort);
+            dlcManager.Initialize(cant_write_dir, fullUrl, DLCManager::Hints());
         }
         catch (Exception& ex)
         {
@@ -260,8 +260,10 @@ DAVA_TESTCLASS (DLCManagerFullTest)
 
         try
         {
+            char fullUrl[1024] = { 0 };
+            sprintf(fullUrl, "http://127.0.0.1:%s/superpack_for_unittests.dvpk", localPort);
             dlcManager.Initialize(packDir,
-                                  "http://127.0.0.1:8181/superpack_for_unittests.dvpk",
+                                  fullUrl,
                                   hints);
             Logger::Info("Initialize called no exception");
         }
@@ -279,5 +281,3 @@ DAVA_TESTCLASS (DLCManagerFullTest)
 };
 
 #endif // __DAVAENGINE_WIN_UAP__
-
-#endif // ENABLE_FULL_DLC_MANAGER_TEST
