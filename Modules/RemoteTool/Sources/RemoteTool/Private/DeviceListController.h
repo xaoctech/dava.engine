@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include <Tools/NetworkHelpers/ServiceCreatorDispatched.h>
-#include <Tools/NetworkHelpers/ServiceDeleterDispatched.h>
+#include <NetworkHelpers/ServiceCreatorDispatched.h>
+#include <NetworkHelpers/ServiceDeleterDispatched.h>
 
 #include <Network/NetCore.h>
 #include <Network/Base/Endpoint.h>

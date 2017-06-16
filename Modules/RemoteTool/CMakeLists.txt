@@ -18,5 +18,6 @@ set( DEFINITIONS_PRIVATE_WINUAP   -D_CRT_SECURE_NO_WARNINGS )
 
 find_package( LoggerService REQUIRED )
 find_package( MemoryProfilerService REQUIRED )
+find_package( NetworkHelpers REQUIRED )
 
 setup_main_module()

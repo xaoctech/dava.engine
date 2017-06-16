@@ -5,7 +5,7 @@
 #ifdef WITH_SCENE_PERFORMANCE_TESTS
 #include <GridTest.h>
 #endif
-#include <Tools/NetworkHelpers/ChannelListenerDispatched.h>
+#include <NetworkHelpers/ChannelListenerDispatched.h>
 
 #include <Network/ServicesProvider.h>
 #include <DAVAEngine.h>
