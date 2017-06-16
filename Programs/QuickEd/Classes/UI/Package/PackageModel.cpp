@@ -355,6 +355,7 @@ bool PackageModel::setData(const QModelIndex& index, const QVariant& value, int 
     {
         auto prop = controlNode->GetRootProperty()->GetVisibleProperty();
         prop->SetVisibleInEditor(value.toBool());
+        package->RefreshProperty(controlNode, prop);
         return true;
     }
     if (role == Qt::EditRole)
