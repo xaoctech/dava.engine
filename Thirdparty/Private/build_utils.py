@@ -337,7 +337,7 @@ def android_ndk_make_toolchain(root_project_path, arch, install_dir):
 
     exec_path = os.path.join(android_ndk_root, 'build/tools')
 
-    cmd = ['python', 'make_standalone_toolchain.py', '--unified-headers', '--arch=' + arch, '--api=' + build_config.get_android_api_version(), '--stl=' + build_config.get_android_stl(), '--install-dir=' + install_dir]
+    cmd = ['python', 'make_standalone_toolchain.py', '--unified-headers', '--arch=' + arch, '--api=' + build_config.get_android_api_version(), '--stl=' + build_config.get_android_libc(), '--install-dir=' + install_dir]
     run_process(cmd, process_cwd=exec_path)
 
 

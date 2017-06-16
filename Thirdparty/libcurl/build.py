@@ -245,62 +245,88 @@ def _build_ios(working_directory_path, root_project_path):
 def _build_android(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
 
+    # copy headers
+    _copy_headers(source_folder_path, root_project_path, 'Android')
+
     env = os.environ.copy()
     original_path_var = env["PATH"]
 
     # ARM
 
-    toolchain_path_arm = os.path.join(
-        working_directory_path, 'gen/ndk_toolchain_arm')
-    build_utils.android_ndk_make_toolchain(
-        root_project_path,
-        'arm',
-        'android-14',
-        'darwin-x86_64',
-        toolchain_path_arm)
+    toolchain_path_arm = os.path.join(working_directory_path, 'gen/ndk_toolchain_arm')
+    build_utils.android_ndk_make_toolchain(root_project_path, 'arm', toolchain_path_arm)
 
-    env['PATH'] = '{}:{}'.format(
-        os.path.join(toolchain_path_arm, 'bin'), original_path_var)
-    install_dir_arm = os.path.join(working_directory_path, 'gen/install_arm')
+    env_arm = build_utils.get_autotools_android_arm_env(toolchain_path_arm)
+    install_dir_android_arm = os.path.join(working_directory_path, 'gen/install_android_arm')
     configure_args = [
         '--host=arm-linux-androideabi',
+        '--target=arm-linux-androideabi',
+        '--enable-threaded-resolver',
+        '--enable-ipv6',
         '--disable-shared',
-        '--with-ssl=' + os.path.abspath(
-            os.path.join(
-                working_directory_path, '../openssl/gen/install_arm/'))]
+        '--disable-rtsp',
+        '--disable-ftp',
+        '--disable-file',
+        '--disable-ldap',
+        '--disable-ldaps',
+        '--disable-rtsp',
+        '--disable-dict',
+        '--disable-telnet',
+        '--disable-tftp',
+        '--disable-pop3',
+        '--disable-imap',
+        '--disable-smtp',
+        '--disable-gopher',
+        '--with-ssl=' + os.path.abspath(os.path.join(working_directory_path, '../openssl/gen/install_android_arm/'))]
     build_utils.build_with_autotools(
         source_folder_path,
         configure_args,
-        install_dir_arm,
-        env)
+        install_dir_android_arm,
+        env_arm)
 
     # x86
 
-    toolchain_path_x86 = os.path.join(
-        working_directory_path, 'gen/ndk_toolchain_x86')
-    build_utils.android_ndk_make_toolchain(
-        root_project_path,
-        'x86',
-        'android-14',
-        'darwin-x86_64',
-        toolchain_path_x86)
+    toolchain_path_x86 = os.path.join(working_directory_path, 'gen/ndk_toolchain_x86')
+    build_utils.android_ndk_make_toolchain(root_project_path, 'x86', toolchain_path_x86)
 
-    env['PATH'] = '{}:{}'.format(
-        os.path.join(toolchain_path_x86, 'bin'), original_path_var)
-    install_dir_arm = os.path.join(working_directory_path, 'gen/install_x86')
+    env_x86 = build_utils.get_autotools_android_arm_env(toolchain_path_x86)
+    install_dir_android_x86 = os.path.join(working_directory_path, 'gen/install_android_x86')
     configure_args = [
         '--host=i686-linux-android',
+        '--target=i686-linux-android',
+        '--enable-threaded-resolver',
+        '--enable-ipv6',
         '--disable-shared',
-        '--with-ssl=' + os.path.abspath(
-            os.path.join(
-                working_directory_path,
-                '../openssl/gen/install_x86/'))]
+        '--disable-rtsp',
+        '--disable-ftp',
+        '--disable-file',
+        '--disable-ldap',
+        '--disable-ldaps',
+        '--disable-rtsp',
+        '--disable-dict',
+        '--disable-telnet',
+        '--disable-tftp',
+        '--disable-pop3',
+        '--disable-imap',
+        '--disable-smtp',
+        '--disable-gopher',
+        '--with-ssl=' + os.path.abspath(os.path.join(working_directory_path,'../openssl/gen/install_android_x86/'))]
     build_utils.build_with_autotools(
         source_folder_path,
         configure_args,
-        install_dir_arm, env)
+        install_dir_android_x86, env_x86)
 
-    _copy_headers(source_folder_path, root_project_path, 'Others')
+    # intermediate libs
+    lib_android_arm_itm = os.path.join(install_dir_android_arm, 'lib/libcurl.a')
+    lib_android_x86_itm = os.path.join(install_dir_android_x86, 'lib/libcurl.a')
+
+    # ready libs
+    libs_android_root = os.path.join(root_project_path, 'Libs/lib_CMake/android')
+    lib_android_arm = os.path.join(libs_android_root, 'armeabi-v7a/libcurl.a')
+    lib_android_x86 = os.path.join(libs_android_root, 'x86/libcurl.a')
+
+    shutil.copyfile(lib_android_arm_itm, lib_android_arm)
+    shutil.copyfile(lib_android_x86_itm, lib_android_x86)
 
 
 def _copy_headers(source_folder_path, root_project_path, target_folder):
