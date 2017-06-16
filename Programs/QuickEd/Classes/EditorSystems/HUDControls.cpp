@@ -327,7 +327,7 @@ void SetupHUDMagnetLineControl(UIControl* control)
 {
     UIControlBackground* background = control->GetOrCreateComponent<UIControlBackground>();
     background->SetPerPixelAccuracyType(UIControlBackground::PER_PIXEL_ACCURACY_ENABLED);
-    ScopedPtr<Sprite> sprite(Sprite::CreateFromSourceFile("~res:/QuickEd/UI/HUDControls/MagnetLine/RedGrid.png"));
+    ScopedPtr<Sprite> sprite(Sprite::CreateFromSourceFile("~res:/QuickEd/UI/HUDControls/MagnetLine/dotline.png"));
     background->SetSprite(sprite, 0);
     background->SetDrawType(UIControlBackground::DRAW_TILED);
     control->SetName("Magnet line");
