@@ -186,6 +186,11 @@ def _build_android(working_directory_path, root_project_path):
     build_utils.android_ndk_make_toolchain(root_project_path, 'arm', toolchain_path_arm)
 
     env_arm = build_utils.get_autotools_android_arm_env(toolchain_path_arm)
+
+    # libuv require this enviroment variable when building for android
+    env_arm['CFLAGS'] = env_arm['CFLAGS'] + ' -D__ANDROID__'
+    env_arm['CPPFLAGS'] = env_arm['CPPFLAGS'] + ' -D__ANDROID__'
+
     install_dir_android_arm = os.path.join(
         working_directory_path, 'gen/install_android_arm')
     build_utils.run_process(
@@ -204,6 +209,11 @@ def _build_android(working_directory_path, root_project_path):
     build_utils.android_ndk_make_toolchain(root_project_path, 'x86', toolchain_path_x86)
 
     env_x86 = build_utils.get_autotools_android_x86_env(toolchain_path_x86)
+
+    # libuv require this enviroment variable when building for android
+    env_x86['CFLAGS'] = env_x86['CFLAGS'] + ' -D__ANDROID__'
+    env_x86['CPPFLAGS'] = env_x86['CPPFLAGS'] + ' -D__ANDROID__'
+
     install_dir_android_x86 = os.path.join(
         working_directory_path, 'gen/install_android_x86')
     build_utils.run_process(
