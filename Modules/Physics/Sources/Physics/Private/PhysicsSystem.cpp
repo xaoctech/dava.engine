@@ -1,4 +1,4 @@
-#include "Physics/Private/PhysicsSystem.h"
+#include "Physics/PhysicsSystem.h"
 #include "Physics/PhysicsModule.h"
 #include "Physics/PhysicsConfigs.h"
 #include "Physics/PhysicsComponent.h"
@@ -61,7 +61,6 @@ PhysicsSystem::PhysicsSystem(Scene* scene)
     sceneConfig.gravity = options->GetVector3("physics.gravity", Vector3(0, 0, -9.81f));
     sceneConfig.threadCount = options->GetUInt32("physics.threadCount", 2);
     physicsScene = physics->CreateScene(sceneConfig);
-    SetDrawDebugInfo(true);
 }
 
 PhysicsSystem::~PhysicsSystem()

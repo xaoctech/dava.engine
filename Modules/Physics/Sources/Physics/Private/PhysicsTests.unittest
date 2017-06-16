@@ -1,9 +1,73 @@
 #include "UnitTests/UnitTests.h"
-
-#include "Engine/Engine.h"
 #include "Physics/PhysicsModule.h"
+#include "Physics/StaticBodyComponent.h"
+#include "Physics/DynamicBodyComponent.h"
+#include "Physics/CollisionComponent.h"
+#include "Physics/Private/PhysicsSystemPrivate.h"
+
+#include <Engine/Engine.h>
+#include <Scene3D/Scene.h>
+#include <Entity/Component.h>
+
+#include <physx/PxScene.h>
+#include <physx/PxActor.h>
+#include <physx/PxRigidStatic.h>
+#include <physx/PxRigidDynamic.h>
+#include <PxShared/foundation/PxFlags.h>
 
 using namespace DAVA;
+
+namespace PhysicsTestDetils
+{
+
+struct SceneInfo
+{
+    ScopedPtr<Scene> scene;
+    ScopedPtr<Entity> entity;
+};
+
+SceneInfo CreateScene()
+{
+    SceneInfo info;
+    info.scene.reset(new Scene());
+    info.entity.reset(new Entity());
+
+    info.scene->AddNode(info.entity);
+
+    return info;
+}
+
+void Frame(SceneInfo& info)
+{
+    info.scene->Update(0.1f);
+}
+
+template<typename T>
+T* AttachComponent(SceneInfo& info)
+{
+    T* component = new T();
+    info.entity->AddComponent(component);
+    return component;
+}
+
+void RemoveComponent(SceneInfo& info, Component* component)
+{
+    info.entity->RemoveComponent(component);
+}
+
+physx::PxScene* ExtractPxScene(const SceneInfo& info)
+{
+    return PhysicsSystemPrivate::GetPxScene(info.scene->physicsSystem);
+}
+
+physx::PxShape* ExtractPxShape(const SceneInfo& info)
+{
+    CollisionComponent* component = static_cast<CollisionComponent*>(info.entity->GetComponent(Component::COLLISION_COMPONENT, 0));
+    TEST_VERIFY(component != nullptr);
+    return component->GetPxShape();
+}
+
+} // namespace PhysicsTestDetils
 
 DAVA_TESTCLASS(PhysicsTest)
 {
@@ -12,5 +76,155 @@ DAVA_TESTCLASS(PhysicsTest)
         const ModuleManager& moduleManager = *GetEngineContext()->moduleManager;
         Physics* physicsModule = moduleManager.GetModule<Physics>();
         TEST_VERIFY(physicsModule->IsInitialized());
+    }
+
+    DAVA_TEST(AddStaticBodyTest)
+    {
+        using namespace PhysicsTestDetils;
+        SceneInfo info = CreateScene();
+        AttachComponent<StaticBodyComponent>(info);
+
+        physx::PxScene* pxScene = ExtractPxScene(info);
+        TEST_VERIFY(pxScene != nullptr);
+        TEST_VERIFY(pxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_STATIC) == 0);
+        TEST_VERIFY(pxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC) == 0);
+
+        Frame(info);
+        TEST_VERIFY(pxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_STATIC) == 1);
+        TEST_VERIFY(pxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC) == 0);
+
+        physx::PxActor* actor = nullptr;
+        pxScene->getActors(physx::PxActorTypeFlag::eRIGID_STATIC, &actor, 1);
+        TEST_VERIFY(actor != nullptr);
+        physx::PxRigidStatic* staticActor = actor->is<physx::PxRigidStatic>();
+        TEST_VERIFY(staticActor != nullptr);
+        TEST_VERIFY(staticActor->getNbShapes() == 0);
+
+        AttachComponent<CollisionComponent>(info);
+        TEST_VERIFY(staticActor->getNbShapes() == 0);
+
+        Frame(info);
+        TEST_VERIFY(staticActor->getNbShapes() == 1);
+        physx::PxShape* shape = nullptr;
+        staticActor->getShapes(&shape, 1);
+        TEST_VERIFY(shape != nullptr);
+    }
+
+    DAVA_TEST(CollisionFirstTest)
+    {
+        using namespace PhysicsTestDetils;
+        SceneInfo info = CreateScene();
+        AttachComponent<CollisionComponent>(info);
+
+        physx::PxScene* pxScene = ExtractPxScene(info);
+        TEST_VERIFY(pxScene != nullptr);
+        TEST_VERIFY(pxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_STATIC) == 0);
+        TEST_VERIFY(pxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC) == 0);
+
+        Frame(info);
+        TEST_VERIFY(pxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_STATIC) == 0);
+        TEST_VERIFY(pxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC) == 0);
+
+        physx::PxShape* shape = ExtractPxShape(info);
+        TEST_VERIFY(shape != nullptr);
+
+        AttachComponent<StaticBodyComponent>(info);
+        TEST_VERIFY(pxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_STATIC) == 0);
+        TEST_VERIFY(pxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC) == 0);
+
+        Frame(info);
+        TEST_VERIFY(pxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_STATIC) == 1);
+        TEST_VERIFY(pxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC) == 0);
+
+        physx::PxActor* actor = nullptr;
+        pxScene->getActors(physx::PxActorTypeFlag::eRIGID_STATIC, &actor, 1);
+        TEST_VERIFY(actor != nullptr);
+        physx::PxRigidStatic* staticActor = actor->is<physx::PxRigidStatic>();
+        TEST_VERIFY(staticActor != nullptr);
+        TEST_VERIFY(staticActor->getNbShapes() == 1);
+
+        physx::PxShape* attachedShape = nullptr;
+        staticActor->getShapes(&attachedShape, 1);
+        TEST_VERIFY(attachedShape != nullptr);
+        TEST_VERIFY(attachedShape == shape);
+    }
+
+    DAVA_TEST(DynamicBodyTest)
+    {
+        using namespace PhysicsTestDetils;
+        SceneInfo info = CreateScene();
+        AttachComponent<DynamicBodyComponent>(info);
+        AttachComponent<CollisionComponent>(info);
+        Frame(info);
+
+        physx::PxScene* pxScene = ExtractPxScene(info);
+        TEST_VERIFY(pxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC) == 1);
+        TEST_VERIFY(pxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_STATIC) == 0);
+
+        physx::PxActor* actor = nullptr;
+        pxScene->getActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC, &actor, 1);
+        TEST_VERIFY(actor != nullptr);
+        physx::PxRigidDynamic* dynamicActor = actor->is<physx::PxRigidDynamic>();
+        TEST_VERIFY(dynamicActor != nullptr);
+
+        TEST_VERIFY(dynamicActor->isSleeping() == false);
+        TEST_VERIFY(dynamicActor->getNbShapes() == 1);
+    }
+
+    DAVA_TEST(ReplaceBodyComponent)
+    {
+        using namespace PhysicsTestDetils;
+        SceneInfo info = CreateScene();
+        Component* componentToRemove = AttachComponent<DynamicBodyComponent>(info);
+        AttachComponent<CollisionComponent>(info);
+        Frame(info);
+
+        RemoveComponent(info, componentToRemove);
+        Frame(info);
+
+        physx::PxScene* pxScene = ExtractPxScene(info);
+        TEST_VERIFY(pxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC) == 0);
+        TEST_VERIFY(pxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_STATIC) == 0);
+
+        physx::PxShape* shape = ExtractPxShape(info);
+        TEST_VERIFY(shape != nullptr);
+
+        AttachComponent<StaticBodyComponent>(info);
+        Frame(info);
+
+        TEST_VERIFY(pxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC) == 0);
+        TEST_VERIFY(pxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_STATIC) == 1);
+
+        physx::PxActor* actor = nullptr;
+        pxScene->getActors(physx::PxActorTypeFlag::eRIGID_STATIC, &actor, 1);
+        TEST_VERIFY(actor != nullptr);
+        physx::PxRigidStatic* staticActor = actor->is<physx::PxRigidStatic>();
+        TEST_VERIFY(staticActor != nullptr);
+        TEST_VERIFY(staticActor->getNbShapes() == 1);
+        physx::PxShape* attachedShape = nullptr;
+        staticActor->getShapes(&attachedShape, 1);
+        TEST_VERIFY(shape == attachedShape);
+    }
+
+    DAVA_TEST(RemoveCollisionTest)
+    {
+        using namespace PhysicsTestDetils;
+        SceneInfo info = CreateScene();
+        AttachComponent<DynamicBodyComponent>(info);
+        Component* componentToRemove = AttachComponent<CollisionComponent>(info);
+        Frame(info);
+
+        RemoveComponent(info, componentToRemove);
+
+        physx::PxScene* pxScene = ExtractPxScene(info);
+        TEST_VERIFY(pxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC) == 1);
+        TEST_VERIFY(pxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_STATIC) == 0);
+
+        physx::PxActor* actor = nullptr;
+        TEST_VERIFY(pxScene->getActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC, &actor, 1) == 1);
+        physx::PxRigidDynamic* dynamicActor = actor->is<physx::PxRigidDynamic>();
+        TEST_VERIFY(dynamicActor != nullptr);
+
+        TEST_VERIFY(dynamicActor->getNbShapes() == 0);
     }
 };

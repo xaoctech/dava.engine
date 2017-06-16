@@ -39,6 +39,8 @@ private:
     void DrawDebugInfo();
 
 private:
+    friend class PhysicsSystemPrivate; // for tests only
+
     void* simulationBlock = nullptr;
     uint32 simulationBlockSize = 0;
 

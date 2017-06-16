@@ -126,20 +126,21 @@ class Physics::PhysicsAllocator : public physx::PxAllocatorCallback
 public:
     void* allocate(size_t size, const char* typeName, const char* filename, int line) override
     {
+// MemoryManager temporary disabled as AlignedAllocate produce heap corruption on Deallocation
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
-        return MemoryManager::Instance()->AlignedAllocate(size, 16, ALLOC_POOL_PHYSICS);
+//return MemoryManager::Instance()->AlignedAllocate(size, 16, ALLOC_POOL_PHYSICS);
 #else
-        return defaultAllocator.allocate(size, typeName, filename, line);
 #endif
+        return defaultAllocator.allocate(size, typeName, filename, line);
     }
 
     void deallocate(void* ptr) override
     {
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
-        MemoryManager::Instance()->Deallocate(ptr);
+//MemoryManager::Instance()->Deallocate(ptr);
 #else
-        defaultAllocator.deallocate(ptr);
 #endif
+        defaultAllocator.deallocate(ptr);
     }
 
 private:

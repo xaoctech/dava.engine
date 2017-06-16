@@ -11,7 +11,7 @@
 #include "Scene3D/SceneFile/VersionInfo.h"
 #include "Base/Observer.h"
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-#include <Physics/Private/PhysicsSystem.h>
+#include <Physics/PhysicsSystem.h>
 #endif
 
 namespace DAVA
