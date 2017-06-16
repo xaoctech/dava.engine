@@ -58,8 +58,8 @@ vertex_in
     #endif
     #endif
 
-    #if PARTICLES_FRES_TO_ALPHA
-        float texcoord5 : TEXCOORD5;  // fresnel.
+    #if PARTICLES_FRES_TO_ALPHA || PARTICLES_APHA_REMAP || PARTICLES_PERSPECTIVE_MAPPING
+        float3 texcoord5 : TEXCOORD5;  // x - fresnel. y - alpha remap. z - presp mapping w.
     #endif
 
     #if PARTICLES_APHA_REMAP || PARTICLES_PERSPECTIVE_MAPPING
@@ -687,7 +687,7 @@ vertex_out vp_main( vertex_in input )
 #if MATERIAL_SKYBOX || MATERIAL_TEXTURE || TILED_DECAL_MASK
     output.varTexCoord0.xy = input.texcoord0;
     #if PARTICLES_PERSPECTIVE_MAPPING
-        output.varTexCoord0.z = input.texcoord6.y;
+        output.varTexCoord0.z = input.texcoord5.z;
     #endif
 #endif    
 
@@ -728,10 +728,10 @@ vertex_out vp_main( vertex_in input )
 #if FRAME_BLEND
     output.varTexcoord3.x = input.texcoord1.z;
     #if PARTICLES_APHA_REMAP
-        output.varTexcoord3.y = input.texcoord6.x;
+        output.varTexcoord3.y = input.texcoord5.y;
     #endif
 #elif PARTICLES_APHA_REMAP
-    output.varTexcoord3.x = input.texcoord6.x;
+    output.varTexcoord3.x = input.texcoord5.y;
 #endif
 
 

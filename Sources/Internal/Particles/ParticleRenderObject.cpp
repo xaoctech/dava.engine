@@ -15,8 +15,7 @@ ParticleRenderObject::ParticleRenderObject(ParticleEffectData* effect)
     layoutsData[1 << FRAME_BLEND] = { rhi::VS_TEXCOORD, 1, rhi::VDT_FLOAT, 3 };
     layoutsData[1 << FLOW] = { rhi::VS_TEXCOORD, 2, rhi::VDT_FLOAT, 4 }; // uv, speed, offset
     layoutsData[1 << NOISE] = { rhi::VS_TEXCOORD, 3, rhi::VDT_FLOAT, 3 }; // uv, scale
-    layoutsData[1 << FRESNEL_TO_ALPHA] = { rhi::VS_TEXCOORD, 5, rhi::VDT_FLOAT, 1 }; // fres. TODO: join with remap and proj.
-    layoutsData[1 << ALPHA_REMAP_PERP_MAPPING] = { rhi::VS_TEXCOORD, 6, rhi::VDT_FLOAT, 2 }; // remap.
+    layoutsData[1 << FRESNEL_TO_ALPHA_REMAP_PERP_MAPPING] = { rhi::VS_TEXCOORD, 5, rhi::VDT_FLOAT, 3 }; // fres. TODO: join with remap and proj.
 
     uint16 numBits = static_cast<uint16>(layoutsData.size());
 
@@ -147,10 +146,8 @@ uint32 ParticleRenderObject::GetVertexStride(ParticleLayer* layer)
         vertexStride += (2 + 2) * sizeof(float); // texcoord2.xy + speed and offset
     if (layer->enableNoise)
         vertexStride += (2 + 1) * sizeof(float); // texcoord.xy + noise scale
-    if (layer->useFresnelToAlpha)
-        vertexStride += (1) * sizeof(float); // fres
-    if (layer->enableAlphaRemap || layer->usePerspectiveMapping)
-        vertexStride += (2) * sizeof(float);
+    if (layer->useFresnelToAlpha || layer->enableAlphaRemap || layer->usePerspectiveMapping)
+        vertexStride += (3) * sizeof(float);
     return vertexStride;
 }
 
@@ -183,8 +180,7 @@ uint32 ParticleRenderObject::SelectLayout(const ParticleLayer& layer)
     uint32 key = isFramBlendEnabled << static_cast<uint32>(eParticlePropsOffsets::FRAME_BLEND);
     key |= static_cast<uint32>(layer.enableFlow) << static_cast<uint32>(eParticlePropsOffsets::FLOW);
     key |= static_cast<uint32>(layer.enableNoise) << static_cast<uint32>(eParticlePropsOffsets::NOISE);
-    key |= static_cast<uint32>(layer.useFresnelToAlpha) << static_cast<uint32>(eParticlePropsOffsets::FRESNEL_TO_ALPHA);
-    key |= static_cast<uint32>(layer.enableAlphaRemap || layer.usePerspectiveMapping) << static_cast<uint32>(eParticlePropsOffsets::ALPHA_REMAP_PERP_MAPPING);
+    key |= static_cast<uint32>(layer.enableAlphaRemap || layer.usePerspectiveMapping || layer.useFresnelToAlpha) << static_cast<uint32>(eParticlePropsOffsets::FRESNEL_TO_ALPHA_REMAP_PERP_MAPPING);
     return layoutMap[key];
 }
 
@@ -218,12 +214,9 @@ void ParticleRenderObject::UpdateStripeVertex(float32*& dataPtr, Vector3& positi
 
         *dataPtr++ = particle->currNoiseScale;
     }
-    if (layer->useFresnelToAlpha)
+    if (layer->enableAlphaRemap || layer->usePerspectiveMapping || layer->useFresnelToAlpha)
     {
         *dataPtr++ = fresToAlpha;
-    }
-    if (layer->enableAlphaRemap || layer->usePerspectiveMapping)
-    {
         *dataPtr++ = particle->alphaRemap;
         *dataPtr++ = uv.z;
     }
@@ -429,22 +422,15 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
                     }
                     ptrOffset += 3;
                 }
-                if (begin->layer->useFresnelToAlpha)
+                if (begin->layer->enableAlphaRemap || begin->layer->useFresnelToAlpha)
                 {
                     for (int32 i = 0; i < 4; ++i)
                     {
                         verts[i][ptrOffset + 0] = fresnelToAlpha;
+                        verts[i][ptrOffset + 1] = current->alphaRemap;
+                        verts[i][ptrOffset + 2] = 0.0f;
                     }
-                    ptrOffset++;
-                }
-                if (begin->layer->enableAlphaRemap)
-                {
-                    for (int32 i = 0; i < 4; ++i)
-                    {
-                        verts[i][ptrOffset + 0] = current->alphaRemap;
-                        verts[i][ptrOffset + 1] = 0.0f;
-                    }
-                    ptrOffset += 2;
+                    ptrOffset += 3;
                 }
                 currpos += particleStride;
                 verteciesAppended += 4;
