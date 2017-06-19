@@ -339,7 +339,7 @@ void InputSystemTest::CreateKeyboardUI(String header, float32 x, float32 y)
 void InputSystemTest::CreateMouseUI()
 {
     ScopedPtr<FTFont> font(FTFont::Create("~res:/Fonts/DejaVuSans.ttf"));
-    font->SetSize(10);
+    font->SetSize(12);
 
     const float32 x = 530;
 
@@ -350,41 +350,48 @@ void InputSystemTest::CreateMouseUI()
     mouseHeader->SetUtf8Text("Mouse");
     AddControl(mouseHeader);
 
-    mouseBody = new UIButton(Rect(x, 35, 84, 100));
+    mouseBody = new UIButton(Rect(x, 40, 84, 100));
     mouseBody->SetStateFont(0xFF, font);
     mouseBody->SetStateFontColor(0xFF, Color::White);
     mouseBody->GetOrCreateComponent<UIDebugRenderComponent>();
     AddControl(mouseBody);
 
-    UIButton* mousePositionButton = new UIButton(Rect(x, 140, 84, 15));
+    UIButton* mousePositionButton = new UIButton(Rect(x, 145, 84, 15));
     mousePositionButton->SetStateFont(0xFF, font);
     mousePositionButton->SetStateFontColor(0xFF, Color::White);
     mousePositionButton->GetOrCreateComponent<UIDebugRenderComponent>();
     mouseButtons[static_cast<uint32>(eInputElements::MOUSE_POSITION)] = mousePositionButton;
     AddControl(mousePositionButton);
 
-    UIButton* leftButton = new UIButton(Rect(x + 15.0f, 35, 20, 70));
+    UIButton* leftButton = new UIButton(Rect(x + 15.0f, 40, 20, 70));
     leftButton->SetStateFont(0xFF, font);
     leftButton->SetStateFontColor(0xFF, Color::White);
     leftButton->GetOrCreateComponent<UIDebugRenderComponent>();
     mouseButtons[static_cast<uint32>(eInputElements::MOUSE_LBUTTON)] = leftButton;
     AddControl(leftButton);
 
-    UIButton* rightButton = new UIButton(Rect(x + 45.0f, 35, 20, 70));
+    UIButton* rightButton = new UIButton(Rect(x + 45.0f, 40, 20, 70));
     rightButton->SetStateFont(0xFF, font);
     rightButton->SetStateFontColor(0xFF, Color::White);
     rightButton->GetOrCreateComponent<UIDebugRenderComponent>();
     mouseButtons[static_cast<uint32>(eInputElements::MOUSE_RBUTTON)] = rightButton;
     AddControl(rightButton);
+
+    UIButton* wheelButton = new UIButton(Rect(x, 165, 84, 15));
+    wheelButton->SetStateFont(0xFF, font);
+    wheelButton->SetStateFontColor(0xFF, Color::White);
+    wheelButton->GetOrCreateComponent<UIDebugRenderComponent>();
+    mouseButtons[static_cast<uint32>(eInputElements::MOUSE_WHEEL)] = wheelButton;
+    AddControl(wheelButton);
 }
 
 void InputSystemTest::CreateTouchUI()
 {
     ScopedPtr<FTFont> font(FTFont::Create("~res:/Fonts/DejaVuSans.ttf"));
-    font->SetSize(10);
+    font->SetSize(12);
 
-    float32 x = 530.0f;
-    float32 y = 180.0f;
+    float32 x = 20.0f;
+    float32 y = 185.0f;
 
     touchHeader = new UIStaticText(Rect(x, y, 250, 15));
     touchHeader->SetTextColor(Color::White);
@@ -395,7 +402,7 @@ void InputSystemTest::CreateTouchUI()
 
     y += 17.0f;
 
-    const float32 clickButtonSizeX = 22.8f;
+    const float32 clickButtonSizeX = 32.8f;
     const float32 clickButtonSizeY = 20.0f;
     for (size_t i = 0; i < INPUT_ELEMENTS_TOUCH_CLICK_COUNT; ++i)
     {
@@ -646,6 +653,12 @@ bool InputSystemTest::OnInputEvent(InputEvent const& event)
         UIButton* mouseButton = mouseButtons[event.elementId];
 
         if (event.elementId == eInputElements::MOUSE_POSITION)
+        {
+            std::wstringstream ss;
+            ss << event.analogState.x << L", " << event.analogState.y;
+            mouseButton->SetStateText(0xFF, ss.str());
+        }
+        else if (event.elementId == eInputElements::MOUSE_WHEEL)
         {
             std::wstringstream ss;
             ss << event.analogState.x << L", " << event.analogState.y;
