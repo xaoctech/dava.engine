@@ -166,12 +166,14 @@ void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
 
     Logger::Info("DLCManager::Initialize(\ndirToDownloadPacks:%s, "
                  "\nurlToServerSuperpack:%s, \nlogFilePath:%s, "
-                 "\nretryConnectMilliseconds:%d, \nmaxFilesToDownload: %d",
+                 "\nretryConnectMilliseconds:%d, \nmaxFilesToDownload: %d"
+                 "\npreloadedPacks: %s",
                  dirToDownloadPacks_.GetAbsolutePathname().c_str(),
                  urlToServerSuperpack_.c_str(),
                  fullLogPath.c_str(),
                  hints_.retryConnectMilliseconds,
-                 hints_.maxFilesToDownload);
+                 hints_.maxFilesToDownload,
+                 hints_.preloadedPacks.c_str());
 
     if (!log.is_open())
     {
@@ -182,6 +184,10 @@ void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
             Logger::Error("can't create dlc_manager.log error: %s", err);
             DAVA_THROW(DAVA::Exception, err);
         }
+        const EnumMap* enumMap = GlobalEnumMap<eGPUFamily>::Instance();
+        eGPUFamily e = DeviceInfo::GetGPUFamily();
+        const char* gpuFamily = enumMap->ToString(e);
+        log << "current_device_gpu: " << gpuFamily << std::endl;
     }
 
     log << __FUNCTION__ << std::endl;
@@ -220,6 +226,21 @@ void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
 
         urlToSuperPack = urlToServerSuperpack_;
         hints = hints_;
+
+        preloadedPacks.clear();
+        if (!hints.preloadedPacks.empty())
+        {
+            StringStream ss(hints.preloadedPacks);
+            for (String packName; getline(ss, packName);)
+            {
+                if (packName.empty())
+                {
+                    continue; // skip empty lines if any
+                }
+                DVASSERT(packName.find(' ') == String::npos); // No spaces
+                preloadedPacks.emplace(packName, PreloadedPack(packName));
+            }
+        }
     }
 
     // if Initialize called second time
@@ -255,7 +276,7 @@ void DLCManagerImpl::Deinitialize()
 bool DLCManagerImpl::IsInitialized() const
 {
     DVASSERT(Thread::IsMainThread());
-    return nullptr != requestManager && delayedRequests.empty();
+    return nullptr != requestManager && delayedRequests.empty() && scanThread == nullptr;
 }
 
 DLCManagerImpl::InitState DLCManagerImpl::GetInitState() const
@@ -532,7 +553,7 @@ void DLCManagerImpl::AskFooter()
             {
                 initError = InitError::LoadingRequestFailed;
                 initErrorMsg = "failed get superpack size on server, download error: ";
-                log << initErrorMsg << std::endl;
+                log << initErrorMsg << " " << status << std::endl;
             }
         }
     }
@@ -565,8 +586,7 @@ void DLCManagerImpl::GetFooter()
         {
             initError = InitError::LoadingRequestFailed;
             initErrorMsg = "failed get footer from server, download error: ";
-            const char* gpuFamily = GlobalEnumMap<eGPUFamily>::Instance()->ToString(static_cast<eGPUFamily>(DeviceInfo::GetGPUFamily()));
-            log << initErrorMsg << " current_device_gpu: " << gpuFamily << std::endl;
+            log << initErrorMsg << " " << status << std::endl;
         }
     }
 }
@@ -894,7 +914,7 @@ void DLCManagerImpl::StartDelayedRequests()
         requestManager->Remove(request);
     }
 
-    for (auto request : tmpRequests)
+    for (PackRequest* request : tmpRequests)
     {
         const String& requestedPackName = request->GetRequestedPackName();
         PackRequest* r = FindRequest(requestedPackName);
@@ -922,6 +942,13 @@ void DLCManagerImpl::StartDelayedRequests()
     size_t numDownloaded = std::count(begin(scanFileReady), end(scanFileReady), true);
 
     initializeFinished.Emit(numDownloaded, meta->GetFileCount());
+
+    for (PackRequest* request : tmpRequests)
+    {
+        // we have to inform user because after scanning is finished
+        // some request may be already downloaded (all files found)
+        requestUpdated.Emit(*request);
+    }
 }
 
 void DLCManagerImpl::DeleteLocalMetaFiles()
@@ -933,6 +960,11 @@ void DLCManagerImpl::DeleteLocalMetaFiles()
 bool DLCManagerImpl::IsPackDownloaded(const String& packName)
 {
     DVASSERT(Thread::IsMainThread());
+
+    if (end(preloadedPacks) != preloadedPacks.find(packName))
+    {
+        return true;
+    }
 
     if (!IsInitialized())
     {
@@ -964,7 +996,7 @@ bool DLCManagerImpl::IsPackDownloaded(const String& packName)
             }
         }
     }
-    catch (DAVA::Exception& e)
+    catch (Exception& e)
     {
         log << "Exception at `" << e.file << "`: " << e.line << '\n';
         log << Debug::GetBacktraceString(e.callstack) << std::endl;
@@ -980,6 +1012,13 @@ const DLCManager::IRequest* DLCManagerImpl::RequestPack(const String& packName)
     DVASSERT(Thread::IsMainThread());
 
     log << __FUNCTION__ << " packName: " << packName << std::endl;
+
+    auto itPreloaded = preloadedPacks.find(packName);
+    if (end(preloadedPacks) != itPreloaded)
+    {
+        const PreloadedPack& request = itPreloaded->second;
+        return &request;
+    }
 
     if (!IsInitialized())
     {

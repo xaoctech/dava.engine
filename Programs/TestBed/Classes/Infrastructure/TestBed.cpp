@@ -47,6 +47,7 @@
 #include "Tests/OverdrawTest.h"
 #include "Tests/WindowTest.h"
 #include "Tests/RichTextTest.h"
+#include "Tests/PhysicsTest.h"
 #include "Tests/SpineTest.h"
 //$UNITTEST_INCLUDE
 
@@ -385,6 +386,7 @@ void TestBed::RegisterTests()
 
     new WindowTest(*this);
     new RichTextTest(*this);
+    new PhysicsTest(*this);
     new SpineTest(*this);
     //$UNITTEST_CTOR
 }
