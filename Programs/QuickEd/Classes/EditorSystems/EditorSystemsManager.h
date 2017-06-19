@@ -1,8 +1,7 @@
 #pragma once
 
-#include "EditorSystems/SelectionContainer.h"
-
 #include "Model/PackageHierarchy/PackageBaseNode.h"
+#include "Model/PackageHierarchy/ControlNode.h"
 
 #include <TArc/DataProcessing/DataWrapper.h>
 #include <TArc/DataProcessing/DataListener.h>
@@ -129,7 +128,7 @@ public:
 
     void SetEmulationMode(bool emulationMode);
 
-    ControlNode* GetControlNodeAtPoint(const DAVA::Vector2& point) const;
+    ControlNode* GetControlNodeAtPoint(const DAVA::Vector2& point, bool canGoDeeper = false) const;
     DAVA::uint32 GetIndexOfNearestRootControl(const DAVA::Vector2& point) const;
 
     void SelectAll();
