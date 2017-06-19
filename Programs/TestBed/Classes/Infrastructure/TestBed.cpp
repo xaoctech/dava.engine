@@ -24,7 +24,7 @@
 #include "Tests/FontTest.h"
 #include "Tests/WebViewTest.h"
 #include "Tests/FunctionSignalTest.h"
-#include "Tests/KeyboardTest.h"
+#include "Tests/GamepadTest.h"
 #include "Tests/FullscreenTest.h"
 #include "Tests/UIBackgroundTest.h"
 #include "Tests/ClipTest.h"
@@ -363,7 +363,7 @@ void TestBed::RegisterTests()
     new WebViewTest(*this);
     new FunctionSignalTest(*this);
     new InputSystemTest(*this);
-    new KeyboardTest(*this);
+    new GamepadTest(*this);
     new FullscreenTest(*this);
     new UIBackgroundTest(*this);
     new ClipTest(*this);

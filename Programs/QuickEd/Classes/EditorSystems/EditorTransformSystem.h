@@ -46,7 +46,7 @@ private:
     void PrepareDrag();
 
     void ProcessKey(DAVA::eInputElements key);
-    
+
     void ProcessDrag(const DAVA::Vector2& point);
 
     void ResizeControl(DAVA::Vector2 delta, bool withPivot, bool rateably);
