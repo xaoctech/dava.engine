@@ -406,6 +406,9 @@ Scene::~Scene()
     windSystem = 0;
     waveSystem = 0;
     animationSystem = 0;
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+    physicsSystem = nullptr;
+#endif
 
     size_t size = systems.size();
     for (size_t k = 0; k < size; ++k)
