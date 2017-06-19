@@ -41,7 +41,7 @@ void StaticBodyComponent::Deserialize(KeyedArchive* archive, SerializationContex
     PhysicsComponent::Deserialize(archive, serializationContext);
 }
 
-#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+#if defined(__DAVAENGINE_DEBUG__)
 void StaticBodyComponent::CheckActorType() const
 {
     DVASSERT(actor->is<physx::PxRigidStatic>());
