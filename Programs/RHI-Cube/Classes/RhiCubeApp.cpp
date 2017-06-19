@@ -153,7 +153,9 @@ void RhiCubeApp::OnAppStarted()
 
 void RhiCubeApp::OnWindowCreated(DAVA::Window* w)
 {
-    const char* src = "test-vp.sl";
+    //    const char* src = "test-vp.sl";
+    const char* src = "~res:/Materials/Shaders/Default/materials-vp.sl";
+    //    const char* src = "bug.sl";
 
     File* file = File::Create(src, File::OPEN | File::READ);
 
@@ -169,10 +171,19 @@ void RhiCubeApp::OnWindowCreated(DAVA::Window* w)
 
         std::vector<std::string> defines;
 
+        defines.push_back("VERTEX_LIT");
+        defines.push_back("1");
+        defines.push_back("NORMALIZED_BLINN_PHONG");
+        defines.push_back("1");
+
         if (vp.Construct(rhi::PROG_VERTEX, buf, defines))
+        //        if (vp.Construct(rhi::PROG_FRAGMENT, buf, defines))
         {
-            vp.GetSourceCode(rhi::HostApi());
-            vp.Dump();
+            //            vp.GetSourceCode(rhi::HostApi());
+            //            vp.GetSourceCode(rhi::RHI_DX11);
+            //            vp.GetSourceCode(rhi::RHI_METAL);
+            //            vp.GetSourceCode(rhi::RHI_GLES2);
+            //            vp.Dump();
         }
     }
     exit(0);

@@ -141,6 +141,9 @@ inline char* PreProc::GetExpression(char* txt, char** end) const
 
     while (*s != '\n' && *s != '\r')
     {
+        if (*s == 0)
+            return nullptr;
+
         if (s[0] == '/')
         {
             if (s[1] == '/')
@@ -167,10 +170,18 @@ inline char* PreProc::GetExpression(char* txt, char** end) const
     }
     DVASSERT(*s);
     if (*s == '\r')
+    {
         *s = '\0';
+        ++s;
+    }
 
     while (*s != '\n')
+    {
+        if (*s == 0)
+            return nullptr;
+
         ++s;
+    }
 
     *end = s;
     return e;
@@ -186,6 +197,9 @@ char* PreProc::GetIdentifier(char* txt, char** end) const
 
     while (!cmt && !(isalnum(*t) || *t == '_'))
     {
+        if (*t == '\0')
+            return nullptr;
+
         if (t[0] == '/' && t[1] == '*')
             cmt = true;
         else if (t[0] == '*' && t[1] == '/')
@@ -202,10 +216,18 @@ char* PreProc::GetIdentifier(char* txt, char** end) const
     if (*t == '\0')
         return nullptr;
     if (*t != '\n')
+    {
         *t = '\0';
+        ++t;
+    }
 
     while (*t != '\n')
+    {
+        if (*t == '\0')
+            return nullptr;
+
         ++t;
+    }
 
     *t = '\0';
     *end = t;
@@ -232,7 +254,7 @@ int PreProc::GetNameAndValue(char* txt, char** name, char** value, char** end) c
     if (*t == '\0')
         return 0;
     n0 = t;
-    while (*t != ' ' && *t != '\t' && *t != '\n' && *t != '\r')
+    while (*t && *t != ' ' && *t != '\t' && *t != '\n' && *t != '\r')
     {
         if (t[0] == '/' && t[1] == '/')
             return 0;
@@ -253,7 +275,7 @@ int PreProc::GetNameAndValue(char* txt, char** name, char** value, char** end) c
     if (*t == '\0')
         return 0;
     v0 = t;
-    while (*t != ' ' && *t != '\t' && *t != '\n' && *t != '\r')
+    while (*t && *t != ' ' && *t != '\t' && *t != '\n' && *t != '\r')
     {
         if (t[0] == '/' && t[1] == '/')
         {
@@ -274,10 +296,17 @@ int PreProc::GetNameAndValue(char* txt, char** name, char** value, char** end) c
     if (*t != '\0')
     {
         if (*t != '\n')
+        {
             *t = '\0';
+            ++t;
+        }
 
         while (*t != '\n')
+        {
+            if (*t == 0)
+                return 0;
             ++t;
+        }
         *t = '\0';
         *end = t;
 
@@ -381,7 +410,7 @@ bool PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
 
             if (do_skip)
             {
-                while (*s != '\n')
+                while (*s && *s != '\n')
                     ++s;
 
                 if (*s == 0)
@@ -434,13 +463,19 @@ bool PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
                     char* f1 = nullptr;
 
                     while (*t != '\"')
+                    {
+                        if (*t == 0)
+                            return false;
                         ++t;
-                    DVASSERT(*t);
+                    }
                     f0 = t + 1;
                     ++t;
                     while (*t != '\"')
+                    {
+                        if (*t == 0)
+                            return false;
                         ++t;
-                    DVASSERT(*t);
+                    }
                     f1 = t - 1;
 
                     char fname[256];
@@ -453,7 +488,12 @@ bool PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
                     }
 
                     while (*t != '\n')
+                    {
+                        if (*t == 0)
+                            return false;
                         ++t;
+                    }
+
                     if (*t == 0)
                     {
                         break;
@@ -583,6 +623,9 @@ bool PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
                     char* e = GetExpression(s + 1 + 2, &s);
                     float v = 0;
 
+                    if (!e)
+                        return false;
+
                     if (!evaluator.Evaluate(e, &v))
                     {
                         ReportExprEvalError(src_line_n);
@@ -602,6 +645,9 @@ bool PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
                 {
                     char* e = GetExpression(s + 1 + 4, &s);
                     float v = 0;
+
+                    if (!e)
+                        return false;
 
                     if (!evaluator.Evaluate(e, &v))
                     {
@@ -628,8 +674,9 @@ bool PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
                 {
                     pending_elif.back().do_skip_lines = pending_elif.back().effective_condition;
 
-                    while (*s != '\n')
+                    while (*s && *s != '\n')
                         ++s;
+
                     if (*s == 0)
                     {
                         ln[0] = 0;
@@ -640,8 +687,8 @@ bool PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
                 }
                 else if (strncmp(s + 1, "endif", 5) == 0)
                 {
-                    pending_elif.pop_back();
                     DVASSERT(pending_elif.size());
+                    pending_elif.pop_back();
 
                     while (*s && *s != '\n')
                         ++s;
