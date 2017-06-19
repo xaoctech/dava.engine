@@ -3,7 +3,7 @@
 An overview how the DAVAEngine project is structured.
 
 ## Basic naming requirements
-- All top-level folders are named with a capital letter
+- All top-level folders are named with a capital letter.
 - We support a several platforms. If the directory or file is related to a particular platform, then this relation must be expressed in the file or directory naming in the following form: `[Prefix]<Platform>`, where `Prefix` is any user-defined world (can be empty) and `Platform` is one of the following:
   - Android
   - Mac
@@ -46,14 +46,37 @@ It is used to store some reference data about the project, such documentation, b
 
 ## Libs
     |- ...
-    |- Libs
-    |  |- Build
-    |  |- Include
-    |  |- Lib
+    |- Libs/
+    |  |- Build/
+    |  |- Include/
+    |  |- Lib/
     |- ...
 
 #### Libs/Build
+    |- ...
+    |- Build/
+    |  |- liba/
+    |  |  |- build.py
+    |  |- libb/
+    |  |  |- build.py
+    |  |- ...
+    |  |- libz/
+    |  |  |- build.py
+    |  |- build.py
+    |- ...
+    
 #### Libs/Include
+    |- ...
+    |- Include/
+    |  |- liba/
+    |  |  |- a.h
+    |  |- libb/
+    |  |  |- b.h
+    |  |- ...
+    |  |- libz/
+    |  |  |- z.h
+    |- ...
+    
 #### Libs/Lib
 
 ## Sources
@@ -77,7 +100,7 @@ It is used to store some reference data about the project, such documentation, b
     |  |- ModuleX/
     |  |  |- Docs/
     |  |  |- Libs/
-    |  |  |- Platform/
+    |  |  |- Platforms/
     |  |  |- Sources/
     |  |  |  |- Private/
     |  |  |  |- ModuleName.h
@@ -85,7 +108,7 @@ It is used to store some reference data about the project, such documentation, b
     |  |- ...
     |- ...
 
-#### Modules/X/Platform/Android
+#### Modules/X/Platforms/Android
     |- ...
     |- ModuleX
     |  |- ...
@@ -93,6 +116,13 @@ It is used to store some reference data about the project, such documentation, b
     |  |  |- Android
     |  |  |  |- libs/
     |  |  |  |- src/
+    |  |  |  |  |- main
+    |  |  |  |  |  |- java
+    |  |  |  |  |  |  |- com
+    |  |  |  |  |  |  |  |- dava
+    |  |  |  |  |  |  |  |  |- modules
+    |  |  |  |  |  |  |  |  |  |- ModuleX
+    |  |  |  |  |  |  |  |  |  |  | - ModuleX.java
     |  |  |  |- AndroidManifest.xml
     |  |  |  |- build.gradle
     |  |  |- 
@@ -112,3 +142,75 @@ It is used to store some reference data about the project, such documentation, b
 
 ## User Projects
 
+## Appendix A: Full folders structure
+    .
+    |- Bin/
+    |  |- bin1.exe
+    |  |- bin1
+    |  |- ...
+    |  |- binN.exe
+    |  |- binN
+    |- Docs/
+    |  |- Doxygen/
+    |  |  |- doxyfile
+    |  |- Codestyle.md
+    |  |- FAQ.md
+    |  |- ...
+    |  |- Structure.md
+    |- Libs/
+    |  |- Build
+    |  |  |- liba/
+    |  |  |  |- build.py
+    |  |  |- libb/
+    |  |  |  |- build.py
+    |  |  |- ...
+    |  |  |- libz/
+    |  |  |  |- build.py
+    |  |  |- build.py
+    |  |- Include
+    |  |  |- liba/
+    |  |  |  |- a.h
+    |  |  |- libb/
+    |  |  |  |- b.h
+    |  |  |- ...
+    |  |  |- libz/
+    |  |  |  |- z.h
+    |  |- Lib
+    |- Modules/
+    |  |- ModuleX/
+    |  |  |- Docs/
+    |  |  |- Libs/
+    |  |  |- Platforms/
+    |  |  |  |- Android
+    |  |  |  |  |- libs/
+    |  |  |  |  |- src/
+    |  |  |  |  |  |- main
+    |  |  |  |  |  |  |- java
+    |  |  |  |  |  |  |  |- com
+    |  |  |  |  |  |  |  |  |- dava
+    |  |  |  |  |  |  |  |  |  |- modules
+    |  |  |  |  |  |  |  |  |  |  |- ModuleX
+    |  |  |  |  |  |  |  |  |  |  |  | - ModuleX.java
+    |  |  |  |  |- AndroidManifest.xml
+    |  |  |  |  |- build.gradle
+    |  |  |  | - Ios
+    |  |  |  |  | - Entitlements.plist
+    |  |  |  |  | - ModuleX.entitlements
+    |  |  |  |  | - ModuleX.plist
+    |  |  |  |  | - ModuleX-Info.plist
+    |  |  |  | - ...
+    |  |  |- Sources/
+    |  |  |  |- Private/
+    |  |  |  |  | - ModuleXImpl.cpp
+    |  |  |  |  | - ...
+    |  |  |  |- ModuleX.h
+    |  |  |- README.md
+    |  |- ...
+    |- Programs/
+    |  |- ProgramA/
+    |  |- ...
+    |  |- ProgramZ/
+    |  |  |- ...
+    |- Sources/
+    |- LICENSE
+    |- README.md
