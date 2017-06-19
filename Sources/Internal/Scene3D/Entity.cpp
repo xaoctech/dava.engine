@@ -911,6 +911,11 @@ const Matrix4& Entity::GetWorldTransform() const
     return (static_cast<TransformComponent*>(GetComponent(Component::TRANSFORM_COMPONENT)))->GetWorldTransform();
 }
 
+void Entity::SetWorldTransform(const Matrix4& newMatrix)
+{
+    return (static_cast<TransformComponent*>(GetComponent(Component::TRANSFORM_COMPONENT)))->SetWorldTransform(&newMatrix);
+}
+
 void Entity::SetVisible(const bool& isVisible)
 {
     RenderComponent* renderComponent = static_cast<RenderComponent*>(GetComponent(Component::RENDER_COMPONENT));

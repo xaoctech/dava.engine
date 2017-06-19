@@ -37,6 +37,8 @@ private:
     bool FetchResults(bool block);
 
     void DrawDebugInfo();
+    void InitNewObjects();
+    void SyncTransformToPhysx();
 
 private:
     friend class PhysicsSystemPrivate; // for tests only

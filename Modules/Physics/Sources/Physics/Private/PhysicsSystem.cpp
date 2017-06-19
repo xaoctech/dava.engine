@@ -12,6 +12,7 @@
 #include <Engine/EngineContext.h>
 #include <ModuleManager/ModuleManager.h>
 #include <Scene3D/Scene.h>
+#include <Scene3D/Components/SingleComponents/TransformSingleComponent.h>
 #include <Render/Highlevel/RenderSystem.h>
 #include <Render/RenderHelper.h>
 #include <FileSystem/KeyedArchive.h>
@@ -168,87 +169,17 @@ void PhysicsSystem::UnregisterComponent(Entity* entity, Component* component)
 
 void PhysicsSystem::Process(float32 timeElapsed)
 {
-    if (isSimulationRunning && FetchResults(false))
+    if (isSimulationRunning == true)
     {
-        isSimulationRunning = false;
+        FetchResults(false);
     }
 
     DrawDebugInfo();
-
-    Physics* physics = GetEngineContext()->moduleManager->GetModule<Physics>();
-    for (PhysicsComponent* component : pendingAddPhysicsComponents)
-    {
-        uint32 componentType = component->GetType();
-        physx::PxActor* createdActor = nullptr;
-        if (componentType == Component::STATIC_BODY_COMPONENT)
-        {
-            createdActor = physics->CreateStaticActor();
-        }
-        else
-        {
-            DVASSERT(componentType == Component::DYNAMIC_BODY_COMPONENT);
-            createdActor = physics->CreateDynamicActor();
-        }
-
-        component->SetPxActor(createdActor);
-
-        Entity* entity = component->GetEntity();
-        for (uint32 i = 0; i < entity->GetComponentCount(Component::COLLISION_COMPONENT); ++i)
-        {
-            CollisionComponent* collision = static_cast<CollisionComponent*>(entity->GetComponent(Component::COLLISION_COMPONENT, i));
-            physx::PxShape* shape = collision->GetPxShape();
-            if (shape != nullptr)
-            {
-                physx::PxRigidActor* rigidActor = createdActor->is<physx::PxRigidActor>();
-                rigidActor->attachShape(*shape);
-            }
-        }
-
-        physicsScene->addActor(*(component->GetPxActor()));
-        physicsComponents.push_back(component);
-    }
-    pendingAddPhysicsComponents.clear();
-
-    auto attachShapeFn = [](physx::PxShape* shape, PhysicsComponent* component)
-    {
-        physx::PxRigidActor* actor = component->GetPxActor()->is<physx::PxRigidActor>();
-        DVASSERT(actor != nullptr);
-        actor->attachShape(*shape);
-    };
-
-    for (CollisionComponent* component : pendingAddCollisionComponents)
-    {
-        physx::PxShape* shape = physics->CreateBoxShape(true);
-        component->SetPxShape(shape);
-
-        Entity* entity = component->GetEntity();
-        PhysicsComponent* staticBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::STATIC_BODY_COMPONENT, 0));
-        if (staticBodyComponent != nullptr)
-        {
-            attachShapeFn(shape, staticBodyComponent);
-        }
-        else
-        {
-            PhysicsComponent* dynamicBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::DYNAMIC_BODY_COMPONENT, 0));
-            if (dynamicBodyComponent != nullptr)
-            {
-                attachShapeFn(shape, dynamicBodyComponent);
-                physx::PxRigidDynamic* dynamicActor = dynamicBodyComponent->GetPxActor()->is<physx::PxRigidDynamic>();
-                DVASSERT(dynamicActor != nullptr);
-                if (dynamicActor->getActorFlags().isSet(physx::PxActorFlag::eDISABLE_SIMULATION) == false &&
-                    dynamicActor->getRigidBodyFlags().isSet(physx::PxRigidBodyFlag::eKINEMATIC) == false)
-                {
-                    dynamicActor->wakeUp();
-                }
-            }
-        }
-
-        collisionComponents.push_back(component);
-    }
-    pendingAddCollisionComponents.clear();
+    InitNewObjects();
 
     if (isSimulationEnabled == false)
     {
+        SyncTransformToPhysx();
         return;
     }
 
@@ -307,12 +238,46 @@ bool PhysicsSystem::IsDrawDebugInfo() const
 bool PhysicsSystem::FetchResults(bool block)
 {
     DVASSERT(isSimulationRunning);
-    return physicsScene->fetchResults(block);
+    bool isFetched = physicsScene->fetchResults(block);
+    if (isFetched == true)
+    {
+        isSimulationRunning = false;
+        physx::PxU32 actorsCount = 0;
+        physx::PxActor** actors = physicsScene->getActiveActors(actorsCount);
+
+        Vector<Entity*> activeEntities;
+        activeEntities.reserve(actorsCount);
+
+        for (physx::PxU32 i = 0; i < actorsCount; ++i)
+        {
+            physx::PxActor* actor = actors[i];
+            PhysicsComponent* component = reinterpret_cast<PhysicsComponent*>(actor->userData);
+            Entity* entity = component->GetEntity();
+
+            physx::PxRigidActor* rigidActor = actor->is<physx::PxRigidActor>();
+            DVASSERT(rigidActor != nullptr);
+
+            entity->SetWorldTransform(PhysicsMath::PxMat44ToMatrix4(rigidActor->getGlobalPose()));
+            activeEntities.push_back(entity);
+        }
+
+        Scene* scene = GetScene();
+        if (scene->transformSingleComponent != nullptr)
+        {
+            for (Entity* entity : activeEntities)
+            {
+                DVASSERT(entity->GetScene() == scene);
+                scene->transformSingleComponent->worldTransformChanged.Push(entity);
+            }
+        }
+    }
+
+    return isFetched;
 }
 
 void PhysicsSystem::DrawDebugInfo()
 {
-    if (IsDrawDebugInfo() == false)
+    if (IsDrawDebugInfo() == false || isSimulationEnabled == false)
     {
         return;
     }
@@ -343,6 +308,127 @@ void PhysicsSystem::DrawDebugInfo()
     {
         const physx::PxDebugPoint& point = points[i];
         renderHelper->DrawIcosahedron(PhysicsMath::PxVec3ToVector3(point.pos), 5.0f, PhysicsMath::PxColorToColor(point.color), RenderHelper::DRAW_WIRE_DEPTH);
+    }
+}
+
+void PhysicsSystem::InitNewObjects()
+{
+    Physics* physics = GetEngineContext()->moduleManager->GetModule<Physics>();
+    for (PhysicsComponent* component : pendingAddPhysicsComponents)
+    {
+        uint32 componentType = component->GetType();
+        physx::PxActor* createdActor = nullptr;
+        if (componentType == Component::STATIC_BODY_COMPONENT)
+        {
+            createdActor = physics->CreateStaticActor();
+        }
+        else
+        {
+            DVASSERT(componentType == Component::DYNAMIC_BODY_COMPONENT);
+            createdActor = physics->CreateDynamicActor();
+        }
+
+        component->SetPxActor(createdActor);
+        physx::PxRigidActor* rigidActor = createdActor->is<physx::PxRigidActor>();
+        rigidActor->setGlobalPose(physx::PxTransform(PhysicsMath::Matrix4ToPxMat44(component->GetEntity()->GetWorldTransform())));
+
+        Entity* entity = component->GetEntity();
+        for (uint32 i = 0; i < entity->GetComponentCount(Component::COLLISION_COMPONENT); ++i)
+        {
+            CollisionComponent* collision = static_cast<CollisionComponent*>(entity->GetComponent(Component::COLLISION_COMPONENT, i));
+            physx::PxShape* shape = collision->GetPxShape();
+            if (shape != nullptr)
+            {
+                rigidActor->attachShape(*shape);
+            }
+        }
+
+        physicsScene->addActor(*(component->GetPxActor()));
+        physicsComponents.push_back(component);
+    }
+    pendingAddPhysicsComponents.clear();
+
+    auto attachShapeFn = [](physx::PxShape* shape, PhysicsComponent* component)
+    {
+        physx::PxRigidActor* actor = component->GetPxActor()->is<physx::PxRigidActor>();
+        DVASSERT(actor != nullptr);
+        actor->attachShape(*shape);
+    };
+
+    for (CollisionComponent* component : pendingAddCollisionComponents)
+    {
+        physx::PxShape* shape = physics->CreateBoxShape(true);
+        component->SetPxShape(shape);
+
+        Entity* entity = component->GetEntity();
+        PhysicsComponent* staticBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::STATIC_BODY_COMPONENT, 0));
+        if (staticBodyComponent != nullptr)
+        {
+            attachShapeFn(shape, staticBodyComponent);
+        }
+        else
+        {
+            PhysicsComponent* dynamicBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::DYNAMIC_BODY_COMPONENT, 0));
+            if (dynamicBodyComponent != nullptr)
+            {
+                attachShapeFn(shape, dynamicBodyComponent);
+                physx::PxRigidDynamic* dynamicActor = dynamicBodyComponent->GetPxActor()->is<physx::PxRigidDynamic>();
+                DVASSERT(dynamicActor != nullptr);
+                if (dynamicActor->getActorFlags().isSet(physx::PxActorFlag::eDISABLE_SIMULATION) == false &&
+                    dynamicActor->getRigidBodyFlags().isSet(physx::PxRigidBodyFlag::eKINEMATIC) == false)
+                {
+                    dynamicActor->wakeUp();
+                }
+            }
+        }
+
+        collisionComponents.push_back(component);
+    }
+    pendingAddCollisionComponents.clear();
+}
+
+void PhysicsSystem::SyncTransformToPhysx()
+{
+    DVASSERT(isSimulationEnabled == false);
+    DVASSERT(isSimulationRunning == false);
+    auto updatePose = [this](Entity* e, PhysicsComponent* component)
+    {
+        if (component != nullptr)
+        {
+            physx::PxActor* actor = component->GetPxActor();
+            DVASSERT(actor != nullptr);
+            physx::PxRigidActor* rigidActor = actor->is<physx::PxRigidActor>();
+            DVASSERT(rigidActor != nullptr);
+            rigidActor->setGlobalPose(physx::PxTransform(PhysicsMath::Matrix4ToPxMat44(e->GetWorldTransform())));
+        }
+    };
+
+    TransformSingleComponent* transformSingle = GetScene()->transformSingleComponent;
+    for (Entity* entity : transformSingle->localTransformChanged)
+    {
+        PhysicsComponent* staticBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::STATIC_BODY_COMPONENT, 0));
+        updatePose(entity, staticBodyComponent);
+
+        PhysicsComponent* dynamicBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::DYNAMIC_BODY_COMPONENT, 0));
+        updatePose(entity, dynamicBodyComponent);
+    }
+
+    for (auto& mapNode : transformSingle->worldTransformChanged.map)
+    {
+        uint64 flags = mapNode.first->GetComponentsFlags();
+        if ((flags & Component::STATIC_BODY_COMPONENT) == 0 && (flags & Component::DYNAMIC_BODY_COMPONENT) == 0)
+        {
+            continue;
+        }
+
+        for (Entity* entity : mapNode.second)
+        {
+            PhysicsComponent* staticBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::STATIC_BODY_COMPONENT, 0));
+            updatePose(entity, staticBodyComponent);
+
+            PhysicsComponent* dynamicBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::DYNAMIC_BODY_COMPONENT, 0));
+            updatePose(entity, dynamicBodyComponent);
+        }
     }
 }
 

@@ -179,6 +179,7 @@ void Physics::Init()
     physics = PxCreateBasePhysics(PX_PHYSICS_VERSION, *foundation, PxTolerancesScale(), true, pvd);
     DVASSERT(physics);
     PxRegisterHeightFields(*physics);
+    PxRegisterParticles(*physics); // For correct rigidDynamic->setGloblaPose after simulation stop
 
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(StaticBodyComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(DynamicBodyComponent);

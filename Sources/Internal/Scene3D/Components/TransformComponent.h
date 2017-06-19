@@ -20,6 +20,7 @@ public:
     inline const Matrix4& GetLocalTransform();
     Matrix4& ModifyLocalTransform();
 
+    void SetWorldTransform(const Matrix4* transform);
     void SetLocalTransform(const Matrix4* transform);
     void SetParent(Entity* node);
 

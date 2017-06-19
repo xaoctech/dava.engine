@@ -208,6 +208,8 @@ private:
     private:
         SceneEditor2* editor = nullptr;
     };
+
+    DAVA_VIRTUAL_REFLECTION(SceneEditor2, DAVA::Scene);
 };
 
 Q_DECLARE_METATYPE(SceneEditor2*)

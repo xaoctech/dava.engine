@@ -195,6 +195,7 @@ public:
      */
     Matrix4& ModifyLocalTransform();
     const Matrix4& GetWorldTransform() const;
+    void SetWorldTransform(const Matrix4& newMatrix);
 
     void SetLocalTransform(const Matrix4& newMatrix);
     Matrix4 AccamulateLocalTransform(Entity* fromParent);
