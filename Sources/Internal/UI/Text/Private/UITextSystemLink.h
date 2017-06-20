@@ -31,9 +31,6 @@ private:
     UITextSystemLink(UIControl* control_, UITextComponent* component_);
     ~UITextSystemLink() = default;
 
-    /** Apply component properties changes to internal TextBlock and UIControlBackground objects. */
-    void ApplyData();
-
     UIControl* control;
     UITextComponent* component;
 

@@ -28,6 +28,8 @@ public:
     void UnregisterComponent(UIControl* control, UIComponent* component) override;
 
     void Process(float32 elapsedTime) override;
+    /** Apply component properties changes to internal TextBlock and UIControlBackground objects. */
+    void ApplyData(UITextComponent* component);
 
 private:
     void AddLink(UITextComponent* component);
