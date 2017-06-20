@@ -78,7 +78,6 @@ std::ostream& DLCManagerImpl::GetLog() const
     return log;
 }
 
-#ifdef __DAVAENGINE_COREV2__
 DLCManagerImpl::DLCManagerImpl(Engine* engine_)
     : engine(*engine_)
 {
@@ -86,7 +85,6 @@ DLCManagerImpl::DLCManagerImpl(Engine* engine_)
     engine.update.Connect(this, &DLCManagerImpl::Update);
     engine.backgroundUpdate.Connect(this, &DLCManagerImpl::Update);
 }
-#endif
 
 void DLCManagerImpl::ClearResouces()
 {
@@ -147,10 +145,8 @@ DLCManagerImpl::~DLCManagerImpl()
 {
     DVASSERT(Thread::IsMainThread());
 
-#ifdef __DAVAENGINE_COREV2__
     engine.update.Disconnect(this);
     engine.backgroundUpdate.Disconnect(this);
-#endif
 
     ClearResouces();
 }
@@ -1419,13 +1415,12 @@ void DLCManagerImpl::ThreadScanFunc()
     {
         return;
     }
-#ifdef __DAVAENGINE_COREV2__
+
     DAVA::RunOnMainThreadAsync([this]()
                                {
                                    // finish thread
                                    scanState = ScanState::Done;
                                });
-#endif
 }
 
 } // end namespace DAVA

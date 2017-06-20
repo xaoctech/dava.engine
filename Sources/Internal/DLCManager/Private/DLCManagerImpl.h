@@ -5,14 +5,11 @@
 #include "DLCManager/DLCManager.h"
 #include "DLCManager/DLCDownloader.h"
 #include "DLCManager/Private/RequestManager.h"
+#include "Engine/Engine.h"
 #include "FileSystem/Private/PackFormatSpec.h"
 #include "FileSystem/Private/PackMetaData.h"
 #include "Concurrency/Semaphore.h"
 #include "Concurrency/Thread.h"
-
-#ifdef __DAVAENGINE_COREV2__
-#include "Engine/Engine.h"
-#endif
 
 namespace DAVA
 {
@@ -120,12 +117,7 @@ public:
     };
 
     static const String& ToString(InitError state);
-#ifdef __DAVAENGINE_COREV2__
     explicit DLCManagerImpl(Engine* engine_);
-    Engine& engine;
-#else
-    DLCManagerImpl() = default; // TODO remove it later (fix for client UnitTests)
-#endif
     ~DLCManagerImpl();
 
     void Initialize(const FilePath& dirToDownloadPacks_,
@@ -250,6 +242,7 @@ private:
 
     mutable std::ofstream log;
 
+    Engine& engine;
     FilePath localCacheMeta;
     FilePath localCacheFileTable;
     FilePath dirToDownloadedPacks;
