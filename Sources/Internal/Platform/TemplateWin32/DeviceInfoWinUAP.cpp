@@ -20,7 +20,6 @@
 #include "Platform/TemplateWin32/DeviceInfoWinUAP.h"
 
 __DAVAENGINE_WIN_UAP_INCOMPLETE_IMPLEMENTATION__MARKER__
-#include "Platform/TemplateWin32/CorePlatformWinUAP.h"
 const wchar_t* KOSTIL_SURFACE_MOUSE = L"NTRG0001";
 const wchar_t* KOSTIL_SURFACE_KEYBOARD = L"MSHW0029";
 
