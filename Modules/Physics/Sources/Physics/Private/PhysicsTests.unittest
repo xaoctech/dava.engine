@@ -62,7 +62,7 @@ physx::PxScene* ExtractPxScene(const SceneInfo& info)
 
 physx::PxShape* ExtractPxShape(const SceneInfo& info)
 {
-    CollisionComponent* component = static_cast<CollisionComponent*>(info.entity->GetComponent(Component::COLLISION_COMPONENT, 0));
+    CollisionShapeComponent* component = static_cast<CollisionShapeComponent*>(info.entity->GetComponent(Component::COLLISION_COMPONENT, 0));
     TEST_VERIFY(component != nullptr);
     return component->GetPxShape();
 }
@@ -100,7 +100,7 @@ DAVA_TESTCLASS(PhysicsTest)
         TEST_VERIFY(staticActor != nullptr);
         TEST_VERIFY(staticActor->getNbShapes() == 0);
 
-        AttachComponent<CollisionComponent>(info);
+        AttachComponent<CollisionShapeComponent>(info);
         TEST_VERIFY(staticActor->getNbShapes() == 0);
 
         Frame(info);
@@ -114,7 +114,7 @@ DAVA_TESTCLASS(PhysicsTest)
     {
         using namespace PhysicsTestDetils;
         SceneInfo info = CreateScene();
-        AttachComponent<CollisionComponent>(info);
+        AttachComponent<CollisionShapeComponent>(info);
 
         physx::PxScene* pxScene = ExtractPxScene(info);
         TEST_VERIFY(pxScene != nullptr);
@@ -154,7 +154,7 @@ DAVA_TESTCLASS(PhysicsTest)
         using namespace PhysicsTestDetils;
         SceneInfo info = CreateScene();
         AttachComponent<DynamicBodyComponent>(info);
-        AttachComponent<CollisionComponent>(info);
+        AttachComponent<CollisionShapeComponent>(info);
         Frame(info);
 
         physx::PxScene* pxScene = ExtractPxScene(info);
@@ -176,7 +176,7 @@ DAVA_TESTCLASS(PhysicsTest)
         using namespace PhysicsTestDetils;
         SceneInfo info = CreateScene();
         Component* componentToRemove = AttachComponent<DynamicBodyComponent>(info);
-        AttachComponent<CollisionComponent>(info);
+        AttachComponent<CollisionShapeComponent>(info);
         Frame(info);
 
         RemoveComponent(info, componentToRemove);
@@ -211,7 +211,7 @@ DAVA_TESTCLASS(PhysicsTest)
         using namespace PhysicsTestDetils;
         SceneInfo info = CreateScene();
         AttachComponent<DynamicBodyComponent>(info);
-        Component* componentToRemove = AttachComponent<CollisionComponent>(info);
+        Component* componentToRemove = AttachComponent<CollisionShapeComponent>(info);
         Frame(info);
 
         RemoveComponent(info, componentToRemove);

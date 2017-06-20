@@ -2,7 +2,11 @@
 #include "Physics/PhysicsModule.h"
 #include "Physics/PhysicsConfigs.h"
 #include "Physics/PhysicsComponent.h"
-#include "Physics/CollisionComponent.h"
+#include "Physics/CollisionShapeComponent.h"
+#include "Physics/BoxShapeComponent.h"
+#include "Physics/CapsuleShapeComponent.h"
+#include "Physics/SphereShapeComponent.h"
+#include "Physics/PlaneShapeComponent.h"
 #include "Physics/Private/PhysicsMath.h"
 
 #include <Scene3D/Entity.h>
@@ -25,6 +29,8 @@
 #include <PxShared/foundation/PxAllocatorCallback.h>
 #include <PxShared/foundation/PxFoundation.h>
 
+#include <functional>
+
 namespace DAVA
 {
 namespace PhysicsSystemDetail
@@ -43,6 +49,21 @@ void EraseComponent(T* component, Vector<T*>& pendingComponents, Vector<T*>& com
         DVASSERT(iter != components.end());
         RemoveExchangingWithLast(components, std::distance(components.begin(), iter));
     }
+}
+
+Array<uint32, 4> collisionShapeTypes = {
+    Component::BOX_SHAPE_COMPONENT,
+    Component::CAPSULE_SHAPE_COMPONENT,
+    Component::SPHERE_SHAPE_COMPONENT,
+    Component::PLANE_SHAPE_COMPONENT
+};
+
+bool IsCollisionShapeType(uint32 componentType)
+{
+    return std::any_of(collisionShapeTypes.begin(), collisionShapeTypes.end(), [componentType](uint32 type)
+                       {
+                           return componentType == type;
+                       });
 }
 } // namespace
 
@@ -91,7 +112,10 @@ void PhysicsSystem::RegisterEntity(Entity* entity)
 
     processEntity(entity, Component::STATIC_BODY_COMPONENT);
     processEntity(entity, Component::DYNAMIC_BODY_COMPONENT);
-    processEntity(entity, Component::COLLISION_COMPONENT);
+    for (uint32 type : PhysicsSystemDetail::collisionShapeTypes)
+    {
+        processEntity(entity, type);
+    }
 }
 
 void PhysicsSystem::UnregisterEntity(Entity* entity)
@@ -106,7 +130,10 @@ void PhysicsSystem::UnregisterEntity(Entity* entity)
 
     processEntity(entity, Component::STATIC_BODY_COMPONENT);
     processEntity(entity, Component::DYNAMIC_BODY_COMPONENT);
-    processEntity(entity, Component::COLLISION_COMPONENT);
+    for (uint32 type : PhysicsSystemDetail::collisionShapeTypes)
+    {
+        processEntity(entity, type);
+    }
 }
 
 void PhysicsSystem::RegisterComponent(Entity* entity, Component* component)
@@ -117,9 +144,10 @@ void PhysicsSystem::RegisterComponent(Entity* entity, Component* component)
         pendingAddPhysicsComponents.push_back(static_cast<PhysicsComponent*>(component));
     }
 
-    if (componentType == Component::COLLISION_COMPONENT)
+    using namespace PhysicsSystemDetail;
+    if (IsCollisionShapeType(componentType))
     {
-        pendingAddCollisionComponents.push_back(static_cast<CollisionComponent*>(component));
+        pendingAddCollisionComponents.push_back(static_cast<CollisionShapeComponent*>(component));
     }
 }
 
@@ -149,9 +177,10 @@ void PhysicsSystem::UnregisterComponent(Entity* entity, Component* component)
         }
     }
 
-    if (componentType == Component::COLLISION_COMPONENT)
+    using namespace PhysicsSystemDetail;
+    if (IsCollisionShapeType(componentType))
     {
-        CollisionComponent* collisionComponent = static_cast<CollisionComponent*>(component);
+        CollisionShapeComponent* collisionComponent = static_cast<CollisionShapeComponent*>(component);
         PhysicsSystemDetail::EraseComponent(collisionComponent, pendingAddCollisionComponents, collisionComponents);
 
         physx::PxShape* shape = collisionComponent->GetPxShape();
@@ -174,7 +203,6 @@ void PhysicsSystem::Process(float32 timeElapsed)
         FetchResults(false);
     }
 
-    DrawDebugInfo();
     InitNewObjects();
 
     if (isSimulationEnabled == false)
@@ -185,6 +213,7 @@ void PhysicsSystem::Process(float32 timeElapsed)
 
     if (isSimulationRunning == false)
     {
+        DrawDebugInfo();
         physicsScene->simulate(timeElapsed, nullptr, simulationBlock, simulationBlockSize);
         isSimulationRunning = true;
     }
@@ -215,11 +244,9 @@ void PhysicsSystem::SetDrawDebugInfo(bool drawDebugInfo_)
     drawDebugInfo = drawDebugInfo_;
     physx::PxReal enabled = drawDebugInfo == true ? 1.0f : 0.0f;
     physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_SHAPES, enabled);
-    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_STATIC, enabled);
-    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_DYNAMIC, enabled);
-    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_AABBS, enabled);
-    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eACTOR_AXES, 10.0f * enabled);
-    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eWORLD_AXES, enabled);
+    //physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_STATIC, enabled);
+    //physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_DYNAMIC, enabled);
+    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eACTOR_AXES, 2.0f * enabled);
     physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eSCALE, enabled);
 
     physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eBODY_MASS_AXES, enabled);
@@ -277,7 +304,9 @@ bool PhysicsSystem::FetchResults(bool block)
 
 void PhysicsSystem::DrawDebugInfo()
 {
-    if (IsDrawDebugInfo() == false || isSimulationEnabled == false)
+    DVASSERT(isSimulationRunning == false);
+    DVASSERT(isSimulationEnabled == true);
+    if (IsDrawDebugInfo() == false)
     {
         return;
     }
@@ -333,15 +362,7 @@ void PhysicsSystem::InitNewObjects()
         rigidActor->setGlobalPose(physx::PxTransform(PhysicsMath::Matrix4ToPxMat44(component->GetEntity()->GetWorldTransform())));
 
         Entity* entity = component->GetEntity();
-        for (uint32 i = 0; i < entity->GetComponentCount(Component::COLLISION_COMPONENT); ++i)
-        {
-            CollisionComponent* collision = static_cast<CollisionComponent*>(entity->GetComponent(Component::COLLISION_COMPONENT, i));
-            physx::PxShape* shape = collision->GetPxShape();
-            if (shape != nullptr)
-            {
-                rigidActor->attachShape(*shape);
-            }
-        }
+        AttachShape(entity, rigidActor);
 
         physicsScene->addActor(*(component->GetPxActor()));
         physicsComponents.push_back(component);
@@ -355,10 +376,10 @@ void PhysicsSystem::InitNewObjects()
         actor->attachShape(*shape);
     };
 
-    for (CollisionComponent* component : pendingAddCollisionComponents)
+    for (CollisionShapeComponent* component : pendingAddCollisionComponents)
     {
-        physx::PxShape* shape = physics->CreateBoxShape(true);
-        component->SetPxShape(shape);
+        physx::PxShape* shape = CreateShape(component, physics);
+        DVASSERT(shape != nullptr);
 
         Entity* entity = component->GetEntity();
         PhysicsComponent* staticBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::STATIC_BODY_COMPONENT, 0));
@@ -385,6 +406,66 @@ void PhysicsSystem::InitNewObjects()
         collisionComponents.push_back(component);
     }
     pendingAddCollisionComponents.clear();
+}
+
+void PhysicsSystem::AttachShape(Entity* entity, physx::PxRigidActor* actor)
+{
+    auto componentLoop = [](Entity* entity, physx::PxRigidActor* actor, uint32 componentType)
+    {
+        for (uint32 i = 0; i < entity->GetComponentCount(componentType); ++i)
+        {
+            CollisionShapeComponent* collision = static_cast<CollisionShapeComponent*>(entity->GetComponent(componentType, i));
+            physx::PxShape* shape = collision->GetPxShape();
+            if (shape != nullptr)
+            {
+                actor->attachShape(*shape);
+            }
+        }
+    };
+
+    for (uint32 type : PhysicsSystemDetail::collisionShapeTypes)
+    {
+        componentLoop(entity, actor, type);
+    }
+}
+
+physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, Physics* physics)
+{
+    physx::PxShape* shape = nullptr;
+    switch (component->GetType())
+    {
+    case Component::BOX_SHAPE_COMPONENT:
+    {
+        BoxShapeComponent* boxShape = static_cast<BoxShapeComponent*>(component);
+        shape = physics->CreateBoxShape(boxShape->GetHalfSize());
+    }
+    break;
+    case Component::CAPSULE_SHAPE_COMPONENT:
+    {
+        CapsuleShapeComponent* capsuleShape = static_cast<CapsuleShapeComponent*>(component);
+        shape = physics->CreateCapsuleShape(capsuleShape->GetRadius(), capsuleShape->GetHalfHeight());
+    }
+    break;
+    case Component::SPHERE_SHAPE_COMPONENT:
+    {
+        SphereShapeComponent* sphereShape = static_cast<SphereShapeComponent*>(component);
+        shape = physics->CreateSphereShape(sphereShape->GetRadius());
+    }
+    break;
+    case Component::PLANE_SHAPE_COMPONENT:
+    {
+        PlaneShapeComponent* planeComponent = static_cast<PlaneShapeComponent*>(component);
+        shape = physics->CreatePlaneShape();
+    }
+    break;
+    default:
+        DVASSERT(false);
+        break;
+    }
+
+    component->SetPxShape(shape);
+
+    return shape;
 }
 
 void PhysicsSystem::SyncTransformToPhysx()

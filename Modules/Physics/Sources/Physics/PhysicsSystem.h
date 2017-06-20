@@ -5,13 +5,16 @@
 namespace physx
 {
 class PxScene;
+class PxRigidActor;
+class PxShape;
 }
 
 namespace DAVA
 {
 class Scene;
+class Physics;
 class PhysicsComponent;
-class CollisionComponent;
+class CollisionShapeComponent;
 
 class PhysicsSystem : public SceneSystem
 {
@@ -38,6 +41,9 @@ private:
 
     void DrawDebugInfo();
     void InitNewObjects();
+    void AttachShape(Entity* entity, physx::PxRigidActor* actor);
+    physx::PxShape* CreateShape(CollisionShapeComponent* component, Physics* physics);
+
     void SyncTransformToPhysx();
 
 private:
@@ -53,8 +59,8 @@ private:
     Vector<PhysicsComponent*> physicsComponents;
     Vector<PhysicsComponent*> pendingAddPhysicsComponents;
 
-    Vector<CollisionComponent*> collisionComponents;
-    Vector<CollisionComponent*> pendingAddCollisionComponents;
+    Vector<CollisionShapeComponent*> collisionComponents;
+    Vector<CollisionShapeComponent*> pendingAddCollisionComponents;
 
     bool drawDebugInfo = false;
 };

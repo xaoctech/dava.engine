@@ -38,7 +38,10 @@ public:
     physx::PxActor* CreateStaticActor() const;
     physx::PxActor* CreateDynamicActor() const;
 
-    physx::PxShape* CreateBoxShape(bool exclusive) const;
+    physx::PxShape* CreateBoxShape(const Vector3& halfSize) const;
+    physx::PxShape* CreateCapsuleShape(float32 radius, float32 halfHeight) const;
+    physx::PxShape* CreateSphereShape(float32 radius) const;
+    physx::PxShape* CreatePlaneShape() const;
 
     physx::PxMaterial* GetDefaultMaterial() const;
 

@@ -1,7 +1,10 @@
 #include "Physics/PhysicsModule.h"
 #include "Physics/StaticBodyComponent.h"
 #include "Physics/DynamicBodyComponent.h"
-#include "Physics/CollisionComponent.h"
+#include "Physics/BoxShapeComponent.h"
+#include "Physics/CapsuleShapeComponent.h"
+#include "Physics/PlaneShapeComponent.h"
+#include "Physics/SphereShapeComponent.h"
 #include "Physics/Private/PhysicsMath.h"
 
 #include <Engine/Engine.h>
@@ -183,7 +186,10 @@ void Physics::Init()
 
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(StaticBodyComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(DynamicBodyComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(CollisionComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(BoxShapeComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(CapsuleShapeComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SphereShapeComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PlaneShapeComponent);
 }
 
 void Physics::Shutdown()
@@ -279,9 +285,24 @@ physx::PxActor* Physics::CreateDynamicActor() const
     return physics->createRigidDynamic(physx::PxTransform(physx::PxIDENTITY::PxIdentity));
 }
 
-physx::PxShape* Physics::CreateBoxShape(bool exclusive) const
+physx::PxShape* Physics::CreateBoxShape(const Vector3& halfSize) const
 {
-    return physics->createShape(physx::PxBoxGeometry(10.0f, 10.0f, 10.0f), *GetDefaultMaterial(), exclusive);
+    return physics->createShape(physx::PxBoxGeometry(PhysicsMath::Vector3ToPxVec3(halfSize)), *GetDefaultMaterial(), true);
+}
+
+physx::PxShape* Physics::CreateCapsuleShape(float32 radius, float32 halfHeight) const
+{
+    return physics->createShape(physx::PxCapsuleGeometry(radius, halfHeight), *GetDefaultMaterial(), true);
+}
+
+physx::PxShape* Physics::CreateSphereShape(float32 radius) const
+{
+    return physics->createShape(physx::PxSphereGeometry(radius), *GetDefaultMaterial(), true);
+}
+
+physx::PxShape* Physics::CreatePlaneShape() const
+{
+    return physics->createShape(physx::PxPlaneGeometry(), *GetDefaultMaterial(), true);
 }
 
 physx::PxMaterial* Physics::GetDefaultMaterial() const

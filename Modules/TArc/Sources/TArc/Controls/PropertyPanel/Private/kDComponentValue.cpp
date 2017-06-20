@@ -18,9 +18,6 @@ namespace TArc
 template <typename T, typename TEditor, typename TComponent>
 DAVA::TArc::kDComponentValue<T, TEditor, TComponent>::kDComponentValue()
 {
-    using namespace KDComponentValueTraits;
-    InitFieldsList<T, TEditor>(fields);
-    InitRanges<T>(nodes, ranges);
 }
 
 template <typename T, typename TEditor, typename TComponent>
@@ -44,6 +41,9 @@ bool kDComponentValue<T, TEditor, TComponent>::IsValidValueToSet(const Any& newV
 template <typename T, typename TEditor, typename TComponent>
 ControlProxy* kDComponentValue<T, TEditor, TComponent>::CreateEditorWidget(QWidget* parent, const Reflection& model, DataWrappersProcessor* wrappersProcessor)
 {
+    using namespace KDComponentValueTraits;
+    InitFieldsList<T, TEditor>(fields);
+    InitRanges<T>(nodes, ranges);
     if (Type::Instance<T>() == Type::Instance<Color>())
     {
         Widget* w = new Widget(parent);

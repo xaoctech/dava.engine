@@ -3,6 +3,15 @@
 #include "Render/Highlevel/ShadowVolume.h"
 #include "Engine/Engine.h"
 
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+#include <Physics/StaticBodyComponent.h>
+#include <Physics/DynamicBodyComponent.h>
+#include <Physics/BoxShapeComponent.h>
+#include <Physics/CapsuleShapeComponent.h>
+#include <Physics/SphereShapeComponent.h>
+#include <Physics/PlaneShapeComponent.h>
+#endif
+
 using namespace DAVA;
 
 void DAVA::RegisterDAVAClasses()
@@ -79,3 +88,12 @@ REGISTER_CLASS(PathComponent);
 REGISTER_CLASS(WASDControllerComponent);
 REGISTER_CLASS(RotationControllerComponent);
 REGISTER_CLASS(SnapToLandscapeControllerComponent);
+
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+REGISTER_CLASS(StaticBodyComponent);
+REGISTER_CLASS(DynamicBodyComponent);
+REGISTER_CLASS(BoxShapeComponent);
+REGISTER_CLASS(CapsuleShapeComponent);
+REGISTER_CLASS(SphereShapeComponent);
+REGISTER_CLASS(PlaneShapeComponent);
+#endif

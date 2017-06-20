@@ -52,6 +52,10 @@ public:
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
         STATIC_BODY_COMPONENT,
         DYNAMIC_BODY_COMPONENT,
+        BOX_SHAPE_COMPONENT,
+        CAPSULE_SHAPE_COMPONENT,
+        SPHERE_SHAPE_COMPONENT,
+        PLANE_SHAPE_COMPONENT,
 #endif
 
         //debug components - note that everything below won't be serialized
