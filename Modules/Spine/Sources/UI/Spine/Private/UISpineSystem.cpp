@@ -97,7 +97,10 @@ void UISpineSystem::Process(float32 elapsedTime)
             node.spine->SetSkinsNames(node.skeleton->GetAvailableSkinsNames());
 
             // Build bones links after load skeleton
-            spineSingle->spineBonesModified.insert(c);
+            if (spineSingle)
+            {
+                spineSingle->spineBonesModified.insert(c);
+            }
         }
     }
 
@@ -215,8 +218,11 @@ void UISpineSystem::AddNode(UISpineComponent* component)
     nodes[component->GetControl()] = node;
 
     UISpineSingleComponent* spineSingle = GetScene()->GetSingleComponent<UISpineSingleComponent>();
-    spineSingle->spineModified.insert(component->GetControl());
-    spineSingle->spineNeedReload.insert(component->GetControl());
+    if (spineSingle)
+    {
+        spineSingle->spineModified.insert(component->GetControl());
+        spineSingle->spineNeedReload.insert(component->GetControl());
+    }
 
     // Bind bones if exists
     UISpineAttachControlsToBonesComponent* bones = component->GetControl()->GetComponent<UISpineAttachControlsToBonesComponent>();
@@ -258,7 +264,10 @@ void UISpineSystem::BindBones(UISpineAttachControlsToBonesComponent* bones)
         node.bones = bones;
 
         UISpineSingleComponent* spineSingle = GetScene()->GetSingleComponent<UISpineSingleComponent>();
-        spineSingle->spineBonesModified.insert(bones->GetControl());
+        if (spineSingle)
+        {
+            spineSingle->spineBonesModified.insert(bones->GetControl());
+        }
     }
 }
 
@@ -272,7 +281,10 @@ void UISpineSystem::UnbindBones(UISpineAttachControlsToBonesComponent* bones)
         node.bones.Set(nullptr);
 
         UISpineSingleComponent* spineSingle = GetScene()->GetSingleComponent<UISpineSingleComponent>();
-        spineSingle->spineBonesModified.insert(bones->GetControl());
+        if (spineSingle)
+        {
+            spineSingle->spineBonesModified.insert(bones->GetControl());
+        }
     }
 }
 

@@ -46,14 +46,14 @@ DAVA_TESTCLASS (UISpineTest)
     void SkipTime(float32 timeDelta)
     {
         spineSystem->Process(timeDelta);
-        spineSingleComponent->Clear();
+        spineSingleComponent->ResetState();
     }
 
     void SkipFrames(int32 frameDelta)
     {
         static const float32 SPINE_FRAMES_PER_SECOND = 30.f;
         spineSystem->Process(frameDelta / SPINE_FRAMES_PER_SECOND);
-        spineSingleComponent->Clear();
+        spineSingleComponent->ResetState();
     }
 
     bool CompareVectors(const Vector2& a, const Vector2& b, float32 epsilon = DAVA::EPSILON)
