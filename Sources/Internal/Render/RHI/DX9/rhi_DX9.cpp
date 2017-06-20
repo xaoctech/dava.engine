@@ -4,7 +4,7 @@
 
 #include "Debug/DVAssert.h"
 #include "Logger/Logger.h"
-#include "Core/Core.h"
+
 using DAVA::Logger;
 
 #include "_dx9.h"

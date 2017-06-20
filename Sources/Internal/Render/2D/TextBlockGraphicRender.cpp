@@ -1,5 +1,4 @@
 #include "Render/2D/TextBlockGraphicRender.h"
-#include "Core/Core.h"
 #include "Render/ShaderCache.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
 #include "UI/UIControlSystem.h"

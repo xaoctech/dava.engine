@@ -1,9 +1,7 @@
-#ifndef __DAVAENGINE_UI_SCREEN_H__
-#define __DAVAENGINE_UI_SCREEN_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "Utils/Utils.h"
-#include "Core/Core.h"
 #include "UI/UIControl.h"
 #include "Reflection/Reflection.h"
 #if !defined(__DAVAENGINE_COREV2__)
@@ -73,5 +71,3 @@ private:
     static int32 groupIdCounter;
 };
 };
-
-#endif

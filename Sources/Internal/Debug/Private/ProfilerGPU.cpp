@@ -4,7 +4,6 @@
 #include "Render/Renderer.h"
 #include "Render/RHI/dbg_Draw.h"
 #include "Engine/Engine.h"
-#include "Core/Core.h"
 #include <ostream>
 
 //==============================================================================

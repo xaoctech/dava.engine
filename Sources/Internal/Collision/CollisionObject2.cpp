@@ -3,7 +3,6 @@
 #include "Render/RenderHelper.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
 #include "Render/Renderer.h"
-#include "Core/Core.h"
 
 #include "Engine/Engine.h"
 
