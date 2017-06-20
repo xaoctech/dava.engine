@@ -39,6 +39,8 @@ UITextComponent::UITextComponent(const UITextComponent& src)
     , perPixelAccuracyType(src.perPixelAccuracyType)
     , useRtlAlign(src.useRtlAlign)
     , forceBiDiSupport(src.forceBiDiSupport)
+    , font(src.font)
+    , requestedTextRectSize(src.requestedTextRectSize)
     , modified(true)
 {
 }
@@ -49,6 +51,7 @@ UITextComponent::UITextComponent()
 
 UITextComponent::~UITextComponent()
 {
+    font = nullptr;
 }
 
 UITextComponent* UITextComponent::Clone() const
@@ -103,6 +106,7 @@ void UITextComponent::SetFontName(const String& value)
     if (fontName != value)
     {
         fontName = value;
+        font = nullptr;
         modified = true;
     }
 }
@@ -233,6 +237,21 @@ DAVA::Vector2 UITextComponent::GetRequestedTextRectSize() const
     return requestedTextRectSize;
 }
 
+void UITextComponent::SetFont(Font* value)
+{
+    if (font != value)
+    {
+        font = value;
+        fontName = "";
+        modified = true;
+    }
+}
+
+Font* UITextComponent::GetFont()
+{
+    return font.Get();
+}
+
 bool UITextComponent::IsForceBiDiSupportEnabled() const
 {
     return forceBiDiSupport;
@@ -257,8 +276,7 @@ UITextSystemLink* UITextComponent::GetLink() const
     return link.Get();
 }
 
-// Backward compatibility method
-Vector2 UITextComponent::GetContentPreferredSize(const Vector2& constraints) const
+void UITextComponent::ApplyDataImmediately() const
 {
     DVASSERT(GetControl());
     if (modified)
@@ -266,6 +284,12 @@ Vector2 UITextComponent::GetContentPreferredSize(const Vector2& constraints) con
         UIControlSystem::Instance()->GetTextSystem()->ApplyData(const_cast<UITextComponent*>(this));
     }
     DVASSERT(link.Valid());
+}
+
+// Backward compatibility method
+Vector2 UITextComponent::GetContentPreferredSize(const Vector2& constraints) const
+{
+    ApplyDataImmediately();
     return link->GetTextBlock()->GetPreferredSizeForWidth(constraints.x);
 }
 

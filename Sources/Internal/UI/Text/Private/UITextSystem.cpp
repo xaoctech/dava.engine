@@ -95,6 +95,17 @@ void UITextSystem::ApplyData(UITextComponent* component)
                 textBlock->SetFont(font);
             }
         }
+        else
+        {
+            Font* font = component->GetFont();
+            if (font)
+            {
+                if (textBlock->GetFont() != font)
+                {
+                    textBlock->SetFont(font);
+                }
+            }
+        }
 
         switch (component->GetMultiline())
         {
