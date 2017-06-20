@@ -7,29 +7,18 @@
 
 #include "Base/RefPtr.h"
 #include "Debug/DVAssert.h"
-
-#if defined(__DAVAENGINE_COREV2__)
 #include "Engine/Engine.h"
-#else
-#include "Platform/TemplateWin32/WinUAPXamlApp.h"
-#include "Platform/TemplateWin32/CorePlatformWinUAP.h"
-#endif
-#include "UI/UIControlSystem.h"
+#include "FileSystem/File.h"
+#include "FileSystem/FileSystem.h"
+#include "Logger/Logger.h"
 #include "Render/Image/Image.h"
 #include "Render/Image/ImageConvert.h"
 #include "Render/Image/Image.h"
-
-#include "Utils/UTF8Utils.h"
-#include "Utils/Utils.h"
-#include "Utils/Random.h"
-#include "Utils/Utils.h"
-#include "Utils/StringFormat.h"
-
+#include "UI/UIControlSystem.h"
 #include "UI/UIWebView.h"
-
-#include "FileSystem/FileSystem.h"
-#include "FileSystem/File.h"
-#include "Logger/Logger.h"
+#include "Utils/Random.h"
+#include "Utils/StringFormat.h"
+#include "Utils/UTF8Utils.h"
 #include "Utils/Utils.h"
 
 namespace DAVA
@@ -138,39 +127,16 @@ void WebViewControl::WebViewProperties::ClearChangedFlags()
     navigateTo = WebViewProperties::NAVIGATE_NONE;
 }
 
-#if defined(__DAVAENGINE_COREV2__)
 WebViewControl::WebViewControl(Window* w, UIWebView* uiWebView)
     : window(w)
     , uiWebView(uiWebView)
     , properties()
 {
 }
-#else
-WebViewControl::WebViewControl(UIWebView* uiWebView)
-    : core(static_cast<CorePlatformWinUAP*>(Core::Instance()))
-    , uiWebView(uiWebView)
-    , properties()
-{
-}
-#endif
 
 WebViewControl::~WebViewControl()
 {
-#if defined(__DAVAENGINE_COREV2__)
     nativeWebView = nullptr;
-#else
-    using ::Windows::UI::Xaml::Controls::WebView;
-    if (nativeWebView != nullptr)
-    {
-        // Compiler complains of capturing nativeWebView data member in lambda
-        WebView ^ p = nativeWebView;
-        core->RunOnUIThread([p]() {
-            // We don't need blocking call here
-            static_cast<CorePlatformWinUAP*>(Core::Instance())->XamlApplication()->RemoveUIElement(p);
-        });
-        nativeWebView = nullptr;
-    }
-#endif
 }
 
 void WebViewControl::OwnerIsDying()
@@ -179,8 +145,6 @@ void WebViewControl::OwnerIsDying()
 
     uiWebView = nullptr;
     webViewDelegate = nullptr;
-
-#if defined(__DAVAENGINE_COREV2__)
     if (window != nullptr)
     {
         if (nativeWebView != nullptr)
@@ -196,7 +160,6 @@ void WebViewControl::OwnerIsDying()
         window->sizeChanged.Disconnect(this);
         Engine::Instance()->windowDestroyed.Disconnect(this);
     }
-#endif
 }
 
 void WebViewControl::Initialize(const Rect& rect)
@@ -208,10 +171,8 @@ void WebViewControl::Initialize(const Rect& rect)
     properties.rectChanged = true;
     properties.anyPropertyChanged = true;
 
-#if defined(__DAVAENGINE_COREV2__)
     window->sizeChanged.Connect(this, &WebViewControl::OnWindowSizeChanged);
     Engine::Instance()->windowDestroyed.Connect(this, &WebViewControl::OnWindowDestroyed);
-#endif
 }
 
 void WebViewControl::OpenURL(const String& urlToOpen)
@@ -264,7 +225,6 @@ void WebViewControl::SetVisible(bool isVisible, bool /*hierarchic*/)
         if (!isVisible)
         { // Immediately hide native control if it has been already created
             auto self{ shared_from_this() };
-#if defined(__DAVAENGINE_COREV2__)
             if (window != nullptr)
             {
                 window->RunOnUIThreadAsync([this, self]() {
@@ -274,7 +234,6 @@ void WebViewControl::SetVisible(bool isVisible, bool /*hierarchic*/)
                     }
                 });
             }
-#endif
         }
     }
 }
@@ -304,14 +263,12 @@ void WebViewControl::SetRenderToTexture(bool value)
         if (!value)
         { // Immediately hide native control if it has been already created
             auto self{ shared_from_this() };
-#if defined(__DAVAENGINE_COREV2__)
             window->RunOnUIThreadAsync([this, self]() {
                 if (nativeWebView != nullptr)
                 {
                     SetNativePositionAndSize(rectInWindowSpace, true);
                 }
             });
-#endif
         }
     }
 }
@@ -327,11 +284,9 @@ void WebViewControl::Update()
     {
         auto self{ shared_from_this() };
         WebViewProperties props(properties);
-#if defined(__DAVAENGINE_COREV2__)
         window->RunOnUIThreadAsync([this, self, props]() {
             ProcessProperties(props);
         });
-#endif
 
         properties.createNew = false;
         properties.ClearChangedFlags();
@@ -351,9 +306,7 @@ void WebViewControl::CreateNativeControl()
     nativeWebView->MinHeight = 0.0;
     nativeWebView->Visibility = Visibility::Visible;
 
-#if defined(__DAVAENGINE_COREV2__)
     PlatformApi::Win10::AddXamlControl(window, nativeWebView);
-#endif
     SetNativePositionAndSize(rectInWindowSpace, true); // After creation move native control offscreen
 }
 
@@ -427,14 +380,12 @@ void WebViewControl::OnNavigationCompleted(::Windows::UI::Xaml::Controls::WebVie
     }
 
     auto self{ shared_from_this() };
-#if defined(__DAVAENGINE_COREV2__)
     RunOnMainThreadAsync([this, self]() {
         if (uiWebView != nullptr && webViewDelegate != nullptr)
         {
             webViewDelegate->PageLoaded(uiWebView);
         }
     });
-#endif
 }
 
 void WebViewControl::OnUnsupportedUriSchemeIdentified(::Windows::UI::Xaml::Controls::WebView ^, ::Windows::UI::Xaml::Controls::WebViewUnsupportedUriSchemeIdentifiedEventArgs ^ args)
@@ -460,14 +411,12 @@ IUIWebViewDelegate::eAction WebViewControl::HandleUriNavigation(::Windows::Found
 
     bool redirectedByMouse = !programmaticUrlNavigation;
     IUIWebViewDelegate::eAction whatToDo = IUIWebViewDelegate::PROCESS_IN_WEBVIEW;
-#if defined(__DAVAENGINE_COREV2__)
     RunOnMainThread([this, &whatToDo, &url, redirectedByMouse]() {
         if (uiWebView != nullptr && webViewDelegate != nullptr)
         {
             whatToDo = webViewDelegate->URLChanged(uiWebView, url, redirectedByMouse);
         }
     });
-#endif
 
     nativeWebView->Visibility = Visibility::Visible;
     return whatToDo;
@@ -483,9 +432,7 @@ void WebViewControl::OnWindowSizeChanged(Window* w, Size2f windowSize, Size2f su
 void WebViewControl::OnWindowDestroyed(Window* w)
 {
     OwnerIsDying();
-#if defined(__DAVAENGINE_COREV2__)
     window = nullptr;
-#endif
 }
 
 void WebViewControl::ProcessProperties(const WebViewProperties& props)
@@ -534,9 +481,7 @@ void WebViewControl::SetNativePositionAndSize(const Rect& rect, bool offScreen)
     }
     nativeWebView->Width = std::max(0.0f, rect.dx);
     nativeWebView->Height = std::max(0.0f, rect.dy);
-#if defined(__DAVAENGINE_COREV2__)
     PlatformApi::Win10::PositionXamlControl(window, nativeWebView, rect.x - xOffset, rect.y - yOffset);
-#endif
 }
 
 void WebViewControl::SetNativeBackgroundTransparency(bool enabled)
@@ -593,7 +538,6 @@ void WebViewControl::NativeExecuteJavaScript(const String& jsScript)
     auto js = nativeWebView->InvokeScriptAsync(L"eval", args);
     auto self{shared_from_this()};
     create_task(js).then([this, self](Platform::String^ result) {
-#if defined(__DAVAENGINE_COREV2__)
         RunOnMainThreadAsync([this, self, result]() {
             if (webViewDelegate != nullptr && uiWebView != nullptr)
             {
@@ -601,7 +545,6 @@ void WebViewControl::NativeExecuteJavaScript(const String& jsScript)
                 webViewDelegate->OnExecuteJScript(uiWebView, jsResult);
             }
         });
-#endif
     }).then([self](task<void> t) {
         try {
             t.get();
@@ -616,11 +559,7 @@ void WebViewControl::NativeExecuteJavaScript(const String& jsScript)
 
 Rect WebViewControl::VirtualToWindow(const Rect& srcRect) const
 {
-#if defined(__DAVAENGINE_COREV2__)
     VirtualCoordinatesSystem* vcs = window->GetUIControlSystem()->vcs;
-#else
-    VirtualCoordinatesSystem* vcs = UIControlSystem::Instance()->vcs;
-#endif
     return vcs->ConvertVirtualToInput(srcRect);
 }
 
@@ -654,7 +593,6 @@ void WebViewControl::RenderToTexture()
             RefPtr<Sprite> sprite(CreateSpriteFromPreviewData(&buf[0], width, height));
             if (sprite.Valid())
             {
-#if defined(__DAVAENGINE_COREV2__)
                 RunOnMainThreadAsync([this, self, sprite]()
                 {
                     if (uiWebView != nullptr)
@@ -663,7 +601,6 @@ void WebViewControl::RenderToTexture()
                         bg->SetSprite(sprite.Get(), 0);
                     }
                 });
-#endif
             }
         });
     }).then([this, self](task<void> t) {

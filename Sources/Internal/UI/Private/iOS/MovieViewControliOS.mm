@@ -3,16 +3,11 @@
 #if defined(__DAVAENGINE_IPHONE__)
 #if !defined(DISABLE_NATIVE_MOVIEVIEW)
 
-#include "UI/UIControlSystem.h"
-
 #import <MediaPlayer/MediaPlayer.h>
 
-#if defined(__DAVAENGINE_COREV2__)
 #include "Engine/Engine.h"
 #include "Engine/Ios/PlatformApi.h"
-#else
-#import <Platform/TemplateiOS/HelperAppDelegate.h>
-#endif
+#include "UI/UIControlSystem.h"
 
 namespace DAVA
 {
@@ -21,14 +16,9 @@ struct MovieViewControl::MovieViewObjcBridge final
     MPMoviePlayerController* moviePlayer = nullptr;
 };
 
-#if defined(__DAVAENGINE_COREV2__)
 MovieViewControl::MovieViewControl(Window* w)
     : bridge(new MovieViewObjcBridge)
     , window(w)
-#else
-MovieViewControl::MovieViewControl()
-    : bridge(new MovieViewObjcBridge)
-#endif
 {
     bridge->moviePlayer = [[MPMoviePlayerController alloc] init];
 
@@ -41,21 +31,12 @@ MovieViewControl::MovieViewControl()
         [bridge->moviePlayer setScalingMode:MPMovieScalingModeFill];
     }
 
-#if defined(__DAVAENGINE_COREV2__)
     PlatformApi::Ios::AddUIView(window, [bridge->moviePlayer view]);
-#else
-    HelperAppDelegate* appDelegate = [[UIApplication sharedApplication] delegate];
-    [[appDelegate renderViewController].backgroundView addSubview:[bridge->moviePlayer view]];
-#endif
 }
 
 MovieViewControl::~MovieViewControl()
 {
-#if defined(__DAVAENGINE_COREV2__)
     PlatformApi::Ios::RemoveUIView(window, [bridge->moviePlayer view]);
-#else
-    [[bridge->moviePlayer view] removeFromSuperview];
-#endif
     [bridge->moviePlayer release];
 }
 

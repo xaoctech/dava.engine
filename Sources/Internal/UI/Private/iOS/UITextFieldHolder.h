@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_UI_TEXT_FIELD_HOLDER_H__
-#define __DAVAENGINE_UI_TEXT_FIELD_HOLDER_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 
@@ -17,9 +16,7 @@ class Window;
 {
     NSString* cachedText;
     BOOL isKeyboardHidden;
-#if defined(__DAVAENGINE_COREV2__)
     DAVA::Window* window;
-#endif
 @public
     // hold single line text field if user switch to multiline mode
     // otherwise nullptr
@@ -35,9 +32,7 @@ class Window;
 
 - (void)setTextField:(DAVA::UITextField*)tf;
 - (id)init;
-#if defined(__DAVAENGINE_COREV2__)
 - (void)attachWindow:(DAVA::Window*)w;
-#endif
 - (void)dealloc;
 - (BOOL)textFieldShouldReturn:(UITextField*)textField;
 - (BOOL)textField:(UITextField*)_textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string;
@@ -65,5 +60,3 @@ class Window;
 
 
 #endif //#if defined (__DAVAENGINE_IPHONE__)
-
-#endif // __DAVAENGINE_UI_TEXT_FIELD_HOLDER_H__

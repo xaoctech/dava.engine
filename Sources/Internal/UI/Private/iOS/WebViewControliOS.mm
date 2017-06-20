@@ -4,18 +4,11 @@
 
 #import <UIKit/UIKit.h>
 
-#include "Render/Image/Image.h"
-#include "UI/UIWebView.h"
-#include "UI/UIControlSystem.h"
-
-#if defined(__DAVAENGINE_COREV2__)
 #include "Engine/Engine.h"
 #include "Engine/Ios/PlatformApi.h"
-#else
-#include "Core/Core.h"
-#import "Platform/TemplateiOS/HelperAppDelegate.h"
-#import "Platform/TemplateiOS/BackgroundView.h"
-#endif
+#include "Render/Image/Image.h"
+#include "UI/UIControlSystem.h"
+#include "UI/UIWebView.h"
 
 @interface WebViewURLDelegate : NSObject<UIWebViewDelegate>
 {
@@ -34,9 +27,6 @@
 - (void)webView:(UIWebView*)webView didFailLoadWithError:(NSError*)error;
 - (void)leftGesture;
 - (void)rightGesture;
-#if !defined(__DAVAENGINE_COREV2__)
-- (UIImage*)renderUIViewToImage:(UIView*)view;
-#endif
 - (void)setDAVAUIWebView:(DAVA::UIWebView*)uiWebControl;
 - (void)onExecuteJScript:(NSArray*)result;
 - (void)setDAVAWebViewControl:(DAVA::WebViewControl*)webViewControl;
@@ -143,16 +133,6 @@
     }
 }
 
-#if !defined(__DAVAENGINE_COREV2__)
-- (UIImage*)renderUIViewToImage:(UIView*)view
-{
-    void* image = DAVA::WebViewControl::RenderIOSUIViewToImage(view);
-    DVASSERT(image);
-    UIImage* uiImage = static_cast<UIImage*>(image);
-    return uiImage;
-}
-#endif
-
 - (void)onExecuteJScript:(NSString*)result
 {
     if (delegate)
@@ -185,25 +165,12 @@ struct WebViewControl::WebViewObjcBridge final
     UISwipeGestureRecognizer* leftSwipeGesture = nullptr;
 };
 
-#if defined(__DAVAENGINE_COREV2__)
 WebViewControl::WebViewControl(Window* w, UIWebView* uiWebView)
     : bridge(new WebViewObjcBridge)
     , window(w)
     , uiWebView(*uiWebView)
-#else
-WebViewControl::WebViewControl(UIWebView* uiWebView)
-    : bridge(new WebViewObjcBridge)
-    , uiWebView(*uiWebView)
-#endif
 {
-#if defined(__DAVAENGINE_COREV2__)
     bridge->nativeWebView = static_cast<::UIWebView*>(PlatformApi::Ios::GetUIViewFromPool(window, "UIWebView"));
-#else
-    HelperAppDelegate* appDelegate = [[UIApplication sharedApplication] delegate];
-    BackgroundView* backgroundView = [appDelegate renderViewController].backgroundView;
-
-    bridge->nativeWebView = [backgroundView CreateWebView];
-#endif
 
     CGRect emptyRect = CGRectMake(0.0f, 0.0f, 0.0f, 0.0f);
     [bridge->nativeWebView setFrame:emptyRect];
@@ -219,97 +186,9 @@ WebViewControl::WebViewControl(UIWebView* uiWebView)
     [bridge->nativeWebView becomeFirstResponder];
 }
 
-#if !defined(__DAVAENGINE_COREV2__)
-void* WebViewControl::RenderIOSUIViewToImage(void* uiviewPtr)
-{
-    ::UIView* view = static_cast<::UIView*>(uiviewPtr);
-    DVASSERT(view);
-
-    size_t w = view.frame.size.width;
-    size_t h = view.frame.size.height;
-
-    if (w == 0 || h == 0)
-    {
-        return nullptr; // empty rect on start, just skip it
-    }
-
-    // Workaround! render text view directly without scrolling
-    if ([ ::UITextView class] == [view class])
-    {
-        ::UITextView* textView = (::UITextView*)view;
-        view = textView.textInputView;
-    }
-
-    UIGraphicsBeginImageContextWithOptions(CGSizeMake(w, h), NO, 0);
-    // Workaround! iOS bug see http://stackoverflow.com/questions/23157653/drawviewhierarchyinrectafterscreenupdates-delays-other-animations
-    [view.layer renderInContext:UIGraphicsGetCurrentContext()];
-
-    UIImage* image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-
-    DVASSERT(image);
-    return image;
-}
-
-void WebViewControl::SetImageAsSpriteToControl(void* imagePtr, UIControl& control)
-{
-    ::UIImage* image = static_cast<::UIImage*>(imagePtr);
-    DVASSERT(image);
-    // copy image into our buffer with bitmap context
-    // TODO create fucntion static void copyImageToTexture(UIControl& control, ::UIImage* image
-    CGImageRef imageRef = [image CGImage];
-    DAVA::int32 width = static_cast<DAVA::int32>(CGImageGetWidth(imageRef));
-    DAVA::int32 height = static_cast<DAVA::int32>(CGImageGetHeight(imageRef));
-    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-
-    {
-        DAVA::Image* imageRGB = DAVA::Image::Create(width, height,
-                                                    DAVA::FORMAT_RGBA8888);
-        DVASSERT(imageRGB);
-
-        DAVA::uint8* rawData = imageRGB->GetData();
-
-        NSUInteger bytesPerPixel = 4;
-        NSUInteger bytesPerRow = bytesPerPixel * width;
-        NSUInteger bitsPerComponent = 8;
-
-        // this way we can copy image from system memory into our buffer
-        Memset(rawData, 0, width * height * bytesPerPixel);
-
-        CGContextRef context = CGBitmapContextCreate(rawData, width, height,
-                                                     bitsPerComponent, bytesPerRow, colorSpace,
-                                                     kCGImageAlphaPremultipliedLast
-                                                     | kCGBitmapByteOrder32Big);
-        CGColorSpaceRelease(colorSpace);
-
-        CGContextDrawImage(context, CGRectMake(0, 0, width, height), imageRef);
-        CGContextRelease(context);
-
-        {
-            DAVA::Texture* tex = DAVA::Texture::CreateFromData(imageRGB, false);
-            DVASSERT(tex);
-
-            DAVA::Rect rect = control.GetRect();
-            {
-                DAVA::Sprite* spr = DAVA::Sprite::CreateFromTexture(tex, 0, 0, width, height, rect.dx, rect.dy);
-                DVASSERT(spr);
-
-                UIControlBackground* bg = control.GetOrCreateComponent<UIControlBackground>();
-                bg->SetSprite(spr, 0);
-                DAVA::SafeRelease(spr);
-            }
-            DAVA::SafeRelease(tex);
-        }
-        DAVA::SafeRelease(imageRGB);
-    }
-}
-#endif
-
 void WebViewControl::RenderToTextureAndSetAsBackgroundSpriteToControl(UIWebView& control)
 {
-#if defined(__DAVAENGINE_COREV2__)
     UIImage* nativeImage = PlatformApi::Ios::RenderUIViewToUIImage(bridge->nativeWebView);
-
     if (nativeImage != nullptr)
     {
         RefPtr<Image> image(PlatformApi::Ios::ConvertUIImageToImage(nativeImage));
@@ -330,15 +209,6 @@ void WebViewControl::RenderToTextureAndSetAsBackgroundSpriteToControl(UIWebView&
             }
         }
     }
-#else
-    WebViewURLDelegate* webURLDelegate = bridge->webViewDelegate;
-    ::UIWebView* iosWebView = bridge->nativeWebView;
-
-    UIImage* image = [webURLDelegate renderUIViewToImage:iosWebView];
-    DVASSERT(image);
-
-    WebViewControl::SetImageAsSpriteToControl(image, control);
-#endif
 }
 
 static const struct
@@ -367,13 +237,7 @@ WebViewControl::~WebViewControl()
 
     [innerWebView resignFirstResponder];
 
-#if defined(__DAVAENGINE_COREV2__)
     PlatformApi::Ios::ReturnUIViewToPool(window, innerWebView);
-#else
-    HelperAppDelegate* appDelegate = [[UIApplication sharedApplication] delegate];
-    BackgroundView* backgroundView = [appDelegate renderViewController].backgroundView;
-    [backgroundView ReleaseWebView:innerWebView];
-#endif
 
     [bridge->webViewDelegate release];
 
@@ -574,13 +438,7 @@ void WebViewControl::SetBounces(bool value)
 //for iOS we need use techique like http://stackoverflow.com/questions/12578895/how-to-detect-a-swipe-gesture-on-webview
 void WebViewControl::SetGestures(bool value)
 {
-#if defined(__DAVAENGINE_COREV2__)
     UIView* backView = [bridge->nativeWebView superview];
-#else
-    HelperAppDelegate* appDelegate = [[UIApplication sharedApplication] delegate];
-    UIView* backView = appDelegate.renderViewController.backgroundView;
-#endif
-
     if (value && !gesturesEnabled)
     {
         WebViewURLDelegate* urlDelegate = bridge->webViewDelegate;

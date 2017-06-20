@@ -3,15 +3,10 @@
 #if defined(__DAVAENGINE_MACOS__)
 #if !defined(DISABLE_NATIVE_MOVIEVIEW)
 
-#if defined(__DAVAENGINE_COREV2__)
 #include "Engine/Engine.h"
-#else
-#include "Platform/TemplateMacOS/CorePlatformMacOS.h"
-#endif
 #include "Logger/Logger.h"
-
-#include "UI/UIControlSystem.h"
 #include "Platform/Steam.h"
+#include "UI/UIControlSystem.h"
 
 #import <AVFoundation/AVFoundation.h>
 #import <CoreMedia/CoreMedia.h>
@@ -57,16 +52,10 @@ enum MoviePlayerHelperPlaybackState
     DAVA::eMovieScalingMode scalingMode;
     double videoDuration;
     
-#if defined(__DAVAENGINE_COREV2__)
     DAVA::Window* window;
-#endif
 }
 
-#if defined(__DAVAENGINE_COREV2__)
 - (id)init:(DAVA::Window*)w;
-#else
-- (id)init;
-#endif
 
 // Set the video rectangle.
 - (void)setRect:(const DAVA::Rect&)rect;
@@ -90,18 +79,13 @@ enum MoviePlayerHelperPlaybackState
 
 @implementation MoviePlayerHelper
 
-#if defined(__DAVAENGINE_COREV2__)
 - (MoviePlayerHelper*)init:(DAVA::Window*)w
-#else
-- (id)init
-#endif
 {
     self = [super init];
     if (self != nullptr)
     {
-#if defined(__DAVAENGINE_COREV2__)
         window = w;
-#endif
+
         videoPlayer = nil;
         videoView = nil;
 
@@ -117,11 +101,8 @@ enum MoviePlayerHelperPlaybackState
 
 - (void)dealloc
 {
-#if defined(__DAVAENGINE_COREV2__)
     DAVA::PlatformApi::Mac::RemoveNSView(window, videoView);
-#else
-    [videoView removeFromSuperview];
-#endif
+
     [videoView release];
     videoView = nil;
 
@@ -194,12 +175,7 @@ enum MoviePlayerHelperPlaybackState
     [videoView setWantsLayer:YES];
     videoView.layer.backgroundColor = [[NSColor clearColor] CGColor];
 
-#if defined(__DAVAENGINE_COREV2__)
     DAVA::PlatformApi::Mac::AddNSView(window, videoView);
-#else
-    NSView* openGLView = static_cast<NSView*>(DAVA::Core::Instance()->GetNativeView());
-    [openGLView addSubview:videoView];
-#endif
 
     AVPlayerLayer* newPlayerLayer = [AVPlayerLayer playerLayerWithPlayer:videoPlayer];
     [newPlayerLayer setAutoresizingMask:kCALayerWidthSizable | kCALayerHeightSizable];
@@ -333,22 +309,11 @@ enum MoviePlayerHelperPlaybackState
 
 namespace DAVA
 {
-#if defined(__DAVAENGINE_COREV2__)
 MovieViewControl::MovieViewControl(Window* w)
     : window(w)
-#else
-MovieViewControl::MovieViewControl()
-#endif
 {
-#if defined(__DAVAENGINE_COREV2__)
     moviePlayerHelper = [[MoviePlayerHelper alloc] init:window];
     window->visibilityChanged.Connect(this, &MovieViewControl::OnWindowVisibilityChanged);
-#else
-    moviePlayerHelper = [[MoviePlayerHelper alloc] init];
-
-    CoreMacOSPlatformBase* xcore = static_cast<CoreMacOSPlatformBase*>(Core::Instance());
-    xcore->signalAppMinimizedRestored.Connect(this, &MovieViewControl::OnAppMinimizedRestored);
-#endif
 
 #if defined(__DAVAENGINE_STEAM__)
     Steam::GameOverlayActivated.Connect(this, &MovieViewControl::OnSteamOverlayChanged);
@@ -361,12 +326,7 @@ MovieViewControl::~MovieViewControl()
     Steam::GameOverlayActivated.Disconnect(this);
 #endif
 
-#if defined(__DAVAENGINE_COREV2__)
     window->visibilityChanged.Disconnect(this);
-#else
-    CoreMacOSPlatformBase* xcore = static_cast<CoreMacOSPlatformBase*>(Core::Instance());
-    xcore->signalAppMinimizedRestored.Disconnect(this);
-#endif
 
     MoviePlayerHelper* helper = static_cast<MoviePlayerHelper*>(moviePlayerHelper);
     [helper release];
@@ -433,17 +393,10 @@ bool MovieViewControl::IsPlaying() const
     return [static_cast<MoviePlayerHelper*>(moviePlayerHelper) isPlaying];
 }
 
-#if defined(__DAVAENGINE_COREV2__)
 void MovieViewControl::OnWindowVisibilityChanged(Window* w, bool visible)
 {
     SetVisible(visible);
 }
-#else
-void MovieViewControl::OnAppMinimizedRestored(bool minimized)
-{
-    SetVisible(!minimized);
-}
-#endif
 
 } // namespace DAVA
 

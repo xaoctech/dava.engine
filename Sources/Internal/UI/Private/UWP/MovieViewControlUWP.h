@@ -10,9 +10,6 @@
 namespace DAVA
 {
 class Window;
-#if !defined(__DAVAENGINE_COREV2__)
-class CorePlatformWinUAP;
-#endif
 class MovieViewControl : public IMovieViewControl,
                          public std::enable_shared_from_this<MovieViewControl>
 {
@@ -47,11 +44,7 @@ class MovieViewControl : public IMovieViewControl,
     };
 
 public:
-#if defined(__DAVAENGINE_COREV2__)
     MovieViewControl(Window* w);
-#else
-    MovieViewControl();
-#endif
     ~MovieViewControl() override;
 
     void Initialize(const Rect& rect) override;
@@ -96,11 +89,7 @@ private: // MediaElement event handlers
     void OnWindowDestroyed(Window* w);
 
 private:
-#if defined(__DAVAENGINE_COREV2__)
     Window* window = nullptr;
-#else
-    CorePlatformWinUAP* core;
-#endif
     Windows::UI::Xaml::Controls::MediaElement ^ nativeControl = nullptr;
     bool playAfterLoaded = false; // Movie should play after loading as Play() can be invoked earlier than movie has been loaded
     bool movieLoaded = false; // Movie has been successfully loaded and decoded

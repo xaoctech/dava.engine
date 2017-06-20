@@ -40,11 +40,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIMovieView)
 
 UIMovieView::UIMovieView(const Rect& rect)
     : UIControl(rect)
-#if defined(__DAVAENGINE_COREV2__)
     , movieViewControl(std::make_shared<MovieViewControl>(Engine::Instance()->PrimaryWindow()))
-#else
-    , movieViewControl(std::make_shared<MovieViewControl>())
-#endif
 {
     movieViewControl->Initialize(rect);
     UpdateControlRect();

@@ -15,11 +15,7 @@ class UIWebView;
 class WebViewControl : public IWebViewControl
 {
 public:
-#if defined(__DAVAENGINE_COREV2__)
     WebViewControl(Window* w, UIWebView* uiWebView);
-#else
-    WebViewControl(UIWebView* uiWebView);
-#endif
     virtual ~WebViewControl();
 
     // Initialize the control.
@@ -54,12 +50,8 @@ public:
 private:
     void SetNativeVisible(bool visible);
 
-#if defined(__DAVAENGINE_COREV2__)
     void OnWindowVisibilityChanged(Window* w, bool visible);
     void OnWindowDestroyed(Window* w);
-#else
-    void OnAppMinimizedRestored(bool minimized);
-#endif
 
 #if defined(__DAVAENGINE_STEAM__)
     bool overlayVisible = false;
@@ -68,10 +60,8 @@ private:
 
 private:
     UIWebView& uiWebViewControl;
-    
-#if defined(__DAVAENGINE_COREV2__)
     Window* window = nullptr;
-#endif
+
     struct WebViewObjCBridge;
     WebViewObjCBridge* bridge = nullptr;
 

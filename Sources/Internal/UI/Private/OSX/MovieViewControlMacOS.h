@@ -14,11 +14,7 @@ class Window;
 class MovieViewControl : public IMovieViewControl
 {
 public:
-#if defined(__DAVAENGINE_COREV2__)
     MovieViewControl(Window* w);
-#else
-    MovieViewControl();
-#endif
     ~MovieViewControl() override;
 
     // Initialize the control.
@@ -43,11 +39,7 @@ public:
     bool IsPlaying() const override;
 
 private:
-#if defined(__DAVAENGINE_COREV2__)
     void OnWindowVisibilityChanged(Window* w, bool visible);
-#else
-    void OnAppMinimizedRestored(bool minimized);
-#endif
 
 #if defined(__DAVAENGINE_STEAM__)
     bool wasVisible = false;
@@ -55,9 +47,7 @@ private:
 #endif
 
 private:
-#if defined(__DAVAENGINE_COREV2__)
     Window* window = nullptr;
-#endif
 
     // Pointer to MacOS video player helper.
     void* moviePlayerHelper;

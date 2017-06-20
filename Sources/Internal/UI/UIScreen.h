@@ -1,14 +1,10 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
-#include "Utils/Utils.h"
-#include "UI/UIControl.h"
 #include "Reflection/Reflection.h"
-#if !defined(__DAVAENGINE_COREV2__)
-#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
-#else
+#include "UI/UIControl.h"
 #include "UI/UIControlSystem.h"
-#endif
+#include "Utils/Utils.h"
 
 namespace DAVA
 {
@@ -32,13 +28,8 @@ protected:
 public:
     UIScreen(const Rect& rect = Rect(0.0f,
                                      0.0f,
-#if !defined(__DAVAENGINE_COREV2__)
-                                     static_cast<float32>(VirtualCoordinatesSystem::Instance()->GetVirtualScreenSize().dx),
-                                     static_cast<float32>(VirtualCoordinatesSystem::Instance()->GetVirtualScreenSize().dy)
-#else
                                      static_cast<float32>(UIControlSystem::Instance()->vcs->GetVirtualScreenSize().dx),
                                      static_cast<float32>(UIControlSystem::Instance()->vcs->GetVirtualScreenSize().dy)
-#endif
                                      ));
 
     /* 

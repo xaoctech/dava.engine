@@ -13,11 +13,7 @@ class UITextField;
 class TextFieldPlatformImpl
 {
 public:
-#if defined(__DAVAENGINE_COREV2__)
     TextFieldPlatformImpl(Window* w, UITextField* uiTextField);
-#else
-    TextFieldPlatformImpl(UITextField* tf);
-#endif
     virtual ~TextFieldPlatformImpl();
 
     void Initialize()
@@ -80,12 +76,10 @@ private:
     void UpdateStaticTexture();
     void UpdateNativeRect(const Rect& virtualRect, int xOffset);
     
-#if defined(__DAVAENGINE_COREV2__)
     void OnWindowDestroyed(Window* destroyedWindow);
 
     Token windowDestroyedToken;
     Window* window = nullptr;
-#endif
     struct TextFieldObjcBridge;
     std::unique_ptr<TextFieldObjcBridge> bridge;
 

@@ -17,11 +17,7 @@ class UIWebView;
 class WebViewControl : public IWebViewControl
 {
 public:
-#if defined(__DAVAENGINE_COREV2__)
     WebViewControl(Window* w, UIWebView* uiWebView);
-#else
-    WebViewControl(UIWebView* uiWebView);
-#endif
     virtual ~WebViewControl();
 
     // Initialize the control.
@@ -68,24 +64,12 @@ public:
     }
 
     void WillDraw() override;
-
-#if !defined(__DAVAENGINE_COREV2__)
-    // common ios part to render any UIView* to UIImage*
-    // workaroundKeyboardBug - if call during show/hide keyboard - false
-    static void* RenderIOSUIViewToImage(void* uiviewPtr);
-    // common ios part to copy from ios ::UIImage* to DAVA::Sprite*
-    static void SetImageAsSpriteToControl(void* imagePtr, UIControl& control);
-#endif
-
     void RenderToTextureAndSetAsBackgroundSpriteToControl(UIWebView& control);
 
 private:
     struct WebViewObjcBridge;
     std::unique_ptr<WebViewObjcBridge> bridge;
-    
-#if defined(__DAVAENGINE_COREV2__)
     Window* window = nullptr;
-#endif
 
     Map<void*, bool> subviewVisibilityMap;
 
@@ -100,6 +84,6 @@ private:
 
     UIWebView& uiWebView;
 };
-};
+}
 
 #endif //defined(__DAVAENGINE_IPHONE__) && !defined(DISABLE_NATIVE_WEBVIEW)

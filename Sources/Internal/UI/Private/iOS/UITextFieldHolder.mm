@@ -1,22 +1,15 @@
 #include "UI/Private/iOS/UITextFieldHolder.h"
-#include "Logger/Logger.h"
 
 #if defined(__DAVAENGINE_IPHONE__)
 
+#include "Engine/Window.h"
 #include "Logger/Logger.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "UI/UIControlSystem.h"
 #include "UI/Private/iOS/TextFieldPlatformImpliOS.h"
-#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Utils/NSStringUtils.h"
 #include "Utils/StringUtils.h"
 #include "Utils/UTF8Utils.h"
-#include "Logger/Logger.h"
-
-#if defined(__DAVAENGINE_COREV2__)
-#include "Engine/Window.h"
-#else
-#import <Platform/TemplateiOS/HelperAppDelegate.h>
-#endif
 
 @implementation UITextFieldHolder
 
@@ -25,15 +18,7 @@
     if (self = [super init])
     {
         isKeyboardHidden = true;
-#if defined(__DAVAENGINE_COREV2__)
         window = nullptr;
-#else
-        DAVA::float32 divider = DAVA::Core::Instance()->GetScreenScaleFactor();
-        DAVA::Size2i physicalScreenSize = DAVA::UIControlSystem::Instance()->vcs->GetPhysicalScreenSize();
-
-        self.bounds = CGRectMake(0.0f, 0.0f, physicalScreenSize.dx / divider, physicalScreenSize.dy / divider);
-        self.center = CGPointMake(physicalScreenSize.dx / 2.f / divider, physicalScreenSize.dy / 2.f / divider);
-#endif
 
         self.userInteractionEnabled = TRUE;
         textInputAllowed = YES;
@@ -63,7 +48,6 @@
     return self;
 }
 
-#if defined(__DAVAENGINE_COREV2__)
 - (void)attachWindow:(DAVA::Window*)w
 {
     window = w;
@@ -73,7 +57,6 @@
     self.bounds = CGRectMake(0.0f, 0.0f, inputScreenSize.dx, inputScreenSize.dy);
     self.center = CGPointMake(inputScreenSize.dx / 2.f, inputScreenSize.dy / 2.f);
 }
-#endif
 
 - (void)setTextField:(DAVA::UITextField*)tf
 {

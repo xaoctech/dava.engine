@@ -14,11 +14,7 @@ class Window;
 class MovieViewControl : public IMovieViewControl
 {
 public:
-#if defined(__DAVAENGINE_COREV2__)
     MovieViewControl(Window* w);
-#else
-    MovieViewControl();
-#endif
     ~MovieViewControl() override;
 
     // Initialize the control.
@@ -45,10 +41,7 @@ public:
 private:
     struct MovieViewObjcBridge;
     std::unique_ptr<MovieViewObjcBridge> bridge;
-    
-#if defined(__DAVAENGINE_COREV2__)
     Window* window = nullptr;
-#endif
 };
 } // namespace DAVA
 

@@ -1,30 +1,19 @@
 #include "Base/BaseTypes.h"
-#include "Core/Core.h"
-#include "Logger/Logger.h"
 
 #if defined(__DAVAENGINE_IPHONE__)
 
 #import <UIKit/UIKit.h>
 
+#include "Engine/Engine.h"
+#include "Engine/Ios/PlatformApi.h"
 #include "Logger/Logger.h"
+#include "Render/Image/Image.h"
+#include "UI/UIControlSystem.h"
 #include "UI/UITextField.h"
 #include "UI/Private/iOS/TextFieldPlatformImpliOS.h"
 #include "UI/Private/iOS/UITextFieldHolder.h"
-#include "Core/Core.h"
-#include "UI/UIControlSystem.h"
-#include "Render/Image/Image.h"
-#include "UI/UIControlSystem.h"
 #include "Utils/NSStringUtils.h"
 #include "Utils/UTF8Utils.h"
-#include "Logger/Logger.h"
-
-#if defined(__DAVAENGINE_COREV2__)
-#include "Engine/Engine.h"
-#include "Engine/Ios/PlatformApi.h"
-#else
-#import "Platform/TemplateiOS/HelperAppDelegate.h"
-#include "UI/Private/iOS/WebViewControliOS.h"
-#endif
 
 namespace
 {
@@ -38,7 +27,6 @@ struct TextFieldPlatformImpl::TextFieldObjcBridge final
     UITextFieldHolder* textFieldHolder = nullptr;
 };
 
-#if defined(__DAVAENGINE_COREV2__)
 TextFieldPlatformImpl::TextFieldPlatformImpl(Window* w, UITextField* uiTextField)
     : window(w)
     , bridge(new TextFieldObjcBridge)
@@ -97,54 +85,6 @@ void TextFieldPlatformImpl::OnWindowDestroyed(Window* destroyedWindow)
         window = nullptr;
     }
 }
-
-#else // defined(__DAVAENGINE_COREV2__)
-TextFieldPlatformImpl::TextFieldPlatformImpl(DAVA::UITextField* tf)
-    : bridge(new TextFieldObjcBridge)
-    , davaTextField(*tf)
-{
-    DVASSERT(isSingleLine);
-    HelperAppDelegate* appDelegate = [[UIApplication sharedApplication] delegate];
-    BackgroundView* backgroundView = [appDelegate renderViewController].backgroundView;
-
-    bridge->textFieldHolder = [backgroundView CreateTextField];
-    UITextFieldHolder* textFieldHolder = bridge->textFieldHolder;
-    DVASSERT(textFieldHolder->textCtrl != nullptr);
-
-    [textFieldHolder setTextField:&davaTextField];
-    [textFieldHolder dropCachedText];
-
-    prevRect = tf->GetRect();
-    if (renderToTexture)
-    {
-        UpdateNativeRect(prevRect, MOVE_TO_OFFSCREEN_STEP);
-    }
-    else
-    {
-        UpdateNativeRect(prevRect, 0);
-    }
-}
-TextFieldPlatformImpl::~TextFieldPlatformImpl()
-{
-    UITextFieldHolder* textFieldHolder = bridge->textFieldHolder;
-    [textFieldHolder setTextField:(DAVA::UITextField*)nil];
-
-    HelperAppDelegate* appDelegate = [[UIApplication sharedApplication] delegate];
-    BackgroundView* backgroundView = [appDelegate renderViewController].backgroundView;
-    if (!isSingleLine)
-    {
-        textFieldHolder->textField.userInteractionEnabled = NO;
-        // destroy UITextView and restore textFild back
-        [textFieldHolder->textCtrl removeFromSuperview];
-
-        textFieldHolder->textCtrl = textFieldHolder->textField;
-        [backgroundView PrepareView:textFieldHolder->textCtrl];
-        [textFieldHolder addSubview:textFieldHolder->textCtrl];
-    }
-
-    [backgroundView ReleaseTextField:textFieldHolder];
-}
-#endif // !defined(__DAVAENGINE_COREV2__)
 
 void TextFieldPlatformImpl::SetTextColor(const DAVA::Color& color)
 {
@@ -670,7 +610,6 @@ void TextFieldPlatformImpl::UpdateStaticTexture()
 
     if (renderToTexture && deltaMoveControl != 0 && text.length > 0)
     {
-#if defined(__DAVAENGINE_COREV2__)
         UIImage* nativeImage = PlatformApi::Ios::RenderUIViewToUIImage(textView);
         if (nativeImage != nullptr)
         {
@@ -692,15 +631,6 @@ void TextFieldPlatformImpl::UpdateStaticTexture()
                 }
             }
         }
-#else
-        void* imgPtr = DAVA::WebViewControl::RenderIOSUIViewToImage(textView);
-        ::UIImage* image = static_cast<::UIImage*>(imgPtr);
-        if (nullptr != image) // can't render to empty rect so skip
-        {
-            // set backgroud image into davaTextField control
-            WebViewControl::SetImageAsSpriteToControl(image, davaTextField);
-        }
-#endif
         isNeedToUpdateTexture = false;
     }
     else
@@ -742,13 +672,6 @@ void TextFieldPlatformImpl::SetMultiline(bool multiline)
         //See http://stackoverflow.com/questions/746670/how-to-lose-margin-padding-in-uitextview
         textView.contentInset = UIEdgeInsetsMake(-10, -5, 0, 0);
 
-#if defined(__DAVAENGINE_COREV2__)
-
-#else
-        HelperAppDelegate* appDelegate = [[UIApplication sharedApplication] delegate];
-        BackgroundView* backgroundView = [[appDelegate renderViewController] backgroundView];
-        [backgroundView PrepareView:textFieldHolder->textCtrl];
-#endif
         [textFieldHolder addSubview:textView];
         textFieldHolder->textCtrl = textView;
 

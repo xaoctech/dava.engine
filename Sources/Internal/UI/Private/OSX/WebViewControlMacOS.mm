@@ -2,19 +2,12 @@
 
 #if defined __DAVAENGINE_MACOS__ && !defined DISABLE_NATIVE_WEBVIEW
 
-#if defined(__DAVAENGINE_COREV2__)
 #include "Engine/Engine.h"
-#else
-#include "Platform/TemplateMacOS/MainWindowController.h"
-#include "Platform/TemplateMacOS/CorePlatformMacOS.h"
-#endif
-
-#include "Render/Image/Image.h"
+#include "Platform/Steam.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
-
+#include "Render/Image/Image.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UIWebView.h"
-#include "Platform/Steam.h"
 
 #import <WebKit/WebKit.h>
 #import <AppKit/NSWorkspace.h>
@@ -277,16 +270,10 @@ struct WebViewControl::WebViewObjCBridge final
     NSBitmapImageRep* bitmapImageRep = nullptr;
 };
 
-#if defined(__DAVAENGINE_COREV2__)
 WebViewControl::WebViewControl(Window* w, UIWebView* uiWebView)
     : uiWebViewControl(*uiWebView)
     , window(w)
     , bridge(new WebViewObjCBridge)
-#else
-WebViewControl::WebViewControl(UIWebView* uiWebView)
-    : uiWebViewControl(*uiWebView)
-    , bridge(new WebViewObjCBridge)
-#endif
 {
     bridge->controlUIDelegate = [[WebViewControlUIDelegate alloc] init];
     bridge->policyDelegate = [[WebViewPolicyDelegate alloc] init];
@@ -302,17 +289,9 @@ WebViewControl::WebViewControl(UIWebView* uiWebView)
     [bridge->policyDelegate setWebViewControl:this];
     [bridge->policyDelegate setUiWebViewControl:&uiWebViewControl];
 
-#if defined(__DAVAENGINE_COREV2__)
     PlatformApi::Mac::AddNSView(window, bridge->webView);
     Engine::Instance()->windowDestroyed.Connect(this, &WebViewControl::OnWindowDestroyed);
     window->visibilityChanged.Connect(this, &WebViewControl::OnWindowVisibilityChanged);
-#else
-    NSView* openGLView = static_cast<NSView*>(Core::Instance()->GetNativeView());
-    [openGLView addSubview:bridge->webView];
-
-    CoreMacOSPlatformBase* xcore = static_cast<CoreMacOSPlatformBase*>(Core::Instance());
-    xcore->signalAppMinimizedRestored.Connect(this, &WebViewControl::OnAppMinimizedRestored);
-#endif
 
 #if defined(__DAVAENGINE_STEAM__)
     Steam::GameOverlayActivated.Connect(this, &WebViewControl::OnSteamOverlayChanged);
@@ -327,28 +306,19 @@ WebViewControl::~WebViewControl()
     Steam::GameOverlayActivated.Disconnect(this);
 #endif
 
-#if defined(__DAVAENGINE_COREV2__)
     if (nullptr != window)
     {
         window->visibilityChanged.Disconnect(this);
         Engine::Instance()->windowDestroyed.Disconnect(this);
     }
-#else
-    CoreMacOSPlatformBase* xcore = static_cast<CoreMacOSPlatformBase*>(Core::Instance());
-    xcore->signalAppMinimizedRestored.Disconnect(this);
-#endif
 
     [bridge->bitmapImageRep release];
     bridge->bitmapImageRep = nullptr;
 
-#if defined(__DAVAENGINE_COREV2__)
     if (nullptr != window)
     {
         PlatformApi::Mac::RemoveNSView(window, bridge->webView);
     }
-#else
-    [bridge->webView removeFromSuperview];
-#endif
 
     // It is very important to set WebView's delegates to nil before calling [WebView close] as
     //  - WebView can invoke didFinishLoadForFrame for unfinished request
@@ -499,9 +469,6 @@ void WebViewControl::SetRenderToTexture(bool value)
 void WebViewControl::RenderToTextureAndSetAsBackgroundSpriteToControl(UIWebView& uiWebViewControl)
 {
     bool recreateImageRep = true;
-#if !defined(__DAVAENGINE_COREV2__)
-    NSView* openGLView = static_cast<NSView*>(Core::Instance()->GetNativeView());
-#endif
     if (bridge->bitmapImageRep != nullptr)
     {
         NSSize imageRepSize = [bridge->bitmapImageRep size];
@@ -512,11 +479,7 @@ void WebViewControl::RenderToTextureAndSetAsBackgroundSpriteToControl(UIWebView&
     if (recreateImageRep)
     {
         [bridge->bitmapImageRep release];
-#if defined(__DAVAENGINE_COREV2__)
         bridge->bitmapImageRep = [[bridge->webView superview] bitmapImageRepForCachingDisplayInRect:[bridge->webView frame]];
-#else
-        bridge->bitmapImageRep = [openGLView bitmapImageRepForCachingDisplayInRect:[bridge->webView frame]];
-#endif
         if (bridge->bitmapImageRep != nullptr)
         {
             [bridge->bitmapImageRep retain];
@@ -609,7 +572,6 @@ void WebViewControl::SetNativeVisible(bool visible)
     [bridge->webView setHidden:!visible];
 }
 
-#if defined(__DAVAENGINE_COREV2__)
 void WebViewControl::OnWindowDestroyed(Window* w)
 {
     if (window == w)
@@ -628,18 +590,7 @@ void WebViewControl::OnWindowVisibilityChanged(Window* w, bool visible)
         SetNativeVisible(true);
     }
 }
-#else
-void WebViewControl::OnAppMinimizedRestored(bool minimized)
-{
-    if (!minimized && isVisible)
-    {
-        // Force WebView repaint after restoring application window
-        // Repaint is done by hiding and showing control as people in internet say
-        SetNativeVisible(false);
-        SetNativeVisible(true);
-    }
-}
-#endif
+
 } // namespace DAVA
 
 #endif //defined __DAVAENGINE_MACOS__ && !defined DISABLE_NATIVE_WEBVIEW

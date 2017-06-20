@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_WEBVIEWCONTROL_WINUAP_H__
-#define __DAVAENGINE_WEBVIEWCONTROL_WINUAP_H__
+#pragma once
 
 #include "Base/Platform.h"
 
@@ -52,11 +51,7 @@ class WebViewControl : public IWebViewControl,
     };
 
 public:
-#if defined(__DAVAENGINE_COREV2__)
     WebViewControl(Window* w, UIWebView* uiWebView);
-#else
-    WebViewControl(UIWebView* uiWebView);
-#endif
     ~WebViewControl() override;
 
     // Initialize the control.
@@ -120,11 +115,7 @@ private: // WebView event handlers
 
 private:
 // clang-format off
-#if defined(__DAVAENGINE_COREV2__)
     Window* window = nullptr;
-#else
-    CorePlatformWinUAP* core;
-#endif
     UIWebView* uiWebView = nullptr;
     IUIWebViewDelegate* webViewDelegate = nullptr;
     Windows::UI::Xaml::Controls::WebView^ nativeWebView = nullptr;
@@ -147,4 +138,3 @@ private:
 } // namespace DAVA
 
 #endif // __DAVAENGINE_WIN_UAP__ && !DISABLE_NATIVE_WEBVIEW
-#endif // __DAVAENGINE_WEBVIEWCONTROL_WINUAP_H__
