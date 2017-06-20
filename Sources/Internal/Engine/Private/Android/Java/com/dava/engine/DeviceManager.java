@@ -233,7 +233,11 @@ public final class DeviceManager
             }
             else
             {
-                Log.e(DavaActivity.LOG_TAG, "Could not retrieve CPU temperature from file: " + filepath + ": file format is wrong");
+                if (firstTimeCpuTempException)
+                {
+                    Log.e(DavaActivity.LOG_TAG, "Could not retrieve CPU temperature from file: " + filepath + ": file format is wrong");
+                    firstTimeCpuTempException = false;
+                }
             }
             scanner.close();
         }

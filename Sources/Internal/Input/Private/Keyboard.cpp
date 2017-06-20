@@ -18,6 +18,7 @@
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 #include "Input/InputSystem.h"
 #include "Time/SystemTimer.h"
+#include "Logger/Logger.h"
 
 namespace DAVA
 {
@@ -141,7 +142,7 @@ bool Keyboard::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e)
         eInputElements elementId = impl->ConvertNativeScancodeToDavaScancode(e.keyEvent.key);
         if (elementId == eInputElements::NONE)
         {
-            DVASSERT(false, "Couldn't map native scancode to dava scancode");
+            Logger::Info("Couldn't map native scancode (%u) to dava scancode", e.keyEvent.key);
             return false;
         }
 

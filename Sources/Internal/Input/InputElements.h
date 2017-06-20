@@ -138,6 +138,15 @@ enum eInputElements : uint32
     KB_NUMPAD_0,
     KB_LCMD,
     KB_RCMD,
+    KB_CAMERA_FOCUS,
+    KB_FUNCTION,
+    KB_MEDIA_PREVIOUS,
+    KB_MEDIA_NEXT,
+    KB_MEDIA_PLAY_PAUSE,
+    KB_MEDIA_EJECT,
+    KB_VOLUME_MUTE,
+    KB_VOLUME_UP,
+    KB_VOLUME_DOWN,
 
     // Mouse
 
@@ -209,7 +218,7 @@ enum eInputElements : uint32
     MOUSE_LAST_BUTTON = MOUSE_EXT2BUTTON,
 
     KB_FIRST = KB_1,
-    KB_LAST = KB_RCMD,
+    KB_LAST = KB_VOLUME_DOWN,
 
     GAMEPAD_FIRST = GAMEPAD_START,
     GAMEPAD_LAST = GAMEPAD_AXIS_RTHUMB,
@@ -321,12 +330,19 @@ inline bool IsKeyboardSystemInputElement(eInputElements element)
             element == eInputElements::KB_PAUSE ||
             element == eInputElements::KB_INSERT ||
             element == eInputElements::KB_HOME ||
-            element == eInputElements::KB_PAGEUP ||
-            element == eInputElements::KB_PAGEDOWN ||
             element == eInputElements::KB_DELETE ||
             element == eInputElements::KB_END ||
             element == eInputElements::KB_NUMLOCK ||
-            element == eInputElements::KB_MENU);
+            element == eInputElements::KB_MENU ||
+            element == eInputElements::KB_CAMERA_FOCUS ||
+            element == eInputElements::KB_FUNCTION ||
+            element == eInputElements::KB_MEDIA_PREVIOUS ||
+            element == eInputElements::KB_MEDIA_NEXT ||
+            element == eInputElements::KB_MEDIA_PLAY_PAUSE ||
+            element == eInputElements::KB_MEDIA_EJECT ||
+            element == eInputElements::KB_VOLUME_DOWN ||
+            element == eInputElements::KB_VOLUME_UP ||
+            element == eInputElements::KB_VOLUME_MUTE);
 }
 
 /** Return true if specified `element` is a touch element. */

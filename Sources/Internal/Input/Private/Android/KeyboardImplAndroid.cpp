@@ -37,8 +37,8 @@ const eInputElements nativeScancodeToDavaScancode[] =
   eInputElements::KB_LEFT, // 21
   eInputElements::KB_RIGHT, // 22
   eInputElements::NONE, // 23
-  eInputElements::NONE, // 24
-  eInputElements::NONE, // 25
+  eInputElements::KB_VOLUME_UP, // 24
+  eInputElements::KB_VOLUME_DOWN, // 25
   eInputElements::NONE, // 26
   eInputElements::NONE, // 27
   eInputElements::NONE, // 28
@@ -93,15 +93,15 @@ const eInputElements nativeScancodeToDavaScancode[] =
   eInputElements::NONE, // 77
   eInputElements::NONE, // 78
   eInputElements::NONE, // 79
-  eInputElements::NONE, // 80
+  eInputElements::KB_CAMERA_FOCUS, // 80
   eInputElements::NONE, // 81
   eInputElements::KB_MENU, // 82
   eInputElements::NONE, // 83
   eInputElements::NONE, // 84
-  eInputElements::NONE, // 85
+  eInputElements::KB_MEDIA_PLAY_PAUSE, // 85
   eInputElements::NONE, // 86
-  eInputElements::NONE, // 87
-  eInputElements::NONE, // 88
+  eInputElements::KB_MEDIA_NEXT, // 87
+  eInputElements::KB_MEDIA_PREVIOUS, // 88
   eInputElements::NONE, // 89
   eInputElements::NONE, // 90
   eInputElements::NONE, // 91
@@ -132,7 +132,7 @@ const eInputElements nativeScancodeToDavaScancode[] =
   eInputElements::KB_SCROLLLOCK, // 116
   eInputElements::KB_LCMD, // 117
   eInputElements::KB_RCMD, // 118
-  eInputElements::NONE, // 119
+  eInputElements::KB_FUNCTION, // 119
   eInputElements::KB_PRINTSCREEN, // 120
   eInputElements::KB_PAUSE, // 121
   eInputElements::KB_HOME, // 122
@@ -142,7 +142,7 @@ const eInputElements nativeScancodeToDavaScancode[] =
   eInputElements::NONE, // 126
   eInputElements::NONE, // 127
   eInputElements::NONE, // 128
-  eInputElements::NONE, // 129
+  eInputElements::KB_MEDIA_EJECT, // 129
   eInputElements::NONE, // 130
   eInputElements::KB_F1, // 131
   eInputElements::KB_F2, // 132
@@ -175,10 +175,10 @@ const eInputElements nativeScancodeToDavaScancode[] =
   eInputElements::NONE, // 159
   eInputElements::KB_NUMPAD_ENTER, // 160
   eInputElements::KB_EQUALS, // 161
+  eInputElements::NONE, // 162
+  eInputElements::NONE, // 163
+  eInputElements::KB_VOLUME_MUTE, // 164
   /* There are 283 keycodes in android, the ones below are unused right now
-    eInputElements::NONE, // 162
-    eInputElements::NONE, // 163
-    eInputElements::NONE, // 164
     eInputElements::NONE, // 165
     eInputElements::NONE, // 166
     eInputElements::NONE, // 167

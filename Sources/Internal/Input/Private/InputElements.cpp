@@ -122,6 +122,15 @@ const InputElementInfo& GetInputElementInfo(eInputElements element)
         infoKeyboard[eInputElements::KB_NUMPAD_0 - eInputElements::KB_FIRST] = { "10 (Numpad)", eInputElementTypes::DIGITAL };
         infoKeyboard[eInputElements::KB_LCMD - eInputElements::KB_FIRST] = { "LCmd", eInputElementTypes::DIGITAL };
         infoKeyboard[eInputElements::KB_RCMD - eInputElements::KB_FIRST] = { "RCmd", eInputElementTypes::DIGITAL };
+        infoKeyboard[eInputElements::KB_CAMERA_FOCUS - eInputElements::KB_FIRST] = { "Camera Focus", eInputElementTypes::DIGITAL };
+        infoKeyboard[eInputElements::KB_FUNCTION - eInputElements::KB_FIRST] = { "Fn", eInputElementTypes::DIGITAL };
+        infoKeyboard[eInputElements::KB_MEDIA_PREVIOUS - eInputElements::KB_FIRST] = { "Previous media", eInputElementTypes::DIGITAL };
+        infoKeyboard[eInputElements::KB_MEDIA_NEXT - eInputElements::KB_FIRST] = { "Next media", eInputElementTypes::DIGITAL };
+        infoKeyboard[eInputElements::KB_MEDIA_PLAY_PAUSE - eInputElements::KB_FIRST] = { "Play/pause media", eInputElementTypes::DIGITAL };
+        infoKeyboard[eInputElements::KB_MEDIA_EJECT - eInputElements::KB_FIRST] = { "Eject media", eInputElementTypes::DIGITAL };
+        infoKeyboard[eInputElements::KB_VOLUME_DOWN - eInputElements::KB_FIRST] = { "Volume down", eInputElementTypes::DIGITAL };
+        infoKeyboard[eInputElements::KB_VOLUME_UP - eInputElements::KB_FIRST] = { "Volume up", eInputElementTypes::DIGITAL };
+        infoKeyboard[eInputElements::KB_VOLUME_MUTE - eInputElements::KB_FIRST] = { "Volume mute", eInputElementTypes::DIGITAL };
 
         // Mouse
 

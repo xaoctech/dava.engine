@@ -642,6 +642,13 @@ void InputSystemTest::HighlightDigitalButton(DAVA::UIButton* button, DAVA::Digit
 
 bool InputSystemTest::OnInputEvent(InputEvent const& event)
 {
+    if (event.deviceType == eInputDeviceTypes::KEYBOARD && event.keyboardEvent.charCode > 0)
+    {
+        return false;
+    }
+
+    Logger::Info("Input event, element: %s", GetInputElementInfo(event.elementId).name.c_str());
+
     if (event.deviceType == eInputDeviceTypes::KEYBOARD)
     {
         UIButton* scancodeButton = keyboardButtons[event.elementId];
