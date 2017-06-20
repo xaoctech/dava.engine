@@ -1,5 +1,4 @@
-#ifndef __FRAMEWORK__DEVICEINFO_MACOS__
-#define __FRAMEWORK__DEVICEINFO_MACOS__
+#pragma once
 
 #include "Base/Platform.h"
 
@@ -33,16 +32,8 @@ public:
     bool IsHIDConnected(DeviceInfo::eHIDType type);
     bool IsTouchPresented();
     String GetCarrierName();
-
-#if !defined(__DAVAENGINE_COREV2__)
-    DeviceInfo::ScreenInfo screenInfo;
-    DeviceInfo::ScreenInfo& GetScreenInfo();
-    void InitializeScreenInfo();
-#endif
 };
 
 }; // namespace DAVA
 
 #endif //defined(__DAVAENGINE_MACOS__)
-
-#endif /* defined(__FRAMEWORK__DEVICEINFO_MACOS__) */

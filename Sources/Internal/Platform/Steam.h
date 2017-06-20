@@ -18,10 +18,6 @@ public:
     static void Deinit();
     static bool IsInited();
     
-#if !defined(__DAVAENGINE_COREV2__)
-    static void Update();
-#endif
-
     /** 
     Return language code from Steam (for example: "ru" for russian, "en" for english).
     Try to return set language for app. 

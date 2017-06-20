@@ -1,5 +1,4 @@
-#ifndef __FRAMEWORK__DEVICEINFO_IOS__
-#define __FRAMEWORK__DEVICEINFO_IOS__
+#pragma once
 
 #include "Base/Platform.h"
 
@@ -38,12 +37,6 @@ public:
     bool IsTouchPresented();
     String GetCarrierName();
 
-#if !defined(__DAVAENGINE_COREV2__)
-    DeviceInfo::ScreenInfo screenInfo;
-    DeviceInfo::ScreenInfo& GetScreenInfo();
-    void InitializeScreenInfo();
-#endif
-
 private:
     CTTelephonyNetworkInfo* telephonyNetworkInfo = nullptr;
     NSString* lastCarrierName = nullptr;
@@ -52,5 +45,3 @@ private:
 }; // namespace DAVA
 
 #endif //defined(__DAVAENGINE_IPHONE__)
-
-#endif /* defined(__FRAMEWORK__DEVICEINFO_IOS__) */

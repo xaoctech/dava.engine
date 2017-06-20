@@ -146,22 +146,6 @@ int32 DeviceInfoPrivate::GetHTTPProxyPort()
     return 0;
 }
 
-#if !defined(__DAVAENGINE_COREV2__)
-
-DeviceInfo::ScreenInfo& DeviceInfoPrivate::GetScreenInfo()
-{
-    return screenInfo;
-}
-
-void DeviceInfoPrivate::InitializeScreenInfo()
-{
-    screenInfo.width = [[NSScreen mainScreen] frame].size.width;
-    screenInfo.height = [[NSScreen mainScreen] frame].size.height;
-    screenInfo.scale = [[NSScreen mainScreen] backingScaleFactor];
-}
-
-#endif
-
 int32 DeviceInfoPrivate::GetZBufferSize()
 {
     return 24;

@@ -1,5 +1,4 @@
-#ifndef __FRAMEWORK__DEVICEINFO_WINUAP__
-#define __FRAMEWORK__DEVICEINFO_WINUAP__
+#pragma once
 
 #include "Base/Platform.h"
 
@@ -34,11 +33,6 @@ public:
     bool IsHIDConnected(DeviceInfo::eHIDType type);
     bool IsTouchPresented();
     String GetCarrierName();
-
-#if !defined(__DAVAENGINE_COREV2__)
-    DeviceInfo::ScreenInfo& GetScreenInfo();
-    void InitializeScreenInfo(const DeviceInfo::ScreenInfo& screenInfo_, bool fullInit);
-#endif
 
 private:
     enum NativeHIDType
@@ -77,9 +71,7 @@ private:
     void NotifyAllClients(NativeHIDType type, bool isConnected);
     eGPUFamily GPUFamily();
 
-#if defined(__DAVAENGINE_COREV2__)
     void CheckContinuumMode();
-#endif
 
     bool isTouchPresent = false;
     bool isMousePresent = false;
@@ -93,9 +85,6 @@ private:
     Vector<Windows::Devices::Enumeration::DeviceWatcher ^> watchers;
 
     DeviceInfo::ePlatform platform = DeviceInfo::PLATFORM_UNKNOWN_VALUE;
-#if !defined(__DAVAENGINE_COREV2__)
-    DeviceInfo::ScreenInfo screenInfo;
-#endif
     eGPUFamily gpu = GPU_INVALID;
     String platformString;
     String version;
@@ -113,8 +102,6 @@ private:
     Map<Platform::Guid, ::Windows::ApplicationModel::Calls::PhoneLine ^> phoneLines;
     Platform::String ^ carrierName = nullptr;
 };
-};
+}
 
 #endif //  (__DAVAENGINE_WIN_UAP__)
-
-#endif /* defined(__FRAMEWORK__DEVICEINFO_WINUAP__) */

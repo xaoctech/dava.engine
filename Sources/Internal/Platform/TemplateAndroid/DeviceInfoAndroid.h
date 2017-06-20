@@ -1,5 +1,4 @@
-#ifndef __FRAMEWORK__DEVICEINFOANDROID__
-#define __FRAMEWORK__DEVICEINFOANDROID__
+#pragma once
 
 #include "Base/Platform.h"
 
@@ -36,12 +35,6 @@ public:
     bool IsTouchPresented();
     String GetCarrierName();
 
-#if !defined(__DAVAENGINE_COREV2__)
-    DeviceInfo::ScreenInfo screenInfo;
-    DeviceInfo::ScreenInfo& GetScreenInfo();
-    void InitializeScreenInfo();
-#endif
-
 protected:
     DeviceInfo::StorageInfo StorageInfoFromJava(jobject object);
 
@@ -75,5 +68,3 @@ private:
 };
 
 #endif //defined(__DAVAENGINE_ANDROID__)
-
-#endif /* defined(__FRAMEWORK__DEVICEINFOANDROID__) */

@@ -39,7 +39,6 @@
 #include "Notification/LocalNotificationController.h"
 #include "DLCManager/Private/DLCManagerImpl.h"
 #include "Platform/DeviceInfo.h"
-#include "Platform/DPIHelper.h"
 #include "Platform/Steam.h"
 #include "PluginManager/PluginManager.h"
 #include "Render/2D/FontManager.h"

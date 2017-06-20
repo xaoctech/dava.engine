@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_OPENUDIDMACOS_H__
-#define __DAVAENGINE_OPENUDIDMACOS_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "Platform/OpenUDIDApple.h"
@@ -20,5 +19,3 @@
 
 
 #endif // #if defined(__DAVAENGINE_MACOS__)
-
-#endif //__DAVAENGINE_OPENUDIDMACOS_H__

@@ -23,7 +23,6 @@
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
 #include "Render/2D/TextBlock.h"
-#include "Platform/DPIHelper.h"
 #include "Platform/DeviceInfo.h"
 #include "Input/InputSystem.h"
 #include "UI/Update/UIUpdateSystem.h"

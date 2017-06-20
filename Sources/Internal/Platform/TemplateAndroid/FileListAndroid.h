@@ -1,7 +1,7 @@
-#ifndef __DAVAENGINE_FILELISTANDROID_H__
-#define __DAVAENGINE_FILELISTANDROID_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
+
 #if defined(__DAVAENGINE_ANDROID__)
 
 #include "Engine/Android/JNIBridge.h"
@@ -24,8 +24,6 @@ private:
     JNI::JavaClass jniFileList;
     Function<jobjectArray(jstring)> getFileList;
 };
-};
+}
 
 #endif //#if defined(__DAVAENGINE_ANDROID__)
-
-#endif /* defined(__DAVAENGINE_FILELISTANDROID_H__) */

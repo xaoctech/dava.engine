@@ -41,11 +41,7 @@ DeviceInfoPrivate::DeviceInfoPrivate()
     using ::Windows::System::UserProfile::AdvertisingManager;
     using ::Windows::Security::ExchangeActiveSyncProvisioning::EasClientDeviceInformation;
 
-#if defined(__DAVAENGINE_COREV2__)
     isMobileMode = Private::PlatformCore::IsPhoneContractPresent();
-#else
-    isMobileMode = ApiInformation::IsApiContractPresent("Windows.Phone.PhoneContract", 1);
-#endif
     platform = isMobileMode ? DeviceInfo::PLATFORM_PHONE_WIN_UAP : DeviceInfo::PLATFORM_DESKTOP_WIN_UAP;
     TouchCapabilities touchCapabilities;
     isTouchPresent = (1 == touchCapabilities.TouchPresent); //  Touch is always present in MSVS simulator
@@ -112,7 +108,6 @@ DeviceInfoPrivate::DeviceInfoPrivate()
         InitCarrierLinesAsync();
     }
 
-#if defined(__DAVAENGINE_COREV2__)
     if (isMobileMode)
     {
         // DeviceInfoPrivate constructor must be called in UI thread and DeviceInfo is explicitly instantiated in PlatformCore::OnLaunchedOrActivated
@@ -129,10 +124,8 @@ DeviceInfoPrivate::DeviceInfoPrivate()
         });
     }
     CreateAndStartHIDWatcher();
-#endif
 }
 
-#if defined(__DAVAENGINE_COREV2__)
 void DeviceInfoPrivate::CheckContinuumMode()
 {
     using namespace ::Windows::UI::ViewManagement;
@@ -144,7 +137,6 @@ void DeviceInfoPrivate::CheckContinuumMode()
         NotifyAllClients(TOUCH, !isContinuumMode);
     }
 }
-#endif
 
 DeviceInfo::ePlatform DeviceInfoPrivate::GetPlatform()
 {
@@ -205,13 +197,6 @@ int DeviceInfoPrivate::GetHTTPProxyPort()
 {
     return 0;
 }
-
-#if !defined(__DAVAENGINE_COREV2__)
-DeviceInfo::ScreenInfo& DeviceInfoPrivate::GetScreenInfo()
-{
-    return screenInfo;
-}
-#endif
 
 int DeviceInfoPrivate::GetZBufferSize()
 {
@@ -275,60 +260,6 @@ DeviceInfo::NetworkInfo DeviceInfoPrivate::GetNetworkInfo()
 
     return networkInfo;
 }
-
-#if !defined(__DAVAENGINE_COREV2__)
-// temporary decision
-void DeviceInfoPrivate::InitializeScreenInfo(const DeviceInfo::ScreenInfo& screenInfo_, bool fullInit)
-{
-    using ::Windows::UI::ViewManagement::UIViewSettings;
-    using ::Windows::UI::ViewManagement::UserInteractionMode;
-
-    __DAVAENGINE_WIN_UAP_INCOMPLETE_IMPLEMENTATION__MARKER__
-
-    if (screenInfo_.width > 0 && screenInfo_.height > 0)
-    {
-        screenInfo = screenInfo_;
-    }
-
-    // First time InitializeScreenInfo is called before dava thread and dispatcher are created
-    // so use this flag to leave function
-    if (!fullInit)
-    {
-        return;
-    }
-
-    CorePlatformWinUAP* core = static_cast<CorePlatformWinUAP*>(Core::Instance());
-    DVASSERT(nullptr != core && "DeviceInfo::InitializeScreenInfo(): Core::Instance() is null");
-
-    auto func = [this]() {
-        // should be started on UI thread
-        //  in Continuum mode, we don't have touch
-        if (isMobileMode)
-        {
-            bool last = isContinuumMode;
-            if (UserInteractionMode::Mouse == UIViewSettings::GetForCurrentView()->UserInteractionMode)
-            {
-                isContinuumMode = true;
-            }
-            else
-            {
-                isContinuumMode = false;
-            }
-            if (last != isContinuumMode)
-            {
-                NotifyAllClients(TOUCH, !isContinuumMode);
-            }
-        }
-    };
-    core->RunOnUIThread(func);
-    // start device watchers, after creation main thread dispatcher
-    if (!watchersCreated)
-    {
-        CreateAndStartHIDWatcher();
-        watchersCreated = true;
-    }
-}
-#endif // !__DAVAENGINE_COREV2__
 
 bool FillStorageSpaceInfo(DeviceInfo::StorageInfo& storage_info)
 {
@@ -420,12 +351,7 @@ void DeviceInfoPrivate::NotifyAllClients(NativeHIDType type, bool isConnected)
     DeviceInfo::eHIDType hidType = std::find_if(HidConvSet.begin(), HidConvSet.end(), func)->second;
 
     DeviceInfo::HIDConnectionSignal* signal = &GetHIDConnectionSignal(hidType);
-#if defined(__DAVAENGINE_COREV2__)
     RunOnMainThreadAsync([=] { signal->Emit(hidType, isConnected); });
-#else
-    CorePlatformWinUAP* core = static_cast<CorePlatformWinUAP*>(Core::Instance());
-    core->RunOnMainThread([=] { signal->Emit(hidType, isConnected); });
-#endif // !__DAVAENGINE_COREV2__
 }
 
 eGPUFamily DeviceInfoPrivate::GPUFamily()
@@ -494,12 +420,7 @@ void DeviceInfoPrivate::OnCarrierLineChange(::Windows::ApplicationModel::Calls::
     Platform::Guid guid = WaitAsync(phoneCallStore->GetDefaultLineAsync());
     if (guid == line->Id)
     {
-#if defined(__DAVAENGINE_COREV2__)
         RunOnMainThreadAsync([=] {
-#else
-        CorePlatformWinUAP* core = static_cast<CorePlatformWinUAP*>(Core::Instance());
-        core->RunOnMainThread([=] {
-#endif
             // must run on main thread
             if ((nullptr != line->NetworkName) && (line->NetworkName != carrierName))
             {

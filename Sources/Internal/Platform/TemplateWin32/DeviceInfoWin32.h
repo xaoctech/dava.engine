@@ -33,12 +33,7 @@ public:
     bool IsTouchPresented();
     String GetCarrierName();
 
-#if !defined(__DAVAENGINE_COREV2__)
-    DeviceInfo::ScreenInfo screenInfo;
-    DeviceInfo::ScreenInfo& GetScreenInfo();
-    void InitializeScreenInfo();
-#endif
 };
-};
+}
 
 #endif //  defined(__DAVAENGINE_WIN32__)
