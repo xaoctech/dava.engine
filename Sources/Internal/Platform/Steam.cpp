@@ -4,7 +4,6 @@
 
 #include "Engine/Engine.h"
 #include "Logger/Logger.h"
-#include "Core/Core.h"
 #include "FileSystem/KeyedArchive.h"
 #include "FileSystem/LocalizationSystem.h"
 
