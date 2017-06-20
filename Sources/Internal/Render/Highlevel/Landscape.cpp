@@ -103,12 +103,7 @@ Landscape::Landscape()
         }
     }
 
-#ifdef __DAVAENGINE_COREV2__
-    EngineSettings* settings = Engine::Instance()->GetContext()->settings;
-#else
-    EngineSettings* settings = EngineSettings::Instance();
-#endif
-
+    EngineSettings* settings = GetEngineContext()->settings;
     EngineSettings::eSettingValue landscapeSetting = settings->GetSetting<EngineSettings::SETTING_LANDSCAPE_RENDERMODE>().Get<EngineSettings::eSettingValue>();
     if (landscapeSetting == EngineSettings::LANDSCAPE_NO_INSTANCING)
         renderMode = RENDERMODE_NO_INSTANCING;
