@@ -7,6 +7,9 @@ FILE(GLOB SOURCE_FILES src/*.c)
 
 if(NOT WIN32)
   list(REMOVE_ITEM SOURCE_FILES "${CMAKE_SOURCE_DIR}/src/env_win32.c")
+else()
+  list(REMOVE_ITEM SOURCE_FILES "${CMAKE_SOURCE_DIR}/src/env_posix.c")
+  list(REMOVE_ITEM SOURCE_FILES "${CMAKE_SOURCE_DIR}/src/env_standard.c")
 endif()
 
 add_library(mongodb STATIC ${SOURCE_FILES})

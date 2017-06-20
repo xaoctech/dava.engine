@@ -51,6 +51,39 @@ def _patch_sources(source_folder_path, working_directory_path):
         working_directory_path)
 
 
+def _build_win32(working_directory_path, root_project_path):
+    source_folder_path = _download_and_extract(working_directory_path)
+    _patch_sources(source_folder_path, working_directory_path)
+
+    build_utils.build_and_copy_libraries_win32_cmake(
+        os.path.join(working_directory_path, 'gen'),
+        source_folder_path,
+        root_project_path,
+        'mongodb.sln', 'mongodb',
+        'mongodb.lib', 'mongodb.lib',
+        'libmongodb_wind.lib', 'libmongodb_win.lib',
+        'libmongodb_wind.lib', 'libmongodb_win.lib')
+
+    _copy_headers(os.path.join(source_folder_path, 'src'), root_project_path)
+
+
+def _build_win10(working_directory_path, root_project_path):
+    source_folder_path = _download_and_extract(working_directory_path)
+    _patch_sources(source_folder_path, working_directory_path)
+
+    build_utils.build_and_copy_libraries_win10_cmake(
+        os.path.join(working_directory_path, 'gen'),
+        source_folder_path,
+        root_project_path,
+        'mongodb.sln', 'mongodb',
+        'mongodb.lib', 'mongodb.lib',
+        'libmongodb_wind.lib', 'libmongodb_win.lib',
+        'libmongodb_wind.lib', 'libmongodb_win.lib',
+        'libmongodb_wind.lib', 'libmongodb_win.lib')
+
+    _copy_headers(os.path.join(source_folder_path, 'src'), root_project_path)
+
+
 def _build_macos(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
     _patch_sources(source_folder_path, working_directory_path)
