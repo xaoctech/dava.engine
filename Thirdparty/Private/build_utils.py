@@ -130,8 +130,8 @@ def copy_files(from_dir, to_dir, wildcard):
 def clean_copy_includes(from_dir, to_dir):
     print "Copying includes from %s to %s" % (from_dir, to_dir)
     if os.path.exists(to_dir) and os.path.isdir(to_dir):
-        shutil.rmtree(to_dir)
-    shutil.copytree(from_dir, to_dir)
+        clear_files(to_dir, '*.h')
+    copy_files(from_dir, to_dir, '*.h')
 
 
 def clear_files(dir, wildcard):
