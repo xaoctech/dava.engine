@@ -514,23 +514,18 @@ void UIControlBackground::Draw(const UIGeometricData& parentGeometricData)
         RenderSystem2D::Instance()->DrawTiledMultylayer(mask.Get(), detail.Get(), gradient.Get(), contour.Get(), &drawState, Vector2(leftStretchCap, topStretchCap), geometricData, &tiledMultulayerData, drawColor);
         break;
     case DRAW_BATCH:
+    {
+        Matrix3 matrix2d;
+        geometricData.BuildTransformMatrix(matrix2d);
+        Matrix4 worldMatrix = Convert2DTransformTo3DTransform(matrix2d);
+        for (BatchDescriptor& b : batchDescriptors)
         {
-            Matrix3 matrix2d;
-            geometricData.BuildTransformMatrix(matrix2d);
-            Matrix4 worldMatrix(
-            matrix2d._00, matrix2d._01, 0.f, 0.f,
-            matrix2d._10, matrix2d._11, 0.f, 0.f,
-            0.f, 0.f, 1.f, 0.f,
-            matrix2d._20, matrix2d._21, 0.f, 1.f
-            );
-            for (BatchDescriptor& b : batchDescriptors)
-            {
-                b.worldMatrix = &worldMatrix;
-                RenderSystem2D::Instance()->PushBatch(b);
-            }
-            batchDescriptors.clear();
+            b.worldMatrix = &worldMatrix;
+            RenderSystem2D::Instance()->PushBatch(b);
         }
+        batchDescriptors.clear();
         break;
+    }
     default:
         break;
     }
