@@ -1,6 +1,6 @@
 #include "TArc/WindowSubSystem/Private/OverlayWidget.h"
 #include "TArc/WindowSubSystem/Private/QtEvents.h"
-#include "TArc/WindowSubSystem//QtTArcEvents.h"
+#include "TArc/WindowSubSystem/QtTArcEvents.h"
 
 #include <QHBoxLayout>
 #include <QKeyEvent>
