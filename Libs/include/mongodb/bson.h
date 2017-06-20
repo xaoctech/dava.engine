@@ -23,6 +23,7 @@
 
 // PATCHED
 #define MONGO_HAVE_STDINT
+#define MONGO_STATIC_BUILD
 
 #include <time.h>
 #include <stdlib.h>
