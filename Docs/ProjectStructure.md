@@ -1,15 +1,19 @@
 # Project Structure
 
-An overview how the DAVAEngine project is structured.
-
-## Basic naming requirements
-- All top-level folders are named with a capital letter.
-- We support a several platforms. If the directory or file is related to a particular platform, then this relation must be expressed in the file or directory naming in the following form: `[Prefix]<Platform>`, where `Prefix` is any user-defined world (can be empty) and `Platform` is one of the following:
+## Basic files/folders naming requirements
+- Files and folders are named using CamelCase. Some exceptions may apply (see below).
+- File or folder related to a particular platform must be named using the following convention: FileName<Platform>. For example: `DeviceInfoWin32.cpp`. `Platform` can be on of the following:
   - Android
   - Mac
   - Ios
   - Win32
   - Win10
+  - Linux
+
+  - Posix
+  - Windows
+  - Apple
+
 - We support several processor architectures. If the directory is related to a particular architecture, then this relation must be expressed in directory naming in the following form: `[Prefix]<architecture>`, where `Prefix` is any user-defined world (can be empty) and `architecture` is one of the following:
   - x86
   - x64
