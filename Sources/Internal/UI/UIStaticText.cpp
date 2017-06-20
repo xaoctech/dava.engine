@@ -389,6 +389,11 @@ void UIStaticText::SetForceBiDiSupportEnabled(bool value)
     }
 }
 
+void UIStaticText::SetMeasureEnable(bool value)
+{
+    textBlock->SetMeasureEnable(value);
+}
+
 void UIStaticText::PrepareSprite()
 {
     if (textBlock->IsSpriteReady())
