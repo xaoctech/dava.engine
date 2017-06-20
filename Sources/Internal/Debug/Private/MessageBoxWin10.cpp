@@ -1,6 +1,5 @@
 #include "Base/Platform.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_WIN_UAP__)
 
 #include "Base/BaseTypes.h"
@@ -201,4 +200,3 @@ int MessageBox(const String& title, const String& message, const Vector<String>&
 } // namespace DAVA
 
 #endif // defined(__DAVAENGINE_WIN_UAP__)
-#endif // defined(__DAVAENGINE_COREV2__)
