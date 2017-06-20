@@ -1,12 +1,15 @@
 #pragma once
 
-#include "Base/BaseTypes.h"
-#include "Math/Vector.h"
-#include "UI/UIControl.h"
-#include "Preferences/PreferencesRegistrator.h"
-#include "Input/InputElements.h"
 #include "EditorSystems/BaseEditorSystem.h"
 #include "EditorSystems/EditorSystemsManager.h"
+#include "EditorSystems/SelectionContainer.h"
+
+#include <Preferences/PreferencesRegistrator.h>
+#include <UI/UIControl.h>
+#include <Input/KeyboardDevice.h>
+#include <Base/BaseTypes.h>
+#include <Math/Vector.h>
+#include <Input/InputElements.h>
 
 namespace DAVA
 {
