@@ -1,16 +1,12 @@
 #include "Notification/Private/Android/LocalNotificationListenerAndroid.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_ANDROID__)
 
+#include "Engine/Engine.h"
+#include "Engine/Android/JNIBridge.h"
+#include "Logger/Logger.h"
 #include "Notification/LocalNotificationController.h"
 #include "Notification/Private/Android/LocalNotificationAndroid.h"
-
-#include "Engine/Android/JNIBridge.h"
-#include "Engine/Engine.h"
-#include "Notification/LocalNotificationController.h"
-
-#include "Logger/Logger.h"
 
 extern "C"
 {
@@ -61,4 +57,3 @@ LocalNotificationListener::~LocalNotificationListener()
 } // namespace DAVA
 
 #endif // defined(__DAVAENGINE_ANDROID__)
-#endif // defined(__DAVAENGINE_COREV2__)

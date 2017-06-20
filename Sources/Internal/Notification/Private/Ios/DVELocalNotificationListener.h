@@ -2,7 +2,6 @@
 
 #include "Base/BaseTypes.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_IPHONE__)
 
 #include "Engine/Ios/PlatformApi.h"
@@ -27,4 +26,3 @@ class LocalNotificationController;
 @end
 
 #endif // defined(__DAVAENGINE_MACOS__)
-#endif // defined(__DAVAENGINE_COREV2__)
