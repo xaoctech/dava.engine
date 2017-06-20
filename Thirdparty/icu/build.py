@@ -134,6 +134,11 @@ def _build_android(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(
         working_directory_path, 'others')
 
+    # ARM
+
+    toolchain_path_arm = os.path.join(working_directory_path, 'gen/ndk_toolchain_arm')
+    build_utils.android_ndk_make_toolchain(root_project_path, 'arm', toolchain_path_arm)
+
     install_dir_android_arm = os.path.join(
         working_directory_path, 'gen/install_android_arm')
     build_utils.build_with_autotools(
@@ -145,7 +150,12 @@ def _build_android(working_directory_path, root_project_path):
          '--enable-static'],
         install_dir_android_arm,
         env=build_utils.get_autotools_android_arm_env(
-            root_project_path, enable_stl=True))
+            toolchain_path_arm, enable_stl=True))
+
+    # x86
+
+    toolchain_path_x86 = os.path.join(working_directory_path, 'gen/ndk_toolchain_x86')
+    build_utils.android_ndk_make_toolchain(root_project_path, 'x86', toolchain_path_x86)
 
     install_dir_android_x86 = os.path.join(
         working_directory_path, 'gen/install_android_x86')
@@ -158,6 +168,6 @@ def _build_android(working_directory_path, root_project_path):
          '--enable-static'],
         install_dir_android_x86,
         env=build_utils.get_autotools_android_x86_env(
-            root_project_path, enable_stl=True))
+            toolchain_path_x86, enable_stl=True))
 
 # TODO: Add copying headers & libraries when switching to new directories structure
