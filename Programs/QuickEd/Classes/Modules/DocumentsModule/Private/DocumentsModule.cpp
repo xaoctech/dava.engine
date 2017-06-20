@@ -6,7 +6,7 @@
 
 #include "QECommands/ChangePropertyValueCommand.h"
 
-#include "UI/QtModelPackageCommandExecutor.h"
+#include "UI/CommandExecutor.h"
 #include "Model/ControlProperties/RootProperty.h"
 #include "Model/PackageHierarchy/ControlNode.h"
 #include "Model/PackageHierarchy/PackageControlsNode.h"
@@ -21,7 +21,6 @@
 #include "UI/Preview/PreviewWidget.h"
 #include "UI/Package/PackageWidget.h"
 #include "UI/Package/PackageModel.h"
-#include "UI/Properties/PropertiesWidgetData.h"
 
 #include "Model/PackageHierarchy/PackageNode.h"
 #include "Model/QuickEdPackageBuilder.h"
@@ -511,7 +510,6 @@ DAVA::TArc::DataContext::ContextID DocumentsModule::OpenDocument(const QString& 
         {
             DAVA::Vector<std::unique_ptr<DAVA::TArc::DataNode>> initialData;
             initialData.emplace_back(new DocumentData(package));
-            initialData.emplace_back(new PropertiesWidgetData());
             initialData.emplace_back(new EditorCanvasData());
             id = contextManager->CreateContext(std::move(initialData));
         }
@@ -902,7 +900,7 @@ bool DocumentsModule::SaveDocument(const DAVA::TArc::DataContext::ContextID& con
     QString path = data->GetPackageAbsolutePath();
     watcherData->Unwatch(path);
     YamlPackageSerializer serializer;
-    serializer.SerializePackage(data->package.Get());
+    serializer.SerializePackage(data->GetPackageNode());
     if (serializer.HasErrors())
     {
         ModalMessageParams params;

@@ -5,10 +5,12 @@
 #include "EditorSystems/EditorCanvas.h"
 #include "EditorSystems/CursorSystem.h"
 
-#include "Ruler/RulerWidget.h"
-#include "Ruler/RulerController.h"
+#include "UI/Preview/Ruler/RulerWidget.h"
+#include "UI/Preview/Ruler/RulerController.h"
+#include "UI/Preview/Guides/GuidesController.h"
+
 #include "UI/Package/PackageMimeData.h"
-#include "UI/QtModelPackageCommandExecutor.h"
+#include "UI/CommandExecutor.h"
 #include "Model/PackageHierarchy/PackageNode.h"
 #include "Model/PackageHierarchy/PackageControlsNode.h"
 #include "Model/PackageHierarchy/PackageBaseNode.h"
@@ -52,9 +54,11 @@ QString ScaleStringFromReal(float scale)
 }
 
 PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::RenderWidget* renderWidget, EditorSystemsManager* systemsManager)
-    : QFrame()
+    : QFrame(nullptr)
     , accessor(accessor_)
     , rulerController(new RulerController(this))
+    , vGuidesController(new VGuidesController(accessor, this))
+    , hGuidesController(new HGuidesController(accessor, this))
 {
     qRegisterMetaType<SelectedNodes>("SelectedNodes");
 
@@ -219,8 +223,16 @@ void PreviewWidget::SetActualScale()
 
 void PreviewWidget::ApplyPosChanges()
 {
-    QPoint viewPos = canvasPos + rootControlPos;
-    rulerController->SetViewPos(-viewPos);
+    using namespace DAVA;
+
+    float32 scale = editorCanvas->GetScale();
+    QPoint viewPos = (canvasPos + rootControlPos * scale) * -1;
+    rulerController->SetViewPos(viewPos);
+
+    QPoint viewStartValue(std::floor(viewPos.x() / scale), std::floor(viewPos.y()) / scale);
+
+    hGuidesController->OnCanvasParametersChanged(viewPos.x(), viewStartValue.x(), viewStartValue.x() + renderWidget->width() / scale, scale);
+    vGuidesController->OnCanvasParametersChanged(viewPos.y(), viewStartValue.y(), viewStartValue.y() + renderWidget->height() / scale, scale);
 }
 
 void PreviewWidget::UpdateScrollArea(const DAVA::Vector2& /*size*/)
@@ -372,14 +384,15 @@ void PreviewWidget::InitUI()
     tabBar->setUsesScrollButtons(true);
     gridLayout->addWidget(tabBar, 0, 0, 1, 4);
 
-    horizontalRuler = new RulerWidget(this);
+    horizontalRuler = new RulerWidget(hGuidesController, this);
     horizontalRuler->SetRulerOrientation(Qt::Horizontal);
+    connect(horizontalRuler, &RulerWidget::GeometryChanged, this, &PreviewWidget::OnRulersGeometryChanged);
+    gridLayout->addWidget(horizontalRuler, 2, 1, 1, 2);
 
-    gridLayout->addWidget(horizontalRuler, 1, 1, 1, 2);
-
-    verticalRuler = new RulerWidget(this);
+    verticalRuler = new RulerWidget(vGuidesController, this);
     verticalRuler->SetRulerOrientation(Qt::Vertical);
-    gridLayout->addWidget(verticalRuler, 2, 0, 1, 1);
+    connect(verticalRuler, &RulerWidget::GeometryChanged, this, &PreviewWidget::OnRulersGeometryChanged);
+    gridLayout->addWidget(verticalRuler, 3, 0, 1, 1);
 
     QSizePolicy expandingPolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     renderWidget->setSizePolicy(expandingPolicy);
@@ -402,6 +415,10 @@ void PreviewWidget::InitUI()
     gridLayout->addWidget(horizontalScrollBar, 3, 2, 1, 1);
 
     gridLayout->setMargin(0.0f);
+    gridLayout->setSpacing(1.0f);
+
+    hGuidesController->CreatePreviewGuide();
+    vGuidesController->CreatePreviewGuide();
 }
 
 void PreviewWidget::ShowMenu(const QMouseEvent* mouseEvent)
@@ -488,28 +505,31 @@ void PreviewWidget::OnMouseReleased(QMouseEvent* event)
 {
     if (event->button() == Qt::RightButton)
     {
+        DVASSERT(nodeToChangeTextOnMouseRelease == nullptr);
         ShowMenu(event);
     }
-    if (nodeToChangeTextOnMouseRelease != nullptr)
+
+    if (nodeToChangeTextOnMouseRelease)
     {
-        requestChangeTextInNode.Emit(nodeToChangeTextOnMouseRelease);
+        QPoint point = event->pos();
+        Vector2 davaPoint(point.x(), point.y());
+        ControlNode* node = systemsManager->GetControlNodeAtPoint(davaPoint);
+        if (node == nodeToChangeTextOnMouseRelease && CanChangeTextInControl(node))
+        {
+            requestChangeTextInNode.Emit(node);
+        }
         nodeToChangeTextOnMouseRelease = nullptr;
     }
 }
 
 void PreviewWidget::OnMouseDBClick(QMouseEvent* event)
 {
-    QPoint point = event->pos();
-
-    Vector2 davaPoint(point.x(), point.y());
-    ControlNode* node = systemsManager->GetControlNodeAtPoint(davaPoint);
-    if (!CanChangeTextInControl(node))
+    if (event->button() == Qt::LeftButton)
     {
-        return;
+        QPoint point = event->pos();
+        Vector2 davaPoint(point.x(), point.y());
+        nodeToChangeTextOnMouseRelease = systemsManager->GetControlNodeAtPoint(davaPoint);
     }
-
-    // call "change text" after release event will pass
-    nodeToChangeTextOnMouseRelease = node;
 }
 
 void PreviewWidget::OnMouseMove(QMouseEvent* event)
@@ -662,4 +682,26 @@ void PreviewWidget::OnKeyPressed(QKeyEvent* event)
             }
         }
     }
+}
+
+void PreviewWidget::OnRulersGeometryChanged()
+{
+    QPoint topRight = horizontalRuler->geometry().topRight();
+    QPoint bottomLeft = verticalRuler->geometry().bottomLeft();
+
+    hGuidesController->OnContainerGeometryChanged(bottomLeft, topRight, horizontalRuler->pos().x());
+    vGuidesController->OnContainerGeometryChanged(bottomLeft, topRight, verticalRuler->pos().y());
+}
+
+bool PreviewWidget::event(QEvent* event)
+{
+    //we have bug when horizontalRuler->geometry() returns uncorrect value on ruler resizeEvent
+    QEvent::Type type = event->type();
+    bool returnValue = QFrame::event(event);
+
+    if (type == QEvent::Resize)
+    {
+        OnRulersGeometryChanged();
+    }
+    return returnValue;
 }

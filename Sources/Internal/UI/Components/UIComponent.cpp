@@ -16,7 +16,10 @@
 #include "UI/Layouts/UILayoutSourceRectComponent.h"
 #include "UI/Layouts/UILinearLayoutComponent.h"
 #include "UI/Layouts/UISizePolicyComponent.h"
+#include "UI/Render/UIClipContentComponent.h"
+#include "UI/Render/UIDebugRenderComponent.h"
 #include "UI/Render/UISceneComponent.h"
+#include "UI/RichContent/UIRichContentAliasesComponent.h"
 #include "UI/RichContent/UIRichContentComponent.h"
 #include "UI/RichContent/UIRichContentObjectComponent.h"
 #include "UI/Scroll/UIScrollBarDelegateComponent.h"
@@ -128,11 +131,20 @@ UIComponent* UIComponent::CreateByType(uint32 componentType)
     case RICH_CONTENT_COMPONENT:
         return new UIRichContentComponent();
 
+    case RICH_CONTENT_ALIASES_COMPONENT:
+        return new UIRichContentAliasesComponent();
+
     case RICH_CONTENT_OBJECT_COMPONENT:
         return new UIRichContentObjectComponent();
 
     case SCENE_COMPONENT:
         return new UISceneComponent();
+
+    case DEBUG_RENDER_COMPONENT:
+        return new UIDebugRenderComponent();
+
+    case CLIP_CONTENT_COMPONENT:
+        return new UIClipContentComponent();
 
     default:
         DVASSERT(false, Format("Can't create component with type %d", componentType).c_str());
@@ -147,6 +159,12 @@ RefPtr<UIComponent> UIComponent::SafeCreateByType(uint32 componentType)
 
 bool UIComponent::IsMultiple(uint32 componentType)
 {
+    switch (componentType)
+    {
+    case RICH_CONTENT_ALIASES_COMPONENT:
+        return true;
+    }
+
     return false;
 }
 

@@ -47,7 +47,11 @@ public:
     QString GetUndoText() const;
     QString GetRedoText() const;
 
+    PackageNode::Guides GetGuides() const;
+
     bool IsDocumentExists() const;
+
+    PackageBaseNode* GetCurrentNode() const;
 
     DAVA_DEPRECATED(void RefreshLayout());
     DAVA_DEPRECATED(void RefreshAllControlProperties());
@@ -58,8 +62,10 @@ public:
     static DAVA::FastName canRedoPropertyName;
     static DAVA::FastName undoTextPropertyName;
     static DAVA::FastName redoTextPropertyName;
+    static DAVA::FastName currentNodePropertyName;
     static DAVA::FastName selectionPropertyName;
     static DAVA::FastName displayedRootControlsPropertyName;
+    static DAVA::FastName guidesPropertyName;
 
 private:
     friend class DocumentsModule;
@@ -67,9 +73,17 @@ private:
     void SetSelectedNodes(const SelectedNodes& selection);
     void SetDisplayedRootControls(const SortedControlNodeSet& controls);
 
+    void RefreshDisplayedRootControls();
+    void RefreshCurrentNode(const SelectedNodes& selection);
+
     DAVA::RefPtr<PackageNode> package;
     std::unique_ptr<DAVA::CommandStack> commandStack;
     SelectionContainer selection;
+
+    PackageBaseNode* currentNode = nullptr;
+    //we store this variable for cases when we select multiple controls from bottom to top and than deselect them one by one
+    DAVA::List<PackageBaseNode*> currentNodesHistory;
+
     SortedControlNodeSet displayedRootControls;
 
     bool documentExists = true;
@@ -90,3 +104,7 @@ void DocumentData::ExecCommand(Arguments&&... args)
     std::unique_ptr<DAVA::Command> command = CreateCommand<T>(std::forward<Arguments>(args)...);
     ExecCommand(std::move(command));
 }
+
+template <>
+bool DAVA::AnyCompare<PackageNode::Guides>::IsEqual(const DAVA::Any&, const DAVA::Any&);
+extern template struct DAVA::AnyCompare<PackageNode::Guides>;
