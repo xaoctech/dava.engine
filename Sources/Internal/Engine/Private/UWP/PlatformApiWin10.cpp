@@ -1,6 +1,5 @@
 #include "Base/Platform.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_WIN_UAP__)
 
 #include "Engine/Private/EngineBackend.h"
@@ -68,4 +67,3 @@ void UnregisterXamlApplicationListener(XamlApplicationListener* listener)
 } // namespace DAVA
 
 #endif // defined(__DAVAENGINE_WIN_UAP__)
-#endif // defined(__DAVAENGINE_COREV2__)

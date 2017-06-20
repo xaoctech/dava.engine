@@ -1,5 +1,3 @@
-#if defined(__DAVAENGINE_COREV2__)
-
 #include "Engine/Private/OsX/Window/RenderViewOsX.h"
 
 #if defined(__DAVAENGINE_QT__)
@@ -190,4 +188,3 @@
 @end
 
 #endif // __DAVAENGINE_MACOS__
-#endif // __DAVAENGINE_COREV2__

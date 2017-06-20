@@ -1,7 +1,5 @@
 #include "Base/BaseTypes.h"
 
-#if defined(__DAVAENGINE_COREV2__)
-
 #include "Base/Exception.h"
 #include "Base/Platform.h"
 #include "Debug/Backtrace.h"
@@ -152,5 +150,3 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
 #endif
 
 // clang-format on
-
-#endif // __DAVAENGINE_COREV2__

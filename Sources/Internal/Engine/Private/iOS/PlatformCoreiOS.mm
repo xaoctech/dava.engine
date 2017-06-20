@@ -1,6 +1,5 @@
 #include "Engine/Private/iOS/PlatformCoreiOS.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_IPHONE__)
 
 #include "Engine/Window.h"
@@ -60,4 +59,3 @@ int32 PlatformCore::OnFrame()
 } // namespace DAVA
 
 #endif // __DAVAENGINE_IPHONE__
-#endif // __DAVAENGINE_COREV2__

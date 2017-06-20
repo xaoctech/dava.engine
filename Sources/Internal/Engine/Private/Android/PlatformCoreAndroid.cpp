@@ -1,5 +1,3 @@
-#if defined(__DAVAENGINE_COREV2__)
-
 #include "Engine/Private/Android/PlatformCoreAndroid.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
@@ -194,4 +192,3 @@ void PlatformCore::OnGamepadRemoved(int32 deviceId)
 } // namespace DAVA
 
 #endif // __DAVAENGINE_ANDROID__
-#endif // __DAVAENGINE_COREV2__

@@ -1,14 +1,12 @@
 #pragma once
 
-#if defined(__DAVAENGINE_COREV2__)
-
 #include "Base/BaseTypes.h"
 
 #if defined(__DAVAENGINE_QT__)
 
-#include "Functional/Signal.h"
-#include "Engine/Private/EnginePrivateFwd.h"
 #include "Engine/EngineTypes.h"
+#include "Engine/Private/EnginePrivateFwd.h"
+#include "Functional/Signal.h"
 
 #include <QWidget>
 
@@ -50,4 +48,3 @@ private:
 } // namespace DAVA
 
 #endif // __DAVAENGINE_QT__
-#endif // __DAVAENGINE_COREV2__

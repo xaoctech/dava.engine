@@ -1,4 +1,3 @@
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_QT__)
 
 #include "Engine/Private/EngineBackend.h"
@@ -42,4 +41,3 @@ RenderWidget* GetRenderWidget()
 } // namespace DAVA
 
 #endif // defined(__DAVAENGINE_QT__)
-#endif // defined(__DAVAENGINE_COREV2__)

@@ -7,7 +7,6 @@
     Suite of functions to access some platform specific facilities.
 */
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_QT__)
 
 class QApplication;
@@ -126,4 +125,3 @@ jobject CreateNativeControl(Window* targetWindow, const char8* controlClassName,
 } // namespace DAVA
 
 #endif
-#endif // defined(__DAVAENGINE_COREV2__)

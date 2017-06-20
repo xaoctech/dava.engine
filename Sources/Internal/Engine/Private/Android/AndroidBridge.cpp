@@ -1,5 +1,3 @@
-#if defined(__DAVAENGINE_COREV2__)
-
 #include "Engine/Private/Android/AndroidBridge.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
@@ -449,4 +447,3 @@ const String& AndroidBridge::GetPackageName()
 } // namespace DAVA
 
 #endif // __DAVAENGINE_ANDROID__
-#endif // __DAVAENGINE_COREV2__

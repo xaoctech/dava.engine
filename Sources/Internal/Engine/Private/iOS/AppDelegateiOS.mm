@@ -1,6 +1,5 @@
 #include "Engine/Private/iOS/AppDelegateiOS.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_IPHONE__)
 
 #include "Engine/Private/iOS/CoreNativeBridgeiOS.h"
@@ -113,4 +112,3 @@ extern CoreNativeBridge* coreNativeBridge;
 @end
 
 #endif // __DAVAENGINE_IPHONE__
-#endif // __DAVAENGINE_COREV2__

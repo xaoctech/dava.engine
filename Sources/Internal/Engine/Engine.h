@@ -2,14 +2,11 @@
 
 #include "Base/BaseTypes.h"
 
-#if defined(__DAVAENGINE_COREV2__)
-
-#include "Functional/Functional.h"
-
 #include "Engine/EngineTypes.h"
 #include "Engine/EngineContext.h"
 #include "Engine/PlatformApi.h"
 #include "Engine/Window.h"
+#include "Functional/Functional.h"
 
 /**
     \defgroup engine Engine
@@ -358,5 +355,3 @@ private:
 };
 
 } // namespace DAVA
-
-#endif // __DAVAENGINE_COREV2__

@@ -1,7 +1,6 @@
 #include "Engine/Android/JNIBridge.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
-#if defined(__DAVAENGINE_COREV2__)
 
 #include "Engine/Private/Android/AndroidBridge.h"
 
@@ -150,5 +149,4 @@ jstring WideStringToJavaString(const WideString& string, JNIEnv* env)
 } // namespace JNI
 } // namespace DAVA
 
-#endif // __DAVAENGINE_COREV2__
 #endif // __DAVAENGINE_ANDROID__

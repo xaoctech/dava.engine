@@ -1,18 +1,15 @@
 #pragma once
 
-#if defined(__DAVAENGINE_COREV2__)
-
 #include "Base/BaseTypes.h"
 
 #if defined(__DAVAENGINE_QT__)
 // TODO: plarform defines
 #elif defined(__DAVAENGINE_MACOS__)
 
-#include "Functional/Function.h"
-
+#include "Engine/EngineTypes.h"
 #include "Engine/Private/EnginePrivateFwd.h"
 #include "Engine/Private/Dispatcher/UIDispatcher.h"
-#include "Engine/EngineTypes.h"
+#include "Functional/Function.h"
 
 namespace rhi
 {
@@ -79,4 +76,3 @@ inline void WindowBackend::InitCustomRenderParams(rhi::InitParam& /*params*/)
 } // namespace DAVA
 
 #endif // __DAVAENGINE_MACOS__
-#endif // __DAVAENGINE_COREV2__

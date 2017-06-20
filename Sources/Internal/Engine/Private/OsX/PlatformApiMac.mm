@@ -1,12 +1,11 @@
 #include "Base/Platform.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_QT__)
 #elif defined(__DAVAENGINE_MACOS__)
 
 #include "Engine/Private/EngineBackend.h"
-#include "Engine/Private/OsX/PlatformCoreOsX.h"
 #include "Engine/Private/OsX/CoreNativeBridgeOsX.h"
+#include "Engine/Private/OsX/PlatformCoreOsX.h"
 #include "Engine/Private/OsX/Window/WindowBackendOsX.h"
 #include "Engine/Private/OsX/Window/WindowNativeBridgeOsX.h"
 
@@ -57,4 +56,3 @@ void UnregisterDVEApplicationListener(id<DVEApplicationListener> listener)
 } // namespace DAVA
 
 #endif // defined(__DAVAENGINE_MACOS__)
-#endif // defined(__DAVAENGINE_COREV2__)

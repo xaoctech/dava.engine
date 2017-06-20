@@ -1,7 +1,5 @@
 #include "Engine/Private/EngineBackend.h"
 
-#if defined(__DAVAENGINE_COREV2__)
-
 #include "Engine/Engine.h"
 #include "Engine/EngineContext.h"
 #include "Engine/Window.h"
@@ -1105,5 +1103,3 @@ void EngineBackend::DrawSingleFrameWhileSuspended()
 
 } // namespace Private
 } // namespace DAVA
-
-#endif // __DAVAENGINE_COREV2__

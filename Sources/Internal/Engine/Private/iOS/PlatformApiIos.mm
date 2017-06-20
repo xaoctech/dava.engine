@@ -1,6 +1,5 @@
 #include "Base/Platform.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_IPHONE__)
 
 #include "Engine/Private/EngineBackend.h"
@@ -123,4 +122,3 @@ void UnregisterDVEApplicationListener(id<DVEApplicationListener> listener)
 } // namespace DAVA
 
 #endif // defined(__DAVAENGINE_IPHONE__)
-#endif // defined(__DAVAENGINE_COREV2__)

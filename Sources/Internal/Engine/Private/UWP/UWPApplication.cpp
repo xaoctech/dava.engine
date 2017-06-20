@@ -1,6 +1,5 @@
 #include "Engine/Private/UWP/UWPApplication.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_WIN_UAP__)
 
 #include "Engine/Private/EngineBackend.h"
@@ -140,4 +139,3 @@ void UWPApplication::InstallEventHandlers()
 // clang-format on
 
 #endif // __DAVAENGINE_WIN_UAP__
-#endif // __DAVAENGINE_COREV2__

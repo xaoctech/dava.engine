@@ -1,6 +1,5 @@
 #include "Engine/Private/Win32/PlatformCoreWin32.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_QT__)
 // TODO: plarform defines
 #elif defined(__DAVAENGINE_WIN32__)
@@ -178,4 +177,3 @@ void PlatformCore::EnableHighResolutionTimer(bool enable)
 } // namespace DAVA
 
 #endif // __DAVAENGINE_WIN32__
-#endif // __DAVAENGINE_COREV2__

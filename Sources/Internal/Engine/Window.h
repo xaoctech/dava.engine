@@ -1,20 +1,16 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
-
-#if defined(__DAVAENGINE_COREV2__)
-
-#include <bitset>
-
+#include "Engine/EngineTypes.h"
+#include "Engine/PlatformApi.h"
+#include "Engine/Private/EnginePrivateFwd.h"
+#include "Engine/Private/EngineBackend.h"
 #include "Functional/Signal.h"
 #include "Math/Math2D.h"
 #include "Math/Rect.h"
 #include "Math/Vector.h"
 
-#include "Engine/EngineTypes.h"
-#include "Engine/PlatformApi.h"
-#include "Engine/Private/EnginePrivateFwd.h"
-#include "Engine/Private/EngineBackend.h"
+#include <bitset>
 
 namespace rhi
 {
@@ -414,5 +410,3 @@ inline eFullscreen Window::GetFullscreen() const
 }
 
 } // namespace DAVA
-
-#endif // __DAVAENGINE_COREV2__

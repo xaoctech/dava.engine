@@ -1,5 +1,3 @@
-#if defined(__DAVAENGINE_COREV2__)
-
 #include "Engine/Private/iOS/Window/WindowBackendiOS.h"
 
 #if defined(__DAVAENGINE_IPHONE__)
@@ -8,7 +6,6 @@
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
 #include "Engine/Private/iOS/PlatformCoreiOS.h"
 #include "Engine/Private/iOS/Window/WindowNativeBridgeiOS.h"
-
 #include "Time/SystemTimer.h"
 
 namespace DAVA
@@ -149,4 +146,3 @@ void WindowBackend::UIEventHandler(const UIDispatcherEvent& e)
 } // namespace DAVA
 
 #endif // __DAVAENGINE_IPHONE__
-#endif // __DAVAENGINE_COREV2__

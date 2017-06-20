@@ -2,16 +2,14 @@
 
 #include "Base/BaseTypes.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_QT__)
 // TODO: plarform defines
 #elif defined(__DAVAENGINE_MACOS__)
 
 #import <IOKit/pwr_mgt/IOPMLib.h>
 
-#include "Functional/Signal.h"
-
 #include "Engine/Private/EnginePrivateFwd.h"
+#include "Functional/Signal.h"
 
 namespace DAVA
 {
@@ -49,4 +47,3 @@ private:
 } // namespace DAVA
 
 #endif // __DAVAENGINE_MACOS__
-#endif // __DAVAENGINE_COREV2__

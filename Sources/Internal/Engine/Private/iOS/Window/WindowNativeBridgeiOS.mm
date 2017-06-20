@@ -1,25 +1,21 @@
-#if defined(__DAVAENGINE_COREV2__)
-
 #include "Engine/Private/iOS/Window/WindowNativeBridgeiOS.h"
 
 #if defined(__DAVAENGINE_IPHONE__)
 
+#include "DeviceManager/Private/Ios/DeviceManagerImplIos.h"
 #include "Engine/Window.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
+#include "Engine/Private/iOS/Window/NativeViewPooliOS.h"
+#include "Engine/Private/iOS/Window/RenderViewiOS.h"
+#include "Engine/Private/iOS/Window/RenderViewControlleriOS.h"
+#include "Engine/Private/iOS/Window/VisibleFrameObserver.h"
 #include "Engine/Private/iOS/Window/WindowBackendiOS.h"
-
-#include "Time/SystemTimer.h"
 #include "Logger/Logger.h"
-
 #include "Render/RHI/rhi_Public.h"
+#include "Time/SystemTimer.h"
 
 #import <sys/utsname.h>
 #import <UIKit/UIKit.h>
-#import "Engine/Private/iOS/Window/RenderViewiOS.h"
-#import "Engine/Private/iOS/Window/RenderViewControlleriOS.h"
-#import "Engine/Private/iOS/Window/NativeViewPooliOS.h"
-#import "Engine/Private/iOS/Window/VisibleFrameObserver.h"
-#import "DeviceManager/Private/Ios/DeviceManagerImplIos.h"
 
 // Objective-C class used for interoperation between Objective-C and C++.
 @interface ObjectiveCInteropWindow : NSObject
@@ -244,4 +240,3 @@ UIImage* RenderUIViewToImage(UIView* view)
 } // namespace DAVA
 
 #endif // __DAVAENGINE_IPHONE__
-#endif // __DAVAENGINE_COREV2__

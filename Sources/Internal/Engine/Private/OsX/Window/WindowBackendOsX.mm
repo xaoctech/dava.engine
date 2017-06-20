@@ -1,5 +1,3 @@
-#if defined(__DAVAENGINE_COREV2__)
-
 #include "Engine/Private/OsX/Window/WindowBackendOsX.h"
 
 #if defined(__DAVAENGINE_QT__)
@@ -160,4 +158,3 @@ void WindowBackend::WindowWillClose()
 } // namespace DAVA
 
 #endif // __DAVAENGINE_MACOS__
-#endif // __DAVAENGINE_COREV2__

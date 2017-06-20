@@ -1,7 +1,5 @@
 #pragma once
 
-#if defined(__DAVAENGINE_COREV2__)
-
 #include "Base/BaseTypes.h"
 
 #if defined(__DAVAENGINE_QT__)
@@ -24,4 +22,3 @@
 @end
 
 #endif // __DAVAENGINE_MACOS__
-#endif // __DAVAENGINE_COREV2__

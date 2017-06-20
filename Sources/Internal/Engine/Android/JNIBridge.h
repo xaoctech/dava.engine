@@ -3,9 +3,6 @@
 #include "Base/BaseTypes.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
-#if !defined(__DAVAENGINE_COREV2__)
-#include "Platform/TemplateAndroid/JniHelpers.h"
-#else
 
 #include <jni.h>
 #include <stdexcept>
@@ -570,5 +567,4 @@ StaticField<R> JavaClass::GetStaticField(const char8* name) const
 } // namespace JNI
 } // namespace DAVA
 
-#endif // __DAVAENGINE_COREV2__
 #endif // __DAVAENGINE_ANDROID__

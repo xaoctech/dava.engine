@@ -2,7 +2,6 @@
 
 #include "Base/BaseTypes.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_WIN_UAP__)
 
 #include "Concurrency/Mutex.h"
@@ -87,4 +86,3 @@ inline ::Windows::UI::Core::CoreDispatcher ^ PlatformCore::GetCoreDispatcher()
 } // namespace DAVA
 
 #endif // __DAVAENGINE_WIN_UAP__
-#endif // __DAVAENGINE_COREV2__

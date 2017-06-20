@@ -1,7 +1,5 @@
 #include "Engine/Window.h"
 
-#if defined(__DAVAENGINE_COREV2__)
-
 #include "Engine/EngineContext.h"
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
@@ -690,5 +688,3 @@ void Window::SetSurfaceScaleAsync(float32 scale)
 }
 
 } // namespace DAVA
-
-#endif // __DAVAENGINE_COREV2__

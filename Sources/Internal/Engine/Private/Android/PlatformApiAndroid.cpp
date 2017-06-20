@@ -1,4 +1,3 @@
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_ANDROID__)
 
 #include "Engine/Private/EngineBackend.h"
@@ -22,4 +21,3 @@ jobject CreateNativeControl(Window* targetWindow, const char8* controlClassName,
 } // namespace DAVA
 
 #endif // defined(__DAVAENGINE_ANDROID__)
-#endif // defined(__DAVAENGINE_COREV2__)

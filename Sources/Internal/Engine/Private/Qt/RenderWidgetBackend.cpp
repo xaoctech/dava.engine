@@ -1,6 +1,5 @@
 #include "Engine/Private/Qt/RenderWidgetBackend.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_QT__)
 
 #include "Engine/PlatformApi.h"
@@ -288,4 +287,3 @@ _Pragma("clang diagnostic pop")
 
 } // namespace DAVA
 #endif // __DAVAENGINE_QT__
-#endif // __DAVAENGINE_COREV2__

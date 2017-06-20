@@ -2,8 +2,6 @@
 
 #include "Base/BaseTypes.h"
 
-#if defined(__DAVAENGINE_COREV2__)
-
 #include "Concurrency/Mutex.h"
 #include "Concurrency/LockGuard.h"
 #include "Concurrency/Semaphore.h"
@@ -224,5 +222,3 @@ void Dispatcher<T>::ViewEventQueue(const Function<void(const T&)>& viewer)
 }
 
 } // namespace DAVA
-
-#endif // __DAVAENGINE_COREV2__

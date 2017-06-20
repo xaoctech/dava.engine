@@ -1,7 +1,5 @@
 #pragma once
 
-#if defined(__DAVAENGINE_COREV2__)
-
 #if defined(__DAVAENGINE_QT__)
 #include "Engine/Private/Qt/WindowBackendQt.h"
 #elif defined(__DAVAENGINE_WIN32__)
@@ -17,10 +15,5 @@
 #elif defined(__DAVAENGINE_LINUX__)
 #include "Engine/Private/Linux/Window/WindowBackendLinux.h"
 #else
-#if defined(__DAVAENGINE_COREV2__)
-// Do not emit error when building with old core implementation
 #error "WindowBackend is not implemented"
 #endif
-#endif
-
-#endif // __DAVAENGINE_COREV2__

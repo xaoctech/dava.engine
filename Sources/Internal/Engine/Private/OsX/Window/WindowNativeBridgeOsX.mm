@@ -1,5 +1,3 @@
-#if defined(__DAVAENGINE_COREV2__)
-
 #include "Engine/Private/OsX/Window/WindowNativeBridgeOsX.h"
 
 #if defined(__DAVAENGINE_QT__)
@@ -589,4 +587,3 @@ void WindowNativeBridge::SetSurfaceScale(const float32 scale)
 } // namespace DAVA
 
 #endif // __DAVAENGINE_MACOS__
-#endif // __DAVAENGINE_COREV2__

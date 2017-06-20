@@ -1,7 +1,6 @@
 #pragma once
 
 #if defined(__DAVAENGINE_ANDROID__)
-#if defined(__DAVAENGINE_COREV2__)
 
 namespace DAVA
 {
@@ -327,5 +326,4 @@ struct TypedMethod<jdouble>
 } // namespace JNI
 } // namespace DAVA
 
-#endif // __DAVAENGINE_COREV2__
 #endif // __DAVAENGINE_ANDROID__

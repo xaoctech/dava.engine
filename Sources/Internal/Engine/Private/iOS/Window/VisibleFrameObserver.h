@@ -1,6 +1,5 @@
 #pragma once
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_IPHONE__)
 
 #import <Foundation/NSObject.h>
@@ -26,4 +25,3 @@ class WindowNativeBridge;
 @end
 
 #endif // __DAVAENGINE_IPHONE__
-#endif // __DAVAENGINE_COREV2__

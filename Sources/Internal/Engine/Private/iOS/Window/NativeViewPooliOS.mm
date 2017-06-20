@@ -1,5 +1,3 @@
-#if defined(__DAVAENGINE_COREV2__)
-
 #include "Engine/Private/iOS/Window/NativeViewPooliOS.h"
 
 #if defined(__DAVAENGINE_IPHONE__)
@@ -69,4 +67,3 @@
 @end
 
 #endif // __DAVAENGINE_IPHONE__
-#endif // __DAVAENGINE_COREV2__

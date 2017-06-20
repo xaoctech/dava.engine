@@ -1,7 +1,4 @@
-#if defined(__DAVAENGINE_COREV2__)
-
 #include "Engine/Private/Qt/WindowBackendQt.h"
-#include "Input/InputSystem.h"
 
 #if defined(__DAVAENGINE_QT__)
 
@@ -15,7 +12,6 @@
 #include "Render/RHI/rhi_Public.h"
 
 #include "Logger/Logger.h"
-#include "Input/InputSystem.h"
 #include "UI/UIEvent.h"
 #include "Debug/DVAssert.h"
 
@@ -673,4 +669,3 @@ uint32 WindowBackend::ConvertQtKeyToSystemScanCode(int key)
 } // namespace DAVA
 
 #endif // __DAVAENGINE_QT__
-#endif // __DAVAENGINE_COREV2__
