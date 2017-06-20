@@ -3,7 +3,6 @@
 
 #if defined(__DAVAENGINE_WIN32__)
 
-#include "Input/MouseDevice.h"
 #include "Math/Math2D.h"
 
 #if !defined(__DAVAENGINE_COREV2__)

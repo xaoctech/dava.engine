@@ -6,7 +6,6 @@
 #include "Debug/DVAssert.h"
 #include "Engine/Engine.h"
 #include "Input/InputSystem.h"
-#include "Input/MouseDevice.h"
 #include "Logger/Logger.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "Render/2D/Systems/RenderSystem2D.h"

@@ -29,7 +29,6 @@
 #include "UI/Update/UIUpdateSystem.h"
 #include "Debug/ProfilerOverlay.h"
 #include "Engine/Engine.h"
-#include "Input/MouseDevice.h"
 #include "UI/RichContent/UIRichContentSystem.h"
 
 namespace DAVA
