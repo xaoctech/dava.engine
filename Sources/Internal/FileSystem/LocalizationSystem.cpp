@@ -1,22 +1,19 @@
 #include "FileSystem/LocalizationSystem.h"
-#include "Utils/Utils.h"
-#include "Utils/StringFormat.h"
-#include "Logger/Logger.h"
-#include "yaml/yaml.h"
-#include "Utils/UTF8Utils.h"
+
 #include "Debug/DVAssert.h"
+#include "Engine/Engine.h"
 #include "FileSystem/FileSystem.h"
 #include "FileSystem/KeyedArchive.h"
-#include "FileSystem/YamlNode.h"
 #include "FileSystem/YamlEmitter.h"
-#include "Sound/SoundSystem.h"
+#include "FileSystem/YamlNode.h"
+#include "Logger/Logger.h"
 #include "Platform/DeviceInfo.h"
+#include "Sound/SoundSystem.h"
+#include "Utils/StringFormat.h"
+#include "Utils/UTF8Utils.h"
+#include "Utils/Utils.h"
 
-#if defined(__DAVAENGINE_COREV2__)
-#include "Engine/Engine.h"
-#else
-#include "Core/Core.h"
-#endif
+#include "yaml/yaml.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
 #include "Engine/Android/JNIBridge.h"
@@ -43,11 +40,7 @@ const char* LocalizationSystem::DEFAULT_LOCALE = "en";
 
 const KeyedArchive* GetOptions()
 {
-#if defined(__DAVAENGINE_COREV2__)
     return Engine::Instance()->GetOptions();
-#else
-    return Core::Instance()->GetOptions();
-#endif
 }
 
 LocalizationSystem::LocalizationSystem()
