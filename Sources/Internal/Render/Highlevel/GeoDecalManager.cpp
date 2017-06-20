@@ -153,12 +153,12 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, co
     view._data[2][1] = up.z;
     view._data[2][2] = -dir.z;
 
+    Matrix4 worldToObject = decalWorldTransform * ro->GetInverseWorldTransform();
     Vector3 boxMin = Vector3(+std::numeric_limits<float>::max(), +std::numeric_limits<float>::max(), +std::numeric_limits<float>::max());
     Vector3 boxMax = Vector3(-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
     for (uint32 i = 0; i < 8; ++i)
     {
-        Vector3 worldPos = boxCorners[i] * decalWorldTransform;
-        Vector3 objectPos = worldPos * ro->GetInverseWorldTransform();
+        Vector3 objectPos = boxCorners[i] * worldToObject;
         Vector3 t = MultiplyVectorMat3x3(objectPos, view);
         boxMin.x = std::min(boxMin.x, t.x);
         boxMin.y = std::min(boxMin.y, t.y);
@@ -327,10 +327,10 @@ void GeoDecalManager::AddVerticesToGeometry(const DecalBuildInfo& info, DecalVer
 
 void GeoDecalManager::GetStaticMeshGeometry(const DecalBuildInfo& info, Vector<uint8>& buffer)
 {
-    char decalVertexData[MAX_CLIPPED_POLYGON_CAPACITY * sizeof(DecalVertex)] = {};
+    uint8 decalVertexData[MAX_CLIPPED_POLYGON_CAPACITY * sizeof(DecalVertex)] = {};
     DecalVertex* points = reinterpret_cast<DecalVertex*>(decalVertexData);
 
-    char decalVertexData_tmp[MAX_CLIPPED_POLYGON_CAPACITY * sizeof(DecalVertex)] = {};
+    uint8 decalVertexData_tmp[MAX_CLIPPED_POLYGON_CAPACITY * sizeof(DecalVertex)] = {};
     DecalVertex* points_tmp = reinterpret_cast<DecalVertex*>(decalVertexData_tmp);
 
     Vector<uint16> triangles;
@@ -392,9 +392,9 @@ void GeoDecalManager::GetSkinnedMeshGeometry(const DecalBuildInfo& info, Vector<
 {
     const AABBox3 clipSpaceBox = AABBox3(Vector3(0.0f, 0.0f, 0.0f), 2.0f);
 
-    char decalVertexData[MAX_CLIPPED_POLYGON_CAPACITY * sizeof(DecalVertex)];
+    uint8 decalVertexData[MAX_CLIPPED_POLYGON_CAPACITY * sizeof(DecalVertex)];
     DecalVertex* points = reinterpret_cast<DecalVertex*>(decalVertexData);
-    char decalVertexData_tmp[MAX_CLIPPED_POLYGON_CAPACITY * sizeof(DecalVertex)];
+    uint8 decalVertexData_tmp[MAX_CLIPPED_POLYGON_CAPACITY * sizeof(DecalVertex)];
     DecalVertex* points_tmp = reinterpret_cast<DecalVertex*>(decalVertexData_tmp);
 
     int32 geometryFormat = info.polygonGroup->GetFormat();

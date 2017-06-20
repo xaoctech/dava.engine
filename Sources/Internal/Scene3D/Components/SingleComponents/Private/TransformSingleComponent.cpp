@@ -12,7 +12,7 @@ void RemoveEntitiesFromVector(Vector<Entity*>& vector, const Entity* entity)
     {
         if (vector[k] == entity)
         {
-            std::swap(vector[k], vector.back());
+            vector[k] = vector.back();
             vector.pop_back();
             --size;
         }

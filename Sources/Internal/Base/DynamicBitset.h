@@ -8,27 +8,26 @@ namespace DAVA
 class DynamicBitset
 {
 public:
-    enum : pointer_size
-    {
-        SHIFT_BITS = StaticLog2<sizeof(pointer_size) * 8>::value,
-        AND_BITS = (1 << SHIFT_BITS) - 1,
-    };
-
-    DynamicBitset(uint32 elementCount = 200);
+    DynamicBitset(uint32 elementCount = 256);
     ~DynamicBitset();
 
     void Clear();
     void Resize(uint32 size);
     bool At(uint32 index);
     void Set(uint32 index, bool value);
-    uint32 GetCount() const;
 
+    uint32 GetSize() const;
     pointer_size* GetData() const;
 
 private:
+    enum : pointer_size
+    {
+        SHIFT_BITS = StaticLog2<sizeof(pointer_size) * 8>::value,
+        AND_BITS = (1 << SHIFT_BITS) - 1,
+    };
     void ReallocateSize(uint32 _newMaxElementCount);
-    void ReallocateBits(uint32 _newBits);
 
+private:
     uint32 elementCount = 0;
     pointer_size* dataArray = 0;
 };
@@ -43,7 +42,7 @@ inline DynamicBitset::~DynamicBitset()
     SafeDeleteArray(dataArray);
 }
 
-inline uint32 DynamicBitset::GetCount() const
+inline uint32 DynamicBitset::GetSize() const
 {
     return elementCount;
 }

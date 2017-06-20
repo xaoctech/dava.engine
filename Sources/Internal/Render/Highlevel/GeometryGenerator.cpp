@@ -32,6 +32,7 @@ PolygonGroup* CreatePolygonGroup(uint32 vertexCount, uint32 indexCount, Geometry
 
 PolygonGroup* GenerateUVSphere(const AABBox3& boundingBox, Map<FastName, float32> objectDimentions, GeometryGenOptions genOptions)
 {
+    DVASSERT(0, "Not implemented");
     return nullptr;
 }
 
@@ -92,9 +93,7 @@ public:
         return result;
     }
 
-    void GenerateIcoSphere(uint32 subdivisionsCount,
-                           Vector<Vector3>& verticesOut,
-                           Vector<Triangle>& trianglesOut)
+    void GenerateIcoSphere(uint32 subdivisionsCount, Vector<Vector3>& verticesOut, Vector<Triangle>& trianglesOut)
     {
         const Vector<Vector3> _vertices =
         {
@@ -349,6 +348,7 @@ PolygonGroup* GenerateBox(const AABBox3& boundingBox, Map<FastName, float32> obj
 
 PolygonGroup* GenerateTorus(const AABBox3& boundingBox, Map<FastName, float32> objectDimentions, GeometryGenOptions genOptions)
 {
+    DVASSERT(0, "Not implemented");
     return nullptr;
 }
 
@@ -358,15 +358,16 @@ PolygonGroup* GenerateGeometry(eGeometryBasicPrimitive geometryType, const AABBo
     {
     case TYPE_BOX:
         return GenerateBox(boundingBox, objectDimentions, genOptions);
-    case TYPE_UV_SPHERE:
-        return GenerateUVSphere(boundingBox, objectDimentions, genOptions);
     case TYPE_ICO_SPHERE:
         return GenerateIcoSphere(boundingBox, objectDimentions, genOptions);
+    /*/
+    case TYPE_UV_SPHERE:
+        return GenerateUVSphere(boundingBox, objectDimentions, genOptions);
     case TYPE_TORUS:
         return GenerateTorus(boundingBox, objectDimentions, genOptions);
-    // case TYPE_CYLINDER:
-    //    return GenerateCylinder(boundingBox, objectDimentions, genOptions);
-
+    case TYPE_CYLINDER:
+        return GenerateCylinder(boundingBox, objectDimentions, genOptions);
+    // */
     default:
         DVASSERT(0, "Invalid geometry type specified, box will be generated.");
         return GenerateBox(boundingBox, objectDimentions, genOptions);
