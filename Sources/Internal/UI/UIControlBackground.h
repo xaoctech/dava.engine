@@ -251,8 +251,11 @@ public:
     void SetMaterial(NMaterial* material);
     NMaterial* GetMaterial() const;
 
-    void SetRenderBatch(BatchDescriptor* batch);
-    BatchDescriptor* GetRenderBatch() const;
+    void SetRenderBatches(const Vector<BatchDescriptor>& batches);
+    void AppendRenderBatches(const Vector<BatchDescriptor>& batches);
+    void AddRenderBatch(const BatchDescriptor& batch);
+    void ClearBatches();
+    const Vector<BatchDescriptor>& GetRenderBatches() const;
 
 protected:
     RefPtr<Sprite> spr;
@@ -289,7 +292,7 @@ protected:
     Color drawColor;
 
     NMaterial* material = nullptr;
-    BatchDescriptor* batchDescriptor = nullptr;
+    Vector<BatchDescriptor> batchDescriptors;
 #if defined(LOCALIZATION_DEBUG)
     Sprite::DrawState lastDrawState;
 #endif

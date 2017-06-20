@@ -123,7 +123,6 @@ void RenderSystem2D::Init()
     lastMaterial = nullptr;
     lastUsedCustomWorldMatrix = false;
     lastCustomWorldMatrix = Matrix4::IDENTITY;
-    lastCustomMatrixSematic = 1;
     lastClip = Rect(0, 0, -1, -1);
 
     currentVertexBuffer.reserve(MAX_VERTICES * VBO_STRIDE[1]);
@@ -605,7 +604,6 @@ void RenderSystem2D::PushBatch(const BatchDescriptor& batchDesc)
         {
             needUpdateWorldMatrix = true;
             lastCustomWorldMatrix = *batchDesc.worldMatrix;
-            //lastCustomMatrixSematic++;
         }
     }
     else // Not equal
@@ -614,7 +612,6 @@ void RenderSystem2D::PushBatch(const BatchDescriptor& batchDesc)
         if (useCustomWorldMatrix)
         {
             lastCustomWorldMatrix = *batchDesc.worldMatrix;
-            //lastCustomMatrixSematic++;
         }
     }
     // End check world matrix

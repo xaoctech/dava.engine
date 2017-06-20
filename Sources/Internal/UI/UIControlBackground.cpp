@@ -514,25 +514,21 @@ void UIControlBackground::Draw(const UIGeometricData& parentGeometricData)
         RenderSystem2D::Instance()->DrawTiledMultylayer(mask.Get(), detail.Get(), gradient.Get(), contour.Get(), &drawState, Vector2(leftStretchCap, topStretchCap), geometricData, &tiledMultulayerData, drawColor);
         break;
     case DRAW_BATCH:
-        if (batchDescriptor && batchDescriptor->vertexCount > 0)
         {
-            //NOTE: correct affine transformations
-            Matrix4 offsetMatrix;
-            offsetMatrix.glTranslate(-geometricData.pivotPoint.x, -geometricData.pivotPoint.y, 0.f);
-
-            Matrix4 rotateMatrix;
-            rotateMatrix.glRotate(RadToDeg(geometricData.angle), 0.f, 0.f, 1.f);
-
-            Matrix4 scaleMatrix;
-            scaleMatrix.glScale(geometricData.scale.x, geometricData.scale.y, 1.f);
-
-            Matrix4 worldMatrix;
-            worldMatrix.glTranslate(geometricData.position.x, geometricData.position.y, 0.f);
-
-            offsetMatrix = (offsetMatrix * scaleMatrix * rotateMatrix) * worldMatrix;
-
-            batchDescriptor->worldMatrix = &offsetMatrix;
-            RenderSystem2D::Instance()->PushBatch(*batchDescriptor);
+            Matrix3 matrix2d;
+            geometricData.BuildTransformMatrix(matrix2d);
+            Matrix4 worldMatrix(
+            matrix2d._00, matrix2d._01, 0.f, 0.f,
+            matrix2d._10, matrix2d._11, 0.f, 0.f,
+            0.f, 0.f, 1.f, 0.f,
+            matrix2d._20, matrix2d._21, 0.f, 1.f
+            );
+            for (BatchDescriptor& b : batchDescriptors)
+            {
+                b.worldMatrix = &worldMatrix;
+                RenderSystem2D::Instance()->PushBatch(b);
+            }
+            batchDescriptors.clear();
         }
         break;
     default:
@@ -588,13 +584,28 @@ inline NMaterial* UIControlBackground::GetMaterial() const
     return material;
 }
 
-void UIControlBackground::SetRenderBatch(BatchDescriptor* batch)
+void UIControlBackground::SetRenderBatches(const Vector<BatchDescriptor>& batches)
 {
-    batchDescriptor = batch;
+    batchDescriptors = batches;
 }
 
-BatchDescriptor* UIControlBackground::GetRenderBatch() const
+void UIControlBackground::AppendRenderBatches(const Vector<BatchDescriptor>& batches)
 {
-    return batchDescriptor;
+    batchDescriptors.insert(batchDescriptors.end(), batches.begin(), batches.end());
+}
+
+void UIControlBackground::AddRenderBatch(const BatchDescriptor& batch)
+{
+    batchDescriptors.push_back(batch);
+}
+
+void UIControlBackground::ClearBatches()
+{
+    batchDescriptors.clear();
+}
+
+const Vector<BatchDescriptor>& UIControlBackground::GetRenderBatches() const
+{
+    return batchDescriptors;
 }
 };

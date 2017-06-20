@@ -4,6 +4,8 @@
 #include "UI/Spine/Private/SpineTrackEntry.h"
 
 #include <Debug/DVAssert.h>
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
 #include <Logger/Logger.h>
 #include <Render/2D/Systems/RenderSystem2D.h>
 #include <Render/2D/Systems/VirtualCoordinatesSystem.h>
@@ -27,8 +29,7 @@ int32 MaxVerticesCount(spSkeleton* skeleton)
 {
     int32 max = 0;
 
-    auto checkIsMax = [&max](int32 value)
-    {
+    auto checkIsMax = [&max](int32 value) {
         if (value > max)
         {
             max = value;
@@ -69,7 +70,7 @@ FilePath GetScaledName(const FilePath& path)
     else
         pathname = path.GetAbsolutePathname();
 
-    VirtualCoordinatesSystem* virtualCoordsSystem = UIControlSystem::Instance()->vcs;
+    VirtualCoordinatesSystem* virtualCoordsSystem = Engine::Instance()->GetContext()->uiControlSystem->vcs;
     const String baseGfxFolderName = virtualCoordsSystem->GetResourceFolder(virtualCoordsSystem->GetBaseResourceIndex());
     String::size_type pos = pathname.find(baseGfxFolderName);
     if (String::npos != pos)
@@ -85,12 +86,10 @@ FilePath GetScaledName(const FilePath& path)
 
 SpineSkeleton::SpineSkeleton()
 {
-    batchDescriptor = new BatchDescriptor();
 }
 
 SpineSkeleton::~SpineSkeleton()
 {
-    SafeDelete(batchDescriptor);
 }
 
 void SpineSkeleton::ReleaseAtlas()
@@ -106,10 +105,7 @@ void SpineSkeleton::ReleaseAtlas()
         currentTexture = nullptr;
     }
 
-    if (batchDescriptor)
-    {
-        batchDescriptor->vertexCount = 0;
-    }
+    ClearData();
 }
 
 void SpineSkeleton::ReleaseSkeleton()
@@ -137,13 +133,10 @@ void SpineSkeleton::ReleaseSkeleton()
     animationsNames.clear();
     skinsNames.clear();
 
-    if (batchDescriptor)
-    {
-        batchDescriptor->vertexCount = 0;
-    }
+    ClearData();
 }
 
-void SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath_)
+bool SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath_)
 {
     ReleaseAtlas();
     ReleaseSkeleton();
@@ -151,14 +144,14 @@ void SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath_)
     FilePath atlasPath = SpinePrivate::GetScaledName(atlasPath_);
     if (!dataPath.Exists() || !atlasPath.Exists())
     {
-        return;
+        return false;
     }
 
     atlas = spAtlas_createFromFile(atlasPath.GetAbsolutePathname().c_str(), 0);
     if (atlas == nullptr)
     {
         Logger::Error("[SpineSkeleton::Load] Error reading atlas file!");
-        return;
+        return false;
     }
     currentTexture = reinterpret_cast<Texture*>(atlas->pages[0].rendererObject);
 
@@ -216,7 +209,7 @@ void SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath_)
     {
         Logger::Error("[SpineSkeleton::Load] %s", dataLoadingError.c_str());
         ReleaseAtlas();
-        return;
+        return false;
     }
 
     skeleton = spSkeleton_create(skeletonData);
@@ -225,7 +218,7 @@ void SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath_)
     {
         Logger::Error("[SpineSkeleton::Load] Create skeleton failure!");
         ReleaseAtlas();
-        return;
+        return false;
     }
 
     state = spAnimationState_create(spAnimationStateData_create(skeleton->data));
@@ -235,11 +228,10 @@ void SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath_)
         Logger::Error("[SpineSkeleton::Load] %s", "Error creating animation state!");
         ReleaseAtlas();
         ReleaseSkeleton();
-        return;
+        return false;
     }
 
-    state->listener = [](spAnimationState* state, int32 trackIndex, spEventType type, spEvent* event, int32 loopCount)
-    {
+    state->listener = [](spAnimationState* state, int32 trackIndex, spEventType type, spEvent* event, int32 loopCount) {
         switch (type)
         {
         case SP_ANIMATION_START:
@@ -281,6 +273,60 @@ void SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath_)
     spAnimationState_update(state, 0);
     spAnimationState_apply(state, skeleton);
     spSkeleton_updateWorldTransform(skeleton);
+
+    return true;
+}
+
+void SpineSkeleton::PushBatch()
+{
+    if (!verticesCoords.empty())
+    {
+        uint32 vCount = static_cast<uint32>(verticesCoords.size());
+        uint32 iCount = static_cast<uint32>(verticesIndices.size());
+        float32* vCoords = reinterpret_cast<float32*>(&verticesCoords[currentVerticesStart]);
+        float32* uvCoords = reinterpret_cast<float32*>(&verticesUVs[currentVerticesStart]);
+        uint32* colors = &verticesColors[currentVerticesStart];
+        uint16* indices = &verticesIndices[currentIndicesStart];
+
+        currentVerticesStart += vCount;
+        currentIndicesStart += iCount;
+
+        BatchDescriptor batch;
+        batch.material = RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL;
+        batch.vertexCount = vCount;
+        batch.indexCount = iCount;
+        batch.vertexStride = SpinePrivate::VERTICES_COMPONENTS_COUNT;
+        batch.texCoordStride = SpinePrivate::TEXTURE_COMPONENTS_COUNT;
+        batch.colorStride = SpinePrivate::COLOR_STRIDE;
+        batch.vertexPointer = vCoords;
+        batch.texCoordPointer[0] = uvCoords;
+        batch.colorPointer = colors;
+        batch.indexPointer = indices;
+        batch.textureSetHandle = currentTexture->singleTextureSet;
+        batch.samplerStateHandle = currentTexture->samplerStateHandle;
+
+        batchDescriptors.push_back(std::move(batch));
+    }
+}
+
+void SpineSkeleton::ClearData()
+{
+    batchDescriptors.clear();
+    verticesCoords.clear();
+    verticesUVs.clear();
+    verticesColors.clear();
+    verticesIndices.clear();
+    currentVerticesStart = 0;
+    currentIndicesStart = 0;
+}
+
+void SpineSkeleton::SwitchTexture(Texture* texture)
+{
+    if (texture != currentTexture)
+    {
+        PushBatch();
+        currentTexture = texture;
+    }
 }
 
 void SpineSkeleton::Update(const float32 timeElapsed)
@@ -294,51 +340,10 @@ void SpineSkeleton::Update(const float32 timeElapsed)
     spSkeleton_updateWorldTransform(skeleton);
 
     // Draw
+    ClearData();
+
     if (!skeleton || !state || !currentTexture)
         return;
-
-    Matrix3 transformMtx;
-    //geometricData.BuildTransformMatrix(transformMtx);
-
-    auto pushBatch = [&]()
-    {
-        verticesPolygon.Transform(transformMtx);
-
-        BatchDescriptor batch;
-        batch.singleColor = Color::White;
-        batch.material = RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL; // background->GetMaterial();
-        batch.vertexCount = static_cast<uint32>(verticesPolygon.GetPointCount());
-        batch.indexCount = static_cast<uint32>(clippedIndecex.size());
-        batch.vertexStride = SpinePrivate::VERTICES_COMPONENTS_COUNT;
-        batch.texCoordStride = SpinePrivate::TEXTURE_COMPONENTS_COUNT;
-        batch.vertexPointer = reinterpret_cast<float32*>(verticesPolygon.GetPoints());
-        batch.texCoordPointer[0] = reinterpret_cast<float32*>(verticesUVs.data());
-        batch.textureSetHandle = currentTexture->singleTextureSet;
-        batch.samplerStateHandle = currentTexture->samplerStateHandle;
-        batch.indexPointer = clippedIndecex.data();
-        batch.colorStride = SpinePrivate::COLOR_STRIDE;
-        batch.colorPointer = verticesColors.data();
-
-        batchDescriptor->operator=(batch);
-    };
-
-    auto clearData = [&]()
-    {
-        verticesPolygon.Clear();
-        verticesUVs.clear();
-        clippedIndecex.clear();
-        verticesColors.clear();
-    };
-
-    auto switchTexture = [&](Texture* texture)
-    {
-        if (texture != currentTexture)
-        {
-            pushBatch();
-            clearData();
-            currentTexture = texture;
-        }
-    };
 
     for (int32 i = 0, n = skeleton->slotsCount; i < n; i++)
     {
@@ -346,11 +351,12 @@ void SpineSkeleton::Update(const float32 timeElapsed)
         Color color(slot->r, slot->g, slot->b, slot->a);
         if (slot->attachment)
         {
-            const float32* uvs = nullptr;
             int32 verticesCount = 0;
-            const uint16* triangles = nullptr;
-            int32 trianglesCount = 0;
-            uint16 startIndex = verticesPolygon.GetPointCount();
+            const float32* uvs = nullptr;
+            const uint16* indices = nullptr;
+            int32 indicesCount = 0;
+            DVASSERT(verticesCoords.size() < UINT16_MAX);
+            uint16 startIndex = static_cast<uint16>(verticesCoords.size());
 
             switch (slot->attachment->type)
             {
@@ -359,12 +365,12 @@ void SpineSkeleton::Update(const float32 timeElapsed)
                 spRegionAttachment* attachment = reinterpret_cast<spRegionAttachment*>(slot->attachment);
                 spRegionAttachment_computeWorldVertices(attachment, slot->bone, worldVertices);
 
-                switchTexture(reinterpret_cast<Texture*>(reinterpret_cast<spAtlasRegion*>(attachment->rendererObject)->page->rendererObject));
+                SwitchTexture(reinterpret_cast<Texture*>(reinterpret_cast<spAtlasRegion*>(attachment->rendererObject)->page->rendererObject));
 
                 uvs = attachment->uvs;
                 verticesCount = SpinePrivate::QUAD_VERTICES_COUNT;
-                triangles = SpinePrivate::QUAD_TRIANGLES;
-                trianglesCount = SpinePrivate::QUAD_TRIANGLES_COUNT;
+                indices = SpinePrivate::QUAD_TRIANGLES;
+                indicesCount = SpinePrivate::QUAD_TRIANGLES_COUNT;
                 break;
             }
             case SP_ATTACHMENT_MESH:
@@ -372,12 +378,12 @@ void SpineSkeleton::Update(const float32 timeElapsed)
                 spMeshAttachment* attachment = reinterpret_cast<spMeshAttachment*>(slot->attachment);
                 spMeshAttachment_computeWorldVertices(attachment, slot, worldVertices);
 
-                switchTexture(reinterpret_cast<Texture*>(reinterpret_cast<spAtlasRegion*>(attachment->rendererObject)->page->rendererObject));
+                SwitchTexture(reinterpret_cast<Texture*>(reinterpret_cast<spAtlasRegion*>(attachment->rendererObject)->page->rendererObject));
 
                 uvs = attachment->uvs;
                 verticesCount = attachment->trianglesCount * 3;
-                triangles = attachment->triangles;
-                trianglesCount = attachment->trianglesCount;
+                indices = attachment->triangles;
+                indicesCount = attachment->trianglesCount;
                 break;
             }
             default:
@@ -394,22 +400,17 @@ void SpineSkeleton::Update(const float32 timeElapsed)
                 Vector2 point(worldVertices[i * SpinePrivate::VERTICES_COMPONENTS_COUNT], -worldVertices[i * SpinePrivate::VERTICES_COMPONENTS_COUNT + 1]);
                 Vector2 uv(uvs[i * SpinePrivate::VERTICES_COMPONENTS_COUNT], uvs[i * SpinePrivate::VERTICES_COMPONENTS_COUNT + 1]);
 
-                verticesPolygon.AddPoint(point);
+                verticesCoords.push_back(point);
                 verticesUVs.push_back(uv);
                 verticesColors.push_back(color.GetRGBA());
             }
-            for (int32 i = 0; i < trianglesCount; i++)
+            for (int32 i = 0; i < indicesCount; i++)
             {
-                clippedIndecex.push_back(startIndex + triangles[i]);
+                verticesIndices.push_back(startIndex + indices[i]);
             }
         }
     }
-
-    if (verticesPolygon.GetPointCount() > 0)
-    {
-        pushBatch();
-        clearData();
-    }
+    PushBatch();
 }
 
 void SpineSkeleton::ResetSkeleton()
@@ -438,9 +439,9 @@ Vector2 SpineSkeleton::GetSkeletonOriginOffset() const
     return Vector2();
 }
 
-BatchDescriptor* SpineSkeleton::GetRenderBatch() const
+const Vector<BatchDescriptor>& SpineSkeleton::GetRenderBatches() const
 {
-    return batchDescriptor;
+    return batchDescriptors;
 }
 
 const Vector<String>& SpineSkeleton::GetAvailableAnimationsNames() const

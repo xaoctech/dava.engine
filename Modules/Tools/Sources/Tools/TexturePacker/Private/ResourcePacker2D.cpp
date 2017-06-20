@@ -500,13 +500,13 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath& inputPath, const FilePa
                     }
                 }
 
-                if (!justCopyList.empty())
+                for (FilePath& path : justCopyList)
                 {
-                    for (FilePath& path : justCopyList)
+                    FilePath destPath(path);
+                    destPath.ReplaceDirectory(outputPath);
+                    if (!FileSystem::Instance()->CopyFile(path, destPath))
                     {
-                        FilePath destPath(path);
-                        destPath.ReplaceDirectory(outputPath);
-                        FileSystem::Instance()->CopyFile(path, destPath);
+                        Logger::Error("Can't copy %s to %s", path.GetStringValue().c_str(), destPath.GetStringValue().c_str());
                     }
                 }
 

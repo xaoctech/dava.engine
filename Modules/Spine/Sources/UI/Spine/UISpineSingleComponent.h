@@ -17,6 +17,6 @@ struct UISpineSingleComponent : public UISingleComponent
     /** Set of controls with modified Spine components for reattach bones to controls. */
     UnorderedSet<UIControl*> spineBonesModified;
 
-    void Clear() override;
+    void ResetState() override;
 };
 }

@@ -407,7 +407,7 @@ void UIControlSystem::Update()
 
         for (auto& components : singleComponents)
         {
-            components->Clear();
+            components->ResetState();
         }
     }
 }

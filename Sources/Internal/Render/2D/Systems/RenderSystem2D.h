@@ -120,22 +120,22 @@ struct BatchDescriptor
 {
     static const uint32 MAX_TEXTURE_STREAMS_COUNT = 4;
 
-    Color singleColor = Color::White;
     uint32 vertexCount = 0;
     uint32 indexCount = 0;
-    const float32* vertexPointer = nullptr;
     uint32 vertexStride = 0;
-    Array<const float32*, MAX_TEXTURE_STREAMS_COUNT> texCoordPointer = {};
     uint32 texCoordStride = 0;
     uint32 texCoordCount = 1;
-    const uint32* colorPointer = nullptr;
     uint32 colorStride = 0;
-    const uint16* indexPointer = nullptr;
-    NMaterial* material = nullptr;
     rhi::HTextureSet textureSetHandle;
     rhi::HSamplerState samplerStateHandle;
     rhi::PrimitiveType primitiveType = rhi::PRIMITIVE_TRIANGLELIST;
+    const float32* vertexPointer = nullptr;
+    Array<const float32*, MAX_TEXTURE_STREAMS_COUNT> texCoordPointer = {};
+    const uint32* colorPointer = nullptr;
+    const uint16* indexPointer = nullptr;
+    NMaterial* material = nullptr;
     Matrix4* worldMatrix = nullptr;
+    Color singleColor = Color::White;
 };
 
 class RenderSystem2D : public Singleton<RenderSystem2D>
@@ -393,7 +393,6 @@ private:
     Rect lastClip;
     Matrix4 lastCustomWorldMatrix;
     bool lastUsedCustomWorldMatrix = false;
-    uint32 lastCustomMatrixSematic = 0;
     float32 globalTime = 0.f;
 
     uint32 VBO_STRIDE[BatchDescriptor::MAX_TEXTURE_STREAMS_COUNT + 1];

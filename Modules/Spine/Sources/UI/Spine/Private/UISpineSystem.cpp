@@ -163,6 +163,11 @@ void UISpineSystem::Process(float32 elapsedTime)
         skeleton->SetOriginOffset(pivotPoint);
         skeleton->Update(elapsedTime);
 
+        if (node.bg)
+        {
+            node.bg->AppendRenderBatches(skeleton->GetRenderBatches());
+        }
+
         for (const BoneLink& link : node.boneLinks)
         {
             const Vector2 positionWithPivot = link.bone->GetPosition() + pivotPoint;
@@ -177,7 +182,6 @@ void UISpineSystem::Process(float32 elapsedTime)
             link.control->SetPosition(positionWithPivot);
             link.control->SetAngleInDegrees(link.bone->GetAngle());
             link.control->SetScale(link.bone->GetScale());
-            link.control->UpdateLayout();
         }
     }
 }
@@ -232,24 +236,16 @@ void UISpineSystem::AddNode(UISpineComponent* component)
 void UISpineSystem::RemoveNode(UISpineComponent* component)
 {
     DVASSERT(component);
-
     auto it = nodes.find(component->GetControl());
     if (it != nodes.end())
     {
         SpineNode& node = it->second;
-
         if (node.bg)
         {
-            node.bg->SetRenderBatch(nullptr);
+            node.bg->ClearBatches();
         }
-
-        if (node.bones)
-        {
-            node.boneLinks.clear();
-        }
-
-        nodes.erase(it);
     }
+    nodes.erase(component->GetControl());
 }
 
 void UISpineSystem::BindBones(UISpineAttachControlsToBonesComponent* bones)
@@ -288,7 +284,6 @@ void UISpineSystem::BindBackground(UIControlBackground* bg)
         SpineNode& node = it->second;
         DVASSERT(node.bg == nullptr);
         node.bg = bg;
-        node.bg->SetRenderBatch(node.skeleton->GetRenderBatch());
     }
 }
 
@@ -299,7 +294,7 @@ void UISpineSystem::UnbindBackground(UIControlBackground* bg)
     {
         SpineNode& node = it->second;
         DVASSERT(node.bg == bg);
-        node.bg->SetRenderBatch(nullptr);
+        node.bg->ClearBatches();
         node.bg.Set(nullptr);
     }
 }

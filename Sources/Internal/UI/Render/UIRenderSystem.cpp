@@ -200,7 +200,7 @@ void UIRenderSystem::RenderPivotPoint(const UIDebugRenderComponent* component, c
 
     const Color& drawColor = component->GetDrawColor();
 
-    Vector2 pivotPointCenter = drawRect.GetPosition() + component->GetControl()->GetPivotPoint();
+    Vector2 pivotPointCenter = drawRect.GetPosition() + component->GetControl()->GetPivotPoint() * component->GetControl()->GetScale();
     renderSystem2D->DrawCircle(pivotPointCenter, PIVOT_POINT_MARK_RADIUS, drawColor);
 
     // Draw the cross mark.

@@ -5,6 +5,8 @@ namespace DAVA
 struct UISingleComponent
 {
     virtual ~UISingleComponent() = default;
-    virtual void Clear() = 0;
+
+    /** Restore temporare state of component at the end of each frame. */
+    virtual void ResetState() = 0;
 };
 }

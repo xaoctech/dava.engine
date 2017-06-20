@@ -15,6 +15,12 @@
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(SpineModule)
+{
+    ReflectionRegistrator<SpineModule>::Begin()
+    .End();
+}
+
 SpineModule::SpineModule(Engine* engine)
     : IModule(engine)
 {

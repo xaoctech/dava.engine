@@ -4,7 +4,7 @@
 
 namespace DAVA
 {
-void UISpineSingleComponent::Clear()
+void UISpineSingleComponent::ResetState()
 {
     spineModified.clear();
     spineNeedReload.clear();
