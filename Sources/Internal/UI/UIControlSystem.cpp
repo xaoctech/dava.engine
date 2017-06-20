@@ -50,6 +50,7 @@ UIControlSystem::UIControlSystem()
 
     inputSystem = GetSystem<UIInputSystem>();
     styleSheetSystem = GetSystem<UIStyleSheetSystem>();
+    textSystem = GetSystem<UITextSystem>();
     layoutSystem = GetSystem<UILayoutSystem>();
     soundSystem = GetSystem<UISoundSystem>();
     updateSystem = GetSystem<UIUpdateSystem>();
@@ -127,6 +128,7 @@ UIControlSystem::~UIControlSystem()
     soundSystem = nullptr;
     inputSystem = nullptr;
     styleSheetSystem = nullptr;
+    textSystem = nullptr;
     layoutSystem = nullptr;
     updateSystem = nullptr;
     renderSystem = nullptr;
@@ -799,6 +801,11 @@ std::unique_ptr<UISystem> UIControlSystem::RemoveSystem(const UISystem* system)
     }
 
     return nullptr;
+}
+
+UITextSystem* UIControlSystem::GetTextSystem() const
+{
+    return textSystem;
 }
 
 UILayoutSystem* UIControlSystem::GetLayoutSystem() const

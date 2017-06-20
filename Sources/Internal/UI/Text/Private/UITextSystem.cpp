@@ -165,9 +165,9 @@ void UITextSystem::UnregisterComponent(UIControl* control, UIComponent* componen
 void UITextSystem::AddLink(UITextComponent* component)
 {
     DVASSERT(component);
-    DVASSERT(component->GetLink() == nullptr);
-    UITextSystemLink* link = new UITextSystemLink(component->GetControl(), component);
-    component->SetLink(link);
+    UIControl* control = component->GetControl();
+    control->SetInputEnabled(false, false);
+    UITextSystemLink* link = component->GetLink();
     links.push_back(link);
 }
 
@@ -175,14 +175,11 @@ void UITextSystem::RemoveLink(UITextComponent* component)
 {
     DVASSERT(component);
     UITextSystemLink* link = component->GetLink();
-    DVASSERT(component->GetLink());
 
     auto findIt = std::find(links.begin(), links.end(), link);
     if (findIt != links.end())
     {
         (*findIt) = nullptr; // mark link for delete
-        component->SetLink(nullptr);
-        delete link;
     }
     else
     {

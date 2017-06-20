@@ -1,6 +1,7 @@
 #include "UI/Text/UITextComponent.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "UITextSystemLink.h"
+#include "UI/Text/UITextSystem.h"
 
 namespace DAVA
 {
@@ -39,6 +40,14 @@ UITextComponent::UITextComponent(const UITextComponent& src)
     , useRtlAlign(src.useRtlAlign)
     , forceBiDiSupport(src.forceBiDiSupport)
     , modified(true)
+{
+}
+
+UITextComponent::UITextComponent()
+{
+}
+
+UITextComponent::~UITextComponent()
 {
 }
 
@@ -239,28 +248,30 @@ bool UITextComponent::IsModified() const
     return modified;
 }
 
-void UITextComponent::SetLink(UITextSystemLink* value)
-{
-    link = value;
-    modified = true;
-}
-
 UITextSystemLink* UITextComponent::GetLink() const
 {
-    return link;
+    if (!link.Valid())
+    {
+        link.Set(new UITextSystemLink(this));
+    }
+    return link.Get();
 }
 
 // Backward compatibility method
 Vector2 UITextComponent::GetContentPreferredSize(const Vector2& constraints) const
 {
-    DVASSERT(link);
+    DVASSERT(GetControl());
+    if (modified)
+    {
+        UIControlSystem::Instance()->GetTextSystem()->ApplyData(const_cast<UITextComponent*>(this));
+    }
+    DVASSERT(link.Valid());
     return link->GetTextBlock()->GetPreferredSizeForWidth(constraints.x);
 }
 
 // Backward compatibility method
 bool UITextComponent::IsHeightDependsOnWidth() const
 {
-    DVASSERT(link);
-    return link->GetTextBlock()->GetMultiline();
+    return multiline != eTextMultiline::MULTILINE_DISABLED;
 }
 };

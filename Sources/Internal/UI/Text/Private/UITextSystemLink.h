@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Base/BaseObject.h"
 #include "Base/RefPtr.h"
 
 namespace DAVA
@@ -15,9 +16,12 @@ class UIControlBackground;
     Lifecycle totally managed by system. 
     \sa {UITextComponent, UITextSystem}. 
 */
-class UITextSystemLink final
+class UITextSystemLink final : public BaseObject
 {
 public:
+    UITextSystemLink(const UITextComponent* component_);
+
+    UITextComponent* GetComponent() const;
     /** Text parser and renderer. */
     TextBlock* GetTextBlock() const;
     /** Text layer representation for render. */
@@ -27,11 +31,8 @@ public:
 
 private:
     UITextSystemLink& operator=(const UITextSystemLink&) = delete;
+    ~UITextSystemLink();
 
-    UITextSystemLink(UIControl* control_, UITextComponent* component_);
-    ~UITextSystemLink() = default;
-
-    UIControl* control;
     UITextComponent* component;
 
     RefPtr<TextBlock> textBlock;
@@ -41,6 +42,11 @@ private:
     // Friends
     friend class UITextSystem;
 };
+
+inline UITextComponent* UITextSystemLink::GetComponent() const
+{
+    return component;
+}
 
 inline TextBlock* UITextSystemLink::GetTextBlock() const
 {

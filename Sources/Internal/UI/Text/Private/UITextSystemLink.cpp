@@ -7,24 +7,22 @@
 
 namespace DAVA
 {
-UITextSystemLink::UITextSystemLink(UIControl* control_, UITextComponent* component_)
+UITextSystemLink::UITextSystemLink(const UITextComponent* component_)
+    : BaseObject()
 {
-    control = control_;
-    component = component_;
+    component = const_cast<UITextComponent*>(component_);
 
-    Rect rect = control->GetRect();
-    control->SetInputEnabled(false, false);
-    textBlock.Set(TextBlock::Create(Vector2(rect.dx, rect.dy)));
+    textBlock.Set(TextBlock::Create(Vector2::Zero));
 
     textBg.Set(new UIControlBackground());
     textBg->SetDrawType(UIControlBackground::DRAW_ALIGNED);
-    textBg->SetColorInheritType(component->GetColorInheritType());
-    textBg->SetPerPixelAccuracyType(component->GetPerPixelAccuracyType());
 
     shadowBg.Set(new UIControlBackground());
     shadowBg->SetDrawType(UIControlBackground::DRAW_ALIGNED);
-    shadowBg->SetColorInheritType(component->GetColorInheritType());
-    shadowBg->SetPerPixelAccuracyType(component->GetPerPixelAccuracyType());
 }
 
+UITextSystemLink::~UITextSystemLink()
+{
+    component = nullptr;
+}
 };

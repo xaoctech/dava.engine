@@ -26,6 +26,7 @@ class UIScreen;
 class UISystem;
 class UILayoutSystem;
 class UIStyleSheetSystem;
+class UITextSystem;
 class UIFocusSystem;
 class UIInputSystem;
 class UIScreenshoter;
@@ -296,6 +297,7 @@ public:
         return nullptr;
     }
 
+    UITextSystem* GetTextSystem() const;
     UILayoutSystem* GetLayoutSystem() const;
     UIInputSystem* GetInputSystem() const;
     UIFocusSystem* GetFocusSystem() const;
@@ -323,6 +325,7 @@ private:
 #endif
 
     Vector<std::unique_ptr<UISystem>> systems;
+    UITextSystem* textSystem = nullptr;
     UILayoutSystem* layoutSystem = nullptr;
     UIStyleSheetSystem* styleSheetSystem = nullptr;
     UIInputSystem* inputSystem = nullptr;
