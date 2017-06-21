@@ -19,37 +19,10 @@ DAVA_TESTCLASS (InputElementsTestClass)
         {
             eInputElements element = static_cast<eInputElements>(i);
 
-            const bool isModifier = (element == eInputElements::KB_LSHIFT ||
-                                     element == eInputElements::KB_LCTRL ||
-                                     element == eInputElements::KB_LALT ||
-                                     element == eInputElements::KB_RSHIFT ||
-                                     element == eInputElements::KB_RCTRL ||
-                                     element == eInputElements::KB_RALT ||
-                                     element == eInputElements::KB_LCMD ||
-                                     element == eInputElements::KB_RCMD);
-
-            const bool isSystemKey = (element == eInputElements::KB_ESCAPE ||
-                                      element == eInputElements::KB_CAPSLOCK ||
-                                      element == eInputElements::KB_LWIN ||
-                                      element == eInputElements::KB_RWIN ||
-                                      element == eInputElements::KB_PRINTSCREEN ||
-                                      element == eInputElements::KB_SCROLLLOCK ||
-                                      element == eInputElements::KB_PAUSE ||
-                                      element == eInputElements::KB_INSERT ||
-                                      element == eInputElements::KB_HOME ||
-                                      element == eInputElements::KB_PAGEUP ||
-                                      element == eInputElements::KB_PAGEDOWN ||
-                                      element == eInputElements::KB_DELETE ||
-                                      element == eInputElements::KB_END ||
-                                      element == eInputElements::KB_NUMLOCK ||
-                                      element == eInputElements::KB_MENU);
-
             InputElementInfo info = GetInputElementInfo(element);
             TEST_VERIFY(!info.name.empty());
             TEST_VERIFY(info.type == eInputElementTypes::DIGITAL);
             TEST_VERIFY(IsKeyboardInputElement(element));
-            TEST_VERIFY(isModifier ? IsKeyboardModifierInputElement(element) : !IsKeyboardModifierInputElement(element));
-            TEST_VERIFY(isSystemKey ? IsKeyboardSystemInputElement(element) : !IsKeyboardSystemInputElement(element));
             TEST_VERIFY(!IsMouseInputElement(element));
             TEST_VERIFY(!IsMouseButtonInputElement(element));
             TEST_VERIFY(!IsGamepadInputElement(element));

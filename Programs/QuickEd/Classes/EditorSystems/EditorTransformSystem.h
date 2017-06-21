@@ -6,7 +6,7 @@
 
 #include <Preferences/PreferencesRegistrator.h>
 #include <UI/UIControl.h>
-#include <Input/KeyboardDevice.h>
+#include <Input/Keyboard.h>
 #include <Base/BaseTypes.h>
 #include <Math/Vector.h>
 #include <Input/InputElements.h>
