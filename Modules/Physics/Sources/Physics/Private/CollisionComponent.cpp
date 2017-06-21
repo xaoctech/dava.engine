@@ -6,7 +6,6 @@
 
 namespace DAVA
 {
-
 Component* CollisionComponent::Clone(Entity* toEntity)
 {
     CollisionComponent* result = new CollisionComponent();
