@@ -1,15 +1,14 @@
 #include "Tools/LoggerOutput/ErrorDialogOutput.h"
 
 #include "Classes/Qt/GlobalOperations.h"
+#include "Classes/Settings/SettingsManager.h"
 
-#include "TArc/Utils/AssertGuard.h"
+#include <TArc/Utils/AssertGuard.h>
 
-#include "Concurrency/LockGuard.h"
-#include "Utils/StringFormat.h"
-
-#include "Settings/SettingsManager.h"
-
-#include "Debug/DVAssertDefaultHandlers.h"
+#include <Engine/PlatformApi.h>
+#include <Concurrency/LockGuard.h>
+#include <Debug/DVAssertDefaultHandlers.h>
+#include <Utils/StringFormat.h>
 
 #include <QMessageBox>
 
@@ -167,7 +166,9 @@ void ErrorDialogOutput::ShowErrorDialogImpl()
         errors.clear();
     }
 
+    bool prevValue = DAVA::PlatformApi::Qt::SetLoopStopped(true);
     QMessageBox::critical(globalOperations->GetGlobalParentWidget(), title.c_str(), errorMessage.c_str());
+    DAVA::PlatformApi::Qt::SetLoopStopped(false);
 }
 
 void ErrorDialogOutput::Disable()

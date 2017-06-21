@@ -25,6 +25,7 @@ void ReleaseWindowContext(Window* targetWindow);
 
 QApplication* GetApplication();
 RenderWidget* GetRenderWidget();
+bool SetLoopStopped(bool isLoopStopped);
 
 } // namespace Qt
 } // namespace PlatformApi

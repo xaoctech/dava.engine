@@ -41,12 +41,12 @@ protected:
     virtual void CheckActorType() const = 0;
 #endif
     virtual void SetPxActor(physx::PxActor* actor);
-
-    physx::PxActor* actor = nullptr;
+    void CopyFields(PhysicsComponent* component) const;
 
 private:
     friend class PhysicsSystem;
     void ReleasePxActor();
+    physx::PxActor* actor = nullptr;
 
     void UpdateBodyFlags();
 

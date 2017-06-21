@@ -5,20 +5,27 @@
 #include "Physics/CapsuleShapeComponent.h"
 #include "Physics/PlaneShapeComponent.h"
 #include "Physics/SphereShapeComponent.h"
+#include "Physics/MeshShapeComponent.h"
+#include "Physics/ConvexHullShapeComponent.h"
+#include "Physics/HeightFieldShapeComponent.h"
 #include "Physics/Private/PhysicsMath.h"
 
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
 #include <Logger/Logger.h>
+#include <Render/3D/PolygonGroup.h>
+#include <Render/Highlevel/Landscape.h>
+#include <Render/Highlevel/Heightmap.h>
 #include <MemoryManager/MemoryManager.h>
 #include <Reflection/ReflectionRegistrator.h>
+#include <Math/MathConstants.h>
 
 #include <physx/PxPhysicsAPI.h>
 #include <PxShared/pvd/PxPvd.h>
 
 namespace DAVA
 {
-namespace
+namespace PhysicsModuleDetail
 {
 physx::PxPvd* CreatePvd(physx::PxFoundation* foundation)
 {
@@ -55,73 +62,18 @@ void ReleasePvd()
     fn.Invoke();
 }
 
-void CopyBaseFields(physx::PxBase* src, physx::PxBase* dst)
+class AssertHandler : public physx::PxAssertHandler
 {
-    DVASSERT(src != nullptr);
-    DVASSERT(dst != nullptr);
-
-    DVASSERT(src->getConcreteType() == dst->getConcreteType());
-    dst->setBaseFlags(src->getBaseFlags());
-}
-
-void CopyActorFields(physx::PxActor* src, physx::PxActor* dst)
-{
-    CopyBaseFields(src, dst);
-    DVASSERT(src->getType() == dst->getType());
-
-    dst->setName(src->getName());
-    dst->setActorFlags(src->getActorFlags());
-    dst->setDominanceGroup(src->getDominanceGroup());
-    dst->setClientBehaviorFlags(src->getClientBehaviorFlags());
-}
-
-void CopyRigidBodyFields(physx::PxRigidBody* src, physx::PxRigidBody* dst)
-{
-    CopyActorFields(src, dst);
-
-    dst->setCMassLocalPose(src->getCMassLocalPose());
-    dst->setMass(src->getMass());
-    dst->setMassSpaceInertiaTensor(src->getMassSpaceInertiaTensor());
-
-    dst->setLinearVelocity(src->getLinearVelocity());
-    dst->setAngularVelocity(src->getAngularVelocity());
-
-    dst->setRigidBodyFlags(src->getRigidBodyFlags());
-    dst->setMinCCDAdvanceCoefficient(src->getMinCCDAdvanceCoefficient());
-    dst->setMaxDepenetrationVelocity(src->getMaxDepenetrationVelocity());
-    dst->setMaxContactImpulse(src->getMaxContactImpulse());
-}
-
-void CopyRigidStaticFields(physx::PxRigidStatic* src, physx::PxRigidStatic* dst)
-{
-    CopyActorFields(src, dst);
-}
-
-void CopyRigidDynamicFields(physx::PxRigidDynamic* src, physx::PxRigidDynamic* dst)
-{
-    CopyRigidBodyFields(src, dst);
-
-    dst->setLinearDamping(src->getLinearDamping());
-    dst->setAngularDamping(src->getAngularDamping());
-    dst->setMaxAngularVelocity(src->getMaxAngularVelocity());
-
-    dst->setSleepThreshold(src->getSleepThreshold());
-    dst->setStabilizationThreshold(src->getStabilizationThreshold());
-    dst->setRigidDynamicLockFlags(src->getRigidDynamicLockFlags());
-    if (src->getActorFlags().isSet(physx::PxActorFlag::eDISABLE_SIMULATION) == false)
+public:
+    void operator()(const char* exp, const char* file, int line, bool& ignore)
     {
-        dst->setWakeCounter(src->getWakeCounter());
+        Assert::FailBehaviour result = HandleAssert(exp, file, line);
+        if (result != Assert::FailBehaviour::Continue)
+        {
+            DVASSERT_HALT();
+        }
     }
-
-    {
-        physx::PxU32 minPositionIters = 1;
-        physx::PxU32 minVelocityIters = 1;
-        src->getSolverIterationCounts(minPositionIters, minVelocityIters);
-        dst->setSolverIterationCounts(minPositionIters, minVelocityIters);
-    }
-
-    dst->setContactReportThreshold(src->getContactReportThreshold());
-}
+};
 }
 
 class Physics::PhysicsAllocator : public physx::PxAllocatorCallback
@@ -175,14 +127,23 @@ void Physics::Init()
     allocator = new PhysicsAllocator();
     errorCallback = new PhysicsErrotCallback();
 
+    PxTolerancesScale toleranceScale;
+
     foundation = PxCreateFoundation(PX_FOUNDATION_VERSION, *allocator, *errorCallback);
     DVASSERT(foundation);
 
-    physx::PxPvd* pvd = CreatePvd(foundation);
-    physics = PxCreateBasePhysics(PX_PHYSICS_VERSION, *foundation, PxTolerancesScale(), true, pvd);
+    physx::PxPvd* pvd = PhysicsModuleDetail::CreatePvd(foundation);
+    physics = PxCreateBasePhysics(PX_PHYSICS_VERSION, *foundation, toleranceScale, true, pvd);
     DVASSERT(physics);
     PxRegisterHeightFields(*physics);
     PxRegisterParticles(*physics); // For correct rigidDynamic->setGloblaPose after simulation stop
+
+    PxCookingParams cookingParams(toleranceScale);
+    cooking = PxCreateCooking(PX_PHYSICS_VERSION, *foundation, cookingParams);
+    DVASSERT(cooking);
+
+    static PhysicsModuleDetail::AssertHandler assertHandler;
+    PxSetAssertHandler(assertHandler);
 
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(StaticBodyComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(DynamicBodyComponent);
@@ -190,12 +151,16 @@ void Physics::Init()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(CapsuleShapeComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SphereShapeComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PlaneShapeComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ConvexHullShapeComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(MeshShapeComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(HeightFieldShapeComponent);
 }
 
 void Physics::Shutdown()
 {
+    cooking->release();
     physics->release();
-    ReleasePvd(); // PxPvd should be released between PxPhysics and PxFoundation
+    PhysicsModuleDetail::ReleasePvd(); // PxPvd should be released between PxPhysics and PxFoundation
     foundation->release();
     SafeDelete(allocator);
     SafeDelete(errorCallback);
@@ -238,43 +203,6 @@ physx::PxScene* Physics::CreateScene(const PhysicsSceneConfig& config) const
     return scene;
 }
 
-physx::PxActor* Physics::ClonePxActor(physx::PxActor* actor, void* userData) const
-{
-    DVASSERT(actor);
-
-    physx::PxActor* result = nullptr;
-
-    switch (actor->getConcreteType())
-    {
-    case physx::PxConcreteType::eRIGID_STATIC:
-    {
-        physx::PxRigidStatic* staticActor = actor->is<physx::PxRigidStatic>();
-        DVASSERT(staticActor != nullptr);
-
-        physx::PxRigidStatic* resultStatic = physics->createRigidStatic(staticActor->getGlobalPose());
-        CopyRigidStaticFields(staticActor, resultStatic);
-        result = resultStatic;
-    }
-    break;
-    case physx::PxConcreteType::eRIGID_DYNAMIC:
-    {
-        physx::PxRigidDynamic* dynamicActor = actor->is<physx::PxRigidDynamic>();
-        DVASSERT(dynamicActor != nullptr);
-
-        physx::PxRigidDynamic* resultStatic = physics->createRigidDynamic(dynamicActor->getGlobalPose());
-        CopyRigidDynamicFields(dynamicActor, resultStatic);
-        result = resultStatic;
-    }
-    break;
-    default:
-        DVASSERT(false);
-        break;
-    }
-
-    result->userData = userData;
-    return result;
-}
-
 physx::PxActor* Physics::CreateStaticActor() const
 {
     return physics->createRigidStatic(physx::PxTransform(physx::PxIDENTITY::PxIdentity));
@@ -303,6 +231,161 @@ physx::PxShape* Physics::CreateSphereShape(float32 radius) const
 physx::PxShape* Physics::CreatePlaneShape() const
 {
     return physics->createShape(physx::PxPlaneGeometry(), *GetDefaultMaterial(), true);
+}
+
+physx::PxShape* Physics::CreateMeshShape(PolygonGroup* polygon, const Vector3& scale) const
+{
+    using namespace physx;
+
+    int32 vertexCount = polygon->vertexCount;
+    Vector<PxVec3> vertices(vertexCount);
+    for (int32 i = 0; i < vertexCount; ++i)
+    {
+        Vector3 coord;
+        polygon->GetCoord(i, coord);
+        vertices[i].x = coord.x;
+        vertices[i].y = coord.y;
+        vertices[i].z = coord.z;
+    }
+
+    int32 indexCount = polygon->indexCount;
+    Vector<PxU32> indices(indexCount);
+    for (int32 i = 0; i < indexCount; ++i)
+    {
+        int32 index;
+        polygon->GetIndex(i, index);
+        indices[i] = index;
+    }
+
+    PxTriangleMeshDesc desc;
+    desc.points.count = vertexCount;
+    desc.points.stride = sizeof(PxVec3);
+    desc.points.data = vertices.data();
+    desc.triangles.count = polygon->indexCount / 3;
+    desc.triangles.stride = 3 * sizeof(PxU32);
+    desc.triangles.data = indices.data();
+    desc.flags = PxMeshFlags(0);
+
+    physx::PxTriangleMeshCookingResult::Enum condition;
+    PxDefaultMemoryOutputStream outStream;
+    if (cooking->cookTriangleMesh(desc, outStream, &condition) == false)
+    {
+        Logger::Error("[Physics::CreateMeshShape] Mesh creation failure for polygon group with code: %u", static_cast<uint32>(condition));
+        return nullptr;
+    }
+
+    physx::PxDefaultMemoryInputData inputStream(outStream.getData(), outStream.getSize());
+    PxTriangleMesh* mesh = physics->createTriangleMesh(inputStream);
+    DVASSERT(mesh != nullptr);
+    PxMeshScale pxScale(PxVec3(scale.x, scale.y, scale.z), PxQuat(PxIdentity));
+    PxTriangleMeshGeometry geometry(mesh, pxScale);
+    PxShape* shape = physics->createShape(geometry, *GetDefaultMaterial(), true);
+
+    return shape;
+}
+
+physx::PxShape* Physics::CreateConvexHullShape(PolygonGroup* polygon, const Vector3& scale) const
+{
+    using namespace physx;
+
+    int32 vertexCount = polygon->vertexCount;
+    Vector<PxVec3> vertices(vertexCount);
+    for (int32 i = 0; i < vertexCount; ++i)
+    {
+        Vector3 coord;
+        polygon->GetCoord(i, coord);
+        vertices[i].x = coord.x;
+        vertices[i].y = coord.y;
+        vertices[i].z = coord.z;
+    }
+
+    int32 indexCount = polygon->indexCount;
+    Vector<PxU32> indices(indexCount);
+    for (int32 i = 0; i < indexCount; ++i)
+    {
+        int32 index;
+        polygon->GetIndex(i, index);
+        indices[i] = index;
+    }
+
+    PxConvexMeshDesc desc;
+    desc.points.count = vertexCount;
+    desc.points.stride = sizeof(PxVec3);
+    desc.points.data = vertices.data();
+    desc.indices.count = indexCount;
+    desc.indices.stride = sizeof(PxU32);
+    desc.indices.data = indices.data();
+    desc.flags = PxConvexFlag::eCOMPUTE_CONVEX;
+
+    PxConvexMeshCookingResult::Enum condition;
+    PxDefaultMemoryOutputStream outStream;
+    if (cooking->cookConvexMesh(desc, outStream, &condition) == false)
+    {
+        Logger::Error("[Physics::CreateMeshShape] Mesh creation failure for polygon group with code: %u", static_cast<uint32>(condition));
+        return nullptr;
+    }
+
+    physx::PxDefaultMemoryInputData inputStream(outStream.getData(), outStream.getSize());
+    PxConvexMesh* mesh = physics->createConvexMesh(inputStream);
+    DVASSERT(mesh != nullptr);
+    PxMeshScale pxScale(PxVec3(scale.x, scale.y, scale.z), PxQuat(PxIdentity));
+    PxConvexMeshGeometry geometry(mesh, pxScale);
+    PxShape* shape = physics->createShape(geometry, *GetDefaultMaterial(), true);
+
+    return shape;
+}
+
+physx::PxShape* Physics::CreateHeightField(Landscape* landscape, Matrix4& localPose) const
+{
+    using namespace physx;
+    Heightmap* heightmap = landscape->GetHeightmap();
+
+    uint32 size = heightmap->Size();
+    uint32 samplesCount = size * size;
+    Vector<PxHeightFieldSample> pxData(samplesCount);
+    uint16* dvData = heightmap->Data();
+
+    for (uint32 x = 0; x < size; ++x)
+    {
+        for (uint32 y = 0; y < size; ++y)
+        {
+            uint16 readHeight = dvData[x * size + y];
+            PxHeightFieldSample& pxSample = pxData[x * size + y];
+            pxSample.height = readHeight / 2;
+            pxSample.materialIndex0 = 0;
+            pxSample.materialIndex1 = 0;
+        }
+    }
+
+    PxHeightFieldDesc desc;
+    desc.format = PxHeightFieldFormat::eS16_TM;
+    desc.nbColumns = size;
+    desc.nbRows = size;
+    desc.samples.data = pxData.data();
+    desc.samples.stride = sizeof(PxHeightFieldSample);
+
+    physx::PxDefaultMemoryOutputStream outStream;
+    if (cooking->cookHeightField(desc, outStream) == false)
+    {
+        Logger::Error("[Physics::CreateHeightField] HeightField creation failure");
+        return nullptr;
+    }
+
+    physx::PxDefaultMemoryInputData data(outStream.getData(), outStream.getSize());
+    PxHeightField* heightfield = physics->createHeightField(data);
+
+    float32 landscapeSize = landscape->GetLandscapeSize();
+    physx::PxReal heightScale = landscape->GetLandscapeHeight() / 32767.f;
+    physx::PxReal dimensionScale = landscapeSize / size;
+    PxHeightFieldGeometry geometry(heightfield, PxMeshGeometryFlags(), heightScale, dimensionScale, dimensionScale);
+    PxShape* shape = physics->createShape(geometry, *GetDefaultMaterial());
+
+    float32 translate = landscapeSize / 2.0f;
+    localPose = Matrix4::MakeRotation(Vector3(1.0f, 0.0f, 0.0f), -PI_05) *
+    Matrix4::MakeRotation(Vector3(0.0f, 0.0f, 1.0f), -PI_05) *
+    Matrix4::MakeTranslation(Vector3(-translate, -translate, 0.0f));
+
+    return shape;
 }
 
 physx::PxMaterial* Physics::GetDefaultMaterial() const

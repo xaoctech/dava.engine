@@ -67,7 +67,10 @@ void EditorPhysicsSystem::Process(DAVA::float32 timeElapsed)
     {
         for (auto& node : transformMap)
         {
-            node.first->SetLocked(true);
+            if (node.first->GetLocked() == false)
+            {
+                node.first->SetLocked(true);
+            }
         }
     }
 }

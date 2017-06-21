@@ -17,6 +17,10 @@
 #include <ModuleManager/ModuleManager.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/Components/SingleComponents/TransformSingleComponent.h>
+#include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/TransformComponent.h>
+#include <Render/Highlevel/RenderObject.h>
+#include <Render/Highlevel/RenderBatch.h>
 #include <Render/Highlevel/RenderSystem.h>
 #include <Render/RenderHelper.h>
 #include <FileSystem/KeyedArchive.h>
@@ -51,11 +55,14 @@ void EraseComponent(T* component, Vector<T*>& pendingComponents, Vector<T*>& com
     }
 }
 
-Array<uint32, 4> collisionShapeTypes = {
+Array<uint32, 7> collisionShapeTypes = {
     Component::BOX_SHAPE_COMPONENT,
     Component::CAPSULE_SHAPE_COMPONENT,
     Component::SPHERE_SHAPE_COMPONENT,
-    Component::PLANE_SHAPE_COMPONENT
+    Component::PLANE_SHAPE_COMPONENT,
+    Component::CONVEX_HULL_SHAPE_COMPONENT,
+    Component::MESH_SHAPE_COMPONENT,
+    Component::HEIGHT_FIELD_SHAPE_COMPONENT
 };
 
 bool IsCollisionShapeType(uint32 componentType)
@@ -207,6 +214,7 @@ void PhysicsSystem::Process(float32 timeElapsed)
 
     if (isSimulationEnabled == false)
     {
+        DrawDebugObject();
         SyncTransformToPhysx();
         return;
     }
@@ -379,31 +387,34 @@ void PhysicsSystem::InitNewObjects()
     for (CollisionShapeComponent* component : pendingAddCollisionComponents)
     {
         physx::PxShape* shape = CreateShape(component, physics);
-        DVASSERT(shape != nullptr);
+        if (shape != nullptr)
+        {
+            DVASSERT(shape != nullptr);
 
-        Entity* entity = component->GetEntity();
-        PhysicsComponent* staticBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::STATIC_BODY_COMPONENT, 0));
-        if (staticBodyComponent != nullptr)
-        {
-            attachShapeFn(shape, staticBodyComponent);
-        }
-        else
-        {
-            PhysicsComponent* dynamicBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::DYNAMIC_BODY_COMPONENT, 0));
-            if (dynamicBodyComponent != nullptr)
+            Entity* entity = component->GetEntity();
+            PhysicsComponent* staticBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::STATIC_BODY_COMPONENT, 0));
+            if (staticBodyComponent != nullptr)
             {
-                attachShapeFn(shape, dynamicBodyComponent);
-                physx::PxRigidDynamic* dynamicActor = dynamicBodyComponent->GetPxActor()->is<physx::PxRigidDynamic>();
-                DVASSERT(dynamicActor != nullptr);
-                if (dynamicActor->getActorFlags().isSet(physx::PxActorFlag::eDISABLE_SIMULATION) == false &&
-                    dynamicActor->getRigidBodyFlags().isSet(physx::PxRigidBodyFlag::eKINEMATIC) == false)
+                attachShapeFn(shape, staticBodyComponent);
+            }
+            else
+            {
+                PhysicsComponent* dynamicBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::DYNAMIC_BODY_COMPONENT, 0));
+                if (dynamicBodyComponent != nullptr)
                 {
-                    dynamicActor->wakeUp();
+                    attachShapeFn(shape, dynamicBodyComponent);
+                    physx::PxRigidDynamic* dynamicActor = dynamicBodyComponent->GetPxActor()->is<physx::PxRigidDynamic>();
+                    DVASSERT(dynamicActor != nullptr);
+                    if (dynamicActor->getActorFlags().isSet(physx::PxActorFlag::eDISABLE_SIMULATION) == false &&
+                        dynamicActor->getRigidBodyFlags().isSet(physx::PxRigidBodyFlag::eKINEMATIC) == false)
+                    {
+                        dynamicActor->wakeUp();
+                    }
                 }
             }
-        }
 
-        collisionComponents.push_back(component);
+            collisionComponents.push_back(component);
+        }
     }
     pendingAddCollisionComponents.clear();
 }
@@ -458,12 +469,57 @@ physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, P
         shape = physics->CreatePlaneShape();
     }
     break;
+    case Component::CONVEX_HULL_SHAPE_COMPONENT:
+    {
+        Entity* entity = component->GetEntity();
+        RenderObject* ro = GetRenderObject(entity);
+        DVASSERT(ro != nullptr);
+        uint32 batchesCount = ro->GetRenderBatchCount();
+        DVASSERT(batchesCount > 0);
+        RenderBatch* batch = ro->GetRenderBatch(0);
+        Vector3 pos;
+        Vector3 scale;
+        Quaternion quat;
+        TransformComponent* transformComponent = GetTransformComponent(entity);
+        transformComponent->GetWorldTransform().Decomposition(pos, scale, quat);
+        shape = physics->CreateConvexHullShape(batch->GetPolygonGroup(), scale);
+    }
+    break;
+    case Component::MESH_SHAPE_COMPONENT:
+    {
+        Entity* entity = component->GetEntity();
+        RenderObject* ro = GetRenderObject(entity);
+        DVASSERT(ro != nullptr);
+        uint32 batchesCount = ro->GetRenderBatchCount();
+        DVASSERT(batchesCount > 0);
+        RenderBatch* batch = ro->GetRenderBatch(0);
+        Vector3 pos;
+        Vector3 scale;
+        Quaternion quat;
+        TransformComponent* transformComponent = GetTransformComponent(entity);
+        transformComponent->GetWorldTransform().Decomposition(pos, scale, quat);
+        shape = physics->CreateMeshShape(batch->GetPolygonGroup(), scale);
+    }
+    break;
+    case Component::HEIGHT_FIELD_SHAPE_COMPONENT:
+    {
+        Entity* entity = component->GetEntity();
+        Landscape* landscape = GetLandscape(entity);
+        DVASSERT(landscape);
+        Matrix4 localPose;
+        shape = physics->CreateHeightField(landscape, localPose);
+        component->SetLocalPose(localPose);
+    }
+    break;
     default:
         DVASSERT(false);
         break;
     }
 
-    component->SetPxShape(shape);
+    if (shape != nullptr)
+    {
+        component->SetPxShape(shape);
+    }
 
     return shape;
 }
@@ -480,7 +536,39 @@ void PhysicsSystem::SyncTransformToPhysx()
             DVASSERT(actor != nullptr);
             physx::PxRigidActor* rigidActor = actor->is<physx::PxRigidActor>();
             DVASSERT(rigidActor != nullptr);
-            rigidActor->setGlobalPose(physx::PxTransform(PhysicsMath::Matrix4ToPxMat44(e->GetWorldTransform())));
+            Matrix4 worldTransform = e->GetWorldTransform();
+            Vector3 position;
+            Vector3 scale;
+            Quaternion rotation;
+            worldTransform.Decomposition(position, scale, rotation);
+            rigidActor->setGlobalPose(physx::PxTransform(PhysicsMath::Vector3ToPxVec3(position), PhysicsMath::QuaternionToPxQuat(rotation)));
+
+            physx::PxU32 shapesCount = rigidActor->getNbShapes();
+            for (physx::PxU32 i = 0; i < shapesCount; ++i)
+            {
+                physx::PxShape* shape = nullptr;
+                rigidActor->getShapes(&shape, 1, i);
+
+                physx::PxGeometryHolder geomHolder = shape->getGeometry();
+
+                physx::PxGeometryType::Enum geomType = geomHolder.getType();
+                if (geomType == physx::PxGeometryType::eTRIANGLEMESH)
+                {
+                    physx::PxTriangleMeshGeometry geom;
+                    bool extracted = shape->getTriangleMeshGeometry(geom);
+                    DVASSERT(extracted);
+                    geom.scale.scale = PhysicsMath::Vector3ToPxVec3(scale);
+                    shape->setGeometry(geom);
+                }
+                else if (geomType == physx::PxGeometryType::eCONVEXMESH)
+                {
+                    physx::PxConvexMeshGeometry geom;
+                    bool extracted = shape->getConvexMeshGeometry(geom);
+                    DVASSERT(extracted);
+                    geom.scale.scale = PhysicsMath::Vector3ToPxVec3(scale);
+                    shape->setGeometry(geom);
+                }
+            }
         }
     };
 
@@ -509,6 +597,151 @@ void PhysicsSystem::SyncTransformToPhysx()
 
             PhysicsComponent* dynamicBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::DYNAMIC_BODY_COMPONENT, 0));
             updatePose(entity, dynamicBodyComponent);
+        }
+    }
+}
+
+void PhysicsSystem::DrawDebugObject()
+{
+    physx::PxActorTypeFlags actorTypes = physx::PxActorTypeFlag::eRIGID_STATIC | physx::PxActorTypeFlag::eRIGID_DYNAMIC;
+    physx::PxU32 count = physicsScene->getNbActors(actorTypes);
+    Vector<physx::PxActor*> actors;
+    actors.resize(count);
+    Vector<physx::PxShape*> shapes;
+
+    RenderHelper* renderHelper = GetScene()->GetRenderSystem()->GetDebugDrawer();
+
+    count = physicsScene->getActors(actorTypes, actors.data(), static_cast<physx::PxU32>(actors.size()));
+    for (physx::PxU32 actorIndex = 0; actorIndex < count; ++actorIndex)
+    {
+        physx::PxRigidActor* actor = actors[actorIndex]->is<physx::PxRigidActor>();
+        DVASSERT(actor != nullptr);
+
+        Matrix4 globalPose = PhysicsMath::PxMat44ToMatrix4(physx::PxMat44(actor->getGlobalPose()));
+
+        physx::PxU32 shapesCount = actor->getNbShapes();
+        shapes.resize(shapesCount);
+        shapesCount = actor->getShapes(shapes.data(), static_cast<physx::PxU32>(shapes.size()));
+
+        for (physx::PxU32 shapeIndex = 0; shapeIndex < shapesCount; ++shapeIndex)
+        {
+            physx::PxShape* shape = shapes[shapeIndex];
+            physx::PxGeometryHolder geomHolder = shape->getGeometry();
+
+            Matrix4 localPose = PhysicsMath::PxMat44ToMatrix4(physx::PxMat44(shape->getLocalPose()));
+            Matrix4 finalTranfrom = globalPose * localPose;
+
+            switch (geomHolder.getType())
+            {
+            case physx::PxGeometryType::eBOX:
+            {
+                const physx::PxBoxGeometry& boxGeom = geomHolder.box();
+                Vector3 corner(boxGeom.halfExtents.x, boxGeom.halfExtents.y, boxGeom.halfExtents.z);
+                AABBox3 box(-corner, corner);
+                renderHelper->DrawAABoxTransformed(box, finalTranfrom, Color::White, RenderHelper::DRAW_WIRE_DEPTH);
+            }
+            break;
+            case physx::PxGeometryType::eSPHERE:
+            {
+                const physx::PxSphereGeometry& sphereGeom = geomHolder.sphere();
+                Vector3 position(0.0f, 0.0f, 0.0f);
+                position = position * finalTranfrom;
+                renderHelper->DrawCircle(position, Vector3(1.0f, 0.0f, 0.0f), sphereGeom.radius, 32, Color::White, RenderHelper::DRAW_WIRE_DEPTH);
+                renderHelper->DrawCircle(position, Vector3(0.0f, 1.0f, 0.0f), sphereGeom.radius, 32, Color::White, RenderHelper::DRAW_WIRE_DEPTH);
+                renderHelper->DrawCircle(position, Vector3(0.0f, 0.0f, 1.0f), sphereGeom.radius, 32, Color::White, RenderHelper::DRAW_WIRE_DEPTH);
+            }
+            break;
+            case physx::PxGeometryType::eCAPSULE:
+                //renderHelper->DrawIcosahedron();
+                // not implemented
+                break;
+            case physx::PxGeometryType::ePLANE:
+                // not implemented
+                break;
+            case physx::PxGeometryType::eTRIANGLEMESH:
+            {
+                const physx::PxTriangleMeshGeometry& meshGeom = geomHolder.triangleMesh();
+                Matrix4 scaleMatrix = Matrix4::MakeScale(PhysicsMath::PxVec3ToVector3(meshGeom.scale.scale));
+                Matrix4 meshTransform = scaleMatrix * finalTranfrom;
+                physx::PxTriangleMesh* mesh = meshGeom.triangleMesh;
+
+                const physx::PxU32 triangleCount = mesh->getNbTriangles();
+
+                const physx::PxVec3* vertices = mesh->getVertices();
+                const void* indices = mesh->getTriangles();
+
+                const bool indices16Bits = mesh->getTriangleMeshFlags() & physx::PxTriangleMeshFlag::e16_BIT_INDICES;
+
+                for (physx::PxU32 i = 0; i < triangleCount; ++i)
+                {
+                    physx::PxU32 i0 = indices16Bits ? ((physx::PxU16*)indices)[3 * i] : ((physx::PxU32*)indices)[3 * i];
+                    physx::PxU32 i1 = indices16Bits ? ((physx::PxU16*)indices)[3 * i + 1] : ((physx::PxU32*)indices)[3 * i + 1];
+                    physx::PxU32 i2 = indices16Bits ? ((physx::PxU16*)indices)[3 * i + 2] : ((physx::PxU32*)indices)[3 * i + 2];
+
+                    Vector3 v0 = PhysicsMath::PxVec3ToVector3(vertices[i0]);
+                    Vector3 v1 = PhysicsMath::PxVec3ToVector3(vertices[i1]);
+                    Vector3 v2 = PhysicsMath::PxVec3ToVector3(vertices[i2]);
+
+                    v0 = v0 * meshTransform;
+                    v1 = v1 * meshTransform;
+                    v2 = v2 * meshTransform;
+
+                    Polygon3 polygon;
+                    polygon.AddPoint(v0);
+                    polygon.AddPoint(v1);
+                    polygon.AddPoint(v2);
+                    polygon.AddPoint(v0);
+                    renderHelper->DrawPolygon(polygon, Color::White, RenderHelper::DRAW_WIRE_DEPTH);
+                }
+            }
+            break;
+            case physx::PxGeometryType::eCONVEXMESH:
+            {
+                const physx::PxConvexMeshGeometry& meshGeom = geomHolder.convexMesh();
+                Matrix4 scaleMatrix = Matrix4::MakeScale(PhysicsMath::PxVec3ToVector3(meshGeom.scale.scale));
+                Matrix4 meshTransform = scaleMatrix * finalTranfrom;
+                physx::PxConvexMesh* mesh = meshGeom.convexMesh;
+
+                physx::PxU32 polygonCount = mesh->getNbPolygons();
+                const physx::PxU8* indices = mesh->getIndexBuffer();
+                const physx::PxVec3* vertices = mesh->getVertices();
+                for (physx::PxU32 i = 0; i < polygonCount; ++i)
+                {
+                    physx::PxHullPolygon data;
+                    mesh->getPolygonData(i, data);
+
+                    physx::PxU16 vertexCount = data.mNbVerts;
+                    for (physx::PxU16 j = 1; j < vertexCount; j++)
+                    {
+                        Vector3 v0 = PhysicsMath::PxVec3ToVector3(vertices[indices[j - 1]]);
+                        Vector3 v1 = PhysicsMath::PxVec3ToVector3(vertices[indices[j]]);
+
+                        v0 = v0 * meshTransform;
+                        v1 = v1 * meshTransform;
+
+                        renderHelper->DrawLine(v0, v1, Color::White);
+                    }
+
+                    {
+                        Vector3 v0 = PhysicsMath::PxVec3ToVector3(vertices[indices[0]]);
+                        Vector3 v1 = PhysicsMath::PxVec3ToVector3(vertices[indices[vertexCount - 1]]);
+
+                        v0 = v0 * meshTransform;
+                        v1 = v1 * meshTransform;
+
+                        renderHelper->DrawLine(v0, v1, Color::White);
+                    }
+
+                    indices += vertexCount;
+                }
+            }
+            break;
+            case physx::PxGeometryType::eHEIGHTFIELD:
+                break;
+            default:
+                DVASSERT(false);
+                break;
+            }
         }
     }
 }

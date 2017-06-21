@@ -1,4 +1,4 @@
-#include "Physics/SphereShapeComponent.h"
+#include "Physics/PlaneShapeComponent.h"
 #include "Physics/Private/PhysicsMath.h"
 
 #include <Reflection/ReflectionRegistrator.h>

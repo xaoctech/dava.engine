@@ -32,12 +32,11 @@ Component* DynamicBodyComponent::Clone(Entity* toEntity)
 {
     DynamicBodyComponent* result = new DynamicBodyComponent();
     result->SetEntity(toEntity);
-
-    if (actor != nullptr)
-    {
-        Physics* physics = GetEngineContext()->moduleManager->GetModule<Physics>();
-        result->actor = physics->ClonePxActor(actor, result);
-    }
+    CopyFields(result);
+    result->linearDamping = linearDamping;
+    result->angularDamping = angularDamping;
+    result->maxAngularVelocity = maxAngularVelocity;
+    result->lockFlags = lockFlags;
 
     return result;
 }
@@ -124,7 +123,7 @@ void DynamicBodyComponent::SetLockFlags(eLockFlags lockFlags_)
 #if defined(__DAVAENGINE_DEBUG__)
 void DynamicBodyComponent::CheckActorType() const
 {
-    DVASSERT(actor->is<physx::PxRigidDynamic>());
+    DVASSERT(GetPxActor()->is<physx::PxRigidDynamic>());
 }
 #endif
 

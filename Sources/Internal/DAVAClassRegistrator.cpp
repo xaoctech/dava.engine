@@ -10,6 +10,9 @@
 #include <Physics/CapsuleShapeComponent.h>
 #include <Physics/SphereShapeComponent.h>
 #include <Physics/PlaneShapeComponent.h>
+#include "Physics/ConvexHullShapeComponent.h"
+#include <Physics/MeshShapeComponent.h>
+#include <Physics/HeightFieldShapeComponent.h>
 #endif
 
 using namespace DAVA;
@@ -96,4 +99,7 @@ REGISTER_CLASS(BoxShapeComponent);
 REGISTER_CLASS(CapsuleShapeComponent);
 REGISTER_CLASS(SphereShapeComponent);
 REGISTER_CLASS(PlaneShapeComponent);
+REGISTER_CLASS(ConvexHullShapeComponent);
+REGISTER_CLASS(MeshShapeComponent);
+REGISTER_CLASS(HeightFieldShapeComponent);
 #endif

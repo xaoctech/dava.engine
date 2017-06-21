@@ -56,6 +56,9 @@ public:
         CAPSULE_SHAPE_COMPONENT,
         SPHERE_SHAPE_COMPONENT,
         PLANE_SHAPE_COMPONENT,
+        MESH_SHAPE_COMPONENT,
+        CONVEX_HULL_SHAPE_COMPONENT,
+        HEIGHT_FIELD_SHAPE_COMPONENT,
 #endif
 
         //debug components - note that everything below won't be serialized
