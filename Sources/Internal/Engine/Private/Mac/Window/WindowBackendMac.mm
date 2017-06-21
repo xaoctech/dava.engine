@@ -1,4 +1,4 @@
-#include "Engine/Private/OsX/Window/WindowBackendOsX.h"
+#include "Engine/Private/Mac/Window/WindowBackendMac.h"
 
 #if defined(__DAVAENGINE_QT__)
 // TODO: plarform defines
@@ -8,8 +8,8 @@
 
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
-#include "Engine/Private/OsX/PlatformCoreOsX.h"
-#include "Engine/Private/OsX/Window/WindowNativeBridgeOsX.h"
+#include "Engine/Private/Mac/PlatformCoreMac.h"
+#include "Engine/Private/Mac/Window/WindowNativeBridgeMac.h"
 
 #include "Logger/Logger.h"
 #include "Time/SystemTimer.h"

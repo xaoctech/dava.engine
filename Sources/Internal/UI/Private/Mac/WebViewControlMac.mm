@@ -1,4 +1,4 @@
-#include "UI/Private/OSX/WebViewControlMacOS.h"
+#include "UI/Private/Mac/WebViewControlMac.h"
 
 #if defined __DAVAENGINE_MACOS__ && !defined DISABLE_NATIVE_WEBVIEW
 

@@ -1,10 +1,10 @@
-#include "Engine/Private/OsX/Window/WindowDelegateOsX.h"
+#include "Engine/Private/Mac/Window/WindowDelegateMac.h"
 
 #if defined(__DAVAENGINE_QT__)
 // TODO: plarform defines
 #elif defined(__DAVAENGINE_MACOS__)
 
-#include "Engine/Private/OsX/Window/WindowNativeBridgeOsX.h"
+#include "Engine/Private/Mac/Window/WindowNativeBridgeMac.h"
 
 @implementation WindowDelegate
 

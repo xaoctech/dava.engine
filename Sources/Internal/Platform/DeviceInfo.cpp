@@ -3,7 +3,7 @@
 #if defined(__DAVAENGINE_IPHONE__)
     #include "Platform/TemplateiOS/DeviceInfoiOS.h"
 #elif defined(__DAVAENGINE_MACOS__)
-    #include "Platform/TemplateMacOS/DeviceInfoMacOS.h"
+    #include "Platform/TemplateMacOS/DeviceInfoMac.h"
 #elif defined(__DAVAENGINE_ANDROID__)
     #include "Platform/TemplateAndroid/DeviceInfoAndroid.h"
 #elif defined(__DAVAENGINE_WIN32__)

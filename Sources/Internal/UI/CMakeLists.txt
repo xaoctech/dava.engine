@@ -44,8 +44,8 @@ set( CPP_FILES_ANDROID Private/Android/*.cpp   )
 set( HPP_FILES_IOS Private/iOS/*.h )
 set( CPP_FILES_IOS Private/iOS/*.cpp Private/iOS/*.mm  )
 
-set( HPP_FILES_MACOS Private/OSX/*.h )
-set( CPP_FILES_MACOS Private/OSX/*.cpp Private/OSX/*.mm )
+set( HPP_FILES_MACOS Private/Mac/*.h )
+set( CPP_FILES_MACOS Private/Mac/*.cpp Private/Mac/*.mm )
 
 set( HPP_FILES_WIN Private/Win32/*.h )
 set( CPP_FILES_WIN Private/Win32/*.cpp )

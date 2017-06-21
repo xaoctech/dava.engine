@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_WEBVIEWCONTROL_MACOS_H__
-#define __DAVAENGINE_WEBVIEWCONTROL_MACOS_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #if defined __DAVAENGINE_MACOS__ && !defined DISABLE_NATIVE_WEBVIEW
@@ -76,5 +75,3 @@ inline bool WebViewControl::IsRenderToTexture() const
 }
 
 #endif //defined __DAVAENGINE_MACOS__ && !defined DISABLE_NATIVE_WEBVIEW
-
-#endif /* defined(__DAVAENGINE_WEBVIEWCONTROL_MACOS_H__) */

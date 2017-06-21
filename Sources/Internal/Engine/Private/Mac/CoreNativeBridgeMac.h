@@ -23,13 +23,13 @@ namespace DAVA
 {
 namespace Private
 {
-// Bridge between C++ and Objective-C for OsX's PlatformCore class
+// Bridge between C++ and Objective-C for macos PlatformCore class
 // Responsibilities:
 //  - holds neccesary Objective-C objects
-//  - processes notifications from OsXAppDelegate which implements
+//  - processes notifications from AppDelegate which implements
 //    interface NSApplicationDelegate
 //
-// CoreNativeBridge is friend of OsX's PlatformCore
+// CoreNativeBridge is friend of macos PlatformCore
 struct CoreNativeBridge final
 {
     CoreNativeBridge(PlatformCore* core);
@@ -39,7 +39,7 @@ struct CoreNativeBridge final
     void Quit();
     void OnFrameTimer();
 
-    // Callbacks from OsXAppDelegate
+    // Callbacks from AppDelegate
     void ApplicationWillFinishLaunching(NSNotification* notification);
     void ApplicationDidFinishLaunching(NSNotification* notification);
     void ApplicationDidChangeScreenParameters();

@@ -1,10 +1,10 @@
-#include "OpenUDIDMacOS.h"
+#include "OpenUDIDMac.h"
 
 #if defined(__DAVAENGINE_MACOS__)
 
 #import <AppKit/NSPasteboard.h>
 
-@implementation OpenUDIDMacOS
+@implementation OpenUDIDMac
 
 - (void)setDict:(id)dict forPasteboard:(id)pboard
 {

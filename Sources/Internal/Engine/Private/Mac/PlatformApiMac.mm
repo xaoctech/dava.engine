@@ -4,10 +4,10 @@
 #elif defined(__DAVAENGINE_MACOS__)
 
 #include "Engine/Private/EngineBackend.h"
-#include "Engine/Private/OsX/CoreNativeBridgeOsX.h"
-#include "Engine/Private/OsX/PlatformCoreOsX.h"
-#include "Engine/Private/OsX/Window/WindowBackendOsX.h"
-#include "Engine/Private/OsX/Window/WindowNativeBridgeOsX.h"
+#include "Engine/Private/Mac/CoreNativeBridgeMac.h"
+#include "Engine/Private/Mac/PlatformCoreMac.h"
+#include "Engine/Private/Mac/Window/WindowBackendMac.h"
+#include "Engine/Private/Mac/Window/WindowNativeBridgeMac.h"
 
 #import <AppKit/NSView.h>
 

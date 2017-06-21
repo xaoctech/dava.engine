@@ -1,4 +1,4 @@
-#include "Engine/Private/OsX/Window/RenderViewOsX.h"
+#include "Engine/Private/Mac/Window/RenderViewMac.h"
 
 #if defined(__DAVAENGINE_QT__)
 // TODO: plarform defines
@@ -9,7 +9,7 @@
 #import <AppKit/NSTrackingArea.h>
 #import <OpenGL/OpenGL.h>
 
-#include "Engine/Private/OsX/Window/WindowNativeBridgeOsX.h"
+#include "Engine/Private/Mac/Window/WindowNativeBridgeMac.h"
 
 #include "Logger/Logger.h"
 

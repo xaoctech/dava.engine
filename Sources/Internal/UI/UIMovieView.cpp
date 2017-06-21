@@ -11,7 +11,7 @@
 #elif defined(__DAVAENGINE_IPHONE__)
 #include "UI/Private/iOS/MovieViewControliOS.h"
 #elif defined(__DAVAENGINE_MACOS__)
-#include "UI/Private/OSX/MovieViewControlMacOS.h"
+#include "UI/Private/Mac/MovieViewControlMac.h"
 #elif defined(__DAVAENGINE_ANDROID__)
 #include "UI/Private/Android/MovieViewControlAndroid.h"
 #elif defined(__DAVAENGINE_WIN_UAP__)

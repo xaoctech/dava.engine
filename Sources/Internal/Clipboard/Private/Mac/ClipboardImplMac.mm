@@ -1,4 +1,4 @@
-#include "ClipboardImplOsx.h"
+#include "ClipboardImplMac.h"
 #include "Utils/NSStringUtils.h"
 
 #import <Foundation/Foundation.h>
@@ -6,20 +6,20 @@
 
 namespace DAVA
 {
-ClipboardImplOsx::ClipboardImplOsx()
+ClipboardImplMac::ClipboardImplMac()
 {
 }
 
-ClipboardImplOsx::~ClipboardImplOsx()
+ClipboardImplMac::~ClipboardImplMac()
 {
 }
 
-bool ClipboardImplOsx::IsReadyToUse() const
+bool ClipboardImplMac::IsReadyToUse() const
 {
     return [NSPasteboard generalPasteboard] != nil;
 }
 
-bool ClipboardImplOsx::Clear() const
+bool ClipboardImplMac::Clear() const
 {
     NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
     if (pasteboard != nil)
@@ -30,7 +30,7 @@ bool ClipboardImplOsx::Clear() const
     return false;
 }
 
-bool ClipboardImplOsx::HasText() const
+bool ClipboardImplMac::HasText() const
 {
     NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
     if (pasteboard != nil)
@@ -42,7 +42,7 @@ bool ClipboardImplOsx::HasText() const
     return false;
 }
 
-bool ClipboardImplOsx::SetText(const WideString& str)
+bool ClipboardImplMac::SetText(const WideString& str)
 {
     NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
     if (pasteboard != nil)
@@ -55,7 +55,7 @@ bool ClipboardImplOsx::SetText(const WideString& str)
     return false;
 }
 
-WideString ClipboardImplOsx::GetText() const
+WideString ClipboardImplMac::GetText() const
 {
     WideString outPut;
     NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];

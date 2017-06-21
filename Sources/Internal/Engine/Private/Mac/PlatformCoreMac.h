@@ -30,7 +30,7 @@ public:
 
     int OnFrame();
 
-    // Through this signal WindowOsX gets notified about application hidden/unhidden state has changed
+    // Through this signal WindowImpl gets notified about application hidden/unhidden state has changed
     // to update its visibility state
     Signal<bool> didHideUnhide;
 

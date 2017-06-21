@@ -5,11 +5,11 @@
 
 namespace DAVA
 {
-class ClipboardImplOsx : public IClipboard
+class ClipboardImplMac : public IClipboard
 {
 public:
-    ClipboardImplOsx();
-    ~ClipboardImplOsx() override;
+    ClipboardImplMac();
+    ~ClipboardImplMac() override;
     bool IsReadyToUse() const override;
     bool Clear() const override;
     bool HasText() const override;
@@ -17,5 +17,5 @@ public:
     WideString GetText() const override;
 };
 
-using ClipboardImpl = ClipboardImplOsx;
+using ClipboardImpl = ClipboardImplMac;
 }

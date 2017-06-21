@@ -2,7 +2,7 @@
 
 #ifdef __DAVAENGINE_MACOS__
 
-#include "Platform/TemplateMacOS/DeviceInfoMacOS.h"
+#include "Platform/TemplateMacOS/DeviceInfoMac.h"
 #include "Base/GlobalEnum.h"
 #include "Base/TemplateHelpers.h"
 
@@ -16,7 +16,7 @@
 #import <Foundation/NSProcessInfo.h>
 #import <AppKit/NSScreen.h>
 #include "Utils/StringFormat.h"
-#include "OpenUDIDMacOS.h"
+#include "OpenUDIDMac.h"
 #include "Platform/DeviceInfo.h"
 
 namespace DAVA
@@ -114,7 +114,7 @@ String DeviceInfoPrivate::GetTimeZone()
 
 String DeviceInfoPrivate::GetUDID()
 {
-    OpenUDIDMacOS* udid = [[[OpenUDIDMacOS alloc] init] autorelease];
+    OpenUDIDMac* udid = [[[OpenUDIDMac alloc] init] autorelease];
     return [[udid value] UTF8String];
 }
 

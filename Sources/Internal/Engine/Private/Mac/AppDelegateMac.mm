@@ -1,10 +1,10 @@
-#include "Engine/Private/OsX/AppDelegateOsX.h"
+#include "Engine/Private/Mac/AppDelegateMac.h"
 
 #if defined(__DAVAENGINE_QT__)
 // TODO: plarform defines
 #elif defined(__DAVAENGINE_MACOS__)
 
-#include "Engine/Private/OsX/CoreNativeBridgeOsX.h"
+#include "Engine/Private/Mac/CoreNativeBridgeMac.h"
 
 @implementation AppDelegate
 

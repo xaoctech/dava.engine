@@ -1,4 +1,4 @@
-#include "Engine/Private/OsX/PlatformCoreOsX.h"
+#include "Engine/Private/Mac/PlatformCoreMac.h"
 
 #if defined(__DAVAENGINE_QT__)
 // TODO: plarform defines
@@ -9,8 +9,8 @@
 #include "Engine/Engine.h"
 #include "Engine/Window.h"
 #include "Engine/Private/EngineBackend.h"
-#include "Engine/Private/OsX/CoreNativeBridgeOsX.h"
-#include "Engine/Private/OsX/Window/WindowBackendOsX.h"
+#include "Engine/Private/Mac/CoreNativeBridgeMac.h"
+#include "Engine/Private/Mac/Window/WindowBackendMac.h"
 #include "Utils/StringFormat.h"
 
 namespace DAVA

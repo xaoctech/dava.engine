@@ -1,4 +1,4 @@
-#include "Engine/Private/OsX/Window/WindowNativeBridgeOsX.h"
+#include "Engine/Private/Mac/Window/WindowNativeBridgeMac.h"
 
 #if defined(__DAVAENGINE_QT__)
 // TODO: plarform defines
@@ -10,9 +10,9 @@
 
 #include "Engine/Window.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
-#include "Engine/Private/OsX/Window/WindowBackendOsX.h"
-#include "Engine/Private/OsX/Window/RenderViewOsX.h"
-#include "Engine/Private/OsX/Window/WindowDelegateOsX.h"
+#include "Engine/Private/Mac/Window/WindowBackendMac.h"
+#include "Engine/Private/Mac/Window/RenderViewMac.h"
+#include "Engine/Private/Mac/Window/WindowDelegateMac.h"
 
 #include "Time/SystemTimer.h"
 #include "Logger/Logger.h"

@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface OpenUDIDMacOS : OpenUDID
+@interface OpenUDIDMac : OpenUDID
 {
 }
 
