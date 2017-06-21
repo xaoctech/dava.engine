@@ -6,10 +6,6 @@
 
 namespace DAVA
 {
-uint32 CollisionComponent::GetType() const
-{
-    return COLLISION_COMPONENT;
-}
 
 Component* CollisionComponent::Clone(Entity* toEntity)
 {

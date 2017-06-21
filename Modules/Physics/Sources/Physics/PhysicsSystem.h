@@ -30,11 +30,11 @@ public:
     void SetSimulationEnabled(bool isEnabled);
     bool IsSimulationEnabled() const;
 
-    void SetDrawDebugInfo(bool drawDebugInfo);
-    bool IsDrawDebugInfo() const;
+    void SetDebugDrawEnabled(bool drawDebugInfo);
+    bool IsDebugDrawEnabled() const;
 
 private:
-    bool FetchResults(bool block);
+    bool FetchResults(bool waitForFetchFinish);
 
     void DrawDebugInfo();
     void InitNewObjects();

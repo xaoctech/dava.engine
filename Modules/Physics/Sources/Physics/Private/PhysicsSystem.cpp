@@ -44,6 +44,8 @@ void EraseComponent(T* component, Vector<T*>& pendingComponents, Vector<T*>& com
         RemoveExchangingWithLast(components, std::distance(components.begin(), iter));
     }
 }
+
+const uint32 DEFAULT_SIMULATION_BLOCK_SIZE = 16 * 1024 * 512;
 } // namespace
 
 PhysicsSystem::PhysicsSystem(Scene* scene)
@@ -51,8 +53,8 @@ PhysicsSystem::PhysicsSystem(Scene* scene)
 {
     const KeyedArchive* options = Engine::Instance()->GetOptions();
 
-    simulationBlockSize = options->GetUInt32("physics.simulationBlockSize", 16 * 1024 * 512);
-    DVASSERT((simulationBlockSize % (16 * 1024)) == 0);
+    simulationBlockSize = options->GetUInt32("physics.simulationBlockSize", PhysicsSystemDetail::DEFAULT_SIMULATION_BLOCK_SIZE);
+    DVASSERT((simulationBlockSize % (16 * 1024)) == 0); // simulationBlockSize must be 16K multiplier
 
     const EngineContext* ctx = GetEngineContext();
     Physics* physics = ctx->moduleManager->GetModule<Physics>();
@@ -210,7 +212,7 @@ bool PhysicsSystem::IsSimulationEnabled() const
     return isSimulationEnabled;
 }
 
-void PhysicsSystem::SetDrawDebugInfo(bool drawDebugInfo_)
+void PhysicsSystem::SetDebugDrawEnabled(bool drawDebugInfo_)
 {
     drawDebugInfo = drawDebugInfo_;
     physx::PxReal enabled = drawDebugInfo == true ? 1.0f : 0.0f;
@@ -230,15 +232,15 @@ void PhysicsSystem::SetDrawDebugInfo(bool drawDebugInfo_)
     physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eCONTACT_FORCE, enabled);
 }
 
-bool PhysicsSystem::IsDrawDebugInfo() const
+bool PhysicsSystem::IsDebugDrawEnabled() const
 {
     return drawDebugInfo;
 }
 
-bool PhysicsSystem::FetchResults(bool block)
+bool PhysicsSystem::FetchResults(bool waitForFetchFinish)
 {
     DVASSERT(isSimulationRunning);
-    bool isFetched = physicsScene->fetchResults(block);
+    bool isFetched = physicsScene->fetchResults(waitForFetchFinish);
     if (isFetched == true)
     {
         isSimulationRunning = false;
@@ -277,7 +279,7 @@ bool PhysicsSystem::FetchResults(bool block)
 
 void PhysicsSystem::DrawDebugInfo()
 {
-    if (IsDrawDebugInfo() == false || isSimulationEnabled == false)
+    if (IsDebugDrawEnabled() == false || isSimulationEnabled == false)
     {
         return;
     }
@@ -391,6 +393,12 @@ void PhysicsSystem::SyncTransformToPhysx()
 {
     DVASSERT(isSimulationEnabled == false);
     DVASSERT(isSimulationRunning == false);
+    TransformSingleComponent* transformSingle = GetScene()->transformSingleComponent;
+    if (transformSingle == nullptr)
+    {
+        return;
+    }
+
     auto updatePose = [this](Entity* e, PhysicsComponent* component)
     {
         if (component != nullptr)
@@ -403,7 +411,6 @@ void PhysicsSystem::SyncTransformToPhysx()
         }
     };
 
-    TransformSingleComponent* transformSingle = GetScene()->transformSingleComponent;
     for (Entity* entity : transformSingle->localTransformChanged)
     {
         PhysicsComponent* staticBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::STATIC_BODY_COMPONENT, 0));

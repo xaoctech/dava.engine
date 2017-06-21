@@ -12,11 +12,6 @@
 
 namespace DAVA
 {
-uint32 StaticBodyComponent::GetType() const
-{
-    return STATIC_BODY_COMPONENT;
-}
-
 Component* StaticBodyComponent::Clone(Entity* toEntity)
 {
     StaticBodyComponent* result = new StaticBodyComponent();
@@ -42,7 +37,7 @@ void StaticBodyComponent::Deserialize(KeyedArchive* archive, SerializationContex
 }
 
 #if defined(__DAVAENGINE_DEBUG__)
-void StaticBodyComponent::CheckActorType() const
+void StaticBodyComponent::ValidateActorType() const
 {
     DVASSERT(actor->is<physx::PxRigidStatic>());
 }

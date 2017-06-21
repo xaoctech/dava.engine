@@ -27,7 +27,7 @@ public:
 
 protected:
 #if defined(__DAVAENGINE_DEBUG__)
-    virtual void CheckActorType() const = 0;
+    virtual void ValidateActorType() const = 0;
 #endif
 
     physx::PxActor* actor = nullptr;

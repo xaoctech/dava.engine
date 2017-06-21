@@ -11,11 +11,6 @@
 
 namespace DAVA
 {
-uint32 DynamicBodyComponent::GetType() const
-{
-    return DYNAMIC_BODY_COMPONENT;
-}
-
 Component* DynamicBodyComponent::Clone(Entity* toEntity)
 {
     DynamicBodyComponent* result = new DynamicBodyComponent();
@@ -41,7 +36,7 @@ void DynamicBodyComponent::Deserialize(KeyedArchive* archive, SerializationConte
 }
 
 #if defined(__DAVAENGINE_DEBUG__)
-void DynamicBodyComponent::CheckActorType() const
+void DynamicBodyComponent::ValidateActorType() const
 {
     DVASSERT(actor->is<physx::PxRigidDynamic>());
 }
