@@ -8,7 +8,10 @@ import tarfile
 import sys
 import build_config
 
+# These values should be set by root build.py before using this module
 verbose = False
+output_folder_path = ''
+dava_folder_path = ''
 
 
 def print_verbose(msg):
@@ -150,8 +153,8 @@ def copy_folder_recursive(src, dest, ignore=None):
             ignored = set()
         for f in files:
             if f not in ignored:
-                copy_folder_recursive(os.path.join(src, f), 
-                                    os.path.join(dest, f), 
+                copy_folder_recursive(os.path.join(src, f),
+                                    os.path.join(dest, f),
                                     ignore)
     else:
         shutil.copyfile(src, dest)
@@ -194,7 +197,7 @@ def cmake_generate_build_ndk(output_folder_path, src_folder_path, android_ndk_pa
     cmake_path = os.path.join(android_ndk_path, '../cmake/3.6.3155560/bin/cmake')
     cmake_toolchain = os.path.join(android_ndk_path, 'build/cmake/android.toolchain.cmake')
 
-    cmd = [cmake_path, 
+    cmd = [cmake_path,
         '-DANDROID_PLATFORM=' + build_config.get_android_platform(),
         '-DANDROID_STL=' + build_config.get_android_stl(),
         '-DANDROID_ARM_NEON=TRUE',
@@ -239,8 +242,8 @@ def build_android_ndk(project_path, output_path, debug, ndk_additional_args = []
     sp.wait()
 
 
-def get_android_ndk_path(root_project_path):
-    config_file_path = os.path.join(root_project_path, 'DavaConfig.in')
+def get_android_ndk_path():
+    config_file_path = os.path.join(dava_folder_path, 'DavaConfig.in')
     for line in open(config_file_path):
         splitted = line.strip().split('=')
         key = splitted[0].strip()
@@ -270,7 +273,7 @@ def get_url_file_name_no_ext(url):
 def download_and_extract(download_url, working_directory_path, result_folder_path, inner_dir_name = None):
     download_data = (download_url, result_folder_path)
 
-    try:        
+    try:
         if download_data in download_and_extract.cache:
             return result_folder_path
     except AttributeError:
@@ -332,12 +335,38 @@ def _run_process_iter(args, process_cwd='.', environment=None, shell=False):
         raise subprocess.CalledProcessError(return_code, args)
 
 
-def android_ndk_make_toolchain(root_project_path, arch, install_dir):
-    android_ndk_root = get_android_ndk_path(root_project_path)
+def android_ndk_get_toolchain_arm():
+    install_dir = os.path.join(os.path.join(output_folder_path, 'common'), 'android_ndk_toolchain_arm')
+
+    if 'installed' not in android_ndk_get_toolchain_arm.__dict__:
+        android_ndk_get_toolchain_arm.installed = False
+
+    if not android_ndk_get_toolchain_arm.installed:
+        _android_ndk_make_toolchain('arm', install_dir)
+        android_ndk_get_toolchain_arm.installed = True
+
+    return install_dir
+
+
+def android_ndk_get_toolchain_x86():
+    install_dir = os.path.join(os.path.join(output_folder_path, 'common'), 'android_ndk_toolchain_x86')
+
+    if 'installed' not in android_ndk_get_toolchain_x86.__dict__:
+        android_ndk_get_toolchain_x86.installed = False
+
+    if not android_ndk_get_toolchain_x86.installed:
+        _android_ndk_make_toolchain('x86', install_dir)
+        android_ndk_get_toolchain_x86.installed = True
+
+    return install_dir
+
+
+def _android_ndk_make_toolchain(arch, install_dir):
+    android_ndk_root = get_android_ndk_path()
 
     exec_path = os.path.join(android_ndk_root, 'build/tools')
 
-    cmd = ['python', 'make_standalone_toolchain.py', '--unified-headers', '--arch=' + arch, '--api=' + build_config.get_android_api_version(), '--stl=' + build_config.get_android_libc(), '--install-dir=' + install_dir]
+    cmd = ['python', 'make_standalone_toolchain.py', '--force', '--arch=' + arch, '--api=' + build_config.get_android_api_version(), '--stl=' + build_config.get_android_libc(), '--install-dir=' + install_dir]
     run_process(cmd, process_cwd=exec_path)
 
 
@@ -607,7 +636,7 @@ def build_and_copy_libraries_android_cmake(
     build_android_armeabiv7a_folder = os.path.join(gen_folder_path, 'build_android_armeabiv7a')
     build_android_x86_folder = os.path.join(gen_folder_path, 'build_android_x86')
 
-    android_ndk_folder_path = get_android_ndk_path(root_project_path)
+    android_ndk_folder_path = get_android_ndk_path()
 
     cmake_generate_build_ndk(build_android_armeabiv7a_folder, source_folder_path, android_ndk_folder_path, arm_abi, cmake_additional_args)
     cmake_generate_build_ndk(build_android_x86_folder, source_folder_path, android_ndk_folder_path, 'x86', cmake_additional_args)
