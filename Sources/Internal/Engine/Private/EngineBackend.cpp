@@ -65,6 +65,8 @@
 #include "Engine/Private/Android/AndroidBridge.h"
 #endif
 
+#include <cstdlib>
+
 namespace DAVA
 {
 const EngineContext* GetEngineContext()
@@ -204,6 +206,7 @@ void EngineBackend::Init(eEngineRunMode engineRunMode, const Vector<String>& mod
     }
 
     Thread::InitMainThread();
+    RegisterReflectionForBaseTypes();
     // For now only next subsystems/modules are created on demand:
     //  - LocalizationSystem
     //  - JobManager
@@ -214,7 +217,6 @@ void EngineBackend::Init(eEngineRunMode engineRunMode, const Vector<String>& mod
     CreateSubsystems(modules);
 
     RegisterDAVAClasses();
-    RegisterReflectionForBaseTypes();
 
     isInitialized = true;
 }
@@ -256,6 +258,17 @@ void EngineBackend::Quit(int exitCode_)
     default:
         break;
     }
+}
+
+void EngineBackend::Terminate(int exitCode)
+{
+#if defined(_MSC_VER) && _MSC_VER < 1900
+    // msvc prior to 2015 does not support neither std::quick_exit nor std::_Exit
+    _exit(exitCode);
+#else
+    // Here we could call std::quick_exit but it seems that only msvc2015 supports it now
+    std::_Exit(exitCode);
+#endif
 }
 
 void EngineBackend::SetCloseRequestHandler(const Function<bool(Window*)>& handler)
