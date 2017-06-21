@@ -328,9 +328,6 @@ public:
 
     void SetAngleInDegrees(float32 angle);
 
-    virtual Vector2 GetContentPreferredSize(const Vector2& constraints) const; // -1.0f means no constraint for axis
-    virtual bool IsHeightDependsOnWidth() const;
-
     /**
      \brief Returns control visibility.
         Invisible controls don't process any inputs.

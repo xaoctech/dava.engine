@@ -529,48 +529,6 @@ void UIControl::SetScaledRect(const Rect& rect, bool rectInAbsoluteCoordinates /
     }
 }
 
-Vector2 UIControl::GetContentPreferredSize(const Vector2& constraints) const
-{
-    UITextComponent* txt = GetComponent<UITextComponent>();
-    if (txt)
-    {
-        return txt->GetContentPreferredSize(constraints);
-    }
-    UIControlBackground* bg = GetComponent<UIControlBackground>();
-    if (bg != nullptr && bg->GetSprite() != nullptr)
-    {
-        if (constraints.dx > 0)
-        {
-            Vector2 size;
-            size.dx = constraints.dx;
-            size.dy = bg->GetSprite()->GetHeight() * size.dx / bg->GetSprite()->GetWidth();
-            return size;
-        }
-        else
-        {
-            return bg->GetSprite()->GetSize();
-        }
-    }
-    return Vector2(0.0f, 0.0f);
-}
-
-bool UIControl::IsHeightDependsOnWidth() const
-{
-    UITextComponent* txt = GetComponent<UITextComponent>();
-    if (txt)
-    {
-        return txt->IsHeightDependsOnWidth();
-    }
-    UIControlBackground* bg = GetComponent<UIControlBackground>();
-    if (bg == nullptr || bg->GetSprite() == nullptr)
-    {
-        return false;
-    }
-
-    UIControlBackground::eDrawType dt = bg->GetDrawType();
-    return dt == UIControlBackground::DRAW_SCALE_PROPORTIONAL || dt == UIControlBackground::DRAW_SCALE_PROPORTIONAL_ONE;
-}
-
 void UIControl::SetVisibilityFlag(bool isVisible)
 {
     if (visible == isVisible)
