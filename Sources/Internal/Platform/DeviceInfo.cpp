@@ -1,7 +1,7 @@
 #include "Platform/DeviceInfo.h"
 
 #if defined(__DAVAENGINE_IPHONE__)
-    #include "Platform/TemplateiOS/DeviceInfoiOS.h"
+    #include "Platform/TemplateiOS/DeviceInfoIos.h"
 #elif defined(__DAVAENGINE_MACOS__)
     #include "Platform/TemplateMacOS/DeviceInfoMac.h"
 #elif defined(__DAVAENGINE_ANDROID__)

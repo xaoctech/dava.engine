@@ -1,11 +1,11 @@
-#include "Engine/Private/iOS/PlatformCoreiOS.h"
+#include "Engine/Private/Ios/PlatformCoreIos.h"
 
 #if defined(__DAVAENGINE_IPHONE__)
 
 #include "Engine/Window.h"
 #include "Engine/Private/EngineBackend.h"
-#include "Engine/Private/iOS/Window/WindowBackendiOS.h"
-#include "Engine/Private/iOS/CoreNativeBridgeiOS.h"
+#include "Engine/Private/Ios/Window/WindowBackendIos.h"
+#include "Engine/Private/Ios/CoreNativeBridgeIos.h"
 
 namespace DAVA
 {

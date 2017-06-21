@@ -42,7 +42,7 @@ struct CoreNativeBridge final
     void Run();
     void OnFrameTimer();
 
-    // Callbacks from AppDelegateiOS
+    // Callbacks from AppDelegate
     BOOL ApplicationWillFinishLaunchingWithOptions(UIApplication* app, NSDictionary* launchOptions);
     BOOL ApplicationDidFinishLaunchingWithOptions(UIApplication* app, NSDictionary* launchOptions);
     void ApplicationDidBecomeActive(UIApplication* app);

@@ -2,7 +2,7 @@
 
 #ifdef __DAVAENGINE_IPHONE__
 
-#include "Platform/TemplateiOS/DeviceInfoiOS.h"
+#include "Platform/TemplateiOS/DeviceInfoIos.h"
 #include "Utils/StringFormat.h"
 #import "Utils/NSStringUtils.h"
 #include "Base/GlobalEnum.h"

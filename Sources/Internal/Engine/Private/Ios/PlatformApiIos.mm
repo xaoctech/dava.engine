@@ -3,10 +3,10 @@
 #if defined(__DAVAENGINE_IPHONE__)
 
 #include "Engine/Private/EngineBackend.h"
-#include "Engine/Private/iOS/PlatformCoreiOS.h"
-#include "Engine/Private/iOS/CoreNativeBridgeiOS.h"
-#include "Engine/Private/iOS/Window/WindowBackendiOS.h"
-#include "Engine/Private/iOS/Window/WindowNativeBridgeiOS.h"
+#include "Engine/Private/Ios/PlatformCoreIos.h"
+#include "Engine/Private/Ios/CoreNativeBridgeIos.h"
+#include "Engine/Private/Ios/Window/WindowBackendIos.h"
+#include "Engine/Private/Ios/Window/WindowNativeBridgeIos.h"
 #include "Render/Image/Image.h"
 
 #import <UIKit/UIKit.h>

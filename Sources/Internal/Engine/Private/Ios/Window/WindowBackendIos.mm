@@ -1,11 +1,11 @@
-#include "Engine/Private/iOS/Window/WindowBackendiOS.h"
+#include "Engine/Private/Ios/Window/WindowBackendIos.h"
 
 #if defined(__DAVAENGINE_IPHONE__)
 
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
-#include "Engine/Private/iOS/PlatformCoreiOS.h"
-#include "Engine/Private/iOS/Window/WindowNativeBridgeiOS.h"
+#include "Engine/Private/Ios/PlatformCoreIos.h"
+#include "Engine/Private/Ios/Window/WindowNativeBridgeIos.h"
 #include "Time/SystemTimer.h"
 
 namespace DAVA

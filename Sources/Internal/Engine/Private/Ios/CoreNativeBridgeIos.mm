@@ -1,12 +1,12 @@
-#include "Engine/Private/iOS/CoreNativeBridgeiOS.h"
+#include "Engine/Private/Ios/CoreNativeBridgeIos.h"
 
 #if defined(__DAVAENGINE_IPHONE__)
 
 #include "Engine/Engine.h"
 #include "Engine/Ios/PlatformApi.h"
 #include "Engine/Private/EngineBackend.h"
-#include "Engine/Private/iOS/PlatformCoreiOS.h"
-#include "Engine/Private/iOS/Window/WindowBackendiOS.h"
+#include "Engine/Private/Ios/PlatformCoreIos.h"
+#include "Engine/Private/Ios/Window/WindowBackendIos.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
 
 #include "Logger/Logger.h"

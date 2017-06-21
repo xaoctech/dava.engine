@@ -188,7 +188,7 @@ DeviceInfo::NetworkInfo DeviceInfoPrivate::GetNetworkInfo()
 
     [reachability stopNotifier];
 
-    // No way to determine signal strength under iOS.
+    // No way to determine signal strength under macos.
     return networkInfo;
 }
 

@@ -10,8 +10,8 @@
 #include "Render/Image/Image.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UITextField.h"
-#include "UI/Private/iOS/TextFieldPlatformImpliOS.h"
-#include "UI/Private/iOS/UITextFieldHolder.h"
+#include "UI/Private/Ios/TextFieldPlatformImplIos.h"
+#include "UI/Private/Ios/UITextFieldHolder.h"
 #include "Utils/NSStringUtils.h"
 #include "Utils/UTF8Utils.h"
 

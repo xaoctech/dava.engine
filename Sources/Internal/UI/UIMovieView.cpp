@@ -9,7 +9,7 @@
 #include "Platform/MovieViewControlStub.h"
 #include "Render/RenderHelper.h"
 #elif defined(__DAVAENGINE_IPHONE__)
-#include "UI/Private/iOS/MovieViewControliOS.h"
+#include "UI/Private/Ios/MovieViewControlIos.h"
 #elif defined(__DAVAENGINE_MACOS__)
 #include "UI/Private/Mac/MovieViewControlMac.h"
 #elif defined(__DAVAENGINE_ANDROID__)
