@@ -444,13 +444,13 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBat
     if (info.polygonGroup == nullptr)
         return false;
 
-    String fxName(info.material->GetEffectiveFXName().c_str());
-    std::transform(fxName.begin(), fxName.end(), fxName.begin(), ::tolower);
+    String baseFXName(info.material->GetEffectiveFXName().c_str());
+    std::transform(baseFXName.begin(), baseFXName.end(), baseFXName.begin(), ::tolower);
 
-    static const String InvalidMaterialsForDecal[] = { "shadow", "silhouette" };
-    for (const String& m : InvalidMaterialsForDecal)
+    static const String invalidMaterialsForDecal[] = { "shadow", "silhouette" };
+    for (const String& m : invalidMaterialsForDecal)
     {
-        if (fxName.find(m) != String::npos)
+        if (baseFXName.find(m) != String::npos)
         {
             // Logger::Warning("Material ignored for decal: %s", fxName.c_str());
             return false;
@@ -515,37 +515,30 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBat
     /*
      * Process material
      */
-    bool isBlinnFongMaterial = fxName.find("normalizedblinnphong") != String::npos;
-
-    ScopedPtr<Texture> geoDecalTexture(Texture::CreateFromFile(info.albedo));
+    String fxFileName = (baseFXName.find("normalizedblinnphong") != String::npos) ? "NormalizedBlinnPhongAllQualities.GeoDecal.material" : "GeoDecal.material";
+    FilePath fxName = (info.overridenMaterialsPath.IsEmpty() ? String("~res:/Materials/") : info.overridenMaterialsPath) + fxFileName;
 
     ScopedPtr<NMaterial> material(new NMaterial());
-    material->SetQualityGroup(info.material->GetQualityGroup());
-    material->SetFXName(FastName(isBlinnFongMaterial ? "~res:/Materials/GeoDecal.Translucent.material" : "~res:/Materials/GeoDecal.material"));
-    material->SetMaterialName(FastName("GeoDecal"));
     material->SetParent(info.material);
-    material->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, geoDecalTexture);
+    material->SetQualityGroup(info.material->GetQualityGroup());
+    material->SetFXName(FastName(fxName.GetStringValue().c_str()));
+    material->SetMaterialName(FastName("GeoDecal"));
     material->SetRuntime(true);
 
-    if (fxName.find("lightmap") != String::npos)
+    if (baseFXName.find("lightmap") != String::npos)
     {
         material->AddFlag(FastName("MATERIAL_LIGHTMAP"), 1);
     }
-    if (isBlinnFongMaterial)
-    {
-        bool perpixel = fxName.find("pervertex") == String::npos;
-        material->AddFlag(FastName("NORMALIZED_BLINN_PHONG"), 1);
-        material->AddFlag(FastName("PIXEL_LIT"), perpixel ? 1 : 0);
-        material->AddFlag(FastName("VERTEX_LIT"), perpixel ? 0 : 1);
 
-        if (info.useCustomNormal)
-        {
-            ScopedPtr<Texture> customNormal(Texture::CreateFromFile(info.normal));
-            material->AddTexture(NMaterialTextureName::TEXTURE_NORMAL, customNormal);
-        }
+    ScopedPtr<Texture> geoDecalTexture(Texture::CreateFromFile(info.albedo));
+    material->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, geoDecalTexture);
+
+    if (info.useCustomNormal)
+    {
+        ScopedPtr<Texture> customNormal(Texture::CreateFromFile(info.normal));
+        material->AddTexture(NMaterialTextureName::TEXTURE_NORMAL, customNormal);
     }
 
-    material->PreBuildMaterial(PASS_FORWARD);
     dstBatch->SetMaterial(material);
     return true;
 }

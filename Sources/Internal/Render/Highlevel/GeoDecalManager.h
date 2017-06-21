@@ -30,6 +30,7 @@ public:
         Mapping mapping = Mapping::PLANAR;
         FilePath albedo;
         FilePath normal;
+        FilePath overridenMaterialsPath;
         Vector2 uvOffset;
         Vector2 uvScale = Vector2(1.0f, 1.0f);
 

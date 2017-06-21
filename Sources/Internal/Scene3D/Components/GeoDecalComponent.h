@@ -51,6 +51,7 @@ public:
     void Set##Name(const T& value) { config.varName = value; ConfigChanged(); }
     IMPL_PROPERTY(FilePath, DecalAlbedo, albedo);
     IMPL_PROPERTY(FilePath, DecalNormal, normal);
+    IMPL_PROPERTY(FilePath, OverridenMaterialsPath, overridenMaterialsPath);
     IMPL_PROPERTY(AABBox3, BoundingBox, boundingBox);
     IMPL_PROPERTY(Vector2, UVScale, uvScale);
     IMPL_PROPERTY(Vector2, UVOffset, uvOffset);

@@ -22,6 +22,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(GeoDecalComponent)
     .Field("boundingBox", &GeoDecalComponent::GetBoundingBox, &GeoDecalComponent::SetBoundingBox)[M::DisplayName("Bounding Box")]
     .Field("decalAlbedo", &GeoDecalComponent::GetDecalAlbedo, &GeoDecalComponent::SetDecalAlbedo)[M::DisplayName("Decal albedo")]
     .Field("decalNormal", &GeoDecalComponent::GetDecalNormal, &GeoDecalComponent::SetDecalNormal)[M::DisplayName("Decal normal")]
+    .Field("overridenMaterialsPath", &GeoDecalComponent::GetOverridenMaterialsPath, &GeoDecalComponent::SetOverridenMaterialsPath)[M::DisplayName("Overriden Materials Path")]
     .Field("textureMapping", &GeoDecalComponent::GetMapping, &GeoDecalComponent::SetMapping)[M::DisplayName("Texture mapping"), M::EnumT<GeoDecalManager::Mapping>()]
     .Field("uvScale", &GeoDecalComponent::GetUVScale, &GeoDecalComponent::SetUVScale)[M::DisplayName("UV Scale")]
     .Field("uvOffset", &GeoDecalComponent::GetUVOffset, &GeoDecalComponent::SetUVOffset)[M::DisplayName("UV Offset")]
