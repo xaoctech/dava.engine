@@ -5,6 +5,7 @@
 #include "UI/UIButton.h"
 #include "UI/UIControlSystem.h"
 #include "UI/Render/UIDebugRenderComponent.h"
+#include <UI/Layouts/UISizePolicyComponent.h>
 #include "Render/2D/Font.h"
 #include "Scene3D/Scene.h"
 #include "Debug/ProfilerOverlay.h"
@@ -107,6 +108,7 @@ void ProfilerTest::LoadResources()
     dumpText = CreateStaticText(Rect(0.f, 0.f, 500.f, 400.f), L"Dump Text", dumpFont, Color(0.f, 1.f, 0.f, 1.f));
     dumpText->SetMultilineType(UIStaticText::MULTILINE_ENABLED);
     dumpText->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
+    dumpText->GetOrCreateComponent<UISizePolicyComponent>()->SetVerticalPolicy(UISizePolicyComponent::eSizePolicy::PERCENT_OF_CONTENT);
     dumpScrollView->AddControlToContainer(dumpText);
     dumpScrollView->RecalculateContentSize();
 
@@ -227,8 +229,9 @@ void ProfilerTest::DumpAverageToUI(DAVA::ProfilerCPU* profiler, DAVA::int32 snap
     std::stringstream stream;
     profiler->DumpAverage(marker, 10, stream, snapshotID);
 
-    dumpText->SetText(UTF8Utils::EncodeToWideString(stream.str()));
-    dumpText->SetSize(dumpText->GetContentPreferredSize(dumpText->GetSize()));
+    dumpText->SetUtf8Text(stream.str());
+    dumpText->UpdateLayout();
+
     dumpScrollView->RecalculateContentSize();
     dumpScrollView->SetVerticalScrollPosition(0.f);
 
