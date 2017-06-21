@@ -127,7 +127,10 @@ public:
     DLCManagerImpl() = default; // TODO remove it later (fix for client UnitTests)
 #endif
     ~DLCManagerImpl();
-
+    void TestWriteAccessToPackDirectory(const FilePath& dirToDownloadPacks_);
+    void FillPreloadedPacks();
+    void TestPackDirectoryExist();
+    void TestLoggerAndDumpInitials(const FilePath& dirToDownloadPacks, const String& urlToServerSuperpack, const Hints& hints);
     void Initialize(const FilePath& dirToDownloadPacks_,
                     const String& urlToServerSuperpack_,
                     const Hints& hints_) override;
