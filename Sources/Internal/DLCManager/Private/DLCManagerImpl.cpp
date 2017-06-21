@@ -13,6 +13,7 @@
 #include "Engine/Engine.h"
 #include "Debug/Backtrace.h"
 #include "Platform/DeviceInfo.h"
+#include <iomanip>
 
 namespace DAVA
 {
@@ -155,28 +156,74 @@ DLCManagerImpl::~DLCManagerImpl()
     ClearResouces();
 }
 
-void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
-                                const String& urlToServerSuperpack_,
-                                const Hints& hints_)
+void DLCManagerImpl::TestWriteAccessToPackDirectory(const FilePath& dirToDownloadPacks_)
 {
-    DVASSERT(Thread::IsMainThread());
+    FilePath tmpFile = dirToDownloadPacks_ + "tmp.file";
+    {
+        ScopedPtr<File> f(File::Create(tmpFile, File::WRITE | File::CREATE));
+        if (!f)
+        {
+            String err = "can't write into directory: " + dirToDownloadedPacks.GetStringValue();
+            DAVA_THROW(DAVA::Exception, err);
+        }
+    }
+    FileSystem* fs = GetEngineContext()->fileSystem;
+    fs->DeleteFile(tmpFile);
+}
 
-    FilePath logPath(hints_.logFilePath);
-    String fullLogPath = logPath.GetAbsolutePathname();
+void DLCManagerImpl::FillPreloadedPacks()
+{
+    preloadedPacks.clear();
+    if (!hints.preloadedPacks.empty())
+    {
+        StringStream ss(hints.preloadedPacks);
+        for (String packName; getline(ss, packName);)
+        {
+            if (packName.empty())
+            {
+                continue; // skip empty lines if any
+            }
+            DVASSERT(packName.find(' ') == String::npos); // No spaces
+            preloadedPacks.emplace(packName, PreloadedPack(packName));
+        }
+    }
+}
 
-    Logger::Info("DLCManager::Initialize(\ndirToDownloadPacks:%s, "
-                 "\nurlToServerSuperpack:%s, \nlogFilePath:%s, "
-                 "\nretryConnectMilliseconds:%d, \nmaxFilesToDownload: %d"
-                 "\npreloadedPacks: %s",
-                 dirToDownloadPacks_.GetAbsolutePathname().c_str(),
-                 urlToServerSuperpack_.c_str(),
-                 fullLogPath.c_str(),
-                 hints_.retryConnectMilliseconds,
-                 hints_.maxFilesToDownload,
-                 hints_.preloadedPacks.c_str());
+void DLCManagerImpl::TestPackDirectoryExist()
+{
+    FileSystem* fs = GetEngineContext()->fileSystem;
+    if (FileSystem::DIRECTORY_CANT_CREATE == fs->CreateDirectory(dirToDownloadedPacks, true))
+    {
+        String err = "can't create directory for packs: " + dirToDownloadedPacks.GetStringValue();
+        DAVA_THROW(DAVA::Exception, err);
+    }
+}
 
+struct tabs
+{
+    explicit tabs(size_t n)
+        : count(n)
+    {
+    }
+    size_t count;
+};
+
+static std::ostream& operator<<(std::ostream& os, const tabs& t)
+{
+    for (size_t i = 0; i < t.count; ++i)
+    {
+        os << '\t';
+    }
+    return os;
+}
+
+void DLCManagerImpl::TestLoggerAndDumpInitials(const FilePath& dirToDownloadPacks, const String& urlToServerSuperpack, const Hints& hints_)
+{
     if (!log.is_open())
     {
+        FilePath p(hints_.logFilePath);
+        String fullLogPath = p.GetAbsolutePathname();
+
         log.open(fullLogPath.c_str(), std::ios::trunc);
         if (!log)
         {
@@ -184,13 +231,49 @@ void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
             Logger::Error("can't create dlc_manager.log error: %s", err);
             DAVA_THROW(DAVA::Exception, err);
         }
+
+        String preloaded = hints_.preloadedPacks;
+        transform(begin(preloaded), end(preloaded), begin(preloaded), [](char c)
+                  {
+                      return c == '\n' ? ' ' : c;
+                  });
+
+        log << "DLCManager::Initialize" << '\n'
+            << tabs(0) << "(\n"
+            << tabs(1) << "dirToDownloadPacks: " << dirToDownloadPacks.GetAbsolutePathname() << '\n'
+            << tabs(1) << "urlToServerSuperpack: " << urlToServerSuperpack << '\n'
+            << tabs(1) << "hints:\n"
+            << tabs(1) << "(\n"
+            << tabs(2) << "logFilePath(this file): " << hints_.logFilePath << '\n'
+            << tabs(2) << "preloadedPacks: " << preloaded << '\n'
+            << tabs(2) << "retryConnectMilliseconds: " << hints_.retryConnectMilliseconds << '\n'
+            << tabs(2) << "maxFilesToDownload: " << hints_.maxFilesToDownload << '\n'
+            << tabs(2) << "timeoutForDownload: " << hints_.timeoutForDownload << '\n'
+            << tabs(2) << "retriesCountForDownload: " << hints_.retriesCountForDownload << '\n'
+            << tabs(2) << "downloaderMaxHandles: " << hints_.downloaderMaxHandles << '\n'
+            << tabs(2) << "downloaderChankBufSize: " << hints_.downloaderChankBufSize << '\n'
+            << tabs(1) << ")\n"
+            << tabs(0) << ")\n";
+
         const EnumMap* enumMap = GlobalEnumMap<eGPUFamily>::Instance();
         eGPUFamily e = DeviceInfo::GetGPUFamily();
         const char* gpuFamily = enumMap->ToString(e);
         log << "current_device_gpu: " << gpuFamily << std::endl;
     }
+}
 
-    log << __FUNCTION__ << std::endl;
+void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
+                                const String& urlToServerSuperpack_,
+                                const Hints& hints_)
+{
+    DVASSERT(Thread::IsMainThread());
+    using namespace std;
+
+    bool isFirstTimeCall = (log.is_open() == false);
+
+    TestLoggerAndDumpInitials(dirToDownloadPacks_, urlToServerSuperpack_, hints_);
+
+    log << __FUNCTION__ << endl;
 
     DLCDownloader::Hints downloaderHints;
     downloaderHints.numOfMaxEasyHandles = static_cast<int>(hints.downloaderMaxHandles);
@@ -202,50 +285,22 @@ void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
         downloader->SetHints(downloaderHints);
     }
 
-    // TODO check if signal asyncConnectStateChanged has any subscriber
-
     if (!IsInitialized())
     {
         dirToDownloadedPacks = dirToDownloadPacks_;
         localCacheMeta = dirToDownloadPacks_ + "local_copy_server_meta.meta";
         localCacheFileTable = dirToDownloadPacks_ + "local_copy_server_file_table.block";
-
-        FileSystem* fs = FileSystem::Instance();
-        if (FileSystem::DIRECTORY_CANT_CREATE == fs->CreateDirectory(dirToDownloadedPacks, true))
-        {
-            String err = "can't create directory for packs: " + dirToDownloadedPacks.GetStringValue();
-            DAVA_THROW(DAVA::Exception, err);
-        }
-
-        ScopedPtr<File> f(File::Create(dirToDownloadPacks_ + "tmp.file", File::WRITE | File::CREATE));
-        if (!f)
-        {
-            String err = "can't write into directory: " + dirToDownloadedPacks.GetStringValue();
-            DAVA_THROW(DAVA::Exception, err);
-        }
-
         urlToSuperPack = urlToServerSuperpack_;
         hints = hints_;
 
-        preloadedPacks.clear();
-        if (!hints.preloadedPacks.empty())
-        {
-            StringStream ss(hints.preloadedPacks);
-            for (String packName; getline(ss, packName);)
-            {
-                if (packName.empty())
-                {
-                    continue; // skip empty lines if any
-                }
-                DVASSERT(packName.find(' ') == String::npos); // No spaces
-                preloadedPacks.emplace(packName, PreloadedPack(packName));
-            }
-        }
+        TestPackDirectoryExist();
+        TestWriteAccessToPackDirectory(dirToDownloadPacks_);
+        FillPreloadedPacks();
     }
 
     // if Initialize called second time
     fullSizeServerData = 0;
-    if (0 != downloadTaskId)
+    if (nullptr != downloadTaskId)
     {
         downloader->RemoveTask(downloadTaskId);
         downloadTaskId = nullptr;
@@ -254,9 +309,13 @@ void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
     initError = InitError::AllGood;
     initState = InitState::LoadingRequestAskFooter;
 
-    StartScanDownloadedFiles(); // safe to call several times, only first will work
+    // safe to call several times, only first will work
+    StartScanDownloadedFiles();
 
-    SetRequestingEnabled(true);
+    if (isFirstTimeCall)
+    {
+        SetRequestingEnabled(true);
+    }
 }
 
 void DLCManagerImpl::Deinitialize()
@@ -335,8 +394,9 @@ void DLCManagerImpl::Update(float frameDelta)
             }
         }
     }
-    catch (std::exception& ex)
+    catch (Exception& ex)
     {
+        log << "PackManager error: exception: " << ex.what() << " file: " << ex.file << "(" << ex.line << ")" << std::endl;
         Logger::Error("PackManager error: %s", ex.what());
         throw; // crush or let parent code decide
     }
@@ -513,7 +573,10 @@ void DLCManagerImpl::AskFooter()
     if (nullptr == downloadTaskId)
     {
         downloadTaskId = downloader->StartGetContentSize(urlToSuperPack);
-        DVASSERT(nullptr != downloadTaskId);
+        if (nullptr == downloadTaskId)
+        {
+            DAVA_THROW(Exception, "can't start get_size task with url: " + urlToSuperPack);
+        }
     }
     else
     {
@@ -528,17 +591,10 @@ void DLCManagerImpl::AskFooter()
             if (allGood)
             {
                 fullSizeServerData = status.sizeTotal;
-                if (fullSizeServerData == 0)
-                {
-                    StringStream ss;
-                    ss << "can't get size of file on server side (status: " << status << ")"
-                       << " url: " << urlToSuperPack;
-                    DAVA_THROW(DAVA::Exception, ss.str());
-                }
-
                 if (fullSizeServerData < sizeof(PackFormat::PackFile))
                 {
-                    DAVA_THROW(DAVA::Exception, "too small superpack on server");
+                    log << "error: too small superpack on server: " << status << std::endl;
+                    DAVA_THROW(DAVA::Exception, "too small superpack on server fullSizeServerData:");
                 }
                 // start downloading footer from server superpack
                 uint64 downloadOffset = fullSizeServerData - sizeof(initFooterOnServer);
@@ -546,6 +602,10 @@ void DLCManagerImpl::AskFooter()
 
                 memBufWriter.reset(new MemoryBufferWriter(&initFooterOnServer, sizeofFooter));
                 downloadTaskId = downloader->StartTask(urlToSuperPack, *memBufWriter, DLCDownloader::Range(downloadOffset, sizeofFooter));
+                if (nullptr == downloadTaskId)
+                {
+                    DAVA_THROW(Exception, "can't start get_size task with url: " + urlToSuperPack);
+                }
                 initState = InitState::LoadingRequestGetFooter;
                 log << "initState: " << ToString(initState) << std::endl;
             }
