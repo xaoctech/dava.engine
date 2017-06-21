@@ -1,11 +1,11 @@
-#include "Engine/Private/UWP/Window/WindowNativeBridgeUWP.h"
+#include "Engine/Private/Win10/Window/WindowNativeBridgeWin10.h"
 
 #if defined(__DAVAENGINE_WIN_UAP__)
 
 #include "Engine/Window.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
-#include "Engine/Private/UWP/PlatformCoreUWP.h"
-#include "Engine/Private/UWP/Window/WindowBackendUWP.h"
+#include "Engine/Private/Win10/PlatformCoreWin10.h"
+#include "Engine/Private/Win10/Window/WindowBackendWin10.h"
 
 #include "Logger/Logger.h"
 #include "Utils/UTF8Utils.h"

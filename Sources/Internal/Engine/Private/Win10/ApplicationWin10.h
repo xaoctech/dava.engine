@@ -12,10 +12,10 @@ namespace Private
 {
 // clang-format off
 
-ref class UWPApplication sealed : public ::Windows::UI::Xaml::Application
+ref class Application sealed : public ::Windows::UI::Xaml::Application
 {
 internal:
-    UWPApplication(Vector<String> cmdargs);
+    Application(Vector<String> cmdargs);
 
 protected:
     // ::Windows::UI::Xaml::Application overriden methods

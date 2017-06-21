@@ -1,4 +1,4 @@
-#include "Engine/Private/UWP/PlatformCoreUWP.h"
+#include "Engine/Private/Win10/PlatformCoreWin10.h"
 
 #if defined(__DAVAENGINE_WIN_UAP__)
 
@@ -6,8 +6,8 @@
 #include "Engine/Window.h"
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
-#include "Engine/Private/UWP/DllImportWin10.h"
-#include "Engine/Private/UWP/Window/WindowBackendUWP.h"
+#include "Engine/Private/Win10/DllImportWin10.h"
+#include "Engine/Private/Win10/Window/WindowBackendWin10.h"
 
 #include "Concurrency/LockGuard.h"
 #include "Concurrency/Thread.h"

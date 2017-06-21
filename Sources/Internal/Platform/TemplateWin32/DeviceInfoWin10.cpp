@@ -16,8 +16,8 @@
 #include "Base/GlobalEnum.h"
 
 #include "Engine/Engine.h"
-#include "Engine/Private/UWP/PlatformCoreUWP.h"
-#include "Platform/TemplateWin32/DeviceInfoWinUAP.h"
+#include "Engine/Private/Win10/PlatformCoreWin10.h"
+#include "Platform/TemplateWin32/DeviceInfoWin10.h"
 
 __DAVAENGINE_WIN_UAP_INCOMPLETE_IMPLEMENTATION__MARKER__
 const wchar_t* KOSTIL_SURFACE_MOUSE = L"NTRG0001";
@@ -110,7 +110,7 @@ DeviceInfoPrivate::DeviceInfoPrivate()
     if (isMobileMode)
     {
         // DeviceInfoPrivate constructor must be called in UI thread and DeviceInfo is explicitly instantiated in PlatformCore::OnLaunchedOrActivated
-        // file Engine/Private/UWP/PlatformCoreUWP.cpp
+        // file Engine/Private/Win10/PlatformCoreWin10.cpp
         CheckContinuumMode();
 
         using namespace ::Windows::Foundation;

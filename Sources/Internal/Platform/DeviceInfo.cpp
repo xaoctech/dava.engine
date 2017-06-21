@@ -9,7 +9,7 @@
 #elif defined(__DAVAENGINE_WIN32__)
     #include "Platform/TemplateWin32/DeviceInfoWin32.h"
 #elif defined(__DAVAENGINE_WIN_UAP__)
-    #include "Platform/TemplateWin32/DeviceInfoWinUAP.h"
+    #include "Platform/TemplateWin32/DeviceInfoWin10.h"
 #elif defined(__DAVAENGINE_LINUX__)
     #include "Platform/Linux/DeviceInfoLinux.h"
 #endif

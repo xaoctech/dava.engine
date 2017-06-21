@@ -50,8 +50,8 @@ set( CPP_FILES_MACOS Private/OSX/*.cpp Private/OSX/*.mm )
 set( HPP_FILES_WIN Private/Win32/*.h )
 set( CPP_FILES_WIN Private/Win32/*.cpp )
 
-set( HPP_FILES_WINUAP Private/UWP/*.h )
-set( CPP_FILES_WINUAP Private/UWP/*.cpp )
+set( HPP_FILES_WINUAP Private/Win10/*.h )
+set( CPP_FILES_WINUAP Private/Win10/*.cpp )
 
 set( ERASE_FILES_NOT_ANDROID     UITextFieldAndroid.cpp
                                  UITextFieldAndroid.h

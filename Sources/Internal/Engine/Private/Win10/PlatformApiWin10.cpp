@@ -3,9 +3,9 @@
 #if defined(__DAVAENGINE_WIN_UAP__)
 
 #include "Engine/Private/EngineBackend.h"
-#include "Engine/Private/UWP/PlatformCoreUWP.h"
-#include "Engine/Private/UWP/Window/WindowBackendUWP.h"
-#include "Engine/Private/UWP/Window/WindowNativeBridgeUWP.h"
+#include "Engine/Private/Win10/PlatformCoreWin10.h"
+#include "Engine/Private/Win10/Window/WindowBackendWin10.h"
+#include "Engine/Private/Win10/Window/WindowNativeBridgeWin10.h"
 
 namespace DAVA
 {

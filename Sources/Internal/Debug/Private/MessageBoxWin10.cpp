@@ -7,7 +7,7 @@
 #include "Concurrency/Semaphore.h"
 #include "Concurrency/Thread.h"
 #include "Engine/PlatformApi.h"
-#include "Engine/Private/UWP/PlatformCoreUWP.h"
+#include "Engine/Private/Win10/PlatformCoreWin10.h"
 #include "Utils/UTF8Utils.h"
 
 #include <ppltasks.h>

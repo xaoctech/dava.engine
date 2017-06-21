@@ -24,7 +24,7 @@ public:
 
     void SetScreenTimeoutEnabled(bool enabled);
 
-    // Forwarded methods from UWPApplication
+    // Forwarded methods from Application
     void OnLaunchedOrActivated(::Windows::ApplicationModel::Activation::IActivatedEventArgs ^ args);
     void OnWindowCreated(::Windows::UI::Xaml::Window ^ xamlWindow);
     void OnSuspending();
