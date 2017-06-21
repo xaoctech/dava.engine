@@ -75,7 +75,7 @@ private:
     void* TruncateText(void* text, int maxLength);
     void UpdateStaticTexture();
     void UpdateNativeRect(const Rect& virtualRect, int xOffset);
-    
+
     void OnWindowDestroyed(Window* destroyedWindow);
 
     Token windowDestroyedToken;

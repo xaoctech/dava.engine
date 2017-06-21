@@ -114,7 +114,7 @@ private: // WebView event handlers
     void OnWindowDestroyed(Window* w);
 
 private:
-// clang-format off
+    // clang-format off
     Window* window = nullptr;
     UIWebView* uiWebView = nullptr;
     IUIWebViewDelegate* webViewDelegate = nullptr;

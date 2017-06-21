@@ -17,7 +17,7 @@ public:
     static void Init();
     static void Deinit();
     static bool IsInited();
-    
+
     /** 
     Return language code from Steam (for example: "ru" for russian, "en" for english).
     Try to return set language for app. 

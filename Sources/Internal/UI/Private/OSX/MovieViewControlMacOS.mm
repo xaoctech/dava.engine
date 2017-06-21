@@ -51,7 +51,7 @@ enum MoviePlayerHelperPlaybackState
     // Scaling mode for newly open media
     DAVA::eMovieScalingMode scalingMode;
     double videoDuration;
-    
+
     DAVA::Window* window;
 }
 

@@ -185,7 +185,6 @@ void UIScreenManager::StartGLAnimation()
     RenderView* view = (RenderView*)controller.view;
     [view performSelector:@selector(startAnimation)];
 }
-
 }
 
 #endif // #if defined(__DAVAENGINE_IPHONE__)

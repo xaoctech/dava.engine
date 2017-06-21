@@ -50,7 +50,6 @@ UIControlSystem::UIControlSystem()
     soundSystem = GetSystem<UISoundSystem>();
     updateSystem = GetSystem<UIUpdateSystem>();
     renderSystem = GetSystem<UIRenderSystem>();
-    
 
     vcs = new VirtualCoordinatesSystem();
     vcs->EnableReloadResourceOnResize(true);

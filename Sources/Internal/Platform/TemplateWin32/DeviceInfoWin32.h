@@ -32,7 +32,6 @@ public:
     bool IsHIDConnected(DeviceInfo::eHIDType type);
     bool IsTouchPresented();
     String GetCarrierName();
-
 };
 }
 
