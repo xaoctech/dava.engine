@@ -76,7 +76,7 @@ void TextDrawSystem::PushNextBatch(const Color& color)
     uint32 vertexCount = static_cast<uint32>(vertices.size());
     uint32 indexCount = 6 * vertexCount / 4;
 
-    BatchDescriptor batchDescriptor;
+    BatchDescriptor2D batchDescriptor;
     batchDescriptor.singleColor = color;
     batchDescriptor.vertexCount = vertexCount;
     batchDescriptor.indexCount = DAVA::Min(TextBlockGraphicRender::GetSharedIndexBufferCapacity(), indexCount);

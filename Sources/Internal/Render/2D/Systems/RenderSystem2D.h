@@ -2,11 +2,11 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/Singleton.h"
-#include "Render/RenderBase.h"
-#include "Render/2D/Sprite.h"
-
-#include "UI/UIControlBackground.h"
 #include "Functional/Function.h"
+#include "Render/2D/Sprite.h"
+#include "Render/2D/Systems/BatchDescriptor2D.h"
+#include "Render/RenderBase.h"
+#include "UI/UIControlBackground.h"
 
 namespace DAVA
 {
@@ -116,28 +116,6 @@ private:
                                             float32 maskBase, float32 maskStretchBase, float32 maskStretchMax, float32 maskMax); //unlike in TileData, this method generates actual vertices info along the axis
 };
 
-struct BatchDescriptor
-{
-    static const uint32 MAX_TEXTURE_STREAMS_COUNT = 4;
-
-    uint32 vertexCount = 0;
-    uint32 indexCount = 0;
-    uint32 vertexStride = 0;
-    uint32 texCoordStride = 0;
-    uint32 texCoordCount = 1;
-    uint32 colorStride = 0;
-    rhi::HTextureSet textureSetHandle;
-    rhi::HSamplerState samplerStateHandle;
-    rhi::PrimitiveType primitiveType = rhi::PRIMITIVE_TRIANGLELIST;
-    const float32* vertexPointer = nullptr;
-    Array<const float32*, MAX_TEXTURE_STREAMS_COUNT> texCoordPointer = {};
-    const uint32* colorPointer = nullptr;
-    const uint16* indexPointer = nullptr;
-    NMaterial* material = nullptr;
-    Matrix4* worldMatrix = nullptr;
-    Color singleColor = Color::White;
-};
-
 class RenderSystem2D : public Singleton<RenderSystem2D>
 {
 public:
@@ -197,7 +175,7 @@ public:
      */
     void HardResetBatchingBuffers(uint32 verticesCount, uint32 indicesCount, uint8 buffersCount);
 
-    void PushBatch(const BatchDescriptor& batchDesc);
+    void PushBatch(const BatchDescriptor2D& batchDesc);
 
     /*
      *  note - it will flush currently batched!
@@ -395,8 +373,8 @@ private:
     bool lastUsedCustomWorldMatrix = false;
     float32 globalTime = 0.f;
 
-    uint32 VBO_STRIDE[BatchDescriptor::MAX_TEXTURE_STREAMS_COUNT + 1];
-    uint32 vertexLayouts2d[BatchDescriptor::MAX_TEXTURE_STREAMS_COUNT + 1];
+    uint32 VBO_STRIDE[BatchDescriptor2D::MAX_TEXTURE_STREAMS_COUNT + 1];
+    uint32 vertexLayouts2d[BatchDescriptor2D::MAX_TEXTURE_STREAMS_COUNT + 1];
 
     // Batching errors handling
     enum ErrorFlag

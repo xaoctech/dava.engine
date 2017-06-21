@@ -518,7 +518,7 @@ void UIControlBackground::Draw(const UIGeometricData& parentGeometricData)
         Matrix3 matrix2d;
         geometricData.BuildTransformMatrix(matrix2d);
         Matrix4 worldMatrix = Convert2DTransformTo3DTransform(matrix2d);
-        for (BatchDescriptor& b : batchDescriptors)
+        for (BatchDescriptor2D& b : batchDescriptors)
         {
             b.worldMatrix = &worldMatrix;
             RenderSystem2D::Instance()->PushBatch(b);
@@ -579,17 +579,17 @@ inline NMaterial* UIControlBackground::GetMaterial() const
     return material;
 }
 
-void UIControlBackground::SetRenderBatches(const Vector<BatchDescriptor>& batches)
+void UIControlBackground::SetRenderBatches(const Vector<BatchDescriptor2D>& batches)
 {
     batchDescriptors = batches;
 }
 
-void UIControlBackground::AppendRenderBatches(const Vector<BatchDescriptor>& batches)
+void UIControlBackground::AppendRenderBatches(const Vector<BatchDescriptor2D>& batches)
 {
     batchDescriptors.insert(batchDescriptors.end(), batches.begin(), batches.end());
 }
 
-void UIControlBackground::AddRenderBatch(const BatchDescriptor& batch)
+void UIControlBackground::AddRenderBatch(const BatchDescriptor2D& batch)
 {
     batchDescriptors.push_back(batch);
 }
@@ -599,7 +599,7 @@ void UIControlBackground::ClearBatches()
     batchDescriptors.clear();
 }
 
-const Vector<BatchDescriptor>& UIControlBackground::GetRenderBatches() const
+const Vector<BatchDescriptor2D>& UIControlBackground::GetRenderBatches() const
 {
     return batchDescriptors;
 }

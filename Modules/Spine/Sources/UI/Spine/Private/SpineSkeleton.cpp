@@ -291,7 +291,7 @@ void SpineSkeleton::PushBatch()
         currentVerticesStart += vCount;
         currentIndicesStart += iCount;
 
-        BatchDescriptor batch;
+        BatchDescriptor2D batch;
         batch.material = RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL;
         batch.vertexCount = vCount;
         batch.indexCount = iCount;
@@ -439,7 +439,7 @@ Vector2 SpineSkeleton::GetSkeletonOriginOffset() const
     return Vector2();
 }
 
-const Vector<BatchDescriptor>& SpineSkeleton::GetRenderBatches() const
+const Vector<BatchDescriptor2D>& SpineSkeleton::GetRenderBatches() const
 {
     return batchDescriptors;
 }

@@ -15,7 +15,7 @@ class UIGeometricData;
 struct TiledDrawData;
 struct StretchDrawData;
 struct TiledMultilayerData;
-struct BatchDescriptor;
+struct BatchDescriptor2D;
 class NMaterial;
 
 /**
@@ -47,7 +47,7 @@ public:
         DRAW_STRETCH_BOTH, //!<Stretch sprite along the all control rect.
         DRAW_TILED, //!<Fill control with sprite tiles
         DRAW_TILED_MULTILAYER, //!uses for texture - tiled background (withot stretch caps!), stretch mask and contour using same stratch caps, and full back gradient overlay
-        DRAW_BATCH //<! Draw specified BatchDescriptor.
+        DRAW_BATCH //<! Draw few specified BatchDescriptor2D.
     };
 
     /**
@@ -251,11 +251,11 @@ public:
     void SetMaterial(NMaterial* material);
     NMaterial* GetMaterial() const;
 
-    void SetRenderBatches(const Vector<BatchDescriptor>& batches);
-    void AppendRenderBatches(const Vector<BatchDescriptor>& batches);
-    void AddRenderBatch(const BatchDescriptor& batch);
+    void SetRenderBatches(const Vector<BatchDescriptor2D>& batches);
+    void AppendRenderBatches(const Vector<BatchDescriptor2D>& batches);
+    void AddRenderBatch(const BatchDescriptor2D& batch);
     void ClearBatches();
-    const Vector<BatchDescriptor>& GetRenderBatches() const;
+    const Vector<BatchDescriptor2D>& GetRenderBatches() const;
 
 protected:
     RefPtr<Sprite> spr;
@@ -292,7 +292,7 @@ protected:
     Color drawColor;
 
     NMaterial* material = nullptr;
-    Vector<BatchDescriptor> batchDescriptors;
+    Vector<BatchDescriptor2D> batchDescriptors;
 #if defined(LOCALIZATION_DEBUG)
     Sprite::DrawState lastDrawState;
 #endif

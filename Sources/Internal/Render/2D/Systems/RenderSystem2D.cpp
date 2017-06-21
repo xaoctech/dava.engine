@@ -105,7 +105,7 @@ void RenderSystem2D::Init()
     layout.AddElement(rhi::VS_COLOR, 0, rhi::VDT_UINT8N, 4);
     vertexLayouts2d[1] = rhi::VertexLayout::UniqueId(layout);
     VBO_STRIDE[1] = 3 * sizeof(float32) + 2 * sizeof(float32) + 4; //position, uv, color
-    for (uint32 i = 2; i <= BatchDescriptor::MAX_TEXTURE_STREAMS_COUNT; ++i)
+    for (uint32 i = 2; i <= BatchDescriptor2D::MAX_TEXTURE_STREAMS_COUNT; ++i)
     {
         layout.AddElement(rhi::VS_TEXCOORD, i - 1, rhi::VDT_FLOAT, 2);
         vertexLayouts2d[i] = rhi::VertexLayout::UniqueId(layout);
@@ -543,7 +543,7 @@ void RenderSystem2D::DrawPacket(rhi::Packet& packet)
         AddPacket(packet);
 }
 
-void RenderSystem2D::PushBatch(const BatchDescriptor& batchDesc)
+void RenderSystem2D::PushBatch(const BatchDescriptor2D& batchDesc)
 {
     DVASSERT(batchDesc.vertexPointer != nullptr && batchDesc.vertexStride > 0 && batchDesc.vertexCount > 0, "Incorrect vertex position data");
     DVASSERT(batchDesc.indexPointer != nullptr && batchDesc.indexCount > 0, "Incorrect index data");
@@ -694,7 +694,7 @@ void RenderSystem2D::PushBatch(const BatchDescriptor& batchDesc)
         Vector2 uv;
         uint32 color;
         //optional explicit params
-        Vector2 uv_ext[BatchDescriptor::MAX_TEXTURE_STREAMS_COUNT - 1];
+        Vector2 uv_ext[BatchDescriptor2D::MAX_TEXTURE_STREAMS_COUNT - 1];
     };
 
     uint32 vertexStride = GetVBOStride(currentTexcoordStreamCount);
@@ -1068,7 +1068,7 @@ void RenderSystem2D::Draw(Sprite* sprite, Sprite::DrawState* drawState, const Co
         }
     }
 
-    BatchDescriptor batch;
+    BatchDescriptor2D batch;
     batch.material = state->GetMaterial();
     batch.textureSetHandle = sprite->GetTexture(frame)->singleTextureSet;
     batch.samplerStateHandle = sprite->GetTexture(frame)->samplerStateHandle;
@@ -1182,7 +1182,7 @@ void RenderSystem2D::DrawStretched(Sprite* sprite, Sprite::DrawState* state, Vec
 
     if (spriteVertexCount > 0 && spriteIndexCount > 0) // Ignore incorrect streched data
     {
-        BatchDescriptor batch;
+        BatchDescriptor2D batch;
         batch.singleColor = color;
         batch.textureSetHandle = sprite->GetTexture(frame)->singleTextureSet;
         batch.samplerStateHandle = sprite->GetTexture(frame)->samplerStateHandle;
@@ -1279,7 +1279,7 @@ void RenderSystem2D::DrawTiled(Sprite* sprite, Sprite::DrawState* state, const V
     for (uint32 uIndex = 0; uIndex < uCount; ++uIndex)
     {
         TiledDrawData::Unit& unit = td.units[uIndex];
-        BatchDescriptor batch;
+        BatchDescriptor2D batch;
         batch.singleColor = color;
         batch.material = state->GetMaterial();
         batch.textureSetHandle = sprite->GetTexture(frame)->singleTextureSet;
@@ -1410,7 +1410,7 @@ void RenderSystem2D::DrawTiledMultylayer(Sprite* mask, Sprite* detail, Sprite* g
 
     if (td.transformedVertices.size() != 0)
     {
-        BatchDescriptor batch;
+        BatchDescriptor2D batch;
         batch.singleColor = color;
         batch.material = state->GetMaterial();
         batch.textureSetHandle = td.textureSet;
@@ -1453,7 +1453,7 @@ void RenderSystem2D::FillRect(const Rect& rect, const Color& color, NMaterial* m
     spriteTempVertices[6] = rect.x + rect.dx;
     spriteTempVertices[7] = rect.y + rect.dy;
 
-    BatchDescriptor batch;
+    BatchDescriptor2D batch;
     batch.singleColor = color;
     batch.material = material;
     batch.vertexCount = 4;
@@ -1490,7 +1490,7 @@ void RenderSystem2D::FillGradientRect(const Rect& rect, const Color& xy, const C
     spriteTempColors[2] = xh.GetRGBA();
     spriteTempColors[3] = wh.GetRGBA();
 
-    BatchDescriptor batch;
+    BatchDescriptor2D batch;
     batch.material = DEFAULT_2D_COLOR_MATERIAL;
     batch.vertexCount = 4;
     batch.colorStride = 1;
@@ -1515,7 +1515,7 @@ void RenderSystem2D::DrawRect(const Rect& rect, const Color& color)
     spriteTempVertices[6] = rect.x;
     spriteTempVertices[7] = rect.y + rect.dy;
 
-    BatchDescriptor batch;
+    BatchDescriptor2D batch;
     batch.singleColor = color;
     batch.material = DEFAULT_2D_COLOR_MATERIAL;
     batch.vertexCount = 4;
@@ -1561,7 +1561,7 @@ void RenderSystem2D::DrawGrid(const Rect& rect, const Vector2& gridSize, const C
         indices.push_back(i);
     }
 
-    BatchDescriptor batch;
+    BatchDescriptor2D batch;
     batch.singleColor = color;
     batch.material = DEFAULT_2D_COLOR_MATERIAL;
     batch.vertexCount = curVertexIndex / 2;
@@ -1582,7 +1582,7 @@ void RenderSystem2D::DrawLine(const Vector2& start, const Vector2& end, const Co
     spriteTempVertices[2] = end.x;
     spriteTempVertices[3] = end.y;
 
-    BatchDescriptor batch;
+    BatchDescriptor2D batch;
     batch.singleColor = color;
     batch.material = DEFAULT_2D_COLOR_MATERIAL;
     batch.vertexCount = 2;
@@ -1604,7 +1604,7 @@ void RenderSystem2D::DrawLine(const Vector2& start, const Vector2& end, float32 
     spriteTempVertices[2] = end.x;
     spriteTempVertices[3] = end.y;
 
-    BatchDescriptor batch;
+    BatchDescriptor2D batch;
     batch.singleColor = color;
     batch.material = DEFAULT_2D_COLOR_MATERIAL;
     batch.vertexCount = 2;
@@ -1632,7 +1632,7 @@ void RenderSystem2D::DrawLines(const Vector<float32>& linePoints, const Color& c
         indices.push_back(i);
     }
 
-    BatchDescriptor batch;
+    BatchDescriptor2D batch;
     batch.singleColor = color;
     batch.material = DEFAULT_2D_COLOR_MATERIAL;
     batch.vertexCount = static_cast<uint32>(ptCount);
@@ -1685,7 +1685,7 @@ void RenderSystem2D::DrawPolygon(const Polygon2& polygon, bool closed, const Col
         }
         auto pointsPtr = static_cast<const float32*>(static_cast<const void*>(polygon.GetPoints()));
 
-        BatchDescriptor batch;
+        BatchDescriptor2D batch;
         batch.singleColor = color;
         batch.material = DEFAULT_2D_COLOR_MATERIAL;
         batch.vertexCount = ptCount;
@@ -1713,7 +1713,7 @@ void RenderSystem2D::FillPolygon(const Polygon2& polygon, const Color& color)
         }
         auto pointsPtr = static_cast<const float32*>(static_cast<const void*>(polygon.GetPoints()));
 
-        BatchDescriptor batch;
+        BatchDescriptor2D batch;
         batch.singleColor = color;
         batch.material = DEFAULT_2D_COLOR_MATERIAL;
         batch.vertexCount = ptCount;
@@ -1749,7 +1749,7 @@ void RenderSystem2D::DrawTextureWithoutAdjustingRects(Texture* texture, NMateria
 
     static uint16 indices[6] = { 0, 1, 2, 1, 3, 2 };
 
-    BatchDescriptor batch;
+    BatchDescriptor2D batch;
     batch.singleColor = color;
     batch.textureSetHandle = texture->singleTextureSet;
     batch.samplerStateHandle = texture->samplerStateHandle;
