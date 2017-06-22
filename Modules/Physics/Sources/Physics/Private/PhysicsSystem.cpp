@@ -526,6 +526,23 @@ physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, P
 
 void PhysicsSystem::SyncTransformToPhysx()
 {
+    TransformSingleComponent* transformSingle = GetScene()->transformSingleComponent;
+    for (Entity* entity : transformSingle->localTransformChanged)
+    {
+        SyncEntityTransformToPhysx(entity);
+    }
+
+    for (auto& mapNode : transformSingle->worldTransformChanged.map)
+    {
+        for (Entity* entity : mapNode.second)
+        {
+            SyncEntityTransformToPhysx(entity);
+        }
+    }
+}
+
+void PhysicsSystem::SyncEntityTransformToPhysx(Entity* entity)
+{
     DVASSERT(isSimulationEnabled == false);
     DVASSERT(isSimulationRunning == false);
     auto updatePose = [this](Entity* e, PhysicsComponent* component)
@@ -572,32 +589,15 @@ void PhysicsSystem::SyncTransformToPhysx()
         }
     };
 
-    TransformSingleComponent* transformSingle = GetScene()->transformSingleComponent;
-    for (Entity* entity : transformSingle->localTransformChanged)
+    PhysicsComponent* staticBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::STATIC_BODY_COMPONENT, 0));
+    updatePose(entity, staticBodyComponent);
+
+    PhysicsComponent* dynamicBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::DYNAMIC_BODY_COMPONENT, 0));
+    updatePose(entity, dynamicBodyComponent);
+
+    for (int32 i = 0; i < entity->GetChildrenCount(); ++i)
     {
-        PhysicsComponent* staticBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::STATIC_BODY_COMPONENT, 0));
-        updatePose(entity, staticBodyComponent);
-
-        PhysicsComponent* dynamicBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::DYNAMIC_BODY_COMPONENT, 0));
-        updatePose(entity, dynamicBodyComponent);
-    }
-
-    for (auto& mapNode : transformSingle->worldTransformChanged.map)
-    {
-        uint64 flags = mapNode.first->GetComponentsFlags();
-        if ((flags & Component::STATIC_BODY_COMPONENT) == 0 && (flags & Component::DYNAMIC_BODY_COMPONENT) == 0)
-        {
-            continue;
-        }
-
-        for (Entity* entity : mapNode.second)
-        {
-            PhysicsComponent* staticBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::STATIC_BODY_COMPONENT, 0));
-            updatePose(entity, staticBodyComponent);
-
-            PhysicsComponent* dynamicBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::DYNAMIC_BODY_COMPONENT, 0));
-            updatePose(entity, dynamicBodyComponent);
-        }
+        SyncEntityTransformToPhysx(entity->GetChild(i));
     }
 }
 

@@ -47,6 +47,7 @@ private:
     physx::PxShape* CreateShape(CollisionShapeComponent* component, Physics* physics);
 
     void SyncTransformToPhysx();
+    void SyncEntityTransformToPhysx(Entity* entity);
 
 private:
     friend class PhysicsSystemPrivate; // for tests only
