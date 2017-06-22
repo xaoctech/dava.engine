@@ -2,7 +2,7 @@
 
 #include "Base/BaseTypes.h"
 
-#include "Engine/Dispatcher.h"
+#include "Concurrency/Dispatcher.h"
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 
 namespace DAVA
