@@ -53,12 +53,12 @@ REGISTER_PREFERENCES_ON_START(HUDControlsPreferences,
                               PREF_ARG("selectionRectColor", Color(0.8f, 0.8f, 0.8f, 0.9f)),
                               PREF_ARG("highlightColor", Color(0.26f, 0.75f, 1.0f, 0.9f)),
                               PREF_ARG("hudRectColor", Color(0.8f, 0.8f, 0.8f, 0.9f)),
-                              PREF_ARG("cornerRectPath", FilePath("~res:/QuickEd/UI/HUDControls/CornerRect.png")),
-                              PREF_ARG("borderRectPath", FilePath("~res:/QuickEd/UI/HUDControls/BorderRect.png")),
-                              PREF_ARG("pivotPointPath", FilePath("~res:/QuickEd/UI/HUDControls/Pivot.png")),
-                              PREF_ARG("rotatePath", FilePath("~res:/QuickEd/UI/HUDControls/Rotate.png")),
-                              PREF_ARG("magnetLinePath", FilePath("~res:/QuickEd/UI/HUDControls/MagnetLine/dotline.png")),
-                              PREF_ARG("magnetRectPath", FilePath("~res:/QuickEd/UI/HUDControls/MagnetLine/MagnetLine.png"))
+                              PREF_ARG("cornerRectPath2", String("~res:/QuickEd/UI/HUDControls/CornerRect.png")),
+                              PREF_ARG("borderRectPath2", String("~res:/QuickEd/UI/HUDControls/BorderRect.png")),
+                              PREF_ARG("pivotPointPath2", String("~res:/QuickEd/UI/HUDControls/Pivot.png")),
+                              PREF_ARG("rotatePath2", String("~res:/QuickEd/UI/HUDControls/Rotate.png")),
+                              PREF_ARG("magnetLinePath2", String("~res:/QuickEd/UI/HUDControls/MagnetLine/dotline.png")),
+                              PREF_ARG("magnetRectPath2", String("~res:/QuickEd/UI/HUDControls/MagnetLine/MagnetLine.png"))
                               )
 
 HUDControlsPreferences::HUDControlsPreferences()
@@ -84,12 +84,12 @@ HUDControlsPreferences::HUDControlsPreferences()
 IMPL_PREFERENCE(Color, selectionRectColor);
 IMPL_PREFERENCE(Color, highlightColor);
 IMPL_PREFERENCE(Color, hudRectColor);
-IMPL_PREFERENCE(FilePath, cornerRectPath);
-IMPL_PREFERENCE(FilePath, borderRectPath);
-IMPL_PREFERENCE(FilePath, pivotPointPath);
-IMPL_PREFERENCE(FilePath, rotatePath);
-IMPL_PREFERENCE(FilePath, magnetLinePath);
-IMPL_PREFERENCE(FilePath, magnetRectPath);
+IMPL_PREFERENCE(String, cornerRectPath2);
+IMPL_PREFERENCE(String, borderRectPath2);
+IMPL_PREFERENCE(String, pivotPointPath2);
+IMPL_PREFERENCE(String, rotatePath2);
+IMPL_PREFERENCE(String, magnetLinePath2);
+IMPL_PREFERENCE(String, magnetRectPath2);
 
 #undef IMPL_PREFERENCE
 
@@ -329,14 +329,14 @@ FrameRectControl::FrameRectControl(const HUDAreaInfo::eArea area_)
     case HUDAreaInfo::TOP_RIGHT_AREA:
     case HUDAreaInfo::BOTTOM_LEFT_AREA:
     case HUDAreaInfo::BOTTOM_RIGHT_AREA:
-        spritePath = HUDControlsDetails::GetPreferences().cornerRectPath;
+        spritePath = HUDControlsDetails::GetPreferences().cornerRectPath2;
         rectSize = Vector2(8.0f, 8.0f);
         break;
     case HUDAreaInfo::TOP_CENTER_AREA:
     case HUDAreaInfo::BOTTOM_CENTER_AREA:
     case HUDAreaInfo::CENTER_LEFT_AREA:
     case HUDAreaInfo::CENTER_RIGHT_AREA:
-        spritePath = HUDControlsDetails::GetPreferences().borderRectPath;
+        spritePath = HUDControlsDetails::GetPreferences().borderRectPath2;
         rectSize = Vector2(8.0f, 8.0f);
         break;
     default:
@@ -388,7 +388,7 @@ PivotPointControl::PivotPointControl()
 {
     drawable->SetName(FastName("pivot point control"));
     UIControlBackground* background = drawable->GetOrCreateComponent<UIControlBackground>();
-    ScopedPtr<Sprite> sprite(Sprite::CreateFromSourceFile(HUDControlsDetails::GetPreferences().pivotPointPath, true, false));
+    ScopedPtr<Sprite> sprite(Sprite::CreateFromSourceFile(HUDControlsDetails::GetPreferences().pivotPointPath2, true, false));
     background->SetSprite(sprite, 0);
     background->SetDrawType(UIControlBackground::DRAW_SCALE_TO_RECT);
     background->SetPerPixelAccuracyType(UIControlBackground::PER_PIXEL_ACCURACY_ENABLED);
@@ -406,7 +406,7 @@ RotateControl::RotateControl()
 {
     drawable->SetName(FastName("rotate control"));
     UIControlBackground* background = drawable->GetOrCreateComponent<UIControlBackground>();
-    ScopedPtr<Sprite> sprite(Sprite::CreateFromSourceFile(HUDControlsDetails::GetPreferences().rotatePath, true, false));
+    ScopedPtr<Sprite> sprite(Sprite::CreateFromSourceFile(HUDControlsDetails::GetPreferences().rotatePath2, true, false));
     background->SetSprite(sprite, 0);
     background->SetDrawType(UIControlBackground::DRAW_SCALE_TO_RECT);
     background->SetPerPixelAccuracyType(UIControlBackground::PER_PIXEL_ACCURACY_ENABLED);
@@ -428,7 +428,7 @@ void SetupHUDMagnetLineControl(UIControl* control)
 {
     UIControlBackground* background = control->GetOrCreateComponent<UIControlBackground>();
     background->SetPerPixelAccuracyType(UIControlBackground::PER_PIXEL_ACCURACY_ENABLED);
-    ScopedPtr<Sprite> sprite(Sprite::CreateFromSourceFile(HUDControlsDetails::GetPreferences().magnetLinePath));
+    ScopedPtr<Sprite> sprite(Sprite::CreateFromSourceFile(HUDControlsDetails::GetPreferences().magnetLinePath2));
     background->SetSprite(sprite, 0);
     background->SetDrawType(UIControlBackground::DRAW_TILED);
     control->SetName("Magnet line");
@@ -443,7 +443,7 @@ void SetupHUDMagnetRectControl(UIControl* parentControl)
 
         UIControlBackground* background = control->GetOrCreateComponent<UIControlBackground>();
         background->SetPerPixelAccuracyType(UIControlBackground::PER_PIXEL_ACCURACY_ENABLED);
-        ScopedPtr<Sprite> sprite(Sprite::CreateFromSourceFile(HUDControlsDetails::GetPreferences().magnetRectPath));
+        ScopedPtr<Sprite> sprite(Sprite::CreateFromSourceFile(HUDControlsDetails::GetPreferences().magnetRectPath2));
         background->SetSprite(sprite, 0);
         background->SetDrawType(UIControlBackground::DRAW_TILED);
         control->SetName("magnet rect border");
