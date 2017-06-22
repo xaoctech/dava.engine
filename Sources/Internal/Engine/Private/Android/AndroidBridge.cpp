@@ -2,7 +2,7 @@
 
 #if defined(__DAVAENGINE_ANDROID__)
 
-#include "Engine/Android/JNIBridge.h"
+#include "Engine/PlatformApiAndroid.h"
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/CommandArgs.h"
 #include "Engine/Private/Android/PlatformCoreAndroid.h"

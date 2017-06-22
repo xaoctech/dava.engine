@@ -2,8 +2,9 @@
 
 #if defined(__DAVAENGINE_QT__)
 
-#include "Engine/PlatformApi.h"
 #include "Debug/DVAssert.h"
+#include "Engine/PlatformApiQt.h"
+
 #include <QQuickWidget>
 #include <QWidget>
 #include <QDesktopWidget>

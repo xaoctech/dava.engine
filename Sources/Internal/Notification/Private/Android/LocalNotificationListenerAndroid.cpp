@@ -3,7 +3,7 @@
 #if defined(__DAVAENGINE_ANDROID__)
 
 #include "Engine/Engine.h"
-#include "Engine/Android/JNIBridge.h"
+#include "Engine/PlatformApiAndroid.h"
 #include "Logger/Logger.h"
 #include "Notification/LocalNotificationController.h"
 #include "Notification/Private/Android/LocalNotificationAndroid.h"

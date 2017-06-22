@@ -2,7 +2,6 @@
 
 #include "Base/BaseTypes.h"
 #include "Engine/EngineTypes.h"
-#include "Engine/PlatformApi.h"
 #include "Engine/Private/EnginePrivateFwd.h"
 #include "Engine/Private/EngineBackend.h"
 #include "Functional/Signal.h"

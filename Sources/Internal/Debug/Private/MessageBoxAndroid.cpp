@@ -4,7 +4,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Engine/Engine.h"
-#include "Engine/Android/JNIBridge.h"
+#include "Engine/PlatformApiAndroid.h"
 #include "Engine/Private/Android/AndroidBridge.h"
 #include "Logger/Logger.h"
 

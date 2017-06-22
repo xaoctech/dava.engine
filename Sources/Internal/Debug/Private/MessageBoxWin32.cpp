@@ -13,7 +13,7 @@
 #include "Utils/UTF8Utils.h"
 
 #if defined(__DAVAENGINE_QT__)
-#include "Engine/PlatformApi.h"
+#include "Engine/PlatformApiQt.h"
 #endif
 
 namespace DAVA

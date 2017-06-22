@@ -5,6 +5,7 @@
 #include "Concurrency/LockGuard.h"
 #include "Debug/DVAssert.h"
 #include "Engine/Engine.h"
+#include "Engine/PlatformApiWin10.h"
 #include "Logger/Logger.h"
 #include "Math/Color.h"
 #include "Render/2D/Sprite.h"

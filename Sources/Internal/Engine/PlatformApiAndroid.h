@@ -1,18 +1,20 @@
 #pragma once
 
-#include "Base/BaseTypes.h"
+/**
+    \defgroup engine_android Engine facilities specific to Android and JNI wrappers
+*/
 
 #if defined(__DAVAENGINE_ANDROID__)
 
 #include <jni.h>
 #include <stdexcept>
 
-#include "Functional/Function.h"
-#include "Utils/StringFormat.h"
+#include "Base/BaseTypes.h"
 #include "Debug/DVAssert.h"
+#include "Engine/Private/Android/JNIDecl.h"
+#include "Functional/Function.h"
 #include "Math/Rect.h"
-
-#include "Engine/Private/Android/JNI/JNIDecl.h"
+#include "Utils/StringFormat.h"
 
 #define DAVA_DECLARE_CUSTOM_JNI_TYPE(jnitype, base, signature) \
     class dava_custom_jni_type##jnitype : public std::remove_pointer<base>::type {}; \
@@ -33,6 +35,16 @@ DAVA_DECLARE_CUSTOM_JNI_TYPE(jstringArray, jobjectArray, "[Ljava/lang/String;");
 
 namespace DAVA
 {
+class Window;
+namespace PlatformApi
+{
+namespace Android
+{
+jobject CreateNativeControl(Window* targetWindow, const char8* controlClassName, void* backendPointer);
+
+} // namespace Android
+} // namespace PlatformApi
+
 namespace JNI
 {
 class Exception : public std::runtime_error

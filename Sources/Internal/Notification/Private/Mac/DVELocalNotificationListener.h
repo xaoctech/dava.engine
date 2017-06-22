@@ -7,7 +7,7 @@
 #elif defined(__DAVAENGINE_MACOS__)
 
 #import <Foundation/NSObject.h>
-#import "Engine/Mac/PlatformApi.h"
+#import "Engine/PlatformApiMac.h"
 
 namespace DAVA
 {

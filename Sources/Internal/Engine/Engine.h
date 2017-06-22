@@ -1,18 +1,15 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
-
 #include "Engine/EngineTypes.h"
 #include "Engine/EngineContext.h"
-#include "Engine/PlatformApi.h"
 #include "Engine/Window.h"
 #include "Functional/Functional.h"
+#include "Render/RHI/rhi_Type.h"
 
 /**
     \defgroup engine Engine
 */
-
-#include "Render/RHI/rhi_Type.h"
 
 namespace DAVA
 {

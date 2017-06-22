@@ -4,7 +4,7 @@
 
 #include "Concurrency/LockGuard.h"
 #include "Engine/Engine.h"
-#include "Engine/Android/JNIBridge.h"
+#include "Engine/PlatformApiAndroid.h"
 #include "Notification/LocalNotificationController.h"
 
 namespace DAVA

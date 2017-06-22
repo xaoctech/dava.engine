@@ -6,7 +6,7 @@
 #import <MediaPlayer/MediaPlayer.h>
 
 #include "Engine/Engine.h"
-#include "Engine/Ios/PlatformApi.h"
+#include "Engine/PlatformApiIos.h"
 #include "UI/UIControlSystem.h"
 
 namespace DAVA

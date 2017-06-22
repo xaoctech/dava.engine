@@ -4,6 +4,7 @@
 
 #include "Base/Exception.h"
 #include "Engine/Window.h"
+#include "Engine/PlatformApiWin10.h"
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 #include "Engine/Private/Win10/DllImportWin10.h"

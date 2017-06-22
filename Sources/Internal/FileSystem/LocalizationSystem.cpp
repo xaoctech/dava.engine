@@ -16,7 +16,7 @@
 #include "yaml/yaml.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
-#include "Engine/Android/JNIBridge.h"
+#include "Engine/PlatformApiAndroid.h"
 #endif
 
 namespace DAVA

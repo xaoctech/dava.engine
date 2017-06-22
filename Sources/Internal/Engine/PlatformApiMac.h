@@ -1,11 +1,15 @@
+#pragma once
+
 /**
     \defgroup engine_mac Engine facilities specific to macOS platform
 */
-#pragma once
 
 #ifndef __OBJC__
 #error This file can only be included from .mm file
 #endif
+
+#if defined(__DAVAENGINE_QT__) 
+#elif defined(__DAVAENGINE_MACOS__)
 
 @protocol NSObject;
 @class NSNotification;
@@ -79,3 +83,5 @@ void UnregisterDVEApplicationListener(id<DVEApplicationListener> listener);
 } // namespace Mac
 } // namespace PlatformApi
 } // namespace DAVA
+
+#endif // __DAVAENGINE_MACOS__

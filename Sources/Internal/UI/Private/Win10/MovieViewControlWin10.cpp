@@ -5,6 +5,7 @@
 
 #include "Debug/DVAssert.h"
 #include "Engine/Engine.h"
+#include "Engine/PlatformApiWin10.h"
 #include "FileSystem/FileSystem.h"
 #include "Logger/Logger.h"
 #include "Render/RHI/rhi_Public.h"

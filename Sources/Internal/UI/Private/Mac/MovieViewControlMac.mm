@@ -12,7 +12,7 @@
 #import <CoreMedia/CoreMedia.h>
 #import <AppKit/AppKit.h>
 
-#import "Engine/Mac/PlatformApi.h"
+#import "Engine/PlatformApiMac.h"
 
 enum MoviePlayerHelperState
 {

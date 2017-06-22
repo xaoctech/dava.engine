@@ -6,7 +6,7 @@
 #include "Concurrency/AutoResetEvent.h"
 #include "Concurrency/Semaphore.h"
 #include "Concurrency/Thread.h"
-#include "Engine/PlatformApi.h"
+#include "Engine/PlatformApiWin10.h"
 #include "Engine/Private/Win10/PlatformCoreWin10.h"
 #include "Utils/UTF8Utils.h"
 

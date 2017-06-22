@@ -4,7 +4,7 @@
 
 #if defined(__DAVAENGINE_IPHONE__)
 
-#include "Engine/Ios/PlatformApi.h"
+#import "Engine/PlatformApiIos.h"
 
 #import <Foundation/NSObject.h>
 

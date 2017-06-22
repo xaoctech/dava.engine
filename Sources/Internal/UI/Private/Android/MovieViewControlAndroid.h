@@ -7,7 +7,7 @@
 #if defined(__DAVAENGINE_ANDROID__)
 
 #include "Engine/Private/EnginePrivateFwd.h"
-#include "Engine/Android/JNIBridge.h"
+#include "Engine/PlatformApiAndroid.h"
 
 #include "UI/IMovieViewControl.h"
 

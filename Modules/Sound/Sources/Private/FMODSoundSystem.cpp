@@ -17,7 +17,7 @@
 #include "fmodiphone.h"
 #include "Private/iOS/musicios.h"
 #elif __DAVAENGINE_ANDROID__
-#include "Engine/Android/JNIBridge.h"
+#include "Engine/PlatformApiAndroid.h"
 #endif
 
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)

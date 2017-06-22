@@ -2,6 +2,7 @@
 
 #if defined(__DAVAENGINE_QT__)
 
+#include "Engine/PlatformApiQt.h"
 #include "Engine/Window.h"
 #include "Engine/EngineContext.h"
 #include "Engine/Private/EngineBackend.h"

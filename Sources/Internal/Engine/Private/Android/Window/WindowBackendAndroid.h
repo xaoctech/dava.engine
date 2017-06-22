@@ -7,7 +7,7 @@
 #include <bitset>
 
 #include "Engine/EngineTypes.h"
-#include "Engine/Android/JNIBridge.h"
+#include "Engine/PlatformApiAndroid.h"
 #include "Engine/Private/EnginePrivateFwd.h"
 #include "Engine/Private/Dispatcher/UIDispatcher.h"
 #include "Engine/EngineTypes.h"

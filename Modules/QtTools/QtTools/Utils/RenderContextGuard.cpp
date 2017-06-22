@@ -1,6 +1,7 @@
 #include "RenderContextGuard.h"
 
 #include "Engine/Engine.h"
+#include "Engine/PlatformApiQt.h"
 #include "Engine/Window.h"
 
 RenderContextGuard::RenderContextGuard()

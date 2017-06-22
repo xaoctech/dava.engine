@@ -12,7 +12,7 @@
 #import <WebKit/WebKit.h>
 #import <AppKit/NSWorkspace.h>
 
-#import "Engine/Mac/PlatformApi.h"
+#import "Engine/PlatformApiMac.h"
 
 // Subclassing from WebView to make workaround:
 // Webview should change its size while window is resizing

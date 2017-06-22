@@ -4,7 +4,7 @@
 
 #if defined(__DAVAENGINE_ANDROID__)
 
-#include "Engine/Android/JNIBridge.h"
+#include "Engine/PlatformApiAndroid.h"
 
 namespace DAVA
 {
