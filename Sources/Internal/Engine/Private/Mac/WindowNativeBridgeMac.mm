@@ -11,8 +11,8 @@
 #include "Engine/Window.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
 #include "Engine/Private/Mac/WindowImplMac.h"
-#include "Engine/Private/Mac/Window/RenderViewMac.h"
-#include "Engine/Private/Mac/Window/WindowDelegateMac.h"
+#include "Engine/Private/Mac/RenderViewMac.h"
+#include "Engine/Private/Mac/WindowDelegateMac.h"
 
 #include "Time/SystemTimer.h"
 #include "Logger/Logger.h"

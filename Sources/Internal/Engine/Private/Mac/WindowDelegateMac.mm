@@ -1,4 +1,4 @@
-#include "Engine/Private/Mac/Window/WindowDelegateMac.h"
+#include "Engine/Private/Mac/WindowDelegateMac.h"
 
 #if defined(__DAVAENGINE_QT__)
 // TODO: plarform defines
