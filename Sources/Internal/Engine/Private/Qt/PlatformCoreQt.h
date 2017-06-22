@@ -34,7 +34,7 @@ public:
 
 private:
     EngineBackend& engineBackend;
-    WindowBackend* primaryWindowBackend = nullptr;
+    WindowImpl* primaryWindowImpl = nullptr;
 
     Signal<bool> applicationFocusChanged;
 };

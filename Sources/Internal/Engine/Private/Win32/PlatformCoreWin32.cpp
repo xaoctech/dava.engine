@@ -10,7 +10,7 @@
 #include "Engine/Window.h"
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Win32/DllImportWin32.h"
-#include "Engine/Private/Win32/Window/WindowBackendWin32.h"
+#include "Engine/Private/Win32/WindowImplWin32.h"
 
 #include "Logger/Logger.h"
 #include "Time/SystemTimer.h"
@@ -83,8 +83,8 @@ void PlatformCore::Run()
 
     engineBackend.OnGameLoopStarted();
 
-    WindowBackend* primaryWindowBackend = EngineBackend::GetWindowBackend(engineBackend.GetPrimaryWindow());
-    primaryWindowBackend->Create(1024.0f, 768.0f);
+    WindowImpl* primaryWindowImpl = EngineBackend::GetWindowImpl(engineBackend.GetPrimaryWindow());
+    primaryWindowImpl->Create(1024.0f, 768.0f);
 
     for (;;)
     {

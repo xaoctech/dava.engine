@@ -6,7 +6,7 @@
 #include "Engine/PlatformApiIos.h"
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Ios/PlatformCoreIos.h"
-#include "Engine/Private/Ios/Window/WindowBackendIos.h"
+#include "Engine/Private/Ios/WindowImplIos.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
 
 #include "Logger/Logger.h"
@@ -177,8 +177,8 @@ BOOL CoreNativeBridge::ApplicationDidFinishLaunchingWithOptions(UIApplication* a
 
     engineBackend->OnGameLoopStarted();
 
-    WindowBackend* primaryWindowBackend = EngineBackend::GetWindowBackend(engineBackend->GetPrimaryWindow());
-    primaryWindowBackend->Create();
+    WindowImpl* primaryWindowImpl = EngineBackend::GetWindowImpl(engineBackend->GetPrimaryWindow());
+    primaryWindowImpl->Create();
 
     objcInterop = [[ObjectiveCInterop alloc] init:this];
     [objcInterop setDisplayLinkInterval:1];
@@ -245,8 +245,8 @@ void CoreNativeBridge::ApplicationWillTerminate(UIApplication* app)
     [objcInterop cancelDisplayLink];
     [objcInterop enableGameControllerObserver:NO];
 
-    WindowBackend* primaryWindowBackend = EngineBackend::GetWindowBackend(engineBackend->GetPrimaryWindow());
-    primaryWindowBackend->Close(true);
+    WindowImpl* primaryWindowImpl = EngineBackend::GetWindowImpl(engineBackend->GetPrimaryWindow());
+    primaryWindowImpl->Close(true);
 }
 
 void CoreNativeBridge::ApplicationDidReceiveMemoryWarning(UIApplication* app)

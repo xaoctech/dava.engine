@@ -6,7 +6,7 @@
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/CommandArgs.h"
 #include "Engine/Private/Android/PlatformCoreAndroid.h"
-#include "Engine/Private/Android/Window/WindowBackendAndroid.h"
+#include "Engine/Private/Android/WindowImplAndroid.h"
 
 #include "Concurrency/Thread.h"
 #include "Logger/Logger.h"
@@ -40,7 +40,7 @@ JNIEXPORT void JNICALL Java_com_dava_engine_DavaActivity_nativeShutdownEngine(JN
 
 JNIEXPORT jlong JNICALL Java_com_dava_engine_DavaActivity_nativeOnCreate(JNIEnv* env, jclass jclazz, jobject activity)
 {
-    DAVA::Private::WindowBackend* wbackend = androidBridge->ActivityOnCreate(env, activity);
+    DAVA::Private::WindowImpl* wbackend = androidBridge->ActivityOnCreate(env, activity);
     return static_cast<jlong>(reinterpret_cast<uintptr_t>(wbackend));
 }
 
@@ -254,7 +254,7 @@ void AndroidBridge::ShutdownEngine()
     core = nullptr;
 }
 
-WindowBackend* AndroidBridge::ActivityOnCreate(JNIEnv* env, jobject activityInstance)
+WindowImpl* AndroidBridge::ActivityOnCreate(JNIEnv* env, jobject activityInstance)
 {
     activity = env->NewGlobalRef(activityInstance);
     return core->ActivityOnCreate();

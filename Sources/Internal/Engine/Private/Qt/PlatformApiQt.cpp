@@ -2,7 +2,7 @@
 
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Qt/PlatformCoreQt.h"
-#include "Engine/Private/Qt/WindowBackendQt.h"
+#include "Engine/Private/Qt/WindowImplQt.h"
 
 namespace DAVA
 {
@@ -13,14 +13,14 @@ namespace Qt
 void AcquireWindowContext(Window* targetWindow)
 {
     using namespace DAVA::Private;
-    WindowBackend* wb = EngineBackend::GetWindowBackend(targetWindow);
+    WindowImpl* wb = EngineBackend::GetWindowImpl(targetWindow);
     wb->AcquireContext();
 }
 
 void ReleaseWindowContext(Window* targetWindow)
 {
     using namespace DAVA::Private;
-    WindowBackend* wb = EngineBackend::GetWindowBackend(targetWindow);
+    WindowImpl* wb = EngineBackend::GetWindowImpl(targetWindow);
     wb->ReleaseContext();
 }
 

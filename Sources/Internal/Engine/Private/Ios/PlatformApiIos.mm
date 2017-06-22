@@ -5,8 +5,8 @@
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Ios/PlatformCoreIos.h"
 #include "Engine/Private/Ios/CoreNativeBridgeIos.h"
-#include "Engine/Private/Ios/Window/WindowBackendIos.h"
-#include "Engine/Private/Ios/Window/WindowNativeBridgeIos.h"
+#include "Engine/Private/Ios/WindowImplIos.h"
+#include "Engine/Private/Ios/WindowNativeBridgeIos.h"
 #include "Render/Image/Image.h"
 
 #import <UIKit/UIKit.h>
@@ -20,28 +20,28 @@ namespace Ios
 void AddUIView(Window* targetWindow, UIView* uiview)
 {
     using namespace DAVA::Private;
-    WindowBackend* wb = EngineBackend::GetWindowBackend(targetWindow);
+    WindowImpl* wb = EngineBackend::GetWindowImpl(targetWindow);
     wb->bridge->AddUIView(uiview);
 }
 
 void RemoveUIView(Window* targetWindow, UIView* uiview)
 {
     using namespace DAVA::Private;
-    WindowBackend* wb = EngineBackend::GetWindowBackend(targetWindow);
+    WindowImpl* wb = EngineBackend::GetWindowImpl(targetWindow);
     wb->bridge->RemoveUIView(uiview);
 }
 
 UIView* GetUIViewFromPool(Window* targetWindow, const char8* className)
 {
     using namespace DAVA::Private;
-    WindowBackend* wb = EngineBackend::GetWindowBackend(targetWindow);
+    WindowImpl* wb = EngineBackend::GetWindowImpl(targetWindow);
     return wb->bridge->GetUIViewFromPool(className);
 }
 
 void ReturnUIViewToPool(Window* targetWindow, UIView* view)
 {
     using namespace DAVA::Private;
-    WindowBackend* wb = EngineBackend::GetWindowBackend(targetWindow);
+    WindowImpl* wb = EngineBackend::GetWindowImpl(targetWindow);
     wb->bridge->ReturnUIViewToPool(view);
 }
 

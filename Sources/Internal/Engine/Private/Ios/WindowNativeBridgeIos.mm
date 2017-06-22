@@ -1,4 +1,4 @@
-#include "Engine/Private/Ios/Window/WindowNativeBridgeIos.h"
+#include "Engine/Private/Ios/WindowNativeBridgeIos.h"
 
 #if defined(__DAVAENGINE_IPHONE__)
 
@@ -9,7 +9,7 @@
 #include "Engine/Private/Ios/Window/RenderViewIos.h"
 #include "Engine/Private/Ios/Window/RenderViewControllerIos.h"
 #include "Engine/Private/Ios/Window/VisibleFrameObserver.h"
-#include "Engine/Private/Ios/Window/WindowBackendIos.h"
+#include "Engine/Private/Ios/WindowImplIos.h"
 #include "Logger/Logger.h"
 #include "Render/RHI/rhi_Public.h"
 #include "Time/SystemTimer.h"
@@ -42,7 +42,7 @@
 
 - (void)processPlatformEvents
 {
-    bridge->windowBackend->ProcessPlatformEvents();
+    bridge->windowImpl->ProcessPlatformEvents();
 }
 
 @end
@@ -51,10 +51,10 @@ namespace DAVA
 {
 namespace Private
 {
-WindowNativeBridge::WindowNativeBridge(WindowBackend* windowBackend, const KeyedArchive* options)
-    : windowBackend(windowBackend)
-    , window(windowBackend->window)
-    , mainDispatcher(windowBackend->mainDispatcher)
+WindowNativeBridge::WindowNativeBridge(WindowImpl* windowImpl, const KeyedArchive* options)
+    : windowImpl(windowImpl)
+    , window(windowImpl->window)
+    , mainDispatcher(windowImpl->mainDispatcher)
     , engineOptions(options)
 {
     objcInterop = [[ObjectiveCInteropWindow alloc] init:this];
@@ -74,7 +74,7 @@ void* WindowNativeBridge::GetHandle() const
 
 bool WindowNativeBridge::CreateWindow()
 {
-    windowBackend->uiDispatcher.LinkToCurrentThread();
+    windowImpl->uiDispatcher.LinkToCurrentThread();
 
     ::UIScreen* screen = [ ::UIScreen mainScreen];
     CGRect rect = [screen bounds];

@@ -28,7 +28,7 @@ using UIDispatcher = Dispatcher<UIDispatcherEvent>;
 
 class EngineBackend;
 class PlatformCore;
-class WindowBackend;
+class WindowImpl;
 
 #if defined(__DAVAENGINE_QT__)
 

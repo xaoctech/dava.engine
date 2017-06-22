@@ -1,4 +1,4 @@
-#include "Engine/Private/Mac/Window/WindowBackendMac.h"
+#include "Engine/Private/Mac/WindowImplMac.h"
 
 #if defined(__DAVAENGINE_QT__)
 // TODO: plarform defines
@@ -9,7 +9,7 @@
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
 #include "Engine/Private/Mac/PlatformCoreMac.h"
-#include "Engine/Private/Mac/Window/WindowNativeBridgeMac.h"
+#include "Engine/Private/Mac/WindowNativeBridgeMac.h"
 
 #include "Logger/Logger.h"
 #include "Time/SystemTimer.h"
@@ -18,23 +18,23 @@ namespace DAVA
 {
 namespace Private
 {
-WindowBackend::WindowBackend(EngineBackend* engineBackend, Window* window)
+WindowImpl::WindowImpl(EngineBackend* engineBackend, Window* window)
     : engineBackend(engineBackend)
     , window(window)
     , mainDispatcher(engineBackend->GetDispatcher())
-    , uiDispatcher(MakeFunction(this, &WindowBackend::UIEventHandler))
+    , uiDispatcher(MakeFunction(this, &WindowImpl::UIEventHandler))
     , bridge(new WindowNativeBridge(this))
 {
 }
 
-WindowBackend::~WindowBackend() = default;
+WindowImpl::~WindowImpl() = default;
 
-void* WindowBackend::GetHandle() const
+void* WindowImpl::GetHandle() const
 {
     return bridge->renderView;
 }
 
-bool WindowBackend::Create(float32 width, float32 height)
+bool WindowImpl::Create(float32 width, float32 height)
 {
     engineBackend->GetPlatformCore()->didHideUnhide.Connect(bridge.get(), &WindowNativeBridge::ApplicationDidHideUnhide);
 
@@ -44,75 +44,75 @@ bool WindowBackend::Create(float32 width, float32 height)
     return bridge->CreateWindow(x, y, width, height);
 }
 
-void WindowBackend::Resize(float32 width, float32 height)
+void WindowImpl::Resize(float32 width, float32 height)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateResizeEvent(width, height));
 }
 
-void WindowBackend::Close(bool /*appIsTerminating*/)
+void WindowImpl::Close(bool /*appIsTerminating*/)
 {
     closeRequestByApp = true;
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateCloseEvent());
 }
 
-void WindowBackend::SetTitle(const String& title)
+void WindowImpl::SetTitle(const String& title)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateSetTitleEvent(title));
 }
 
-void WindowBackend::SetMinimumSize(Size2f size)
+void WindowImpl::SetMinimumSize(Size2f size)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateMinimumSizeEvent(size.dx, size.dy));
 }
 
-void WindowBackend::SetFullscreen(eFullscreen newMode)
+void WindowImpl::SetFullscreen(eFullscreen newMode)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateSetFullscreenEvent(newMode));
 }
 
-void WindowBackend::RunAsyncOnUIThread(const Function<void()>& task)
+void WindowImpl::RunAsyncOnUIThread(const Function<void()>& task)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateFunctorEvent(task));
 }
 
-void WindowBackend::RunAndWaitOnUIThread(const Function<void()>& task)
+void WindowImpl::RunAndWaitOnUIThread(const Function<void()>& task)
 {
     uiDispatcher.SendEvent(UIDispatcherEvent::CreateFunctorEvent(task));
 }
 
-bool WindowBackend::IsWindowReadyForRender() const
+bool WindowImpl::IsWindowReadyForRender() const
 {
     return GetHandle() != nullptr;
 }
 
-void WindowBackend::TriggerPlatformEvents()
+void WindowImpl::TriggerPlatformEvents()
 {
     bridge->TriggerPlatformEvents();
 }
 
-void WindowBackend::ProcessPlatformEvents()
+void WindowImpl::ProcessPlatformEvents()
 {
     uiDispatcher.ProcessEvents();
 }
 
-void WindowBackend::SetCursorCapture(eCursorCapture mode)
+void WindowImpl::SetCursorCapture(eCursorCapture mode)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateSetCursorCaptureEvent(mode));
 }
 
-void WindowBackend::SetCursorVisibility(bool visible)
+void WindowImpl::SetCursorVisibility(bool visible)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateSetCursorVisibilityEvent(visible));
 }
 
-void WindowBackend::SetSurfaceScaleAsync(const float32 scale)
+void WindowImpl::SetSurfaceScaleAsync(const float32 scale)
 {
     DVASSERT(scale > 0.0f && scale <= 1.0f);
 
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateSetSurfaceScaleEvent(scale));
 }
 
-void WindowBackend::UIEventHandler(const UIDispatcherEvent& e)
+void WindowImpl::UIEventHandler(const UIDispatcherEvent& e)
 {
     switch (e.type)
     {
@@ -149,7 +149,7 @@ void WindowBackend::UIEventHandler(const UIDispatcherEvent& e)
     }
 }
 
-void WindowBackend::WindowWillClose()
+void WindowImpl::WindowWillClose()
 {
     engineBackend->GetPlatformCore()->didHideUnhide.Disconnect(bridge.get());
 }

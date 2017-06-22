@@ -3,7 +3,7 @@
 #include "Engine/Engine.h"
 #include "Engine/EngineContext.h"
 #include "Engine/Window.h"
-#include "Engine/Private/WindowBackend.h"
+#include "Engine/Private/WindowImpl.h"
 #include "Engine/Private/PlatformCore.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
 
@@ -109,9 +109,9 @@ EngineBackend* EngineBackend::Instance()
     return instance;
 }
 
-WindowBackend* EngineBackend::GetWindowBackend(Window* w)
+WindowImpl* EngineBackend::GetWindowImpl(Window* w)
 {
-    return w->windowBackend.get();
+    return w->windowImpl.get();
 }
 
 EngineBackend::EngineBackend(const Vector<String>& cmdargs)
@@ -620,13 +620,13 @@ void EngineBackend::HandleAppTerminate(const MainDispatcherEvent& e)
     {
         appIsTerminating = true;
 
-        // WindowBackend::Close can lead to removing a window from aliveWindows list (inside of OnWindowDestroyed)
+        // WindowImpl::Close can lead to removing a window from aliveWindows list (inside of OnWindowDestroyed)
         // So copy the vector and iterate over the copy to avoid dealing with invalid iterators
         std::vector<Window*> aliveWindowsCopy = aliveWindows;
         for (Window* w : aliveWindowsCopy)
         {
-            // Directly call Close for WindowBackend to tell important information that application is terminating
-            GetWindowBackend(w)->Close(true);
+            // Directly call Close for WindowImpl to tell important information that application is terminating
+            GetWindowImpl(w)->Close(true);
         }
     }
     else if (!appIsTerminating)

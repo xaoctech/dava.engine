@@ -8,7 +8,7 @@
 #include "Concurrency/ThreadLocalPtr.h"
 #include "Engine/Engine.h"
 #include "Engine/Private/EngineBackend.h"
-#include "Engine/Private/Win32/Window/WindowBackendWin32.h"
+#include "Engine/Private/Win32/WindowImplWin32.h"
 #include "Debug/DVAssert.h"
 #include "Utils/UTF8Utils.h"
 

@@ -1,11 +1,11 @@
-#include "Engine/Private/Win10/Window/WindowNativeBridgeWin10.h"
+#include "Engine/Private/Win10/WindowNativeBridgeWin10.h"
 
 #if defined(__DAVAENGINE_WIN_UAP__)
 
 #include "Engine/Window.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
 #include "Engine/Private/Win10/PlatformCoreWin10.h"
-#include "Engine/Private/Win10/Window/WindowBackendWin10.h"
+#include "Engine/Private/Win10/WindowImplWin10.h"
 
 #include "Logger/Logger.h"
 #include "Utils/UTF8Utils.h"
@@ -15,10 +15,10 @@ namespace DAVA
 {
 namespace Private
 {
-WindowNativeBridge::WindowNativeBridge(WindowBackend* windowBackend)
-    : windowBackend(windowBackend)
-    , window(windowBackend->window)
-    , mainDispatcher(windowBackend->mainDispatcher)
+WindowNativeBridge::WindowNativeBridge(WindowImpl* windowImpl)
+    : windowImpl(windowImpl)
+    , window(windowImpl->window)
+    , mainDispatcher(windowImpl->mainDispatcher)
 {
     lastShiftStates[0] = lastShiftStates[1] = false;
 }
@@ -222,7 +222,7 @@ void WindowNativeBridge::SetCursorCapture(eCursorCapture mode)
 
 void WindowNativeBridge::OnTriggerPlatformEvents()
 {
-    windowBackend->ProcessPlatformEvents();
+    windowImpl->ProcessPlatformEvents();
 }
 
 void WindowNativeBridge::HandleFocusChanging(bool gotFocus)

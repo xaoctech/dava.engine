@@ -1,4 +1,4 @@
-#include "Engine/Private/Linux/Window/WindowBackendLinux.h"
+#include "Engine/Private/Linux/WindowImplLinux.h"
 
 #if defined(__DAVAENGINE_LINUX__)
 
@@ -6,84 +6,84 @@ namespace DAVA
 {
 namespace Private
 {
-WindowBackend::WindowBackend(EngineBackend* /*engineBackend*/, Window* /*window*/)
-    : uiDispatcher(MakeFunction(this, &WindowBackend::UIEventHandler), MakeFunction(this, &WindowBackend::TriggerPlatformEvents))
+WindowImpl::WindowImpl(EngineBackend* /*engineBackend*/, Window* /*window*/)
+    : uiDispatcher(MakeFunction(this, &WindowImpl::UIEventHandler), MakeFunction(this, &WindowImpl::TriggerPlatformEvents))
 {
 }
 
-WindowBackend::~WindowBackend() = default;
+WindowImpl::~WindowImpl() = default;
 
-bool WindowBackend::Create(float32 /*width*/, float32 /*height*/)
+bool WindowImpl::Create(float32 /*width*/, float32 /*height*/)
 {
-    DVASSERT(0, "Implement WindowBackend::Create");
+    DVASSERT(0, "Implement WindowImpl::Create");
     return false;
 }
 
-void WindowBackend::Resize(float32 width, float32 height)
+void WindowImpl::Resize(float32 width, float32 height)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateResizeEvent(width, height));
 }
 
-void WindowBackend::Close(bool /*appIsTerminating*/)
+void WindowImpl::Close(bool /*appIsTerminating*/)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateCloseEvent());
 }
 
-void WindowBackend::SetTitle(const String& title)
+void WindowImpl::SetTitle(const String& title)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateSetTitleEvent(title));
 }
 
-void WindowBackend::SetMinimumSize(Size2f size)
+void WindowImpl::SetMinimumSize(Size2f size)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateMinimumSizeEvent(size.dx, size.dy));
 }
 
-void WindowBackend::SetFullscreen(eFullscreen newMode)
+void WindowImpl::SetFullscreen(eFullscreen newMode)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateSetFullscreenEvent(newMode));
 }
 
-void WindowBackend::RunAsyncOnUIThread(const Function<void()>& task)
+void WindowImpl::RunAsyncOnUIThread(const Function<void()>& task)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateFunctorEvent(task));
 }
 
-void WindowBackend::RunAndWaitOnUIThread(const Function<void()>& task)
+void WindowImpl::RunAndWaitOnUIThread(const Function<void()>& task)
 {
     uiDispatcher.SendEvent(UIDispatcherEvent::CreateFunctorEvent(task));
 }
 
-bool WindowBackend::IsWindowReadyForRender() const
+bool WindowImpl::IsWindowReadyForRender() const
 {
     return GetHandle() != nullptr;
 }
 
-void WindowBackend::TriggerPlatformEvents()
+void WindowImpl::TriggerPlatformEvents()
 {
     if (uiDispatcher.HasEvents())
     {
     }
 }
 
-void WindowBackend::SetCursorCapture(eCursorCapture mode)
+void WindowImpl::SetCursorCapture(eCursorCapture mode)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateSetCursorCaptureEvent(mode));
 }
 
-void WindowBackend::SetCursorVisibility(bool visible)
+void WindowImpl::SetCursorVisibility(bool visible)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateSetCursorVisibilityEvent(visible));
 }
 
-void WindowBackend::SetSurfaceScaleAsync(const float32 scale)
+void WindowImpl::SetSurfaceScaleAsync(const float32 scale)
 {
     DVASSERT(scale > 0.0f && scale <= 1.0f);
 
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateSetSurfaceScaleEvent(scale));
 }
 
-void WindowBackend::UIEventHandler(const UIDispatcherEvent& e)
+void WindowImpl::UIEventHandler(const UIDispatcherEvent& e)
 {
     switch (e.type)
     {

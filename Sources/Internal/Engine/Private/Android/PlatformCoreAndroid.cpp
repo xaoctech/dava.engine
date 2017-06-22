@@ -8,7 +8,7 @@
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 #include "Engine/Private/Android/AndroidBridge.h"
-#include "Engine/Private/Android/Window/WindowBackendAndroid.h"
+#include "Engine/Private/Android/WindowImplAndroid.h"
 
 #include "Debug/Backtrace.h"
 #include "Input/InputSystem.h"
@@ -114,11 +114,11 @@ void PlatformCore::SetScreenTimeoutEnabled(bool enabled)
     androidBridge->SetScreenTimeoutEnabled(enabled);
 }
 
-WindowBackend* PlatformCore::ActivityOnCreate()
+WindowImpl* PlatformCore::ActivityOnCreate()
 {
     Window* primaryWindow = engineBackend->InitializePrimaryWindow();
-    WindowBackend* primaryWindowBackend = EngineBackend::GetWindowBackend(primaryWindow);
-    return primaryWindowBackend;
+    WindowImpl* primaryWindowImpl = EngineBackend::GetWindowImpl(primaryWindow);
+    return primaryWindowImpl;
 }
 
 void PlatformCore::ActivityOnResume()

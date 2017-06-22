@@ -22,7 +22,7 @@ namespace DAVA
 {
 namespace Private
 {
-// Bridge between C++ and Objective-C for iOS's WindowBackend class
+// Bridge between C++ and Objective-C for iOS's WindowImpl class
 // Responsibilities:
 //  - holds neccesary Objective-C objects
 //  - posts events to dispatcher
@@ -33,10 +33,10 @@ namespace Private
 // combines all window-related logic and processes events from Objective-C classes.
 // Objective-C classes only forward its notifications to WindowNativeBridge.
 //
-// WindowNativeBridge is a friend of iOS's WindowBackend
+// WindowNativeBridge is a friend of iOS's WindowImpl
 struct WindowNativeBridge final
 {
-    WindowNativeBridge(WindowBackend* windowBackend, const KeyedArchive* engineOptions);
+    WindowNativeBridge(WindowImpl* windowImpl, const KeyedArchive* engineOptions);
     ~WindowNativeBridge();
 
     void* GetHandle() const;
@@ -68,7 +68,7 @@ struct WindowNativeBridge final
 
     //////////////////////////////////////////////////////////////////////////
 
-    WindowBackend* windowBackend = nullptr;
+    WindowImpl* windowImpl = nullptr;
     Window* window = nullptr;
     MainDispatcher* mainDispatcher = nullptr;
 

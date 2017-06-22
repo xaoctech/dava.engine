@@ -3,7 +3,7 @@
 #if defined(__DAVAENGINE_ANDROID__)
 
 #include "Engine/Private/Android/AndroidBridge.h"
-#include "Engine/Private/Android/Window/WindowBackendAndroid.h"
+#include "Engine/Private/Android/WindowImplAndroid.h"
 #include "Engine/Private/EngineBackend.h"
 #include "Logger/Logger.h"
 #include "Utils/UTF8Utils.h"
@@ -17,7 +17,7 @@ namespace Android
 jobject CreateNativeControl(Window* targetWindow, const char8* controlClassName, void* backendPointer)
 {
     using namespace DAVA::Private;
-    WindowBackend* wb = EngineBackend::GetWindowBackend(targetWindow);
+    WindowImpl* wb = EngineBackend::GetWindowImpl(targetWindow);
     return wb->CreateNativeControl(controlClassName, backendPointer);
 }
 

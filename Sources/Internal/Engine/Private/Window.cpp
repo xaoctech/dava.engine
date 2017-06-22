@@ -3,7 +3,7 @@
 #include "Engine/EngineContext.h"
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
-#include "Engine/Private/WindowBackend.h"
+#include "Engine/Private/WindowImpl.h"
 
 #include "Utils/StringFormat.h"
 #include "Animation/AnimationManager.h"
@@ -21,11 +21,11 @@ namespace DAVA
 Window::Window(Private::EngineBackend* engineBackend, bool primary)
     : engineBackend(engineBackend)
     , mainDispatcher(engineBackend->GetDispatcher())
-    , windowBackend(new Private::WindowBackend(engineBackend, this))
+    , windowImpl(new Private::WindowImpl(engineBackend, this))
     , isPrimary(primary)
 {
     // TODO: Add platfom's caps check
-    //if (windowBackend->IsPlatformSupported(SET_CURSOR_VISIBILITY))
+    //if (windowImpl->IsPlatformSupported(SET_CURSOR_VISIBILITY))
     {
         cursorVisible = true;
     }
@@ -39,7 +39,7 @@ void Window::SetSizeAsync(Size2f sz)
     // is controlled by highlevel framework
     if (!engineBackend->IsEmbeddedGUIMode())
     {
-        windowBackend->Resize(sz.dx, sz.dy);
+        windowImpl->Resize(sz.dx, sz.dy);
     }
 }
 
@@ -52,7 +52,7 @@ void Window::SetMinimumSize(Size2f size)
         size.dx = std::max(size.dx, static_cast<float32>(smallestWidth));
         size.dy = std::max(size.dy, static_cast<float32>(smallestHeight));
 
-        windowBackend->SetMinimumSize(size);
+        windowImpl->SetMinimumSize(size);
     }
 }
 
@@ -73,7 +73,7 @@ void Window::CloseAsync()
     // is controlled by highlevel framework
     if (!engineBackend->IsEmbeddedGUIMode())
     {
-        windowBackend->Close(false);
+        windowImpl->Close(false);
     }
 }
 
@@ -82,7 +82,7 @@ void Window::SetTitleAsync(const String& title)
     // It does not make sense to set window title in embedded mode
     if (!engineBackend->IsEmbeddedGUIMode())
     {
-        windowBackend->SetTitle(title);
+        windowImpl->SetTitle(title);
     }
 }
 
@@ -91,7 +91,7 @@ void Window::SetFullscreenAsync(eFullscreen newMode)
     // Window's fullscreen mode cannot be changed in embedded mode
     if (!engineBackend->IsEmbeddedGUIMode() && newMode != fullscreenMode)
     {
-        windowBackend->SetFullscreen(newMode);
+        windowImpl->SetFullscreen(newMode);
     }
 }
 
@@ -102,22 +102,22 @@ Engine* Window::GetEngine() const
 
 void* Window::GetNativeHandle() const
 {
-    return windowBackend->GetHandle();
+    return windowImpl->GetHandle();
 }
 
 void Window::RunOnUIThreadAsync(const Function<void()>& task)
 {
-    windowBackend->RunAsyncOnUIThread(task);
+    windowImpl->RunAsyncOnUIThread(task);
 }
 
 void Window::RunOnUIThread(const Function<void()>& task)
 {
-    windowBackend->RunAndWaitOnUIThread(task);
+    windowImpl->RunAndWaitOnUIThread(task);
 }
 
 void Window::InitCustomRenderParams(rhi::InitParam& params)
 {
-    windowBackend->InitCustomRenderParams(params);
+    windowImpl->InitCustomRenderParams(params);
 }
 
 void Window::SetCursorCapture(eCursorCapture mode)
@@ -126,7 +126,7 @@ void Window::SetCursorCapture(eCursorCapture mode)
     if (mode == eCursorCapture::FRAME)
         return;
 
-    /*if (windowBackend->IsPlatformSupported(SET_CURSOR_CAPTURE))*/ // TODO: Add platfom's caps check
+    /*if (windowImpl->IsPlatformSupported(SET_CURSOR_CAPTURE))*/ // TODO: Add platfom's caps check
     {
         if (cursorCapture != mode)
         {
@@ -136,14 +136,14 @@ void Window::SetCursorCapture(eCursorCapture mode)
                 waitInputActivation |= !hasFocus;
                 if (!waitInputActivation)
                 {
-                    windowBackend->SetCursorCapture(cursorCapture);
-                    windowBackend->SetCursorVisibility(false);
+                    windowImpl->SetCursorCapture(cursorCapture);
+                    windowImpl->SetCursorVisibility(false);
                 }
             }
             else if (hasFocus)
             {
-                windowBackend->SetCursorCapture(cursorCapture);
-                windowBackend->SetCursorVisibility(cursorVisible);
+                windowImpl->SetCursorCapture(cursorCapture);
+                windowImpl->SetCursorVisibility(cursorVisible);
             }
         }
     }
@@ -156,14 +156,14 @@ eCursorCapture Window::GetCursorCapture() const
 
 void Window::SetCursorVisibility(bool visible)
 {
-    /*if (windowBackend->IsPlatformSupported(SET_CURSOR_VISIBILITY))*/ // TODO: Add platfom's caps check
+    /*if (windowImpl->IsPlatformSupported(SET_CURSOR_VISIBILITY))*/ // TODO: Add platfom's caps check
     {
         if (cursorVisible != visible)
         {
             cursorVisible = visible;
             if (hasFocus && cursorCapture != eCursorCapture::PINNING)
             {
-                windowBackend->SetCursorVisibility(cursorVisible);
+                windowImpl->SetCursorVisibility(cursorVisible);
             }
         }
     }
@@ -280,7 +280,7 @@ void Window::EventHandler(const Private::MainDispatcherEvent& e)
 void Window::FinishEventHandlingOnCurrentFrame()
 {
     sizeEventsMerged = false;
-    windowBackend->TriggerPlatformEvents();
+    windowImpl->TriggerPlatformEvents();
 }
 
 void Window::HandleWindowCreated(const Private::MainDispatcherEvent& e)
@@ -335,8 +335,8 @@ void Window::HandleSizeChanged(const Private::MainDispatcherEvent& e)
         MergeSizeChangedEvents(e);
         sizeEventsMerged = true;
 
-        engineBackend->ResetRenderer(this, !windowBackend->IsWindowReadyForRender());
-        if (windowBackend->IsWindowReadyForRender())
+        engineBackend->ResetRenderer(this, !windowImpl->IsWindowReadyForRender());
+        if (windowImpl->IsWindowReadyForRender())
         {
             UpdateVirtualCoordinatesSystem();
             sizeChanged.Emit(this, GetSize(), GetSurfaceSize());
@@ -447,8 +447,8 @@ bool Window::HandleInputActivation(const Private::MainDispatcherEvent& e)
 
         if (enablePinning)
         {
-            windowBackend->SetCursorCapture(eCursorCapture::PINNING);
-            windowBackend->SetCursorVisibility(false);
+            windowImpl->SetCursorCapture(eCursorCapture::PINNING);
+            windowImpl->SetCursorVisibility(false);
         }
         return skipEvent;
     }
@@ -478,15 +478,15 @@ void Window::HandleFocusChanged(const Private::MainDispatcherEvent& e)
         uiControlSystem->CancelAllInputs();
         inputSystem->GetKeyboard().ClearAllKeys();
         hasFocus = gainsFocus;
-        /*if (windowBackend->IsPlatformSupported(SET_CURSOR_CAPTURE))*/ // TODO: Add platfom's caps check
+        /*if (windowImpl->IsPlatformSupported(SET_CURSOR_CAPTURE))*/ // TODO: Add platfom's caps check
         {
             // When the native window loses focus, it restores the original cursor capture and visibility.
             // After the window gives the focus back, set the current visibility state, if not set pinning mode.
             // If the cursor capture mode is pinning, set the visibility state and capture mode when input activated.
             if (hasFocus && cursorCapture != eCursorCapture::PINNING)
             {
-                windowBackend->SetCursorVisibility(cursorVisible);
-                windowBackend->SetCursorCapture(cursorCapture);
+                windowImpl->SetCursorVisibility(cursorVisible);
+                windowImpl->SetCursorCapture(cursorCapture);
             }
         }
         focusChanged.Emit(this, hasFocus);
@@ -684,7 +684,7 @@ void Window::SetSurfaceScaleAsync(float32 scale)
         return;
     }
 
-    windowBackend->SetSurfaceScaleAsync(scale);
+    windowImpl->SetSurfaceScaleAsync(scale);
 }
 
 } // namespace DAVA

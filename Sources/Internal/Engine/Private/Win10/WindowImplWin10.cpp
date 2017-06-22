@@ -1,49 +1,49 @@
-#include "Engine/Private/Win10/Window/WindowBackendWin10.h"
+#include "Engine/Private/Win10/WindowImplWin10.h"
 
 #if defined(__DAVAENGINE_WIN_UAP__)
 
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
 #include "Engine/Private/Win10/PlatformCoreWin10.h"
-#include "Engine/Private/Win10/Window/WindowNativeBridgeWin10.h"
+#include "Engine/Private/Win10/WindowNativeBridgeWin10.h"
 #include "Platform/DeviceInfo.h"
 
 namespace DAVA
 {
 namespace Private
 {
-WindowBackend::WindowBackend(EngineBackend* engineBackend, Window* window)
+WindowImpl::WindowImpl(EngineBackend* engineBackend, Window* window)
     : engineBackend(engineBackend)
     , window(window)
     , mainDispatcher(engineBackend->GetDispatcher())
-    , uiDispatcher(MakeFunction(this, &WindowBackend::UIEventHandler), MakeFunction(this, &WindowBackend::TriggerPlatformEvents))
+    , uiDispatcher(MakeFunction(this, &WindowImpl::UIEventHandler), MakeFunction(this, &WindowImpl::TriggerPlatformEvents))
     , bridge(ref new WindowNativeBridge(this))
 {
 }
 
-WindowBackend::~WindowBackend() = default;
+WindowImpl::~WindowImpl() = default;
 
-void WindowBackend::Resize(float32 width, float32 height)
+void WindowImpl::Resize(float32 width, float32 height)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateResizeEvent(width, height));
 }
 
-void WindowBackend::Close(bool /*appIsTerminating*/)
+void WindowImpl::Close(bool /*appIsTerminating*/)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateCloseEvent());
 }
 
-void WindowBackend::SetTitle(const String& title)
+void WindowImpl::SetTitle(const String& title)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateSetTitleEvent(title));
 }
 
-void WindowBackend::SetMinimumSize(Size2f size)
+void WindowImpl::SetMinimumSize(Size2f size)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateMinimumSizeEvent(size.dx, size.dy));
 }
 
-void WindowBackend::SetFullscreen(eFullscreen newMode)
+void WindowImpl::SetFullscreen(eFullscreen newMode)
 {
     // Fullscreen mode cannot be changed on phones
     if (!PlatformCore::IsPhoneContractPresent())
@@ -52,27 +52,27 @@ void WindowBackend::SetFullscreen(eFullscreen newMode)
     }
 }
 
-void WindowBackend::RunAsyncOnUIThread(const Function<void()>& task)
+void WindowImpl::RunAsyncOnUIThread(const Function<void()>& task)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateFunctorEvent(task));
 }
 
-void WindowBackend::RunAndWaitOnUIThread(const Function<void()>& task)
+void WindowImpl::RunAndWaitOnUIThread(const Function<void()>& task)
 {
     uiDispatcher.SendEvent(UIDispatcherEvent::CreateFunctorEvent(task));
 }
 
-void* WindowBackend::GetHandle() const
+void* WindowImpl::GetHandle() const
 {
     return bridge->GetHandle();
 }
 
-bool WindowBackend::IsWindowReadyForRender() const
+bool WindowImpl::IsWindowReadyForRender() const
 {
     return GetHandle() != nullptr;
 }
 
-void WindowBackend::TriggerPlatformEvents()
+void WindowImpl::TriggerPlatformEvents()
 {
     if (uiDispatcher.HasEvents())
     {
@@ -80,27 +80,27 @@ void WindowBackend::TriggerPlatformEvents()
     }
 }
 
-void WindowBackend::ProcessPlatformEvents()
+void WindowImpl::ProcessPlatformEvents()
 {
     // Method executes in context of XAML::Window's UI thread
     uiDispatcher.ProcessEvents();
 }
 
-void WindowBackend::SetSurfaceScaleAsync(const float32 scale)
+void WindowImpl::SetSurfaceScaleAsync(const float32 scale)
 {
     DVASSERT(scale > 0.0f && scale <= 1.0f);
 
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateSetSurfaceScaleEvent(scale));
 }
 
-void WindowBackend::BindXamlWindow(::Windows::UI::Xaml::Window ^ xamlWindow)
+void WindowImpl::BindXamlWindow(::Windows::UI::Xaml::Window ^ xamlWindow)
 {
     // Method executes in context of XAML::Window's UI thread
     uiDispatcher.LinkToCurrentThread();
     bridge->BindToXamlWindow(xamlWindow);
 }
 
-void WindowBackend::UIEventHandler(const UIDispatcherEvent& e)
+void WindowImpl::UIEventHandler(const UIDispatcherEvent& e)
 {
     // Method executes in context of XAML::Window's UI thread
     switch (e.type)
@@ -138,12 +138,12 @@ void WindowBackend::UIEventHandler(const UIDispatcherEvent& e)
     }
 }
 
-void WindowBackend::SetCursorCapture(eCursorCapture mode)
+void WindowImpl::SetCursorCapture(eCursorCapture mode)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateSetCursorCaptureEvent(mode));
 }
 
-void WindowBackend::SetCursorVisibility(bool visible)
+void WindowImpl::SetCursorVisibility(bool visible)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateSetCursorVisibilityEvent(visible));
 }

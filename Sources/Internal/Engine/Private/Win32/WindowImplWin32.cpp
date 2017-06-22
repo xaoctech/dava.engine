@@ -1,4 +1,4 @@
-#include "Engine/Private/Win32/Window/WindowBackendWin32.h"
+#include "Engine/Private/Win32/WindowImplWin32.h"
 
 #if defined(__DAVAENGINE_QT__)
 // TODO: plarform defines
@@ -19,15 +19,15 @@ namespace DAVA
 {
 namespace Private
 {
-HCURSOR WindowBackend::defaultCursor = nullptr;
-bool WindowBackend::windowClassRegistered = false;
-const wchar_t WindowBackend::windowClassName[] = L"DAVA_WND_CLASS";
+HCURSOR WindowImpl::defaultCursor = nullptr;
+bool WindowImpl::windowClassRegistered = false;
+const wchar_t WindowImpl::windowClassName[] = L"DAVA_WND_CLASS";
 
-WindowBackend::WindowBackend(EngineBackend* engineBackend, Window* window)
+WindowImpl::WindowImpl(EngineBackend* engineBackend, Window* window)
     : engineBackend(engineBackend)
     , window(window)
     , mainDispatcher(engineBackend->GetDispatcher())
-    , uiDispatcher(MakeFunction(this, &WindowBackend::UIEventHandler), MakeFunction(this, &WindowBackend::TriggerPlatformEvents))
+    , uiDispatcher(MakeFunction(this, &WindowImpl::UIEventHandler), MakeFunction(this, &WindowImpl::TriggerPlatformEvents))
     , minWidth(Window::smallestWidth)
     , minHeight(Window::smallestHeight)
     , lastCursorPosition({ 0, 0 })
@@ -38,12 +38,12 @@ WindowBackend::WindowBackend(EngineBackend* engineBackend, Window* window)
     lastShiftStates[0] = lastShiftStates[1] = false;
 }
 
-WindowBackend::~WindowBackend()
+WindowImpl::~WindowImpl()
 {
     DVASSERT(hwnd == nullptr);
 }
 
-bool WindowBackend::Create(float32 width, float32 height)
+bool WindowImpl::Create(float32 width, float32 height)
 {
     if (!RegisterWindowClass())
     {
@@ -77,43 +77,43 @@ bool WindowBackend::Create(float32 width, float32 height)
     return false;
 }
 
-void WindowBackend::Resize(float32 width, float32 height)
+void WindowImpl::Resize(float32 width, float32 height)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateResizeEvent(width, height));
 }
 
-void WindowBackend::Close(bool /*appIsTerminating*/)
+void WindowImpl::Close(bool /*appIsTerminating*/)
 {
     closeRequestByApp = true;
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateCloseEvent());
 }
 
-void WindowBackend::SetTitle(const String& title)
+void WindowImpl::SetTitle(const String& title)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateSetTitleEvent(title));
 }
 
-void WindowBackend::SetMinimumSize(Size2f size)
+void WindowImpl::SetMinimumSize(Size2f size)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateMinimumSizeEvent(size.dx, size.dy));
 }
 
-void WindowBackend::SetFullscreen(eFullscreen newMode)
+void WindowImpl::SetFullscreen(eFullscreen newMode)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateSetFullscreenEvent(newMode));
 }
 
-void WindowBackend::RunAsyncOnUIThread(const Function<void()>& task)
+void WindowImpl::RunAsyncOnUIThread(const Function<void()>& task)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateFunctorEvent(task));
 }
 
-void WindowBackend::RunAndWaitOnUIThread(const Function<void()>& task)
+void WindowImpl::RunAndWaitOnUIThread(const Function<void()>& task)
 {
     uiDispatcher.SendEvent(UIDispatcherEvent::CreateFunctorEvent(task));
 }
 
-void WindowBackend::SetIcon(const wchar_t* iconResourceName)
+void WindowImpl::SetIcon(const wchar_t* iconResourceName)
 {
     DVASSERT(hwnd != nullptr);
 
@@ -125,7 +125,7 @@ void WindowBackend::SetIcon(const wchar_t* iconResourceName)
     }
 }
 
-void WindowBackend::SetCursor(HCURSOR hcursor)
+void WindowImpl::SetCursor(HCURSOR hcursor)
 {
     DVASSERT(hwnd != nullptr);
 
@@ -136,12 +136,12 @@ void WindowBackend::SetCursor(HCURSOR hcursor)
     }
 }
 
-bool WindowBackend::IsWindowReadyForRender() const
+bool WindowImpl::IsWindowReadyForRender() const
 {
     return GetHandle() != nullptr;
 }
 
-void WindowBackend::TriggerPlatformEvents()
+void WindowImpl::TriggerPlatformEvents()
 {
     if (uiDispatcher.HasEvents())
     {
@@ -149,17 +149,17 @@ void WindowBackend::TriggerPlatformEvents()
     }
 }
 
-void WindowBackend::SetCursorCapture(eCursorCapture mode)
+void WindowImpl::SetCursorCapture(eCursorCapture mode)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateSetCursorCaptureEvent(mode));
 }
 
-void WindowBackend::SetCursorVisibility(bool visible)
+void WindowImpl::SetCursorVisibility(bool visible)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateSetCursorVisibilityEvent(visible));
 }
 
-LRESULT WindowBackend::OnSetCursor(LPARAM lparam)
+LRESULT WindowImpl::OnSetCursor(LPARAM lparam)
 {
     uint16 hittest = LOWORD(lparam);
     if (hittest == HTCLIENT)
@@ -171,7 +171,7 @@ LRESULT WindowBackend::OnSetCursor(LPARAM lparam)
     return FALSE;
 }
 
-void WindowBackend::SetCursorInCenter()
+void WindowImpl::SetCursorInCenter()
 {
     RECT clientRect;
     ::GetClientRect(hwnd, &clientRect);
@@ -182,7 +182,7 @@ void WindowBackend::SetCursorInCenter()
     ::SetCursorPos(point.x, point.y);
 }
 
-void WindowBackend::ProcessPlatformEvents()
+void WindowImpl::ProcessPlatformEvents()
 {
     // Prevent processing UI dispatcher events to exclude cases when WM_TRIGGER_EVENTS is delivered
     // when modal dialog is open as Dispatcher::ProcessEvents is not reentrant now
@@ -192,14 +192,14 @@ void WindowBackend::ProcessPlatformEvents()
     }
 }
 
-void WindowBackend::SetSurfaceScaleAsync(const float32 scale)
+void WindowImpl::SetSurfaceScaleAsync(const float32 scale)
 {
     DVASSERT(scale > 0.0f && scale <= 1.0f);
 
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateSetSurfaceScaleEvent(scale));
 }
 
-void WindowBackend::DoSetSurfaceScale(const float32 scale)
+void WindowImpl::DoSetSurfaceScale(const float32 scale)
 {
     if (Renderer::GetAPI() == rhi::RHI_DX9)
     {
@@ -208,7 +208,7 @@ void WindowBackend::DoSetSurfaceScale(const float32 scale)
     }
 }
 
-void WindowBackend::DoResizeWindow(float32 width, float32 height, int resizeFlags)
+void WindowImpl::DoResizeWindow(float32 width, float32 height, int resizeFlags)
 {
     if ((resizeFlags & NO_TRANSLATE_TO_DIPS) == 0)
     {
@@ -253,24 +253,24 @@ void WindowBackend::DoResizeWindow(float32 width, float32 height, int resizeFlag
     ::SetWindowPos(hwnd, nullptr, x, y, w, h, flags);
 }
 
-void WindowBackend::DoCloseWindow()
+void WindowImpl::DoCloseWindow()
 {
     ::DestroyWindow(hwnd);
 }
 
-void WindowBackend::DoSetTitle(const char8* title)
+void WindowImpl::DoSetTitle(const char8* title)
 {
     WideString wideTitle = UTF8Utils::EncodeToWideString(title);
     ::SetWindowTextW(hwnd, wideTitle.c_str());
 }
 
-void WindowBackend::DoSetMinimumSize(float32 width, float32 height)
+void WindowImpl::DoSetMinimumSize(float32 width, float32 height)
 {
     minWidth = static_cast<int>(width);
     minHeight = static_cast<int>(height);
 }
 
-void WindowBackend::DoSetFullscreen(eFullscreen newMode)
+void WindowImpl::DoSetFullscreen(eFullscreen newMode)
 {
     // Changing of fullscreen mode leads to size changing, so set mode before it applying
     if (newMode == eFullscreen::On)
@@ -285,7 +285,7 @@ void WindowBackend::DoSetFullscreen(eFullscreen newMode)
     }
 }
 
-void WindowBackend::SetFullscreenMode()
+void WindowImpl::SetFullscreenMode()
 {
     // Get window placement which is needed for back to windowed mode
     ::GetWindowPlacement(hwnd, &windowPlacement);
@@ -309,7 +309,7 @@ void WindowBackend::SetFullscreenMode()
                    SWP_FRAMECHANGED | SWP_NOOWNERZORDER);
 }
 
-void WindowBackend::SetWindowedMode()
+void WindowImpl::SetWindowedMode()
 {
     ::SetWindowLong(hwnd, GWL_STYLE, windowedStyle);
     ::SetWindowPlacement(hwnd, &windowPlacement);
@@ -318,7 +318,7 @@ void WindowBackend::SetWindowedMode()
     ::SetWindowPos(hwnd, nullptr, 0, 0, 0, 0, flags);
 }
 
-void WindowBackend::DoSetCursorCapture(eCursorCapture mode)
+void WindowImpl::DoSetCursorCapture(eCursorCapture mode)
 {
     if (captureMode != mode)
     {
@@ -358,7 +358,7 @@ void WindowBackend::DoSetCursorCapture(eCursorCapture mode)
     }
 }
 
-void WindowBackend::SwitchToPinning()
+void WindowImpl::SwitchToPinning()
 {
     mouseMoveSkipCount = SKIP_N_MOUSE_MOVE_EVENTS;
 
@@ -369,7 +369,7 @@ void WindowBackend::SwitchToPinning()
     SetCursorInCenter();
 }
 
-void WindowBackend::UpdateClipCursor()
+void WindowImpl::UpdateClipCursor()
 {
     ::ClipCursor(nullptr);
     if (captureMode == eCursorCapture::PINNING)
@@ -382,7 +382,7 @@ void WindowBackend::UpdateClipCursor()
     }
 }
 
-void WindowBackend::HandleWindowFocusChanging(bool hasFocus)
+void WindowImpl::HandleWindowFocusChanging(bool hasFocus)
 {
     mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowFocusChangedEvent(window, hasFocus));
     if (!hasFocus)
@@ -398,12 +398,12 @@ void WindowBackend::HandleWindowFocusChanging(bool hasFocus)
     PlatformCore::EnableHighResolutionTimer(hasFocus);
 }
 
-void WindowBackend::DoSetCursorVisibility(bool visible)
+void WindowImpl::DoSetCursorVisibility(bool visible)
 {
     mouseVisible = visible;
 }
 
-void WindowBackend::HandleSizeChanged(int32 w, int32 h, bool dpiChanged)
+void WindowImpl::HandleSizeChanged(int32 w, int32 h, bool dpiChanged)
 {
     lastWidth = w;
     lastHeight = h;
@@ -423,7 +423,7 @@ void WindowBackend::HandleSizeChanged(int32 w, int32 h, bool dpiChanged)
     }
 }
 
-void WindowBackend::UIEventHandler(const UIDispatcherEvent& e)
+void WindowImpl::UIEventHandler(const UIDispatcherEvent& e)
 {
     switch (e.type)
     {
@@ -460,7 +460,7 @@ void WindowBackend::UIEventHandler(const UIDispatcherEvent& e)
     }
 }
 
-LRESULT WindowBackend::OnSize(int32 resizingType, int32 width, int32 height)
+LRESULT WindowImpl::OnSize(int32 resizingType, int32 width, int32 height)
 {
     UpdateClipCursor();
     if (resizingType == SIZE_MINIMIZED)
@@ -491,13 +491,13 @@ LRESULT WindowBackend::OnSize(int32 resizingType, int32 width, int32 height)
     return 0;
 }
 
-LRESULT WindowBackend::OnEnterSizeMove()
+LRESULT WindowImpl::OnEnterSizeMove()
 {
     isEnteredSizingModalLoop = true;
     return 0;
 }
 
-LRESULT WindowBackend::OnExitSizeMove()
+LRESULT WindowImpl::OnExitSizeMove()
 {
     RECT rc;
     ::GetClientRect(hwnd, &rc);
@@ -513,13 +513,13 @@ LRESULT WindowBackend::OnExitSizeMove()
     return 0;
 }
 
-LRESULT WindowBackend::OnEnterMenuLoop()
+LRESULT WindowImpl::OnEnterMenuLoop()
 {
     ::ClipCursor(nullptr);
     return 0;
 }
 
-LRESULT WindowBackend::OnExitMenuLoop()
+LRESULT WindowImpl::OnExitMenuLoop()
 {
     UpdateClipCursor();
 
@@ -534,14 +534,14 @@ LRESULT WindowBackend::OnExitMenuLoop()
     return 0;
 }
 
-LRESULT WindowBackend::OnGetMinMaxInfo(MINMAXINFO* minMaxInfo)
+LRESULT WindowImpl::OnGetMinMaxInfo(MINMAXINFO* minMaxInfo)
 {
     minMaxInfo->ptMinTrackSize.x = minWidth;
     minMaxInfo->ptMinTrackSize.y = minHeight;
     return 0;
 }
 
-LRESULT WindowBackend::OnDpiChanged(RECT* suggestedRect)
+LRESULT WindowImpl::OnDpiChanged(RECT* suggestedRect)
 {
     float32 curDpi = GetDpi();
     if (dpi != curDpi)
@@ -561,7 +561,7 @@ LRESULT WindowBackend::OnDpiChanged(RECT* suggestedRect)
     return 0;
 }
 
-LRESULT WindowBackend::OnActivate(WPARAM wparam)
+LRESULT WindowImpl::OnActivate(WPARAM wparam)
 {
     bool newFocus = (LOWORD(wparam) != WA_INACTIVE);
     if (hasFocus != newFocus)
@@ -577,7 +577,7 @@ LRESULT WindowBackend::OnActivate(WPARAM wparam)
     return 0;
 }
 
-LRESULT WindowBackend::OnMouseMoveRelativeEvent(int x, int y)
+LRESULT WindowImpl::OnMouseMoveRelativeEvent(int x, int y)
 {
     if (mouseMoveSkipCount > 0)
     {
@@ -606,7 +606,7 @@ LRESULT WindowBackend::OnMouseMoveRelativeEvent(int x, int y)
     return 0;
 }
 
-LRESULT WindowBackend::OnMouseMoveEvent(int32 x, int32 y)
+LRESULT WindowImpl::OnMouseMoveEvent(int32 x, int32 y)
 {
     if (forceCursorHide)
     {
@@ -635,7 +635,7 @@ LRESULT WindowBackend::OnMouseMoveEvent(int32 x, int32 y)
     return 0;
 }
 
-LRESULT WindowBackend::OnMouseWheelEvent(int32 deltaX, int32 deltaY, int32 x, int32 y)
+LRESULT WindowImpl::OnMouseWheelEvent(int32 deltaX, int32 deltaY, int32 x, int32 y)
 {
     eModifierKeys modifierKeys = GetModifierKeys();
     float32 vx = static_cast<float32>(x) / dipSize;
@@ -647,7 +647,7 @@ LRESULT WindowBackend::OnMouseWheelEvent(int32 deltaX, int32 deltaY, int32 x, in
     return 0;
 }
 
-LRESULT WindowBackend::OnMouseClickEvent(UINT message, uint16 xbutton, int32 x, int32 y)
+LRESULT WindowImpl::OnMouseClickEvent(UINT message, uint16 xbutton, int32 x, int32 y)
 {
     // Windows generates WM_xBUTTONDONW/WM_xBUTTONUP event for primary touch point so check and process
     // mouse clicks only from mouse device.
@@ -711,7 +711,7 @@ LRESULT WindowBackend::OnMouseClickEvent(UINT message, uint16 xbutton, int32 x, 
     return 0;
 }
 
-LRESULT WindowBackend::OnCaptureChanged()
+LRESULT WindowImpl::OnCaptureChanged()
 {
     if (mouseButtonsState != 0)
     {
@@ -755,7 +755,7 @@ LRESULT WindowBackend::OnCaptureChanged()
     return 0;
 }
 
-LRESULT WindowBackend::OnTouch(uint32 ntouch, HTOUCHINPUT htouch)
+LRESULT WindowImpl::OnTouch(uint32 ntouch, HTOUCHINPUT htouch)
 {
     touchInput.resize(ntouch);
     TOUCHINPUT* pinput = touchInput.data();
@@ -793,7 +793,7 @@ LRESULT WindowBackend::OnTouch(uint32 ntouch, HTOUCHINPUT htouch)
     return 0;
 }
 
-LRESULT WindowBackend::OnPointerClick(uint32 pointerId, int32 x, int32 y)
+LRESULT WindowImpl::OnPointerClick(uint32 pointerId, int32 x, int32 y)
 {
     POINTER_INFO pointerInfo;
     DllImport::fnGetPointerInfo(pointerId, &pointerInfo);
@@ -818,7 +818,7 @@ LRESULT WindowBackend::OnPointerClick(uint32 pointerId, int32 x, int32 y)
     return 0;
 }
 
-LRESULT WindowBackend::OnPointerUpdate(uint32 pointerId, int32 x, int32 y)
+LRESULT WindowImpl::OnPointerUpdate(uint32 pointerId, int32 x, int32 y)
 {
     POINTER_INFO pointerInfo;
     DllImport::fnGetPointerInfo(pointerId, &pointerInfo);
@@ -850,7 +850,7 @@ LRESULT WindowBackend::OnPointerUpdate(uint32 pointerId, int32 x, int32 y)
     return 0;
 }
 
-LRESULT WindowBackend::OnKeyEvent(uint32 key, uint32 scanCode, bool isPressed, bool isExtended, bool isRepeated)
+LRESULT WindowImpl::OnKeyEvent(uint32 key, uint32 scanCode, bool isPressed, bool isExtended, bool isRepeated)
 {
     // Handle shifts separately to workaround some windows behaviours (see comment inside of OnShiftKeyEvent)
     if (key == VK_SHIFT)
@@ -872,7 +872,7 @@ LRESULT WindowBackend::OnKeyEvent(uint32 key, uint32 scanCode, bool isPressed, b
     }
 }
 
-LRESULT WindowBackend::OnShiftKeyEvent()
+LRESULT WindowImpl::OnShiftKeyEvent()
 {
     // Windows does not send event with separate WM_KEYUP for second shift if first one is still pressed
     // So if it's a shift key event, request and store every shift state explicitly
@@ -903,14 +903,14 @@ LRESULT WindowBackend::OnShiftKeyEvent()
     return 0;
 }
 
-LRESULT WindowBackend::OnCharEvent(uint32 key, bool isRepeated)
+LRESULT WindowImpl::OnCharEvent(uint32 key, bool isRepeated)
 {
     eModifierKeys modifierKeys = GetModifierKeys();
     mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_CHAR, key, modifierKeys, isRepeated));
     return 0;
 }
 
-LRESULT WindowBackend::OnCreate()
+LRESULT WindowImpl::OnCreate()
 {
     RECT rc;
     ::GetClientRect(hwnd, &rc);
@@ -940,7 +940,7 @@ LRESULT WindowBackend::OnCreate()
     return 0;
 }
 
-bool WindowBackend::OnClose()
+bool WindowImpl::OnClose()
 {
     if (!closeRequestByApp)
     {
@@ -949,7 +949,7 @@ bool WindowBackend::OnClose()
     return closeRequestByApp;
 }
 
-bool WindowBackend::OnSysCommand(int sysCommand)
+bool WindowImpl::OnSysCommand(int sysCommand)
 {
     // Ignore 'Move' and 'Size' commands from system menu as handling them takes more efforts than brings profit.
     // Window still can be moved and sized by mouse.
@@ -968,7 +968,7 @@ bool WindowBackend::OnSysCommand(int sysCommand)
     return false;
 }
 
-LRESULT WindowBackend::OnDestroy()
+LRESULT WindowImpl::OnDestroy()
 {
     if (!isMinimized)
     {
@@ -980,7 +980,7 @@ LRESULT WindowBackend::OnDestroy()
     return 0;
 }
 
-LRESULT WindowBackend::WindowProc(UINT message, WPARAM wparam, LPARAM lparam, bool& isHandled)
+LRESULT WindowImpl::WindowProc(UINT message, WPARAM wparam, LPARAM lparam, bool& isHandled)
 {
     // Intentionally use 'if' instead of 'switch'
     LRESULT lresult = 0;
@@ -1162,13 +1162,13 @@ LRESULT WindowBackend::WindowProc(UINT message, WPARAM wparam, LPARAM lparam, bo
     return lresult;
 }
 
-LRESULT CALLBACK WindowBackend::WndProcStart(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK WindowImpl::WndProcStart(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 {
     bool isHandled = true;
     if (message == WM_NCCREATE)
     {
         CREATESTRUCT* cs = reinterpret_cast<CREATESTRUCT*>(lparam);
-        WindowBackend* pthis = static_cast<WindowBackend*>(cs->lpCreateParams);
+        WindowImpl* pthis = static_cast<WindowImpl*>(cs->lpCreateParams);
         SetWindowLongPtrW(hwnd, 0, reinterpret_cast<LONG_PTR>(pthis));
         pthis->hwnd = hwnd;
     }
@@ -1176,7 +1176,7 @@ LRESULT CALLBACK WindowBackend::WndProcStart(HWND hwnd, UINT message, WPARAM wpa
     // NOTE: first message coming to wndproc is not always WM_NCCREATE
     // It can be e.g. WM_GETMINMAXINFO, so do not handle all messages before WM_NCCREATE
     LRESULT lresult = 0;
-    WindowBackend* pthis = reinterpret_cast<WindowBackend*>(GetWindowLongPtrW(hwnd, 0));
+    WindowImpl* pthis = reinterpret_cast<WindowImpl*>(GetWindowLongPtrW(hwnd, 0));
     if (pthis != nullptr)
     {
         lresult = pthis->WindowProc(message, wparam, lparam, isHandled);
@@ -1197,7 +1197,7 @@ LRESULT CALLBACK WindowBackend::WndProcStart(HWND hwnd, UINT message, WPARAM wpa
     return lresult;
 }
 
-bool WindowBackend::RegisterWindowClass()
+bool WindowImpl::RegisterWindowClass()
 {
     if (!windowClassRegistered)
     {
@@ -1223,7 +1223,7 @@ bool WindowBackend::RegisterWindowClass()
     return windowClassRegistered;
 }
 
-float32 WindowBackend::GetDpi() const
+float32 WindowImpl::GetDpi() const
 {
     float32 result = 0.0f;
     if (DllImport::fnGetDpiForMonitor != nullptr)
@@ -1244,7 +1244,7 @@ float32 WindowBackend::GetDpi() const
     return result;
 }
 
-eModifierKeys WindowBackend::GetModifierKeys()
+eModifierKeys WindowImpl::GetModifierKeys()
 {
     eModifierKeys result = eModifierKeys::NONE;
     BYTE keyState[256];
@@ -1266,7 +1266,7 @@ eModifierKeys WindowBackend::GetModifierKeys()
     return result;
 }
 
-eInputDevices WindowBackend::GetInputEventSourceLegacy(LPARAM messageExtraInfo)
+eInputDevices WindowImpl::GetInputEventSourceLegacy(LPARAM messageExtraInfo)
 {
     // How to distinguish pen input from mouse and touch
     // https://msdn.microsoft.com/en-us/library/windows/desktop/ms703320(v=vs.85).aspx
@@ -1281,7 +1281,7 @@ eInputDevices WindowBackend::GetInputEventSourceLegacy(LPARAM messageExtraInfo)
     return eInputDevices::MOUSE;
 }
 
-eMouseButtons WindowBackend::GetMouseButtonLegacy(uint32 curState, uint32 newState, bool* isPressed)
+eMouseButtons WindowImpl::GetMouseButtonLegacy(uint32 curState, uint32 newState, bool* isPressed)
 {
     uint32 changed = curState ^ newState;
     if (changed & MK_LBUTTON)
@@ -1312,7 +1312,7 @@ eMouseButtons WindowBackend::GetMouseButtonLegacy(uint32 curState, uint32 newSta
     return eMouseButtons::NONE;
 }
 
-eMouseButtons WindowBackend::GetMouseButton(POINTER_BUTTON_CHANGE_TYPE buttonChangeType, bool* isPressed)
+eMouseButtons WindowImpl::GetMouseButton(POINTER_BUTTON_CHANGE_TYPE buttonChangeType, bool* isPressed)
 {
     *isPressed = false;
     switch (buttonChangeType)

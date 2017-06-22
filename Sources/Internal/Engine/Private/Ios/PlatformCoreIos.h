@@ -29,7 +29,7 @@ public:
     // Signals for distribution UIApplicationDelegate's notifications:
     //  - applicationDidBecomeActive/applicationWillResignActive
     //  - applicationWillEnterForeground/applicationDidEnterBackground
-    // WindowBackends usually connect to these signals to manage its focus
+    // WindowImpls usually connect to these signals to manage its focus
     // and visibility states
     Signal<bool> didBecomeResignActive;
     Signal<bool> didEnterForegroundBackground;

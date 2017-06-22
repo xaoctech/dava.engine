@@ -21,14 +21,14 @@ namespace DAVA
 {
 namespace Private
 {
-class WindowBackend final
+class WindowImpl final
 {
 public:
-    WindowBackend(EngineBackend* engineBackend, Window* window);
-    ~WindowBackend();
+    WindowImpl(EngineBackend* engineBackend, Window* window);
+    ~WindowImpl();
 
-    WindowBackend(const WindowBackend&) = delete;
-    WindowBackend& operator=(const WindowBackend&) = delete;
+    WindowImpl(const WindowImpl&) = delete;
+    WindowImpl& operator=(const WindowImpl&) = delete;
 
     bool Create(float32 width, float32 height);
     void Resize(float32 width, float32 height);
@@ -182,17 +182,17 @@ private:
     bool lastShiftStates[2];
 };
 
-inline void* WindowBackend::GetHandle() const
+inline void* WindowImpl::GetHandle() const
 {
     return static_cast<void*>(hwnd);
 }
 
-inline HWND WindowBackend::GetHWND() const
+inline HWND WindowImpl::GetHWND() const
 {
     return hwnd;
 }
 
-inline void WindowBackend::InitCustomRenderParams(rhi::InitParam& /*params*/)
+inline void WindowImpl::InitCustomRenderParams(rhi::InitParam& /*params*/)
 {
     // No custom render params
 }

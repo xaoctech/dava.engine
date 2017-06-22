@@ -10,7 +10,7 @@
 #include "Engine/Window.h"
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Mac/CoreNativeBridgeMac.h"
-#include "Engine/Private/Mac/Window/WindowBackendMac.h"
+#include "Engine/Private/Mac/WindowImplMac.h"
 #include "Utils/StringFormat.h"
 
 namespace DAVA

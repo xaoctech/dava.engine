@@ -18,11 +18,11 @@ namespace DAVA
 {
 namespace Private
 {
-class WindowBackend final
+class WindowImpl final
 {
 public:
-    WindowBackend(EngineBackend* engineBackend, Window* window);
-    ~WindowBackend();
+    WindowImpl(EngineBackend* engineBackend, Window* window);
+    ~WindowImpl();
 
     bool Create(float32 width, float32 height);
     void Resize(float32 width, float32 height);
@@ -55,12 +55,12 @@ private:
     UIDispatcher uiDispatcher; // Dispatcher that dispatches events to window UI thread
 };
 
-inline void* WindowBackend::GetHandle() const
+inline void* WindowImpl::GetHandle() const
 {
     return nullptr;
 }
 
-inline void WindowBackend::InitCustomRenderParams(rhi::InitParam& /*params*/)
+inline void WindowImpl::InitCustomRenderParams(rhi::InitParam& /*params*/)
 {
     // No custom render params
 }

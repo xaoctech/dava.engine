@@ -8,7 +8,7 @@
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 #include "Engine/Private/Win10/DllImportWin10.h"
-#include "Engine/Private/Win10/Window/WindowBackendWin10.h"
+#include "Engine/Private/Win10/WindowImplWin10.h"
 
 #include "Concurrency/LockGuard.h"
 #include "Concurrency/Thread.h"
@@ -166,8 +166,8 @@ void PlatformCore::OnWindowCreated(::Windows::UI::Xaml::Window ^ xamlWindow)
     {
         primaryWindow = engineBackend->InitializePrimaryWindow();
     }
-    WindowBackend* windowBackend = EngineBackend::GetWindowBackend(primaryWindow);
-    windowBackend->BindXamlWindow(xamlWindow);
+    WindowImpl* windowImpl = EngineBackend::GetWindowImpl(primaryWindow);
+    windowImpl->BindXamlWindow(xamlWindow);
 }
 
 void PlatformCore::OnSuspending()

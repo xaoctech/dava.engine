@@ -4,7 +4,7 @@
 // TODO: plarform defines
 #elif defined(__DAVAENGINE_MACOS__)
 
-#include "Engine/Private/Mac/Window/WindowNativeBridgeMac.h"
+#include "Engine/Private/Mac/WindowNativeBridgeMac.h"
 
 @implementation WindowDelegate
 

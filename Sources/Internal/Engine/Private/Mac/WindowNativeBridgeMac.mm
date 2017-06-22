@@ -1,4 +1,4 @@
-#include "Engine/Private/Mac/Window/WindowNativeBridgeMac.h"
+#include "Engine/Private/Mac/WindowNativeBridgeMac.h"
 
 #if defined(__DAVAENGINE_QT__)
 // TODO: plarform defines
@@ -10,7 +10,7 @@
 
 #include "Engine/Window.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
-#include "Engine/Private/Mac/Window/WindowBackendMac.h"
+#include "Engine/Private/Mac/WindowImplMac.h"
 #include "Engine/Private/Mac/Window/RenderViewMac.h"
 #include "Engine/Private/Mac/Window/WindowDelegateMac.h"
 
@@ -21,10 +21,10 @@ namespace DAVA
 {
 namespace Private
 {
-WindowNativeBridge::WindowNativeBridge(WindowBackend* windowBackend)
-    : windowBackend(windowBackend)
-    , window(windowBackend->window)
-    , mainDispatcher(windowBackend->mainDispatcher)
+WindowNativeBridge::WindowNativeBridge(WindowImpl* windowImpl)
+    : windowImpl(windowImpl)
+    , window(windowImpl->window)
+    , mainDispatcher(windowImpl->mainDispatcher)
 {
 }
 
@@ -32,7 +32,7 @@ WindowNativeBridge::~WindowNativeBridge() = default;
 
 bool WindowNativeBridge::CreateWindow(float32 x, float32 y, float32 width, float32 height)
 {
-    windowBackend->uiDispatcher.LinkToCurrentThread();
+    windowImpl->uiDispatcher.LinkToCurrentThread();
 
     // clang-format off
     NSUInteger style = NSTitledWindowMask |
@@ -140,7 +140,7 @@ void WindowNativeBridge::SetFullscreen(eFullscreen newMode)
 void WindowNativeBridge::TriggerPlatformEvents()
 {
     dispatch_async(dispatch_get_main_queue(), [this]() {
-        windowBackend->ProcessPlatformEvents();
+        windowImpl->ProcessPlatformEvents();
     });
 }
 
@@ -214,7 +214,7 @@ void WindowNativeBridge::WindowDidChangeScreen()
 
 bool WindowNativeBridge::WindowShouldClose()
 {
-    if (!windowBackend->closeRequestByApp)
+    if (!windowImpl->closeRequestByApp)
     {
         mainDispatcher->PostEvent(MainDispatcherEvent::CreateUserCloseRequestEvent(window));
         return false;
@@ -224,7 +224,7 @@ bool WindowNativeBridge::WindowShouldClose()
 
 void WindowNativeBridge::WindowWillClose()
 {
-    windowBackend->WindowWillClose();
+    windowImpl->WindowWillClose();
     mainDispatcher->SendEvent(MainDispatcherEvent::CreateWindowDestroyedEvent(window));
 
     [nswindow setContentView:nil];

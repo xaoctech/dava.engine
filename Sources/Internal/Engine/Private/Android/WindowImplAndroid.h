@@ -23,14 +23,14 @@ namespace DAVA
 {
 namespace Private
 {
-class WindowBackend final
+class WindowImpl final
 {
 public:
-    WindowBackend(EngineBackend* engineBackend, Window* window);
-    ~WindowBackend();
+    WindowImpl(EngineBackend* engineBackend, Window* window);
+    ~WindowImpl();
 
-    WindowBackend(const WindowBackend&) = delete;
-    WindowBackend& operator=(const WindowBackend&) = delete;
+    WindowImpl(const WindowImpl&) = delete;
+    WindowImpl& operator=(const WindowImpl&) = delete;
 
     void Resize(float32 width, float32 height);
     void Close(bool appIsTerminating);
@@ -107,12 +107,12 @@ private:
     friend struct AndroidBridge;
 };
 
-inline void* WindowBackend::GetHandle() const
+inline void* WindowImpl::GetHandle() const
 {
     return androidWindow;
 }
 
-inline void WindowBackend::InitCustomRenderParams(rhi::InitParam& /*params*/)
+inline void WindowImpl::InitCustomRenderParams(rhi::InitParam& /*params*/)
 {
     // No custom render params
 }

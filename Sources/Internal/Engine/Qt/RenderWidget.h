@@ -29,7 +29,7 @@ public:
     Signal<uint32, uint32> resized;
 
 private:
-    friend class Private::WindowBackend;
+    friend class Private::WindowImpl;
 
     RenderWidget(IWindowDelegate* widgetDelegate, uint32 width, uint32 height);
     ~RenderWidget();

@@ -332,7 +332,7 @@ private:
 private:
     Private::EngineBackend* engineBackend = nullptr;
     Private::MainDispatcher* mainDispatcher = nullptr;
-    std::unique_ptr<Private::WindowBackend> windowBackend;
+    std::unique_ptr<Private::WindowImpl> windowImpl;
 
     InputSystem* inputSystem = nullptr;
     UIControlSystem* uiControlSystem = nullptr;

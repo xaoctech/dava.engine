@@ -6,8 +6,8 @@
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Mac/CoreNativeBridgeMac.h"
 #include "Engine/Private/Mac/PlatformCoreMac.h"
-#include "Engine/Private/Mac/Window/WindowBackendMac.h"
-#include "Engine/Private/Mac/Window/WindowNativeBridgeMac.h"
+#include "Engine/Private/Mac/WindowImplMac.h"
+#include "Engine/Private/Mac/WindowNativeBridgeMac.h"
 
 #import <AppKit/NSView.h>
 
@@ -20,7 +20,7 @@ namespace Mac
 void AddNSView(Window* targetWindow, NSView* nsview)
 {
     using namespace DAVA::Private;
-    WindowBackend* wb = EngineBackend::GetWindowBackend(targetWindow);
+    WindowImpl* wb = EngineBackend::GetWindowImpl(targetWindow);
     [wb->bridge->renderView addSubview:nsview];
 }
 
@@ -32,7 +32,7 @@ void RemoveNSView(Window* targetWindow, NSView* nsview)
 void PrimaryWindowDeminiaturize()
 {
     using namespace DAVA::Private;
-    WindowBackend* wb = EngineBackend::GetWindowBackend(EngineBackend::Instance()->GetPrimaryWindow());
+    WindowImpl* wb = EngineBackend::GetWindowImpl(EngineBackend::Instance()->GetPrimaryWindow());
     [wb->bridge->nswindow deminiaturize:wb->bridge->windowDelegate];
     [wb->bridge->nswindow becomeKeyWindow];
 }

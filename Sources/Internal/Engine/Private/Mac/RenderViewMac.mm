@@ -9,7 +9,7 @@
 #import <AppKit/NSTrackingArea.h>
 #import <OpenGL/OpenGL.h>
 
-#include "Engine/Private/Mac/Window/WindowNativeBridgeMac.h"
+#include "Engine/Private/Mac/WindowNativeBridgeMac.h"
 
 #include "Logger/Logger.h"
 

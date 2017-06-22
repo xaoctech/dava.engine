@@ -1,4 +1,4 @@
-#include "Engine/Private/Qt/WindowBackendQt.h"
+#include "Engine/Private/Qt/WindowImplQt.h"
 
 #if defined(__DAVAENGINE_QT__)
 
@@ -7,7 +7,7 @@
 #include "Engine/EngineContext.h"
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
-#include "Engine/Private/Qt/WindowBackendQt.h"
+#include "Engine/Private/Qt/WindowImplQt.h"
 
 #include "Input/InputSystem.h"
 #include "Render/RHI/rhi_Public.h"
@@ -47,7 +47,7 @@ public:
     static const Type eventType = static_cast<Type>(User + 1);
 };
 
-class WindowBackend::QtEventListener : public QObject
+class WindowImpl::QtEventListener : public QObject
 {
 public:
     using TCallback = Function<void()>;
@@ -82,11 +82,11 @@ private:
     TCallback destroyed;
 };
 
-WindowBackend::WindowBackend(EngineBackend* engineBackend, Window* window)
+WindowImpl::WindowImpl(EngineBackend* engineBackend, Window* window)
     : engineBackend(engineBackend)
     , window(window)
     , mainDispatcher(engineBackend->GetDispatcher())
-    , uiDispatcher(MakeFunction(this, &WindowBackend::UIEventHandler), MakeFunction(this, &WindowBackend::TriggerPlatformEvents))
+    , uiDispatcher(MakeFunction(this, &WindowImpl::UIEventHandler), MakeFunction(this, &WindowImpl::TriggerPlatformEvents))
 {
     QtEventListener::TCallback triggered = [this]()
     {
@@ -105,53 +105,53 @@ WindowBackend::WindowBackend(EngineBackend* engineBackend, Window* window)
     qtEventListener = new QtEventListener(triggered, destroyed, PlatformApi::Qt::GetApplication());
 }
 
-WindowBackend::~WindowBackend()
+WindowImpl::~WindowImpl()
 {
     delete renderWidget;
 }
 
-void WindowBackend::Resize(float32 width, float32 height)
+void WindowImpl::Resize(float32 width, float32 height)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateResizeEvent(width, height));
 }
 
-void WindowBackend::Close(bool /*appIsTerminating*/)
+void WindowImpl::Close(bool /*appIsTerminating*/)
 {
     closeRequestByApp = true;
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateCloseEvent());
 }
 
-void WindowBackend::SetTitle(const String& title)
+void WindowImpl::SetTitle(const String& title)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateSetTitleEvent(title));
 }
 
-void WindowBackend::SetMinimumSize(Size2f size)
+void WindowImpl::SetMinimumSize(Size2f size)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateMinimumSizeEvent(size.dx, size.dy));
 }
 
-void WindowBackend::SetFullscreen(eFullscreen newMode)
+void WindowImpl::SetFullscreen(eFullscreen newMode)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateSetFullscreenEvent(newMode));
 }
 
-void WindowBackend::RunAsyncOnUIThread(const Function<void()>& task)
+void WindowImpl::RunAsyncOnUIThread(const Function<void()>& task)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateFunctorEvent(task));
 }
 
-void WindowBackend::RunAndWaitOnUIThread(const Function<void()>& task)
+void WindowImpl::RunAndWaitOnUIThread(const Function<void()>& task)
 {
     uiDispatcher.SendEvent(UIDispatcherEvent::CreateFunctorEvent(task));
 }
 
-bool WindowBackend::IsWindowReadyForRender() const
+bool WindowImpl::IsWindowReadyForRender() const
 {
     return renderWidget != nullptr && renderWidget->IsInitialized();
 }
 
-void WindowBackend::TriggerPlatformEvents()
+void WindowImpl::TriggerPlatformEvents()
 {
     QApplication* app = PlatformApi::Qt::GetApplication();
     DVASSERT(app);
@@ -161,12 +161,12 @@ void WindowBackend::TriggerPlatformEvents()
     }
 }
 
-void WindowBackend::SetSurfaceScaleAsync(const float32 scale)
+void WindowImpl::SetSurfaceScaleAsync(const float32 scale)
 {
     // Not supported natively on OpenGL
 }
 
-void WindowBackend::UIEventHandler(const UIDispatcherEvent& e)
+void WindowImpl::UIEventHandler(const UIDispatcherEvent& e)
 {
     switch (e.type)
     {
@@ -193,7 +193,7 @@ void WindowBackend::UIEventHandler(const UIDispatcherEvent& e)
     }
 }
 
-void WindowBackend::OnCreated()
+void WindowImpl::OnCreated()
 {
     uiDispatcher.LinkToCurrentThread();
 
@@ -207,7 +207,7 @@ void WindowBackend::OnCreated()
     OnApplicationFocusChanged(true);
 }
 
-bool WindowBackend::OnUserCloseRequest()
+bool WindowImpl::OnUserCloseRequest()
 {
     if (!closeRequestByApp)
     {
@@ -216,12 +216,12 @@ bool WindowBackend::OnUserCloseRequest()
     return closeRequestByApp;
 }
 
-void WindowBackend::OnDestroyed()
+void WindowImpl::OnDestroyed()
 {
     mainDispatcher->SendEvent(MainDispatcherEvent::CreateWindowDestroyedEvent(window));
 }
 
-void WindowBackend::OnFrame()
+void WindowImpl::OnFrame()
 {
     // HACK Qt send key event to widget with focus not globaly
     // if user hold ALT(CTRL, SHIFT) and then clicked DavaWidget(focused)
@@ -237,7 +237,7 @@ void WindowBackend::OnFrame()
     engineBackend->OnFrame();
 }
 
-void WindowBackend::OnResized(uint32 width, uint32 height, bool isFullScreen)
+void WindowImpl::OnResized(uint32 width, uint32 height, bool isFullScreen)
 {
     if (renderWidget && renderWidget->IsInitialized())
     {
@@ -249,13 +249,13 @@ void WindowBackend::OnResized(uint32 width, uint32 height, bool isFullScreen)
     }
 }
 
-void WindowBackend::OnDpiChanged(float32 dpi_)
+void WindowImpl::OnDpiChanged(float32 dpi_)
 {
     dpi = dpi_;
     mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowDpiChangedEvent(window, dpi));
 }
 
-void WindowBackend::OnVisibilityChanged(bool isVisible)
+void WindowImpl::OnVisibilityChanged(bool isVisible)
 {
     if (renderWidget && renderWidget->IsInitialized())
     {
@@ -263,7 +263,7 @@ void WindowBackend::OnVisibilityChanged(bool isVisible)
     }
 }
 
-void WindowBackend::OnMousePressed(QMouseEvent* qtEvent)
+void WindowImpl::OnMousePressed(QMouseEvent* qtEvent)
 {
     const MainDispatcherEvent::eType type = MainDispatcherEvent::MOUSE_BUTTON_DOWN;
     eMouseButtons button = GetMouseButton(qtEvent->button());
@@ -273,7 +273,7 @@ void WindowBackend::OnMousePressed(QMouseEvent* qtEvent)
     mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowMouseClickEvent(window, type, button, x, y, 1, modifierKeys, false));
 }
 
-void WindowBackend::OnMouseReleased(QMouseEvent* qtEvent)
+void WindowImpl::OnMouseReleased(QMouseEvent* qtEvent)
 {
     const MainDispatcherEvent::eType type = MainDispatcherEvent::MOUSE_BUTTON_UP;
     eMouseButtons button = GetMouseButton(qtEvent->button());
@@ -283,7 +283,7 @@ void WindowBackend::OnMouseReleased(QMouseEvent* qtEvent)
     mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowMouseClickEvent(window, type, button, x, y, 1, modifierKeys, false));
 }
 
-void WindowBackend::OnMouseMove(QMouseEvent* qtEvent)
+void WindowImpl::OnMouseMove(QMouseEvent* qtEvent)
 {
     float32 x = static_cast<float32>(qtEvent->x());
     float32 y = static_cast<float32>(qtEvent->y());
@@ -291,7 +291,7 @@ void WindowBackend::OnMouseMove(QMouseEvent* qtEvent)
     mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowMouseMoveEvent(window, x, y, modifierKeys, false));
 }
 
-void WindowBackend::OnDragMoved(QDragMoveEvent* qtEvent)
+void WindowImpl::OnDragMoved(QDragMoveEvent* qtEvent)
 {
     float32 x = static_cast<float32>(qtEvent->pos().x());
     float32 y = static_cast<float32>(qtEvent->pos().y());
@@ -299,13 +299,13 @@ void WindowBackend::OnDragMoved(QDragMoveEvent* qtEvent)
     mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowMouseMoveEvent(window, x, y, modifierKeys, false));
 }
 
-void WindowBackend::OnMouseDBClick(QMouseEvent* qtEvent)
+void WindowImpl::OnMouseDBClick(QMouseEvent* qtEvent)
 {
     OnMousePressed(qtEvent);
     OnMouseReleased(qtEvent);
 }
 
-void WindowBackend::OnWheel(QWheelEvent* qtEvent)
+void WindowImpl::OnWheel(QWheelEvent* qtEvent)
 {
     if (qtEvent->phase() != Qt::ScrollUpdate)
     {
@@ -341,7 +341,7 @@ void WindowBackend::OnWheel(QWheelEvent* qtEvent)
     mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowMouseWheelEvent(window, x, y, deltaX, deltaY, modifierKeys, false));
 }
 
-void WindowBackend::OnNativeGesture(QNativeGestureEvent* qtEvent)
+void WindowImpl::OnNativeGesture(QNativeGestureEvent* qtEvent)
 {
     eModifierKeys modifierKeys = GetModifierKeys();
     //local coordinates don't work on OS X - https://bugreports.qt.io/browse/QTBUG-59595
@@ -362,7 +362,7 @@ void WindowBackend::OnNativeGesture(QNativeGestureEvent* qtEvent)
     }
 }
 
-void WindowBackend::OnKeyPressed(QKeyEvent* qtEvent)
+void WindowImpl::OnKeyPressed(QKeyEvent* qtEvent)
 {
     uint32 key = qtEvent->nativeVirtualKey();
 #if defined(Q_OS_WIN)
@@ -400,7 +400,7 @@ void WindowBackend::OnKeyPressed(QKeyEvent* qtEvent)
     }
 }
 
-void WindowBackend::OnKeyReleased(QKeyEvent* qtEvent)
+void WindowImpl::OnKeyReleased(QKeyEvent* qtEvent)
 {
     //we don't support autorepeat key_up
     if (qtEvent->isAutoRepeat())
@@ -430,38 +430,38 @@ void WindowBackend::OnKeyReleased(QKeyEvent* qtEvent)
     mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_UP, key, modifierKeys, false));
 }
 
-void WindowBackend::DoResizeWindow(float32 width, float32 height)
+void WindowImpl::DoResizeWindow(float32 width, float32 height)
 {
     DVASSERT(renderWidget);
     renderWidget->resize(width, height);
 }
 
-void WindowBackend::DoCloseWindow()
+void WindowImpl::DoCloseWindow()
 {
     renderWidget->close();
 }
 
-void WindowBackend::DoSetTitle(const char8* title)
+void WindowImpl::DoSetTitle(const char8* title)
 {
     renderWidget->setWindowTitle(title);
 }
 
-void WindowBackend::DoSetMinimumSize(float32 width, float32 height)
+void WindowImpl::DoSetMinimumSize(float32 width, float32 height)
 {
     renderWidget->setMinimumSize(static_cast<int>(width), static_cast<int>(height));
 }
 
-void WindowBackend::AcquireContext()
+void WindowImpl::AcquireContext()
 {
     renderWidget->AcquireContext();
 }
 
-void WindowBackend::ReleaseContext()
+void WindowImpl::ReleaseContext()
 {
     renderWidget->ReleaseContext();
 }
 
-void WindowBackend::OnApplicationFocusChanged(bool isInFocus)
+void WindowImpl::OnApplicationFocusChanged(bool isInFocus)
 {
     if (renderWidget && renderWidget->IsInitialized())
     {
@@ -469,7 +469,7 @@ void WindowBackend::OnApplicationFocusChanged(bool isInFocus)
     }
 }
 
-void WindowBackend::Update()
+void WindowImpl::Update()
 {
     if (renderWidget != nullptr)
     {
@@ -477,7 +477,7 @@ void WindowBackend::Update()
     }
 }
 
-DAVA::RenderWidget* WindowBackend::GetRenderWidget()
+DAVA::RenderWidget* WindowImpl::GetRenderWidget()
 {
     if (renderWidget == nullptr)
     {
@@ -486,22 +486,22 @@ DAVA::RenderWidget* WindowBackend::GetRenderWidget()
     return renderWidget;
 }
 
-void WindowBackend::InitCustomRenderParams(rhi::InitParam& params)
+void WindowImpl::InitCustomRenderParams(rhi::InitParam& params)
 {
     renderWidget->InitCustomRenderParams(params);
 }
 
-void WindowBackend::SetCursorCapture(eCursorCapture mode)
+void WindowImpl::SetCursorCapture(eCursorCapture mode)
 {
     // not implemented
 }
 
-void WindowBackend::SetCursorVisibility(bool visible)
+void WindowImpl::SetCursorVisibility(bool visible)
 {
     // not implemented
 }
 
-eModifierKeys WindowBackend::GetModifierKeys() const
+eModifierKeys WindowImpl::GetModifierKeys() const
 {
     eModifierKeys result = eModifierKeys::NONE;
     Qt::KeyboardModifiers qmodifiers = QApplication::queryKeyboardModifiers();
@@ -533,7 +533,7 @@ eModifierKeys WindowBackend::GetModifierKeys() const
     return result;
 }
 
-eMouseButtons WindowBackend::GetMouseButton(Qt::MouseButton button)
+eMouseButtons WindowImpl::GetMouseButton(Qt::MouseButton button)
 {
     switch (button)
     {
@@ -653,14 +653,14 @@ public:
     UnorderedMap<Qt::Key, uint32> keyTranslator;
 };
 
-uint32 WindowBackend::ConvertQtKeyToSystemScanCode(int key)
+uint32 WindowImpl::ConvertQtKeyToSystemScanCode(int key)
 {
     static QtToSystemMacKeyTranslator tr;
     auto iter = tr.keyTranslator.find(static_cast<Qt::Key>(key));
     if (iter != tr.keyTranslator.end())
         return iter->second;
 
-    DAVA::Logger::Warning("[WindowBackend::ConvertQtKeyToSystemScanCode] Unresolved Qt::Key: %d", key);
+    DAVA::Logger::Warning("[WindowImpl::ConvertQtKeyToSystemScanCode] Unresolved Qt::Key: %d", key);
     return 0;
 }
 

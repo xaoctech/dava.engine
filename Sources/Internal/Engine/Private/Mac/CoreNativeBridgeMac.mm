@@ -9,7 +9,7 @@
 #include "Engine/Window.h"
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Mac/PlatformCoreMac.h"
-#include "Engine/Private/Mac/Window/WindowBackendMac.h"
+#include "Engine/Private/Mac/WindowImplMac.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
 
 #import "Engine/PlatformApiMac.h"
@@ -154,8 +154,8 @@ void CoreNativeBridge::ApplicationDidFinishLaunching(NSNotification* notificatio
 {
     core->engineBackend->OnGameLoopStarted();
 
-    WindowBackend* primaryWindowBackend = EngineBackend::GetWindowBackend(core->engineBackend->GetPrimaryWindow());
-    primaryWindowBackend->Create(640.0f, 480.0f);
+    WindowImpl* primaryWindowImpl = EngineBackend::GetWindowImpl(core->engineBackend->GetPrimaryWindow());
+    primaryWindowImpl->Create(640.0f, 480.0f);
 
     frameTimer = [[FrameTimer alloc] init:this];
     [frameTimer set:1.0 / 60.0];

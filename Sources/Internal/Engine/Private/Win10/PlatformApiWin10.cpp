@@ -4,8 +4,8 @@
 
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Win10/PlatformCoreWin10.h"
-#include "Engine/Private/Win10/Window/WindowBackendWin10.h"
-#include "Engine/Private/Win10/Window/WindowNativeBridgeWin10.h"
+#include "Engine/Private/Win10/WindowImplWin10.h"
+#include "Engine/Private/Win10/WindowNativeBridgeWin10.h"
 
 namespace DAVA
 {
@@ -16,35 +16,35 @@ namespace Win10
 void AddXamlControl(Window* targetWindow, ::Windows::UI::Xaml::UIElement ^ xamlControl)
 {
     using namespace DAVA::Private;
-    WindowBackend* wb = EngineBackend::GetWindowBackend(targetWindow);
+    WindowImpl* wb = EngineBackend::GetWindowImpl(targetWindow);
     wb->bridge->AddXamlControl(xamlControl);
 }
 
 void RemoveXamlControl(Window* targetWindow, ::Windows::UI::Xaml::UIElement ^ xamlControl)
 {
     using namespace DAVA::Private;
-    WindowBackend* wb = EngineBackend::GetWindowBackend(targetWindow);
+    WindowImpl* wb = EngineBackend::GetWindowImpl(targetWindow);
     wb->bridge->RemoveXamlControl(xamlControl);
 }
 
 void PositionXamlControl(Window* targetWindow, ::Windows::UI::Xaml::UIElement ^ xamlControl, float32 x, float32 y)
 {
     using namespace DAVA::Private;
-    WindowBackend* wb = EngineBackend::GetWindowBackend(targetWindow);
+    WindowImpl* wb = EngineBackend::GetWindowImpl(targetWindow);
     wb->bridge->PositionXamlControl(xamlControl, x, y);
 }
 
 void UnfocusXamlControl(Window* targetWindow, ::Windows::UI::Xaml::UIElement ^ xamlControl)
 {
     using namespace DAVA::Private;
-    WindowBackend* wb = EngineBackend::GetWindowBackend(targetWindow);
+    WindowImpl* wb = EngineBackend::GetWindowImpl(targetWindow);
     wb->bridge->UnfocusXamlControl();
 }
 
 ::Windows::UI::Xaml::Input::Pointer ^ GetLastPressedPointer(Window* targetWindow)
 {
     using namespace DAVA::Private;
-    WindowBackend* wb = EngineBackend::GetWindowBackend(targetWindow);
+    WindowImpl* wb = EngineBackend::GetWindowImpl(targetWindow);
     return wb->bridge->GetLastPressedPointer();
 }
 

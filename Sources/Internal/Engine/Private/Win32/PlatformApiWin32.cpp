@@ -4,7 +4,7 @@
 #elif defined(__DAVAENGINE_WIN32__)
 
 #include "Engine/Private/EngineBackend.h"
-#include "Engine/Private/Win32/Window/WindowBackendWin32.h"
+#include "Engine/Private/Win32/WindowImplWin32.h"
 
 namespace DAVA
 {
@@ -15,14 +15,14 @@ namespace Win32
 void SetWindowIcon(Window* targetWindow, int32 iconResourceId)
 {
     using namespace DAVA::Private;
-    WindowBackend* wb = EngineBackend::GetWindowBackend(targetWindow);
+    WindowImpl* wb = EngineBackend::GetWindowImpl(targetWindow);
     wb->SetIcon(MAKEINTRESOURCEW(iconResourceId));
 }
 
 void SetWindowCursor(Window* targetWindow, HCURSOR hcursor)
 {
     using namespace DAVA::Private;
-    WindowBackend* wb = EngineBackend::GetWindowBackend(targetWindow);
+    WindowImpl* wb = EngineBackend::GetWindowImpl(targetWindow);
     wb->SetCursor(hcursor);
 }
 

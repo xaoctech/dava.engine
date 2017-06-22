@@ -27,7 +27,7 @@ public:
     void OnGamepadRemoved(int32 deviceId);
 
 private:
-    WindowBackend* ActivityOnCreate();
+    WindowImpl* ActivityOnCreate();
     void ActivityOnResume();
     void ActivityOnPause();
     void ActivityOnDestroy();

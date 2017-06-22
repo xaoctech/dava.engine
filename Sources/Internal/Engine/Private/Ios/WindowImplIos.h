@@ -19,11 +19,11 @@ namespace DAVA
 {
 namespace Private
 {
-class WindowBackend final
+class WindowImpl final
 {
 public:
-    WindowBackend(EngineBackend* engineBackend, Window* window);
-    ~WindowBackend();
+    WindowImpl(EngineBackend* engineBackend, Window* window);
+    ~WindowImpl();
 
     bool Create();
     void Resize(float32 width, float32 height);
@@ -65,7 +65,7 @@ public:
     friend struct WindowNativeBridge;
 };
 
-inline void WindowBackend::InitCustomRenderParams(rhi::InitParam& /*params*/)
+inline void WindowImpl::InitCustomRenderParams(rhi::InitParam& /*params*/)
 {
     // No custom render params
 }

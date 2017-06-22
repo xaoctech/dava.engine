@@ -17,7 +17,7 @@ namespace Private
 ref struct WindowNativeBridge sealed
 {
     internal :
-    WindowNativeBridge(WindowBackend* windowBackend);
+    WindowNativeBridge(WindowImpl* windowImpl);
 
     void* GetHandle() const;
 
@@ -75,7 +75,7 @@ private:
     void UninstallEventHandlers();
 
 private:
-    WindowBackend* windowBackend = nullptr;
+    WindowImpl* windowImpl = nullptr;
     Window* window = nullptr;
     MainDispatcher* mainDispatcher = nullptr;
 
