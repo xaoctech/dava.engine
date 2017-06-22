@@ -177,7 +177,6 @@ void UITextSystem::AddLink(UITextComponent* component)
 {
     DVASSERT(component);
     UIControl* control = component->GetControl();
-    control->SetInputEnabled(false, false);
     UITextSystemLink* link = component->GetLink();
     links.push_back(link);
 }

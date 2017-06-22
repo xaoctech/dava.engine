@@ -13,6 +13,7 @@
 #include "Job/JobManager.h"
 #include "Utils/UTF8Utils.h"
 #include "Reflection/ReflectionRegistrator.h"
+#include "UI/Update/UIUpdateComponent.h"
 #include "UI/Text/UITextComponent.h"
 #include "UI/Text/Private/UITextSystemLink.h"
 
@@ -46,6 +47,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIStaticText)
 UIStaticText::UIStaticText(const Rect& rect)
     : UIControl(rect)
 {
+    SetInputEnabled(false, false);
     text = GetOrCreateComponent<UITextComponent>();
 }
 
