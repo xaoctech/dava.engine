@@ -543,12 +543,14 @@
 #define HAVE_INTTYPES_H TRUE
 #define HAVE_STDINT_H TRUE
 #endif
+#if !defined(__ANDROID__) || (defined(__ANDROID__) && __ANDROID_API__ >= 21)
 #define HOST_HAVE_LONG_LONG TRUE 
 #if HOST_SYSTEM == SYS_LINUX || defined(__linux__)
 #define HOST_HAVE_STPCPY TRUE
 #endif
 #if HOST_SYSTEM == SYS_MAC
 #define HOST_HAVE_STPCPY TRUE
+#endif
 #endif
 
 #elif HOST_COMPILER == LCC

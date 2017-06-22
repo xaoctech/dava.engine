@@ -1,21 +1,21 @@
-android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.3'
+if (project.plugins.hasPlugin('com.android.library') || project.plugins.hasPlugin('com.android.application')) {
+    android {
+        compileSdkVersion 25
+        buildToolsVersion '25.0.3'
 
-    defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 25
+        defaultConfig {
+            minSdkVersion 16
+            targetSdkVersion 25
 
-        externalNativeBuild  {
-            cmake {
-                abiFilters 'armeabi-v7a'
-                cppFlags "-std=c++14", "-frtti", "-fexceptions"
-                arguments "-DANDROID_ARM_NEON=TRUE", "-DANDROID_STL=c++_shared"
+            externalNativeBuild {
+                cmake {
+                    cppFlags "-std=c++14", "-frtti", "-fexceptions"
+                    arguments "-DANDROID_ARM_NEON=TRUE", "-DANDROID_STL=c++_shared"
+                    abiFilters 'armeabi-v7a'
+                }
             }
         }
-
-        ndk {
-            abiFilters 'armeabi-v7a'
-        }
     }
+} else {
+    throw new StopExecutionException('You should apply \'com.android.library\' or \'com.android.application\' before appling this file.')
 }

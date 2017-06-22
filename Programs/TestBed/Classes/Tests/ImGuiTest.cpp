@@ -87,7 +87,7 @@ void ImGuiTest::ShowEngineSettings()
 
     for (const Reflection::Field& field : settingsFields)
     {
-        const String& fieldname = field.key.Get<String>();
+        FastName fieldname = field.key.Get<FastName>();
         const Type* fieldtype = field.ref.GetValueType()->Decay();
 
         if (fieldtype == Type::Instance<bool>())
