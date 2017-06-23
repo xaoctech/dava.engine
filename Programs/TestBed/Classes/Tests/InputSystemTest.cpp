@@ -339,7 +339,7 @@ void InputSystemTest::CreateKeyboardUI(String header, float32 x, float32 y)
 void InputSystemTest::CreateMouseUI()
 {
     ScopedPtr<FTFont> font(FTFont::Create("~res:/Fonts/DejaVuSans.ttf"));
-    font->SetSize(12);
+    font->SetSize(10);
 
     const float32 x = 530;
 
@@ -350,39 +350,62 @@ void InputSystemTest::CreateMouseUI()
     mouseHeader->SetUtf8Text("Mouse");
     AddControl(mouseHeader);
 
-    mouseBody = new UIButton(Rect(x, 40, 84, 100));
+    mouseBody = new UIButton(Rect(x, 40, 74, 100));
     mouseBody->SetStateFont(0xFF, font);
     mouseBody->SetStateFontColor(0xFF, Color::White);
     mouseBody->GetOrCreateComponent<UIDebugRenderComponent>();
     AddControl(mouseBody);
 
-    UIButton* mousePositionButton = new UIButton(Rect(x, 145, 84, 15));
+    UIButton* mousePositionButton = new UIButton(Rect(x + 100, 40, 100, 15));
     mousePositionButton->SetStateFont(0xFF, font);
     mousePositionButton->SetStateFontColor(0xFF, Color::White);
     mousePositionButton->GetOrCreateComponent<UIDebugRenderComponent>();
     mouseButtons[static_cast<uint32>(eInputElements::MOUSE_POSITION)] = mousePositionButton;
     AddControl(mousePositionButton);
 
-    UIButton* leftButton = new UIButton(Rect(x + 15.0f, 40, 20, 70));
+    UIButton* wheelButton = new UIButton(Rect(x + 100, 65, 100, 15));
+    wheelButton->SetStateFont(0xFF, font);
+    wheelButton->SetStateFontColor(0xFF, Color::White);
+    wheelButton->GetOrCreateComponent<UIDebugRenderComponent>();
+    mouseButtons[static_cast<uint32>(eInputElements::MOUSE_WHEEL)] = wheelButton;
+    AddControl(wheelButton);
+
+    UIButton* leftButton = new UIButton(Rect(x + 15.0f, 40, 15, 70));
     leftButton->SetStateFont(0xFF, font);
     leftButton->SetStateFontColor(0xFF, Color::White);
     leftButton->GetOrCreateComponent<UIDebugRenderComponent>();
     mouseButtons[static_cast<uint32>(eInputElements::MOUSE_LBUTTON)] = leftButton;
     AddControl(leftButton);
 
-    UIButton* rightButton = new UIButton(Rect(x + 45.0f, 40, 20, 70));
+    UIButton* middleButton = new UIButton(Rect(x + 32.0f, 60, 10, 20));
+    middleButton->SetStateFont(0xFF, font);
+    middleButton->SetStateFontColor(0xFF, Color::White);
+    middleButton->GetOrCreateComponent<UIDebugRenderComponent>();
+    mouseButtons[static_cast<uint32>(eInputElements::MOUSE_MBUTTON)] = middleButton;
+    AddControl(middleButton);
+
+    UIButton* rightButton = new UIButton(Rect(x + 45.0f, 40, 15, 70));
     rightButton->SetStateFont(0xFF, font);
     rightButton->SetStateFontColor(0xFF, Color::White);
     rightButton->GetOrCreateComponent<UIDebugRenderComponent>();
     mouseButtons[static_cast<uint32>(eInputElements::MOUSE_RBUTTON)] = rightButton;
     AddControl(rightButton);
 
-    UIButton* wheelButton = new UIButton(Rect(x, 165, 84, 15));
-    wheelButton->SetStateFont(0xFF, font);
-    wheelButton->SetStateFontColor(0xFF, Color::White);
-    wheelButton->GetOrCreateComponent<UIDebugRenderComponent>();
-    mouseButtons[static_cast<uint32>(eInputElements::MOUSE_WHEEL)] = wheelButton;
-    AddControl(wheelButton);
+    UIButton* ext1Button = new UIButton(Rect(x + 100, 90, 100, 15));
+    ext1Button->SetStateFont(0xFF, font);
+    ext1Button->SetStateFontColor(0xFF, Color::White);
+    ext1Button->GetOrCreateComponent<UIDebugRenderComponent>();
+    ext1Button->SetStateText(0xFF, L"Ext1 button");
+    mouseButtons[static_cast<uint32>(eInputElements::MOUSE_EXT1BUTTON)] = ext1Button;
+    AddControl(ext1Button);
+
+    UIButton* ext2Button = new UIButton(Rect(x + 100, 115, 100, 15));
+    ext2Button->SetStateFont(0xFF, font);
+    ext2Button->SetStateFontColor(0xFF, Color::White);
+    ext2Button->GetOrCreateComponent<UIDebugRenderComponent>();
+    ext2Button->SetStateText(0xFF, L"Ext2 button");
+    mouseButtons[static_cast<uint32>(eInputElements::MOUSE_EXT2BUTTON)] = ext2Button;
+    AddControl(ext2Button);
 }
 
 void InputSystemTest::CreateTouchUI()
@@ -662,13 +685,13 @@ bool InputSystemTest::OnInputEvent(InputEvent const& event)
         if (event.elementId == eInputElements::MOUSE_POSITION)
         {
             std::wstringstream ss;
-            ss << event.analogState.x << L", " << event.analogState.y;
+            ss << "pos: " << static_cast<uint32>(event.analogState.x) << L", " << static_cast<uint32>(event.analogState.y);
             mouseButton->SetStateText(0xFF, ss.str());
         }
         else if (event.elementId == eInputElements::MOUSE_WHEEL)
         {
             std::wstringstream ss;
-            ss << event.analogState.x << L", " << event.analogState.y;
+            ss << "wheel: " << event.analogState.x << L", " << event.analogState.y;
             mouseButton->SetStateText(0xFF, ss.str());
         }
         else
