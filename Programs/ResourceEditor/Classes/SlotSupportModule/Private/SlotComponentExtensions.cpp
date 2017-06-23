@@ -4,6 +4,7 @@
 #include "Classes/Qt/Scene/SceneEditor2.h"
 #include "Classes/SceneManager/SceneData.h"
 #include "Classes/SlotSupportModule/Private/EditorSlotSystem.h"
+#include "Classes/SlotSupportModule/Private/SlotTemplatesData.h"
 
 #include <TArc/Controls/CommonStrings.h>
 #include <TArc/Controls/ComboBox.h>
@@ -537,6 +538,67 @@ private:
     }
 };
 
+class SlotTemplateComponentValue : public DAVA::TArc::BaseComponentValue
+{
+public:
+    DAVA::Any GetMultipleValue() const override
+    {
+        return DAVA::Any();
+    }
+
+    bool IsValidValueToSet(const DAVA::Any& newValue, const DAVA::Any& currentValue) const override
+    {
+        if (currentValue.IsEmpty())
+        {
+            return false;
+        }
+
+        return newValue.IsEmpty() == true || newValue != currentValue;
+    }
+
+    DAVA::TArc::ControlProxy* CreateEditorWidget(QWidget* parent, const DAVA::Reflection& model, DAVA::TArc::DataWrappersProcessor* wrappersProcessor) override
+    {
+        DAVA::TArc::ContextAccessor* accessor = GetAccessor();
+        SlotTemplatesData* data = accessor->GetGlobalContext()->GetData<SlotTemplatesData>();
+        DAVA::Vector<SlotTemplatesData::Template> templates = data->GetTemplates();
+        for (const SlotTemplatesData::Template& t : templates)
+        {
+            enumerator.emplace(t.name.c_str());
+        }
+
+        DAVA::TArc::ComboBox::Params params(accessor, GetUI(), GetWindowKey());
+        params.fields[DAVA::TArc::ComboBox::Fields::Enumerator] = "enumerator";
+        params.fields[DAVA::TArc::ComboBox::Fields::Value] = "value";
+        return new DAVA::TArc::ComboBox(params, wrappersProcessor, model, parent);
+    }
+
+private:
+    DAVA::Any GetTemplateName() const
+    {
+        DAVA::Any fastNameAny = GetValue();
+        if (fastNameAny.IsEmpty())
+        {
+            return fastNameAny;
+        }
+
+        return fastNameAny.Cast<String>();
+    }
+
+    void SetTemplateName(const DAVA::Any& templateName)
+    {
+        SetValue(templateName);
+    }
+
+    DAVA::Set<String> enumerator;
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(SlotTemplateComponentValue, DAVA::TArc::BaseComponentValue)
+    {
+        DAVA::ReflectionRegistrator<SlotTemplateComponentValue>::Begin()
+        .Field("enumerator", &SlotTemplateComponentValue::enumerator)
+        .Field("value", &SlotTemplateComponentValue::GetTemplateName, &SlotTemplateComponentValue::SetTemplateName)
+        .End();
+    }
+};
+
 void SlotComponentChildCreator::ExposeChildren(const std::shared_ptr<DAVA::TArc::PropertyNode>& parent, DAVA::Vector<std::shared_ptr<DAVA::TArc::PropertyNode>>& children) const
 {
     if (parent->propertyType == SlotPreviewProperty ||
@@ -551,21 +613,34 @@ void SlotComponentChildCreator::ExposeChildren(const std::shared_ptr<DAVA::TArc:
     const DAVA::ReflectedType* slotComponentType = DAVA::ReflectedTypeDB::Get<DAVA::SlotComponent>();
     if (fieldType == slotComponentType)
     {
-        auto iter = std::find_if(children.rbegin(), children.rend(), [](const std::shared_ptr<DAVA::TArc::PropertyNode>& node)
-                                 {
-                                     return node->field.key.Cast<DAVA::FastName>() == DAVA::SlotComponent::AttchementToJointFieldName;
-                                 });
-
-        DVASSERT(iter != children.rend());
-        std::shared_ptr<DAVA::TArc::PropertyNode> jointAttachmentNode = *iter;
-        jointAttachmentNode->propertyType = SlotJointAttachment;
-        const DAVA::M::DisplayName* displayNameMeta = jointAttachmentNode->field.ref.GetMeta<DAVA::M::DisplayName>();
-        if (displayNameMeta != nullptr)
         {
-            jointAttachmentNode->field.key = displayNameMeta->displayName;
+            auto iter = std::find_if(children.rbegin(), children.rend(), [](const std::shared_ptr<DAVA::TArc::PropertyNode>& node)
+                                     {
+                                         return node->field.key.Cast<DAVA::FastName>() == DAVA::SlotComponent::AttchementToJointFieldName;
+                                     });
+
+            DVASSERT(iter != children.rend());
+            std::shared_ptr<DAVA::TArc::PropertyNode> jointAttachmentNode = *iter;
+            jointAttachmentNode->propertyType = SlotJointAttachment;
+            const DAVA::M::DisplayName* displayNameMeta = jointAttachmentNode->field.ref.GetMeta<DAVA::M::DisplayName>();
+            if (displayNameMeta != nullptr)
+            {
+                jointAttachmentNode->field.key = displayNameMeta->displayName;
+            }
+            jointAttachmentNode->field.ref = parent->field.ref;
+            jointAttachmentNode->cachedValue = parent->cachedValue;
         }
-        jointAttachmentNode->field.ref = parent->field.ref;
-        jointAttachmentNode->cachedValue = parent->cachedValue;
+
+        {
+            auto iter = std::find_if(children.rbegin(), children.rend(), [](const std::shared_ptr<DAVA::TArc::PropertyNode>& node)
+                                     {
+                                         return node->field.key.Cast<DAVA::FastName>() == DAVA::SlotComponent::TemplateFieldName;
+                                     });
+
+            DVASSERT(iter != children.rend());
+            std::shared_ptr<DAVA::TArc::PropertyNode> templateNameNode = *iter;
+            templateNameNode->propertyType = SlotTemplateName;
+        }
 
         {
             DAVA::Reflection::Field f;
@@ -600,6 +675,11 @@ std::unique_ptr<DAVA::TArc::BaseComponentValue> SlotComponentEditorCreator::GetE
     if (node->propertyType == SlotJointAttachment)
     {
         return std::make_unique<SlotJointComponentValue>();
+    }
+
+    if (node->propertyType == SlotTemplateName)
+    {
+        return std::make_unique<SlotTemplateComponentValue>();
     }
 
     return EditorComponentExtension::GetEditor(node);

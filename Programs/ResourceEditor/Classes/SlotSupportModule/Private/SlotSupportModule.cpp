@@ -2,6 +2,7 @@
 #include "Classes/SlotSupportModule/Private/EditorSlotSystem.h"
 #include "Classes/SlotSupportModule/Private/EntityForSlotLoader.h"
 #include "Classes/SlotSupportModule/Private/SlotComponentExtensions.h"
+#include "Classes/SlotSupportModule/Private/SlotTemplatesData.h"
 
 #include "Classes/Interfaces/PropertyPanelInterface.h"
 #include "Classes/SlotSupportModule/Private/EntityForSlotLoader.h"
@@ -13,6 +14,7 @@
 
 #include <Entity/Component.h>
 #include <Reflection/ReflectionRegistrator.h>
+#include "Project/ProjectManagerData.h"
 
 namespace SlotSupportModuleDetails
 {
@@ -58,7 +60,7 @@ void SlotSupportModule::OnContextCreated(DAVA::TArc::DataContext* context)
 
     SlotSupportModuleDetails::SlotSupportData* slotSupportData = new SlotSupportModuleDetails::SlotSupportData();
     context->CreateData(std::unique_ptr<DAVA::TArc::DataNode>(slotSupportData));
-    slotSupportData->system.reset(new EditorSlotSystem(scene.Get()));
+    slotSupportData->system.reset(new EditorSlotSystem(scene.Get(), GetAccessor()));
 
     scene->AddSystem(slotSupportData->system.get(), MAKE_COMPONENT_MASK(Component::SLOT_COMPONENT), Scene::SCENE_SYSTEM_REQUIRE_PROCESS, scene->slotSystem);
     scene->slotSystem->SetExternalEntityLoader(std::shared_ptr<SlotSystem::ExternalEntityLoader>(new EntityForSlotLoader(GetAccessor())));
@@ -103,6 +105,23 @@ void SlotSupportModule::OnBeforeInterfaceUnregistered(const DAVA::Type* interfac
     }
 }
 
+void SlotSupportModule::ReloadConfig() const
+{
+    ProjectManagerData* data = GetAccessor()->GetGlobalContext()->GetData<ProjectManagerData>();
+    ParseConfig(data->GetProjectPath());
+}
+
+void SlotSupportModule::ParseConfig(const DAVA::Any& v) const
+{
+    SlotTemplatesData* slotTemplates = GetAccessor()->GetGlobalContext()->GetData<SlotTemplatesData>();
+    slotTemplates->Clear();
+    if (v.IsEmpty() == false)
+    {
+        DAVA::FilePath projectPath = v.Cast<DAVA::FilePath>();
+        slotTemplates->ParseConfig(projectPath + "/SlotTemplates.yaml");
+    }
+}
+
 void SlotSupportModule::PostInit()
 {
     using namespace SlotSupportModuleDetails;
@@ -110,6 +129,27 @@ void SlotSupportModule::PostInit()
     extData->childCreator.reset(new PropertyPanel::SlotComponentChildCreator());
     extData->editorCreator.reset(new PropertyPanel::SlotComponentEditorCreator());
     GetAccessor()->GetGlobalContext()->CreateData(std::unique_ptr<DAVA::TArc::DataNode>(extData));
+
+    SlotTemplatesData* slotTemplates = new SlotTemplatesData();
+    GetAccessor()->GetGlobalContext()->CreateData(std::unique_ptr<DAVA::TArc::DataNode>(slotTemplates));
+
+    DAVA::TArc::ContextAccessor* accessor = GetAccessor();
+    fieldBinder.reset(new DAVA::TArc::FieldBinder(accessor));
+
+    DAVA::TArc::FieldDescriptor descr;
+    descr.fieldName = DAVA::FastName(ProjectManagerData::ProjectPathProperty);
+    descr.type = DAVA::ReflectedTypeDB::Get<ProjectManagerData>();
+    fieldBinder->BindField(descr, DAVA::MakeFunction(this, &SlotSupportModule::ParseConfig));
+
+    DAVA::TArc::QtAction* action = new DAVA::TArc::QtAction(accessor, "Reload slot templates");
+    action->SetStateUpdationFunction(DAVA::TArc::QtAction::Enabled, descr, [](const DAVA::Any& v) {
+        return !v.IsEmpty();
+    });
+
+    connections.AddConnection(action, &QAction::triggered, DAVA::MakeFunction(this, &SlotSupportModule::ReloadConfig));
+
+    DAVA::TArc::ActionPlacementInfo placement(DAVA::TArc::CreateMenuPoint(QList<QString>() << "DebugFunctions"));
+    GetUI()->AddAction(DAVA::TArc::mainWindowKey, placement, action);
 }
 
 DECL_GUI_MODULE(SlotSupportModule);

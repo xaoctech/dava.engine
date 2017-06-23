@@ -92,17 +92,21 @@ public:
     /** \return Name of the item that currently loaded into 'this' slot*/
     FastName GetLoadedItemName() const;
 
+    FastName GetTemplateName() const;
+
     INTROSPECTION_EXTEND(SlotComponent, Component, nullptr);
 
     static const FastName SlotNameFieldName;
     static const FastName ConfigPathFieldName;
     static const FastName AttchementToJointFieldName;
+    static const FastName TemplateFieldName;
 
 private:
     friend class SlotSystem;
     void SetAttachmentTransform(const Matrix4& transform);
 
     FastName slotName;
+    FastName templateName = FastName("");
 
     Matrix4 attachmentTransform;
     FastName attachementToJoint;

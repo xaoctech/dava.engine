@@ -8,13 +8,21 @@
 #include <Scene3D/Components/SlotComponent.h>
 #include <Base/BaseTypes.h>
 
+namespace DAVA
+{
+namespace TArc
+{
+class ContextAccessor;
+} // namespace TArc
+} // namespace DAVA
+
 class EditorSlotSystem : public DAVA::SceneSystem,
                          public EditorSceneSystem
 {
 public:
     static const DAVA::FastName emptyItemName;
 
-    EditorSlotSystem(DAVA::Scene* scene);
+    EditorSlotSystem(DAVA::Scene* scene, DAVA::TArc::ContextAccessor* accessor);
 
     void AddEntity(DAVA::Entity* entity) override;
     void RemoveEntity(DAVA::Entity* entity) override;
@@ -34,6 +42,8 @@ protected:
     void AccumulateDependentCommands(REDependentCommandsHolder& holder) override;
     void ProcessCommand(const RECommandNotificationObject& commandNotification) override;
 
+    void Draw() override;
+
 protected:
     std::unique_ptr<DAVA::Command> PrepareForSave(bool saveForGame) override;
 
@@ -41,4 +51,5 @@ private:
     DAVA::Vector<DAVA::Entity*> entities;
     DAVA::Set<DAVA::Entity*> pendingOnInitialize;
     DAVA::TArc::QtConnections connections;
+    DAVA::TArc::ContextAccessor* accessor;
 };

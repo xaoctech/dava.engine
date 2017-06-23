@@ -1,4 +1,5 @@
 #include "Classes/SlotSupportModule/Private/EditorSlotSystem.h"
+#include "Classes/SlotSupportModule/Private/SlotTemplatesData.h"
 #include "Classes/Commands2/SlotCommands.h"
 #include "Classes/Commands2/Base/RECommandBatch.h"
 #include "Classes/Commands2/SetFieldValueCommand.h"
@@ -7,10 +8,15 @@
 #include "Classes/Selection/Selection.h"
 #include "Classes/Qt/Scene/SceneSignals.h"
 
+#include <TArc/Core/ContextAccessor.h>
+#include <TArc/DataProcessing/DataContext.h>
+
 #include <Scene3D/Systems/SlotSystem.h>
 #include <Scene3D/Components/SlotComponent.h>
 #include <Scene3D/Components/SingleComponents/TransformSingleComponent.h>
 #include <Scene3D/Scene.h>
+#include <Render/RenderHelper.h>
+#include <Render/Highlevel/RenderSystem.h>
 #include <Base/BaseTypes.h>
 
 #include <Utils/Utils.h>
@@ -18,8 +24,9 @@
 
 const DAVA::FastName EditorSlotSystem::emptyItemName = DAVA::FastName("Empty");
 
-EditorSlotSystem::EditorSlotSystem(DAVA::Scene* scene)
+EditorSlotSystem::EditorSlotSystem(DAVA::Scene* scene, DAVA::TArc::ContextAccessor* accessor_)
     : SceneSystem(scene)
+    , accessor(accessor_)
 {
 }
 
@@ -109,7 +116,7 @@ void EditorSlotSystem::Process(DAVA::float32 timeElapsed)
                 Vector<SlotSystem::ItemsCache::Item> items = slotSystem->GetItems(component->GetConfigFilePath());
                 if (items.empty())
                 {
-                    DAVA::RefPtr<Entity> newEntity(new Entity());
+                    RefPtr<Entity> newEntity(new Entity());
                     slotSystem->AttachEntityToSlot(component, newEntity.Get(), emptyItemName);
                 }
                 else
@@ -122,7 +129,7 @@ void EditorSlotSystem::Process(DAVA::float32 timeElapsed)
 
     pendingOnInitialize.clear();
 
-    for (DAVA::Entity* entity : scene->transformSingleComponent->localTransformChanged)
+    for (Entity* entity : scene->transformSingleComponent->localTransformChanged)
     {
         SlotComponent* slot = scene->slotSystem->LookUpSlot(entity);
         if (slot == nullptr)
@@ -130,10 +137,10 @@ void EditorSlotSystem::Process(DAVA::float32 timeElapsed)
             continue;
         }
 
-        DAVA::Matrix4 jointTranfsorm = scene->slotSystem->GetJointTransform(slot);
+        Matrix4 jointTranfsorm = scene->slotSystem->GetJointTransform(slot);
         bool inverseSuccessed = jointTranfsorm.Inverse();
         DVASSERT(inverseSuccessed);
-        DAVA::Matrix4 attachmentTransform = jointTranfsorm * entity->GetLocalTransform();
+        Matrix4 attachmentTransform = jointTranfsorm * entity->GetLocalTransform();
         scene->slotSystem->SetAttachmentTransform(slot, attachmentTransform);
     }
 }
@@ -250,6 +257,49 @@ void EditorSlotSystem::ProcessCommand(const RECommandNotificationObject& command
     };
 
     commandNotification.ForEach(visitor, CMDID_REFLECTED_FIELD_MODIFY);
+}
+
+void EditorSlotSystem::Draw()
+{
+    SlotTemplatesData* data = accessor->GetGlobalContext()->GetData<SlotTemplatesData>();
+    Scene* scene = GetScene();
+
+    DAVA::Color boxColor = data->GetBoxColor();
+    DAVA::Color boxEdgeColor = data->GetBoxEdgesColor();
+    DAVA::Color pivotColor = data->GetPivotColor();
+
+    RenderHelper* rh = scene->GetRenderSystem()->GetDebugDrawer();
+    for (Entity* entity : entities)
+    {
+        for (uint32 i = 0; i < entity->GetComponentCount(Component::SLOT_COMPONENT); ++i)
+        {
+            SlotComponent* component = static_cast<SlotComponent*>(entity->GetComponent(Component::SLOT_COMPONENT, i));
+            FastName templateName = component->GetTemplateName();
+            const SlotTemplatesData::Template* t = data->GetTemplate(templateName);
+            if (t != nullptr)
+            {
+                Vector3 min(-t->pivot.x, -t->pivot.y, -t->pivot.z);
+                Vector3 max(t->boundingBoxSize.x - t->pivot.x,
+                            t->boundingBoxSize.y - t->pivot.y,
+                            t->boundingBoxSize.z - t->pivot.z);
+                AABBox3 box(min, max);
+                Matrix4 transform;
+                if (component->GetJointName().IsValid())
+                {
+                    transform = scene->slotSystem->GetResultTranform(component);
+                }
+                else
+                {
+                    transform = component->GetAttachmentTransform();
+                }
+                rh->DrawAABoxTransformed(box, transform, boxColor, RenderHelper::DRAW_SOLID_DEPTH);
+                rh->DrawAABoxTransformed(box, transform, boxEdgeColor, RenderHelper::DRAW_WIRE_DEPTH);
+
+                Vector3 pivot = Vector3(0.0f, 0.0f, 0.0f) * transform;
+                rh->DrawIcosahedron(pivot, 0.3f, pivotColor, RenderHelper::DRAW_SOLID_DEPTH);
+            }
+        }
+    }
 }
 
 std::unique_ptr<DAVA::Command> EditorSlotSystem::PrepareForSave(bool /*saveForGame*/)
