@@ -22,7 +22,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
-        android:backupAgent="com.dava.framework.JNIBackupAgent">
+        android:backupAgent="com.dava.engine.BackupAgent">
         
         <!-- List of shared libraries to load at startup -->
         <meta-data android:name="com.dava.engine.BootModules" android:value="crystax;c++_shared;fmodex;fmodevent;TestBed"/>
