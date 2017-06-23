@@ -259,8 +259,7 @@ def _build_android(working_directory_path, root_project_path):
     original_path_var = env["PATH"]
 
     # ARM
-    toolchain_path_arm = os.path.join(working_directory_path, 'gen/ndk_toolchain_arm')
-    build_utils.android_ndk_make_toolchain(root_project_path, 'arm', toolchain_path_arm)
+    toolchain_path_arm = build_utils.android_ndk_get_toolchain_arm()
 
     env_arm = build_utils.get_autotools_android_arm_env(toolchain_path_arm)
     install_dir_android_arm = os.path.join(working_directory_path, 'gen/install_android_arm')
@@ -291,8 +290,7 @@ def _build_android(working_directory_path, root_project_path):
         env_arm)
     
     # x86
-    toolchain_path_x86 = os.path.join(working_directory_path, 'gen/ndk_toolchain_x86')
-    build_utils.android_ndk_make_toolchain(root_project_path, 'x86', toolchain_path_x86)
+    toolchain_path_x86 = build_utils.android_ndk_get_toolchain_x86()
 
     env_x86 = build_utils.get_autotools_android_x86_env(toolchain_path_x86)
     install_dir_android_x86 = os.path.join(working_directory_path, 'gen/install_android_x86')

@@ -468,7 +468,7 @@ def _get_android_env(
     # Python version of setenv.sh
     # (from https://wiki.openssl.org/index.php/Android)
 
-    android_ndk_root = build_utils.get_android_ndk_path(root_project_path)
+    android_ndk_root = build_utils.get_android_ndk_path()
     platform_path = '{}/platforms/{}/arch-{}'.format(
         android_ndk_root, android_target, arch)
     eabi_path = '{}/toolchains/{}/prebuilt/darwin-x86_64/bin'.format(
