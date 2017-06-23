@@ -75,12 +75,17 @@ private:
     Mouse(const Mouse&) = delete;
     Mouse& operator=(const Mouse&) = delete;
 
+    void OnEndFrame();
+    void OnWindowFocusChanged(DAVA::Window* window, bool focused);
+
     bool HandleEvent(const Private::MainDispatcherEvent& e);
+
+    void ResetState(Window* window);
     void HandleMouseClick(const Private::MainDispatcherEvent& e);
     void HandleMouseWheel(const Private::MainDispatcherEvent& e);
     void HandleMouseMove(const Private::MainDispatcherEvent& e);
 
-    void OnEndFrame();
+    void CreateAndSendButtonInputEvent(eInputElements elementId, DigitalElementState state, Window* window, int64 timestamp, bool isRelative);
 
 private:
     InputSystem* inputSystem = nullptr;
