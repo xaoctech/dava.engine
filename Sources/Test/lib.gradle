@@ -11,11 +11,10 @@ if (project.plugins.hasPlugin('com.android.library') || project.plugins.hasPlugi
                 cmake {
                     cppFlags "-std=c++14", "-frtti", "-fexceptions"
                     arguments "-DANDROID_ARM_NEON=TRUE", "-DANDROID_STL=c++_shared"
-                    abiFilters 'armeabi-v7a'
                 }
             }
         }
     }
 } else {
-    throw new StopExecutionException('You should apply \'com.android.library\' or \'com.android.application\' before appling this file.')
+    throw new StopExecutionException('You should apply \'com.android.library\' or \'com.android.application\' before applying this file.')
 }
