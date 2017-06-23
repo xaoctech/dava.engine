@@ -10,7 +10,7 @@
 
     <application
         android:allowBackup="true"
-        android:backupAgent="com.dava.framework.JNIBackupAgent">
+        android:backupAgent="com.dava.engine.BackupAgent">
         
         <meta-data android:name="com.dava.engine.BootModules" android:value="c++_shared;fmodex;fmodevent;TestBed"/>
         <meta-data android:name="com.dava.engine.BootClasses" android:value="com.dava.testbed.TestBed"/>
