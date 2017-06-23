@@ -1,20 +1,23 @@
 # Project Structure
 
 ## Basic files/folders naming requirements
-- Files and folders are named using CamelCase. Some exceptions may apply (see below).
-- File or folder related to a particular platform must be named using the following convention: FileName<Platform>. For example: `DeviceInfoWin32.cpp`. `Platform` can be on of the following:
-  - Android
-  - Mac
-  - Ios
-  - Win32
-  - Win10
-  - Linux
+- Files and folders are named using CamelCase, while some exceptions may apply (see below).
+- File or folder related to a particular platform must be named using the following convention: _Name\<Platform\>_. For example `DeviceInfoWin32.cpp`, where _Name_ is `DeviceInfo` and _Platform_ is `Win32`. Folders can also be named with a short form, when _Name_ is empty, e.g. `Android/`. 
 
+    _Platform_ have to be one of the following:
+    - Android
+    - Mac
+    - Ios
+    - Win32
+    - Win10
+    - Linux
+
+- File or folder related to multiple platforms can be named using the following convention: _Name\<PlatformGroup\>_, e.g. `ThreadPosix.cpp`, where _Name_ is `Thread` and _PlatformGroup_ is `Posix`. _PlatformGroup_ can be one of the following:
   - Posix
   - Windows
   - Apple
 
-- We support several processor architectures. If the directory is related to a particular architecture, then this relation must be expressed in directory naming in the following form: `[Prefix]<architecture>`, where `Prefix` is any user-defined world (can be empty) and `architecture` is one of the following:
+- We support several processor architectures. If the directory is related to a particular architecture, then this relation must be expressed in directory naming in the following form: _Name\<Architecture\>_, where _Architecture_ is one of the following:
   - x86
   - x64
   - arm
