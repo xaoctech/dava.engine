@@ -7,8 +7,12 @@ import build_config
 def get_supported_targets(platform):
     if platform == 'win32':
         return ['win32']
-    else:
+    elif platform == 'darwin':
         return ['macos', 'ios', 'android']
+    elif platform == 'linux':
+        return ['android', 'linux']
+    else:
+        return []
 
 
 def get_dependencies_for_target(target):
@@ -24,6 +28,8 @@ def build_for_target(target, working_directory_path, root_project_path):
         _build_ios(working_directory_path, root_project_path)
     elif target == 'android':
         _build_android(working_directory_path, root_project_path)
+    elif target == 'linux':
+        _build_linux(working_directory_path, root_project_path)
 
 
 def get_download_info():
@@ -41,6 +47,11 @@ def _download_and_extract(working_directory_path):
 
     return source_folder_path
 
+@build_utils.run_once
+def _patch_sources(working_directory_path):
+    build_utils.apply_patch(
+        os.path.abspath('patch.diff'),
+        working_directory_path)
 
 def _build_win32(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
@@ -174,8 +185,18 @@ def _build_ios(working_directory_path, root_project_path):
 
 def _build_android(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
+    #_patch_sources(working_directory_path)
 
-    env_arm = build_utils.get_autotools_android_arm_env(root_project_path)
+    # ARM
+    toolchain_path_arm = os.path.join(working_directory_path, 'gen/ndk_toolchain_arm')
+    build_utils.android_ndk_make_toolchain(root_project_path, 'arm', toolchain_path_arm)
+
+    env_arm = build_utils.get_autotools_android_arm_env(toolchain_path_arm)
+
+    # libuv require this enviroment variable when building for android
+    env_arm['CFLAGS'] = env_arm['CFLAGS'] + ' -D__ANDROID__'
+    env_arm['CPPFLAGS'] = env_arm['CPPFLAGS'] + ' -D__ANDROID__'
+
     install_dir_android_arm = os.path.join(
         working_directory_path, 'gen/install_android_arm')
     build_utils.run_process(
@@ -189,7 +210,16 @@ def _build_android(working_directory_path, root_project_path):
          '--enable-static'],
         install_dir_android_arm, env=env_arm)
 
-    env_x86 = build_utils.get_autotools_android_x86_env(root_project_path)
+    # x86    
+    toolchain_path_x86 = os.path.join(working_directory_path, 'gen/ndk_toolchain_x86')
+    build_utils.android_ndk_make_toolchain(root_project_path, 'x86', toolchain_path_x86)
+
+    env_x86 = build_utils.get_autotools_android_x86_env(toolchain_path_x86)
+
+    # libuv require this enviroment variable when building for android
+    env_x86['CFLAGS'] = env_x86['CFLAGS'] + ' -D__ANDROID__'
+    env_x86['CPPFLAGS'] = env_x86['CPPFLAGS'] + ' -D__ANDROID__'
+
     install_dir_android_x86 = os.path.join(
         working_directory_path, 'gen/install_android_x86')
     build_utils.run_process(
@@ -214,6 +244,37 @@ def _build_android(working_directory_path, root_project_path):
 
     _copy_headers_from_install(install_dir_android_arm, root_project_path)
 
+def _build_linux(working_directory_path, root_project_path):
+    source_folder_path = _download_and_extract(working_directory_path)
+
+    # Clone gyp
+    build_utils.run_process(
+        ['git clone https://chromium.googlesource.com/external/gyp.git build/gyp'],
+        process_cwd=source_folder_path,
+        shell=True)
+
+    # Generate makefile using gyp
+    env = build_utils.get_autotools_linux_env()
+    build_utils.run_process(
+        ['./gyp_uv.py -f make'],
+        process_cwd=source_folder_path,
+        environment=env,
+        shell=True)
+    # Build release library: only libuv.a, skipping tests
+    build_utils.run_process(
+        ['BUILDTYPE=Release make libuv -C out'],
+        process_cwd=source_folder_path,
+        environment=env,
+        shell=True)
+
+    # Copy binary files to dava.engine's library folder
+    source_dir = os.path.join(source_folder_path, 'out/Release')
+    target_dir = os.path.join(root_project_path, 'Libs/lib_CMake/linux')
+    shutil.copyfile(os.path.join(source_dir, 'libuv.a'),
+                    os.path.join(target_dir, 'libuv.a'))
+
+    # Copy headers to dava.engine's include folder
+    _copy_headers_from_install(source_folder_path, root_project_path)
 
 def _copy_headers_from_install(install_folder_path, root_project_path):
     include_path = os.path.join(root_project_path, 'Libs/include/libuv')

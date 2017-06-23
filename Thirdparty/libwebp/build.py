@@ -5,8 +5,12 @@ import build_utils
 def get_supported_targets(platform):
     if platform == 'win32':
         return ['win32', 'win10', 'android']
-    else:
+    elif platform == 'darwin':
         return ['macos', 'ios', 'android']
+    elif platform == 'linux':
+        return ['android', 'linux']
+    else:
+        return []
 
 
 def get_dependencies_for_target(target):
@@ -24,10 +28,12 @@ def build_for_target(target, working_directory_path, root_project_path):
         _build_ios(working_directory_path, root_project_path)
     elif target == 'android':
         _build_android(working_directory_path, root_project_path)
+    elif target == 'linux':
+        _build_linux(working_directory_path, root_project_path)
 
 
 def get_download_info():
-    return 'https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-0.5.1.tar.gz'
+    return 'https://github.com/webmproject/libwebp/archive/v0.5.1.tar.gz'
 
 
 def _download_and_extract(working_directory_path):
@@ -37,7 +43,7 @@ def _download_and_extract(working_directory_path):
         url,
         working_directory_path,
         source_folder_path,
-        build_utils.get_url_file_name_no_ext(url))
+        'libwebp-0.5.1')
     return source_folder_path
 
 
@@ -121,10 +127,22 @@ def _build_android(working_directory_path, root_project_path):
         root_project_path,
         'libwebp.a',
         'libwebp.a',
-        arm_abi='armeabi-v7a with NEON')
+        arm_abi='armeabi-v7a')
 
     _copy_headers(source_folder_path, root_project_path)
 
+def _build_linux(working_directory_path, root_project_path):
+    source_folder_path = _download_and_extract(working_directory_path)
+    _patch_sources(source_folder_path, working_directory_path)
+
+    build_utils.build_and_copy_libraries_linux_cmake(
+        gen_folder_path=os.path.join(working_directory_path, 'gen'),
+        source_folder_path=source_folder_path,
+        root_project_path=root_project_path,
+        target="all",
+        lib_name='libwebp.a')
+
+    _copy_headers(source_folder_path, root_project_path)
 
 def _copy_headers(source_folder_path, root_project_path):
     include_path = os.path.join(root_project_path, 'Libs/include/webp')

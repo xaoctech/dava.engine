@@ -63,7 +63,7 @@ def unzip_inplace(path):
     extension = os.path.splitext(path)[1]
     if extension == '.zip':
         ref = zipfile.ZipFile(path, 'r')
-    elif extension == '.gz' or extension == '.tgz' or extension=='.bz2':
+    elif extension == '.gz' or extension == '.tgz' or extension=='.bz2' or extension=='.tar':
         ref = tarfile.open(path, 'r')
     ref.extractall(os.path.dirname(path))
     ref.close()
@@ -120,11 +120,40 @@ def build_xcode_alltargets(project, configuration):
         print "Failed with return code %s" % proc.returncode
         raise
 
+def build_make_target(output_folder_path, target):
+    print "Building target %s in %s ..." % (target, output_folder_path)
+    # make <target> -C <output_folder_path>
+    proc = subprocess.Popen(["make", target, '-C', output_folder_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    for line in proc.stdout:
+        print_verbose(line)
+    proc.wait()
+    if proc.returncode != 0:
+        print "Failed with return code %s" % proc.returncode
+        raise
 
 def copy_files(from_dir, to_dir, wildcard):
     print "Copying %s from %s to %s" % (wildcard, from_dir, to_dir)
+
+    # First create destination dir if it does not exist, else
+    # shutil.copy will copy all files into one with name 'to_dir'
+    if not os.path.exists(to_dir):
+        os.makedirs(to_dir)
+
     for file in glob.glob(from_dir+"/"+wildcard):
         shutil.copy(file, to_dir)
+
+def copy_files_by_name(from_dir, to_dir, filenames):
+    # First create destination dir if it does not exist, else
+    # shutil.copy will copy all files into one with name 'to_dir'
+    if not os.path.exists(to_dir):
+        os.makedirs(to_dir)
+
+    for file in filenames:
+        print "Copying %s from %s to %s" % (file, from_dir, to_dir)
+
+        src = os.path.join(from_dir, file)
+        dst = os.path.join(to_dir, file)
+        shutil.copy(src, dst)
 
 
 def clean_copy_includes(from_dir, to_dir):
@@ -186,16 +215,30 @@ def cmake_generate_build_xcode(output_folder_path, src_folder_path, cmake_genera
     cmake_generate(output_folder_path, src_folder_path, cmake_generator, cmake_additional_args)
     build_xcode_target(os.path.join(output_folder_path, project), target, 'Release')
 
+def cmake_generate_build_make(output_folder_path, src_folder_path, cmake_generator, target, cmake_additional_args = []):
+    cmake_generate(output_folder_path, src_folder_path, cmake_generator, cmake_additional_args)
+    build_make_target(output_folder_path, target)
 
-def cmake_generate_build_ndk(output_folder_path, src_folder_path, toolchain_filepath, android_ndk_path, abi, cmake_additional_args = []):
+
+def cmake_generate_build_ndk(output_folder_path, src_folder_path, android_ndk_path, abi, cmake_additional_args = []):
     if not os.path.exists(output_folder_path):
         os.makedirs(output_folder_path)
 
-    cmd = ['cmake', '-DCMAKE_TOOLCHAIN_FILE=' + toolchain_filepath, '-DANDROID_NDK=' + android_ndk_path, '-DCMAKE_BUILD_TYPE=Release', '-DANDROID_ABI=' + abi]
+    cmake_path = os.path.join(android_ndk_path, '../cmake/3.6.3155560/bin/cmake')
+    cmake_toolchain = os.path.join(android_ndk_path, 'build/cmake/android.toolchain.cmake')
+
+    cmd = [cmake_path, 
+        '-DANDROID_PLATFORM=' + build_config.get_android_platform(),
+        '-DANDROID_STL=' + build_config.get_android_stl(),
+        '-DANDROID_ARM_NEON=TRUE',
+        '-DANDROID_ABI=' + abi,
+        '-GAndroid Gradle - Unix Makefiles',
+        '-DCMAKE_TOOLCHAIN_FILE=' + cmake_toolchain,
+        '-DCMAKE_BUILD_TYPE=Release']
+
     if (sys.platform == 'win32'):
         cmd.extend(['-G', 'MinGW Makefiles', '-DCMAKE_MAKE_PROGRAM=' + os.path.join(android_ndk_path, 'prebuilt\\windows-x86_64\\bin\\make.exe')])
     cmd.extend(cmake_additional_args)
-
     cmd.append(src_folder_path)
 
     sp = subprocess.Popen(cmd, stdout=subprocess.PIPE, cwd=output_folder_path)
@@ -203,7 +246,7 @@ def cmake_generate_build_ndk(output_folder_path, src_folder_path, toolchain_file
         print_verbose(line)
     sp.wait()
 
-    sp = subprocess.Popen(['cmake', '--build', '.'], stdout=subprocess.PIPE, cwd=output_folder_path)
+    sp = subprocess.Popen([cmake_path, '--build', '.'], stdout=subprocess.PIPE, cwd=output_folder_path)
     for line in sp.stdout:
         print_verbose(line)
     sp.wait()
@@ -322,12 +365,12 @@ def _run_process_iter(args, process_cwd='.', environment=None, shell=False):
         raise subprocess.CalledProcessError(return_code, args)
 
 
-def android_ndk_make_toolchain(root_project_path, arch, platform, system, install_dir):
+def android_ndk_make_toolchain(root_project_path, arch, install_dir):
     android_ndk_root = get_android_ndk_path(root_project_path)
 
     exec_path = os.path.join(android_ndk_root, 'build/tools')
 
-    cmd = ['sh', 'make-standalone-toolchain.sh', '--arch=' + arch, '--platform=' + platform, '--system=' + system, '--install-dir=' + install_dir, '--ndk-dir=' + android_ndk_root]
+    cmd = ['python', 'make_standalone_toolchain.py', '--unified-headers', '--arch=' + arch, '--api=' + build_config.get_android_api_version(), '--stl=' + build_config.get_android_libc(), '--install-dir=' + install_dir]
     run_process(cmd, process_cwd=exec_path)
 
 
@@ -386,68 +429,56 @@ def get_autotools_ios_env():
 
     return env
 
+def get_autotools_linux_env():
+    env = os.environ.copy()
+    env['CC'] = '/usr/local/bin/clang'
+    env['CXX'] = '/usr/local/bin/clang++'
+    return env
 
-def get_autotools_android_arm_env(root_project_path, enable_stl=False):
-    android_ndk_folder_path = get_android_ndk_path(root_project_path)
-    android_prefix = os.path.join(android_ndk_folder_path, 'toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64')
-    cross_path = os.path.join(android_prefix, 'bin/arm-linux-androideabi')
-    sysroot_path = os.path.join(android_ndk_folder_path, 'platforms/android-14/arch-arm')
+def get_autotools_android_arm_env(toolchain_path, enable_stl=False):
+    cross_path = os.path.join(toolchain_path, 'bin/arm-linux-androideabi')
+    sysroot_path = os.path.join(toolchain_path, 'sysroot')
 
     env = os.environ.copy()
     env['CPP'] = '{}-cpp'.format(cross_path)
     env['AR'] = '{}-ar'.format(cross_path)
     env['AS'] = '{}-as'.format(cross_path)
     env['NM'] = '{}-nm'.format(cross_path)
-    env['CC'] = '{}-gcc'.format(cross_path)
-    env['CXX'] = '{}-g++'.format(cross_path)
+    env['CC'] = '{}-clang'.format(cross_path)
+    env['CXX'] = '{}-clang++'.format(cross_path)
     env['LD'] = '{}-ld'.format(cross_path)
     env['RANLIB'] = '{}-ranlib'.format(cross_path)
-    env['CFLAGS'] = '--sysroot={} -I{}/usr/include -I{}/include -O2'.format(sysroot_path, sysroot_path, android_prefix)
+    env['CFLAGS'] = '--sysroot={} -I{}/usr/include -O2'.format(sysroot_path, sysroot_path)
     env['CPPFLAGS'] = env['CFLAGS']
-    env['LDFLAGS'] = '--sysroot={} -L{}/usr/lib -L{}/lib -L{}/sources/crystax/libs/armeabi-v7a'.format(sysroot_path, sysroot_path, android_prefix, android_ndk_folder_path)
+    env['LDFLAGS'] = '--sysroot={} -L{}/usr/lib -L{}/lib'.format(sysroot_path, sysroot_path, os.path.join(toolchain_path, 'arm-linux-androideabi'))
 
     if enable_stl:
-        # just use gnu-libstdc++ shared for now
-        stl_folder_path = os.path.join(android_ndk_folder_path, 'sources/cxx-stl/gnu-libstdc++/4.9')
-        stl_include_folder_path = os.path.join(stl_folder_path, 'include')
-        stl_lib_folder_path = os.path.join(stl_folder_path, 'libs/armeabi-v7a')
-        stl_bits_include_folder_path = os.path.join(stl_lib_folder_path, 'include')
-        env['CPPFLAGS'] += ' -I{} -I{} -frtti -fexceptions'.format(stl_include_folder_path, stl_bits_include_folder_path)
-        env['LDFLAGS'] += ' -L{} -l{}'.format(stl_lib_folder_path, 'gnustl_shared')
+        env['LDFLAGS'] += ' -l' + build_config.get_android_stl()
 
     return env
 
 
-def get_autotools_android_x86_env(root_project_path, enable_stl=False):
-    android_ndk_folder_path = get_android_ndk_path(root_project_path)
-    android_prefix = os.path.join(android_ndk_folder_path, 'toolchains/x86-4.9/prebuilt/darwin-x86_64')
-    cross_path = os.path.join(android_prefix, 'bin/i686-linux-android')
-    sysroot_path = os.path.join(android_ndk_folder_path, 'platforms/android-14/arch-x86')
+def get_autotools_android_x86_env(toolchain_path, enable_stl=False):
+    cross_path = os.path.join(toolchain_path, 'bin/i686-linux-android')
+    sysroot_path = os.path.join(toolchain_path, 'sysroot')
 
     env = os.environ.copy()
     env['CPP'] = '{}-cpp'.format(cross_path)
     env['AR'] = '{}-ar'.format(cross_path)
     env['AS'] = '{}-as'.format(cross_path)
     env['NM'] = '{}-nm'.format(cross_path)
-    env['CC'] = '{}-gcc'.format(cross_path)
-    env['CXX'] = '{}-g++'.format(cross_path)
+    env['CC'] = '{}-clang'.format(cross_path)
+    env['CXX'] = '{}-clang++'.format(cross_path)
     env['LD'] = '{}-ld'.format(cross_path)
     env['RANLIB'] = '{}-ranlib'.format(cross_path)
-    env['CFLAGS'] = '--sysroot={} -I{}/usr/include -I{}/include -O2'.format(sysroot_path, sysroot_path, android_prefix)
+    env['CFLAGS'] = '--sysroot={} -I{}/usr/include -O2'.format(sysroot_path, sysroot_path)
     env['CPPFLAGS'] = env['CFLAGS']
-    env['LDFLAGS'] = '--sysroot={} -L{}/usr/lib -L{}/lib -L{}/sources/crystax/libs/x86'.format(sysroot_path, sysroot_path, android_prefix, android_ndk_folder_path)
+    env['LDFLAGS'] = '--sysroot={} -L{}/usr/lib -L{}/lib'.format(sysroot_path, sysroot_path, os.path.join(toolchain_path, 'i686-linux-android'))
 
     if enable_stl:
-        # just use gnu-libstdc++ shared for now
-        stl_folder_path = os.path.join(android_ndk_folder_path, 'sources/cxx-stl/gnu-libstdc++/4.9')
-        stl_include_folder_path = os.path.join(stl_folder_path, 'include')
-        stl_lib_folder_path = os.path.join(stl_folder_path, 'libs/x86')
-        stl_bits_include_folder_path = os.path.join(stl_lib_folder_path, 'include')
-        env['CPPFLAGS'] += ' -I{} -I{} -frtti -fexceptions'.format(stl_include_folder_path, stl_bits_include_folder_path)
-        env['LDFLAGS'] += ' -L{} -l{}'.format(stl_lib_folder_path, 'gnustl_shared')
+        env['LDFLAGS'] += ' -l' + build_config.get_android_stl()
 
     return env
-
 
 def get_win32_vs_x86_env():
     return _get_vs_env(build_config.get_vs_vc_path_win32(), 'x86')
@@ -614,11 +645,10 @@ def build_and_copy_libraries_android_cmake(
     build_android_armeabiv7a_folder = os.path.join(gen_folder_path, 'build_android_armeabiv7a')
     build_android_x86_folder = os.path.join(gen_folder_path, 'build_android_x86')
 
-    toolchain_filepath = os.path.join(root_project_path, 'Sources/CMake/Toolchains/android.toolchain.cmake')
     android_ndk_folder_path = get_android_ndk_path(root_project_path)
 
-    cmake_generate_build_ndk(build_android_armeabiv7a_folder, source_folder_path, toolchain_filepath, android_ndk_folder_path, arm_abi, cmake_additional_args)
-    cmake_generate_build_ndk(build_android_x86_folder, source_folder_path, toolchain_filepath, android_ndk_folder_path, 'x86', cmake_additional_args)
+    cmake_generate_build_ndk(build_android_armeabiv7a_folder, source_folder_path, android_ndk_folder_path, arm_abi, cmake_additional_args)
+    cmake_generate_build_ndk(build_android_x86_folder, source_folder_path, android_ndk_folder_path, 'x86', cmake_additional_args)
 
     # Move built files into Libs/lib_CMake
     # TODO: update pathes after switching to new folders structure
@@ -631,19 +661,48 @@ def build_and_copy_libraries_android_cmake(
 
     return (build_android_x86_folder, build_android_armeabiv7a_folder)
 
+def build_and_copy_libraries_linux_cmake(
+        gen_folder_path,
+        source_folder_path,
+        root_project_path,
+        target,
+        lib_name,
+        cmake_additional_args = [],
+        target_lib_subdir=''):
 
-def build_with_autotools(source_folder_path, configure_args, install_dir, env=None, configure_exec_name='configure', make_exec_name='make', postclean=True):
+    build_folder = os.path.join(gen_folder_path, 'build_linux')
+    cmake_generate_build_make(build_folder, source_folder_path, build_config.get_cmake_generator_linux(), target, cmake_additional_args)
+
+    # Move built files into Libs/lib_CMake
+    # TODO: update pathes after switching to new folders structure
+    source_dir = os.path.join(build_folder, target_lib_subdir)
+    target_dir = os.path.join(root_project_path, 'Libs/lib_CMake/linux')
+
+    shutil.copyfile(os.path.join(source_dir, lib_name),
+                    os.path.join(target_dir, lib_name))
+    return build_folder
+
+def build_with_autotools(source_folder_path,
+                         configure_args,
+                         install_dir,
+                         env=None,
+                         configure_exec_name='configure',
+                         make_exec_name='make',
+                         make_targets=['all', 'install'],
+                         postclean=True):
     if isinstance(configure_exec_name, list):
         if sys.platform == 'win32':
             cmd = list(configure_exec_name)
         else:
             cmd = ['./{}'.format(configure_exec_name[0])]
             cmd.extend(configure_exec_name[1:])
+            cmd.insert(0, 'sh')
     else:
         if sys.platform == 'win32':
             cmd = [configure_exec_name]
         else:
             cmd = ['./{}'.format(configure_exec_name)]
+            cmd.insert(0, 'sh')
 
     cmd.extend(configure_args)
     if install_dir is not None:
@@ -655,16 +714,12 @@ def build_with_autotools(source_folder_path, configure_args, install_dir, env=No
 
     run_process(cmd, process_cwd=source_folder_path, environment=env, shell=enable_shell)
 
-    cmd = [make_exec_name, 'all']
-    run_process(cmd, process_cwd=source_folder_path, environment=env, shell=enable_shell)
+    if postclean:
+        make_targets.append('clean')
 
-    if install_dir is not None:
-        cmd = [make_exec_name, 'install']
+    for target in make_targets:
+        cmd = [make_exec_name, target]
         run_process(cmd, process_cwd=source_folder_path, environment=env, shell=enable_shell)
-
-        if postclean:
-            cmd = [make_exec_name, 'clean']
-            run_process(cmd, process_cwd=source_folder_path, environment=env, shell=enable_shell)
 
 
 def run_once(fn):

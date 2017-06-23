@@ -6,8 +6,12 @@ import build_utils
 def get_supported_targets(platform):
     if platform == 'win32':
         return ['win32', 'win10']
-    else:
+    elif platform == 'darwin':
         return ['macos', 'ios', 'android']
+    elif platform == 'linux':
+        return ['android', 'linux']
+    else:
+        return []
 
 
 def get_dependencies_for_target(target):
@@ -25,17 +29,19 @@ def build_for_target(target, working_directory_path, root_project_path):
         _build_ios(working_directory_path, root_project_path)
     elif target == 'android':
         _build_android(working_directory_path, root_project_path)
+    elif target == 'linux':
+        _build_linux(working_directory_path, root_project_path)
 
 
 def get_download_info():
-    return {'win': 'http://www.ijg.org/files/jpegsr9b.zip',
-            'others': 'http://www.ijg.org/files/jpegsrc.v9b.tar.gz'}
+    return {'win': 'http://www.ijg.org/files/jpegsr9a.zip',
+            'others': 'http://www.ijg.org/files/jpegsrc.v9a.tar.gz'}
 
 
 def _get_downloaded_archive_inner_dir():
     # Because archive inner folder and archive file name do not match
     # If you change download link - change this one too
-    return 'jpeg-9b'
+    return 'jpeg-9a'
 
 
 def _download_and_extract(
@@ -209,6 +215,10 @@ def _build_android(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(
         working_directory_path, 'others')
 
+    # ARM
+    toolchain_path_arm = os.path.join(working_directory_path, 'gen/ndk_toolchain_arm')
+    build_utils.android_ndk_make_toolchain(root_project_path, 'arm', toolchain_path_arm)    
+
     install_dir_android_arm = os.path.join(
         working_directory_path, 'gen/install_android_arm')
     build_utils.build_with_autotools(
@@ -217,17 +227,23 @@ def _build_android(working_directory_path, root_project_path):
          '--disable-shared',
          '--enable-static'],
         install_dir_android_arm,
-        env=build_utils.get_autotools_android_arm_env(root_project_path))
+       env=build_utils.get_autotools_android_arm_env(toolchain_path_arm))
+
+    # x86
+    toolchain_path_x86 = os.path.join(working_directory_path, 'gen/ndk_toolchain_x86')
+    build_utils.android_ndk_make_toolchain(root_project_path, 'x86', toolchain_path_x86)
 
     install_dir_android_x86 = os.path.join(
         working_directory_path, 'gen/install_android_x86')
     build_utils.build_with_autotools(
         source_folder_path,
-        ['--host=i686-linux-android', '--disable-shared', '--enable-static'],
+        ['--host=i686-linux-android',
+         '--disable-shared',
+         '--enable-static'],
         install_dir_android_x86,
-        env=build_utils.get_autotools_android_x86_env(root_project_path))
+        env=build_utils.get_autotools_android_x86_env(toolchain_path_x86))
 
-    libs_android_root = os.path(root_project_path, 'Libs/lib_CMake/android')
+    libs_android_root = os.path.join(root_project_path, 'Libs/lib_CMake/android')
 
     lib_path_arm = os.path.join(install_dir_android_arm, 'lib/libjpeg.a')
     shutil.copyfile(
@@ -238,6 +254,24 @@ def _build_android(working_directory_path, root_project_path):
         lib_path_x86, os.path.join(libs_android_root, 'x86/libjpeg.a'))
 
     _copy_headers_from_install(install_dir_android_arm, root_project_path)
+
+
+def _build_linux(working_directory_path, root_project_path):
+    source_folder_path = _download_and_extract(working_directory_path, 'others')
+
+    env = build_utils.get_autotools_linux_env()
+    install_dir = os.path.join(working_directory_path, 'gen/install_linux')
+
+    build_utils.build_with_autotools(
+        source_folder_path,
+        ['--disable-shared', '--enable-static'],
+        install_dir,
+        env=env)
+
+    shutil.copyfile(os.path.join(install_dir, 'lib/libjpeg.a'),
+                    os.path.join(root_project_path, 'Libs/lib_CMake/linux/libjpeg.a'))
+
+    _copy_headers_from_install(install_dir, root_project_path)
 
 
 def _copy_headers_from_install(install_folder_path, root_project_path):

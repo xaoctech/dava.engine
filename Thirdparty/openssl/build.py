@@ -4,13 +4,18 @@
 import os
 import shutil
 import build_utils
+import build_config
 
 
 def get_supported_targets(platform):
     if platform == 'win32':
         return ['win32', 'win10']
-    else:
+    elif platform == 'darwin':
         return ['macos', 'ios', 'android']
+    elif platform == 'linux':
+        return ['android', 'linux']
+    else:
+        return []
 
 
 def get_dependencies_for_target(target):
@@ -28,12 +33,14 @@ def build_for_target(target, working_directory_path, root_project_path):
         _build_ios(working_directory_path, root_project_path)
     elif target == 'android':
         _build_android(working_directory_path, root_project_path)
+    elif target == 'linux':
+        _build_linux(working_directory_path, root_project_path)
 
 
 def get_download_info():
     # Win 10 uses different sources - maintained by Microsoft
     return {'win10': 'https://github.com/Microsoft/openssl/archive/OpenSSL_1_0_2j_WinRT.tar.gz',
-            'others': 'https://www.openssl.org/source/openssl-1.1.0b.tar.gz'}
+            'others': 'https://www.openssl.org/source/openssl-1.1.0e.tar.gz'}
 
 
 def _download_and_extract(working_directory_path, win10=False):
@@ -408,6 +415,34 @@ def _build_android(working_directory_path, root_project_path):
     _copy_headers(install_dir_arm, root_project_path, 'android')
 
 
+def _build_linux(working_directory_path, root_project_path):
+    source_folder_path = _download_and_extract(working_directory_path)
+    # TODO: patch if neccessary (current patch does not apply to 1.0.1l)
+    #_patch_sources(source_folder_path, working_directory_path)
+
+    env = build_utils.get_autotools_linux_env()
+    install_dir = os.path.join(working_directory_path, 'gen/install_linux')
+
+    configure_args=list(_configure_args)
+    configure_args.append('linux-x86_64')
+
+    build_utils.build_with_autotools(
+        source_folder_path,
+        configure_args,
+        install_dir,
+        env=env,
+        configure_exec_name='Configure',
+        make_targets=['depend', 'all', 'install'],
+        postclean=False)
+
+    shutil.copyfile(os.path.join(install_dir, 'lib/libssl.a'),
+                    os.path.join(root_project_path, 'Libs/lib_CMake/linux/libssl.a'))
+    shutil.copyfile(os.path.join(install_dir, 'lib/libcrypto.a'),
+                    os.path.join(root_project_path, 'Libs/lib_CMake/linux/libcrypto.a'))
+
+    _copy_headers(install_dir, root_project_path, 'linux')
+
+
 def _get_ios_env():
     xcode_developer_path = build_utils.get_xcode_developer_path()
 
@@ -438,8 +473,6 @@ def _get_android_env(
         android_ndk_root, android_target, arch)
     eabi_path = '{}/toolchains/{}/prebuilt/darwin-x86_64/bin'.format(
         android_ndk_root, toolchain_folder)
-    crystax_libs_cflag = '-L{}/sources/crystax/libs/{}/'.format(
-        android_ndk_root, crystax_libs_folder)
     fips_sig_path = '{}/util/incore'.format(source_folder_path)
 
     env = os.environ.copy()
@@ -449,7 +482,6 @@ def _get_android_env(
     env['CROSS_SYSROOT'] = platform_path
     env['CROSS_COMPILE'] = cross_compile
     env['PATH'] = '{}:{}'.format(eabi_path, env['PATH'])
-    env['CRYSTAX_LDFLAGS'] = crystax_libs_cflag
     env['FIPS_SIG'] = fips_sig_path
 
     return env
@@ -459,7 +491,7 @@ def _get_android_env_arm(source_folder_path, root_project_path):
     return _get_android_env(
         source_folder_path,
         root_project_path,
-        'android-9',
+        build_config.get_android_platform(),
         'armv7',
         'arm',
         'arm-linux-androideabi-4.9',
@@ -471,7 +503,7 @@ def _get_android_env_x86(source_folder_path, root_project_path):
     return _get_android_env(
         source_folder_path,
         root_project_path,
-        'android-9',
+        build_config.get_android_platform(),
         'i686',
         'x86',
         'x86-4.9',

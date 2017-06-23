@@ -20,7 +20,7 @@
 
 #if defined(__DAVAENGINE_WINDOWS__)
 #include <io.h>
-#elif defined(__DAVAENGINE_ANDROID__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
+#elif defined(__DAVAENGINE_POSIX__)
 #include <unistd.h>
 #endif
 
@@ -587,7 +587,7 @@ bool File::Truncate(uint64 size)
 #endif
 #if defined(__DAVAENGINE_WINDOWS__)
     return (0 == _chsize(_fileno(file), static_cast<long>(size)));
-#elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+#elif defined(__DAVAENGINE_POSIX__)
     return (0 == ftruncate(fileno(file), size));
 #else
 #error No implementation for current platform
