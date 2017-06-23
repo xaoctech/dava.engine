@@ -160,16 +160,16 @@ def _build_android(working_directory_path, root_project_path):
     build_android_armeabiv7a_folder = os.path.join(working_directory_path, 'gen', 'build_android_armeabiv7a')
     build_android_x86_folder = os.path.join(working_directory_path, 'gen', 'build_android_x86')
     toolchain_filepath = os.path.join(root_project_path, 'Sources/CMake/Toolchains/android.toolchain.cmake')
-    android_ndk_folder_path = build_utils.get_android_ndk_path(root_project_path)
+    android_ndk_folder_path = build_utils.get_android_ndk_path()
 
-    build_utils.cmake_generate_build_ndk(build_android_armeabiv7a_folder, source_dir, toolchain_filepath,
+    build_utils.cmake_generate_build_ndk(build_android_armeabiv7a_folder, source_dir,
                                          android_ndk_folder_path, 'armeabi-v7a',
                                          ['-DFRAMEWORK_ROOT_PATH=' + root_project_path])
 
     binary_dst_path = os.path.join(root_project_path, 'Modules', 'Physics', 'Libs', 'Android')
     _copy_libs(build_android_armeabiv7a_folder, os.path.join(binary_dst_path, 'armeabi-v7a'), '.a', True)
 
-    #build_utils.cmake_generate_build_ndk(build_android_x86_folder, source_dir, toolchain_filepath,
+    #build_utils.cmake_generate_build_ndk(build_android_x86_folder, source_dir,
     #                                     android_ndk_folder_path, 'x86',
     #                                     ['-DFRAMEWORK_ROOT_PATH=' + root_project_path, '-Wno-dev'])
     _copy_headers(source_folder_path, root_project_path)
