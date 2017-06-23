@@ -16,7 +16,6 @@ struct GeoDecalManager::DecalBuildInfo : public GeoDecalManager::DecalConfig
     Vector4* jointQuaternions = nullptr;
     Vector3 projectionAxis;
     Matrix4 projectionSpaceTransform;
-    Matrix4 projectionSpaceInverseTransform;
     int32 jointCount = 0;
     bool useCustomNormal = false;
     bool useSkinning = false;
@@ -131,31 +130,30 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, co
     AABBox3 worldSpaceBox;
     config.boundingBox.GetTransformedBox(decalWorldTransform, worldSpaceBox);
 
-    Vector3 boxCorners[8];
+    uint8 boxCornersData[8 * sizeof(Vector3)];
+    Vector3* boxCorners = reinterpret_cast<Vector3*>(boxCornersData);
     config.boundingBox.GetCorners(boxCorners);
 
-    Vector3 dir = MultiplyVectorMat3x3(Vector3(0.0f, 0.0f, 1.0f), decalWorldTransform);
-    Vector3 up = MultiplyVectorMat3x3(Vector3(0.0f, -1.0f, 0.0f), decalWorldTransform);
-    Vector3 side = MultiplyVectorMat3x3(Vector3(1.0f, 0.0f, 0.0f), decalWorldTransform);
+    Matrix4 worldToObject = decalWorldTransform * ro->GetInverseWorldTransform();
 
-    dir = MultiplyVectorMat3x3(dir, ro->GetInverseWorldTransform());
-    up = MultiplyVectorMat3x3(up, ro->GetInverseWorldTransform());
-    side = MultiplyVectorMat3x3(side, ro->GetInverseWorldTransform());
+    Vector3 side = MultiplyVectorMat3x3(Vector3(1.0f, 0.0f, 0.0f), worldToObject);
+    Vector3 up = MultiplyVectorMat3x3(Vector3(0.0f, 1.0f, 0.0f), worldToObject);
+    Vector3 dir = MultiplyVectorMat3x3(Vector3(0.0f, 0.0f, 1.0f), worldToObject);
+
+    Vector3 boxMin = Vector3(+std::numeric_limits<float>::max(), +std::numeric_limits<float>::max(), +std::numeric_limits<float>::max());
+    Vector3 boxMax = Vector3(-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
 
     Matrix4 view = Matrix4::IDENTITY;
     view._data[0][0] = side.x;
     view._data[0][1] = up.x;
-    view._data[0][2] = -dir.x;
+    view._data[0][2] = dir.x;
     view._data[1][0] = side.y;
     view._data[1][1] = up.y;
-    view._data[1][2] = -dir.y;
+    view._data[1][2] = dir.y;
     view._data[2][0] = side.z;
     view._data[2][1] = up.z;
-    view._data[2][2] = -dir.z;
+    view._data[2][2] = dir.z;
 
-    Matrix4 worldToObject = decalWorldTransform * ro->GetInverseWorldTransform();
-    Vector3 boxMin = Vector3(+std::numeric_limits<float>::max(), +std::numeric_limits<float>::max(), +std::numeric_limits<float>::max());
-    Vector3 boxMax = Vector3(-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
     for (uint32 i = 0; i < 8; ++i)
     {
         Vector3 objectPos = boxCorners[i] * worldToObject;
@@ -167,13 +165,16 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, co
         boxMax.y = std::max(boxMax.y, t.y);
         boxMax.z = std::max(boxMax.z, t.z);
     }
+
+    // notice flip "-boxMax.z, -boxMin.z" in znear/zfar parameters
+    // this is done because BuildOrtho building matrix for NDC, with z direction reversed
+    // and here we expecting boxMin mapping to -1 -1 -1 and boxMax to +1 +1 +1
     Matrix4 proj;
-    proj.OrthographicProjectionLH(boxMin.x, boxMax.x, boxMin.y, boxMax.y, boxMin.z, boxMax.z, false);
+    proj.BuildOrtho(boxMin.x, boxMax.x, boxMin.y, boxMax.y, -boxMax.z, -boxMin.z, false);
 
     DecalBuildInfo info;
     info.projectionAxis = dir;
     info.projectionSpaceTransform = view * proj;
-    info.projectionSpaceTransform.GetInverse(info.projectionSpaceInverseTransform);
     info.mapping = config.mapping;
     info.albedo = config.albedo;
     info.normal = config.normal;
@@ -381,7 +382,7 @@ void GeoDecalManager::GetStaticMeshGeometry(const DecalBuildInfo& info, Vector<u
             info.polygonGroup->GetBinormal(idx[2], points[2].binormal);
         }
         Vector3 nrm = (points[1].actualPoint - points[0].actualPoint).CrossProduct(points[2].actualPoint - points[0].actualPoint);
-        if ((info.mapping != Mapping::PLANAR) || (nrm.DotProduct(info.projectionAxis) < -std::numeric_limits<float>::epsilon()))
+        // if ((info.mapping != Mapping::PLANAR) || (nrm.DotProduct(info.projectionAxis) < -std::numeric_limits<float>::epsilon()))
         {
             AddVerticesToGeometry(info, points, points_tmp, buffer);
         }
@@ -431,7 +432,7 @@ void GeoDecalManager::GetSkinnedMeshGeometry(const DecalBuildInfo& info, Vector<
         if (Intersection::BoxTriangle(info.boundingBox, points[2].actualPoint, points[1].actualPoint, points[0].actualPoint))
         {
             Vector3 nrm = (points[1].actualPoint - points[0].actualPoint).CrossProduct(points[2].actualPoint - points[0].actualPoint);
-            if ((info.mapping != Mapping::PLANAR) || (nrm.DotProduct(info.projectionAxis) < -std::numeric_limits<float>::epsilon()))
+            // if ((info.mapping != Mapping::PLANAR) || (nrm.DotProduct(info.projectionAxis) < -std::numeric_limits<float>::epsilon()))
             {
                 AddVerticesToGeometry(info, points, points_tmp, buffer);
             }
