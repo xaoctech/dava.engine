@@ -8,7 +8,7 @@
 #include "FileSystem/Private/PackFormatSpec.h"
 #include "FileSystem/Private/CheckIOError.h"
 #include "FileSystem/ResourceArchive.h"
-#include "Platform/TemplateAndroid/AssetsManagerAndroid.h"
+#include "Engine/Private/Android/AssetsManagerAndroid.h"
 
 #include "Compression/LZ4Compressor.h"
 #include "Concurrency/LockGuard.h"

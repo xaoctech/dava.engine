@@ -1,11 +1,11 @@
-package com.dava.framework;
+package com.dava.engine;
 
 import java.util.TimeZone;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class JNIDateTime {
+public class DateTime {
     final static String TAG = "JNIDateTime";
 
     public static String GetTimeAsString(final String format,final String countryCode, long timeStamp, int timeZoneOffset)

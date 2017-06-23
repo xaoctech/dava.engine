@@ -20,7 +20,6 @@
 
 #if defined(__DAVAENGINE_ANDROID__)
 #include "Engine/Android/JNIBridge.h"
-#include "Platform/TemplateAndroid/ExternC/AndroidLayer.h"
 #endif
 
 namespace DAVA
@@ -110,7 +109,7 @@ String LocalizationSystem::GetDeviceLocale(void) const
         return overridenLangId;
     }
 
-    JNI::JavaClass jniLocalisation("com/dava/framework/JNILocalization");
+    JNI::JavaClass jniLocalisation("com/dava/engine/Localization");
     Function<jstring()> jgetLocale = jniLocalisation.GetStaticMethod<jstring>("GetLocale");
 
     return JNI::JavaStringToString(JNI::LocalRef<jstring>(jgetLocale()));

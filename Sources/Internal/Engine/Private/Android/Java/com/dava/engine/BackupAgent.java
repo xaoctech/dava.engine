@@ -1,6 +1,4 @@
-package com.dava.framework;
-
-import com.dava.engine.DavaActivity;
+package com.dava.engine;
 
 import android.content.Context;
 import android.app.Activity;
@@ -9,10 +7,10 @@ import android.app.backup.BackupManager;
 import android.app.backup.RestoreObserver;
 import android.app.backup.SharedPreferencesBackupHelper;
 
-public class JNIBackupAgent extends BackupAgentHelper {
+public class BackupAgent extends BackupAgentHelper {
 	public void onCreate() {
-        SharedPreferencesBackupHelper helper = new SharedPreferencesBackupHelper(this, JNISharedPreferences.GetName());
-        addHelper(JNISharedPreferences.GetName(), helper);
+        SharedPreferencesBackupHelper helper = new SharedPreferencesBackupHelper(this, SharedPreferences.GetName());
+        addHelper(SharedPreferences.GetName(), helper);
     }
 	
 	public static void Backup()
@@ -38,13 +36,7 @@ public class JNIBackupAgent extends BackupAgentHelper {
 
     private static Context getContext()
     {
-        // TODO: Just use DavaActivity when CoreV1 is removed
-        Activity activity = JNIActivity.GetActivity();
-        if (activity == null)
-        {
-            activity = DavaActivity.instance();
-        }
-
+        DavaActivity activity = DavaActivity.instance();
         return activity.getApplicationContext();
     }
 }

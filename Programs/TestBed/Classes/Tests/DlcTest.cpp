@@ -11,7 +11,6 @@
 
 #if defined(__DAVAENGINE_ANDROID__)
 #include "Platform/DeviceInfo.h"
-#include "Platform/TemplateAndroid/CorePlatformAndroid.h"
 #endif
 
 //#define DLC_TEST

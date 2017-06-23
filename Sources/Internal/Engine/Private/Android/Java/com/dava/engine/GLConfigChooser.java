@@ -1,4 +1,4 @@
-package com.dava.framework;
+package com.dava.engine;
 
 import java.util.Vector;
 
@@ -8,7 +8,7 @@ import javax.microedition.khronos.egl.EGLDisplay;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
 
-public class JNIConfigChooser implements GLSurfaceView.EGLConfigChooser {
+public class GLConfigChooser implements GLSurfaceView.EGLConfigChooser {
 	private static final int EGL_RENDERABLE_TYPE = 0x3040;
 	private static final int EGL_OPENGL_ES2_BIT = 0x0004;
 	
@@ -32,10 +32,7 @@ public class JNIConfigChooser implements GLSurfaceView.EGLConfigChooser {
     public static int GetDepthBufferSize() {
     	return curDepthBufferSize;
     }
-    
-	public JNIConfigChooser() {
-	}
-	
+
 	public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display) {
 		int[] version = new int[2];
 		boolean ret = egl.eglInitialize(display, version);
@@ -76,7 +73,7 @@ public class JNIConfigChooser implements GLSurfaceView.EGLConfigChooser {
 		}
 		
 		if (eglConfig == null) {
-			Log.e(JNIConst.LOG_TAG, "Error initialize gl");
+			Log.e(DavaActivity.LOG_TAG, "Error initialize gl");
 			curDepthBufferSize = 0;
 			return null;
 		}
@@ -102,7 +99,7 @@ public class JNIConfigChooser implements GLSurfaceView.EGLConfigChooser {
 		int num_configs[] = new int[1];
 		egl.eglChooseConfig(display, configAttrs, config, config.length, num_configs);
 		if (egl.eglGetError() != EGL10.EGL_SUCCESS) {
-			Log.w(JNIConst.LOG_TAG, "eglChooseConfig err: " + egl.eglGetError());
+			Log.w(DavaActivity.LOG_TAG, "eglChooseConfig err: " + egl.eglGetError());
 			return null;
 		}
 
@@ -125,8 +122,8 @@ public class JNIConfigChooser implements GLSurfaceView.EGLConfigChooser {
 			currScore += Math.abs(s - stencilSize);
 
 			if (currScore < score) {
-				Log.w(JNIConst.LOG_TAG, "--------------------------");
-				Log.w(JNIConst.LOG_TAG, "New config chosen: " + i);
+				Log.w(DavaActivity.LOG_TAG, "--------------------------");
+				Log.w(DavaActivity.LOG_TAG, "New config chosen: " + i);
 				/*
 				 * for (int j = 0; j < (configAttrs.length-1)>>1; j++) {
 				 * egl.eglGetConfigAttrib(display, config[i], configAttrs[j*2],
@@ -220,9 +217,9 @@ public class JNIConfigChooser implements GLSurfaceView.EGLConfigChooser {
 			int attribute = attributes[i];
 			String name = names[i];
 			if (egl.eglGetConfigAttrib(display, config, attribute, value)) {
-				Log.w(JNIConst.LOG_TAG, String.format("  %s: %d\n", name, value[0]));
+				Log.w(DavaActivity.LOG_TAG, String.format("  %s: %d\n", name, value[0]));
 			} else {
-				Log.w(JNIConst.LOG_TAG, String.format("  %s: failed\n", name));
+				Log.w(DavaActivity.LOG_TAG, String.format("  %s: failed\n", name));
 				while (egl.eglGetError() != EGL10.EGL_SUCCESS);
 			}
 		}
