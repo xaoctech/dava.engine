@@ -1,18 +1,17 @@
 #pragma once
 
-#include <fstream>
-
 #include "DLCManager/DLCManager.h"
 #include "DLCManager/DLCDownloader.h"
 #include "DLCManager/Private/RequestManager.h"
+#include "DLCManager/Private/PackRequest.h"
+#include "FileSystem/FilePath.h"
 #include "FileSystem/Private/PackFormatSpec.h"
 #include "FileSystem/Private/PackMetaData.h"
 #include "Concurrency/Semaphore.h"
 #include "Concurrency/Thread.h"
-
-#ifdef __DAVAENGINE_COREV2__
 #include "Engine/Engine.h"
-#endif
+
+#include <fstream>
 
 namespace DAVA
 {
@@ -182,17 +181,19 @@ private:
     void AskFooter();
     void GetFooter();
     void AskFileTable();
-    void ReadLocalFileTableInfoBuffer();
-    void FillFileNameIndexes();
     void GetFileTable();
     void CompareLocalMetaWitnRemoteHash();
     void AskServerMeta();
     void GetServerMeta();
     void ParseMeta();
+    void LoadLocalCacheServerFooter();
     void LoadPacksDataFromMeta();
     void WaitScanThreadToFinish();
     void StartDelayedRequests();
     // helper functions
+    void ReadLocalFileTableInfoBuffer();
+    void FillFileNameIndexes();
+    void SaveServerFooter();
     void DeleteLocalMetaFiles();
     void ContinueInitialization(float frameDelta);
     void ReadContentAndExtractFileNames();
@@ -236,6 +237,7 @@ private:
 
     FilePath localCacheMeta;
     FilePath localCacheFileTable;
+    FilePath localCacheFooter;
     FilePath dirToDownloadedPacks;
     String urlToSuperPack;
     bool isProcessingEnabled = false;

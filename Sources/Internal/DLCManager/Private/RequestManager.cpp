@@ -1,6 +1,7 @@
 #include "DLCManager/Private/RequestManager.h"
 #include "DLCManager/Private/DLCManagerImpl.h"
 #include "Debug/DVAssert.h"
+#include "Base/BaseTypes.h"
 
 namespace DAVA
 {

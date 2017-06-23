@@ -1,37 +1,38 @@
 #pragma once
 
-#include "FileSystem/FilePath.h"
 #include "Functional/Signal.h"
 
 namespace DAVA
 {
+class FilePath;
+
 /**
- Interface for requesting packs from server.
+	 Interface for requesting packs from server.
 
- Typical work flow:
- 1. connect to state change signal and to request update signal
- 2. call Initialize to connect to server, wait for state become `Pack::Status::Ready`
- 3. request pack from server or mount local automatically on request
+	 Typical work flow:
+	 1. connect to state change signal and to request update signal
+	 2. call Initialize to connect to server, wait for state become `Pack::Status::Ready`
+	 3. request pack from server or mount local automatically on request
 
- example:
- ```
- DLCManager& pm = *engine.GetContext()->dlcManager;
- // if initialize failed we will know about it
- pm.networkReady.Connect(this, &DLCManagerTest::OnNetworkReady);
+	 example:
+	 ```
+	 DLCManager& pm = *engine.GetContext()->dlcManager;
+	 // if initialize failed we will know about it
+	 pm.networkReady.Connect(this, &DLCManagerTest::OnNetworkReady);
 
- FilePath folderWithDownloadedPacks = "~doc:/FolderForPacks/";
- String urlToServerSuperpack = "http://server.net/superpack.3.7.0.mali.dvpk";
- DLCManager::Hints hints;
- hints.logFilePath = "~doc:/UberGame/dlc_manager.log";
- hints.retryConnectMilliseconds = 1000; // retry connect every second
- hints.maxFilesToDownload = 22456; // help download manager to reserve memory better
+	 FilePath folderWithDownloadedPacks = "~doc:/FolderForPacks/";
+	 String urlToServerSuperpack = "http://server.net/superpack.3.7.0.mali.dvpk";
+	 DLCManager::Hints hints;
+	 hints.logFilePath = "~doc:/UberGame/dlc_manager.log";
+	 hints.retryConnectMilliseconds = 1000; // retry connect every second
+	 hints.maxFilesToDownload = 22456; // help download manager to reserve memory better
 
- pm.Initialize(folderWithDownloadedPacks, urlToServerSuperpack, hints);
+	 pm.Initialize(folderWithDownloadedPacks, urlToServerSuperpack, hints);
 
- // now we can connect to request signal, and start requesting packs
+	 // now we can connect to request signal, and start requesting packs
 
- ```
-*/
+	 ```
+	*/
 
 class DLCManager
 {
@@ -83,7 +84,7 @@ public:
 		DLCManager requesting disabled before signal.
 		If you receive this signal first check available space on device.
 		*/
-    Signal<const String&, int32> fileErrorOccured;
+    Signal<const String&, int32_t> fileErrorOccured;
 
     /**
 	    User fills hints to internal implementation.
@@ -93,12 +94,12 @@ public:
     {
         String logFilePath = "~doc:/dlc_manager.log"; //!< path for separate log file
         String preloadedPacks = ""; //!< list of preloaded pack names already exist separated with new line char (example: "base_pack1\ntutorial\nsounds")
-        uint32 retryConnectMilliseconds = 5000; //!< try to reconnect to server if `Offline` state default every 5 seconds
-        uint32 maxFilesToDownload = 0; //!< user should fill this value default value average files count in Data
-        uint32 timeoutForDownload = 30; //!< this value passed to DownloadManager
-        uint32 skipCDNConnectAfterAttemps = 3; //!< if local metadata exist and CDN not available use local files without CDN
-        uint32 downloaderMaxHandles = 8; //!< play with any values you like from 1 to max open file per process
-        uint32 downloaderChankBufSize = 512 * 1024; //!< 512Kb RAM buffer for one handle, you can set any value in bytes
+        uint32_t retryConnectMilliseconds = 5000; //!< try to reconnect to server if `Offline` state default every 5 seconds
+        uint32_t maxFilesToDownload = 0; //!< user should fill this value default value average files count in Data
+        uint32_t timeoutForDownload = 30; //!< this value passed to DownloadManager
+        uint32_t skipCDNConnectAfterAttemps = 3; //!< if local metadata exist and CDN not available use local files without CDN
+        uint32_t downloaderMaxHandles = 8; //!< play with any values you like from 1 to max open file per process
+        uint32_t downloaderChankBufSize = 512 * 1024; //!< 512Kb RAM buffer for one handle, you can set any value in bytes
     };
 
     /** Start complex initialization process. You can call it again if need.
@@ -137,9 +138,9 @@ public:
 
     struct Progress
     {
-        uint64 total = 0; //!< in bytes
-        uint64 alreadyDownloaded = 0; //!< in bytes
-        uint64 inQueue = 0; //!< in bytes
+        uint64_t total = 0; //!< in bytes
+        uint64_t alreadyDownloaded = 0; //!< in bytes
+        uint64_t inQueue = 0; //!< in bytes
         bool isRequestingEnabled = false; //!< current state of requesting
     };
 

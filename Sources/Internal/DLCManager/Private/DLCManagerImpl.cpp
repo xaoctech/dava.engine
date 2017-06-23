@@ -12,6 +12,7 @@
 #include "Engine/Engine.h"
 #include "Debug/Backtrace.h"
 #include "Platform/DeviceInfo.h"
+#include "DLCManager/Private/PackRequest.h"
 
 #include <iomanip>
 
@@ -62,7 +63,6 @@ std::ostream& DLCManagerImpl::GetLog() const
     return log;
 }
 
-#ifdef __DAVAENGINE_COREV2__
 DLCManagerImpl::DLCManagerImpl(Engine* engine_)
     : engine(*engine_)
 {
@@ -70,7 +70,6 @@ DLCManagerImpl::DLCManagerImpl(Engine* engine_)
     engine.update.Connect(this, &DLCManagerImpl::Update);
     engine.backgroundUpdate.Connect(this, &DLCManagerImpl::Update);
 }
-#endif
 
 void DLCManagerImpl::ClearResouces()
 {
@@ -271,6 +270,7 @@ void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
         dirToDownloadedPacks = dirToDownloadPacks_;
         localCacheMeta = dirToDownloadPacks_ + "local_copy_server_meta.meta";
         localCacheFileTable = dirToDownloadPacks_ + "local_copy_server_file_table.block";
+        localCacheFooter = dirToDownloadPacks_ + "local_copy_server_footer.footer";
         urlToSuperPack = urlToServerSuperpack_;
         hints = hints_;
 
@@ -587,6 +587,24 @@ void DLCManagerImpl::AskFooter()
     }
 }
 
+void DLCManagerImpl::SaveServerFooter()
+{
+    ScopedPtr<File> f(File::Create(localCacheFooter, File::CREATE | File::WRITE));
+    if (f)
+    {
+        if (sizeof(initFooterOnServer) == f->Write(&initFooterOnServer, sizeof(initFooterOnServer)))
+        {
+            return; // all good
+        }
+    }
+
+    StringStream ss;
+    ss << "can't write file: " << localCacheFooter.GetAbsolutePathname() << " errno: (" << errno << ") " << strerror(errno) << std::endl;
+    log << ss.str();
+    fileErrorOccured.Emit(localCacheFooter.GetAbsolutePathname(), errno);
+    DAVA_THROW(Exception, ss.str());
+}
+
 void DLCManagerImpl::GetFooter()
 {
     //Logger::FrameworkDebug("pack manager get_footer");
@@ -610,6 +628,9 @@ void DLCManagerImpl::GetFooter()
                     << initFooterOnServer.infoCrc32 << std::dec << std::endl;
                 DAVA_THROW(DAVA::Exception, "on server bad superpack!!! Footer not match crc32");
             }
+
+            SaveServerFooter();
+
             usedPackFile.footer = initFooterOnServer;
             initState = InitState::LoadingRequestAskFileTable;
             log << "initState: " << ToString(initState) << std::endl;
@@ -883,12 +904,35 @@ void DLCManagerImpl::ParseMeta()
     log << "initState: " << ToString(initState) << std::endl;
 }
 
+void DLCManagerImpl::LoadLocalCacheServerFooter()
+{
+    ScopedPtr<File> f(File::Create(localCacheFooter, File::OPEN | File::READ));
+    if (f)
+    {
+        if (sizeof(initFooterOnServer) == f->Read(&initFooterOnServer, sizeof(initFooterOnServer)))
+        {
+            return;
+        }
+    }
+
+    log << "can't read file: " << localCacheFooter.GetAbsolutePathname() << " errno(" << errno << ") error: " << strerror(errno) << std::endl;
+    DAVA_THROW(Exception, "can't load localCacheFooter data");
+}
+
 void DLCManagerImpl::LoadPacksDataFromMeta()
 {
     //Logger::FrameworkDebug("pack manager load_packs_data_from_db");
 
     try
     {
+        if (initFooterOnServer.info.packArchiveMarker == Array<char8, 4>{ '\0', '\0', '\0', '\0' })
+        {
+            // no server data, so use local as is (preload existing file_names_cache)
+            LoadLocalCacheServerFooter();
+
+            ReadContentAndExtractFileNames();
+        }
+
         ScopedPtr<File> f(File::Create(localCacheMeta, File::OPEN | File::READ));
 
         uint32 size = static_cast<uint32>(f->GetSize());

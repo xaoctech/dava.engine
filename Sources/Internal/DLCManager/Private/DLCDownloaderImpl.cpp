@@ -1,8 +1,5 @@
 #include "DLCManager/Private/DLCDownloaderImpl.h"
-
-#include "DLC/Downloader/CurlDownloader.h"
 #include "Debug/Backtrace.h"
-
 #include "Logger/Logger.h"
 #include "FileSystem/File.h"
 #include "FileSystem/FileSystem.h"

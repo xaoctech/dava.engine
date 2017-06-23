@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Base/BaseTypes.h"
-
 #include <atomic>
 #include <iosfwd>
+
+#include "Base/String.h"
 
 namespace DAVA
 {
@@ -61,22 +61,22 @@ public:
 	*/
     struct Hints
     {
-        int32 numOfMaxEasyHandles = 8; //!< How many curl easy handles will be used
-        int32 chunkMemBuffSize = 512 * 1024; //!< Max buffer size per one download operation per curl easy handler
-        int32 timeout = 30; //!< Timeout in seconds for curl easy handlers to wait on connect, dns request etc.
+        int32_t numOfMaxEasyHandles = 8; //!< How many curl easy handles will be used
+        int32_t chunkMemBuffSize = 512 * 1024; //!< Max buffer size per one download operation per curl easy handler
+        int32_t timeout = 30; //!< Timeout in seconds for curl easy handlers to wait on connect, dns request etc.
     };
 
     /**
 		Task can be in one of next states.
 	*/
-    enum class TaskState : int32
+    enum class TaskState : int32_t
     {
         JustAdded, //!< Just created and added to download queue
         Downloading, //!< One or more curl handles is working.
         Finished //!< All done, now you can remove task with ```DLCDownloader::RemoveTask(Task*)```
     };
 
-    enum class TaskType : int32
+    enum class TaskType : int32_t
     {
         FULL, //!< Truncate file if exist and download again
         RESUME, //!< Resume downloading from current output file(buffer) size
@@ -91,9 +91,9 @@ public:
     {
         virtual ~IWriter() = default;
         /** Save next buffer bytes into memory or file, on error return differs from parameter size */
-        virtual uint64 Save(const void* ptr, uint64 size) = 0;
+        virtual uint64_t Save(const void* ptr, uint64_t size) = 0;
         /** Return current size of saved byte stream, return ```std::numeric_limits<uint64>::max()``` value on error */
-        virtual uint64 GetSeekPos() = 0;
+        virtual uint64_t GetSeekPos() = 0;
         /** Truncate file(or buffer) to zero length, return false on error */
         virtual bool Truncate() = 0;
         /** Close internal resource (file handle, socket, free memory) */
@@ -105,13 +105,13 @@ public:
     struct Range
     {
         Range();
-        Range(int64 offset_, int64 size_)
+        Range(int64_t offset_, int64_t size_)
             : offset(offset_)
             , size(size_)
         {
         }
-        int64 offset = -1;
-        int64 size = -1;
+        int64_t offset = -1;
+        int64_t size = -1;
     };
 
     static const Range EmptyRange;
@@ -124,9 +124,9 @@ public:
         String srcUrl; //!< URL to download from
         String dstPath; //!< Path to file or empty string if loading into custom IWriter
         TaskType type = TaskType::RESUME; //!< Type of download action
-        int32 timeoutSec = 30; //!< Timeout in seconds
-        int64 rangeOffset = -1; //!< Index of first byte to download from or -1 [0 - first byte index]
-        int64 rangeSize = -1; //!< Size of downloaded range in bytes
+        int32_t timeoutSec = 30; //!< Timeout in seconds
+        int64_t rangeOffset = -1; //!< Index of first byte to download from or -1 [0 - first byte index]
+        int64_t rangeSize = -1; //!< Size of downloaded range in bytes
     };
     /**
 		Four types of error can happen during download process. All grouped
@@ -139,11 +139,11 @@ public:
 	*/
     struct TaskError
     {
-        int32 curlErr = 0; //!< CURLE_OK == 0 see https://curl.haxx.se/libcurl/c/libcurl-errors.html
-        int32 curlMErr = 0; //!< CURLM_OK == 0 see https://curl.haxx.se/libcurl/c/libcurl-errors.html
-        int32 fileErrno = 0; //!< Errno value after bad (open|read|write|close|truncate) operation to file
-        int32 httpCode = 0; //!< Last received HTTP response code
-        int32 fileLine = 0; //!< Source code first known line with error
+        int32_t curlErr = 0; //!< CURLE_OK == 0 see https://curl.haxx.se/libcurl/c/libcurl-errors.html
+        int32_t curlMErr = 0; //!< CURLM_OK == 0 see https://curl.haxx.se/libcurl/c/libcurl-errors.html
+        int32_t fileErrno = 0; //!< Errno value after bad (open|read|write|close|truncate) operation to file
+        int32_t httpCode = 0; //!< Last received HTTP response code
+        int32_t fileLine = 0; //!< Source code first known line with error
         //!< See http://en.cppreference.com/w/cpp/error/errno_macros
         const char* errStr = ""; //!< See https://curl.haxx.se/libcurl/c/curl_multi_strerror.html
         //!< And https://curl.haxx.se/libcurl/c/curl_easy_strerror.html
@@ -156,8 +156,8 @@ public:
     {
         std::atomic<TaskState> state{ TaskState::JustAdded }; //!< Current state
         TaskError error; //!< Full error info
-        uint64 sizeTotal = 0; //!< Size of remote file or range size to download
-        uint64 sizeDownloaded = 0; //!< Size written into IWritable(file)
+        uint64_t sizeTotal = 0; //!< Size of remote file or range size to download
+        uint64_t sizeDownloaded = 0; //!< Size written into IWritable(file)
 
         TaskStatus();
         TaskStatus(const TaskStatus& other);
