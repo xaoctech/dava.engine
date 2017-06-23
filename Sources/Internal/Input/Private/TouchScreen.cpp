@@ -3,6 +3,7 @@
 #include "Engine/Engine.h"
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 #include "Input/InputSystem.h"
+#include "Time/SystemTimer.h"
 
 namespace DAVA
 {
@@ -13,13 +14,19 @@ TouchScreen::TouchScreen(uint32 id)
     , positions{}
     , nativeTouchIds{}
 {
-    Engine::Instance()->endFrame.Connect(this, &TouchScreen::OnEndFrame);
+    Engine* engine = Engine::Instance();
+    engine->endFrame.Connect(this, &TouchScreen::OnEndFrame);
+    engine->PrimaryWindow()->focusChanged.Connect(this, &TouchScreen::OnWindowFocusChanged); // TODO: handle all the windows
+
     Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &TouchScreen::HandleMainDispatcherEvent));
 }
 
 TouchScreen::~TouchScreen()
 {
-    Engine::Instance()->endFrame.Disconnect(this);
+    Engine* engine = Engine::Instance();
+    engine->endFrame.Disconnect(this);
+    engine->PrimaryWindow()->focusChanged.Disconnect(this);
+
     Private::EngineBackend::Instance()->UninstallEventFilter(this);
 }
 
@@ -50,6 +57,46 @@ AnalogElementState TouchScreen::GetAnalogElementState(eInputElements elementId) 
     return positions[elementId - eInputElements::TOUCH_FIRST_POSITION];
 }
 
+void TouchScreen::OnEndFrame()
+{
+    // Promote JustPressed & JustReleased states to Pressed/Released accordingly
+    for (DigitalElementState& touchState : clicks)
+    {
+        touchState.OnEndFrame();
+    }
+}
+
+void TouchScreen::OnWindowFocusChanged(DAVA::Window* window, bool focused)
+{
+    // Reset keyboard state when window is unfocused
+    if (!focused)
+    {
+        ResetState(window);
+    }
+}
+
+void TouchScreen::ResetState(Window* window)
+{
+    int64 timestamp = SystemTimer::GetMs();
+    for (size_t i = 0; i < INPUT_ELEMENTS_TOUCH_CLICK_COUNT; ++i)
+    {
+        DigitalElementState& touchState = clicks[i];
+        if (touchState.IsPressed())
+        {
+            eInputElements elementId = static_cast<eInputElements>(eInputElements::TOUCH_FIRST_CLICK + i);
+
+            touchState.Release();
+            nativeTouchIds[i] = 0;
+
+            CreateAndSendTouchClickEvent(elementId, touchState, window, timestamp);
+
+            AnalogElementState& analogState = positions[i];
+            analogState.x = 0.0f;
+            analogState.y = 0.0f;
+        }
+    }
+}
+
 bool TouchScreen::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e)
 {
     using Private::MainDispatcherEvent;
@@ -60,13 +107,6 @@ bool TouchScreen::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& 
     {
         return false;
     }
-
-    // Create input event
-    InputEvent inputEvent;
-    inputEvent.window = e.window;
-    inputEvent.timestamp = static_cast<float64>(e.timestamp / 1000.0f);
-    inputEvent.deviceType = eInputDeviceTypes::TOUCH_SURFACE;
-    inputEvent.device = this;
 
     if (e.type == MainDispatcherEvent::TOUCH_DOWN)
     {
@@ -94,10 +134,8 @@ bool TouchScreen::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& 
 
         // Send input event
 
-        inputEvent.digitalState = touchState;
-        inputEvent.elementId = static_cast<eInputElements>(eInputElements::TOUCH_FIRST_CLICK + touchIndex);
-
-        inputSystem->DispatchInputEvent(inputEvent);
+        eInputElements element = static_cast<eInputElements>(eInputElements::TOUCH_FIRST_CLICK + touchIndex);
+        CreateAndSendTouchClickEvent(element, touchState, e.window, e.timestamp);
     }
     else if (e.type == MainDispatcherEvent::TOUCH_UP)
     {
@@ -136,10 +174,8 @@ bool TouchScreen::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& 
 
         // Send input event
 
-        inputEvent.digitalState = touchState;
-        inputEvent.elementId = static_cast<eInputElements>(eInputElements::TOUCH_FIRST_CLICK + touchIndex);
-
-        inputSystem->DispatchInputEvent(inputEvent);
+        eInputElements element = static_cast<eInputElements>(eInputElements::TOUCH_FIRST_CLICK + touchIndex);
+        CreateAndSendTouchClickEvent(element, touchState, e.window, e.timestamp);
 
         // If it's an up event, reset position AFTER sending the input event
         // (so that users can request it during handling and get correct position)
@@ -174,6 +210,11 @@ bool TouchScreen::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& 
 
         // Send input event
 
+        InputEvent inputEvent;
+        inputEvent.window = e.window;
+        inputEvent.timestamp = static_cast<float64>(e.timestamp / 1000.0f);
+        inputEvent.deviceType = eInputDeviceTypes::TOUCH_SURFACE;
+        inputEvent.device = this;
         inputEvent.analogState = analogState;
         inputEvent.elementId = static_cast<eInputElements>(eInputElements::TOUCH_FIRST_POSITION + touchIndex);
 
@@ -183,13 +224,17 @@ bool TouchScreen::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& 
     return true;
 }
 
-void TouchScreen::OnEndFrame()
+void TouchScreen::CreateAndSendTouchClickEvent(eInputElements elementId, DigitalElementState state, Window* window, int64 timestamp)
 {
-    // Promote JustPressed & JustReleased states to Pressed/Released accordingly
-    for (DigitalElementState& touchState : clicks)
-    {
-        touchState.OnEndFrame();
-    }
+    InputEvent inputEvent;
+    inputEvent.window = window;
+    inputEvent.timestamp = static_cast<float64>(timestamp / 1000.0f);
+    inputEvent.deviceType = eInputDeviceTypes::TOUCH_SURFACE;
+    inputEvent.device = this;
+    inputEvent.digitalState = state;
+    inputEvent.elementId = elementId;
+
+    inputSystem->DispatchInputEvent(inputEvent);
 }
 
 int TouchScreen::GetFirstNonUsedTouchIndex() const

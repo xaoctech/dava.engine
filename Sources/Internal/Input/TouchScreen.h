@@ -4,6 +4,7 @@
 
 namespace DAVA
 {
+class Window;
 class InputSystem;
 
 namespace Private
@@ -50,8 +51,13 @@ private:
     TouchScreen(const TouchScreen&) = delete;
     TouchScreen& operator=(const TouchScreen&) = delete;
 
-    bool HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e);
     void OnEndFrame();
+    void OnWindowFocusChanged(DAVA::Window* window, bool focused);
+
+    void ResetState(Window* window);
+
+    bool HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e);
+    void CreateAndSendTouchClickEvent(eInputElements elementId, DigitalElementState state, Window* window, int64 timestamp);
 
     int GetFirstNonUsedTouchIndex() const;
 

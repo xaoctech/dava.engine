@@ -4,6 +4,7 @@
 
 namespace DAVA
 {
+class Window;
 class InputSystem;
 
 namespace Private
