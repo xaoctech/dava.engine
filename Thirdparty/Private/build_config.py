@@ -81,3 +81,6 @@ def get_cmake_generator_win10_arm():
 
 def get_cmake_generator_macos():
     return 'Xcode'
+
+def get_cmake_generator_linux():
+    return 'Unix Makefiles'
