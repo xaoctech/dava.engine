@@ -27,6 +27,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(GeoDecalComponent)
     .Field("uvScale", &GeoDecalComponent::GetUVScale, &GeoDecalComponent::SetUVScale)[M::DisplayName("UV Scale")]
     .Field("uvOffset", &GeoDecalComponent::GetUVOffset, &GeoDecalComponent::SetUVOffset)[M::DisplayName("UV Offset")]
     .Field("rebakeOnTransform", &GeoDecalComponent::GetRebakeOnTransform, &GeoDecalComponent::SetRebakeOnTransform)[M::DisplayName("Rebake on transform")]
+    .Field("debugOverlayEnabled", &GeoDecalComponent::GetDebugOverlayEnabled, &GeoDecalComponent::SetDebugOverlayEnabled)[M::DisplayName("Debug Overlay")]
     .End();
 }
 

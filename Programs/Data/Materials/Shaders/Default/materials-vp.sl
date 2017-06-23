@@ -334,10 +334,10 @@ vertex_out vp_main( vertex_in input )
     float3 billboardOffset = input.position.xyz - position.xyz;
     
     #if CUT_LEAF
-	    float pivotDistance = dot(position.xyz, float3(worldViewMatrix[0].z, worldViewMatrix[1].z, worldViewMatrix[2].z)) + worldViewMatrix[3].z;
+        float pivotDistance = dot(position.xyz, float3(worldViewMatrix[0].z, worldViewMatrix[1].z, worldViewMatrix[2].z)) + worldViewMatrix[3].z;
         billboardOffset *= step(-cutDistance, pivotDistance);
     #endif
-	
+    
     #if WIND_ANIMATION
     
         //inAngleSinCos:          x: cos(T0);  y: sin(T0);
@@ -676,6 +676,10 @@ vertex_out vp_main( vertex_in input )
     // todo : check on various GPUs
     output.position.z -= output.position.w / 65535.0;
     output.geoDecalCoord = input.geoDecalCoord.xy;
+#endif
+
+#if (GEO_DECAL_DEBUG)
+    output.position.z -= output.position.w / 1024.0;
 #endif
 
     return output;

@@ -17,8 +17,17 @@ struct GeoDecalManager::DecalBuildInfo : public GeoDecalManager::DecalConfig
     Vector3 projectionAxis;
     Matrix4 projectionSpaceTransform;
     int32 jointCount = 0;
+    int32 lodIndex = -1;
+    int32 switchIndex = -1;
     bool useCustomNormal = false;
     bool useSkinning = false;
+
+    DecalBuildInfo() = default;
+
+    DecalBuildInfo(const GeoDecalManager::DecalConfig& r)
+        : GeoDecalManager::DecalConfig(r)
+    {
+    }
 };
 
 struct GeoDecalManager::DecalVertex
@@ -172,14 +181,9 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, co
     Matrix4 proj;
     proj.BuildOrtho(boxMin.x, boxMax.x, boxMin.y, boxMax.y, -boxMax.z, -boxMin.z, false);
 
-    DecalBuildInfo info;
+    DecalBuildInfo info = config;
     info.projectionAxis = dir;
     info.projectionSpaceTransform = view * proj;
-    info.mapping = config.mapping;
-    info.albedo = config.albedo;
-    info.normal = config.normal;
-    info.uvOffset = config.uvOffset;
-    info.uvScale = config.uvScale;
     info.useCustomNormal = FileSystem::Instance()->Exists(info.normal);
     info.useSkinning = ro->GetType() == RenderObject::TYPE_SKINNED_MESH;
 
@@ -210,12 +214,9 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, co
             RenderBatch* sourceBatch = ro->GetRenderBatch(i, lodIndex, switchIndex);
             info.polygonGroup = sourceBatch->GetPolygonGroup();
             info.material = sourceBatch->GetMaterial();
-
-            ScopedPtr<RenderBatch> newBatch(new RenderBatch());
-            if (BuildDecal(info, newBatch))
-            {
-                decalBatchProvider->EmplaceRenderBatch(newBatch, lodIndex, switchIndex);
-            }
+            info.lodIndex = lodIndex;
+            info.switchIndex = switchIndex;
+            BuildDecal(info, decalBatchProvider);
         }
     }
     RegisterDecal(decal);
@@ -382,7 +383,7 @@ void GeoDecalManager::GetStaticMeshGeometry(const DecalBuildInfo& info, Vector<u
             info.polygonGroup->GetBinormal(idx[2], points[2].binormal);
         }
         Vector3 nrm = (points[1].actualPoint - points[0].actualPoint).CrossProduct(points[2].actualPoint - points[0].actualPoint);
-        // if ((info.mapping != Mapping::PLANAR) || (nrm.DotProduct(info.projectionAxis) < -std::numeric_limits<float>::epsilon()))
+        if ((info.mapping != Mapping::PLANAR) || (nrm.DotProduct(info.projectionAxis) < -std::numeric_limits<float>::epsilon()))
         {
             AddVerticesToGeometry(info, points, points_tmp, buffer);
         }
@@ -432,7 +433,7 @@ void GeoDecalManager::GetSkinnedMeshGeometry(const DecalBuildInfo& info, Vector<
         if (Intersection::BoxTriangle(info.boundingBox, points[2].actualPoint, points[1].actualPoint, points[0].actualPoint))
         {
             Vector3 nrm = (points[1].actualPoint - points[0].actualPoint).CrossProduct(points[2].actualPoint - points[0].actualPoint);
-            // if ((info.mapping != Mapping::PLANAR) || (nrm.DotProduct(info.projectionAxis) < -std::numeric_limits<float>::epsilon()))
+            if ((info.mapping != Mapping::PLANAR) || (nrm.DotProduct(info.projectionAxis) < -std::numeric_limits<float>::epsilon()))
             {
                 AddVerticesToGeometry(info, points, points_tmp, buffer);
             }
@@ -440,7 +441,7 @@ void GeoDecalManager::GetSkinnedMeshGeometry(const DecalBuildInfo& info, Vector<
     }
 }
 
-bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBatch)
+bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatchProvider* batchProvider)
 {
     if (info.polygonGroup == nullptr)
         return false;
@@ -510,8 +511,6 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBat
         }
     }
     newPolygonGroup->BuildBuffers();
-    dstBatch->SetPolygonGroup(newPolygonGroup);
-    dstBatch->UpdateAABBoxFromSource();
 
     /*
      * Process material
@@ -540,7 +539,28 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBat
         material->AddTexture(NMaterialTextureName::TEXTURE_NORMAL, customNormal);
     }
 
-    dstBatch->SetMaterial(material);
+    ScopedPtr<RenderBatch> batch(new RenderBatch());
+    batch->SetPolygonGroup(newPolygonGroup);
+    batch->SetMaterial(material);
+    batch->UpdateAABBoxFromSource();
+    static_cast<GeoDecalRenderBatchProvider*>(batchProvider)->EmplaceRenderBatch(batch, info.lodIndex, info.switchIndex);
+
+    if (info.debugOverlayEnabled)
+    {
+        /*
+         * Process debug material
+         */
+        ScopedPtr<NMaterial> debugMaterial(new NMaterial());
+        debugMaterial->SetFXName(FastName("~res:/Materials/GeoDecal.Debug.material"));
+        debugMaterial->SetRuntime(true);
+
+        ScopedPtr<RenderBatch> debugBatch(new RenderBatch());
+        debugBatch->SetPolygonGroup(newPolygonGroup);
+        debugBatch->SetMaterial(debugMaterial);
+        debugBatch->UpdateAABBoxFromSource();
+        static_cast<GeoDecalRenderBatchProvider*>(batchProvider)->EmplaceRenderBatch(debugBatch, info.lodIndex, info.switchIndex);
+    }
+
     return true;
 }
 

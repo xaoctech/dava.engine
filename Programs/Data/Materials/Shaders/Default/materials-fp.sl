@@ -595,8 +595,13 @@ fragment_out fp_main( fragment_in input )
         else
             output.color = 0.0;
     #endif
+
     #if PARTICLE_DEBUG_SHOW_OVERDRAW
         output.color = float4(0.01f, 0.0f, 0.0f, 1.0f);
+    #endif
+
+    #if (GEO_DECAL_DEBUG)
+        output.color = float4(1.0f, 0.666666f, 0.333333f, 1.0f);
     #endif
 
     return output;
