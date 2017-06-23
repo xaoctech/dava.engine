@@ -28,6 +28,7 @@ enum eInputElements : uint32
     // Keyboard scancode keys
     // These are named after characters they produce in QWERTY US layout
     // E.g. KB_W produces 'w' in QWERTY, but 'z' in AZERTY
+    // TODO: except for Android, since we handle keycodes instead of scancodes there (see DavaSurfaceView.onKey). Needs some research
 
     // TODO: add support for virtual keys in addition to scancode keys we have now
 
