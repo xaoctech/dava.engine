@@ -1,4 +1,0 @@
-include ':DavaEngine'
-project(':DavaEngine').projectDir = file('../../../Sources/Test')
-include ':Modules:Sound'
-project(':Modules:Sound').projectDir = file('../../../Modules/Sound/Platform/Android')
