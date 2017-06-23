@@ -133,21 +133,25 @@ void PhysicsSystem::UnregisterComponent(Entity* entity, Component* component)
         PhysicsComponent* physicsComponent = static_cast<PhysicsComponent*>(component);
         PhysicsSystemDetail::EraseComponent(physicsComponent, pendingAddPhysicsComponents, physicsComponents);
 
-        physx::PxRigidActor* actor = physicsComponent->GetPxActor()->is<physx::PxRigidActor>();
+        physx::PxActor* actor = physicsComponent->GetPxActor();
         if (actor != nullptr)
         {
-            physx::PxU32 shapesCount = actor->getNbShapes();
-            Vector<physx::PxShape*> shapes(shapesCount, nullptr);
-            actor->getShapes(shapes.data(), shapesCount);
-
-            for (physx::PxShape* shape : shapes)
+            physx::PxRigidActor* rigidActor = actor->is<physx::PxRigidActor>();
+            if (rigidActor != nullptr)
             {
-                DVASSERT(shape != nullptr);
-                actor->detachShape(*shape);
-            }
+                physx::PxU32 shapesCount = rigidActor->getNbShapes();
+                Vector<physx::PxShape*> shapes(shapesCount, nullptr);
+                rigidActor->getShapes(shapes.data(), shapesCount);
 
-            physicsScene->removeActor(*physicsComponent->GetPxActor());
-            physicsComponent->ReleasePxActor();
+                for (physx::PxShape* shape : shapes)
+                {
+                    DVASSERT(shape != nullptr);
+                    rigidActor->detachShape(*shape);
+                }
+
+                physicsScene->removeActor(*physicsComponent->GetPxActor());
+                physicsComponent->ReleasePxActor();
+            }
         }
     }
 

@@ -43,6 +43,7 @@ PhysicsWidget::PhysicsWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc:
         ReflectedButton::Params params(accessor, ui, mainWindowKey);
         params.fields[ReflectedButton::Fields::Icon] = "StartPauseIcon";
         params.fields[ReflectedButton::Fields::Clicked] = "OnStartPauseClick";
+        params.fields[ReflectedButton::Fields::Enabled] = "isEnabled";
         ReflectedButton* playPauseButton = new ReflectedButton(params, accessor, model, buttonsWidget->ToWidgetCast());
         buttonsWidget->AddControl(playPauseButton);
     }
@@ -51,6 +52,7 @@ PhysicsWidget::PhysicsWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc:
         ReflectedButton::Params params(accessor, ui, mainWindowKey);
         params.fields[ReflectedButton::Fields::Icon] = "StopIcon";
         params.fields[ReflectedButton::Fields::Clicked] = "OnStopClick";
+        params.fields[ReflectedButton::Fields::Enabled] = "isEnabled";
         ReflectedButton* stopButton = new ReflectedButton(params, accessor, model, buttonsWidget->ToWidgetCast());
         buttonsWidget->AddControl(stopButton);
     }
@@ -150,6 +152,11 @@ QString PhysicsWidget::GetLabelText() const
     return QString("Physics simulation state: %1").arg(stateText);
 }
 
+bool PhysicsWidget::IsEnabled() const
+{
+    return accessor->GetActiveContext() != nullptr;
+}
+
 DAVA_REFLECTION_IMPL(PhysicsWidget)
 {
     DAVA::ReflectionRegistrator<PhysicsWidget>::Begin()
@@ -158,5 +165,6 @@ DAVA_REFLECTION_IMPL(PhysicsWidget)
     .Field("StartPauseIcon", &PhysicsWidget::GetStartPauseIcon, nullptr)
     .Field("StopIcon", &PhysicsWidget::GetStopIcon, nullptr)
     .Field("labelText", &PhysicsWidget::GetLabelText, nullptr)
+    .Field("isEnabled", &PhysicsWidget::IsEnabled, nullptr)
     .End();
 }

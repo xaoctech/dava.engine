@@ -27,6 +27,7 @@ private:
     QIcon GetStopIcon() const;
 
     QString GetLabelText() const;
+    bool IsEnabled() const;
 
 private:
     DAVA::TArc::ContextAccessor* accessor = nullptr;
