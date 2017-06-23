@@ -23,6 +23,7 @@
 #include <Render/Image/ImageSystem.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/ParticleEffectComponent.h>
+#include <Scene3D/Components/SlotComponent.h>
 #include <Scene3D/SceneFile/VersionInfo.h>
 #include <Scene3D/Systems/SlotSystem.h>
 #include <Utils/StringUtils.h>
@@ -97,7 +98,7 @@ bool SaveExportedObjects(const DAVA::FilePath& linkPathname, const DAVA::Vector<
     }
 }
 
-std::pair<bool, DAVA::int32> ReadInt(File* file)
+std::pair<bool, DAVA::int32> ReadInt(DAVA::File* file)
 {
     using namespace DAVA;
 
@@ -327,6 +328,7 @@ void CollectParticleConfigs(DAVA::Scene* scene, const DAVA::FilePath& dataSource
 void CollectSlotConfigs(DAVA::Scene* scene, const DAVA::FilePath& dataSourceFolder, SceneExporter::ExportedObjectCollection& exportedObjects,
                         SceneExporter::ExportedObjectCollection& externalScenes)
 {
+    using namespace DAVA;
     Vector<Entity*> slotHolders;
     scene->GetChildEntitiesWithComponent(slotHolders, Component::SLOT_COMPONENT);
     for (Entity* slotHolder : slotHolders)
@@ -735,7 +737,7 @@ bool SceneExporter::SplitCompressedFile(const DAVA::TextureDescriptor& descripto
     if (isCubemap)
     {
         uint32 firstFace = loadedImages[0]->cubeFaceID;
-        mipmapsCount = count_if(loadedImages.begin(), loadedImages.end(), [&firstFace](const DAVA::Image* img) { return img->cubeFaceID == firstFace; });
+        mipmapsCount = static_cast<uint32>(count_if(loadedImages.begin(), loadedImages.end(), [&firstFace](const DAVA::Image* img) { return img->cubeFaceID == firstFace; }));
     }
 
     Vector<FilePath> pathnamesForGPU;

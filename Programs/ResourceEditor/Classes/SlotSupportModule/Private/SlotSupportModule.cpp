@@ -7,14 +7,16 @@
 #include "Classes/Interfaces/PropertyPanelInterface.h"
 #include "Classes/SlotSupportModule/Private/EntityForSlotLoader.h"
 #include "Classes/SceneManager/SceneData.h"
+#include "Classes/Project/ProjectManagerData.h"
 
 #include "Classes/Qt/Scene/SceneEditor2.h"
 
 #include <TArc/Utils/ModuleCollection.h>
+#include <TArc/WindowSubSystem/QtAction.h>
+#include <TArc/WindowSubSystem/ActionUtils.h>
 
 #include <Entity/Component.h>
 #include <Reflection/ReflectionRegistrator.h>
-#include "Project/ProjectManagerData.h"
 
 namespace SlotSupportModuleDetails
 {

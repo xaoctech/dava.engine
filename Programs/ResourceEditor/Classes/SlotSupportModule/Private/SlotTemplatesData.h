@@ -5,6 +5,7 @@
 #include <Reflection/Reflection.h>
 #include <FileSystem/FilePath.h>
 #include <Math/Vector.h>
+#include <Math/Color.h>
 #include <Base/FastName.h>
 #include <Base/UnordererMap.h>
 

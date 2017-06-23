@@ -581,7 +581,7 @@ private:
             return fastNameAny;
         }
 
-        return fastNameAny.Cast<String>();
+        return fastNameAny.Cast<DAVA::String>();
     }
 
     void SetTemplateName(const DAVA::Any& templateName)
@@ -589,7 +589,7 @@ private:
         SetValue(templateName);
     }
 
-    DAVA::Set<String> enumerator;
+    DAVA::Set<DAVA::String> enumerator;
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(SlotTemplateComponentValue, DAVA::TArc::BaseComponentValue)
     {
         DAVA::ReflectionRegistrator<SlotTemplateComponentValue>::Begin()

@@ -1,9 +1,14 @@
 #include "Classes/SlotSupportModule/Private/SlotTemplatesData.h"
+#include "Classes/Settings/Settings.h"
+#include "Classes/Settings/SettingsManager.h"
 
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
 
 #include <FileSystem/FileSystem.h>
+#include <FileSystem/YamlNode.h>
+#include <FileSystem/YamlParser.h>
+#include <Logger/Logger.h>
 
 const SlotTemplatesData::Template* SlotTemplatesData::GetTemplate(DAVA::FastName name) const
 {

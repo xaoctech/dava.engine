@@ -261,12 +261,13 @@ void EditorSlotSystem::ProcessCommand(const RECommandNotificationObject& command
 
 void EditorSlotSystem::Draw()
 {
+    using namespace DAVA;
     SlotTemplatesData* data = accessor->GetGlobalContext()->GetData<SlotTemplatesData>();
     Scene* scene = GetScene();
 
-    DAVA::Color boxColor = data->GetBoxColor();
-    DAVA::Color boxEdgeColor = data->GetBoxEdgesColor();
-    DAVA::Color pivotColor = data->GetPivotColor();
+    Color boxColor = data->GetBoxColor();
+    Color boxEdgeColor = data->GetBoxEdgesColor();
+    Color pivotColor = data->GetPivotColor();
 
     RenderHelper* rh = scene->GetRenderSystem()->GetDebugDrawer();
     for (Entity* entity : entities)
