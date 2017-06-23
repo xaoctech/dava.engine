@@ -65,7 +65,7 @@ String KeyboardImpl::TranslateElementToUTF8String(eInputElements elementId)
     int nativeScancode = ConvertDavaScancodeToNativeScancode(elementId);
     wchar_t character = TranslateNativeScancodeToWChar(static_cast<uint32>(nativeScancode));
 
-    if (character == 0)
+    if (character == 0 || std::iswspace(character))
     {
         // Non printable
         return GetInputElementInfo(elementId).name;

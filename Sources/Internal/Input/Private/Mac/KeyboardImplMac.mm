@@ -198,14 +198,22 @@ String KeyboardImpl::TranslateElementToUTF8String(eInputElements elementId)
 
             CFRelease(inputSource);
 
-            if (realLength == 0)
+            NSString* string = [NSString stringWithCharacters:unicodeString length:realLength];
+            
+            // whitespaceCharacterSet does not include backspace, which we also don't want to translate,
+            // so remove it manually
+            NSString* trimmedString = [[string
+            stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]
+            stringByReplacingOccurrencesOfString:@"\b"
+                                      withString:@""];
+
+            if ([trimmedString length] == 0)
             {
                 // Non printable
                 return GetInputElementInfo(elementId).name;
             }
             else
             {
-                NSString* string = [NSString stringWithCharacters:unicodeString length:realLength];
                 return StringFromNSString(string);
             }
         }
