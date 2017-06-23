@@ -4,6 +4,7 @@
 #include "UI/UIStaticText.h"
 #include "UI/UIButton.h"
 #include "UI/UIControlSystem.h"
+#include "UI/Update/UIUpdateComponent.h"
 #include "UI/Render/UIDebugRenderComponent.h"
 #include <UI/Layouts/UISizePolicyComponent.h>
 #include "Render/2D/Font.h"
@@ -14,6 +15,7 @@
 #include "Debug/ProfilerMarkerNames.h"
 #include "Debug/ProfilerUtils.h"
 #include "Engine/Engine.h"
+
 #include <sstream>
 
 using namespace DAVA;
@@ -28,6 +30,7 @@ static const char* PROFILER_TEST_DUMP_JSON_PATH = "~doc:/TestBed/profiler_test_d
 ProfilerTest::ProfilerTest(TestBed& app)
     : BaseScreen(app, "ProfilerTest")
 {
+    GetOrCreateComponent<UIUpdateComponent>();
 }
 
 void ProfilerTest::LoadResources()

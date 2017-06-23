@@ -46,6 +46,7 @@
 #include "Tests/AnyPerformanceTest.h"
 #include "Tests/OverdrawTest.h"
 #include "Tests/WindowTest.h"
+#include "Tests/UIStylesTest.h"
 #include "Tests/RichTextTest.h"
 #include "Tests/PhysicsTest.h"
 //$UNITTEST_INCLUDE
@@ -384,6 +385,7 @@ void TestBed::RegisterTests()
 #endif
 
     new WindowTest(*this);
+    new UIStylesTest(*this);
     new RichTextTest(*this);
     new PhysicsTest(*this);
     //$UNITTEST_CTOR
