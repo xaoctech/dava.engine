@@ -18,11 +18,13 @@ protected:
     LandscapeEditorDrawSystem::eErrorType IsCanBeEnabled() const;
 
     void UpdateCursorPosition();
+    void RenderRestoreCallback();
 
 protected:
-    SceneCollisionSystem* collisionSystem;
-    EntityModificationSystem* modifSystem;
-    LandscapeEditorDrawSystem* drawSystem;
+    SceneCollisionSystem* collisionSystem = nullptr;
+    EntityModificationSystem* modifSystem = nullptr;
+    LandscapeEditorDrawSystem* drawSystem = nullptr;
+    DAVA::FilePath cursorPathName;
     DAVA::Vector2 cursorPosition;
     DAVA::Vector2 prevCursorPos;
     DAVA::Texture* cursorTexture = nullptr;
