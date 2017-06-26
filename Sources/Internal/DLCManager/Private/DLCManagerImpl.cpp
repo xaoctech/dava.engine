@@ -316,6 +316,8 @@ void DLCManagerImpl::Deinitialize()
     }
 
     ClearResouces();
+
+    log.close();
 }
 
 bool DLCManagerImpl::IsInitialized() const

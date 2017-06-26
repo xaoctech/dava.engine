@@ -3,6 +3,7 @@
 #include "Base/String.h"
 #include "Base/Vector.h"
 #include "Base/UnordererSet.h"
+#include "Base/List.h"
 
 namespace DAVA
 {
