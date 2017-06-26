@@ -16,12 +16,6 @@ Component* DynamicBodyComponent::Clone(Entity* toEntity)
     DynamicBodyComponent* result = new DynamicBodyComponent();
     result->SetEntity(toEntity);
 
-    if (actor != nullptr)
-    {
-        Physics* physics = GetEngineContext()->moduleManager->GetModule<Physics>();
-        result->actor = physics->ClonePxActor(actor, result);
-    }
-
     return result;
 }
 
