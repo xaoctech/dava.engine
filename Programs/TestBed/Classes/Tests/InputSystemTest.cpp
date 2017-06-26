@@ -132,6 +132,12 @@ void InputSystemTest::UnloadResources()
 
     GetEngineContext()->actionSystem->UnbindAllSets();
 
+    InputBindingListener* inputListener = GetEngineContext()->inputListener;
+    if (inputListener->IsListening())
+    {
+        inputListener->StopListening();
+    }
+
     BaseScreen::UnloadResources();
 }
 
