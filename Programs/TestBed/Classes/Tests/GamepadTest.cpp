@@ -93,6 +93,9 @@ bool GamepadTest::OnGamepadEvent(const DAVA::InputEvent& e)
 
     switch (e.elementId)
     {
+    case eInputElements::GAMEPAD_START:
+        UpdateGamepadElement("button_start", e.digitalState.IsPressed());
+        break;
     case eInputElements::GAMEPAD_A:
         UpdateGamepadElement("button_a", e.digitalState.IsPressed());
         break;
@@ -112,16 +115,22 @@ bool GamepadTest::OnGamepadEvent(const DAVA::InputEvent& e)
         UpdateGamepadElement("shift_right", e.digitalState.IsPressed());
         break;
     case eInputElements::GAMEPAD_LTHUMB:
-        UpdateGamepadElement("triger_left", e.digitalState.IsPressed());
+        UpdateGamepadElement("stick_left", e.digitalState.IsPressed());
         break;
     case eInputElements::GAMEPAD_RTHUMB:
-        UpdateGamepadElement("triger_right", e.digitalState.IsPressed());
+        UpdateGamepadElement("stick_right", e.digitalState.IsPressed());
         break;
     case eInputElements::GAMEPAD_AXIS_LTHUMB:
         UpdateGamepadStickX("stick_left", e.analogState.x);
         break;
     case eInputElements::GAMEPAD_AXIS_RTHUMB:
         UpdateGamepadStickX("stick_right", e.analogState.x);
+        break;
+    case eInputElements::GAMEPAD_AXIS_LTRIGGER:
+        UpdateGamepadStickX("triger_left", e.analogState.x);
+        break;
+    case eInputElements::GAMEPAD_AXIS_RTRIGGER:
+        UpdateGamepadStickX("triger_right", e.analogState.x);
         break;
     case eInputElements::GAMEPAD_DPAD_LEFT:
         UpdateGamepadElement("button_left", e.digitalState.IsPressed());
