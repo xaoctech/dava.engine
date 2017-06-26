@@ -10,7 +10,7 @@ namespace Private
 {
 // TODO: Implement keyboard on iOS
 
-eInputElements KeyboardImpl::ConvertNativeScancodeToDavaScancode(uint32 nativeScancode)
+eInputElements KeyboardImpl::ConvertNativeScancodeToDavaScancode(uint32 nativeScancode, uint32 nativeVirtual)
 {
     return eInputElements::NONE;
 }

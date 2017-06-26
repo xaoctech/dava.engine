@@ -146,7 +146,7 @@ const eInputElements nativeScancodeToDavaScancode[] =
   eInputElements::KB_UP, // 0x7E
 };
 
-eInputElements KeyboardImpl::ConvertNativeScancodeToDavaScancode(uint32 nativeScancode)
+eInputElements KeyboardImpl::ConvertNativeScancodeToDavaScancode(uint32 nativeScancode, uint32 /*nativeVirtual*/)
 {
     DVASSERT(nativeScancode < COUNT_OF(nativeScancodeToDavaScancode));
     return nativeScancodeToDavaScancode[nativeScancode];

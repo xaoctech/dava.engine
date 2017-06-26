@@ -355,7 +355,7 @@ void WindowNativeBridge::KeyEvent(NSEvent* theEvent)
 
     eModifierKeys modifierKeys = GetModifierKeys(theEvent);
     MainDispatcherEvent::eType type = isPressed ? MainDispatcherEvent::KEY_DOWN : MainDispatcherEvent::KEY_UP;
-    mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, type, key, modifierKeys, isRepeated));
+    mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, type, key, 0, modifierKeys, isRepeated));
 
     if ([theEvent type] == NSKeyDown)
     {
@@ -363,11 +363,11 @@ void WindowNativeBridge::KeyEvent(NSEvent* theEvent)
         NSUInteger n = [chars length];
         if (n > 0)
         {
-            MainDispatcherEvent e = MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_CHAR, 0, modifierKeys, false);
+            MainDispatcherEvent e = MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_CHAR, 0, 0, modifierKeys, false);
             for (NSUInteger i = 0; i < n; ++i)
             {
                 uint32 key = [chars characterAtIndex:i];
-                e.keyEvent.key = key;
+                e.keyEvent.keyVirtual = key;
                 mainDispatcher->PostEvent(e);
             }
         }
@@ -397,7 +397,7 @@ void WindowNativeBridge::FlagsChanged(NSEvent* theEvent)
 
     uint32 key = [theEvent keyCode];
     eModifierKeys modifierKeys = GetModifierKeys(theEvent);
-    MainDispatcherEvent e = MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_DOWN, key, modifierKeys, false);
+    MainDispatcherEvent e = MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_DOWN, key, 0, modifierKeys, false);
     for (uint32 flag : interestingFlags)
     {
         if (flag & changedModifierFlags)
