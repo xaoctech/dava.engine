@@ -304,6 +304,7 @@ const eInputElements nativeVirtualToDavaScancode[] =
 eInputElements KeyboardImpl::ConvertNativeScancodeToDavaScancode(uint32 /*nativeScancode*/, uint32 nativeVirtual)
 {
     // Use virtual key instead of scancode for now
+
     if (nativeVirtual >= COUNT_OF(nativeVirtualToDavaScancode))
     {
         return eInputElements::NONE;

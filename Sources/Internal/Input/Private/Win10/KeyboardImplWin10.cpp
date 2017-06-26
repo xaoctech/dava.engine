@@ -41,10 +41,20 @@ eInputElements KeyboardImpl::ConvertNativeScancodeToDavaScancode(uint32 nativeSc
 
     if (isExtended)
     {
+        if (nonExtendedScancode >= COUNT_OF(nativeScancodeExtToDavaScancode))
+        {
+            return eInputElements::NONE;
+        }
+
         return nativeScancodeExtToDavaScancode[nonExtendedScancode];
     }
     else
     {
+        if (nonExtendedScancode >= COUNT_OF(nativeScancodeToDavaScancode))
+        {
+            return eInputElements::NONE;
+        }
+
         return nativeScancodeToDavaScancode[nonExtendedScancode];
     }
 }
