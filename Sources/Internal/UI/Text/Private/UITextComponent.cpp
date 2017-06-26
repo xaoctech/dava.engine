@@ -25,7 +25,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UITextComponent)
 }
 
 UITextComponent::UITextComponent(const UITextComponent& src)
-    : UIBaseComponent(src)
+    : UIComponent(src)
     , align(src.align)
     , text(src.text)
     , fontName(src.fontName)

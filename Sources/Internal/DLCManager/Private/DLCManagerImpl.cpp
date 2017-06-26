@@ -83,8 +83,14 @@ DLCManagerImpl::DLCManagerImpl(Engine* engine_)
     : engine(*engine_)
 {
     DVASSERT(Thread::IsMainThread());
-    engine.update.Connect(this, &DLCManagerImpl::Update);
-    engine.backgroundUpdate.Connect(this, &DLCManagerImpl::Update);
+    engine.update.Connect(this, [this](float32 frameDelta)
+                          {
+                              Update(frameDelta, false);
+                          });
+    engine.backgroundUpdate.Connect(this, [this](float32 frameDelta)
+                                    {
+                                        Update(frameDelta, true);
+                                    });
 }
 #endif
 
@@ -166,12 +172,14 @@ void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
 
     Logger::Info("DLCManager::Initialize(\ndirToDownloadPacks:%s, "
                  "\nurlToServerSuperpack:%s, \nlogFilePath:%s, "
-                 "\nretryConnectMilliseconds:%d, \nmaxFilesToDownload: %d",
+                 "\nretryConnectMilliseconds:%d, \nmaxFilesToDownload: %d"
+                 "\npreloadedPacks: %s",
                  dirToDownloadPacks_.GetAbsolutePathname().c_str(),
                  urlToServerSuperpack_.c_str(),
                  fullLogPath.c_str(),
                  hints_.retryConnectMilliseconds,
-                 hints_.maxFilesToDownload);
+                 hints_.maxFilesToDownload,
+                 hints_.preloadedPacks.c_str());
 
     if (!log.is_open())
     {
@@ -224,6 +232,21 @@ void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
 
         urlToSuperPack = urlToServerSuperpack_;
         hints = hints_;
+
+        preloadedPacks.clear();
+        if (!hints.preloadedPacks.empty())
+        {
+            StringStream ss(hints.preloadedPacks);
+            for (String packName; getline(ss, packName);)
+            {
+                if (packName.empty())
+                {
+                    continue; // skip empty lines if any
+                }
+                DVASSERT(packName.find(' ') == String::npos); // No spaces
+                preloadedPacks.emplace(packName, PreloadedPack(packName));
+            }
+        }
     }
 
     // if Initialize called second time
@@ -297,7 +320,7 @@ void DLCManagerImpl::RetryInit()
 
 // end Initialization ////////////////////////////////////////
 
-void DLCManagerImpl::Update(float frameDelta)
+void DLCManagerImpl::Update(float frameDelta, bool inBackground)
 {
     DVASSERT(Thread::IsMainThread());
 
@@ -313,7 +336,7 @@ void DLCManagerImpl::Update(float frameDelta)
             {
                 if (requestManager)
                 {
-                    requestManager->Update();
+                    requestManager->Update(inBackground);
                 }
             }
         }
@@ -944,6 +967,11 @@ bool DLCManagerImpl::IsPackDownloaded(const String& packName)
 {
     DVASSERT(Thread::IsMainThread());
 
+    if (end(preloadedPacks) != preloadedPacks.find(packName))
+    {
+        return true;
+    }
+
     if (!IsInitialized())
     {
         DVASSERT(false && "Initialization not finished. Files is scanning now.");
@@ -974,7 +1002,7 @@ bool DLCManagerImpl::IsPackDownloaded(const String& packName)
             }
         }
     }
-    catch (DAVA::Exception& e)
+    catch (Exception& e)
     {
         log << "Exception at `" << e.file << "`: " << e.line << '\n';
         log << Debug::GetBacktraceString(e.callstack) << std::endl;
@@ -990,6 +1018,13 @@ const DLCManager::IRequest* DLCManagerImpl::RequestPack(const String& packName)
     DVASSERT(Thread::IsMainThread());
 
     log << __FUNCTION__ << " packName: " << packName << std::endl;
+
+    auto itPreloaded = preloadedPacks.find(packName);
+    if (end(preloadedPacks) != itPreloaded)
+    {
+        const PreloadedPack& request = itPreloaded->second;
+        return &request;
+    }
 
     if (!IsInitialized())
     {
@@ -1037,6 +1072,21 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
     DVASSERT(Thread::IsMainThread());
 
     PackRequest* request = FindRequest(requestedPackName);
+    if (request != nullptr && IsInitialized())
+    {
+        Vector<uint32> deps = request->GetDependencies();
+        for (uint32 dependent : deps)
+        {
+            const String& depPackName = meta->GetPackInfo(dependent).packName;
+            PackRequest* r = FindRequest(depPackName);
+            if (nullptr != r)
+            {
+                String packToRemove = r->GetRequestedPackName();
+                RemovePack(packToRemove);
+            }
+        }
+    }
+
     if (nullptr != request)
     {
         requestManager->Remove(request);
@@ -1058,6 +1108,8 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
 
     if (IsInitialized())
     {
+        StringStream undeletedFiles;
+        FileSystem* fs = GetEngineContext()->fileSystem;
         // remove all files for pack
         Vector<uint32> fileIndexes = meta->GetFileIndexes(requestedPackName);
         for (uint32 index : fileIndexes)
@@ -1065,9 +1117,22 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
             if (IsFileReady(index))
             {
                 const String relFile = GetRelativeFilePath(index);
-                FileSystem::Instance()->DeleteFile(dirToDownloadedPacks + relFile);
-                scanFileReady[index] = false;
+
+                FilePath filePath = dirToDownloadedPacks + (relFile + extDvpl);
+                if (!fs->DeleteFile(filePath))
+                {
+                    if (fs->IsFile(filePath))
+                    {
+                        undeletedFiles << filePath.GetStringValue() << '\n';
+                    }
+                }
+                scanFileReady[index] = false; // clear flag anyway
             }
+        }
+        String errMsg = undeletedFiles.str();
+        if (!errMsg.empty())
+        {
+            Logger::Error("can't delete files: %s", errMsg.c_str());
         }
     }
 }
