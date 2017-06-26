@@ -228,16 +228,6 @@ TextBlock::eUseRtlAlign UIStaticText::GetTextUseRtlAlign() const
     return text->GetUseRtlAlign();
 }
 
-void UIStaticText::SetTextUseRtlAlignFromInt(int32 value)
-{
-    SetTextUseRtlAlign(static_cast<TextBlock::eUseRtlAlign>(value));
-}
-
-int32 UIStaticText::GetTextUseRtlAlignAsInt() const
-{
-    return GetTextUseRtlAlign();
-}
-
 const Vector2& UIStaticText::GetTextSize()
 {
     return GetTextBlock()->GetTextSize();
@@ -284,11 +274,6 @@ Animation* UIStaticText::ShadowColorAnimation(const Color& finalColor, float32 t
     LinearAnimation<Color>* animation = new LinearAnimation<Color>(this, &colorShadow, finalColor, time, interpolationFunc);
     animation->Start(track);
     return animation;
-}
-
-const Vector<float32>& UIStaticText::GetStringSizes() const
-{
-    return GetTextBlock()->GetStringSizes();
 }
 
 void UIStaticText::SetForceBiDiSupportEnabled(bool value)
