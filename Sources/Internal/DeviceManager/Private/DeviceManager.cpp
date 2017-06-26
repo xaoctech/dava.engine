@@ -147,7 +147,7 @@ void DeviceManager::OnEngineInited()
     inputDevices.push_back(mouse);
 #endif
 
-#if defined(__DAVAENGINE_WIN_UAP__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+#if defined(__DAVAENGINE_WINDOWS__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
     touchScreen = new TouchScreen(3);
     inputDevices.push_back(touchScreen);
 #endif
