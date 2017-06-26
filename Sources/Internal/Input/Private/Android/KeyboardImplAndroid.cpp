@@ -11,7 +11,7 @@ namespace Private
 {
 // Taken from https://developer.android.com/reference/android/view/KeyEvent.html
 // or https://android.googlesource.com/platform/frameworks/native/+/master/include/android/keycodes.h
-const eInputElements nativeScancodeToDavaScancode[] =
+const eInputElements nativeVirtualToDavaScancode[] =
 {
   eInputElements::NONE, // 0
   eInputElements::NONE, // 1
@@ -178,7 +178,7 @@ const eInputElements nativeScancodeToDavaScancode[] =
   eInputElements::NONE, // 162
   eInputElements::NONE, // 163
   eInputElements::KB_VOLUME_MUTE, // 164
-  /* There are 283 keycodes in android, the ones below are unused right now
+  /* There are at least 283 keycodes in android, the ones below are unused right now
     eInputElements::NONE, // 165
     eInputElements::NONE, // 166
     eInputElements::NONE, // 167
@@ -301,23 +301,24 @@ const eInputElements nativeScancodeToDavaScancode[] =
     */
 };
 
-eInputElements KeyboardImpl::ConvertNativeScancodeToDavaScancode(uint32 nativeScancode)
+eInputElements KeyboardImpl::ConvertNativeScancodeToDavaScancode(uint32 /*nativeScancode*/, uint32 nativeVirtual)
 {
-    if (nativeScancode >= COUNT_OF(nativeScancodeToDavaScancode))
+    // Use virtual key instead of scancode for now
+    if (nativeVirtual >= COUNT_OF(nativeVirtualToDavaScancode))
     {
         return eInputElements::NONE;
     }
 
-    return nativeScancodeToDavaScancode[nativeScancode];
+    return nativeVirtualToDavaScancode[nativeVirtual];
 }
 
 uint32 KeyboardImpl::ConvertDavaScancodeToNativeScancode(eInputElements elementId)
 {
     int nativeScancode = -1;
 
-    for (size_t i = 0; i < COUNT_OF(nativeScancodeToDavaScancode); ++i)
+    for (size_t i = 0; i < COUNT_OF(nativeVirtualToDavaScancode); ++i)
     {
-        if (nativeScancodeToDavaScancode[i] == elementId)
+        if (nativeVirtualToDavaScancode[i] == elementId)
         {
             nativeScancode = static_cast<int>(i);
         }

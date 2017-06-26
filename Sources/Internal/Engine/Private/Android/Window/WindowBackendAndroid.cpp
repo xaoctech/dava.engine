@@ -75,11 +75,11 @@ JNIEXPORT void JNICALL Java_com_dava_engine_DavaSurfaceView_nativeSurfaceViewOnT
     wbackend->OnTouchEvent(action, touchId, x, y, modifierKeys);
 }
 
-JNIEXPORT void JNICALL Java_com_dava_engine_DavaSurfaceView_nativeSurfaceViewOnKeyEvent(JNIEnv* env, jclass jclazz, jlong windowBackendPointer, jint action, jint keyCode, jint unicodeChar, jint modifierKeys, jboolean isRepeated)
+JNIEXPORT void JNICALL Java_com_dava_engine_DavaSurfaceView_nativeSurfaceViewOnKeyEvent(JNIEnv* env, jclass jclazz, jlong windowBackendPointer, jint action, jint keyScancode, jint keyVirtual, jint unicodeChar, jint modifierKeys, jboolean isRepeated)
 {
     using DAVA::Private::WindowBackend;
     WindowBackend* wbackend = reinterpret_cast<WindowBackend*>(static_cast<uintptr_t>(windowBackendPointer));
-    wbackend->OnKeyEvent(action, keyCode, unicodeChar, modifierKeys, isRepeated == JNI_TRUE);
+    wbackend->OnKeyEvent(action, keyScancode, keyVirtual, unicodeChar, modifierKeys, isRepeated == JNI_TRUE);
 }
 
 JNIEXPORT void JNICALL Java_com_dava_engine_DavaSurfaceView_nativeSurfaceViewOnGamepadButton(JNIEnv* env, jclass jclazz, jlong windowBackendPointer, jint deviceId, jint action, jint keyCode)
@@ -434,9 +434,9 @@ void WindowBackend::OnTouchEvent(int32 action, int32 touchId, float32 x, float32
     mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowTouchEvent(window, type, touchId, x, y, modifierKeys));
 }
 
-void WindowBackend::OnKeyEvent(int32 action, int32 keyCode, int32 unicodeChar, int32 nativeModifierKeys, bool isRepeated)
+void WindowBackend::OnKeyEvent(int32 action, int32 keyScancode, int32 keyVirtual, int32 unicodeChar, int32 nativeModifierKeys, bool isRepeated)
 {
-    if (keyCode == AKEYCODE_BACK)
+    if (keyVirtual == AKEYCODE_BACK)
     {
         if (action == AKEY_EVENT_ACTION_UP)
         {
@@ -448,11 +448,11 @@ void WindowBackend::OnKeyEvent(int32 action, int32 keyCode, int32 unicodeChar, i
         bool isPressed = action == AKEY_EVENT_ACTION_DOWN;
         eModifierKeys modifierKeys = GetModifierKeys(nativeModifierKeys);
         MainDispatcherEvent::eType type = isPressed ? MainDispatcherEvent::KEY_DOWN : MainDispatcherEvent::KEY_UP;
-        mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, type, keyCode, modifierKeys, isRepeated));
+        mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, type, keyScancode, keyVirtual, modifierKeys, isRepeated));
 
         if (isPressed && unicodeChar != 0)
         {
-            mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_CHAR, unicodeChar, modifierKeys, isRepeated));
+            mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_CHAR, 0, unicodeChar, modifierKeys, isRepeated));
         }
     }
 }

@@ -48,7 +48,7 @@ final class DavaSurfaceView extends SurfaceView
     public static native void nativeSurfaceViewProcessEvents(long windowBackendPointer);
     public static native void nativeSurfaceViewOnMouseEvent(long windowBackendPointer, int action, int buttonId, float x, float y, float deltaX, float deltaY, int modifierKeys);
     public static native void nativeSurfaceViewOnTouchEvent(long windowBackendPointer, int action, int touchId, float x, float y, int modifierKeys);
-    public static native void nativeSurfaceViewOnKeyEvent(long windowBackendPointer, int action, int keyCode, int unicodeChar, int modifierKeys, boolean isRepeated);
+    public static native void nativeSurfaceViewOnKeyEvent(long windowBackendPointer, int action, int keyScancode, int keyVirtual, int unicodeChar, int modifierKeys, boolean isRepeated);
     public static native void nativeSurfaceViewOnGamepadButton(long windowBackendPointer, int deviceId, int action, int keyCode);
     public static native void nativeSurfaceViewOnGamepadMotion(long windowBackendPointer, int deviceId, int axis, float value);
     public static native void nativeSurfaceViewOnVisibleFrameChanged(long windowBackendPointer, int x, int y, int w, int h);
@@ -274,7 +274,8 @@ final class DavaSurfaceView extends SurfaceView
             int modifierKeys = event.getMetaState();
             int unicodeChar = event.getUnicodeChar();
             boolean isRepeated = event.getRepeatCount() > 0;
-            nativeSurfaceViewOnKeyEvent(windowBackendPointer, action, keyCode, unicodeChar, modifierKeys, isRepeated);
+            int scanCode = event.getScanCode();
+            nativeSurfaceViewOnKeyEvent(windowBackendPointer, action, scanCode, keyCode, unicodeChar, modifierKeys, isRepeated);
             return true;
         }
         return false;
