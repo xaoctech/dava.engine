@@ -66,8 +66,8 @@ find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS} )
 find_package( EmbeddedWebServer REQUIRED )
 
 
-include_directories   ( "Classes" )
-include_directories   ( "Classes/Infrastructure" )
+include_directories   ( "Sources" )
+include_directories   ( "Sources/Infrastructure" )
 
 if( MACOS )
     set( PLATFORM_SPECIFIC_FOLDER "Platforms/Mac" )
@@ -82,7 +82,7 @@ endif()
 
 file ( GLOB_RECURSE XIB_LIST "${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_SPECIFIC_FOLDER}/*.xib" )
 
-define_source ( SOURCE    "Classes" )
+define_source ( SOURCE    "Sources" )
 
 set( MIX_APP_DATA                 "Data = ${DAVA_ROOT_DIR}/Programs/Data" 
                                   "Data = ${CMAKE_CURRENT_LIST_DIR}/Data" )
@@ -112,7 +112,7 @@ endif ()
 
 if (ANDROID)
     # Libraries and classes to load at startup
-    set (ANDROID_BOOT_MODULES "crystax;c++_shared;fmodex;fmodevent;TestBed")
+    set (ANDROID_BOOT_MODULES "c++_shared;fmodex;fmodevent;TestBed")
     set (ANDROID_BOOT_CLASSES "com.dava.testbed.TestBed")
 endif()
 
