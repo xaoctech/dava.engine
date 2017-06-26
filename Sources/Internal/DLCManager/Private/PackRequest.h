@@ -16,7 +16,7 @@ class FileSystem;
 class PackRequest : public DLCManager::IRequest
 {
 public:
-    PackRequest(DLCManagerImpl& packManager_, const String& packName, Vector<uint32_t> fileIndexes_);
+    PackRequest(DLCManagerImpl& packManager_, const String& packName, Vector<uint32> fileIndexes_);
     void CancelCurrentDownloadRequests();
     PackRequest(DLCManagerImpl& packManager_, const String& requestedPackName);
 
@@ -28,7 +28,7 @@ public:
 
     const String& GetRequestedPackName() const override;
     /** recalculate full size with all dependencies */
-    Vector<uint32_t> GetDependencies() const;
+    Vector<uint32> GetDependencies() const;
     /** return size of files within this request without dependencies */
     uint64 GetSize() const override;
     /** recalculate current downloaded size without dependencies */
@@ -37,7 +37,7 @@ public:
     /** return true when all files loaded and ready */
     bool IsDownloaded() const override;
 
-    void SetFileIndexes(Vector<uint32_t> fileIndexes_);
+    void SetFileIndexes(Vector<uint32> fileIndexes_);
 
     /** this request depends on other, so other should be downloaded first */
     bool IsSubRequest(const PackRequest* other) const;
@@ -49,7 +49,7 @@ public:
 private:
     void InitializeFileRequests();
 
-    enum Status : uint32_t
+    enum Status : uint32
     {
         Wait = 0,
         CheckLocalFile,
@@ -65,23 +65,23 @@ private:
         FilePath localFile;
         String errorMsg;
         String url;
-        uint32_t fileIndex = 0;
-        uint32_t hashFromMeta = 0;
-        uint64_t startLoadingPos = 0;
-        uint64_t sizeOfCompressedFile = 0;
-        uint64_t sizeOfUncompressedFile = 0;
-        uint64_t downloadedFileSize = 0;
+        uint32 fileIndex = 0;
+        uint32 hashFromMeta = 0;
+        uint64 startLoadingPos = 0;
+        uint64 sizeOfCompressedFile = 0;
+        uint64 sizeOfUncompressedFile = 0;
+        uint64 downloadedFileSize = 0;
         DLCDownloader::Task* task = nullptr;
         Compressor::Type compressionType = Compressor::Type::Lz4HC;
         Status status = Wait;
     };
 
-    void InitializeFileRequest(const uint32_t fileIndex,
+    void InitializeFileRequest(const uint32 fileIndex,
                                const FilePath& file,
-                               const uint32_t hash,
-                               const uint64_t startLoadingPos,
-                               const uint64_t fileCompressedSize,
-                               const uint64_t fileUncompressedSize,
+                               const uint32 hash,
+                               const uint64 startLoadingPos,
+                               const uint64 fileCompressedSize,
+                               const uint64 fileUncompressedSize,
                                const String& url,
                                const Compressor::Type compressionType_,
                                FileRequest& fileRequest);
@@ -97,11 +97,11 @@ private:
     DLCManagerImpl* packManagerImpl = nullptr;
 
     Vector<FileRequest> requests;
-    Vector<uint32_t> fileIndexes;
+    Vector<uint32> fileIndexes;
     String requestedPackName;
-    mutable Vector<uint32_t> dependencyCache;
+    mutable Vector<uint32> dependencyCache;
 
-    uint32_t numOfDownloadedFile = 0;
+    uint32 numOfDownloadedFile = 0;
 
     // if this field is false, you can check fileIndexes
     // else fileIndexes maybe empty and wait initialization

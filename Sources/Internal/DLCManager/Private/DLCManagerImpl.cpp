@@ -824,7 +824,7 @@ void DLCManagerImpl::AskServerMeta()
     memBufWriter.reset(new MemoryBufferWriter(buffer.data(), buffer.size()));
 
     downloadTaskId = downloader->StartTask(urlToSuperPack, *memBufWriter, DLCDownloader::Range(downloadOffset, downloadSize));
-    if (nullptr != downloadTaskId)
+    if (nullptr == downloadTaskId)
     {
         DAVA_THROW(Exception, "can't start download task into memory buffer");
     }
