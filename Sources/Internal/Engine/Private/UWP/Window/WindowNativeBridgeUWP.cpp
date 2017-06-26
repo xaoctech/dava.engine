@@ -266,7 +266,7 @@ void WindowNativeBridge::OnVisibilityChanged(Windows::UI::Core::CoreWindow ^ cor
 void WindowNativeBridge::OnCharacterReceived(::Windows::UI::Core::CoreWindow ^ /*coreWindow*/, ::Windows::UI::Core::CharacterReceivedEventArgs ^ arg)
 {
     eModifierKeys modifierKeys = GetModifierKeys();
-    mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_CHAR, arg->KeyCode, modifierKeys, arg->KeyStatus.WasKeyDown));
+    mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_CHAR, 0, arg->KeyCode, modifierKeys, arg->KeyStatus.WasKeyDown));
 }
 
 void WindowNativeBridge::OnAcceleratorKeyActivated(::Windows::UI::Core::CoreDispatcher ^ /*dispatcher*/, ::Windows::UI::Core::AcceleratorKeyEventArgs ^ arg)
@@ -300,17 +300,18 @@ void WindowNativeBridge::OnAcceleratorKeyActivated(::Windows::UI::Core::CoreDisp
         {
             eModifierKeys modifierKeys = GetModifierKeys();
             CorePhysicalKeyStatus status = arg->KeyStatus;
-            uint32 key = status.ScanCode;
+            uint32 keyScancode = status.ScanCode;
+            uint32 keyVirtual = static_cast<uint32>(arg->VirtualKey);
 
             if (status.IsExtendedKey)
             {
                 // Windows uses 0xE000 mask throughout its API to distinguish between extended and non-extended keys
                 // So, follow this convention and use the same mask
-                key |= 0xE000;
+                keyScancode |= 0xE000;
             }
 
             MainDispatcherEvent::eType type = isPressed ? MainDispatcherEvent::KEY_DOWN : MainDispatcherEvent::KEY_UP;
-            mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, type, key, modifierKeys, status.WasKeyDown));
+            mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, type, keyScancode, keyVirtual, modifierKeys, status.WasKeyDown));
         }
 
         break;
@@ -331,6 +332,8 @@ void WindowNativeBridge::OnShiftKeyActivated()
     // These are left and right shift scancodes, taken from https://msdn.microsoft.com/en-us/library/aa299374(v=vs.60).aspx
     static const uint32 shiftKeyScancodes[2] = { 0x2A, 0x36 };
 
+    static const uint32 shiftKeyVirtuals[2] = { static_cast<uint32>(VirtualKey::LeftShift), static_cast<uint32>(VirtualKey::RightShift) };
+
     CoreWindow ^ coreWindow = xamlWindow->CoreWindow;
     const bool lshiftPressed = static_cast<bool>(coreWindow->GetKeyState(VirtualKey::LeftShift) & CoreVirtualKeyStates::Down);
     const bool rshiftPressed = static_cast<bool>(coreWindow->GetKeyState(VirtualKey::RightShift) & CoreVirtualKeyStates::Down);
@@ -343,11 +346,11 @@ void WindowNativeBridge::OnShiftKeyActivated()
         if (lastShiftStates[i] != currentShiftStates[i])
         {
             const MainDispatcherEvent::eType eventType = currentShiftStates[i] ? MainDispatcherEvent::KEY_DOWN : MainDispatcherEvent::KEY_UP;
-            mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, eventType, shiftKeyScancodes[i], modifierKeys, false));
+            mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, eventType, shiftKeyScancodes[i], shiftKeyVirtuals[i], modifierKeys, false));
         }
         else if (currentShiftStates[i] == true)
         {
-            mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_DOWN, shiftKeyScancodes[i], modifierKeys, true));
+            mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_DOWN, shiftKeyScancodes[i], shiftKeyVirtuals[i], modifierKeys, true));
         }
 
         lastShiftStates[i] = currentShiftStates[i];

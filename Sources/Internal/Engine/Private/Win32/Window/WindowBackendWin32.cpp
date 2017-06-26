@@ -851,10 +851,10 @@ LRESULT WindowBackend::OnPointerUpdate(uint32 pointerId, int32 x, int32 y)
     return 0;
 }
 
-LRESULT WindowBackend::OnKeyEvent(uint32 key, uint32 scanCode, bool isPressed, bool isExtended, bool isRepeated)
+LRESULT WindowBackend::OnKeyEvent(uint32 keyVirtual, uint32 keyScancode, bool isPressed, bool isExtended, bool isRepeated)
 {
     // Handle shifts separately to workaround some windows behaviours (see comment inside of OnShiftKeyEvent)
-    if (key == VK_SHIFT)
+    if (keyVirtual == VK_SHIFT)
     {
         return OnShiftKeyEvent();
     }
@@ -864,12 +864,12 @@ LRESULT WindowBackend::OnKeyEvent(uint32 key, uint32 scanCode, bool isPressed, b
         {
             // Windows uses 0xE000 mask throughout its API to distinguish between extended and non-extended keys
             // So, follow this convention and use the same mask
-            scanCode = 0xE000 | scanCode;
+            keyScancode = 0xE000 | keyScancode;
         }
 
         eModifierKeys modifierKeys = GetModifierKeys();
         MainDispatcherEvent::eType type = isPressed ? MainDispatcherEvent::KEY_DOWN : MainDispatcherEvent::KEY_UP;
-        mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, type, scanCode, modifierKeys, isRepeated));
+        mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, type, keyScancode, keyVirtual, modifierKeys, isRepeated));
         return 0;
     }
 }
@@ -882,6 +882,8 @@ LRESULT WindowBackend::OnShiftKeyEvent()
     // These are left and right shift scancodes, taken from https://msdn.microsoft.com/en-us/library/aa299374(v=vs.60).aspx
     static const uint32 shiftKeyScancodes[2] = { 0x2A, 0x36 };
 
+    static const uint32 shiftKeyVirtuals[2] = { VK_LSHIFT, VK_RSHIFT };
+
     const bool lshiftPressed = ::GetKeyState(VK_LSHIFT) & 0x8000 ? true : false;
     const bool rshiftPressed = ::GetKeyState(VK_RSHIFT) & 0x8000 ? true : false;
     const bool currentShiftStates[2] = { lshiftPressed, rshiftPressed };
@@ -893,11 +895,11 @@ LRESULT WindowBackend::OnShiftKeyEvent()
         if (lastShiftStates[i] != currentShiftStates[i])
         {
             const MainDispatcherEvent::eType eventType = currentShiftStates[i] ? MainDispatcherEvent::KEY_DOWN : MainDispatcherEvent::KEY_UP;
-            mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, eventType, shiftKeyScancodes[i], modifierKeys, false));
+            mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, eventType, shiftKeyScancodes[i], shiftKeyVirtuals[i], modifierKeys, false));
         }
         else if (currentShiftStates[i] == true)
         {
-            mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_DOWN, shiftKeyScancodes[i], modifierKeys, true));
+            mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_DOWN, shiftKeyScancodes[i], shiftKeyVirtuals[i], modifierKeys, true));
         }
 
         lastShiftStates[i] = currentShiftStates[i];
@@ -909,7 +911,7 @@ LRESULT WindowBackend::OnShiftKeyEvent()
 LRESULT WindowBackend::OnCharEvent(uint32 key, bool isRepeated)
 {
     eModifierKeys modifierKeys = GetModifierKeys();
-    mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_CHAR, key, modifierKeys, isRepeated));
+    mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_CHAR, 0, key, modifierKeys, isRepeated));
     return 0;
 }
 
@@ -1096,12 +1098,12 @@ LRESULT WindowBackend::WindowProc(UINT message, WPARAM wparam, LPARAM lparam, bo
     }
     else if (message == WM_KEYUP || message == WM_KEYDOWN || message == WM_SYSKEYUP || message == WM_SYSKEYDOWN)
     {
-        uint32 key = static_cast<uint32>(wparam);
-        uint32 scanCode = (static_cast<uint32>(lparam) >> 16) & 0xFF;
+        uint32 keyVirtual = static_cast<uint32>(wparam);
+        uint32 keyScancode = (static_cast<uint32>(lparam) >> 16) & 0xFF;
         bool isPressed = message == WM_KEYDOWN || message == WM_SYSKEYDOWN;
         bool isExtended = (HIWORD(lparam) & KF_EXTENDED) == KF_EXTENDED;
         bool isRepeated = (HIWORD(lparam) & KF_REPEAT) == KF_REPEAT;
-        lresult = OnKeyEvent(key, scanCode, isPressed, isExtended, isRepeated);
+        lresult = OnKeyEvent(keyVirtual, keyScancode, isPressed, isExtended, isRepeated);
         // Mark only WM_SYSKEYUP message as handled to prevent entering modal loop when Alt is released,
         // but leave WM_SYSKEYDOWN and other as unhandled to allow system shortcuts such as Alt+F4.
         isHandled = (message == WM_SYSKEYUP);

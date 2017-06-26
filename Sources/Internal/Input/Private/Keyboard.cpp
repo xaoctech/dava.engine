@@ -139,10 +139,10 @@ bool Keyboard::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e)
 
     if (e.type == MainDispatcherEvent::KEY_DOWN || e.type == MainDispatcherEvent::KEY_UP)
     {
-        eInputElements elementId = impl->ConvertNativeScancodeToDavaScancode(e.keyEvent.key);
+        eInputElements elementId = impl->ConvertNativeScancodeToDavaScancode(e.keyEvent.keyScancode, e.keyEvent.keyVirtual);
         if (elementId == eInputElements::NONE)
         {
-            Logger::Info("Couldn't map native scancode (%u) to dava scancode", e.keyEvent.key);
+            Logger::Info("Couldn't map native scancode (%u) to dava scancode", e.keyEvent.keyScancode);
             return false;
         }
 
@@ -161,7 +161,7 @@ bool Keyboard::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e)
     }
     else if (e.type == MainDispatcherEvent::KEY_CHAR)
     {
-        CreateAndSendCharInputEvent(e.keyEvent.key, e.keyEvent.isRepeated, e.window, e.timestamp);
+        CreateAndSendCharInputEvent(e.keyEvent.keyVirtual, e.keyEvent.isRepeated, e.window, e.timestamp);
 
         return true;
     }

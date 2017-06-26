@@ -7,14 +7,37 @@
 #include "Utils/UTF8Utils.h"
 #include "Engine/Private/UWP/DllImportWin10.h"
 
+#include <cwctype>
+
 namespace DAVA
 {
 namespace Private
 {
-eInputElements KeyboardImpl::ConvertNativeScancodeToDavaScancode(uint32 nativeScancode)
+eInputElements KeyboardImpl::ConvertNativeScancodeToDavaScancode(uint32 nativeScancode, uint32 nativeVirtual)
 {
+    using ::Windows::System::VirtualKey;
+
     const bool isExtended = (nativeScancode & 0xE000) == 0xE000;
     const uint32 nonExtendedScancode = nativeScancode & 0x00FF;
+
+    // Pause/Break and right control send the same scancode (29) with extended flag
+    // So use virtual key to distinguish between them
+    if (nonExtendedScancode == 29 && isExtended)
+    {
+        VirtualKey virtualKey = static_cast<VirtualKey>(nativeVirtual);
+
+        if (virtualKey == VirtualKey::Pause)
+        {
+            return eInputElements::KB_PAUSE;
+        }
+        else
+        {
+            DVASSERT(virtualKey == VirtualKey::Control);
+
+            // Send right control since this is the one which has 'extended' flag
+            return eInputElements::KB_RCTRL;
+        }
+    }
 
     if (isExtended)
     {
@@ -65,7 +88,7 @@ String KeyboardImpl::TranslateElementToUTF8String(eInputElements elementId)
     int nativeScancode = ConvertDavaScancodeToNativeScancode(elementId);
     wchar_t character = TranslateNativeScancodeToWChar(static_cast<uint32>(nativeScancode));
 
-    if (character == 0 || std::iswspace(character))
+    if (character == 0 || !std::iswprint(character) || std::iswspace(character))
     {
         // Non printable
         return GetInputElementInfo(elementId).name;

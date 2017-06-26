@@ -13,7 +13,7 @@ namespace DAVA
 {
 namespace Private
 {
-eInputElements KeyboardImpl::ConvertNativeScancodeToDavaScancode(uint32 nativeScancode)
+eInputElements KeyboardImpl::ConvertNativeScancodeToDavaScancode(uint32 nativeScancode, uint32 /*nativeVirtual*/)
 {
     // Windows uses 0xE000 mask throughout its API to distinguish between extended and non-extended keys
     // We follow this convention and use the same mask
@@ -64,7 +64,7 @@ String KeyboardImpl::TranslateElementToUTF8String(eInputElements elementId)
     uint32 nativeScancode = ConvertDavaScancodeToNativeScancode(elementId);
     wchar_t character = TranslateNativeScancodeToWChar(nativeScancode);
 
-    if (character == 0 || std::iswspace(character))
+    if (character == 0 || !std::iswprint(character) || std::iswspace(character))
     {
         // Non printable
         return GetInputElementInfo(elementId).name;
