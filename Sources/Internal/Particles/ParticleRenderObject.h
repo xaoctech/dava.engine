@@ -91,6 +91,8 @@ private:
     Map<uint32, uint32> layoutMap;
 
     float FresnelShlick(float32 nDotVInv, float32 bias, float32 power) const;
+    bool CheckGroup(const ParticleGroup& group) const;
+    int32 PrepareBasisIndexes(const ParticleGroup& group, int32 (&basises)[4]) const;
 };
 
 inline float ParticleRenderObject::FresnelShlick(float32 nDotVInv, float32 bias, float32 power) const
@@ -102,5 +104,10 @@ inline bool ParticleRenderObject::CheckIfSimpleParticle(ParticleLayer* layer) co
 {
     return layer->type == ParticleLayer::eType::TYPE_PARTICLES
     || layer->type == ParticleLayer::eType::TYPE_SINGLE_PARTICLE;
+}
+
+inline bool ParticleRenderObject::CheckGroup(const ParticleGroup& group) const
+{
+    return group.material && group.head && !group.layer->isDisabled && group.layer->sprite;
 }
 }

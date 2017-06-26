@@ -15,7 +15,7 @@ ParticleRenderObject::ParticleRenderObject(ParticleEffectData* effect)
     layoutsData[1 << FRAME_BLEND] = { rhi::VS_TEXCOORD, 1, rhi::VDT_FLOAT, 3 };
     layoutsData[1 << FLOW] = { rhi::VS_TEXCOORD, 2, rhi::VDT_FLOAT, 4 }; // uv, speed, offset
     layoutsData[1 << NOISE] = { rhi::VS_TEXCOORD, 3, rhi::VDT_FLOAT, 3 }; // uv, scale
-    layoutsData[1 << FRESNEL_TO_ALPHA_REMAP_PERP_MAPPING] = { rhi::VS_TEXCOORD, 5, rhi::VDT_FLOAT, 3 }; // fres. TODO: join with remap and proj.
+    layoutsData[1 << FRESNEL_TO_ALPHA_REMAP_PERP_MAPPING] = { rhi::VS_TEXCOORD, 5, rhi::VDT_FLOAT, 3 }; // Fresnel, alpha remap from chart, perspective mapping w.
 
     uint16 numBits = static_cast<uint16>(layoutsData.size());
 
@@ -112,7 +112,7 @@ void ParticleRenderObject::PrepareRenderData(Camera* camera)
     {
         const ParticleGroup& group = (*itGroupCurr);
         //note - isDisabled just stop it from being rendered, still processing particles in ParticleEffectSystem
-        if ((!group.material) || (!group.head) || (group.layer->isDisabled) || (!group.layer->sprite))
+        if (!CheckGroup(group))
             continue; //if no material was set up, or empty group, or layer rendering is disabled or sprite is removed - don't draw anyway
 
         bool isLayerTypesNotTheSame = CheckIfSimpleParticle(itGroupStart->layer) != CheckIfSimpleParticle(itGroupCurr->layer);
@@ -222,6 +222,21 @@ void ParticleRenderObject::UpdateStripeVertex(float32*& dataPtr, Vector3& positi
     }
 }
 
+int32 ParticleRenderObject::PrepareBasisIndexes(const ParticleGroup& group, int32 (&basises)[4]) const
+{
+    int32 basisCount = 0;
+    bool worldAlign = (group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_WORLD_ALIGN) != 0;
+    if (group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING)
+        basises[basisCount++] = 0;
+    if (group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_X_FACING)
+        basises[basisCount++] = worldAlign ? 4 : 1;
+    if (group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_Y_FACING)
+        basises[basisCount++] = worldAlign ? 5 : 2;
+    if (group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_Z_FACING)
+        basises[basisCount++] = worldAlign ? 6 : 3;
+    return basisCount;
+}
+
 void ParticleRenderObject::AppendRenderBatch(NMaterial* material, uint32 indexCount, uint32 vertexLayout, const DynamicBufferAllocator::AllocResultVB& vBuffer)
 {
     AppendRenderBatch(material, indexCount, vertexLayout, vBuffer, DynamicBufferAllocator::AllocateQuadListIndexBuffer(indexCount));
@@ -272,21 +287,13 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
     for (auto it = begin; it != end; ++it)
     {
         const ParticleGroup& group = *it;
-        if ((!group.material) || (!group.head) || (group.layer->isDisabled) || (!group.layer->sprite))
+        if (!CheckGroup(group))
             continue; //if no material was set up, or empty group, or layer rendering is disabled or sprite is removed - don't draw anyway
 
         //prepare basis indexes
         int32 basisCount = 0;
         int32 basises[4]; //4 basises max per particle
-        bool worldAlign = (group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_WORLD_ALIGN) != 0;
-        if (group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING)
-            basises[basisCount++] = 0;
-        if (group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_X_FACING)
-            basises[basisCount++] = worldAlign ? 4 : 1;
-        if (group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_Y_FACING)
-            basises[basisCount++] = worldAlign ? 5 : 2;
-        if (group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_Z_FACING)
-            basises[basisCount++] = worldAlign ? 6 : 3;
+        basisCount = PrepareBasisIndexes(group, basises);
 
         Particle* current = group.head;
         while (current)
@@ -448,30 +455,22 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
 void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator begin, List<ParticleGroup>::iterator end, uint32 particlesCount, const Vector3& cameraDirection, Vector3* basisVectors)
 {
     if (!particlesCount)
-        return; //hmmm?
+        return;
 
     uint32 vertexStride = GetVertexStride(begin->layer); // If you change vertex layout, don't forget to change the stride.
 
-    uint32 verteciesAppended = 0;
-    uint32 particleStride = vertexStride * 4;
     for (auto it = begin; it != end; ++it)
     {
         const ParticleGroup& group = *it;
-        if ((!group.material) || (!group.head) || (group.layer->isDisabled) || (!group.layer->sprite))
+        if (!CheckGroup(group))
             continue; //if no material was set up, or empty group, or layer rendering is disabled or sprite is removed - don't draw anyway
 
-        //prepare basis indexes
         int32 basisCount = 0;
         int32 basises[4]; //4 basises max per particle
-        bool worldAlign = (group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_WORLD_ALIGN) != 0;
-        if (group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING)
-            basises[basisCount++] = 0;
-        if (group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_X_FACING)
-            basises[basisCount++] = worldAlign ? 4 : 1;
-        if (group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_Y_FACING)
-            basises[basisCount++] = worldAlign ? 5 : 2;
-        if (group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_Z_FACING)
-            basises[basisCount++] = worldAlign ? 6 : 3;
+        basisCount = PrepareBasisIndexes(group, basises);
+
+        if (basisCount == 0)
+            continue;
 
         Particle* currentParticle = group.head;
         while (currentParticle)
@@ -492,7 +491,18 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
 
             StripeNode& base = data.baseNode;
             List<StripeNode>& nodes = data.strpeNodes;
-            uint32 iCount = 0;
+            
+            int32 vCountInBasis = static_cast<int32>((nodes.size() + 1) * 2);
+            int32 vCount = vCountInBasis * basisCount;
+            uint32 iCount = static_cast<int32>(nodes.size()) * 6 * basisCount;
+            uint32 baseVertex = 0;
+
+            DynamicBufferAllocator::AllocResultVB vb = DynamicBufferAllocator::AllocateVertexBuffer(vertexStride, vCount);
+            DynamicBufferAllocator::AllocResultIB ib = DynamicBufferAllocator::AllocateIndexBuffer(iCount);
+
+            uint16* indexBufferData = ib.data;
+            float* vertexBufferData = reinterpret_cast<float*>(vb.data);
+
             for (int32 i = 0; i < basisCount; i++)
             {
                 if (nodes.size() == 0)
@@ -507,14 +517,8 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                     viewNormal = Vector3(basisVector.y, -basisVector.x, 0.0f); // basisVector.CrossProduct(Vector3(0.0f, 0.0f, 1.0f));
                     viewNormal.Normalize();
                     dot = cameraDirection.DotProduct(viewNormal);
-                    dot = 1.0f - Abs(dot);
-                    fresnelToAlpha = FresnelShlick(dot, currentParticle->fresnelToAlphaBias, currentParticle->fresnelToAlphaPower);
+                    fresnelToAlpha = FresnelShlick(1.0f - Abs(dot), currentParticle->fresnelToAlphaBias, currentParticle->fresnelToAlphaPower);
                 }
-
-                int32 vCount = static_cast<int32>((nodes.size() + 1) * 2);
-                DynamicBufferAllocator::AllocResultVB vb = DynamicBufferAllocator::AllocateVertexBuffer(vertexStride, vCount);
-                iCount = (vCount - 2) * 3;
-                DynamicBufferAllocator::AllocResultIB ib = DynamicBufferAllocator::AllocateIndexBuffer(iCount);
 
                 float32 size = group.layer->stripeStartSize * 0.5f;
                 if (group.layer->stripeSizeOverLifeProp)
@@ -540,7 +544,6 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                     uv2 = Vector3(startU + 1.0f, startV, 0.0f);
                 }
 
-                float* dataPtr = reinterpret_cast<float*>(vb.data);
 
                 Color colOverLife = Color::White;
                 if (group.layer->stripeColorOverLife)
@@ -548,8 +551,8 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
 
                 uint32 col = rhi::NativeColorRGBA(Saturate(currColor.r * colOverLife.r), Saturate(currColor.g * colOverLife.g), Saturate(currColor.b * colOverLife.b), Saturate(currColor.a * colOverLife.a));
                 float32* color = reinterpret_cast<float32*>(&col);
-                UpdateStripeVertex(dataPtr, left, uv1, color, group.layer, currentParticle, fresnelToAlpha);
-                UpdateStripeVertex(dataPtr, right, uv2, color, group.layer, currentParticle, fresnelToAlpha);
+                UpdateStripeVertex(vertexBufferData, left, uv1, color, group.layer, currentParticle, fresnelToAlpha);
+                UpdateStripeVertex(vertexBufferData, right, uv2, color, group.layer, currentParticle, fresnelToAlpha);
 
                 StripeNode* prevNode = &base;
                 float32 distance = 0.0f;
@@ -586,26 +589,25 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                     uv1.y = v;
                     uv2.y = v;
 
-                    UpdateStripeVertex(dataPtr, left, uv1, color, group.layer, currentParticle, fresnelToAlpha);
-                    UpdateStripeVertex(dataPtr, right, uv2, color, group.layer, currentParticle, fresnelToAlpha);
+                    UpdateStripeVertex(vertexBufferData, left, uv1, color, group.layer, currentParticle, fresnelToAlpha);
+                    UpdateStripeVertex(vertexBufferData, right, uv2, color, group.layer, currentParticle, fresnelToAlpha);
 
                     prevNode = &node;
                 }
-                uint16* currentI = ib.data;
                 for (uint32 i = 0; i < static_cast<uint32>(nodes.size()); ++i)
                 {
                     uint32 twoI = i * 2;
-                    *(currentI++) = twoI + 0;
-                    *(currentI++) = twoI + 3;
-                    *(currentI++) = twoI + 1;
+                    *(indexBufferData++) = twoI + 0 + baseVertex;
+                    *(indexBufferData++) = twoI + 3 + baseVertex;
+                    *(indexBufferData++) = twoI + 1 + baseVertex;
 
-                    *(currentI++) = twoI + 0;
-                    *(currentI++) = twoI + 2;
-                    *(currentI++) = twoI + 3;
+                    *(indexBufferData++) = twoI + 0 + baseVertex;
+                    *(indexBufferData++) = twoI + 2 + baseVertex;
+                    *(indexBufferData++) = twoI + 3 + baseVertex;
                 }
-
-                AppendRenderBatch(begin->material, iCount, SelectLayout(*begin->layer), vb, ib.buffer);
+                baseVertex += vCountInBasis;
             }
+            AppendRenderBatch(begin->material, iCount, SelectLayout(*begin->layer), vb, ib.buffer);
             currentParticle = currentParticle->next;
         }
     }
