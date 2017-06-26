@@ -9,19 +9,16 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Looper;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.util.Log;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -250,7 +247,7 @@ public final class DavaActivity extends Activity
             alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + 100, pendingIntent);
             System.exit(0);
         } catch (Exception e) {
-            Log.e(LOG_TAG, String.format("DavaActivity.restart failed: %s", e.toString()));
+            DavaLog.e(LOG_TAG, String.format("DavaActivity.restart failed: %s", e.toString()));
         }
     }
 
@@ -264,12 +261,12 @@ public final class DavaActivity extends Activity
             // still running. Later system may recreate Activity and Activity.onCreate handler tries to initialize again already
             // running dava.engine and game which may lead to crash or unpredictable behaviour.
             // Solution is to restart application.
-            Log.e(LOG_TAG, "DavaActivity.onCreate: restarting");
+            DavaLog.e(LOG_TAG, "DavaActivity.onCreate: restarting");
             activitySingleton = null;
             restart();
         }
 
-        Log.d(LOG_TAG, "DavaActivity.onCreate");
+        DavaLog.i(LOG_TAG, "DavaActivity.onCreate");
 
         activitySingleton = this;
         uiThreadId = android.os.Process.myTid();
@@ -333,7 +330,7 @@ public final class DavaActivity extends Activity
         }
         catch (Exception e)
         {
-            Log.e(LOG_TAG, String.format("DavaActivity: loading splash image failed: %s. Splash view will be empty", e.toString()));
+            DavaLog.e(LOG_TAG, String.format("DavaActivity: loading splash image failed: %s. Splash view will be empty", e.toString()));
         }
 
         return splashViewBitmap;
@@ -377,7 +374,7 @@ public final class DavaActivity extends Activity
     @Override
     protected void onStart()
     {
-        Log.d(LOG_TAG, "DavaActivity.onStart");
+        DavaLog.i(LOG_TAG, "DavaActivity.onStart");
         super.onStart();
 
         isStopped = false;
@@ -388,7 +385,7 @@ public final class DavaActivity extends Activity
     @Override
     protected void onResume()
     {
-        Log.d(LOG_TAG, "DavaActivity.onResume");
+        DavaLog.i(LOG_TAG, "DavaActivity.onResume");
         super.onResume();
 
         handleResume();
@@ -398,7 +395,7 @@ public final class DavaActivity extends Activity
     @Override
     protected void onPause()
     {
-        Log.d(LOG_TAG, "DavaActivity.onPause");
+        DavaLog.i(LOG_TAG, "DavaActivity.onPause");
         super.onPause();
 
         handlePause();
@@ -408,7 +405,7 @@ public final class DavaActivity extends Activity
     @Override
     protected void onRestart()
     {
-        Log.d(LOG_TAG, "DavaActivity.onRestart");
+        DavaLog.i(LOG_TAG, "DavaActivity.onRestart");
         super.onRestart();
 
         notifyListeners(ON_ACTIVITY_RESTART, null);
@@ -417,7 +414,7 @@ public final class DavaActivity extends Activity
     @Override
     protected void onStop()
     {
-        Log.d(LOG_TAG, "DavaActivity.onStop");
+        DavaLog.i(LOG_TAG, "DavaActivity.onStop");
         super.onStop();
         
         isStopped = true;
@@ -428,7 +425,7 @@ public final class DavaActivity extends Activity
     @Override
     protected void onDestroy()
     {
-        Log.d(LOG_TAG, "DavaActivity.onDestroy");
+        DavaLog.i(LOG_TAG, "DavaActivity.onDestroy");
         super.onDestroy();
 
         notifyListeners(ON_ACTIVITY_DESTROY, null);
@@ -436,19 +433,19 @@ public final class DavaActivity extends Activity
 
         if (isEngineRunning)
         {
-            Log.d(LOG_TAG, "DavaActivity.nativeOnDestroy");
+            DavaLog.i(LOG_TAG, "DavaActivity.nativeOnDestroy");
             nativeOnDestroy();
             if (isNativeThreadRunning())
             {
                 try {
-                    Log.d(LOG_TAG, "Joining native thread");
+                    DavaLog.i(LOG_TAG, "Joining native thread");
                     nativeThread.join();
                 } catch (Exception e) {
-                    Log.e(LOG_TAG, "DavaActivity.onDestroy: davaMainThread.join() failed " + e);
+                    DavaLog.e(LOG_TAG, "DavaActivity.onDestroy: davaMainThread.join() failed " + e);
                 }
                 nativeThread = null;
             }
-            Log.d(LOG_TAG, "DavaActivity.nativeShutdownEngine");
+            DavaLog.i(LOG_TAG, "DavaActivity.nativeShutdownEngine");
             nativeShutdownEngine();
         }
 
@@ -461,14 +458,14 @@ public final class DavaActivity extends Activity
         //    but engine's shared library is not unloaded and all static variables preserve their
         //    values which leads to unpredictable behavior on next activity.onCreate call
         //  - same is applied to java classes
-        Log.i(LOG_TAG, "Quitting application...");
+        DavaLog.i(LOG_TAG, "Quitting application...");
         System.exit(0);
     }
     
     @Override
     public void onWindowFocusChanged(boolean hasWindowFocus)
     {
-        Log.d(LOG_TAG, String.format("DavaActivity.onWindowFocusChanged: focus=%b", hasWindowFocus));
+        DavaLog.i(LOG_TAG, String.format("DavaActivity.onWindowFocusChanged: focus=%b", hasWindowFocus));
 
         isFocused = hasWindowFocus;
         if (isFocused)
@@ -481,7 +478,7 @@ public final class DavaActivity extends Activity
     @Override
     public void onConfigurationChanged(Configuration newConfig)
     {
-        Log.d(LOG_TAG, "DavaActivity.onConfigurationChanged");
+        DavaLog.i(LOG_TAG, "DavaActivity.onConfigurationChanged");
         super.onConfigurationChanged(newConfig);
     }
 
@@ -667,7 +664,7 @@ public final class DavaActivity extends Activity
     {
         if (primarySurfaceView.isSurfaceReady() && isPaused && isFocused)
         {
-            Log.d(LOG_TAG, "DavaActivity.handleResume");
+            DavaLog.i(LOG_TAG, "DavaActivity.handleResume");
 
             isPaused = false;
             nativeOnResume();
@@ -679,7 +676,7 @@ public final class DavaActivity extends Activity
     {
         if (primarySurfaceView.isSurfaceReady() && !isPaused)
         {
-            Log.d(LOG_TAG, "DavaActivity.handlePause");
+            DavaLog.i(LOG_TAG, "DavaActivity.handlePause");
 
             isPaused = true;
             primarySurfaceView.onPause();
@@ -728,12 +725,12 @@ public final class DavaActivity extends Activity
             {
                 if (!m.isEmpty())
                 {
-                    Log.i(LOG_TAG, String.format("DavaActivity: loading bootstrap module '%s'", m));
+                    DavaLog.i(LOG_TAG, String.format("DavaActivity: loading bootstrap module '%s'", m));
                     try {
                         System.loadLibrary(m);
                         nloaded += 1;
                     } catch (Throwable e) {
-                        Log.e(DavaActivity.LOG_TAG, String.format("DavaActivity: module '%s' not loaded: %s", m, e.toString()));
+                        DavaLog.e(DavaActivity.LOG_TAG, String.format("DavaActivity: module '%s' not loaded: %s", m, e.toString()));
                     }
                 }
             }
@@ -742,7 +739,7 @@ public final class DavaActivity extends Activity
         {
             // Issue warning if no boot modules were loaded as usually all logic is contained
             // in shared libraries written in C/C++
-            Log.w(LOG_TAG, "DavaActivity: no bootstrap modules loaded!!! Maybe you forgot to add meta-data tag with module list to AndroidManifest.xml");
+            DavaLog.w(LOG_TAG, "DavaActivity: no bootstrap modules loaded!!! Maybe you forgot to add meta-data tag with module list to AndroidManifest.xml");
         }
 
         // Read and create instances of bootstrap classes
@@ -754,14 +751,14 @@ public final class DavaActivity extends Activity
             {
                 if (!c.isEmpty())
                 {
-                    Log.i(LOG_TAG, String.format("DavaActivity: instantiate bootstrap class '%s'", c));
+                    DavaLog.i(LOG_TAG, String.format("DavaActivity: instantiate bootstrap class '%s'", c));
                     try {
                         Class<?> clazz = Class.forName(c);
                         Constructor<?> ctor = clazz.getConstructor();
                         Object obj = ctor.newInstance();
                         bootstrapObjects.add(obj);
                     } catch (Throwable e) {
-                        Log.e(DavaActivity.LOG_TAG, String.format("DavaActivity: class '%s' not instantiated: %s", c, e.toString()));
+                        DavaLog.e(DavaActivity.LOG_TAG, String.format("DavaActivity: class '%s' not instantiated: %s", c, e.toString()));
                     }
                 }
             }
@@ -778,7 +775,7 @@ public final class DavaActivity extends Activity
                 return s.split(";");
             }
         } catch (Exception e) {
-            Log.e(LOG_TAG, String.format("DavaActivity: get metadata for '%s' failed: %s", key, e.toString()));
+            DavaLog.e(LOG_TAG, String.format("DavaActivity: get metadata for '%s' failed: %s", key, e.toString()));
         }
         return null;
     }
