@@ -13,10 +13,10 @@ namespace DAVA
 {
 UITextSystem::~UITextSystem()
 {
-    for (UITextSystemLink* link : links)
+    for (UITextComponent* component : components)
     {
         // System expect that all components already removed via UnregisterComponent and UnregisterControl.
-        DVASSERT(link == nullptr, "Unexpected system state! List of links must be empty!");
+        DVASSERT(component == nullptr, "Unexpected system state! List of links must be empty!");
     }
 }
 
@@ -25,17 +25,17 @@ void UITextSystem::Process(float32 elapsedTime)
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::UI_TEXT_SYSTEM);
 
     // Remove empty links
-    if (!links.empty())
+    if (!components.empty())
     {
-        links.erase(std::remove(links.begin(), links.end(), nullptr), links.end());
+        components.erase(std::remove(components.begin(), components.end(), nullptr), components.end());
     }
 
     // Process links
-    for (UITextSystemLink* link : links)
+    for (UITextComponent* component : components)
     {
-        if (link != nullptr && link->component->IsModified())
+        if (component != nullptr && component->IsModified())
         {
-            ApplyData(link->component);
+            ApplyData(component);
         }
     }
 }
@@ -176,18 +176,16 @@ void UITextSystem::UnregisterComponent(UIControl* control, UIComponent* componen
 void UITextSystem::AddLink(UITextComponent* component)
 {
     DVASSERT(component);
-    UIControl* control = component->GetControl();
     UITextSystemLink* link = component->GetLink();
-    links.push_back(link);
+    components.push_back(component);
 }
 
 void UITextSystem::RemoveLink(UITextComponent* component)
 {
     DVASSERT(component);
-    UITextSystemLink* link = component->GetLink();
 
-    auto findIt = std::find(links.begin(), links.end(), link);
-    if (findIt != links.end())
+    auto findIt = std::find(components.begin(), components.end(), component);
+    if (findIt != components.end())
     {
         (*findIt) = nullptr; // mark link for delete
     }

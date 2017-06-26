@@ -9,7 +9,6 @@ namespace DAVA
 {
 class UIControl;
 class UITextComponent;
-class UITextSystemLink;
 
 /** 
     Text component support system. 
@@ -35,6 +34,6 @@ private:
     void AddLink(UITextComponent* component);
     void RemoveLink(UITextComponent* component);
 
-    Vector<UITextSystemLink*> links;
+    Vector<UITextComponent*> components;
 };
 }
