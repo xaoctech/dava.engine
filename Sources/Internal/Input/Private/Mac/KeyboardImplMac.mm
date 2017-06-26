@@ -175,43 +175,57 @@ String KeyboardImpl::TranslateElementToUTF8String(eInputElements elementId)
     {
         if (nativeScancodeToDavaScancode[i] == elementId)
         {
+            String result;
+
             // Get ascii capable input source
             TISInputSourceRef inputSource = TISCopyCurrentASCIICapableKeyboardInputSource();
             CFDataRef layoutData = (CFDataRef)TISGetInputSourceProperty(inputSource, kTISPropertyUnicodeKeyLayoutData);
-            const UCKeyboardLayout* keyboardLayout = (const UCKeyboardLayout*)CFDataGetBytePtr(layoutData);
 
-            // Translate key to unicode using selected input source
-            const size_t maxLength = 4;
-            UniChar unicodeString[maxLength];
-            UniCharCount realLength;
-            uint32 deadKeyState;
-            UCKeyTranslate(keyboardLayout,
-                           i,
-                           kUCKeyActionDown,
-                           0,
-                           LMGetKbdType(),
-                           kUCKeyTranslateNoDeadKeysMask,
-                           &deadKeyState,
-                           maxLength,
-                           &realLength,
-                           unicodeString);
-
-            CFRelease(inputSource);
-
-            NSString* string = [NSString stringWithCharacters:unicodeString length:realLength];
-
-            NSCharacterSet* charactersToRemove = [[NSCharacterSet alphanumericCharacterSet] invertedSet];
-            NSString* trimmedString = [string stringByTrimmingCharactersInSet:charactersToRemove];
-
-            if ([trimmedString length] == 0)
+            if (layoutData != nullptr)
             {
-                // Non printable
-                return GetInputElementInfo(elementId).name;
+                const UCKeyboardLayout* keyboardLayout = (const UCKeyboardLayout*)CFDataGetBytePtr(layoutData);
+
+                // Translate key to unicode using selected input source
+                const size_t maxLength = 4;
+                UniChar unicodeString[maxLength];
+                UniCharCount realLength;
+                uint32 deadKeyState;
+                UCKeyTranslate(keyboardLayout,
+                               i,
+                               kUCKeyActionDown,
+                               0,
+                               LMGetKbdType(),
+                               kUCKeyTranslateNoDeadKeysMask,
+                               &deadKeyState,
+                               maxLength,
+                               &realLength,
+                               unicodeString);
+
+                NSString* string = [NSString stringWithCharacters:unicodeString length:realLength];
+
+                NSCharacterSet* charactersToRemove = [[NSCharacterSet alphanumericCharacterSet] invertedSet];
+                NSString* trimmedString = [string stringByTrimmingCharactersInSet:charactersToRemove];
+
+                if ([trimmedString length] == 0)
+                {
+                    // Non printable
+                    result = GetInputElementInfo(elementId).name;
+                }
+                else
+                {
+                    result = StringFromNSString([string uppercaseString]);
+                }
             }
             else
             {
-                return StringFromNSString(string);
+                // kTISPropertyUnicodeKeyLayoutData gives null for Japanese and some other languages,
+                // use default name in this case
+                result = GetInputElementInfo(elementId).name;
             }
+
+            CFRelease(inputSource);
+
+            return result;
         }
     }
 
