@@ -100,7 +100,7 @@ public:
         uint32 timeoutForDownload = 30; //!< this value passed to DownloadManager
         uint32 skipCDNConnectAfterAttempts = 3; //!< if local metadata exists and CDN is not available use local files without CDN
         uint32 downloaderMaxHandles = 8; //!< play with any values you like from 1 to max open file per process
-        uint32 downloaderChankBufSize = 512 * 1024; //!< 512Kb RAM buffer for one handle, you can set any value in bytes
+        uint32 downloaderChunkBufSize = 512 * 1024; //!< 512Kb RAM buffer for one handle, you can set any value in bytes
     };
 
     /** Start complex initialization process. You can call it again if need.

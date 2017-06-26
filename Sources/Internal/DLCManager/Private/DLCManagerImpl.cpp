@@ -219,7 +219,7 @@ void DLCManagerImpl::DumpInitialParams(const FilePath& dirToDownloadPacks, const
             << "        timeoutForDownload: " << hints_.timeoutForDownload << '\n'
             << "        skipCDNConnectAfterAttemps: " << hints_.skipCDNConnectAfterAttempts << '\n'
             << "        downloaderMaxHandles: " << hints_.downloaderMaxHandles << '\n'
-            << "        downloaderChankBufSize: " << hints_.downloaderChankBufSize << '\n'
+            << "        downloaderChankBufSize: " << hints_.downloaderChunkBufSize << '\n'
             << "    )\n"
             << ")\n";
 
@@ -236,7 +236,7 @@ void DLCManagerImpl::CreateDownloader()
     {
         DLCDownloader::Hints downloaderHints;
         downloaderHints.numOfMaxEasyHandles = static_cast<int>(hints.downloaderMaxHandles);
-        downloaderHints.chunkMemBuffSize = static_cast<int>(hints.downloaderChankBufSize);
+        downloaderHints.chunkMemBuffSize = static_cast<int>(hints.downloaderChunkBufSize);
 
         downloader.reset(DLCDownloader::Create());
         downloader->SetHints(downloaderHints);
