@@ -568,15 +568,19 @@ String FilePath::GetRelativePathname(const FilePath& forDirectory) const
 String FilePath::GetRelativePathname(const String& forDirectory) const
 {
     if (forDirectory.empty())
+    {
         return String();
+    }
 
     return GetRelativePathname(FilePath(forDirectory));
 }
 
 String FilePath::GetRelativePathname(const char8* forDirectory) const
 {
-    if (forDirectory == NULL)
+    if (forDirectory == nullptr)
+    {
         return String();
+    }
 
     return GetRelativePathname(FilePath(forDirectory));
 }
