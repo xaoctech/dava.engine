@@ -162,6 +162,8 @@ void DLCManagerImpl::FillPreloadedPacks()
     preloadedPacks.clear();
     if (!hints.preloadedPacks.empty())
     {
+        DVASSERT(hints.preloadedPacks.find(' ') == String::npos); // No spaces
+
         StringStream ss(hints.preloadedPacks);
         for (String packName; getline(ss, packName);)
         {
@@ -169,7 +171,6 @@ void DLCManagerImpl::FillPreloadedPacks()
             {
                 continue; // skip empty lines if any
             }
-            DVASSERT(packName.find(' ') == String::npos); // No spaces
             preloadedPacks.emplace(packName, PreloadedPack(packName));
         }
     }
@@ -237,6 +238,7 @@ void DLCManagerImpl::CreateDownloader()
         DLCDownloader::Hints downloaderHints;
         downloaderHints.numOfMaxEasyHandles = static_cast<int>(hints.downloaderMaxHandles);
         downloaderHints.chunkMemBuffSize = static_cast<int>(hints.downloaderChunkBufSize);
+        downloaderHints.timeout = static_cast<int>(hints.timeoutForDownload);
 
         downloader.reset(DLCDownloader::Create());
         downloader->SetHints(downloaderHints);
@@ -520,6 +522,16 @@ void DLCManagerImpl::TestRetryCountLocalMetaAndGoTo(InitState nextState, InitSta
     }
 }
 
+void DLCManagerImpl::FireNetworkReady(bool nextState)
+{
+    if (nextState != prevNetworkState || firstTimeNetworkState == false)
+    {
+        networkReady.Emit(nextState);
+        prevNetworkState = nextState;
+        firstTimeNetworkState = true;
+    }
+}
+
 void DLCManagerImpl::AskFooter()
 {
     //Logger::FrameworkDebug("pack manager ask_footer");
@@ -566,14 +578,14 @@ void DLCManagerImpl::AskFooter()
                 initState = InitState::LoadingRequestGetFooter;
                 log << "initState: " << ToString(initState) << std::endl;
 
-                networkReady.Emit(true);
+                FireNetworkReady(true);
             }
             else
             {
                 initErrorMsg = "failed get superpack size on server, download error: ";
                 log << initErrorMsg << " " << status << std::endl;
 
-                networkReady.Emit(false);
+                FireNetworkReady(false);
 
                 TestRetryCountLocalMetaAndGoTo(InitState::LoadingPacksDataFromLocalMeta, InitState::LoadingRequestAskFooter);
             }
@@ -629,14 +641,14 @@ void DLCManagerImpl::GetFooter()
             initState = InitState::LoadingRequestAskFileTable;
             log << "initState: " << ToString(initState) << std::endl;
 
-            networkReady.Emit(true);
+            FireNetworkReady(true);
         }
         else
         {
             initErrorMsg = "failed get footer from server, download error: ";
             log << initErrorMsg << " " << status << std::endl;
 
-            networkReady.Emit(false);
+            FireNetworkReady(false);
 
             TestRetryCountLocalMetaAndGoTo(InitState::LoadingPacksDataFromLocalMeta, InitState::LoadingRequestAskFooter);
         }
@@ -752,14 +764,14 @@ void DLCManagerImpl::GetFileTable()
                 retryCount = 0;
                 ReadContentAndExtractFileNames();
 
-                networkReady.Emit(true);
+                FireNetworkReady(true);
             }
             else
             {
                 initErrorMsg = "failed get fileTable from server, download error: ";
                 log << "error: " << initErrorMsg << std::endl;
 
-                networkReady.Emit(false);
+                FireNetworkReady(false);
 
                 TestRetryCountLocalMetaAndGoTo(InitState::LoadingPacksDataFromLocalMeta, InitState::LoadingRequestAskFileTable);
             }
@@ -845,14 +857,14 @@ void DLCManagerImpl::GetServerMeta()
             initState = InitState::UnpakingDB;
             log << "initState: " << ToString(initState) << std::endl;
 
-            networkReady.Emit(true);
+            FireNetworkReady(true);
         }
         else
         {
             initErrorMsg = "failed get meta from server, download error: ";
             log << initErrorMsg << status << std::endl;
 
-            networkReady.Emit(false);
+            FireNetworkReady(false);
 
             TestRetryCountLocalMetaAndGoTo(InitState::LoadingPacksDataFromLocalMeta, InitState::LoadingRequestAskMeta);
         }

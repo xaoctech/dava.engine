@@ -202,6 +202,7 @@ private:
     PackRequest* CreateNewRequest(const String& requestedPackName);
     bool IsLocalMetaAlreadyExist() const;
     void TestRetryCountLocalMetaAndGoTo(InitState nextState, InitState alternateState);
+    void FireNetworkReady(bool nextState);
     void ClearResouces();
 
     enum class ScanState : uint32
@@ -291,6 +292,8 @@ private:
     uint32 retryCount = 0; // count every initialization error during session
 
     std::unique_ptr<DLCDownloader> downloader;
+    bool prevNetworkState = false;
+    bool firstTimeNetworkState = false;
 };
 
 inline uint32 DLCManagerImpl::GetServerFooterCrc32() const
