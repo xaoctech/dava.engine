@@ -8,6 +8,7 @@
 
 namespace DAVA
 {
+class Window;
 class InputSystem;
 
 namespace Private
@@ -161,6 +162,7 @@ private:
 
     void Update();
     void OnEndFrame();
+    void OnWindowFocusChanged(DAVA::Window* window, bool focused);
 
     void HandleGamepadAdded(const Private::MainDispatcherEvent& e);
     void HandleGamepadRemoved(const Private::MainDispatcherEvent& e);

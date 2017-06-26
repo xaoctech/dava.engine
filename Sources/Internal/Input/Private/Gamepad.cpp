@@ -33,12 +33,16 @@ Gamepad::Gamepad(uint32 id)
     , buttons{}
     , axes{}
 {
-    endFrameConnectionToken = Engine::Instance()->endFrame.Connect(this, &Gamepad::OnEndFrame);
+    Engine* engine = Engine::Instance();
+    endFrameConnectionToken = engine->endFrame.Connect(this, &Gamepad::OnEndFrame);
+    engine->PrimaryWindow()->focusChanged.Connect(this, &Gamepad::OnWindowFocusChanged); // TODO: handle all the windows
 }
 
 Gamepad::~Gamepad()
 {
-    Engine::Instance()->endFrame.Disconnect(endFrameConnectionToken);
+    Engine* engine = Engine::Instance();
+    engine->endFrame.Disconnect(endFrameConnectionToken);
+    engine->PrimaryWindow()->focusChanged.Disconnect(this);
 }
 
 DigitalElementState Gamepad::GetStartButtonState() const
@@ -187,6 +191,23 @@ void Gamepad::OnEndFrame()
     for (DigitalElementState& buttonState : buttons)
     {
         buttonState.OnEndFrame();
+    }
+}
+
+void Gamepad::OnWindowFocusChanged(DAVA::Window* window, bool focused)
+{
+    // Reset gamepad state when window is unfocused
+    if (!focused)
+    {
+        /*for (uint32 i = eInputElements::GAMEPAD_FIRST_BUTTON; i <= eInputElements::GAMEPAD_LAST_BUTTON; ++i)
+        {
+            uint32 index = i - eInputElements::GAMEPAD_FIRST_BUTTON;
+            if (buttons[i].IsPressed())
+            {
+                buttons[i].Release();
+                buttonChangedMask.set(index);
+            }
+        }*/
     }
 }
 
