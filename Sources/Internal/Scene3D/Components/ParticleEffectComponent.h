@@ -76,6 +76,9 @@ public:
     bool GetRefractionVisible() const;
     void SetRefractionVisible(bool visible);
 
+    float32 GetStartFromTime() const;
+    void SetStartFromTime(float32 time);
+
     inline eState GetAnimationState() const;
     inline ParticleRenderObject* GetRenderObject() const;
 
@@ -107,6 +110,7 @@ private:
     uint32 repeatsCount = -1; // note that now it's really count - not depending if effect is stop when empty or by duration - it would be restarted if currRepeatsCount<repetsCount
     int32 desiredLodLevel = 1;
     int32 activeLodLevel = 1;
+    float32 startFromTime = 0.0f;
 
     bool stopWhenEmpty = false; //if true effect is considered finished when no particles left, otherwise effect is considered finished if time>effectDuration
     bool clearOnRestart = true; // when effect is restarted repeatsCount
@@ -146,12 +150,23 @@ public:
                          MEMBER(effectDuration, "effectDuration", I_VIEW | I_EDIT | I_SAVE)
                          MEMBER(clearOnRestart, "clearOnRestart", I_VIEW | I_EDIT | I_SAVE)
 
+                         PROPERTY("startFromTime", "Start From Time", GetStartFromTime, SetStartFromTime, I_SAVE | I_VIEW | I_EDIT)
                          PROPERTY("visibleReflection", "Visible Reflection", GetReflectionVisible, SetReflectionVisible, I_SAVE | I_VIEW | I_EDIT)
                          PROPERTY("visibleRefraction", "Visible Refraction", GetRefractionVisible, SetRefractionVisible, I_SAVE | I_VIEW | I_EDIT)
                          );
 
     DAVA_VIRTUAL_REFLECTION(ParticleEffectComponent, Component);
 };
+
+inline float32 ParticleEffectComponent::GetStartFromTime() const
+{
+    return startFromTime;
+}
+
+inline void ParticleEffectComponent::SetStartFromTime(float32 time)
+{
+    startFromTime = Max(0.0f, time);
+}
 
 ParticleEffectComponent::eState ParticleEffectComponent::GetAnimationState() const
 {
