@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Base/BaseTypes.h"
 #include "DLCManager/DLCDownloader.h"
 #include "DLCManager/DLCManager.h"
+#include "FileSystem/FilePath.h"
 #include "Compression/Compressor.h"
 
 namespace DAVA
