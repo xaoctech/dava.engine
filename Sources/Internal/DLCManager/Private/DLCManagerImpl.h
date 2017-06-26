@@ -148,7 +148,7 @@ public:
 
     void SetRequestingEnabled(bool value) override;
 
-    void Update(float frameDelta);
+    void Update(float frameDelta, bool inBackground);
 
     bool IsPackDownloaded(const String& packName) override;
 
@@ -227,6 +227,7 @@ private:
         Starting,
         Done
     };
+
     // info to scan local pack files
     struct LocalFileInfo
     {
@@ -258,6 +259,33 @@ private:
     std::unique_ptr<RequestManager> requestManager;
     std::unique_ptr<PackMetaData> meta;
 
+    struct PreloadedPack : IRequest
+    {
+        explicit PreloadedPack(const String& pack)
+            : packName(pack)
+        {
+        }
+        const String& GetRequestedPackName() const override
+        {
+            return packName;
+        }
+        uint64 GetSize() const override
+        {
+            return 0;
+        };
+        uint64 GetDownloadedSize() const override
+        {
+            return 0;
+        }
+        bool IsDownloaded() const override
+        {
+            return true;
+        }
+
+        String packName;
+    };
+
+    Map<String, PreloadedPack> preloadedPacks;
     Vector<PackRequest*> requests; // not forget to delete in destructor
     Vector<PackRequest*> delayedRequests; // move to requests after initialization finished
 
