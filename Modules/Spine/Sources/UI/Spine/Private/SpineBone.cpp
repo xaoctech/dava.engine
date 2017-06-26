@@ -14,28 +14,16 @@ SpineBone::SpineBone(spBone* bone)
 
 Vector2 SpineBone::GetPosition() const
 {
-    if (bonePtr)
-    {
-        return Vector2(bonePtr->worldX, -bonePtr->worldY);
-    }
-    return Vector2();
+    return Vector2(bonePtr->worldX, -bonePtr->worldY);
 }
 
 Vector2 SpineBone::GetScale() const
 {
-    if (bonePtr)
-    {
-        return Vector2(bonePtr->scaleX, bonePtr->scaleY);
-    }
-    return Vector2();
+    return Vector2(bonePtr->scaleX, bonePtr->scaleY);
 }
 
 float32 SpineBone::GetAngle() const
 {
-    if (bonePtr)
-    {
-        return float32(-bonePtr->rotation);
-    }
-    return 0.f;
+    return float32(-bonePtr->rotation);
 }
 }

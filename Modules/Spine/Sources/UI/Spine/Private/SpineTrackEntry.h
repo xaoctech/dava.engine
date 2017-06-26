@@ -18,6 +18,9 @@ public:
     /** Return loopplayback flag of current track. */
     bool IsLoop() const;
 
+    /** Return animation name of current track. */
+    String GetName() const;
+
 private:
     spTrackEntry* trackPtr = nullptr;
 };

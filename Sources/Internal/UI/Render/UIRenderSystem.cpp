@@ -158,11 +158,11 @@ void UIRenderSystem::RenderControlHierarhy(UIControl* control, const UIGeometric
     const UIDebugRenderComponent* debugRenderComponent = control->GetComponent<UIDebugRenderComponent>();
     if (debugRenderComponent && debugRenderComponent->IsEnabled())
     {
-        DebugRender(debugRenderComponent, drawData, unrotatedRect);
+        DebugRender(debugRenderComponent, drawData);
     }
 }
 
-void UIRenderSystem::DebugRender(const UIDebugRenderComponent* component, const UIGeometricData& geometricData, const Rect& unrotatedRect)
+void UIRenderSystem::DebugRender(const UIDebugRenderComponent* component, const UIGeometricData& geometricData)
 {
     renderSystem2D->PushClip();
     renderSystem2D->RemoveClip();
@@ -171,36 +171,36 @@ void UIRenderSystem::DebugRender(const UIDebugRenderComponent* component, const 
     if (drawMode != UIDebugRenderComponent::DRAW_NEVER &&
         (drawMode != UIDebugRenderComponent::DRAW_ONLY_IF_NONZERO || !component->GetControl()->GetPivotPoint().IsZero()))
     {
-        RenderPivotPoint(component, unrotatedRect);
+        RenderPivotPoint(component, geometricData);
     }
     renderSystem2D->PopClip();
 }
 
-void UIRenderSystem::RenderDebugRect(const UIDebugRenderComponent* component, const UIGeometricData& gd)
+void UIRenderSystem::RenderDebugRect(const UIDebugRenderComponent* component, const UIGeometricData& geometricData)
 {
     const Color& drawColor = component->GetDrawColor();
 
-    if (gd.angle != 0.0f)
+    if (geometricData.angle != 0.0f)
     {
         Polygon2 poly;
-        gd.GetPolygon(poly);
+        geometricData.GetPolygon(poly);
 
         renderSystem2D->DrawPolygon(poly, true, drawColor);
     }
     else
     {
-        renderSystem2D->DrawRect(gd.GetUnrotatedRect(), drawColor);
+        renderSystem2D->DrawRect(geometricData.GetUnrotatedRect(), drawColor);
     }
 }
 
-void UIRenderSystem::RenderPivotPoint(const UIDebugRenderComponent* component, const Rect& drawRect)
+void UIRenderSystem::RenderPivotPoint(const UIDebugRenderComponent* component, const UIGeometricData& geometricData)
 {
     static const float32 PIVOT_POINT_MARK_RADIUS = 10.0f;
     static const float32 PIVOT_POINT_MARK_HALF_LINE_LENGTH = 13.0f;
 
     const Color& drawColor = component->GetDrawColor();
 
-    Vector2 pivotPointCenter = drawRect.GetPosition() + component->GetControl()->GetPivotPoint() * component->GetControl()->GetScale();
+    Vector2 pivotPointCenter = geometricData.GetUnrotatedRect().GetPosition() + component->GetControl()->GetPivotPoint() * geometricData.scale;
     renderSystem2D->DrawCircle(pivotPointCenter, PIVOT_POINT_MARK_RADIUS, drawColor);
 
     // Draw the cross mark.

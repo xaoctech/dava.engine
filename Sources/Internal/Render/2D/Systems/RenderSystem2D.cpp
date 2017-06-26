@@ -719,8 +719,8 @@ void RenderSystem2D::PushBatch(const BatchDescriptor2D& batchDesc)
         {
             DVASSERT(batchDesc.texCoordPointer[texStream] != nullptr);
             BatchVertex& v = *OffsetPointer<BatchVertex>(currentVertexBuffer.data(), vertexStride * (vertexIndex + i));
-            v.uv_ext[texStream - 1].x = batchDesc.texCoordPointer[texStream][i * 2];
-            v.uv_ext[texStream - 1].y = batchDesc.texCoordPointer[texStream][i * 2 + 1];
+            v.uv_ext[texStream - 1].x = batchDesc.texCoordPointer[texStream][i * texStride];
+            v.uv_ext[texStream - 1].y = batchDesc.texCoordPointer[texStream][i * texStride + 1];
         }
     }
 

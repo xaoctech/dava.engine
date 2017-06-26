@@ -18,8 +18,9 @@ namespace DAVA
 {
 namespace SpinePrivate
 {
+static const int32 MAX_VERTICES_PER_BATCH = 1024;
 static const uint16 QUAD_TRIANGLES[6] = { 0, 1, 2, 2, 3, 0 };
-static const int32 QUAD_VERTICES_COUNT = 8;
+static const int32 QUAD_VERTICES_COUNT = 4;
 static const int32 QUAD_TRIANGLES_COUNT = 6;
 static const int32 VERTICES_COMPONENTS_COUNT = 2;
 static const int32 TEXTURE_COMPONENTS_COUNT = 2;
@@ -46,7 +47,7 @@ int32 MaxVerticesCount(spSkeleton* skeleton)
         {
         case SP_ATTACHMENT_REGION:
         {
-            checkIsMax(QUAD_VERTICES_COUNT);
+            checkIsMax(QUAD_VERTICES_COUNT * VERTICES_COMPONENTS_COUNT);
             break;
         }
         case SP_ATTACHMENT_MESH:
@@ -204,7 +205,6 @@ bool SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath_)
         }
     }
 
-    DVASSERT(skeletonData != nullptr);
     if (skeletonData == nullptr)
     {
         Logger::Error("[SpineSkeleton::Load] %s", dataLoadingError.c_str());
@@ -213,7 +213,6 @@ bool SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath_)
     }
 
     skeleton = spSkeleton_create(skeletonData);
-    DVASSERT(skeleton != nullptr);
     if (skeleton == nullptr)
     {
         Logger::Error("[SpineSkeleton::Load] Create skeleton failure!");
@@ -222,7 +221,6 @@ bool SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath_)
     }
 
     state = spAnimationState_create(spAnimationStateData_create(skeleton->data));
-    DVASSERT(state != nullptr);
     if (state == nullptr)
     {
         Logger::Error("[SpineSkeleton::Load] %s", "Error creating animation state!");
@@ -279,14 +277,14 @@ bool SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath_)
 
 void SpineSkeleton::PushBatch()
 {
-    if (!verticesCoords.empty())
+    uint32 vCount = static_cast<uint32>(verticesCoords.size()) - currentVerticesStart;
+    uint32 iCount = static_cast<uint32>(verticesIndices.size()) - currentIndicesStart;
+    if (vCount > 0 && iCount > 0)
     {
-        uint32 vCount = static_cast<uint32>(verticesCoords.size());
-        uint32 iCount = static_cast<uint32>(verticesIndices.size());
-        float32* vCoords = reinterpret_cast<float32*>(&verticesCoords[currentVerticesStart]);
-        float32* uvCoords = reinterpret_cast<float32*>(&verticesUVs[currentVerticesStart]);
-        uint32* colors = &verticesColors[currentVerticesStart];
-        uint16* indices = &verticesIndices[currentIndicesStart];
+        float32* vCoords = reinterpret_cast<float32*>(verticesCoords.data() + currentVerticesStart);
+        float32* uvCoords = reinterpret_cast<float32*>(verticesUVs.data() + currentVerticesStart);
+        uint32* colors = verticesColors.data() + currentVerticesStart;
+        uint16* indices = verticesIndices.data() + currentIndicesStart;
 
         currentVerticesStart += vCount;
         currentIndicesStart += iCount;
@@ -381,21 +379,25 @@ void SpineSkeleton::Update(const float32 timeElapsed)
                 SwitchTexture(reinterpret_cast<Texture*>(reinterpret_cast<spAtlasRegion*>(attachment->rendererObject)->page->rendererObject));
 
                 uvs = attachment->uvs;
-                verticesCount = attachment->trianglesCount * 3;
+                verticesCount = attachment->super.worldVerticesLength / 2;
                 indices = attachment->triangles;
                 indicesCount = attachment->trianglesCount;
                 break;
             }
             default:
-                DVASSERT(false, "Error: Wrong spine-attachment type!");
+                // Skip other attachment types
                 break;
             }
 
             // TODO: mix colors from control
             // TODO: store slot color for bone
 
-            int32 verticesCountFinal = verticesCount / SpinePrivate::VERTICES_COMPONENTS_COUNT;
-            for (int32 i = 0; i < verticesCountFinal; ++i)
+            if ((verticesCoords.size() - currentVerticesStart + verticesCount) > 128) // SpinePrivate::MAX_VERTICES_PER_BATCH)
+            {
+                PushBatch();
+            }
+
+            for (int32 i = 0; i < verticesCount; ++i)
             {
                 Vector2 point(worldVertices[i * SpinePrivate::VERTICES_COMPONENTS_COUNT], -worldVertices[i * SpinePrivate::VERTICES_COMPONENTS_COUNT + 1]);
                 Vector2 uv(uvs[i * SpinePrivate::VERTICES_COMPONENTS_COUNT], uvs[i * SpinePrivate::VERTICES_COMPONENTS_COUNT + 1]);
@@ -454,12 +456,22 @@ std::shared_ptr<SpineTrackEntry> SpineSkeleton::SetAnimation(int32 trackIndex, c
     if (skeleton != nullptr && state != nullptr)
     {
         spAnimation* animation = spSkeletonData_findAnimation(skeleton->data, name.c_str());
-        if (!animation)
+        if (animation)
+        {
+            spTrackEntry* entry = spAnimationState_setAnimation(state, trackIndex, animation, loop);
+            if (entry)
+            {
+                return std::make_shared<SpineTrackEntry>(entry);
+            }
+            else
+            {
+                Logger::Error("[SpineSkeleton] Animation '%s' was not setted!", name.c_str());
+            }
+        }
+        else
         {
             Logger::Error("[SpineSkeleton] Animation '%s' was not found!", name.c_str());
-            return nullptr;
         }
-        return std::make_shared<SpineTrackEntry>(spAnimationState_setAnimation(state, trackIndex, animation, loop));
     }
     return nullptr;
 }
@@ -469,12 +481,22 @@ std::shared_ptr<SpineTrackEntry> SpineSkeleton::AddAnimation(int32 trackIndex, c
     if (skeleton != nullptr && state != nullptr)
     {
         spAnimation* animation = spSkeletonData_findAnimation(skeleton->data, name.c_str());
-        if (!animation)
+        if (animation)
+        {
+            spTrackEntry* entry = spAnimationState_addAnimation(state, trackIndex, animation, loop, delay);
+            if (entry)
+            {
+                return std::make_shared<SpineTrackEntry>(entry);
+            }
+            else
+            {
+                Logger::Error("[SpineSkeleton] Animation '%s' was not added!", name.c_str());
+            }
+        }
+        else
         {
             Logger::Error("[SpineSkeleton] Animation '%s' was not found!", name.c_str());
-            return nullptr;
         }
-        return std::make_shared<SpineTrackEntry>(spAnimationState_addAnimation(state, trackIndex, animation, loop, delay));
     }
     return nullptr;
 }
@@ -483,7 +505,11 @@ std::shared_ptr<SpineTrackEntry> SpineSkeleton::GetTrack(int32 trackIndex)
 {
     if (state != nullptr)
     {
-        return std::make_shared<SpineTrackEntry>(spAnimationState_getCurrent(state, trackIndex));
+        spTrackEntry* entry = spAnimationState_getCurrent(state, trackIndex);
+        if (entry)
+        {
+            return std::make_shared<SpineTrackEntry>(entry);
+        }
     }
     return nullptr;
 }
@@ -558,7 +584,11 @@ std::shared_ptr<SpineBone> SpineSkeleton::FindBone(const String& boneName)
 {
     if (skeleton)
     {
-        return std::make_shared<SpineBone>(spSkeleton_findBone(skeleton, boneName.c_str()));
+        spBone* bone = spSkeleton_findBone(skeleton, boneName.c_str());
+        if (bone)
+        {
+            return std::make_shared<SpineBone>(bone);
+        }
     }
     return nullptr;
 }

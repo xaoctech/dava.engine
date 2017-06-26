@@ -1,12 +1,13 @@
 #include "UI/Spine/UISpineSystem.h"
 
-#include "UI/Spine/Private/SpineSkeleton.h"
 #include "UI/Spine/Private/SpineBone.h"
+#include "UI/Spine/Private/SpineSkeleton.h"
 #include "UI/Spine/Private/SpineTrackEntry.h"
 #include "UI/Spine/UISpineAttachControlsToBonesComponent.h"
 #include "UI/Spine/UISpineComponent.h"
 #include "UI/Spine/UISpineSingleComponent.h"
 
+#include <Logger/Logger.h>
 #include <Render/2D/Systems/RenderSystem2D.h>
 #include <UI/Components/UIComponent.h>
 #include <UI/Layouts/UILayoutSourceRectComponent.h>
@@ -114,9 +115,11 @@ void UISpineSystem::Process(float32 elapsedTime)
             node.skeleton->SetTimeScale(node.spine->GetTimeScale());
             if (!node.skeleton->SetSkin(node.spine->GetSkinName()))
             {
-                // Skin not found, restore current skin's name
+                // Skin not found, restore current skin name
                 node.spine->SetSkinName(node.skeleton->GetSkinName());
             }
+
+            node.skeleton->ResetSkeleton();
             switch (node.spine->GetAnimationState())
             {
             case UISpineComponent::PLAYED:
@@ -125,15 +128,13 @@ void UISpineSystem::Process(float32 elapsedTime)
                 if (name.empty() || node.skeleton->SetAnimation(0, name, node.spine->IsLoopedPlayback()) == nullptr)
                 {
                     node.skeleton->ClearTracks();
-                    node.skeleton->ResetSkeleton();
-                    // Skin not found, clear animation's name
-                    node.spine->SetSkinName("");
+                    // Animation not found, clear animation name
+                    node.spine->SetAnimationName("");
                 }
+                break;
             }
-            break;
             case UISpineComponent::STOPPED:
                 node.skeleton->ClearTracks();
-                node.skeleton->ResetSkeleton();
                 break;
             }
         }
@@ -330,6 +331,14 @@ void UISpineSystem::BuildBoneLinks(SpineNode& node)
                     link.control = boneControl;
                     node.boneLinks.push_back(std::move(link));
                 }
+                else
+                {
+                    Logger::Warning("[UISpineSystem] Can't find control with path '%s'", bonePair.controlPath.c_str());
+                }
+            }
+            else
+            {
+                Logger::Warning("[UISpineSystem] Can't find bone with name '%s'", bonePair.boneName.c_str());
             }
         }
     }

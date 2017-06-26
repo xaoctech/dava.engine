@@ -47,16 +47,19 @@ UISpineComponent::~UISpineComponent() = default;
 void UISpineComponent::Modify(bool needReload)
 {
     UIControl* control = GetControl();
-    UIControlSystem* scene = control->GetScene();
-    if (scene)
+    if (control)
     {
-        UISpineSingleComponent* spineSingle = scene->GetSingleComponent<UISpineSingleComponent>();
-        if (spineSingle)
+        UIControlSystem* scene = control->GetScene();
+        if (scene)
         {
-            spineSingle->spineModified.insert(control);
-            if (needReload)
+            UISpineSingleComponent* spineSingle = scene->GetSingleComponent<UISpineSingleComponent>();
+            if (spineSingle)
             {
-                spineSingle->spineNeedReload.insert(control);
+                spineSingle->spineModified.insert(control);
+                if (needReload)
+                {
+                    spineSingle->spineNeedReload.insert(control);
+                }
             }
         }
     }
