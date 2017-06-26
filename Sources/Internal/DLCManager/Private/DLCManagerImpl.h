@@ -92,7 +92,6 @@ public:
         LoadingRequestAskMeta, //!< start loading DB from server
         LoadingRequestGetMeta, //!< download DB and check it's hash
         UnpakingDB, //!< unpack DB from zip
-        //        DeleteDownloadedPacksIfNotMatchHash, //!< go throw all local packs and unmount it if hash not match then delete
         LoadingPacksDataFromLocalMeta, //!< open local DB and build pack index for all packs
         WaitScanThreadToFinish, //!< wait till finish scanning of downloaded .dvpl files
         MoveDeleyedRequestsToQueue, //!< mount all local packs downloaded and not mounted later
@@ -121,8 +120,6 @@ public:
     bool IsInitialized() const override;
 
     InitState GetInitState() const;
-
-    //InitError GetInitError() const;
 
     const String& GetLastErrorMessage() const;
 
