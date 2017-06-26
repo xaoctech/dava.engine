@@ -147,3 +147,9 @@ DAVA::Texture* CreateSingleMipTexture(const DAVA::FilePath& imagePath)
 
     return result;
 }
+
+const DAVA::FilePath& DefaultCursorPath()
+{
+    static const FilePath path = "~res:/ResourceEditor/LandscapeEditor/Tools/cursor/cursor.png";
+    return path;
+}
