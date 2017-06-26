@@ -28,7 +28,7 @@ static const DAVA::FastName TILEMASK_EDTIOR_TEXTURE_TOOL("toolTexture");
 static const DAVA::FastName TILEMASK_EDITOR_MATERIAL_PASS("2d");
 
 TilemaskEditorSystem::TilemaskEditorSystem(DAVA::Scene* scene)
-    : LandscapeEditorSystem(scene, "~res:/ResourceEditor/LandscapeEditor/Tools/cursor/cursor.png")
+    : LandscapeEditorSystem(scene, DefaultCursorPath())
     , curToolSize(0)
     , toolImageTexture(nullptr)
     , landscapeTilemaskTexture(nullptr)
