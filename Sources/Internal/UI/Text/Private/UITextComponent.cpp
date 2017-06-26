@@ -63,11 +63,9 @@ int32 UITextComponent::GetAlign() const
 
 void UITextComponent::SetText(const String& value)
 {
-    if (text != value)
-    {
-        text = value;
-        modified = true;
-    }
+    // force set modified flag
+    text = value;
+    modified = true;
 }
 
 String UITextComponent::GetText() const
