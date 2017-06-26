@@ -197,17 +197,20 @@ void Gamepad::OnEndFrame()
 void Gamepad::OnWindowFocusChanged(DAVA::Window* window, bool focused)
 {
     // Reset gamepad state when window is unfocused
+
     if (!focused)
     {
-        /*for (uint32 i = eInputElements::GAMEPAD_FIRST_BUTTON; i <= eInputElements::GAMEPAD_LAST_BUTTON; ++i)
+        for (uint32 i = eInputElements::GAMEPAD_FIRST_BUTTON; i <= eInputElements::GAMEPAD_LAST_BUTTON; ++i)
         {
-            uint32 index = i - eInputElements::GAMEPAD_FIRST_BUTTON;
-            if (buttons[i].IsPressed())
-            {
-                buttons[i].Release();
-                buttonChangedMask.set(index);
-            }
-        }*/
+            HandleButtonPress(static_cast<eInputElements>(i), false);
+        }
+
+        for (uint32 i = eInputElements::GAMEPAD_FIRST_AXIS; i <= eInputElements::GAMEPAD_LAST_AXIS; ++i)
+        {
+            eInputElements axis = static_cast<eInputElements>(i);
+            HandleAxisMovement(axis, 0.0f, true);
+            HandleAxisMovement(axis, 0.0f, false);
+        }
     }
 }
 
