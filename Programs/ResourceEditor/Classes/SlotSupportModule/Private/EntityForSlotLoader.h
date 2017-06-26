@@ -23,5 +23,10 @@ protected:
 
 private:
     DAVA::TArc::ContextAccessor* accessor = nullptr;
-    DAVA::Vector<DAVA::Function<void(DAVA::String&&)>> callbacks;
+    struct CallbackInfo
+    {
+        DAVA::Function<void(DAVA::String&&)> callback;
+        DAVA::String message;
+    };
+    DAVA::Vector<CallbackInfo> callbacks;
 };
