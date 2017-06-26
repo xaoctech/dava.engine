@@ -16,7 +16,7 @@ class Physics;
 class PhysicsComponent;
 class CollisionShapeComponent;
 
-class PhysicsSystem : public SceneSystem
+class PhysicsSystem final : public SceneSystem
 {
 public:
     PhysicsSystem(Scene* scene);

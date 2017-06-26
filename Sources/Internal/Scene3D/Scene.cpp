@@ -56,6 +56,10 @@
 
 #include "Render/Renderer.h"
 
+#if defined(__DAVAENGINE_PHYSICS_DEBUG_DRAW_ENABLED__)
+#include "PhysicsDebug/PhysicsDebugDrawSystem.h"
+#endif
+
 #include <functional>
 
 namespace DAVA
@@ -257,6 +261,10 @@ void Scene::CreateSystems()
         physicsSystem = new PhysicsSystem(this);
         AddSystem(physicsSystem, 0, SCENE_SYSTEM_REQUIRE_PROCESS);
     }
+#endif
+
+#if defined(__DAVAENGINE_PHYSICS_DEBUG_DRAW_ENABLED__)
+    AddSystem(new PhysicsDebugDrawSystem(this), 0, SCENE_SYSTEM_REQUIRE_PROCESS);
 #endif
 
     if (SCENE_SYSTEM_TRANSFORM_FLAG & systemsMask)

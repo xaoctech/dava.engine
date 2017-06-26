@@ -214,14 +214,14 @@ void PhysicsSystem::Process(float32 timeElapsed)
 
     if (isSimulationEnabled == false)
     {
-        DrawDebugObject();
+        //DrawDebugObject();
         SyncTransformToPhysx();
         return;
     }
 
     if (isSimulationRunning == false)
     {
-        DrawDebugInfo();
+        //DrawDebugInfo();
         physicsScene->simulate(timeElapsed, nullptr, simulationBlock, simulationBlockSize);
         isSimulationRunning = true;
     }
@@ -251,9 +251,6 @@ void PhysicsSystem::SetDrawDebugInfo(bool drawDebugInfo_)
 {
     drawDebugInfo = drawDebugInfo_;
     physx::PxReal enabled = drawDebugInfo == true ? 1.0f : 0.0f;
-    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_SHAPES, enabled);
-    //physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_STATIC, enabled);
-    //physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_DYNAMIC, enabled);
     physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eACTOR_AXES, 2.0f * enabled);
     physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eSCALE, enabled);
 
