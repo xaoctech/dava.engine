@@ -221,7 +221,7 @@ void PhysicsSystem::Process(float32 timeElapsed)
 
     if (isSimulationRunning == false)
     {
-        //DrawDebugInfo();
+        DrawDebugInfo();
         physicsScene->simulate(timeElapsed, nullptr, simulationBlock, simulationBlockSize);
         isSimulationRunning = true;
     }

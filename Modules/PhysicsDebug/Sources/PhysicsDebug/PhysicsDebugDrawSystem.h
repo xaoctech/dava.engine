@@ -3,6 +3,8 @@
 #include <Entity/SceneSystem.h>
 #include <Base/Set.h>
 
+#include <physx/geometry/PxGeometryHelpers.h>
+
 namespace DAVA
 {
 class RenderObject;
@@ -21,8 +23,14 @@ public:
     void Process(float32 timeElapsed) override;
 
 private:
-    UnorderedMap<Component*, RenderObject*> renderObjects;
-    uint32 vertexLayoutId;
+    struct RenderObjectInfo
+    {
+        RenderObject* ro = nullptr;
+        physx::PxGeometryHolder geomHolder;
+        physx::PxTransform localPose;
+    };
+    UnorderedMap<CollisionShapeComponent*, RenderObjectInfo> renderObjects;
+    static uint32 vertexLayoutId;
 
     Set<CollisionShapeComponent*> pendingComponents;
 };
