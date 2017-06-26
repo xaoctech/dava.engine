@@ -103,6 +103,8 @@ private:
 
     uint32 numOfDownloadedFile = 0;
 
+    int32 letsTryOnceMore = 10; // 10 frames to try write append footer
+
     // if this field is false, you can check fileIndexes
     // else fileIndexes maybe empty and wait initialization
     bool delayedRequest = true;
