@@ -85,7 +85,7 @@ public:
 		DLCManager requesting disabled before signal.
 		If you receive this signal first check available space on device.
 		*/
-    Signal<const String&, int32_t> fileErrorOccured;
+    Signal<const String&, int32> fileErrorOccured;
 
     /**
 	    User fills hints to internal implementation.

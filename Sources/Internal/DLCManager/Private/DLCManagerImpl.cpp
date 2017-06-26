@@ -113,12 +113,12 @@ void DLCManagerImpl::ClearResouces()
     mapFileData.clear();
     startFileNameIndexesInUncompressedNames.clear();
 
-    if (downloadTaskId != nullptr)
+    if (downloadTask != nullptr)
     {
         if (downloader != nullptr)
         {
-            downloader->RemoveTask(downloadTaskId);
-            downloadTaskId = nullptr;
+            downloader->RemoveTask(downloadTask);
+            downloadTask = nullptr;
         }
     }
 
@@ -203,7 +203,7 @@ static std::ostream& operator<<(std::ostream& os, const tabs& t)
     return os;
 }
 
-void DLCManagerImpl::TestLoggerAndDumpInitials(const FilePath& dirToDownloadPacks, const String& urlToServerSuperpack, const Hints& hints_)
+void DLCManagerImpl::DumpInitialParams(const FilePath& dirToDownloadPacks, const String& urlToServerSuperpack, const Hints& hints_)
 {
     if (!log.is_open())
     {
@@ -248,28 +248,32 @@ void DLCManagerImpl::TestLoggerAndDumpInitials(const FilePath& dirToDownloadPack
     }
 }
 
+void DLCManagerImpl::CreateDownloader()
+{
+    if (!downloader)
+    {
+        DLCDownloader::Hints downloaderHints;
+        downloaderHints.numOfMaxEasyHandles = static_cast<int>(hints.downloaderMaxHandles);
+        downloaderHints.chunkMemBuffSize = static_cast<int>(hints.downloaderChankBufSize);
+
+        downloader.reset(DLCDownloader::Create());
+        downloader->SetHints(downloaderHints);
+    }
+}
+
 void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
                                 const String& urlToServerSuperpack_,
                                 const Hints& hints_)
 {
     DVASSERT(Thread::IsMainThread());
-    using namespace std;
 
     bool isFirstTimeCall = (log.is_open() == false);
 
-    TestLoggerAndDumpInitials(dirToDownloadPacks_, urlToServerSuperpack_, hints_);
+    DumpInitialParams(dirToDownloadPacks_, urlToServerSuperpack_, hints_);
 
-    log << __FUNCTION__ << endl;
+    log << __FUNCTION__ << std::endl;
 
-    DLCDownloader::Hints downloaderHints;
-    downloaderHints.numOfMaxEasyHandles = static_cast<int>(hints.downloaderMaxHandles);
-    downloaderHints.chunkMemBuffSize = static_cast<int>(hints.downloaderChankBufSize);
-
-    if (!downloader)
-    {
-        downloader.reset(DLCDownloader::Create());
-        downloader->SetHints(downloaderHints);
-    }
+    CreateDownloader();
 
     if (!IsInitialized())
     {
@@ -287,10 +291,10 @@ void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
 
     // if Initialize called second time
     fullSizeServerData = 0;
-    if (nullptr != downloadTaskId)
+    if (nullptr != downloadTask)
     {
-        downloader->RemoveTask(downloadTaskId);
-        downloadTaskId = nullptr;
+        downloader->RemoveTask(downloadTask);
+        downloadTask = nullptr;
     }
 
     initState = InitState::LoadingRequestAskFooter;
@@ -540,22 +544,22 @@ void DLCManagerImpl::AskFooter()
 
     DVASSERT(0 == fullSizeServerData);
 
-    if (nullptr == downloadTaskId)
+    if (nullptr == downloadTask)
     {
-        downloadTaskId = downloader->StartGetContentSize(urlToSuperPack);
-        if (nullptr == downloadTaskId)
+        downloadTask = downloader->StartGetContentSize(urlToSuperPack);
+        if (nullptr == downloadTask)
         {
             DAVA_THROW(Exception, "can't start get_size task with url: " + urlToSuperPack);
         }
     }
     else
     {
-        DLCDownloader::TaskStatus status = downloader->GetTaskStatus(downloadTaskId);
+        DLCDownloader::TaskStatus status = downloader->GetTaskStatus(downloadTask);
 
         if (DLCDownloader::TaskState::Finished == status.state)
         {
-            downloader->RemoveTask(downloadTaskId);
-            downloadTaskId = nullptr;
+            downloader->RemoveTask(downloadTask);
+            downloadTask = nullptr;
 
             bool allGood = !status.error.errorHappened;
             if (allGood)
@@ -572,8 +576,8 @@ void DLCManagerImpl::AskFooter()
                 uint32 sizeofFooter = static_cast<uint32>(sizeof(initFooterOnServer));
 
                 memBufWriter.reset(new MemoryBufferWriter(&initFooterOnServer, sizeofFooter));
-                downloadTaskId = downloader->StartTask(urlToSuperPack, *memBufWriter, DLCDownloader::Range(downloadOffset, sizeofFooter));
-                if (nullptr == downloadTaskId)
+                downloadTask = downloader->StartTask(urlToSuperPack, *memBufWriter, DLCDownloader::Range(downloadOffset, sizeofFooter));
+                if (nullptr == downloadTask)
                 {
                     DAVA_THROW(Exception, "can't start get_size task with url: " + urlToSuperPack);
                 }
@@ -617,12 +621,12 @@ void DLCManagerImpl::GetFooter()
 {
     //Logger::FrameworkDebug("pack manager get_footer");
 
-    DLCDownloader::TaskStatus status = downloader->GetTaskStatus(downloadTaskId);
+    DLCDownloader::TaskStatus status = downloader->GetTaskStatus(downloadTask);
 
     if (DLCDownloader::TaskState::Finished == status.state)
     {
-        downloader->RemoveTask(downloadTaskId);
-        downloadTaskId = nullptr;
+        downloader->RemoveTask(downloadTask);
+        downloadTask = nullptr;
 
         bool allGood = !status.error.errorHappened;
         if (allGood)
@@ -677,8 +681,8 @@ void DLCManagerImpl::AskFileTable()
 
     uint64 downloadOffset = fullSizeServerData - (sizeof(initFooterOnServer) + initFooterOnServer.info.filesTableSize);
 
-    downloadTaskId = downloader->StartTask(urlToSuperPack, localCacheFileTable.GetAbsolutePathname(), DLCDownloader::Range(downloadOffset, buffer.size()));
-    if (nullptr == downloadTaskId)
+    downloadTask = downloader->StartTask(urlToSuperPack, localCacheFileTable.GetAbsolutePathname(), DLCDownloader::Range(downloadOffset, buffer.size()));
+    if (nullptr == downloadTask)
     {
         DAVA_THROW(DAVA::Exception, "can't start downloading into buffer");
     }
@@ -752,13 +756,13 @@ void DLCManagerImpl::GetFileTable()
 
     DLCDownloader::TaskStatus status;
 
-    if (downloadTaskId != nullptr)
+    if (downloadTask != nullptr)
     {
-        status = downloader->GetTaskStatus(downloadTaskId);
+        status = downloader->GetTaskStatus(downloadTask);
         if (DLCDownloader::TaskState::Finished == status.state)
         {
-            downloader->RemoveTask(downloadTaskId);
-            downloadTaskId = nullptr;
+            downloader->RemoveTask(downloadTask);
+            downloadTask = nullptr;
 
             bool allGood = !status.error.errorHappened;
             if (allGood)
@@ -831,8 +835,8 @@ void DLCManagerImpl::AskServerMeta()
 
     memBufWriter.reset(new MemoryBufferWriter(buffer.data(), buffer.size()));
 
-    downloadTaskId = downloader->StartTask(urlToSuperPack, *memBufWriter, DLCDownloader::Range(downloadOffset, downloadSize));
-    if (nullptr == downloadTaskId)
+    downloadTask = downloader->StartTask(urlToSuperPack, *memBufWriter, DLCDownloader::Range(downloadOffset, downloadSize));
+    if (nullptr == downloadTask)
     {
         DAVA_THROW(Exception, "can't start download task into memory buffer");
     }
@@ -845,12 +849,12 @@ void DLCManagerImpl::GetServerMeta()
 {
     //Logger::FrameworkDebug("pack manager get_db");
 
-    DLCDownloader::TaskStatus status = downloader->GetTaskStatus(downloadTaskId);
+    DLCDownloader::TaskStatus status = downloader->GetTaskStatus(downloadTask);
 
     if (DLCDownloader::TaskState::Finished == status.state)
     {
-        downloader->RemoveTask(downloadTaskId);
-        downloadTaskId = nullptr;
+        downloader->RemoveTask(downloadTask);
+        downloadTask = nullptr;
 
         bool allGood = !status.error.errorHappened;
         if (allGood)

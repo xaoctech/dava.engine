@@ -110,7 +110,8 @@ public:
     void TestWriteAccessToPackDirectory(const FilePath& dirToDownloadPacks_);
     void FillPreloadedPacks();
     void TestPackDirectoryExist();
-    void TestLoggerAndDumpInitials(const FilePath& dirToDownloadPacks, const String& urlToServerSuperpack, const Hints& hints);
+    void DumpInitialParams(const FilePath& dirToDownloadPacks, const String& urlToServerSuperpack, const Hints& hints);
+    void CreateDownloader();
     void Initialize(const FilePath& dirToDownloadPacks_,
                     const String& urlToServerSuperpack_,
                     const Hints& hints_) override;
@@ -280,7 +281,7 @@ private:
     String uncompressedFileNames;
     UnorderedMap<String, const PackFormat::FileTableEntry*> mapFileData;
     Vector<uint32> startFileNameIndexesInUncompressedNames;
-    DLCDownloader::Task* downloadTaskId = nullptr;
+    DLCDownloader::Task* downloadTask = nullptr;
     uint64 fullSizeServerData = 0;
     mutable Progress lastProgress;
 
