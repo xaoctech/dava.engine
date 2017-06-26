@@ -185,24 +185,6 @@ void DLCManagerImpl::TestPackDirectoryExist()
     }
 }
 
-struct tabs
-{
-    explicit tabs(size_t n)
-        : count(n)
-    {
-    }
-    size_t count;
-};
-
-static std::ostream& operator<<(std::ostream& os, const tabs& t)
-{
-    for (size_t i = 0; i < t.count; ++i)
-    {
-        os << '\t';
-    }
-    return os;
-}
-
 void DLCManagerImpl::DumpInitialParams(const FilePath& dirToDownloadPacks, const String& urlToServerSuperpack, const Hints& hints_)
 {
     if (!log.is_open())
@@ -225,21 +207,21 @@ void DLCManagerImpl::DumpInitialParams(const FilePath& dirToDownloadPacks, const
                   });
 
         log << "DLCManager::Initialize" << '\n'
-            << tabs(0) << "(\n"
-            << tabs(1) << "dirToDownloadPacks: " << dirToDownloadPacks.GetAbsolutePathname() << '\n'
-            << tabs(1) << "urlToServerSuperpack: " << urlToServerSuperpack << '\n'
-            << tabs(1) << "hints:\n"
-            << tabs(1) << "(\n"
-            << tabs(2) << "logFilePath(this file): " << hints_.logFilePath << '\n'
-            << tabs(2) << "preloadedPacks: " << preloaded << '\n'
-            << tabs(2) << "retryConnectMilliseconds: " << hints_.retryConnectMilliseconds << '\n'
-            << tabs(2) << "maxFilesToDownload: " << hints_.maxFilesToDownload << '\n'
-            << tabs(2) << "timeoutForDownload: " << hints_.timeoutForDownload << '\n'
-            << tabs(2) << "skipCDNConnectAfterAttemps: " << hints_.skipCDNConnectAfterAttemps << '\n'
-            << tabs(2) << "downloaderMaxHandles: " << hints_.downloaderMaxHandles << '\n'
-            << tabs(2) << "downloaderChankBufSize: " << hints_.downloaderChankBufSize << '\n'
-            << tabs(1) << ")\n"
-            << tabs(0) << ")\n";
+            << "(\n"
+            << "    dirToDownloadPacks: " << dirToDownloadPacks.GetAbsolutePathname() << '\n'
+            << "    urlToServerSuperpack: " << urlToServerSuperpack << '\n'
+            << "    hints:\n"
+            << "    (\n"
+            << "        logFilePath(this file): " << hints_.logFilePath << '\n'
+            << "        preloadedPacks: " << preloaded << '\n'
+            << "        retryConnectMilliseconds: " << hints_.retryConnectMilliseconds << '\n'
+            << "        maxFilesToDownload: " << hints_.maxFilesToDownload << '\n'
+            << "        timeoutForDownload: " << hints_.timeoutForDownload << '\n'
+            << "        skipCDNConnectAfterAttemps: " << hints_.skipCDNConnectAfterAttempts << '\n'
+            << "        downloaderMaxHandles: " << hints_.downloaderMaxHandles << '\n'
+            << "        downloaderChankBufSize: " << hints_.downloaderChankBufSize << '\n'
+            << "    )\n"
+            << ")\n";
 
         const EnumMap* enumMap = GlobalEnumMap<eGPUFamily>::Instance();
         eGPUFamily e = DeviceInfo::GetGPUFamily();
@@ -521,7 +503,7 @@ void DLCManagerImpl::TestRetryCountLocalMetaAndGoTo(InitState nextState, InitSta
     ++retryCount;
     timeWaitingNextInitializationAttempt = hints.retryConnectMilliseconds / 1000.f;
 
-    if (retryCount > hints.skipCDNConnectAfterAttemps)
+    if (retryCount > hints.skipCDNConnectAfterAttempts)
     {
         if (IsLocalMetaAlreadyExist())
         {
