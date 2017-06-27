@@ -232,7 +232,7 @@ public final class DeviceManager
             {
                 if (firstTimeCpuTempException)
                 {
-                    Log.e(DavaActivity.LOG_TAG, "Could not retrieve CPU temperature from file: " + filepath + ": file format is wrong");
+                    DavaLog.e(DavaActivity.LOG_TAG, "Could not retrieve CPU temperature from file: " + filepath + ": file format is wrong");
                     firstTimeCpuTempException = false;
                 }
             }
