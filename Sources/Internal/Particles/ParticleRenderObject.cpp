@@ -239,10 +239,10 @@ int32 ParticleRenderObject::PrepareBasisIndexes(const ParticleGroup& group, int3
 
 void ParticleRenderObject::AppendRenderBatch(NMaterial* material, uint32 indexCount, uint32 vertexLayout, const DynamicBufferAllocator::AllocResultVB& vBuffer)
 {
-    AppendRenderBatch(material, indexCount, vertexLayout, vBuffer, DynamicBufferAllocator::AllocateQuadListIndexBuffer(indexCount));
+    AppendRenderBatch(material, indexCount, vertexLayout, vBuffer, DynamicBufferAllocator::AllocateQuadListIndexBuffer(indexCount), 0);
 }
 
-void ParticleRenderObject::AppendRenderBatch(NMaterial* material, uint32 indexCount, uint32 vertexLayout, const DynamicBufferAllocator::AllocResultVB& vBuffer, const rhi::HIndexBuffer iBuffer)
+void ParticleRenderObject::AppendRenderBatch(NMaterial* material, uint32 indexCount, uint32 vertexLayout, const DynamicBufferAllocator::AllocResultVB& vBuffer, const rhi::HIndexBuffer iBuffer, uint32 startIndex)
 {
     DVASSERT(indexCount);
 
@@ -265,7 +265,7 @@ void ParticleRenderObject::AppendRenderBatch(NMaterial* material, uint32 indexCo
 
     targetBatch->indexCount = indexCount;
     targetBatch->indexBuffer = iBuffer;
-    targetBatch->startIndex = 0;
+    targetBatch->startIndex = startIndex;
     targetBatch->vertexLayoutId = vertexLayout;
     activeRenderBatchArray.push_back(targetBatch);
     currRenderBatchId++;
@@ -607,7 +607,7 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                 }
                 baseVertex += vCountInBasis;
             }
-            AppendRenderBatch(begin->material, iCount, SelectLayout(*begin->layer), vb, ib.buffer);
+            AppendRenderBatch(begin->material, iCount, SelectLayout(*begin->layer), vb, ib.buffer, ib.baseIndex);
             currentParticle = currentParticle->next;
         }
     }
