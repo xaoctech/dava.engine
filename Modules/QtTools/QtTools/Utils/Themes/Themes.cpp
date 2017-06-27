@@ -275,6 +275,11 @@ QColor GetRulerWidgetBackgroungColor()
     return GetCurrentTheme() == Light ? lightWindowColor : darkWindowColor;
 }
 
+QColor GetRulerTextColor()
+{
+    return GetCurrentTheme() == Light ? lightDisabledTextColor : QColor(0x62, 0x62, 0x62);
+}
+
 QColor GetHighligtedItemTextColor()
 {
     return GetCurrentTheme() == Light ? QColor(0x37, 0x63, 0xAD) : QColor(0x88, 0xBB, 0xFF);
