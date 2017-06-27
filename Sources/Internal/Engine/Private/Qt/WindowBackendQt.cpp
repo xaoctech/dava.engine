@@ -374,20 +374,24 @@ void WindowBackend::OnNativeGesture(QNativeGestureEvent* qtEvent)
 
 void WindowBackend::OnKeyPressed(QKeyEvent* qtEvent)
 {
-    uint32 key = qtEvent->nativeVirtualKey();
+    const uint32 virtualKey = qtEvent->nativeVirtualKey();
+    uint32 scancodeKey = 0;
+    
 #if defined(Q_OS_WIN)
     // How to distinguish left and right shift, control and alt: http://stackoverflow.com/a/15977613
     uint32 lparam = qtEvent->nativeModifiers();
-    uint32 scanCode = qtEvent->nativeScanCode();
+    scancodeKey = qtEvent->nativeScanCode();
     bool isExtended = (HIWORD(lparam) & KF_EXTENDED) == KF_EXTENDED;
-    if (isExtended || (key == VK_SHIFT && ::MapVirtualKeyW(scanCode, MAPVK_VSC_TO_VK_EX) == VK_RSHIFT))
+    if (isExtended || (key == VK_SHIFT && ::MapVirtualKeyW(scancodeKey, MAPVK_VSC_TO_VK_EX) == VK_RSHIFT))
     {
-        key |= 0x100;
+        // Windows uses 0xE000 mask throughout its API to distinguish between extended and non-extended keys
+        // So, follow this convention and use the same mask
+        scancodeKey |= 0xE000;
     }
 #elif defined(Q_OS_OSX)
-    if (key == 0)
+    if (virtualKey == 0)
     {
-        key = ConvertQtKeyToSystemScanCode(qtEvent->key());
+        scancodeKey = ConvertQtKeyToSystemScanCode(qtEvent->key());
     }
 #else
 #error "Unsupported platform"
@@ -395,16 +399,16 @@ void WindowBackend::OnKeyPressed(QKeyEvent* qtEvent)
 
     bool isRepeated = qtEvent->isAutoRepeat();
     eModifierKeys modifierKeys = GetModifierKeys();
-    mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_DOWN, key, modifierKeys, isRepeated));
+    mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_DOWN, scancodeKey, virtualKey, modifierKeys, isRepeated));
 
     QString text = qtEvent->text();
     if (!text.isEmpty())
     {
-        MainDispatcherEvent e = MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_CHAR, 0, modifierKeys, isRepeated);
+        MainDispatcherEvent e = MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_CHAR, 0, 0, modifierKeys, isRepeated);
         for (int i = 0, n = text.size(); i < n; ++i)
         {
             QCharRef charRef = text[i];
-            e.keyEvent.key = charRef.unicode();
+            e.keyEvent.keyVirtual = charRef.unicode();
             mainDispatcher->PostEvent(e);
         }
     }
@@ -425,7 +429,9 @@ void WindowBackend::OnKeyReleased(QKeyEvent* qtEvent)
     bool isExtended = (HIWORD(lparam) & KF_EXTENDED) == KF_EXTENDED;
     if (isExtended || (key == VK_SHIFT && ::MapVirtualKeyW(scanCode, MAPVK_VSC_TO_VK_EX) == VK_RSHIFT))
     {
-        key |= 0x100;
+        // Windows uses 0xE000 mask throughout its API to distinguish between extended and non-extended keys
+        // So, follow this convention and use the same mask
+        key |= 0xE000;
     }
 #elif defined(Q_OS_OSX)
     if (key == 0)
@@ -437,7 +443,7 @@ void WindowBackend::OnKeyReleased(QKeyEvent* qtEvent)
 #endif
 
     eModifierKeys modifierKeys = GetModifierKeys();
-    mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_UP, key, modifierKeys, false));
+    mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_UP, key, qtEvent->nativeVirtualKey(), modifierKeys, false));
 }
 
 void WindowBackend::DoResizeWindow(float32 width, float32 height)
