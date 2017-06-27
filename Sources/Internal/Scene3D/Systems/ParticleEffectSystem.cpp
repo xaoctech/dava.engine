@@ -287,7 +287,7 @@ void ParticleEffectSystem::Process(float32 timeElapsed)
 
             if (effect->GetStartFromTime() > EPSILON)
             {
-                SimulateEffect(effect, speedMult);
+                SimulateEffect(effect);
             }
         }
 
@@ -776,12 +776,12 @@ Map<String, float32> ParticleEffectSystem::GetGlobalExternals()
     return globalExternalValues;
 }
 
-void ParticleEffectSystem::SimulateEffect(ParticleEffectComponent* effect, float32 shortEffectSpeedMult)
+void ParticleEffectSystem::SimulateEffect(ParticleEffectComponent* effect)
 {
     static const float32 particleSystemFps = 30.0f;
     static const float32 delta = 0.0333f;
     uint32 frames = static_cast<uint32>(effect->GetStartFromTime() * particleSystemFps);
     for (uint32 i = 0; i < frames; ++i)
-        UpdateEffect(effect, delta * effect->playbackSpeed, delta * shortEffectSpeedMult * effect->playbackSpeed);
+        UpdateEffect(effect, delta, delta);
 }
 }
