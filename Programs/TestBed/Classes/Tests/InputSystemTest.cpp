@@ -150,7 +150,7 @@ void InputSystemTest::CreateKeyboardUI(String header, float32 x, float32 y)
 
     const float32 headerHeight = 15.0f;
 
-    font->SetSize(10);
+    font->SetSize(8);
 
     UIStaticText* headerText = new UIStaticText(Rect(x, y, 250, headerHeight));
     headerText->SetTextColor(Color::White);
@@ -263,7 +263,9 @@ void InputSystemTest::CreateKeyboardUI(String header, float32 x, float32 y)
     CreateKeyboardUIButton(eInputElements::KB_LCTRL, L"CTRL", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
     CreateKeyboardUIButton(eInputElements::KB_LWIN, L"WIN", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
     CreateKeyboardUIButton(eInputElements::KB_LALT, L"ALT", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
+    CreateKeyboardUIButton(eInputElements::KB_LCMD, L"CMD", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
     CreateKeyboardUIButton(eInputElements::KB_SPACE, L"SPACE", font, &x, y, keyboardButtonWidth * 4, keyboardButtonHeight);
+    CreateKeyboardUIButton(eInputElements::KB_RCMD, L"CMD", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
     CreateKeyboardUIButton(eInputElements::KB_RALT, L"ALT", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
     CreateKeyboardUIButton(eInputElements::KB_RWIN, L"WIN", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
     CreateKeyboardUIButton(eInputElements::KB_MENU, L"MENU", font, &x, y, keyboardButtonWidth, keyboardButtonHeight);
