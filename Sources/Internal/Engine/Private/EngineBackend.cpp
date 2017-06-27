@@ -973,7 +973,6 @@ void EngineBackend::DestroySubsystems()
     }
 
     SafeDelete(context->inputListener);
-    
 
     if (context->inputSystem != nullptr)
     {
