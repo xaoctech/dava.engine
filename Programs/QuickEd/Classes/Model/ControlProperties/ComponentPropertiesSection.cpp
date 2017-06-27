@@ -13,6 +13,8 @@
 #include <Reflection/ReflectedMeta.h>
 #include <Reflection/ReflectedTypeDB.h>
 
+#include <TArc/Utils/ReflectionHelpers.h>
+
 using namespace DAVA;
 
 ComponentPropertiesSection::ComponentPropertiesSection(DAVA::UIControl* control_, const DAVA::Type* type_, int32 index_, const ComponentPropertiesSection* sourceSection, eCloneType cloneType)
@@ -66,22 +68,7 @@ ComponentPropertiesSection::~ComponentPropertiesSection()
 bool ComponentPropertiesSection::IsHiddenComponent(const Type* type)
 {
     const ReflectedType* rtype = ReflectedTypeDB::GetByType(type);
-    if (rtype)
-    {
-        const ReflectedStructure* structure = rtype->GetStructure();
-        if (structure)
-        {
-            const std::unique_ptr<ReflectedMeta>& meta = structure->meta;
-            if (meta)
-            {
-                if (meta->GetMeta<M::HiddenField>() != nullptr)
-                {
-                    return true;
-                }
-            }
-        }
-    }
-    return false;
+    return TArc::GetReflectedTypeMeta<DAVA::M::HiddenField>(rtype) != nullptr;
 }
 
 UIComponent* ComponentPropertiesSection::GetComponent() const
@@ -218,7 +205,18 @@ void ComponentPropertiesSection::Accept(PropertyVisitor* visitor)
 
 String ComponentPropertiesSection::GetComponentName() const
 {
-    return ReflectedTypeDB::GetByType(component->GetType())->GetPermanentName();
+    String name = component->GetType()->GetName();
+    const ReflectedType* rtype = ReflectedTypeDB::GetByType(component->GetType());
+    const DAVA::M::DisplayName* dmeta = TArc::GetReflectedTypeMeta<DAVA::M::DisplayName>(rtype);
+    if (dmeta != nullptr)
+    {
+        name = dmeta->displayName;
+    }
+    else if (rtype != nullptr)
+    {
+        name = rtype->GetPermanentName();
+    }
+    return name;
 }
 
 void ComponentPropertiesSection::RefreshName()

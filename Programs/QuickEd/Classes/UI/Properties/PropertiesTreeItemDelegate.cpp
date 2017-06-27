@@ -79,22 +79,22 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
                        << "max(parent, childrenSum)";
 
     propertyNameTypeItemDelegates[PropertyPath("*", "actions")] = new TablePropertyDelegate(QList<QString>({ "Action", "Shortcut" }), this);
-    propertyNameTypeItemDelegates[PropertyPath("*", "sprite")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this);
-    propertyNameTypeItemDelegates[PropertyPath("*", "mask")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this);
-    propertyNameTypeItemDelegates[PropertyPath("*", "detail")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this);
-    propertyNameTypeItemDelegates[PropertyPath("*", "gradient")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this);
-    propertyNameTypeItemDelegates[PropertyPath("*", "contour")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this);
-    propertyNameTypeItemDelegates[PropertyPath("*", "effectPath")] = new ResourceFilePropertyDelegate(particleExtensions, "/3d/", this);
+    propertyNameTypeItemDelegates[PropertyPath("*", "sprite")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);
+    propertyNameTypeItemDelegates[PropertyPath("*", "mask")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);
+    propertyNameTypeItemDelegates[PropertyPath("*", "detail")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);
+    propertyNameTypeItemDelegates[PropertyPath("*", "gradient")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);
+    propertyNameTypeItemDelegates[PropertyPath("*", "contour")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);
+    propertyNameTypeItemDelegates[PropertyPath("*", "effectPath")] = new ResourceFilePropertyDelegate(particleExtensions, "/3d/", this, false);
     propertyNameTypeItemDelegates[PropertyPath("*", "font")] = new FontPropertyDelegate(this);
     propertyNameTypeItemDelegates[PropertyPath("ScrollBarDelegate", "delegate")] = new ComboPropertyDelegate(this, std::make_unique<CompletionsProviderForScrollBar>(), true);
 
-    propertyNameTypeItemDelegates[PropertyPath("*", "bg-sprite")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this);
-    propertyNameTypeItemDelegates[PropertyPath("*", "bg-mask")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this);
-    propertyNameTypeItemDelegates[PropertyPath("*", "bg-detail")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this);
-    propertyNameTypeItemDelegates[PropertyPath("*", "bg-gradient")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this);
-    propertyNameTypeItemDelegates[PropertyPath("*", "bg-contour")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this);
+    propertyNameTypeItemDelegates[PropertyPath("*", "bg-sprite")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);
+    propertyNameTypeItemDelegates[PropertyPath("*", "bg-mask")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);
+    propertyNameTypeItemDelegates[PropertyPath("*", "bg-detail")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);
+    propertyNameTypeItemDelegates[PropertyPath("*", "bg-gradient")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);
+    propertyNameTypeItemDelegates[PropertyPath("*", "bg-contour")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);
     propertyNameTypeItemDelegates[PropertyPath("*", "text-font")] = new FontPropertyDelegate(this);
-    propertyNameTypeItemDelegates[PropertyPath("*", "particleEffect-effectPath")] = new ResourceFilePropertyDelegate(particleExtensions, "/3d/", this);
+    propertyNameTypeItemDelegates[PropertyPath("*", "particleEffect-effectPath")] = new ResourceFilePropertyDelegate(particleExtensions, "/3d/", this, false);
 
     propertyNameTypeItemDelegates[PropertyPath("Sound", "*")] = new FMODEventPropertyDelegate(this);
     propertyNameTypeItemDelegates[PropertyPath("*", "sound-touchDown")] = new FMODEventPropertyDelegate(this);
@@ -107,11 +107,11 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
     propertyNameTypeItemDelegates[PropertyPath("SizePolicy", "horizontalFormula")] = new ComboPropertyDelegate(this, std::make_unique<PredefinedCompletionsProvider>(formulaCompletions), true);
     propertyNameTypeItemDelegates[PropertyPath("SizePolicy", "verticalFormula")] = new ComboPropertyDelegate(this, std::make_unique<PredefinedCompletionsProvider>(formulaCompletions), true);
 
-    propertyNameTypeItemDelegates[PropertyPath("UISpineComponent", "skeletonPath")] = new ResourceFilePropertyDelegate(spineSkeletonExtensions, "", this);
-    propertyNameTypeItemDelegates[PropertyPath("UISpineComponent", "atlasPath")] = new ResourceFilePropertyDelegate(spineAtlasExtensions, "/Gfx/", this);
-    propertyNameTypeItemDelegates[PropertyPath("UISpineComponent", "animationName")] = new ComboPropertyDelegate(this, std::make_unique<CompletionsProviderForUIReflection>("animationsNames", "UISpineComponent"), false);
-    propertyNameTypeItemDelegates[PropertyPath("UISpineComponent", "skinName")] = new ComboPropertyDelegate(this, std::make_unique<CompletionsProviderForUIReflection>("skinsNames", "UISpineComponent"), false);
-    propertyNameTypeItemDelegates[PropertyPath("UISpineAttachControlsToBonesComponent", "bonesBinds")] = new TablePropertyDelegate(QList<QString>({ "Bone", "Control" }), this);
+    propertyNameTypeItemDelegates[PropertyPath("Spine", "skeletonPath")] = new ResourceFilePropertyDelegate(spineSkeletonExtensions, "", this, false);
+    propertyNameTypeItemDelegates[PropertyPath("Spine", "atlasPath")] = new ResourceFilePropertyDelegate(spineAtlasExtensions, "/Gfx/", this, false);
+    propertyNameTypeItemDelegates[PropertyPath("Spine", "animationName")] = new ComboPropertyDelegate(this, std::make_unique<CompletionsProviderForUIReflection>("animationsNames", "UISpineComponent"), false);
+    propertyNameTypeItemDelegates[PropertyPath("Spine", "skinName")] = new ComboPropertyDelegate(this, std::make_unique<CompletionsProviderForUIReflection>("skinsNames", "UISpineComponent"), false);
+    propertyNameTypeItemDelegates[PropertyPath("SpineAttachControlsToBones", "bonesBinds")] = new TablePropertyDelegate(QList<QString>({ "Bone", "Control" }), this);
 }
 
 PropertiesTreeItemDelegate::~PropertiesTreeItemDelegate()

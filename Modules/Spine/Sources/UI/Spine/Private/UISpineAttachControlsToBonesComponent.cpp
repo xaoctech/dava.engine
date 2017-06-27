@@ -11,7 +11,7 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UISpineAttachControlsToBonesComponent)
 {
-    ReflectionRegistrator<UISpineAttachControlsToBonesComponent>::Begin()
+    ReflectionRegistrator<UISpineAttachControlsToBonesComponent>::Begin()[M::DisplayName("SpineAttachControlsToBones")]
     .ConstructorByPointer()
     .DestructorByPointer([](UISpineAttachControlsToBonesComponent* c) { SafeRelease(c); })
     .Field("bonesBinds", &UISpineAttachControlsToBonesComponent::GetBindsAsString, &UISpineAttachControlsToBonesComponent::SetBindsFromString)

@@ -16,7 +16,7 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UISpineComponent)
 {
-    ReflectionRegistrator<UISpineComponent>::Begin()
+    ReflectionRegistrator<UISpineComponent>::Begin()[M::DisplayName("Spine")]
     .ConstructorByPointer()
     .DestructorByPointer([](UISpineComponent* c) { SafeRelease(c); })
     .Field("skeletonPath", &UISpineComponent::GetSkeletonPath, &UISpineComponent::SetSkeletonPath)

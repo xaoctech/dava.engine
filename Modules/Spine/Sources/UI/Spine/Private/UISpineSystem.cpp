@@ -85,74 +85,74 @@ void UISpineSystem::Process(float32 elapsedTime)
 {
     UISpineSingleComponent* spineSingle = GetScene()->GetSingleComponent<UISpineSingleComponent>();
 
-    for (UIControl* c : spineSingle->spineNeedReload)
+    if (spineSingle)
     {
-        auto it = nodes.find(c);
-        if (it != nodes.end())
+        for (UIControl* c : spineSingle->spineNeedReload)
         {
-            SpineNode& node = it->second;
-
-            node.skeleton->Load(node.spine->GetSkeletonPath(), node.spine->GetAtlasPath());
-
-            node.spine->SetAnimationsNames(node.skeleton->GetAvailableAnimationsNames());
-            node.spine->SetSkinsNames(node.skeleton->GetAvailableSkinsNames());
-
-            // Build bones links after load skeleton
-            if (spineSingle)
+            auto it = nodes.find(c);
+            if (it != nodes.end())
             {
+                SpineNode& node = it->second;
+
+                node.skeleton->Load(node.spine->GetSkeletonPath(), node.spine->GetAtlasPath());
+
+                node.spine->SetAnimationsNames(node.skeleton->GetAvailableAnimationsNames());
+                node.spine->SetSkinsNames(node.skeleton->GetAvailableSkinsNames());
+
+                // Build bones links after load skeleton
                 spineSingle->spineBonesModified.insert(c);
             }
         }
-    }
 
-    for (UIControl* c : spineSingle->spineModified)
-    {
-        auto it = nodes.find(c);
-        if (it != nodes.end())
+        for (UIControl* c : spineSingle->spineModified)
         {
-            SpineNode& node = it->second;
+            auto it = nodes.find(c);
+            if (it != nodes.end())
+            {
+                SpineNode& node = it->second;
 
-            node.skeleton->SetTimeScale(node.spine->GetTimeScale());
-            if (!node.skeleton->SetSkin(node.spine->GetSkinName()))
-            {
-                // Skin not found, restore current skin name
-                node.spine->SetSkinName(node.skeleton->GetSkinName());
-            }
-
-            node.skeleton->ResetSkeleton();
-            switch (node.spine->GetAnimationState())
-            {
-            case UISpineComponent::PLAYED:
-            {
-                const String& name = node.spine->GetAnimationName();
-                if (name.empty() || node.skeleton->SetAnimation(0, name, node.spine->IsLoopedPlayback()) == nullptr)
+                node.skeleton->SetTimeScale(node.spine->GetTimeScale());
+                if (!node.skeleton->SetSkin(node.spine->GetSkinName()))
                 {
-                    node.skeleton->ClearTracks();
-                    // Animation not found, clear animation name
-                    node.spine->SetAnimationName("");
+                    // Skin not found, restore current skin name
+                    node.spine->SetSkinName(node.skeleton->GetSkinName());
                 }
-                break;
-            }
-            case UISpineComponent::STOPPED:
-                node.skeleton->ClearTracks();
-                break;
+
+                node.skeleton->ResetSkeleton();
+                switch (node.spine->GetAnimationState())
+                {
+                case UISpineComponent::PLAYED:
+                {
+                    const String& name = node.spine->GetAnimationName();
+                    if (name.empty() || node.skeleton->SetAnimation(0, name, node.spine->IsLoopedPlayback()) == nullptr)
+                    {
+                        node.skeleton->ClearTracks();
+                        // Animation not found, clear animation name
+                        node.spine->SetAnimationName("");
+                    }
+                    break;
+                }
+                case UISpineComponent::STOPPED:
+                    node.skeleton->ClearTracks();
+                    break;
+                }
             }
         }
-    }
 
-    for (UIControl* c : spineSingle->spineBonesModified)
-    {
-        auto it = nodes.find(c);
-        if (it != nodes.end())
+        for (UIControl* c : spineSingle->spineBonesModified)
         {
-            SpineNode& node = it->second;
-            if (node.bones)
+            auto it = nodes.find(c);
+            if (it != nodes.end())
             {
-                BuildBoneLinks(node);
-            }
-            else if (!node.boneLinks.empty())
-            {
-                node.boneLinks.clear();
+                SpineNode& node = it->second;
+                if (node.bones)
+                {
+                    BuildBoneLinks(node);
+                }
+                else if (!node.boneLinks.empty())
+                {
+                    node.boneLinks.clear();
+                }
             }
         }
     }
