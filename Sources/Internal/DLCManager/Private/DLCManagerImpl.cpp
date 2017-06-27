@@ -63,6 +63,15 @@ std::ostream& DLCManagerImpl::GetLog() const
     return log;
 }
 
+DLCDownloader& DLCManagerImpl::GetDownloader() const
+{
+    if (!downloader)
+    {
+        DAVA_THROW(Exception, "downloader in nullptr");
+    }
+    return *downloader;
+}
+
 DLCManagerImpl::DLCManagerImpl(Engine* engine_)
     : engine(*engine_)
 {
@@ -200,6 +209,8 @@ void DLCManagerImpl::DumpInitialParams(const FilePath& dirToDownloadPacks, const
             Logger::Error("can't create dlc_manager.log error: %s", err);
             DAVA_THROW(DAVA::Exception, err);
         }
+
+        Logger::Info("DLCManager log file: %s", fullLogPath.c_str());
 
         String preloaded = hints_.preloadedPacks;
         transform(begin(preloaded), end(preloaded), begin(preloaded), [](char c)
@@ -995,7 +1006,7 @@ void DLCManagerImpl::SwapRequestAndUpdatePointers(PackRequest* userRequestObject
 {
     // We want to give user same pointer, so we need move(swap) old object
     // with new object value
-    *userRequestObject = std::move(*newRequestObject);
+    *userRequestObject = *newRequestObject;
     delete newRequestObject; // now this pointer is invalid!
     PackRequest* invalidPointer = newRequestObject;
     // so we have to update all references to new swapped pointer value

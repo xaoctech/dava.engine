@@ -169,10 +169,7 @@ public:
 
     std::ostream& GetLog() const;
 
-    DLCDownloader* GetDownloader() const
-    {
-        return downloader.get();
-    }
+    DLCDownloader& GetDownloader() const;
 
 private:
     // initialization state functions

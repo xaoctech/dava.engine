@@ -720,8 +720,9 @@ struct DefaultWriter : DLCDownloader::IWriter
 
         if (!f)
         {
-            const char* err = strerror(errno);
-            DAVA_THROW(Exception, "can't create output file: " + outputFile + " " + err);
+            StringStream ss;
+            ss << "can't create output file: " << outputFile << " errno(" << errno << ") " << strerror(errno);
+            DAVA_THROW(Exception, ss.str());
         }
     }
     ~DefaultWriter() = default;
@@ -1216,10 +1217,10 @@ void DLCDownloader::Task::SetupFullDownload()
         {
             writer.reset(new DefaultWriter(info.dstPath));
         }
-        catch (std::exception& ex)
+        catch (Exception& ex)
         {
             OnErrorCurlErrno(errno, *this, __LINE__);
-            Logger::Error("can't create DefaultWriter: %s", ex.what());
+            Logger::Error("can't create DefaultWriter: %s %s %d", ex.what(), ex.file.c_str(), static_cast<int>(ex.line));
             return;
         }
     }
