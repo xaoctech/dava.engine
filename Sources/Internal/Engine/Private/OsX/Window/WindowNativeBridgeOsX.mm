@@ -401,7 +401,7 @@ void WindowNativeBridge::FlagsChanged(NSEvent* theEvent)
         kVK_Shift,
         kVK_RightShift,
         kVK_Command,
-        kVK_RightCommand,
+        0x36, // kVK_RightCommand from HIToolbox/Events.h, defined only on macOS 10.12+
         kVK_Option,
         kVK_RightOption,
         kVK_CapsLock
