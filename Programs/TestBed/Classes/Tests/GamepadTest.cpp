@@ -122,15 +122,19 @@ bool GamepadTest::OnGamepadEvent(const DAVA::InputEvent& e)
         break;
     case eInputElements::GAMEPAD_AXIS_LTHUMB:
         UpdateGamepadStickX("stick_left", e.analogState.x);
+        UpdateGamepadStickY("stick_left", e.analogState.y);
         break;
     case eInputElements::GAMEPAD_AXIS_RTHUMB:
         UpdateGamepadStickX("stick_right", e.analogState.x);
+        UpdateGamepadStickY("stick_right", e.analogState.y);
         break;
     case eInputElements::GAMEPAD_AXIS_LTRIGGER:
         UpdateGamepadStickX("triger_left", e.analogState.x);
+        UpdateGamepadStickY("triger_left", e.analogState.y);
         break;
     case eInputElements::GAMEPAD_AXIS_RTRIGGER:
         UpdateGamepadStickX("triger_right", e.analogState.x);
+        UpdateGamepadStickY("triger_right", e.analogState.y);
         break;
     case eInputElements::GAMEPAD_DPAD_LEFT:
         UpdateGamepadElement("button_left", e.digitalState.IsPressed());
