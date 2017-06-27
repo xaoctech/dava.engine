@@ -1176,12 +1176,18 @@ void DLCManagerImpl::SetRequestPriority(const IRequest* request)
     }
 }
 
-void DLCManagerImpl::RemovePack(const String& requestedPackName)
+bool DLCManagerImpl::RemovePack(const String& requestedPackName)
 {
     DVASSERT(Thread::IsMainThread());
 
+    // now we can work without CDN, so always wait for initialization is done
+    if (!IsInitialized())
+    {
+        return false;
+    }
+
     PackRequest* request = FindRequest(requestedPackName);
-    if (request != nullptr && IsInitialized())
+    if (request != nullptr)
     {
         Vector<uint32> deps = request->GetDependencies();
         for (uint32 dependent : deps)
@@ -1191,13 +1197,13 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
             if (nullptr != r)
             {
                 String packToRemove = r->GetRequestedPackName();
-                RemovePack(packToRemove);
+                if (!RemovePack(packToRemove))
+                {
+                    return false;
+                }
             }
         }
-    }
 
-    if (nullptr != request)
-    {
         requestManager->Remove(request);
 
         auto it = find(begin(requests), end(requests), request);
@@ -1206,16 +1212,10 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
             requests.erase(it);
         }
 
-        it = find(begin(delayedRequests), end(delayedRequests), request);
-        if (it != end(delayedRequests))
-        {
-            delayedRequests.erase(it);
-        }
-
         delete request;
     }
 
-    if (IsInitialized())
+    if (meta)
     {
         StringStream undeletedFiles;
         FileSystem* fs = GetEngineContext()->fileSystem;
@@ -1244,6 +1244,7 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
             Logger::Error("can't delete files: %s", errMsg.c_str());
         }
     }
+    return true;
 }
 
 DLCManager::Progress DLCManagerImpl::GetProgress() const
