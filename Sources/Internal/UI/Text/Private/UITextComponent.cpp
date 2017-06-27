@@ -63,9 +63,11 @@ int32 UITextComponent::GetAlign() const
 
 void UITextComponent::SetText(const String& value)
 {
-    // force set modified flag
-    text = value;
-    modified = true;
+    if (text != value)
+    {
+        text = value;
+        modified = true;
+    }
 }
 
 String UITextComponent::GetText() const
@@ -89,7 +91,8 @@ UITextComponent::eTextFitting UITextComponent::GetFitting() const
 
 void UITextComponent::SetFontName(const String& value)
 {
-    if (fontName != value)
+    // Force update modified flag
+    // For case when font associated with alias was changed externally
     {
         fontName = value;
         modified = true;

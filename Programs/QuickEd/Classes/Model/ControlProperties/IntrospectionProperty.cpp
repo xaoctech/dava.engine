@@ -24,6 +24,7 @@ const String INTROSPECTION_PROPERTY_NAME_SIZE("size");
 const String INTROSPECTION_PROPERTY_NAME_POSITION("position");
 const String INTROSPECTION_PROPERTY_NAME_TEXT("text");
 const String INTROSPECTION_PROPERTY_NAME_FONT("font");
+const String INTROSPECTION_PROPERTY_NAME_FONT_NAME("fontName");
 const String INTROSPECTION_PROPERTY_NAME_CLASSES("classes");
 const String INTROSPECTION_PROPERTY_NAME_VISIBLE("visible");
 }
@@ -114,7 +115,7 @@ IntrospectionProperty* IntrospectionProperty::Create(BaseObject* object, const D
     {
         return new LocalizedTextValueProperty(object, name, ref, sourceProperty, cloneType);
     }
-    else if (name == INTROSPECTION_PROPERTY_NAME_FONT)
+    else if (name == INTROSPECTION_PROPERTY_NAME_FONT || name == INTROSPECTION_PROPERTY_NAME_FONT_NAME)
     {
         return new FontValueProperty(object, name, ref, sourceProperty, cloneType);
     }
