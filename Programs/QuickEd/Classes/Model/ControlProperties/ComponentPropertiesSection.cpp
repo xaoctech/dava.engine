@@ -65,11 +65,23 @@ ComponentPropertiesSection::~ComponentPropertiesSection()
 
 bool ComponentPropertiesSection::IsHiddenComponent(const Type* type)
 {
-    return (type == Type::Instance<UILayoutIsolationComponent>() ||
-            type == Type::Instance<UILayoutSourceRectComponent>() ||
-            type == Type::Instance<UIScrollComponent>() ||
-            type == Type::Instance<UIRichContentObjectComponent>() ||
-            type == Type::Instance<UISceneComponent>());
+    const ReflectedType* rtype = ReflectedTypeDB::GetByType(type);
+    if (rtype)
+    {
+        const ReflectedStructure* structure = rtype->GetStructure();
+        if (structure)
+        {
+            const std::unique_ptr<ReflectedMeta>& meta = structure->meta;
+            if (meta)
+            {
+                if (meta->GetMeta<M::HiddenField>() != nullptr)
+                {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
 }
 
 UIComponent* ComponentPropertiesSection::GetComponent() const

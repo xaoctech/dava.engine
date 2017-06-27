@@ -349,12 +349,10 @@ void SpineSkeleton::Update(const float32 timeElapsed)
         Color color(slot->r, slot->g, slot->b, slot->a);
         if (slot->attachment)
         {
-            int32 verticesCount = 0;
             const float32* uvs = nullptr;
             const uint16* indices = nullptr;
+            int32 verticesCount = 0;
             int32 indicesCount = 0;
-            DVASSERT(verticesCoords.size() < UINT16_MAX);
-            uint16 startIndex = static_cast<uint16>(verticesCoords.size());
 
             switch (slot->attachment->type)
             {
@@ -392,11 +390,13 @@ void SpineSkeleton::Update(const float32 timeElapsed)
             // TODO: mix colors from control
             // TODO: store slot color for bone
 
-            if ((verticesCoords.size() - currentVerticesStart + verticesCount) > 128) // SpinePrivate::MAX_VERTICES_PER_BATCH)
+            if ((verticesCoords.size() - currentVerticesStart + verticesCount) > SpinePrivate::MAX_VERTICES_PER_BATCH)
             {
                 PushBatch();
             }
 
+            DVASSERT((verticesCoords.size() - currentVerticesStart) < UINT16_MAX);
+            uint16 startIndex = static_cast<uint16>(verticesCoords.size() - currentVerticesStart);
             for (int32 i = 0; i < verticesCount; ++i)
             {
                 Vector2 point(worldVertices[i * SpinePrivate::VERTICES_COMPONENTS_COUNT], -worldVertices[i * SpinePrivate::VERTICES_COMPONENTS_COUNT + 1]);

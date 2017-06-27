@@ -160,17 +160,11 @@ void UISpineSystem::Process(float32 elapsedTime)
     for (auto& pair : nodes)
     {
         SpineNode& node = pair.second;
-        const RefPtr<UISpineComponent>& spine = node.spine;
         const RefPtr<SpineSkeleton>& skeleton = node.skeleton;
         const Vector2 pivotPoint = node.spine->GetControl()->GetPivotPoint();
 
         skeleton->SetOriginOffset(pivotPoint);
-        skeleton->Update(elapsedTime);
-
-        if (node.bg)
-        {
-            node.bg->AppendRenderBatches(skeleton->GetRenderBatches());
-        }
+        skeleton->Update(isPause ? 0.f : elapsedTime);
 
         for (const BoneLink& link : node.boneLinks)
         {
@@ -186,6 +180,37 @@ void UISpineSystem::Process(float32 elapsedTime)
             link.control->SetPosition(positionWithPivot);
             link.control->SetAngleInDegrees(link.bone->GetAngle());
             link.control->SetScale(link.bone->GetScale());
+        }
+
+        if (node.bg)
+        {
+            node.bg->AppendRenderBatches(skeleton->GetRenderBatches());
+        }
+    }
+}
+
+void UISpineSystem::SetPause(bool pause)
+{
+    isPause = pause;
+}
+
+bool UISpineSystem::IsPause() const
+{
+    return isPause;
+}
+
+void UISpineSystem::RebuildAllBoneLinks()
+{
+    UISpineSingleComponent* spineSingle = GetScene()->GetSingleComponent<UISpineSingleComponent>();
+    if (spineSingle)
+    {
+        for (auto& pair : nodes)
+        {
+            SpineNode& node = pair.second;
+            if (node.bones)
+            {
+                spineSingle->spineBonesModified.insert(node.bones->GetControl());
+            }
         }
     }
 }
