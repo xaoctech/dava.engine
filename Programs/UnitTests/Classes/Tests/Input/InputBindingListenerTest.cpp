@@ -317,7 +317,7 @@ DAVA_TESTCLASS (InputBindingListenerTestClass)
         Window* primaryWindow = GetPrimaryWindow();
         MainDispatcher* dispatcher = EngineBackend::Instance()->GetDispatcher();
 
-        dispatcher->SendEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(primaryWindow, MainDispatcherEvent::KEY_DOWN, kb->GetKeyNativeScancode(key), DAVA::eModifierKeys::NONE, false));
+        dispatcher->SendEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(primaryWindow, MainDispatcherEvent::KEY_DOWN, kb->GetKeyNativeScancode(key), kb->GetKeyNativeScancode(key), DAVA::eModifierKeys::NONE, false));
     }
 
     void SendKeyboardKeyUp(Keyboard * kb, eInputElements key)
@@ -327,7 +327,7 @@ DAVA_TESTCLASS (InputBindingListenerTestClass)
         Window* primaryWindow = GetPrimaryWindow();
         MainDispatcher* dispatcher = EngineBackend::Instance()->GetDispatcher();
 
-        dispatcher->SendEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(primaryWindow, MainDispatcherEvent::KEY_UP, kb->GetKeyNativeScancode(key), DAVA::eModifierKeys::NONE, false));
+        dispatcher->SendEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(primaryWindow, MainDispatcherEvent::KEY_UP, kb->GetKeyNativeScancode(key), kb->GetKeyNativeScancode(key), DAVA::eModifierKeys::NONE, false));
     }
 
     void SendMouseButtonDown(Mouse * mouse, eInputElements button)
