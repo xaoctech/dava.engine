@@ -58,12 +58,16 @@
 #include "UI/UIEvent.h"
 #include "UI/UIScreenManager.h"
 #include "UI/UIControlSystem.h"
+#include "Entity/ComponentManager.h"
+#include "Reflection/ReflectedTypeDB.h"
 #include "Utils/Random.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
 #include "Platform/TemplateAndroid/AssetsManagerAndroid.h"
 #include "Engine/Private/Android/AndroidBridge.h"
 #endif
+
+#include <cstdlib>
 
 namespace DAVA
 {
@@ -128,8 +132,11 @@ EngineBackend::EngineBackend(const Vector<String>& cmdargs)
     // The following subsystems should be created earlier than other:
     //  - Logger, to log messages on startup
     //  - FileSystem, to load config files with init options
-    //  - DeviceManager, to check what hatdware is available
-    context->logger = new Logger();
+    //  - DeviceManager, to check what hardware is available
+    context->logger = new Logger;
+    context->componentManager = new ComponentManager();
+    RegisterDAVAClasses();
+    RegisterReflectionForBaseTypes();
     context->settings = new EngineSettings();
     context->fileSystem = new FileSystem;
     FilePath::InitializeBundleName();
@@ -213,9 +220,6 @@ void EngineBackend::Init(eEngineRunMode engineRunMode, const Vector<String>& mod
     // Other subsystems are always created
     CreateSubsystems(modules);
 
-    RegisterDAVAClasses();
-    RegisterReflectionForBaseTypes();
-
     isInitialized = true;
 }
 
@@ -256,6 +260,17 @@ void EngineBackend::Quit(int exitCode_)
     default:
         break;
     }
+}
+
+void EngineBackend::Terminate(int exitCode)
+{
+#if defined(_MSC_VER) && _MSC_VER < 1900
+    // msvc prior to 2015 does not support neither std::quick_exit nor std::_Exit
+    _exit(exitCode);
+#else
+    // Here we could call std::quick_exit but it seems that only msvc2015 supports it now
+    std::_Exit(exitCode);
+#endif
 }
 
 void EngineBackend::SetCloseRequestHandler(const Function<bool(Window*)>& handler)
@@ -338,12 +353,9 @@ void EngineBackend::OnEngineCleanup()
     if (Renderer::IsInitialized())
         Renderer::Uninitialize();
 
-    delete context;
-    delete dispatcher;
-    delete platformCore;
-    context = nullptr;
-    dispatcher = nullptr;
-    platformCore = nullptr;
+    SafeDelete(context);
+    SafeDelete(dispatcher);
+    SafeDelete(platformCore);
 
     DAVA_MEMORY_PROFILER_FINISH();
 
@@ -397,13 +409,22 @@ int32 EngineBackend::OnFrame()
             rhi::InvalidateCache();
 #endif
             Update(frameDelta);
-            UpdateWindows(frameDelta);
+            UpdateAndDrawWindows(frameDelta, false);
         }
     }
     else
     {
+        // See comment to DrawSingleFrameWhileSuspended method
+        if (drawSingleFrameWhileSuspended)
+        {
+            Logger::Info("EngineBackend::OnFrame, rendering single frame while suspended");
+            ResumeRenderer();
+            UpdateAndDrawWindows(frameDelta, true);
+        }
         BackgroundUpdate(frameDelta);
     }
+
+    drawSingleFrameWhileSuspended = false;
 
     // Notify memory profiler about new frame
     DAVA_MEMORY_PROFILER_UPDATE();
@@ -433,11 +454,13 @@ void EngineBackend::Update(float32 frameDelta)
     context->localNotificationController->Update();
 }
 
-void EngineBackend::UpdateWindows(float32 frameDelta)
+void EngineBackend::UpdateAndDrawWindows(float32 frameDelta, bool drawOnly)
 {
     for (Window* w : aliveWindows)
     {
         BeginFrame();
+
+        if (!drawOnly)
         {
             DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::ENGINE_UPDATE_WINDOW);
             w->Update(frameDelta);
@@ -622,8 +645,7 @@ void EngineBackend::HandleAppSuspended(const MainDispatcherEvent& e)
         Logger::Info("EngineBackend::HandleAppSuspended: enter");
 
         appIsSuspended = true;
-        if (Renderer::IsInitialized())
-            rhi::SuspendRendering();
+        SuspendRenderer();
         rhi::ShaderSourceCache::Save("~doc:/ShaderSource.bin");
         engine->suspended.Emit();
 
@@ -638,8 +660,7 @@ void EngineBackend::HandleAppResumed(const MainDispatcherEvent& e)
         Logger::Info("EngineBackend::HandleAppResumed: enter");
 
         appIsSuspended = false;
-        if (Renderer::IsInitialized())
-            rhi::ResumeRendering();
+        ResumeRenderer();
         engine->resumed.Emit();
 
         Logger::Info("EngineBackend::HandleAppResumed: leave");
@@ -783,9 +804,14 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
     context->performanceSettings = new PerformanceSettings();
     context->versionInfo = new VersionInfo();
     context->renderSystem2D = new RenderSystem2D();
+
     context->uiControlSystem = new UIControlSystem();
     context->animationManager = new AnimationManager();
     context->fontManager = new FontManager();
+
+    context->typeDB = TypeDB::GetLocalDB();
+    context->fastNameDB = FastNameDB::GetLocalDB();
+    context->reflectedTypeDB = ReflectedTypeDB::GetLocalDB();
 
 #if defined(__DAVAENGINE_ANDROID__)
     context->assetsManager = new AssetsManagerAndroid(AndroidBridge::GetApplicationPath());
@@ -882,16 +908,9 @@ void EngineBackend::DestroySubsystems()
 #endif
     }
 
-    if (context->analyticsCore != nullptr)
-    {
-        delete context->analyticsCore;
-        context->analyticsCore = nullptr;
-    }
-    if (context->settings != nullptr)
-    {
-        delete context->settings;
-        context->settings = nullptr;
-    }
+    SafeDelete(context->analyticsCore);
+    SafeDelete(context->settings);
+
     if (context->moduleManager != nullptr)
     {
         context->moduleManager->ShutdownModules();
@@ -902,6 +921,7 @@ void EngineBackend::DestroySubsystems()
     {
         context->pluginManager->UnloadPlugins();
         delete context->pluginManager;
+        context->pluginManager = nullptr;
     }
     if (context->jobManager != nullptr)
     {
@@ -910,111 +930,41 @@ void EngineBackend::DestroySubsystems()
         context->jobManager->WaitWorkerJobs();
         context->jobManager->WaitMainJobs();
     }
-    if (context->localNotificationController != nullptr)
-    {
-        context->localNotificationController->Release();
-        context->localNotificationController = nullptr;
-    }
-    if (context->uiScreenManager != nullptr)
-    {
-        context->uiScreenManager->Release();
-        context->uiScreenManager = nullptr;
-    }
-    if (context->uiControlSystem != nullptr)
-    {
-        context->uiControlSystem->Release();
-        context->uiControlSystem = nullptr;
-    }
-    if (context->fontManager != nullptr)
-    {
-        context->fontManager->Release();
-        context->fontManager = nullptr;
-    }
-    if (context->animationManager != nullptr)
-    {
-        context->animationManager->Release();
-        context->animationManager = nullptr;
-    }
-    if (context->renderSystem2D != nullptr)
-    {
-        context->renderSystem2D->Release();
-        context->renderSystem2D = nullptr;
-    }
-    if (context->performanceSettings != nullptr)
-    {
-        context->performanceSettings->Release();
-        context->performanceSettings = nullptr;
-    }
-    if (context->random != nullptr)
-    {
-        context->random->Release();
-        context->random = nullptr;
-    }
-    if (context->allocatorFactory != nullptr)
-    {
-        context->allocatorFactory->Release();
-        context->allocatorFactory = nullptr;
-    }
-    if (context->versionInfo != nullptr)
-    {
-        context->versionInfo->Release();
-        context->versionInfo = nullptr;
-    }
-    if (context->jobManager != nullptr)
-    {
-        context->jobManager->Release();
-        context->jobManager = nullptr;
-    }
-    if (context->localizationSystem != nullptr)
-    {
-        context->localizationSystem->Release();
-        context->localizationSystem = nullptr;
-    }
-    if (context->downloadManager != nullptr)
-    {
-        context->downloadManager->Release();
-        context->downloadManager = nullptr;
-    }
-    if (context->soundSystem != nullptr)
-    {
-        context->soundSystem->Release();
-        context->soundSystem = nullptr;
-    }
-    if (context->dlcManager != nullptr)
-    {
-        delete context->dlcManager;
-        context->dlcManager = nullptr;
-    }
+
+    SafeRelease(context->localNotificationController);
+    SafeRelease(context->uiScreenManager);
+    SafeRelease(context->uiControlSystem);
+    SafeRelease(context->fontManager);
+    SafeRelease(context->animationManager);
+    SafeRelease(context->renderSystem2D);
+    SafeRelease(context->performanceSettings);
+    SafeRelease(context->random);
+    SafeRelease(context->allocatorFactory);
+    SafeRelease(context->versionInfo);
+    SafeRelease(context->jobManager);
+    SafeRelease(context->localizationSystem);
+    SafeRelease(context->downloadManager);
+    SafeRelease(context->soundSystem);
+    SafeDelete(context->dlcManager);
     if (context->inputSystem != nullptr)
     {
         delete context->inputSystem;
         context->inputSystem = nullptr;
     }
 
-    if (context->netCore != nullptr)
-    {
-        context->netCore->Release();
-        context->netCore = nullptr;
-    }
+    SafeRelease(context->netCore);
 
 #if defined(__DAVAENGINE_ANDROID__)
-    if (context->assetsManager != nullptr)
-    {
-        context->assetsManager->Release();
-        context->assetsManager = nullptr;
-    }
+    SafeRelease(context->assetsManager);
 #endif
 
-    if (context->fileSystem != nullptr)
-    {
-        context->fileSystem->Release();
-        context->fileSystem = nullptr;
-    }
+    SafeRelease(context->fileSystem);
     if (context->deviceManager != nullptr)
     {
         delete context->deviceManager;
         context->deviceManager = nullptr;
     }
+    SafeDelete(context->componentManager);
 
     if (context->logger != nullptr)
     {
@@ -1056,6 +1006,29 @@ void EngineBackend::SetScreenTimeoutEnabled(bool enabled)
 bool EngineBackend::IsRunning() const
 {
     return isRunning;
+}
+
+void EngineBackend::SuspendRenderer()
+{
+    if (Renderer::IsInitialized() && !rendererSuspended)
+    {
+        rhi::SuspendRendering();
+        rendererSuspended = true;
+    }
+}
+
+void EngineBackend::ResumeRenderer()
+{
+    if (Renderer::IsInitialized() && rendererSuspended)
+    {
+        rhi::ResumeRendering();
+        rendererSuspended = false;
+    }
+}
+
+void EngineBackend::DrawSingleFrameWhileSuspended()
+{
+    drawSingleFrameWhileSuspended = true;
 }
 
 } // namespace Private
