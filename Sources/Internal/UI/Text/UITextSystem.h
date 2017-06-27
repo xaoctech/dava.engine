@@ -28,6 +28,7 @@ public:
     void UnregisterComponent(UIControl* control, UIComponent* component) override;
 
     void Process(float32 elapsedTime) override;
+    void ForceProcessControl(float32 elapsedTime, UIControl* control) override;
 
 private:
     void AddLink(UITextComponent* component);

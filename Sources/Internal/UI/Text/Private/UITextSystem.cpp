@@ -40,6 +40,19 @@ void UITextSystem::Process(float32 elapsedTime)
     }
 }
 
+void UITextSystem::ForceProcessControl(float32 elapsedTime, UIControl* control)
+{
+    UITextComponent* component = control->GetComponent<UITextComponent>();
+    if (component)
+    {
+        UITextSystemLink* link = component->GetLink();
+        if (link)
+        {
+            link->ApplyData();
+        }
+    }
+}
+
 void UITextSystem::RegisterControl(UIControl* control)
 {
     UISystem::RegisterControl(control);

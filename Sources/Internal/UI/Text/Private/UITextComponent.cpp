@@ -254,6 +254,10 @@ UITextSystemLink* UITextComponent::GetLink() const
 // Backward compatibility method
 Vector2 UITextComponent::GetContentPreferredSize(const Vector2& constraints) const
 {
+    if (link == nullptr)
+    {
+        return Vector2::Zero;
+    }
     DVASSERT(link);
     return link->GetTextBlock()->GetPreferredSizeForWidth(constraints.x);
 }
@@ -261,6 +265,10 @@ Vector2 UITextComponent::GetContentPreferredSize(const Vector2& constraints) con
 // Backward compatibility method
 bool UITextComponent::IsHeightDependsOnWidth() const
 {
+    if (link == nullptr)
+    {
+        return false;
+    }
     DVASSERT(link);
     return link->GetTextBlock()->GetMultiline();
 }

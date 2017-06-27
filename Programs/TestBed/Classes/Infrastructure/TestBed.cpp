@@ -13,6 +13,7 @@
 #include <UI/Render/UIRenderSystem.h>
 
 #include "Infrastructure/TestListScreen.h"
+#include "Tests/TextSystemTest.h"
 #include "Tests/NotificationTest.h"
 #include "Tests/UIScrollViewTest.h"
 #include "Tests/SpeedLoadImagesTest.h"
@@ -390,6 +391,7 @@ void TestBed::RegisterTests()
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
     new PhysicsTest(*this);
 #endif
+    new TextSystemTest(*this);
     //$UNITTEST_CTOR
 }
 

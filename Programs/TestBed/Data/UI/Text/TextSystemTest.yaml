@@ -1,5 +1,5 @@
 Header:
-    version: "16"
+    version: "17"
 Prototypes:
 -   class: "UIControl"
     name: "StaticTextComponentTest"
@@ -286,7 +286,7 @@ Controls:
                     multiline: "MULTILINE_ENABLED_BY_SYMBOL"
                     text: "MULTILINE: DISABLED, FITTING: POINTS"
 -   class: "UIControl"
-    name: "ShadowText"
+    name: "ShadowTest"
     position: [0.000000, 0.000000]
     size: [524.000000, 168.000000]
     children:
@@ -306,7 +306,7 @@ Controls:
                     shadowOffset: [3.000000, 3.000000]
                     text: "Lorem ipsum dolor sit amet, nobis solet commodo est in."
 -   class: "UIControl"
-    name: "ParentColorText"
+    name: "ParentColorTest"
     position: [0.000000, 0.000000]
     size: [565.000000, 413.000000]
     components:
@@ -434,7 +434,7 @@ Controls:
                     shadowOffset: [0.000000, 0.000000]
                     text: "Lorem ipsum dolor sit amet, nobis solet commodo est in."
 -   class: "UIControl"
-    name: "PercentOfContent"
+    name: "PercentOfContentTest"
     position: [0.000000, 0.000000]
     size: [252.000000, 0.000000]
     components:
@@ -525,3 +525,140 @@ Controls:
                 fontName: "DroidSansMono_18"
                 multiline: "MULTILINE_ENABLED"
                 text: "Lorem ipsum dolor sit amet, nobis solet commodo est in."
+-   class: "UIControl"
+    name: "MainFrame"
+    position: [0.000000, 0.000000]
+    size: [755.000000, 546.000000]
+    noInput: true
+    components:
+        SizePolicy:
+            horizontalPolicy: "PercentOfParent"
+            verticalPolicy: "PercentOfParent"
+        ActionBinding:
+            actions: "START; STOP; PREV; NEXT; BENCHMARK1; BENCHMARK2"
+    children:
+    -   class: "UIControl"
+        name: "Holder"
+        position: [377.000000, 273.000000]
+        size: [253.000000, 238.000000]
+        noInput: true
+    -   class: "UIControl"
+        name: "UIControl"
+        position: [19.000000, 19.000000]
+        size: [228.000000, 48.000000]
+        components:
+            LinearLayout: {}
+        children:
+        -   class: "UIStaticText"
+            name: "StartBtn"
+            position: [0.000000, 0.000000]
+            size: [114.000000, 38.000000]
+            noInput: false
+            text: "Start"
+            font: "Korinna_18"
+            components:
+                SizePolicy:
+                    horizontalPolicy: "PercentOfParent"
+                    horizontalValue: 50.000000
+                Action:
+                    action: "START"
+                DebugRender:
+                    enabled: true
+        -   class: "UIStaticText"
+            name: "StopBtn"
+            position: [114.000000, 0.000000]
+            size: [114.000000, 38.000000]
+            noInput: false
+            text: "Stop"
+            font: "Korinna_18"
+            components:
+                SizePolicy:
+                    horizontalPolicy: "PercentOfParent"
+                    horizontalValue: 50.000000
+                Action:
+                    action: "STOP"
+                DebugRender:
+                    enabled: true
+    -   class: "UIControl"
+        name: "UIControl"
+        position: [19.000000, 89.000000]
+        size: [228.000000, 40.000000]
+        components:
+            LinearLayout: {}
+        children:
+        -   class: "UIStaticText"
+            name: "StartBtn"
+            position: [0.000000, 0.000000]
+            size: [114.000000, 38.000000]
+            noInput: false
+            text: "Prev test"
+            font: "Korinna_18"
+            components:
+                SizePolicy:
+                    horizontalPolicy: "PercentOfParent"
+                    horizontalValue: 50.000000
+                Action:
+                    action: "PREV"
+                DebugRender:
+                    enabled: true
+        -   class: "UIStaticText"
+            name: "StopBtn"
+            position: [114.000000, 0.000000]
+            size: [114.000000, 38.000000]
+            noInput: false
+            text: "Next test"
+            font: "Korinna_18"
+            components:
+                SizePolicy:
+                    horizontalPolicy: "PercentOfParent"
+                    horizontalValue: 50.000000
+                Action:
+                    action: "NEXT"
+                DebugRender:
+                    enabled: true
+    -   class: "UIStaticText"
+        name: "StatusText"
+        position: [262.000000, 19.000000]
+        size: [465.000000, 110.000000]
+        noInput: false
+        multiline: "MULTILINE_ENABLED"
+        text: "FPS: 0"
+        font: "Korinna_18"
+        components:
+            SizePolicy:
+                horizontalPolicy: "Ignore"
+                horizontalValue: 50.000000
+            Action:
+                action: "STOP"
+            DebugRender:
+                enabled: true
+    -   class: "UIStaticText"
+        name: "Benchmark1Btn"
+        position: [19.000000, 148.000000]
+        size: [377.500000, 38.000000]
+        noInput: false
+        text: "Benchmark UIStaticText"
+        font: "Korinna_18"
+        components:
+            SizePolicy:
+                horizontalPolicy: "PercentOfParent"
+                horizontalValue: 50.000000
+            Action:
+                action: "BENCHMARK1"
+            DebugRender:
+                enabled: true
+    -   class: "UIStaticText"
+        name: "Benchmark2Btn"
+        position: [19.000000, 199.000000]
+        size: [377.500000, 38.000000]
+        noInput: false
+        text: "Benchmark UITextComponent"
+        font: "Korinna_18"
+        components:
+            SizePolicy:
+                horizontalPolicy: "PercentOfParent"
+                horizontalValue: 50.000000
+            Action:
+                action: "BENCHMARK2"
+            DebugRender:
+                enabled: true
