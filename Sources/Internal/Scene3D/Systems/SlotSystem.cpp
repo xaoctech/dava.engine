@@ -302,7 +302,6 @@ SlotSystem::SlotSystem(Scene* scene)
     , sharedCache(new ItemsCache())
     , externalEntityLoader(new AsyncSlotExternalLoader())
 {
-    deletePending.reserve(4);
 }
 
 SlotSystem::~SlotSystem()
@@ -332,8 +331,6 @@ void SlotSystem::SetExternalEntityLoader(std::shared_ptr<ExternalEntityLoader> e
 
 void SlotSystem::UnregisterEntity(Entity* entity)
 {
-    FindAndRemoveExchangingWithLast(deletePending, entity);
-
     if (loadedItemsCount > 0)
     {
         auto loadedIter = std::find_if(nodes.begin(), nodes.end(), [entity](const SlotNode& node) {
@@ -351,6 +348,7 @@ void SlotSystem::UnregisterEntity(Entity* entity)
             --loadedItemsCount;
         }
     }
+
     SceneSystem::UnregisterEntity(entity);
 }
 
@@ -384,31 +382,13 @@ void SlotSystem::AddComponent(Entity* entity, Component* component)
 void SlotSystem::RemoveComponent(Entity* entity, Component* component)
 {
     DVASSERT(component->GetType() == Component::SLOT_COMPONENT);
+    UnloadItem(static_cast<SlotComponent*>(component));
     uint32 index = GetComponentIndex(static_cast<SlotComponent*>(component));
-    Entity* loadedEntity = nodes[index].loadedEnity;
     RemoveExchangingWithLast(nodes, index);
-
-    if (loadedEntity != nullptr)
-    {
-        DVASSERT(loadedItemsCount > 0);
-        --loadedItemsCount;
-        deletePending.push_back(loadedEntity);
-    }
 }
 
 void SlotSystem::Process(float32 timeElapsed)
 {
-    Vector<Entity*> deletePendingCopy = deletePending;
-    deletePending.clear();
-    if (deletePendingCopy.empty() == false)
-    {
-        for (Entity* e : deletePendingCopy)
-        {
-            Entity* parent = e->GetParent();
-            parent->RemoveNode(e);
-        }
-    }
-
     for (uint32 i = 0; i < loadedItemsCount; ++i)
     {
         SlotNode& node = nodes[i];
@@ -614,12 +594,16 @@ void SlotSystem::UnloadItem(SlotComponent* component)
     {
         DVASSERT(loadedItemsCount > 0);
         SlotNode& node = nodes[index];
-        deletePending.push_back(node.loadedEnity);
+        Entity* loadedEntity = node.loadedEnity;
+        Entity* parent = loadedEntity->GetParent();
+
         node.loadedEnity = nullptr;
         SetState(node, eSlotState::NOT_LOADED);
 
         std::swap(nodes[index], nodes[loadedItemsCount - 1]);
         --loadedItemsCount;
+
+        parent->RemoveNode(loadedEntity);
     }
 }
 

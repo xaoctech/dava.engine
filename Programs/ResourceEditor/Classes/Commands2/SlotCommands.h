@@ -31,6 +31,7 @@ private:
     DAVA::FastName undoItemName;
     DAVA::FastName redoItemName;
     bool redoEntityInited = false;
+    bool executed = false;
 };
 
 class SlotTypeFilterEdit : public RECommand

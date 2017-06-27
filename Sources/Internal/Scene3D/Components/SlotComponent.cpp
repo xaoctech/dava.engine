@@ -43,7 +43,10 @@ void SlotComponent::Serialize(KeyedArchive* archive, SerializationContext* seria
         {
             archive->SetFastName("sc.attachmentToBone", attachementToJoint);
         }
-        archive->SetString("sc.configFilePath", configFilePath.GetRelativePathname(serializationContext->GetScenePath()));
+        if (configFilePath.IsEmpty() == false)
+        {
+            archive->SetString("sc.configFilePath", configFilePath.GetRelativePathname(serializationContext->GetScenePath()));
+        }
         archive->SetFastName("sc.template", templateName);
         archive->SetUInt32("sc.typeFiltersCount", actualFiltersCount);
         for (uint32 i = 0; i < actualFiltersCount; ++i)
@@ -60,7 +63,11 @@ void SlotComponent::Deserialize(KeyedArchive* archive, SerializationContext* ser
         slotName = archive->GetFastName("sc.slotName");
         attachmentTransform = archive->GetMatrix4("sc.attachmentTransform");
         attachementToJoint = archive->GetFastName("sc.attachmentToBone");
-        configFilePath = FilePath(serializationContext->GetScenePath() + archive->GetString("sc.configFilePath"));
+        String relativePathToConfig = archive->GetString("sc.configFilePath");
+        if (relativePathToConfig.empty() == false)
+        {
+            configFilePath = FilePath(serializationContext->GetScenePath() + relativePathToConfig);
+        }
         templateName = archive->GetFastName("sc.template");
         actualFiltersCount = archive->GetUInt32("sc.typeFiltersCount");
         for (uint32 i = 0; i < actualFiltersCount; ++i)

@@ -17,6 +17,8 @@ public:
     void Show(const QPoint& position);
     void Show(const QRect& geometry);
 
+    void ForceUpdate();
+
 protected:
     bool eventFilter(QObject* obj, QEvent* e) override;
 

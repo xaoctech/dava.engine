@@ -141,7 +141,7 @@ private:
         params.fields[LineEdit::Fields::PlaceHolder] = "filterEditPlaceholder";
 
         DAVA::Reflection popupModel = DAVA::Reflection::Create(DAVA::ReflectedObject(this));
-        DAVA::TArc::PopupLineEdit* popupLineEdit = new DAVA::TArc::PopupLineEdit(params, GetDataProcessor(), popupModel, realWidget);
+        DAVA::TArc::PopupLineEdit* popupLineEdit = new DAVA::TArc::PopupLineEdit(params, GetAccessor(), popupModel, realWidget);
         popupLineEdit->Show(realWidget->parentWidget()->mapToGlobal(realWidget->geometry().topLeft()));
     }
 
@@ -155,6 +155,8 @@ private:
                                  cmdInterface.Exec(std::make_unique<SlotTypeFilterEdit>(component, filterToRemove, false));
                                  return true;
                              });
+
+        ForceUpdate();
     }
 
     DAVA::String GetPopupText() const
@@ -172,11 +174,40 @@ private:
         DAVA::FastName filterToAdd(filterName);
         DAVA::String descr = DAVA::Format("Add type filter: %s", currentFilter.c_str());
         DAVA::TArc::ModifyExtension::MultiCommandInterface cmdInterface = GetModifyInterface()->GetMultiCommandInterface(descr, static_cast<DAVA::uint32>(nodes.size()));
-        ForEachSlotComponent([&](DAVA::SlotComponent* component, bool isFirst)
-                             {
-                                 cmdInterface.Exec(std::make_unique<SlotTypeFilterEdit>(component, filterToAdd, true));
-                                 return true;
-                             });
+        ForEachSlotComponent([&](DAVA::SlotComponent* component, bool isFirst) {
+            for (uint32 i = 0; i < component->GetTypeFiltersCount(); ++i)
+            {
+                if (component->GetTypeFilter(i) == filterToAdd)
+                {
+                    return true;
+                }
+            }
+            cmdInterface.Exec(std::make_unique<SlotTypeFilterEdit>(component, filterToAdd, true));
+            return true;
+        });
+    }
+
+    Any GetCurrentFilter() const
+    {
+        if (currentFilter.empty())
+        {
+            return Any();
+        }
+        return currentFilter;
+    }
+
+    void SetCurrentFilter(const Any& v)
+    {
+        if (v.IsEmpty())
+        {
+            currentFilter = DAVA::String("");
+        }
+        else
+        {
+            currentFilter = v.Cast<DAVA::String>();
+        }
+
+        ForceUpdate();
     }
 
     mutable DAVA::Set<DAVA::String> filters;
@@ -186,7 +217,7 @@ private:
     {
         DAVA::ReflectionRegistrator<SlotTypeFiltersComponentValue>::Begin()
         .Field("filtersList", &SlotTypeFiltersComponentValue::GetTypeFilters, nullptr)
-        .Field("currentFilter", &SlotTypeFiltersComponentValue::currentFilter)
+        .Field("currentFilter", &SlotTypeFiltersComponentValue::GetCurrentFilter, &SlotTypeFiltersComponentValue::SetCurrentFilter)
         .Field("autoRise", [](SlotTypeFiltersComponentValue*) { return false; }, nullptr)
         .Field("addButtonIcon", [](SlotTypeFiltersComponentValue*) { return SharedIcon(":/QtIcons/cplus.png"); }, nullptr)
         .Field("addButtonTooltip", [](SlotTypeFiltersComponentValue*) { return "Add type filter"; }, nullptr)
@@ -232,7 +263,6 @@ private:
     const DAVA::Set<DAVA::String>& GetJoints() const
     {
         joints.clear();
-        joints.emplace(DetachItemName);
         ForEachSlotComponent([&](DAVA::SlotComponent* component, bool isFirst)
                              {
                                  if (isFirst == true)
@@ -263,6 +293,7 @@ private:
                                  return true;
                              });
 
+        joints.emplace(DetachItemName);
         return joints;
     }
 

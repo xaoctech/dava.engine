@@ -15,8 +15,6 @@ AttachEntityToSlot::AttachEntityToSlot(SceneEditor2* sceneEditor_, DAVA::SlotCom
     , redoItemName(itemName)
     , redoEntityInited(true)
 {
-    undoEntity = DAVA::RefPtr<DAVA::Entity>::ConstructWithRetain(sceneEditor->slotSystem->LookUpLoadedEntity(slotComponent));
-    undoItemName = slotComponent->GetLoadedItemName();
 }
 
 AttachEntityToSlot::AttachEntityToSlot(SceneEditor2* sceneEditor_, DAVA::SlotComponent* slotComponent, DAVA::FastName itemName)
@@ -27,15 +25,19 @@ AttachEntityToSlot::AttachEntityToSlot(SceneEditor2* sceneEditor_, DAVA::SlotCom
     , redoEntityInited(false)
 {
     DVASSERT(redoItemName.IsValid());
-
-    undoEntity = DAVA::RefPtr<DAVA::Entity>::ConstructWithRetain(sceneEditor->slotSystem->LookUpLoadedEntity(slotComponent));
-    undoItemName = slotComponent->GetLoadedItemName();
 }
 
 void AttachEntityToSlot::Redo()
 {
     EditorSlotSystem* system = sceneEditor->LookupEditorSystem<EditorSlotSystem>();
     DVASSERT(system != nullptr);
+
+    if (executed == false)
+    {
+        undoEntity = DAVA::RefPtr<DAVA::Entity>::ConstructWithRetain(sceneEditor->slotSystem->LookUpLoadedEntity(component));
+        undoItemName = component->GetLoadedItemName();
+        executed = true;
+    }
 
     if (undoEntity.Get() != nullptr)
     {

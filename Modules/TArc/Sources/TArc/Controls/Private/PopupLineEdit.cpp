@@ -41,6 +41,11 @@ void PopupLineEdit::Show(const QRect& geometry)
     edit->ToWidgetCast()->setFocus(Qt::PopupFocusReason);
 }
 
+void PopupLineEdit::ForceUpdate()
+{
+    edit->ForceUpdate();
+}
+
 bool PopupLineEdit::eventFilter(QObject* obj, QEvent* e)
 {
     if (e->type() == QEvent::KeyPress)

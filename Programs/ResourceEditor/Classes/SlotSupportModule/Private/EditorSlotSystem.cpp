@@ -4,6 +4,8 @@
 #include "Classes/Commands2/Base/RECommandBatch.h"
 #include "Classes/Commands2/SetFieldValueCommand.h"
 #include "Classes/Commands2/RemoveComponentCommand.h"
+#include "Classes/Commands2/AddComponentCommand.h"
+#include "Classes/Commands2/EntityRemoveCommand.h"
 #include "Classes/Commands2/Base/RECommandNotificationObject.h"
 #include "Classes/Selection/Selection.h"
 #include "Classes/Qt/Scene/SceneSignals.h"
@@ -23,6 +25,23 @@
 #include <QObject>
 
 const DAVA::FastName EditorSlotSystem::emptyItemName = DAVA::FastName("Empty");
+
+namespace EditorSlotSystemDetail
+{
+void DetachSlotForRemovingEntity(DAVA::Entity* entity, SceneEditor2* scene, REDependentCommandsHolder& holder)
+{
+    for (uint32 i = 0; i < entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT); ++i)
+    {
+        DAVA::SlotComponent* component = static_cast<DAVA::SlotComponent*>(entity->GetComponent(DAVA::Component::SLOT_COMPONENT, i));
+        holder.AddPreCommand(std::make_unique<AttachEntityToSlot>(scene, component, nullptr, DAVA::FastName()));
+    }
+
+    for (int32 i = 0; i < entity->GetChildrenCount(); ++i)
+    {
+        DetachSlotForRemovingEntity(entity->GetChild(i), scene, holder);
+    }
+}
+} // namespace EditorSlotSystemDetail
 
 EditorSlotSystem::EditorSlotSystem(DAVA::Scene* scene, DAVA::TArc::ContextAccessor* accessor_)
     : SceneSystem(scene)
@@ -124,6 +143,10 @@ void EditorSlotSystem::Process(DAVA::float32 timeElapsed)
                     slotSystem->AttachItemToSlot(component, items.front().itemName);
                 }
             }
+            else
+            {
+                loadedEntity->SetName(component->GetSlotName());
+            }
         }
     }
 
@@ -142,6 +165,24 @@ void EditorSlotSystem::Process(DAVA::float32 timeElapsed)
         DVASSERT(inverseSuccessed);
         Matrix4 attachmentTransform = jointTranfsorm * entity->GetLocalTransform();
         scene->slotSystem->SetAttachmentTransform(slot, attachmentTransform);
+    }
+
+    for (Entity* entity : entities)
+    {
+        for (uint32 i = 0; i < entity->GetComponentCount(Component::SLOT_COMPONENT); ++i)
+        {
+            SlotComponent* component = static_cast<SlotComponent*>(entity->GetComponent(Component::SLOT_COMPONENT, i));
+            Entity* loadedEntity = scene->slotSystem->LookUpLoadedEntity(component);
+            DVASSERT(loadedEntity != nullptr);
+            for (int32 j = 0; j < loadedEntity->GetChildrenCount(); ++j)
+            {
+                Entity* child = loadedEntity->GetChild(j);
+                if (child->GetLocked() == false)
+                {
+                    child->SetLocked(true);
+                }
+            }
+        }
     }
 }
 
@@ -222,6 +263,38 @@ void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& ho
     };
 
     commandInfo.ForEach(removeSlotVisitor, CMDID_COMPONENT_REMOVE);
+
+    auto removeEntityVisitor = [&](const RECommand* command)
+    {
+        const EntityRemoveCommand* cmd = static_cast<const EntityRemoveCommand*>(command);
+        DAVA::Entity* entityToRemove = cmd->GetEntity();
+        EditorSlotSystemDetail::DetachSlotForRemovingEntity(entityToRemove, scene, holder);
+    };
+
+    commandInfo.ForEach(removeEntityVisitor, CMDID_ENTITY_REMOVE);
+
+    auto addSlotVisitor = [&](const RECommand* command)
+    {
+        const AddComponentCommand* cmd = static_cast<const AddComponentCommand*>(command);
+        DAVA::Component* component = cmd->GetComponent();
+        if (component->GetType() == DAVA::Component::SLOT_COMPONENT)
+        {
+            DAVA::SlotComponent* slotComponent = static_cast<DAVA::SlotComponent*>(component);
+
+            Vector<SlotSystem::ItemsCache::Item> items = scene->slotSystem->GetItems(slotComponent->GetConfigFilePath());
+            if (items.empty())
+            {
+                RefPtr<Entity> newEntity(new Entity());
+                holder.AddPostCommand(std::unique_ptr<DAVA::Command>(new AttachEntityToSlot(scene, slotComponent, newEntity.Get(), emptyItemName)));
+            }
+            else
+            {
+                holder.AddPostCommand(std::unique_ptr<DAVA::Command>(new AttachEntityToSlot(scene, slotComponent, items.front().itemName)));
+            }
+        }
+    };
+
+    commandInfo.ForEach(addSlotVisitor, CMDID_COMPONENT_ADD);
 }
 
 void EditorSlotSystem::ProcessCommand(const RECommandNotificationObject& commandNotification)
