@@ -5,8 +5,9 @@
 #include <Utils/Utils.h>
 #include <Utils/UTF8Utils.h>
 #include <UI/Update/UIUpdateComponent.h>
-#include <UI/Text/UItextComponent.h>
-#include <UI/Text/UItextSystem.h>
+#include <UI/Text/UITextComponent.h>
+#include <UI/Text/UITextSystem.h>
+#include <UI/Input/UIActionBindingComponent.h>
 
 using namespace DAVA;
 

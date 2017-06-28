@@ -37,7 +37,7 @@
 #include <Command/CommandStack.h>
 #include <UI/UIPackageLoader.h>
 #include <UI/UIStaticText.h>
-#include <UI/Text/UITextcomponent.h>
+#include <UI/Text/UITextComponent.h>
 #include <Render/Renderer.h>
 #include <Render/DynamicBufferAllocator.h>
 #include <Particles/ParticleEmitter.h>
