@@ -1187,14 +1187,14 @@ void DLCManagerImpl::SetRequestPriority(const IRequest* request)
     }
 }
 
-bool DLCManagerImpl::RemovePack(const String& requestedPackName)
+void DLCManagerImpl::RemovePack(const String& requestedPackName)
 {
     DVASSERT(Thread::IsMainThread());
 
     // now we can work without CDN, so always wait for initialization is done
     if (!IsInitialized())
     {
-        return false;
+        return;
     }
 
     PackRequest* request = FindRequest(requestedPackName);
@@ -1208,10 +1208,7 @@ bool DLCManagerImpl::RemovePack(const String& requestedPackName)
             if (nullptr != r)
             {
                 String packToRemove = r->GetRequestedPackName();
-                if (!RemovePack(packToRemove))
-                {
-                    return false;
-                }
+                RemovePack(packToRemove);
             }
         }
 
@@ -1255,7 +1252,6 @@ bool DLCManagerImpl::RemovePack(const String& requestedPackName)
             Logger::Error("can't delete files: %s", errMsg.c_str());
         }
     }
-    return true;
 }
 
 DLCManager::Progress DLCManagerImpl::GetProgress() const

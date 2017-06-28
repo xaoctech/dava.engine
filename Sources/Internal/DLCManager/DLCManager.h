@@ -134,9 +134,8 @@ public:
         and then request itself */
     virtual void SetRequestPriority(const IRequest* request) = 0;
 
-    /** Remove request with downloaded content with dependent packs,
-	    return false if no such pack or initialization not finished */
-    virtual bool RemovePack(const String& packName) = 0;
+    /** Remove request with downloaded content with dependent packs */
+    virtual void RemovePack(const String& packName) = 0;
 
     struct Progress
     {
