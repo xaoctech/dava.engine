@@ -1433,6 +1433,7 @@ void DLCManagerImpl::RecursiveScan(const FilePath& baseDir, const FilePath& dir,
                     if (footerSize == fread(&footer, 1, footerSize, f))
                     {
                         LocalFileInfo info;
+                        info.sizeOnDevice = FileAPI::GetFileSize(fileName);
                         info.relativeName = path.GetRelativePathname(baseDir);
                         info.compressedSize = footer.sizeCompressed;
                         info.crc32Hash = footer.crc32Compressed;
@@ -1518,15 +1519,17 @@ void DLCManagerImpl::ThreadScanFunc()
         const PackFormat::FileTableEntry* entry = mapFileData[relativeNameWithoutDvpl];
         if (entry != nullptr)
         {
-            if (entry->compressedCrc32 != info.crc32Hash || entry->compressedSize != info.compressedSize)
-            {
-                Logger::Info("hash not match for file: %s delete it", info.relativeName.c_str());
-                fs->DeleteFile(dirToDownloadedPacks + info.relativeName);
-            }
-            else
+            if (entry->compressedCrc32 == info.crc32Hash &&
+                entry->compressedSize == info.compressedSize &&
+                entry->compressedSize + sizeof(PackFormat::LitePack::Footer) == info.sizeOnDevice)
             {
                 size_t fileIndex = std::distance(&pack.filesTable.data.files[0], entry);
                 scanFileReady[fileIndex] = true;
+            }
+            else
+            {
+                // need to continue downloading file
+                // leave it as is
             }
         }
         else
