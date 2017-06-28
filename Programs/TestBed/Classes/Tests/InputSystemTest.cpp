@@ -724,8 +724,8 @@ bool InputSystemTest::OnInputEvent(InputEvent const& event)
 void InputSystemTest::OnAction(DAVA::Action action)
 {
     UIStaticText* staticTextCounter = actionCounters[action.actionId];
-    int counter = std::atoi(UTF8Utils::EncodeToUTF8(staticTextCounter->GetText()).c_str()) + 1;
-    staticTextCounter->SetText(UTF8Utils::EncodeToWideString(std::to_string(counter)));
+    int counter = std::atoi(staticTextCounter->GetUtf8Text().c_str()) + 1;
+    staticTextCounter->SetUtf8Text(std::to_string(counter));
 }
 
 void InputSystemTest::OnInputListenerButtonPressed(DAVA::BaseObject* sender, void* data, void* callerData)
