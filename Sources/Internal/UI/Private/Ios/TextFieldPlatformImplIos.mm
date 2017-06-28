@@ -9,6 +9,7 @@
 #include "Logger/Logger.h"
 #include "Render/Image/Image.h"
 #include "UI/UIControlSystem.h"
+#include "UI/UIControlBackground.h"
 #include "UI/UITextField.h"
 #include "UI/Private/Ios/TextFieldPlatformImplIos.h"
 #include "UI/Private/Ios/UITextFieldHolder.h"
@@ -636,7 +637,7 @@ void TextFieldPlatformImpl::UpdateStaticTexture()
     else
     {
         // remove background component
-        davaTextField.RemoveComponent(UIComponent::BACKGROUND_COMPONENT);
+        davaTextField.RemoveComponent<UIControlBackground>();
     }
 }
 

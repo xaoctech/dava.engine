@@ -2,6 +2,7 @@
 
 #include "UI/Private/Android/WebViewControlAndroid.h"
 #include "UI/UIControlSystem.h"
+#include "UI/UIControlBackground.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
 

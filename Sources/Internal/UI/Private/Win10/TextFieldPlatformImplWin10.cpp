@@ -14,6 +14,7 @@
 #include "Render/Image/ImageConvert.h"
 #include "Render/Texture.h"
 #include "UI/UIControlSystem.h"
+#include "UI/UIControlBackground.h"
 #include "UI/UITextField.h"
 #include "UI/Focus/FocusHelpers.h"
 
@@ -271,7 +272,7 @@ void TextFieldPlatformImpl::UpdateRect(const Rect& rect)
     {
         if (properties.textChanged && properties.focusChanged && properties.focus)
         {
-            uiTextField->RemoveComponent(UIComponent::BACKGROUND_COMPONENT);
+            uiTextField->RemoveComponent<UIControlBackground>();
         }
 
         auto self{ shared_from_this() };
@@ -311,7 +312,7 @@ void TextFieldPlatformImpl::SetText(const WideString& text)
     curText = text;
     if (text.empty())
     { // Immediatly remove sprite image if new text is empty to get rid of some flickering
-        uiTextField->RemoveComponent(UIComponent::BACKGROUND_COMPONENT);
+        uiTextField->RemoveComponent<UIControlBackground>();
     }
     programmaticTextChange = true;
 }
@@ -652,7 +653,7 @@ void TextFieldPlatformImpl::OnGotFocus()
         {
             if (!multiline)
             {
-                uiTextField->RemoveComponent(UIComponent::BACKGROUND_COMPONENT);
+                uiTextField->RemoveComponent<UIControlBackground>();
             }
 
             // Manually set focus through direct call to UITextField::SetFocused()

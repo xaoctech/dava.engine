@@ -458,7 +458,7 @@ void WebViewControl::SetRenderToTexture(bool value)
     else
     {
         // remove sprite from UIControl and show native window
-        uiWebViewControl.RemoveComponent(UIComponent::BACKGROUND_COMPONENT);
+        uiWebViewControl.RemoveComponent<UIControlBackground>();
         if (isVisible)
         {
             SetNativeVisible(true);
@@ -488,7 +488,7 @@ void WebViewControl::RenderToTextureAndSetAsBackgroundSpriteToControl(UIWebView&
 
     if (bridge->bitmapImageRep == nullptr)
     {
-        uiWebViewControl.RemoveComponent(UIComponent::BACKGROUND_COMPONENT);
+        uiWebViewControl.RemoveComponent<UIControlBackground>();
         return;
     }
 
@@ -517,7 +517,7 @@ void WebViewControl::RenderToTextureAndSetAsBackgroundSpriteToControl(UIWebView&
     else
     {
         DVASSERT(false && "[WebView] Unexpected bits per pixel value");
-        uiWebViewControl.RemoveComponent(UIComponent::BACKGROUND_COMPONENT);
+        uiWebViewControl.RemoveComponent<UIControlBackground>();
         return;
     }
 
