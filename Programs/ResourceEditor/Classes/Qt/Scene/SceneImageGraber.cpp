@@ -84,7 +84,7 @@ void GrabImage(Params params)
 {
     if (params.processInDAVAFrame)
     {
-        DAVA::JobManager::Instance()->CreateMainJob(DAVA::Bind(&SceneImageGrabberDetail::GrabImage, params), DAVA::JobManager::eMainJobType::JOB_MAINLAZY);
+        DAVA::GetEngineContext()->jobManager->CreateMainJob(DAVA::Bind(&SceneImageGrabberDetail::GrabImage, params), DAVA::JobManager::eMainJobType::JOB_MAINLAZY);
     }
     else
     {

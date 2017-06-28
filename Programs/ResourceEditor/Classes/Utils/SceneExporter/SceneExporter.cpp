@@ -96,7 +96,7 @@ bool SaveExportedObjects(const DAVA::FilePath& linkPathname, const DAVA::Vector<
     }
 }
 
-std::pair<bool, DAVA::int32> ReadInt(File* file)
+std::pair<bool, DAVA::int32> ReadInt(DAVA::File* file)
 {
     using namespace DAVA;
 
@@ -706,7 +706,7 @@ bool SceneExporter::SplitCompressedFile(const DAVA::TextureDescriptor& descripto
     if (isCubemap)
     {
         uint32 firstFace = loadedImages[0]->cubeFaceID;
-        mipmapsCount = count_if(loadedImages.begin(), loadedImages.end(), [&firstFace](const DAVA::Image* img) { return img->cubeFaceID == firstFace; });
+        mipmapsCount = static_cast<uint32>(count_if(loadedImages.begin(), loadedImages.end(), [&firstFace](const DAVA::Image* img) { return img->cubeFaceID == firstFace; }));
     }
 
     Vector<FilePath> pathnamesForGPU;

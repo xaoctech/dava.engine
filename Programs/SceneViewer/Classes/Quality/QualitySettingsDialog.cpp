@@ -124,7 +124,7 @@ QualitySettingsDialog::QualitySettingsDialog(Settings& settings)
 {
     using namespace DAVA;
 
-    const Size2i screenSize = DAVA::UIControlSystem::Instance()->vcs->GetVirtualScreenSize();
+    const Size2i screenSize = DAVA::GetEngineContext()->uiControlSystem->vcs->GetVirtualScreenSize();
     float32 w = screenSize.dx * 2.f / 3.f;
     float32 h = screenSize.dy * 4.f / 5.f;
     SetSize(DAVA::Vector2(w, h));

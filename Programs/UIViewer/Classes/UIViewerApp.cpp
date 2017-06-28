@@ -41,7 +41,7 @@ void UIViewerApp::OnWindowCreated(DAVA::Window* w)
 
     engine.PrimaryWindow()->draw.Connect(this, &UIViewerApp::Draw);
 
-    const Size2i& physicalSize = UIControlSystem::Instance()->vcs->GetPhysicalScreenSize();
+    const Size2i& physicalSize = GetEngineContext()->uiControlSystem->vcs->GetPhysicalScreenSize();
     float32 screenAspect = static_cast<float32>(physicalSize.dx) / static_cast<float32>(physicalSize.dy);
 
     const Size2f windowSize = { 1024.f, 1024.f / screenAspect };
@@ -54,7 +54,7 @@ void UIViewerApp::OnWindowCreated(DAVA::Window* w)
     w->SetSizeAsync(windowSize);
     w->SetVirtualSize(windowSize.dx, windowSize.dy);
 
-    VirtualCoordinatesSystem* vcs = DAVA::UIControlSystem::Instance()->vcs;
+    VirtualCoordinatesSystem* vcs = DAVA::GetEngineContext()->uiControlSystem->vcs;
     vcs->RegisterAvailableResourceSize(static_cast<int32>(windowSize.dx), static_cast<int32>(windowSize.dy), "Gfx");
     vcs->RegisterAvailableResourceSize(static_cast<int32>(windowSize.dx * 2.0f), static_cast<int32>(windowSize.dy * 2.0f), "Gfx2");
 
