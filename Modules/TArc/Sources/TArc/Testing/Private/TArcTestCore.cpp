@@ -60,7 +60,7 @@ void TestCore::OnAppStarted()
     if (TArcTestCoreDetail::teamcityOutputEnabled)
     {
         teamCityOutput.SetCaptureStdoutFlag(TArcTestCoreDetail::teamcityCaptureStdout);
-        GetEngineContext()->logger->AddCustomOutput(&teamCityOutput);
+        Logger::AddCustomOutput(&teamCityOutput);
     }
 
     UnitTests::TestCore::Instance()->Init(MakeFunction(this, &TestCore::OnTestClassStarted),
@@ -99,7 +99,7 @@ void TestCore::OnAppFinished()
 {
     if (TArcTestCoreDetail::teamcityOutputEnabled)
     {
-        DAVA::GetEngineContext()->logger->RemoveCustomOutput(&teamCityOutput);
+        DAVA::Logger::RemoveCustomOutput(&teamCityOutput);
     }
 }
 
