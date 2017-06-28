@@ -13,7 +13,7 @@
 
 using namespace DAVA;
 
-DAVA_TESTCLASS(UIRichContentTest)
+DAVA_TESTCLASS (UIRichContentTest)
 {
     BEGIN_FILES_COVERED_BY_TESTS()
     FIND_FILES_IN_TARGET(DavaFramework)
@@ -48,7 +48,7 @@ DAVA_TESTCLASS(UIRichContentTest)
         sys->Process(0.f);
     }
 
-    DAVA_TEST(BasicTest)
+    DAVA_TEST (BasicTest)
     {
         const String testData = R"(
             <p class="text">Header</p><span class="text">Simple text<br /> with </span><img src="~res:/UI/Images/GoldPin.png" /><span class="text">image.</span>
@@ -64,7 +64,7 @@ DAVA_TESTCLASS(UIRichContentTest)
         TEST_VERIFY(richControl->GetChildren().size() == 14);
     }
 
-    DAVA_TEST(BaseClassesTest)
+    DAVA_TEST (BaseClassesTest)
     {
         const String testData = R"(
             Simple <span class="text-green">green</span> text
@@ -82,7 +82,7 @@ DAVA_TESTCLASS(UIRichContentTest)
         c->SetClassesInheritance(false);
     }
 
-    DAVA_TEST(AliasesTest)
+    DAVA_TEST (AliasesTest)
     {
         const String testData = R"(
             <h1>Header</h1><text>Simple text<nl/> with </text><GoldPin/><text>image.</text>
@@ -98,7 +98,7 @@ DAVA_TESTCLASS(UIRichContentTest)
         {
             UIRichAliasMap::Attributes attrs;
             attrs["class"] = "dejavu";
-            UIRichAliasMap::Alias h1{"h1", "p", attrs};
+            UIRichAliasMap::Alias h1{ "h1", "p", attrs };
             aliases.PutAlias(h1);
 
             const UIRichAliasMap::Alias& a = aliases.GetAlias("h1");
@@ -159,7 +159,7 @@ DAVA_TESTCLASS(UIRichContentTest)
         TEST_VERIFY(richControl->GetComponentCount<UIRichContentAliasesComponent>() == 1);
     }
 
-    DAVA_TEST(RichComponentTest)
+    DAVA_TEST (RichComponentTest)
     {
         RefPtr<UIRichContentComponent> orig;
         orig = richControl->GetComponent<UIRichContentComponent>();

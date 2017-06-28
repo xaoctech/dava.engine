@@ -35,7 +35,7 @@ else:
 
 sources = ['../../Sources/Internal', '../../Modules', '../../Programs']
 exclude = ['*/Libs/*']
-extensions = ['cpp', 'h', 'mm']
+extensions = ['cpp', 'h', 'mm', 'unittest']
 
 def main():
     pool = multiprocessing.Pool()

@@ -26,7 +26,7 @@ static const int32 VERTICES_COMPONENTS_COUNT = 2;
 static const int32 TEXTURE_COMPONENTS_COUNT = 2;
 static const int32 COLOR_STRIDE = 1;
 
-int32 MaxVerticesCount(spSkeleton* skeleton)
+int32 MaxVerticesLength(spSkeleton* skeleton)
 {
     int32 max = 0;
 
@@ -52,7 +52,7 @@ int32 MaxVerticesCount(spSkeleton* skeleton)
         }
         case SP_ATTACHMENT_MESH:
         {
-            checkIsMax(reinterpret_cast<spMeshAttachment*>(slot->attachment)->trianglesCount * 3);
+            checkIsMax(reinterpret_cast<spMeshAttachment*>(slot->attachment)->super.worldVerticesLength);
             break;
         }
         default:
@@ -118,12 +118,6 @@ void SpineSkeleton::ReleaseSkeleton()
         skeleton = nullptr;
     }
 
-    if (worldVertices != nullptr)
-    {
-        SafeDeleteArray(worldVertices);
-        worldVertices = nullptr;
-    }
-
     if (state != nullptr)
     {
         spAnimationStateData_dispose(state->data);
@@ -131,6 +125,7 @@ void SpineSkeleton::ReleaseSkeleton()
         state = nullptr;
     }
 
+    worldVertices.clear();
     animationsNames.clear();
     skinsNames.clear();
 
@@ -248,7 +243,7 @@ bool SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath_)
     };
     state->rendererObject = this;
 
-    worldVertices = new float32[SpinePrivate::MaxVerticesCount(skeleton)];
+    worldVertices.resize(SpinePrivate::MaxVerticesLength(skeleton));
 
     animationsNames.clear();
     int32 animCount = skeleton->data->animationsCount;
@@ -359,7 +354,7 @@ void SpineSkeleton::Update(const float32 timeElapsed)
             case SP_ATTACHMENT_REGION:
             {
                 spRegionAttachment* attachment = reinterpret_cast<spRegionAttachment*>(slot->attachment);
-                spRegionAttachment_computeWorldVertices(attachment, slot->bone, worldVertices);
+                spRegionAttachment_computeWorldVertices(attachment, slot->bone, worldVertices.data());
 
                 SwitchTexture(reinterpret_cast<Texture*>(reinterpret_cast<spAtlasRegion*>(attachment->rendererObject)->page->rendererObject));
 
@@ -372,7 +367,7 @@ void SpineSkeleton::Update(const float32 timeElapsed)
             case SP_ATTACHMENT_MESH:
             {
                 spMeshAttachment* attachment = reinterpret_cast<spMeshAttachment*>(slot->attachment);
-                spMeshAttachment_computeWorldVertices(attachment, slot, worldVertices);
+                spMeshAttachment_computeWorldVertices(attachment, slot, worldVertices.data());
 
                 SwitchTexture(reinterpret_cast<Texture*>(reinterpret_cast<spAtlasRegion*>(attachment->rendererObject)->page->rendererObject));
 
@@ -552,13 +547,12 @@ bool SpineSkeleton::SetSkin(const String& skinName)
 {
     if (skeleton != nullptr)
     {
-        int32 skin = spSkeleton_setSkinByName(skeleton, skinName.c_str());
+        int32 skin = spSkeleton_setSkinByName(skeleton, skinName.empty() ? nullptr : skinName.c_str());
         if (skin != 0)
         {
-            SafeDeleteArray(worldVertices);
             if (skeleton != nullptr)
             {
-                worldVertices = new float32[SpinePrivate::MaxVerticesCount(skeleton)];
+                worldVertices.resize(SpinePrivate::MaxVerticesLength(skeleton));
             }
             return true;
         }
