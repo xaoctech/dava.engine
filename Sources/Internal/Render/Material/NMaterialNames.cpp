@@ -123,6 +123,7 @@ const FastName NMaterialParamName::WATER_CLEAR_COLOR("waterColor");
 const FastName NMaterialParamName::DEPRECATED_SHADOW_COLOR_PARAM("shadowColor");
 const FastName NMaterialParamName::DEPRECATED_LANDSCAPE_TEXTURE_0_TILING("texture0Tiling");
 const FastName NMaterialParamName::PARAM_TREE_LEAF_COLOR_MUL("treeLeafColorMul");
+const FastName NMaterialParamName::FORCED_SHADOW_DIRECTION_PARAM("forcedShadowDirection");
 
 //flags
 const FastName NMaterialFlagName::FLAG_BLENDING = FastName("BLENDING");
@@ -184,6 +185,8 @@ const FastName NMaterialFlagName::FLAG_ILLUMINATION_SHADOW_CASTER = FastName("IL
 const FastName NMaterialFlagName::FLAG_ILLUMINATION_SHADOW_RECEIVER = FastName("ILLUMINATION_SHADOW_RECEIVER");
 
 const FastName NMaterialFlagName::FLAG_TEST_OCCLUSION = FastName("TEST_OCCLUSION");
+
+const FastName NMaterialFlagName::FLAG_FORCED_SHADOW_DIRECTION = FastName("FORCED_SHADOW_DIRECTION");
 
 const FastName NMaterialFlagName::FLAG_PARTICLES_DEBUG_SHOW_HEATMAP = FastName("HEATMAP");
 const FastName NMaterialFlagName::FLAG_GEO_DECAL = FastName("GEO_DECAL");
