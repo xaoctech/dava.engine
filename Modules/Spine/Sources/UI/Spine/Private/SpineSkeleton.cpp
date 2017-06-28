@@ -395,7 +395,7 @@ void SpineSkeleton::Update(const float32 timeElapsed)
                 PushBatch();
             }
 
-            DVASSERT((verticesCoords.size() - currentVerticesStart) < UINT16_MAX);
+            DVASSERT((verticesCoords.size() - currentVerticesStart) < std::numeric_limits<uint16>::max());
             uint16 startIndex = static_cast<uint16>(verticesCoords.size() - currentVerticesStart);
             for (int32 i = 0; i < verticesCount; ++i)
             {
