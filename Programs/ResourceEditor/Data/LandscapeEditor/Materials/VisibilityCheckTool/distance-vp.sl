@@ -4,7 +4,6 @@
 vertex_in
 {
     float3 position : POSITION;
-    float3 normal   : NORMAL;
 #if defined(DEBUG_2D)
     float2 texCoord : TEXCOORD0;
 #endif
