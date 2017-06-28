@@ -37,6 +37,7 @@
 #include <Command/CommandStack.h>
 #include <UI/UIPackageLoader.h>
 #include <UI/UIStaticText.h>
+#include <UI/Text/UITextComponent.h>
 #include <Render/Renderer.h>
 #include <Render/DynamicBufferAllocator.h>
 #include <Particles/ParticleEmitter.h>
@@ -534,7 +535,7 @@ DAVA::RefPtr<PackageNode> DocumentsModule::CreatePackage(const QString& path)
     ProjectData* projectData = GetAccessor()->GetGlobalContext()->GetData<ProjectData>();
     DVASSERT(nullptr != projectData);
 
-    QuickEdPackageBuilder builder;
+    QuickEdPackageBuilder builder(GetAccessor()->GetEngineContext());
     UIPackageLoader packageLoader(projectData->GetPrototypes());
     bool packageLoaded = packageLoader.LoadPackage(davaPath, &builder);
 
@@ -614,7 +615,8 @@ void DocumentsModule::ChangeControlText(ControlNode* node)
     UIControl* control = node->GetControl();
 
     UIStaticText* staticText = dynamic_cast<UIStaticText*>(control);
-    DVASSERT(staticText != nullptr);
+    UITextComponent* textComponent = control->GetComponent<UITextComponent>();
+    DVASSERT(staticText != nullptr || textComponent != nullptr);
 
     RootProperty* rootProperty = node->GetRootProperty();
     AbstractProperty* textProperty = rootProperty->FindPropertyByName("text");
@@ -635,13 +637,24 @@ void DocumentsModule::ChangeControlText(ControlNode* node)
         stack->BeginBatch("change text by user");
         AbstractProperty* multilineProperty = rootProperty->FindPropertyByName("multiline");
         DVASSERT(multilineProperty != nullptr);
-        UIStaticText::eMultiline multilineType = multilineProperty->GetValue().Cast<UIStaticText::eMultiline>();
-        if (inputText.contains('\n') && multilineType == UIStaticText::MULTILINE_DISABLED)
+
+        // Update "multiline" property if need
+        if (inputText.contains('\n'))
         {
-            std::unique_ptr<ChangePropertyValueCommand> command = data->CreateCommand<ChangePropertyValueCommand>();
-            command->AddNodePropertyValue(node, multilineProperty, Any(UIStaticText::MULTILINE_ENABLED));
-            data->ExecCommand(std::move(command));
+            if (staticText != nullptr && (multilineProperty->GetValue().Cast<UIStaticText::eMultiline>() == UIStaticText::MULTILINE_DISABLED))
+            {
+                std::unique_ptr<ChangePropertyValueCommand> command = data->CreateCommand<ChangePropertyValueCommand>();
+                command->AddNodePropertyValue(node, multilineProperty, Any(UIStaticText::MULTILINE_ENABLED));
+                data->ExecCommand(std::move(command));
+            }
+            else if (textComponent != nullptr && (multilineProperty->GetValue().Cast<UITextComponent::eTextMultiline>() == UITextComponent::MULTILINE_DISABLED))
+            {
+                std::unique_ptr<ChangePropertyValueCommand> command = data->CreateCommand<ChangePropertyValueCommand>();
+                command->AddNodePropertyValue(node, multilineProperty, Any(UITextComponent::MULTILINE_ENABLED));
+                data->ExecCommand(std::move(command));
+            }
         }
+
         std::unique_ptr<ChangePropertyValueCommand> command = data->CreateCommand<ChangePropertyValueCommand>();
         command->AddNodePropertyValue(node, textProperty, Any(inputText.toStdString()));
         data->ExecCommand(std::move(command));

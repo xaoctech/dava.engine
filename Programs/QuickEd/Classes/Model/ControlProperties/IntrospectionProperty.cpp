@@ -6,7 +6,9 @@
 
 #include "PropertyVisitor.h"
 #include "SubValueProperty.h"
+
 #include <Base/BaseMath.h>
+#include <Reflection/ReflectedMeta.h>
 #include <UI/Layouts/UILayoutSourceRectComponent.h>
 #include <UI/Styles/UIStyleSheetPropertyDataBase.h>
 #include <UI/UIControl.h>
@@ -22,11 +24,12 @@ const String INTROSPECTION_PROPERTY_NAME_SIZE("size");
 const String INTROSPECTION_PROPERTY_NAME_POSITION("position");
 const String INTROSPECTION_PROPERTY_NAME_TEXT("text");
 const String INTROSPECTION_PROPERTY_NAME_FONT("font");
+const String INTROSPECTION_PROPERTY_NAME_FONT_NAME("fontName");
 const String INTROSPECTION_PROPERTY_NAME_CLASSES("classes");
 const String INTROSPECTION_PROPERTY_NAME_VISIBLE("visible");
 }
 
-IntrospectionProperty::IntrospectionProperty(DAVA::BaseObject* anObject, DAVA::int32 componentType, const String& name, const DAVA::Reflection& ref, const IntrospectionProperty* sourceProperty, eCloneType copyType)
+IntrospectionProperty::IntrospectionProperty(DAVA::BaseObject* anObject, const DAVA::Type* componentType, const String& name, const DAVA::Reflection& ref, const IntrospectionProperty* sourceProperty, eCloneType copyType)
     : ValueProperty(name, ref.GetValueType())
     , object(SafeRetain(anObject))
     , reflection(ref)
@@ -106,13 +109,13 @@ IntrospectionProperty::~IntrospectionProperty()
     SafeRelease(object);
 }
 
-IntrospectionProperty* IntrospectionProperty::Create(BaseObject* object, uint32 componentType, const String& name, const Reflection& ref, const IntrospectionProperty* sourceProperty, eCloneType cloneType)
+IntrospectionProperty* IntrospectionProperty::Create(BaseObject* object, const DAVA::Type* componentType, const String& name, const Reflection& ref, const IntrospectionProperty* sourceProperty, eCloneType cloneType)
 {
     if (name == INTROSPECTION_PROPERTY_NAME_TEXT)
     {
         return new LocalizedTextValueProperty(object, name, ref, sourceProperty, cloneType);
     }
-    else if (name == INTROSPECTION_PROPERTY_NAME_FONT)
+    else if (name == INTROSPECTION_PROPERTY_NAME_FONT || name == INTROSPECTION_PROPERTY_NAME_FONT_NAME)
     {
         return new FontValueProperty(object, name, ref, sourceProperty, cloneType);
     }

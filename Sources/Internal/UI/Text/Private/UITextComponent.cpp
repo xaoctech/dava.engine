@@ -26,7 +26,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UITextComponent)
 }
 
 UITextComponent::UITextComponent(const UITextComponent& src)
-    : UIBaseComponent(src)
+    : UIComponent(src)
     , align(src.align)
     , text(src.text)
     , fontName(src.fontName)
@@ -103,7 +103,8 @@ UITextComponent::eTextFitting UITextComponent::GetFitting() const
 
 void UITextComponent::SetFontName(const String& value)
 {
-    if (fontName != value)
+    // Force update modified flag
+    // For case when font associated with alias was changed externally
     {
         fontName = value;
         font = nullptr;

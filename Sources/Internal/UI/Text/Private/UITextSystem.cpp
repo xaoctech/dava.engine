@@ -132,6 +132,15 @@ void UITextSystem::ApplyData(UITextComponent* component)
     }
 }
 
+void UITextSystem::ForceProcessControl(float32 elapsedTime, UIControl* control)
+{
+    UITextComponent* component = control->GetComponent<UITextComponent>();
+    if (component)
+    {
+        ApplyData(component);
+    }
+}
+
 void UITextSystem::RegisterControl(UIControl* control)
 {
     UISystem::RegisterControl(control);
@@ -157,17 +166,19 @@ void UITextSystem::RegisterComponent(UIControl* control, UIComponent* component)
 {
     UISystem::RegisterComponent(control, component);
 
-    if (component->GetType() == UITextComponent::C_TYPE)
+    UITextComponent* textComponent = CastIfEqual<UITextComponent*>(component);
+    if (textComponent != nullptr)
     {
-        AddLink(DAVA::DynamicTypeCheck<UITextComponent*>(component));
+        AddLink(textComponent);
     }
 }
 
 void UITextSystem::UnregisterComponent(UIControl* control, UIComponent* component)
 {
-    if (component->GetType() == UITextComponent::C_TYPE)
+    UITextComponent* textComponent = CastIfEqual<UITextComponent*>(component);
+    if (textComponent != nullptr)
     {
-        RemoveLink(DAVA::DynamicTypeCheck<UITextComponent*>(component));
+        RemoveLink(textComponent);
     }
 
     UISystem::UnregisterComponent(control, component);

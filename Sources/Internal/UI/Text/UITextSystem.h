@@ -27,6 +27,8 @@ public:
     void UnregisterComponent(UIControl* control, UIComponent* component) override;
 
     void Process(float32 elapsedTime) override;
+    void ForceProcessControl(float32 elapsedTime, UIControl* control) override;
+
     /** Apply component properties changes to internal TextBlock and UIControlBackground objects. */
     void ApplyData(UITextComponent* component);
 
