@@ -19,9 +19,12 @@ NotPassableTerrainProxy::NotPassableTerrainProxy(DAVA::int32 heightmapSize)
     DAVA::int32 buffersCount = quadLineSize * quadLineSize;
     gridBuffers.resize(buffersCount);
 
-    DAVA::int32 quadBufferSize = GRID_QUAD_SIZE * GRID_QUAD_SIZE * 4 * sizeof(DAVA::float32) * 4;
+    rhi::VertexBuffer::Descriptor desc;
+    desc.size = GRID_QUAD_SIZE * GRID_QUAD_SIZE * 4 * sizeof(DAVA::float32) * 4;
+    desc.needRestore = false;
+
     for (DAVA::int32 i = 0; i < buffersCount; ++i)
-        gridBuffers[i] = rhi::CreateVertexBuffer(quadBufferSize);
+        gridBuffers[i] = rhi::CreateVertexBuffer(desc);
 }
 
 NotPassableTerrainProxy::~NotPassableTerrainProxy()
@@ -119,8 +122,17 @@ void NotPassableTerrainProxy::UpdateTexture(DAVA::Heightmap* heightmap, const DA
 
     ///////////////////////////////
 
+    DAVA::Size2f textureSize(DAVA::float32(notPassableTexture->GetWidth()), DAVA::float32(notPassableTexture->GetHeight()));
+
     DAVA::Matrix4 projMatrix;
-    projMatrix.glOrtho(0.0f, static_cast<DAVA::float32>(notPassableTexture->GetWidth()), 0.0f, static_cast<DAVA::float32>(notPassableTexture->GetHeight()), -1.0f, 1.0f, false);
+    if (!rhi::DeviceCaps().isUpperLeftRTOrigin)
+    {
+        projMatrix.BuildOrtho(0.0f, textureSize.dx, 0.0f, textureSize.dy, -1.0f, 1.0f, rhi::DeviceCaps().isZeroBaseClipRange);
+    }
+    else
+    {
+        projMatrix.BuildOrtho(0.0f, textureSize.dx, textureSize.dy, 0.0f, -1.0f, 1.0f, rhi::DeviceCaps().isZeroBaseClipRange);
+    }
 
     DAVA::Renderer::GetDynamicBindings().SetDynamicParam(DAVA::DynamicBindings::PARAM_WORLD, &DAVA::Matrix4::IDENTITY, reinterpret_cast<DAVA::pointer_size>(&DAVA::Matrix4::IDENTITY));
     DAVA::Renderer::GetDynamicBindings().SetDynamicParam(DAVA::DynamicBindings::PARAM_VIEW, &DAVA::Matrix4::IDENTITY, reinterpret_cast<DAVA::pointer_size>(&DAVA::Matrix4::IDENTITY));
