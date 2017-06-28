@@ -184,7 +184,7 @@ DAVA_TESTCLASS (UISpineTest)
     {
         spineComponent->SetAnimationName("position");
         spineComponent->SetAnimationState(UISpineComponent::PLAYED);
-        
+
         // Default test
         spineComponent->SetSkinName("default");
         SkipFrames(1);
@@ -194,12 +194,12 @@ DAVA_TESTCLASS (UISpineTest)
         spineComponent->SetSkinName("gold");
         SkipFrames(1);
         TEST_VERIFY(spineComponent->GetSkinName() == "gold");
-        
+
         // Second skin name
         spineComponent->SetSkinName("silver");
         SkipFrames(1);
         TEST_VERIFY(spineComponent->GetSkinName() == "silver");
-        
+
         // Invalid name
         spineComponent->SetSkinName("invalid");
         SkipFrames(1);

@@ -17,7 +17,6 @@
 
 #include <TArc/WindowSubSystem/UI.h>
 #include <TArc/Core/ContextAccessor.h>
-#include <TArc/Utils/ReflectionHelpers.h>
 
 #include <UI/Components/UIComponent.h>
 #include <UI/UIControl.h>
@@ -207,19 +206,7 @@ QAction* PropertiesWidget::CreateAddComponentAction()
     {
         if (!ComponentPropertiesSection::IsHiddenComponent(c))
         {
-            String name = c->GetName();
-
-            const ReflectedType* rtype = ReflectedTypeDB::GetByType(c);
-            const DAVA::M::DisplayName* dmeta = TArc::GetReflectedTypeMeta<DAVA::M::DisplayName>(rtype);
-            if (dmeta != nullptr)
-            {
-                name = dmeta->displayName;
-            }
-            else if (rtype != nullptr)
-            {
-                name = rtype->GetPermanentName();
-            }
-
+            const String& name = ReflectedTypeDB::GetByType(c)->GetPermanentName();
             QAction* componentAction = new QAction(name.c_str(), this); // TODO: Localize name
             componentAction->setData(QVariant::fromValue(Any(c)));
             addComponentMenu->addAction(componentAction);

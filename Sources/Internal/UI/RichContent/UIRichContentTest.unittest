@@ -120,7 +120,7 @@ DAVA_TESTCLASS(UIRichContentTest)
         }
         // From alias and xml source
         {
-            aliases.PutAliasFromXml("GoldPin", "<img src=\"~res:/Gfx/UI/GoldPin\" />");
+            aliases.PutAliasFromXml("GoldPin", "<img src=\"~res:/UI/Images/GoldPin.png\" />");
             TEST_VERIFY(aliases.GetAlias("GoldPin").tag == "img");
         }
         // Negative tests

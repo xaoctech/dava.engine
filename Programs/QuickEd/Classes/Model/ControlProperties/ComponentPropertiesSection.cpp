@@ -205,18 +205,7 @@ void ComponentPropertiesSection::Accept(PropertyVisitor* visitor)
 
 String ComponentPropertiesSection::GetComponentName() const
 {
-    String name = component->GetType()->GetName();
-    const ReflectedType* rtype = ReflectedTypeDB::GetByType(component->GetType());
-    const DAVA::M::DisplayName* dmeta = TArc::GetReflectedTypeMeta<DAVA::M::DisplayName>(rtype);
-    if (dmeta != nullptr)
-    {
-        name = dmeta->displayName;
-    }
-    else if (rtype != nullptr)
-    {
-        name = rtype->GetPermanentName();
-    }
-    return name;
+    return ReflectedTypeDB::GetByType(component->GetType())->GetPermanentName();
 }
 
 void ComponentPropertiesSection::RefreshName()
