@@ -122,18 +122,18 @@ void TextBlockGraphicRender::Draw(const Color& textColor, const Vector2* offset)
 
     //NOTE: correct affine transformations
     Matrix4 offsetMatrix;
-    offsetMatrix.glTranslate(float32(xOffset) - textBlock->pivot.x, float32(yOffset) - textBlock->pivot.y, 0.f);
+    offsetMatrix.BuildTranslation(Vector3(float32(xOffset) - textBlock->pivot.x, float32(yOffset) - textBlock->pivot.y, 0.f));
 
     Matrix4 rotateMatrix;
-    rotateMatrix.glRotate(RadToDeg(textBlock->angle), 0.f, 0.f, 1.f);
+    rotateMatrix.BuildRotation(Vector3(0.f, 0.f, 1.f), textBlock->angle);
 
     Matrix4 scaleMatrix;
     //recalculate x scale - for non-uniform scale
     const float difX = 1.0f - (textBlock->scale.dy - textBlock->scale.dx);
-    scaleMatrix.glScale(difX, 1.f, 1.0f);
+    scaleMatrix.BuildScale(Vector3(difX, 1.f, 1.0f));
 
     Matrix4 worldMatrix;
-    worldMatrix.glTranslate(textBlock->position.x, textBlock->position.y, 0.f);
+    worldMatrix.BuildTranslation(Vector3(textBlock->position.x, textBlock->position.y, 0.f));
 
     offsetMatrix = (scaleMatrix * offsetMatrix * rotateMatrix) * worldMatrix;
 
