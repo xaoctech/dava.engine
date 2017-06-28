@@ -304,6 +304,11 @@ void ParticleEffectSystem::Process(float32 timeElapsed)
                 if (effect->clearOnRestart)
                     effect->ClearCurrentGroups();
                 RunEffect(effect);
+
+                if (effect->GetStartFromTime() > EPSILON)
+                {
+                    SimulateEffect(effect);
+                }
             }
             else
             {

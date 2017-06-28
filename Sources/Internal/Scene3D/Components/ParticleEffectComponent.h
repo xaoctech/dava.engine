@@ -165,7 +165,7 @@ inline float32 ParticleEffectComponent::GetStartFromTime() const
 
 inline void ParticleEffectComponent::SetStartFromTime(float32 time)
 {
-    startFromTime = Max(0.0f, time);
+    startFromTime = Clamp(time, 0.0f, effectDuration);
 }
 
 ParticleEffectComponent::eState ParticleEffectComponent::GetAnimationState() const
