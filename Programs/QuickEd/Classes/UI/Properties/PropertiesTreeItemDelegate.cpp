@@ -107,11 +107,11 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
     propertyNameTypeItemDelegates[PropertyPath("SizePolicy", "horizontalFormula")] = new ComboPropertyDelegate(this, std::make_unique<PredefinedCompletionsProvider>(formulaCompletions), true);
     propertyNameTypeItemDelegates[PropertyPath("SizePolicy", "verticalFormula")] = new ComboPropertyDelegate(this, std::make_unique<PredefinedCompletionsProvider>(formulaCompletions), true);
 
-    propertyNameTypeItemDelegates[PropertyPath("Spine", "skeletonPath")] = new ResourceFilePropertyDelegate(spineSkeletonExtensions, "", this, false);
-    propertyNameTypeItemDelegates[PropertyPath("Spine", "atlasPath")] = new ResourceFilePropertyDelegate(spineAtlasExtensions, "/Gfx/", this, false);
-    propertyNameTypeItemDelegates[PropertyPath("Spine", "animationName")] = new ComboPropertyDelegate(this, std::make_unique<CompletionsProviderForUIReflection>("animationsNames", "UISpineComponent"), false);
-    propertyNameTypeItemDelegates[PropertyPath("Spine", "skinName")] = new ComboPropertyDelegate(this, std::make_unique<CompletionsProviderForUIReflection>("skinsNames", "UISpineComponent"), false);
-    propertyNameTypeItemDelegates[PropertyPath("SpineAttachControlsToBones", "bonesBinds")] = new TablePropertyDelegate(QList<QString>({ "Bone", "Control" }), this);
+    propertyNameTypeItemDelegates[PropertyPath("UISpineComponent", "skeletonPath")] = new ResourceFilePropertyDelegate(spineSkeletonExtensions, "", this, false);
+    propertyNameTypeItemDelegates[PropertyPath("UISpineComponent", "atlasPath")] = new ResourceFilePropertyDelegate(spineAtlasExtensions, "/Gfx/", this, false);
+    propertyNameTypeItemDelegates[PropertyPath("UISpineComponent", "animationName")] = new ComboPropertyDelegate(this, std::make_unique<CompletionsProviderForUIReflection>("animationsNames", "UISpineComponent"), false);
+    propertyNameTypeItemDelegates[PropertyPath("UISpineComponent", "skinName")] = new ComboPropertyDelegate(this, std::make_unique<CompletionsProviderForUIReflection>("skinsNames", "UISpineComponent"), false);
+    propertyNameTypeItemDelegates[PropertyPath("UISpineAttachControlsToBonesComponent", "bonesBinds")] = new TablePropertyDelegate(QList<QString>({ "Bone", "Control" }), this);
 }
 
 PropertiesTreeItemDelegate::~PropertiesTreeItemDelegate()
