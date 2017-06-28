@@ -6,6 +6,7 @@
 #include "UI/Layouts/UIFlowLayoutHintComponent.h"
 #include "UI/Layouts/UISizePolicyComponent.h"
 #include "UI/Layouts/LayoutFormula.h"
+#include "UI/Text/UITextComponent.h"
 
 #include "UI/UIControl.h"
 

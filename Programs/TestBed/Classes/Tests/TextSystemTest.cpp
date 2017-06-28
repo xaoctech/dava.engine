@@ -125,6 +125,7 @@ void TextSystemTest::Benchmark1()
         s = s + s;
         testTexts.push_back(s);
     }
+    UITextSystem* textSystem = UIControlSystem::Instance()->GetSystem<UITextSystem>();
 
     uint64 begin = SystemTimer::GetUs();
     const int32 n = 100;
@@ -145,6 +146,8 @@ void TextSystemTest::Benchmark1()
         {
             staticText->SetFittingOption(fitting);
         }
+        textSystem->ForceProcessControl(0.f, staticText);
+
         RemoveControl(staticText);
         SafeRelease(staticText);
     }

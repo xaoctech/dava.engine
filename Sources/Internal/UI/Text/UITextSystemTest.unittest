@@ -84,20 +84,21 @@ DAVA_TESTCLASS (UITextSystemTest)
 
         UITextSystem* sys = UIControlSystem::Instance()->GetSystem<UITextSystem>();
 
-        RefPtr<UITextComponent>
-        copy(orig->Clone());
+        RefPtr<UITextComponent> copy(orig->Clone());
         TEST_VERIFY(orig->GetLink() != nullptr);
-        TEST_VERIFY(copy->GetLink() == nullptr);
+        TEST_VERIFY(copy->GetLink() != nullptr);
+		TEST_VERIFY(orig->GetLink() != copy->GetLink());
 
         newControl->RemoveComponent(orig.Get());
-        TEST_VERIFY(orig->GetLink() == nullptr);
-        TEST_VERIFY(copy->GetLink() == nullptr);
+        TEST_VERIFY(orig->GetLink() != nullptr);
+        TEST_VERIFY(copy->GetLink() != nullptr);
 
         UpdateSystem();
 
         newControl->AddComponent(copy.Get());
-        TEST_VERIFY(orig->GetLink() == nullptr);
+        TEST_VERIFY(orig->GetLink() != nullptr);
         TEST_VERIFY(copy->GetLink() != nullptr);
+		TEST_VERIFY(orig->GetLink() != copy->GetLink());
 
         UpdateSystem();
     }
