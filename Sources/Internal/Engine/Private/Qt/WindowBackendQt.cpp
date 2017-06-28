@@ -382,7 +382,7 @@ void WindowBackend::OnKeyPressed(QKeyEvent* qtEvent)
     uint32 lparam = qtEvent->nativeModifiers();
     scancodeKey = qtEvent->nativeScanCode();
     bool isExtended = (HIWORD(lparam) & KF_EXTENDED) == KF_EXTENDED;
-    if (isExtended || (key == VK_SHIFT && ::MapVirtualKeyW(scancodeKey, MAPVK_VSC_TO_VK_EX) == VK_RSHIFT))
+    if (isExtended || (virtualKey == VK_SHIFT && ::MapVirtualKeyW(scancodeKey, MAPVK_VSC_TO_VK_EX) == VK_RSHIFT))
     {
         // Windows uses 0xE000 mask throughout its API to distinguish between extended and non-extended keys
         // So, follow this convention and use the same mask
