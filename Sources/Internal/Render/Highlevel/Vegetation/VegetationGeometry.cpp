@@ -448,7 +448,7 @@ void VegetationGeometry::Rotate(float32 angle, const Vector<Vector3>& sourcePosi
     rotatedNormals.clear();
 
     Matrix4 rotMat;
-    rotMat.CreateRotation(Vector3(0.0f, 0.0f, 1.0f), DegToRad(angle));
+    rotMat.BuildRotation(Vector3(0.0f, 0.0f, 1.0f), DegToRad(angle));
 
     Matrix4 normalMatrix4;
     rotMat.GetInverse(normalMatrix4);

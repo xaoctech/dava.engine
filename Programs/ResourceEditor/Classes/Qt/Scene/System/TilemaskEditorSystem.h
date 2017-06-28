@@ -65,7 +65,6 @@ protected:
     DAVA::FilePath toolImagePath;
     DAVA::int32 toolImageIndex;
 
-    rhi::HVertexBuffer quadBuffer;
     rhi::Packet quadPacket;
     DAVA::uint32 quadVertexLayoutID;
 
@@ -91,8 +90,6 @@ protected:
     DAVA::Rect GetUpdatedRect();
 
     void CreateMaskTexture();
-    void CreateMaskFromTexture(DAVA::Texture* texture);
-    void UpdateVertexBuffer();
 
     void CreateUndoPoint();
 

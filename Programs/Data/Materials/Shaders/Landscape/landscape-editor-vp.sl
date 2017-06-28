@@ -33,12 +33,6 @@ vertex_out
     #if TILEMASK
     float2  texCoordTiled   : TEXCOORD1;
     #endif
-    #if VERTEX_FOG
-    float4  varFog          : TEXCOORD5;
-    #endif
-    #if LANDSCAPE_MORPHING_COLOR
-    float4  morphColor      : COLOR0;
-    #endif
 };
 
 #if LANDSCAPE_USE_INSTANCING
@@ -55,18 +49,6 @@ vertex_out
     [auto][a] property float3 boundingBoxSize;
     [auto][a] property float heightmapTextureSize;
 #endif
-
-#if VERTEX_FOG
-[auto][a] property float4x4 worldMatrix;
-[auto][a] property float4x4 worldViewMatrix;
-[auto][a] property float3   cameraPosition;
-#endif
-#if VERTEX_FOG && FOG_ATMOSPHERE
-[auto][a] property float4   lightPosition0;
-#endif
-
-#include "vp-fog-props.slh"
-
 
 vertex_out vp_main( vertex_in input )
 {
