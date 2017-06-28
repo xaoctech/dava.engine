@@ -175,6 +175,11 @@ void ParticleEffectSystem::RunEffect(ParticleEffectComponent* effect)
 
     effect->state = ParticleEffectComponent::STATE_PLAYING;
     effect->time = 0;
+
+    if (effect->GetStartFromTime() > EPSILON)
+    {
+        SimulateEffect(effect);
+    }
 }
 
 void ParticleEffectSystem::AddToActive(ParticleEffectComponent* effect)
@@ -284,11 +289,6 @@ void ParticleEffectSystem::Process(float32 timeElapsed)
         if (effect->state == ParticleEffectComponent::STATE_STARTING)
         {
             RunEffect(effect);
-
-            if (effect->GetStartFromTime() > EPSILON)
-            {
-                SimulateEffect(effect);
-            }
         }
 
         if (effect->isPaused)
@@ -304,11 +304,6 @@ void ParticleEffectSystem::Process(float32 timeElapsed)
                 if (effect->clearOnRestart)
                     effect->ClearCurrentGroups();
                 RunEffect(effect);
-
-                if (effect->GetStartFromTime() > EPSILON)
-                {
-                    SimulateEffect(effect);
-                }
             }
             else
             {
