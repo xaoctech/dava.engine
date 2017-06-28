@@ -122,7 +122,7 @@ FMODSoundSystem::FMODSoundSystem(Engine* e)
 #endif
     FMOD_VERIFY(fmodSystem->setSoftwareChannels(MAX_SOUND_CHANNELS));
 
-    FMOD_INITFLAGS initFlags = FMOD_INIT_NORMAL;
+    FMOD_INITFLAGS initFlags = FMOD_INIT_NORMAL | FMOD_INIT_3D_RIGHTHANDED;
 #ifdef DAVA_FMOD_PROFILE
     initFlags |= FMOD_INIT_ENABLE_PROFILE;
 #endif

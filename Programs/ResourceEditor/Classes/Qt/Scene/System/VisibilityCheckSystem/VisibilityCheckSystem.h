@@ -47,7 +47,6 @@ private:
 
     void UpdatePointSet();
     void Prerender();
-    void CreateRenderTarget();
 
     bool CacheIsValid();
     void BuildCache();

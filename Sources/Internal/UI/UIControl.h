@@ -1026,7 +1026,8 @@ public:
     template <class T>
     void RemoveComponent(int32 index = 0)
     {
-        RemoveComponent(Type::Instance<T>(), index);
+        static int32 runtimeType = GetEngineContext()->componentManager->GetRuntimeType(Type::Instance<T>());
+        RemoveComponent(runtimeType, index);
     }
 
     /** Remove all components. */
@@ -1042,7 +1043,8 @@ public:
     template <class T>
     inline T* GetComponent(uint32 index = 0) const
     {
-        return DynamicTypeCheck<T*>(GetComponent(Type::Instance<T>(), index));
+        static int32 runtimeType = GetEngineContext()->componentManager->GetRuntimeType(Type::Instance<T>());
+        return DynamicTypeCheck<T*>(GetComponent(runtimeType, index));
     }
 
     /**
@@ -1077,7 +1079,8 @@ public:
     template <class T>
     inline uint32 GetComponentCount() const
     {
-        return GetComponentCount(Type::Instance<T>());
+        static int32 runtimeType = GetEngineContext()->componentManager->GetRuntimeType(Type::Instance<T>());
+        return GetComponentCount(runtimeType);
     }
 
     /** Return UIControl::components reference. */

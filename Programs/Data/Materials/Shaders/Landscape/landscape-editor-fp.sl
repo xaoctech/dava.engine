@@ -3,7 +3,9 @@
 fragment_in
 {
     float2  texCoord        : TEXCOORD0;
+	#if TILEMASK
     float2  texCoordTiled   : TEXCOORD1;
+    #endif
 };
 
 fragment_out
