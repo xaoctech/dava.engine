@@ -119,6 +119,28 @@ void ParticleEffectSystem::SetGlobalMaterial(NMaterial* material)
 
     //RHI_COMPLETE pre-cache all configs for regularly used blending modes
     const static uint32 FRAME_BLEND_MASK = 1;
+    const static uint32 FOG_MASK = 2;
+    const static uint32 BLEND_SHIFT = 2;
+    for (uint32 i = 0; i < 12; i++)
+    {
+        bool enableFrameBlend = (i & FRAME_BLEND_MASK) == FRAME_BLEND_MASK;
+        bool enableFog = (i & FOG_MASK) == FOG_MASK;
+        uint32 blending = (i >> BLEND_SHIFT) + 1;
+
+        ScopedPtr<NMaterial> material(new NMaterial());
+        material->SetParent(particleBaseMaterial);
+
+        if (enableFrameBlend)
+            material->AddFlag(NMaterialFlagName::FLAG_FRAME_BLEND, 1);
+        if (!enableFog) //inverse logic to suspend vertex fog inherited from global material
+            material->AddFlag(NMaterialFlagName::FLAG_VERTEXFOG, 0);
+        material->AddFlag(NMaterialFlagName::FLAG_BLENDING, blending);
+        material->PreCacheFX();
+    }
+    /*particleBaseMaterial->SetParent(material);
+
+    //RHI_COMPLETE pre-cache all configs for regularly used blending modes
+    const static uint32 FRAME_BLEND_MASK = 1;
     const static uint32 FOG_MASK = 1 << 1;
     const static uint32 FRES_TO_ALPHA_MASK = 1 << 2;
     const static uint32 NOISE_MASK = 1 << 3;
@@ -162,7 +184,7 @@ void ParticleEffectSystem::SetGlobalMaterial(NMaterial* material)
 
         material->AddFlag(NMaterialFlagName::FLAG_BLENDING, blending);
         material->PreCacheFX();
-    }
+    }*/
 }
 
 void ParticleEffectSystem::PrebuildMaterials(ParticleEffectComponent* component)
