@@ -70,7 +70,7 @@ const InputElementInfo& GetInputElementInfo(eInputElements element)
         infoKeyboard[eInputElements::KB_BACKSLASH - eInputElements::KB_FIRST] = { "\\", eInputElementTypes::DIGITAL };
         infoKeyboard[eInputElements::KB_APOSTROPHE - eInputElements::KB_FIRST] = { "'", eInputElementTypes::DIGITAL };
         infoKeyboard[eInputElements::KB_SEMICOLON - eInputElements::KB_FIRST] = { ";", eInputElementTypes::DIGITAL };
-        infoKeyboard[eInputElements::KB_RBRACKET - eInputElements::KB_FIRST] = { " - eInputElements::KB_FIRST]", eInputElementTypes::DIGITAL };
+        infoKeyboard[eInputElements::KB_RBRACKET - eInputElements::KB_FIRST] = { "]", eInputElementTypes::DIGITAL };
         infoKeyboard[eInputElements::KB_LBRACKET - eInputElements::KB_FIRST] = { "[", eInputElementTypes::DIGITAL };
         infoKeyboard[eInputElements::KB_BACKSPACE - eInputElements::KB_FIRST] = { "Backspace", eInputElementTypes::DIGITAL };
         infoKeyboard[eInputElements::KB_EQUALS - eInputElements::KB_FIRST] = { "=", eInputElementTypes::DIGITAL };
