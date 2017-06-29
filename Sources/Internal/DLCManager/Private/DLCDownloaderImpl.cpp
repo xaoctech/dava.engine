@@ -1,8 +1,5 @@
 #include "DLCManager/Private/DLCDownloaderImpl.h"
-
-#include "DLC/Downloader/CurlDownloader.h"
 #include "Debug/Backtrace.h"
-
 #include "Logger/Logger.h"
 #include "FileSystem/File.h"
 #include "FileSystem/FileSystem.h"
@@ -712,7 +709,12 @@ struct DefaultWriter : DLCDownloader::IWriter
         FileSystem* fs = GetEngineContext()->fileSystem;
 
         FilePath path = outputFile;
-        fs->CreateDirectory(path.GetDirectory(), true);
+        FilePath directory = path.GetDirectory();
+        if (FileSystem::DIRECTORY_CANT_CREATE == fs->CreateDirectory(directory, true))
+        {
+            const char* err = strerror(errno);
+            DAVA_THROW(Exception, "can't create output directory: " + directory.GetAbsolutePathname() + " errno:(" + err + ") outputFile: " + outputFile);
+        }
 
         f.reset(File::Create(outputFile, File::WRITE | File::APPEND));
 
