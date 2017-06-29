@@ -385,7 +385,6 @@ SkinnedMesh* CreateSkinnedMesh(Entity* fromEntity, Vector<SkeletonComponent::Joi
                 CopyVertex(currentGroup, currentBatchVxIndex, polygonGroup, newBatchVxIndex);
                 polygonGroup->SetJointWeight(newBatchVxIndex, 0, 1.f);
                 polygonGroup->SetJointIndex(newBatchVxIndex, 0, data[dataIndex].jointIndex);
-                polygonGroup->SetJointCount(newBatchVxIndex, 1);
             }
 
             int32 currentBatchIndexCount = currentGroup->GetIndexCount();

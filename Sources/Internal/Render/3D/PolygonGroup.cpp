@@ -36,10 +36,9 @@ PolygonGroup::PolygonGroup()
     , normalArray(0)
     , tangentArray(0)
     , binormalArray(0)
-    , jointIdxArray(0)
+    , jointIndexArray(0)
     , jointWeightArray(0)
     , cubeTextureCoordArray(0)
-    , jointCountArray(0)
 
     , pivotArray(0)
     , flexArray(0)
@@ -152,18 +151,15 @@ void PolygonGroup::UpdateDataPointersAndStreams()
     }
     if (vertexFormat & EVF_JOINTINDEX)
     {
-        jointIdxArray = reinterpret_cast<float32*>(meshData + baseShift);
+        jointIndexArray = reinterpret_cast<Vector4*>(meshData + baseShift);
         baseShift += GetVertexSize(EVF_JOINTINDEX);
-        vLayout.AddElement(rhi::VS_BLENDINDEX, 0, rhi::VDT_FLOAT, 1);
-
-        SafeDeleteArray(jointCountArray);
-        jointCountArray = new uint32[vertexCount];
+        vLayout.AddElement(rhi::VS_BLENDINDEX, 0, rhi::VDT_FLOAT, 4);
     }
     if (vertexFormat & EVF_JOINTWEIGHT)
     {
-        jointWeightArray = reinterpret_cast<float32*>(meshData + baseShift);
+        jointWeightArray = reinterpret_cast<Vector4*>(meshData + baseShift);
         baseShift += GetVertexSize(EVF_JOINTWEIGHT);
-        vLayout.AddElement(rhi::VS_BLENDWEIGHT, 0, rhi::VDT_FLOAT, 1);
+        vLayout.AddElement(rhi::VS_BLENDWEIGHT, 0, rhi::VDT_FLOAT, 4);
     }
     if (vertexFormat & EVF_CUBETEXCOORD0)
     {
@@ -260,7 +256,6 @@ void PolygonGroup::ApplyMatrix(const Matrix4& matrix)
 
 void PolygonGroup::ReleaseData()
 {
-    SafeDeleteArray(jointCountArray);
     SafeDeleteArray(meshData);
     SafeDeleteArray(indexArray);
     SafeDeleteArray(textureCoordArray);
@@ -271,7 +266,6 @@ uint32 PolygonGroup::ReleaseGeometryData()
 {
     if (meshData)
     {
-        SafeDeleteArray(jointCountArray);
         SafeDeleteArray(meshData);
         SafeDeleteArray(indexArray);
         SafeDeleteArray(textureCoordArray);
@@ -282,10 +276,9 @@ uint32 PolygonGroup::ReleaseGeometryData()
         normalArray = nullptr;
         tangentArray = nullptr;
         binormalArray = nullptr;
-        jointIdxArray = nullptr;
+        jointIndexArray = nullptr;
         jointWeightArray = nullptr;
         cubeTextureCoordArray = nullptr;
-        jointCountArray = nullptr;
 
         pivotArray = nullptr;
         flexArray = nullptr;

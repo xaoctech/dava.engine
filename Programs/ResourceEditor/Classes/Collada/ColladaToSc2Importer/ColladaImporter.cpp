@@ -12,39 +12,53 @@
 #include "Collada/ColladaMeshInstance.h"
 #include "Collada/ColladaSceneNode.h"
 #include "Collada/ColladaScene.h"
-#include "Collada/ColladaToSc2Importer/ColladaToSc2Importer.h"
+#include "Collada/ColladaToSc2Importer/ColladaImporter.h"
 #include "Collada/ColladaToSc2Importer/ImportSettings.h"
 #include "Utils/UTF8Utils.h"
 #include "Qt/Main/QtUtils.h"
 
 namespace DAVA
 {
-ColladaToSc2Importer::ColladaToSc2Importer()
+ColladaImporter::ColladaImporter()
 {
 }
 
-// Creates Dava::Mesh from ColladaMeshInstance and puts it
-Mesh* ColladaToSc2Importer::GetMeshFromCollada(ColladaMeshInstance* mesh, const bool isShadow)
+// Creates Dava::RenderObject from ColladaMeshInstance and puts it
+RenderObject* ColladaImporter::GetMeshFromCollada(ColladaMeshInstance* mesh, const FastName& name)
 {
-    Mesh* davaMesh = new Mesh();
+    RenderObject* ro = nullptr;
+    if (mesh->GetSkinnedMesh() != nullptr)
+    {
+        ro = new SkinnedMesh();
+    }
+    else
+    {
+        ro = new Mesh();
+    }
+
     for (auto polygonGroupInstance : mesh->polyGroupInstances)
     {
         PolygonGroup* davaPolygon = library.GetOrCreatePolygon(polygonGroupInstance);
 
+        bool isShadow = (strstr(name.c_str(), ImportSettings::shadowNamePattern.c_str()) != nullptr);
         if (isShadow)
         {
             davaPolygon = DAVA::MeshUtils::CreateShadowPolygonGroup(davaPolygon);
         }
 
         ScopedPtr<NMaterial> davaMaterial(library.CreateMaterialInstance(polygonGroupInstance, isShadow));
-        davaMesh->AddPolygonGroup(davaPolygon, davaMaterial);
+        ScopedPtr<RenderBatch> davaBatch(new RenderBatch());
+
+        davaBatch->SetPolygonGroup(davaPolygon);
+        davaBatch->SetMaterial(davaMaterial);
+        ro->AddRenderBatch(davaBatch);
     }
     // TO VERIFY?
-    DVASSERT(0 < davaMesh->GetPolygonGroupCount() && "Empty mesh");
-    return davaMesh;
+    DVASSERT(0 < ro->GetRenderBatchCount() && "Empty mesh");
+    return ro;
 }
 
-bool ColladaToSc2Importer::VerifyColladaMesh(ColladaMeshInstance* mesh, const FastName& nodeName)
+bool ColladaImporter::VerifyColladaMesh(ColladaMeshInstance* mesh, const FastName& nodeName)
 {
     for (auto polygonGroupInstance : mesh->polyGroupInstances)
     {
@@ -65,7 +79,7 @@ bool ColladaToSc2Importer::VerifyColladaMesh(ColladaMeshInstance* mesh, const Fa
     return true;
 }
 
-eColladaErrorCodes ColladaToSc2Importer::VerifyDavaMesh(RenderObject* mesh, const FastName name)
+eColladaErrorCodes ColladaImporter::VerifyDavaMesh(RenderObject* mesh, const FastName name)
 {
     eColladaErrorCodes retValue = eColladaErrorCodes::COLLADA_OK;
 
@@ -104,28 +118,26 @@ eColladaErrorCodes ColladaToSc2Importer::VerifyDavaMesh(RenderObject* mesh, cons
     return retValue;
 }
 
-eColladaErrorCodes ColladaToSc2Importer::ImportMeshes(const Vector<ColladaMeshInstance*>& meshInstances, Entity* node)
+eColladaErrorCodes ColladaImporter::ImportMeshes(const Vector<ColladaMeshInstance*>& meshInstances, Entity* node)
 {
     eColladaErrorCodes retValue = eColladaErrorCodes::COLLADA_OK;
 
-    DVASSERT(1 >= meshInstances.size() && "Should be only one meshInstance in one collada node");
+    DVASSERT(meshInstances.size() <= 1 && "Should be only one meshInstance in one collada node");
     for (auto meshInstance : meshInstances)
     {
         if (VerifyColladaMesh(meshInstance, node->GetName()))
         {
-            bool isShadowNode = String::npos != node->GetName().find(ImportSettings::shadowNamePattern);
-
-            ScopedPtr<RenderObject> davaMesh(GetMeshFromCollada(meshInstance, isShadowNode));
+            ScopedPtr<RenderObject> renderObject(GetMeshFromCollada(meshInstance, node->GetName()));
             RenderComponent* davaRenderComponent = GetRenderComponent(node);
             if (nullptr == davaRenderComponent)
             {
                 davaRenderComponent = new RenderComponent();
                 node->AddComponent(davaRenderComponent);
             }
-            davaRenderComponent->SetRenderObject(davaMesh);
+            davaRenderComponent->SetRenderObject(renderObject);
 
             // Verification!
-            eColladaErrorCodes iterationRet = VerifyDavaMesh(davaMesh.get(), node->GetName());
+            eColladaErrorCodes iterationRet = VerifyDavaMesh(renderObject.get(), node->GetName());
             retValue = Max(iterationRet, retValue);
         }
         else
@@ -137,7 +149,7 @@ eColladaErrorCodes ColladaToSc2Importer::ImportMeshes(const Vector<ColladaMeshIn
     return retValue;
 }
 
-void ColladaToSc2Importer::ImportAnimation(ColladaSceneNode* colladaNode, Entity* nodeEntity)
+void ColladaImporter::ImportAnimation(ColladaSceneNode* colladaNode, Entity* nodeEntity)
 {
     if (nullptr != colladaNode->animation)
     {
@@ -159,7 +171,68 @@ void ColladaToSc2Importer::ImportAnimation(ColladaSceneNode* colladaNode, Entity
     }
 }
 
-eColladaErrorCodes ColladaToSc2Importer::BuildSceneAsCollada(Entity* root, ColladaSceneNode* colladaNode)
+void ColladaImporter::ImportSkeleton(ColladaSceneNode* colladaNode, Entity* node)
+{
+    DVASSERT(colladaNode->meshInstances.size() <= 1);
+
+    ColladaSkinnedMesh* skinnedMesh = colladaNode->meshInstances.empty() ? nullptr : colladaNode->meshInstances[0]->GetSkinnedMesh();
+    if (skinnedMesh == nullptr)
+        return;
+
+    SkeletonComponent* davaSkeletonComponent = new SkeletonComponent();
+    node->AddComponent(davaSkeletonComponent);
+    int32 jointsCount = int32(skinnedMesh->joints.size());
+    Vector<SkeletonComponent::JointConfig> jointConfigs;
+    jointConfigs.resize(jointsCount);
+    for (int32 i = 0; i < jointsCount; i++)
+    {
+        FCDSceneNode* originalNode = skinnedMesh->joints[i].node->originalNode;
+
+        jointConfigs[i].parentIndex = skinnedMesh->joints[i].parentIndex;
+        if (jointConfigs[i].parentIndex == -1)
+            jointConfigs[i].parentIndex = SkeletonComponent::INVALID_JOINT_INDEX;
+        jointConfigs[i].targetId = skinnedMesh->joints[i].index;
+
+        String jointName = UTF8Utils::EncodeToUTF8(originalNode->GetName().c_str());
+        jointConfigs[i].name = FastName(jointName);
+
+        jointConfigs[i].orientation = Quaternion();
+        jointConfigs[i].position = Vector3();
+        jointConfigs[i].scale = 1.0;
+
+        for (size_t t = 0; t < originalNode->GetTransformCount(); ++t)
+        {
+            FCDTransform* transform = originalNode->GetTransform(t);
+            FCDTransform::Type transformType = transform->GetType();
+
+            if (transformType == FCDTransform::ROTATION)
+            {
+                FCDTRotation* rotation = dynamic_cast<FCDTRotation*>(transform);
+                FMVector3 axis = rotation->GetAxis();
+                float32 angle = DegToRad(rotation->GetAngle());
+
+                if (strstr(transform->GetSubId()->c_str(), "jointOrient") != nullptr)
+                {
+                    jointConfigs[i].orientation *= Quaternion::MakeRotation(Vector3(axis.x, axis.y, axis.z), angle);
+                }
+            }
+            else if (transformType == FCDTransform::TRANSLATION)
+            {
+                FMVector3 translation = dynamic_cast<FCDTTranslation*>(transform)->GetTranslation();
+                jointConfigs[i].position = Vector3(translation.x, translation.y, translation.z);
+            }
+            else if (transformType == FCDTransform::SCALE)
+            {
+                jointConfigs[i].scale = dynamic_cast<FCDTScale*>(transform)->GetScale()->x;
+            }
+        }
+
+        jointConfigs[i].bbox = AABBox3(jointConfigs[i].position, 1.0);
+    }
+    davaSkeletonComponent->SetConfigJoints(jointConfigs);
+}
+
+eColladaErrorCodes ColladaImporter::BuildSceneAsCollada(Entity* root, ColladaSceneNode* colladaNode)
 {
     eColladaErrorCodes res = eColladaErrorCodes::COLLADA_OK;
 
@@ -188,6 +261,9 @@ eColladaErrorCodes ColladaToSc2Importer::BuildSceneAsCollada(Entity* root, Colla
     const eColladaErrorCodes importMeshesResult = ImportMeshes(colladaNode->meshInstances, nodeEntity);
     res = Max(importMeshesResult, res);
 
+    // Import skeleton
+    ImportSkeleton(colladaNode, nodeEntity);
+
     // Import animation
     ImportAnimation(colladaNode, nodeEntity);
 
@@ -205,7 +281,7 @@ eColladaErrorCodes ColladaToSc2Importer::BuildSceneAsCollada(Entity* root, Colla
     return res;
 }
 
-void ColladaToSc2Importer::LoadMaterialParents(ColladaScene* colladaScene)
+void ColladaImporter::LoadMaterialParents(ColladaScene* colladaScene)
 {
     for (auto cmaterial : colladaScene->colladaMaterials)
     {
@@ -214,7 +290,7 @@ void ColladaToSc2Importer::LoadMaterialParents(ColladaScene* colladaScene)
     }
 }
 
-void ColladaToSc2Importer::LoadAnimations(ColladaScene* colladaScene)
+void ColladaImporter::LoadAnimations(ColladaScene* colladaScene)
 {
     for (auto canimation : colladaScene->colladaAnimations)
     {
@@ -227,7 +303,7 @@ void ColladaToSc2Importer::LoadAnimations(ColladaScene* colladaScene)
     }
 }
 
-eColladaErrorCodes ColladaToSc2Importer::SaveSC2(ColladaScene* colladaScene, const FilePath& scenePath)
+eColladaErrorCodes ColladaImporter::SaveSC2(ColladaScene* colladaScene, const FilePath& scenePath)
 {
     ScopedPtr<Scene> scene(new Scene());
 
@@ -263,5 +339,10 @@ eColladaErrorCodes ColladaToSc2Importer::SaveSC2(ColladaScene* colladaScene, con
     }
 
     return convertRes;
+}
+
+eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, const FilePath& path)
+{
+    return COLLADA_OK;
 }
 };

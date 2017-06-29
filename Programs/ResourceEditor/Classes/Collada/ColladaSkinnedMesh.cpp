@@ -1,18 +1,18 @@
 #include "stdafx.h"
-#include "ColladaAnimatedMesh.h"
+#include "ColladaSkinnedMesh.h"
 #include "Scene3D/SceneNodeAnimation.h"
+#include "Utils/UTF8Utils.h"
 
 namespace DAVA
 {
-ColladaAnimatedMesh::ColladaAnimatedMesh(FCDController* animationController)
+ColladaSkinnedMesh::ColladaSkinnedMesh(FCDController* colladaController)
 {
-    mesh = 0;
-    controller = animationController;
-    bool isSkin = animationController->IsSkin();
+    controller = colladaController;
+    bool isSkin = colladaController->IsSkin();
 
     if (isSkin)
     {
-        FCDSkinController* skinController = animationController->GetSkinController();
+        FCDSkinController* skinController = colladaController->GetSkinController();
         size_t jointCount = skinController->GetJointCount();
         FCDSkinControllerJoint* origJoints = skinController->GetJoints();
 
@@ -20,8 +20,8 @@ ColladaAnimatedMesh::ColladaAnimatedMesh(FCDController* animationController)
         for (size_t j = 0; j < jointCount; ++j)
         {
             joints[j].joint = &origJoints[j];
-            joints[j].parentJoint = 0;
-            joints[j].node = 0;
+            joints[j].parentJoint = nullptr;
+            joints[j].node = nullptr;
             joints[j].index = static_cast<int32>(j);
             joints[j].parentIndex = -1;
 
@@ -35,7 +35,7 @@ ColladaAnimatedMesh::ColladaAnimatedMesh(FCDController* animationController)
         colladaBindShapeMatrix = skinController->GetBindShapeTransform();
         bindShapeMatrix = ConvertMatrix(colladaBindShapeMatrix);
 
-        printf("- controller: %s influence: %ld influence-entity: %s\n", animationController->GetDaeId().c_str(), skinController->GetInfluenceCount(), skinController->GetTarget()->GetDaeId().c_str());
+        printf("- controller: %s influence: %ld influence-entity: %s\n", colladaController->GetDaeId().c_str(), skinController->GetInfluenceCount(), skinController->GetTarget()->GetDaeId().c_str());
 
         vertexWeights.resize(skinController->GetInfluenceCount());
         int maxJoints = 0;
@@ -56,8 +56,13 @@ ColladaAnimatedMesh::ColladaAnimatedMesh(FCDController* animationController)
         }
         printf("- max joints: %d\n", maxJoints);
 
-        mesh = new ColladaMesh(animationController->GetBaseGeometry()->GetMesh(), &(vertexWeights.front()));
+        mesh = new ColladaMesh(colladaController->GetBaseGeometry()->GetMesh(), &(vertexWeights.front()));
     }
+}
+
+ColladaSkinnedMesh::~ColladaSkinnedMesh()
+{
+    SafeDelete(mesh);
 }
 
 void PrintMatrix(Matrix4& m, bool finishLine = true)
@@ -68,7 +73,7 @@ void PrintMatrix(Matrix4& m, bool finishLine = true)
         printf("\n");
 }
 
-void ColladaAnimatedMesh::UpdateSkinnedMesh(float32 time)
+void ColladaSkinnedMesh::UpdateSkinnedMesh(float32 time)
 {
     if (mesh == 0)
         return;
@@ -173,21 +178,21 @@ void ColladaAnimatedMesh::UpdateSkinnedMesh(float32 time)
     }
 }
 
-void ColladaAnimatedMesh::MarkJoints(ColladaSceneNode* node)
+void ColladaSkinnedMesh::MarkJoints(ColladaSceneNode* node)
 {
     sceneRootNode = node;
     BuildJointsHierarhy(sceneRootNode, 0);
 }
 
-void ColladaAnimatedMesh::BuildJointsHierarhy(ColladaSceneNode* node, Joint* parentJoint)
+void ColladaSkinnedMesh::BuildJointsHierarhy(ColladaSceneNode* node, Joint* parentJoint)
 {
     static int depth = 0;
 
     depth++;
 
-    for (int d = 0; d < depth; ++d)
-        printf("-");
-    printf("%s %s\n", node->originalNode->GetDaeId().c_str(), node->originalNode->GetSubId().c_str());
+    //for (int d = 0; d < depth; ++d)
+    //    printf("-");
+    //printf("%s %s\n", node->originalNode->GetDaeId().c_str(), node->originalNode->GetSubId().c_str());
 
     Joint* currentJoint = 0;
     for (int j = 0; j < (int)joints.size(); ++j)
@@ -205,7 +210,7 @@ void ColladaAnimatedMesh::BuildJointsHierarhy(ColladaSceneNode* node, Joint* par
                 printf("-");
 
             currentJoint = &joints[j];
-            printf("Joint founded: %s i:%d p:%d\n", node->originalNode->GetDaeId().c_str(), currentJoint->index, currentJoint->parentIndex);
+            printf("Joint founded: %s i:%d p:%d\n", UTF8Utils::EncodeToUTF8(node->originalNode->GetName().c_str()).c_str(), currentJoint->index, currentJoint->parentIndex);
             break;
         }
     }

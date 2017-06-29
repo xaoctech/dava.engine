@@ -13,12 +13,8 @@ struct ColladaVertex
 {
     ColladaVertex()
     {
-        jointCount = 0;
-        for (int i = 0; i < 20; ++i)
-        {
-            joint[i] = 0;
-            weight[i] = 0.0f;
-        }
+        memset(joint, 0, sizeof(joint));
+        memset(weight, 0, sizeof(weight));
     }
 
     static bool IsEqual(const ColladaVertex& v1, const ColladaVertex& c2, int32 vertexFormat);
@@ -29,9 +25,9 @@ struct ColladaVertex
     Vector3 binormal;
     Vector2 texCoords[4];
 
-    int32 jointCount;
-    int32 joint[20];
-    float32 weight[20];
+    int32 jointCount = 0;
+    int32 joint[4];
+    float32 weight[4];
 };
 
 struct ColladaSortVertex
@@ -46,13 +42,14 @@ struct ColladaVertexWeight
 {
     ColladaVertexWeight()
     {
-        jointCount = 0;
+        memset(jointArray, 0, sizeof(jointArray));
+        memset(weightArray, 0, sizeof(weightArray));
     }
 
-    void AddWeight(int jointI, float32 weight);
+    void AddWeight(int32 jointI, float32 weight);
     void Normalize();
 
-    int32 jointCount;
+    int32 jointCount = 0;
     int32 jointArray[10];
     float32 weightArray[10];
 };
@@ -92,7 +89,7 @@ public:
     ColladaMesh* parentMesh;
 
 protected:
-    bool skinAnimation;
+    bool skinned;
 
     FCDGeometryPolygons* polygons;
 

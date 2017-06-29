@@ -59,6 +59,9 @@ public:
     inline void GetFlexibility(int32 i, float32& v);
     inline void GetAngle(int32 i, Vector2& v);
 
+    inline void GetJointIndex(int32 vIndex, int32 jointIndex, int32& boneIndexValue);
+    inline void GetJointWeight(int32 vIndex, int32 jointIndex, float32& boneWeightValue);
+
     inline rhi::PrimitiveType GetPrimitiveType();
 
     //! Setters
@@ -70,9 +73,8 @@ public:
     inline void SetColor(int32 i, const uint32& c);
     inline void SetTexcoord(int32 ti, int32 i, const Vector2& v);
     inline void SetCubeTexcoord(int32 ti, int32 i, const Vector3& v);
-    inline void SetJointIndex(int32 vIndex, int32 jointIndex, int32 boneIndexValue);
-    inline void SetJointCount(int32 vIndex, int32 jointCount);
-    inline void SetJointWeight(int32 vIndex, int32 jointIndex, float32 boneWeightValue);
+    inline void SetJointIndex(int32 vIndex, int32 jIndex, int32 indexValue);
+    inline void SetJointWeight(int32 vIndex, int32 jIndex, float32 weightValue);
 
     inline void SetIndex(int32 i, int16 index);
 
@@ -104,11 +106,9 @@ public:
     Vector3* normalArray;
     Vector3* tangentArray;
     Vector3* binormalArray;
-    float32* jointIdxArray;
-    float32* jointWeightArray;
+    Vector4* jointIndexArray;
+    Vector4* jointWeightArray;
     Vector3** cubeTextureCoordArray;
-
-    uint32* jointCountArray;
 
     Vector4* pivot4Array;
     Vector3* pivotArray;
@@ -240,25 +240,16 @@ inline void PolygonGroup::SetAngle(int32 i, const Vector2& _v)
     *v = _v;
 }
 
-inline void PolygonGroup::SetJointIndex(int32 vIndex, int32 jointIndex, int32 boneIndexValue)
+inline void PolygonGroup::SetJointIndex(int32 vIndex, int32 jointIndex, int32 indexValue)
 {
     DVASSERT(jointIndex >= 0 && jointIndex < 4);
-    *reinterpret_cast<float32*>(reinterpret_cast<uint8*>(jointIdxArray) + vIndex * vertexStride) = float32(boneIndexValue);
-    //	uint8 * t = ((uint8*)jointIdxArray) + vIndex * vertexStride;
-    //	t[jointIndex] = boneIndexValue;
+    reinterpret_cast<Vector4*>(reinterpret_cast<uint8*>(jointIndexArray) + vIndex * vertexStride)->data[jointIndex] = float32(indexValue);
 }
 
-inline void PolygonGroup::SetJointWeight(int32 vIndex, int32 jointIndex, float32 boneWeightValue)
+inline void PolygonGroup::SetJointWeight(int32 vIndex, int32 jointIndex, float32 weightValue)
 {
     DVASSERT(jointIndex >= 0 && jointIndex < 4);
-    *reinterpret_cast<float32*>(reinterpret_cast<uint8*>(jointIdxArray) + vIndex * vertexStride) = float32(boneWeightValue);
-    //    uint8 * t = ((uint8*)jointWeightArray) + vIndex * vertexStride;
-    //	t[jointIndex] = (uint8)(255 * boneWeightValue);
-}
-
-inline void PolygonGroup::SetJointCount(int32 vIndex, int32 jointCount)
-{
-    jointCountArray[vIndex] = jointCount;
+    reinterpret_cast<Vector4*>(reinterpret_cast<uint8*>(jointWeightArray) + vIndex * vertexStride)->data[jointIndex] = float32(weightValue);
 }
 
 inline void PolygonGroup::SetIndex(int32 i, int16 index)
@@ -340,6 +331,18 @@ inline void PolygonGroup::GetAngle(int32 i, Vector2& _v)
 {
     Vector2* v = reinterpret_cast<Vector2*>(reinterpret_cast<uint8*>(angleArray) + i * vertexStride);
     _v = *v;
+}
+
+inline void PolygonGroup::GetJointIndex(int32 vIndex, int32 jointIndex, int32& indexValue)
+{
+    DVASSERT(jointIndex >= 0 && jointIndex < 4);
+    indexValue = int32(reinterpret_cast<Vector4*>(reinterpret_cast<uint8*>(jointIndexArray) + vIndex * vertexStride)->data[jointIndex]);
+}
+
+inline void PolygonGroup::GetJointWeight(int32 vIndex, int32 jointIndex, float32& weightValue)
+{
+    DVASSERT(jointIndex >= 0 && jointIndex < 4);
+    weightValue = reinterpret_cast<Vector4*>(reinterpret_cast<uint8*>(jointWeightArray) + vIndex * vertexStride)->data[jointIndex];
 }
 
 inline void PolygonGroup::GetIndex(int32 i, int32& index)
