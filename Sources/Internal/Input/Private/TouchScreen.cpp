@@ -100,7 +100,7 @@ void TouchScreen::ResetState(Window* window)
 bool TouchScreen::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e)
 {
     using Private::MainDispatcherEvent;
-    
+
     if (e.type == MainDispatcherEvent::TOUCH_DOWN)
     {
         return HandleTouchDownEvent(e);

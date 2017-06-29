@@ -418,29 +418,28 @@ void WindowBackend::OnKeyReleased(QKeyEvent* qtEvent)
     {
         return;
     }
-    uint32 key = qtEvent->nativeVirtualKey();
+
+    const uint32 virtualKey = qtEvent->nativeVirtualKey();
+
 #if defined(Q_OS_WIN)
     // How to distinguish left and right shift, control and alt: http://stackoverflow.com/a/15977613
     uint32 lparam = qtEvent->nativeModifiers();
-    uint32 scanCode = qtEvent->nativeScanCode();
+    uint32 scancodeKey = qtEvent->nativeScanCode();
     bool isExtended = (HIWORD(lparam) & KF_EXTENDED) == KF_EXTENDED;
-    if (isExtended || (key == VK_SHIFT && ::MapVirtualKeyW(scanCode, MAPVK_VSC_TO_VK_EX) == VK_RSHIFT))
+    if (isExtended || (virtualKey == VK_SHIFT && ::MapVirtualKeyW(scancodeKey, MAPVK_VSC_TO_VK_EX) == VK_RSHIFT))
     {
         // Windows uses 0xE000 mask throughout its API to distinguish between extended and non-extended keys
         // So, follow this convention and use the same mask
-        key |= 0xE000;
+        scancodeKey |= 0xE000;
     }
 #elif defined(Q_OS_OSX)
-    if (key == 0)
-    {
-        key = ConvertQtKeyToSystemScanCode(qtEvent->key());
-    }
+    scancodeKey = ConvertQtKeyToSystemScanCode(qtEvent->key());
 #else
 #error "Unsupported platform"
 #endif
 
     eModifierKeys modifierKeys = GetModifierKeys();
-    mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_UP, key, qtEvent->nativeVirtualKey(), modifierKeys, false));
+    mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_UP, scancodeKey, qtEvent->nativeVirtualKey(), modifierKeys, false));
 }
 
 void WindowBackend::DoResizeWindow(float32 width, float32 height)
