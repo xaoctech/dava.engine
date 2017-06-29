@@ -51,7 +51,7 @@ protected:
 
 protected:
     std::unique_ptr<DAVA::Command> PrepareForSave(bool saveForGame) override;
-    void SetScene(Scene* scene) override;
+    void SetScene(DAVA::Scene* scene) override;
 
 private:
     DAVA::Vector<DAVA::Entity*> entities;

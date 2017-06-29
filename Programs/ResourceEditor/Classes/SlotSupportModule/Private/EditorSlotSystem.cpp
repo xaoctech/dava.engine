@@ -31,13 +31,13 @@ namespace EditorSlotSystemDetail
 {
 void DetachSlotForRemovingEntity(DAVA::Entity* entity, SceneEditor2* scene, REDependentCommandsHolder& holder)
 {
-    for (uint32 i = 0; i < entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT); ++i)
+    for (DAVA::uint32 i = 0; i < entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT); ++i)
     {
         DAVA::SlotComponent* component = static_cast<DAVA::SlotComponent*>(entity->GetComponent(DAVA::Component::SLOT_COMPONENT, i));
         holder.AddPreCommand(std::make_unique<AttachEntityToSlot>(scene, component, nullptr, DAVA::FastName()));
     }
 
-    for (int32 i = 0; i < entity->GetChildrenCount(); ++i)
+    for (DAVA::int32 i = 0; i < entity->GetChildrenCount(); ++i)
     {
         DetachSlotForRemovingEntity(entity->GetChild(i), scene, holder);
     }
@@ -221,7 +221,7 @@ void EditorSlotSystem::DidCloned(DAVA::Entity* originalEntity, DAVA::Entity* new
         return;
     }
 
-    const Vector<AttachedItemInfo> infos = iter->second;
+    const DAVA::Vector<AttachedItemInfo> infos = iter->second;
     for (const AttachedItemInfo& info : infos)
     {
         AttachEntity(info.component, info.entity, info.itemName);
@@ -320,10 +320,10 @@ void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& ho
 
     auto loadDefaultItem = [&](DAVA::SlotComponent* component)
     {
-        Vector<SlotSystem::ItemsCache::Item> items = scene->slotSystem->GetItems(component->GetConfigFilePath());
+        DAVA::Vector<DAVA::SlotSystem::ItemsCache::Item> items = scene->slotSystem->GetItems(component->GetConfigFilePath());
         if (items.empty())
         {
-            RefPtr<Entity> newEntity(new Entity());
+            DAVA::RefPtr<DAVA::Entity> newEntity(new DAVA::Entity());
             holder.AddPostCommand(std::unique_ptr<DAVA::Command>(new AttachEntityToSlot(scene, component, newEntity.Get(), emptyItemName)));
         }
         else
@@ -351,7 +351,7 @@ void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& ho
         auto iter = clonedEntityes.find(entity);
         if (iter != clonedEntityes.end())
         {
-            for (uint32 i = 0; i < entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT); ++i)
+            for (DAVA::uint32 i = 0; i < entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT); ++i)
             {
                 loadDefaultItem(static_cast<DAVA::SlotComponent*>(entity->GetComponent(DAVA::Component::SLOT_COMPONENT, i)));
             }
@@ -466,7 +466,7 @@ std::unique_ptr<DAVA::Command> EditorSlotSystem::PrepareForSave(bool /*saveForGa
     return std::unique_ptr<DAVA::Command>(batchCommand);
 }
 
-void EditorSlotSystem::SetScene(Scene* scene)
+void EditorSlotSystem::SetScene(DAVA::Scene* scene)
 {
     {
         SceneEditor2* currentScene = static_cast<SceneEditor2*>(GetScene());

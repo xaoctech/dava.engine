@@ -176,7 +176,7 @@ private:
         DAVA::String descr = DAVA::Format("Add type filter: %s", currentFilter.c_str());
         DAVA::TArc::ModifyExtension::MultiCommandInterface cmdInterface = GetModifyInterface()->GetMultiCommandInterface(descr, static_cast<DAVA::uint32>(nodes.size()));
         ForEachSlotComponent([&](DAVA::SlotComponent* component, bool isFirst) {
-            for (uint32 i = 0; i < component->GetTypeFiltersCount(); ++i)
+            for (DAVA::uint32 i = 0; i < component->GetTypeFiltersCount(); ++i)
             {
                 if (component->GetTypeFilter(i) == filterToAdd)
                 {
@@ -188,16 +188,16 @@ private:
         });
     }
 
-    Any GetCurrentFilter() const
+    DAVA::Any GetCurrentFilter() const
     {
         if (currentFilter.empty())
         {
-            return Any();
+            return DAVA::Any();
         }
         return currentFilter;
     }
 
-    void SetCurrentFilter(const Any& v)
+    void SetCurrentFilter(const DAVA::Any& v)
     {
         if (v.IsEmpty())
         {
