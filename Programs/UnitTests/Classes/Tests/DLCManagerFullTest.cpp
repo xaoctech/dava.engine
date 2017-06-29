@@ -276,7 +276,10 @@ DAVA_TESTCLASS (DLCManagerFullTest)
             dlcManager.Initialize(packDir,
                                   fullUrl,
                                   hints);
+
             Logger::Info("Initialize called no exception");
+
+            TEST_VERIFY(true == dlcManager.IsRequestingEnabled());
 
             TEST_VERIFY(true == dlcManager.IsPackDownloaded(pack1));
             TEST_VERIFY(true == dlcManager.IsPackDownloaded(pack2));
