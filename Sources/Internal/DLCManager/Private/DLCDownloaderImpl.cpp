@@ -232,6 +232,18 @@ static void CurlSetTimeout(DLCDownloader::Task& task, CURL* easyHandle)
     {
         DLCDownloader::Task::OnErrorCurlEasy(code, task, __LINE__);
     }
+
+    code = curl_easy_setopt(easyHandle, CURLOPT_LOW_SPEED_TIME, 30L);
+    if (code != CURLE_OK)
+    {
+        DLCDownloader::Task::OnErrorCurlEasy(code, task, __LINE__);
+    }
+
+    code = curl_easy_setopt(easyHandle, CURLOPT_LOW_SPEED_LIMIT, 30L);
+    if (code != CURLE_OK)
+    {
+        DLCDownloader::Task::OnErrorCurlEasy(code, task, __LINE__);
+    }
 }
 
 static size_t CurlDataRecvHandler(void* ptr, size_t size, size_t nmemb, void* part)
