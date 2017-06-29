@@ -378,7 +378,7 @@ physx::PxShape* Physics::CreateHeightField(Landscape* landscape, Matrix4& localP
     physx::PxReal heightScale = landscape->GetLandscapeHeight() / 32767.f;
     physx::PxReal dimensionScale = landscapeSize / size;
     PxHeightFieldGeometry geometry(heightfield, PxMeshGeometryFlags(), heightScale, dimensionScale, dimensionScale);
-    PxShape* shape = physics->createShape(geometry, *GetDefaultMaterial());
+    PxShape* shape = physics->createShape(geometry, *GetDefaultMaterial(), true);
 
     float32 translate = landscapeSize / 2.0f;
     localPose = Matrix4::MakeRotation(Vector3(1.0f, 0.0f, 0.0f), -PI_05) *

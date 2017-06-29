@@ -40,10 +40,9 @@ private:
     bool FetchResults(bool block);
 
     void DrawDebugInfo();
-    void DrawDebugObject();
 
     void InitNewObjects();
-    void AttachShape(Entity* entity, physx::PxRigidActor* actor);
+    void AttachShape(Entity* entity, physx::PxRigidActor* actor, const Vector3& scale);
     physx::PxShape* CreateShape(CollisionShapeComponent* component, Physics* physics);
 
     void SyncTransformToPhysx();

@@ -65,6 +65,14 @@ Array<uint32, 7> collisionShapeTypes = {
     Component::HEIGHT_FIELD_SHAPE_COMPONENT
 };
 
+void UpdateGlobalPose(physx::PxRigidActor* actor, const Matrix4& m, Vector3& scale)
+{
+    Vector3 position;
+    Quaternion rotation;
+    m.Decomposition(position, scale, rotation);
+    actor->setGlobalPose(physx::PxTransform(PhysicsMath::Vector3ToPxVec3(position), PhysicsMath::QuaternionToPxQuat(rotation)));
+}
+
 bool IsCollisionShapeType(uint32 componentType)
 {
     return std::any_of(collisionShapeTypes.begin(), collisionShapeTypes.end(), [componentType](uint32 type)
@@ -214,7 +222,6 @@ void PhysicsSystem::Process(float32 timeElapsed)
 
     if (isSimulationEnabled == false)
     {
-        //DrawDebugObject();
         SyncTransformToPhysx();
         return;
     }
@@ -253,6 +260,7 @@ void PhysicsSystem::SetDrawDebugInfo(bool drawDebugInfo_)
     physx::PxReal enabled = drawDebugInfo == true ? 1.0f : 0.0f;
     physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eACTOR_AXES, 2.0f * enabled);
     physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eSCALE, enabled);
+    //physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_SHAPES, enabled);
 
     physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eBODY_MASS_AXES, enabled);
     physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eBODY_LIN_VELOCITY, enabled);
@@ -289,7 +297,15 @@ bool PhysicsSystem::FetchResults(bool block)
             physx::PxRigidActor* rigidActor = actor->is<physx::PxRigidActor>();
             DVASSERT(rigidActor != nullptr);
 
-            entity->SetWorldTransform(PhysicsMath::PxMat44ToMatrix4(rigidActor->getGlobalPose()));
+            Vector3 position;
+            Vector3 scale;
+            Quaternion rotation;
+            entity->GetWorldTransform().Decomposition(position, scale, rotation);
+
+            Matrix4 transform = PhysicsMath::PxMat44ToMatrix4(rigidActor->getGlobalPose());
+            Matrix4 scaleMatrix = Matrix4::MakeScale(scale);
+
+            entity->SetWorldTransform(scaleMatrix * transform);
             activeEntities.push_back(entity);
         }
 
@@ -364,10 +380,11 @@ void PhysicsSystem::InitNewObjects()
 
         component->SetPxActor(createdActor);
         physx::PxRigidActor* rigidActor = createdActor->is<physx::PxRigidActor>();
-        rigidActor->setGlobalPose(physx::PxTransform(PhysicsMath::Matrix4ToPxMat44(component->GetEntity()->GetWorldTransform())));
+        Vector3 scale;
+        PhysicsSystemDetail::UpdateGlobalPose(rigidActor, component->GetEntity()->GetWorldTransform(), scale);
 
         Entity* entity = component->GetEntity();
-        AttachShape(entity, rigidActor);
+        AttachShape(entity, rigidActor, scale);
 
         physicsScene->addActor(*(component->GetPxActor()));
         physicsComponents.push_back(component);
@@ -416,9 +433,9 @@ void PhysicsSystem::InitNewObjects()
     pendingAddCollisionComponents.clear();
 }
 
-void PhysicsSystem::AttachShape(Entity* entity, physx::PxRigidActor* actor)
+void PhysicsSystem::AttachShape(Entity* entity, physx::PxRigidActor* actor, const Vector3& scale)
 {
-    auto componentLoop = [](Entity* entity, physx::PxRigidActor* actor, uint32 componentType)
+    auto componentLoop = [&scale](Entity* entity, physx::PxRigidActor* actor, uint32 componentType)
     {
         for (uint32 i = 0; i < entity->GetComponentCount(componentType); ++i)
         {
@@ -426,6 +443,22 @@ void PhysicsSystem::AttachShape(Entity* entity, physx::PxRigidActor* actor)
             physx::PxShape* shape = collision->GetPxShape();
             if (shape != nullptr)
             {
+                physx::PxGeometryType::Enum geomType = shape->getGeometryType();
+                if (geomType == physx::PxGeometryType::eCONVEXMESH)
+                {
+                    physx::PxConvexMeshGeometry geom;
+                    shape->getConvexMeshGeometry(geom);
+                    geom.scale.scale = PhysicsMath::Vector3ToPxVec3(scale);
+                    shape->setGeometry(geom);
+                }
+                else if (geomType == physx::PxGeometryType::eTRIANGLEMESH)
+                {
+                    physx::PxTriangleMeshGeometry geom;
+                    shape->getTriangleMeshGeometry(geom);
+                    geom.scale.scale = PhysicsMath::Vector3ToPxVec3(scale);
+                    shape->setGeometry(geom);
+                }
+
                 actor->attachShape(*shape);
             }
         }
@@ -550,12 +583,8 @@ void PhysicsSystem::SyncEntityTransformToPhysx(Entity* entity)
             DVASSERT(actor != nullptr);
             physx::PxRigidActor* rigidActor = actor->is<physx::PxRigidActor>();
             DVASSERT(rigidActor != nullptr);
-            Matrix4 worldTransform = e->GetWorldTransform();
-            Vector3 position;
             Vector3 scale;
-            Quaternion rotation;
-            worldTransform.Decomposition(position, scale, rotation);
-            rigidActor->setGlobalPose(physx::PxTransform(PhysicsMath::Vector3ToPxVec3(position), PhysicsMath::QuaternionToPxQuat(rotation)));
+            PhysicsSystemDetail::UpdateGlobalPose(rigidActor, e->GetWorldTransform(), scale);
 
             physx::PxU32 shapesCount = rigidActor->getNbShapes();
             for (physx::PxU32 i = 0; i < shapesCount; ++i)
@@ -595,151 +624,6 @@ void PhysicsSystem::SyncEntityTransformToPhysx(Entity* entity)
     for (int32 i = 0; i < entity->GetChildrenCount(); ++i)
     {
         SyncEntityTransformToPhysx(entity->GetChild(i));
-    }
-}
-
-void PhysicsSystem::DrawDebugObject()
-{
-    physx::PxActorTypeFlags actorTypes = physx::PxActorTypeFlag::eRIGID_STATIC | physx::PxActorTypeFlag::eRIGID_DYNAMIC;
-    physx::PxU32 count = physicsScene->getNbActors(actorTypes);
-    Vector<physx::PxActor*> actors;
-    actors.resize(count);
-    Vector<physx::PxShape*> shapes;
-
-    RenderHelper* renderHelper = GetScene()->GetRenderSystem()->GetDebugDrawer();
-
-    count = physicsScene->getActors(actorTypes, actors.data(), static_cast<physx::PxU32>(actors.size()));
-    for (physx::PxU32 actorIndex = 0; actorIndex < count; ++actorIndex)
-    {
-        physx::PxRigidActor* actor = actors[actorIndex]->is<physx::PxRigidActor>();
-        DVASSERT(actor != nullptr);
-
-        Matrix4 globalPose = PhysicsMath::PxMat44ToMatrix4(physx::PxMat44(actor->getGlobalPose()));
-
-        physx::PxU32 shapesCount = actor->getNbShapes();
-        shapes.resize(shapesCount);
-        shapesCount = actor->getShapes(shapes.data(), static_cast<physx::PxU32>(shapes.size()));
-
-        for (physx::PxU32 shapeIndex = 0; shapeIndex < shapesCount; ++shapeIndex)
-        {
-            physx::PxShape* shape = shapes[shapeIndex];
-            physx::PxGeometryHolder geomHolder = shape->getGeometry();
-
-            Matrix4 localPose = PhysicsMath::PxMat44ToMatrix4(physx::PxMat44(shape->getLocalPose()));
-            Matrix4 finalTranfrom = globalPose * localPose;
-
-            switch (geomHolder.getType())
-            {
-            case physx::PxGeometryType::eBOX:
-            {
-                const physx::PxBoxGeometry& boxGeom = geomHolder.box();
-                Vector3 corner(boxGeom.halfExtents.x, boxGeom.halfExtents.y, boxGeom.halfExtents.z);
-                AABBox3 box(-corner, corner);
-                renderHelper->DrawAABoxTransformed(box, finalTranfrom, Color::White, RenderHelper::DRAW_WIRE_DEPTH);
-            }
-            break;
-            case physx::PxGeometryType::eSPHERE:
-            {
-                const physx::PxSphereGeometry& sphereGeom = geomHolder.sphere();
-                Vector3 position(0.0f, 0.0f, 0.0f);
-                position = position * finalTranfrom;
-                renderHelper->DrawCircle(position, Vector3(1.0f, 0.0f, 0.0f), sphereGeom.radius, 32, Color::White, RenderHelper::DRAW_WIRE_DEPTH);
-                renderHelper->DrawCircle(position, Vector3(0.0f, 1.0f, 0.0f), sphereGeom.radius, 32, Color::White, RenderHelper::DRAW_WIRE_DEPTH);
-                renderHelper->DrawCircle(position, Vector3(0.0f, 0.0f, 1.0f), sphereGeom.radius, 32, Color::White, RenderHelper::DRAW_WIRE_DEPTH);
-            }
-            break;
-            case physx::PxGeometryType::eCAPSULE:
-                //renderHelper->DrawIcosahedron();
-                // not implemented
-                break;
-            case physx::PxGeometryType::ePLANE:
-                // not implemented
-                break;
-            case physx::PxGeometryType::eTRIANGLEMESH:
-            {
-                const physx::PxTriangleMeshGeometry& meshGeom = geomHolder.triangleMesh();
-                Matrix4 scaleMatrix = Matrix4::MakeScale(PhysicsMath::PxVec3ToVector3(meshGeom.scale.scale));
-                Matrix4 meshTransform = scaleMatrix * finalTranfrom;
-                physx::PxTriangleMesh* mesh = meshGeom.triangleMesh;
-
-                const physx::PxU32 triangleCount = mesh->getNbTriangles();
-
-                const physx::PxVec3* vertices = mesh->getVertices();
-                const void* indices = mesh->getTriangles();
-
-                const bool indices16Bits = mesh->getTriangleMeshFlags() & physx::PxTriangleMeshFlag::e16_BIT_INDICES;
-
-                for (physx::PxU32 i = 0; i < triangleCount; ++i)
-                {
-                    physx::PxU32 i0 = indices16Bits ? ((physx::PxU16*)indices)[3 * i] : ((physx::PxU32*)indices)[3 * i];
-                    physx::PxU32 i1 = indices16Bits ? ((physx::PxU16*)indices)[3 * i + 1] : ((physx::PxU32*)indices)[3 * i + 1];
-                    physx::PxU32 i2 = indices16Bits ? ((physx::PxU16*)indices)[3 * i + 2] : ((physx::PxU32*)indices)[3 * i + 2];
-
-                    Vector3 v0 = PhysicsMath::PxVec3ToVector3(vertices[i0]);
-                    Vector3 v1 = PhysicsMath::PxVec3ToVector3(vertices[i1]);
-                    Vector3 v2 = PhysicsMath::PxVec3ToVector3(vertices[i2]);
-
-                    v0 = v0 * meshTransform;
-                    v1 = v1 * meshTransform;
-                    v2 = v2 * meshTransform;
-
-                    Polygon3 polygon;
-                    polygon.AddPoint(v0);
-                    polygon.AddPoint(v1);
-                    polygon.AddPoint(v2);
-                    polygon.AddPoint(v0);
-                    renderHelper->DrawPolygon(polygon, Color::White, RenderHelper::DRAW_WIRE_DEPTH);
-                }
-            }
-            break;
-            case physx::PxGeometryType::eCONVEXMESH:
-            {
-                const physx::PxConvexMeshGeometry& meshGeom = geomHolder.convexMesh();
-                Matrix4 scaleMatrix = Matrix4::MakeScale(PhysicsMath::PxVec3ToVector3(meshGeom.scale.scale));
-                Matrix4 meshTransform = scaleMatrix * finalTranfrom;
-                physx::PxConvexMesh* mesh = meshGeom.convexMesh;
-
-                physx::PxU32 polygonCount = mesh->getNbPolygons();
-                const physx::PxU8* indices = mesh->getIndexBuffer();
-                const physx::PxVec3* vertices = mesh->getVertices();
-                for (physx::PxU32 i = 0; i < polygonCount; ++i)
-                {
-                    physx::PxHullPolygon data;
-                    mesh->getPolygonData(i, data);
-
-                    physx::PxU16 vertexCount = data.mNbVerts;
-                    for (physx::PxU16 j = 1; j < vertexCount; j++)
-                    {
-                        Vector3 v0 = PhysicsMath::PxVec3ToVector3(vertices[indices[j - 1]]);
-                        Vector3 v1 = PhysicsMath::PxVec3ToVector3(vertices[indices[j]]);
-
-                        v0 = v0 * meshTransform;
-                        v1 = v1 * meshTransform;
-
-                        renderHelper->DrawLine(v0, v1, Color::White);
-                    }
-
-                    {
-                        Vector3 v0 = PhysicsMath::PxVec3ToVector3(vertices[indices[0]]);
-                        Vector3 v1 = PhysicsMath::PxVec3ToVector3(vertices[indices[vertexCount - 1]]);
-
-                        v0 = v0 * meshTransform;
-                        v1 = v1 * meshTransform;
-
-                        renderHelper->DrawLine(v0, v1, Color::White);
-                    }
-
-                    indices += vertexCount;
-                }
-            }
-            break;
-            case physx::PxGeometryType::eHEIGHTFIELD:
-                break;
-            default:
-                DVASSERT(false);
-                break;
-            }
-        }
     }
 }
 

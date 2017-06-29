@@ -25,6 +25,7 @@
 #include <physx/geometry/PxConvexMesh.h>
 #include <physx/geometry/PxHeightFieldGeometry.h>
 #include <physx/geometry/PxHeightField.h>
+#include <PxShared/foundation/PxVec3.h>
 
 namespace DAVA
 {
@@ -81,6 +82,42 @@ bool IsGeometryEqual(const physx::PxGeometryHolder& holder1, const physx::PxGeom
 
         if (capsule1.radius == capsule2.radius &&
             capsule1.halfHeight == capsule2.halfHeight)
+        {
+            result = true;
+        }
+    }
+    break;
+    case physx::PxGeometryType::eCONVEXMESH:
+    {
+        physx::PxConvexMeshGeometry mesh1 = holder1.convexMesh();
+        physx::PxConvexMeshGeometry mesh2 = holder2.convexMesh();
+
+        if (mesh1.convexMesh == mesh2.convexMesh)
+        {
+            result = true;
+        }
+    }
+    break;
+    case physx::PxGeometryType::eTRIANGLEMESH:
+    {
+        physx::PxTriangleMeshGeometry mesh1 = holder1.triangleMesh();
+        physx::PxTriangleMeshGeometry mesh2 = holder2.triangleMesh();
+
+        if (mesh1.triangleMesh == mesh2.triangleMesh)
+        {
+            result = true;
+        }
+    }
+    break;
+    case physx::PxGeometryType::eHEIGHTFIELD:
+    {
+        physx::PxHeightFieldGeometry heightfield1 = holder1.heightField();
+        physx::PxHeightFieldGeometry heightfield2 = holder2.heightField();
+
+        if (heightfield1.heightField == heightfield2.heightField &&
+            heightfield1.columnScale == heightfield2.columnScale &&
+            heightfield1.rowScale == heightfield2.rowScale &&
+            heightfield1.heightScale == heightfield2.heightScale)
         {
             result = true;
         }
@@ -200,8 +237,6 @@ RefPtr<PolygonGroup> CreateSpherePolygonGroup(const physx::PxSphereGeometry& geo
         GenerateArc(0.0, PI_2, geom.radius, Vector3(0.0f, 0.0f, 0.0f), directions[dirIndex], true, localPose, vertices, indices);
     }
 
-    DVASSERT(static_cast<uint32>(indices.size()) == pointsCount * 2 * 3);
-
     RefPtr<PolygonGroup> polygonGroup(new PolygonGroup());
     polygonGroup->SetPrimitiveType(rhi::PRIMITIVE_LINELIST);
     polygonGroup->AllocateData(eVertexFormat::EVF_VERTEX, static_cast<int32>(vertices.size()), static_cast<int32>(indices.size()), static_cast<int32>(indices.size() >> 1));
@@ -260,19 +295,196 @@ RefPtr<PolygonGroup> CreateCapsulePolygonGroup(const physx::PxCapsuleGeometry& g
     return polygonGroup;
 }
 
-RefPtr<PolygonGroup> CreatePolygonGroup(const physx::PxGeometryHolder& geom, const Matrix4& localPose)
+RefPtr<PolygonGroup> CreateConvexMeshPolygonGroup(const physx::PxConvexMeshGeometry& geom, const Matrix4& localPose)
 {
-    RefPtr<PolygonGroup> result;
+    physx::PxConvexMesh* mesh = geom.convexMesh;
+    physx::PxU32 polygonCount = mesh->getNbPolygons();
+    const physx::PxU8* indicesPtr = mesh->getIndexBuffer();
+    const physx::PxVec3* verticesPtr = mesh->getVertices();
+
+    Vector<Vector3> vertices;
+    vertices.reserve(mesh->getNbVertices());
+    Vector<uint16> indices;
+    indices.reserve(vertices.capacity() * 2);
+
+    for (physx::PxU32 i = 0; i < polygonCount; ++i)
+    {
+        physx::PxHullPolygon data;
+        mesh->getPolygonData(i, data);
+
+        physx::PxU16 vertexCount = data.mNbVerts;
+        for (physx::PxU16 j = 1; j < vertexCount; j++)
+        {
+            indices.push_back(static_cast<uint16>(vertices.size()));
+            vertices.push_back(PhysicsMath::PxVec3ToVector3(verticesPtr[indicesPtr[j - 1]]));
+            indices.push_back(static_cast<uint16>(vertices.size()));
+            vertices.push_back(PhysicsMath::PxVec3ToVector3(verticesPtr[indicesPtr[j]]));
+        }
+
+        {
+            indices.push_back(static_cast<uint16>(vertices.size()));
+            vertices.push_back(PhysicsMath::PxVec3ToVector3(verticesPtr[indicesPtr[0]]));
+            indices.push_back(static_cast<uint16>(vertices.size()));
+            vertices.push_back(PhysicsMath::PxVec3ToVector3(verticesPtr[indicesPtr[vertexCount - 1]]));
+        }
+
+        indicesPtr += vertexCount;
+    }
+
+    RefPtr<PolygonGroup> polygonGroup(new PolygonGroup());
+    polygonGroup->SetPrimitiveType(rhi::PRIMITIVE_LINELIST);
+    polygonGroup->AllocateData(eVertexFormat::EVF_VERTEX, static_cast<int32>(vertices.size()), static_cast<int32>(indices.size()), static_cast<int32>(indices.size() >> 1));
+    memcpy(polygonGroup->vertexArray, vertices.data(), vertices.size() * sizeof(Vector3));
+    memcpy(polygonGroup->indexArray, indices.data(), indices.size() * sizeof(uint16));
+    polygonGroup->BuildBuffers();
+    polygonGroup->RecalcAABBox();
+
+    return polygonGroup;
+}
+
+RefPtr<PolygonGroup> CreateTriangleMeshPolygonGroup(const physx::PxTriangleMeshGeometry& geom, const Matrix4& localPose)
+{
+    physx::PxTriangleMesh* mesh = geom.triangleMesh;
+
+    const physx::PxU32 triangleCount = mesh->getNbTriangles();
+    const physx::PxVec3* verticesPtr = mesh->getVertices();
+    const void* indicesPtr = mesh->getTriangles();
+
+    const bool indices16Bits = mesh->getTriangleMeshFlags() & physx::PxTriangleMeshFlag::e16_BIT_INDICES;
+
+    Vector<Vector3> vertices;
+    vertices.reserve(triangleCount * 3);
+    Vector<uint16> indices;
+    indices.reserve(vertices.capacity());
+
+    for (physx::PxU32 i = 0; i < triangleCount; ++i)
+    {
+        physx::PxU32 i0 = indices16Bits ? ((physx::PxU16*)indicesPtr)[3 * i] : ((physx::PxU32*)indicesPtr)[3 * i];
+        physx::PxU32 i1 = indices16Bits ? ((physx::PxU16*)indicesPtr)[3 * i + 1] : ((physx::PxU32*)indicesPtr)[3 * i + 1];
+        physx::PxU32 i2 = indices16Bits ? ((physx::PxU16*)indicesPtr)[3 * i + 2] : ((physx::PxU32*)indicesPtr)[3 * i + 2];
+
+        Vector3 v0 = PhysicsMath::PxVec3ToVector3(verticesPtr[i0]);
+        Vector3 v1 = PhysicsMath::PxVec3ToVector3(verticesPtr[i1]);
+        Vector3 v2 = PhysicsMath::PxVec3ToVector3(verticesPtr[i2]);
+
+        indices.push_back(static_cast<uint16>(vertices.size()));
+        vertices.push_back(v0);
+        indices.push_back(static_cast<uint16>(vertices.size()));
+        vertices.push_back(v1);
+        indices.push_back(static_cast<uint16>(vertices.size()));
+        vertices.push_back(v2);
+    }
+
+    RefPtr<PolygonGroup> polygonGroup(new PolygonGroup());
+    polygonGroup->SetPrimitiveType(rhi::PRIMITIVE_TRIANGLELIST);
+    polygonGroup->AllocateData(eVertexFormat::EVF_VERTEX, static_cast<int32>(vertices.size()), static_cast<int32>(indices.size()), triangleCount);
+    memcpy(polygonGroup->vertexArray, vertices.data(), vertices.size() * sizeof(Vector3));
+    memcpy(polygonGroup->indexArray, indices.data(), indices.size() * sizeof(uint16));
+    polygonGroup->BuildBuffers();
+    polygonGroup->RecalcAABBox();
+
+    return polygonGroup;
+}
+
+Vector<RefPtr<PolygonGroup>> CreateHeightfieldPolygonGroup(const physx::PxHeightFieldGeometry& geom, const Matrix4& localPose)
+{
+    Vector<RefPtr<PolygonGroup>> result;
+
+    physx::PxHeightField* heightfield = geom.heightField;
+    physx::PxU32 columnCount = heightfield->getNbColumns();
+    physx::PxU32 rowCount = heightfield->getNbRows();
+
+    uint32 squadCount = 4 * (columnCount - 1) * (rowCount - 1);
+
+    Vector<Vector3> vertices;
+    vertices.reserve(squadCount);
+    Vector<uint16> indices;
+    indices.reserve(6 * vertices.capacity() / 4);
+
+    float32 xOffset = (rowCount >> 1) * geom.rowScale;
+    float32 yOffset = (columnCount >> 1) * geom.columnScale;
+
+    for (physx::PxU32 i = 0; i < rowCount - 1; ++i)
+    {
+        for (physx::PxU32 j = 0; j < columnCount - 1; ++j)
+        {
+            uint32 currentIndex = static_cast<uint32>(vertices.size());
+            if (currentIndex + 6 > std::numeric_limits<uint16>::max())
+            {
+                RefPtr<PolygonGroup> polygonGroup(new PolygonGroup());
+                polygonGroup->SetPrimitiveType(rhi::PRIMITIVE_TRIANGLELIST);
+                polygonGroup->AllocateData(eVertexFormat::EVF_VERTEX, static_cast<int32>(vertices.size()), static_cast<int32>(indices.size()), static_cast<int32>(indices.size() / 3));
+                memcpy(polygonGroup->vertexArray, vertices.data(), vertices.size() * sizeof(Vector3));
+                memcpy(polygonGroup->indexArray, indices.data(), indices.size() * sizeof(uint16));
+                polygonGroup->BuildBuffers();
+                polygonGroup->RecalcAABBox();
+                result.push_back(polygonGroup);
+
+                vertices.clear();
+                indices.clear();
+                currentIndex = static_cast<uint32>(vertices.size());
+            }
+
+            uint16 startIndex = static_cast<uint16>(currentIndex);
+            float32 rowIndex = static_cast<float32>(i);
+            float32 columnIndex = static_cast<float32>(j);
+
+            float32 height0 = heightfield->getHeight(rowIndex, columnIndex);
+            float32 height1 = heightfield->getHeight(rowIndex + 1, columnIndex);
+            float32 height2 = heightfield->getHeight(rowIndex, columnIndex + 1);
+            float32 height3 = heightfield->getHeight(rowIndex + 1, columnIndex + 1);
+
+            float32 xPosition = columnIndex * geom.rowScale - xOffset;
+            float32 yPosition = rowIndex * geom.columnScale - yOffset;
+            vertices.push_back(Vector3(xPosition, yPosition, height0 * geom.heightScale));
+            vertices.push_back(Vector3(xPosition + geom.columnScale, yPosition, height2 * geom.heightScale));
+            vertices.push_back(Vector3(xPosition, yPosition + geom.rowScale, height1 * geom.heightScale));
+            vertices.push_back(Vector3(xPosition + geom.columnScale, yPosition + geom.rowScale, height3 * geom.heightScale));
+
+            indices.push_back(startIndex);
+            indices.push_back(startIndex + 1);
+            indices.push_back(startIndex + 2);
+
+            indices.push_back(startIndex + 1);
+            indices.push_back(startIndex + 2);
+            indices.push_back(startIndex + 3);
+        }
+    }
+
+    RefPtr<PolygonGroup> polygonGroup(new PolygonGroup());
+    polygonGroup->SetPrimitiveType(rhi::PRIMITIVE_TRIANGLELIST);
+    polygonGroup->AllocateData(eVertexFormat::EVF_VERTEX, static_cast<int32>(vertices.size()), static_cast<int32>(indices.size()), static_cast<int32>(indices.size() / 3));
+    memcpy(polygonGroup->vertexArray, vertices.data(), vertices.size() * sizeof(Vector3));
+    memcpy(polygonGroup->indexArray, indices.data(), indices.size() * sizeof(uint16));
+    polygonGroup->BuildBuffers();
+    polygonGroup->RecalcAABBox();
+    result.push_back(polygonGroup);
+
+    return result;
+}
+
+Vector<RefPtr<PolygonGroup>> CreatePolygonGroup(const physx::PxGeometryHolder& geom, const Matrix4& localPose)
+{
+    Vector<RefPtr<PolygonGroup>> result;
     switch (geom.getType())
     {
     case physx::PxGeometryType::eBOX:
-        result = CreateBoxPolygonGroup(geom.box(), localPose);
+        result.push_back(CreateBoxPolygonGroup(geom.box(), localPose));
         break;
     case physx::PxGeometryType::eSPHERE:
-        result = CreateSpherePolygonGroup(geom.sphere(), localPose);
+        result.push_back(CreateSpherePolygonGroup(geom.sphere(), localPose));
         break;
     case physx::PxGeometryType::eCAPSULE:
-        result = CreateCapsulePolygonGroup(geom.capsule(), localPose);
+        result.push_back(CreateCapsulePolygonGroup(geom.capsule(), localPose));
+        break;
+    case physx::PxGeometryType::eCONVEXMESH:
+        result.push_back(CreateConvexMeshPolygonGroup(geom.convexMesh(), localPose));
+        break;
+    case physx::PxGeometryType::eTRIANGLEMESH:
+        result.push_back(CreateTriangleMeshPolygonGroup(geom.triangleMesh(), localPose));
+        break;
+    case physx::PxGeometryType::eHEIGHTFIELD:
+        result = CreateHeightfieldPolygonGroup(geom.heightField(), localPose);
         break;
     default:
         break;
@@ -293,13 +505,18 @@ RefPtr<NMaterial> CreateMaterial()
 
 RenderObject* CreateRenderObject(const physx::PxGeometryHolder& geometry, uint32 vertexLayoutId, const Matrix4& localPose)
 {
-    ScopedPtr<RenderBatch> batch(new RenderBatch());
-    batch->SetMaterial(CreateMaterial().Get());
-    batch->SetPolygonGroup(CreatePolygonGroup(geometry, localPose).Get());
-    batch->vertexLayoutId = vertexLayoutId;
-
     RenderObject* ro = new RenderObject();
-    ro->AddRenderBatch(batch);
+    Vector<RefPtr<PolygonGroup>> groups = CreatePolygonGroup(geometry, localPose);
+
+    for (RefPtr<PolygonGroup>& group : groups)
+    {
+        ScopedPtr<RenderBatch> batch(new RenderBatch());
+        batch->SetMaterial(CreateMaterial().Get());
+        batch->SetPolygonGroup(group.Get());
+        batch->vertexLayoutId = vertexLayoutId;
+
+        ro->AddRenderBatch(batch);
+    }
 
     return ro;
 }
@@ -428,18 +645,19 @@ void PhysicsDebugDrawSystem::Process(float32 timeElapsed)
         else
         {
             CollisionShapeComponent* shapeComponent = node.first;
-            NMaterial* material = node.second.ro->GetRenderBatch(0)->GetMaterial();
             physx::PxShape* shape = shapeComponent->GetPxShape();
             physx::PxActor* actor = shape->getActor();
+            DAVA::Color currentColor;
+
             if (actor == nullptr)
             {
-                material->SetPropertyValue(FastName("color"), Color::White.color);
+                currentColor = Color::White;
             }
             else
             {
                 if (actor->is<physx::PxRigidStatic>())
                 {
-                    material->SetPropertyValue(FastName("color"), Color::Red.color);
+                    currentColor = Color::Red;
                 }
                 else
                 {
@@ -448,14 +666,25 @@ void PhysicsDebugDrawSystem::Process(float32 timeElapsed)
                     {
                         if (dynamic->isSleeping())
                         {
-                            material->SetPropertyValue(FastName("color"), Color::Yellow.color);
+                            currentColor = Color::Yellow;
                         }
                         else
                         {
-                            material->SetPropertyValue(FastName("color"), Color::Green.color);
+                            currentColor = Color::Green;
                         }
                     }
                 }
+            }
+
+            if (shape->getGeometryType() == physx::PxGeometryType::eHEIGHTFIELD)
+            {
+                currentColor = Color(0.0f, 0.0f, 0.5f, 1.0f);
+            }
+
+            for (uint32 i = 0; i < node.second.ro->GetRenderBatchCount(); ++i)
+            {
+                NMaterial* material = node.second.ro->GetRenderBatch(i)->GetMaterial();
+                material->SetPropertyValue(FastName("color"), currentColor.color);
             }
         }
     }
@@ -490,6 +719,7 @@ void PhysicsDebugDrawSystem::Process(float32 timeElapsed)
 
                         Matrix4* worldTransformPointer = (static_cast<TransformComponent*>(e->GetComponent(Component::TRANSFORM_COMPONENT)))->GetWorldTransformPtr();
                         roIter->second->SetWorldTransformPtr(worldTransformPointer);
+                        GetScene()->renderSystem->MarkForUpdate(roIter->second);
                     }
                 }
             }
