@@ -84,13 +84,16 @@ void UISpineAttachControlsToBonesComponent::MakeBindsString()
 void UISpineAttachControlsToBonesComponent::Modify()
 {
     UIControl* control = GetControl();
-    UIControlSystem* scene = control->GetScene();
-    if (scene)
+    if (control)
     {
-        UISpineSingleComponent* spineSingle = scene->GetSingleComponent<UISpineSingleComponent>();
-        if (spineSingle)
+        UIControlSystem* scene = control->GetScene();
+        if (scene)
         {
-            spineSingle->spineBonesModified.insert(control);
+            UISpineSingleComponent* spineSingle = scene->GetSingleComponent<UISpineSingleComponent>();
+            if (spineSingle)
+            {
+                spineSingle->spineBonesModified.insert(control);
+            }
         }
     }
 }
