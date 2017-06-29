@@ -2,12 +2,13 @@
 #include "CollisionSystem.h"
 #include "ModifSystem.h"
 #include "LandscapeEditorDrawSystem.h"
-#include "../SceneEditor2.h"
+#include "Classes/Qt/Scene/SceneEditor2.h"
 #include "LandscapeEditorDrawSystem/HeightmapProxy.h"
 #include "LandscapeEditorDrawSystem/LandscapeProxy.h"
 #include "Commands2/TilemaskEditorCommands.h"
 
 #include "Classes/Selection/Selection.h"
+#include "Classes/Qt/Main/QtUtils.h"
 
 #include <UI/UIEvent.h>
 #include <Render/Renderer.h>
