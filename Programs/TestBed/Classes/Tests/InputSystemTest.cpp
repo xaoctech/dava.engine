@@ -693,7 +693,7 @@ bool InputSystemTest::OnInputEvent(InputEvent const& event)
         if (event.elementId == eInputElements::MOUSE_POSITION)
         {
             std::wstringstream ss;
-            ss << "pos: " << static_cast<uint32>(event.analogState.x) << L", " << static_cast<uint32>(event.analogState.y);
+            ss << "pos: " << static_cast<int32>(event.analogState.x) << L", " << static_cast<int32>(event.analogState.y);
             mouseButton->SetStateText(0xFF, ss.str());
         }
         else if (event.elementId == eInputElements::MOUSE_WHEEL)
