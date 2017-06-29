@@ -68,7 +68,10 @@ PhysicsWidget::PhysicsWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc:
 void PhysicsWidget::OnStartPauseClick()
 {
     DAVA::TArc::DataContext* ctx = accessor->GetActiveContext();
-    DVASSERT(ctx != nullptr);
+    if (ctx == nullptr)
+    {
+        return;
+    }
 
     EditorPhysicsData* data = ctx->GetData<EditorPhysicsData>();
     DVASSERT(data != nullptr);
@@ -87,7 +90,10 @@ void PhysicsWidget::OnStartPauseClick()
 void PhysicsWidget::OnStopClick()
 {
     DAVA::TArc::DataContext* ctx = accessor->GetActiveContext();
-    DVASSERT(ctx != nullptr);
+    if (ctx == nullptr)
+    {
+        return;
+    }
 
     EditorPhysicsData* data = ctx->GetData<EditorPhysicsData>();
     DVASSERT(data != nullptr);
