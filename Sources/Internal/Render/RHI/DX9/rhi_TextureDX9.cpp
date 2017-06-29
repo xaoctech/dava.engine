@@ -528,14 +528,17 @@ void SetAsRenderTarget(Handle tex, unsigned target_i, TextureFace face)
         self->lastUnit = DAVA::InvalidIndex;
     }
 
-    if (self->surf9)
-    {
-        DX9_CALL(_D3D9_Device->SetRenderTarget(target_i, self->surf9), "SetRenderTarget");
-    }
-    else //cubemap
+    if (self->cubetex9)
     {
         DVASSERT(face != TEXTURE_FACE_NONE);
+        DVASSERT(self->cubesurf9[face] != nullptr);
         DX9_CALL(_D3D9_Device->SetRenderTarget(target_i, self->cubesurf9[face]), "SetRenderTarget");
+    }
+    else
+    {
+        DVASSERT(face == TEXTURE_FACE_NONE);
+        DVASSERT(self->surf9 != nullptr);
+        DX9_CALL(_D3D9_Device->SetRenderTarget(target_i, self->surf9), "SetRenderTarget");
     }
 }
 

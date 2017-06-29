@@ -52,8 +52,10 @@ inline UIControl* UIComponent::GetControl() const
 }
 
 #define IMPLEMENT_UI_COMPONENT(TYPE) \
-const Type* GetType() const override { return Type::Instance<TYPE>(); }; \
-int32 GetRuntimeType() const override \
+const Type* \
+    GetType() const override { return Type::Instance<TYPE>(); }; \
+int32 \
+    GetRuntimeType() const override \
 { \
     static int32 runtimeType = GetEngineContext()->componentManager->GetRuntimeType(GetType()); \
     return runtimeType; \

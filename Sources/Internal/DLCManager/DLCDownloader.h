@@ -1,9 +1,10 @@
 #pragma once
 
-#include "Base/BaseTypes.h"
-
 #include <atomic>
 #include <iosfwd>
+
+#include "Base/BaseTypes.h"
+#include "Base/String.h"
 
 namespace DAVA
 {

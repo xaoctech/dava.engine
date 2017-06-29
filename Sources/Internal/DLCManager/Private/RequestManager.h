@@ -1,9 +1,15 @@
 #pragma once
 
-#include "DLCManager/Private/PackRequest.h"
+#include "Base/String.h"
+#include "Base/Vector.h"
+#include "Base/UnordererSet.h"
+#include "Base/List.h"
 
 namespace DAVA
 {
+class DLCManagerImpl;
+class PackRequest;
+
 class RequestManager
 {
 public:
