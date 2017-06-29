@@ -19,6 +19,8 @@
 
 #include <UI/UIEvent.h>
 #include <UI/UIControl.h>
+#include <Preferences/PreferencesRegistrator.h>
+#include <Preferences/PreferencesStorage.h>
 
 using namespace DAVA;
 
@@ -657,21 +659,23 @@ Vector2 EditorTransformSystem::AdjustMoveToNearestBorder(Vector2 delta, Vector<M
     Rect box = controlGD.GetAABBox();
     box.SetPosition(box.GetPosition() + delta);
 
+    std::array<Vector<MagnetLine>, Vector2::AXIS_COUNT> magnetLines;
+
     for (int32 axisInt = Vector2::AXIS_X; axisInt < Vector2::AXIS_COUNT; ++axisInt)
     {
         Vector2::eAxis axis = static_cast<Vector2::eAxis>(axisInt);
-        Vector<MagnetLine> magnetLines = CreateMagnetLines(box, parentGD, neighbours, axis);
+        magnetLines[axis] = CreateMagnetLines(box, parentGD, neighbours, axis);
 
         //get nearest magnet line
         std::function<bool(const MagnetLine&, const MagnetLine&)> predicate = [](const MagnetLine& left, const MagnetLine& right) -> bool {
             return fabs(left.interval) < fabs(right.interval);
         };
-        if (magnetLines.empty())
+        if (magnetLines[axis].empty())
         {
             continue;
         }
 
-        MagnetLine nearestLine = *std::min_element(magnetLines.begin(), magnetLines.end(), predicate);
+        MagnetLine nearestLine = *std::min_element(magnetLines[axis].begin(), magnetLines[axis].end(), predicate);
         float32 areaNearLineRight = nearestLine.targetPosition + moveMagnetRange[axis];
         float32 areaNearLineLeft = nearestLine.targetPosition - moveMagnetRange[axis];
         if (nearestLine.controlPosition >= areaNearLineLeft && nearestLine.controlPosition <= areaNearLineRight)
@@ -680,12 +684,20 @@ Vector2 EditorTransformSystem::AdjustMoveToNearestBorder(Vector2 delta, Vector<M
             delta[axis] -= nearestLine.interval;
             extraDelta[axis] = oldDelta[axis] - delta[axis];
         }
+    }
+
+    for (int32 axisInt = Vector2::AXIS_X; axisInt < Vector2::AXIS_COUNT; ++axisInt)
+    {
+        Vector2::eAxis axis = static_cast<Vector2::eAxis>(axisInt);
         //adjust all lines to transformed state to get matched lines
-        for (MagnetLine& line : magnetLines)
+        for (MagnetLine& line : magnetLines[axis])
         {
-            line.interval -= extraDelta[line.axis];
+            line.interval -= extraDelta[axis];
+            Vector2 boxPosition = line.controlBox.GetPosition();
+            boxPosition -= extraDelta;
+            line.controlBox.SetPosition(boxPosition);
         }
-        ExtractMatchedLines(magnets, magnetLines, control, axis);
+        ExtractMatchedLines(magnets, magnetLines[axis], control, axis);
     }
     return delta;
 }

@@ -53,6 +53,8 @@ protected:
     void RunEmitter(ParticleEffectComponent* effect, ParticleEmitter* emitter, const Vector3& spawnPosition, int32 positionSource = 0);
 
 private:
+    void SimulateEffect(ParticleEffectComponent* effect);
+
     Map<String, float32> globalExternalValues;
 
     Vector<ParticleEffectComponent*> activeComponents;

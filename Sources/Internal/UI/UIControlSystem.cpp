@@ -546,7 +546,7 @@ void UIControlSystem::ScreenSizeChanged(const Rect& newFullscreenRect)
     resizePerFrame++;
     if (resizePerFrame >= 5)
     {
-        Logger::Error("Resizes per frame : %d", resizePerFrame);
+        Logger::Warning("Resizes per frame : %d", resizePerFrame);
     }
 
     fullscreenRect = newFullscreenRect;
