@@ -122,41 +122,40 @@ void EditorSlotSystem::Process(DAVA::float32 timeElapsed)
         }
     }
 
-    Scene* scene = GetScene();
+    SceneEditor2* scene = static_cast<SceneEditor2*>(GetScene());
     SlotSystem* slotSystem = scene->slotSystem;
-    for (Entity* entity : pendingOnInitialize)
+    if (scene->modifSystem->InCloneState() == false &&
+        scene->modifSystem->InCloneDoneState() == false)
     {
-        if (clonedEntityes.count(entity) > 0)
+        for (Entity* entity : pendingOnInitialize)
         {
-            continue;
-        }
-
-        uint32 slotCount = entity->GetComponentCount(Component::SLOT_COMPONENT);
-        for (uint32 slotIndex = 0; slotIndex < slotCount; ++slotIndex)
-        {
-            SlotComponent* component = static_cast<SlotComponent*>(entity->GetComponent(Component::SLOT_COMPONENT, slotIndex));
-            Entity* loadedEntity = slotSystem->LookUpLoadedEntity(component);
-            if (loadedEntity == nullptr)
+            uint32 slotCount = entity->GetComponentCount(Component::SLOT_COMPONENT);
+            for (uint32 slotIndex = 0; slotIndex < slotCount; ++slotIndex)
             {
-                Vector<SlotSystem::ItemsCache::Item> items = slotSystem->GetItems(component->GetConfigFilePath());
-                if (items.empty())
+                SlotComponent* component = static_cast<SlotComponent*>(entity->GetComponent(Component::SLOT_COMPONENT, slotIndex));
+                Entity* loadedEntity = slotSystem->LookUpLoadedEntity(component);
+                if (loadedEntity == nullptr)
                 {
-                    RefPtr<Entity> newEntity(new Entity());
-                    slotSystem->AttachEntityToSlot(component, newEntity.Get(), emptyItemName);
+                    Vector<SlotSystem::ItemsCache::Item> items = slotSystem->GetItems(component->GetConfigFilePath());
+                    if (items.empty())
+                    {
+                        RefPtr<Entity> newEntity(new Entity());
+                        slotSystem->AttachEntityToSlot(component, newEntity.Get(), emptyItemName);
+                    }
+                    else
+                    {
+                        slotSystem->AttachItemToSlot(component, items.front().itemName);
+                    }
                 }
                 else
                 {
-                    slotSystem->AttachItemToSlot(component, items.front().itemName);
+                    loadedEntity->SetName(component->GetSlotName());
                 }
             }
-            else
-            {
-                loadedEntity->SetName(component->GetSlotName());
-            }
         }
-    }
 
-    pendingOnInitialize.clear();
+        pendingOnInitialize.clear();
+    }
 
     for (Entity* entity : scene->transformSingleComponent->localTransformChanged)
     {
@@ -196,38 +195,60 @@ void EditorSlotSystem::Process(DAVA::float32 timeElapsed)
 
 void EditorSlotSystem::WillClone(DAVA::Entity* originalEntity)
 {
-    DAVA::uint32 slotCount = originalEntity->GetComponentCount(DAVA::Component::SLOT_COMPONENT);
-    if (slotCount > 0)
+    auto extractSlots = [this](DAVA::Entity* entity)
     {
-        DAVA::Scene* scene = GetScene();
-        for (DAVA::uint32 i = 0; i < slotCount; ++i)
+        DAVA::uint32 slotCount = entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT);
+        if (slotCount > 0)
         {
-            AttachedItemInfo info;
-            info.component = static_cast<DAVA::SlotComponent*>(originalEntity->GetComponent(DAVA::Component::SLOT_COMPONENT, i));
-            info.entity = scene->slotSystem->LookUpLoadedEntity(info.component);
-            info.itemName = info.component->GetLoadedItemName();
+            DAVA::Scene* scene = GetScene();
+            for (DAVA::uint32 i = 0; i < slotCount; ++i)
+            {
+                AttachedItemInfo info;
+                info.component = static_cast<DAVA::SlotComponent*>(entity->GetComponent(DAVA::Component::SLOT_COMPONENT, i));
+                info.entity = scene->slotSystem->LookUpLoadedEntity(info.component);
+                info.itemName = info.component->GetLoadedItemName();
 
-            inClonedState[originalEntity].push_back(info);
-            DetachEntity(info.component, info.entity);
+                inClonedState[entity].push_back(info);
+                DetachEntity(info.component, info.entity);
+            }
         }
+    };
+
+    extractSlots(originalEntity);
+    DAVA::Vector<DAVA::Entity*> children;
+    originalEntity->GetChildEntitiesWithComponent(children, DAVA::Component::SLOT_COMPONENT);
+    for (DAVA::Entity* e : children)
+    {
+        extractSlots(e);
     }
 }
 
 void EditorSlotSystem::DidCloned(DAVA::Entity* originalEntity, DAVA::Entity* newEntity)
 {
-    auto iter = inClonedState.find(originalEntity);
-    if (iter == inClonedState.end())
+    auto restoreSlots = [this](DAVA::Entity* entity)
     {
-        return;
+        auto iter = inClonedState.find(entity);
+        if (iter == inClonedState.end())
+        {
+            return;
+        }
+
+        const DAVA::Vector<AttachedItemInfo> infos = iter->second;
+        for (const AttachedItemInfo& info : infos)
+        {
+            AttachEntity(info.component, info.entity, info.itemName);
+        }
+        inClonedState.erase(iter);
+    };
+
+    restoreSlots(originalEntity);
+    DAVA::Vector<DAVA::Entity*> children;
+    originalEntity->GetChildEntitiesWithComponent(children, DAVA::Component::SLOT_COMPONENT);
+    for (DAVA::Entity* e : children)
+    {
+        restoreSlots(e);
     }
 
-    const DAVA::Vector<AttachedItemInfo> infos = iter->second;
-    for (const AttachedItemInfo& info : infos)
-    {
-        AttachEntity(info.component, info.entity, info.itemName);
-    }
-
-    inClonedState.erase(iter);
     clonedEntityes.insert(newEntity);
 }
 
@@ -347,14 +368,23 @@ void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& ho
     auto addEntityVisitor = [&](const RECommand* command)
     {
         const EntityAddCommand* cmd = static_cast<const EntityAddCommand*>(command);
-        DAVA::Entity* entity = cmd->GetEntity();
-        auto iter = clonedEntityes.find(entity);
+        DAVA::Entity* entityForAdd = cmd->GetEntity();
+
+        auto iter = clonedEntityes.find(entityForAdd);
         if (iter != clonedEntityes.end())
         {
-            for (DAVA::uint32 i = 0; i < entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT); ++i)
+            DAVA::Vector<DAVA::Entity*> slotEntityes;
+            entityForAdd->GetChildEntitiesWithComponent(slotEntityes, DAVA::Component::SLOT_COMPONENT);
+            slotEntityes.push_back(entityForAdd);
+
+            for (DAVA::Entity* e : slotEntityes)
             {
-                loadDefaultItem(static_cast<DAVA::SlotComponent*>(entity->GetComponent(DAVA::Component::SLOT_COMPONENT, i)));
+                for (DAVA::uint32 i = 0; i < e->GetComponentCount(DAVA::Component::SLOT_COMPONENT); ++i)
+                {
+                    loadDefaultItem(static_cast<DAVA::SlotComponent*>(e->GetComponent(DAVA::Component::SLOT_COMPONENT, i)));
+                }
             }
+
             clonedEntityes.erase(iter);
         }
     };

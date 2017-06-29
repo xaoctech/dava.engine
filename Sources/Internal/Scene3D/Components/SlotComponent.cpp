@@ -26,6 +26,8 @@ Component* SlotComponent::Clone(Entity* toEntity)
     clone->slotName = slotName;
     clone->attachmentTransform = attachmentTransform;
     clone->configFilePath = configFilePath;
+    clone->templateName = templateName;
+    clone->actualFiltersCount = actualFiltersCount;
     clone->typeFilters = typeFilters;
 
     return clone;

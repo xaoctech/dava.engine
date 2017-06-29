@@ -445,20 +445,6 @@ Entity* SlotSystem::AttachItemToSlot(SlotComponent* component, FastName itemName
         SetState(nodes[index], eSlotState::LOADING_FAILED);
         return nullptr;
     }
-    
-#if defined(__DAVAENGINE_DEBUG__)
-    uint32 typeFiltersCount = component->GetTypeFiltersCount();
-    bool filterFound = (typeFiltersCount == 0);
-    for (uint32 i = 0; i < component->GetTypeFiltersCount(); ++i)
-    {
-        if (component->GetTypeFilter(i) == item->type)
-        {
-            filterFound = true;
-            break;
-        }
-    }
-    DVASSERT(filterFound == true);
-#endif
 
     Entity* slotRootEntity = new Entity();
     DVASSERT(externalEntityLoader != nullptr);

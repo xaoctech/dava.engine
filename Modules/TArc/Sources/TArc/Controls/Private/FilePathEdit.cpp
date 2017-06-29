@@ -53,10 +53,33 @@ void FilePathEdit::EditingFinished()
     RETURN_IF_MODEL_LOST(void());
     if (!edit->isReadOnly())
     {
-        FilePath path(edit->text().toStdString());
-        FilePath currentValue = GetFieldValue<FilePath>(Fields::Value, FilePath());
-        if (path != currentValue)
+        Any currenRawValue;
+        const FastName& fieldName = GetFieldName(Fields::Value);
+        if (fieldName.IsValid() == true)
         {
+            DAVA::Reflection field = model.GetField(fieldName);
+            if (field.IsValid())
+            {
+                currenRawValue = field.GetValue();
+            }
+        }
+        bool isValuesEqual = false;
+        if (currenRawValue.CanCast<FilePath>())
+        {
+            isValuesEqual = FilePath(edit->text().toStdString()) == currenRawValue.Cast<FilePath>();
+        }
+        else if (currenRawValue.CanCast<String>())
+        {
+            isValuesEqual = edit->text().toStdString() == currenRawValue.Cast<String>();
+        }
+        else
+        {
+            DVASSERT(false);
+        }
+
+        if (isValuesEqual == false)
+        {
+            FilePath path(edit->text().toStdString());
             M::ValidationResult validation = Validate(path);
             ProcessValidationResult(validation, path);
             if (validation.state == M::ValidationResult::eState::Valid)
