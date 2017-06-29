@@ -74,10 +74,6 @@ namespace DAVA
 EngineContext** GetEngineContextPtr()
 {
     static EngineContext* staticPtr = nullptr;
-    if (Private::EngineBackend::Instance())
-    {
-        staticPtr = Private::EngineBackend::Instance()->GetContext();
-    }
     return &staticPtr;
 }
 
@@ -147,7 +143,7 @@ EngineBackend::EngineBackend(const Vector<String>& cmdargs)
 {
     DVASSERT(instance == nullptr);
     instance = this;
-
+    Private::SetEngineContext(context);
     // The following subsystems should be created earlier than other:
     //  - Logger, to log messages on startup
     //  - FileSystem, to load config files with init options
