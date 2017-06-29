@@ -57,8 +57,12 @@ private:
     void ResetState(Window* window);
 
     bool HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e);
+    bool HandleTouchDownEvent(const Private::MainDispatcherEvent& e);
+    bool HandleTouchUpEvent(const Private::MainDispatcherEvent& e);
+    bool HandleTouchMoveEvent(const Private::MainDispatcherEvent& e);
     void CreateAndSendTouchClickEvent(eInputElements elementId, DigitalElementState state, Window* window, int64 timestamp);
 
+    int GetTouchIndexFromNativeTouchId(uint32 nativeTouchId) const;
     int GetFirstNonUsedTouchIndex() const;
 
 private:

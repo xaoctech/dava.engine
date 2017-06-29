@@ -100,126 +100,126 @@ void TouchScreen::ResetState(Window* window)
 bool TouchScreen::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e)
 {
     using Private::MainDispatcherEvent;
-
-    if (e.type != MainDispatcherEvent::TOUCH_DOWN &&
-        e.type != MainDispatcherEvent::TOUCH_UP &&
-        e.type != MainDispatcherEvent::TOUCH_MOVE)
-    {
-        return false;
-    }
-
+    
     if (e.type == MainDispatcherEvent::TOUCH_DOWN)
     {
-        const int touchIndex = GetFirstNonUsedTouchIndex();
-        if (touchIndex < 0)
-        {
-            DVASSERT(false);
-            return false;
-        }
-
-        // Update digital part
-
-        DigitalElementState& touchState = clicks[touchIndex];
-        touchState.Press();
-
-        // Update analog part
-
-        AnalogElementState& analogState = positions[touchIndex];
-        analogState.x = e.touchEvent.x;
-        analogState.y = e.touchEvent.y;
-
-        // Save native touch id to be able to locate correct touch when TOUCH_UP event comes
-
-        nativeTouchIds[touchIndex] = e.touchEvent.touchId;
-
-        // Send input event
-
-        eInputElements element = static_cast<eInputElements>(eInputElements::TOUCH_FIRST_CLICK + touchIndex);
-        CreateAndSendTouchClickEvent(element, touchState, e.window, e.timestamp);
+        return HandleTouchDownEvent(e);
     }
     else if (e.type == MainDispatcherEvent::TOUCH_UP)
     {
-        // Find out index of the touch
-
-        int touchIndex = -1;
-        for (int i = 0; i < INPUT_ELEMENTS_TOUCH_CLICK_COUNT; ++i)
-        {
-            if (nativeTouchIds[i] == e.touchEvent.touchId)
-            {
-                touchIndex = i;
-                break;
-            }
-        }
-
-        if (touchIndex == -1)
-        {
-            DVASSERT(false);
-            return false;
-        }
-
-        // Update digital part
-
-        DigitalElementState& touchState = clicks[touchIndex];
-        touchState.Release();
-
-        // Reset native id for this touch
-
-        nativeTouchIds[touchIndex] = 0;
-
-        // Update analog part
-
-        AnalogElementState& analogState = positions[touchIndex];
-        analogState.x = e.touchEvent.x;
-        analogState.y = e.touchEvent.y;
-
-        // Send input event
-
-        eInputElements element = static_cast<eInputElements>(eInputElements::TOUCH_FIRST_CLICK + touchIndex);
-        CreateAndSendTouchClickEvent(element, touchState, e.window, e.timestamp);
-
-        // If it's an up event, reset position AFTER sending the input event
-        // (so that users can request it during handling and get correct position)
-        analogState.x = 0.0f;
-        analogState.y = 0.0f;
+        return HandleTouchUpEvent(e);
     }
     else if (e.type == MainDispatcherEvent::TOUCH_MOVE)
     {
-        // Find out index the of touch
-
-        int touchIndex = -1;
-        for (int i = 0; i < INPUT_ELEMENTS_TOUCH_CLICK_COUNT; ++i)
-        {
-            if (nativeTouchIds[i] == e.touchEvent.touchId)
-            {
-                touchIndex = i;
-                break;
-            }
-        }
-
-        if (touchIndex == -1)
-        {
-            DVASSERT(false);
-            return false;
-        }
-
-        // Update analog part
-
-        AnalogElementState& analogState = positions[touchIndex];
-        analogState.x = e.touchEvent.x;
-        analogState.y = e.touchEvent.y;
-
-        // Send input event
-
-        InputEvent inputEvent;
-        inputEvent.window = e.window;
-        inputEvent.timestamp = static_cast<float64>(e.timestamp / 1000.0f);
-        inputEvent.deviceType = eInputDeviceTypes::TOUCH_SURFACE;
-        inputEvent.device = this;
-        inputEvent.analogState = analogState;
-        inputEvent.elementId = static_cast<eInputElements>(eInputElements::TOUCH_FIRST_POSITION + touchIndex);
-
-        inputSystem->DispatchInputEvent(inputEvent);
+        return HandleTouchMoveEvent(e);
     }
+
+    return false;
+}
+
+bool TouchScreen::HandleTouchDownEvent(const Private::MainDispatcherEvent& e)
+{
+    const int touchIndex = GetFirstNonUsedTouchIndex();
+    if (touchIndex < 0)
+    {
+        DVASSERT(false);
+        return false;
+    }
+
+    // Update digital part
+
+    DigitalElementState& touchState = clicks[touchIndex];
+    touchState.Press();
+
+    // Update analog part
+
+    AnalogElementState& analogState = positions[touchIndex];
+    analogState.x = e.touchEvent.x;
+    analogState.y = e.touchEvent.y;
+
+    // Save native touch id to be able to locate correct touch when TOUCH_UP event comes
+
+    nativeTouchIds[touchIndex] = e.touchEvent.touchId;
+
+    // Send input event
+
+    eInputElements element = static_cast<eInputElements>(eInputElements::TOUCH_FIRST_CLICK + touchIndex);
+    CreateAndSendTouchClickEvent(element, touchState, e.window, e.timestamp);
+
+    return true;
+}
+
+bool TouchScreen::HandleTouchUpEvent(const Private::MainDispatcherEvent& e)
+{
+    int touchIndex = GetTouchIndexFromNativeTouchId(e.touchEvent.touchId);
+    if (touchIndex == -1)
+    {
+        // We can receive touch up event without registred touch
+        // E.g. when we touch a screen then press a Win button twice on Windows 10
+        // First press leads to touch state reseting (in OnWindowFocusChanged),
+        // and second one brings back focus to our window and we start receiving events with the same touch id
+        // Don't want to handle these
+        return false;
+    }
+
+    // Update digital part
+
+    DigitalElementState& touchState = clicks[touchIndex];
+    touchState.Release();
+
+    // Reset native id for this touch
+
+    nativeTouchIds[touchIndex] = 0;
+
+    // Update analog part
+
+    AnalogElementState& analogState = positions[touchIndex];
+    analogState.x = e.touchEvent.x;
+    analogState.y = e.touchEvent.y;
+
+    // Send input event
+
+    eInputElements element = static_cast<eInputElements>(eInputElements::TOUCH_FIRST_CLICK + touchIndex);
+    CreateAndSendTouchClickEvent(element, touchState, e.window, e.timestamp);
+
+    // If it's an up event, reset position AFTER sending the input event
+    // (so that users can request it during handling and get correct position)
+    analogState.x = 0.0f;
+    analogState.y = 0.0f;
+
+    return true;
+}
+
+bool TouchScreen::HandleTouchMoveEvent(const Private::MainDispatcherEvent& e)
+{
+    int touchIndex = GetTouchIndexFromNativeTouchId(e.touchEvent.touchId);
+    if (touchIndex == -1)
+    {
+        // We can receive touch up event without registred touch
+        // E.g. when we touch a screen then press a Win button twice on Windows 10
+        // First press leads to touch state reseting (in OnWindowFocusChanged),
+        // and second one brings back focus to our window and we start receiving events with the same touch id
+        // Don't want to handle these
+        return false;
+    }
+
+    // Update analog part
+
+    AnalogElementState& analogState = positions[touchIndex];
+    analogState.x = e.touchEvent.x;
+    analogState.y = e.touchEvent.y;
+
+    // Send input event
+
+    InputEvent inputEvent;
+    inputEvent.window = e.window;
+    inputEvent.timestamp = static_cast<float64>(e.timestamp / 1000.0f);
+    inputEvent.deviceType = eInputDeviceTypes::TOUCH_SURFACE;
+    inputEvent.device = this;
+    inputEvent.analogState = analogState;
+    inputEvent.elementId = static_cast<eInputElements>(eInputElements::TOUCH_FIRST_POSITION + touchIndex);
+
+    inputSystem->DispatchInputEvent(inputEvent);
 
     return true;
 }
@@ -235,6 +235,21 @@ void TouchScreen::CreateAndSendTouchClickEvent(eInputElements elementId, Digital
     inputEvent.elementId = elementId;
 
     inputSystem->DispatchInputEvent(inputEvent);
+}
+
+int TouchScreen::GetTouchIndexFromNativeTouchId(uint32 nativeTouchId) const
+{
+    int touchIndex = -1;
+    for (int i = 0; i < INPUT_ELEMENTS_TOUCH_CLICK_COUNT; ++i)
+    {
+        if (nativeTouchIds[i] == nativeTouchId)
+        {
+            touchIndex = i;
+            break;
+        }
+    }
+
+    return touchIndex;
 }
 
 int TouchScreen::GetFirstNonUsedTouchIndex() const
