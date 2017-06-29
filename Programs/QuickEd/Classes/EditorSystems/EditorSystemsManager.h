@@ -142,7 +142,7 @@ public:
 
     DAVA::Signal<const HUDAreaInfo& /*areaInfo*/> activeAreaChanged;
     DAVA::Signal<const DAVA::Vector<MagnetLineInfo>& /*magnetLines*/> magnetLinesChanged;
-    DAVA::Signal<const ControlNode*> highlightNode;
+    DAVA::Signal<ControlNode*> highlightNode;
     DAVA::Signal<const DAVA::Rect& /*selectionRectControl*/> selectionRectChanged;
     DAVA::Signal<const DAVA::Vector2&> contentSizeChanged;
     DAVA::Signal<ControlNode*, AbstractProperty*, const DAVA::Any&> propertyChanged;

@@ -33,6 +33,7 @@ public:
         FilePath overridenMaterialsPath;
         Vector2 uvOffset;
         Vector2 uvScale = Vector2(1.0f, 1.0f);
+        bool debugOverlayEnabled = false;
 
         bool operator==(const DecalConfig&) const;
         bool operator!=(const DecalConfig&) const;
@@ -79,7 +80,7 @@ private:
     void RegisterDecal(Decal decal);
     void UnregisterDecal(Decal decal);
 
-    bool BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBatch);
+    bool BuildDecal(const DecalBuildInfo& info, RenderBatchProvider* provider);
     void ClipToPlane(DecalVertex* p_vs, DecalVertex* p_vs_out, uint32* nb_p_vs, int32 sign, Vector3::eAxis axis, const Vector3& c_v);
     void ClipToBoundingBox(DecalVertex* p_vs, DecalVertex* p_out, uint32* nb_p_vs, const AABBox3& clipper);
     int32 Classify(int32 sign, Vector3::eAxis axis, const Vector3& c_v, const DecalVertex& p_v);
@@ -97,13 +98,13 @@ private:
 inline bool GeoDecalManager::DecalConfig::operator==(const GeoDecalManager::DecalConfig& r) const
 {
     return (boundingBox == r.boundingBox) && (albedo == r.albedo) && (normal == r.normal) && (mapping == r.mapping) &&
-    (uvOffset == r.uvOffset) && (uvScale == r.uvScale);
+    (uvOffset == r.uvOffset) && (uvScale == r.uvScale) && (debugOverlayEnabled == r.debugOverlayEnabled);
 }
 
 inline bool GeoDecalManager::DecalConfig::operator!=(const GeoDecalManager::DecalConfig& r) const
 {
     return (boundingBox != r.boundingBox) || (albedo != r.albedo) || (normal != r.normal) || (mapping != r.mapping) ||
-    (uvOffset != r.uvOffset) || (uvScale != r.uvScale);
+    (uvOffset != r.uvOffset) || (uvScale != r.uvScale) || (debugOverlayEnabled != r.debugOverlayEnabled);
 }
 
 inline void GeoDecalManager::DecalConfig::invalidate()

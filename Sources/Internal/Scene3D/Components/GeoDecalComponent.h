@@ -56,6 +56,7 @@ public:
     IMPL_PROPERTY(Vector2, UVScale, uvScale);
     IMPL_PROPERTY(Vector2, UVOffset, uvOffset);
     IMPL_PROPERTY(GeoDecalManager::Mapping, Mapping, mapping);
+    IMPL_PROPERTY(bool, DebugOverlayEnabled, debugOverlayEnabled);
 #undef IMPL_PROPERTY
 
     INTROSPECTION_EXTEND(GeoDecalComponent, Component, NULL)

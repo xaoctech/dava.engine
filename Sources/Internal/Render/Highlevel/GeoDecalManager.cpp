@@ -16,10 +16,18 @@ struct GeoDecalManager::DecalBuildInfo : public GeoDecalManager::DecalConfig
     Vector4* jointQuaternions = nullptr;
     Vector3 projectionAxis;
     Matrix4 projectionSpaceTransform;
-    Matrix4 projectionSpaceInverseTransform;
     int32 jointCount = 0;
+    int32 lodIndex = -1;
+    int32 switchIndex = -1;
     bool useCustomNormal = false;
     bool useSkinning = false;
+
+    DecalBuildInfo() = default;
+
+    DecalBuildInfo(const GeoDecalManager::DecalConfig& r)
+        : GeoDecalManager::DecalConfig(r)
+    {
+    }
 };
 
 struct GeoDecalManager::DecalVertex
@@ -131,31 +139,30 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, co
     AABBox3 worldSpaceBox;
     config.boundingBox.GetTransformedBox(decalWorldTransform, worldSpaceBox);
 
-    Vector3 boxCorners[8];
+    uint8 boxCornersData[8 * sizeof(Vector3)];
+    Vector3* boxCorners = reinterpret_cast<Vector3*>(boxCornersData);
     config.boundingBox.GetCorners(boxCorners);
 
-    Vector3 dir = MultiplyVectorMat3x3(Vector3(0.0f, 0.0f, 1.0f), decalWorldTransform);
-    Vector3 up = MultiplyVectorMat3x3(Vector3(0.0f, -1.0f, 0.0f), decalWorldTransform);
-    Vector3 side = MultiplyVectorMat3x3(Vector3(1.0f, 0.0f, 0.0f), decalWorldTransform);
+    Matrix4 worldToObject = decalWorldTransform * ro->GetInverseWorldTransform();
 
-    dir = MultiplyVectorMat3x3(dir, ro->GetInverseWorldTransform());
-    up = MultiplyVectorMat3x3(up, ro->GetInverseWorldTransform());
-    side = MultiplyVectorMat3x3(side, ro->GetInverseWorldTransform());
+    Vector3 side = MultiplyVectorMat3x3(Vector3(1.0f, 0.0f, 0.0f), worldToObject);
+    Vector3 up = MultiplyVectorMat3x3(Vector3(0.0f, 1.0f, 0.0f), worldToObject);
+    Vector3 dir = MultiplyVectorMat3x3(Vector3(0.0f, 0.0f, 1.0f), worldToObject);
+
+    Vector3 boxMin = Vector3(+std::numeric_limits<float>::max(), +std::numeric_limits<float>::max(), +std::numeric_limits<float>::max());
+    Vector3 boxMax = Vector3(-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
 
     Matrix4 view = Matrix4::IDENTITY;
     view._data[0][0] = side.x;
     view._data[0][1] = up.x;
-    view._data[0][2] = -dir.x;
+    view._data[0][2] = dir.x;
     view._data[1][0] = side.y;
     view._data[1][1] = up.y;
-    view._data[1][2] = -dir.y;
+    view._data[1][2] = dir.y;
     view._data[2][0] = side.z;
     view._data[2][1] = up.z;
-    view._data[2][2] = -dir.z;
+    view._data[2][2] = dir.z;
 
-    Matrix4 worldToObject = decalWorldTransform * ro->GetInverseWorldTransform();
-    Vector3 boxMin = Vector3(+std::numeric_limits<float>::max(), +std::numeric_limits<float>::max(), +std::numeric_limits<float>::max());
-    Vector3 boxMax = Vector3(-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
     for (uint32 i = 0; i < 8; ++i)
     {
         Vector3 objectPos = boxCorners[i] * worldToObject;
@@ -167,18 +174,16 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, co
         boxMax.y = std::max(boxMax.y, t.y);
         boxMax.z = std::max(boxMax.z, t.z);
     }
-    Matrix4 proj;
-    proj.OrthographicProjectionLH(boxMin.x, boxMax.x, boxMin.y, boxMax.y, boxMin.z, boxMax.z, false);
 
-    DecalBuildInfo info;
+    // notice flip "-boxMax.z, -boxMin.z" in znear/zfar parameters
+    // this is done because BuildOrtho building matrix for NDC, with z direction reversed
+    // and here we expecting boxMin mapping to -1 -1 -1 and boxMax to +1 +1 +1
+    Matrix4 proj;
+    proj.BuildOrtho(boxMin.x, boxMax.x, boxMin.y, boxMax.y, -boxMax.z, -boxMin.z, false);
+
+    DecalBuildInfo info = config;
     info.projectionAxis = dir;
     info.projectionSpaceTransform = view * proj;
-    info.projectionSpaceTransform.GetInverse(info.projectionSpaceInverseTransform);
-    info.mapping = config.mapping;
-    info.albedo = config.albedo;
-    info.normal = config.normal;
-    info.uvOffset = config.uvOffset;
-    info.uvScale = config.uvScale;
     info.useCustomNormal = FileSystem::Instance()->Exists(info.normal);
     info.useSkinning = ro->GetType() == RenderObject::TYPE_SKINNED_MESH;
 
@@ -209,12 +214,9 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, co
             RenderBatch* sourceBatch = ro->GetRenderBatch(i, lodIndex, switchIndex);
             info.polygonGroup = sourceBatch->GetPolygonGroup();
             info.material = sourceBatch->GetMaterial();
-
-            ScopedPtr<RenderBatch> newBatch(new RenderBatch());
-            if (BuildDecal(info, newBatch))
-            {
-                decalBatchProvider->EmplaceRenderBatch(newBatch, lodIndex, switchIndex);
-            }
+            info.lodIndex = lodIndex;
+            info.switchIndex = switchIndex;
+            BuildDecal(info, decalBatchProvider);
         }
     }
     RegisterDecal(decal);
@@ -439,7 +441,7 @@ void GeoDecalManager::GetSkinnedMeshGeometry(const DecalBuildInfo& info, Vector<
     }
 }
 
-bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBatch)
+bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatchProvider* batchProvider)
 {
     if (info.polygonGroup == nullptr)
         return false;
@@ -509,8 +511,6 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBat
         }
     }
     newPolygonGroup->BuildBuffers();
-    dstBatch->SetPolygonGroup(newPolygonGroup);
-    dstBatch->UpdateAABBoxFromSource();
 
     /*
      * Process material
@@ -539,7 +539,28 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatch* dstBat
         material->AddTexture(NMaterialTextureName::TEXTURE_NORMAL, customNormal);
     }
 
-    dstBatch->SetMaterial(material);
+    ScopedPtr<RenderBatch> batch(new RenderBatch());
+    batch->SetPolygonGroup(newPolygonGroup);
+    batch->SetMaterial(material);
+    batch->UpdateAABBoxFromSource();
+    static_cast<GeoDecalRenderBatchProvider*>(batchProvider)->EmplaceRenderBatch(batch, info.lodIndex, info.switchIndex);
+
+    if (info.debugOverlayEnabled)
+    {
+        /*
+         * Process debug material
+         */
+        ScopedPtr<NMaterial> debugMaterial(new NMaterial());
+        debugMaterial->SetFXName(FastName("~res:/Materials/GeoDecal.Debug.material"));
+        debugMaterial->SetRuntime(true);
+
+        ScopedPtr<RenderBatch> debugBatch(new RenderBatch());
+        debugBatch->SetPolygonGroup(newPolygonGroup);
+        debugBatch->SetMaterial(debugMaterial);
+        debugBatch->UpdateAABBoxFromSource();
+        static_cast<GeoDecalRenderBatchProvider*>(batchProvider)->EmplaceRenderBatch(debugBatch, info.lodIndex, info.switchIndex);
+    }
+
     return true;
 }
 
