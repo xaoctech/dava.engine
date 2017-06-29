@@ -77,7 +77,7 @@ bool SaveExportedObjects(const DAVA::FilePath& linkPathname, const DAVA::Vector<
 {
     using namespace DAVA;
 
-    ScopedPtr<File> linksFile(File::Create(linkPathname, File::CREATE | File::WRITE));
+    DAVA::ScopedPtr<DAVA::File> linksFile(DAVA::File::Create(linkPathname, DAVA::File::CREATE | DAVA::File::WRITE));
     if (linksFile)
     {
         linksFile->WriteLine(Format("%d", static_cast<int32>(exportedObjects.size())));
