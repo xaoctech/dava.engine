@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Classes/Qt/Scene/System/EditorSceneSystem.h"
+#include "Classes/Qt/Scene/System/SystemDelegates.h"
 
 #include <TArc/Utils/QtConnections.h>
 
@@ -17,7 +18,8 @@ class ContextAccessor;
 } // namespace DAVA
 
 class EditorSlotSystem : public DAVA::SceneSystem,
-                         public EditorSceneSystem
+                         public EditorSceneSystem,
+                         public EntityModificationSystemDelegate
 {
 public:
     static const DAVA::FastName emptyItemName;
@@ -31,6 +33,9 @@ public:
     void RemoveComponent(DAVA::Entity* entity, DAVA::Component* component) override;
 
     void Process(DAVA::float32 timeElapsed) override;
+
+    void WillClone(DAVA::Entity* originalEntity) override;
+    void DidCloned(DAVA::Entity* originalEntity, DAVA::Entity* newEntity) override;
 
 protected:
     friend class AttachEntityToSlot;
@@ -46,10 +51,21 @@ protected:
 
 protected:
     std::unique_ptr<DAVA::Command> PrepareForSave(bool saveForGame) override;
+    void SetScene(Scene* scene) override;
 
 private:
     DAVA::Vector<DAVA::Entity*> entities;
     DAVA::Set<DAVA::Entity*> pendingOnInitialize;
     DAVA::TArc::QtConnections connections;
     DAVA::TArc::ContextAccessor* accessor;
+
+    struct AttachedItemInfo
+    {
+        DAVA::SlotComponent* component = nullptr;
+        DAVA::Entity* entity = nullptr;
+        DAVA::FastName itemName;
+    };
+
+    DAVA::UnorderedMap<DAVA::Entity*, DAVA::Vector<AttachedItemInfo>> inClonedState;
+    DAVA::Set<DAVA::Entity*> clonedEntityes;
 };

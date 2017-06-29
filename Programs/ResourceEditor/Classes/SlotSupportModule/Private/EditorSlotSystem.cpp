@@ -7,6 +7,7 @@
 #include "Classes/Commands2/AddComponentCommand.h"
 #include "Classes/Commands2/EntityRemoveCommand.h"
 #include "Classes/Commands2/Base/RECommandNotificationObject.h"
+#include "Classes/Commands2/EntityAddCommand.h"
 #include "Classes/Selection/Selection.h"
 #include "Classes/Qt/Scene/SceneSignals.h"
 
@@ -125,6 +126,11 @@ void EditorSlotSystem::Process(DAVA::float32 timeElapsed)
     SlotSystem* slotSystem = scene->slotSystem;
     for (Entity* entity : pendingOnInitialize)
     {
+        if (clonedEntityes.count(entity) > 0)
+        {
+            continue;
+        }
+
         uint32 slotCount = entity->GetComponentCount(Component::SLOT_COMPONENT);
         for (uint32 slotIndex = 0; slotIndex < slotCount; ++slotIndex)
         {
@@ -173,17 +179,56 @@ void EditorSlotSystem::Process(DAVA::float32 timeElapsed)
         {
             SlotComponent* component = static_cast<SlotComponent*>(entity->GetComponent(Component::SLOT_COMPONENT, i));
             Entity* loadedEntity = scene->slotSystem->LookUpLoadedEntity(component);
-            DVASSERT(loadedEntity != nullptr);
-            for (int32 j = 0; j < loadedEntity->GetChildrenCount(); ++j)
+            if (loadedEntity != nullptr)
             {
-                Entity* child = loadedEntity->GetChild(j);
-                if (child->GetLocked() == false)
+                for (int32 j = 0; j < loadedEntity->GetChildrenCount(); ++j)
                 {
-                    child->SetLocked(true);
+                    Entity* child = loadedEntity->GetChild(j);
+                    if (child->GetLocked() == false)
+                    {
+                        child->SetLocked(true);
+                    }
                 }
             }
         }
     }
+}
+
+void EditorSlotSystem::WillClone(DAVA::Entity* originalEntity)
+{
+    DAVA::uint32 slotCount = originalEntity->GetComponentCount(DAVA::Component::SLOT_COMPONENT);
+    if (slotCount > 0)
+    {
+        DAVA::Scene* scene = GetScene();
+        for (DAVA::uint32 i = 0; i < slotCount; ++i)
+        {
+            AttachedItemInfo info;
+            info.component = static_cast<DAVA::SlotComponent*>(originalEntity->GetComponent(DAVA::Component::SLOT_COMPONENT, i));
+            info.entity = scene->slotSystem->LookUpLoadedEntity(info.component);
+            info.itemName = info.component->GetLoadedItemName();
+
+            inClonedState[originalEntity].push_back(info);
+            DetachEntity(info.component, info.entity);
+        }
+    }
+}
+
+void EditorSlotSystem::DidCloned(DAVA::Entity* originalEntity, DAVA::Entity* newEntity)
+{
+    auto iter = inClonedState.find(originalEntity);
+    if (iter == inClonedState.end())
+    {
+        return;
+    }
+
+    const Vector<AttachedItemInfo> infos = iter->second;
+    for (const AttachedItemInfo& info : infos)
+    {
+        AttachEntity(info.component, info.entity, info.itemName);
+    }
+
+    inClonedState.erase(iter);
+    clonedEntityes.insert(newEntity);
 }
 
 void EditorSlotSystem::DetachEntity(DAVA::SlotComponent* component, DAVA::Entity* entity)
@@ -273,28 +318,48 @@ void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& ho
 
     commandInfo.ForEach(removeEntityVisitor, CMDID_ENTITY_REMOVE);
 
+    auto loadDefaultItem = [&](DAVA::SlotComponent* component)
+    {
+        Vector<SlotSystem::ItemsCache::Item> items = scene->slotSystem->GetItems(component->GetConfigFilePath());
+        if (items.empty())
+        {
+            RefPtr<Entity> newEntity(new Entity());
+            holder.AddPostCommand(std::unique_ptr<DAVA::Command>(new AttachEntityToSlot(scene, component, newEntity.Get(), emptyItemName)));
+        }
+        else
+        {
+            holder.AddPostCommand(std::unique_ptr<DAVA::Command>(new AttachEntityToSlot(scene, component, items.front().itemName)));
+        }
+    };
+
     auto addSlotVisitor = [&](const RECommand* command)
     {
         const AddComponentCommand* cmd = static_cast<const AddComponentCommand*>(command);
         DAVA::Component* component = cmd->GetComponent();
         if (component->GetType() == DAVA::Component::SLOT_COMPONENT)
         {
-            DAVA::SlotComponent* slotComponent = static_cast<DAVA::SlotComponent*>(component);
-
-            Vector<SlotSystem::ItemsCache::Item> items = scene->slotSystem->GetItems(slotComponent->GetConfigFilePath());
-            if (items.empty())
-            {
-                RefPtr<Entity> newEntity(new Entity());
-                holder.AddPostCommand(std::unique_ptr<DAVA::Command>(new AttachEntityToSlot(scene, slotComponent, newEntity.Get(), emptyItemName)));
-            }
-            else
-            {
-                holder.AddPostCommand(std::unique_ptr<DAVA::Command>(new AttachEntityToSlot(scene, slotComponent, items.front().itemName)));
-            }
+            loadDefaultItem(static_cast<DAVA::SlotComponent*>(component));
         }
     };
 
     commandInfo.ForEach(addSlotVisitor, CMDID_COMPONENT_ADD);
+
+    auto addEntityVisitor = [&](const RECommand* command)
+    {
+        const EntityAddCommand* cmd = static_cast<const EntityAddCommand*>(command);
+        DAVA::Entity* entity = cmd->GetEntity();
+        auto iter = clonedEntityes.find(entity);
+        if (iter != clonedEntityes.end())
+        {
+            for (uint32 i = 0; i < entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT); ++i)
+            {
+                loadDefaultItem(static_cast<DAVA::SlotComponent*>(entity->GetComponent(DAVA::Component::SLOT_COMPONENT, i)));
+            }
+            clonedEntityes.erase(iter);
+        }
+    };
+
+    commandInfo.ForEach(addEntityVisitor, CMDID_ENTITY_ADD);
 }
 
 void EditorSlotSystem::ProcessCommand(const RECommandNotificationObject& commandNotification)
@@ -366,6 +431,8 @@ void EditorSlotSystem::Draw()
                 {
                     transform = component->GetAttachmentTransform();
                 }
+                Matrix4 worldTransform = entity->GetWorldTransform();
+                transform = worldTransform * transform;
                 rh->DrawAABoxTransformed(box, transform, boxColor, RenderHelper::DRAW_SOLID_DEPTH);
                 rh->DrawAABoxTransformed(box, transform, boxEdgeColor, RenderHelper::DRAW_WIRE_DEPTH);
 
@@ -397,4 +464,25 @@ std::unique_ptr<DAVA::Command> EditorSlotSystem::PrepareForSave(bool /*saveForGa
     }
 
     return std::unique_ptr<DAVA::Command>(batchCommand);
+}
+
+void EditorSlotSystem::SetScene(Scene* scene)
+{
+    {
+        SceneEditor2* currentScene = static_cast<SceneEditor2*>(GetScene());
+        if (currentScene != nullptr)
+        {
+            currentScene->modifSystem->RemoveDelegate(this);
+        }
+    }
+
+    SceneSystem::SetScene(scene);
+
+    {
+        SceneEditor2* currentScene = static_cast<SceneEditor2*>(GetScene());
+        if (currentScene != nullptr)
+        {
+            currentScene->modifSystem->AddDelegate(this);
+        }
+    }
 }

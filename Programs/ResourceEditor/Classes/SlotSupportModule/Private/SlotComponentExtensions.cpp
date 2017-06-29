@@ -90,6 +90,7 @@ public:
             params.fields[ReflectedButton::Fields::Icon] = "addButtonIcon";
             params.fields[ReflectedButton::Fields::Tooltip] = "addButtonTooltip";
             params.fields[ReflectedButton::Fields::Clicked] = "addTypeFilter";
+            params.fields[ReflectedButton::Fields::Enabled] = "addButtonEnabled";
             ReflectedButton* addButton = new ReflectedButton(params, wrappersProcessor, model, w->ToWidgetCast());
             buttonsBar->AddControl(addButton);
         }
@@ -221,6 +222,7 @@ private:
         .Field("autoRise", [](SlotTypeFiltersComponentValue*) { return false; }, nullptr)
         .Field("addButtonIcon", [](SlotTypeFiltersComponentValue*) { return SharedIcon(":/QtIcons/cplus.png"); }, nullptr)
         .Field("addButtonTooltip", [](SlotTypeFiltersComponentValue*) { return "Add type filter"; }, nullptr)
+        .Field("addButtonEnabled", [](SlotTypeFiltersComponentValue* v) { return v->filters.size() < DAVA::SlotComponent::MAX_FILTERS_COUNT; }, nullptr)
         .Method("addTypeFilter", &SlotTypeFiltersComponentValue::AddTypeFilter)
         .Field("removeButtonIcon", [](SlotTypeFiltersComponentValue*) { return SharedIcon(":/QtIcons/cminus.png"); }, nullptr)
         .Field("removeButtonTooltip", [](SlotTypeFiltersComponentValue*) { return "Remove selected type filter"; }, nullptr)
@@ -464,24 +466,23 @@ private:
         }
     }
 
-    size_t GetCurrentItemIndex() const
+    DAVA::String GetCurrentItem() const
     {
         DAVA::FastName item = GetLoadedItemInfo();
-        auto iter = std::find(itemsList.begin(), itemsList.end(), item);
-        if (iter == itemsList.end())
+        DVASSERT(item.IsValid());
+        DAVA::String strItem(item.c_str());
+        if (itemsList.find(strItem) == itemsList.end())
         {
-            UpdateValues();
-            iter = std::find(itemsList.begin(), itemsList.end(), item);
+            RebuildItemsList();
         }
-        DVASSERT(iter != itemsList.end());
-        return std::distance(itemsList.begin(), iter);
+        return strItem;
     }
 
-    void SetCurrentItemIndex(size_t index)
+    void SetCurrentItem(const DAVA::String& item)
     {
         using namespace DAVA::TArc;
 
-        DAVA::FastName itemName = itemsList[index];
+        DAVA::FastName itemName(item);
         DAVA::RefPtr<SceneEditor2> scene = GetAccessor()->GetActiveContext()->GetData<SceneData>()->GetScene();
 
         std::shared_ptr<ModifyExtension> extension = GetModifyInterface();
@@ -531,7 +532,7 @@ private:
         using namespace DAVA;
 
         itemsList.clear();
-        itemsList.push_back(EditorSlotSystem::emptyItemName);
+        itemsList.emplace(EditorSlotSystem::emptyItemName.c_str(), EditorSlotSystem::emptyItemName);
         DAVA::FastName item = GetLoadedItemInfo();
         if (configPath.CanGet<DAVA::FilePath>() == true)
         {
@@ -543,18 +544,18 @@ private:
             {
                 if (filters.empty() == true || filters.count(item.type) > 0)
                 {
-                    itemsList.push_back(item.itemName);
+                    itemsList.emplace(item.itemName.c_str(), item.itemName);
                 }
             }
         }
 
-        if (std::find(itemsList.begin(), itemsList.end(), item) == itemsList.end())
+        if (itemsList.find(item.c_str()) == itemsList.end())
         {
-            itemsList.push_back(item);
+            itemsList.emplace(item.c_str(), item);
         }
     }
 
-    const DAVA::Vector<DAVA::FastName>& GetItemsList() const
+    const DAVA::Map<DAVA::String, DAVA::FastName>& GetItemsList() const
     {
         UpdateValues();
         return itemsList;
@@ -562,12 +563,12 @@ private:
 
     mutable DAVA::Any configPath;
     mutable DAVA::Set<DAVA::FastName> filters;
-    mutable DAVA::Vector<DAVA::FastName> itemsList;
+    mutable DAVA::Map<DAVA::String, DAVA::FastName> itemsList;
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(SlotPreviewComponentValue, BaseSlotComponentValue)
     {
         DAVA::ReflectionRegistrator<SlotPreviewComponentValue>::Begin()
-        .Field("currentPreviewItem", &SlotPreviewComponentValue::GetCurrentItemIndex, &SlotPreviewComponentValue::SetCurrentItemIndex)
+        .Field("currentPreviewItem", &SlotPreviewComponentValue::GetCurrentItem, &SlotPreviewComponentValue::SetCurrentItem)
         .Field("previewItemReadOnly", &SlotPreviewComponentValue::IsPreviewReadOnly, nullptr)
         .Field("itemsList", &SlotPreviewComponentValue::GetItemsList, nullptr)
         .End();
@@ -586,7 +587,7 @@ public:
     {
         if (currentValue.IsEmpty())
         {
-            return false;
+            return true;
         }
 
         return newValue.IsEmpty() == true || newValue != currentValue;
