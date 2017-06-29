@@ -420,11 +420,12 @@ void WindowBackend::OnKeyReleased(QKeyEvent* qtEvent)
     }
 
     const uint32 virtualKey = qtEvent->nativeVirtualKey();
-
+    uint32 scancodeKey = 0;
+    
 #if defined(Q_OS_WIN)
     // How to distinguish left and right shift, control and alt: http://stackoverflow.com/a/15977613
     uint32 lparam = qtEvent->nativeModifiers();
-    uint32 scancodeKey = qtEvent->nativeScanCode();
+    scancodeKey = qtEvent->nativeScanCode();
     bool isExtended = (HIWORD(lparam) & KF_EXTENDED) == KF_EXTENDED;
     if (isExtended || (virtualKey == VK_SHIFT && ::MapVirtualKeyW(scancodeKey, MAPVK_VSC_TO_VK_EX) == VK_RSHIFT))
     {
