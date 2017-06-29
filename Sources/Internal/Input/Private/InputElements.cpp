@@ -119,7 +119,7 @@ const InputElementInfo& GetInputElementInfo(eInputElements element)
         infoKeyboard[eInputElements::KB_NUMPAD_7 - eInputElements::KB_FIRST] = { "7 (Numpad)", eInputElementTypes::DIGITAL };
         infoKeyboard[eInputElements::KB_NUMPAD_8 - eInputElements::KB_FIRST] = { "8 (Numpad)", eInputElementTypes::DIGITAL };
         infoKeyboard[eInputElements::KB_NUMPAD_9 - eInputElements::KB_FIRST] = { "9 (Numpad)", eInputElementTypes::DIGITAL };
-        infoKeyboard[eInputElements::KB_NUMPAD_0 - eInputElements::KB_FIRST] = { "10 (Numpad)", eInputElementTypes::DIGITAL };
+        infoKeyboard[eInputElements::KB_NUMPAD_0 - eInputElements::KB_FIRST] = { "0 (Numpad)", eInputElementTypes::DIGITAL };
         infoKeyboard[eInputElements::KB_LCMD - eInputElements::KB_FIRST] = { "LCmd", eInputElementTypes::DIGITAL };
         infoKeyboard[eInputElements::KB_RCMD - eInputElements::KB_FIRST] = { "RCmd", eInputElementTypes::DIGITAL };
         infoKeyboard[eInputElements::KB_CAMERA_FOCUS - eInputElements::KB_FIRST] = { "Camera Focus", eInputElementTypes::DIGITAL };
