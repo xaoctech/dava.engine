@@ -12,7 +12,7 @@
 #include "Classes/Selection/Selection.h"
 
 RulerToolSystem::RulerToolSystem(DAVA::Scene* scene)
-    : LandscapeEditorSystem(scene, "~res:/ResourceEditor/LandscapeEditor/Tools/cursor/cursor.png")
+    : LandscapeEditorSystem(scene, DefaultCursorPath())
     , curToolSize(0)
     , previewEnabled(true)
 {

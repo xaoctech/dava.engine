@@ -2,6 +2,7 @@
 
 #include <limits>
 
+#include "Math/MathConstants.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Particles/ParticleEmitter.h"
@@ -287,6 +288,11 @@ void ParticleEffectSystem::RunEffect(ParticleEffectComponent* effect)
 
     effect->state = ParticleEffectComponent::STATE_PLAYING;
     effect->time = 0;
+
+    if (effect->GetStartFromTime() > EPSILON)
+    {
+        SimulateEffect(effect);
+    }
 }
 
 void ParticleEffectSystem::AddToActive(ParticleEffectComponent* effect)
@@ -398,14 +404,6 @@ void ParticleEffectSystem::Process(float32 timeElapsed)
         if (effect->state == ParticleEffectComponent::STATE_STARTING)
         {
             RunEffect(effect);
-
-            if (effect->simulateFromTime > EPSILON)
-            {
-                uint32 frames = static_cast<uint32>(effect->simulateFromTime * 30.0f);
-                static const float32 delta = 0.0333f;
-                for (uint32 i = 0; i < frames; ++i)
-                    UpdateEffect(effect, delta, delta);
-            }
         }
 
         if (effect->isPaused)
@@ -1035,5 +1033,14 @@ float32 ParticleEffectSystem::GetGlobalExternalValue(const String& name)
 Map<String, float32> ParticleEffectSystem::GetGlobalExternals()
 {
     return globalExternalValues;
+}
+
+void ParticleEffectSystem::SimulateEffect(ParticleEffectComponent* effect)
+{
+    static const float32 particleSystemFps = 30.0f;
+    static const float32 delta = 0.0333f;
+    uint32 frames = static_cast<uint32>(effect->GetStartFromTime() * particleSystemFps);
+    for (uint32 i = 0; i < frames; ++i)
+        UpdateEffect(effect, delta, delta);
 }
 }

@@ -91,6 +91,7 @@ protected:
 
 private:
     void UpdateStripe(Particle* particle, ParticleEffectData& effectData, ParticleGroup& group, float32 dt, AABBox3& bbox, Vector<Vector3>& currForceValues, int32 forcesCount, bool isActive);
+    void SimulateEffect(ParticleEffectComponent* effect);
 
     Map<String, float32> globalExternalValues;
     Vector<ParticleEffectComponent*> activeComponents;
