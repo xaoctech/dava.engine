@@ -6,7 +6,7 @@
 
 #include "QECommands/ChangePropertyValueCommand.h"
 
-#include "UI/QtModelPackageCommandExecutor.h"
+#include "UI/CommandExecutor.h"
 #include "Model/ControlProperties/RootProperty.h"
 #include "Model/PackageHierarchy/ControlNode.h"
 #include "Model/PackageHierarchy/PackageControlsNode.h"
@@ -21,7 +21,6 @@
 #include "UI/Preview/PreviewWidget.h"
 #include "UI/Package/PackageWidget.h"
 #include "UI/Package/PackageModel.h"
-#include "UI/Properties/PropertiesWidgetData.h"
 
 #include "Model/PackageHierarchy/PackageNode.h"
 #include "Model/QuickEdPackageBuilder.h"
@@ -513,7 +512,6 @@ DAVA::TArc::DataContext::ContextID DocumentsModule::OpenDocument(const QString& 
         {
             DAVA::Vector<std::unique_ptr<DAVA::TArc::DataNode>> initialData;
             initialData.emplace_back(new DocumentData(package));
-            initialData.emplace_back(new PropertiesWidgetData());
             initialData.emplace_back(new EditorCanvasData());
             id = contextManager->CreateContext(std::move(initialData));
         }
@@ -536,7 +534,7 @@ DAVA::RefPtr<PackageNode> DocumentsModule::CreatePackage(const QString& path)
     ProjectData* projectData = GetAccessor()->GetGlobalContext()->GetData<ProjectData>();
     DVASSERT(nullptr != projectData);
 
-    QuickEdPackageBuilder builder;
+    QuickEdPackageBuilder builder(GetAccessor()->GetEngineContext());
     UIPackageLoader packageLoader(projectData->GetPrototypes());
     bool packageLoaded = packageLoader.LoadPackage(davaPath, &builder);
 
@@ -651,15 +649,6 @@ void DocumentsModule::ChangeControlText(ControlNode* node)
     }
 }
 
-void DocumentsModule::CloseActiveDocument()
-{
-    using namespace DAVA::TArc;
-    ContextAccessor* accessor = GetAccessor();
-    DataContext* active = accessor->GetActiveContext();
-    DVASSERT(active != nullptr);
-    CloseDocument(active->GetID());
-}
-
 void DocumentsModule::CloseDocument(DAVA::uint64 id)
 {
     using namespace DAVA;
@@ -672,6 +661,11 @@ void DocumentsModule::CloseDocument(DAVA::uint64 id)
     DVASSERT(context != nullptr);
     DocumentData* data = context->GetData<DocumentData>();
     DVASSERT(nullptr != data);
+    if (data->CanClose() == false)
+    {
+        return;
+    }
+
     if (data->CanSave())
     {
         QString status = data->documentExists ? "modified" : "renamed or removed";
@@ -795,6 +789,11 @@ void DocumentsModule::ReloadDocument(const DAVA::TArc::DataContext::ContextID& c
     DVASSERT(context != nullptr);
     DVASSERT(contextID == accessor->GetActiveContext()->GetID());
     DocumentData* currentData = context->GetData<DocumentData>();
+    if (currentData->CanClose() == false)
+    {
+        return;
+    }
+
     QString path = currentData->GetPackageAbsolutePath();
 
     RefPtr<PackageNode> package = CreatePackage(path);
@@ -903,7 +902,7 @@ bool DocumentsModule::SaveDocument(const DAVA::TArc::DataContext::ContextID& con
     QString path = data->GetPackageAbsolutePath();
     watcherData->Unwatch(path);
     YamlPackageSerializer serializer;
-    serializer.SerializePackage(data->package.Get());
+    serializer.SerializePackage(data->GetPackageNode());
     if (serializer.HasErrors())
     {
         ModalMessageParams params;
@@ -1033,11 +1032,11 @@ void DocumentsModule::OnDragStateChanged(EditorSystemsManager::eDragState dragSt
     //TODO: move this code to the TransformSystem when systems will be moved to the TArc
     if (dragState == EditorSystemsManager::Transform)
     {
-        documentData->commandStack->BeginBatch("transformations");
+        documentData->BeginBatch("transformations");
     }
     else if (previousState == EditorSystemsManager::Transform)
     {
-        documentData->commandStack->EndBatch();
+        documentData->EndBatch();
     }
 }
 

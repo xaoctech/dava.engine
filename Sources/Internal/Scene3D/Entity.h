@@ -284,6 +284,8 @@ public:
 
     Vector<Entity*> children;
 
+    EntityFamily* GetFamily() const;
+
 protected:
     void UpdateFamily();
     void RemoveAllComponents();
@@ -536,6 +538,11 @@ inline uint32 Entity::GetSceneID() const
 inline void Entity::SetSceneID(uint32 sceneId_)
 {
     sceneId = sceneId_;
+}
+
+inline EntityFamily* Entity::GetFamily() const
+{
+    return family;
 }
 };
 

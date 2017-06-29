@@ -42,14 +42,14 @@ float DecodeFloat(float4 encoded)
     return encoded.x;
 }
 
-float ComputeOcclusion(float4 sampledDistance, float actualDistance)
+float ComputeOcclusion(float4 smpDistance, float actDistance)
 {
-    float Ex_2 = sampledDistance.x * sampledDistance.x;
-    float E_x2 = sampledDistance.y;
+    float Ex_2 = smpDistance.x * smpDistance.x;
+    float E_x2 = smpDistance.y;
     float variance = E_x2 - Ex_2;
-    float mD = sampledDistance.x - actualDistance;
+    float mD = smpDistance.x - actDistance;
     float p = variance / (variance + mD * mD);
-    return max(p, float(actualDistance <= sampledDistance.x)); 
+    return max(p, float(actDistance <= smpDistance.x)); 
 }
 
 #if defined(DECODE_DISTANCE)
@@ -67,14 +67,16 @@ uniform sampler2D fixedFrameDistances;
 uniform sampler2D currentFrame;
 
 [material][a] property float2 viewportSize;
+[material][a] property float2 pixelOffset;
 [material][a] property float currentFrameCompleteness;
+
+[auto][instance] property float projectionFlip;
 
 #elif defined(DEBUG_2D)
 
 uniform samplerCUBE cubemap;
 
 #endif
-
 
 fragment_out fp_main(fragment_in input)
 {
@@ -90,7 +92,7 @@ fragment_out fp_main(fragment_in input)
 
 #elif defined(DECODE_DISTANCE)
 
-    float4 sampledDistance = texCUBE(cubemap, input.directionFromPoint);
+    float4 sampledDistance = texCUBE(cubemap, normalize(input.directionFromPoint));
     float actualDistance = length(input.directionFromPoint);
     float occluded = ComputeOcclusion(sampledDistance, actualDistance);
     
@@ -102,36 +104,45 @@ fragment_out fp_main(fragment_in input)
 
 #elif defined(REPROJECTION)
 
-    float2 vpCoords = 0.5 + 0.5 * input.viewportCoords.xy / input.viewportCoords.w;
+    float2 vpCoords = input.viewportCoords.xy / input.viewportCoords.w;
+	vpCoords.y *= -projectionFlip;
+	vpCoords = 0.5 + 0.5 * vpCoords;
     float2 vp = viewportSize * vpCoords;
 
     float cx = float(int(vp.x) / 4);
     float cy = float(int(vp.y) / 4);
-    float4 checkboard = float4(0.25 * fmod(cx + fmod(cy, 2.0), 2.0));
+    float4 checkboard = 0.25 * fmod(cx + fmod(cy, 2.0), 2.0);
 
-    float3 reprojectedUVW = 0.5 + 0.5 * input.reprojectedCoords.xyz / input.reprojectedCoords.w;
-    float4 sampledColor = tex2D(fixedFrame, reprojectedUVW.xy);
+    float3 reprojectedUVW = input.reprojectedCoords.xyz / input.reprojectedCoords.w;
+	float2 fixedFrameFetch = 0.5 + 0.5 * (float2(reprojectedUVW.x, -projectionFlip * reprojectedUVW.y)) + pixelOffset / viewportSize;
+    reprojectedUVW = 0.5 + 0.5 * reprojectedUVW;
+	
+    float4 sampledColor = tex2D(fixedFrame, fixedFrameFetch);
     float4 currentColor = lerp(checkboard, tex2D(currentFrame, vpCoords), currentFrameCompleteness);
 
     float actualDistance = input.distanceToOrigin;
-    float sampledDistance = DecodeFloat(tex2D(fixedFrameDistances, reprojectedUVW.xy));
+    float sampledDistance = DecodeFloat(tex2D(fixedFrameDistances, fixedFrameFetch));
     float visibleInProjection = 1.0 - float(abs(actualDistance / sampledDistance - 1.0) > MAGIC_TRESHOLD_2);
 
-    float3 rpClamped = clamp(reprojectedUVW, float3(0.0), float3(1.0));
+    float3 rpClamped = clamp(reprojectedUVW, 0.0, 1.0);
     float insideProjection = float((rpClamped.x == reprojectedUVW.x) && (rpClamped.y == reprojectedUVW.y) && (rpClamped.z == reprojectedUVW.z));
 
     output.color = lerp(currentColor, sampledColor, insideProjection * visibleInProjection);
 
 #elif DEBUG_2D
     
-    float phi = input.texCoord.x * 2.0 * _PI;
-    float theta = (1.0 - input.texCoord.y) * _PI - _PI / 2.0;
-    float3 direction = float3(cos(phi) * cos(theta), sin(phi) * cos(theta), sin(theta));
-    float2 sampledDistance = texCUBE(cubemap, direction).xy;
-    sampledDistance.y = sqrt(sampledDistance.y);
+	//texCoord.x == 0.0  -> +X
+	//texCoord.x == 0.25 -> +Y
+	//texCoord.y == 0.0  -> +Z
+    float theta = input.texCoord.x * 2.0 * _PI;
+	float phi = input.texCoord.y * _PI;
+    float3 lookUpDirection = float3( sin(phi) * cos(theta), sin(phi) * sin(theta), cos(phi) );
+	
+    float2 sampledDistance = texCUBE(cubemap, lookUpDirection).xy;
+	sampledDistance.y = sqrt(sampledDistance.y);
     sampledDistance = 1.0 - exp(-0.05 * sampledDistance);
         
-    output.color = float4(sampledDistance, 0.0, 1.0);
+    output.color = float4(sampledDistance.xy, 0.0, 1.0);
 
 #else
 #   error Undefined

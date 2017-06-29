@@ -37,7 +37,7 @@
 #include "Scene3D/Systems/QualitySettingsSystem.h"
 
 #include "Scene3D/Converters/SwitchToRenerObjectConverter.h"
-#include "Scene3D/Converters/TreeToAnimatedTreeConverter.h"
+#include "Scene3D/Converters/SpeedTreeConverter.h"
 
 #include "Job/JobManager.h"
 
@@ -1298,7 +1298,7 @@ void SceneFileV2::OptimizeScene(Entity* rootNode)
 
     if (header.version < TREE_ANIMATION_SCENE_VERSION)
     {
-        TreeToAnimatedTreeConverter treeConverter;
+        SpeedTreeConverter treeConverter;
         treeConverter.ConvertTrees(rootNode);
     }
 
@@ -1320,6 +1320,17 @@ void SceneFileV2::OptimizeScene(Entity* rootNode)
     if (header.version < OLD_MATERIAL_FLAGS_SCENE_VERSION)
     {
         RemoveDeprecatedMaterialFlags(rootNode);
+    }
+
+    if (header.version < SPEED_TREE_POLYGON_GROUPS_PIVOT3_SCENE_VERSION)
+    {
+        SpeedTreeConverter covert;
+        covert.ConvertPolygonGroupsPivot3(rootNode);
+    }
+
+    {
+        SpeedTreeConverter convert;
+        convert.ValidateSpeedTreeComponentCount(rootNode);
     }
 
     QualitySettingsSystem::Instance()->UpdateEntityAfterLoad(rootNode);

@@ -4,10 +4,11 @@
 #include "FileSystem/FilePath.h"
 #include "UI/Styles/UIStyleSheetStructs.h"
 #include "Model/ControlProperties/SectionProperty.h"
+#include "Model/PackageHierarchy/PackageNode.h"
 
 #include <Base/Result.h>
+#include <Engine/Engine.h>
 
-class PackageNode;
 class ControlNode;
 class StyleSheetNode;
 class ControlsContainerNode;
@@ -16,7 +17,7 @@ class IntrospectionProperty;
 class QuickEdPackageBuilder : public DAVA::AbstractUIPackageBuilder
 {
 public:
-    QuickEdPackageBuilder();
+    QuickEdPackageBuilder(const DAVA::EngineContext* engineContext);
     virtual ~QuickEdPackageBuilder();
 
     virtual void BeginPackage(const DAVA::FilePath& packagePath, DAVA::int32 version) override;
@@ -35,15 +36,19 @@ public:
     virtual void BeginControlPropertiesSection(const DAVA::String& name) override;
     virtual void EndControlPropertiesSection() override;
 
-    virtual const DAVA::ReflectedType* BeginComponentPropertiesSection(DAVA::uint32 componentType, DAVA::uint32 componentIndex) override;
+    virtual const DAVA::ReflectedType* BeginComponentPropertiesSection(const DAVA::Type* componentType, DAVA::uint32 componentIndex) override;
     virtual void EndComponentPropertiesSection() override;
 
     virtual void ProcessProperty(const DAVA::ReflectedStructure::Field& field, const DAVA::Any& value) override;
+
+    virtual void ProcessCustomData(const DAVA::YamlNode* customDataNode) override;
+    void ProcessGuides(const DAVA::YamlNode* guidesNode);
 
     DAVA::RefPtr<PackageNode> BuildPackage() const;
     const DAVA::Vector<ControlNode*>& GetRootControls() const;
     const DAVA::Vector<PackageNode*>& GetImportedPackages() const;
     const DAVA::Vector<StyleSheetNode*>& GetStyles() const;
+
     void AddImportedPackage(PackageNode* node);
 
     const DAVA::ResultList& GetResults() const;
@@ -74,8 +79,11 @@ private:
     DAVA::Vector<StyleSheetNode*> styleSheets;
     DAVA::Vector<DAVA::FilePath> declinedPackages;
 
+    DAVA::Map<DAVA::String, PackageNode::Guides> allGuides;
+
     DAVA::BaseObject* currentObject;
     SectionProperty<IntrospectionProperty>* currentSection;
+    const DAVA::EngineContext* engineContext;
 
     DAVA::ResultList results;
 };

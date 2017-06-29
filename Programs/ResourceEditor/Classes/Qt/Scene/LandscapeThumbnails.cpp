@@ -167,7 +167,7 @@ RequestID Create(DAVA::Landscape* landscape, LandscapeThumbnails::Callback handl
     packet.vertexCount = renderData->vertexCount;
     packet.indexBuffer = renderData->indexBuffer;
     packet.primitiveType = renderData->primitiveType;
-    packet.primitiveCount = GetPrimitiveCount(renderData->indexCount, renderData->primitiveType);
+    packet.primitiveCount = CalculatePrimitiveCount(renderData->indexCount, renderData->primitiveType);
     packet.vertexLayoutUID = renderData->vertexLayoutId;
 
     thumbnailMaterial->BindParams(packet);
@@ -177,6 +177,7 @@ RequestID Create(DAVA::Landscape* landscape, LandscapeThumbnails::Callback handl
     passDesc.priority = PRIORITY_SERVICE_3D;
     passDesc.viewport.width = TEXTURE_TILE_FULL_SIZE;
     passDesc.viewport.height = TEXTURE_TILE_FULL_SIZE;
+    passDesc.depthStencilBuffer.texture = rhi::InvalidHandle;
 
     rhi::HPacketList packetList = {};
     rhi::HRenderPass renderPass = rhi::AllocateRenderPass(passDesc, 1, &packetList);
