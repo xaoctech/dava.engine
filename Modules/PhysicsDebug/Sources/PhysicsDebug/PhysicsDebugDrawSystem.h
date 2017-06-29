@@ -23,6 +23,8 @@ public:
     void Process(float32 timeElapsed) override;
 
 private:
+    void Cleanup();
+
     struct RenderObjectInfo
     {
         RenderObject* ro = nullptr;

@@ -50,8 +50,10 @@ void EraseComponent(T* component, Vector<T*>& pendingComponents, Vector<T*>& com
     else
     {
         auto iter = std::find(components.begin(), components.end(), component);
-        DVASSERT(iter != components.end());
-        RemoveExchangingWithLast(components, std::distance(components.begin(), iter));
+        if (iter != components.end())
+        {
+            RemoveExchangingWithLast(components, std::distance(components.begin(), iter));
+        }
     }
 }
 
@@ -131,6 +133,7 @@ void PhysicsSystem::RegisterEntity(Entity* entity)
     {
         processEntity(entity, type);
     }
+    processEntity(entity, Component::RENDER_COMPONENT);
 }
 
 void PhysicsSystem::UnregisterEntity(Entity* entity)
@@ -149,6 +152,7 @@ void PhysicsSystem::UnregisterEntity(Entity* entity)
     {
         processEntity(entity, type);
     }
+    processEntity(entity, Component::RENDER_COMPONENT);
 }
 
 void PhysicsSystem::RegisterComponent(Entity* entity, Component* component)
@@ -163,6 +167,16 @@ void PhysicsSystem::RegisterComponent(Entity* entity, Component* component)
     if (IsCollisionShapeType(componentType))
     {
         pendingAddCollisionComponents.push_back(static_cast<CollisionShapeComponent*>(component));
+    }
+
+    if (componentType == Component::RENDER_COMPONENT)
+    {
+        auto iter = waitRenderInfoComponents.find(entity);
+        if (iter != waitRenderInfoComponents.end())
+        {
+            pendingAddCollisionComponents.insert(pendingAddCollisionComponents.end(), iter->second.begin(), iter->second.end());
+            waitRenderInfoComponents.erase(iter);
+        }
     }
 }
 
@@ -198,16 +212,37 @@ void PhysicsSystem::UnregisterComponent(Entity* entity, Component* component)
         CollisionShapeComponent* collisionComponent = static_cast<CollisionShapeComponent*>(component);
         PhysicsSystemDetail::EraseComponent(collisionComponent, pendingAddCollisionComponents, collisionComponents);
 
-        physx::PxShape* shape = collisionComponent->GetPxShape();
-        if (shape != nullptr)
+        auto iter = waitRenderInfoComponents.find(entity);
+        if (iter != waitRenderInfoComponents.end())
         {
-            physx::PxRigidActor* actor = shape->getActor();
-            if (actor != nullptr)
-            {
-                actor->detachShape(*shape);
-            }
-            collisionComponent->ReleasePxShape();
+            FindAndRemoveExchangingWithLast(iter->second, collisionComponent);
         }
+
+        ReleaseShape(collisionComponent);
+    }
+
+    if (componentType == Component::RENDER_COMPONENT)
+    {
+        Vector<CollisionShapeComponent*>* waitingComponents = nullptr;
+        auto collisionProcess = [&](uint32 componentType)
+        {
+            for (uint32 i = 0; i < entity->GetComponentCount(componentType); ++i)
+            {
+                CollisionShapeComponent* component = static_cast<CollisionShapeComponent*>(entity->GetComponent(componentType, i));
+                if (waitingComponents == nullptr)
+                {
+                    waitingComponents = &waitRenderInfoComponents[entity];
+                }
+
+                waitingComponents->push_back(component);
+                ReleaseShape(component);
+                PhysicsSystemDetail::EraseComponent(component, pendingAddCollisionComponents, collisionComponents);
+            }
+        };
+
+        collisionProcess(Component::CONVEX_HULL_SHAPE_COMPONENT);
+        collisionProcess(Component::MESH_SHAPE_COMPONENT);
+        collisionProcess(Component::HEIGHT_FIELD_SHAPE_COMPONENT);
     }
 }
 
@@ -503,42 +538,60 @@ physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, P
     {
         Entity* entity = component->GetEntity();
         RenderObject* ro = GetRenderObject(entity);
-        DVASSERT(ro != nullptr);
-        uint32 batchesCount = ro->GetRenderBatchCount();
-        DVASSERT(batchesCount > 0);
-        RenderBatch* batch = ro->GetRenderBatch(0);
-        Vector3 pos;
-        Vector3 scale;
-        Quaternion quat;
-        TransformComponent* transformComponent = GetTransformComponent(entity);
-        transformComponent->GetWorldTransform().Decomposition(pos, scale, quat);
-        shape = physics->CreateConvexHullShape(batch->GetPolygonGroup(), scale);
+        if (ro != nullptr)
+        {
+            uint32 batchesCount = ro->GetRenderBatchCount();
+            DVASSERT(batchesCount > 0);
+            RenderBatch* batch = ro->GetRenderBatch(0);
+            Vector3 pos;
+            Vector3 scale;
+            Quaternion quat;
+            TransformComponent* transformComponent = GetTransformComponent(entity);
+            transformComponent->GetWorldTransform().Decomposition(pos, scale, quat);
+            shape = physics->CreateConvexHullShape(batch->GetPolygonGroup(), scale);
+        }
+        else
+        {
+            waitRenderInfoComponents[entity].push_back(component);
+        }
     }
     break;
     case Component::MESH_SHAPE_COMPONENT:
     {
         Entity* entity = component->GetEntity();
         RenderObject* ro = GetRenderObject(entity);
-        DVASSERT(ro != nullptr);
-        uint32 batchesCount = ro->GetRenderBatchCount();
-        DVASSERT(batchesCount > 0);
-        RenderBatch* batch = ro->GetRenderBatch(0);
-        Vector3 pos;
-        Vector3 scale;
-        Quaternion quat;
-        TransformComponent* transformComponent = GetTransformComponent(entity);
-        transformComponent->GetWorldTransform().Decomposition(pos, scale, quat);
-        shape = physics->CreateMeshShape(batch->GetPolygonGroup(), scale);
+        if (ro != nullptr)
+        {
+            uint32 batchesCount = ro->GetRenderBatchCount();
+            DVASSERT(batchesCount > 0);
+            RenderBatch* batch = ro->GetRenderBatch(0);
+            Vector3 pos;
+            Vector3 scale;
+            Quaternion quat;
+            TransformComponent* transformComponent = GetTransformComponent(entity);
+            transformComponent->GetWorldTransform().Decomposition(pos, scale, quat);
+            shape = physics->CreateMeshShape(batch->GetPolygonGroup(), scale);
+        }
+        else
+        {
+            waitRenderInfoComponents[entity].push_back(component);
+        }
     }
     break;
     case Component::HEIGHT_FIELD_SHAPE_COMPONENT:
     {
         Entity* entity = component->GetEntity();
         Landscape* landscape = GetLandscape(entity);
-        DVASSERT(landscape);
-        Matrix4 localPose;
-        shape = physics->CreateHeightField(landscape, localPose);
-        component->SetLocalPose(localPose);
+        if (landscape != nullptr)
+        {
+            Matrix4 localPose;
+            shape = physics->CreateHeightField(landscape, localPose);
+            component->SetLocalPose(localPose);
+        }
+        else
+        {
+            waitRenderInfoComponents[entity].push_back(component);
+        }
     }
     break;
     default:
@@ -625,6 +678,25 @@ void PhysicsSystem::SyncEntityTransformToPhysx(Entity* entity)
     {
         SyncEntityTransformToPhysx(entity->GetChild(i));
     }
+}
+
+void PhysicsSystem::ReleaseShape(CollisionShapeComponent* component)
+{
+    physx::PxShape* shape = component->GetPxShape();
+    if (shape == nullptr)
+    {
+        return;
+    }
+    DVASSERT(shape->isExclusive() == true);
+
+    physx::PxActor* actor = shape->getActor();
+    if (actor == nullptr)
+    {
+        return;
+    }
+
+    actor->is<physx::PxRigidActor>()->detachShape(*shape);
+    component->ReleasePxShape();
 }
 
 } // namespace DAVA

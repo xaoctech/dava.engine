@@ -43,6 +43,7 @@ private:
 
     void InitNewObjects();
     void AttachShape(Entity* entity, physx::PxRigidActor* actor, const Vector3& scale);
+    void ReleaseShape(CollisionShapeComponent* component);
     physx::PxShape* CreateShape(CollisionShapeComponent* component, Physics* physics);
 
     void SyncTransformToPhysx();
@@ -63,6 +64,8 @@ private:
 
     Vector<CollisionShapeComponent*> collisionComponents;
     Vector<CollisionShapeComponent*> pendingAddCollisionComponents;
+
+    UnorderedMap<Entity*, Vector<CollisionShapeComponent*>> waitRenderInfoComponents;
 
     bool drawDebugInfo = false;
 };

@@ -131,6 +131,41 @@ bool IsGeometryEqual(const physx::PxGeometryHolder& holder1, const physx::PxGeom
     return result;
 }
 
+Color GetColor(physx::PxShape* shape)
+{
+    physx::PxActor* actor = shape->getActor();
+    Color result = Color::White;
+    if (actor != nullptr)
+    {
+        if (actor->is<physx::PxRigidStatic>())
+        {
+            result = Color::Red;
+        }
+        else
+        {
+            physx::PxRigidDynamic* dynamic = actor->is<physx::PxRigidDynamic>();
+            if (dynamic != nullptr)
+            {
+                if (dynamic->isSleeping())
+                {
+                    result = Color::Yellow;
+                }
+                else
+                {
+                    result = Color::Green;
+                }
+            }
+        }
+
+        if (shape->getGeometryType() == physx::PxGeometryType::eHEIGHTFIELD)
+        {
+            result = Color(0.0f, 0.0f, 0.5f, 1.0f);
+        }
+    }
+
+    return result;
+}
+
 bool IsCollisionComponent(Component* component)
 {
     uint32 componentType = component->GetType();
@@ -583,7 +618,6 @@ void PhysicsDebugDrawSystem::UnregisterComponent(Entity* entity, Component* comp
         {
             RenderObjectInfo& roInfo = iter->second;
             DVASSERT(roInfo.ro != nullptr);
-
             GetScene()->GetRenderSystem()->RemoveFromRender(roInfo.ro);
             DAVA::SafeRelease(roInfo.ro);
             renderObjects.erase(iter);
@@ -609,7 +643,7 @@ void PhysicsDebugDrawSystem::Process(float32 timeElapsed)
             roInfo.ro = ro;
             roInfo.geomHolder = holder;
             roInfo.localPose = shape->getLocalPose();
-            renderObjects.emplace(*iter, roInfo);
+            renderObjects[*iter] = roInfo;
 
             if (ro != nullptr)
             {
@@ -627,73 +661,24 @@ void PhysicsDebugDrawSystem::Process(float32 timeElapsed)
         }
     }
 
-    Vector<CollisionShapeComponent*> updateRenderComponents;
-    updateRenderComponents.reserve(renderObjects.size());
-
+    Cleanup();
     for (auto& node : renderObjects)
     {
-        const physx::PxGeometryHolder& holder1 = node.second.geomHolder;
-        physx::PxShape* shape = node.first->GetPxShape();
-        physx::PxTransform localPose = shape->getLocalPose();
-        const physx::PxGeometryHolder& holder2 = shape->getGeometry();
-        if (IsGeometryEqual(holder1, holder2) == false ||
-            !(node.second.localPose.p == localPose.p &&
-              node.second.localPose.q == localPose.q))
+        if (node.second.ro == nullptr)
         {
-            updateRenderComponents.push_back(node.first);
+            continue;
         }
-        else
+
+        CollisionShapeComponent* shapeComponent = node.first;
+        physx::PxShape* shape = shapeComponent->GetPxShape();
+        DVASSERT(shape != nullptr);
+        DAVA::Color currentColor = GetColor(shape);
+
+        for (uint32 i = 0; i < node.second.ro->GetRenderBatchCount(); ++i)
         {
-            CollisionShapeComponent* shapeComponent = node.first;
-            physx::PxShape* shape = shapeComponent->GetPxShape();
-            physx::PxActor* actor = shape->getActor();
-            DAVA::Color currentColor;
-
-            if (actor == nullptr)
-            {
-                currentColor = Color::White;
-            }
-            else
-            {
-                if (actor->is<physx::PxRigidStatic>())
-                {
-                    currentColor = Color::Red;
-                }
-                else
-                {
-                    physx::PxRigidDynamic* dynamic = actor->is<physx::PxRigidDynamic>();
-                    if (dynamic != nullptr)
-                    {
-                        if (dynamic->isSleeping())
-                        {
-                            currentColor = Color::Yellow;
-                        }
-                        else
-                        {
-                            currentColor = Color::Green;
-                        }
-                    }
-                }
-            }
-
-            if (shape->getGeometryType() == physx::PxGeometryType::eHEIGHTFIELD)
-            {
-                currentColor = Color(0.0f, 0.0f, 0.5f, 1.0f);
-            }
-
-            for (uint32 i = 0; i < node.second.ro->GetRenderBatchCount(); ++i)
-            {
-                NMaterial* material = node.second.ro->GetRenderBatch(i)->GetMaterial();
-                material->SetPropertyValue(FastName("color"), currentColor.color);
-            }
+            NMaterial* material = node.second.ro->GetRenderBatch(i)->GetMaterial();
+            material->SetPropertyValue(FastName("color"), currentColor.color);
         }
-    }
-
-    for (CollisionShapeComponent* component : updateRenderComponents)
-    {
-        Entity* e = component->GetEntity();
-        UnregisterComponent(e, component);
-        RegisterComponent(e, component);
     }
 
     UnorderedMap<Entity*, RenderObject*> mapping;
@@ -724,6 +709,40 @@ void PhysicsDebugDrawSystem::Process(float32 timeElapsed)
                 }
             }
         }
+    }
+}
+
+void PhysicsDebugDrawSystem::Cleanup()
+{
+    Vector<CollisionShapeComponent*> reinitComponents;
+    for (auto& node : renderObjects)
+    {
+        const physx::PxGeometryHolder& holder1 = node.second.geomHolder;
+        physx::PxShape* shape = node.first->GetPxShape();
+        if (shape == nullptr)
+        {
+            reinitComponents.push_back(node.first);
+        }
+        else
+        {
+            const physx::PxGeometryHolder& holder1 = node.second.geomHolder;
+            physx::PxShape* shape = node.first->GetPxShape();
+            physx::PxTransform localPose = shape->getLocalPose();
+            const physx::PxGeometryHolder& holder2 = shape->getGeometry();
+            using namespace PhysicsDebugDrawSystemDetail;
+            if (IsGeometryEqual(holder1, holder2) == false ||
+                !(node.second.localPose.p == localPose.p &&
+                  node.second.localPose.q == localPose.q))
+            {
+                reinitComponents.push_back(node.first);
+            }
+        }
+    }
+
+    for (CollisionShapeComponent* component : reinitComponents)
+    {
+        UnregisterComponent(component->GetEntity(), component);
+        RegisterComponent(component->GetEntity(), component);
     }
 }
 
