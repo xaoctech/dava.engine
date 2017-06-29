@@ -7,6 +7,8 @@
 #include <Reflection/Reflection.h>
 #include <Base/GlobalEnum.h>
 
+#include <QIcon>
+
 namespace DAVA
 {
 namespace TArc
@@ -27,12 +29,12 @@ protected:
     void PostInit() override;
 
 private:
-    bool GetSystemPauseState() const;
-    void SetSystemPauseState(bool pause);
-    void RebuildAllBoneLinks();
     bool IsEnabled() const;
-    void UpdateSceneSystem();
+    const QIcon& GetRebuildButtonIcon();
+    const QIcon& GetPauseButtonIcon();
+    void RebuildAllBoneLinks();
+    void PlayPause();
 
-    const String pausePropertyTitle = "Pause";
-    const String rebuildButtonTitle = "Rebuild all bones alinks";
+    const String pauseButtonHint = "Play/Pause Spine animations";
+    const String rebuildButtonHint = "Rebuild all links Spine bones to controls";
 };

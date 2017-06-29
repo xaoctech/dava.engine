@@ -16,18 +16,10 @@
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/UI.h>
 
+#include <QtTools/WidgetHelpers/SharedIcon.h>
+
 #include <QAction>
 #include <QWidget>
-
-class SpineControlData : public DAVA::TArc::DataNode
-{
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(SpineControlData, DAVA::TArc::DataNode)
-    {
-    }
-
-public:
-    bool isPauseOn = false;
-};
 
 void SpineControlModule::OnContextCreated(DAVA::TArc::DataContext* context)
 {
@@ -42,32 +34,32 @@ void SpineControlModule::PostInit()
     using namespace DAVA::TArc;
 
     ContextAccessor* accessor = GetAccessor();
-    accessor->GetGlobalContext()->CreateData(std::make_unique<SpineControlData>());
+    UI* ui = GetUI();
 
     QWidget* w = new QWidget();
     QtHBoxLayout* layout = new QtHBoxLayout(w);
     layout->setMargin(0);
     layout->setSpacing(4);
 
-    UI* ui = GetUI();
-
     {
-        CheckBox::Params params(accessor, ui, DAVA::TArc::mainWindowKey);
-        params.fields[CheckBox::Fields::IsEnabled] = "isEnabled";
-        params.fields[CheckBox::Fields::Checked] = "isPauseProperty";
-        params.fields[CheckBox::Fields::TextHint] = "pausePropertyTitle";
-        layout->AddControl(new CheckBox(params, accessor, DAVA::Reflection::Create(DAVA::ReflectedObject(this)), w));
+        ReflectedButton::Params params(accessor, ui, DAVA::TArc::mainWindowKey);
+        params.fields[ReflectedButton::Fields::Enabled] = "isEnabled";
+        params.fields[ReflectedButton::Fields::Clicked] = "playPause";
+        params.fields[ReflectedButton::Fields::Tooltip] = "pauseButtonHint";
+        params.fields[ReflectedButton::Fields::Icon] = "pauseButtonIcon";
+        layout->AddControl(new ReflectedButton(params, accessor, DAVA::Reflection::Create(DAVA::ReflectedObject(this)), w));
     }
 
     {
         ReflectedButton::Params params(accessor, ui, DAVA::TArc::mainWindowKey);
         params.fields[ReflectedButton::Fields::Enabled] = "isEnabled";
         params.fields[ReflectedButton::Fields::Clicked] = "rebuildAllBoneLinks";
-        params.fields[ReflectedButton::Fields::Text] = "rebuildButtonTitle";
+        params.fields[ReflectedButton::Fields::Tooltip] = "rebuildButtonHint";
+        params.fields[ReflectedButton::Fields::Icon] = "rebuildButtonIcon";
         layout->AddControl(new ReflectedButton(params, accessor, DAVA::Reflection::Create(DAVA::ReflectedObject(this)), w));
     }
 
-    QString toolbarName = "SpineControlToolbar";
+    QString toolbarName = "Spine Toolbar";
     ActionPlacementInfo toolbarTogglePlacement(CreateMenuPoint(QList<QString>() << "View"
                                                                                 << "Toolbars"));
     ui->DeclareToolbar(DAVA::TArc::mainWindowKey, toolbarTogglePlacement, toolbarName);
@@ -79,15 +71,19 @@ void SpineControlModule::PostInit()
     ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
 }
 
-bool SpineControlModule::GetSystemPauseState() const
+const QIcon& SpineControlModule::GetRebuildButtonIcon()
 {
-    return GetAccessor()->GetGlobalContext()->GetData<SpineControlData>()->isPauseOn;
+    return SharedIcon(":/Icons/reload.png");
 }
 
-void SpineControlModule::SetSystemPauseState(bool pause)
+const QIcon& SpineControlModule::GetPauseButtonIcon()
 {
-    GetAccessor()->GetGlobalContext()->GetData<SpineControlData>()->isPauseOn = pause;
-    UpdateSceneSystem();
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+    ContextAccessor* accessor = GetAccessor();
+    UISpineSystem* spineSystem = accessor->GetEngineContext()->uiControlSystem->GetSystem<UISpineSystem>();
+
+    return spineSystem != nullptr && spineSystem->IsPause() ? SharedIcon(":/Icons/play.png") : SharedIcon(":/Icons/pause.png");
 }
 
 void SpineControlModule::RebuildAllBoneLinks()
@@ -95,11 +91,24 @@ void SpineControlModule::RebuildAllBoneLinks()
     using namespace DAVA;
     using namespace DAVA::TArc;
     ContextAccessor* accessor = GetAccessor();
-    SpineControlData* data = accessor->GetGlobalContext()->GetData<SpineControlData>();
     UISpineSystem* spineSystem = accessor->GetEngineContext()->uiControlSystem->GetSystem<UISpineSystem>();
+
     if (spineSystem != nullptr)
     {
         spineSystem->RebuildAllBoneLinks();
+    }
+}
+
+void SpineControlModule::PlayPause()
+{
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+    ContextAccessor* accessor = GetAccessor();
+    UISpineSystem* spineSystem = accessor->GetEngineContext()->uiControlSystem->GetSystem<UISpineSystem>();
+
+    if (spineSystem != nullptr)
+    {
+        spineSystem->SetPause(!spineSystem->IsPause());
     }
 }
 
@@ -108,27 +117,17 @@ bool SpineControlModule::IsEnabled() const
     return GetAccessor()->GetContextCount() != 0;
 }
 
-void SpineControlModule::UpdateSceneSystem()
-{
-    using namespace DAVA::TArc;
-    ContextAccessor* accessor = GetAccessor();
-    SpineControlData* data = accessor->GetGlobalContext()->GetData<SpineControlData>();
-    DAVA::UISpineSystem* spineSystem = accessor->GetEngineContext()->uiControlSystem->GetSystem<DAVA::UISpineSystem>();
-    if (spineSystem != nullptr)
-    {
-        spineSystem->SetPause(data->isPauseOn);
-    }
-}
-
 DAVA_VIRTUAL_REFLECTION_IMPL(SpineControlModule)
 {
     DAVA::ReflectionRegistrator<SpineControlModule>::Begin()
     .ConstructorByPointer()
-    .Field("isPauseProperty", &SpineControlModule::GetSystemPauseState, &SpineControlModule::SetSystemPauseState)
     .Field("isEnabled", &SpineControlModule::IsEnabled, nullptr)
-    .Field("pausePropertyTitle", &SpineControlModule::pausePropertyTitle)
-    .Field("rebuildButtonTitle", &SpineControlModule::rebuildButtonTitle)
+    .Field("pauseButtonHint", &SpineControlModule::pauseButtonHint)
+    .Field("rebuildButtonHint", &SpineControlModule::rebuildButtonHint)
+    .Field("pauseButtonIcon", &SpineControlModule::GetPauseButtonIcon, nullptr)
+    .Field("rebuildButtonIcon", &SpineControlModule::GetRebuildButtonIcon, nullptr)
     .Method("rebuildAllBoneLinks", &SpineControlModule::RebuildAllBoneLinks)
+    .Method("playPause", &SpineControlModule::PlayPause)
     .End();
 }
 
