@@ -34,14 +34,14 @@ REGISTER_PREFERENCES_ON_START(HUDSystem,
                               PREF_ARG("minimumSelectionRectSize", Vector2(5.0f, 5.0f))
                               )
 
-RefPtr<ControlContainer> CreateControlContainer(HUDAreaInfo::eArea area)
+std::unique_ptr<ControlContainer> CreateControlContainer(HUDAreaInfo::eArea area)
 {
     switch (area)
     {
     case HUDAreaInfo::PIVOT_POINT_AREA:
-        return RefPtr<ControlContainer>(new PivotPointControl());
+        return std::unique_ptr<ControlContainer>(new PivotPointControl());
     case HUDAreaInfo::ROTATE_AREA:
-        return RefPtr<ControlContainer>(new RotateControl());
+        return std::unique_ptr<ControlContainer>(new RotateControl());
     case HUDAreaInfo::TOP_LEFT_AREA:
     case HUDAreaInfo::TOP_CENTER_AREA:
     case HUDAreaInfo::TOP_RIGHT_AREA:
@@ -50,12 +50,12 @@ RefPtr<ControlContainer> CreateControlContainer(HUDAreaInfo::eArea area)
     case HUDAreaInfo::BOTTOM_LEFT_AREA:
     case HUDAreaInfo::BOTTOM_CENTER_AREA:
     case HUDAreaInfo::BOTTOM_RIGHT_AREA:
-        return RefPtr<ControlContainer>(new FrameRectControl(area));
+        return std::unique_ptr<ControlContainer>(new FrameRectControl(area));
     case HUDAreaInfo::FRAME_AREA:
-        return RefPtr<ControlContainer>(new FrameControl());
+        return std::unique_ptr<ControlContainer>(new FrameControl(FrameControl::SELECTION));
     default:
         DVASSERT(!"unacceptable value of area");
-        return RefPtr<ControlContainer>(nullptr);
+        return std::unique_ptr<ControlContainer>(nullptr);
     }
 }
 
@@ -66,8 +66,8 @@ struct HUDSystem::HUD
     ControlNode* node = nullptr;
     UIControl* control = nullptr;
     UIControl* hudControl = nullptr;
-    RefPtr<HUDContainer> container;
-    Map<HUDAreaInfo::eArea, RefPtr<ControlContainer>> hudControls;
+    std::unique_ptr<ControlContainer> container;
+    Map<HUDAreaInfo::eArea, ControlContainer*> hudControls;
 };
 
 HUDSystem::HUD::HUD(ControlNode* node_, HUDSystem* hudSystem)
@@ -76,12 +76,12 @@ HUDSystem::HUD::HUD(ControlNode* node_, HUDSystem* hudSystem)
     , hudControl(hudSystem->hudControl.Get())
     , container(new HUDContainer(node_))
 {
-    container->SetName(FastName("Container for HUD controls of node " + node_->GetName()));
+    container->SetName(String("Container for HUD controls of node ") + node_->GetName());
     DAVA::Vector<HUDAreaInfo::eArea> areas;
     if (node->GetParent() != nullptr && node->GetParent()->GetControl() != nullptr)
     {
         areas.reserve(HUDAreaInfo::AREAS_COUNT);
-        for (int area = HUDAreaInfo::AREAS_BEGIN; area != HUDAreaInfo::AREAS_COUNT; ++area)
+        for (int area = HUDAreaInfo::AREAS_COUNT - 1; area >= HUDAreaInfo::AREAS_BEGIN; --area)
         {
             if ((hudSystem->showPivot == false && area == HUDAreaInfo::PIVOT_POINT_AREA) ||
                 (hudSystem->showRotate == false && area == HUDAreaInfo::ROTATE_AREA))
@@ -107,17 +107,17 @@ HUDSystem::HUD::HUD(ControlNode* node_, HUDSystem* hudSystem)
     }
     for (HUDAreaInfo::eArea area : areas)
     {
-        RefPtr<ControlContainer> controlContainer(CreateControlContainer(area));
-        container->AddChild(controlContainer.Get());
-        hudControls[area] = controlContainer;
+        std::unique_ptr<ControlContainer> controlContainer = CreateControlContainer(area);
+        hudControls[area] = controlContainer.get();
+        container->AddChild(std::move(controlContainer));
     }
-    hudControl->AddControl(container.Get());
+    container->AddToParent(hudControl);
     container->InitFromGD(control->GetGeometricData());
 }
 
 HUDSystem::HUD::~HUD()
 {
-    hudControl->RemoveControl(container.Get());
+    container->RemoveFromParent(hudControl);
 }
 
 class HUDControl : public UIControl
@@ -219,6 +219,7 @@ void HUDSystem::ProcessInput(UIEvent* currentInput)
                 point.y += size.y;
                 size.y *= -1.0f;
             }
+
             selectionRectControl->SetRect(Rect(point, size));
             systemsManager->selectionRectChanged.Emit(selectionRectControl->GetAbsoluteRect());
         }
@@ -244,24 +245,38 @@ void HUDSystem::ProcessInput(UIEvent* currentInput)
     }
 }
 
-void HUDSystem::OnHighlightNode(const ControlNode* node)
+void HUDSystem::OnHighlightNode(ControlNode* node)
 {
+    using namespace DAVA::TArc;
+
     if (hoveredNodeControl != nullptr)
     {
-        hudControl->RemoveControl(hoveredNodeControl.Get());
-        hoveredNodeControl.Set(nullptr);
+        hoveredNodeControl->RemoveFromParent(hudControl.Get());
+        hoveredNodeControl = nullptr;
     }
+
     if (node != nullptr)
     {
+        DataContext* activeContext = accessor->GetActiveContext();
+        DVASSERT(activeContext != nullptr);
+        DocumentData* documentData = activeContext->GetData<DocumentData>();
+        const SelectedNodes& selectedNodes = documentData->GetSelectedNodes();
+
+        if (selectedNodes.find(node) != selectedNodes.end())
+        {
+            return;
+        }
+
         UIControl* targetControl = node->GetControl();
-        hoveredNodeControl = CreateHUDRect(node);
-        hudControl->AddControl(hoveredNodeControl.Get());
+        DVASSERT(hoveredNodeControl == nullptr);
+        hoveredNodeControl = CreateHighlightRect(node);
+        hoveredNodeControl->AddToParent(hudControl.Get());
     }
 }
 
 void HUDSystem::OnMagnetLinesChanged(const Vector<MagnetLineInfo>& magnetLines)
 {
-    static const float32 axtraSizeValue = 50.0f;
+    static const float32 extraSizeValue = 50.0f;
     DVASSERT(magnetControls.size() == magnetTargetControls.size());
 
     const size_type magnetsSize = magnetControls.size();
@@ -309,7 +324,6 @@ void HUDSystem::OnMagnetLinesChanged(const Vector<MagnetLineInfo>& magnetLines)
     {
         const MagnetLineInfo& line = magnetLines.at(i);
         const auto& gd = line.gd;
-
         auto linePos = line.rect.GetPosition();
         auto lineSize = line.rect.GetSize();
 
@@ -320,7 +334,7 @@ void HUDSystem::OnMagnetLinesChanged(const Vector<MagnetLineInfo>& magnetLines)
 
         UIControl* lineControl = magnetControls.at(i).Get();
         float32 angle = line.gd->angle;
-        Vector2 extraSize(line.axis == Vector2::AXIS_X ? axtraSizeValue : 0.0f, line.axis == Vector2::AXIS_Y ? axtraSizeValue : 0.0f);
+        Vector2 extraSize(line.axis == Vector2::AXIS_X ? extraSizeValue : 0.0f, line.axis == Vector2::AXIS_Y ? extraSizeValue : 0.0f);
         Vector2 extraPos = ::Rotate(extraSize, angle) / 2.0f;
         Rect lineRect(Vector2(linePos + gdPos) - extraPos, lineSize + extraSize);
         lineControl->SetRect(lineRect);
@@ -412,7 +426,7 @@ void HUDSystem::UpdateAreasVisibility()
             auto hudControlsIter = hud->hudControls.find(area);
             if (hudControlsIter != hud->hudControls.end())
             {
-                const RefPtr<ControlContainer>& controlContainer = hudControlsIter->second;
+                ControlContainer* controlContainer = hudControlsIter->second;
                 controlContainer->SetSystemVisible(showAreas);
             }
         }
@@ -424,9 +438,9 @@ void HUDSystem::OnDragStateChanged(EditorSystemsManager::eDragState currentState
     switch (currentState)
     {
     case EditorSystemsManager::SelectByRect:
-        DVASSERT(selectionRectControl.Valid() == false);
-        selectionRectControl.Set(new FrameControl());
-        hudControl->AddControl(selectionRectControl.Get());
+        DVASSERT(selectionRectControl == nullptr);
+        selectionRectControl.reset(new FrameControl(FrameControl::SELECTION_RECT));
+        selectionRectControl->AddToParent(hudControl.Get());
         break;
     case EditorSystemsManager::Transform:
         OnHighlightNode(nullptr);
@@ -441,9 +455,9 @@ void HUDSystem::OnDragStateChanged(EditorSystemsManager::eDragState currentState
     switch (previousState)
     {
     case EditorSystemsManager::SelectByRect:
-        DVASSERT(selectionRectControl.Valid());
-        hudControl->RemoveControl(selectionRectControl.Get());
-        selectionRectControl.Set(nullptr);
+        DVASSERT(selectionRectControl != nullptr);
+        selectionRectControl->RemoveFromParent(hudControl.Get());
+        selectionRectControl = nullptr;
         break;
     case EditorSystemsManager::Transform:
         ClearMagnetLines();
