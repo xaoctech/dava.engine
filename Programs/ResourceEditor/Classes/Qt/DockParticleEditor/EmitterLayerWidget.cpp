@@ -255,13 +255,13 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     facingLayout->addWidget(cameraFacingCheckBox);
     connect(cameraFacingCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
 
-    xFacingCheckBox = new QCheckBox("X-Facing");
+    xFacingCheckBox = new QCheckBox(/*layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE ? "X-Align" : */"X-Facing");
     facingLayout->addWidget(xFacingCheckBox);
     connect(xFacingCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
-    yFacingCheckBox = new QCheckBox("Y-Facing");
+    yFacingCheckBox = new QCheckBox(/*layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE ? "Y-Align" :*/ "Y-Facing");
     facingLayout->addWidget(yFacingCheckBox);
     connect(yFacingCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
-    zFacingCheckBox = new QCheckBox("Z-Facing");
+    zFacingCheckBox = new QCheckBox(/*layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE ? "Z-Align" :*/ "Z-Facing");
     facingLayout->addWidget(zFacingCheckBox);
     connect(zFacingCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
     orientationLayout->addLayout(facingLayout);
@@ -1965,6 +1965,10 @@ void EmitterLayerWidget::SetLayerMode(bool isSuperemitter, bool isStripe)
     sizeOverLifeTimeLine->setVisible(!isStripe);
     angleTimeLine->setVisible(!isStripe);
     randomSpinDirectionCheckBox->setVisible(!isStripe);
+
+    xFacingCheckBox->setText(isStripe ? "X-Align" : "X-Facing");
+    yFacingCheckBox->setText(isStripe ? "Y-Align" : "Y-Facing");
+    zFacingCheckBox->setText(isStripe ? "Z-Align" : "Z-Facing");
 
     spinTimeLine->setVisible(!isStripe);
     spinOverLifeTimeLine->setVisible(!isStripe);

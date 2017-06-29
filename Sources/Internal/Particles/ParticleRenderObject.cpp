@@ -106,6 +106,21 @@ void ParticleRenderObject::PrepareRenderData(Camera* camera)
     basisVectors[6] = ey;
     basisVectors[7] = ex;
 
+    static Vector3 stripeBasisVectors[7] = { Vector3(),
+        Vector3(), Vector3(),
+        Vector3(), 
+        Vector3(1, 0, 0),
+        Vector3(0, 1, 0),
+        Vector3(0, 0, 1) };
+    stripeBasisVectors[0] = basisVectors[0];
+    ex.Normalize();
+    ey.Normalize();
+    ez.Normalize();
+    stripeBasisVectors[1] = ex;
+    stripeBasisVectors[2] = ey;
+    stripeBasisVectors[3] = ez;
+
+
     auto itGroupStart = effectData->groups.begin();
     uint32 particlesInGroup = 0;
     for (List<ParticleGroup>::iterator itGroupCurr = effectData->groups.begin(), e = effectData->groups.end(); itGroupCurr != e; ++itGroupCurr)
@@ -122,7 +137,7 @@ void ParticleRenderObject::PrepareRenderData(Camera* camera)
             if (CheckIfSimpleParticle(itGroupStart->layer))
                 AppendParticleGroup(itGroupStart, itGroupCurr, particlesInGroup, camera->GetDirection(), basisVectors);
             else
-                AppendStripeParticle(itGroupStart, effectData->groups.end(), particlesInGroup, camera->GetDirection(), basisVectors);
+                AppendStripeParticle(itGroupStart, effectData->groups.end(), particlesInGroup, camera, stripeBasisVectors);
             itGroupStart = itGroupCurr;
             particlesInGroup = 0;
         }
@@ -133,7 +148,7 @@ void ParticleRenderObject::PrepareRenderData(Camera* camera)
         if (CheckIfSimpleParticle(itGroupStart->layer))
             AppendParticleGroup(itGroupStart, effectData->groups.end(), particlesInGroup, camera->GetDirection(), basisVectors);
         else
-            AppendStripeParticle(itGroupStart, effectData->groups.end(), particlesInGroup, camera->GetDirection(), basisVectors);
+            AppendStripeParticle(itGroupStart, effectData->groups.end(), particlesInGroup, camera, stripeBasisVectors);
     }
 }
 
@@ -146,7 +161,7 @@ uint32 ParticleRenderObject::GetVertexStride(ParticleLayer* layer)
         vertexStride += (2 + 2) * sizeof(float); // texcoord2.xy + speed and offset
     if (layer->enableNoise)
         vertexStride += (2 + 1) * sizeof(float); // texcoord.xy + noise scale
-    if (layer->useFresnelToAlpha || layer->enableAlphaRemap || layer->usePerspectiveMapping)
+    if (layer->useFresnelToAlpha || layer->enableAlphaRemap || (layer->usePerspectiveMapping && layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE))
         vertexStride += (3) * sizeof(float);
     return vertexStride;
 }
@@ -180,7 +195,7 @@ uint32 ParticleRenderObject::SelectLayout(const ParticleLayer& layer)
     uint32 key = isFramBlendEnabled << static_cast<uint32>(eParticlePropsOffsets::FRAME_BLEND);
     key |= static_cast<uint32>(layer.enableFlow) << static_cast<uint32>(eParticlePropsOffsets::FLOW);
     key |= static_cast<uint32>(layer.enableNoise) << static_cast<uint32>(eParticlePropsOffsets::NOISE);
-    key |= static_cast<uint32>(layer.enableAlphaRemap || layer.usePerspectiveMapping || layer.useFresnelToAlpha) << static_cast<uint32>(eParticlePropsOffsets::FRESNEL_TO_ALPHA_REMAP_PERP_MAPPING);
+    key |= static_cast<uint32>(layer.enableAlphaRemap || (layer.usePerspectiveMapping && layer.type == ParticleLayer::TYPE_PARTICLE_STRIPE) || layer.useFresnelToAlpha) << static_cast<uint32>(eParticlePropsOffsets::FRESNEL_TO_ALPHA_REMAP_PERP_MAPPING);
     return layoutMap[key];
 }
 
@@ -452,7 +467,7 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
     }
 }
 
-void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator begin, List<ParticleGroup>::iterator end, uint32 particlesCount, const Vector3& cameraDirection, Vector3* basisVectors)
+void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator begin, List<ParticleGroup>::iterator end, uint32 particlesCount, Camera* camera, Vector3* basisVectors)
 {
     if (!particlesCount)
         return;
@@ -467,6 +482,7 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
 
         int32 basisCount = 0;
         int32 basises[4]; //4 basises max per particle
+
         basisCount = PrepareBasisIndexes(group, basises);
 
         if (basisCount == 0)
@@ -507,7 +523,14 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
             {
                 if (nodes.size() == 0)
                     return;
-                Vector3 basisVector = basisVectors[basises[i] * 2];
+                Vector3 basisVector = basisVectors[basises[i]];
+                if(i == 0 && group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING)
+                {
+                    basisVector = (base.position - camera->GetPosition()).CrossProduct(base.speed);
+                    basisVector = (camera->GetDirection()).CrossProduct(base.speed);
+                    
+                    basisVector.Normalize();
+                }
 
                 float32 fresnelToAlpha = 0.0f;
                 if (begin->layer->useFresnelToAlpha)
@@ -516,7 +539,7 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                     float32 dot = 0.0f;
                     viewNormal = Vector3(basisVector.y, -basisVector.x, 0.0f); // basisVector.CrossProduct(Vector3(0.0f, 0.0f, 1.0f));
                     viewNormal.Normalize();
-                    dot = cameraDirection.DotProduct(viewNormal);
+                    dot = camera->GetDirection().DotProduct(viewNormal);
                     fresnelToAlpha = FresnelShlick(1.0f - Abs(dot), currentParticle->fresnelToAlphaBias, currentParticle->fresnelToAlphaPower);
                 }
 
@@ -531,19 +554,18 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                 float32 startU = currentParticle->life * group.layer->stripeUScrollSpeed;
                 float32 startV = currentParticle->life * group.layer->stripeVScrollSpeed;
 
-                Vector3 uv1;
-                Vector3 uv2;
+                Vector3 uv1 = Vector3(startU, startV, 0.0f);
+                Vector3 uv2 = Vector3(startU + 1.0f, startV, 0.0f);
                 if (group.layer->usePerspectiveMapping)
                 {
-                    uv1 = Vector3(startU * fullEdgeSize, startV * fullEdgeSize, fullEdgeSize);
-                    uv2 = Vector3((startU + 1.0f) * fullEdgeSize, startV * fullEdgeSize, fullEdgeSize);
-                }
-                else
-                {
-                    uv1 = Vector3(startU, startV, 0.0f);
-                    uv2 = Vector3(startU + 1.0f, startV, 0.0f);
-                }
+                    uv1.x *= fullEdgeSize;
+                    uv1.y *= fullEdgeSize;
+                    uv1.z = fullEdgeSize;
 
+                    uv2.x *= fullEdgeSize;
+                    uv2.y *= fullEdgeSize;
+                    uv2.z = fullEdgeSize;
+                }
 
                 Color colOverLife = Color::White;
                 if (group.layer->stripeColorOverLife)
@@ -558,6 +580,13 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                 float32 distance = 0.0f;
                 for (auto& node : nodes)
                 {
+                    if (i == 0 && group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING)
+                    {
+                        basisVector = (node.position - camera->GetPosition()).CrossProduct(node.speed);
+                        basisVector = (camera->GetDirection()).CrossProduct(node.speed);
+                        basisVector.Normalize();
+                    }
+
                     float32 overLifeTime = node.lifeime / group.layer->stripeLifetime;
                     size = group.layer->stripeStartSize * 0.5f;
                     if (group.layer->stripeSizeOverLifeProp)
