@@ -389,10 +389,7 @@ void WindowBackend::OnKeyPressed(QKeyEvent* qtEvent)
         scancodeKey |= 0xE000;
     }
 #elif defined(Q_OS_OSX)
-    if (virtualKey == 0)
-    {
-        scancodeKey = ConvertQtKeyToSystemScanCode(qtEvent->key());
-    }
+    scancodeKey = ConvertQtKeyToSystemScanCode(qtEvent->key());
 #else
 #error "Unsupported platform"
 #endif
