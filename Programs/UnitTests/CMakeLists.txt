@@ -61,24 +61,24 @@ find_package( Steam REQUIRED )
 find_package( DavaFramework REQUIRED COMPONENTS "${DAVA_COMPONENTS}" )
 find_package( EmbeddedWebServer REQUIRED )
 
-include_directories   ( "Classes" )
+include_directories   ( "Sources" )
 
 if( MACOS )
-    set( PLATFORM_SPECIFIC_FOLDER "MacOSSpecific" )
+    set( PLATFORM_SPECIFIC_FOLDER "Platforms/Mac" )
 
 elseif( IOS )
-    set( PLATFORM_SPECIFIC_FOLDER "iOSSpecific" )
+    set( PLATFORM_SPECIFIC_FOLDER "Platforms/Ios" )
     set( IOS_ADD_SRC ${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_SPECIFIC_FOLDER}/UnitTests.entitlements )
 
 elseif( WIN32 )
-    set( PLATFORM_SPECIFIC_FOLDER "Win32Specific" )
+    set( PLATFORM_SPECIFIC_FOLDER "Platforms/Win32" )
     set( EXECUTABLE_FLAG WIN32 )
 
 endif()
 
-define_source                  ( SOURCE "Classes" )
+define_source                  ( SOURCE "Sources" )
 
-set( STEAM_APPID                Win32Specific/steam_appid.txt )
+set( STEAM_APPID                Platforms/Win32/steam_appid.txt )
 
 set( MIX_APP_DATA                 "Data = ${DAVA_ROOT_DIR}/Programs/Data" 
                                   "Data = ${CMAKE_CURRENT_LIST_DIR}/Data" )
@@ -105,7 +105,7 @@ endif ()
 
 if (ANDROID)
     # Libraries and classes to load at startup
-    set (ANDROID_BOOT_MODULES "crystax;c++_shared;fmodex;fmodevent;UnitTests")
+    set (ANDROID_BOOT_MODULES "c++_shared;fmodex;fmodevent;UnitTests")
     set (ANDROID_BOOT_CLASSES "com.dava.unittests.UnitTests")
 endif()
 
