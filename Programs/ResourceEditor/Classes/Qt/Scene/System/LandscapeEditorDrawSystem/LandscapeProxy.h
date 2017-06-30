@@ -72,6 +72,9 @@ public:
     DAVA::Texture* GetTilemaskDrawTexture(DAVA::int32 number);
     void SwapTilemaskDrawTextures();
 
+private:
+    void RestoreResources();
+
 protected:
     enum eToolTextureType
     {

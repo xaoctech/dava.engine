@@ -3,7 +3,7 @@
 #if defined(__DAVAENGINE_WIN32__)
 #include "Win32/ClipboardImplWin32.h"
 #elif defined(__DAVAENGINE_MACOS__)
-#include "Mac/ClipboardImplOsx.h"
+#include "Mac/ClipboardImplMac.h"
 #else
 #include "ClipboardImplStub.h"
 #endif

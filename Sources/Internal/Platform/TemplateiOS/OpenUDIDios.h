@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_OPENUDID_iOS_H__
-#define __DAVAENGINE_OPENUDID_iOS_H__
+#pragma once
 
 #include "Platform/OpenUDIDApple.h"
 
@@ -16,5 +15,3 @@
 @end
 
 #endif // #if defined(__DAVAENGINE_IPHONE__)
-
-#endif //__DAVAENGINE_OPENUDID_iOS_H__

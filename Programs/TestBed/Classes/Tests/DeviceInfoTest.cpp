@@ -60,12 +60,6 @@ void DeviceInfoTest::UpdateTestInfo()
     infoStream << "GetHTTPProxyHost() :" << DeviceInfo::GetHTTPProxyHost() << "\n";
     infoStream << "GetHTTPNonProxyHosts() :" << DeviceInfo::GetHTTPNonProxyHosts() << "\n";
     infoStream << "GetHTTPProxyPort() :" << DeviceInfo::GetHTTPProxyPort() << "\n";
-#if !defined(__DAVAENGINE_COREV2__)
-    infoStream << "GetScreenInfo() :"
-               << "width: " << DeviceInfo::GetScreenInfo().width << ", height: " << DeviceInfo::GetScreenInfo().height << L"\n";
-    infoStream << "GetScreenInfo() :"
-               << "scale: " << DeviceInfo::GetScreenInfo().scale << "\n";
-#endif
     infoStream << "GetZBufferSize() :" << DeviceInfo::GetZBufferSize() << "\n";
     infoStream << "GetGPUFamily() :" << int(DeviceInfo::GetGPUFamily()) << "\n";
     auto netInfo = DeviceInfo::GetNetworkInfo();

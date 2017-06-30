@@ -666,7 +666,7 @@ void RenderHelper::FillCircleVBuffer(ColoredVertex* buffer, const Vector3& cente
     float32 angleDelta = PI_2 / pointCount;
     for (uint32 i = 0; i < pointCount; ++i)
     {
-        rotationMx.CreateRotation(direction, angleDelta * i);
+        rotationMx.BuildRotation(direction, angleDelta * i);
         buffer[i].position = center + (ortho * radius) * rotationMx;
         buffer[i].color = nativeColor;
     }

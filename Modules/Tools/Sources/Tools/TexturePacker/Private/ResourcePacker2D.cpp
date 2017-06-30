@@ -6,7 +6,6 @@
 #include <Engine/Engine.h>
 #include <FileSystem/FileSystem.h>
 #include <FileSystem/FileList.h>
-#include <Core/Core.h>
 #include <Utils/StringUtils.h>
 #include <Platform/DeviceInfo.h>
 #include <Time/DateTime.h>
@@ -118,11 +117,7 @@ void ResourcePacker2D::PackResources(const Vector<eGPUFamily>& forGPUs)
 
     if (RecalculateDirMD5(outputGfxDirectory, processDirectoryPath + gfxDirName + ".md5", true))
     {
-#if defined(__DAVAENGINE_COREV2__)
         if (Engine::Instance()->IsConsoleMode())
-#else
-        if (Core::Instance()->IsConsoleMode())
-#endif
         {
             Logger::FrameworkDebug("[Gfx not available or changed - performing full repack]");
         }
@@ -497,11 +492,7 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath& inputPath, const FilePa
 
                 packTime = SystemTimer::GetMs() - packTime;
 
-#if defined(__DAVAENGINE_COREV2__)
                 if (Engine::Instance()->IsConsoleMode())
-#else
-                if (Core::Instance()->IsConsoleMode())
-#endif
                 {
                     Logger::Info("[%u files packed with flags: %s]", static_cast<uint32>(definitionFileList.size()), mergedFlags.c_str());
                 }
