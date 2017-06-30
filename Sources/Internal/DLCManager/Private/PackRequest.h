@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Base/BaseTypes.h"
 #include "DLCManager/DLCDownloader.h"
 #include "DLCManager/DLCManager.h"
+#include "FileSystem/FilePath.h"
 #include "Compression/Compressor.h"
 
 namespace DAVA
@@ -87,7 +87,7 @@ private:
                                FileRequest& fileRequest);
 
     static void DeleteJustDownloadedFileAndStartAgain(FileRequest& fileRequest);
-    void DisableRequestingAndFireSignalIOError(FileRequest& fileRequest, int32 errVal) const;
+    void DisableRequestingAndFireSignalIOError(FileRequest& fileRequest, int32 errVal, const String& extMsg) const;
     bool CheckLocalFileState(FileSystem* fs, FileRequest& fileRequest);
     bool CheckLoadingStatusOfFileRequest(FileRequest& fileRequest, DLCDownloader* dm, const String& dstPath);
     bool LoadingPackFileState(FileSystem* fs, FileRequest& fileRequest);
@@ -102,6 +102,8 @@ private:
     mutable Vector<uint32> dependencyCache;
 
     uint32 numOfDownloadedFile = 0;
+
+    int32 openRetryCounter = 10; // 10 frames to try write append footer
 
     // if this field is false, you can check fileIndexes
     // else fileIndexes maybe empty and wait initialization

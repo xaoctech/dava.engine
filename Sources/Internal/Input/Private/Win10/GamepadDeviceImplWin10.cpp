@@ -1,6 +1,5 @@
 #include "Input/Private/Win10/GamepadDeviceImplWin10.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_WIN_UAP__)
 
 #include "Input/GamepadDevice.h"
@@ -121,4 +120,3 @@ bool GamepadDeviceImpl::HandleGamepadRemoved(uint32 /*id*/)
 } // namespace DAVA
 
 #endif // __DAVAENGINE_WIN_UAP__
-#endif // __DAVAENGINE_COREV2__

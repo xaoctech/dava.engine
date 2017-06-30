@@ -20,7 +20,6 @@
 #include "../NullRenderer/rhi_NullRenderer.h"
 
 #include "Logger/Logger.h"
-#include "Core/Core.h"
 #include "Concurrency/Spinlock.h"
 #include "Concurrency/Thread.h"
 #include "MemoryManager/MemoryProfiler.h"

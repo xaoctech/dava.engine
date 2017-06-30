@@ -1,7 +1,6 @@
 #include "UI/UIControlBackground.h"
 #include "Debug/DVAssert.h"
 #include "UI/UIControl.h"
-#include "Core/Core.h"
 #include "Render/RenderHelper.h"
 #include "UI/UIControlSystem.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
