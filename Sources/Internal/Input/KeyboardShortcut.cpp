@@ -17,11 +17,7 @@ KeyboardShortcut::KeyboardShortcut(const KeyboardShortcut& shortcut)
 {
 }
 
-#if defined(__DAVAENGINE_COREV2__)
 KeyboardShortcut::KeyboardShortcut(Key key_, eModifierKeys modifiers_)
-#else
-KeyboardShortcut::KeyboardShortcut(Key key_, uint32 modifiers_)
-#endif
     : key(key_)
     , modifiers(modifiers_)
 {
@@ -32,7 +28,6 @@ KeyboardShortcut::KeyboardShortcut(const String& str)
     Vector<String> tokens;
     Split(str, "+", tokens);
 
-#if defined(__DAVAENGINE_COREV2__)
     int modifiersPack = 0;
     for (const String& token : tokens)
     {
@@ -49,23 +44,6 @@ KeyboardShortcut::KeyboardShortcut(const String& str)
         }
     }
     modifiers = static_cast<eModifierKeys>(modifiersPack) & eModifierKeys::MASK;
-#else
-    modifiers = 0;
-    for (const String& token : tokens)
-    {
-        String t = StringUtils::Trim(token);
-        int modifier = 0;
-        if (GlobalEnumMap<UIEvent::Modifier>::Instance()->ToValue(token.c_str(), modifier))
-        {
-            modifiers |= modifier;
-        }
-        else
-        {
-            DVASSERT(key == Key::UNKNOWN);
-            key = InputSystem::Instance()->GetKeyboard().GetKeyByName(t);
-        }
-    }
-#endif
 
     DVASSERT(key != Key::UNKNOWN);
 }
@@ -94,11 +72,7 @@ Key KeyboardShortcut::GetKey() const
     return key;
 }
 
-#if defined(__DAVAENGINE_COREV2__)
 eModifierKeys KeyboardShortcut::GetModifiers() const
-#else
-uint32 KeyboardShortcut::GetModifiers() const
-#endif
 {
     return modifiers;
 }
@@ -107,7 +81,6 @@ String KeyboardShortcut::ToString() const
 {
     StringStream stream;
 
-#if defined(__DAVAENGINE_COREV2__)
     int test = static_cast<int>(eModifierKeys::FIRST);
     int last = static_cast<int>(eModifierKeys::LAST);
     int modifiersPack = static_cast<int>(modifiers);
@@ -119,17 +92,6 @@ String KeyboardShortcut::ToString() const
         }
         test <<= 1;
     }
-#else
-    int test = 0x01;
-    while (test <= UIEvent::Modifier::LAST)
-    {
-        if (test & modifiers)
-        {
-            stream << GlobalEnumMap<UIEvent::Modifier>::Instance()->ToString(test) << "+";
-        }
-        test <<= 1;
-    }
-#endif
     stream << InputSystem::Instance()->GetKeyboard().GetKeyName(key);
 
     return stream.str();

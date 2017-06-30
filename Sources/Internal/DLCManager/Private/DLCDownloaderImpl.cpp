@@ -229,6 +229,22 @@ static void CurlSetTimeout(DLCDownloader::Task& task, CURL* easyHandle)
     {
         DLCDownloader::Task::OnErrorCurlEasy(code, task, __LINE__);
     }
+
+    // Trigger timeout in case transfer speed is below CURLOPT_LOW_SPEED_LIMIT for CURLOPT_LOW_SPEED_TIME seconds
+
+    code = curl_easy_setopt(easyHandle, CURLOPT_LOW_SPEED_TIME, operationTimeout);
+    if (code != CURLE_OK)
+    {
+        DLCDownloader::Task::OnErrorCurlEasy(code, task, __LINE__);
+    }
+
+    // Use passed timeoutSec field for speed limit for now
+    long lowSpeedLimit = task.info.timeoutSec;
+    code = curl_easy_setopt(easyHandle, CURLOPT_LOW_SPEED_LIMIT, lowSpeedLimit);
+    if (code != CURLE_OK)
+    {
+        DLCDownloader::Task::OnErrorCurlEasy(code, task, __LINE__);
+    }
 }
 
 static size_t CurlDataRecvHandler(void* ptr, size_t size, size_t nmemb, void* part)

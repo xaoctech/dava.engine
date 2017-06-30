@@ -143,10 +143,8 @@ DLCManagerImpl::~DLCManagerImpl()
 {
     DVASSERT(Thread::IsMainThread());
 
-#ifdef __DAVAENGINE_COREV2__
     engine.update.Disconnect(this);
     engine.backgroundUpdate.Disconnect(this);
-#endif
 
     ClearResouces();
 }
@@ -1546,13 +1544,12 @@ void DLCManagerImpl::ThreadScanFunc()
     {
         return;
     }
-#ifdef __DAVAENGINE_COREV2__
+
     DAVA::RunOnMainThreadAsync([this]()
                                {
                                    // finish thread
                                    scanState = ScanState::Done;
                                });
-#endif
 }
 
 } // end namespace DAVA

@@ -14,7 +14,6 @@
 #include "Concurrency/LockGuard.h"
 #include "Concurrency/Mutex.h"
 #include "Concurrency/Thread.h"
-#include "Core/Core.h"
 #include "Logger/Logger.h"
 #include "Utils/StringFormat.h"
 

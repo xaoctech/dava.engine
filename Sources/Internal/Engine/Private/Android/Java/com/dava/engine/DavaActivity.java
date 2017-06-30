@@ -310,9 +310,9 @@ public final class DavaActivity extends Activity
 
         // #3 Initialize engine and run its onCreate method
         nativeInitializeEngine(externalFilesDir, internalFilesDir, sourceDir, packageName, cmdline);
-        long nativePrimaryWindowBackend = nativeOnCreate(this);
+        long nativePrimaryWindowImpl = nativeOnCreate(this);
         // Create primary DavaSurfaceView in advance but add to view hierarchy later when DavaSplashView will do its work
-        primarySurfaceView = new DavaSurfaceView(getApplication(), nativePrimaryWindowBackend);
+        primarySurfaceView = new DavaSurfaceView(getApplication(), nativePrimaryWindowImpl);
 
         notifyListeners(ON_ACTIVITY_CREATE, savedInstanceState);
 

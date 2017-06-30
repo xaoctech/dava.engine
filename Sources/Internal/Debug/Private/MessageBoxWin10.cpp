@@ -1,14 +1,13 @@
 #include "Base/Platform.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_WIN_UAP__)
 
 #include "Base/BaseTypes.h"
 #include "Concurrency/AutoResetEvent.h"
 #include "Concurrency/Semaphore.h"
 #include "Concurrency/Thread.h"
-#include "Engine/PlatformApi.h"
-#include "Engine/Private/UWP/PlatformCoreUWP.h"
+#include "Engine/PlatformApiWin10.h"
+#include "Engine/Private/Win10/PlatformCoreWin10.h"
 #include "Utils/UTF8Utils.h"
 
 #include <ppltasks.h>
@@ -201,4 +200,3 @@ int MessageBox(const String& title, const String& message, const Vector<String>&
 } // namespace DAVA
 
 #endif // defined(__DAVAENGINE_WIN_UAP__)
-#endif // defined(__DAVAENGINE_COREV2__)

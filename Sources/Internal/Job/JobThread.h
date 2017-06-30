@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_JOB_THREAD_H__
-#define __DAVAENGINE_JOB_THREAD_H__
+#pragma once
 
 #include "Concurrency/Semaphore.h"
 #include "Concurrency/Thread.h"
@@ -25,5 +24,3 @@ protected:
     void ThreadFunc();
 };
 }
-
-#endif // __DAVAENGINE_JOB_THREAD_H__

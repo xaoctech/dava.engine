@@ -1,5 +1,7 @@
 #pragma once
 
+#include <fstream>
+
 #include "DLCManager/DLCManager.h"
 #include "DLCManager/DLCDownloader.h"
 #include "DLCManager/Private/RequestManager.h"
@@ -10,8 +12,6 @@
 #include "Concurrency/Semaphore.h"
 #include "Concurrency/Thread.h"
 #include "Engine/Engine.h"
-
-#include <fstream>
 
 namespace DAVA
 {
@@ -104,8 +104,6 @@ public:
     static const String& ToString(InitState state);
 
     explicit DLCManagerImpl(Engine* engine_);
-    Engine& engine;
-
     ~DLCManagerImpl();
     void TestWriteAccessToPackDirectory(const FilePath& dirToDownloadPacks_);
     void FillPreloadedPacks();
@@ -232,6 +230,7 @@ private:
 
     mutable std::ofstream log;
 
+    Engine& engine;
     FilePath localCacheMeta;
     FilePath localCacheFileTable;
     FilePath localCacheFooter;
