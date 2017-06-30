@@ -706,7 +706,7 @@ bool SceneExporter::SplitCompressedFile(const DAVA::TextureDescriptor& descripto
     if (isCubemap)
     {
         uint32 firstFace = loadedImages[0]->cubeFaceID;
-        mipmapsCount = DAVA::uint32(count_if(loadedImages.begin(), loadedImages.end(), [&firstFace](const DAVA::Image* img) { return img->cubeFaceID == firstFace; }));
+        mipmapsCount = static_cast<uint32>(count_if(loadedImages.begin(), loadedImages.end(), [&firstFace](const DAVA::Image* img) { return img->cubeFaceID == firstFace; }));
     }
 
     Vector<FilePath> pathnamesForGPU;

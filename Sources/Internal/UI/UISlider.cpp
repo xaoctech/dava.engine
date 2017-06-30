@@ -2,7 +2,6 @@
 #include "Render/RenderHelper.h"
 #include "Base/ObjectFactory.h"
 #include "Utils/Utils.h"
-#include "Core/Core.h"
 #include "UI/UIEvent.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
 #include "UI/UIControlSystem.h"

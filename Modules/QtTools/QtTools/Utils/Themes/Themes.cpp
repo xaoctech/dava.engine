@@ -3,6 +3,7 @@
 #include "Base/GlobalEnum.h"
 
 #include "Engine/Engine.h"
+#include "Engine/PlatformApiQt.h"
 
 #include "Preferences/PreferencesStorage.h"
 #include "Preferences/PreferencesRegistrator.h"

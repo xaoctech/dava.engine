@@ -9,7 +9,6 @@
 #include "Engine/Engine.h"
 #include "Entity/ComponentManager.h"
 #include "Input/InputSystem.h"
-#include "Input/MouseDevice.h"
 #include "Logger/Logger.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
@@ -967,21 +966,12 @@ void UIControl::SetParentColor(const Color& parentColor)
 bool UIControl::IsPointInside(const Vector2& _point, bool expandWithFocus /* = false*/) const
 {
     Vector2 point = _point;
-#if defined(__DAVAENGINE_COREV2__)
     if (GetPrimaryWindow()->GetCursorCapture() == eCursorCapture::PINNING)
     {
         Size2f sz = GetPrimaryWindow()->GetVirtualSize();
         point.x = sz.dx / 2.f;
         point.y = sz.dy / 2.f;
     }
-#else
-    if (InputSystem::Instance()->GetMouseDevice().IsPinningEnabled())
-    {
-        const Size2i& virtScreenSize = UIControlSystem::Instance()->vcs->GetVirtualScreenSize();
-        point.x = virtScreenSize.dx / 2.f;
-        point.y = virtScreenSize.dy / 2.f;
-    }
-#endif // !defined(__DAVAENGINE_COREV2__)
     const UIGeometricData& gd = GetGeometricData();
     Rect rect = gd.GetUnrotatedRect();
     if (expandWithFocus)

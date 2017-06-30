@@ -9,13 +9,13 @@
 #include "Platform/MovieViewControlStub.h"
 #include "Render/RenderHelper.h"
 #elif defined(__DAVAENGINE_IPHONE__)
-#include "UI/Private/iOS/MovieViewControliOS.h"
+#include "UI/Private/Ios/MovieViewControlIos.h"
 #elif defined(__DAVAENGINE_MACOS__)
-#include "UI/Private/OSX/MovieViewControlMacOS.h"
+#include "UI/Private/Mac/MovieViewControlMac.h"
 #elif defined(__DAVAENGINE_ANDROID__)
 #include "UI/Private/Android/MovieViewControlAndroid.h"
 #elif defined(__DAVAENGINE_WIN_UAP__)
-#include "UI/Private/UWP/MovieViewControlUWP.h"
+#include "UI/Private/Win10/MovieViewControlWin10.h"
 #elif defined(__DAVAENGINE_WIN32__)
 #include "Platform/TemplateWin32/MovieViewControlWin32.h"
 #else
@@ -40,11 +40,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIMovieView)
 
 UIMovieView::UIMovieView(const Rect& rect)
     : UIControl(rect)
-#if defined(__DAVAENGINE_COREV2__)
     , movieViewControl(std::make_shared<MovieViewControl>(Engine::Instance()->PrimaryWindow()))
-#else
-    , movieViewControl(std::make_shared<MovieViewControl>())
-#endif
 {
     movieViewControl->Initialize(rect);
     UpdateControlRect();
