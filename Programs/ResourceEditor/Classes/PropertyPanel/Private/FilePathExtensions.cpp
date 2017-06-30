@@ -325,6 +325,12 @@ DAVA::M::ValidationResult ValidateExistsFileInProject(const DAVA::Any& value, co
     M::ValidationResult result;
 
     FilePath filePath = value.Cast<FilePath>();
+    if (filePath.IsEmpty())
+    {
+        result.state = M::ValidationResult::eState::Valid;
+        return result;
+    }
+
     FilePath validProjectDir = GetValidDir(false);
 
     if (filePath.IsDirectoryPathname() == true)
