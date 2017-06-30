@@ -476,10 +476,14 @@ void WindowBackend::OnVisibleFrameChanged(int32 x, int32 y, int32 width, int32 h
 std::bitset<WindowBackend::MOUSE_BUTTON_COUNT> WindowBackend::GetMouseButtonState(int32 nativeButtonState)
 {
     std::bitset<MOUSE_BUTTON_COUNT> state;
-    // Android supports only three mouse buttons
     state.set(0, (nativeButtonState & AMOTION_EVENT_BUTTON_PRIMARY) == AMOTION_EVENT_BUTTON_PRIMARY);
     state.set(1, (nativeButtonState & AMOTION_EVENT_BUTTON_SECONDARY) == AMOTION_EVENT_BUTTON_SECONDARY);
     state.set(2, (nativeButtonState & AMOTION_EVENT_BUTTON_TERTIARY) == AMOTION_EVENT_BUTTON_TERTIARY);
+
+    // Map BUTTON_BACK & BUTTON_FORWARD to Ext1 and Ext2 buttons accordingly
+    state.set(3, (nativeButtonState & AMOTION_EVENT_BUTTON_BACK) == AMOTION_EVENT_BUTTON_BACK);
+    state.set(4, (nativeButtonState & AMOTION_EVENT_BUTTON_FORWARD) == AMOTION_EVENT_BUTTON_FORWARD);
+
     return state;
 }
 
