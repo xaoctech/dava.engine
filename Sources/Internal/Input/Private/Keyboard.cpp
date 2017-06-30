@@ -34,7 +34,9 @@ Keyboard::Keyboard(uint32 id)
     Window* primaryWindow = engine->PrimaryWindow();
     if (primaryWindow != nullptr)
     {
-        primaryWindow->focusChanged.Connect(this, &Keyboard::OnWindowFocusChanged); // TODO: handle all the windows
+        // TODO: handle all the windows
+        primaryWindow->focusChanged.Connect(this, &Keyboard::OnWindowFocusChanged);
+        primaryWindow->sizeChanged.Connect(this, &Keyboard::OnWindowSizeChanged);
     }
 
     Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &Keyboard::HandleMainDispatcherEvent));
@@ -49,6 +51,7 @@ Keyboard::~Keyboard()
     if (primaryWindow != nullptr)
     {
         primaryWindow->focusChanged.Disconnect(this);
+        primaryWindow->sizeChanged.Disconnect(this);
     }
 
     Private::EngineBackend::Instance()->UninstallEventFilter(this);
@@ -110,6 +113,14 @@ void Keyboard::OnWindowFocusChanged(DAVA::Window* window, bool focused)
     {
         ResetState(window);
     }
+}
+
+void Keyboard::OnWindowSizeChanged(DAVA::Window* window, Size2f, Size2f)
+{
+    // Reset keyboard state when window size changes
+    // To workaround cases when input events are not generated while window is changint its size
+    // (e.g. when maximizing window in macOS)
+    ResetState(window);
 }
 
 void Keyboard::ResetState(Window* window)
