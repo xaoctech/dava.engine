@@ -526,6 +526,7 @@ LRESULT WindowBackend::OnExitMenuLoop()
 
     // System menu is usually shown after pressing Alt+Space, window receives Alt up down,
     // but do not receives Alt key up. So send event to force clearing all inputs.
+    // TODO: refactor this event usage according to the new input system?
     mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowCancelInputEvent(window));
     if (captureMode == eCursorCapture::PINNING)
     {
