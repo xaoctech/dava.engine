@@ -116,7 +116,7 @@ set(WIN32_DYNAMIC_RELEASE_LIBS "${LibsPath}/Win32/x86/PhysX3_x86.dll"
                                "${LibsPath}/Win32/x86/PhysX3Common_x86.dll"
                                "${LibsPath}/Win32/x86/PhysX3Cooking_x86.dll"
                                "${LibsPath}/Win32/x86/PxFoundation_x86.dll"
-                               "${LibsPath}/Win32/x64/PxPvdSDK_x86.dll")
+                               "${LibsPath}/Win32/x86/PxPvdSDK_x86.dll")
 
 set(WIN64_STATIC_DEBUG_LIBS "${LibsPath}/Win32/x64/LowLevelDEBUG.lib"
                             "${LibsPath}/Win32/x64/LowLevelAABBDEBUG.lib"
