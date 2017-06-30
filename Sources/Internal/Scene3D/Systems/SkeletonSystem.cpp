@@ -187,13 +187,13 @@ void SkeletonSystem::RebuildSkeleton(Entity* entity)
         DVASSERT((component->configJoints[i].parentIndex == SkeletonComponent::INVALID_JOINT_INDEX) || ((component->configJoints[i].parentIndex & SkeletonComponent::INFO_PARENT_MASK) == component->configJoints[i].parentIndex)); //parent fits mask
         DVASSERT((component->configJoints[i].targetId == SkeletonComponent::INVALID_JOINT_INDEX) || ((component->configJoints[i].targetId & SkeletonComponent::INFO_PARENT_MASK) == component->configJoints[i].targetId)); //target fits mask
         DVASSERT((component->configJoints[i].targetId == SkeletonComponent::INVALID_JOINT_INDEX) || (component->configJoints[i].targetId < SkeletonComponent::MAX_TARGET_JOINTS));
-        DVASSERT(component->jointMap.find(component->configJoints[i].name) == component->jointMap.end()); //duplicate bone name
+        DVASSERT(component->jointMap.find(component->configJoints[i].uid) == component->jointMap.end()); //duplicate bone name
 
         component->jointInfo[i] = component->configJoints[i].parentIndex | (component->configJoints[i].targetId << SkeletonComponent::INFO_TARGET_SHIFT) | SkeletonComponent::FLAG_MARKED_FOR_UPDATED;
         if ((component->configJoints[i].targetId != SkeletonComponent::INVALID_JOINT_INDEX) && component->configJoints[i].targetId > maxTargetJoint)
             maxTargetJoint = component->configJoints[i].targetId;
 
-        component->jointMap[component->configJoints[i].name] = i;
+        component->jointMap[component->configJoints[i].uid] = i;
 
         SkeletonComponent::JointTransform localTransform;
         localTransform.position = component->configJoints[i].position;

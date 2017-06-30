@@ -20,6 +20,7 @@ public:
         int32 hierarhyDepth;
 
         String jointName;
+        String jointUID;
 
         // original collada matrices
         FMMatrix44 colladaInverse0;

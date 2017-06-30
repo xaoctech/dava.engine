@@ -196,6 +196,7 @@ void ColladaImporter::ImportSkeleton(ColladaSceneNode* colladaNode, Entity* node
         jointConfigs[i].targetId = skinnedMesh->joints[i].index;
 
         jointConfigs[i].name = FastName(skinnedMesh->joints[i].jointName);
+        jointConfigs[i].uid = FastName(skinnedMesh->joints[i].jointUID);
 
         jointConfigs[i].orientation = Quaternion();
         jointConfigs[i].position = Vector3();

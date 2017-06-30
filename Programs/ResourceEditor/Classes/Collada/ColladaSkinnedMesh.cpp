@@ -204,6 +204,8 @@ void ColladaSkinnedMesh::LinkJoints(ColladaSceneNode* node, Joint* parentJoint)
             }
 
             joint.jointName = UTF8Utils::EncodeToUTF8(node->originalNode->GetName().c_str());
+            joint.jointUID = node->originalNode->GetDaeId();
+
             node->inverse0 = joint.inverse0; // copy bindpos inverse matrix to node
 
             currentJoint = &joint;
@@ -223,7 +225,7 @@ void ColladaSkinnedMesh::BuildJointsHierarhy()
     std::sort(joints.begin(), joints.end(), [](const Joint& l, const Joint& r)
               {
                   if (l.hierarhyDepth == r.hierarhyDepth)
-                      return l.jointName < r.jointName;
+                      return l.jointUID < r.jointUID;
                   else
                       return l.hierarhyDepth < r.hierarhyDepth;
               });

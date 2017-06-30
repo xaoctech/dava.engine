@@ -330,6 +330,7 @@ SkinnedMesh* CreateSkinnedMesh(Entity* fromEntity, Vector<SkeletonComponent::Joi
         const Matrix4& localTransform = child->GetLocalTransform();
 
         outJoints[nodeIndex].name = childrenNodes[nodeIndex]->GetName();
+        outJoints[nodeIndex].uid = childrenNodes[nodeIndex]->GetName();
         outJoints[nodeIndex].orientation.Construct(localTransform);
         outJoints[nodeIndex].position = localTransform.GetTranslationVector();
         outJoints[nodeIndex].scale = localTransform.GetScaleVector().x;

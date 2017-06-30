@@ -14,6 +14,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SkeletonComponent::JointConfig)
 {
     ReflectionRegistrator<SkeletonComponent::JointConfig>::Begin()
     .Field("name", &SkeletonComponent::JointConfig::name)[M::DisplayName("Name")]
+    .Field("uid", &SkeletonComponent::JointConfig::uid)[M::DisplayName("UID")]
     .Field("position", &SkeletonComponent::JointConfig::position)[M::DisplayName("Position")]
     .Field("scale", &SkeletonComponent::JointConfig::scale)[M::DisplayName("Scale")]
     .Field("bbox", &SkeletonComponent::JointConfig::bbox)[M::DisplayName("Bounding box")]
@@ -42,18 +43,11 @@ SkeletonComponent::~SkeletonComponent()
 {
 }
 
-SkeletonComponent::JointConfig::JointConfig()
-    : parentIndex(INVALID_JOINT_INDEX)
-    , targetId(INVALID_JOINT_INDEX)
-    , orientation(0.0f, 0.0f, 0.0f, 1.0f)
-    , position(0.0f, 0.0f, 0.0f)
-    , scale(1.0f)
-{
-}
-SkeletonComponent::JointConfig::JointConfig(int32 _parentIndex, int32 _targetId, const FastName& _name, const Vector3& _position, const Quaternion& _orientation, float32 _scale, const AABBox3& _bbox)
+SkeletonComponent::JointConfig::JointConfig(int32 _parentIndex, int32 _targetId, const FastName& _name, const FastName& _uid, const Vector3& _position, const Quaternion& _orientation, float32 _scale, const AABBox3& _bbox)
     : parentIndex(_parentIndex)
     , targetId(_targetId)
     , name(_name)
+    , uid(_uid)
     , orientation(_orientation)
     , position(_position)
     , scale(_scale)
@@ -66,6 +60,7 @@ bool SkeletonComponent::JointConfig::operator==(const JointConfig& other) const
     return parentIndex == other.parentIndex &&
     targetId == other.targetId &&
     name == other.name &&
+    uid == other.uid &&
     orientation == other.orientation &&
     position == other.position &&
     scale == other.scale &&
@@ -110,6 +105,7 @@ void SkeletonComponent::Serialize(KeyedArchive* archive, SerializationContext* s
         const JointConfig& joint = configJoints[i];
         ScopedPtr<KeyedArchive> jointArch(new KeyedArchive());
         jointArch->SetFastName("joint.name", joint.name);
+        jointArch->SetFastName("joint.uid", joint.uid);
         jointArch->SetInt32("joint.parentIndex", joint.parentIndex);
         jointArch->SetInt32("joint.targetId", joint.targetId);
         jointArch->SetVector3("joint.position", joint.position);
@@ -135,6 +131,7 @@ void SkeletonComponent::Deserialize(KeyedArchive* archive, SerializationContext*
         JointConfig& joint = configJoints[i];
         KeyedArchive* jointArch = jointsArch->GetArchive(KeyedArchive::GenKeyFromIndex(i));
         joint.name = jointArch->GetFastName("joint.name");
+        joint.uid = jointArch->GetFastName("joint.uid");
         joint.parentIndex = jointArch->GetInt32("joint.parentIndex");
         joint.targetId = jointArch->GetInt32("joint.targetId");
         joint.position = jointArch->GetVector3("joint.position");

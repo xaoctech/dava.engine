@@ -35,22 +35,23 @@ public:
 
     struct JointConfig : public InspBase
     {
-        JointConfig();
+        JointConfig() = default;
+        JointConfig(int32 parentIndex, int32 targetId, const FastName& name, const FastName& uid, const Vector3& position, const Quaternion& orientation, float32 scale, const AABBox3& bbox);
 
-        JointConfig(int32 parentIndex, int32 targetId, const FastName& name, const Vector3& position, const Quaternion& orientation, float32 scale, const AABBox3& bbox);
-
-        int32 parentIndex;
-        int32 targetId;
+        int32 parentIndex = INVALID_JOINT_INDEX;
+        int32 targetId = INVALID_JOINT_INDEX;
         FastName name;
+        FastName uid;
         Quaternion orientation;
         Vector3 position;
-        float32 scale;
+        float32 scale = 1.f;
         AABBox3 bbox;
 
         bool operator==(const JointConfig& other) const;
 
         INTROSPECTION(JointConfig,
                       MEMBER(name, "Name", I_SAVE | I_VIEW | I_EDIT)
+                      MEMBER(uid, "UID", I_SAVE | I_VIEW | I_EDIT)
                       MEMBER(position, "Position", I_SAVE | I_VIEW | I_EDIT)
                       //MEMBER(orientation, "Orientation", I_SAVE | I_VIEW | I_EDIT)
                       MEMBER(scale, "Scale", I_SAVE | I_VIEW | I_EDIT)
