@@ -30,7 +30,12 @@ Keyboard::Keyboard(uint32 id)
 {
     Engine* engine = Engine::Instance();
     engine->endFrame.Connect(this, &Keyboard::OnEndFrame);
-    engine->PrimaryWindow()->focusChanged.Connect(this, &Keyboard::OnWindowFocusChanged); // TODO: handle all the windows
+
+    Window* primaryWindow = engine->PrimaryWindow();
+    if (primaryWindow != nullptr)
+    {
+        primaryWindow->focusChanged.Connect(this, &Keyboard::OnWindowFocusChanged); // TODO: handle all the windows
+    }
 
     Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &Keyboard::HandleMainDispatcherEvent));
 }
@@ -39,7 +44,12 @@ Keyboard::~Keyboard()
 {
     Engine* engine = Engine::Instance();
     engine->endFrame.Disconnect(this);
-    engine->PrimaryWindow()->focusChanged.Disconnect(this);
+
+    Window* primaryWindow = engine->PrimaryWindow();
+    if (primaryWindow != nullptr)
+    {
+        primaryWindow->focusChanged.Disconnect(this);
+    }
 
     Private::EngineBackend::Instance()->UninstallEventFilter(this);
 
@@ -149,7 +159,7 @@ bool Keyboard::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e)
         eInputElements elementId = impl->ConvertNativeScancodeToDavaScancode(e.keyEvent.keyScancode, e.keyEvent.keyVirtual);
         if (elementId == eInputElements::NONE)
         {
-            Logger::Info("Couldn't map native scancode (%u) to dava scancode", e.keyEvent.keyScancode);
+            Logger::FrameworkDebug("Couldn't map native scancode (%u) to dava scancode", e.keyEvent.keyScancode);
             return false;
         }
 

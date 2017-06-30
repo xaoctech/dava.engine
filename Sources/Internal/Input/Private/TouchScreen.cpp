@@ -16,7 +16,12 @@ TouchScreen::TouchScreen(uint32 id)
 {
     Engine* engine = Engine::Instance();
     engine->endFrame.Connect(this, &TouchScreen::OnEndFrame);
-    engine->PrimaryWindow()->focusChanged.Connect(this, &TouchScreen::OnWindowFocusChanged); // TODO: handle all the windows
+
+    Window* primaryWindow = engine->PrimaryWindow();
+    if (primaryWindow != nullptr)
+    {
+        primaryWindow->focusChanged.Connect(this, &TouchScreen::OnWindowFocusChanged); // TODO: handle all the windows
+    }
 
     Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &TouchScreen::HandleMainDispatcherEvent));
 }
@@ -25,7 +30,12 @@ TouchScreen::~TouchScreen()
 {
     Engine* engine = Engine::Instance();
     engine->endFrame.Disconnect(this);
-    engine->PrimaryWindow()->focusChanged.Disconnect(this);
+
+    Window* primaryWindow = engine->PrimaryWindow();
+    if (primaryWindow != nullptr)
+    {
+        primaryWindow->focusChanged.Disconnect(this);
+    }
 
     Private::EngineBackend::Instance()->UninstallEventFilter(this);
 }

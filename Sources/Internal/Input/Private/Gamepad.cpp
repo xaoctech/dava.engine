@@ -35,14 +35,24 @@ Gamepad::Gamepad(uint32 id)
 {
     Engine* engine = Engine::Instance();
     endFrameConnectionToken = engine->endFrame.Connect(this, &Gamepad::OnEndFrame);
-    engine->PrimaryWindow()->focusChanged.Connect(this, &Gamepad::OnWindowFocusChanged); // TODO: handle all the windows
+
+    Window* primaryWindow = engine->PrimaryWindow();
+    if (primaryWindow != nullptr)
+    {
+        primaryWindow->focusChanged.Connect(this, &Gamepad::OnWindowFocusChanged); // TODO: handle all the windows
+    }
 }
 
 Gamepad::~Gamepad()
 {
     Engine* engine = Engine::Instance();
     engine->endFrame.Disconnect(endFrameConnectionToken);
-    engine->PrimaryWindow()->focusChanged.Disconnect(this);
+
+    Window* primaryWindow = engine->PrimaryWindow();
+    if (primaryWindow != nullptr)
+    {
+        primaryWindow->focusChanged.Disconnect(this);
+    }
 }
 
 DigitalElementState Gamepad::GetStartButtonState() const
