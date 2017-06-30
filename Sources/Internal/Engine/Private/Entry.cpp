@@ -1,7 +1,5 @@
 #include "Base/BaseTypes.h"
 
-#if defined(__DAVAENGINE_COREV2__)
-
 #include "Base/Exception.h"
 #include "Base/Platform.h"
 #include "Debug/Backtrace.h"
@@ -108,7 +106,7 @@ namespace DAVA
 {
 namespace Private
 {
-extern int StartUWPApplication(Vector<String> cmdargs);
+extern int StartApplication(Vector<String> cmdargs);
 } // namespace Private
 } // namespace DAVA
 
@@ -117,7 +115,7 @@ extern int StartUWPApplication(Vector<String> cmdargs);
 int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int)
 {
     using namespace DAVA;
-    return Private::StartUWPApplication(Private::GetCommandArgs());
+    return Private::StartApplication(Private::GetCommandArgs());
 }
 
 #elif defined(__DAVAENGINE_ANDROID__)
@@ -152,5 +150,3 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
 #endif
 
 // clang-format on
-
-#endif // __DAVAENGINE_COREV2__

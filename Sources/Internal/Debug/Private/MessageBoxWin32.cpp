@@ -1,6 +1,5 @@
 #include "Base/Platform.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_WIN32__)
 
 #include "Base/BaseTypes.h"
@@ -9,12 +8,12 @@
 #include "Concurrency/ThreadLocalPtr.h"
 #include "Engine/Engine.h"
 #include "Engine/Private/EngineBackend.h"
-#include "Engine/Private/Win32/Window/WindowBackendWin32.h"
+#include "Engine/Private/Win32/WindowImplWin32.h"
 #include "Debug/DVAssert.h"
 #include "Utils/UTF8Utils.h"
 
 #if defined(__DAVAENGINE_QT__)
-#include "Engine/PlatformApi.h"
+#include "Engine/PlatformApiQt.h"
 #endif
 
 namespace DAVA
@@ -263,4 +262,3 @@ int MessageBox(const String& title, const String& message, const Vector<String>&
 } // namespace DAVA
 
 #endif // defined(__DAVAENGINE_WIN32__)
-#endif // defined(__DAVAENGINE_COREV2__)

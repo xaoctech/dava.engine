@@ -109,40 +109,9 @@ int32 DeviceInfoPrivate::GetHTTPProxyPort()
     return static_cast<int32>(jgetHTTPProxyPort());
 }
 
-#if !defined(__DAVAENGINE_COREV2__)
-DeviceInfo::ScreenInfo& DeviceInfoPrivate::GetScreenInfo()
-{
-    return screenInfo;
-}
-#endif
-
 eGPUFamily DeviceInfoPrivate::GetGPUFamilyImpl()
 {
-    eGPUFamily gpuFamily = GPU_INVALID;
-#ifdef __DAVAENGINE_COREV2__
-    gpuFamily = static_cast<eGPUFamily>(jgetGpuFamily());
-#else
-    if (Renderer::IsInitialized())
-    {
-        if (rhi::TextureFormatSupported(rhi::TextureFormat::TEXTURE_FORMAT_PVRTC_4BPP_RGBA))
-        {
-            gpuFamily = GPU_POWERVR_ANDROID;
-        }
-        else if (rhi::TextureFormatSupported(rhi::TextureFormat::TEXTURE_FORMAT_DXT1))
-        {
-            gpuFamily = GPU_TEGRA;
-        }
-        else if (rhi::TextureFormatSupported(rhi::TextureFormat::TEXTURE_FORMAT_ATC_RGB))
-        {
-            gpuFamily = GPU_ADRENO;
-        }
-        else if (rhi::TextureFormatSupported(rhi::TextureFormat::TEXTURE_FORMAT_ETC1))
-        {
-            gpuFamily = GPU_MALI;
-        }
-    }
-#endif
-
+    eGPUFamily gpuFamily = static_cast<eGPUFamily>(jgetGpuFamily());
     return gpuFamily;
 }
 
@@ -175,16 +144,6 @@ List<DeviceInfo::StorageInfo> DeviceInfoPrivate::GetStoragesList()
 
     return l;
 }
-
-#if !defined(__DAVAENGINE_COREV2__)
-void DeviceInfoPrivate::InitializeScreenInfo()
-{
-    CorePlatformAndroid* core = static_cast<CorePlatformAndroid*>(Core::Instance());
-    screenInfo.width = core->GetViewWidth();
-    screenInfo.height = core->GetViewHeight();
-    screenInfo.scale = 1;
-}
-#endif
 
 bool DeviceInfoPrivate::IsHIDConnected(DeviceInfo::eHIDType type)
 {

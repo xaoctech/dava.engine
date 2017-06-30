@@ -307,11 +307,11 @@ void RenderSystem2D::Setup2DMatrices()
     if ((descr.colorAttachment != rhi::InvalidHandle) && (!rhi::DeviceCaps().isUpperLeftRTOrigin))
     {
         //invert projection
-        projMatrix.glOrtho(0.0f, targetSize.dx, 0.0f, targetSize.dy, -1.0f, 1.0f, rhi::DeviceCaps().isZeroBaseClipRange);
+        projMatrix.BuildOrtho(0.0f, targetSize.dx, 0.0f, targetSize.dy, -1.0f, 1.0f, rhi::DeviceCaps().isZeroBaseClipRange);
     }
     else
     {
-        projMatrix.glOrtho(0.0f, targetSize.dx, targetSize.dy, 0.0f, -1.0f, 1.0f, rhi::DeviceCaps().isZeroBaseClipRange);
+        projMatrix.BuildOrtho(0.0f, targetSize.dx, targetSize.dy, 0.0f, -1.0f, 1.0f, rhi::DeviceCaps().isZeroBaseClipRange);
     }
 
     if (rhi::DeviceCaps().isCenterPixelMapping)
@@ -352,15 +352,15 @@ void RenderSystem2D::AddPacket(rhi::Packet& packet)
 
 void RenderSystem2D::ScreenSizeChanged()
 {
-    Matrix4 glTranslate, glScale;
+    Matrix4 translateMx, scaleMx;
 
     Vector2 scale = UIControlSystem::Instance()->vcs->ConvertVirtualToPhysical(Vector2(1.f, 1.f));
     Vector2 realDrawOffset = UIControlSystem::Instance()->vcs->GetPhysicalDrawOffset();
 
-    glTranslate.glTranslate(realDrawOffset.x, realDrawOffset.y, 0.0f);
-    glScale.glScale(scale.x, scale.y, 1.0f);
+    translateMx.BuildTranslation(Vector3(realDrawOffset.x, realDrawOffset.y, 0.0f));
+    scaleMx.BuildScale(Vector3(scale.x, scale.y, 1.0f));
 
-    actualVirtualToPhysicalMatrix = glScale * glTranslate;
+    actualVirtualToPhysicalMatrix = scaleMx * translateMx;
     actualPhysicalToVirtualScale.x = UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualX(1.0f);
     actualPhysicalToVirtualScale.y = UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualY(1.0f);
     if (GetActiveTargetDescriptor().transformVirtualToPhysical)

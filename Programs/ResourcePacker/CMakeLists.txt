@@ -7,8 +7,6 @@ set                   ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_
 set                   ( NO_CEF true )
 include               ( CMake-common )
 
-set ( DAVA_COREV2 1 )
-dava_add_definitions  ( -D__DAVAENGINE_COREV2__ )
 find_package          ( DavaTools REQUIRED )
 
 dava_add_definitions  ( -DCONSOLE )
