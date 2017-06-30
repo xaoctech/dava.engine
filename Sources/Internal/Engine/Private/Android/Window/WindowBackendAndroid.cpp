@@ -436,10 +436,16 @@ void WindowBackend::OnKeyEvent(int32 action, int32 keyCode, int32 unicodeChar, i
 {
     if (keyCode == AKeyEvent::KEYCODE_BACK)
     {
-        if (action == AKeyEvent::ACTION_UP)
+        // backButtonDown check handles the case when button was pressed in another activity
+        // 1. some third-party activity is open
+        // 2. third-party activity closes on back button down event
+        // 3. our activity is activated and handles corresponding back button up event, which is undesired
+        if (backButtonDown && (action == AKeyEvent::ACTION_UP))
         {
             mainDispatcher->PostEvent(MainDispatcherEvent(MainDispatcherEvent::BACK_NAVIGATION));
         }
+
+        backButtonDown = action == AKeyEvent::ACTION_DOWN;
     }
     else
     {
