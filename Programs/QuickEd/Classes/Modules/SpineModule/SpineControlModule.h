@@ -1,23 +1,16 @@
 #pragma once
 
-#include <memory.h>
-
 #include <TArc/Core/ClientModule.h>
 
+#include <Base/BaseTypes.h>
 #include <Reflection/Reflection.h>
-#include <Base/GlobalEnum.h>
 
 #include <QIcon>
 
 namespace DAVA
 {
-namespace TArc
-{
-class FieldBinder;
+class UISpineSystem;
 }
-}
-
-class SelectableGroup;
 
 class SpineControlModule : public DAVA::TArc::ClientModule
 {
@@ -34,7 +27,8 @@ private:
     const QIcon& GetPauseButtonIcon();
     void RebuildAllBoneLinks();
     void PlayPause();
+    DAVA::UISpineSystem* GetSpineSystem() const;
 
-    const String pauseButtonHint = "Play/Pause Spine animations";
-    const String rebuildButtonHint = "Rebuild all links Spine bones to controls";
+    const DAVA::String pauseButtonHint = "Play/Pause Spine animations";
+    const DAVA::String rebuildButtonHint = "Rebuild all links Spine bones to controls";
 };

@@ -1,17 +1,13 @@
 #include "Modules/SpineModule/SpineControlModule.h"
 
-#include <Base/BaseTypes.h>
 #include <Engine/EngineContext.h>
 #include <UI/UIControlSystem.h>
 
 #include <UI/Spine/UISpineSystem.h>
 
-#include <TArc/Controls/CheckBox.h>
 #include <TArc/Controls/QtBoxLayouts.h>
 #include <TArc/Controls/ReflectedButton.h>
 #include <TArc/Core/ContextAccessor.h>
-#include <TArc/Core/FieldBinder.h>
-#include <TArc/DataProcessing/DataNode.h>
 #include <TArc/Utils/ModuleCollection.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/UI.h>
@@ -78,21 +74,20 @@ const QIcon& SpineControlModule::GetRebuildButtonIcon()
 
 const QIcon& SpineControlModule::GetPauseButtonIcon()
 {
-    using namespace DAVA;
-    using namespace DAVA::TArc;
-    ContextAccessor* accessor = GetAccessor();
-    UISpineSystem* spineSystem = accessor->GetEngineContext()->uiControlSystem->GetSystem<UISpineSystem>();
-
-    return spineSystem != nullptr && spineSystem->IsPause() ? SharedIcon(":/Icons/play.png") : SharedIcon(":/Icons/pause.png");
+    DAVA::UISpineSystem* spineSystem = GetSpineSystem();
+    if (spineSystem != nullptr && !spineSystem->IsPause())
+    {
+        return SharedIcon(":/Icons/pause.png");
+    }
+    else
+    {
+        return SharedIcon(":/Icons/play.png");
+    }
 }
 
 void SpineControlModule::RebuildAllBoneLinks()
 {
-    using namespace DAVA;
-    using namespace DAVA::TArc;
-    ContextAccessor* accessor = GetAccessor();
-    UISpineSystem* spineSystem = accessor->GetEngineContext()->uiControlSystem->GetSystem<UISpineSystem>();
-
+    DAVA::UISpineSystem* spineSystem = GetSpineSystem();
     if (spineSystem != nullptr)
     {
         spineSystem->RebuildAllBoneLinks();
@@ -101,11 +96,7 @@ void SpineControlModule::RebuildAllBoneLinks()
 
 void SpineControlModule::PlayPause()
 {
-    using namespace DAVA;
-    using namespace DAVA::TArc;
-    ContextAccessor* accessor = GetAccessor();
-    UISpineSystem* spineSystem = accessor->GetEngineContext()->uiControlSystem->GetSystem<UISpineSystem>();
-
+    DAVA::UISpineSystem* spineSystem = GetSpineSystem();
     if (spineSystem != nullptr)
     {
         spineSystem->SetPause(!spineSystem->IsPause());
@@ -114,7 +105,15 @@ void SpineControlModule::PlayPause()
 
 bool SpineControlModule::IsEnabled() const
 {
-    return GetAccessor()->GetContextCount() != 0;
+    return GetSpineSystem() != nullptr;
+}
+
+DAVA::UISpineSystem* SpineControlModule::GetSpineSystem() const
+{
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+    const ContextAccessor* accessor = GetAccessor();
+    return accessor != nullptr ? accessor->GetEngineContext()->uiControlSystem->GetSystem<UISpineSystem>() : nullptr;
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(SpineControlModule)
