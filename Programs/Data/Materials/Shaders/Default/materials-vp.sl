@@ -247,10 +247,6 @@ FresnelShlickVec3( float NdotL, float3 Cspec )
     return (1.0 - Cspec) * (pow(1.0 - NdotL, fresnel_exponent)) + Cspec;
 }
 
-    float4 index : BLENDINDICES;
-	float4 weight : BLENDWEIGHT;
-    #endif
-
 #if SKINNING
 
 inline float3 JointTransformTangent( float3 tangent, int4 jIndices, float4 jWeights)
