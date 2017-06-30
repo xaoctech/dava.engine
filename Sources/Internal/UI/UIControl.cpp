@@ -630,7 +630,8 @@ void UIControl::SetVisibilityFlag(bool isVisible)
         }
         else
         {
-            if (scene && scene->IsHostControl(this))
+            if ((scene && scene->IsHostControl(this))
+                || UIControlSystem::Instance()->IsHostControl(this))
             {
                 parentViewState = eViewState::VISIBLE;
             }
@@ -1068,7 +1069,8 @@ bool UIControl::SystemProcessInput(UIEvent* currentInput)
     {
         return false;
     }
-    if (scene && scene->GetExclusiveInputLocker() && scene->GetExclusiveInputLocker() != this)
+    if ((scene && scene->GetExclusiveInputLocker() && scene->GetExclusiveInputLocker() != this)
+        || (UIControlSystem::Instance()->GetExclusiveInputLocker() && UIControlSystem::Instance()->GetExclusiveInputLocker() != this))
     {
         return false;
     }
@@ -1130,14 +1132,31 @@ bool UIControl::SystemProcessInput(UIEvent* currentInput)
                 // Yuri Coder, 2013/12/18. Set the touch lockers before the EVENT_TOUCH_DOWN handler
                 // to have possibility disable control inside the EVENT_TOUCH_DOWN. See also DF-2943.
                 currentInput->touchLocker = this;
-                if (exclusiveInput && scene)
+                if (exclusiveInput)
                 {
-                    scene->SetExclusiveInputLocker(this, currentInput->touchId);
+                    if (scene)
+                    {
+                        scene->SetExclusiveInputLocker(this, currentInput->touchId);
+                    }
+                    else
+                    {
+                        UIControlSystem::Instance()->SetExclusiveInputLocker(this, currentInput->touchId);
+                    }
                 }
 
-                if (scene && scene->GetFocusedControl() != this && FocusHelpers::CanFocusControl(this))
+                if (scene)
                 {
-                    scene->SetFocusedControl(this);
+                    if (scene->GetFocusedControl() != this && FocusHelpers::CanFocusControl(this))
+                    {
+                        scene->SetFocusedControl(this);
+                    }
+                }
+                else
+                {
+                    if (UIControlSystem::Instance()->GetFocusedControl() != this && FocusHelpers::CanFocusControl(this))
+                    {
+                        UIControlSystem::Instance()->SetFocusedControl(this);
+                    }
                 }
 
                 if (!multiInput)
@@ -1242,16 +1261,33 @@ bool UIControl::SystemProcessInput(UIEvent* currentInput)
 #endif
                         PerformEventWithData(event, currentInput, currentInput);
 
-                        if (isPointInside && scene)
+                        if (isPointInside)
                         {
-                            scene->GetInputSystem()->PerformActionOnControl(this);
+                            if (scene)
+                            {
+                                scene->GetInputSystem()->PerformActionOnControl(this);
+                            }
+                            else
+                            {
+                                UIControlSystem::Instance()->GetInputSystem()->PerformActionOnControl(this);
+                            }
                         }
 
                         AddState(STATE_NORMAL);
                         RemoveState(STATE_PRESSED_INSIDE | STATE_PRESSED_OUTSIDE);
-                        if (scene && scene->GetExclusiveInputLocker() == this)
+                        if (scene)
                         {
-                            scene->SetExclusiveInputLocker(nullptr, -1);
+                            if (scene->GetExclusiveInputLocker() == this)
+                            {
+                                scene->SetExclusiveInputLocker(nullptr, -1);
+                            }
+                        }
+                        else
+                        {
+                            if (UIControlSystem::Instance()->GetExclusiveInputLocker() == this)
+                            {
+                                UIControlSystem::Instance()->SetExclusiveInputLocker(nullptr, -1);
+                            }
                         }
                     }
                     else if (touchesInside <= 0)
@@ -1350,9 +1386,19 @@ void UIControl::SystemInputCancelled(UIEvent* currentInput)
     {
         RemoveState(STATE_PRESSED_INSIDE | STATE_PRESSED_OUTSIDE);
         AddState(STATE_NORMAL);
-        if (scene && scene->GetExclusiveInputLocker() == this)
+        if (scene)
         {
-            scene->SetExclusiveInputLocker(NULL, -1);
+            if (scene->GetExclusiveInputLocker() == this)
+            {
+                scene->SetExclusiveInputLocker(nullptr, -1);
+            }
+        }
+        else
+        {
+            if (UIControlSystem::Instance()->GetExclusiveInputLocker() == this)
+            {
+                UIControlSystem::Instance()->SetExclusiveInputLocker(nullptr, -1);
+            }
         }
     }
 
@@ -2032,9 +2078,16 @@ void UIControl::AddComponent(UIComponent* component)
     });
     UpdateFamily();
 
-    if (viewState >= eViewState::ACTIVE && scene)
+    if (viewState >= eViewState::ACTIVE)
     {
-        scene->RegisterComponent(this, component);
+        if (scene)
+        {
+            scene->RegisterComponent(this, component);
+        }
+        else
+        {
+            UIControlSystem::Instance()->RegisterComponent(this, component);
+        }
     }
     SetStyleSheetDirty();
     SetLayoutDirty();
@@ -2057,9 +2110,16 @@ void UIControl::InsertComponentAt(UIComponent* component, uint32 index)
 
         UpdateFamily();
 
-        if (viewState >= eViewState::ACTIVE && scene)
+        if (viewState >= eViewState::ACTIVE)
         {
-            scene->RegisterComponent(this, component);
+            if (scene)
+            {
+                scene->RegisterComponent(this, component);
+            }
+            else
+            {
+                UIControlSystem::Instance()->RegisterComponent(this, component);
+            }
         }
 
         SetStyleSheetDirty();
@@ -2126,9 +2186,16 @@ void UIControl::RemoveAllComponents()
         auto it = components.end() - 1;
         UIComponent* component = *it;
 
-        if (viewState >= eViewState::ACTIVE && scene)
+        if (viewState >= eViewState::ACTIVE)
         {
-            scene->UnregisterComponent(this, component);
+            if (scene)
+            {
+                scene->UnregisterComponent(this, component);
+            }
+            else
+            {
+                UIControlSystem::Instance()->UnregisterComponent(this, component);
+            }
         }
 
         components.erase(it);
@@ -2147,9 +2214,16 @@ void UIControl::RemoveComponent(const Vector<UIComponent*>::iterator& it)
     {
         UIComponent* component = *it;
 
-        if (viewState >= eViewState::ACTIVE && scene)
+        if (viewState >= eViewState::ACTIVE)
         {
-            scene->UnregisterComponent(this, component);
+            if (scene)
+            {
+                scene->UnregisterComponent(this, component);
+            }
+            else
+            {
+                UIControlSystem::Instance()->UnregisterComponent(this, component);
+            }
         }
 
         components.erase(it);
