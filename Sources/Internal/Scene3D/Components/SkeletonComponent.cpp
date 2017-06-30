@@ -28,6 +28,12 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SkeletonComponent)
     .End();
 }
 
+template <>
+bool AnyCompare<SkeletonComponent::JointConfig>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2)
+{
+    return v1.Get<SkeletonComponent::JointConfig>() == v2.Get<SkeletonComponent::JointConfig>();
+}
+
 SkeletonComponent::SkeletonComponent()
 {
 }
@@ -66,10 +72,16 @@ bool SkeletonComponent::JointConfig::operator==(const JointConfig& other) const
     bbox == other.bbox;
 }
 
-uint16 SkeletonComponent::GetConfigJointsCount()
+uint32 SkeletonComponent::GetConfigJointsCount()
 {
     return uint16(configJoints.size());
 }
+
+const SkeletonComponent::JointConfig& SkeletonComponent::GetConfigJoint(uint32 i)
+{
+    return configJoints[i];
+}
+
 void SkeletonComponent::SetConfigJoints(const Vector<JointConfig>& config)
 {
     configJoints = config;

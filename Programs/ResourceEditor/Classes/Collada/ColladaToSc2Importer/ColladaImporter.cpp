@@ -225,6 +225,13 @@ void ColladaImporter::ImportSkeleton(ColladaSceneNode* colladaNode, Entity* node
             {
                 jointConfigs[i].scale = dynamic_cast<FCDTScale*>(transform)->GetScale()->x;
             }
+            else if (transformType == FCDTransform::MATRIX)
+            {
+                Matrix4 matrix = ConvertMatrix(*dynamic_cast<FCDTMatrix*>(transform)->GetTransform());
+                jointConfigs[i].orientation.Construct(matrix);
+                jointConfigs[i].position = matrix.GetTranslationVector();
+                jointConfigs[i].scale = matrix.GetScaleVector().x;
+            }
         }
 
         jointConfigs[i].bbox = AABBox3(jointConfigs[i].position, 1.0);
@@ -236,8 +243,10 @@ eColladaErrorCodes ColladaImporter::BuildSceneAsCollada(Entity* root, ColladaSce
 {
     eColladaErrorCodes res = eColladaErrorCodes::COLLADA_OK;
 
-    ScopedPtr<Entity> nodeEntity(new Entity());
+    if (colladaNode->originalNode->GetJointFlag())
+        return res;
 
+    ScopedPtr<Entity> nodeEntity(new Entity());
     String name = UTF8Utils::MakeUTF8String(colladaNode->originalNode->GetName().c_str());
     if (name.empty())
     {

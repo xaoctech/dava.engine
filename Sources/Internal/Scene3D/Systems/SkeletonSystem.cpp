@@ -62,14 +62,14 @@ void SkeletonSystem::Process(float32 timeElapsed)
         /*test/
         {
             static float32 t=0;
-            t+=timeElapsed;
+            t += timeElapsed;
             for (int32 i=0, sz = component->GetJointsCount(); i<sz; ++i)
             {
                 float32 fi = t;
                 Quaternion q;
                 q.Construct(Vector3(0,1,0), fi);
                 component->SetJointOrientation(i, q);
-            }
+        }
         }*/
         if (component && (component->startJoint != SkeletonComponent::INVALID_JOINT_INDEX))
         {
@@ -168,7 +168,7 @@ void SkeletonSystem::RebuildSkeleton(Entity* entity)
     component->configUpdated = false;
 
     /*convert joint configs to joints*/
-    component->jointsCount = component->GetConfigJointsCount();
+    component->jointsCount = uint16(component->GetConfigJointsCount());
 
     component->jointInfo.resize(component->jointsCount);
     component->localSpaceTransforms.resize(component->jointsCount);

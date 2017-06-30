@@ -28,7 +28,6 @@ Matrix4 ConvertMatrixT(FMMatrix44& matrix)
 
 ColladaSceneNode::ColladaSceneNode(ColladaScene* _scene, FCDSceneNode* _node)
 {
-    isJoint = false;
     originalNode = _node;
     localTransform.Identity();
     parent = 0;
@@ -84,7 +83,7 @@ void ColladaSceneNode::Render(Matrix4 currentMatrix)
     glPushMatrix();
     glMultMatrixf(worldTransform.data);
 
-    if (isJoint)
+    if (originalNode->GetJointFlag())
     {
         glDisable(GL_LIGHTING);
         glColor3f(0.984375, 0.078125, 0.64453125);
@@ -108,11 +107,6 @@ void ColladaSceneNode::Render(Matrix4 currentMatrix)
 void ColladaSceneNode::AddLight(ColladaLight* light)
 {
     lights.push_back(light);
-}
-
-void ColladaSceneNode::MarkJoint()
-{
-    isJoint = true;
 }
 
 void ColladaSceneNode::UpdateTransforms(float time)

@@ -34,7 +34,7 @@ public:
     ColladaSkinnedMesh(FCDController* colladaController);
     ~ColladaSkinnedMesh();
 
-    void MarkJoints(ColladaSceneNode* node);
+    void BuildJoints(ColladaSceneNode* node);
     void UpdateSkinnedMesh(float32 time);
 
     std::vector<Joint> joints;

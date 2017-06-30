@@ -178,7 +178,7 @@ void ColladaSkinnedMesh::UpdateSkinnedMesh(float32 time)
     }
 }
 
-void ColladaSkinnedMesh::MarkJoints(ColladaSceneNode* node)
+void ColladaSkinnedMesh::BuildJoints(ColladaSceneNode* node)
 {
     sceneRootNode = node;
     BuildJointsHierarhy(sceneRootNode, 0);
@@ -189,10 +189,6 @@ void ColladaSkinnedMesh::BuildJointsHierarhy(ColladaSceneNode* node, Joint* pare
     static int depth = 0;
 
     depth++;
-
-    //for (int d = 0; d < depth; ++d)
-    //    printf("-");
-    //printf("%s %s\n", node->originalNode->GetDaeId().c_str(), node->originalNode->GetSubId().c_str());
 
     Joint* currentJoint = 0;
     for (int j = 0; j < (int)joints.size(); ++j)
@@ -205,7 +201,6 @@ void ColladaSkinnedMesh::BuildJointsHierarhy(ColladaSceneNode* node, Joint* pare
 
             node->inverse0 = joints[j].inverse0; // copy bindpos inverse matrix to node
 
-            node->MarkJoint();
             for (int d = 0; d < depth; ++d)
                 printf("-");
 

@@ -35,7 +35,8 @@ vertex_in
     #endif
     
     #if SKINNING
-    float index : BLENDINDICES;
+    float4 index : BLENDINDICES;
+	float4 weight : BLENDWEIGHT;
     #endif
 
 
@@ -246,13 +247,32 @@ FresnelShlickVec3( float NdotL, float3 Cspec )
     return (1.0 - Cspec) * (pow(1.0 - NdotL, fresnel_exponent)) + Cspec;
 }
 
-inline float3
-JointTransformTangent( float3 inVec, float4 jointQuaternion )
+    float4 index : BLENDINDICES;
+	float4 weight : BLENDWEIGHT;
+    #endif
+
+#if SKINNING
+
+inline float3 JointTransformTangent( float3 tangent, int4 jIndices, float4 jWeights)
 {
-    float3 t = 2.0 * cross( jointQuaternion.xyz, inVec );
-    return inVec + jointQuaternion.w * t + cross(jointQuaternion.xyz, t); 
+	int4 indices = jIndices;
+	float4 weights = jWeights;
+	for(int i = 0; i < 4; ++i)
+	{
+		int jIndex = int(indices.x);
+		float4 jQ = jointQuaternions[jIndex];
+	
+		float3 tmp = 2.0 * cross(jQ.xyz, tangent);
+		tangent += (jQ.w * tmp + cross(jQ.xyz, tmp)) * weights.x;
+		
+		indices = indices.yzwx;
+		weights = weights.yzwx;
+	}
+
+    return tangent;
 }
 
+#endif
 
 inline float4
 Wave( float time, float4 pos, float2 uv )
@@ -295,13 +315,6 @@ Wave( float time, float4 pos, float2 uv )
 vertex_out vp_main( vertex_in input )
 {
     vertex_out  output;
-
-#if SKINNING
-    // compute final state - for now just effected by 1 bone - later blend everything here
-    int     index                    = int(input.index);
-    float4  weightedVertexPosition   = jointPositions[index];
-    float4  weightedVertexQuaternion = jointQuaternions[index];
-#endif
 
 #if FLOWMAP
     float scaledTime = globalTime * flowAnimSpeed;
@@ -369,8 +382,24 @@ vertex_out vp_main( vertex_in input )
             output.position = mul( waveValue, worldViewProjMatrix );
         #else
             #if SKINNING
-                float3 tmpVec = 2.0 * cross(weightedVertexQuaternion.xyz, input.position.xyz);
-                float4 skinnedPosition = float4(weightedVertexPosition.xyz + (input.position.xyz + weightedVertexQuaternion.w * tmpVec + cross(weightedVertexQuaternion.xyz, tmpVec))*weightedVertexPosition.w, 1.0);
+
+				int4 indices = input.index;
+				float4 weights = input.weight;
+			    float4 skinnedPosition = float4(0.0, 0.0, 0.0, 0.0);
+			    for(int i = 0; i < 4; ++i)
+				{
+					int jIndex = int(indices.x);
+					
+					float4 jP = jointPositions[jIndex];
+					float4 jQ = jointQuaternions[jIndex];
+				
+					float3 tmp = 2.0 * cross(jQ.xyz, input.position.xyz);
+					skinnedPosition += float4(jP.xyz + (input.position.xyz + jQ.w * tmp + cross(jQ.xyz, tmp)) * jP.w, 1.0) * weights.x;
+					
+					indices = indices.yzwx;
+					weights = weights.yzwx;
+				}
+				
                 output.position = mul( skinnedPosition, worldViewProjMatrix );
             #else
                 output.position = mul( float4(input.position.xyz,1.0), worldViewProjMatrix );
@@ -458,9 +487,9 @@ vertex_out vp_main( vertex_in input )
     float3  inBinormal  = input.binormal;
     
     #if SKINNING
-        float3 n = normalize( mul( float4(JointTransformTangent(inNormal, weightedVertexQuaternion),1.0), worldViewInvTransposeMatrix ).xyz );
-        float3 t = normalize( mul( float4(JointTransformTangent(inTangent, weightedVertexQuaternion),1.0), worldViewInvTransposeMatrix ).xyz );
-        float3 b = normalize( mul( float4(JointTransformTangent(inBinormal, weightedVertexQuaternion),1.0), worldViewInvTransposeMatrix ).xyz );
+        float3 n = normalize( mul( float4(JointTransformTangent(inNormal), 1.0), worldViewInvTransposeMatrix ).xyz );
+        float3 t = normalize( mul( float4(JointTransformTangent(inTangent), 1.0), worldViewInvTransposeMatrix ).xyz );
+        float3 b = normalize( mul( float4(JointTransformTangent(inBinormal), 1.0), worldViewInvTransposeMatrix ).xyz );
     #else
         float3 n = normalize( mul( float4(inNormal,1.0), worldViewInvTransposeMatrix ).xyz );
         float3 t = normalize( mul( float4(inTangent,1.0), worldViewInvTransposeMatrix ).xyz );

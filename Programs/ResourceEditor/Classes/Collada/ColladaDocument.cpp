@@ -29,6 +29,8 @@ eColladaErrorCodes ColladaDocument::Open(const char* filename)
     if (!val)
         return COLLADA_ERROR;
 
+    FCDocumentTools::StandardizeUpAxisAndLength(document, FMVector3(0.f, 0.f, 1.f));
+
     FCDSceneNode* loadedRootNode = document->GetVisualSceneInstance();
     if (!loadedRootNode)
     {
@@ -106,7 +108,7 @@ eColladaErrorCodes ColladaDocument::Open(const char* filename)
 
     for (int k = 0; k < (int)colladaScene->colladaSkinnedMeshes.size(); ++k)
     {
-        colladaScene->colladaSkinnedMeshes[k]->MarkJoints(colladaScene->rootNode);
+        colladaScene->colladaSkinnedMeshes[k]->BuildJoints(colladaScene->rootNode);
     }
 
     ExportNodeAnimations(document, document->GetVisualSceneInstance());

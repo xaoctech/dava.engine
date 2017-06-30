@@ -62,7 +62,9 @@ public:
 
     void RebuildFromConfig();
     void SetConfigJoints(const Vector<JointConfig>& config);
-    uint16 GetConfigJointsCount();
+
+    uint32 GetConfigJointsCount();
+    const JointConfig& GetConfigJoint(uint32 i);
 
     Component* Clone(Entity* toEntity) override;
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
@@ -178,6 +180,10 @@ inline SkeletonComponent::JointTransform SkeletonComponent::JointTransform::GetI
 
     return res;
 }
+
+template <>
+bool AnyCompare<SkeletonComponent::JointConfig>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2);
+extern template struct AnyCompare<SkeletonComponent::JointConfig>;
 
 } //ns
 
