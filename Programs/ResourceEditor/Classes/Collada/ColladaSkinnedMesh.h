@@ -17,6 +17,9 @@ public:
         ColladaSceneNode* node;
         int32 index;
         int32 parentIndex;
+        int32 hierarhyDepth;
+
+        String jointName;
 
         // original collada matrices
         FMMatrix44 colladaInverse0;
@@ -48,7 +51,8 @@ public:
     ColladaMesh* mesh = nullptr;
 
 private:
-    void BuildJointsHierarhy(ColladaSceneNode* node, Joint* parentJoint);
+    void LinkJoints(ColladaSceneNode* node, Joint* parentJoint);
+    void BuildJointsHierarhy();
 };
 };
 

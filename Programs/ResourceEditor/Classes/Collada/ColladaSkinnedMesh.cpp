@@ -22,8 +22,9 @@ ColladaSkinnedMesh::ColladaSkinnedMesh(FCDController* colladaController)
             joints[j].joint = &origJoints[j];
             joints[j].parentJoint = nullptr;
             joints[j].node = nullptr;
-            joints[j].index = static_cast<int32>(j);
+            joints[j].index = -1;
             joints[j].parentIndex = -1;
+            joints[j].hierarhyDepth = 0;
 
             FMMatrix44 bindPoseInverse = joints[j].joint->GetBindPoseInverse();
             joints[j].colladaInverse0 = bindPoseInverse;
@@ -181,31 +182,31 @@ void ColladaSkinnedMesh::UpdateSkinnedMesh(float32 time)
 void ColladaSkinnedMesh::BuildJoints(ColladaSceneNode* node)
 {
     sceneRootNode = node;
-    BuildJointsHierarhy(sceneRootNode, 0);
+    LinkJoints(sceneRootNode, nullptr);
+
+    BuildJointsHierarhy();
 }
 
-void ColladaSkinnedMesh::BuildJointsHierarhy(ColladaSceneNode* node, Joint* parentJoint)
+void ColladaSkinnedMesh::LinkJoints(ColladaSceneNode* node, Joint* parentJoint)
 {
-    static int depth = 0;
-
-    depth++;
-
-    Joint* currentJoint = 0;
+    Joint* currentJoint = nullptr;
     for (int j = 0; j < (int)joints.size(); ++j)
     {
         if (node->originalNode->GetSubId() == joints[j].joint->GetId())
         {
-            joints[j].node = node;
-            if (parentJoint != 0)
-                joints[j].parentIndex = parentJoint->index;
+            Joint& joint = joints[j];
 
-            node->inverse0 = joints[j].inverse0; // copy bindpos inverse matrix to node
+            joint.node = node;
+            if (parentJoint != nullptr)
+            {
+                joint.parentJoint = parentJoint->joint;
+                joint.hierarhyDepth = parentJoint->hierarhyDepth + 1;
+            }
 
-            for (int d = 0; d < depth; ++d)
-                printf("-");
+            joint.jointName = UTF8Utils::EncodeToUTF8(node->originalNode->GetName().c_str());
+            node->inverse0 = joint.inverse0; // copy bindpos inverse matrix to node
 
-            currentJoint = &joints[j];
-            printf("Joint founded: %s i:%d p:%d\n", UTF8Utils::EncodeToUTF8(node->originalNode->GetName().c_str()).c_str(), currentJoint->index, currentJoint->parentIndex);
+            currentJoint = &joint;
             break;
         }
     }
@@ -213,8 +214,30 @@ void ColladaSkinnedMesh::BuildJointsHierarhy(ColladaSceneNode* node, Joint* pare
     for (int i = 0; i < (int)node->childs.size(); i++)
     {
         ColladaSceneNode* childNode = node->childs[i];
-        BuildJointsHierarhy(childNode, currentJoint);
+        LinkJoints(childNode, currentJoint);
     }
-    depth--;
+}
+
+void ColladaSkinnedMesh::BuildJointsHierarhy()
+{
+    std::sort(joints.begin(), joints.end(), [](const Joint& l, const Joint& r)
+              {
+                  if (l.hierarhyDepth == r.hierarhyDepth)
+                      return l.jointName < r.jointName;
+                  else
+                      return l.hierarhyDepth < r.hierarhyDepth;
+              });
+
+    for (int32 j = 0; j < int32(joints.size()); ++j)
+    {
+        Joint& joint = joints[j];
+
+        size_t parentIndex = std::distance(joints.begin(), std::find_if(joints.begin(), joints.end(), [&joint](const Joint& item) {
+                                               return (item.joint == joint.parentJoint);
+                                           }));
+
+        joint.parentIndex = (parentIndex == joints.size()) ? -1 : int32(parentIndex);
+        joint.index = j;
+    }
 }
 };

@@ -186,6 +186,8 @@ void ColladaImporter::ImportSkeleton(ColladaSceneNode* colladaNode, Entity* node
     jointConfigs.resize(jointsCount);
     for (int32 i = 0; i < jointsCount; i++)
     {
+        DVASSERT(skinnedMesh->joints[i].parentIndex < skinnedMesh->joints[i].index);
+
         FCDSceneNode* originalNode = skinnedMesh->joints[i].node->originalNode;
 
         jointConfigs[i].parentIndex = skinnedMesh->joints[i].parentIndex;
@@ -193,8 +195,7 @@ void ColladaImporter::ImportSkeleton(ColladaSceneNode* colladaNode, Entity* node
             jointConfigs[i].parentIndex = SkeletonComponent::INVALID_JOINT_INDEX;
         jointConfigs[i].targetId = skinnedMesh->joints[i].index;
 
-        String jointName = UTF8Utils::EncodeToUTF8(originalNode->GetName().c_str());
-        jointConfigs[i].name = FastName(jointName);
+        jointConfigs[i].name = FastName(skinnedMesh->joints[i].jointName);
 
         jointConfigs[i].orientation = Quaternion();
         jointConfigs[i].position = Vector3();
