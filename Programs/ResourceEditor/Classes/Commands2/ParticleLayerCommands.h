@@ -137,6 +137,7 @@ public:
         DAVA::float32 stripeStartSize;
         DAVA::float32 stripeUScrollSpeed;
         DAVA::float32 stripeVScrollSpeed;
+        DAVA::float32 stripeFadeDistanceFromTop;
         bool stripeInheritPositionForBase;
         bool usePerspectiveMapping;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> stripeTextureTile;

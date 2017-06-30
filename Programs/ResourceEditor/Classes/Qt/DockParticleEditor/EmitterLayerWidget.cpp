@@ -884,6 +884,7 @@ void EmitterLayerWidget::OnStripePropertiesChanged()
     params.stripeStartSize = static_cast<DAVA::float32>(stripeStartSizeSpin->value());
     params.stripeUScrollSpeed = static_cast<DAVA::float32>(stripeUScrollSpeedSpin->value());
     params.stripeVScrollSpeed = static_cast<DAVA::float32>(stripeVScrollSpeedSpin->value());
+    params.stripeFadeDistanceFromTop = static_cast<DAVA::float32>(stripeFadeDistanceFromTopSpin->value());
     params.stripeInheritPositionForBase = stripeInheritPositionForBaseCheckBox->isChecked();
     params.usePerspectiveMapping = stripeUsePerspectiveMappingCheckBox->isChecked();
     params.stripeTextureTile = propStripeTileOverLife.GetPropLine();
@@ -1089,6 +1090,7 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     stripeStartSizeSpin->setValue(layer->stripeStartSize);
     stripeUScrollSpeedSpin->setValue(layer->stripeUScrollSpeed);
     stripeVScrollSpeedSpin->setValue(layer->stripeVScrollSpeed);
+    stripeFadeDistanceFromTopSpin->setValue(layer->stripeFadeDistanceFromTop);
     stripeInheritPositionForBaseCheckBox->setChecked(layer->stripeInheritPositionForBase);
     stripeUsePerspectiveMappingCheckBox->setChecked(layer->usePerspectiveMapping);
 
@@ -1649,14 +1651,25 @@ void EmitterLayerWidget::CreateStripeLayoutWidget()
     stripeUScrollSpeedLabel = new QLabel("U scroll");
     stripeVScrollSpeedLabel = new QLabel("V scroll");
 
+    stripeFadeDistanceFromTopSpin = new EventFilterDoubleSpinBox();
+    stripeFadeDistanceFromTopSpin->setMinimum(0);
+    stripeFadeDistanceFromTopSpin->setMaximum(100);
+    stripeFadeDistanceFromTopSpin->setSingleStep(0.1f);
+    stripeFadeDistanceFromTopSpin->setDecimals(2);
+
+    stripeFadeDistanceFromTopLabel = new QLabel("Stripe fade distance from top");
+
     vertStripeLayout->addWidget(stripeUScrollSpeedLabel);
     vertStripeLayout->addWidget(stripeUScrollSpeedSpin);
     vertStripeLayout->addWidget(stripeVScrollSpeedLabel);
     vertStripeLayout->addWidget(stripeVScrollSpeedSpin);
+    vertStripeLayout->addWidget(stripeFadeDistanceFromTopLabel);
+    vertStripeLayout->addWidget(stripeFadeDistanceFromTopSpin);
 
     connect(stripeLifetimeSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
     connect(stripeRateSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
     connect(stripeStartSizeSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
+    connect(stripeFadeDistanceFromTopSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
 
     connect(stripeTextureTileTimeLine, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
     connect(stripeUScrollSpeedSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));

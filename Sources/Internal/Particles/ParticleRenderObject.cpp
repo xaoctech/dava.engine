@@ -1,5 +1,6 @@
 #include "ParticleRenderObject.h"
 
+#include "Math/MathConstants.h"
 #include "Render/DynamicBufferAllocator.h"
 #include "Render/Renderer.h"
 #include "Time/SystemTimer.h"
@@ -524,7 +525,6 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                 if (nodes.size() == 0)
                     return;
                 float32 height = nodes.back().distanceFromBase;
-                Logger::Info("%f", height);
                 Vector3 basisVector = basisVectors[basises[i]];
                 if(i == 0 && group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING)
                 {
@@ -573,12 +573,17 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                 if (group.layer->stripeColorOverLife)
                     colOverLife = group.layer->stripeColorOverLife->GetValue(0.0f);
 
-                float32 distToUp = height - base.distanceFromBase;
-                distToUp = Clamp(distToUp, 0.0f, 2.0f);
-                distToUp = 2.0f - distToUp;
-                float32 cA = (2.0f - distToUp) / 2.0f;
+                float32 fadeFromTop = 1.0f;
+                float32 distToUp = 0.0f;
+                if (group.layer->stripeFadeDistanceFromTop > EPSILON)
+                {
+                    distToUp = height - base.distanceFromBase;
+                    distToUp = Clamp(distToUp, 0.0f, group.layer->stripeFadeDistanceFromTop);
+                    distToUp = group.layer->stripeFadeDistanceFromTop - distToUp;
+                    fadeFromTop = 1.0f - distToUp / group.layer->stripeFadeDistanceFromTop;
+                }
 
-                uint32 col = rhi::NativeColorRGBA(Saturate(currColor.r * colOverLife.r), Saturate(currColor.g * colOverLife.g), Saturate(currColor.b * colOverLife.b), Saturate(currColor.a * colOverLife.a * cA));
+                uint32 col = rhi::NativeColorRGBA(Saturate(currColor.r * colOverLife.r), Saturate(currColor.g * colOverLife.g), Saturate(currColor.b * colOverLife.b), Saturate(currColor.a * colOverLife.a * fadeFromTop));
                 float32* color = reinterpret_cast<float32*>(&col);
                 UpdateStripeVertex(vertexBufferData, left, uv1, color, group.layer, currentParticle, fresnelToAlpha);
                 UpdateStripeVertex(vertexBufferData, right, uv2, color, group.layer, currentParticle, fresnelToAlpha);
@@ -595,10 +600,13 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                         basisVector.Normalize();
                     }
 
-                    distToUp = height - node.distanceFromBase;
-                    distToUp = Clamp(distToUp, 0.0f, 2.0f);
-                    distToUp = 2.0f - distToUp;
-                    cA = (2.0f - distToUp) / 2.0f;
+                    if (group.layer->stripeFadeDistanceFromTop > EPSILON)
+                    {
+                        distToUp = height - node.distanceFromBase;
+                        distToUp = Clamp(distToUp, 0.0f, group.layer->stripeFadeDistanceFromTop);
+                        distToUp = group.layer->stripeFadeDistanceFromTop - distToUp;
+                        fadeFromTop = 1.0f - distToUp / group.layer->stripeFadeDistanceFromTop;
+                    }
 
                     float32 overLifeTime = node.lifeime / group.layer->stripeLifetime;
                     size = group.layer->stripeStartSize * 0.5f;
@@ -613,7 +621,7 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                     if (group.layer->stripeColorOverLife)
                         colOverLife = group.layer->stripeColorOverLife->GetValue(overLifeTime);
 
-                    col = rhi::NativeColorRGBA(Saturate(currColor.r * colOverLife.r), Saturate(currColor.g * colOverLife.g), Saturate(currColor.b * colOverLife.b), Saturate(currColor.a * colOverLife.a * cA));
+                    col = rhi::NativeColorRGBA(Saturate(currColor.r * colOverLife.r), Saturate(currColor.g * colOverLife.g), Saturate(currColor.b * colOverLife.b), Saturate(currColor.a * colOverLife.a * fadeFromTop));
 
                     distance += (prevNode->position - node.position).Length();
                     float32 tile = 1.0f;

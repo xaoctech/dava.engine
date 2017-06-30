@@ -724,7 +724,7 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
         else
             AddParticleToBBox(nodeIter->position, radius, bbox);
 
-        nodeIter->distanceFromBase = prevNode->distanceFromBase + (nodeIter->position - prevNode->position).Length();
+        nodeIter->distanceFromBase = prevNode->distanceFromBase + (nodeIter->position - prevNode->position).Length(); // TODO: save (nodeIter->position - prevNode->position).Length() in node
 
         if (nodeIter->lifeime >= layer->stripeLifetime)
             data.strpeNodes.erase(nodeIter++);

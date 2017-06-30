@@ -160,6 +160,7 @@ ParticleLayer* ParticleLayer::Clone()
     dstLayer->stripeStartSize = stripeStartSize;
     dstLayer->stripeUScrollSpeed = stripeUScrollSpeed;
     dstLayer->stripeVScrollSpeed = stripeVScrollSpeed;
+    dstLayer->stripeFadeDistanceFromTop = stripeFadeDistanceFromTop;
     dstLayer->alphaOverLife = alphaOverLife;
 
     if (stripeSizeOverLifeProp)
@@ -521,6 +522,14 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
     {
         stripeVScrollSpeed = stripeVScrollSpeedNode->AsFloat();
     }
+
+    stripeFadeDistanceFromTop = 0.0f;
+    const YamlNode* stripeFadeDistanceFromTopNode = node->Get("stripeFadeDistanceFromTop");
+    if (stripeFadeDistanceFromTopNode)
+    {
+        stripeFadeDistanceFromTop = stripeFadeDistanceFromTopNode->AsFloat();
+    }
+
 
     // format processing
     int32 format = 0;
@@ -1003,6 +1012,7 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
     PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeStartSize", stripeStartSize);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeUScrollSpeed", stripeUScrollSpeed);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeVScrollSpeed", stripeVScrollSpeed);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeFadeDistanceFromTop", stripeFadeDistanceFromTop);
 
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "name", layerName);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "type", "layer");
