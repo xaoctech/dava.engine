@@ -28,7 +28,7 @@ DAVA::NMaterial* ParticleEffectSystem::GetMaterial(MaterialData&& materialData)
     if (!materialData.texture) //for superemitter particles eg
         return nullptr;
 
-    for (int i = 0; i < prebultMaterialsVector.size(); ++i)
+    for (uint32 i = 0; i < prebultMaterialsVector.size(); ++i)
     {
         if (prebultMaterialsVector[i].first == materialData)
             return prebultMaterialsVector[i].second;

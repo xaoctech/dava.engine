@@ -593,7 +593,7 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
 
                 for (auto& node : nodes)
                 {
-                    if (i == 0 && group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING)
+                    if (i == 0 && group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING && false)
                     {
                         basisVector = (node.position - camera->GetPosition()).CrossProduct(node.speed);
                         basisVector = (camera->GetDirection()).CrossProduct(node.speed);
