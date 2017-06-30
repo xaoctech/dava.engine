@@ -170,8 +170,19 @@ bool SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath_)
             }
             catch (...)
             {
-                // Skip Spine internal error while parsing data file
-                dataLoadingError = "Internal unhandled error while parsing data file!";
+                if (json->attachmentLoader && json->attachmentLoader->error1 != nullptr)
+                {
+                    dataLoadingError = String(json->attachmentLoader->error1);
+                    if (json->attachmentLoader->error2 != nullptr)
+                    {
+                        dataLoadingError += String(json->attachmentLoader->error2);
+                    }
+                }
+                else
+                {
+                    // Skip Spine internal error while parsing data file
+                    dataLoadingError = "Internal unhandled error while parsing data file!";
+                }
             }
             spSkeletonJson_dispose(json);
         }
@@ -192,10 +203,20 @@ bool SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath_)
             }
             catch (...)
             {
-                // Skip Spine internal error while parsing data file
-                dataLoadingError = "Internal unhandled error while parsing data file!";
+                if (binary->attachmentLoader && binary->attachmentLoader->error1 != nullptr)
+                {
+                    dataLoadingError = String(binary->attachmentLoader->error1);
+                    if (binary->attachmentLoader->error2 != nullptr)
+                    {
+                        dataLoadingError += String(binary->attachmentLoader->error2);
+                    }
+                }
+                else
+                {
+                    // Skip Spine internal error while parsing data file
+                    dataLoadingError = "Internal unhandled error while parsing data file!";
+                }
             }
-
             spSkeletonBinary_dispose(binary);
         }
     }
