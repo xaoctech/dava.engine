@@ -523,6 +523,8 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
             {
                 if (nodes.size() == 0)
                     return;
+                float32 height = nodes.back().distanceFromBase;
+                Logger::Info("%f", height);
                 Vector3 basisVector = basisVectors[basises[i]];
                 if(i == 0 && group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING)
                 {
@@ -571,13 +573,19 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                 if (group.layer->stripeColorOverLife)
                     colOverLife = group.layer->stripeColorOverLife->GetValue(0.0f);
 
-                uint32 col = rhi::NativeColorRGBA(Saturate(currColor.r * colOverLife.r), Saturate(currColor.g * colOverLife.g), Saturate(currColor.b * colOverLife.b), Saturate(currColor.a * colOverLife.a));
+                float32 distToUp = height - base.distanceFromBase;
+                distToUp = Clamp(distToUp, 0.0f, 2.0f);
+                distToUp = 2.0f - distToUp;
+                float32 cA = (2.0f - distToUp) / 2.0f;
+
+                uint32 col = rhi::NativeColorRGBA(Saturate(currColor.r * colOverLife.r), Saturate(currColor.g * colOverLife.g), Saturate(currColor.b * colOverLife.b), Saturate(currColor.a * colOverLife.a * cA));
                 float32* color = reinterpret_cast<float32*>(&col);
                 UpdateStripeVertex(vertexBufferData, left, uv1, color, group.layer, currentParticle, fresnelToAlpha);
                 UpdateStripeVertex(vertexBufferData, right, uv2, color, group.layer, currentParticle, fresnelToAlpha);
 
                 StripeNode* prevNode = &base;
                 float32 distance = 0.0f;
+
                 for (auto& node : nodes)
                 {
                     if (i == 0 && group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING)
@@ -586,6 +594,11 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                         basisVector = (camera->GetDirection()).CrossProduct(node.speed);
                         basisVector.Normalize();
                     }
+
+                    distToUp = height - node.distanceFromBase;
+                    distToUp = Clamp(distToUp, 0.0f, 2.0f);
+                    distToUp = 2.0f - distToUp;
+                    cA = (2.0f - distToUp) / 2.0f;
 
                     float32 overLifeTime = node.lifeime / group.layer->stripeLifetime;
                     size = group.layer->stripeStartSize * 0.5f;
@@ -600,13 +613,13 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                     if (group.layer->stripeColorOverLife)
                         colOverLife = group.layer->stripeColorOverLife->GetValue(overLifeTime);
 
-                    col = rhi::NativeColorRGBA(Saturate(currColor.r * colOverLife.r), Saturate(currColor.g * colOverLife.g), Saturate(currColor.b * colOverLife.b), Saturate(currColor.a * colOverLife.a));
+                    col = rhi::NativeColorRGBA(Saturate(currColor.r * colOverLife.r), Saturate(currColor.g * colOverLife.g), Saturate(currColor.b * colOverLife.b), Saturate(currColor.a * colOverLife.a * cA));
 
                     distance += (prevNode->position - node.position).Length();
                     float32 tile = 1.0f;
                     if (group.layer->stripeTextureTile)
                         tile = group.layer->stripeTextureTile->GetValue(overLifeTime);
-                    float32 v = (distance * tile + currentParticle->life * group.layer->stripeVScrollSpeed);
+                    float32 v = distance * tile + currentParticle->life * group.layer->stripeVScrollSpeed;
                     if (group.layer->usePerspectiveMapping)
                     {
                         uv1.x = startU * fullEdgeSize;

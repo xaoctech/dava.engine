@@ -694,10 +694,11 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
     if (shouldInsert)
     {
         data.spawnTimer -= spawnTime;
-        data.strpeNodes.emplace_front(0.0f, data.baseNode.position, data.baseNode.speed);
+        data.strpeNodes.emplace_front(0.0f, data.baseNode.position, data.baseNode.speed, 0.0f);
     }
 
     auto nodeIter = data.strpeNodes.begin();
+    DAVA::StripeNode* prevNode = &data.baseNode;
 
     while (nodeIter != data.strpeNodes.end())
     {
@@ -722,6 +723,8 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
             AddParticleToBBox(nodeIter->position + effectData.infoSources[group.positionSource].position, radius, bbox);
         else
             AddParticleToBBox(nodeIter->position, radius, bbox);
+
+        nodeIter->distanceFromBase = prevNode->distanceFromBase + (nodeIter->position - prevNode->position).Length();
 
         if (nodeIter->lifeime >= layer->stripeLifetime)
             data.strpeNodes.erase(nodeIter++);
