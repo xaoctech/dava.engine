@@ -193,6 +193,13 @@ bool Keyboard::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e)
 
         return true;
     }
+    else if (e.type == MainDispatcherEvent::WINDOW_CANCEL_INPUT)
+    {
+        ResetState(e.window);
+
+        // To send it further
+        return false;
+    }
 
     return false;
 }

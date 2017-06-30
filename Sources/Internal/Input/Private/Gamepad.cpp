@@ -41,6 +41,8 @@ Gamepad::Gamepad(uint32 id)
     {
         primaryWindow->focusChanged.Connect(this, &Gamepad::OnWindowFocusChanged); // TODO: handle all the windows
     }
+
+    Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &Gamepad::HandleMainDispatcherEvent));
 }
 
 Gamepad::~Gamepad()
@@ -53,6 +55,8 @@ Gamepad::~Gamepad()
     {
         primaryWindow->focusChanged.Disconnect(this);
     }
+
+    Private::EngineBackend::Instance()->UninstallEventFilter(this);
 }
 
 DigitalElementState Gamepad::GetStartButtonState() const
@@ -210,18 +214,20 @@ void Gamepad::OnWindowFocusChanged(DAVA::Window* window, bool focused)
 
     if (!focused)
     {
-        for (uint32 i = eInputElements::GAMEPAD_FIRST_BUTTON; i <= eInputElements::GAMEPAD_LAST_BUTTON; ++i)
-        {
-            HandleButtonPress(static_cast<eInputElements>(i), false);
-        }
-
-        for (uint32 i = eInputElements::GAMEPAD_FIRST_AXIS; i <= eInputElements::GAMEPAD_LAST_AXIS; ++i)
-        {
-            eInputElements axis = static_cast<eInputElements>(i);
-            HandleAxisMovement(axis, 0.0f, true);
-            HandleAxisMovement(axis, 0.0f, false);
-        }
+        ResetState();
     }
+}
+
+bool Gamepad::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e)
+{
+    using Private::MainDispatcherEvent;
+
+    if (e.type == MainDispatcherEvent::WINDOW_CANCEL_INPUT)
+    {
+        ResetState();
+    }
+
+    return false;
 }
 
 void Gamepad::HandleGamepadAdded(const Private::MainDispatcherEvent& e)
@@ -293,6 +299,21 @@ void Gamepad::HandleAxisMovement(eInputElements element, float32 newValue, bool 
             axes[index].y = newValue;
             axisChangedMask.set(index);
         }
+    }
+}
+
+void Gamepad::ResetState()
+{
+    for (uint32 i = eInputElements::GAMEPAD_FIRST_BUTTON; i <= eInputElements::GAMEPAD_LAST_BUTTON; ++i)
+    {
+        HandleButtonPress(static_cast<eInputElements>(i), false);
+    }
+
+    for (uint32 i = eInputElements::GAMEPAD_FIRST_AXIS; i <= eInputElements::GAMEPAD_LAST_AXIS; ++i)
+    {
+        eInputElements axis = static_cast<eInputElements>(i);
+        HandleAxisMovement(axis, 0.0f, true);
+        HandleAxisMovement(axis, 0.0f, false);
     }
 }
 

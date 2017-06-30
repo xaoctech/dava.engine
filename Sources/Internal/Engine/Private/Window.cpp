@@ -259,6 +259,7 @@ bool Window::EventHandler(const Private::MainDispatcherEvent& e)
         break;
     case MainDispatcherEvent::WINDOW_CANCEL_INPUT:
         HandleCancelInput(e);
+        isHandled = false; // To send it further to other input-dependent subscribers
         break;
     case MainDispatcherEvent::WINDOW_VISIBLE_FRAME_CHANGED:
         HandleVisibleFrameChanged(e);
