@@ -118,7 +118,7 @@ private:
             for (DAVA::uint32 i = 0; i < component->GetTypeFiltersCount(); ++i)
             {
                 DAVA::FastName filter = component->GetTypeFilter(i);
-                if (intersection.empty() == true || intersection.count(filter) > 0)
+                if (isFirst == true || intersection.count(filter) > 0)
                 {
                     currentIntersection.insert(component->GetTypeFilter(i));
                 }
@@ -151,11 +151,10 @@ private:
         DAVA::FastName filterToRemove(currentFilter);
         DAVA::String descr = DAVA::Format("Remove type filter: %s", currentFilter.c_str());
         DAVA::TArc::ModifyExtension::MultiCommandInterface cmdInterface = GetModifyInterface()->GetMultiCommandInterface(descr, static_cast<DAVA::uint32>(nodes.size()));
-        ForEachSlotComponent([&](DAVA::SlotComponent* component, bool isFirst)
-                             {
-                                 cmdInterface.Exec(std::make_unique<SlotTypeFilterEdit>(component, filterToRemove, false));
-                                 return true;
-                             });
+        ForEachSlotComponent([&](DAVA::SlotComponent* component, bool isFirst) {
+            cmdInterface.Exec(std::make_unique<SlotTypeFilterEdit>(component, filterToRemove, false));
+            return true;
+        });
 
         ForceUpdate();
     }

@@ -318,6 +318,42 @@ DAVA::M::ValidationResult ValidateScene(const DAVA::Any& value, const DAVA::Any&
     return result;
 }
 
+DAVA::M::ValidationResult ValidateExistsFileInProject(const DAVA::Any& value, const DAVA::Any& oldValue)
+{
+    using namespace DAVA;
+
+    M::ValidationResult result;
+
+    FilePath filePath = value.Cast<FilePath>();
+    FilePath validProjectDir = GetValidDir(false);
+
+    if (filePath.IsDirectoryPathname() == true)
+    {
+        result.state = M::ValidationResult::eState::Invalid;
+        result.message = Format("\"%s\" is wrong. Should be file", filePath.GetAbsolutePathname().c_str());
+        return result;
+    }
+
+    const DAVA::EngineContext* ctx = DAVA::GetEngineContext();
+
+    if (ctx->fileSystem->Exists(filePath) == false)
+    {
+        result.state = M::ValidationResult::eState::Invalid;
+        result.message = Format("\"%s\" is wrong. File doesn't exists", filePath.GetAbsolutePathname().c_str());
+        return result;
+    }
+
+    if (FilePath::ContainPath(filePath, validProjectDir) == false)
+    {
+        result.state = M::ValidationResult::eState::Invalid;
+        result.message = Format("\"%s\" is wrong. It's allowed to select only from %s", filePath.GetAbsolutePathname().c_str(), validProjectDir.GetAbsolutePathname().c_str());
+        return result;
+    }
+
+    result.state = M::ValidationResult::eState::Valid;
+    return result;
+}
+
 } // namespace PathValidatorsDetail
 
 void InitFilePathExtensions(DAVA::TArc::ContextAccessor* accessor)
@@ -343,6 +379,11 @@ DAVA::M::Validator CreateImageValidator()
 DAVA::M::Validator CreateSceneValidator()
 {
     return DAVA::M::Validator(PathValidatorsDetail::ValidateScene);
+}
+
+DAVA::M::Validator CreateExistsFile()
+{
+    return DAVA::M::Validator(PathValidatorsDetail::ValidateExistsFileInProject);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
