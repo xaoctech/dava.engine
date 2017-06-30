@@ -1710,7 +1710,10 @@ bool IsControlActive(const UIControl* control)
     {
         return control->GetScene()->IsHostControl(control);
     }
-    return false;
+    else
+    {
+        return UIControlSystem::Instance()->IsHostControl(control);
+    }
 }
 
 bool IsControlVisible(const UIControl* control)
@@ -1727,7 +1730,10 @@ bool IsControlVisible(const UIControl* control)
     {
         return control->GetScene()->IsHostControl(control) ? control->GetVisibilityFlag() : false;
     }
-    return false;
+    else
+    {
+        return UIControlSystem::Instance()->IsHostControl(control) ? control->GetVisibilityFlag() : false;
+    }
 }
 
 void UIControl::ChangeViewState(eViewState newViewState)
