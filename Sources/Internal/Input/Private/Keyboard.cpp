@@ -129,6 +129,13 @@ void Keyboard::OnKeyPressed(eInputElements element, Window* window, int64 timest
 void Keyboard::OnKeyReleased(eInputElements element, Window* window, int64 timestamp)
 {
     DigitalElementState& keyState = keys[element - eInputElements::KB_FIRST];
+
+    // Avoid sending excessive key up events
+    if (keyState.IsReleased() && !keyState.IsJustReleased())
+    {
+        return;
+    }
+
     keyState.Release();
     CreateAndSendKeyInputEvent(element, keyState, window, timestamp);
 }
