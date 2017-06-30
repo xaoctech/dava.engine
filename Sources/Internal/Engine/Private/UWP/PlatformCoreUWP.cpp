@@ -248,13 +248,6 @@ void PlatformCore::GameThread()
         Logger::PlatformLog(Logger::LEVEL_ERROR, ss.str().c_str());
         throw;
     }
-    catch (const std::exception& e)
-    {
-        StringStream ss;
-        ss << "!!! Unhandled std::exception in DAVAMain: " << e.what() << std::endl;
-        Logger::PlatformLog(Logger::LEVEL_ERROR, ss.str().c_str());
-        throw;
-    }
 
     using namespace ::Windows::UI::Xaml;
     Application::Current->Exit();
