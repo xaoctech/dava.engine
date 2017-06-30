@@ -128,6 +128,10 @@ UIControl::~UIControl()
     {
         scene->CancelInputs(this);
     }
+    else
+    {
+        UIControlSystem::Instance()->CancelInputs(this);
+    }
     SafeRelease(eventDispatcher);
     RemoveAllControls();
     RemoveAllComponents();
@@ -236,6 +240,10 @@ void UIControl::PerformEvent(int32 eventType, const UIEvent* uiEvent /* = nullpt
     {
         scene->ProcessControlEvent(eventType, uiEvent, this);
     }
+    else
+    {
+        UIControlSystem::Instance()->ProcessControlEvent(eventType, uiEvent, this);
+    }
 
     if (eventDispatcher)
     {
@@ -248,6 +256,10 @@ void UIControl::PerformEventWithData(int32 eventType, void* callerData, const UI
     if (scene)
     {
         scene->ProcessControlEvent(eventType, uiEvent, this);
+    }
+    else
+    {
+        UIControlSystem::Instance()->ProcessControlEvent(eventType, uiEvent, this);
     }
 
     if (eventDispatcher)
@@ -428,12 +440,17 @@ const UIGeometricData& UIControl::GetGeometricData() const
         if (scene)
         {
             tempGeometricData.AddGeometricData(scene->GetRenderSystem()->GetBaseGeometricData());
-            return tempGeometricData;
         }
-        tempGeometricData.AddGeometricData(UIControlSystem::Instance()->GetRenderSystem()->GetBaseGeometricData());
-        return tempGeometricData;
+        else
+        {
+            tempGeometricData.AddGeometricData(UIControlSystem::Instance()->GetRenderSystem()->GetBaseGeometricData());
+        }
     }
-    tempGeometricData.AddGeometricData(parent->GetGeometricData());
+    else
+    {
+        tempGeometricData.AddGeometricData(parent->GetGeometricData());
+    }
+
     return tempGeometricData;
 }
 
@@ -668,6 +685,10 @@ void UIControl::SetDisabled(bool isDisabled, bool hierarchic /* = true*/)
         if (scene)
         {
             scene->CancelInputs(this);
+        }
+        else
+        {
+            UIControlSystem::Instance()->CancelInputs(this);
         }
     }
     else
@@ -1076,6 +1097,10 @@ bool UIControl::SystemProcessInput(UIEvent* currentInput)
             {
                 scene->SetHoveredControl(this);
             }
+            else
+            {
+                UIControlSystem::Instance()->SetHoveredControl(this);
+            }
             Input(currentInput);
             return true;
         }
@@ -1402,6 +1427,10 @@ void UIControl::SystemVisible()
     {
         scene->RegisterVisibleControl(this);
     }
+    else
+    {
+        UIControlSystem::Instance()->RegisterVisibleControl(this);
+    }
 
     SetStyleSheetDirty();
     OnVisible();
@@ -1459,6 +1488,10 @@ void UIControl::SystemInvisible()
     {
         scene->UnregisterVisibleControl(this);
     }
+    else
+    {
+        UIControlSystem::Instance()->UnregisterVisibleControl(this);
+    }
     OnInvisible();
 }
 
@@ -1482,6 +1515,10 @@ void UIControl::SystemActive()
     if (scene)
     {
         scene->RegisterControl(this);
+    }
+    else
+    {
+        UIControlSystem::Instance()->RegisterControl(this);
     }
 
     OnActive();
@@ -1537,6 +1574,10 @@ void UIControl::SystemInactive()
     if (scene)
     {
         scene->UnregisterControl(this);
+    }
+    else
+    {
+        UIControlSystem::Instance()->UnregisterControl(this);
     }
 
     OnInactive();
@@ -1969,6 +2010,10 @@ void UIControl::UpdateLayout()
     {
         scene->GetLayoutSystem()->ManualApplyLayout(this);
     }
+    else
+    {
+        UIControlSystem::Instance()->GetLayoutSystem()->ManualApplyLayout(this);
+    }
 }
 
 void UIControl::OnSizeChanged()
@@ -2268,6 +2313,10 @@ void UIControl::SetStyleSheetDirty()
     {
         scene->GetStyleSheetSystem()->SetDirty();
     }
+    else
+    {
+        UIControlSystem::Instance()->GetStyleSheetSystem()->SetDirty();
+    }
 }
 
 void UIControl::ResetStyleSheetDirty()
@@ -2281,6 +2330,10 @@ void UIControl::SetLayoutDirty()
     if (scene)
     {
         scene->GetLayoutSystem()->SetDirty();
+    }
+    else
+    {
+        UIControlSystem::Instance()->GetLayoutSystem()->SetDirty();
     }
 }
 
@@ -2297,6 +2350,10 @@ void UIControl::SetLayoutPositionDirty()
     if (scene)
     {
         scene->GetLayoutSystem()->SetDirty();
+    }
+    else
+    {
+        UIControlSystem::Instance()->GetLayoutSystem()->SetDirty();
     }
 }
 
