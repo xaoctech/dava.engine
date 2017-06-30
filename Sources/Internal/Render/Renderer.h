@@ -4,13 +4,12 @@
 #include "Core/Core.h"
 #include "RenderBase.h"
 #include "RenderOptions.h"
+#include "RestoreResourceSignal.h"
 #include "DynamicBindings.h"
 #include "RuntimeTextures.h"
 #include "RHI/rhi_Public.h"
 #include "RHI/rhi_Type.h"
 #include "Base/FastNameMap.h"
-#include "Base/Token.h"
-#include "Functional/Signal.h"
 
 namespace DAVA
 {
@@ -65,8 +64,8 @@ void UnRegisterSyncCallback(Token token);
 
 struct RenderSignals
 {
-    Signal<> needRestoreResources;
-    Signal<> restoreResoucesCompleted;
+    RestoreResourceSignal needRestoreResources;
+    RestoreResourceSignal restoreResoucesCompleted;
 };
 
 struct RenderStats
