@@ -694,7 +694,7 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
     if (shouldInsert)
     {
         data.spawnTimer -= spawnTime;
-        data.strpeNodes.emplace_front(0.0f, data.baseNode.position, data.baseNode.speed, 0.0f);
+        data.strpeNodes.emplace_front(0.0f, data.baseNode.position, data.baseNode.speed, 0.0f, 0.0f);
     }
 
     auto nodeIter = data.strpeNodes.begin();
@@ -724,8 +724,10 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
         else
             AddParticleToBBox(nodeIter->position, radius, bbox);
 
-        nodeIter->distanceFromBase = prevNode->distanceFromBase + (nodeIter->position - prevNode->position).Length(); // TODO: save (nodeIter->position - prevNode->position).Length() in node
+        nodeIter->distanceFromPrevNode = (prevNode->position - nodeIter->position).Length();
+        nodeIter->distanceFromBase = prevNode->distanceFromBase + nodeIter->distanceFromPrevNode;
 
+        prevNode = &(*nodeIter);
         if (nodeIter->lifeime >= layer->stripeLifetime)
             data.strpeNodes.erase(nodeIter++);
         else
