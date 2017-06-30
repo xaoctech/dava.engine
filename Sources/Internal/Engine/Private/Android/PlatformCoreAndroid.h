@@ -1,5 +1,3 @@
-#if defined(__DAVAENGINE_COREV2__)
-
 #pragma once
 
 #include "Base/BaseTypes.h"
@@ -29,7 +27,7 @@ public:
     void OnGamepadRemoved(int32 deviceId);
 
 private:
-    WindowBackend* ActivityOnCreate();
+    WindowImpl* ActivityOnCreate();
     void ActivityOnResume();
     void ActivityOnPause();
     void ActivityOnDestroy();
@@ -53,4 +51,3 @@ private:
 } // namespace DAVA
 
 #endif // __DAVAENGINE_ANDROID__
-#endif // __DAVAENGINE_COREV2__

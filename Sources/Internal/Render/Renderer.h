@@ -1,7 +1,5 @@
-#ifndef __DAVAENGINE_RENDERER_H__
-#define __DAVAENGINE_RENDERER_H__
+#pragma once
 
-#include "Core/Core.h"
 #include "RenderBase.h"
 #include "RenderOptions.h"
 #include "DynamicBindings.h"
@@ -101,5 +99,3 @@ struct RenderStats
     FastNameMap<uint32> visibilityQueryResults = FastNameMap<uint32>(16, 0U);
 };
 }
-
-#endif
