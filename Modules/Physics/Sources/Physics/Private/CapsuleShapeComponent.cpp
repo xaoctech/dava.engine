@@ -9,10 +9,6 @@
 
 namespace DAVA
 {
-uint32 CapsuleShapeComponent::GetType() const
-{
-    return Component::CAPSULE_SHAPE_COMPONENT;
-}
 
 Component* CapsuleShapeComponent::Clone(Entity* toEntity)
 {
@@ -48,13 +44,7 @@ float32 CapsuleShapeComponent::GetRadius() const
 void CapsuleShapeComponent::SetRadius(float32 r)
 {
     radius = r;
-
-    physx::PxShape* shape = GetPxShape();
-    if (shape != nullptr)
-    {
-        physx::PxCapsuleGeometry geom(radius, halfHeight);
-        shape->setGeometry(geom);
-    }
+    SheduleUpdate();
 }
 
 DAVA::float32 CapsuleShapeComponent::GetHalfHeight() const
@@ -65,13 +55,7 @@ DAVA::float32 CapsuleShapeComponent::GetHalfHeight() const
 void CapsuleShapeComponent::SetHalfHeight(float32 halfHeight_)
 {
     halfHeight = halfHeight_;
-
-    physx::PxShape* shape = GetPxShape();
-    if (shape != nullptr)
-    {
-        physx::PxCapsuleGeometry geom(radius, halfHeight);
-        shape->setGeometry(geom);
-    }
+    SheduleUpdate();
 }
 
 #if defined(__DAVAENGINE_DEBUG__)
@@ -79,7 +63,20 @@ void CapsuleShapeComponent::CheckShapeType() const
 {
     DVASSERT(GetPxShape()->getGeometryType() == physx::PxGeometryType::eCAPSULE);
 }
+
 #endif
+
+void CapsuleShapeComponent::UpdateLocalProperties()
+{
+    physx::PxShape* shape = GetPxShape();
+    physx::PxCapsuleGeometry geom;
+    shape->getCapsuleGeometry(geom);
+    geom.halfHeight = halfHeight;
+    geom.radius = radius;
+    shape->setGeometry(geom);
+
+    CollisionShapeComponent::UpdateLocalProperties();
+}
 
 DAVA_VIRTUAL_REFLECTION_IMPL(CapsuleShapeComponent)
 {

@@ -10,11 +10,6 @@
 
 namespace DAVA
 {
-uint32 BoxShapeComponent::GetType() const
-{
-    return Component::BOX_SHAPE_COMPONENT;
-}
-
 DAVA::Component* BoxShapeComponent::Clone(Entity* toEntity)
 {
     BoxShapeComponent* result = new BoxShapeComponent();
@@ -46,12 +41,7 @@ const Vector3& BoxShapeComponent::GetHalfSize() const
 void BoxShapeComponent::SetHalfSize(const Vector3& size)
 {
     halfExtents = size;
-    physx::PxShape* shape = GetPxShape();
-    if (shape != nullptr)
-    {
-        physx::PxBoxGeometry box(PhysicsMath::Vector3ToPxVec3(halfExtents));
-        shape->setGeometry(box);
-    }
+    SheduleUpdate();
 }
 
 #if defined(__DAVAENGINE_DEBUG__)
@@ -60,6 +50,16 @@ void BoxShapeComponent::CheckShapeType() const
     DVASSERT(GetPxShape()->getGeometryType() == physx::PxGeometryType::eBOX);
 }
 #endif
+
+void BoxShapeComponent::UpdateLocalProperties()
+{
+    physx::PxShape* shape = GetPxShape();
+    physx::PxBoxGeometry geom;
+    shape->getBoxGeometry(geom);
+    geom.halfExtents = PhysicsMath::Vector3ToPxVec3(halfExtents);
+    shape->setGeometry(geom);
+    CollisionShapeComponent::UpdateLocalProperties();
+}
 
 DAVA_VIRTUAL_REFLECTION_IMPL(BoxShapeComponent)
 {

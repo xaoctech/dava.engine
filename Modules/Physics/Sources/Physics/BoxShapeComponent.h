@@ -9,7 +9,7 @@ namespace DAVA
 class BoxShapeComponent : public CollisionShapeComponent
 {
 public:
-    uint32 GetType() const override;
+    IMPLEMENT_COMPONENT_TYPE(BOX_SHAPE_COMPONENT);
     Component* Clone(Entity* toEntity) override;
 
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
@@ -22,6 +22,8 @@ protected:
 #if defined(__DAVAENGINE_DEBUG__)
     void CheckShapeType() const override;
 #endif
+
+    void UpdateLocalProperties() override;
 
 private:
     Vector3 halfExtents = Vector3(1.0f, 1.0f, 1.0f);

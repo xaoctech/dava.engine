@@ -191,7 +191,7 @@ void GenerateArc(float32 startRad, float32 endRad, float32 radius, const Vector3
     float32 currentAngle = startRad;
     while (currentAngle < endRad + 0.01)
     {
-        rotationMx.CreateRotation(direction, currentAngle);
+        rotationMx.BuildRotation(direction, currentAngle);
         uint16 vertexIndex = static_cast<uint16>(vertices.size());
         vertices.push_back(center + ((ortho * radius) * rotationMx) * localPose);
 
@@ -695,7 +695,7 @@ void PhysicsDebugDrawSystem::Process(float32 timeElapsed)
             uint64 components = pair.first->GetComponentsFlags();
             for (uint32 type : collisionShapeTypes)
             {
-                if ((components & type) == type)
+                if (pair.first->GetComponentsCount(type) > 0)
                 {
                     for (Entity* e : pair.second)
                     {

@@ -10,6 +10,7 @@
 #include <Base/GlobalEnum.h>
 
 #include <physx/PxRigidDynamic.h>
+#include <physx/extensions/PxRigidBodyExt.h>
 
 ENUM_DECLARE(DAVA::DynamicBodyComponent::eLockFlags)
 {
@@ -23,11 +24,6 @@ ENUM_DECLARE(DAVA::DynamicBodyComponent::eLockFlags)
 
 namespace DAVA
 {
-uint32 DynamicBodyComponent::GetType() const
-{
-    return DYNAMIC_BODY_COMPONENT;
-}
-
 Component* DynamicBodyComponent::Clone(Entity* toEntity)
 {
     DynamicBodyComponent* result = new DynamicBodyComponent();
@@ -37,6 +33,8 @@ Component* DynamicBodyComponent::Clone(Entity* toEntity)
     result->angularDamping = angularDamping;
     result->maxAngularVelocity = maxAngularVelocity;
     result->lockFlags = lockFlags;
+    result->minPositionIters = minPositionIters;
+    result->minVelocityIters = minVelocityIters;
 
     return result;
 }
@@ -48,6 +46,8 @@ void DynamicBodyComponent::Serialize(KeyedArchive* archive, SerializationContext
     archive->SetFloat("dynamicBody.angularDamping", angularDamping);
     archive->SetFloat("dynamicBody.maxAngularVelocity", maxAngularVelocity);
     archive->SetUInt32("dynamicBody.lockFlags", static_cast<uint32>(lockFlags));
+    archive->SetUInt32("dynamicBody.minPositionIters", minPositionIters);
+    archive->SetUInt32("dynamicBody.minVelocityIters", minVelocityIters);
 }
 
 void DynamicBodyComponent::Deserialize(KeyedArchive* archive, SerializationContext* serializationContext)
@@ -57,6 +57,8 @@ void DynamicBodyComponent::Deserialize(KeyedArchive* archive, SerializationConte
     angularDamping = archive->GetFloat("dynamicBody.angularDamping", angularDamping);
     maxAngularVelocity = archive->GetFloat("dynamicBody.maxAngularVelocity", maxAngularVelocity);
     lockFlags = static_cast<eLockFlags>(archive->GetUInt32("dynamicBody.lockFlags", static_cast<uint32>(lockFlags)));
+    minPositionIters = archive->GetUInt32("dynamicBody.minPositionIters", minPositionIters);
+    minVelocityIters = archive->GetUInt32("dynamicBody.minVelocityIters", minVelocityIters);
 }
 
 float32 DynamicBodyComponent::GetLinearDamping() const
@@ -67,11 +69,7 @@ float32 DynamicBodyComponent::GetLinearDamping() const
 void DynamicBodyComponent::SetLinearDamping(float32 damping)
 {
     linearDamping = damping;
-    physx::PxRigidDynamic* actor = GetPxActor()->is<physx::PxRigidDynamic>();
-    if (actor != nullptr)
-    {
-        actor->setLinearDamping(linearDamping);
-    }
+    SheduleUpdate();
 }
 
 float32 DynamicBodyComponent::GetAngularDamping() const
@@ -82,11 +80,7 @@ float32 DynamicBodyComponent::GetAngularDamping() const
 void DynamicBodyComponent::SetAngularDamping(float32 damping)
 {
     angularDamping = damping;
-    physx::PxRigidDynamic* actor = GetPxActor()->is<physx::PxRigidDynamic>();
-    if (actor != nullptr)
-    {
-        actor->setAngularDamping(angularDamping);
-    }
+    SheduleUpdate();
 }
 
 float32 DynamicBodyComponent::GetMaxAngularVelocity() const
@@ -97,11 +91,29 @@ float32 DynamicBodyComponent::GetMaxAngularVelocity() const
 void DynamicBodyComponent::SetMaxAngularVelocity(float32 velocity)
 {
     maxAngularVelocity = velocity;
-    physx::PxRigidDynamic* actor = GetPxActor()->is<physx::PxRigidDynamic>();
-    if (actor != nullptr)
-    {
-        actor->setMaxAngularVelocity(angularDamping);
-    }
+    SheduleUpdate();
+}
+
+uint32 DynamicBodyComponent::GetMinPositionIters() const
+{
+    return minPositionIters;
+}
+
+void DynamicBodyComponent::SetMinPositionIters(uint32 minPositionIters_)
+{
+    minPositionIters = minPositionIters_;
+    SheduleUpdate();
+}
+
+uint32 DynamicBodyComponent::GetMinVelocityIters() const
+{
+    return minVelocityIters;
+}
+
+void DynamicBodyComponent::SetMinVelocityIters(uint32 minVelocityIters_)
+{
+    minVelocityIters = minVelocityIters_;
+    SheduleUpdate();
 }
 
 DynamicBodyComponent::eLockFlags DynamicBodyComponent::GetLockFlags() const
@@ -112,12 +124,7 @@ DynamicBodyComponent::eLockFlags DynamicBodyComponent::GetLockFlags() const
 void DynamicBodyComponent::SetLockFlags(eLockFlags lockFlags_)
 {
     lockFlags = lockFlags_;
-    physx::PxRigidDynamic* actor = GetPxActor()->is<physx::PxRigidDynamic>();
-    if (actor != nullptr)
-    {
-        physx::PxRigidDynamicLockFlags flags(static_cast<physx::PxRigidDynamicLockFlag::Enum>(lockFlags));
-        actor->setRigidDynamicLockFlags(flags);
-    }
+    SheduleUpdate();
 }
 
 #if defined(__DAVAENGINE_DEBUG__)
@@ -127,16 +134,17 @@ void DynamicBodyComponent::CheckActorType() const
 }
 #endif
 
-void DynamicBodyComponent::SetPxActor(physx::PxActor* actor)
+void DynamicBodyComponent::UpdateLocalProperties()
 {
-    PhysicsComponent::SetPxActor(actor);
-    physx::PxRigidDynamic* dynamicActor = actor->is<physx::PxRigidDynamic>();
-    DVASSERT(dynamicActor != nullptr);
+    physx::PxRigidDynamic* actor = GetPxActor()->is<physx::PxRigidDynamic>();
+    DVASSERT(actor);
 
-    dynamicActor->setLinearDamping(linearDamping);
-    dynamicActor->setAngularDamping(angularDamping);
-    dynamicActor->setMaxAngularVelocity(maxAngularVelocity);
-    dynamicActor->setRigidDynamicLockFlags(physx::PxRigidDynamicLockFlags(static_cast<physx::PxRigidDynamicLockFlag::Enum>(lockFlags)));
+    actor->setLinearDamping(linearDamping);
+    actor->setAngularDamping(angularDamping);
+    actor->setMaxAngularVelocity(maxAngularVelocity);
+    actor->setRigidDynamicLockFlags(physx::PxRigidDynamicLockFlags(static_cast<physx::PxRigidDynamicLockFlag::Enum>(lockFlags)));
+    actor->setSolverIterationCounts(minPositionIters, minVelocityIters);
+    PhysicsComponent::UpdateLocalProperties();
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(DynamicBodyComponent)
@@ -147,6 +155,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(DynamicBodyComponent)
     .Field("Angular damping", &DynamicBodyComponent::GetAngularDamping, &DynamicBodyComponent::SetAngularDamping)[M::Range(0, Any(), 1.0f), M::Group("Damping")]
     .Field("Max angular velocity", &DynamicBodyComponent::GetMaxAngularVelocity, &DynamicBodyComponent::SetMaxAngularVelocity)[M::Range(0, Any(), 1.0f)]
     .Field("Lock flags", &DynamicBodyComponent::GetLockFlags, &DynamicBodyComponent::SetLockFlags)[M::FlagsT<DynamicBodyComponent::eLockFlags>()]
+    .Field("Position iterations count", &DynamicBodyComponent::GetMinPositionIters, &DynamicBodyComponent::SetMinPositionIters)[M::Range(1, 255, 1)]
+    .Field("Velocity iterations count", &DynamicBodyComponent::GetMinVelocityIters, &DynamicBodyComponent::SetMinVelocityIters)[M::Range(1, 255, 1)]
     .End();
 }
 } // namespace DAVA

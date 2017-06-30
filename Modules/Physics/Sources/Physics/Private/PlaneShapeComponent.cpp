@@ -9,11 +9,6 @@
 
 namespace DAVA
 {
-uint32 PlaneShapeComponent::GetType() const
-{
-    return Component::PLANE_SHAPE_COMPONENT;
-}
-
 DAVA::Component* PlaneShapeComponent::Clone(Entity* toEntity)
 {
     PlaneShapeComponent* result = new PlaneShapeComponent();
@@ -31,7 +26,6 @@ void PlaneShapeComponent::Serialize(KeyedArchive* archive, SerializationContext*
     CollisionShapeComponent::Serialize(archive, serializationContext);
     archive->SetVector3("planeShape.point", point);
     archive->SetVector3("planeShape.normal", normal);
-    UpdateLocalPose();
 }
 
 void PlaneShapeComponent::Deserialize(KeyedArchive* archive, SerializationContext* serializationContext)
@@ -49,7 +43,7 @@ const Vector3& PlaneShapeComponent::GetPoint() const
 void PlaneShapeComponent::SetPoint(const Vector3& point_)
 {
     point = point_;
-    UpdateLocalPose();
+    SheduleUpdate();
 }
 
 const Vector3& PlaneShapeComponent::GetNormal() const
@@ -60,7 +54,7 @@ const Vector3& PlaneShapeComponent::GetNormal() const
 void PlaneShapeComponent::SetNormal(const Vector3& normal_)
 {
     normal = normal_;
-    UpdateLocalPose();
+    SheduleUpdate();
 }
 
 #if defined(__DAVAENGINE_DEBUG__)
@@ -70,11 +64,12 @@ void PlaneShapeComponent::CheckShapeType() const
 }
 #endif
 
-void PlaneShapeComponent::UpdateLocalPose()
+void PlaneShapeComponent::UpdateLocalProperties()
 {
     physx::PxPlane plane(PhysicsMath::Vector3ToPxVec3(point), PhysicsMath::Vector3ToPxVec3(normal));
     physx::PxTransform planeTransform = physx::PxTransformFromPlaneEquation(plane);
-    SetLocalPose(PhysicsMath::PxMat44ToMatrix4(physx::PxMat44(planeTransform)));
+    localPose = PhysicsMath::PxMat44ToMatrix4(physx::PxMat44(planeTransform));
+    CollisionShapeComponent::UpdateLocalProperties();
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(PlaneShapeComponent)

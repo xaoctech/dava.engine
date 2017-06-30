@@ -392,7 +392,7 @@ physx::PxMaterial* Physics::GetDefaultMaterial() const
 {
     if (defaultMaterial == nullptr)
     {
-        defaultMaterial = physics->createMaterial(0.5f, 0.5f, 1.f);
+        defaultMaterial = physics->createMaterial(0.5f, 0.5f, 0.1f);
     }
 
     return defaultMaterial;

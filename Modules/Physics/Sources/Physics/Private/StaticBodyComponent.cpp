@@ -12,11 +12,6 @@
 
 namespace DAVA
 {
-uint32 StaticBodyComponent::GetType() const
-{
-    return STATIC_BODY_COMPONENT;
-}
-
 Component* StaticBodyComponent::Clone(Entity* toEntity)
 {
     StaticBodyComponent* result = new StaticBodyComponent();

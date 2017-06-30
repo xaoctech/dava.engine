@@ -34,6 +34,17 @@ void ConvexHullShapeComponent::CheckShapeType() const
 }
 #endif
 
+void ConvexHullShapeComponent::UpdateLocalProperties()
+{
+    physx::PxShape* shape = GetPxShape();
+    physx::PxConvexMeshGeometry geom;
+    shape->getConvexMeshGeometry(geom);
+    geom.scale.scale = PhysicsMath::Vector3ToPxVec3(scale);
+    shape->setGeometry(geom);
+
+    CollisionShapeComponent::UpdateLocalProperties();
+}
+
 DAVA_VIRTUAL_REFLECTION_IMPL(ConvexHullShapeComponent)
 {
     ReflectionRegistrator<ConvexHullShapeComponent>::Begin()

@@ -10,10 +10,6 @@
 
 namespace DAVA
 {
-uint32 SphereShapeComponent::GetType() const
-{
-    return Component::SPHERE_SHAPE_COMPONENT;
-}
 
 DAVA::Component* SphereShapeComponent::Clone(Entity* toEntity)
 {
@@ -46,12 +42,7 @@ float32 SphereShapeComponent::GetRadius() const
 void SphereShapeComponent::SetRadius(float32 radius_)
 {
     radius = radius_;
-    physx::PxShape* shape = GetPxShape();
-    if (shape != nullptr)
-    {
-        physx::PxSphereGeometry geom(radius);
-        shape->setGeometry(geom);
-    }
+    SheduleUpdate();
 }
 
 #if defined(__DAVAENGINE_DEBUG__)
@@ -60,6 +51,17 @@ void SphereShapeComponent::CheckShapeType() const
     DVASSERT(GetPxShape()->getGeometryType() == physx::PxGeometryType::eSPHERE);
 }
 #endif
+
+void SphereShapeComponent::UpdateLocalProperties()
+{
+    physx::PxShape* shape = GetPxShape();
+    physx::PxSphereGeometry geom;
+    shape->getSphereGeometry(geom);
+    geom.radius = radius;
+    shape->setGeometry(geom);
+
+    CollisionShapeComponent::UpdateLocalProperties();
+}
 
 DAVA_VIRTUAL_REFLECTION_IMPL(SphereShapeComponent)
 {

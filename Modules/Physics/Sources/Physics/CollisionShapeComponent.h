@@ -27,16 +27,28 @@ public:
     const Matrix4& GetLocalPose() const;
     void SetLocalPose(const Matrix4& localPose);
 
+    bool GetOverrideMass() const;
+    void SetOverrideMass(bool override);
+
+    float32 GetMass() const;
+    void SetMass(float32 mass);
+
 protected:
 #if defined(__DAVAENGINE_DEBUG__)
     virtual void CheckShapeType() const = 0;
 #endif
 
     void CopyFields(CollisionShapeComponent* component);
+    void SheduleUpdate();
+    virtual void UpdateLocalProperties();
+
+    Matrix4 localPose;
+    Vector3 scale = Vector3(1.0f, 1.0f, 1.0f);
 
 private:
     FastName name = FastName("");
-    Matrix4 localPose;
+    bool overrideMass = false;
+    float32 mass = 1.0f;
 
     physx::PxShape* shape = nullptr;
 

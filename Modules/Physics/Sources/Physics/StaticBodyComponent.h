@@ -9,7 +9,7 @@ namespace DAVA
 class StaticBodyComponent : public PhysicsComponent
 {
 public:
-    uint32 GetType() const override;
+    IMPLEMENT_COMPONENT_TYPE(STATIC_BODY_COMPONENT);
     Component* Clone(Entity* toEntity) override;
 
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;

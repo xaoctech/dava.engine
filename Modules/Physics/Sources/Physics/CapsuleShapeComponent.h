@@ -7,7 +7,7 @@ namespace DAVA
 class CapsuleShapeComponent : public CollisionShapeComponent
 {
 public:
-    uint32 GetType() const override;
+    IMPLEMENT_COMPONENT_TYPE(CAPSULE_SHAPE_COMPONENT);
     Component* Clone(Entity* toEntity) override;
 
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
@@ -23,6 +23,8 @@ protected:
 #if defined(__DAVAENGINE_DEBUG__)
     void CheckShapeType() const override;
 #endif
+
+    void UpdateLocalProperties() override;
 
 private:
     float32 radius = 1.0f;

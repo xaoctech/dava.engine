@@ -9,7 +9,7 @@ namespace DAVA
 class PlaneShapeComponent : public CollisionShapeComponent
 {
 public:
-    uint32 GetType() const override;
+    IMPLEMENT_COMPONENT_TYPE(PLANE_SHAPE_COMPONENT);
     Component* Clone(Entity* toEntity) override;
 
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
@@ -26,7 +26,7 @@ protected:
     void CheckShapeType() const override;
 #endif
 
-    void UpdateLocalPose();
+    void UpdateLocalProperties() override;
 
 private:
     Vector3 point = Vector3(0.0f, 0.0f, 0.0f);

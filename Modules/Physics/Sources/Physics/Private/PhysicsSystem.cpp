@@ -82,6 +82,7 @@ bool IsCollisionShapeType(uint32 componentType)
                            return componentType == type;
                        });
 }
+
 } // namespace
 
 PhysicsSystem::PhysicsSystem(Scene* scene)
@@ -254,6 +255,7 @@ void PhysicsSystem::Process(float32 timeElapsed)
     }
 
     InitNewObjects();
+    UpdateComponents();
 
     if (isSimulationEnabled == false)
     {
@@ -293,16 +295,15 @@ void PhysicsSystem::SetDrawDebugInfo(bool drawDebugInfo_)
 {
     drawDebugInfo = drawDebugInfo_;
     physx::PxReal enabled = drawDebugInfo == true ? 1.0f : 0.0f;
-    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eACTOR_AXES, 2.0f * enabled);
+    //physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eACTOR_AXES, 2.0f * enabled);
     physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eSCALE, enabled);
-    //physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_SHAPES, enabled);
 
     physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eBODY_MASS_AXES, enabled);
-    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eBODY_LIN_VELOCITY, enabled);
-    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eBODY_ANG_VELOCITY, enabled);
-    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eCONTACT_POINT, enabled);
-    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eCONTACT_NORMAL, enabled);
-    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eCONTACT_FORCE, enabled);
+    //    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eBODY_LIN_VELOCITY, enabled);
+    //    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eBODY_ANG_VELOCITY, enabled);
+    //    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eCONTACT_POINT, enabled);
+    //    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eCONTACT_NORMAL, enabled);
+    //    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eCONTACT_FORCE, enabled);
 }
 
 bool PhysicsSystem::IsDrawDebugInfo() const
@@ -332,15 +333,9 @@ bool PhysicsSystem::FetchResults(bool block)
             physx::PxRigidActor* rigidActor = actor->is<physx::PxRigidActor>();
             DVASSERT(rigidActor != nullptr);
 
-            Vector3 position;
-            Vector3 scale;
-            Quaternion rotation;
-            entity->GetWorldTransform().Decomposition(position, scale, rotation);
+            Matrix4 scaleMatrix = Matrix4::MakeScale(component->currentScale);
 
-            Matrix4 transform = PhysicsMath::PxMat44ToMatrix4(rigidActor->getGlobalPose());
-            Matrix4 scaleMatrix = Matrix4::MakeScale(scale);
-
-            entity->SetWorldTransform(scaleMatrix * transform);
+            entity->SetWorldTransform(scaleMatrix * PhysicsMath::PxMat44ToMatrix4(rigidActor->getGlobalPose()));
             activeEntities.push_back(entity);
         }
 
@@ -417,21 +412,15 @@ void PhysicsSystem::InitNewObjects()
         physx::PxRigidActor* rigidActor = createdActor->is<physx::PxRigidActor>();
         Vector3 scale;
         PhysicsSystemDetail::UpdateGlobalPose(rigidActor, component->GetEntity()->GetWorldTransform(), scale);
+        component->currentScale = scale;
 
         Entity* entity = component->GetEntity();
-        AttachShape(entity, rigidActor, scale);
+        AttachShape(entity, component, scale);
 
         physicsScene->addActor(*(component->GetPxActor()));
         physicsComponents.push_back(component);
     }
     pendingAddPhysicsComponents.clear();
-
-    auto attachShapeFn = [](physx::PxShape* shape, PhysicsComponent* component)
-    {
-        physx::PxRigidActor* actor = component->GetPxActor()->is<physx::PxRigidActor>();
-        DVASSERT(actor != nullptr);
-        actor->attachShape(*shape);
-    };
 
     for (CollisionShapeComponent* component : pendingAddCollisionComponents)
     {
@@ -441,17 +430,22 @@ void PhysicsSystem::InitNewObjects()
             DVASSERT(shape != nullptr);
 
             Entity* entity = component->GetEntity();
+            Matrix4 worldTransform = entity->GetWorldTransform();
+            Vector3 position, scale, rotation;
+            worldTransform.Decomposition(position, scale, rotation);
+
             PhysicsComponent* staticBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::STATIC_BODY_COMPONENT, 0));
             if (staticBodyComponent != nullptr)
             {
-                attachShapeFn(shape, staticBodyComponent);
+                AttachShape(staticBodyComponent, component, scale);
             }
             else
             {
                 PhysicsComponent* dynamicBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::DYNAMIC_BODY_COMPONENT, 0));
                 if (dynamicBodyComponent != nullptr)
                 {
-                    attachShapeFn(shape, dynamicBodyComponent);
+                    AttachShape(dynamicBodyComponent, component, scale);
+
                     physx::PxRigidDynamic* dynamicActor = dynamicBodyComponent->GetPxActor()->is<physx::PxRigidDynamic>();
                     DVASSERT(dynamicActor != nullptr);
                     if (dynamicActor->getActorFlags().isSet(physx::PxActorFlag::eDISABLE_SIMULATION) == false &&
@@ -468,40 +462,37 @@ void PhysicsSystem::InitNewObjects()
     pendingAddCollisionComponents.clear();
 }
 
-void PhysicsSystem::AttachShape(Entity* entity, physx::PxRigidActor* actor, const Vector3& scale)
+void PhysicsSystem::AttachShape(PhysicsComponent* bodyComponent, CollisionShapeComponent* shapeComponent, const Vector3& scale)
 {
-    auto componentLoop = [&scale](Entity* entity, physx::PxRigidActor* actor, uint32 componentType)
+    physx::PxActor* actor = bodyComponent->GetPxActor();
+    DVASSERT(actor);
+    physx::PxRigidActor* rigidActor = actor->is<physx::PxRigidActor>();
+    DVASSERT(rigidActor);
+
+    shapeComponent->scale = scale;
+    SheduleUpdate(shapeComponent);
+
+    physx::PxShape* shape = shapeComponent->GetPxShape();
+    if (shape != nullptr)
+    {
+        rigidActor->attachShape(*shape);
+        SheduleUpdate(bodyComponent);
+    }
+}
+
+void PhysicsSystem::AttachShape(Entity* entity, PhysicsComponent* bodyComponent, const Vector3& scale)
+{
+    auto componentLoop = [&scale, this](Entity* entity, PhysicsComponent* bodyComponent, uint32 componentType)
     {
         for (uint32 i = 0; i < entity->GetComponentCount(componentType); ++i)
         {
-            CollisionShapeComponent* collision = static_cast<CollisionShapeComponent*>(entity->GetComponent(componentType, i));
-            physx::PxShape* shape = collision->GetPxShape();
-            if (shape != nullptr)
-            {
-                physx::PxGeometryType::Enum geomType = shape->getGeometryType();
-                if (geomType == physx::PxGeometryType::eCONVEXMESH)
-                {
-                    physx::PxConvexMeshGeometry geom;
-                    shape->getConvexMeshGeometry(geom);
-                    geom.scale.scale = PhysicsMath::Vector3ToPxVec3(scale);
-                    shape->setGeometry(geom);
-                }
-                else if (geomType == physx::PxGeometryType::eTRIANGLEMESH)
-                {
-                    physx::PxTriangleMeshGeometry geom;
-                    shape->getTriangleMeshGeometry(geom);
-                    geom.scale.scale = PhysicsMath::Vector3ToPxVec3(scale);
-                    shape->setGeometry(geom);
-                }
-
-                actor->attachShape(*shape);
-            }
+            AttachShape(bodyComponent, static_cast<CollisionShapeComponent*>(entity->GetComponent(componentType, i)), scale);
         }
     };
 
     for (uint32 type : PhysicsSystemDetail::collisionShapeTypes)
     {
-        componentLoop(entity, actor, type);
+        componentLoop(entity, bodyComponent, type);
     }
 }
 
@@ -697,6 +688,63 @@ void PhysicsSystem::ReleaseShape(CollisionShapeComponent* component)
 
     actor->is<physx::PxRigidActor>()->detachShape(*shape);
     component->ReleasePxShape();
+}
+
+void PhysicsSystem::SheduleUpdate(PhysicsComponent* component)
+{
+    physicsComponensUpdatePending.insert(component);
+}
+
+void PhysicsSystem::SheduleUpdate(CollisionShapeComponent* component)
+{
+    collisionComponentsUpdatePending.insert(component);
+}
+
+void PhysicsSystem::UpdateComponents()
+{
+    for (CollisionShapeComponent* shapeComponent : collisionComponentsUpdatePending)
+    {
+        shapeComponent->UpdateLocalProperties();
+        physx::PxShape* shape = shapeComponent->GetPxShape();
+        DVASSERT(shape != nullptr);
+        physx::PxActor* actor = shape->getActor();
+        if (actor != nullptr)
+        {
+            PhysicsComponent* bodyComponent = reinterpret_cast<PhysicsComponent*>(actor->userData);
+            physicsComponensUpdatePending.insert(bodyComponent);
+        }
+    }
+
+    for (PhysicsComponent* bodyComponent : physicsComponensUpdatePending)
+    {
+        bodyComponent->UpdateLocalProperties();
+
+        physx::PxRigidDynamic* dynamicActor = bodyComponent->GetPxActor()->is<physx::PxRigidDynamic>();
+        if (dynamicActor != nullptr)
+        {
+            physx::PxU32 shapesCount = dynamicActor->getNbShapes();
+            if (shapesCount > 0)
+            {
+                Vector<physx::PxShape*> shapes(shapesCount, nullptr);
+                physx::PxU32 extractedShapesCount = dynamicActor->getShapes(shapes.data(), shapesCount);
+                DVASSERT(shapesCount == extractedShapesCount);
+
+                Vector<physx::PxReal> masses;
+                masses.reserve(shapesCount);
+
+                for (physx::PxShape* shape : shapes)
+                {
+                    CollisionShapeComponent* shapeComponent = reinterpret_cast<CollisionShapeComponent*>(shape->userData);
+                    masses.push_back(shapeComponent->GetMass());
+                }
+
+                physx::PxRigidBodyExt::setMassAndUpdateInertia(*dynamicActor, masses.data(), static_cast<physx::PxU32>(masses.size()));
+            }
+        }
+    }
+
+    collisionComponentsUpdatePending.clear();
+    physicsComponensUpdatePending.clear();
 }
 
 } // namespace DAVA

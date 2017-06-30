@@ -36,22 +36,26 @@ public:
 
     physx::PxActor* GetPxActor() const;
 
+    Vector3 currentScale;
+
 protected:
 #if defined(__DAVAENGINE_DEBUG__)
     virtual void CheckActorType() const = 0;
 #endif
-    virtual void SetPxActor(physx::PxActor* actor);
+    void SetPxActor(physx::PxActor* actor);
     void CopyFields(PhysicsComponent* component) const;
+    void SheduleUpdate();
+
+    virtual void UpdateLocalProperties();
 
 private:
     friend class PhysicsSystem;
     void ReleasePxActor();
     physx::PxActor* actor = nullptr;
 
-    void UpdateBodyFlags();
-
     eBodyFlags flags = VISUALIZE;
 
     DAVA_VIRTUAL_REFLECTION(PhysicsComponent, Component);
 };
+
 } // namespace DAVA

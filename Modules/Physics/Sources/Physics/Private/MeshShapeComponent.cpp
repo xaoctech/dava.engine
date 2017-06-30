@@ -36,6 +36,17 @@ void MeshShapeComponent::CheckShapeType() const
 }
 #endif
 
+void MeshShapeComponent::UpdateLocalProperties()
+{
+    physx::PxShape* shape = GetPxShape();
+    physx::PxTriangleMeshGeometry geom;
+    shape->getTriangleMeshGeometry(geom);
+    geom.scale.scale = PhysicsMath::Vector3ToPxVec3(scale);
+    shape->setGeometry(geom);
+
+    CollisionShapeComponent::UpdateLocalProperties();
+}
+
 DAVA_VIRTUAL_REFLECTION_IMPL(MeshShapeComponent)
 {
     ReflectionRegistrator<MeshShapeComponent>::Begin()

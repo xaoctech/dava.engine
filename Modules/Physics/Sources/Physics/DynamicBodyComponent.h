@@ -7,7 +7,7 @@ namespace DAVA
 class DynamicBodyComponent : public PhysicsComponent
 {
 public:
-    uint32 GetType() const override;
+    IMPLEMENT_COMPONENT_TYPE(DYNAMIC_BODY_COMPONENT);
     Component* Clone(Entity* toEntity) override;
 
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
@@ -21,6 +21,12 @@ public:
 
     float32 GetMaxAngularVelocity() const;
     void SetMaxAngularVelocity(float32 velocity);
+
+    uint32 GetMinPositionIters() const;
+    void SetMinPositionIters(uint32 minPositionIters);
+
+    uint32 GetMinVelocityIters() const;
+    void SetMinVelocityIters(uint32 minPositionIters);
 
     enum eLockFlags
     {
@@ -41,14 +47,17 @@ protected:
     void CheckActorType() const override;
 #endif
 
-    void SetPxActor(physx::PxActor* actor) override;
+    void UpdateLocalProperties() override;
 
 private:
-    float32 linearDamping = 0.0f;
+    float32 linearDamping = 0.05f;
     float32 angularDamping = 0.05f;
 
     float32 maxAngularVelocity = 7.0f;
     eLockFlags lockFlags = NoLock;
+
+    uint32 minPositionIters = 4;
+    uint32 minVelocityIters = 1;
 
     DAVA_VIRTUAL_REFLECTION(DynamicBodyComponent, PhysicsComponent);
 };

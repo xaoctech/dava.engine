@@ -36,18 +36,24 @@ public:
     void SetDrawDebugInfo(bool drawDebugInfo);
     bool IsDrawDebugInfo() const;
 
+    void SheduleUpdate(PhysicsComponent* component);
+    void SheduleUpdate(CollisionShapeComponent* component);
+
 private:
     bool FetchResults(bool block);
 
     void DrawDebugInfo();
 
     void InitNewObjects();
-    void AttachShape(Entity* entity, physx::PxRigidActor* actor, const Vector3& scale);
+    void AttachShape(Entity* entity, PhysicsComponent* bodyComponent, const Vector3& scale);
+    void AttachShape(PhysicsComponent* bodyComponent, CollisionShapeComponent* shapeComponent, const Vector3& scale);
+
     void ReleaseShape(CollisionShapeComponent* component);
     physx::PxShape* CreateShape(CollisionShapeComponent* component, Physics* physics);
 
     void SyncTransformToPhysx();
     void SyncEntityTransformToPhysx(Entity* entity);
+    void UpdateComponents();
 
 private:
     friend class PhysicsSystemPrivate; // for tests only
@@ -66,6 +72,9 @@ private:
     Vector<CollisionShapeComponent*> pendingAddCollisionComponents;
 
     UnorderedMap<Entity*, Vector<CollisionShapeComponent*>> waitRenderInfoComponents;
+
+    Set<PhysicsComponent*> physicsComponensUpdatePending;
+    Set<CollisionShapeComponent*> collisionComponentsUpdatePending;
 
     bool drawDebugInfo = false;
 };
