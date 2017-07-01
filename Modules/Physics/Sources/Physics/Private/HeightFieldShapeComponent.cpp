@@ -36,6 +36,15 @@ void HeightFieldShapeComponent::CheckShapeType() const
 }
 #endif
 
+void HeightFieldShapeComponent::ReleasePxShape()
+{
+    physx::PxHeightFieldGeometry geom;
+    GetPxShape()->getHeightFieldGeometry(geom);
+    physx::PxHeightField* heightfield = geom.heightField;
+    CollisionShapeComponent::ReleasePxShape();
+    heightfield->release();
+}
+
 DAVA_VIRTUAL_REFLECTION_IMPL(HeightFieldShapeComponent)
 {
     ReflectionRegistrator<HeightFieldShapeComponent>::Begin()

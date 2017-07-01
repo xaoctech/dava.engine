@@ -45,6 +45,8 @@ protected:
     Matrix4 localPose;
     Vector3 scale = Vector3(1.0f, 1.0f, 1.0f);
 
+    virtual void ReleasePxShape();
+
 private:
     FastName name = FastName("");
     bool overrideMass = false;
@@ -54,7 +56,6 @@ private:
 
     friend class PhysicsSystem;
     void SetPxShape(physx::PxShape* shape);
-    void ReleasePxShape();
 
     DAVA_VIRTUAL_REFLECTION(CollisionShapeComponent, Component);
 };

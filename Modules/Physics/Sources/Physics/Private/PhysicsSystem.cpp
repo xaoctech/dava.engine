@@ -7,6 +7,7 @@
 #include "Physics/CapsuleShapeComponent.h"
 #include "Physics/SphereShapeComponent.h"
 #include "Physics/PlaneShapeComponent.h"
+#include "Physics/PhysicsGeometryCache.h"
 #include "Physics/Private/PhysicsMath.h"
 
 #include <Scene3D/Entity.h>
@@ -19,6 +20,7 @@
 #include <Scene3D/Components/SingleComponents/TransformSingleComponent.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/TransformComponent.h>
+#include <Scene3D/Components/SwitchComponent.h>
 #include <Render/Highlevel/RenderObject.h>
 #include <Render/Highlevel/RenderBatch.h>
 #include <Render/Highlevel/RenderSystem.h>
@@ -83,6 +85,38 @@ bool IsCollisionShapeType(uint32 componentType)
                        });
 }
 
+Vector3 AccumulateMeshInfo(Entity* e, Vector<PolygonGroup*>& groups)
+{
+    RenderObject* ro = GetRenderObject(e);
+    if (ro != nullptr)
+    {
+        uint32 batchesCount = ro->GetRenderBatchCount();
+        int32 maxLod = ro->GetMaxLodIndex();
+        for (uint32 i = 0; i < batchesCount; ++i)
+        {
+            int32 lodIndex = -1;
+            int32 switchIndex = -1;
+            RenderBatch* batch = ro->GetRenderBatch(i, lodIndex, switchIndex);
+            if (lodIndex == maxLod)
+            {
+                PolygonGroup* group = batch->GetPolygonGroup();
+                if (group != nullptr)
+                {
+                    groups.push_back(group);
+                }
+            }
+        }
+    }
+
+    Vector3 pos;
+    Vector3 scale;
+    Quaternion quat;
+    TransformComponent* transformComponent = GetTransformComponent(e);
+    transformComponent->GetWorldTransform().Decomposition(pos, scale, quat);
+
+    return scale;
+}
+
 } // namespace
 
 PhysicsSystem::PhysicsSystem(Scene* scene)
@@ -100,6 +134,7 @@ PhysicsSystem::PhysicsSystem(Scene* scene)
     PhysicsSceneConfig sceneConfig;
     sceneConfig.gravity = options->GetVector3("physics.gravity", Vector3(0, 0, -9.81f));
     sceneConfig.threadCount = options->GetUInt32("physics.threadCount", 2);
+    geometryCache = new PhysicsGeometryCache();
     physicsScene = physics->CreateScene(sceneConfig);
 }
 
@@ -110,6 +145,7 @@ PhysicsSystem::~PhysicsSystem()
         FetchResults(true);
     }
     DVASSERT(simulationBlock != nullptr);
+    SafeDelete(geometryCache);
 
     const EngineContext* ctx = GetEngineContext();
     Physics* physics = ctx->moduleManager->GetModule<Physics>();
@@ -189,17 +225,19 @@ void PhysicsSystem::UnregisterComponent(Entity* entity, Component* component)
         PhysicsComponent* physicsComponent = static_cast<PhysicsComponent*>(component);
         PhysicsSystemDetail::EraseComponent(physicsComponent, pendingAddPhysicsComponents, physicsComponents);
 
-        physx::PxRigidActor* actor = physicsComponent->GetPxActor()->is<physx::PxRigidActor>();
+        physx::PxActor* actor = physicsComponent->GetPxActor();
         if (actor != nullptr)
         {
-            physx::PxU32 shapesCount = actor->getNbShapes();
+            physx::PxRigidActor* rigidActor = actor->is<physx::PxRigidActor>();
+            DVASSERT(rigidActor != nullptr);
+            physx::PxU32 shapesCount = rigidActor->getNbShapes();
             Vector<physx::PxShape*> shapes(shapesCount, nullptr);
-            actor->getShapes(shapes.data(), shapesCount);
+            rigidActor->getShapes(shapes.data(), shapesCount);
 
             for (physx::PxShape* shape : shapes)
             {
                 DVASSERT(shape != nullptr);
-                actor->detachShape(*shape);
+                rigidActor->detachShape(*shape);
             }
 
             physicsScene->removeActor(*physicsComponent->GetPxActor());
@@ -470,12 +508,12 @@ void PhysicsSystem::AttachShape(PhysicsComponent* bodyComponent, CollisionShapeC
     DVASSERT(rigidActor);
 
     shapeComponent->scale = scale;
-    SheduleUpdate(shapeComponent);
 
     physx::PxShape* shape = shapeComponent->GetPxShape();
     if (shape != nullptr)
     {
         rigidActor->attachShape(*shape);
+        SheduleUpdate(shapeComponent);
         SheduleUpdate(bodyComponent);
     }
 }
@@ -498,6 +536,7 @@ void PhysicsSystem::AttachShape(Entity* entity, PhysicsComponent* bodyComponent,
 
 physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, Physics* physics)
 {
+    using namespace PhysicsSystemDetail;
     physx::PxShape* shape = nullptr;
     switch (component->GetType())
     {
@@ -527,19 +566,12 @@ physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, P
     break;
     case Component::CONVEX_HULL_SHAPE_COMPONENT:
     {
+        Vector<PolygonGroup*> groups;
         Entity* entity = component->GetEntity();
-        RenderObject* ro = GetRenderObject(entity);
-        if (ro != nullptr)
+        Vector3 scale = AccumulateMeshInfo(entity, groups);
+        if (groups.empty() == false)
         {
-            uint32 batchesCount = ro->GetRenderBatchCount();
-            DVASSERT(batchesCount > 0);
-            RenderBatch* batch = ro->GetRenderBatch(0);
-            Vector3 pos;
-            Vector3 scale;
-            Quaternion quat;
-            TransformComponent* transformComponent = GetTransformComponent(entity);
-            transformComponent->GetWorldTransform().Decomposition(pos, scale, quat);
-            shape = physics->CreateConvexHullShape(batch->GetPolygonGroup(), scale);
+            shape = physics->CreateConvexHullShape(std::move(groups), scale, geometryCache);
         }
         else
         {
@@ -549,19 +581,12 @@ physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, P
     break;
     case Component::MESH_SHAPE_COMPONENT:
     {
+        Vector<PolygonGroup*> groups;
         Entity* entity = component->GetEntity();
-        RenderObject* ro = GetRenderObject(entity);
-        if (ro != nullptr)
+        Vector3 scale = AccumulateMeshInfo(entity, groups);
+        if (groups.empty() == false)
         {
-            uint32 batchesCount = ro->GetRenderBatchCount();
-            DVASSERT(batchesCount > 0);
-            RenderBatch* batch = ro->GetRenderBatch(0);
-            Vector3 pos;
-            Vector3 scale;
-            Quaternion quat;
-            TransformComponent* transformComponent = GetTransformComponent(entity);
-            transformComponent->GetWorldTransform().Decomposition(pos, scale, quat);
-            shape = physics->CreateMeshShape(batch->GetPolygonGroup(), scale);
+            shape = physics->CreateMeshShape(std::move(groups), scale, geometryCache);
         }
         else
         {

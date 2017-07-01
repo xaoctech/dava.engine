@@ -8,6 +8,7 @@
 #include "Physics/MeshShapeComponent.h"
 #include "Physics/ConvexHullShapeComponent.h"
 #include "Physics/HeightFieldShapeComponent.h"
+#include "Physics/PhysicsGeometryCache.h"
 #include "Physics/Private/PhysicsMath.h"
 
 #include <Engine/Engine.h>
@@ -83,19 +84,32 @@ public:
     {
 // MemoryManager temporary disabled as AlignedAllocate produce heap corruption on Deallocation
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
-//return MemoryManager::Instance()->AlignedAllocate(size, 16, ALLOC_POOL_PHYSICS);
+        int32 alignment = 16;
+        int32 offset = alignment - 1 + sizeof(void*);
+        void* p1 = MemoryManager::Instance()->Allocate(size + offset, ALLOC_POOL_PHYSICS);
+        if (p1 == nullptr)
+        {
+            return nullptr;
+        }
+
+        void** p2 = reinterpret_cast<void**>((reinterpret_cast<size_t>(p1) + offset) & ~(alignment - 1));
+        p2[-1] = p1;
+        return p2;
 #else
-#endif
         return defaultAllocator.allocate(size, typeName, filename, line);
+#endif
     }
 
     void deallocate(void* ptr) override
     {
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
-//MemoryManager::Instance()->Deallocate(ptr);
+        if (ptr)
+        {
+            MemoryManager::Instance()->Deallocate(static_cast<void**>(ptr)[-1]);
+        }
 #else
-#endif
         defaultAllocator.deallocate(ptr);
+#endif
     }
 
 private:
@@ -233,103 +247,131 @@ physx::PxShape* Physics::CreatePlaneShape() const
     return physics->createShape(physx::PxPlaneGeometry(), *GetDefaultMaterial(), true);
 }
 
-physx::PxShape* Physics::CreateMeshShape(PolygonGroup* polygon, const Vector3& scale) const
+physx::PxShape* Physics::CreateMeshShape(Vector<PolygonGroup*>&& polygons, const Vector3& scale, PhysicsGeometryCache* cache) const
 {
     using namespace physx;
 
-    int32 vertexCount = polygon->vertexCount;
-    Vector<PxVec3> vertices(vertexCount);
-    for (int32 i = 0; i < vertexCount; ++i)
+    Vector<PolygonGroup*> polyData = std::move(polygons);
+    std::sort(polyData.begin(), polyData.end());
+    polyData.erase(std::unique(polyData.begin(), polyData.end()), polyData.end());
+
+    DVASSERT(cache != nullptr);
+    PxBase* mesh = cache->GetTriangleMeshEntry(polyData);
+    if (mesh == nullptr)
     {
-        Vector3 coord;
-        polygon->GetCoord(i, coord);
-        vertices[i].x = coord.x;
-        vertices[i].y = coord.y;
-        vertices[i].z = coord.z;
+        PolygonGroup* polygon = polyData.front();
+        int32 vertexCount = polygon->vertexCount;
+        Vector<PxVec3> vertices(vertexCount);
+        for (int32 i = 0; i < vertexCount; ++i)
+        {
+            Vector3 coord;
+            polygon->GetCoord(i, coord);
+            vertices[i].x = coord.x;
+            vertices[i].y = coord.y;
+            vertices[i].z = coord.z;
+        }
+
+        int32 indexCount = polygon->indexCount;
+        Vector<PxU32> indices(indexCount);
+        for (int32 i = 0; i < indexCount; ++i)
+        {
+            int32 index;
+            polygon->GetIndex(i, index);
+            indices[i] = index;
+        }
+
+        PxTriangleMeshDesc desc;
+        desc.points.count = vertexCount;
+        desc.points.stride = sizeof(PxVec3);
+        desc.points.data = vertices.data();
+        desc.triangles.count = polygon->indexCount / 3;
+        desc.triangles.stride = 3 * sizeof(PxU32);
+        desc.triangles.data = indices.data();
+        desc.flags = PxMeshFlags(0);
+
+        physx::PxTriangleMeshCookingResult::Enum condition;
+        PxDefaultMemoryOutputStream outStream;
+        if (cooking->cookTriangleMesh(desc, outStream, &condition) == false)
+        {
+            Logger::Error("[Physics::CreateMeshShape] Mesh creation failure for polygon group with code: %u", static_cast<uint32>(condition));
+            return nullptr;
+        }
+
+        physx::PxDefaultMemoryInputData inputStream(outStream.getData(), outStream.getSize());
+        mesh = physics->createTriangleMesh(inputStream);
+        DVASSERT(mesh != nullptr);
+        cache->AddEntry(polyData, mesh);
     }
+    PxTriangleMesh* triangleMesh = mesh->is<PxTriangleMesh>();
+    DVASSERT(triangleMesh != nullptr);
 
-    int32 indexCount = polygon->indexCount;
-    Vector<PxU32> indices(indexCount);
-    for (int32 i = 0; i < indexCount; ++i)
-    {
-        int32 index;
-        polygon->GetIndex(i, index);
-        indices[i] = index;
-    }
-
-    PxTriangleMeshDesc desc;
-    desc.points.count = vertexCount;
-    desc.points.stride = sizeof(PxVec3);
-    desc.points.data = vertices.data();
-    desc.triangles.count = polygon->indexCount / 3;
-    desc.triangles.stride = 3 * sizeof(PxU32);
-    desc.triangles.data = indices.data();
-    desc.flags = PxMeshFlags(0);
-
-    physx::PxTriangleMeshCookingResult::Enum condition;
-    PxDefaultMemoryOutputStream outStream;
-    if (cooking->cookTriangleMesh(desc, outStream, &condition) == false)
-    {
-        Logger::Error("[Physics::CreateMeshShape] Mesh creation failure for polygon group with code: %u", static_cast<uint32>(condition));
-        return nullptr;
-    }
-
-    physx::PxDefaultMemoryInputData inputStream(outStream.getData(), outStream.getSize());
-    PxTriangleMesh* mesh = physics->createTriangleMesh(inputStream);
-    DVASSERT(mesh != nullptr);
     PxMeshScale pxScale(PxVec3(scale.x, scale.y, scale.z), PxQuat(PxIdentity));
-    PxTriangleMeshGeometry geometry(mesh, pxScale);
+    PxTriangleMeshGeometry geometry(triangleMesh, pxScale);
     PxShape* shape = physics->createShape(geometry, *GetDefaultMaterial(), true);
 
     return shape;
 }
 
-physx::PxShape* Physics::CreateConvexHullShape(PolygonGroup* polygon, const Vector3& scale) const
+physx::PxShape* Physics::CreateConvexHullShape(Vector<PolygonGroup*>&& polygons, const Vector3& scale, PhysicsGeometryCache* cache) const
 {
     using namespace physx;
 
-    int32 vertexCount = polygon->vertexCount;
-    Vector<PxVec3> vertices(vertexCount);
-    for (int32 i = 0; i < vertexCount; ++i)
+    Vector<PolygonGroup*> polyData = std::move(polygons);
+    std::sort(polyData.begin(), polyData.end());
+    polyData.erase(std::unique(polyData.begin(), polyData.end()), polyData.end());
+
+    DVASSERT(cache != nullptr);
+    PxBase* mesh = cache->GetConvexHullEntry(polyData);
+    if (mesh == nullptr)
     {
-        Vector3 coord;
-        polygon->GetCoord(i, coord);
-        vertices[i].x = coord.x;
-        vertices[i].y = coord.y;
-        vertices[i].z = coord.z;
+        PolygonGroup* polygon = polyData.front();
+        int32 vertexCount = polygon->vertexCount;
+        Vector<PxVec3> vertices(vertexCount);
+        for (int32 i = 0; i < vertexCount; ++i)
+        {
+            Vector3 coord;
+            polygon->GetCoord(i, coord);
+            vertices[i].x = coord.x;
+            vertices[i].y = coord.y;
+            vertices[i].z = coord.z;
+        }
+
+        int32 indexCount = polygon->indexCount;
+        Vector<PxU32> indices(indexCount);
+        for (int32 i = 0; i < indexCount; ++i)
+        {
+            int32 index;
+            polygon->GetIndex(i, index);
+            indices[i] = index;
+        }
+
+        PxConvexMeshDesc desc;
+        desc.points.count = vertexCount;
+        desc.points.stride = sizeof(PxVec3);
+        desc.points.data = vertices.data();
+        desc.indices.count = indexCount;
+        desc.indices.stride = sizeof(PxU32);
+        desc.indices.data = indices.data();
+        desc.flags = PxConvexFlag::eCOMPUTE_CONVEX;
+
+        PxConvexMeshCookingResult::Enum condition;
+        PxDefaultMemoryOutputStream outStream;
+        if (cooking->cookConvexMesh(desc, outStream, &condition) == false)
+        {
+            Logger::Error("[Physics::CreateMeshShape] Mesh creation failure for polygon group with code: %u", static_cast<uint32>(condition));
+            return nullptr;
+        }
+
+        physx::PxDefaultMemoryInputData inputStream(outStream.getData(), outStream.getSize());
+        mesh = physics->createConvexMesh(inputStream);
+        DVASSERT(mesh != nullptr);
+        cache->AddEntry(polyData, mesh);
     }
 
-    int32 indexCount = polygon->indexCount;
-    Vector<PxU32> indices(indexCount);
-    for (int32 i = 0; i < indexCount; ++i)
-    {
-        int32 index;
-        polygon->GetIndex(i, index);
-        indices[i] = index;
-    }
-
-    PxConvexMeshDesc desc;
-    desc.points.count = vertexCount;
-    desc.points.stride = sizeof(PxVec3);
-    desc.points.data = vertices.data();
-    desc.indices.count = indexCount;
-    desc.indices.stride = sizeof(PxU32);
-    desc.indices.data = indices.data();
-    desc.flags = PxConvexFlag::eCOMPUTE_CONVEX;
-
-    PxConvexMeshCookingResult::Enum condition;
-    PxDefaultMemoryOutputStream outStream;
-    if (cooking->cookConvexMesh(desc, outStream, &condition) == false)
-    {
-        Logger::Error("[Physics::CreateMeshShape] Mesh creation failure for polygon group with code: %u", static_cast<uint32>(condition));
-        return nullptr;
-    }
-
-    physx::PxDefaultMemoryInputData inputStream(outStream.getData(), outStream.getSize());
-    PxConvexMesh* mesh = physics->createConvexMesh(inputStream);
-    DVASSERT(mesh != nullptr);
+    PxConvexMesh* convexMesh = mesh->is<PxConvexMesh>();
+    DVASSERT(convexMesh != nullptr);
     PxMeshScale pxScale(PxVec3(scale.x, scale.y, scale.z), PxQuat(PxIdentity));
-    PxConvexMeshGeometry geometry(mesh, pxScale);
+    PxConvexMeshGeometry geometry(convexMesh, pxScale);
     PxShape* shape = physics->createShape(geometry, *GetDefaultMaterial(), true);
 
     return shape;

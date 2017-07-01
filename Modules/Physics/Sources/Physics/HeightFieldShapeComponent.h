@@ -20,6 +20,8 @@ protected:
     void CheckShapeType() const override;
 #endif
 
+    void ReleasePxShape() override;
+
 private:
     DAVA_VIRTUAL_REFLECTION(HeightFieldShapeComponent, CollisionShapeComponent);
 };

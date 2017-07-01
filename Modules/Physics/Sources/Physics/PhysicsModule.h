@@ -23,6 +23,7 @@ namespace DAVA
 {
 class PolygonGroup;
 class Landscape;
+class PhysicsGeometryCache;
 struct Matrix4;
 
 class Physics : public IModule
@@ -46,8 +47,8 @@ public:
     physx::PxShape* CreateCapsuleShape(float32 radius, float32 halfHeight) const;
     physx::PxShape* CreateSphereShape(float32 radius) const;
     physx::PxShape* CreatePlaneShape() const;
-    physx::PxShape* CreateMeshShape(PolygonGroup* polygon, const Vector3& scale) const;
-    physx::PxShape* CreateConvexHullShape(PolygonGroup* polygon, const Vector3& scale) const;
+    physx::PxShape* CreateMeshShape(Vector<PolygonGroup*>&& polygons, const Vector3& scale, PhysicsGeometryCache* cache) const;
+    physx::PxShape* CreateConvexHullShape(Vector<PolygonGroup*>&& polygons, const Vector3& scale, PhysicsGeometryCache* cache) const;
     physx::PxShape* CreateHeightField(Landscape* landscape, Matrix4& localPose) const;
 
     physx::PxMaterial* GetDefaultMaterial() const;
@@ -66,7 +67,5 @@ private:
     PhysicsErrotCallback* errorCallback = nullptr;
 
     DAVA_VIRTUAL_REFLECTION(Physics, IModule);
-
-public:
 };
 }

@@ -15,6 +15,7 @@ class Scene;
 class Physics;
 class PhysicsComponent;
 class CollisionShapeComponent;
+class PhysicsGeometryCache;
 
 class PhysicsSystem final : public SceneSystem
 {
@@ -64,6 +65,7 @@ private:
     bool isSimulationEnabled = true;
     bool isSimulationRunning = false;
     physx::PxScene* physicsScene = nullptr;
+    PhysicsGeometryCache* geometryCache;
 
     Vector<PhysicsComponent*> physicsComponents;
     Vector<PhysicsComponent*> pendingAddPhysicsComponents;
