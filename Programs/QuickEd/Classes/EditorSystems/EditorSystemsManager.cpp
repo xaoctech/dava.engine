@@ -9,8 +9,9 @@
 #include "EditorSystems/EditorControlsView.h"
 #include "EditorSystems/HUDSystem.h"
 #include "EditorSystems/EditorTransformSystem.h"
-#include "EditorSystems/KeyboardProxy.h"
 #include "EditorSystems/EditorControlsView.h"
+
+#include "Utils/KeyboardProxy.h"
 
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Core/FieldBinder.h>
@@ -166,7 +167,7 @@ ControlNode* EditorSystemsManager::GetControlNodeAtPoint(const DAVA::Vector2& po
         return nullptr;
     }
 
-    if (!KeyboardProxy::IsKeyPressed(KeyboardProxy::KEY_ALT))
+    if (!Utils::IsKeyPressed(eModifierKeys::ALT))
     {
         return selectionSystemPtr->GetCommonNodeUnderPoint(point, canGoDeeper);
     }

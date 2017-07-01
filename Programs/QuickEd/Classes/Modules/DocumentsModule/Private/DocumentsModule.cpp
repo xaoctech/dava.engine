@@ -1,8 +1,8 @@
 #include "Modules/DocumentsModule/DocumentsModule.h"
 #include "Modules/LegacySupportModule/Private/Project.h"
 #include "Modules/DocumentsModule/DocumentData.h"
+#include "Modules/DocumentsModule/EditorCanvasData.h"
 #include "Modules/DocumentsModule/Private/DocumentsWatcherData.h"
-#include "Modules/DocumentsModule/Private/EditorCanvasData.h"
 
 #include "QECommands/ChangePropertyValueCommand.h"
 
@@ -116,7 +116,8 @@ void DocumentsModule::PostInit()
 
     packageListenerProxy.Init(this, GetAccessor());
 
-    InitWatcher();
+    InitGlobalData();
+
     InitEditorSystems();
     InitCentralWidget();
 
@@ -176,7 +177,7 @@ void DocumentsModule::InitCentralWidget()
 
     RenderWidget* renderWidget = GetContextManager()->GetRenderWidget();
 
-    previewWidget = new PreviewWidget(accessor, renderWidget, systemsManager.get());
+    previewWidget = new PreviewWidget(accessor, GetUI(), renderWidget, systemsManager.get());
     previewWidget->requestCloseTab.Connect(this, &DocumentsModule::CloseDocument);
     previewWidget->requestChangeTextInNode.Connect(this, &DocumentsModule::ChangeControlText);
     connections.AddConnection(previewWidget, &PreviewWidget::OpenPackageFile, MakeFunction(this, &DocumentsModule::OpenDocument));
@@ -199,7 +200,7 @@ void DocumentsModule::InitCentralWidget()
     findInDocumentController.reset(new FindInDocumentController(this, mainWindow, previewWidget->GetFindInDocumentWidget()));
 }
 
-void DocumentsModule::InitWatcher()
+void DocumentsModule::InitGlobalData()
 {
     using namespace DAVA;
     using namespace TArc;
@@ -512,7 +513,7 @@ DAVA::TArc::DataContext::ContextID DocumentsModule::OpenDocument(const QString& 
         {
             DAVA::Vector<std::unique_ptr<DAVA::TArc::DataNode>> initialData;
             initialData.emplace_back(new DocumentData(package));
-            initialData.emplace_back(new EditorCanvasData());
+            initialData.emplace_back(new EditorCanvasData(accessor));
             id = contextManager->CreateContext(std::move(initialData));
         }
     }

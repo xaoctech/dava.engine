@@ -3,7 +3,6 @@
 
 #include "EditorSystems/EditorTransformSystem.h"
 #include "EditorSystems/EditorSystemsManager.h"
-#include "EditorSystems/KeyboardProxy.h"
 
 #include "Model/PackageHierarchy/PackageNode.h"
 #include "Model/PackageHierarchy/ControlNode.h"
@@ -15,6 +14,8 @@
 #include "QECommands/ChangePropertyValueCommand.h"
 #include "QECommands/ResizeCommand.h"
 #include "QECommands/ChangePivotCommand.h"
+
+#include "Utils/KeyboardProxy.h"
 
 #include <TArc/Core/ContextAccessor.h>
 
@@ -394,8 +395,8 @@ void EditorTransformSystem::ProcessDrag(const Vector2& pos)
     case HUDAreaInfo::BOTTOM_CENTER_AREA:
     case HUDAreaInfo::BOTTOM_RIGHT_AREA:
     {
-        bool withPivot = IsKeyPressed(KeyboardProxy::KEY_ALT);
-        bool rateably = IsKeyPressed(KeyboardProxy::KEY_CTRL);
+        bool withPivot = Utils::IsKeyPressed(eModifierKeys::ALT);
+        bool rateably = Utils::IsKeyPressed(eModifierKeys::CONTROL);
         ResizeControl(delta, withPivot, rateably);
         break;
     }
@@ -1225,5 +1226,5 @@ void EditorTransformSystem::ClampAngle()
 
 bool EditorTransformSystem::IsShiftPressed() const
 {
-    return IsKeyPressed(KeyboardProxy::KEY_SHIFT) ^ (shiftInverted);
+    return Utils::IsKeyPressed(eModifierKeys::SHIFT) ^ (shiftInverted);
 }

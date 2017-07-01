@@ -19,8 +19,12 @@
 #include "Model/ControlProperties/VisibleValueProperty.h"
 
 #include "Modules/DocumentsModule/DocumentData.h"
+#include "Modules/DocumentsModule/CentralWidgetData.h"
+
+#include "Controls/ScaleComboBox.h"
 
 #include <TArc/Controls/SceneTabbar.h>
+#include <TArc/Controls/ScrollBar.h>
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/DataProcessing/DataContext.h>
 
@@ -30,6 +34,7 @@
 #include <UI/UIStaticText.h>
 #include <UI/UIControlSystem.h>
 #include <Engine/Engine.h>
+#include <Reflection/ReflectedTypeDB.h>
 
 #include <QLineEdit>
 #include <QScreen>
@@ -46,68 +51,30 @@
 
 using namespace DAVA;
 
-namespace
-{
-QString ScaleStringFromReal(float scale)
-{
-    return QString("%1 %").arg(static_cast<int>(scale * 100.0f + 0.5f));
-}
-}
-
-PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::RenderWidget* renderWidget, EditorSystemsManager* systemsManager)
+PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* ui_, DAVA::RenderWidget* renderWidget, EditorSystemsManager* systemsManager)
     : QFrame(nullptr)
     , accessor(accessor_)
+    , ui(ui_)
     , rulerController(new RulerController(this))
     , vGuidesController(new VGuidesController(accessor, this))
     , hGuidesController(new HGuidesController(accessor, this))
+    , scaleComboBoxData(accessor)
+    , hScrollBarData(Vector2::AXIS_X, accessor)
+    , vScrollBarData(Vector2::AXIS_Y, accessor)
 {
-    qRegisterMetaType<SelectedNodes>("SelectedNodes");
-
     InjectRenderWidget(renderWidget);
 
     InitUI();
 
     InitFromSystemsManager(systemsManager);
 
-    connect(rulerController, &RulerController::HorisontalRulerSettingsChanged, horizontalRuler, &RulerWidget::OnRulerSettingsChanged);
-    connect(rulerController, &RulerController::VerticalRulerSettingsChanged, verticalRuler, &RulerWidget::OnRulerSettingsChanged);
+    DAVA::TArc::DataContext* globalContext = accessor->GetGlobalContext();
+    globalContext->CreateData(std::make_unique<CentralWidgetData>(renderWidget, horizontalRuler, verticalRuler));
 
-    connect(rulerController, &RulerController::HorisontalRulerMarkPositionChanged, horizontalRuler, &RulerWidget::OnMarkerPositionChanged);
-    connect(rulerController, &RulerController::VerticalRulerMarkPositionChanged, verticalRuler, &RulerWidget::OnMarkerPositionChanged);
-
-    // Setup the Scale Combo.
-    for (DAVA::float32 scale : editorCanvas->GetPredefinedScales())
-    {
-        scaleCombo->addItem(ScaleStringFromReal(scale));
-    }
-
-    connect(scaleCombo, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &PreviewWidget::OnScaleByComboIndex);
-    connect(scaleCombo->lineEdit(), &QLineEdit::editingFinished, this, &PreviewWidget::OnScaleByComboText);
-
-    connect(verticalScrollBar, &QScrollBar::actionTriggered, this, &PreviewWidget::OnVScrollbarActionTriggered);
-    connect(horizontalScrollBar, &QScrollBar::actionTriggered, this, &PreviewWidget::OnHScrollbarActionTriggered);
-
-    QRegExp regEx("[0-8]?([0-9]|[0-9]){0,2}\\s?\\%?");
-    scaleCombo->setValidator(new QRegExpValidator(regEx));
-    scaleCombo->setInsertPolicy(QComboBox::NoInsert);
-    OnScaleChanged(1.0f);
-    editorCanvas->SetScale(1.0f);
-    UpdateScrollArea();
+    centralWidgetDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<CentralWidgetData>());
 }
 
 PreviewWidget::~PreviewWidget() = default;
-
-float PreviewWidget::GetScaleFromComboboxText() const
-{
-    // Firstly verify whether the value is already set.
-    QString curTextValue = scaleCombo->currentText();
-    curTextValue.remove('%');
-    curTextValue.remove(' ');
-    bool ok;
-    float scaleValue = curTextValue.toFloat(&ok);
-    DVASSERT(ok, "can not parse text to float");
-    return scaleValue / 100.0f;
-}
 
 FindInDocumentWidget* PreviewWidget::GetFindInDocumentWidget()
 {
@@ -209,81 +176,77 @@ void PreviewWidget::OnEmulationModeChanged(bool emulationMode)
 
 void PreviewWidget::OnIncrementScale()
 {
-    float32 nextScale = editorCanvas->GetNextScale(1);
-    editorCanvas->SetScale(nextScale);
+    //float32 nextScale = editorCanvas->GetNextScale(1);
+    //editorCanvas->SetScale(nextScale);
 }
 
 void PreviewWidget::OnDecrementScale()
 {
-    float32 nextScale = editorCanvas->GetPreviousScale(-1);
-    editorCanvas->SetScale(nextScale);
+    //float32 nextScale = editorCanvas->GetPreviousScale(-1);
+    // editorCanvas->SetScale(nextScale);
 }
 
 void PreviewWidget::SetActualScale()
 {
-    if (editorCanvas != nullptr)
-    {
-        editorCanvas->SetScale(1.0f); //1.0f is a 100% scale
-    }
+    //     if (editorCanvas != nullptr)
+    //     {
+    //         editorCanvas->SetScale(1.0f); //1.0f is a 100% scale
+    //     }
 }
 
 void PreviewWidget::ApplyPosChanges()
 {
-    using namespace DAVA;
-
-    float32 scale = editorCanvas->GetScale();
-    QPoint viewPos = (canvasPos + rootControlPos * scale) * -1;
-    rulerController->SetViewPos(viewPos);
-
-    QPoint viewStartValue(std::floor(viewPos.x() / scale), std::floor(viewPos.y()) / scale);
-
-    hGuidesController->OnCanvasParametersChanged(viewPos.x(), viewStartValue.x(), viewStartValue.x() + renderWidget->width() / scale, scale);
-    vGuidesController->OnCanvasParametersChanged(viewPos.y(), viewStartValue.y(), viewStartValue.y() + renderWidget->height() / scale, scale);
+    //     using namespace DAVA;
+    //
+    //     float32 scale = editorCanvas->GetScale();
+    //     QPoint viewPos = (canvasPos + rootControlPos * scale) * -1;
+    //     rulerController->SetViewPos(viewPos);
+    //
+    //     QPoint viewStartValue(std::floor(viewPos.x() / scale), std::floor(viewPos.y()) / scale);
+    //
+    //     hGuidesController->OnCanvasParametersChanged(viewPos.x(), viewStartValue.x(), viewStartValue.x() + renderWidget->width() / scale, scale);
+    //     vGuidesController->OnCanvasParametersChanged(viewPos.y(), viewStartValue.y(), viewStartValue.y() + renderWidget->height() / scale, scale);
 }
 
 void PreviewWidget::UpdateScrollArea(const DAVA::Vector2& /*size*/)
 {
-    if (editorCanvas == nullptr)
-    {
-        verticalScrollBar->setPageStep(0);
-        horizontalScrollBar->setPageStep(0);
-
-        verticalScrollBar->setRange(0, 0);
-        horizontalScrollBar->setRange(0, 0);
-    }
-    else
-    {
-        Vector2 areaSize = editorCanvas->GetViewSize();
-
-        verticalScrollBar->setPageStep(areaSize.dy);
-        horizontalScrollBar->setPageStep(areaSize.dx);
-
-        Vector2 minPos = editorCanvas->GetMinimumPos();
-        Vector2 maxPos = editorCanvas->GetMaximumPos();
-        horizontalScrollBar->setRange(minPos.x, maxPos.x);
-        verticalScrollBar->setRange(minPos.y, maxPos.y);
-    }
+    //     if (editorCanvas == nullptr)
+    //     {
+    //         verticalScrollBar->setPageStep(0);
+    //         horizontalScrollBar->setPageStep(0);
+    //
+    //         verticalScrollBar->setRange(0, 0);
+    //         horizontalScrollBar->setRange(0, 0);
+    //     }
+    //     else
+    //     {
+    //         Vector2 areaSize = editorCanvas->GetViewSize();
+    //
+    //         verticalScrollBar->setPageStep(areaSize.dy);
+    //         horizontalScrollBar->setPageStep(areaSize.dx);
+    //
+    //         Vector2 minPos = editorCanvas->GetMinimumPos();
+    //         Vector2 maxPos = editorCanvas->GetMaximumPos();
+    //         horizontalScrollBar->setRange(minPos.x, maxPos.x);
+    //         verticalScrollBar->setRange(minPos.y, maxPos.y);
+    //     }
 }
 
 void PreviewWidget::OnPositionChanged(const Vector2& position)
 {
-    using namespace DAVA::TArc;
-    horizontalScrollBar->setSliderPosition(position.x);
-    verticalScrollBar->setSliderPosition(position.y);
+    //     using namespace DAVA::TArc;
+    //     horizontalScrollBar->setSliderPosition(position.x);
+    //     verticalScrollBar->setSliderPosition(position.y);
 }
 
 void PreviewWidget::OnResized(DAVA::uint32 width, DAVA::uint32 height)
 {
-    editorCanvas->OnViewSizeChanged(width, height);
-
     const EngineContext* engineContext = GetEngineContext();
     VirtualCoordinatesSystem* vcs = engineContext->uiControlSystem->vcs;
     vcs->UnregisterAllAvailableResourceSizes();
     vcs->SetVirtualScreenSize(width, height);
     vcs->RegisterAvailableResourceSize(width, height, "Gfx");
     vcs->RegisterAvailableResourceSize(width, height, "Gfx2");
-
-    UpdateScrollArea();
 }
 
 void PreviewWidget::InitFromSystemsManager(EditorSystemsManager* systemsManager_)
@@ -299,10 +262,6 @@ void PreviewWidget::InitFromSystemsManager(EditorSystemsManager* systemsManager_
 
     editorCanvas = new EditorCanvas(systemsManager, accessor);
 
-    editorCanvas->sizeChanged.Connect(this, &PreviewWidget::UpdateScrollArea);
-    editorCanvas->positionChanged.Connect(this, &PreviewWidget::OnPositionChanged);
-    editorCanvas->nestedControlPositionChanged.Connect(this, &PreviewWidget::OnNestedControlPositionChanged);
-    editorCanvas->scaleChanged.Connect(this, &PreviewWidget::OnScaleChanged);
     systemsManager->AddEditorSystem(editorCanvas);
 
     CursorSystem* cursorSystem = new CursorSystem(renderWidget, systemsManager, accessor);
@@ -320,66 +279,30 @@ void PreviewWidget::InjectRenderWidget(DAVA::RenderWidget* renderWidget_)
     renderWidget->SetClientDelegate(this);
 }
 
-void PreviewWidget::OnScaleChanged(float32 scale)
-{
-    bool wasBlocked = scaleCombo->blockSignals(true);
-    const Vector<float32>& scales = editorCanvas->GetPredefinedScales();
-    auto iter = std::find(scales.begin(), scales.end(), scale);
-    if (iter != scales.end())
-    {
-        int index = std::distance(scales.begin(), iter);
-        scaleCombo->setCurrentIndex(index);
-    }
-    scaleCombo->lineEdit()->setText(ScaleStringFromReal(scale));
-    scaleCombo->blockSignals(wasBlocked);
-
-    rulerController->SetScale(scale);
-    float32 realScale = static_cast<float32>(scale);
-}
-
-void PreviewWidget::OnScaleByComboIndex(int index)
-{
-    DVASSERT(index >= 0);
-    const Vector<float32> scales = editorCanvas->GetPredefinedScales();
-    DVASSERT(index < static_cast<int>(scales.size()));
-    if (editorCanvas != nullptr)
-    {
-        editorCanvas->SetScale(scales.at(index));
-    }
-}
-
-void PreviewWidget::OnScaleByComboText()
-{
-    float scale = GetScaleFromComboboxText();
-    if (editorCanvas != nullptr)
-    {
-        editorCanvas->SetScale(scale);
-    }
-}
-
 void PreviewWidget::OnVScrollbarActionTriggered(int /*action*/)
 {
-    Vector2 canvasPosition = editorCanvas->GetPosition();
-    canvasPosition.y = verticalScrollBar->sliderPosition();
-    if (editorCanvas != nullptr)
-    {
-        editorCanvas->SetPosition(canvasPosition);
-    }
+    //     Vector2 canvasPosition = editorCanvas->GetPosition();
+    //     canvasPosition.y = verticalScrollBar->sliderPosition();
+    //     if (editorCanvas != nullptr)
+    //     {
+    //         editorCanvas->SetPosition(canvasPosition);
+    //     }
 }
 
 void PreviewWidget::OnHScrollbarActionTriggered(int /*action*/)
 {
-    Vector2 canvasPosition = editorCanvas->GetPosition();
-    canvasPosition.x = horizontalScrollBar->sliderPosition();
-    if (editorCanvas != nullptr)
-    {
-        editorCanvas->SetPosition(canvasPosition);
-    }
+    //     Vector2 canvasPosition = editorCanvas->GetPosition();
+    //     canvasPosition.x = horizontalScrollBar->sliderPosition();
+    //     if (editorCanvas != nullptr)
+    //     {
+    //         editorCanvas->SetPosition(canvasPosition);
+    //     }
 }
 
 void PreviewWidget::InitUI()
 {
-    gridLayout = new QGridLayout(this);
+    using namespace DAVA::TArc;
+    QVBoxLayout* vLayout = new QVBoxLayout(this);
 
     DAVA::TArc::DataContext* ctx = accessor->GetGlobalContext();
     DAVA::TArc::SceneTabbar* tabBar = new DAVA::TArc::SceneTabbar(accessor, DAVA::Reflection::Create(&accessor), this);
@@ -388,40 +311,70 @@ void PreviewWidget::InitUI()
     tabBar->setElideMode(Qt::ElideNone);
     tabBar->setTabsClosable(true);
     tabBar->setUsesScrollButtons(true);
-    gridLayout->addWidget(tabBar, 0, 0, 1, 4);
+    vLayout->addWidget(tabBar);
 
     findInDocumentWidget = new FindInDocumentWidget(this);
-    gridLayout->addWidget(findInDocumentWidget, 1, 0, 1, 4);
 
+    vLayout->addWidget(findInDocumentWidget);
+
+    QGridLayout* gridLayout = new QGridLayout();
+    vLayout->addLayout(gridLayout);
     horizontalRuler = new RulerWidget(hGuidesController, this);
     horizontalRuler->SetRulerOrientation(Qt::Horizontal);
+    horizontalRuler->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
     connect(horizontalRuler, &RulerWidget::GeometryChanged, this, &PreviewWidget::OnRulersGeometryChanged);
-    gridLayout->addWidget(horizontalRuler, 2, 1, 1, 2);
+    connect(rulerController, &RulerController::HorisontalRulerSettingsChanged, horizontalRuler, &RulerWidget::OnRulerSettingsChanged);
+    connect(rulerController, &RulerController::HorisontalRulerMarkPositionChanged, horizontalRuler, &RulerWidget::OnMarkerPositionChanged);
+    gridLayout->addWidget(horizontalRuler, 0, 1);
 
     verticalRuler = new RulerWidget(vGuidesController, this);
     verticalRuler->SetRulerOrientation(Qt::Vertical);
+    verticalRuler->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
     connect(verticalRuler, &RulerWidget::GeometryChanged, this, &PreviewWidget::OnRulersGeometryChanged);
-    gridLayout->addWidget(verticalRuler, 3, 0, 1, 1);
+    connect(rulerController, &RulerController::VerticalRulerSettingsChanged, verticalRuler, &RulerWidget::OnRulerSettingsChanged);
+    connect(rulerController, &RulerController::VerticalRulerMarkPositionChanged, verticalRuler, &RulerWidget::OnMarkerPositionChanged);
+    gridLayout->addWidget(verticalRuler, 1, 0);
 
     QSizePolicy expandingPolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     renderWidget->setSizePolicy(expandingPolicy);
-    gridLayout->addWidget(renderWidget, 3, 1, 1, 2);
+    gridLayout->addWidget(renderWidget, 1, 1);
 
-    verticalScrollBar = new QScrollBar(this);
-    verticalScrollBar->setOrientation(Qt::Vertical);
+    {
+        ScrollBar::Params params(accessor, ui, DAVA::TArc::mainWindowKey);
+        params.fields[ScrollBar::Fields::Value] = ScrollBarData::positionPropertyName;
+        params.fields[ScrollBar::Fields::Minimum] = ScrollBarData::minPosPropertyName;
+        params.fields[ScrollBar::Fields::Maximum] = ScrollBarData::maxPosPropertyName;
+        params.fields[ScrollBar::Fields::PageStep] = ScrollBarData::pageStepPropertyName;
+        params.fields[ScrollBar::Fields::Orientation] = ScrollBarData::orientationPropertyName;
+        params.fields[ScrollBar::Fields::Enabled] = ScrollBarData::enabledPropertyName;
+        params.fields[ScrollBar::Fields::Visible] = ScrollBarData::visiblePropertyName;
 
-    gridLayout->addWidget(verticalScrollBar, 3, 3, 1, 1);
+        ScrollBar* scrollBar = new ScrollBar(params, accessor, Reflection::Create(ReflectedObject(&vScrollBarData)));
+        gridLayout->addWidget(scrollBar->ToWidgetCast(), 1, 2);
+    }
 
-    scaleCombo = new QComboBox(this);
-    scaleCombo->setEditable(true);
+    //     {
+    //         ScaleComboBox::Params params(accessor, ui, DAVA::TArc::mainWindowKey);
+    //         params.fields[ScaleComboBox::Fields::Enumerator] = ScaleComboBoxData::enumeratorPropertyName;
+    //         params.fields[ScaleComboBox::Fields::Value] = ScaleComboBoxData::scalePropertyName;
+    //         params.fields[ScaleComboBox::Fields::Enabled] = ScaleComboBoxData::enabledPropertyName;
+    //         ScaleComboBox* scaleCombo = new ScaleComboBox(params, accessor, Reflection::Create(ReflectedObject(&scaleComboBoxData)));
+    //         gridLayout->addWidget(scaleCombo->ToWidgetCast(), 4, 1, 1, 1);
+    //     }
 
-    gridLayout->addWidget(scaleCombo, 4, 1, 1, 1);
+    {
+        ScrollBar::Params params(accessor, ui, DAVA::TArc::mainWindowKey);
+        params.fields[ScrollBar::Fields::Value] = ScrollBarData::positionPropertyName;
+        params.fields[ScrollBar::Fields::Minimum] = ScrollBarData::minPosPropertyName;
+        params.fields[ScrollBar::Fields::Maximum] = ScrollBarData::maxPosPropertyName;
+        params.fields[ScrollBar::Fields::PageStep] = ScrollBarData::pageStepPropertyName;
+        params.fields[ScrollBar::Fields::Orientation] = ScrollBarData::orientationPropertyName;
+        params.fields[ScrollBar::Fields::Enabled] = ScrollBarData::enabledPropertyName;
+        params.fields[ScrollBar::Fields::Visible] = ScrollBarData::visiblePropertyName;
 
-    horizontalScrollBar = new QScrollBar(this);
-    horizontalScrollBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
-    horizontalScrollBar->setOrientation(Qt::Horizontal);
-
-    gridLayout->addWidget(horizontalScrollBar, 4, 2, 1, 1);
+        ScrollBar* scrollBar = new ScrollBar(params, accessor, Reflection::Create(ReflectedObject(&hScrollBarData)));
+        gridLayout->addWidget(scrollBar->ToWidgetCast(), 2, 1);
+    }
 
     gridLayout->setMargin(0.0f);
     gridLayout->setSpacing(1.0f);

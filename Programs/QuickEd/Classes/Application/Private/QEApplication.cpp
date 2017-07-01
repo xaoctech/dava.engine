@@ -68,6 +68,8 @@ void QEApplication::Init(const DAVA::EngineContext* engineContext)
 #endif
     PVRConverter::Instance()->SetPVRTexTool(pvrTexToolPath);
 
+    Texture::SetPixelization(true);
+
     FileSystem* fs = engineContext->fileSystem;
     fs->SetCurrentDocumentsDirectory(fs->GetUserDocumentsPath() + "QuickEd/");
     fs->CreateDirectory(fs->GetCurrentDocumentsDirectory(), true);

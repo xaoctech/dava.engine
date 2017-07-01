@@ -1,4 +1,4 @@
-#include "HUDSystem.h"
+#include "EditorSystems/HUDSystem.h"
 
 #include "Modules/DocumentsModule/DocumentData.h"
 
@@ -9,7 +9,8 @@
 #include "Model/ControlProperties/VisibleValueProperty.h"
 
 #include "EditorSystems/HUDControls.h"
-#include "EditorSystems/KeyboardProxy.h"
+
+#include "Utils/KeyboardProxy.h"
 
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Core/FieldBinder.h>
@@ -192,7 +193,7 @@ void HUDSystem::OnSelectionChanged(const Any& selection)
 
 void HUDSystem::ProcessInput(UIEvent* currentInput)
 {
-    bool findPivot = hudMap.size() == 1 && IsKeyPressed(KeyboardProxy::KEY_CTRL) && IsKeyPressed(KeyboardProxy::KEY_ALT);
+    bool findPivot = hudMap.size() == 1 && Utils::IsKeyPressed(eModifierKeys::CONTROL) && Utils::IsKeyPressed(eModifierKeys::ALT);
     eSearchOrder searchOrder = findPivot ? SEARCH_BACKWARD : SEARCH_FORWARD;
     hoveredPoint = currentInput->point;
     UIEvent::Phase phase = currentInput->phase;

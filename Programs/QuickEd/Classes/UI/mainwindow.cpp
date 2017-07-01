@@ -26,10 +26,6 @@
 
 using namespace DAVA;
 
-REGISTER_PREFERENCES_ON_START(MainWindow,
-                              PREF_ARG("isPixelized", false),
-                              )
-
 Q_DECLARE_METATYPE(const InspMember*);
 
 MainWindow::MainWindow(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* tarcUi, QWidget* parent)
@@ -58,17 +54,12 @@ MainWindow::MainWindow(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ta
     InitEmulationMode();
     ConnectActions();
 
-    PreferencesStorage::Instance()->RegisterPreferences(this);
-
     connect(projectView, &ProjectView::ProjectChanged, ui->propertiesWidget, &PropertiesWidget::SetProject);
 
     qApp->installEventFilter(this);
 }
 
-MainWindow::~MainWindow()
-{
-    PreferencesStorage::Instance()->UnregisterPreferences(this);
-}
+MainWindow::~MainWindow() = default;
 
 void MainWindow::SetEditorTitle(const QString& editorTitle_)
 {
@@ -87,8 +78,6 @@ void MainWindow::SetProjectPath(const QString& projectPath_)
 void MainWindow::ConnectActions()
 {
     connect(ui->actionExit, &QAction::triggered, this, &MainWindow::close);
-
-    connect(ui->actionPixelized, &QAction::triggered, this, &MainWindow::OnPixelizationStateChanged);
     connect(ui->actionPreferences, &QAction::triggered, this, &MainWindow::OnEditorPreferencesTriggered);
 }
 
@@ -221,25 +210,10 @@ void MainWindow::OnPreferencesPropertyChanged(const InspMember* member, const Va
     }
 }
 
-void MainWindow::OnPixelizationStateChanged(bool isPixelized)
-{
-    Texture::SetPixelization(isPixelized);
-}
-
 void MainWindow::OnEditorPreferencesTriggered()
 {
     PreferencesDialog dialog(this);
     dialog.exec();
-}
-
-bool MainWindow::IsPixelized() const
-{
-    return ui->actionPixelized->isChecked();
-}
-
-void MainWindow::SetPixelized(bool pixelized)
-{
-    ui->actionPixelized->setChecked(pixelized);
 }
 
 void MainWindow::UpdateWindowTitle()
