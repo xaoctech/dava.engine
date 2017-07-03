@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_KEYBOARD_SHORTCUT_H__
-#define __DAVAENGINE_KEYBOARD_SHORTCUT_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "Engine/EngineTypes.h"
@@ -13,11 +12,7 @@ class KeyboardShortcut final
 public:
     KeyboardShortcut();
     KeyboardShortcut(const KeyboardShortcut& shortcut);
-#if defined(__DAVAENGINE_COREV2__)
     KeyboardShortcut(eInputElements key_, eModifierKeys modifiers_ = eModifierKeys::NONE);
-#else
-    KeyboardShortcut(Key key, uint32 modifiers = 0);
-#endif
     KeyboardShortcut(const String& str);
 
     ~KeyboardShortcut();
@@ -27,21 +22,12 @@ public:
     bool operator!=(const KeyboardShortcut& other) const;
 
     eInputElements GetKey() const;
-#if defined(__DAVAENGINE_COREV2__)
     eModifierKeys GetModifiers() const;
-#else
-    uint32 GetModifiers() const;
-#endif
-
     String ToString() const;
 
 private:
     eInputElements key = eInputElements::NONE;
-#if defined(__DAVAENGINE_COREV2__)
     eModifierKeys modifiers = eModifierKeys::NONE;
-#else
-    uint32 modifiers = 0;
-#endif
 };
 }
 
@@ -56,5 +42,3 @@ struct hash<DAVA::KeyboardShortcut>
     }
 };
 }
-
-#endif //__DAVAENGINE_KEYBOARD_SHORTCUT_H__

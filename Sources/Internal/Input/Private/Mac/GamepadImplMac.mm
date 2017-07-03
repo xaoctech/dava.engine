@@ -1,6 +1,5 @@
 #include "Input/Private/Mac/GamepadImplMac.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_MACOS__)
 
 namespace DAVA
@@ -30,4 +29,3 @@ bool GamepadImpl::HandleGamepadRemoved(uint32 /*id*/)
 } // namespace DAVA
 
 #endif // __DAVAENGINE_MACOS__
-#endif // __DAVAENGINE_COREV2__

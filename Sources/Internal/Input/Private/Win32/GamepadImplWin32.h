@@ -2,7 +2,6 @@
 
 #include "Base/BaseTypes.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_WIN32__)
 
 namespace DAVA
@@ -35,4 +34,3 @@ public:
 } // namespace DAVA
 
 #endif // __DAVAENGINE_WIN32__
-#endif // __DAVAENGINE_COREV2__

@@ -24,11 +24,8 @@ public:
     static const uint32 INVALID_POS = uint32(-1);
 
     friend class UITextField;
-#if defined(__DAVAENGINE_COREV2__)
+
     TextFieldStbImpl(Window* w, UITextField* control);
-#else
-    TextFieldStbImpl(UITextField* control);
-#endif
     ~TextFieldStbImpl();
     void Initialize();
     void OwnerIsDying();
@@ -114,10 +111,7 @@ private:
     uint32 lastCursorPos = INVALID_POS;
     uint32 lastSelStart = INVALID_POS;
     uint32 lastSelEnd = INVALID_POS;
-
-#if defined(__DAVAENGINE_COREV2__)
     Window* window = nullptr;
-#endif
 };
 
 } // end namespace DAVA

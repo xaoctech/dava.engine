@@ -1,6 +1,5 @@
 #include "Input/Private/Win32/GamepadImplWin32.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_WIN32__)
 
 namespace DAVA
@@ -30,4 +29,3 @@ bool GamepadImpl::HandleGamepadRemoved(uint32 /*id*/)
 } // namespace DAVA
 
 #endif // __DAVAENGINE_WIN32__
-#endif // __DAVAENGINE_COREV2__

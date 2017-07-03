@@ -1,6 +1,5 @@
 #include "Input/Private/Ios/GamepadImplIos.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_IPHONE__)
 
 #import <GameController/GameController.h>
@@ -151,4 +150,3 @@ void GamepadImpl::DetermineSupportedElements()
 } // namespace DAVA
 
 #endif // __DAVAENGINE_IPHONE__
-#endif // __DAVAENGINE_COREV2__

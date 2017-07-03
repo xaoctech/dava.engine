@@ -1,7 +1,5 @@
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 
-#if defined(__DAVAENGINE_COREV2__)
-
 #include "Debug/DVAssert.h"
 #include "Time/SystemTimer.h"
 
@@ -277,5 +275,3 @@ MainDispatcherEvent MainDispatcherEvent::CreateInputLanguageChangedEvent()
 }
 } // namespace Private
 } // namespace DAVA
-
-#endif // __DAVAENGINE_COREV2__

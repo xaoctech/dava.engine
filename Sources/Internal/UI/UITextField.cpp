@@ -13,15 +13,11 @@
 #endif
 
 #if defined(__DAVAENGINE_ANDROID__)
-#if defined(__DAVAENGINE_COREV2__)
 #include "UI/Private/Android/TextFieldPlatformImplAndroid.h"
-#else
-#include "UITextFieldAndroid.h"
-#endif
 #elif defined(__DAVAENGINE_IPHONE__)
-#include "UI/Private/iOS/TextFieldPlatformImpliOS.h"
+#include "UI/Private/Ios/TextFieldPlatformImplIos.h"
 #elif defined(__DAVAENGINE_WIN_UAP__) && !defined(DISABLE_NATIVE_TEXTFIELD)
-#include "UI/Private/UWP/TextFieldPlatformImplUWP.h"
+#include "UI/Private/Win10/TextFieldPlatformImplWin10.h"
 #else
 #define DAVA_TEXTFIELD_USE_STB
 #include "UI/UITextFieldStb.h"
@@ -31,13 +27,8 @@ namespace DAVA
 class TextFieldPlatformImpl : public TextFieldStbImpl
 {
 public:
-#if defined(__DAVAENGINE_COREV2__)
     TextFieldPlatformImpl(Window* w, UITextField* uiTextField)
         : TextFieldStbImpl(w, uiTextField)
-#else
-    TextFieldPlatformImpl(UITextField* uiTextField)
-        : TextFieldStbImpl(uiTextField)
-#endif
     {
     }
 };
@@ -76,11 +67,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UITextField)
 
 UITextField::UITextField(const Rect& rect)
     : UIControl(rect)
-#if defined(__DAVAENGINE_COREV2__)
     , textFieldImpl(std::make_shared<TextFieldPlatformImpl>(Engine::Instance()->PrimaryWindow(), this))
-#else
-    , textFieldImpl(std::make_shared<TextFieldPlatformImpl>(this))
-#endif
 {
     // Additional step to do impl initialization which cannot be done in impl constructor, e.g.
     // call shared_from_this() to create std::weak_ptr from std::shared_ptr

@@ -1,8 +1,5 @@
 #include "DeviceManager/DeviceManager.h"
 
-#if defined(__DAVAENGINE_COREV2__)
-
-#include "Debug/DVAssert.h"
 #include "Engine/Engine.h"
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
@@ -186,5 +183,3 @@ TouchScreen* DeviceManager::GetTouchScreen()
 }
 
 } // namespace DAVA
-
-#endif // __DAVAENGINE_COREV2__

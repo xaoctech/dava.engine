@@ -10,10 +10,6 @@
 
 #include "UI/UIControl.h"
 #include "UI/UIEvent.h"
-#if !defined(__DAVAENGINE_COREV2__)
-#include "UI/UIScreenTransition.h"
-#include "UI/UIPopup.h"
-#endif
 
 #define FRAME_SKIP 5
 
@@ -34,11 +30,8 @@ class UIScreenshoter;
 class UISoundSystem;
 class UIUpdateSystem;
 class UIRenderSystem;
-
-#if defined(__DAVAENGINE_COREV2__)
 class UIScreenTransition;
 class UIPopup;
-#endif
 
 class ScreenSwitchListener
 {
@@ -325,11 +318,7 @@ private:
     eModifierKeys GetKeyboardModifierKeys() const;
     static eMouseButtons TranslateMouseElementToButtons(eInputElements element);
 
-#if defined(__DAVAENGINE_COREV2__)
     friend class Private::EngineBackend;
-#else
-    friend void Core::CreateSingletons();
-#endif
 
     Vector<std::unique_ptr<UISystem>> systems;
     UILayoutSystem* layoutSystem = nullptr;
@@ -359,14 +348,7 @@ private:
     uint32 resizePerFrame = 0; //used for logging some strange crahses on android
 
     float32 doubleClickTime = 0.f;
-#if !defined(__DAVAENGINE_COREV2__)
-    float32 doubleClickPhysSquare = 0.f;
-    float32 doubleClickRadiusSquared = 0.f;
-    float32 defaultDoubleClickRadiusSquared = 0.f;
-    float32 defaultDoubleClickTime = 0.5f;
-#else
     float32 doubleClickInchSquare = 0.f;
-#endif
     struct LastClickData
     {
         uint32 touchId = 0;
@@ -378,5 +360,4 @@ private:
     };
     LastClickData lastClickData;
 };
-
-} // namespace DAVA
+}

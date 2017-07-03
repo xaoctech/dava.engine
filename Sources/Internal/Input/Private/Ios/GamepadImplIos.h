@@ -2,7 +2,6 @@
 
 #include "Base/BaseTypes.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_IPHONE__)
 
 DAVA_FORWARD_DECLARE_OBJC_CLASS(GCController);
@@ -44,4 +43,3 @@ public:
 } // namespace DAVA
 
 #endif // __DAVAENGINE_IPHONE__
-#endif // __DAVAENGINE_COREV2__

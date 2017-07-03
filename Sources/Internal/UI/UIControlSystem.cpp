@@ -23,7 +23,6 @@
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
 #include "Render/2D/TextBlock.h"
-#include "Platform/DPIHelper.h"
 #include "Platform/DeviceInfo.h"
 #include "Input/InputSystem.h"
 #include "UI/Update/UIUpdateSystem.h"
@@ -58,14 +57,9 @@ UIControlSystem::UIControlSystem()
     soundSystem = GetSystem<UISoundSystem>();
     updateSystem = GetSystem<UIUpdateSystem>();
     renderSystem = GetSystem<UIRenderSystem>();
-    
 
-#if defined(__DAVAENGINE_COREV2__)
     vcs = new VirtualCoordinatesSystem();
     vcs->EnableReloadResourceOnResize(true);
-#else
-    vcs = VirtualCoordinatesSystem::Instance();
-#endif
     vcs->virtualSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
     vcs->physicalSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
 
@@ -78,29 +72,7 @@ UIControlSystem::UIControlSystem()
     layoutSystem->SetPopupContainer(popupContainer);
     renderSystem->SetPopupContainer(popupContainer);
 
-#if !defined(__DAVAENGINE_COREV2__)
-    // calculate default radius
-    if (DeviceInfo::IsHIDConnected(DeviceInfo::eHIDType::HID_TOUCH_TYPE))
-    {
-        // quarter of an inch
-        defaultDoubleClickRadiusSquared = DPIHelper::GetScreenDPI() * 0.25f;
-        if (DeviceInfo::GetScreenInfo().scale != 0.f)
-        {
-            // to look the same on all devices
-            defaultDoubleClickRadiusSquared = defaultDoubleClickRadiusSquared / DeviceInfo::GetScreenInfo().scale;
-        }
-        defaultDoubleClickRadiusSquared *= defaultDoubleClickRadiusSquared;
-    }
-    else
-    {
-        defaultDoubleClickRadiusSquared = 4.f; // default, if touch didn't detect, 4 - default pixels in windows desktop
-    }
-    doubleClickTime = defaultDoubleClickTime;
-    doubleClickRadiusSquared = defaultDoubleClickRadiusSquared;
-    doubleClickPhysSquare = defaultDoubleClickRadiusSquared;
-#else
     SetDoubleTapSettings(0.5f, 0.25f);
-#endif
 }
 
 UIControlSystem::~UIControlSystem()
@@ -451,11 +423,6 @@ void UIControlSystem::OnInput(UIEvent* newEvent)
         return;
     }
 
-#if !defined(__DAVAENGINE_COREV2__)
-    if (InputSystem::Instance()->GetMouseDevice().SkipEvents(newEvent))
-        return;
-#endif // !defined(__DAVAENGINE_COREV2__)
-
     if (ProfilerOverlay::globalProfilerOverlay && ProfilerOverlay::globalProfilerOverlay->OnInput(newEvent))
         return;
 
@@ -652,11 +619,9 @@ bool UIControlSystem::CheckTimeAndPosition(UIEvent* newEvent)
     if ((lastClickData.timestamp != 0.0) && ((newEvent->timestamp - lastClickData.timestamp) < doubleClickTime))
     {
         Vector2 point = lastClickData.physPoint - newEvent->physPoint;
-        
-#if defined(__DAVAENGINE_COREV2__)
+
         float32 dpi = GetPrimaryWindow()->GetDPI();
         float32 doubleClickPhysSquare = doubleClickInchSquare * (dpi * dpi);
-#endif
 
         if (point.SquareLength() <= doubleClickPhysSquare)
         {
@@ -855,20 +820,7 @@ void UIControlSystem::SetDoubleTapSettings(float32 time, float32 inch)
 {
     DVASSERT((time > 0.0f) && (inch > 0.0f));
     doubleClickTime = time;
-
-#if !defined(__DAVAENGINE_COREV2__)
-    // calculate pixels from inch
-    float32 dpi = static_cast<float32>(DPIHelper::GetScreenDPI());
-    if (DeviceInfo::GetScreenInfo().scale != 0.f)
-    {
-        // to look the same on all devices
-        dpi /= DeviceInfo::GetScreenInfo().scale;
-    }
-    doubleClickPhysSquare = inch * dpi;
-    doubleClickPhysSquare *= doubleClickPhysSquare;
-#else
     doubleClickInchSquare = inch * inch;
-#endif
 }
 
 UIEvent UIControlSystem::MakeUIEvent(const InputEvent& inputEvent) const
@@ -1032,4 +984,4 @@ eMouseButtons UIControlSystem::TranslateMouseElementToButtons(eInputElements ele
         return eMouseButtons::NONE;
     }
 }
-};
+}

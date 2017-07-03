@@ -134,10 +134,8 @@ DLCManagerImpl::~DLCManagerImpl()
 {
     DVASSERT(Thread::IsMainThread());
 
-#ifdef __DAVAENGINE_COREV2__
     engine.update.Disconnect(this);
     engine.backgroundUpdate.Disconnect(this);
-#endif
 
     ClearResouces();
 }
@@ -1180,8 +1178,14 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
 {
     DVASSERT(Thread::IsMainThread());
 
+    // now we can work without CDN, so always wait for initialization is done
+    if (!IsInitialized())
+    {
+        return;
+    }
+
     PackRequest* request = FindRequest(requestedPackName);
-    if (request != nullptr && IsInitialized())
+    if (request != nullptr)
     {
         Vector<uint32> deps = request->GetDependencies();
         for (uint32 dependent : deps)
@@ -1194,10 +1198,7 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
                 RemovePack(packToRemove);
             }
         }
-    }
 
-    if (nullptr != request)
-    {
         requestManager->Remove(request);
 
         auto it = find(begin(requests), end(requests), request);
@@ -1206,16 +1207,10 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
             requests.erase(it);
         }
 
-        it = find(begin(delayedRequests), end(delayedRequests), request);
-        if (it != end(delayedRequests))
-        {
-            delayedRequests.erase(it);
-        }
-
         delete request;
     }
 
-    if (IsInitialized())
+    if (meta)
     {
         StringStream undeletedFiles;
         FileSystem* fs = GetEngineContext()->fileSystem;
@@ -1532,13 +1527,12 @@ void DLCManagerImpl::ThreadScanFunc()
     {
         return;
     }
-#ifdef __DAVAENGINE_COREV2__
+
     DAVA::RunOnMainThreadAsync([this]()
                                {
                                    // finish thread
                                    scanState = ScanState::Done;
                                });
-#endif
 }
 
 } // end namespace DAVA

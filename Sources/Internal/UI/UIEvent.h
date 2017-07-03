@@ -56,19 +56,6 @@ public:
 
     friend class UIControlSystem;
 
-#if !defined(__DAVAENGINE_COREV2__)
-    enum Modifier
-    {
-        NONE = 0, // Used to denote no flags explicitly
-        SHIFT_DOWN = 1 << 0,
-        CONTROL_DOWN = 1 << 1,
-        ALT_DOWN = 1 << 2,
-        COMMAND_DOWN = 1 << 3, // Command on OS X
-
-        LAST = COMMAND_DOWN
-    };
-#endif
-
     UIEvent() = default;
 
     void SetInputHandledType(eInputHandledType value)
@@ -109,11 +96,7 @@ public:
         eInputElements key;
         char32_t keyChar; // unicode utf32 char
         eMouseButtons mouseButton;
-#if defined(__DAVAENGINE_COREV2__)
         eGamepadElements element;
-#else
-        GamepadDevice::eDavaGamepadElement element;
-#endif
         WheelDelta wheelDelta; // scroll delta in mouse wheel clicks (or lines)
         Gesture gesture; // pinch/rotate/swipe
     };
@@ -127,12 +110,7 @@ public:
     uint32 tapCount = 0; // (TODO not all platforms) count of the continuous inputs (clicks for mouse)
     eInputHandledType inputHandledType = INPUT_NOT_HANDLED; //!< input handled type, INPUT_NOT_HANDLED by default.
     eInputDevices device = eInputDevices::UNKNOWN;
-#if defined(__DAVAENGINE_COREV2__)
     Window* window = nullptr;
     eModifierKeys modifiers = eModifierKeys::NONE;
-#else
-    uint32 modifiers = 0;
-#endif
 };
-
-} // namespace DAVA
+}
