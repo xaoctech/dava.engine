@@ -5,7 +5,7 @@
 #include "Input/Private/KeyboardImplWinCodes.h"
 #include "Base/TemplateHelpers.h"
 #include "Utils/UTF8Utils.h"
-#include "Engine/Private/UWP/DllImportWin10.h"
+#include "Engine/Private/Win10/DllImportWin10.h"
 
 #include <cwctype>
 
