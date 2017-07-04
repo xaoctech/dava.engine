@@ -6,7 +6,7 @@
 #include "Base/RefPtr.h"
 #include "Concurrency/Thread.h"
 #include "Engine/Engine.h"
-#include "Engine/Android/JNIBridge.h"
+#include "Engine/PlatformApiAndroid.h"
 #include "Utils/StringFormat.h"
 
 #include "Logger/Logger.h"

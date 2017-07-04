@@ -16,6 +16,7 @@
 #include "QtTools/Utils/QtDelayedExecutor.h"
 
 #include "Engine/Engine.h"
+#include "Engine/PlatformApiQt.h"
 #include "Engine/Window.h"
 #include "Engine/EngineContext.h"
 
