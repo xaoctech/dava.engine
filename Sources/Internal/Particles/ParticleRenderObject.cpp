@@ -470,9 +470,6 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
 
 void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator begin, List<ParticleGroup>::iterator end, uint32 particlesCount, Camera* camera, Vector3* basisVectors)
 {
-    if (!particlesCount)
-        return;
-
     uint32 vertexStride = GetVertexStride(begin->layer); // If you change vertex layout, don't forget to change the stride.
 
     for (auto it = begin; it != end; ++it)
@@ -485,6 +482,8 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
         int32 basises[4]; //4 basises max per particle
 
         basisCount = PrepareBasisIndexes(group, basises);
+        if (group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING_STRIPE_SPHERICAL)
+            ++basisCount;
 
         if (basisCount == 0)
             continue;
@@ -525,13 +524,17 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                 if (nodes.size() == 0)
                     return;
                 float32 height = nodes.back().distanceFromBase;
-                Vector3 basisVector = basisVectors[basises[i]];
-                if(i == 0 && group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING)
+                Vector3 basisVector;
+                if ((group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING_STRIPE_SPHERICAL) && i == basisCount - 1)
                 {
                     basisVector = (base.position - camera->GetPosition()).CrossProduct(base.speed);
                     basisVector = (camera->GetDirection()).CrossProduct(base.speed);
-                    
+
                     basisVector.Normalize();
+                }
+                else
+                {
+                    basisVector = basisVectors[basises[i]];
                 }
 
                 float32 fresnelToAlpha = 0.0f;
@@ -593,7 +596,7 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
 
                 for (auto& node : nodes)
                 {
-                    if (i == 0 && group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING && false)
+                    if ((group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING_STRIPE_SPHERICAL) && i == basisCount - 1)
                     {
                         basisVector = (node.position - camera->GetPosition()).CrossProduct(node.speed);
                         basisVector = (camera->GetDirection()).CrossProduct(node.speed);

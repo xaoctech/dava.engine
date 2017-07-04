@@ -258,12 +258,19 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     xFacingCheckBox = new QCheckBox(/*layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE ? "X-Align" : */"X-Facing");
     facingLayout->addWidget(xFacingCheckBox);
     connect(xFacingCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+
     yFacingCheckBox = new QCheckBox(/*layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE ? "Y-Align" :*/ "Y-Facing");
     facingLayout->addWidget(yFacingCheckBox);
     connect(yFacingCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+
     zFacingCheckBox = new QCheckBox(/*layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE ? "Z-Align" :*/ "Z-Facing");
     facingLayout->addWidget(zFacingCheckBox);
     connect(zFacingCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+
+    cameraFacingStripeSphericalCheckBox = new QCheckBox("Camera Facing Spherical");
+    facingLayout->addWidget(cameraFacingStripeSphericalCheckBox);
+    connect(cameraFacingStripeSphericalCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+
     orientationLayout->addLayout(facingLayout);
 
     worldAlignCheckBox = new QCheckBox("World Align");
@@ -709,6 +716,8 @@ void EmitterLayerWidget::OnValueChanged()
         particleOrientation += DAVA::ParticleLayer::PARTICLE_ORIENTATION_Z_FACING;
     if (worldAlignCheckBox->isChecked())
         particleOrientation += DAVA::ParticleLayer::PARTICLE_ORIENTATION_WORLD_ALIGN;
+    if (cameraFacingStripeSphericalCheckBox->isChecked())
+        particleOrientation += DAVA::ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING_STRIPE_SPHERICAL;
 
     DAVA::ParticleLayer::eDegradeStrategy degradeStrategy = DAVA::ParticleLayer::eDegradeStrategy(degradeStrategyComboBox->currentIndex());
     bool superemitterStatusChanged = (layer->type == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES) != (propLayerType == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES);
@@ -1135,6 +1144,7 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     yFacingCheckBox->setChecked(layer->particleOrientation & DAVA::ParticleLayer::PARTICLE_ORIENTATION_Y_FACING);
     zFacingCheckBox->setChecked(layer->particleOrientation & DAVA::ParticleLayer::PARTICLE_ORIENTATION_Z_FACING);
     worldAlignCheckBox->setChecked(layer->particleOrientation & DAVA::ParticleLayer::PARTICLE_ORIENTATION_WORLD_ALIGN);
+    cameraFacingStripeSphericalCheckBox->setChecked(layer->particleOrientation & DAVA::ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING_STRIPE_SPHERICAL);
 
     //blend and fog
 
@@ -2037,6 +2047,7 @@ void EmitterLayerWidget::SetLayerMode(bool isSuperemitter, bool isStripe)
     yFacingCheckBox->setVisible(!isSuperemitter);
     zFacingCheckBox->setVisible(!isSuperemitter);
     worldAlignCheckBox->setVisible(!isSuperemitter);
+    cameraFacingStripeSphericalCheckBox->setVisible(!isSuperemitter && isStripe);
 
     //blend and fog settings are set in inner emitter layers
     blendOptionsLabel->setVisible(!isSuperemitter);
