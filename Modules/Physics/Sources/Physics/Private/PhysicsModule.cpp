@@ -75,6 +75,34 @@ public:
         }
     }
 };
+
+void BuildPhysxMeshInfo(const Vector<PolygonGroup*>& polygons, Vector<physx::PxVec3>& vertices, Vector<physx::PxU32>& indices)
+{
+    uint32 indexOffset = 0;
+    for (PolygonGroup* polygon : polygons)
+    {
+        int32 vertexCount = polygon->vertexCount;
+        vertices.reserve(vertices.size() + vertexCount);
+
+        for (int32 i = 0; i < vertexCount; ++i)
+        {
+            Vector3 coord;
+            polygon->GetCoord(i, coord);
+            vertices.push_back(PhysicsMath::Vector3ToPxVec3(coord));
+        }
+
+        int32 indexCount = polygon->indexCount;
+        indices.reserve(indices.size() + indexCount);
+        for (int32 i = 0; i < indexCount; ++i)
+        {
+            int32 index;
+            polygon->GetIndex(i, index);
+            indices.push_back(static_cast<uint32>(index) + indexOffset);
+        }
+
+        indexOffset = static_cast<uint32>(vertices.size());
+    }
+}
 }
 
 class Physics::PhysicsAllocator : public physx::PxAllocatorCallback
@@ -251,40 +279,22 @@ physx::PxShape* Physics::CreateMeshShape(Vector<PolygonGroup*>&& polygons, const
 {
     using namespace physx;
 
-    Vector<PolygonGroup*> polyData = std::move(polygons);
-    std::sort(polyData.begin(), polyData.end());
-    polyData.erase(std::unique(polyData.begin(), polyData.end()), polyData.end());
+    std::sort(polygons.begin(), polygons.end());
+    polygons.erase(std::unique(polygons.begin(), polygons.end()), polygons.end());
 
     DVASSERT(cache != nullptr);
-    PxBase* mesh = cache->GetTriangleMeshEntry(polyData);
+    PxBase* mesh = cache->GetTriangleMeshEntry(polygons);
     if (mesh == nullptr)
     {
-        PolygonGroup* polygon = polyData.front();
-        int32 vertexCount = polygon->vertexCount;
-        Vector<PxVec3> vertices(vertexCount);
-        for (int32 i = 0; i < vertexCount; ++i)
-        {
-            Vector3 coord;
-            polygon->GetCoord(i, coord);
-            vertices[i].x = coord.x;
-            vertices[i].y = coord.y;
-            vertices[i].z = coord.z;
-        }
-
-        int32 indexCount = polygon->indexCount;
-        Vector<PxU32> indices(indexCount);
-        for (int32 i = 0; i < indexCount; ++i)
-        {
-            int32 index;
-            polygon->GetIndex(i, index);
-            indices[i] = index;
-        }
+        Vector<PxVec3> vertices;
+        Vector<PxU32> indices;
+        PhysicsModuleDetail::BuildPhysxMeshInfo(polygons, vertices, indices);
 
         PxTriangleMeshDesc desc;
-        desc.points.count = vertexCount;
+        desc.points.count = static_cast<PxU32>(vertices.size());
         desc.points.stride = sizeof(PxVec3);
         desc.points.data = vertices.data();
-        desc.triangles.count = polygon->indexCount / 3;
+        desc.triangles.count = static_cast<PxU32>(indices.size() / 3);
         desc.triangles.stride = 3 * sizeof(PxU32);
         desc.triangles.data = indices.data();
         desc.flags = PxMeshFlags(0);
@@ -300,7 +310,7 @@ physx::PxShape* Physics::CreateMeshShape(Vector<PolygonGroup*>&& polygons, const
         physx::PxDefaultMemoryInputData inputStream(outStream.getData(), outStream.getSize());
         mesh = physics->createTriangleMesh(inputStream);
         DVASSERT(mesh != nullptr);
-        cache->AddEntry(polyData, mesh);
+        cache->AddEntry(polygons, mesh);
     }
     PxTriangleMesh* triangleMesh = mesh->is<PxTriangleMesh>();
     DVASSERT(triangleMesh != nullptr);
@@ -316,40 +326,22 @@ physx::PxShape* Physics::CreateConvexHullShape(Vector<PolygonGroup*>&& polygons,
 {
     using namespace physx;
 
-    Vector<PolygonGroup*> polyData = std::move(polygons);
-    std::sort(polyData.begin(), polyData.end());
-    polyData.erase(std::unique(polyData.begin(), polyData.end()), polyData.end());
+    std::sort(polygons.begin(), polygons.end());
+    polygons.erase(std::unique(polygons.begin(), polygons.end()), polygons.end());
 
     DVASSERT(cache != nullptr);
-    PxBase* mesh = cache->GetConvexHullEntry(polyData);
+    PxBase* mesh = cache->GetConvexHullEntry(polygons);
     if (mesh == nullptr)
     {
-        PolygonGroup* polygon = polyData.front();
-        int32 vertexCount = polygon->vertexCount;
-        Vector<PxVec3> vertices(vertexCount);
-        for (int32 i = 0; i < vertexCount; ++i)
-        {
-            Vector3 coord;
-            polygon->GetCoord(i, coord);
-            vertices[i].x = coord.x;
-            vertices[i].y = coord.y;
-            vertices[i].z = coord.z;
-        }
-
-        int32 indexCount = polygon->indexCount;
-        Vector<PxU32> indices(indexCount);
-        for (int32 i = 0; i < indexCount; ++i)
-        {
-            int32 index;
-            polygon->GetIndex(i, index);
-            indices[i] = index;
-        }
+        Vector<PxVec3> vertices;
+        Vector<PxU32> indices;
+        PhysicsModuleDetail::BuildPhysxMeshInfo(polygons, vertices, indices);
 
         PxConvexMeshDesc desc;
-        desc.points.count = vertexCount;
+        desc.points.count = static_cast<PxU32>(vertices.size());
         desc.points.stride = sizeof(PxVec3);
         desc.points.data = vertices.data();
-        desc.indices.count = indexCount;
+        desc.indices.count = static_cast<PxU32>(indices.size());
         desc.indices.stride = sizeof(PxU32);
         desc.indices.data = indices.data();
         desc.flags = PxConvexFlag::eCOMPUTE_CONVEX;
@@ -365,7 +357,7 @@ physx::PxShape* Physics::CreateConvexHullShape(Vector<PolygonGroup*>&& polygons,
         physx::PxDefaultMemoryInputData inputStream(outStream.getData(), outStream.getSize());
         mesh = physics->createConvexMesh(inputStream);
         DVASSERT(mesh != nullptr);
-        cache->AddEntry(polyData, mesh);
+        cache->AddEntry(polygons, mesh);
     }
 
     PxConvexMesh* convexMesh = mesh->is<PxConvexMesh>();
