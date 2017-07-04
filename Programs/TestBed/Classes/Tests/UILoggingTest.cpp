@@ -2,22 +2,13 @@
 #include "Analytics/Analytics.h"
 #include "Analytics/LoggingBackend.h"
 #include "UI/Render/UIDebugRenderComponent.h"
-
-#if defined(__DAVAENGINE_COREV2__)
 #include "Engine/Engine.h"
-#else
-#include "Core/Core.h"
-#endif
 
 using namespace DAVA;
 
 Analytics::Core& GetCore()
 {
-#if defined(__DAVAENGINE_COREV2__)
-    return *Engine::Instance()->GetContext()->analyticsCore;
-#else
-    return Core::Instance()->GetAnalyticsCore();
-#endif
+    return *GetEngineContext()->analyticsCore;
 }
 
 UILoggingTest::UILoggingTest(TestBed& app)

@@ -1,7 +1,6 @@
 #include "UI/UIControlBackground.h"
 #include "Debug/DVAssert.h"
 #include "UI/UIControl.h"
-#include "Core/Core.h"
 #include "Render/RenderHelper.h"
 #include "UI/UIControlSystem.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
@@ -46,7 +45,7 @@ UIControlBackground::UIControlBackground()
 }
 
 UIControlBackground::UIControlBackground(const UIControlBackground& src)
-    : UIBaseComponent(src)
+    : UIComponent(src)
     , spr(src.spr)
     , align(src.align)
     , type(src.type)

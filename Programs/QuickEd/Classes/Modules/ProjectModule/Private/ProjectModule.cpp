@@ -8,7 +8,7 @@
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/Utils/ModuleCollection.h>
 
-#include <Engine/PlatformApi.h>
+#include <Engine/PlatformApiQt.h>
 #include <FileSystem/FileSystem.h>
 #include <PluginManager/PluginManager.h>
 #include <Base/Result.h>

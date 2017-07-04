@@ -81,6 +81,7 @@
 #include "QtTools/WidgetHelpers/SharedIcon.h"
 
 #include "Engine/Engine.h"
+#include "Engine/PlatformApiQt.h"
 #include "Engine/Qt/RenderWidget.h"
 #include "Reflection/ReflectedType.h"
 

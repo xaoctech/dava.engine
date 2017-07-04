@@ -325,10 +325,16 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
 
     const char* s = expression;
     char* d = text;
+    bool ignore_closing_brace = false;
 
     while (*s && *s != '\n' && *s != '\r')
     {
-        if (*s == '=' && *(s + 1) == '=')
+        if (*s == ')' && ignore_closing_brace)
+        {
+            ++s;
+            ignore_closing_brace = false;
+        }
+        else if (*s == '=' && *(s + 1) == '=')
         {
             *d++ = OpEqual;
             s += 2;
@@ -351,11 +357,31 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
         else if (strnicmp(s, "!defined", 8) == 0)
         {
             *d++ = OpNotDefined;
+
+            const char* t = s + 8;
+            while (*t == ' ' || *t == '\t')
+                ++t;
+            if (*t == '(')
+            {
+                DVASSERT(!ignore_closing_brace);
+                ignore_closing_brace = true;
+            }
+
             s += 8 + 1;
         }
         else if (strnicmp(s, "defined", 7) == 0)
         {
             *d++ = OpDefined;
+
+            const char* t = s + 7;
+            while (*t == ' ' || *t == '\t')
+                ++t;
+            if (*t == '(')
+            {
+                DVASSERT(!ignore_closing_brace);
+                ignore_closing_brace = true;
+            }
+
             s += 7 + 1;
         }
         else if (*s == '!')
