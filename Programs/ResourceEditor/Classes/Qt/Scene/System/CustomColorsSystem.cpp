@@ -26,7 +26,7 @@
 #include "Render/RHI/rhi_Type.h"
 
 CustomColorsSystem::CustomColorsSystem(DAVA::Scene* scene)
-    : LandscapeEditorSystem(scene, "~res:/ResourceEditor/LandscapeEditor/Tools/cursor/cursor.png")
+    : LandscapeEditorSystem(scene, DefaultCursorPath())
 {
     SetColor(colorIndex);
 }

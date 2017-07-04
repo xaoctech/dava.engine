@@ -16,14 +16,19 @@ vertex_out
 };
 
 [auto][instance] property float4x4 worldViewMatrix;
-[auto][instance] property float4x4 projMatrix;
 [auto][instance] property float4x4 worldViewInvTransposeMatrix;
-
 [auto][instance] property float4 lightPosition0;
+
+[auto][global] property float4x4 projMatrix;
 
 #if SKINNING
 [auto][jpos] property float4 jointPositions[MAX_JOINTS] : "bigarray"; // (x, y, z, scale)
 [auto][jrot] property float4 jointQuaternions[MAX_JOINTS] : "bigarray";
+#endif
+
+#if FORCED_SHADOW_DIRECTION
+[auto][global] property float4x4 viewMatrix;
+[material][global] property float3 forcedShadowDirection = float3(0.0, 0.0, -1.0);
 #endif
 
 inline float3 JointTransformTangent( float3 inVec, float4 jointQuaternion )
@@ -57,7 +62,13 @@ vertex_out vp_main( vertex_in input )
 #endif
 
     float4 posView = mul( position, worldViewMatrix );
+
+#if FORCED_SHADOW_DIRECTION
+    float3 lightVecView = normalize(mul(float4(forcedShadowDirection, 0.0), viewMatrix).xyz);        
+#else
     float3 lightVecView = normalize(posView.xyz * lightPosition0.w - lightPosition0.xyz);        
+#endif
+    
 
     float4 posProj = mul(posView, projMatrix);
     

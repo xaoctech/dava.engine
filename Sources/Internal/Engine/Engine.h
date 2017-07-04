@@ -1,21 +1,15 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
-
-#if defined(__DAVAENGINE_COREV2__)
-
-#include "Functional/Functional.h"
-
 #include "Engine/EngineTypes.h"
 #include "Engine/EngineContext.h"
-#include "Engine/PlatformApi.h"
 #include "Engine/Window.h"
+#include "Functional/Functional.h"
+#include "Render/RHI/rhi_Type.h"
 
 /**
     \defgroup engine Engine
 */
-
-#include "Render/RHI/rhi_Type.h"
 
 namespace DAVA
 {
@@ -358,5 +352,3 @@ private:
 };
 
 } // namespace DAVA
-
-#endif // __DAVAENGINE_COREV2__

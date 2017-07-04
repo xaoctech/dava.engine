@@ -3,6 +3,7 @@
 #include "Base/GlobalEnum.h"
 
 #include "Engine/Engine.h"
+#include "Engine/PlatformApiQt.h"
 
 #include "Preferences/PreferencesStorage.h"
 #include "Preferences/PreferencesRegistrator.h"
@@ -273,6 +274,11 @@ QColor GetStyleSheetNodeColor()
 QColor GetRulerWidgetBackgroungColor()
 {
     return GetCurrentTheme() == Light ? lightWindowColor : darkWindowColor;
+}
+
+QColor GetRulerTextColor()
+{
+    return GetCurrentTheme() == Light ? lightDisabledTextColor : QColor(0x62, 0x62, 0x62);
 }
 
 QColor GetHighligtedItemTextColor()

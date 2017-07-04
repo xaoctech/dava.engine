@@ -40,3 +40,4 @@ void SaveTextureToFile(DAVA::Texture* texture, const DAVA::FilePath& path);
 void SaveImageToFile(DAVA::Image* image, const DAVA::FilePath& path);
 
 DAVA::Texture* CreateSingleMipTexture(const DAVA::FilePath& pngPathname);
+const DAVA::FilePath& DefaultCursorPath();

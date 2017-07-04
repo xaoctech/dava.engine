@@ -40,7 +40,7 @@
 #include <Render/Renderer.h>
 #include <Render/DynamicBufferAllocator.h>
 #include <Particles/ParticleEmitter.h>
-#include <Engine/PlatformApi.h>
+#include <Engine/PlatformApiQt.h>
 #include <Engine/Qt/RenderWidget.h>
 
 #include <QAction>
@@ -532,7 +532,7 @@ DAVA::RefPtr<PackageNode> DocumentsModule::CreatePackage(const QString& path)
     ProjectData* projectData = GetAccessor()->GetGlobalContext()->GetData<ProjectData>();
     DVASSERT(nullptr != projectData);
 
-    QuickEdPackageBuilder builder;
+    QuickEdPackageBuilder builder(GetAccessor()->GetEngineContext());
     UIPackageLoader packageLoader(projectData->GetPrototypes());
     bool packageLoaded = packageLoader.LoadPackage(davaPath, &builder);
 

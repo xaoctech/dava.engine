@@ -15,6 +15,9 @@ class FieldBinder;
 }
 }
 
+class ControlContainer;
+class FrameControl;
+
 class HUDSystem : public DAVA::InspBase, public BaseEditorSystem
 {
 public:
@@ -37,7 +40,7 @@ private:
     void OnDisplayStateChanged(EditorSystemsManager::eDisplayState currentState, EditorSystemsManager::eDisplayState previousState) override;
 
     void OnSelectionChanged(const DAVA::Any& selection);
-    void OnHighlightNode(const ControlNode* node);
+    void OnHighlightNode(ControlNode* node);
 
     void OnMagnetLinesChanged(const DAVA::Vector<MagnetLineInfo>& magnetLines);
     void ClearMagnetLines();
@@ -58,11 +61,11 @@ private:
     DAVA::Vector2 hoveredPoint;
 
     DAVA::Map<ControlNode*, std::unique_ptr<HUD>> hudMap;
-    DAVA::RefPtr<DAVA::UIControl> selectionRectControl;
+    std::unique_ptr<FrameControl> selectionRectControl;
     DAVA::Vector<DAVA::RefPtr<DAVA::UIControl>> magnetControls;
     DAVA::Vector<DAVA::RefPtr<DAVA::UIControl>> magnetTargetControls;
     SortedControlNodeSet sortedControlList;
-    DAVA::RefPtr<DAVA::UIControl> hoveredNodeControl;
+    std::unique_ptr<ControlContainer> hoveredNodeControl;
 
     bool showPivot;
     bool showRotate;

@@ -108,20 +108,14 @@ set( UNITY_IGNORE_LIST              "Internal/Autotesting"
                                     "External/imgui")
 
 set( UNITY_IGNORE_LIST_APPLE        "DataStorage/Apple/ICloudKeyValue.cpp"
-                                    "TemplateMacOS/CoreMacOSPlatformBase.cpp"
                                     "Concurrency/ThreadPosix.cpp"
                                     "Render/Texture.cpp" 
                                     "Render/RHI/GLES2"
-                                    "TemplateMacOS/MainWindowController.mm"
-                                    "TemplateMacOS/MovieViewControlMacOS.mm"
                                     "Logger/TeamcityOutput.cpp" )
 
 set( UNITY_IGNORE_LIST_IOS          "DataStorage/Apple/ICloudKeyValue.cpp"
-                                    "TemplateiOS/BackgroundView.mm"
-                                    "TemplateiOS/HelperAppDelegate.mm"
-                                    "TemplateiOS/DPIHelperiOS.mm"
                                     "TemplateiOS"
-                                    "UI/UITextFieldiPhone.mm" )
+                                    )
 
 set( DEFINITIONS_PRIVATE            -D_UNICODE 
                                     -DUNICODE 
