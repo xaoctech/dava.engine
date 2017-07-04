@@ -79,3 +79,4 @@ REGISTER_CLASS(PathComponent);
 REGISTER_CLASS(WASDControllerComponent);
 REGISTER_CLASS(RotationControllerComponent);
 REGISTER_CLASS(SnapToLandscapeControllerComponent);
+REGISTER_CLASS(SlotComponent);
