@@ -35,6 +35,7 @@ private:
     void OnAddSceneRequested(const DAVA::FilePath& scenePathname);
     void OnEditSceneRequested(const DAVA::FilePath& scenePathname);
     void OnDAEConvertionRequested(const DAVA::FilePath& daePathname);
+    void OnDAEAnimationConvertionRequested(const DAVA::FilePath& daePathname);
     void OnDoubleClicked(const DAVA::FilePath& scenePathname);
     void OnDragStarted();
 
