@@ -46,7 +46,6 @@ public:
 
     inline void Emit()
     {
-        LockGuard<Mutex> guard(mutex);
         signal.Emit();
     }
 
