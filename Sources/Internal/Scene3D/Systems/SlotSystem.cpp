@@ -448,7 +448,7 @@ Entity* SlotSystem::AttachItemToSlot(SlotComponent* component, FastName itemName
 
     Entity* slotRootEntity = new Entity();
     DVASSERT(externalEntityLoader != nullptr);
-    externalEntityLoader->Load(RefPtr<Entity>::ConstructWithRetain(slotRootEntity), item->scenePath, [this, component, itemName](String&& message) {
+    externalEntityLoader->Load(RefPtr<Entity>::ConstructWithRetain(slotRootEntity), item->scenePath.GetAbsolutePathname(), [this, component, itemName](String&& message) {
         auto iter = std::find_if(nodes.begin(), nodes.end(), [component](const SlotNode& node) {
             return node.component == component;
         });
