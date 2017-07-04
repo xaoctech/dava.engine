@@ -1,5 +1,7 @@
 #include "Physics/PhysicsGeometryCache.h"
 
+#include <Debug/DVAssert.h>
+
 #include <physx/geometry/PxConvexMesh.h>
 #include <physx/geometry/PxTriangleMesh.h>
 

@@ -10,7 +10,6 @@
 
 namespace DAVA
 {
-
 DAVA::Component* SphereShapeComponent::Clone(Entity* toEntity)
 {
     SphereShapeComponent* result = new SphereShapeComponent();

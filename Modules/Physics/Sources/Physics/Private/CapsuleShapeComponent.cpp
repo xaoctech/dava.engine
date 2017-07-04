@@ -9,7 +9,6 @@
 
 namespace DAVA
 {
-
 Component* CapsuleShapeComponent::Clone(Entity* toEntity)
 {
     CapsuleShapeComponent* result = new CapsuleShapeComponent();
