@@ -108,11 +108,11 @@ void ParticleRenderObject::PrepareRenderData(Camera* camera)
     basisVectors[7] = ex;
 
     static Vector3 stripeBasisVectors[7] = { Vector3(),
-        Vector3(), Vector3(),
-        Vector3(), 
-        Vector3(1, 0, 0),
-        Vector3(0, 1, 0),
-        Vector3(0, 0, 1) };
+                                             Vector3(), Vector3(),
+                                             Vector3(),
+                                             Vector3(1, 0, 0),
+                                             Vector3(0, 1, 0),
+                                             Vector3(0, 0, 1) };
     stripeBasisVectors[0] = basisVectors[0];
     ex.Normalize();
     ey.Normalize();
@@ -120,7 +120,6 @@ void ParticleRenderObject::PrepareRenderData(Camera* camera)
     stripeBasisVectors[1] = ex;
     stripeBasisVectors[2] = ey;
     stripeBasisVectors[3] = ez;
-
 
     auto itGroupStart = effectData->groups.begin();
     uint32 particlesInGroup = 0;
@@ -238,7 +237,7 @@ void ParticleRenderObject::UpdateStripeVertex(float32*& dataPtr, Vector3& positi
     }
 }
 
-int32 ParticleRenderObject::PrepareBasisIndexes(const ParticleGroup& group, int32 (&basises)[4]) const
+int32 ParticleRenderObject::PrepareBasisIndexes(const ParticleGroup& group, int32(&basises)[4]) const
 {
     int32 basisCount = 0;
     bool worldAlign = (group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_WORLD_ALIGN) != 0;
@@ -507,7 +506,7 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
 
             StripeNode& base = data.baseNode;
             List<StripeNode>& nodes = data.strpeNodes;
-            
+
             int32 vCountInBasis = static_cast<int32>((nodes.size() + 1) * 2);
             int32 vCount = vCountInBasis * basisCount;
             uint32 iCount = static_cast<int32>(nodes.size()) * 6 * basisCount;

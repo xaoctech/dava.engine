@@ -92,7 +92,7 @@ private:
 
     float FresnelShlick(float32 nDotVInv, float32 bias, float32 power) const;
     bool CheckGroup(const ParticleGroup& group) const;
-    int32 PrepareBasisIndexes(const ParticleGroup& group, int32 (&basises)[4]) const;
+    int32 PrepareBasisIndexes(const ParticleGroup& group, int32(&basises)[4]) const;
 };
 
 inline float ParticleRenderObject::FresnelShlick(float32 nDotVInv, float32 bias, float32 power) const

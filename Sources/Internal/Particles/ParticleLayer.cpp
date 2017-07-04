@@ -530,7 +530,6 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
         stripeFadeDistanceFromTop = stripeFadeDistanceFromTopNode->AsFloat();
     }
 
-
     // format processing
     int32 format = 0;
     const YamlNode* formatNode = node->Get("effectFormat");

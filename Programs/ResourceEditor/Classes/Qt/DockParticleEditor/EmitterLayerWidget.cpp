@@ -255,7 +255,7 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     facingLayout->addWidget(cameraFacingCheckBox);
     connect(cameraFacingCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
 
-    xFacingCheckBox = new QCheckBox(/*layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE ? "X-Align" : */"X-Facing");
+    xFacingCheckBox = new QCheckBox(/*layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE ? "X-Align" : */ "X-Facing");
     facingLayout->addWidget(xFacingCheckBox);
     connect(xFacingCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
 
