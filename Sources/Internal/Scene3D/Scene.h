@@ -112,7 +112,8 @@ public:
     enum eSceneProcessFlags
     {
         SCENE_SYSTEM_REQUIRE_PROCESS = 1 << 0,
-        SCENE_SYSTEM_REQUIRE_INPUT = 1 << 1
+        SCENE_SYSTEM_REQUIRE_INPUT = 1 << 1,
+        SCENE_SYSTEM_REQUIRE_FIXED_PROCESS = 1 << 2
     };
 
     Scene(uint32 systemsMask = SCENE_SYSTEM_ALL_MASK);
@@ -135,12 +136,13 @@ public:
      */
     void UnregisterComponent(Entity* entity, Component* component);
 
-    virtual void AddSystem(SceneSystem* sceneSystem, uint64 componentFlags, uint32 processFlags = 0, SceneSystem* insertBeforeSceneForProcess = nullptr, SceneSystem* insertBeforeSceneForInput = nullptr);
+    virtual void AddSystem(SceneSystem* sceneSystem, uint64 componentFlags, uint32 processFlags = 0, SceneSystem* insertBeforeSceneForProcess = nullptr, SceneSystem* insertBeforeSceneForInput = nullptr, SceneSystem* insertBeforeSceneForFixedProcess = nullptr);
     virtual void RemoveSystem(SceneSystem* sceneSystem);
 
     Vector<SceneSystem*> systems;
     Vector<SceneSystem*> systemsToProcess;
     Vector<SceneSystem*> systemsToInput;
+    Vector<SceneSystem*> systemsToFixedProcess;
     TransformSystem* transformSystem;
     RenderUpdateSystem* renderUpdateSystem;
     LodSystem* lodSystem;
@@ -247,6 +249,12 @@ protected:
 
     Camera* mainCamera;
     Camera* drawCamera;
+
+    struct FixedUpdate
+    {
+        float32 constantTime = 0.016f;
+        float32 lastTime = 0.f;
+    } fixedUpdate;
 
     friend class Entity;
 };

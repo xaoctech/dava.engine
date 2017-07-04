@@ -401,6 +401,7 @@ Scene::~Scene()
 
     systemsToProcess.clear();
     systemsToInput.clear();
+    systemsToFixedProcess.clear();
     cache.ClearAll();
 
     SafeDelete(eventSystem);
@@ -469,44 +470,9 @@ void Scene::UnregisterComponent(Entity* entity, Component* component)
     }
 }
 
-
-#if 0 // Removed temporarly if everything will work with events can be removed fully.
-void Scene::ImmediateEvent(Entity * entity, uint32 componentType, uint32 event)
-{
-#if 1
-    uint32 systemsCount = systems.size();
-    uint64 updatedComponentFlag = MAKE_COMPONENT_MASK(componentType);
-    uint64 componentsInEntity = entity->GetAvailableComponentFlags();
-
-    for (uint32 k = 0; k < systemsCount; ++k)
-    {
-        uint64 requiredComponentFlags = systems[k]->GetRequiredComponents();
-        
-        if (((requiredComponentFlags & updatedComponentFlag) != 0) && ((requiredComponentFlags & componentsInEntity) == requiredComponentFlags))
-        {
-			eventSystem->NotifySystem(systems[k], entity, event);
-        }
-    }
-#else
-    uint64 componentsInEntity = entity->GetAvailableComponentFlags();
-    Set<SceneSystem*> & systemSetForType = componentTypeMapping.GetValue(componentsInEntity);
-    
-    for (Set<SceneSystem*>::iterator it = systemSetForType.begin(); it != systemSetForType.end(); ++it)
-    {
-        SceneSystem * system = *it;
-        uint64 requiredComponentFlags = system->GetRequiredComponents();
-        if ((requiredComponentFlags & componentsInEntity) == requiredComponentFlags)
-            eventSystem->NotifySystem(system, entity, event);
-    }
-#endif
-}
-#endif
-
-void Scene::AddSystem(SceneSystem* sceneSystem, uint64 componentFlags, uint32 processFlags /*= 0*/, SceneSystem* insertBeforeSceneForProcess /* = nullptr */, SceneSystem* insertBeforeSceneForInput /* = nullptr*/)
+void Scene::AddSystem(SceneSystem* sceneSystem, uint64 componentFlags, uint32 processFlags /*= 0*/, SceneSystem* insertBeforeSceneForProcess /* = nullptr */, SceneSystem* insertBeforeSceneForInput /* = nullptr*/, SceneSystem* insertBeforeSceneForFixedProcess)
 {
     sceneSystem->SetRequiredComponents(componentFlags);
-    //Set<SceneSystem*> & systemSetForType = componentTypeMapping.GetValue(componentFlags);
-    //systemSetForType.insert(sceneSystem);
     systems.push_back(sceneSystem);
 
     auto insertSystemBefore = [sceneSystem](Vector<SceneSystem*>& container, SceneSystem* beforeThisSystem)
@@ -544,6 +510,12 @@ void Scene::AddSystem(SceneSystem* sceneSystem, uint64 componentFlags, uint32 pr
         DVASSERT(wasInsertedForInput);
     }
 
+    if (processFlags & SCENE_SYSTEM_REQUIRE_FIXED_PROCESS)
+    {
+        bool wasInserted = insertSystemBefore(systemsToProcess, insertBeforeSceneForFixedProcess);
+        DVASSERT(wasInserted);
+    }
+
     sceneSystem->SetScene(this);
     RegisterEntitiesInSystemRecursively(sceneSystem, this);
 }
@@ -554,6 +526,7 @@ void Scene::RemoveSystem(SceneSystem* sceneSystem)
 
     RemoveSystem(systemsToProcess, sceneSystem);
     RemoveSystem(systemsToInput, sceneSystem);
+    RemoveSystem(systemsToFixedProcess, sceneSystem);
 
     bool removed = RemoveSystem(systems, sceneSystem);
     if (removed)
@@ -619,12 +592,18 @@ void Scene::Update(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_UPDATE)
 
-    uint64 time = SystemTimer::GetMs();
-
-    size_t size = systemsToProcess.size();
-    for (size_t k = 0; k < size; ++k)
+    fixedUpdate.lastTime += timeElapsed;
+    while (fixedUpdate.lastTime > fixedUpdate.constantTime)
     {
-        SceneSystem* system = systemsToProcess[k];
+        for (SceneSystem* system : systemsToFixedProcess)
+        {
+            system->FixedProcess(fixedUpdate.constantTime);
+        }
+        fixedUpdate.lastTime -= fixedUpdate.constantTime;
+    }
+
+    for (SceneSystem* system : systemsToProcess)
+    {
         if ((systemsMask & SCENE_SYSTEM_UPDATEBLE_FLAG) && system == transformSystem)
         {
             updatableSystem->UpdatePreTransform(timeElapsed);
