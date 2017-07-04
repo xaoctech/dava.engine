@@ -9,6 +9,6 @@ set(INCLUDES "${CMAKE_CURRENT_LIST_DIR}" "Sources" "Sources/MemoryProfilerServic
 
 set(INCLUDES_PRIVATE ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_LIST_DIR})
 
-find_package( NetworkHelpers REQUIRED )
+set(FIND_PACKAGE NetworkHelpers)
 
 setup_main_module()

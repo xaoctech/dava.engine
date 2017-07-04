@@ -16,8 +16,6 @@ set( INCLUDES_PRIVATE ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_LIST_DIR} ${DA
 set( DEFINITIONS_PRIVATE_WIN      -D_CRT_SECURE_NO_WARNINGS )
 set( DEFINITIONS_PRIVATE_WINUAP   -D_CRT_SECURE_NO_WARNINGS )
 
-find_package( LoggerService REQUIRED )
-find_package( MemoryProfilerService REQUIRED )
-find_package( NetworkHelpers REQUIRED )
+set(FIND_PACKAGE NetworkHelpers LoggerService MemoryProfilerService)
 
 setup_main_module()
