@@ -370,9 +370,6 @@ void Entity::Draw()
 
     for (auto child : children)
         child->Draw();
-
-    if (scene)
-        scene->nodeCounter++;
 		
 #if 0
 	if (debugFlags & DEBUG_DRAW_AABOX_CORNERS)
