@@ -199,6 +199,7 @@ void ColladaSkinnedMesh::LinkJoints(ColladaSceneNode* node, Joint* parentJoint)
             joint.node = node;
             if (parentJoint != nullptr)
             {
+                joint.index = j;
                 joint.parentJoint = parentJoint->joint;
                 joint.hierarhyDepth = parentJoint->hierarhyDepth + 1;
             }
@@ -229,6 +230,31 @@ void ColladaSkinnedMesh::BuildJointsHierarhy()
                   else
                       return l.hierarhyDepth < r.hierarhyDepth;
               });
+
+    //////////////////////////////////////////////////////////////////////////
+    //rebind joints indices in geometry after sorting
+    Map<int32, int32> sortedJointsMapping;
+    for (int32 j = 0; j < int32(joints.size()); ++j)
+        sortedJointsMapping[joints[j].index] = j;
+
+    for (int32 p = 0; p < mesh->GetPolygonGroupCount(); ++p)
+    {
+        ColladaPolygonGroup* pg = mesh->GetPolygonGroup(p);
+
+        std::vector<ColladaVertex>& vertices = pg->GetVertices();
+        std::vector<ColladaVertex> originalVertices = vertices; //copy
+
+        int32 vertexCount = int32(vertices.size());
+        for (int32 v = 0; v < vertexCount; ++v)
+        {
+            for (int32 j = 0; j < vertices[v].jointCount; ++j)
+            {
+                vertices[v].joint[j] = sortedJointsMapping[originalVertices[v].joint[j]];
+            }
+        }
+    }
+
+    //////////////////////////////////////////////////////////////////////////
 
     for (int32 j = 0; j < int32(joints.size()); ++j)
     {

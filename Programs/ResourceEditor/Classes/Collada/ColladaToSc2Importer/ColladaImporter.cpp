@@ -324,7 +324,7 @@ eColladaErrorCodes ColladaImporter::SaveSC2(ColladaScene* colladaScene, const Fi
     // Load scene global animations
     LoadAnimations(colladaScene);
 
-    // Iterate recursive over collada scene and build Dava Scene with same ierarchy
+    // Iterate recursive over collada scene and build Dava Scene with same hierarchy
 
     eColladaErrorCodes convertRes = BuildSceneAsCollada(scene, colladaScene->rootNode);
     if (eColladaErrorCodes::COLLADA_OK == convertRes)
