@@ -12,7 +12,7 @@ class ResourceFilePropertyDelegate : public BasePropertyDelegate
 {
     Q_OBJECT
 public:
-    explicit ResourceFilePropertyDelegate(const QString& extension, const QString& resourceSubDir, PropertiesTreeItemDelegate* delegate);
+    explicit ResourceFilePropertyDelegate(const QList<QString>& extensions, const QString& resourceSubDir, PropertiesTreeItemDelegate* delegate, bool allowAnyExtension);
     ~ResourceFilePropertyDelegate();
 
     QWidget* createEditor(QWidget* parent, const PropertiesContext& context, const QStyleOptionViewItem& option, const QModelIndex& index) override;
@@ -33,12 +33,13 @@ private:
     QPointer<QLineEdit> lineEdit = nullptr;
     const Project* project = nullptr;
 
-    QString resourceExtension;
+    QList<QString> resourceExtensions;
     QString projectResourceDir;
     QString resourceSubDir;
 #if defined(__DAVAENGINE_MACOS__)
     std::unique_ptr<MacOSSymLinkRestorer> symLinkRestorer;
 #endif
+    bool allowAnyExtension = false;
 };
 
 #endif // __RESOURCE_FILE_PROPERTY_DELEGATE_H__
