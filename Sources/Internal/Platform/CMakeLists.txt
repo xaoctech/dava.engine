@@ -14,13 +14,16 @@ set( HPP_FILES_WIN   TemplateWin32/*.h  )
 set( CPP_FILES_WINUAP TemplateWin32/*.cpp )
 set( HPP_FILES_WINUAP TemplateWin32/*.h  )
 
+set( CPP_FILES_LINUX Linux/*.cpp )
+set( HPP_FILES_LINUX Linux/*.h  )
+
 set( ERASE_FILES_ANDROID  )
 
 set( ERASE_FILES_IOS  )
 
-set( ERASE_FILES_MACOS AppDelegate.h AppDelegate.mm HelperAppDelegate.h HelperAppDelegate.mm MainWindowController.h MainWindowController.mm OpenGLView.h OpenGLView.mm CoreMacOSPlatform.h )
+set( ERASE_FILES_MACOS  )
 
-set( ERASE_FILES_WIN CorePlatformWin32.cpp CorePlatformWin32.h )
+set( ERASE_FILES_WIN )
 set( ERASE_FILES_WINUAP ${ERASE_FILES_WIN32} )
 
 setup_main_module()

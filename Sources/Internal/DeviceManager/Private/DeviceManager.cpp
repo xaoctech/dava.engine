@@ -1,7 +1,5 @@
 #include "DeviceManager/DeviceManager.h"
 
-#if defined(__DAVAENGINE_COREV2__)
-
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 
@@ -17,6 +15,8 @@
 #include "DeviceManager/Private/Ios/DeviceManagerImplIos.h"
 #elif defined(__DAVAENGINE_ANDROID__)
 #include "DeviceManager/Private/Android/DeviceManagerImplAndroid.h"
+#elif defined(__DAVAENGINE_LINUX__)
+#include "DeviceManager/Private/Linux/DeviceManagerImplLinux.h"
 #else
 #error "DeviceManager: unknown platform"
 #endif
@@ -58,5 +58,3 @@ void DeviceManager::HandleEvent(const Private::MainDispatcherEvent& e)
 }
 
 } // namespace DAVA
-
-#endif // __DAVAENGINE_COREV2__

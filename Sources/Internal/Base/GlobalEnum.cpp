@@ -138,6 +138,7 @@ ENUM_DECLARE(DeviceInfo::ePlatform)
     ENUM_ADD_DESCR(DeviceInfo::PLATFORM_WIN32, "Win32");
     ENUM_ADD_DESCR(DeviceInfo::PLATFORM_DESKTOP_WIN_UAP, "Windows Desktop UAP");
     ENUM_ADD_DESCR(DeviceInfo::PLATFORM_PHONE_WIN_UAP, "Windows Phone UAP");
+    ENUM_ADD_DESCR(DeviceInfo::PLATFORM_LINUX, "Linux");
     ENUM_ADD_DESCR(DeviceInfo::PLATFORM_UNKNOWN_VALUE, "Unknown");
 }
 
@@ -184,6 +185,7 @@ ENUM_DECLARE(UIControlBackground::eDrawType)
     ENUM_ADD_DESCR(UIControlBackground::DRAW_STRETCH_BOTH, "DRAW_STRETCH_BOTH");
     ENUM_ADD_DESCR(UIControlBackground::DRAW_TILED, "DRAW_TILED");
     ENUM_ADD_DESCR(UIControlBackground::DRAW_TILED_MULTILAYER, "DRAW_TILED_MULTILAYER");
+    ENUM_ADD_DESCR(UIControlBackground::DRAW_BATCH, "DRAW_BATCH");
 }
 
 ENUM_DECLARE(eAlign)
@@ -330,38 +332,6 @@ ENUM_DECLARE(UITextField::eStopEditPolicy)
     ENUM_ADD_DESCR(UITextField::STOP_EDIT_BY_USER_REQUEST, "ByUserRequest");
 };
 
-ENUM_DECLARE(UIComponent::eType)
-{
-    ENUM_ADD_DESCR(UIComponent::LINEAR_LAYOUT_COMPONENT, "LinearLayout");
-    ENUM_ADD_DESCR(UIComponent::FLOW_LAYOUT_COMPONENT, "FlowLayout");
-    ENUM_ADD_DESCR(UIComponent::FLOW_LAYOUT_HINT_COMPONENT, "FlowLayoutHint");
-    ENUM_ADD_DESCR(UIComponent::IGNORE_LAYOUT_COMPONENT, "IgnoreLayout");
-    ENUM_ADD_DESCR(UIComponent::SIZE_POLICY_COMPONENT, "SizePolicy");
-    ENUM_ADD_DESCR(UIComponent::ANCHOR_COMPONENT, "Anchor");
-    ENUM_ADD_DESCR(UIComponent::LAYOUT_SOURCE_RECT_COMPONENT, "UILayoutSourceRectComponent");
-    ENUM_ADD_DESCR(UIComponent::LAYOUT_ISOLATION_COMPONENT, "UILayoutIsolationComponent");
-    ENUM_ADD_DESCR(UIComponent::BACKGROUND_COMPONENT, "Background");
-    ENUM_ADD_DESCR(UIComponent::MODAL_INPUT_COMPONENT, "ModalInput");
-    ENUM_ADD_DESCR(UIComponent::FOCUS_COMPONENT, "Focus");
-    ENUM_ADD_DESCR(UIComponent::FOCUS_GROUP_COMPONENT, "FocusGroup");
-    ENUM_ADD_DESCR(UIComponent::NAVIGATION_COMPONENT, "Navigation");
-    ENUM_ADD_DESCR(UIComponent::TAB_ORDER_COMPONENT, "TabOrder");
-    ENUM_ADD_DESCR(UIComponent::ACTION_COMPONENT, "Action");
-    ENUM_ADD_DESCR(UIComponent::ACTION_BINDING_COMPONENT, "ActionBinding");
-    ENUM_ADD_DESCR(UIComponent::SCROLL_BAR_DELEGATE_COMPONENT, "ScrollBarDelegate");
-    ENUM_ADD_DESCR(UIComponent::SCROLL_COMPONENT, "ScrollComponent");
-    ENUM_ADD_DESCR(UIComponent::SOUND_COMPONENT, "Sound");
-    ENUM_ADD_DESCR(UIComponent::SOUND_VALUE_FILTER_COMPONENT, "SoundValueFilter");
-    ENUM_ADD_DESCR(UIComponent::UPDATE_COMPONENT, "Update");
-    ENUM_ADD_DESCR(UIComponent::CUSTOM_UPDATE_DELTA_COMPONENT, "CustomDeltaUpdate");
-    ENUM_ADD_DESCR(UIComponent::RICH_CONTENT_COMPONENT, "RichContent");
-    ENUM_ADD_DESCR(UIComponent::RICH_CONTENT_ALIASES_COMPONENT, "RichContentAliases");
-    ENUM_ADD_DESCR(UIComponent::RICH_CONTENT_OBJECT_COMPONENT, "RichContentObject");
-    ENUM_ADD_DESCR(UIComponent::SCENE_COMPONENT, "SceneComponent");
-    ENUM_ADD_DESCR(UIComponent::DEBUG_RENDER_COMPONENT, "DebugRender");
-    ENUM_ADD_DESCR(UIComponent::CLIP_CONTENT_COMPONENT, "ClipContent");
-};
-
 ENUM_DECLARE(UISizePolicyComponent::eSizePolicy)
 {
     ENUM_ADD_DESCR(UISizePolicyComponent::IGNORE_SIZE, "Ignore");
@@ -389,7 +359,6 @@ ENUM_DECLARE(UIFlowLayoutComponent::eOrientation)
     ENUM_ADD_DESCR(UIFlowLayoutComponent::ORIENTATION_RIGHT_TO_LEFT, "RightToLeft");
 };
 
-#if defined(__DAVAENGINE_COREV2__)
 ENUM_DECLARE(eModifierKeys)
 {
     ENUM_ADD_DESCR(static_cast<int>(eModifierKeys::SHIFT), "SHIFT");
@@ -397,15 +366,6 @@ ENUM_DECLARE(eModifierKeys)
     ENUM_ADD_DESCR(static_cast<int>(eModifierKeys::ALT), "ALT");
     ENUM_ADD_DESCR(static_cast<int>(eModifierKeys::COMMAND), "CMD");
 };
-#else
-ENUM_DECLARE(UIEvent::Modifier)
-{
-    ENUM_ADD_DESCR(UIEvent::Modifier::SHIFT_DOWN, "SHIFT");
-    ENUM_ADD_DESCR(UIEvent::Modifier::CONTROL_DOWN, "CTRL");
-    ENUM_ADD_DESCR(UIEvent::Modifier::ALT_DOWN, "ALT");
-    ENUM_ADD_DESCR(UIEvent::Modifier::COMMAND_DOWN, "CMD");
-};
-#endif
 
 ENUM_DECLARE(rhi::TextureAddrMode)
 {

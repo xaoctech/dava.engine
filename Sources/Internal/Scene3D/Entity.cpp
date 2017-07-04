@@ -36,12 +36,14 @@ const char* Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME = "editor.isSolid";
 const char* Entity::SCENE_NODE_IS_LOCKED_PROPERTY_NAME = "editor.isLocked";
 const char* Entity::SCENE_NODE_IS_NOT_REMOVABLE_PROPERTY_NAME = "editor.isNotRemovable";
 
+FastName Entity::EntityNameFieldName = FastName("Name");
+
 DAVA_VIRTUAL_REFLECTION_IMPL(Entity)
 {
-    ReflectionRegistrator<Entity>::Begin()
+    ReflectionRegistrator<Entity>::Begin()[M::Tooltip(EntityNameFieldName.c_str())]
     .DestructorByPointer([](Entity* e) { DAVA::SafeRelease(e); })
     .Field("ID", &Entity::GetID, &Entity::SetID)[M::ReadOnly()]
-    .Field("Name", &Entity::GetName, static_cast<void (Entity::*)(const FastName&)>(&Entity::SetName))
+    .Field(EntityNameFieldName.c_str(), &Entity::GetName, static_cast<void (Entity::*)(const FastName&)>(&Entity::SetName))
     .Field("Tag", &Entity::tag)
     .Field("Flags", &Entity::flags)[M::FlagsT<Entity::EntityFlags>(), M::DeveloperModeOnly()]
     .Field("Visible", &Entity::GetVisible, &Entity::SetVisible)[M::ValueDescription(&VisibleValueDescription)]
@@ -455,12 +457,12 @@ Entity* Entity::Clone(Entity* dstNode)
 
 void Entity::SetDebugFlags(uint32 debugFlags, bool isRecursive)
 {
-    DebugRenderComponent* debugComponent = cast_if_equal<DebugRenderComponent*>(GetComponent(Component::DEBUG_RENDER_COMPONENT));
+    DebugRenderComponent* debugComponent = CastIfEqual<DebugRenderComponent*>(GetComponent(Component::DEBUG_RENDER_COMPONENT));
 
     if (!debugComponent)
     {
         AddComponent(new DebugRenderComponent());
-        debugComponent = cast_if_equal<DebugRenderComponent*>(GetComponent(Component::DEBUG_RENDER_COMPONENT));
+        debugComponent = CastIfEqual<DebugRenderComponent*>(GetComponent(Component::DEBUG_RENDER_COMPONENT));
         debugComponent->SetDebugFlags(DebugRenderComponent::DEBUG_AUTOCREATED);
     }
 
@@ -484,7 +486,7 @@ void Entity::SetDebugFlags(uint32 debugFlags, bool isRecursive)
 
 uint32 Entity::GetDebugFlags() const
 {
-    DebugRenderComponent* debugComponent = cast_if_equal<DebugRenderComponent*>(GetComponent(Component::DEBUG_RENDER_COMPONENT));
+    DebugRenderComponent* debugComponent = CastIfEqual<DebugRenderComponent*>(GetComponent(Component::DEBUG_RENDER_COMPONENT));
     if (debugComponent)
     {
         return debugComponent->GetDebugFlags();
@@ -597,7 +599,7 @@ void Entity::Save(KeyedArchive* archive, SerializationContext* serializationCont
             //don't save empty custom properties
             if (Component::CUSTOM_PROPERTIES_COMPONENT == i)
             {
-                CustomPropertiesComponent* customProps = cast_if_equal<CustomPropertiesComponent*>(components[i]);
+                CustomPropertiesComponent* customProps = CastIfEqual<CustomPropertiesComponent*>(components[i]);
                 if (customProps && customProps->GetArchive()->Count() <= 0)
                 {
                     continue;

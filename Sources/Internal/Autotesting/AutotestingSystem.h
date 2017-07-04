@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_AUTOTESTING_SYSTEM_H__
-#define __DAVAENGINE_AUTOTESTING_SYSTEM_H__
+#pragma once
 
 #include "DAVAConfig.h"
 
@@ -157,7 +156,7 @@ private:
 
 public:
     static const String RecordScriptFileName;
-    float32 startTime = 0.f;
+    int64 startTime = 0;
 
     bool isInit;
     bool isRunning;
@@ -219,5 +218,3 @@ inline bool AutotestingSystem::GetIsScreenShotSaving() const
 };
 
 #endif //__DAVAENGINE_AUTOTESTING__
-
-#endif //__DAVAENGINE_AUTOTESTING_SYSTEM_H__
