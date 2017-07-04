@@ -18,10 +18,6 @@ if (LINUX)
     set ( DAVA_MEMORY_PROFILER 0 )
 endif()
 
-# Now unittests is core v2 only
-set (DAVA_COREV2 1)
-dava_add_definitions(-D__DAVAENGINE_COREV2__)
-
 if (LINUX)
     dava_add_definitions(-DDISABLE_NATIVE_MOVIEVIEW)
     dava_add_definitions(-DDISABLE_NATIVE_TEXTFIELD)
@@ -58,7 +54,6 @@ elseif (WINDOWS_UAP AND WINDOWS_UAP_PLATFORMS MATCHES "ARM")
 elseif (LINUX)
     # for now physx is not supported for linux
 else()
-    dava_add_definitions(-D__DAVAENGINE_PHYSICS_ENABLED__)
     list ( APPEND DAVA_COMPONENTS "Physics" )
 endif()
 

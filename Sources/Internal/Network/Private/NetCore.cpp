@@ -17,7 +17,6 @@ namespace Net
 {
 const char8 NetCore::defaultAnnounceMulticastGroup[] = "239.192.100.1";
 
-#if defined(__DAVAENGINE_COREV2__)
 NetCore::NetCore(Engine* e)
     : engine(e)
     , loopCreatedEvent(false)
@@ -48,20 +47,12 @@ NetCore::NetCore(Engine* e)
     e->resumed.Connect(this, &NetCore::RestartAllControllers);
 #endif
 }
-#else
-NetCore::NetCore()
-{
-    loop = new IOLoop(true);
-}
-#endif
 
 NetCore::~NetCore()
 {
-#if defined(__DAVAENGINE_COREV2__)
     engine->update.Disconnect(this);
 #if defined(__DAVAENGINE_IPHONE__)
     engine->resumed.Disconnect(this);
-#endif
 #endif
 
     Finish(true);

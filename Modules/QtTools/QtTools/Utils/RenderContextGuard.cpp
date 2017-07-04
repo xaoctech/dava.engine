@@ -1,7 +1,7 @@
 #include "RenderContextGuard.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #include "Engine/Engine.h"
+#include "Engine/PlatformApiQt.h"
 #include "Engine/Window.h"
 
 RenderContextGuard::RenderContextGuard()
@@ -25,5 +25,3 @@ RenderContextGuard::~RenderContextGuard()
         DAVA::PlatformApi::Qt::ReleaseWindowContext(window);
     }
 }
-
-#endif

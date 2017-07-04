@@ -3,7 +3,6 @@
 #include "Render/RenderHelper.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
 #include "Render/Renderer.h"
-#include "Core/Core.h"
 
 #include "Engine/Engine.h"
 
@@ -103,11 +102,8 @@ void CollisionObject2::Update(const Sprite::DrawState& state /*const Vector2 & _
 {
     if (!basePolygon)
         return;
-#if defined(__DAVAENGINE_COREV2__)
+
     uint32 globalFrameIndex = Engine::Instance()->GetGlobalFrameIndex();
-#else
-    uint32 globalFrameIndex = Core::Instance()->GetGlobalFrameIndex();
-#endif
     if (globalFrameIndex == updateFrameIndex)
         return;
     updateFrameIndex = globalFrameIndex;

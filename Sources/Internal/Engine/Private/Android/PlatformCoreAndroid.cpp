@@ -1,16 +1,14 @@
-#if defined(__DAVAENGINE_COREV2__)
-
 #include "Engine/Private/Android/PlatformCoreAndroid.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
 
 #include "Base/Exception.h"
 #include "Engine/Window.h"
-#include "Engine/Android/JNIBridge.h"
+#include "Engine/PlatformApiAndroid.h"
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 #include "Engine/Private/Android/AndroidBridge.h"
-#include "Engine/Private/Android/Window/WindowBackendAndroid.h"
+#include "Engine/Private/Android/WindowImplAndroid.h"
 
 #include "Debug/Backtrace.h"
 #include "Input/InputSystem.h"
@@ -116,11 +114,11 @@ void PlatformCore::SetScreenTimeoutEnabled(bool enabled)
     androidBridge->SetScreenTimeoutEnabled(enabled);
 }
 
-WindowBackend* PlatformCore::ActivityOnCreate()
+WindowImpl* PlatformCore::ActivityOnCreate()
 {
     Window* primaryWindow = engineBackend->InitializePrimaryWindow();
-    WindowBackend* primaryWindowBackend = EngineBackend::GetWindowBackend(primaryWindow);
-    return primaryWindowBackend;
+    WindowImpl* primaryWindowImpl = EngineBackend::GetWindowImpl(primaryWindow);
+    return primaryWindowImpl;
 }
 
 void PlatformCore::ActivityOnResume()
@@ -166,7 +164,7 @@ void PlatformCore::GameThread()
     catch (const Exception& e)
     {
         StringStream ss;
-        ss << "!!! Unhandled DAVA::Exception at `" << e.file << "`: " << e.line << std::endl;
+        ss << "!!! Unhandled DAVA::Exception \"" << e.what() << "\" at `" << e.file << "`: " << e.line << std::endl;
         ss << Debug::GetBacktraceString(e.callstack) << std::endl;
         Logger::PlatformLog(Logger::LEVEL_ERROR, ss.str().c_str());
         throw;
@@ -194,4 +192,3 @@ void PlatformCore::OnGamepadRemoved(int32 deviceId)
 } // namespace DAVA
 
 #endif // __DAVAENGINE_ANDROID__
-#endif // __DAVAENGINE_COREV2__

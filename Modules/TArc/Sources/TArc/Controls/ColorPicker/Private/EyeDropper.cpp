@@ -2,8 +2,6 @@
 #include "TArc/Controls/ColorPicker/Private/DropperShade.h"
 #include "TArc/Controls/ColorPicker/Private/MouseHelper.h"
 
-#include <Platform/DPIHelper.h>
-
 #include <QApplication>
 #include <QCursor>
 #include <QMouseEvent>

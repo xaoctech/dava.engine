@@ -17,6 +17,7 @@ set( EXTERNAL_MODULES_WIN           ${DAVA_EXTERNAL_DIR}/cef )
 set( EXTERNAL_MODULES               ${DAVA_MODULES_DIR}/SampleModule
                                     ${DAVA_MODULES_DIR}/NetworkCore
                                     ${DAVA_MODULES_DIR}/Physics
+                                    ${DAVA_MODULES_DIR}/PhysicsDebug
                                     )
 
 set( INCLUDES_PRIVATE               ${DAVA_ENGINE_DIR} 
@@ -107,20 +108,14 @@ set( UNITY_IGNORE_LIST              "Internal/Autotesting"
                                     "External/imgui")
 
 set( UNITY_IGNORE_LIST_APPLE        "DataStorage/Apple/ICloudKeyValue.cpp"
-                                    "TemplateMacOS/CoreMacOSPlatformBase.cpp"
                                     "Concurrency/ThreadPosix.cpp"
                                     "Render/Texture.cpp" 
                                     "Render/RHI/GLES2"
-                                    "TemplateMacOS/MainWindowController.mm"
-                                    "TemplateMacOS/MovieViewControlMacOS.mm"
                                     "Logger/TeamcityOutput.cpp" )
 
 set( UNITY_IGNORE_LIST_IOS          "DataStorage/Apple/ICloudKeyValue.cpp"
-                                    "TemplateiOS/BackgroundView.mm"
-                                    "TemplateiOS/HelperAppDelegate.mm"
-                                    "TemplateiOS/DPIHelperiOS.mm"
                                     "TemplateiOS"
-                                    "UI/UITextFieldiPhone.mm" )
+                                    )
 
 set( DEFINITIONS_PRIVATE            -D_UNICODE 
                                     -DUNICODE 

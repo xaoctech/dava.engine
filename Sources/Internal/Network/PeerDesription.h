@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_PEERDESRIPTION_H__
-#define __DAVAENGINE_PEERDESRIPTION_H__
+#pragma once
 
 #include <Base/BaseTypes.h>
 #include <Platform/DeviceInfo.h>
@@ -25,9 +24,6 @@ public:
     const String& GetUDID() const;
     const String& GetDeviceName() const;
     const String& GetAppName() const;
-#if !defined(__DAVAENGINE_COREV2__)
-    const DeviceInfo::ScreenInfo& GetScreenInfo() const;
-#endif
     eGPUFamily GetGPUFamily() const;
     const NetConfig& NetworkConfig() const;
     const Vector<IfAddress>& NetworkInterfaces() const;
@@ -51,9 +47,6 @@ private:
     String udid;
     String deviceName;
     String appName;
-#if !defined(__DAVAENGINE_COREV2__)
-    DeviceInfo::ScreenInfo screenInfo;
-#endif
     eGPUFamily gpuFamily;
 
     NetConfig netConfig;
@@ -101,13 +94,6 @@ inline const String& PeerDescription::GetAppName() const
     return appName;
 }
 
-#if !defined(__DAVAENGINE_COREV2__)
-inline const DeviceInfo::ScreenInfo& PeerDescription::GetScreenInfo() const
-{
-    return screenInfo;
-}
-#endif
-
 inline eGPUFamily PeerDescription::GetGPUFamily() const
 {
     return gpuFamily;
@@ -125,5 +111,3 @@ inline const Vector<IfAddress>& PeerDescription::NetworkInterfaces() const
 
 } // namespace Net
 } // namespace DAVA
-
-#endif // __DAVAENGINE_PEERDESRIPTION_H__

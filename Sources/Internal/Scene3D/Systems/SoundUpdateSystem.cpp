@@ -94,11 +94,7 @@ void SoundUpdateSystem::Process(float32 timeElapsed)
 
     if (activeCamera)
     {
-#if defined(__DAVAENGINE_COREV2__)
         SoundSystem* ss = GetEngineContext()->soundSystem;
-#else
-        SoundSystem* ss = SoundSystem::Instance();
-#endif
         const Vector3& listenerPosition = activeCamera->GetPosition();
         ss->SetListenerPosition(listenerPosition);
         ss->SetListenerOrientation(activeCamera->GetDirection(), activeCamera->GetLeft());
