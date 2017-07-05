@@ -2,8 +2,8 @@ set(NAME_MODULE PhysicsDebug )
 
 set(MODULE_TYPE STATIC)#INLINE STATIC DYNAMIC 
 
-set(HPP_FILES_RECURSE Sources/PhysicsDebug/*.h Sources/PhysicsDebug/*.hpp)
-set(CPP_FILES_RECURSE Sources/PhysicsDebug/*.cpp)
+set(HPP_FILES_RECURSE Sources/*.h Sources/*.hpp)
+set(CPP_FILES_RECURSE Sources/*.cpp)
 
 set(PhysicsDebugRootDir "${CMAKE_CURRENT_SOURCE_DIR}")
 set(PhysicsRootDir "${PhysicsDebugRootDir}/../Physics")
@@ -12,7 +12,7 @@ set(INCLUDES_PRIVATE ${DAVA_INCLUDE_DIR}
                      "${PhysicsRootDir}/Libs/include/physx"
                      "${PhysicsRootDir}/Libs/include/PxShared"
                      "${PhysicsDebugRootDir}/Sources")
-set(MODULE_INITIALIZATION_CODE Sources/PhysicsDebug/PhysicsDebugModule.h)
+set(MODULE_INITIALIZATION_CODE Sources/PhysicsDebugModule.h)
 
 set(LibsPath "${PhysicsRootDir}/Libs")
 

@@ -1,6 +1,7 @@
-#include "PhysicsDebug/PhysicsDebugModule.h"
-#include "Reflection/Reflection.h"
-#include "Reflection/ReflectionRegistrator.h"
+#include "PhysicsDebugModule.h"
+
+#include <Reflection/Reflection.h>
+#include <Reflection/ReflectionRegistrator.h>
 
 #include <physx/PxPhysicsAPI.h>
 #include <PxShared/pvd/PxPvd.h>
@@ -8,18 +9,18 @@
 
 namespace DAVA
 {
-PhysicsDebug::PhysicsDebug(Engine* engine)
+PhysicsDebugModule::PhysicsDebugModule(Engine* engine)
     : IModule(engine)
 {
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PhysicsDebug);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PhysicsDebugModule);
 }
 
-PhysicsDebug::~PhysicsDebug()
+PhysicsDebugModule::~PhysicsDebugModule()
 {
     DVASSERT(pvd == nullptr);
 }
 
-void PhysicsDebug::Init()
+void PhysicsDebugModule::Init()
 {
     if (pvd != nullptr)
     {
@@ -32,7 +33,7 @@ void PhysicsDebug::Init()
     }
 }
 
-void PhysicsDebug::Shutdown()
+void PhysicsDebugModule::Shutdown()
 {
     if (pvd != nullptr)
     {
@@ -47,7 +48,7 @@ void PhysicsDebug::Shutdown()
     }
 }
 
-physx::PxPvd* PhysicsDebug::CreatePvd(physx::PxFoundation* foundation)
+physx::PxPvd* PhysicsDebugModule::CreatePvd(physx::PxFoundation* foundation)
 {
     DVASSERT(pvd == nullptr);
     DVASSERT(foundation != nullptr);
@@ -55,18 +56,18 @@ physx::PxPvd* PhysicsDebug::CreatePvd(physx::PxFoundation* foundation)
     return pvd;
 }
 
-void PhysicsDebug::ReleasePvd()
+void PhysicsDebugModule::ReleasePvd()
 {
     DVASSERT(pvd != nullptr);
     pvd->release();
     pvd = nullptr;
 }
 
-DAVA_VIRTUAL_REFLECTION_IMPL(PhysicsDebug)
+DAVA_VIRTUAL_REFLECTION_IMPL(PhysicsDebugModule)
 {
-    ReflectionRegistrator<PhysicsDebug>::Begin()
-    .Method("CreatePvd", &PhysicsDebug::CreatePvd)
-    .Method("ReleasePvd", &PhysicsDebug::ReleasePvd)
+    ReflectionRegistrator<PhysicsDebugModule>::Begin()
+    .Method("CreatePvd", &PhysicsDebugModule::CreatePvd)
+    .Method("ReleasePvd", &PhysicsDebugModule::ReleasePvd)
     .End();
 }
 

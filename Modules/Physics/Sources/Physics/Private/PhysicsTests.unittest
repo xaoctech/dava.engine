@@ -1,7 +1,7 @@
 #include "UnitTests/UnitTests.h"
 
 #include "Engine/Engine.h"
-#include "Physics/PhysicsModule.h"
+#include "PhysicsModule.h"
 
 using namespace DAVA;
 

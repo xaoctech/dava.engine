@@ -42,9 +42,7 @@ if ( WIN32 AND NOT WINDOWS_UAP )
     list ( APPEND DAVA_COMPONENTS "CEFWebview" )
 endif ()
 
-if (NOT ANDROID)
-    list ( APPEND DAVA_COMPONENTS "SampleModule" )
-endif()
+list ( APPEND DAVA_COMPONENTS "SampleModule" )
 
 # add physics
 if(ANDROID AND ANDROID_ABI STREQUAL "x86" )

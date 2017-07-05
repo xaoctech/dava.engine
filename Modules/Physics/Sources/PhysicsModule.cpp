@@ -1,4 +1,4 @@
-#include "Physics/PhysicsModule.h"
+#include "PhysicsModule.h"
 #include "Physics/Private/PhysicsMath.h"
 
 #include <Engine/Engine.h>
@@ -49,7 +49,7 @@ void ReleasePvd()
     fn.Invoke();
 }
 }
-class Physics::PhysicsAllocator : public physx::PxAllocatorCallback
+class PhysicsModule::PhysicsAllocator : public physx::PxAllocatorCallback
 {
 public:
     void* allocate(size_t size, const char* typeName, const char* filename, int line) override
@@ -74,7 +74,7 @@ private:
     physx::PxDefaultAllocator defaultAllocator;
 };
 
-class Physics::PhysicsErrotCallback : public physx::PxErrorCallback
+class PhysicsModule::PhysicsErrotCallback : public physx::PxErrorCallback
 {
 public:
     void reportError(physx::PxErrorCode::Enum code, const char* message, const char* file, int line) override
@@ -86,13 +86,13 @@ private:
     physx::PxDefaultErrorCallback defaultErrorCallback;
 };
 
-Physics::Physics(Engine* engine)
+PhysicsModule::PhysicsModule(Engine* engine)
     : IModule(engine)
 {
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(Physics);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PhysicsModule);
 }
 
-void Physics::Init()
+void PhysicsModule::Init()
 {
     using namespace physx;
 
@@ -108,7 +108,7 @@ void Physics::Init()
     PxRegisterHeightFields(*physics);
 }
 
-void Physics::Shutdown()
+void PhysicsModule::Shutdown()
 {
     physics->release();
     ReleasePvd(); // PxPvd should be released between PxPhysics and PxFoundation
@@ -117,17 +117,17 @@ void Physics::Shutdown()
     SafeDelete(errorCallback);
 }
 
-bool Physics::IsInitialized() const
+bool PhysicsModule::IsInitialized() const
 {
     return foundation != nullptr && physics != nullptr;
 }
 
-physx::PxPhysics* Physics::GetPhysics() const
+physx::PxPhysics* PhysicsModule::GetPhysics() const
 {
     return physics;
 }
 
-physx::PxScene* Physics::CreateScene(const PhysicsSceneConfig& config) const
+physx::PxScene* PhysicsModule::CreateScene(const PhysicsSceneConfig& config) const
 {
     using namespace physx;
 
@@ -149,9 +149,9 @@ physx::PxScene* Physics::CreateScene(const PhysicsSceneConfig& config) const
     return scene;
 }
 
-DAVA_VIRTUAL_REFLECTION_IMPL(Physics)
+DAVA_VIRTUAL_REFLECTION_IMPL(PhysicsModule)
 {
-    ReflectionRegistrator<Physics>::Begin()
+    ReflectionRegistrator<PhysicsModule>::Begin()
     .End();
 }
 }
