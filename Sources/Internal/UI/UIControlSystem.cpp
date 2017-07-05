@@ -57,6 +57,7 @@ UIControlSystem::UIControlSystem()
     vcs->physicalSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
 
     popupContainer.Set(new UIControl(Rect(0, 0, 1, 1)));
+    popupContainer->SetScene(this);
     popupContainer->SetName("UIControlSystem_popupContainer");
     popupContainer->SetInputEnabled(false);
     popupContainer->InvokeActive(UIControl::eViewState::VISIBLE);
@@ -83,11 +84,13 @@ UIControlSystem::~UIControlSystem()
     renderSystem->SetCurrentScreenTransition(RefPtr<UIScreenTransition>());
 
     popupContainer->InvokeInactive();
+    popupContainer->SetScene(nullptr);
     popupContainer = nullptr;
 
     if (currentScreen.Valid())
     {
         currentScreen->InvokeInactive();
+        currentScreen->SetScene(nullptr);
         currentScreen = nullptr;
     }
 
@@ -262,6 +265,7 @@ void UIControlSystem::ProcessScreenLogic()
         if (currentScreen)
         {
             currentScreen->InvokeInactive();
+            currentScreen->SetScene(nullptr);
 
             RefPtr<UIScreen> prevScreen = currentScreen;
             currentScreen = nullptr;
@@ -289,6 +293,7 @@ void UIControlSystem::ProcessScreenLogic()
 
         if (currentScreen)
         {
+            currentScreen->SetScene(this);
             currentScreen->InvokeActive(UIControl::eViewState::VISIBLE);
         }
         inputSystem->SetCurrentScreen(currentScreen.Get());
@@ -306,6 +311,7 @@ void UIControlSystem::ProcessScreenLogic()
             LockInput();
 
             currentScreenTransition = nextScreenTransitionProcessed;
+            currentScreenTransition->SetScene(this);
             currentScreenTransition->InvokeActive(UIControl::eViewState::VISIBLE);
             styleSheetSystem->SetCurrentScreenTransition(currentScreenTransition);
             layoutSystem->SetCurrentScreenTransition(currentScreenTransition);
@@ -323,6 +329,7 @@ void UIControlSystem::ProcessScreenLogic()
         if (currentScreenTransition->IsComplete())
         {
             currentScreenTransition->InvokeInactive();
+            currentScreenTransition->SetScene(nullptr);
 
             RefPtr<UIScreenTransition> prevScreenTransitionProcessed = currentScreenTransition;
             currentScreenTransition = nullptr;
@@ -367,6 +374,11 @@ void UIControlSystem::Update()
         for (auto& system : systems)
         {
             system->Process(timeElapsed);
+        }
+
+        for (auto& components : singleComponents)
+        {
+            components->ResetState();
         }
     }
 }
@@ -729,6 +741,7 @@ void UIControlSystem::UnregisterComponent(UIControl* control, UIComponent* compo
 
 void UIControlSystem::AddSystem(std::unique_ptr<UISystem> system, const UISystem* insertBeforeSystem)
 {
+    system->SetScene(this);
     if (insertBeforeSystem)
     {
         auto insertIt = std::find_if(systems.begin(), systems.end(),
@@ -757,9 +770,30 @@ std::unique_ptr<UISystem> UIControlSystem::RemoveSystem(const UISystem* system)
     {
         std::unique_ptr<UISystem> systemPtr(it->release());
         systems.erase(it);
+        systemPtr->SetScene(nullptr);
         return systemPtr;
     }
 
+    return nullptr;
+}
+
+void UIControlSystem::AddSingleComponent(std::unique_ptr<UISingleComponent> single)
+{
+    singleComponents.push_back(std::move(single));
+}
+
+std::unique_ptr<UISingleComponent> UIControlSystem::RemoveSingleComponent(const UISingleComponent* singleComponent)
+{
+    auto it = std::find_if(singleComponents.begin(), singleComponents.end(),
+                           [singleComponent](const std::unique_ptr<UISingleComponent>& ptr) {
+                               return ptr.get() == singleComponent;
+                           });
+    if (it != singleComponents.end())
+    {
+        std::unique_ptr<UISingleComponent> ptr(it->release());
+        singleComponents.erase(it);
+        return ptr;
+    }
     return nullptr;
 }
 

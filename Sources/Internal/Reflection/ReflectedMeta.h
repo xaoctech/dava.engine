@@ -244,6 +244,8 @@ using CantBeCreatedManualyComponent = Meta<Metas::CantBeCreatedManualyComponent>
     Type that derived from Component and marked by this Meta couldn't be created in PropertyPanel
 */
 using CantBeDeletedManualyComponent = Meta<Metas::CantBeDeletedManualyComponent>;
+
+using Tooltip = Meta<Metas::Tooltip>;
 }
 
 } // namespace DAVA

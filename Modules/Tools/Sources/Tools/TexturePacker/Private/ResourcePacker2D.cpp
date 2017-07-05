@@ -417,6 +417,7 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath& inputPath, const FilePa
                 }
 
                 DefinitionFile::Collection definitionFileList;
+                Vector<FilePath> justCopyList;
                 definitionFileList.reserve(fileList->GetCount());
                 for (uint32 fi = 0; fi < fileList->GetCount() && running; ++fi)
                 {
@@ -434,7 +435,7 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath& inputPath, const FilePa
                         shouldAcceptFile = defFile->LoadPSD(fullname, processDir, maxTextureSize,
                                                             withAlpha, useLayerNames, verbose);
                     }
-                    else if (isLightmapsPacking && fullname.IsEqualToExtension(".png"))
+                    else if (fullname.IsEqualToExtension(".png"))
                     {
                         shouldAcceptFile = true;
                         defFile->LoadPNG(fullname, processDir);
@@ -442,6 +443,10 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath& inputPath, const FilePa
                     else if (fullname.IsEqualToExtension(".pngdef"))
                     {
                         shouldAcceptFile = defFile->LoadPNGDef(fullname, processDir);
+                    }
+                    else if (!IsFileIgnoredByName(ignoredFileNames, fullname.GetFilename()))
+                    {
+                        justCopyList.push_back(fullname);
                     }
 
                     if (shouldAcceptFile == false)
@@ -487,6 +492,16 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath& inputPath, const FilePa
                     if (!currentErrors.empty())
                     {
                         errors.insert(currentErrors.begin(), currentErrors.end());
+                    }
+                }
+
+                for (FilePath& path : justCopyList)
+                {
+                    FilePath destPath(path);
+                    destPath.ReplaceDirectory(outputPath);
+                    if (!FileSystem::Instance()->CopyFile(path, destPath))
+                    {
+                        Logger::Error("Can't copy %s to %s", path.GetStringValue().c_str(), destPath.GetStringValue().c_str());
                     }
                 }
 
