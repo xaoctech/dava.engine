@@ -3,9 +3,9 @@
 
 #include <Base/GlobalEnum.h>
 
-DAVA_TESTCLASS(AllocPoolsEnumTest)
+DAVA_TESTCLASS (AllocPoolsEnumTest)
 {
-    DAVA_TEST(CheckStringValuesTest)
+    DAVA_TEST (CheckStringValuesTest)
     {
         const EnumMap* enumMap = GlobalEnumMap<DAVA::ePredefAllocPools>::Instance();
         TEST_VERIFY(enumMap->GetCount() == DAVA::PREDEF_POOL_COUNT);

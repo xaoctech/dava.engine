@@ -4,8 +4,9 @@
 
 namespace DAVA
 {
-class UIControl;
 class UIComponent;
+class UIControl;
+class UIControlSystem;
 
 class UISystem
 {
@@ -25,5 +26,16 @@ protected:
 
     virtual void Process(float32 elapsedTime){};
     virtual void ForceProcessControl(float32 elapsedTime, UIControl* control){};
+
+    void SetScene(UIControlSystem* scene);
+    UIControlSystem* GetScene() const;
+
+private:
+    UIControlSystem* scene = nullptr;
 };
+
+inline UIControlSystem* UISystem::GetScene() const
+{
+    return scene;
+}
 }
