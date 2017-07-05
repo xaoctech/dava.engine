@@ -1,6 +1,7 @@
+#include "Engine/Private/Ios/AppDelegateIos.h"
+
 #if defined(__DAVAENGINE_IPHONE__)
 
-#include "Engine/Private/Ios/AppDelegateIos.h"
 #include "Engine/Private/Ios/CoreNativeBridgeIos.h"
 
 namespace DAVA

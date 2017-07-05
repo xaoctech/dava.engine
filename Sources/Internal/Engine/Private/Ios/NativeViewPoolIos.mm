@@ -1,6 +1,6 @@
-#if defined(__DAVAENGINE_IPHONE__)
-
 #include "Engine/Private/Ios/NativeViewPoolIos.h"
+
+#if defined(__DAVAENGINE_IPHONE__)
 
 #include "Debug/DVAssert.h"
 
