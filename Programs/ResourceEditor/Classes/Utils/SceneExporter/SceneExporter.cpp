@@ -994,6 +994,20 @@ bool SceneExporter::CopyObject(const ExportedObject& object)
     return filesCopied;
 }
 
+const DAVA::Array<SceneExporter::ExportedObjectDesc, SceneExporter::OBJECT_COUNT>& SceneExporter::GetExportedObjectsDescriptions()
+{
+    static DAVA::Array<SceneExporter::ExportedObjectDesc, SceneExporter::OBJECT_COUNT> desc =
+    {
+      ExportedObjectDesc(OBJECT_SCENE, DAVA::Vector<DAVA::String>{ ".sc2" }),
+      ExportedObjectDesc(OBJECT_TEXTURE, DAVA::Vector<DAVA::String>{ ".tex" }),
+      ExportedObjectDesc(OBJECT_HEIGHTMAP, DAVA::Vector<DAVA::String>{ DAVA::Heightmap::FileExtension() }),
+      ExportedObjectDesc(OBJECT_EMITTER_CONFIG, DAVA::Vector<DAVA::String>{ ".yaml" }),
+      ExportedObjectDesc(OBJECT_SLOT_CONFIG, DAVA::Vector<DAVA::String>{ ".yaml", ".xml" })
+    };
+
+    return desc;
+}
+
 bool operator==(const SceneExporter::ExportedObject& left, const SceneExporter::ExportedObject& right)
 {
     return left.relativePathname == right.relativePathname && left.type == right.type;
