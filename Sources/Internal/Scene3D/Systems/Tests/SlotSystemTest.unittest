@@ -38,7 +38,7 @@ DAVA_TESTCLASS (SlotSystemTests)
         TEST_VERIFY(testItem2Found == true);
     }
 
-    DAVA_TEST(ConfigParseTest)
+    DAVA_TEST (ConfigParseTest)
     {
         DAVA::RefPtr<DAVA::Scene> scene;
         scene.ConstructInplace();
@@ -73,7 +73,6 @@ DAVA_TESTCLASS (SlotSystemTests)
             components.push_back(alfaComponent);
             testScene->AddNode(aEntity.Get());
             testScene->slotSystem->SetAttachmentTransform(alfaComponent, Matrix4::MakeRotation(Vector3(1.0f, 0.0f, 0.5f), 0.3f) * Matrix4::MakeTranslation(Vector3(30.0f, 25.0f, 0.0f)));
-
         }
 
         {
@@ -112,7 +111,7 @@ DAVA_TESTCLASS (SlotSystemTests)
         }
     }
 
-    DAVA_TEST(RemoveLoadedEntityTest)
+    DAVA_TEST (RemoveLoadedEntityTest)
     {
         using namespace DAVA;
         TEST_VERIFY(testScene.Get() == nullptr);
@@ -135,7 +134,7 @@ DAVA_TESTCLASS (SlotSystemTests)
         TEST_VERIFY(testScene->slotSystem->GetSlotState(alfaComponent) == SlotSystem::eSlotState::NOT_LOADED);
     }
 
-    DAVA_TEST(RemoveSlotEntityTest)
+    DAVA_TEST (RemoveSlotEntityTest)
     {
         using namespace DAVA;
         TEST_VERIFY(testScene.Get() == nullptr);
@@ -156,7 +155,7 @@ DAVA_TESTCLASS (SlotSystemTests)
         testScene->RemoveNode(aEntity.Get());
     }
 
-    DAVA_TEST(RemoveSlotWhileLoadingTest)
+    DAVA_TEST (RemoveSlotWhileLoadingTest)
     {
         using namespace DAVA;
         TEST_VERIFY(testScene.Get() == nullptr);
@@ -208,7 +207,7 @@ DAVA_TESTCLASS (SlotSystemTests)
         }
     }
 
-    bool ValidateLoadedItem(DAVA::Entity* rootEntity, DAVA::SlotComponent* component, const DAVA::FastName& subItemName) const
+    bool ValidateLoadedItem(DAVA::Entity * rootEntity, DAVA::SlotComponent * component, const DAVA::FastName& subItemName) const
     {
         using namespace DAVA;
         bool entityFound = false;
