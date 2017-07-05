@@ -1,14 +1,14 @@
 #include "UILayoutIsolationComponent.h"
 
-#include "UI/UIControl.h"
 #include "Math/Vector.h"
 #include "Reflection/ReflectionRegistrator.h"
+#include "UI/UIControl.h"
 
 namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UILayoutIsolationComponent)
 {
-    ReflectionRegistrator<UILayoutIsolationComponent>::Begin()
+    ReflectionRegistrator<UILayoutIsolationComponent>::Begin()[M::HiddenField()]
     .ConstructorByPointer()
     .DestructorByPointer([](UILayoutIsolationComponent* o) { o->Release(); })
     .End();

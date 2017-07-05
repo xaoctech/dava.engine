@@ -9,6 +9,7 @@
 #include "Qt/Main/QtUtils.h"
 
 #include "Classes/Selection/Selection.h"
+#include "Classes/Qt/Main/QtUtils.h"
 
 #include <UI/UIEvent.h>
 #include <Render/Renderer.h>

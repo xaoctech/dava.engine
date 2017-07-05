@@ -47,6 +47,9 @@ void GuidesController::OnCanvasParametersChanged(DAVA::float32 scaledMinValue_, 
     maxValue = max_;
     scale = scale_;
 
+    SetDisplayState(NO_DISPLAY);
+    DisableDrag();
+
     SyncGuidesWithValues();
 }
 
