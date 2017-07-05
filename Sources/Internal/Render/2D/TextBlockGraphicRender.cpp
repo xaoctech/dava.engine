@@ -146,7 +146,7 @@ void TextBlockGraphicRender::Draw(const Color& textColor, const Vector2* offset)
         }
     }
 
-    RenderSystem2D::BatchDescriptor batch;
+    BatchDescriptor2D batch;
     batch.material = dfMaterial; // RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL;
     batch.singleColor = textColor;
     batch.vertexStride = TextVerticesDefaultStride;
