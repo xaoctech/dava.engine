@@ -140,5 +140,16 @@ void SaveImageToFile(Image* image, const FilePath& path)
 DAVA::Texture* CreateSingleMipTexture(const DAVA::FilePath& imagePath)
 {
     DAVA::ScopedPtr<DAVA::Image> image(DAVA::ImageSystem::LoadSingleMip(imagePath));
-    return Texture::CreateFromData(image, false);
+
+    DAVA::Texture* result = Texture::CreateFromData(image, false);
+    DAVA::String baseName = imagePath.GetFilename();
+    result->SetPathname(DAVA::Format("memoryfile_%s_%p", baseName.c_str(), result));
+
+    return result;
+}
+
+const DAVA::FilePath& DefaultCursorPath()
+{
+    static const FilePath path = "~res:/ResourceEditor/LandscapeEditor/Tools/cursor/cursor.png";
+    return path;
 }

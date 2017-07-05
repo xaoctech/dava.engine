@@ -22,19 +22,13 @@ if (DEPLOY)
     set (TOOL_OUTPUT_DIR ${DEPLOY_DIR})
 endif()
 
-
-set ( DAVA_COREV2 1 )
-
-dava_add_definitions       (
--D__DAVAENGINE_COREV2__
-)
-
 find_package( QT5 REQUIRED )
 find_package( DavaTools REQUIRED )
 find_package( QtHelpers REQUIRED )
 find_package( DocDirSetup REQUIRED )
 
 find_package( DavaFramework REQUIRED COMPONENTS "Sound"
+                                                "SpineModule"
                                                 DAVA_PLATFORM_QT 
                                                 DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME 
                                                 DAVA_DISABLE_AUTOTESTS 

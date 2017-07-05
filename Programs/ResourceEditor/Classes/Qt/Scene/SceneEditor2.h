@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <Classes/Commands2/Base/RECommandNotificationObject.h>
 #include "UI/UIEvent.h"
 #include "Scene3D/Scene.h"
 #include "Base/StaticSingleton.h"
@@ -44,6 +45,7 @@ class FogSettingsChangedReceiver;
 class VisibilityCheckSystem;
 class RECommandStack;
 class EditorSceneSystem;
+class EditorSlotSystem;
 
 class SceneEditor2 : public DAVA::Scene
 {
@@ -94,6 +96,9 @@ public:
     //to manage editor systems adding/deleting
     void AddSystem(DAVA::SceneSystem* sceneSystem, DAVA::uint64 componentFlags, DAVA::uint32 processFlags = 0, DAVA::SceneSystem* insertBeforeSceneForProcess = nullptr, DAVA::SceneSystem* insertBeforeSceneForInput = nullptr) override;
     void RemoveSystem(DAVA::SceneSystem* sceneSystem) override;
+
+    template <typename T>
+    T* LookupEditorSystem();
 
     // save/load
     DAVA::SceneFileV2::eError LoadScene(const DAVA::FilePath& path) override;
@@ -178,6 +183,7 @@ protected:
     DAVA::Vector<EditorSceneSystem*> landscapeEditorSystems;
     DAVA::Vector<DAVA::Entity*> editorEntities;
 
+    void AccumulateDependentCommands(REDependentCommandsHolder& holder);
     void EditorCommandProcess(const RECommandNotificationObject& commandNotification);
 
     void ExtractEditorEntities();
@@ -198,6 +204,8 @@ private:
     {
     public:
         EditorCommandNotify(SceneEditor2* _editor);
+
+        void AccumulateDependentCommands(REDependentCommandsHolder& holder) override;
         void Notify(const RECommandNotificationObject& commandNotification) override;
         void CleanChanged(bool clean) override;
         void CanUndoChanged(bool canUndo) override;
@@ -209,6 +217,20 @@ private:
         SceneEditor2* editor = nullptr;
     };
 };
+
+template <typename T>
+T* SceneEditor2::LookupEditorSystem()
+{
+    for (EditorSceneSystem* system : editorSystems)
+    {
+        if (dynamic_cast<T*>(system) != nullptr)
+        {
+            return static_cast<T*>(system);
+        }
+    }
+
+    return nullptr;
+}
 
 Q_DECLARE_METATYPE(SceneEditor2*)
 

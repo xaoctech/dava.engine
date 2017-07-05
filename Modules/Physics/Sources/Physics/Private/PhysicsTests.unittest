@@ -5,9 +5,9 @@
 
 using namespace DAVA;
 
-DAVA_TESTCLASS(PhysicsTest)
+DAVA_TESTCLASS (PhysicsTest)
 {
-    DAVA_TEST(InitTest)
+    DAVA_TEST (InitTest)
     {
         const ModuleManager& moduleManager = *GetEngineContext()->moduleManager;
         Physics* physicsModule = moduleManager.GetModule<Physics>();

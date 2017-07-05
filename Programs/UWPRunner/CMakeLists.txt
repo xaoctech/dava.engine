@@ -5,10 +5,8 @@ set    ( DAVA_NO_RENDER true )
 set    ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/../../Sources/CMake/Modules/" )
 include( CMake-common )
 
-set ( DAVA_COREV2 1 )
 dava_add_definitions (
--D__DAVAENGINE_COREV2__
--DCONSOLE
+    -DCONSOLE
 )
 
 find_package( QT5           REQUIRED )

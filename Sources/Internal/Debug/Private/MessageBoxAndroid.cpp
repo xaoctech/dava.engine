@@ -1,11 +1,10 @@
 #include "Base/Platform.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_ANDROID__)
 
 #include "Base/BaseTypes.h"
 #include "Engine/Engine.h"
-#include "Engine/Android/JNIBridge.h"
+#include "Engine/PlatformApiAndroid.h"
 #include "Engine/Private/Android/AndroidBridge.h"
 #include "Logger/Logger.h"
 
@@ -50,4 +49,3 @@ int MessageBox(const String& title, const String& message, const Vector<String>&
 } // namespace DAVA
 
 #endif // defined(__DAVAENGINE_ANDROID__)
-#endif // defined(__DAVAENGINE_COREV2__)
