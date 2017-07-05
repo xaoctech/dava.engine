@@ -33,7 +33,7 @@ dava_add_definitions(-DLOCALIZATION_DEBUG)
 
 if (NOT LINUX)
     # Enable sound after fmod libraries
-    set ( DAVA_COMPONENTS "Sound" "NetworkCore" DAVA_DISABLE_AUTOTESTS )
+    set ( DAVA_COMPONENTS "Sound" "SpineModule" "NetworkCore" DAVA_DISABLE_AUTOTESTS )
 else()
     set ( DAVA_COMPONENTS "NetworkCore" DAVA_DISABLE_AUTOTESTS )
 endif()

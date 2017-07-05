@@ -12,4 +12,6 @@ ProjectProperties:
     GfxDirectories:
     -   directory: "./Gfx/"
         resolution: [1024, 768]
+    -   directory: "./Gfx2/"
+        resolution: [2048, 1536]
     Library: []
