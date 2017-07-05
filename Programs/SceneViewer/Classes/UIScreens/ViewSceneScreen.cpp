@@ -2,6 +2,8 @@
 #include "SceneViewerApp.h"
 #include "Settings.h"
 
+#include <DocDirSetup/DocDirSetup.h>
+
 #include <Math/MathHelpers.h>
 #include <Render/2D/Sprite.h>
 #include <UI/Layouts/UIAnchorComponent.h>
@@ -354,7 +356,7 @@ void ViewSceneScreen::OnButtonSelectFromRes(DAVA::BaseObject* caller, void* para
 void ViewSceneScreen::OnButtonSelectFromDoc(DAVA::BaseObject* caller, void* param, void* callerData)
 {
     DVASSERT(fileSystemDialog);
-    fileSystemDialog->SetCurrentDir("~doc:/");
+    fileSystemDialog->SetCurrentDir(DAVA::DocumentsDirectorySetup::GetEngineDocumentsPath());
     fileSystemDialog->Show(this);
     menu->SetEnabled(false);
 }

@@ -5,20 +5,17 @@ namespace DAVA
 {
 namespace DocumentsDirectorySetup
 {
-namespace Details
-{
 FilePath GetEngineDocumentsPath()
 {
     return FileSystem::GetUserDocumentsPath() + "DAVAProject/";
 }
-} // namespace Details
 
 FilePath GetApplicationDocDirectory(FileSystem* fs, const String& appName)
 {
 #if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
     return GetApplicationSupportPath() + appName + "/";
 #else
-    return Details::GetEngineDocumentsPath() + appName + "/";
+    return GetEngineDocumentsPath() + appName + "/";
 #endif
 }
 
