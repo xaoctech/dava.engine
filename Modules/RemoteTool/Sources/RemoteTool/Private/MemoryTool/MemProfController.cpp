@@ -14,7 +14,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 
-#include <MMNetClient.h>
+#include <MemoryProfilerService/MMNetClient.h>
 
 using namespace DAVA;
 using namespace DAVA::Net;
