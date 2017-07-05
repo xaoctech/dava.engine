@@ -80,6 +80,7 @@ private:
     {
         DAVA::ScopedPtr<DAVA::DynamicMemoryFile> serializedData;
         bool infoSent = false;
+        bool infoReceived = false;
         DAVA::uint32 chunksSent = 0;
         DAVA::uint32 chunksOverall = 0;
     };
@@ -109,6 +110,8 @@ private:
     void RemoveClientFromTasks(DAVA::Net::IChannel* clientChannel);
 
     void ProcessLazyTasks();
+
+    void ProcessFirstRemoteAddDataTask();
 
 private:
     DAVA::AssetCache::ServerNetProxy* serverProxy = nullptr;

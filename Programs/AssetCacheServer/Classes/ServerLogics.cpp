@@ -484,14 +484,15 @@ void ServerLogics::OnAddedToCache(const DAVA::AssetCache::CacheItemKey& key, boo
     {
         DataRemoteAddTask& task = itTask->second;
 
-        if (!task.infoSent)
+        if (!task.infoReceived)
         {
-            task.infoSent = true;
+            task.infoReceived = true;
         }
         else if (++task.chunksSent == task.chunksOverall)
         {
             DAVA::Logger::Debug("All chunks are sent. Removing remote add task");
             dataRemoteAddTasks.erase(itTask);
+            ProcessFirstRemoteAddDataTask();
             return;
         }
 
@@ -501,6 +502,7 @@ void ServerLogics::OnAddedToCache(const DAVA::AssetCache::CacheItemKey& key, boo
             if (!sentOk)
             {
                 dataRemoteAddTasks.erase(itTask);
+                ProcessFirstRemoteAddDataTask();
                 return;
             }
         }
@@ -508,6 +510,7 @@ void ServerLogics::OnAddedToCache(const DAVA::AssetCache::CacheItemKey& key, boo
         {
             DAVA::Logger::Debug("Chunk/info was not added to remote cache. Removing task");
             dataRemoteAddTasks.erase(itTask);
+            ProcessFirstRemoteAddDataTask();
             return;
         }
     }
@@ -584,7 +587,8 @@ bool ServerLogics::SendAddInfoToRemote(DataRemoteAddMap::iterator taskIt)
         AssetCache::CachedItemValue& value = entry->GetValue();
         value.Serialize(task.serializedData);
         uint64 dataSize = task.serializedData->GetSize();
-        task.infoSent = false;
+        task.infoSent = true;
+        task.infoReceived = false;
         task.chunksSent = 0;
         task.chunksOverall = AssetCache::ChunkSplitter::GetNumberOfChunks(dataSize);
         DAVA::Logger::Debug("Sending add data info to remote: %u bytes %u chunks", dataSize, task.chunksOverall);
@@ -703,19 +707,7 @@ void ServerLogics::ProcessLazyTasks()
             }
             dataWarmupTasks.clear();
 
-            auto firstRemoteDataTask = dataRemoteAddTasks.begin();
-            if (firstRemoteDataTask != dataRemoteAddTasks.end())
-            {
-                DataRemoteAddTask& task = firstRemoteDataTask->second;
-                if (!task.infoSent)
-                {
-                    bool sentOk = SendAddInfoToRemote(firstRemoteDataTask);
-                    if (!sentOk)
-                    {
-                        dataRemoteAddTasks.erase(firstRemoteDataTask);
-                    }
-                }
-            }
+            ProcessFirstRemoteAddDataTask();
         }
     }
     else
@@ -725,6 +717,27 @@ void ServerLogics::ProcessLazyTasks()
     }
 
     hasIncomingRequestsRecently = false;
+}
+
+void ServerLogics::ProcessFirstRemoteAddDataTask()
+{
+    if (!hasIncomingRequestsRecently)
+    {
+        auto firstRemoteDataTask = dataRemoteAddTasks.begin();
+        if (firstRemoteDataTask != dataRemoteAddTasks.end())
+        {
+            DataRemoteAddTask& task = firstRemoteDataTask->second;
+            if (!task.infoSent)
+            {
+                bool sentOk = SendAddInfoToRemote(firstRemoteDataTask);
+                if (!sentOk)
+                {
+                    dataRemoteAddTasks.erase(firstRemoteDataTask);
+                    ProcessFirstRemoteAddDataTask();
+                }
+            }
+        }
+    }
 }
 
 void ServerLogics::Update()
