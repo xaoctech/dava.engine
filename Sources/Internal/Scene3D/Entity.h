@@ -280,6 +280,8 @@ public:
     static const char* SCENE_NODE_IS_LOCKED_PROPERTY_NAME;
     static const char* SCENE_NODE_IS_NOT_REMOVABLE_PROPERTY_NAME;
 
+    static FastName EntityNameFieldName;
+
     void FindComponentsByTypeRecursive(Component::eType type, List<DAVA::Entity*>& components);
 
     Vector<Entity*> children;

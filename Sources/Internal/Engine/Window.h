@@ -1,20 +1,15 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
-
-#if defined(__DAVAENGINE_COREV2__)
-
-#include <bitset>
-
+#include "Engine/EngineTypes.h"
+#include "Engine/Private/EnginePrivateFwd.h"
+#include "Engine/Private/EngineBackend.h"
 #include "Functional/Signal.h"
 #include "Math/Math2D.h"
 #include "Math/Rect.h"
 #include "Math/Vector.h"
 
-#include "Engine/EngineTypes.h"
-#include "Engine/PlatformApi.h"
-#include "Engine/Private/EnginePrivateFwd.h"
-#include "Engine/Private/EngineBackend.h"
+#include <bitset>
 
 namespace rhi
 {
@@ -337,7 +332,7 @@ private:
 private:
     Private::EngineBackend* engineBackend = nullptr;
     Private::MainDispatcher* mainDispatcher = nullptr;
-    std::unique_ptr<Private::WindowBackend> windowBackend;
+    std::unique_ptr<Private::WindowImpl> windowImpl;
 
     InputSystem* inputSystem = nullptr;
     UIControlSystem* uiControlSystem = nullptr;
@@ -414,5 +409,3 @@ inline eFullscreen Window::GetFullscreen() const
 }
 
 } // namespace DAVA
-
-#endif // __DAVAENGINE_COREV2__

@@ -32,6 +32,11 @@ void Widget::AddControl(ControlProxy* control, Qt::Alignment alignment)
     }
 }
 
+void Widget::HandleControl(ControlProxy* control)
+{
+    controls.push_back(control);
+}
+
 void Widget::ForceUpdate()
 {
     std::for_each(controls.begin(), controls.end(), [](ControlProxy* c)

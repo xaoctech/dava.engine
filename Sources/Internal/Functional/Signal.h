@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Debug/DVAssert.h"
-
 #include "Base/List.h"
 #include "Base/Token.h"
 #include "Functional/Function.h"
@@ -12,14 +11,14 @@ namespace DAVA
 {
 /**
     \ingroup functional
-    Signal represents callback with multiple targets. Signal is connected to some set of slots, 
+    Signal represents callback with multiple targets. Signal is connected to some set of slots,
     which are callback receivers (also called event targets or subscribers), which are called
     when the signal is "emitted."
 
-    Signals and slots can be managed - can track connections and are capable of automatically 
-    disconnecting signal/slot connections when either is destroyed. This enables the user 
+    Signals and slots can be managed - can track connections and are capable of automatically
+    disconnecting signal/slot connections when either is destroyed. This enables the user
     to make signal/slot connections without expending a great effort to manage the lifetimes
-    of those connections with regard to the lifetimes of all objects involved. 
+    of those connections with regard to the lifetimes of all objects involved.
     See TrackedObject for more info.
 
 
@@ -29,7 +28,7 @@ namespace DAVA
 
     The following example writes "Hello, World!" using signals and slots. First, we create a signal `sig`,
     a signal that takes no arguments. Next, we connect the `HelloWorld::foo` function to the signal using the
-    Signal::Connect() method. Finally, use the signal `sig` like a function to call the slots, which in 
+    Signal::Connect() method. Finally, use the signal `sig` like a function to call the slots, which in
     turns invokes HelloWorld::operator() to print "Hello, World!".
 
     \code
@@ -95,9 +94,9 @@ namespace DAVA
 
     Slots are free to have side effects, and that can mean that some slots will have to be called before others
     even if they are not connected in that order. The DAVA::Signal allows slots to be placed into groups that are
-    ordered in some way. For our Hello, World program, we want "Hello" to be printed before ", World!", 
-    so we put "Hello" into a group that must be executed before the group that ", World!" is in. 
-    To do this, we can supply an extra parameter to the end of the connect call that specifies the group. 
+    ordered in some way. For our Hello, World program, we want "Hello" to be printed before ", World!",
+    so we put "Hello" into a group that must be executed before the group that ", World!" is in.
+    To do this, we can supply an extra parameter to the end of the connect call that specifies the group.
     Group value is one of the following three values: Signal::Group::High, Signal::Group::Medium, Signal::Group::Low.
 
     Here's how we construct Hello, World:
@@ -105,7 +104,7 @@ namespace DAVA
     void main()
     {
         ...
-        
+
         DAVA::Signal<void ()> sig;
 
         sig.Connect(&world, &World::foo, Signal::Group::Low);
@@ -118,9 +117,9 @@ namespace DAVA
         }
     \endcode
 
-    Invoking the signal will correctly print "Hello World", because the `Hello::foo` method is in group Signal::Group::High, 
+    Invoking the signal will correctly print "Hello World", because the `Hello::foo` method is in group Signal::Group::High,
     which precedes group Signal::Group::Low where the `World::foo` method resides. The `group` parameter is optional,
-    Signal::Group::Medium will be used by default. 
+    Signal::Group::Medium will be used by default.
 
     ### Disconnecting Slots
 
@@ -165,7 +164,7 @@ namespace DAVA
 
     Slots can be temporarily "blocked", meaning that they will be ignored when the signal is emited but has not
     been permanently disconnected. This is typically used to prevent infinite recursion in cases where otherwise
-    running a slot would cause the signal it is connected to be invoked again. 
+    running a slot would cause the signal it is connected to be invoked again.
     Here is an example of blocking/unblocking slots:
 
     \code
@@ -189,7 +188,7 @@ namespace DAVA
     Signals can automatically track the lifetime of objects involved in signal/slot connections, including automatic
     disconnection of slots when objects involved in the slot call are destroyed. Let's consider a typical example
     when thing go wrong:
-    
+
     \code
     struct Hello
     { ... };
@@ -203,9 +202,9 @@ namespace DAVA
         delete hello;
         sig.Emit(); // <-- segmentation fault, `sig` don't know that `hello` object was destroyed
     }
-    \endcode 
+    \endcode
 
-    However, there is an easy way to avoid such issues. With Signal one may track any object which is 
+    However, there is an easy way to avoid such issues. With Signal one may track any object which is
     inherited from special class - TrackedObject. A slot will automatically disconnect when any of its
     tracked objects expire.
 
@@ -217,7 +216,7 @@ namespace DAVA
     \code
     sig.Emit(); // OK, Prints "Hello"
     delete hello;   // automatically disconnect from all signals
-    sig.Emit(); // OK, Prints nothing 
+    sig.Emit(); // OK, Prints nothing
     \endcode
 
     Also one may use TrackedObject that isn't part of the slot.
@@ -236,7 +235,7 @@ namespace DAVA
 
         delete to; // All connection tracked by `to` disconnect
 
-        sig.Emit(); // OK, Prints nothing 
+        sig.Emit(); // OK, Prints nothing
     }
     \endcode
 */
@@ -260,8 +259,8 @@ public:
         // have to be reviewed and changed!
     };
 
-    /** 
-        Connect this signal to the incoming object `obj` and callback function `fn` - the slot. 
+    /**
+        Connect this signal to the incoming object `obj` and callback function `fn` - the slot.
         If `obj` points to TrackedObject than connection will be managed - it will be automatically
         disconnected if this signal or object `obj` is destroyed. Optional parameter `group` can be
         used to associate slot with the given group (see Emit() for more info about groups).
@@ -318,7 +317,7 @@ public:
     /** Disconnects all slots connected to the signal. */
     void DisconnectAll();
 
-    /** 
+    /**
         Make connection with specified token `token` managed by specified TrackedObject `trackedObject`.
         Such connection will be automatically disconnected if this signal or specified `trackedObject` is destroyed.
     */
@@ -349,7 +348,7 @@ public:
 
     /**
         Invokes the sequence of calls to the slots connected to signal *this. Every slot will be invoked
-        with the given set of parameters `args...`. 
+        with the given set of parameters `args...`.
 
         The order of invocation depends on slot connection group:
         1. Signal::Group::High, while order within the group is not defined

@@ -48,6 +48,7 @@ class AnimationSystem;
 class LandscapeSystem;
 class LodSystem;
 class ParticleEffectDebugDrawSystem;
+class SlotSystem;
 class TransformSingleComponent;
 
 class UIEvent;
@@ -105,6 +106,7 @@ public:
         SCENE_SYSTEM_WAVE_UPDATE_FLAG = 1 << 16,
         SCENE_SYSTEM_SKELETON_UPDATE_FLAG = 1 << 17,
         SCENE_SYSTEM_ANIMATION_FLAG = 1 << 18,
+        SCENE_SYSTEM_SLOT_FLAG = 1 << 19,
 
         SCENE_SYSTEM_ALL_MASK = 0xFFFFFFFF
     };
@@ -144,29 +146,30 @@ public:
     Vector<SceneSystem*> systemsToProcess;
     Vector<SceneSystem*> systemsToInput;
     //HashMap<uint32, Set<SceneSystem*> > componentTypeMapping;
-    TransformSystem* transformSystem;
-    RenderUpdateSystem* renderUpdateSystem;
-    LodSystem* lodSystem;
-    DebugRenderSystem* debugRenderSystem;
-    EventSystem* eventSystem;
-    ParticleEffectSystem* particleEffectSystem;
-    UpdateSystem* updatableSystem;
-    LightUpdateSystem* lightUpdateSystem;
-    SwitchSystem* switchSystem;
-    RenderSystem* renderSystem;
-    SoundUpdateSystem* soundSystem;
-    ActionUpdateSystem* actionSystem;
-    StaticOcclusionSystem* staticOcclusionSystem;
-    SpeedTreeUpdateSystem* speedTreeUpdateSystem;
-    FoliageSystem* foliageSystem;
+    TransformSystem* transformSystem = nullptr;
+    RenderUpdateSystem* renderUpdateSystem = nullptr;
+    LodSystem* lodSystem = nullptr;
+    DebugRenderSystem* debugRenderSystem = nullptr;
+    EventSystem* eventSystem = nullptr;
+    ParticleEffectSystem* particleEffectSystem = nullptr;
+    UpdateSystem* updatableSystem = nullptr;
+    LightUpdateSystem* lightUpdateSystem = nullptr;
+    SwitchSystem* switchSystem = nullptr;
+    RenderSystem* renderSystem = nullptr;
+    SoundUpdateSystem* soundSystem = nullptr;
+    ActionUpdateSystem* actionSystem = nullptr;
+    StaticOcclusionSystem* staticOcclusionSystem = nullptr;
+    SpeedTreeUpdateSystem* speedTreeUpdateSystem = nullptr;
+    FoliageSystem* foliageSystem = nullptr;
     VersionInfo::SceneVersion version;
-    WindSystem* windSystem;
-    WaveSystem* waveSystem;
-    AnimationSystem* animationSystem;
-    StaticOcclusionDebugDrawSystem* staticOcclusionDebugDrawSystem;
-    SkeletonSystem* skeletonSystem;
-    LandscapeSystem* landscapeSystem;
-    ParticleEffectDebugDrawSystem* particleEffectDebugDrawSystem;
+    WindSystem* windSystem = nullptr;
+    WaveSystem* waveSystem = nullptr;
+    AnimationSystem* animationSystem = nullptr;
+    StaticOcclusionDebugDrawSystem* staticOcclusionDebugDrawSystem = nullptr;
+    SkeletonSystem* skeletonSystem = nullptr;
+    LandscapeSystem* landscapeSystem = nullptr;
+    ParticleEffectDebugDrawSystem* particleEffectDebugDrawSystem = nullptr;
+    SlotSystem* slotSystem = nullptr;
 
     TransformSingleComponent* transformSingleComponent = nullptr;
 
