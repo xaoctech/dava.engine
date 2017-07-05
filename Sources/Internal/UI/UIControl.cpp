@@ -9,7 +9,6 @@
 #include "Engine/Engine.h"
 #include "Entity/ComponentManager.h"
 #include "Input/InputSystem.h"
-#include "Input/MouseDevice.h"
 #include "Logger/Logger.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
@@ -124,12 +123,37 @@ UIControl::UIControl(const Rect& rect)
 
 UIControl::~UIControl()
 {
-    UIControlSystem::Instance()->CancelInputs(this);
+    if (scene)
+    {
+        scene->CancelInputs(this);
+    }
+    else
+    {
+        UIControlSystem::Instance()->CancelInputs(this);
+    }
     SafeRelease(eventDispatcher);
     RemoveAllControls();
     RemoveAllComponents();
     UIControlFamily::Release(family);
     StopControlTracking(this);
+}
+
+UIControlSystem* UIControl::GetScene() const
+{
+    return scene;
+}
+
+void UIControl::SetScene(UIControlSystem* scene_)
+{
+    if (scene == scene_)
+    {
+        return;
+    }
+    scene = scene_;
+    for (auto child : children)
+    {
+        child->SetScene(scene);
+    }
 }
 
 void UIControl::SetParent(UIControl* newParent)
@@ -211,7 +235,14 @@ bool UIControl::RemoveAllEvents()
 
 void UIControl::PerformEvent(int32 eventType, const UIEvent* uiEvent /* = nullptr*/)
 {
-    UIControlSystem::Instance()->ProcessControlEvent(eventType, uiEvent, this);
+    if (scene)
+    {
+        scene->ProcessControlEvent(eventType, uiEvent, this);
+    }
+    else
+    {
+        UIControlSystem::Instance()->ProcessControlEvent(eventType, uiEvent, this);
+    }
 
     if (eventDispatcher)
     {
@@ -221,7 +252,14 @@ void UIControl::PerformEvent(int32 eventType, const UIEvent* uiEvent /* = nullpt
 
 void UIControl::PerformEventWithData(int32 eventType, void* callerData, const UIEvent* uiEvent /* = nullptr*/)
 {
-    UIControlSystem::Instance()->ProcessControlEvent(eventType, uiEvent, this);
+    if (scene)
+    {
+        scene->ProcessControlEvent(eventType, uiEvent, this);
+    }
+    else
+    {
+        UIControlSystem::Instance()->ProcessControlEvent(eventType, uiEvent, this);
+    }
 
     if (eventDispatcher)
     {
@@ -398,10 +436,20 @@ const UIGeometricData& UIControl::GetGeometricData() const
 
     if (!parent)
     {
-        tempGeometricData.AddGeometricData(UIControlSystem::Instance()->GetRenderSystem()->GetBaseGeometricData());
-        return tempGeometricData;
+        if (scene)
+        {
+            tempGeometricData.AddGeometricData(scene->GetRenderSystem()->GetBaseGeometricData());
+        }
+        else
+        {
+            tempGeometricData.AddGeometricData(UIControlSystem::Instance()->GetRenderSystem()->GetBaseGeometricData());
+        }
     }
-    tempGeometricData.AddGeometricData(parent->GetGeometricData());
+    else
+    {
+        tempGeometricData.AddGeometricData(parent->GetGeometricData());
+    }
+
     return tempGeometricData;
 }
 
@@ -581,7 +629,8 @@ void UIControl::SetVisibilityFlag(bool isVisible)
         }
         else
         {
-            if (UIControlSystem::Instance()->IsHostControl(this))
+            if ((scene && scene->IsHostControl(this))
+                || UIControlSystem::Instance()->IsHostControl(this))
             {
                 parentViewState = eViewState::VISIBLE;
             }
@@ -633,7 +682,14 @@ void UIControl::SetDisabled(bool isDisabled, bool hierarchic /* = true*/)
         AddState(STATE_DISABLED);
 
         // Cancel all inputs because of DF-2943.
-        UIControlSystem::Instance()->CancelInputs(this);
+        if (scene)
+        {
+            scene->CancelInputs(this);
+        }
+        else
+        {
+            UIControlSystem::Instance()->CancelInputs(this);
+        }
     }
     else
     {
@@ -687,6 +743,7 @@ void UIControl::AddControl(UIControl* control)
     control->RemoveFromParent();
 
     control->isInputProcessed = false;
+    control->SetScene(GetScene());
     control->SetParent(this);
     children.push_back(control);
 
@@ -710,6 +767,7 @@ void UIControl::RemoveControl(UIControl* control)
         {
             control->InvokeInactive();
 
+            control->SetScene(nullptr);
             control->SetParent(NULL);
             children.erase(it);
             control->Release();
@@ -778,6 +836,7 @@ void UIControl::InsertChildBelow(UIControl* control, UIControl* _belowThisChild)
             control->RemoveFromParent();
 
             children.insert(it, control);
+            control->SetScene(GetScene());
             control->SetParent(this);
 
             control->InvokeActive(viewState);
@@ -802,6 +861,7 @@ void UIControl::InsertChildAbove(UIControl* control, UIControl* _aboveThisChild)
             control->RemoveFromParent();
 
             children.insert(++it, control);
+            control->SetScene(GetScene());
             control->SetParent(this);
 
             control->InvokeActive(viewState);
@@ -967,21 +1027,12 @@ void UIControl::SetParentColor(const Color& parentColor)
 bool UIControl::IsPointInside(const Vector2& _point, bool expandWithFocus /* = false*/) const
 {
     Vector2 point = _point;
-#if defined(__DAVAENGINE_COREV2__)
     if (GetPrimaryWindow()->GetCursorCapture() == eCursorCapture::PINNING)
     {
         Size2f sz = GetPrimaryWindow()->GetVirtualSize();
         point.x = sz.dx / 2.f;
         point.y = sz.dy / 2.f;
     }
-#else
-    if (InputSystem::Instance()->GetMouseDevice().IsPinningEnabled())
-    {
-        const Size2i& virtScreenSize = UIControlSystem::Instance()->vcs->GetVirtualScreenSize();
-        point.x = virtScreenSize.dx / 2.f;
-        point.y = virtScreenSize.dy / 2.f;
-    }
-#endif // !defined(__DAVAENGINE_COREV2__)
     const UIGeometricData& gd = GetGeometricData();
     Rect rect = gd.GetUnrotatedRect();
     if (expandWithFocus)
@@ -1008,7 +1059,8 @@ bool UIControl::SystemProcessInput(UIEvent* currentInput)
     {
         return false;
     }
-    if (UIControlSystem::Instance()->GetExclusiveInputLocker() && UIControlSystem::Instance()->GetExclusiveInputLocker() != this)
+    if ((scene && scene->GetExclusiveInputLocker() && scene->GetExclusiveInputLocker() != this)
+        || (UIControlSystem::Instance()->GetExclusiveInputLocker() && UIControlSystem::Instance()->GetExclusiveInputLocker() != this))
     {
         return false;
     }
@@ -1033,7 +1085,14 @@ bool UIControl::SystemProcessInput(UIEvent* currentInput)
     {
         if (!currentInput->touchLocker && IsPointInside(currentInput->point))
         {
-            UIControlSystem::Instance()->SetHoveredControl(this);
+            if (scene)
+            {
+                scene->SetHoveredControl(this);
+            }
+            else
+            {
+                UIControlSystem::Instance()->SetHoveredControl(this);
+            }
             Input(currentInput);
             return true;
         }
@@ -1065,12 +1124,29 @@ bool UIControl::SystemProcessInput(UIEvent* currentInput)
                 currentInput->touchLocker = this;
                 if (exclusiveInput)
                 {
-                    UIControlSystem::Instance()->SetExclusiveInputLocker(this, currentInput->touchId);
+                    if (scene)
+                    {
+                        scene->SetExclusiveInputLocker(this, currentInput->touchId);
+                    }
+                    else
+                    {
+                        UIControlSystem::Instance()->SetExclusiveInputLocker(this, currentInput->touchId);
+                    }
                 }
 
-                if (UIControlSystem::Instance()->GetFocusedControl() != this && FocusHelpers::CanFocusControl(this))
+                if (scene)
                 {
-                    UIControlSystem::Instance()->SetFocusedControl(this);
+                    if (scene->GetFocusedControl() != this && FocusHelpers::CanFocusControl(this))
+                    {
+                        scene->SetFocusedControl(this);
+                    }
+                }
+                else
+                {
+                    if (UIControlSystem::Instance()->GetFocusedControl() != this && FocusHelpers::CanFocusControl(this))
+                    {
+                        UIControlSystem::Instance()->SetFocusedControl(this);
+                    }
                 }
 
                 if (!multiInput)
@@ -1177,14 +1253,31 @@ bool UIControl::SystemProcessInput(UIEvent* currentInput)
 
                         if (isPointInside)
                         {
-                            UIControlSystem::Instance()->GetInputSystem()->PerformActionOnControl(this);
+                            if (scene)
+                            {
+                                scene->GetInputSystem()->PerformActionOnControl(this);
+                            }
+                            else
+                            {
+                                UIControlSystem::Instance()->GetInputSystem()->PerformActionOnControl(this);
+                            }
                         }
 
                         AddState(STATE_NORMAL);
                         RemoveState(STATE_PRESSED_INSIDE | STATE_PRESSED_OUTSIDE);
-                        if (UIControlSystem::Instance()->GetExclusiveInputLocker() == this)
+                        if (scene)
                         {
-                            UIControlSystem::Instance()->SetExclusiveInputLocker(nullptr, -1);
+                            if (scene->GetExclusiveInputLocker() == this)
+                            {
+                                scene->SetExclusiveInputLocker(nullptr, -1);
+                            }
+                        }
+                        else
+                        {
+                            if (UIControlSystem::Instance()->GetExclusiveInputLocker() == this)
+                            {
+                                UIControlSystem::Instance()->SetExclusiveInputLocker(nullptr, -1);
+                            }
                         }
                     }
                     else if (touchesInside <= 0)
@@ -1283,9 +1376,19 @@ void UIControl::SystemInputCancelled(UIEvent* currentInput)
     {
         RemoveState(STATE_PRESSED_INSIDE | STATE_PRESSED_OUTSIDE);
         AddState(STATE_NORMAL);
-        if (UIControlSystem::Instance()->GetExclusiveInputLocker() == this)
+        if (scene)
         {
-            UIControlSystem::Instance()->SetExclusiveInputLocker(NULL, -1);
+            if (scene->GetExclusiveInputLocker() == this)
+            {
+                scene->SetExclusiveInputLocker(nullptr, -1);
+            }
+        }
+        else
+        {
+            if (UIControlSystem::Instance()->GetExclusiveInputLocker() == this)
+            {
+                UIControlSystem::Instance()->SetExclusiveInputLocker(nullptr, -1);
+            }
         }
     }
 
@@ -1356,7 +1459,14 @@ void UIControl::SystemVisible()
     }
 
     ChangeViewState(eViewState::VISIBLE);
-    UIControlSystem::Instance()->RegisterVisibleControl(this);
+    if (scene)
+    {
+        scene->RegisterVisibleControl(this);
+    }
+    else
+    {
+        UIControlSystem::Instance()->RegisterVisibleControl(this);
+    }
 
     SetStyleSheetDirty();
     OnVisible();
@@ -1410,7 +1520,14 @@ void UIControl::SystemInvisible()
     }
 
     ChangeViewState(eViewState::ACTIVE);
-    UIControlSystem::Instance()->UnregisterVisibleControl(this);
+    if (scene)
+    {
+        scene->UnregisterVisibleControl(this);
+    }
+    else
+    {
+        UIControlSystem::Instance()->UnregisterVisibleControl(this);
+    }
     OnInvisible();
 }
 
@@ -1431,7 +1548,14 @@ void UIControl::SystemActive()
     }
 
     ChangeViewState(eViewState::ACTIVE);
-    UIControlSystem::Instance()->RegisterControl(this);
+    if (scene)
+    {
+        scene->RegisterControl(this);
+    }
+    else
+    {
+        UIControlSystem::Instance()->RegisterControl(this);
+    }
 
     OnActive();
 
@@ -1482,7 +1606,15 @@ void UIControl::SystemInactive()
     }
 
     ChangeViewState(eViewState::INACTIVE);
-    UIControlSystem::Instance()->UnregisterControl(this);
+
+    if (scene)
+    {
+        scene->UnregisterControl(this);
+    }
+    else
+    {
+        UIControlSystem::Instance()->UnregisterControl(this);
+    }
 
     OnInactive();
 }
@@ -1564,7 +1696,14 @@ bool IsControlActive(const UIControl* control)
         control = control->GetParent();
     }
 
-    return UIControlSystem::Instance()->IsHostControl(control);
+    if (control->GetScene())
+    {
+        return control->GetScene()->IsHostControl(control);
+    }
+    else
+    {
+        return UIControlSystem::Instance()->IsHostControl(control);
+    }
 }
 
 bool IsControlVisible(const UIControl* control)
@@ -1577,7 +1716,14 @@ bool IsControlVisible(const UIControl* control)
         control = control->GetParent();
     }
 
-    return UIControlSystem::Instance()->IsHostControl(control) ? control->GetVisibilityFlag() : false;
+    if (control->GetScene())
+    {
+        return control->GetScene()->IsHostControl(control) ? control->GetVisibilityFlag() : false;
+    }
+    else
+    {
+        return UIControlSystem::Instance()->IsHostControl(control) ? control->GetVisibilityFlag() : false;
+    }
 }
 
 void UIControl::ChangeViewState(eViewState newViewState)
@@ -1902,7 +2048,14 @@ void UIControl::DumpControls(bool onlyOrphans)
 
 void UIControl::UpdateLayout()
 {
-    UIControlSystem::Instance()->GetLayoutSystem()->ManualApplyLayout(this);
+    if (scene)
+    {
+        scene->GetLayoutSystem()->ManualApplyLayout(this);
+    }
+    else
+    {
+        UIControlSystem::Instance()->GetLayoutSystem()->ManualApplyLayout(this);
+    }
 }
 
 void UIControl::OnSizeChanged()
@@ -1923,7 +2076,14 @@ void UIControl::AddComponent(UIComponent* component)
 
     if (viewState >= eViewState::ACTIVE)
     {
-        UIControlSystem::Instance()->RegisterComponent(this, component);
+        if (scene)
+        {
+            scene->RegisterComponent(this, component);
+        }
+        else
+        {
+            UIControlSystem::Instance()->RegisterComponent(this, component);
+        }
     }
     SetStyleSheetDirty();
     SetLayoutDirty();
@@ -1948,7 +2108,14 @@ void UIControl::InsertComponentAt(UIComponent* component, uint32 index)
 
         if (viewState >= eViewState::ACTIVE)
         {
-            UIControlSystem::Instance()->RegisterComponent(this, component);
+            if (scene)
+            {
+                scene->RegisterComponent(this, component);
+            }
+            else
+            {
+                UIControlSystem::Instance()->RegisterComponent(this, component);
+            }
         }
 
         SetStyleSheetDirty();
@@ -2017,7 +2184,14 @@ void UIControl::RemoveAllComponents()
 
         if (viewState >= eViewState::ACTIVE)
         {
-            UIControlSystem::Instance()->UnregisterComponent(this, component);
+            if (scene)
+            {
+                scene->UnregisterComponent(this, component);
+            }
+            else
+            {
+                UIControlSystem::Instance()->UnregisterComponent(this, component);
+            }
         }
 
         components.erase(it);
@@ -2038,7 +2212,14 @@ void UIControl::RemoveComponent(const Vector<UIComponent*>::iterator& it)
 
         if (viewState >= eViewState::ACTIVE)
         {
-            UIControlSystem::Instance()->UnregisterComponent(this, component);
+            if (scene)
+            {
+                scene->UnregisterComponent(this, component);
+            }
+            else
+            {
+                UIControlSystem::Instance()->UnregisterComponent(this, component);
+            }
         }
 
         components.erase(it);
@@ -2198,7 +2379,14 @@ bool UIControl::IsStyleSheetDirty() const
 void UIControl::SetStyleSheetDirty()
 {
     styleSheetDirty = true;
-    UIControlSystem::Instance()->GetStyleSheetSystem()->SetDirty();
+    if (scene)
+    {
+        scene->GetStyleSheetSystem()->SetDirty();
+    }
+    else
+    {
+        UIControlSystem::Instance()->GetStyleSheetSystem()->SetDirty();
+    }
 }
 
 void UIControl::ResetStyleSheetDirty()
@@ -2209,7 +2397,14 @@ void UIControl::ResetStyleSheetDirty()
 void UIControl::SetLayoutDirty()
 {
     layoutDirty = true;
-    UIControlSystem::Instance()->GetLayoutSystem()->SetDirty();
+    if (scene)
+    {
+        scene->GetLayoutSystem()->SetDirty();
+    }
+    else
+    {
+        UIControlSystem::Instance()->GetLayoutSystem()->SetDirty();
+    }
 }
 
 void UIControl::ResetLayoutDirty()
@@ -2222,7 +2417,14 @@ void UIControl::ResetLayoutDirty()
 void UIControl::SetLayoutPositionDirty()
 {
     layoutPositionDirty = true;
-    UIControlSystem::Instance()->GetLayoutSystem()->SetDirty();
+    if (scene)
+    {
+        scene->GetLayoutSystem()->SetDirty();
+    }
+    else
+    {
+        UIControlSystem::Instance()->GetLayoutSystem()->SetDirty();
+    }
 }
 
 void UIControl::ResetLayoutPositionDirty()

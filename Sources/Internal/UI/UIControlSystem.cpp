@@ -23,13 +23,11 @@
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
 #include "Render/2D/TextBlock.h"
-#include "Platform/DPIHelper.h"
 #include "Platform/DeviceInfo.h"
 #include "Input/InputSystem.h"
 #include "UI/Update/UIUpdateSystem.h"
 #include "Debug/ProfilerOverlay.h"
 #include "Engine/Engine.h"
-#include "Input/MouseDevice.h"
 #include "UI/RichContent/UIRichContentSystem.h"
 
 namespace DAVA
@@ -52,18 +50,14 @@ UIControlSystem::UIControlSystem()
     soundSystem = GetSystem<UISoundSystem>();
     updateSystem = GetSystem<UIUpdateSystem>();
     renderSystem = GetSystem<UIRenderSystem>();
-    
 
-#if defined(__DAVAENGINE_COREV2__)
     vcs = new VirtualCoordinatesSystem();
     vcs->EnableReloadResourceOnResize(true);
-#else
-    vcs = VirtualCoordinatesSystem::Instance();
-#endif
     vcs->virtualSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
     vcs->physicalSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
 
     popupContainer.Set(new UIControl(Rect(0, 0, 1, 1)));
+    popupContainer->SetScene(this);
     popupContainer->SetName("UIControlSystem_popupContainer");
     popupContainer->SetInputEnabled(false);
     popupContainer->InvokeActive(UIControl::eViewState::VISIBLE);
@@ -72,29 +66,7 @@ UIControlSystem::UIControlSystem()
     layoutSystem->SetPopupContainer(popupContainer);
     renderSystem->SetPopupContainer(popupContainer);
 
-#if !defined(__DAVAENGINE_COREV2__)
-    // calculate default radius
-    if (DeviceInfo::IsHIDConnected(DeviceInfo::eHIDType::HID_TOUCH_TYPE))
-    {
-        // quarter of an inch
-        defaultDoubleClickRadiusSquared = DPIHelper::GetScreenDPI() * 0.25f;
-        if (DeviceInfo::GetScreenInfo().scale != 0.f)
-        {
-            // to look the same on all devices
-            defaultDoubleClickRadiusSquared = defaultDoubleClickRadiusSquared / DeviceInfo::GetScreenInfo().scale;
-        }
-        defaultDoubleClickRadiusSquared *= defaultDoubleClickRadiusSquared;
-    }
-    else
-    {
-        defaultDoubleClickRadiusSquared = 4.f; // default, if touch didn't detect, 4 - default pixels in windows desktop
-    }
-    doubleClickTime = defaultDoubleClickTime;
-    doubleClickRadiusSquared = defaultDoubleClickRadiusSquared;
-    doubleClickPhysSquare = defaultDoubleClickRadiusSquared;
-#else
     SetDoubleTapSettings(0.5f, 0.25f);
-#endif
 }
 
 UIControlSystem::~UIControlSystem()
@@ -112,11 +84,13 @@ UIControlSystem::~UIControlSystem()
     renderSystem->SetCurrentScreenTransition(RefPtr<UIScreenTransition>());
 
     popupContainer->InvokeInactive();
+    popupContainer->SetScene(nullptr);
     popupContainer = nullptr;
 
     if (currentScreen.Valid())
     {
         currentScreen->InvokeInactive();
+        currentScreen->SetScene(nullptr);
         currentScreen = nullptr;
     }
 
@@ -291,6 +265,7 @@ void UIControlSystem::ProcessScreenLogic()
         if (currentScreen)
         {
             currentScreen->InvokeInactive();
+            currentScreen->SetScene(nullptr);
 
             RefPtr<UIScreen> prevScreen = currentScreen;
             currentScreen = nullptr;
@@ -318,6 +293,7 @@ void UIControlSystem::ProcessScreenLogic()
 
         if (currentScreen)
         {
+            currentScreen->SetScene(this);
             currentScreen->InvokeActive(UIControl::eViewState::VISIBLE);
         }
         inputSystem->SetCurrentScreen(currentScreen.Get());
@@ -335,6 +311,7 @@ void UIControlSystem::ProcessScreenLogic()
             LockInput();
 
             currentScreenTransition = nextScreenTransitionProcessed;
+            currentScreenTransition->SetScene(this);
             currentScreenTransition->InvokeActive(UIControl::eViewState::VISIBLE);
             styleSheetSystem->SetCurrentScreenTransition(currentScreenTransition);
             layoutSystem->SetCurrentScreenTransition(currentScreenTransition);
@@ -352,6 +329,7 @@ void UIControlSystem::ProcessScreenLogic()
         if (currentScreenTransition->IsComplete())
         {
             currentScreenTransition->InvokeInactive();
+            currentScreenTransition->SetScene(nullptr);
 
             RefPtr<UIScreenTransition> prevScreenTransitionProcessed = currentScreenTransition;
             currentScreenTransition = nullptr;
@@ -397,6 +375,11 @@ void UIControlSystem::Update()
         {
             system->Process(timeElapsed);
         }
+
+        for (auto& components : singleComponents)
+        {
+            components->ResetState();
+        }
     }
 }
 
@@ -433,11 +416,6 @@ void UIControlSystem::OnInput(UIEvent* newEvent)
     {
         return;
     }
-
-#if !defined(__DAVAENGINE_COREV2__)
-    if (InputSystem::Instance()->GetMouseDevice().SkipEvents(newEvent))
-        return;
-#endif // !defined(__DAVAENGINE_COREV2__)
 
     if (ProfilerOverlay::globalProfilerOverlay && ProfilerOverlay::globalProfilerOverlay->OnInput(newEvent))
         return;
@@ -635,11 +613,9 @@ bool UIControlSystem::CheckTimeAndPosition(UIEvent* newEvent)
     if ((lastClickData.timestamp != 0.0) && ((newEvent->timestamp - lastClickData.timestamp) < doubleClickTime))
     {
         Vector2 point = lastClickData.physPoint - newEvent->physPoint;
-        
-#if defined(__DAVAENGINE_COREV2__)
+
         float32 dpi = GetPrimaryWindow()->GetDPI();
         float32 doubleClickPhysSquare = doubleClickInchSquare * (dpi * dpi);
-#endif
 
         if (point.SquareLength() <= doubleClickPhysSquare)
         {
@@ -765,6 +741,7 @@ void UIControlSystem::UnregisterComponent(UIControl* control, UIComponent* compo
 
 void UIControlSystem::AddSystem(std::unique_ptr<UISystem> system, const UISystem* insertBeforeSystem)
 {
+    system->SetScene(this);
     if (insertBeforeSystem)
     {
         auto insertIt = std::find_if(systems.begin(), systems.end(),
@@ -793,9 +770,30 @@ std::unique_ptr<UISystem> UIControlSystem::RemoveSystem(const UISystem* system)
     {
         std::unique_ptr<UISystem> systemPtr(it->release());
         systems.erase(it);
+        systemPtr->SetScene(nullptr);
         return systemPtr;
     }
 
+    return nullptr;
+}
+
+void UIControlSystem::AddSingleComponent(std::unique_ptr<UISingleComponent> single)
+{
+    singleComponents.push_back(std::move(single));
+}
+
+std::unique_ptr<UISingleComponent> UIControlSystem::RemoveSingleComponent(const UISingleComponent* singleComponent)
+{
+    auto it = std::find_if(singleComponents.begin(), singleComponents.end(),
+                           [singleComponent](const std::unique_ptr<UISingleComponent>& ptr) {
+                               return ptr.get() == singleComponent;
+                           });
+    if (it != singleComponents.end())
+    {
+        std::unique_ptr<UISingleComponent> ptr(it->release());
+        singleComponents.erase(it);
+        return ptr;
+    }
     return nullptr;
 }
 
@@ -838,19 +836,6 @@ void UIControlSystem::SetDoubleTapSettings(float32 time, float32 inch)
 {
     DVASSERT((time > 0.0f) && (inch > 0.0f));
     doubleClickTime = time;
-
-#if !defined(__DAVAENGINE_COREV2__)
-    // calculate pixels from inch
-    float32 dpi = static_cast<float32>(DPIHelper::GetScreenDPI());
-    if (DeviceInfo::GetScreenInfo().scale != 0.f)
-    {
-        // to look the same on all devices
-        dpi /= DeviceInfo::GetScreenInfo().scale;
-    }
-    doubleClickPhysSquare = inch * dpi;
-    doubleClickPhysSquare *= doubleClickPhysSquare;
-#else
     doubleClickInchSquare = inch * inch;
-#endif
 }
-};
+}

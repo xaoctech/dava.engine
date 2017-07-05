@@ -11,10 +11,6 @@ set          ( WARNINGS_AS_ERRORS true )
 set          ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/../../Sources/CMake/Modules/" )
 include      ( CMake-common  )
 
-# Now testbed is core v2 only
-set (DAVA_COREV2 1)
-dava_add_definitions(-D__DAVAENGINE_COREV2__)
-
 if (LINUX)
     dava_add_definitions(-DDISABLE_NATIVE_MOVIEVIEW)
     dava_add_definitions(-DDISABLE_NATIVE_TEXTFIELD)
@@ -26,7 +22,7 @@ endif()
 
 set ( DAVA_COMPONENTS "SampleModule" "DAVA_DISABLE_AUTOTESTS" )
 if (NOT LINUX)
-    list ( APPEND DAVA_COMPONENTS "Sound" )
+    list ( APPEND DAVA_COMPONENTS "Sound" "SpineModule" )
 endif()
 if ( WIN32 AND NOT WIN_UAP AND NOT DAVA_PLATFORM_QT)
     list ( APPEND DAVA_COMPONENTS "CEFWebview" )

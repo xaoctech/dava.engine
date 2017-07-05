@@ -319,6 +319,7 @@ protected:
             Connect(menu.addAction(SharedIcon(":/QtIcons/save_as.png"), QStringLiteral("Save Entity As...")), this, &EntityContextMenu::SaveEntityAs);
 
             DAVA::KeyedArchive* customProp = GetCustomPropertiesArchieve(entity);
+            bool isConstReference = false;
             if (nullptr != customProp)
             {
                 DAVA::FilePath ownerRef = customProp->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
@@ -331,9 +332,14 @@ protected:
 
                     Connect(menu.addAction(QStringLiteral("Reload Model...")), this, &EntityContextMenu::ReloadModel);
                 }
+
+                isConstReference = customProp->GetBool(ResourceEditor::EDITOR_CONST_REFERENCE, false);
             }
 
-            Connect(menu.addAction(QStringLiteral("Reload Model As...")), this, &EntityContextMenu::ReloadModelAs);
+            if (isConstReference != true)
+            {
+                Connect(menu.addAction(QStringLiteral("Reload Model As...")), this, &EntityContextMenu::ReloadModelAs);
+            }
 
             // particle effect
             DAVA::ParticleEffectComponent* effect = DAVA::GetEffectComponent(entity);
@@ -1059,7 +1065,7 @@ void SceneTree::CommandExecuted(SceneEditor2* scene, const RECommandNotification
     CMDID_PARTICLE_EMITTER_FORCE_ADD,
     CMDID_PARTICLE_EMITTER_FORCE_REMOVE,
     CMDID_PARTICLE_EFFECT_EMITTER_REMOVE,
-    CMDID_REFLECTED_FIELD_MODIFY
+    CMDID_REFLECTED_FIELD_MODIFY,
     } };
 
     if (commandNotification.MatchCommandIDs(idsForUpdate))

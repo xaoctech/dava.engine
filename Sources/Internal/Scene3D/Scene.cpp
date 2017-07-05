@@ -36,6 +36,7 @@
 #include "Scene3D/Systems/SoundUpdateSystem.h"
 #include "Scene3D/Systems/ParticleEffectDebugDrawSystem.h"
 #include "Scene3D/Systems/GeoDecalSystem.h"
+#include "Scene3D/Systems/SlotSystem.h"
 
 #include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
 
@@ -165,22 +166,6 @@ void EntityCache::ClearAll()
 
 Scene::Scene(uint32 _systemsMask /* = SCENE_SYSTEM_ALL_MASK */)
     : Entity()
-    , transformSystem(0)
-    , renderUpdateSystem(0)
-    , lodSystem(0)
-    , debugRenderSystem(0)
-    , particleEffectSystem(0)
-    , updatableSystem(0)
-    , lightUpdateSystem(0)
-    , switchSystem(0)
-    , soundSystem(0)
-    , actionSystem(0)
-    , staticOcclusionSystem(0)
-    , foliageSystem(0)
-    , windSystem(0)
-    , animationSystem(0)
-    , staticOcclusionDebugDrawSystem(0)
-    , particleEffectDebugDrawSystem(0)
     , systemsMask(_systemsMask)
     , maxEntityIDCounter(0)
     , sceneGlobalMaterial(0)
@@ -250,6 +235,18 @@ void Scene::CreateSystems()
     {
         animationSystem = new AnimationSystem(this);
         AddSystem(animationSystem, MAKE_COMPONENT_MASK(Component::ANIMATION_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
+    }
+
+    if (SCENE_SYSTEM_SKELETON_UPDATE_FLAG & systemsMask)
+    {
+        skeletonSystem = new SkeletonSystem(this);
+        AddSystem(skeletonSystem, MAKE_COMPONENT_MASK(Component::SKELETON_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
+    }
+
+    if (SCENE_SYSTEM_SLOT_FLAG & systemsMask)
+    {
+        slotSystem = new SlotSystem(this);
+        AddSystem(slotSystem, MAKE_COMPONENT_MASK(Component::SLOT_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
     }
 
     if (SCENE_SYSTEM_TRANSFORM_FLAG & systemsMask)
@@ -343,12 +340,6 @@ void Scene::CreateSystems()
     {
         waveSystem = new WaveSystem(this);
         AddSystem(waveSystem, MAKE_COMPONENT_MASK(Component::WAVE_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
-    }
-
-    if (SCENE_SYSTEM_SKELETON_UPDATE_FLAG & systemsMask)
-    {
-        skeletonSystem = new SkeletonSystem(this);
-        AddSystem(skeletonSystem, MAKE_COMPONENT_MASK(Component::SKELETON_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
     }
 
     if (SCENE_SYSTEM_GEO_DECAL_FLAG & systemsMask)

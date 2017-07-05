@@ -101,6 +101,7 @@ void ListView::UpdateControl(const ControlDescriptor& fields)
     if (fields.IsChanged(Fields::CurrentValue) || fields.IsChanged(Fields::ValueList))
     {
         Any currentValue = GetFieldValue(Fields::CurrentValue, Any());
+        bool currentValueSet = false;
         for (size_t i = 0; i < m->values.size(); ++i)
         {
             if (m->values[i].first == currentValue)
@@ -109,8 +110,14 @@ void ListView::UpdateControl(const ControlDescriptor& fields)
                 QItemSelectionModel* selectModel = selectionModel();
                 selectModel->clearCurrentIndex();
                 selectModel->select(index, QItemSelectionModel::ClearAndSelect);
+                currentValueSet = true;
                 break;
             }
+        }
+
+        if (currentValueSet == false)
+        {
+            wrapper.SetFieldValue(GetFieldName(Fields::CurrentValue), Any());
         }
     }
 
@@ -122,11 +129,18 @@ void ListView::OnSelectionChanged(const QItemSelection& newSelection, const QIte
     SCOPED_VALUE_GUARD(bool, updateGuard, true, void());
 
     QModelIndexList indexList = newSelection.indexes();
-    DVASSERT(indexList.size() == 1);
-    const QModelIndex& index = indexList.front();
-    ListViewDetails::ListModel* m = static_cast<ListViewDetails::ListModel*>(listModel);
-    DVASSERT(index.row() < m->values.size());
-    wrapper.SetFieldValue(GetFieldName(Fields::CurrentValue), m->values[index.row()].first);
+    DVASSERT(indexList.size() < 2);
+    if (indexList.size() == 1)
+    {
+        const QModelIndex& index = indexList.front();
+        ListViewDetails::ListModel* m = static_cast<ListViewDetails::ListModel*>(listModel);
+        DVASSERT(index.row() < m->values.size());
+        wrapper.SetFieldValue(GetFieldName(Fields::CurrentValue), m->values[index.row()].first);
+    }
+    else
+    {
+        wrapper.SetFieldValue(GetFieldName(Fields::CurrentValue), Any());
+    }
 }
 
 } // namespace TArc

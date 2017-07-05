@@ -7,7 +7,7 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UISceneComponent)
 {
-    ReflectionRegistrator<UISceneComponent>::Begin()
+    ReflectionRegistrator<UISceneComponent>::Begin()[M::HiddenField()]
     .ConstructorByPointer()
     .DestructorByPointer([](UISceneComponent* o) { o->Release(); })
     .End();

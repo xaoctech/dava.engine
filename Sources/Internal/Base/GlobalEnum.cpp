@@ -186,6 +186,7 @@ ENUM_DECLARE(UIControlBackground::eDrawType)
     ENUM_ADD_DESCR(UIControlBackground::DRAW_STRETCH_BOTH, "DRAW_STRETCH_BOTH");
     ENUM_ADD_DESCR(UIControlBackground::DRAW_TILED, "DRAW_TILED");
     ENUM_ADD_DESCR(UIControlBackground::DRAW_TILED_MULTILAYER, "DRAW_TILED_MULTILAYER");
+    ENUM_ADD_DESCR(UIControlBackground::DRAW_BATCH, "DRAW_BATCH");
 }
 
 ENUM_DECLARE(eAlign)
@@ -359,7 +360,6 @@ ENUM_DECLARE(UIFlowLayoutComponent::eOrientation)
     ENUM_ADD_DESCR(UIFlowLayoutComponent::ORIENTATION_RIGHT_TO_LEFT, "RightToLeft");
 };
 
-#if defined(__DAVAENGINE_COREV2__)
 ENUM_DECLARE(eModifierKeys)
 {
     ENUM_ADD_DESCR(static_cast<int>(eModifierKeys::SHIFT), "SHIFT");
@@ -367,15 +367,6 @@ ENUM_DECLARE(eModifierKeys)
     ENUM_ADD_DESCR(static_cast<int>(eModifierKeys::ALT), "ALT");
     ENUM_ADD_DESCR(static_cast<int>(eModifierKeys::COMMAND), "CMD");
 };
-#else
-ENUM_DECLARE(UIEvent::Modifier)
-{
-    ENUM_ADD_DESCR(UIEvent::Modifier::SHIFT_DOWN, "SHIFT");
-    ENUM_ADD_DESCR(UIEvent::Modifier::CONTROL_DOWN, "CTRL");
-    ENUM_ADD_DESCR(UIEvent::Modifier::ALT_DOWN, "ALT");
-    ENUM_ADD_DESCR(UIEvent::Modifier::COMMAND_DOWN, "CMD");
-};
-#endif
 
 ENUM_DECLARE(rhi::TextureAddrMode)
 {

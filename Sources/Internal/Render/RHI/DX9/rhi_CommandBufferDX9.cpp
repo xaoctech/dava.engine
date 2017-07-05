@@ -9,7 +9,6 @@
 #include "Logger/Logger.h"
 using DAVA::Logger;
 
-#include "Core/Core.h"
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
 #include "Concurrency/Thread.h"

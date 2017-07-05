@@ -71,5 +71,10 @@ String ValueDescription::GetDescription(const Any& v) const
     return fn(v);
 }
 
+Tooltip::Tooltip(const String& tooltipFieldName_)
+    : tooltipFieldName(tooltipFieldName_)
+{
+}
+
 } // namespace Metas
 } // namespace DAVA

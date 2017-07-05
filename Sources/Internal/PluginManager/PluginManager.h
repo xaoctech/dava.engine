@@ -3,9 +3,6 @@
 #include "Base/BaseTypes.h"
 #include "FileSystem/FileSystem.h"
 
-//
-#if defined(__DAVAENGINE_COREV2__)
-
 namespace DAVA
 {
 /**
@@ -65,4 +62,3 @@ private:
     Engine* rootEngine;
 };
 }
-#endif // __DAVAENGINE_COREV2__

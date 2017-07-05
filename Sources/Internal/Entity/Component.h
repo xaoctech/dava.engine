@@ -8,6 +8,10 @@
 #include "MemoryManager/MemoryProfiler.h"
 #include "Reflection/Reflection.h"
 
+/**
+    \defgroup components Component
+*/
+
 namespace DAVA
 {
 class Entity;
@@ -48,10 +52,10 @@ public:
         SNAP_TO_LANDSCAPE_CONTROLLER_COMPONENT,
         WASD_CONTROLLER_COMPONENT,
         VISIBILITY_CHECK_COMPONENT,
+        SLOT_COMPONENT,
         GEO_DECAL_COMPONENT,
 
         NON_SERIALIZABLE_COMPONENTS, // everything below NON_SERIALIZABLE_COMPONENTS won't be serialized
-
         STATIC_OCCLUSION_DEBUG_DRAW_COMPONENT,
         WAYPOINT_COMPONENT,
         EDGE_COMPONENT,
