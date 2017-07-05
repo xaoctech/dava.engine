@@ -53,6 +53,7 @@ public:
         WASD_CONTROLLER_COMPONENT,
         VISIBILITY_CHECK_COMPONENT,
         SLOT_COMPONENT,
+        TEXT_COMPONENT,
 
         //debug components - note that everything below won't be serialized
         DEBUG_COMPONENTS,

@@ -65,8 +65,6 @@
 #include "Constants.h"
 #include "StringConstants.h"
 
-#include "Render/2D/Sprite.h"
-
 #include <Tools/TextureCompression/TextureConverter.h>
 
 #include <TArc/WindowSubSystem/Private/WaitDialog.h>
@@ -80,18 +78,19 @@
 #include "QtTools/Utils/Themes/Themes.h"
 #include "QtTools/WidgetHelpers/SharedIcon.h"
 
-#include "Engine/Engine.h"
-#include "Engine/PlatformApiQt.h"
-#include "Engine/Qt/RenderWidget.h"
-#include "Reflection/ReflectedType.h"
-
-#include "Scene3D/Components/ActionComponent.h"
-#include "Scene3D/Components/Waypoint/PathComponent.h"
-#include "Scene3D/Components/Controller/WASDControllerComponent.h"
-#include "Scene3D/Components/Controller/RotationControllerComponent.h"
-#include "Scene3D/Systems/StaticOcclusionSystem.h"
-#include "Scene/System/EditorVegetationSystem.h"
-#include "Utils/StringFormat.h"
+#include <Engine/Engine.h>
+#include <Engine/PlatformApiQt.h>
+#include <Engine/Qt/RenderWidget.h>
+#include <Reflection/ReflectedType.h>
+#include <Render/2D/Sprite.h>
+#include <Scene3D/Components/ActionComponent.h>
+#include <Scene3D/Components/TextComponent.h>
+#include <Scene3D/Components/Waypoint/PathComponent.h>
+#include <Scene3D/Components/Controller/WASDControllerComponent.h>
+#include <Scene3D/Components/Controller/RotationControllerComponent.h>
+#include <Scene3D/Systems/StaticOcclusionSystem.h>
+#include <Scene/System/EditorVegetationSystem.h>
+#include <Utils/StringFormat.h>
 
 #include <QActionGroup>
 #include <QColorDialog>
@@ -623,6 +622,7 @@ void QtMainWindow::SetupActions()
     QObject::connect(ui->actionAddWind, SIGNAL(triggered()), this, SLOT(OnAddWindEntity()));
     QObject::connect(ui->actionAddVegetation, SIGNAL(triggered()), this, SLOT(OnAddVegetation()));
     QObject::connect(ui->actionAddPath, SIGNAL(triggered()), this, SLOT(OnAddPathEntity()));
+    QObject::connect(ui->actionTextEntity, SIGNAL(triggered()), this, SLOT(OnAddTextEntity()));
 
     QObject::connect(ui->actionSaveHeightmapToPNG, SIGNAL(triggered()), this, SLOT(OnSaveHeightmapToImage()));
     QObject::connect(ui->actionSaveTiledTexture, SIGNAL(triggered()), this, SLOT(OnSaveTiledTexture()));
@@ -1297,6 +1297,18 @@ void QtMainWindow::OnUserNodeDialog()
         sceneNode->AddComponent(new DAVA::UserComponent());
         sceneNode->SetName(ResourceEditor::USER_NODE_NAME);
         sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EntityAddCommand(sceneNode, sceneEditor.Get())));
+    }
+}
+
+void QtMainWindow::OnAddTextEntity()
+{
+    DAVA::RefPtr<SceneEditor2> sceneEditor = MainWindowDetails::GetCurrentScene();
+    if (sceneEditor)
+    {
+        DAVA::ScopedPtr<DAVA::Entity> textEntity(new DAVA::Entity());
+        textEntity->AddComponent(new DAVA::TextComponent());
+        textEntity->SetName("TextEntity");
+        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EntityAddCommand(textEntity, sceneEditor.Get())));
     }
 }
 
