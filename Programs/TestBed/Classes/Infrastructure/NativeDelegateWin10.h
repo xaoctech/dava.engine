@@ -4,7 +4,7 @@
 
 #if defined(__DAVAENGINE_WIN_UAP__)
 
-#include <Engine/PlatformApi.h>
+#include <Engine/PlatformApiWin10.h>
 
 struct NativeDelegateWin10 : public DAVA::PlatformApi::Win10::XamlApplicationListener
 {

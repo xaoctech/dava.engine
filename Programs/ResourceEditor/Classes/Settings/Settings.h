@@ -81,6 +81,10 @@ public:
     static const DAVA::FastName Scene_Grab_Size_Width;
     static const DAVA::FastName Scene_Grab_Size_Height;
 
+    static const DAVA::FastName Scene_Slot_Box_Color;
+    static const DAVA::FastName Scene_Slot_Box_Edges_Color;
+    static const DAVA::FastName Scene_Slot_Pivot_Color;
+
     static const DAVA::FastName General_Mouse_InvertWheel;
     static const DAVA::FastName General_Mouse_WheelMoveCamera;
     static const DAVA::FastName General_Mouse_WheelMoveIntensity;

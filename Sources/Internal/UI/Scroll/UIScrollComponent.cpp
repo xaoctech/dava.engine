@@ -1,10 +1,11 @@
 #include "UIScrollComponent.h"
+#include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UIScrollComponent)
 {
-    ReflectionRegistrator<UIScrollComponent>::Begin()
+    ReflectionRegistrator<UIScrollComponent>::Begin()[M::HiddenField()]
     .ConstructorByPointer()
     .DestructorByPointer([](UIScrollComponent* o) { o->Release(); })
     .End();

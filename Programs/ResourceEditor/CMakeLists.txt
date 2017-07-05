@@ -19,12 +19,6 @@ if (WIN32 AND DEPLOY AND NOT DAVA_MEGASOLUTION )
     set( DEPLOY_BEAST_DIR ${DEPLOY_DIR} )
 endif()
 
-set ( DAVA_COREV2 1 )
-
-dava_add_definitions       (
--D__DAVAENGINE_COREV2__
-)
-
 find_package( DavaTools REQUIRED )
 
 
