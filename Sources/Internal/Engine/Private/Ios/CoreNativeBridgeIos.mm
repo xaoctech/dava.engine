@@ -1,6 +1,6 @@
-#include "Engine/Private/Ios/CoreNativeBridgeIos.h"
-
 #if defined(__DAVAENGINE_IPHONE__)
+
+#include "Engine/Private/Ios/CoreNativeBridgeIos.h"
 
 #include "Engine/Engine.h"
 #include "Engine/PlatformApiIos.h"

@@ -1,7 +1,6 @@
-#include "Engine/Private/Ios/RenderViewControllerIos.h"
-
 #if defined(__DAVAENGINE_IPHONE__)
 
+#include "Engine/Private/Ios/RenderViewControllerIos.h"
 #include "Engine/Private/Ios/WindowNativeBridgeIos.h"
 
 @implementation RenderViewController

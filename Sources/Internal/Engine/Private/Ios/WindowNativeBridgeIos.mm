@@ -1,7 +1,6 @@
-#include "Engine/Private/Ios/WindowNativeBridgeIos.h"
-
 #if defined(__DAVAENGINE_IPHONE__)
 
+#include "Engine/Private/Ios/WindowNativeBridgeIos.h"
 #include "DeviceManager/Private/Ios/DeviceManagerImplIos.h"
 #include "Engine/Window.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
