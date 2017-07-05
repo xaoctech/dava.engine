@@ -1,4 +1,5 @@
 #include "TArc/Controls/DoubleSpinBox.h"
+#include "TArc/Utils/ScopedValueGuard.h"
 
 namespace DAVA
 {
@@ -52,7 +53,33 @@ bool DoubleSpinBox::FromText(const QString& input, double& output) const
 
 QString DoubleSpinBox::ToText(const double value) const
 {
-    return QString::number(value, 'f');
+    QString result = QString::number(value, 'f', decimals());
+    int zeroCount = 0;
+    for (auto iter = result.rbegin(); iter != result.rend(); ++iter)
+    {
+        if ((*iter) == QChar('.'))
+        {
+            zeroCount = std::max(zeroCount - 1, 0);
+            break;
+        }
+        if ((*iter) != QChar('0'))
+        {
+            break;
+        }
+
+        ++zeroCount;
+    }
+
+    result.truncate(result.size() - zeroCount);
+
+    // for size hint calculation we bound maximum size of text to 6 digit,
+    // because default implementation of QDoubleSpinBox calculate sizeHint according to range (minimum value and maximum value - about 40 signs)
+    if (sizeHintCalculation == true && result.size() > 6)
+    {
+        result = "-999.9";
+    }
+
+    return result;
 }
 
 bool DoubleSpinBox::IsEqualValue(double v1, double v2) const
@@ -83,10 +110,10 @@ QValidator::State DoubleSpinBox::TypeSpecificValidate(const QString& input) cons
 
 QSize DoubleSpinBox::sizeHint() const
 {
-    QSize s = TBase::sizeHint();
-    if (decimals() > 3)
+    QSize s;
     {
-        s.setWidth(s.width() >> 1);
+        ScopedValueGuard<bool> guard(sizeHintCalculation, true);
+        s = TBase::sizeHint();
     }
 
     return s;
@@ -94,10 +121,10 @@ QSize DoubleSpinBox::sizeHint() const
 
 QSize DoubleSpinBox::minimumSizeHint() const
 {
-    QSize s = TBase::minimumSizeHint();
-    if (decimals() > 3)
+    QSize s;
     {
-        s.setWidth(s.width() >> 1);
+        ScopedValueGuard<bool> guard(sizeHintCalculation, true);
+        s = TBase::minimumSizeHint();
     }
 
     return s;

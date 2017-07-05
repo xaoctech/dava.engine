@@ -43,6 +43,7 @@ private:
     bool IsEqualValue(double v1, double v2) const override;
 
     QValidator::State TypeSpecificValidate(const QString& input) const override;
+    mutable bool sizeHintCalculation = false;
 };
 
 } // namespace TArc
