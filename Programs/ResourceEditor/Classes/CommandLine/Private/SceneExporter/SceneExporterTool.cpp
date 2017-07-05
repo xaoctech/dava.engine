@@ -59,21 +59,16 @@ void CollectObjectsFromFolder(const DAVA::FilePath& folderPathname, const DAVA::
 
 SceneExporter::eExportedObjectType GetObjectType(const DAVA::FilePath& pathname)
 {
-    static const DAVA::Vector<std::pair<SceneExporter::eExportedObjectType, DAVA::String>> objectDefinition =
-    {
-      { SceneExporter::OBJECT_TEXTURE, ".tex" },
-      { SceneExporter::OBJECT_SCENE, ".sc2" },
-      { SceneExporter::OBJECT_HEIGHTMAP, DAVA::Heightmap::FileExtension() },
-      { SceneExporter::OBJECT_EMITTER_CONFIG, ".yaml" },
-    };
+    const DAVA::Array<SceneExporter::ExportedObjectDesc, SceneExporter::OBJECT_COUNT>& desc = SceneExporter::GetExportedObjectsDescriptions();
 
-    DVASSERT(static_cast<DAVA::int32>(objectDefinition.size()) == SceneExporter::OBJECT_COUNT);
-
-    for (const auto& def : objectDefinition)
+    for (const SceneExporter::ExportedObjectDesc& def : desc)
     {
-        if (pathname.IsEqualToExtension(def.second))
+        for (const DAVA::String& ext : def.extensions)
         {
-            return def.first;
+            if (pathname.IsEqualToExtension(ext))
+            {
+                return def.type;
+            }
         }
     }
 
