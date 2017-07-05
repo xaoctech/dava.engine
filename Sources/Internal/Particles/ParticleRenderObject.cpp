@@ -555,8 +555,11 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                 Vector3 left = base.position + data.inheritPositionOffset + scaledBasis;
                 Vector3 right = base.position + data.inheritPositionOffset - scaledBasis;
 
+                float32 tile = 1.0f;
+                if (group.layer->stripeTextureTile)
+                    tile = group.layer->stripeTextureTile->GetValue(0.0f);
                 float32 startU = currentParticle->life * group.layer->stripeUScrollSpeed;
-                float32 startV = currentParticle->life * group.layer->stripeVScrollSpeed;
+                float32 startV = currentParticle->life * group.layer->stripeVScrollSpeed + data.uvOffset * tile;
 
                 Vector3 uv1 = Vector3(startU, startV, 0.0f);
                 Vector3 uv2 = Vector3(startU + 1.0f, startV, 0.0f);
@@ -627,10 +630,12 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
 
                     distance += node.distanceFromPrevNode;
 
-                    float32 tile = 1.0f;
+                    tile = 1.0f;
                     if (group.layer->stripeTextureTile)
                         tile = group.layer->stripeTextureTile->GetValue(overLifeTime);
-                    float32 v = distance * tile + currentParticle->life * group.layer->stripeVScrollSpeed;
+                    float32 v = (distance + data.uvOffset) * tile + currentParticle->life * group.layer->stripeVScrollSpeed;
+                    // v += data.uvOffset * tile + currentParticle->life * group.layer->stripeVScrollSpeed;
+
                     if (group.layer->usePerspectiveMapping)
                     {
                         uv1.x = startU * fullEdgeSize;

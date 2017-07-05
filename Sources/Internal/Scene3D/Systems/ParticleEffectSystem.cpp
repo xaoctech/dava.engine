@@ -675,6 +675,7 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
 {
     ParticleLayer* layer = group.layer;
     StripeData& data = particle->stripe;
+    Vector3 prevBasePosition = data.baseNode.position;
     data.baseNode.position = particle->position;
     data.isActive = isActive;
     if (layer->inheritPosition)
@@ -682,7 +683,21 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
         data.inheritPositionOffset = effectData.infoSources[group.positionSource].position;
     }
     if (layer->stripeInheritPositionForBase)
+    {
         data.baseNode.position = effectData.infoSources[group.positionSource].position;
+
+        Vector3 dir = particle->speed;
+        dir.Normalize();
+
+        Vector3 delta = data.baseNode.position - prevBasePosition;
+        float32 len = delta.Length();
+        int32 sign = 1;
+
+        if (dir.DotProduct(delta) <= 0)
+            sign = -1;
+
+        data.uvOffset += len * sign;
+    }
 
     data.baseNode.speed = particle->speed;
 
