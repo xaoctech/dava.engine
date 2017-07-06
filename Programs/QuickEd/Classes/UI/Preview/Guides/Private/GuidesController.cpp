@@ -24,7 +24,7 @@ GuidesController::GuidesController(DAVA::Vector2::eAxis orientation_, DAVA::TArc
     , fieldBinder(new DAVA::TArc::FieldBinder(accessor))
     , container(container_)
 {
-    updater.SetUpdater(DAVA::MakeFunction(this, &GuidesController::SyncGuidesWithValues));
+    updater.SetCallback(DAVA::MakeFunction(this, &GuidesController::SyncGuidesWithValues));
 
     documentDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<DocumentData>());
     preferencesDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<PreferencesData>());
@@ -99,7 +99,7 @@ void GuidesController::BindFields()
 
 void GuidesController::OnVisualPropertiesChanged(const DAVA::Any&)
 {
-    updater.Update();
+    updater.MarkDirty();
 
     SetDisplayState(NO_DISPLAY);
     DisableDrag();

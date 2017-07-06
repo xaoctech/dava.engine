@@ -12,11 +12,10 @@
 #include "EditorSystems/EditorTransformSystem.h"
 #include "EditorSystems/EditorControlsView.h"
 
-#include "Utils/KeyboardProxy.h"
-
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Core/FieldBinder.h>
 #include <TArc/DataProcessing/DataContext.h>
+#include <TArc/Utils/KeyboardProxy.h>
 
 #include <UI/UIControl.h>
 #include <UI/Input/UIModalInputComponent.h>

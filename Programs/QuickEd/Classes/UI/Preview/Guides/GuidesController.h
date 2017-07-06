@@ -6,8 +6,8 @@
 #include "Model/PackageHierarchy/PackageNode.h"
 
 #include <TArc/DataProcessing/DataWrapper.h>
+#include <TArc/Utils/DirtyFrameUpdater.h>
 
-#include <QtTools/Updaters/FrameUpdater.h>
 #include <QtTools/Utils/QtDelayedExecutor.h>
 
 #include <Base/Any.h>
@@ -170,7 +170,7 @@ private:
     QList<Guide> guides;
 
     GuidesControllerPreferences preferences;
-    FrameUpdater updater;
+    DirtyFrameUpdater updater;
     //we can not use Show inside Update signal
     QtDelayedExecutor delayedExecutor;
 };

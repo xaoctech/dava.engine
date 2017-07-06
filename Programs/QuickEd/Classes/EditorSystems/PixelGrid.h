@@ -2,7 +2,7 @@
 
 #include "EditorSystems/BaseEditorSystem.h"
 
-#include <QtTools/Updaters/FrameUpdater.h>
+#include <TArc/Utils/DirtyFrameUpdater.h>
 
 #include <Base/Introspection.h>
 #include <Math/Vector.h>
@@ -59,7 +59,7 @@ private:
     void OnVisualSettingsChanged(const DAVA::Any&);
 
     bool CanShowGrid() const;
-    void DrawGrid();
+    void UpdateGrid();
 
     std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
     PixelGridPreferences preferences;
@@ -67,5 +67,5 @@ private:
     DAVA::RefPtr<DAVA::UIControl> vLinesContainer;
     DAVA::RefPtr<DAVA::UIControl> hLinesContainer;
 
-    FrameUpdater updater;
+    DirtyFrameUpdater updater;
 };

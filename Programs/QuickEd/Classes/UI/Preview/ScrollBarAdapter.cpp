@@ -1,4 +1,4 @@
-#include "UI/Preview/ScrolLBarData.h"
+#include "UI/Preview/ScrollBarAdapter.h"
 
 #include "Modules/DocumentsModule/EditorCanvasData.h"
 
@@ -6,35 +6,35 @@
 
 #include <Reflection/ReflectedTypeDB.h>
 
-DAVA::FastName ScrollBarData::positionPropertyName{ "position" };
-DAVA::FastName ScrollBarData::minPosPropertyName{ "minimum position" };
-DAVA::FastName ScrollBarData::maxPosPropertyName{ "maximum position" };
-DAVA::FastName ScrollBarData::pageStepPropertyName{ "page step" };
-DAVA::FastName ScrollBarData::enabledPropertyName{ "enabled" };
-DAVA::FastName ScrollBarData::visiblePropertyName{ "visible" };
-DAVA::FastName ScrollBarData::orientationPropertyName{ "orientation" };
+DAVA::FastName ScrollBarAdapter::positionPropertyName{ "position" };
+DAVA::FastName ScrollBarAdapter::minPosPropertyName{ "minimum position" };
+DAVA::FastName ScrollBarAdapter::maxPosPropertyName{ "maximum position" };
+DAVA::FastName ScrollBarAdapter::pageStepPropertyName{ "page step" };
+DAVA::FastName ScrollBarAdapter::enabledPropertyName{ "enabled" };
+DAVA::FastName ScrollBarAdapter::visiblePropertyName{ "visible" };
+DAVA::FastName ScrollBarAdapter::orientationPropertyName{ "orientation" };
 
-DAVA_REFLECTION_IMPL(ScrollBarData)
+DAVA_REFLECTION_IMPL(ScrollBarAdapter)
 {
-    DAVA::ReflectionRegistrator<ScrollBarData>::Begin()
-    .Field(positionPropertyName.c_str(), &ScrollBarData::GetPosition, &ScrollBarData::SetPosition)
-    .Field(minPosPropertyName.c_str(), &ScrollBarData::GetMinPos, nullptr)
-    .Field(maxPosPropertyName.c_str(), &ScrollBarData::GetMaxPos, nullptr)
-    .Field(pageStepPropertyName.c_str(), &ScrollBarData::GetPageStep, nullptr)
-    .Field(enabledPropertyName.c_str(), &ScrollBarData::IsEnabled, nullptr)
-    .Field(visiblePropertyName.c_str(), &ScrollBarData::IsVisible, nullptr)
-    .Field(orientationPropertyName.c_str(), &ScrollBarData::GetOrientation, nullptr)
+    DAVA::ReflectionRegistrator<ScrollBarAdapter>::Begin()
+    .Field(positionPropertyName.c_str(), &ScrollBarAdapter::GetPosition, &ScrollBarAdapter::SetPosition)
+    .Field(minPosPropertyName.c_str(), &ScrollBarAdapter::GetMinPos, nullptr)
+    .Field(maxPosPropertyName.c_str(), &ScrollBarAdapter::GetMaxPos, nullptr)
+    .Field(pageStepPropertyName.c_str(), &ScrollBarAdapter::GetPageStep, nullptr)
+    .Field(enabledPropertyName.c_str(), &ScrollBarAdapter::IsEnabled, nullptr)
+    .Field(visiblePropertyName.c_str(), &ScrollBarAdapter::IsVisible, nullptr)
+    .Field(orientationPropertyName.c_str(), &ScrollBarAdapter::GetOrientation, nullptr)
     .End();
 }
 
-ScrollBarData::ScrollBarData(DAVA::Vector2::eAxis orientation_, DAVA::TArc::ContextAccessor* accessor_)
+ScrollBarAdapter::ScrollBarAdapter(DAVA::Vector2::eAxis orientation_, DAVA::TArc::ContextAccessor* accessor_)
     : orientation(orientation_)
     , accessor(accessor_)
 {
     editorCanvasDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<EditorCanvasData>());
 }
 
-int ScrollBarData::GetPosition() const
+int ScrollBarAdapter::GetPosition() const
 {
     using namespace DAVA;
     if (editorCanvasDataWrapper.HasData())
@@ -50,7 +50,7 @@ int ScrollBarData::GetPosition() const
     }
 }
 
-void ScrollBarData::SetPosition(int value)
+void ScrollBarAdapter::SetPosition(int value)
 {
     using namespace DAVA;
     DVASSERT(editorCanvasDataWrapper.HasData());
@@ -61,7 +61,7 @@ void ScrollBarData::SetPosition(int value)
     editorCanvasDataWrapper.SetFieldValue(EditorCanvasData::positionPropertyName, position);
 }
 
-int ScrollBarData::GetMinPos() const
+int ScrollBarAdapter::GetMinPos() const
 {
     using namespace DAVA;
     if (editorCanvasDataWrapper.HasData())
@@ -74,7 +74,7 @@ int ScrollBarData::GetMinPos() const
     return 0;
 }
 
-int ScrollBarData::GetMaxPos() const
+int ScrollBarAdapter::GetMaxPos() const
 {
     using namespace DAVA;
     if (editorCanvasDataWrapper.HasData())
@@ -87,7 +87,7 @@ int ScrollBarData::GetMaxPos() const
     return 0;
 }
 
-int ScrollBarData::GetPageStep() const
+int ScrollBarAdapter::GetPageStep() const
 {
     using namespace DAVA;
     using namespace DAVA::TArc;
@@ -104,17 +104,17 @@ int ScrollBarData::GetPageStep() const
     }
 }
 
-bool ScrollBarData::IsEnabled() const
+bool ScrollBarAdapter::IsEnabled() const
 {
     return editorCanvasDataWrapper.HasData();
 }
 
-bool ScrollBarData::IsVisible() const
+bool ScrollBarAdapter::IsVisible() const
 {
     return GetMaxPos() > 0;
 }
 
-Qt::Orientation ScrollBarData::GetOrientation() const
+Qt::Orientation ScrollBarAdapter::GetOrientation() const
 {
     return orientation == DAVA::Vector2::AXIS_X ? Qt::Horizontal : Qt::Vertical;
 }

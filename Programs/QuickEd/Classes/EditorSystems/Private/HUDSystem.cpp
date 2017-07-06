@@ -10,11 +10,10 @@
 
 #include "EditorSystems/HUDControls.h"
 
-#include "Utils/KeyboardProxy.h"
-
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Core/FieldBinder.h>
 #include <TArc/DataProcessing/DataContext.h>
+#include <TArc/Utils/KeyboardProxy.h>
 
 #include <Base/BaseTypes.h>
 #include <UI/UIControl.h>

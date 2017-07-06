@@ -21,14 +21,7 @@ public:
         FieldCount
     };
 
-    struct Params : BaseParams
-    {
-        Params(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui, const DAVA::TArc::WindowKey& wndKey)
-            : BaseParams(accessor, ui, wndKey)
-        {
-        }
-        DAVA::TArc::ControlDescriptorBuilder<Fields> fields;
-    };
+    DECLARE_CONTROL_PARAMS(Fields);
     ScaleComboBox(const Params& params, DAVA::TArc::ContextAccessor* accessor, DAVA::Reflection model, QWidget* parent = nullptr);
 
 private:

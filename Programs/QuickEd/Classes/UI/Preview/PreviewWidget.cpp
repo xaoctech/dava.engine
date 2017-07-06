@@ -274,33 +274,24 @@ void PreviewWidget::InitUI()
     QSizePolicy expandingPolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     renderWidget->setSizePolicy(expandingPolicy);
     gridLayout->addWidget(renderWidget, 1, 1);
-
     {
         ScrollBar::Params params(accessor, ui, DAVA::TArc::mainWindowKey);
-        params.fields[ScrollBar::Fields::Value] = ScrollBarData::positionPropertyName;
-        params.fields[ScrollBar::Fields::Minimum] = ScrollBarData::minPosPropertyName;
-        params.fields[ScrollBar::Fields::Maximum] = ScrollBarData::maxPosPropertyName;
-        params.fields[ScrollBar::Fields::PageStep] = ScrollBarData::pageStepPropertyName;
-        params.fields[ScrollBar::Fields::Orientation] = ScrollBarData::orientationPropertyName;
-        params.fields[ScrollBar::Fields::Enabled] = ScrollBarData::enabledPropertyName;
-        params.fields[ScrollBar::Fields::Visible] = ScrollBarData::visiblePropertyName;
+        params.fields[ScrollBar::Fields::Value] = ScrollBarAdapter::positionPropertyName;
+        params.fields[ScrollBar::Fields::Minimum] = ScrollBarAdapter::minPosPropertyName;
+        params.fields[ScrollBar::Fields::Maximum] = ScrollBarAdapter::maxPosPropertyName;
+        params.fields[ScrollBar::Fields::PageStep] = ScrollBarAdapter::pageStepPropertyName;
+        params.fields[ScrollBar::Fields::Orientation] = ScrollBarAdapter::orientationPropertyName;
+        params.fields[ScrollBar::Fields::Enabled] = ScrollBarAdapter::enabledPropertyName;
+        params.fields[ScrollBar::Fields::Visible] = ScrollBarAdapter::visiblePropertyName;
+        {
+            ScrollBar* scrollBar = new ScrollBar(params, accessor, Reflection::Create(ReflectedObject(&vScrollBarData)));
+            gridLayout->addWidget(scrollBar->ToWidgetCast(), 1, 2);
+        }
 
-        ScrollBar* scrollBar = new ScrollBar(params, accessor, Reflection::Create(ReflectedObject(&vScrollBarData)));
-        gridLayout->addWidget(scrollBar->ToWidgetCast(), 1, 2);
-    }
-
-    {
-        ScrollBar::Params params(accessor, ui, DAVA::TArc::mainWindowKey);
-        params.fields[ScrollBar::Fields::Value] = ScrollBarData::positionPropertyName;
-        params.fields[ScrollBar::Fields::Minimum] = ScrollBarData::minPosPropertyName;
-        params.fields[ScrollBar::Fields::Maximum] = ScrollBarData::maxPosPropertyName;
-        params.fields[ScrollBar::Fields::PageStep] = ScrollBarData::pageStepPropertyName;
-        params.fields[ScrollBar::Fields::Orientation] = ScrollBarData::orientationPropertyName;
-        params.fields[ScrollBar::Fields::Enabled] = ScrollBarData::enabledPropertyName;
-        params.fields[ScrollBar::Fields::Visible] = ScrollBarData::visiblePropertyName;
-
-        ScrollBar* scrollBar = new ScrollBar(params, accessor, Reflection::Create(ReflectedObject(&hScrollBarData)));
-        gridLayout->addWidget(scrollBar->ToWidgetCast(), 2, 1);
+        {
+            ScrollBar* scrollBar = new ScrollBar(params, accessor, Reflection::Create(ReflectedObject(&hScrollBarData)));
+            gridLayout->addWidget(scrollBar->ToWidgetCast(), 2, 1);
+        }
     }
 
     gridLayout->setMargin(0.0f);
@@ -311,9 +302,9 @@ void PreviewWidget::InitUI()
 
     {
         ScaleComboBox::Params params(accessor, ui, DAVA::TArc::mainWindowKey);
-        params.fields[ScaleComboBox::Fields::Enumerator] = ScaleComboBoxData::enumeratorPropertyName;
-        params.fields[ScaleComboBox::Fields::Value] = ScaleComboBoxData::scalePropertyName;
-        params.fields[ScaleComboBox::Fields::Enabled] = ScaleComboBoxData::enabledPropertyName;
+        params.fields[ScaleComboBox::Fields::Enumerator] = ScaleComboBoxAdapter::enumeratorPropertyName;
+        params.fields[ScaleComboBox::Fields::Value] = ScaleComboBoxAdapter::scalePropertyName;
+        params.fields[ScaleComboBox::Fields::Enabled] = ScaleComboBoxAdapter::enabledPropertyName;
         ScaleComboBox* scaleCombo = new ScaleComboBox(params, accessor, Reflection::Create(ReflectedObject(&scaleComboBoxData)));
 
         QString toolbarName = "Document toolBar";

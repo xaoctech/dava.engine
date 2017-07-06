@@ -190,21 +190,23 @@ DAVA::Vector2 EditorCanvasData::GetViewSize() const
 DAVA::float32 EditorCanvasData::GetNextScale(DAVA::int32 ticksCount) const
 {
     using namespace DAVA;
+    DVASSERT(ticksCount > 0);
     auto iter = std::upper_bound(predefinedScales.begin(), predefinedScales.end(), scale);
     if (iter == predefinedScales.end())
     {
         return scale;
     }
     ticksCount--;
-    int32 distance = static_cast<int32>(std::distance(iter, predefinedScales.end()));
+    int32 distance = static_cast<int32>(std::distance(iter, predefinedScales.end())) - 1;
     ticksCount = std::min(distance, ticksCount);
     std::advance(iter, ticksCount);
-    return iter != predefinedScales.end() ? *iter : predefinedScales.back();
+    return *iter;
 }
 
 DAVA::float32 EditorCanvasData::GetPreviousScale(DAVA::int32 ticksCount) const
 {
     using namespace DAVA;
+    DVASSERT(ticksCount < 0);
     auto iter = std::lower_bound(predefinedScales.begin(), predefinedScales.end(), scale);
     if (iter == predefinedScales.end())
     {

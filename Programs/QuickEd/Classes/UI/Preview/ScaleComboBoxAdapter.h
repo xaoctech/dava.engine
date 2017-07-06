@@ -13,14 +13,14 @@ class ContextAccessor;
 }
 }
 
-class ScaleComboBoxData
+class ScaleComboBoxAdapter
 {
 public:
     static DAVA::FastName scalePropertyName;
     static DAVA::FastName enumeratorPropertyName;
     static DAVA::FastName enabledPropertyName;
 
-    ScaleComboBoxData(DAVA::TArc::ContextAccessor* accessor);
+    ScaleComboBoxAdapter(DAVA::TArc::ContextAccessor* accessor);
 
 private:
     DAVA::Any GetScale() const;

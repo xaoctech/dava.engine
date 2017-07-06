@@ -15,8 +15,7 @@
 #include "QECommands/ResizeCommand.h"
 #include "QECommands/ChangePivotCommand.h"
 
-#include "Utils/KeyboardProxy.h"
-
+#include <TArc/Utils/KeyboardProxy.h>
 #include <TArc/Core/ContextAccessor.h>
 
 #include <UI/UIEvent.h>
