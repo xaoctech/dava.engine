@@ -25,7 +25,7 @@
 - More..
 
 ## Top-level directory layout
-rfregerg
+TODO: add some description
 
     .
     |- Bin/
