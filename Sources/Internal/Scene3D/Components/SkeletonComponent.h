@@ -29,10 +29,11 @@ public:
         Vector3 position;
         float32 scale;
 
-        inline void Construct(const Matrix4& transform);
-        inline JointTransform AppendTransform(const JointTransform& transform) const;
-        inline JointTransform GetInverse() const;
-        inline Vector3 TransformVector(const Vector3& inVec) const;
+        void Construct(const Matrix4& transform);
+        JointTransform AppendTransform(const JointTransform& transform) const;
+        JointTransform GetInverse() const;
+        Vector3 TransformPoint(const Vector3& inVec) const;
+        AABBox3 TransformAABBox(const AABBox3& bbox) const;
     };
 
     struct JointConfig : public InspBase
@@ -164,9 +165,27 @@ inline uint16 SkeletonComponent::GetJointsCount() const
     return jointsCount;
 }
 
-inline Vector3 SkeletonComponent::JointTransform::TransformVector(const Vector3& inVec) const
+inline Vector3 SkeletonComponent::JointTransform::TransformPoint(const Vector3& inVec) const
 {
     return position + orientation.ApplyToVectorFast(inVec) * scale;
+}
+
+inline AABBox3 SkeletonComponent::JointTransform::TransformAABBox(const AABBox3& bbox) const
+{
+    const Vector3& min = bbox.min;
+    const Vector3& max = bbox.max;
+
+    AABBox3 res;
+    res.AddPoint(TransformPoint(min));
+    res.AddPoint(TransformPoint(max));
+    res.AddPoint(TransformPoint(Vector3(min.x, min.y, max.z)));
+    res.AddPoint(TransformPoint(Vector3(min.x, max.y, min.z)));
+    res.AddPoint(TransformPoint(Vector3(min.x, max.y, max.z)));
+    res.AddPoint(TransformPoint(Vector3(max.x, min.y, min.z)));
+    res.AddPoint(TransformPoint(Vector3(max.x, min.y, max.z)));
+    res.AddPoint(TransformPoint(Vector3(max.x, max.y, min.z)));
+
+    return res;
 }
 
 inline void SkeletonComponent::JointTransform::Construct(const Matrix4& transform)
@@ -179,7 +198,7 @@ inline void SkeletonComponent::JointTransform::Construct(const Matrix4& transfor
 inline SkeletonComponent::JointTransform SkeletonComponent::JointTransform::AppendTransform(const JointTransform& transform) const
 {
     JointTransform res;
-    res.position = TransformVector(transform.position);
+    res.position = TransformPoint(transform.position);
     res.orientation = orientation * transform.orientation;
     res.scale = scale * transform.scale;
     return res;

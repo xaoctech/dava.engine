@@ -188,10 +188,10 @@ void ColladaImporter::ImportSkeleton(ColladaSceneNode* colladaNode, Entity* node
 
     SkeletonComponent* davaSkeletonComponent = new SkeletonComponent();
     node->AddComponent(davaSkeletonComponent);
+
     int32 jointsCount = int32(skinnedMesh->joints.size());
-    Vector<SkeletonComponent::JointConfig> jointConfigs;
-    jointConfigs.resize(jointsCount);
-    for (int32 i = 0; i < jointsCount; i++)
+    Vector<SkeletonComponent::JointConfig> jointConfigs(jointsCount);
+    for (int32 i = 0; i < jointsCount; ++i)
     {
         const ColladaSkinnedMesh::Joint& colladaJoint = skinnedMesh->joints[i];
         const ColladaSceneNode* jointNode = colladaJoint.node;
@@ -215,10 +215,35 @@ void ColladaImporter::ImportSkeleton(ColladaSceneNode* colladaNode, Entity* node
         jointConfig.orientation = orientation;
         jointConfig.position = translation;
         jointConfig.scale = scale.x;
-        jointConfig.bbox = AABBox3(jointConfig.position, 1.0);
-
         jointConfig.bindTransformInv = colladaJoint.inverse0;
+
+        jointConfig.bbox.Empty();
     }
+
+    //TODO: *Skinning* calc bounding sphere instead bbox?
+    for (auto& pgi : colladaNode->meshInstances[0]->polyGroupInstances)
+    {
+        PolygonGroup* polygonGroup = library.GetOrCreatePolygon(pgi);
+        int32 jointIndex = -1;
+        float32 jointWeight = 0.f;
+        Vector3 position;
+        int32 vxCount = polygonGroup->GetVertexCount();
+        for (int32 v = 0; v < vxCount; ++v)
+        {
+            for (int32 j = 0; j < 4; ++j)
+            {
+                polygonGroup->GetJointWeight(v, j, jointWeight);
+                if (jointWeight > EPSILON)
+                {
+                    polygonGroup->GetCoord(v, position);
+                    polygonGroup->GetJointIndex(v, j, jointIndex);
+
+                    jointConfigs[jointIndex].bbox.AddPoint(position * jointConfigs[jointIndex].bindTransformInv);
+                }
+            }
+        }
+    }
+
     davaSkeletonComponent->SetConfigJoints(jointConfigs);
 }
 

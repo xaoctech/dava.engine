@@ -92,13 +92,14 @@ void SkeletonSystem::DrawSkeletons(RenderHelper* drawer)
     for (Entity* entity : entities)
     {
         SkeletonComponent* component = GetSkeletonComponent(entity);
-        TransformComponent* transform = GetTransformComponent(entity);
         if (component->drawSkeleton)
         {
+            const Matrix4& worldTransform = GetTransformComponent(entity)->GetWorldTransform();
+
             Vector<Vector3> positions(component->GetJointsCount());
             for (uint16 i = 0; i < component->GetJointsCount(); ++i)
             {
-                positions[i] = component->objectSpaceTransforms[i].position * transform->GetWorldTransform();
+                positions[i] = component->objectSpaceTransforms[i].position * worldTransform;
             }
 
             const Vector<SkeletonComponent::JointConfig>& joints = component->configJoints;
@@ -111,8 +112,15 @@ void SkeletonSystem::DrawSkeletons(RenderHelper* drawer)
                     drawer->DrawArrow(positions[cfg.parentIndex], positions[i], 0.25f * dl, Color(1.0f, 0.5f, 0.0f, 1.0), RenderHelper::eDrawType::DRAW_WIRE_NO_DEPTH);
                 }
 
-                float32 scale = component->resultPositions[i].w;
-                drawer->DrawIcosahedron(positions[i], scale, Color(0.0, 0.5, 1.0, 1.0), RenderHelper::eDrawType::DRAW_WIRE_NO_DEPTH);
+                Vector3 xAxis = component->objectSpaceTransforms[i].TransformPoint(Vector3(1.f, 0.f, 0.f)) * worldTransform;
+                Vector3 yAxis = component->objectSpaceTransforms[i].TransformPoint(Vector3(0.f, 1.f, 0.f)) * worldTransform;
+                Vector3 zAxis = component->objectSpaceTransforms[i].TransformPoint(Vector3(0.f, 0.f, 1.f)) * worldTransform;
+
+                drawer->DrawLine(positions[i], xAxis, Color::Red, RenderHelper::eDrawType::DRAW_WIRE_NO_DEPTH);
+                drawer->DrawLine(positions[i], yAxis, Color::Green, RenderHelper::eDrawType::DRAW_WIRE_NO_DEPTH);
+                drawer->DrawLine(positions[i], zAxis, Color::Blue, RenderHelper::eDrawType::DRAW_WIRE_NO_DEPTH);
+
+                //drawer->DrawAABoxTransformed(component->objectSpaceBoxes[i], worldTransform, DAVA::Color::Red, RenderHelper::eDrawType::DRAW_WIRE_NO_DEPTH);
             }
         }
     }
@@ -142,22 +150,11 @@ void SkeletonSystem::UpdatePose(SkeletonComponent* component)
             uint16 targetId = (component->jointInfo[currJoint] >> SkeletonComponent::INFO_TARGET_SHIFT) & SkeletonComponent::INFO_PARENT_MASK;
             if (targetId != SkeletonComponent::INVALID_JOINT_INDEX)
             {
+                component->objectSpaceBoxes[currJoint] = component->objectSpaceTransforms[currJoint].TransformAABBox(component->jointSpaceBoxes[currJoint]);
+
                 SkeletonComponent::JointTransform finalTransform = component->objectSpaceTransforms[currJoint].AppendTransform(component->inverseBindTransforms[currJoint]);
                 component->resultPositions[targetId].Set(finalTransform.position.x, finalTransform.position.y, finalTransform.position.z, finalTransform.scale);
                 component->resultQuaternions[targetId].Set(finalTransform.orientation.x, finalTransform.orientation.y, finalTransform.orientation.z, finalTransform.orientation.w);
-                const Vector3& min = component->jointSpaceBoxes[currJoint].min;
-                const Vector3& max = component->jointSpaceBoxes[currJoint].max;
-                AABBox3& box = component->objectSpaceBoxes[currJoint];
-                box.Empty();
-                /*rework analogically to box.applytransform later*/
-                box.AddPoint(finalTransform.TransformVector(min));
-                box.AddPoint(finalTransform.TransformVector(max));
-                box.AddPoint(finalTransform.TransformVector(Vector3(min.x, min.y, max.z)));
-                box.AddPoint(finalTransform.TransformVector(Vector3(min.x, max.y, min.z)));
-                box.AddPoint(finalTransform.TransformVector(Vector3(min.x, max.y, max.z)));
-                box.AddPoint(finalTransform.TransformVector(Vector3(max.x, min.y, min.z)));
-                box.AddPoint(finalTransform.TransformVector(Vector3(max.x, min.y, max.z)));
-                box.AddPoint(finalTransform.TransformVector(Vector3(max.x, max.y, min.z)));
             }
 
             //  add [was updated]  remove [marked for update]
