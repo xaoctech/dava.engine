@@ -6,10 +6,6 @@ namespace DAVA
 SkinnedMesh::SkinnedMesh()
 {
     type = TYPE_SKINNED_MESH;
-    bbox = AABBox3(Vector3(0, 0, 0), Vector3(0, 0, 0));
-    jointsCount = 0;
-    positionArray = NULL;
-    quaternionArray = NULL;
 }
 
 RenderObject* SkinnedMesh::Clone(RenderObject* newObject)
@@ -21,6 +17,20 @@ RenderObject* SkinnedMesh::Clone(RenderObject* newObject)
     }
     RenderObject::Clone(newObject);
     return newObject;
+}
+
+void SkinnedMesh::RecalcBoundingBox()
+{
+    AABBox3 geometryBBox;
+
+    for (const IndexedRenderBatch& i : renderBatchArray)
+    {
+        RenderBatch* batch = i.renderBatch;
+        geometryBBox.AddAABBox(batch->GetBoundingBox());
+    }
+
+    float32 radius = geometryBBox.GetBoundingSphereRadius();
+    bbox = AABBox3(geometryBBox.GetCenter(), 2.f * radius);
 }
 
 void SkinnedMesh::BindDynamicParameters(Camera* camera)

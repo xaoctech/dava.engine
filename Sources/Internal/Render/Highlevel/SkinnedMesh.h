@@ -22,18 +22,16 @@ public:
 
     virtual RenderObject* Clone(RenderObject* newObject);
 
-    virtual void RecalcBoundingBox()
-    {
-    }
-    virtual void BindDynamicParameters(Camera* camera);
+    void RecalcBoundingBox() override;
+    void BindDynamicParameters(Camera* camera) override;
 
-    inline void SetObjectSpaceBoundingBox(const AABBox3& box);
+    inline void SetBoundingBox(const AABBox3& box);
     inline void SetJointsPtr(Vector4* positionPtr, Vector4* quaternoinPtr, int32 count);
 
 protected:
-    Vector4* positionArray;
-    Vector4* quaternionArray;
-    int32 jointsCount;
+    Vector4* positionArray = nullptr;
+    Vector4* quaternionArray = nullptr;
+    int32 jointsCount = 0;
 };
 
 inline void SkinnedMesh::SetJointsPtr(Vector4* positionPtr, Vector4* quaternoinPtr, int32 count)
@@ -43,7 +41,7 @@ inline void SkinnedMesh::SetJointsPtr(Vector4* positionPtr, Vector4* quaternoinP
     jointsCount = count;
 }
 
-inline void SkinnedMesh::SetObjectSpaceBoundingBox(const AABBox3& box)
+inline void SkinnedMesh::SetBoundingBox(const AABBox3& box)
 {
     bbox = box;
 }

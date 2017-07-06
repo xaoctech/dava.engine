@@ -59,18 +59,7 @@ void SkeletonSystem::Process(float32 timeElapsed)
     for (int32 i = 0, sz = static_cast<int32>(entities.size()); i < sz; ++i)
     {
         SkeletonComponent* component = GetSkeletonComponent(entities[i]);
-        /*test/
-        {
-            static float32 t=0;
-            t += timeElapsed;
-            for (int32 i=0, sz = component->GetJointsCount(); i<sz; ++i)
-            {
-                float32 fi = t;
-                Quaternion q;
-                q.Construct(Vector3(0,1,0), fi);
-                component->SetJointOrientation(i, q);
-        }
-        }*/
+
         if (component && (component->startJoint != SkeletonComponent::INVALID_JOINT_INDEX))
         {
             UpdatePose(component);
@@ -186,7 +175,7 @@ void SkeletonSystem::UpdateSkinnedMesh(SkeletonComponent* component, SkinnedMesh
 
     //set data to SkinnedMesh
     skinnedMeshObject->SetJointsPtr(&component->resultPositions[0], &component->resultQuaternions[0], component->targetJointsCount);
-    skinnedMeshObject->SetObjectSpaceBoundingBox(resBox);
+    skinnedMeshObject->SetBoundingBox(resBox); //TODO: *Skinning* decide on bbox calculation
     GetScene()->renderSystem->MarkForUpdate(skinnedMeshObject);
 }
 
