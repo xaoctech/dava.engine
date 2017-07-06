@@ -103,11 +103,12 @@ set( TOOL_TARGET_LIST             )
 
 
 reset_property ( MIX_APP_DATA )
+    add_tool     ( SceneViewer     DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
+    add_tool     ( UIViewer        DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
 
     add_tool     ( ResourceEditor  DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
     add_tool     ( QuickEd         DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
-    add_tool     ( SceneViewer     DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
-    add_tool     ( UIViewer        DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
+
 ##
     add_tool     ( ResourceArchiver )
     add_tool     ( ResourcePacker   )
