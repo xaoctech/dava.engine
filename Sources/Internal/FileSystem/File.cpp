@@ -14,7 +14,6 @@
 #include "Concurrency/LockGuard.h"
 #include "Concurrency/Mutex.h"
 #include "Concurrency/Thread.h"
-#include "Core/Core.h"
 #include "Logger/Logger.h"
 #include "Utils/StringFormat.h"
 
@@ -98,9 +97,15 @@ File* File::Create(const FilePath& filename, uint32 attributes)
     if (!(attributes & (WRITE | CREATE | APPEND)))
     {
         FilePath compressedFile = filename + extDvpl;
-        if (FileAPI::IsRegularFile(compressedFile.GetAbsolutePathname()))
+        String fileName = compressedFile.GetAbsolutePathname();
+        if (FileAPI::IsRegularFile(fileName))
         {
             result = CompressedCreate(compressedFile, attributes);
+            if (result == nullptr)
+            {
+                // delete bad file (can't decompress)
+                FileAPI::RemoveFile(fileName);
+            }
         }
     }
     return result; // easy debug on android(can set breakpoint on nullptr value in eclipse do not remove it)
@@ -200,7 +205,7 @@ File* File::CompressedCreate(const FilePath& filename, uint32 attributes)
 
         if (!LZ4HCCompressor().Decompress(compressed, uncompressed))
         {
-            Logger::Error("decompress failed on file:", filename.GetAbsolutePathname().c_str());
+            Logger::Error("decompress failed on file: %s", filename.GetAbsolutePathname().c_str());
             return nullptr;
         }
 

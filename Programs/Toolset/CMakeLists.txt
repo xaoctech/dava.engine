@@ -41,8 +41,6 @@ set( JOIN_PROJECT_NAME 1 )
 set( DAVA_MEGASOLUTION      1 )
 set( IGNORE_FILE_TREE_CHECK 1 )
 
-dava_add_definitions (-D__DAVAENGINE_COREV2__)
-
 if( NOT DEPLOY_DIR )
     set( DEPLOY_DIR_MACOS             ${CMAKE_BINARY_DIR}/app )
     set( DEPLOY_DIR_WIN               ${CMAKE_BINARY_DIR}/app )

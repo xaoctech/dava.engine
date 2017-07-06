@@ -72,6 +72,10 @@ static void LogError(int32 errnoCode, const String& fileName, const char* functi
     case EINVAL:
         Logger::Error("Invalid parameter to stat: %s", fileName.c_str());
         break;
+    case EACCES:
+        // common case for android: /mnt/knox/Android/
+        // do not spam to logger
+        break;
     default:
         // Should never be reached.
         Logger::Error("Unexpected error in func: %s: errno: %s for path: %s",

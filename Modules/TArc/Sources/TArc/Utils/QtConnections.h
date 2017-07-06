@@ -2,6 +2,8 @@
 
 #include "Base/BaseTypes.h"
 
+#include <Functional/Function.h>
+
 #include <QMetaObject>
 #include <QPointer>
 #include <QObject>

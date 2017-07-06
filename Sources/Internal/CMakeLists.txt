@@ -11,26 +11,27 @@ include ( DavaLibs )
 
 set( NAME_MODULE ${DAVA_LIBRARY} )
 
-set( MODULE_TYPE STATIC )#INLINE STATIC DYNAMIC 
+set( MODULE_TYPE STATIC )#INLINE STATIC DYNAMIC
 
 set( EXTERNAL_MODULES_WIN           ${DAVA_EXTERNAL_DIR}/cef )
 set( EXTERNAL_MODULES               ${DAVA_MODULES_DIR}/SampleModule
                                     ${DAVA_MODULES_DIR}/NetworkCore
                                     ${DAVA_MODULES_DIR}/Physics
                                     ${DAVA_MODULES_DIR}/PhysicsDebug
+                                    ${DAVA_MODULES_DIR}/Spine
                                     )
 
-set( INCLUDES_PRIVATE               ${DAVA_ENGINE_DIR} 
+set( INCLUDES_PRIVATE               ${DAVA_ENGINE_DIR}
                                     ${DAVA_THIRD_PARTY_INCLUDES_PATH}  )
 
-set( INCLUDES_WIN                   ${WINDOWSSDK_LATEST_DIR}/include/shared        
-                                    $ENV{DXSDK_DIR}/include 
+set( INCLUDES_WIN                   ${WINDOWSSDK_LATEST_DIR}/include/shared
+                                    $ENV{DXSDK_DIR}/include
                                     ${DAVA_THIRD_PARTY_ROOT_PATH}/include/ffmpeg )
 
-  
-set( FIND_SYSTEM_LIBRARY_IOS        CoreGraphics 
-                                    Foundation 
-                                    UIKit 
+
+set( FIND_SYSTEM_LIBRARY_IOS        CoreGraphics
+                                    Foundation
+                                    UIKit
                                     OpenGLES
                                     Metal
                                     OpenAL
@@ -45,7 +46,7 @@ set( FIND_SYSTEM_LIBRARY_IOS        CoreGraphics
                                     Security
                                     AssetsLibrary
                                     SystemConfiguration
-                                    MediaPlayer 
+                                    MediaPlayer
                                     ZLIB
                                     CoreTelephony )
 
@@ -59,15 +60,15 @@ set( FIND_SYSTEM_LIBRARY_MACOS      Cocoa
                                     CoreMedia
                                     WebKit
                                     SystemConfiguration
-                                    IOKit 
+                                    IOKit
                                     ZLIB )
 
 
-set( FIND_SYSTEM_LIBRARY_ANDROID    ZLIB ) 
+set( FIND_SYSTEM_LIBRARY_ANDROID    ZLIB )
 
 set( STATIC_LIBRARIES_IOS           ${DAVA_STATIC_LIBRARIES_IOS} )
 set( STATIC_LIBRARIES_MACOS         ${DAVA_STATIC_LIBRARIES_MACOS} )
-set( STATIC_LIBRARIES_ANDROID       ${DAVA_STATIC_LIBRARIES_ANDROID} )  
+set( STATIC_LIBRARIES_ANDROID       ${DAVA_STATIC_LIBRARIES_ANDROID} )
 set( STATIC_LIBRARIES_WIN32         ${DAVA_STATIC_LIBRARIES_WIN32} )
 set( STATIC_LIBRARIES_WIN32_RELEASE ${DAVA_STATIC_LIBRARIES_WIN32_RELEASE} )
 set( STATIC_LIBRARIES_WIN32_DEBUG   ${DAVA_STATIC_LIBRARIES_WIN32_DEBUG} )
@@ -80,18 +81,18 @@ set( STATIC_LIBRARIES_WINUAP_DEBUG  ${DAVA_STATIC_LIBRARIES_WINUAP_DEBUG} )
 
 set( DYNAMIC_LIBRARIES_WIN32        ${DAVA_DYNAMIC_LIBRARIES_WIN32})
 set( DYNAMIC_LIBRARIES_WIN64        ${DAVA_DYNAMIC_LIBRARIES_WIN64} )
-  
+
 set( DYNAMIC_LIBRARIES_ANDROID      ${DAVA_DYNAMIC_LIBRARIES_ANDROID} )
 
 set( STATIC_LIBRARIES_LINUX         ${DAVA_STATIC_LIBRARIES_LINUX} )
 
 set( SRC_FOLDERS                    "." )
- 
+
 set( MODULE_MANAGER_TEMPLATE        ModuleManager/ModuleManager.in )
 
 set( CPP_FILES                      ${DAVA_EXTERNAL_DIR}/lz4/*.c
                                     ${DAVA_EXTERNAL_DIR}/imgui/*.cpp)
-                   
+
 set( ERASE_FOLDERS_IOS              "DX9" "DX11" )
 set( ERASE_FOLDERS_MACOS            "Metal" "DX9" "DX11" )
 set( ERASE_FOLDERS_ANDROID          "Metal" "DX9" "DX11" )
@@ -100,7 +101,7 @@ set( ERASE_FOLDERS_WINUAP           "DX9" "GLES2" "Metal" )
 set( ERASE_FOLDERS_LINUX            "DX9" "DX11" "Metal" "GLES2" )
 
 
-set( UNITY_IGNORE_LIST              "Internal/Autotesting" 
+set( UNITY_IGNORE_LIST              "Internal/Autotesting"
                                     "Compression/ZipCompressor.cpp"
                                     "Platform/Steam.cpp"
                                     "DataStorage/Steam/DataStorageSteam.cpp"
@@ -108,24 +109,18 @@ set( UNITY_IGNORE_LIST              "Internal/Autotesting"
                                     "External/imgui")
 
 set( UNITY_IGNORE_LIST_APPLE        "DataStorage/Apple/ICloudKeyValue.cpp"
-                                    "TemplateMacOS/CoreMacOSPlatformBase.cpp"
                                     "Concurrency/ThreadPosix.cpp"
-                                    "Render/Texture.cpp" 
+                                    "Render/Texture.cpp"
                                     "Render/RHI/GLES2"
-                                    "TemplateMacOS/MainWindowController.mm"
-                                    "TemplateMacOS/MovieViewControlMacOS.mm"
                                     "Logger/TeamcityOutput.cpp" )
 
 set( UNITY_IGNORE_LIST_IOS          "DataStorage/Apple/ICloudKeyValue.cpp"
-                                    "TemplateiOS/BackgroundView.mm"
-                                    "TemplateiOS/HelperAppDelegate.mm"
-                                    "TemplateiOS/DPIHelperiOS.mm"
                                     "TemplateiOS"
-                                    "UI/UITextFieldiPhone.mm" )
+                                    )
 
-set( DEFINITIONS_PRIVATE            -D_UNICODE 
-                                    -DUNICODE 
-                                    -D_CRT_SECURE_NO_DEPRECATE 
+set( DEFINITIONS_PRIVATE            -D_UNICODE
+                                    -DUNICODE
+                                    -D_CRT_SECURE_NO_DEPRECATE
                                     -D_CRT_NON_CONFORMING_SWPRINTFS
                                     -DCURL_STATICLIB  )
 

@@ -46,6 +46,7 @@ private:
     FileDialogParams GetFileDialogParams() const;
 
     void ProcessValidationResult(M::ValidationResult& validationResult, FilePath& path);
+    void UpdateControlValue(const DAVA::Any& value);
 
 private:
     QtConnections connections;

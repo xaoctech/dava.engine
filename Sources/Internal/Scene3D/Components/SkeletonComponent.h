@@ -84,6 +84,9 @@ public:
     uint16 GetJointId(const FastName& name) const;
     uint16 GetJointsCount() const;
 
+    const FastName& GetJointName(uint16 jointId) const;
+    const JointTransform& GetObjectSpaceTransform(uint16 jointId) const;
+
 private:
     /*config time*/
     Vector<JointConfig> configJoints;
@@ -216,7 +219,7 @@ inline SkeletonComponent::JointTransform SkeletonComponent::JointTransform::GetI
 }
 
 template <>
-bool AnyCompare<SkeletonComponent::JointConfig>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2);
+bool AnyCompare<SkeletonComponent::JointConfig>::IsEqual(const Any& v1, const Any& v2);
 extern template struct AnyCompare<SkeletonComponent::JointConfig>;
 
 } //ns
