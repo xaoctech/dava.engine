@@ -82,6 +82,13 @@ void SceneSaver::ResaveFile(const String& fileName)
 
 void SceneSaver::SaveScene(Scene* scene, const FilePath& fileName)
 {
+    DAVA::String absScenePath = fileName.GetAbsolutePathname();
+    if (savedExternalScenes.count(absScenePath) > 0)
+    {
+        return;
+    }
+
+    savedExternalScenes.insert(absScenePath);
     uint64 startTime = SystemTimer::GetMs();
 
     DVASSERT(0 == texturesForSave.size());
@@ -147,12 +154,10 @@ void SceneSaver::SaveScene(Scene* scene, const FilePath& fileName)
 
     for (const DAVA::FilePath& externalScene : externalScenes)
     {
-        savedExternalScenes.insert(externalScene);
         DAVA::ScopedPtr<Scene> scene(new Scene());
         if (SceneFileV2::ERROR_NO_ERROR == scene->LoadScene(externalScene))
         {
-            DAVA::FilePath absExternalScenePath(externalScene.GetAbsolutePathname());
-            SaveScene(scene, absExternalScenePath);
+            SaveScene(scene, externalScene.GetAbsolutePathname());
         }
         else
         {
