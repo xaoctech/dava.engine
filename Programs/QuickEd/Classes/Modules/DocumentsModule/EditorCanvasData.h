@@ -72,8 +72,8 @@ public:
     DAVA::Vector2 GetViewSize() const;
 
     //helper functions for mouse wheel and shortcuts
-    DAVA::float32 EditorCanvasData::GetNextScale(DAVA::int32 ticksCount) const;
-    DAVA::float32 EditorCanvasData::GetPreviousScale(DAVA::int32 ticksCount) const;
+    DAVA::float32 GetNextScale(DAVA::int32 ticksCount) const;
+    DAVA::float32 GetPreviousScale(DAVA::int32 ticksCount) const;
 
 private:
     void SetWorkAreaSize(const DAVA::Vector2& size);

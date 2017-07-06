@@ -28,7 +28,6 @@ bool IsKeyPressed(DAVA::eModifierKeys modifier)
     default:
         DVASSERT(false, "unsupported key");
         return false;
-        break;
     }
 }
 }

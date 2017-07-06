@@ -139,7 +139,7 @@ DAVA_TARC_TESTCLASS(ScrollBarTests)
     {
         QStyleOptionSlider opt;
         opt.initFrom(scrollBar);
-        Qt::Orientation or = scrollBar->orientation();
+
         QStyle* style = scrollBar->style();
         QRect rD = style->subControlRect(QStyle::CC_ScrollBar, &opt, QStyle::SC_ScrollBarSubLine, scrollBar);
         QRect rU = style->subControlRect(QStyle::CC_ScrollBar, &opt, QStyle::SC_ScrollBarAddLine, scrollBar);
