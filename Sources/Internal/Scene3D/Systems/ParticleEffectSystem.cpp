@@ -678,25 +678,24 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
     Vector3 prevBasePosition = data.baseNode.position;
     data.baseNode.position = particle->position;
     data.isActive = isActive;
+    bool fuck = false;
     if (layer->inheritPosition)
     {
         data.inheritPositionOffset = effectData.infoSources[group.positionSource].position;
     }
-    if (layer->stripeInheritPositionForBase)
+
+    if (layer->stripeInheritPositionForBase && data.stripeNodes.size() > 0)
     {
         data.baseNode.position = effectData.infoSources[group.positionSource].position;
+    }
 
-        Vector3 dir = particle->speed;
-        dir.Normalize();
+    if (layer->stripeInheritPositionForBase && data.stripeNodes.size() > 0)
+    {
+        float32 previousLength = (data.baseNode.position - data.stripeNodes.front().position).Length();
+        float32 currentLength = (prevBasePosition - data.stripeNodes.front().position).Length();
+        float32 deltaLength = currentLength - previousLength;
 
-        Vector3 delta = data.baseNode.position - prevBasePosition;
-        float32 len = delta.Length();
-        int32 sign = 1;
-
-        if (dir.DotProduct(delta) <= 0)
-            sign = -1;
-
-        data.uvOffset += len * sign;
+        data.uvOffset += deltaLength;
     }
 
     data.baseNode.speed = particle->speed;
@@ -709,13 +708,14 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
     if (shouldInsert)
     {
         data.spawnTimer -= spawnTime;
-        data.strpeNodes.emplace_front(0.0f, data.baseNode.position, data.baseNode.speed, 0.0f, 0.0f);
+        data.stripeNodes.emplace_front(0.0f, data.baseNode.position, data.baseNode.speed, 0.0f, 0.0f);
+        data.prevBaseLen = 0.0f;
     }
 
-    auto nodeIter = data.strpeNodes.begin();
+    auto nodeIter = data.stripeNodes.begin();
     DAVA::StripeNode* prevNode = &data.baseNode;
 
-    while (nodeIter != data.strpeNodes.end())
+    while (nodeIter != data.stripeNodes.end())
     {
         nodeIter->lifeime += dt;
         float32 overLife = nodeIter->lifeime / layer->stripeLifetime;
@@ -744,9 +744,17 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
 
         prevNode = &(*nodeIter);
         if (nodeIter->lifeime >= layer->stripeLifetime)
-            data.strpeNodes.erase(nodeIter++);
+            data.stripeNodes.erase(nodeIter++);
         else
             ++nodeIter;
+    }
+
+    if (data.stripeNodes.size() > 0 && false)
+    {
+        float32 len = data.stripeNodes.front().distanceFromPrevNode;
+        if (len < data.prevBaseLen)
+            data.uvOffset -= data.prevBaseLen - len;
+        data.prevBaseLen = len;
     }
 }
 
