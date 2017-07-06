@@ -209,7 +209,7 @@ public:
     static bool IsPropertyAffectBackground(AbstractProperty* property);
 
     Signal<> contentSizeChanged;
-    Signal<const Vector2&> rootControlPosChanged;
+    Signal<> rootControlPosChanged;
 
 private:
     void CalculateTotalRect(Rect& totalRect, Vector2& rootControlPosition) const;
@@ -342,7 +342,7 @@ void BackgroundController::AdjustToNestedControl()
     positionHolderControl->SetPosition(pos);
     gridControl->SetSize(size);
     rootControlPos = pos;
-    rootControlPosChanged.Emit(pos);
+    rootControlPosChanged.Emit();
 }
 
 void BackgroundController::ControlWasRemoved(ControlNode* node, ControlsContainerNode* from)
@@ -593,6 +593,8 @@ void EditorControlsView::Layout()
     Vector2 size(maxWidth, totalHeight);
 
     editorCanvasDataWrapper.SetFieldValue(EditorCanvasData::workAreaSizePropertyName, size);
+
+    OnRootControlPosChanged();
 }
 
 void EditorControlsView::OnRootContolsChanged(const Any& newRootControlsValue)
@@ -640,11 +642,13 @@ void EditorControlsView::OnRootContolsChanged(const Any& newRootControlsValue)
     Layout();
 }
 
-void EditorControlsView::OnRootControlPosChanged(const DAVA::Vector2& pos)
+//later background controls must be a part of data and rootControlPos must be simple getter
+void EditorControlsView::OnRootControlPosChanged()
 {
     if (gridControls.size() == 1)
     {
-        editorCanvasDataWrapper.SetFieldValue(EditorCanvasData::rootPositionPropertyName, pos);
+        const std::unique_ptr<BackgroundController>& grid = gridControls.front();
+        editorCanvasDataWrapper.SetFieldValue(EditorCanvasData::rootPositionPropertyName, grid->GetRootControlPos());
     }
     else
     {
