@@ -1,4 +1,28 @@
 
+## Skeleton
+
+
+    
+    Skeleton
+    {
+        node_count          U4;
+    
+        data
+        {
+            parent_i        U4;
+            bind_matrix     F4 16;
+            inv_bind_matrix F4 16;
+        } node_count;
+    
+        info
+        {
+            id              S0;
+            name            S0;
+        } node_count;
+    }
+    
+
+
 ## Animation
 
     
