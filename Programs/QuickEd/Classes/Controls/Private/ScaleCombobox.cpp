@@ -43,12 +43,9 @@ void ScaleComboBox::UpdateControl(const DAVA::TArc::ControlDescriptor& changedFi
     DVASSERT(updateControlProceed == false);
     ScopedValueGuard<bool> guard(updateControlProceed, true);
 
-    bool isEnabledChanged = changedFields.IsChanged(Fields::Enabled);
-    bool valueChanged = changedFields.IsChanged(Fields::Value);
-    if (isEnabledChanged || valueChanged)
+    if (changedFields.IsChanged(Fields::Enabled))
     {
-        bool readOnly = IsValueReadOnly(changedFields, Fields::Value, Fields::Enabled);
-        setEnabled(readOnly == false);
+        setEnabled(this->template GetFieldValue<bool>(Fields::Enabled, false));
     }
 
     if (changedFields.IsChanged(Fields::Enumerator))
@@ -56,8 +53,7 @@ void ScaleComboBox::UpdateControl(const DAVA::TArc::ControlDescriptor& changedFi
         CreateItems(model.GetField(changedFields.GetName(Fields::Enumerator)));
     }
 
-    DVASSERT(valueChanged);
-    Any value = model.GetField(changedFields.GetName(Fields::Value));
+    Any value = model.GetField(changedFields.GetName(Fields::Value)).GetValue();
     SetCurrentValue(value);
 }
 
@@ -68,9 +64,6 @@ void ScaleComboBox::CreateItems(const DAVA::Reflection& fieldEnumerator)
     QSignalBlocker blockSignals(this);
 
     clear();
-
-    DVASSERT(fieldEnumerator.IsValid() == true);
-
     Vector<Reflection::Field> fields = fieldEnumerator.GetFields();
     for (Reflection::Field& field : fields)
     {
@@ -80,7 +73,8 @@ void ScaleComboBox::CreateItems(const DAVA::Reflection& fieldEnumerator)
         dataValue.setValue(field.key);
         DVASSERT(fieldDescr.CanCast<float32>());
         float32 value = fieldDescr.Cast<float32>();
-        addItem(ValueToString(value), QVariant(value));
+
+        addItem(ValueToString(value), dataValue);
     }
 }
 

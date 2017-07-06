@@ -1,10 +1,21 @@
-#ifndef __RULERCONTROLLER__H__
-#define __RULERCONTROLLER__H__
+#pragma once
 
-#include "RulerSettings.h"
+#include "UI/Preview/Ruler/RulerSettings.h"
 
 #include <QObject>
 #include <QPoint>
+
+#include <memory>
+
+namespace DAVA
+{
+class Any;
+namespace TArc
+{
+class ContextAccessor;
+class FieldBinder;
+}
+}
 
 class RulerController : public QObject
 {
@@ -12,16 +23,12 @@ class RulerController : public QObject
 
 public:
     // Construction/destruction.
-    RulerController(QObject* parent = nullptr);
-    ~RulerController() = default;
-
-    // Set the screen view pos and scale.
-    void SetScale(float scale);
+    RulerController(DAVA::TArc::ContextAccessor* accessor, QObject* parent = nullptr);
+    ~RulerController() override;
 
 public slots:
     // Update the ruler markers with the mouse position.
     void UpdateRulerMarkers(QPoint curMousePos);
-    void SetViewPos(QPoint pos);
 
 signals:
     // Horizontal/Vertical ruler settings are changed.
@@ -42,6 +49,10 @@ protected:
     void RecalculateRulerSettings();
 
 private:
+    void InitFieldBinder();
+    void OnStartValueChanged(const DAVA::Any& startValue);
+    void OnScaleChanged(const DAVA::Any& scaleValue);
+
     // Screen view pos and scale.
     QPoint viewPos;
     float screenScale = 1.0f;
@@ -49,6 +60,7 @@ private:
     // Ruler settings.
     RulerSettings horisontalRulerSettings;
     RulerSettings verticalRulerSettings;
-};
 
-#endif /* defined(__RULERCONTROLLER__H__) */
+    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
+    DAVA::TArc::ContextAccessor* accessor = nullptr;
+};

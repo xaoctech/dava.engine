@@ -20,11 +20,14 @@
 
 #include "Modules/DocumentsModule/DocumentData.h"
 #include "Modules/DocumentsModule/CentralWidgetData.h"
+#include "Modules/DocumentsModule/EditorCanvasData.h"
 
 #include "Controls/ScaleComboBox.h"
 
 #include <TArc/Controls/SceneTabbar.h>
 #include <TArc/Controls/ScrollBar.h>
+#include <TArc/WindowSubSystem/ActionUtils.h>
+#include <TArc/WindowSubSystem/UI.h>
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/DataProcessing/DataContext.h>
 
@@ -55,9 +58,7 @@ PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc:
     : QFrame(nullptr)
     , accessor(accessor_)
     , ui(ui_)
-    , rulerController(new RulerController(this))
-    , vGuidesController(new VGuidesController(accessor, this))
-    , hGuidesController(new HGuidesController(accessor, this))
+    , rulerController(new RulerController(accessor, this))
     , scaleComboBoxData(accessor)
     , hScrollBarData(Vector2::AXIS_X, accessor)
     , vScrollBarData(Vector2::AXIS_Y, accessor)
@@ -68,10 +69,8 @@ PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc:
 
     InitFromSystemsManager(systemsManager);
 
-    DAVA::TArc::DataContext* globalContext = accessor->GetGlobalContext();
-    globalContext->CreateData(std::make_unique<CentralWidgetData>(renderWidget, horizontalRuler, verticalRuler));
-
     centralWidgetDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<CentralWidgetData>());
+    editorCanvasDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<EditorCanvasData>());
 }
 
 PreviewWidget::~PreviewWidget() = default;
@@ -134,22 +133,10 @@ void PreviewWidget::CreateActions()
     focusNextChildAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     renderWidget->addAction(focusNextChildAction);
 
-    focusPreviousChildAction = new QAction(tr("Focus frevious child"), this);
+    focusPreviousChildAction = new QAction(tr("Focus previous child"), this);
     focusPreviousChildAction->setShortcut(static_cast<int>(Qt::ShiftModifier | Qt::Key_Tab));
     focusPreviousChildAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     renderWidget->addAction(focusPreviousChildAction);
-}
-
-void PreviewWidget::OnRootControlPositionChanged(const Vector2& pos)
-{
-    rootControlPos = QPoint(static_cast<int>(pos.x), static_cast<int>(pos.y));
-    ApplyPosChanges();
-}
-
-void PreviewWidget::OnNestedControlPositionChanged(const Vector2& pos)
-{
-    canvasPos = QPoint(static_cast<int>(pos.x), static_cast<int>(pos.y));
-    ApplyPosChanges();
 }
 
 void PreviewWidget::OnEmulationModeChanged(bool emulationMode)
@@ -176,67 +163,36 @@ void PreviewWidget::OnEmulationModeChanged(bool emulationMode)
 
 void PreviewWidget::OnIncrementScale()
 {
-    //float32 nextScale = editorCanvas->GetNextScale(1);
-    //editorCanvas->SetScale(nextScale);
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    DataContext* activeContext = accessor->GetActiveContext();
+    DVASSERT(activeContext != nullptr);
+    EditorCanvasData* canvasData = activeContext->GetData<EditorCanvasData>();
+
+    float32 nextScale = canvasData->GetNextScale(1);
+    editorCanvasDataWrapper.SetFieldValue(EditorCanvasData::scalePropertyName, nextScale);
 }
 
 void PreviewWidget::OnDecrementScale()
 {
-    //float32 nextScale = editorCanvas->GetPreviousScale(-1);
-    // editorCanvas->SetScale(nextScale);
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    DataContext* activeContext = accessor->GetActiveContext();
+    DVASSERT(activeContext != nullptr);
+    EditorCanvasData* canvasData = activeContext->GetData<EditorCanvasData>();
+
+    float32 nextScale = canvasData->GetPreviousScale(-1);
+    editorCanvasDataWrapper.SetFieldValue(EditorCanvasData::scalePropertyName, nextScale);
 }
 
 void PreviewWidget::SetActualScale()
 {
-    //     if (editorCanvas != nullptr)
-    //     {
-    //         editorCanvas->SetScale(1.0f); //1.0f is a 100% scale
-    //     }
-}
+    using namespace DAVA;
+    using namespace DAVA::TArc;
 
-void PreviewWidget::ApplyPosChanges()
-{
-    //     using namespace DAVA;
-    //
-    //     float32 scale = editorCanvas->GetScale();
-    //     QPoint viewPos = (canvasPos + rootControlPos * scale) * -1;
-    //     rulerController->SetViewPos(viewPos);
-    //
-    //     QPoint viewStartValue(std::floor(viewPos.x() / scale), std::floor(viewPos.y()) / scale);
-    //
-    //     hGuidesController->OnCanvasParametersChanged(viewPos.x(), viewStartValue.x(), viewStartValue.x() + renderWidget->width() / scale, scale);
-    //     vGuidesController->OnCanvasParametersChanged(viewPos.y(), viewStartValue.y(), viewStartValue.y() + renderWidget->height() / scale, scale);
-}
-
-void PreviewWidget::UpdateScrollArea(const DAVA::Vector2& /*size*/)
-{
-    //     if (editorCanvas == nullptr)
-    //     {
-    //         verticalScrollBar->setPageStep(0);
-    //         horizontalScrollBar->setPageStep(0);
-    //
-    //         verticalScrollBar->setRange(0, 0);
-    //         horizontalScrollBar->setRange(0, 0);
-    //     }
-    //     else
-    //     {
-    //         Vector2 areaSize = editorCanvas->GetViewSize();
-    //
-    //         verticalScrollBar->setPageStep(areaSize.dy);
-    //         horizontalScrollBar->setPageStep(areaSize.dx);
-    //
-    //         Vector2 minPos = editorCanvas->GetMinimumPos();
-    //         Vector2 maxPos = editorCanvas->GetMaximumPos();
-    //         horizontalScrollBar->setRange(minPos.x, maxPos.x);
-    //         verticalScrollBar->setRange(minPos.y, maxPos.y);
-    //     }
-}
-
-void PreviewWidget::OnPositionChanged(const Vector2& position)
-{
-    //     using namespace DAVA::TArc;
-    //     horizontalScrollBar->setSliderPosition(position.x);
-    //     verticalScrollBar->setSliderPosition(position.y);
+    editorCanvasDataWrapper.SetFieldValue(EditorCanvasData::scalePropertyName, 1.0f);
 }
 
 void PreviewWidget::OnResized(DAVA::uint32 width, DAVA::uint32 height)
@@ -253,8 +209,6 @@ void PreviewWidget::InitFromSystemsManager(EditorSystemsManager* systemsManager_
 {
     DVASSERT(nullptr == systemsManager);
     systemsManager = systemsManager_;
-
-    systemsManager->rootControlPositionChanged.Connect(this, &PreviewWidget::OnRootControlPositionChanged);
 
     connect(focusNextChildAction, &QAction::triggered, std::bind(&EditorSystemsManager::FocusNextChild, systemsManager));
     connect(focusPreviousChildAction, &QAction::triggered, std::bind(&EditorSystemsManager::FocusPreviousChild, systemsManager));
@@ -279,29 +233,13 @@ void PreviewWidget::InjectRenderWidget(DAVA::RenderWidget* renderWidget_)
     renderWidget->SetClientDelegate(this);
 }
 
-void PreviewWidget::OnVScrollbarActionTriggered(int /*action*/)
-{
-    //     Vector2 canvasPosition = editorCanvas->GetPosition();
-    //     canvasPosition.y = verticalScrollBar->sliderPosition();
-    //     if (editorCanvas != nullptr)
-    //     {
-    //         editorCanvas->SetPosition(canvasPosition);
-    //     }
-}
-
-void PreviewWidget::OnHScrollbarActionTriggered(int /*action*/)
-{
-    //     Vector2 canvasPosition = editorCanvas->GetPosition();
-    //     canvasPosition.x = horizontalScrollBar->sliderPosition();
-    //     if (editorCanvas != nullptr)
-    //     {
-    //         editorCanvas->SetPosition(canvasPosition);
-    //     }
-}
-
 void PreviewWidget::InitUI()
 {
     using namespace DAVA::TArc;
+
+    GuidesController* hGuidesController = new GuidesController(Vector2::AXIS_X, accessor, this);
+    GuidesController* vGuidesController = new GuidesController(Vector2::AXIS_Y, accessor, this);
+
     QVBoxLayout* vLayout = new QVBoxLayout(this);
 
     DAVA::TArc::DataContext* ctx = accessor->GetGlobalContext();
@@ -319,18 +257,16 @@ void PreviewWidget::InitUI()
 
     QGridLayout* gridLayout = new QGridLayout();
     vLayout->addLayout(gridLayout);
-    horizontalRuler = new RulerWidget(hGuidesController, this);
+    RulerWidget* horizontalRuler = new RulerWidget(hGuidesController, this);
     horizontalRuler->SetRulerOrientation(Qt::Horizontal);
     horizontalRuler->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
-    connect(horizontalRuler, &RulerWidget::GeometryChanged, this, &PreviewWidget::OnRulersGeometryChanged);
     connect(rulerController, &RulerController::HorisontalRulerSettingsChanged, horizontalRuler, &RulerWidget::OnRulerSettingsChanged);
     connect(rulerController, &RulerController::HorisontalRulerMarkPositionChanged, horizontalRuler, &RulerWidget::OnMarkerPositionChanged);
     gridLayout->addWidget(horizontalRuler, 0, 1);
 
-    verticalRuler = new RulerWidget(vGuidesController, this);
+    RulerWidget* verticalRuler = new RulerWidget(vGuidesController, this);
     verticalRuler->SetRulerOrientation(Qt::Vertical);
     verticalRuler->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
-    connect(verticalRuler, &RulerWidget::GeometryChanged, this, &PreviewWidget::OnRulersGeometryChanged);
     connect(rulerController, &RulerController::VerticalRulerSettingsChanged, verticalRuler, &RulerWidget::OnRulerSettingsChanged);
     connect(rulerController, &RulerController::VerticalRulerMarkPositionChanged, verticalRuler, &RulerWidget::OnMarkerPositionChanged);
     gridLayout->addWidget(verticalRuler, 1, 0);
@@ -353,15 +289,6 @@ void PreviewWidget::InitUI()
         gridLayout->addWidget(scrollBar->ToWidgetCast(), 1, 2);
     }
 
-    //     {
-    //         ScaleComboBox::Params params(accessor, ui, DAVA::TArc::mainWindowKey);
-    //         params.fields[ScaleComboBox::Fields::Enumerator] = ScaleComboBoxData::enumeratorPropertyName;
-    //         params.fields[ScaleComboBox::Fields::Value] = ScaleComboBoxData::scalePropertyName;
-    //         params.fields[ScaleComboBox::Fields::Enabled] = ScaleComboBoxData::enabledPropertyName;
-    //         ScaleComboBox* scaleCombo = new ScaleComboBox(params, accessor, Reflection::Create(ReflectedObject(&scaleComboBoxData)));
-    //         gridLayout->addWidget(scaleCombo->ToWidgetCast(), 4, 1, 1, 1);
-    //     }
-
     {
         ScrollBar::Params params(accessor, ui, DAVA::TArc::mainWindowKey);
         params.fields[ScrollBar::Fields::Value] = ScrollBarData::positionPropertyName;
@@ -379,8 +306,30 @@ void PreviewWidget::InitUI()
     gridLayout->setMargin(0.0f);
     gridLayout->setSpacing(1.0f);
 
-    hGuidesController->CreatePreviewGuide();
-    vGuidesController->CreatePreviewGuide();
+    vLayout->setMargin(0.0f);
+    vLayout->setSpacing(1.0f);
+
+    {
+        ScaleComboBox::Params params(accessor, ui, DAVA::TArc::mainWindowKey);
+        params.fields[ScaleComboBox::Fields::Enumerator] = ScaleComboBoxData::enumeratorPropertyName;
+        params.fields[ScaleComboBox::Fields::Value] = ScaleComboBoxData::scalePropertyName;
+        params.fields[ScaleComboBox::Fields::Enabled] = ScaleComboBoxData::enabledPropertyName;
+        ScaleComboBox* scaleCombo = new ScaleComboBox(params, accessor, Reflection::Create(ReflectedObject(&scaleComboBoxData)));
+
+        QString toolbarName = "Document toolBar";
+        ActionPlacementInfo toolBarScalePlacement(CreateMenuPoint(QList<QString>() << "View"
+                                                                                   << "Toolbars"));
+        ui->DeclareToolbar(DAVA::TArc::mainWindowKey, toolBarScalePlacement, toolbarName);
+
+        QAction* action = new QAction(nullptr);
+        AttachWidgetToAction(action, scaleCombo->ToWidgetCast());
+
+        ActionPlacementInfo placementInfo(CreateToolbarPoint(toolbarName));
+        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+    }
+
+    DAVA::TArc::DataContext* globalContext = accessor->GetGlobalContext();
+    globalContext->CreateData(std::make_unique<CentralWidgetData>(renderWidget, horizontalRuler, verticalRuler));
 }
 
 void PreviewWidget::ShowMenu(const QMouseEvent* mouseEvent)
@@ -644,26 +593,4 @@ void PreviewWidget::OnKeyPressed(QKeyEvent* event)
             }
         }
     }
-}
-
-void PreviewWidget::OnRulersGeometryChanged()
-{
-    QPoint topRight = horizontalRuler->geometry().topRight();
-    QPoint bottomLeft = verticalRuler->geometry().bottomLeft();
-
-    hGuidesController->OnContainerGeometryChanged(bottomLeft, topRight, horizontalRuler->pos().x());
-    vGuidesController->OnContainerGeometryChanged(bottomLeft, topRight, verticalRuler->pos().y());
-}
-
-bool PreviewWidget::event(QEvent* event)
-{
-    //we have bug when horizontalRuler->geometry() returns uncorrect value on ruler resizeEvent
-    QEvent::Type type = event->type();
-    bool returnValue = QFrame::event(event);
-
-    if (type == QEvent::Resize)
-    {
-        OnRulersGeometryChanged();
-    }
-    return returnValue;
 }

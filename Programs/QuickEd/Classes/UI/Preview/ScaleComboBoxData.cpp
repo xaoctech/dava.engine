@@ -17,7 +17,8 @@ DAVA_REFLECTION_IMPL(ScaleComboBoxData)
     .End();
 }
 
-ScaleComboBoxData::ScaleComboBoxData(DAVA::TArc::ContextAccessor* accessor)
+ScaleComboBoxData::ScaleComboBoxData(DAVA::TArc::ContextAccessor* accessor_)
+    : accessor(accessor_)
 {
     editorCanvasDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<EditorCanvasData>());
 }
@@ -40,19 +41,21 @@ void ScaleComboBoxData::SetScale(const DAVA::Any& scale)
     editorCanvasDataWrapper.SetFieldValue(EditorCanvasData::scalePropertyName, scale);
 }
 
-DAVA::Any ScaleComboBoxData::GetScales() const
+const DAVA::Vector<DAVA::float32>& ScaleComboBoxData::GetScales() const
 {
-    if (editorCanvasDataWrapper.HasData())
+    DAVA::TArc::DataContext* activeContext = accessor->GetActiveContext();
+    if (activeContext == nullptr)
     {
-        return editorCanvasDataWrapper.GetFieldValue(EditorCanvasData::predefinedScalesPropertyName);
+        static DAVA::Vector<DAVA::float32> emptyData;
+        return emptyData;
     }
     else
     {
-        return DAVA::Any();
+        return activeContext->GetData<EditorCanvasData>()->GetPredefinedScales();
     }
 }
 
-DAVA::Any ScaleComboBoxData::IsEnabled() const
+bool ScaleComboBoxData::IsEnabled() const
 {
     return editorCanvasDataWrapper.HasData();
 }

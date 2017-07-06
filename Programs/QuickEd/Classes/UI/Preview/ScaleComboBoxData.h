@@ -26,11 +26,12 @@ private:
     DAVA::Any GetScale() const;
     void SetScale(const DAVA::Any& scale);
 
-    DAVA::Any GetScales() const;
+    const DAVA::Vector<DAVA::float32>& GetScales() const;
 
-    DAVA::Any IsEnabled() const;
+    bool IsEnabled() const;
 
     DAVA::TArc::DataWrapper editorCanvasDataWrapper;
+    DAVA::TArc::ContextAccessor* accessor = nullptr;
 
     DAVA_REFLECTION(EditorCanvasData);
 };

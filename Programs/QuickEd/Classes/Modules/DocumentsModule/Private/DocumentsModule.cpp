@@ -383,7 +383,7 @@ void DocumentsModule::CreateUndoRedoActions()
         QAction* separator = new QAction(editMenuSeparatorName, nullptr);
         separator->setSeparator(true);
         ActionPlacementInfo placementInfo;
-        placementInfo.AddPlacementPoint(CreateToolbarPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::AfterItem, redoActionName }));
+        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName, { InsertionParams::eInsertionMethod::AfterItem, redoActionName }));
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, separator);
     }
 }
@@ -439,11 +439,18 @@ void DocumentsModule::CreateViewActions()
 
     //Zoom in
     {
-        QAction* action = new QAction(zoomInActionName, nullptr);
+        QtAction* action = new QtAction(accessor, zoomInActionName, nullptr);
         action->setShortcutContext(Qt::WindowShortcut);
         action->setShortcuts(QList<QKeySequence>()
                              << QKeySequence("Ctrl+=")
                              << QKeySequence("Ctrl++"));
+
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
+        fieldDescr.fieldName = FastName(DocumentData::packagePropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any {
+            return fieldValue.CanCast<PackageNode*>() && fieldValue.Cast<PackageNode*>() != nullptr;
+        });
 
         connections.AddConnection(action, &QAction::triggered, MakeFunction(previewWidget, &PreviewWidget::OnIncrementScale));
         ActionPlacementInfo placementInfo;
@@ -454,9 +461,16 @@ void DocumentsModule::CreateViewActions()
 
     //Zoom out
     {
-        QAction* action = new QAction(zoomOutActionName, nullptr);
+        QtAction* action = new QtAction(accessor, zoomOutActionName, nullptr);
         action->setShortcutContext(Qt::WindowShortcut);
         action->setShortcut(QKeySequence("Ctrl+-"));
+
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
+        fieldDescr.fieldName = FastName(DocumentData::packagePropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any {
+            return fieldValue.CanCast<PackageNode*>() && fieldValue.Cast<PackageNode*>() != nullptr;
+        });
 
         connections.AddConnection(action, &QAction::triggered, MakeFunction(previewWidget, &PreviewWidget::OnDecrementScale));
 
@@ -468,9 +482,16 @@ void DocumentsModule::CreateViewActions()
 
     //Actual zoom
     {
-        QAction* action = new QAction(actualZoomActionName, nullptr);
+        QtAction* action = new QtAction(accessor, actualZoomActionName, nullptr);
         action->setShortcutContext(Qt::WindowShortcut);
         action->setShortcut(QKeySequence("Ctrl+0"));
+
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
+        fieldDescr.fieldName = FastName(DocumentData::packagePropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any {
+            return fieldValue.CanCast<PackageNode*>() && fieldValue.Cast<PackageNode*>() != nullptr;
+        });
 
         connections.AddConnection(action, &QAction::triggered, MakeFunction(previewWidget, &PreviewWidget::SetActualScale));
 

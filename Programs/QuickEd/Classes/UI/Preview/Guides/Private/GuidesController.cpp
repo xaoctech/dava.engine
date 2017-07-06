@@ -2,21 +2,30 @@
 #include "UI/Preview/Guides/GuideLabel.h"
 
 #include "Modules/DocumentsModule/DocumentData.h"
+#include "Modules/DocumentsModule/EditorCanvasData.h"
+#include "Modules/DocumentsModule/CentralWidgetData.h"
+
 #include "Modules/PreferencesModule/PreferencesData.h"
+
 #include "QECommands/SetGuidesCommand.h"
 
 #include <TArc/Core/FieldBinder.h>
+
+#include <QtTools/Updaters/LazyUpdater.h>
 
 #include <Reflection/ReflectedTypeDB.h>
 #include <Logger/Logger.h>
 #include <Preferences/PreferencesStorage.h>
 #include <Preferences/PreferencesRegistrator.h>
 
-GuidesController::GuidesController(DAVA::TArc::ContextAccessor* accessor_, QWidget* container_)
-    : accessor(accessor_)
+GuidesController::GuidesController(DAVA::Vector2::eAxis orientation_, DAVA::TArc::ContextAccessor* accessor_, QWidget* container_)
+    : orientation(orientation_)
+    , accessor(accessor_)
     , fieldBinder(new DAVA::TArc::FieldBinder(accessor))
     , container(container_)
 {
+    updater.SetUpdater(DAVA::MakeFunction(this, &GuidesController::SyncGuidesWithValues));
+
     documentDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<DocumentData>());
     preferencesDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<PreferencesData>());
 
@@ -24,33 +33,77 @@ GuidesController::GuidesController(DAVA::TArc::ContextAccessor* accessor_, QWidg
 
     preferences.guidesColorChanged.Connect(this, &GuidesController::OnGuidesColorChanged);
     preferences.previewGuideColorChanged.Connect(this, &GuidesController::OnPreviewGuideColorChanged);
+
+    CreatePreviewGuide();
 }
 
-void GuidesController::CreatePreviewGuide()
+void GuidesController::BindFields()
 {
-    DVASSERT(previewGuide.line == nullptr && previewGuide.text == nullptr);
-    previewGuide = CreateGuide(preferences.GetPreviewGuideColor());
-    previewGuide.Hide();
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+    {
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
+        fieldDescr.fieldName = DocumentData::displayedRootControlsPropertyName;
+        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnRootControlsChanged));
+    }
+    {
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
+        fieldDescr.fieldName = DocumentData::guidesPropertyName;
+        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnVisualPropertiesChanged));
+    }
+    {
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<PreferencesData>();
+        fieldDescr.fieldName = PreferencesData::guidesEnabledPropertyName;
+        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnVisualPropertiesChanged));
+    }
+    {
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<EditorCanvasData>();
+        fieldDescr.fieldName = EditorCanvasData::startValuePropertyName;
+        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnVisualPropertiesChanged));
+    }
+    {
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<EditorCanvasData>();
+        fieldDescr.fieldName = EditorCanvasData::lastValuePropertyName;
+        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnVisualPropertiesChanged));
+    }
+    {
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<EditorCanvasData>();
+        fieldDescr.fieldName = EditorCanvasData::scalePropertyName;
+        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnVisualPropertiesChanged));
+    }
+    {
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<CentralWidgetData>();
+        fieldDescr.fieldName = CentralWidgetData::guidesPosPropertyName;
+        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnVisualPropertiesChanged));
+    }
+    {
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<CentralWidgetData>();
+        fieldDescr.fieldName = CentralWidgetData::guidesSizePropertyName;
+        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnVisualPropertiesChanged));
+    }
+    {
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<CentralWidgetData>();
+        fieldDescr.fieldName = CentralWidgetData::guidesRelativePosPropertyName;
+        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnVisualPropertiesChanged));
+    }
 }
 
-void GuidesController::OnContainerGeometryChanged(const QPoint& bottomLeft, const QPoint& topRight, DAVA::float32 rulerRelativePos_)
+void GuidesController::OnVisualPropertiesChanged(const DAVA::Any&)
 {
-    ProcessGeometryChanged(bottomLeft, topRight);
-    rulerRelativePos = rulerRelativePos_;
-    SyncGuidesWithValues();
-}
-
-void GuidesController::OnCanvasParametersChanged(DAVA::float32 scaledMinValue_, DAVA::float32 min_, DAVA::float32 max_, DAVA::float32 scale_)
-{
-    scaledMinValue = scaledMinValue_;
-    minValue = min_;
-    maxValue = max_;
-    scale = scale_;
+    updater.Update();
 
     SetDisplayState(NO_DISPLAY);
     DisableDrag();
 
-    SyncGuidesWithValues();
 }
 
 void GuidesController::OnMousePress(DAVA::float32 position)
@@ -164,7 +217,7 @@ QList<QAction*> GuidesController::GetActions(DAVA::float32 position, QObject* pa
         actions << removeGuideAction;
     }
 
-    QAction* removeAllGuidesAction = new QAction(QString("Remove All %1 Guides").arg(GetOrientation() == DAVA::Vector2::AXIS_X ? "Vertical" : "Horizontal"), parent);
+    QAction* removeAllGuidesAction = new QAction(QString("Remove All %1 Guides").arg(orientation == DAVA::Vector2::AXIS_X ? "Vertical" : "Horizontal"), parent);
     connect(removeAllGuidesAction, &QAction::triggered, this, &GuidesController::RemoveAllGuides);
     if (GetValues().empty())
     {
@@ -205,7 +258,7 @@ void GuidesController::SetDisplayState(eDisplayState state)
         previewGuide.Raise();
         break;
     case DISPLAY_DRAG:
-        container->setCursor(GetOrientation() == DAVA::Vector2::AXIS_X ? Qt::SplitHCursor : Qt::SplitVCursor);
+        container->setCursor(orientation == DAVA::Vector2::AXIS_X ? Qt::SplitHCursor : Qt::SplitVCursor);
         break;
     case DISPLAY_REMOVE:
         container->setCursor(QCursor(QPixmap(":/Cursors/trashCursor.png")));
@@ -252,35 +305,6 @@ void GuidesController::DisableDrag()
     dragState = NO_DRAG;
 }
 
-void GuidesController::BindFields()
-{
-    using namespace DAVA;
-    using namespace DAVA::TArc;
-    {
-        FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-        fieldDescr.fieldName = DocumentData::guidesPropertyName;
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnValuesChanged));
-    }
-    {
-        FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-        fieldDescr.fieldName = DocumentData::displayedRootControlsPropertyName;
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnRootControlsChanged));
-    }
-    {
-        FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<PreferencesData>();
-        fieldDescr.fieldName = PreferencesData::guidesEnabledPropertyName;
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnGuidesEnabledChanged));
-    }
-}
-
-void GuidesController::OnValuesChanged(const DAVA::Any&)
-{
-    SyncGuidesWithValues();
-}
-
 void GuidesController::OnRootControlsChanged(const DAVA::Any& rootControls)
 {
     //this is not good situation, but we can reload or close document by shortcut while we dragging guide
@@ -289,13 +313,10 @@ void GuidesController::OnRootControlsChanged(const DAVA::Any& rootControls)
     SyncGuidesWithValues();
 }
 
-void GuidesController::OnGuidesEnabledChanged(const DAVA::Any&)
-{
-    SyncGuidesWithValues();
-}
-
 void GuidesController::SyncGuidesWithValues()
 {
+    using namespace DAVA;
+
     if (IsEnabled() == false || IsGuidesEnabled() == false)
     {
         while (guides.empty() == false)
@@ -305,9 +326,14 @@ void GuidesController::SyncGuidesWithValues()
         return;
     }
 
+    EditorCanvasData* canvasData = GetCanvasData();
+    float32 scale = canvasData->GetScale();
+    float32 minValue = canvasData->GetStartValue()[orientation] / scale;
+    float32 maxValue = canvasData->GetLastValue()[orientation] / scale;
+
     PackageNode::AxisGuides values = GetValues();
     PackageNode::AxisGuides visibleValues;
-    for (DAVA::float32 value : values)
+    for (float32 value : values)
     {
         if (value > minValue && value < maxValue)
         {
@@ -329,21 +355,27 @@ void GuidesController::SyncGuidesWithValues()
 
     DVASSERT(size == guides.size());
     int index = 0;
-    for (DAVA::float32 value : visibleValues)
+    for (float32 value : visibleValues)
     {
         Guide& guide = guides[index++];
         ResizeGuide(guide);
         guide.text->SetValue(value);
         MoveGuide(value, guide);
 
-        guide.Show();
-        guide.Raise();
+        delayedExecutor.DelayedExecute([&guide]() {
+            guide.Show();
+            guide.Raise();
+        });
     }
 }
 
 PackageNode::AxisGuides::iterator GuidesController::GetNearestValuePtr(DAVA::float32 position)
 {
-    DAVA::float32 range = 1;
+    using namespace DAVA;
+
+    float32 range = 1;
+
+    float32 scale = GetCanvasData()->GetScale();
     if (scale < 1.0f)
     {
         range = 3 / scale;
@@ -356,13 +388,13 @@ PackageNode::AxisGuides::iterator GuidesController::GetNearestValuePtr(DAVA::flo
         return cachedValues.end();
     }
 
-    DAVA::float32 value = PositionToValue(position);
+    float32 value = PositionToValue(position);
 
-    PackageNode::AxisGuides::iterator iter = std::min_element(cachedValues.begin(), cachedValues.end(), [value](DAVA::float32 left, DAVA::float32 right)
+    PackageNode::AxisGuides::iterator iter = std::min_element(cachedValues.begin(), cachedValues.end(), [value](float32 left, float32 right)
                                                               {
                                                                   return std::abs(left - value) < std::abs(right - value);
                                                               });
-    if (std::fabs(*iter - value) > range)
+    if (std::fabs(*iter - value) >= range)
     {
         return cachedValues.end();
     }
@@ -385,7 +417,7 @@ bool GuidesController::IsEnabled() const
 PackageNode::AxisGuides GuidesController::GetValues() const
 {
     PackageNode::Guides guides = documentDataWrapper.GetFieldValue(DocumentData::guidesPropertyName).Cast<PackageNode::Guides>(PackageNode::Guides());
-    return guides[GetOrientation()];
+    return guides[orientation];
 }
 
 void GuidesController::SetValues(const PackageNode::AxisGuides& values)
@@ -399,7 +431,14 @@ void GuidesController::SetValues(const PackageNode::AxisGuides& values)
     Q_ASSERT(rootControls.size() == 1);
     DAVA::String name = (*rootControls.begin())->GetName();
 
-    data->ExecCommand<SetGuidesCommand>(name, GetOrientation(), values);
+    data->ExecCommand<SetGuidesCommand>(name, orientation, values);
+}
+
+void GuidesController::CreatePreviewGuide()
+{
+    DVASSERT(previewGuide.line == nullptr && previewGuide.text == nullptr);
+    previewGuide = CreateGuide(preferences.GetPreviewGuideColor());
+    previewGuide.Hide();
 }
 
 void GuidesController::SetupPreviewGuide(DAVA::float32 position)
@@ -414,7 +453,7 @@ Guide GuidesController::CreateGuide(const DAVA::Color& color) const
 {
     Guide guide;
     guide.line = new QWidget(container);
-    guide.text = new GuideLabel(GetOrientation(), container);
+    guide.text = new GuideLabel(orientation, container);
 
     guide.line->setAttribute(Qt::WA_TransparentForMouseEvents);
     guide.text->setAttribute(Qt::WA_TransparentForMouseEvents);
@@ -424,10 +463,17 @@ Guide GuidesController::CreateGuide(const DAVA::Color& color) const
 
 void GuidesController::DragGuide(DAVA::float32 position)
 {
+    using namespace DAVA;
+
     DVASSERT(IsEnabled());
     DVASSERT(dragState == DRAG);
 
-    DAVA::float32 value = PositionToValue(position);
+    float32 value = PositionToValue(position);
+
+    EditorCanvasData* canvasData = GetCanvasData();
+    float32 scale = canvasData->GetScale();
+    float32 minValue = canvasData->GetStartValue()[orientation] / scale;
+    float32 maxValue = canvasData->GetLastValue()[orientation] / scale;
     SetDisplayState((value < minValue || value > maxValue) ? DISPLAY_REMOVE : DISPLAY_DRAG);
 
     *valuePtr = PositionToValue(position);
@@ -495,78 +541,86 @@ void GuidesController::RemoveLastGuideWidget()
     guides.removeLast();
 }
 
+EditorCanvasData* GuidesController::GetCanvasData() const
+{
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    DataContext* activeContext = accessor->GetActiveContext();
+    DVASSERT(activeContext != nullptr);
+    return activeContext->GetData<EditorCanvasData>();
+}
+
+CentralWidgetData* GuidesController::GetCentralWidgetData() const
+{
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    DataContext* globalContext = accessor->GetGlobalContext();
+    return globalContext->GetData<CentralWidgetData>();
+}
+
+DocumentData* GuidesController::GetDocumentData() const
+{
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    DataContext* activeContext = accessor->GetActiveContext();
+    DVASSERT(activeContext != nullptr);
+    return activeContext->GetData<DocumentData>();
+}
+
 DAVA::float32 GuidesController::PositionToValue(DAVA::float32 position) const
 {
-    return std::round((scaledMinValue + position) / scale);
+    using namespace DAVA;
+    EditorCanvasData* canvasData = GetCanvasData();
+    float32 minValue = canvasData->GetStartValue()[orientation];
+    float32 scale = canvasData->GetScale();
+    return std::round((minValue + position) / scale);
 }
 
 DAVA::float32 GuidesController::ValueToPosition(DAVA::float32 value) const
 {
-    return rulerRelativePos + (value)*scale - scaledMinValue;
+    using namespace DAVA;
+    EditorCanvasData* canvasData = GetCanvasData();
+    float32 relativePos = GetCentralWidgetData()->GetGuidesRelativePos()[orientation];
+    float32 minValue = canvasData->GetStartValue()[orientation];
+    float32 scale = canvasData->GetScale();
+    return relativePos + value * scale - minValue;
 }
 
-HGuidesController::HGuidesController(DAVA::TArc::ContextAccessor* accessor, QWidget* container)
-    : GuidesController(accessor, container)
+void GuidesController::ResizeGuide(Guide& guide) const
 {
+    using namespace DAVA;
+    float32 size = GetCentralWidgetData()->GetGuidesSize()[orientation];
+    if (orientation == Vector2::AXIS_X)
+    {
+        guide.line->resize(1, size);
+        guide.text->resize(30, 15);
+    }
+    else
+    {
+        guide.line->resize(size, 1);
+        guide.text->resize(15, 30);
+    }
 }
 
-void HGuidesController::ProcessGeometryChanged(const QPoint& bottomLeft, const QPoint& topRight)
+void GuidesController::MoveGuide(DAVA::float32 value, Guide& guide) const
 {
-    int top = topRight.y();
-    int bottom = bottomLeft.y();
-
-    guideStartPosition = top;
-    size = bottom - top;
-}
-
-void HGuidesController::ResizeGuide(Guide& guide) const
-{
-    guide.line->resize(1, size);
-    guide.text->resize(30, 15);
-}
-
-void HGuidesController::MoveGuide(DAVA::float32 value, Guide& guide) const
-{
-    DAVA::float32 xPosition = ValueToPosition(value);
-    guide.line->move(xPosition, guideStartPosition);
-    guide.text->move(xPosition + 5, guideStartPosition);
-}
-
-DAVA::Vector2::eAxis HGuidesController::GetOrientation() const
-{
-    return DAVA::Vector2::AXIS_X;
-}
-
-VGuidesController::VGuidesController(DAVA::TArc::ContextAccessor* accessor, QWidget* container)
-    : GuidesController(accessor, container)
-{
-}
-
-void VGuidesController::ProcessGeometryChanged(const QPoint& bottomLeft, const QPoint& topRight)
-{
-    int left = bottomLeft.x();
-    int right = topRight.x();
-
-    guideStartPosition = left;
-    size = right - left;
-}
-
-void VGuidesController::ResizeGuide(Guide& guide) const
-{
-    guide.line->resize(size, 1);
-    guide.text->resize(15, 30);
-}
-
-void VGuidesController::MoveGuide(DAVA::float32 value, Guide& guide) const
-{
-    DAVA::float32 yPosition = ValueToPosition(value);
-    guide.line->move(guideStartPosition, yPosition);
-    guide.text->move(guideStartPosition, yPosition - guide.text->height() - 5);
-}
-
-DAVA::Vector2::eAxis VGuidesController::GetOrientation() const
-{
-    return DAVA::Vector2::AXIS_Y;
+    using namespace DAVA;
+    float32 startPos = GetCentralWidgetData()->GetGuidesPos()[orientation];
+    float32 tmp = ValueToPosition(value);
+    int32 position = static_cast<int32>(std::round(ValueToPosition(value)));
+    if (orientation == Vector2::AXIS_X)
+    {
+        guide.line->move(position, startPos);
+        guide.text->move(position + 5, startPos);
+    }
+    else
+    {
+        guide.line->move(startPos, position);
+        guide.text->move(startPos, position - guide.text->height() - 5);
+    }
 }
 
 GuidesControllerPreferences::GuidesControllerPreferences()

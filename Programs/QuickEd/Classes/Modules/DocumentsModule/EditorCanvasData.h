@@ -26,7 +26,8 @@ public:
     //size of all controls with scale and margins
     static DAVA::FastName canvasSizePropertyName;
 
-    //position for the scroll bars
+    //canvas position
+    //used by scrollBars and inputs in CanvasSystem
     static DAVA::FastName positionPropertyName;
     static DAVA::FastName minimumPositionPropertyName;
     static DAVA::FastName maximumPositionPropertyName;
@@ -64,7 +65,7 @@ public:
     DAVA::Vector2 GetLastValue() const;
 
     DAVA::float32 GetScale() const;
-    DAVA::Vector<DAVA::float32> GetPredefinedScales() const;
+    const DAVA::Vector<DAVA::float32>& GetPredefinedScales() const;
 
     DAVA::Vector2 GetMovableControlPosition() const;
 
@@ -94,7 +95,10 @@ private:
     DAVA::Vector2 referencePoint;
     const DAVA::Vector2 invalidPoint = DAVA::Vector2(-1.0f, -1.0f);
 
-    const DAVA::float32 margin = 10.0f;
+    const DAVA::float32 margin = 50.0f;
+
+    //when new screen is open it must be centralized. But opening a new screen takes more than one frame, because viewSize can be changed by the tabBar
+    bool needCentralize = true;
 
     DAVA::TArc::ContextAccessor* accessor = nullptr;
 

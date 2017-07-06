@@ -44,14 +44,13 @@ private:
 
     bool IsVisible() const;
 
-    int GetRange() const;
-
     Qt::Orientation GetOrientation() const;
 
     const DAVA::Vector2::eAxis orientation;
 
     DAVA::TArc::DataWrapper editorCanvasDataWrapper;
-    DAVA::TArc::DataWrapper centralWidgetDataWrapper;
+
+    DAVA::TArc::ContextAccessor* accessor = nullptr;
 
     DAVA_REFLECTION(ScrollBarData);
 };

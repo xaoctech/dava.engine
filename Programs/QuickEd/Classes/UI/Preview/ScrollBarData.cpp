@@ -1,7 +1,6 @@
 #include "UI/Preview/ScrolLBarData.h"
 
 #include "Modules/DocumentsModule/EditorCanvasData.h"
-#include "Modules/DocumentsModule/CentralWidgetData.h"
 
 #include <TArc/Core/ContextAccessor.h>
 
@@ -28,10 +27,10 @@ DAVA_REFLECTION_IMPL(ScrollBarData)
     .End();
 }
 
-ScrollBarData::ScrollBarData(DAVA::Vector2::eAxis orientation_, DAVA::TArc::ContextAccessor* accessor)
+ScrollBarData::ScrollBarData(DAVA::Vector2::eAxis orientation_, DAVA::TArc::ContextAccessor* accessor_)
     : orientation(orientation_)
+    , accessor(accessor_)
 {
-    centralWidgetDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<CentralWidgetData>());
     editorCanvasDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<EditorCanvasData>());
 }
 
@@ -64,26 +63,45 @@ void ScrollBarData::SetPosition(int value)
 
 int ScrollBarData::GetMinPos() const
 {
+    using namespace DAVA;
+    if (editorCanvasDataWrapper.HasData())
+    {
+        Any minPosValue = editorCanvasDataWrapper.GetFieldValue(EditorCanvasData::minimumPositionPropertyName);
+        DVASSERT(minPosValue.CanGet<Vector2>());
+        Vector2 minPos = minPosValue.Get<Vector2>();
+        return static_cast<int>(minPos[orientation]);
+    }
     return 0;
 }
 
 int ScrollBarData::GetMaxPos() const
 {
-    return std::max(0, GetRange());
+    using namespace DAVA;
+    if (editorCanvasDataWrapper.HasData())
+    {
+        Any maxPosValue = editorCanvasDataWrapper.GetFieldValue(EditorCanvasData::maximumPositionPropertyName);
+        DVASSERT(maxPosValue.CanGet<Vector2>());
+        Vector2 maxPos = maxPosValue.Get<Vector2>();
+        return static_cast<int>(maxPos[orientation]);
+    }
+    return 0;
 }
 
 int ScrollBarData::GetPageStep() const
 {
     using namespace DAVA;
-    if (editorCanvasDataWrapper.HasData())
-    {
-        Any viewSizeValue = centralWidgetDataWrapper.GetFieldValue(CentralWidgetData::viewSizePropertyName);
-        DVASSERT(viewSizeValue.CanGet<Vector2>());
-        Vector2 viewSize = viewSizeValue.Get<Vector2>();
+    using namespace DAVA::TArc;
 
-        return viewSize[orientation];
+    DataContext* activeContext = accessor->GetActiveContext();
+    if (activeContext == nullptr)
+    {
+        return 0;
     }
-    return 0;
+    else
+    {
+        EditorCanvasData* canvasData = activeContext->GetData<EditorCanvasData>();
+        return canvasData->GetViewSize()[orientation];
+    }
 }
 
 bool ScrollBarData::IsEnabled() const
@@ -93,25 +111,7 @@ bool ScrollBarData::IsEnabled() const
 
 bool ScrollBarData::IsVisible() const
 {
-    return GetRange() > 0;
-}
-
-int ScrollBarData::GetRange() const
-{
-    using namespace DAVA;
-    if (editorCanvasDataWrapper.HasData())
-    {
-        Any viewSizeValue = centralWidgetDataWrapper.GetFieldValue(CentralWidgetData::viewSizePropertyName);
-        DVASSERT(viewSizeValue.CanGet<Vector2>());
-        Vector2 viewSize = viewSizeValue.Get<Vector2>();
-
-        Any canvasSizeValue = editorCanvasDataWrapper.GetFieldValue(EditorCanvasData::canvasSizePropertyName);
-        DVASSERT(canvasSizeValue.CanGet<Vector2>());
-        Vector2 canvasSize = canvasSizeValue.Get<Vector2>();
-
-        return static_cast<int>(canvasSize[orientation] - viewSize[orientation]);
-    }
-    return 0;
+    return GetMaxPos() > 0;
 }
 
 Qt::Orientation ScrollBarData::GetOrientation() const

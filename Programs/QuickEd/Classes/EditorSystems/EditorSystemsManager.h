@@ -139,13 +139,14 @@ public:
 
     DAVA::UIControl* GetRootControl() const;
     DAVA::UIControl* GetScalableControl() const;
+    DAVA::UIControl* GetPixelGridControl() const;
+    DAVA::UIControl* GetHUDControl() const;
 
     DAVA::Signal<const HUDAreaInfo& /*areaInfo*/> activeAreaChanged;
     DAVA::Signal<const DAVA::Vector<MagnetLineInfo>& /*magnetLines*/> magnetLinesChanged;
     DAVA::Signal<ControlNode*> highlightNode;
     DAVA::Signal<const DAVA::Rect& /*selectionRectControl*/> selectionRectChanged;
     DAVA::Signal<ControlNode*, AbstractProperty*, const DAVA::Any&> propertyChanged;
-    DAVA::Signal<const DAVA::Vector2& /*new position*/> rootControlPositionChanged;
     DAVA::Signal<bool> emulationModeChanged;
     DAVA::Signal<eDragState /*currentState*/, eDragState /*previousState*/> dragStateChanged;
     DAVA::Signal<eDisplayState /*currentState*/, eDisplayState /*previousState*/> displayStateChanged;
@@ -165,6 +166,7 @@ private:
     template <class OutIt, class Predicate>
     void CollectControlNodesImpl(OutIt destination, Predicate predicate, StopPredicate stopPredicate, ControlNode* node) const;
 
+    void InitControls();
     void InitDAVAScreen();
 
     void OnDragStateChanged(eDragState currentState, eDragState previousState);
@@ -177,6 +179,8 @@ private:
     DAVA::RefPtr<DAVA::UIControl> rootControl;
     DAVA::RefPtr<DAVA::UIControl> inputLayerControl;
     DAVA::RefPtr<DAVA::UIControl> scalableControl;
+    DAVA::RefPtr<DAVA::UIControl> pixelGridControl;
+    DAVA::RefPtr<DAVA::UIControl> hudControl;
 
     DAVA::List<std::unique_ptr<BaseEditorSystem>> systems;
 

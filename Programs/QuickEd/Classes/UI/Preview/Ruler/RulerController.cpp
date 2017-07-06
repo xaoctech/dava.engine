@@ -1,13 +1,24 @@
-#include <cmath>
-#include "RulerController.h"
+#include "UI/Preview/Ruler/RulerController.h"
 
-RulerController::RulerController(QObject* parent)
+#include "Modules/DocumentsModule/EditorCanvasData.h"
+
+#include <TArc/Core/ContextAccessor.h>
+#include <TArc/Core/FieldBinder.h>
+
+#include <cmath>
+
+RulerController::RulerController(DAVA::TArc::ContextAccessor* accessor_, QObject* parent)
     : QObject(parent)
     , screenScale(0.0f)
+    , accessor(accessor_)
 {
     SetupInitialRulerSettings(horisontalRulerSettings);
     SetupInitialRulerSettings(verticalRulerSettings);
+
+    InitFieldBinder();
 }
+
+RulerController::~RulerController() = default;
 
 void RulerController::SetupInitialRulerSettings(RulerSettings& settings)
 {
@@ -18,27 +29,6 @@ void RulerController::SetupInitialRulerSettings(RulerSettings& settings)
     settings.bigTicksDelta = defaultBigTicksDelta;
     settings.startPos = 0;
     settings.zoomLevel = 1.0f;
-}
-
-void RulerController::SetViewPos(QPoint pos)
-{
-    if (viewPos != pos)
-    {
-        viewPos = pos;
-        horisontalRulerSettings.startPos = viewPos.x();
-        verticalRulerSettings.startPos = viewPos.y();
-
-        UpdateRulers();
-    }
-}
-
-void RulerController::SetScale(float scale)
-{
-    screenScale = scale;
-    horisontalRulerSettings.zoomLevel = screenScale;
-    verticalRulerSettings.zoomLevel = screenScale;
-
-    RecalculateRulerSettings();
 }
 
 void RulerController::UpdateRulerMarkers(QPoint curMousePos)
@@ -94,4 +84,57 @@ void RulerController::RecalculateRulerSettings()
     verticalRulerSettings.bigTicksDelta = ticksMap[closestValueIndex].bigTicksDelta;
 
     UpdateRulers();
+}
+
+void RulerController::InitFieldBinder()
+{
+    using namespace DAVA;
+    using namespace TArc;
+    fieldBinder.reset(new FieldBinder(accessor));
+    {
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<EditorCanvasData>();
+        fieldDescr.fieldName = FastName(EditorCanvasData::startValuePropertyName);
+        fieldBinder->BindField(fieldDescr, MakeFunction(this, &RulerController::OnStartValueChanged));
+    }
+    {
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<EditorCanvasData>();
+        fieldDescr.fieldName = FastName(EditorCanvasData::scalePropertyName);
+        fieldBinder->BindField(fieldDescr, MakeFunction(this, &RulerController::OnScaleChanged));
+    }
+}
+
+void RulerController::OnStartValueChanged(const DAVA::Any& startValue)
+{
+    QPoint pos(0, 0);
+    if (startValue.CanGet<DAVA::Vector2>())
+    {
+        DAVA::Vector2 davaPos = startValue.Get<DAVA::Vector2>();
+        pos.setX(davaPos.x);
+        pos.setY(davaPos.y);
+    }
+
+    if (viewPos != pos)
+    {
+        viewPos = pos;
+        horisontalRulerSettings.startPos = viewPos.x();
+        verticalRulerSettings.startPos = viewPos.y();
+
+        UpdateRulers();
+    }
+}
+
+void RulerController::OnScaleChanged(const DAVA::Any& scaleValue)
+{
+    screenScale = 1.0f;
+    if (scaleValue.CanGet<DAVA::float32>())
+    {
+        screenScale = scaleValue.Get<DAVA::float32>();
+    }
+
+    horisontalRulerSettings.zoomLevel = screenScale;
+    verticalRulerSettings.zoomLevel = screenScale;
+
+    RecalculateRulerSettings();
 }

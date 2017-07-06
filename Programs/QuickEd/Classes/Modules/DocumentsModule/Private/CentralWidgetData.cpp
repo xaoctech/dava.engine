@@ -5,6 +5,7 @@
 DAVA::FastName CentralWidgetData::viewSizePropertyName{ "view size" };
 DAVA::FastName CentralWidgetData::guidesPosPropertyName{ "guides position" };
 DAVA::FastName CentralWidgetData::guidesSizePropertyName{ "guides size" };
+DAVA::FastName CentralWidgetData::guidesRelativePosPropertyName{ "guides relative pos" };
 
 DAVA_VIRTUAL_REFLECTION_IMPL(CentralWidgetData)
 {
@@ -12,6 +13,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(CentralWidgetData)
     .Field(viewSizePropertyName.c_str(), &CentralWidgetData::GetViewSize, nullptr)
     .Field(guidesPosPropertyName.c_str(), &CentralWidgetData::GetGuidesPos, nullptr)
     .Field(guidesSizePropertyName.c_str(), &CentralWidgetData::GetGuidesSize, nullptr)
+    .Field(guidesRelativePosPropertyName.c_str(), &CentralWidgetData::GetGuidesRelativePos, nullptr)
     .End();
 }
 
@@ -35,17 +37,27 @@ DAVA::Vector2 CentralWidgetData::GetGuidesPos() const
 {
     using namespace DAVA;
 
-    return Vector2(static_cast<float32>(vRulerWidget->pos().x()),
-                   static_cast<float32>(hRulerWidget->pos().y()));
+    return Vector2(static_cast<float32>(hRulerWidget->pos().y()),
+                   static_cast<float32>(vRulerWidget->pos().x()));
 }
 
 DAVA::Vector2 CentralWidgetData::GetGuidesSize() const
 {
     using namespace DAVA;
+    int top = hRulerWidget->geometry().top();
+    int bottom = renderWidget->geometry().bottom();
 
-    QPoint topRight = hRulerWidget->geometry().topRight();
-    QPoint bottomLeft = vRulerWidget->geometry().bottomLeft();
+    int left = vRulerWidget->geometry().left();
+    int right = renderWidget->geometry().right();
 
-    return Vector2(static_cast<float32>(topRight.x() - bottomLeft.x()),
-                   static_cast<float32>(topRight.y() - bottomLeft.y()));
+    return Vector2(static_cast<float32>(bottom - top),
+                   static_cast<float32>(right - left));
+}
+
+DAVA::Vector2 CentralWidgetData::GetGuidesRelativePos() const
+{
+    using namespace DAVA;
+
+    return Vector2(static_cast<float32>(hRulerWidget->pos().x()),
+                   static_cast<float32>(vRulerWidget->pos().y()));
 }

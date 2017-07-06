@@ -5,6 +5,7 @@
 
 #include <Base/FastName.h>
 #include <Math/Vector.h>
+#include <Logger/Logger.h>
 
 DAVA::FastName EditorCanvasData::workAreaSizePropertyName{ "work area size" };
 DAVA::FastName EditorCanvasData::canvasSizePropertyName{ "canvas size" };
@@ -32,6 +33,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(EditorCanvasData)
     .Field(lastValuePropertyName.c_str(), &EditorCanvasData::GetLastValue, nullptr)
     .Field(scalePropertyName.c_str(), &EditorCanvasData::GetScale, &EditorCanvasData::SetScale)
     .Field(predefinedScalesPropertyName.c_str(), &EditorCanvasData::GetPredefinedScales, nullptr)
+    .Field(referencePointPropertyName.c_str(), &EditorCanvasData::referencePoint)
     .Field(movableControlPositionPropertyName.c_str(), &EditorCanvasData::GetMovableControlPosition, nullptr)
     .End();
 }
@@ -39,10 +41,9 @@ DAVA_VIRTUAL_REFLECTION_IMPL(EditorCanvasData)
 EditorCanvasData::EditorCanvasData(DAVA::TArc::ContextAccessor* accessor_)
     : accessor(accessor_)
 {
-    predefinedScales = { 0.25f, 0.33f, 0.50f, 0.67f, 0.75f,
-                         0.90f, 1.00f, 1.10f, 1.25f, 1.50f, 1.75f, 2.00f,
-                         2.50f, 3.00f, 4.00f, 5.00f, 6.00f, 7.00f, 8.00f,
-                         16.0f, 24.0f, 32.0f };
+    predefinedScales = { 0.01f, 0.02f, 0.04f, 0.08f, 0.16f,
+                         0.32f, 0.64f, 1.0f, 2.00f, 4.00f,
+                         8.00f, 16.0f, 24.0f, 32.0f };
 }
 
 DAVA::Vector2 EditorCanvasData::GetWorkAreaSize() const
@@ -54,27 +55,41 @@ void EditorCanvasData::SetWorkAreaSize(const DAVA::Vector2& size)
 {
     DVASSERT(size.dx >= 0.0f && size.dy >= 0.0f);
     workAreaSize = size;
+    if (workAreaSize.IsZero())
+    {
+        needCentralize = true;
+    }
 }
 
 DAVA::Vector2 EditorCanvasData::GetCanvasSize() const
 {
-    return workAreaSize * scale + DAVA::Vector2(margin, margin);
+    return workAreaSize * scale + DAVA::Vector2(margin, margin) * 2.0f;
 }
 
 DAVA::Vector2 EditorCanvasData::GetPosition() const
 {
-    return position;
+    if (needCentralize)
+    {
+        return GetMaximumPosition() / 2.0f;
+    }
+    else
+    {
+        return position;
+    }
 }
 
 void EditorCanvasData::SetPosition(const DAVA::Vector2& position_)
 {
     using namespace DAVA;
+    needCentralize = false;
+
     Vector2 minPos = GetMinimumPosition();
     Vector2 maxPos = GetMaximumPosition();
 
     //wheel and gesture events doesn't check min and max position
     position.Set(Clamp(position_.x, minPos.x, maxPos.x),
                  Clamp(position_.y, minPos.y, maxPos.y));
+    position.Set(std::floor(position.x), std::floor(position.y));
 }
 
 DAVA::Vector2 EditorCanvasData::GetMinimumPosition() const
@@ -84,7 +99,8 @@ DAVA::Vector2 EditorCanvasData::GetMinimumPosition() const
 
 DAVA::Vector2 EditorCanvasData::GetMaximumPosition() const
 {
-    return GetCanvasSize() - GetViewSize();
+    DAVA::Vector2 sizeDiff = GetCanvasSize() - GetViewSize();
+    return DAVA::Vector2(std::max(0.0f, sizeDiff.dx), std::max(0.0f, sizeDiff.dy));
 }
 
 DAVA::Vector2 EditorCanvasData::GetRootPosition() const
@@ -100,12 +116,12 @@ void EditorCanvasData::SetRootPosition(const DAVA::Vector2& rootPosition_)
 
 DAVA::Vector2 EditorCanvasData::GetStartValue() const
 {
-    return GetMovableControlPosition() + GetRootPosition() * GetScale();
+    return (GetMovableControlPosition() + GetRootPosition() * GetScale()) * -1;
 }
 
 DAVA::Vector2 EditorCanvasData::GetLastValue() const
 {
-    return GetStartValue() + GetViewSize() / GetScale();
+    return GetStartValue() + GetViewSize();
 }
 
 DAVA::float32 EditorCanvasData::GetScale() const
@@ -123,19 +139,20 @@ void EditorCanvasData::SetScale(DAVA::float32 scale_)
     scale = scale_;
 
     Vector2 referenecePoint_ = referencePoint;
+
     if (referencePoint == invalidPoint)
     {
         referencePoint = GetViewSize() / 2.0f;
     }
 
     //recalculate new position to keep referncePoint on the same visible pos
-    position = (referencePoint + position) * scaleDiff - referencePoint;
+    SetPosition((referencePoint + position - Vector2(margin, margin)) * scaleDiff - referencePoint + Vector2(margin, margin));
 
     //clear reference point before next call
     referencePoint = invalidPoint;
 }
 
-DAVA::Vector<DAVA::float32> EditorCanvasData::GetPredefinedScales() const
+const DAVA::Vector<DAVA::float32>& EditorCanvasData::GetPredefinedScales() const
 {
     return predefinedScales;
 }
@@ -153,7 +170,7 @@ DAVA::Vector2 EditorCanvasData::GetMovableControlPosition() const
         Vector2::eAxis axis = static_cast<Vector2::eAxis>(i);
         if (canvasSize[axis] <= viewSize[axis])
         {
-            movableControlPosition[axis] = (viewSize[axis] - canvasSize[axis]) / 2.0f;
+            movableControlPosition[axis] = (viewSize[axis] - workAreaSize[axis] * scale) / 2.0f;
         }
         else
         {

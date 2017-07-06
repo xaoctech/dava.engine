@@ -11,13 +11,24 @@ class CentralWidgetData : public DAVA::TArc::DataNode
 public:
     CentralWidgetData(QWidget* renderWidget, QWidget* hRulerWidget, QWidget* vRulerWidget);
 
+    //size of render widget
     static DAVA::FastName viewSizePropertyName;
+
+    //guides start position
+    //as an example for vertical guides it is horizontal ruler top
     static DAVA::FastName guidesPosPropertyName;
+
+    //guides size
     static DAVA::FastName guidesSizePropertyName;
+
+    //guides offset to calculate position from value
+    //as an example for vertical guides it is horizontal ruler left
+    static DAVA::FastName guidesRelativePosPropertyName;
 
     DAVA::Vector2 GetViewSize() const;
     DAVA::Vector2 GetGuidesPos() const;
     DAVA::Vector2 GetGuidesSize() const;
+    DAVA::Vector2 GetGuidesRelativePos() const;
 
 private:
     QWidget* renderWidget = nullptr;

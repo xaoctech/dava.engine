@@ -240,15 +240,6 @@ void RulerWidget::resizeEvent(QResizeEvent* resizeEvent)
     UpdateDoubleBufferImage();
 
     QWidget::resizeEvent(resizeEvent);
-
-    emit GeometryChanged();
-}
-
-void RulerWidget::moveEvent(QMoveEvent* moveEvent)
-{
-    QWidget::moveEvent(moveEvent);
-
-    emit GeometryChanged();
 }
 
 void RulerWidget::mouseMoveEvent(QMouseEvent* mouseEvent)

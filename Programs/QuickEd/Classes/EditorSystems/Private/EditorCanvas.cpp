@@ -15,11 +15,16 @@ EditorCanvas::EditorCanvas(EditorSystemsManager* parent, DAVA::TArc::ContextAcce
     : BaseEditorSystem(parent, accessor)
 {
     wrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<EditorCanvasData>());
+    InitFieldBinder();
 }
 
 bool EditorCanvas::CanProcessInput(DAVA::UIEvent* currentInput) const
 {
     using namespace DAVA;
+    if (wrapper.HasData() == false)
+    {
+        return false;
+    }
     if ((currentInput->device & eInputDevices::CLASS_POINTER) == eInputDevices::UNKNOWN)
     {
         return false;
@@ -144,12 +149,20 @@ void EditorCanvas::InitFieldBinder()
 {
     using namespace DAVA;
     using namespace TArc;
-
     fieldBinder.reset(new FieldBinder(accessor));
-    FieldDescriptor fieldDescr;
-    fieldDescr.type = ReflectedTypeDB::Get<EditorCanvasData>();
-    fieldDescr.fieldName = FastName(EditorCanvasData::movableControlPositionPropertyName);
-    fieldBinder->BindField(fieldDescr, MakeFunction(this, &EditorCanvas::OnMovableControlPositionChanged));
+
+    {
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<EditorCanvasData>();
+        fieldDescr.fieldName = FastName(EditorCanvasData::movableControlPositionPropertyName);
+        fieldBinder->BindField(fieldDescr, MakeFunction(this, &EditorCanvas::OnMovableControlPositionChanged));
+    }
+    {
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<EditorCanvasData>();
+        fieldDescr.fieldName = FastName(EditorCanvasData::scalePropertyName);
+        fieldBinder->BindField(fieldDescr, MakeFunction(this, &EditorCanvas::OnScaleChanged));
+    }
 }
 
 DAVA::float32 EditorCanvas::GetScaleFromWheelEvent(DAVA::int32 ticksCount) const
@@ -173,6 +186,8 @@ void EditorCanvas::OnMovableControlPositionChanged(const DAVA::Any& movableContr
 {
     using namespace DAVA;
 
+    //right now we scale and move the same UIControl
+    //because there is no reason to have another UIControl for moving only
     UIControl* movableControl = systemsManager->GetScalableControl();
     if (movableControlPosition.CanGet<Vector2>())
     {
@@ -182,5 +197,20 @@ void EditorCanvas::OnMovableControlPositionChanged(const DAVA::Any& movableContr
     else
     {
         movableControl->SetPosition(Vector2(0.0f, 0.0f));
+    }
+}
+
+void EditorCanvas::OnScaleChanged(const DAVA::Any& scaleValue)
+{
+    using namespace DAVA;
+    UIControl* scalableControl = systemsManager->GetScalableControl();
+    if (scaleValue.CanGet<float32>())
+    {
+        float32 scale = scaleValue.Get<float32>();
+        scalableControl->SetScale(Vector2(scale, scale));
+    }
+    else
+    {
+        scalableControl->SetScale(Vector2(1.0f, 1.0f));
     }
 }
