@@ -26,6 +26,7 @@ private:
     DAVA::String filename;
 
     DAVA::FilePath inFolder;
+    DAVA::FilePath dataSourceFolder;
     DAVA::FilePath outFolder;
 
     bool copyConverted = false;
