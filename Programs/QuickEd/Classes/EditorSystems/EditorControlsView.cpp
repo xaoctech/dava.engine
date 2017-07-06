@@ -313,7 +313,7 @@ void BackgroundController::CalculateTotalRect(Rect& totalRect, Vector2& rootCont
     gd.scale /= scalableControl->GetScale(); //grid->controlCanvas->scalableControl
     if (gd.scale.x != 0.0f || gd.scale.y != 0.0f)
     {
-        totalRect = gd.GetAABBox();
+        totalRect = gd.GetAABBox();        
 
         for (const auto& child : nestedControl->GetChildren())
         {
@@ -474,11 +474,16 @@ void EditorControlsView::ControlPropertyWasChanged(ControlNode* node, AbstractPr
     {
         if (BackgroundController::IsPropertyAffectBackground(property))
         {
-            for (auto& iter : gridControls)
-            {
-                iter->RecalculateBackgroundProperties(node->GetControl());
-            }
-        }
+            RecalculateBackgroundPropertiesForGrids(node->GetControl());
+         }
+    }
+}
+
+void EditorControlsView::RecalculateBackgroundPropertiesForGrids(DAVA::UIControl* control)
+{
+    for (auto& iter : gridControls)
+    {
+        iter->RecalculateBackgroundProperties(control);
     }
 }
 
@@ -492,10 +497,12 @@ void EditorControlsView::OnControlLayouted(UIControl* control)
 
     if (systemsManager->GetDragState() != EditorSystemsManager::Transform)
     {
-        for (std::unique_ptr<BackgroundController>& bc : gridControls)
-        {
-            bc->RecalculateBackgroundProperties(control);
-        }
+        // delayedExecutor is used to call RecalculateBackgroundProperties on next frame,
+        // because after updating of UILayoutSystem (which is actually processed in current function)
+        // we may have update of UIScrollSystem, which may influence at recalculate results.
+        // Should be replaced when either updates from UIScrollSystem will be available or special System will be developed
+        Function<void()> updateBgr = Bind(&EditorControlsView::RecalculateBackgroundPropertiesForGrids, this, control);
+        delayedExecutor.DelayedExecute(updateBgr);
     }
 }
 
