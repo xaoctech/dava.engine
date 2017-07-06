@@ -72,7 +72,8 @@ public:
 
 private:
     void BindFields();
-    void OnVisualPropertiesChanged(const DAVA::Any&);
+    void OnCanvasParametersChanged(const DAVA::Any&);
+    void OnDataChanged(const DAVA::Any&);
 
     //IRulerListener
     void OnMousePress(DAVA::float32 position) override;

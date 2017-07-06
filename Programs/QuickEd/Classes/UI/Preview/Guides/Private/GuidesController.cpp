@@ -51,59 +51,58 @@ void GuidesController::BindFields()
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
         fieldDescr.fieldName = DocumentData::guidesPropertyName;
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnVisualPropertiesChanged));
+        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnDataChanged));
     }
     {
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<PreferencesData>();
         fieldDescr.fieldName = PreferencesData::guidesEnabledPropertyName;
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnVisualPropertiesChanged));
+        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnDataChanged));
     }
     {
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<EditorCanvasData>();
         fieldDescr.fieldName = EditorCanvasData::startValuePropertyName;
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnVisualPropertiesChanged));
+        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnCanvasParametersChanged));
     }
     {
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<EditorCanvasData>();
         fieldDescr.fieldName = EditorCanvasData::lastValuePropertyName;
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnVisualPropertiesChanged));
-    }
-    {
-        FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<EditorCanvasData>();
-        fieldDescr.fieldName = EditorCanvasData::scalePropertyName;
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnVisualPropertiesChanged));
+        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnCanvasParametersChanged));
     }
     {
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<CentralWidgetData>();
         fieldDescr.fieldName = CentralWidgetData::guidesPosPropertyName;
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnVisualPropertiesChanged));
+        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnCanvasParametersChanged));
     }
     {
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<CentralWidgetData>();
         fieldDescr.fieldName = CentralWidgetData::guidesSizePropertyName;
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnVisualPropertiesChanged));
+        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnCanvasParametersChanged));
     }
     {
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<CentralWidgetData>();
         fieldDescr.fieldName = CentralWidgetData::guidesRelativePosPropertyName;
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnVisualPropertiesChanged));
+        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnCanvasParametersChanged));
     }
 }
 
-void GuidesController::OnVisualPropertiesChanged(const DAVA::Any&)
+void GuidesController::OnCanvasParametersChanged(const DAVA::Any&)
 {
     updater.MarkDirty();
 
+    //canvas parameters can be changed during animation process and guides will not work correctly
     SetDisplayState(NO_DISPLAY);
     DisableDrag();
+}
 
+void GuidesController::OnDataChanged(const DAVA::Any&)
+{
+    updater.Update();
 }
 
 void GuidesController::OnMousePress(DAVA::float32 position)
