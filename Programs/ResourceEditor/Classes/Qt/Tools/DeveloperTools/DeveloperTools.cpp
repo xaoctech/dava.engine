@@ -89,11 +89,12 @@ void DeveloperTools::OnDebugCreateTestSkinnedObject()
     AABBox3 jointBox(Vector3(-1, -1, -1), Vector3(1, 1, 1));
     SkeletonComponent* component = new SkeletonComponent();
 
+    //TODO: *Skinning* restore debug skinned object, or just remove it
     Vector<SkeletonComponent::JointConfig> configJoints;
-    configJoints.push_back(SkeletonComponent::JointConfig(SkeletonComponent::INVALID_JOINT_INDEX, 0, FastName("root0"), FastName("root0"), Vector3(0, 0, 0), Quaternion(0, 0, 0, 1), 1.0, AABBox3(jointBox.min + boxes[0], jointBox.max + boxes[0])));
-    configJoints.push_back(SkeletonComponent::JointConfig(0, 1, FastName("bone0"), FastName("root0.bone0"), Vector3(0, 0, 10), Quaternion(0, 0, 0, 1), 1.0, AABBox3(jointBox.min + boxes[1], jointBox.max + boxes[1])));
-    configJoints.push_back(SkeletonComponent::JointConfig(1, 2, FastName("bone0"), FastName("root0.bone0.bone0"), Vector3(2, 0, 5), Quaternion(0, 0, 0, 1), 1.0, AABBox3(jointBox.min + boxes[2], jointBox.max + boxes[2])));
-    configJoints.push_back(SkeletonComponent::JointConfig(1, 3, FastName("bone1"), FastName("root0.bone0.bone1"), Vector3(-2, 0, 5), Quaternion(0, 0, 0, 1), 1.0, AABBox3(jointBox.min + boxes[3], jointBox.max + boxes[3])));
+    //configJoints.push_back(SkeletonComponent::JointConfig(SkeletonComponent::INVALID_JOINT_INDEX, 0, FastName("root0"), FastName("root0"), Vector3(0, 0, 0), Quaternion(0, 0, 0, 1), 1.0, AABBox3(jointBox.min + boxes[0], jointBox.max + boxes[0])));
+    //configJoints.push_back(SkeletonComponent::JointConfig(0, 1, FastName("bone0"), FastName("root0.bone0"), Vector3(0, 0, 10), Quaternion(0, 0, 0, 1), 1.0, AABBox3(jointBox.min + boxes[1], jointBox.max + boxes[1])));
+    //configJoints.push_back(SkeletonComponent::JointConfig(1, 2, FastName("bone0"), FastName("root0.bone0.bone0"), Vector3(2, 0, 5), Quaternion(0, 0, 0, 1), 1.0, AABBox3(jointBox.min + boxes[2], jointBox.max + boxes[2])));
+    //configJoints.push_back(SkeletonComponent::JointConfig(1, 3, FastName("bone1"), FastName("root0.bone0.bone1"), Vector3(-2, 0, 5), Quaternion(0, 0, 0, 1), 1.0, AABBox3(jointBox.min + boxes[3], jointBox.max + boxes[3])));
     component->SetConfigJoints(configJoints);
     entity->AddComponent(component);
 

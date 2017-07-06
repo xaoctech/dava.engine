@@ -26,8 +26,10 @@ ColladaImporter::ColladaImporter()
 // Creates Dava::RenderObject from ColladaMeshInstance and puts it
 RenderObject* ColladaImporter::GetMeshFromCollada(ColladaMeshInstance* mesh, const FastName& name)
 {
+    ColladaSkinnedMesh* colladaSkinnedMesh = mesh->GetSkinnedMesh();
+
     RenderObject* ro = nullptr;
-    if (mesh->GetSkinnedMesh() != nullptr)
+    if (colladaSkinnedMesh != nullptr)
     {
         ro = new SkinnedMesh();
     }
@@ -39,6 +41,11 @@ RenderObject* ColladaImporter::GetMeshFromCollada(ColladaMeshInstance* mesh, con
     for (auto polygonGroupInstance : mesh->polyGroupInstances)
     {
         PolygonGroup* davaPolygon = library.GetOrCreatePolygon(polygonGroupInstance);
+
+        if (colladaSkinnedMesh != nullptr)
+        {
+            davaPolygon->ApplyMatrix(colladaSkinnedMesh->bindShapeMatrix);
+        }
 
         bool isShadow = (strstr(name.c_str(), ImportSettings::shadowNamePattern.c_str()) != nullptr);
         if (isShadow)
@@ -186,57 +193,31 @@ void ColladaImporter::ImportSkeleton(ColladaSceneNode* colladaNode, Entity* node
     jointConfigs.resize(jointsCount);
     for (int32 i = 0; i < jointsCount; i++)
     {
-        DVASSERT(skinnedMesh->joints[i].parentIndex < skinnedMesh->joints[i].index);
+        const ColladaSkinnedMesh::Joint& colladaJoint = skinnedMesh->joints[i];
+        const ColladaSceneNode* jointNode = colladaJoint.node;
+        SkeletonComponent::JointConfig& jointConfig = jointConfigs[i];
 
-        FCDSceneNode* originalNode = skinnedMesh->joints[i].node->originalNode;
+        DVASSERT(colladaJoint.parentIndex < colladaJoint.index);
 
-        jointConfigs[i].parentIndex = skinnedMesh->joints[i].parentIndex;
-        if (jointConfigs[i].parentIndex == -1)
-            jointConfigs[i].parentIndex = SkeletonComponent::INVALID_JOINT_INDEX;
-        jointConfigs[i].targetId = skinnedMesh->joints[i].index;
+        bool isRootJoint = (colladaJoint.parentIndex == -1);
 
-        jointConfigs[i].name = FastName(skinnedMesh->joints[i].jointName);
-        jointConfigs[i].uid = FastName(skinnedMesh->joints[i].jointUID);
+        jointConfig.targetId = colladaJoint.index;
+        jointConfig.parentIndex = isRootJoint ? SkeletonComponent::INVALID_JOINT_INDEX : colladaJoint.parentIndex;
+        jointConfig.name = FastName(colladaJoint.jointName);
+        jointConfig.uid = FastName(colladaJoint.jointUID);
 
-        jointConfigs[i].orientation = Quaternion();
-        jointConfigs[i].position = Vector3();
-        jointConfigs[i].scale = 1.0;
+        Matrix4 transform = isRootJoint ? jointNode->AccumulateTransformUptoFarParent(colladaNode->scene->rootNode) : jointNode->localTransform;
+        Vector3 scale, translation;
+        Quaternion orientation;
+        transform.Decomposition(translation, scale, orientation);
 
-        for (size_t t = 0; t < originalNode->GetTransformCount(); ++t)
-        {
-            FCDTransform* transform = originalNode->GetTransform(t);
-            FCDTransform::Type transformType = transform->GetType();
+        //TODO: *Skinning* remove local transforms from JointConfig. Keep bindTransformInv only
+        jointConfig.orientation = orientation;
+        jointConfig.position = translation;
+        jointConfig.scale = scale.x;
+        jointConfig.bbox = AABBox3(jointConfig.position, 1.0);
 
-            if (transformType == FCDTransform::ROTATION)
-            {
-                FCDTRotation* rotation = dynamic_cast<FCDTRotation*>(transform);
-                FMVector3 axis = rotation->GetAxis();
-                float32 angle = DegToRad(rotation->GetAngle());
-
-                if (strstr(transform->GetSubId()->c_str(), "jointOrient") != nullptr)
-                {
-                    jointConfigs[i].orientation *= Quaternion::MakeRotation(Vector3(axis.x, axis.y, axis.z), angle);
-                }
-            }
-            else if (transformType == FCDTransform::TRANSLATION)
-            {
-                FMVector3 translation = dynamic_cast<FCDTTranslation*>(transform)->GetTranslation();
-                jointConfigs[i].position = Vector3(translation.x, translation.y, translation.z);
-            }
-            else if (transformType == FCDTransform::SCALE)
-            {
-                jointConfigs[i].scale = dynamic_cast<FCDTScale*>(transform)->GetScale()->x;
-            }
-            else if (transformType == FCDTransform::MATRIX)
-            {
-                Matrix4 matrix = ConvertMatrix(*dynamic_cast<FCDTMatrix*>(transform)->GetTransform());
-                jointConfigs[i].orientation.Construct(matrix);
-                jointConfigs[i].position = matrix.GetTranslationVector();
-                jointConfigs[i].scale = matrix.GetScaleVector().x;
-            }
-        }
-
-        jointConfigs[i].bbox = AABBox3(jointConfigs[i].position, 1.0);
+        jointConfig.bindTransformInv = colladaJoint.inverse0;
     }
     davaSkeletonComponent->SetConfigJoints(jointConfigs);
 }

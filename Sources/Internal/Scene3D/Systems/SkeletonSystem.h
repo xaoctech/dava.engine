@@ -22,6 +22,8 @@ public:
     void Process(float32 timeElapsed) override;
     void ImmediateEvent(Component* component, uint32 event) override;
 
+    void DrawSkeletons(RenderHelper* drawer);
+
 private:
     void UpdatePose(SkeletonComponent* component);
     void UpdateSkinnedMesh(SkeletonComponent* component, SkinnedMesh* skinnedMeshObject);

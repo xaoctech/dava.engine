@@ -369,8 +369,9 @@ Matrix4 ColladaSceneNode::AccumulateTransformUptoFarParent(ColladaSceneNode* far
 {
     if (farParent == this)
     {
-        return Matrix4::IDENTITY;
+        return localTransform;
     }
+
     return localTransform * parent->AccumulateTransformUptoFarParent(farParent);
 }
 

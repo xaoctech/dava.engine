@@ -83,6 +83,39 @@ void SkeletonSystem::Process(float32 timeElapsed)
             }
         }
     }
+
+    DrawSkeletons(GetScene()->renderSystem->GetDebugDrawer());
+}
+
+void SkeletonSystem::DrawSkeletons(RenderHelper* drawer)
+{
+    for (Entity* entity : entities)
+    {
+        SkeletonComponent* component = GetSkeletonComponent(entity);
+        TransformComponent* transform = GetTransformComponent(entity);
+        if (component->drawSkeleton)
+        {
+            Vector<Vector3> positions(component->GetJointsCount());
+            for (uint16 i = 0; i < component->GetJointsCount(); ++i)
+            {
+                positions[i] = component->objectSpaceTransforms[i].position * transform->GetWorldTransform();
+            }
+
+            const Vector<SkeletonComponent::JointConfig>& joints = component->configJoints;
+            for (uint16 i = 0; i < component->GetJointsCount(); ++i)
+            {
+                const SkeletonComponent::JointConfig& cfg = joints[i];
+                if (cfg.parentIndex != SkeletonComponent::INVALID_JOINT_INDEX)
+                {
+                    float32 dl = (positions[cfg.parentIndex] - positions[i]).Length();
+                    drawer->DrawArrow(positions[cfg.parentIndex], positions[i], 0.25f * dl, Color(1.0f, 0.5f, 0.0f, 1.0), RenderHelper::eDrawType::DRAW_WIRE_NO_DEPTH);
+                }
+
+                float32 scale = component->resultPositions[i].w;
+                drawer->DrawIcosahedron(positions[i], scale, Color(0.0, 0.5, 1.0, 1.0), RenderHelper::eDrawType::DRAW_WIRE_NO_DEPTH);
+            }
+        }
+    }
 }
 
 void SkeletonSystem::UpdatePose(SkeletonComponent* component)
@@ -205,8 +238,10 @@ void SkeletonSystem::RebuildSkeleton(Entity* entity)
             component->objectSpaceTransforms[i] = localTransform;
         else
             component->objectSpaceTransforms[i] = component->objectSpaceTransforms[component->configJoints[i].parentIndex].AppendTransform(localTransform);
-        component->inverseBindTransforms[i] = component->objectSpaceTransforms[i].GetInverse();
+
         component->jointSpaceBoxes[i] = component->configJoints[i].bbox;
+
+        component->inverseBindTransforms[i].Construct(component->configJoints[i].bindTransformInv);
     }
     component->targetJointsCount = maxTargetJoint + 1;
     component->resultPositions.resize(component->targetJointsCount);

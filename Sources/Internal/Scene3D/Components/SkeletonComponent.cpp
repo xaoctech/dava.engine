@@ -15,9 +15,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SkeletonComponent::JointConfig)
     ReflectionRegistrator<SkeletonComponent::JointConfig>::Begin()
     .Field("name", &SkeletonComponent::JointConfig::name)[M::DisplayName("Name")]
     .Field("uid", &SkeletonComponent::JointConfig::uid)[M::DisplayName("UID")]
-    .Field("position", &SkeletonComponent::JointConfig::position)[M::DisplayName("Position")]
-    .Field("scale", &SkeletonComponent::JointConfig::scale)[M::DisplayName("Scale")]
     .Field("bbox", &SkeletonComponent::JointConfig::bbox)[M::DisplayName("Bounding box")]
+    .Field("bindTransformInv", &SkeletonComponent::JointConfig::bbox)[M::DisplayName("Bind Transform Inverse")]
     .End();
 }
 
@@ -35,15 +34,7 @@ bool AnyCompare<SkeletonComponent::JointConfig>::IsEqual(const DAVA::Any& v1, co
     return v1.Get<SkeletonComponent::JointConfig>() == v2.Get<SkeletonComponent::JointConfig>();
 }
 
-SkeletonComponent::SkeletonComponent()
-{
-}
-
-SkeletonComponent::~SkeletonComponent()
-{
-}
-
-SkeletonComponent::JointConfig::JointConfig(int32 _parentIndex, int32 _targetId, const FastName& _name, const FastName& _uid, const Vector3& _position, const Quaternion& _orientation, float32 _scale, const AABBox3& _bbox)
+SkeletonComponent::JointConfig::JointConfig(int32 _parentIndex, int32 _targetId, const FastName& _name, const FastName& _uid, const Vector3& _position, const Quaternion& _orientation, float32 _scale, const AABBox3& _bbox, const Matrix4& _invBindPose)
     : parentIndex(_parentIndex)
     , targetId(_targetId)
     , name(_name)
@@ -52,6 +43,7 @@ SkeletonComponent::JointConfig::JointConfig(int32 _parentIndex, int32 _targetId,
     , position(_position)
     , scale(_scale)
     , bbox(_bbox)
+    , bindTransformInv(_invBindPose)
 {
 }
 
@@ -61,6 +53,7 @@ bool SkeletonComponent::JointConfig::operator==(const JointConfig& other) const
     targetId == other.targetId &&
     name == other.name &&
     uid == other.uid &&
+    bindTransformInv == other.bindTransformInv;
     orientation == other.orientation &&
     position == other.position &&
     scale == other.scale &&
@@ -109,10 +102,11 @@ void SkeletonComponent::Serialize(KeyedArchive* archive, SerializationContext* s
         jointArch->SetInt32("joint.parentIndex", joint.parentIndex);
         jointArch->SetInt32("joint.targetId", joint.targetId);
         jointArch->SetVector3("joint.position", joint.position);
-        jointArch->SetVector4("joint.orientation", Vector4(joint.orientation.x, joint.orientation.y, joint.orientation.z, joint.orientation.w));
+        jointArch->SetVector4("joint.orientation", Vector4(joint.orientation.data));
         jointArch->SetFloat("joint.scale", joint.scale);
         jointArch->SetVector3("joint.bbox.min", joint.bbox.min);
         jointArch->SetVector3("joint.bbox.max", joint.bbox.max);
+        jointArch->SetMatrix4("joint.invBindPose", joint.bindTransformInv);
 
         jointsArch->SetArchive(KeyedArchive::GenKeyFromIndex(static_cast<int32>(i)), jointArch);
     }
@@ -135,11 +129,11 @@ void SkeletonComponent::Deserialize(KeyedArchive* archive, SerializationContext*
         joint.parentIndex = jointArch->GetInt32("joint.parentIndex");
         joint.targetId = jointArch->GetInt32("joint.targetId");
         joint.position = jointArch->GetVector3("joint.position");
-        Vector4 qv = jointArch->GetVector4("joint.orientation");
-        joint.orientation = Quaternion(qv.x, qv.y, qv.z, qv.w);
+        joint.orientation = Quaternion(jointArch->GetVector4("joint.orientation").data);
         joint.scale = jointArch->GetFloat("joint.scale");
         joint.bbox.min = jointArch->GetVector3("joint.bbox.min");
         joint.bbox.max = jointArch->GetVector3("joint.bbox.max");
+        joint.bindTransformInv = jointArch->GetMatrix4("joint.invBindPose", joint.bindTransformInv);
     }
 }
 }
