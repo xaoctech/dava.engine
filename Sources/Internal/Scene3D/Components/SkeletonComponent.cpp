@@ -28,12 +28,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SkeletonComponent)
     .End();
 }
 
-template <>
-bool AnyCompare<SkeletonComponent::JointConfig>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2)
-{
-    return v1.Get<SkeletonComponent::JointConfig>() == v2.Get<SkeletonComponent::JointConfig>();
-}
-
 SkeletonComponent::JointConfig::JointConfig(int32 _parentIndex, int32 _targetId, const FastName& _name, const FastName& _uid, const Vector3& _position, const Quaternion& _orientation, float32 _scale, const AABBox3& _bbox, const Matrix4& _invBindPose)
     : parentIndex(_parentIndex)
     , targetId(_targetId)
