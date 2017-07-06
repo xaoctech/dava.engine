@@ -24,6 +24,7 @@ public:
         IsReadOnly = TBase::BaseFields::IsReadOnly,
         IsEnabled = TBase::BaseFields::IsEnabled,
         Range = TBase::BaseFields::Range, // Value should be castable to " const M::Range* "
+        ShowSpinArrows = TBase::BaseFields::ShowSpinArrows,
         Accuracy,
         FieldCount
     };

@@ -246,6 +246,7 @@ using CantBeCreatedManualyComponent = Meta<Metas::CantBeCreatedManualyComponent>
 using CantBeDeletedManualyComponent = Meta<Metas::CantBeDeletedManualyComponent>;
 
 using Tooltip = Meta<Metas::Tooltip>;
+using FloatColor = Meta<Metas::FloatColor>;
 }
 
 } // namespace DAVA

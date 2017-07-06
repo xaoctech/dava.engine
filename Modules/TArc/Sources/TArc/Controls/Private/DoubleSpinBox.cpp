@@ -23,6 +23,11 @@ void DoubleSpinBox::UpdateControl(const ControlDescriptor& changedFields)
     {
         DAVA::Reflection r = model.GetField(changedFields.GetName(Fields::Accuracy));
         DVASSERT(r.IsValid());
+        DAVA::Any value = r.GetValue();
+        if (value.CanGet<M::FloatNumberAccuracy*>())
+        {
+            setDecimals(value.Get<M::FloatNumberAccuracy*>()->accuracy);
+        }
         setDecimals(r.GetValue().Cast<int>());
     }
     else if (changedFields.IsChanged(Fields::Value))

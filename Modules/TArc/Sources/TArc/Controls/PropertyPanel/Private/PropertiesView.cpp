@@ -104,7 +104,7 @@ protected:
     {
         QTreeView::drawRow(painter, options, index);
 
-        QColor gridColor = options.palette.color(QPalette::Normal, QPalette::Window);
+        QColor gridColor = options.palette.color(QPalette::Normal, QPalette::Mid);
 
         painter->save();
         // draw horizontal bottom line

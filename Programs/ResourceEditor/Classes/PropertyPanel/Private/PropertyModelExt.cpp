@@ -316,9 +316,12 @@ void EntityChildCreator::ExposeChildren(const std::shared_ptr<DAVA::TArc::Proper
                     String permanentName = GetValueReflectedType(ref)->GetPermanentName();
 
                     DAVA::Reflection::Field f(permanentName, Reflection(ref), nullptr);
-                    std::shared_ptr<PropertyNode> node = allocator->CreatePropertyNode(parent, std::move(f), static_cast<size_t>(type), PropertyNode::RealProperty);
-                    node->idPostfix = FastName(Format("%u", componentIndex));
-                    children.push_back(node);
+                    if (CanBeExposed(f))
+                    {
+                        std::shared_ptr<PropertyNode> node = allocator->CreatePropertyNode(parent, std::move(f), static_cast<size_t>(type), PropertyNode::RealProperty);
+                        node->idPostfix = FastName(Format("%u", componentIndex));
+                        children.push_back(node);
+                    }
                 }
             }
 
