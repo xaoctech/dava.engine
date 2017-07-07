@@ -177,6 +177,11 @@ QString MainWindow::GetSelectedBranchID() const
     return selectedBranchID;
 }
 
+void MainWindow::ShowDebugString(const QString& str)
+{
+    AddText(str, Qt::blue);
+}
+
 void MainWindow::OnRun(int rowNumber)
 {
     QString appID, insVersionID, avVersionID;
@@ -245,15 +250,13 @@ void MainWindow::OnNewsLoaded(const BaseTask* task)
     QString error = task->GetError();
     if (error.isEmpty())
     {
-        Q_ASSERT(task->GetTaskType() == BaseTask::DOWNLOAD_TASK);
-        const DownloadTask* downloadTask = static_cast<const DownloadTask*>(task);
-        Q_ASSERT(downloadTask->GetLoadedData().empty() == false);
-        ui->textBrowser->setHtml(downloadTask->GetLoadedData().front());
+        ui->textBrowser->setHtml(newsDataBuffer.data());
     }
     else
     {
         ui->textBrowser->setText(QObject::tr("Failed to load news: %1").arg(error));
     }
+    newsDataBuffer.close();
 }
 
 void MainWindow::ShowTable(QString branchID)
@@ -269,8 +272,9 @@ void MainWindow::ShowTable(QString branchID)
             QString description = QObject::tr("Loading news");
             ui->textBrowser->setText(description);
             Receiver tmpReceiver;
+            newsDataBuffer.open(QIODevice::ReadWrite);
             tmpReceiver.onFinished = std::bind(&MainWindow::OnNewsLoaded, this, std::placeholders::_1);
-            std::unique_ptr<BaseTask> task = appManager->CreateTask<DownloadTask>(description, localConfig->GetWebpageURL());
+            std::unique_ptr<BaseTask> task = appManager->CreateTask<DownloadTask>(description, localConfig->GetWebpageURL(), &newsDataBuffer);
             appManager->AddTaskWithCustomReceivers(std::move(task), { tmpReceiver });
             return;
         }

@@ -18,7 +18,7 @@ namespace FileManagerDetails
 {
 const QString tempSelfUpdateDir = "selfupdate/";
 const QString baseAppDir = "DAVATools/";
-const QString tempDir = baseAppDir + "/temp/";
+const QString tempDir = baseAppDir + "temp/";
 
 QStringList DeployDirectories()
 {
@@ -274,28 +274,6 @@ void FileManager::MakeDirectory(const QString& path)
 {
     if (!QDir(path).exists())
         QDir().mkpath(path);
-}
-
-bool FileManager::CreateFileFromRawData(const QByteArray& dataToWrite, const QString& filePath) const
-{
-    using namespace std;
-    //we can not use QFile::write because of bug https://bugreports.qt.io/browse/QTBUG-57468
-    try
-    {
-        ofstream outfile(filePath.toStdString().c_str(), ofstream::out | ofstream::trunc | ofstream::binary);
-        if (outfile.is_open())
-        {
-            outfile.write(dataToWrite, dataToWrite.size());
-            outfile.close();
-            return outfile.good();
-        }
-        return false;
-    }
-    catch (const ofstream::failure& failure)
-    {
-        ErrorMessenger::LogMessage(QtWarningMsg, "can not write to file " + filePath + " the reason is " + failure.what());
-        return false;
-    }
 }
 
 void FileManager::SetFilesDirectory(const QString& newDirPath)

@@ -1,17 +1,19 @@
 #include "Core/Tasks/DownloadTask.h"
 
-DownloadTask::DownloadTask(ApplicationManager* appManager, const QString& description_, const std::vector<QUrl>& urls_)
+#include <QIODevice>
+
+DownloadTask::DownloadTask(ApplicationManager* appManager, const QString& description_, const std::map<QUrl, QIODevice*>& buffers_)
     : BaseTask(appManager)
     , description(description_)
-    , urls(urls_)
+    , buffers(buffers_)
 {
 }
 
-DownloadTask::DownloadTask(ApplicationManager* appManager, const QString& description_, const QUrl url)
+DownloadTask::DownloadTask(ApplicationManager* appManager, const QString& description_, const QUrl& url, QIODevice* writeBuffer)
     : BaseTask(appManager)
     , description(description_)
-    , urls(1, url)
 {
+    buffers[url] = writeBuffer;
 }
 
 BaseTask::eTaskType DownloadTask::GetTaskType() const
@@ -24,18 +26,20 @@ QString DownloadTask::GetDescription() const
     return description;
 }
 
-const std::vector<QByteArray>& DownloadTask::GetLoadedData() const
+void DownloadTask::AddLoadedData(const QUrl& url, QByteArray& data)
 {
-    return loadedData;
+    Q_ASSERT(buffers.find(url) != buffers.end());
+    buffers[url]->write(data);
 }
 
-void DownloadTask::AddLoadedData(const QByteArray& data)
+std::vector<QUrl> DownloadTask::GetUrls() const
 {
-    loadedData.push_back(data);
-}
-
-const std::vector<QUrl>& DownloadTask::GetUrls() const
-{
+    std::vector<QUrl> urls;
+    urls.reserve(buffers.size());
+    for (const auto& item : buffers)
+    {
+        urls.push_back(item.first);
+    }
     return urls;
 }
 
