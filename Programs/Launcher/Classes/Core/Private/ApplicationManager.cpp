@@ -46,7 +46,7 @@ ApplicationManager::ApplicationManager(ApplicationQuitController* quitController
     , commandsSender(new AppsCommandsSender(this))
     , baManagerClient(new BAManagerClient(this))
     , configRefresher(new ConfigRefresher(this))
-    , urlsHolder(new UrlsHolder(this))
+    , urlsHolder(new UrlsHolder())
     , mainWindow(new MainWindow(this))
     , taskManager(new TaskManager(this))
 {
