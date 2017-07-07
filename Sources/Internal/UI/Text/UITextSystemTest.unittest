@@ -53,7 +53,7 @@ DAVA_TESTCLASS (UITextSystemTest)
         DVASSERT(loaded);
 
         RefPtr<UIControl> control;
-		control = pkgBuilder.GetPackage()->GetControl("NewText");
+        control = pkgBuilder.GetPackage()->GetControl("NewText");
         TEST_VERIFY(control.Get() != nullptr);
     }
 
@@ -139,32 +139,32 @@ DAVA_TESTCLASS (UITextSystemTest)
         TEST_VERIFY(orig->GetUseRtlAlign() == copy->GetUseRtlAlign());
         TEST_VERIFY(orig->IsForceBiDiSupportEnabled() == copy->IsForceBiDiSupportEnabled());
 
-		copy->SetText("4321");
+        copy->SetText("4321");
         TEST_VERIFY(orig->GetText() != copy->GetText());
     }
 
-	DAVA_TEST (UpdateTextBlockTest)
+    DAVA_TEST (UpdateTextBlockTest)
     {
         const String str1 = "123";
         const String str2 = "54321";
 
         RefPtr<UITextComponent> orig;
         orig = newControl->GetComponent<UITextComponent>();
-		orig->SetText(str1);
+        orig->SetText(str1);
 
         newControl->RemoveComponent(orig.Get());
         RefPtr<UITextComponent> copy(orig->Clone());
         newControl->AddComponent(copy.Get());
 
-		UpdateSystem();
+        UpdateSystem();
         TEST_VERIFY(copy->GetLink()->GetTextBlock()->GetText() == UTF8Utils::EncodeToWideString(str1));
 
         copy->SetText(str2);
         TEST_VERIFY(copy->GetText() == str2);
         TEST_VERIFY(copy->GetLink()->GetTextBlock()->GetText() == UTF8Utils::EncodeToWideString(str1));
         TEST_VERIFY(orig->GetText() != copy->GetText());
-        
-		UpdateSystem();
+
+        UpdateSystem();
         TEST_VERIFY(copy->GetLink()->GetTextBlock()->GetText() == UTF8Utils::EncodeToWideString(str2));
     }
 };
