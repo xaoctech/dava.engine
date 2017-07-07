@@ -36,7 +36,9 @@ private:
     const String& GetClass() const;
 
     /** Setup base parameters in specified control. */
-    void PrepareControl(UIControl* ctrl, bool autosize);
+    void PrepareControl(UIControl* ctrl, bool autosize, bool stick);
+    /** Append control to the controls list. */
+    void AppendControl(UIControl* ctrl);
     /** Process open tag. */
     void ProcessTagBegin(const String& tag, const Map<String, String>& attributes);
     /** Process close tag. */
@@ -46,6 +48,7 @@ private:
 
 private:
     bool needLineBreak = false;
+    bool needSpace = false;
     bool isEditorMode = false;
     bool classesInheritance = false;
     BiDiHelper::Direction direction = BiDiHelper::Direction::NEUTRAL;

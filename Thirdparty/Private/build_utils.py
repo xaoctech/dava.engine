@@ -547,6 +547,14 @@ def _get_vs_env(vs_path, arch):
 
     return env
 
+
+def mkpath(*args):
+    path = os.path.join(*args)
+    if not os.path.exists(path):
+        os.makedirs(path)
+    return path
+
+
 # Default builders
 
 
@@ -556,7 +564,8 @@ def build_and_copy_libraries_win32_cmake(
         built_lib_name_debug, built_lib_name_release,
         result_lib_name_x86_debug, result_lib_name_x86_release,
         result_lib_name_x64_debug, result_lib_name_x64_release,
-        cmake_additional_args = [], target_lib_subdir = ''):
+        cmake_additional_args = [], target_lib_subdir = '',
+        output_libs_path = 'Libs/lib_CMake'):
     # Folders for the library to be built into
     build_x86_folder = os.path.join(gen_folder_path, 'build_win32_x86')
     build_x64_folder = os.path.join(gen_folder_path, 'build_win32_x64')
@@ -573,10 +582,10 @@ def build_and_copy_libraries_win32_cmake(
     lib_path_x64_debug = os.path.join(build_x64_folder, os.path.join(target_lib_subdir, 'Debug', built_lib_name_debug))
     lib_path_x64_release = os.path.join(build_x64_folder, os.path.join(target_lib_subdir, 'Release', built_lib_name_release))
 
-    shutil.copyfile(lib_path_x86_debug, os.path.join(root_project_path, os.path.join('Libs/lib_CMake/win/x86/Debug', result_lib_name_x86_debug)))
-    shutil.copyfile(lib_path_x86_release, os.path.join(root_project_path, os.path.join('Libs/lib_CMake/win/x86/Release', result_lib_name_x86_release)))
-    shutil.copyfile(lib_path_x64_debug, os.path.join(root_project_path, os.path.join('Libs/lib_CMake/win/x64/Debug', result_lib_name_x64_debug)))
-    shutil.copyfile(lib_path_x64_release, os.path.join(root_project_path, os.path.join('Libs/lib_CMake/win/x64/Release', result_lib_name_x64_release)))
+    shutil.copyfile(lib_path_x86_debug, os.path.join(mkpath(root_project_path, output_libs_path, 'win', 'x86', 'Debug'), result_lib_name_x86_debug))
+    shutil.copyfile(lib_path_x86_release, os.path.join(mkpath(root_project_path, output_libs_path, 'win', 'x86', 'Release'), result_lib_name_x86_release))
+    shutil.copyfile(lib_path_x64_debug, os.path.join(mkpath(root_project_path, output_libs_path, 'win', 'x64', 'Debug'), result_lib_name_x64_debug))
+    shutil.copyfile(lib_path_x64_release, os.path.join(mkpath(root_project_path, output_libs_path, 'win', 'x64', 'Release'), result_lib_name_x64_release))
 
     return (build_x86_folder, build_x64_folder)
 
@@ -588,7 +597,8 @@ def build_and_copy_libraries_win10_cmake(
         result_lib_name_x86_debug, result_lib_name_x86_release,
         result_lib_name_x64_debug, result_lib_name_x64_release,
         result_lib_name_arm_debug, result_lib_name_arm_release,
-        cmake_additional_args = []):
+        cmake_additional_args = [],
+        output_libs_path = 'Libs/lib_CMake'):
     # Folders for the library to be built into
     build_win10_x86_folder = os.path.join(gen_folder_path, 'build_win10_x86')
     build_win10_x64_folder = os.path.join(gen_folder_path, 'build_win10_x64')
@@ -603,7 +613,7 @@ def build_and_copy_libraries_win10_cmake(
     cmake_generate_build_vs(build_win10_arm_folder, source_folder_path, build_config.get_cmake_generator_win10_arm(), solution_name, target_name, 'ARM', cmake_additional_args)
 
     # Move built files into Libs/lib_CMake
-    # TODO: update pathes after switching to new folders structure  
+    # TODO: update pathes after switching to new folders structure
 
     lib_path_win10_x86_debug = os.path.join(build_win10_x86_folder, os.path.join('Debug', built_lib_name_debug))
     lib_path_win10_x86_release = os.path.join(build_win10_x86_folder, os.path.join('Release', built_lib_name_release))
@@ -612,12 +622,12 @@ def build_and_copy_libraries_win10_cmake(
     lib_path_win10_arm_debug = os.path.join(build_win10_arm_folder, os.path.join('Debug', built_lib_name_debug))
     lib_path_win10_arm_release = os.path.join(build_win10_arm_folder, os.path.join('Release', built_lib_name_release))
 
-    shutil.copyfile(lib_path_win10_x86_debug, os.path.join(root_project_path, os.path.join('Libs/lib_CMake/win10/Win32/Debug', result_lib_name_x86_debug)))
-    shutil.copyfile(lib_path_win10_x86_release, os.path.join(root_project_path, os.path.join('Libs/lib_CMake/win10/Win32/Release', result_lib_name_x86_release)))
-    shutil.copyfile(lib_path_win10_x64_debug, os.path.join(root_project_path, os.path.join('Libs/lib_CMake/win10/x64/Debug', result_lib_name_x64_debug)))
-    shutil.copyfile(lib_path_win10_x64_release, os.path.join(root_project_path, os.path.join('Libs/lib_CMake/win10/x64/Release', result_lib_name_x64_release)))
-    shutil.copyfile(lib_path_win10_arm_debug, os.path.join(root_project_path, os.path.join('Libs/lib_CMake/win10/arm/Debug', result_lib_name_arm_debug)))
-    shutil.copyfile(lib_path_win10_arm_release, os.path.join(root_project_path, os.path.join('Libs/lib_CMake/win10/arm/Release', result_lib_name_arm_release)))
+    shutil.copyfile(lib_path_win10_x86_debug, os.path.join(mkpath(root_project_path, output_libs_path, 'win10', 'Win32', 'Debug'), result_lib_name_x86_debug))
+    shutil.copyfile(lib_path_win10_x86_release, os.path.join(mkpath(root_project_path, output_libs_path, 'win10', 'Win32', 'Release'), result_lib_name_x86_release))
+    shutil.copyfile(lib_path_win10_x64_debug, os.path.join(mkpath(root_project_path, output_libs_path, 'win10', 'x64', 'Debug'), result_lib_name_x64_debug))
+    shutil.copyfile(lib_path_win10_x64_release, os.path.join(mkpath(root_project_path, output_libs_path, 'win10', 'x64', 'Release'), result_lib_name_x64_release))
+    shutil.copyfile(lib_path_win10_arm_debug, os.path.join(mkpath(root_project_path, output_libs_path, 'win10', 'arm', 'Debug'), result_lib_name_arm_debug))
+    shutil.copyfile(lib_path_win10_arm_release, os.path.join(mkpath(root_project_path, output_libs_path, 'win10', 'arm', 'Release'), result_lib_name_arm_release))
 
     return (build_win10_x86_folder, build_win10_x64_folder, build_win10_arm_folder)
 
@@ -627,7 +637,9 @@ def build_and_copy_libraries_macos_cmake(
         project_name, target_name,
         built_lib_name_release,
         result_lib_name_release,
-        cmake_additional_args = [], target_lib_subdir=''):
+        cmake_additional_args = [],
+        target_lib_subdir='',
+        output_libs_path='Libs/lib_CMake'):
     build_folder_macos = os.path.join(gen_folder_path, 'build_macos')
 
     cmake_generate_build_xcode(build_folder_macos, source_folder_path, build_config.get_cmake_generator_macos(), project_name, target_name, cmake_additional_args)
@@ -637,7 +649,7 @@ def build_and_copy_libraries_macos_cmake(
 
     lib_path_macos_release = os.path.join(build_folder_macos, os.path.join(target_lib_subdir, 'Release', built_lib_name_release))
 
-    shutil.copyfile(lib_path_macos_release, os.path.join(root_project_path, os.path.join('Libs/lib_CMake/mac', result_lib_name_release)))
+    shutil.copyfile(lib_path_macos_release, os.path.join(mkpath(root_project_path, output_libs_path, 'mac'), result_lib_name_release))
 
     return build_folder_macos
 
@@ -647,7 +659,8 @@ def build_and_copy_libraries_ios_cmake(
         project_name, target_name,
         built_lib_name_release,
         result_lib_name_release,
-        cmake_additional_args = []):
+        cmake_additional_args = [],
+        output_libs_path='Libs/lib_CMake'):
     build_folder_ios = os.path.join(gen_folder_path, 'build_ios')
 
     toolchain_filepath = os.path.join(root_project_path, 'Sources/CMake/Toolchains/ios.toolchain.cmake')
@@ -660,7 +673,7 @@ def build_and_copy_libraries_ios_cmake(
 
     lib_path_ios_release = os.path.join(build_folder_ios, os.path.join('Release-iphoneos', built_lib_name_release))
 
-    shutil.copyfile(lib_path_ios_release, os.path.join(root_project_path, os.path.join('Libs/lib_CMake/ios', result_lib_name_release)))
+    shutil.copyfile(lib_path_ios_release, os.path.join(mkpath(root_project_path, output_libs_path, 'ios'), result_lib_name_release))
 
     return build_folder_ios
 
@@ -670,7 +683,8 @@ def build_and_copy_libraries_android_cmake(
         built_lib_name_release,
         result_lib_name_release,
         arm_abi='armeabi-v7a',
-        cmake_additional_args = []):
+        cmake_additional_args = [],
+        output_libs_path='Libs/lib_CMake'):
     build_android_armeabiv7a_folder = os.path.join(gen_folder_path, 'build_android_armeabiv7a')
     build_android_x86_folder = os.path.join(gen_folder_path, 'build_android_x86')
 
@@ -685,8 +699,8 @@ def build_and_copy_libraries_android_cmake(
     lib_path_android_armeabiv7a = os.path.join(build_android_armeabiv7a_folder, built_lib_name_release)
     lib_path_android_x86 = os.path.join(build_android_x86_folder, built_lib_name_release)
 
-    shutil.copyfile(lib_path_android_armeabiv7a, os.path.join(root_project_path, os.path.join('Libs/lib_CMake/android/armeabi-v7a', result_lib_name_release)))
-    shutil.copyfile(lib_path_android_x86, os.path.join(root_project_path, os.path.join('Libs/lib_CMake/android/x86', result_lib_name_release)))
+    shutil.copyfile(lib_path_android_armeabiv7a, os.path.join(mkpath(root_project_path, output_libs_path, 'android', 'armeabi-v7a'), result_lib_name_release))
+    shutil.copyfile(lib_path_android_x86, os.path.join(mkpath(root_project_path, output_libs_path, 'android', 'x86'), result_lib_name_release))
 
     return (build_android_x86_folder, build_android_armeabiv7a_folder)
 

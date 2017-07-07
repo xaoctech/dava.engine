@@ -400,6 +400,8 @@ void UIPackageLoader::LoadControl(const YamlNode* node, AbstractUIPackageBuilder
 
 void UIPackageLoader::LoadControlPropertiesFromYamlNode(const ReflectedType* ref, const YamlNode* node, AbstractUIPackageBuilder* builder)
 {
+    static const FastName componentsName("components");
+
     const TypeInheritance* inheritance = ref->GetType()->GetInheritance();
     if (nullptr != inheritance)
     {
@@ -452,8 +454,9 @@ void UIPackageLoader::LoadComponentPropertiesFromYamlNode(const YamlNode* node, 
                 Any res;
                 if (nodeDescr.type == Type::Instance<UILinearLayoutComponent>() && version <= LAST_VERSION_WITH_LINEAR_LAYOUT_LEGACY_ORIENTATION)
                 {
+                    static const FastName orientationName("orientation");
                     FastName name(field->name);
-                    if (nodeDescr.type == Type::Instance<UILinearLayoutComponent>() && name == FastName("orientation"))
+                    if (nodeDescr.type == Type::Instance<UILinearLayoutComponent>() && name == orientationName)
                     {
                         const YamlNode* valueNode = nodeDescr.node->Get(name.c_str());
                         if (valueNode)
