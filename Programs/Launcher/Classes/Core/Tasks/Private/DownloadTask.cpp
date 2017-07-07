@@ -26,7 +26,7 @@ QString DownloadTask::GetDescription() const
     return description;
 }
 
-void DownloadTask::AddLoadedData(const QUrl& url, QByteArray& data)
+void DownloadTask::AddLoadedData(const QUrl& url, const QByteArray& data)
 {
     Q_ASSERT(buffers.find(url) != buffers.end());
     buffers[url]->write(data);

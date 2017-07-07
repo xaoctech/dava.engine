@@ -17,7 +17,7 @@ public:
     QString GetDescription() const override;
     eTaskType GetTaskType() const override;
 
-    void AddLoadedData(const QUrl& url, QByteArray& data);
+    void AddLoadedData(const QUrl& url, const QByteArray& data);
 
     std::vector<QUrl> GetUrls() const;
 
