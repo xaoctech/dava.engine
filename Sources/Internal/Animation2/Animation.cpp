@@ -13,7 +13,7 @@ void Animation::Reset()
 {
 }
 
-void Animation::Advance(float dt_s)
+void Animation::Advance(float dt_s, DAVA::Vector3* offset)
 {
 }
 
