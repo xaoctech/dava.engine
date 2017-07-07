@@ -51,7 +51,7 @@ private:
 
     void UpdateAreasVisibility();
 
-    void SetHUDEnabled(bool enabled);
+    void UpdateHUDEnabled();
 
     HUDAreaInfo activeAreaInfo;
 

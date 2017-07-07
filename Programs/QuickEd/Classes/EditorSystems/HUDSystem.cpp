@@ -446,7 +446,7 @@ void HUDSystem::OnDragStateChanged(EditorSystemsManager::eDragState currentState
         OnHighlightNode(nullptr);
         break;
     case EditorSystemsManager::DragScreen:
-        SetHUDEnabled(false);
+        UpdateHUDEnabled();
         break;
     default:
         break;
@@ -463,23 +463,16 @@ void HUDSystem::OnDragStateChanged(EditorSystemsManager::eDragState currentState
         ClearMagnetLines();
         break;
     case EditorSystemsManager::DragScreen:
-        SetHUDEnabled(true);
+        UpdateHUDEnabled();
         break;
     default:
         break;
     }
 }
 
-void HUDSystem::OnDisplayStateChanged(EditorSystemsManager::eDisplayState currentState, EditorSystemsManager::eDisplayState previousState)
+void HUDSystem::OnDisplayStateChanged(EditorSystemsManager::eDisplayState, EditorSystemsManager::eDisplayState)
 {
-    if (currentState == EditorSystemsManager::Emulation)
-    {
-        SetHUDEnabled(false);
-    }
-    else if (previousState == EditorSystemsManager::Emulation)
-    {
-        SetHUDEnabled(true);
-    }
+    UpdateHUDEnabled();
 }
 
 bool HUDSystem::CanProcessInput(DAVA::UIEvent* currentInput) const
@@ -548,8 +541,10 @@ void HUDSystem::ClearMagnetLines()
     OnMagnetLinesChanged(emptyVector);
 }
 
-void HUDSystem::SetHUDEnabled(bool enabled)
+void HUDSystem::UpdateHUDEnabled()
 {
+    bool enabled = systemsManager->GetDragState() != EditorSystemsManager::DragScreen
+    && systemsManager->GetDisplayState() == EditorSystemsManager::Edit;
     if (enabled)
     {
         systemsManager->GetRootControl()->AddControl(hudControl.Get());
