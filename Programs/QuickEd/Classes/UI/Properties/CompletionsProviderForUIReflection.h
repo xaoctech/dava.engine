@@ -1,6 +1,9 @@
 #pragma once
 
 #include "UI/Properties/CompletionsProvider.h"
+#include <Base/String.h>
+#include <Base/FastName.h>
+#include <Base/Type.h>
 
 #include <Base/FastName.h>
 
