@@ -1,7 +1,6 @@
 #include "UI/UIControlBackground.h"
 #include "Debug/DVAssert.h"
 #include "UI/UIControl.h"
-#include "Core/Core.h"
 #include "Render/RenderHelper.h"
 #include "UI/UIControlSystem.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
@@ -513,6 +512,19 @@ void UIControlBackground::Draw(const UIGeometricData& parentGeometricData)
         lastDrawPos = geometricData.position;
         RenderSystem2D::Instance()->DrawTiledMultylayer(mask.Get(), detail.Get(), gradient.Get(), contour.Get(), &drawState, Vector2(leftStretchCap, topStretchCap), geometricData, &tiledMultulayerData, drawColor);
         break;
+    case DRAW_BATCH:
+    {
+        Matrix3 matrix2d;
+        geometricData.BuildTransformMatrix(matrix2d);
+        Matrix4 worldMatrix = Convert2DTransformTo3DTransform(matrix2d);
+        for (BatchDescriptor2D& b : batchDescriptors)
+        {
+            b.worldMatrix = &worldMatrix;
+            RenderSystem2D::Instance()->PushBatch(b);
+        }
+        batchDescriptors.clear();
+        break;
+    }
     default:
         break;
     }
@@ -564,5 +576,30 @@ void UIControlBackground::SetMaterial(NMaterial* _material)
 inline NMaterial* UIControlBackground::GetMaterial() const
 {
     return material;
+}
+
+void UIControlBackground::SetRenderBatches(const Vector<BatchDescriptor2D>& batches)
+{
+    batchDescriptors = batches;
+}
+
+void UIControlBackground::AppendRenderBatches(const Vector<BatchDescriptor2D>& batches)
+{
+    batchDescriptors.insert(batchDescriptors.end(), batches.begin(), batches.end());
+}
+
+void UIControlBackground::AddRenderBatch(const BatchDescriptor2D& batch)
+{
+    batchDescriptors.push_back(batch);
+}
+
+void UIControlBackground::ClearBatches()
+{
+    batchDescriptors.clear();
+}
+
+const Vector<BatchDescriptor2D>& UIControlBackground::GetRenderBatches() const
+{
+    return batchDescriptors;
 }
 };

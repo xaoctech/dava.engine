@@ -6,6 +6,7 @@
 
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
+#include <Engine/PlatformApiQt.h>
 #include <FileSystem/FileSystem.h>
 #include <UnitTests/UnitTests.h>
 

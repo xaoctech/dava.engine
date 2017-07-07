@@ -1,6 +1,6 @@
-#ifndef __DAVAENGINE_UI_CONTROL_SYSTEM_H__
-#define __DAVAENGINE_UI_CONTROL_SYSTEM_H__
+#pragma once
 
+#include "Base/Any.h"
 #include "Base/BaseMath.h"
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
@@ -10,10 +10,7 @@
 
 #include "UI/UIControl.h"
 #include "UI/UIEvent.h"
-#if !defined(__DAVAENGINE_COREV2__)
-#include "UI/UIScreenTransition.h"
-#include "UI/UIPopup.h"
-#endif
+#include "UI/Components/UISingleComponent.h"
 
 #define FRAME_SKIP 5
 
@@ -32,11 +29,8 @@ class UIScreenshoter;
 class UISoundSystem;
 class UIUpdateSystem;
 class UIRenderSystem;
-
-#if defined(__DAVAENGINE_COREV2__)
 class UIScreenTransition;
 class UIPopup;
-#endif
 
 class ScreenSwitchListener
 {
@@ -296,6 +290,22 @@ public:
         return nullptr;
     }
 
+    void AddSingleComponent(std::unique_ptr<UISingleComponent> single);
+    std::unique_ptr<UISingleComponent> RemoveSingleComponent(const UISingleComponent* singleComponent);
+
+    template <typename T>
+    T* GetSingleComponent() const
+    {
+        for (auto& c : singleComponents)
+        {
+            if (IsPointerToExactClass<T>(c.get()))
+            {
+                return static_cast<T*>(c.get());
+            }
+        }
+        return nullptr;
+    }
+
     UILayoutSystem* GetLayoutSystem() const;
     UIInputSystem* GetInputSystem() const;
     UIFocusSystem* GetFocusSystem() const;
@@ -316,13 +326,10 @@ private:
     bool CheckTimeAndPosition(UIEvent* newEvent);
     int32 CalculatedTapCount(UIEvent* newEvent);
 
-#if defined(__DAVAENGINE_COREV2__)
     friend class Private::EngineBackend;
-#else
-    friend void Core::CreateSingletons();
-#endif
 
     Vector<std::unique_ptr<UISystem>> systems;
+    Vector<std::unique_ptr<UISingleComponent>> singleComponents;
     UILayoutSystem* layoutSystem = nullptr;
     UIStyleSheetSystem* styleSheetSystem = nullptr;
     UIInputSystem* inputSystem = nullptr;
@@ -350,14 +357,7 @@ private:
     uint32 resizePerFrame = 0; //used for logging some strange crahses on android
 
     float32 doubleClickTime = 0.f;
-#if !defined(__DAVAENGINE_COREV2__)
-    float32 doubleClickPhysSquare = 0.f;
-    float32 doubleClickRadiusSquared = 0.f;
-    float32 defaultDoubleClickRadiusSquared = 0.f;
-    float32 defaultDoubleClickTime = 0.5f;
-#else
     float32 doubleClickInchSquare = 0.f;
-#endif
     struct LastClickData
     {
         uint32 touchId = 0;
@@ -369,6 +369,4 @@ private:
     };
     LastClickData lastClickData;
 };
-};
-
-#endif
+}

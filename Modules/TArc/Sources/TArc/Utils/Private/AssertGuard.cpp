@@ -76,12 +76,6 @@ public:
         LockGuard<Mutex> mutexGuard(mutex);
         DAVA::TArc::ScopedValueGuard<bool> valueGuard(isInAssert, true);
 
-        std::unique_ptr<EventFilter> filter;
-        if (Thread::IsMainThread())
-        {
-            filter.reset(new EventFilter());
-        }
-
 #if defined(__DAVAENGINE_MACOS__)
         MacOSRunLoopGuard macOSGuard;
 #endif

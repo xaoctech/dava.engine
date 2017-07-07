@@ -7,8 +7,6 @@ include      ( CMake-common )
 
 
 set ( DAVA_COMPONENTS "NetworkCore" DAVA_DISABLE_AUTOTESTS )
-set (DAVA_COREV2 1)
-dava_add_definitions(-D__DAVAENGINE_COREV2__)
 
 dava_add_definitions(-DDISABLE_NATIVE_MOVIEVIEW)
 dava_add_definitions(-DDISABLE_NATIVE_TEXTFIELD)

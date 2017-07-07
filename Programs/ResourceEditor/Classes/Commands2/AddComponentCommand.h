@@ -19,7 +19,7 @@ public:
     void Redo() override;
 
     DAVA::Entity* GetEntity() const;
-    const DAVA::Component* GetComponent() const;
+    DAVA::Component* GetComponent() const;
 
 private:
     DAVA::Entity* entity = nullptr;

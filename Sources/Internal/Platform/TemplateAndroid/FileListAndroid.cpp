@@ -1,6 +1,8 @@
-#include "FileListAndroid.h"
+#include "Platform/TemplateAndroid/FileListAndroid.h"
+
+#if defined(__DAVAENGINE_ANDROID__)
+
 #include "Logger/Logger.h"
-#include "Platform/TemplateAndroid/ExternC/AndroidLayer.h"
 
 namespace DAVA
 {
@@ -25,15 +27,9 @@ Vector<JniFileList::JniFileListEntry> JniFileList::GetFileList(const String& pat
             JNI::LocalRef<jobject> item = env->GetObjectArrayElement(jArray, i);
 
             JNI::LocalRef<jclass> cls = env->GetObjectClass(item);
-#if defined(__DAVAENGINE_COREV2__)
             jfieldID jNameField = env->GetFieldID(cls, "name", JNI::TypeSignature<jstring>::value());
             jfieldID jSizeField = env->GetFieldID(cls, "size", JNI::TypeSignature<jlong>::value());
             jfieldID jIsDirectoryField = env->GetFieldID(cls, "isDirectory", JNI::TypeSignature<jboolean>::value());
-#else
-            jfieldID jNameField = env->GetFieldID(cls, "name", JNI::TypeMetrics<jstring>());
-            jfieldID jSizeField = env->GetFieldID(cls, "size", JNI::TypeMetrics<jlong>());
-            jfieldID jIsDirectoryField = env->GetFieldID(cls, "isDirectory", JNI::TypeMetrics<jboolean>());
-#endif
 
             jlong jSize = env->GetLongField(item, jSizeField);
             jboolean jIsDir = env->GetBooleanField(item, jIsDirectoryField);
@@ -51,3 +47,5 @@ Vector<JniFileList::JniFileListEntry> JniFileList::GetFileList(const String& pat
 }
 
 } //namespace DAVA
+
+#endif // __DAVAENGINE_ANDROID__

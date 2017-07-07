@@ -5,7 +5,7 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UIRichContentObjectComponent)
 {
-    ReflectionRegistrator<UIRichContentObjectComponent>::Begin()
+    ReflectionRegistrator<UIRichContentObjectComponent>::Begin()[M::HiddenField()]
     .ConstructorByPointer()
     .DestructorByPointer([](UIRichContentObjectComponent* o) { o->Release(); })
     .Field("packagePath", &UIRichContentObjectComponent::GetPackagePath, &UIRichContentObjectComponent::SetPackagePath)
