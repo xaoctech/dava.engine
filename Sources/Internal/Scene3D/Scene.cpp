@@ -584,11 +584,12 @@ void Scene::Update(float32 timeElapsed)
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_UPDATE)
 
     fixedUpdate.lastTime += timeElapsed;
+    //call ProcessFixed N times where N = (timeSinceLastProcessFixed + timeElapsed) / fixedUpdate.constantTime;
     while (fixedUpdate.lastTime >= fixedUpdate.constantTime)
     {
         for (SceneSystem* system : systemsToFixedProcess)
         {
-            system->FixedProcess(fixedUpdate.constantTime);
+            system->ProcessFixed(fixedUpdate.constantTime);
         }
         fixedUpdate.lastTime -= fixedUpdate.constantTime;
     }
