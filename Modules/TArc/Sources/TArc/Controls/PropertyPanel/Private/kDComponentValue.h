@@ -1,7 +1,6 @@
 #pragma once
 
 #include "TArc/Controls/PropertyPanel/BaseComponentValue.h"
-#include "TArc/Controls/PropertyPanel/Private/MultiDoubleSpinBox.h"
 
 #include <Reflection/Reflection.h>
 #include <Reflection/ReflectedMeta.h>

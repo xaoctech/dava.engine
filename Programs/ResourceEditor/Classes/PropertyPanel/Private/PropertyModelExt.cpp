@@ -41,7 +41,7 @@ struct ComponentCreator : public StaticSingleton<ComponentCreator>
     const ReflectedType* componentType = nullptr;
 };
 
-const char* chooseComponentTypeString = "Choose component type";
+const char* chooseComponentTypeString = "Choose component type for Add";
 
 struct TypeInitializer : public StaticSingleton<ComponentCreator>
 {
@@ -114,6 +114,11 @@ class ComponentCreatorComponentValue : public BaseComponentValue
 {
 public:
     ComponentCreatorComponentValue() = default;
+
+    bool IsSpannedControl() const override
+    {
+        return true;
+    }
 
 protected:
     Any GetMultipleValue() const override

@@ -1,6 +1,7 @@
 #include "TArc/Controls/PropertyPanel/Private/kDComponentValue.h"
 #include "TArc/Controls/PropertyPanel/Private/kDComponentValueTraits.h"
 #include "TArc/Controls/PropertyPanel/Private/MultiDoubleSpinBox.h"
+#include "TArc/Controls/PropertyPanel/Private/MultiIntSpinBox.h"
 #include "TArc/Controls/PropertyPanel/PropertyModelExtensions.h"
 #include "TArc/Controls/Widget.h"
 #include "TArc/Controls/ColorPicker/ColorPickerButton.h"
@@ -237,7 +238,8 @@ const M::Range* kDComponentValue<T, TEditor, TComponent>::Get6AxisRange() const
 template <typename T, typename TEditor, typename TComponent>
 bool kDComponentValue<T, TEditor, TComponent>::ShowSpinArrows() const
 {
-    return Type::Instance<T>() != Type::Instance<Color>();
+    const Type* componentType = Type::Instance<TComponent>();
+    return componentType != Type::Instance<float32>() && componentType != Type::Instance<float64>();
 }
 
 using Vector2ComponentValue = kDComponentValue<Vector2, MultiDoubleSpinBox, float32>;
@@ -250,6 +252,7 @@ DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(Vector2ComponentValue)
     .Field("accuracy", &Vector2ComponentValue::GetAccuracy, nullptr)
     .Field("xRange", &Vector2ComponentValue::Get1AxisRange, nullptr)
     .Field("yRange", &Vector2ComponentValue::Get2AxisRange, nullptr)
+    .Field("showSpinArrows", &Vector2ComponentValue::ShowSpinArrows, nullptr)
     .End();
 }
 
@@ -265,6 +268,7 @@ DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(Vector3ComponentValue)
     .Field("xRange", &Vector3ComponentValue::Get1AxisRange, nullptr)
     .Field("yRange", &Vector3ComponentValue::Get2AxisRange, nullptr)
     .Field("zRange", &Vector3ComponentValue::Get3AxisRange, nullptr)
+    .Field("showSpinArrows", &Vector3ComponentValue::ShowSpinArrows, nullptr)
     .End();
 }
 
@@ -282,6 +286,7 @@ DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(Vector4ComponentValue)
     .Field("yRange", &Vector4ComponentValue::Get2AxisRange, nullptr)
     .Field("zRange", &Vector4ComponentValue::Get3AxisRange, nullptr)
     .Field("wRange", &Vector4ComponentValue::Get4AxisRange, nullptr)
+    .Field("showSpinArrows", &Vector4ComponentValue::ShowSpinArrows, nullptr)
     .End();
 }
 
@@ -299,6 +304,7 @@ DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(RectComponentValue)
     .Field("yRange", &RectComponentValue::Get2AxisRange, nullptr)
     .Field("widthRange", &RectComponentValue::Get3AxisRange, nullptr)
     .Field("heightRange", &RectComponentValue::Get4AxisRange, nullptr)
+    .Field("showSpinArrows", &RectComponentValue::ShowSpinArrows, nullptr)
     .End();
 }
 
@@ -336,7 +342,6 @@ DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(IntColorComponentValue)
     .Field("gRange", &IntColorComponentValue::Get2AxisRange, nullptr)
     .Field("bRange", &IntColorComponentValue::Get3AxisRange, nullptr)
     .Field("aRange", &IntColorComponentValue::Get4AxisRange, nullptr)
-    .Field("showSpinArrows", &IntColorComponentValue::ShowSpinArrows, nullptr)
     .End();
 }
 
@@ -358,6 +363,7 @@ DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(AABBox3ComponentValue)
     .Field("maxXRange", &AABBox3ComponentValue::Get4AxisRange, nullptr)
     .Field("maxYRange", &AABBox3ComponentValue::Get5AxisRange, nullptr)
     .Field("maxZRange", &AABBox3ComponentValue::Get6AxisRange, nullptr)
+    .Field("showSpinArrows", &AABBox3ComponentValue::ShowSpinArrows, nullptr)
     .End();
 }
 
