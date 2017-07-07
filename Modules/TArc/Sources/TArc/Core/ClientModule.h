@@ -35,6 +35,14 @@ protected:
     {
     }
 
+    virtual void OnInterfaceRegistered(const Type* interfaceType)
+    {
+    }
+
+    virtual void OnBeforeInterfaceUnregistered(const Type* interfaceType)
+    {
+    }
+
     virtual void PostInit() = 0;
     ContextAccessor* GetAccessor();
     const ContextAccessor* GetAccessor() const;
@@ -50,6 +58,12 @@ protected:
 
     template <typename... Args>
     void InvokeOperation(int operationId, const Args&... args);
+
+    template <typename TInterface>
+    void RegisterInterface(TInterface* interface);
+
+    template <typename TInterface>
+    TInterface* QueryInterface() const;
 
 private:
     void Init(CoreInterface* coreInterface, std::unique_ptr<UI>&& ui);
@@ -82,6 +96,19 @@ template <typename... Args>
 inline void ClientModule::InvokeOperation(int operationId, const Args&... args)
 {
     coreInterface->Invoke(operationId, args...);
+}
+
+template <typename TInterface>
+inline void ClientModule::RegisterInterface(TInterface* interface)
+{
+    coreInterface->RegisterInterface(this, Type::Instance<TInterface>(), interface);
+}
+
+template <typename TInterface>
+inline TInterface* ClientModule::QueryInterface() const
+{
+    Any result = coreInterface->QueryInterface(Type::Instance<TInterface>());
+    return result.Get<TInterface*>();
 }
 
 } // namespace TArc

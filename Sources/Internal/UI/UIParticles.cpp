@@ -217,7 +217,7 @@ void UIParticles::Draw(const UIGeometricData& geometricData)
     }
     else
     {
-        matrix.CreateRotation(Vector3::UnitZ, -geometricData.angle);
+        matrix.BuildRotation(Vector3::UnitZ, -geometricData.angle);
         matrix.SetTranslationVector(Vector3(geometricData.position.x, geometricData.position.y, 0));
         effect->effectRenderObject->BindDynamicParameters(defaultCamera);
         effect->effectRenderObject->SetWorldTransformPtr(&matrix);

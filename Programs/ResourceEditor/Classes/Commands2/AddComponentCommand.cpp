@@ -33,7 +33,7 @@ DAVA::Entity* AddComponentCommand::GetEntity() const
     return entity;
 }
 
-const DAVA::Component* AddComponentCommand::GetComponent() const
+DAVA::Component* AddComponentCommand::GetComponent() const
 {
     return component;
 }

@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_JOB_QUEUE_H__
-#define __DAVAENGINE_JOB_QUEUE_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "Functional/Function.h"
@@ -37,5 +36,3 @@ protected:
     Mutex jobsInQueueMutex;
 };
 }
-
-#endif //__DAVAENGINE_JOB_QUEUE_H__
