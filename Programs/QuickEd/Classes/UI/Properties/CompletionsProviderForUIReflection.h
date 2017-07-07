@@ -3,10 +3,10 @@
 #include "UI/Properties/CompletionsProvider.h"
 #include <Base/String.h>
 #include <Base/FastName.h>
+#include <Base/Type.h>
 
 class PackageBaseNode;
 
-class DAVA::Type;
 class CompletionsProviderForUIReflection : public CompletionsProvider
 {
 public:
