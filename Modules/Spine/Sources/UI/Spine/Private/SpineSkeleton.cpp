@@ -18,50 +18,14 @@ namespace DAVA
 {
 namespace SpinePrivate
 {
-static const int32 MAX_VERTICES_PER_BATCH = 1024;
+static const uint32 MAX_VERTICES_PER_BATCH = 1024;
+static const uint32 VERTICES_COMPONENTS_COUNT = 2;
+static const uint32 TEXTURE_COMPONENTS_COUNT = 2;
+static const uint32 COLOR_STRIDE = 1;
+static const uint32 QUAD_VERTICES_COUNT = 4;
+static const uint32 QUAD_TRIANGLES_COUNT = 6;
+static const uint32 QUAD_VERTICES_LENGTH = QUAD_VERTICES_COUNT * VERTICES_COMPONENTS_COUNT;
 static const uint16 QUAD_TRIANGLES[6] = { 0, 1, 2, 2, 3, 0 };
-static const int32 QUAD_VERTICES_COUNT = 4;
-static const int32 QUAD_TRIANGLES_COUNT = 6;
-static const int32 VERTICES_COMPONENTS_COUNT = 2;
-static const int32 TEXTURE_COMPONENTS_COUNT = 2;
-static const int32 COLOR_STRIDE = 1;
-
-int32 MaxVerticesLength(spSkeleton* skeleton)
-{
-    int32 max = 0;
-
-    auto checkIsMax = [&max](int32 value) {
-        if (value > max)
-        {
-            max = value;
-        }
-    };
-
-    for (int32 i = 0, n = skeleton->slotsCount; i < n; i++)
-    {
-        spSlot* slot = skeleton->drawOrder[i];
-        if (!slot->attachment)
-            continue;
-
-        switch (slot->attachment->type)
-        {
-        case SP_ATTACHMENT_REGION:
-        {
-            checkIsMax(QUAD_VERTICES_COUNT * VERTICES_COMPONENTS_COUNT);
-            break;
-        }
-        case SP_ATTACHMENT_MESH:
-        {
-            checkIsMax(reinterpret_cast<spMeshAttachment*>(slot->attachment)->super.worldVerticesLength);
-            break;
-        }
-        default:
-            break;
-        }
-    }
-
-    return max;
-}
 
 FilePath GetScaledName(const FilePath& path)
 {
@@ -264,8 +228,6 @@ bool SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath_)
     };
     state->rendererObject = this;
 
-    worldVertices.resize(SpinePrivate::MaxVerticesLength(skeleton));
-
     animationsNames.clear();
     int32 animCount = skeleton->data->animationsCount;
     for (int32 i = 0; i < animCount; ++i)
@@ -283,6 +245,7 @@ bool SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath_)
     }
 
     // Init initial state
+    spSkeleton_setToSetupPose(skeleton);
     spSkeleton_update(skeleton, 0);
     spAnimationState_update(state, 0);
     spAnimationState_apply(state, skeleton);
@@ -367,14 +330,19 @@ void SpineSkeleton::Update(const float32 timeElapsed)
         {
             const float32* uvs = nullptr;
             const uint16* indices = nullptr;
-            int32 verticesCount = 0;
-            int32 indicesCount = 0;
+            uint32 verticesCount = 0;
+            uint32 indicesCount = 0;
 
             switch (slot->attachment->type)
             {
             case SP_ATTACHMENT_REGION:
             {
                 spRegionAttachment* attachment = reinterpret_cast<spRegionAttachment*>(slot->attachment);
+
+                if (worldVertices.size() < SpinePrivate::QUAD_VERTICES_LENGTH)
+                {
+                    worldVertices.resize(SpinePrivate::QUAD_VERTICES_LENGTH);
+                }
                 spRegionAttachment_computeWorldVertices(attachment, slot->bone, worldVertices.data());
 
                 SwitchTexture(reinterpret_cast<Texture*>(reinterpret_cast<spAtlasRegion*>(attachment->rendererObject)->page->rendererObject));
@@ -388,14 +356,19 @@ void SpineSkeleton::Update(const float32 timeElapsed)
             case SP_ATTACHMENT_MESH:
             {
                 spMeshAttachment* attachment = reinterpret_cast<spMeshAttachment*>(slot->attachment);
+
+                if (worldVertices.size() < static_cast<uint32>(attachment->super.worldVerticesLength))
+                {
+                    worldVertices.resize(static_cast<uint32>(attachment->super.worldVerticesLength));
+                }
                 spMeshAttachment_computeWorldVertices(attachment, slot, worldVertices.data());
 
                 SwitchTexture(reinterpret_cast<Texture*>(reinterpret_cast<spAtlasRegion*>(attachment->rendererObject)->page->rendererObject));
 
                 uvs = attachment->uvs;
-                verticesCount = attachment->super.worldVerticesLength / 2;
+                verticesCount = static_cast<uint32>(attachment->super.worldVerticesLength / 2);
                 indices = attachment->triangles;
-                indicesCount = attachment->trianglesCount;
+                indicesCount = static_cast<uint32>(attachment->trianglesCount);
                 break;
             }
             default:
@@ -413,7 +386,7 @@ void SpineSkeleton::Update(const float32 timeElapsed)
 
             DVASSERT((verticesCoords.size() - currentVerticesStart) < std::numeric_limits<uint16>::max());
             uint16 startIndex = static_cast<uint16>(verticesCoords.size() - currentVerticesStart);
-            for (int32 i = 0; i < verticesCount; ++i)
+            for (uint32 i = 0; i < verticesCount; ++i)
             {
                 Vector2 point(worldVertices[i * SpinePrivate::VERTICES_COMPONENTS_COUNT], -worldVertices[i * SpinePrivate::VERTICES_COMPONENTS_COUNT + 1]);
                 Vector2 uv(uvs[i * SpinePrivate::VERTICES_COMPONENTS_COUNT], uvs[i * SpinePrivate::VERTICES_COMPONENTS_COUNT + 1]);
@@ -422,7 +395,7 @@ void SpineSkeleton::Update(const float32 timeElapsed)
                 verticesUVs.push_back(uv);
                 verticesColors.push_back(color.GetRGBA());
             }
-            for (int32 i = 0; i < indicesCount; i++)
+            for (uint32 i = 0; i < indicesCount; i++)
             {
                 verticesIndices.push_back(startIndex + indices[i]);
             }
@@ -569,14 +542,7 @@ bool SpineSkeleton::SetSkin(const String& skinName)
     if (skeleton != nullptr)
     {
         int32 skin = spSkeleton_setSkinByName(skeleton, skinName.empty() ? nullptr : skinName.c_str());
-        if (skin != 0)
-        {
-            if (skeleton != nullptr)
-            {
-                worldVertices.resize(SpinePrivate::MaxVerticesLength(skeleton));
-            }
-            return true;
-        }
+        return skin != 0;
     }
     return false;
 }

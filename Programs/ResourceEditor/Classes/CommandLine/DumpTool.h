@@ -24,6 +24,7 @@ private:
     eAction commandAction = ACTION_NONE;
     DAVA::String filename;
     DAVA::FilePath inFolder;
+    DAVA::FilePath dataSourceFolder;
     DAVA::FilePath outFile;
 
     DAVA::Vector<DAVA::eGPUFamily> compressedGPUs;
