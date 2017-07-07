@@ -831,7 +831,7 @@ macro( setup_main_module )
                 include_directories( ${INCLUDES_PRIVATE} ) 
             endif() 
 
-            include_directories( "Sources/" ) 
+            #include_directories( "Sources/" ) 
 
 
             if( CREATE_NEW_MODULE )
