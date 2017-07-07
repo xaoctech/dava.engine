@@ -113,7 +113,7 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
     propertyNameTypeItemDelegates[PropertyPath("UISpineComponent", "skinName")] = new ComboPropertyDelegate(this, std::make_unique<CompletionsProviderForUIReflection>("skinsNames", "UISpineComponent"), false);
     propertyNameTypeItemDelegates[PropertyPath("UISpineAttachControlsToBonesComponent", "bonesBinds")] = new TablePropertyDelegate(QList<QString>({ "Bone", "Control" }), this);
 
-    propertyNameTypeItemDelegates[PropertyPath("Text", "fontName")] = new FontPropertyDelegate(this);
+    propertyNameTypeItemDelegates[PropertyPath("UITextComponent", "fontName")] = new FontPropertyDelegate(this);
 }
 
 PropertiesTreeItemDelegate::~PropertiesTreeItemDelegate()
