@@ -7,14 +7,6 @@
 
 namespace DAVA
 {
-Texture* GetSharedPinkTexture()
-{
-    Texture* staticTexture = nullptr;
-    if (staticTexture == nullptr)
-        staticTexture = Texture::CreatePink();
-    return SafeRetain(staticTexture);
-}
-
 DAVA_VIRTUAL_REFLECTION_IMPL(GeoDecalComponent)
 {
     ReflectionRegistrator<GeoDecalComponent>::Begin()
@@ -50,6 +42,7 @@ void GeoDecalComponent::init(uint32 flags)
 
         dataNodeMaterial.reset(new NMaterial());
         dataNodeMaterial->SetMaterialName(FastName(materialName));
+        dataNodeMaterial->SetRuntime(true);
     }
 }
 
