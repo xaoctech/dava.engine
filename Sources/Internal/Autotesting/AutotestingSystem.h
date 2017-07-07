@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_AUTOTESTING_SYSTEM_H__
-#define __DAVAENGINE_AUTOTESTING_SYSTEM_H__
+#pragma once
 
 #include "DAVAConfig.h"
 
@@ -219,5 +218,3 @@ inline bool AutotestingSystem::GetIsScreenShotSaving() const
 };
 
 #endif //__DAVAENGINE_AUTOTESTING__
-
-#endif //__DAVAENGINE_AUTOTESTING_SYSTEM_H__

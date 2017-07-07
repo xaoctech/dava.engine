@@ -18,6 +18,7 @@ class Message;
 class UIComponent;
 class UIControlFamily;
 class UIControlPackageContext;
+class UIControlSystem;
 
 #define CONTROL_TOUCH_AREA 15
 
@@ -509,6 +510,8 @@ public:
      */
     void SetState(int32 state);
 
+    UIControlSystem* GetScene() const;
+
     /**
      \brief Returns control parent.
      \returns if control hasn't parent returns NULL.
@@ -932,6 +935,8 @@ private:
     FastName name;
     Vector2 pivot; //!<control pivot. Top left control corner by default.
 
+    UIControlSystem* scene = nullptr;
+
     UIControl* parent;
     List<UIControl*> children;
 
@@ -975,6 +980,7 @@ protected:
 
     EventDispatcher* eventDispatcher;
 
+    void SetScene(UIControlSystem* scene);
     void SetParent(UIControl* newParent);
 
     virtual ~UIControl();
@@ -1023,7 +1029,8 @@ public:
     template <class T>
     void RemoveComponent(int32 index = 0)
     {
-        RemoveComponent(Type::Instance<T>(), index);
+        static int32 runtimeType = GetEngineContext()->componentManager->GetRuntimeType(Type::Instance<T>());
+        RemoveComponent(runtimeType, index);
     }
 
     /** Remove all components. */
@@ -1039,7 +1046,8 @@ public:
     template <class T>
     inline T* GetComponent(uint32 index = 0) const
     {
-        return DynamicTypeCheck<T*>(GetComponent(Type::Instance<T>(), index));
+        static int32 runtimeType = GetEngineContext()->componentManager->GetRuntimeType(Type::Instance<T>());
+        return DynamicTypeCheck<T*>(GetComponent(runtimeType, index));
     }
 
     /**
@@ -1074,7 +1082,8 @@ public:
     template <class T>
     inline uint32 GetComponentCount() const
     {
-        return GetComponentCount(Type::Instance<T>());
+        static int32 runtimeType = GetEngineContext()->componentManager->GetRuntimeType(Type::Instance<T>());
+        return GetComponentCount(runtimeType);
     }
 
     /** Return UIControl::components reference. */

@@ -41,7 +41,7 @@
 #include <Render/Renderer.h>
 #include <Render/DynamicBufferAllocator.h>
 #include <Particles/ParticleEmitter.h>
-#include <Engine/PlatformApi.h>
+#include <Engine/PlatformApiQt.h>
 #include <Engine/Qt/RenderWidget.h>
 
 #include <QAction>

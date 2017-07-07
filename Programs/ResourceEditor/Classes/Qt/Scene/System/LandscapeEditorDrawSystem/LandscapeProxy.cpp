@@ -26,14 +26,17 @@ LandscapeProxy::LandscapeProxy(DAVA::Landscape* landscape, DAVA::Entity* node)
     landscapeEditorMaterial->AddProperty(LANDSCAPE_PARAM_CURSOR_COORD_SIZE, cursorCoordSize.data, rhi::ShaderProp::TYPE_FLOAT4);
     landscape->PrepareMaterial(landscapeEditorMaterial);
 
-    DAVA::ScopedPtr<DAVA::Texture> texture(CreateSingleMipTexture("~res:/ResourceEditor/LandscapeEditor/Tools/cursor/cursor.png"));
-    texture->SetWrapMode(rhi::TEXADDR_CLAMP, rhi::TEXADDR_CLAMP);
-    texture->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NONE);
-    landscapeEditorMaterial->AddTexture(LANDSCAPE_TEXTURE_CURSOR, texture);
+    cursorTexture = CreateSingleMipTexture(DefaultCursorPath());
+    cursorTexture->SetWrapMode(rhi::TEXADDR_CLAMP, rhi::TEXADDR_CLAMP);
+    cursorTexture->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NONE);
+    landscapeEditorMaterial->AddTexture(LANDSCAPE_TEXTURE_CURSOR, cursorTexture);
+
+    DAVA::Renderer::GetSignals().needRestoreResources.Connect(this, &LandscapeProxy::RestoreResources);
 }
 
 LandscapeProxy::~LandscapeProxy()
 {
+    DAVA::Renderer::GetSignals().needRestoreResources.Disconnect(this);
     SafeRelease(landscapeEditorMaterial);
 
     SafeRelease(baseLandscape);
@@ -42,6 +45,15 @@ LandscapeProxy::~LandscapeProxy()
     SafeRelease(tilemaskDrawTextures[TILEMASK_TEXTURE_DESTINATION]);
 
     SafeRelease(cursorTexture);
+}
+
+void LandscapeProxy::RestoreResources()
+{
+    if (rhi::NeedRestoreTexture(cursorTexture->handle))
+    {
+        DAVA::ScopedPtr<DAVA::Image> image(DAVA::ImageSystem::LoadSingleMip(DefaultCursorPath()));
+        rhi::UpdateTexture(cursorTexture->handle, image->GetData(), 0);
+    }
 }
 
 void LandscapeProxy::SetMode(LandscapeProxy::eLandscapeMode _mode)

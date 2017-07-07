@@ -29,7 +29,9 @@ void CheckBox::UpdateControl(const ControlDescriptor& changedFields)
     DAVA::Reflection fieldValue = model.GetField(changedFields.GetName(Fields::Checked));
     DVASSERT(fieldValue.IsValid());
 
-    setEnabled(!IsValueReadOnly(changedFields, Fields::Checked, Fields::IsReadOnly));
+    bool readOnly = IsValueReadOnly(changedFields, Fields::Checked, Fields::IsReadOnly);
+    bool enabled = GetFieldValue(Fields::IsEnabled, true);
+    setEnabled(!readOnly && enabled);
 
     const DAVA::M::ValueDescription* valueDescriptor = fieldValue.GetMeta<DAVA::M::ValueDescription>();
     if (valueDescriptor != nullptr)

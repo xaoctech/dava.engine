@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_UI_TEXT_FIELD_H__
-#define __DAVAENGINE_UI_TEXT_FIELD_H__
+#pragma once
 
 #include "UI/UIControl.h"
 #include "Render/2D/TextBlock.h"
@@ -426,5 +425,3 @@ private:
 };
 
 } // namespace DAVA
-
-#endif // __DAVAENGINE_UI_TEXT_FIELD_H__
