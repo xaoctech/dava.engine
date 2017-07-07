@@ -684,18 +684,9 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
         data.inheritPositionOffset = effectData.infoSources[group.positionSource].position;
     }
 
-    if (layer->stripeInheritPositionForBase && data.stripeNodes.size() > 0)
+    if (layer->stripeInheritPositionForBase)
     {
         data.baseNode.position = effectData.infoSources[group.positionSource].position;
-    }
-
-    if (layer->stripeInheritPositionForBase && data.stripeNodes.size() > 0)
-    {
-        float32 previousLength = (data.baseNode.position - data.stripeNodes.front().position).Length();
-        float32 currentLength = (prevBasePosition - data.stripeNodes.front().position).Length();
-        float32 deltaLength = currentLength - previousLength;
-
-        data.uvOffset += deltaLength;
     }
 
     data.baseNode.speed = particle->speed;
@@ -715,6 +706,11 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
     auto nodeIter = data.stripeNodes.begin();
     DAVA::StripeNode* prevNode = &data.baseNode;
 
+    float32 firstDelta = 0.0f;
+    Vector3 prevFirst = data.baseNode.position;
+    if (data.stripeNodes.size() > 0)
+        prevFirst = nodeIter->position;
+
     while (nodeIter != data.stripeNodes.end())
     {
         nodeIter->lifeime += dt;
@@ -724,6 +720,9 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
         if (layer->velocityOverLife)
             currVelocityOverLife = layer->velocityOverLife->GetValue(overLife);
         nodeIter->position += nodeIter->speed * (currVelocityOverLife * dt);
+
+        if (nodeIter == data.stripeNodes.begin())
+            firstDelta = (prevFirst - nodeIter->position).Length();
 
         if (forcesCount > 0)
         {
@@ -749,12 +748,24 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
             ++nodeIter;
     }
 
-    if (data.stripeNodes.size() > 0 && false)
+    if (layer->stripeInheritPositionForBase && data.stripeNodes.size() > 0)
     {
-        float32 len = data.stripeNodes.front().distanceFromPrevNode;
-        if (len < data.prevBaseLen)
-            data.uvOffset -= data.prevBaseLen - len;
-        data.prevBaseLen = len;
+        float32 previousLength = data.prevBaseLen;
+        float32 currentLength = (data.baseNode.position - data.stripeNodes.front().position).Length();
+        float32 deltaLength = previousLength - currentLength; // +firstDelta;
+        data.prevBaseLen = currentLength;
+        data.uvOffset += deltaLength;
+
+        //if (shouldInsert)
+        /*if (false)
+        {
+            Logger::Info("DeltaLen %f", deltaLength);
+            Logger::Info("curr len %f", currentLength);
+            Logger::Info("prev len %f", previousLength);
+            if (shouldInsert)
+                Logger::Info("*********************************");
+        }*/
+        //     Logger::Info("prev len %f, current len %f, firstDelta %f, uv offset %f", previousLength, currentLength, firstDelta, data.uvOffset);
     }
 }
 

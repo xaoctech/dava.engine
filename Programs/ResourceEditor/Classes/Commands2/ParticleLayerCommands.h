@@ -142,6 +142,8 @@ public:
         bool usePerspectiveMapping;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> stripeTextureTile;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> stripeSizeOverLifeProp;
+        DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> stripeNoiseUScrollSpeedOverLife;
+        DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> stripeNoiseVScrollSpeedOverLife;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::Color>> stripeColorOverLife;
     };
 
