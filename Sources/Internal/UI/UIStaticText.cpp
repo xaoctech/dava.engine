@@ -6,6 +6,7 @@
 #include "Render/2D/FontManager.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
 #include "Animation/LinearAnimation.h"
+#include "Animation/LinearPropertyAnimation.h"
 #include "Utils/StringUtils.h"
 #include "Render/2D/TextBlockSoftwareRender.h"
 #include "Render/RenderHelper.h"
@@ -13,6 +14,8 @@
 #include "Job/JobManager.h"
 #include "Utils/UTF8Utils.h"
 #include "Reflection/ReflectionRegistrator.h"
+#include "Reflection/ReflectedObject.h"
+
 #include "UI/Update/UIUpdateComponent.h"
 #include "UI/Text/UITextComponent.h"
 #include "UI/Text/Private/UITextSystemLink.h"
@@ -258,20 +261,20 @@ const WideString& UIStaticText::GetText() const
     return GetTextBlock()->GetText();
 }
 
-// TODO fix
-static Color color;
-static Color colorShadow;
-
 Animation* UIStaticText::TextColorAnimation(const Color& finalColor, float32 time, Interpolation::FuncType interpolationFunc /*= Interpolation::LINEAR*/, int32 track /*= 0*/)
 {
-    LinearAnimation<Color>* animation = new LinearAnimation<Color>(this, &color, finalColor, time, interpolationFunc);
+    Reflection ref = Reflection::Create(ReflectedObject(text.Get()));
+    ref = ref.GetField("color");
+    LinearPropertyAnimation<Color>* animation = new LinearPropertyAnimation<Color>(this, ref, text->GetColor(), finalColor, time, interpolationFunc);
     animation->Start(track);
     return animation;
 }
 
 Animation* UIStaticText::ShadowColorAnimation(const Color& finalColor, float32 time, Interpolation::FuncType interpolationFunc /*= Interpolation::LINEAR*/, int32 track /*= 1*/)
 {
-    LinearAnimation<Color>* animation = new LinearAnimation<Color>(this, &colorShadow, finalColor, time, interpolationFunc);
+    Reflection ref = Reflection::Create(ReflectedObject(text.Get()));
+    ref = ref.GetField("shadowColor");
+    LinearPropertyAnimation<Color>* animation = new LinearPropertyAnimation<Color>(this, ref, text->GetShadowColor(), finalColor, time, interpolationFunc);
     animation->Start(track);
     return animation;
 }
