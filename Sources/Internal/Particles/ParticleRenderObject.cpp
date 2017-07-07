@@ -219,13 +219,16 @@ void ParticleRenderObject::UpdateStripeVertex(float32*& dataPtr, Vector3& positi
     }
     if (layer->enableNoise && layer->noise.get() != nullptr)
     {
-        *dataPtr++ = uv.x;
+        float32 offsetU = uv.x;
         if (layer->enableNoiseScroll)
-            *(dataPtr - 1) += particle->currNoiseUOffset;
+            offsetU += layer->usePerspectiveMapping ? particle->currNoiseUOffset * uv.z : particle->currNoiseUOffset;
 
-        *dataPtr++ = uv.y;
+        *dataPtr++ = offsetU;
+
+        float32 offsetV = uv.y;
         if (layer->enableNoiseScroll)
-            *(dataPtr - 1) += particle->currNoiseVOffset;
+            offsetV += layer->usePerspectiveMapping ? particle->currNoiseVOffset * uv.z : particle->currNoiseVOffset;
+        *dataPtr++ = offsetV;
 
         *dataPtr++ = particle->currNoiseScale;
     }
@@ -505,7 +508,7 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                 currColor.a = group.layer->alphaOverLife->GetValue(currentParticle->life / currentParticle->lifeTime);
 
             StripeNode& base = data.baseNode;
-            List<StripeNode>& nodes = data.strpeNodes;
+            List<StripeNode>& nodes = data.stripeNodes;
 
             int32 vCountInBasis = static_cast<int32>((nodes.size() + 1) * 2);
             int32 vCount = vCountInBasis * basisCount;
@@ -593,7 +596,7 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                 UpdateStripeVertex(vertexBufferData, left, uv1, color, group.layer, currentParticle, fresnelToAlpha);
                 UpdateStripeVertex(vertexBufferData, right, uv2, color, group.layer, currentParticle, fresnelToAlpha);
 
-                StripeNode* prevNode = &base;
+                StripeNode* prevNode = &base; // TODO: unused
                 float32 distance = 0.0f;
 
                 for (auto& node : nodes)
