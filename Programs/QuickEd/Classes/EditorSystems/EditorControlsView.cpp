@@ -313,7 +313,7 @@ void BackgroundController::CalculateTotalRect(Rect& totalRect, Vector2& rootCont
     gd.scale /= scalableControl->GetScale(); //grid->controlCanvas->scalableControl
     if (gd.scale.x != 0.0f || gd.scale.y != 0.0f)
     {
-        totalRect = gd.GetAABBox();        
+        totalRect = gd.GetAABBox();
 
         for (const auto& child : nestedControl->GetChildren())
         {
@@ -475,7 +475,7 @@ void EditorControlsView::ControlPropertyWasChanged(ControlNode* node, AbstractPr
         if (BackgroundController::IsPropertyAffectBackground(property))
         {
             RecalculateBackgroundPropertiesForGrids(node->GetControl());
-         }
+        }
     }
 }
 
