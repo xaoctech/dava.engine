@@ -37,6 +37,7 @@ private:
     void CopyTexture(const DAVA::FilePath& texturePathname);
 
     void CopyReferencedObject(DAVA::Entity* node);
+    void CopySlots(DAVA::Entity* node, DAVA::Set<DAVA::FilePath>& externalScenes);
     void CopyEffects(DAVA::Entity* node);
     void CopyAllParticlesEmitters(DAVA::ParticleEmitterInstance* instance);
     void CopyEmitterByPath(const DAVA::FilePath& emitterConfigPath);
@@ -50,5 +51,6 @@ private:
     SceneUtils sceneUtils;
     DAVA::TexturesMap texturesForSave;
     DAVA::Set<DAVA::FilePath> effectFolders;
+    DAVA::Set<DAVA::FilePath> savedExternalScenes;
     bool copyConverted = false;
 };
