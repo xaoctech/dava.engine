@@ -352,6 +352,21 @@ eColladaErrorCodes ColladaImporter::SaveSC2(ColladaScene* colladaScene, const Fi
 
 eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, const FilePath& path)
 {
+    ScopedPtr<File> file(File::Create(path, File::CREATE | File::WRITE));
+    if (!file)
+    {
+        return COLLADA_ERROR;
+    }
+
+    for (ColladaSkinnedMesh* mesh : colladaScene->colladaSkinnedMeshes)
+    {
+        for (const ColladaSkinnedMesh::Joint& joint : mesh->joints)
+        {
+            SceneNodeAnimation* jointAnimation = joint.animation;
+            //TODO: *Skining* save animations
+        }
+    }
+
     return COLLADA_OK;
 }
 };

@@ -206,6 +206,7 @@ void ColladaSkinnedMesh::LinkJoints(ColladaSceneNode* node, Joint* parentJoint)
 
             joint.jointName = UTF8Utils::EncodeToUTF8(node->originalNode->GetName().c_str());
             joint.jointUID = node->originalNode->GetDaeId();
+            joint.animation = node->animation;
 
             node->inverse0 = joint.inverse0; // copy bindpos inverse matrix to node
 

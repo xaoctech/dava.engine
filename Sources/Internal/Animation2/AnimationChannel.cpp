@@ -1,12 +1,39 @@
 #include "AnimationChannel.h"
 
+namespace DAVA
+{
 AnimationChannel::AnimationChannel()
 {
 }
 
-void AnimationChannel::Bind(const DAVA::uint8* data)
+uint32 AnimationChannel::Bind(const uint8* _data)
 {
-    this->data = data;
+    DVASSERT(_data == nullptr || *reinterpret_cast<const uint32*>(_data) == ANIMATION_CHANNEL_DATA_SIGNATURE);
+
+    type = dimension = keysCount = 0;
+    data = nullptr;
+
+    if (_data != nullptr)
+    {
+        const uint8* dataptr = _data;
+
+        dataptr += 4; //skip signature
+
+        type = uint32(*dataptr);
+        dataptr += 1;
+
+        dimension = uint32(*dataptr);
+        dataptr += 1;
+
+        dataptr += 2; //pad
+
+        keysCount = *reinterpret_cast<const uint32*>(dataptr);
+        dataptr += 4;
+
+        data = dataptr;
+    }
+
+    return uint32(data - _data) + keysCount * uint32(sizeof(float32)) * (dimension + 1);
 }
 
 void AnimationChannel::Reset(State* state) const
@@ -16,4 +43,5 @@ void AnimationChannel::Reset(State* state) const
 
 void AnimationChannel::Advance(State* state) const
 {
+}
 }
