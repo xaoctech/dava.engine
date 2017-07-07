@@ -123,6 +123,10 @@ public:
     /** Return true if pack is already downloaded. */
     virtual bool IsPackDownloaded(const String& packName) = 0;
 
+    /** Return size of pack with all it's dependent packs from local meta
+	    or 0 if not initialized */
+    virtual uint64 GetDownloadedSize(const String& packName);
+
     virtual void SetRequestingEnabled(bool value) = 0;
 
     /** return nullptr if can't find pack */

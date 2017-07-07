@@ -1131,6 +1131,51 @@ bool DLCManagerImpl::IsPackDownloaded(const String& packName)
     return true;
 }
 
+uint64 DLCManagerImpl::CountCompressedFileSize(const uint64& startCounterValue,
+                                               const Vector<uint32>& fileIndexes)
+{
+    uint64 result = startCounterValue;
+    const auto& allFiles = usedPackFile.filesTable.data.files;
+
+    for (uint32 fileIndex : fileIndexes)
+    {
+        const auto& fileInfo = allFiles.at(fileIndex);
+        result += fileInfo.compressedSize;
+    }
+
+    return result;
+}
+
+uint64 DLCManager::GetDownloadedSize(const String&)
+{
+    // default implementation
+    return 0;
+}
+
+uint64 DLCManagerImpl::GetDownloadedSize(const String& packName)
+{
+    uint64 totalSize = 0;
+    if (IsInitialized())
+    {
+        Vector<uint32> fileIndexes = meta->GetFileIndexes(packName);
+
+        totalSize = CountCompressedFileSize(totalSize, fileIndexes);
+
+        Vector<uint32> dependencyIndexes;
+        uint32 packIndex = meta->GetPackIndex(packName);
+
+        meta->CollectDependencies(packIndex, dependencyIndexes);
+
+        for (uint32 dependencyPackIndex : dependencyIndexes)
+        {
+            const auto& packInfo = meta->GetPackInfo(dependencyPackIndex);
+            fileIndexes = meta->GetFileIndexes(packInfo.packName);
+            totalSize = CountCompressedFileSize(totalSize, fileIndexes);
+        }
+    }
+    return totalSize;
+}
+
 const DLCManager::IRequest* DLCManagerImpl::RequestPack(const String& packName)
 {
     DVASSERT(Thread::IsMainThread());
