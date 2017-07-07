@@ -16,7 +16,7 @@ void RebuildMeshTangentSpace(PolygonGroup* group, bool precomputeBinormal = true
 void CopyVertex(PolygonGroup* srcGroup, uint32 srcPos, PolygonGroup* dstGroup, uint32 dstPos);
 void CopyGroupData(PolygonGroup* srcGroup, PolygonGroup* dstGroup);
 
-SkinnedMesh* CreateSkinnedMesh(Entity* fromEntity, Vector<SkeletonComponent::JointConfig>& outJoints);
+SkinnedMesh* CreateSkinnedMesh(Entity* fromEntity, Vector<SkeletonComponent::Joint>& outJoints);
 PolygonGroup* CreateShadowPolygonGroup(PolygonGroup* source);
 
 uint32 ReleaseGeometryDataRecursive(Entity* forEntity);

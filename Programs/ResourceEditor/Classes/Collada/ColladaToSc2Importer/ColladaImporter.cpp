@@ -190,34 +190,26 @@ void ColladaImporter::ImportSkeleton(ColladaSceneNode* colladaNode, Entity* node
     node->AddComponent(davaSkeletonComponent);
 
     int32 jointsCount = int32(skinnedMesh->joints.size());
-    Vector<SkeletonComponent::JointConfig> jointConfigs(jointsCount);
+    Vector<SkeletonComponent::Joint> joints(jointsCount);
     for (int32 i = 0; i < jointsCount; ++i)
     {
         const ColladaSkinnedMesh::Joint& colladaJoint = skinnedMesh->joints[i];
         const ColladaSceneNode* jointNode = colladaJoint.node;
-        SkeletonComponent::JointConfig& jointConfig = jointConfigs[i];
+        SkeletonComponent::Joint& joint = joints[i];
 
         DVASSERT(colladaJoint.parentIndex < colladaJoint.index);
 
         bool isRootJoint = (colladaJoint.parentIndex == -1);
 
-        jointConfig.targetId = colladaJoint.index;
-        jointConfig.parentIndex = isRootJoint ? SkeletonComponent::INVALID_JOINT_INDEX : colladaJoint.parentIndex;
-        jointConfig.name = FastName(colladaJoint.jointName);
-        jointConfig.uid = FastName(colladaJoint.jointUID);
+        joint.targetIndex = colladaJoint.index;
+        joint.parentIndex = isRootJoint ? SkeletonComponent::INVALID_JOINT_INDEX : colladaJoint.parentIndex;
+        joint.name = FastName(colladaJoint.jointName);
+        joint.uid = FastName(colladaJoint.jointUID);
 
-        Matrix4 transform = isRootJoint ? jointNode->AccumulateTransformUptoFarParent(colladaNode->scene->rootNode) : jointNode->localTransform;
-        Vector3 scale, translation;
-        Quaternion orientation;
-        transform.Decomposition(translation, scale, orientation);
+        joint.bindTransform = isRootJoint ? jointNode->AccumulateTransformUptoFarParent(colladaNode->scene->rootNode) : jointNode->localTransform;
+        joint.bindTransformInv = colladaJoint.inverse0;
 
-        //TODO: *Skinning* remove local transforms from JointConfig. Keep bindTransformInv only
-        jointConfig.orientation = orientation;
-        jointConfig.position = translation;
-        jointConfig.scale = scale.x;
-        jointConfig.bindTransformInv = colladaJoint.inverse0;
-
-        jointConfig.bbox.Empty();
+        joint.bbox.Empty();
     }
 
     //TODO: *Skinning* calc bounding sphere instead bbox?
@@ -238,13 +230,13 @@ void ColladaImporter::ImportSkeleton(ColladaSceneNode* colladaNode, Entity* node
                     polygonGroup->GetCoord(v, position);
                     polygonGroup->GetJointIndex(v, j, jointIndex);
 
-                    jointConfigs[jointIndex].bbox.AddPoint(position * jointConfigs[jointIndex].bindTransformInv);
+                    joints[jointIndex].bbox.AddPoint(position * joints[jointIndex].bindTransformInv);
                 }
             }
         }
     }
 
-    davaSkeletonComponent->SetConfigJoints(jointConfigs);
+    davaSkeletonComponent->SetJoints(joints);
 }
 
 eColladaErrorCodes ColladaImporter::BuildSceneAsCollada(Entity* root, ColladaSceneNode* colladaNode)

@@ -289,7 +289,7 @@ void RebuildMeshTangentSpace(PolygonGroup* group, bool precomputeBinormal /*=tru
     group->BuildBuffers();
 }
 
-SkinnedMesh* CreateSkinnedMesh(Entity* fromEntity, Vector<SkeletonComponent::JointConfig>& outJoints)
+SkinnedMesh* CreateSkinnedMesh(Entity* fromEntity, Vector<SkeletonComponent::Joint>& outJoints)
 {
     SkinnedMesh* newRenderObject = new SkinnedMesh();
 
@@ -319,21 +319,19 @@ SkinnedMesh* CreateSkinnedMesh(Entity* fromEntity, Vector<SkeletonComponent::Joi
 
             outJoints[nodeIndex].bbox = ro->GetBoundingBox();
 
-            outJoints[nodeIndex].targetId = currentTargetIndex;
+            outJoints[nodeIndex].targetIndex = currentTargetIndex;
             currentTargetIndex++;
         }
         else
         {
-            outJoints[nodeIndex].targetId = SkeletonComponent::INVALID_JOINT_INDEX;
+            outJoints[nodeIndex].targetIndex = SkeletonComponent::INVALID_JOINT_INDEX;
         }
 
         const Matrix4& localTransform = child->GetLocalTransform();
 
         outJoints[nodeIndex].name = childrenNodes[nodeIndex]->GetName();
         outJoints[nodeIndex].uid = childrenNodes[nodeIndex]->GetName();
-        outJoints[nodeIndex].orientation.Construct(localTransform);
-        outJoints[nodeIndex].position = localTransform.GetTranslationVector();
-        outJoints[nodeIndex].scale = localTransform.GetScaleVector().x;
+        outJoints[nodeIndex].bindTransform = localTransform;
 
         Entity* parentEntity = child->GetParent();
         if (!parentEntity || parentEntity == fromEntity)

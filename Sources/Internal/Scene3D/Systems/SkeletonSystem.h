@@ -20,7 +20,6 @@ public:
     void RemoveEntity(Entity* entity) override;
 
     void Process(float32 timeElapsed) override;
-    void ImmediateEvent(Component* component, uint32 event) override;
 
     void DrawSkeletons(RenderHelper* drawer);
 

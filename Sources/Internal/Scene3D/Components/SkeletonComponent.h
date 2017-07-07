@@ -1,4 +1,3 @@
-#ifndef __DAVAENGINE_SKELETON_COMPONENT_H__
 #pragma once
 
 #include "Base/BaseTypes.h"
@@ -12,6 +11,7 @@ namespace DAVA
 {
 class Entity;
 class SkeletonSystem;
+class SkeletonPose;
 class SkeletonComponent : public Component
 {
     friend class SkeletonSystem;
@@ -36,25 +36,23 @@ public:
         AABBox3 TransformAABBox(const AABBox3& bbox) const;
     };
 
-    struct JointConfig : public InspBase
+    struct Joint : public InspBase
     {
-        JointConfig() = default;
-        JointConfig(int32 parentIndex, int32 targetId, const FastName& name, const FastName& uid, const Vector3& position, const Quaternion& orientation, float32 scale, const AABBox3& bbox, const Matrix4& _invBindPose);
+        Joint() = default;
+        Joint(int32 parentIndex, int32 targetId, const FastName& name, const FastName& uid, const AABBox3& bbox, const Matrix4& bindPose, const Matrix4& invBindPose);
 
         int32 parentIndex = INVALID_JOINT_INDEX;
-        int32 targetId = INVALID_JOINT_INDEX;
+        int32 targetIndex = INVALID_JOINT_INDEX;
         FastName name;
         FastName uid;
-        //TODO: *Skinning* remove local transforms from JointConfig. Keep bindTransformInv only
-        Quaternion orientation;
-        Vector3 position;
-        float32 scale = 1.f;
         AABBox3 bbox;
+
+        Matrix4 bindTransform;
         Matrix4 bindTransformInv;
 
-        bool operator==(const JointConfig& other) const;
+        bool operator==(const Joint& other) const;
 
-        INTROSPECTION(JointConfig,
+        INTROSPECTION(Joint,
                       MEMBER(name, "Name", I_SAVE | I_VIEW | I_EDIT)
                       MEMBER(uid, "UID", I_SAVE | I_VIEW | I_EDIT)
                       MEMBER(parentIndex, "Parent Index", I_SAVE | I_VIEW | I_EDIT)
@@ -62,34 +60,33 @@ public:
                       MEMBER(bindTransformInv, "invBindPos", I_SAVE | I_VIEW | I_EDIT)
                       );
 
-        DAVA_VIRTUAL_REFLECTION(JointConfig, InspBase);
+        DAVA_VIRTUAL_REFLECTION(Joint, InspBase);
     };
 
     SkeletonComponent() = default;
 
-    void RebuildFromConfig();
-    void SetConfigJoints(const Vector<JointConfig>& config);
+    uint16 GetJointIndex(const FastName& uid) const;
+    uint16 GetJointsCount() const;
+    const Joint& GetJoint(uint16 i);
 
-    uint32 GetConfigJointsCount();
-    const JointConfig& GetConfigJoint(uint32 i);
+    void SetJoints(const Vector<Joint>& config);
+
+    const JointTransform& GetJointTransform(uint16 jointIndex) const;
+    const JointTransform& GetJointObjectSpaceTransform(uint16 jointIndex) const;
+
+    void SetJointTransform(uint16 jointIndex, const JointTransform& transform);
+
+    void ApplyPose(const SkeletonPose* pose);
 
     Component* Clone(Entity* toEntity) override;
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
     void Deserialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
 
-    void SetJointPosition(uint16 jointId, const Vector3& position);
-    void SetJointOrientation(uint16 jointId, const Quaternion& orientation);
-    void SetJointScale(uint16 jointId, float32 scale);
-
-    uint16 GetJointId(const FastName& name) const;
-    uint16 GetJointsCount() const;
-
-    const FastName& GetJointName(uint16 jointId) const;
-    const JointTransform& GetObjectSpaceTransform(uint16 jointId) const;
+    void Rebuild();
 
 private:
     /*config time*/
-    Vector<JointConfig> configJoints;
+    Vector<Joint> jointsArray;
 
     /*runtime*/
     const static uint32 INFO_PARENT_MASK = 0xff;
@@ -121,7 +118,7 @@ private:
 
 public:
     INTROSPECTION_EXTEND(SkeletonComponent, Component,
-                         COLLECTION(configJoints, "Root Joints", I_SAVE | I_VIEW | I_EDIT)
+                         COLLECTION(jointsArray, "Root Joints", I_SAVE | I_VIEW | I_EDIT)
                          MEMBER(drawSkeleton, "Draw Skeleton", I_SAVE | I_VIEW | I_EDIT)
                          );
 
@@ -130,33 +127,9 @@ public:
     friend class SkeletonSystem;
 };
 
-inline void SkeletonComponent::SetJointPosition(uint16 jointId, const Vector3& position)
+inline uint16 SkeletonComponent::GetJointIndex(const FastName& uid) const
 {
-    DVASSERT(jointId < GetJointsCount());
-    jointInfo[jointId] |= FLAG_MARKED_FOR_UPDATED;
-    localSpaceTransforms[jointId].position = position;
-    startJoint = Min(startJoint, jointId);
-}
-
-inline void SkeletonComponent::SetJointOrientation(uint16 jointId, const Quaternion& orientation)
-{
-    DVASSERT(jointId < GetJointsCount());
-    jointInfo[jointId] |= FLAG_MARKED_FOR_UPDATED;
-    localSpaceTransforms[jointId].orientation = orientation;
-    startJoint = Min(startJoint, jointId);
-}
-
-inline void SkeletonComponent::SetJointScale(uint16 jointId, float32 scale)
-{
-    DVASSERT(jointId < GetJointsCount());
-    jointInfo[jointId] |= FLAG_MARKED_FOR_UPDATED;
-    localSpaceTransforms[jointId].scale = scale;
-    startJoint = Min(startJoint, jointId);
-}
-
-inline uint16 SkeletonComponent::GetJointId(const FastName& name) const
-{
-    Map<FastName, uint16>::const_iterator it = jointMap.find(name);
+    Map<FastName, uint16>::const_iterator it = jointMap.find(uid);
     if (jointMap.end() != it)
         return it->second;
     else
@@ -166,6 +139,43 @@ inline uint16 SkeletonComponent::GetJointId(const FastName& name) const
 inline uint16 SkeletonComponent::GetJointsCount() const
 {
     return jointsCount;
+}
+
+inline const SkeletonComponent::Joint& SkeletonComponent::GetJoint(uint16 i)
+{
+    return jointsArray[i];
+}
+
+inline void SkeletonComponent::SetJoints(const Vector<Joint>& config)
+{
+    jointsArray = config;
+    configUpdated = true;
+}
+
+inline const SkeletonComponent::JointTransform& SkeletonComponent::GetJointTransform(uint16 jointIndex) const
+{
+    DVASSERT(jointIndex < GetJointsCount());
+    return localSpaceTransforms[jointIndex];
+}
+
+inline const SkeletonComponent::JointTransform& SkeletonComponent::GetJointObjectSpaceTransform(uint16 jointIndex) const
+{
+    DVASSERT(jointIndex < objectSpaceTransforms.size());
+    return objectSpaceTransforms[jointIndex];
+}
+
+inline void SkeletonComponent::SetJointTransform(uint16 jointIndex, const SkeletonComponent::JointTransform& transform)
+{
+    DVASSERT(jointIndex < GetJointsCount());
+
+    jointInfo[jointIndex] |= FLAG_MARKED_FOR_UPDATED;
+    localSpaceTransforms[jointIndex] = transform;
+    startJoint = Min(startJoint, jointIndex);
+}
+
+inline void SkeletonComponent::Rebuild()
+{
+    configUpdated = true;
 }
 
 inline Vector3 SkeletonComponent::JointTransform::TransformPoint(const Vector3& inVec) const
@@ -219,9 +229,7 @@ inline SkeletonComponent::JointTransform SkeletonComponent::JointTransform::GetI
 }
 
 template <>
-bool AnyCompare<SkeletonComponent::JointConfig>::IsEqual(const Any& v1, const Any& v2);
-extern template struct AnyCompare<SkeletonComponent::JointConfig>;
+bool AnyCompare<SkeletonComponent::Joint>::IsEqual(const Any& v1, const Any& v2);
+extern template struct AnyCompare<SkeletonComponent::Joint>;
 
 } //ns
-
-#endif

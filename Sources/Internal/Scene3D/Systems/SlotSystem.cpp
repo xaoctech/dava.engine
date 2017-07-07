@@ -518,9 +518,9 @@ Matrix4 SlotSystem::GetJointTransform(SlotComponent* component) const
     {
         SkeletonComponent* skeleton = GetSkeletonComponent(component->GetEntity());
         DVASSERT(skeleton != nullptr);
-        uint16 jointId = skeleton->GetJointId(boneName);
+        uint16 jointId = skeleton->GetJointIndex(boneName);
         DVASSERT(jointId != SkeletonComponent::INVALID_JOINT_INDEX);
-        const SkeletonComponent::JointTransform& transform = skeleton->GetObjectSpaceTransform(jointId);
+        const SkeletonComponent::JointTransform& transform = skeleton->GetJointObjectSpaceTransform(jointId);
         jointTransform = transform.orientation.GetMatrix();
         jointTransform.SetTranslationVector(transform.position);
 
@@ -537,9 +537,9 @@ DAVA::Matrix4 SlotSystem::GetResultTranform(SlotComponent* component) const
     DVASSERT(boneName.IsValid());
     SkeletonComponent* skeleton = GetSkeletonComponent(component->GetEntity());
     DVASSERT(skeleton != nullptr);
-    uint16 jointId = skeleton->GetJointId(boneName);
+    uint16 jointId = skeleton->GetJointIndex(boneName);
     DVASSERT(jointId != SkeletonComponent::INVALID_JOINT_INDEX);
-    const SkeletonComponent::JointTransform& transform = skeleton->GetObjectSpaceTransform(jointId);
+    const SkeletonComponent::JointTransform& transform = skeleton->GetJointObjectSpaceTransform(jointId);
     Matrix4 jointTransform = transform.orientation.GetMatrix();
     jointTransform.SetTranslationVector(transform.position);
 

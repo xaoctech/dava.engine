@@ -12,12 +12,10 @@ namespace DAVA
 SkeletonSystem::SkeletonSystem(Scene* scene)
     : SceneSystem(scene)
 {
-    scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::SKELETON_CONFIG_CHANGED);
 }
 
 SkeletonSystem::~SkeletonSystem()
 {
-    GetScene()->GetEventSystem()->UnregisterSystemForEvent(this, EventSystem::SKELETON_CONFIG_CHANGED);
 }
 
 void SkeletonSystem::AddEntity(Entity* entity)
@@ -46,12 +44,6 @@ void SkeletonSystem::RemoveEntity(Entity* entity)
     DVASSERT(0);
 }
 
-void SkeletonSystem::ImmediateEvent(Component* component, uint32 event)
-{
-    if (event == EventSystem::SKELETON_CONFIG_CHANGED)
-        RebuildSkeleton(component->GetEntity());
-}
-
 void SkeletonSystem::Process(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_SKELETON_SYSTEM);
@@ -60,15 +52,23 @@ void SkeletonSystem::Process(float32 timeElapsed)
     {
         SkeletonComponent* component = GetSkeletonComponent(entities[i]);
 
-        if (component && (component->startJoint != SkeletonComponent::INVALID_JOINT_INDEX))
+        if (component != nullptr)
         {
-            UpdatePose(component);
-            RenderObject* ro = GetRenderObject(entities[i]);
-            if (ro && (RenderObject::TYPE_SKINNED_MESH == ro->GetType()))
+            if (component->configUpdated)
             {
-                SkinnedMesh* skinnedMeshObject = static_cast<SkinnedMesh*>(ro);
-                DVASSERT(skinnedMeshObject);
-                UpdateSkinnedMesh(component, skinnedMeshObject);
+                RebuildSkeleton(entities[i]);
+            }
+
+            if (component->startJoint != SkeletonComponent::INVALID_JOINT_INDEX)
+            {
+                UpdatePose(component);
+                RenderObject* ro = GetRenderObject(entities[i]);
+                if (ro && (RenderObject::TYPE_SKINNED_MESH == ro->GetType()))
+                {
+                    SkinnedMesh* skinnedMeshObject = static_cast<SkinnedMesh*>(ro);
+                    DVASSERT(skinnedMeshObject);
+                    UpdateSkinnedMesh(component, skinnedMeshObject);
+                }
             }
         }
     }
@@ -91,10 +91,10 @@ void SkeletonSystem::DrawSkeletons(RenderHelper* drawer)
                 positions[i] = component->objectSpaceTransforms[i].position * worldTransform;
             }
 
-            const Vector<SkeletonComponent::JointConfig>& joints = component->configJoints;
+            const Vector<SkeletonComponent::Joint>& joints = component->jointsArray;
             for (uint16 i = 0; i < component->GetJointsCount(); ++i)
             {
-                const SkeletonComponent::JointConfig& cfg = joints[i];
+                const SkeletonComponent::Joint& cfg = joints[i];
                 if (cfg.parentIndex != SkeletonComponent::INVALID_JOINT_INDEX)
                 {
                     float32 dl = (positions[cfg.parentIndex] - positions[i]).Length();
@@ -187,7 +187,7 @@ void SkeletonSystem::RebuildSkeleton(Entity* entity)
     component->configUpdated = false;
 
     /*convert joint configs to joints*/
-    component->jointsCount = uint16(component->GetConfigJointsCount());
+    component->jointsCount = uint16(component->jointsArray.size());
 
     component->jointInfo.resize(component->jointsCount);
     component->localSpaceTransforms.resize(component->jointsCount);
@@ -199,35 +199,33 @@ void SkeletonSystem::RebuildSkeleton(Entity* entity)
 
     component->targetJointsCount = 0;
     int32 maxTargetJoint = 0;
-    DVASSERT(component->configJoints.size() < SkeletonComponent::INFO_PARENT_MASK);
-    for (int32 i = 0, sz = static_cast<int32>(component->configJoints.size()); i < sz; ++i)
+    DVASSERT(component->jointsArray.size() < SkeletonComponent::INFO_PARENT_MASK);
+    for (int32 i = 0, sz = static_cast<int32>(component->jointsArray.size()); i < sz; ++i)
     {
-        DVASSERT((component->configJoints[i].parentIndex == SkeletonComponent::INVALID_JOINT_INDEX) || (component->configJoints[i].parentIndex < i)); //order
-        DVASSERT((component->configJoints[i].parentIndex == SkeletonComponent::INVALID_JOINT_INDEX) || ((component->configJoints[i].parentIndex & SkeletonComponent::INFO_PARENT_MASK) == component->configJoints[i].parentIndex)); //parent fits mask
-        DVASSERT((component->configJoints[i].targetId == SkeletonComponent::INVALID_JOINT_INDEX) || ((component->configJoints[i].targetId & SkeletonComponent::INFO_PARENT_MASK) == component->configJoints[i].targetId)); //target fits mask
-        DVASSERT((component->configJoints[i].targetId == SkeletonComponent::INVALID_JOINT_INDEX) || (component->configJoints[i].targetId < SkeletonComponent::MAX_TARGET_JOINTS));
-        DVASSERT(component->jointMap.find(component->configJoints[i].uid) == component->jointMap.end()); //duplicate bone name
+        DVASSERT((component->jointsArray[i].parentIndex == SkeletonComponent::INVALID_JOINT_INDEX) || (component->jointsArray[i].parentIndex < i)); //order
+        DVASSERT((component->jointsArray[i].parentIndex == SkeletonComponent::INVALID_JOINT_INDEX) || ((component->jointsArray[i].parentIndex & SkeletonComponent::INFO_PARENT_MASK) == component->jointsArray[i].parentIndex)); //parent fits mask
+        DVASSERT((component->jointsArray[i].targetIndex == SkeletonComponent::INVALID_JOINT_INDEX) || ((component->jointsArray[i].targetIndex & SkeletonComponent::INFO_PARENT_MASK) == component->jointsArray[i].targetIndex)); //target fits mask
+        DVASSERT((component->jointsArray[i].targetIndex == SkeletonComponent::INVALID_JOINT_INDEX) || (component->jointsArray[i].targetIndex < SkeletonComponent::MAX_TARGET_JOINTS));
+        DVASSERT(component->jointMap.find(component->jointsArray[i].uid) == component->jointMap.end()); //duplicate bone name
 
-        component->jointInfo[i] = component->configJoints[i].parentIndex | (component->configJoints[i].targetId << SkeletonComponent::INFO_TARGET_SHIFT) | SkeletonComponent::FLAG_MARKED_FOR_UPDATED;
-        if ((component->configJoints[i].targetId != SkeletonComponent::INVALID_JOINT_INDEX) && component->configJoints[i].targetId > maxTargetJoint)
-            maxTargetJoint = component->configJoints[i].targetId;
+        component->jointInfo[i] = component->jointsArray[i].parentIndex | (component->jointsArray[i].targetIndex << SkeletonComponent::INFO_TARGET_SHIFT) | SkeletonComponent::FLAG_MARKED_FOR_UPDATED;
+        if ((component->jointsArray[i].targetIndex != SkeletonComponent::INVALID_JOINT_INDEX) && component->jointsArray[i].targetIndex > maxTargetJoint)
+            maxTargetJoint = component->jointsArray[i].targetIndex;
 
-        component->jointMap[component->configJoints[i].uid] = i;
+        component->jointMap[component->jointsArray[i].uid] = i;
 
         SkeletonComponent::JointTransform localTransform;
-        localTransform.position = component->configJoints[i].position;
-        localTransform.orientation = component->configJoints[i].orientation;
-        localTransform.scale = component->configJoints[i].scale;
+        localTransform.Construct(component->jointsArray[i].bindTransform);
 
         component->localSpaceTransforms[i] = localTransform;
-        if (component->configJoints[i].parentIndex == SkeletonComponent::INVALID_JOINT_INDEX)
+        if (component->jointsArray[i].parentIndex == SkeletonComponent::INVALID_JOINT_INDEX)
             component->objectSpaceTransforms[i] = localTransform;
         else
-            component->objectSpaceTransforms[i] = component->objectSpaceTransforms[component->configJoints[i].parentIndex].AppendTransform(localTransform);
+            component->objectSpaceTransforms[i] = component->objectSpaceTransforms[component->jointsArray[i].parentIndex].AppendTransform(localTransform);
 
-        component->jointSpaceBoxes[i] = component->configJoints[i].bbox;
+        component->jointSpaceBoxes[i] = component->jointsArray[i].bbox;
 
-        component->inverseBindTransforms[i].Construct(component->configJoints[i].bindTransformInv);
+        component->inverseBindTransforms[i].Construct(component->jointsArray[i].bindTransformInv);
     }
     component->targetJointsCount = maxTargetJoint + 1;
     component->resultPositions.resize(component->targetJointsCount);
