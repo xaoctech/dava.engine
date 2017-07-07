@@ -108,3 +108,29 @@ QString UnescapeString(const QString& str)
     }
     return stringToReplace;
 }
+
+DAVA::Vector<DAVA::float32> ParseFloatList(const DAVA::String& str)
+{
+    return ParseFloatList(QString::fromStdString(str));
+}
+
+DAVA::Vector<DAVA::float32> ParseFloatList(const QString& str)
+{
+    QRegularExpression expr("[+-]?[\\d*]*[.]?[\\d*]+");
+    QRegularExpressionMatchIterator iter = expr.globalMatch(str);
+    DAVA::Vector<DAVA::float32> result;
+    result.reserve(8);
+    while (iter.hasNext())
+    {
+        QRegularExpressionMatch match(iter.next());
+        if (match.hasMatch())
+        {
+            QString matchedStr = match.captured(0);
+            bool ok;
+            result.push_back(matchedStr.toFloat(&ok));
+            DVASSERT(ok);
+        }
+    }
+
+    return result;
+}
