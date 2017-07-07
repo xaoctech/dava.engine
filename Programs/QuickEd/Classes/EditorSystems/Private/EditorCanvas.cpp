@@ -1,27 +1,27 @@
 
 #include "EditorSystems/EditorCanvas.h"
 
-#include "Modules/DocumentsModule/EditorCanvasData.h"
-#include "Modules/DocumentsModule/CentralWidgetData.h"
+#include "UI/Preview/Data/CanvasData.h"
+#include "UI/Preview/Data/CentralWidgetData.h"
 
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/DataProcessing/DataContext.h>
-#include <TArc/Core/FieldBinder.h>
 
 #include <UI/UIEvent.h>
 #include <UI/UIControl.h>
 
 EditorCanvas::EditorCanvas(EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* accessor)
     : BaseEditorSystem(parent, accessor)
+    , canvasDataAdapter(accessor)
 {
-    wrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<EditorCanvasData>());
-    InitFieldBinder();
+    canvasDataAdapterWrapper = accessor->CreateWrapper([this](const DAVA::TArc::DataContext*) { return DAVA::Reflection::Create(&canvasDataAdapter); });
+    canvasDataAdapterWrapper.SetListener(this);
 }
 
 bool EditorCanvas::CanProcessInput(DAVA::UIEvent* currentInput) const
 {
     using namespace DAVA;
-    if (wrapper.HasData() == false)
+    if (accessor->GetActiveContext() == nullptr)
     {
         return false;
     }
@@ -40,15 +40,7 @@ bool EditorCanvas::CanProcessInput(DAVA::UIEvent* currentInput) const
 void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput)
 {
     using namespace DAVA;
-    DVASSERT(wrapper.HasData());
-    DAVA::TArc::DataContext* activeContext = accessor->GetActiveContext();
-    DVASSERT(activeContext != nullptr);
-    EditorCanvasData* canvasData = activeContext->GetData<EditorCanvasData>();
 
-    if (accessor->GetActiveContext() == nullptr)
-    {
-        return;
-    }
     if (currentInput->device == eInputDevices::TOUCH_PAD)
     {
         if (currentInput->phase == UIEvent::Phase::GESTURE)
@@ -56,15 +48,14 @@ void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput)
             const UIEvent::Gesture& gesture = currentInput->gesture;
             if (gesture.dx != 0.0f || gesture.dy != 0.0f)
             {
-                Vector2 position = canvasData->GetPosition();
+                Vector2 position = canvasDataAdapter.GetPosition();
                 Vector2 newPosition = position - Vector2(gesture.dx, gesture.dy);
-                wrapper.SetFieldValue(EditorCanvasData::positionPropertyName, newPosition);
+                canvasDataAdapter.SetPosition(newPosition);
             }
             else if (gesture.magnification != 0.0f)
             {
-                wrapper.SetFieldValue(EditorCanvasData::referencePointPropertyName, currentInput->physPoint);
-                float32 newScale = canvasData->GetScale() + gesture.magnification;
-                wrapper.SetFieldValue(EditorCanvasData::scalePropertyName, newScale);
+                float32 newScale = canvasDataAdapter.GetScale() + gesture.magnification;
+                canvasDataAdapter.SetScale(newScale, currentInput->physPoint);
             }
         }
     }
@@ -74,20 +65,16 @@ void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput)
         {
             if ((currentInput->modifiers & (eModifierKeys::CONTROL | eModifierKeys::COMMAND)) != eModifierKeys::NONE)
             {
-                wrapper.SetFieldValue(EditorCanvasData::referencePointPropertyName, currentInput->physPoint);
-
                 int32 ticksCount = static_cast<int32>(currentInput->wheelDelta.y);
                 float newScale = GetScaleFromWheelEvent(ticksCount);
-                wrapper.SetFieldValue(EditorCanvasData::scalePropertyName, newScale);
+                canvasDataAdapter.SetScale(newScale, currentInput->physPoint);
             }
             else
             {
-                Vector2 position = canvasData->GetPosition();
+                Vector2 position = canvasDataAdapter.GetPosition();
                 Vector2 additionalPos(currentInput->wheelDelta.x, currentInput->wheelDelta.y);
 
-                CentralWidgetData* centralWidgetData = accessor->GetGlobalContext()->GetData<CentralWidgetData>();
-
-                additionalPos *= centralWidgetData->GetViewSize();
+                additionalPos *= canvasDataAdapter.GetViewSize();
 //custom delimiter to scroll widget by little chunks of visible area
 #if defined(__DAVAENGINE_MACOS__)
                 //on the OS X platform wheelDelta depend on scrolling speed
@@ -96,14 +83,14 @@ void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput)
                 static const float wheelDelta = 0.1f;
 #endif //platform
                 Vector2 newPosition = position - additionalPos * wheelDelta;
-                wrapper.SetFieldValue(EditorCanvasData::positionPropertyName, newPosition);
+                canvasDataAdapter.SetPosition(newPosition);
             }
         }
         else
         {
-            Vector2 position = canvasData->GetPosition();
+            Vector2 position = canvasDataAdapter.GetPosition();
             Vector2 delta = systemsManager->GetMouseDelta();
-            wrapper.SetFieldValue(EditorCanvasData::positionPropertyName, position - delta);
+            canvasDataAdapter.SetPosition(position - delta);
         }
     }
 }
@@ -145,23 +132,18 @@ EditorSystemsManager::eDragState EditorCanvas::RequireNewState(DAVA::UIEvent* cu
     return inDragScreenState ? EditorSystemsManager::DragScreen : EditorSystemsManager::NoDrag;
 }
 
-void EditorCanvas::InitFieldBinder()
+void EditorCanvas::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
 {
-    using namespace DAVA;
-    using namespace TArc;
-    fieldBinder.reset(new FieldBinder(accessor));
-
+    bool movableControlPositionChanged = std::find(fields.begin(), fields.end(), CanvasDataAdapter::movableControlPositionPropertyName) != fields.end();
+    if (movableControlPositionChanged)
     {
-        FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<EditorCanvasData>();
-        fieldDescr.fieldName = FastName(EditorCanvasData::movableControlPositionPropertyName);
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &EditorCanvas::OnMovableControlPositionChanged));
+        OnMovableControlPositionChanged(wrapper.GetFieldValue(CanvasDataAdapter::movableControlPositionPropertyName));
     }
+
+    bool scaleChanged = std::find(fields.begin(), fields.end(), CanvasDataAdapter::scalePropertyName) != fields.end();
+    if (scaleChanged)
     {
-        FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<EditorCanvasData>();
-        fieldDescr.fieldName = FastName(EditorCanvasData::scalePropertyName);
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &EditorCanvas::OnScaleChanged));
+        OnScaleChanged(wrapper.GetFieldValue(CanvasDataAdapter::scalePropertyName));
     }
 }
 
@@ -170,7 +152,7 @@ DAVA::float32 EditorCanvas::GetScaleFromWheelEvent(DAVA::int32 ticksCount) const
     using namespace DAVA;
     DAVA::TArc::DataContext* activeContext = accessor->GetActiveContext();
     DVASSERT(activeContext != nullptr);
-    EditorCanvasData* canvasData = activeContext->GetData<EditorCanvasData>();
+    CanvasData* canvasData = activeContext->GetData<CanvasData>();
     if (ticksCount > 0)
     {
         return canvasData->GetNextScale(ticksCount);

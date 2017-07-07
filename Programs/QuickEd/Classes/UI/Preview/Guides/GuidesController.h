@@ -2,9 +2,11 @@
 
 #include "UI/Preview/Guides/IRulerListener.h"
 #include "UI/Preview/Guides/Guide.h"
+#include "UI/Preview/Data/CanvasDataAdapter.h"
 
 #include "Model/PackageHierarchy/PackageNode.h"
 
+#include <TArc/DataProcessing/DataListener.h>
 #include <TArc/DataProcessing/DataWrapper.h>
 #include <TArc/Utils/DirtyFrameUpdater.h>
 
@@ -29,7 +31,7 @@ class FieldBinder;
 }
 }
 
-class EditorCanvasData;
+class CanvasData;
 class CentralWidgetData;
 class DocumentData;
 
@@ -63,7 +65,7 @@ public:
 };
 
 //this class realize Behavior pattern to have different behaviors for vertical and for horizontal guides
-class GuidesController : public QObject, public IRulerListener
+class GuidesController : public QObject, public IRulerListener, DAVA::TArc::DataListener
 {
     Q_OBJECT
 
@@ -71,9 +73,11 @@ public:
     GuidesController(DAVA::Vector2::eAxis orientation, DAVA::TArc::ContextAccessor* accessor, QWidget* container);
 
 private:
+    void OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;
+
     void BindFields();
     void OnCanvasParametersChanged(const DAVA::Any&);
-    void OnDataChanged(const DAVA::Any&);
+    void OnDataFieldChanged(const DAVA::Any&);
 
     //IRulerListener
     void OnMousePress(DAVA::float32 position) override;
@@ -143,7 +147,6 @@ private:
     void ResizeGuide(Guide& guide) const;
     void MoveGuide(DAVA::float32 value, Guide& guide) const;
 
-    EditorCanvasData* GetCanvasData() const;
     CentralWidgetData* GetCentralWidgetData() const;
     DocumentData* GetDocumentData() const;
 
@@ -174,4 +177,6 @@ private:
     DirtyFrameUpdater updater;
     //we can not use Show inside Update signal
     QtDelayedExecutor delayedExecutor;
+    CanvasDataAdapter canvasDataAdapter;
+    DAVA::TArc::DataWrapper canvasDataAdapterWrapper;
 };

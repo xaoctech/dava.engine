@@ -86,7 +86,7 @@ class EditorSystemsManager
 
 public:
     //we have situations, when one input can produce two different state. To resolve this conflict we declare that state priority is equal to it value
-    //as an example dragging control with pressed spacebar button will perform drag screen and transform at the same time
+    //as an example dragging control with pressed space bar button will perform drag screen and transform at the same time
     enum eDragState
     {
         //invalid state to request new state from baseEditorSystem
@@ -95,15 +95,15 @@ public:
         SelectByRect,
         //if cursor under selected control, pressed left mouse button and starts dragging
         Transform,
-        //all user input used only to drag canvas inide rednder widget
+        //all user input used only to drag canvas inside render widget
         DragScreen
     };
 
     enum eDisplayState
     {
-        //remove hud and throw all input to the DAVA frameworkx
+        //remove hud and throw all input to the DAVA framework
         Emulation,
-        //just display all root controls, no other iteraction enabled
+        //just display all root controls, no other interaction enabled
         Preview,
         //display one root control
         Edit

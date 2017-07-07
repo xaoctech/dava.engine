@@ -1,5 +1,7 @@
 #pragma once
 
+#include "UI/Preview/Data/CanvasDataAdapter.h"
+
 #include <TArc/DataProcessing/DataWrapper.h>
 
 #include <Base/BaseTypes.h>
@@ -30,8 +32,8 @@ private:
 
     bool IsEnabled() const;
 
-    DAVA::TArc::DataWrapper editorCanvasDataWrapper;
+    CanvasDataAdapter canvasDataAdapter;
     DAVA::TArc::ContextAccessor* accessor = nullptr;
 
-    DAVA_REFLECTION(EditorCanvasData);
+    DAVA_REFLECTION(CanvasData);
 };

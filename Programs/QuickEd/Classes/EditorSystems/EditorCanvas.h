@@ -1,20 +1,18 @@
 #pragma once
 
 #include "EditorSystems/BaseEditorSystem.h"
+#include "UI/Preview/Data/CanvasDataAdapter.h"
 
 #include <TArc/DataProcessing/DataWrapper.h>
+#include <TArc/DataProcessing/DataListener.h>
 
 namespace DAVA
 {
 class Vector2;
 class UIControl;
-namespace TArc
-{
-class FieldBinder;
-}
 }
 
-class EditorCanvas final : public BaseEditorSystem
+class EditorCanvas final : public BaseEditorSystem, DAVA::TArc::DataListener
 {
 public:
     EditorCanvas(EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* accessor);
@@ -24,13 +22,15 @@ public:
     void ProcessInput(DAVA::UIEvent* currentInput) override;
 
 private:
+    void OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;
+
     void InitFieldBinder();
     DAVA::float32 GetScaleFromWheelEvent(DAVA::int32 ticksCount) const;
     void OnMovableControlPositionChanged(const DAVA::Any& movableControlPosition);
     void OnScaleChanged(const DAVA::Any& scale);
 
-    DAVA::TArc::DataWrapper wrapper;
-    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
+    CanvasDataAdapter canvasDataAdapter;
+    DAVA::TArc::DataWrapper canvasDataAdapterWrapper;
 
     bool isMouseMidButtonPressed = false;
     bool isSpacePressed = false;

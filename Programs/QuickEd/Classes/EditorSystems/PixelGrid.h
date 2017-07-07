@@ -1,8 +1,11 @@
 #pragma once
 
 #include "EditorSystems/BaseEditorSystem.h"
+#include "UI/Preview/Data/CanvasDataAdapter.h"
 
 #include <TArc/Utils/DirtyFrameUpdater.h>
+#include <TArc/DataProcessing/DataWrapper.h>
+#include <TArc/DataProcessing/DataListener.h>
 
 #include <Base/Introspection.h>
 #include <Math/Vector.h>
@@ -11,10 +14,6 @@
 namespace DAVA
 {
 class Any;
-namespace TArc
-{
-class FieldBinder;
-}
 }
 
 class PixelGridPreferences : public DAVA::InspBase
@@ -46,26 +45,29 @@ private:
     DAVA::float32 scaleToDisaply;
 };
 
-class PixelGrid : public BaseEditorSystem
+class PixelGrid : public BaseEditorSystem, DAVA::TArc::DataListener
 {
 public:
     PixelGrid(EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* accessor);
     ~PixelGrid() override;
 
 private:
+    void OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;
+
     void InitControls();
-    void BindFields();
 
     void OnVisualSettingsChanged(const DAVA::Any&);
 
     bool CanShowGrid() const;
     void UpdateGrid();
 
-    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
     PixelGridPreferences preferences;
 
     DAVA::RefPtr<DAVA::UIControl> vLinesContainer;
     DAVA::RefPtr<DAVA::UIControl> hLinesContainer;
 
     DirtyFrameUpdater updater;
+
+    CanvasDataAdapter canvasDataAdapter;
+    DAVA::TArc::DataWrapper canvasDataAdapterWrapper;
 };

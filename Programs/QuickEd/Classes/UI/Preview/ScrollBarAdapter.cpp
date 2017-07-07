@@ -1,7 +1,5 @@
 #include "UI/Preview/ScrollBarAdapter.h"
 
-#include "Modules/DocumentsModule/EditorCanvasData.h"
-
 #include <TArc/Core/ContextAccessor.h>
 
 #include <Reflection/ReflectedTypeDB.h>
@@ -30,83 +28,40 @@ DAVA_REFLECTION_IMPL(ScrollBarAdapter)
 ScrollBarAdapter::ScrollBarAdapter(DAVA::Vector2::eAxis orientation_, DAVA::TArc::ContextAccessor* accessor_)
     : orientation(orientation_)
     , accessor(accessor_)
+    , canvasDataAdapter(accessor)
 {
-    editorCanvasDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<EditorCanvasData>());
 }
 
 int ScrollBarAdapter::GetPosition() const
 {
-    using namespace DAVA;
-    if (editorCanvasDataWrapper.HasData())
-    {
-        Any positionValue = editorCanvasDataWrapper.GetFieldValue(EditorCanvasData::positionPropertyName);
-        DVASSERT(positionValue.CanGet<Vector2>());
-        Vector2 position = positionValue.Get<Vector2>();
-        return static_cast<int>(position[orientation]);
-    }
-    else
-    {
-        return 0;
-    }
+    return static_cast<int>(canvasDataAdapter.GetPosition()[orientation]);
 }
 
 void ScrollBarAdapter::SetPosition(int value)
 {
-    using namespace DAVA;
-    DVASSERT(editorCanvasDataWrapper.HasData());
-    Any positionValue = editorCanvasDataWrapper.GetFieldValue(EditorCanvasData::positionPropertyName);
-    DVASSERT(positionValue.CanGet<Vector2>());
-    Vector2 position = positionValue.Get<Vector2>();
-    position[orientation] = static_cast<float32>(value);
-    editorCanvasDataWrapper.SetFieldValue(EditorCanvasData::positionPropertyName, position);
+    DAVA::Vector2 position = canvasDataAdapter.GetPosition();
+    position[orientation] = static_cast<DAVA::float32>(value);
+    canvasDataAdapter.SetPosition(position);
 }
 
 int ScrollBarAdapter::GetMinPos() const
 {
-    using namespace DAVA;
-    if (editorCanvasDataWrapper.HasData())
-    {
-        Any minPosValue = editorCanvasDataWrapper.GetFieldValue(EditorCanvasData::minimumPositionPropertyName);
-        DVASSERT(minPosValue.CanGet<Vector2>());
-        Vector2 minPos = minPosValue.Get<Vector2>();
-        return static_cast<int>(minPos[orientation]);
-    }
-    return 0;
+    return static_cast<int>(canvasDataAdapter.GetMinimumPosition()[orientation]);
 }
 
 int ScrollBarAdapter::GetMaxPos() const
 {
-    using namespace DAVA;
-    if (editorCanvasDataWrapper.HasData())
-    {
-        Any maxPosValue = editorCanvasDataWrapper.GetFieldValue(EditorCanvasData::maximumPositionPropertyName);
-        DVASSERT(maxPosValue.CanGet<Vector2>());
-        Vector2 maxPos = maxPosValue.Get<Vector2>();
-        return static_cast<int>(maxPos[orientation]);
-    }
-    return 0;
+    return static_cast<int>(canvasDataAdapter.GetMaximumPosition()[orientation]);
 }
 
 int ScrollBarAdapter::GetPageStep() const
 {
-    using namespace DAVA;
-    using namespace DAVA::TArc;
-
-    DataContext* activeContext = accessor->GetActiveContext();
-    if (activeContext == nullptr)
-    {
-        return 0;
-    }
-    else
-    {
-        EditorCanvasData* canvasData = activeContext->GetData<EditorCanvasData>();
-        return canvasData->GetViewSize()[orientation];
-    }
+    return canvasDataAdapter.GetViewSize()[orientation];
 }
 
 bool ScrollBarAdapter::IsEnabled() const
 {
-    return editorCanvasDataWrapper.HasData();
+    return accessor->GetActiveContext() != nullptr;
 }
 
 bool ScrollBarAdapter::IsVisible() const

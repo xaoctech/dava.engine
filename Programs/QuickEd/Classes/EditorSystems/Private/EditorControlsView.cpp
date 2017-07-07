@@ -9,7 +9,7 @@
 #include "Model/ControlProperties/RootProperty.h"
 
 #include "Modules/DocumentsModule/DocumentData.h"
-#include "Modules/DocumentsModule/EditorCanvasData.h"
+#include "UI/Preview/Data/CanvasData.h"
 
 #include <TArc/Core/FieldBinder.h>
 
@@ -412,7 +412,7 @@ EditorControlsView::EditorControlsView(UIControl* canvasParent_, EditorSystemsMa
 
     InitFieldBinder();
 
-    editorCanvasDataWrapper = accessor->CreateWrapper(ReflectedTypeDB::Get<EditorCanvasData>());
+    canvasDataWrapper = accessor->CreateWrapper(ReflectedTypeDB::Get<CanvasData>());
 
     UIControlSystem::Instance()->GetLayoutSystem()->AddListener(this);
 }
@@ -557,7 +557,7 @@ uint32 EditorControlsView::GetIndexByPos(const Vector2& pos) const
 
 void EditorControlsView::Layout()
 {
-    if (editorCanvasDataWrapper.HasData() == false)
+    if (canvasDataWrapper.HasData() == false)
     {
         return;
     }
@@ -592,7 +592,7 @@ void EditorControlsView::Layout()
     }
     Vector2 size(maxWidth, totalHeight);
 
-    editorCanvasDataWrapper.SetFieldValue(EditorCanvasData::workAreaSizePropertyName, size);
+    canvasDataWrapper.SetFieldValue(CanvasData::workAreaSizePropertyName, size);
 
     OnRootControlPosChanged();
 }
@@ -648,11 +648,11 @@ void EditorControlsView::OnRootControlPosChanged()
     if (gridControls.size() == 1)
     {
         const std::unique_ptr<BackgroundController>& grid = gridControls.front();
-        editorCanvasDataWrapper.SetFieldValue(EditorCanvasData::rootPositionPropertyName, grid->GetRootControlPos());
+        canvasDataWrapper.SetFieldValue(CanvasData::rootPositionPropertyName, grid->GetRootControlPos());
     }
     else
     {
         //force show 0, 0 at top left corner if many root controls displayed
-        editorCanvasDataWrapper.SetFieldValue(EditorCanvasData::rootPositionPropertyName, Vector2(0.0f, 0.0f));
+        canvasDataWrapper.SetFieldValue(CanvasData::rootPositionPropertyName, Vector2(0.0f, 0.0f));
     }
 }

@@ -2,8 +2,8 @@
 #include "UI/Preview/Guides/GuideLabel.h"
 
 #include "Modules/DocumentsModule/DocumentData.h"
-#include "Modules/DocumentsModule/EditorCanvasData.h"
-#include "Modules/DocumentsModule/CentralWidgetData.h"
+#include "UI/Preview/Data/CanvasData.h"
+#include "UI/Preview/Data/CentralWidgetData.h"
 
 #include "Modules/PreferencesModule/PreferencesData.h"
 
@@ -23,11 +23,14 @@ GuidesController::GuidesController(DAVA::Vector2::eAxis orientation_, DAVA::TArc
     , accessor(accessor_)
     , fieldBinder(new DAVA::TArc::FieldBinder(accessor))
     , container(container_)
+    , canvasDataAdapter(accessor)
 {
     updater.SetCallback(DAVA::MakeFunction(this, &GuidesController::SyncGuidesWithValues));
 
     documentDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<DocumentData>());
     preferencesDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<PreferencesData>());
+    canvasDataAdapterWrapper = accessor->CreateWrapper([this](const DAVA::TArc::DataContext*) { return DAVA::Reflection::Create(&canvasDataAdapter); });
+    canvasDataAdapterWrapper.SetListener(this);
 
     BindFields();
 
@@ -51,25 +54,13 @@ void GuidesController::BindFields()
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
         fieldDescr.fieldName = DocumentData::guidesPropertyName;
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnDataChanged));
+        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnDataFieldChanged));
     }
     {
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<PreferencesData>();
         fieldDescr.fieldName = PreferencesData::guidesEnabledPropertyName;
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnDataChanged));
-    }
-    {
-        FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<EditorCanvasData>();
-        fieldDescr.fieldName = EditorCanvasData::startValuePropertyName;
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnCanvasParametersChanged));
-    }
-    {
-        FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<EditorCanvasData>();
-        fieldDescr.fieldName = EditorCanvasData::lastValuePropertyName;
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnCanvasParametersChanged));
+        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnDataFieldChanged));
     }
     {
         FieldDescriptor fieldDescr;
@@ -100,9 +91,19 @@ void GuidesController::OnCanvasParametersChanged(const DAVA::Any&)
     DisableDrag();
 }
 
-void GuidesController::OnDataChanged(const DAVA::Any&)
+void GuidesController::OnDataFieldChanged(const DAVA::Any&)
 {
-    updater.Update();
+    updater.MarkDirty();
+}
+
+void GuidesController::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
+{
+    bool startValueChanged = std::find(fields.begin(), fields.end(), CanvasDataAdapter::startValuePropertyName) != fields.end();
+    bool lastValueChanged = std::find(fields.begin(), fields.end(), CanvasDataAdapter::lastValuePropertyName) != fields.end();
+    if (startValueChanged || lastValueChanged)
+    {
+        updater.MarkDirty();
+    }
 }
 
 void GuidesController::OnMousePress(DAVA::float32 position)
@@ -325,10 +326,9 @@ void GuidesController::SyncGuidesWithValues()
         return;
     }
 
-    EditorCanvasData* canvasData = GetCanvasData();
-    float32 scale = canvasData->GetScale();
-    float32 minValue = canvasData->GetStartValue()[orientation] / scale;
-    float32 maxValue = canvasData->GetLastValue()[orientation] / scale;
+    float32 scale = canvasDataAdapter.GetScale();
+    float32 minValue = canvasDataAdapter.GetStartValue()[orientation] / scale;
+    float32 maxValue = canvasDataAdapter.GetLastValue()[orientation] / scale;
 
     PackageNode::AxisGuides values = GetValues();
     PackageNode::AxisGuides visibleValues;
@@ -374,7 +374,7 @@ PackageNode::AxisGuides::iterator GuidesController::GetNearestValuePtr(DAVA::flo
 
     float32 range = 1;
 
-    float32 scale = GetCanvasData()->GetScale();
+    float32 scale = canvasDataAdapter.GetScale();
     if (scale < 1.0f)
     {
         range = 3 / scale;
@@ -469,10 +469,9 @@ void GuidesController::DragGuide(DAVA::float32 position)
 
     float32 value = PositionToValue(position);
 
-    EditorCanvasData* canvasData = GetCanvasData();
-    float32 scale = canvasData->GetScale();
-    float32 minValue = canvasData->GetStartValue()[orientation] / scale;
-    float32 maxValue = canvasData->GetLastValue()[orientation] / scale;
+    float32 scale = canvasDataAdapter.GetScale();
+    float32 minValue = canvasDataAdapter.GetStartValue()[orientation] / scale;
+    float32 maxValue = canvasDataAdapter.GetLastValue()[orientation] / scale;
     SetDisplayState((value < minValue || value > maxValue) ? DISPLAY_REMOVE : DISPLAY_DRAG);
 
     *valuePtr = PositionToValue(position);
@@ -540,16 +539,6 @@ void GuidesController::RemoveLastGuideWidget()
     guides.removeLast();
 }
 
-EditorCanvasData* GuidesController::GetCanvasData() const
-{
-    using namespace DAVA;
-    using namespace DAVA::TArc;
-
-    DataContext* activeContext = accessor->GetActiveContext();
-    DVASSERT(activeContext != nullptr);
-    return activeContext->GetData<EditorCanvasData>();
-}
-
 CentralWidgetData* GuidesController::GetCentralWidgetData() const
 {
     using namespace DAVA;
@@ -572,19 +561,17 @@ DocumentData* GuidesController::GetDocumentData() const
 DAVA::float32 GuidesController::PositionToValue(DAVA::float32 position) const
 {
     using namespace DAVA;
-    EditorCanvasData* canvasData = GetCanvasData();
-    float32 minValue = canvasData->GetStartValue()[orientation];
-    float32 scale = canvasData->GetScale();
+    float32 minValue = canvasDataAdapter.GetStartValue()[orientation];
+    float32 scale = canvasDataAdapter.GetScale();
     return std::round((minValue + position) / scale);
 }
 
 DAVA::float32 GuidesController::ValueToPosition(DAVA::float32 value) const
 {
     using namespace DAVA;
-    EditorCanvasData* canvasData = GetCanvasData();
     float32 relativePos = GetCentralWidgetData()->GetGuidesRelativePos()[orientation];
-    float32 minValue = canvasData->GetStartValue()[orientation];
-    float32 scale = canvasData->GetScale();
+    float32 minValue = canvasDataAdapter.GetStartValue()[orientation];
+    float32 scale = canvasDataAdapter.GetScale();
     return relativePos + value * scale - minValue;
 }
 

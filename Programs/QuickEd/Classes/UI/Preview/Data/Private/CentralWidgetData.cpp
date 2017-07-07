@@ -1,4 +1,4 @@
-#include "Modules/DocumentsModule/CentralWidgetData.h"
+#include "UI/Preview/Data/CentralWidgetData.h"
 
 #include <QWidget>
 

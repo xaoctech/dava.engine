@@ -1,7 +1,5 @@
 #include "UI/Preview/Ruler/RulerController.h"
 
-#include "Modules/DocumentsModule/EditorCanvasData.h"
-
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Core/FieldBinder.h>
 
@@ -10,26 +8,16 @@
 RulerController::RulerController(DAVA::TArc::ContextAccessor* accessor_, QObject* parent)
     : QObject(parent)
     , screenScale(0.0f)
+    , canvasDataAdapter(accessor_)
     , accessor(accessor_)
 {
-    SetupInitialRulerSettings(horisontalRulerSettings);
-    SetupInitialRulerSettings(verticalRulerSettings);
+    canvasDataAdapterWrapper = accessor->CreateWrapper([this](const DAVA::TArc::DataContext*) { return DAVA::Reflection::Create(&canvasDataAdapter); });
+    canvasDataAdapterWrapper.SetListener(this);
 
-    InitFieldBinder();
+    OnScaleChanged(1.0f);
 }
 
 RulerController::~RulerController() = default;
-
-void RulerController::SetupInitialRulerSettings(RulerSettings& settings)
-{
-    static const int defaultSmallTicksDelta = 10;
-    static const int defaultBigTicksDelta = 50;
-
-    settings.smallTicksDelta = defaultSmallTicksDelta;
-    settings.bigTicksDelta = defaultBigTicksDelta;
-    settings.startPos = 0;
-    settings.zoomLevel = 1.0f;
-}
 
 void RulerController::UpdateRulerMarkers(QPoint curMousePos)
 {
@@ -86,25 +74,6 @@ void RulerController::RecalculateRulerSettings()
     UpdateRulers();
 }
 
-void RulerController::InitFieldBinder()
-{
-    using namespace DAVA;
-    using namespace TArc;
-    fieldBinder.reset(new FieldBinder(accessor));
-    {
-        FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<EditorCanvasData>();
-        fieldDescr.fieldName = FastName(EditorCanvasData::startValuePropertyName);
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &RulerController::OnStartValueChanged));
-    }
-    {
-        FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<EditorCanvasData>();
-        fieldDescr.fieldName = FastName(EditorCanvasData::scalePropertyName);
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &RulerController::OnScaleChanged));
-    }
-}
-
 void RulerController::OnStartValueChanged(const DAVA::Any& startValue)
 {
     QPoint pos(0, 0);
@@ -137,4 +106,19 @@ void RulerController::OnScaleChanged(const DAVA::Any& scaleValue)
     verticalRulerSettings.zoomLevel = screenScale;
 
     RecalculateRulerSettings();
+}
+
+void RulerController::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
+{
+    bool startValueChanged = std::find(fields.begin(), fields.end(), CanvasDataAdapter::startValuePropertyName) != fields.end();
+    if (startValueChanged)
+    {
+        OnStartValueChanged(wrapper.GetFieldValue(CanvasDataAdapter::startValuePropertyName));
+    }
+
+    bool scaleChanged = std::find(fields.begin(), fields.end(), CanvasDataAdapter::scalePropertyName) != fields.end();
+    if (scaleChanged)
+    {
+        OnScaleChanged(wrapper.GetFieldValue(CanvasDataAdapter::scalePropertyName));
+    }
 }

@@ -2,6 +2,11 @@
 
 #include "UI/Preview/Ruler/RulerSettings.h"
 
+#include "UI/Preview/Data/CanvasDataAdapter.h"
+
+#include <TArc/DataProcessing/DataWrapper.h>
+#include <TArc/DataProcessing/DataListener.h>
+
 #include <QObject>
 #include <QPoint>
 
@@ -13,11 +18,10 @@ class Any;
 namespace TArc
 {
 class ContextAccessor;
-class FieldBinder;
 }
 }
 
-class RulerController : public QObject
+class RulerController : public QObject, DAVA::TArc::DataListener
 {
     Q_OBJECT
 
@@ -49,7 +53,8 @@ protected:
     void RecalculateRulerSettings();
 
 private:
-    void InitFieldBinder();
+    void OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;
+
     void OnStartValueChanged(const DAVA::Any& startValue);
     void OnScaleChanged(const DAVA::Any& scaleValue);
 
@@ -61,6 +66,8 @@ private:
     RulerSettings horisontalRulerSettings;
     RulerSettings verticalRulerSettings;
 
-    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
+    CanvasDataAdapter canvasDataAdapter;
+
+    DAVA::TArc::DataWrapper canvasDataAdapterWrapper;
     DAVA::TArc::ContextAccessor* accessor = nullptr;
 };

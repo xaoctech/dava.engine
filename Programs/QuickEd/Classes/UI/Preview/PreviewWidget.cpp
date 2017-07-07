@@ -19,8 +19,8 @@
 #include "Model/ControlProperties/VisibleValueProperty.h"
 
 #include "Modules/DocumentsModule/DocumentData.h"
-#include "Modules/DocumentsModule/CentralWidgetData.h"
-#include "Modules/DocumentsModule/EditorCanvasData.h"
+#include "UI/Preview/Data/CentralWidgetData.h"
+#include "UI/Preview/Data/CanvasData.h"
 
 #include "Controls/ScaleComboBox.h"
 
@@ -70,7 +70,7 @@ PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc:
     InitFromSystemsManager(systemsManager);
 
     centralWidgetDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<CentralWidgetData>());
-    editorCanvasDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<EditorCanvasData>());
+    canvasDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<CanvasData>());
 }
 
 PreviewWidget::~PreviewWidget() = default;
@@ -168,10 +168,10 @@ void PreviewWidget::OnIncrementScale()
 
     DataContext* activeContext = accessor->GetActiveContext();
     DVASSERT(activeContext != nullptr);
-    EditorCanvasData* canvasData = activeContext->GetData<EditorCanvasData>();
+    CanvasData* canvasData = activeContext->GetData<CanvasData>();
 
     float32 nextScale = canvasData->GetNextScale(1);
-    editorCanvasDataWrapper.SetFieldValue(EditorCanvasData::scalePropertyName, nextScale);
+    canvasDataWrapper.SetFieldValue(CanvasData::scalePropertyName, nextScale);
 }
 
 void PreviewWidget::OnDecrementScale()
@@ -181,10 +181,10 @@ void PreviewWidget::OnDecrementScale()
 
     DataContext* activeContext = accessor->GetActiveContext();
     DVASSERT(activeContext != nullptr);
-    EditorCanvasData* canvasData = activeContext->GetData<EditorCanvasData>();
+    CanvasData* canvasData = activeContext->GetData<CanvasData>();
 
     float32 nextScale = canvasData->GetPreviousScale(-1);
-    editorCanvasDataWrapper.SetFieldValue(EditorCanvasData::scalePropertyName, nextScale);
+    canvasDataWrapper.SetFieldValue(CanvasData::scalePropertyName, nextScale);
 }
 
 void PreviewWidget::SetActualScale()
@@ -192,7 +192,7 @@ void PreviewWidget::SetActualScale()
     using namespace DAVA;
     using namespace DAVA::TArc;
 
-    editorCanvasDataWrapper.SetFieldValue(EditorCanvasData::scalePropertyName, 1.0f);
+    canvasDataWrapper.SetFieldValue(CanvasData::scalePropertyName, 1.0f);
 }
 
 void PreviewWidget::OnResized(DAVA::uint32 width, DAVA::uint32 height)
@@ -271,6 +271,9 @@ void PreviewWidget::InitUI()
     connect(rulerController, &RulerController::VerticalRulerMarkPositionChanged, verticalRuler, &RulerWidget::OnMarkerPositionChanged);
     gridLayout->addWidget(verticalRuler, 1, 0);
 
+    DAVA::TArc::DataContext* globalContext = accessor->GetGlobalContext();
+    globalContext->CreateData(std::make_unique<CentralWidgetData>(renderWidget, horizontalRuler, verticalRuler));
+
     QSizePolicy expandingPolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     renderWidget->setSizePolicy(expandingPolicy);
     gridLayout->addWidget(renderWidget, 1, 1);
@@ -285,11 +288,13 @@ void PreviewWidget::InitUI()
         params.fields[ScrollBar::Fields::Visible] = ScrollBarAdapter::visiblePropertyName;
         {
             ScrollBar* scrollBar = new ScrollBar(params, accessor, Reflection::Create(ReflectedObject(&vScrollBarData)));
+            scrollBar->ForceUpdate();
             gridLayout->addWidget(scrollBar->ToWidgetCast(), 1, 2);
         }
 
         {
             ScrollBar* scrollBar = new ScrollBar(params, accessor, Reflection::Create(ReflectedObject(&hScrollBarData)));
+            scrollBar->ForceUpdate();
             gridLayout->addWidget(scrollBar->ToWidgetCast(), 2, 1);
         }
     }
@@ -318,9 +323,6 @@ void PreviewWidget::InitUI()
         ActionPlacementInfo placementInfo(CreateToolbarPoint(toolbarName));
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     }
-
-    DAVA::TArc::DataContext* globalContext = accessor->GetGlobalContext();
-    globalContext->CreateData(std::make_unique<CentralWidgetData>(renderWidget, horizontalRuler, verticalRuler));
 }
 
 void PreviewWidget::ShowMenu(const QMouseEvent* mouseEvent)
