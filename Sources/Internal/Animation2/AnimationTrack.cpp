@@ -5,6 +5,10 @@
 
 namespace DAVA
 {
+const char* AnimationTrack::ANIMATION_CHANNEL_NAME_POSITION = "position";
+const char* AnimationTrack::ANIMATION_CHANNEL_NAME_ORIENTATION = "orientation";
+const char* AnimationTrack::ANIMATION_CHANNEL_NAME_SCALE = "scale";
+
 AnimationTrack::~AnimationTrack()
 {
     SafeDeleteArray(channels);

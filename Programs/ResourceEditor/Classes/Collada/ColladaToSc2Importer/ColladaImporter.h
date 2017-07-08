@@ -15,7 +15,7 @@ class ColladaImporter
 public:
     ColladaImporter();
     eColladaErrorCodes SaveSC2(ColladaScene* colladaScene, const FilePath& scenePath);
-    eColladaErrorCodes SaveAnimations(ColladaScene* colladaScene, const FilePath& path);
+    eColladaErrorCodes SaveAnimations(ColladaScene* colladaScene, const FilePath& dir);
 
 private:
     void ImportAnimation(ColladaSceneNode* colladaNode, Entity* nodeEntity);

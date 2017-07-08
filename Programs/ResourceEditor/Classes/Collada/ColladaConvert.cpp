@@ -59,9 +59,9 @@ eColladaErrorCodes ConvertDaeToAnimations(const DAVA::FilePath& pathToFile)
         return code;
     }
 
-    DAVA::FilePath pathAnim = DAVA::FilePath::CreateWithNewExtension(pathToFile, ".anim");
+    DAVA::FilePath saveDirectory = pathToFile.GetDirectory();
 
-    eColladaErrorCodes ret = colladaDocument.SaveAnimations(pathAnim);
+    eColladaErrorCodes ret = colladaDocument.SaveAnimations(saveDirectory);
     colladaDocument.Close();
 
     FCollada::Release();

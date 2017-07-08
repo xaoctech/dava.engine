@@ -1,71 +1,50 @@
+## Animation Clip File
 
-## Skeleton
-
-
+    FileHeader
+	{
+        signature       U4,
+        version         U4,
+	}
     
-    Skeleton
+    AnimationClip
     {
-        node_count          U4;
-    
-        data
+        node_count      U4,
+        
+        nodes[node_count]
         {
-            parent_i        U4;
-            bind_matrix     F4 16;
-            inv_bind_matrix F4 16;
-        } node_count;
-    
-        info
-        {
-            id              S0;
-            name            S0;
-        } node_count;
+            UID         S0,
+            name        S0,
+            data        Track
+        }
     }
     
+## Track Data
 
-
-## Animation
-
-    
-    Channel
-    {
-        type        U1,
-        dimension   U1,
-        pad         U1 2,
-    
-        key_count   U4,
-    
-        key
-        {
-            time    F4,
-            data    F4 dim
-        } key_count
-    }
-    
-
-    
     Track
     {
-        chan_count  U4,
+        signature       U4,
+        channel_count   U4,
     
-        chan
+        channels[channel_count]
         {
-            name    S0,
-            data    Channel
-        } chan_count
+            name        S0,
+            data        Channel
+        }
     }
     
+##Channel Data
 
-
-    
-    Clip
+    Channel
     {
-        node_count  U4,
-        node
-        {
-            id      S0,
-            name    S0,
-            data    Track
-        } node_count
-    }
+        signature       U4
+        type            U1,
+        dimension       U1,
+        pad             U1 2,
+        key_count       U4,
     
-
+        keys[key_count]
+        {
+            time        F4,
+            data        F4 dim
+        }
+    }

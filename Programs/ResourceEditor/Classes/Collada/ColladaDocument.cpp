@@ -230,9 +230,9 @@ eColladaErrorCodes ColladaDocument::SaveSC2(const FilePath& scenePath) const
     return importer.SaveSC2(colladaScene, scenePath);
 }
 
-eColladaErrorCodes ColladaDocument::SaveAnimations(const FilePath& path) const
+eColladaErrorCodes ColladaDocument::SaveAnimations(const FilePath& dir) const
 {
     ColladaImporter importer;
-    return importer.SaveAnimations(colladaScene, path);
+    return importer.SaveAnimations(colladaScene, dir);
 }
 };

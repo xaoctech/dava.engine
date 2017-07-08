@@ -33,8 +33,6 @@ public:
 
         Quaternion localQuat;
         Vector3 localTranslation;
-
-        SceneNodeAnimation* animation = nullptr;
     };
 
     ColladaSkinnedMesh(FCDController* colladaController);

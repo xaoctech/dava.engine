@@ -1,3 +1,6 @@
+#include "Animation2/AnimationClip.h"
+#include "Animation2/AnimationTrack.h"
+#include "Animation2/AnimationChannel.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/SceneUtils.h"
@@ -350,20 +353,95 @@ eColladaErrorCodes ColladaImporter::SaveSC2(ColladaScene* colladaScene, const Fi
     return convertRes;
 }
 
-eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, const FilePath& path)
+eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, const FilePath& dir)
 {
-    ScopedPtr<File> file(File::Create(path, File::CREATE | File::WRITE));
-    if (!file)
+    struct ChannelHeader
     {
-        return COLLADA_ERROR;
-    }
+        uint32 signature = AnimationChannel::ANIMATION_CHANNEL_DATA_SIGNATURE;
+        uint8 type = 0;
+        uint8 dimension = 0;
+        uint16 pad = 0;
+        uint32 key_count = 0;
+    } channelHeader;
 
-    for (ColladaSkinnedMesh* mesh : colladaScene->colladaSkinnedMeshes)
+    //binary file format described in 'Internal/Animations2/BinaryFormats.md'
+    AnimationClip::FileHeader header;
+    header.signature = AnimationClip::ANIMATION_CLIP_FILE_SIGNATURE;
+    header.version = 1;
+
+    for (auto canimation : colladaScene->colladaAnimations)
     {
-        for (const ColladaSkinnedMesh::Joint& joint : mesh->joints)
+        ScopedPtr<File> file(File::Create(dir + String(canimation->name + ".anim"), File::CREATE | File::WRITE));
+        if (file)
         {
-            SceneNodeAnimation* jointAnimation = joint.animation;
-            //TODO: *Skining* save animations
+            file->Write(&header);
+
+            uint32 nodeCount = uint32(canimation->animations.size());
+            file->Write(&nodeCount);
+
+            //Write nodes data
+            for (auto& pair : canimation->animations)
+            {
+                ColladaSceneNode* colladaNode = pair.first;
+                SceneNodeAnimation* colladaAnimation = pair.second;
+
+                String nodeUID = colladaNode->originalNode->GetDaeId();
+                String nodeName = UTF8Utils::EncodeToUTF8(colladaNode->originalNode->GetName().c_str());
+
+                file->WriteString(nodeUID);
+                file->WriteString(nodeName);
+
+                //Write Track data
+                file->Write(&AnimationTrack::ANIMATION_TRACK_DATA_SIGNATURE);
+
+                uint32 channelsCount = 3; //position, orientation, scale
+                file->Write(&channelsCount);
+
+                uint32 keyCount = colladaAnimation->keyCount;
+                channelHeader.key_count = keyCount;
+
+                //Write position channel
+                {
+                    channelHeader.dimension = 3;
+                    file->WriteString(AnimationTrack::ANIMATION_CHANNEL_NAME_POSITION);
+                    file->Write(&channelHeader);
+
+                    for (uint32 k = 0; k < keyCount; ++k)
+                    {
+                        const SceneNodeAnimationKey& key = colladaAnimation->keys[k];
+                        file->Write(&key.time);
+                        file->Write(&key.translation);
+                    }
+                }
+
+                //Write orientation channel
+                {
+                    channelHeader.dimension = 4;
+                    file->WriteString(AnimationTrack::ANIMATION_CHANNEL_NAME_ORIENTATION);
+                    file->Write(&channelHeader);
+
+                    for (uint32 k = 0; k < keyCount; ++k)
+                    {
+                        const SceneNodeAnimationKey& key = colladaAnimation->keys[k];
+                        file->Write(&key.time);
+                        file->Write(&key.rotation);
+                    }
+                }
+
+                //Write scale channel
+                {
+                    channelHeader.dimension = 3;
+                    file->WriteString(AnimationTrack::ANIMATION_CHANNEL_NAME_SCALE);
+                    file->Write(&channelHeader);
+
+                    for (uint32 k = 0; k < keyCount; ++k)
+                    {
+                        const SceneNodeAnimationKey& key = colladaAnimation->keys[k];
+                        file->Write(&key.time);
+                        file->Write(&key.scale);
+                    }
+                }
+            }
         }
     }
 

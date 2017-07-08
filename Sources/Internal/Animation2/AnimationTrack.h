@@ -8,6 +8,9 @@ class AnimationTrack
 {
 public:
     static const uint32 ANIMATION_TRACK_DATA_SIGNATURE = DAVA_MAKEFOURCC('D', 'V', 'A', 'T');
+    static const char* ANIMATION_CHANNEL_NAME_POSITION;
+    static const char* ANIMATION_CHANNEL_NAME_ORIENTATION;
+    static const char* ANIMATION_CHANNEL_NAME_SCALE;
 
     class State;
 
@@ -25,9 +28,9 @@ public:
     const float32* GetValue(const State& state, uint32 channel) const;
 
 private:
-    uint32 channelsCount = 0;
     AnimationChannel* channels = nullptr;
     const char** channelNames = nullptr;
+    uint32 channelsCount = 0;
 };
 
 class AnimationTrack::State
