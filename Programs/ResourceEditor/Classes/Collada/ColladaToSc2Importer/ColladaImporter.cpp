@@ -1,6 +1,7 @@
 #include "Animation2/AnimationClip.h"
 #include "Animation2/AnimationTrack.h"
 #include "Animation2/AnimationChannel.h"
+#include "FileSystem/DynamicMemoryFile.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/SceneUtils.h"
@@ -18,6 +19,7 @@
 #include "Collada/ColladaToSc2Importer/ColladaImporter.h"
 #include "Collada/ColladaToSc2Importer/ImportSettings.h"
 #include "Utils/UTF8Utils.h"
+#include "Utils/CRC32.h"
 #include "Qt/Main/QtUtils.h"
 
 namespace DAVA
@@ -353,6 +355,20 @@ eColladaErrorCodes ColladaImporter::SaveSC2(ColladaScene* colladaScene, const Fi
     return convertRes;
 }
 
+void WriteToBuffer(Vector<uint8>& buffer, const void* data, uint32 size)
+{
+    DVASSERT(data != nullptr && size != 0);
+
+    const uint8* bytes = reinterpret_cast<const uint8*>(data);
+    buffer.insert(buffer.end(), bytes, bytes + size);
+}
+
+template <class T>
+void WriteToBuffer(Vector<uint8>& buffer, const T* value)
+{
+    WriteToBuffer(buffer, value, sizeof(T));
+}
+
 eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, const FilePath& dir)
 {
     //binary file format described in 'Internal/Animations2/BinaryFormats.md'
@@ -371,19 +387,16 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
     channelHeader.pad0[0] = channelHeader.pad0[1] = channelHeader.pad0[2] = 0;
     channelHeader.pad1[0] = channelHeader.pad1[1] = channelHeader.pad1[2] = 0;
 
-    AnimationClip::FileHeader header;
-    header.signature = AnimationClip::ANIMATION_CLIP_FILE_SIGNATURE;
-    header.version = 1;
-
     for (auto canimation : colladaScene->colladaAnimations)
     {
-        ScopedPtr<File> file(File::Create(dir + String(canimation->name + ".anim"), File::CREATE | File::WRITE));
+        FilePath filePath = dir + String(canimation->name + ".anim");
+        ScopedPtr<File> file(File::Create(filePath, File::CREATE | File::WRITE));
         if (file)
         {
-            file->Write(&header);
+            Vector<uint8> animationData;
 
             uint32 nodeCount = uint32(canimation->animations.size());
-            file->Write(&nodeCount);
+            WriteToBuffer(animationData, &nodeCount);
 
             //Write nodes data
             for (auto& pair : canimation->animations)
@@ -394,22 +407,22 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
                 String nodeUID = colladaNode->originalNode->GetDaeId();
                 String nodeName = UTF8Utils::EncodeToUTF8(colladaNode->originalNode->GetName().c_str());
 
-                file->WriteString(nodeUID);
-                file->WriteString(nodeName);
+                WriteToBuffer(animationData, nodeUID.c_str(), uint32(nodeUID.length()) + 1);
+                WriteToBuffer(animationData, nodeName.c_str(), uint32(nodeName.length()) + 1);
 
                 //as we load animation data directly to memory and use it without any processing we have to align strings data
                 uint32 stringAlignment = 4 - (uint32(nodeUID.length() + 1 + nodeName.length() + 1) & 0x3);
                 if (stringAlignment > 0 && stringAlignment < 4)
                 {
                     uint32 pad = 0;
-                    file->Write(&pad, stringAlignment);
+                    WriteToBuffer(animationData, &pad, stringAlignment);
                 }
 
                 //Write Track data
-                file->Write(&AnimationTrack::ANIMATION_TRACK_DATA_SIGNATURE);
+                WriteToBuffer(animationData, &AnimationTrack::ANIMATION_TRACK_DATA_SIGNATURE);
 
                 uint32 channelsCount = 3; //position, orientation, scale
-                file->Write(&channelsCount);
+                WriteToBuffer(animationData, &channelsCount);
 
                 uint32 keyCount = colladaAnimation->keyCount;
                 channelHeader.key_count = keyCount;
@@ -418,13 +431,13 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
                 {
                     channelHeader.dimension = 3;
                     channelHeader.target = AnimationTrack::CHANNEL_TARGET_POSITION;
-                    file->Write(&channelHeader);
+                    WriteToBuffer(animationData, &channelHeader);
 
                     for (uint32 k = 0; k < keyCount; ++k)
                     {
                         const SceneNodeAnimationKey& key = colladaAnimation->keys[k];
-                        file->Write(&key.time);
-                        file->Write(&key.translation);
+                        WriteToBuffer(animationData, &key.time);
+                        WriteToBuffer(animationData, &key.translation);
                     }
                 }
 
@@ -432,13 +445,13 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
                 {
                     channelHeader.dimension = 4;
                     channelHeader.target = AnimationTrack::CHANNEL_TARGET_ORIENTATION;
-                    file->Write(&channelHeader);
+                    WriteToBuffer(animationData, &channelHeader);
 
                     for (uint32 k = 0; k < keyCount; ++k)
                     {
                         const SceneNodeAnimationKey& key = colladaAnimation->keys[k];
-                        file->Write(&key.time);
-                        file->Write(&key.rotation);
+                        WriteToBuffer(animationData, &key.time);
+                        WriteToBuffer(animationData, &key.rotation);
                     }
                 }
 
@@ -446,16 +459,33 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
                 {
                     channelHeader.dimension = 3;
                     channelHeader.target = AnimationTrack::CHANNEL_TARGET_SCALE;
-                    file->Write(&channelHeader);
+                    WriteToBuffer(animationData, &channelHeader);
 
                     for (uint32 k = 0; k < keyCount; ++k)
                     {
                         const SceneNodeAnimationKey& key = colladaAnimation->keys[k];
-                        file->Write(&key.time);
-                        file->Write(&key.scale);
+                        WriteToBuffer(animationData, &key.time);
+                        WriteToBuffer(animationData, &key.scale);
                     }
                 }
             }
+
+            uint32 animationDataSize = uint32(animationData.size());
+
+            AnimationClip::FileHeader header;
+            header.signature = AnimationClip::ANIMATION_CLIP_FILE_SIGNATURE;
+            header.version = 1;
+            header.crc32 = CRC32::ForBuffer(animationData.data(), animationDataSize);
+            header.dataSize = animationDataSize;
+
+            file->Write(&header);
+            file->Write(animationData.data(), animationDataSize);
+
+            file->Flush();
+        }
+        else
+        {
+            Logger::Error("[ColladaImporter::SaveAnimations] Failed to open file for writing: %s", filePath.GetAbsolutePathname().c_str());
         }
     }
 

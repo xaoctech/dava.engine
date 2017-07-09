@@ -4,6 +4,8 @@
 	{
         signature       U4,
         version         U4,
+        crc32           U4,
+        dataSize        U4,
 	}
     
     AnimationClip
