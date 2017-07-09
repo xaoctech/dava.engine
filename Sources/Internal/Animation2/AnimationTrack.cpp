@@ -5,14 +5,10 @@
 
 namespace DAVA
 {
-const char* AnimationTrack::ANIMATION_CHANNEL_NAME_POSITION = "position";
-const char* AnimationTrack::ANIMATION_CHANNEL_NAME_ORIENTATION = "orientation";
-const char* AnimationTrack::ANIMATION_CHANNEL_NAME_SCALE = "scale";
-
 AnimationTrack::~AnimationTrack()
 {
     SafeDeleteArray(channels);
-    SafeDeleteArray(channelNames);
+    SafeDeleteArray(channelTargets);
 }
 
 uint32 AnimationTrack::Bind(const uint8* _data)
@@ -20,7 +16,7 @@ uint32 AnimationTrack::Bind(const uint8* _data)
     DVASSERT(_data == nullptr || *reinterpret_cast<const uint32*>(_data) == ANIMATION_TRACK_DATA_SIGNATURE);
 
     SafeDeleteArray(channels);
-    SafeDeleteArray(channelNames);
+    SafeDeleteArray(channelTargets);
 
     const uint8* dataptr = _data;
     if (_data != nullptr)
@@ -31,12 +27,14 @@ uint32 AnimationTrack::Bind(const uint8* _data)
         dataptr += 4;
 
         channels = new AnimationChannel[channelsCount];
-        channelNames = new const char*[channelsCount];
+        channelTargets = new eChannelTarget[channelsCount];
 
         for (uint32 c = 0; c < channelsCount; ++c)
         {
-            channelNames[c] = reinterpret_cast<const char*>(dataptr);
-            dataptr += strlen(channelNames[c]) + 1;
+            channelTargets[c] = eChannelTarget(*dataptr);
+            dataptr += 1;
+
+            dataptr += 3; //pad
 
             dataptr += channels[c].Bind(dataptr);
         }
@@ -64,9 +62,9 @@ uint32 AnimationTrack::GetChannelsCount() const
     return channelsCount;
 }
 
-const char* AnimationTrack::GetChannelName(uint32 channel) const
+AnimationTrack::eChannelTarget AnimationTrack::GetChannelTarget(uint32 channel) const
 {
     DVASSERT(channel < channelsCount);
-    return channelNames[channel];
+    return channelTargets[channel];
 }
 }

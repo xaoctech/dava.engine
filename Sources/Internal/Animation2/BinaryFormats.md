@@ -10,12 +10,13 @@
     {
         node_count      U4,
         
-        nodes[node_count]
+        node
         {
             UID         S0,
             name        S0,
+            pad         U1 0...3 *(string aligment by zeros)*
             data        Track
-        }
+        } [node_count]
     }
     
 ## Track Data
@@ -25,11 +26,12 @@
         signature       U4,
         channel_count   U4,
     
-        channels[channel_count]
+        channels
         {
-            name        S0,
+            target      U1,
+            pad         U1 3,
             data        Channel
-        }
+        } [channel_count]
     }
     
 ##Channel Data
@@ -37,9 +39,8 @@
     Channel
     {
         signature       U4
-        type            U1,
         dimension       U1,
-        pad             U1 2,
+        pad             U1 3,
         key_count       U4,
     
         keys[key_count]

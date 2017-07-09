@@ -8,9 +8,15 @@ class AnimationTrack
 {
 public:
     static const uint32 ANIMATION_TRACK_DATA_SIGNATURE = DAVA_MAKEFOURCC('D', 'V', 'A', 'T');
-    static const char* ANIMATION_CHANNEL_NAME_POSITION;
-    static const char* ANIMATION_CHANNEL_NAME_ORIENTATION;
-    static const char* ANIMATION_CHANNEL_NAME_SCALE;
+
+    enum eChannelTarget : uint8
+    {
+        CHANNEL_TARGET_POSITION = 0,
+        CHANNEL_TARGET_ORIENTATION,
+        CHANNEL_TARGET_SCALE,
+
+        CHANNEL_TARGET_COUNT
+    };
 
     class State;
 
@@ -20,7 +26,7 @@ public:
     uint32 Bind(const uint8* data);
 
     uint32 GetChannelsCount() const;
-    const char* GetChannelName(uint32 channel) const;
+    eChannelTarget GetChannelTarget(uint32 channel) const;
 
     void Reset(State* state) const;
     void Advance(State* state) const;
@@ -29,7 +35,7 @@ public:
 
 private:
     AnimationChannel* channels = nullptr;
-    const char** channelNames = nullptr;
+    eChannelTarget* channelTargets = nullptr;
     uint32 channelsCount = 0;
 };
 

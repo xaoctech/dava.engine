@@ -355,16 +355,22 @@ eColladaErrorCodes ColladaImporter::SaveSC2(ColladaScene* colladaScene, const Fi
 
 eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, const FilePath& dir)
 {
+    //binary file format described in 'Internal/Animations2/BinaryFormats.md'
     struct ChannelHeader
     {
+        //Track part
+        uint8 target;
+        uint8 pad0[3];
+
+        //Channel part
         uint32 signature = AnimationChannel::ANIMATION_CHANNEL_DATA_SIGNATURE;
-        uint8 type = 0;
         uint8 dimension = 0;
-        uint16 pad = 0;
+        uint8 pad1[3];
         uint32 key_count = 0;
     } channelHeader;
+    channelHeader.pad0[0] = channelHeader.pad0[1] = channelHeader.pad0[2] = 0;
+    channelHeader.pad1[0] = channelHeader.pad1[1] = channelHeader.pad1[2] = 0;
 
-    //binary file format described in 'Internal/Animations2/BinaryFormats.md'
     AnimationClip::FileHeader header;
     header.signature = AnimationClip::ANIMATION_CLIP_FILE_SIGNATURE;
     header.version = 1;
@@ -391,6 +397,14 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
                 file->WriteString(nodeUID);
                 file->WriteString(nodeName);
 
+                //as we load animation data directly to memory and use it without any processing we have to align strings data
+                uint32 stringAlignment = 4 - (uint32(nodeUID.length() + 1 + nodeName.length() + 1) & 0x3);
+                if (stringAlignment > 0 && stringAlignment < 4)
+                {
+                    uint32 pad = 0;
+                    file->Write(&pad, stringAlignment);
+                }
+
                 //Write Track data
                 file->Write(&AnimationTrack::ANIMATION_TRACK_DATA_SIGNATURE);
 
@@ -403,7 +417,7 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
                 //Write position channel
                 {
                     channelHeader.dimension = 3;
-                    file->WriteString(AnimationTrack::ANIMATION_CHANNEL_NAME_POSITION);
+                    channelHeader.target = AnimationTrack::CHANNEL_TARGET_POSITION;
                     file->Write(&channelHeader);
 
                     for (uint32 k = 0; k < keyCount; ++k)
@@ -417,7 +431,7 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
                 //Write orientation channel
                 {
                     channelHeader.dimension = 4;
-                    file->WriteString(AnimationTrack::ANIMATION_CHANNEL_NAME_ORIENTATION);
+                    channelHeader.target = AnimationTrack::CHANNEL_TARGET_ORIENTATION;
                     file->Write(&channelHeader);
 
                     for (uint32 k = 0; k < keyCount; ++k)
@@ -431,7 +445,7 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
                 //Write scale channel
                 {
                     channelHeader.dimension = 3;
-                    file->WriteString(AnimationTrack::ANIMATION_CHANNEL_NAME_SCALE);
+                    channelHeader.target = AnimationTrack::CHANNEL_TARGET_SCALE;
                     file->Write(&channelHeader);
 
                     for (uint32 k = 0; k < keyCount; ++k)
@@ -443,6 +457,11 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
                 }
             }
         }
+
+        AnimationClip* clip = new AnimationClip();
+        clip->Load(dir + String(canimation->name + ".anim"));
+
+        clip->Dump();
     }
 
     return COLLADA_OK;

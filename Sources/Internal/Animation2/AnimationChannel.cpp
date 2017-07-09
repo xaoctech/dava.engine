@@ -19,12 +19,10 @@ uint32 AnimationChannel::Bind(const uint8* _data)
 
         dataptr += 4; //skip signature
 
-        dataptr += 1; //type, unused for now
-
         dimension = uint32(*dataptr);
         dataptr += 1;
 
-        dataptr += 2; //pad
+        dataptr += 3; //pad
 
         keysCount = *reinterpret_cast<const uint32*>(dataptr);
         dataptr += 4;
