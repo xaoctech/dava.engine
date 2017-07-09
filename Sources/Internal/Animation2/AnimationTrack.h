@@ -34,9 +34,12 @@ public:
     const float32* GetValue(const State& state, uint32 channel) const;
 
 private:
-    AnimationChannel* channels = nullptr;
-    eChannelTarget* channelTargets = nullptr;
-    uint32 channelsCount = 0;
+    struct Channel
+    {
+        AnimationChannel channel;
+        eChannelTarget target;
+    };
+    Vector<Channel> channels;
 };
 
 class AnimationTrack::State

@@ -457,11 +457,6 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
                 }
             }
         }
-
-        AnimationClip* clip = new AnimationClip();
-        clip->Load(dir + String(canimation->name + ".anim"));
-
-        clip->Dump();
     }
 
     return COLLADA_OK;

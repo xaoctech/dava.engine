@@ -7,36 +7,33 @@ namespace DAVA
 {
 AnimationTrack::~AnimationTrack()
 {
-    SafeDeleteArray(channels);
-    SafeDeleteArray(channelTargets);
 }
 
 uint32 AnimationTrack::Bind(const uint8* _data)
 {
-    DVASSERT(_data == nullptr || *reinterpret_cast<const uint32*>(_data) == ANIMATION_TRACK_DATA_SIGNATURE);
-
-    SafeDeleteArray(channels);
-    SafeDeleteArray(channelTargets);
+    channels.clear();
 
     const uint8* dataptr = _data;
-    if (_data != nullptr)
+    if (dataptr && *reinterpret_cast<const uint32*>(dataptr) == ANIMATION_TRACK_DATA_SIGNATURE)
     {
-        dataptr += 4; //skip signature
-
-        channelsCount = *reinterpret_cast<const uint32*>(dataptr);
-        dataptr += 4;
-
-        channels = new AnimationChannel[channelsCount];
-        channelTargets = new eChannelTarget[channelsCount];
-
-        for (uint32 c = 0; c < channelsCount; ++c)
+        if (_data != nullptr)
         {
-            channelTargets[c] = eChannelTarget(*dataptr);
-            dataptr += 1;
+            dataptr += 4; //skip signature
 
-            dataptr += 3; //pad
+            uint32 channelsCount = *reinterpret_cast<const uint32*>(dataptr);
+            dataptr += 4;
 
-            dataptr += channels[c].Bind(dataptr);
+            channels.resize(channelsCount);
+
+            for (uint32 c = 0; c < channelsCount; ++c)
+            {
+                channels[c].target = eChannelTarget(*dataptr);
+                dataptr += 1;
+
+                dataptr += 3; //pad
+
+                dataptr += channels[c].channel.Bind(dataptr);
+            }
         }
     }
 
@@ -59,12 +56,12 @@ const float32* AnimationTrack::GetValue(const State& state, uint32 channel) cons
 
 uint32 AnimationTrack::GetChannelsCount() const
 {
-    return channelsCount;
+    return uint32(channels.size());
 }
 
 AnimationTrack::eChannelTarget AnimationTrack::GetChannelTarget(uint32 channel) const
 {
-    DVASSERT(channel < channelsCount);
-    return channelTargets[channel];
+    DVASSERT(channel < GetChannelsCount());
+    return channels[channel].target;
 }
 }
