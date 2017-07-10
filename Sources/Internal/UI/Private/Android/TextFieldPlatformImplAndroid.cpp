@@ -1,7 +1,6 @@
 #include "UI/Private/Android/TextFieldPlatformImplAndroid.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
-#if defined(__DAVAENGINE_COREV2__)
 
 #include "Engine/Engine.h"
 #include "Engine/Window.h"
@@ -577,5 +576,4 @@ void TextFieldPlatformImpl::OnTextChanged(const WideString& newText, bool progra
 
 } // namespace DAVA 
 
-#endif // __DAVAENGINE_COREV2__
 #endif // __DAVAENGINE_ANDROID__

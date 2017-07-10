@@ -6,7 +6,6 @@
 #include "FileSystem/File.h"
 #include "FileSystem/FilePath.h"
 #include "FileSystem/FileSystem.h"
-#include "Core/Core.h"
 #include "Render/Shader.h"
 #include "Render/RenderHelper.h"
 #include "FileSystem/LocalizationSystem.h"

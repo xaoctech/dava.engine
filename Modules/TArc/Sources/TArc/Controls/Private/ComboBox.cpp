@@ -60,8 +60,6 @@ void ComboBox::UpdateControl(const ControlDescriptor& changedFields)
         CreateItems(fieldValue, fieldEnumerator);
     }
 
-    DVASSERT(count() != 0);
-
     int currentIndex = SelectCurrentItem(fieldValue, fieldEnumerator);
     setCurrentIndex(currentIndex);
 }

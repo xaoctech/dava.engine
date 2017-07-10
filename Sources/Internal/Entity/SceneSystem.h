@@ -2,13 +2,20 @@
 
 #include "Base/BaseTypes.h"
 
+/**
+    \defgroup systems Systems
+*/
+
 namespace DAVA
 {
 class Entity;
 class Scene;
 class Component;
 class UIEvent;
-
+/**
+    \ingroup systems
+    \brief Base class of systems.
+*/
 class SceneSystem
 {
 public:
@@ -89,16 +96,10 @@ public:
      */
     virtual void Process(float32 timeElapsed);
 
-#if defined(__DAVAENGINE_COREV2__)
     virtual bool Input(UIEvent* uie)
     {
         return false;
     }
-#else
-    virtual void Input(UIEvent* event)
-    {
-    }
-#endif
 
     virtual void InputCancelled(UIEvent* event);
 

@@ -2,6 +2,7 @@
 #include "TArc/Testing/Private/DeadCodeTrick.h"
 
 #include "Engine/Engine.h"
+#include "Engine/PlatformApiQt.h"
 
 #include "UnitTests/TestCore.h"
 #include "Utils/StringFormat.h"

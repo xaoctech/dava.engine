@@ -35,6 +35,7 @@
 #include "Scene3D/Systems/LandscapeSystem.h"
 #include "Scene3D/Systems/SoundUpdateSystem.h"
 #include "Scene3D/Systems/ParticleEffectDebugDrawSystem.h"
+#include "Scene3D/Systems/SlotSystem.h"
 
 #include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
 
@@ -164,22 +165,6 @@ void EntityCache::ClearAll()
 
 Scene::Scene(uint32 _systemsMask /* = SCENE_SYSTEM_ALL_MASK */)
     : Entity()
-    , transformSystem(0)
-    , renderUpdateSystem(0)
-    , lodSystem(0)
-    , debugRenderSystem(0)
-    , particleEffectSystem(0)
-    , updatableSystem(0)
-    , lightUpdateSystem(0)
-    , switchSystem(0)
-    , soundSystem(0)
-    , actionSystem(0)
-    , staticOcclusionSystem(0)
-    , foliageSystem(0)
-    , windSystem(0)
-    , animationSystem(0)
-    , staticOcclusionDebugDrawSystem(0)
-    , particleEffectDebugDrawSystem(0)
     , systemsMask(_systemsMask)
     , maxEntityIDCounter(0)
     , sceneGlobalMaterial(0)
@@ -249,6 +234,18 @@ void Scene::CreateSystems()
     {
         animationSystem = new AnimationSystem(this);
         AddSystem(animationSystem, MAKE_COMPONENT_MASK(Component::ANIMATION_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
+    }
+
+    if (SCENE_SYSTEM_SKELETON_UPDATE_FLAG & systemsMask)
+    {
+        skeletonSystem = new SkeletonSystem(this);
+        AddSystem(skeletonSystem, MAKE_COMPONENT_MASK(Component::SKELETON_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
+    }
+
+    if (SCENE_SYSTEM_SLOT_FLAG & systemsMask)
+    {
+        slotSystem = new SlotSystem(this);
+        AddSystem(slotSystem, MAKE_COMPONENT_MASK(Component::SLOT_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
     }
 
     if (SCENE_SYSTEM_TRANSFORM_FLAG & systemsMask)
@@ -342,12 +339,6 @@ void Scene::CreateSystems()
     {
         waveSystem = new WaveSystem(this);
         AddSystem(waveSystem, MAKE_COMPONENT_MASK(Component::WAVE_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
-    }
-
-    if (SCENE_SYSTEM_SKELETON_UPDATE_FLAG & systemsMask)
-    {
-        skeletonSystem = new SkeletonSystem(this);
-        AddSystem(skeletonSystem, MAKE_COMPONENT_MASK(Component::SKELETON_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
     }
 
     if (DAVA::Renderer::GetOptions()->IsOptionEnabled(DAVA::RenderOptions::DEBUG_DRAW_STATIC_OCCLUSION) && !staticOcclusionDebugDrawSystem)
@@ -475,39 +466,6 @@ void Scene::UnregisterComponent(Entity* entity, Component* component)
         systems[k]->UnregisterComponent(entity, component);
     }
 }
-
-
-#if 0 // Removed temporarly if everything will work with events can be removed fully.
-void Scene::ImmediateEvent(Entity * entity, uint32 componentType, uint32 event)
-{
-#if 1
-    uint32 systemsCount = systems.size();
-    uint64 updatedComponentFlag = MAKE_COMPONENT_MASK(componentType);
-    uint64 componentsInEntity = entity->GetAvailableComponentFlags();
-
-    for (uint32 k = 0; k < systemsCount; ++k)
-    {
-        uint64 requiredComponentFlags = systems[k]->GetRequiredComponents();
-        
-        if (((requiredComponentFlags & updatedComponentFlag) != 0) && ((requiredComponentFlags & componentsInEntity) == requiredComponentFlags))
-        {
-			eventSystem->NotifySystem(systems[k], entity, event);
-        }
-    }
-#else
-    uint64 componentsInEntity = entity->GetAvailableComponentFlags();
-    Set<SceneSystem*> & systemSetForType = componentTypeMapping.GetValue(componentsInEntity);
-    
-    for (Set<SceneSystem*>::iterator it = systemSetForType.begin(); it != systemSetForType.end(); ++it)
-    {
-        SceneSystem * system = *it;
-        uint64 requiredComponentFlags = system->GetRequiredComponents();
-        if ((requiredComponentFlags & componentsInEntity) == requiredComponentFlags)
-            eventSystem->NotifySystem(system, entity, event);
-    }
-#endif
-}
-#endif
 
 void Scene::AddSystem(SceneSystem* sceneSystem, uint64 componentFlags, uint32 processFlags /*= 0*/, SceneSystem* insertBeforeSceneForProcess /* = nullptr */, SceneSystem* insertBeforeSceneForInput /* = nullptr*/)
 {
@@ -673,7 +631,7 @@ void Scene::SetupTestLighting()
 #endif
 }
 
-void Scene::Update(float timeElapsed)
+void Scene::Update(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_UPDATE)
 

@@ -1,8 +1,5 @@
 #include "DLCManager/Private/DLCDownloaderImpl.h"
-
-#include "DLC/Downloader/CurlDownloader.h"
 #include "Debug/Backtrace.h"
-
 #include "Logger/Logger.h"
 #include "FileSystem/File.h"
 #include "FileSystem/FileSystem.h"
@@ -228,6 +225,22 @@ static void CurlSetTimeout(DLCDownloader::Task& task, CURL* easyHandle)
     }
 
     code = curl_easy_setopt(easyHandle, CURLOPT_SERVER_RESPONSE_TIMEOUT, operationTimeout);
+    if (code != CURLE_OK)
+    {
+        DLCDownloader::Task::OnErrorCurlEasy(code, task, __LINE__);
+    }
+
+    // Trigger timeout in case transfer speed is below CURLOPT_LOW_SPEED_LIMIT for CURLOPT_LOW_SPEED_TIME seconds
+
+    code = curl_easy_setopt(easyHandle, CURLOPT_LOW_SPEED_TIME, operationTimeout);
+    if (code != CURLE_OK)
+    {
+        DLCDownloader::Task::OnErrorCurlEasy(code, task, __LINE__);
+    }
+
+    // Use passed timeoutSec field for speed limit for now
+    long lowSpeedLimit = task.info.timeoutSec;
+    code = curl_easy_setopt(easyHandle, CURLOPT_LOW_SPEED_LIMIT, lowSpeedLimit);
     if (code != CURLE_OK)
     {
         DLCDownloader::Task::OnErrorCurlEasy(code, task, __LINE__);
@@ -712,14 +725,20 @@ struct DefaultWriter : DLCDownloader::IWriter
         FileSystem* fs = GetEngineContext()->fileSystem;
 
         FilePath path = outputFile;
-        fs->CreateDirectory(path.GetDirectory(), true);
+        FilePath directory = path.GetDirectory();
+        if (FileSystem::DIRECTORY_CANT_CREATE == fs->CreateDirectory(directory, true))
+        {
+            const char* err = strerror(errno);
+            DAVA_THROW(Exception, "can't create output directory: " + directory.GetAbsolutePathname() + " errno:(" + err + ") outputFile: " + outputFile);
+        }
 
         f.reset(File::Create(outputFile, File::WRITE | File::APPEND));
 
         if (!f)
         {
-            const char* err = strerror(errno);
-            DAVA_THROW(Exception, "can't create output file: " + outputFile + " " + err);
+            StringStream ss;
+            ss << "can't create output file: " << outputFile << " errno(" << errno << ") " << strerror(errno);
+            DAVA_THROW(Exception, ss.str());
         }
     }
     ~DefaultWriter() = default;
@@ -1214,10 +1233,10 @@ void DLCDownloader::Task::SetupFullDownload()
         {
             writer.reset(new DefaultWriter(info.dstPath));
         }
-        catch (std::exception& ex)
+        catch (Exception& ex)
         {
             OnErrorCurlErrno(errno, *this, __LINE__);
-            Logger::Error("can't create DefaultWriter: %s", ex.what());
+            Logger::Error("can't create DefaultWriter: %s %s %d", ex.what(), ex.file.c_str(), static_cast<int>(ex.line));
             return;
         }
     }

@@ -1,8 +1,9 @@
 #include "UI/UIScrollViewContainer.h"
-#include "UI/UIScrollView.h"
-#include "UI/UIControlSystem.h"
-#include "UI/ScrollHelper.h"
+
 #include "Reflection/ReflectionRegistrator.h"
+#include "UI/ScrollHelper.h"
+#include "UI/UIControlSystem.h"
+#include "UI/UIScrollView.h"
 #include "UI/Scroll/UIScrollComponent.h"
 
 namespace DAVA
@@ -117,13 +118,7 @@ void UIScrollViewContainer::Input(UIEvent* currentTouch)
     if (UIEvent::Phase::WHEEL == currentTouch->phase)
     {
         Vector2 wheelDelta(currentTouch->wheelDelta.x * GetWheelSensitivity(), currentTouch->wheelDelta.y * GetWheelSensitivity());
-        if (currentTouch->device == eInputDevices::MOUSE
-#if defined(__DAVAENGINE_COREV2__)
-            && (currentTouch->modifiers & eModifierKeys::SHIFT) != eModifierKeys::NONE
-#else
-            && (currentTouch->modifiers & UIEvent::SHIFT_DOWN) != 0
-#endif
-            )
+        if (currentTouch->device == eInputDevices::MOUSE && (currentTouch->modifiers & eModifierKeys::SHIFT) != eModifierKeys::NONE)
         {
             std::swap(wheelDelta.x, wheelDelta.y);
         }
