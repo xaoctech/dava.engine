@@ -130,7 +130,7 @@ public:
 
     bool IsPackDownloaded(const String& packName) override;
 
-    uint64 GetDownloadedSize(const String& packName) override;
+    uint64 GetPackSize(const String& packName) override;
 
     const IRequest* RequestPack(const String& requestedPackName) override;
 

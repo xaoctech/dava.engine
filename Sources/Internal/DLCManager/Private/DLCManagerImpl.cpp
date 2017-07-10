@@ -1146,13 +1146,13 @@ uint64 DLCManagerImpl::CountCompressedFileSize(const uint64& startCounterValue,
     return result;
 }
 
-uint64 DLCManager::GetDownloadedSize(const String&)
+uint64 DLCManager::GetPackSize(const String&)
 {
     // default implementation
     return 0;
 }
 
-uint64 DLCManagerImpl::GetDownloadedSize(const String& packName)
+uint64 DLCManagerImpl::GetPackSize(const String& packName)
 {
     uint64 totalSize = 0;
     if (IsInitialized())
