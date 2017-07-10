@@ -2,6 +2,7 @@
 #include "DLCManager/Private/DLCManagerImpl.h"
 #include "Debug/DVAssert.h"
 #include "Base/BaseTypes.h"
+#include <Time/SystemTimer.h>
 
 namespace DAVA
 {
@@ -91,6 +92,8 @@ void RequestManager::FireUpdateSignal(PackRequest& request, bool inBackground)
 
 void RequestManager::OneUpdateIteration(bool inBackground)
 {
+    isQueueChanged = false;
+
     Vector<PackRequest*> nextDependentPacks;
 
     PackRequest* request = Top();
@@ -98,6 +101,7 @@ void RequestManager::OneUpdateIteration(bool inBackground)
 
     if (request->IsDownloaded())
     {
+        isQueueChanged = true;
         if (callSignal == false && request->GetDownloadedSize() == 0)
         {
             // empty pack, so we need inform signal
@@ -148,9 +152,28 @@ void RequestManager::Update(bool inBackground)
         FireUpdateWhileInactiveSignals();
     }
 
-    if (!Empty())
+    int64 updateTotalTime = 0;
+
+    const DLCManager::Hints& hints = packManager.GetHints();
+
+    while (!Empty())
     {
+        int64 start = SystemTimer::GetMs();
+
         OneUpdateIteration(inBackground);
+
+        int64 timeIter = SystemTimer::GetMs() - start;
+        updateTotalTime += timeIter;
+
+        if (updateTotalTime >= hints.maxPackUpdateIterationMs)
+        {
+            break;
+        }
+
+        if (!IsQueueOrderChangedDuringLastIteration())
+        {
+            break;
+        }
     }
 }
 
