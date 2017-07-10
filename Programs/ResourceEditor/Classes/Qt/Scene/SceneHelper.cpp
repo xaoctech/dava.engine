@@ -217,3 +217,15 @@ DAVA::Entity* SceneHelper::CloneEntityWithMaterials(DAVA::Entity* fromNode)
 
     return newEntity;
 }
+
+bool SceneHelper::IsEntityChildRecursive(DAVA::Entity* root, DAVA::Entity* child)
+{
+    if (std::find(root->children.begin(), root->children.end(), child) != root->children.end())
+    {
+        return true;
+    }
+    else
+    {
+        return std::any_of(root->children.begin(), root->children.end(), [&](DAVA::Entity* ch) { return IsEntityChildRecursive(ch, child); });
+    }
+}

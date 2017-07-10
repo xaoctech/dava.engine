@@ -540,19 +540,19 @@ vertex_out vp_main( vertex_in input )
 
 #if SPHERICAL_LIT
 
-    #define A0      (0.282094)
-    #define A1      (0.325734)
+//    #define A0      (0.282094)
+//    #define A1      (0.325734)
 
-    #define Y2_2(n) (0.273136 * (n.y * n.x))                                // (1.0 / 2.0) * sqrt(15.0 / PI) * ((n.y * n.x)) * 0.785398 / PI
-    #define Y2_1(n) (0.273136 * (n.y * n.z))                                // (1.0 / 2.0) * sqrt(15.0 / PI) * ((n.y * n.z)) * 0.785398 / PI
-    #define Y20(n)  (0.078847 * (3.0 * n.z * n.z - 1.0))                    // (1.0 / 4.0) * sqrt(5.0 / PI) * ((3.0 * n.z * n.z - 1.0)) * 0.785398 / PI
-    #define Y21(n)  (0.273136 * (n.z * n.x))                                // (1.0 / 2.0) * sqrt(15.0 / PI) * ((n.z * n.x)) * 0.785398 / PI
-    #define Y22(n)  (0.136568 * (n.x * n.x - n.y * n.y))                    // (1.0 / 4.0) * sqrt(15.0 / PI) * ((n.x * n.x - n.y * n.y)) * 0.785398 / PI
+//    #define Y2_2(n) (0.273136 * (n.y * n.x))                                // (1.0 / 2.0) * sqrt(15.0 / PI) * ((n.y * n.x)) * 0.785398 / PI
+//    #define Y2_1(n) (0.273136 * (n.y * n.z))                                // (1.0 / 2.0) * sqrt(15.0 / PI) * ((n.y * n.z)) * 0.785398 / PI
+//    #define Y20(n)  (0.078847 * (3.0 * n.z * n.z - 1.0))                    // (1.0 / 4.0) * sqrt(5.0 / PI) * ((3.0 * n.z * n.z - 1.0)) * 0.785398 / PI
+//    #define Y21(n)  (0.273136 * (n.z * n.x))                                // (1.0 / 2.0) * sqrt(15.0 / PI) * ((n.z * n.x)) * 0.785398 / PI
+//    #define Y22(n)  (0.136568 * (n.x * n.x - n.y * n.y))                    // (1.0 / 4.0) * sqrt(15.0 / PI) * ((n.x * n.x - n.y * n.y)) * 0.785398 / PI
 
     #if SPHERICAL_HARMONICS_4 || SPHERICAL_HARMONICS_9
-        float3 sphericalLightFactor = A0 * sphericalHarmonics[0].xyz;
+        float3 sphericalLightFactor = 0.282094 * sphericalHarmonics[0].xyz;
     #else
-        float3 sphericalLightFactor = A0 * sphericalHarmonics.xyz;
+        float3 sphericalLightFactor = 0.282094 * sphericalHarmonics.xyz;
     #endif
     
     #if SPEED_TREE_OBJECT
@@ -571,21 +571,21 @@ vertex_out vp_main( vertex_in input )
             float3x3 shMatrix = float3x3(float3(sphericalHarmonics[0].w,  sphericalHarmonics[1].xy),
                                          float3(sphericalHarmonics[1].zw, sphericalHarmonics[2].x),
                                          float3(sphericalHarmonics[2].yzw));
-            sphericalLightFactor += A1 * mul(float3(n.y, n.z, n.x), shMatrix);
+            sphericalLightFactor += 0.325734 * mul(float3(n.y, n.z, n.x), shMatrix);
         
             #if SPEED_TREE_OBJECT
                 float3 localNormal = mul( (worldScale * billboardOffset), invViewMatrix3 );
                 localNormal.z += 1.0 - input.pivot.w; //in case regular geometry (not billboard) we have zero 'localNoraml', so add something to correct 'normalize'
                 float3 ln = normalize(localNormal);
-                localSphericalLightFactor += (A1 * mul(float3(ln.y, ln.z, ln.x), shMatrix)) * input.pivot.w;
+                localSphericalLightFactor += (0.325734 * mul(float3(ln.y, ln.z, ln.x), shMatrix)) * input.pivot.w;
             #endif
 
             #if SPHERICAL_HARMONICS_9
-                sphericalLightFactor += Y2_2(n) * float3(sphericalHarmonics[3].xyz);
-                sphericalLightFactor += Y2_1(n) * float3(sphericalHarmonics[3].w,  sphericalHarmonics[4].xy);
-                sphericalLightFactor += Y20(n)  * float3(sphericalHarmonics[4].zw, sphericalHarmonics[5].x);
-                sphericalLightFactor += Y21(n)  * float3(sphericalHarmonics[5].yzw);
-                sphericalLightFactor += Y22(n)  * float3(sphericalHarmonics[6].xyz);
+                sphericalLightFactor += (0.273136 * (n.y * n.x)) * float3(sphericalHarmonics[3].xyz);                
+                sphericalLightFactor += (0.273136 * (n.y * n.z)) * float3(sphericalHarmonics[3].w,  sphericalHarmonics[4].xy);                
+                sphericalLightFactor += (0.078847 * (3.0 * n.z * n.z - 1.0)) * float3(sphericalHarmonics[4].zw, sphericalHarmonics[5].x);
+                sphericalLightFactor += (0.273136 * (n.z * n.x))  * float3(sphericalHarmonics[5].yzw);
+                sphericalLightFactor += (0.136568 * (n.x * n.x - n.y * n.y)) * float3(sphericalHarmonics[6].xyz);
             #endif
 
             #if SPEED_TREE_OBJECT
@@ -598,15 +598,6 @@ vertex_out vp_main( vertex_in input )
 
     output.varVertexColor.xyz = half3(sphericalLightFactor * 2.0);
     output.varVertexColor.w = half(1.0);    
-
-    #undef A0     
-    #undef A1     
-
-    #undef Y2_2
-    #undef Y2_1
-    #undef Y20 
-    #undef Y21 
-    #undef Y22 
 
 #elif SPEED_TREE_OBJECT //legacy for old tree lighting
     
