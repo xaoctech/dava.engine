@@ -17,12 +17,18 @@ if (project.plugins.hasPlugin('com.android.library') || project.plugins.hasPlugi
                     arguments "-DANDROID_ARM_NEON=TRUE", "-DANDROID_STL=c++_shared"
                 }
             }
-
-            /*
-            ndk {
-                abiFilters "armeabi-v7a", "x86"
+            // Can be uncommented to limit gradle build to specified ABIs
+            // ndk {
+            //    abiFilters "armeabi-v7a", "x86"
+            // }
+        }
+        signingConfigs {
+            DavaTest {
+                storeFile file("DavaTest.keystore")
+                storePassword "qazwsx"
+                keyAlias "test"
+                keyPassword "qazwsx"
             }
-            */
         }
     }
 
