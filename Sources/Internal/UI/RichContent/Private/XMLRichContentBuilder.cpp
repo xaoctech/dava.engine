@@ -261,7 +261,7 @@ void XMLRichContentBuilder::ProcessTagBegin(const String& tag, const Map<String,
             }
             else
             {
-                Logger::Error("[UIRichContentSystem] Recursive object in rich content from '%s' with name '%s'!",
+                Logger::Error("Recursive object in rich content from '%s' with name '%s'!",
                               path.c_str(),
                               controlName.empty() ? prototypeName.c_str() : controlName.c_str());
             }

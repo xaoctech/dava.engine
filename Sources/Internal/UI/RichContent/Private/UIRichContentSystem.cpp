@@ -1,6 +1,7 @@
 #include "UI/RichContent/UIRichContentSystem.h"
 
 #include "Debug/DVAssert.h"
+#include "Logger/Logger.h"
 #include "UI/RichContent/Private/RichLink.h"
 #include "UI/RichContent/Private/XMLRichContentBuilder.h"
 #include "UI/RichContent/UIRichAliasMap.h"
