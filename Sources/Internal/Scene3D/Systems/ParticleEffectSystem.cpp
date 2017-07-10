@@ -504,7 +504,11 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
     effect->time += deltaTime;
     const Matrix4* worldTransformPtr;
     if (GetScene())
-        worldTransformPtr = &effect->GetEntity()->GetWorldTransform();
+    {
+        TransformComponent* tr = GetTransformComponent(effect->GetEntity());
+        DVASSERT(tr);
+        worldTransformPtr = tr->GetWorldTransformPtr();
+    }
     else
         worldTransformPtr = effect->effectRenderObject->GetWorldTransformPtr();
 
