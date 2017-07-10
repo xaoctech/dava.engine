@@ -8,15 +8,12 @@ AnimationChannel::AnimationChannel()
 
 uint32 AnimationChannel::Bind(const uint8* _data)
 {
-    DVASSERT(_data == nullptr || *reinterpret_cast<const uint32*>(_data) == ANIMATION_CHANNEL_DATA_SIGNATURE);
-
     dimension = keyStride = keysCount = 0;
     data = nullptr;
 
-    if (_data != nullptr)
+    const uint8* dataptr = _data;
+    if (_data != nullptr && *reinterpret_cast<const uint32*>(_data) == ANIMATION_CHANNEL_DATA_SIGNATURE)
     {
-        const uint8* dataptr = _data;
-
         dataptr += 4; //skip signature
 
         dimension = uint32(*dataptr);

@@ -36,7 +36,7 @@
         } [channel_count]
     }
     
-##Channel Data
+## Channel Data
 
     Channel
     {

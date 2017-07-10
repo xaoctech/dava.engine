@@ -32,7 +32,14 @@ uint32 AnimationTrack::Bind(const uint8* _data)
 
                 dataptr += 3; //pad
 
-                dataptr += channels[c].channel.Bind(dataptr);
+                uint32 boundData = channels[c].channel.Bind(dataptr);
+                if (boundData == 0)
+                {
+                    channels.clear();
+                    return 0;
+                }
+
+                dataptr += boundData;
             }
         }
     }
