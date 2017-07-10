@@ -34,8 +34,8 @@ if(ANDROID AND ANDROID_ABI STREQUAL "x86" )
 elseif (WINDOWS_UAP AND WINDOWS_UAP_PLATFORMS MATCHES "ARM")
     # we don't have physx for win uap arm, so skip this
 else()
-    list ( APPEND DAVA_COMPONENTS "PhysicsModule" )
-    list ( APPEND DAVA_COMPONENTS "PhysicsDebugModule" )
+    list ( APPEND DAVA_COMPONENTS "Physics" )
+    list ( APPEND DAVA_COMPONENTS "PhysicsDebug" )
 endif()
 
 if (DAVA_PLATFORM_QT)

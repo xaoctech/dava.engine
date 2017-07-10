@@ -1,4 +1,4 @@
-set(NAME_MODULE PhysicsModule )
+set(NAME_MODULE Physics )
 
 set(MODULE_TYPE STATIC)#INLINE STATIC DYNAMIC 
 
@@ -12,7 +12,7 @@ set(INCLUDES "${PhysicsRootDir}/Sources"
              "${PhysicsRootDir}/Libs/include/physx"
              "${PhysicsRootDir}/Libs/include/PxShared")
 set(INCLUDES_PRIVATE ${DAVA_INCLUDE_DIR})
-set(MODULE_INITIALIZATION_CODE Sources/PhysicsModule.h )
+set(MODULE_INITIALIZATION_CODE Sources/Physics/PhysicsModule.h )
 set(DEFINITIONS "-D__DAVAENGINE_PHYSICS_ENABLED__")
 set(DEFINITIONS_ANDROID "-D__STDC_LIMIT_MACROS")
 

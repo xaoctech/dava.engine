@@ -245,11 +245,8 @@ macro( setup_main_module )
     set( MODULE_COMPONENTS )
 
     if( MODULE_COMPONENTS_VALUE_NAME )
-        message(STATUS "---->2 processing ${NAME_MODULE}")
-
         get_property(  MODULE_COMPONENTS GLOBAL PROPERTY COMPONENTS_${MODULE_COMPONENTS_VALUE_NAME} )
         if( ORIGINAL_NAME_MODULE )
-            message(STATUS "----->3 ${ORIGINAL_NAME_MODULE} | ${MODULE_COMPONENTS}")
             list (FIND MODULE_COMPONENTS ${ORIGINAL_NAME_MODULE} _index)
             if ( ${_index} GREATER -1)
                 set( INIT true )
@@ -268,8 +265,6 @@ macro( setup_main_module )
         list( APPEND MAIN_MODULES_FIND_FIRST_CALL_LIST "call" )
         set_property(GLOBAL PROPERTY MAIN_MODULES_FIND_FIRST_CALL_LIST ${MAIN_MODULES_FIND_FIRST_CALL_LIST} ) 
     endif()
-
-    message(STATUS "---->1 processing ${NAME_MODULE}")
 
     if ( INIT )
         if( IOS AND ${MODULE_TYPE} STREQUAL "DYNAMIC" )
@@ -346,8 +341,6 @@ macro( setup_main_module )
                 endif()
             endforeach()
         endif()
-
-        message(STATUS "---->0 processing ${NAME_MODULE}")
 
         #"INCLUDES"
         set( INCLUDES_LIST )
@@ -430,7 +423,6 @@ macro( setup_main_module )
             endforeach()
 
             if( EXTERNAL_MODULES_DIR_NAME )
-                message(STATUS "&&&&&&&&& ${EXTERNAL_MODULES_DIR_NAME}")
                 load_external_modules( "${EXTERNAL_MODULES_DIR_NAME}" )
             endif()
             
@@ -591,7 +583,6 @@ macro( setup_main_module )
                 if( CREATE_NEW_MODULE )
                     add_library( ${NAME_MODULE} STATIC  ${ALL_SRC} ${ALL_SRC_HEADER_FILE_ONLY} )
                 endif()
-                message(STATUS "---> append ${NAME_MODULE}")
                 append_property( TARGET_MODULES_LIST ${NAME_MODULE} )  
 
             elseif( ${MODULE_TYPE} STREQUAL "PLUGIN" )
