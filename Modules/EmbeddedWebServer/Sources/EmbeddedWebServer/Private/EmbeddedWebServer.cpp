@@ -4,7 +4,7 @@
 
 #define _CRT_SECURE_NO_WARNINGS 1
 
-#include "EmbeddedWebServer.h"
+#include "EmbeddedWebServer/EmbeddedWebServer.h"
 
 #ifndef __DAVAENGINE_WIN_UAP__
 
@@ -20,7 +20,7 @@ extern "C" {
 #pragma warning(disable : 4244 4267)
 #endif
 
-#include "mongoose.c"
+#include "mongoose.hpp"
 
 #ifdef _MSC_VER
 #pragma warning(pop)

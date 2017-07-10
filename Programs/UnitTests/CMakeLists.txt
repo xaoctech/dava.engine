@@ -52,7 +52,7 @@ elseif (WINDOWS_UAP AND WINDOWS_UAP_PLATFORMS MATCHES "ARM")
 elseif (LINUX)
     # for now physx is not supported for linux
 else()
-    list ( APPEND DAVA_COMPONENTS "Physics" )
+    list ( APPEND DAVA_COMPONENTS "PhysicsModule" )
 endif()
 
 find_package( Steam REQUIRED )
