@@ -34,7 +34,8 @@ def main():
 
         for module in args.modules:
             module_header = '%s/%sModule.h' % (module, module)
-            if os.path.isfile(rootpath + '/' + module_header):
+            module_fw_path = 'Modules/%s/Sources/%s' % (module, module_header)
+            if os.path.isfile(rootpath + '/' + module_fw_path):
                 included_modules.append(module)
                 outfile.write('#include "%s"\n' % module_header)
 
