@@ -11,6 +11,7 @@
 #include <TArc/Controls/Widget.h>
 #include <TArc/Controls/CommonStrings.h>
 #include <TArc/Controls/ReflectedButton.h>
+#include <TArc/Controls/QtBoxLayouts.h>
 #include <TArc/Qt/QtSize.h>
 
 #include <QtTools/WidgetHelpers/SharedIcon.h>
