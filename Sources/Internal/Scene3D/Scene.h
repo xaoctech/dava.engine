@@ -182,7 +182,7 @@ public:
     //virtual void StopAllAnimations(bool recursive = true);
 
     virtual void Update(float32 timeElapsed);
-    void Draw() override;
+    virtual void Draw();
     void SceneDidLoaded() override;
 
     Camera* GetCamera(int32 n);

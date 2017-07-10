@@ -6,7 +6,6 @@
 #include <Base/Type.h>
 
 class PackageBaseNode;
-
 class CompletionsProviderForUIReflection : public CompletionsProvider
 {
 public:
