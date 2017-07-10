@@ -81,6 +81,18 @@ void SkeletonComponent::RebuildFromConfig()
     GlobalEventSystem::Instance()->Event(this, EventSystem::SKELETON_CONFIG_CHANGED);
 }
 
+const DAVA::FastName& SkeletonComponent::GetJointName(uint16 jointId) const
+{
+    DVASSERT(jointId < configJoints.size());
+    return configJoints[jointId].name;
+}
+
+const SkeletonComponent::JointTransform& SkeletonComponent::GetObjectSpaceTransform(uint16 jointId) const
+{
+    DVASSERT(jointId < objectSpaceTransforms.size());
+    return objectSpaceTransforms[jointId];
+}
+
 Component* SkeletonComponent::Clone(Entity* toEntity)
 {
     SkeletonComponent* newComponent = new SkeletonComponent();
@@ -132,5 +144,11 @@ void SkeletonComponent::Deserialize(KeyedArchive* archive, SerializationContext*
         joint.bbox.min = jointArch->GetVector3("joint.bbox.min");
         joint.bbox.max = jointArch->GetVector3("joint.bbox.max");
     }
+}
+
+template <>
+bool AnyCompare<SkeletonComponent::JointConfig>::IsEqual(const Any& v1, const Any& v2)
+{
+    return v1.Get<SkeletonComponent::JointConfig>() == v2.Get<SkeletonComponent::JointConfig>();
 }
 }

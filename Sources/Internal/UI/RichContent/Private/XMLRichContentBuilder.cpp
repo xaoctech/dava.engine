@@ -74,7 +74,7 @@ const String& XMLRichContentBuilder::GetClass() const
     return classesStack.back();
 }
 
-void XMLRichContentBuilder::PrepareControl(UIControl* ctrl, bool autosize)
+void XMLRichContentBuilder::PrepareControl(UIControl* ctrl, bool autosize, bool stick)
 {
     ctrl->SetClassesFromString(ctrl->GetClassesAsString() + " " + GetClass());
 
@@ -94,11 +94,19 @@ void XMLRichContentBuilder::PrepareControl(UIControl* ctrl, bool autosize)
 
     UIFlowLayoutHintComponent* flh = ctrl->GetOrCreateComponent<UIFlowLayoutHintComponent>();
     flh->SetContentDirection(direction);
-    if (needLineBreak)
+    flh->SetNewLineBeforeThis(needLineBreak);
+    if (!needSpace)
     {
-        flh->SetNewLineBeforeThis(needLineBreak);
-        needLineBreak = false;
+        flh->SetStickItemBeforeThis(stick);
     }
+
+    needSpace = false;
+    needLineBreak = false;
+}
+
+void XMLRichContentBuilder::AppendControl(UIControl* ctrl)
+{
+    controls.emplace_back(SafeRetain(ctrl));
 }
 
 void XMLRichContentBuilder::OnElementStarted(const String& elementName, const String& namespaceURI, const String& qualifedName, const Map<String, String>& attributes)
@@ -170,11 +178,11 @@ void XMLRichContentBuilder::ProcessTagBegin(const String& tag, const Map<String,
         if (GetAttribute(attributes, "src", src))
         {
             UIControl* img = new UIControl();
-            PrepareControl(img, true);
+            PrepareControl(img, true, true);
             UIControlBackground* bg = img->GetOrCreateComponent<UIControlBackground>();
             bg->SetDrawType(UIControlBackground::DRAW_STRETCH_BOTH);
             bg->SetSprite(FilePath(src));
-            controls.emplace_back(img);
+            AppendControl(img);
         }
     }
     else if (tag == "object")
@@ -230,19 +238,20 @@ void XMLRichContentBuilder::ProcessTagBegin(const String& tag, const Map<String,
                 }
                 if (obj != nullptr)
                 {
-                    PrepareControl(obj, false);
+                    if (!name.empty())
+                    {
+                        obj->SetName(name);
+                    }
+
+                    PrepareControl(obj, false, true);
 
                     UIRichContentObjectComponent* objComp = obj->GetOrCreateComponent<UIRichContentObjectComponent>();
                     objComp->SetPackagePath(path);
                     objComp->SetControlName(controlName);
                     objComp->SetPrototypeName(prototypeName);
 
-                    if (!name.empty())
-                    {
-                        obj->SetName(name);
-                    }
                     link->component->onCreateObject.Emit(obj);
-                    controls.emplace_back(SafeRetain(obj));
+                    AppendControl(obj);
                 }
             }
             else
@@ -279,30 +288,40 @@ void XMLRichContentBuilder::ProcessText(const String& text)
     const static String RTL_MARK = UTF8Utils::EncodeToUTF8(L"\u200F");
 
     Vector<String> tokens;
-    Split(text, " \n\r\t", tokens);
+    Split(text, " \n\r\t", tokens, false, true);
+    bool first = true;
     for (String& token : tokens)
     {
-        BiDiHelper::Direction wordDirection = bidiHelper.GetDirectionUTF8String(token);
-        if (wordDirection == BiDiHelper::Direction::NEUTRAL)
+        if (token.empty())
         {
-            if (direction == BiDiHelper::Direction::RTL)
-            {
-                token = RTL_MARK + token;
-            }
-            else if (direction == BiDiHelper::Direction::LTR)
-            {
-                token = LTR_MARK + token;
-            }
+            needSpace = true;
         }
         else
         {
-            direction = wordDirection;
+            BiDiHelper::Direction wordDirection = bidiHelper.GetDirectionUTF8String(token);
+            if (wordDirection == BiDiHelper::Direction::NEUTRAL)
+            {
+                if (direction == BiDiHelper::Direction::RTL)
+                {
+                    token = RTL_MARK + token;
+                }
+                else if (direction == BiDiHelper::Direction::LTR)
+                {
+                    token = LTR_MARK + token;
+                }
+            }
+            else
+            {
+                direction = wordDirection;
+            }
+
+            UIStaticText* ctrl = new UIStaticText();
+            PrepareControl(ctrl, true, first);
+            ctrl->SetUtf8Text(token);
+            AppendControl(ctrl);
         }
 
-        UIStaticText* ctrl = new UIStaticText();
-        PrepareControl(ctrl, true);
-        ctrl->SetUtf8Text(token);
-        controls.emplace_back(ctrl);
+        first = false;
     }
 }
 }
