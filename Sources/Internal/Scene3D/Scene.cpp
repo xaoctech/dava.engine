@@ -365,13 +365,6 @@ Scene::~Scene()
 {
     Renderer::GetOptions()->RemoveObserver(this);
 
-    for (Vector<Camera*>::iterator t = cameras.begin(); t != cameras.end(); ++t)
-    {
-        Camera* obj = *t;
-        obj->Release();
-    }
-    cameras.clear();
-
     SafeRelease(mainCamera);
     SafeRelease(drawCamera);
 
@@ -406,6 +399,7 @@ Scene::~Scene()
 
     systemsToProcess.clear();
     systemsToInput.clear();
+    systemsToFixedProcess.clear();
     cache.ClearAll();
 
     SafeDelete(eventSystem);
@@ -474,11 +468,9 @@ void Scene::UnregisterComponent(Entity* entity, Component* component)
     }
 }
 
-void Scene::AddSystem(SceneSystem* sceneSystem, uint64 componentFlags, uint32 processFlags /*= 0*/, SceneSystem* insertBeforeSceneForProcess /* = nullptr */, SceneSystem* insertBeforeSceneForInput /* = nullptr*/)
+void Scene::AddSystem(SceneSystem* sceneSystem, uint64 componentFlags, uint32 processFlags /*= 0*/, SceneSystem* insertBeforeSceneForProcess /* = nullptr */, SceneSystem* insertBeforeSceneForInput /* = nullptr*/, SceneSystem* insertBeforeSceneForFixedProcess)
 {
     sceneSystem->SetRequiredComponents(componentFlags);
-    //Set<SceneSystem*> & systemSetForType = componentTypeMapping.GetValue(componentFlags);
-    //systemSetForType.insert(sceneSystem);
     systems.push_back(sceneSystem);
 
     auto insertSystemBefore = [sceneSystem](Vector<SceneSystem*>& container, SceneSystem* beforeThisSystem)
@@ -516,6 +508,12 @@ void Scene::AddSystem(SceneSystem* sceneSystem, uint64 componentFlags, uint32 pr
         DVASSERT(wasInsertedForInput);
     }
 
+    if (processFlags & SCENE_SYSTEM_REQUIRE_FIXED_PROCESS)
+    {
+        bool wasInserted = insertSystemBefore(systemsToProcess, insertBeforeSceneForFixedProcess);
+        DVASSERT(wasInserted);
+    }
+
     sceneSystem->SetScene(this);
     RegisterEntitiesInSystemRecursively(sceneSystem, this);
 }
@@ -526,6 +524,7 @@ void Scene::RemoveSystem(SceneSystem* sceneSystem)
 
     RemoveSystem(systemsToProcess, sceneSystem);
     RemoveSystem(systemsToInput, sceneSystem);
+    RemoveSystem(systemsToFixedProcess, sceneSystem);
 
     bool removed = RemoveSystem(systems, sceneSystem);
     if (removed)
@@ -591,12 +590,19 @@ void Scene::Update(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_UPDATE)
 
-    uint64 time = SystemTimer::GetMs();
-
-    size_t size = systemsToProcess.size();
-    for (size_t k = 0; k < size; ++k)
+    fixedUpdate.lastTime += timeElapsed;
+    //call ProcessFixed N times where N = (timeSinceLastProcessFixed + timeElapsed) / fixedUpdate.constantTime;
+    while (fixedUpdate.lastTime >= fixedUpdate.constantTime)
     {
-        SceneSystem* system = systemsToProcess[k];
+        for (SceneSystem* system : systemsToFixedProcess)
+        {
+            system->ProcessFixed(fixedUpdate.constantTime);
+        }
+        fixedUpdate.lastTime -= fixedUpdate.constantTime;
+    }
+
+    for (SceneSystem* system : systemsToProcess)
+    {
         if ((systemsMask & SCENE_SYSTEM_UPDATEBLE_FLAG) && system == transformSystem)
         {
             updatableSystem->UpdatePreTransform(timeElapsed);
@@ -620,8 +626,6 @@ void Scene::Update(float32 timeElapsed)
     {
         transformSingleComponent->Clear();
     }
-
-    updateTime = SystemTimer::GetMs() - time;
     sceneGlobalTime += timeElapsed;
 }
 
@@ -644,15 +648,10 @@ void Scene::Draw()
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_WATER_CLEAR_COLOR, waterDataPtr, reinterpret_cast<pointer_size>(waterDataPtr));
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_GLOBAL_TIME, &sceneGlobalTime, reinterpret_cast<pointer_size>(&sceneGlobalTime));
 
-    uint64 time = SystemTimer::GetMs();
-
     renderSystem->Render();
 
     if (particleEffectDebugDrawSystem != nullptr)
         particleEffectDebugDrawSystem->Draw();
-    //foliageSystem->DebugDrawVegetation();
-
-    drawTime = SystemTimer::GetMs() - time;
 }
 
 void Scene::SceneDidLoaded()
@@ -699,115 +698,6 @@ Camera* Scene::GetDrawCamera() const
     return drawCamera;
 }
 
-//void Scene::SetForceLodLayer(int32 layer)
-//{
-//    forceLodLayer = layer;
-//}
-//int32 Scene::GetForceLodLayer()
-//{
-//    return forceLodLayer;
-//}
-//
-//int32 Scene::RegisterLodLayer(float32 nearDistance, float32 farDistance)
-//{
-//    LodLayer newLevel;
-//    newLevel.nearDistance = nearDistance;
-//    newLevel.farDistance = farDistance;
-//    newLevel.nearDistanceSq = nearDistance * nearDistance;
-//    newLevel.farDistanceSq = farDistance * farDistance;
-//    int i = 0;
-//
-//    for (Vector<LodLayer>::iterator it = lodLayers.begin(); it < lodLayers.end(); it++)
-//    {
-//        if (nearDistance < it->nearDistance)
-//        {
-//            lodLayers.insert(it, newLevel);
-//            return i;
-//        }
-//        i++;
-//    }
-//
-//    lodLayers.push_back(newLevel);
-//    return i;
-//}
-//
-//void Scene::ReplaceLodLayer(int32 layerNum, float32 nearDistance, float32 farDistance)
-//{
-//    DVASSERT(layerNum < (int32)lodLayers.size());
-//
-//    lodLayers[layerNum].nearDistance = nearDistance;
-//    lodLayers[layerNum].farDistance = farDistance;
-//    lodLayers[layerNum].nearDistanceSq = nearDistance * nearDistance;
-//    lodLayers[layerNum].farDistanceSq = farDistance * farDistance;
-//
-//
-////    LodLayer newLevel;
-////    newLevel.nearDistance = nearDistance;
-////    newLevel.farDistance = farDistance;
-////    newLevel.nearDistanceSq = nearDistance * nearDistance;
-////    newLevel.farDistanceSq = farDistance * farDistance;
-////    int i = 0;
-////
-////    for (Vector<LodLayer>::iterator it = lodLayers.begin(); it < lodLayers.end(); it++)
-////    {
-////        if (nearDistance < it->nearDistance)
-////        {
-////            lodLayers.insert(it, newLevel);
-////            return i;
-////        }
-////        i++;
-////    }
-////
-////    lodLayers.push_back(newLevel);
-////    return i;
-//}
-//
-
-void Scene::UpdateLights()
-{
-}
-
-Light* Scene::GetNearestDynamicLight(Light::eType type, Vector3 position)
-{
-    switch (type)
-    {
-    case Light::TYPE_DIRECTIONAL:
-
-        break;
-
-    default:
-        break;
-    };
-
-    float32 squareMinDistance = 10000000.0f;
-    Light* nearestLight = 0;
-
-    Set<Light*>& lights = GetLights();
-    const Set<Light*>::iterator& endIt = lights.end();
-    for (Set<Light*>::iterator it = lights.begin(); it != endIt; ++it)
-    {
-        Light* node = *it;
-        if (node->IsDynamic())
-        {
-            const Vector3& lightPosition = node->GetPosition();
-
-            float32 squareDistanceToLight = (position - lightPosition).SquareLength();
-            if (squareDistanceToLight < squareMinDistance)
-            {
-                squareMinDistance = squareDistanceToLight;
-                nearestLight = node;
-            }
-        }
-    }
-
-    return nearestLight;
-}
-
-Set<Light*>& Scene::GetLights()
-{
-    return lights;
-}
-
 EventSystem* Scene::GetEventSystem() const
 {
     return eventSystem;
@@ -827,22 +717,6 @@ ParticleEffectDebugDrawSystem* Scene::GetParticleEffectDebugDrawSystem() const
 {
     return particleEffectDebugDrawSystem;
 }
-
-/*void Scene::Save(KeyedArchive * archive)
-{
-    // Perform refactoring and add Matrix4, Vector4 types to VariantType and KeyedArchive
-    Entity::Save(archive);
-    
-    
-    
-    
-    
-}
-
-void Scene::Load(KeyedArchive * archive)
-{
-    Entity::Load(archive);
-}*/
 
 SceneFileV2::eError Scene::LoadScene(const DAVA::FilePath& pathname)
 {

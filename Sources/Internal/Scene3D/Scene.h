@@ -113,7 +113,8 @@ public:
     enum eSceneProcessFlags : uint32
     {
         SCENE_SYSTEM_REQUIRE_PROCESS = 1 << 0,
-        SCENE_SYSTEM_REQUIRE_INPUT = 1 << 1
+        SCENE_SYSTEM_REQUIRE_INPUT = 1 << 1,
+        SCENE_SYSTEM_REQUIRE_FIXED_PROCESS = 1 << 2
     };
 
     Scene(uint32 systemsMask = SCENE_SYSTEM_ALL_MASK);
@@ -136,15 +137,13 @@ public:
      */
     void UnregisterComponent(Entity* entity, Component* component);
 
-    virtual void AddSystem(SceneSystem* sceneSystem, uint64 componentFlags, uint32 processFlags = 0, SceneSystem* insertBeforeSceneForProcess = nullptr, SceneSystem* insertBeforeSceneForInput = nullptr);
+    virtual void AddSystem(SceneSystem* sceneSystem, uint64 componentFlags, uint32 processFlags = 0, SceneSystem* insertBeforeSceneForProcess = nullptr, SceneSystem* insertBeforeSceneForInput = nullptr, SceneSystem* insertBeforeSceneForFixedProcess = nullptr);
     virtual void RemoveSystem(SceneSystem* sceneSystem);
-
-    //virtual void ImmediateEvent(Entity * entity, uint32 componentType, uint32 event);
 
     Vector<SceneSystem*> systems;
     Vector<SceneSystem*> systemsToProcess;
     Vector<SceneSystem*> systemsToInput;
-    //HashMap<uint32, Set<SceneSystem*> > componentTypeMapping;
+    Vector<SceneSystem*> systemsToFixedProcess;
     TransformSystem* transformSystem = nullptr;
     RenderUpdateSystem* renderUpdateSystem = nullptr;
     LodSystem* lodSystem = nullptr;
@@ -201,9 +200,6 @@ public:
     void SetCustomDrawCamera(Camera* camera);
     Camera* GetDrawCamera() const;
 
-    Set<Light*>& GetLights();
-    Light* GetNearestDynamicLight(Light::eType type, Vector3 position);
-
     void CreateComponents();
     void CreateSystems();
 
@@ -240,17 +236,10 @@ public: // deprecated methods
     DAVA_DEPRECATED(rhi::RenderPassConfig& GetMainPassConfig());
 
 protected:
-    void UpdateLights();
-
     void RegisterEntitiesInSystemRecursively(SceneSystem* system, Entity* entity);
     void UnregisterEntitiesInSystemRecursively(SceneSystem* system, Entity* entity);
 
     bool RemoveSystem(Vector<SceneSystem*>& storage, SceneSystem* system);
-
-    uint64 updateTime;
-
-    uint64 drawTime;
-    uint32 nodeCounter;
 
     uint32 systemsMask;
     uint32 maxEntityIDCounter;
@@ -264,7 +253,11 @@ protected:
     Camera* mainCamera;
     Camera* drawCamera;
 
-    Set<Light*> lights;
+    struct FixedUpdate
+    {
+        float32 constantTime = 0.016f;
+        float32 lastTime = 0.f;
+    } fixedUpdate;
 
     friend class Entity;
 };
