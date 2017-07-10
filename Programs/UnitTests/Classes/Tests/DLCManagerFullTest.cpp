@@ -67,7 +67,7 @@ struct FSMTest02
         {
             if (dlcManager.IsInitialized())
             {
-                uint64 sizeOfPack = dlcManager.GetDownloadedSize("8");
+                uint64 sizeOfPack = dlcManager.GetPackSize("8");
 
                 // size from superpack_for_unittests.dvpk without any meta
                 TEST_VERIFY(sizeOfPack == 29720253);
