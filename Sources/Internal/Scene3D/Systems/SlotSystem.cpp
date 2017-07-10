@@ -320,6 +320,11 @@ Vector<SlotSystem::ItemsCache::Item> SlotSystem::GetItems(const FilePath& config
     return sharedCache->GetItems(configPath);
 }
 
+DAVA::Vector<SlotSystem::ItemsCache::Item> SlotSystem::ParseConfig(const FilePath& configPath)
+{
+    return ItemsCache().GetItems(configPath);
+}
+
 void SlotSystem::SetExternalEntityLoader(std::shared_ptr<ExternalEntityLoader> externalEntityLoader_)
 {
     DVASSERT(externalEntityLoader_ != nullptr);
