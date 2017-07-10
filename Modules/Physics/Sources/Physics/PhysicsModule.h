@@ -16,10 +16,10 @@ class PxScene;
 
 namespace DAVA
 {
-class Physics : public IModule
+class PhysicsModule : public IModule
 {
 public:
-    Physics(Engine* engine);
+    PhysicsModule(Engine* engine);
 
     void Init() override;
     void Shutdown() override;
@@ -39,6 +39,6 @@ private:
     class PhysicsErrotCallback;
     PhysicsErrotCallback* errorCallback = nullptr;
 
-    DAVA_VIRTUAL_REFLECTION(Physics, IModule);
+    DAVA_VIRTUAL_REFLECTION(PhysicsModule, IModule);
 };
 };
