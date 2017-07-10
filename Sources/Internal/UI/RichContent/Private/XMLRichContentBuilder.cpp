@@ -141,11 +141,16 @@ void XMLRichContentBuilder::OnElementEnded(const String& elementName, const Stri
 
 void XMLRichContentBuilder::OnFoundCharacters(const String& chars)
 {
-    ProcessText(chars);
+    // Concat input characters in one single string, because some kind
+    // of intarnalization characters break XML parser to few
+    // OnFoundCharacters callbacks per one word
+    fullText += chars;
 }
 
 void XMLRichContentBuilder::ProcessTagBegin(const String& tag, const Map<String, String>& attributes)
 {
+    FlushText();
+
     // Global attributes
     String classes;
     if (!GetAttribute(attributes, "class", classes) && !classesInheritance)
@@ -266,6 +271,8 @@ void XMLRichContentBuilder::ProcessTagBegin(const String& tag, const Map<String,
 
 void XMLRichContentBuilder::ProcessTagEnd(const String& tag)
 {
+    FlushText();
+
     PopClass();
 
     if (tag == "p")
@@ -322,6 +329,15 @@ void XMLRichContentBuilder::ProcessText(const String& text)
         }
 
         first = false;
+    }
+}
+
+void XMLRichContentBuilder::FlushText()
+{
+    if (!fullText.empty())
+    {
+        ProcessText(fullText);
+        fullText.clear();
     }
 }
 }

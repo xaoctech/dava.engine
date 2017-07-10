@@ -110,6 +110,10 @@ void UIRichContentSystem::Process(float32 elapsedTime)
                         l->AddItem(ctrl);
                     }
                 }
+                else
+                {
+                    Logger::Warning("Syntax error in rich content text!");
+                }
             }
         }
     }
