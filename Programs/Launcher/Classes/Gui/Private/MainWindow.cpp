@@ -110,6 +110,7 @@ MainWindow::MainWindow(ApplicationManager* appManager_, QWidget* parent)
     , appManager(appManager_)
 {
     ui->setupUi(this);
+    ui->textEdit_launcherStatus->document()->setMaximumBlockCount(1000);
     ui->textEdit_launcherStatus->setReadOnly(true);
 
     ui->action_updateConfiguration->setShortcuts(QList<QKeySequence>() << QKeySequence("F5") << QKeySequence("Ctrl+R"));
@@ -411,7 +412,9 @@ void MainWindow::AddText(const QString& text, const QColor& color)
     QTextCursor textCursor = textEdit->textCursor();
     textCursor.movePosition(QTextCursor::End);
     textEdit->setTextCursor(textCursor);
-    textEdit->insertHtml(QTime::currentTime().toString() + " : " + "<font color=\"" + color.name() + "\">" + text + "</font><br>");
+    QString html = QTime::currentTime().toString() + " : " + "<font color=\"" + color.name() + "\">" + text + "</font>";
+    //insertHtml method doesn't recalculate blocks and doesn't remove first blocks if number of blocks > maximum blocks count
+    textEdit->append(html);
 }
 
 void MainWindow::OnTaskStarted(const BaseTask* task)
