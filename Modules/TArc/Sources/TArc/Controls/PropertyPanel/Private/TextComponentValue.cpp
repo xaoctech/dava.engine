@@ -72,7 +72,7 @@ DAVA_REFLECTION_IMPL(MultilineEditDialog)
 }
 }
 
-String DefaultFieldAccessor::GetFieldValue(const Any& v) const
+String DefaultFieldAccessor::GetFieldValue(const Any& v, const Reflection&) const
 {
     return v.Cast<String>();
 }
@@ -132,10 +132,11 @@ bool TextComponentValue::IsValidValueToSet(const Any& newValue, const Any& curre
 
 String TextComponentValue::GetText() const
 {
-    Any value = accessor->GetFieldValue(nodes.front()->cachedValue);
+    std::shared_ptr<PropertyNode> node = nodes.front();
+    Any value = accessor->GetFieldValue(node->cachedValue, node->field.ref);
     for (const std::shared_ptr<const PropertyNode>& node : nodes)
     {
-        Any currentValue = accessor->GetFieldValue(node->cachedValue);
+        Any currentValue = accessor->GetFieldValue(node->cachedValue, node->field.ref);
         if (value != currentValue)
         {
             return String(MultipleValuesString);
