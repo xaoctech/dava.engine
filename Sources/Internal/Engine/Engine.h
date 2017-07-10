@@ -158,7 +158,7 @@ public:
             - FileSystem
             - DeviceManager
     */
-    EngineContext* GetContext() const;
+    const EngineContext* GetContext() const;
 
     /**
         Return primary window if any.

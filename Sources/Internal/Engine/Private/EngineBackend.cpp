@@ -68,14 +68,14 @@
 
 namespace DAVA
 {
+namespace Private
+{
 EngineContext** GetEngineContextPtr()
 {
     static EngineContext* staticPtr = nullptr;
     return &staticPtr;
 }
 
-namespace Private
-{
 void SetEngineContext(EngineContext* context)
 {
     EngineContext** contextPtr = GetEngineContextPtr();
@@ -85,7 +85,7 @@ void SetEngineContext(EngineContext* context)
 
 const EngineContext* GetEngineContext()
 {
-    return *GetEngineContextPtr();
+    return *Private::GetEngineContextPtr();
 }
 
 Window* GetPrimaryWindow()
