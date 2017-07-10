@@ -241,7 +241,6 @@ void SceneValidator::ValidateParticleEmitter(DAVA::ParticleEmitterInstance* inst
 
 void SceneValidator::ValidateRenderBatch(DAVA::Entity* ownerNode, DAVA::RenderBatch* renderBatch)
 {
-    ownerNode->RemoveFlag(DAVA::Entity::NODE_INVALID);
 }
 
 void SceneValidator::ValidateMaterials(DAVA::Scene* scene)
