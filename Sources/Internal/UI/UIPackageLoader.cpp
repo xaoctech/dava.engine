@@ -10,6 +10,7 @@
 #include "UI/UIControl.h"
 #include "UI/Styles/UIStyleSheet.h"
 #include "UI/UIStaticText.h"
+#include "UI/Text/UITextComponent.h"
 #include "UI/UIControlHelpers.h"
 #include "UI/UIPackage.h"
 #include "UI/Components/UIComponent.h"
