@@ -89,6 +89,57 @@ void RequestManager::FireUpdateSignal(PackRequest& request, bool inBackground)
     }
 }
 
+void RequestManager::OneUpdateIteration(bool inBackground)
+{
+    Vector<PackRequest*> nextDependentPacks;
+
+    PackRequest* request = Top();
+    bool callSignal = request->Update();
+
+    if (request->IsDownloaded())
+    {
+        if (callSignal == false && request->GetDownloadedSize() == 0)
+        {
+            // empty pack, so we need inform signal
+            FireStartLoadingSignal(*request, inBackground);
+        }
+        callSignal = true; // we need to inform on empty pack too
+        Pop();
+        if (!Empty())
+        {
+            PackRequest* next = Top();
+            while (next->IsDownloaded())
+            {
+                nextDependentPacks.push_back(next);
+                Pop();
+                if (!Empty() && Top()->IsDownloaded())
+                {
+                    next = Top();
+                }
+                else
+                {
+                    next = nullptr;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (callSignal)
+    {
+        // if error happened and no space on device, requesting
+        // may be already be disabled, so we need check it out
+        if (packManager.IsRequestingEnabled())
+        {
+            FireUpdateSignal(*request, inBackground);
+            for (PackRequest* r : nextDependentPacks)
+            {
+                FireUpdateSignal(*r, inBackground);
+            }
+        }
+    }
+}
+
 void RequestManager::Update(bool inBackground)
 {
     if (!inBackground)
@@ -99,53 +150,7 @@ void RequestManager::Update(bool inBackground)
 
     if (!Empty())
     {
-        Vector<PackRequest*> nextDependentPacks;
-
-        PackRequest* request = Top();
-        bool callSignal = request->Update();
-
-        if (request->IsDownloaded())
-        {
-            if (callSignal == false && request->GetDownloadedSize() == 0)
-            {
-                // empty pack, so we need inform signal
-                FireStartLoadingSignal(*request, inBackground);
-            }
-            callSignal = true; // we need to inform on empty pack too
-            Pop();
-            if (!Empty())
-            {
-                PackRequest* next = Top();
-                while (next->IsDownloaded())
-                {
-                    nextDependentPacks.push_back(next);
-                    Pop();
-                    if (!Empty() && Top()->IsDownloaded())
-                    {
-                        next = Top();
-                    }
-                    else
-                    {
-                        next = nullptr;
-                        break;
-                    }
-                }
-            }
-        }
-
-        if (callSignal)
-        {
-            // if error happened and no space on device, requesting
-            // may be already be disabled, so we need check it out
-            if (packManager.IsRequestingEnabled())
-            {
-                FireUpdateSignal(*request, inBackground);
-                for (PackRequest* r : nextDependentPacks)
-                {
-                    FireUpdateSignal(*r, inBackground);
-                }
-            }
-        }
+        OneUpdateIteration(inBackground);
     }
 }
 
