@@ -327,11 +327,12 @@ SkinnedMesh* CreateSkinnedMesh(Entity* fromEntity, Vector<SkeletonComponent::Joi
             outJoints[nodeIndex].targetIndex = SkeletonComponent::INVALID_JOINT_INDEX;
         }
 
-        const Matrix4& localTransform = child->GetLocalTransform();
+        Matrix4 bindTransform = child->AccamulateLocalTransform(fromEntity);
 
         outJoints[nodeIndex].name = childrenNodes[nodeIndex]->GetName();
         outJoints[nodeIndex].uid = childrenNodes[nodeIndex]->GetName();
-        outJoints[nodeIndex].bindTransform = localTransform;
+        outJoints[nodeIndex].bindTransform = bindTransform;
+        bindTransform.GetInverse(outJoints[nodeIndex].bindTransformInv);
 
         Entity* parentEntity = child->GetParent();
         if (!parentEntity || parentEntity == fromEntity)
@@ -384,6 +385,10 @@ SkinnedMesh* CreateSkinnedMesh(Entity* fromEntity, Vector<SkeletonComponent::Joi
                 CopyVertex(currentGroup, currentBatchVxIndex, polygonGroup, newBatchVxIndex);
                 polygonGroup->SetJointWeight(newBatchVxIndex, 0, 1.f);
                 polygonGroup->SetJointIndex(newBatchVxIndex, 0, data[dataIndex].jointIndex);
+
+                polygonGroup->SetJointWeight(newBatchVxIndex, 1, 0.f);
+                polygonGroup->SetJointWeight(newBatchVxIndex, 2, 0.f);
+                polygonGroup->SetJointWeight(newBatchVxIndex, 3, 0.f);
             }
 
             int32 currentBatchIndexCount = currentGroup->GetIndexCount();

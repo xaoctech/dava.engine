@@ -36,7 +36,7 @@ vertex_in
     
     #if SKINNING
     float4 index : BLENDINDICES;
-	float4 weight : BLENDWEIGHT;
+    float4 weight : BLENDWEIGHT;
     #endif
 
 
@@ -249,21 +249,21 @@ FresnelShlickVec3( float NdotL, float3 Cspec )
 
 #if SKINNING
 
-inline float3 JointTransformTangent( float3 tangent, int4 jIndices, float4 jWeights)
+inline float3 JointTransformTangent( float3 tangent, float4 jIndices, float4 jWeights)
 {
-	int4 indices = jIndices;
-	float4 weights = jWeights;
-	for(int i = 0; i < 4; ++i)
-	{
-		int jIndex = int(indices.x);
-		float4 jQ = jointQuaternions[jIndex];
-	
-		float3 tmp = 2.0 * cross(jQ.xyz, tangent);
-		tangent += (jQ.w * tmp + cross(jQ.xyz, tmp)) * weights.x;
-		
-		indices = indices.yzwx;
-		weights = weights.yzwx;
-	}
+    int4 indices = int4(jIndices);
+    float4 weights = jWeights;
+    for(int i = 0; i < 4; ++i)
+    {
+        int jIndex = int(indices.x);
+        float4 jQ = jointQuaternions[jIndex];
+
+        float3 tmp = 2.0 * cross(jQ.xyz, tangent);
+        tangent += (jQ.w * tmp + cross(jQ.xyz, tmp)) * weights.x;
+        
+        indices = indices.yzwx;
+        weights = weights.yzwx;
+    }
 
     return tangent;
 }
@@ -336,10 +336,10 @@ vertex_out vp_main( vertex_in input )
     float3 billboardOffset = input.position.xyz - position.xyz;
     
     #if CUT_LEAF
-	    float pivotDistance = dot(position.xyz, float3(worldViewMatrix[0].z, worldViewMatrix[1].z, worldViewMatrix[2].z)) + worldViewMatrix[3].z;
+        float pivotDistance = dot(position.xyz, float3(worldViewMatrix[0].z, worldViewMatrix[1].z, worldViewMatrix[2].z)) + worldViewMatrix[3].z;
         billboardOffset *= step(-cutDistance, pivotDistance);
     #endif
-	
+
     #if WIND_ANIMATION
     
         //inAngleSinCos:          x: cos(T0);  y: sin(T0);
@@ -378,25 +378,26 @@ vertex_out vp_main( vertex_in input )
             output.position = mul( waveValue, worldViewProjMatrix );
         #else
             #if SKINNING
-
-				int4 indices = input.index;
-				float4 weights = input.weight;
-			    float4 skinnedPosition = float4(0.0, 0.0, 0.0, 0.0);
-			    for(int i = 0; i < 4; ++i)
-				{
-					int jIndex = int(indices.x);
-					
-					float4 jP = jointPositions[jIndex];
-					float4 jQ = jointQuaternions[jIndex];
-				
-					float3 tmp = 2.0 * cross(jQ.xyz, input.position.xyz);
-					skinnedPosition += float4(jP.xyz + (input.position.xyz + jQ.w * tmp + cross(jQ.xyz, tmp)) * jP.w, 1.0) * weights.x;
-					
-					indices = indices.yzwx;
-					weights = weights.yzwx;
-				}
-				
+            float4 skinnedPosition = float4(0.0, 0.0, 0.0, 0.0);
+            {
+                int4 indices = input.index;
+                float4 weights = input.weight;
+                for(int i = 0; i < 4; ++i)
+                {
+                    int jIndex = int(indices.x);
+                    
+                    float4 jP = jointPositions[jIndex];
+                    float4 jQ = jointQuaternions[jIndex];
+                
+                    float3 tmp = 2.0 * cross(jQ.xyz, input.position.xyz);
+                    skinnedPosition += float4(jP.xyz + (input.position.xyz + jQ.w * tmp + cross(jQ.xyz, tmp)) * jP.w, 1.0) * weights.x;
+                    
+                    indices = indices.yzwx;
+                    weights = weights.yzwx;
+                }
+                
                 output.position = mul( skinnedPosition, worldViewProjMatrix );
+            }
             #else
                 output.position = mul( float4(input.position.xyz,1.0), worldViewProjMatrix );
             #endif
@@ -483,9 +484,9 @@ vertex_out vp_main( vertex_in input )
     float3  inBinormal  = input.binormal;
     
     #if SKINNING
-        float3 n = normalize( mul( float4(JointTransformTangent(inNormal), 1.0), worldViewInvTransposeMatrix ).xyz );
-        float3 t = normalize( mul( float4(JointTransformTangent(inTangent), 1.0), worldViewInvTransposeMatrix ).xyz );
-        float3 b = normalize( mul( float4(JointTransformTangent(inBinormal), 1.0), worldViewInvTransposeMatrix ).xyz );
+        float3 n = normalize( mul( float4(JointTransformTangent(inNormal, input.index, input.weight), 1.0), worldViewInvTransposeMatrix ).xyz );
+        float3 t = normalize( mul( float4(JointTransformTangent(inTangent, input.index, input.weight), 1.0), worldViewInvTransposeMatrix ).xyz );
+        float3 b = normalize( mul( float4(JointTransformTangent(inBinormal, input.index, input.weight), 1.0), worldViewInvTransposeMatrix ).xyz );
     #else
         float3 n = normalize( mul( float4(inNormal,1.0), worldViewInvTransposeMatrix ).xyz );
         float3 t = normalize( mul( float4(inTangent,1.0), worldViewInvTransposeMatrix ).xyz );
