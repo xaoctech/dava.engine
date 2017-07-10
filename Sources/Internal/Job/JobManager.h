@@ -11,6 +11,7 @@
 namespace DAVA
 {
 class Engine;
+class JobThread;
 class JobManager
 {
 public:
