@@ -155,7 +155,8 @@ const FastName NMaterialFlagName::FLAG_DEBUG_UNITY_Z_NORMAL = FastName("DEBUG_UN
 const FastName NMaterialFlagName::FLAG_DEBUG_Z_NORMAL_SCALE = FastName("DEBUG_Z_NORMAL_SCALE");
 const FastName NMaterialFlagName::FLAG_DEBUG_NORMAL_ROTATION = FastName("DEBUG_NORMAL_ROTATION");
 
-const FastName NMaterialFlagName::FLAG_SKINNING = FastName("SKINNING");
+const FastName NMaterialFlagName::FLAG_SKINNING_HARD = FastName("SKINNING_HARD");
+const FastName NMaterialFlagName::FLAG_SKINNING_SOFT = FastName("SKINNING_SOFT");
 
 const FastName NMaterialFlagName::FLAG_FLOWMAP_SKY = FastName("FLOWMAP_SKY");
 

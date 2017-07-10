@@ -23,32 +23,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(PolygonGroup)
 
 PolygonGroup::PolygonGroup()
     : DataNode()
-    , vertexCount(0)
-    , indexCount(0)
-    , textureCoordCount(0)
-    , vertexStride(0)
-    , vertexFormat(0)
-    , indexFormat(EIF_16)
-    , primitiveType(rhi::PRIMITIVE_TRIANGLELIST)
-    , cubeTextureCoordCount(0)
-    , vertexArray(0)
-    , textureCoordArray(0)
-    , normalArray(0)
-    , tangentArray(0)
-    , binormalArray(0)
-    , jointIndexArray(0)
-    , jointWeightArray(0)
-    , cubeTextureCoordArray(0)
-
-    , pivotArray(0)
-    , flexArray(0)
-    , angleArray(0)
-
-    , colorArray(0)
-    , indexArray(0)
-    , meshData(0)
-    , baseVertexArray(0)
-    , vertexLayoutId(rhi::VertexLayout::InvalidUID)
 {
     Renderer::GetSignals().needRestoreResources.Connect(this, &PolygonGroup::RestoreBuffers);
 }
@@ -124,6 +98,12 @@ void PolygonGroup::UpdateDataPointersAndStreams()
         binormalArray = reinterpret_cast<Vector3*>(meshData + baseShift);
         baseShift += GetVertexSize(EVF_BINORMAL);
         vLayout.AddElement(rhi::VS_BINORMAL, 0, rhi::VDT_FLOAT, 3);
+    }
+    if (vertexFormat & EVF_JOINTINDEX_HARD)
+    {
+        jointIndexHardArray = reinterpret_cast<float32*>(meshData + baseShift);
+        baseShift += GetVertexSize(EVF_JOINTINDEX_HARD);
+        vLayout.AddElement(rhi::VS_BLENDINDEX, 0, rhi::VDT_FLOAT, 1);
     }
     if (vertexFormat & EVF_PIVOT4)
     {
@@ -276,6 +256,7 @@ uint32 PolygonGroup::ReleaseGeometryData()
         normalArray = nullptr;
         tangentArray = nullptr;
         binormalArray = nullptr;
+        jointIndexHardArray = nullptr;
         jointIndexArray = nullptr;
         jointWeightArray = nullptr;
         cubeTextureCoordArray = nullptr;

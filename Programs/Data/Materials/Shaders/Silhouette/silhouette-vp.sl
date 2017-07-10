@@ -4,9 +4,9 @@ vertex_in
 {
     float4  position : POSITION;
     float3  normal   : NORMAL;
-    #if SKINNING
-    float4  index    : BLENDINDICES;
-    float4  weight   : BLENDWEIGHT;
+    
+    #if SKINNING_HARD
+    float   index    : BLENDINDICES;
     #endif
 };
 
@@ -20,9 +20,7 @@ vertex_out
 [auto][a] property float4x4 projMatrix;
 [auto][a] property float4x4 worldViewInvTransposeMatrix;
 
-
-
-#if SKINNING
+#if SKINNING_HARD
 [auto][jpos] property float4 jointPositions[MAX_JOINTS] : "bigarray" ; // (x, y, z, scale)
 [auto][jrot] property float4 jointQuaternions[MAX_JOINTS] : "bigarray" ;
 #endif
@@ -30,23 +28,15 @@ vertex_out
 [material][a] property float silhouetteScale = 1.0;
 [material][a] property float silhouetteExponent = 0;
 
-#if SKINNING
+#if SKINNING_HARD
 
-inline float3 JointTransformTangent( float3 tangent, float4 jIndices, float4 jWeights)
+inline float3 JointTransformTangent( float3 tangent, float jointIndex )
 {
-    int4 indices = int4(jIndices);
-    float4 weights = jWeights;
-    for(int i = 0; i < 4; ++i)
-    {
-        int jIndex = int(indices.x);
-        float4 jQ = jointQuaternions[jIndex];
+    int jIndex = int(jointIndex);
+    float4 jQ = jointQuaternions[jIndex];
 
-        float3 tmp = 2.0 * cross(jQ.xyz, tangent);
-        tangent += (jQ.w * tmp + cross(jQ.xyz, tmp)) * weights.x;
-        
-        indices = indices.yzwx;
-        weights = weights.yzwx;
-    }
+    float3 tmp = 2.0 * cross(jQ.xyz, tangent);
+    tangent += jQ.w * tmp + cross(jQ.xyz, tmp);
 
     return tangent;
 }
@@ -60,27 +50,17 @@ vertex_out vp_main( vertex_in input )
     float4 position;
     float3 normal;
     
-#if SKINNING
+#if SKINNING_HARD
     {
-        int4 indices = input.index;
-        float4 weights = input.weight;
-        float4 skinnedPosition = float4(0.0, 0.0, 0.0, 0.0);
-        for(int i = 0; i < 4; ++i)
-        {
-            int jIndex = int(indices.x);
-            
-            float4 jP = jointPositions[jIndex];
-            float4 jQ = jointQuaternions[jIndex];
+        int jIndex = int(input.index);
         
-            float3 tmp = 2.0 * cross(jQ.xyz, input.position.xyz);
-            skinnedPosition += float4(jP.xyz + (input.position.xyz + jQ.w * tmp + cross(jQ.xyz, tmp)) * jP.w, 1.0) * weights.x;
-            
-            indices = indices.yzwx;
-            weights = weights.yzwx;
-        }
-        
-        position = skinnedPosition;
-        normal = JointTransformTangent(input.normal, input.index, input.weight);
+        float4 jP = jointPositions[jIndex];
+        float4 jQ = jointQuaternions[jIndex];
+    
+        float3 tmp = 2.0 * cross(jQ.xyz, input.position.xyz);
+        position = float4(jP.xyz + (input.position.xyz + jQ.w * tmp + cross(jQ.xyz, tmp)) * jP.w, 1.0);
+
+        normal = JointTransformTangent(input.normal, input.index);
     }
 #else
     position = float4(input.position.xyz, 1.0);

@@ -2,6 +2,8 @@
 #include "CommandLine/Private/OptionName.h"
 #include "CommandLine/Private/SceneConsoleHelper.h"
 
+#include "Project/ProjectManagerData.h"
+
 #include "Utils/SceneExporter/SceneExporter.h"
 #include "TArc/Utils/ModuleCollection.h"
 

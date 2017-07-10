@@ -289,7 +289,7 @@ void RebuildMeshTangentSpace(PolygonGroup* group, bool precomputeBinormal /*=tru
     group->BuildBuffers();
 }
 
-SkinnedMesh* CreateSkinnedMesh(Entity* fromEntity, Vector<SkeletonComponent::Joint>& outJoints)
+SkinnedMesh* CreateHardSkinnedMesh(Entity* fromEntity, Vector<SkeletonComponent::Joint>& outJoints)
 {
     SkinnedMesh* newRenderObject = new SkinnedMesh();
 
@@ -371,7 +371,7 @@ SkinnedMesh* CreateSkinnedMesh(Entity* fromEntity, Vector<SkeletonComponent::Joi
         }
 
         PolygonGroup* polygonGroup = new PolygonGroup();
-        polygonGroup->AllocateData(meshFormat | EVF_JOINTINDEX | EVF_JOINTWEIGHT, vxCount, indCount);
+        polygonGroup->AllocateData(meshFormat | EVF_JOINTINDEX_HARD, vxCount, indCount);
 
         int32 vertexOffset = 0;
         int32 indexOffset = 0;
@@ -383,12 +383,7 @@ SkinnedMesh* CreateSkinnedMesh(Entity* fromEntity, Vector<SkeletonComponent::Joi
             {
                 int32 newBatchVxIndex = vertexOffset + currentBatchVxIndex;
                 CopyVertex(currentGroup, currentBatchVxIndex, polygonGroup, newBatchVxIndex);
-                polygonGroup->SetJointWeight(newBatchVxIndex, 0, 1.f);
-                polygonGroup->SetJointIndex(newBatchVxIndex, 0, data[dataIndex].jointIndex);
-
-                polygonGroup->SetJointWeight(newBatchVxIndex, 1, 0.f);
-                polygonGroup->SetJointWeight(newBatchVxIndex, 2, 0.f);
-                polygonGroup->SetJointWeight(newBatchVxIndex, 3, 0.f);
+                polygonGroup->SetJointIndexHard(newBatchVxIndex, data[dataIndex].jointIndex);
             }
 
             int32 currentBatchIndexCount = currentGroup->GetIndexCount();
@@ -405,7 +400,7 @@ SkinnedMesh* CreateSkinnedMesh(Entity* fromEntity, Vector<SkeletonComponent::Joi
 
         NMaterial* material = new NMaterial();
         material->SetParent(key.materialParent);
-        material->AddFlag(NMaterialFlagName::FLAG_SKINNING, 1);
+        material->AddFlag(NMaterialFlagName::FLAG_SKINNING_HARD, 1);
 
         RenderBatch* newBatch = new RenderBatch();
         polygonGroup->RecalcAABBox();

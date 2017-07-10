@@ -32,9 +32,10 @@ ColladaImporter::ColladaImporter()
 RenderObject* ColladaImporter::GetMeshFromCollada(ColladaMeshInstance* mesh, const FastName& name)
 {
     ColladaSkinnedMesh* colladaSkinnedMesh = mesh->GetSkinnedMesh();
+    bool isSkinnedMesh = colladaSkinnedMesh != nullptr;
 
     RenderObject* ro = nullptr;
-    if (colladaSkinnedMesh != nullptr)
+    if (isSkinnedMesh)
     {
         ro = new SkinnedMesh();
     }
@@ -47,11 +48,6 @@ RenderObject* ColladaImporter::GetMeshFromCollada(ColladaMeshInstance* mesh, con
     {
         PolygonGroup* davaPolygon = library.GetOrCreatePolygon(polygonGroupInstance);
 
-        if (colladaSkinnedMesh != nullptr)
-        {
-            davaPolygon->ApplyMatrix(colladaSkinnedMesh->bindShapeMatrix);
-        }
-
         bool isShadow = (strstr(name.c_str(), ImportSettings::shadowNamePattern.c_str()) != nullptr);
         if (isShadow)
         {
@@ -60,6 +56,12 @@ RenderObject* ColladaImporter::GetMeshFromCollada(ColladaMeshInstance* mesh, con
 
         ScopedPtr<NMaterial> davaMaterial(library.CreateMaterialInstance(polygonGroupInstance, isShadow));
         ScopedPtr<RenderBatch> davaBatch(new RenderBatch());
+
+        if (isSkinnedMesh)
+        {
+            davaPolygon->ApplyMatrix(colladaSkinnedMesh->bindShapeMatrix);
+            davaMaterial->AddFlag(NMaterialFlagName::FLAG_SKINNING_SOFT, 4);
+        }
 
         davaBatch->SetPolygonGroup(davaPolygon);
         davaBatch->SetMaterial(davaMaterial);

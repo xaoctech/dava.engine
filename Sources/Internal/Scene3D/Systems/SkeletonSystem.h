@@ -3,12 +3,13 @@
 
 #include "Base/BaseTypes.h"
 #include "Scene3D/Systems/BaseProcessSystem.h"
-#include "Scene3D/Components/SkeletonComponent.h"
 
 namespace DAVA
 {
 class Component;
+class SkeletonComponent;
 class SkinnedMesh;
+class RenderHelper;
 
 class SkeletonSystem : public SceneSystem
 {
