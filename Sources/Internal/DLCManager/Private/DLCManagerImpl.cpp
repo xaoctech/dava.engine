@@ -1308,7 +1308,7 @@ DLCManager::Info DLCManagerImpl::GetInfo() const
     {
         info.infoCrc32 = initFooterOnServer.infoCrc32;
         info.metaCrc32 = initFooterOnServer.metaDataCrc32;
-        info.totalFiles = meta->GetFileCount();
+        info.totalFiles = static_cast<uint32>(meta->GetFileCount());
     }
     return info;
 }
