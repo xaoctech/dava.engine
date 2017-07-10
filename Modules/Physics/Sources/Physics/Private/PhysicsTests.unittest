@@ -10,7 +10,7 @@ DAVA_TESTCLASS (PhysicsTest)
     DAVA_TEST (InitTest)
     {
         const ModuleManager& moduleManager = *GetEngineContext()->moduleManager;
-        Physics* physicsModule = moduleManager.GetModule<Physics>();
+        PhysicsModule* physicsModule = moduleManager.GetModule<PhysicsModule>();
         TEST_VERIFY(physicsModule->IsInitialized());
     }
 };

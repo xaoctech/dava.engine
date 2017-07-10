@@ -34,6 +34,12 @@ public:
     bool IsNewLineAfterThis() const;
     void SetNewLineAfterThis(bool flag);
 
+    bool IsStickItemBeforeThis() const;
+    void SetStickItemBeforeThis(bool flag);
+
+    bool IsStickItemAfterThis() const;
+    void SetStickItemAfterThis(bool flag);
+
     BiDiHelper::Direction GetContentDirection() const;
     void SetContentDirection(BiDiHelper::Direction direction);
 
@@ -45,6 +51,8 @@ private:
     {
         FLAG_NEW_LINE_BEFORE_THIS,
         FLAG_NEW_LINE_AFTER_THIS,
+        FLAG_STICK_ITEM_BEFORE_THIS,
+        FLAG_STICK_ITEM_AFTER_THIS,
         FLAG_COUNT
     };
 

@@ -325,8 +325,7 @@ void CollectParticleConfigs(DAVA::Scene* scene, const DAVA::FilePath& dataSource
     }
 }
 
-void CollectSlotConfigs(DAVA::Scene* scene, const DAVA::FilePath& dataSourceFolder, SceneExporter::ExportedObjectCollection& exportedObjects,
-                        SceneExporter::ExportedObjectCollection& externalScenes)
+void CollectSlotConfigs(DAVA::Scene* scene, const DAVA::FilePath& dataSourceFolder, SceneExporter::ExportedObjectCollection& exportedObjects)
 {
     using namespace DAVA;
     Vector<Entity*> slotHolders;
@@ -342,13 +341,6 @@ void CollectSlotConfigs(DAVA::Scene* scene, const DAVA::FilePath& dataSourceFold
             {
                 String configRelativePath = configPath.GetRelativePathname(dataSourceFolder);
                 exportedObjects.emplace_back(SceneExporter::eExportedObjectType::OBJECT_SLOT_CONFIG, configRelativePath);
-
-                Vector<SlotSystem::ItemsCache::Item> items = scene->slotSystem->GetItems(configPath);
-                for (const SlotSystem::ItemsCache::Item& item : items)
-                {
-                    String externalScenePath = item.scenePath.GetRelativePathname(dataSourceFolder);
-                    externalScenes.emplace_back(SceneExporter::eExportedObjectType::OBJECT_SCENE, externalScenePath);
-                }
             }
         }
     }
@@ -423,6 +415,18 @@ bool SceneExporter::ExportSceneObject(const ExportedObject& sceneObject)
         return filesCopied;
     };
 
+    auto parseSlotConfig = [this](const DAVA::Vector<ExportedObjectCollection>& expObjects)
+    {
+        for (const ExportedObject& obj : expObjects[OBJECT_SLOT_CONFIG])
+        {
+            DAVA::Vector<DAVA::SlotSystem::ItemsCache::Item> items = SlotSystem::ParseConfig(exportingParams.dataSourceFolder + obj.relativePathname);
+            for (const DAVA::SlotSystem::ItemsCache::Item& item : items)
+            {
+                objectsToExport[OBJECT_SCENE].push_back(ExportedObject(OBJECT_SCENE, item.scenePath.GetRelativePathname(exportingParams.dataSourceFolder)));
+            }
+        }
+    };
+
     AssetCache::CacheItemKey cacheKey;
     if (cacheClient != nullptr && cacheClient->IsConnected())
     { //request Scene from cache
@@ -436,6 +440,7 @@ bool SceneExporter::ExportSceneObject(const ExportedObject& sceneObject)
 
             bool filesCopied = copyScene();
             bool objectsLoaded = SceneExporterDetails::LoadExportedObjects(linksPathname, objectsToExport);
+            parseSlotConfig(objectsToExport);
             return exportedToFolder && objectsLoaded && filesCopied;
         }
         else
@@ -457,6 +462,8 @@ bool SceneExporter::ExportSceneObject(const ExportedObject& sceneObject)
         {
             objectsToExport[i].insert(objectsToExport[i].end(), externalLinks[i].begin(), externalLinks[i].end());
         }
+
+        parseSlotConfig(externalLinks);
     }
 
     if (cacheClient != nullptr && cacheClient->IsConnected())
@@ -842,6 +849,11 @@ bool SceneExporter::CopyFile(const DAVA::FilePath& fromPath, const DAVA::FilePat
         using namespace DAVA;
 
         FileSystem* fileSystem = GetEngineContext()->fileSystem;
+        DAVA::FilePath dstFolder = toPath.GetDirectory();
+        if (fileSystem->Exists(dstFolder) == false)
+        {
+            fileSystem->CreateDirectory(dstFolder, true);
+        }
         retCopy = fileSystem->CopyFile(fromPath, toPath, true);
         if (retCopy == false)
         {
@@ -857,14 +869,7 @@ bool SceneExporter::ExportScene(DAVA::Scene* scene, const DAVA::FilePath& sceneP
 
     using namespace DAVA;
 
-    SceneExporterDetails::PrepareSceneToExport(scene, exportingParams.optimizeOnExport);
-
-    SceneExporterDetails::CollectHeightmapPathname(scene, exportingParams.dataSourceFolder, exportedObjects[eExportedObjectType::OBJECT_HEIGHTMAP]); //must be first
-    SceneExporterDetails::CollectTextureDescriptors(scene, exportingParams.dataSourceFolder, exportedObjects[eExportedObjectType::OBJECT_TEXTURE]);
-    SceneExporterDetails::CollectParticleConfigs(scene, exportingParams.dataSourceFolder, exportedObjects[eExportedObjectType::OBJECT_EMITTER_CONFIG]);
-    SceneExporterDetails::CollectSlotConfigs(scene, exportingParams.dataSourceFolder,
-                                             exportedObjects[eExportedObjectType::OBJECT_SLOT_CONFIG],
-                                             exportedObjects[eExportedObjectType::OBJECT_SCENE]);
+    CollectObjects(scene, exportedObjects);
 
     // save scene to new place
     FilePath tempSceneName = FilePath::CreateWithNewExtension(scenePathname, ".exported.sc2");
@@ -901,7 +906,13 @@ bool SceneExporter::ExportObjects(const ExportedObjectCollection& exportedObject
     CreateFoldersStructure(scenes);
     for (uint32 i = 0; i < static_cast<uint32>(scenes.size()); ++i)
     {
-        exportIsOk = ExportSceneObject(scenes[i]) && exportIsOk;
+        const ExportedObject& sceneObj = scenes[i];
+        DAVA::FilePath fullScenePath(exportingParams.dataSourceFolder + sceneObj.relativePathname);
+        if (alreadyExportedScenes.count(fullScenePath) == 0)
+        {
+            alreadyExportedScenes.insert(fullScenePath);
+            exportIsOk = ExportSceneObject(scenes[i]) && exportIsOk;
+        }
     }
 
     //export objects
@@ -1006,6 +1017,16 @@ const DAVA::Array<SceneExporter::ExportedObjectDesc, SceneExporter::OBJECT_COUNT
     };
 
     return desc;
+}
+
+void SceneExporter::CollectObjects(DAVA::Scene* scene, DAVA::Vector<ExportedObjectCollection>& exportedObjects)
+{
+    SceneExporterDetails::PrepareSceneToExport(scene, exportingParams.optimizeOnExport);
+
+    SceneExporterDetails::CollectHeightmapPathname(scene, exportingParams.dataSourceFolder, exportedObjects[eExportedObjectType::OBJECT_HEIGHTMAP]); //must be first
+    SceneExporterDetails::CollectTextureDescriptors(scene, exportingParams.dataSourceFolder, exportedObjects[eExportedObjectType::OBJECT_TEXTURE]);
+    SceneExporterDetails::CollectParticleConfigs(scene, exportingParams.dataSourceFolder, exportedObjects[eExportedObjectType::OBJECT_EMITTER_CONFIG]);
+    SceneExporterDetails::CollectSlotConfigs(scene, exportingParams.dataSourceFolder, exportedObjects[eExportedObjectType::OBJECT_SLOT_CONFIG]);
 }
 
 bool operator==(const SceneExporter::ExportedObject& left, const SceneExporter::ExportedObject& right)

@@ -474,39 +474,6 @@ void Scene::UnregisterComponent(Entity* entity, Component* component)
     }
 }
 
-
-#if 0 // Removed temporarly if everything will work with events can be removed fully.
-void Scene::ImmediateEvent(Entity * entity, uint32 componentType, uint32 event)
-{
-#if 1
-    uint32 systemsCount = systems.size();
-    uint64 updatedComponentFlag = MAKE_COMPONENT_MASK(componentType);
-    uint64 componentsInEntity = entity->GetAvailableComponentFlags();
-
-    for (uint32 k = 0; k < systemsCount; ++k)
-    {
-        uint64 requiredComponentFlags = systems[k]->GetRequiredComponents();
-        
-        if (((requiredComponentFlags & updatedComponentFlag) != 0) && ((requiredComponentFlags & componentsInEntity) == requiredComponentFlags))
-        {
-			eventSystem->NotifySystem(systems[k], entity, event);
-        }
-    }
-#else
-    uint64 componentsInEntity = entity->GetAvailableComponentFlags();
-    Set<SceneSystem*> & systemSetForType = componentTypeMapping.GetValue(componentsInEntity);
-    
-    for (Set<SceneSystem*>::iterator it = systemSetForType.begin(); it != systemSetForType.end(); ++it)
-    {
-        SceneSystem * system = *it;
-        uint64 requiredComponentFlags = system->GetRequiredComponents();
-        if ((requiredComponentFlags & componentsInEntity) == requiredComponentFlags)
-            eventSystem->NotifySystem(system, entity, event);
-    }
-#endif
-}
-#endif
-
 void Scene::AddSystem(SceneSystem* sceneSystem, uint64 componentFlags, uint32 processFlags /*= 0*/, SceneSystem* insertBeforeSceneForProcess /* = nullptr */, SceneSystem* insertBeforeSceneForInput /* = nullptr*/)
 {
     sceneSystem->SetRequiredComponents(componentFlags);
@@ -620,7 +587,7 @@ Camera* Scene::GetCamera(int32 n)
     return nullptr;
 }
 
-void Scene::Update(float timeElapsed)
+void Scene::Update(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_UPDATE)
 

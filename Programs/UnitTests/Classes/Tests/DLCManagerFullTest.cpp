@@ -7,7 +7,7 @@
 #include <Concurrency/Thread.h>
 #include <Logger/Logger.h>
 #include <Engine/Engine.h>
-#include <EmbeddedWebServer.h>
+#include <EmbeddedWebServer/EmbeddedWebServer.h>
 
 #include "UnitTests/UnitTests.h"
 #include <Platform/DeviceInfo.h>
