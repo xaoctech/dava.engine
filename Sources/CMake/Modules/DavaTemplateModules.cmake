@@ -140,148 +140,6 @@ macro ( load_external_modules EXTERNAL_MODULES )
     endforeach()
 endmacro()
 #
-macro( modules_tree_info_execute )
-    set( TMP_CMAKE_MODULE_INFO       ${CMAKE_CURRENT_BINARY_DIR}/ModulesInfo)
-    set( TMP_CMAKE_MODULE_INFO_BUILD ${TMP_CMAKE_MODULE_INFO}/build)
-
-    execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${TMP_BUILD_MODULE_INFO}/" )
-    execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${TMP_CMAKE_MODULE_INFO_BUILD}/" )
-
-    set( FOLDER_MODULE ${CMAKE_CURRENT_LIST_DIR} )
-    get_property(  ARG_MODULE_COMPONENTS GLOBAL PROPERTY COMPONENTS_${MODULE_COMPONENTS_VALUE_NAME} )
-
-    configure_file( ${DAVA_CONFIGURE_FILES_PATH}/ModulesInfoCmake.in
-                    ${TMP_CMAKE_MODULE_INFO}/CMakeLists.txt  @ONLY )
-
-    if( CUSTOM_DAVA_CONFIG_PATH )
-        set( CUSTOM_VALUE -DCUSTOM_DAVA_CONFIG_PATH=${CUSTOM_DAVA_CONFIG_PATH} )
-    endif()
-
-    if( CMAKE_TOOLCHAIN_FILE )
-        set( CUSTOM_VALUE_2 -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE} )
-    endif()
-
-    if( QT_VERSION )
-        set( CUSTOM_VALUE_3 -DQT_VERSION=${QT_VERSION} )
-    endif()
-
-    execute_process( COMMAND ${CMAKE_COMMAND} -G${CMAKE_GENERATOR} ${TMP_CMAKE_MODULE_INFO} -DMODULES_TREE_INFO=true -D${DAVA_PLATFORM_CURENT}=true ${CUSTOM_VALUE} ${CUSTOM_VALUE_2} ${CUSTOM_VALUE_3}
-                     WORKING_DIRECTORY ${TMP_CMAKE_MODULE_INFO_BUILD} )
-
-    include( ${TMP_CMAKE_MODULE_INFO}/ModulesInfo.cmake )
-
-endmacro()
-#
-macro( modules_tree_info )
-    if( NAME_MODULE AND ( NOT ${MODULE_TYPE} STREQUAL "PLUGIN" ) )
-        append_property( LOADED_MODULES ${NAME_MODULE} )
-    endif()
-
-    if( MODULE_INITIALIZATION_CODE AND NAME_MODULE )
-        append_property( MODULES_INITIALIZATION ${NAME_MODULE} ) 
-
-        foreach( FILE ${MODULE_INITIALIZATION_CODE} )
-            get_filename_component( FILE_EXT ${FILE} EXT )
-            if( FILE_EXT STREQUAL ".h" OR FILE_EXT STREQUAL ".hpp")
-                get_filename_component( FILE ${FILE} REALPATH )
-                append_property( MODULES_INITIALIZATION_HPP ${FILE} ) 
-            endif()
-        endforeach() 
-        
-        list( APPEND MODULES_CODE  "set( MODULE_TYPE_${NAME_MODULE} ${MODULE_TYPE} )\n" )            
-
-        if( MODULE_INITIALIZATION_NAMESPACE )
-            list( APPEND MODULES_CODE  "set( MODULE_INITIALIZATION_NAMESPACE_${NAME_MODULE} ${MODULE_INITIALIZATION_NAMESPACE} )\n" )
-        endif()
-
-        append_property( MODULES_CODE ${MODULES_CODE} ) 
-
-    endif()
-
-    set( EXTERNAL_MODULES ${EXTERNAL_MODULES} ${EXTERNAL_MODULES_${DAVA_PLATFORM_CURENT}} ${IMPL_MODULE} ) 
-
-    if( SRC_FOLDERS OR EXTERNAL_MODULES  )
-
-        foreach( VALUE ${MAIN_MODULE_VALUES} )
-            set( ${VALUE}_DIR_NAME ${${VALUE}} )
-            set( ${VALUE})
-        endforeach()
-
-        if( EXTERNAL_MODULES_DIR_NAME )
-            load_external_modules( "${EXTERNAL_MODULES_DIR_NAME}" )
-        endif()
-        
-        if( SRC_FOLDERS_DIR_NAME )
-            define_source( SOURCE        ${SRC_FOLDERS_DIR_NAME}
-                           IGNORE_ITEMS  ${ERASE_FOLDERS_DIR_NAME} ${ERASE_FOLDERS_${DAVA_PLATFORM_CURENT}_DIR_NAME} )
-                                     
-            set_project_files_properties( "${PROJECT_SOURCE_FILES_CPP}" )
-            list( APPEND ALL_SRC  ${PROJECT_SOURCE_FILES} )
-            list( APPEND ALL_SRC_HEADER_FILE_ONLY  ${PROJECT_HEADER_FILE_ONLY} )
-        endif()            
-
-        foreach( VALUE ${MAIN_MODULE_VALUES} )
-            set(  ${VALUE} ${${VALUE}_DIR_NAME} )
-        endforeach()
-    endif()
-
-    foreach( NAME ${FIND_PACKAGE} ${FIND_PACKAGE${DAVA_PLATFORM_CURENT}} )
-        find_package( ${NAME} COMPONENTS ${MODULE_COMPONENTS} )
-    endforeach()
-
-endmacro()
-#
-macro( generated_initialization_module_code )
-    if( MODULE_MANAGER_TEMPLATE )
-        get_filename_component( MODULE_MANAGER_TEMPLATE ${MODULE_MANAGER_TEMPLATE} ABSOLUTE )
-        get_filename_component( MODULE_MANAGER_TEMPLATE_NAME_WE ${MODULE_MANAGER_TEMPLATE} NAME_WE )
-
-        foreach( ITEM ${MODULES_INITIALIZATION_HPP} )
-            file(RELATIVE_PATH RELATIVE_PATH_ITEM ${CMAKE_CURRENT_LIST_DIR} ${ITEM}) 
-
-            list( APPEND IMODULE_INCLUDES "#include \"${RELATIVE_PATH_ITEM}\" \n" )
-        endforeach()
-        
-        if( IMODULE_INCLUDES )
-            string(REGEX REPLACE ";" "" IMODULE_INCLUDES ${IMODULE_INCLUDES} )
-        endif()
-
-        list( APPEND CTOR_CODE "    Vector<IModule*> modules\;\n")
-        foreach( ITEM ${MODULES_INITIALIZATION} )
-            set( NAMESPACE_PREFIX )
-            if( MODULE_INITIALIZATION_NAMESPACE_${ITEM} )
-               set( NAMESPACE_PREFIX "${MODULE_INITIALIZATION_NAMESPACE_${ITEM}}::" )
-
-            endif()
-
-            if( ${MODULE_TYPE_${ITEM}} STREQUAL "INLINE" OR ${MODULE_TYPE_${ITEM}} STREQUAL "STATIC" )
-				list( APPEND CTOR_CODE "    modules.emplace_back(new ${NAMESPACE_PREFIX}${ITEM}(engine))\;\n" )
-            elseif( ${MODULE_TYPE_${ITEM}} STREQUAL "PLUGIN" )
-            endif()
-        endforeach()
-        list( APPEND CTOR_CODE "    return modules\;")
-
-        foreach( TYPE_VALUE CTOR_CODE )
-            foreach( ITEM ${${TYPE_VALUE}} )
-                set( IMODULE_${TYPE_VALUE} "${IMODULE_${TYPE_VALUE}}${ITEM}")
-            endforeach()
-        endforeach() 
-
-        set( IMODULE_CPP ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${MODULE_MANAGER_TEMPLATE_NAME_WE}_generated.cpp)
-        configure_file( ${MODULE_MANAGER_TEMPLATE}
-                        ${IMODULE_CPP}  @ONLY ) 
-        list( APPEND CPP_FILES ${IMODULE_CPP} )
-        list( APPEND ERASE_FILES ${MODULE_MANAGER_TEMPLATE_NAME_WE}Stub.cpp )
-
-
-        file(RELATIVE_PATH RELATIVE_PATH ${CMAKE_CURRENT_LIST_DIR} ${MODULE_MANAGER_TEMPLATE}) 
-        string(REGEX REPLACE "/" "\\\\" RELATIVE_PATH ${RELATIVE_PATH})
-        get_filename_component( FOLDER_NAME ${RELATIVE_PATH}  DIRECTORY    )
-
-        set( MODULE_GROUP_STRINGS "${FOLDER_NAME} ${IMODULE_CPP}")
-    endif()
-endmacro()
-#
 macro( reset_MAIN_MODULE_VALUES )
     foreach( VALUE ${GLOBAL_PROPERTY_VALUES} GLOBAL_DEFINITIONS )
         set( ${VALUE} )
@@ -367,7 +225,7 @@ macro( setup_main_module )
 
     set( ORIGINAL_NAME_MODULE ${NAME_MODULE} )
 
-    if( NOT MODULES_TREE_INFO AND NOT ( ${MODULE_TYPE} STREQUAL "INLINE" ) )
+    if( NOT ( ${MODULE_TYPE} STREQUAL "INLINE" ) )
         get_property( MODULES_ARRAY GLOBAL PROPERTY MODULES_ARRAY )
         list (FIND MODULES_ARRAY ${NAME_MODULE} _index)
         if ( JOIN_PROJECT_NAME OR ${_index} GREATER -1)
@@ -387,9 +245,11 @@ macro( setup_main_module )
     set( MODULE_COMPONENTS )
 
     if( MODULE_COMPONENTS_VALUE_NAME )
-        get_property(  MODULE_COMPONENTS GLOBAL PROPERTY COMPONENTS_${MODULE_COMPONENTS_VALUE_NAME} )
+        message(STATUS "---->2 processing ${NAME_MODULE}")
 
+        get_property(  MODULE_COMPONENTS GLOBAL PROPERTY COMPONENTS_${MODULE_COMPONENTS_VALUE_NAME} )
         if( ORIGINAL_NAME_MODULE )
+            message(STATUS "----->3 ${ORIGINAL_NAME_MODULE} | ${MODULE_COMPONENTS}")
             list (FIND MODULE_COMPONENTS ${ORIGINAL_NAME_MODULE} _index)
             if ( ${_index} GREATER -1)
                 set( INIT true )
@@ -402,30 +262,16 @@ macro( setup_main_module )
         set( INIT true )
     endif()
 
-    if( MODULES_TREE_INFO AND INIT )
-        modules_tree_info()
-    elseif ( INIT )
+    if ( INIT )
         #"hack - find first call"
         get_property( MAIN_MODULES_FIND_FIRST_CALL_LIST GLOBAL PROPERTY MAIN_MODULES_FIND_FIRST_CALL_LIST )
-
-        if( NOT MAIN_MODULES_FIND_FIRST_CALL_LIST )    
-            #if (NOT ANDROID)        
-            #    modules_tree_info_execute()
-            #endif()
-        endif()
-
-        if( MODULE_MANAGER_TEMPLATE )
-            #if (NOT ANDROID)        
-            #    generated_initialization_module_code()
-            #endif()
-        endif()
-
         list( APPEND MAIN_MODULES_FIND_FIRST_CALL_LIST "call" )
         set_property(GLOBAL PROPERTY MAIN_MODULES_FIND_FIRST_CALL_LIST ${MAIN_MODULES_FIND_FIRST_CALL_LIST} ) 
     endif()
 
+    message(STATUS "---->1 processing ${NAME_MODULE}")
 
-    if ( INIT AND NOT MODULES_TREE_INFO )
+    if ( INIT )
         if( IOS AND ${MODULE_TYPE} STREQUAL "DYNAMIC" )
             set( MODULE_TYPE "STATIC" )
         endif()
@@ -500,6 +346,8 @@ macro( setup_main_module )
                 endif()
             endforeach()
         endif()
+
+        message(STATUS "---->0 processing ${NAME_MODULE}")
 
         #"INCLUDES"
         set( INCLUDES_LIST )
@@ -582,6 +430,7 @@ macro( setup_main_module )
             endforeach()
 
             if( EXTERNAL_MODULES_DIR_NAME )
+                message(STATUS "&&&&&&&&& ${EXTERNAL_MODULES_DIR_NAME}")
                 load_external_modules( "${EXTERNAL_MODULES_DIR_NAME}" )
             endif()
             
@@ -712,8 +561,6 @@ macro( setup_main_module )
             set (${DIR_NAME}_PROJECT_SOURCE_FILES_CPP ${PROJECT_SOURCE_FILES_CPP} PARENT_SCOPE)
             set (${DIR_NAME}_PROJECT_SOURCE_FILES_HPP ${PROJECT_SOURCE_FILES_HPP} PARENT_SCOPE)
         else()
-
-
 #####
             set( CREATE_NEW_MODULE true )
 
@@ -744,6 +591,7 @@ macro( setup_main_module )
                 if( CREATE_NEW_MODULE )
                     add_library( ${NAME_MODULE} STATIC  ${ALL_SRC} ${ALL_SRC_HEADER_FILE_ONLY} )
                 endif()
+                message(STATUS "---> append ${NAME_MODULE}")
                 append_property( TARGET_MODULES_LIST ${NAME_MODULE} )  
 
             elseif( ${MODULE_TYPE} STREQUAL "PLUGIN" )
