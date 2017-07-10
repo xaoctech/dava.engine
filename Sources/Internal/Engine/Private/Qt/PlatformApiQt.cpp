@@ -36,7 +36,7 @@ RenderWidget* GetRenderWidget()
     return EngineBackend::Instance()->GetPlatformCore()->GetRenderWidget();
 }
 
-bool SetLoopStopped(bool isLoopStopped)
+bool SetLoopPaused(bool isLoopStopped)
 {
     bool result = Private::EngineBackend::showingModalMessageBox;
     Private::EngineBackend::showingModalMessageBox = isLoopStopped;

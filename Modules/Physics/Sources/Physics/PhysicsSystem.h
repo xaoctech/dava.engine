@@ -2,6 +2,8 @@
 
 #include <Entity/SceneSystem.h>
 
+#include <physx/PxQueryReport.h>
+
 namespace physx
 {
 class PxScene;
@@ -39,6 +41,8 @@ public:
 
     void SheduleUpdate(PhysicsComponent* component);
     void SheduleUpdate(CollisionShapeComponent* component);
+
+    bool Raycast(const Vector3& origin, const Vector3& direction, float32 distance, physx::PxRaycastCallback& callback);
 
 private:
     bool FetchResults(bool block);

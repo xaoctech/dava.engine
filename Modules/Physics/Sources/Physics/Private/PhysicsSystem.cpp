@@ -725,6 +725,14 @@ void PhysicsSystem::SheduleUpdate(CollisionShapeComponent* component)
     collisionComponentsUpdatePending.insert(component);
 }
 
+bool PhysicsSystem::Raycast(const Vector3& origin, const Vector3& direction, float32 distance, physx::PxRaycastCallback& callback)
+{
+    using namespace physx;
+
+    return physicsScene->raycast(PhysicsMath::Vector3ToPxVec3(origin), PhysicsMath::Vector3ToPxVec3(Normalize(direction)),
+                                 static_cast<PxReal>(distance), callback);
+}
+
 void PhysicsSystem::UpdateComponents()
 {
     for (CollisionShapeComponent* shapeComponent : collisionComponentsUpdatePending)

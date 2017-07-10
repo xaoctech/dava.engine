@@ -5,7 +5,7 @@
 
 #include <TArc/Utils/AssertGuard.h>
 
-#include <Engine/PlatformApi.h>
+#include <Engine/PlatformApiQt.h>
 #include <Concurrency/LockGuard.h>
 #include <Debug/DVAssertDefaultHandlers.h>
 #include <Utils/StringFormat.h>
@@ -166,9 +166,9 @@ void ErrorDialogOutput::ShowErrorDialogImpl()
         errors.clear();
     }
 
-    bool prevValue = DAVA::PlatformApi::Qt::SetLoopStopped(true);
+    bool prevValue = DAVA::PlatformApi::Qt::SetLoopPaused(true);
     QMessageBox::critical(globalOperations->GetGlobalParentWidget(), title.c_str(), errorMessage.c_str());
-    DAVA::PlatformApi::Qt::SetLoopStopped(false);
+    DAVA::PlatformApi::Qt::SetLoopPaused(prevValue);
 }
 
 void ErrorDialogOutput::Disable()
