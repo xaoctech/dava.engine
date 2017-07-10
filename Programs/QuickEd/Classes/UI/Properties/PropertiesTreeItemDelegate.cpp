@@ -93,7 +93,7 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
     propertyNameTypeItemDelegates[PropertyPath("*", "bg-detail")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);
     propertyNameTypeItemDelegates[PropertyPath("*", "bg-gradient")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);
     propertyNameTypeItemDelegates[PropertyPath("*", "bg-contour")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);
-    propertyNameTypeItemDelegates[PropertyPath("*", "text-font")] = new FontPropertyDelegate(this);
+    propertyNameTypeItemDelegates[PropertyPath("*", "text-fontName")] = new FontPropertyDelegate(this);
     propertyNameTypeItemDelegates[PropertyPath("*", "particleEffect-effectPath")] = new ResourceFilePropertyDelegate(particleExtensions, "/3d/", this, false);
 
     propertyNameTypeItemDelegates[PropertyPath("Sound", "*")] = new FMODEventPropertyDelegate(this);

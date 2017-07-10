@@ -55,6 +55,18 @@ UIPackageLoader::UIPackageLoader(const Map<String, DAVA::Set<FastName>>& legacyP
 
     legacyDebugDrawMap["enabled"] = "debugDraw";
     legacyDebugDrawMap["drawColor"] = "debugDrawColor";
+
+    // Map old properties from UIStaticText to UITextConponent (except "fitting" and "multiline")
+    legacyStaticTextMap["colorInheritType"] = "textcolorInheritType";
+    legacyStaticTextMap["align"] = "textalign";
+    legacyStaticTextMap["color"] = "textColor";
+    legacyStaticTextMap["fontName"] = "font";
+    legacyStaticTextMap["forceBiDiSupport"] = "forceBiDiSupport";
+    legacyStaticTextMap["perPixelAccuracyType"] = "textperPixelAccuracyType";
+    legacyStaticTextMap["shadowColor"] = "shadowcolor";
+    legacyStaticTextMap["shadowOffset"] = "shadowoffset";
+    legacyStaticTextMap["text"] = "text";
+    legacyStaticTextMap["useRtlAlign"] = "textUseRtlAlign";
 }
 
 UIPackageLoader::~UIPackageLoader()
@@ -384,6 +396,11 @@ void UIPackageLoader::LoadControl(const YamlNode* node, AbstractUIPackageBuilder
         {
             ProcessLegacyRichSingleAliases(node, builder);
         }
+
+        if (version <= LAST_VERSION_WITH_LEGACY_STATIC_TEXT)
+        {
+            ProcessLegacyStaticText(controlReflectedType, node, builder);
+        }
     }
 
     // load children
@@ -623,6 +640,99 @@ void UIPackageLoader::ProcessLegacyRichSingleAliases(const YamlNode* node, Abstr
             }
         }
 
+        builder->EndComponentPropertiesSection();
+    }
+}
+
+void UIPackageLoader::ProcessLegacyStaticText(const ReflectedType* ref, const YamlNode* node, AbstractUIPackageBuilder* builder) const
+{
+    static const Type* STATIC_TEXT_TYPE = Type::Instance<UIStaticText>();
+    // Move propeties from UIStaticText to component
+    if (ref && ref->GetType() == STATIC_TEXT_TYPE)
+    {
+        const ReflectedType* componentRef = builder->BeginComponentPropertiesSection(Type::Instance<UITextComponent>(), 0);
+        if (componentRef != nullptr && componentRef->GetStructure() != nullptr)
+        {
+            const Vector<std::unique_ptr<ReflectedStructure::Field>>& fields = componentRef->GetStructure()->fields;
+            for (const std::unique_ptr<ReflectedStructure::Field>& field : fields)
+            {
+                // Find all component properties in UIStaticText yaml node and copy to component
+                String name = field->name.c_str();
+                auto iter = legacyStaticTextMap.find(name);
+                if (iter != legacyStaticTextMap.end())
+                {
+                    // Copy simple properties
+                    Any res = ReadAnyFromYamlNode(field.get(), node, iter->second);
+                    builder->ProcessProperty(*field, res);
+                }
+                else if (name == "fitting")
+                {
+                    // Convert "fitting" flags
+                    const YamlNode* fittingNode = node->Get("fitting");
+                    if (fittingNode)
+                    {
+                        Any res;
+                        const Vector<YamlNode*>& fittingsFlags = fittingNode->AsVector();
+                        bool enlarge = false, reduce = false, points = false;
+                        for (YamlNode* flag : fittingsFlags)
+                        {
+                            String flagName = flag->AsString();
+                            enlarge = enlarge || (flagName == "ENLARGE");
+                            reduce = reduce || (flagName == "REDUCE");
+                            points = points || (flagName == "POINTS");
+                        }
+                        if ((!enlarge) && (!reduce) && (!points))
+                        {
+                            res = UITextComponent::eTextFitting::FITTING_NONE;
+                        }
+                        else if (enlarge && reduce && (!points))
+                        {
+                            res = UITextComponent::eTextFitting::FITTING_FILL;
+                        }
+                        else if ((!enlarge) && (!reduce) && points)
+                        {
+                            res = UITextComponent::eTextFitting::FITTING_POINTS;
+                        }
+                        else if (enlarge && (!reduce) && (!points))
+                        {
+                            res = UITextComponent::eTextFitting::FITTING_ENLARGE;
+                        }
+                        else if ((!enlarge) && reduce && (!points))
+                        {
+                            res = UITextComponent::eTextFitting::FITTING_REDUCE;
+                        }
+                        else
+                        {
+                            DVASSERT(false && "Invalid fitting combination!");
+                        }
+                        builder->ProcessProperty(*field, res);
+                    }
+                }
+                else if (name == "multiline")
+                {
+                    // Convert "multiline" enum
+                    const YamlNode* multilineNode = node->Get("multiline");
+                    if (multilineNode)
+                    {
+                        Any res;
+                        String multilineString = multilineNode->AsString();
+                        if (multilineString == "MULTILINE_ENABLED")
+                        {
+                            res = UITextComponent::eTextMultiline::MULTILINE_ENABLED;
+                        }
+                        else if (multilineString == "MULTILINE_ENABLED_BY_SYMBOL")
+                        {
+                            res = UITextComponent::eTextMultiline::MULTILINE_ENABLED_BY_SYMBOL;
+                        }
+                        else
+                        {
+                            res = UITextComponent::eTextMultiline::MULTILINE_DISABLED;
+                        }
+                        builder->ProcessProperty(*field, res);
+                    }
+                }
+            }
+        }
         builder->EndComponentPropertiesSection();
     }
 }

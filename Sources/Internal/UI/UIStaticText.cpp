@@ -32,18 +32,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIStaticText)
     ReflectionRegistrator<UIStaticText>::Begin()
     .ConstructorByPointer()
     .DestructorByPointer([](UIStaticText* o) { o->Release(); })
-    .Field("textColor", &UIStaticText::GetTextColor, &UIStaticText::SetTextColor)
-    .Field("textcolorInheritType", &UIStaticText::GetTextColorInheritType, &UIStaticText::SetTextColorInheritType)[M::EnumT<UIControlBackground::eColorInheritType>()] // TODO: camel style
-    .Field("textperPixelAccuracyType", &UIStaticText::GetTextPerPixelAccuracyType, &UIStaticText::SetTextPerPixelAccuracyType)[M::EnumT<UIControlBackground::ePerPixelAccuracyType>()] // TODO: camel style
-    .Field("shadowoffset", &UIStaticText::GetShadowOffset, &UIStaticText::SetShadowOffset) // TODO: camel style
-    .Field("shadowcolor", &UIStaticText::GetShadowColor, &UIStaticText::SetShadowColor) // TODO: camel style
-    .Field("multiline", &UIStaticText::GetMultilineType, &UIStaticText::SetMultilineType)[M::EnumT<eMultiline>()]
-    .Field("fitting", &UIStaticText::GetFittingOption, &UIStaticText::SetFittingOption)[M::FlagsT<TextBlock::eFitType>()]
-    .Field("textalign", &UIStaticText::GetTextAlign, &UIStaticText::SetTextAlign)[M::FlagsT<eAlign>()] // TODO: camel style
-    .Field("textUseRtlAlign", &UIStaticText::GetTextUseRtlAlign, &UIStaticText::SetTextUseRtlAlign)[M::EnumT<TextBlock::eUseRtlAlign>()]
-    .Field("text", &UIStaticText::GetUtf8Text, &UIStaticText::SetUtf8TextWithoutRect)
-    .Field("font", &UIStaticText::GetFontPresetName, &UIStaticText::SetFontByPresetName)
-    .Field("forceBiDiSupport", &UIStaticText::IsForceBiDiSupportEnabled, &UIStaticText::SetForceBiDiSupportEnabled)
     .End();
 }
 
