@@ -275,7 +275,8 @@ int PreProc::GetNameAndValue(char* txt, char** name, char** value, char** end) c
     if (*t == '\0')
         return 0;
     v0 = t;
-    while (*t && *t != ' ' && *t != '\t' && *t != '\n' && *t != '\r')
+    int brace_lev = 0;
+    while (*t && (*t != ' ' || brace_lev > 0) && *t != '\t' && *t != '\n' && *t != '\r')
     {
         if (t[0] == '/' && t[1] == '/')
         {
@@ -283,6 +284,11 @@ int PreProc::GetNameAndValue(char* txt, char** name, char** value, char** end) c
             ++t;
             break;
         }
+
+        if (*t == '(')
+            ++brace_lev;
+        else if (*t == ')')
+            --brace_lev;
 
         ++t;
     }
