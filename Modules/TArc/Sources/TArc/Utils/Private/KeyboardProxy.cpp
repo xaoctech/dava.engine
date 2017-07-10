@@ -19,7 +19,7 @@ bool IsKeyPressed(DAVA::eModifierKeys modifier)
 #ifdef __DAVAENGINE_WINDOWS__
         return keyboard.IsKeyPressed(Key::LCTRL) || keyboard.IsKeyPressed(Key::RCTRL);
 #elif defined __DAVAENGINE_MACOS__
-        return keyboard.IsKeyPressed(Key::LCMD) || keyboard.IsKeyPressed(Key::LCMD);
+        return keyboard.IsKeyPressed(Key::LCMD) || keyboard.IsKeyPressed(Key::RCMD);
 #else
 #error "non supported platform";
 #endif //platform
