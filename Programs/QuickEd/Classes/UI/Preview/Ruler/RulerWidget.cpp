@@ -1,6 +1,6 @@
 #include "RulerWidget.h"
 
-#include <QtTools/Utils/Themes/Themes.h>
+#include <TArc/Utils/Themes.h>
 #include <QtTools/Updaters/LazyUpdater.h>
 
 #include <Debug/DVAssert.h>

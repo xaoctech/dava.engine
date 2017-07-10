@@ -85,7 +85,6 @@ public:
             params.fields[ScrollBar::Fields::PageStep] = "pageStep";
             params.fields[ScrollBar::Fields::Orientation] = "orientation";
             ScrollBar* edit = new ScrollBar(params, GetAccessor(), ref);
-            edit->ToWidgetCast()->setStyleSheet("QScrollBar{background: white}");
             edit->SetObjectName("ScrollBar_value");
             layout->AddControl(edit);
         }
@@ -97,7 +96,6 @@ public:
             params.fields[ScrollBar::Fields::Orientation] = "orientation";
 
             ScrollBar* edit = new ScrollBar(params, GetAccessor(), ref);
-            edit->ToWidgetCast()->setStyleSheet("QScrollBar{background: white}");
             edit->SetObjectName("ScrollBar_enable");
             layout->AddControl(edit);
         }

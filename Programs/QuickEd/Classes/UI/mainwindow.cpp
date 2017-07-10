@@ -14,9 +14,10 @@
 #include "Preferences/PreferencesDialog.h"
 
 #include "DebugTools/DebugTools.h"
-#include "QtTools/Utils/Themes/Themes.h"
 #include "UI/Package/PackageModel.h"
 #include "UI/ProjectView.h"
+
+#include <TArc/Utils/Themes.h>
 
 #include <Base/Result.h>
 
