@@ -1301,6 +1301,11 @@ DLCManager::Progress DLCManagerImpl::GetProgress() const
     return progress;
 }
 
+DLCManager::Info DLCManager::GetInfo() const
+{
+    return Info{};
+}
+
 DLCManager::Info DLCManagerImpl::GetInfo() const
 {
     Info info;

@@ -155,7 +155,7 @@ public:
         uint32 totalFiles = 0; //!< count files in superpack (easy for human to see difference on superpacks)
     };
     /** Check if manager is initialized and return info */
-    virtual Info GetInfo() const = 0;
+    virtual Info GetInfo() const;
 };
 
 } // end namespace DAVA
