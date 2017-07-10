@@ -5,8 +5,6 @@
 #include <Base/FastName.h>
 #include <Base/Type.h>
 
-#include <Base/FastName.h>
-
 class PackageBaseNode;
 
 class CompletionsProviderForUIReflection : public CompletionsProvider
