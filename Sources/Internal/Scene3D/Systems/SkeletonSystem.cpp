@@ -54,6 +54,25 @@ void SkeletonSystem::Process(float32 timeElapsed)
     {
         SkeletonComponent* component = GetSkeletonComponent(entities[i]);
 
+        //For debug. Manipulate test skinned mesh in 'Debug Functions' in RE
+        //{
+        //    static float32 _time = 0.f;
+        //    _time += timeElapsed;
+
+        //    uint16 jointCount = component->GetJointsCount();
+        //    for (uint16 j = 1; j < jointCount; ++j)
+        //    {
+        //        component->GetJoint(j).bindTransform.GetTranslationVector();
+
+        //        SkeletonComponent::JointTransform transform;
+        //        transform.position = component->GetJoint(j).bindTransform.GetTranslationVector();
+        //        transform.position.z += 5.f * sinf(float32(j + _time));
+        //        transform.scale = 1.f;
+
+        //        component->SetJointTransform(j, transform);
+        //    }
+        //}
+
         if (component != nullptr)
         {
             if (component->configUpdated)
