@@ -165,7 +165,7 @@ void RequestManager::Update(bool inBackground)
         int64 timeIter = SystemTimer::GetMs() - start;
         updateTotalTime += timeIter;
 
-        if (updateTotalTime >= hints.maxPackUpdateIterationMs)
+        if (updateTotalTime >= hints.limitRequestUpdateIterationMs)
         {
             break;
         }
