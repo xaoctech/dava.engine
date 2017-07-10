@@ -39,6 +39,9 @@ UISpineComponent::UISpineComponent(const UISpineComponent& copy)
     , animationName(copy.animationName)
     , animationsNames(copy.animationsNames)
     , animationLooped(copy.animationLooped)
+    , skinName(copy.skinName)
+    , skinsNames(copy.skinsNames)
+    , timeScale(copy.timeScale)
 {
 }
 
