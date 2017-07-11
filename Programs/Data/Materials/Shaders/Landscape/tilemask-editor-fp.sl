@@ -5,6 +5,7 @@
 #define DRAW_TYPE_B_CHANNEL  2
 #define DRAW_TYPE_A_CHANNEL  3
 #define DRAW_TYPE_COPY_PASTE 4
+#ensuredefined DRAW_TYPE 0
 
 fragment_in
 {
