@@ -2,7 +2,8 @@
 #include "Physics/PhysicsModule.h"
 #include "Physics/StaticBodyComponent.h"
 #include "Physics/DynamicBodyComponent.h"
-#include "Physics/CollisionComponent.h"
+#include "Physics/CollisionShapeComponent.h"
+#include "Physics/BoxShapeComponent.h"
 #include "Physics/Private/PhysicsSystemPrivate.h"
 
 #include <Engine/Engine.h>
@@ -100,7 +101,7 @@ DAVA_TESTCLASS(PhysicsTest)
         TEST_VERIFY(staticActor != nullptr);
         TEST_VERIFY(staticActor->getNbShapes() == 0);
 
-        AttachComponent<CollisionShapeComponent>(info);
+        AttachComponent<BoxShapeComponent>(info);
         TEST_VERIFY(staticActor->getNbShapes() == 0);
 
         Frame(info);
@@ -114,7 +115,7 @@ DAVA_TESTCLASS(PhysicsTest)
     {
         using namespace PhysicsTestDetils;
         SceneInfo info = CreateScene();
-        AttachComponent<CollisionShapeComponent>(info);
+        AttachComponent<BoxShapeComponent>(info);
 
         physx::PxScene* pxScene = ExtractPxScene(info);
         TEST_VERIFY(pxScene != nullptr);
@@ -154,7 +155,7 @@ DAVA_TESTCLASS(PhysicsTest)
         using namespace PhysicsTestDetils;
         SceneInfo info = CreateScene();
         AttachComponent<DynamicBodyComponent>(info);
-        AttachComponent<CollisionShapeComponent>(info);
+        AttachComponent<BoxShapeComponent>(info);
         Frame(info);
 
         physx::PxScene* pxScene = ExtractPxScene(info);
@@ -176,7 +177,7 @@ DAVA_TESTCLASS(PhysicsTest)
         using namespace PhysicsTestDetils;
         SceneInfo info = CreateScene();
         Component* componentToRemove = AttachComponent<DynamicBodyComponent>(info);
-        AttachComponent<CollisionShapeComponent>(info);
+        AttachComponent<BoxShapeComponent>(info);
         Frame(info);
 
         RemoveComponent(info, componentToRemove);
@@ -211,7 +212,7 @@ DAVA_TESTCLASS(PhysicsTest)
         using namespace PhysicsTestDetils;
         SceneInfo info = CreateScene();
         AttachComponent<DynamicBodyComponent>(info);
-        Component* componentToRemove = AttachComponent<CollisionShapeComponent>(info);
+        Component* componentToRemove = AttachComponent<BoxShapeComponent>(info);
         Frame(info);
 
         RemoveComponent(info, componentToRemove);
