@@ -45,7 +45,7 @@ DAVA_TESTCLASS (UITextSystemTest)
         UITextSystem* sys = UIControlSystem::Instance()->GetSystem<UITextSystem>();
         sys->Process(0.f);
     }
-    
+
     bool IsEqual(const Color& a, const Color& b)
     {
         return (FLOAT_EQUAL(a.r, b.r) && FLOAT_EQUAL(a.g, b.g) && FLOAT_EQUAL(a.b, b.b) && FLOAT_EQUAL(a.a, b.a));
@@ -74,13 +74,13 @@ DAVA_TESTCLASS (UITextSystemTest)
         DVASSERT(loaded);
 
         RefPtr<UIControl> control;
-        
+
         control = pkgBuilder.GetPackage()->GetControl("UIStaticTextSample");
         TEST_VERIFY(control.Get() != nullptr);
         UITextComponent* text = control->GetComponent<UITextComponent>();
         DVASSERT(text);
-        
-        // Check converted propeties 
+
+        // Check converted propeties
         TEST_VERIFY(text->GetAlign() == (eAlign::ALIGN_HCENTER | eAlign::ALIGN_BOTTOM));
         TEST_VERIFY(text->GetText() == "Test text");
         TEST_VERIFY(text->GetFitting() == UITextComponent::eTextFitting::FITTING_FILL);
@@ -125,7 +125,7 @@ DAVA_TESTCLASS (UITextSystemTest)
         RefPtr<UITextComponent> copy(orig->Clone());
         TEST_VERIFY(orig->GetLink() != nullptr);
         TEST_VERIFY(copy->GetLink() != nullptr);
-		TEST_VERIFY(orig->GetLink() != copy->GetLink());
+        TEST_VERIFY(orig->GetLink() != copy->GetLink());
 
         newControl->RemoveComponent(orig.Get());
         TEST_VERIFY(orig->GetLink() != nullptr);
@@ -136,7 +136,7 @@ DAVA_TESTCLASS (UITextSystemTest)
         newControl->AddComponent(copy.Get());
         TEST_VERIFY(orig->GetLink() != nullptr);
         TEST_VERIFY(copy->GetLink() != nullptr);
-		TEST_VERIFY(orig->GetLink() != copy->GetLink());
+        TEST_VERIFY(orig->GetLink() != copy->GetLink());
 
         UpdateSystem();
     }
