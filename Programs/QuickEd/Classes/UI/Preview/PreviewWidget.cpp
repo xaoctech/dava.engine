@@ -733,10 +733,29 @@ void PreviewWidget::OnTabBarContextMenuRequested(const QPoint& pos)
         return;
     }
 
+    QTabBar* tabBar = findChild<QTabBar*>();
+    DVASSERT(tabBar != nullptr);
+
+    int index = tabBar->tabAt(pos);
+    if (index == -1)
+    {
+        return;
+    }
+
+    QVariant data = tabBar->tabData(index);
+    DVASSERT(data.canConvert<uint64>());
+    uint64 currentId = data.value<uint64>();
+
     QMenu menu(this);
     QAction* closeTabAction = new QAction(tr("Close tab"), &menu);
     QAction* closeOtherTabsAction = new QAction(tr("Close other tabs"), &menu);
     QAction* closeAllTabsAction = new QAction(tr("Close all tabs"), &menu);
+
+    closeOtherTabsAction->setEnabled(allIDs.size() > 1);
+
+    menu.addAction(closeTabAction);
+    menu.addAction(closeOtherTabsAction);
+    menu.addAction(closeAllTabsAction);
 
     connect(closeAllTabsAction, &QAction::triggered, [this, allIDs]()
             {
@@ -746,40 +765,18 @@ void PreviewWidget::OnTabBarContextMenuRequested(const QPoint& pos)
                 }
             });
 
-    QTabBar* tabBar = findChild<QTabBar*>();
-    DVASSERT(tabBar != nullptr);
+    connect(closeTabAction, &QAction::triggered, std::bind(&Signal<uint64>::Emit, &requestCloseTab, currentId));
 
-    int index = tabBar->tabAt(pos);
-
-    closeTabAction->setEnabled(allIDs.empty() == false && index != -1);
-    closeOtherTabsAction->setEnabled(allIDs.size() > 1 && index != -1);
-    closeAllTabsAction->setEnabled(allIDs.empty() == false);
-
-    if (index != -1)
-    {
-        QVariant data = tabBar->tabData(index);
-        DVASSERT(data.canConvert<uint64>());
-        uint64 currentId = data.value<uint64>();
-        connect(closeTabAction, &QAction::triggered, std::bind(&Signal<uint64>::Emit, &requestCloseTab, currentId));
-
-        if (allIDs.size() > 1)
-        {
-            connect(closeOtherTabsAction, &QAction::triggered, [this, allIDs, currentId]()
+    connect(closeOtherTabsAction, &QAction::triggered, [this, allIDs, currentId]()
+            {
+                for (uint64 id : allIDs)
+                {
+                    if (id != currentId)
                     {
-                        for (uint64 id : allIDs)
-                        {
-                            if (id != currentId)
-                            {
-                                requestCloseTab.Emit(id);
-                            }
-                        }
-                    });
-        }
-    }
+                        requestCloseTab.Emit(id);
+                    }
+                }
+            });
 
-    menu.addAction(closeTabAction);
-    menu.addAction(closeOtherTabsAction);
-    menu.addAction(closeAllTabsAction);
-
-    QAction* action = menu.exec(tabBar->mapToGlobal(pos));
+    menu.exec(tabBar->mapToGlobal(pos));
 }
