@@ -406,6 +406,7 @@ DAVA::int32 KeyedArchiveEditor::GetChoosedPreset() const
 
 void KeyedArchiveEditor::SetChoosedPreset(DAVA::int32 choosedPreset_)
 {
+    DVASSERT(choosedPreset != choosedPreset_);
     choosedPreset = choosedPreset_;
     editorWidget->ForceUpdate();
 }

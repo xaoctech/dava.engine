@@ -1,6 +1,8 @@
 #include "TArc/Controls/DoubleSpinBox.h"
 #include "TArc/Utils/ScopedValueGuard.h"
 
+#include "TArc/Utils/StringFormatingUtils.h"
+
 namespace DAVA
 {
 namespace TArc
@@ -58,24 +60,8 @@ bool DoubleSpinBox::FromText(const QString& input, double& output) const
 
 QString DoubleSpinBox::ToText(const double value) const
 {
-    QString result = QString::number(value, 'f', decimals());
-    int zeroCount = 0;
-    for (auto iter = result.rbegin(); iter != result.rend(); ++iter)
-    {
-        if ((*iter) == QChar('.'))
-        {
-            zeroCount = std::max(zeroCount - 1, 0);
-            break;
-        }
-        if ((*iter) != QChar('0'))
-        {
-            break;
-        }
-
-        ++zeroCount;
-    }
-
-    result.truncate(result.size() - zeroCount);
+    QString result;
+    FloatToString(value, decimals(), result);
 
     // for size hint calculation we bound maximum size of text to 6 digit,
     // because default implementation of QDoubleSpinBox calculate sizeHint according to range (minimum value and maximum value - about 40 signs)
