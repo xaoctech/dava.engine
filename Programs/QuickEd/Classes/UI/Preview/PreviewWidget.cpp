@@ -384,6 +384,8 @@ void PreviewWidget::InitUI()
     DAVA::TArc::DataContext* ctx = accessor->GetGlobalContext();
     DAVA::TArc::SceneTabbar* tabBar = new DAVA::TArc::SceneTabbar(accessor, DAVA::Reflection::Create(&accessor), this);
     tabBar->closeTab.Connect(&requestCloseTab, &DAVA::Signal<DAVA::uint64>::Emit);
+    tabBar->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(tabBar, &QWidget::customContextMenuRequested, this, &PreviewWidget::OnTabBarContextMenuRequested);
 
     tabBar->setElideMode(Qt::ElideNone);
     tabBar->setTabsClosable(true);
@@ -713,4 +715,71 @@ bool PreviewWidget::event(QEvent* event)
         OnRulersGeometryChanged();
     }
     return returnValue;
+}
+
+void PreviewWidget::OnTabBarContextMenuRequested(const QPoint& pos)
+{
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    Vector<uint64> allIDs;
+    accessor->ForEachContext([&allIDs](const DataContext& context) {
+        allIDs.push_back(context.GetID());
+    });
+
+    //no tabs at all, do nothing
+    if (allIDs.empty())
+    {
+        return;
+    }
+
+    QMenu menu(this);
+    QAction* closeTabAction = new QAction(tr("Close tab"), &menu);
+    QAction* closeOtherTabsAction = new QAction(tr("Close other tabs"), &menu);
+    QAction* closeAllTabsAction = new QAction(tr("Close all tabs"), &menu);
+
+    connect(closeAllTabsAction, &QAction::triggered, [this, allIDs]()
+            {
+                for (uint64 id : allIDs)
+                {
+                    requestCloseTab.Emit(id);
+                }
+            });
+
+    QTabBar* tabBar = findChild<QTabBar*>();
+    DVASSERT(tabBar != nullptr);
+
+    int index = tabBar->tabAt(pos);
+
+    closeTabAction->setEnabled(allIDs.empty() == false && index != -1);
+    closeOtherTabsAction->setEnabled(allIDs.size() > 1 && index != -1);
+    closeAllTabsAction->setEnabled(allIDs.empty() == false);
+
+    if (index != -1)
+    {
+        QVariant data = tabBar->tabData(index);
+        DVASSERT(data.canConvert<uint64>());
+        uint64 currentId = data.value<uint64>();
+        connect(closeTabAction, &QAction::triggered, std::bind(&Signal<uint64>::Emit, &requestCloseTab, currentId));
+
+        if (allIDs.size() > 1)
+        {
+            connect(closeOtherTabsAction, &QAction::triggered, [this, allIDs, currentId]()
+                    {
+                        for (uint64 id : allIDs)
+                        {
+                            if (id != currentId)
+                            {
+                                requestCloseTab.Emit(id);
+                            }
+                        }
+                    });
+        }
+    }
+
+    menu.addAction(closeTabAction);
+    menu.addAction(closeOtherTabsAction);
+    menu.addAction(closeAllTabsAction);
+
+    QAction* action = menu.exec(tabBar->mapToGlobal(pos));
 }
