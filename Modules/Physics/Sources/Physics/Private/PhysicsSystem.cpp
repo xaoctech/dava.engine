@@ -292,20 +292,21 @@ void PhysicsSystem::Process(float32 timeElapsed)
         FetchResults(false);
     }
 
-    InitNewObjects();
-    UpdateComponents();
-
-    if (isSimulationEnabled == false)
-    {
-        SyncTransformToPhysx();
-        return;
-    }
-
     if (isSimulationRunning == false)
     {
-        DrawDebugInfo();
-        physicsScene->simulate(timeElapsed, nullptr, simulationBlock, simulationBlockSize);
-        isSimulationRunning = true;
+        InitNewObjects();
+        UpdateComponents();
+
+        if (isSimulationEnabled == false)
+        {
+            SyncTransformToPhysx();
+        }
+        else
+        {
+            DrawDebugInfo();
+            physicsScene->simulate(timeElapsed, nullptr, simulationBlock, simulationBlockSize);
+            isSimulationRunning = true;
+        }
     }
 }
 
@@ -365,7 +366,7 @@ bool PhysicsSystem::FetchResults(bool block)
         for (physx::PxU32 i = 0; i < actorsCount; ++i)
         {
             physx::PxActor* actor = actors[i];
-            PhysicsComponent* component = reinterpret_cast<PhysicsComponent*>(actor->userData);
+            PhysicsComponent* component = PhysicsComponent::GetComponent(actor);
             Entity* entity = component->GetEntity();
 
             physx::PxRigidActor* rigidActor = actor->is<physx::PxRigidActor>();
@@ -455,6 +456,7 @@ void PhysicsSystem::InitNewObjects()
         Entity* entity = component->GetEntity();
         AttachShape(entity, component, scale);
 
+        Logger::Info("Add actor %p", component->GetPxActor());
         physicsScene->addActor(*(component->GetPxActor()));
         physicsComponents.push_back(component);
     }
@@ -512,6 +514,7 @@ void PhysicsSystem::AttachShape(PhysicsComponent* bodyComponent, CollisionShapeC
     physx::PxShape* shape = shapeComponent->GetPxShape();
     if (shape != nullptr)
     {
+        Logger::Info("Add shape %p to actor %p", shape, rigidActor);
         rigidActor->attachShape(*shape);
         SheduleUpdate(shapeComponent);
         SheduleUpdate(bodyComponent);
@@ -743,7 +746,7 @@ void PhysicsSystem::UpdateComponents()
         physx::PxActor* actor = shape->getActor();
         if (actor != nullptr)
         {
-            PhysicsComponent* bodyComponent = reinterpret_cast<PhysicsComponent*>(actor->userData);
+            PhysicsComponent* bodyComponent = PhysicsComponent::GetComponent(actor);
             physicsComponensUpdatePending.insert(bodyComponent);
         }
     }
@@ -767,7 +770,7 @@ void PhysicsSystem::UpdateComponents()
 
                 for (physx::PxShape* shape : shapes)
                 {
-                    CollisionShapeComponent* shapeComponent = reinterpret_cast<CollisionShapeComponent*>(shape->userData);
+                    CollisionShapeComponent* shapeComponent = CollisionShapeComponent::GetComponent(shape);
                     masses.push_back(shapeComponent->GetMass());
                 }
 

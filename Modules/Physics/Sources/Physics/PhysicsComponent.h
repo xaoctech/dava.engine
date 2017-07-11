@@ -38,6 +38,8 @@ public:
 
     Vector3 currentScale;
 
+    static PhysicsComponent* GetComponent(physx::PxActor* actor);
+
 protected:
 #if defined(__DAVAENGINE_DEBUG__)
     virtual void CheckActorType() const = 0;

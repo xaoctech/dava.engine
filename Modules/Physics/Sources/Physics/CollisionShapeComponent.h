@@ -33,6 +33,8 @@ public:
     float32 GetMass() const;
     void SetMass(float32 mass);
 
+    static CollisionShapeComponent* GetComponent(physx::PxShape* shape);
+
 protected:
 #if defined(__DAVAENGINE_DEBUG__)
     virtual void CheckShapeType() const = 0;

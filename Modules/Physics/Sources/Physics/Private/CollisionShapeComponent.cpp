@@ -79,6 +79,12 @@ void CollisionShapeComponent::SetMass(float32 mass_)
     }
 }
 
+CollisionShapeComponent* CollisionShapeComponent::GetComponent(physx::PxShape* shape)
+{
+    DVASSERT(shape != nullptr);
+    return reinterpret_cast<CollisionShapeComponent*>(shape->userData);
+}
+
 void CollisionShapeComponent::SetPxShape(physx::PxShape* shape_)
 {
     DVASSERT(shape_ != nullptr);
