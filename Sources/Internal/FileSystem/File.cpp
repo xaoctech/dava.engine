@@ -38,7 +38,6 @@ File::~File()
     if (file != nullptr)
     {
         int result = fclose(file);
-        DVASSERT(result == 0);
         if (result != 0)
         {
             const String& s = filename.GetStringValue();
