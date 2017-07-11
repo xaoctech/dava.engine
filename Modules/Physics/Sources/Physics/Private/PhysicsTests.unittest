@@ -19,7 +19,6 @@ using namespace DAVA;
 
 namespace PhysicsTestDetils
 {
-
 struct SceneInfo
 {
     ScopedPtr<Scene> scene;
@@ -42,7 +41,7 @@ void Frame(SceneInfo& info)
     info.scene->Update(0.1f);
 }
 
-template<typename T>
+template <typename T>
 T* AttachComponent(SceneInfo& info)
 {
     T* component = new T();
@@ -69,16 +68,16 @@ physx::PxShape* ExtractPxShape(const SceneInfo& info)
 
 } // namespace PhysicsTestDetils
 
-DAVA_TESTCLASS(PhysicsTest)
+DAVA_TESTCLASS (PhysicsTest)
 {
-    DAVA_TEST(InitTest)
+    DAVA_TEST (InitTest)
     {
         const ModuleManager& moduleManager = *GetEngineContext()->moduleManager;
-        Physics* physicsModule = moduleManager.GetModule<Physics>();
+        PhysicsModule* physicsModule = moduleManager.GetModule<PhysicsModule>();
         TEST_VERIFY(physicsModule->IsInitialized());
     }
 
-    DAVA_TEST(AddStaticBodyTest)
+    DAVA_TEST (AddStaticBodyTest)
     {
         using namespace PhysicsTestDetils;
         SceneInfo info = CreateScene();
@@ -110,7 +109,7 @@ DAVA_TESTCLASS(PhysicsTest)
         TEST_VERIFY(shape != nullptr);
     }
 
-    DAVA_TEST(CollisionFirstTest)
+    DAVA_TEST (CollisionFirstTest)
     {
         using namespace PhysicsTestDetils;
         SceneInfo info = CreateScene();
@@ -149,7 +148,7 @@ DAVA_TESTCLASS(PhysicsTest)
         TEST_VERIFY(attachedShape == shape);
     }
 
-    DAVA_TEST(DynamicBodyTest)
+    DAVA_TEST (DynamicBodyTest)
     {
         using namespace PhysicsTestDetils;
         SceneInfo info = CreateScene();
@@ -171,7 +170,7 @@ DAVA_TESTCLASS(PhysicsTest)
         TEST_VERIFY(dynamicActor->getNbShapes() == 1);
     }
 
-    DAVA_TEST(ReplaceBodyComponent)
+    DAVA_TEST (ReplaceBodyComponent)
     {
         using namespace PhysicsTestDetils;
         SceneInfo info = CreateScene();
@@ -206,7 +205,7 @@ DAVA_TESTCLASS(PhysicsTest)
         TEST_VERIFY(shape == attachedShape);
     }
 
-    DAVA_TEST(RemoveCollisionTest)
+    DAVA_TEST (RemoveCollisionTest)
     {
         using namespace PhysicsTestDetils;
         SceneInfo info = CreateScene();

@@ -55,7 +55,11 @@ void LineEdit::UpdateControl(const ControlDescriptor& descriptor)
 
         if (textChanged)
         {
-            setText(QString::fromStdString(fieldValue.GetValue().Cast<String>()));
+            QString newText = QString::fromStdString(fieldValue.GetValue().Cast<String>());
+            if (newText != text())
+            {
+                setText(newText);
+            }
         }
     }
 

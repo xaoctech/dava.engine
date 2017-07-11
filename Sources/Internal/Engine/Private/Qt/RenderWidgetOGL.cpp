@@ -1,6 +1,5 @@
 #include "Engine/Private/Qt/RenderWidgetOGL.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_QT__)
 #include "Engine/Qt/IClientDelegate.h"
 #include "Engine/Private/Qt/IWindowDelegate.h"
@@ -291,4 +290,3 @@ QWindow* RenderWidgetOGL::GetQWindow()
 } // namespace DAVA
 
 #endif // __DAVAENGINE_QT__
-#endif // __DAVAENGINE_COREV2__

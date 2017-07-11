@@ -2,8 +2,6 @@
 
 #include "Base/BaseTypes.h"
 
-#if defined(__DAVAENGINE_COREV2__)
-
 namespace DAVA
 {
 class GamepadDevice;
@@ -42,5 +40,3 @@ public:
 
 } // namespace Private
 } // namespace DAVA
-
-#endif // __DAVAENGINE_COREV2__

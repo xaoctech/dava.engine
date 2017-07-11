@@ -63,6 +63,15 @@ std::ostream& DLCManagerImpl::GetLog() const
     return log;
 }
 
+DLCDownloader& DLCManagerImpl::GetDownloader() const
+{
+    if (!downloader)
+    {
+        DAVA_THROW(Exception, "downloader in nullptr");
+    }
+    return *downloader;
+}
+
 DLCManagerImpl::DLCManagerImpl(Engine* engine_)
     : engine(*engine_)
 {
@@ -134,10 +143,8 @@ DLCManagerImpl::~DLCManagerImpl()
 {
     DVASSERT(Thread::IsMainThread());
 
-#ifdef __DAVAENGINE_COREV2__
     engine.update.Disconnect(this);
     engine.backgroundUpdate.Disconnect(this);
-#endif
 
     ClearResouces();
 }
@@ -200,6 +207,8 @@ void DLCManagerImpl::DumpInitialParams(const FilePath& dirToDownloadPacks, const
             Logger::Error("can't create dlc_manager.log error: %s", err);
             DAVA_THROW(DAVA::Exception, err);
         }
+
+        Logger::Info("DLCManager log file: %s", fullLogPath.c_str());
 
         String preloaded = hints_.preloadedPacks;
         transform(begin(preloaded), end(preloaded), begin(preloaded), [](char c)
@@ -995,7 +1004,7 @@ void DLCManagerImpl::SwapRequestAndUpdatePointers(PackRequest* userRequestObject
 {
     // We want to give user same pointer, so we need move(swap) old object
     // with new object value
-    *userRequestObject = std::move(*newRequestObject);
+    *userRequestObject = *newRequestObject;
     delete newRequestObject; // now this pointer is invalid!
     PackRequest* invalidPointer = newRequestObject;
     // so we have to update all references to new swapped pointer value
@@ -1180,25 +1189,31 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
 {
     DVASSERT(Thread::IsMainThread());
 
-    PackRequest* request = FindRequest(requestedPackName);
-    if (request != nullptr && IsInitialized())
+    // now we can work without CDN, so always wait for initialization is done
+    if (!IsInitialized())
     {
-        Vector<uint32> deps = request->GetDependencies();
+        return;
+    }
+
+    const IRequest* request = RequestPack(requestedPackName);
+    if (request != nullptr)
+    {
+        const PackRequest* r = static_cast<const PackRequest*>(request);
+        PackRequest* packRequest = const_cast<PackRequest*>(r);
+
+        Vector<uint32> deps = packRequest->GetDependencies();
         for (uint32 dependent : deps)
         {
             const String& depPackName = meta->GetPackInfo(dependent).packName;
-            PackRequest* r = FindRequest(depPackName);
-            if (nullptr != r)
+            PackRequest* depRequest = FindRequest(depPackName);
+            if (nullptr != depRequest)
             {
-                String packToRemove = r->GetRequestedPackName();
+                String packToRemove = depRequest->GetRequestedPackName();
                 RemovePack(packToRemove);
             }
         }
-    }
 
-    if (nullptr != request)
-    {
-        requestManager->Remove(request);
+        requestManager->Remove(packRequest);
 
         auto it = find(begin(requests), end(requests), request);
         if (it != end(requests))
@@ -1206,42 +1221,36 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
             requests.erase(it);
         }
 
-        it = find(begin(delayedRequests), end(delayedRequests), request);
-        if (it != end(delayedRequests))
-        {
-            delayedRequests.erase(it);
-        }
-
         delete request;
-    }
 
-    if (IsInitialized())
-    {
-        StringStream undeletedFiles;
-        FileSystem* fs = GetEngineContext()->fileSystem;
-        // remove all files for pack
-        Vector<uint32> fileIndexes = meta->GetFileIndexes(requestedPackName);
-        for (uint32 index : fileIndexes)
+        if (meta)
         {
-            if (IsFileReady(index))
+            StringStream undeletedFiles;
+            FileSystem* fs = GetEngineContext()->fileSystem;
+            // remove all files for pack
+            Vector<uint32> fileIndexes = meta->GetFileIndexes(requestedPackName);
+            for (uint32 index : fileIndexes)
             {
-                const String relFile = GetRelativeFilePath(index);
-
-                FilePath filePath = dirToDownloadedPacks + (relFile + extDvpl);
-                if (!fs->DeleteFile(filePath))
+                if (IsFileReady(index))
                 {
-                    if (fs->IsFile(filePath))
+                    const String relFile = GetRelativeFilePath(index);
+
+                    FilePath filePath = dirToDownloadedPacks + (relFile + extDvpl);
+                    if (!fs->DeleteFile(filePath))
                     {
-                        undeletedFiles << filePath.GetStringValue() << '\n';
+                        if (fs->IsFile(filePath))
+                        {
+                            undeletedFiles << filePath.GetStringValue() << '\n';
+                        }
                     }
+                    scanFileReady[index] = false; // clear flag anyway
                 }
-                scanFileReady[index] = false; // clear flag anyway
             }
-        }
-        String errMsg = undeletedFiles.str();
-        if (!errMsg.empty())
-        {
-            Logger::Error("can't delete files: %s", errMsg.c_str());
+            String errMsg = undeletedFiles.str();
+            if (!errMsg.empty())
+            {
+                Logger::Error("can't delete files: %s", errMsg.c_str());
+            }
         }
     }
 }
@@ -1425,6 +1434,7 @@ void DLCManagerImpl::RecursiveScan(const FilePath& baseDir, const FilePath& dir,
                     if (footerSize == fread(&footer, 1, footerSize, f))
                     {
                         LocalFileInfo info;
+                        info.sizeOnDevice = FileAPI::GetFileSize(fileName);
                         info.relativeName = path.GetRelativePathname(baseDir);
                         info.compressedSize = footer.sizeCompressed;
                         info.crc32Hash = footer.crc32Compressed;
@@ -1510,15 +1520,17 @@ void DLCManagerImpl::ThreadScanFunc()
         const PackFormat::FileTableEntry* entry = mapFileData[relativeNameWithoutDvpl];
         if (entry != nullptr)
         {
-            if (entry->compressedCrc32 != info.crc32Hash || entry->compressedSize != info.compressedSize)
-            {
-                Logger::Info("hash not match for file: %s delete it", info.relativeName.c_str());
-                fs->DeleteFile(dirToDownloadedPacks + info.relativeName);
-            }
-            else
+            if (entry->compressedCrc32 == info.crc32Hash &&
+                entry->compressedSize == info.compressedSize &&
+                entry->compressedSize + sizeof(PackFormat::LitePack::Footer) == info.sizeOnDevice)
             {
                 size_t fileIndex = std::distance(&pack.filesTable.data.files[0], entry);
                 scanFileReady[fileIndex] = true;
+            }
+            else
+            {
+                // need to continue downloading file
+                // leave it as is
             }
         }
         else
@@ -1532,13 +1544,12 @@ void DLCManagerImpl::ThreadScanFunc()
     {
         return;
     }
-#ifdef __DAVAENGINE_COREV2__
+
     DAVA::RunOnMainThreadAsync([this]()
                                {
                                    // finish thread
                                    scanState = ScanState::Done;
                                });
-#endif
 }
 
 } // end namespace DAVA

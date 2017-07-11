@@ -50,6 +50,7 @@
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
 #include "Tests/PhysicsTest.h"
 #endif
+#include "Tests/SpineTest.h"
 //$UNITTEST_INCLUDE
 
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
@@ -391,6 +392,7 @@ void TestBed::RegisterTests()
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
     new PhysicsTest(*this);
 #endif
+    new SpineTest(*this);
     //$UNITTEST_CTOR
 }
 

@@ -13,7 +13,7 @@ namespace TArc
 class Widget : private QWidget, public ControlProxy
 {
 public:
-    Widget(QWidget* parent = nullptr);
+    explicit Widget(QWidget* parent = nullptr);
     ~Widget() override;
 
     void SetLayout(QLayout* layout);

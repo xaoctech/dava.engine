@@ -8,6 +8,10 @@
 #include "MemoryManager/MemoryProfiler.h"
 #include "Reflection/Reflection.h"
 
+/**
+    \defgroup components Component
+*/
+
 namespace DAVA
 {
 class Entity;
@@ -48,6 +52,7 @@ public:
         SNAP_TO_LANDSCAPE_CONTROLLER_COMPONENT,
         WASD_CONTROLLER_COMPONENT,
         VISIBILITY_CHECK_COMPONENT,
+        SLOT_COMPONENT,
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
         STATIC_BODY_COMPONENT,

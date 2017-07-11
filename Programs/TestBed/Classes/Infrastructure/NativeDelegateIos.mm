@@ -2,7 +2,7 @@
 
 #if defined(__DAVAENGINE_IPHONE__)
 
-#import <Engine/Ios/PlatformApi.h>
+#import <Engine/PlatformApiIos.h>
 #import <Foundation/Foundation.h>
 
 #include <Logger/Logger.h>

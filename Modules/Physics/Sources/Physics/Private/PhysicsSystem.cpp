@@ -57,7 +57,7 @@ PhysicsSystem::PhysicsSystem(Scene* scene)
     DVASSERT((simulationBlockSize % (16 * 1024)) == 0); // simulationBlockSize must be 16K multiplier
 
     const EngineContext* ctx = GetEngineContext();
-    Physics* physics = ctx->moduleManager->GetModule<Physics>();
+    PhysicsModule* physics = ctx->moduleManager->GetModule<PhysicsModule>();
     simulationBlock = physics->Allocate(simulationBlockSize, "SimulationBlock", __FILE__, __LINE__);
 
     PhysicsSceneConfig sceneConfig;
@@ -75,7 +75,7 @@ PhysicsSystem::~PhysicsSystem()
     DVASSERT(simulationBlock != nullptr);
 
     const EngineContext* ctx = GetEngineContext();
-    Physics* physics = ctx->moduleManager->GetModule<Physics>();
+    PhysicsModule* physics = ctx->moduleManager->GetModule<PhysicsModule>();
     physics->Deallocate(simulationBlock);
     simulationBlock = nullptr;
     physicsScene->release();
@@ -319,7 +319,7 @@ void PhysicsSystem::DrawDebugInfo()
 
 void PhysicsSystem::InitNewObjects()
 {
-    Physics* physics = GetEngineContext()->moduleManager->GetModule<Physics>();
+    PhysicsModule* physics = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
     for (PhysicsComponent* component : pendingAddPhysicsComponents)
     {
         uint32 componentType = component->GetType();

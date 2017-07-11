@@ -121,7 +121,7 @@ void CopyRigidDynamicFields(physx::PxRigidDynamic* src, physx::PxRigidDynamic* d
 }
 }
 
-class Physics::PhysicsAllocator : public physx::PxAllocatorCallback
+class PhysicsModule::PhysicsAllocator : public physx::PxAllocatorCallback
 {
 public:
     void* allocate(size_t size, const char* typeName, const char* filename, int line) override
@@ -147,7 +147,7 @@ private:
     physx::PxDefaultAllocator defaultAllocator;
 };
 
-class Physics::PhysicsErrotCallback : public physx::PxErrorCallback
+class PhysicsModule::PhysicsErrotCallback : public physx::PxErrorCallback
 {
 public:
     void reportError(physx::PxErrorCode::Enum code, const char* message, const char* file, int line) override
@@ -159,13 +159,13 @@ private:
     physx::PxDefaultErrorCallback defaultErrorCallback;
 };
 
-Physics::Physics(Engine* engine)
+PhysicsModule::PhysicsModule(Engine* engine)
     : IModule(engine)
 {
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(Physics);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PhysicsModule);
 }
 
-void Physics::Init()
+void PhysicsModule::Init()
 {
     using namespace physx;
 
@@ -186,7 +186,7 @@ void Physics::Init()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(CollisionComponent);
 }
 
-void Physics::Shutdown()
+void PhysicsModule::Shutdown()
 {
     physics->release();
     ReleasePvd(); // PxPvd should be released between PxPhysics and PxFoundation
@@ -195,22 +195,22 @@ void Physics::Shutdown()
     SafeDelete(errorCallback);
 }
 
-bool Physics::IsInitialized() const
+bool PhysicsModule::IsInitialized() const
 {
     return foundation != nullptr && physics != nullptr;
 }
 
-void* Physics::Allocate(size_t size, const char* typeName, const char* filename, int line)
+void* PhysicsModule::Allocate(size_t size, const char* typeName, const char* filename, int line)
 {
     return allocator->allocate(size, typeName, filename, line);
 }
 
-void Physics::Deallocate(void* ptr)
+void PhysicsModule::Deallocate(void* ptr)
 {
     allocator->deallocate(ptr);
 }
 
-physx::PxScene* Physics::CreateScene(const PhysicsSceneConfig& config) const
+physx::PxScene* PhysicsModule::CreateScene(const PhysicsSceneConfig& config) const
 {
     using namespace physx;
 
@@ -232,7 +232,7 @@ physx::PxScene* Physics::CreateScene(const PhysicsSceneConfig& config) const
     return scene;
 }
 
-physx::PxActor* Physics::ClonePxActor(physx::PxActor* actor, void* userData) const
+physx::PxActor* PhysicsModule::ClonePxActor(physx::PxActor* actor, void* userData) const
 {
     DVASSERT(actor);
 
@@ -269,22 +269,22 @@ physx::PxActor* Physics::ClonePxActor(physx::PxActor* actor, void* userData) con
     return result;
 }
 
-physx::PxActor* Physics::CreateStaticActor() const
+physx::PxActor* PhysicsModule::CreateStaticActor() const
 {
     return physics->createRigidStatic(physx::PxTransform(physx::PxIDENTITY::PxIdentity));
 }
 
-physx::PxActor* Physics::CreateDynamicActor() const
+physx::PxActor* PhysicsModule::CreateDynamicActor() const
 {
     return physics->createRigidDynamic(physx::PxTransform(physx::PxIDENTITY::PxIdentity));
 }
 
-physx::PxShape* Physics::CreateBoxShape(bool exclusive) const
+physx::PxShape* PhysicsModule::CreateBoxShape(bool exclusive) const
 {
     return physics->createShape(physx::PxBoxGeometry(10.0f, 10.0f, 10.0f), *GetDefaultMaterial(), exclusive);
 }
 
-physx::PxMaterial* Physics::GetDefaultMaterial() const
+physx::PxMaterial* PhysicsModule::GetDefaultMaterial() const
 {
     if (defaultMaterial == nullptr)
     {
@@ -294,9 +294,9 @@ physx::PxMaterial* Physics::GetDefaultMaterial() const
     return defaultMaterial;
 }
 
-DAVA_VIRTUAL_REFLECTION_IMPL(Physics)
+DAVA_VIRTUAL_REFLECTION_IMPL(PhysicsModule)
 {
-    ReflectionRegistrator<Physics>::Begin()
+    ReflectionRegistrator<PhysicsModule>::Begin()
     .End();
 }
 }

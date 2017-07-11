@@ -6,6 +6,7 @@
 #include "LandscapeEditorDrawSystem/HeightmapProxy.h"
 #include "LandscapeEditorDrawSystem/LandscapeProxy.h"
 #include "Commands2/TilemaskEditorCommands.h"
+#include "Qt/Main/QtUtils.h"
 
 #include "Classes/Selection/Selection.h"
 #include "Classes/Qt/Main/QtUtils.h"

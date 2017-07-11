@@ -229,6 +229,22 @@ static void CurlSetTimeout(DLCDownloader::Task& task, CURL* easyHandle)
     {
         DLCDownloader::Task::OnErrorCurlEasy(code, task, __LINE__);
     }
+
+    // Trigger timeout in case transfer speed is below CURLOPT_LOW_SPEED_LIMIT for CURLOPT_LOW_SPEED_TIME seconds
+
+    code = curl_easy_setopt(easyHandle, CURLOPT_LOW_SPEED_TIME, operationTimeout);
+    if (code != CURLE_OK)
+    {
+        DLCDownloader::Task::OnErrorCurlEasy(code, task, __LINE__);
+    }
+
+    // Use passed timeoutSec field for speed limit for now
+    long lowSpeedLimit = task.info.timeoutSec;
+    code = curl_easy_setopt(easyHandle, CURLOPT_LOW_SPEED_LIMIT, lowSpeedLimit);
+    if (code != CURLE_OK)
+    {
+        DLCDownloader::Task::OnErrorCurlEasy(code, task, __LINE__);
+    }
 }
 
 static size_t CurlDataRecvHandler(void* ptr, size_t size, size_t nmemb, void* part)
@@ -720,8 +736,9 @@ struct DefaultWriter : DLCDownloader::IWriter
 
         if (!f)
         {
-            const char* err = strerror(errno);
-            DAVA_THROW(Exception, "can't create output file: " + outputFile + " " + err);
+            StringStream ss;
+            ss << "can't create output file: " << outputFile << " errno(" << errno << ") " << strerror(errno);
+            DAVA_THROW(Exception, ss.str());
         }
     }
     ~DefaultWriter() = default;
@@ -1216,10 +1233,10 @@ void DLCDownloader::Task::SetupFullDownload()
         {
             writer.reset(new DefaultWriter(info.dstPath));
         }
-        catch (std::exception& ex)
+        catch (Exception& ex)
         {
             OnErrorCurlErrno(errno, *this, __LINE__);
-            Logger::Error("can't create DefaultWriter: %s", ex.what());
+            Logger::Error("can't create DefaultWriter: %s %s %d", ex.what(), ex.file.c_str(), static_cast<int>(ex.line));
             return;
         }
     }

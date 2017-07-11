@@ -35,6 +35,7 @@ private:
 
     DAVA::String filename;
     DAVA::String foldername;
+    DAVA::FilePath dataSourceFolder;
     DAVA::FilePath fileListPath;
 
     eAction commandAction = ACTION_NONE;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <fstream>
+
 #include "DLCManager/DLCManager.h"
 #include "DLCManager/DLCDownloader.h"
 #include "DLCManager/Private/RequestManager.h"
@@ -10,8 +12,6 @@
 #include "Concurrency/Semaphore.h"
 #include "Concurrency/Thread.h"
 #include "Engine/Engine.h"
-
-#include <fstream>
 
 namespace DAVA
 {
@@ -104,8 +104,6 @@ public:
     static const String& ToString(InitState state);
 
     explicit DLCManagerImpl(Engine* engine_);
-    Engine& engine;
-
     ~DLCManagerImpl();
     void TestWriteAccessToPackDirectory(const FilePath& dirToDownloadPacks_);
     void FillPreloadedPacks();
@@ -169,10 +167,7 @@ public:
 
     std::ostream& GetLog() const;
 
-    DLCDownloader* GetDownloader() const
-    {
-        return downloader.get();
-    }
+    DLCDownloader& GetDownloader() const;
 
 private:
     // initialization state functions
@@ -216,6 +211,7 @@ private:
     struct LocalFileInfo
     {
         String relativeName;
+        uint64 sizeOnDevice = std::numeric_limits<uint64>::max();
         uint32 compressedSize = std::numeric_limits<uint32>::max(); // file size can be 0 so use max value default
         uint32 crc32Hash = std::numeric_limits<uint32>::max();
     };
@@ -234,6 +230,7 @@ private:
 
     mutable std::ofstream log;
 
+    Engine& engine;
     FilePath localCacheMeta;
     FilePath localCacheFileTable;
     FilePath localCacheFooter;
