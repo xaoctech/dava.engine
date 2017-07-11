@@ -22,7 +22,7 @@ endif()
 
 set ( DAVA_COMPONENTS "SampleModule" "DAVA_DISABLE_AUTOTESTS" )
 if (NOT LINUX)
-    list ( APPEND DAVA_COMPONENTS "Sound" "SpineModule" )
+    list ( APPEND DAVA_COMPONENTS "Sound" "Spine" )
 endif()
 if ( WIN32 AND NOT WIN_UAP AND NOT DAVA_PLATFORM_QT)
     list ( APPEND DAVA_COMPONENTS "CEFWebview" )
