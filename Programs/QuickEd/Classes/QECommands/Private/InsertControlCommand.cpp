@@ -7,14 +7,13 @@
 #include <UI/UIControl.h>
 #include <Logger/Logger.h>
 
-
 namespace InsertControlCommandDetails
 {
 using namespace DAVA;
 
 bool IsNameExists(const String& name, ControlsContainerNode* dest, ControlsContainerNode* prototypes)
 {
-    auto& isEqual = [&name](ControlNode* siblingControl)
+    auto isEqual = [&name](ControlNode* siblingControl)
     {
         return (siblingControl->GetName() == name);
     };
@@ -65,7 +64,7 @@ InsertControlCommand::InsertControlCommand(PackageNode* package, ControlNode* no
     , node(DAVA::RefPtr<ControlNode>::ConstructWithRetain(node_))
     , dest(DAVA::RefPtr<ControlsContainerNode>::ConstructWithRetain(dest_))
     , index(index_)
-{    
+{
     ControlsContainerNode* prototypes = nullptr;
     if (dest->GetParent() == package)
     {
