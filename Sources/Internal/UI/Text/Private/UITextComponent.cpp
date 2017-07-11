@@ -271,11 +271,7 @@ bool UITextComponent::IsModified() const
 
 UITextSystemLink* UITextComponent::GetLink() const
 {
-    if (!link.Valid())
-    {
-        link.Set(new UITextSystemLink(this));
-    }
-    return link.Get();
+    return &link;
 }
 
 void UITextComponent::ApplyDataImmediately() const
@@ -285,14 +281,13 @@ void UITextComponent::ApplyDataImmediately() const
     {
         UIControlSystem::Instance()->GetTextSystem()->ApplyData(const_cast<UITextComponent*>(this));
     }
-    DVASSERT(link.Valid());
 }
 
 // Backward compatibility method
 Vector2 UITextComponent::GetContentPreferredSize(const Vector2& constraints) const
 {
     ApplyDataImmediately();
-    return link->GetTextBlock()->GetPreferredSizeForWidth(constraints.x);
+    return link.GetTextBlock()->GetPreferredSizeForWidth(constraints.x);
 }
 
 // Backward compatibility method

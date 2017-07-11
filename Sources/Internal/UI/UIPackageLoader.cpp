@@ -648,7 +648,7 @@ void UIPackageLoader::ProcessLegacyRichSingleAliases(const YamlNode* node, Abstr
 void UIPackageLoader::ProcessLegacyStaticText(const ReflectedType* ref, const YamlNode* node, AbstractUIPackageBuilder* builder) const
 {
     static const Type* STATIC_TEXT_TYPE = Type::Instance<UIStaticText>();
-    // Move propeties from UIStaticText to component
+    // Move properties from UIStaticText to component
     if (ref && ref->GetType() == STATIC_TEXT_TYPE)
     {
         const ReflectedType* componentRef = builder->BeginComponentPropertiesSection(Type::Instance<UITextComponent>(), 0);

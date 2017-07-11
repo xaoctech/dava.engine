@@ -7,11 +7,8 @@
 
 namespace DAVA
 {
-UITextSystemLink::UITextSystemLink(const UITextComponent* component_)
-    : BaseObject()
+UITextSystemLink::UITextSystemLink()
 {
-    component = const_cast<UITextComponent*>(component_);
-
     textBlock.Set(TextBlock::Create(Vector2::Zero));
 
     textBg.Set(new UIControlBackground());
@@ -23,6 +20,5 @@ UITextSystemLink::UITextSystemLink(const UITextComponent* component_)
 
 UITextSystemLink::~UITextSystemLink()
 {
-    component = nullptr;
 }
 };

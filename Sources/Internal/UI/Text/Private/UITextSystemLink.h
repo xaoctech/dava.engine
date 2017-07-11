@@ -12,16 +12,15 @@ class UIControlBackground;
 
 /**
     Internal helper class for text parsing and rendering purpose.    
-    Stores component-control pair and helper renderer objects.
-    Lifecycle totally managed by system. 
+    Stores text and shadow renderers.
     \sa {UITextComponent, UITextSystem}. 
 */
-class UITextSystemLink final : public BaseObject
+class UITextSystemLink final
 {
 public:
-    UITextSystemLink(const UITextComponent* component_);
+    UITextSystemLink();
+    ~UITextSystemLink();
 
-    UITextComponent* GetComponent() const;
     /** Text parser and renderer. */
     TextBlock* GetTextBlock() const;
     /** Text layer representation for render. */
@@ -31,22 +30,11 @@ public:
 
 private:
     UITextSystemLink& operator=(const UITextSystemLink&) = delete;
-    ~UITextSystemLink();
-
-    UITextComponent* component;
 
     RefPtr<TextBlock> textBlock;
     RefPtr<UIControlBackground> textBg;
     RefPtr<UIControlBackground> shadowBg;
-
-    // Friends
-    friend class UITextSystem;
 };
-
-inline UITextComponent* UITextSystemLink::GetComponent() const
-{
-    return component;
-}
 
 inline TextBlock* UITextSystemLink::GetTextBlock() const
 {
