@@ -1,13 +1,15 @@
 #pragma once
 
+#include "DAVAEngine.h"
 #include "Infrastructure/BaseScreen.h"
 #include <Base/RefPtr.h>
 #include <UI/UIControl.h>
 #include <UI/UITextField.h>
 
 class TestBed;
-class RichInputDelegate;
 struct TextTestCase;
+
+using namespace DAVA;
 
 class TextSystemTest : public BaseScreen
 {
@@ -23,7 +25,7 @@ public:
 protected:
     void LoadResources() override;
     void UnloadResources() override;
-    void Update(DAVA::float32 delta) override;
+    void Update(float32 delta) override;
 
     void ChangeCurrentTest(int32 testIdx_);
     void Benchmark1();

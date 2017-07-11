@@ -2,6 +2,7 @@
 #include "Reflection/ReflectionRegistrator.h"
 #include "UITextSystemLink.h"
 #include "UI/Text/UITextSystem.h"
+#include "UI/UIControlSystem.h"
 
 namespace DAVA
 {

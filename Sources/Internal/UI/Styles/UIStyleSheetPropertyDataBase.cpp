@@ -11,6 +11,7 @@
 #include "UI/Layouts/UISizePolicyComponent.h"
 #include "UI/Layouts/UIAnchorComponent.h"
 #include "UI/Sound/UISoundComponent.h"
+#include "UI/Text/UITextComponent.h"
 #include "Reflection/ReflectedTypeDB.h"
 
 namespace DAVA

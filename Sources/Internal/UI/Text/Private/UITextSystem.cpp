@@ -8,6 +8,7 @@
 #include "UI/Text/UITextComponent.h"
 #include "UI/UIControl.h"
 #include "UITextSystemLink.h"
+#include "Utils/UTF8Utils.h"
 
 namespace DAVA
 {
