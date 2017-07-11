@@ -281,7 +281,8 @@ bool PackArchive::LoadFile(const String& relativeFilePath, Vector<uint8>& output
     // check crc32 for file content
     if (fileEntry.originalCrc32 != 0 && fileEntry.originalCrc32 != CRC32::ForBuffer(output.data(), output.size()))
     {
-        throw FileCrc32FromPackNotMatch("original crc32 not match for: " + relativeFilePath + " during decompress from pack: " + archiveName.GetStringValue());
+        String msg = "original crc32 not match for: " + relativeFilePath + " during decompress from pack: " + archiveName.GetStringValue();
+        throw FileCrc32FromPackNotMatch(msg, __FILE__, __LINE__);
     }
 
     return true;
