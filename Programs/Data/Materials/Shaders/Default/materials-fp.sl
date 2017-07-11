@@ -68,7 +68,7 @@ fragment_in
     #endif
 
     #if GEO_DECAL
-        float2 geoDecalCoord : TEXCOORD4;
+        float2 geoDecalCoord : TEXCOORD6;
     #endif
 };
 

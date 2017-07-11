@@ -164,7 +164,7 @@ enum eVertexFormat
     EVF_TEXCOORD3 = 1 << 6,
     EVF_TANGENT = 1 << 7,
     EVF_BINORMAL = 1 << 8,
-    EVF_DECAL_TEXCOORD = 1 << 9,
+    // EVF_HOLY_SHIT_DONT_USE_THIS_ID = 1 << 9,
     EVF_PIVOT4 = 1 << 10,
     EVF_PIVOT_DEPRECATED = 1 << 11, //deprecated, need remove after content re-saving
     EVF_FLEXIBILITY = 1 << 12,
@@ -177,7 +177,7 @@ enum eVertexFormat
     EVF_CUBETEXCOORD3 = 1 << 19,
 
     EVF_LOWER_BIT = EVF_VERTEX,
-    EVF_HIGHER_BIT = EVF_JOINTWEIGHT,
+    EVF_HIGHER_BIT = EVF_JOINTWEIGHT, // shouldn't it be EVF_CUBETEXCOORD3?
     EVF_NEXT_AFTER_HIGHER_BIT = (EVF_HIGHER_BIT << 1),
     EVF_FORCE_DWORD = 0x7fffffff,
 };
@@ -232,9 +232,6 @@ inline int32 GetVertexSize(int32 flags)
         size += 3 * sizeof(float32);
     if (flags & EVF_BINORMAL)
         size += 3 * sizeof(float32);
-
-    if (flags & EVF_DECAL_TEXCOORD)
-        size += 4 * sizeof(float32);
 
     if (flags & EVF_CUBETEXCOORD0)
         size += 3 * sizeof(float32);

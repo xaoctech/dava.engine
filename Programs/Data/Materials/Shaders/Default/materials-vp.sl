@@ -55,7 +55,7 @@ vertex_in
     #endif
 
     #if GEO_DECAL
-    float4 geoDecalCoord : TEXCOORD4;
+    float4 geoDecalCoord : TEXCOORD3;
     #endif
 };
 
@@ -123,7 +123,7 @@ vertex_out
     #endif
 
     #if GEO_DECAL
-        float2 geoDecalCoord : TEXCOORD4;
+        float2 geoDecalCoord : TEXCOORD6;
     #endif
 };
 

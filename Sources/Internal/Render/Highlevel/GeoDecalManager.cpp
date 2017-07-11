@@ -39,6 +39,7 @@ struct GeoDecalManager::DecalVertex
     Vector3 binormal;
     Vector2 texCoord0;
     Vector2 texCoord1;
+    Vector2 texCoord2;
     Vector4 decalCoord;
     int32 jointIndex = 0;
 
@@ -364,6 +365,12 @@ void GeoDecalManager::GetStaticMeshGeometry(const DecalBuildInfo& info, Vector<u
             info.polygonGroup->GetTexcoord(1, idx[1], points[1].texCoord1);
             info.polygonGroup->GetTexcoord(1, idx[2], points[2].texCoord1);
         }
+        if (geometryFormat & EVF_TEXCOORD2)
+        {
+            info.polygonGroup->GetTexcoord(2, idx[0], points[0].texCoord2);
+            info.polygonGroup->GetTexcoord(2, idx[1], points[1].texCoord2);
+            info.polygonGroup->GetTexcoord(2, idx[2], points[2].texCoord2);
+        }
         if (geometryFormat & EVF_NORMAL)
         {
             info.polygonGroup->GetNormal(idx[0], points[0].normal);
@@ -413,6 +420,8 @@ void GeoDecalManager::GetSkinnedMeshGeometry(const DecalBuildInfo& info, Vector<
                 info.polygonGroup->GetTexcoord(0, idx[j], points[j].texCoord0);
             if (geometryFormat & EVF_TEXCOORD1)
                 info.polygonGroup->GetTexcoord(1, idx[j], points[j].texCoord1);
+            if (geometryFormat & EVF_TEXCOORD2)
+                info.polygonGroup->GetTexcoord(2, idx[j], points[j].texCoord2);
             if (geometryFormat & EVF_NORMAL)
                 info.polygonGroup->GetNormal(idx[j], points[j].normal);
             if (geometryFormat & EVF_TANGENT)
@@ -479,20 +488,23 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatchProvider
     const DecalVertex* decalVertexPtr = reinterpret_cast<DecalVertex*>(buffer.data());
 
     ScopedPtr<PolygonGroup> newPolygonGroup(new PolygonGroup());
-    newPolygonGroup->AllocateData(geometryFormat | EVF_DECAL_TEXCOORD, decalVertexCount, decalVertexCount);
+    newPolygonGroup->AllocateData(geometryFormat | EVF_TEXCOORD3, decalVertexCount, decalVertexCount);
     for (uint32 index = 0; index < decalVertexCount; ++index, ++decalVertexPtr)
     {
         const DecalVertex& c = (*decalVertexPtr);
 
         newPolygonGroup->SetCoord(index, c.originalPoint);
         newPolygonGroup->SetIndex(index, static_cast<int16>(index));
-        newPolygonGroup->SetDecalTexcoord(index, c.decalCoord);
+        newPolygonGroup->SetTexcoord(3, index, Vector2(c.decalCoord.x, c.decalCoord.y));
 
         if (geometryFormat & EVF_TEXCOORD0)
             newPolygonGroup->SetTexcoord(0, index, info.useCustomNormal ? Vector2(c.decalCoord.x, c.decalCoord.y) : c.texCoord0);
 
         if (geometryFormat & EVF_TEXCOORD1)
             newPolygonGroup->SetTexcoord(1, index, c.texCoord1);
+
+        if (geometryFormat & EVF_TEXCOORD2)
+            newPolygonGroup->SetTexcoord(2, index, c.texCoord2);
 
         if (geometryFormat & EVF_NORMAL)
             newPolygonGroup->SetNormal(index, c.normal);
@@ -582,6 +594,7 @@ void GeoDecalManager::Lerp(float t, const DecalVertex& v1, const DecalVertex& v2
     LERP_IMPL(binormal);
     LERP_IMPL(texCoord0);
     LERP_IMPL(texCoord1);
+    LERP_IMPL(texCoord2);
     LERP_IMPL(decalCoord);
 #undef LERP_IMPL
 }

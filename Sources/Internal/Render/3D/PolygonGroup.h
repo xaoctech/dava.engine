@@ -25,14 +25,17 @@ public:
     enum VertexDataType
     {
         VERTEX_FLOAT = 1,
-        //		VERTEX_FIXED16_16,
-        //		VERTEX_SHORT,
     };
 
     enum
     {
         PACKING_NONE = 0,
         PACKING_DEFAULT,
+    };
+
+    enum : uint32_t
+    {
+        TEXTURE_COORDS_COUNT = 4
     };
 
 protected:
@@ -108,7 +111,7 @@ public:
     int32 cubeTextureCoordCount;
 
     Vector3* vertexArray;
-    Vector2** textureCoordArray;
+    Vector2* textureCoordArray[TEXTURE_COORDS_COUNT];
     Vector3* normalArray;
     Vector3* tangentArray;
     Vector3* binormalArray;
@@ -231,7 +234,7 @@ inline void PolygonGroup::SetColor(int32 i, const uint32& _c)
 
 inline void PolygonGroup::SetTexcoord(int32 ti, int32 i, const Vector2& _t)
 {
-    DVASSERT(ti < textureCoordCount);
+    DVASSERT(ti < TEXTURE_COORDS_COUNT);
     SetVertexData(i, textureCoordArray[ti], _t);
 }
 

@@ -32,7 +32,6 @@ PolygonGroup::PolygonGroup()
     , primitiveType(rhi::PRIMITIVE_TRIANGLELIST)
     , cubeTextureCoordCount(0)
     , vertexArray(0)
-    , textureCoordArray(0)
     , normalArray(0)
     , tangentArray(0)
     , binormalArray(0)
@@ -51,6 +50,7 @@ PolygonGroup::PolygonGroup()
     , baseVertexArray(0)
     , vertexLayoutId(rhi::VertexLayout::InvalidUID)
 {
+    std::fill(std::begin(textureCoordArray), std::end(textureCoordArray), nullptr);
     Renderer::GetSignals().needRestoreResources.Connect(this, &PolygonGroup::RestoreBuffers);
 }
 
@@ -113,12 +113,6 @@ void PolygonGroup::UpdateDataPointersAndStreams()
         textureCoordArray[3] = reinterpret_cast<Vector2*>(meshData + baseShift);
         baseShift += GetVertexSize(EVF_TEXCOORD3);
         vLayout.AddElement(rhi::VS_TEXCOORD, 3, rhi::VDT_FLOAT, 2);
-    }
-    if (vertexFormat & EVF_DECAL_TEXCOORD)
-    {
-        decalTexCoordArray = reinterpret_cast<Vector4*>(meshData + baseShift);
-        baseShift += GetVertexSize(EVF_DECAL_TEXCOORD);
-        vLayout.AddElement(rhi::VS_TEXCOORD, 4, rhi::VDT_FLOAT, 4);
     }
     if (vertexFormat & EVF_TANGENT)
     {
@@ -220,9 +214,6 @@ void PolygonGroup::AllocateData(int32 _meshFormat, int32 _vertexCount, int32 _in
     DVASSERT(indexCount > 0);
     indexArray = new int16[indexCount];
 
-    if (textureCoordCount > 0)
-        textureCoordArray = new Vector2*[textureCoordCount];
-
     if (cubeTextureCoordCount > 0)
         cubeTextureCoordArray = new Vector3*[cubeTextureCoordCount];
 
@@ -280,8 +271,8 @@ void PolygonGroup::ReleaseData()
     SafeDeleteArray(jointCountArray);
     SafeDeleteArray(meshData);
     SafeDeleteArray(indexArray);
-    SafeDeleteArray(textureCoordArray);
     SafeDeleteArray(cubeTextureCoordArray);
+    std::fill(std::begin(textureCoordArray), std::end(textureCoordArray), nullptr);
 }
 
 uint32 PolygonGroup::ReleaseGeometryData()
@@ -291,11 +282,10 @@ uint32 PolygonGroup::ReleaseGeometryData()
         SafeDeleteArray(jointCountArray);
         SafeDeleteArray(meshData);
         SafeDeleteArray(indexArray);
-        SafeDeleteArray(textureCoordArray);
         SafeDeleteArray(cubeTextureCoordArray);
+        std::fill(std::begin(textureCoordArray), std::end(textureCoordArray), nullptr);
 
         vertexArray = nullptr;
-        textureCoordArray = nullptr;
         normalArray = nullptr;
         tangentArray = nullptr;
         binormalArray = nullptr;
@@ -473,12 +463,10 @@ void PolygonGroup::LoadPolygonData(KeyedArchive* keyedArchive, SerializationCont
         memcpy(indexArray, archiveData, indexCount * INDEX_FORMAT_SIZE[indexFormat]);
     }
 
-    SafeDeleteArray(textureCoordArray);
-    textureCoordArray = new Vector2*[textureCoordCount];
-
+    std::fill(std::begin(textureCoordArray), std::end(textureCoordArray), nullptr);
     UpdateDataPointersAndStreams();
-    RecalcAABBox();
 
+    RecalcAABBox();
     BuildBuffers();
 }
 
