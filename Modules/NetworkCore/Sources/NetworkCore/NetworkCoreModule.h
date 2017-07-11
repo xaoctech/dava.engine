@@ -10,7 +10,7 @@ namespace DAVA
 {
 class ModuleManager;
 
-class NetworkCore : public IModule
+class NetworkCoreModule : public IModule
 {
 public:
     enum eStatus
@@ -25,7 +25,7 @@ public:
         return statusList;
     }
 
-    NetworkCore(Engine* engine);
+    NetworkCoreModule(Engine* engine);
 
     void Init() override;
     void Shutdown() override;
@@ -33,6 +33,6 @@ public:
 private:
     Vector<eStatus> statusList;
 
-    DAVA_VIRTUAL_REFLECTION(NetworkCore, IModule);
+    DAVA_VIRTUAL_REFLECTION(NetworkCoreModule, IModule);
 };
 };

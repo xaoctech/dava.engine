@@ -1,28 +1,27 @@
-#include "NetworkCore.h"
-
+#include "NetworkCore/NetworkCoreModule.h"
 #include <Reflection/ReflectionRegistrator.h>
 
 namespace DAVA
 {
-NetworkCore::NetworkCore(Engine* engine)
+NetworkCoreModule::NetworkCoreModule(Engine* engine)
     : IModule(engine)
 {
     statusList.emplace_back(eStatus::ES_UNKNOWN);
 }
 
-void NetworkCore::Init()
+void NetworkCoreModule::Init()
 {
     statusList.emplace_back(eStatus::ES_INIT);
 }
 
-void NetworkCore::Shutdown()
+void NetworkCoreModule::Shutdown()
 {
     statusList.emplace_back(eStatus::ES_SHUTDOWN);
 }
 
-DAVA_VIRTUAL_REFLECTION_IMPL(NetworkCore)
+DAVA_VIRTUAL_REFLECTION_IMPL(NetworkCoreModule)
 {
-    ReflectionRegistrator<NetworkCore>::Begin()
+    ReflectionRegistrator<NetworkCoreModule>::Begin()
     .End();
 }
 }

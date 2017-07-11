@@ -8,6 +8,7 @@ def main():
     parser.add_argument('modules', nargs='*')
     parser.add_argument('-o', metavar='output', help='Output file', nargs=1)
     parser.add_argument('-r', metavar='root', help='Engine root path', nargs=1)
+    parser.add_argument('--verbose', help='Be verbose', action="store_true")
     
     try:
         args = parser.parse_args()
@@ -28,16 +29,22 @@ def main():
 
     if (len(args.modules) > 0):
         outfile.write('#include "ModuleManager/ModuleManager.h"\n')
-        outfile.write('#include "ModuleManager/IModule.h"\n')
+        outfile.write('#include "ModuleManager/IModule.h"\n\n')
 
         included_modules = []
 
         for module in args.modules:
             module_header = '%s/%sModule.h' % (module, module)
             module_fw_path = 'Modules/%s/Sources/%s' % (module, module_header)
+
+            has_header = False
             if os.path.isfile(rootpath + '/' + module_fw_path):
+                has_header = True
                 included_modules.append(module)
                 outfile.write('#include "%s"\n' % module_header)
+
+            if args.verbose:
+                print "Checking for %s = %s" % (module_fw_path, has_header)
 
         outfile.write('\n')
         outfile.write('namespace DAVA\n')
@@ -53,7 +60,10 @@ def main():
 
         outfile.write('}\n')
         outfile.write('} // namespace DAVA\n')
-        
+
+        if args.verbose:
+            print "Initialization code was generated for: %s" % included_modules
+
     outfile.close()
 
 if __name__ == '__main__':

@@ -1,4 +1,4 @@
-#include "SpineModule.h"
+#include "Spine/SpineModule.h"
 #include "UI/Spine/UISpineAttachControlsToBonesComponent.h"
 #include "UI/Spine/UISpineComponent.h"
 #include "UI/Spine/UISpineSingleComponent.h"
