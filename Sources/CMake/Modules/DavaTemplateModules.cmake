@@ -446,12 +446,11 @@ macro( setup_main_module )
 
         if( NAME_MODULE_STUB )
             set( CONECTION_TYPE STUB )
-            list (FIND LOADED_MODULES ${NAME_MODULE_STUB} _index)
+            list (FIND DAVA_COMPONENTS ${NAME_MODULE_STUB} _index)
             if ( ${_index} GREATER -1 )
                 set( NAME_MODULE )
                 set( MODULE_TYPE INLINE )
                 set( CONECTION_TYPE IMPL )
-
             endif()
 
             foreach ( ITEM  HPP_FILES_RECURSE HPP_FILES
