@@ -152,20 +152,16 @@ void RequestManager::Update(bool inBackground)
         FireUpdateWhileInactiveSignals();
     }
 
-    int64 updateTotalTime = 0;
-
+    const int64 start = SystemTimer::GetMs();
     const DLCManager::Hints& hints = packManager.GetHints();
 
     while (!Empty())
     {
-        int64 start = SystemTimer::GetMs();
-
         OneUpdateIteration(inBackground);
 
         int64 timeIter = SystemTimer::GetMs() - start;
-        updateTotalTime += timeIter;
 
-        if (updateTotalTime >= hints.limitRequestUpdateIterationMs)
+        if (timeIter >= hints.limitRequestUpdateIterationMs)
         {
             break;
         }
