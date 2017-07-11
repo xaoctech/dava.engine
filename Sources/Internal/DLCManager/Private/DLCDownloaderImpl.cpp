@@ -1577,6 +1577,11 @@ void DLCDownloaderImpl::DownloadThreadFunc()
 
             BalancingHandles();
 
+            if (numOfRunningSubTasks == 0)
+            {
+                downloading = false;
+            }
+
             while (downloading)
             {
                 int numOfCurlWorkingHandles = CurlPerform();
@@ -1620,14 +1625,32 @@ int DLCDownloaderImpl::CurlPerform()
         DAVA_THROW(Exception, strErr);
     }
 
+    int numfds = 0;
+
     // wait for activity, timeout or "nothing"
     // from https://curl.haxx.se/libcurl/c/curl_multi_wait.html
-    code = curl_multi_wait(multiHandle, nullptr, 0, 1000, nullptr);
+    code = curl_multi_wait(multiHandle, nullptr, 0, 1000, &numfds);
     if (code != CURLM_OK)
     {
         const char* strErr = curl_multi_strerror(code);
         Logger::Error("curl_multi_wait failed: %s", strErr);
         DAVA_THROW(Exception, strErr);
+    }
+    // 'numfds' being zero means either a timeout or no file descriptors to
+    // wait for. Try timeout on first occurrence, then assume no file
+    // descriptors and no file descriptors to wait for means wait for 100
+    // milliseconds.
+    if (!numfds)
+    {
+        ++multiWaitRepeats;
+        if (multiWaitRepeats > 1)
+        {
+            Thread::Sleep(100);
+        }
+    }
+    else
+    {
+        multiWaitRepeats = 0;
     }
 
     // if there are still transfers, loop!
