@@ -1,5 +1,7 @@
 #include "PreviewWidget.h"
 
+#include "Application/QEGlobal.h"
+
 #include "EditorSystems/EditorSystemsManager.h"
 
 #include "EditorSystems/EditorCanvas.h"
@@ -22,6 +24,7 @@
 
 #include <TArc/Controls/SceneTabbar.h>
 #include <TArc/Core/ContextAccessor.h>
+#include <TArc/Core/OperationInvoker.h>
 #include <TArc/DataProcessing/DataContext.h>
 
 #include <QtTools/Updaters/ContinuousUpdater.h>
@@ -54,9 +57,10 @@ QString ScaleStringFromReal(float scale)
 }
 }
 
-PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::RenderWidget* renderWidget, EditorSystemsManager* systemsManager)
+PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::OperationInvoker* invoker_, DAVA::RenderWidget* renderWidget, EditorSystemsManager* systemsManager)
     : QFrame(nullptr)
     , accessor(accessor_)
+    , invoker(invoker_)
     , rulerController(new RulerController(this))
     , vGuidesController(new VGuidesController(accessor, this))
     , hGuidesController(new HGuidesController(accessor, this))
@@ -750,12 +754,15 @@ void PreviewWidget::OnTabBarContextMenuRequested(const QPoint& pos)
     QAction* closeTabAction = new QAction(tr("Close tab"), &menu);
     QAction* closeOtherTabsAction = new QAction(tr("Close other tabs"), &menu);
     QAction* closeAllTabsAction = new QAction(tr("Close all tabs"), &menu);
+    QAction* selectInFileSystemAction = new QAction(tr("Select in file system"), &menu);
 
     closeOtherTabsAction->setEnabled(allIDs.size() > 1);
 
     menu.addAction(closeTabAction);
     menu.addAction(closeOtherTabsAction);
     menu.addAction(closeAllTabsAction);
+    menu.addSeparator();
+    menu.addAction(selectInFileSystemAction);
 
     connect(closeAllTabsAction, &QAction::triggered, [this, allIDs]()
             {
@@ -777,6 +784,11 @@ void PreviewWidget::OnTabBarContextMenuRequested(const QPoint& pos)
                     }
                 }
             });
+
+    connect(selectInFileSystemAction, &QAction::triggered, [this, currentId]() {
+        QString filePath = accessor->GetContext(currentId)->GetData<DocumentData>()->GetPackageAbsolutePath();
+        invoker->Invoke(QEGlobal::SelectFile.ID, filePath);
+    });
 
     menu.exec(tabBar->mapToGlobal(pos));
 }
