@@ -8,7 +8,6 @@
 #include <Base/FastName.h>
 
 class PackageBaseNode;
-
 class CompletionsProviderForUIReflection : public CompletionsProvider
 {
 public:

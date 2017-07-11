@@ -180,6 +180,7 @@ private:
     CURLM* multiHandle = nullptr;
     Thread* downloadThread = nullptr;
     int numOfRunningSubTasks = 0;
+    int multiWaitRepeats = 0;
     // [end] variables
 
     Semaphore downloadSem; // to resume download thread
