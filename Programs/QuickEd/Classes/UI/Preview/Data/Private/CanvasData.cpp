@@ -27,8 +27,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(CanvasData)
 
 CanvasData::CanvasData()
 {
-    predefinedScales = { 0.01f, 0.02f, 0.04f, 0.08f, 0.16f,
-                         0.32f, 0.64f, 1.0f, 2.00f, 4.00f,
+    predefinedScales = { 0.25f, 0.50f, 1.0f, 2.00f, 4.00f,
                          8.00f, 16.0f, 24.0f, 32.0f };
 }
 

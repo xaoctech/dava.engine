@@ -62,6 +62,7 @@ PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc:
     , scaleComboBoxData(accessor)
     , hScrollBarData(Vector2::AXIS_X, accessor)
     , vScrollBarData(Vector2::AXIS_Y, accessor)
+    , canvasDataAdapter(accessor)
 {
     InjectRenderWidget(renderWidget);
 
@@ -70,7 +71,6 @@ PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc:
     InitFromSystemsManager(systemsManager);
 
     centralWidgetDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<CentralWidgetData>());
-    canvasDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<CanvasData>());
 }
 
 PreviewWidget::~PreviewWidget() = default;
@@ -171,7 +171,7 @@ void PreviewWidget::OnIncrementScale()
     CanvasData* canvasData = activeContext->GetData<CanvasData>();
 
     float32 nextScale = canvasData->GetNextScale(1);
-    canvasDataWrapper.SetFieldValue(CanvasData::scalePropertyName, nextScale);
+    canvasDataAdapter.SetScale(nextScale);
 }
 
 void PreviewWidget::OnDecrementScale()
@@ -184,7 +184,7 @@ void PreviewWidget::OnDecrementScale()
     CanvasData* canvasData = activeContext->GetData<CanvasData>();
 
     float32 nextScale = canvasData->GetPreviousScale(-1);
-    canvasDataWrapper.SetFieldValue(CanvasData::scalePropertyName, nextScale);
+    canvasDataAdapter.SetScale(nextScale);
 }
 
 void PreviewWidget::SetActualScale()
@@ -192,7 +192,7 @@ void PreviewWidget::SetActualScale()
     using namespace DAVA;
     using namespace DAVA::TArc;
 
-    canvasDataWrapper.SetFieldValue(CanvasData::scalePropertyName, 1.0f);
+    canvasDataAdapter.SetScale(1.0f);
 }
 
 void PreviewWidget::OnResized(DAVA::uint32 width, DAVA::uint32 height)

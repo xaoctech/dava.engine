@@ -360,12 +360,16 @@ void GuidesController::SyncGuidesWithValues()
         ResizeGuide(guide);
         guide.text->SetValue(value);
         MoveGuide(value, guide);
+    }
 
-        delayedExecutor.DelayedExecute([&guide]() {
+    //we can not use QWidget::show inside this SyncGuidesWithValues method, because it can be called by FrameUpdater and will cause processFrames inside another frame
+    delayedExecutor.DelayedExecute([this]() {
+        for (Guide& guide : guides)
+        {
             guide.Show();
             guide.Raise();
-        });
-    }
+        }
+    });
 }
 
 PackageNode::AxisGuides::iterator GuidesController::GetNearestValuePtr(DAVA::float32 position)
