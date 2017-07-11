@@ -8,11 +8,11 @@ set(CPP_FILES_RECURSE Sources/*.cpp)
 set(PhysicsDebugRootDir "${CMAKE_CURRENT_SOURCE_DIR}")
 set(PhysicsRootDir "${PhysicsDebugRootDir}/../Physics")
 
+set(INCLUDES "${PhysicsDebugRootDir}/Sources")
 set(INCLUDES_PRIVATE ${DAVA_INCLUDE_DIR}
                      "${PhysicsRootDir}/Libs/include/physx"
-                     "${PhysicsRootDir}/Libs/include/PxShared"
-                     "${PhysicsDebugRootDir}/Sources")
-set(MODULE_INITIALIZATION_CODE Sources/PhysicsDebugModule.h)
+                     "${PhysicsRootDir}/Libs/include/PxShared")
+set(MODULE_INITIALIZATION_CODE Sources/PhysicsDebug/PhysicsDebugModule.h)
 
 set(LibsPath "${PhysicsRootDir}/Libs")
 
