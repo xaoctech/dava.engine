@@ -75,13 +75,122 @@ void DeveloperTools::OnDebugFunctionsGridCopy()
     }
 }
 
-void DeveloperTools::OnDebugCreateTestSkinnedObject()
+void DeveloperTools::OnDebugCreateTestHardSkinnedObject()
 {
     SceneEditor2* currentScene = sceneHolder.GetScene();
     if (!currentScene)
         return;
+
     ScopedPtr<Entity> entity(new Entity());
-    entity->SetName(FastName("SkeletonTestComponent"));
+    entity->SetName(FastName("TestHardSkinned"));
+
+    int boxesCount = 4;
+    Vector3 boxes[] = { Vector3(0, 0, 0), Vector3(0, 0, 10), Vector3(2, 0, 5), Vector3(-2, 0, 5) };
+
+    AABBox3 jointBox(Vector3(-1, -1, -1), Vector3(1, 1, 1));
+    SkeletonComponent* component = new SkeletonComponent();
+
+    Vector<SkeletonComponent::Joint> joints;
+    joints.resize(4);
+
+    joints[0].parentIndex = SkeletonComponent::INVALID_JOINT_INDEX;
+    joints[0].uid = FastName("root0");
+
+    joints[1].parentIndex = 0;
+    joints[1].uid = FastName("root0.bone0");
+
+    joints[2].parentIndex = 1;
+    joints[2].uid = FastName("root0.bone0.bone0");
+
+    joints[3].parentIndex = 1;
+    joints[3].uid = FastName("root0.bone0.bone1");
+
+    for (int32 i = 0; i < 4; ++i)
+    {
+        joints[i].targetIndex = i;
+        joints[i].name = joints[i].uid;
+        joints[i].bindTransform = Matrix4::MakeTranslation(boxes[i]);
+        joints[i].bindTransform.GetInverse(joints[i].bindTransformInv);
+        joints[i].bbox = AABBox3(jointBox.min + boxes[i], jointBox.max + boxes[i]);
+    }
+
+    component->SetJoints(joints);
+    entity->AddComponent(component);
+
+    ScopedPtr<PolygonGroup> polygonGroup(new PolygonGroup());
+    polygonGroup->SetPrimitiveType(rhi::PRIMITIVE_LINELIST);
+    polygonGroup->AllocateData(EVF_VERTEX | EVF_JOINTINDEX_HARD, boxesCount * 8, boxesCount * 24);
+    for (int32 i = 0; i < boxesCount; i++)
+    {
+        polygonGroup->SetCoord(i * 8 + 0, boxes[i] + Vector3(jointBox.min.x, jointBox.min.y, jointBox.min.z));
+        polygonGroup->SetCoord(i * 8 + 1, boxes[i] + Vector3(jointBox.min.x, jointBox.max.y, jointBox.min.z));
+        polygonGroup->SetCoord(i * 8 + 2, boxes[i] + Vector3(jointBox.max.x, jointBox.max.y, jointBox.min.z));
+        polygonGroup->SetCoord(i * 8 + 3, boxes[i] + Vector3(jointBox.max.x, jointBox.min.y, jointBox.min.z));
+        polygonGroup->SetCoord(i * 8 + 4, boxes[i] + Vector3(jointBox.min.x, jointBox.min.y, jointBox.max.z));
+        polygonGroup->SetCoord(i * 8 + 5, boxes[i] + Vector3(jointBox.min.x, jointBox.max.y, jointBox.max.z));
+        polygonGroup->SetCoord(i * 8 + 6, boxes[i] + Vector3(jointBox.max.x, jointBox.max.y, jointBox.max.z));
+        polygonGroup->SetCoord(i * 8 + 7, boxes[i] + Vector3(jointBox.max.x, jointBox.min.y, jointBox.max.z));
+        for (int32 v = 0; v < 8; v++)
+        {
+            polygonGroup->SetJointIndexHard(i * 8 + v, i);
+        }
+
+        polygonGroup->SetIndex(i * 24 + 0, i * 8 + 0);
+        polygonGroup->SetIndex(i * 24 + 1, i * 8 + 1);
+        polygonGroup->SetIndex(i * 24 + 2, i * 8 + 1);
+        polygonGroup->SetIndex(i * 24 + 3, i * 8 + 2);
+        polygonGroup->SetIndex(i * 24 + 4, i * 8 + 2);
+        polygonGroup->SetIndex(i * 24 + 5, i * 8 + 3);
+        polygonGroup->SetIndex(i * 24 + 6, i * 8 + 3);
+        polygonGroup->SetIndex(i * 24 + 7, i * 8 + 0);
+
+        polygonGroup->SetIndex(i * 24 + 8, i * 8 + 0);
+        polygonGroup->SetIndex(i * 24 + 9, i * 8 + 4);
+        polygonGroup->SetIndex(i * 24 + 10, i * 8 + 1);
+        polygonGroup->SetIndex(i * 24 + 11, i * 8 + 5);
+        polygonGroup->SetIndex(i * 24 + 12, i * 8 + 2);
+        polygonGroup->SetIndex(i * 24 + 13, i * 8 + 6);
+        polygonGroup->SetIndex(i * 24 + 14, i * 8 + 3);
+        polygonGroup->SetIndex(i * 24 + 15, i * 8 + 7);
+        polygonGroup->SetIndex(i * 24 + 16, i * 8 + 4);
+        polygonGroup->SetIndex(i * 24 + 17, i * 8 + 5);
+        polygonGroup->SetIndex(i * 24 + 18, i * 8 + 5);
+        polygonGroup->SetIndex(i * 24 + 19, i * 8 + 6);
+        polygonGroup->SetIndex(i * 24 + 20, i * 8 + 6);
+        polygonGroup->SetIndex(i * 24 + 21, i * 8 + 7);
+        polygonGroup->SetIndex(i * 24 + 22, i * 8 + 7);
+        polygonGroup->SetIndex(i * 24 + 23, i * 8 + 4);
+    }
+
+    polygonGroup->BuildBuffers();
+
+    ScopedPtr<NMaterial> material(new NMaterial());
+    material->SetMaterialName(FastName("DebugSkeleton"));
+    material->SetFXName(NMaterialName::DECAL_OPAQUE);
+    material->AddFlag(NMaterialFlagName::FLAG_SKINNING_HARD, 1);
+
+    ScopedPtr<RenderBatch> renderBatch(new RenderBatch());
+    renderBatch->SetMaterial(material);
+    renderBatch->SetPolygonGroup(polygonGroup);
+
+    ScopedPtr<SkinnedMesh> skinnedMesh(new SkinnedMesh());
+    skinnedMesh->AddRenderBatch(renderBatch);
+
+    RenderComponent* renderComponent = new RenderComponent();
+    renderComponent->SetRenderObject(skinnedMesh);
+    entity->AddComponent(renderComponent);
+
+    currentScene->Exec(std::unique_ptr<DAVA::Command>(new EntityAddCommand(entity, currentScene)));
+}
+
+void DeveloperTools::OnDebugCreateTestSoftSkinnedObject()
+{
+    SceneEditor2* currentScene = sceneHolder.GetScene();
+    if (!currentScene)
+        return;
+
+    ScopedPtr<Entity> entity(new Entity());
+    entity->SetName(FastName("TestSoftSkinned"));
 
     //////////////////////////////////////////////////////////////////////////
 

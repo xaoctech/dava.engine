@@ -54,24 +54,47 @@ void SkeletonSystem::Process(float32 timeElapsed)
     {
         SkeletonComponent* component = GetSkeletonComponent(entities[i]);
 
-        //For debug. Manipulate test skinned mesh in 'Debug Functions' in RE
-        //{
-        //    static float32 _time = 0.f;
-        //    _time += timeElapsed;
+#if 0
+        {
+            static const FastName HARD_SKINNED_ENTITY_NAME("TestHardSkinned");
+            static const FastName SOFT_SKINNED_ENTITY_NAME("TestSoftSkinned");
 
-        //    uint16 jointCount = component->GetJointsCount();
-        //    for (uint16 j = 1; j < jointCount; ++j)
-        //    {
-        //        component->GetJoint(j).bindTransform.GetTranslationVector();
+            static float32 t = 0;
+            t += timeElapsed;
 
-        //        SkeletonComponent::JointTransform transform;
-        //        transform.position = component->GetJoint(j).bindTransform.GetTranslationVector();
-        //        transform.position.z += 5.f * sinf(float32(j + _time));
-        //        transform.scale = 1.f;
+            //Manipulate test hard skinned mesh in 'Debug Functions' in RE
+            if(entities[i]->GetName() == HARD_SKINNED_ENTITY_NAME)
+            {
+                static float32 t = 0;
+                t += timeElapsed;
+                for (int32 i = 0, sz = component->GetJointsCount(); i < sz; ++i)
+                {
+                    float32 fi = t;
 
-        //        component->SetJointTransform(j, transform);
-        //    }
-        //}
+                    SkeletonComponent::JointTransform transform = component->GetJointTransform(i);
+                    transform.orientation.Construct(Vector3(0.f, 1.f, 0.f), fi);
+                    component->SetJointTransform(i, transform);
+                }
+            }
+
+            //Manipulate test soft skinned mesh in 'Debug Functions' in RE
+            if (entities[i]->GetName() == SOFT_SKINNED_ENTITY_NAME)
+            {
+                uint16 jointCount = component->GetJointsCount();
+                for (uint16 j = 1; j < jointCount; ++j)
+                {
+                    component->GetJoint(j).bindTransform.GetTranslationVector();
+
+                    SkeletonComponent::JointTransform transform;
+                    transform.position = component->GetJoint(j).bindTransform.GetTranslationVector();
+                    transform.position.z += 5.f * sinf(float32(j + t));
+                    transform.scale = 1.f;
+
+                    component->SetJointTransform(j, transform);
+                }
+            }
+        }
+#endif
 
         if (component != nullptr)
         {
@@ -118,8 +141,8 @@ void SkeletonSystem::DrawSkeletons(RenderHelper* drawer)
                 const SkeletonComponent::Joint& cfg = joints[i];
                 if (cfg.parentIndex != SkeletonComponent::INVALID_JOINT_INDEX)
                 {
-                    float32 dl = (positions[cfg.parentIndex] - positions[i]).Length();
-                    drawer->DrawArrow(positions[cfg.parentIndex], positions[i], 0.25f * dl, Color(1.0f, 0.5f, 0.0f, 1.0), RenderHelper::eDrawType::DRAW_WIRE_NO_DEPTH);
+                    float32 arrowLength = (positions[cfg.parentIndex] - positions[i]).Length() * 0.25f;
+                    drawer->DrawArrow(positions[cfg.parentIndex], positions[i], arrowLength, Color(1.0f, 0.5f, 0.0f, 1.0), RenderHelper::eDrawType::DRAW_WIRE_NO_DEPTH);
                 }
 
                 Vector3 xAxis = component->objectSpaceTransforms[i].TransformPoint(Vector3(1.f, 0.f, 0.f)) * worldTransform;
