@@ -404,7 +404,29 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
             for (auto& pair : canimation->animations)
             {
                 ColladaSceneNode* colladaNode = pair.first;
-                SceneNodeAnimation* colladaAnimation = pair.second;
+                uint32 animationKeysCount = pair.second->keyCount;
+                SceneNodeAnimationKey* animationKeys = pair.second->keys;
+                SceneNodeAnimationKey* animationKeysCopy = nullptr;
+
+                //bake parents transform to root-joint animation
+                if ((colladaNode->originalNode->GetJointFlag()) && (colladaNode->parent != nullptr) && !(colladaNode->parent->originalNode->GetJointFlag()))
+                {
+                    animationKeysCopy = new SceneNodeAnimationKey[animationKeysCount];
+
+                    Matrix4 parentTransform = colladaNode->parent->AccumulateTransformUptoFarParent(colladaScene->rootNode);
+                    Matrix4 keyTransform;
+                    for (uint32 k = 0; k < animationKeysCount; ++k)
+                    {
+                        SceneNodeAnimationKey& key = animationKeys[k];
+                        key.GetMatrix(keyTransform);
+
+                        SceneNodeAnimationKey& keyCopy = animationKeysCopy[k];
+                        keyCopy.time = key.time;
+                        (keyTransform * parentTransform).Decomposition(keyCopy.translation, keyCopy.scale, keyCopy.rotation);
+                    }
+
+                    animationKeys = animationKeysCopy;
+                }
 
                 String nodeUID = colladaNode->originalNode->GetDaeId();
                 String nodeName = UTF8Utils::EncodeToUTF8(colladaNode->originalNode->GetName().c_str());
@@ -426,7 +448,7 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
                 uint32 channelsCount = 3; //position, orientation, scale
                 WriteToBuffer(animationData, &channelsCount);
 
-                uint32 keyCount = colladaAnimation->keyCount;
+                uint32 keyCount = animationKeysCount;
                 channelHeader.key_count = keyCount;
 
                 //Write position channel
@@ -437,7 +459,7 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
 
                     for (uint32 k = 0; k < keyCount; ++k)
                     {
-                        const SceneNodeAnimationKey& key = colladaAnimation->keys[k];
+                        const SceneNodeAnimationKey& key = animationKeys[k];
                         WriteToBuffer(animationData, &key.time);
                         WriteToBuffer(animationData, &key.translation);
                     }
@@ -451,7 +473,7 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
 
                     for (uint32 k = 0; k < keyCount; ++k)
                     {
-                        const SceneNodeAnimationKey& key = colladaAnimation->keys[k];
+                        const SceneNodeAnimationKey& key = animationKeys[k];
                         WriteToBuffer(animationData, &key.time);
                         WriteToBuffer(animationData, &key.rotation);
                     }
@@ -465,11 +487,13 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
 
                     for (uint32 k = 0; k < keyCount; ++k)
                     {
-                        const SceneNodeAnimationKey& key = colladaAnimation->keys[k];
+                        const SceneNodeAnimationKey& key = animationKeys[k];
                         WriteToBuffer(animationData, &key.time);
                         WriteToBuffer(animationData, &key.scale);
                     }
                 }
+
+                SafeDeleteArray(animationKeysCopy);
             }
 
             uint32 animationDataSize = uint32(animationData.size());
