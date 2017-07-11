@@ -49,6 +49,7 @@ private:
     void FlushText();
 
 private:
+    bool debugDraw = false;
     bool needLineBreak = false;
     bool needSpace = false;
     bool isEditorMode = false;

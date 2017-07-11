@@ -1,10 +1,13 @@
 #include "UI/RichContent/Private/XMLRichContentBuilder.h"
 
 #include "Logger/Logger.h"
+#include "Render/Renderer.h"
+#include "Render/RenderOptions.h"
 #include "UI/DefaultUIPackageBuilder.h"
 #include "UI/Layouts/UIFlowLayoutHintComponent.h"
 #include "UI/Layouts/UILayoutSourceRectComponent.h"
 #include "UI/Layouts/UISizePolicyComponent.h"
+#include "UI/Render/UIDebugRenderComponent.h"
 #include "UI/RichContent/Private/RichContentUIPackageBuilder.h"
 #include "UI/RichContent/Private/RichLink.h"
 #include "UI/RichContent/UIRichAliasMap.h"
@@ -32,6 +35,8 @@ XMLRichContentBuilder::XMLRichContentBuilder(RichLink* link_, bool editorMode /*
 
 bool XMLRichContentBuilder::Build(const String& text)
 {
+    debugDraw = Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DEBUG_DRAW_RICH_ITEMS);
+
     controls.clear();
     direction = bidiHelper.GetDirectionUTF8String(text); // Detect text direction
     RefPtr<XMLParser> parser(new XMLParser());
@@ -98,6 +103,17 @@ void XMLRichContentBuilder::PrepareControl(UIControl* ctrl, bool autosize, bool 
     if (!needSpace)
     {
         flh->SetStickItemBeforeThis(stick);
+    }
+
+    if (debugDraw)
+    {
+        UIDebugRenderComponent* debug = ctrl->GetOrCreateComponent<UIDebugRenderComponent>();
+        debug->SetEnabled(true);
+        debug->SetDrawColor(Color::Cyan);
+        if (!needSpace && stick)
+        {
+            debug->SetDrawColor(Color::Magenta);
+        }
     }
 
     needSpace = false;
