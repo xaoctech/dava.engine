@@ -544,7 +544,19 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                 {
                     Vector3 viewNormal;
                     float32 dot = 0.0f;
-                    viewNormal = Vector3(basisVector.y, -basisVector.x, 0.0f); // basisVector.CrossProduct(Vector3(0.0f, 0.0f, 1.0f));
+
+                    Vector3 dir = currentParticle->speed;
+                    float32 len = dir.Normalize();
+                    if (abs(len) < EPSILON && nodes.size() > 0) // TODO: recalculate for each node? should I?
+                    {
+                        dir = base.position - nodes.front().position;
+                        len = dir.Normalize();
+                        if (abs(len) < EPSILON)
+                            dir = Vector3(0.0f, 0.0f, 1.0f);
+                    }
+
+                    viewNormal = basisVector.CrossProduct(dir);
+
                     viewNormal.Normalize();
                     dot = camera->GetDirection().DotProduct(viewNormal);
                     fresnelToAlpha = FresnelShlick(1.0f - Abs(dot), currentParticle->fresnelToAlphaBias, currentParticle->fresnelToAlphaPower);
