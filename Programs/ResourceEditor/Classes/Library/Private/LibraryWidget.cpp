@@ -306,6 +306,7 @@ void LibraryWidget::ShowContextMenu(const QPoint& point)
     if (pathname.IsEqualToExtension(".sc2"))
     {
         QAction* actionAdd = contextMenu.addAction("Add Model", this, SLOT(OnAddModel()));
+        actionAdd->setEnabled(contextAccessor->GetActiveContext() != nullptr);
         QAction* actionEdit = contextMenu.addAction("Edit Model", this, SLOT(OnEditModel()));
 
         actionAdd->setData(fileInfoAsVariant);
