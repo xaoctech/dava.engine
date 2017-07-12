@@ -17,6 +17,4 @@ private:
     DAVA::RefPtr<ControlNode> node;
     DAVA::RefPtr<ControlsContainerNode> dest;
     const int index;
-    String origName;
-    String newName;
 };
