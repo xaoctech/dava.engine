@@ -103,6 +103,7 @@ void AnimationChannel::Advance(float32 dTime, State* state) const
         Quaternion q0(KEY_DATA(k0));
         Quaternion q(KEY_DATA(k));
         q.Slerp(q0, q, t);
+        q.Normalize();
 
         Memcpy(state->value, q.data, KEY_DATA_SIZE);
     }
