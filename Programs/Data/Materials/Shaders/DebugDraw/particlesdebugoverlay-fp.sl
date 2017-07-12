@@ -1,4 +1,5 @@
 #include "blending.slh"
+#include "common.slh"
 
 fragment_in
 {
