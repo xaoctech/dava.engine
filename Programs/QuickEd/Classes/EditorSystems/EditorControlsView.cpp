@@ -401,14 +401,14 @@ EditorControlsView::EditorControlsView(UIControl* canvasParent_, EditorSystemsMa
 
     InitFieldBinder();
 
-    UIControlSystem::Instance()->GetLayoutSystem()->AddListener(this);
+    RelayoutSignallerSystem* relayoutSystem = UIControlSystem::Instance()->GetSystem<RelayoutSignallerSystem>();
+    relayoutSignalToken = relayoutSystem->beforeRelayoutedControlRender.Connect(Bind(&EditorControlsView::BeforeRelayoutedControlRendering, this, _1));
 }
 
 EditorControlsView::~EditorControlsView()
 {
     canvasParent->RemoveControl(controlsCanvas.Get());
-
-    UIControlSystem::Instance()->GetLayoutSystem()->RemoveListener(this);
+    UIControlSystem::Instance()->GetSystem<RelayoutSignallerSystem>()->beforeRelayoutedControlRender.Disconnect(relayoutSignalToken);
 }
 
 void EditorControlsView::InitFieldBinder()
@@ -488,7 +488,7 @@ void EditorControlsView::RecalculateBackgroundPropertiesForGrids(DAVA::UIControl
     }
 }
 
-void EditorControlsView::OnControlLayouted(UIControl* control)
+void EditorControlsView::BeforeRelayoutedControlRendering(UIControl* control)
 {
     if (controlsCanvas->GetParent() == nullptr) //detached canvas
     {
@@ -498,12 +498,7 @@ void EditorControlsView::OnControlLayouted(UIControl* control)
 
     if (systemsManager->GetDragState() != EditorSystemsManager::Transform)
     {
-        // delayedExecutor is used to call RecalculateBackgroundProperties on next frame,
-        // because after updating of UILayoutSystem (which is actually processed in current function)
-        // we may have update of UIScrollSystem, which may influence at recalculate results.
-        // Should be replaced when either updates from UIScrollSystem will be available or special System will be developed
-        Function<void()> updateBgr = Bind(&EditorControlsView::RecalculateBackgroundPropertiesForGrids, this, control);
-        delayedExecutor.DelayedExecute(updateBgr);
+        RecalculateBackgroundPropertiesForGrids(control);
     }
 }
 
