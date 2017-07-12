@@ -81,7 +81,7 @@ def apply_patch(patch, working_dir = '.'):
 
 
 def build_vs(project, configuration, platform='Win32', target = None, toolset = None, env=None):
-    print "Building %s for %s ..." % (project, configuration)
+    print "Building %s for %s (%s) ..." % (project, configuration, platform)
     args = ["c:/Program Files (x86)/MSBuild/14.0/Bin/MSBuild.exe", project, "/p:Configuration="+configuration, '/p:Platform=' + platform]
     if not toolset is None:
         args.append('/p:PlatformToolset=' + toolset)

@@ -1,10 +1,13 @@
 #include "UI/RichContent/Private/XMLRichContentBuilder.h"
 
 #include "Logger/Logger.h"
+#include "Render/Renderer.h"
+#include "Render/RenderOptions.h"
 #include "UI/DefaultUIPackageBuilder.h"
 #include "UI/Layouts/UIFlowLayoutHintComponent.h"
 #include "UI/Layouts/UILayoutSourceRectComponent.h"
 #include "UI/Layouts/UISizePolicyComponent.h"
+#include "UI/Render/UIDebugRenderComponent.h"
 #include "UI/RichContent/Private/RichContentUIPackageBuilder.h"
 #include "UI/RichContent/Private/RichLink.h"
 #include "UI/RichContent/UIRichAliasMap.h"
@@ -32,6 +35,8 @@ XMLRichContentBuilder::XMLRichContentBuilder(RichLink* link_, bool editorMode /*
 
 bool XMLRichContentBuilder::Build(const String& text)
 {
+    debugDraw = Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DEBUG_DRAW_RICH_ITEMS);
+
     controls.clear();
     direction = bidiHelper.GetDirectionUTF8String(text); // Detect text direction
     RefPtr<XMLParser> parser(new XMLParser());
@@ -100,6 +105,17 @@ void XMLRichContentBuilder::PrepareControl(UIControl* ctrl, bool autosize, bool 
         flh->SetStickItemBeforeThis(stick);
     }
 
+    if (debugDraw)
+    {
+        UIDebugRenderComponent* debug = ctrl->GetOrCreateComponent<UIDebugRenderComponent>();
+        debug->SetEnabled(true);
+        debug->SetDrawColor(Color::Cyan);
+        if (!needSpace && stick)
+        {
+            debug->SetDrawColor(Color::Magenta);
+        }
+    }
+
     needSpace = false;
     needLineBreak = false;
 }
@@ -141,11 +157,16 @@ void XMLRichContentBuilder::OnElementEnded(const String& elementName, const Stri
 
 void XMLRichContentBuilder::OnFoundCharacters(const String& chars)
 {
-    ProcessText(chars);
+    // Concat input characters in one single string, because some kind
+    // of intarnalization characters break XML parser to few
+    // OnFoundCharacters callbacks per one word
+    fullText += chars;
 }
 
 void XMLRichContentBuilder::ProcessTagBegin(const String& tag, const Map<String, String>& attributes)
 {
+    FlushText();
+
     // Global attributes
     String classes;
     if (!GetAttribute(attributes, "class", classes) && !classesInheritance)
@@ -256,7 +277,7 @@ void XMLRichContentBuilder::ProcessTagBegin(const String& tag, const Map<String,
             }
             else
             {
-                Logger::Error("[UIRichContentSystem] Recursive object in rich content from '%s' with name '%s'!",
+                Logger::Error("Recursive object in rich content from '%s' with name '%s'!",
                               path.c_str(),
                               controlName.empty() ? prototypeName.c_str() : controlName.c_str());
             }
@@ -266,6 +287,8 @@ void XMLRichContentBuilder::ProcessTagBegin(const String& tag, const Map<String,
 
 void XMLRichContentBuilder::ProcessTagEnd(const String& tag)
 {
+    FlushText();
+
     PopClass();
 
     if (tag == "p")
@@ -322,6 +345,15 @@ void XMLRichContentBuilder::ProcessText(const String& text)
         }
 
         first = false;
+    }
+}
+
+void XMLRichContentBuilder::FlushText()
+{
+    if (!fullText.empty())
+    {
+        ProcessText(fullText);
+        fullText.clear();
     }
 }
 }

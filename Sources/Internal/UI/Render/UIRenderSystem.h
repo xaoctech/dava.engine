@@ -33,7 +33,6 @@ public:
     void SetUseClearPass(bool useClearPass);
 
     void SetCurrentScreen(const RefPtr<UIScreen>& screen);
-    void SetCurrentScreenTransition(const RefPtr<UIScreenTransition>& screenTransition);
     void SetPopupContainer(const RefPtr<UIControl>& popupContainer);
 
 protected:
@@ -61,7 +60,6 @@ private:
 
     RefPtr<UIScreen> currentScreen;
     RefPtr<UIControl> popupContainer;
-    RefPtr<UIScreenTransition> currentScreenTransition;
 
     int32 ui3DViewCount = 0;
     bool needClearMainPass = true;

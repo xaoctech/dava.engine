@@ -14,7 +14,7 @@ public:
     void RegisterScreen(int screenId, UIScreen* screen);
 
     void SetFirst(int screenId);
-    void SetScreen(int screenId, UIScreenTransition* transition = 0);
+    void SetScreen(int screenId);
     void ResetScreen();
 
     UIScreen* GetScreen(int screenId);
