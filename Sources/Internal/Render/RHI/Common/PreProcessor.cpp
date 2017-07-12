@@ -897,11 +897,40 @@ bool PreProc::ProcessDefine(const char* name, const char* value)
         //        _report_expr_eval_error(0);
     }
 
+    char value2[1024];
+    size_t value2_sz;
+
+    strcpy(value2, value);
+    value2_sz = strlen(value2) + 1;
+
+    bool expanded = false;
+    do
+    {
+        expanded = false;
+        for (unsigned m = 0; m != macro.size(); ++m)
+        {
+            char* t = strstr(value2, macro[m].name);
+
+            if (t)
+            {
+                size_t name_l = macro[m].name_len;
+                size_t val_l = macro[m].value_len;
+
+                memmove(t + val_l, t + name_l, value2_sz - (t - value2) - name_l);
+                memcpy(t, macro[m].value, val_l);
+                value2_sz += val_l - name_l;
+                expanded = true;
+                break;
+            }
+        }
+    }
+    while (expanded);
+
     macro.resize(macro.size() + 1);
     strncpy(macro.back().name, name, countof(macro.back().name));
-    strncpy(macro.back().value, value, countof(macro.back().value));
+    strncpy(macro.back().value, value2, countof(macro.back().value));
     macro.back().name_len = unsigned(strlen(name));
-    macro.back().value_len = unsigned(strlen(value));
+    macro.back().value_len = unsigned(strlen(value2));
     if (macro.back().value_len < minMacroLength)
         minMacroLength = macro.back().value_len;
 

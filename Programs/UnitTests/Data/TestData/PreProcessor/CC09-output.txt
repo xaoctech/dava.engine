@@ -1,6 +1,6 @@
 DEFINE VIA DEFINE
 
 
-x = (1.0 + MAGIC_TRESHOLD_2);
+x = (1.0 + (1.0 / 255.0));
 
 last
