@@ -293,7 +293,6 @@ uint32 PolygonGroup::ReleaseGeometryData()
         jointWeightArray = nullptr;
         cubeTextureCoordArray = nullptr;
         jointCountArray = nullptr;
-        decalTexCoordArray = nullptr;
 
         pivotArray = nullptr;
         flexArray = nullptr;

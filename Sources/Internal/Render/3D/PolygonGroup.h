@@ -88,8 +88,6 @@ public:
     inline void SetFlexibility(int32 i, const float32& v);
     inline void SetAngle(int32 i, const Vector2& v);
 
-    inline void SetDecalTexcoord(int32 i, const Vector4& v);
-
     inline int32 GetVertexCount();
     inline int32 GetIndexCount();
     inline int32 GetPrimitiveCount();
@@ -118,7 +116,6 @@ public:
     float32* jointIdxArray;
     float32* jointWeightArray;
     Vector3** cubeTextureCoordArray;
-    Vector4* decalTexCoordArray = nullptr;
 
     uint32* jointCountArray;
 
@@ -242,11 +239,6 @@ inline void PolygonGroup::SetCubeTexcoord(int32 ti, int32 i, const Vector3& _t)
 {
     DVASSERT(ti < cubeTextureCoordCount);
     SetVertexData(i, cubeTextureCoordArray[ti], _t);
-}
-
-inline void PolygonGroup::SetDecalTexcoord(int32 i, const Vector4& _v)
-{
-    SetVertexData(i, decalTexCoordArray, _v);
 }
 
 inline void PolygonGroup::SetPivot(int32 i, const Vector4& _v)

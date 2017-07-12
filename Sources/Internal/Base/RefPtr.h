@@ -1,7 +1,8 @@
-#pragma once
+#ifndef __DAVA_REF_PTR_H__
+#define __DAVA_REF_PTR_H__
 
-#include "Base/Any.h"
 #include "Base/BaseObject.h"
+#include "Base/Any.h"
 
 namespace DAVA
 {
@@ -24,23 +25,19 @@ public:
     {
         T* tmp_ptr = _ptr;
         _ptr = p;
-
-        if (tmp_ptr)
-            tmp_ptr->Release();
+        SafeRelease(tmp_ptr);
     }
 
     ~RefPtr()
     {
-        if (_ptr)
-            _ptr->Release();
+        SafeRelease(_ptr);
     }
 
     RefPtr(const RefPtr<T>& rp)
     {
         _ptr = rp._ptr;
 
-        if (_ptr)
-            _ptr->Retain();
+        SafeRetain(_ptr);
     }
 
     template <class Other>
@@ -48,8 +45,7 @@ public:
     {
         _ptr = rp.Get();
 
-        if (_ptr)
-            _ptr->Retain();
+        SafeRetain(_ptr);
     }
 
     static RefPtr<T> ConstructWithRetain(T* p)
@@ -89,13 +85,8 @@ public:
 
         T* tmp_ptr = _ptr;
         _ptr = ptr;
-
-        if (_ptr)
-            _ptr->Retain();
-
-        if (tmp_ptr)
-            tmp_ptr->Release();
-
+        SafeRetain(_ptr);
+        SafeRelease(tmp_ptr);
         return *this;
     }
 
@@ -111,7 +102,6 @@ public:
     {
         return *_ptr;
     }
-
     T* operator->() const
     {
         return _ptr;
@@ -129,6 +119,7 @@ public:
     {
         return ptr == rp._ptr;
     }
+
     bool operator!=(const RefPtr& rp) const
     {
         return _ptr != rp._ptr;
@@ -143,7 +134,7 @@ public:
     }
     bool operator!() const // Enables "if (!sp) ..."
     {
-        return _ptr == nullptr;
+        return _ptr == 0;
     }
 
     template <typename... Arg>
@@ -167,9 +158,8 @@ private:
 public:
     operator Tester*() const
     {
-        if (_ptr == nullptr)
-            return nullptr;
-
+        if (!_ptr)
+            return 0;
         static Tester test;
         return &test;
     }
@@ -185,12 +175,8 @@ private:
 
         T* tmp_ptr = _ptr;
         _ptr = rp.Get();
-
-        if (_ptr)
-            _ptr->Retain();
-
-        if (tmp_ptr)
-            tmp_ptr->Release();
+        SafeRetain(_ptr);
+        SafeRelease(tmp_ptr);
     }
 };
 
@@ -204,4 +190,6 @@ struct AnyCompare<RefPtr<T>>
         return s1 == s2;
     }
 };
-}
+} // ns
+
+#endif // __DAVA_REF_PTR_H__
