@@ -10,6 +10,7 @@
 #include "Concurrency/Mutex.h"
 #include "Concurrency/Semaphore.h"
 #include "Concurrency/Spinlock.h"
+#include "Concurrency/SyncBarrier.h"
 #include "Concurrency/Thread.h"
 #include "Concurrency/ThreadLocalPtr.h"
 
