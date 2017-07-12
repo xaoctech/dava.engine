@@ -3,6 +3,8 @@
 #include "UITextSystemLink.h"
 #include "UI/Text/UITextSystem.h"
 #include "UI/UIControlSystem.h"
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
 
 namespace DAVA
 {
@@ -279,7 +281,7 @@ void UITextComponent::ApplyDataImmediately() const
     DVASSERT(GetControl());
     if (modified)
     {
-        UIControlSystem::Instance()->GetTextSystem()->ApplyData(const_cast<UITextComponent*>(this));
+        Engine::Instance()->GetContext()->uiControlSystem->GetTextSystem()->ApplyData(const_cast<UITextComponent*>(this));
     }
 }
 

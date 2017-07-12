@@ -781,11 +781,6 @@ std::unique_ptr<UISystem> UIControlSystem::RemoveSystem(const UISystem* system)
     return nullptr;
 }
 
-UITextSystem* UIControlSystem::GetTextSystem() const
-{
-    return textSystem;
-}
-
 void UIControlSystem::AddSingleComponent(std::unique_ptr<UISingleComponent> single)
 {
     singleComponents.push_back(std::move(single));
@@ -804,6 +799,11 @@ std::unique_ptr<UISingleComponent> UIControlSystem::RemoveSingleComponent(const 
         return ptr;
     }
     return nullptr;
+}
+
+UITextSystem* UIControlSystem::GetTextSystem() const
+{
+    return textSystem;
 }
 
 UILayoutSystem* UIControlSystem::GetLayoutSystem() const

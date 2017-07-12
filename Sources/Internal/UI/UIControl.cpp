@@ -23,7 +23,6 @@
 #include "UI/Render/UIClipContentComponent.h"
 #include "UI/Render/UIRenderSystem.h"
 #include "UI/Sound/UISoundSystem.h"
-#include "UI/Text/UITextComponent.h"
 #include "UI/Styles/UIStyleSheetSystem.h"
 #include "UI/Update/UIUpdateComponent.h"
 #include "UI/UIAnalitycs.h"
@@ -31,7 +30,6 @@
 #include "UI/UIControlPackageContext.h"
 #include "UI/UIControlSystem.h"
 #include "Utils/StringFormat.h"
-
 
 #ifdef __DAVAENGINE_AUTOTESTING__
 #include "Autotesting/AutotestingSystem.h"

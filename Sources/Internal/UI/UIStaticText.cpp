@@ -62,18 +62,10 @@ UIStaticText* UIStaticText::Clone()
 
 void UIStaticText::CopyDataFrom(UIControl* srcControl)
 {
-    UIControl::CopyDataFrom(srcControl);
-    UIStaticText* src = static_cast<UIStaticText*>(srcControl);
-    DVASSERT(src);
-
-    UITextComponent* srcTextComponent = src->GetComponent<UITextComponent>();
-    DVASSERT(srcTextComponent);
-
     RemoveComponent<UITextComponent>();
-    UITextComponent* newComponent = srcTextComponent->Clone();
-    AddComponent(newComponent);
-    newComponent->Release();
-    text = newComponent;
+    UIControl::CopyDataFrom(srcControl);
+    text = GetComponent<UITextComponent>();
+    DVASSERT(text);
 }
 
 void UIStaticText::SetText(const WideString& _string, const Vector2& requestedTextRectSize /* = Vector2(0,0)*/)
@@ -272,11 +264,6 @@ void UIStaticText::SetForceBiDiSupportEnabled(bool value)
     text->SetForceBiDiSupportEnabled(value);
 }
 
-void UIStaticText::SetMeasureEnable(bool value)
-{
-    text->GetLink()->GetTextBlock()->SetMeasureEnable(value);
-}
-
 String UIStaticText::GetFontPresetName() const
 {
     return text->GetFontName();
@@ -354,11 +341,6 @@ DAVA::float32 UIStaticText::GetFontSize() const
 void UIStaticText::SetFontSize(float32 newSize)
 {
     GetTextBlock()->SetRenderSize(newSize);
-}
-
-TextBox* UIStaticText::GetTextBox()
-{
-    return GetTextBlock()->GetTextBox();
 }
 
 TextBlock* UIStaticText::GetTextBlock() const

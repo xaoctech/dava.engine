@@ -15,6 +15,7 @@ set( HPP_FILES *.h
     RichContent/*.h
     RichContent/Private/*.h
     Text/*.h
+    Text/Private/*.h
     Render/*.h
     )
 

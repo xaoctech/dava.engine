@@ -291,7 +291,6 @@ public:
         return nullptr;
     }
 
-    UITextSystem* GetTextSystem() const;
     void AddSingleComponent(std::unique_ptr<UISingleComponent> single);
     std::unique_ptr<UISingleComponent> RemoveSingleComponent(const UISingleComponent* singleComponent);
 
@@ -308,6 +307,7 @@ public:
         return nullptr;
     }
 
+    UITextSystem* GetTextSystem() const;
     UILayoutSystem* GetLayoutSystem() const;
     UIInputSystem* GetInputSystem() const;
     UIFocusSystem* GetFocusSystem() const;
@@ -331,8 +331,9 @@ private:
     friend class Private::EngineBackend;
 
     Vector<std::unique_ptr<UISystem>> systems;
-    UITextSystem* textSystem = nullptr;
     Vector<std::unique_ptr<UISingleComponent>> singleComponents;
+
+    UITextSystem* textSystem = nullptr;
     UILayoutSystem* layoutSystem = nullptr;
     UIStyleSheetSystem* styleSheetSystem = nullptr;
     UIInputSystem* inputSystem = nullptr;
