@@ -56,7 +56,8 @@ struct FSMTest02
 
     bool Update(DAVA::float32 dt)
     {
-        DAVA::DLCManager& dlcManager = *DAVA::GetEngineContext()->dlcManager;
+        using namespace DAVA;
+        DLCManager& dlcManager = *GetEngineContext()->dlcManager;
 
         time += dt;
 
@@ -66,13 +67,18 @@ struct FSMTest02
         {
             if (dlcManager.IsInitialized())
             {
+                uint64 sizeOfPack = dlcManager.GetPackSize("8");
+
+                // size from superpack_for_unittests.dvpk without any meta
+                TEST_VERIFY(sizeOfPack == 29720253);
+
                 state = WaitSecondConnectAttempt;
-                DAVA::StopEmbeddedWebServer();
+                StopEmbeddedWebServer();
                 progressAfterInit = dlcManager.GetProgress();
-                const DAVA::DLCManager::IRequest* r3 = dlcManager.RequestPack("3");
-                const DAVA::DLCManager::IRequest* r2 = dlcManager.RequestPack("2");
-                const DAVA::DLCManager::IRequest* r1 = dlcManager.RequestPack("1");
-                const DAVA::DLCManager::IRequest* r0 = dlcManager.RequestPack("0");
+                const DLCManager::IRequest* r3 = dlcManager.RequestPack("3");
+                const DLCManager::IRequest* r2 = dlcManager.RequestPack("2");
+                const DLCManager::IRequest* r1 = dlcManager.RequestPack("1");
+                const DLCManager::IRequest* r0 = dlcManager.RequestPack("0");
                 TEST_VERIFY(r3 != nullptr);
                 TEST_VERIFY(r2 != nullptr);
                 TEST_VERIFY(r1 != nullptr);
@@ -95,7 +101,7 @@ struct FSMTest02
             waitSecondConnect -= dt;
             if (waitSecondConnect <= 0.f)
             {
-                if (!DAVA::StartEmbeddedWebServer(documentRootDir.GetAbsolutePathname().c_str(), localPort))
+                if (!StartEmbeddedWebServer(documentRootDir.GetAbsolutePathname().c_str(), localPort))
                 {
                     TEST_VERIFY(false && "can't start server");
                 }
@@ -134,25 +140,25 @@ struct FSMTest02
         {
             auto prog = dlcManager.GetProgress();
 
-            DAVA::Logger::Error("time > timeout (%f > %f)", time, timeout);
-            DAVA::Logger::Error("timeout: total: %llu in_queue: %llu downloaded: %lld", prog.total, prog.inQueue, prog.alreadyDownloaded);
+            Logger::Error("time > timeout (%f > %f)", time, timeout);
+            Logger::Error("timeout: total: %llu in_queue: %llu downloaded: %lld", prog.total, prog.inQueue, prog.alreadyDownloaded);
 
-            DAVA::FilePath logPath(DAVA::DLCManager::Hints().logFilePath);
-            DAVA::String path = logPath.GetAbsolutePathname();
+            FilePath logPath(DLCManager::Hints().logFilePath);
+            String path = logPath.GetAbsolutePathname();
             std::ifstream dlcLogFile(path.c_str());
 
             if (!dlcLogFile)
             {
-                DAVA::Logger::Error("can't open dlcManager.log file at: %s", path.c_str());
+                Logger::Error("can't open dlcManager.log file at: %s", path.c_str());
             }
             else
             {
-                DAVA::Logger::Error("begin-------dlcManager.log---------content");
-                for (DAVA::String str; getline(dlcLogFile, str);)
+                Logger::Error("begin-------dlcManager.log---------content");
+                for (String str; getline(dlcLogFile, str);)
                 {
-                    DAVA::Logger::Error("%s", str.c_str());
+                    Logger::Error("%s", str.c_str());
                 }
-                DAVA::Logger::Error("end-------dlcManager.log---------content");
+                Logger::Error("end-------dlcManager.log---------content");
             }
 
             Cleanup(dlcManager);
