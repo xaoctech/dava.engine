@@ -43,6 +43,8 @@ DAVA::int32 EnumerateModifiedTextures(DAVA::Scene* forScene, DAVA::Map<DAVA::Tex
 DAVA::Entity* CloneEntityWithMaterials(DAVA::Entity* fromNode);
 
 void BuildMaterialList(DAVA::Entity* forNode, DAVA::Set<DAVA::NMaterial*>& materialList, bool includeRuntime = true);
-};
+
+bool IsEntityChildRecursive(DAVA::Entity* root, DAVA::Entity* child);
+}
 
 #endif // __SCENE_HELPER_H__

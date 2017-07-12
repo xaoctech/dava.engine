@@ -1,16 +1,8 @@
 #include "FileSystem/FileList.h"
-#include "Utils/UTF8Utils.h"
-#include "Logger/Logger.h"
-#if defined(__DAVAENGINE_COREV2__)
-#include "Engine/Engine.h"
-#else
-#include "Core/Core.h"
-#endif
 
-#if defined(__DAVAENGINE_COREV2__)
 #include "Engine/Engine.h"
-#include "Engine/EngineContext.h"
-#endif
+#include "Logger/Logger.h"
+#include "Utils/UTF8Utils.h"
 
 #if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
 #include <dirent.h>
@@ -25,6 +17,9 @@
 #elif defined(__DAVAENGINE_ANDROID__)
 #include "Platform/TemplateAndroid/FileListAndroid.h"
 #include "Platform/TemplateAndroid/AssetsManagerAndroid.h"
+#include <dirent.h>
+#include <sys/stat.h>
+#elif defined(__DAVAENGINE_LINUX__)
 #include <dirent.h>
 #include <sys/stat.h>
 #endif //PLATFORMS
@@ -213,6 +208,57 @@ FileList::FileList(const FilePath& filepath, bool includeHidden)
             }
         }
     }
+#elif defined(__DAVAENGINE_LINUX__)
+    const String& dirPath = path.GetAbsolutePathname();
+
+    DIR* dir = opendir(dirPath.c_str());
+    if (nullptr != dir)
+    {
+        // print all the files and directories within directory
+        FileEntry entry;
+        for (struct dirent* ent = readdir(dir); nullptr != ent; ent = readdir(dir))
+        {
+            String fileOrDirName = ent->d_name;
+            if (fileOrDirName == "." || fileOrDirName == "..")
+            {
+                continue; // just skip. faster work less bugs
+            }
+            entry.name = fileOrDirName;
+            entry.path = path + entry.name;
+
+            if (ent->d_type != DT_DIR && ent->d_type != DT_REG)
+            {
+                Logger::Error("unsupported d_type in directory: %s", dirPath.c_str());
+                continue;
+            }
+
+            entry.isDirectory = (DT_DIR == ent->d_type);
+            entry.isHidden = (!entry.name.empty() && entry.name[0] == '.');
+            entry.size = 0;
+
+            if (!entry.isDirectory)
+            {
+                struct stat st;
+                String fullPath = dirPath + fileOrDirName;
+                if (stat(fullPath.c_str(), &st) == 0)
+                {
+                    entry.size = st.st_size;
+                }
+            }
+            else
+            {
+                entry.path.MakeDirectoryPathname();
+            }
+
+            if (!entry.isHidden || includeHidden)
+            {
+                fileList.push_back(entry);
+            }
+        }
+        closedir(dir);
+    }
+#else
+#error Unknown platform
 #endif //PLATFORMS
 
     directoryCount = 0;

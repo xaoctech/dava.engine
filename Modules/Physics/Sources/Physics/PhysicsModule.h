@@ -1,28 +1,33 @@
 #pragma once
 
-#include "ModuleManager/IModule.h"
-#include "ModuleManager/ModuleManager.h"
+#include "Physics/PhysicsConfigs.h"
 
-#include "Base/Singleton.h"
-#include "Base/BaseTypes.h"
+#include <ModuleManager/IModule.h>
+#include <ModuleManager/ModuleManager.h>
+
+#include <Base/BaseTypes.h>
 
 namespace physx
 {
 class PxFoundation;
 class PxPhysics;
+class PxScene;
 }
 
 namespace DAVA
 {
-class Physics : public IModule
+class PhysicsModule : public IModule
 {
 public:
-    Physics(Engine* engine);
+    PhysicsModule(Engine* engine);
 
     void Init() override;
     void Shutdown() override;
 
     bool IsInitialized() const;
+
+    physx::PxPhysics* GetPhysics() const;
+    physx::PxScene* CreateScene(const PhysicsSceneConfig& config) const;
 
 private:
     physx::PxFoundation* foundation = nullptr;
@@ -33,5 +38,7 @@ private:
 
     class PhysicsErrotCallback;
     PhysicsErrotCallback* errorCallback = nullptr;
+
+    DAVA_VIRTUAL_REFLECTION(PhysicsModule, IModule);
 };
 };

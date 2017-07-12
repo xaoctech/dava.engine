@@ -46,9 +46,9 @@ private:
 
     void RenderControlHierarhy(UIControl* control, const UIGeometricData& geometricData, const UIControlBackground* parentBackground);
 
-    void DebugRender(const UIDebugRenderComponent* component, const UIGeometricData& geometricData, const Rect& unrotatedRect);
+    void DebugRender(const UIDebugRenderComponent* component, const UIGeometricData& geometricData);
     void RenderDebugRect(const UIDebugRenderComponent* component, const UIGeometricData& geometricData);
-    void RenderPivotPoint(const UIDebugRenderComponent* component, const Rect& drawRect);
+    void RenderPivotPoint(const UIDebugRenderComponent* component, const UIGeometricData& geometricData);
 
     RenderSystem2D* renderSystem2D = nullptr;
     UIGeometricData baseGeometricData;

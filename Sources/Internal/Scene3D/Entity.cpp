@@ -22,27 +22,21 @@
 #include "Reflection/ReflectionRegistrator.h"
 #include <functional>
 
-
-#define USE_VECTOR(x) ((((uint64)1 << (uint64)x) & vectorComponentsMask) != (uint64)0)
-
 namespace DAVA
 {
-const int COMPONENT_COUNT_V6 = 18;
-
-uint64 vectorComponentsMask = MAKE_COMPONENT_MASK(Component::TRANSFORM_COMPONENT) | MAKE_COMPONENT_MASK(Component::RENDER_COMPONENT) | MAKE_COMPONENT_MASK(Component::LOD_COMPONENT);
-
 // Property Names
 const char* Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME = "editor.isSolid";
 const char* Entity::SCENE_NODE_IS_LOCKED_PROPERTY_NAME = "editor.isLocked";
 const char* Entity::SCENE_NODE_IS_NOT_REMOVABLE_PROPERTY_NAME = "editor.isNotRemovable";
 
+FastName Entity::EntityNameFieldName = FastName("Name");
+
 DAVA_VIRTUAL_REFLECTION_IMPL(Entity)
 {
-    ReflectionRegistrator<Entity>::Begin()
+    ReflectionRegistrator<Entity>::Begin()[M::Tooltip(EntityNameFieldName.c_str())]
     .DestructorByPointer([](Entity* e) { DAVA::SafeRelease(e); })
     .Field("ID", &Entity::GetID, &Entity::SetID)[M::ReadOnly()]
-    .Field("Name", &Entity::GetName, static_cast<void (Entity::*)(const FastName&)>(&Entity::SetName))
-    .Field("Tag", &Entity::tag)
+    .Field(EntityNameFieldName.c_str(), &Entity::GetName, static_cast<void (Entity::*)(const FastName&)>(&Entity::SetName))
     .Field("Flags", &Entity::flags)[M::FlagsT<Entity::EntityFlags>(), M::DeveloperModeOnly()]
     .Field("Visible", &Entity::GetVisible, &Entity::SetVisible)[M::ValueDescription(&VisibleValueDescription)]
     .Field(componentFieldString, &Entity::components)
@@ -52,14 +46,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(Entity)
 const char* Entity::componentFieldString = "Components";
 
 Entity::Entity()
-    : scene(nullptr)
-    , parent(nullptr)
-    , tag(0)
-    , family(nullptr)
-    , id(0)
-    , sceneId(0)
 {
-    flags = NODE_VISIBLE | NODE_UPDATABLE | NODE_LOCAL_MATRIX_IDENTITY;
     UpdateFamily();
 
     AddComponent(new TransformComponent());
@@ -174,7 +161,6 @@ void Entity::AddNode(Entity* node)
         }
         uint32 insertPosition = static_cast<uint32>(children.size());
         children.push_back(node);
-        node->SetIndexInParent(insertPosition);
         node->SetParent(this);
         node->SetScene(GetScene());
     }
@@ -238,7 +224,6 @@ void Entity::RemoveNode(Entity* node)
             if (node)
             {
                 node->SetScene(nullptr);
-                node->SetIndexInParent(ENTITY_INDEX_MASK);
                 node->SetParent(nullptr);
                 node->Release();
             }
@@ -264,30 +249,6 @@ Entity* Entity::GetNextChild(Entity* child)
     }
 
     return next;
-}
-
-int32 Entity::GetChildrenCountRecursive() const
-{
-    int32 result = 0;
-    result += static_cast<int32>(children.size());
-    for (Vector<Entity*>::const_iterator t = children.begin(); t != children.end(); ++t)
-    {
-        Entity* node = *t;
-        result += node->GetChildrenCountRecursive();
-    }
-    return result;
-}
-
-bool Entity::IsMyChildRecursive(const Entity* child) const
-{
-    if (std::find(children.begin(), children.end(), child) != children.end())
-    {
-        return true;
-    }
-    else
-    {
-        return std::any_of(children.begin(), children.end(), [&](const Entity* ch) { return ch->IsMyChildRecursive(child); });
-    }
 }
 
 void Entity::RemoveAllChildren()
@@ -330,86 +291,12 @@ void Entity::BakeTransforms()
     {
         children[0]->SetLocalTransform(children[0]->GetLocalTransform() * GetLocalTransform());
         SetLocalTransform(Matrix4::IDENTITY);
-        AddFlag(NODE_LOCAL_MATRIX_IDENTITY);
     }
 
     for (auto child : children)
     {
         child->BakeTransforms();
     }
-}
-
-void Entity::PropagateBoolProperty(String name, bool value)
-{
-    KeyedArchive* currentProperties = GetOrCreateCustomProperties(this)->GetArchive();
-    currentProperties->SetBool(name, value);
-
-    for (auto child : children)
-    {
-        child->PropagateBoolProperty(name, value);
-    }
-}
-
-void Entity::ExtractCurrentNodeKeyForAnimation(SceneNodeAnimationKey& key)
-{
-    const Matrix4& localTransform = GetLocalTransform();
-    key.time = 0.0f;
-    key.translation.x = localTransform._30;
-    key.translation.y = localTransform._31;
-    key.translation.z = localTransform._32;
-    key.rotation.Construct(localTransform);
-    //key.matrix = localTransform;
-}
-
-void Entity::Draw()
-{
-    //Stats::Instance()->BeginTimeMeasure("Scene.Draw.Entity.Draw", this);
-
-    if (!(flags & NODE_VISIBLE) || !(flags & NODE_UPDATABLE) || (flags & NODE_INVALID))
-        return;
-
-    for (auto child : children)
-        child->Draw();
-
-    if (scene)
-        scene->nodeCounter++;
-		
-#if 0
-	if (debugFlags & DEBUG_DRAW_AABOX_CORNERS)
-	{
-		//		Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
-		//		Matrix4 finalMatrix = worldTransform * prevMatrix;
-		//		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
-			
-		AABBox3 box = GetWTMaximumBoundingBoxSlow();
-		if(box == AABBox3())
-		{
-			box.min = Vector3(0, 0, 0) * GetWorldTransform();
-			box.max = box.min;
-		}
-			
-		RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
-		RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE | RenderStateBlock::STATE_DEPTH_TEST);
-		RenderSystem2D::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
-		RenderHelper::Instance()->DrawCornerBox(box);
-		RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
-		RenderSystem2D::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
-		//		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
-	}
-		
-	if (debugFlags & DEBUG_DRAW_RED_AABBOX)
-	{
-		AABBox3 box = GetWTMaximumBoundingBoxSlow();
-		RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
-		RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE | RenderStateBlock::STATE_DEPTH_TEST);
-		RenderSystem2D::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
-		RenderHelper::Instance()->DrawBox(box);
-		RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
-		RenderSystem2D::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
-	}
-#endif
-
-    //Stats::Instance()->EndTimeMeasure("Scene.Draw.Entity.Draw", this);
 }
 
 void Entity::SceneDidLoaded()
@@ -433,7 +320,6 @@ Entity* Entity::Clone(Entity* dstNode)
     }
 
     dstNode->name = name;
-    dstNode->tag = tag;
     dstNode->sceneId = sceneId;
     dstNode->id = 0;
 
@@ -455,12 +341,12 @@ Entity* Entity::Clone(Entity* dstNode)
 
 void Entity::SetDebugFlags(uint32 debugFlags, bool isRecursive)
 {
-    DebugRenderComponent* debugComponent = cast_if_equal<DebugRenderComponent*>(GetComponent(Component::DEBUG_RENDER_COMPONENT));
+    DebugRenderComponent* debugComponent = CastIfEqual<DebugRenderComponent*>(GetComponent(Component::DEBUG_RENDER_COMPONENT));
 
     if (!debugComponent)
     {
         AddComponent(new DebugRenderComponent());
-        debugComponent = cast_if_equal<DebugRenderComponent*>(GetComponent(Component::DEBUG_RENDER_COMPONENT));
+        debugComponent = CastIfEqual<DebugRenderComponent*>(GetComponent(Component::DEBUG_RENDER_COMPONENT));
         debugComponent->SetDebugFlags(DebugRenderComponent::DEBUG_AUTOCREATED);
     }
 
@@ -484,7 +370,7 @@ void Entity::SetDebugFlags(uint32 debugFlags, bool isRecursive)
 
 uint32 Entity::GetDebugFlags() const
 {
-    DebugRenderComponent* debugComponent = cast_if_equal<DebugRenderComponent*>(GetComponent(Component::DEBUG_RENDER_COMPONENT));
+    DebugRenderComponent* debugComponent = CastIfEqual<DebugRenderComponent*>(GetComponent(Component::DEBUG_RENDER_COMPONENT));
     if (debugComponent)
     {
         return debugComponent->GetDebugFlags();
@@ -570,34 +456,24 @@ AABBox3 Entity::GetWTMaximumBoundingBoxSlow()
     return retBBox;
 }
 
-String Entity::GetDebugDescription()
-{
-    return Format("children: %d ", GetChildrenCount());
-}
-
 void Entity::Save(KeyedArchive* archive, SerializationContext* serializationContext)
 {
-    // Perform refactoring and add Matrix4, Vector4 types to VariantType and KeyedArchive
     BaseObject::SaveObject(archive);
 
     archive->SetString("name", String(name.c_str()));
-    archive->SetInt32("tag", tag);
     archive->SetUInt32("id", id);
-    archive->SetByteArrayAsType("localTransform", GetLocalTransform());
-
     archive->SetUInt32("flags", flags);
-    //    archive->SetUInt32("debugFlags", debugFlags);
 
     KeyedArchive* compsArch = new KeyedArchive();
     uint32 savedIndex = 0;
-    for (uint32 i = 0; i < components.size(); ++i)
+    for (Component* c : components)
     {
-        if (components[i]->GetType() < Component::DEBUG_COMPONENTS)
+        if (c->GetType() < Component::DEBUG_COMPONENTS)
         {
             //don't save empty custom properties
-            if (Component::CUSTOM_PROPERTIES_COMPONENT == i)
+            if (c->GetType() == Component::CUSTOM_PROPERTIES_COMPONENT)
             {
-                CustomPropertiesComponent* customProps = cast_if_equal<CustomPropertiesComponent*>(components[i]);
+                CustomPropertiesComponent* customProps = CastIfEqual<CustomPropertiesComponent*>(c);
                 if (customProps && customProps->GetArchive()->Count() <= 0)
                 {
                     continue;
@@ -605,7 +481,7 @@ void Entity::Save(KeyedArchive* archive, SerializationContext* serializationCont
             }
 
             KeyedArchive* compArch = new KeyedArchive();
-            components[i]->Serialize(compArch, serializationContext);
+            c->Serialize(compArch, serializationContext);
             compsArch->SetArchive(KeyedArchive::GenKeyFromIndex(savedIndex), compArch);
             compArch->Release();
             savedIndex++;
@@ -622,8 +498,6 @@ void Entity::Load(KeyedArchive* archive, SerializationContext* serializationCont
     BaseObject::LoadObject(archive);
 
     name = FastName(archive->GetString("name", "").c_str());
-    tag = archive->GetInt32("tag", 0);
-
     id = archive->GetUInt32("id", 0);
     if (nullptr != serializationContext->GetScene())
     {
@@ -631,75 +505,11 @@ void Entity::Load(KeyedArchive* archive, SerializationContext* serializationCont
     }
 
     flags = archive->GetUInt32("flags", NODE_VISIBLE);
-    flags |= NODE_UPDATABLE;
     flags &= ~TRANSFORM_DIRTY;
-
-    const Matrix4& localTransform = archive->GetByteArrayAsType("localTransform", GetLocalTransform());
-    SetLocalTransform(localTransform);
 
     KeyedArchive* compsArch = archive->GetArchive("components");
 
-    if (serializationContext->GetVersion() < COMPONENTS_BY_NAME_SAVE_SCENE_VERSION)
-    {
-        LoadComponentsV6(compsArch, serializationContext);
-    }
-    else
-    {
-        LoadComponentsV7(compsArch, serializationContext);
-    }
-
-    if (serializationContext->GetVersion() < CUSTOM_PROPERTIES_COMPONENT_SAVE_SCENE_VERSION)
-    {
-        KeyedArchive* customProps = archive->GetArchiveFromByteArray("customprops");
-        if (customProps != nullptr)
-        {
-            CustomPropertiesComponent* customPropsComponent = GetOrCreateCustomProperties(this);
-            customPropsComponent->LoadFromArchive(*customProps, serializationContext);
-
-            customProps->Release();
-        }
-    }
-}
-
-void Entity::LoadComponentsV6(KeyedArchive* compsArch, SerializationContext* serializationContext)
-{
-    if (nullptr != compsArch)
-    {
-        for (uint32 i = 0; i < COMPONENT_COUNT_V6; ++i)
-        {
-            KeyedArchive* compArch = compsArch->GetArchive(KeyedArchive::GenKeyFromIndex(i));
-            if (nullptr != compArch)
-            {
-                uint32 compType = compArch->GetUInt32("comp.type", 0xFFFFFFFF);
-                if (compType != 0xFFFFFFFF)
-                {
-                    //VI{
-                    //Need to swap these 2 components since their order in the enum
-                    //has been changed
-                    if (Component::DEBUG_RENDER_COMPONENT == compType)
-                    {
-                        compType = Component::LOD_COMPONENT;
-                        compArch->SetUInt32("comp.type", compType);
-                    }
-                    else if (Component::LOD_COMPONENT == compType)
-                    {
-                        compType = Component::DEBUG_RENDER_COMPONENT;
-                        compArch->SetUInt32("comp.type", compType);
-                    }
-                    //}VI
-
-                    Component* comp = Component::CreateByType(compType);
-                    if (nullptr != comp)
-                    {
-                        if (compType == Component::TRANSFORM_COMPONENT)
-                            RemoveComponent(compType);
-                        AddComponent(comp);
-                        comp->Deserialize(compArch, serializationContext);
-                    }
-                }
-            }
-        }
-    }
+    LoadComponentsV7(compsArch, serializationContext);
 }
 
 void Entity::LoadComponentsV7(KeyedArchive* compsArch, SerializationContext* serializationContext)
@@ -831,70 +641,6 @@ void Entity::RemoveFlagRecursive(int32 flagToRemove)
     }
 }
 
-bool Entity::IsLodMain(Entity* childToCheck)
-{
-    if (nullptr == parent || !IsLodPart())
-    {
-        return true;
-    }
-
-    return parent->IsLodMain(this);
-}
-
-String Entity::GetPathID(Entity* root)
-{
-    String result;
-    Entity* curr = this;
-    Entity* parent = nullptr;
-    int32 sz, i;
-
-    while (curr != root)
-    {
-        parent = curr->GetParent();
-        sz = parent->GetChildrenCount();
-        for (i = 0; i < sz; i++)
-        {
-            if (curr == parent->GetChild(i))
-            {
-                result = Format("%d:", i) + result;
-                break;
-            }
-        }
-        curr = parent;
-    }
-    return result;
-}
-
-Entity* Entity::GetNodeByPathID(Entity* root, String pathID)
-{
-    Entity* result = root;
-    int32 offs = 0;
-    int32 index = 0;
-    int32 sz = static_cast<int32>(pathID.size());
-    char val;
-    while (offs < sz)
-    {
-        val = pathID[offs];
-        if (val < '0' || val > '9')
-        {
-            offs++;
-            if (index >= 0 && result->GetChildrenCount() > index)
-                result = result->GetChild(index);
-            else
-                return nullptr;
-            continue;
-        }
-        index = index * 10 + val - '0';
-        offs++;
-    }
-    return result;
-}
-
-Matrix4& Entity::ModifyLocalTransform()
-{
-    return (static_cast<TransformComponent*>(GetComponent(Component::TRANSFORM_COMPONENT)))->ModifyLocalTransform();
-}
-
 void Entity::SetLocalTransform(const Matrix4& newMatrix)
 {
     //	TIME_PROFILE("Entity::SetLocalTransform");
@@ -904,77 +650,6 @@ void Entity::SetLocalTransform(const Matrix4& newMatrix)
 const Matrix4& Entity::GetLocalTransform()
 {
     return (static_cast<TransformComponent*>(GetComponent(Component::TRANSFORM_COMPONENT)))->GetLocalTransform();
-}
-
-const Matrix4& Entity::GetWorldTransform() const
-{
-    return (static_cast<TransformComponent*>(GetComponent(Component::TRANSFORM_COMPONENT)))->GetWorldTransform();
-}
-
-void Entity::SetVisible(const bool& isVisible)
-{
-    RenderComponent* renderComponent = static_cast<RenderComponent*>(GetComponent(Component::RENDER_COMPONENT));
-    if (isVisible)
-    {
-        AddFlag(NODE_VISIBLE);
-
-        if (nullptr != renderComponent)
-        {
-            RenderObject* renderObject = renderComponent->GetRenderObject();
-            renderObject->SetFlags(renderObject->GetFlags() | RenderObject::VISIBLE);
-            if ((renderObject->GetFlags() & RenderObject::NEED_UPDATE) &&
-                renderObject->GetRenderSystem() != nullptr)
-            {
-                renderObject->GetRenderSystem()->MarkForUpdate(renderObject);
-            }
-        }
-    }
-    else
-    {
-        RemoveFlag(NODE_VISIBLE);
-        if (nullptr != renderComponent)
-        {
-            RenderObject* renderObject = renderComponent->GetRenderObject();
-            renderObject->SetFlags(renderObject->GetFlags() & ~RenderObject::VISIBLE);
-        }
-    }
-
-    ParticleEffectComponent* effect = GetEffectComponent(this);
-    if (nullptr != effect)
-        effect->SetRenderObjectVisible(isVisible);
-
-    int32 count = GetChildrenCount();
-    for (int32 i = 0; i < count; ++i)
-    {
-        GetChild(i)->SetVisible(isVisible);
-    }
-}
-
-void Entity::SetUpdatable(bool isUpdatable)
-{
-    RenderComponent* renderComponent = static_cast<RenderComponent*>(GetComponent(Component::RENDER_COMPONENT));
-    if (isUpdatable)
-    {
-        AddFlag(NODE_UPDATABLE);
-        if (nullptr != renderComponent)
-        {
-            renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() | RenderObject::VISIBLE);
-        }
-    }
-    else
-    {
-        RemoveFlag(NODE_UPDATABLE);
-        if (nullptr != renderComponent)
-        {
-            renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() & ~RenderObject::VISIBLE);
-        }
-    }
-
-    int32 count = GetChildrenCount();
-    for (int32 i = 0; i < count; ++i)
-    {
-        GetChild(i)->SetUpdatable(isUpdatable);
-    }
 }
 
 Matrix4 Entity::AccamulateLocalTransform(Entity* fromParent)
@@ -1035,6 +710,50 @@ inline void Entity::RemoveComponent(Vector<Component*>::iterator& it)
         DetachComponent(it);
         SafeDelete(c);
     }
+}
+
+void Entity::SetVisible(const bool& isVisible)
+{
+    RenderComponent* renderComponent = static_cast<RenderComponent*>(GetComponent(Component::RENDER_COMPONENT));
+    if (isVisible)
+    {
+        AddFlag(NODE_VISIBLE);
+
+        if (nullptr != renderComponent)
+        {
+            RenderObject* renderObject = renderComponent->GetRenderObject();
+            renderObject->SetFlags(renderObject->GetFlags() | RenderObject::VISIBLE);
+            if ((renderObject->GetFlags() & RenderObject::NEED_UPDATE) &&
+                renderObject->GetRenderSystem() != nullptr)
+            {
+                renderObject->GetRenderSystem()->MarkForUpdate(renderObject);
+            }
+        }
+    }
+    else
+    {
+        RemoveFlag(NODE_VISIBLE);
+        if (nullptr != renderComponent)
+        {
+            RenderObject* renderObject = renderComponent->GetRenderObject();
+            renderObject->SetFlags(renderObject->GetFlags() & ~RenderObject::VISIBLE);
+        }
+    }
+
+    ParticleEffectComponent* effect = GetEffectComponent(this);
+    if (nullptr != effect)
+        effect->SetRenderObjectVisible(isVisible);
+
+    int32 count = GetChildrenCount();
+    for (int32 i = 0; i < count; ++i)
+    {
+        GetChild(i)->SetVisible(isVisible);
+    }
+}
+
+const Matrix4& Entity::GetWorldTransform() const
+{
+    return (static_cast<TransformComponent*>(GetComponent(Component::TRANSFORM_COMPONENT)))->GetWorldTransform();
 }
 
 Entity* Entity::GetEntityByID(uint32 id)

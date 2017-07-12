@@ -14,13 +14,12 @@
 #include "Concurrency/LockGuard.h"
 #include "Concurrency/Mutex.h"
 #include "Concurrency/Thread.h"
-#include "Core/Core.h"
 #include "Logger/Logger.h"
 #include "Utils/StringFormat.h"
 
 #if defined(__DAVAENGINE_WINDOWS__)
 #include <io.h>
-#elif defined(__DAVAENGINE_ANDROID__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
+#elif defined(__DAVAENGINE_POSIX__)
 #include <unistd.h>
 #endif
 
@@ -39,7 +38,6 @@ File::~File()
     if (file != nullptr)
     {
         int result = fclose(file);
-        DVASSERT(result == 0);
         if (result != 0)
         {
             const String& s = filename.GetStringValue();
@@ -98,9 +96,15 @@ File* File::Create(const FilePath& filename, uint32 attributes)
     if (!(attributes & (WRITE | CREATE | APPEND)))
     {
         FilePath compressedFile = filename + extDvpl;
-        if (FileAPI::IsRegularFile(compressedFile.GetAbsolutePathname()))
+        String fileName = compressedFile.GetAbsolutePathname();
+        if (FileAPI::IsRegularFile(fileName))
         {
             result = CompressedCreate(compressedFile, attributes);
+            if (result == nullptr)
+            {
+                // delete bad file (can't decompress)
+                FileAPI::RemoveFile(fileName);
+            }
         }
     }
     return result; // easy debug on android(can set breakpoint on nullptr value in eclipse do not remove it)
@@ -200,7 +204,7 @@ File* File::CompressedCreate(const FilePath& filename, uint32 attributes)
 
         if (!LZ4HCCompressor().Decompress(compressed, uncompressed))
         {
-            Logger::Error("decompress failed on file:", filename.GetAbsolutePathname().c_str());
+            Logger::Error("decompress failed on file: %s", filename.GetAbsolutePathname().c_str());
             return nullptr;
         }
 
@@ -587,7 +591,7 @@ bool File::Truncate(uint64 size)
 #endif
 #if defined(__DAVAENGINE_WINDOWS__)
     return (0 == _chsize(_fileno(file), static_cast<long>(size)));
-#elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+#elif defined(__DAVAENGINE_POSIX__)
     return (0 == ftruncate(fileno(file), size));
 #else
 #error No implementation for current platform
@@ -630,7 +634,7 @@ String File::GetModificationDate(const FilePath& filePathname)
     int32 ret = stat(realPathname.c_str(), &fileInfo);
     if (0 == ret)
     {
-#if defined(__DAVAENGINE_WINDOWS__)
+#if defined(__DAVAENGINE_WINDOWS__) || defined(__DAVAENGINE_LINUX__)
         tm* utcTime = gmtime(&fileInfo.st_mtime);
 #elif defined(__DAVAENGINE_ANDROID__)
         time_t st_mtime = static_cast<time_t>(fileInfo.st_mtime);

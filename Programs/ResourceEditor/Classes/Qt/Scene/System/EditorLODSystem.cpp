@@ -555,6 +555,9 @@ void EditorLODSystem::SelectionChanged(const SelectableGroup& selection)
         }
     }
 
+    std::sort(lodEntities.begin(), lodEntities.end());
+    lodEntities.erase(std::unique(lodEntities.begin(), lodEntities.end()), lodEntities.end());
+
     for (auto& entity : lodEntities)
     {
         uint32 count = entity->GetComponentCount(Component::LOD_COMPONENT);

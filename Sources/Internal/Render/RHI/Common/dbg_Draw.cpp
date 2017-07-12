@@ -1,5 +1,4 @@
 #include "../dbg_Draw.h"
-#include "../Common/PreProcess.h"
 #include "../rhi_ShaderSource.h"
 #include "../rhi_ShaderCache.h"
 #include "rhi_Utils.h"
@@ -13,7 +12,7 @@ using DAVA::Vector3;
 #include <stdio.h>
 #include <stdarg.h>
 
-#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+#if defined(__DAVAENGINE_POSIX__)
 #define _vsnprintf vsnprintf
 #endif
 

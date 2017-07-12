@@ -94,11 +94,7 @@ void SoundUpdateSystem::Process(float32 timeElapsed)
 
     if (activeCamera)
     {
-#if defined(__DAVAENGINE_COREV2__)
         SoundSystem* ss = GetEngineContext()->soundSystem;
-#else
-        SoundSystem* ss = SoundSystem::Instance();
-#endif
         const Vector3& listenerPosition = activeCamera->GetPosition();
         ss->SetListenerPosition(listenerPosition);
         ss->SetListenerOrientation(activeCamera->GetDirection(), activeCamera->GetLeft());
@@ -107,7 +103,7 @@ void SoundUpdateSystem::Process(float32 timeElapsed)
         for (uint32 i = 0; i < autoCount; ++i)
         {
             AutoTriggerSound& autoTriggerSound = autoTriggerSounds[i];
-            float32 distanceSq = (listenerPosition - autoTriggerSound.owner->GetWorldTransform().GetTranslationVector()).SquareLength();
+            float32 distanceSq = (listenerPosition - GetTransformComponent(autoTriggerSound.owner)->GetWorldTransformPtr()->GetTranslationVector()).SquareLength();
             if (distanceSq < autoTriggerSound.maxSqDistance)
             {
                 if (!autoTriggerSound.soundEvent->IsActive())

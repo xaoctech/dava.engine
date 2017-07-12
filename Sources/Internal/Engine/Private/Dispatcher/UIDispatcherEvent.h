@@ -1,11 +1,8 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
-
-#if defined(__DAVAENGINE_COREV2__)
-
-#include "Functional/Function.h"
 #include "Engine/EngineTypes.h"
+#include "Functional/Function.h"
 
 namespace DAVA
 {
@@ -90,5 +87,3 @@ struct UIDispatcherEvent final
 
 } // namespace Private
 } // namespace DAVA
-
-#endif // __DAVAENGINE_COREV2__

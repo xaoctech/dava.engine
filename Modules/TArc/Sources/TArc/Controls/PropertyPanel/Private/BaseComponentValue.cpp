@@ -10,7 +10,7 @@
 #include "TArc/Utils/ReflectionHelpers.h"
 #include "TArc/Qt/QtSize.h"
 
-#include <Engine/PlatformApi.h>
+#include <Engine/PlatformApiQt.h>
 #include <Reflection/ReflectionRegistrator.h>
 #include <Logger/Logger.h>
 

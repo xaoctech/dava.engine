@@ -1075,7 +1075,6 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity* currentNode)
         if (currentNode->GetLocalTransform() == Matrix4::IDENTITY)
         {
             Entity* parent = currentNode->GetParent();
-            uint32 curNodeID = currentNode->GetID();
 
             if (parent)
             {
@@ -1114,7 +1113,6 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity* currentNode)
                 parent->RemoveNode(currentNode);
 
                 removedNodeCount++;
-                childNode->SetID(curNodeID);
                 SafeRelease(childNode);
 
                 return true;
@@ -1283,7 +1281,6 @@ void SceneFileV2::ConvertShadowVolumes(Entity* entity, NMaterial* shadowMaterial
 
 void SceneFileV2::OptimizeScene(Entity* rootNode)
 {
-    int32 beforeCount = rootNode->GetChildrenCountRecursive();
     removedNodeCount = 0;
     rootNode->BakeTransforms();
 
@@ -1331,10 +1328,12 @@ void SceneFileV2::OptimizeScene(Entity* rootNode)
         covert.ConvertPolygonGroupsPivot3(rootNode);
     }
 
-    QualitySettingsSystem::Instance()->UpdateEntityAfterLoad(rootNode);
+    {
+        SpeedTreeConverter convert;
+        convert.ValidateSpeedTreeComponentCount(rootNode);
+    }
 
-    int32 nowCount = rootNode->GetChildrenCountRecursive();
-    Logger::FrameworkDebug("nodes removed: %d before: %d, now: %d, diff: %d", removedNodeCount, beforeCount, nowCount, beforeCount - nowCount);
+    QualitySettingsSystem::Instance()->UpdateEntityAfterLoad(rootNode);
 }
 
 void SceneFileV2::UpdatePolygonGroupRequestedFormatRecursively(Entity* entity)

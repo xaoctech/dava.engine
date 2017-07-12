@@ -142,7 +142,8 @@ void SpeedTreeConverter::ConvertingPathRecursive(Entity* node)
     {
         return;
     }
-    SpeedTreeObject* treeObject = cast_if_equal<SpeedTreeObject*>(ro);
+
+    SpeedTreeObject* treeObject = CastIfEqual<SpeedTreeObject*>(ro);
     if (nullptr == treeObject)
     {
         treeObject = new SpeedTreeObject();
@@ -151,7 +152,10 @@ void SpeedTreeConverter::ConvertingPathRecursive(Entity* node)
         treeObject->Release();
     }
 
-    node->AddComponent(new SpeedTreeComponent());
+    if (GetSpeedTreeComponent(node) == nullptr)
+    {
+        node->AddComponent(new SpeedTreeComponent());
+    }
 
     uniqTreeObjects.insert(treeObject);
 
@@ -276,15 +280,33 @@ void SpeedTreeConverter::ConvertPolygonGroupsPivot3(Entity* scene)
 
     ConvertingPathRecursive(scene);
 
-    Map<PolygonGroup*, PolygonGroup*> convertedPGs;
+    Map<PolygonGroup*, PolygonGroup*> pgCopy;
     for (PolygonGroup* dataSource : uniqPGs)
     {
         int32 vertexFormat = dataSource->GetFormat();
         int32 vxCount = dataSource->GetVertexCount();
         int32 indCount = dataSource->GetIndexCount();
+        int32 vertexSize = GetVertexSize(vertexFormat);
+
+        PolygonGroup* pg = new PolygonGroup();
+        pg->AllocateData(vertexFormat, vxCount, indCount);
+        memcpy(pg->meshData, dataSource->meshData, vertexSize * vxCount);
+        memcpy(pg->indexArray, dataSource->indexArray, indCount * sizeof(uint16));
+
+        pgCopy[dataSource] = pg;
+    }
+
+    for (PolygonGroup* pg : uniqPGs)
+    {
+        PolygonGroup* dataSource = pgCopy[pg];
+
+        int32 vertexFormat = dataSource->GetFormat();
+        int32 vxCount = dataSource->GetVertexCount();
+        int32 indCount = dataSource->GetIndexCount();
 
         int32 convertedFormat = (vertexFormat & ~EVF_PIVOT_DEPRECATED) | EVF_PIVOT4;
-        PolygonGroup* pg = new PolygonGroup();
+
+        pg->ReleaseGeometryData();
         pg->AllocateData(convertedFormat, vxCount, indCount);
 
         Memcpy(pg->indexArray, dataSource->indexArray, indCount * sizeof(int16));
@@ -312,8 +334,6 @@ void SpeedTreeConverter::ConvertPolygonGroupsPivot3(Entity* scene)
 
         pg->RecalcAABBox();
         pg->BuildBuffers();
-
-        convertedPGs[dataSource] = pg;
     }
 
     static const FastName FLAG_SPEED_TREE_LEAF("SPEED_TREE_LEAF");
@@ -335,16 +355,21 @@ void SpeedTreeConverter::ConvertPolygonGroupsPivot3(Entity* scene)
         }
     }
 
-    for (SpeedTreeObject* object : uniqTreeObjects)
+    for (auto& it : pgCopy)
+        SafeRelease(it.second);
+}
+
+void SpeedTreeConverter::ValidateSpeedTreeComponentCount(Entity* node)
+{
+    for (int32 c = 0; c < node->GetChildrenCount(); ++c)
     {
-        for (uint32 ri = 0, rCount = object->GetRenderBatchCount(); ri < rCount; ++ri)
-        {
-            RenderBatch* batch = object->GetRenderBatch(ri);
-            batch->SetPolygonGroup(convertedPGs[batch->GetPolygonGroup()]);
-        }
+        Entity* childNode = node->GetChild(c);
+        ValidateSpeedTreeComponentCount(childNode);
     }
 
-    for (auto& it : convertedPGs)
-        SafeRelease(it.second);
+    while (node->GetComponentCount(Component::SPEEDTREE_COMPONENT) > 1u)
+    {
+        node->RemoveComponent(Component::SPEEDTREE_COMPONENT, 1u);
+    };
 }
 };
