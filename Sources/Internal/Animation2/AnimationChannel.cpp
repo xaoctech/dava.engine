@@ -1,4 +1,6 @@
 #include "AnimationChannel.h"
+#include "Base/BaseMath.h"
+#include "Debug/DVAssert.h"
 
 namespace DAVA
 {
@@ -10,10 +12,6 @@ AnimationChannel::State::State()
 const float32* AnimationChannel::State::GetChannelValue() const
 {
     return value;
-}
-
-AnimationChannel::AnimationChannel()
-{
 }
 
 uint32 AnimationChannel::Bind(const uint8* _data)

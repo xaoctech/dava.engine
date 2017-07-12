@@ -1,34 +1,36 @@
 #include "Animation2/AnimationClip.h"
 #include "Scene3D/Components/SkeletonComponent.h"
-#include "Scene3D/Components/SkeletonAnimationComponent.h"
-#include "Scene3D/Entity.h"
+#include "Scene3D/Components/MotionComponent.h"
 #include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Entity.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Systems/GlobalEventSystem.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "Reflection/ReflectedMeta.h"
 
 namespace DAVA
 {
-REGISTER_CLASS(SkeletonAnimationComponent)
+REGISTER_CLASS(MotionComponent)
 
-DAVA_VIRTUAL_REFLECTION_IMPL(SkeletonAnimationComponent)
+DAVA_VIRTUAL_REFLECTION_IMPL(MotionComponent)
 {
-    ReflectionRegistrator<SkeletonAnimationComponent>::Begin()
+    ReflectionRegistrator<MotionComponent>::Begin()
     .ConstructorByPointer()
-    .Field("animationPath", &SkeletonAnimationComponent::GetAnimationPath, &SkeletonAnimationComponent::SetAnimationPath)[M::DisplayName("Animation File")]
+    .Field("animationPath", &MotionComponent::GetAnimationPath, &MotionComponent::SetAnimationPath)[M::DisplayName("Animation File")]
     .End();
 }
 
-SkeletonAnimationComponent::~SkeletonAnimationComponent()
+MotionComponent::~MotionComponent()
 {
     SafeDelete(animationClip);
 }
 
-const FilePath& SkeletonAnimationComponent::GetAnimationPath() const
+const FilePath& MotionComponent::GetAnimationPath() const
 {
     return animationPath;
 }
 
-void SkeletonAnimationComponent::SetAnimationPath(const FilePath& path)
+void MotionComponent::SetAnimationPath(const FilePath& path)
 {
     animationPath = path;
 
@@ -40,18 +42,18 @@ void SkeletonAnimationComponent::SetAnimationPath(const FilePath& path)
             SafeDelete(animationClip);
     }
 
-    animationChanged = true;
+    GlobalEventSystem::Instance()->Event(this, EventSystem::MOTION_CHANGED);
 }
 
-Component* SkeletonAnimationComponent::Clone(Entity* toEntity)
+Component* MotionComponent::Clone(Entity* toEntity)
 {
-    SkeletonAnimationComponent* newComponent = new SkeletonAnimationComponent();
+    MotionComponent* newComponent = new MotionComponent();
     newComponent->SetEntity(toEntity);
     newComponent->SetAnimationPath(animationPath);
     return newComponent;
 }
 
-void SkeletonAnimationComponent::Serialize(KeyedArchive* archive, SerializationContext* serializationContext)
+void MotionComponent::Serialize(KeyedArchive* archive, SerializationContext* serializationContext)
 {
     Component::Serialize(archive, serializationContext);
 
@@ -59,7 +61,7 @@ void SkeletonAnimationComponent::Serialize(KeyedArchive* archive, SerializationC
     archive->SetString("animationPath", animationRelativePath);
 }
 
-void SkeletonAnimationComponent::Deserialize(KeyedArchive* archive, SerializationContext* serializationContext)
+void MotionComponent::Deserialize(KeyedArchive* archive, SerializationContext* serializationContext)
 {
     Component::Deserialize(archive, serializationContext);
 

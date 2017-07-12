@@ -48,7 +48,7 @@ const char* SCENE_SPEEDTREE_SYSTEM = "SpeedTreeUpdateSystem";
 const char* SCENE_WIND_SYSTEM = "WindSystem";
 const char* SCENE_WAVE_SYSTEM = "WaveSystem";
 const char* SCENE_SKELETON_SYSTEM = "SkeletonSystem";
-const char* SCENE_SKELETON_ANIMATION_SYSTEM = "SkeletonAnimationSystem";
+const char* SCENE_MOTION_SYSTEM = "MotionSystem";
 
 //Render
 const char* RENDER_PASS_PREPARE_ARRAYS = "RenderPass::PrepareArrays";

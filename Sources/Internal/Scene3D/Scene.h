@@ -44,7 +44,7 @@ class FoliageSystem;
 class WindSystem;
 class WaveSystem;
 class SkeletonSystem;
-class SkeletonAnimationSystem;
+class MotionSystem;
 class AnimationSystem;
 class LandscapeSystem;
 class LodSystem;
@@ -106,9 +106,9 @@ public:
         SCENE_SYSTEM_WIND_UPDATE_FLAG = 1 << 15,
         SCENE_SYSTEM_WAVE_UPDATE_FLAG = 1 << 16,
         SCENE_SYSTEM_SKELETON_FLAG = 1 << 17,
-        SCENE_SYSTEM_SKELETON_ANIMATION_FLAG = 1 << 18,
-        SCENE_SYSTEM_ANIMATION_FLAG = 1 << 19,
-        SCENE_SYSTEM_SLOT_FLAG = 1 << 20,
+        SCENE_SYSTEM_ANIMATION_FLAG = 1 << 18,
+        SCENE_SYSTEM_SLOT_FLAG = 1 << 19,
+        SCENE_SYSTEM_MOTION_FLAG = 1 << 20,
 
         SCENE_SYSTEM_ALL_MASK = 0xFFFFFFFF
     };
@@ -168,7 +168,7 @@ public:
     AnimationSystem* animationSystem = nullptr;
     StaticOcclusionDebugDrawSystem* staticOcclusionDebugDrawSystem = nullptr;
     SkeletonSystem* skeletonSystem = nullptr;
-    SkeletonAnimationSystem* skeletonAnimationSystem = nullptr;
+    MotionSystem* motionSystem = nullptr;
     LandscapeSystem* landscapeSystem = nullptr;
     ParticleEffectDebugDrawSystem* particleEffectDebugDrawSystem = nullptr;
     SlotSystem* slotSystem = nullptr;

@@ -31,7 +31,7 @@
 #include "Scene3D/Systems/WindSystem.h"
 #include "Scene3D/Systems/WaveSystem.h"
 #include "Scene3D/Systems/SkeletonSystem.h"
-#include "Scene3D/Systems/SkeletonAnimationSystem.h"
+#include "Scene3D/Systems/MotionSystem.h"
 #include "Scene3D/Systems/AnimationSystem.h"
 #include "Scene3D/Systems/LandscapeSystem.h"
 #include "Scene3D/Systems/SoundUpdateSystem.h"
@@ -237,10 +237,10 @@ void Scene::CreateSystems()
         AddSystem(animationSystem, MAKE_COMPONENT_MASK(Component::ANIMATION_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
     }
 
-    if (SCENE_SYSTEM_SKELETON_ANIMATION_FLAG & systemsMask)
+    if (SCENE_SYSTEM_MOTION_FLAG & systemsMask)
     {
-        skeletonAnimationSystem = new SkeletonAnimationSystem(this);
-        AddSystem(skeletonAnimationSystem, MAKE_COMPONENT_MASK(Component::SKELETON_COMPONENT) | MAKE_COMPONENT_MASK(Component::SKELETON_ANIMATION_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
+        motionSystem = new MotionSystem(this);
+        AddSystem(motionSystem, MAKE_COMPONENT_MASK(Component::SKELETON_COMPONENT) | MAKE_COMPONENT_MASK(Component::MOTION_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
     }
 
     if (SCENE_SYSTEM_SKELETON_FLAG & systemsMask)
@@ -373,22 +373,23 @@ Scene::~Scene()
 
     SafeRelease(sceneGlobalMaterial);
 
-    transformSystem = 0;
-    renderUpdateSystem = 0;
-    lodSystem = 0;
-    debugRenderSystem = 0;
-    particleEffectSystem = 0;
-    updatableSystem = 0;
-    lightUpdateSystem = 0;
-    switchSystem = 0;
-    soundSystem = 0;
-    actionSystem = 0;
-    staticOcclusionSystem = 0;
-    speedTreeUpdateSystem = 0;
-    foliageSystem = 0;
-    windSystem = 0;
-    waveSystem = 0;
-    animationSystem = 0;
+    transformSystem = nullptr;
+    renderUpdateSystem = nullptr;
+    lodSystem = nullptr;
+    debugRenderSystem = nullptr;
+    particleEffectSystem = nullptr;
+    updatableSystem = nullptr;
+    lightUpdateSystem = nullptr;
+    switchSystem = nullptr;
+    soundSystem = nullptr;
+    actionSystem = nullptr;
+    staticOcclusionSystem = nullptr;
+    speedTreeUpdateSystem = nullptr;
+    foliageSystem = nullptr;
+    windSystem = nullptr;
+    waveSystem = nullptr;
+    animationSystem = nullptr;
+    motionSystem = nullptr;
 
     size_t size = systems.size();
     for (size_t k = 0; k < size; ++k)

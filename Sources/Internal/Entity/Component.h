@@ -53,7 +53,7 @@ public:
         WASD_CONTROLLER_COMPONENT,
         VISIBILITY_CHECK_COMPONENT,
         SLOT_COMPONENT,
-        SKELETON_ANIMATION_COMPONENT,
+        MOTION_COMPONENT,
 
         //debug components - note that everything below won't be serialized
         DEBUG_COMPONENTS,

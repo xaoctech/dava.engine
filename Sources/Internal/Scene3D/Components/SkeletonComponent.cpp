@@ -53,6 +53,14 @@ void SkeletonComponent::SetJoints(const Vector<Joint>& config)
     GlobalEventSystem::Instance()->Event(this, EventSystem::SKELETON_CONFIG_CHANGED);
 }
 
+void SkeletonComponent::ApplyPose(const Pose& pose)
+{
+    for (const Pose::Node& node : pose.nodes)
+    {
+        SetJointTransform(node.jointIndex, node.transform);
+    }
+}
+
 Component* SkeletonComponent::Clone(Entity* toEntity)
 {
     SkeletonComponent* newComponent = new SkeletonComponent();

@@ -7,15 +7,14 @@
 namespace DAVA
 {
 class AnimationClip;
-class SkeletonComponent;
-class SkeletonAnimationSystem;
-class SkeletonAnimationComponent : public Component
+class MotionSystem;
+class MotionComponent : public Component
 {
 public:
-    IMPLEMENT_COMPONENT_TYPE(SKELETON_ANIMATION_COMPONENT);
+    IMPLEMENT_COMPONENT_TYPE(MOTION_COMPONENT);
 
-    SkeletonAnimationComponent() = default;
-    ~SkeletonAnimationComponent();
+    MotionComponent() = default;
+    ~MotionComponent();
 
     Component* Clone(Entity* toEntity) override;
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
@@ -25,20 +24,18 @@ public:
     void SetAnimationPath(const FilePath& path);
 
 private:
-    AnimationClip* animationClip = nullptr;
-    Vector<std::pair<const AnimationTrack*, AnimationTrack::State>> animationStates;
     FilePath animationPath;
 
-    bool animationChanged = false;
+    AnimationClip* animationClip = nullptr;
 
 public:
-    INTROSPECTION_EXTEND(SkeletonAnimationComponent, Component,
+    INTROSPECTION_EXTEND(MotionComponent, Component,
                          PROPERTY("animation", "animation", GetAnimationPath, SetAnimationPath, I_SAVE | I_VIEW | I_EDIT)
                          );
 
-    DAVA_VIRTUAL_REFLECTION(SkeletonAnimationComponent, Component);
+    DAVA_VIRTUAL_REFLECTION(MotionComponent, Component);
 
-    friend class SkeletonAnimationSystem;
+    friend class MotionSystem;
 };
 
 } //ns

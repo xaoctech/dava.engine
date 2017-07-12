@@ -3,6 +3,7 @@
 #include "Animation2/AnimationTrack.h"
 #include "Base/BaseTypes.h"
 #include "Reflection/Reflection.h"
+#include "Scene3D/Entity.h"
 #include "Entity/Component.h"
 #include "Debug/DVAssert.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
@@ -63,18 +64,30 @@ public:
         DAVA_VIRTUAL_REFLECTION(Joint, InspBase);
     };
 
+    struct Pose
+    {
+        struct Node
+        {
+            uint32 jointIndex = 0;
+            JointTransform transform;
+        };
+
+        Vector<Node> nodes;
+    };
+
     SkeletonComponent() = default;
     ~SkeletonComponent() = default;
 
     uint32 GetJointIndex(const FastName& uid) const;
     uint32 GetJointsCount() const;
-    const Joint& GetJoint(uint32 i);
+    const Joint& GetJoint(uint32 i) const;
 
     void SetJoints(const Vector<Joint>& config);
 
     const JointTransform& GetJointTransform(uint32 jointIndex) const;
     const JointTransform& GetJointObjectSpaceTransform(uint32 jointIndex) const;
 
+    void ApplyPose(const Pose& pose);
     void SetJointTransform(uint32 jointIndex, const JointTransform& transform);
 
     Component* Clone(Entity* toEntity) override;
@@ -137,7 +150,7 @@ inline uint32 SkeletonComponent::GetJointsCount() const
     return uint32(jointsArray.size());
 }
 
-inline const SkeletonComponent::Joint& SkeletonComponent::GetJoint(uint32 i)
+inline const SkeletonComponent::Joint& SkeletonComponent::GetJoint(uint32 i) const
 {
     return jointsArray[i];
 }
