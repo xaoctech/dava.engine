@@ -1,5 +1,3 @@
-#include "Animation2/AnimationClip.h"
-#include "Animation2/AnimationTrack.h"
 #include "Scene3D/Components/SkeletonComponent.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Components/ComponentHelpers.h"
@@ -25,8 +23,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SkeletonComponent::Joint)
 DAVA_VIRTUAL_REFLECTION_IMPL(SkeletonComponent)
 {
     ReflectionRegistrator<SkeletonComponent>::Begin()
-    .ConstructorByPointer()
     .Field("joints", &SkeletonComponent::jointsArray)[M::DisplayName("Joints")]
+    .Field("drawSkeleton", &SkeletonComponent::drawSkeleton)[M::DisplayName("Draw Skeleton")]
     .End();
 }
 
@@ -48,18 +46,11 @@ bool SkeletonComponent::Joint::operator==(const Joint& other) const
                      bbox == other.bbox;
 }
 
-SkeletonComponent::SkeletonComponent()
+void SkeletonComponent::SetJoints(const Vector<Joint>& config)
 {
-}
+    jointsArray = config;
 
-SkeletonComponent::~SkeletonComponent()
-{
-    SafeDelete(animationClip);
-}
-
-void SkeletonComponent::ApplyPose(const SkeletonPose* pose)
-{
-
+    GlobalEventSystem::Instance()->Event(this, EventSystem::SKELETON_CONFIG_CHANGED);
 }
 
 Component* SkeletonComponent::Clone(Entity* toEntity)
@@ -72,7 +63,7 @@ Component* SkeletonComponent::Clone(Entity* toEntity)
 void SkeletonComponent::Serialize(KeyedArchive* archive, SerializationContext* serializationContext)
 {
     Component::Serialize(archive, serializationContext);
-    archive->SetUInt32("skeletoncomponent.jointsCount", static_cast<uint32>(jointsArray.size()));
+    archive->SetUInt32("jointsCount", static_cast<uint32>(jointsArray.size()));
     ScopedPtr<KeyedArchive> jointsArch(new KeyedArchive());
     for (size_t i = 0, sz = jointsArray.size(); i < sz; ++i)
     {
@@ -90,15 +81,15 @@ void SkeletonComponent::Serialize(KeyedArchive* archive, SerializationContext* s
         jointsArch->SetArchive(KeyedArchive::GenKeyFromIndex(static_cast<int32>(i)), jointArch);
     }
 
-    archive->SetArchive("skeletoncomponent.joints", jointsArch);
+    archive->SetArchive("joints", jointsArch);
 }
 void SkeletonComponent::Deserialize(KeyedArchive* archive, SerializationContext* serializationContext)
 {
     Component::Deserialize(archive, serializationContext);
 
-    uint32 jointsCount = archive->GetUInt32("skeletoncomponent.jointsCount", static_cast<uint32>(jointsArray.size()));
+    uint32 jointsCount = archive->GetUInt32("jointsCount", static_cast<uint32>(jointsArray.size()));
     jointsArray.resize(jointsCount);
-    KeyedArchive* jointsArch = archive->GetArchive("skeletoncomponent.joints");
+    KeyedArchive* jointsArch = archive->GetArchive("joints");
     for (uint32 i = 0; i < jointsCount; ++i)
     {
         Joint& joint = jointsArray[i];
@@ -111,46 +102,6 @@ void SkeletonComponent::Deserialize(KeyedArchive* archive, SerializationContext*
         joint.bbox.max = jointArch->GetVector3("joint.bbox.max");
         joint.bindTransform = jointArch->GetMatrix4("joint.bindPose");
         joint.bindTransformInv = jointArch->GetMatrix4("joint.invBindPose");
-    }
-}
-
-const FilePath& SkeletonComponent::GetAnimationPath() const
-{
-    return animationPath;
-}
-
-void SkeletonComponent::SetAnimationPath(const FilePath& path)
-{
-    SafeDelete(animationClip);
-    animationStates.clear();
-
-    animationPath = path;
-    if (!animationPath.IsEmpty())
-    {
-        animationClip = new AnimationClip();
-        if (animationClip->Load(animationPath))
-        {
-            animationStates.resize(jointsArray.size());
-
-            uint32 trackCount = animationClip->GetTrackCount();
-            for (const Joint& j : jointsArray)
-            {
-                for (uint32 t = 0; t < trackCount; ++t)
-                {
-                    if (strcmp(animationClip->GetTrackUID(t), j.uid.c_str()) == 0)
-                    {
-                        const AnimationTrack* track = animationClip->GetTrack(t);
-                        animationStates[j.targetIndex] = std::make_pair(track, AnimationTrack::State(track->GetChannelsCount()));
-
-                        track->Reset(&animationStates[j.targetIndex].second);
-                    }
-                }
-            }
-        }
-        else
-        {
-            SafeDelete(animationClip);
-        }
     }
 }
 

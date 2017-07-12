@@ -13,7 +13,6 @@ namespace DAVA
 class AnimationClip;
 class Entity;
 class SkeletonSystem;
-class SkeletonPose;
 class SkeletonComponent : public Component
 {
     friend class SkeletonSystem;
@@ -64,8 +63,8 @@ public:
         DAVA_VIRTUAL_REFLECTION(Joint, InspBase);
     };
 
-    SkeletonComponent();
-    ~SkeletonComponent();
+    SkeletonComponent() = default;
+    ~SkeletonComponent() = default;
 
     uint32 GetJointIndex(const FastName& uid) const;
     uint32 GetJointsCount() const;
@@ -78,18 +77,11 @@ public:
 
     void SetJointTransform(uint32 jointIndex, const JointTransform& transform);
 
-    void ApplyPose(const SkeletonPose* pose);
-
     Component* Clone(Entity* toEntity) override;
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
     void Deserialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
 
-    void Rebuild();
-
 private:
-    const FilePath& GetAnimationPath() const;
-    void SetAnimationPath(const FilePath& path);
-
     /*config time*/
     Vector<Joint> jointsArray;
 
@@ -116,10 +108,6 @@ private:
 
     Map<FastName, uint32> jointMap;
 
-    AnimationClip* animationClip = nullptr;
-    Vector<std::pair<const AnimationTrack*, AnimationTrack::State>> animationStates;
-    FilePath animationPath;
-
     uint32 startJoint = 0u; //first joint in the list that was updated this frame - cache this value to optimize processing
     bool configUpdated = true;
     bool drawSkeleton = false;
@@ -127,7 +115,6 @@ private:
 public:
     INTROSPECTION_EXTEND(SkeletonComponent, Component,
                          COLLECTION(jointsArray, "Root Joints", I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("animation", "animation", GetAnimationPath, SetAnimationPath, I_SAVE | I_VIEW | I_EDIT)
                          MEMBER(drawSkeleton, "Draw Skeleton", I_SAVE | I_VIEW | I_EDIT)
                          );
 
@@ -155,12 +142,6 @@ inline const SkeletonComponent::Joint& SkeletonComponent::GetJoint(uint32 i)
     return jointsArray[i];
 }
 
-inline void SkeletonComponent::SetJoints(const Vector<Joint>& config)
-{
-    jointsArray = config;
-    configUpdated = true;
-}
-
 inline const SkeletonComponent::JointTransform& SkeletonComponent::GetJointTransform(uint32 jointIndex) const
 {
     DVASSERT(jointIndex < GetJointsCount());
@@ -180,11 +161,6 @@ inline void SkeletonComponent::SetJointTransform(uint32 jointIndex, const Skelet
     jointInfo[jointIndex] |= FLAG_MARKED_FOR_UPDATED;
     localSpaceTransforms[jointIndex] = transform;
     startJoint = Min(startJoint, jointIndex);
-}
-
-inline void SkeletonComponent::Rebuild()
-{
-    configUpdated = true;
 }
 
 inline Vector3 SkeletonComponent::JointTransform::TransformPoint(const Vector3& inVec) const

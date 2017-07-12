@@ -31,6 +31,7 @@
 #include "Scene3D/Systems/WindSystem.h"
 #include "Scene3D/Systems/WaveSystem.h"
 #include "Scene3D/Systems/SkeletonSystem.h"
+#include "Scene3D/Systems/SkeletonAnimationSystem.h"
 #include "Scene3D/Systems/AnimationSystem.h"
 #include "Scene3D/Systems/LandscapeSystem.h"
 #include "Scene3D/Systems/SoundUpdateSystem.h"
@@ -236,7 +237,13 @@ void Scene::CreateSystems()
         AddSystem(animationSystem, MAKE_COMPONENT_MASK(Component::ANIMATION_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
     }
 
-    if (SCENE_SYSTEM_SKELETON_UPDATE_FLAG & systemsMask)
+    if (SCENE_SYSTEM_SKELETON_ANIMATION_FLAG & systemsMask)
+    {
+        skeletonAnimationSystem = new SkeletonAnimationSystem(this);
+        AddSystem(skeletonAnimationSystem, MAKE_COMPONENT_MASK(Component::SKELETON_COMPONENT) | MAKE_COMPONENT_MASK(Component::SKELETON_ANIMATION_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
+    }
+
+    if (SCENE_SYSTEM_SKELETON_FLAG & systemsMask)
     {
         skeletonSystem = new SkeletonSystem(this);
         AddSystem(skeletonSystem, MAKE_COMPONENT_MASK(Component::SKELETON_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);

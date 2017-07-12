@@ -10,6 +10,7 @@
 #include "Scene3D/Components/CustomPropertiesComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/SkeletonComponent.h"
+#include "Scene3D/Components/SkeletonAnimationComponent.h"
 #include "Scene3D/Components/StaticOcclusionComponent.h"
 #include "Scene3D/Components/SwitchComponent.h"
 #include "Scene3D/Components/Waypoint/WaypointComponent.h"
@@ -59,6 +60,14 @@ SkeletonComponent* GetSkeletonComponent(const Entity* fromEntity)
 {
     if (fromEntity)
         return static_cast<SkeletonComponent*>(fromEntity->GetComponent(Component::SKELETON_COMPONENT));
+    else
+        return nullptr;
+}
+
+SkeletonAnimationComponent* GetSkeletonAnimationComponent(const Entity* fromEntity)
+{
+    if (fromEntity)
+        return static_cast<SkeletonAnimationComponent*>(fromEntity->GetComponent(Component::SKELETON_ANIMATION_COMPONENT));
     else
         return nullptr;
 }

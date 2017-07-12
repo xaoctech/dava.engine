@@ -218,7 +218,7 @@ inline void DynamicBindings::ComputeWorldInvTransposeMatrixIfRequired()
 uint32 DynamicBindings::GetDynamicParamArraySize(DynamicBindings::eUniformSemantic shaderSemantic, uint32 defaultValue)
 {
     if ((shaderSemantic == PARAM_JOINT_POSITIONS) || (shaderSemantic == PARAM_JOINT_QUATERNIONS))
-        return *(reinterpret_cast<const int32*>(GetDynamicParam(PARAM_JOINTS_COUNT)));
+        return *(reinterpret_cast<const uint32*>(GetDynamicParam(PARAM_JOINTS_COUNT)));
     else
         return defaultValue;
 }

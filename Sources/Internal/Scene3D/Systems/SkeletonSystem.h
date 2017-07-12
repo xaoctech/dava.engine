@@ -21,15 +21,16 @@ public:
     void AddEntity(Entity* entity) override;
     void RemoveEntity(Entity* entity) override;
 
+    void ImmediateEvent(Component* component, uint32 event) override;
     void Process(float32 timeElapsed) override;
 
     void DrawSkeletons(RenderHelper* drawer);
 
 private:
-    void UpdatePose(SkeletonComponent* component);
-    void UpdateSkinnedMesh(SkeletonComponent* component, SkinnedMesh* skinnedMeshObject);
+    void UpdateJointTransforms(SkeletonComponent* skeleton);
+    void UpdateSkinnedMesh(SkeletonComponent* skeleton, SkinnedMesh* skinnedMeshObject);
 
-    void RebuildSkeleton(Entity* entity);
+    void RebuildSkeleton(SkeletonComponent* skeleton);
 
     Vector<Entity*> entities;
 };
