@@ -11,43 +11,6 @@ namespace DAVA
 DLCDownloader::Range::Range() = default;
 const DLCDownloader::Range DLCDownloader::EmptyRange;
 
-static Mutex curlInitializeMut;
-static int counterCurlInitialization{ 0 };
-
-void CurlGlobalInit()
-{
-    LockGuard<Mutex> lock(curlInitializeMut);
-    if (counterCurlInitialization == 0)
-    {
-        // https://curl.haxx.se/libcurl/c/curl_global_init.html
-        CURLcode code = curl_global_init(CURL_GLOBAL_ALL);
-        if (CURLE_OK != code)
-        {
-            StringStream ss;
-            ss << "curl_global_init failed: CURLcode == " << code << std::endl;
-            DAVA_THROW(Exception, ss.str());
-        }
-    }
-    ++counterCurlInitialization;
-}
-void CurlGlobalDeinit()
-{
-    LockGuard<Mutex> lock(curlInitializeMut);
-    if (counterCurlInitialization > 0)
-    {
-        --counterCurlInitialization;
-    }
-    else
-    {
-        DVASSERT(counterCurlInitialization >= 0);
-    }
-
-    if (counterCurlInitialization == 0)
-    {
-        curl_global_cleanup();
-    }
-}
-
 std::ostream& operator<<(std::ostream& stream, const DLCDownloader::TaskError& error)
 {
     stream << " err_happened: " << std::boolalpha << error.errorHappened;
@@ -800,7 +763,7 @@ DLCDownloader::TaskStatus& DLCDownloader::TaskStatus::operator=(const TaskStatus
 
 void DLCDownloaderImpl::Initialize()
 {
-    CurlGlobalInit();
+    Context::CurlGlobalInit();
 
     multiHandle = curl_multi_init();
 
@@ -841,7 +804,7 @@ void DLCDownloaderImpl::Deinitialize()
     }
     reusableHandles.clear();
 
-    CurlGlobalDeinit();
+    Context::CurlGlobalDeinit();
 }
 
 DLCDownloaderImpl::DLCDownloaderImpl()
