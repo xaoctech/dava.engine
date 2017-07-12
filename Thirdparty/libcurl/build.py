@@ -200,7 +200,7 @@ def _build_android(working_directory_path, root_project_path):
     _patch_sources(source_folder_path, working_directory_path, 'patch_android.diff')
 
     # copy headers
-    _copy_headers(source_folder_path, root_project_path, 'Android')
+    _copy_headers(source_folder_path, root_project_path)
 
     env = os.environ.copy()
     original_path_var = env["PATH"]
