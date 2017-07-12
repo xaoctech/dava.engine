@@ -117,7 +117,7 @@ public:
     void SetRecursive(bool recursive);
 
     //actions
-    bool CanDeleteLOD() const;
+    bool CanDeleteLOD(DAVA::int32 lodLayer) const;
     bool CanCreateLOD() const;
 
     void DeleteLOD(DAVA::int32 layer);
