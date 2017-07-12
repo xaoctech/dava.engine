@@ -102,6 +102,7 @@ void QEApplication::Init(const DAVA::EngineContext* engineContext)
 
 void QEApplication::Cleanup()
 {
+    DAVA::UIControlSystem::Instance()->RemoveSystem(DAVA::UIControlSystem::Instance()->GetSystem<RelayoutSignallerSystem>());
     cmdLine.clear();
 }
 
