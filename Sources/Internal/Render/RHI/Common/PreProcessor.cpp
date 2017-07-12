@@ -429,6 +429,8 @@ bool PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
             }
         }
 
+        bool expand_macros = false;
+
         if (*s == '\n')
         {
             *s = 0;
@@ -729,11 +731,17 @@ bool PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
                     s = ns1 - 1;
 
                 dcheck_pending = false;
+                expand_macros = (*ns1 != '\n') && (!skipping_line);
             }
         }
         else
         {
             // expand macros, if any
+            expand_macros = true;
+        }
+
+        if (expand_macros)
+        {
             char* ln_end = s;
             bool macro_expanded = false;
             bool restore_nl = false;
@@ -757,15 +765,23 @@ bool PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
                     char* l = AllocBuffer(unsigned(sz) + macro[m].value_len + 1);
 
                     size_t l1 = t - ln;
+                    size_t l2 = l1 + macro[m].value_len + sz - (l1 + macro[m].name_len);
 
                     strncpy(l, ln, l1);
                     strncpy(l + l1, macro[m].value, macro[m].value_len);
                     strncpy(l + l1 + macro[m].value_len, t + macro[m].name_len, sz - (l1 + macro[m].name_len));
-                    l[l1 + macro[m].value_len + sz - (l1 + macro[m].name_len)] = '\n';
-                    l[l1 + macro[m].value_len + sz - (l1 + macro[m].name_len) + 1] = '\0';
-
+                    l[l2] = '\n';
+                    l[l2 + 1] = '\0';
                     ln = l;
                     s = l + l1 + macro[m].value_len;
+
+                    if (*s == '\r')
+                    {
+                        if (s[1] == '\n')
+                            *s++ = 0;
+                        else
+                            *s = ' ';
+                    }
 
                     if (!ln_external)
                     {
@@ -774,6 +790,7 @@ bool PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
                     }
 
                     macro_expanded = true;
+                    --s;
                     break;
                 }
             }
