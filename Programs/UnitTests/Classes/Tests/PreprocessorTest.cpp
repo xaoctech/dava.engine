@@ -187,7 +187,7 @@ DAVA_TESTCLASS (PreprocessorTest)
             expected_file->Read(expected_data, uint32(expected_sz));
             expected_data[expected_sz] = 0;
 
-            #if 1
+            #if 0
             {
                 char aname[2048] = "~res:/Data/TestData/PreProcessor/";
 
