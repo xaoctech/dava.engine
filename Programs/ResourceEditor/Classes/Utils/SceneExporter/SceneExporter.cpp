@@ -256,9 +256,12 @@ void PrepareSceneToExport(DAVA::Scene* scene, bool removeCustomProperties)
                 RemoveEditorCustomProperties(entity);
             }
 
-            while (entity->GetComponentCount(Component::TEXT_COMPONENT) > 0)
-            { // remove text component because this is RE specific data
-                entity->RemoveComponent(Component::TEXT_COMPONENT, 0);
+            for (uint32 ct = Component::NOT_EXPORTED_COMPONENTS; ct < Component::FIRST_USER_DEFINED_COMPONENT; ++ct)
+            { // remove RE specific components
+                while (entity->GetComponentCount(ct) > 0)
+                {
+                    entity->RemoveComponent(ct, 0);
+                }
             }
         }
     }

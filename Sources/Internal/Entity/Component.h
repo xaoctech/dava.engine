@@ -53,7 +53,9 @@ public:
         WASD_CONTROLLER_COMPONENT,
         VISIBILITY_CHECK_COMPONENT,
         SLOT_COMPONENT,
-        TEXT_COMPONENT,
+
+        NOT_EXPORTED_COMPONENTS, //components for RE only. Serialized, but not exported
+        TEXT_COMPONENT = NOT_EXPORTED_COMPONENTS,
 
         //debug components - note that everything below won't be serialized
         DEBUG_COMPONENTS,

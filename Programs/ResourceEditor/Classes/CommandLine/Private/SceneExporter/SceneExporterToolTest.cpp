@@ -32,10 +32,12 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
         ScopedPtr<Scene> scene(new Scene());
         TEST_VERIFY(scene->LoadScene(scenePathname) == DAVA::SceneFileV2::eError::ERROR_NO_ERROR);
 
-        Vector<Entity*> textEntities;
-        scene->GetChildEntitiesWithComponent(textEntities, Component::TEXT_COMPONENT);
-
-        TEST_VERIFY(textEntities.empty() == true);
+        for (uint32 ct = Component::NOT_EXPORTED_COMPONENTS; ct < Component::FIRST_USER_DEFINED_COMPONENT; ++ct)
+        { //test that RE specific components were removed
+            Vector<Entity*> entities;
+            scene->GetChildEntitiesWithComponent(entities, static_cast<Component::eType>(ct));
+            TEST_VERIFY(entities.empty() == true);
+        }
     }
 
     void TestExportedTextures(const DAVA::FilePath& folder, const DAVA::Vector<DAVA::eGPUFamily>& gpuForTest, bool useHD)

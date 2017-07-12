@@ -37,6 +37,7 @@ void TextModule::PostInit()
     }
 
     action->setShortcut(QKeySequence("Ctrl+F"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 
     connections.AddConnection(action, &QAction::triggered, DAVA::Bind(&TextModule::ChangeDrawingState, this));
 
