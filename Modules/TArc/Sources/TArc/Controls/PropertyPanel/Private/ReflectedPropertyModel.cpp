@@ -176,6 +176,11 @@ Qt::ItemFlags ReflectedPropertyModel::flags(const QModelIndex& index) const
     return flags;
 }
 
+QModelIndex ReflectedPropertyModel::buddy(const QModelIndex& indexForEdit) const
+{
+    return index(indexForEdit.row(), 1, indexForEdit.parent());
+}
+
 QModelIndex ReflectedPropertyModel::index(int row, int column, const QModelIndex& parent) const
 {
     if (parent.isValid())
@@ -674,6 +679,10 @@ bool ReflectedPropertyModel::IsFavorite(const QModelIndex& index) const
 bool ReflectedPropertyModel::IsInFavoriteHierarchy(const QModelIndex& index) const
 {
     ReflectedPropertyItem* item = MapItem(index);
+    if (item->GetPropertyNode(0)->propertyType == PropertyNode::SelfRoot)
+    {
+        return true;
+    }
     bool isFavorite = false;
     while (isFavorite == false && item != nullptr)
     {
