@@ -2,6 +2,7 @@ import os
 import shutil
 import build_utils
 
+libcurl_version = '7.53.1'
 
 def get_supported_targets(platform):
     if platform == 'win32':
@@ -35,16 +36,10 @@ def build_for_target(target, working_directory_path, root_project_path):
     elif target == 'linux':
         _build_linux(working_directory_path, root_project_path)
 
-
-def get_download_info():
-    return {'macos_and_ios': 'maintained by curl-ios-build-scripts (bundled)',
-            'others': 'https://curl.haxx.se/download/curl-7.50.3.tar.gz'}
-
-
 def _download_and_extract(working_directory_path):
     source_folder_path = os.path.join(working_directory_path, 'libcurl_source')
 
-    url = get_download_info()['others']
+    url = 'https://curl.haxx.se/download/curl-' + libcurl_version + '.tar.gz'
     build_utils.download_and_extract(
         url,
         working_directory_path,
@@ -63,122 +58,74 @@ def _patch_sources(source_folder_path, working_directory_path, patch_name):
 
 def _build_win32(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
+    _patch_sources(source_folder_path, working_directory_path, 'patch_win32.diff')
 
-    vc12_solution_file_path = os.path.join(
-        source_folder_path, 'projects/Windows/VC12/curl-all.sln')
-    build_utils.build_vs(
-        vc12_solution_file_path,
-        'LIB Debug - DLL Windows SSPI', 'Win32', 'libcurl')
-    build_utils.build_vs(
-        vc12_solution_file_path,
-        'LIB Release - DLL Windows SSPI', 'Win32', 'libcurl')
-    build_utils.build_vs(
-        vc12_solution_file_path,
-        'LIB Debug - DLL Windows SSPI', 'x64', 'libcurl')
-    build_utils.build_vs(
-        vc12_solution_file_path,
-        'LIB Release - DLL Windows SSPI', 'x64', 'libcurl')
+    vc12_solution_file_path = os.path.join(source_folder_path, 'projects/Windows/VC12/lib/libcurl.sln')
+
+    build_utils.build_vs(vc12_solution_file_path, 'LIB Debug - LIB OpenSSL', 'Win32', 'libcurl')
+    build_utils.build_vs(vc12_solution_file_path, 'LIB Release - LIB OpenSSL', 'Win32', 'libcurl')
+    build_utils.build_vs(vc12_solution_file_path, 'LIB Debug - LIB OpenSSL', 'x64', 'libcurl')
+    build_utils.build_vs(vc12_solution_file_path, 'LIB Release - LIB OpenSSL', 'x64', 'libcurl')
 
     libs_win_root = os.path.join(root_project_path, 'Libs/lib_CMake/win')
 
     shutil.copyfile(
-        os.path.join(
-            source_folder_path,
-            'build/Win32/VC12/LIB Debug - DLL Windows SSPI/libcurld.lib'),
+        os.path.join(source_folder_path,'build/Win32/VC12/LIB Debug - LIB OpenSSL/libcurld.lib'),
         os.path.join(libs_win_root, 'x86/Debug/libcurl.lib'))
+
     shutil.copyfile(
-        os.path.join(
-            source_folder_path,
-            'build/Win32/VC12/LIB Release - DLL Windows SSPI/libcurl.lib'),
+        os.path.join(source_folder_path, 'build/Win32/VC12/LIB Release - LIB OpenSSL/libcurl.lib'),
         os.path.join(libs_win_root, 'x86/Release/libcurl.lib'))
+
     shutil.copyfile(
-        os.path.join(
-            source_folder_path,
-            'build/Win64/VC12/LIB Debug - DLL Windows SSPI/libcurld.lib'),
+        os.path.join(source_folder_path, 'build/Win64/VC12/LIB Debug - LIB OpenSSL/libcurld.lib'),
         os.path.join(libs_win_root, 'x64/Debug/libcurl_a_debug.lib'))
+
     shutil.copyfile(
-        os.path.join(
-            source_folder_path,
-            'build/Win64/VC12/LIB Release - DLL Windows SSPI/libcurl.lib'),
+        os.path.join(source_folder_path, 'build/Win64/VC12/LIB Release - LIB OpenSSL/libcurl.lib'),
         os.path.join(libs_win_root, 'x64/Release/libcurl_a.lib'))
 
-    _copy_headers(source_folder_path, root_project_path, 'Others')
+    _copy_headers(source_folder_path, root_project_path)
 
 
 def _build_win10(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
-    _patch_sources(source_folder_path, working_directory_path, 'patch.diff')
+    _patch_sources(source_folder_path, working_directory_path, 'patch_win10.diff')
 
-    vc14_solution_folder_path = os.path.join(
-        source_folder_path, 'projects/Windows/VC14')
-    vc14_solution_file_path = os.path.join(
-        vc14_solution_folder_path, 'curl-all.sln')
+    vc14_solution_file_path = os.path.join(source_folder_path, 'projects/Windows/VC14/lib/libcurl.sln')
 
-    build_utils.build_vs(
-        vc14_solution_file_path,
-        'LIB Debug - DLL Windows SSPI', 'Win32', 'libcurl')
-    build_utils.build_vs(
-        vc14_solution_file_path,
-        'LIB Release - DLL Windows SSPI', 'Win32', 'libcurl')
-    build_utils.build_vs(
-        vc14_solution_file_path,
-        'LIB Debug - DLL Windows SSPI', 'x64', 'libcurl')
-    build_utils.build_vs(
-        vc14_solution_file_path,
-        'LIB Release - DLL Windows SSPI', 'x64', 'libcurl')
-    build_utils.build_vs(
-        vc14_solution_file_path,
-        'LIB Debug - DLL Windows SSPI', 'ARM', 'libcurl')
-    build_utils.build_vs(
-        vc14_solution_file_path,
-        'LIB Release - DLL Windows SSPI', 'ARM', 'libcurl')
+    build_utils.build_vs(vc14_solution_file_path, 'LIB Debug - LIB OpenSSL', 'Win32', 'libcurl')
+    build_utils.build_vs(vc14_solution_file_path, 'LIB Release - LIB OpenSSL', 'Win32', 'libcurl')
+    build_utils.build_vs(vc14_solution_file_path, 'LIB Debug - LIB OpenSSL', 'x64', 'libcurl')
+    build_utils.build_vs(vc14_solution_file_path, 'LIB Release - LIB OpenSSL', 'x64', 'libcurl')
+    build_utils.build_vs(vc14_solution_file_path, 'LIB Debug - LIB OpenSSL', 'ARM', 'libcurl')
+    build_utils.build_vs(vc14_solution_file_path, 'LIB Release - LIB OpenSSL', 'ARM', 'libcurl')
 
     shutil.copyfile(
-        os.path.join(
-            source_folder_path,
-            'build/Win32/VC14/LIB Debug - DLL Windows SSPI/libcurld.lib'),
-        os.path.join(
-            root_project_path,
-            'Libs/lib_CMake/win10/Win32/Debug/libcurl.lib'))
-    shutil.copyfile(
-        os.path.join(
-            source_folder_path,
-            'build/Win32/VC14/LIB Release - DLL Windows SSPI/libcurl.lib'),
-        os.path.join(
-            root_project_path,
-            'Libs/lib_CMake/win10/Win32/Release/libcurl.lib'))
-    shutil.copyfile(
-        os.path.join(
-            source_folder_path,
-            'build/Win64/VC14/LIB Debug - DLL Windows SSPI/libcurld.lib'),
-        os.path.join(
-            root_project_path,
-            'Libs/lib_CMake/win10/x64/Debug/libcurl.lib'))
-    shutil.copyfile(
-        os.path.join(
-            source_folder_path,
-            'build/Win64/VC14/LIB Release - DLL Windows SSPI/libcurl.lib'),
-        os.path.join(
-            root_project_path, 'Libs/lib_CMake/win10/x64/Release/libcurl.lib'))
-
-    # ARM outptu folder isn't specifically set by solution, so it's a default one
+        os.path.join(source_folder_path, 'build/Win32/VC14/LIB Debug - LIB OpenSSL/libcurld.lib'),
+        os.path.join(root_project_path, 'Libs/lib_CMake/win10/Win32/Debug/libcurl.lib'))
 
     shutil.copyfile(
-        os.path.join(
-            vc14_solution_folder_path,
-            'ARM/LIB Debug - DLL Windows SSPI/libcurld.lib'),
-        os.path.join(
-            root_project_path,
-            'Libs/lib_CMake/win10/arm/Debug/libcurl.lib'))
-    shutil.copyfile(
-        os.path.join(
-            vc14_solution_folder_path,
-            'ARM/LIB Release - DLL Windows SSPI/libcurl.lib'),
-        os.path.join(
-            root_project_path,
-            'Libs/lib_CMake/win10/arm/Release/libcurl.lib'))
+        os.path.join(source_folder_path, 'build/Win32/VC14/LIB Release - LIB OpenSSL/libcurl.lib'),
+        os.path.join(root_project_path, 'Libs/lib_CMake/win10/Win32/Release/libcurl.lib'))
 
-    _copy_headers(source_folder_path, root_project_path, 'Others')
+    shutil.copyfile(
+        os.path.join(source_folder_path, 'build/Win64/VC14/LIB Debug - LIB OpenSSL/libcurld.lib'),
+        os.path.join(root_project_path, 'Libs/lib_CMake/win10/x64/Debug/libcurl.lib'))
+
+    shutil.copyfile(
+        os.path.join(source_folder_path, 'build/Win64/VC14/LIB Release - LIB OpenSSL/libcurl.lib'),
+        os.path.join(root_project_path, 'Libs/lib_CMake/win10/x64/Release/libcurl.lib'))
+
+    shutil.copyfile(
+        os.path.join(source_folder_path, 'build/ARM/VC14/LIB Debug - LIB OpenSSL/libcurld.lib'),
+        os.path.join(root_project_path, 'Libs/lib_CMake/win10/arm/Debug/libcurl.lib'))
+
+    shutil.copyfile(
+        os.path.join(source_folder_path, 'build/ARM/VC14/LIB Release - LIB OpenSSL/libcurl.lib'),
+        os.path.join(root_project_path, 'Libs/lib_CMake/win10/arm/Release/libcurl.lib'))
+
+    _copy_headers(source_folder_path, root_project_path)
 
 
 def _build_macos(working_directory_path, root_project_path):
@@ -188,7 +135,16 @@ def _build_macos(working_directory_path, root_project_path):
         os.makedirs(build_curl_run_dir)
 
     build_curl_args = [
-        './build_curl', '--arch', 'x86_64', '--run-dir', build_curl_run_dir]
+        './build_curl', 
+        '--libcurl-version',
+        libcurl_version,
+        '--osx-sdk-version',
+        '10.12',
+        '--arch', 
+        'x86_64', 
+        '--run-dir', 
+        build_curl_run_dir]
+
     if (build_utils.verbose):
         build_curl_args.append('--verbose')
 
@@ -196,21 +152,14 @@ def _build_macos(working_directory_path, root_project_path):
         build_curl_args,
         process_cwd='curl-ios-build-scripts-master')
 
-    output_path = os.path.join(build_curl_run_dir, 'curl/osx/lib/libcurl.a')
-
+    # copy libs
     shutil.copyfile(
-        output_path,
-        os.path.join(
-            root_project_path,
-            os.path.join('Libs/lib_CMake/mac/libcurl_macos.a')))
+        os.path.join(build_curl_run_dir, 'curl/osx/lib/libcurl.a'),
+        os.path.join(root_project_path, os.path.join('Libs/lib_CMake/mac/libcurl_macos.a')))
 
-    include_path = os.path.join(
-        root_project_path,
-        os.path.join('Libs/include/curl/iOS_MacOS'))
-    build_utils.copy_files(
-        os.path.join(build_curl_run_dir, 'curl/osx/include'),
-        include_path,
-        '*.h')
+    # copy headers from original archive
+    source_folder_path = _download_and_extract(working_directory_path)
+    _copy_headers(source_folder_path, root_project_path)    
 
 
 def _build_ios(working_directory_path, root_project_path):
@@ -221,31 +170,29 @@ def _build_ios(working_directory_path, root_project_path):
 
     build_curl_args = [
         './build_curl',
+        '--libcurl-version',
+        libcurl_version,
+        '--sdk-version',
+        '10.2',
         '--arch',
         'armv7,armv7s,arm64',
         '--run-dir',
         build_curl_run_dir]
+
     if (build_utils.verbose):
         build_curl_args.append('--verbose')
 
     build_utils.run_process(
         build_curl_args, process_cwd='curl-ios-build-scripts-master')
 
-    output_path = os.path.join(
-        build_curl_run_dir, 'curl/ios-appstore/lib/libcurl.a')
-
+    # copy libs
     shutil.copyfile(
-        output_path,
-        os.path.join(
-            root_project_path,
-            os.path.join('Libs/lib_CMake/ios/libcurl_ios.a')))
+        os.path.join(build_curl_run_dir, 'curl/ios-appstore/lib/libcurl.a'),
+        os.path.join(root_project_path, os.path.join('Libs/lib_CMake/ios/libcurl_ios.a')))
 
-    include_path = os.path.join(
-        root_project_path, os.path.join('Libs/include/curl/iOS_MacOS'))
-    build_utils.copy_files(
-        os.path.join(build_curl_run_dir, 'curl/ios-appstore/include'),
-        include_path,
-        '*.h')
+    # copy headers from original archive
+    source_folder_path = _download_and_extract(working_directory_path)    
+    _copy_headers(source_folder_path, root_project_path)
 
 
 def _build_android(working_directory_path, root_project_path):
@@ -340,6 +287,21 @@ def _build_linux(working_directory_path, root_project_path):
     
     configure_args = [
         '--disable-shared',
+        '--enable-threaded-resolver',
+        '--enable-ipv6',
+        '--disable-rtsp',
+        '--disable-ftp',
+        '--disable-file',
+        '--disable-ldap',
+        '--disable-ldaps',
+        '--disable-rtsp',
+        '--disable-dict',
+        '--disable-telnet',
+        '--disable-tftp',
+        '--disable-pop3',
+        '--disable-imap',
+        '--disable-smtp',
+        '--disable-gopher',		
         '--with-ssl=' + openssl_install_dir]
     build_utils.build_with_autotools(
         source_folder_path,
@@ -350,11 +312,9 @@ def _build_linux(working_directory_path, root_project_path):
     shutil.copyfile(os.path.join(install_dir, 'lib/libcurl.a'),
                     os.path.join(root_project_path, 'Libs/lib_CMake/linux/libcurl.a'))
 
-    _copy_headers(source_folder_path, root_project_path, 'Others')
+    _copy_headers(source_folder_path, root_project_path)
 
 
-def _copy_headers(source_folder_path, root_project_path, target_folder):
-    include_path = os.path.join(
-        root_project_path, os.path.join('Libs/include/curl', target_folder))
-    build_utils.copy_files(
-        os.path.join(source_folder_path, 'include/curl'), include_path, '*.h')
+def _copy_headers(source_folder_path, root_project_path):
+    include_path = os.path.join(root_project_path, 'Libs/include/curl')
+    build_utils.copy_files(os.path.join(source_folder_path, 'include/curl'), include_path, '*.h')

@@ -38,13 +38,22 @@ def build_for_target(target, working_directory_path, root_project_path):
 
 
 def get_download_info():
-    # Win 10 uses different sources - maintained by Microsoft
-    return {'win10': 'https://github.com/Microsoft/openssl/archive/OpenSSL_1_0_2j_WinRT.tar.gz',
+    # Win32 and Win10 uses different sources - maintained by Microsoft
+    return {'win32': 'https://github.com/Microsoft/openssl/archive/OpenSSL_1_0_2k.tar.gz',
+            'win10': 'https://github.com/Microsoft/openssl/archive/OpenSSL_1_0_2k_WinRT.tar.gz',
             'others': 'https://www.openssl.org/source/openssl-1.1.0e.tar.gz'}
 
 
-def _download_and_extract(working_directory_path, win10=False):
-    if win10:
+def _download_and_extract(working_directory_path, target=''):
+    if target == 'win32_x86':
+        source_folder_path = os.path.join(working_directory_path, 'openssl_source_win32_x86')
+        url = get_download_info()['win32']
+        inner_dir = 'openssl-' + build_utils.get_url_file_name_no_ext(url)
+    elif target == 'win32_x64':
+        source_folder_path = os.path.join(working_directory_path, 'openssl_source_win32_x64')
+        url = get_download_info()['win32']
+        inner_dir = 'openssl-' + build_utils.get_url_file_name_no_ext(url)
+    elif target == 'win10':
         source_folder_path = os.path.join(
             working_directory_path, 'openssl_source_win10')
         url = get_download_info()['win10']
@@ -65,9 +74,9 @@ def _download_and_extract(working_directory_path, win10=False):
 
 
 @build_utils.run_once
-def _patch_sources(source_folder_path, working_directory_path):
+def _patch_sources(source_folder_path, patch_name):
     build_utils.apply_patch(
-        os.path.abspath('patch.diff'), working_directory_path)
+        os.path.abspath(patch_name), source_folder_path)
 
 
 _configure_args = [
@@ -80,114 +89,54 @@ _configure_args = [
     'no-hw',
     'no-engine']
 
+_configure_args_win32 = "" # all configure args are in patch_win32.diff
 
 def _build_win32(working_directory_path, root_project_path):
-    source_folder_path = _download_and_extract(working_directory_path)
-
-    configure_exec = ['perl', 'Configure']
-    vs_x86_env = build_utils.get_win32_vs_x86_env()
-    vs_x64_env = build_utils.get_win32_vs_x64_env()
-
-    win32_configure_args_base = list(_configure_args)
-    win32_configure_args_base.append('no-shared')
-
-    install_dir_x86_debug = os.path.join(
-        working_directory_path, 'gen/install_win32_debug_x86')
-    x86_debug_args = list(win32_configure_args_base)
-    x86_debug_args.insert(0, 'debug-VC-WIN32')
-    build_utils.build_with_autotools(
-        source_folder_path,
-        x86_debug_args,
-        install_dir_x86_debug,
-        configure_exec_name=configure_exec,
-        make_exec_name='nmake.exe',
-        env=vs_x86_env)
-
-    install_dir_x86 = os.path.join(
-        working_directory_path, 'gen/install_win32_x86')
-    x86_args = list(win32_configure_args_base)
-    x86_args.insert(0, 'VC-WIN32')
-    build_utils.build_with_autotools(
-        source_folder_path,
-        x86_args,
-        install_dir_x86,
-        configure_exec_name=configure_exec,
-        make_exec_name='nmake.exe',
-        env=vs_x86_env)
-
-    install_dir_x64_debug = os.path.join(
-        working_directory_path, 'gen/install_win32_debug_x64')
-    x64_debug_args = list(win32_configure_args_base)
-    x64_debug_args.insert(0, 'debug-VC-WIN64A')
-    build_utils.build_with_autotools(
-        source_folder_path,
-        x64_debug_args,
-        install_dir_x64_debug,
-        configure_exec_name=configure_exec,
-        make_exec_name='nmake.exe',
-        env=vs_x64_env)
-
-    install_dir_x64 = os.path.join(
-        working_directory_path, 'gen/install_win32_x64')
-    x64_args = list(win32_configure_args_base)
-    x64_args.insert(0, 'VC-WIN64A')
-    build_utils.build_with_autotools(
-        source_folder_path,
-        x64_args,
-        install_dir_x64,
-        configure_exec_name=configure_exec,
-        make_exec_name='nmake.exe',
-        env=vs_x64_env)
 
     libraries_win_root = os.path.join(root_project_path, 'Libs/lib_CMake/win')
 
-    libssl_path_x86_debug = os.path.join(
-        install_dir_x86_debug, 'lib/libssl.lib')
-    libcrypto_path_x86_debug = os.path.join(
-        install_dir_x86_debug, 'lib/libcrypto.lib')
-    shutil.copyfile(
-        libssl_path_x86_debug,
-        os.path.join(libraries_win_root, 'x86/Debug/ssleay32.lib'))
-    shutil.copyfile(
-        libcrypto_path_x86_debug,
-        os.path.join(libraries_win_root, 'x86/Debug/libeay32.lib'))
+    # x86
+    source_folder_path_x86 = _download_and_extract(working_directory_path, 'win32_x86')
+    build_utils.apply_patch(os.path.abspath('patch_win32.diff'), source_folder_path_x86)
 
-    libssl_path_x86 = os.path.join(install_dir_x86, 'lib/libssl.lib')
-    libcrypto_path_x86 = os.path.join(install_dir_x86, 'lib/libcrypto.lib')
-    shutil.copyfile(
-        libssl_path_x86,
-        os.path.join(libraries_win_root, 'x86/Release/ssleay32.lib'))
-    shutil.copyfile(
-        libcrypto_path_x86,
-        os.path.join(libraries_win_root, 'x86/Release/libeay32.lib'))
+    build_utils.run_process(['build-vc12.cmd'], process_cwd=source_folder_path_x86, shell=True)
 
-    libssl_path_x64_debug = os.path.join(
-        install_dir_x64_debug, 'lib/libssl.lib')
-    libcrypto_path_x64_debug = os.path.join(
-        install_dir_x64_debug, 'lib/libcrypto.lib')
-    shutil.copyfile(
-        libssl_path_x64_debug,
-        os.path.join(libraries_win_root, 'x64/Debug/ssleay32_64.lib'))
-    shutil.copyfile(
-        libcrypto_path_x64_debug,
-        os.path.join(libraries_win_root, 'x64/Debug/libeay32_64.lib'))
+    libeay_path_x86_debug = os.path.join(source_folder_path_x86, 'out32.dbg/libeay32.lib')
+    ssleay_path_x86_debug = os.path.join(source_folder_path_x86, 'out32.dbg/ssleay32.lib')
+    libeay_path_x86_release = os.path.join(source_folder_path_x86, 'out32/libeay32.lib')
+    ssleay_path_x86_release = os.path.join(source_folder_path_x86, 'out32/ssleay32.lib')
 
-    libssl_path_x64 = os.path.join(install_dir_x64, 'lib/libssl.lib')
-    libcrypto_path_x64 = os.path.join(install_dir_x64, 'lib/libcrypto.lib')
-    shutil.copyfile(
-        libssl_path_x64,
-        os.path.join(libraries_win_root, 'x64/Release/ssleay32_64.lib'))
-    shutil.copyfile(
-        libcrypto_path_x64,
-        os.path.join(libraries_win_root, 'x64/Release/libeay32_64.lib'))
+    shutil.copyfile(libeay_path_x86_debug, os.path.join(libraries_win_root, 'x86/Debug/libeay32.lib'))
+    shutil.copyfile(ssleay_path_x86_debug, os.path.join(libraries_win_root, 'x86/Debug/ssleay32.lib'))
+    shutil.copyfile(libeay_path_x86_release, os.path.join(libraries_win_root, 'x86/Release/libeay32.lib'))
+    shutil.copyfile(ssleay_path_x86_release, os.path.join(libraries_win_root, 'x86/Release/ssleay32.lib'))
 
-    _copy_headers(install_dir_x86, root_project_path, 'win32/x86')
-    _copy_headers(install_dir_x64, root_project_path, 'win32/x64')
+    #x64
+    source_folder_path_x64 = _download_and_extract(working_directory_path, 'win32_x64')
+    build_utils.apply_patch(os.path.abspath('patch_win32.diff'), source_folder_path_x64)
 
+    build_utils.run_process('build-vc12.cmd x64', process_cwd=source_folder_path_x64, shell=True)
+
+    libeay_path_x64_debug = os.path.join(source_folder_path_x64, 'out32.dbg/libeay32.lib')
+    ssleay_path_x64_debug = os.path.join(source_folder_path_x64, 'out32.dbg/ssleay32.lib')
+    libeay_path_x64_release = os.path.join(source_folder_path_x64, 'out32/libeay32.lib')
+    ssleay_path_x64_release = os.path.join(source_folder_path_x64, 'out32/ssleay32.lib')
+
+    shutil.copyfile(libeay_path_x64_debug, os.path.join(libraries_win_root, 'x64/Debug/libeay32.lib'))
+    shutil.copyfile(ssleay_path_x64_debug, os.path.join(libraries_win_root, 'x64/Debug/ssleay32.lib'))
+    shutil.copyfile(libeay_path_x64_release, os.path.join(libraries_win_root, 'x64/Release/libeay32.lib'))
+    shutil.copyfile(ssleay_path_x64_release, os.path.join(libraries_win_root, 'x64/Release/ssleay32.lib'))
+
+    # headers 
+    headers_x86_src = os.path.join(source_folder_path_x86, 'inc32/openssl')
+    headers_x64_src = os.path.join(source_folder_path_x64, 'inc32/openssl')
+    headers_x86_dst = _headers_include_path(root_project_path, 'win32/x86')
+    headers_x64_dst = _headers_include_path(root_project_path, 'win32/x64')
+    build_utils.copy_folder_recursive(headers_x86_src, headers_x86_dst)
+    build_utils.copy_folder_recursive(headers_x64_src, headers_x64_dst)
 
 def _build_win10(working_directory_path, root_project_path):
-    source_folder_path = _download_and_extract(
-        working_directory_path, win10=True)
+    source_folder_path = _download_and_extract(working_directory_path, 'win10')
 
     build_utils.run_process(
         ['ms\\do_vsprojects14.bat'],
@@ -291,7 +240,7 @@ def _build_win10(working_directory_path, root_project_path):
 
 def _build_macos(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
-    _patch_sources(source_folder_path, working_directory_path)
+    _patch_sources(source_folder_path, 'patch.diff')
 
     install_dir = os.path.join(working_directory_path, 'gen/install_macos')
     macos_configure_args = list(_configure_args)
@@ -316,7 +265,7 @@ def _build_macos(working_directory_path, root_project_path):
 
 def _build_ios(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
-    _patch_sources(source_folder_path, working_directory_path)
+    _patch_sources(source_folder_path, 'patch.diff')
 
     install_dir_armv7 = os.path.join(
         working_directory_path, 'gen/install_ios_armv7')
@@ -367,7 +316,7 @@ def _build_android(working_directory_path, root_project_path):
     # https://wiki.openssl.org/index.php/Android
 
     source_folder_path = _download_and_extract(working_directory_path)
-    _patch_sources(source_folder_path, working_directory_path)
+    _patch_sources(source_folder_path, 'patch.diff')
 
     install_dir_arm = os.path.join(
         working_directory_path, 'gen/install_android_arm')
@@ -510,10 +459,12 @@ def _get_android_env_x86(source_folder_path, root_project_path):
         'i686-linux-android-',
         'x86')
 
-
-def _copy_headers(install_path, root_project_path, target_folder):
+def _headers_include_path(root_project_path, target_folder):
     include_subpath = os.path.join(
         os.path.join('Libs/openssl/include', target_folder), 'openssl')
-    include_path = os.path.join(root_project_path, include_subpath)
+    return os.path.join(root_project_path, include_subpath)
+
+def _copy_headers(install_path, root_project_path, target_folder):
+    include_path = _headers_include_path(root_project_path, target_folder)
     build_utils.copy_files(
         os.path.join(install_path, 'include/openssl'), include_path, '*.h')
