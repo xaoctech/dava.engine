@@ -8,15 +8,13 @@ void SkeletonAnimation::BindAnimation(const AnimationClip* clip, const SkeletonC
 {
     DVASSERT(skeleton);
 
+    boundTracks.clear();
     animationStates.clear();
     skeletonPose.nodes.clear();
-    animationClip = clip;
 
-    if (animationClip)
+    if (clip)
     {
-        uint32 trackCount = animationClip->GetTrackCount();
-        skeletonPose.nodes.resize(trackCount);
-        animationStates.resize(trackCount);
+        uint32 trackCount = clip->GetTrackCount();
 
         uint32 jointCount = skeleton->GetJointsCount();
         for (uint32 j = 0; j < jointCount; ++j)
@@ -25,14 +23,16 @@ void SkeletonAnimation::BindAnimation(const AnimationClip* clip, const SkeletonC
 
             for (uint32 t = 0; t < trackCount; ++t)
             {
-                if (strcmp(animationClip->GetTrackUID(t), joint.uid.c_str()) == 0)
+                if (strcmp(clip->GetTrackUID(t), joint.uid.c_str()) == 0)
                 {
-                    skeletonPose.nodes[t].jointIndex = j;
+                    const AnimationTrack* track = clip->GetTrack(t);
+                    boundTracks.emplace_back(track);
 
-                    const AnimationTrack* track = animationClip->GetTrack(t);
-                    animationStates[t] = AnimationTrack::State(track->GetChannelsCount());
+                    skeletonPose.nodes.emplace_back();
+                    skeletonPose.nodes.back().jointIndex = j;
 
-                    track->Reset(&animationStates[t]);
+                    animationStates.emplace_back(AnimationTrack::State(track->GetChannelsCount()));
+                    track->Reset(&animationStates.back());
                 }
             }
         }
@@ -41,36 +41,34 @@ void SkeletonAnimation::BindAnimation(const AnimationClip* clip, const SkeletonC
 
 void SkeletonAnimation::Advance(float32 dTime, Vector3* offset)
 {
-    if (animationClip)
+    uint32 boundTrackCount = uint32(boundTracks.size());
+    for (uint32 t = 0; t < boundTrackCount; ++t)
     {
-        for (uint32 t = 0; t < animationClip->GetTrackCount(); ++t)
+        const AnimationTrack* track = boundTracks[t];
+        AnimationTrack::State* state = &animationStates[t];
+        if (state)
         {
-            const AnimationTrack* track = animationClip->GetTrack(t);
-            AnimationTrack::State* state = &animationStates[t];
-            if (track)
+            track->Advance(dTime, state);
+
+            for (uint32 c = 0; c < track->GetChannelsCount(); ++c)
             {
-                track->Advance(dTime, state);
-
-                for (uint32 c = 0; c < track->GetChannelsCount(); ++c)
+                AnimationTrack::eChannelTarget target = track->GetChannelTarget(c);
+                switch (target)
                 {
-                    AnimationTrack::eChannelTarget target = track->GetChannelTarget(c);
-                    switch (target)
-                    {
-                    case DAVA::AnimationTrack::CHANNEL_TARGET_POSITION:
-                        skeletonPose.nodes[t].transform.position = Vector3(track->GetStateValue(state, c));
-                        break;
+                case DAVA::AnimationTrack::CHANNEL_TARGET_POSITION:
+                    skeletonPose.nodes[t].transform.position = Vector3(track->GetStateValue(state, c));
+                    break;
 
-                    case DAVA::AnimationTrack::CHANNEL_TARGET_ORIENTATION:
-                        skeletonPose.nodes[t].transform.orientation = Quaternion(track->GetStateValue(state, c));
-                        break;
+                case DAVA::AnimationTrack::CHANNEL_TARGET_ORIENTATION:
+                    skeletonPose.nodes[t].transform.orientation = Quaternion(track->GetStateValue(state, c));
+                    break;
 
-                    case DAVA::AnimationTrack::CHANNEL_TARGET_SCALE:
-                        skeletonPose.nodes[t].transform.scale = *track->GetStateValue(state, c);
-                        break;
+                case DAVA::AnimationTrack::CHANNEL_TARGET_SCALE:
+                    skeletonPose.nodes[t].transform.scale = *track->GetStateValue(state, c);
+                    break;
 
-                    default:
-                        break;
-                    }
+                default:
+                    break;
                 }
             }
         }

@@ -18,8 +18,8 @@ public:
     const SkeletonComponent::Pose& GetSkeletonPose() const;
 
 protected:
-    const AnimationClip* animationClip = nullptr; //weak ptr
     SkeletonComponent::Pose skeletonPose;
+    Vector<const AnimationTrack*> boundTracks; //weak pointers
     Vector<AnimationTrack::State> animationStates;
 };
 

@@ -68,7 +68,7 @@ public:
     {
         struct Node
         {
-            uint32 jointIndex = 0;
+            uint32 jointIndex = INVALID_JOINT_INDEX;
             JointTransform transform;
         };
 
