@@ -747,7 +747,9 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
 
         prevNode = &(*nodeIter);
         if (nodeIter->lifeime >= layer->stripeLifetime)
+        {
             data.stripeNodes.erase(nodeIter++);
+        }
         else
             ++nodeIter;
     }
@@ -756,20 +758,33 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
     {
         float32 previousLength = data.prevBaseLen;
         float32 currentLength = (data.baseNode.position - data.stripeNodes.front().position).Length();
-        float32 deltaLength = previousLength - currentLength; // +firstDelta;
+        float32 deltaLength = previousLength - currentLength + firstDelta;
         data.prevBaseLen = currentLength;
-        data.uvOffset += deltaLength;
+        // data.uvOffset += deltaLength;
 
-        //if (shouldInsert)
-        /*if (false)
+        float32 delta = (data.baseNode.position - prevBasePosition).Length();
+        if (!shouldInsert)
+            data.uvOffset += deltaLength;
+        else
         {
-            Logger::Info("DeltaLen %f", deltaLength);
-            Logger::Info("curr len %f", currentLength);
-            Logger::Info("prev len %f", previousLength);
-            if (shouldInsert)
-                Logger::Info("*********************************");
-        }*/
-        //     Logger::Info("prev len %f, current len %f, firstDelta %f, uv offset %f", previousLength, currentLength, firstDelta, data.uvOffset);
+            if (particle->speed.DotProduct(data.baseNode.position - prevBasePosition) <= 0)
+            {
+                data.uvOffset -= delta;
+            }
+            else
+            {
+                float32 ololo = 0.0f;
+                if (data.stripeNodes.size() > 1)
+                    ololo = (data.stripeNodes.begin()->position - std::next(data.stripeNodes.begin())->position).Length();
+                float32 offset = 0.0f;
+                if (ololo > data.prevBaseDelta)
+                {
+                    offset = data.prevBaseDelta - ololo;
+                }
+                data.uvOffset -= delta - firstDelta;// -offset;
+            }
+        }
+        data.prevBaseDelta = (data.baseNode.position - data.stripeNodes.front().position).Length();
     }
 }
 
