@@ -1,12 +1,20 @@
 #include "AnimationTrack.h"
+#include "AnimationChannel.h"
 
 #include "Base/FastName.h"
 #include "Debug/DVAssert.h"
 
 namespace DAVA
 {
-AnimationTrack::~AnimationTrack()
+AnimationTrack::State::State(uint32 channelCount)
 {
+    channelStates.resize(channelCount);
+}
+
+const float32* AnimationTrack::State::GetChannelStateValue(uint32 channel) const
+{
+    DVASSERT(channel < uint32(channelStates.size()));
+    return channelStates[channel].GetChannelValue();
 }
 
 uint32 AnimationTrack::Bind(const uint8* _data)
@@ -49,16 +57,24 @@ uint32 AnimationTrack::Bind(const uint8* _data)
 
 void AnimationTrack::Reset(State* state) const
 {
+    for (uint32 c = 0; c < GetChannelsCount(); ++c)
+    {
+        channels[c].channel.Reset(&state->channelStates[c]);
+    }
 }
 
-void AnimationTrack::Advance(State* state) const
+void AnimationTrack::Advance(float32 dTime, State* state) const
 {
+    for (uint32 c = 0; c < GetChannelsCount(); ++c)
+    {
+        channels[c].channel.Advance(dTime, &state->channelStates[c]);
+    }
 }
 
-const float32* AnimationTrack::GetValue(const State& state, uint32 channel) const
+const float32* AnimationTrack::GetStateValue(const State* state, uint32 channel) const
 {
-    DVASSERT(channel < state.stateCount);
-    return state.state[channel].GetValue();
+    DVASSERT(channel < uint32(state->channelStates.size()));
+    return state->channelStates[channel].GetChannelValue();
 }
 
 uint32 AnimationTrack::GetChannelsCount() const

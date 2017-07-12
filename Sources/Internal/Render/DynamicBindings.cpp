@@ -215,13 +215,14 @@ inline void DynamicBindings::ComputeWorldInvTransposeMatrixIfRequired()
     }
 }
 
-int32 DynamicBindings::GetDynamicParamArraySize(DynamicBindings::eUniformSemantic shaderSemantic, int32 defaultValue)
+uint32 DynamicBindings::GetDynamicParamArraySize(DynamicBindings::eUniformSemantic shaderSemantic, uint32 defaultValue)
 {
     if ((shaderSemantic == PARAM_JOINT_POSITIONS) || (shaderSemantic == PARAM_JOINT_QUATERNIONS))
         return *(reinterpret_cast<const int32*>(GetDynamicParam(PARAM_JOINTS_COUNT)));
     else
         return defaultValue;
 }
+
 const void* DynamicBindings::GetDynamicParam(eUniformSemantic shaderSemantic)
 {
     switch (shaderSemantic)

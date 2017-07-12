@@ -383,7 +383,8 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
         //Channel part
         uint32 signature = AnimationChannel::ANIMATION_CHANNEL_DATA_SIGNATURE;
         uint8 dimension = 0;
-        uint8 pad1[3];
+        uint8 interpolation = 0;
+        uint8 pad1[2];
         uint32 key_count = 0;
     } channelHeader;
     channelHeader.pad0[0] = channelHeader.pad0[1] = channelHeader.pad0[2] = 0;
@@ -454,6 +455,7 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
                 //Write position channel
                 {
                     channelHeader.dimension = 3;
+                    channelHeader.interpolation = uint8(AnimationChannel::INTERPOLATION_LINEAR);
                     channelHeader.target = AnimationTrack::CHANNEL_TARGET_POSITION;
                     WriteToBuffer(animationData, &channelHeader);
 
@@ -468,6 +470,7 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
                 //Write orientation channel
                 {
                     channelHeader.dimension = 4;
+                    channelHeader.interpolation = uint8(AnimationChannel::INTERPOLATION_SPHERICAL_LINEAR);
                     channelHeader.target = AnimationTrack::CHANNEL_TARGET_ORIENTATION;
                     WriteToBuffer(animationData, &channelHeader);
 
@@ -482,6 +485,7 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
                 //Write scale channel
                 {
                     channelHeader.dimension = 3;
+                    channelHeader.interpolation = uint8(AnimationChannel::INTERPOLATION_LINEAR);
                     channelHeader.target = AnimationTrack::CHANNEL_TARGET_SCALE;
                     WriteToBuffer(animationData, &channelHeader);
 

@@ -18,10 +18,21 @@ public:
         CHANNEL_TARGET_COUNT
     };
 
-    class State;
+    class State
+    {
+    public:
+        State(uint32 channelCount = 0);
+
+        const float32* GetChannelStateValue(uint32 channel) const;
+
+    private:
+        Vector<AnimationChannel::State> channelStates;
+
+        friend class AnimationTrack;
+    };
 
     AnimationTrack() = default;
-    ~AnimationTrack();
+    ~AnimationTrack() = default;
 
     uint32 Bind(const uint8* data);
 
@@ -29,9 +40,9 @@ public:
     eChannelTarget GetChannelTarget(uint32 channel) const;
 
     void Reset(State* state) const;
-    void Advance(State* state) const;
+    void Advance(float32 dTime, State* state) const;
 
-    const float32* GetValue(const State& state, uint32 channel) const;
+    const float32* GetStateValue(const State* state, uint32 channel) const;
 
 private:
     struct Channel
@@ -42,12 +53,4 @@ private:
     Vector<Channel> channels;
 };
 
-class AnimationTrack::State
-{
-private:
-    uint32 stateCount = 0;
-    AnimationChannel::State* state = nullptr;
-
-    friend class AnimationTrack;
-};
 }

@@ -1,3 +1,5 @@
+#include "Animation2/AnimationClip.h"
+#include "Animation2/AnimationTrack.h"
 #include "Scene3D/Components/SkeletonComponent.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Components/ComponentHelpers.h"
@@ -28,14 +30,10 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SkeletonComponent)
     .End();
 }
 
-SkeletonComponent::Joint::Joint(int32 _parentIndex, int32 _targetId, const FastName& _name, const FastName& _uid, const AABBox3& _bbox, const Matrix4& _bindPose, const Matrix4& _invBindPose)
-    : parentIndex(_parentIndex)
-    , targetIndex(_targetId)
-    , name(_name)
-    , uid(_uid)
-    , bbox(_bbox)
-    , bindTransform(_bindPose)
-    , bindTransformInv(_invBindPose)
+SkeletonComponent::JointTransform::JointTransform(const Vector3& _position, const Quaternion& _orientation, float32 _scale)
+    : orientation(_orientation)
+    , position(_position)
+    , scale(_scale)
 {
 }
 
@@ -48,6 +46,15 @@ bool SkeletonComponent::Joint::operator==(const Joint& other) const
     bindTransformInv == other.bindTransformInv;
     bindTransform == other.bindTransform&&
                      bbox == other.bbox;
+}
+
+SkeletonComponent::SkeletonComponent()
+{
+}
+
+SkeletonComponent::~SkeletonComponent()
+{
+    SafeDelete(animationClip);
 }
 
 void SkeletonComponent::ApplyPose(const SkeletonPose* pose)
@@ -73,8 +80,8 @@ void SkeletonComponent::Serialize(KeyedArchive* archive, SerializationContext* s
         ScopedPtr<KeyedArchive> jointArch(new KeyedArchive());
         jointArch->SetFastName("joint.name", joint.name);
         jointArch->SetFastName("joint.uid", joint.uid);
-        jointArch->SetInt32("joint.parentIndex", joint.parentIndex);
-        jointArch->SetInt32("joint.targetId", joint.targetIndex);
+        jointArch->SetUInt32("joint.parentIndex", joint.parentIndex);
+        jointArch->SetUInt32("joint.targetIndex", joint.targetIndex);
         jointArch->SetVector3("joint.bbox.min", joint.bbox.min);
         jointArch->SetVector3("joint.bbox.max", joint.bbox.max);
         jointArch->SetMatrix4("joint.bindPose", joint.bindTransform);
@@ -98,12 +105,52 @@ void SkeletonComponent::Deserialize(KeyedArchive* archive, SerializationContext*
         KeyedArchive* jointArch = jointsArch->GetArchive(KeyedArchive::GenKeyFromIndex(i));
         joint.name = jointArch->GetFastName("joint.name");
         joint.uid = jointArch->GetFastName("joint.uid");
-        joint.parentIndex = jointArch->GetInt32("joint.parentIndex");
-        joint.targetIndex = jointArch->GetInt32("joint.targetId");
+        joint.parentIndex = jointArch->GetUInt32("joint.parentIndex", INVALID_JOINT_INDEX);
+        joint.targetIndex = jointArch->GetUInt32("joint.targetIndex", INVALID_JOINT_INDEX);
         joint.bbox.min = jointArch->GetVector3("joint.bbox.min");
         joint.bbox.max = jointArch->GetVector3("joint.bbox.max");
         joint.bindTransform = jointArch->GetMatrix4("joint.bindPose");
         joint.bindTransformInv = jointArch->GetMatrix4("joint.invBindPose");
+    }
+}
+
+const FilePath& SkeletonComponent::GetAnimationPath() const
+{
+    return animationPath;
+}
+
+void SkeletonComponent::SetAnimationPath(const FilePath& path)
+{
+    SafeDelete(animationClip);
+    animationStates.clear();
+
+    animationPath = path;
+    if (!animationPath.IsEmpty())
+    {
+        animationClip = new AnimationClip();
+        if (animationClip->Load(animationPath))
+        {
+            animationStates.resize(jointsArray.size());
+
+            uint32 trackCount = animationClip->GetTrackCount();
+            for (const Joint& j : jointsArray)
+            {
+                for (uint32 t = 0; t < trackCount; ++t)
+                {
+                    if (strcmp(animationClip->GetTrackUID(t), j.uid.c_str()) == 0)
+                    {
+                        const AnimationTrack* track = animationClip->GetTrack(t);
+                        animationStates[j.targetIndex] = std::make_pair(track, AnimationTrack::State(track->GetChannelsCount()));
+
+                        track->Reset(&animationStates[j.targetIndex].second);
+                    }
+                }
+            }
+        }
+        else
+        {
+            SafeDelete(animationClip);
+        }
     }
 }
 

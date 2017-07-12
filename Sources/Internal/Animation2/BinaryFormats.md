@@ -42,7 +42,8 @@
     {
         signature       U4
         dimension       U1,
-        pad             U1 3,
+        interpolation   U1,
+        pad             U1 2,
         key_count       U4,
     
         keys[key_count]

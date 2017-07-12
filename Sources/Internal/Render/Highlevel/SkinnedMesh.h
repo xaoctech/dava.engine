@@ -26,15 +26,15 @@ public:
     void BindDynamicParameters(Camera* camera) override;
 
     inline void SetBoundingBox(const AABBox3& box);
-    inline void SetJointsPtr(Vector4* positionPtr, Vector4* quaternoinPtr, int32 count);
+    inline void SetJointsPtr(Vector4* positionPtr, Vector4* quaternoinPtr, uint32 count);
 
 protected:
     Vector4* positionArray = nullptr;
     Vector4* quaternionArray = nullptr;
-    int32 jointsCount = 0;
+    uint32 jointsCount = 0;
 };
 
-inline void SkinnedMesh::SetJointsPtr(Vector4* positionPtr, Vector4* quaternoinPtr, int32 count)
+inline void SkinnedMesh::SetJointsPtr(Vector4* positionPtr, Vector4* quaternoinPtr, uint32 count)
 {
     positionArray = positionPtr;
     quaternionArray = quaternoinPtr;

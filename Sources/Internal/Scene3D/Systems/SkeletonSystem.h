@@ -6,6 +6,7 @@
 
 namespace DAVA
 {
+class AnimationTrack;
 class Component;
 class SkeletonComponent;
 class SkinnedMesh;
