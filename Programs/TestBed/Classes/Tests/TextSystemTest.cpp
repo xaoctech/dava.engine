@@ -229,13 +229,13 @@ void TextSystemTest::Update(float32 delta)
     if (updateDelta > 0.5f)
     {
         float32 fps = framesCount / updateDelta;
-        const char* c_state = (state == PLAYING) ? "PLAYING" : "STOPPED";
+        String stateStr = (state == PLAYING) ? "PLAYING" : "STOPPED";
         String testName = "<NULL>";
         if (activeObject)
         {
             testName = activeObject->name;
         }
-        statusText->SetUtf8Text(Format("FPS: %f\nSTATE: %s\nTEST: %s", fps, c_state, testName.c_str()));
+        statusText->SetUtf8Text(Format("FPS: %f\nSTATE: %s\nTEST: %s", fps, stateStr.c_str(), testName.c_str()));
         updateDelta = 0.f;
         framesCount = 0;
     }
