@@ -285,7 +285,6 @@ void UIControlSystem::ProcessScreenLogic()
         frameSkip = FRAME_SKIP;
         removeCurrentScreen = false;
     }
-    currentScreenTransition->SetScene(nullptr);
 
     /*
      if we have popups to remove, we removes them here
