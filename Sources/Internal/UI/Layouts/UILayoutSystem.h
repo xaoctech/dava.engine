@@ -20,7 +20,6 @@ public:
     ~UILayoutSystem() override;
 
     void SetCurrentScreen(const RefPtr<UIScreen>& screen);
-    void SetCurrentScreenTransition(const RefPtr<UIScreenTransition>& screenTransition);
     void SetPopupContainer(const RefPtr<UIControl>& popupContainer);
 
     bool IsRtl() const;
@@ -61,7 +60,6 @@ private:
     std::unique_ptr<class Layouter> sharedLayouter;
     RefPtr<UIScreen> currentScreen;
     RefPtr<UIControl> popupContainer;
-    RefPtr<UIScreenTransition> currentScreenTransition;
 
     Vector<UILayoutSystemListener*> listeners;
 
