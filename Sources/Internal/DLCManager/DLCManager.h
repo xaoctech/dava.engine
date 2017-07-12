@@ -151,6 +151,15 @@ public:
 
     /** Calculate statistic about downloading progress */
     virtual Progress GetProgress() const = 0;
+
+    struct Info
+    {
+        uint32 infoCrc32 = 0; //!< this mean server version of superpack
+        uint32 metaCrc32 = 0; //!< separate meta crc32
+        uint32 totalFiles = 0; //!< count files in superpack (easy for human to see difference on superpacks)
+    };
+    /** Check if manager is initialized and return info */
+    virtual Info GetInfo() const;
 };
 
 } // end namespace DAVA

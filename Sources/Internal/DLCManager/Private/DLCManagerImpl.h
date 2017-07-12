@@ -144,6 +144,8 @@ public:
 
     Progress GetProgress() const override;
 
+    Info GetInfo() const override;
+
     const FilePath& GetLocalPacksDirectory() const;
 
     const String& GetSuperPackUrl() const;
