@@ -452,7 +452,6 @@ void PhysicsSystem::InitNewObjects()
         Entity* entity = component->GetEntity();
         AttachShape(entity, component, scale);
 
-        Logger::Info("Add actor %p", component->GetPxActor());
         physicsScene->addActor(*(component->GetPxActor()));
         physicsComponents.push_back(component);
     }
@@ -510,7 +509,6 @@ void PhysicsSystem::AttachShape(PhysicsComponent* bodyComponent, CollisionShapeC
     physx::PxShape* shape = shapeComponent->GetPxShape();
     if (shape != nullptr)
     {
-        Logger::Info("Add shape %p to actor %p", shape, rigidActor);
         rigidActor->attachShape(*shape);
         SheduleUpdate(shapeComponent);
         SheduleUpdate(bodyComponent);

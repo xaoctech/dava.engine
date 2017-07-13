@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Entity/SceneSystem.h>
+#include <Base/BaseTypes.h>
 
 #include <physx/PxQueryReport.h>
 
@@ -13,6 +14,7 @@ class PxShape;
 
 namespace DAVA
 {
+class Vector3;
 class Scene;
 class PhysicsModule;
 class PhysicsComponent;
