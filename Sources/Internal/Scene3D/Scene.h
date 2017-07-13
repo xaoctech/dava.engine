@@ -10,6 +10,9 @@
 #include "Scene3D/SceneFileV2.h"
 #include "Scene3D/SceneFile/VersionInfo.h"
 #include "Base/Observer.h"
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+#include <Physics/PhysicsSystem.h>
+#endif
 
 namespace DAVA
 {
@@ -107,6 +110,9 @@ public:
         SCENE_SYSTEM_SLOT_FLAG = 1 << 19,
         SCENE_SYSTEM_GEO_DECAL_FLAG = 1 << 20,
 
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+        SCENE_SYSTEM_PHYSICS_FLAG = 1 << 19,
+#endif
         SCENE_SYSTEM_ALL_MASK = 0xFFFFFFFF
     };
 
@@ -169,6 +175,9 @@ public:
     ParticleEffectDebugDrawSystem* particleEffectDebugDrawSystem = nullptr;
     SlotSystem* slotSystem = nullptr;
     GeoDecalSystem* geoDecalSystem = nullptr;
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+    PhysicsSystem* physicsSystem = nullptr;
+#endif
 
     TransformSingleComponent* transformSingleComponent = nullptr;
 

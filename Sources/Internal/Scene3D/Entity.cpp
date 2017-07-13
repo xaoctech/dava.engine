@@ -652,6 +652,16 @@ const Matrix4& Entity::GetLocalTransform()
     return (static_cast<TransformComponent*>(GetComponent(Component::TRANSFORM_COMPONENT)))->GetLocalTransform();
 }
 
+const Matrix4& Entity::GetWorldTransform() const
+{
+    return (static_cast<TransformComponent*>(GetComponent(Component::TRANSFORM_COMPONENT)))->GetWorldTransform();
+}
+
+void Entity::SetWorldTransform(const Matrix4& newMatrix)
+{
+    return (static_cast<TransformComponent*>(GetComponent(Component::TRANSFORM_COMPONENT)))->SetWorldTransform(&newMatrix);
+}
+
 Matrix4 Entity::AccamulateLocalTransform(Entity* fromParent)
 {
     if (fromParent == this)
@@ -749,11 +759,6 @@ void Entity::SetVisible(const bool& isVisible)
     {
         GetChild(i)->SetVisible(isVisible);
     }
-}
-
-const Matrix4& Entity::GetWorldTransform() const
-{
-    return (static_cast<TransformComponent*>(GetComponent(Component::TRANSFORM_COMPONENT)))->GetWorldTransform();
 }
 
 Entity* Entity::GetEntityByID(uint32 id)

@@ -237,6 +237,14 @@ void Scene::CreateSystems()
         AddSystem(animationSystem, MAKE_COMPONENT_MASK(Component::ANIMATION_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
     }
 
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+    if (SCENE_SYSTEM_PHYSICS_FLAG & systemsMask)
+    {
+        physicsSystem = new PhysicsSystem(this);
+        AddSystem(physicsSystem, 0, SCENE_SYSTEM_REQUIRE_PROCESS);
+    }
+#endif
+
     if (SCENE_SYSTEM_SKELETON_UPDATE_FLAG & systemsMask)
     {
         skeletonSystem = new SkeletonSystem(this);
@@ -389,6 +397,9 @@ Scene::~Scene()
     windSystem = 0;
     waveSystem = 0;
     animationSystem = 0;
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+    physicsSystem = nullptr;
+#endif
 
     size_t size = systems.size();
     for (size_t k = 0; k < size; ++k)
