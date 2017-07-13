@@ -28,13 +28,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SkeletonComponent)
     .End();
 }
 
-SkeletonComponent::JointTransform::JointTransform(const Vector3& _position, const Quaternion& _orientation, float32 _scale)
-    : orientation(_orientation)
-    , position(_position)
-    , scale(_scale)
-{
-}
-
 bool SkeletonComponent::Joint::operator==(const Joint& other) const
 {
     return parentIndex == other.parentIndex &&
@@ -53,11 +46,28 @@ void SkeletonComponent::SetJoints(const Vector<Joint>& config)
     GlobalEventSystem::Instance()->Event(this, EventSystem::SKELETON_CONFIG_CHANGED);
 }
 
-void SkeletonComponent::ApplyPose(const Pose& pose)
+SkeletonPose SkeletonComponent::GetDefaultPose() const
 {
-    for (const Pose::Node& node : pose.nodes)
+    uint32 jointCount = uint32(jointsArray.size());
+    SkeletonPose pose(jointCount);
+
+    JointTransform transform;
+    for (uint32 j = 0; j < jointCount; ++j)
     {
-        SetJointTransform(node.jointIndex, node.transform);
+        transform.Construct(jointsArray[j].bindTransform);
+        pose.SetJointIndex(j, j);
+        pose.SetTransform(j, transform);
+    }
+
+    return pose;
+}
+
+void SkeletonComponent::ApplyPose(const SkeletonPose& pose)
+{
+    uint32 nodeCount = pose.GetNodeCount();
+    for (uint32 n = 0; n < nodeCount; ++n)
+    {
+        SetJointTransform(pose.GetJointIndex(n), pose.GetJointTransform(n));
     }
 }
 
@@ -68,6 +78,7 @@ Component* SkeletonComponent::Clone(Entity* toEntity)
     newComponent->jointsArray = jointsArray;
     return newComponent;
 }
+
 void SkeletonComponent::Serialize(KeyedArchive* archive, SerializationContext* serializationContext)
 {
     Component::Serialize(archive, serializationContext);
@@ -91,6 +102,7 @@ void SkeletonComponent::Serialize(KeyedArchive* archive, SerializationContext* s
 
     archive->SetArchive("joints", jointsArch);
 }
+
 void SkeletonComponent::Deserialize(KeyedArchive* archive, SerializationContext* serializationContext)
 {
     Component::Deserialize(archive, serializationContext);

@@ -10,7 +10,7 @@ void SkeletonAnimation::BindAnimation(const AnimationClip* clip, const SkeletonC
 
     boundTracks.clear();
     animationStates.clear();
-    skeletonPose.nodes.clear();
+    skeletonPose.SetNodeCount(0);
 
     if (clip)
     {
@@ -26,10 +26,9 @@ void SkeletonAnimation::BindAnimation(const AnimationClip* clip, const SkeletonC
                 if (strcmp(clip->GetTrackUID(t), joint.uid.c_str()) == 0)
                 {
                     const AnimationTrack* track = clip->GetTrack(t);
-                    boundTracks.emplace_back(track);
 
-                    skeletonPose.nodes.emplace_back();
-                    skeletonPose.nodes.back().jointIndex = j;
+                    boundTracks.emplace_back(track);
+                    skeletonPose.AddNode(j, JointTransform()); //node index in pose equal bound track index
 
                     animationStates.emplace_back(AnimationTrack::State(track->GetChannelsCount()));
                     track->Reset(&animationStates.back());
@@ -50,32 +49,34 @@ void SkeletonAnimation::Advance(float32 dTime, Vector3* offset)
         {
             track->Advance(dTime, state);
 
+            JointTransform transform;
             for (uint32 c = 0; c < track->GetChannelsCount(); ++c)
             {
                 AnimationTrack::eChannelTarget target = track->GetChannelTarget(c);
                 switch (target)
                 {
                 case DAVA::AnimationTrack::CHANNEL_TARGET_POSITION:
-                    skeletonPose.nodes[t].transform.position = Vector3(track->GetStateValue(state, c));
+                    transform.position = Vector3(track->GetStateValue(state, c));
                     break;
 
                 case DAVA::AnimationTrack::CHANNEL_TARGET_ORIENTATION:
-                    skeletonPose.nodes[t].transform.orientation = Quaternion(track->GetStateValue(state, c));
+                    transform.orientation = Quaternion(track->GetStateValue(state, c));
                     break;
 
                 case DAVA::AnimationTrack::CHANNEL_TARGET_SCALE:
-                    skeletonPose.nodes[t].transform.scale = *track->GetStateValue(state, c);
+                    transform.scale = *track->GetStateValue(state, c);
                     break;
 
                 default:
                     break;
                 }
             }
+            skeletonPose.SetTransform(t, transform);
         }
     }
 }
 
-const SkeletonComponent::Pose& SkeletonAnimation::GetSkeletonPose() const
+const SkeletonPose& SkeletonAnimation::GetSkeletonPose() const
 {
     return skeletonPose;
 }

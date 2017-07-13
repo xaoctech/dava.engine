@@ -1,4 +1,5 @@
 #include "Animation2/AnimationTrack.h"
+#include "Animation2/JointTransform.h"
 #include "Scene3D/Systems/SkeletonSystem.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Components/ComponentHelpers.h"
@@ -193,7 +194,7 @@ void SkeletonSystem::UpdateJointTransforms(SkeletonComponent* skeleton)
             {
                 skeleton->objectSpaceBoxes[currJoint] = skeleton->objectSpaceTransforms[currJoint].TransformAABBox(skeleton->jointSpaceBoxes[currJoint]);
 
-                SkeletonComponent::JointTransform finalTransform = skeleton->objectSpaceTransforms[currJoint].AppendTransform(skeleton->inverseBindTransforms[currJoint]);
+                JointTransform finalTransform = skeleton->objectSpaceTransforms[currJoint].AppendTransform(skeleton->inverseBindTransforms[currJoint]);
                 skeleton->resultPositions[targetIndex].Set(finalTransform.position.x, finalTransform.position.y, finalTransform.position.z, finalTransform.scale);
                 skeleton->resultQuaternions[targetIndex].Set(finalTransform.orientation.x, finalTransform.orientation.y, finalTransform.orientation.z, finalTransform.orientation.w);
             }
@@ -261,7 +262,7 @@ void SkeletonSystem::RebuildSkeleton(SkeletonComponent* skeleton)
 
         skeleton->jointMap[skeleton->jointsArray[i].uid] = i;
 
-        SkeletonComponent::JointTransform localTransform;
+        JointTransform localTransform;
         localTransform.Construct(skeleton->jointsArray[i].bindTransform);
 
         skeleton->localSpaceTransforms[i] = localTransform;

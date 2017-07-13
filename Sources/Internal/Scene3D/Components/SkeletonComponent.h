@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Animation2/AnimationTrack.h"
+#include "Animation2/JointTransform.h"
+#include "Animation2/SkeletonPose.h"
 #include "Base/BaseTypes.h"
 #include "Reflection/Reflection.h"
 #include "Scene3D/Entity.h"
@@ -23,22 +25,6 @@ public:
 
     const static uint32 INVALID_JOINT_INDEX = 0xfff; //same as INFO_PARENT_MASK
     const static uint32 MAX_TARGET_JOINTS = 64; //same as in shader
-
-    struct JointTransform
-    {
-        JointTransform() = default;
-        JointTransform(const Vector3& position, const Quaternion& orientation, float32 scale = 1.f);
-
-        Quaternion orientation;
-        Vector3 position;
-        float32 scale = 1.f;
-
-        void Construct(const Matrix4& transform);
-        JointTransform AppendTransform(const JointTransform& transform) const;
-        JointTransform GetInverse() const;
-        Vector3 TransformPoint(const Vector3& inVec) const;
-        AABBox3 TransformAABBox(const AABBox3& bbox) const;
-    };
 
     struct Joint : public InspBase
     {
@@ -64,17 +50,6 @@ public:
         DAVA_VIRTUAL_REFLECTION(Joint, InspBase);
     };
 
-    struct Pose
-    {
-        struct Node
-        {
-            uint32 jointIndex = INVALID_JOINT_INDEX;
-            JointTransform transform;
-        };
-
-        Vector<Node> nodes;
-    };
-
     SkeletonComponent() = default;
     ~SkeletonComponent() = default;
 
@@ -87,7 +62,8 @@ public:
     const JointTransform& GetJointTransform(uint32 jointIndex) const;
     const JointTransform& GetJointObjectSpaceTransform(uint32 jointIndex) const;
 
-    void ApplyPose(const Pose& pose);
+    SkeletonPose GetDefaultPose() const;
+    void ApplyPose(const SkeletonPose& pose);
     void SetJointTransform(uint32 jointIndex, const JointTransform& transform);
 
     Component* Clone(Entity* toEntity) override;
@@ -155,75 +131,25 @@ inline const SkeletonComponent::Joint& SkeletonComponent::GetJoint(uint32 i) con
     return jointsArray[i];
 }
 
-inline const SkeletonComponent::JointTransform& SkeletonComponent::GetJointTransform(uint32 jointIndex) const
+inline const JointTransform& SkeletonComponent::GetJointTransform(uint32 jointIndex) const
 {
     DVASSERT(jointIndex < GetJointsCount());
     return localSpaceTransforms[jointIndex];
 }
 
-inline const SkeletonComponent::JointTransform& SkeletonComponent::GetJointObjectSpaceTransform(uint32 jointIndex) const
+inline const JointTransform& SkeletonComponent::GetJointObjectSpaceTransform(uint32 jointIndex) const
 {
     DVASSERT(jointIndex < objectSpaceTransforms.size());
     return objectSpaceTransforms[jointIndex];
 }
 
-inline void SkeletonComponent::SetJointTransform(uint32 jointIndex, const SkeletonComponent::JointTransform& transform)
+inline void SkeletonComponent::SetJointTransform(uint32 jointIndex, const JointTransform& transform)
 {
     DVASSERT(jointIndex < GetJointsCount());
 
     jointInfo[jointIndex] |= FLAG_MARKED_FOR_UPDATED;
     localSpaceTransforms[jointIndex] = transform;
     startJoint = Min(startJoint, jointIndex);
-}
-
-inline Vector3 SkeletonComponent::JointTransform::TransformPoint(const Vector3& inVec) const
-{
-    return position + orientation.ApplyToVectorFast(inVec) * scale;
-}
-
-inline AABBox3 SkeletonComponent::JointTransform::TransformAABBox(const AABBox3& bbox) const
-{
-    const Vector3& min = bbox.min;
-    const Vector3& max = bbox.max;
-
-    AABBox3 res;
-    res.AddPoint(TransformPoint(min));
-    res.AddPoint(TransformPoint(max));
-    res.AddPoint(TransformPoint(Vector3(min.x, min.y, max.z)));
-    res.AddPoint(TransformPoint(Vector3(min.x, max.y, min.z)));
-    res.AddPoint(TransformPoint(Vector3(min.x, max.y, max.z)));
-    res.AddPoint(TransformPoint(Vector3(max.x, min.y, min.z)));
-    res.AddPoint(TransformPoint(Vector3(max.x, min.y, max.z)));
-    res.AddPoint(TransformPoint(Vector3(max.x, max.y, min.z)));
-
-    return res;
-}
-
-inline void SkeletonComponent::JointTransform::Construct(const Matrix4& transform)
-{
-    Vector3 scale3;
-    transform.Decomposition(position, scale3, orientation);
-    scale = scale3.x;
-}
-
-inline SkeletonComponent::JointTransform SkeletonComponent::JointTransform::AppendTransform(const JointTransform& transform) const
-{
-    JointTransform res;
-    res.position = TransformPoint(transform.position);
-    res.orientation = orientation * transform.orientation;
-    res.scale = scale * transform.scale;
-    return res;
-}
-
-inline SkeletonComponent::JointTransform SkeletonComponent::JointTransform::GetInverse() const
-{
-    JointTransform res;
-    res.scale = 1.0f / scale;
-    res.orientation = orientation;
-    res.orientation.Inverse();
-    res.position = -res.orientation.ApplyToVectorFast(position) * res.scale;
-
-    return res;
 }
 
 template <>

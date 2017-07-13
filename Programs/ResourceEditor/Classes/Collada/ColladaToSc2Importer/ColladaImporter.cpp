@@ -373,7 +373,7 @@ void WriteToBuffer(Vector<uint8>& buffer, const T* value)
 
 eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, const FilePath& dir)
 {
-    //binary file format described in 'Internal/Animations2/BinaryFormats.md'
+    //binary file format described in 'AnimationBinaryFormat.md'
     struct ChannelHeader
     {
         //Track part

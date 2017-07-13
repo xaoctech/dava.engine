@@ -15,10 +15,10 @@ public:
     void BindAnimation(const AnimationClip* animationClip, const SkeletonComponent* skeleton);
     void Advance(float32 dTime, Vector3* offset = nullptr);
 
-    const SkeletonComponent::Pose& GetSkeletonPose() const;
+    const SkeletonPose& GetSkeletonPose() const;
 
 protected:
-    SkeletonComponent::Pose skeletonPose;
+    SkeletonPose skeletonPose;
     Vector<const AnimationTrack*> boundTracks; //weak pointers
     Vector<AnimationTrack::State> animationStates;
 };
