@@ -13,7 +13,6 @@ if (project.plugins.hasPlugin('com.android.library') || project.plugins.hasPlugi
 
             externalNativeBuild {
                 cmake {
-                    cppFlags "-std=c++14" , "-frtti", "-fexceptions"
                     arguments "-DANDROID_ARM_NEON=TRUE", "-DANDROID_STL=c++_shared"
                 }
             }

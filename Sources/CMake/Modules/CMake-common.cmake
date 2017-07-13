@@ -20,21 +20,6 @@ if ( DAVA_MEMORY_PROFILER )
     endif()
 endif()
 
-if( ANDROID )
-#    find_package( AndroidTools REQUIRED )
-#
-#    if( WIN32 )
-#        set( MAKE_PROGRAM ${ANDROID_NDK}/prebuilt/windows-x86_64/bin/make.exe )
-#    elseif( APPLE )
-#       set( MAKE_PROGRAM ${ANDROID_NDK}/prebuilt/darwin-x86_64/bin/make )
-#    endif()
-#
-#    file( TO_CMAKE_PATH "${MAKE_PROGRAM}" MAKE_PROGRAM )
-#    set (CMAKE_MAKE_PROGRAM "${MAKE_PROGRAM}" CACHE STRING   "Program used to build from makefiles.")
-#    mark_as_advanced(CMAKE_MAKE_PROGRAM)
-#
-endif()
-
 include ( PlatformSettings     )
 include ( MergeStaticLibrarees )
 include ( FileTreeCheck        )
