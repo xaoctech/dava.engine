@@ -106,7 +106,7 @@ void SetCurrentTheme(eTheme theme)
 {
     if (!themesInitialized)
     {
-        qWarning("ThemesFactiry uninitialized");
+        qWarning("ThemesFactory uninitialized");
         return;
     }
     switch (theme)

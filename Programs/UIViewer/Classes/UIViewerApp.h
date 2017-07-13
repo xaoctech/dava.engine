@@ -3,6 +3,7 @@
 #include <Base/ScopedPtr.h>
 #include <CommandLine/ProgramOptions.h>
 #include <FileSystem/FilePath.h>
+#include <Math/Math2D.h>
 
 namespace DAVA
 {
@@ -28,6 +29,8 @@ public:
     void EndFrame();
 
 private:
+    void OnWindowSizeChanged(DAVA::Window* window, DAVA::Size2f size, DAVA::Size2f surfaceSize);
+
     void CreateDocumentsFolder();
 
     UIViewScreen* uiViewScreen = nullptr;

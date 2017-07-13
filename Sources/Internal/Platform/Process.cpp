@@ -7,7 +7,7 @@
 #if defined(__DAVAENGINE_MACOS__)
 #include <sys/wait.h>
 #include <unistd.h>
-#endif
+#endif //MACOS
 
 static const int READ = 0;
 static const int WRITE = 1;
@@ -17,7 +17,28 @@ namespace DAVA
 {
 namespace ProcessDetails
 {
+
 #if defined(__DAVAENGINE_WIN32__)
+
+#if defined(UNICODE)
+
+void ConvertToWideChar(const String& str, wchar_t** outStr, size_t* outLength)
+{
+    *outStr = nullptr;
+    *outLength = 0;
+
+    *outLength = mbstowcs(nullptr, str.c_str(), str.size()) + 1;
+
+    if (*outLength > 0)
+    {
+        *outStr = new wchar_t[*outLength];
+        memset(*outStr, 0, sizeof(wchar_t) * (*outLength));
+        mbstowcs(*outStr, str.c_str(), str.size());
+    }
+}
+
+#endif // defined(UNICODE)
+
 String EscapeSpaces(const String& str)
 {
     if (str.find(' ') == String::npos)
@@ -35,7 +56,7 @@ Process::Process(const FilePath& path, const Vector<String>& args)
     , executablePath(path)
     , runArgs(args)
 {
-    Logger::FrameworkDebug("Proces: run %s", executablePath.GetAbsolutePathname().c_str());
+    Logger::FrameworkDebug("%s: run %s", __FUNCTION__, executablePath.GetAbsolutePathname().c_str());
     
 #if defined(__DAVAENGINE_WINDOWS__)
     childProcIn[0] = childProcIn[1] = 0;
@@ -106,6 +127,7 @@ bool Process::Run(bool showWindow)
 {
     //see http://msdn.microsoft.com/en-us/library/ms682499%28v=vs.85%29.aspx
 
+    bool running = IsRunning();
     DVASSERT(!running);
 
     if (running)
@@ -181,7 +203,7 @@ bool Process::Run(bool showWindow)
         size_t execArgsWLength = 0;
 
         //VI: TODO: UNICODE: Use framework methods to convert to Unicode once it will be ready.
-        ConvertToWideChar(runArgsFlat, &execArgsW, &execArgsWLength);
+        ProcessDetails::ConvertToWideChar(runArgsFlat, &execArgsW, &execArgsWLength);
 
         bSuccess = CreateProcess(nullptr,
                                  execArgsW, // command line
@@ -225,84 +247,94 @@ bool Process::Run(bool showWindow)
         CleanupHandles();
     }
 
-    running = result;
     return result;
 }
 
 void Process::Wait()
 {
+    bool running = IsRunning();
     DVASSERT(running);
-    DVASSERT(pid != -1);
 
-    if (!running || pid == -1)
+    if (!running)
         return;
-    running = false;
 
+    ReadOutput();
+
+    ::WaitForSingleObject((HANDLE)pid, INFINITE);
+
+    ReadExitCode(0);
+    CleanupHandles();
+}
+
+bool Process::IsRunning() const
+{
+    if (pid != -1)
+    {
+        DWORD code = 0;
+        BOOL res = ::GetExitCodeProcess((HANDLE)pid, &code);
+        bool isRunning = (res == TRUE) && (code == STILL_ACTIVE);
+        return isRunning;
+    }
+
+    return false;
+}
+
+void Process::RetriveFinalStatus()
+{
+    if (IsRunning() == false)
+    {
+        ReadOutput();
+        ReadExitCode(0);
+        CleanupHandles();
+    }
+}
+
+void Process::ReadOutput()
+{
     if (childProcOut[READ])
     {
         output = "";
         CHAR readBuf[BUF_SIZE];
         DWORD bytesRead = 0;
-        BOOL readResult = FALSE;
-
-        readResult = ReadFile(childProcOut[READ], readBuf, BUF_SIZE, &bytesRead, nullptr);
+        BOOL readResult = ReadFile(childProcOut[READ], readBuf, BUF_SIZE, &bytesRead, nullptr);
         while (bytesRead > 0 && readResult != FALSE)
         {
             output.append(readBuf, bytesRead);
             readResult = ReadFile(childProcOut[READ], readBuf, BUF_SIZE, &bytesRead, nullptr);
         }
     }
+}
 
-    ::WaitForSingleObject((HANDLE)pid, INFINITE);
-
-    DWORD code;
+void Process::ReadExitCode(int32 status)
+{
+    DWORD code = 0;
     BOOL res = ::GetExitCodeProcess((HANDLE)pid, &code);
     exitCode = static_cast<int>(code);
     if (res == FALSE)
     {
         exitCode = -1;
-        Logger::Error("[Process::Wait] Can't get exit code for process %s, error %d", executablePath.GetAbsolutePathname().c_str(), ::GetLastError());
-    }
-
-    CleanupHandles();
-}
-
-#if defined(UNICODE)
-
-void Process::ConvertToWideChar(const String& str, wchar_t** outStr, size_t* outLength)
-{
-    *outStr = nullptr;
-    *outLength = 0;
-
-    *outLength = mbstowcs(nullptr, str.c_str(), str.size()) + 1;
-
-    if (*outLength > 0)
-    {
-        *outStr = new wchar_t[*outLength];
-        memset(*outStr, 0, sizeof(wchar_t) * (*outLength));
-        mbstowcs(*outStr, str.c_str(), str.size());
+        Logger::Error("[%s] Can't get exit code for process %s, error %d", __FUNCTION__, executablePath.GetStringValue().c_str(), ::GetLastError());
     }
 }
+    
+    
 
-#endif
-
-#else
+#else //now mac
 
 bool Process::Run(bool showWindow)
 {
+    bool running = IsRunning();
     DVASSERT(!running);
 
     if (running)
         return false;
 
-    running = false;
-    bool result = false;
-
     if (pipe(pipes) != 0)
     {
-        return result;
+        return false;
     }
 
+    bool result = false;
     Vector<char*> execArgs;
 
     String execPath = executablePath.GetAbsolutePathname();
@@ -337,7 +369,7 @@ bool Process::Run(bool showWindow)
     case -1: //error
     {
         result = false;
-        Logger::Error("[Process::Run] Failed to start process %s", executablePath.GetAbsolutePathname().c_str());
+        Logger::Error("[%s] Failed to start process %s", __FUNCTION__, executablePath.GetStringValue().c_str());
         break;
     }
 
@@ -346,8 +378,8 @@ bool Process::Run(bool showWindow)
         close(pipes[WRITE]);
         pipes[WRITE] = -1;
 
-        running = true;
         result = true;
+        break;
     }
     };
 
@@ -356,12 +388,11 @@ bool Process::Run(bool showWindow)
 
 void Process::Wait()
 {
+    bool running = IsRunning();
     DVASSERT(running);
-    DVASSERT(pid != -1);
 
-    if (!running || pid == -1)
+    if (!running)
         return;
-    running = false;
 
     int status = 0;
     int64 pd = -1;
@@ -371,16 +402,33 @@ void Process::Wait()
         pd = wait(&status);
     } while (pd != pid);
 
-    exitCode = WEXITSTATUS(status);
-    if (WIFEXITED(status) == 0)
-    {
-        if (exitCode == 0)
-        {
-            exitCode = -1; //to say external code about problems
-        }
-        Logger::Error("[Process::Wait] The process %s exited abnormally! (exitcode=%d, errno=%d)", executablePath.GetAbsolutePathname().c_str(), exitCode, errno);
-    }
+    ReadExitCode(status);
+    ReadOutput();
+    CleanupHandles();
+}
 
+bool Process::IsRunning() const
+{
+    int status = 0;
+    int64 result = waitpid(pid, &status, WNOHANG);
+    return (0 == result);
+}
+
+void Process::RetriveFinalStatus()
+{
+    if (IsRunning() == false)
+    {
+        int status = 0;
+        int64 pd = wait(&status);
+
+        ReadExitCode(status);
+        ReadOutput();
+        CleanupHandles();
+    }
+}
+
+void Process::ReadOutput()
+{
     output = "";
     char readBuf[BUF_SIZE];
     int bytesRead = read(pipes[READ], readBuf, BUF_SIZE);
@@ -389,8 +437,19 @@ void Process::Wait()
         output.append(readBuf, bytesRead);
         bytesRead = read(pipes[READ], readBuf, BUF_SIZE);
     }
+}
 
-    CleanupHandles();
+void Process::ReadExitCode(int32 status)
+{
+    exitCode = WEXITSTATUS(status);
+    if (WIFEXITED(status) == 0)
+    {
+        if (exitCode == 0)
+        {
+            exitCode = -1; //to say external code about problems
+        }
+        Logger::Error("[%s] The process %s exited abnormally! (exitcode=%d, errno=%d)", __FUNCTION__, executablePath.GetStringValue().c_str(), exitCode, errno);
+    }
 }
 
 void Process::CleanupHandles()
@@ -405,7 +464,7 @@ void Process::CleanupHandles()
     }
 }
 
-#endif
+#endif //
 };
 
-#endif
+#endif //mac & win
