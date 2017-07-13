@@ -22,7 +22,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(MotionComponent)
 
 MotionComponent::~MotionComponent()
 {
-    SafeDelete(animationClip);
+    SafeRelease(animationClip);
 }
 
 const FilePath& MotionComponent::GetAnimationPath() const
@@ -34,12 +34,10 @@ void MotionComponent::SetAnimationPath(const FilePath& path)
 {
     animationPath = path;
 
-    SafeDelete(animationClip);
+    SafeRelease(animationClip);
     if (!animationPath.IsEmpty())
     {
-        animationClip = new AnimationClip();
-        if (!animationClip->Load(animationPath))
-            SafeDelete(animationClip);
+        animationClip = AnimationClip::Load(animationPath);
     }
 
     GlobalEventSystem::Instance()->Event(this, EventSystem::MOTION_CHANGED);
