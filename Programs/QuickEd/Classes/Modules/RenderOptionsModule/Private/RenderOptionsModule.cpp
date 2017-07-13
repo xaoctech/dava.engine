@@ -5,14 +5,11 @@
 #include <Render/Renderer.h>
 
 #include <TArc/Controls/CheckBox.h>
-#include <TArc/Controls/ReflectedButton.h>
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/DataProcessing/DataNode.h>
 #include <TArc/Utils/ModuleCollection.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/UI.h>
-
-#include <QtTools/WidgetHelpers/SharedIcon.h>
 
 #include <QAction>
 #include <QDialog>
@@ -44,36 +41,19 @@ public:
     {
     }
 
-    String GetTitle() const
+    DAVA::String GetTitle() const
     {
-        using namespace DAVA;
-        RenderOptions* options = Renderer::GetOptions();
-        if (options)
-        {
-            return String(options->GetOptionName(option).c_str());
-        }
-        return String();
+        return DAVA::String(DAVA::Renderer::GetOptions()->GetOptionName(option).c_str());
     }
 
     bool GetEnabled() const
     {
-        using namespace DAVA;
-        RenderOptions* options = Renderer::GetOptions();
-        if (options)
-        {
-            return options->IsOptionEnabled(option);
-        }
-        return false;
+        return DAVA::Renderer::GetOptions()->IsOptionEnabled(option);
     }
 
     void SetEnabled(bool value)
     {
-        using namespace DAVA;
-        RenderOptions* options = Renderer::GetOptions();
-        if (options)
-        {
-            options->SetOption(option, value);
-        }
+        DAVA::Renderer::GetOptions()->SetOption(option, value);
     }
 
 private:
