@@ -10,6 +10,8 @@
 
 //comboBox can be in invalid state so give it DAVA::Any as value
 
+class QIntValidator;
+
 class ScaleComboBox final : public DAVA::TArc::ControlProxyImpl<QComboBox>
 {
 public:
@@ -36,8 +38,8 @@ private:
 
     void CreateItems(const DAVA::Reflection& fieldEnumerator);
     void SetCurrentValue(const DAVA::Any& value);
-    void UpdateValidator();
 
     bool updateControlProceed = false;
+    QIntValidator* validator = nullptr;
     DAVA::TArc::QtConnections connections;
 };

@@ -8,6 +8,7 @@
 #include <Reflection/ReflectedMeta.h>
 
 #include <QLineEdit>
+#include <QIntValidator>
 #include <QSignalBlocker>
 #include <QVariant>
 
@@ -20,6 +21,8 @@ ScaleComboBox::ScaleComboBox(const Params& params, DAVA::TArc::ContextAccessor* 
 void ScaleComboBox::SetupControl()
 {
     setEditable(true);
+    validator = new QIntValidator(this);
+    setValidator(validator);
 
     connections.AddConnection(this, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), DAVA::MakeFunction(this, &ScaleComboBox::CurrentIndexChanged));
     connections.AddConnection(lineEdit(), &QLineEdit::editingFinished, DAVA::MakeFunction(this, &ScaleComboBox::EditingFinished));
@@ -50,7 +53,12 @@ void ScaleComboBox::UpdateControl(const DAVA::TArc::ControlDescriptor& changedFi
     Any value = model.GetField(changedFields.GetName(Fields::Value)).GetValue();
     SetCurrentValue(value);
 
-    UpdateValidator();
+    if (count() > 0)
+    {
+        float32 first = itemData(0).value<float32>();
+        float32 last = itemData(count() - 1).value<float32>();
+        validator->setRange(first * 100, last * 100);
+    }
 }
 
 void ScaleComboBox::CreateItems(const DAVA::Reflection& fieldEnumerator)
@@ -129,16 +137,4 @@ DAVA::float32 ScaleComboBox::StringToValue(const QString& text) const
     float value = curTextValue.toFloat(&ok);
     DVASSERT(ok, "can not parse text to float");
     return value / 100.0f;
-}
-
-void ScaleComboBox::UpdateValidator()
-{
-    using namespace DAVA;
-    if (count() > 0)
-    {
-        float32 first = itemData(0).value<float32>();
-        float32 last = itemData(count() - 1).value<float32>();
-        delete validator();
-        setValidator(new QIntValidator(first * 100, last * 100));
-    }
 }
