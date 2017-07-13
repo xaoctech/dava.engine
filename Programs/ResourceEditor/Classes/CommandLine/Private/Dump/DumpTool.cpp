@@ -37,13 +37,13 @@ bool DumpTool::PostInitInternal()
     }
     inFolder.MakeDirectoryPathname();
 
-    dataSourceFolder = ProjectManagerData::GetDataSourcePath(inFolder);
-    if (dataSourceFolder.IsEmpty())
+    resourceFolder = ProjectManagerData::GetDataSourcePath(inFolder);
+    if (resourceFolder.IsEmpty())
     {
-        dataSourceFolder = ProjectManagerData::GetDataPath(inFolder);
-        if (dataSourceFolder.IsEmpty())
+        resourceFolder = ProjectManagerData::GetDataPath(inFolder);
+        if (resourceFolder.IsEmpty())
         {
-            DAVA::Logger::Error("DataSource of Data folder was not found");
+            DAVA::Logger::Error("DataSource or Data folder was not found");
             return false;
         }
     }
@@ -133,7 +133,7 @@ DAVA::TArc::ConsoleModule::eFrameResult DumpTool::OnFrameInternal()
 {
     if (commandAction == ACTION_DUMP_LINKS)
     {
-        DAVA::FilePath::AddResourcesFolder(dataSourceFolder);
+        DAVA::FilePath::AddResourcesFolder(resourceFolder);
         DAVA::Set<DAVA::FilePath> links = SceneDumper::DumpLinks(inFolder + filename, mode, compressedGPUs);
 
         DAVA::FileSystem::Instance()->CreateDirectory(outFile.GetDirectory(), true);
@@ -149,7 +149,7 @@ DAVA::TArc::ConsoleModule::eFrameResult DumpTool::OnFrameInternal()
             }
         }
 
-        DAVA::FilePath::RemoveResourcesFolder(dataSourceFolder);
+        DAVA::FilePath::RemoveResourcesFolder(resourceFolder);
     }
 
     return DAVA::TArc::ConsoleModule::eFrameResult::FINISHED;
