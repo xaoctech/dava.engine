@@ -143,6 +143,8 @@ public:
     const Matrix4& GetLocalTransform();
     void SetLocalTransform(const Matrix4& newMatrix);
     const Matrix4& GetWorldTransform() const;
+    void SetWorldTransform(const Matrix4& newMatrix);
+
     Matrix4 AccamulateLocalTransform(Entity* fromParent);
     Matrix4 AccamulateTransformUptoFarParent(Entity* farParent);
     /*

@@ -12,6 +12,7 @@
 #include "TArc/Utils/Private/CrashDumpHandler.h"
 #include "TArc/Utils/QtMessageHandler.h"
 #include "TArc/DataProcessing/DataWrappersProcessor.h"
+#include "TArc/PluginsManager/TArcPluginsManager.h"
 
 #include "QtTools/Utils/QtDelayedExecutor.h"
 
@@ -198,6 +199,26 @@ public:
         return nullptr;
     }
 
+    void InitPluginsManager(const String& applicationName, const String& pluginsFolder)
+    {
+        pluginsManager.reset(new TArcPluginManager(applicationName, pluginsFolder));
+    }
+
+    template <typename T>
+    void LoadPluginModules()
+    {
+        if (pluginsManager == nullptr)
+        {
+            return;
+        }
+
+        Vector<TArcPlugin*> plugins = pluginsManager->GetPluginsWithBaseType(Type::Instance<T*>());
+        for (TArcPlugin* plugin : plugins)
+        {
+            AddModule(plugin->GetModuleType()->CreateObject(ReflectedType::CreatePolicy::ByPointer).Cast<T*>(nullptr));
+        }
+    }
+
 protected:
     virtual void BeforeContextSwitch(DataContext* currentContext, DataContext* newOne)
     {
@@ -241,6 +262,7 @@ protected:
 protected:
     Engine& engine;
     Core* core;
+    std::unique_ptr<TArcPluginManager> pluginsManager;
 
     DataContext* globalContext = nullptr;
     Vector<DataContext*> contexts;
@@ -332,6 +354,7 @@ public:
         Texture::SetGPULoadingOrder({ GPU_ORIGIN });
 
         ActivateContextImpl(globalContext);
+        LoadPluginModules<ConsoleModule>();
         for (std::unique_ptr<ConsoleModule>& module : modules)
         {
             module->Init(this);
@@ -492,6 +515,8 @@ public:
         PlatformApi::Qt::GetApplication()->setWindowIcon(QIcon(":/icons/appIcon.ico"));
         uiManager.reset(new UIManager(this, propertiesHolder->CreateSubHolder("UIManager")));
         DVASSERT(controllerModule != nullptr, "Controller Module hasn't been registered");
+
+        LoadPluginModules<ClientModule>();
         for (std::unique_ptr<ClientModule>& module : modules)
         {
             module->Init(this, std::make_unique<UIProxy>(module.get(), uiManager.get()));
@@ -928,6 +953,11 @@ void Core::SetInvokeListener(OperationInvoker* proxyInvoker)
     GuiImpl* guiImpl = dynamic_cast<GuiImpl*>(impl.get());
     DVASSERT(guiImpl != nullptr);
     guiImpl->SetInvokeListener(proxyInvoker);
+}
+
+void Core::InitPluginsManager(const String& applicationName, const String& pluginsFolder)
+{
+    impl->InitPluginsManager(applicationName, pluginsFolder);
 }
 
 } // namespace TArc

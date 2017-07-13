@@ -5,6 +5,7 @@ set                   ( CMAKE_CONFIGURATION_TYPES "Debug;Release;RelWithDebinfo"
 project               ( ResourceEditor )
 
 get_filename_component( FRAMEWORK_PATH "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOLUTE)
+get_filename_component( RE_PATH "${CMAKE_CURRENT_LIST_DIR}" ABSOLUTE)
 
 set                   ( WARNINGS_AS_ERRORS true )
 set                   ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${FRAMEWORK_PATH}/Sources/CMake/Modules/" )
@@ -19,22 +20,24 @@ if (WIN32 AND DEPLOY AND NOT DAVA_MEGASOLUTION )
     set( DEPLOY_BEAST_DIR ${DEPLOY_DIR} )
 endif()
 
+list(APPEND DAVA_COMPONENTS "PhysicsModule")
+list(APPEND DAVA_COMPONENTS "PhysicsDebugModule")
+list(APPEND DAVA_COMPONENTS DAVA_PLATFORM_QT)
+list(APPEND DAVA_COMPONENTS DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME)
+list(APPEND DAVA_COMPONENTS DAVA_DISABLE_AUTOTESTS)
+list(APPEND DAVA_COMPONENTS DAVA_USE_RENDERSTATS)
+
 find_package( DavaTools REQUIRED )
-
-
 find_package( QT5 REQUIRED )
 find_package( GMock REQUIRED )
 find_package( QtHelpers REQUIRED )
 
-find_package( DavaFramework REQUIRED COMPONENTS "Sound"
-                                                DAVA_PLATFORM_QT 
-                                                DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME 
-                                                DAVA_DISABLE_AUTOTESTS 
-                                                DAVA_USE_RENDERSTATS )
+find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS})
 
 find_package( QtTools REQUIRED )
 find_package( TArc REQUIRED )
 find_package( RemoteTool REQUIRED )
+find_package( EditorPhysics REQUIRED )
 
 #
 
@@ -122,7 +125,7 @@ endif()
 set ( Generated          ${UI_APP_HDRS} ${RCC_APP_SRCS} )
 
 define_source ( SOURCE "Classes" ${BEAST_WRAPPER} ${DAVA_SPEEDTREE_ROOT_DIR}/Sources "DataQt"
-                GROUP_SOURCE Generated )
+                GROUP_SOURCE Generated IGNORE_ITEMS)
 
 set( MIX_APP_DATA         "Data = ${DAVA_ROOT_DIR}/Programs/Data" 
                           "Data/${PROJECT_NAME} = ${CMAKE_CURRENT_LIST_DIR}/Data" )
@@ -167,3 +170,5 @@ if (DEPLOY OR WIN32 )
             "${BEAST_DIR}"
         )
 endif()
+
+dump_module_log()

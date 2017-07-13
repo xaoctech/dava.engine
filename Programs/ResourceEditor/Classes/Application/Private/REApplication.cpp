@@ -50,6 +50,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QCryptographicHash>
+#include "FileSystem/FileSystem.h"
 
 namespace REApplicationDetail
 {
@@ -152,6 +153,12 @@ void REApplication::Init(const DAVA::EngineContext* engineContext)
     {
         DAVA::TArc::TestClass::coreChanged.Connect(&REGlobal::InitTArcCore);
     }
+}
+
+void REApplication::Init(DAVA::TArc::Core* tarcCore)
+{
+    tarcCore->InitPluginsManager("ResourceEditor", DAVA::GetEngineContext()->fileSystem->GetPluginDirectory().GetAbsolutePathname());
+    BaseApplication::Init(tarcCore);
 }
 
 void REApplication::Cleanup()

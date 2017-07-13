@@ -23,6 +23,11 @@ struct PluginDescriptor
 
 Vector<FilePath> PluginManager::GetPlugins(const FilePath& folder, eFindPluginMode mode) const
 {
+    return LookupPlugins(folder, mode);
+}
+
+Vector<DAVA::FilePath> PluginManager::LookupPlugins(const FilePath& folder, eFindPluginMode mode)
+{
 #ifdef __DAVAENGINE_DEBUG__
     bool debugMode = true;
 #else
@@ -41,7 +46,7 @@ Vector<FilePath> PluginManager::GetPlugins(const FilePath& folder, eFindPluginMo
 
     Vector<FilePath> pluginsList;
 
-    FileSystem* fs = rootEngine->GetContext()->fileSystem;
+    FileSystem* fs = GetEngineContext()->fileSystem;
     Vector<FilePath> cacheDirContent = fs->EnumerateFilesInDirectory(folder, false);
 
     for (auto& path : cacheDirContent)

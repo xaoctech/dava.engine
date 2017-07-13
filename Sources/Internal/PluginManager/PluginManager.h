@@ -38,6 +38,7 @@ public:
      Returns a list of plugins in the specified mode.
     */
     Vector<FilePath> GetPlugins(const FilePath& folder, eFindPluginMode mode) const;
+    static Vector<FilePath> LookupPlugins(const FilePath& folder, eFindPluginMode mode);
 
     /**
      Load plugin located on the path pluginPath and returns descriptor to it
