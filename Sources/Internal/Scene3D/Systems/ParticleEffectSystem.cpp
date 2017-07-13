@@ -781,7 +781,7 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
                 {
                     offset = data.prevBaseDelta - ololo;
                 }
-                data.uvOffset -= delta - firstDelta;// -offset;
+                data.uvOffset -= delta - firstDelta; // -offset;
             }
         }
         data.prevBaseDelta = (data.baseNode.position - data.stripeNodes.front().position).Length();
