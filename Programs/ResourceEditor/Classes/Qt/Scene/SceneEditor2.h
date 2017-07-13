@@ -216,6 +216,8 @@ private:
     private:
         SceneEditor2* editor = nullptr;
     };
+
+    DAVA_VIRTUAL_REFLECTION(SceneEditor2, DAVA::Scene);
 };
 
 template <typename T>
