@@ -10,6 +10,8 @@
 
 #include "Modules/DocumentsModule/DocumentData.h"
 
+#include "UISystems/RelayoutSignallerSystem.h"
+
 #include <TArc/Core/FieldBinder.h>
 
 #include <Render/2D/Sprite.h>
