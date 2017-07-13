@@ -2,6 +2,7 @@
 #include "Scene/SceneEditor2.h"
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/Application/REGlobal.h"
+#include "Classes/Qt/Scene/System/BeastSystem.h"
 #include "Scene/System/LandscapeEditorDrawSystem/LandscapeProxy.h"
 #include "Deprecated/EditorConfig.h"
 #include "Deprecated/SceneValidator.h"
@@ -174,7 +175,7 @@ void DebugDrawSystem::DrawLightNode(DAVA::Entity* entity, bool isSelected)
             if (value != nullptr && value->GetType() == DAVA::VariantType::TYPE_FLOAT && isSelected)
             {
                 DAVA::float32 distance = value->AsFloat();
-                if (distance < 1000.0f)
+                if (distance < BeastSystem::DEFAULT_FALLOFFCUTOFF_VALUE)
                 {
                     uint32 segmentCount = 32;
                     drawer->DrawCircle(worldCenter, DAVA::Vector3(1.0f, 0.0f, 0.0f), distance, segmentCount, DAVA::Color(1.0f, 1.0f, 0.0f, 1.0f), RenderHelper::DRAW_WIRE_DEPTH);
