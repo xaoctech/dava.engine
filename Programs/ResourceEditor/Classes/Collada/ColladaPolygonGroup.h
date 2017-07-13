@@ -57,7 +57,7 @@ struct ColladaVertexWeight
 class ColladaPolygonGroup
 {
 public:
-    ColladaPolygonGroup(ColladaMesh* _mesh, FCDGeometryPolygons* _polygons, ColladaVertexWeight* wertexWeightArray);
+    ColladaPolygonGroup(ColladaMesh* _mesh, FCDGeometryPolygons* _polygons, ColladaVertexWeight* wertexWeightArray, uint32 maxVertexInfluence);
     ~ColladaPolygonGroup();
 
     void Render(ColladaMaterial* material);
@@ -87,6 +87,8 @@ public:
     std::vector<ColladaVertex> skinVerteces;
 
     ColladaMesh* parentMesh;
+
+    uint32 maxVertexInfluenceCount;
 
 protected:
     bool skinned;

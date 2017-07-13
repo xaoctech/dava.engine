@@ -39,7 +39,7 @@ ColladaSkinnedMesh::ColladaSkinnedMesh(FCDController* colladaController)
         printf("- controller: %s influence: %ld influence-entity: %s\n", colladaController->GetDaeId().c_str(), skinController->GetInfluenceCount(), skinController->GetTarget()->GetDaeId().c_str());
 
         vertexWeights.resize(skinController->GetInfluenceCount());
-        int maxJoints = 0;
+        int32 maxJoints = 0;
         for (int index = 0; index < (int)skinController->GetInfluenceCount(); ++index)
         {
             FCDSkinControllerVertex* vert = skinController->GetVertexInfluence(index);
@@ -57,7 +57,7 @@ ColladaSkinnedMesh::ColladaSkinnedMesh(FCDController* colladaController)
         }
         printf("- max joints: %d\n", maxJoints);
 
-        mesh = new ColladaMesh(colladaController->GetBaseGeometry()->GetMesh(), &(vertexWeights.front()));
+        mesh = new ColladaMesh(colladaController->GetBaseGeometry()->GetMesh(), &(vertexWeights.front()), uint32(maxJoints));
     }
 }
 

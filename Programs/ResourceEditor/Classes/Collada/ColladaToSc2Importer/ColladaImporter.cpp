@@ -60,7 +60,14 @@ RenderObject* ColladaImporter::GetMeshFromCollada(ColladaMeshInstance* mesh, con
         if (isSkinnedMesh)
         {
             davaPolygon->ApplyMatrix(colladaSkinnedMesh->bindShapeMatrix);
-            davaMaterial->AddFlag(NMaterialFlagName::FLAG_SKINNING_SOFT, 4);
+
+            DVASSERT(polygonGroupInstance->polyGroup->maxVertexInfluenceCount > 0);
+            uint32 maxJointWeights = polygonGroupInstance->polyGroup->maxVertexInfluenceCount;
+
+            if (davaPolygon->GetFormat() & EVF_JOINTINDEX_HARD)
+                davaMaterial->AddFlag(NMaterialFlagName::FLAG_SKINNING_HARD, 1);
+            else
+                davaMaterial->AddFlag(NMaterialFlagName::FLAG_SKINNING_SOFT, maxJointWeights);
         }
 
         davaBatch->SetPolygonGroup(davaPolygon);
@@ -227,18 +234,30 @@ void ColladaImporter::ImportSkeleton(ColladaSceneNode* colladaNode, Entity* node
         float32 jointWeight = 0.f;
         Vector3 position;
         int32 vxCount = polygonGroup->GetVertexCount();
+        int32 vertexFormat = polygonGroup->GetFormat();
         for (int32 v = 0; v < vxCount; ++v)
         {
-            for (int32 j = 0; j < 4; ++j)
+            if (vertexFormat & (EVF_JOINTINDEX | EVF_JOINTWEIGHT)) //soft-skinning
             {
-                polygonGroup->GetJointWeight(v, j, jointWeight);
-                if (jointWeight > EPSILON)
+                for (int32 j = 0; j < 4; ++j)
                 {
-                    polygonGroup->GetCoord(v, position);
-                    polygonGroup->GetJointIndex(v, j, jointIndex);
+                    polygonGroup->GetJointWeight(v, j, jointWeight);
+                    if (jointWeight > EPSILON)
+                    {
+                        polygonGroup->GetCoord(v, position);
+                        polygonGroup->GetJointIndex(v, j, jointIndex);
 
-                    joints[jointIndex].bbox.AddPoint(position * joints[jointIndex].bindTransformInv);
+                        joints[jointIndex].bbox.AddPoint(position * joints[jointIndex].bindTransformInv);
+                    }
                 }
+            }
+            else
+            {
+                DVASSERT(vertexFormat & EVF_JOINTINDEX_HARD);
+
+                polygonGroup->GetCoord(v, position);
+                polygonGroup->GetJointIndexHard(v, jointIndex);
+                joints[jointIndex].bbox.AddPoint(position * joints[jointIndex].bindTransformInv);
             }
         }
     }

@@ -48,7 +48,7 @@ eColladaErrorCodes ColladaDocument::Open(const char* filename)
         if (geometry->IsMesh())
         {
             FCDGeometryMesh* geometryMesh = geometry->GetMesh();
-            colladaScene->colladaMeshes.push_back(new ColladaMesh(geometryMesh, 0));
+            colladaScene->colladaMeshes.push_back(new ColladaMesh(geometryMesh, 0, 0));
         }
     }
 
