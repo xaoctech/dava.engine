@@ -57,7 +57,8 @@ DAVA::Vector2 CentralWidgetData::GetGuidesSize() const
 DAVA::Vector2 CentralWidgetData::GetGuidesRelativePos() const
 {
     using namespace DAVA;
-
-    return Vector2(static_cast<float32>(hRulerWidget->pos().x()),
-                   static_cast<float32>(vRulerWidget->pos().y()));
+    QPoint hRulerPos = hRulerWidget->pos();
+    QPoint vRulerPos = vRulerWidget->pos();
+    return Vector2(static_cast<float32>(hRulerPos.x()),
+                   static_cast<float32>(vRulerPos.y()));
 }

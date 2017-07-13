@@ -830,7 +830,16 @@ void EditorTransformSystem::ResizeControl(Vector2 delta, bool withPivot, bool ra
 
 Vector2 EditorTransformSystem::AdjustResizeToMinimumSize(Vector2 deltaSize)
 {
-    const Vector2 scaledMinimum(GetMinimumSize() / controlGeometricData.scale);
+    Vector2 scaledMinimum(GetMinimumSize() / controlGeometricData.scale);
+    for (int32 axisInt = Vector2::AXIS_X; axisInt < Vector2::AXIS_COUNT; ++axisInt)
+    {
+        Vector2::eAxis axis = static_cast<Vector2::eAxis>(axisInt);
+        if (scaledMinimum[axis] < 1.0f)
+        {
+            scaledMinimum[axis] = 1.0f;
+        }
+    }
+
     Vector2 origSize = sizeProperty->GetValue().Cast<Vector2>();
 
     Vector2 finalSize(origSize + deltaSize);

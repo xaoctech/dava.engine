@@ -11,11 +11,6 @@
 #include <QSignalBlocker>
 #include <QVariant>
 
-namespace ScaleComboBoxDetails
-{
-const QString postfix(" %");
-}
-
 ScaleComboBox::ScaleComboBox(const Params& params, DAVA::TArc::ContextAccessor* accessor, DAVA::Reflection model, QWidget* parent)
     : ControlProxyImpl<QComboBox>(params, DAVA::TArc::ControlDescriptor(params.fields), accessor, model, parent)
 {
@@ -27,12 +22,11 @@ void ScaleComboBox::SetupControl()
     setEditable(true);
 
     connections.AddConnection(this, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), DAVA::MakeFunction(this, &ScaleComboBox::CurrentIndexChanged));
-    connections.AddConnection(this->lineEdit(), &QLineEdit::editingFinished, DAVA::MakeFunction(this, &ScaleComboBox::EditingFinished));
+    connections.AddConnection(lineEdit(), &QLineEdit::editingFinished, DAVA::MakeFunction(this, &ScaleComboBox::EditingFinished));
     setSizeAdjustPolicy(QComboBox::AdjustToContents);
 
-    QRegExp regEx("[0-8]?([0-9]|[0-9]){0,2}\\s?\\%?");
-    this->setValidator(new QRegExpValidator(regEx));
-    this->setInsertPolicy(QComboBox::NoInsert);
+    setInsertPolicy(QComboBox::NoInsert);
+    setEnabled(count() > 0);
 }
 
 void ScaleComboBox::UpdateControl(const DAVA::TArc::ControlDescriptor& changedFields)
@@ -45,7 +39,7 @@ void ScaleComboBox::UpdateControl(const DAVA::TArc::ControlDescriptor& changedFi
 
     if (changedFields.IsChanged(Fields::Enabled))
     {
-        setEnabled(this->template GetFieldValue<bool>(Fields::Enabled, false));
+        setEnabled(GetFieldValue<bool>(Fields::Enabled, false));
     }
 
     if (changedFields.IsChanged(Fields::Enumerator))
@@ -55,6 +49,8 @@ void ScaleComboBox::UpdateControl(const DAVA::TArc::ControlDescriptor& changedFi
 
     Any value = model.GetField(changedFields.GetName(Fields::Value)).GetValue();
     SetCurrentValue(value);
+
+    UpdateValidator();
 }
 
 void ScaleComboBox::CreateItems(const DAVA::Reflection& fieldEnumerator)
@@ -69,12 +65,10 @@ void ScaleComboBox::CreateItems(const DAVA::Reflection& fieldEnumerator)
     {
         Any fieldDescr = field.ref.GetValue();
 
-        QVariant dataValue;
-        dataValue.setValue(field.key);
         DVASSERT(fieldDescr.CanCast<float32>());
         float32 value = fieldDescr.Cast<float32>();
 
-        addItem(ValueToString(value), dataValue);
+        addItem(ValueToString(value), value);
     }
 }
 
@@ -86,17 +80,17 @@ void ScaleComboBox::SetCurrentValue(const DAVA::Any& value)
     if (value.CanGet<float32>())
     {
         float32 fltValue = value.Get<float32>();
-        int index = this->findData(QVariant(fltValue));
+        int index = findData(QVariant(fltValue));
         if (index != -1)
         {
-            this->setCurrentIndex(index);
+            setCurrentIndex(index);
         }
 
-        this->lineEdit()->setText(ValueToString(fltValue));
+        lineEdit()->setText(ValueToString(fltValue));
     }
     else
     {
-        this->lineEdit()->setText(QString());
+        lineEdit()->setText(QString());
     }
 }
 
@@ -108,7 +102,7 @@ void ScaleComboBox::CurrentIndexChanged(int newCurrentItem)
         return;
     }
 
-    wrapper.SetFieldValue(GetFieldName(Fields::Value), StringToValue(this->currentText()));
+    wrapper.SetFieldValue(GetFieldName(Fields::Value), StringToValue(currentText()));
 }
 
 void ScaleComboBox::EditingFinished()
@@ -119,21 +113,32 @@ void ScaleComboBox::EditingFinished()
         return;
     }
 
-    wrapper.SetFieldValue(GetFieldName(Fields::Value), StringToValue(this->currentText()));
+    wrapper.SetFieldValue(GetFieldName(Fields::Value), StringToValue(currentText()));
 }
 
 QString ScaleComboBox::ValueToString(DAVA::float32 value) const
 {
-    return QString("%1%2").arg(static_cast<int>(value * 100.0f + 0.5f)).arg(ScaleComboBoxDetails::postfix);
+    return QString("%1").arg(static_cast<int>(value * 100.0f + 0.5f));
 }
 
 DAVA::float32 ScaleComboBox::StringToValue(const QString& text) const
 {
-    QString curTextValue = this->currentText();
-    curTextValue.remove(ScaleComboBoxDetails::postfix);
+    QString curTextValue = currentText();
 
     bool ok;
     float value = curTextValue.toFloat(&ok);
     DVASSERT(ok, "can not parse text to float");
     return value / 100.0f;
+}
+
+void ScaleComboBox::UpdateValidator()
+{
+    using namespace DAVA;
+    if (count() > 0)
+    {
+        float32 first = itemData(0).value<float32>();
+        float32 last = itemData(count() - 1).value<float32>();
+        delete validator();
+        setValidator(new QIntValidator(first * 100, last * 100));
+    }
 }

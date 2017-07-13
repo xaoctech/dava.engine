@@ -94,7 +94,8 @@ DAVA::Vector2 CanvasDataAdapter::GetStartValue() const
         return DAVA::Vector2(0.0f, 0.0f);
     }
 
-    return (GetMovableControlPosition() + canvasData->GetRootPosition() * GetScale()) * -1;
+    DAVA::Vector2 startValue = (GetMovableControlPosition() + canvasData->GetRootPosition() * GetScale()) * -1;
+    return DAVA::Vector2(std::floor(startValue.x), std::floor(startValue.y));
 }
 
 DAVA::Vector2 CanvasDataAdapter::GetLastValue() const
@@ -127,14 +128,15 @@ void CanvasDataAdapter::SetScale(DAVA::float32 scale, const DAVA::Vector2& refer
 
     const Vector<float32>& predefinedScales = canvasData->GetPredefinedScales();
 
+    float32 margin = canvasData->GetMargin();
+    Vector2 position = Vector2(margin, margin) - GetMovableControlPosition();
+
     scale = Clamp(scale, predefinedScales.front(), predefinedScales.back());
     DVASSERT(scale != 0.0f);
     float32 scaleDiff = scale / canvasData->GetScale();
 
     canvasDataWrapper.SetFieldValue(CanvasData::scalePropertyName, scale);
 
-    Vector2 position = canvasData->GetPosition();
-    float32 margin = canvasData->GetMargin();
     //recalculate new position to keep referncePoint on the same visible pos
     Vector2 newPosition = (referencePoint + position - Vector2(margin, margin)) * scaleDiff - referencePoint + Vector2(margin, margin);
     SetPosition(newPosition);
@@ -169,7 +171,8 @@ DAVA::Vector2 CanvasDataAdapter::GetMovableControlPosition() const
             movableControlPosition[axis] = margin - GetPosition()[axis];
         }
     }
-    return movableControlPosition;
+
+    return Vector2(std::floor(movableControlPosition.x), std::floor(movableControlPosition.y));
 }
 
 DAVA::Vector2 CanvasDataAdapter::GetViewSize() const

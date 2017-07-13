@@ -318,7 +318,13 @@ void PreviewWidget::InitUI()
         ui->DeclareToolbar(DAVA::TArc::mainWindowKey, toolBarScalePlacement, toolbarName);
 
         QAction* action = new QAction(nullptr);
-        AttachWidgetToAction(action, scaleCombo->ToWidgetCast());
+        QWidget* container = new QWidget();
+        QHBoxLayout* layout = new QHBoxLayout(container);
+        layout->addWidget(new QLabel(tr("Scale")));
+        layout->addWidget(scaleCombo->ToWidgetCast());
+        layout->addWidget(new QLabel(tr("%")));
+
+        AttachWidgetToAction(action, container);
 
         ActionPlacementInfo placementInfo(CreateToolbarPoint(toolbarName));
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);

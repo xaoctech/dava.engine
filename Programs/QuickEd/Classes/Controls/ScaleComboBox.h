@@ -36,6 +36,7 @@ private:
 
     void CreateItems(const DAVA::Reflection& fieldEnumerator);
     void SetCurrentValue(const DAVA::Any& value);
+    void UpdateValidator();
 
     bool updateControlProceed = false;
     DAVA::TArc::QtConnections connections;
