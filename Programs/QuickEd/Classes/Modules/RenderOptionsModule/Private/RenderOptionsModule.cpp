@@ -1,9 +1,10 @@
 #include "Modules/RenderOptionsModule/RenderOptionsModule.h"
 #include "Modules/RenderOptionsModule/Private/OptionWrapper.h"
+#include "Modules/RenderOptionsModule/Private/RenderOptionsData.h"
 
 #include <Engine/EngineContext.h>
-#include <Render/Renderer.h>
 #include <Render/RenderOptions.h>
+#include <Render/Renderer.h>
 
 #include <TArc/Controls/CheckBox.h>
 #include <TArc/Controls/QtBoxLayouts.h>
@@ -19,6 +20,8 @@
 #include <QDialog>
 #include <QScrollArea>
 #include <QWidget>
+
+const QString RenderOptionsModule::renderOptionsMenuItemName = QString("Render Options");
 
 void RenderOptionsModule::OnContextCreated(DAVA::TArc::DataContext* context)
 {
@@ -36,32 +39,31 @@ void RenderOptionsModule::PostInit()
     ContextAccessor* accessor = GetAccessor();
     UI* ui = GetUI();
 
-    // Toolbar
+    // Data node
 
     {
-        QWidget* w = new QWidget();
-        QtHBoxLayout* layout = new QtHBoxLayout(w);
-        layout->setMargin(0);
-        layout->setSpacing(4);
+        std::unique_ptr<RenderOptionsData> data(new RenderOptionsData());
+        DataContext* globalContext = accessor->GetGlobalContext();
+        globalContext->CreateData(std::move(data));
+    }
 
-        {
-            ReflectedButton::Params params(accessor, ui, DAVA::TArc::mainWindowKey);
-            params.fields[ReflectedButton::Fields::Enabled] = "isEnabled";
-            params.fields[ReflectedButton::Fields::Clicked] = "showRenderOptionsDialog";
-            params.fields[ReflectedButton::Fields::Tooltip] = "toolbarButtonHint";
-            params.fields[ReflectedButton::Fields::Icon] = "toolbarButtonIcon";
-            layout->AddControl(new ReflectedButton(params, accessor, DAVA::Reflection::Create(DAVA::ReflectedObject(this)), w));
-        }
+    // Menu item
 
-        QString toolbarName = "Render Options Toolbar";
-        ActionPlacementInfo toolbarTogglePlacement(CreateMenuPoint(QList<QString>() << "View"
-                                                                                    << "Toolbars"));
-        ui->DeclareToolbar(DAVA::TArc::mainWindowKey, toolbarTogglePlacement, toolbarName);
+    {
+        QtAction* action = new QtAction(accessor, QIcon(":/Icons/render_options.png"), renderOptionsMenuItemName);
 
-        QAction* action = new QAction(nullptr);
-        AttachWidgetToAction(action, w);
+        FieldDescriptor fieldIsEnabled;
+        fieldIsEnabled.type = ReflectedTypeDB::Get<RenderOptionsData>();
+        fieldIsEnabled.fieldName = FastName("isEnabled");
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldIsEnabled, [](const Any& fieldValue) -> Any {
+            return fieldValue.Cast<bool>(false);
+        });
 
-        ActionPlacementInfo placementInfo(CreateToolbarPoint(toolbarName));
+        connections.AddConnection(action, &QAction::triggered, MakeFunction(this, &RenderOptionsModule::ShowRenderOptionsDialog));
+
+        ActionPlacementInfo placementInfo;
+        placementInfo.AddPlacementPoint(CreateMenuPoint(QString("Tools"), { InsertionParams::eInsertionMethod::AfterItem }));
+
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     }
 
@@ -98,38 +100,16 @@ void RenderOptionsModule::PostInit()
     }
 }
 
-const QIcon& RenderOptionsModule::GetToolbarButtonIcon() const
-{
-    return SharedIcon(":/Icons/configure.png");
-}
-
-const DAVA::String& RenderOptionsModule::GetToolbarButtonHint() const
-{
-    static const DAVA::String hint = "Show Render Options dialog";
-    return hint;
-}
-
 void RenderOptionsModule::ShowRenderOptionsDialog()
 {
-    if (optionsDialog)
-    {
-        optionsDialog->exec();
-    }
-}
-
-bool RenderOptionsModule::IsEnabled() const
-{
-    return DAVA::Renderer::IsInitialized();
+    DVASSERT(optionsDialog);
+    optionsDialog->exec();
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(RenderOptionsModule)
 {
     DAVA::ReflectionRegistrator<RenderOptionsModule>::Begin()
     .ConstructorByPointer()
-    .Field("isEnabled", &RenderOptionsModule::IsEnabled, nullptr)
-    .Field("toolbarButtonHint", &RenderOptionsModule::GetToolbarButtonHint, nullptr)
-    .Field("toolbarButtonIcon", &RenderOptionsModule::GetToolbarButtonIcon, nullptr)
-    .Method("showRenderOptionsDialog", &RenderOptionsModule::ShowRenderOptionsDialog)
     .End();
 }
 
