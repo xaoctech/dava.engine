@@ -574,7 +574,9 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                 if (group.layer->stripeTextureTile)
                     tile = group.layer->stripeTextureTile->GetValue(0.0f);
                 float32 startU = currentParticle->life * group.layer->stripeUScrollSpeed;
-                float32 startV = currentParticle->life * group.layer->stripeVScrollSpeed + data.uvOffset * tile;
+                float32 startV = currentParticle->life * group.layer->stripeVScrollSpeed;
+                if (abs(data.uvOffset) > EPSILON)
+                    startV += data.uvOffset * tile + currentParticle->life * group.layer->stripeVScrollSpeed;
 
                 Vector3 uv1 = Vector3(startU, startV, 0.0f);
                 Vector3 uv2 = Vector3(startU + 1.0f, startV, 0.0f);
@@ -608,7 +610,6 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                 UpdateStripeVertex(vertexBufferData, left, uv1, color, group.layer, currentParticle, fresnelToAlpha);
                 UpdateStripeVertex(vertexBufferData, right, uv2, color, group.layer, currentParticle, fresnelToAlpha);
 
-                StripeNode* prevNode = &base; // TODO: unused
                 float32 distance = 0.0f;
 
                 for (auto& node : nodes)
@@ -648,8 +649,9 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                     tile = 1.0f;
                     if (group.layer->stripeTextureTile)
                         tile = group.layer->stripeTextureTile->GetValue(overLifeTime);
-                    float32 v = (distance + data.uvOffset) * tile + currentParticle->life * group.layer->stripeVScrollSpeed;
-                    // v += data.uvOffset * tile + currentParticle->life * group.layer->stripeVScrollSpeed;
+                    float32 v = distance * tile + currentParticle->life * group.layer->stripeVScrollSpeed;
+                    if (abs(data.uvOffset) > EPSILON)
+                        v += data.uvOffset * tile + currentParticle->life * group.layer->stripeVScrollSpeed;
 
                     if (group.layer->usePerspectiveMapping)
                     {
@@ -664,8 +666,6 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
 
                     UpdateStripeVertex(vertexBufferData, left, uv1, color, group.layer, currentParticle, fresnelToAlpha);
                     UpdateStripeVertex(vertexBufferData, right, uv2, color, group.layer, currentParticle, fresnelToAlpha);
-
-                    prevNode = &node;
                 }
                 for (uint32 i = 0; i < static_cast<uint32>(nodes.size()); ++i)
                 {
