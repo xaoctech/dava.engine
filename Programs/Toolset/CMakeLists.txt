@@ -36,10 +36,10 @@ endmacro ()
 
 macro ( generation_ToolList_json TARGET_LIST )
 
-    set( TOOL_LIST_FILE  ${CMAKE_BINARY_DIR}/ToolList.json )
+    set( TOOL_LIST_FILE  ${CMAKE_BINARY_DIR}/Info.json )
 
     file(WRITE  ${TOOL_LIST_FILE} "{\n" )
-    file(APPEND ${TOOL_LIST_FILE} "   \"ToolList\": [\n" )
+    file(APPEND ${TOOL_LIST_FILE} "   \"Applications\": [\n" )
 
     set( TARGET_LIST "${TARGET_LIST}")
     list( LENGTH TARGET_LIST TARGET_LIST_COUNT )
@@ -47,11 +47,12 @@ macro ( generation_ToolList_json TARGET_LIST )
 
     foreach ( index RANGE ${TARGET_LIST_COUNT} )
         list ( GET TARGET_LIST ${index} ITEM )
-        file( APPEND ${TOOL_LIST_FILE} "       \"${ITEM}\"" )
+        file( APPEND ${TOOL_LIST_FILE} "      {\n" )
+        file( APPEND ${TOOL_LIST_FILE} "          \"name\": \"${ITEM}\"\n" )
         if (${index} EQUAL ${TARGET_LIST_COUNT})
-            file( APPEND ${TOOL_LIST_FILE} "\n" )
+            file( APPEND ${TOOL_LIST_FILE} "      }\n" )
         else()
-            file( APPEND ${TOOL_LIST_FILE} ",\n" )        
+            file( APPEND ${TOOL_LIST_FILE} "      },\n" )
         endif()
     endforeach()
 
