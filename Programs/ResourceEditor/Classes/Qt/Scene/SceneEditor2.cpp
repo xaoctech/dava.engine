@@ -36,6 +36,7 @@
 #include <Scene3D/Systems/Controller/SnapToLandscapeControllerSystem.h>
 #include <Render/Highlevel/RenderBatchArray.h>
 #include <Render/Highlevel/RenderPass.h>
+#include <Reflection/ReflectionRegistrator.h>
 #include <Command/Command.h>
 
 #include <QShortcut>
@@ -973,4 +974,10 @@ void UnlockTransform(SceneEditor2* scene)
     {
         scene->modifSystem->LockTransform(Selection::GetSelection(), false);
     }
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(SceneEditor2)
+{
+    DAVA::ReflectionRegistrator<SceneEditor2>::Begin()
+    .End();
 }

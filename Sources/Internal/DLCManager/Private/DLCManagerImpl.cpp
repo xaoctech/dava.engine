@@ -1346,6 +1346,23 @@ DLCManager::Progress DLCManagerImpl::GetProgress() const
     return progress;
 }
 
+DLCManager::Info DLCManager::GetInfo() const
+{
+    return Info{};
+}
+
+DLCManager::Info DLCManagerImpl::GetInfo() const
+{
+    Info info;
+    if (IsInitialized())
+    {
+        info.infoCrc32 = initFooterOnServer.infoCrc32;
+        info.metaCrc32 = initFooterOnServer.metaDataCrc32;
+        info.totalFiles = static_cast<uint32>(meta->GetFileCount());
+    }
+    return info;
+}
+
 bool DLCManagerImpl::IsRequestingEnabled() const
 {
     DVASSERT(Thread::IsMainThread());
