@@ -71,14 +71,14 @@ String FormatNodeNames(const DAVA::Vector<T*>& nodes)
     return list;
 }
 
-bool IsNameExists(const String& name, const ControlsContainerNode* dest, const ControlsContainerNode* prototypes)
+bool IsNameExists(const String& name, const ControlsContainerNode* dest, const ControlsContainerNode* siblingContainer)
 {
     auto isEqual = [&name](ControlNode* siblingControl)
     {
         return (siblingControl->GetName() == name);
     };
 
-    return std::any_of(dest->begin(), dest->end(), isEqual) || (prototypes != nullptr && std::any_of(prototypes->begin(), prototypes->end(), isEqual));
+    return std::any_of(dest->begin(), dest->end(), isEqual) || (siblingContainer != nullptr && std::any_of(siblingContainer->begin(), siblingContainer->end(), isEqual));
 }
 
 void SplitName(const String& name, String& nameMainPart, uint32& namePostfix)
@@ -99,7 +99,7 @@ void SplitName(const String& name, String& nameMainPart, uint32& namePostfix)
     namePostfix = 0;
 }
 
-String ProduceUniqueName(const String& name, const ControlsContainerNode* dest, const ControlsContainerNode* prototypes)
+String ProduceUniqueName(const String& name, const ControlsContainerNode* dest, const ControlsContainerNode* siblingContainer)
 {
     String nameMainPart;
     uint32 namePostfixCounter = 0;
@@ -108,7 +108,7 @@ String ProduceUniqueName(const String& name, const ControlsContainerNode* dest, 
     for (++namePostfixCounter; namePostfixCounter <= UINT32_MAX; ++namePostfixCounter)
     {
         String newName = Format("%s_%u", nameMainPart.c_str(), namePostfixCounter);
-        if (!IsNameExists(newName, dest, prototypes))
+        if (!IsNameExists(newName, dest, siblingContainer))
         {
             return newName;
         }
@@ -120,17 +120,25 @@ String ProduceUniqueName(const String& name, const ControlsContainerNode* dest, 
 
 void EnsureControlNameIsUnique(ControlNode* control, const PackageNode* package, const ControlsContainerNode* dest)
 {
-    ControlsContainerNode* prototypes = nullptr;
+    ControlsContainerNode* siblingTopContainer = nullptr;
+
     if (dest->GetParent() == package)
     {
-        // prototypes names scope is also taking into account if dest is a top level node
-        prototypes = static_cast<ControlsContainerNode*>(package->GetPrototypes());
+        ControlsContainerNode* topPrototypes = static_cast<ControlsContainerNode*>(package->GetPrototypes());
+        if (dest == topPrototypes) // If we are inserting into top controls container, then prototypes scope will also be taking into account.
+        {
+            siblingTopContainer = static_cast<ControlsContainerNode*>(package->GetPackageControlsNode());
+        }
+        else // Vice versa, if we are inserting into top prototypes container, then top controls scope will also be taking into account
+        {
+            siblingTopContainer = topPrototypes;
+        }
     }
 
     String origName = control->GetName();
-    if (IsNameExists(origName, dest, prototypes))
+    if (IsNameExists(origName, dest, siblingTopContainer))
     {
-        String newName = ProduceUniqueName(origName, dest, prototypes);
+        String newName = ProduceUniqueName(origName, dest, siblingTopContainer);
         control->GetControl()->SetName(newName);
     }
 }
