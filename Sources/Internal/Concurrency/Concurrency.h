@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_CONCURRENCY_H__
-#define __DAVAENGINE_CONCURRENCY_H__
+#pragma once
 
 // All concurrency subsystem includes
 
@@ -16,5 +15,3 @@
 
 //TODO: uncomment this include in client
 #include "Concurrency/PosixThreads.h"
-
-#endif //  __DAVAENGINE_CONCURRENCY_H__
