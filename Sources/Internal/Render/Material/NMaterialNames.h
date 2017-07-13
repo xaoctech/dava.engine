@@ -163,6 +163,7 @@ public:
     static const FastName FLAG_TILED_DECAL_MASK;
     static const FastName FLAG_TILED_DECAL_ROTATION;
     static const FastName FLAG_FLATCOLOR;
+    static const FastName FLAG_FLATALBEDO;
     static const FastName FLAG_DISTANCEATTENUATION;
     static const FastName FLAG_SPECULAR;
     static const FastName FLAG_SEPARATE_NORMALMAPS;

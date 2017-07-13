@@ -167,7 +167,7 @@ fragment_out
 #endif
 
 
-#if FLATCOLOR
+#if FLATCOLOR || FLATALBEDO
     [material][a] property float4 flatColor = float4(0,0,0,0);
 #endif
 
@@ -290,6 +290,11 @@ fragment_out fp_main( fragment_in input )
     #elif MATERIAL_SKYBOX
         half4 textureColor0 = half4(texCUBE( cubemap, input.varTexCoord0 ));
     #endif
+    
+    #if FLATALBEDO
+        textureColor0 *= flatColor;
+    #endif
+    
 
     #if MATERIAL_TEXTURE
         #if ALPHATEST
