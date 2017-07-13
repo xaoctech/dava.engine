@@ -398,6 +398,8 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
         {
             Vector<uint8> animationData;
 
+            WriteToBuffer(animationData, &canimation->duration);
+
             uint32 nodeCount = uint32(canimation->animations.size());
             WriteToBuffer(animationData, &nodeCount);
 
