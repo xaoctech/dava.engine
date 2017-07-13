@@ -392,7 +392,7 @@ void EditorLODSystem::SetForceValues(const ForceValues& values)
     EmitInvalidateUI(FLAG_FORCE);
 }
 
-bool EditorLODSystem::CanDeleteLOD(DAVA::int32 lodLayer) const
+bool EditorLODSystem::CanDeleteLOD() const
 {
     DVASSERT(activeLodData != nullptr);
 
