@@ -25,15 +25,15 @@ DAVA_VIRTUAL_REFLECTION_IMPL(GeoDecalComponent)
 
 GeoDecalComponent::GeoDecalComponent()
 {
-    init(0);
+    InitWithFlags(0);
 }
 
 GeoDecalComponent::GeoDecalComponent(uint32 flags)
 {
-    init(flags);
+    InitWithFlags(flags);
 }
 
-void GeoDecalComponent::init(uint32 flags)
+void GeoDecalComponent::InitWithFlags(uint32 flags)
 {
     if ((flags & SuppressMaterialCreation) == 0)
     {

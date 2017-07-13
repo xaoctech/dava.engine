@@ -38,7 +38,7 @@ public:
 
 private:
     void ConfigChanged();
-    void init(uint32 flags);
+    void InitWithFlags(uint32 flags);
 
 private:
     ScopedPtr<NMaterial> dataNodeMaterial;

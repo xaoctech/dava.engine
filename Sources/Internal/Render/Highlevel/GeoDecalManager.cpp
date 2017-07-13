@@ -455,18 +455,10 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatchProvider
     if (info.polygonGroup == nullptr)
         return false;
 
-    String baseFXName(info.material->GetEffectiveFXName().c_str());
-    std::transform(baseFXName.begin(), baseFXName.end(), baseFXName.begin(), ::tolower);
+    const FastName& effectiveFxName = info.material->GetEffectiveFXName();
 
-    static const String invalidMaterialsForDecal[] = { "shadow", "silhouette" };
-    for (const String& m : invalidMaterialsForDecal)
-    {
-        if (baseFXName.find(m) != String::npos)
-        {
-            // Logger::Warning("Material ignored for decal: %s", fxName.c_str());
-            return false;
-        }
-    }
+    if ((effectiveFxName == NMaterialName::SILHOUETTE) || (effectiveFxName == NMaterialName::SHADOW_VOLUME))
+        return false;
 
     int32 geometryFormat = info.polygonGroup->GetFormat();
 
@@ -527,6 +519,9 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatchProvider
     /*
      * Process material
      */
+    String baseFXName(info.material->GetEffectiveFXName().c_str());
+    std::transform(baseFXName.begin(), baseFXName.end(), baseFXName.begin(), ::tolower);
+
     String fxFileName = (baseFXName.find("normalizedblinnphong") != String::npos) ? "NormalizedBlinnPhongAllQualities.GeoDecal.material" : "GeoDecal.material";
     FilePath fxName = (info.overridenMaterialsPath.IsEmpty() ? String("~res:/Materials/") : info.overridenMaterialsPath) + fxFileName;
 

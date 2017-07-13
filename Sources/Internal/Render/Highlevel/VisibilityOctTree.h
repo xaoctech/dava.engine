@@ -106,7 +106,6 @@ private:
     Vector<BroadPhaseCollision> broadPhaseCollisions;
     std::queue<VoxelCoord> broadPhaseQueue;
     uint32 localRayBoxTraceCount = 0;
-    AccumulativeStatCounter avgBoxRayTestCount;
 };
 
 inline AABBox3 VisibilityOctTree::ReconstructAABBox(VoxelCoord voxelCoord) const

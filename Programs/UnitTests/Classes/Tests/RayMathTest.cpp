@@ -1,31 +1,3 @@
-/*==================================================================================
-    Copyright (c) 2008, binaryzebra
-    All rights reserved.
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the binaryzebra nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
-
-    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-=====================================================================================*/
-
 #include "UnitTests/UnitTests.h"
 #include "Math/AABBox3.h"
 #include "Utils/Random.h"
@@ -50,7 +22,7 @@ DAVA_TESTCLASS (RayMathTest)
 
         TEST_VERIFY(largeBox.IntersectsWithBox(smallBox));
         TEST_VERIFY(smallBox.IntersectsWithBox(smallBox));
-        TEST_VERIFY(smallBox.IntersectsWithBox(smallBox));
+
         TEST_VERIFY(emptyBox.IsEmpty() == true);
         TEST_VERIFY(smallBox.IsEmpty() == false);
 
@@ -327,16 +299,6 @@ DAVA_TESTCLASS (RayMathTest)
         p2 = Vector3(5.0f, 1000.0f, -1000.0f);
         TEST_VERIFY(Intersection::BoxTriangle(box, p0, p1, p2) == true);
 
-        /* p0 = Vector3(0.0f, 0.0f, 0.0f);
-         p1 = Vector3(1.0f, 0.0f, 0.0f);
-         p2 = Vector3(0.0f, 0.0f, 1.0f);
-         TEST_VERIFY(box.IsIntersectsWithTriangle(p0, p1, p2) == true);
-         
-         p0 = Vector3(0.0f, 0.0f, 0.0f);
-         p1 = Vector3(0.0f, 1.0f, 0.0f);
-         p2 = Vector3(0.0f, 0.0f, 1.0f);
-         TEST_VERIFY(box.IsIntersectsWithTriangle(p0, p1, p2) == true);*/
-
         p0 = Vector3(-50.0f, 5.0f, 5.0f);
         p1 = Vector3(100.0f, 5.0f, 5.0f);
         p2 = Vector3(101.0f, 5.0f, 5.0f);
@@ -367,48 +329,6 @@ DAVA_TESTCLASS (RayMathTest)
         p1 = Vector3(5000.0f, 0.0f, 5000.0f);
         p1 = Vector3(0.0f, 5000.0f, 5000.0f);
         TEST_VERIFY(Intersection::BoxTriangle(box, p0, p1, p2) == true);
-
-        // Corner cases
-        //        {
-        //            /*
-        //             box -(-5.06715011596680,-5.85103988647461,-0.11697360128164) (0.00000000000000, 0.00000000000000, 7.17094850540161)
-        //
-        //             (0.00000101618002, -3.77569198608398, 3.90985894203186)
-        //             (-0.00000074881905, 3.77569198608398, 3.90985894203186)
-        //             (3.26984500885010, 1.88784694671631, 3.90985894203186)
-        //             */
-        //
-        //            AABBox3 box(Vector3(-5.06715011596680f,-5.85103988647461f,-0.11697360128164f),
-        //                    Vector3(0.00000000000000f, 0.00000000000000f, 7.17094850540161f));
-        //
-        //            p0 = Vector3(0.00000101618002f, -3.77569198608398f, 3.90985894203186f);
-        //            p1 = Vector3(-0.00000074881905f, 3.77569198608398f, 3.90985894203186f);
-        //            p2 = Vector3(3.26984500885010f, 1.88784694671631f, 3.90985894203186f);
-        //            TEST_VERIFY(box.IsIntersectsWithTriangle(p0, p1, p2) == true);
-        //
-        //            Vector3 halfBox = box.GetSize() * 0.5f;
-        //
-        //            for (uint32 xdiv = 0; xdiv < 2; ++xdiv)
-        //            {
-        //                for (uint32 ydiv = 0; ydiv < 2; ++ydiv)
-        //                {
-        //                    for (uint32 zdiv = 0; zdiv < 2; ++zdiv)
-        //                    {
-        //                        Vector3 childBoxMin(box.min.x + halfBox.x * (float32)xdiv,
-        //                                            box.min.y + halfBox.y * (float32)ydiv,
-        //                                            box.min.z + halfBox.z * (float32)zdiv);
-        //                        AABBox3 childBox(childBoxMin, childBoxMin + halfBox);
-        //
-        //                        Logger::FrameworkDebug("box -(%.14f,%.14f,%.14f) (%.14f, %.14f, %.14f) %d",
-        //                                               childBox.min.x, childBox.min.y, childBox.min.z,
-        //                                               childBox.max.x, childBox.max.y, childBox.max.z,
-        //                                               childBox.IsIntersectsWithTriangle(p0, p1, p2) ? (1) : (0));
-        //
-        //                    }
-        //                }
-        //            }
-        //
-        //        }
     }
 
     DAVA_TEST (TriangleAABBoxFloatPrecisionProblemTest)

@@ -25,20 +25,6 @@ DAVA_TESTCLASS (GeometryOctTreeTest)
             };
 
             PolygonGroup* geometry = GeometryGenerator::GenerateBox(AABBox3(Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f)), options);
-
-            //            for (uint32 k = 0; k < geometry->GetVertexCount(); ++k)
-            //            {
-            //                Vector3 coord;
-            //                geometry->GetCoord(k, coord);
-            //                Logger::FrameworkDebug("%f %f %f", coord.x, coord.y, coord.z);
-            //            }
-            //
-            //            for (uint32 k = 0; k < geometry->GetIndexCount(); ++k)
-            //            {
-            //                int32 index;
-            //                geometry->GetIndex(k, index);
-            //                Logger::FrameworkDebug("%d", index);
-            //            }
             geometry->GenerateGeometryOctTree();
             GeometryOctTree* geoOctTree = geometry->GetGeometryOctTree();
 
@@ -139,9 +125,6 @@ DAVA_TESTCLASS (GeometryOctTreeTest)
             TEST_VERIFY(geoOctTree->IntersectionWithRay2(ray7, resultT, triIndex) == true);
             TEST_VERIFY(FLOAT_EQUAL(resultT, 0.5f));
 
-            //Ray3Optimized ray2(Vector3(0.5f, 0.5f, -1.0f), Vector3(0.0f, 0.0f, 2.0f));
-            //TEST_VERIFY(geoOctTree->IntersectionWithRay(ray2, resultT, triIndex, 0.0f, 1.000f) == true);
-            //TEST_VERIFY(FLOAT_EQUAL(resultT, 0.5f));
             SafeRelease(geometry);
         }
     }

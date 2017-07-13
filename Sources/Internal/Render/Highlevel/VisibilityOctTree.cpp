@@ -434,7 +434,7 @@ bool VisibilityOctTree::RayTrace(const Ray3& ray, RayTraceCollision& collision)
 
     localRayBoxTraceCount = 0;
     BroadPhaseCollisions(ray, broadPhaseCollisions);
-    avgBoxRayTestCount += static_cast<float>(localRayBoxTraceCount);
+
     // TODO: Remove duplication of this code in SpatialTree and RenderHierarchy
     bool intersectionFound = false;
     float32 closestT = FLOAT_MAX;
