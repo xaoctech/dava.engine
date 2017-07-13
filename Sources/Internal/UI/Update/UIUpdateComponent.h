@@ -2,7 +2,7 @@
 
 #include "Base/BaseTypes.h"
 #include "UI/Components/UIComponent.h"
-#include "Functional/Function.h"
+#include "Reflection/Reflection.h"
 
 namespace DAVA
 {

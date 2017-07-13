@@ -105,7 +105,7 @@ void BuildPhysxMeshInfo(const Vector<PolygonGroup*>& polygons, Vector<physx::PxV
 }
 }
 
-class Physics::PhysicsAllocator : public physx::PxAllocatorCallback
+class PhysicsModule::PhysicsAllocator : public physx::PxAllocatorCallback
 {
 public:
     void* allocate(size_t size, const char* typeName, const char* filename, int line) override
@@ -144,7 +144,7 @@ private:
     physx::PxDefaultAllocator defaultAllocator;
 };
 
-class Physics::PhysicsErrotCallback : public physx::PxErrorCallback
+class PhysicsModule::PhysicsErrotCallback : public physx::PxErrorCallback
 {
 public:
     void reportError(physx::PxErrorCode::Enum code, const char* message, const char* file, int line) override
@@ -156,13 +156,13 @@ private:
     physx::PxDefaultErrorCallback defaultErrorCallback;
 };
 
-Physics::Physics(Engine* engine)
+PhysicsModule::PhysicsModule(Engine* engine)
     : IModule(engine)
 {
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(Physics);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PhysicsModule);
 }
 
-void Physics::Init()
+void PhysicsModule::Init()
 {
     using namespace physx;
 
@@ -198,7 +198,7 @@ void Physics::Init()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(HeightFieldShapeComponent);
 }
 
-void Physics::Shutdown()
+void PhysicsModule::Shutdown()
 {
     cooking->release();
     physics->release();
@@ -208,22 +208,22 @@ void Physics::Shutdown()
     SafeDelete(errorCallback);
 }
 
-bool Physics::IsInitialized() const
+bool PhysicsModule::IsInitialized() const
 {
     return foundation != nullptr && physics != nullptr;
 }
 
-void* Physics::Allocate(size_t size, const char* typeName, const char* filename, int line)
+void* PhysicsModule::Allocate(size_t size, const char* typeName, const char* filename, int line)
 {
     return allocator->allocate(size, typeName, filename, line);
 }
 
-void Physics::Deallocate(void* ptr)
+void PhysicsModule::Deallocate(void* ptr)
 {
     allocator->deallocate(ptr);
 }
 
-physx::PxScene* Physics::CreateScene(const PhysicsSceneConfig& config) const
+physx::PxScene* PhysicsModule::CreateScene(const PhysicsSceneConfig& config) const
 {
     using namespace physx;
 
@@ -245,37 +245,37 @@ physx::PxScene* Physics::CreateScene(const PhysicsSceneConfig& config) const
     return scene;
 }
 
-physx::PxActor* Physics::CreateStaticActor() const
+physx::PxActor* PhysicsModule::CreateStaticActor() const
 {
     return physics->createRigidStatic(physx::PxTransform(physx::PxIDENTITY::PxIdentity));
 }
 
-physx::PxActor* Physics::CreateDynamicActor() const
+physx::PxActor* PhysicsModule::CreateDynamicActor() const
 {
     return physics->createRigidDynamic(physx::PxTransform(physx::PxIDENTITY::PxIdentity));
 }
 
-physx::PxShape* Physics::CreateBoxShape(const Vector3& halfSize) const
+physx::PxShape* PhysicsModule::CreateBoxShape(const Vector3& halfSize) const
 {
     return physics->createShape(physx::PxBoxGeometry(PhysicsMath::Vector3ToPxVec3(halfSize)), *GetDefaultMaterial(), true);
 }
 
-physx::PxShape* Physics::CreateCapsuleShape(float32 radius, float32 halfHeight) const
+physx::PxShape* PhysicsModule::CreateCapsuleShape(float32 radius, float32 halfHeight) const
 {
     return physics->createShape(physx::PxCapsuleGeometry(radius, halfHeight), *GetDefaultMaterial(), true);
 }
 
-physx::PxShape* Physics::CreateSphereShape(float32 radius) const
+physx::PxShape* PhysicsModule::CreateSphereShape(float32 radius) const
 {
     return physics->createShape(physx::PxSphereGeometry(radius), *GetDefaultMaterial(), true);
 }
 
-physx::PxShape* Physics::CreatePlaneShape() const
+physx::PxShape* PhysicsModule::CreatePlaneShape() const
 {
     return physics->createShape(physx::PxPlaneGeometry(), *GetDefaultMaterial(), true);
 }
 
-physx::PxShape* Physics::CreateMeshShape(Vector<PolygonGroup*>&& polygons, const Vector3& scale, PhysicsGeometryCache* cache) const
+physx::PxShape* PhysicsModule::CreateMeshShape(Vector<PolygonGroup*>&& polygons, const Vector3& scale, PhysicsGeometryCache* cache) const
 {
     using namespace physx;
 
@@ -322,7 +322,7 @@ physx::PxShape* Physics::CreateMeshShape(Vector<PolygonGroup*>&& polygons, const
     return shape;
 }
 
-physx::PxShape* Physics::CreateConvexHullShape(Vector<PolygonGroup*>&& polygons, const Vector3& scale, PhysicsGeometryCache* cache) const
+physx::PxShape* PhysicsModule::CreateConvexHullShape(Vector<PolygonGroup*>&& polygons, const Vector3& scale, PhysicsGeometryCache* cache) const
 {
     using namespace physx;
 
@@ -369,7 +369,7 @@ physx::PxShape* Physics::CreateConvexHullShape(Vector<PolygonGroup*>&& polygons,
     return shape;
 }
 
-physx::PxShape* Physics::CreateHeightField(Landscape* landscape, Matrix4& localPose) const
+physx::PxShape* PhysicsModule::CreateHeightField(Landscape* landscape, Matrix4& localPose) const
 {
     using namespace physx;
     Heightmap* heightmap = landscape->GetHeightmap();
@@ -422,7 +422,7 @@ physx::PxShape* Physics::CreateHeightField(Landscape* landscape, Matrix4& localP
     return shape;
 }
 
-physx::PxMaterial* Physics::GetDefaultMaterial() const
+physx::PxMaterial* PhysicsModule::GetDefaultMaterial() const
 {
     if (defaultMaterial == nullptr)
     {
@@ -432,9 +432,9 @@ physx::PxMaterial* Physics::GetDefaultMaterial() const
     return defaultMaterial;
 }
 
-DAVA_VIRTUAL_REFLECTION_IMPL(Physics)
+DAVA_VIRTUAL_REFLECTION_IMPL(PhysicsModule)
 {
-    ReflectionRegistrator<Physics>::Begin()
+    ReflectionRegistrator<PhysicsModule>::Begin()
     .End();
 }
 }

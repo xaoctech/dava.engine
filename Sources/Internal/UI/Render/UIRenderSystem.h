@@ -32,7 +32,6 @@ public:
     void SetUseClearPass(bool useClearPass);
 
     void SetCurrentScreen(const RefPtr<UIScreen>& screen);
-    void SetCurrentScreenTransition(const RefPtr<UIScreenTransition>& screenTransition);
     void SetPopupContainer(const RefPtr<UIControl>& popupContainer);
 
 protected:
@@ -47,9 +46,9 @@ private:
 
     void RenderControlHierarhy(UIControl* control, const UIGeometricData& geometricData, const UIControlBackground* parentBackground);
 
-    void DebugRender(const UIDebugRenderComponent* component, const UIGeometricData& geometricData, const Rect& unrotatedRect);
+    void DebugRender(const UIDebugRenderComponent* component, const UIGeometricData& geometricData);
     void RenderDebugRect(const UIDebugRenderComponent* component, const UIGeometricData& geometricData);
-    void RenderPivotPoint(const UIDebugRenderComponent* component, const Rect& drawRect);
+    void RenderPivotPoint(const UIDebugRenderComponent* component, const UIGeometricData& geometricData);
 
     RenderSystem2D* renderSystem2D = nullptr;
     UIGeometricData baseGeometricData;
@@ -58,7 +57,6 @@ private:
 
     RefPtr<UIScreen> currentScreen;
     RefPtr<UIControl> popupContainer;
-    RefPtr<UIScreenTransition> currentScreenTransition;
 
     int32 ui3DViewCount = 0;
     bool needClearMainPass = true;

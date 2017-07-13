@@ -14,7 +14,7 @@ class PxShape;
 namespace DAVA
 {
 class Scene;
-class Physics;
+class PhysicsModule;
 class PhysicsComponent;
 class CollisionShapeComponent;
 class PhysicsGeometryCache;
@@ -36,8 +36,8 @@ public:
     void SetSimulationEnabled(bool isEnabled);
     bool IsSimulationEnabled() const;
 
-    void SetDrawDebugInfo(bool drawDebugInfo);
-    bool IsDrawDebugInfo() const;
+    void SetDebugDrawEnabled(bool drawDebugInfo);
+    bool IsDebugDrawEnabled() const;
 
     void SheduleUpdate(PhysicsComponent* component);
     void SheduleUpdate(CollisionShapeComponent* component);
@@ -45,7 +45,7 @@ public:
     bool Raycast(const Vector3& origin, const Vector3& direction, float32 distance, physx::PxRaycastCallback& callback);
 
 private:
-    bool FetchResults(bool block);
+    bool FetchResults(bool waitForFetchFinish);
 
     void DrawDebugInfo();
 
@@ -54,7 +54,7 @@ private:
     void AttachShape(PhysicsComponent* bodyComponent, CollisionShapeComponent* shapeComponent, const Vector3& scale);
 
     void ReleaseShape(CollisionShapeComponent* component);
-    physx::PxShape* CreateShape(CollisionShapeComponent* component, Physics* physics);
+    physx::PxShape* CreateShape(CollisionShapeComponent* component, PhysicsModule* physics);
 
     void SyncTransformToPhysx();
     void SyncEntityTransformToPhysx(Entity* entity);

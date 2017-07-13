@@ -39,9 +39,6 @@ private:
     void SetNextEntityName(const FastName& name);
     const FastName GetNextEntityName() const;
 
-    void SetNextEntityTag(int32 tag);
-    int32 GetNextEntityTag() const;
-
 private:
     Entity* nextEntity = nullptr;
     PathComponent* path = nullptr;
@@ -51,7 +48,6 @@ public:
     INTROSPECTION_EXTEND(EdgeComponent, Component,
                          PROPERTY("Edge properties", "Edge properties", GetProperties, SetProperties, I_SAVE | I_VIEW | I_EDIT)
                          PROPERTY("nextEntityName", "Next Entity Name", GetNextEntityName, SetNextEntityName, I_VIEW)
-                         PROPERTY("nextEntityTag", "Next Entity Tag", GetNextEntityTag, SetNextEntityTag, I_VIEW)
                          );
 
     DAVA_VIRTUAL_REFLECTION(EdgeComponent, Component);

@@ -36,9 +36,13 @@ public:
 private:
     void FireStartLoadingSignal(PackRequest& request, bool inBackground);
     void FireUpdateSignal(PackRequest& request, bool inBackground);
-
+    void OneUpdateIteration(bool inBackground);
     void FireStartLoadingWhileInactiveSignals();
     void FireUpdateWhileInactiveSignals();
+    bool IsQueueOrderChangedDuringLastIteration() const
+    {
+        return isQueueChanged;
+    }
 
     DLCManagerImpl& packManager;
     Vector<PackRequest*> requests;
@@ -47,6 +51,7 @@ private:
     // use List to preserve the order of incoming events
     List<String> requestStartedWhileInactive;
     List<String> requestUpdatedWhileInactive;
+    bool isQueueChanged = false;
 };
 
 inline bool RequestManager::IsInQueue(const String& packName) const

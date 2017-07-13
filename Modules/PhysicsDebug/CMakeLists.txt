@@ -1,4 +1,4 @@
-set(NAME_MODULE PhysicsDebug )
+set(NAME_MODULE PhysicsDebugModule )
 
 set(MODULE_TYPE STATIC)#INLINE STATIC DYNAMIC 
 

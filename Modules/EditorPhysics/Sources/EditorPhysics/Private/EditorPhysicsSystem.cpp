@@ -12,7 +12,7 @@
 EditorPhysicsSystem::EditorPhysicsSystem(DAVA::Scene* scene)
     : SceneSystem(scene)
 {
-    scene->physicsSystem->SetDrawDebugInfo(true);
+    scene->physicsSystem->SetDebugDrawEnabled(true);
     scene->physicsSystem->SetSimulationEnabled(false);
 }
 

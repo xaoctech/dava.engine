@@ -1,6 +1,7 @@
 #include "CommandLine/DumpTool.h"
 #include "CommandLine/Private/OptionName.h"
 #include "CommandLine/Private/SceneConsoleHelper.h"
+#include "Classes/Project/ProjectManagerData.h"
 
 #include "Logger/Logger.h"
 #include "Utils/Utils.h"
@@ -35,6 +36,13 @@ bool DumpTool::PostInitInternal()
         return false;
     }
     inFolder.MakeDirectoryPathname();
+
+    dataSourceFolder = ProjectManagerData::GetDataSourcePath(inFolder);
+    if (dataSourceFolder.IsEmpty())
+    {
+        DAVA::Logger::Error("DataSource folder was not found");
+        return false;
+    }
 
     filename = options.GetOption(OptionName::ProcessFile).AsString();
     if (filename.empty())
@@ -121,6 +129,7 @@ DAVA::TArc::ConsoleModule::eFrameResult DumpTool::OnFrameInternal()
 {
     if (commandAction == ACTION_DUMP_LINKS)
     {
+        DAVA::FilePath::AddResourcesFolder(dataSourceFolder);
         DAVA::Set<DAVA::FilePath> links = SceneDumper::DumpLinks(inFolder + filename, mode, compressedGPUs);
 
         DAVA::FileSystem::Instance()->CreateDirectory(outFile.GetDirectory(), true);
@@ -135,6 +144,8 @@ DAVA::TArc::ConsoleModule::eFrameResult DumpTool::OnFrameInternal()
                 }
             }
         }
+
+        DAVA::FilePath::RemoveResourcesFolder(dataSourceFolder);
     }
 
     return DAVA::TArc::ConsoleModule::eFrameResult::FINISHED;

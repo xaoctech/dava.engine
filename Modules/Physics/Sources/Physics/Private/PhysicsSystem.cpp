@@ -117,6 +117,7 @@ Vector3 AccumulateMeshInfo(Entity* e, Vector<PolygonGroup*>& groups)
     return scale;
 }
 
+const uint32 DEFAULT_SIMULATION_BLOCK_SIZE = 16 * 1024 * 512;
 } // namespace
 
 PhysicsSystem::PhysicsSystem(Scene* scene)
@@ -124,11 +125,11 @@ PhysicsSystem::PhysicsSystem(Scene* scene)
 {
     const KeyedArchive* options = Engine::Instance()->GetOptions();
 
-    simulationBlockSize = options->GetUInt32("physics.simulationBlockSize", 16 * 1024 * 512);
-    DVASSERT((simulationBlockSize % (16 * 1024)) == 0);
+    simulationBlockSize = options->GetUInt32("physics.simulationBlockSize", PhysicsSystemDetail::DEFAULT_SIMULATION_BLOCK_SIZE);
+    DVASSERT((simulationBlockSize % (16 * 1024)) == 0); // simulationBlockSize must be 16K multiplier
 
     const EngineContext* ctx = GetEngineContext();
-    Physics* physics = ctx->moduleManager->GetModule<Physics>();
+    PhysicsModule* physics = ctx->moduleManager->GetModule<PhysicsModule>();
     simulationBlock = physics->Allocate(simulationBlockSize, "SimulationBlock", __FILE__, __LINE__);
 
     PhysicsSceneConfig sceneConfig;
@@ -148,7 +149,7 @@ PhysicsSystem::~PhysicsSystem()
     SafeDelete(geometryCache);
 
     const EngineContext* ctx = GetEngineContext();
-    Physics* physics = ctx->moduleManager->GetModule<Physics>();
+    PhysicsModule* physics = ctx->moduleManager->GetModule<PhysicsModule>();
     physics->Deallocate(simulationBlock);
     simulationBlock = nullptr;
     physicsScene->release();
@@ -229,19 +230,21 @@ void PhysicsSystem::UnregisterComponent(Entity* entity, Component* component)
         if (actor != nullptr)
         {
             physx::PxRigidActor* rigidActor = actor->is<physx::PxRigidActor>();
-            DVASSERT(rigidActor != nullptr);
-            physx::PxU32 shapesCount = rigidActor->getNbShapes();
-            Vector<physx::PxShape*> shapes(shapesCount, nullptr);
-            rigidActor->getShapes(shapes.data(), shapesCount);
-
-            for (physx::PxShape* shape : shapes)
+            if (rigidActor != nullptr)
             {
-                DVASSERT(shape != nullptr);
-                rigidActor->detachShape(*shape);
-            }
+                physx::PxU32 shapesCount = rigidActor->getNbShapes();
+                Vector<physx::PxShape*> shapes(shapesCount, nullptr);
+                rigidActor->getShapes(shapes.data(), shapesCount);
 
-            physicsScene->removeActor(*physicsComponent->GetPxActor());
-            physicsComponent->ReleasePxActor();
+                for (physx::PxShape* shape : shapes)
+                {
+                    DVASSERT(shape != nullptr);
+                    rigidActor->detachShape(*shape);
+                }
+
+                physicsScene->removeActor(*physicsComponent->GetPxActor());
+                physicsComponent->ReleasePxActor();
+            }
         }
     }
 
@@ -330,30 +333,23 @@ bool PhysicsSystem::IsSimulationEnabled() const
     return isSimulationEnabled;
 }
 
-void PhysicsSystem::SetDrawDebugInfo(bool drawDebugInfo_)
+void PhysicsSystem::SetDebugDrawEnabled(bool drawDebugInfo_)
 {
     drawDebugInfo = drawDebugInfo_;
     physx::PxReal enabled = drawDebugInfo == true ? 1.0f : 0.0f;
-    //physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eACTOR_AXES, 2.0f * enabled);
     physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eSCALE, enabled);
-
     physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eBODY_MASS_AXES, enabled);
-    //    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eBODY_LIN_VELOCITY, enabled);
-    //    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eBODY_ANG_VELOCITY, enabled);
-    //    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eCONTACT_POINT, enabled);
-    //    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eCONTACT_NORMAL, enabled);
-    //    physicsScene->setVisualizationParameter(physx::PxVisualizationParameter::eCONTACT_FORCE, enabled);
 }
 
-bool PhysicsSystem::IsDrawDebugInfo() const
+bool PhysicsSystem::IsDebugDrawEnabled() const
 {
     return drawDebugInfo;
 }
 
-bool PhysicsSystem::FetchResults(bool block)
+bool PhysicsSystem::FetchResults(bool waitForFetchFinish)
 {
     DVASSERT(isSimulationRunning);
-    bool isFetched = physicsScene->fetchResults(block);
+    bool isFetched = physicsScene->fetchResults(waitForFetchFinish);
     if (isFetched == true)
     {
         isSimulationRunning = false;
@@ -396,7 +392,7 @@ void PhysicsSystem::DrawDebugInfo()
 {
     DVASSERT(isSimulationRunning == false);
     DVASSERT(isSimulationEnabled == true);
-    if (IsDrawDebugInfo() == false)
+    if (IsDebugDrawEnabled() == false)
     {
         return;
     }
@@ -432,7 +428,7 @@ void PhysicsSystem::DrawDebugInfo()
 
 void PhysicsSystem::InitNewObjects()
 {
-    Physics* physics = GetEngineContext()->moduleManager->GetModule<Physics>();
+    PhysicsModule* physics = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
     for (PhysicsComponent* component : pendingAddPhysicsComponents)
     {
         uint32 componentType = component->GetType();
@@ -537,7 +533,7 @@ void PhysicsSystem::AttachShape(Entity* entity, PhysicsComponent* bodyComponent,
     }
 }
 
-physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, Physics* physics)
+physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, PhysicsModule* physics)
 {
     using namespace PhysicsSystemDetail;
     physx::PxShape* shape = nullptr;
@@ -647,6 +643,12 @@ void PhysicsSystem::SyncEntityTransformToPhysx(Entity* entity)
 {
     DVASSERT(isSimulationEnabled == false);
     DVASSERT(isSimulationRunning == false);
+    TransformSingleComponent* transformSingle = GetScene()->transformSingleComponent;
+    if (transformSingle == nullptr)
+    {
+        return;
+    }
+
     auto updatePose = [this](Entity* e, PhysicsComponent* component)
     {
         if (component != nullptr)

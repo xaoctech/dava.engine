@@ -128,7 +128,7 @@ void DynamicBodyComponent::SetLockFlags(eLockFlags lockFlags_)
 }
 
 #if defined(__DAVAENGINE_DEBUG__)
-void DynamicBodyComponent::CheckActorType() const
+void DynamicBodyComponent::ValidateActorType() const
 {
     DVASSERT(GetPxActor()->is<physx::PxRigidDynamic>());
 }

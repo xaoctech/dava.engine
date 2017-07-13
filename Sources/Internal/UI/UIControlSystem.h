@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Base/Any.h"
 #include "Base/BaseMath.h"
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
@@ -9,6 +10,7 @@
 
 #include "UI/UIControl.h"
 #include "UI/UIEvent.h"
+#include "UI/Components/UISingleComponent.h"
 
 #define FRAME_SKIP 5
 
@@ -68,7 +70,7 @@ public:
 	 \param[in] Screen you want to set as current
 	 \param[in] Transition you want to use for the screen setting.
 	 */
-    void SetScreen(UIScreen* newMainControl, UIScreenTransition* transition = 0);
+    void SetScreen(UIScreen* newMainControl);
 
     /**
 	 \brief Sets the requested screen as current.
@@ -99,8 +101,6 @@ public:
 	 \returns popup container
 	 */
     UIControl* GetPopupContainer() const;
-
-    UIScreenTransition* GetScreenTransition() const;
 
     /**
 	 \brief Disabled all controls inputs.
@@ -288,6 +288,22 @@ public:
         return nullptr;
     }
 
+    void AddSingleComponent(std::unique_ptr<UISingleComponent> single);
+    std::unique_ptr<UISingleComponent> RemoveSingleComponent(const UISingleComponent* singleComponent);
+
+    template <typename T>
+    T* GetSingleComponent() const
+    {
+        for (auto& c : singleComponents)
+        {
+            if (IsPointerToExactClass<T>(c.get()))
+            {
+                return static_cast<T*>(c.get());
+            }
+        }
+        return nullptr;
+    }
+
     UILayoutSystem* GetLayoutSystem() const;
     UIInputSystem* GetInputSystem() const;
     UIFocusSystem* GetFocusSystem() const;
@@ -311,6 +327,7 @@ private:
     friend class Private::EngineBackend;
 
     Vector<std::unique_ptr<UISystem>> systems;
+    Vector<std::unique_ptr<UISingleComponent>> singleComponents;
     UILayoutSystem* layoutSystem = nullptr;
     UIStyleSheetSystem* styleSheetSystem = nullptr;
     UIInputSystem* inputSystem = nullptr;
@@ -322,8 +339,6 @@ private:
 
     RefPtr<UIScreen> currentScreen;
     RefPtr<UIScreen> nextScreen;
-    RefPtr<UIScreenTransition> nextScreenTransition;
-    RefPtr<UIScreenTransition> currentScreenTransition;
     RefPtr<UIControl> popupContainer;
     Set<UIPopup*> popupsToRemove;
 

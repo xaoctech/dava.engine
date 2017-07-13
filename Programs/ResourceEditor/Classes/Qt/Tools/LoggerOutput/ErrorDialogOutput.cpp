@@ -144,6 +144,11 @@ void ErrorDialogOutput::ShowErrorDialogImpl()
         DAVA::LockGuard<DAVA::Mutex> lock(errorsLocker);
         DAVA::uint32 totalErrors = static_cast<DAVA::uint32>(errors.size());
 
+        if (totalErrors == 0)
+        {
+            return;
+        }
+
         if (totalErrors == 1)
         {
             title = "Error occurred";

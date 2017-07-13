@@ -8,9 +8,9 @@ class EditorPhysicsSystem : public DAVA::SceneSystem
 public:
     enum class eSimulationState
     {
+        STOPPED,
         PLAYING,
-        PAUSED,
-        STOPPED
+        PAUSED
     };
 
     EditorPhysicsSystem(DAVA::Scene* scene);

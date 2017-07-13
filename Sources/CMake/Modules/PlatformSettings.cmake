@@ -85,6 +85,7 @@ elseif ( MACOS )
     set( CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++14" )
     set( CMAKE_XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT "dwarf-with-dsym" )    
     set( CMAKE_XCODE_ATTRIBUTE_GCC_GENERATE_DEBUGGING_SYMBOLS "YES" )    
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
     set( CMAKE_OSX_DEPLOYMENT_TARGET "10.8" )
     set( OTHER_CODE_SIGN_FLAGS "--deep")
@@ -271,6 +272,7 @@ elseif( WARNINGS_AS_ERRORS )
             -Wno-receiver-forward-class \
             -Wno-semicolon-before-method-body \
             -Wno-reserved-id-macro \
+            -Wno-nonportable-include-path \
             -Wno-import-preprocessor-directive-pedantic" )
 
         set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LOCAL_DISABLED_WARNINGS}" ) # warnings as errors

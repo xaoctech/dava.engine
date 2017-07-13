@@ -17,7 +17,7 @@ public:
 
 protected:
 #if defined(__DAVAENGINE_DEBUG__)
-    void CheckActorType() const override;
+    void ValidateActorType() const override;
 #endif
 
 private:
