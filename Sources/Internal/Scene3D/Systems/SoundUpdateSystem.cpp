@@ -103,7 +103,7 @@ void SoundUpdateSystem::Process(float32 timeElapsed)
         for (uint32 i = 0; i < autoCount; ++i)
         {
             AutoTriggerSound& autoTriggerSound = autoTriggerSounds[i];
-            float32 distanceSq = (listenerPosition - autoTriggerSound.owner->GetWorldTransform().GetTranslationVector()).SquareLength();
+            float32 distanceSq = (listenerPosition - GetTransformComponent(autoTriggerSound.owner)->GetWorldTransformPtr()->GetTranslationVector()).SquareLength();
             if (distanceSq < autoTriggerSound.maxSqDistance)
             {
                 if (!autoTriggerSound.soundEvent->IsActive())

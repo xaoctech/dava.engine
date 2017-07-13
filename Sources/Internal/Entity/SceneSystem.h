@@ -96,6 +96,9 @@ public:
      */
     virtual void Process(float32 timeElapsed);
 
+    /** Similar to 'Process' but called with fixed 'timeElapsed'. Could be called from zero to several times per frame. */
+    virtual void ProcessFixed(float32 timeElapsed){};
+
     virtual bool Input(UIEvent* uie)
     {
         return false;
