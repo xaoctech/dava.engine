@@ -40,8 +40,12 @@ bool DumpTool::PostInitInternal()
     dataSourceFolder = ProjectManagerData::GetDataSourcePath(inFolder);
     if (dataSourceFolder.IsEmpty())
     {
-        DAVA::Logger::Error("DataSource folder was not found");
-        return false;
+        dataSourceFolder = ProjectManagerData::GetDataPath(inFolder);
+        if (dataSourceFolder.IsEmpty())
+        {
+            DAVA::Logger::Error("DataSource of Data folder was not found");
+            return false;
+        }
     }
 
     filename = options.GetOption(OptionName::ProcessFile).AsString();
