@@ -17,7 +17,7 @@ public:
     explicit RelayoutSignallerSystem();
     ~RelayoutSignallerSystem() override;
 
-    DAVA::Signal<DAVA::UIControl*> beforeRelayoutedControlRender; // emits for every control which was relayouted in this frame, in the moment before rendering of this control
+    DAVA::Signal<> beforeRelayoutedControlRender; // emits for every control which was relayouted in this frame, in the moment before rendering of this control
 
 private:
     // UISystem
@@ -27,5 +27,5 @@ private:
     void OnControlLayouted(DAVA::UIControl* control) override;
 
 private:
-    DAVA::Vector<DAVA::UIControl*> relayoutedControls;
+    bool isDirty = false;
 };

@@ -402,13 +402,18 @@ EditorControlsView::EditorControlsView(UIControl* canvasParent_, EditorSystemsMa
     InitFieldBinder();
 
     RelayoutSignallerSystem* relayoutSystem = UIControlSystem::Instance()->GetSystem<RelayoutSignallerSystem>();
-    relayoutSignalToken = relayoutSystem->beforeRelayoutedControlRender.Connect(Bind(&EditorControlsView::BeforeRelayoutedControlRendering, this, _1));
+    DVASSERT(relayoutSystem != nullptr);
+    relayoutSignalToken = relayoutSystem->beforeRelayoutedControlRender.Connect(Bind(&EditorControlsView::BeforeRelayoutedControlRendering, this));
 }
 
 EditorControlsView::~EditorControlsView()
 {
     canvasParent->RemoveControl(controlsCanvas.Get());
-    UIControlSystem::Instance()->GetSystem<RelayoutSignallerSystem>()->beforeRelayoutedControlRender.Disconnect(relayoutSignalToken);
+    RelayoutSignallerSystem* relayoutSystem = UIControlSystem::Instance()->GetSystem<RelayoutSignallerSystem>();
+    if (relayoutSystem)
+    {
+        relayoutSystem->beforeRelayoutedControlRender.Disconnect(relayoutSignalToken);
+    }
 }
 
 void EditorControlsView::InitFieldBinder()
@@ -488,18 +493,14 @@ void EditorControlsView::RecalculateBackgroundPropertiesForGrids(DAVA::UIControl
     }
 }
 
-void EditorControlsView::BeforeRelayoutedControlRendering(UIControl* control)
+void EditorControlsView::BeforeRelayoutedControlRendering()
 {
-    if (controlsCanvas->GetParent() == nullptr) //detached canvas
+    for (auto& iter : gridControls)
     {
-        DVASSERT(false);
-        return;
+        iter->UpdateCounterpoise();
+        iter->AdjustToNestedControl();
     }
-
-    if (systemsManager->GetDragState() != EditorSystemsManager::Transform)
-    {
-        RecalculateBackgroundPropertiesForGrids(control);
-    }
+    Layout();
 }
 
 BackgroundController* EditorControlsView::CreateControlBackground(PackageBaseNode* node)

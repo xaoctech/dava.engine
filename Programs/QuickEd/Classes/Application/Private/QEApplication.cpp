@@ -82,8 +82,6 @@ void QEApplication::Init(const DAVA::EngineContext* engineContext)
     uiControlSystem->GetSystem<UIScrollBarLinkSystem>()->SetRestoreLinks(true);
     uiControlSystem->GetSystem<UIRichContentSystem>()->SetEditorMode(true);
 
-    uiControlSystem->AddSystem(std::make_unique<RelayoutSignallerSystem>(), uiControlSystem->GetRenderSystem());
-
     UIInputSystem* inputSystem = uiControlSystem->GetInputSystem();
     inputSystem->BindGlobalShortcut(KeyboardShortcut(Key::LEFT), UIInputSystem::ACTION_FOCUS_LEFT);
     inputSystem->BindGlobalShortcut(KeyboardShortcut(Key::RIGHT), UIInputSystem::ACTION_FOCUS_RIGHT);
@@ -102,7 +100,6 @@ void QEApplication::Init(const DAVA::EngineContext* engineContext)
 
 void QEApplication::Cleanup()
 {
-    DAVA::UIControlSystem::Instance()->RemoveSystem(DAVA::UIControlSystem::Instance()->GetSystem<RelayoutSignallerSystem>());
     cmdLine.clear();
 }
 

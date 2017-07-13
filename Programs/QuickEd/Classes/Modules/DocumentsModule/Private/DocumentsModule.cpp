@@ -12,6 +12,7 @@
 #include "Model/PackageHierarchy/PackageControlsNode.h"
 
 #include "EditorSystems/EditorSystemsManager.h"
+#include "UISystems/RelayoutSignallerSystem.h"
 
 #include "Application/QEGlobal.h"
 
@@ -37,6 +38,7 @@
 #include <Command/CommandStack.h>
 #include <UI/UIPackageLoader.h>
 #include <UI/UIStaticText.h>
+#include <UI/Render/UIRenderSystem.h>
 #include <Render/Renderer.h>
 #include <Render/DynamicBufferAllocator.h>
 #include <Particles/ParticleEmitter.h>
@@ -117,6 +119,7 @@ void DocumentsModule::PostInit()
     packageListenerProxy.Init(this, GetAccessor());
 
     InitWatcher();
+    InitCustomUISystems();
     InitEditorSystems();
     InitCentralWidget();
 
@@ -136,6 +139,9 @@ void DocumentsModule::OnWindowClosed(const DAVA::TArc::WindowKey& key)
     ContextAccessor* accessor = GetAccessor();
     DataContext* context = accessor->GetGlobalContext();
     context->DeleteData<DocumentsWatcherData>();
+
+    DAVA::UIControlSystem* uiControlSystem = GetAccessor()->GetEngineContext()->uiControlSystem;
+    uiControlSystem->RemoveSystem(uiControlSystem->GetSystem<RelayoutSignallerSystem>());
 }
 
 void DocumentsModule::OnContextCreated(DAVA::TArc::DataContext* context)
@@ -157,6 +163,12 @@ void DocumentsModule::OnContextDeleted(DAVA::TArc::DataContext* context)
     DataContext* globalContext = GetAccessor()->GetGlobalContext();
     DocumentsWatcherData* watcherData = globalContext->GetData<DocumentsWatcherData>();
     watcherData->Unwatch(path);
+}
+
+void DocumentsModule::InitCustomUISystems()
+{
+    DAVA::UIControlSystem* uiControlSystem = GetAccessor()->GetEngineContext()->uiControlSystem;
+    uiControlSystem->AddSystem(std::make_unique<RelayoutSignallerSystem>(), uiControlSystem->GetRenderSystem());
 }
 
 void DocumentsModule::InitEditorSystems()

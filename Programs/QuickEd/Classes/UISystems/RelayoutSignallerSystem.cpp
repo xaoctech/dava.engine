@@ -15,11 +15,14 @@ RelayoutSignallerSystem::~RelayoutSignallerSystem()
 
 void RelayoutSignallerSystem::Process(DAVA::float32 elapsedTime)
 {
-    std::for_each(relayoutedControls.begin(), relayoutedControls.end(), [&](DAVA::UIControl* control) { beforeRelayoutedControlRender.Emit(control); });
-    relayoutedControls.clear();
+    if (isDirty)
+    {
+        isDirty = false;
+        beforeRelayoutedControlRender.Emit();
+    }
 }
 
 void RelayoutSignallerSystem::OnControlLayouted(DAVA::UIControl* control)
 {
-    relayoutedControls.push_back(control);
+    isDirty = true;
 }
