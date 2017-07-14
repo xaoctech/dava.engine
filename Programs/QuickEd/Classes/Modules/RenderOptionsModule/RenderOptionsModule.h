@@ -15,8 +15,6 @@ public:
     /** Menu item name in Tools menu. */
     static const QString renderOptionsMenuItemName;
 
-    ~RenderOptionsModule() override;
-
 protected:
     void PostInit() override;
 

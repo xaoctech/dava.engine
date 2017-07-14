@@ -82,24 +82,6 @@ public:
 
 const QString RenderOptionsModule::renderOptionsMenuItemName = QString("Render Options");
 
-RenderOptionsModule::~RenderOptionsModule()
-{
-    using namespace DAVA;
-    using namespace DAVA::TArc;
-
-    ContextAccessor* accessor = GetAccessor();
-    if (accessor)
-    {
-        DataContext* globalContext = accessor->GetGlobalContext();
-        RenderOptionsDetails::RenderOptionsData* data = globalContext->GetData<RenderOptionsDetails::RenderOptionsData>();
-        DVASSERT(data);
-        DVASSERT(data->optionsDialog);
-
-        PropertiesItem properties = accessor->CreatePropertiesNode(RenderOptionsDetails::Properties::GlobalName);
-        properties.Set(RenderOptionsDetails::Properties::Geometry, data->optionsDialog->geometry());
-    }
-}
-
 void RenderOptionsModule::PostInit()
 {
     using namespace DAVA;
@@ -196,7 +178,11 @@ void RenderOptionsModule::ShowRenderOptionsDialog()
         RenderOptionsDetails::RenderOptionsData* data = globalContext->GetData<RenderOptionsDetails::RenderOptionsData>();
         DVASSERT(data);
         DVASSERT(data->optionsDialog);
+
         data->optionsDialog->exec();
+
+        PropertiesItem properties = accessor->CreatePropertiesNode(RenderOptionsDetails::Properties::GlobalName);
+        properties.Set(RenderOptionsDetails::Properties::Geometry, data->optionsDialog->geometry());
     }
 }
 
