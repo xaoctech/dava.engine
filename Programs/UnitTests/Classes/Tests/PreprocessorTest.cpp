@@ -10,6 +10,39 @@ static float EV_OneMore(float x)
     return x + 1.0f;
 }
 
+static void
+DumpBytes(const void* mem, unsigned count)
+{
+    const uint8_t* byte = (const uint8_t*)mem;
+    const uint8_t* end = byte + count;
+    static char hex[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+
+    while (byte < end)
+    {
+        unsigned byte_cnt = (end - byte < 8) ? end - byte : 8;
+        char line[64];
+
+        memset(line, ' ', countof(line));
+        for (unsigned b = 0; b < byte_cnt; ++b)
+        {
+            char* l1 = line + 3 * b + ((b < 4) ? 0 : 2);
+            char* l2 = line + 8 * 3 + 2 + 1 + 2 + b;
+
+            l1[0] = hex[(byte[b] >> 4) & 0x0F];
+            l1[1] = hex[byte[b] & 0x0F];
+            l1[2] = ' ';
+
+            l2[0] = (byte[b] > 0x20 && byte[b] < 0xAF) ? char(byte[b]) : '.';
+            l2[1] = '\0';
+        }
+        line[8 * 3 + 2 + 1] = '|';
+        line[8 * 3 + 2 + 1 + 2 + 8] = '\0';
+        DAVA::Logger::Info("%s", line);
+
+        byte += byte_cnt;
+    }
+}
+
 DAVA_TESTCLASS (PreprocessorTest)
 {
     static bool CompareStringBuffers();
@@ -200,8 +233,18 @@ DAVA_TESTCLASS (PreprocessorTest)
             #endif
 
             const char* actual_data = &output[0];
-            TEST_VERIFY(output.size() == expected_sz);
-            TEST_VERIFY(strncmp(expected_data, actual_data, output.size()) == 0);
+            bool size_match = output.size() == expected_sz;
+            bool content_match = strncmp(expected_data, actual_data, output.size()) == 0;
+            if (!size_match || !content_match)
+            {
+                DAVA::Logger::Error("output-data mismatch");
+                DAVA::Logger::Info("actual data (%u) :", unsigned(output.size()));
+                DumpBytes(&output[0], output.size());
+                DAVA::Logger::Info("expected data (%u) :", unsigned(expected_sz));
+                DumpBytes(expected_data, expected_sz);
+            }
+            TEST_VERIFY(size_match);
+            TEST_VERIFY(content_match);
 
             ::free(expected_data);
             expected_file->Release();
