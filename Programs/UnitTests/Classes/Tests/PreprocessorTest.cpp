@@ -13,7 +13,7 @@ static float EV_OneMore(float x)
 static void
 DumpBytes(const void* mem, unsigned count)
 {
-    const uint8_t* byte = (const uint8_t*)mem;
+    const uint8_t* byte = reinterpret_cast<const uint8_t*>(mem);
     const uint8_t* end = byte + count;
     static char hex[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
