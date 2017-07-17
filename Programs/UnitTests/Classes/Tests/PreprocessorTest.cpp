@@ -19,7 +19,7 @@ DumpBytes(const void* mem, unsigned count)
 
     while (byte < end)
     {
-        unsigned byte_cnt = (end - byte < 8) ? unsigned(end - byte) : 8;
+        unsigned byte_cnt = (end - byte < 8) ? static_cast<unsigned>(end - byte) : 8;
         char line[64];
 
         memset(line, ' ', countof(line));
@@ -239,9 +239,9 @@ DAVA_TESTCLASS (PreprocessorTest)
             {
                 DAVA::Logger::Error("output-data mismatch");
                 DAVA::Logger::Info("actual data (%u) :", unsigned(output.size()));
-                DumpBytes(&output[0], unsigned(output.size()));
+                DumpBytes(&output[0], static_cast<unsigned>(output.size()));
                 DAVA::Logger::Info("expected data (%u) :", unsigned(expected_sz));
-                DumpBytes(expected_data, unsigned(expected_sz));
+                DumpBytes(expected_data, static_cast<unsigned>(expected_sz));
             }
             TEST_VERIFY(size_match);
             TEST_VERIFY(content_match);
