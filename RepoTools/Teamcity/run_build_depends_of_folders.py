@@ -61,6 +61,8 @@ def __run_build( args, triggering_options = [] ):
 
     run_build_result = teamcity.run_build( args.configuration_name, framework_branch, properties, triggering_options  )
 
+    common_tool.flush_print_teamcity_set_parameter('env.run_build_id', run_build_result['id'] )
+
     return run_build_result
 
 
