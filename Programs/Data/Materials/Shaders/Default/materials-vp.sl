@@ -320,20 +320,6 @@ vertex_out vp_main( vertex_in input )
     float4  weightedVertexQuaternion = jointQuaternions[index];
 #endif
 
-    #if SPEED_TREE_LEAF
-    float3 inPivot = input.texcoord3;
-    #if WIND_ANIMATION
-    float2 inAngleSinCos = input.texcoord4;
-    #endif
-    #endif
-    #if WIND_ANIMATION
-    float inFlexibility = input.flexibility;
-    #endif
-
-    #if VERTEX_COLOR
-    float4 inVertexColor = input.color0;
-    #endif
-
 #if FLOWMAP || PARTICLES_FLOWMAP
     #if FLOWMAP
         float flowSpeed = flowAnimSpeed;
