@@ -82,7 +82,7 @@ size_t DLCManagerImpl::CountError(int32 errCode)
         errorCounters[prevErrorCode] = 0;
     }
 
-    int32 yota = 1;
+    size_t yota = 1;
 
     auto it = find(begin(errorForExternalHandle), end(errorForExternalHandle), errCode);
     if (it != end(errorForExternalHandle))
@@ -90,7 +90,7 @@ size_t DLCManagerImpl::CountError(int32 errCode)
         yota = hints.maxSameErrorCounter;
     }
 
-    auto& value = errorCounters[errCode];
+    size_t& value = errorCounters[errCode];
     value += yota;
 
     return value;
