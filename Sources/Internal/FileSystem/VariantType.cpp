@@ -76,162 +76,141 @@ const Array<VariantType::PairTypeName, VariantType::TYPES_COUNT> VariantType::va
 } };
 
 VariantType::VariantType()
-    : type(TYPE_NONE)
-    , pointerValue(nullptr)
 {
 }
 
 VariantType::VariantType(const VariantType& var)
-    : pointerValue(nullptr)
 {
     SetVariant(var);
 }
 
+VariantType::VariantType(VariantType&& value)
+{
+    type = value.type;
+    int64Value = value.int64Value;
+    value.type = TYPE_NONE;
+}
+
 VariantType::VariantType(bool value)
-    : pointerValue(nullptr)
 {
     SetBool(value);
 }
 
 VariantType::VariantType(int8 value)
-    : pointerValue(nullptr)
 {
     SetInt8(value);
 }
 
 VariantType::VariantType(uint8 value)
-    : pointerValue(nullptr)
 {
     SetUInt8(value);
 }
 
 VariantType::VariantType(int16 value)
-    : pointerValue(nullptr)
 {
     SetInt16(value);
 }
 VariantType::VariantType(uint16 value)
-    : pointerValue(nullptr)
 {
     SetUInt16(value);
 }
 
 VariantType::VariantType(int32 value)
-    : pointerValue(nullptr)
 {
     SetInt32(value);
 }
 
 VariantType::VariantType(uint32 value)
-    : pointerValue(nullptr)
 {
     SetUInt32(value);
 }
 
 VariantType::VariantType(float32 value)
-    : pointerValue(nullptr)
 {
     SetFloat(value);
 }
 
 VariantType::VariantType(float64 value)
-    : pointerValue(nullptr)
 {
     SetFloat64(value);
 }
 
 VariantType::VariantType(const String& value)
-    : pointerValue(nullptr)
 {
     SetString(value);
 }
 
 VariantType::VariantType(const WideString& value)
-    : pointerValue(nullptr)
 {
     SetString(UTF8Utils::EncodeToUTF8(value));
 }
 
 VariantType::VariantType(const uint8* _array, int32 arraySizeInBytes)
-    : pointerValue(nullptr)
 {
     SetByteArray(_array, arraySizeInBytes);
 }
 
 VariantType::VariantType(KeyedArchive* archive)
-    : pointerValue(nullptr)
 {
     SetKeyedArchive(archive);
 }
 
 VariantType::VariantType(const int64& value)
-    : pointerValue(nullptr)
 {
     SetInt64(value);
 }
 
 VariantType::VariantType(const uint64& value)
-    : pointerValue(nullptr)
 {
     SetUInt64(value);
 }
 
 VariantType::VariantType(const Vector2& value)
-    : pointerValue(nullptr)
 {
     SetVector2(value);
 }
 
 VariantType::VariantType(const Vector3& value)
-    : pointerValue(nullptr)
 {
     SetVector3(value);
 }
 
 VariantType::VariantType(const Vector4& value)
-    : pointerValue(nullptr)
 {
     SetVector4(value);
 }
 
 VariantType::VariantType(const Matrix2& value)
-    : pointerValue(nullptr)
 {
     SetMatrix2(value);
 }
 
 VariantType::VariantType(const Matrix3& value)
-    : pointerValue(nullptr)
 {
     SetMatrix3(value);
 }
 
 VariantType::VariantType(const Matrix4& value)
-    : pointerValue(nullptr)
 {
     SetMatrix4(value);
 }
 
 VariantType::VariantType(const Color& value)
-    : pointerValue(nullptr)
 {
     SetColor(value);
 }
 
 VariantType::VariantType(const FastName& value)
-    : pointerValue(nullptr)
 {
     SetFastName(value);
 }
 
 VariantType::VariantType(const AABBox3& value)
-    : pointerValue(nullptr)
 {
     SetAABBox3(value);
 }
 
 VariantType::VariantType(const FilePath& value)
-    : pointerValue(nullptr)
 {
     SetFilePath(value);
 }
@@ -249,184 +228,216 @@ const String& VariantType::GetTypeName() const
 
 void VariantType::SetBool(bool value)
 {
-    ReleasePointer();
-    type = TYPE_BOOLEAN;
+    if (TYPE_BOOLEAN != type)
+    {
+        ReleasePointer();
+        type = TYPE_BOOLEAN;
+    }
     boolValue = value;
 }
 
 void VariantType::SetInt8(int8 value)
 {
-    ReleasePointer();
-    type = TYPE_INT8;
+    if (TYPE_INT8 != type)
+    {
+        ReleasePointer();
+        type = TYPE_INT8;
+    }
     int8Value = value;
 }
 
 void VariantType::SetUInt8(uint8 value)
 {
-    ReleasePointer();
-    type = TYPE_UINT8;
+    if (TYPE_UINT8 != type)
+    {
+        ReleasePointer();
+        type = TYPE_UINT8;
+    }
     uint8Value = value;
 }
+
 void VariantType::SetInt16(int16 value)
 {
-    ReleasePointer();
-    type = TYPE_INT16;
+    if (TYPE_INT16 != type)
+    {
+        ReleasePointer();
+        type = TYPE_INT16;
+    }
     int16Value = value;
 }
 
 void VariantType::SetUInt16(uint16 value)
 {
-    ReleasePointer();
-    type = TYPE_UINT16;
+    if (TYPE_UINT16 != type)
+    {
+        ReleasePointer();
+        type = TYPE_UINT16;
+    }
     uint16Value = value;
 }
 
 void VariantType::SetInt32(int32 value)
 {
-    ReleasePointer();
-    type = TYPE_INT32;
+    if (TYPE_INT32 != type)
+    {
+        ReleasePointer();
+        type = TYPE_INT32;
+    }
     int32Value = value;
 }
 
 void VariantType::SetUInt32(uint32 value)
 {
-    ReleasePointer();
-    type = TYPE_UINT32;
+    if (TYPE_UINT32 != type)
+    {
+        ReleasePointer();
+        type = TYPE_UINT32;
+    }
     uint32Value = value;
 }
 
 void VariantType::SetFloat(float32 value)
 {
-    ReleasePointer();
-    type = TYPE_FLOAT;
+    if (TYPE_FLOAT != type)
+    {
+        ReleasePointer();
+        type = TYPE_FLOAT;
+    }
     floatValue = value;
 }
 
 void VariantType::SetFloat64(float64 value)
 {
-    ReleasePointer();
-    type = TYPE_FLOAT64;
+    if (TYPE_FLOAT64 != type)
+    {
+        ReleasePointer();
+        type = TYPE_FLOAT64;
+    }
     float64Value = value;
 }
 
 void VariantType::SetString(const String& value)
 {
-    ReleasePointer();
-    type = TYPE_STRING;
-    stringValue = new String(value);
+    SetValueWithAllocation(TYPE_STRING, value);
 }
 void VariantType::SetWideString(const WideString& value)
 {
-    ReleasePointer();
-    type = TYPE_STRING;
-    stringValue = new String(UTF8Utils::EncodeToUTF8(value));
+    SetValueWithAllocation(TYPE_STRING, String(UTF8Utils::EncodeToUTF8(value)));
 }
 
 void VariantType::SetByteArray(const uint8* array, int32 arraySizeInBytes)
 {
-    ReleasePointer();
-    type = TYPE_BYTE_ARRAY;
-    auto vec = new Vector<uint8>(array, array + arraySizeInBytes);
-    pointerValue = static_cast<void*>(vec);
+    if (type != TYPE_BYTE_ARRAY)
+    {
+        ReleasePointer();
+        auto vec = new Vector<uint8>(array, array + arraySizeInBytes);
+        pointerValue = static_cast<void*>(vec);
+        type = TYPE_BYTE_ARRAY;
+    }
+    else
+    {
+        (static_cast<Vector<uint8>*>(pointerValue))->assign(array, array + arraySizeInBytes);
+    }
 }
 
 void VariantType::SetKeyedArchive(KeyedArchive* archive)
 {
-    ReleasePointer();
-    type = TYPE_KEYED_ARCHIVE;
-    if (archive)
+    if (type != TYPE_KEYED_ARCHIVE)
     {
-        pointerValue = new KeyedArchive(*archive);
+        ReleasePointer();
+
+        if (nullptr != archive)
+        {
+            pointerValue = new KeyedArchive(*archive);
+        }
+        else
+        {
+            pointerValue = new KeyedArchive();
+        }
+        type = TYPE_KEYED_ARCHIVE;
     }
     else
     {
-        pointerValue = new KeyedArchive();
+        KeyedArchive* pointerKeyedArchive = static_cast<KeyedArchive*>(pointerValue);
+
+        if (nullptr != archive)
+        {
+            *pointerKeyedArchive = *archive;
+        }
+        else
+        {
+            pointerKeyedArchive->DeleteAllKeys();
+        }
     }
 }
 
 void VariantType::SetInt64(const int64& value)
 {
-    ReleasePointer();
-    type = TYPE_INT64;
+    if (TYPE_INT64 != type)
+    {
+        ReleasePointer();
+        type = TYPE_INT64;
+    }
     int64Value = value;
 }
 
 void VariantType::SetUInt64(const uint64& value)
 {
-    ReleasePointer();
-    type = TYPE_UINT64;
+    if (TYPE_UINT64 != type)
+    {
+        ReleasePointer();
+        type = TYPE_UINT64;
+    }
     uint64Value = value;
 }
 
 void VariantType::SetVector2(const Vector2& value)
 {
-    ReleasePointer();
-    type = TYPE_VECTOR2;
-    vector2Value = new Vector2(value);
+    SetValueWithAllocation(TYPE_VECTOR2, value);
 }
 
 void VariantType::SetVector3(const Vector3& value)
 {
-    ReleasePointer();
-    type = TYPE_VECTOR3;
-    vector3Value = new Vector3(value);
+    SetValueWithAllocation(TYPE_VECTOR3, value);
 }
 
 void VariantType::SetVector4(const Vector4& value)
 {
-    ReleasePointer();
-    type = TYPE_VECTOR4;
-    vector4Value = new Vector4(value);
+    SetValueWithAllocation(TYPE_VECTOR4, value);
 }
 
 void VariantType::SetMatrix2(const Matrix2& value)
 {
-    ReleasePointer();
-    type = TYPE_MATRIX2;
-    matrix2Value = new Matrix2(value);
+    SetValueWithAllocation(TYPE_MATRIX2, value);
 }
+
 void VariantType::SetMatrix3(const Matrix3& value)
 {
-    ReleasePointer();
-    type = TYPE_MATRIX3;
-    matrix3Value = new Matrix3(value);
+    SetValueWithAllocation(TYPE_MATRIX3, value);
 }
 void VariantType::SetMatrix4(const Matrix4& value)
 {
-    ReleasePointer();
-    type = TYPE_MATRIX4;
-    matrix4Value = new Matrix4(value);
+    SetValueWithAllocation(TYPE_MATRIX4, value);
 }
 
 void VariantType::SetColor(const DAVA::Color& value)
 {
-    ReleasePointer();
-    type = TYPE_COLOR;
-    colorValue = new Color(value);
+    SetValueWithAllocation(TYPE_COLOR, value);
 }
 
 void VariantType::SetFastName(const DAVA::FastName& value)
 {
-    ReleasePointer();
-    type = TYPE_FASTNAME;
-
-    fastnameValue = new FastName(value);
+    SetValueWithAllocation(TYPE_FASTNAME, value);
 }
 
 void VariantType::SetAABBox3(const DAVA::AABBox3& value)
 {
-    ReleasePointer();
-    type = TYPE_AABBOX3;
-
-    aabbox3 = new AABBox3(value);
+    SetValueWithAllocation(TYPE_AABBOX3, value);
 }
 
 void VariantType::SetFilePath(const FilePath& value)
 {
-    ReleasePointer();
-    type = TYPE_FILEPATH;
-
-    filepathValue = new FilePath(value);
+    SetValueWithAllocation(TYPE_FILEPATH, value);
 }
 
 void VariantType::SetVariant(const VariantType& var)
@@ -1622,6 +1633,15 @@ bool VariantType::operator!=(const VariantType& other) const
 VariantType& VariantType::operator=(const VariantType& other)
 {
     SetVariant(other);
+    return *this;
+}
+
+VariantType& VariantType::operator=(VariantType&& other)
+{
+    type = other.type;
+    int64Value = other.int64Value;
+    other.type = TYPE_NONE;
+
     return *this;
 }
 

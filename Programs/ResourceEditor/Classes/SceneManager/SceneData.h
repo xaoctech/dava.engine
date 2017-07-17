@@ -30,6 +30,7 @@ public:
 private:
     friend class SceneManagerModule;
 
+    SceneEditor2* GetScenePtr() const;
     DAVA::RefPtr<SceneEditor2> scene;
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(SceneData, DAVA::TArc::DataNode)
@@ -39,6 +40,7 @@ private:
         .Field(sceneChangedPropertyName, &SceneData::IsSceneChanged, nullptr)
         .Field(scenePathPropertyName, &SceneData::GetScenePath, nullptr)
         .Field(sceneLandscapeToolsPropertyName, &SceneData::GetEnabledLandscapeTools, nullptr)
+        .Field("ScenePtr", &SceneData::GetScenePtr, nullptr)
         .End();
     }
 };
