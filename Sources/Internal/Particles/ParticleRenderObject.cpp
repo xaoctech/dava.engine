@@ -108,7 +108,8 @@ void ParticleRenderObject::PrepareRenderData(Camera* camera)
     basisVectors[7] = ex;
 
     static Vector3 stripeBasisVectors[7] = { Vector3(),
-                                             Vector3(), Vector3(),
+                                             Vector3(),
+                                             Vector3(),
                                              Vector3(),
                                              Vector3(1, 0, 0),
                                              Vector3(0, 1, 0),
@@ -126,9 +127,10 @@ void ParticleRenderObject::PrepareRenderData(Camera* camera)
     for (List<ParticleGroup>::iterator itGroupCurr = effectData->groups.begin(), e = effectData->groups.end(); itGroupCurr != e; ++itGroupCurr)
     {
         const ParticleGroup& group = (*itGroupCurr);
-        //note - isDisabled just stop it from being rendered, still processing particles in ParticleEffectSystem
+        // Note - isDisabled just stop it from being rendered, still processing particles in ParticleEffectSystem
         if (!CheckGroup(group))
-            continue; //if no material was set up, or empty group, or layer rendering is disabled or sprite is removed - don't draw anyway
+            continue; // If no material was set up, or empty group, or layer rendering is disabled or sprite is removed - don't draw anyway
+
         bool isLayerTypesNotTheSame = CheckIfSimpleParticle(itGroupStart->layer) != CheckIfSimpleParticle(itGroupCurr->layer);
 
         if (itGroupStart->material != itGroupCurr->material || isLayerTypesNotTheSame)
@@ -136,7 +138,7 @@ void ParticleRenderObject::PrepareRenderData(Camera* camera)
             if (itGroupStart->layer->type != ParticleLayer::TYPE_PARTICLE_STRIPE)
                 AppendParticleGroup(itGroupStart, itGroupCurr, particlesInGroup, camera->GetDirection(), basisVectors);
             else
-                AppendStripeParticle(itGroupStart, itGroupCurr, particlesInGroup, camera, stripeBasisVectors);
+                AppendStripeParticle(itGroupStart, itGroupCurr, camera, stripeBasisVectors);
             itGroupStart = itGroupCurr;
             particlesInGroup = 0;
         }
@@ -147,7 +149,7 @@ void ParticleRenderObject::PrepareRenderData(Camera* camera)
         if (itGroupStart->layer->type != ParticleLayer::TYPE_PARTICLE_STRIPE)
             AppendParticleGroup(itGroupStart, effectData->groups.end(), particlesInGroup, camera->GetDirection(), basisVectors);
         else
-            AppendStripeParticle(itGroupStart, effectData->groups.end(), particlesInGroup, camera, stripeBasisVectors);
+            AppendStripeParticle(itGroupStart, effectData->groups.end(), camera, stripeBasisVectors);
     }
 }
 
@@ -419,7 +421,6 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
                 }
                 if (begin->layer->enableFlow && begin->layer->flowmap.get() != nullptr)
                 {
-                    // todo:: mmmm frameblend?
                     float32* flowUV = group.layer->flowmap->GetTextureVerts(current->frame);
                     for (int32 i = 0; i < 4; i++) // VS_TEXCOORD2.xy, z - speed, w - offset.
                     {
@@ -469,9 +470,10 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
     }
 }
 
-void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator begin, List<ParticleGroup>::iterator end, uint32 particlesCount, Camera* camera, Vector3* basisVectors)
+void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator begin, List<ParticleGroup>::iterator end, Camera* camera, Vector3* basisVectors)
 {
     uint32 vertexStride = GetVertexStride(begin->layer); // If you change vertex layout, don't forget to change the stride.
+    Vector3 cameraDirection = camera->GetDirection();
 
     for (auto it = begin; it != end; ++it)
     {
@@ -529,7 +531,7 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                 if ((group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING_STRIPE_SPHERICAL) && i == basisCount - 1)
                 {
                     basisVector = (base.position - camera->GetPosition()).CrossProduct(base.speed);
-                    basisVector = (camera->GetDirection()).CrossProduct(base.speed);
+                    basisVector = cameraDirection.CrossProduct(base.speed);
 
                     basisVector.Normalize();
                 }
@@ -546,7 +548,7 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
 
                     Vector3 dir = currentParticle->speed;
                     float32 len = dir.Normalize();
-                    if (abs(len) < EPSILON && nodes.size() > 0) // TODO: recalculate for each node? should I?
+                    if (abs(len) < EPSILON && nodes.size() > 0)
                     {
                         dir = base.position - nodes.front().position;
                         len = dir.Normalize();
@@ -557,7 +559,7 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                     viewNormal = basisVector.CrossProduct(dir);
 
                     viewNormal.Normalize();
-                    dot = camera->GetDirection().DotProduct(viewNormal);
+                    dot = cameraDirection.DotProduct(viewNormal);
                     fresnelToAlpha = FresnelShlick(1.0f - Abs(dot), currentParticle->fresnelToAlphaBias, currentParticle->fresnelToAlphaPower);
                 }
 
@@ -615,8 +617,7 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                 {
                     if ((group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING_STRIPE_SPHERICAL) && i == basisCount - 1)
                     {
-                        basisVector = (node.position - camera->GetPosition()).CrossProduct(node.speed);
-                        basisVector = (camera->GetDirection()).CrossProduct(node.speed);
+                        basisVector = cameraDirection.CrossProduct(node.speed);
                         basisVector.Normalize();
                     }
 

@@ -250,6 +250,7 @@ void CommandChangeParticlesStripeProperties::ApplyParams(StripeParams& params)
         PropertyLineHelper::SetValueLine(layer->stripeNoiseUScrollSpeedOverLife, params.stripeNoiseUScrollSpeedOverLife);
         PropertyLineHelper::SetValueLine(layer->stripeNoiseVScrollSpeedOverLife, params.stripeNoiseVScrollSpeedOverLife);
         PropertyLineHelper::SetValueLine(layer->stripeColorOverLife, params.stripeColorOverLife);
+        layer->isMaxStripeOverLifeDirty = true;
     }
 }
 
