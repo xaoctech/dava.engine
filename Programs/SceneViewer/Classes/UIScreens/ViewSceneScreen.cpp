@@ -491,7 +491,7 @@ void ViewSceneScreen::ProcessUserInput(DAVA::float32 timeElapsed)
 
         Camera* camera = scene->GetDrawCamera();
         Vector2 joypadPos = moveJoyPAD->GetDigitalPosition();
-        Vector3 cameraMoveOffset = (joypadPos.x * camera->GetLeft() - joypadPos.y * camera->GetDirection()) * timeElapsed * 20.f;
+        Vector3 cameraMoveOffset = (-joypadPos.x * camera->GetLeft() - joypadPos.y * camera->GetDirection()) * timeElapsed * 20.f;
 
         camera->SetPosition(camera->GetPosition() + cameraMoveOffset);
         camera->SetTarget(camera->GetTarget() + cameraMoveOffset);
