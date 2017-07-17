@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Commands2/Base/RECommand.h"
-#include "Render/RenderBase.h"
-#include "FileSystem/FilePath.h"
 #include "Base/RefPtr.h"
+#include "Commands2/Base/RECommand.h"
+#include "FileSystem/FilePath.h"
 #include "Particles/ParticlePropertyLine.h"
+#include "Render/RenderBase.h"
 
 namespace DAVA
 {
@@ -53,7 +53,7 @@ public:
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> flowOffsetVariation;
     };
 
-    CommandChangeFlowProperties(DAVA::ParticleLayer* layer_, FlowParams&& flowParameters);
+    CommandChangeFlowProperties(DAVA::ParticleLayer* layer_, FlowParams&& params);
 
     void Undo() override;
     void Redo() override;
