@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_SEMAPHORE_LITE_H__
-#define __DAVAENGINE_SEMAPHORE_LITE_H__
+#pragma once
 
 #include "Semaphore.h"
 #include "Debug/DVAssert.h"
@@ -75,5 +74,3 @@ private:
 };
 
 } // namespace DAVA
-
-#endif // __DAVAENGINE_SEMAPHORE_LITE_H__
