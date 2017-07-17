@@ -368,8 +368,14 @@ void WindowNativeBridge::KeyEvent(NSEvent* theEvent)
             for (NSUInteger i = 0; i < n; ++i)
             {
                 uint32 key = [chars characterAtIndex:i];
-                e.keyEvent.keyVirtual = key;
-                mainDispatcher->PostEvent(e);
+
+                // Some key combinations can produce non-empty NSString with zero chars in it (e.g. ctrl + space)
+                // Do not handle such symbols
+                if (key > 0)
+                {
+                    e.keyEvent.keyVirtual = key;
+                    mainDispatcher->PostEvent(e);
+                }
             }
         }
     }
