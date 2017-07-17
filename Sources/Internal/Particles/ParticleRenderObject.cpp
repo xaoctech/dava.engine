@@ -129,7 +129,6 @@ void ParticleRenderObject::PrepareRenderData(Camera* camera)
         //note - isDisabled just stop it from being rendered, still processing particles in ParticleEffectSystem
         if (!CheckGroup(group))
             continue; //if no material was set up, or empty group, or layer rendering is disabled or sprite is removed - don't draw anyway
-
         bool isLayerTypesNotTheSame = CheckIfSimpleParticle(itGroupStart->layer) != CheckIfSimpleParticle(itGroupCurr->layer);
 
         if (itGroupStart->material != itGroupCurr->material || isLayerTypesNotTheSame)
@@ -137,7 +136,7 @@ void ParticleRenderObject::PrepareRenderData(Camera* camera)
             if (itGroupStart->layer->type != ParticleLayer::TYPE_PARTICLE_STRIPE)
                 AppendParticleGroup(itGroupStart, itGroupCurr, particlesInGroup, camera->GetDirection(), basisVectors);
             else
-                AppendStripeParticle(itGroupStart, effectData->groups.end(), particlesInGroup, camera, stripeBasisVectors);
+                AppendStripeParticle(itGroupStart, itGroupCurr, particlesInGroup, camera, stripeBasisVectors);
             itGroupStart = itGroupCurr;
             particlesInGroup = 0;
         }
@@ -380,7 +379,7 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
                 bot *= 0.5f * current->currSize.y * (1 - group.layer->layerPivotPoint.y);
 
                 Vector3 particlePosition = current->position;
-                if (group.layer->inheritPosition)
+                if (group.layer->GetInheritPosition())
                     particlePosition += effectData->infoSources[group.positionSource].position;
                 Array<Vector3, 4> quadPos = { particlePosition + left + bot, particlePosition + right + bot, particlePosition + left + top, particlePosition + right + top };
                 uint32 ptrOffset = 0;

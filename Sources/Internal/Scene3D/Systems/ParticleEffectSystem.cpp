@@ -627,7 +627,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
                 if (!group.head)
                 {
                     current = GenerateNewParticle(effect, group, currLoopTime, *worldTransformPtr);
-                    if (group.layer->inheritPosition)
+                    if (group.layer->GetInheritPosition())
                         AddParticleToBBox(current->position + effect->effectData.infoSources[group.positionSource].position, current->currRadius, bbox);
                     else
                         AddParticleToBBox(current->position, current->currRadius, bbox);
@@ -648,7 +648,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
                 {
                     group.particlesToGenerate -= 1.0f;
                     current = GenerateNewParticle(effect, group, currLoopTime, *worldTransformPtr);
-                    if (group.layer->inheritPosition)
+                    if (group.layer->GetInheritPosition())
                         AddParticleToBBox(current->position + effect->effectData.infoSources[group.positionSource].position, current->currRadius, bbox);
                     else
                         AddParticleToBBox(current->position, current->currRadius, bbox);
@@ -683,12 +683,12 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
     data.baseNode.position = particle->position;
     data.isActive = isActive;
     bool fuck = false;
-    if (layer->inheritPosition)
+    if (layer->GetInheritPosition())
     {
         data.inheritPositionOffset = effectData.infoSources[group.positionSource].position;
     }
 
-    if (layer->stripeInheritPositionForBase)
+    if (layer->GetInheritPositionForStripeBase())
     {
         data.baseNode.position = effectData.infoSources[group.positionSource].position;
     }
@@ -737,7 +737,7 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
             }
             nodeIter->speed += acceleration * dt;
         }
-        if (layer->inheritPosition)
+        if (layer->GetInheritPosition())
             AddParticleToBBox(nodeIter->position + effectData.infoSources[group.positionSource].position, radius, bbox);
         else
             AddParticleToBBox(nodeIter->position, radius, bbox);
@@ -754,7 +754,7 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
             ++nodeIter;
     }
 
-    if (layer->stripeInheritPositionForBase && data.stripeNodes.size() > 0)
+    if (layer->GetInheritPositionForStripeBase() && data.stripeNodes.size() > 0)
     {
         float32 previousLength = data.prevBaseLen;
         float32 currentLength = (data.baseNode.position - data.stripeNodes.front().position).Length();
@@ -903,7 +903,7 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleEffectComponent* eff
         vel += (group.layer->velocityVariation->GetValue(currLoopTime) * static_cast<float32>(Random::Instance()->RandFloat()));
     particle->speed *= vel;
 
-    if (!group.layer->inheritPosition) //just generate at correct position
+    if (!group.layer->GetInheritPosition()) //just generate at correct position
     {
         particle->position += effect->effectData.infoSources[group.positionSource].position;
     }
@@ -954,7 +954,7 @@ void ParticleEffectSystem::UpdateNonStripeParticleData(ParticleEffectComponent* 
         Vector2 pivotSize = particle->currSize * group.layer->layerPivotSizeOffsets;
         particle->currRadius = pivotSize.Length();
     }
-    if (group.layer->inheritPosition)
+    if (group.layer->GetInheritPosition())
         AddParticleToBBox(particle->position + effect->effectData.infoSources[group.positionSource].position, particle->currRadius, bbox);
     else
         AddParticleToBBox(particle->position, particle->currRadius, bbox);

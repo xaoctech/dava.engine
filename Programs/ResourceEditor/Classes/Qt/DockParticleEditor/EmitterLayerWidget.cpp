@@ -1092,7 +1092,7 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     layerTypeComboBox->setCurrentIndex(LayerTypeToIndex(layer->type));
 
     enableCheckBox->setChecked(!layer->isDisabled);
-    inheritPostionCheckBox->setChecked(layer->inheritPosition);
+    inheritPostionCheckBox->setChecked(layer->GetInheritPosition());
 
     isLongCheckBox->setChecked(layer->isLong);
     scaleVelocityBaseSpinBox->setValue((double)layer->scaleVelocityBase);
@@ -1114,7 +1114,7 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     stripeUScrollSpeedSpin->setValue(layer->stripeUScrollSpeed);
     stripeVScrollSpeedSpin->setValue(layer->stripeVScrollSpeed);
     stripeFadeDistanceFromTopSpin->setValue(layer->stripeFadeDistanceFromTop);
-    stripeInheritPositionForBaseCheckBox->setChecked(layer->stripeInheritPositionForBase);
+    stripeInheritPositionForBaseCheckBox->setChecked(layer->GetInheritPositionForStripeBase());
     stripeUsePerspectiveMappingCheckBox->setChecked(layer->usePerspectiveMapping);
 
     bool fresToAlphaVisible = layer->useFresnelToAlpha;

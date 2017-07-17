@@ -209,7 +209,7 @@ CommandChangeParticlesStripeProperties::CommandChangeParticlesStripeProperties(D
         oldParams.stripeUScrollSpeed = layer->stripeUScrollSpeed;
         oldParams.stripeVScrollSpeed = layer->stripeVScrollSpeed;
         oldParams.stripeFadeDistanceFromTop = layer->stripeFadeDistanceFromTop;
-        oldParams.stripeInheritPositionForBase = layer->stripeInheritPositionForBase;
+        oldParams.stripeInheritPositionForBase = layer->GetInheritPositionForStripeBase();
         oldParams.stripeSizeOverLifeProp = layer->stripeSizeOverLifeProp;
         oldParams.stripeNoiseUScrollSpeedOverLife = layer->stripeNoiseUScrollSpeedOverLife;
         oldParams.stripeNoiseVScrollSpeedOverLife = layer->stripeNoiseVScrollSpeedOverLife;
@@ -243,7 +243,7 @@ void CommandChangeParticlesStripeProperties::ApplyParams(StripeParams& params)
         layer->stripeUScrollSpeed = params.stripeUScrollSpeed;
         layer->stripeVScrollSpeed = params.stripeVScrollSpeed;
         layer->stripeFadeDistanceFromTop = params.stripeFadeDistanceFromTop;
-        layer->stripeInheritPositionForBase = params.stripeInheritPositionForBase;
+        layer->SetInheritPositionForStripeBase(params.stripeInheritPositionForBase);
         layer->usePerspectiveMapping = params.usePerspectiveMapping;
         PropertyLineHelper::SetValueLine(layer->stripeTextureTile, params.stripeTextureTile);
         PropertyLineHelper::SetValueLine(layer->stripeSizeOverLifeProp, params.stripeSizeOverLifeProp);
