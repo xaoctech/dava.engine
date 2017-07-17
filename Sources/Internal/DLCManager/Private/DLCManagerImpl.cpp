@@ -15,6 +15,7 @@
 #include "DLCManager/Private/PackRequest.h"
 
 #include <iomanip>
+#include <algorithm>
 
 namespace DAVA
 {
