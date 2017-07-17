@@ -31,7 +31,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SkeletonComponent)
 bool SkeletonComponent::Joint::operator==(const Joint& other) const
 {
     return parentIndex == other.parentIndex &&
-    targetIndex == other.targetIndex &&
     name == other.name &&
     uid == other.uid &&
     bindTransformInv == other.bindTransformInv;
@@ -91,7 +90,6 @@ void SkeletonComponent::Serialize(KeyedArchive* archive, SerializationContext* s
         jointArch->SetFastName("joint.name", joint.name);
         jointArch->SetFastName("joint.uid", joint.uid);
         jointArch->SetUInt32("joint.parentIndex", joint.parentIndex);
-        jointArch->SetUInt32("joint.targetIndex", joint.targetIndex);
         jointArch->SetVector3("joint.bbox.min", joint.bbox.min);
         jointArch->SetVector3("joint.bbox.max", joint.bbox.max);
         jointArch->SetMatrix4("joint.bindPose", joint.bindTransform);
@@ -117,7 +115,6 @@ void SkeletonComponent::Deserialize(KeyedArchive* archive, SerializationContext*
         joint.name = jointArch->GetFastName("joint.name");
         joint.uid = jointArch->GetFastName("joint.uid");
         joint.parentIndex = jointArch->GetUInt32("joint.parentIndex", INVALID_JOINT_INDEX);
-        joint.targetIndex = jointArch->GetUInt32("joint.targetIndex", INVALID_JOINT_INDEX);
         joint.bbox.min = jointArch->GetVector3("joint.bbox.min");
         joint.bbox.max = jointArch->GetVector3("joint.bbox.max");
         joint.bindTransform = jointArch->GetMatrix4("joint.bindPose");

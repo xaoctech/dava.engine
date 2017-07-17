@@ -18,27 +18,50 @@ class NMaterial;
 class SkinnedMesh : public RenderObject
 {
 public:
+    const static uint32 MAX_TARGET_JOINTS = 32; //same as in shader
+
     SkinnedMesh();
 
-    virtual RenderObject* Clone(RenderObject* newObject);
+    RenderObject* Clone(RenderObject* newObject) override;
+    void Save(KeyedArchive* archive, SerializationContext* serializationContext) override;
+    void Load(KeyedArchive* archive, SerializationContext* serializationContext) override;
 
     void RecalcBoundingBox() override;
-    void BindDynamicParameters(Camera* camera) override;
+    void BindDynamicParameters(Camera* camera, RenderBatch* batch) override;
+    void PrepareToRender(Camera* camera) override;
 
-    inline void SetBoundingBox(const AABBox3& box);
-    inline void SetJointsPtr(Vector4* positionPtr, Vector4* quaternoinPtr, uint32 count);
+    void SetBoundingBox(const AABBox3& box);
+    void SetJointsPtr(const Vector4* positionPtr, const Vector4* quaternoinPtr, uint32 jointCount);
+    void SetJointsMapping(RenderBatch* batch, const Vector<int32>& jointTargets);
 
 protected:
-    Vector4* positionArray = nullptr;
-    Vector4* quaternionArray = nullptr;
-    uint32 jointsCount = 0;
+    struct BatchJointData
+    {
+        Vector<Vector4> positions;
+        Vector<Vector4> quaternions;
+        uint32 jointsDataCount = 0;
+    };
+    Map<RenderBatch*, Vector<int32>> jointsMapping; // [batch, [target joints]]
+    Map<RenderBatch*, BatchJointData> jointsData; // [batch, [target joints]]
+
+    const Vector4* positionArray = nullptr;
+    const Vector4* quaternionArray = nullptr;
+    uint32 skeletonJointCount = 0;
 };
 
-inline void SkinnedMesh::SetJointsPtr(Vector4* positionPtr, Vector4* quaternoinPtr, uint32 count)
+inline void SkinnedMesh::SetJointsPtr(const Vector4* positionPtr, const Vector4* quaternoinPtr, uint32 jointCount)
 {
     positionArray = positionPtr;
     quaternionArray = quaternoinPtr;
-    jointsCount = count;
+    skeletonJointCount = jointCount;
+}
+
+inline void SkinnedMesh::SetJointsMapping(RenderBatch* batch, const Vector<int32>& jointTargets)
+{
+    jointsMapping[batch] = jointTargets;
+    jointsData[batch].positions.resize(jointTargets.size());
+    jointsData[batch].quaternions.resize(jointTargets.size());
+    jointsData[batch].jointsDataCount = uint32(jointTargets.size());
 }
 
 inline void SkinnedMesh::SetBoundingBox(const AABBox3& box)

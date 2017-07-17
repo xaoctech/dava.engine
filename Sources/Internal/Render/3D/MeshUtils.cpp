@@ -319,12 +319,7 @@ SkinnedMesh* CreateHardSkinnedMesh(Entity* fromEntity, Vector<SkeletonComponent:
 
             outJoints[nodeIndex].bbox = ro->GetBoundingBox();
 
-            outJoints[nodeIndex].targetIndex = currentTargetIndex;
             currentTargetIndex++;
-        }
-        else
-        {
-            outJoints[nodeIndex].targetIndex = SkeletonComponent::INVALID_JOINT_INDEX;
         }
 
         Matrix4 bindTransform = child->AccamulateLocalTransform(fromEntity);

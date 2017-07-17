@@ -1,5 +1,4 @@
-#ifndef __COLLADA_TO_SC2_IMPORTER_H__
-#define __COLLADA_TO_SC2_IMPORTER_H__
+#pragma once
 
 #include "Collada/ColladaToSc2Importer/ImportLibrary.h"
 #include "Collada/ColladaErrorCodes.h"
@@ -18,6 +17,12 @@ public:
     eColladaErrorCodes SaveAnimations(ColladaScene* colladaScene, const FilePath& dir);
 
 private:
+    struct SkinnedTriangle
+    {
+        Set<int32> usedJoints;
+        int32 indices[3];
+    };
+
     void ImportAnimation(ColladaSceneNode* colladaNode, Entity* nodeEntity);
     void ImportSkeleton(ColladaSceneNode* colladaNode, Entity* node);
     void LoadMaterialParents(ColladaScene* colladaScene);
@@ -28,8 +33,10 @@ private:
     eColladaErrorCodes BuildSceneAsCollada(Entity* root, ColladaSceneNode* colladaNode);
     RenderObject* GetMeshFromCollada(ColladaMeshInstance* mesh, const FastName& name);
 
+    //split geometry by max available joint count per draw-call
+    //returns [PolygonGroup, [jointOffset, jointCount]]
+    Vector<std::pair<PolygonGroup*, Vector<int32>>> SplitSkinnedMeshGeometry(PolygonGroup* dataSource, uint32 maxJointCount);
+
     ImportLibrary library;
 };
 };
-
-#endif

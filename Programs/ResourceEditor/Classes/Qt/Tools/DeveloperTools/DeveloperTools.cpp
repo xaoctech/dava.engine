@@ -107,7 +107,6 @@ void DeveloperTools::OnDebugCreateTestHardSkinnedObject()
 
     for (int32 i = 0; i < 4; ++i)
     {
-        joints[i].targetIndex = i;
         joints[i].name = joints[i].uid;
         joints[i].bindTransform = Matrix4::MakeTranslation(boxes[i]);
         joints[i].bindTransform.GetInverse(joints[i].bindTransformInv);
@@ -218,7 +217,6 @@ void DeveloperTools::OnDebugCreateTestSoftSkinnedObject()
     for (int32 j = 0; j < 5; ++j)
     {
         joints[j].parentIndex = (j == 0) ? SkeletonComponent::INVALID_JOINT_INDEX : 0;
-        joints[j].targetIndex = j;
         joints[j].name = joints[j].uid;
         joints[j].bbox = jointBBox;
         joints[j].bindTransform.GetInverse(joints[j].bindTransformInv);

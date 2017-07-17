@@ -55,11 +55,9 @@ RenderObject* ColladaImporter::GetMeshFromCollada(ColladaMeshInstance* mesh, con
         }
 
         ScopedPtr<NMaterial> davaMaterial(library.CreateMaterialInstance(polygonGroupInstance, isShadow));
-        ScopedPtr<RenderBatch> davaBatch(new RenderBatch());
-
         if (isSkinnedMesh)
         {
-            davaPolygon->ApplyMatrix(colladaSkinnedMesh->bindShapeMatrix);
+            SkinnedMesh* davaMesh = static_cast<SkinnedMesh*>(ro);
 
             DVASSERT(polygonGroupInstance->polyGroup->maxVertexInfluenceCount > 0);
             uint32 maxJointWeights = polygonGroupInstance->polyGroup->maxVertexInfluenceCount;
@@ -68,15 +66,188 @@ RenderObject* ColladaImporter::GetMeshFromCollada(ColladaMeshInstance* mesh, con
                 davaMaterial->AddFlag(NMaterialFlagName::FLAG_SKINNING_HARD, 1);
             else
                 davaMaterial->AddFlag(NMaterialFlagName::FLAG_SKINNING_SOFT, maxJointWeights);
-        }
 
-        davaBatch->SetPolygonGroup(davaPolygon);
-        davaBatch->SetMaterial(davaMaterial);
-        ro->AddRenderBatch(davaBatch);
+            auto skinnedDavaPolygons = SplitSkinnedMeshGeometry(davaPolygon, SkinnedMesh::MAX_TARGET_JOINTS);
+            for (auto& p : skinnedDavaPolygons)
+            {
+                PolygonGroup* pg = p.first;
+                pg->ApplyMatrix(colladaSkinnedMesh->bindShapeMatrix);
+                pg->RecalcAABBox();
+
+                ScopedPtr<RenderBatch> davaBatch(new RenderBatch());
+                davaBatch->SetPolygonGroup(pg);
+                davaBatch->SetMaterial(davaMaterial);
+
+                davaMesh->AddRenderBatch(davaBatch);
+                davaMesh->SetJointsMapping(davaBatch, p.second);
+
+                SafeRelease(pg);
+            }
+        }
+        else
+        {
+            ScopedPtr<RenderBatch> davaBatch(new RenderBatch());
+
+            davaBatch->SetPolygonGroup(davaPolygon);
+            davaBatch->SetMaterial(davaMaterial);
+            ro->AddRenderBatch(davaBatch);
+        }
     }
     // TO VERIFY?
     DVASSERT(0 < ro->GetRenderBatchCount() && "Empty mesh");
     return ro;
+}
+
+Vector<std::pair<PolygonGroup*, Vector<int32>>> ColladaImporter::SplitSkinnedMeshGeometry(PolygonGroup* dataSource, uint32 maxJointCount)
+{
+    DVASSERT(dataSource);
+    DVASSERT(dataSource->GetPrimitiveType() == rhi::PRIMITIVE_TRIANGLELIST);
+
+    int32 vertexFormat = dataSource->GetFormat();
+    int32 trianglesCount = dataSource->GetPrimitiveCount();
+
+    DVASSERT((vertexFormat & EVF_JOINTINDEX_HARD) || (vertexFormat & (EVF_JOINTINDEX | EVF_JOINTWEIGHT)));
+
+    Vector<std::pair<PolygonGroup*, Vector<int32>>> result;
+    Vector<SkinnedTriangle> sourceTriangles(trianglesCount);
+
+    bool softSkinned = ((vertexFormat & EVF_JOINTINDEX) != 0);
+
+    int32 jIndex = -1, vIndex = -1;
+    float32 jWeight = 0.f;
+    int32 sourceMaxJointIndex = 0;
+    for (int32 t = 0; t < trianglesCount; ++t)
+    {
+        SkinnedTriangle& triangle = sourceTriangles[t];
+        for (int32 i = 0; i < 3; ++i)
+        {
+            dataSource->GetIndex(t * 3 + i, vIndex);
+            triangle.indices[i] = vIndex;
+
+            if (softSkinned)
+            {
+                for (uint32 j = 0; j < 4; ++j)
+                {
+                    dataSource->GetJointWeight(vIndex, j, jWeight);
+                    if (jWeight > EPSILON)
+                    {
+                        dataSource->GetJointIndex(vIndex, j, jIndex);
+                        triangle.usedJoints.insert(jIndex);
+
+                        sourceMaxJointIndex = Max(sourceMaxJointIndex, jIndex);
+                    }
+                }
+            }
+            else
+            {
+                dataSource->GetJointIndexHard(vIndex, jIndex);
+                triangle.usedJoints.insert(jIndex);
+
+                sourceMaxJointIndex = Max(sourceMaxJointIndex, jIndex);
+            }
+        }
+    }
+
+    std::sort(sourceTriangles.begin(), sourceTriangles.end(), [](const SkinnedTriangle& l, const SkinnedTriangle& r) {
+        return *l.usedJoints.rbegin() > *r.usedJoints.rbegin(); //descending order by max joint index
+    });
+
+    Set<int32> usedJoints;
+    Set<int32> usedIndices;
+    Vector<int32> tmpJoints;
+    Vector<int32> tmpIndices;
+    Map<int32, int32> tmpIndicesMap;
+    Vector<SkinnedTriangle> triangles;
+    while (sourceTriangles.size())
+    {
+        triangles.clear();
+        usedJoints.clear();
+        usedIndices.clear();
+        tmpIndicesMap.clear();
+
+        while (sourceTriangles.size())
+        {
+            SkinnedTriangle& triangle = sourceTriangles.back();
+
+            tmpJoints.clear();
+            std::set_union(usedJoints.begin(), usedJoints.end(), triangle.usedJoints.begin(), triangle.usedJoints.end(), std::back_inserter(tmpJoints));
+            if (uint32(tmpJoints.size()) > maxJointCount)
+                break;
+
+            usedJoints.insert(triangle.usedJoints.begin(), triangle.usedJoints.end());
+
+            for (int32 ind : triangle.indices)
+                usedIndices.insert(ind);
+
+            triangles.emplace_back(triangle);
+            sourceTriangles.pop_back();
+        }
+
+        Vector<int32> jointsMapping; //map used joint indices to [0...]
+        jointsMapping.insert(jointsMapping.end(), usedJoints.begin(), usedJoints.end());
+
+        tmpIndices.clear();
+        tmpIndices.reserve(usedIndices.size());
+        tmpIndices.insert(tmpIndices.end(), usedIndices.begin(), usedIndices.end());
+
+        for (int32 ind = 0; ind < int32(usedIndices.size()); ++ind)
+            tmpIndicesMap[tmpIndices[ind]] = ind;
+
+        int32 vertexCount = int32(usedIndices.size());
+        int32 indexCount = int32(triangles.size()) * 3;
+
+        PolygonGroup* pg = new PolygonGroup();
+        pg->AllocateData(vertexFormat, vertexCount, indexCount);
+
+        for (int32 v = 0; v < vertexCount; ++v)
+        {
+            MeshUtils::CopyVertex(dataSource, tmpIndices[v], pg, v);
+
+            if (softSkinned)
+            {
+                for (uint32 j = 0; j < 4; ++j)
+                {
+                    pg->GetJointWeight(v, j, jWeight);
+                    if (jWeight > EPSILON)
+                    {
+                        pg->GetJointIndex(v, j, jIndex);
+
+                        auto found = std::find(jointsMapping.begin(), jointsMapping.end(), jIndex);
+                        DVASSERT(found != jointsMapping.end());
+
+                        pg->SetJointIndex(v, j, int32(std::distance(jointsMapping.begin(), found)));
+                    }
+                }
+            }
+            else
+            {
+                pg->GetJointIndexHard(v, jIndex);
+
+                auto found = std::find(jointsMapping.begin(), jointsMapping.end(), jIndex);
+                DVASSERT(found != jointsMapping.end());
+
+                pg->SetJointIndexHard(v, int32(std::distance(jointsMapping.begin(), found)));
+            }
+        }
+
+        int32 iIndex = 0;
+        for (const SkinnedTriangle& t : triangles)
+        {
+            for (int32 i : t.indices)
+            {
+                DVASSERT(tmpIndicesMap.count(i) != 0);
+                pg->SetIndex(iIndex, uint16(tmpIndicesMap[i]));
+
+                ++iIndex;
+            }
+        }
+
+        DVASSERT(iIndex == indexCount);
+
+        result.emplace_back(pg, std::move(jointsMapping));
+    }
+
+    return result;
 }
 
 bool ColladaImporter::VerifyColladaMesh(ColladaMeshInstance* mesh, const FastName& nodeName)
@@ -215,7 +386,6 @@ void ColladaImporter::ImportSkeleton(ColladaSceneNode* colladaNode, Entity* node
 
         bool isRootJoint = (colladaJoint.parentIndex == -1);
 
-        joint.targetIndex = colladaJoint.index;
         joint.parentIndex = isRootJoint ? SkeletonComponent::INVALID_JOINT_INDEX : colladaJoint.parentIndex;
         joint.name = FastName(colladaJoint.jointName);
         joint.uid = FastName(colladaJoint.jointUID);

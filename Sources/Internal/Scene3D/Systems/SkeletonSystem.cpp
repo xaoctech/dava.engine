@@ -187,17 +187,13 @@ void SkeletonSystem::UpdateJointTransforms(SkeletonComponent* skeleton)
             {
                 skeleton->objectSpaceTransforms[currJoint] = skeleton->objectSpaceTransforms[parentJoint].AppendTransform(skeleton->localSpaceTransforms[currJoint]);
             }
+
             //calculate final transform including bindTransform
+            skeleton->objectSpaceBoxes[currJoint] = skeleton->objectSpaceTransforms[currJoint].TransformAABBox(skeleton->jointSpaceBoxes[currJoint]);
 
-            uint32 targetIndex = (skeleton->jointInfo[currJoint] >> SkeletonComponent::INFO_TARGET_SHIFT) & SkeletonComponent::INFO_PARENT_MASK;
-            if (targetIndex != SkeletonComponent::INVALID_JOINT_INDEX)
-            {
-                skeleton->objectSpaceBoxes[currJoint] = skeleton->objectSpaceTransforms[currJoint].TransformAABBox(skeleton->jointSpaceBoxes[currJoint]);
-
-                JointTransform finalTransform = skeleton->objectSpaceTransforms[currJoint].AppendTransform(skeleton->inverseBindTransforms[currJoint]);
-                skeleton->resultPositions[targetIndex].Set(finalTransform.position.x, finalTransform.position.y, finalTransform.position.z, finalTransform.scale);
-                skeleton->resultQuaternions[targetIndex].Set(finalTransform.orientation.x, finalTransform.orientation.y, finalTransform.orientation.z, finalTransform.orientation.w);
-            }
+            JointTransform finalTransform = skeleton->objectSpaceTransforms[currJoint].AppendTransform(skeleton->inverseBindTransforms[currJoint]);
+            skeleton->resultPositions[currJoint].Set(finalTransform.position.x, finalTransform.position.y, finalTransform.position.z, finalTransform.scale);
+            skeleton->resultQuaternions[currJoint].Set(finalTransform.orientation.x, finalTransform.orientation.y, finalTransform.orientation.z, finalTransform.orientation.w);
 
             //  add [was updated]  remove [marked for update]
             skeleton->jointInfo[currJoint] &= ~SkeletonComponent::FLAG_MARKED_FOR_UPDATED;
@@ -221,13 +217,11 @@ void SkeletonSystem::UpdateSkinnedMesh(SkeletonComponent* skeleton, SkinnedMesh*
     AABBox3 resBox;
     for (uint32 currJoint = 0; currJoint < count; ++currJoint)
     {
-        uint32 targetIndex = (skeleton->jointInfo[currJoint] >> SkeletonComponent::INFO_TARGET_SHIFT) & SkeletonComponent::INFO_PARENT_MASK;
-        if (targetIndex != SkeletonComponent::INVALID_JOINT_INDEX)
-            resBox.AddAABBox(skeleton->objectSpaceBoxes[currJoint]);
+        resBox.AddAABBox(skeleton->objectSpaceBoxes[currJoint]);
     }
 
     //set data to SkinnedMesh
-    skinnedMeshObject->SetJointsPtr(&skeleton->resultPositions[0], &skeleton->resultQuaternions[0], skeleton->targetJointsCount);
+    skinnedMeshObject->SetJointsPtr(skeleton->resultPositions.data(), skeleton->resultQuaternions.data(), skeleton->GetJointsCount());
     skinnedMeshObject->SetBoundingBox(resBox); //TODO: *Skinning* decide on bbox calculation
     GetScene()->renderSystem->MarkForUpdate(skinnedMeshObject);
 }
@@ -245,20 +239,14 @@ void SkeletonSystem::RebuildSkeleton(SkeletonComponent* skeleton)
     skeleton->objectSpaceBoxes.resize(jointsCount);
     skeleton->jointMap.clear();
 
-    skeleton->targetJointsCount = 0;
-    uint32 maxTargetJoint = 0;
     DVASSERT(skeleton->jointsArray.size() < SkeletonComponent::INFO_PARENT_MASK);
     for (uint32 i = 0, sz = static_cast<int32>(skeleton->jointsArray.size()); i < sz; ++i)
     {
         DVASSERT((skeleton->jointsArray[i].parentIndex == SkeletonComponent::INVALID_JOINT_INDEX) || (skeleton->jointsArray[i].parentIndex < i)); //order
         DVASSERT((skeleton->jointsArray[i].parentIndex == SkeletonComponent::INVALID_JOINT_INDEX) || ((skeleton->jointsArray[i].parentIndex & SkeletonComponent::INFO_PARENT_MASK) == skeleton->jointsArray[i].parentIndex)); //parent fits mask
-        DVASSERT((skeleton->jointsArray[i].targetIndex == SkeletonComponent::INVALID_JOINT_INDEX) || ((skeleton->jointsArray[i].targetIndex & SkeletonComponent::INFO_PARENT_MASK) == skeleton->jointsArray[i].targetIndex)); //target fits mask
-        DVASSERT((skeleton->jointsArray[i].targetIndex == SkeletonComponent::INVALID_JOINT_INDEX) || (skeleton->jointsArray[i].targetIndex < SkeletonComponent::MAX_TARGET_JOINTS));
         DVASSERT(skeleton->jointMap.find(skeleton->jointsArray[i].uid) == skeleton->jointMap.end()); //duplicate bone name
 
-        skeleton->jointInfo[i] = skeleton->jointsArray[i].parentIndex | (skeleton->jointsArray[i].targetIndex << SkeletonComponent::INFO_TARGET_SHIFT) | SkeletonComponent::FLAG_MARKED_FOR_UPDATED;
-        if ((skeleton->jointsArray[i].targetIndex != SkeletonComponent::INVALID_JOINT_INDEX) && skeleton->jointsArray[i].targetIndex > maxTargetJoint)
-            maxTargetJoint = skeleton->jointsArray[i].targetIndex;
+        skeleton->jointInfo[i] = skeleton->jointsArray[i].parentIndex | SkeletonComponent::FLAG_MARKED_FOR_UPDATED;
 
         skeleton->jointMap[skeleton->jointsArray[i].uid] = i;
 
@@ -275,9 +263,9 @@ void SkeletonSystem::RebuildSkeleton(SkeletonComponent* skeleton)
 
         skeleton->inverseBindTransforms[i].Construct(skeleton->jointsArray[i].bindTransformInv);
     }
-    skeleton->targetJointsCount = maxTargetJoint + 1;
-    skeleton->resultPositions.resize(skeleton->targetJointsCount);
-    skeleton->resultQuaternions.resize(skeleton->targetJointsCount);
+
+    skeleton->resultPositions.resize(jointsCount);
+    skeleton->resultQuaternions.resize(jointsCount);
 
     skeleton->startJoint = 0;
 }

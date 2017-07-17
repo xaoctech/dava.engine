@@ -23,13 +23,11 @@ class SkeletonComponent : public Component
 public:
     IMPLEMENT_COMPONENT_TYPE(SKELETON_COMPONENT);
 
-    const static uint32 INVALID_JOINT_INDEX = 0xfff; //same as INFO_PARENT_MASK
-    const static uint32 MAX_TARGET_JOINTS = 64; //same as in shader
+    const static uint32 INVALID_JOINT_INDEX = 0xffffff; //same as INFO_PARENT_MASK
 
     struct Joint : public InspBase
     {
         uint32 parentIndex = INVALID_JOINT_INDEX;
-        uint32 targetIndex = INVALID_JOINT_INDEX;
         FastName name;
         FastName uid;
         AABBox3 bbox;
@@ -75,13 +73,11 @@ private:
     Vector<Joint> jointsArray;
 
     /*runtime*/
-    const static uint32 INFO_PARENT_MASK = 0xfff;
-    const static uint32 INFO_TARGET_SHIFT = 12;
+    const static uint32 INFO_PARENT_MASK = 0xffffff;
     const static uint32 INFO_FLAG_BASE = 0x1000000;
     const static uint32 FLAG_UPDATED_THIS_FRAME = INFO_FLAG_BASE << 0;
     const static uint32 FLAG_MARKED_FOR_UPDATED = INFO_FLAG_BASE << 1;
 
-    uint32 targetJointsCount = 0u; //amount of joints bound to skinnedMesh
     Vector<uint32> jointInfo; //flags and parent
     //transforms info
     Vector<JointTransform> localSpaceTransforms;
