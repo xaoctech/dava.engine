@@ -760,31 +760,21 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
         float32 currentLength = (data.baseNode.position - data.stripeNodes.front().position).Length();
         float32 deltaLength = previousLength - currentLength + firstDelta;
         data.prevBaseLen = currentLength;
-        // data.uvOffset += deltaLength;
 
-        float32 delta = (data.baseNode.position - prevBasePosition).Length();
         if (!shouldInsert)
             data.uvOffset += deltaLength;
         else
         {
+            float32 delta = (data.baseNode.position - prevBasePosition).Length();
             if (particle->speed.DotProduct(data.baseNode.position - prevBasePosition) <= 0)
             {
                 data.uvOffset -= delta;
             }
             else
             {
-                float32 ololo = 0.0f;
-                if (data.stripeNodes.size() > 1)
-                    ololo = (data.stripeNodes.begin()->position - std::next(data.stripeNodes.begin())->position).Length();
-                float32 offset = 0.0f;
-                if (ololo > data.prevBaseDelta)
-                {
-                    offset = data.prevBaseDelta - ololo;
-                }
-                data.uvOffset -= delta - firstDelta; // -offset;
+                data.uvOffset -= delta - firstDelta; // Look at 7abf5621f27 commit (and before) if results will be unsatisfying.
             }
         }
-        data.prevBaseDelta = (data.baseNode.position - data.stripeNodes.front().position).Length();
     }
 }
 
