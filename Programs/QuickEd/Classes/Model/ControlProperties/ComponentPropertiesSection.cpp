@@ -13,6 +13,8 @@
 #include <Reflection/ReflectedMeta.h>
 #include <Reflection/ReflectedTypeDB.h>
 
+#include <TArc/Utils/ReflectionHelpers.h>
+
 using namespace DAVA;
 
 ComponentPropertiesSection::ComponentPropertiesSection(DAVA::UIControl* control_, const DAVA::Type* type_, int32 index_, const ComponentPropertiesSection* sourceSection, eCloneType cloneType)
@@ -65,11 +67,8 @@ ComponentPropertiesSection::~ComponentPropertiesSection()
 
 bool ComponentPropertiesSection::IsHiddenComponent(const Type* type)
 {
-    return (type == Type::Instance<UILayoutIsolationComponent>() ||
-            type == Type::Instance<UILayoutSourceRectComponent>() ||
-            type == Type::Instance<UIScrollComponent>() ||
-            type == Type::Instance<UIRichContentObjectComponent>() ||
-            type == Type::Instance<UISceneComponent>());
+    const ReflectedType* rtype = ReflectedTypeDB::GetByType(type);
+    return TArc::GetReflectedTypeMeta<DAVA::M::HiddenField>(rtype) != nullptr;
 }
 
 UIComponent* ComponentPropertiesSection::GetComponent() const

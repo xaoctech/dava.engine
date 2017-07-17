@@ -12,7 +12,7 @@ class ComboPropertyDelegate : public BasePropertyDelegate
 {
     Q_OBJECT
 public:
-    ComboPropertyDelegate(PropertiesTreeItemDelegate* delegate, std::unique_ptr<CompletionsProvider> completionsProvider);
+    ComboPropertyDelegate(PropertiesTreeItemDelegate* delegate, std::unique_ptr<CompletionsProvider> completionsProvider, bool isEditable);
     ~ComboPropertyDelegate();
 
     QWidget* createEditor(QWidget* parent, const PropertiesContext& context, const QStyleOptionViewItem& option, const QModelIndex& index) override;
@@ -29,4 +29,5 @@ private:
     void CommitDataImpl(QWidget* comboBox);
 
     std::unique_ptr<CompletionsProvider> completionsProvider;
+    bool isEditable = true;
 };

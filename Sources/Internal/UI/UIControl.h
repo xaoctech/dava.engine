@@ -18,6 +18,7 @@ class Message;
 class UIComponent;
 class UIControlFamily;
 class UIControlPackageContext;
+class UIControlSystem;
 
 #define CONTROL_TOUCH_AREA 15
 
@@ -512,6 +513,8 @@ public:
      */
     void SetState(int32 state);
 
+    UIControlSystem* GetScene() const;
+
     /**
      \brief Returns control parent.
      \returns if control hasn't parent returns NULL.
@@ -935,6 +938,8 @@ private:
     FastName name;
     Vector2 pivot; //!<control pivot. Top left control corner by default.
 
+    UIControlSystem* scene = nullptr;
+
     UIControl* parent;
     List<UIControl*> children;
 
@@ -978,6 +983,7 @@ protected:
 
     EventDispatcher* eventDispatcher;
 
+    void SetScene(UIControlSystem* scene);
     void SetParent(UIControl* newParent);
 
     virtual ~UIControl();

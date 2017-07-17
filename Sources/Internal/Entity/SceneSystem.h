@@ -2,13 +2,20 @@
 
 #include "Base/BaseTypes.h"
 
+/**
+    \defgroup systems Systems
+*/
+
 namespace DAVA
 {
 class Entity;
 class Scene;
 class Component;
 class UIEvent;
-
+/**
+    \ingroup systems
+    \brief Base class of systems.
+*/
 class SceneSystem
 {
 public:
@@ -88,6 +95,9 @@ public:
         \param[in] timeElapsed time elapsed from previous frame.
      */
     virtual void Process(float32 timeElapsed);
+
+    /** Similar to 'Process' but called with fixed 'timeElapsed'. Could be called from zero to several times per frame. */
+    virtual void ProcessFixed(float32 timeElapsed){};
 
     virtual bool Input(UIEvent* uie)
     {

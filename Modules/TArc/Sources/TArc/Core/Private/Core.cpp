@@ -435,6 +435,15 @@ private:
     {
     }
 
+    void RegisterInterface(ClientModule* module, const Type* lookupType, Any interface) override
+    {
+    }
+
+    Any QueryInterface(const Type* lookupType) const override
+    {
+        return Any();
+    }
+
 private:
     DAVA::Deque<std::unique_ptr<ConsoleModule>> modules;
     QGuiApplication* application = nullptr;
@@ -493,6 +502,14 @@ public:
             module->PostInit();
         }
 
+        for (const auto& interfaceNode : interfaces)
+        {
+            for (std::unique_ptr<ClientModule>& module : modules)
+            {
+                module->OnInterfaceRegistered(interfaceNode.first);
+            }
+        }
+
         uiManager->InitializationFinished();
 #if defined(__DAVAENGINE_MACOS__)
         RestoreMenuBar();
@@ -506,6 +523,15 @@ public:
 
     void OnLoopStopped() override
     {
+        for (const auto& interfaceNode : interfaces)
+        {
+            for (std::unique_ptr<ClientModule>& module : modules)
+            {
+                module->OnBeforeInterfaceUnregistered(interfaceNode.first);
+            }
+        }
+
+        interfaces.clear();
         for (std::unique_ptr<ClientModule>& module : modules)
         {
             uiManager->ModuleDestroyed(module.get());
@@ -682,6 +708,23 @@ public:
         }
     }
 
+    void RegisterInterface(ClientModule* module, const Type* lookupType, Any interface) override
+    {
+        DVASSERT(interface.GetType() == lookupType->Pointer());
+        interfaces[lookupType] = std::make_pair(module, interface);
+    }
+
+    Any QueryInterface(const Type* lookupType) const override
+    {
+        auto iter = interfaces.find(lookupType);
+        if (iter == interfaces.end())
+        {
+            return Any();
+        }
+
+        return iter->second.second;
+    }
+
     bool WindowCloseRequested(const WindowKey& key) override
     {
         DVASSERT(controllerModule != nullptr);
@@ -777,6 +820,7 @@ private:
     ControllerModule* controllerModule = nullptr;
 
     UnorderedMap<int, AnyFn> globalOperations;
+    UnorderedMap<const Type*, std::pair<ClientModule*, Any>> interfaces;
 
     std::unique_ptr<UIManager> uiManager;
     OperationInvoker* invokeListener = nullptr;
