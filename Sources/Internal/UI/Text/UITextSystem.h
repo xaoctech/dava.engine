@@ -32,6 +32,9 @@ public:
     /** Apply component properties changes to internal TextBlock and UIControlBackground objects. */
     void ApplyData(UITextComponent* component);
 
+    /** Mark all components as modified, for forced refresh. */
+    void InvalidateAll();
+
 private:
     void AddLink(UITextComponent* component);
     void RemoveLink(UITextComponent* component);

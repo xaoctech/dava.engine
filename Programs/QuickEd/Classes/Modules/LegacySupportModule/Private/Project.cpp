@@ -26,6 +26,7 @@
 #include <FileSystem/YamlNode.h>
 #include <FileSystem/YamlParser.h>
 #include <UI/Styles/UIStyleSheetSystem.h>
+#include <UI/Text/UITextSystem.h>
 #include <UI/UIControlSystem.h>
 #include <Utils/Utils.h>
 
@@ -142,6 +143,9 @@ void Project::SetCurrentLanguage(const QString& newLanguageCode)
 {
     editorLocalizationSystem->SetCurrentLocale(newLanguageCode);
     editorFontSystem->RegisterCurrentLocaleFonts();
+
+    const EngineContext* engineContext = GetEngineContext();
+    engineContext->uiControlSystem->GetTextSystem()->InvalidateAll();
 
     accessor->ForEachContext([](DAVA::TArc::DataContext& context)
                              {

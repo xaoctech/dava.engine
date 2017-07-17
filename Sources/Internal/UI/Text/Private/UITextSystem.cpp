@@ -189,6 +189,7 @@ void UITextSystem::AddLink(UITextComponent* component)
 {
     DVASSERT(component);
     UITextSystemLink* link = component->GetLink();
+    component->SetModified(true);
     components.push_back(component);
 }
 
@@ -204,6 +205,17 @@ void UITextSystem::RemoveLink(UITextComponent* component)
     else
     {
         DVASSERT(0 && "Text component link not found in system list!");
+    }
+}
+
+void UITextSystem::InvalidateAll()
+{
+    for (UITextComponent* component : components)
+    {
+        if (component != nullptr)
+        {
+            component->SetModified(true);
+        }
     }
 }
 }

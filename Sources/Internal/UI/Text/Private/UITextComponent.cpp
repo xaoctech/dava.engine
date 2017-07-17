@@ -106,8 +106,7 @@ UITextComponent::eTextFitting UITextComponent::GetFitting() const
 
 void UITextComponent::SetFontName(const String& value)
 {
-    // Force update modified flag
-    // For case when font associated with alias was changed externally
+    if (fontName != value)
     {
         fontName = value;
         font = nullptr;
