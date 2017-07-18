@@ -63,6 +63,13 @@ const InputElementInfo& GetInputElementInfo(eInputElements element)
         infoKeyboard[eInputElements::KB_F10 - eInputElements::KB_FIRST] = { "F10", eInputElementTypes::DIGITAL };
         infoKeyboard[eInputElements::KB_F11 - eInputElements::KB_FIRST] = { "F11", eInputElementTypes::DIGITAL };
         infoKeyboard[eInputElements::KB_F12 - eInputElements::KB_FIRST] = { "F12", eInputElementTypes::DIGITAL };
+        infoKeyboard[eInputElements::KB_F13 - eInputElements::KB_FIRST] = { "F13", eInputElementTypes::DIGITAL };
+        infoKeyboard[eInputElements::KB_F14 - eInputElements::KB_FIRST] = { "F14", eInputElementTypes::DIGITAL };
+        infoKeyboard[eInputElements::KB_F15 - eInputElements::KB_FIRST] = { "F15", eInputElementTypes::DIGITAL };
+        infoKeyboard[eInputElements::KB_F16 - eInputElements::KB_FIRST] = { "F16", eInputElementTypes::DIGITAL };
+        infoKeyboard[eInputElements::KB_F17 - eInputElements::KB_FIRST] = { "F17", eInputElementTypes::DIGITAL };
+        infoKeyboard[eInputElements::KB_F18 - eInputElements::KB_FIRST] = { "F18", eInputElementTypes::DIGITAL };
+        infoKeyboard[eInputElements::KB_F19 - eInputElements::KB_FIRST] = { "F19", eInputElementTypes::DIGITAL };
         infoKeyboard[eInputElements::KB_NONUSBACKSLASH - eInputElements::KB_FIRST] = { "\\", eInputElementTypes::DIGITAL };
         infoKeyboard[eInputElements::KB_COMMA - eInputElements::KB_FIRST] = { ",", eInputElementTypes::DIGITAL };
         infoKeyboard[eInputElements::KB_PERIOD - eInputElements::KB_FIRST] = { ".", eInputElementTypes::DIGITAL };
