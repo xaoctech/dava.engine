@@ -36,7 +36,6 @@
 #include <Base/Any.h>
 #include <Command/CommandStack.h>
 #include <UI/UIPackageLoader.h>
-#include <UI/UIStaticText.h>
 #include <UI/Text/UITextComponent.h>
 #include <Render/Renderer.h>
 #include <Render/DynamicBufferAllocator.h>
@@ -614,9 +613,8 @@ void DocumentsModule::ChangeControlText(ControlNode* node)
 
     UIControl* control = node->GetControl();
 
-    UIStaticText* staticText = dynamic_cast<UIStaticText*>(control);
     UITextComponent* textComponent = control->GetComponent<UITextComponent>();
-    DVASSERT(staticText != nullptr || textComponent != nullptr);
+    DVASSERT(textComponent != nullptr);
 
     RootProperty* rootProperty = node->GetRootProperty();
     AbstractProperty* textProperty = rootProperty->FindPropertyByName("text");
@@ -641,13 +639,7 @@ void DocumentsModule::ChangeControlText(ControlNode* node)
         // Update "multiline" property if need
         if (inputText.contains('\n'))
         {
-            if (staticText != nullptr && (multilineProperty->GetValue().Cast<UIStaticText::eMultiline>() == UIStaticText::MULTILINE_DISABLED))
-            {
-                std::unique_ptr<ChangePropertyValueCommand> command = data->CreateCommand<ChangePropertyValueCommand>();
-                command->AddNodePropertyValue(node, multilineProperty, Any(UIStaticText::MULTILINE_ENABLED));
-                data->ExecCommand(std::move(command));
-            }
-            else if (textComponent != nullptr && (multilineProperty->GetValue().Cast<UITextComponent::eTextMultiline>() == UITextComponent::MULTILINE_DISABLED))
+            if (textComponent != nullptr && (multilineProperty->GetValue().Cast<UITextComponent::eTextMultiline>() == UITextComponent::MULTILINE_DISABLED))
             {
                 std::unique_ptr<ChangePropertyValueCommand> command = data->CreateCommand<ChangePropertyValueCommand>();
                 command->AddNodePropertyValue(node, multilineProperty, Any(UITextComponent::MULTILINE_ENABLED));
