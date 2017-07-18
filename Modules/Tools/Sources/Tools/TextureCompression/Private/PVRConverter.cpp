@@ -87,60 +87,46 @@ FilePath PVRConverter::ConvertToPvr(const TextureDescriptor& descriptor, eGPUFam
 
 #else
     FilePath sourcePathname = descriptor.GetSourceTexturePathname();
-
-    bool shouldHackRGBAFloatImage = false;
-    FilePath inputPathname = sourcePathname;
-
-    SCOPE_EXIT
+    FilePath outputName;
+    ImageInfo sourceInfo = ImageSystem::GetImageInfo(sourcePathname);
+    if (IsFloatPixelFormat(sourceInfo.format))
     {
-        if (shouldHackRGBAFloatImage)
+        const TextureDescriptor::Compression* compression = &descriptor.compression[gpuFamily];
+        PixelFormat targetFormat = static_cast<PixelFormat>(compression->format);
+
+        Vector<Image*> sourceImages;
+        Vector<Image*> targetImages;
+        ImageSystem::Load(sourcePathname, sourceImages);
+        targetImages.reserve(sourceImages.size());
+
+        for (Image* sourceImage : sourceImages)
         {
-            FileSystem::Instance()->DeleteFile(inputPathname);
+            Image* targetImage = Image::Create(sourceImage->width, sourceImage->height, targetFormat);
+            ImageConvert::ConvertFloatFormats(sourceImage->width, sourceImage->height, sourceInfo.format, targetFormat, sourceImage->data, targetImage->data);
+            targetImages.emplace_back(targetImage);
         }
-    };
 
-    if (sourcePathname.IsEqualToExtension(".dds"))
-    {
-        ImageInfo sourceInfo = ImageSystem::GetImageInfo(sourcePathname);
-        shouldHackRGBAFloatImage = (sourceInfo.format == PixelFormat::FORMAT_RGBA32F || sourceInfo.format == PixelFormat::FORMAT_RGBA16F);
-        if (shouldHackRGBAFloatImage)
-        {
-            inputPathname.ReplaceBasename(sourcePathname.GetBasename() + "_hack");
+        outputName = GetConvertedTexturePath(descriptor, gpuFamily);
 
-            Vector<Image*> abgrfImages;
-            ImageSystem::Load(sourcePathname, abgrfImages);
+        LibPVRHelper pvrHelper;
+        if (pvrHelper.Save(outputName, targetImages) != eErrorCode::SUCCESS)
+            outputName = FilePath();
 
-            if (sourceInfo.format == PixelFormat::FORMAT_RGBA32F)
-            {
-                for (Image* img : abgrfImages)
-                {
-                    ConvertDirect<ABGR32F, RGBA32F, ConvertABGR32FtoRGBA32F> convert;
-                    convert(img->data, img->width, img->height, img->width * sizeof(ABGR32F), img->data);
-                }
-            }
-            else if (sourceInfo.format == PixelFormat::FORMAT_RGBA16F)
-            {
-                for (Image* img : abgrfImages)
-                {
-                    ConvertDirect<ABGR16F, RGBA16F, ConvertABGR16FtoRGBA16F> convert;
-                    convert(img->data, img->width, img->height, img->width * sizeof(ABGR16F), img->data);
-                }
-            }
+        for (Image* image : sourceImages)
+            SafeRelease(image);
 
-            ImageSystem::Save(inputPathname, abgrfImages, sourceInfo.format);
+        for (Image* image : targetImages)
+            SafeRelease(image);
 
-            for (Image* img : abgrfImages)
-            {
-                SafeRelease(img);
-            }
-        }
+        return outputName;
     }
-    else if (descriptor.IsCubeMap())
+
+    FilePath inputPathname = sourcePathname;
+    if (descriptor.IsCubeMap())
     {
         inputPathname = PrepareCubeMapForPvrConvert(descriptor);
     }
 
-    FilePath outputName;
     Vector<String> args;
     GetToolCommandLine(descriptor, inputPathname, gpuFamily, quality, args);
     Process process(pvrTexToolPathname, args);

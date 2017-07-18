@@ -280,6 +280,15 @@ inline uint32 CalculatePrimitiveCount(uint32 indexCount, rhi::PrimitiveType prim
     return 0;
 }
 
+inline bool IsFloatPixelFormat(PixelFormat fmt)
+{
+    return
+    (fmt == PixelFormat::FORMAT_R16F) || (fmt == PixelFormat::FORMAT_R32F) ||
+    (fmt == PixelFormat::FORMAT_RG16F) || (fmt == PixelFormat::FORMAT_RG32F) ||
+    (fmt == PixelFormat::FORMAT_RGB16F) || (fmt == PixelFormat::FORMAT_RGB32F) ||
+    (fmt == PixelFormat::FORMAT_RGBA16F) || (fmt == PixelFormat::FORMAT_RGBA32F);
+}
+
 uint32 GetVertexLayoutRequiredFormat(const rhi::VertexLayout& layout);
 
 rhi::CmpFunc GetCmpFuncByName(const String& cmpFuncStr);
