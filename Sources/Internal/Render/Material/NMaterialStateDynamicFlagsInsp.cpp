@@ -30,6 +30,7 @@ Vector<FastName> NMaterialStateDynamicFlagsInsp::MembersList(const DynamicData& 
         ret.emplace_back(NMaterialFlagName::FLAG_FOG_ATMOSPHERE);
 
         ret.emplace_back(NMaterialFlagName::FLAG_FLATCOLOR);
+        ret.emplace_back(NMaterialFlagName::FLAG_FLATALBEDO);
         ret.emplace_back(NMaterialFlagName::FLAG_TEXTURESHIFT);
         ret.emplace_back(NMaterialFlagName::FLAG_TEXTURE0_ANIMATION_SHIFT);
 

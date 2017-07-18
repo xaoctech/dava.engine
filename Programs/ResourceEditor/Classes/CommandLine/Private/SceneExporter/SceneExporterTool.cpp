@@ -1,6 +1,7 @@
 #include "CommandLine/SceneExporterTool.h"
 #include "CommandLine/Private/OptionName.h"
 #include "CommandLine/Private/SceneConsoleHelper.h"
+#include "Classes/Project/ProjectManagerData.h"
 
 #include "Project/ProjectManagerData.h"
 

@@ -826,19 +826,27 @@ bool SceneExporter::SplitCompressedFile(const DAVA::TextureDescriptor& descripto
     };
 
     // save hd mips, each in separate file
-    uint32 mip = 0;
+    uint32 savedMip = 0;
     uint32 singleMipCount = outTexturesCount - 1;
-    for (; mip < singleMipCount; ++mip)
+    for (uint32 mip = 0; mip < singleMipCount; ++mip)
     {
-        bool saved = saveImages(createOutPathname(pathnamesForGPU[mip]), mip, eSavingParam::SaveOneMip);
-        if (!saved)
+        if (loadedImages[mip]->width > Texture::MINIMAL_WIDTH && loadedImages[mip]->height > Texture::MINIMAL_HEIGHT)
         {
-            return false;
+            bool saved = saveImages(createOutPathname(pathnamesForGPU[mip]), savedMip++, eSavingParam::SaveOneMip);
+            if (!saved)
+            {
+                return false;
+            }
+        }
+        else
+        {
+            break;
         }
     }
 
     // save remaining mips, all in single file
-    return saveImages(createOutPathname(pathnamesForGPU[mip]), mip, eSavingParam::SaveRemainingMips);
+    size_t lastIndex = pathnamesForGPU.size() - 1;
+    return saveImages(createOutPathname(pathnamesForGPU[lastIndex]), savedMip, eSavingParam::SaveRemainingMips);
 }
 
 bool SceneExporter::CopyFile(const DAVA::FilePath& fromPath, const DAVA::FilePath& toPath) const
