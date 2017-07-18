@@ -18,7 +18,7 @@ void MicroWebBrowserTest::LoadResources()
     Rect textFieldRect;
     textFieldRect.x = 10.0f;
     textFieldRect.y = 10.0f;
-    textFieldRect.dx = screenRect.dx - 210.0f;
+    textFieldRect.dx = screenRect.dx - 230.0f;
     textFieldRect.dy = 50.0f;
 
     textField.Set(new UITextField(textFieldRect));
