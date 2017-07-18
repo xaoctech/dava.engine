@@ -409,6 +409,20 @@ void WriteToBuffer(Vector<uint8>& buffer, const T* value)
     WriteToBuffer(buffer, value, sizeof(T));
 }
 
+void WriteToBuffer(Vector<uint8>& buffer, const String& string)
+{
+    uint32 stringBytes = uint32(string.length() + 1);
+    WriteToBuffer(buffer, string.c_str(), stringBytes);
+
+    //as we load animation data directly to memory and use it without any processing we have to align strings data
+    uint32 stringAlignment = 4 - (stringBytes & 0x3);
+    if (stringAlignment > 0 && stringAlignment < 4)
+    {
+        uint32 pad = 0;
+        WriteToBuffer(buffer, &pad, stringAlignment);
+    }
+}
+
 eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, const FilePath& dir)
 {
     //binary file format described in 'AnimationBinaryFormat.md'
@@ -428,6 +442,7 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
     channelHeader.pad0[0] = channelHeader.pad0[1] = channelHeader.pad0[2] = 0;
     channelHeader.pad1[0] = channelHeader.pad1[1] = channelHeader.pad1[2] = 0;
 
+    uint32 zeroU4 = 0;
     for (auto canimation : colladaScene->colladaAnimations)
     {
         FilePath filePath = dir + String(canimation->name + ".anim");
@@ -436,7 +451,11 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
         {
             Vector<uint8> animationData;
 
+            WriteToBuffer(animationData, &zeroU4); //TODO: *Skinning* compression flags
+
             WriteToBuffer(animationData, &canimation->duration);
+
+            WriteToBuffer(animationData, &zeroU4); //TODO: *Skinning* events count
 
             uint32 nodeCount = uint32(canimation->animations.size());
             WriteToBuffer(animationData, &nodeCount);
@@ -472,16 +491,8 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
                 String nodeUID = colladaNode->originalNode->GetDaeId();
                 String nodeName = UTF8Utils::EncodeToUTF8(colladaNode->originalNode->GetName().c_str());
 
-                WriteToBuffer(animationData, nodeUID.c_str(), uint32(nodeUID.length()) + 1);
-                WriteToBuffer(animationData, nodeName.c_str(), uint32(nodeName.length()) + 1);
-
-                //as we load animation data directly to memory and use it without any processing we have to align strings data
-                uint32 stringAlignment = 4 - (uint32(nodeUID.length() + 1 + nodeName.length() + 1) & 0x3);
-                if (stringAlignment > 0 && stringAlignment < 4)
-                {
-                    uint32 pad = 0;
-                    WriteToBuffer(animationData, &pad, stringAlignment);
-                }
+                WriteToBuffer(animationData, nodeUID);
+                WriteToBuffer(animationData, nodeName);
 
                 //Write Track data
                 WriteToBuffer(animationData, &AnimationTrack::ANIMATION_TRACK_DATA_SIGNATURE);
