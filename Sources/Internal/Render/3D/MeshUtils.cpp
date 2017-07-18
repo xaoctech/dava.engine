@@ -573,6 +573,7 @@ SkinnedMesh* CreateHardSkinnedMesh(Entity* fromEntity, Vector<SkeletonComponent:
         newBatch->SetMaterial(material);
 
         newRenderObject->AddRenderBatch(newBatch, key.lodIndex, key.switchIndex);
+        newRenderObject->SetJointTargets(newBatch, jointTargets);
 
         material->Release();
         polygonGroup->Release();
