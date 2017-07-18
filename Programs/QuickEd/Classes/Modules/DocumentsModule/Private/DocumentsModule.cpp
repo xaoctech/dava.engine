@@ -907,7 +907,7 @@ bool DocumentsModule::SaveDocument(const DAVA::TArc::DataContext::ContextID& con
     {
         ModalMessageParams params;
         params.title = QObject::tr("Can't save");
-        params.message = QObject::tr("Next Erros were occurred during serialization:\n");
+        params.message = QObject::tr("Errors were occurred during serialization:\n");
         params.message.append(QString::fromStdString(serializer.GetResults().GetResultMessages()));
 
         params.buttons = ModalMessageParams::Ok;

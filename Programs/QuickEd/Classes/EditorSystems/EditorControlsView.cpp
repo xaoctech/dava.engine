@@ -84,7 +84,7 @@ GridControl::GridControl()
     background->SetDrawType(UIControlBackground::DRAW_TILED);
     ScopedPtr<Sprite> sprite(Sprite::CreateFromSourceFile("~res:/QuickEd/UI/GrayGrid.png"));
     background->SetSprite(sprite, 0);
-    colorControl->SetName("Color control");
+    colorControl->SetName("Color_control");
 
     UIControl::AddControl(colorControl);
 }
@@ -226,9 +226,9 @@ BackgroundController::BackgroundController(UIControl* nestedControl_)
     DVASSERT(nullptr != nestedControl);
     String name = nestedControl->GetName().c_str();
     name = name.empty() ? "unnamed" : name;
-    gridControl->SetName(FastName("Grid control of " + name));
-    counterpoiseControl->SetName(FastName("counterpoise of " + name));
-    positionHolderControl->SetName(FastName("Position holder of " + name));
+    gridControl->SetName(FastName("Grid_control_of_nestedControl"));
+    counterpoiseControl->SetName(FastName("counterpoise_of_nestedControl"));
+    positionHolderControl->SetName(FastName("Position_holder_of_nestedControl"));
     gridControl->AddControl(positionHolderControl.Get());
     positionHolderControl->AddControl(counterpoiseControl.Get());
     counterpoiseControl->AddControl(nestedControl);
@@ -397,7 +397,7 @@ EditorControlsView::EditorControlsView(UIControl* canvasParent_, EditorSystemsMa
     , packageListenerProxy(this, accessor)
 {
     canvasParent->AddControl(controlsCanvas.Get());
-    controlsCanvas->SetName(FastName("controls canvas"));
+    controlsCanvas->SetName(FastName("controls_canvas"));
 
     InitFieldBinder();
 
