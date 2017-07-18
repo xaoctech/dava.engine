@@ -140,8 +140,8 @@ public:
         DAVA::float32 stripeFadeDistanceFromTop;
         bool stripeInheritPositionForBase;
         bool usePerspectiveMapping;
-        DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> stripeTextureTile;
-        DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> stripeSizeOverLifeProp;
+        DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> stripeTextureTileOverLife;
+        DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> stripeSizeOverLife;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> stripeNoiseUScrollSpeedOverLife;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> stripeNoiseVScrollSpeedOverLife;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::Color>> stripeColorOverLife;

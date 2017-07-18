@@ -908,8 +908,8 @@ void EmitterLayerWidget::OnStripePropertiesChanged()
     params.stripeFadeDistanceFromTop = static_cast<DAVA::float32>(stripeFadeDistanceFromTopSpin->value());
     params.stripeInheritPositionForBase = stripeInheritPositionForBaseCheckBox->isChecked();
     params.usePerspectiveMapping = stripeUsePerspectiveMappingCheckBox->isChecked();
-    params.stripeTextureTile = propStripeTileOverLife.GetPropLine();
-    params.stripeSizeOverLifeProp = propStripeSizeOverLife.GetPropLine();
+    params.stripeTextureTileOverLife = propStripeTileOverLife.GetPropLine();
+    params.stripeSizeOverLife = propStripeSizeOverLife.GetPropLine();
     params.stripeNoiseUScrollSpeedOverLife = propstripeNoiseUScrollSpeedOverLife.GetPropLine();
     params.stripeNoiseVScrollSpeedOverLife = propstripeNoiseVScrollSpeedOverLife.GetPropLine();
     params.stripeColorOverLife = propStripeColorOverLife.GetPropLine();
@@ -1178,7 +1178,7 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     frameBlendingCheckBox->setChecked(layer->enableFrameBlend);
 
     stripeSizeOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
-    stripeSizeOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->stripeSizeOverLifeProp)).GetProps(), Qt::red, "Stripe edge size over life");
+    stripeSizeOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->stripeSizeOverLife)).GetProps(), Qt::red, "Stripe edge size over life");
     stripeSizeOverLifeTimeLine->EnableLock(true);
 
     stripeNoiseScrollSpeedOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
@@ -1187,7 +1187,7 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     stripeNoiseScrollSpeedOverLifeTimeLine->EnableLock(true);
 
     stripeTextureTileTimeLine->Init(0.0f, 1.0f, updateMinimized, false, true, false, STRIPE_TILE_PRECISION_DIGITS);
-    stripeTextureTileTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->stripeTextureTile)).GetProps(), Qt::red, "Stripe texture tile over life");
+    stripeTextureTileTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->stripeTextureTileOverLife)).GetProps(), Qt::red, "Stripe texture tile over life");
     stripeTextureTileTimeLine->EnableLock(true);
 
     stripeColorOverLifeGradient->Init(0, 1, "Stripe vertex color over life");

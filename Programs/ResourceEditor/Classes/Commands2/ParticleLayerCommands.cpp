@@ -205,12 +205,12 @@ CommandChangeParticlesStripeProperties::CommandChangeParticlesStripeProperties(D
         oldParams.stripeLifetime = layer->stripeLifetime;
         oldParams.stripeRate = layer->stripeRate;
         oldParams.stripeStartSize = layer->stripeStartSize;
-        oldParams.stripeTextureTile = layer->stripeTextureTile;
+        oldParams.stripeTextureTileOverLife = layer->stripeTextureTileOverLife;
         oldParams.stripeUScrollSpeed = layer->stripeUScrollSpeed;
         oldParams.stripeVScrollSpeed = layer->stripeVScrollSpeed;
         oldParams.stripeFadeDistanceFromTop = layer->stripeFadeDistanceFromTop;
         oldParams.stripeInheritPositionForBase = layer->GetInheritPositionForStripeBase();
-        oldParams.stripeSizeOverLifeProp = layer->stripeSizeOverLifeProp;
+        oldParams.stripeSizeOverLife = layer->stripeSizeOverLife;
         oldParams.stripeNoiseUScrollSpeedOverLife = layer->stripeNoiseUScrollSpeedOverLife;
         oldParams.stripeNoiseVScrollSpeedOverLife = layer->stripeNoiseVScrollSpeedOverLife;
         oldParams.stripeColorOverLife = layer->stripeColorOverLife;
@@ -245,8 +245,8 @@ void CommandChangeParticlesStripeProperties::ApplyParams(StripeParams& params)
         layer->stripeFadeDistanceFromTop = params.stripeFadeDistanceFromTop;
         layer->SetInheritPositionForStripeBase(params.stripeInheritPositionForBase);
         layer->usePerspectiveMapping = params.usePerspectiveMapping;
-        PropertyLineHelper::SetValueLine(layer->stripeTextureTile, params.stripeTextureTile);
-        PropertyLineHelper::SetValueLine(layer->stripeSizeOverLifeProp, params.stripeSizeOverLifeProp);
+        PropertyLineHelper::SetValueLine(layer->stripeTextureTileOverLife, params.stripeTextureTileOverLife);
+        PropertyLineHelper::SetValueLine(layer->stripeSizeOverLife, params.stripeSizeOverLife);
         PropertyLineHelper::SetValueLine(layer->stripeNoiseUScrollSpeedOverLife, params.stripeNoiseUScrollSpeedOverLife);
         PropertyLineHelper::SetValueLine(layer->stripeNoiseVScrollSpeedOverLife, params.stripeNoiseVScrollSpeedOverLife);
         PropertyLineHelper::SetValueLine(layer->stripeColorOverLife, params.stripeColorOverLife);
