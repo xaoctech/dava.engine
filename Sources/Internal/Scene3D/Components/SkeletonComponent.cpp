@@ -95,7 +95,7 @@ void SkeletonComponent::Serialize(KeyedArchive* archive, SerializationContext* s
         jointArch->SetMatrix4("joint.bindPose", joint.bindTransform);
         jointArch->SetMatrix4("joint.invBindPose", joint.bindTransformInv);
 
-        jointsArch->SetArchive(KeyedArchive::GenKeyFromIndex(static_cast<int32>(i)), jointArch);
+        jointsArch->SetArchive(KeyedArchive::GenKeyFromIndex(static_cast<uint32>(i)), jointArch);
     }
 
     archive->SetArchive("joints", jointsArch);

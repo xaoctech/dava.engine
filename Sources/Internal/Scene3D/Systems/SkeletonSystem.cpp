@@ -154,9 +154,9 @@ void SkeletonSystem::DrawSkeletons(RenderHelper* drawer)
                     drawer->DrawArrow(positions[cfg.parentIndex], positions[i], arrowLength, Color(1.0f, 0.5f, 0.0f, 1.0), RenderHelper::eDrawType::DRAW_WIRE_NO_DEPTH);
                 }
 
-                Vector3 xAxis = component->objectSpaceTransforms[i].TransformPoint(Vector3(1.f, 0.f, 0.f)) * worldTransform;
-                Vector3 yAxis = component->objectSpaceTransforms[i].TransformPoint(Vector3(0.f, 1.f, 0.f)) * worldTransform;
-                Vector3 zAxis = component->objectSpaceTransforms[i].TransformPoint(Vector3(0.f, 0.f, 1.f)) * worldTransform;
+                Vector3 xAxis = component->objectSpaceTransforms[i].ApplyToPoint(Vector3(1.f, 0.f, 0.f)) * worldTransform;
+                Vector3 yAxis = component->objectSpaceTransforms[i].ApplyToPoint(Vector3(0.f, 1.f, 0.f)) * worldTransform;
+                Vector3 zAxis = component->objectSpaceTransforms[i].ApplyToPoint(Vector3(0.f, 0.f, 1.f)) * worldTransform;
 
                 drawer->DrawLine(positions[i], xAxis, Color::Red, RenderHelper::eDrawType::DRAW_WIRE_NO_DEPTH);
                 drawer->DrawLine(positions[i], yAxis, Color::Green, RenderHelper::eDrawType::DRAW_WIRE_NO_DEPTH);
@@ -178,7 +178,7 @@ void SkeletonSystem::UpdateJointTransforms(SkeletonComponent* skeleton)
         uint32 parentJoint = skeleton->jointInfo[currJoint] & SkeletonComponent::INFO_PARENT_MASK;
         if ((skeleton->jointInfo[currJoint] & SkeletonComponent::FLAG_MARKED_FOR_UPDATED) || ((parentJoint != SkeletonComponent::INVALID_JOINT_INDEX) && (skeleton->jointInfo[parentJoint] & SkeletonComponent::FLAG_UPDATED_THIS_FRAME)))
         {
-            //calculate local pose
+            //calculate object space transforms
             if (parentJoint == SkeletonComponent::INVALID_JOINT_INDEX) //root
             {
                 skeleton->objectSpaceTransforms[currJoint] = skeleton->localSpaceTransforms[currJoint]; //just copy
@@ -187,13 +187,10 @@ void SkeletonSystem::UpdateJointTransforms(SkeletonComponent* skeleton)
             {
                 skeleton->objectSpaceTransforms[currJoint] = skeleton->objectSpaceTransforms[parentJoint].AppendTransform(skeleton->localSpaceTransforms[currJoint]);
             }
+            skeleton->objectSpaceBoxes[currJoint] = skeleton->objectSpaceTransforms[currJoint].ApplyToAABBox(skeleton->jointSpaceBoxes[currJoint]);
 
             //calculate final transform including bindTransform
-            skeleton->objectSpaceBoxes[currJoint] = skeleton->objectSpaceTransforms[currJoint].TransformAABBox(skeleton->jointSpaceBoxes[currJoint]);
-
-            JointTransform finalTransform = skeleton->objectSpaceTransforms[currJoint].AppendTransform(skeleton->inverseBindTransforms[currJoint]);
-            skeleton->resultPositions[currJoint].Set(finalTransform.position.x, finalTransform.position.y, finalTransform.position.z, finalTransform.scale);
-            skeleton->resultQuaternions[currJoint].Set(finalTransform.orientation.x, finalTransform.orientation.y, finalTransform.orientation.z, finalTransform.orientation.w);
+            skeleton->finalTransforms[currJoint] = skeleton->objectSpaceTransforms[currJoint].AppendTransform(skeleton->inverseBindTransforms[currJoint]);
 
             //  add [was updated]  remove [marked for update]
             skeleton->jointInfo[currJoint] &= ~SkeletonComponent::FLAG_MARKED_FOR_UPDATED;
@@ -221,7 +218,7 @@ void SkeletonSystem::UpdateSkinnedMesh(SkeletonComponent* skeleton, SkinnedMesh*
     }
 
     //set data to SkinnedMesh
-    skinnedMeshObject->SetJointsPtr(skeleton->resultPositions.data(), skeleton->resultQuaternions.data(), skeleton->GetJointsCount());
+    skinnedMeshObject->SetFinalJointTransformsPtr(skeleton->finalTransforms.data(), skeleton->GetJointsCount());
     skinnedMeshObject->SetBoundingBox(resBox); //TODO: *Skinning* decide on bbox calculation
     GetScene()->renderSystem->MarkForUpdate(skinnedMeshObject);
 }
@@ -234,6 +231,7 @@ void SkeletonSystem::RebuildSkeleton(SkeletonComponent* skeleton)
     skeleton->jointInfo.resize(jointsCount);
     skeleton->localSpaceTransforms.resize(jointsCount);
     skeleton->objectSpaceTransforms.resize(jointsCount);
+    skeleton->finalTransforms.resize(jointsCount);
     skeleton->inverseBindTransforms.resize(jointsCount);
     skeleton->jointSpaceBoxes.resize(jointsCount);
     skeleton->objectSpaceBoxes.resize(jointsCount);
@@ -247,7 +245,6 @@ void SkeletonSystem::RebuildSkeleton(SkeletonComponent* skeleton)
         DVASSERT(skeleton->jointMap.find(skeleton->jointsArray[i].uid) == skeleton->jointMap.end()); //duplicate bone name
 
         skeleton->jointInfo[i] = skeleton->jointsArray[i].parentIndex | SkeletonComponent::FLAG_MARKED_FOR_UPDATED;
-
         skeleton->jointMap[skeleton->jointsArray[i].uid] = i;
 
         JointTransform localTransform;
@@ -255,17 +252,17 @@ void SkeletonSystem::RebuildSkeleton(SkeletonComponent* skeleton)
 
         skeleton->localSpaceTransforms[i] = localTransform;
         if (skeleton->jointsArray[i].parentIndex == SkeletonComponent::INVALID_JOINT_INDEX)
+        {
             skeleton->objectSpaceTransforms[i] = localTransform;
+        }
         else
+        {
             skeleton->objectSpaceTransforms[i] = skeleton->objectSpaceTransforms[skeleton->jointsArray[i].parentIndex].AppendTransform(localTransform);
+        }
 
         skeleton->jointSpaceBoxes[i] = skeleton->jointsArray[i].bbox;
-
         skeleton->inverseBindTransforms[i].Construct(skeleton->jointsArray[i].bindTransformInv);
     }
-
-    skeleton->resultPositions.resize(jointsCount);
-    skeleton->resultQuaternions.resize(jointsCount);
 
     skeleton->startJoint = 0;
 }

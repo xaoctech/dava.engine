@@ -1,9 +1,10 @@
 #ifndef __DAVAENGINE_SKINNED_MESH_H__
 #define __DAVAENGINE_SKINNED_MESH_H__
 
-#include "Base/BaseTypes.h"
 #include "Animation/AnimatedObject.h"
+#include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
+#include "Debug/DVAssert.h"
 #include "Render/Highlevel/RenderSystem.h"
 #include "Render/Highlevel/RenderObject.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
@@ -14,11 +15,13 @@ class PolygonGroup;
 class RenderBatch;
 class ShadowVolume;
 class NMaterial;
-
+struct JointTransform;
 class SkinnedMesh : public RenderObject
 {
 public:
     const static uint32 MAX_TARGET_JOINTS = 32; //same as in shader
+
+    using JointTargets = Vector<int32>; // Vector index is joint target, value - skeleton joint index.
 
     SkinnedMesh();
 
@@ -31,37 +34,37 @@ public:
     void PrepareToRender(Camera* camera) override;
 
     void SetBoundingBox(const AABBox3& box);
-    void SetJointsPtr(const Vector4* positionPtr, const Vector4* quaternoinPtr, uint32 jointCount);
-    void SetJointsMapping(RenderBatch* batch, const Vector<int32>& jointTargets);
+    void SetFinalJointTransformsPtr(const JointTransform* transformsPtr, uint32 jointCount);
+    void SetJointTargets(RenderBatch* batch, const JointTargets& jointTargets);
 
 protected:
-    struct BatchJointData
+    struct JointTargetsData
     {
         Vector<Vector4> positions;
         Vector<Vector4> quaternions;
         uint32 jointsDataCount = 0;
     };
-    Map<RenderBatch*, Vector<int32>> jointsMapping; // [batch, [target joints]]
-    Map<RenderBatch*, BatchJointData> jointsData; // [batch, [target joints]]
+    Map<RenderBatch*, JointTargets> jointTargets;
+    Map<RenderBatch*, JointTargetsData> jointTargetsData;
 
-    const Vector4* positionArray = nullptr;
-    const Vector4* quaternionArray = nullptr;
+    const JointTransform* skeletonFinalJointTransforms = nullptr;
     uint32 skeletonJointCount = 0;
 };
 
-inline void SkinnedMesh::SetJointsPtr(const Vector4* positionPtr, const Vector4* quaternoinPtr, uint32 jointCount)
+inline void SkinnedMesh::SetFinalJointTransformsPtr(const JointTransform* transformsPtr, uint32 jointCount)
 {
-    positionArray = positionPtr;
-    quaternionArray = quaternoinPtr;
+    skeletonFinalJointTransforms = transformsPtr;
     skeletonJointCount = jointCount;
 }
 
-inline void SkinnedMesh::SetJointsMapping(RenderBatch* batch, const Vector<int32>& jointTargets)
+inline void SkinnedMesh::SetJointTargets(RenderBatch* batch, const JointTargets& targets)
 {
-    jointsMapping[batch] = jointTargets;
-    jointsData[batch].positions.resize(jointTargets.size());
-    jointsData[batch].quaternions.resize(jointTargets.size());
-    jointsData[batch].jointsDataCount = uint32(jointTargets.size());
+    DVASSERT(uint32(targets.size()) <= MAX_TARGET_JOINTS);
+
+    jointTargets[batch] = targets;
+    jointTargetsData[batch].positions.resize(targets.size());
+    jointTargetsData[batch].quaternions.resize(targets.size());
+    jointTargetsData[batch].jointsDataCount = uint32(targets.size());
 }
 
 inline void SkinnedMesh::SetBoundingBox(const AABBox3& box)
