@@ -82,10 +82,6 @@ private:
     uint32 SelectLayout(const ParticleLayer& layer);
     void UpdateStripeVertex(float32*& dataPtr, Vector3& position, Vector3& uv, float32* color, ParticleLayer* layer, Particle* particle, float32 fresToAlpha);
 
-    uint32 regularVertexLayoutId = 0;
-    uint32 frameBlendVertexLayoutId = 0;
-    uint32 flowVertexLayoutId = 0;
-    uint32 frameBlendFlowVertexLayoutId = 0;
     Map<uint32, uint32> layoutMap;
 
     float FresnelShlick(float32 nDotVInv, float32 bias, float32 power) const;
