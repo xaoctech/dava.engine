@@ -1,6 +1,7 @@
 #include "Tests/MicroWebBrowserTest.h"
-#include "UI/Focus/UIFocusComponent.h"
-#include "UI/Render/UIDebugRenderComponent.h"
+#include <UI/Focus/UIFocusComponent.h>
+#include <UI/Render/UIDebugRenderComponent.h>
+#include <MemoryManager/MemoryManager.h>
 
 MicroWebBrowserTest::MicroWebBrowserTest(TestBed& app)
     : BaseScreen(app, "MicroWebBrowserTest")
@@ -62,6 +63,15 @@ void MicroWebBrowserTest::LoadResources()
     fpsText->SetTextAlign(ALIGN_LEFT | ALIGN_VCENTER);
     fpsText->SetUtf8Text("FPS: ");
     AddControl(fpsText);
+    
+#if defined(DAVA_MEMORY_PROFILING_ENABLE)
+    memoryText = new UIStaticText(Rect(110.0f, screenRect.dy - 50.0f, 200.0f, 45.0f));
+    memoryText->SetTextColor(Color::White);
+    memoryText->SetFont(font);
+    memoryText->SetTextAlign(ALIGN_LEFT | ALIGN_VCENTER);
+    memoryText->SetUtf8Text("Memory usage: ");
+    AddControl(memoryText);
+#endif
 
     Engine::Instance()->update.Connect(this, &MicroWebBrowserTest::Update);
 
@@ -74,6 +84,9 @@ void MicroWebBrowserTest::UnloadResources()
     textField = nullptr;
 
     SafeRelease(fpsText);
+#if defined(DAVA_MEMORY_PROFILING_ENABLE)
+    SafeRelease(memoryText);
+#endif
 
     Engine::Instance()->update.Disconnect(this);
 
@@ -97,9 +110,13 @@ void MicroWebBrowserTest::TextFieldShouldReturn(UITextField* /*textField*/)
 void MicroWebBrowserTest::Update(float elapsedTime)
 {
     fpsMeter.Update(elapsedTime);
-
     if (fpsMeter.IsFpsReady())
     {
         fpsText->SetUtf8Text(Format("FPS: %u", static_cast<uint32>(fpsMeter.GetFps())));
     }
+    
+#if defined(DAVA_MEMORY_PROFILING_ENABLE)
+    float32 memoryUsageMb = static_cast<float32>(MemoryManager::Instance()->GetSystemMemoryUsage()) / (1024 * 1024);
+    memoryText->SetUtf8Text(Format("Memory usage: %.2f MB", memoryUsageMb));
+#endif
 }
