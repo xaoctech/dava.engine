@@ -15,7 +15,9 @@
 #include "UI/UIControl.h"
 #include "UI/UIPackageLoader.h"
 #include "UI/UIStaticText.h"
+#include "Utils/StringUtils.h"
 #include "Utils/UTF8Utils.h"
+#include "Utils/UTF8Walker.h"
 #include "Utils/Utils.h"
 
 namespace DAVA
@@ -103,6 +105,10 @@ void XMLRichContentBuilder::PrepareControl(UIControl* ctrl, bool autosize)
     else if (!needSpace)
     {
         flh->SetStickItemBeforeThis(true);
+        if (!needSoftStick)
+        {
+            flh->SetStickHardBeforeThis(true);
+        }
     }
 
     if (isDebugDraw)
@@ -115,16 +121,24 @@ void XMLRichContentBuilder::PrepareControl(UIControl* ctrl, bool autosize)
         }
         else if (!needSpace)
         {
-            debug->SetDrawColor(Color::Magenta);
+            if (needSoftStick)
+            {
+                debug->SetDrawColor(Color::Cyan);
+            }
+            else
+            {
+                debug->SetDrawColor(Color::Blue);
+            }
         }
         else
         {
-            debug->SetDrawColor(Color::Cyan);
+            debug->SetDrawColor(Color::Magenta);
         }
     }
 
     needSpace = false;
     needLineBreak = false;
+    needSoftStick = false;
 }
 
 void XMLRichContentBuilder::AppendControl(UIControl* ctrl)
@@ -315,20 +329,25 @@ void XMLRichContentBuilder::ProcessText(const String& text)
 {
     const static String LTR_MARK = UTF8Utils::EncodeToUTF8(L"\u200E");
     const static String RTL_MARK = UTF8Utils::EncodeToUTF8(L"\u200F");
+    const static uint32 ZERO_WIDTH_SPACE = 0x200B;
+    const static uint32 NEW_LINE = 0x0A;
 
-    Vector<String> tokens;
-    Split(text, " \n\r\t", tokens, false, true);
+    UTF8Walker walker(text);
+    String token;
     bool first = true;
-    for (String& token : tokens)
+    while (walker.Next())
     {
-        if (token.empty())
-        {
-            needSpace = true;
-        }
-        else
-        {
-            needSpace = !first;
+        token += walker.GetUtf8Character();
 
+        StringUtils::eLineBreakType br = walker.GetLineBreak();
+        if (br == StringUtils::LB_NOBREAK && walker.HasNext())
+        {
+            continue;
+        }
+
+        token = StringUtils::Trim(token);
+        if (!token.empty())
+        {
             BiDiHelper::Direction wordDirection = bidiHelper.GetDirectionUTF8String(token);
             if (wordDirection == BiDiHelper::Direction::NEUTRAL)
             {
@@ -350,7 +369,20 @@ void XMLRichContentBuilder::ProcessText(const String& text)
             PrepareControl(ctrl, true);
             ctrl->SetUtf8Text(token);
             AppendControl(ctrl);
+
+            token.clear();
         }
+
+        if (br == StringUtils::LB_MUSTBREAK)
+        {
+            needLineBreak = walker.GetUnicodeCodepoint() == NEW_LINE;
+        }
+        else if (br == StringUtils::LB_ALLOWBREAK)
+        {
+            needSpace = walker.IsWhitespace() && walker.GetUnicodeCodepoint() != ZERO_WIDTH_SPACE;
+            needSoftStick = true;
+        }
+
         first = false;
     }
 }
