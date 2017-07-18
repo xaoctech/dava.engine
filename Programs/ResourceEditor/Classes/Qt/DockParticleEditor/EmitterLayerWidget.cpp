@@ -255,15 +255,15 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     facingLayout->addWidget(cameraFacingCheckBox);
     connect(cameraFacingCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
 
-    xFacingCheckBox = new QCheckBox(/*layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE ? "X-Align" : */ "X-Facing");
+    xFacingCheckBox = new QCheckBox("X-Facing");
     facingLayout->addWidget(xFacingCheckBox);
     connect(xFacingCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
 
-    yFacingCheckBox = new QCheckBox(/*layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE ? "Y-Align" :*/ "Y-Facing");
+    yFacingCheckBox = new QCheckBox("Y-Facing");
     facingLayout->addWidget(yFacingCheckBox);
     connect(yFacingCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
 
-    zFacingCheckBox = new QCheckBox(/*layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE ? "Z-Align" :*/ "Z-Facing");
+    zFacingCheckBox = new QCheckBox("Z-Facing");
     facingLayout->addWidget(zFacingCheckBox);
     connect(zFacingCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
 
@@ -788,7 +788,6 @@ void EmitterLayerWidget::OnValueChanged()
         REGlobal::ShowNotification(params);
     }
 
-    // Update(false);
     if (superemitterStatusChanged)
     {
         if (!GetEffect(activeScene)->IsStopped())
