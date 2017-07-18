@@ -56,6 +56,15 @@ void MicroWebBrowserTest::LoadResources()
     webView->GetOrCreateComponent<UIFocusComponent>();
     AddControl(webView.Get());
 
+    fpsText = new UIStaticText(Rect(10.0f, screenRect.dy - 50.0f, 100.0f, 45.0f));
+    fpsText->SetTextColor(Color::White);
+    fpsText->SetFont(font);
+    fpsText->SetTextAlign(ALIGN_LEFT | ALIGN_VCENTER);
+    fpsText->SetUtf8Text("FPS: ");
+    AddControl(fpsText);
+
+    Engine::Instance()->update.Connect(this, &MicroWebBrowserTest::Update);
+
     BaseScreen::LoadResources();
 }
 
@@ -63,6 +72,11 @@ void MicroWebBrowserTest::UnloadResources()
 {
     webView = nullptr;
     textField = nullptr;
+
+    SafeRelease(fpsText);
+
+    Engine::Instance()->update.Disconnect(this);
+
     BaseScreen::UnloadResources();
 }
 
@@ -78,4 +92,14 @@ void MicroWebBrowserTest::OnLoadPage(BaseObject* obj, void* data, void* callerDa
 void MicroWebBrowserTest::TextFieldShouldReturn(UITextField* /*textField*/)
 {
     OnLoadPage(nullptr, nullptr, nullptr);
+}
+
+void MicroWebBrowserTest::Update(float elapsedTime)
+{
+    fpsMeter.Update(elapsedTime);
+
+    if (fpsMeter.IsFpsReady())
+    {
+        fpsText->SetUtf8Text(Format("FPS: %u", static_cast<uint32>(fpsMeter.GetFps())));
+    }
 }

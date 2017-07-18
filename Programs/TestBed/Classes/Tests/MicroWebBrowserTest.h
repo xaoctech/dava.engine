@@ -1,6 +1,7 @@
 #pragma once
 #include "DAVAEngine.h"
-#include "UI/UIWebView.h"
+#include <UI/UIWebView.h>
+#include <Utils/FpsMeter.h>
 
 #include "Infrastructure/BaseScreen.h"
 
@@ -23,6 +24,12 @@ private:
     // UITextFieldDelegate implementation
     void TextFieldShouldReturn(UITextField* /*textField*/) override;
 
+    void Update(float elapsedTime);
+
     RefPtr<UIWebView> webView;
     RefPtr<UITextField> textField;
+
+    UIStaticText* fpsText;
+    UIStaticText* memoryText;
+    FpsMeter fpsMeter;
 };
