@@ -384,7 +384,7 @@ std::string PackArchive::PrintMeta() const
         size_t numPacks = meta.get_num_packs();
         string packName;
         string dependencies;
-        size_t max_pack_name = 0;
+        size_t max_pack_name = strlen("pack-name");
         size_t max_dep_name = 0;
         for (unsigned i = 0; i < numPacks; ++i)
         {
