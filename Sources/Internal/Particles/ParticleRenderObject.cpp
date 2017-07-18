@@ -548,11 +548,11 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
 
                     Vector3 dir = currentParticle->speed;
                     float32 len = dir.Normalize();
-                    if (abs(len) < EPSILON && nodes.size() > 0)
+                    if (Abs(len) < EPSILON && nodes.size() > 0)
                     {
                         dir = base.position - nodes.front().position;
                         len = dir.Normalize();
-                        if (abs(len) < EPSILON)
+                        if (Abs(len) < EPSILON)
                             dir = Vector3(0.0f, 0.0f, 1.0f);
                     }
 
@@ -576,7 +576,7 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                     tile = group.layer->stripeTextureTileOverLife->GetValue(0.0f);
                 float32 startU = currentParticle->life * group.layer->stripeUScrollSpeed;
                 float32 startV = currentParticle->life * group.layer->stripeVScrollSpeed;
-                if (abs(data.uvOffset) > EPSILON)
+                if (Abs(data.uvOffset) > EPSILON)
                     startV += data.uvOffset * tile + currentParticle->life * group.layer->stripeVScrollSpeed;
 
                 Vector3 uv1 = Vector3(startU, startV, 0.0f);
@@ -650,7 +650,7 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                     if (group.layer->stripeTextureTileOverLife)
                         tile = group.layer->stripeTextureTileOverLife->GetValue(overLifeTime);
                     float32 v = distance * tile + currentParticle->life * group.layer->stripeVScrollSpeed;
-                    if (abs(data.uvOffset) > EPSILON)
+                    if (Abs(data.uvOffset) > EPSILON)
                         v += data.uvOffset * tile + currentParticle->life * group.layer->stripeVScrollSpeed;
 
                     if (group.layer->usePerspectiveMapping)
