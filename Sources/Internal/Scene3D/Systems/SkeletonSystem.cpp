@@ -187,7 +187,7 @@ void SkeletonSystem::UpdateJointTransforms(SkeletonComponent* skeleton)
             {
                 skeleton->objectSpaceTransforms[currJoint] = skeleton->objectSpaceTransforms[parentJoint].AppendTransform(skeleton->localSpaceTransforms[currJoint]);
             }
-            skeleton->objectSpaceBoxes[currJoint] = skeleton->objectSpaceTransforms[currJoint].ApplyToAABBox(skeleton->jointSpaceBoxes[currJoint]);
+            skeleton->objectSpaceBoxes[currJoint] = skeleton->objectSpaceTransforms[currJoint].ApplyToAABBox(skeleton->jointsArray[currJoint].bbox);
 
             //calculate final transform including bindTransform
             skeleton->finalTransforms[currJoint] = skeleton->objectSpaceTransforms[currJoint].AppendTransform(skeleton->inverseBindTransforms[currJoint]);
@@ -233,7 +233,6 @@ void SkeletonSystem::RebuildSkeleton(SkeletonComponent* skeleton)
     skeleton->objectSpaceTransforms.resize(jointsCount);
     skeleton->finalTransforms.resize(jointsCount);
     skeleton->inverseBindTransforms.resize(jointsCount);
-    skeleton->jointSpaceBoxes.resize(jointsCount);
     skeleton->objectSpaceBoxes.resize(jointsCount);
     skeleton->jointMap.clear();
 
@@ -260,7 +259,6 @@ void SkeletonSystem::RebuildSkeleton(SkeletonComponent* skeleton)
             skeleton->objectSpaceTransforms[i] = skeleton->objectSpaceTransforms[skeleton->jointsArray[i].parentIndex].AppendTransform(localTransform);
         }
 
-        skeleton->jointSpaceBoxes[i] = skeleton->jointsArray[i].bbox;
         skeleton->inverseBindTransforms[i].Construct(skeleton->jointsArray[i].bindTransformInv);
     }
 

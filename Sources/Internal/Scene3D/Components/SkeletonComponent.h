@@ -30,7 +30,7 @@ public:
         uint32 parentIndex = INVALID_JOINT_INDEX;
         FastName name;
         FastName uid;
-        AABBox3 bbox; //object-space
+        AABBox3 bbox;
 
         Matrix4 bindTransform;
         Matrix4 bindTransformInv;
@@ -85,8 +85,7 @@ private:
     Vector<JointTransform> finalTransforms;
     //bind pose
     Vector<JointTransform> inverseBindTransforms;
-    //bounding boxes for bone
-    Vector<AABBox3> jointSpaceBoxes;
+    //bounding boxes
     Vector<AABBox3> objectSpaceBoxes;
 
     Map<FastName, uint32> jointMap;

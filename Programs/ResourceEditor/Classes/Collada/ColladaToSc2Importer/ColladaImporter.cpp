@@ -245,6 +245,7 @@ void ColladaImporter::ImportSkeleton(ColladaSceneNode* colladaNode, Entity* node
     }
 
     //TODO: *Skinning* calc bounding sphere instead bbox?
+    const Matrix4& bindShapeMatrix = skinnedMesh->bindShapeMatrix;
     for (auto& pgi : colladaNode->meshInstances[0]->polyGroupInstances)
     {
         PolygonGroup* polygonGroup = library.GetOrCreatePolygon(pgi);
@@ -265,7 +266,7 @@ void ColladaImporter::ImportSkeleton(ColladaSceneNode* colladaNode, Entity* node
                         polygonGroup->GetCoord(v, position);
                         polygonGroup->GetJointIndex(v, j, jointIndex);
 
-                        joints[jointIndex].bbox.AddPoint(position * joints[jointIndex].bindTransformInv);
+                        joints[jointIndex].bbox.AddPoint(position * bindShapeMatrix * joints[jointIndex].bindTransformInv);
                     }
                 }
             }
@@ -275,7 +276,7 @@ void ColladaImporter::ImportSkeleton(ColladaSceneNode* colladaNode, Entity* node
 
                 polygonGroup->GetCoord(v, position);
                 polygonGroup->GetJointIndexHard(v, jointIndex);
-                joints[jointIndex].bbox.AddPoint(position * joints[jointIndex].bindTransformInv);
+                joints[jointIndex].bbox.AddPoint(position * bindShapeMatrix * joints[jointIndex].bindTransformInv);
             }
         }
     }
