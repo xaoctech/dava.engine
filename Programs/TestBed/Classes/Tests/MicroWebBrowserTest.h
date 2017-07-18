@@ -24,7 +24,7 @@ private:
     // UITextFieldDelegate implementation
     void TextFieldShouldReturn(UITextField* /*textField*/) override;
 
-    void Update(float elapsedTime);
+    void Update(float elapsedTime) override;
 
     RefPtr<UIWebView> webView;
     RefPtr<UITextField> textField;

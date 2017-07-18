@@ -1,11 +1,13 @@
 #include "Tests/MicroWebBrowserTest.h"
 #include <UI/Focus/UIFocusComponent.h>
 #include <UI/Render/UIDebugRenderComponent.h>
+#include <UI/Update/UIUpdateComponent.h>
 #include <MemoryManager/MemoryManager.h>
 
 MicroWebBrowserTest::MicroWebBrowserTest(TestBed& app)
     : BaseScreen(app, "MicroWebBrowserTest")
 {
+    GetOrCreateComponent<UIUpdateComponent>();
 }
 
 void MicroWebBrowserTest::LoadResources()
@@ -73,8 +75,6 @@ void MicroWebBrowserTest::LoadResources()
     AddControl(memoryText);
 #endif
 
-    Engine::Instance()->update.Connect(this, &MicroWebBrowserTest::Update);
-
     BaseScreen::LoadResources();
 }
 
@@ -87,8 +87,6 @@ void MicroWebBrowserTest::UnloadResources()
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
     SafeRelease(memoryText);
 #endif
-
-    Engine::Instance()->update.Disconnect(this);
 
     BaseScreen::UnloadResources();
 }
