@@ -205,7 +205,7 @@ ParticleLayer* ParticleLayer::Clone()
     if (noiseVScrollSpeed)
         dstLayer->noiseVScrollSpeed.Set(noiseVScrollSpeed->Clone());
     if (noiseVScrollSpeedVariation)
-        dstLayer->noiseVScrollSpeed.Set(noiseVScrollSpeedVariation->Clone());
+        dstLayer->noiseVScrollSpeedVariation.Set(noiseVScrollSpeedVariation->Clone());
     if (noiseVScrollSpeedOverLife)
         dstLayer->noiseVScrollSpeedOverLife.Set(noiseVScrollSpeedOverLife->Clone());
 
@@ -478,9 +478,9 @@ void ParticleLayer::SetFlowmap(const FilePath& spritePath_)
         flowmap.reset(Sprite::Create(flowmapPath));
 }
 
-void ParticleLayer::SetNoise(const FilePath& noisePath_)
+void ParticleLayer::SetNoise(const FilePath& spritePath_)
 {
-    noisePath = noisePath_;
+    noisePath = spritePath_;
     if (type != TYPE_SUPEREMITTER_PARTICLES)
         noise.reset(Sprite::Create(noisePath));
 }
