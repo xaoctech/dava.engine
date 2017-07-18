@@ -1037,7 +1037,7 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
     PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "fresToAlphaPower", fresnelToAlphaPower);
 
     PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "alphaRemapLoopCount", alphaRemapLoopCount);
-    
+
     SaveSpritePath(spritePath, configPath, layerNode, "sprite");
     SaveSpritePath(flowmapPath, configPath, layerNode, "flowmap");
     SaveSpritePath(noisePath, configPath, layerNode, "noise");
