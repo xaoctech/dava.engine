@@ -137,55 +137,7 @@ void ParticleEffectSystem::SetGlobalMaterial(NMaterial* material)
             material->AddFlag(NMaterialFlagName::FLAG_VERTEXFOG, 0);
         material->AddFlag(NMaterialFlagName::FLAG_BLENDING, blending);
         material->PreCacheFX();
-    }
-    /*particleBaseMaterial->SetParent(material);
-
-    //RHI_COMPLETE pre-cache all configs for regularly used blending modes
-    const static uint32 FRAME_BLEND_MASK = 1;
-    const static uint32 FOG_MASK = 1 << 1;
-    const static uint32 FRES_TO_ALPHA_MASK = 1 << 2;
-    const static uint32 NOISE_MASK = 1 << 3;
-    const static uint32 FLOWMAP_MASK = 1 << 4;
-    const static uint32 FLOWMAP_ANIMATION_MASK = 1 << 5;
-    const static uint32 ENABLE_ALPHA_REMAP_MASK = 1 << 6;
-    const static uint32 PERP_MAPPING_MASK = 1 << 7;
-    const static uint32 BLEND_SHIFT = 8;
-    for (uint32 i = 0; i < 768; i++)
-    {
-        bool enableFrameBlend = (i & FRAME_BLEND_MASK) == FRAME_BLEND_MASK;
-        bool enableFog = (i & FOG_MASK) == FOG_MASK;
-        bool enableFresToAlpha = (i & FRES_TO_ALPHA_MASK) == FRES_TO_ALPHA_MASK;
-        bool enableNoise = (i & NOISE_MASK) == NOISE_MASK;
-        bool enableFlow = (i & FLOWMAP_MASK) == FLOWMAP_MASK;
-        bool enableFlowAnimation = (i & FLOWMAP_ANIMATION_MASK) == FLOWMAP_ANIMATION_MASK;
-        bool enableAlphaRemap = (i & ENABLE_ALPHA_REMAP_MASK) == ENABLE_ALPHA_REMAP_MASK;
-        bool perpMapping = (i & PERP_MAPPING_MASK) == PERP_MAPPING_MASK;
-
-        uint32 blending = (i >> BLEND_SHIFT) + 1;
-
-        ScopedPtr<NMaterial> material(new NMaterial());
-        material->SetParent(particleBaseMaterial);
-
-        if (enableFrameBlend)
-            material->AddFlag(NMaterialFlagName::FLAG_FRAME_BLEND, 1);
-        if (!enableFog) //inverse logic to suspend vertex fog inherited from global material
-            material->AddFlag(NMaterialFlagName::FLAG_VERTEXFOG, 0);
-        if (enableFresToAlpha)
-            material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_FRES_TO_ALPHA, 1);
-        if (enableNoise)
-            material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_NOISE, 1);
-        if (enableFlow)
-            material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_FLOWMAP, 1);
-        if (enableFlowAnimation)
-            material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_FLOWMAP_ANIMATION, 1);
-        if (enableAlphaRemap)
-            material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_ALPHA_REMAP, 1);
-        if (perpMapping)
-            material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_PERSPECTIVE_MAPPING, 1);
-
-        material->AddFlag(NMaterialFlagName::FLAG_BLENDING, blending);
-        material->PreCacheFX();
-    }*/
+    } // For pre-cache everything see commit c9c9346c6d6 and older.
 }
 
 void ParticleEffectSystem::PrebuildMaterials(ParticleEffectComponent* component)
