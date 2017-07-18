@@ -138,6 +138,8 @@ const InputElementInfo& GetInputElementInfo(eInputElements element)
         infoKeyboard[eInputElements::KB_VOLUME_DOWN - eInputElements::KB_FIRST] = { "Volume down", eInputElementTypes::DIGITAL };
         infoKeyboard[eInputElements::KB_VOLUME_UP - eInputElements::KB_FIRST] = { "Volume up", eInputElementTypes::DIGITAL };
         infoKeyboard[eInputElements::KB_VOLUME_MUTE - eInputElements::KB_FIRST] = { "Volume mute", eInputElementTypes::DIGITAL };
+        infoKeyboard[eInputElements::KB_UNUSED1 - eInputElements::KB_FIRST] = { "UNUSED", eInputElementTypes::DIGITAL };
+        infoKeyboard[eInputElements::KB_UNUSED2 - eInputElements::KB_FIRST] = { "UNUSED", eInputElementTypes::DIGITAL };
 
         // Mouse
 
