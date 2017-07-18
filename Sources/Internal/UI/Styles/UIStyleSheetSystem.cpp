@@ -112,11 +112,7 @@ void UIStyleSheetSystem::Process(float32 elapsedTime)
     if (!needUpdate)
         return;
 
-    if (currentScreenTransition.Valid())
-    {
-        ProcessControlHierarhy(currentScreenTransition.Get());
-    }
-    else if (currentScreen.Valid())
+    if (currentScreen.Valid())
     {
         ProcessControlHierarhy(currentScreen.Get());
     }
@@ -139,11 +135,6 @@ void UIStyleSheetSystem::ForceProcessControl(float32 elapsedTime, UIControl* con
 void UIStyleSheetSystem::SetCurrentScreen(const RefPtr<UIScreen>& screen)
 {
     currentScreen = screen;
-}
-
-void UIStyleSheetSystem::SetCurrentScreenTransition(const RefPtr<UIScreenTransition>& screenTransition)
-{
-    currentScreenTransition = screenTransition;
 }
 
 void UIStyleSheetSystem::SetPopupContainer(const RefPtr<UIControl>& _popupContainer)
@@ -391,7 +382,7 @@ void UIStyleSheetSystem::DoForAllPropertyInstances(UIControl* control, uint32 pr
 
     const UIStyleSheetPropertyDescriptor& descr = propertyDB->GetStyleSheetPropertyByIndex(propertyIndex);
 
-    if (descr.group->componentType == -1)
+    if (descr.group->componentType == nullptr)
     {
         Reflection ref = Reflection::Create(ReflectedObject(control));
         ref = ref.GetField(descr.field->name);
@@ -423,7 +414,8 @@ void UIStyleSheetSystem::DoForAllPropertyInstances(UIControl* control, uint32 pr
         }
         else
         {
-            const char* componentName = GlobalEnumMap<UIComponent::eType>::Instance()->ToString(descr.group->componentType);
+            const ReflectedType* rt = ReflectedTypeDB::GetByType(descr.group->componentType);
+            const char* componentName = rt->GetPermanentName().c_str();
             const char* controlName = control->GetName().c_str();
             Logger::Error("Style sheet can not find component \'%s\' in control \'%s\'", componentName, controlName);
         }

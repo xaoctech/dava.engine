@@ -27,15 +27,17 @@
 #include "Classes/Qt/Scene/System/EditorSceneSystem.h"
 
 // framework
-#include "Debug/DVAssert.h"
-#include "Engine/Engine.h"
-#include "Scene3D/Entity.h"
-#include "Scene3D/SceneFileV2.h"
-#include "Scene3D/Systems/RenderUpdateSystem.h"
-#include "Scene3D/Systems/StaticOcclusionSystem.h"
-#include "Scene3D/Systems/Controller/SnapToLandscapeControllerSystem.h"
-#include "Render/Highlevel/RenderBatchArray.h"
-#include "Render/Highlevel/RenderPass.h"
+#include <Debug/DVAssert.h>
+#include <Engine/Engine.h>
+#include <Scene3D/Entity.h>
+#include <Scene3D/SceneFileV2.h>
+#include <Scene3D/Systems/RenderUpdateSystem.h>
+#include <Scene3D/Systems/StaticOcclusionSystem.h>
+#include <Scene3D/Systems/Controller/SnapToLandscapeControllerSystem.h>
+#include <Render/Highlevel/RenderBatchArray.h>
+#include <Render/Highlevel/RenderPass.h>
+#include <Reflection/ReflectionRegistrator.h>
+#include <Command/Command.h>
 
 #include <QShortcut>
 
@@ -224,6 +226,22 @@ DAVA::SceneFileV2::eError SceneEditor2::SaveScene(const DAVA::FilePath& path, bo
 
     ExtractEditorEntities();
 
+    DAVA::Vector<std::unique_ptr<DAVA::Command>> prepareForSaveCommands;
+    prepareForSaveCommands.reserve(editorSystems.size());
+    for (EditorSceneSystem* editorSceneSystem : editorSystems)
+    {
+        std::unique_ptr<DAVA::Command> cmd = editorSceneSystem->PrepareForSave(saveForGame);
+        if (cmd != nullptr)
+        {
+            prepareForSaveCommands.push_back(std::move(cmd));
+        }
+    }
+
+    std::for_each(prepareForSaveCommands.begin(), prepareForSaveCommands.end(), [](std::unique_ptr<DAVA::Command>& cmd)
+                  {
+                      cmd->Redo();
+                  });
+
     DAVA::ScopedPtr<DAVA::Texture> tilemaskTexture(nullptr);
     bool needToRestoreTilemask = false;
     if (landscapeEditorDrawSystem)
@@ -250,6 +268,11 @@ DAVA::SceneFileV2::eError SceneEditor2::SaveScene(const DAVA::FilePath& path, bo
         landscapeEditorDrawSystem->SetTileMaskTexture(tilemaskTexture);
     }
 
+    std::for_each(prepareForSaveCommands.rbegin(), prepareForSaveCommands.rend(), [](std::unique_ptr<DAVA::Command>& cmd)
+                  {
+                      cmd->Undo();
+                  });
+
     InjectEditorEntities();
 
     if (editorLightSystem != nullptr)
@@ -262,7 +285,7 @@ DAVA::SceneFileV2::eError SceneEditor2::SaveScene(const DAVA::FilePath& path, bo
     return err;
 }
 
-void SceneEditor2::AddSystem(DAVA::SceneSystem* sceneSystem, DAVA::uint64 componentFlags, DAVA::uint32 processFlags, DAVA::SceneSystem* insertBeforeSceneForProcess, DAVA::SceneSystem* insertBeforeSceneForInput)
+void SceneEditor2::AddSystem(DAVA::SceneSystem* sceneSystem, DAVA::uint64 componentFlags, DAVA::uint32 processFlags, DAVA::SceneSystem* insertBeforeSceneForProcess, DAVA::SceneSystem* insertBeforeSceneForInput, DAVA::SceneSystem* insertBeforeSceneForFixedProcess)
 {
     Scene::AddSystem(sceneSystem, componentFlags, processFlags, insertBeforeSceneForProcess, insertBeforeSceneForInput);
 
@@ -554,6 +577,19 @@ void SceneEditor2::Draw()
     }
 }
 
+void SceneEditor2::AccumulateDependentCommands(REDependentCommandsHolder& holder)
+{
+    if (holder.GetMasterCommandInfo().IsEmpty())
+    {
+        return;
+    }
+
+    for (EditorSceneSystem* system : editorSystems)
+    {
+        system->AccumulateDependentCommands(holder);
+    }
+}
+
 void SceneEditor2::EditorCommandProcess(const RECommandNotificationObject& commandNotification)
 {
     if (commandNotification.IsEmpty())
@@ -582,6 +618,14 @@ void SceneEditor2::AddEditorEntity(Entity* editorEntity)
 SceneEditor2::EditorCommandNotify::EditorCommandNotify(SceneEditor2* _editor)
     : editor(_editor)
 {
+}
+
+void SceneEditor2::EditorCommandNotify::AccumulateDependentCommands(REDependentCommandsHolder& holder)
+{
+    if (nullptr != editor)
+    {
+        editor->AccumulateDependentCommands(holder);
+    }
 }
 
 void SceneEditor2::EditorCommandNotify::Notify(const RECommandNotificationObject& commandNotification)
@@ -930,4 +974,10 @@ void UnlockTransform(SceneEditor2* scene)
     {
         scene->modifSystem->LockTransform(Selection::GetSelection(), false);
     }
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(SceneEditor2)
+{
+    DAVA::ReflectionRegistrator<SceneEditor2>::Begin()
+    .End();
 }

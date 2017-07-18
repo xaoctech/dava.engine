@@ -1,6 +1,5 @@
 #include "Input/Private/Ios/GamepadDeviceImplIos.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_IPHONE__)
 
 #import <GameController/GameController.h>
@@ -138,4 +137,3 @@ bool GamepadDeviceImpl::HandleGamepadRemoved(uint32 id)
 } // namespace DAVA
 
 #endif // __DAVAENGINE_IPHONE__
-#endif // __DAVAENGINE_COREV2__

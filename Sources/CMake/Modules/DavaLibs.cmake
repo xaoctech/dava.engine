@@ -113,6 +113,7 @@ if( WIN )
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libcurl.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libdxt.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libeay32.lib"
+                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/ssleay32.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libjpeg.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libmongodb_win.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libogg_static.lib"
@@ -126,7 +127,6 @@ if( WIN )
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libyaml_win.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/pnglib_win.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/PVRTexLib32.lib"
-                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/ssleay32.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/TextureConverter.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/unibreak_win.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/zlib.lib"   
@@ -151,6 +151,7 @@ if( WIN )
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libcurl.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libdxtd.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libeay32.lib"
+                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/ssleay32.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libjpegd.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libmongodb_wind.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libogg_static_d.lib"
@@ -164,7 +165,6 @@ if( WIN )
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libyaml_wind.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/pnglib_wind.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/PVRTexLib32.lib"
-                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/ssleay32.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/TextureConverterD.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/unibreak_wind.lib"  
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/zlib.lib" 
@@ -187,7 +187,8 @@ if( WIN )
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/jpeg.lib"              
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libcurl_a.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libdxt.lib"
-                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libeay32_64.lib"
+                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libeay32.lib"
+                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/ssleay32.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libmongodb_win.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libogg_static.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libpsd.lib"
@@ -199,7 +200,6 @@ if( WIN )
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libyaml_win.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/pnglib_win.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/PVRTexLib.lib"
-                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/ssleay32_64.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/TextureConverter.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/theora_static.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/unibreak.lib"
@@ -216,8 +216,8 @@ if( WIN )
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/sqlite3.lib" )
 
     set( DAVA_STATIC_LIBRARIES_WIN64_DEBUG
-                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libeay32_64.lib"
-                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/ssleay32_64.lib"
+                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libeay32.lib"
+                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/ssleay32.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/FColladaVS2010.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/freetype.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/glew32.lib"
@@ -225,9 +225,7 @@ if( WIN )
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/icucommon.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/jpeg_d.lib"            
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libcurl_a_debug.lib"
-                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libeay32_64.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libdxtd.lib"
-                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libeay32_64.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libmongodb_wind.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libogg_static.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libpsd.lib"
@@ -239,7 +237,6 @@ if( WIN )
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libyaml_wind.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/pnglib_wind.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/PVRTexLib32.lib"
-                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/ssleay32_64.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/TextureConverter_d.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/theora_static_d.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/unibreak.lib"
@@ -310,13 +307,13 @@ endif()
 if( WINUAP ) 
     add_static_libs_win_uap ( "${DAVA_WIN_UAP_LIBRARIES_PATH_COMMON}" LIST_SHARED_LIBRARIES )
 
-    set( DAVA_STATIC_LIBRARIES_WINUAP   "d2d1.lib"
+    set( DAVA_STATIC_LIBRARIES_WINUAP   "OneCore.lib"
+                                        "d2d1.lib"
                                         "d3d11.lib"
                                         "d3dcompiler.lib"
                                         "dxgi.lib"
                                         "dxguid.lib"
                                         "dwrite.lib"
-                                        "iphlpapi.lib" 
                                         ${LIST_SHARED_LIBRARIES} )
                                         
     set( DAVA_STATIC_LIBRARIES_WINUAP_RELEASE ${LIST_SHARED_LIBRARIES_RELEASE} )

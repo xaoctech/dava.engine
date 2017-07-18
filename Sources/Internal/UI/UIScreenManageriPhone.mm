@@ -15,9 +15,6 @@ UIScreenManager::UIScreenManager()
     glControllerId = -1;
     activeControllerId = -1;
     activeScreenId = -1;
-#if defined(__DAVAENGINE_COREV2__)
-    drawBlocked = false;
-#endif // __DAVAENGINE_COREV2__
 }
 
 UIScreenManager::~UIScreenManager()
@@ -76,7 +73,7 @@ void UIScreenManager::SetFirst(int screenId)
     }
 }
 
-void UIScreenManager::SetScreen(int screenId, UIScreenTransition* transition)
+void UIScreenManager::SetScreen(int screenId)
 {
     Screen& screen = screens[screenId];
     if (screen.type == Screen::TYPE_CONTROLLER)
@@ -106,7 +103,7 @@ void UIScreenManager::SetScreen(int screenId, UIScreenTransition* transition)
         }
         activeScreenId = screenId;
 
-        UIControlSystem::Instance()->SetScreen((UIScreen*)screen.value, transition);
+        UIControlSystem::Instance()->SetScreen((UIScreen*)screen.value);
     }
 }
 
@@ -188,24 +185,6 @@ void UIScreenManager::StartGLAnimation()
     RenderView* view = (RenderView*)controller.view;
     [view performSelector:@selector(startAnimation)];
 }
-
-#if !defined(__DAVAENGINE_COREV2__)
-void UIScreenManager::BlockDrawing()
-{
-    Screen& glController = screens[glControllerId];
-    UIViewController* controller = (UIViewController*)glController.value;
-    RenderView* view = (RenderView*)controller.view;
-    [view performSelector:@selector(blockDrawing)];
-}
-
-void UIScreenManager::UnblockDrawing()
-{
-    Screen& glController = screens[glControllerId];
-    UIViewController* controller = (UIViewController*)glController.value;
-    RenderView* view = (RenderView*)controller.view;
-    [view performSelector:@selector(unblockDrawing)];
-}
-#endif // !__DAVAENGINE_COREV2__
 }
 
 #endif // #if defined(__DAVAENGINE_IPHONE__)

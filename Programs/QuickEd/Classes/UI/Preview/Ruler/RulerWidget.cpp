@@ -176,7 +176,7 @@ void RulerWidget::UpdateDoubleBufferImage()
 
     QColor rulerBackgroundColor = Themes::GetRulerWidgetBackgroungColor();
 
-    const QColor rulerTicksColor = palette().color(QPalette::Text);
+    const QColor rulerTicksColor = Themes::GetRulerTextColor();
     static const int rulerFontSize = 10;
 
     static const int borderWidth = 2;

@@ -374,6 +374,7 @@ void NMaterialStateDynamicPropertiesInsp::FillGlobalMaterialMemebers(NMaterial* 
     checkAndAdd(NMaterialParamName::PARAM_DECAL_TILE_COLOR, rhi::ShaderProp::TYPE_FLOAT4, 1, Color::White.color);
     checkAndAdd(NMaterialParamName::PARAM_DETAIL_TILE_SCALE, rhi::ShaderProp::TYPE_FLOAT2, 1, DefaultValues::defaultVec2.data);
     checkAndAdd(NMaterialParamName::DEPRECATED_SHADOW_COLOR_PARAM, rhi::ShaderProp::TYPE_FLOAT4, 1, DefaultValues::defaultColor.color);
+    checkAndAdd(NMaterialParamName::FORCED_SHADOW_DIRECTION_PARAM, rhi::ShaderProp::TYPE_FLOAT3, 1, DefaultValues::defaultVec3.data);
     checkAndAdd(NMaterialParamName::WATER_CLEAR_COLOR, rhi::ShaderProp::TYPE_FLOAT4, 1, DefaultValues::blackColor.color);
 
     //checkAndAdd(NMaterialParamName::PARAM_NORMAL_SCALE, rhi::ShaderProp::TYPE_FLOAT1, 1, &DefaultValues::defaultFloat10);

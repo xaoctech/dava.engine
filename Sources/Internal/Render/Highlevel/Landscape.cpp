@@ -103,12 +103,7 @@ Landscape::Landscape()
         }
     }
 
-#ifdef __DAVAENGINE_COREV2__
-    EngineSettings* settings = Engine::Instance()->GetContext()->settings;
-#else
-    EngineSettings* settings = EngineSettings::Instance();
-#endif
-
+    EngineSettings* settings = GetEngineContext()->settings;
     EngineSettings::eSettingValue landscapeSetting = settings->GetSetting<EngineSettings::SETTING_LANDSCAPE_RENDERMODE>().Get<EngineSettings::eSettingValue>();
     if (landscapeSetting == EngineSettings::LANDSCAPE_NO_INSTANCING)
         renderMode = RENDERMODE_NO_INSTANCING;
@@ -179,7 +174,7 @@ void Landscape::RestoreGeometry()
             // if (rhi::NeedRestoreTexture(static_cast<rhi::HTexture>(restoreData.buffer)))
             // we are not checking condition above,
             // because texture is marked as restored immediately after updating zero level
-            rhi::UpdateTexture(static_cast<rhi::HTexture>(restoreData.buffer), restoreData.data, restoreData.level, rhi::TextureFace::TEXTURE_FACE_POSITIVE_X);
+            rhi::UpdateTexture(static_cast<rhi::HTexture>(restoreData.buffer), restoreData.data, restoreData.level);
             break;
 
         default:

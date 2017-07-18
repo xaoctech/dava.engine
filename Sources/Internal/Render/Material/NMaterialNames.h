@@ -138,6 +138,7 @@ public:
     static const FastName DEPRECATED_SHADOW_COLOR_PARAM;
     static const FastName DEPRECATED_LANDSCAPE_TEXTURE_0_TILING;
     static const FastName PARAM_TREE_LEAF_COLOR_MUL;
+    static const FastName FORCED_SHADOW_DIRECTION_PARAM;
 };
 
 class NMaterialFlagName
@@ -159,6 +160,7 @@ public:
     static const FastName FLAG_TILED_DECAL_MASK;
     static const FastName FLAG_TILED_DECAL_ROTATION;
     static const FastName FLAG_FLATCOLOR;
+    static const FastName FLAG_FLATALBEDO;
     static const FastName FLAG_DISTANCEATTENUATION;
     static const FastName FLAG_SPECULAR;
     static const FastName FLAG_SEPARATE_NORMALMAPS;
@@ -205,6 +207,8 @@ public:
     static const FastName FLAG_TEST_OCCLUSION;
 
     static const FastName FLAG_PARTICLES_DEBUG_SHOW_HEATMAP;
+
+    static const FastName FLAG_FORCED_SHADOW_DIRECTION;
 
     static bool IsRuntimeFlag(const FastName& flag);
 };

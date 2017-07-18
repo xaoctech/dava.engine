@@ -12,11 +12,7 @@
 
 namespace DAVA
 {
-#if defined(__DAVAENGINE_COREV2__)
 MovieViewControl::MovieViewControl(Window* /*w*/)
-#else
-MovieViewControl::MovieViewControl()
-#endif
     : ffmpegPlayer(new FfmpegPlayer())
     , videoBackground(new UIControlBackground())
 {

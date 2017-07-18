@@ -3,13 +3,21 @@
 #include "IntrospectionProperty.h"
 #include "PropertyVisitor.h"
 
-#include "UI/UIControl.h"
+#include <UI/UIControl.h>
+#include <UI/Layouts/UILayoutIsolationComponent.h>
+#include <UI/Layouts/UILayoutSourceRectComponent.h>
+#include <UI/Render/UISceneComponent.h>
+#include <UI/RichContent/UIRichContentObjectComponent.h>
+#include <UI/Scroll/UIScrollComponent.h>
+#include <Utils/StringFormat.h>
+#include <Reflection/ReflectedMeta.h>
+#include <Reflection/ReflectedTypeDB.h>
 
-#include "Utils/StringFormat.h"
+#include <TArc/Utils/ReflectionHelpers.h>
 
 using namespace DAVA;
 
-ComponentPropertiesSection::ComponentPropertiesSection(DAVA::UIControl* control_, DAVA::UIComponent::eType type_, int32 index_, const ComponentPropertiesSection* sourceSection, eCloneType cloneType)
+ComponentPropertiesSection::ComponentPropertiesSection(DAVA::UIControl* control_, const DAVA::Type* type_, int32 index_, const ComponentPropertiesSection* sourceSection, eCloneType cloneType)
     : SectionProperty("")
     , control(SafeRetain(control_))
     , component(nullptr)
@@ -57,13 +65,10 @@ ComponentPropertiesSection::~ComponentPropertiesSection()
     prototypeSection = nullptr; // weak
 }
 
-bool ComponentPropertiesSection::IsHiddenComponent(UIComponent::eType type)
+bool ComponentPropertiesSection::IsHiddenComponent(const Type* type)
 {
-    return (type == UIComponent::LAYOUT_ISOLATION_COMPONENT ||
-            type == UIComponent::LAYOUT_SOURCE_RECT_COMPONENT ||
-            type == UIComponent::SCROLL_COMPONENT ||
-            type == UIComponent::RICH_CONTENT_OBJECT_COMPONENT ||
-            type == UIComponent::SCENE_COMPONENT);
+    const ReflectedType* rtype = ReflectedTypeDB::GetByType(type);
+    return TArc::GetReflectedTypeMeta<DAVA::M::HiddenField>(rtype) != nullptr;
 }
 
 UIComponent* ComponentPropertiesSection::GetComponent() const
@@ -71,7 +76,7 @@ UIComponent* ComponentPropertiesSection::GetComponent() const
     return component;
 }
 
-DAVA::uint32 ComponentPropertiesSection::GetComponentType() const
+const DAVA::Type* ComponentPropertiesSection::GetComponentType() const
 {
     return component->GetType();
 }
@@ -200,7 +205,7 @@ void ComponentPropertiesSection::Accept(PropertyVisitor* visitor)
 
 String ComponentPropertiesSection::GetComponentName() const
 {
-    return GlobalEnumMap<UIComponent::eType>::Instance()->ToString(component->GetType());
+    return ReflectedTypeDB::GetByType(component->GetType())->GetPermanentName();
 }
 
 void ComponentPropertiesSection::RefreshName()

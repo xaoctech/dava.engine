@@ -11,6 +11,11 @@ Widget::Widget(QWidget* parent /*= nullptr*/)
 {
 }
 
+Widget::~Widget()
+{
+    TearDown();
+}
+
 void Widget::SetLayout(QLayout* layout)
 {
     setLayout(layout);

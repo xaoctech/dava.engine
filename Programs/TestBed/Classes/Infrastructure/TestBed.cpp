@@ -47,6 +47,10 @@
 #include "Tests/OverdrawTest.h"
 #include "Tests/WindowTest.h"
 #include "Tests/RichTextTest.h"
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+#include "Tests/PhysicsTest.h"
+#endif
+#include "Tests/SpineTest.h"
 //$UNITTEST_INCLUDE
 
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
@@ -253,6 +257,7 @@ void TestBed::OnWindowCreated(DAVA::Window* w)
 
 void TestBed::OnWindowDestroyed(DAVA::Window* w)
 {
+    UIScreenManager::Instance()->ResetScreen();
     Logger::Error("****** TestBed::OnWindowDestroyed");
 }
 
@@ -384,6 +389,10 @@ void TestBed::RegisterTests()
 
     new WindowTest(*this);
     new RichTextTest(*this);
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+    new PhysicsTest(*this);
+#endif
+    new SpineTest(*this);
     //$UNITTEST_CTOR
 }
 

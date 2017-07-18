@@ -4,7 +4,7 @@
 #include "Base/Type.h"
 #endif
 
-#include "Base/List.h"
+#include "Base/Vector.h"
 
 namespace DAVA
 {
@@ -76,8 +76,15 @@ Type::SeedCastOP GetCastIfSeed(std::false_type)
     return nullptr;
 }
 
-struct TypeDB
+} // namespace TypeDetails
+
+struct Type::Seed
 {
+};
+
+class TypeDB
+{
+public:
     struct Stats
     {
         size_t typesCount = 0;
@@ -89,31 +96,16 @@ struct TypeDB
         size_t totalMemory = 0;
     };
 
-    using DB = List<Type**>;
+    static TypeDB* GetLocalDB();
+    static Stats GetLocalDBStats();
 
-    static DB* GetLocalDB();
-    static void AddType(Type**);
-    static Stats GetStats();
+    void AddType(Type** type);
+    void SetMasterDB(TypeDB* masterDB);
 
-    // TODO:
-    // implement sync with plugin DB
-    // ...
-    //
-    // something like:
-    //
-    // enum class RemoteDBType
-    // {
-    //    MASTER,
-    //    SLAVE
-    // };
-    // static void SetRemoteDB(DB*, RemoteDBType);
-    // static DB* GetRemoteDB();
-};
+private:
+    static TypeDB** GetLocalDBPtr();
 
-} // namespace TypeDetails
-
-struct Type::Seed
-{
+    Vector<Type**> types;
 };
 
 inline size_t Type::GetSize() const
@@ -133,7 +125,7 @@ inline std::type_index Type::GetTypeIndex() const
 
 inline const TypeInheritance* Type::GetInheritance() const
 {
-    return static_cast<const TypeInheritance*>(inheritance.get());
+    return inheritance.get();
 }
 
 inline unsigned long Type::GetTypeFlags() const
@@ -179,6 +171,11 @@ inline bool Type::IsFloatingPoint() const
 inline bool Type::IsEnum() const
 {
     return flags.test(static_cast<size_t>(eTypeFlag::isEnum));
+}
+
+inline bool Type::IsAbstract() const
+{
+    return flags.test(static_cast<size_t>(eTypeFlag::isAbstract));
 }
 
 inline Type::SeedCastOP Type::GetSeedCastOP() const
@@ -234,6 +231,7 @@ Type* Type::Init()
     type.flags.set(isIntegral, std::is_integral<T>::value);
     type.flags.set(isFloatingPoint, std::is_floating_point<T>::value);
     type.flags.set(isEnum, std::is_enum<T>::value);
+    type.flags.set(isAbstract, std::is_abstract<T>::value);
 
     auto condSeed = std::integral_constant<bool, needSeed>();
     type.seedCastOP = TypeDetail::GetCastIfSeed<T>(condSeed);
@@ -247,7 +245,7 @@ Type* Type::Init()
     auto condPointer = std::integral_constant<bool, needPointer>();
     type.pointerType = TypeDetail::GetTypeIfTrue<PointerU>(condPointer);
 
-    TypeDetail::TypeDB::AddType(TypeDetail::TypeHolder<T>::InstancePointer());
+    TypeDB::GetLocalDB()->AddType(TypeDetail::TypeHolder<T>::InstancePointer());
 
     return &type;
 }

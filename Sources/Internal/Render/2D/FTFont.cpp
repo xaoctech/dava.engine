@@ -5,7 +5,6 @@
 #include "Utils/UTF8Utils.h"
 #include "Debug/DVAssert.h"
 #include "FileSystem/File.h"
-#include "Core/Core.h"
 #include "FileSystem/LocalizationSystem.h"
 #include "FileSystem/YamlParser.h"
 #include "FileSystem/YamlNode.h"

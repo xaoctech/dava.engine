@@ -17,9 +17,8 @@ const ReflectedType* GetValueReflectedType(const Reflection& r);
 const ReflectedType* GetValueReflectedType(const Any& value);
 
 template <typename T>
-const T* GetTypeMeta(const Any& value)
+const T* GetReflectedTypeMeta(const ReflectedType* type)
 {
-    const ReflectedType* type = GetValueReflectedType(value);
     if (type == nullptr)
     {
         return nullptr;
@@ -37,6 +36,13 @@ const T* GetTypeMeta(const Any& value)
     }
 
     return structure->meta->GetMeta<T>();
+}
+
+template <typename T>
+const T* GetTypeMeta(const Any& value)
+{
+    const ReflectedType* type = GetValueReflectedType(value);
+    return GetReflectedTypeMeta<T>(type);
 }
 
 template <typename TMeta, typename TIndex>

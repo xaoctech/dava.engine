@@ -1,14 +1,9 @@
 #include "UI/UIAnalitycs.h"
 
+#include "Engine/Engine.h"
 #include "Input/KeyboardDevice.h"
 #include "UI/UIEvent.h"
 #include "Utils/Utils.h"
-
-#if defined(__DAVAENGINE_COREV2__)
-#include "Engine/Engine.h"
-#else
-#include "Core/Core.h"
-#endif
 
 namespace DAVA
 {
@@ -16,11 +11,7 @@ namespace Analytics
 {
 Analytics::Core& GetCore()
 {
-#if defined(__DAVAENGINE_COREV2__)
     return *GetEngineContext()->analyticsCore;
-#else
-    return DAVA::Core::Instance()->GetAnalyticsCore();
-#endif
 }
 
 bool EmitUIEvent(UIControl* control, UIControl::eEventType eventType, UIEvent* uiEvent)

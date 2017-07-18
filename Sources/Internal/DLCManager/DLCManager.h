@@ -1,37 +1,39 @@
 #pragma once
 
-#include "FileSystem/FilePath.h"
+#include "Base/BaseTypes.h"
 #include "Functional/Signal.h"
 
 namespace DAVA
 {
+class FilePath;
+
 /**
- Interface for requesting packs from server.
+	 Interface for requesting packs from server.
 
- Typical work flow:
- 1. connect to state change signal and to request update signal
- 2. call Initialize to connect to server, wait for state become `Pack::Status::Ready`
- 3. request pack from server or mount local automatically on request
+	 Typical work flow:
+	 1. connect to state change signal and to request update signal
+	 2. call Initialize to connect to server, wait for state become `Pack::Status::Ready`
+	 3. request pack from server or mount local automatically on request
 
- example:
- ```
- DLCManager& pm = *engine.GetContext()->dlcManager;
- // if initialize failed we will know about it
- pm.networkReady.Connect(this, &DLCManagerTest::OnNetworkReady);
+	 example:
+	 ```
+	 DLCManager& pm = *engine.GetContext()->dlcManager;
+	 // if initialize failed we will know about it
+	 pm.networkReady.Connect(this, &DLCManagerTest::OnNetworkReady);
 
- FilePath folderWithDownloadedPacks = "~doc:/FolderForPacks/";
- String urlToServerSuperpack = "http://server.net/superpack.3.7.0.mali.dvpk";
- DLCManager::Hints hints;
- hints.logFilePath = "~doc:/UberGame/dlc_manager.log";
- hints.retryConnectMilliseconds = 1000; // retry connect every second
- hints.maxFilesToDownload = 22456; // help download manager to reserve memory better
+	 FilePath folderWithDownloadedPacks = "~doc:/FolderForPacks/";
+	 String urlToServerSuperpack = "http://server.net/superpack.3.7.0.mali.dvpk";
+	 DLCManager::Hints hints;
+	 hints.logFilePath = "~doc:/UberGame/dlc_manager.log";
+	 hints.retryConnectMilliseconds = 1000; // retry connect every second
+	 hints.maxFilesToDownload = 22456; // help download manager to reserve memory better
 
- pm.Initialize(folderWithDownloadedPacks, urlToServerSuperpack, hints);
+	 pm.Initialize(folderWithDownloadedPacks, urlToServerSuperpack, hints);
 
- // now we can connect to request signal, and start requesting packs
+	 // now we can connect to request signal, and start requesting packs
 
- ```
-*/
+	 ```
+	*/
 
 class DLCManager
 {
@@ -92,12 +94,14 @@ public:
     struct Hints
     {
         String logFilePath = "~doc:/dlc_manager.log"; //!< path for separate log file
+        String preloadedPacks = ""; //!< list of preloaded pack names already exist separated with new line char (example: "base_pack1\ntutorial\nsounds")
+        int64 limitRequestUpdateIterationMs = 4; //!< max time to update requestManager in milliseconds
         uint32 retryConnectMilliseconds = 5000; //!< try to reconnect to server if `Offline` state default every 5 seconds
         uint32 maxFilesToDownload = 0; //!< user should fill this value default value average files count in Data
         uint32 timeoutForDownload = 30; //!< this value passed to DownloadManager
-        uint32 retriesCountForDownload = 3; //!< this value passed to DownloadManager
+        uint32 skipCDNConnectAfterAttempts = 3; //!< if local metadata exists and CDN is not available use local files without CDN
         uint32 downloaderMaxHandles = 8; //!< play with any values you like from 1 to max open file per process
-        uint32 downloaderChankBufSize = 512 * 1024; //!< 512Kb RAM buffer for one handle, you can set any value in bytes
+        uint32 downloaderChunkBufSize = 512 * 1024; //!< 512Kb RAM buffer for one handle, you can set any value in bytes
     };
 
     /** Start complex initialization process. You can call it again if need.
@@ -120,6 +124,10 @@ public:
     /** Return true if pack is already downloaded. */
     virtual bool IsPackDownloaded(const String& packName) = 0;
 
+    /** Return size of pack with all it's dependent packs from local meta without downloading
+	    or 0 if manager is not initialized */
+    virtual uint64 GetPackSize(const String& packName);
+
     virtual void SetRequestingEnabled(bool value) = 0;
 
     /** return nullptr if can't find pack */
@@ -131,6 +139,7 @@ public:
         and then request itself */
     virtual void SetRequestPriority(const IRequest* request) = 0;
 
+    /** Remove request with downloaded content with dependent packs */
     virtual void RemovePack(const String& packName) = 0;
 
     struct Progress
@@ -143,6 +152,15 @@ public:
 
     /** Calculate statistic about downloading progress */
     virtual Progress GetProgress() const = 0;
+
+    struct Info
+    {
+        uint32 infoCrc32 = 0; //!< this mean server version of superpack
+        uint32 metaCrc32 = 0; //!< separate meta crc32
+        uint32 totalFiles = 0; //!< count files in superpack (easy for human to see difference on superpacks)
+    };
+    /** Check if manager is initialized and return info */
+    virtual Info GetInfo() const;
 };
 
 } // end namespace DAVA

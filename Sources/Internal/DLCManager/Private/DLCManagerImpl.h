@@ -5,14 +5,13 @@
 #include "DLCManager/DLCManager.h"
 #include "DLCManager/DLCDownloader.h"
 #include "DLCManager/Private/RequestManager.h"
+#include "DLCManager/Private/PackRequest.h"
+#include "FileSystem/FilePath.h"
 #include "FileSystem/Private/PackFormatSpec.h"
 #include "FileSystem/Private/PackMetaData.h"
 #include "Concurrency/Semaphore.h"
 #include "Concurrency/Thread.h"
-
-#ifdef __DAVAENGINE_COREV2__
 #include "Engine/Engine.h"
-#endif
 
 namespace DAVA
 {
@@ -93,7 +92,6 @@ public:
         LoadingRequestAskMeta, //!< start loading DB from server
         LoadingRequestGetMeta, //!< download DB and check it's hash
         UnpakingDB, //!< unpack DB from zip
-        DeleteDownloadedPacksIfNotMatchHash, //!< go throw all local packs and unmount it if hash not match then delete
         LoadingPacksDataFromLocalMeta, //!< open local DB and build pack index for all packs
         WaitScanThreadToFinish, //!< wait till finish scanning of downloaded .dvpl files
         MoveDeleyedRequestsToQueue, //!< mount all local packs downloaded and not mounted later
@@ -105,42 +103,22 @@ public:
 
     static const String& ToString(InitState state);
 
-    enum class InitError : uint32
-    {
-        AllGood,
-        CantCopyLocalDB,
-        CantMountLocalPacks,
-        LoadingRequestFailed,
-        UnpackingDBFailed,
-        DeleteDownloadedPackFailed,
-        LoadingPacksDataFailed,
-        MountingDownloadedPackFailed,
-
-        Error_COUNT
-    };
-
-    static const String& ToString(InitError state);
-#ifdef __DAVAENGINE_COREV2__
     explicit DLCManagerImpl(Engine* engine_);
-    Engine& engine;
-#else
-    DLCManagerImpl() = default; // TODO remove it later (fix for client UnitTests)
-#endif
     ~DLCManagerImpl();
-
+    void TestWriteAccessToPackDirectory(const FilePath& dirToDownloadPacks_);
+    void FillPreloadedPacks();
+    void TestPackDirectoryExist();
+    void DumpInitialParams(const FilePath& dirToDownloadPacks, const String& urlToServerSuperpack, const Hints& hints);
+    void CreateDownloader();
     void Initialize(const FilePath& dirToDownloadPacks_,
                     const String& urlToServerSuperpack_,
                     const Hints& hints_) override;
 
     void Deinitialize() override;
 
-    void RetryInit();
-
     bool IsInitialized() const override;
 
     InitState GetInitState() const;
-
-    InitError GetInitError() const;
 
     const String& GetLastErrorMessage() const;
 
@@ -148,9 +126,11 @@ public:
 
     void SetRequestingEnabled(bool value) override;
 
-    void Update(float frameDelta);
+    void Update(float frameDelta, bool inBackground);
 
     bool IsPackDownloaded(const String& packName) override;
+
+    uint64 GetPackSize(const String& packName) override;
 
     const IRequest* RequestPack(const String& requestedPackName) override;
 
@@ -163,6 +143,8 @@ public:
     void RemovePack(const String& packName) override;
 
     Progress GetProgress() const override;
+
+    Info GetInfo() const override;
 
     const FilePath& GetLocalPacksDirectory() const;
 
@@ -189,10 +171,7 @@ public:
 
     std::ostream& GetLog() const;
 
-    DLCDownloader* GetDownloader() const
-    {
-        return downloader.get();
-    }
+    DLCDownloader& GetDownloader() const;
 
 private:
     // initialization state functions
@@ -204,21 +183,26 @@ private:
     void AskServerMeta();
     void GetServerMeta();
     void ParseMeta();
-    void StoreAllMountedPackNames();
-    void DeleteOldPacks();
+    void LoadLocalCacheServerFooter();
     void LoadPacksDataFromMeta();
     void WaitScanThreadToFinish();
     void StartDelayedRequests();
     // helper functions
+    void ReadLocalFileTableInfoBuffer();
+    void FillFileNameIndexes();
+    void SaveServerFooter();
     void DeleteLocalMetaFiles();
     void ContinueInitialization(float frameDelta);
     void ReadContentAndExtractFileNames();
+    uint64 CountCompressedFileSize(const uint64& startCounterValue, const Vector<uint32>& fileIndexes);
 
     void SwapRequestAndUpdatePointers(PackRequest* request, PackRequest* newRequest);
     void SwapPointers(PackRequest* userRequestObject, PackRequest* newRequestObject);
     PackRequest* AddDelayedRequest(const String& requestedPackName);
     PackRequest* CreateNewRequest(const String& requestedPackName);
-
+    bool IsLocalMetaAlreadyExist() const;
+    void TestRetryCountLocalMetaAndGoTo(InitState nextState, InitState alternateState);
+    void FireNetworkReady(bool nextState);
     void ClearResouces();
 
     enum class ScanState : uint32
@@ -227,10 +211,12 @@ private:
         Starting,
         Done
     };
+
     // info to scan local pack files
     struct LocalFileInfo
     {
         String relativeName;
+        uint64 sizeOnDevice = std::numeric_limits<uint64>::max();
         uint32 compressedSize = std::numeric_limits<uint32>::max(); // file size can be 0 so use max value default
         uint32 crc32Hash = std::numeric_limits<uint32>::max();
     };
@@ -249,21 +235,48 @@ private:
 
     mutable std::ofstream log;
 
+    Engine& engine;
     FilePath localCacheMeta;
     FilePath localCacheFileTable;
+    FilePath localCacheFooter;
     FilePath dirToDownloadedPacks;
     String urlToSuperPack;
     bool isProcessingEnabled = false;
-    bool isNetworkReadyLastState = false;
     std::unique_ptr<RequestManager> requestManager;
     std::unique_ptr<PackMetaData> meta;
 
+    struct PreloadedPack : IRequest
+    {
+        explicit PreloadedPack(const String& pack)
+            : packName(pack)
+        {
+        }
+        const String& GetRequestedPackName() const override
+        {
+            return packName;
+        }
+        uint64 GetSize() const override
+        {
+            return 0;
+        };
+        uint64 GetDownloadedSize() const override
+        {
+            return 0;
+        }
+        bool IsDownloaded() const override
+        {
+            return true;
+        }
+
+        String packName;
+    };
+
+    Map<String, PreloadedPack> preloadedPacks;
     Vector<PackRequest*> requests; // not forget to delete in destructor
     Vector<PackRequest*> delayedRequests; // move to requests after initialization finished
 
     String initErrorMsg;
     InitState initState = InitState::Starting;
-    InitError initError = InitError::AllGood;
     std::unique_ptr<MemoryBufferWriter> memBufWriter;
     PackFormat::PackFile::FooterBlock initFooterOnServer; // temp superpack info for every new pack request or during initialization
     PackFormat::PackFile usedPackFile; // current superpack info
@@ -271,16 +284,18 @@ private:
     String uncompressedFileNames;
     UnorderedMap<String, const PackFormat::FileTableEntry*> mapFileData;
     Vector<uint32> startFileNameIndexesInUncompressedNames;
-    DLCDownloader::Task* downloadTaskId = nullptr;
+    DLCDownloader::Task* downloadTask = nullptr;
     uint64 fullSizeServerData = 0;
     mutable Progress lastProgress;
 
-    Hints hints{};
+    Hints hints;
 
     float32 timeWaitingNextInitializationAttempt = 0;
     uint32 retryCount = 0; // count every initialization error during session
 
     std::unique_ptr<DLCDownloader> downloader;
+    bool prevNetworkState = false;
+    bool firstTimeNetworkState = false;
 };
 
 inline uint32 DLCManagerImpl::GetServerFooterCrc32() const

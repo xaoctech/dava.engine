@@ -5,7 +5,7 @@
 #include "TArc/Controls/PropertyPanel/PropertyPanelMeta.h"
 #include "TArc/Controls/PropertyPanel/Private/SubPropertiesExtensions.h"
 
-#include <Engine/PlatformApi.h>
+#include <Engine/PlatformApiQt.h>
 #include <Debug/DVAssert.h>
 #include <Logger/Logger.h>
 #include <Time/SystemTimer.h>
