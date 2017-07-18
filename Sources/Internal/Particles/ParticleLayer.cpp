@@ -1037,38 +1037,11 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
     PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "fresToAlphaPower", fresnelToAlphaPower);
 
     PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "alphaRemapLoopCount", alphaRemapLoopCount);
-    // Truncate an extension of the sprite file.
-    FilePath savePath = spritePath;
-    if (!savePath.IsEmpty())
-    {
-        savePath.TruncateExtension();
-        String relativePath = savePath.GetRelativePathname(configPath.GetDirectory());
-        PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "sprite", relativePath);
-    }
-
-    FilePath flowSavePath = flowmapPath; // TODO!!!!!!!!!!! ^^^^^^^
-    if (!flowSavePath.IsEmpty())
-    {
-        flowSavePath.TruncateExtension();
-        String relativePath = flowSavePath.GetRelativePathname(configPath.GetDirectory());
-        PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "flowmap", relativePath);
-    }
-
-    FilePath noiseSavePath = noisePath;
-    if (!noiseSavePath.IsEmpty())
-    {
-        noiseSavePath.TruncateExtension();
-        String relativePath = noiseSavePath.GetRelativePathname(configPath.GetDirectory());
-        PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "noise", relativePath);
-    }
-
-    FilePath alphaRemapSavePath = alphaRemapPath;
-    if (!alphaRemapSavePath.IsEmpty())
-    {
-        alphaRemapSavePath.TruncateExtension();
-        String relativePath = alphaRemapSavePath.GetRelativePathname(configPath.GetDirectory());
-        PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "alphaRemap", relativePath);
-    }
+    
+    SaveSpritePath(spritePath, configPath, layerNode, "sprite");
+    SaveSpritePath(flowmapPath, configPath, layerNode, "flowmap");
+    SaveSpritePath(noisePath, configPath, layerNode, "noise");
+    SaveSpritePath(alphaRemapPath, configPath, layerNode, "alphaRemap");
 
     layerNode->Add("enableAlphaRemap", enableAlphaRemap);
 
@@ -1164,6 +1137,16 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
 
     // Now write the forces.
     SaveForcesToYamlNode(layerNode);
+}
+
+void ParticleLayer::SaveSpritePath(FilePath& path, const FilePath& configPath, YamlNode* layerNode, std::string name)
+{
+    if (!path.IsEmpty())
+    {
+        path.TruncateExtension();
+        String relativePath = path.GetRelativePathname(configPath.GetDirectory());
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, name, relativePath);
+    }
 }
 
 void ParticleLayer::SaveForcesToYamlNode(YamlNode* layerNode)
