@@ -85,7 +85,7 @@ size_t DLCManagerImpl::CountError(int32 errCode)
 
     size_t yota = 1;
 
-    auto it = find(begin(errorForExternalHandle), end(errorForExternalHandle), errCode);
+    auto it = std::find(begin(errorForExternalHandle), end(errorForExternalHandle), errCode);
     if (it != end(errorForExternalHandle))
     {
         yota = hints.maxSameErrorCounter;
