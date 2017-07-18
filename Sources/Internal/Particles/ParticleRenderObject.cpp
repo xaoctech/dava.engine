@@ -372,7 +372,7 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
                     viewNormal = left.CrossProduct(top);
                     dot = cameraDirection.DotProduct(viewNormal);
                     dot = 1.0f - Abs(dot);
-                    fresnelToAlpha = FresnelShlick(dot, current->fresnelToAlphaBias, current->fresnelToAlphaPower);
+                    fresnelToAlpha = FresnelShlick(dot, group.layer->fresnelToAlphaBias, group.layer->fresnelToAlphaPower);
                 }
 
                 left *= 0.5f * current->currSize.x * (1 + group.layer->layerPivotPoint.x);
@@ -560,7 +560,7 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
 
                     viewNormal.Normalize();
                     dot = cameraDirection.DotProduct(viewNormal);
-                    fresnelToAlpha = FresnelShlick(1.0f - Abs(dot), currentParticle->fresnelToAlphaBias, currentParticle->fresnelToAlphaPower);
+                    fresnelToAlpha = FresnelShlick(1.0f - Abs(dot), group.layer->fresnelToAlphaBias, group.layer->fresnelToAlphaPower);
                 }
 
                 float32 size = group.layer->stripeStartSize * 0.5f;

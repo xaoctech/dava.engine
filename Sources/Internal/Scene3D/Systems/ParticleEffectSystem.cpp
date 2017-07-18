@@ -634,7 +634,7 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
     Vector3 prevBasePosition = data.baseNode.position;
     data.baseNode.position = particle->position;
     data.isActive = isActive;
-    bool fuck = false;
+
     if (layer->GetInheritPosition())
     {
         data.inheritPositionOffset = effectData.infoSources[group.positionSource].position;
@@ -662,10 +662,10 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
     auto nodeIter = data.stripeNodes.begin();
     DAVA::StripeNode* prevNode = &data.baseNode;
 
-    float32 firstDelta = 0.0f;
-    Vector3 prevFirst = data.baseNode.position;
+    float32 firstDeltaLen = 0.0f;
+    Vector3 prevFirstNodePosition = data.baseNode.position;
     if (data.stripeNodes.size() > 0)
-        prevFirst = nodeIter->position;
+        prevFirstNodePosition = nodeIter->position;
 
     while (nodeIter != data.stripeNodes.end())
     {
@@ -678,7 +678,7 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
         nodeIter->position += nodeIter->speed * (currVelocityOverLife * dt);
 
         if (nodeIter == data.stripeNodes.begin())
-            firstDelta = (prevFirst - nodeIter->position).Length();
+            firstDeltaLen = (prevFirstNodePosition - nodeIter->position).Length();
 
         if (forcesCount > 0)
         {
@@ -699,9 +699,7 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
 
         prevNode = &(*nodeIter);
         if (nodeIter->lifeime >= layer->stripeLifetime)
-        {
             data.stripeNodes.erase(nodeIter++);
-        }
         else
             ++nodeIter;
     }
@@ -710,7 +708,7 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
     {
         float32 previousLength = data.prevBaseLen;
         float32 currentLength = (data.baseNode.position - data.stripeNodes.front().position).Length();
-        float32 deltaLength = previousLength - currentLength + firstDelta;
+        float32 deltaLength = previousLength - currentLength + firstDeltaLen;
         data.prevBaseLen = currentLength;
 
         if (!shouldInsert)
@@ -724,7 +722,7 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
             }
             else
             {
-                data.uvOffset -= delta - firstDelta; // Look at 7abf5621f27 commit (and before) if results will be unsatisfying.
+                data.uvOffset -= delta - firstDeltaLen; // Look at 7abf5621f27 commit (and before) if results will be unsatisfying at some point.
             }
         }
     }
@@ -795,11 +793,6 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleEffectComponent* eff
         particle->baseNoiseVScrollSpeed += (group.layer->noiseVScrollSpeedVariation->GetValue(currLoopTime) * static_cast<float32>(Random::Instance()->RandFloat()));
     particle->currNoiseVOffset = particle->baseNoiseVScrollSpeed;
 
-    if (group.layer->useFresnelToAlpha)
-    {
-        particle->fresnelToAlphaPower = group.layer->fresnelToAlphaPower;
-        particle->fresnelToAlphaBias = group.layer->fresnelToAlphaBias;
-    }
     // size
     particle->baseSize = Vector2(1.0f, 1.0f);
     if (group.layer->size)
