@@ -10,6 +10,84 @@ static float EV_OneMore(float x)
     return x + 1.0f;
 }
 
+static void
+DumpBytes(const void* mem, unsigned count)
+{
+    const uint8_t* byte = reinterpret_cast<const uint8_t*>(mem);
+    const uint8_t* end = byte + count;
+    static char hex[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+
+    while (byte < end)
+    {
+        unsigned byte_cnt = (end - byte < 8) ? static_cast<unsigned>(end - byte) : 8;
+        char line[64];
+
+        memset(line, ' ', countof(line));
+        for (unsigned b = 0; b < byte_cnt; ++b)
+        {
+            char* l1 = line + 3 * b + ((b < 4) ? 0 : 2);
+            char* l2 = line + 8 * 3 + 2 + 1 + 2 + b;
+
+            l1[0] = hex[(byte[b] >> 4) & 0x0F];
+            l1[1] = hex[byte[b] & 0x0F];
+            l1[2] = ' ';
+
+            l2[0] = (byte[b] > 0x20 && byte[b] < 0xAF) ? char(byte[b]) : '.';
+            l2[1] = '\0';
+        }
+        line[8 * 3 + 2 + 1] = '|';
+        line[8 * 3 + 2 + 1 + 2 + 8] = '\0';
+        DAVA::Logger::Info("%s", line);
+
+        byte += byte_cnt;
+    }
+}
+
+static bool
+ReadTextData(const char* fileName, std::vector<char>* data)
+{
+    #if defined(__DAVAENGINE_ANDROID__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
+    static const char* endl = "\n";
+    static const int endl_sz = 1;
+    #else
+    static const char* endl = "\r\n";
+    static const int endl_sz = 2;
+    #endif
+
+    bool success = false;
+    DAVA::File* file = DAVA::File::Create(fileName, DAVA::File::READ | DAVA::File::OPEN);
+
+    if (file)
+    {
+        size_t sz = size_t(file->GetSize());
+        char buf[4 * 1024];
+
+        DVASSERT(sz <= sizeof(buf));
+        file->Read(buf, static_cast<uint32>(sz));
+        file->Release();
+
+        data->clear();
+        const char* ln = buf;
+        for (const char *s = buf, *s_end = buf + sz; s < s_end; ++s)
+        {
+            if (s[0] == '\n' || (s[0] == '\r' && s[1] == '\n'))
+            {
+                data->insert(data->end(), ln, s);
+                data->insert(data->end(), endl, endl + endl_sz);
+                ln = s + 1;
+                if (s[0] == '\r')
+                {
+                    ++ln;
+                    ++s;
+                }
+            }
+        }
+        success = true;
+    }
+
+    return success;
+}
+
 DAVA_TESTCLASS (PreprocessorTest)
 {
     static bool CompareStringBuffers();
@@ -173,17 +251,11 @@ DAVA_TESTCLASS (PreprocessorTest)
             TestFileCallback fc(BaseDir);
             PreProc pp(&fc);
             std::vector<char> output;
+            std::vector<char> expected;
             char fname[2048];
             Snprintf(fname, countof(fname), "%s/%s", BaseDir, test[i].resultFileName);
-            DAVA::File* expected_file = DAVA::File::Create(fname, DAVA::File::READ | DAVA::File::OPEN);
-            DVASSERT(expected_file);
-            size_t expected_sz = size_t(expected_file->GetSize());
-            char* expected_data = reinterpret_cast<char*>(::malloc(expected_sz + 1));
-
+            TEST_VERIFY(ReadTextData(fname, &expected));
             TEST_VERIFY(pp.ProcessFile(test[i].inputFileName, &output));
-
-            expected_file->Read(expected_data, uint32(expected_sz));
-            expected_data[expected_sz] = 0;
 
             #if 0
             {
@@ -198,11 +270,19 @@ DAVA_TESTCLASS (PreprocessorTest)
             #endif
 
             const char* actual_data = &output[0];
-            TEST_VERIFY(output.size() == expected_sz);
-            TEST_VERIFY(strncmp(expected_data, actual_data, output.size()) == 0);
-
-            ::free(expected_data);
-            expected_file->Release();
+            const char* expected_data = &expected[0];
+            bool size_match = output.size() == expected.size();
+            bool content_match = strncmp(expected_data, actual_data, output.size()) == 0;
+            if (!size_match || !content_match)
+            {
+                DAVA::Logger::Error("output-data mismatch");
+                DAVA::Logger::Info("actual data (%u) :", unsigned(output.size()));
+                DumpBytes(actual_data, static_cast<unsigned>(output.size()));
+                DAVA::Logger::Info("expected data (%u) :", unsigned(expected.size()));
+                DumpBytes(expected_data, static_cast<unsigned>(expected.size()));
+            }
+            TEST_VERIFY(size_match);
+            TEST_VERIFY(content_match);
 
             DAVA::Logger::Info("  OK");
         }
