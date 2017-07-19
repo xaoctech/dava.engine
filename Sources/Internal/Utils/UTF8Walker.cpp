@@ -1,6 +1,7 @@
 #include "Utils/UTF8Walker.h"
 #include "Logger/Logger.h"
-#include "Utils/UTF8Utils.h"
+
+#include <utf8.h>
 
 namespace DAVA
 {
