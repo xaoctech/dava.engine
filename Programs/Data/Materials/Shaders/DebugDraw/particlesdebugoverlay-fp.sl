@@ -1,5 +1,6 @@
 #include "blending.slh"
-#include "common.slh"
+
+#ensuredefined HEATMAP 0
 
 fragment_in
 {
