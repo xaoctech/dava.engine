@@ -521,7 +521,7 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
 
             for (int32 i = 0; i < basisCount; i++)
             {
-                if (nodes.size() == 0)
+                if (nodes.empty())
                     return;
                 float32 height = nodes.back().distanceFromBase;
                 Vector3 basisVector;

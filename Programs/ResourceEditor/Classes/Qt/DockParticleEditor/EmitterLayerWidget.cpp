@@ -1917,8 +1917,10 @@ void EmitterLayerWidget::FillTimeLineWidgetIndentifiers()
     };
 }
 
-void EmitterLayerWidget::SetLayerMode(bool isSuperemitter, bool isStripe)
+void EmitterLayerWidget::SetLayerMode(eLayerMode layerMode)
 {
+    bool isSuperemitter = layerMode == eLayerMode::SUPEREMITTER;
+    bool isStripe = layerMode == eLayerMode::STRIPE;
     sizeTimeLine->setVisible(!isStripe);
     sizeVariationTimeLine->setVisible(!isStripe);
     sizeOverLifeTimeLine->setVisible(!isStripe);

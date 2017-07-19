@@ -166,10 +166,13 @@ void ParticleEditorWidget::UpdateWidgetsForLayer()
     {
         return;
     }
+    EmitterLayerWidget::eLayerMode mode = EmitterLayerWidget::eLayerMode::REGULAR;
+    if (emitterLayerWidget->GetLayer()->type == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
+        mode = EmitterLayerWidget::eLayerMode::SUPEREMITTER;
+    else if (emitterLayerWidget->GetLayer()->type == DAVA::ParticleLayer::TYPE_PARTICLE_STRIPE)
+        mode = EmitterLayerWidget::eLayerMode::STRIPE;
 
-    bool isSuperemitter = (emitterLayerWidget->GetLayer()->type == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES);
-    bool isStripeParticle = (emitterLayerWidget->GetLayer()->type == DAVA::ParticleLayer::TYPE_PARTICLE_STRIPE);
-    emitterLayerWidget->SetLayerMode(isSuperemitter, isStripeParticle);
+    emitterLayerWidget->SetLayerMode(mode);
 }
 
 void ParticleEditorWidget::HandleEmitterSelected(SceneEditor2* scene, DAVA::ParticleEffectComponent* effect, DAVA::ParticleEmitterInstance* emitter, bool forceUpdate)
