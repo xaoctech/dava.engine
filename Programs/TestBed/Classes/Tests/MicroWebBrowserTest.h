@@ -30,6 +30,8 @@ private:
     RefPtr<UITextField> textField;
 
     UIStaticText* fpsText;
+#if defined(DAVA_MEMORY_PROFILING_ENABLE)
     UIStaticText* memoryText;
+#endif
     FpsMeter fpsMeter;
 };
