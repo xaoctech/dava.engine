@@ -7,6 +7,12 @@
 #include "Base/StaticSingleton.h"
 #include "Scene3D/Entity.h"
 
+namespace DAVA
+{
+class ParticleEmitterInstance;
+class ParticleLayer;
+}
+
 class SceneEditor2;
 class RECommandNotificationObject;
 class SceneSignals : public QObject, public DAVA::StaticSingleton<SceneSignals>

@@ -13,6 +13,7 @@
 #include "Classes/Qt/SpritesPacker/SpritesPackerModule.h"
 #include "Classes/SceneManager/Private/SceneRenderWidget.h"
 #include "Classes/Utils/SceneSaver/SceneSaver.h"
+#include "Scene/System/EditorParticlesSystem.h"
 
 #include "Commands2/Base/RECommandStack.h"
 

@@ -6,6 +6,8 @@
 #include "Classes/Selection/SelectionData.h"
 #include "Classes/SceneManager/SceneData.h"
 
+#include "Scene/System/EditorParticlesSystem.h"
+
 #include "TArc/Core/FieldBinder.h"
 
 #include "ui_mainwindow.h"
