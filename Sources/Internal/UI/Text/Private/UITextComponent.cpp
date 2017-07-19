@@ -1,10 +1,6 @@
 #include "UI/Text/UITextComponent.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "UITextSystemLink.h"
-#include "UI/Text/UITextSystem.h"
-#include "UI/UIControlSystem.h"
-#include <Engine/Engine.h>
-#include <Engine/EngineContext.h>
 
 namespace DAVA
 {
@@ -275,12 +271,4 @@ UITextSystemLink* UITextComponent::GetLink() const
     return &link;
 }
 
-void UITextComponent::ApplyDataImmediately()
-{
-    DVASSERT(GetControl());
-    if (modified)
-    {
-        Engine::Instance()->GetContext()->uiControlSystem->GetTextSystem()->ApplyData(this);
-    }
-}
 };

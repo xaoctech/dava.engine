@@ -18,7 +18,9 @@
 
 #include "UI/Update/UIUpdateComponent.h"
 #include "UI/Text/UITextComponent.h"
-#include "UI/Text/Private/UITextSystemLink.h"
+#include "UI/Text/UITextSystem.h"
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
 
 namespace DAVA
 {
@@ -345,7 +347,19 @@ void UIStaticText::SetFontSize(float32 newSize)
 
 TextBlock* UIStaticText::GetTextBlock() const
 {
-    text->ApplyDataImmediately();
+    // Apply component changes to internal TextBlock
+    if (text->IsModified())
+    {
+        UIControlSystem* ucs = GetScene();
+        if (ucs)
+        {
+            ucs->GetTextSystem()->ApplyData(text.Get());
+        }
+        else // Legacy support
+        {
+            Engine::Instance()->GetContext()->uiControlSystem->GetTextSystem()->ApplyData(text.Get());
+        }
+    }
     return text->GetLink()->GetTextBlock();
 }
 }

@@ -7,6 +7,10 @@
 #include "UI/Layouts/UISizePolicyComponent.h"
 #include "UI/Layouts/LayoutFormula.h"
 #include "UI/Text/UITextComponent.h"
+#include "UI/Text/UITextSystem.h"
+#include "UI/UIControlSystem.h"
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
 
 #include "UI/UIControl.h"
 
@@ -358,7 +362,18 @@ Vector2 SizeMeasuringAlgorithm::GetContentPreferredSize(const Vector2& constrain
     UITextComponent* txt = control->GetComponent<UITextComponent>();
     if (txt)
     {
-        txt->ApplyDataImmediately();
+        if (txt->IsModified())
+        {
+            UIControlSystem* ucs = control->GetScene();
+            if (ucs)
+            {
+                ucs->GetTextSystem()->ApplyData(txt);
+            }
+            else // Legacy support
+            {
+                Engine::Instance()->GetContext()->uiControlSystem->GetTextSystem()->ApplyData(txt);
+            }
+        }
         return txt->GetLink()->GetTextBlock()->GetPreferredSizeForWidth(constraints.x);
     }
     UIControlBackground* bg = control->GetComponent<UIControlBackground>();
