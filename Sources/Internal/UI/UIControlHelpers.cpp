@@ -36,7 +36,7 @@ bool IsAllowedSymbol(char ch)
         return (ch >= '0' && ch <= '9');
     };
 
-    return IsLatinChar(ch) || IsDigit(ch) || /*ch == ' ' ||*/ ch == '-' || ch == '_';
+    return IsLatinChar(ch) || IsDigit(ch) || ch == '.' || ch == '-' || ch == '_';
 }
 
 bool ContainsOnlyAllowedSymbols(const String& str)

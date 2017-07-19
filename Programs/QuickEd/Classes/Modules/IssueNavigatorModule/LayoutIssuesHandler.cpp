@@ -41,7 +41,7 @@ void LayoutIssuesHandler::OnFormulaProcessed(UIControl* control, Vector2::eAxis 
             const DocumentData* data = accessor->GetActiveContext()->GetData<DocumentData>();
             DVASSERT(data != nullptr);
 
-            String pathToControl = control->GetName().c_str();
+            String pathToControl = control->GetName().c_str(); // UIControlHelpers::GetControlPath() should be used after DF-14277 implementing
 
             auto GetParentControl = [&](const UIControl* control) -> UIControl*
             {
