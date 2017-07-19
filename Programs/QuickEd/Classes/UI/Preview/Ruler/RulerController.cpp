@@ -49,7 +49,8 @@ void RulerController::RecalculateRulerSettings()
       { 4.0f, 2, 20 },
       { 8.0f, 1, 10 },
       { 12.0f, 1, 10 },
-      { 16.0f, 1, 10 }
+      { 16.0f, 1, 10 },
+      { 32.0f, 1, 10 }
     };
 
     // Look for the closest value.

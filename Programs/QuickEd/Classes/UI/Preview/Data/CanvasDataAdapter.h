@@ -52,6 +52,11 @@ public:
 
     DAVA::Vector2 GetViewSize() const;
 
+    DAVA::float32 RelativeValueToAbsoluteValue(DAVA::float32 relValue, DAVA::Vector2::eAxis axis) const;
+    DAVA::float32 RelativeValueToPosition(DAVA::float32 relValue, DAVA::Vector2::eAxis axis) const;
+    DAVA::float32 AbsoluteValueToPosition(DAVA::float32 absValue, DAVA::Vector2::eAxis axis) const;
+    DAVA::float32 PositionToAbsoluteValue(DAVA::float32 position, DAVA::Vector2::eAxis axis) const;
+
 private:
     DAVA::TArc::DataWrapper canvasDataWrapper;
 

@@ -257,14 +257,14 @@ void PreviewWidget::InitUI()
 
     QGridLayout* gridLayout = new QGridLayout();
     vLayout->addLayout(gridLayout);
-    RulerWidget* horizontalRuler = new RulerWidget(hGuidesController, this);
+    RulerWidget* horizontalRuler = new RulerWidget(accessor, hGuidesController, this);
     horizontalRuler->SetRulerOrientation(Qt::Horizontal);
     horizontalRuler->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
     connect(rulerController, &RulerController::HorisontalRulerSettingsChanged, horizontalRuler, &RulerWidget::OnRulerSettingsChanged);
     connect(rulerController, &RulerController::HorisontalRulerMarkPositionChanged, horizontalRuler, &RulerWidget::OnMarkerPositionChanged);
     gridLayout->addWidget(horizontalRuler, 0, 1);
 
-    RulerWidget* verticalRuler = new RulerWidget(vGuidesController, this);
+    RulerWidget* verticalRuler = new RulerWidget(accessor, vGuidesController, this);
     verticalRuler->SetRulerOrientation(Qt::Vertical);
     verticalRuler->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
     connect(rulerController, &RulerController::VerticalRulerSettingsChanged, verticalRuler, &RulerWidget::OnRulerSettingsChanged);

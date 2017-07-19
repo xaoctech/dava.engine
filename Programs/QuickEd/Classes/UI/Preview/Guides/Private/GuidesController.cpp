@@ -80,6 +80,12 @@ void GuidesController::BindFields()
         fieldDescr.fieldName = CentralWidgetData::guidesRelativePosPropertyName;
         fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnCanvasParametersChanged));
     }
+    {
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<CanvasData>();
+        fieldDescr.fieldName = CanvasData::scalePropertyName;
+        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnCanvasParametersChanged));
+    }
 }
 
 void GuidesController::OnCanvasParametersChanged(const DAVA::Any&)
@@ -102,7 +108,7 @@ void GuidesController::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, con
     bool lastValueChanged = std::find(fields.begin(), fields.end(), CanvasDataAdapter::lastValuePropertyName) != fields.end();
     if (startValueChanged || lastValueChanged)
     {
-        updater.MarkDirty();
+        OnCanvasParametersChanged(DAVA::Any());
     }
 }
 
@@ -564,19 +570,15 @@ DocumentData* GuidesController::GetDocumentData() const
 
 DAVA::float32 GuidesController::PositionToValue(DAVA::float32 position) const
 {
-    using namespace DAVA;
-    float32 minValue = canvasDataAdapter.GetStartValue()[orientation];
-    float32 scale = canvasDataAdapter.GetScale();
-    return std::round((minValue + position) / scale);
+    return canvasDataAdapter.PositionToAbsoluteValue(position, orientation);
 }
 
 DAVA::float32 GuidesController::ValueToPosition(DAVA::float32 value) const
 {
     using namespace DAVA;
     float32 relativePos = GetCentralWidgetData()->GetGuidesRelativePos()[orientation];
-    float32 minValue = canvasDataAdapter.GetStartValue()[orientation];
-    float32 scale = canvasDataAdapter.GetScale();
-    return relativePos + value * scale - minValue;
+    float32 position = canvasDataAdapter.AbsoluteValueToPosition(value, orientation);
+    return relativePos + std::floorf(position);
 }
 
 void GuidesController::ResizeGuide(Guide& guide) const
@@ -599,7 +601,6 @@ void GuidesController::MoveGuide(DAVA::float32 value, Guide& guide) const
 {
     using namespace DAVA;
     float32 startPos = GetCentralWidgetData()->GetGuidesPos()[orientation];
-    float32 tmp = ValueToPosition(value);
     int32 position = static_cast<int32>(std::round(ValueToPosition(value)));
     if (orientation == Vector2::AXIS_X)
     {

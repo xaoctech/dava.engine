@@ -195,3 +195,51 @@ const CanvasData* CanvasDataAdapter::GetCanvasData() const
 
     return active->GetData<CanvasData>();
 }
+
+DAVA::float32 CanvasDataAdapter::RelativeValueToAbsoluteValue(DAVA::float32 relValue, DAVA::Vector2::eAxis axis) const
+{
+    using namespace DAVA;
+    const CanvasData* canvasData = GetCanvasData();
+    if (canvasData == nullptr)
+    {
+        return relValue;
+    }
+
+    float32 scale = canvasData->GetScale();
+    Vector2 startValue = GetStartValue();
+    return std::ceilf((startValue[axis] + relValue * scale) / scale);
+}
+
+DAVA::float32 CanvasDataAdapter::RelativeValueToPosition(DAVA::float32 relValue, DAVA::Vector2::eAxis axis) const
+{
+    DAVA::float32 absValue = RelativeValueToAbsoluteValue(relValue, axis);
+    return AbsoluteValueToPosition(absValue, axis);
+}
+
+DAVA::float32 CanvasDataAdapter::AbsoluteValueToPosition(DAVA::float32 absValue, DAVA::Vector2::eAxis axis) const
+{
+    using namespace DAVA;
+    const CanvasData* canvasData = GetCanvasData();
+    if (canvasData == nullptr)
+    {
+        return absValue;
+    }
+
+    float32 scale = canvasData->GetScale();
+    Vector2 startValue = GetStartValue();
+    return absValue * scale - startValue[axis];
+}
+
+DAVA::float32 CanvasDataAdapter::PositionToAbsoluteValue(DAVA::float32 position, DAVA::Vector2::eAxis axis) const
+{
+    using namespace DAVA;
+    const CanvasData* canvasData = GetCanvasData();
+    if (canvasData == nullptr)
+    {
+        return position;
+    }
+
+    float32 scale = canvasData->GetScale();
+    Vector2 startValue = GetStartValue();
+    return std::round((startValue[axis] + position) / scale);
+}

@@ -1,6 +1,8 @@
 #include "RulerWidget.h"
 
+#include <TArc/Core/ContextAccessor.h>
 #include <TArc/Utils/Themes.h>
+
 #include <QtTools/Updaters/LazyUpdater.h>
 
 #include <Debug/DVAssert.h>
@@ -14,9 +16,11 @@
 #include <cmath>
 #include <sstream>
 
-RulerWidget::RulerWidget(IRulerListener* listener_, QWidget* parent)
+RulerWidget::RulerWidget(DAVA::TArc::ContextAccessor* accessor_, IRulerListener* listener_, QWidget* parent)
     : QWidget(parent)
+    , accessor(accessor_)
     , listener(listener_)
+    , canvasDataAdapter(accessor)
 {
     DVASSERT(listener != nullptr);
 
@@ -102,15 +106,10 @@ QSize RulerWidget::minimumSizeHint() const
 void RulerWidget::DrawScale(QPainter& painter, int tickStep, int tickStartPos, int tickEndPos,
                             bool drawValues)
 {
+    using namespace DAVA;
     DVASSERT(tickStep > 0);
 
     painter.setRenderHint(QPainter::TextAntialiasing, true);
-
-    //value to start from
-    int numberOffset = std::ceilf((float)(settings.startPos) / (float)(tickStep)) * (float)tickStep;
-
-    //visual position to start
-    int tickOffset = numberOffset - settings.startPos;
 
     const QFont& font = painter.font();
     int fontSize = font.pixelSize();
@@ -133,19 +132,24 @@ void RulerWidget::DrawScale(QPainter& painter, int tickStep, int tickStartPos, i
 
     char nextDigit[2] = { 0x00, 0x00 };
 
-    QVector<QLine> linesVector;
-    linesVector.reserve(endPos / tickStep);
+    Vector2::eAxis axis = orientation == Qt::Horizontal ? Vector2::AXIS_X : Vector2::AXIS_Y;
+    float32 absValue = canvasDataAdapter.RelativeValueToAbsoluteValue(0.0f, axis);
+    float32 scale = canvasDataAdapter.GetScale();
+    float32 positionStep = tickStep * scale;
+    float32 startValue = std::ceilf(absValue / tickStep) * tickStep;
 
     //i and endPos is a visual positions
-    for (int i = 0; i < endPos; i += tickStep)
+    for (int i = 0; i < endPos / scale; i += tickStep)
     {
-        int curPos = i + tickOffset;
-        int curPosValue = (int)(i + numberOffset) / settings.zoomLevel;
+        float32 currentValue = i + startValue;
+
+        int curPos = static_cast<int>(canvasDataAdapter.AbsoluteValueToPosition(currentValue, axis));
+        int curPosValue = static_cast<int>(currentValue);
         const int textOffset = 5;
 
         if (orientation == Qt::Horizontal)
         {
-            linesVector.append(QLine(curPos, tickStartPos, curPos, tickEndPos));
+            painter.drawLine(QLine(curPos, tickStartPos, curPos, tickEndPos));
             if (drawValues)
             {
                 painter.drawText(curPos + textOffset, fontPos + textOffset, QString::number(curPosValue));
@@ -153,7 +157,7 @@ void RulerWidget::DrawScale(QPainter& painter, int tickStep, int tickStartPos, i
         }
         else
         {
-            linesVector.append(QLine(tickStartPos, curPos, tickEndPos, curPos));
+            painter.drawLine(QLine(tickStartPos, curPos, tickEndPos, curPos));
             if (drawValues)
             {
                 int digitPos = curPos + fontSize - 1;
@@ -165,8 +169,6 @@ void RulerWidget::DrawScale(QPainter& painter, int tickStep, int tickStartPos, i
             }
         }
     }
-
-    painter.drawLines(linesVector);
 }
 
 void RulerWidget::UpdateDoubleBufferImage()
@@ -223,16 +225,14 @@ void RulerWidget::UpdateDoubleBufferImage()
     }
 
     // Draw small ticks.
-    int tickStep = settings.smallTicksDelta * settings.zoomLevel;
-    DrawScale(painter, tickStep, smallTickStart, tickEnd, false);
+    DrawScale(painter, settings.smallTicksDelta, smallTickStart, tickEnd, false);
 
     // Draw big ticks and values.
     QFont font = painter.font();
     font.setPixelSize(rulerFontSize);
     painter.setFont(font);
 
-    tickStep = settings.bigTicksDelta * settings.zoomLevel;
-    DrawScale(painter, tickStep, bigTickStart, tickEnd, true);
+    DrawScale(painter, settings.bigTicksDelta, bigTickStart, tickEnd, true);
 }
 
 void RulerWidget::resizeEvent(QResizeEvent* resizeEvent)
