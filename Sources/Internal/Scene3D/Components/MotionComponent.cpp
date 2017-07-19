@@ -187,4 +187,13 @@ void MotionComponent::Deserialize(KeyedArchive* archive, SerializationContext* s
     simpleMotion->SetAnimationPath(serializationContext->GetScenePath() + animationRelativePath);
     simpleMotion->SetRepeatsCount(archive->GetUInt32("simpleMotion.repeatsCount"));
 }
+
+FilePath MotionComponent::GetSimpleMotionAnimationPath() const
+{
+    if (simpleMotion)
+    {
+        return simpleMotion->GetAnimationPath();
+    }
+    return FilePath();
+}
 }

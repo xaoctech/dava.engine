@@ -26,6 +26,8 @@ public:
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
     void Deserialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
 
+    FilePath GetSimpleMotionAnimationPath() const;
+
 private:
     class SimpleMotion
     {
