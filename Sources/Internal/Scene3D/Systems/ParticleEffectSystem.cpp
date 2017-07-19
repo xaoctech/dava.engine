@@ -25,7 +25,7 @@ namespace DAVA
 {
 NMaterial* ParticleEffectSystem::GetMaterial(const MaterialData& materialData)
 {
-    if (!materialData.texture) //for superemitter particles eg
+    if (materialData.texture == nullptr) //for superemitter particles eg
         return nullptr;
 
     for (uint32 i = 0; i < prebultMaterialsVector.size(); ++i)
@@ -137,7 +137,7 @@ void ParticleEffectSystem::SetGlobalMaterial(NMaterial* material)
             material->AddFlag(NMaterialFlagName::FLAG_VERTEXFOG, 0);
         material->AddFlag(NMaterialFlagName::FLAG_BLENDING, blending);
         material->PreCacheFX();
-    } // For pre-cache everything see commit c9c9346c6d6 and older.
+    }
 }
 
 void ParticleEffectSystem::PrebuildMaterials(ParticleEffectComponent* component)
@@ -536,7 +536,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
                 effect->effectData.infoSources[current->positionTarget].size = current->currSize;
             }
 
-            if (group.layer->enableNoise && group.layer->noise)
+            if (group.layer->enableNoise && group.layer->noise.get() != nullptr)
             {
                 if (group.layer->noiseScaleOverLife != nullptr)
                     current->currNoiseScale = current->baseNoiseScale * group.layer->noiseScaleOverLife->GetValue(overLifeTime);
@@ -556,7 +556,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
                 current->currNoiseVOffset += current->baseNoiseVScrollSpeed * overLifeScale * deltaTime;
             }
 
-            if (group.layer->enableAlphaRemap && group.layer->alphaRemapSprite && group.layer->alphaRemapOverLife != nullptr)
+            if (group.layer->enableAlphaRemap && group.layer->alphaRemapSprite.get() != nullptr && group.layer->alphaRemapOverLife != nullptr)
             {
                 float32 lookup = overLifeTime * group.layer->alphaRemapLoopCount;
                 float32 intPart;

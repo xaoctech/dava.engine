@@ -115,9 +115,6 @@ void ParticleRenderObject::PrepareRenderData(Camera* camera)
                                              Vector3(0, 1, 0),
                                              Vector3(0, 0, 1) };
     stripeBasisVectors[0] = basisVectors[0];
-    ex.Normalize();
-    ey.Normalize();
-    ez.Normalize();
     stripeBasisVectors[1] = ex;
     stripeBasisVectors[2] = ey;
     stripeBasisVectors[3] = ez;

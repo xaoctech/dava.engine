@@ -24,19 +24,6 @@ TimeLineWidget::TimeLineWidget(QWidget* parent)
     :
     ScrollZoomWidget(parent)
 {
-    selectedPoint = -1;
-    selectedLine = -1;
-    drawLine = -1;
-
-    sizeState = SIZE_STATE_NORMAL;
-    updateSizeState = true;
-    aliasLinePoint = false;
-    allowDeleteLine = true;
-
-    isLockEnable = false;
-    isLocked = false;
-    isInteger = false;
-
     gridStyle = GRID_STYLE_LIMITS;
 
     setMouseTracking(true);

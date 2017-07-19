@@ -469,6 +469,8 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
 
     spriteUpdateTimer = new QTimer(this);
     connect(spriteUpdateTimer, SIGNAL(timeout()), this, SLOT(OnSpriteUpdateTimerExpired()));
+
+    FillTimeLineWidgetIndentifiers();
 }
 
 void EmitterLayerWidget::InitWidget(QWidget* widget)
@@ -495,40 +497,11 @@ void EmitterLayerWidget::RestoreVisualState(DAVA::KeyedArchive* visualStateProps
 {
     if (!visualStateProps)
         return;
-
-    lifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_LIFE_PROPS"));
-    numberTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NUMBER_PROPS"));
-    sizeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_SIZE_PROPS"));
-    sizeVariationTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_SIZE_VARIATION_PROPS"));
-    sizeOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_SIZE_OVER_LIFE_PROPS"));
-    velocityTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_VELOCITY_PROPS"));
-    velocityOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_VELOCITY_OVER_LIFE")); //todo
-    spinTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_SPIN_PROPS"));
-    spinOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_SPIN_OVER_LIFE_PROPS"));
-    animSpeedOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ANIM_SPEED_OVER_LIFE_PROPS"));
-    alphaOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ALPHA_OVER_LIFE_PROPS"));
-    angleTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ANGLE"));
-
-    flowSpeedTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_FLOW_SPEED_PROPS"));
-    flowSpeedVariationTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_FLOW_SPEED_VARIATION_PROPS"));
-
-    flowOffsetTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_FLOW_OFFSET_PROPS"));
-    flowOffsetVariationTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_FLOW_OFFSET_VARIATION_PROPS"));
-
-    noiseScaleTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_SCALE_PROPS"));
-    noiseScaleVariationTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_SCALE_VARIATION_PROPS"));
-    noiseScaleOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_SCALE_PROPS"));
-
-    noiseUVScrollSpeedTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_UV_SCROLL_SPEED_PROPS"));
-    noiseUVScrollSpeedVariationTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_UV_SCROLL_SPEED_VARIATION_PROPS"));
-    noiseUVScrollSpeedOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NOISE_UV_SCROLL_SPEED_OVER_LIFE"));
-
-    stripeSizeOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_STRIPE_SIZE_OVER_LIFE_TIME_PROPS"));
-    stripeTextureTileTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_STRIPE_TILE_PROPS"));
-
-    stripeNoiseScrollSpeedOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_STRIPE_NOISE_SCROLL_SPEED_OVER_LIFE"));
-
-    alphaRemapOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ALPHA_REMAP"));
+    for (auto& timeLineData : timeLineWidgetsIdentifiers)
+    {
+        if (timeLineData.second != nullptr)
+            timeLineData.second->SetVisualState(visualStateProps->GetArchive(timeLineData.first));
+    }
 }
 
 void EmitterLayerWidget::StoreVisualState(DAVA::KeyedArchive* visualStateProps)
@@ -538,108 +511,12 @@ void EmitterLayerWidget::StoreVisualState(DAVA::KeyedArchive* visualStateProps)
 
     DAVA::ScopedPtr<DAVA::KeyedArchive> props(new DAVA::KeyedArchive());
 
-    lifeTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_LIFE_PROPS", props);
-
-    props->DeleteAllKeys();
-    numberTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_NUMBER_PROPS", props);
-
-    props->DeleteAllKeys();
-    sizeTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_SIZE_PROPS", props);
-
-    props->DeleteAllKeys();
-    sizeVariationTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_SIZE_VARIATION_PROPS", props);
-
-    props->DeleteAllKeys();
-    sizeOverLifeTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_SIZE_OVER_LIFE_PROPS", props);
-
-    props->DeleteAllKeys();
-    velocityTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_VELOCITY_PROPS", props);
-
-    props->DeleteAllKeys();
-    velocityOverLifeTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_VELOCITY_OVER_LIFE", props);
-
-    props->DeleteAllKeys();
-    spinTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_SPIN_PROPS", props);
-
-    props->DeleteAllKeys();
-    spinOverLifeTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_SPIN_OVER_LIFE_PROPS", props);
-
-    props->DeleteAllKeys();
-    animSpeedOverLifeTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_ANIM_SPEED_OVER_LIFE_PROPS", props);
-
-    props->DeleteAllKeys();
-    alphaOverLifeTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_ALPHA_OVER_LIFE_PROPS", props);
-
-    props->DeleteAllKeys();
-    angleTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_ANGLE", props);
-
-    props->DeleteAllKeys();
-    flowSpeedTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_FLOW_SPEED_PROPS", props);
-
-    props->DeleteAllKeys();
-    flowSpeedVariationTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_FLOW_SPEED_VARIATION_PROPS", props);
-
-    props->DeleteAllKeys();
-    flowOffsetTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_FLOW_OFFSET_PROPS", props);
-
-    props->DeleteAllKeys();
-    flowOffsetVariationTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_FLOW_OFFSET_VARIATION_PROPS", props);
-
-    props->DeleteAllKeys();
-    noiseScaleTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_NOISE_SCALE_PROPS", props);
-
-    props->DeleteAllKeys();
-    noiseScaleVariationTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_NOISE_SCALE_VARIATION_PROPS", props);
-
-    props->DeleteAllKeys();
-    noiseScaleOverLifeTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_NOISE_SCALE_OVER_LIFE_PROPS", props);
-
-    props->DeleteAllKeys();
-    noiseUVScrollSpeedTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_NOISE_UV_SCROLL_SPEED_PROPS", props);
-
-    props->DeleteAllKeys();
-    noiseUVScrollSpeedVariationTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_NOISE_UV_SCROLL_SPEED_VARIATION_PROPS", props);
-
-    props->DeleteAllKeys();
-    noiseUVScrollSpeedOverLifeTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_NOISE_UV_SCROLL_SPEED_OVER_LIFE_PROPS", props);
-
-    props->DeleteAllKeys();
-    stripeSizeOverLifeTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_STRIPE_SIZE_OVER_LIFE_TIME_PROPS", props);
-
-    props->DeleteAllKeys();
-    stripeTextureTileTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_STRIPE_TILE_PROPS", props);
-
-    props->DeleteAllKeys();
-    stripeNoiseScrollSpeedOverLifeTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_STRIPE_NOISE_SCROLL_SPEED_OVER_LIFE", props);
-
-    props->DeleteAllKeys();
-    alphaRemapOverLifeTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_ALPHA_REMAP", props);
+    for (auto& timeLineData : timeLineWidgetsIdentifiers)
+    {
+        props->DeleteAllKeys();
+        timeLineData.second->GetVisualState(props);
+        visualStateProps->SetArchive(timeLineData.first, props);
+    }
 }
 
 void EmitterLayerWidget::OnSpriteBtn()
@@ -2005,6 +1882,39 @@ DAVA::int32 EmitterLayerWidget::LayerTypeToIndex(DAVA::ParticleLayer::eType laye
     }
 
     return 0;
+}
+
+void EmitterLayerWidget::FillTimeLineWidgetIndentifiers()
+{
+    timeLineWidgetsIdentifiers =
+    {
+      { "LAYER_LIFE_PROPS", lifeTimeLine },
+      { "LAYER_NUMBER_PROPS", numberTimeLine },
+      { "LAYER_SIZE_PROPS", sizeTimeLine },
+      { "LAYER_SIZE_VARIATION_PROPS", sizeVariationTimeLine },
+      { "LAYER_SIZE_OVER_LIFE_PROPS", sizeOverLifeTimeLine },
+      { "LAYER_VELOCITY_PROPS", velocityTimeLine },
+      { "LAYER_VELOCITY_OVER_LIFE", velocityOverLifeTimeLine },
+      { "LAYER_SPIN_PROPS", spinTimeLine },
+      { "LAYER_SPIN_OVER_LIFE_PROPS", spinOverLifeTimeLine },
+      { "LAYER_ANIM_SPEED_OVER_LIFE_PROPS", animSpeedOverLifeTimeLine },
+      { "LAYER_ALPHA_OVER_LIFE_PROPS", alphaOverLifeTimeLine },
+      { "LAYER_ANGLE", angleTimeLine },
+      { "LAYER_FLOW_SPEED_PROPS", flowSpeedTimeLine },
+      { "LAYER_FLOW_SPEED_VARIATION_PROPS", flowSpeedVariationTimeLine },
+      { "LAYER_FLOW_OFFSET_PROPS", flowOffsetTimeLine },
+      { "LAYER_FLOW_OFFSET_VARIATION_PROPS", flowOffsetVariationTimeLine },
+      { "LAYER_NOISE_SCALE_PROPS", noiseScaleTimeLine },
+      { "LAYER_NOISE_SCALE_VARIATION_PROPS", noiseScaleVariationTimeLine },
+      { "LAYER_NOISE_SCALE_PROPS", noiseScaleOverLifeTimeLine },
+      { "LAYER_NOISE_UV_SCROLL_SPEED_PROPS", noiseUVScrollSpeedTimeLine },
+      { "LAYER_NOISE_UV_SCROLL_SPEED_VARIATION_PROPS", noiseUVScrollSpeedVariationTimeLine },
+      { "LAYER_NOISE_UV_SCROLL_SPEED_OVER_LIFE", noiseUVScrollSpeedOverLifeTimeLine },
+      { "LAYER_STRIPE_SIZE_OVER_LIFE_TIME_PROPS", stripeSizeOverLifeTimeLine },
+      { "LAYER_STRIPE_TILE_PROPS", stripeTextureTileTimeLine },
+      { "LAYER_STRIPE_NOISE_SCROLL_SPEED_OVER_LIFE", stripeNoiseScrollSpeedOverLifeTimeLine },
+      { "LAYER_ALPHA_REMAP", alphaRemapOverLifeTimeLine }
+    };
 }
 
 void EmitterLayerWidget::SetLayerMode(bool isSuperemitter, bool isStripe)
