@@ -1,7 +1,9 @@
 #include "Animation2/AnimationClip.h"
+#include "Animation2/SkeletonAnimation.h"
 #include "Scene3D/Components/SkeletonComponent.h"
 #include "Scene3D/Components/MotionComponent.h"
 #include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Components/SingleComponents/MotionSingleComponent.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
@@ -16,21 +18,106 @@ DAVA_VIRTUAL_REFLECTION_IMPL(MotionComponent)
 {
     ReflectionRegistrator<MotionComponent>::Begin()
     .ConstructorByPointer()
-    .Field("animationPath", &MotionComponent::GetAnimationPath, &MotionComponent::SetAnimationPath)[M::DisplayName("Animation File")]
+    .Field("simpleMotion", &MotionComponent::simpleMotion)[M::DisplayName("Simple Motion")]
     .End();
 }
 
-MotionComponent::~MotionComponent()
+DAVA_REFLECTION_IMPL(MotionComponent::SimpleMotion)
 {
-    SafeRelease(animationClip);
+    ReflectionRegistrator<MotionComponent::SimpleMotion>::Begin()
+    .Field("animationPath", &MotionComponent::SimpleMotion::GetAnimationPath, &MotionComponent::SimpleMotion::SetAnimationPath)[M::DisplayName("Animation")]
+    .Field("repeatsCount", &MotionComponent::SimpleMotion::GetRepeatsCount, &MotionComponent::SimpleMotion::SetRepeatsCount)[M::DisplayName("Repeats Count")]
+    .End();
 }
 
-const FilePath& MotionComponent::GetAnimationPath() const
+const FastName MotionComponent::EVENT_SINGLE_ANIMATION_STARTED = FastName("SingleAnimationStarted");
+const FastName MotionComponent::EVENT_SINGLE_ANIMATION_ENDED = FastName("SingleAnimationEnded");
+
+//////////////////////////////////////////////////////////////////////////
+
+MotionComponent::SimpleMotion::SimpleMotion(MotionComponent* _component)
+    : component(_component)
+{
+}
+
+MotionComponent::SimpleMotion::~SimpleMotion()
+{
+    SafeRelease(animationClip);
+    SafeDelete(skeletonAnimation);
+}
+
+void MotionComponent::SimpleMotion::BindSkeleton(SkeletonComponent* skeleton)
+{
+    SafeDelete(skeletonAnimation);
+    skeletonAnimation = new SkeletonAnimation();
+    skeletonAnimation->BindAnimation(animationClip, skeleton);
+}
+
+void MotionComponent::SimpleMotion::Start()
+{
+    isPlaying = true;
+    repeatsLeft = repeatsCount;
+    if (skeletonAnimation)
+        skeletonAnimation->Reset();
+}
+
+void MotionComponent::SimpleMotion::Stop()
+{
+    isPlaying = false;
+    currentAnimationTime = 0.f;
+    if (skeletonAnimation)
+        skeletonAnimation->Reset();
+}
+
+void MotionComponent::SimpleMotion::Update(float32 timeElapsed)
+{
+    if (animationClip == nullptr || skeletonAnimation == nullptr)
+        return;
+
+    if (isPlaying)
+    {
+        currentAnimationTime += timeElapsed;
+
+        if (animationClip->GetDuration() <= currentAnimationTime)
+        {
+            skeletonAnimation->Reset();
+
+            isPlaying = (repeatsLeft > 0 || repeatsCount == 0);
+            if (isPlaying)
+            {
+                currentAnimationTime -= animationClip->GetDuration();
+                skeletonAnimation->Advance(currentAnimationTime);
+
+                if (repeatsCount != 0)
+                    --repeatsLeft;
+            }
+        }
+        else
+        {
+            skeletonAnimation->Advance(timeElapsed);
+        }
+    }
+}
+
+bool MotionComponent::SimpleMotion::IsPlaying() const
+{
+    return isPlaying;
+}
+
+bool MotionComponent::SimpleMotion::IsFinished() const
+{
+    if (repeatsCount == 0) //infinity-looped motion
+        return false;
+    else
+        return (isPlaying == false) && (currentAnimationTime != 0.f);
+}
+
+const FilePath& MotionComponent::SimpleMotion::GetAnimationPath() const
 {
     return animationPath;
 }
 
-void MotionComponent::SetAnimationPath(const FilePath& path)
+void MotionComponent::SimpleMotion::SetAnimationPath(const FilePath& path)
 {
     animationPath = path;
 
@@ -40,14 +127,46 @@ void MotionComponent::SetAnimationPath(const FilePath& path)
         animationClip = AnimationClip::Load(animationPath);
     }
 
-    GlobalEventSystem::Instance()->Event(this, EventSystem::MOTION_CHANGED);
+    Entity* entity = component->GetEntity();
+    if (entity && entity->GetScene())
+    {
+        entity->GetScene()->motionSingleComponent->rebindAnimation.push_back(component);
+    }
+}
+
+uint32 MotionComponent::SimpleMotion::GetRepeatsCount() const
+{
+    return repeatsCount;
+}
+
+void MotionComponent::SimpleMotion::SetRepeatsCount(uint32 count)
+{
+    repeatsCount = count;
+}
+
+const SkeletonAnimation* MotionComponent::SimpleMotion::GetAnimation() const
+{
+    return skeletonAnimation;
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+MotionComponent::MotionComponent()
+{
+    simpleMotion = new SimpleMotion(this);
+}
+
+MotionComponent::~MotionComponent()
+{
+    SafeDelete(simpleMotion);
 }
 
 Component* MotionComponent::Clone(Entity* toEntity)
 {
     MotionComponent* newComponent = new MotionComponent();
     newComponent->SetEntity(toEntity);
-    newComponent->SetAnimationPath(animationPath);
+    newComponent->simpleMotion->SetAnimationPath(simpleMotion->GetAnimationPath());
+    newComponent->simpleMotion->SetRepeatsCount(simpleMotion->GetRepeatsCount());
     return newComponent;
 }
 
@@ -55,15 +174,17 @@ void MotionComponent::Serialize(KeyedArchive* archive, SerializationContext* ser
 {
     Component::Serialize(archive, serializationContext);
 
-    String animationRelativePath = animationPath.GetRelativePathname(serializationContext->GetScenePath());
-    archive->SetString("animationPath", animationRelativePath);
+    String animationRelativePath = simpleMotion->animationPath.GetRelativePathname(serializationContext->GetScenePath());
+    archive->SetString("simpleMotion.animationPath", animationRelativePath);
+    archive->SetUInt32("simpleMotion.repeatsCount", simpleMotion->repeatsCount);
 }
 
 void MotionComponent::Deserialize(KeyedArchive* archive, SerializationContext* serializationContext)
 {
     Component::Deserialize(archive, serializationContext);
 
-    String animationRelativePath = archive->GetString("animationPath");
-    SetAnimationPath(serializationContext->GetScenePath() + animationRelativePath);
+    String animationRelativePath = archive->GetString("simpleMotion.animationPath");
+    simpleMotion->SetAnimationPath(serializationContext->GetScenePath() + animationRelativePath);
+    simpleMotion->SetRepeatsCount(archive->GetUInt32("simpleMotion.repeatsCount"));
 }
 }

@@ -75,8 +75,7 @@ void AnimationChannel::Advance(float32 dTime, State* state) const
 
     if (k == keysCount)
     {
-        Reset(state); //loop for now
-        //Memcpy(state->value, KEY_DATA(keysCount - 1), KEY_DATA_SIZE);
+        Memcpy(state->value, KEY_DATA(keysCount - 1), KEY_DATA_SIZE);
         return;
     }
 

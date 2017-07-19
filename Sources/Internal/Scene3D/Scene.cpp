@@ -39,6 +39,7 @@
 #include "Scene3D/Systems/SlotSystem.h"
 
 #include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
+#include "Scene3D/Components/SingleComponents/MotionSingleComponent.h"
 
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
@@ -249,6 +250,8 @@ void Scene::CreateSystems()
     {
         motionSystem = new MotionSystem(this);
         AddSystem(motionSystem, MAKE_COMPONENT_MASK(Component::SKELETON_COMPONENT) | MAKE_COMPONENT_MASK(Component::MOTION_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
+
+        motionSingleComponent = new MotionSingleComponent();
     }
 
     if (SCENE_SYSTEM_SKELETON_FLAG & systemsMask)
@@ -408,6 +411,7 @@ Scene::~Scene()
     systems.clear();
 
     SafeDelete(transformSingleComponent);
+    SafeDelete(motionSingleComponent);
 
     systemsToProcess.clear();
     systemsToInput.clear();
@@ -439,6 +443,10 @@ void Scene::UnregisterEntity(Entity* entity)
     if (transformSingleComponent)
     {
         transformSingleComponent->EraseEntity(entity);
+    }
+    if (motionSingleComponent)
+    {
+        motionSingleComponent->EntityRemoved(entity);
     }
 
     for (auto& system : systems)
@@ -638,6 +646,7 @@ void Scene::Update(float32 timeElapsed)
     {
         transformSingleComponent->Clear();
     }
+
     sceneGlobalTime += timeElapsed;
 }
 
