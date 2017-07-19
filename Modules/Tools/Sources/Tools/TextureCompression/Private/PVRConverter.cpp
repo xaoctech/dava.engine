@@ -78,6 +78,59 @@ PVRConverter::~PVRConverter()
 {
 }
 
+FilePath PVRConverter::ConvertFloatTexture(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality,
+                                           const ImageInfo& sourceInfo, bool addCRC, bool isNormalMap)
+{
+    const TextureDescriptor::Compression* compression = &descriptor.compression[gpuFamily];
+    const FilePath sourcePathname = descriptor.GetSourceTexturePathname();
+    const PixelFormat targetFormat = static_cast<PixelFormat>(compression->format);
+
+    Vector<Image*> sourceImages;
+    Vector<Image*> targetImages;
+    ImageSystem::Load(sourcePathname, sourceImages);
+    if (sourceImages.empty())
+    {
+        Logger::Error("Failed to convert float texture to PVR file. Failed to load source image");
+        return FilePath();
+    }
+
+    if (descriptor.GetGenerateMipMaps())
+    {
+        Vector<Image*> mipMaps = sourceImages.front()->CreateMipMapsImages(isNormalMap);
+
+        for (Image* image : sourceImages)
+            SafeRelease(image);
+
+        sourceImages.swap(mipMaps);
+    }
+
+    targetImages.reserve(sourceImages.size());
+
+    for (Image* sourceImage : sourceImages)
+    {
+        Image* targetImage = Image::Create(sourceImage->width, sourceImage->height, targetFormat);
+        ImageConvert::ConvertFloatFormats(sourceImage->width, sourceImage->height, sourceInfo.format, targetFormat, sourceImage->data, targetImage->data);
+        targetImages.emplace_back(targetImage);
+    }
+
+    FilePath outputName = GetConvertedTexturePath(descriptor, gpuFamily);
+
+    eErrorCode saveResult = LibPVRHelper().Save(outputName, targetImages);
+    if (saveResult != eErrorCode::SUCCESS)
+    {
+        Logger::Error("Failed to convert float texture to PVR file. Error code: %u", static_cast<uint32_t>(saveResult));
+        return FilePath();
+    }
+
+    for (Image* image : sourceImages)
+        SafeRelease(image);
+
+    for (Image* image : targetImages)
+        SafeRelease(image);
+
+    return outputName;
+}
+
 FilePath PVRConverter::ConvertToPvr(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, bool addCRC /* = true */)
 {
 #ifdef __DAVAENGINE_WIN_UAP__
@@ -86,83 +139,60 @@ FilePath PVRConverter::ConvertToPvr(const TextureDescriptor& descriptor, eGPUFam
     return FilePath();
 
 #else
-    FilePath sourcePathname = descriptor.GetSourceTexturePathname();
     FilePath outputName;
+
+    FilePath sourcePathname = descriptor.GetSourceTexturePathname();
     ImageInfo sourceInfo = ImageSystem::GetImageInfo(sourcePathname);
     if (IsFloatPixelFormat(sourceInfo.format))
     {
-        const TextureDescriptor::Compression* compression = &descriptor.compression[gpuFamily];
-        PixelFormat targetFormat = static_cast<PixelFormat>(compression->format);
-
-        Vector<Image*> sourceImages;
-        Vector<Image*> targetImages;
-        ImageSystem::Load(sourcePathname, sourceImages);
-        targetImages.reserve(sourceImages.size());
-
-        for (Image* sourceImage : sourceImages)
-        {
-            Image* targetImage = Image::Create(sourceImage->width, sourceImage->height, targetFormat);
-            ImageConvert::ConvertFloatFormats(sourceImage->width, sourceImage->height, sourceInfo.format, targetFormat, sourceImage->data, targetImage->data);
-            targetImages.emplace_back(targetImage);
-        }
-
-        outputName = GetConvertedTexturePath(descriptor, gpuFamily);
-
-        LibPVRHelper pvrHelper;
-        if (pvrHelper.Save(outputName, targetImages) != eErrorCode::SUCCESS)
-            outputName = FilePath();
-
-        for (Image* image : sourceImages)
-            SafeRelease(image);
-
-        for (Image* image : targetImages)
-            SafeRelease(image);
-
-        return outputName;
-    }
-
-    FilePath inputPathname = sourcePathname;
-    if (descriptor.IsCubeMap())
-    {
-        inputPathname = PrepareCubeMapForPvrConvert(descriptor);
-    }
-
-    Vector<String> args;
-    GetToolCommandLine(descriptor, inputPathname, gpuFamily, quality, args);
-    Process process(pvrTexToolPathname, args);
-    if (process.Run(false))
-    {
-        process.Wait();
-
-        const String& procOutput = process.GetOutput();
-        if (procOutput.size() > 0)
-        {
-            Logger::FrameworkDebug(procOutput.c_str());
-        }
-
-        if (process.GetExitCode() != 0)
-        {
-            Logger::Error("PvrTexTool exited with code %d", process.GetExitCode());
-            return FilePath();
-        }
-
-        outputName = GetConvertedTexturePath(descriptor, gpuFamily);
+        outputName = ConvertFloatTexture(descriptor, gpuFamily, quality, sourceInfo, addCRC, false);
     }
     else
     {
-        Logger::Error("Failed to run PVR tool! %s", pvrTexToolPathname.GetAbsolutePathname().c_str());
-        return FilePath();
-    }
+        FilePath inputPathname = sourcePathname;
+        if (descriptor.IsCubeMap())
+        {
+            inputPathname = PrepareCubeMapForPvrConvert(descriptor);
+        }
 
-    if (descriptor.IsCubeMap())
-    {
-        CleanupCubemapAfterConversion(descriptor);
+        Vector<String> args;
+        GetToolCommandLine(descriptor, inputPathname, gpuFamily, quality, args);
+        Process process(pvrTexToolPathname, args);
+        if (process.Run(false))
+        {
+            process.Wait();
+
+            const String& procOutput = process.GetOutput();
+            if (procOutput.size() > 0)
+            {
+                Logger::FrameworkDebug(procOutput.c_str());
+            }
+
+            if (process.GetExitCode() != 0)
+            {
+                Logger::Error("PvrTexTool exited with code %d", process.GetExitCode());
+                return FilePath();
+            }
+
+            outputName = GetConvertedTexturePath(descriptor, gpuFamily);
+        }
+        else
+        {
+            Logger::Error("Failed to run PVR tool! %s", pvrTexToolPathname.GetAbsolutePathname().c_str());
+            return FilePath();
+        }
+
+        if (descriptor.IsCubeMap())
+        {
+            CleanupCubemapAfterConversion(descriptor);
+        }
     }
 
     if (addCRC)
     {
         LibPVRHelper::AddCRCIntoMetaData(outputName);
     }
+
     return outputName;
 #endif
 }
@@ -185,13 +215,13 @@ FilePath PVRConverter::ConvertNormalMapToPvr(const TextureDescriptor& descriptor
         return FilePath();
     }
 
-    Vector<Image *> srcImages, convertedImages;
+    Vector<Image*> srcImages;
+    Vector<Image*> convertedImages;
     SCOPE_EXIT
     {
         for_each(srcImages.begin(), srcImages.end(), SafeRelease<Image>);
         for_each(convertedImages.begin(), convertedImages.end(), SafeRelease<Image>);
     };
-
     if (descriptor.GetGenerateMipMaps())
     {
         srcImages = image->CreateMipMapsImages(true);
@@ -201,17 +231,16 @@ FilePath PVRConverter::ConvertNormalMapToPvr(const TextureDescriptor& descriptor
         image->Retain();
         srcImages.push_back(image);
     }
-    image.reset();
 
-    ImageFormat targetFormat = IMAGE_FORMAT_PNG;
+    ImageFormat targetFormat = IMAGE_FORMAT_PVR;
+
     TextureDescriptor tempFileDescriptor;
     tempFileDescriptor.Initialize(&descriptor);
     tempFileDescriptor.SetGenerateMipmaps(false);
     tempFileDescriptor.dataSettings.sourceFileFormat = targetFormat;
     tempFileDescriptor.dataSettings.sourceFileExtension = ImageSystem::GetDefaultExtension(targetFormat);
     tempFileDescriptor.pathname.ReplaceBasename(sourcePath.GetBasename() + "_temp");
-
-    tempFileDescriptor.compression[eGPUFamily::GPU_ORIGIN].format = PixelFormat::FORMAT_RGBA8888;
+    tempFileDescriptor.compression[eGPUFamily::GPU_ORIGIN].format = image->format;
     tempFileDescriptor.compression[eGPUFamily::GPU_ORIGIN].imageFormat = targetFormat;
 
     FilePath tempSourcePath = tempFileDescriptor.GetSourceTexturePathname();
@@ -234,7 +263,7 @@ FilePath PVRConverter::ConvertNormalMapToPvr(const TextureDescriptor& descriptor
             continue;
         }
 
-        if (ImageSystem::Save(tempSourcePath, srcImage) != eErrorCode::SUCCESS)
+        if (ImageSystem::Save(tempSourcePath, srcImage, image->format) != eErrorCode::SUCCESS)
         {
             return FilePath();
         }
@@ -252,13 +281,13 @@ FilePath PVRConverter::ConvertNormalMapToPvr(const TextureDescriptor& descriptor
             return FilePath();
         }
 
-        convertedImages.push_back(convertedImage);
+        convertedImages.emplace_back(convertedImage);
     }
 
     DVASSERT(convertedImages.empty() == false);
 
     FilePath convertedTexturePath = GetConvertedTexturePath(descriptor, gpuFamily);
-    if (ImageSystem::Save(convertedTexturePath, convertedImages, convertedImages[0]->format) != eErrorCode::SUCCESS)
+    if (ImageSystem::Save(convertedTexturePath, convertedImages, convertedImages.front()->format) != eErrorCode::SUCCESS)
     {
         return FilePath();
     }
