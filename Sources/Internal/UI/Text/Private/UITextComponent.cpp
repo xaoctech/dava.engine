@@ -270,5 +270,4 @@ UITextSystemLink* UITextComponent::GetLink() const
 {
     return &link;
 }
-
 };
