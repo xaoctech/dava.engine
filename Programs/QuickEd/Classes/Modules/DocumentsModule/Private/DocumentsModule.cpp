@@ -21,6 +21,7 @@
 #include "UI/Preview/PreviewWidget.h"
 #include "UI/Package/PackageWidget.h"
 #include "UI/Package/PackageModel.h"
+#include "UI/UIControl.h"
 
 #include "Model/PackageHierarchy/PackageNode.h"
 #include "Model/QuickEdPackageBuilder.h"
