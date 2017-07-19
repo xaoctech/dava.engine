@@ -62,7 +62,7 @@ DAVA::NMaterial* ParticleEffectSystem::GetMaterial(MaterialData&& materialData)
 
     if (materialData.useFresnelToAlpha)
     {
-        material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_FRES_TO_ALPHA, 1);
+        material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_FRESNEL_TO_ALPHA, 1);
     }
 
     if (materialData.enableFlowAnimation)

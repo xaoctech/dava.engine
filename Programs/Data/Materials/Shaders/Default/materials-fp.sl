@@ -62,13 +62,13 @@ fragment_in
     #endif
 
      #if PARTICLES_NOISE
-        #if PARTICLES_FRES_TO_ALPHA
-            float4 varTexcoord6 : TEXCOORD6; // Noise uv and scale. Fres a.
+        #if PARTICLES_FRESNEL_TO_ALPHA
+            float4 varTexcoord6 : TEXCOORD6; // Noise uv and scale. Fresnel a.
         #else
             float3 varTexcoord6 : TEXCOORD6; // Noise uv and scale.
         #endif
-    #elif PARTICLES_FRES_TO_ALPHA
-        float varTexcoord6 : TEXCOORD6; // Fres a.
+    #elif PARTICLES_FRESNEL_TO_ALPHA
+        float varTexcoord6 : TEXCOORD6; // Fresnel a.
     #endif 
 
     #if FRAME_BLEND && PARTICLES_APHA_REMAP
@@ -613,7 +613,7 @@ fragment_out fp_main( fragment_in input )
         output.color *= flatColor;
     #endif
 
-    #if PARTICLES_FRES_TO_ALPHA
+    #if PARTICLES_FRESNEL_TO_ALPHA
         #if PARTICLES_NOISE
             output.color.a *= input.varTexcoord6.w;
         #else
