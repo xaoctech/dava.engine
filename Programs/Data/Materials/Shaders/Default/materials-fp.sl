@@ -71,9 +71,9 @@ fragment_in
         float varTexcoord6 : TEXCOORD6; // Fresnel a.
     #endif 
 
-    #if FRAME_BLEND && PARTICLES_APHA_REMAP
+    #if FRAME_BLEND && PARTICLES_ALPHA_REMAP
         half2 varTexcoord3 : TEXCOORD3;
-    #elif FRAME_BLEND || PARTICLES_APHA_REMAP
+    #elif FRAME_BLEND || PARTICLES_ALPHA_REMAP
         half varTexcoord3 : TEXCOORD3;
     #endif
 
@@ -109,7 +109,7 @@ fragment_out
     uniform sampler2D noiseTex;
 #endif
 
-#if PARTICLES_APHA_REMAP
+#if PARTICLES_ALPHA_REMAP
     uniform sampler2D alphaRemapTex;
 #endif
 
@@ -236,7 +236,7 @@ fragment_out fp_main( fragment_in input )
                 textureColor0.a *= FP_A8(tex2D( alphamask, input.varTexCoord1 ));
             #endif
 
-            #if PARTICLES_APHA_REMAP
+            #if PARTICLES_ALPHA_REMAP
                 #if FRAME_BLEND
                     float4 remap = tex2D(alphaRemapTex, float2(half(textureColor0.a), input.varTexcoord3.y));
                 #else

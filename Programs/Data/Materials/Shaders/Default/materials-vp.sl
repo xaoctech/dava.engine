@@ -58,7 +58,7 @@ vertex_in
     #endif
     #endif
 
-    #if PARTICLES_FRESNEL_TO_ALPHA || PARTICLES_APHA_REMAP || PARTICLES_PERSPECTIVE_MAPPING
+    #if PARTICLES_FRESNEL_TO_ALPHA || PARTICLES_ALPHA_REMAP || PARTICLES_PERSPECTIVE_MAPPING
         float3 texcoord5 : TEXCOORD5;  // x - fresnel. y - alpha remap. z - presp mapping w.
     #endif
 
@@ -135,9 +135,9 @@ vertex_out
         float varTexcoord6 : TEXCOORD6; // Fresnel a.
     #endif 
 
-    #if FRAME_BLEND && PARTICLES_APHA_REMAP
+    #if FRAME_BLEND && PARTICLES_ALPHA_REMAP
         half2 varTexcoord3 : TEXCOORD3;
-    #elif FRAME_BLEND || PARTICLES_APHA_REMAP
+    #elif FRAME_BLEND || PARTICLES_ALPHA_REMAP
         half varTexcoord3 : TEXCOORD3;
     #endif
 
@@ -679,10 +679,10 @@ vertex_out vp_main( vertex_in input )
 
 #if FRAME_BLEND
     output.varTexcoord3.x = input.texcoord1.z;
-    #if PARTICLES_APHA_REMAP
+    #if PARTICLES_ALPHA_REMAP
         output.varTexcoord3.y = input.texcoord5.y;
     #endif
-#elif PARTICLES_APHA_REMAP
+#elif PARTICLES_ALPHA_REMAP
     output.varTexcoord3.x = input.texcoord5.y;
 #endif
 

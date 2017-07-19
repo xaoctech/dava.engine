@@ -10,7 +10,7 @@
 namespace DAVA
 {
 class ParticleEmitterInstance;
-class ParticleLayer;
+struct ParticleLayer;
 }
 
 class SceneEditor2;
