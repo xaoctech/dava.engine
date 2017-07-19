@@ -23,7 +23,7 @@
 
 namespace DAVA
 {
-NMaterial* ParticleEffectSystem::GetMaterial(MaterialData&& materialData)
+NMaterial* ParticleEffectSystem::GetMaterial(const MaterialData& materialData)
 {
     if (!materialData.texture) //for superemitter particles eg
         return nullptr;
@@ -166,7 +166,7 @@ void ParticleEffectSystem::PrebuildMaterials(ParticleEffectComponent* component)
                 matData.alphaRemapTexture = alphaRemap;
                 matData.usePerpMapping = layer->usePerspectiveMapping && layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE;
 
-                GetMaterial(std::move(matData));
+                GetMaterial(matData);
             }
         }
     }
@@ -209,7 +209,7 @@ void ParticleEffectSystem::RunEmitter(ParticleEffectComponent* effect, ParticleE
             matData.alphaRemapTexture = alphaRemap;
             matData.usePerpMapping = layer->usePerspectiveMapping && layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE;
 
-            group.material = GetMaterial(std::move(matData));
+            group.material = GetMaterial(matData);
         }
 
         effect->effectData.groups.push_back(group);

@@ -1707,7 +1707,7 @@ void EmitterLayerWidget::CreateStripeLayoutWidget()
     connect(stripeStartSizeSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
     connect(stripeFadeDistanceFromTopSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
 
-    connect(stripeTextureTileTimeLine, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
+    connect(stripeTextureTileTimeLine, SIGNAL(valueChanged()), this, SLOT(OnStripePropertiesChanged()));
     connect(stripeUScrollSpeedSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
     connect(stripeVScrollSpeedSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
 }

@@ -16,16 +16,16 @@ public:
     struct MaterialData
     {
         Texture* texture = nullptr;
+        Texture* flowmap = nullptr;
+        Texture* noise = nullptr;
+        Texture* alphaRemapTexture = nullptr;
         bool enableFog = false;
         bool enableFrameBlend = false;
-        Texture* flowmap = nullptr;
         bool enableFlow = false;
         bool enableFlowAnimation = false;
         bool enableNoise = false;
         bool isNoiseAffectFlow = false;
-        Texture* noise = nullptr;
         bool useFresnelToAlpha = false;
-        Texture* alphaRemapTexture = nullptr;
         bool enableAlphaRemap = false;
         bool usePerpMapping = false;
 
@@ -99,7 +99,7 @@ private:
 private: //materials stuff
     NMaterial* particleBaseMaterial;
     Vector<std::pair<MaterialData, NMaterial*>> prebultMaterialsVector;
-    NMaterial* GetMaterial(MaterialData&& materialData);
+    NMaterial* GetMaterial(const MaterialData& materialData);
 
     bool allowLodDegrade;
 
