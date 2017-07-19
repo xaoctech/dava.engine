@@ -358,7 +358,8 @@ Vector2 SizeMeasuringAlgorithm::GetContentPreferredSize(const Vector2& constrain
     UITextComponent* txt = control->GetComponent<UITextComponent>();
     if (txt)
     {
-        return txt->GetContentPreferredSize(constraints);
+        txt->ApplyDataImmediately();
+        return txt->GetLink()->GetTextBlock()->GetPreferredSizeForWidth(constraints.x);
     }
     UIControlBackground* bg = control->GetComponent<UIControlBackground>();
     if (bg != nullptr && bg->GetSprite() != nullptr)
@@ -384,7 +385,7 @@ bool SizeMeasuringAlgorithm::IsHeightDependsOnWidth() const
     UITextComponent* txt = control->GetComponent<UITextComponent>();
     if (txt)
     {
-        return txt->IsHeightDependsOnWidth();
+        return txt->GetMultiline() != UITextComponent::eTextMultiline::MULTILINE_DISABLED;
     }
     UIControlBackground* bg = control->GetComponent<UIControlBackground>();
     if (bg == nullptr || bg->GetSprite() == nullptr)

@@ -283,17 +283,4 @@ void UITextComponent::ApplyDataImmediately()
         Engine::Instance()->GetContext()->uiControlSystem->GetTextSystem()->ApplyData(this);
     }
 }
-
-// Backward compatibility method
-Vector2 UITextComponent::GetContentPreferredSize(const Vector2& constraints)
-{
-    ApplyDataImmediately();
-    return link.GetTextBlock()->GetPreferredSizeForWidth(constraints.x);
-}
-
-// Backward compatibility method
-bool UITextComponent::IsHeightDependsOnWidth() const
-{
-    return multiline != eTextMultiline::MULTILINE_DISABLED;
-}
 };
