@@ -30,7 +30,7 @@ UTF8Walker::UTF8Walker(const UTF8Walker& src)
 void UTF8Walker::Reset()
 {
     cursor = 0;
-    size = utfSource.size();
+    size = static_cast<uint32>(utfSource.size());
     length = 0;
     currentCodepoint = 0;
     currentUtf8Character.clear();
