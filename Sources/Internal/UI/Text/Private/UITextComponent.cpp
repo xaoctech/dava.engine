@@ -275,17 +275,17 @@ UITextSystemLink* UITextComponent::GetLink() const
     return &link;
 }
 
-void UITextComponent::ApplyDataImmediately() const
+void UITextComponent::ApplyDataImmediately()
 {
     DVASSERT(GetControl());
     if (modified)
     {
-        Engine::Instance()->GetContext()->uiControlSystem->GetTextSystem()->ApplyData(const_cast<UITextComponent*>(this));
+        Engine::Instance()->GetContext()->uiControlSystem->GetTextSystem()->ApplyData(this);
     }
 }
 
 // Backward compatibility method
-Vector2 UITextComponent::GetContentPreferredSize(const Vector2& constraints) const
+Vector2 UITextComponent::GetContentPreferredSize(const Vector2& constraints)
 {
     ApplyDataImmediately();
     return link.GetTextBlock()->GetPreferredSizeForWidth(constraints.x);
