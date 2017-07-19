@@ -811,11 +811,11 @@ void EmitterLayerWidget::OnFresnelToAlphaChanged()
 
     if (layer->particleOrientation & DAVA::ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING && layer->useFresnelToAlpha)
     {
-        DAVA::TArc::NotificationParams params;
-        params.message.message = "The check boxes Fresnel to alpha and Camera facing are both set.";
-        params.message.type = DAVA::Result::RESULT_WARNING;
-        params.title = "Particle system warning.";
-        REGlobal::ShowNotification(params);
+        DAVA::TArc::NotificationParams notificationParams;
+        notificationParams.message.message = "The check boxes Fresnel to alpha and Camera facing are both set.";
+        notificationParams.message.type = DAVA::Result::RESULT_WARNING;
+        notificationParams.title = "Particle system warning.";
+        REGlobal::ShowNotification(notificationParams);
     }
 
     emit ValueChanged();

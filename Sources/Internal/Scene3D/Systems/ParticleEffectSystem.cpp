@@ -23,7 +23,7 @@
 
 namespace DAVA
 {
-DAVA::NMaterial* ParticleEffectSystem::GetMaterial(MaterialData&& materialData)
+NMaterial* ParticleEffectSystem::GetMaterial(MaterialData&& materialData)
 {
     if (!materialData.texture) //for superemitter particles eg
         return nullptr;
