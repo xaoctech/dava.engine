@@ -298,7 +298,7 @@ private:
     std::unique_ptr<DLCDownloader> downloader;
 
     // collect errno codes and count it, also remember last error code
-    size_t errorCounter;
+    size_t errorCounter = 0;
     int32 prevErrorCode = 0;
 
     bool prevNetworkState = false;
