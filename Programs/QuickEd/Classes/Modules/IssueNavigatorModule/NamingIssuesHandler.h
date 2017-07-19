@@ -48,7 +48,6 @@ private:
     DAVA::UnorderedSet<ControlNode*> GetControlsByName(const DAVA::FastName& name);
     bool FindPreviousDuplicatedNameForControl(ControlNode* node, DAVA::FastName& previousName);
 
-
     DAVA::int32 sectionId = 0;
     IssueNavigatorWidget* widget = nullptr;
 
