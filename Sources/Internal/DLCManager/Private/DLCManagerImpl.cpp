@@ -76,11 +76,12 @@ DLCDownloader& DLCManagerImpl::GetDownloader() const
 static const std::array<int32, 8> errorForExternalHandle = { ENAMETOOLONG,
                                                              ENOSPC, ENODEV, EACCES, EROFS, ENFILE, EMFILE };
 
-size_t DLCManagerImpl::CountError(int32 errCode)
+bool DLCManagerImpl::CountError(int32 errCode)
 {
     if (errCode != prevErrorCode)
     {
-        errorCounters[prevErrorCode] = 0;
+        errorCounter = 0;
+        prevErrorCode = errCode;
     }
 
     size_t yota = 1;
@@ -91,10 +92,9 @@ size_t DLCManagerImpl::CountError(int32 errCode)
         yota = hints.maxSameErrorCounter;
     }
 
-    size_t& value = errorCounters[errCode];
-    value += yota;
+    errorCounter += yota;
 
-    return value;
+    return errorCounter >= hints.maxSameErrorCounter;
 }
 
 DLCManagerImpl::DLCManagerImpl(Engine* engine_)

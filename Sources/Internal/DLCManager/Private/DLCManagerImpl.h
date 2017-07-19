@@ -173,7 +173,7 @@ public:
 
     DLCDownloader& GetDownloader() const;
 
-    size_t CountError(int32 errCode);
+    bool CountError(int32 errCode);
 
 private:
     // initialization state functions
@@ -298,7 +298,7 @@ private:
     std::unique_ptr<DLCDownloader> downloader;
 
     // collect errno codes and count it, also remember last error code
-    Map<int32, size_t> errorCounters;
+    size_t errorCounter;
     int32 prevErrorCode = 0;
 
     bool prevNetworkState = false;
