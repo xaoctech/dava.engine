@@ -138,3 +138,9 @@ DAVA::float32 ScaleComboBox::StringToValue(const QString& text) const
     DVASSERT(ok, "can not parse text to float");
     return value / 100.0f;
 }
+
+void ScaleComboBox::focusOutEvent(QFocusEvent* e)
+{
+    DAVA::Any value = wrapper.GetFieldValue(GetFieldName(Fields::Value));
+    SetCurrentValue(value);
+}

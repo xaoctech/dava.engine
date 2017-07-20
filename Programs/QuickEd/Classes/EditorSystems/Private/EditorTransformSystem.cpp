@@ -1,6 +1,8 @@
 #include "Input/InputSystem.h"
 #include "Input/KeyboardDevice.h"
 
+#include "UI/Preview/Data/CanvasData.h"
+
 #include "EditorSystems/EditorTransformSystem.h"
 #include "EditorSystems/EditorSystemsManager.h"
 
@@ -284,6 +286,7 @@ void EditorTransformSystem::ProcessInput(UIEvent* currentInput)
     switch (currentInput->phase)
     {
     case UIEvent::Phase::KEY_DOWN:
+    case UIEvent::Phase::KEY_DOWN_REPEAT:
         ProcessKey(currentInput->key);
         break;
 
@@ -383,7 +386,7 @@ void EditorTransformSystem::ProcessDrag(const Vector2& pos)
     switch (activeArea)
     {
     case HUDAreaInfo::FRAME_AREA:
-        MoveAllSelectedControlsByMouse(delta, canMagnet);
+        MoveAllSelectedControlsByMouse(delta, CanMagnet());
         break;
     case HUDAreaInfo::TOP_LEFT_AREA:
     case HUDAreaInfo::TOP_CENTER_AREA:
@@ -875,7 +878,7 @@ Vector2 EditorTransformSystem::AdjustResizeToBorderAndToMinimum(Vector2 deltaSiz
 {
     Vector<MagnetLineInfo> magnets;
 
-    bool canAdjustResize = canMagnet && activeControlNode->GetControl()->GetAngle() == 0.0f && activeControlNode->GetParent()->GetControl() != nullptr;
+    bool canAdjustResize = CanMagnet() && activeControlNode->GetControl()->GetAngle() == 0.0f && activeControlNode->GetParent()->GetControl() != nullptr;
     Vector2 adjustedDeltaToBorder(deltaSize);
     if (canAdjustResize)
     {
@@ -1235,4 +1238,13 @@ void EditorTransformSystem::ClampAngle()
 bool EditorTransformSystem::IsShiftPressed() const
 {
     return Utils::IsKeyPressed(eModifierKeys::SHIFT) ^ (shiftInverted);
+}
+
+bool EditorTransformSystem::CanMagnet() const
+{
+    float32 scaleToMagnet = 8.0f;
+    DAVA::TArc::DataContext* activeContext = accessor->GetActiveContext();
+    DVASSERT(activeContext != nullptr);
+    CanvasData* data = activeContext->GetData<CanvasData>();
+    return canMagnet && data->GetScale() <= scaleToMagnet;
 }

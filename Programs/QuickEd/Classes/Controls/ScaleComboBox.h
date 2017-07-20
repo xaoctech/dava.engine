@@ -39,6 +39,8 @@ private:
     void CreateItems(const DAVA::Reflection& fieldEnumerator);
     void SetCurrentValue(const DAVA::Any& value);
 
+    void focusOutEvent(QFocusEvent* e) override;
+
     bool updateControlProceed = false;
     QIntValidator* validator = nullptr;
     DAVA::TArc::QtConnections connections;

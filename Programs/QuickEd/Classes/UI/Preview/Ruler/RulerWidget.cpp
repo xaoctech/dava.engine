@@ -143,8 +143,8 @@ void RulerWidget::DrawScale(QPainter& painter, int tickStep, int tickStartPos, i
     {
         float32 currentValue = i + startValue;
 
-        int curPos = static_cast<int>(canvasDataAdapter.AbsoluteValueToPosition(currentValue, axis));
-        int curPosValue = static_cast<int>(currentValue);
+        int curPos = static_cast<int>(std::round(canvasDataAdapter.AbsoluteValueToPosition(currentValue, axis) + EPSILON));
+        int curPosValue = static_cast<int>(currentValue + EPSILON);
         const int textOffset = 5;
 
         if (orientation == Qt::Horizontal)

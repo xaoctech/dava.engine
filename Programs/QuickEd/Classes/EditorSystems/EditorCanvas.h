@@ -3,6 +3,7 @@
 #include "EditorSystems/BaseEditorSystem.h"
 #include "UI/Preview/Data/CanvasDataAdapter.h"
 
+#include <TArc/Utils/DirtyFrameUpdater.h>
 #include <TArc/DataProcessing/DataWrapper.h>
 #include <TArc/DataProcessing/DataListener.h>
 
@@ -29,8 +30,11 @@ private:
     void OnMovableControlPositionChanged(const DAVA::Any& movableControlPosition);
     void OnScaleChanged(const DAVA::Any& scale);
 
+    void UpdateMovableControlState();
+
     CanvasDataAdapter canvasDataAdapter;
     DAVA::TArc::DataWrapper canvasDataAdapterWrapper;
+    DirtyFrameUpdater updater;
 
     bool isMouseMidButtonPressed = false;
     bool isSpacePressed = false;

@@ -14,6 +14,8 @@ EditorCanvas::EditorCanvas(EditorSystemsManager* parent, DAVA::TArc::ContextAcce
     : BaseEditorSystem(parent, accessor)
     , canvasDataAdapter(accessor)
 {
+    updater.SetCallback(DAVA::MakeFunction(this, &EditorCanvas::UpdateMovableControlState));
+
     canvasDataAdapterWrapper = accessor->CreateWrapper([this](const DAVA::TArc::DataContext*) { return DAVA::Reflection::Create(&canvasDataAdapter); });
     canvasDataAdapterWrapper.SetListener(this);
 }
@@ -135,15 +137,10 @@ EditorSystemsManager::eDragState EditorCanvas::RequireNewState(DAVA::UIEvent* cu
 void EditorCanvas::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
 {
     bool movableControlPositionChanged = std::find(fields.begin(), fields.end(), CanvasDataAdapter::movableControlPositionPropertyName) != fields.end();
-    if (movableControlPositionChanged)
-    {
-        OnMovableControlPositionChanged(wrapper.GetFieldValue(CanvasDataAdapter::movableControlPositionPropertyName));
-    }
-
     bool scaleChanged = std::find(fields.begin(), fields.end(), CanvasDataAdapter::scalePropertyName) != fields.end();
-    if (scaleChanged)
+    if (movableControlPositionChanged || scaleChanged)
     {
-        OnScaleChanged(wrapper.GetFieldValue(CanvasDataAdapter::scalePropertyName));
+        updater.MarkDirty();
     }
 }
 
@@ -195,4 +192,10 @@ void EditorCanvas::OnScaleChanged(const DAVA::Any& scaleValue)
     {
         scalableControl->SetScale(Vector2(1.0f, 1.0f));
     }
+}
+
+void EditorCanvas::UpdateMovableControlState()
+{
+    OnMovableControlPositionChanged(canvasDataAdapterWrapper.GetFieldValue(CanvasDataAdapter::movableControlPositionPropertyName));
+    OnScaleChanged(canvasDataAdapterWrapper.GetFieldValue(CanvasDataAdapter::scalePropertyName));
 }

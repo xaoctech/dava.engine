@@ -578,7 +578,7 @@ DAVA::float32 GuidesController::ValueToPosition(DAVA::float32 value) const
     using namespace DAVA;
     float32 relativePos = GetCentralWidgetData()->GetGuidesRelativePos()[orientation];
     float32 position = canvasDataAdapter.AbsoluteValueToPosition(value, orientation);
-    return relativePos + std::floorf(position);
+    return relativePos + position;
 }
 
 void GuidesController::ResizeGuide(Guide& guide) const

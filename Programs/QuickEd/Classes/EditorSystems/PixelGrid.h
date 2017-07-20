@@ -61,6 +61,8 @@ private:
     bool CanShowGrid() const;
     void UpdateGrid();
 
+    void OnDisplayStateChanged(EditorSystemsManager::eDisplayState currentState, EditorSystemsManager::eDisplayState previousState);
+
     PixelGridPreferences preferences;
 
     DAVA::RefPtr<DAVA::UIControl> vLinesContainer;
