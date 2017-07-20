@@ -1,52 +1,50 @@
 #include "DAVAEngine.h"
 #include "UnitTests/UnitTests.h"
 
-#include "Math/Math2D.h"
-
-using namespace DAVA;
-
-#define FILE_PATH String("~res:/KeyedArchives/keyed_archive_original.yaml")
-#define GENERATED_FILE_PATH String("KeyedArchives/keyed_archive_created.yaml")
-//#define GENERATED_FILE_PATH "~res:/KeyedArchives/keyed_archive_created.yaml"
-//#define GENERATED_FILE_PATH "/Users/user/Documents/work/gitHub/dava.framework/Projects/UnitTests/Data/KeyedArchives/keyed_archive_created.yaml"
-
-#define BOOLMAPID "mapNamebool"
-#define INT32MAPID "mapNameint32"
-#define UINT32MAPID "mapNameUInt32"
-#define FLOATMAPID "mapNamefloat"
-#define STRINGMAPID "mapNameString"
-#define WSTRINGMAPID "mapNameWideString"
-#define BYTEARRMAPID "mapNameByteArrey"
-#define INT64MAPID "mapNameint64"
-#define UINT64MAPID "mapNameUInt64"
-#define VECTOR2MAPID "mapNamevector2"
-#define VECTOR3MAPID "mapNameVector3"
-#define VECTOR4MAPID "mapNameVector4"
-#define MATRIX2MAPID "mapNameMatrix2"
-#define MATRIX3MAPID "mapNameMatrix3"
-#define MATRIX4MAPID "mapNameMatrix4"
-#define KEYEDARCHMAPID "mapNameKArch"
-#define INT8MAPID "mapNameInt8"
-#define UINT8MAPID "mapNameUInt8"
-#define INT16MAPID "mapNameInt16"
-#define UINT16MAPID "mapNameUInt16"
-#define FLOAT64MAPID "mapNameFloat64"
-#define COLORMAPID "mapNameColor"
-#define TESTKEY "testKey"
-
 DAVA_TESTCLASS (KeyedArchiveYamlTest)
 {
-    RefPtr<KeyedArchive> loadedArchive;
-    RefPtr<KeyedArchive> testArchive;
+    DAVA::RefPtr<DAVA::KeyedArchive> loadedArchive;
+    DAVA::RefPtr<DAVA::KeyedArchive> testArchive;
 
     KeyedArchiveYamlTest()
-        : loadedArchive(new KeyedArchive())
-        , testArchive(new KeyedArchive())
+        : loadedArchive(new DAVA::KeyedArchive())
+        , testArchive(new DAVA::KeyedArchive())
     {
     }
 
     DAVA_TEST (TestFunction)
     {
+        using namespace DAVA;
+
+        const DAVA::String FILE_PATH("~res:/KeyedArchives/keyed_archive_original.yaml");
+        const DAVA::String GENERATED_FILE_PATH("KeyedArchives/keyed_archive_created.yaml");
+        //const DAVA::String GENERATED_FILE_PATH "~res:/KeyedArchives/keyed_archive_created.yaml"
+        //const DAVA::String GENERATED_FILE_PATH "/Users/user/Documents/work/gitHub/dava.framework/Projects/UnitTests/Data/KeyedArchives/keyed_archive_created.yaml"
+
+        const DAVA::String BOOLMAPID("mapNamebool");
+        const DAVA::String INT32MAPID("mapNameint32");
+        const DAVA::String UINT32MAPID("mapNameUInt32");
+        const DAVA::String FLOATMAPID("mapNamefloat");
+        const DAVA::String STRINGMAPID("mapNameString");
+        const DAVA::String WSTRINGMAPID("mapNameWideString");
+        const DAVA::String BYTEARRMAPID("mapNameByteArrey");
+        const DAVA::String INT64MAPID("mapNameint64");
+        const DAVA::String UINT64MAPID("mapNameUInt64");
+        const DAVA::String VECTOR2MAPID("mapNamevector2");
+        const DAVA::String VECTOR3MAPID("mapNameVector3");
+        const DAVA::String VECTOR4MAPID("mapNameVector4");
+        const DAVA::String MATRIX2MAPID("mapNameMatrix2");
+        const DAVA::String MATRIX3MAPID("mapNameMatrix3");
+        const DAVA::String MATRIX4MAPID("mapNameMatrix4");
+        const DAVA::String KEYEDARCHMAPID("mapNameKArch");
+        const DAVA::String INT8MAPID("mapNameInt8");
+        const DAVA::String UINT8MAPID("mapNameUInt8");
+        const DAVA::String INT16MAPID("mapNameInt16");
+        const DAVA::String UINT16MAPID("mapNameUInt16");
+        const DAVA::String FLOAT64MAPID("mapNameFloat64");
+        const DAVA::String COLORMAPID("mapNameColor");
+        const DAVA::String TESTKEY("testKey");
+
         bool loaded = false;
 
         loadedArchive->DeleteAllKeys();
@@ -102,5 +100,59 @@ DAVA_TESTCLASS (KeyedArchiveYamlTest)
         TEST_VERIFY(variantFloatPtr == variantStringPtr);
         TEST_VERIFY(variantPtr == variantStringPtr);
         TEST_VERIFY(variant.GetType() == VariantType::TYPE_NONE);
+    }
+
+    DAVA_TEST (CheckCopy)
+    {
+        using namespace DAVA;
+
+        KeyedArchive* arc1root = new KeyedArchive();
+
+        const char* keySub = "sub";
+        const char* keyUrl = "url";
+        const char* keyInt = "i";
+        const char* keyFloat = "d";
+
+        const char* valueUrl = "https://any.com";
+        const int64 valueInt = 42LL;
+        const double valueFloat64 = 100.500;
+
+        {
+            KeyedArchive* arc2sub = new KeyedArchive();
+            arc2sub->SetString(keyUrl, valueUrl);
+            arc2sub->SetInt64(keyInt, valueInt);
+            arc2sub->SetFloat64(keyFloat, valueFloat64);
+
+            arc1root->SetArchive(keySub, arc2sub);
+
+            SafeRelease(arc2sub);
+        }
+
+        {
+            KeyedArchive* arc2sub = arc1root->GetArchive(keySub);
+            TEST_VERIFY(arc2sub != nullptr);
+            String cs = arc2sub->GetString(keyUrl);
+            TEST_VERIFY(cs == valueUrl);
+            int64 i = arc2sub->GetInt64(keyInt);
+            TEST_VERIFY(i == valueInt);
+            float64 f = arc2sub->GetFloat64(keyFloat);
+            TEST_VERIFY(f == valueFloat64);
+
+            // try call operator= for save keyedArchive
+            arc1root->SetArchive(keySub, arc2sub);
+        }
+        // then check again all values
+        {
+            KeyedArchive* arc2sub = arc1root->GetArchive(keySub);
+            TEST_VERIFY(arc2sub != nullptr);
+            String cs = arc2sub->GetString(keyUrl);
+            TEST_VERIFY(cs == valueUrl);
+            int64 i = arc2sub->GetInt64(keyInt);
+            TEST_VERIFY(i == valueInt);
+            float64 f = arc2sub->GetFloat64(keyFloat);
+            TEST_VERIFY(f == valueFloat64);
+        }
+
+        SafeRelease(arc1root);
     }
 };
