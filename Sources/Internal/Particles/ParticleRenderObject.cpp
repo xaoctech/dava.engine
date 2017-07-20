@@ -128,9 +128,9 @@ void ParticleRenderObject::PrepareRenderData(Camera* camera)
         if (!CheckGroup(group))
             continue; // If no material was set up, or empty group, or layer rendering is disabled or sprite is removed - don't draw anyway
 
-        bool isLayerTypesNotTheSame = CheckIfSimpleParticle(itGroupStart->layer) != CheckIfSimpleParticle(itGroupCurr->layer);
+        bool isLayerTypesDifferent = CheckIfSimpleParticle(itGroupStart->layer) != CheckIfSimpleParticle(itGroupCurr->layer);
 
-        if (itGroupStart->material != itGroupCurr->material || isLayerTypesNotTheSame)
+        if (itGroupStart->material != itGroupCurr->material || isLayerTypesDifferent)
         {
             if (itGroupStart->layer->type != ParticleLayer::TYPE_PARTICLE_STRIPE)
                 AppendParticleGroup(itGroupStart, itGroupCurr, particlesInGroup, camera->GetDirection(), basisVectors);
@@ -143,10 +143,10 @@ void ParticleRenderObject::PrepareRenderData(Camera* camera)
     }
     if (itGroupStart != effectData->groups.end())
     {
-        if (itGroupStart->layer->type != ParticleLayer::TYPE_PARTICLE_STRIPE)
-            AppendParticleGroup(itGroupStart, effectData->groups.end(), particlesInGroup, camera->GetDirection(), basisVectors);
-        else
+        if (itGroupStart->layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE)
             AppendStripeParticle(itGroupStart, effectData->groups.end(), camera, stripeBasisVectors);
+        else
+            AppendParticleGroup(itGroupStart, effectData->groups.end(), particlesInGroup, camera->GetDirection(), basisVectors);
     }
 }
 
