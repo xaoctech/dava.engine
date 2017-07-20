@@ -372,7 +372,7 @@ void WindowImpl::OnNativeGesture(QNativeGestureEvent* qtEvent)
 
 void WindowImpl::OnKeyPressed(QKeyEvent* qtEvent)
 {
-    const uint32 virtualKey = qtEvent->nativeVirtualKey();
+    uint32 virtualKey = qtEvent->nativeVirtualKey();
     uint32 scancodeKey = 0;
     
 #if defined(Q_OS_WIN)
@@ -387,7 +387,15 @@ void WindowImpl::OnKeyPressed(QKeyEvent* qtEvent)
         scancodeKey |= 0xE000;
     }
 #elif defined(Q_OS_OSX)
-    scancodeKey = ConvertQtKeyToSystemScanCode(qtEvent->key());
+    // QtKeyEvent::nativeScancode does not work on macOS,
+    // QtKeyEvent::nativeVirtualKey and ConvertQtKeyToSystemScanCode return kVK_* value which is exactly what we need
+
+    if (virtualKey == 0)
+    {
+        virtualKey = ConvertQtKeyToSystemScanCode(qtEvent->key());
+    }
+
+    scancodeKey = virtualKey;
 #else
 #error "Unsupported platform"
 #endif
@@ -417,7 +425,7 @@ void WindowImpl::OnKeyReleased(QKeyEvent* qtEvent)
         return;
     }
 
-    const uint32 virtualKey = qtEvent->nativeVirtualKey();
+    uint32 virtualKey = qtEvent->nativeVirtualKey();
     uint32 scancodeKey = 0;
     
 #if defined(Q_OS_WIN)
@@ -432,7 +440,15 @@ void WindowImpl::OnKeyReleased(QKeyEvent* qtEvent)
         scancodeKey |= 0xE000;
     }
 #elif defined(Q_OS_OSX)
-    scancodeKey = ConvertQtKeyToSystemScanCode(qtEvent->key());
+    // QtKeyEvent::nativeScancode does not work on macOS,
+    // QtKeyEvent::nativeVirtualKey and ConvertQtKeyToSystemScanCode return kVK_* value which is exactly what we need
+
+    if (virtualKey == 0)
+    {
+        virtualKey = ConvertQtKeyToSystemScanCode(qtEvent->key());
+    }
+
+    scancodeKey = virtualKey;
 #else
 #error "Unsupported platform"
 #endif
