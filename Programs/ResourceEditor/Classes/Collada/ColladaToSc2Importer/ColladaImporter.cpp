@@ -241,7 +241,7 @@ void ColladaImporter::ImportSkeleton(ColladaSceneNode* colladaNode, Entity* node
         joint.bindTransform = isRootJoint ? jointNode->AccumulateTransformUptoFarParent(colladaNode->scene->rootNode) : jointNode->localTransform;
         joint.bindTransformInv = colladaJoint.inverse0;
 
-        joint.bbox.Empty();
+        joint.bbox = AABBox3(Vector3(), Vector3());
     }
 
     //TODO: *Skinning* calc bounding sphere instead bbox?
@@ -436,11 +436,9 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
         uint32 signature = AnimationChannel::ANIMATION_CHANNEL_DATA_SIGNATURE;
         uint8 dimension = 0;
         uint8 interpolation = 0;
-        uint8 pad1[2];
+        uint16 compression = 0;
         uint32 key_count = 0;
     } channelHeader;
-    channelHeader.pad0[0] = channelHeader.pad0[1] = channelHeader.pad0[2] = 0;
-    channelHeader.pad1[0] = channelHeader.pad1[1] = channelHeader.pad1[2] = 0;
 
     uint32 zeroU4 = 0;
     for (auto canimation : colladaScene->colladaAnimations)
@@ -451,11 +449,7 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
         {
             Vector<uint8> animationData;
 
-            WriteToBuffer(animationData, &zeroU4); //TODO: *Skinning* compression flags
-
             WriteToBuffer(animationData, &canimation->duration);
-
-            WriteToBuffer(animationData, &zeroU4); //TODO: *Skinning* events count
 
             uint32 nodeCount = uint32(canimation->animations.size());
             WriteToBuffer(animationData, &nodeCount);
@@ -535,7 +529,7 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
 
                 //Write scale channel
                 {
-                    channelHeader.dimension = 3;
+                    channelHeader.dimension = 1;
                     channelHeader.interpolation = uint8(AnimationChannel::INTERPOLATION_LINEAR);
                     channelHeader.target = AnimationTrack::CHANNEL_TARGET_SCALE;
                     WriteToBuffer(animationData, &channelHeader);
@@ -544,12 +538,14 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
                     {
                         const SceneNodeAnimationKey& key = animationKeys[k];
                         WriteToBuffer(animationData, &key.time);
-                        WriteToBuffer(animationData, &key.scale);
+                        WriteToBuffer(animationData, &key.scale.x);
                     }
                 }
 
                 SafeDeleteArray(animationKeysCopy);
             }
+
+            WriteToBuffer(animationData, &zeroU4); //TODO: *Skinning* events count
 
             uint32 animationDataSize = uint32(animationData.size());
 

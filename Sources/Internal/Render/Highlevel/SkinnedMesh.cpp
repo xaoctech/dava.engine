@@ -90,9 +90,10 @@ void SkinnedMesh::RecalcBoundingBox()
 
 void SkinnedMesh::BindDynamicParameters(Camera* camera, RenderBatch* batch)
 {
-    if (!jointTargets.empty())
+    auto found = jointTargetsData.find(batch);
+    if (found != jointTargetsData.end())
     {
-        const JointTargetsData& data = jointTargetsData[batch];
+        const JointTargetsData& data = found->second;
 
         Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_JOINTS_COUNT, &data.jointsDataCount, reinterpret_cast<pointer_size>(&data.jointsDataCount));
         Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_JOINT_POSITIONS, data.positions.data(), reinterpret_cast<pointer_size>(data.positions.data()));
@@ -110,7 +111,11 @@ void SkinnedMesh::PrepareToRender(Camera* camera)
 
         for (RenderBatch* b : activeRenderBatchArray)
         {
-            JointTargetsData& data = jointTargetsData[b];
+            auto found = jointTargetsData.find(b);
+            if (found == jointTargetsData.end())
+                continue;
+
+            JointTargetsData& data = found->second;
             for (uint32 j = 0; j < data.jointsDataCount; ++j)
             {
                 uint32 transformIndex = jointTargets[b][j];
