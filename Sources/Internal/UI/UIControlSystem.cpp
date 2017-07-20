@@ -39,7 +39,7 @@ UIControlSystem::UIControlSystem()
     AddSystem(std::make_unique<UIUpdateSystem>());
     AddSystem(std::make_unique<UIRichContentSystem>());
     AddSystem(std::make_unique<UIStyleSheetSystem>());
-    AddSystem(std::make_unique<UITextSystem>());
+    AddSystem(std::make_unique<UITextSystem>()); // Must be before UILayoutSystem
     AddSystem(std::make_unique<UILayoutSystem>());
     AddSystem(std::make_unique<UIScrollSystem>());
     AddSystem(std::make_unique<UIScrollBarLinkSystem>());
