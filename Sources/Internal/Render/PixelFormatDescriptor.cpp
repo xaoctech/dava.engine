@@ -1,4 +1,5 @@
 #include "Render/PixelFormatDescriptor.h"
+#include "Render/Image/Image.h"
 #include "Utils/Utils.h"
 #include "Render/Renderer.h"
 
