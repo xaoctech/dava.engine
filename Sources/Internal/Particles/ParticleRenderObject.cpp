@@ -474,7 +474,7 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
 
     for (auto it = begin; it != end; ++it)
     {
-        const ParticleGroup& group = *it;
+        ParticleGroup& group = *it;
         if (!CheckGroup(group))
             continue; //if no material was set up, or empty group, or layer rendering is disabled or sprite is removed - don't draw anyway
 
@@ -491,7 +491,7 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
         Particle* currentParticle = group.head;
         while (currentParticle)
         {
-            StripeData& data = currentParticle->stripe;
+            StripeData& data = group.stripe;
             if (!data.isActive)
             {
                 currentParticle = currentParticle->next;

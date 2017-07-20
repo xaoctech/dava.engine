@@ -630,7 +630,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
 void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& effectData, ParticleGroup& group, float32 dt, AABBox3& bbox, Vector<Vector3>& currForceValues, int32 forcesCount, bool isActive)
 {
     ParticleLayer* layer = group.layer;
-    StripeData& data = particle->stripe;
+    StripeData& data = group.stripe;
     Vector3 prevBasePosition = data.baseNode.position;
     data.baseNode.position = particle->position;
     data.isActive = isActive;
