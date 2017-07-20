@@ -26,8 +26,8 @@ dava_add_definitions       (
 )
 
 list(APPEND DAVA_COMPONENTS "Sound")
-list(APPEND DAVA_COMPONENTS "PhysicsModule")
-list(APPEND DAVA_COMPONENTS "PhysicsDebugModule")
+# list(APPEND DAVA_COMPONENTS "PhysicsModule")
+# list(APPEND DAVA_COMPONENTS "PhysicsDebugModule")
 list(APPEND DAVA_COMPONENTS DAVA_PLATFORM_QT)
 list(APPEND DAVA_COMPONENTS DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME)
 list(APPEND DAVA_COMPONENTS DAVA_DISABLE_AUTOTESTS)
@@ -43,7 +43,7 @@ find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS})
 find_package( QtTools REQUIRED )
 find_package( TArc REQUIRED )
 find_package( RemoteTool REQUIRED )
-find_package( EditorPhysics REQUIRED )
+# find_package( EditorPhysics REQUIRED )
 
 #
 
