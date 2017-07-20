@@ -325,8 +325,13 @@ void SceneDumper::DumpSlot(DAVA::SlotComponent* slot, DAVA::Set<DAVA::FilePath>&
     }
 }
 
-void SceneDumper::DumpAnimations(DAVA::MotionComponent* motion, DAVA::Set<DAVA::FilePath>& links) const
+void SceneDumper::DumpAnimations(DAVA::MotionComponent* motionComponent, DAVA::Set<DAVA::FilePath>& links) const
 {
-    FilePath animationPath = motion->GetSimpleMotionAnimationPath();
-    links.insert(animationPath.GetAbsolutePathname());
+    const DAVA::MotionComponent::SimpleMotion* motion = motionComponent->GetSimpleMotion();
+    if (motion)
+    {
+        const FilePath& animationPath = motion->GetAnimationPath();
+        if (!animationPath.IsEmpty())
+            links.insert(animationPath.GetAbsolutePathname());
+    }
 }

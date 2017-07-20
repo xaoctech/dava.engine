@@ -358,11 +358,15 @@ void CollectAnimationClips(DAVA::Scene* scene, const DAVA::FilePath& dataSourceF
         for (uint32 i = 0; i < componentCount; ++i)
         {
             MotionComponent* motionComponent = static_cast<MotionComponent*>(entity->GetComponent(Component::MOTION_COMPONENT, i));
-            FilePath animationPath = motionComponent->GetSimpleMotionAnimationPath();
-            if (!animationPath.IsEmpty())
+            const MotionComponent::SimpleMotion* motion = motionComponent->GetSimpleMotion();
+            if (motion)
             {
-                String relativePath = animationPath.GetRelativePathname(dataSourceFolder);
-                exportedObjects.emplace_back(SceneExporter::eExportedObjectType::OBJECT_SLOT_CONFIG, relativePath);
+                const FilePath& animationPath = motion->GetAnimationPath();
+                if (!animationPath.IsEmpty())
+                {
+                    String relativePath = animationPath.GetRelativePathname(dataSourceFolder);
+                    exportedObjects.emplace_back(SceneExporter::eExportedObjectType::OBJECT_SLOT_CONFIG, relativePath);
+                }
             }
         }
     }
