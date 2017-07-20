@@ -23,15 +23,15 @@
 
 namespace DAVA
 {
-NMaterial* ParticleEffectSystem::GetMaterial(const MaterialData& materialData)
+NMaterial* ParticleEffectSystem::AcquireMaterial(const MaterialData& materialData)
 {
     if (materialData.texture == nullptr) //for superemitter particles eg
         return nullptr;
 
-    for (uint32 i = 0; i < prebultMaterialsVector.size(); ++i)
+    for (uint32 i = 0; i < particlesMaterials.size(); ++i)
     {
-        if (prebultMaterialsVector[i].first == materialData)
-            return prebultMaterialsVector[i].second;
+        if (particlesMaterials[i].first == materialData)
+            return particlesMaterials[i].second;
     }
 
     NMaterial* material = new NMaterial();
@@ -84,7 +84,7 @@ NMaterial* ParticleEffectSystem::GetMaterial(const MaterialData& materialData)
     material->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, materialData.texture);
     material->AddFlag(NMaterialFlagName::FLAG_BLENDING, materialData.blending);
 
-    prebultMaterialsVector.push_back(std::make_pair(materialData, material));
+    particlesMaterials.push_back(std::make_pair(materialData, material));
 
     material->PreBuildMaterial(PASS_FORWARD);
 
@@ -108,7 +108,7 @@ ParticleEffectSystem::ParticleEffectSystem(Scene* scene, bool _is2DMode)
 
 ParticleEffectSystem::~ParticleEffectSystem()
 {
-    for (auto& it : prebultMaterialsVector)
+    for (auto& it : particlesMaterials)
         SafeRelease(it.second);
 
     SafeRelease(particleBaseMaterial);
@@ -166,7 +166,7 @@ void ParticleEffectSystem::PrebuildMaterials(ParticleEffectComponent* component)
                 matData.alphaRemapTexture = alphaRemap;
                 matData.usePerspectiveMapping = layer->usePerspectiveMapping && layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE;
 
-                GetMaterial(matData);
+                AcquireMaterial(matData);
             }
         }
     }
@@ -209,7 +209,7 @@ void ParticleEffectSystem::RunEmitter(ParticleEffectComponent* effect, ParticleE
             matData.alphaRemapTexture = alphaRemap;
             matData.usePerspectiveMapping = layer->usePerspectiveMapping && layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE;
 
-            group.material = GetMaterial(matData);
+            group.material = AcquireMaterial(matData);
         }
 
         effect->effectData.groups.push_back(group);

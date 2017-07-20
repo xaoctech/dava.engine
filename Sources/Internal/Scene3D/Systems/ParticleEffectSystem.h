@@ -98,8 +98,8 @@ private:
 
 private: //materials stuff
     NMaterial* particleBaseMaterial;
-    Vector<std::pair<MaterialData, NMaterial*>> prebultMaterialsVector;
-    NMaterial* GetMaterial(const MaterialData& materialData);
+    Vector<std::pair<MaterialData, NMaterial*>> particlesMaterials;
+    NMaterial* AcquireMaterial(const MaterialData& materialData);
 
     bool allowLodDegrade;
 
@@ -108,7 +108,7 @@ private: //materials stuff
 
 inline const Vector<std::pair<ParticleEffectSystem::MaterialData, NMaterial*>>& ParticleEffectSystem::GetMaterialInstances() const
 {
-    return prebultMaterialsVector;
+    return particlesMaterials;
 }
 
 inline void ParticleEffectSystem::SetAllowLodDegrade(bool allowDegrade)
