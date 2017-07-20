@@ -8,9 +8,6 @@
 
 #include <TArc/DataProcessing/DataListener.h>
 #include <TArc/DataProcessing/DataWrapper.h>
-#include <TArc/Utils/DirtyFrameUpdater.h>
-
-#include <QtTools/Utils/QtDelayedExecutor.h>
 
 #include <Base/Any.h>
 #include <Base/Introspection.h>
@@ -77,7 +74,6 @@ private:
 
     void BindFields();
     void OnCanvasParametersChanged(const DAVA::Any&);
-    void OnDataFieldChanged(const DAVA::Any&);
 
     //IRulerListener
     void OnMousePress(DAVA::float32 position) override;
@@ -174,9 +170,7 @@ private:
     QList<Guide> guides;
 
     GuidesControllerPreferences preferences;
-    DirtyFrameUpdater updater;
-    //we can not use Show inside Update signal
-    QtDelayedExecutor delayedExecutor;
+
     CanvasDataAdapter canvasDataAdapter;
     DAVA::TArc::DataWrapper canvasDataAdapterWrapper;
 };

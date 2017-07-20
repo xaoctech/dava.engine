@@ -25,6 +25,7 @@ void ScaleComboBox::SetupControl()
     setValidator(validator);
 
     connections.AddConnection(this, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), DAVA::MakeFunction(this, &ScaleComboBox::CurrentIndexChanged));
+    connections.AddConnection(this, static_cast<void (QComboBox::*)(int)>(&QComboBox::activated), DAVA::MakeFunction(this, &ScaleComboBox::CurrentIndexChanged));
     connections.AddConnection(lineEdit(), &QLineEdit::editingFinished, DAVA::MakeFunction(this, &ScaleComboBox::EditingFinished));
     setSizeAdjustPolicy(QComboBox::AdjustToContents);
 

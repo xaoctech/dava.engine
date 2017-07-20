@@ -3,10 +3,6 @@
 #include "EditorSystems/BaseEditorSystem.h"
 #include "UI/Preview/Data/CanvasDataAdapter.h"
 
-#include <TArc/Utils/DirtyFrameUpdater.h>
-#include <TArc/DataProcessing/DataWrapper.h>
-#include <TArc/DataProcessing/DataListener.h>
-
 #include <Base/Introspection.h>
 #include <Math/Vector.h>
 #include <Math/Color.h>
@@ -45,15 +41,13 @@ private:
     DAVA::float32 scaleToDisaply;
 };
 
-class PixelGrid : public BaseEditorSystem, DAVA::TArc::DataListener
+class PixelGrid : public BaseEditorSystem
 {
 public:
     PixelGrid(EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* accessor);
     ~PixelGrid() override;
 
 private:
-    void OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;
-
     void InitControls();
 
     void OnVisualSettingsChanged(const DAVA::Any&);
@@ -61,15 +55,10 @@ private:
     bool CanShowGrid() const;
     void UpdateGrid();
 
-    void OnDisplayStateChanged(EditorSystemsManager::eDisplayState currentState, EditorSystemsManager::eDisplayState previousState);
-
     PixelGridPreferences preferences;
 
     DAVA::RefPtr<DAVA::UIControl> vLinesContainer;
     DAVA::RefPtr<DAVA::UIControl> hLinesContainer;
 
-    DirtyFrameUpdater updater;
-
     CanvasDataAdapter canvasDataAdapter;
-    DAVA::TArc::DataWrapper canvasDataAdapterWrapper;
 };

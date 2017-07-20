@@ -1,11 +1,11 @@
 #include "UI/Preview/Guides/GuidesController.h"
 #include "UI/Preview/Guides/GuideLabel.h"
-
-#include "Modules/DocumentsModule/DocumentData.h"
 #include "UI/Preview/Data/CanvasData.h"
 #include "UI/Preview/Data/CentralWidgetData.h"
 
+#include "Modules/DocumentsModule/DocumentData.h"
 #include "Modules/PreferencesModule/PreferencesData.h"
+#include "Modules/UpdateViewsSystemModule/UpdateViewsSystem.h"
 
 #include "QECommands/SetGuidesCommand.h"
 
@@ -13,6 +13,7 @@
 
 #include <QtTools/Updaters/LazyUpdater.h>
 
+#include <UI/UIControlSystem.h>
 #include <Reflection/ReflectedTypeDB.h>
 #include <Logger/Logger.h>
 #include <Preferences/PreferencesStorage.h>
@@ -25,7 +26,8 @@ GuidesController::GuidesController(DAVA::Vector2::eAxis orientation_, DAVA::TArc
     , container(container_)
     , canvasDataAdapter(accessor)
 {
-    updater.SetCallback(DAVA::MakeFunction(this, &GuidesController::SyncGuidesWithValues));
+    UpdateViewsSystem* updateSystem = DAVA::UIControlSystem::Instance()->GetSystem<UpdateViewsSystem>();
+    updateSystem->beforeRender.Connect(this, &GuidesController::SyncGuidesWithValues);
 
     documentDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<DocumentData>());
     preferencesDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<PreferencesData>());
@@ -49,18 +51,6 @@ void GuidesController::BindFields()
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
         fieldDescr.fieldName = DocumentData::displayedRootControlsPropertyName;
         fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnRootControlsChanged));
-    }
-    {
-        FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-        fieldDescr.fieldName = DocumentData::guidesPropertyName;
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnDataFieldChanged));
-    }
-    {
-        FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<PreferencesData>();
-        fieldDescr.fieldName = PreferencesData::guidesEnabledPropertyName;
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnDataFieldChanged));
     }
     {
         FieldDescriptor fieldDescr;
@@ -90,16 +80,9 @@ void GuidesController::BindFields()
 
 void GuidesController::OnCanvasParametersChanged(const DAVA::Any&)
 {
-    updater.MarkDirty();
-
     //canvas parameters can be changed during animation process and guides will not work correctly
     SetDisplayState(NO_DISPLAY);
     DisableDrag();
-}
-
-void GuidesController::OnDataFieldChanged(const DAVA::Any&)
-{
-    updater.MarkDirty();
 }
 
 void GuidesController::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
@@ -367,15 +350,11 @@ void GuidesController::SyncGuidesWithValues()
         guide.text->SetValue(value);
         MoveGuide(value, guide);
     }
-
-    //we can not use QWidget::show inside this SyncGuidesWithValues method, because it can be called by FrameUpdater and will cause processFrames inside another frame
-    delayedExecutor.DelayedExecute([this]() {
-        for (Guide& guide : guides)
-        {
-            guide.Show();
-            guide.Raise();
-        }
-    });
+    for (Guide& guide : guides)
+    {
+        guide.Show();
+        guide.Raise();
+    }
 }
 
 PackageNode::AxisGuides::iterator GuidesController::GetNearestValuePtr(DAVA::float32 position)

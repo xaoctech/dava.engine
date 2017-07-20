@@ -3,10 +3,12 @@
 
 #include "UI/Preview/Data/CanvasData.h"
 #include "UI/Preview/Data/CentralWidgetData.h"
+#include "Modules/UpdateViewsSystemModule/UpdateViewsSystem.h"
 
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/DataProcessing/DataContext.h>
 
+#include <UI/UIControlSystem.h>
 #include <UI/UIEvent.h>
 #include <UI/UIControl.h>
 
@@ -14,10 +16,10 @@ EditorCanvas::EditorCanvas(EditorSystemsManager* parent, DAVA::TArc::ContextAcce
     : BaseEditorSystem(parent, accessor)
     , canvasDataAdapter(accessor)
 {
-    updater.SetCallback(DAVA::MakeFunction(this, &EditorCanvas::UpdateMovableControlState));
+    UpdateViewsSystem* updateSystem = DAVA::UIControlSystem::Instance()->GetSystem<UpdateViewsSystem>();
+    updateSystem->beforeRender.Connect(this, &EditorCanvas::UpdateMovableControlState);
 
     canvasDataAdapterWrapper = accessor->CreateWrapper([this](const DAVA::TArc::DataContext*) { return DAVA::Reflection::Create(&canvasDataAdapter); });
-    canvasDataAdapterWrapper.SetListener(this);
 }
 
 bool EditorCanvas::CanProcessInput(DAVA::UIEvent* currentInput) const
@@ -132,16 +134,6 @@ EditorSystemsManager::eDragState EditorCanvas::RequireNewState(DAVA::UIEvent* cu
     }
     bool inDragScreenState = isMouseMidButtonPressed || isSpacePressed;
     return inDragScreenState ? EditorSystemsManager::DragScreen : EditorSystemsManager::NoDrag;
-}
-
-void EditorCanvas::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
-{
-    bool movableControlPositionChanged = std::find(fields.begin(), fields.end(), CanvasDataAdapter::movableControlPositionPropertyName) != fields.end();
-    bool scaleChanged = std::find(fields.begin(), fields.end(), CanvasDataAdapter::scalePropertyName) != fields.end();
-    if (movableControlPositionChanged || scaleChanged)
-    {
-        updater.MarkDirty();
-    }
 }
 
 DAVA::float32 EditorCanvas::GetScaleFromWheelEvent(DAVA::int32 ticksCount) const

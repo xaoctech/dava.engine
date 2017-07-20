@@ -1,5 +1,7 @@
 #include "Application/QEApplication.h"
 #include "Application/QEGlobal.h"
+
+#include "Modules/UpdateViewsSystemModule/UpdateViewsSystemModule.h"
 #include "Modules/LegacySupportModule/LegacySupportModule.h"
 #include "Classes/Application/ReflectionExtensions.h"
 
@@ -123,6 +125,7 @@ QString QEApplication::GetInstanceKey() const
 void QEApplication::CreateModules(DAVA::TArc::Core* tarcCore) const
 {
     Q_INIT_RESOURCE(QtToolsResources);
+    tarcCore->CreateModule<UpdateViewsSystemModule>();
     tarcCore->CreateModule<LegacySupportModule>();
 
     for (const DAVA::ReflectedType* type : DAVA::TArc::ModuleCollection::Instance()->GetGuiModules())
