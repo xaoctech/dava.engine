@@ -38,15 +38,11 @@ KeyedArchive::KeyedArchive(const KeyedArchive& arc)
 
 KeyedArchive& KeyedArchive::operator=(const KeyedArchive& arc)
 {
-    if (this != &arc)
+    DeleteAllKeys();
+    for (const auto& obj : arc.GetArchieveData())
     {
-        DeleteAllKeys();
-        for (const auto& obj : arc.GetArchieveData())
-        {
-            SetVariant(obj.first, *obj.second);
-        }
+        SetVariant(obj.first, *obj.second);
     }
-
     return *this;
 }
 
