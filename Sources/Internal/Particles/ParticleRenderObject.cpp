@@ -260,7 +260,7 @@ void ParticleRenderObject::AppendRenderBatch(NMaterial* material, uint32 indexCo
 
 void ParticleRenderObject::AppendRenderBatch(NMaterial* material, uint32 indexCount, uint32 vertexLayout, const DynamicBufferAllocator::AllocResultVB& vBuffer, const rhi::HIndexBuffer iBuffer, uint32 startIndex)
 {
-    DVASSERT(indexCount);
+    DVASSERT(indexCount > 0);
 
     //now we need to create batch
     if (currRenderBatchId >= renderBatchCache.size())
@@ -364,10 +364,8 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
                 float32 fresnelToAlpha = 0.0f;
                 if (begin->layer->useFresnelToAlpha)
                 {
-                    Vector3 viewNormal;
-                    float32 dot = 0.0f;
-                    viewNormal = left.CrossProduct(top);
-                    dot = cameraDirection.DotProduct(viewNormal);
+                    Vector3 viewNormal = left.CrossProduct(top);
+                    float32 dot = cameraDirection.DotProduct(viewNormal);
                     dot = 1.0f - Abs(dot);
                     fresnelToAlpha = FresnelShlick(dot, group.layer->fresnelToAlphaBias, group.layer->fresnelToAlphaPower);
                 }
@@ -507,6 +505,8 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
 
             StripeNode& base = data.baseNode;
             List<StripeNode>& nodes = data.stripeNodes;
+            if (nodes.empty())
+                break;
 
             int32 vCountInBasis = static_cast<int32>((nodes.size() + 1) * 2);
             int32 vCount = vCountInBasis * basisCount;
@@ -521,8 +521,6 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
 
             for (int32 i = 0; i < basisCount; i++)
             {
-                if (nodes.empty())
-                    return;
                 float32 height = nodes.back().distanceFromBase;
                 Vector3 basisVector;
                 if ((group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING_STRIPE_SPHERICAL) && i == basisCount - 1)
