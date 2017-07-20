@@ -19,6 +19,7 @@ public:
         Texture* flowmap = nullptr;
         Texture* noise = nullptr;
         Texture* alphaRemapTexture = nullptr;
+        eBlending blending = BLENDING_ALPHABLEND;
         bool enableFog = false;
         bool enableFrameBlend = false;
         bool enableFlow = false;
@@ -29,7 +30,6 @@ public:
         bool enableAlphaRemap = false;
         bool usePerspectiveMapping = false;
 
-        eBlending blending = BLENDING_ALPHABLEND;
 
         bool operator==(const MaterialData& rhs)
         {
