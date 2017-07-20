@@ -43,16 +43,16 @@ void UITextSystem::Process(float32 elapsedTime)
 
 void UITextSystem::ApplyData(UITextComponent* component)
 {
-    UITextSystemLink* link = component->GetLink();
-    UIControlBackground* textBg = link->GetTextBackground();
-    UIControlBackground* shadowBg = link->GetShadowBackground();
-    TextBlock* textBlock = link->GetTextBlock();
-
-    UIControl* control = component->GetControl();
-    DVASSERT(control, "Invalid control poiner!");
-
     if (component->IsModified())
     {
+        UITextSystemLink* link = component->GetLink();
+        UIControlBackground* textBg = link->GetTextBackground();
+        UIControlBackground* shadowBg = link->GetShadowBackground();
+        TextBlock* textBlock = link->GetTextBlock();
+
+        UIControl* control = component->GetControl();
+        DVASSERT(control, "Invalid control poiner!");
+
         component->SetModified(false);
 
         textBg->SetColorInheritType(component->GetColorInheritType());
@@ -139,6 +139,11 @@ void UITextSystem::ForceProcessControl(float32 elapsedTime, UIControl* control)
     if (component)
     {
         ApplyData(component);
+    }
+
+    for (UIControl* c : control->GetChildren())
+    {
+        ForceProcessControl(elapsedTime, c);
     }
 }
 
