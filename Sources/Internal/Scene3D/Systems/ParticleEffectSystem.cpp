@@ -28,10 +28,10 @@ NMaterial* ParticleEffectSystem::AcquireMaterial(const MaterialData& materialDat
     if (materialData.texture == nullptr) //for superemitter particles eg
         return nullptr;
 
-    for (uint32 i = 0; i < particlesMaterials.size(); ++i)
+    for (auto& particlesMaterial : particlesMaterials)
     {
-        if (particlesMaterials[i].first == materialData)
-            return particlesMaterials[i].second;
+        if (particlesMaterial.first == materialData)
+            return particlesMaterial.second;
     }
 
     NMaterial* material = new NMaterial();
@@ -527,7 +527,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
 
             if (group.layer->type != ParticleLayer::TYPE_PARTICLE_STRIPE)
             {
-                UpdateNonStripeParticleData(effect, current, group, overLifeTime, forcesCount, currForceValues, dt, bbox);
+                UpdateRegularParticleData(effect, current, group, overLifeTime, forcesCount, currForceValues, dt, bbox);
             }
 
             if (group.layer->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
@@ -861,7 +861,7 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleEffectComponent* eff
     return particle;
 }
 
-void ParticleEffectSystem::UpdateNonStripeParticleData(ParticleEffectComponent* effect, Particle* particle, const ParticleGroup& group, float32 overLife, int32 forcesCount, Vector<Vector3>& currForceValues, float32 dt, AABBox3& bbox)
+void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* effect, Particle* particle, const ParticleGroup& group, float32 overLife, int32 forcesCount, Vector<Vector3>& currForceValues, float32 dt, AABBox3& bbox)
 {
     float32 currVelocityOverLife = 1.0f;
     if (group.layer->velocityOverLife)
