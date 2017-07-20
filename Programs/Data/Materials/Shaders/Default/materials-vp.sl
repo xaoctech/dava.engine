@@ -59,7 +59,7 @@ vertex_in
     #endif
 
     #if PARTICLES_FRESNEL_TO_ALPHA || PARTICLES_ALPHA_REMAP || PARTICLES_PERSPECTIVE_MAPPING
-        float3 texcoord5 : TEXCOORD5;  // x - fresnel. y - alpha remap. z - presp mapping w.
+        float3 texcoord5 : TEXCOORD5;  // x - fresnel. y - alpha remap. z - perspective mapping w.
     #endif
 
     #if WIND_ANIMATION
