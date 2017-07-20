@@ -1,4 +1,4 @@
-#include "Animation2/JointTransform.h"
+#include "Scene3D/SkeletonAnimation/JointTransform.h"
 #include "Render/Highlevel/SkinnedMesh.h"
 #include "Render/Renderer.h"
 

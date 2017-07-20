@@ -1,6 +1,7 @@
-#include "AnimationClip.h"
-#include "AnimationTrack.h"
 #include "SkeletonAnimation.h"
+
+#include "Animation/AnimationClip.h"
+#include "Animation/AnimationTrack.h"
 
 namespace DAVA
 {

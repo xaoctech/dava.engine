@@ -92,37 +92,37 @@ void AnimationChannel::Advance(float32 dTime, State* state) const
     switch (interpolation)
     {
     case INTERPOLATION_LINEAR:
+    {
+        for (uint32 d = 0; d < dimension; ++d)
         {
-            for (uint32 d = 0; d < dimension; ++d)
-            {
-                float32 v0 = *(KEY_DATA(k0) + d);
-                float32 v1 = *(KEY_DATA(k) + d);
-                state->value[d] = Lerp(v0, v1, t);
-            }
+            float32 v0 = *(KEY_DATA(k0) + d);
+            float32 v1 = *(KEY_DATA(k) + d);
+            state->value[d] = Lerp(v0, v1, t);
         }
+    }
+    break;
+
+    case INTERPOLATION_SPHERICAL_LINEAR:
+    {
+        DVASSERT(dimension == 4); //should be quaternion
+
+        Quaternion q0(KEY_DATA(k0));
+        Quaternion q(KEY_DATA(k));
+        q.Slerp(q0, q, t);
+        q.Normalize();
+
+        Memcpy(state->value, q.data, KEY_DATA_SIZE);
+    }
+    break;
+
+    case INTERPOLATION_BEZIER:
+    {
+        DVASSERT(false);
+    }
+    break;
+
+    default:
         break;
-
-        case INTERPOLATION_SPHERICAL_LINEAR:
-        {
-            DVASSERT(dimension == 4); //should be quaternion
-
-            Quaternion q0(KEY_DATA(k0));
-            Quaternion q(KEY_DATA(k));
-            q.Slerp(q0, q, t);
-            q.Normalize();
-
-            Memcpy(state->value, q.data, KEY_DATA_SIZE);
-        }
-        break;
-
-        case INTERPOLATION_BEZIER:
-        {
-            DVASSERT(false);
-        }
-        break;
-
-        default:
-            break;
     }
 }
 #undef KEY_DATA_SIZE

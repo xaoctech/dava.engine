@@ -330,7 +330,7 @@ void SceneDumper::DumpAnimations(DAVA::MotionComponent* motionComponent, DAVA::S
     const DAVA::MotionComponent::SimpleMotion* motion = motionComponent->GetSimpleMotion();
     if (motion)
     {
-        const FilePath& animationPath = motion->GetAnimationPath();
+        const DAVA::FilePath& animationPath = motion->GetAnimationPath();
         if (!animationPath.IsEmpty())
             links.insert(animationPath.GetAbsolutePathname());
     }

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Animation2/JointTransform.h"
 #include "Base/BaseTypes.h"
+#include "Scene3D/SkeletonAnimation/JointTransform.h"
 
 namespace DAVA
 {

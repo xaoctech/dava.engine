@@ -52,5 +52,4 @@ private:
     };
     Vector<Channel> channels;
 };
-
 }

@@ -1,3 +1,5 @@
+#include "Scene3D/Entity.h"
+#include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/SingleComponents/MotionSingleComponent.h"
 #include "Utils/Utils.h"
 

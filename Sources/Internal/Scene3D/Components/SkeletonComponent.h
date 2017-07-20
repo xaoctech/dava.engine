@@ -1,15 +1,15 @@
 #pragma once
 
-#include "Animation2/AnimationTrack.h"
-#include "Animation2/JointTransform.h"
-#include "Animation2/SkeletonPose.h"
+#include "Animation/AnimationTrack.h"
 #include "Base/BaseTypes.h"
-#include "Reflection/Reflection.h"
-#include "Scene3D/Entity.h"
-#include "Entity/Component.h"
 #include "Debug/DVAssert.h"
-#include "Scene3D/SceneFile/SerializationContext.h"
+#include "Entity/Component.h"
 #include "Math/AABBox3.h"
+#include "Scene3D/Entity.h"
+#include "Scene3D/SceneFile/SerializationContext.h"
+#include "Scene3D/SkeletonAnimation/JointTransform.h"
+#include "Scene3D/SkeletonAnimation/SkeletonPose.h"
+#include "Reflection/Reflection.h"
 
 namespace DAVA
 {
