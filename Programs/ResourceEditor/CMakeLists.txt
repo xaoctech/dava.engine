@@ -25,6 +25,7 @@ dava_add_definitions       (
 -D__DAVAENGINE_COREV2__
 )
 
+list(APPEND DAVA_COMPONENTS "Sound")
 list(APPEND DAVA_COMPONENTS "Physics")
 list(APPEND DAVA_COMPONENTS "PhysicsDebug")
 list(APPEND DAVA_COMPONENTS DAVA_PLATFORM_QT)
