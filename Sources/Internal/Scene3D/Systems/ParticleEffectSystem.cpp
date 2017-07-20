@@ -76,7 +76,7 @@ NMaterial* ParticleEffectSystem::GetMaterial(const MaterialData& materialData)
         material->AddTexture(NMaterialTextureName::TEXTURE_ALPHA_REMAP, materialData.alphaRemapTexture);
     }
 
-    if (materialData.usePerpMapping)
+    if (materialData.usePerspectiveMapping)
     {
         material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_PERSPECTIVE_MAPPING, 1);
     }
@@ -164,7 +164,7 @@ void ParticleEffectSystem::PrebuildMaterials(ParticleEffectComponent* component)
                 matData.blending = layer->blending;
                 matData.enableAlphaRemap = layer->enableAlphaRemap;
                 matData.alphaRemapTexture = alphaRemap;
-                matData.usePerpMapping = layer->usePerspectiveMapping && layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE;
+                matData.usePerspectiveMapping = layer->usePerspectiveMapping && layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE;
 
                 GetMaterial(matData);
             }
@@ -207,7 +207,7 @@ void ParticleEffectSystem::RunEmitter(ParticleEffectComponent* effect, ParticleE
             matData.blending = layer->blending;
             matData.enableAlphaRemap = layer->enableAlphaRemap;
             matData.alphaRemapTexture = alphaRemap;
-            matData.usePerpMapping = layer->usePerspectiveMapping && layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE;
+            matData.usePerspectiveMapping = layer->usePerspectiveMapping && layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE;
 
             group.material = GetMaterial(matData);
         }
@@ -868,20 +868,17 @@ void ParticleEffectSystem::UpdateNonStripeParticleData(ParticleEffectComponent* 
         currVelocityOverLife = group.layer->velocityOverLife->GetValue(overLife);
     particle->position += particle->speed * (currVelocityOverLife * dt);
 
-    float32 currSpinOverLife = 1;
+    float32 currSpinOverLife = 1.0f;
     if (group.layer->spinOverLife)
         currSpinOverLife = group.layer->spinOverLife->GetValue(overLife);
     particle->angle += particle->spin * currSpinOverLife * dt;
 
-    if (forcesCount)
+    Vector3 acceleration(0.0f, 0.0f, 0.0f);
+    for (int32 i = 0; i < forcesCount; ++i)
     {
-        Vector3 acceleration;
-        for (int32 i = 0; i < forcesCount; ++i)
-        {
-            acceleration += (group.layer->forces[i]->forceOverLife) ? (currForceValues[i] * group.layer->forces[i]->forceOverLife->GetValue(overLife)) : currForceValues[i];
-        }
-        particle->speed += acceleration * dt;
+        acceleration += (group.layer->forces[i]->forceOverLife) ? (currForceValues[i] * group.layer->forces[i]->forceOverLife->GetValue(overLife)) : currForceValues[i];
     }
+    particle->speed += acceleration * dt;
 
     if (group.layer->sizeOverLifeXY)
     {

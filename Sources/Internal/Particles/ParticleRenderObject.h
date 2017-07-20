@@ -54,7 +54,7 @@ private:
         FRAME_BLEND = 0,
         FLOW,
         NOISE,
-        FRESNEL_TO_ALPHA_REMAP_PERP_MAPPING
+        FRESNEL_TO_ALPHA_REMAP_PERSPECTIVE_MAPPING
     };
 
     struct LayoutElement

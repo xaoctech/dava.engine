@@ -27,7 +27,7 @@ public:
         bool isNoiseAffectFlow = false;
         bool useFresnelToAlpha = false;
         bool enableAlphaRemap = false;
-        bool usePerpMapping = false;
+        bool usePerspectiveMapping = false;
 
         eBlending blending = BLENDING_ALPHABLEND;
 
@@ -46,7 +46,7 @@ public:
             && blending == rhs.blending
             && enableAlphaRemap == rhs.enableAlphaRemap
             && alphaRemapTexture == rhs.alphaRemapTexture
-            && usePerpMapping == rhs.usePerpMapping;
+            && usePerspectiveMapping == rhs.usePerspectiveMapping;
         }
     };
 

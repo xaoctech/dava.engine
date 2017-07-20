@@ -16,7 +16,7 @@ ParticleRenderObject::ParticleRenderObject(ParticleEffectData* effect)
     layoutsData[1 << FRAME_BLEND] = { rhi::VS_TEXCOORD, 1, rhi::VDT_FLOAT, 3 };
     layoutsData[1 << FLOW] = { rhi::VS_TEXCOORD, 2, rhi::VDT_FLOAT, 4 }; // uv, speed, offset
     layoutsData[1 << NOISE] = { rhi::VS_TEXCOORD, 3, rhi::VDT_FLOAT, 3 }; // uv, scale
-    layoutsData[1 << FRESNEL_TO_ALPHA_REMAP_PERP_MAPPING] = { rhi::VS_TEXCOORD, 5, rhi::VDT_FLOAT, 3 }; // Fresnel, alpha remap from chart, perspective mapping w.
+    layoutsData[1 << FRESNEL_TO_ALPHA_REMAP_PERSPECTIVE_MAPPING] = { rhi::VS_TEXCOORD, 5, rhi::VDT_FLOAT, 3 }; // Fresnel, alpha remap from chart, perspective mapping w.
 
     uint16 numBits = static_cast<uint16>(layoutsData.size());
 
@@ -193,7 +193,7 @@ uint32 ParticleRenderObject::SelectLayout(const ParticleLayer& layer)
     uint32 key = isFramBlendEnabled << static_cast<uint32>(eParticlePropsOffsets::FRAME_BLEND);
     key |= static_cast<uint32>(layer.enableFlow) << static_cast<uint32>(eParticlePropsOffsets::FLOW);
     key |= static_cast<uint32>(layer.enableNoise) << static_cast<uint32>(eParticlePropsOffsets::NOISE);
-    key |= static_cast<uint32>(layer.enableAlphaRemap || (layer.usePerspectiveMapping && layer.type == ParticleLayer::TYPE_PARTICLE_STRIPE) || layer.useFresnelToAlpha) << static_cast<uint32>(eParticlePropsOffsets::FRESNEL_TO_ALPHA_REMAP_PERP_MAPPING);
+    key |= static_cast<uint32>(layer.enableAlphaRemap || (layer.usePerspectiveMapping && layer.type == ParticleLayer::TYPE_PARTICLE_STRIPE) || layer.useFresnelToAlpha) << static_cast<uint32>(eParticlePropsOffsets::FRESNEL_TO_ALPHA_REMAP_PERSPECTIVE_MAPPING);
     return layoutMap[key];
 }
 
