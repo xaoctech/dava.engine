@@ -33,9 +33,9 @@ bool SkeletonComponent::Joint::operator==(const Joint& other) const
     return parentIndex == other.parentIndex &&
     name == other.name &&
     uid == other.uid &&
+    bbox == other.bbox &&
+    bindTransform == other.bindTransform &&
     bindTransformInv == other.bindTransformInv;
-    bindTransform == other.bindTransform&&
-                     bbox == other.bbox;
 }
 
 void SkeletonComponent::SetJoints(const Vector<Joint>& config)
