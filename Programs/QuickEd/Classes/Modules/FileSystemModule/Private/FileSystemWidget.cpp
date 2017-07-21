@@ -156,7 +156,17 @@ void FileSystemWidget::SetResourceDirectory(const QString& path)
 void FileSystemWidget::SelectFile(const QString& filePath)
 {
     DVASSERT(!filePath.isEmpty());
-    treeView->setCurrentIndex(model->index(filePath));
+    QModelIndex index = model->index(filePath);
+    treeView->setCurrentIndex(index);
+
+    //Qt remember expand/collapse state
+    //so if user collapsed items - we need to expand them manually
+    //expanding order doesn't matter
+    while (index.parent().isValid())
+    {
+        index = index.parent();
+        treeView->expand(index);
+    }
 }
 
 //refresh actions by menu invoke pos
