@@ -557,12 +557,10 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatchProvider
         /*
          * Process debug material
          */
-        ScopedPtr<NMaterial> debugMaterial(new NMaterial());
+        ScopedPtr<NMaterial> debugMaterial(material->Clone());
         debugMaterial->SetFXName(FastName("~res:/Materials/GeoDecal.Debug.material"));
-        debugMaterial->SetRuntime(true);
 
-        ScopedPtr<RenderBatch> debugBatch(new RenderBatch());
-        debugBatch->SetPolygonGroup(newPolygonGroup);
+        ScopedPtr<RenderBatch> debugBatch(batch->Clone());
         debugBatch->SetMaterial(debugMaterial);
         debugBatch->UpdateAABBoxFromSource();
         static_cast<GeoDecalRenderBatchProvider*>(batchProvider)->EmplaceRenderBatch(debugBatch, info.lodIndex, info.switchIndex);

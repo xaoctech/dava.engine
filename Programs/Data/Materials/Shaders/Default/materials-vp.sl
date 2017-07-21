@@ -669,10 +669,6 @@ vertex_out vp_main( vertex_in input )
     output.geoDecalCoord = input.geoDecalCoord.xy;
 #endif
 
-#if (GEO_DECAL_DEBUG)
-    output.position.z -= output.position.w / 1024.0;
-#endif
-
     return output;
 }
 
