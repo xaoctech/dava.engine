@@ -9,6 +9,8 @@
 #include <TArc/DataProcessing/DataListener.h>
 #include <TArc/DataProcessing/DataWrapper.h>
 
+#include <QtTools/Utils/QtDelayedExecutor.h>
+
 #include <Base/Any.h>
 #include <Base/Introspection.h>
 #include <Math/Vector.h>
@@ -170,6 +172,9 @@ private:
     QList<Guide> guides;
 
     GuidesControllerPreferences preferences;
+
+    //we can not use Show inside Update signal
+    QtDelayedExecutor delayedExecutor;
 
     CanvasDataAdapter canvasDataAdapter;
     DAVA::TArc::DataWrapper canvasDataAdapterWrapper;
