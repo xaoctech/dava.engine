@@ -673,11 +673,11 @@ Vector3 ParticleRenderObject::GetStripeNormalizedSpeed(const StripeData& data)
 {
     Vector3 baseSpeed = data.baseNode.speed;
     float32 len = baseSpeed.Length();
-    if (Abs(len) < EPSILON)
+    if (len < EPSILON)
     {
         baseSpeed = data.baseNode.position - data.stripeNodes.front().position;
         len = baseSpeed.Length();
-        if (Abs(len) < EPSILON)
+        if (len < EPSILON)
             baseSpeed = Vector3(0.0f, 0.0f, 1.0f);
         else
             baseSpeed /= len;
