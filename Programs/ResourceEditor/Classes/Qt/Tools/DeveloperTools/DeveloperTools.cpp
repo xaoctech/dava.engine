@@ -131,7 +131,7 @@ void DeveloperTools::OnDebugCreateTestHardSkinnedObject()
         polygonGroup->SetCoord(i * 8 + 7, boxes[i] + Vector3(jointBox.max.x, jointBox.min.y, jointBox.max.z));
         for (int32 v = 0; v < 8; v++)
         {
-            polygonGroup->SetJointIndexHard(i * 8 + v, i);
+            polygonGroup->SetHardJointIndex(i * 8 + v, i);
         }
 
         polygonGroup->SetIndex(i * 24 + 0, i * 8 + 0);

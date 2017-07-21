@@ -59,7 +59,7 @@ public:
     inline void GetFlexibility(int32 i, float32& v);
     inline void GetAngle(int32 i, Vector2& v);
 
-    inline void GetJointIndexHard(int32 vIndex, int32& indexValue);
+    inline void GetHardJointIndex(int32 vIndex, int32& indexValue);
     inline void GetJointIndex(int32 vIndex, int32 jIndex, int32& indexValue);
     inline void GetJointWeight(int32 vIndex, int32 jIndex, float32& weightValue);
 
@@ -75,7 +75,7 @@ public:
     inline void SetTexcoord(int32 ti, int32 i, const Vector2& v);
     inline void SetCubeTexcoord(int32 ti, int32 i, const Vector3& v);
 
-    inline void SetJointIndexHard(int32 vIndex, int32 indexValue);
+    inline void SetHardJointIndex(int32 vIndex, int32 indexValue);
     inline void SetJointIndex(int32 vIndex, int32 jIndex, int32 indexValue);
     inline void SetJointWeight(int32 vIndex, int32 jIndex, float32 weightValue);
 
@@ -244,7 +244,7 @@ inline void PolygonGroup::SetAngle(int32 i, const Vector2& _v)
     *v = _v;
 }
 
-inline void PolygonGroup::SetJointIndexHard(int32 vIndex, int32 indexValue)
+inline void PolygonGroup::SetHardJointIndex(int32 vIndex, int32 indexValue)
 {
     float32* v = reinterpret_cast<float32*>(reinterpret_cast<uint8*>(jointIndexHardArray) + vIndex * vertexStride);
     *v = float32(indexValue);
@@ -343,7 +343,7 @@ inline void PolygonGroup::GetAngle(int32 i, Vector2& _v)
     _v = *v;
 }
 
-inline void PolygonGroup::GetJointIndexHard(int32 vIndex, int32& indexValue)
+inline void PolygonGroup::GetHardJointIndex(int32 vIndex, int32& indexValue)
 {
     float32* v = reinterpret_cast<float32*>(reinterpret_cast<uint8*>(jointIndexHardArray) + vIndex * vertexStride);
     indexValue = int32(*v);

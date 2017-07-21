@@ -3,8 +3,6 @@
 #include "CommandLine/Private/SceneConsoleHelper.h"
 #include "Classes/Project/ProjectManagerData.h"
 
-#include "Project/ProjectManagerData.h"
-
 #include "Utils/SceneExporter/SceneExporter.h"
 #include "TArc/Utils/ModuleCollection.h"
 

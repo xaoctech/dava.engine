@@ -30,7 +30,7 @@ public:
 
     void SetSortingOffset(uint32 offset);
 
-    virtual void BindDynamicParameters(Camera* camera);
+    void BindDynamicParameters(Camera* camera, RenderBatch* batch) override;
     virtual void RecalcBoundingBox()
     {
     }

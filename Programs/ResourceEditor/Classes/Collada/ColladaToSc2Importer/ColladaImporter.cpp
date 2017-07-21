@@ -275,7 +275,7 @@ void ColladaImporter::ImportSkeleton(ColladaSceneNode* colladaNode, Entity* node
                 DVASSERT(vertexFormat & EVF_JOINTINDEX_HARD);
 
                 polygonGroup->GetCoord(v, position);
-                polygonGroup->GetJointIndexHard(v, jointIndex);
+                polygonGroup->GetHardJointIndex(v, jointIndex);
                 joints[jointIndex].bbox.AddPoint(position * bindShapeMatrix * joints[jointIndex].bindTransformInv);
             }
         }

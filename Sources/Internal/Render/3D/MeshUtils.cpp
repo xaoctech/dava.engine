@@ -160,7 +160,7 @@ Vector<int32> GetSignificantJoints(PolygonGroup* pg, int32 vertex)
     float32 jWeight = 0.f;
     if (pg->GetFormat() & EVF_JOINTINDEX_HARD) //hard-skinning
     {
-        pg->GetJointIndexHard(vertex, jIndex);
+        pg->GetHardJointIndex(vertex, jIndex);
         result.emplace_back(jIndex);
     }
     else if (pg->GetFormat() & (EVF_JOINTINDEX | EVF_JOINTWEIGHT)) //soft-skinning
@@ -188,9 +188,9 @@ void ReplaceSignificantJoints(PolygonGroup* pg, int32 vertex, const Map<int32, i
     float32 jWeight = 0.f;
     if (pg->GetFormat() & EVF_JOINTINDEX_HARD) //hard-skinning
     {
-        pg->GetJointIndexHard(vertex, jIndex);
+        pg->GetHardJointIndex(vertex, jIndex);
         DVASSERT(jointsMap.count(jIndex) != 0);
-        pg->SetJointIndexHard(vertex, jointsMap.at(jIndex));
+        pg->SetHardJointIndex(vertex, jointsMap.at(jIndex));
     }
     else if (pg->GetFormat() & (EVF_JOINTINDEX | EVF_JOINTWEIGHT)) //soft-skinning
     {
@@ -547,7 +547,7 @@ SkinnedMesh* CreateHardSkinnedMesh(Entity* fromEntity, Vector<SkeletonComponent:
             {
                 int32 newBatchVxIndex = vertexOffset + currentBatchVxIndex;
                 CopyVertex(currentGroup, currentBatchVxIndex, polygonGroup, newBatchVxIndex);
-                polygonGroup->SetJointIndexHard(newBatchVxIndex, data[dataIndex].jointIndex);
+                polygonGroup->SetHardJointIndex(newBatchVxIndex, data[dataIndex].jointIndex);
             }
 
             int32 currentBatchIndexCount = currentGroup->GetIndexCount();
@@ -583,7 +583,7 @@ SkinnedMesh* CreateHardSkinnedMesh(Entity* fromEntity, Vector<SkeletonComponent:
     return newRenderObject;
 }
 
-Vector<std::pair<PolygonGroup*, SkinnedMesh::JointTargets>> MeshUtils::SplitSkinnedMeshGeometry(PolygonGroup* dataSource, uint32 maxJointCount)
+Vector<std::pair<PolygonGroup*, SkinnedMesh::JointTargets>> SplitSkinnedMeshGeometry(PolygonGroup* dataSource, uint32 maxJointCount)
 {
     using namespace MeshUtilsDetails;
 

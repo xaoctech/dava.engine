@@ -38,9 +38,11 @@ void SkinnedMesh::Save(KeyedArchive* archive, SerializationContext* serializatio
     for (uint32 ri = 0; ri < rbCount; ++ri)
     {
         RenderBatch* batch = GetRenderBatch(ri);
-        if (jointTargets.count(batch))
+
+        auto found = jointTargets.find(batch);
+        if (found != jointTargets.end())
         {
-            const JointTargets& targets = jointTargets[batch];
+            const JointTargets& targets = found->second;
 
             uint32 targetsCount = uint32(targets.size());
             archive->SetUInt32(Format("skinnedObject.batch%d.targetsCount", ri), targetsCount);
@@ -111,14 +113,15 @@ void SkinnedMesh::PrepareToRender(Camera* camera)
 
         for (RenderBatch* b : activeRenderBatchArray)
         {
-            auto found = jointTargetsData.find(b);
-            if (found == jointTargetsData.end())
+            auto found = jointTargets.find(b);
+            if (found == jointTargets.end())
                 continue;
 
-            JointTargetsData& data = found->second;
+            const JointTargets& targets = found->second;
+            JointTargetsData& data = jointTargetsData[b];
             for (uint32 j = 0; j < data.jointsDataCount; ++j)
             {
-                uint32 transformIndex = jointTargets[b][j];
+                uint32 transformIndex = targets[j];
                 DVASSERT(transformIndex < skeletonJointCount);
 
                 const JointTransform& finalTransform = skeletonFinalJointTransforms[transformIndex];
