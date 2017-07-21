@@ -519,6 +519,7 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                 Vector3 basisVector;
                 bool isSphericalBasis = (group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING_STRIPE_SPHERICAL) && i == basisCount - 1;
 
+                // We calculating particle basis using only velocity of base vertex. It's good for every real case for now. In the future calculating velocities as (nextNode.position - currentNode.position) can be better.
                 Vector3 stripeSpeed;
                 if (isSphericalBasis || begin->layer->useFresnelToAlpha)
                     stripeSpeed = GetStripeNormalizedSpeed(data);
