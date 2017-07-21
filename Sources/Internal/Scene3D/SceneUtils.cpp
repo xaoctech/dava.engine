@@ -188,7 +188,6 @@ bool CombineEntityLods(Entity* forRootNode)
                     lodRenderObject->RemoveRenderBatch(batch);
                     newMesh->AddRenderBatch(batch, lodNo, -1);
 
-                    const SkinnedMesh::JointTargets* jointTargets = nullptr;
                     if (lodRenderObject->GetType() == RenderObject::TYPE_SKINNED_MESH)
                     {
                         SkinnedMesh* newSkinnedMesh = static_cast<SkinnedMesh*>(newMesh);
@@ -197,7 +196,7 @@ bool CombineEntityLods(Entity* forRootNode)
                         SkinnedMesh::JointTargets targets = lodSkinnedMesh->GetJointTargets(batch);
                         if (!targets.empty())
                         {
-                            newSkinnedMesh->SetJointTargets(batch, *jointTargets);
+                            newSkinnedMesh->SetJointTargets(batch, targets);
                         }
                     }
                 };
