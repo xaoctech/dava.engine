@@ -80,6 +80,7 @@ private:
     int32 CalculateParticleCount(const ParticleGroup& group);
     uint32 SelectLayout(const ParticleLayer& layer);
     void UpdateStripeVertex(float32*& dataPtr, Vector3& position, Vector3& uv, float32* color, ParticleLayer* layer, Particle* particle, float32 fresToAlpha);
+    Vector3 GetStripeNormalizedSpeed(const StripeData& data);
 
     Map<uint32, uint32> layoutMap;
 

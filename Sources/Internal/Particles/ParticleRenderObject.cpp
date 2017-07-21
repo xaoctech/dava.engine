@@ -517,11 +517,15 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
             {
                 float32 height = nodes.back().distanceFromBase;
                 Vector3 basisVector;
-                if ((group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING_STRIPE_SPHERICAL) && i == basisCount - 1)
-                {
-                    basisVector = (base.position - camera->GetPosition()).CrossProduct(base.speed);
-                    basisVector = cameraDirection.CrossProduct(base.speed);
+                bool isSphericalBasis = (group.layer->particleOrientation & ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING_STRIPE_SPHERICAL) && i == basisCount - 1;
 
+                Vector3 stripeSpeed;
+                if (isSphericalBasis || begin->layer->useFresnelToAlpha)
+                    stripeSpeed = GetStripeNormalizedSpeed(data);
+
+                if (isSphericalBasis)
+                {
+                    basisVector = cameraDirection.CrossProduct(stripeSpeed);
                     basisVector.Normalize();
                 }
                 else
@@ -535,17 +539,7 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
                     Vector3 viewNormal;
                     float32 dot = 0.0f;
 
-                    Vector3 dir = currentParticle->speed;
-                    float32 len = dir.Normalize();
-                    if (Abs(len) < EPSILON && nodes.size() > 0)
-                    {
-                        dir = base.position - nodes.front().position;
-                        len = dir.Normalize();
-                        if (Abs(len) < EPSILON)
-                            dir = Vector3(0.0f, 0.0f, 1.0f);
-                    }
-
-                    viewNormal = basisVector.CrossProduct(dir);
+                    viewNormal = basisVector.CrossProduct(stripeSpeed);
 
                     viewNormal.Normalize();
                     dot = cameraDirection.DotProduct(viewNormal);
@@ -673,6 +667,26 @@ void ParticleRenderObject::AppendStripeParticle(List<ParticleGroup>::iterator be
             currentParticle = currentParticle->next;
         }
     }
+}
+
+Vector3 ParticleRenderObject::GetStripeNormalizedSpeed(const StripeData& data)
+{
+    Vector3 baseSpeed = data.baseNode.speed;
+    float32 len = baseSpeed.Length();
+    if (Abs(len) < EPSILON)
+    {
+        baseSpeed = data.baseNode.position - data.stripeNodes.front().position;
+        len = baseSpeed.Length();
+        if (Abs(len) < EPSILON)
+            baseSpeed = Vector3(0.0f, 0.0f, 1.0f);
+        else
+            baseSpeed /= len;
+    }
+    else
+    {
+        baseSpeed /= len;
+    }
+    return baseSpeed;
 }
 
 void ParticleRenderObject::BindDynamicParameters(Camera* camera)
