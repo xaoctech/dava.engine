@@ -87,7 +87,7 @@ void OverdrawTesterRenderObject::RecalculateWorldBoundingBox()
     worldBBox = bbox;
 }
 
-void OverdrawTesterRenderObject::BindDynamicParameters(Camera* camera)
+void OverdrawTesterRenderObject::BindDynamicParameters(Camera* camera, DAVA::RenderBatch* batch)
 {
     DAVA::Renderer::GetDynamicBindings().SetDynamicParam(DAVA::DynamicBindings::PARAM_WORLD, &DAVA::Matrix4::IDENTITY, reinterpret_cast<DAVA::pointer_size>(&DAVA::Matrix4::IDENTITY));
 }
