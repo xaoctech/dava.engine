@@ -379,10 +379,8 @@ void ParticleLayer::UpdateLayerTime(float32 startTime, float32 endTime)
 void ParticleLayer::SetSprite(const FilePath& path)
 {
     spritePath = path;
-    if (type != TYPE_SUPEREMITTER_PARTICLES)
-    {
-        sprite.reset(Sprite::Create(spritePath));
-    }
+    assert(type != TYPE_SUPEREMITTER_PARTICLES);
+    sprite.reset(Sprite::Create(spritePath));
 }
 
 void ParticleLayer::SetPivotPoint(Vector2 pivot)
@@ -395,22 +393,22 @@ void ParticleLayer::SetPivotPoint(Vector2 pivot)
 void ParticleLayer::SetFlowmap(const FilePath& spritePath_)
 {
     flowmapPath = spritePath_;
-    if (type != TYPE_SUPEREMITTER_PARTICLES)
-        flowmap.reset(Sprite::Create(flowmapPath));
+    assert(type != TYPE_SUPEREMITTER_PARTICLES);
+    flowmap.reset(Sprite::Create(flowmapPath));
 }
 
 void ParticleLayer::SetNoise(const FilePath& spritePath_)
 {
     noisePath = spritePath_;
-    if (type != TYPE_SUPEREMITTER_PARTICLES)
-        noise.reset(Sprite::Create(noisePath));
+    assert(type != TYPE_SUPEREMITTER_PARTICLES);
+    noise.reset(Sprite::Create(noisePath));
 }
 
 void ParticleLayer::SetAlphaRemap(const FilePath& spritePath_)
 {
     alphaRemapPath = spritePath_;
-    if (type != TYPE_SUPEREMITTER_PARTICLES)
-        alphaRemapSprite.reset(Sprite::Create(alphaRemapPath));
+    assert(type != TYPE_SUPEREMITTER_PARTICLES);
+    alphaRemapSprite.reset(Sprite::Create(alphaRemapPath));
 }
 
 void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* node, bool preserveInheritPosition)
