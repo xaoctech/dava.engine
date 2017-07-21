@@ -49,8 +49,7 @@ private:
 
     //ClientNetProxyListener
     void OnAddedToCache(const AssetCache::CacheItemKey& key, bool added) override;
-    void OnReceivedFromCache(const AssetCache::CacheItemKey& key, uint64 dataSize, uint32 numOfChunks) override;
-    void OnReceivedFromCache(const AssetCache::CacheItemKey& key, uint32 chunkNumber, const Vector<uint8>& chunkData) override;
+    void OnReceivedFromCache(const AssetCache::CacheItemKey& key, uint64 dataSize, uint32 numOfChunks, uint32 chunkNumber, const Vector<uint8>& chunkData) override;
     void OnRemovedFromCache(const AssetCache::CacheItemKey& key, bool removed) override;
     void OnCacheCleared(bool cleared) override;
     void OnServerStatusReceived() override;

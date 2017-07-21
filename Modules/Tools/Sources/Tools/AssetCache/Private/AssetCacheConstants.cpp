@@ -18,10 +18,8 @@ String PacketToString(ePacketID packet)
     static const Vector<std::pair<ePacketID, String>> packetStrings =
     { {
     { ePacketID::PACKET_UNKNOWN, "PACKET_UNKNOWN" },
-    { ePacketID::PACKET_ADD_REQUEST, "PACKET_ADD_REQUEST" },
     { ePacketID::PACKET_ADD_CHUNK_REQUEST, "PACKET_ADD_CHUNK_REQUEST" },
     { ePacketID::PACKET_ADD_RESPONSE, "PACKET_ADD_RESPONSE" },
-    { ePacketID::PACKET_GET_REQUEST, "PACKET_GET_REQUEST" },
     { ePacketID::PACKET_GET_RESPONSE, "PACKET_GET_RESPONSE" },
     { ePacketID::PACKET_GET_CHUNK_REQUEST, "PACKET_GET_CHUNK_REQUEST" },
     { ePacketID::PACKET_GET_CHUNK_RESPONSE, "PACKET_GET_CHUNK_RESPONSE" },

@@ -74,11 +74,11 @@ private:
 };
 
 //////////////////////////////////////////////////////////////////////////
-class DataInfoPacket : public CachePacket
+class DataChunkPacket : public CachePacket
 {
 public:
-    DataInfoPacket(ePacketID packetId);
-    DataInfoPacket(ePacketID packetId, const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks);
+    DataChunkPacket(ePacketID packetId);
+    DataChunkPacket(ePacketID packetId, const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks, uint32 chunkNumber, const Vector<uint8>& chunkData);
 
 protected:
     bool DeserializeFromBuffer(File* file) override;
@@ -87,30 +87,8 @@ public:
     CacheItemKey key;
     uint64 dataSize = 0;
     uint32 numOfChunks = 0;
-};
-
-//////////////////////////////////////////////////////////////////////////
-class DataChunkPacket : public CachePacket
-{
-public:
-    DataChunkPacket(ePacketID packetId);
-    DataChunkPacket(ePacketID packetId, const CacheItemKey& key, uint32 chunkNumber, const Vector<uint8>& chunkData);
-
-protected:
-    bool DeserializeFromBuffer(File* file) override;
-
-public:
-    CacheItemKey key;
     uint32 chunkNumber = 0;
     Vector<uint8> chunkData;
-};
-
-//////////////////////////////////////////////////////////////////////////
-class AddRequestPacket : public DataInfoPacket
-{
-public:
-    AddRequestPacket();
-    AddRequestPacket(const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks);
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -118,7 +96,7 @@ class AddChunkRequestPacket : public DataChunkPacket
 {
 public:
     AddChunkRequestPacket();
-    AddChunkRequestPacket(const CacheItemKey& key, uint32 chunkNumber, const Vector<uint8>& chunkData);
+    AddChunkRequestPacket(const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks, uint32 chunkNumber, const Vector<uint8>& chunkData);
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -134,28 +112,6 @@ protected:
 public:
     CacheItemKey key;
     bool added = false;
-};
-
-//////////////////////////////////////////////////////////////////////////
-class GetRequestPacket : public CachePacket
-{
-public:
-    GetRequestPacket();
-    GetRequestPacket(const CacheItemKey& key);
-
-protected:
-    bool DeserializeFromBuffer(File* buffer) override;
-
-public:
-    CacheItemKey key;
-};
-
-//////////////////////////////////////////////////////////////////////////
-class GetResponsePacket : public DataInfoPacket
-{
-public:
-    GetResponsePacket();
-    GetResponsePacket(const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks);
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -178,7 +134,7 @@ class GetChunkResponsePacket : public DataChunkPacket
 {
 public:
     GetChunkResponsePacket();
-    GetChunkResponsePacket(const CacheItemKey& key, uint32 chunkNumber, const Vector<uint8>& chunkData);
+    GetChunkResponsePacket(const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks, uint32 chunkNumber, const Vector<uint8>& chunkData);
 };
 
 //////////////////////////////////////////////////////////////////////////

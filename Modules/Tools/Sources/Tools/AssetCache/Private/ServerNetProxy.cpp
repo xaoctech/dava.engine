@@ -55,22 +55,10 @@ void ServerNetProxy::OnPacketReceived(Net::IChannel* channel, const void* packet
 
             switch (packet->type)
             {
-            case PACKET_ADD_REQUEST:
-            {
-                AddRequestPacket* p = static_cast<AddRequestPacket*>(packet.get());
-                listener->OnAddToCache(channel, p->key, p->dataSize, p->numOfChunks);
-                return;
-            }
             case PACKET_ADD_CHUNK_REQUEST:
             {
                 AddChunkRequestPacket* p = static_cast<AddChunkRequestPacket*>(packet.get());
-                listener->OnAddChunkToCache(channel, p->key, p->chunkNumber, p->chunkData);
-                return;
-            }
-            case PACKET_GET_REQUEST:
-            {
-                GetRequestPacket* p = static_cast<GetRequestPacket*>(packet.get());
-                listener->OnRequestedFromCache(channel, p->key);
+                listener->OnAddChunkToCache(channel, p->key, p->dataSize, p->numOfChunks, p->chunkNumber, p->chunkData);
                 return;
             }
             case PACKET_GET_CHUNK_REQUEST:
@@ -161,22 +149,11 @@ bool ServerNetProxy::SendCleared(Net::IChannel* channel, bool cleared)
     return false;
 }
 
-bool ServerNetProxy::SendDataInfo(Net::IChannel* channel, const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks)
+bool ServerNetProxy::SendChunk(Net::IChannel* channel, const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks, uint32 chunkNumber, const Vector<uint8>& chunkData)
 {
     if (channel)
     {
-        GetResponsePacket packet(key, dataSize, numOfChunks);
-        return packet.SendTo(channel);
-    }
-
-    return false;
-}
-
-bool ServerNetProxy::SendChunk(Net::IChannel* channel, const CacheItemKey& key, uint32 chunkNumber, const Vector<uint8>& chunkData)
-{
-    if (channel)
-    {
-        GetChunkResponsePacket packet(key, chunkNumber, chunkData);
+        GetChunkResponsePacket packet(key, dataSize, numOfChunks, chunkNumber, chunkData);
         return packet.SendTo(channel);
     }
 

@@ -16,55 +16,7 @@ void ServerLogics::Init(DAVA::AssetCache::ServerNetProxy* server_, const DAVA::S
     dataBase = dataBase_;
 }
 
-void ServerLogics::OnAddToCache(DAVA::Net::IChannel* channel, const DAVA::AssetCache::CacheItemKey& key, DAVA::uint64 dataSize, DAVA::uint32 numOfChunks)
-{
-    hasIncomingRequestsRecently = true;
-
-    DAVA::List<DataAddTask>::iterator it = GetOrCreateAddTask(channel, key);
-    DataAddTask& task = *it;
-
-    auto DiscardTask = [&]()
-    {
-        DAVA::Logger::Debug("Sending 'add data info failed' response");
-        serverProxy->SendAddedToCache(channel, key, false);
-        dataAddTasks.erase(it);
-    };
-
-    auto Error = [&](const char* err)
-    {
-        DAVA::Logger::Error("Wrong add request: %s. Client %p, key %s", err, channel, Brief(key).c_str());
-        DiscardTask();
-    };
-
-    DAVA::Logger::Debug("Receiving add request: key %s, %u bytes, %u chunks", Brief(key).c_str(), dataSize, numOfChunks);
-
-    if (task.chunksOverall != 0 || task.bytesOverall != 0)
-    {
-        Error("add data info was already received with given key and channel");
-        return;
-    }
-
-    if (dataSize == 0 || numOfChunks == 0)
-    {
-        Error("both data size and number of chunks are zero");
-        return;
-    }
-
-    if (dataSize > dataBase->GetStorageSize())
-    {
-        DAVA::Logger::Warning("Inserted data size %u is bigger than max storage size %u", dataSize, dataBase->GetStorageSize());
-        DiscardTask();
-        return;
-    }
-
-    task.bytesOverall = dataSize;
-    task.chunksOverall = numOfChunks;
-
-    DAVA::Logger::Debug("Sending 'add data info OK' response");
-    serverProxy->SendAddedToCache(channel, key, true);
-}
-
-void ServerLogics::OnAddChunkToCache(DAVA::Net::IChannel* channel, const DAVA::AssetCache::CacheItemKey& key, DAVA::uint32 chunkNumber, const DAVA::Vector<DAVA::uint8>& chunkData)
+void ServerLogics::OnAddChunkToCache(DAVA::Net::IChannel* channel, const DAVA::AssetCache::CacheItemKey& key, DAVA::uint64 dataSize, DAVA::uint32 numOfChunks, DAVA::uint32 chunkNumber, const DAVA::Vector<DAVA::uint8>& chunkData)
 {
     hasIncomingRequestsRecently = true;
 
@@ -86,13 +38,34 @@ void ServerLogics::OnAddChunkToCache(DAVA::Net::IChannel* channel, const DAVA::A
         DiscardTask();
     };
 
-    Logger::Debug("Receiving add request: chunk #%u, %u bytes. Overall received %u, remaining %u", chunkNumber, chunkData.size(), task.bytesReceived, task.bytesOverall - task.bytesReceived);
-
-    if (task.chunksOverall == 0 || task.bytesOverall == 0)
+    if (chunkNumber == 0)
     {
-        Error("add data info was not previously received with given key and channel");
-        return;
+        if (dataSize == 0 || numOfChunks == 0)
+        {
+            Error("both data size and number of chunks are zero");
+            return;
+        }
+
+        DAVA::Logger::Debug("Receiving add request: key %s, %u bytes, %u chunks", Brief(key).c_str(), dataSize, numOfChunks);
+
+        if (task.chunksOverall != 0 || task.bytesOverall != 0)
+        {
+            Error("add data info was already received with given key and channel");
+            return;
+        }
+
+        if (dataSize > dataBase->GetStorageSize())
+        {
+            DAVA::Logger::Warning("Inserted data size %u is bigger than max storage size %u", dataSize, dataBase->GetStorageSize());
+            DiscardTask();
+            return;
+        }
+
+        task.bytesOverall = dataSize;
+        task.chunksOverall = numOfChunks;
     }
+
+    Logger::Debug("Adding chunk #%u, %u bytes. Overall received %u, remaining %u", chunkNumber, chunkData.size(), task.bytesReceived, task.bytesOverall - task.bytesReceived);
 
     if (task.chunksReceived != chunkNumber)
     {
@@ -142,9 +115,10 @@ void ServerLogics::OnAddChunkToCache(DAVA::Net::IChannel* channel, const DAVA::A
         dataBase->Insert(key, value);
         dataAddTasks.erase(it);
         dataRemoteAddTasks.emplace(key, DataRemoteAddTask());
+        DAVA::Logger::Debug("Adding remote add task. Tasks now: %u", dataRemoteAddTasks.size());
     }
 
-    DAVA::Logger::Debug("Sending OK response");
+    DAVA::Logger::Debug("Sending 'chunk successfully added' response");
     serverProxy->SendAddedToCache(channel, key, true);
 }
 
@@ -191,45 +165,17 @@ ServerLogics::DataGetMap::iterator ServerLogics::GetOrCreateGetTask(const DAVA::
             task.bytesOverall = task.bytesReady = task.serializedData->GetSize();
             task.chunksOverall = task.chunksReady = AssetCache::ChunkSplitter::GetNumberOfChunks(task.bytesOverall);
         }
-        else if (IsRemoteServerConnected() && clientProxy->RequestData(key))
+        else if (IsRemoteServerConnected() && clientProxy->RequestGetNextChunk(key, 0))
         { // Not found in db. Ask from remote cache.
             Logger::Debug("Creating get task. Requesting data from remote");
             taskIter = dataGetTasks.emplace(key, DataGetTask()).first;
             DataGetTask& task = taskIter->second;
             task.serializedData = DynamicMemoryFile::Create(File::CREATE | File::READ | File::WRITE);
-            task.dataStatus = DataGetTask::WAITING_DATA_INFO;
+            task.dataStatus = DataGetTask::WAITING_NEXT_CHUNK;
         }
     }
 
     return taskIter;
-}
-
-void ServerLogics::OnRequestedFromCache(DAVA::Net::IChannel* clientChannel, const DAVA::AssetCache::CacheItemKey& key)
-{
-    hasIncomingRequestsRecently = true;
-
-    DAVA::Logger::Debug("Receiving get data request: key %s", Brief(key).c_str());
-    DataGetMap::iterator taskIter = GetOrCreateGetTask(key);
-    if (taskIter != dataGetTasks.end())
-    {
-        DataGetTask& task = taskIter->second;
-        if (task.dataStatus == DataGetTask::WAITING_DATA_INFO)
-        {
-            task.clients.emplace(clientChannel, DataGetTask::WAITING_DATA_INFO);
-        }
-        else
-        {
-            DAVA::Logger::Debug("Sending data info response: %u bytes, %u chunks", task.bytesOverall, task.chunksOverall);
-            serverProxy->SendDataInfo(clientChannel, key, task.bytesOverall, task.chunksOverall);
-            task.clients.emplace(clientChannel, DataGetTask::READY);
-            dataWarmupTasks.emplace_back(DataWarmupTask(key));
-        }
-    }
-    else
-    { // Not found in db. Remote server isn't connected.
-        DAVA::Logger::Debug("Sending data info response: no data");
-        serverProxy->SendDataInfo(clientChannel, key, 0, 0);
-    }
 }
 
 void ServerLogics::OnChunkRequestedFromCache(DAVA::Net::IChannel* clientChannel, const DAVA::AssetCache::CacheItemKey& key, DAVA::uint32 chunkNumber)
@@ -237,13 +183,13 @@ void ServerLogics::OnChunkRequestedFromCache(DAVA::Net::IChannel* clientChannel,
     hasIncomingRequestsRecently = true;
 
     using namespace DAVA;
-    Logger::Debug("Receiving chunk #%u request, key %s", chunkNumber, Brief(key).c_str());
+    Logger::Debug("Requested chunk #%u, key %s", chunkNumber, Brief(key).c_str());
 
     auto Error = [&](const char* err)
     {
         Logger::Error("Wrong chunk request: %s. Client %p, key %s, chunk %u", err, clientChannel, Brief(key).c_str(), chunkNumber);
         Vector<uint8> empty;
-        serverProxy->SendChunk(clientChannel, key, 0, empty);
+        serverProxy->SendChunk(clientChannel, key, 0, 0, 0, empty);
     };
 
     DataGetMap::iterator taskIter = GetOrCreateGetTask(key);
@@ -261,8 +207,12 @@ void ServerLogics::OnChunkRequestedFromCache(DAVA::Net::IChannel* clientChannel,
                 return;
             }
 
-            DAVA::Logger::Debug("Sending chunk data: %u bytes", chunk.size());
-            serverProxy->SendChunk(clientChannel, key, chunkNumber, chunk);
+            if (chunkNumber == 0)
+            {
+                DAVA::Logger::Debug("Requested data will be sent: %u chunks, %u bytes", task.chunksOverall, task.bytesOverall);
+            }
+            DAVA::Logger::Debug("Sending chunk #%u: %u bytes", chunkNumber, chunk.size());
+            serverProxy->SendChunk(clientChannel, key, task.bytesOverall, task.chunksOverall, chunkNumber, chunk);
             client.status = DataGetTask::READY;
         }
         else // task hasn't such chunk yet
@@ -283,7 +233,7 @@ void ServerLogics::OnChunkRequestedFromCache(DAVA::Net::IChannel* clientChannel,
     { // Not found in db. Remote server isn't connected.
         Vector<uint8> empty;
         DAVA::Logger::Debug("Sending empty chunk");
-        serverProxy->SendChunk(clientChannel, key, 0, empty);
+        serverProxy->SendChunk(clientChannel, key, 0, 0, 0, empty);
     }
 }
 
@@ -348,53 +298,7 @@ void ServerLogics::OnClientProxyStateChanged()
     }
 }
 
-void ServerLogics::OnReceivedFromCache(const DAVA::AssetCache::CacheItemKey& key, DAVA::uint64 dataSize, DAVA::uint32 numOfChunks)
-{
-    hasIncomingRequestsRecently = true;
-
-    auto Error = [&](const char* err)
-    {
-        DAVA::Logger::Error("Wrong data info response: %s. Key %s", err, Brief(key).c_str());
-    };
-
-    DAVA::Logger::Debug("Received data info: key %s %u bytes, %u chunks", Brief(key).c_str(), dataSize, numOfChunks);
-
-    auto taskIter = dataGetTasks.find(key);
-    if (taskIter == dataGetTasks.end())
-    {
-        Error("data was not requested");
-        return;
-    }
-
-    DataGetTask& task = taskIter->second;
-    if (task.dataStatus != DataGetTask::DataRequestStatus::WAITING_DATA_INFO)
-    {
-        Error("data status is not WAITING_DATA_INFO");
-        return;
-    }
-    DVASSERT(task.bytesReady == 0 && task.chunksReady == 0 && task.serializedData->GetSize() == 0);
-
-    if (dataSize == 0 || numOfChunks == 0)
-    {
-        CancelGetTask(taskIter);
-        return;
-    }
-    else if (dataSize > dataBase->GetStorageSize())
-    {
-        DAVA::Logger::Warning("Inserted data size %u is bigger than max storage size %u", dataSize, dataBase->GetStorageSize());
-        CancelGetTask(taskIter);
-        return;
-    }
-    else
-    {
-        task.bytesOverall = dataSize;
-        task.chunksOverall = numOfChunks;
-        SendInfoToClients(taskIter);
-        RequestNextChunk(taskIter);
-    }
-}
-
-void ServerLogics::OnReceivedFromCache(const DAVA::AssetCache::CacheItemKey& key, DAVA::uint32 chunkNumber, const DAVA::Vector<DAVA::uint8>& chunkData)
+void ServerLogics::OnReceivedFromCache(const DAVA::AssetCache::CacheItemKey& key, DAVA::uint64 dataSize, DAVA::uint32 numOfChunks, DAVA::uint32 chunkNumber, const DAVA::Vector<DAVA::uint8>& chunkData)
 {
     hasIncomingRequestsRecently = true;
 
@@ -414,6 +318,35 @@ void ServerLogics::OnReceivedFromCache(const DAVA::AssetCache::CacheItemKey& key
     }
 
     DataGetTask& task = taskIter->second;
+
+    if (chunkNumber == 0)
+    {
+        if (task.dataStatus != DataGetTask::DataRequestStatus::WAITING_NEXT_CHUNK)
+        {
+            Error("data status is not WAITING_NEXT_CHUNK", taskIter);
+            return;
+        }
+
+        DVASSERT(task.bytesReady == 0 && task.chunksReady == 0 && task.serializedData->GetSize() == 0);
+
+        if (dataSize == 0 || numOfChunks == 0)
+        {
+            CancelGetTask(taskIter);
+            return;
+        }
+        else if (dataSize > dataBase->GetStorageSize())
+        {
+            DAVA::Logger::Warning("Inserted data size %u is bigger than max storage size %u", dataSize, dataBase->GetStorageSize());
+            CancelGetTask(taskIter);
+            return;
+        }
+        else
+        {
+            task.bytesOverall = dataSize;
+            task.chunksOverall = numOfChunks;
+        }
+    }
+
     if (task.dataStatus != DataGetTask::DataRequestStatus::WAITING_NEXT_CHUNK)
     {
         Error("data status is not WAITING_NEXT_CHUNK", taskIter);
@@ -484,26 +417,24 @@ void ServerLogics::OnAddedToCache(const DAVA::AssetCache::CacheItemKey& key, boo
     {
         DataRemoteAddTask& task = itTask->second;
 
-        if (!task.infoReceived)
-        {
-            task.infoReceived = true;
-        }
-        else if (++task.chunksSent == task.chunksOverall)
-        {
-            DAVA::Logger::Debug("All chunks are sent. Removing remote add task");
-            dataRemoteAddTasks.erase(itTask);
-            ProcessFirstRemoteAddDataTask();
-            return;
-        }
-
         if (received)
         {
-            bool sentOk = SendAddChunkToRemote(itTask);
-            if (!sentOk)
+            if (task.chunksSent == task.chunksOverall)
             {
+                DAVA::Logger::Debug("All chunks are sent. Removing remote add task. Tasks remaining: %u", dataRemoteAddTasks.size() - 1);
                 dataRemoteAddTasks.erase(itTask);
                 ProcessFirstRemoteAddDataTask();
                 return;
+            }
+            else
+            {
+                bool sentOk = SendChunkToRemote(itTask);
+                if (!sentOk)
+                {
+                    dataRemoteAddTasks.erase(itTask);
+                    ProcessFirstRemoteAddDataTask();
+                    return;
+                }
             }
         }
         else
@@ -534,27 +465,8 @@ void ServerLogics::RequestNextChunk(ServerLogics::DataGetMap::iterator it)
     task.dataStatus = DataGetTask::WAITING_NEXT_CHUNK;
 }
 
-void ServerLogics::SendInfoToClients(ServerLogics::DataGetMap::iterator taskIt)
-{
-    DVASSERT(taskIt != dataGetTasks.end());
-
-    const DAVA::AssetCache::CacheItemKey& key = taskIt->first;
-    DataGetTask& task = taskIt->second;
-
-    for (std::pair<DAVA::Net::IChannel* const, DataGetTask::ClientStatus>& client : task.clients)
-    {
-        if (client.second.status == DataGetTask::WAITING_DATA_INFO)
-        {
-            DAVA::Logger::Debug("Sending data info to client: %u bytes, %u chunks", task.bytesOverall, task.chunksOverall);
-            serverProxy->SendDataInfo(client.first, key, task.bytesOverall, task.chunksOverall);
-            client.second.status = DataGetTask::READY;
-        }
-    }
-}
-
 void ServerLogics::SendChunkToClients(ServerLogics::DataGetMap::iterator taskIt, DAVA::uint32 chunkNumber, const DAVA::Vector<DAVA::uint8>& chunk)
 {
-    DAVA::Logger::Debug("%s", __FUNCTION__);
     DVASSERT(taskIt != dataGetTasks.end());
 
     const DAVA::AssetCache::CacheItemKey& key = taskIt->first;
@@ -565,13 +477,13 @@ void ServerLogics::SendChunkToClients(ServerLogics::DataGetMap::iterator taskIt,
         if (client.second.status == DataGetTask::WAITING_NEXT_CHUNK && client.second.waitingChunk == chunkNumber)
         {
             DAVA::Logger::Debug("Sending chunk #%u size %u to client", chunkNumber, chunk.size());
-            serverProxy->SendChunk(client.first, key, chunkNumber, chunk);
+            serverProxy->SendChunk(client.first, key, task.bytesOverall, task.chunksOverall, chunkNumber, chunk);
             client.second.status = DataGetTask::READY;
         }
     }
 }
 
-bool ServerLogics::SendAddInfoToRemote(DataRemoteAddMap::iterator taskIt)
+bool ServerLogics::SendFirstChunkToRemote(DataRemoteAddMap::iterator taskIt)
 {
     using namespace DAVA;
 
@@ -586,13 +498,10 @@ bool ServerLogics::SendAddInfoToRemote(DataRemoteAddMap::iterator taskIt)
         task.serializedData = DynamicMemoryFile::Create(File::CREATE | File::READ | File::WRITE);
         AssetCache::CachedItemValue& value = entry->GetValue();
         value.Serialize(task.serializedData);
-        uint64 dataSize = task.serializedData->GetSize();
-        task.infoSent = true;
-        task.infoReceived = false;
+        task.bytesOverall = task.serializedData->GetSize();
+        task.chunksOverall = AssetCache::ChunkSplitter::GetNumberOfChunks(task.bytesOverall);
         task.chunksSent = 0;
-        task.chunksOverall = AssetCache::ChunkSplitter::GetNumberOfChunks(dataSize);
-        DAVA::Logger::Debug("Sending add data info to remote: %u bytes %u chunks", dataSize, task.chunksOverall);
-        return clientProxy->RequestAddData(key, dataSize, task.chunksOverall);
+        return SendChunkToRemote(taskIt);
     }
     else
     {
@@ -601,7 +510,7 @@ bool ServerLogics::SendAddInfoToRemote(DataRemoteAddMap::iterator taskIt)
     }
 }
 
-bool ServerLogics::SendAddChunkToRemote(DataRemoteAddMap::iterator taskIt)
+bool ServerLogics::SendChunkToRemote(DataRemoteAddMap::iterator taskIt)
 {
     using namespace DAVA;
 
@@ -611,8 +520,8 @@ bool ServerLogics::SendAddChunkToRemote(DataRemoteAddMap::iterator taskIt)
     DataRemoteAddTask& task = taskIt->second;
 
     Vector<uint8> chunk = AssetCache::ChunkSplitter::GetChunk(task.serializedData->GetDataVector(), task.chunksSent);
-    DAVA::Logger::Debug("Sending add chunk #%u to remote", task.chunksSent);
-    return clientProxy->RequestAddNextChunk(key, task.chunksSent, chunk);
+    DAVA::Logger::Debug("Sending add chunk %u/%u to remote, key %s", task.chunksSent, task.chunksOverall, Brief(key).c_str());
+    return clientProxy->RequestAddNextChunk(key, task.bytesOverall, task.chunksOverall, task.chunksSent++, chunk);
 }
 
 void ServerLogics::CancelGetTask(ServerLogics::DataGetMap::iterator it)
@@ -632,13 +541,9 @@ void ServerLogics::CancelGetTask(ServerLogics::DataGetMap::iterator it)
             {
             case DataGetTask::READY:
                 break;
-            case DataGetTask::WAITING_DATA_INFO:
-                DAVA::Logger::Debug("Sending empty data info");
-                serverProxy->SendDataInfo(client.first, key, 0, 0);
-                break;
             case DataGetTask::WAITING_NEXT_CHUNK:
                 DAVA::Logger::Debug("Sending empty chunk");
-                serverProxy->SendChunk(client.first, key, 0, Vector<uint8>());
+                serverProxy->SendChunk(client.first, key, 0, 0, 0, Vector<uint8>());
                 break;
             default:
                 DVASSERT(false, Format("Incorrect data status: %u", task.dataStatus).c_str());
@@ -727,9 +632,9 @@ void ServerLogics::ProcessFirstRemoteAddDataTask()
         if (firstRemoteDataTask != dataRemoteAddTasks.end())
         {
             DataRemoteAddTask& task = firstRemoteDataTask->second;
-            if (!task.infoSent)
+            if (!task.chunksSent)
             {
-                bool sentOk = SendAddInfoToRemote(firstRemoteDataTask);
+                bool sentOk = SendFirstChunkToRemote(firstRemoteDataTask);
                 if (!sentOk)
                 {
                     dataRemoteAddTasks.erase(firstRemoteDataTask);

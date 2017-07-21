@@ -60,7 +60,7 @@ void RotationLogger::Output(DAVA::Logger::eLogLevel logLevel, const DAVA::char8*
         {
             Array<char8, PREFIX_MAX_LENGTH> prefix;
             DateTime dt = DateTime::Now();
-            Snprintf(prefix.data(), prefix.size(), "%02i/%02i %02i:%02i:%02i [%s] ", dt.GetDay(), dt.GetMonth(), dt.GetHour(), dt.GetMinute(), dt.GetSecond(), Logger::GetLogLevelString(logLevel));
+            Snprintf(prefix.data(), prefix.size(), "%02i/%02i %02i:%02i:%02i [%s] ", dt.GetDay(), dt.GetMonth() + 1, dt.GetHour(), dt.GetMinute(), dt.GetSecond(), Logger::GetLogLevelString(logLevel));
             file->Write(prefix.data(), static_cast<uint32>(strlen(prefix.data())));
             file->Write(text, static_cast<uint32>(strlen(text)));
             file->WriteLine(""); // inserting \r\n

@@ -17,9 +17,7 @@ public:
     void OnRemoteDisconnecting();
 
     //ServerNetProxyListener
-    void OnAddToCache(DAVA::Net::IChannel* channel, const DAVA::AssetCache::CacheItemKey& key, DAVA::uint64 dataSize, DAVA::uint32 numOfChunks) override;
-    void OnAddChunkToCache(DAVA::Net::IChannel* channel, const DAVA::AssetCache::CacheItemKey& key, DAVA::uint32 chunkNumber, const DAVA::Vector<DAVA::uint8>& chunkData) override;
-    void OnRequestedFromCache(DAVA::Net::IChannel* channel, const DAVA::AssetCache::CacheItemKey& key) override;
+    void OnAddChunkToCache(DAVA::Net::IChannel* channel, const DAVA::AssetCache::CacheItemKey& key, DAVA::uint64 dataSize, DAVA::uint32 numOfChunks, DAVA::uint32 chunkNumber, const DAVA::Vector<DAVA::uint8>& chunkData) override;
     void OnChunkRequestedFromCache(DAVA::Net::IChannel* channel, const DAVA::AssetCache::CacheItemKey& key, DAVA::uint32 chunkNumber) override;
     void OnRemoveFromCache(DAVA::Net::IChannel* channel, const DAVA::AssetCache::CacheItemKey& key) override;
     void OnClearCache(DAVA::Net::IChannel* channel) override;
@@ -30,8 +28,7 @@ public:
     //ClientNetProxyListener
     void OnClientProxyStateChanged() override;
     void OnAddedToCache(const DAVA::AssetCache::CacheItemKey& key, bool added) override;
-    void OnReceivedFromCache(const DAVA::AssetCache::CacheItemKey& key, DAVA::uint64 dataSize, DAVA::uint32 numOfChunks) override;
-    void OnReceivedFromCache(const DAVA::AssetCache::CacheItemKey& key, DAVA::uint32 chunkNumber, const DAVA::Vector<DAVA::uint8>& chunkData) override;
+    void OnReceivedFromCache(const DAVA::AssetCache::CacheItemKey& key, DAVA::uint64 dataSize, DAVA::uint32 numOfChunks, DAVA::uint32 chunkNumber, const DAVA::Vector<DAVA::uint8>& chunkData) override;
 
 private:
     struct DataGetTask
@@ -39,7 +36,6 @@ private:
         enum DataRequestStatus
         {
             READY,
-            WAITING_DATA_INFO,
             WAITING_NEXT_CHUNK
         };
 
@@ -79,10 +75,9 @@ private:
     struct DataRemoteAddTask
     {
         DAVA::ScopedPtr<DAVA::DynamicMemoryFile> serializedData;
-        bool infoSent = false;
-        bool infoReceived = false;
         DAVA::uint32 chunksSent = 0;
         DAVA::uint32 chunksOverall = 0;
+        DAVA::uint64 bytesOverall = 0;
     };
     using DataRemoteAddMap = DAVA::UnorderedMap<DAVA::AssetCache::CacheItemKey, DataRemoteAddTask>;
 
@@ -103,8 +98,8 @@ private:
     void RequestNextChunk(DataGetMap::iterator it);
     void SendInfoToClients(DataGetMap::iterator taskIt);
     void SendChunkToClients(DataGetMap::iterator taskIt, DAVA::uint32 chunkNumber, const DAVA::Vector<DAVA::uint8>& chunk);
-    bool SendAddInfoToRemote(DataRemoteAddMap::iterator taskIt);
-    bool SendAddChunkToRemote(DataRemoteAddMap::iterator taskIt);
+    bool SendFirstChunkToRemote(DataRemoteAddMap::iterator taskIt);
+    bool SendChunkToRemote(DataRemoteAddMap::iterator taskIt);
     void CancelGetTask(DataGetMap::iterator it);
     void CancelRemoteTasks();
     void RemoveClientFromTasks(DAVA::Net::IChannel* clientChannel);

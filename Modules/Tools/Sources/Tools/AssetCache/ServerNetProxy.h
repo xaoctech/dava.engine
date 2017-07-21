@@ -19,9 +19,7 @@ class ServerNetProxyListener
 public:
     virtual ~ServerNetProxyListener() = default;
 
-    virtual void OnAddToCache(Net::IChannel* channel, const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks) = 0;
-    virtual void OnAddChunkToCache(Net::IChannel* channel, const CacheItemKey& key, uint32 chunkNumber, const Vector<uint8>& chunkData) = 0;
-    virtual void OnRequestedFromCache(Net::IChannel* channel, const CacheItemKey& key) = 0;
+    virtual void OnAddChunkToCache(Net::IChannel* channel, const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks, uint32 chunkNumber, const Vector<uint8>& chunkData) = 0;
     virtual void OnChunkRequestedFromCache(Net::IChannel* channel, const CacheItemKey& key, uint32 chunkNumber) = 0;
     virtual void OnRemoveFromCache(Net::IChannel* channel, const CacheItemKey& key) = 0;
     virtual void OnClearCache(Net::IChannel* channel) = 0;
@@ -48,8 +46,7 @@ public:
     bool SendAddedToCache(Net::IChannel* channel, const CacheItemKey& key, bool added);
     bool SendRemovedFromCache(Net::IChannel* channel, const CacheItemKey& key, bool removed);
     bool SendCleared(Net::IChannel* channel, bool cleared);
-    bool SendDataInfo(Net::IChannel* channel, const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks);
-    bool SendChunk(Net::IChannel* channel, const CacheItemKey& key, uint32 chunkNumber, const Vector<uint8>& chunkData);
+    bool SendChunk(Net::IChannel* channel, const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks, uint32 chunkNumber, const Vector<uint8>& chunkData);
     bool SendStatus(Net::IChannel* channel);
 
     //Net::IChannelListener
