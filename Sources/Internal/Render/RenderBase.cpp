@@ -117,7 +117,7 @@ uint32 GetVertexLayoutRequiredFormat(const rhi::VertexLayout& layout)
                 res |= EVF_JOINTINDEX;
             }
         }
-            break;
+        break;
         default:
             break;
         }

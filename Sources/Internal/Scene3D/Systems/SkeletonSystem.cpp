@@ -11,6 +11,8 @@
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
 
+#define RE_DEBUG_PROCESS_TEST_SKINNED_MESHES 0
+
 namespace DAVA
 {
 SkeletonSystem::SkeletonSystem(Scene* scene)
@@ -64,7 +66,7 @@ void SkeletonSystem::Process(float32 timeElapsed)
     {
         SkeletonComponent* component = GetSkeletonComponent(entities[i]);
 
-#if 0
+#if RE_DEBUG_PROCESS_TEST_SKINNED_MESHES
         {
             static const FastName HARD_SKINNED_ENTITY_NAME("TestHardSkinned");
             static const FastName SOFT_SKINNED_ENTITY_NAME("TestSoftSkinned");
@@ -73,7 +75,7 @@ void SkeletonSystem::Process(float32 timeElapsed)
             t += timeElapsed;
 
             //Manipulate test hard skinned mesh in 'Debug Functions' in RE
-            if(entities[i]->GetName() == HARD_SKINNED_ENTITY_NAME)
+            if (entities[i]->GetName() == HARD_SKINNED_ENTITY_NAME)
             {
                 static float32 t = 0;
                 t += timeElapsed;

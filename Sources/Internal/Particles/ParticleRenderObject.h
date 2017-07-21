@@ -26,24 +26,29 @@ public:
     ParticleRenderObject(ParticleEffectData* effect);
     ~ParticleRenderObject();
 
-    virtual void PrepareToRender(Camera* camera);
+    void PrepareToRender(Camera* camera) override;
 
     void SetSortingOffset(uint32 offset);
 
     void BindDynamicParameters(Camera* camera, RenderBatch* batch) override;
-    virtual void RecalcBoundingBox()
-    {
-    }
-    virtual void RecalculateWorldBoundingBox()
-    {
-        worldBBox = bbox;
-    }
+
+    void RecalcBoundingBox() override;
+    void RecalculateWorldBoundingBox() override;
 
 private:
     int32 CalculateParticleCount(const ParticleGroup& group);
 
     uint32 regularVertexLayoutId, frameBlendVertexLayoutId;
 };
+
+inline void ParticleRenderObject::RecalcBoundingBox()
+{
+}
+
+inline void ParticleRenderObject::RecalculateWorldBoundingBox()
+{
+    worldBBox = bbox;
+}
 }
 
 #endif
