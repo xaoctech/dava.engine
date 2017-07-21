@@ -53,6 +53,7 @@ class LodSystem;
 class ParticleEffectDebugDrawSystem;
 class SlotSystem;
 class TransformSingleComponent;
+class CollisionSingleComponent;
 
 class UIEvent;
 
@@ -180,6 +181,7 @@ public:
 #endif
 
     TransformSingleComponent* transformSingleComponent = nullptr;
+    CollisionSingleComponent* collisionSingleComponent = nullptr;
 
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.

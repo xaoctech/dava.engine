@@ -223,7 +223,7 @@ void PhysicsModule::Deallocate(void* ptr)
     allocator->deallocate(ptr);
 }
 
-physx::PxScene* PhysicsModule::CreateScene(const PhysicsSceneConfig& config) const
+physx::PxScene* PhysicsModule::CreateScene(const PhysicsSceneConfig& config, physx::PxSimulationFilterShader filterShader, physx::PxSimulationEventCallback* callback) const
 {
     using namespace physx;
 
@@ -232,12 +232,12 @@ physx::PxScene* PhysicsModule::CreateScene(const PhysicsSceneConfig& config) con
     PxSceneDesc sceneDesc(physics->getTolerancesScale());
     sceneDesc.flags = PxSceneFlag::eENABLE_ACTIVE_ACTORS;
     sceneDesc.gravity = PhysicsMath::Vector3ToPxVec3(config.gravity);
+    sceneDesc.filterShader = filterShader;
+    sceneDesc.simulationEventCallback = callback;
 
     PxDefaultCpuDispatcher* cpuDispatcher = PxDefaultCpuDispatcherCreate(config.threadCount);
     DVASSERT(cpuDispatcher);
     sceneDesc.cpuDispatcher = cpuDispatcher;
-
-    sceneDesc.filterShader = PxDefaultSimulationFilterShader;
 
     PxScene* scene = physics->createScene(sceneDesc);
     DVASSERT(scene);

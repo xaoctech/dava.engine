@@ -18,6 +18,7 @@
 #include <ModuleManager/ModuleManager.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/Components/SingleComponents/TransformSingleComponent.h>
+#include <Scene3D/Components/SingleComponents/CollisionSingleComponent.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Components/SwitchComponent.h>
@@ -27,6 +28,7 @@
 #include <Render/RenderHelper.h>
 #include <FileSystem/KeyedArchive.h>
 #include <Utils/Utils.h>
+#include <Logger/Logger.h>
 
 #include <physx/PxScene.h>
 #include <physx/PxRigidActor.h>
@@ -120,8 +122,92 @@ Vector3 AccumulateMeshInfo(Entity* e, Vector<PolygonGroup*>& groups)
 const uint32 DEFAULT_SIMULATION_BLOCK_SIZE = 16 * 1024 * 512;
 } // namespace
 
+physx::PxFilterFlags FilterShader(physx::PxFilterObjectAttributes attributes0,
+                                  physx::PxFilterData filterData0,
+                                  physx::PxFilterObjectAttributes attributes1,
+                                  physx::PxFilterData filterData1,
+                                  physx::PxPairFlags& pairFlags,
+                                  const void* constantBlock,
+                                  physx::PxU32 constantBlockSize)
+{
+    PX_UNUSED(attributes0);
+    PX_UNUSED(attributes1);
+    PX_UNUSED(filterData0);
+    PX_UNUSED(filterData1);
+    PX_UNUSED(constantBlockSize);
+    PX_UNUSED(constantBlock);
+
+    pairFlags =
+    physx::PxPairFlag::eCONTACT_DEFAULT | // default collision processing
+    physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | // notify about a first contact
+    physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS | // notify about ongoing contacts
+    physx::PxPairFlag::eNOTIFY_CONTACT_POINTS; // report contact points
+
+    return physx::PxFilterFlag::eDEFAULT;
+}
+
+PhysicsSystem::SimulationEventCallback::SimulationEventCallback(DAVA::CollisionSingleComponent* targetCollisionSingleComponent)
+    : targetCollisionSingleComponent(targetCollisionSingleComponent)
+{
+    DVASSERT(targetCollisionSingleComponent != nullptr);
+}
+
+void PhysicsSystem::SimulationEventCallback::onConstraintBreak(physx::PxConstraintInfo*, physx::PxU32)
+{
+}
+
+void PhysicsSystem::SimulationEventCallback::onWake(physx::PxActor**, physx::PxU32)
+{
+}
+
+void PhysicsSystem::SimulationEventCallback::onSleep(physx::PxActor**, physx::PxU32)
+{
+}
+
+void PhysicsSystem::SimulationEventCallback::onTrigger(physx::PxTriggerPair*, physx::PxU32)
+{
+}
+
+void PhysicsSystem::SimulationEventCallback::onAdvance(const physx::PxRigidBody* const*, const physx::PxTransform*, const physx::PxU32)
+{
+}
+
+void PhysicsSystem::SimulationEventCallback::onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs)
+{
+    for (size_t i = 0; i < nbPairs; ++i)
+    {
+        const physx::PxContactPair& pair = pairs[i];
+
+        Vector<CollisionPoint> davaContactPoints(pair.contactCount);
+
+        if (pair.contactCount > 0)
+        {
+            // Extract physx points
+            Vector<physx::PxContactPairPoint> physxContactPoints(pair.contactCount);
+            pair.extractContacts(&physxContactPoints[0], pair.contactCount);
+
+            // Convert each contact points from physx structure to our structure
+            for (size_t j = 0; j < pair.contactCount; ++j)
+            {
+                CollisionPoint& davaPoint = davaContactPoints[j];
+                physx::PxContactPairPoint& physxPoint = physxContactPoints[j];
+
+                davaPoint.position = PhysicsMath::PxVec3ToVector3(physxPoint.position);
+                davaPoint.impulse = PhysicsMath::PxVec3ToVector3(physxPoint.impulse);
+            }
+        }
+
+        CollisionShapeComponent* firstCollisionComponent = reinterpret_cast<CollisionShapeComponent*>(pair.shapes[0]->userData);
+        CollisionShapeComponent* secondCollisionComponent = reinterpret_cast<CollisionShapeComponent*>(pair.shapes[1]->userData);
+
+        // Register collision
+        targetCollisionSingleComponent->collisions.push_back({ firstCollisionComponent->GetEntity(), secondCollisionComponent->GetEntity(), std::move(davaContactPoints) });
+    }
+}
+
 PhysicsSystem::PhysicsSystem(Scene* scene)
     : SceneSystem(scene)
+    , simulationEventCallback(scene->collisionSingleComponent)
 {
     const KeyedArchive* options = Engine::Instance()->GetOptions();
 
@@ -135,8 +221,9 @@ PhysicsSystem::PhysicsSystem(Scene* scene)
     PhysicsSceneConfig sceneConfig;
     sceneConfig.gravity = options->GetVector3("physics.gravity", Vector3(0, 0, -9.81f));
     sceneConfig.threadCount = options->GetUInt32("physics.threadCount", 2);
+
     geometryCache = new PhysicsGeometryCache();
-    physicsScene = physics->CreateScene(sceneConfig);
+    physicsScene = physics->CreateScene(sceneConfig, FilterShader, &simulationEventCallback);
 }
 
 PhysicsSystem::~PhysicsSystem()

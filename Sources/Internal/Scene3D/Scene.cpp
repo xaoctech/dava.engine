@@ -38,6 +38,7 @@
 #include "Scene3D/Systems/SlotSystem.h"
 
 #include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
+#include "Scene3D/Components/SingleComponents/CollisionSingleComponent.h"
 
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
@@ -243,6 +244,8 @@ void Scene::CreateSystems()
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
     if (SCENE_SYSTEM_PHYSICS_FLAG & systemsMask)
     {
+        collisionSingleComponent = new CollisionSingleComponent;
+
         physicsSystem = new PhysicsSystem(this);
         AddSystem(physicsSystem, 0, SCENE_SYSTEM_REQUIRE_PROCESS);
     }
@@ -408,6 +411,7 @@ Scene::~Scene()
     systems.clear();
 
     SafeDelete(transformSingleComponent);
+    SafeDelete(collisionSingleComponent);
 
     systemsToProcess.clear();
     systemsToInput.clear();
@@ -439,6 +443,11 @@ void Scene::UnregisterEntity(Entity* entity)
     if (transformSingleComponent)
     {
         transformSingleComponent->EraseEntity(entity);
+    }
+
+    if (collisionSingleComponent)
+    {
+        collisionSingleComponent->RemoveCollisionsWithEntity(entity);
     }
 
     for (auto& system : systems)
@@ -638,6 +647,12 @@ void Scene::Update(float32 timeElapsed)
     {
         transformSingleComponent->Clear();
     }
+
+    if (collisionSingleComponent)
+    {
+        collisionSingleComponent->collisions.clear();
+    }
+
     sceneGlobalTime += timeElapsed;
 }
 
