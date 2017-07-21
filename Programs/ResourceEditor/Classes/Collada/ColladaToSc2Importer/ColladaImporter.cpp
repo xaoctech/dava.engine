@@ -482,7 +482,7 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
                     animationKeys = animationKeysCopy;
                 }
 
-                String nodeUID = colladaNode->originalNode->GetDaeId();
+                String nodeUID = String(colladaNode->originalNode->GetDaeId().c_str());
                 String nodeName = UTF8Utils::EncodeToUTF8(colladaNode->originalNode->GetName().c_str());
 
                 WriteToBuffer(animationData, nodeUID);
