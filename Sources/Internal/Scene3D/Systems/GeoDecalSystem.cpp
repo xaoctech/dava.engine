@@ -57,6 +57,21 @@ void GeoDecalSystem::Process(float32 timeElapsed)
         }
     }
 
+    for (auto& i : decals)
+    {
+        if (static_cast<GeoDecalComponent*>(i.first)->GetRebakeOnTransform())
+        {
+            for (const std::pair<Entity*, GeoDecalManager::Decal>& d : i.second.decals)
+            {
+                auto changedEntity = std::find(tsc->localTransformChanged.begin(), tsc->localTransformChanged.end(), d.first);
+                if (changedEntity != tsc->localTransformChanged.end())
+                {
+                    i.second.lastValidConfig.invalidate();
+                }
+            }
+        }
+    }
+
     BakeDecals();
 
 #if (DAVA_GEODECAL_SYSTEM_DEBUG_RENDER)
@@ -156,9 +171,9 @@ void GeoDecalSystem::GatherRenderableEntitiesInBox(Entity* top, const AABBox3& b
 void GeoDecalSystem::RemoveCreatedDecals(Entity* entity, GeoDecalComponent* component)
 {
     GeoDecalManager* manager = GetScene()->GetRenderSystem()->GetGeoDecalManager();
-    for (GeoDecalManager::Decal decal : decals[component].decals)
+    for (const auto& i : decals[component].decals)
     {
-        manager->DeleteDecal(decal);
+        manager->DeleteDecal(i.second);
     }
     decals[component].decals.clear();
 }
@@ -187,7 +202,7 @@ void GeoDecalSystem::BuildDecal(Entity* entityWithDecal, GeoDecalComponent* comp
         }
 
         GeoDecalManager::Decal decal = manager->BuildDecal(component->GetConfig(), entityWithDecal->GetWorldTransform(), e.renderObject);
-        decals[component].decals.emplace_back(decal);
+        decals[component].decals.emplace_back(e.entity, decal);
     }
 }
 }

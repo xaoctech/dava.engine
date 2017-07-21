@@ -1080,22 +1080,27 @@ Texture* Texture::CreatePink(rhi::TextureType requestedType, bool checkers)
 {
     DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
 
-    //we need instances for pink textures for ResourceEditor. We use it for reloading for different GPUs
-    //pink textures at game is invalid situation
-    Texture* tex = new Texture();
-    if (rhi::TEXTURE_TYPE_CUBE == requestedType)
+    static RefPtr<Texture> sharedPinkTexture[3][2]; /* TextureType count X checkers */
+
+    Texture* result = sharedPinkTexture[requestedType][checkers].Get();
+    if (result == nullptr)
     {
-        tex->texDescriptor->Initialize(rhi::TEXADDR_CLAMP, true);
-        tex->texDescriptor->dataSettings.cubefaceFlags = 0x000000FF;
-    }
-    else
-    {
-        tex->texDescriptor->Initialize(rhi::TEXADDR_CLAMP, false);
+        result = new Texture();
+        if (rhi::TEXTURE_TYPE_CUBE == requestedType)
+        {
+            result->texDescriptor->Initialize(rhi::TEXADDR_CLAMP, true);
+            result->texDescriptor->dataSettings.cubefaceFlags = 0x000000FF;
+        }
+        else
+        {
+            result->texDescriptor->Initialize(rhi::TEXADDR_CLAMP, false);
+        }
+        result->MakePink(checkers);
+
+        sharedPinkTexture[requestedType][checkers].Set(result);
     }
 
-    tex->MakePink(checkers);
-
-    return tex;
+    return SafeRetain(result);
 }
 
 void Texture::MakePink(bool checkers)
