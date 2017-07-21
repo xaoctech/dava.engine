@@ -109,10 +109,7 @@ bool MotionComponent::SimpleMotion::IsPlaying() const
 
 bool MotionComponent::SimpleMotion::IsFinished() const
 {
-    if (repeatsCount == 0) //infinity-looped motion
-        return false;
-    else
-        return (isPlaying == false) && (currentAnimationTime != 0.f);
+    return (repeatsCount > 0) && (isPlaying == false) && (currentAnimationTime != 0.f);
 }
 
 const FilePath& MotionComponent::SimpleMotion::GetAnimationPath() const

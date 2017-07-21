@@ -489,7 +489,8 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
                 WriteToBuffer(animationData, nodeName);
 
                 //Write Track data
-                WriteToBuffer(animationData, &AnimationTrack::ANIMATION_TRACK_DATA_SIGNATURE);
+                uint32 signature = AnimationTrack::ANIMATION_TRACK_DATA_SIGNATURE;
+                WriteToBuffer(animationData, &signature);
 
                 uint32 channelsCount = 3; //position, orientation, scale
                 WriteToBuffer(animationData, &channelsCount);

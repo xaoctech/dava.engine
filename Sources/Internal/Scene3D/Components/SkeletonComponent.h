@@ -53,7 +53,7 @@ public:
 
     uint32 GetJointIndex(const FastName& uid) const;
     uint32 GetJointsCount() const;
-    const Joint& GetJoint(uint32 i) const;
+    const Joint& GetJoint(uint32 jointIndex) const;
 
     void SetJoints(const Vector<Joint>& config);
 
@@ -119,9 +119,10 @@ inline uint32 SkeletonComponent::GetJointsCount() const
     return uint32(jointsArray.size());
 }
 
-inline const SkeletonComponent::Joint& SkeletonComponent::GetJoint(uint32 i) const
+inline const SkeletonComponent::Joint& SkeletonComponent::GetJoint(uint32 jointIndex) const
 {
-    return jointsArray[i];
+    DVASSERT(jointIndex < GetJointsCount());
+    return jointsArray[jointIndex];
 }
 
 inline const JointTransform& SkeletonComponent::GetJointTransform(uint32 jointIndex) const
