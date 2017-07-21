@@ -21,7 +21,9 @@ ParticleRenderObject::ParticleRenderObject(ParticleEffectData* effect)
     uint16 numBits = static_cast<uint16>(layoutsData.size());
 
     rhi::VertexLayout baseLayout; // We always have position, texcoord0 and color.
-    GenerateBaseLayout(baseLayout);
+    baseLayout.AddElement(rhi::VS_POSITION, 0, rhi::VDT_FLOAT, 3);
+    baseLayout.AddElement(rhi::VS_TEXCOORD, 0, rhi::VDT_FLOAT, 2);
+    baseLayout.AddElement(rhi::VS_COLOR, 0, rhi::VDT_UINT8N, 4);
 
     uint32 maxCount = (1 << numBits) - 1;
     for (uint32 i = 0; i <= maxCount; ++i)
@@ -162,14 +164,6 @@ uint32 ParticleRenderObject::GetVertexStride(ParticleLayer* layer)
     if (layer->useFresnelToAlpha || layer->enableAlphaRemap || (layer->usePerspectiveMapping && layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE))
         vertexStride += (3) * sizeof(float);
     return vertexStride;
-}
-
-void ParticleRenderObject::GenerateBaseLayout(rhi::VertexLayout& layout)
-{
-    layout = {};
-    layout.AddElement(rhi::VS_POSITION, 0, rhi::VDT_FLOAT, 3);
-    layout.AddElement(rhi::VS_TEXCOORD, 0, rhi::VDT_FLOAT, 2);
-    layout.AddElement(rhi::VS_COLOR, 0, rhi::VDT_UINT8N, 4);
 }
 
 int32 ParticleRenderObject::CalculateParticleCount(const ParticleGroup& group)

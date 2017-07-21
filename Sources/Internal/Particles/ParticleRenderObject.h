@@ -77,7 +77,6 @@ private:
     Map<uint32, LayoutElement> layoutsData;
 
     uint32 GetVertexStride(ParticleLayer* layer);
-    void GenerateBaseLayout(rhi::VertexLayout& layout);
     int32 CalculateParticleCount(const ParticleGroup& group);
     uint32 SelectLayout(const ParticleLayer& layer);
     void UpdateStripeVertex(float32*& dataPtr, Vector3& position, Vector3& uv, float32* color, ParticleLayer* layer, Particle* particle, float32 fresToAlpha);
