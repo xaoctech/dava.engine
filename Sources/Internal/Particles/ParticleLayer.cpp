@@ -78,7 +78,7 @@ ParticleLayer* ParticleLayer::Clone()
     ParticleLayer* dstLayer = new ParticleLayer();
 
     dstLayer->stripeLifetime = stripeLifetime;
-    dstLayer->stripeRate = stripeRate;
+    dstLayer->stripeVertexSpawnStep = stripeVertexSpawnStep;
     dstLayer->stripeStartSize = stripeStartSize;
     dstLayer->stripeUScrollSpeed = stripeUScrollSpeed;
     dstLayer->stripeVScrollSpeed = stripeVScrollSpeed;
@@ -425,11 +425,11 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
     {
         stripeLifetime = stripeLifetimeNode->AsFloat();
     }
-    stripeRate = 0.0f;
-    const YamlNode* stripeRateNode = node->Get("stripeRate");
-    if (stripeRateNode)
+    stripeVertexSpawnStep = 1.0f;
+    const YamlNode* stripeVertexSpawnStepNode = node->Get("stripeVertexSpawnStep");
+    if (stripeVertexSpawnStepNode)
     {
-        stripeRate = stripeRateNode->AsFloat();
+        stripeVertexSpawnStep = stripeVertexSpawnStepNode->AsFloat();
     }
     stripeStartSize = 0.0f;
     const YamlNode* stripeStartSizeNode = node->Get("stripeStartSize");
@@ -936,7 +936,7 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<Color>(layerNode, "stripeColorOverLife", stripeColorOverLife);
 
     PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeLifetime", stripeLifetime);
-    PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeRate", stripeRate);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeVertexSpawnStep", stripeVertexSpawnStep);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeStartSize", stripeStartSize);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeUScrollSpeed", stripeUScrollSpeed);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeVScrollSpeed", stripeVScrollSpeed);

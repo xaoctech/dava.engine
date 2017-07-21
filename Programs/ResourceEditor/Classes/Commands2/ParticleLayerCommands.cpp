@@ -203,7 +203,7 @@ CommandChangeParticlesStripeProperties::CommandChangeParticlesStripeProperties(D
     if (layer != nullptr)
     {
         oldParams.stripeLifetime = layer->stripeLifetime;
-        oldParams.stripeRate = layer->stripeRate;
+        oldParams.stripeVertexSpawnStep = layer->stripeVertexSpawnStep;
         oldParams.stripeStartSize = layer->stripeStartSize;
         oldParams.stripeTextureTileOverLife = layer->stripeTextureTileOverLife;
         oldParams.stripeUScrollSpeed = layer->stripeUScrollSpeed;
@@ -238,7 +238,7 @@ void CommandChangeParticlesStripeProperties::ApplyParams(StripeParams& params)
     if (layer != nullptr)
     {
         layer->stripeLifetime = params.stripeLifetime;
-        layer->stripeRate = params.stripeRate;
+        layer->stripeVertexSpawnStep = params.stripeVertexSpawnStep;
         layer->stripeStartSize = params.stripeStartSize;
         layer->stripeUScrollSpeed = params.stripeUScrollSpeed;
         layer->stripeVScrollSpeed = params.stripeVScrollSpeed;

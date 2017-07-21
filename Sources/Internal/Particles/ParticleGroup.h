@@ -31,7 +31,6 @@ struct StripeData
 {
     List<StripeNode> stripeNodes; // List of stripe control points.
     StripeNode baseNode;
-    float32 spawnTimer = 0;
     Vector3 inheritPositionOffset = {};
     bool isActive = true;
     float32 uvOffset = 0.0f;

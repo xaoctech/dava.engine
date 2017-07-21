@@ -777,7 +777,7 @@ void EmitterLayerWidget::OnStripePropertiesChanged()
 
     CommandChangeParticlesStripeProperties::StripeParams params;
     params.stripeLifetime = static_cast<DAVA::float32>(stripeLifetimeSpin->value());
-    params.stripeRate = static_cast<DAVA::float32>(stripeRateSpin->value());
+    params.stripeVertexSpawnStep = static_cast<DAVA::float32>(stripeVertexSpawnStepSpin->value());
     params.stripeStartSize = static_cast<DAVA::float32>(stripeStartSizeSpin->value());
     params.stripeUScrollSpeed = static_cast<DAVA::float32>(stripeUScrollSpeedSpin->value());
     params.stripeVScrollSpeed = static_cast<DAVA::float32>(stripeVScrollSpeedSpin->value());
@@ -983,7 +983,7 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     fresnelPowerSpinBox->setValue(layer->fresnelToAlphaPower);
 
     stripeLifetimeSpin->setValue(layer->stripeLifetime);
-    stripeRateSpin->setValue(layer->stripeRate);
+    stripeVertexSpawnStepSpin->setValue(layer->stripeVertexSpawnStep);
     stripeStartSizeSpin->setValue(layer->stripeStartSize);
     stripeUScrollSpeedSpin->setValue(layer->stripeUScrollSpeed);
     stripeVScrollSpeedSpin->setValue(layer->stripeVScrollSpeed);
@@ -1521,11 +1521,11 @@ void EmitterLayerWidget::CreateStripeLayoutWidget()
     stripeLifetimeSpin->setSingleStep(0.01);
     stripeLifetimeSpin->setDecimals(4);
 
-    stripeRateSpin = new EventFilterDoubleSpinBox();
-    stripeRateSpin->setMinimum(-100);
-    stripeRateSpin->setMaximum(100);
-    stripeRateSpin->setSingleStep(0.01);
-    stripeRateSpin->setDecimals(4);
+    stripeVertexSpawnStepSpin = new EventFilterDoubleSpinBox();
+    stripeVertexSpawnStepSpin->setMinimum(-100);
+    stripeVertexSpawnStepSpin->setMaximum(100);
+    stripeVertexSpawnStepSpin->setSingleStep(0.01);
+    stripeVertexSpawnStepSpin->setDecimals(4);
 
     stripeStartSizeSpin = new EventFilterDoubleSpinBox();
     stripeStartSizeSpin->setMinimum(-100);
@@ -1533,7 +1533,7 @@ void EmitterLayerWidget::CreateStripeLayoutWidget()
     stripeStartSizeSpin->setSingleStep(0.01);
     stripeStartSizeSpin->setDecimals(4);
     stripeLifetimeLabel = new QLabel("Edge lifetime:");
-    stripeRateLabel = new QLabel("Rate:");
+    stripeVertexSpawnStepLabel = new QLabel("Vertex Spawn Step:");
     stripeStartSizeLabel = new QLabel("Start size:");
 
     vertStripeLayout->addWidget(stripeStartSizeLabel);
@@ -1544,8 +1544,8 @@ void EmitterLayerWidget::CreateStripeLayoutWidget()
 
     vertStripeLayout->addWidget(stripeLifetimeLabel);
     vertStripeLayout->addWidget(stripeLifetimeSpin);
-    vertStripeLayout->addWidget(stripeRateLabel);
-    vertStripeLayout->addWidget(stripeRateSpin);
+    vertStripeLayout->addWidget(stripeVertexSpawnStepLabel);
+    vertStripeLayout->addWidget(stripeVertexSpawnStepSpin);
 
     stripeUScrollSpeedSpin = new EventFilterDoubleSpinBox();
     stripeUScrollSpeedSpin->setMinimum(-100);
@@ -1580,7 +1580,7 @@ void EmitterLayerWidget::CreateStripeLayoutWidget()
     vertStripeLayout->addWidget(stripeNoiseScrollSpeedOverLifeTimeLine);
 
     connect(stripeLifetimeSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
-    connect(stripeRateSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
+    connect(stripeVertexSpawnStepSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
     connect(stripeStartSizeSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
     connect(stripeFadeDistanceFromTopSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
 

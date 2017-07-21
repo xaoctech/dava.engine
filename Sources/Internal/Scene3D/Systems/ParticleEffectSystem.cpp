@@ -647,14 +647,12 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
 
     data.baseNode.speed = particle->speed;
 
-    data.spawnTimer += dt;
-    float32 spawnTime = 1.0f / layer->stripeRate;
-    bool shouldInsert = data.spawnTimer > spawnTime;
+    bool shouldInsert = data.stripeNodes.empty() || (data.baseNode.position - data.stripeNodes.front().position).Length() > layer->stripeVertexSpawnStep;
+
     float32 radius = layer->stripeStartSize * layer->CalculateMaxStripeSizeOverLife();
 
     if (shouldInsert)
     {
-        data.spawnTimer -= spawnTime;
         data.stripeNodes.emplace_front(0.0f, data.baseNode.position, data.baseNode.speed, 0.0f, 0.0f);
         data.prevBaseLen = 0.0f;
     }

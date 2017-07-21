@@ -132,7 +132,7 @@ class CommandChangeParticlesStripeProperties : public RECommand
 public:
     struct StripeParams // TODO: all structs settings to layer.
     {
-        DAVA::float32 stripeRate;
+        DAVA::float32 stripeVertexSpawnStep;
         DAVA::float32 stripeLifetime;
         DAVA::float32 stripeStartSize;
         DAVA::float32 stripeUScrollSpeed;

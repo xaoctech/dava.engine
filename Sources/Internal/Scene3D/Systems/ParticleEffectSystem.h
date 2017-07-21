@@ -30,7 +30,6 @@ public:
         bool enableAlphaRemap = false;
         bool usePerspectiveMapping = false;
 
-
         bool operator==(const MaterialData& rhs)
         {
             return texture == rhs.texture
