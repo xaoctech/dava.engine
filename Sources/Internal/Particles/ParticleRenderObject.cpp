@@ -132,10 +132,10 @@ void ParticleRenderObject::PrepareRenderData(Camera* camera)
 
         if (itGroupStart->material != itGroupCurr->material || isLayerTypesDifferent)
         {
-            if (itGroupStart->layer->type != ParticleLayer::TYPE_PARTICLE_STRIPE)
-                AppendParticleGroup(itGroupStart, itGroupCurr, particlesInGroup, camera->GetDirection(), basisVectors);
-            else
+            if (itGroupStart->layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE)
                 AppendStripeParticle(itGroupStart, itGroupCurr, camera, stripeBasisVectors);
+            else
+                AppendParticleGroup(itGroupStart, itGroupCurr, particlesInGroup, camera->GetDirection(), basisVectors);
             itGroupStart = itGroupCurr;
             particlesInGroup = 0;
         }
