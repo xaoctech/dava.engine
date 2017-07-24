@@ -1,4 +1,4 @@
-#include "EditorControlsView.h"
+#include "EditorSystems/EditorControlsView.h"
 #include "EditorSystems/EditorSystemsManager.h"
 
 #include "Preferences/PreferencesRegistrator.h"
@@ -9,6 +9,7 @@
 #include "Model/ControlProperties/RootProperty.h"
 
 #include "Modules/DocumentsModule/DocumentData.h"
+#include "UI/Preview/Data/CanvasData.h"
 
 #include <TArc/Core/FieldBinder.h>
 
@@ -189,7 +190,7 @@ void ColorControl::SetBackgroundColorIndex(uint32 index)
     GetBackground()->SetColor(color);
 }
 
-} //unnamed namespe
+} //EditorControlsViewDetails
 
 class BackgroundController final
 {
@@ -198,6 +199,8 @@ public:
     ~BackgroundController();
     UIControl* GetGridControl() const;
     bool IsNestedControl(const UIControl* control) const;
+    Vector2 GetRootControlPos() const;
+
     void RecalculateBackgroundProperties(DAVA::UIControl* control);
     void ControlWasRemoved(ControlNode* node, ControlsContainerNode* from);
     void ControlWasAdded(ControlNode* node, ControlsContainerNode* /*destination*/, int /*index*/);
@@ -206,7 +209,7 @@ public:
     static bool IsPropertyAffectBackground(AbstractProperty* property);
 
     Signal<> contentSizeChanged;
-    Signal<const Vector2&> rootControlPosChanged;
+    Signal<> rootControlPosChanged;
 
 private:
     void CalculateTotalRect(Rect& totalRect, Vector2& rootControlPosition) const;
@@ -214,6 +217,8 @@ private:
     RefPtr<UIControl> gridControl;
     RefPtr<UIControl> counterpoiseControl;
     RefPtr<UIControl> positionHolderControl;
+
+    DAVA::Vector2 rootControlPos;
     UIControl* nestedControl = nullptr;
 };
 
@@ -248,6 +253,11 @@ UIControl* BackgroundController::GetGridControl() const
 bool BackgroundController::IsNestedControl(const UIControl* control) const
 {
     return control == nestedControl;
+}
+
+DAVA::Vector2 BackgroundController::GetRootControlPos() const
+{
+    return rootControlPos;
 }
 
 void BackgroundController::RecalculateBackgroundProperties(DAVA::UIControl* control)
@@ -331,7 +341,8 @@ void BackgroundController::AdjustToNestedControl()
     Vector2 size = rect.GetSize();
     positionHolderControl->SetPosition(pos);
     gridControl->SetSize(size);
-    rootControlPosChanged.Emit(pos);
+    rootControlPos = pos;
+    rootControlPosChanged.Emit();
 }
 
 void BackgroundController::ControlWasRemoved(ControlNode* node, ControlsContainerNode* from)
@@ -400,6 +411,8 @@ EditorControlsView::EditorControlsView(UIControl* canvasParent_, EditorSystemsMa
     controlsCanvas->SetName(FastName("controls canvas"));
 
     InitFieldBinder();
+
+    canvasDataWrapper = accessor->CreateWrapper(ReflectedTypeDB::Get<CanvasData>());
 
     UIControlSystem::Instance()->GetLayoutSystem()->AddListener(this);
 }
@@ -504,7 +517,7 @@ BackgroundController* EditorControlsView::CreateControlBackground(PackageBaseNod
 {
     BackgroundController* backgroundController(new BackgroundController(node->GetControl()));
     backgroundController->contentSizeChanged.Connect(this, &EditorControlsView::Layout);
-    backgroundController->rootControlPosChanged.Connect(&systemsManager->rootControlPositionChanged, &Signal<const Vector2&>::Emit);
+    backgroundController->rootControlPosChanged.Connect(this, &EditorControlsView::OnRootControlPosChanged);
     gridControls.emplace_back(backgroundController);
     return backgroundController;
 }
@@ -544,6 +557,11 @@ uint32 EditorControlsView::GetIndexByPos(const Vector2& pos) const
 
 void EditorControlsView::Layout()
 {
+    if (canvasDataWrapper.HasData() == false)
+    {
+        return;
+    }
+
     float32 maxWidth = 0.0f;
     float32 totalHeight = 0.0f;
     const int spacing = 5;
@@ -553,12 +571,16 @@ void EditorControlsView::Layout()
     {
         totalHeight += spacing * (childrenCount - 1);
     }
+
+    //collect current geometry
     for (const UIControl* control : children)
     {
-        maxWidth = Max(maxWidth, control->GetSize().dx);
-        totalHeight += control->GetSize().dy;
+        Vector2 childSize = control->GetSize();
+        maxWidth = Max(maxWidth, childSize.dx);
+        totalHeight += childSize.dy;
     }
 
+    //place all grids in a column
     float32 curY = 0.0f;
     for (UIControl* child : children)
     {
@@ -569,7 +591,10 @@ void EditorControlsView::Layout()
         curY += rect.dy + spacing;
     }
     Vector2 size(maxWidth, totalHeight);
-    systemsManager->contentSizeChanged.Emit(size);
+
+    canvasDataWrapper.SetFieldValue(CanvasData::workAreaSizePropertyName, size);
+
+    OnRootControlPosChanged();
 }
 
 void EditorControlsView::OnRootContolsChanged(const Any& newRootControlsValue)
@@ -615,4 +640,19 @@ void EditorControlsView::OnRootContolsChanged(const Any& newRootControlsValue)
         AddBackgroundControllerToCanvas(backgroundController, std::distance(newRootControls.begin(), iter));
     }
     Layout();
+}
+
+//later background controls must be a part of data and rootControlPos must be simple getter
+void EditorControlsView::OnRootControlPosChanged()
+{
+    if (gridControls.size() == 1)
+    {
+        const std::unique_ptr<BackgroundController>& grid = gridControls.front();
+        canvasDataWrapper.SetFieldValue(CanvasData::rootPositionPropertyName, grid->GetRootControlPos());
+    }
+    else
+    {
+        //force show 0, 0 at top left corner if many root controls displayed
+        canvasDataWrapper.SetFieldValue(CanvasData::rootPositionPropertyName, Vector2(0.0f, 0.0f));
+    }
 }
