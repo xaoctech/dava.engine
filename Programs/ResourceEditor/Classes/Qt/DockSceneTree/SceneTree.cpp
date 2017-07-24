@@ -193,35 +193,47 @@ protected:
         SelectableGroup currentGroup = Selection::GetSelection();
         DAVA::Vector<std::unique_ptr<DAVA::Command>> commands;
         commands.reserve(GetSelectedItemsCount());
-        currentGroup.Clear();
-        ForEachSelectedByType(type, [this, &commands, &currentGroup, callback](SceneTreeItem* item)
-                              {
-                                  SceneTreeItem* parent = static_cast<SceneTreeItem*>(item->parent());
 
-                                  bool parentSelected = false;
+        foreach (QModelIndex index, treeWidget->selectionModel()->selectedRows())
+        {
+            QModelIndex srcIndex = treeWidget->filteringProxyModel->mapToSource(index);
+            SceneTreeItem* item = treeWidget->treeModel->GetItem(srcIndex);
+            DVASSERT(item != nullptr);
 
-                                  if (parent != nullptr)
-                                  {
-                                      foreach (QModelIndex index, this->treeWidget->selectionModel()->selectedRows())
-                                      {
-                                          QModelIndex srcIndex = treeWidget->filteringProxyModel->mapToSource(index);
-                                          SceneTreeItem* item = treeWidget->treeModel->GetItem(srcIndex);
+            bool parentSelected = false;
+            SceneTreeItem* parent = static_cast<SceneTreeItem*>(item->parent());
 
-                                          if (parent == item)
-                                          {
-                                              parentSelected = true;
-                                              break;
-                                          }
-                                      }
-                                  }
+            while (parent != nullptr and !parentSelected)
+            {
+                foreach (QModelIndex index, this->treeWidget->selectionModel()->selectedRows())
+                {
+                    QModelIndex srcIndex = treeWidget->filteringProxyModel->mapToSource(index);
+                    SceneTreeItem* item = treeWidget->treeModel->GetItem(srcIndex);
 
-                                  if (!parentSelected)
-                                  {
-                                      RemoveInfo info = callback(item);
-                                      commands.push_back(std::move(info.command));
-                                  }
+                    if (parent == item && parent->ItemType() == type)
+                    {
+                        parentSelected = true;
+                        break;
+                    }
+                }
 
-                              });
+                parent = static_cast<SceneTreeItem*>(parent->parent());
+            }
+
+            if (parentSelected)
+            {
+                currentGroup.Remove(item->GetItemObject());
+            }
+            else
+            {
+                if (static_cast<SceneTreeItem::eItemType>(item->ItemType()) == type)
+                {
+                    RemoveInfo info = callback(item);
+                    commands.push_back(std::move(info.command));
+                    currentGroup.Remove(info.selectedObject);
+                }
+            }
+        }
 
         if (!commands.empty())
         {
