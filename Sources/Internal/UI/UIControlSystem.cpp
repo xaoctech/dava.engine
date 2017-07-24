@@ -814,15 +814,13 @@ UIEvent UIControlSystem::MakeUIEvent(const InputEvent& inputEvent) const
         }
         else
         {
-            DigitalElementState keyState = inputEvent.device->GetDigitalElementState(uie.key);
-
-            if (keyState.IsReleased())
+            if (inputEvent.digitalState.IsReleased())
             {
                 uie.phase = UIEvent::Phase::KEY_UP;
             }
             else
             {
-                if (keyState.IsJustPressed())
+                if (inputEvent.digitalState.IsJustPressed())
                 {
                     uie.phase = UIEvent::Phase::KEY_DOWN;
                 }
