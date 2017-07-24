@@ -600,8 +600,6 @@ void PreviewWidget::OnKeyPressed(QKeyEvent* event)
     }
 }
 
-}
-
 void PreviewWidget::OnTabBarContextMenuRequested(const QPoint& pos)
 {
     using namespace DAVA;
@@ -672,3 +670,4 @@ void PreviewWidget::OnTabBarContextMenuRequested(const QPoint& pos)
     });
 
     menu.exec(tabBar->mapToGlobal(pos));
+}
