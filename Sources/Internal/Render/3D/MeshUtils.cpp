@@ -159,7 +159,7 @@ Vector<int32> GetSignificantJoints(PolygonGroup* pg, int32 vertex)
     Vector<int32> result;
     int32 jIndex = -1;
     float32 jWeight = 0.f;
-    if (pg->GetFormat() & EVF_JOINTINDEX_HARD) //hard-skinning
+    if (pg->GetFormat() & EVF_HARD_JOINTINDEX) //hard-skinning
     {
         pg->GetHardJointIndex(vertex, jIndex);
         result.emplace_back(jIndex);
@@ -187,7 +187,7 @@ void ReplaceSignificantJoints(PolygonGroup* pg, int32 vertex, const Map<int32, i
 
     int32 jIndex = -1;
     float32 jWeight = 0.f;
-    if (pg->GetFormat() & EVF_JOINTINDEX_HARD) //hard-skinning
+    if (pg->GetFormat() & EVF_HARD_JOINTINDEX) //hard-skinning
     {
         pg->GetHardJointIndex(vertex, jIndex);
         DVASSERT(jointsMap.count(jIndex) != 0);
@@ -536,7 +536,7 @@ SkinnedMesh* CreateHardSkinnedMesh(Entity* fromEntity, Vector<SkeletonComponent:
         }
 
         PolygonGroup* polygonGroup = new PolygonGroup();
-        polygonGroup->AllocateData(meshFormat | EVF_JOINTINDEX_HARD, vxCount, indCount);
+        polygonGroup->AllocateData(meshFormat | EVF_HARD_JOINTINDEX, vxCount, indCount);
 
         int32 vertexOffset = 0;
         int32 indexOffset = 0;
@@ -594,7 +594,7 @@ Vector<std::pair<PolygonGroup*, SkinnedMesh::JointTargets>> SplitSkinnedMeshGeom
     int32 vertexFormat = dataSource->GetFormat();
     int32 trianglesCount = dataSource->GetPrimitiveCount();
 
-    DVASSERT((vertexFormat & EVF_JOINTINDEX_HARD) || (vertexFormat & (EVF_JOINTINDEX | EVF_JOINTWEIGHT)));
+    DVASSERT((vertexFormat & EVF_HARD_JOINTINDEX) || (vertexFormat & (EVF_JOINTINDEX | EVF_JOINTWEIGHT)));
 
     Vector<std::pair<PolygonGroup*, SkinnedMesh::JointTargets>> result;
     Vector<SkinnedTriangleWork> sourceTriangles(trianglesCount);

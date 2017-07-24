@@ -167,7 +167,7 @@ ColladaPolygonGroup::ColladaPolygonGroup(ColladaMesh* _parentMesh, FCDGeometryPo
     if (vertexWeightArray)
     {
         if (maxVertexInfluenceCount == 1)
-            vertexFormat |= EVF_JOINTINDEX_HARD;
+            vertexFormat |= EVF_HARD_JOINTINDEX;
         else
             vertexFormat |= EVF_JOINTWEIGHT | EVF_JOINTINDEX;
     }

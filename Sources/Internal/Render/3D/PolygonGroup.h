@@ -109,7 +109,7 @@ public:
     Vector3* normalArray = nullptr;
     Vector3* tangentArray = nullptr;
     Vector3* binormalArray = nullptr;
-    float32* jointIndexHardArray = nullptr;
+    float32* hardJointIndexArray = nullptr;
     Vector4* jointIndexArray = nullptr;
     Vector4* jointWeightArray = nullptr;
     Vector3** cubeTextureCoordArray = nullptr;
@@ -246,7 +246,7 @@ inline void PolygonGroup::SetAngle(int32 i, const Vector2& _v)
 
 inline void PolygonGroup::SetHardJointIndex(int32 vIndex, int32 indexValue)
 {
-    float32* v = reinterpret_cast<float32*>(reinterpret_cast<uint8*>(jointIndexHardArray) + vIndex * vertexStride);
+    float32* v = reinterpret_cast<float32*>(reinterpret_cast<uint8*>(hardJointIndexArray) + vIndex * vertexStride);
     *v = float32(indexValue);
 }
 
@@ -345,7 +345,7 @@ inline void PolygonGroup::GetAngle(int32 i, Vector2& _v)
 
 inline void PolygonGroup::GetHardJointIndex(int32 vIndex, int32& indexValue)
 {
-    float32* v = reinterpret_cast<float32*>(reinterpret_cast<uint8*>(jointIndexHardArray) + vIndex * vertexStride);
+    float32* v = reinterpret_cast<float32*>(reinterpret_cast<uint8*>(hardJointIndexArray) + vIndex * vertexStride);
     indexValue = int32(*v);
 }
 

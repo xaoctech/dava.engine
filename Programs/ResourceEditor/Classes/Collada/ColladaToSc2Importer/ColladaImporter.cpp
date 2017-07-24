@@ -62,7 +62,7 @@ RenderObject* ColladaImporter::GetMeshFromCollada(ColladaMeshInstance* mesh, con
             DVASSERT(polygonGroupInstance->polyGroup->maxVertexInfluenceCount > 0);
             uint32 maxJointWeights = polygonGroupInstance->polyGroup->maxVertexInfluenceCount;
 
-            if (davaPolygon->GetFormat() & EVF_JOINTINDEX_HARD)
+            if (davaPolygon->GetFormat() & EVF_HARD_JOINTINDEX)
                 davaMaterial->AddFlag(NMaterialFlagName::FLAG_HARD_SKINNING, 1);
             else
                 davaMaterial->AddFlag(NMaterialFlagName::FLAG_SOFT_SKINNING, maxJointWeights);
@@ -272,7 +272,7 @@ void ColladaImporter::ImportSkeleton(ColladaSceneNode* colladaNode, Entity* node
             }
             else
             {
-                DVASSERT(vertexFormat & EVF_JOINTINDEX_HARD);
+                DVASSERT(vertexFormat & EVF_HARD_JOINTINDEX);
 
                 polygonGroup->GetCoord(v, position);
                 polygonGroup->GetHardJointIndex(v, jointIndex);

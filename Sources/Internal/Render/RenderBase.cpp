@@ -110,7 +110,7 @@ uint32 GetVertexLayoutRequiredFormat(const rhi::VertexLayout& layout)
         {
             if (layout.ElementDataCount(i) == 1)
             {
-                res |= EVF_JOINTINDEX_HARD;
+                res |= EVF_HARD_JOINTINDEX;
             }
             else
             {
@@ -137,7 +137,7 @@ ENUM_DECLARE(DAVA::eVertexFormat)
     ENUM_ADD_DESCR(DAVA::EVF_TEXCOORD3, "TexCoord 3");
     ENUM_ADD_DESCR(DAVA::EVF_TANGENT, "Tangent");
     ENUM_ADD_DESCR(DAVA::EVF_BINORMAL, "Binormal");
-    ENUM_ADD_DESCR(DAVA::EVF_JOINTINDEX_HARD, "Joint index hard");
+    ENUM_ADD_DESCR(DAVA::EVF_HARD_JOINTINDEX, "Joint index hard");
     ENUM_ADD_DESCR(DAVA::EVF_PIVOT4, "Pivot");
     ENUM_ADD_DESCR(DAVA::EVF_PIVOT_DEPRECATED, "PivotDeprecated");
     ENUM_ADD_DESCR(DAVA::EVF_FLEXIBILITY, "Flexibility");

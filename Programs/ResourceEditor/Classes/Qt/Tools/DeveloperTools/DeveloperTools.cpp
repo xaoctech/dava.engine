@@ -118,7 +118,7 @@ void DeveloperTools::OnDebugCreateTestHardSkinnedObject()
 
     ScopedPtr<PolygonGroup> polygonGroup(new PolygonGroup());
     polygonGroup->SetPrimitiveType(rhi::PRIMITIVE_LINELIST);
-    polygonGroup->AllocateData(EVF_VERTEX | EVF_JOINTINDEX_HARD, boxesCount * 8, boxesCount * 24);
+    polygonGroup->AllocateData(EVF_VERTEX | EVF_HARD_JOINTINDEX, boxesCount * 8, boxesCount * 24);
     for (int32 i = 0; i < boxesCount; i++)
     {
         polygonGroup->SetCoord(i * 8 + 0, boxes[i] + Vector3(jointBox.min.x, jointBox.min.y, jointBox.min.z));

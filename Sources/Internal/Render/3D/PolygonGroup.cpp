@@ -99,10 +99,10 @@ void PolygonGroup::UpdateDataPointersAndStreams()
         baseShift += GetVertexSize(EVF_BINORMAL);
         vLayout.AddElement(rhi::VS_BINORMAL, 0, rhi::VDT_FLOAT, 3);
     }
-    if (vertexFormat & EVF_JOINTINDEX_HARD)
+    if (vertexFormat & EVF_HARD_JOINTINDEX)
     {
-        jointIndexHardArray = reinterpret_cast<float32*>(meshData + baseShift);
-        baseShift += GetVertexSize(EVF_JOINTINDEX_HARD);
+        hardJointIndexArray = reinterpret_cast<float32*>(meshData + baseShift);
+        baseShift += GetVertexSize(EVF_HARD_JOINTINDEX);
         vLayout.AddElement(rhi::VS_BLENDINDEX, 0, rhi::VDT_FLOAT, 1);
     }
     if (vertexFormat & EVF_PIVOT4)
@@ -256,7 +256,7 @@ uint32 PolygonGroup::ReleaseGeometryData()
         normalArray = nullptr;
         tangentArray = nullptr;
         binormalArray = nullptr;
-        jointIndexHardArray = nullptr;
+        hardJointIndexArray = nullptr;
         jointIndexArray = nullptr;
         jointWeightArray = nullptr;
         cubeTextureCoordArray = nullptr;
