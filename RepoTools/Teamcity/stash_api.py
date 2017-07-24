@@ -61,6 +61,16 @@ class StashRequest:
             raise
 
 
+def argparse_add_argument( arg_parser ):
+    arg_parser.add_argument( '--stash_api_version', default = '1.0' )
+    arg_parser.add_argument( '--stash_project', default = 'DF' )
+    arg_parser.add_argument( '--stash_repo_name', default = 'dava.framework' )
+
+    arg_parser.add_argument( '--stash_url', required = True )
+
+    arg_parser.add_argument( '--stash_login', required = True )
+    arg_parser.add_argument( '--stash_password', required = True )
+
 
 def init( stash_url,stash_api_version, stash_project, stash_repo_name, login, password ):
     global __Stash
@@ -70,5 +80,17 @@ def init( stash_url,stash_api_version, stash_project, stash_repo_name, login, pa
                             stash_repo_name,
                             login,
                             password )
+    return __Stash
+
+def init_args( args ):
+    global __Stash
+    __Stash = StashRequest( args.stash_url,
+                            args.stash_api_version,
+                            args.stash_project,
+                            args.stash_repo_name,
+                            args.stash_login,
+                            args.stash_password )
+    return __Stash
+
 def ptr():
     return __Stash

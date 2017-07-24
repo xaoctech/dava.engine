@@ -1,7 +1,6 @@
 #pragma once
 
 #include "EditorSystems/BaseEditorSystem.h"
-#include "EditorSystems/EditorSystemsManager.h"
 
 #include <Base/Introspection.h>
 #include <Math/Vector.h>
@@ -54,8 +53,6 @@ private:
     void UpdateHUDEnabled();
 
     HUDAreaInfo activeAreaInfo;
-
-    DAVA::RefPtr<DAVA::UIControl> hudControl;
 
     DAVA::Vector2 pressedPoint; //corner of selection rect
     DAVA::Vector2 hoveredPoint;

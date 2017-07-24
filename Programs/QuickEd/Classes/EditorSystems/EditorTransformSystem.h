@@ -80,6 +80,7 @@ private:
 
     void ChangeProperty();
     void Resize();
+    bool CanMagnet() const;
 
     HUDAreaInfo::eArea activeArea = HUDAreaInfo::NO_AREA;
     ControlNode* activeControlNode = nullptr;

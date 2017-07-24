@@ -187,6 +187,10 @@ void QtWrapLayoutPrivate::Layout(int32 width)
     Q_Q(QtWrapLayout);
 
     DVASSERT(items.empty() == false);
+    if (items.empty())
+    {
+        return;
+    }
 
     // Early out if we have no changes that would cause a change in vertical layout
     if (width == layoutWidth && flags[Dirty] == false && flags[SizeDirty] == false)

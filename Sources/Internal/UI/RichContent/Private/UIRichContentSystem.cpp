@@ -1,6 +1,7 @@
 #include "UI/RichContent/UIRichContentSystem.h"
 
 #include "Debug/DVAssert.h"
+#include "Logger/Logger.h"
 #include "UI/RichContent/Private/RichLink.h"
 #include "UI/RichContent/Private/XMLRichContentBuilder.h"
 #include "UI/RichContent/UIRichAliasMap.h"
@@ -109,6 +110,10 @@ void UIRichContentSystem::Process(float32 elapsedTime)
                         root->AddControl(ctrl.Get());
                         l->AddItem(ctrl);
                     }
+                }
+                else
+                {
+                    Logger::Warning("Syntax error in rich content text!");
                 }
             }
         }

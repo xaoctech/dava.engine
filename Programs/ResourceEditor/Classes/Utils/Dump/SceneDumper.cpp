@@ -30,23 +30,15 @@ DAVA::Set<DAVA::FilePath> SceneDumper::DumpLinks(const DAVA::FilePath& scenePath
     DAVA::Set<DAVA::FilePath> links;
     SceneDumper dumper(scenePath, mode, compressedGPUs);
 
+    DAVA::Set<DAVA::FilePath> redumpScenes;
     if (nullptr != dumper.scene)
     {
-        dumper.DumpLinksRecursive(dumper.scene, links);
-    }
-
-    DAVA::Vector<DAVA::FilePath> redumpScenes;
-    for (const DAVA::FilePath& link : links)
-    {
-        if (link.IsEqualToExtension(".sc2") == true && dumpedLinks.count(link) == 0)
-        {
-            redumpScenes.push_back(link);
-        }
+        dumper.DumpLinksRecursive(dumper.scene, links, redumpScenes);
     }
 
     dumpedLinks.insert(links.begin(), links.end());
 
-    for (DAVA::FilePath& scenePath : redumpScenes)
+    for (const DAVA::FilePath& scenePath : redumpScenes)
     {
         DAVA::Set<DAVA::FilePath> result = SceneDumper::DumpLinks(scenePath, mode, compressedGPUs, dumpedLinks);
         links.insert(result.begin(), result.end());
@@ -73,13 +65,13 @@ SceneDumper::~SceneDumper()
     SafeRelease(scene);
 }
 
-void SceneDumper::DumpLinksRecursive(DAVA::Entity* entity, DAVA::Set<DAVA::FilePath>& links) const
+void SceneDumper::DumpLinksRecursive(DAVA::Entity* entity, DAVA::Set<DAVA::FilePath>& links, DAVA::Set<DAVA::FilePath>& redumpScenes) const
 {
     //Recursiveness
     const DAVA::uint32 count = entity->GetChildrenCount();
     for (DAVA::uint32 ch = 0; ch < count; ++ch)
     {
-        DumpLinksRecursive(entity->GetChild(ch), links);
+        DumpLinksRecursive(entity->GetChild(ch), links, redumpScenes);
     }
 
     // Custom Property Links
@@ -93,7 +85,7 @@ void SceneDumper::DumpLinksRecursive(DAVA::Entity* entity, DAVA::Set<DAVA::FileP
 
     for (DAVA::uint32 i = 0; i < entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT); ++i)
     {
-        DumpSlot(static_cast<DAVA::SlotComponent*>(entity->GetComponent(DAVA::Component::SLOT_COMPONENT, i)), links);
+        DumpSlot(static_cast<DAVA::SlotComponent*>(entity->GetComponent(DAVA::Component::SLOT_COMPONENT, i)), links, redumpScenes);
     }
 }
 
@@ -317,7 +309,7 @@ void SceneDumper::DumpEmitter(DAVA::ParticleEmitterInstance* instance, DAVA::Set
     }
 }
 
-void SceneDumper::DumpSlot(DAVA::SlotComponent* slot, DAVA::Set<DAVA::FilePath>& links) const
+void SceneDumper::DumpSlot(DAVA::SlotComponent* slot, DAVA::Set<DAVA::FilePath>& links, DAVA::Set<DAVA::FilePath>& redumpScenes) const
 {
     DAVA::FilePath configPath = slot->GetConfigFilePath();
     links.insert(configPath.GetAbsolutePathname());
@@ -325,5 +317,6 @@ void SceneDumper::DumpSlot(DAVA::SlotComponent* slot, DAVA::Set<DAVA::FilePath>&
     for (const DAVA::SlotSystem::ItemsCache::Item& item : items)
     {
         links.insert(item.scenePath.GetAbsolutePathname());
+        redumpScenes.insert(item.scenePath.GetAbsolutePathname());
     }
 }
