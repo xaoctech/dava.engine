@@ -193,11 +193,33 @@ protected:
         SelectableGroup currentGroup = Selection::GetSelection();
         DAVA::Vector<std::unique_ptr<DAVA::Command>> commands;
         commands.reserve(GetSelectedItemsCount());
-        ForEachSelectedByType(type, [&commands, &currentGroup, callback](SceneTreeItem* item)
+        currentGroup.Clear();
+        ForEachSelectedByType(type, [this, &commands, &currentGroup, callback](SceneTreeItem* item)
                               {
-                                  RemoveInfo info = callback(item);
-                                  currentGroup.Remove(info.selectedObject);
-                                  commands.push_back(std::move(info.command));
+                                  SceneTreeItem* parent = static_cast<SceneTreeItem*>(item->parent());
+
+                                  bool parentSelected = false;
+
+                                  if (parent != nullptr)
+                                  {
+                                      foreach (QModelIndex index, this->treeWidget->selectionModel()->selectedRows())
+                                      {
+                                          QModelIndex srcIndex = treeWidget->filteringProxyModel->mapToSource(index);
+                                          SceneTreeItem* item = treeWidget->treeModel->GetItem(srcIndex);
+
+                                          if (parent == item)
+                                          {
+                                              parentSelected = true;
+                                          }
+                                      }
+                                  }
+
+                                  if (!parentSelected)
+                                  {
+                                      RemoveInfo info = callback(item);
+                                      commands.push_back(std::move(info.command));
+                                  }
+
                               });
 
         if (!commands.empty())
