@@ -80,6 +80,8 @@ private:
     void ExtractMatchedLines(DAVA::Vector<MagnetLineInfo>& magnets, const DAVA::Vector<MagnetLine>& magnetLines, const DAVA::UIControl* control, DAVA::Vector2::eAxis axis);
     bool IsShiftPressed() const;
 
+    bool CanMagnet() const;
+
     HUDAreaInfo::eArea activeArea = HUDAreaInfo::NO_AREA;
     ControlNode* activeControlNode = nullptr;
     DAVA::Vector2 extraDelta;

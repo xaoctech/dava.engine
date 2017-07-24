@@ -1,10 +1,13 @@
 #include "UI/RichContent/Private/XMLRichContentBuilder.h"
 
 #include "Logger/Logger.h"
+#include "Render/Renderer.h"
+#include "Render/RenderOptions.h"
 #include "UI/DefaultUIPackageBuilder.h"
 #include "UI/Layouts/UIFlowLayoutHintComponent.h"
 #include "UI/Layouts/UILayoutSourceRectComponent.h"
 #include "UI/Layouts/UISizePolicyComponent.h"
+#include "UI/Render/UIDebugRenderComponent.h"
 #include "UI/RichContent/Private/RichContentUIPackageBuilder.h"
 #include "UI/RichContent/Private/RichLink.h"
 #include "UI/RichContent/UIRichAliasMap.h"
@@ -32,6 +35,8 @@ XMLRichContentBuilder::XMLRichContentBuilder(RichLink* link_, bool editorMode /*
 
 bool XMLRichContentBuilder::Build(const String& text)
 {
+    debugDraw = Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DEBUG_DRAW_RICH_ITEMS);
+
     controls.clear();
     direction = bidiHelper.GetDirectionUTF8String(text); // Detect text direction
     RefPtr<XMLParser> parser(new XMLParser());
@@ -74,7 +79,7 @@ const String& XMLRichContentBuilder::GetClass() const
     return classesStack.back();
 }
 
-void XMLRichContentBuilder::PrepareControl(UIControl* ctrl, bool autosize)
+void XMLRichContentBuilder::PrepareControl(UIControl* ctrl, bool autosize, bool stick)
 {
     ctrl->SetClassesFromString(ctrl->GetClassesAsString() + " " + GetClass());
 
@@ -94,11 +99,30 @@ void XMLRichContentBuilder::PrepareControl(UIControl* ctrl, bool autosize)
 
     UIFlowLayoutHintComponent* flh = ctrl->GetOrCreateComponent<UIFlowLayoutHintComponent>();
     flh->SetContentDirection(direction);
-    if (needLineBreak)
+    flh->SetNewLineBeforeThis(needLineBreak);
+    if (!needSpace)
     {
-        flh->SetNewLineBeforeThis(needLineBreak);
-        needLineBreak = false;
+        flh->SetStickItemBeforeThis(stick);
     }
+
+    if (debugDraw)
+    {
+        UIDebugRenderComponent* debug = ctrl->GetOrCreateComponent<UIDebugRenderComponent>();
+        debug->SetEnabled(true);
+        debug->SetDrawColor(Color::Cyan);
+        if (!needSpace && stick)
+        {
+            debug->SetDrawColor(Color::Magenta);
+        }
+    }
+
+    needSpace = false;
+    needLineBreak = false;
+}
+
+void XMLRichContentBuilder::AppendControl(UIControl* ctrl)
+{
+    controls.emplace_back(SafeRetain(ctrl));
 }
 
 void XMLRichContentBuilder::OnElementStarted(const String& elementName, const String& namespaceURI, const String& qualifedName, const Map<String, String>& attributes)
@@ -133,11 +157,16 @@ void XMLRichContentBuilder::OnElementEnded(const String& elementName, const Stri
 
 void XMLRichContentBuilder::OnFoundCharacters(const String& chars)
 {
-    ProcessText(chars);
+    // Concat input characters in one single string, because some kind
+    // of intarnalization characters break XML parser to few
+    // OnFoundCharacters callbacks per one word
+    fullText += chars;
 }
 
 void XMLRichContentBuilder::ProcessTagBegin(const String& tag, const Map<String, String>& attributes)
 {
+    FlushText();
+
     // Global attributes
     String classes;
     if (!GetAttribute(attributes, "class", classes) && !classesInheritance)
@@ -170,11 +199,11 @@ void XMLRichContentBuilder::ProcessTagBegin(const String& tag, const Map<String,
         if (GetAttribute(attributes, "src", src))
         {
             UIControl* img = new UIControl();
-            PrepareControl(img, true);
+            PrepareControl(img, true, true);
             UIControlBackground* bg = img->GetOrCreateComponent<UIControlBackground>();
             bg->SetDrawType(UIControlBackground::DRAW_STRETCH_BOTH);
             bg->SetSprite(FilePath(src));
-            controls.emplace_back(img);
+            AppendControl(img);
         }
     }
     else if (tag == "object")
@@ -230,24 +259,25 @@ void XMLRichContentBuilder::ProcessTagBegin(const String& tag, const Map<String,
                 }
                 if (obj != nullptr)
                 {
-                    PrepareControl(obj, false);
+                    if (!name.empty())
+                    {
+                        obj->SetName(name);
+                    }
+
+                    PrepareControl(obj, false, true);
 
                     UIRichContentObjectComponent* objComp = obj->GetOrCreateComponent<UIRichContentObjectComponent>();
                     objComp->SetPackagePath(path);
                     objComp->SetControlName(controlName);
                     objComp->SetPrototypeName(prototypeName);
 
-                    if (!name.empty())
-                    {
-                        obj->SetName(name);
-                    }
                     link->component->onCreateObject.Emit(obj);
-                    controls.emplace_back(SafeRetain(obj));
+                    AppendControl(obj);
                 }
             }
             else
             {
-                Logger::Error("[UIRichContentSystem] Recursive object in rich content from '%s' with name '%s'!",
+                Logger::Error("Recursive object in rich content from '%s' with name '%s'!",
                               path.c_str(),
                               controlName.empty() ? prototypeName.c_str() : controlName.c_str());
             }
@@ -257,6 +287,8 @@ void XMLRichContentBuilder::ProcessTagBegin(const String& tag, const Map<String,
 
 void XMLRichContentBuilder::ProcessTagEnd(const String& tag)
 {
+    FlushText();
+
     PopClass();
 
     if (tag == "p")
@@ -279,30 +311,49 @@ void XMLRichContentBuilder::ProcessText(const String& text)
     const static String RTL_MARK = UTF8Utils::EncodeToUTF8(L"\u200F");
 
     Vector<String> tokens;
-    Split(text, " \n\r\t", tokens);
+    Split(text, " \n\r\t", tokens, false, true);
+    bool first = true;
     for (String& token : tokens)
     {
-        BiDiHelper::Direction wordDirection = bidiHelper.GetDirectionUTF8String(token);
-        if (wordDirection == BiDiHelper::Direction::NEUTRAL)
+        if (token.empty())
         {
-            if (direction == BiDiHelper::Direction::RTL)
-            {
-                token = RTL_MARK + token;
-            }
-            else if (direction == BiDiHelper::Direction::LTR)
-            {
-                token = LTR_MARK + token;
-            }
+            needSpace = true;
         }
         else
         {
-            direction = wordDirection;
+            BiDiHelper::Direction wordDirection = bidiHelper.GetDirectionUTF8String(token);
+            if (wordDirection == BiDiHelper::Direction::NEUTRAL)
+            {
+                if (direction == BiDiHelper::Direction::RTL)
+                {
+                    token = RTL_MARK + token;
+                }
+                else if (direction == BiDiHelper::Direction::LTR)
+                {
+                    token = LTR_MARK + token;
+                }
+            }
+            else
+            {
+                direction = wordDirection;
+            }
+
+            UIStaticText* ctrl = new UIStaticText();
+            PrepareControl(ctrl, true, first);
+            ctrl->SetUtf8Text(token);
+            AppendControl(ctrl);
         }
 
-        UIStaticText* ctrl = new UIStaticText();
-        PrepareControl(ctrl, true);
-        ctrl->SetUtf8Text(token);
-        controls.emplace_back(ctrl);
+        first = false;
+    }
+}
+
+void XMLRichContentBuilder::FlushText()
+{
+    if (!fullText.empty())
+    {
+        ProcessText(fullText);
+        fullText.clear();
     }
 }
 }

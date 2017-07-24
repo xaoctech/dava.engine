@@ -1054,6 +1054,13 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity* currentNode)
             c--;
     }
 
+    KeyedArchive* customProperties = GetCustomPropertiesArchieve(currentNode);
+    bool doNotRemove = customProperties && customProperties->IsKeyExists("editor.donotremove");
+    if (doNotRemove == true)
+    {
+        return false;
+    }
+
     if (currentNode->GetChildrenCount() == 1)
     {
         uint32 allowed_comp_count = 0;
@@ -1075,7 +1082,6 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity* currentNode)
         if (currentNode->GetLocalTransform() == Matrix4::IDENTITY)
         {
             Entity* parent = currentNode->GetParent();
-            uint32 curNodeID = currentNode->GetID();
 
             if (parent)
             {
@@ -1114,7 +1120,6 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity* currentNode)
                 parent->RemoveNode(currentNode);
 
                 removedNodeCount++;
-                childNode->SetID(curNodeID);
                 SafeRelease(childNode);
 
                 return true;
@@ -1283,7 +1288,6 @@ void SceneFileV2::ConvertShadowVolumes(Entity* entity, NMaterial* shadowMaterial
 
 void SceneFileV2::OptimizeScene(Entity* rootNode)
 {
-    int32 beforeCount = rootNode->GetChildrenCountRecursive();
     removedNodeCount = 0;
     rootNode->BakeTransforms();
 
@@ -1337,9 +1341,6 @@ void SceneFileV2::OptimizeScene(Entity* rootNode)
     }
 
     QualitySettingsSystem::Instance()->UpdateEntityAfterLoad(rootNode);
-
-    int32 nowCount = rootNode->GetChildrenCountRecursive();
-    Logger::FrameworkDebug("nodes removed: %d before: %d, now: %d, diff: %d", removedNodeCount, beforeCount, nowCount, beforeCount - nowCount);
 }
 
 void SceneFileV2::UpdatePolygonGroupRequestedFormatRecursively(Entity* entity)

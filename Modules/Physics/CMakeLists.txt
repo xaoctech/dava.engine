@@ -1,4 +1,4 @@
-set(NAME_MODULE Physics )
+set(NAME_MODULE PhysicsModule )
 
 set(MODULE_TYPE STATIC)#INLINE STATIC DYNAMIC 
 

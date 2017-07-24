@@ -63,7 +63,11 @@ public:
 }
 
 //to use std::unique_ptr<FileSystemCache> sceneFilesCache with forward declaration
-SceneManagerModule::SceneManagerModule() = default;
+SceneManagerModule::SceneManagerModule()
+{
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SceneData);
+}
+
 SceneManagerModule::~SceneManagerModule() = default;
 
 void SceneManagerModule::OnRenderSystemInitialized(DAVA::Window* w)

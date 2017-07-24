@@ -59,6 +59,11 @@ bool SceneData::IsSavingAllowed(QString* message /*= nullptr*/) const
     return false;
 }
 
+SceneEditor2* SceneData::GetScenePtr() const
+{
+    return scene.Get();
+}
+
 const char* SceneData::scenePropertyName = "Scene";
 const char* SceneData::sceneChangedPropertyName = "IsSceneChanged";
 const char* SceneData::scenePathPropertyName = "ScenePath";

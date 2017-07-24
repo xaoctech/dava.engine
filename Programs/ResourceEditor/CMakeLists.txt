@@ -19,22 +19,31 @@ if (WIN32 AND DEPLOY AND NOT DAVA_MEGASOLUTION )
     set( DEPLOY_BEAST_DIR ${DEPLOY_DIR} )
 endif()
 
+set ( DAVA_COREV2 1 )
+
+dava_add_definitions       (
+-D__DAVAENGINE_COREV2__
+)
+
+list(APPEND DAVA_COMPONENTS "Sound")
+# list(APPEND DAVA_COMPONENTS "PhysicsModule")
+# list(APPEND DAVA_COMPONENTS "PhysicsDebugModule")
+list(APPEND DAVA_COMPONENTS DAVA_PLATFORM_QT)
+list(APPEND DAVA_COMPONENTS DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME)
+list(APPEND DAVA_COMPONENTS DAVA_DISABLE_AUTOTESTS)
+list(APPEND DAVA_COMPONENTS DAVA_USE_RENDERSTATS)
+
 find_package( DavaTools REQUIRED )
-
-
 find_package( QT5 REQUIRED )
 find_package( GMock REQUIRED )
 find_package( QtHelpers REQUIRED )
 
-find_package( DavaFramework REQUIRED COMPONENTS "Sound"
-                                                DAVA_PLATFORM_QT 
-                                                DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME 
-                                                DAVA_DISABLE_AUTOTESTS 
-                                                DAVA_USE_RENDERSTATS )
+find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS})
 
 find_package( QtTools REQUIRED )
 find_package( TArc REQUIRED )
 find_package( RemoteTool REQUIRED )
+# find_package( EditorPhysics REQUIRED )
 
 #
 

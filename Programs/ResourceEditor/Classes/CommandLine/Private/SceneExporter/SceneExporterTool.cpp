@@ -1,6 +1,7 @@
 #include "CommandLine/SceneExporterTool.h"
 #include "CommandLine/Private/OptionName.h"
 #include "CommandLine/Private/SceneConsoleHelper.h"
+#include "Classes/Project/ProjectManagerData.h"
 
 #include "Utils/SceneExporter/SceneExporter.h"
 #include "TArc/Utils/ModuleCollection.h"
@@ -242,6 +243,13 @@ bool SceneExporterTool::PostInitInternal()
     }
     exportingParams.dataSourceFolder.MakeDirectoryPathname();
 
+    dataSourceFolder = ProjectManagerData::GetDataSourcePath(exportingParams.dataSourceFolder);
+    if (dataSourceFolder.IsEmpty())
+    {
+        DAVA::Logger::Error("DataSource folder was not found");
+        return false;
+    }
+
     FilePath outputsFile = options.GetOption(OptionName::Output).AsString();
     if (outputsFile.IsEmpty() == false)
     { // new style of output params
@@ -340,6 +348,7 @@ bool SceneExporterTool::PostInitInternal()
 
 DAVA::TArc::ConsoleModule::eFrameResult SceneExporterTool::OnFrameInternal()
 {
+    DAVA::FilePath::AddResourcesFolder(dataSourceFolder);
     DAVA::AssetCacheClient cacheClient;
 
     SceneExporter exporter;
@@ -395,6 +404,8 @@ DAVA::TArc::ConsoleModule::eFrameResult SceneExporterTool::OnFrameInternal()
     {
         cacheClient.Disconnect();
     }
+
+    DAVA::FilePath::RemoveResourcesFolder(dataSourceFolder);
 
     return DAVA::TArc::ConsoleModule::eFrameResult::FINISHED;
 }

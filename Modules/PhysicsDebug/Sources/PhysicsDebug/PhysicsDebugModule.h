@@ -12,11 +12,11 @@ class PxPvdTransport;
 
 namespace DAVA
 {
-class PhysicsDebug : public IModule
+class PhysicsDebugModule : public IModule
 {
 public:
-    PhysicsDebug(Engine* engine);
-    ~PhysicsDebug();
+    PhysicsDebugModule(Engine* engine);
+    ~PhysicsDebugModule();
     void Init() override;
     void Shutdown() override;
 
@@ -27,6 +27,6 @@ private:
     physx::PxPvd* pvd = nullptr;
     physx::PxPvdTransport* transport = nullptr;
 
-    DAVA_VIRTUAL_REFLECTION(PhysicsDebug, IModule);
+    DAVA_VIRTUAL_REFLECTION(PhysicsDebugModule, IModule);
 };
 }

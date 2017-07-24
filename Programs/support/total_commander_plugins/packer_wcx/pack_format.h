@@ -26,12 +26,13 @@ struct pack_file
         {
             struct data
             {
-                uint64_t start_position; // from begin of file
-                uint32_t compressed_size;
-                uint32_t original_size;
-                uint32_t compressed_crc32;
-                uint32_t type;
-                uint32_t custom_user_data; // null bytes, leave for future
+                uint64_t start_position = 0; // from begin of file
+                uint32_t compressed_size = 0;
+                uint32_t original_size = 0;
+                uint32_t compressed_crc32 = 0;
+                uint32_t type = 0;
+                uint32_t original_crc32 = 0;
+                uint32_t meta_index = 0; // null bytes, leave for future
             };
             std::vector<data> files;
         } data;
