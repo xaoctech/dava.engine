@@ -754,7 +754,7 @@ void PreviewWidget::OnTabBarContextMenuRequested(const QPoint& pos)
     QAction* closeTabAction = new QAction(tr("Close tab"), &menu);
     QAction* closeOtherTabsAction = new QAction(tr("Close other tabs"), &menu);
     QAction* closeAllTabsAction = new QAction(tr("Close all tabs"), &menu);
-    QAction* selectInFileSystemAction = new QAction(tr("Select in file system"), &menu);
+    QAction* selectInFileSystemAction = new QAction(tr("Find in File System"), &menu);
 
     closeOtherTabsAction->setEnabled(allIDs.size() > 1);
 
