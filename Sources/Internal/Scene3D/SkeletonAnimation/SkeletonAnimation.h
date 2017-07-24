@@ -13,8 +13,7 @@ public:
     SkeletonAnimation() = default;
 
     void BindAnimation(const AnimationClip* animationClip, const SkeletonComponent* skeleton);
-    void Advance(float32 dTime, Vector3* offset = nullptr);
-    void Reset();
+    void EvaluatePose(float32 time, Vector3* offset = nullptr);
 
     const SkeletonPose& GetSkeletonPose() const;
 

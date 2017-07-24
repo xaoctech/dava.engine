@@ -61,7 +61,7 @@ void MotionComponent::SimpleMotion::Start()
     isPlaying = true;
     repeatsLeft = repeatsCount;
     if (skeletonAnimation)
-        skeletonAnimation->Reset();
+        skeletonAnimation->EvaluatePose(0.f);
 }
 
 void MotionComponent::SimpleMotion::Stop()
@@ -69,7 +69,7 @@ void MotionComponent::SimpleMotion::Stop()
     isPlaying = false;
     currentAnimationTime = 0.f;
     if (skeletonAnimation)
-        skeletonAnimation->Reset();
+        skeletonAnimation->EvaluatePose(0.f);
 }
 
 void MotionComponent::SimpleMotion::Update(float32 timeElapsed)
@@ -83,22 +83,21 @@ void MotionComponent::SimpleMotion::Update(float32 timeElapsed)
 
         if (animationClip->GetDuration() <= currentAnimationTime)
         {
-            skeletonAnimation->Reset();
-
             isPlaying = (repeatsLeft > 0 || repeatsCount == 0);
             if (isPlaying)
             {
                 currentAnimationTime -= animationClip->GetDuration();
-                skeletonAnimation->Advance(currentAnimationTime);
 
                 if (repeatsCount != 0)
                     --repeatsLeft;
             }
+            else
+            {
+                currentAnimationTime = 0.f;
+            }
         }
-        else
-        {
-            skeletonAnimation->Advance(timeElapsed);
-        }
+
+        skeletonAnimation->EvaluatePose(currentAnimationTime);
     }
 }
 

@@ -50,21 +50,18 @@ uint32 AnimationChannel::Bind(const uint8* _data)
 #define KEY_DATA(keyIndex) (reinterpret_cast<const float32*>(keysData + (keyIndex)*keyStride + sizeof(float32)))
 #define KEY_META(keyIndex) (KEY_DATA(keyIndex) + KEY_DATA_SIZE) //tangents for bezier interpolation
 
-void AnimationChannel::Reset(State* state) const
+void AnimationChannel::Evaluate(float32 time, State* state) const
 {
-    state->time = KEY_TIME(0);
-    state->startKey = 0;
-    Memcpy(state->value, KEY_DATA(0), KEY_DATA_SIZE);
-}
-
-void AnimationChannel::Advance(float32 dTime, State* state) const
-{
-    state->time += dTime;
-
     uint32 k = state->startKey;
+
+    if (KEY_TIME(k) > time)
+    {
+        k = 0;
+    }
+
     for (; k < keysCount; ++k)
     {
-        if (KEY_TIME(k) > state->time)
+        if (KEY_TIME(k) > time)
             break;
 
         state->startKey = k;
@@ -85,7 +82,7 @@ void AnimationChannel::Advance(float32 dTime, State* state) const
     uint32 k0 = k - 1;
     float32 time0 = KEY_TIME(k0);
     float32 time1 = KEY_TIME(k);
-    float32 t = (state->time - time0) / (time1 - time0);
+    float32 t = (time - time0) / (time1 - time0);
 
     switch (interpolation)
     {

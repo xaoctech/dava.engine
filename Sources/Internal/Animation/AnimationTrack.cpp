@@ -55,19 +55,11 @@ uint32 AnimationTrack::Bind(const uint8* _data)
     return uint32(dataptr - _data);
 }
 
-void AnimationTrack::Reset(State* state) const
+void AnimationTrack::Evaluate(float32 dTime, State* state) const
 {
     for (uint32 c = 0; c < GetChannelsCount(); ++c)
     {
-        channels[c].channel.Reset(&state->channelStates[c]);
-    }
-}
-
-void AnimationTrack::Advance(float32 dTime, State* state) const
-{
-    for (uint32 c = 0; c < GetChannelsCount(); ++c)
-    {
-        channels[c].channel.Advance(dTime, &state->channelStates[c]);
+        channels[c].channel.Evaluate(dTime, &state->channelStates[c]);
     }
 }
 

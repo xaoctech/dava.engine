@@ -29,7 +29,7 @@ void SkeletonAnimation::BindAnimation(const AnimationClip* clip, const SkeletonC
                     const AnimationTrack* track = clip->GetTrack(t);
 
                     animationStates.emplace_back(AnimationTrack::State(track->GetChannelsCount()));
-                    track->Reset(&animationStates.back());
+                    track->Evaluate(0.f, &animationStates.back());
                     skeletonPose.AddNode(j, ConstructJointTransform(track, &animationStates.back())); //node index in pose equal bound track index
 
                     boundTracks.emplace_back(track);
@@ -39,7 +39,7 @@ void SkeletonAnimation::BindAnimation(const AnimationClip* clip, const SkeletonC
     }
 }
 
-void SkeletonAnimation::Advance(float32 dTime, Vector3* offset)
+void SkeletonAnimation::EvaluatePose(float32 time, Vector3* offset)
 {
     uint32 boundTrackCount = uint32(boundTracks.size());
     for (uint32 t = 0; t < boundTrackCount; ++t)
@@ -48,24 +48,7 @@ void SkeletonAnimation::Advance(float32 dTime, Vector3* offset)
         AnimationTrack::State* state = &animationStates[t];
         if (state)
         {
-            track->Advance(dTime, state);
-
-            JointTransform transform = ConstructJointTransform(track, state);
-            skeletonPose.SetTransform(t, transform);
-        }
-    }
-}
-
-void SkeletonAnimation::Reset()
-{
-    uint32 boundTrackCount = uint32(boundTracks.size());
-    for (uint32 t = 0; t < boundTrackCount; ++t)
-    {
-        const AnimationTrack* track = boundTracks[t];
-        AnimationTrack::State* state = &animationStates[t];
-        if (state)
-        {
-            track->Reset(state);
+            track->Evaluate(time, state);
 
             JointTransform transform = ConstructJointTransform(track, state);
             skeletonPose.SetTransform(t, transform);

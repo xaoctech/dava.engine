@@ -39,8 +39,7 @@ public:
     uint32 GetChannelsCount() const;
     eChannelTarget GetChannelTarget(uint32 channel) const;
 
-    void Reset(State* state) const;
-    void Advance(float32 dTime, State* state) const;
+    void Evaluate(float32 time, State* state) const;
 
     const float32* GetStateValue(const State* state, uint32 channel) const;
 
