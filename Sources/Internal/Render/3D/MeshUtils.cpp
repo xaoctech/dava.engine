@@ -98,6 +98,7 @@ struct SkinnedTriangleWork
 {
     Set<int32> usedJoints;
     int32 indices[3];
+    bool processed = false;
 };
 
 int32 FindEdgeInMappingTable(int32 nV1, int32 nV2, EdgeMappingWork* mapping, int32 count)
@@ -640,23 +641,26 @@ Vector<std::pair<PolygonGroup*, SkinnedMesh::JointTargets>> SplitSkinnedMeshGeom
         //////////////////////////////////////////////////////////////////////////
         //Search triangles that suit to max joints count
 
-        while (sourceTriangles.size())
+        for (SkinnedTriangleWork& triangle : sourceTriangles)
         {
-            SkinnedTriangleWork& triangle = sourceTriangles.back();
-
             jointsWork.clear();
             std::set_union(usedJointsWork.begin(), usedJointsWork.end(), triangle.usedJoints.begin(), triangle.usedJoints.end(), std::back_inserter(jointsWork));
             if (uint32(jointsWork.size()) > maxJointCount)
-                break;
+                continue;
 
             usedJointsWork.insert(triangle.usedJoints.begin(), triangle.usedJoints.end());
 
             for (int32 ind : triangle.indices)
                 usedIndicesWork.insert(ind);
 
-            triangles.emplace_back(triangle);
-            sourceTriangles.pop_back();
+            triangles.push_back(triangle);
+            triangle.processed = true;
         }
+
+        auto removed = std::remove_if(sourceTriangles.begin(), sourceTriangles.end(), [](const SkinnedTriangleWork& element) {
+            return element.processed;
+        });
+        sourceTriangles.erase(removed, sourceTriangles.end());
 
         //////////////////////////////////////////////////////////////////////////
         //Fill temporary mapping data for joints and indices
