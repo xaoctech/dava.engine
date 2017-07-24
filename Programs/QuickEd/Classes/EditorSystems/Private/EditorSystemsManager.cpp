@@ -8,13 +8,14 @@
 #include "EditorSystems/SelectionSystem.h"
 #include "EditorSystems/EditorControlsView.h"
 #include "EditorSystems/HUDSystem.h"
+#include "EditorSystems/PixelGrid.h"
 #include "EditorSystems/EditorTransformSystem.h"
-#include "EditorSystems/KeyboardProxy.h"
 #include "EditorSystems/EditorControlsView.h"
 
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Core/FieldBinder.h>
 #include <TArc/DataProcessing/DataContext.h>
+#include <TArc/Utils/KeyboardProxy.h>
 
 #include <UI/UIControl.h>
 #include <UI/Input/UIModalInputComponent.h>
@@ -54,8 +55,6 @@ private:
 
 EditorSystemsManager::EditorSystemsManager(DAVA::TArc::ContextAccessor* accessor_)
     : rootControl(new UIControl())
-    , inputLayerControl(new EditorSystemsManagerDetails::InputLayerControl(this))
-    , scalableControl(new UIControl())
     , accessor(accessor_)
 {
     using namespace DAVA;
@@ -65,11 +64,7 @@ EditorSystemsManager::EditorSystemsManager(DAVA::TArc::ContextAccessor* accessor
     displayStateChanged.Connect(this, &EditorSystemsManager::OnDisplayStateChanged);
     activeAreaChanged.Connect(this, &EditorSystemsManager::OnActiveHUDAreaChanged);
 
-    rootControl->SetName(FastName("rootControl"));
-    rootControl->AddControl(scalableControl.Get());
-    inputLayerControl->SetName("inputLayerControl");
-    rootControl->AddControl(inputLayerControl.Get());
-    scalableControl->SetName(FastName("scalableContent"));
+    InitControls();
 
     InitDAVAScreen();
 
@@ -79,6 +74,7 @@ EditorSystemsManager::EditorSystemsManager(DAVA::TArc::ContextAccessor* accessor
     selectionSystemPtr = new SelectionSystem(this, accessor);
     systems.emplace_back(selectionSystemPtr);
     systems.emplace_back(new HUDSystem(this, accessor));
+    systems.emplace_back(new PixelGrid(this, accessor));
     systems.emplace_back(new EditorTransformSystem(this, accessor));
 
     for (auto it = systems.begin(); it != systems.end(); ++it)
@@ -166,7 +162,7 @@ ControlNode* EditorSystemsManager::GetControlNodeAtPoint(const DAVA::Vector2& po
         return nullptr;
     }
 
-    if (!KeyboardProxy::IsKeyPressed(KeyboardProxy::KEY_ALT))
+    if (!Utils::IsKeyPressed(eModifierKeys::ALT))
     {
         return selectionSystemPtr->GetCommonNodeUnderPoint(point, canGoDeeper);
     }
@@ -266,6 +262,27 @@ void EditorSystemsManager::OnActiveHUDAreaChanged(const HUDAreaInfo& areaInfo)
     currentHUDArea = areaInfo;
 }
 
+void EditorSystemsManager::InitControls()
+{
+    rootControl->SetName(FastName("root control"));
+
+    scalableControl.Set(new UIControl());
+    scalableControl->SetName(FastName("scalable control"));
+    rootControl->AddControl(scalableControl.Get());
+
+    inputLayerControl.Set(new EditorSystemsManagerDetails::InputLayerControl(this));
+    inputLayerControl->SetName("input layer control");
+    rootControl->AddControl(inputLayerControl.Get());
+
+    pixelGridControl.Set(new UIControl());
+    pixelGridControl->SetName(FastName("pixel grid control"));
+    rootControl->AddControl(pixelGridControl.Get());
+
+    hudControl.Set(new UIControl());
+    hudControl->SetName(FastName("grid control"));
+    rootControl->AddControl(hudControl.Get());
+}
+
 void EditorSystemsManager::InitDAVAScreen()
 {
     RefPtr<UIControl> backgroundControl(new UIControl());
@@ -319,6 +336,16 @@ UIControl* EditorSystemsManager::GetRootControl() const
 DAVA::UIControl* EditorSystemsManager::GetScalableControl() const
 {
     return scalableControl.Get();
+}
+
+DAVA::UIControl* EditorSystemsManager::GetPixelGridControl() const
+{
+    return pixelGridControl.Get();
+}
+
+DAVA::UIControl* EditorSystemsManager::GetHUDControl() const
+{
+    return hudControl.Get();
 }
 
 Vector2 EditorSystemsManager::GetMouseDelta() const
