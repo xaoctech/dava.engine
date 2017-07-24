@@ -4,6 +4,7 @@
 #include "Animation/AnimatedObject.h"
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
+#include "Base/HashMap.h"
 #include "Debug/DVAssert.h"
 #include "Render/Highlevel/RenderSystem.h"
 #include "Render/Highlevel/RenderObject.h"
@@ -46,8 +47,8 @@ protected:
         Vector<Vector4> quaternions;
         uint32 jointsDataCount = 0;
     };
-    Map<RenderBatch*, JointTargets> jointTargets;
-    Map<RenderBatch*, JointTargetsData> jointTargetsData;
+    HashMap<RenderBatch*, JointTargets> jointTargets;
+    HashMap<RenderBatch*, JointTargetsData> jointTargetsData;
 
     const JointTransform* skeletonFinalJointTransforms = nullptr;
     uint32 skeletonJointCount = 0;

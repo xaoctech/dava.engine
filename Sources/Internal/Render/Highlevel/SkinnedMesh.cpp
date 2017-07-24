@@ -5,6 +5,8 @@
 namespace DAVA
 {
 SkinnedMesh::SkinnedMesh()
+    : jointTargets(16)
+    , jointTargetsData(16)
 {
     type = TYPE_SKINNED_MESH;
     flags |= RenderObject::eFlags::CUSTOM_PREPARE_TO_RENDER;
@@ -46,8 +48,7 @@ void SkinnedMesh::Save(KeyedArchive* archive, SerializationContext* serializatio
 
             uint32 targetsCount = uint32(targets.size());
             archive->SetUInt32(Format("skinnedObject.batch%d.targetsCount", ri), targetsCount);
-            for (uint32 m = 0; m < targetsCount; ++m)
-                archive->SetInt32(Format("skinnedObject.batch%d.target%d", ri, m), targets[m]);
+            archive->SetByteArray(Format("skinnedObject.batch%d.targetsData", ri), reinterpret_cast<const uint8*>(targets.data()), targetsCount * sizeof(int32));
         }
     }
 
@@ -68,8 +69,9 @@ void SkinnedMesh::Load(KeyedArchive* archive, SerializationContext* serializatio
         {
             uint32 targetsCount = archive->GetUInt32(targetsCountKey);
             JointTargets targets(targetsCount);
-            for (uint32 m = 0; m < targetsCount; ++m)
-                targets[m] = archive->GetInt32(Format("skinnedObject.batch%d.target%d", ri, m), -1);
+            const uint8* targetsData = archive->GetByteArray(Format("skinnedObject.batch%d.targetsData", ri));
+            if (targetsData != nullptr)
+                Memcpy(targets.data(), targetsData, targetsCount * sizeof(int32));
 
             SetJointTargets(batch, targets);
         }
