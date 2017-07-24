@@ -1052,7 +1052,7 @@ bool VariantType::Write(File* fp) const
 
 bool VariantType::Read(File* fp)
 {
-    int32 read = fp->Read(&type, 1);
+    uint32 read = fp->Read(&type, 1);
     if (read != 1)
     {
         return false;
@@ -1144,21 +1144,25 @@ bool VariantType::Read(File* fp)
     break;
     case TYPE_STRING:
     {
-        int32 len;
+        uint32 len;
         read = fp->Read(&len, 4);
         if (read != 4)
         {
             return false;
         }
 
-        Vector<char> buf(len + 1, 0);
-        read = fp->Read(buf.data(), len);
-        stringValue = new String(buf.data());
+        stringValue = new String(len, '\0');
+        read = fp->Read(&(*stringValue)[0], len);
+        if (read != len)
+        {
+            delete stringValue;
+            stringValue = nullptr;
+        }
         return (read == len);
     }
     case TYPE_WIDE_STRING:
     {
-        int32 len;
+        uint32 len;
         read = fp->Read(&len, 4);
         if (read != 4)
         {
@@ -1167,7 +1171,7 @@ bool VariantType::Read(File* fp)
 
         wideStringValue = new WideString();
         wideStringValue->resize(len);
-        for (int k = 0; k < len; ++k)
+        for (uint32 k = 0; k < len; ++k)
         {
             wchar_t c;
             read = fp->Read(&c, sizeof(wchar_t));
@@ -1186,7 +1190,7 @@ bool VariantType::Read(File* fp)
     break;
     case TYPE_BYTE_ARRAY:
     {
-        int32 len;
+        uint32 len;
         read = fp->Read(&len, 4);
         if (read != 4)
         {
@@ -1207,7 +1211,7 @@ bool VariantType::Read(File* fp)
     break;
     case TYPE_KEYED_ARCHIVE:
     {
-        int32 len;
+        uint32 len;
         read = fp->Read(&len, 4);
         if (read != 4)
         {
@@ -1316,7 +1320,7 @@ bool VariantType::Read(File* fp)
 
     case TYPE_FASTNAME:
     {
-        int32 len = 0;
+        uint32 len = 0;
         read = fp->Read(&len, 4);
         if (read != 4)
         {
@@ -1345,7 +1349,7 @@ bool VariantType::Read(File* fp)
     break;
     case TYPE_FILEPATH:
     {
-        int32 len;
+        uint32 len;
         read = fp->Read(&len, 4);
         if (read != 4)
         {
