@@ -240,7 +240,7 @@ fragment_out fp_main( fragment_in input )
                 #if FRAME_BLEND
                     float4 remap = tex2D(alphaRemapTex, float2(half(textureColor0.a), input.varTexcoord3.y));
                 #else
-                    float4 remap = tex2D(alphaRemapTex, float2(half(textureColor0.a), input.varTexcoord3.x));
+                    float4 remap = tex2D(alphaRemapTex, float2(half(textureColor0.a), input.varTexcoord3));
                 #endif
                 textureColor0.a = remap.r;
             #endif
@@ -270,7 +270,11 @@ fragment_out fp_main( fragment_in input )
 
         #if FRAME_BLEND
             half4 blendFrameColor = half4(tex2D( albedo, input.varTexCoord1 ));
-            half varTime = input.varTexcoord3.x;
+            #if PARTICLES_ALPHA_REMAP
+                half varTime = input.varTexcoord3.x;
+            #else
+                half varTime = input.varTexcoord3;
+            #endif
             textureColor0 = lerp( textureColor0, blendFrameColor, varTime );
         #endif
 
@@ -617,7 +621,7 @@ fragment_out fp_main( fragment_in input )
         #if PARTICLES_NOISE
             output.color.a *= input.varTexcoord6.w;
         #else
-            output.color.a *= input.varTexcoord6.x;
+            output.color.a *= input.varTexcoord6;
         #endif
     #endif
 

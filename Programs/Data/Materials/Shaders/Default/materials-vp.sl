@@ -676,14 +676,15 @@ vertex_out vp_main( vertex_in input )
     #endif
 #endif
 
-
 #if FRAME_BLEND
-    output.varTexcoord3.x = input.texcoord1.z;
     #if PARTICLES_ALPHA_REMAP
+        output.varTexcoord3.x = input.texcoord1.z;
         output.varTexcoord3.y = input.texcoord5.y;
+    #else
+        output.varTexcoord3 = input.texcoord1.z;
     #endif
 #elif PARTICLES_ALPHA_REMAP
-    output.varTexcoord3.x = input.texcoord5.y;
+    output.varTexcoord3 = input.texcoord5.y;
 #endif
 
 #if FORCE_2D_MODE
