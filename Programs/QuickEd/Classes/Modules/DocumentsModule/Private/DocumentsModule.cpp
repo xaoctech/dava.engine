@@ -489,7 +489,7 @@ void DocumentsModule::CreateFindActions()
     ContextAccessor* accessor = GetAccessor();
     UI* ui = GetUI();
     {
-        QtAction* action = new QtAction(accessor, "Find in File System");
+        QtAction* action = new QtAction(accessor, "Select Current Document in File System");
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
