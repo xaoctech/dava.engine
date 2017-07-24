@@ -36,10 +36,9 @@ protected:
     void OnContextDeleted(DAVA::TArc::DataContext* context) override;
 
 private:
-    void InitCustomUISystems();
     void InitEditorSystems();
     void InitCentralWidget();
-    void InitWatcher();
+    void InitGlobalData();
 
     void CreateDocumentsActions();
     void RegisterOperations();

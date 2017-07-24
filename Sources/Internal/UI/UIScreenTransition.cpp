@@ -66,6 +66,16 @@ void UIScreenTransition::ReleaseRenderTargets()
     SafeRelease(renderTargetNextScreen);
 }
 
+void UIScreenTransition::SetSourceScreen(UIControl* prevScreen, bool updateScreen)
+{
+    SetSourceControl(prevScreen, updateScreen);
+}
+
+void UIScreenTransition::SetDestinationScreen(UIControl* nextScreen, bool updateScreen)
+{
+    SetDestinationControl(nextScreen, updateScreen);
+}
+
 void UIScreenTransition::StartTransition()
 {
     currentTime = 0.0f;
@@ -74,20 +84,20 @@ void UIScreenTransition::StartTransition()
     CreateRenderTargets();
 }
 
-void UIScreenTransition::SetSourceScreen(UIControl* prevScreen, bool updateScreen)
+void UIScreenTransition::SetSourceControl(UIControl* prevControl, bool updateControl)
 {
     DVASSERT(renderTargetPrevScreen && renderTargetNextScreen);
 
     UIScreenshoter* screenshoter = UIControlSystem::Instance()->GetRenderSystem()->GetScreenshoter();
-    screenshoter->MakeScreenshot(prevScreen, renderTargetPrevScreen->GetTexture(), true, updateScreen);
+    screenshoter->MakeScreenshot(prevControl, renderTargetPrevScreen->GetTexture(), true, updateControl);
 }
 
-void UIScreenTransition::SetDestinationScreen(UIControl* nextScreen, bool updateScreen)
+void UIScreenTransition::SetDestinationControl(UIControl* nextControl, bool updateControl /*= true*/)
 {
     DVASSERT(renderTargetPrevScreen && renderTargetNextScreen);
 
     UIScreenshoter* screenshoter = UIControlSystem::Instance()->GetRenderSystem()->GetScreenshoter();
-    screenshoter->MakeScreenshot(nextScreen, renderTargetNextScreen->GetTexture(), true, updateScreen);
+    screenshoter->MakeScreenshot(nextControl, renderTargetNextScreen->GetTexture(), true, updateControl);
 }
 
 void UIScreenTransition::EndTransition()
@@ -97,7 +107,7 @@ void UIScreenTransition::EndTransition()
 
 void UIScreenTransition::Update(float32 timeElapsed)
 {
-    UIScreen::Update(timeElapsed);
+    UIControl::Update(timeElapsed);
 
     currentTime += timeElapsed;
     normalizedTime = interpolationFunc(currentTime / duration);

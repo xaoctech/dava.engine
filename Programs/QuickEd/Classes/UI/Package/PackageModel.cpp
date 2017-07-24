@@ -27,8 +27,7 @@
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/DataProcessing/DataContext.h>
 #include <TArc/WindowSubSystem/UI.h>
-
-#include <QtTools/Utils/Themes/Themes.h>
+#include <TArc/Utils/Themes.h>
 
 #include <Base/ObjectFactory.h>
 #include <UI/UIControl.h>

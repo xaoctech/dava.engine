@@ -1,8 +1,8 @@
 #include "Modules/DocumentsModule/DocumentsModule.h"
 #include "Modules/LegacySupportModule/Private/Project.h"
 #include "Modules/DocumentsModule/DocumentData.h"
+#include "UI/Preview/Data/CanvasData.h"
 #include "Modules/DocumentsModule/Private/DocumentsWatcherData.h"
-#include "Modules/DocumentsModule/Private/EditorCanvasData.h"
 
 #include "QECommands/ChangePropertyValueCommand.h"
 
@@ -12,7 +12,6 @@
 #include "Model/PackageHierarchy/PackageControlsNode.h"
 
 #include "EditorSystems/EditorSystemsManager.h"
-#include "UISystems/RelayoutSignallerSystem.h"
 
 #include "Application/QEGlobal.h"
 
@@ -118,8 +117,8 @@ void DocumentsModule::PostInit()
 
     packageListenerProxy.Init(this, GetAccessor());
 
-    InitWatcher();
-    InitCustomUISystems();
+    InitGlobalData();
+
     InitEditorSystems();
     InitCentralWidget();
 
@@ -139,9 +138,6 @@ void DocumentsModule::OnWindowClosed(const DAVA::TArc::WindowKey& key)
     ContextAccessor* accessor = GetAccessor();
     DataContext* context = accessor->GetGlobalContext();
     context->DeleteData<DocumentsWatcherData>();
-
-    DAVA::UIControlSystem* uiControlSystem = GetAccessor()->GetEngineContext()->uiControlSystem;
-    uiControlSystem->RemoveSystem(uiControlSystem->GetSystem<RelayoutSignallerSystem>());
 }
 
 void DocumentsModule::OnContextCreated(DAVA::TArc::DataContext* context)
@@ -165,12 +161,6 @@ void DocumentsModule::OnContextDeleted(DAVA::TArc::DataContext* context)
     watcherData->Unwatch(path);
 }
 
-void DocumentsModule::InitCustomUISystems()
-{
-    DAVA::UIControlSystem* uiControlSystem = GetAccessor()->GetEngineContext()->uiControlSystem;
-    uiControlSystem->AddSystem(std::make_unique<RelayoutSignallerSystem>(), uiControlSystem->GetRenderSystem());
-}
-
 void DocumentsModule::InitEditorSystems()
 {
     DVASSERT(nullptr == systemsManager);
@@ -188,7 +178,7 @@ void DocumentsModule::InitCentralWidget()
 
     RenderWidget* renderWidget = GetContextManager()->GetRenderWidget();
 
-    previewWidget = new PreviewWidget(accessor, renderWidget, systemsManager.get());
+    previewWidget = new PreviewWidget(accessor, GetUI(), renderWidget, systemsManager.get());
     previewWidget->requestCloseTab.Connect(this, &DocumentsModule::CloseDocument);
     previewWidget->requestChangeTextInNode.Connect(this, &DocumentsModule::ChangeControlText);
     connections.AddConnection(previewWidget, &PreviewWidget::OpenPackageFile, MakeFunction(this, &DocumentsModule::OpenDocument));
@@ -211,7 +201,7 @@ void DocumentsModule::InitCentralWidget()
     findInDocumentController.reset(new FindInDocumentController(this, mainWindow, previewWidget->GetFindInDocumentWidget()));
 }
 
-void DocumentsModule::InitWatcher()
+void DocumentsModule::InitGlobalData()
 {
     using namespace DAVA;
     using namespace TArc;
@@ -394,7 +384,7 @@ void DocumentsModule::CreateUndoRedoActions()
         QAction* separator = new QAction(editMenuSeparatorName, nullptr);
         separator->setSeparator(true);
         ActionPlacementInfo placementInfo;
-        placementInfo.AddPlacementPoint(CreateToolbarPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::AfterItem, redoActionName }));
+        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName, { InsertionParams::eInsertionMethod::AfterItem, redoActionName }));
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, separator);
     }
 }
@@ -450,11 +440,18 @@ void DocumentsModule::CreateViewActions()
 
     //Zoom in
     {
-        QAction* action = new QAction(zoomInActionName, nullptr);
+        QtAction* action = new QtAction(accessor, zoomInActionName, nullptr);
         action->setShortcutContext(Qt::WindowShortcut);
         action->setShortcuts(QList<QKeySequence>()
                              << QKeySequence("Ctrl+=")
                              << QKeySequence("Ctrl++"));
+
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
+        fieldDescr.fieldName = FastName(DocumentData::packagePropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any {
+            return fieldValue.CanCast<PackageNode*>() && fieldValue.Cast<PackageNode*>() != nullptr;
+        });
 
         connections.AddConnection(action, &QAction::triggered, MakeFunction(previewWidget, &PreviewWidget::OnIncrementScale));
         ActionPlacementInfo placementInfo;
@@ -465,9 +462,16 @@ void DocumentsModule::CreateViewActions()
 
     //Zoom out
     {
-        QAction* action = new QAction(zoomOutActionName, nullptr);
+        QtAction* action = new QtAction(accessor, zoomOutActionName, nullptr);
         action->setShortcutContext(Qt::WindowShortcut);
         action->setShortcut(QKeySequence("Ctrl+-"));
+
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
+        fieldDescr.fieldName = FastName(DocumentData::packagePropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any {
+            return fieldValue.CanCast<PackageNode*>() && fieldValue.Cast<PackageNode*>() != nullptr;
+        });
 
         connections.AddConnection(action, &QAction::triggered, MakeFunction(previewWidget, &PreviewWidget::OnDecrementScale));
 
@@ -479,9 +483,16 @@ void DocumentsModule::CreateViewActions()
 
     //Actual zoom
     {
-        QAction* action = new QAction(actualZoomActionName, nullptr);
+        QtAction* action = new QtAction(accessor, actualZoomActionName, nullptr);
         action->setShortcutContext(Qt::WindowShortcut);
         action->setShortcut(QKeySequence("Ctrl+0"));
+
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
+        fieldDescr.fieldName = FastName(DocumentData::packagePropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any {
+            return fieldValue.CanCast<PackageNode*>() && fieldValue.Cast<PackageNode*>() != nullptr;
+        });
 
         connections.AddConnection(action, &QAction::triggered, MakeFunction(previewWidget, &PreviewWidget::SetActualScale));
 
@@ -524,7 +535,7 @@ DAVA::TArc::DataContext::ContextID DocumentsModule::OpenDocument(const QString& 
         {
             DAVA::Vector<std::unique_ptr<DAVA::TArc::DataNode>> initialData;
             initialData.emplace_back(new DocumentData(package));
-            initialData.emplace_back(new EditorCanvasData());
+            initialData.emplace_back(new CanvasData());
             id = contextManager->CreateContext(std::move(initialData));
         }
     }
