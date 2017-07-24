@@ -647,7 +647,7 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
 
     data.baseNode.speed = particle->speed;
 
-    bool shouldInsert = data.stripeNodes.empty() || (data.baseNode.position - data.stripeNodes.front().position).Length() > layer->stripeVertexSpawnStep;
+    bool shouldInsert = data.stripeNodes.empty() || (data.baseNode.position - data.stripeNodes.front().position).SquareLength() > layer->stripeVertexSpawnStep * layer->stripeVertexSpawnStep;
 
     float32 radius = layer->stripeStartSize * layer->CalculateMaxStripeSizeOverLife();
 
