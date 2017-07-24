@@ -62,50 +62,13 @@ void SkeletonSystem::Process(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_SKELETON_SYSTEM);
 
+#if RE_DEBUG_PROCESS_TEST_SKINNED_MESHES
+    UpdateTestSkeletons();
+#endif
+
     for (int32 i = 0, sz = static_cast<int32>(entities.size()); i < sz; ++i)
     {
         SkeletonComponent* component = GetSkeletonComponent(entities[i]);
-
-#if RE_DEBUG_PROCESS_TEST_SKINNED_MESHES
-        {
-            static const FastName HARD_SKINNED_ENTITY_NAME("TestHardSkinned");
-            static const FastName SOFT_SKINNED_ENTITY_NAME("TestSoftSkinned");
-
-            static float32 t = 0;
-            t += timeElapsed;
-
-            //Manipulate test hard skinned mesh in 'Debug Functions' in RE
-            if (entities[i]->GetName() == HARD_SKINNED_ENTITY_NAME)
-            {
-                static float32 t = 0;
-                t += timeElapsed;
-                for (uint32 i = 0, sz = component->GetJointsCount(); i < sz; ++i)
-                {
-                    float32 fi = t;
-
-                    SkeletonComponent::JointTransform transform = component->GetJointTransform(i);
-                    transform.orientation.Construct(Vector3(0.f, 1.f, 0.f), fi);
-                    component->SetJointTransform(i, transform);
-                }
-            }
-
-            //Manipulate test soft skinned mesh in 'Debug Functions' in RE
-            if (entities[i]->GetName() == SOFT_SKINNED_ENTITY_NAME)
-            {
-                uint32 jointCount = component->GetJointsCount();
-                for (uint32 j = 1; j < jointCount; ++j)
-                {
-                    component->GetJoint(j).bindTransform.GetTranslationVector();
-
-                    SkeletonComponent::JointTransform transform;
-                    transform.position = component->GetJoint(j).bindTransform.GetTranslationVector();
-                    transform.position.z += 5.f * sinf(float32(j + t));
-
-                    component->SetJointTransform(j, transform);
-                }
-            }
-        }
-#endif
 
         if (component != nullptr)
         {
@@ -265,5 +228,47 @@ void SkeletonSystem::RebuildSkeleton(SkeletonComponent* skeleton)
     }
 
     skeleton->startJoint = 0;
+}
+
+void SkeletonSystem::UpdateTestSkeletons(float32 timeElapsed)
+{
+    static float32 t = 0;
+    t += timeElapsed;
+
+    for (Entity* entity : entities)
+    {
+        SkeletonComponent* component = GetSkeletonComponent(entity);
+        if (component != nullptr)
+        {
+            static const FastName SOFT_SKINNED_ENTITY_NAME("TestSoftSkinned");
+
+            if (entity->GetName() == SOFT_SKINNED_ENTITY_NAME)
+            {
+                //Manipulate test soft skinned mesh in 'Debug Functions' in RE
+                uint32 jointCount = component->GetJointsCount();
+                for (uint32 j = 1; j < jointCount; ++j)
+                {
+                    component->GetJoint(j).bindTransform.GetTranslationVector();
+
+                    JointTransform transform;
+                    transform.position = component->GetJoint(j).bindTransform.GetTranslationVector();
+                    transform.position.z += 5.f * sinf(float32(j + t));
+
+                    component->SetJointTransform(j, transform);
+                }
+            }
+            else
+            {
+                for (uint32 i = 0, sz = component->GetJointsCount(); i < sz; ++i)
+                {
+                    float32 fi = t;
+
+                    JointTransform transform = component->GetJointTransform(i);
+                    transform.orientation.Construct(Vector3(0.f, 1.f, 0.f), fi);
+                    component->SetJointTransform(i, transform);
+                }
+            }
+        }
+    }
 }
 }

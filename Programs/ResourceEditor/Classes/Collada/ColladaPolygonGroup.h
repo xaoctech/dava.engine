@@ -11,6 +11,8 @@ class ColladaMesh;
 
 struct ColladaVertex
 {
+    const static uint32 COLLADA_MAX_JOINT_WEIGHTS = 8;
+
     ColladaVertex()
     {
         memset(joint, 0, sizeof(joint));
@@ -26,8 +28,8 @@ struct ColladaVertex
     Vector2 texCoords[4];
 
     int32 jointCount = 0;
-    int32 joint[4];
-    float32 weight[4];
+    int32 joint[COLLADA_MAX_JOINT_WEIGHTS];
+    float32 weight[COLLADA_MAX_JOINT_WEIGHTS];
 };
 
 struct ColladaSortVertex

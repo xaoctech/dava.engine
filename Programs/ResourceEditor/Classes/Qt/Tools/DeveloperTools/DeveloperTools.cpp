@@ -166,7 +166,7 @@ void DeveloperTools::OnDebugCreateTestHardSkinnedObject()
     ScopedPtr<NMaterial> material(new NMaterial());
     material->SetMaterialName(FastName("DebugSkeleton"));
     material->SetFXName(NMaterialName::DECAL_OPAQUE);
-    material->AddFlag(NMaterialFlagName::FLAG_SKINNING_HARD, 1);
+    material->AddFlag(NMaterialFlagName::FLAG_HARD_SKINNING, 1);
 
     ScopedPtr<RenderBatch> renderBatch(new RenderBatch());
     renderBatch->SetMaterial(material);
@@ -353,7 +353,7 @@ void DeveloperTools::OnDebugCreateTestSoftSkinnedObject()
     ScopedPtr<NMaterial> material(new NMaterial());
     material->SetMaterialName(FastName("DebugSkeleton"));
     material->SetFXName(FastName("~res:/Materials/NormalizedBlinnPhongPerVertex.Opaque.material"));
-    material->AddFlag(NMaterialFlagName::FLAG_SKINNING_SOFT, 4);
+    material->AddFlag(NMaterialFlagName::FLAG_SOFT_SKINNING, 4);
 
     ScopedPtr<RenderBatch> renderBatch(new RenderBatch());
     renderBatch->SetMaterial(material);

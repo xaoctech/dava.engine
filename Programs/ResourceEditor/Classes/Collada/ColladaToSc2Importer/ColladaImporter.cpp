@@ -63,9 +63,9 @@ RenderObject* ColladaImporter::GetMeshFromCollada(ColladaMeshInstance* mesh, con
             uint32 maxJointWeights = polygonGroupInstance->polyGroup->maxVertexInfluenceCount;
 
             if (davaPolygon->GetFormat() & EVF_JOINTINDEX_HARD)
-                davaMaterial->AddFlag(NMaterialFlagName::FLAG_SKINNING_HARD, 1);
+                davaMaterial->AddFlag(NMaterialFlagName::FLAG_HARD_SKINNING, 1);
             else
-                davaMaterial->AddFlag(NMaterialFlagName::FLAG_SKINNING_SOFT, maxJointWeights);
+                davaMaterial->AddFlag(NMaterialFlagName::FLAG_SOFT_SKINNING, maxJointWeights);
 
             auto skinnedDavaPolygons = MeshUtils::SplitSkinnedMeshGeometry(davaPolygon, SkinnedMesh::MAX_TARGET_JOINTS);
             for (auto& p : skinnedDavaPolygons)

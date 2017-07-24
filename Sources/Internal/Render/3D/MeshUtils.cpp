@@ -564,7 +564,7 @@ SkinnedMesh* CreateHardSkinnedMesh(Entity* fromEntity, Vector<SkeletonComponent:
 
         NMaterial* material = new NMaterial();
         material->SetParent(key.materialParent);
-        material->AddFlag(NMaterialFlagName::FLAG_SKINNING_HARD, 1);
+        material->AddFlag(NMaterialFlagName::FLAG_HARD_SKINNING, 1);
 
         RenderBatch* newBatch = new RenderBatch();
         polygonGroup->RecalcAABBox();

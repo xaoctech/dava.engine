@@ -31,6 +31,8 @@ private:
 
     void RebuildSkeleton(SkeletonComponent* skeleton);
 
+    void UpdateTestSkeletons(float32 timeElapsed);
+
     Vector<Entity*> entities;
 };
 

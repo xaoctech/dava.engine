@@ -34,10 +34,10 @@ vertex_in
     float3 binormal : BINORMAL;
     #endif
     
-    #if (SKINNING_SOFT > 0)
+    #if SOFT_SKINNING
     float4 index  : BLENDINDICES;
     float4 weight : BLENDWEIGHT;
-    #elif SKINNING_HARD
+    #elif HARD_SKINNING
     float  index  : BLENDINDICES;
     #endif
 
@@ -151,7 +151,7 @@ vertex_out
 [material][a] property float3 metalFresnelReflectance = float3(0.5,0.5,0.5);
 #endif
 
-#if (SKINNING_SOFT > 0) || SKINNING_HARD
+#if SOFT_SKINNING || HARD_SKINNING
 [auto][jpos] property float4 jointPositions[MAX_JOINTS] : "bigarray" ; // (x, y, z, scale)
 [auto][jrot] property float4 jointQuaternions[MAX_JOINTS] : "bigarray";
 #endif
@@ -249,13 +249,13 @@ FresnelShlickVec3( float NdotL, float3 Cspec )
     return (1.0 - Cspec) * (pow(1.0 - NdotL, fresnel_exponent)) + Cspec;
 }
 
-#if (SKINNING_SOFT > 0)
+#if SOFT_SKINNING
 
 inline float3 JointTransformTangent( float3 tangent, float4 jIndices, float4 jWeights)
 {
     int4 indices = int4(jIndices);
     float4 weights = jWeights;
-    for(int i = 0; i < SKINNING_SOFT; ++i)
+    for(int i = 0; i < SOFT_SKINNING; ++i)
     {
         int jIndex = int(indices.x);
         float4 jQ = jointQuaternions[jIndex];
@@ -270,7 +270,7 @@ inline float3 JointTransformTangent( float3 tangent, float4 jIndices, float4 jWe
     return tangent;
 }
 
-#elif SKINNING_HARD
+#elif HARD_SKINNING
 
 inline float3 JointTransformTangent( float3 tangent, float jointIndex )
 {
@@ -392,15 +392,15 @@ vertex_out vp_main( vertex_in input )
             float4 waveValue = Wave(globalTime, float4(input.position.xyz, 1.0), input.texcoord0);
             output.position = mul( waveValue, worldViewProjMatrix );
         #else
-            #if (SKINNING_SOFT > 0) || SKINNING_HARD
+            #if SOFT_SKINNING || HARD_SKINNING
             
                 float4 skinnedPosition = float4(0.0, 0.0, 0.0, 0.0);
                 
-                #if (SKINNING_SOFT > 0)
+                #if SOFT_SKINNING
                 {
                     int4 indices = input.index;
                     float4 weights = input.weight;
-                    for(int i = 0; i < SKINNING_SOFT; ++i)
+                    for(int i = 0; i < SOFT_SKINNING; ++i)
                     {
                         int jIndex = int(indices.x);
                         
@@ -441,7 +441,7 @@ vertex_out vp_main( vertex_in input )
 #if SPEED_TREE_OBJECT
     float3 eyeCoordsPosition = eyeCoordsPosition4.xyz;
 #elif VERTEX_LIT || PIXEL_LIT || VERTEX_FOG || SPHERICAL_LIT
-    #if (SKINNING_SOFT > 0) || SKINNING_HARD
+    #if SOFT_SKINNING || HARD_SKINNING
         float3 eyeCoordsPosition = mul( skinnedPosition, worldViewMatrix ).xyz; // view direction in view space
     #else
         // view direction in view space
@@ -513,11 +513,11 @@ vertex_out vp_main( vertex_in input )
     float3  inTangent   = input.tangent;
     float3  inBinormal  = input.binormal;
     
-    #if (SKINNING_SOFT > 0)
+    #if SOFT_SKINNING
         float3 n = normalize( mul( float4(JointTransformTangent(inNormal, input.index, input.weight), 1.0), worldViewInvTransposeMatrix ).xyz );
         float3 t = normalize( mul( float4(JointTransformTangent(inTangent, input.index, input.weight), 1.0), worldViewInvTransposeMatrix ).xyz );
         float3 b = normalize( mul( float4(JointTransformTangent(inBinormal, input.index, input.weight), 1.0), worldViewInvTransposeMatrix ).xyz );
-    #elif SKINNING_HARD
+    #elif HARD_SKINNING
         float3 n = normalize( mul( float4(JointTransformTangent(inNormal, input.index), 1.0), worldViewInvTransposeMatrix ).xyz );
         float3 t = normalize( mul( float4(JointTransformTangent(inTangent, input.index), 1.0), worldViewInvTransposeMatrix ).xyz );
         float3 b = normalize( mul( float4(JointTransformTangent(inBinormal, input.index), 1.0), worldViewInvTransposeMatrix ).xyz );

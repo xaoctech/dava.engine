@@ -5,7 +5,7 @@ vertex_in
     float3  pos     : POSITION;
     float3  normal  : NORMAL;
 
-    #if SKINNING_HARD
+    #if HARD_SKINNING
     float  index   : BLENDINDICES;
     #endif
 };
@@ -21,7 +21,7 @@ vertex_out
 
 [auto][global] property float4x4 projMatrix;
 
-#if SKINNING_HARD
+#if HARD_SKINNING
 [auto][jpos] property float4 jointPositions[MAX_JOINTS] : "bigarray"; // (x, y, z, scale)
 [auto][jrot] property float4 jointQuaternions[MAX_JOINTS] : "bigarray";
 #endif
@@ -31,7 +31,7 @@ vertex_out
 [material][global] property float3 forcedShadowDirection = float3(0.0, 0.0, -1.0);
 #endif
 
-#if SKINNING_HARD
+#if HARD_SKINNING
 
 inline float3 JointTransformTangent( float3 tangent, float jointIndex )
 {
@@ -60,7 +60,7 @@ vertex_out vp_main( vertex_in input )
     float4 position;
     float3 normal;
     
-#if SKINNING_HARD
+#if HARD_SKINNING
     {
         int jIndex = int(input.index);
         

@@ -323,7 +323,7 @@ ColladaPolygonGroup::ColladaPolygonGroup(ColladaMesh* _parentMesh, FCDGeometryPo
         if (vertexWeightArray)
         {
             tv.jointCount = vertexWeightArray[vertexIndex].jointCount;
-            DVASSERT(tv.jointCount <= 4);
+            DVASSERT(tv.jointCount <= ColladaVertex::COLLADA_MAX_JOINT_WEIGHTS);
 
             for (int jointi = 0; jointi < tv.jointCount; ++jointi)
             {
