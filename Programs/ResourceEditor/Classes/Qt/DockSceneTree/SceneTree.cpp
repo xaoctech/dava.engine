@@ -210,6 +210,7 @@ protected:
                                           if (parent == item)
                                           {
                                               parentSelected = true;
+                                              break;
                                           }
                                       }
                                   }
