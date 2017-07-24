@@ -158,6 +158,7 @@ void FileSystemWidget::SelectFile(const QString& filePath)
     DVASSERT(!filePath.isEmpty());
     QModelIndex index = model->index(filePath);
     treeView->setCurrentIndex(index);
+    treeView->scrollTo(index);
 
     //Qt remember expand/collapse state
     //so if user collapsed items - we need to expand them manually
