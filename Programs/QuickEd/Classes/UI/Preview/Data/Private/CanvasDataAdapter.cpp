@@ -95,7 +95,7 @@ DAVA::Vector2 CanvasDataAdapter::GetStartValue() const
     }
 
     DAVA::Vector2 startValue = (GetMovableControlPosition() + canvasData->GetRootPosition() * GetScale()) * -1;
-    return DAVA::Vector2(std::floor(startValue.x), std::floor(startValue.y));
+    return DAVA::Vector2(startValue.x, startValue.y);
 }
 
 DAVA::Vector2 CanvasDataAdapter::GetLastValue() const
