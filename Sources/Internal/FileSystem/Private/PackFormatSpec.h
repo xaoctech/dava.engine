@@ -34,13 +34,13 @@ struct PackFile
                 uint32 compressedCrc32;
                 Compressor::Type type;
                 uint32 originalCrc32;
-                uint32 metaIndex; // can be castom user index in metaData
+                uint32 metaIndex; // can be custom user index in metaData
             };
 
             Vector<Data> files;
         } data;
 
-        // 0 to N bytes (all file names concatenated and '\0' separeted and packed)
+        // 0 to N bytes (all file names concatenated and '\0' separated and packed)
         // order of file names same as in FilesData
         struct Names
         {

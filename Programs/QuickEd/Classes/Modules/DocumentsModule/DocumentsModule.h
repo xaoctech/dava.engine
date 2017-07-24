@@ -38,7 +38,7 @@ protected:
 private:
     void InitEditorSystems();
     void InitCentralWidget();
-    void InitWatcher();
+    void InitGlobalData();
 
     void CreateDocumentsActions();
     void RegisterOperations();

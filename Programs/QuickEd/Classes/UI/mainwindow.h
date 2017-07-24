@@ -34,7 +34,7 @@ class QCheckBox;
 class QActionGroup;
 class QEvent;
 
-class MainWindow : public QMainWindow, public DAVA::InspBase, public DAVA::TrackedObject
+class MainWindow : public QMainWindow, public DAVA::TrackedObject
 {
     Q_OBJECT
 
@@ -54,7 +54,6 @@ signals:
     void EmulationModeChanged(bool emulationMode);
 
 private slots:
-    void OnPixelizationStateChanged(bool isPixelized);
     void OnEditorPreferencesTriggered();
 
 private:
@@ -68,9 +67,6 @@ private:
 
     void SetupBackgroundMenu();
     void OnPreferencesPropertyChanged(const DAVA::InspMember* member, const DAVA::VariantType& value);
-
-    bool IsPixelized() const;
-    void SetPixelized(bool pixelized);
 
     void UpdateWindowTitle();
 
@@ -94,9 +90,4 @@ private:
     QtDelayedExecutor delayedExecutor;
 
     ProjectView* projectView = nullptr;
-
-public:
-    INTROSPECTION(MainWindow,
-                  PROPERTY("isPixelized", "MainWindowInternal/IsPixelized", IsPixelized, SetPixelized, DAVA::I_PREFERENCE)
-                  )
 };
