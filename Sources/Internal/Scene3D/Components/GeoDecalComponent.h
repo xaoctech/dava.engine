@@ -16,7 +16,7 @@ class GeoDecalComponent : public Component
 public:
     enum : uint32
     {
-        SuppressMaterialCreation = 1 << 0,
+        SuppressMaterialCreation = 1 << 0
     };
 
 public:

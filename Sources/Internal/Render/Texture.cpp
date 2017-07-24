@@ -1082,7 +1082,6 @@ Texture* Texture::CreatePink(rhi::TextureType requestedType, bool checkers)
 
     // we need instances for pink textures for ResourceEditor. We use it for reloading for different GPUs
     // pink textures at game is invalid situation
-
     Texture* tex = new Texture();
     if (rhi::TEXTURE_TYPE_CUBE == requestedType)
     {
