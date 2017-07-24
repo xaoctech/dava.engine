@@ -82,8 +82,6 @@ void AnimationChannel::Advance(float32 dTime, State* state) const
         return;
     }
 
-    DVASSERT(k != 0);
-
     uint32 k0 = k - 1;
     float32 time0 = KEY_TIME(k0);
     float32 time1 = KEY_TIME(k);
@@ -117,7 +115,7 @@ void AnimationChannel::Advance(float32 dTime, State* state) const
 
     case INTERPOLATION_BEZIER:
     {
-        DVASSERT(false);
+        DVASSERT(false, "Bezier not supported yet");
     }
     break;
 
