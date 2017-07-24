@@ -21,6 +21,7 @@
 #include "TArc/Testing/Private/Selftests/QtWrapLayoutTests.h"
 #include "TArc/Testing/Private/Selftests/ReflectedButtonTest.h"
 #include "TArc/Testing/Private/Selftests/ReflectionPathTreeTests.h"
+#include "TArc/Testing/Private/Selftests/ScrollBarTest.h"
 
 namespace DAVA
 {

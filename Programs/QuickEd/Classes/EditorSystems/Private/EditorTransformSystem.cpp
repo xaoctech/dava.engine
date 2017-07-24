@@ -1,8 +1,9 @@
 #include "Input/InputSystem.h"
 
+#include "UI/Preview/Data/CanvasData.h"
+
 #include "EditorSystems/EditorTransformSystem.h"
 #include "EditorSystems/EditorSystemsManager.h"
-#include "EditorSystems/KeyboardProxy.h"
 
 #include "Model/PackageHierarchy/PackageNode.h"
 #include "Model/PackageHierarchy/ControlNode.h"
@@ -15,6 +16,7 @@
 #include "QECommands/ResizeCommand.h"
 #include "QECommands/ChangePivotCommand.h"
 
+#include <TArc/Utils/KeyboardProxy.h>
 #include <TArc/Core/ContextAccessor.h>
 
 #include <UI/UIEvent.h>
@@ -283,6 +285,7 @@ void EditorTransformSystem::ProcessInput(UIEvent* currentInput)
     switch (currentInput->phase)
     {
     case UIEvent::Phase::KEY_DOWN:
+    case UIEvent::Phase::KEY_DOWN_REPEAT:
         ProcessKey(currentInput->key);
         break;
 
@@ -382,7 +385,7 @@ void EditorTransformSystem::ProcessDrag(const Vector2& pos)
     switch (activeArea)
     {
     case HUDAreaInfo::FRAME_AREA:
-        MoveAllSelectedControlsByMouse(delta, canMagnet);
+        MoveAllSelectedControlsByMouse(delta, CanMagnet());
         break;
     case HUDAreaInfo::TOP_LEFT_AREA:
     case HUDAreaInfo::TOP_CENTER_AREA:
@@ -393,8 +396,8 @@ void EditorTransformSystem::ProcessDrag(const Vector2& pos)
     case HUDAreaInfo::BOTTOM_CENTER_AREA:
     case HUDAreaInfo::BOTTOM_RIGHT_AREA:
     {
-        bool withPivot = IsKeyPressed(KeyboardProxy::KEY_ALT);
-        bool rateably = IsKeyPressed(KeyboardProxy::KEY_CTRL);
+        bool withPivot = Utils::IsKeyPressed(eModifierKeys::ALT);
+        bool rateably = Utils::IsKeyPressed(eModifierKeys::CONTROL);
         ResizeControl(delta, withPivot, rateably);
         break;
     }
@@ -829,7 +832,16 @@ void EditorTransformSystem::ResizeControl(Vector2 delta, bool withPivot, bool ra
 
 Vector2 EditorTransformSystem::AdjustResizeToMinimumSize(Vector2 deltaSize)
 {
-    const Vector2 scaledMinimum(GetMinimumSize() / controlGeometricData.scale);
+    Vector2 scaledMinimum(GetMinimumSize() / controlGeometricData.scale);
+    for (int32 axisInt = Vector2::AXIS_X; axisInt < Vector2::AXIS_COUNT; ++axisInt)
+    {
+        Vector2::eAxis axis = static_cast<Vector2::eAxis>(axisInt);
+        if (scaledMinimum[axis] < 1.0f)
+        {
+            scaledMinimum[axis] = 1.0f;
+        }
+    }
+
     Vector2 origSize = sizeProperty->GetValue().Cast<Vector2>();
 
     Vector2 finalSize(origSize + deltaSize);
@@ -865,7 +877,7 @@ Vector2 EditorTransformSystem::AdjustResizeToBorderAndToMinimum(Vector2 deltaSiz
 {
     Vector<MagnetLineInfo> magnets;
 
-    bool canAdjustResize = canMagnet && activeControlNode->GetControl()->GetAngle() == 0.0f && activeControlNode->GetParent()->GetControl() != nullptr;
+    bool canAdjustResize = CanMagnet() && activeControlNode->GetControl()->GetAngle() == 0.0f && activeControlNode->GetParent()->GetControl() != nullptr;
     Vector2 adjustedDeltaToBorder(deltaSize);
     if (canAdjustResize)
     {
@@ -1224,5 +1236,14 @@ void EditorTransformSystem::ClampAngle()
 
 bool EditorTransformSystem::IsShiftPressed() const
 {
-    return IsKeyPressed(KeyboardProxy::KEY_SHIFT) ^ (shiftInverted);
+    return Utils::IsKeyPressed(eModifierKeys::SHIFT) ^ (shiftInverted);
+}
+
+bool EditorTransformSystem::CanMagnet() const
+{
+    float32 scaleToMagnet = 8.0f;
+    DAVA::TArc::DataContext* activeContext = accessor->GetActiveContext();
+    DVASSERT(activeContext != nullptr);
+    CanvasData* data = activeContext->GetData<CanvasData>();
+    return canMagnet && data->GetScale() <= scaleToMagnet;
 }
