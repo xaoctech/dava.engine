@@ -67,6 +67,7 @@
 
 #include <Tools/TextureCompression/TextureConverter.h>
 
+#include <TArc/Utils/Themes.h>
 #include <TArc/WindowSubSystem/Private/WaitDialog.h>
 
 #include "QtTools/ConsoleWidget/LogWidget.h"
@@ -75,7 +76,6 @@
 #include "QtTools/ConsoleWidget/LoggerOutputObject.h"
 #include "QtTools/FileDialogs/FileDialog.h"
 #include "QtTools/FileDialogs/FindFileDialog.h"
-#include "QtTools/Utils/Themes/Themes.h"
 #include "QtTools/WidgetHelpers/SharedIcon.h"
 
 #include <Engine/Engine.h>

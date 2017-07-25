@@ -2,10 +2,14 @@
 
 #include "UI/Preview/Guides/IRulerListener.h"
 #include "UI/Preview/Guides/Guide.h"
+#include "UI/Preview/Data/CanvasDataAdapter.h"
 
 #include "Model/PackageHierarchy/PackageNode.h"
 
+#include <TArc/DataProcessing/DataListener.h>
 #include <TArc/DataProcessing/DataWrapper.h>
+
+#include <QtTools/Utils/QtDelayedExecutor.h>
 
 #include <Base/Any.h>
 #include <Base/Introspection.h>
@@ -25,6 +29,10 @@ class ContextAccessor;
 class FieldBinder;
 }
 }
+
+class CanvasData;
+class CentralWidgetData;
+class DocumentData;
 
 class QWidget;
 class QPropertyAnimation;
@@ -56,19 +64,19 @@ public:
 };
 
 //this class realize Behavior pattern to have different behaviors for vertical and for horizontal guides
-class GuidesController : public QObject, public IRulerListener
+class GuidesController : public QObject, public IRulerListener, DAVA::TArc::DataListener
 {
     Q_OBJECT
 
 public:
-    GuidesController(DAVA::TArc::ContextAccessor* accessor, QWidget* container);
-
-    void CreatePreviewGuide();
-    void OnContainerGeometryChanged(const QPoint& bottomLeft, const QPoint& topRight, DAVA::float32 rulerRelativePos);
-    void OnCanvasParametersChanged(DAVA::float32 scaledMinValue, DAVA::float32 min, DAVA::float32 max, DAVA::float32 scale);
-    void BindFields();
+    GuidesController(DAVA::Vector2::eAxis orientation, DAVA::TArc::ContextAccessor* accessor, QWidget* container);
 
 private:
+    void OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;
+
+    void BindFields();
+    void OnCanvasParametersChanged(const DAVA::Any&);
+
     //IRulerListener
     void OnMousePress(DAVA::float32 position) override;
     void OnMouseMove(DAVA::float32 position) override;
@@ -103,9 +111,7 @@ private:
     void EnableDrag(DAVA::float32 position);
     void DisableDrag();
 
-    void OnValuesChanged(const DAVA::Any& values);
     void OnRootControlsChanged(const DAVA::Any& rootControls);
-    void OnGuidesEnabledChanged(const DAVA::Any& guidesEnabled);
 
     void SyncGuidesWithValues();
 
@@ -118,6 +124,7 @@ private:
     PackageNode::AxisGuides GetValues() const;
     void SetValues(const PackageNode::AxisGuides& values);
 
+    void CreatePreviewGuide();
     void SetupPreviewGuide(DAVA::float32 position);
     void DragGuide(DAVA::float32 position);
 
@@ -135,21 +142,17 @@ private:
 
     void RemoveLastGuideWidget();
 
-    //behavior
-    virtual void ProcessGeometryChanged(const QPoint& bottomLeft, const QPoint& topRight) = 0;
-    virtual void ResizeGuide(Guide& guide) const = 0;
-    virtual void MoveGuide(DAVA::float32 position, Guide& guide) const = 0;
-    virtual DAVA::Vector2::eAxis GetOrientation() const = 0;
+    void ResizeGuide(Guide& guide) const;
+    void MoveGuide(DAVA::float32 value, Guide& guide) const;
 
-protected:
+    CentralWidgetData* GetCentralWidgetData() const;
+    DocumentData* GetDocumentData() const;
+
     DAVA::float32 PositionToValue(DAVA::float32 position) const;
     DAVA::float32 ValueToPosition(DAVA::float32 value) const;
 
-    //guide position in container coordinates
-    DAVA::float32 guideStartPosition = 0.0f;
-    DAVA::float32 size = 0.0f;
+    DAVA::Vector2::eAxis orientation = DAVA::Vector2::AXIS_X;
 
-private:
     DAVA::TArc::ContextAccessor* accessor = nullptr;
     std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
     DAVA::TArc::DataWrapper documentDataWrapper;
@@ -157,19 +160,6 @@ private:
 
     //use it only for drag-n-drop
     PackageNode::AxisGuides cachedValues;
-
-    //this variable used to convert between position in value
-    //in big scale values is very differ from minValue, because minValue can be 100 but scaledMinValue might be 108
-    DAVA::float32 scaledMinValue = 0;
-
-    //guide value on ruler
-    DAVA::float32 minValue = 0.0f;
-    DAVA::float32 maxValue = 0.0f;
-
-    //ruler widget position to show guide in correct point
-    DAVA::float32 rulerRelativePos = 0.0f;
-
-    DAVA::float32 scale = 0.0f;
 
     //parent widget of guides
     QWidget* container = nullptr;
@@ -182,32 +172,10 @@ private:
     QList<Guide> guides;
 
     GuidesControllerPreferences preferences;
-};
 
-class HGuidesController : public GuidesController
-{
-public:
-    HGuidesController(DAVA::TArc::ContextAccessor* accessor, QWidget* container);
+    //we can not use Show inside Update signal
+    QtDelayedExecutor delayedExecutor;
 
-private:
-    void ProcessGeometryChanged(const QPoint& bottomLeft, const QPoint& topRight) override;
-
-    void ResizeGuide(Guide& guide) const override;
-    void MoveGuide(DAVA::float32 position, Guide& guide) const override;
-
-    DAVA::Vector2::eAxis GetOrientation() const override;
-};
-
-class VGuidesController : public GuidesController
-{
-public:
-    VGuidesController(DAVA::TArc::ContextAccessor* accessor, QWidget* container);
-
-private:
-    void ProcessGeometryChanged(const QPoint& bottomLeft, const QPoint& topRight) override;
-
-    void ResizeGuide(Guide& guide) const override;
-    void MoveGuide(DAVA::float32 position, Guide& guide) const override;
-
-    DAVA::Vector2::eAxis GetOrientation() const override;
+    CanvasDataAdapter canvasDataAdapter;
+    DAVA::TArc::DataWrapper canvasDataAdapterWrapper;
 };
