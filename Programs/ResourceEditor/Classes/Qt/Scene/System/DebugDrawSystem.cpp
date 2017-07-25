@@ -5,6 +5,7 @@
 #include "Deprecated/SceneValidator.h"
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/Application/REGlobal.h"
+#include "Classes/Qt/Scene/System/BeastSystem.h"
 #include "Classes/Selection/Selection.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/GeoDecalComponent.h"
@@ -67,7 +68,7 @@ void DebugDrawSystem::Draw(DAVA::Entity* entity)
 
         DrawObjectBoxesByType(entity);
         DrawUserNode(entity);
-        DrawLightNode(entity);
+        DrawLightNode(entity, isSelected);
         DrawHangingObjects(entity);
         DrawSwitchesWithDifferentLods(entity);
         DrawWindNode(entity);
@@ -186,7 +187,7 @@ void DebugDrawSystem::DrawDebugOctTree(DAVA::Entity* entity)
 #endif
 }
 
-void DebugDrawSystem::DrawLightNode(DAVA::Entity* entity)
+void DebugDrawSystem::DrawLightNode(DAVA::Entity* entity, bool isSelected)
 {
     DAVA::Light* light = GetLight(entity);
     if (NULL != light)
@@ -213,8 +214,22 @@ void DebugDrawSystem::DrawLightNode(DAVA::Entity* entity)
         }
         else if (light->GetType() == DAVA::Light::TYPE_POINT)
         {
-            drawer->DrawIcosahedron(worldBox.GetCenter(), worldBox.GetSize().x / 2, DAVA::Color(1.0f, 1.0f, 0, 0.3f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
-            drawer->DrawIcosahedron(worldBox.GetCenter(), worldBox.GetSize().x / 2, DAVA::Color(1.0f, 1.0f, 0, 1.0f), DAVA::RenderHelper::DRAW_WIRE_DEPTH);
+            DAVA::Vector3 worldCenter = worldBox.GetCenter();
+            drawer->DrawIcosahedron(worldCenter, worldBox.GetSize().x / 2, DAVA::Color(1.0f, 1.0f, 0, 0.3f), RenderHelper::DRAW_SOLID_DEPTH);
+            drawer->DrawIcosahedron(worldCenter, worldBox.GetSize().x / 2, DAVA::Color(1.0f, 1.0f, 0, 1.0f), RenderHelper::DRAW_WIRE_DEPTH);
+            DAVA::KeyedArchive* properties = GetCustomPropertiesArchieve(entity);
+            DAVA::VariantType* value = properties->GetVariant("editor.staticlight.falloffcutoff");
+            if (value != nullptr && value->GetType() == DAVA::VariantType::TYPE_FLOAT && isSelected)
+            {
+                DAVA::float32 distance = value->AsFloat();
+                if (distance < BeastSystem::DEFAULT_FALLOFFCUTOFF_VALUE)
+                {
+                    uint32 segmentCount = 32;
+                    drawer->DrawCircle(worldCenter, DAVA::Vector3(1.0f, 0.0f, 0.0f), distance, segmentCount, DAVA::Color(1.0f, 1.0f, 0.0f, 1.0f), RenderHelper::DRAW_WIRE_DEPTH);
+                    drawer->DrawCircle(worldCenter, DAVA::Vector3(0.0f, 1.0f, 0.0f), distance, segmentCount, DAVA::Color(1.0f, 1.0f, 0.0f, 1.0f), RenderHelper::DRAW_WIRE_DEPTH);
+                    drawer->DrawCircle(worldCenter, DAVA::Vector3(0.0f, 0.0f, 1.0f), distance, segmentCount, DAVA::Color(1.0f, 1.0f, 0.0f, 1.0f), RenderHelper::DRAW_WIRE_DEPTH);
+                }
+            }
         }
         else
         {

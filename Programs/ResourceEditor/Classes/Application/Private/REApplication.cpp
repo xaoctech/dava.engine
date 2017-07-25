@@ -152,6 +152,8 @@ void REApplication::Init(const DAVA::EngineContext* engineContext)
     {
         DAVA::TArc::TestClass::coreChanged.Connect(&REGlobal::InitTArcCore);
     }
+
+    BaseApplication::Init(engineContext);
 }
 
 void REApplication::Cleanup()

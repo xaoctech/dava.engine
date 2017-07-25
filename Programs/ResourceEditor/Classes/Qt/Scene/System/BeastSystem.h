@@ -20,6 +20,8 @@ public:
 
     void AddEntity(DAVA::Entity* entity) override;
 
+    static DAVA::float32 DEFAULT_FALLOFFCUTOFF_VALUE;
+
 private:
     static void SetBool(DAVA::KeyedArchive* propertyList, const DAVA::String& key, bool value);
     static void SetFloat(DAVA::KeyedArchive* propertyList, const DAVA::String& key, DAVA::float32 value);
