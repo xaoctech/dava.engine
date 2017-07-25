@@ -44,6 +44,7 @@ public:
         DAVA::FilePath path;
         DAVA::String name;
         DAVA::FastName controlName;
+        DAVA::FastName controlPath;
     };
 
     ProjectData();

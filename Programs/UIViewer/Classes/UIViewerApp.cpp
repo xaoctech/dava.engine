@@ -10,6 +10,7 @@
 UIViewerApp::UIViewerApp(DAVA::Engine& engine_, const DAVA::Vector<DAVA::String>& cmdLine)
     : engine(engine_)
     , options("options")
+    , physicalToVirtualScale(1.f, 1.f)
 {
     using namespace DAVA;
 
@@ -23,7 +24,8 @@ UIViewerApp::UIViewerApp(DAVA::Engine& engine_, const DAVA::Vector<DAVA::String>
 
     options.AddOption("-project", VariantType(String("")), "Path to project folder");
     options.AddOption("-blankYaml", VariantType(String("")), "Path to placeholder yaml");
-    options.AddOption("-blankRoot", VariantType(String("")), "Name pf placeholder root control");
+    options.AddOption("-blankRoot", VariantType(String("")), "Name of placeholder root control");
+    options.AddOption("-blankPath", VariantType(String("")), "Path to placeholder control");
     options.AddOption("-testedYaml", VariantType(String("")), "Path to tested yaml");
     options.AddOption("-testedCtrl", VariantType(String("")), "Name of tested control");
 
@@ -69,10 +71,11 @@ void UIViewerApp::OnWindowCreated(DAVA::Window* w)
         virtualSize.dx = options.GetOption("-virtualWidth").AsInt32();
         virtualSize.dy = options.GetOption("-virtualHeight").AsInt32();
     }
+    physicalToVirtualScale.dx = static_cast<float32>(virtualSize.dx) / windowSize.dx;
+    physicalToVirtualScale.dy = static_cast<float32>(virtualSize.dy) / windowSize.dy;
 
     String title = DAVA::Format("DAVA Engine - UI Viewer | %s [%u bit]", DAVAENGINE_VERSION, static_cast<uint32>(sizeof(pointer_size) * 8));
     w->SetTitleAsync(title);
-
     w->SetSizeAsync(windowSize);
     w->SetVirtualSize(static_cast<float32>(virtualSize.dx), static_cast<float32>(virtualSize.dy));
 
@@ -87,13 +90,13 @@ void UIViewerApp::OnWindowSizeChanged(DAVA::Window* window, DAVA::Size2f size, D
     using namespace DAVA;
 
     VirtualCoordinatesSystem* vcs = window->GetUIControlSystem()->vcs;
-    const Size2i& vSize = vcs->GetVirtualScreenSize();
+    const Size2i& pSize = vcs->GetPhysicalScreenSize();
+    Size2i vSize(static_cast<int32>(pSize.dx * physicalToVirtualScale.dx), static_cast<int32>(pSize.dy * physicalToVirtualScale.dy));
 
+    vcs->SetVirtualScreenSize(vSize.dx, vSize.dy);
     vcs->UnregisterAllAvailableResourceSizes();
     vcs->RegisterAvailableResourceSize(vSize.dx, vSize.dy, "Gfx");
     vcs->RegisterAvailableResourceSize(vSize.dx * 2, vSize.dy * 2, "Gfx2");
-
-    const Size2i& pSize = vcs->GetPhysicalScreenSize();
 
     String title = Format("DAVA Engine - UI Viewer | %s [%u bit] | [%d x %d] - [%d x %d]", DAVAENGINE_VERSION, static_cast<uint32>(sizeof(pointer_size) * 8), pSize.dx, pSize.dy, vSize.dx, vSize.dy);
     window->SetTitleAsync(title);

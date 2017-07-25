@@ -36,6 +36,8 @@ private:
     UIViewScreen* uiViewScreen = nullptr;
     DAVA::Engine& engine;
 
+    DAVA::Size2f physicalToVirtualScale;
+
     DAVA::ProgramOptions options;
     bool optionsAreParsed = true;
 };

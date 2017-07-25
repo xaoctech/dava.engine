@@ -19,9 +19,6 @@ public:
     bool Run(bool showWindow);
     void Wait();
 
-    bool IsRunning() const;
-    void RetriveFinalStatus();
-
     const String& GetOutput() const;
     int64 GetPID() const;
     const FilePath& GetPath() const;
@@ -30,15 +27,20 @@ public:
     int GetExitCode() const;
 
 private:
-    void ReadOutput();
-    void ReadExitCode(int32 status);
-
     void CleanupHandles();
 
+#if defined(__DAVAENGINE_WIN32__) && defined(UNICODE)
+
+    void ConvertToWideChar(const String& str, wchar_t** outStr, size_t* outLength);
+
+#endif
+
+private:
     int64 pid = -1;
     String output;
     FilePath executablePath;
     Vector<String> runArgs;
+    bool running = false;
 
 #if defined(__DAVAENGINE_WIN32__)
     HANDLE childProcIn[2];

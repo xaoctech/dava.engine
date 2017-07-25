@@ -141,6 +141,7 @@ void UIViewScreen::SetupUI()
 
     FilePath placeHolderYaml = options->GetOption("-blankYaml").AsString();
     String placeHolderRootControl = options->GetOption("-blankRoot").AsString();
+    String placeHolderPath = options->GetOption("-blankPath").AsString();
 
     FilePath testedYaml = options->GetOption("-testedYaml").AsString();
     String testedControlName = options->GetOption("-testedCtrl").AsString();
@@ -148,17 +149,27 @@ void UIViewScreen::SetupUI()
     RefPtr<UIControl> placeHolderRoot = UIViewScreenDetails::LoadControl(placeHolderYaml, placeHolderRootControl);
     if (placeHolderRoot)
     {
+        UIControl* placeholder = placeHolderRoot.Get();
+        if (placeHolderPath.empty() == false)
+        {
+            placeholder = placeHolderRoot->FindByPath(placeHolderPath);
+            if (placeholder == nullptr)
+            {
+                PrintError(Format("Cannot find %s in %s", placeHolderPath.c_str(), placeHolderYaml.GetStringValue().c_str()));
+                return;
+            }
+        }
+
         RefPtr<UIControl> testedControl = UIViewScreenDetails::LoadControl(testedYaml, testedControlName);
         if (testedControl)
         {
-            placeHolderRoot->AddControl(testedControl.Get());
+            placeholder->AddControl(testedControl.Get());
+            AddControl(placeHolderRoot.Get());
         }
         else
         {
             PrintError(Format("Cannot find %s in %s", testedControlName.c_str(), testedYaml.GetStringValue().c_str()));
         }
-
-        AddControl(placeHolderRoot.Get());
     }
     else
     {

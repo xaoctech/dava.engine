@@ -20,7 +20,6 @@
 namespace DAVA
 {
 class Any;
-class Process;
 namespace TArc
 {
 class ContextAccessor;
@@ -37,8 +36,6 @@ class PackageModel;
 class PackageNode;
 class QItemSelection;
 class CommandExecutor;
-
-class QTimer;
 
 class PackageWidget : public QDockWidget, public Ui::PackageWidget, public DAVA::InspBase
 {
@@ -142,12 +139,8 @@ private:
     DAVA::uint32 selectedDevice = 0;
     DAVA::uint32 selectedBlank = 0;
 
-    DAVA::List<std::unique_ptr<DAVA::Process>> activePreviews;
-    QTimer* previewTimer = nullptr;
-    void UpdatePreviewStatus();
-
     bool useCustomUIViewerPath = false;
-    DAVA::FilePath customUIViewerPath;
+    DAVA::String customUIViewerPath;
 
 public:
     INTROSPECTION(PackageWidget,
