@@ -27,6 +27,7 @@
 #include <Render/RenderHelper.h>
 #include <FileSystem/KeyedArchive.h>
 #include <Utils/Utils.h>
+#include <Logger/Logger.h>
 
 #include <physx/PxScene.h>
 #include <physx/PxRigidActor.h>

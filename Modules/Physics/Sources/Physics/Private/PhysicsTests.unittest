@@ -235,7 +235,7 @@ DAVA_TESTCLASS (PhysicsTest)
         TEST_VERIFY(dynamicActor->getNbShapes() == 0);
     }
 
-    DAVA_TEST(RaycastTest)
+    DAVA_TEST (RaycastTest)
     {
         using namespace PhysicsTestDetils;
         SceneInfo info = CreateScene();

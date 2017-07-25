@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Entity/SceneSystem.h>
+#include <Math/Vector.h>
 
 #include <physx/PxQueryReport.h>
 
