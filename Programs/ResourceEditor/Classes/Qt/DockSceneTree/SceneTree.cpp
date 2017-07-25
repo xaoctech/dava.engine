@@ -203,7 +203,7 @@ protected:
             bool parentSelected = false;
             SceneTreeItem* parent = static_cast<SceneTreeItem*>(item->parent());
 
-            while (parent != nullptr and !parentSelected)
+            while (parent != nullptr && !parentSelected)
             {
                 foreach (QModelIndex index, this->treeWidget->selectionModel()->selectedRows())
                 {
