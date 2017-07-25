@@ -20,8 +20,8 @@
 
 #include "Utils/QtDavaConvertion.h"
 #include "UI/IconHelper.h"
-#include "QtTools/Utils/Themes/Themes.h"
 
+#include <TArc/Utils/Themes.h>
 #include <TArc/WindowSubSystem/UI.h>
 
 using namespace DAVA;
