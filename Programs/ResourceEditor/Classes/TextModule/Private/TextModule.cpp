@@ -22,7 +22,7 @@ void TextModule::PostInit()
     using namespace DAVA::TArc;
 
     QtAction* action = new QtAction(GetAccessor(), QIcon(":/QtIcons/text_component.png"), QString("Text Drawing Enabled"));
-    {
+    { // checked-unchecked and text
         FieldDescriptor fieldDescr;
         fieldDescr.fieldName = DAVA::FastName(TextModuleData::drawingEnabledPropertyName);
         fieldDescr.type = DAVA::ReflectedTypeDB::Get<TextModuleData>();
@@ -33,6 +33,15 @@ void TextModule::PostInit()
             if (value.Get<bool>(false))
                 return DAVA::String("Text Drawing Enabled");
             return DAVA::String("Text Drawing Disabled");
+        });
+    }
+
+    { // enabled/disabled state
+        FieldDescriptor fieldDescr;
+        fieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
+        fieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
+            return value.CanCast<SceneData::TSceneType>() && value.Cast<SceneData::TSceneType>().Get() != nullptr;
         });
     }
 
