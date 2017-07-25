@@ -512,6 +512,11 @@ void EditorControlsView::BeforeRendering()
 {
     if (needRecalculateBgrBeforeRender)
     {
+        if (systemsManager->GetDragState() == EditorSystemsManager::Transform)
+        { // do not recalculate while control is dragged
+            return;
+        }
+
         needRecalculateBgrBeforeRender = false;
 
         for (auto& iter : gridControls)
