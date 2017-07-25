@@ -34,7 +34,7 @@ enum eInputElements : uint32
 
     // TODO: order of keyboard elements is made to be backward compatible with old DAVA::Key implementation,
     // since these values could be saved to config file by a client.
-    // Reorder these into more logical sequences and remove KB_UNUSED when switcthing to new action system
+    // Reorder these into more logical sequences and remove KB_UNUSED when switching to new action system
 
     KB_ESCAPE,
     KB_BACKSPACE,
