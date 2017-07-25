@@ -3,7 +3,6 @@
 
 #include "Main/mainwindow.h"
 #include "TextureCache.h"
-#include "QtTools/Utils/Themes/Themes.h"
 
 #include "TArc/WindowSubSystem/Private/UIManager.h"
 #include "TArc/DataProcessing/DataNode.h"
@@ -50,7 +49,6 @@ REModule::~REModule()
 
 void REModule::PostInit()
 {
-    Themes::InitFromQApplication();
     DAVA::TArc::ContextAccessor* accessor = GetAccessor();
 
     const DAVA::EngineContext* engineContext = accessor->GetEngineContext();

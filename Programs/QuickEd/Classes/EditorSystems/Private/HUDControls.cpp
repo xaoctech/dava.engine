@@ -1,12 +1,14 @@
-#include "UI/Layouts/UIAnchorComponent.h"
 #include "EditorSystems/HUDControls.h"
+#include <Modules/UpdateViewsSystemModule/UpdateViewsSystem.h>
+
 #include "Model/ControlProperties/RootProperty.h"
 #include "Model/ControlProperties/VisibleValueProperty.h"
 #include "EditorSystems/EditorTransformSystem.h"
 
+#include <UI/UIControlSystem.h>
+#include <UI/Layouts/UIAnchorComponent.h>
 #include <Render/2D/Sprite.h>
 #include <Render/2D/Systems/RenderSystem2D.h>
-#include <Engine/Engine.h>
 #include <Preferences/PreferencesRegistrator.h>
 #include <Preferences/PreferencesStorage.h>
 
@@ -167,7 +169,8 @@ HUDContainer::HUDContainer(const ControlNode* node_)
     visibleProperty = node->GetRootProperty()->GetVisibleProperty();
     DVASSERT(nullptr != control && nullptr != visibleProperty);
 
-    Engine::Instance()->update.Connect(this, &HUDContainer::OnUpdate);
+    UpdateViewsSystem* updateSystem = DAVA::UIControlSystem::Instance()->GetSystem<UpdateViewsSystem>();
+    updateSystem->beforeRender.Connect(this, &HUDContainer::OnUpdate);
 }
 
 void HUDContainer::InitFromGD(const UIGeometricData& gd)
@@ -223,7 +226,7 @@ void HUDContainer::InitFromGD(const UIGeometricData& gd)
     }
 }
 
-void HUDContainer::OnUpdate(float32)
+void HUDContainer::OnUpdate()
 {
     auto controlGD = control->GetGeometricData();
     InitFromGD(controlGD);
