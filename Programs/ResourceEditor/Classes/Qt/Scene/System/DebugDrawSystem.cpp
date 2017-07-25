@@ -215,8 +215,8 @@ void DebugDrawSystem::DrawLightNode(DAVA::Entity* entity, bool isSelected)
         else if (light->GetType() == DAVA::Light::TYPE_POINT)
         {
             DAVA::Vector3 worldCenter = worldBox.GetCenter();
-            drawer->DrawIcosahedron(worldCenter, worldBox.GetSize().x / 2, DAVA::Color(1.0f, 1.0f, 0, 0.3f), RenderHelper::DRAW_SOLID_DEPTH);
-            drawer->DrawIcosahedron(worldCenter, worldBox.GetSize().x / 2, DAVA::Color(1.0f, 1.0f, 0, 1.0f), RenderHelper::DRAW_WIRE_DEPTH);
+            drawer->DrawIcosahedron(worldCenter, worldBox.GetSize().x / 2, DAVA::Color(1.0f, 1.0f, 0, 0.3f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
+            drawer->DrawIcosahedron(worldCenter, worldBox.GetSize().x / 2, DAVA::Color(1.0f, 1.0f, 0, 1.0f), DAVA::RenderHelper::DRAW_WIRE_DEPTH);
             DAVA::KeyedArchive* properties = GetCustomPropertiesArchieve(entity);
             DAVA::VariantType* value = properties->GetVariant("editor.staticlight.falloffcutoff");
             if (value != nullptr && value->GetType() == DAVA::VariantType::TYPE_FLOAT && isSelected)
@@ -224,10 +224,10 @@ void DebugDrawSystem::DrawLightNode(DAVA::Entity* entity, bool isSelected)
                 DAVA::float32 distance = value->AsFloat();
                 if (distance < BeastSystem::DEFAULT_FALLOFFCUTOFF_VALUE)
                 {
-                    uint32 segmentCount = 32;
-                    drawer->DrawCircle(worldCenter, DAVA::Vector3(1.0f, 0.0f, 0.0f), distance, segmentCount, DAVA::Color(1.0f, 1.0f, 0.0f, 1.0f), RenderHelper::DRAW_WIRE_DEPTH);
-                    drawer->DrawCircle(worldCenter, DAVA::Vector3(0.0f, 1.0f, 0.0f), distance, segmentCount, DAVA::Color(1.0f, 1.0f, 0.0f, 1.0f), RenderHelper::DRAW_WIRE_DEPTH);
-                    drawer->DrawCircle(worldCenter, DAVA::Vector3(0.0f, 0.0f, 1.0f), distance, segmentCount, DAVA::Color(1.0f, 1.0f, 0.0f, 1.0f), RenderHelper::DRAW_WIRE_DEPTH);
+                    DAVA::uint32 segmentCount = 32;
+                    drawer->DrawCircle(worldCenter, DAVA::Vector3(1.0f, 0.0f, 0.0f), distance, segmentCount, DAVA::Color(1.0f, 1.0f, 0.0f, 1.0f), DAVA::RenderHelper::DRAW_WIRE_DEPTH);
+                    drawer->DrawCircle(worldCenter, DAVA::Vector3(0.0f, 1.0f, 0.0f), distance, segmentCount, DAVA::Color(1.0f, 1.0f, 0.0f, 1.0f), DAVA::RenderHelper::DRAW_WIRE_DEPTH);
+                    drawer->DrawCircle(worldCenter, DAVA::Vector3(0.0f, 0.0f, 1.0f), distance, segmentCount, DAVA::Color(1.0f, 1.0f, 0.0f, 1.0f), DAVA::RenderHelper::DRAW_WIRE_DEPTH);
                 }
             }
         }
