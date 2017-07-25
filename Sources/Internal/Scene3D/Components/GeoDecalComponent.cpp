@@ -11,7 +11,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(GeoDecalComponent)
 {
     ReflectionRegistrator<GeoDecalComponent>::Begin()
     .ConstructorByPointer()
-    .Field("boundingBox", &GeoDecalComponent::GetBoundingBox, &GeoDecalComponent::SetBoundingBox)[M::DisplayName("Bounding Box")]
+    .Field("dimensions", &GeoDecalComponent::GetDimensions, &GeoDecalComponent::SetDimensions)[M::DisplayName("Dimensions")]
     .Field("decalAlbedo", &GeoDecalComponent::GetDecalAlbedo, &GeoDecalComponent::SetDecalAlbedo)[M::DisplayName("Decal albedo")]
     .Field("decalNormal", &GeoDecalComponent::GetDecalNormal, &GeoDecalComponent::SetDecalNormal)[M::DisplayName("Decal normal")]
     .Field("overridenMaterialsPath", &GeoDecalComponent::GetOverridenMaterialsPath, &GeoDecalComponent::SetOverridenMaterialsPath)[M::DisplayName("Overriden Materials Path")]
@@ -60,8 +60,7 @@ void GeoDecalComponent::Serialize(KeyedArchive* archive, SerializationContext* s
     Component::Serialize(archive, serializationContext);
     if (archive)
     {
-        archive->SetVector3("box.center", config.boundingBox.GetCenter());
-        archive->SetVector3("box.size", config.boundingBox.GetSize());
+        archive->SetVector3("dimensions", config.dimensions);
         archive->SetString("albedo", config.albedo.GetRelativePathname(serializationContext->GetScenePath()));
         archive->SetString("normal", config.normal.GetRelativePathname(serializationContext->GetScenePath()));
         archive->SetUInt32("mapping", config.mapping);
@@ -75,17 +74,17 @@ void GeoDecalComponent::Deserialize(KeyedArchive* archive, SerializationContext*
     if (archive)
     {
         Vector3 center = archive->GetVector3("box.center");
-        Vector3 size = 0.5f * archive->GetVector3("box.size", Vector3(1.0f, 1.0f, 1.0f));
         String albedo = archive->GetString("albedo");
         String normal = archive->GetString("normal");
 
         GeoDecalManager::DecalConfig localConfig;
-        localConfig.boundingBox = AABBox3(center - size, center + size);
+        localConfig.dimensions = archive->GetVector3("dimensions", Vector3(1.0f, 1.0f, 1.0f));
         localConfig.albedo = albedo.empty() ? FilePath() : (serializationContext->GetScenePath() + albedo);
         localConfig.normal = normal.empty() ? FilePath() : (serializationContext->GetScenePath() + normal);
         localConfig.mapping = static_cast<GeoDecalManager::Mapping>(archive->GetUInt32("mapping", localConfig.mapping));
         localConfig.uvOffset = archive->GetVector2("uvoffset", Vector2(0.0f, 0.0f));
         localConfig.uvScale = archive->GetVector2("uvscale", Vector2(1.0f, 1.0f));
+
         config = localConfig;
         ConfigChanged();
     }
@@ -120,5 +119,10 @@ void GeoDecalComponent::ConfigChanged()
         else
             dataNodeMaterial->AddTexture(NMaterialTextureName::TEXTURE_NORMAL, normalTexture);
     }
+}
+
+AABBox3 GeoDecalComponent::GetBoundingBox() const
+{
+    return config.GetBoundingBox();
 }
 }

@@ -36,6 +36,8 @@ public:
 
     void GetDataNodes(Set<DataNode*>& dataNodes) override;
 
+    AABBox3 GetBoundingBox() const;
+
 private:
     void ConfigChanged();
     void InitWithFlags(uint32 flags);
@@ -52,7 +54,7 @@ public:
     IMPL_PROPERTY(FilePath, DecalAlbedo, albedo);
     IMPL_PROPERTY(FilePath, DecalNormal, normal);
     IMPL_PROPERTY(FilePath, OverridenMaterialsPath, overridenMaterialsPath);
-    IMPL_PROPERTY(AABBox3, BoundingBox, boundingBox);
+    IMPL_PROPERTY(Vector3, Dimensions, dimensions);
     IMPL_PROPERTY(Vector2, UVScale, uvScale);
     IMPL_PROPERTY(Vector2, UVOffset, uvOffset);
     IMPL_PROPERTY(GeoDecalManager::Mapping, Mapping, mapping);

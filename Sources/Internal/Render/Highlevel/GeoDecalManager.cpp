@@ -10,6 +10,7 @@ namespace DAVA
 {
 struct GeoDecalManager::DecalBuildInfo : public GeoDecalManager::DecalConfig
 {
+    AABBox3 boundingBox;
     PolygonGroup* polygonGroup = nullptr;
     NMaterial* material = nullptr;
     Vector4* jointPositions = nullptr;
@@ -137,18 +138,20 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, co
     Decal decal = reinterpret_cast<Decal>(decalCounter ^ thisId);
     // todo : use something better for decal id
 
+    AABBox3 decalBox = config.GetBoundingBox();
+
     AABBox3 worldSpaceBox;
-    config.boundingBox.GetTransformedBox(decalWorldTransform, worldSpaceBox);
+    decalBox.GetTransformedBox(decalWorldTransform, worldSpaceBox);
 
     uint8 boxCornersData[8 * sizeof(Vector3)];
     Vector3* boxCorners = reinterpret_cast<Vector3*>(boxCornersData);
-    config.boundingBox.GetCorners(boxCorners);
+    decalBox.GetCorners(boxCorners);
 
     Matrix4 worldToObject = decalWorldTransform * ro->GetInverseWorldTransform();
 
-    Vector3 side = MultiplyVectorMat3x3(Vector3(1.0f, 0.0f, 0.0f), worldToObject);
+    Vector3 side = MultiplyVectorMat3x3(Vector3(-1.0f, 0.0f, 0.0f), worldToObject);
     Vector3 up = MultiplyVectorMat3x3(Vector3(0.0f, 1.0f, 0.0f), worldToObject);
-    Vector3 dir = MultiplyVectorMat3x3(Vector3(0.0f, 0.0f, 1.0f), worldToObject);
+    Vector3 dir = MultiplyVectorMat3x3(Vector3(0.0f, 0.0f, -1.0f), worldToObject);
 
     Vector3 boxMin = Vector3(+std::numeric_limits<float>::max(), +std::numeric_limits<float>::max(), +std::numeric_limits<float>::max());
     Vector3 boxMax = Vector3(-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
@@ -535,6 +538,12 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatchProvider
     if (baseFXName.find("lightmap") != String::npos)
     {
         material->AddFlag(FastName("MATERIAL_LIGHTMAP"), 1);
+    }
+
+    if (material->GetEffectiveFlagValue(NMaterialFlagName::FLAG_TILED_DECAL_MASK) != 0)
+    {
+        // disable decals over decals
+        material->AddFlag(NMaterialFlagName::FLAG_TILED_DECAL_MASK, 0);
     }
 
     ScopedPtr<Texture> geoDecalTexture(Texture::CreateFromFile(info.albedo));

@@ -469,8 +469,8 @@ void DebugDrawSystem::DrawDecals(DAVA::Entity* entity)
         DAVA::Vector3 boxCenter = box.GetCenter();
         DAVA::Vector3 boxHalfSize = 0.5f * box.GetSize();
 
-        DAVA::Vector3 farPoint = DAVA::Vector3(boxCenter.x, boxCenter.y, box.max.z) * transform;
-        DAVA::Vector3 nearPoint = DAVA::Vector3(boxCenter.x, boxCenter.y, box.min.z) * transform;
+        DAVA::Vector3 farPoint = DAVA::Vector3(boxCenter.x, boxCenter.y, box.min.z) * transform;
+        DAVA::Vector3 nearPoint = DAVA::Vector3(boxCenter.x, boxCenter.y, box.max.z) * transform;
 
         DAVA::Vector3 direction = farPoint - nearPoint;
         direction.Normalize();
@@ -479,7 +479,7 @@ void DebugDrawSystem::DrawDecals(DAVA::Entity* entity)
 
         if (decal->GetConfig().mapping == DAVA::GeoDecalManager::Mapping::CYLINDRICAL)
         {
-            DAVA::Vector3 side = DAVA::Vector3(boxCenter.x - boxHalfSize.x, 0.0f, box.min.z) * transform;
+            DAVA::Vector3 side = DAVA::Vector3(boxCenter.x - boxHalfSize.x, 0.0f, box.max.z) * transform;
 
             float radius = (side - nearPoint).Length();
             drawer->DrawCircle(nearPoint, direction, radius, 32, accentColor, dt);

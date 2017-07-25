@@ -51,6 +51,7 @@ SpeedTreeObject* GetSpeedTreeObject(const Entity* fromEntity);
 SnapToLandscapeControllerComponent* GetSnapToLandscapeControllerComponent(const Entity* fromEntity);
 StaticOcclusionComponent* GetStaticOcclusionComponent(const Entity* fromEntity);
 StaticOcclusionDebugDrawComponent* GetStaticOcclusionDebugDrawComponent(const Entity* fromEntity);
+GeoDecalComponent* GetGeoDecalComponent(const Entity* fromEntity);
 
 Light* GetLight(const Entity* fromEntity);
 LightComponent* GetLightComponent(const Entity* fromEntity);

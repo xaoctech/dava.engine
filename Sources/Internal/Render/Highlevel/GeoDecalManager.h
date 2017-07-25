@@ -26,7 +26,8 @@ public:
 
     struct DecalConfig
     {
-        AABBox3 boundingBox = AABBox3(Vector3(0.0f, 0.0f, 0.0f), 1.0f);
+        Vector3 dimensions = Vector3(1.0f, 1.0f, 1.0f);
+        // AABBox3 boundingBox = AABBox3(Vector3(0.0f, 0.0f, 0.0f), 1.0f);
         Mapping mapping = Mapping::PLANAR;
         FilePath albedo;
         FilePath normal;
@@ -38,6 +39,12 @@ public:
         bool operator==(const DecalConfig&) const;
         bool operator!=(const DecalConfig&) const;
         void invalidate();
+
+        AABBox3 GetBoundingBox() const
+        {
+            Vector3 half = 0.5f * dimensions;
+            return AABBox3(-half, half);
+        }
     };
 
     using Decal = struct
@@ -97,19 +104,19 @@ private:
 
 inline bool GeoDecalManager::DecalConfig::operator==(const GeoDecalManager::DecalConfig& r) const
 {
-    return (boundingBox == r.boundingBox) && (albedo == r.albedo) && (normal == r.normal) && (mapping == r.mapping) &&
+    return (dimensions == r.dimensions) && (albedo == r.albedo) && (normal == r.normal) && (mapping == r.mapping) &&
     (uvOffset == r.uvOffset) && (uvScale == r.uvScale) && (debugOverlayEnabled == r.debugOverlayEnabled);
 }
 
 inline bool GeoDecalManager::DecalConfig::operator!=(const GeoDecalManager::DecalConfig& r) const
 {
-    return (boundingBox != r.boundingBox) || (albedo != r.albedo) || (normal != r.normal) || (mapping != r.mapping) ||
+    return (dimensions != r.dimensions) || (albedo != r.albedo) || (normal != r.normal) || (mapping != r.mapping) ||
     (uvOffset != r.uvOffset) || (uvScale != r.uvScale) || (debugOverlayEnabled != r.debugOverlayEnabled);
 }
 
 inline void GeoDecalManager::DecalConfig::invalidate()
 {
-    boundingBox.Empty();
+    dimensions = Vector3(0.0f, 0.0f, 0.0f);
     albedo = FilePath();
     normal = FilePath();
 }
