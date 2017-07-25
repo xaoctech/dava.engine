@@ -253,7 +253,7 @@ FresnelShlickVec3( float NdotL, float3 Cspec )
 
 inline float3 JointTransformTangent( float3 tangent, float4 jIndices, float4 jWeights)
 {
-    int4 indices = int4(jIndices);
+    float4 indices = jIndices;
     float4 weights = jWeights;
     for(int i = 0; i < SOFT_SKINNING; ++i)
     {
@@ -398,7 +398,7 @@ vertex_out vp_main( vertex_in input )
                 
                 #if SOFT_SKINNING
                 {
-                    int4 indices = input.index;
+                    float4 indices = input.index;
                     float4 weights = input.weight;
                     for(int i = 0; i < SOFT_SKINNING; ++i)
                     {
