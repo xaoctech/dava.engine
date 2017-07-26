@@ -330,6 +330,7 @@ void XMLRichContentBuilder::ProcessText(const String& text)
     const static String LTR_MARK = UTF8Utils::EncodeToUTF8(L"\u200E");
     const static String RTL_MARK = UTF8Utils::EncodeToUTF8(L"\u200F");
     const static uint32 ZERO_WIDTH_SPACE = 0x200B;
+    const static uint32 NO_BREAK_SPACE = 0xA0;
     const static uint32 NEW_LINE = 0x0A;
 
     UTF8Walker walker(text);
@@ -340,7 +341,9 @@ void XMLRichContentBuilder::ProcessText(const String& text)
         token += walker.GetUtf8Character();
 
         StringUtils::eLineBreakType br = walker.GetLineBreak();
-        if (br == StringUtils::LB_NOBREAK && walker.HasNext())
+
+        bool allowBreak = br == StringUtils::LB_ALLOWBREAK || (walker.IsWhitespace() && walker.GetUnicodeCodepoint() != NO_BREAK_SPACE);
+        if (!allowBreak && br == StringUtils::LB_NOBREAK && walker.HasNext())
         {
             continue;
         }
@@ -373,15 +376,9 @@ void XMLRichContentBuilder::ProcessText(const String& text)
             token.clear();
         }
 
-        if (br == StringUtils::LB_MUSTBREAK)
-        {
-            needLineBreak = walker.GetUnicodeCodepoint() == NEW_LINE;
-        }
-        else if (br == StringUtils::LB_ALLOWBREAK)
-        {
-            needSpace = walker.IsWhitespace() && walker.GetUnicodeCodepoint() != ZERO_WIDTH_SPACE;
-            needSoftStick = true;
-        }
+        needLineBreak = br == StringUtils::LB_MUSTBREAK || walker.GetUnicodeCodepoint() == NEW_LINE;
+        needSoftStick = allowBreak;
+        needSpace = walker.IsWhitespace() && walker.GetUnicodeCodepoint() != ZERO_WIDTH_SPACE;
 
         first = false;
     }
