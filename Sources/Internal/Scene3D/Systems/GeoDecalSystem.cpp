@@ -9,7 +9,7 @@
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
 
-#define DAVA_GEODECAL_SYSTEM_DEBUG_RENDER 1
+#define DAVA_GEODECAL_SYSTEM_DEBUG_RENDER 0
 
 namespace DAVA
 {

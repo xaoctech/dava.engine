@@ -27,7 +27,6 @@ public:
     struct DecalConfig
     {
         Vector3 dimensions = Vector3(1.0f, 1.0f, 1.0f);
-        // AABBox3 boundingBox = AABBox3(Vector3(0.0f, 0.0f, 0.0f), 1.0f);
         Mapping mapping = Mapping::PLANAR;
         FilePath albedo;
         FilePath normal;
