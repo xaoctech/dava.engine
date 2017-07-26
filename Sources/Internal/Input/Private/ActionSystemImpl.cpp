@@ -37,11 +37,15 @@ ActionSystemImpl::ActionSystemImpl(ActionSystem* actionSystem)
     : actionSystem(actionSystem)
 {
     inputHandlerToken = GetEngineContext()->inputSystem->AddHandler(eInputDeviceTypes::CLASS_ALL, MakeFunction(this, &ActionSystemImpl::OnInputEvent));
+
+    Engine::Instance()->update.Connect(this, &ActionSystemImpl::OnUpdate);
 }
 
 ActionSystemImpl::~ActionSystemImpl()
 {
     GetEngineContext()->inputSystem->RemoveHandler(inputHandlerToken);
+
+    Engine::Instance()->update.Disconnect(this);
 }
 
 void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)
@@ -182,43 +186,6 @@ bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
                     Action action;
                     action.actionId = binding.actionId;
                     action.analogState = event.analogState;
-                    action.triggeredDevice = event.device;
-
-                    actionSystem->ActionTriggered.Emit(action);
-
-                    return false; // TODO
-                }
-            }
-        }
-    }
-    else
-    {
-        // Ignore keyboard char events
-        if (event.deviceType == eInputDevices::KEYBOARD && event.keyboardEvent.charCode > 0)
-        {
-            return false;
-        }
-
-        // Check if any digital action has triggered
-        for (const BoundActionSet& setBinding : boundSets)
-        {
-            for (auto it = setBinding.digitalBindings.begin(); it != setBinding.digitalBindings.end(); ++it)
-            {
-                DigitalBinding const& binding = *it;
-
-                if (std::find(binding.digitalElements.begin(), binding.digitalElements.end(), event.elementId) == binding.digitalElements.end())
-                {
-                    continue;
-                }
-
-                const bool triggered = CheckDigitalStates(binding.digitalElements, binding.digitalStates, setBinding.devices);
-
-                if (triggered)
-                {
-                    Action action;
-                    action.actionId = binding.actionId;
-                    action.analogState = binding.outputAnalogState;
-                    action.triggeredDevice = event.device;
 
                     actionSystem->ActionTriggered.Emit(action);
 
@@ -229,6 +196,70 @@ bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
     }
 
     return false;
+}
+
+void ActionSystemImpl::OnUpdate(float32 elapsedTime)
+{
+    // Set of elements that triggered an action during this update
+    // Required to skip bindings with same elements
+    // For example, we have two bindings:
+    // - Shift + space (binding1)
+    // - Space (binding2)
+    // Binding1 will be processed first and if triggered, binding2 should be skipped
+    static Set<eInputElements> elementsTriggeredActions;
+
+    // Check if any digital action has triggered
+    for (const BoundActionSet& setBinding : boundSets)
+    {
+        for (auto it = setBinding.digitalBindings.begin(); it != setBinding.digitalBindings.end(); ++it)
+        {
+            DigitalBinding const& binding = *it;
+
+            // Check if we already triggered a binding that used some elements from current binding
+            // If we did, skip it
+
+            bool skipBinding = false;
+            for (const eInputElements usedElement : elementsTriggeredActions)
+            {
+                if (std::find(binding.digitalElements.begin(), binding.digitalElements.end(), usedElement) != binding.digitalElements.end())
+                {
+                    skipBinding = true;
+                    break;
+                }
+            }
+
+            if (skipBinding)
+            {
+                continue;
+            }
+
+            // Trigger if all elements are in required state
+
+            const bool triggered = CheckDigitalStates(binding.digitalElements, binding.digitalStates, setBinding.devices);
+
+            if (triggered)
+            {
+                Action action;
+                action.actionId = binding.actionId;
+                action.analogState = binding.outputAnalogState;
+
+                // Remember elements that triggered that
+                for (eInputElements digitalElement : binding.digitalElements)
+                {
+                    if (digitalElement == eInputElements::NONE)
+                    {
+                        break;
+                    }
+
+                    elementsTriggeredActions.insert(digitalElement);
+                }
+
+                actionSystem->ActionTriggered.Emit(action);
+            }
+        }
+    }
+
+    elementsTriggeredActions.clear();
 }
 }
 }

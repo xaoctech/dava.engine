@@ -28,9 +28,6 @@ struct Action final
     /** Id of the action */
     FastName actionId;
 
-    /** Id of the device whose event triggered the action. This field is always non-null. */
-    InputDevice* triggeredDevice;
-
     /**
         If the action was triggered using `AnalogBinding`, this field contains state of the element which triggered the action.
         If the action was triggered using `DigitalBinding`, this field contains value taken from `DigitalBinding::outputAnalogState` field (user-specified).
