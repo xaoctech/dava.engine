@@ -448,7 +448,7 @@ void EditorControlsView::OnDragStateChanged(EditorSystemsManager::eDragState /*c
             control->AdjustToNestedControl();
         }
     }
-    Layout();
+    needRecalculateBgrBeforeRender = true;
 }
 
 void EditorControlsView::ControlWasRemoved(ControlNode* node, ControlsContainerNode* from)
@@ -654,7 +654,7 @@ void EditorControlsView::OnRootContolsChanged(const Any& newRootControlsValue)
         BackgroundController* backgroundController = CreateControlBackground(node);
         AddBackgroundControllerToCanvas(backgroundController, std::distance(newRootControls.begin(), iter));
     }
-    Layout();
+    needRecalculateBgrBeforeRender = true;
 }
 
 //later background controls must be a part of data and rootControlPos must be simple getter
