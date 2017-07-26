@@ -64,6 +64,16 @@ DAVA::TArc::ModalMessageParams::Button ShowModalMessage(const DAVA::TArc::ModalM
     return ui->ShowModalMessage(DAVA::TArc::mainWindowKey, params);
 }
 
+void ShowNotification(const DAVA::TArc::NotificationParams& params)
+{
+    DAVA::TArc::UI* ui = REGlobalDetails::GetUI();
+    DVASSERT(ui != nullptr);
+    if (ui != nullptr)
+    {
+        ui->ShowNotification(DAVA::TArc::mainWindowKey, params);
+    }
+}
+
 void InitTArcCore(DAVA::TArc::Core* core)
 {
     REGlobalDetails::coreInstance = core;
