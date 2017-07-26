@@ -1,6 +1,7 @@
 #include "ParticleForce.h"
-using namespace DAVA;
 
+namespace DAVA
+{
 // Particle Force class is needed to store Particle Force data.
 ParticleForce::ParticleForce(RefPtr<PropertyLine<Vector3>> force_, RefPtr<PropertyLine<float32>> forceOverLife_)
     : force(force_)
@@ -28,4 +29,5 @@ void ParticleForce::GetModifableLines(List<ModifiablePropertyLineBase*>& modifia
 {
     PropertyLineHelper::AddIfModifiable(force.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(forceOverLife.Get(), modifiables);
+}
 }

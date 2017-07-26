@@ -1,5 +1,4 @@
-#ifndef __PARTICLE_FORCE_H__
-#define __PARTICLE_FORCE_H__
+#pragma once
 
 #include "Base/BaseObject.h"
 #include "Particles/ParticlePropertyLine.h"
@@ -23,5 +22,3 @@ public:
     INTROSPECTION_EXTEND(ParticleForce, BaseObject, nullptr)
 };
 };
-
-#endif /* defined(__PARTICLE_FORCE_H__) */
