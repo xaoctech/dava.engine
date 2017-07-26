@@ -1,5 +1,7 @@
 #include "blending.slh"
 
+#ensuredefined HEATMAP 0
+
 fragment_in
 {
     float2 texcoord0 : TEXCOORD0;

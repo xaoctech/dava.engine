@@ -130,6 +130,8 @@ public:
 
     bool IsPackDownloaded(const String& packName) override;
 
+    uint64 GetPackSize(const String& packName) override;
+
     const IRequest* RequestPack(const String& requestedPackName) override;
 
     PackRequest* FindRequest(const String& requestedPackName) const;
@@ -141,6 +143,8 @@ public:
     void RemovePack(const String& packName) override;
 
     Progress GetProgress() const override;
+
+    Info GetInfo() const override;
 
     const FilePath& GetLocalPacksDirectory() const;
 
@@ -167,10 +171,9 @@ public:
 
     std::ostream& GetLog() const;
 
-    DLCDownloader* GetDownloader() const
-    {
-        return downloader.get();
-    }
+    DLCDownloader& GetDownloader() const;
+
+    bool CountError(int32 errCode);
 
 private:
     // initialization state functions
@@ -193,6 +196,7 @@ private:
     void DeleteLocalMetaFiles();
     void ContinueInitialization(float frameDelta);
     void ReadContentAndExtractFileNames();
+    uint64 CountCompressedFileSize(const uint64& startCounterValue, const Vector<uint32>& fileIndexes);
 
     void SwapRequestAndUpdatePointers(PackRequest* request, PackRequest* newRequest);
     void SwapPointers(PackRequest* userRequestObject, PackRequest* newRequestObject);
@@ -214,6 +218,7 @@ private:
     struct LocalFileInfo
     {
         String relativeName;
+        uint64 sizeOnDevice = std::numeric_limits<uint64>::max();
         uint32 compressedSize = std::numeric_limits<uint32>::max(); // file size can be 0 so use max value default
         uint32 crc32Hash = std::numeric_limits<uint32>::max();
     };
@@ -291,6 +296,11 @@ private:
     uint32 retryCount = 0; // count every initialization error during session
 
     std::unique_ptr<DLCDownloader> downloader;
+
+    // collect errno codes and count it, also remember last error code
+    size_t errorCounter = 0;
+    int32 prevErrorCode = 0;
+
     bool prevNetworkState = false;
     bool firstTimeNetworkState = false;
 };

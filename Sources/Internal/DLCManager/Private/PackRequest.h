@@ -42,10 +42,6 @@ public:
     /** this request depends on other, so other should be downloaded first */
     bool IsSubRequest(const PackRequest* other) const;
 
-    bool IsDelayed() const;
-
-    PackRequest& operator=(PackRequest&& other);
-
 private:
     void InitializeFileRequests();
 
@@ -62,11 +58,23 @@ private:
 
     struct FileRequest
     {
+        FileRequest() = default;
+        FileRequest(FilePath localFile_,
+                    String url_,
+                    uint32 fileIndex_,
+                    uint32 compressedCrc32_,
+                    uint64 startLoadingPos_,
+                    uint64 sizeOfCompressedFile_,
+                    uint64 sizeOfUncompressedFile_,
+                    DLCDownloader::Task* task_,
+                    Compressor::Type compressionType_,
+                    Status status_);
+        ~FileRequest();
+
         FilePath localFile;
-        String errorMsg;
         String url;
         uint32 fileIndex = 0;
-        uint32 hashFromMeta = 0;
+        uint32 compressedCrc32 = 0;
         uint64 startLoadingPos = 0;
         uint64 sizeOfCompressedFile = 0;
         uint64 sizeOfUncompressedFile = 0;
@@ -76,20 +84,10 @@ private:
         Status status = Wait;
     };
 
-    void InitializeFileRequest(const uint32 fileIndex,
-                               const FilePath& file,
-                               const uint32 hash,
-                               const uint64 startLoadingPos,
-                               const uint64 fileCompressedSize,
-                               const uint64 fileUncompressedSize,
-                               const String& url,
-                               const Compressor::Type compressionType_,
-                               FileRequest& fileRequest);
-
     static void DeleteJustDownloadedFileAndStartAgain(FileRequest& fileRequest);
     void DisableRequestingAndFireSignalIOError(FileRequest& fileRequest, int32 errVal, const String& extMsg) const;
     bool CheckLocalFileState(FileSystem* fs, FileRequest& fileRequest);
-    bool CheckLoadingStatusOfFileRequest(FileRequest& fileRequest, DLCDownloader* dm, const String& dstPath);
+    bool CheckLoadingStatusOfFileRequest(FileRequest& fileRequest, DLCDownloader& dm, const String& dstPath);
     bool LoadingPackFileState(FileSystem* fs, FileRequest& fileRequest);
     bool CheckHaskState(FileRequest& fileRequest);
     bool UpdateFileRequests();
@@ -103,16 +101,10 @@ private:
 
     uint32 numOfDownloadedFile = 0;
 
-    int32 openRetryCounter = 10; // 10 frames to try write append footer
-
     // if this field is false, you can check fileIndexes
     // else fileIndexes maybe empty and wait initialization
     bool delayedRequest = true;
+    bool fileRequestsInitialized = false;
 };
-
-inline bool PackRequest::IsDelayed() const
-{
-    return delayedRequest;
-}
 
 } // end namespace DAVA

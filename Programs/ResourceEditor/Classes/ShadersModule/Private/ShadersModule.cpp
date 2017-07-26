@@ -76,8 +76,8 @@ void ShadersModule::ReloadShaders()
                                       {
                                           material->InvalidateRenderVariants();
                                       }
-                                      const DAVA::Map<DAVA::uint64, DAVA::NMaterial*>& particleInstances = sceneEditor->particleEffectSystem->GetMaterialInstances();
-                                      for (auto material : particleInstances)
+                                      const auto particleInstances = sceneEditor->particleEffectSystem->GetMaterialInstances();
+                                      for (auto& material : particleInstances)
                                       {
                                           material.second->InvalidateRenderVariants();
                                       }

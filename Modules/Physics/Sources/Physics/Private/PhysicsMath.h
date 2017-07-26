@@ -49,5 +49,15 @@ inline physx::PxVec3 Vector3ToPxVec3(const Vector3& in)
     return physx::PxVec3(in.x, in.y, in.z);
 }
 
+inline Vector3 PxVec3ToVector3(const physx::PxVec3& in)
+{
+    return Vector3(in.x, in.y, in.z);
+}
+
+inline Color PxColorToColor(const physx::PxU32 color)
+{
+    return Color(color);
+}
+
 } // namespace PhysicsMath
 } // namespace DAVA

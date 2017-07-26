@@ -21,9 +21,9 @@
 #define DECLARE_CONTROL_PARAMS(Fields) \
     struct Params : BaseParams\
     { \
-        Params(ContextAccessor* accessor, UI* ui, const WindowKey& wndKey) \
+        Params(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui, const DAVA::TArc::WindowKey& wndKey) \
             : BaseParams(accessor, ui, wndKey){} \
-        ControlDescriptorBuilder<Fields> fields; \
+        DAVA::TArc::ControlDescriptorBuilder<Fields> fields; \
     };
 
 namespace DAVA

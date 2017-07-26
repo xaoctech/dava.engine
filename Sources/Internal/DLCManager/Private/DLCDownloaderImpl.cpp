@@ -11,43 +11,6 @@ namespace DAVA
 DLCDownloader::Range::Range() = default;
 const DLCDownloader::Range DLCDownloader::EmptyRange;
 
-static Mutex curlInitializeMut;
-static int counterCurlInitialization{ 0 };
-
-void CurlGlobalInit()
-{
-    LockGuard<Mutex> lock(curlInitializeMut);
-    if (counterCurlInitialization == 0)
-    {
-        // https://curl.haxx.se/libcurl/c/curl_global_init.html
-        CURLcode code = curl_global_init(CURL_GLOBAL_ALL);
-        if (CURLE_OK != code)
-        {
-            StringStream ss;
-            ss << "curl_global_init failed: CURLcode == " << code << std::endl;
-            DAVA_THROW(Exception, ss.str());
-        }
-    }
-    ++counterCurlInitialization;
-}
-void CurlGlobalDeinit()
-{
-    LockGuard<Mutex> lock(curlInitializeMut);
-    if (counterCurlInitialization > 0)
-    {
-        --counterCurlInitialization;
-    }
-    else
-    {
-        DVASSERT(counterCurlInitialization >= 0);
-    }
-
-    if (counterCurlInitialization == 0)
-    {
-        curl_global_cleanup();
-    }
-}
-
 std::ostream& operator<<(std::ostream& stream, const DLCDownloader::TaskError& error)
 {
     stream << " err_happened: " << std::boolalpha << error.errorHappened;
@@ -736,8 +699,9 @@ struct DefaultWriter : DLCDownloader::IWriter
 
         if (!f)
         {
-            const char* err = strerror(errno);
-            DAVA_THROW(Exception, "can't create output file: " + outputFile + " " + err);
+            StringStream ss;
+            ss << "can't create output file: " << outputFile << " errno(" << errno << ") " << strerror(errno);
+            DAVA_THROW(Exception, ss.str());
         }
     }
     ~DefaultWriter() = default;
@@ -799,7 +763,7 @@ DLCDownloader::TaskStatus& DLCDownloader::TaskStatus::operator=(const TaskStatus
 
 void DLCDownloaderImpl::Initialize()
 {
-    CurlGlobalInit();
+    Context::CurlGlobalInit();
 
     multiHandle = curl_multi_init();
 
@@ -840,7 +804,7 @@ void DLCDownloaderImpl::Deinitialize()
     }
     reusableHandles.clear();
 
-    CurlGlobalDeinit();
+    Context::CurlGlobalDeinit();
 }
 
 DLCDownloaderImpl::DLCDownloaderImpl()
@@ -1232,10 +1196,10 @@ void DLCDownloader::Task::SetupFullDownload()
         {
             writer.reset(new DefaultWriter(info.dstPath));
         }
-        catch (std::exception& ex)
+        catch (Exception& ex)
         {
             OnErrorCurlErrno(errno, *this, __LINE__);
-            Logger::Error("can't create DefaultWriter: %s", ex.what());
+            Logger::Error("can't create DefaultWriter: %s %s %d", ex.what(), ex.file.c_str(), static_cast<int>(ex.line));
             return;
         }
     }
@@ -1576,6 +1540,11 @@ void DLCDownloaderImpl::DownloadThreadFunc()
 
             BalancingHandles();
 
+            if (numOfRunningSubTasks == 0)
+            {
+                downloading = false;
+            }
+
             while (downloading)
             {
                 int numOfCurlWorkingHandles = CurlPerform();
@@ -1619,14 +1588,32 @@ int DLCDownloaderImpl::CurlPerform()
         DAVA_THROW(Exception, strErr);
     }
 
+    int numfds = 0;
+
     // wait for activity, timeout or "nothing"
     // from https://curl.haxx.se/libcurl/c/curl_multi_wait.html
-    code = curl_multi_wait(multiHandle, nullptr, 0, 1000, nullptr);
+    code = curl_multi_wait(multiHandle, nullptr, 0, 1000, &numfds);
     if (code != CURLM_OK)
     {
         const char* strErr = curl_multi_strerror(code);
         Logger::Error("curl_multi_wait failed: %s", strErr);
         DAVA_THROW(Exception, strErr);
+    }
+    // 'numfds' being zero means either a timeout or no file descriptors to
+    // wait for. Try timeout on first occurrence, then assume no file
+    // descriptors and no file descriptors to wait for means wait for 100
+    // milliseconds.
+    if (!numfds)
+    {
+        ++multiWaitRepeats;
+        if (multiWaitRepeats > 1)
+        {
+            Thread::Sleep(100);
+        }
+    }
+    else
+    {
+        multiWaitRepeats = 0;
     }
 
     // if there are still transfers, loop!
