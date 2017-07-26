@@ -1,14 +1,9 @@
 #include "PackageModel.h"
 
-#include <QIcon>
-#include <QAction>
-#include <QUrl>
+#include "Modules/DocumentsModule/DocumentData.h"
 
-#include "DAVAEngine.h"
-#include "Base/ObjectFactory.h"
-
+#include "UI/CommandExecutor.h"
 #include "UI/IconHelper.h"
-#include "UI/QtModelPackageCommandExecutor.h"
 #include "Utils/QtDavaConvertion.h"
 #include "Model/PackageHierarchy/PackageNode.h"
 #include "Model/PackageHierarchy/ControlNode.h"
@@ -24,9 +19,22 @@
 #include "Model/ControlProperties/PrototypeNameProperty.h"
 #include "Model/ControlProperties/VisibleValueProperty.h"
 #include "Model/YamlPackageSerializer.h"
-#include "QtTools/Utils/Themes/Themes.h"
+
+#include "QECommands/ChangePropertyValueCommand.h"
 
 #include "PackageMimeData.h"
+
+#include <TArc/Core/ContextAccessor.h>
+#include <TArc/DataProcessing/DataContext.h>
+#include <TArc/WindowSubSystem/UI.h>
+#include <TArc/Utils/Themes.h>
+
+#include <Base/ObjectFactory.h>
+#include <UI/UIControl.h>
+
+#include <QIcon>
+#include <QAction>
+#include <QUrl>
 
 using namespace DAVA;
 
@@ -61,9 +69,10 @@ void SetAbsoulutePosToControlNode(PackageNode* package, ControlNode* node, Contr
     }
     relativePos = ::Rotate(relativePos, -angle);
     RootProperty* rootProperty = node->GetRootProperty();
-    AbstractProperty* positionProperty = rootProperty->FindPropertyByName("Position");
+    AbstractProperty* positionProperty = rootProperty->FindPropertyByName("position");
     DVASSERT(nullptr != positionProperty);
-    package->SetControlProperty(node, positionProperty, VariantType(relativePos));
+    Vector2 clampedRelativePos(std::floor(relativePos.x), std::floor(relativePos.y));
+    package->SetControlProperty(node, positionProperty, clampedRelativePos);
 }
 } //PackageModel_local
 
@@ -72,7 +81,19 @@ PackageModel::PackageModel(QObject* parent)
 {
 }
 
-void PackageModel::Reset(PackageNode* package_, QtModelPackageCommandExecutor* executor_)
+PackageModel::~PackageModel() = default;
+
+void PackageModel::SetAccessor(DAVA::TArc::ContextAccessor* accessor_)
+{
+    accessor = accessor_;
+}
+
+void PackageModel::SetUI(DAVA::TArc::UI* ui_)
+{
+    ui = ui_;
+}
+
+void PackageModel::Reset(PackageNode* package_)
 {
     beginResetModel();
     if (nullptr != package)
@@ -80,7 +101,6 @@ void PackageModel::Reset(PackageNode* package_, QtModelPackageCommandExecutor* e
         package->RemoveListener(this);
     }
     package = package_;
-    commandExecutor = executor_;
     if (nullptr != package)
     {
         package->AddListener(this);
@@ -131,7 +151,7 @@ QModelIndex PackageModel::parent(const QModelIndex& child) const
     if (package != nullptr)
     {
         DVASSERT(nullptr != parent);
-        if (nullptr == parent || parent == package)
+        if (nullptr == parent || parent == package.Get())
         {
             return QModelIndex();
         }
@@ -200,24 +220,39 @@ QVariant PackageModel::data(const QModelIndex& index, int role) const
             const String& prototype = controlNode->GetRootProperty()->GetPrototypeProperty()->GetPrototypeName();
             const String& className = controlNode->GetRootProperty()->GetClassProperty()->GetClassName();
             const String& customClassName = controlNode->GetRootProperty()->GetCustomClassProperty()->GetCustomClassName();
-            QString toolTip = QString("class: ") + className.c_str();
-            if (!customClassName.empty())
-            {
-                toolTip += QString("\ncustom class: ") + customClassName.c_str();
-            }
 
-            if (controlNode->GetPrototype())
+            QString toolTip;
+
+            if (controlNode->HasErrors())
             {
-                toolTip += QString("\nprototype: ") + prototype.c_str();
+                toolTip = QString::fromStdString(controlNode->GetResults().GetResultMessages());
+            }
+            else
+            {
+                toolTip = QString("class: ") + className.c_str();
+                if (!customClassName.empty())
+                {
+                    toolTip += QString("\ncustom class: ") + customClassName.c_str();
+                }
+
+                if (controlNode->GetPrototype())
+                {
+                    toolTip += QString("\nprototype: ") + prototype.c_str();
+                }
             }
             return toolTip;
         }
 
         case Qt::TextColorRole:
-            if (controlNode->GetPrototype() != nullptr)
+            if (controlNode->HasErrors())
+            {
+                return Themes::GetErrorColor();
+            }
+            else if (controlNode->GetPrototype() != nullptr)
             {
                 return Themes::GetPrototypeColor();
             }
+            return QVariant();
 
         case Qt::FontRole:
         {
@@ -267,6 +302,21 @@ QVariant PackageModel::data(const QModelIndex& index, int role) const
             case Qt::BackgroundRole:
                 return Themes::GetViewLineAlternateColor();
 
+            case Qt::TextColorRole:
+                if (node->HasErrors())
+                {
+                    return Themes::GetErrorColor();
+                }
+                return QVariant();
+
+            case Qt::ToolTipRole:
+            {
+                if (node->HasErrors())
+                {
+                    return QString::fromStdString(node->GetResults().GetResultMessages());
+                }
+                return QVariant();
+            }
             case Qt::FontRole:
             {
                 QFont myFont;
@@ -308,16 +358,15 @@ bool PackageModel::setData(const QModelIndex& index, const QVariant& value, int 
     }
     if (role == Qt::EditRole)
     {
-        DVASSERT(nullptr != commandExecutor);
-        if (nullptr != commandExecutor)
+        auto prop = controlNode->GetRootProperty()->GetNameProperty();
+        const auto& newName = value.toString().toStdString();
+        if (newName != node->GetName())
         {
-            auto prop = controlNode->GetRootProperty()->GetNameProperty();
-            const auto& newName = value.toString().toStdString();
-            if (newName != node->GetName())
-            {
-                commandExecutor->ChangeProperty(controlNode, prop, DAVA::VariantType(newName));
-                return true;
-            }
+            DAVA::TArc::DataContext* activeContext = accessor->GetActiveContext();
+            DVASSERT(activeContext != nullptr);
+            DocumentData* documentData = activeContext->GetData<DocumentData>();
+            documentData->ExecCommand<ChangePropertyValueCommand>(controlNode, prop, Any(newName));
+            return true;
         }
     }
     return false;
@@ -372,7 +421,9 @@ QMimeData* PackageModel::mimeData(const QModelIndexList& indices) const
 
     PackageMimeData* mimeData = new PackageMimeData();
 
-    Vector<ControlNode*> controlNodesForCopy;
+    SortedPackageBaseNodeSet controlNodesForCopy(CompareByLCA);
+    SortedPackageBaseNodeSet styleSheetNodesForCopy(CompareByLCA);
+
     for (const QModelIndex& index : indices)
     {
         if (index.isValid())
@@ -380,38 +431,38 @@ QMimeData* PackageModel::mimeData(const QModelIndexList& indices) const
             PackageBaseNode* node = static_cast<PackageBaseNode*>(index.internalPointer());
             if (node->CanCopy())
             {
-                ControlNode* controlNode = dynamic_cast<ControlNode*>(node);
-                if (nullptr != controlNode)
+                if (dynamic_cast<ControlNode*>(node) != nullptr)
                 {
-                    controlNodesForCopy.push_back(controlNode);
+                    controlNodesForCopy.insert(node);
                 }
-                else
+                else if (dynamic_cast<StyleSheetNode*>(node) != nullptr)
                 {
-                    StyleSheetNode* style = dynamic_cast<StyleSheetNode*>(node);
-                    if (nullptr != style)
-                    {
-                        mimeData->AddStyle(style);
-                    }
+                    styleSheetNodesForCopy.insert(node);
                 }
             }
         }
     }
 
-    for (ControlNode* controlNode : controlNodesForCopy)
+    for (PackageBaseNode* controlNode : controlNodesForCopy)
     {
         PackageBaseNode* parent = controlNode->GetParent();
-        while (parent != nullptr && std::find(controlNodesForCopy.begin(), controlNodesForCopy.end(), parent) == controlNodesForCopy.end())
+        while (parent != nullptr && controlNodesForCopy.find(parent) == controlNodesForCopy.end())
         {
             parent = parent->GetParent();
         }
         if (parent == nullptr)
         {
-            mimeData->AddControl(controlNode);
+            mimeData->AddControl(static_cast<ControlNode*>(controlNode));
         }
     }
 
+    for (PackageBaseNode* styleSheetNode : styleSheetNodesForCopy)
+    {
+        mimeData->AddStyle(static_cast<StyleSheetNode*>(styleSheetNode));
+    }
+
     YamlPackageSerializer serializer;
-    serializer.SerializePackageNodes(package, mimeData->GetControls(), mimeData->GetStyles());
+    serializer.SerializePackageNodes(package.Get(), mimeData->GetControls(), mimeData->GetStyles());
     String str = serializer.WriteToString();
     mimeData->setText(QString::fromStdString(str));
 
@@ -438,63 +489,67 @@ bool PackageModel::dropMimeData(const QMimeData* data, Qt::DropAction action, in
 
 void PackageModel::OnDropMimeData(const QMimeData* data, Qt::DropAction action, PackageBaseNode* destNode, uint32 destIndex, const DAVA::Vector2* pos)
 {
-    DVASSERT(nullptr != commandExecutor && nullptr != package);
+    DVASSERT(nullptr != package);
 
     ControlsContainerNode* destControlContainer = dynamic_cast<ControlsContainerNode*>(destNode);
     StyleSheetsNode* destStylesContainer = dynamic_cast<StyleSheetsNode*>(destNode);
+
+    CommandExecutor executor(accessor, ui);
 
     if (destControlContainer && data->hasFormat(PackageMimeData::MIME_TYPE))
     {
         const PackageMimeData* controlMimeData = DynamicTypeCheck<const PackageMimeData*>(data);
 
         const Vector<ControlNode*>& srcControls = controlMimeData->GetControls();
-        DVASSERT(!srcControls.empty());
-        Vector<ControlNode*> nodes;
-        emit BeforeProcessNodes(SelectedNodes(srcControls.begin(), srcControls.end()));
-        switch (action)
+        if (!srcControls.empty())
         {
-        case Qt::CopyAction:
-            nodes = commandExecutor->CopyControls(srcControls, destControlContainer, destIndex);
-            break;
-        case Qt::MoveAction:
-            nodes = commandExecutor->MoveControls(srcControls, destControlContainer, destIndex);
-            break;
-        case Qt::LinkAction:
-            nodes = commandExecutor->InsertInstances(srcControls, destControlContainer, destIndex);
-            break;
-        default:
-            DVASSERT(false && "unrecognised action!");
-        }
-        if (pos != nullptr && destNode != package->GetPackageControlsNode())
-        {
-            auto destControl = dynamic_cast<ControlNode*>(destNode);
-            if (destControl != nullptr)
+            Vector<ControlNode*> nodes;
+            emit BeforeProcessNodes(SelectedNodes(srcControls.begin(), srcControls.end()));
+            switch (action)
             {
-                for (const auto& node : nodes)
+            case Qt::CopyAction:
+                nodes = executor.CopyControls(srcControls, destControlContainer, destIndex);
+                break;
+            case Qt::MoveAction:
+                nodes = executor.MoveControls(srcControls, destControlContainer, destIndex);
+                break;
+            default:
+                // just do nothing
+                break;
+            }
+            if (pos != nullptr && destNode != package->GetPackageControlsNode())
+            {
+                auto destControl = dynamic_cast<ControlNode*>(destNode);
+                if (destControl != nullptr)
                 {
-                    PackageModel_local::SetAbsoulutePosToControlNode(package, node, destControl, *pos);
+                    for (const auto& node : nodes)
+                    {
+                        PackageModel_local::SetAbsoulutePosToControlNode(package.Get(), node, destControl, *pos);
+                    }
                 }
             }
+            emit AfterProcessNodes(SelectedNodes(nodes.begin(), nodes.end()));
         }
-        emit AfterProcessNodes(SelectedNodes(nodes.begin(), nodes.end()));
     }
     else if (destStylesContainer && data->hasFormat(PackageMimeData::MIME_TYPE))
     {
         const PackageMimeData* mimeData = DynamicTypeCheck<const PackageMimeData*>(data);
 
         const Vector<StyleSheetNode*>& srcStyles = mimeData->GetStyles();
-        DVASSERT(!srcStyles.empty());
-
-        switch (action)
+        if (!srcStyles.empty())
         {
-        case Qt::CopyAction:
-            commandExecutor->CopyStyles(srcStyles, destStylesContainer, destIndex);
-            break;
-        case Qt::MoveAction:
-            commandExecutor->MoveStyles(srcStyles, destStylesContainer, destIndex);
-            break;
-        default:
-            DVASSERT(false && "unrecognised action!");
+            switch (action)
+            {
+            case Qt::CopyAction:
+                executor.CopyStyles(srcStyles, destStylesContainer, destIndex);
+                break;
+            case Qt::MoveAction:
+                executor.MoveStyles(srcStyles, destStylesContainer, destIndex);
+                break;
+            default:
+                // just do nothing
+                break;
+            }
         }
     }
     else if (data->hasFormat("text/uri-list") && data->hasText())
@@ -511,13 +566,13 @@ void PackageModel::OnDropMimeData(const QMimeData* data, Qt::DropAction action, 
         }
         if (!packages.empty())
         {
-            commandExecutor->AddImportedPackagesIntoPackage(packages, package);
+            executor.AddImportedPackagesIntoPackage(packages, package.Get());
         }
     }
     else if (destNode && data->hasFormat("text/plain") && data->hasText())
     {
         String string = data->text().toStdString();
-        auto nodes = commandExecutor->Paste(package, destNode, destIndex, string);
+        auto nodes = executor.Paste(package.Get(), destNode, destIndex, string);
         if (pos != nullptr && destNode != package->GetPackageControlsNode())
         {
             auto destControl = dynamic_cast<ControlNode*>(destNode);
@@ -528,7 +583,7 @@ void PackageModel::OnDropMimeData(const QMimeData* data, Qt::DropAction action, 
                     auto control = dynamic_cast<ControlNode*>(node);
                     if (control != nullptr)
                     {
-                        PackageModel_local::SetAbsoulutePosToControlNode(package, control, destControl, *pos);
+                        PackageModel_local::SetAbsoulutePosToControlNode(package.Get(), control, destControl, *pos);
                     }
                 }
             }

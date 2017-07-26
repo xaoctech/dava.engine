@@ -1,6 +1,6 @@
 #include "DAVAEngine.h"
 #include "DockSceneInfo/SceneInfo.h"
-#include "Qt/Settings/SettingsManager.h"
+#include "Classes/Settings/SettingsManager.h"
 #include "Qt/Main/QtUtils.h"
 #include "Qt/Scene/SceneSignals.h"
 #include "Qt/Scene/SceneEditor2.h"
@@ -386,7 +386,7 @@ DAVA::uint32 SceneInfo::GetTrianglesForNotLODEntityRecursive(DAVA::Entity* entit
     DAVA::uint32 triangles = 0;
 
     RenderObject* ro = GetRenderObject(entity);
-    if (ro && ro->GetType() != RenderObject::TYPE_PARTICLE_EMTITTER)
+    if (ro && ro->GetType() != RenderObject::TYPE_PARTICLE_EMITTER)
     {
         uint32 batchCount = (onlyVisibleBatches) ? ro->GetActiveRenderBatchCount() : ro->GetRenderBatchCount();
         for (uint32 i = 0; i < batchCount; ++i)
@@ -395,7 +395,7 @@ DAVA::uint32 SceneInfo::GetTrianglesForNotLODEntityRecursive(DAVA::Entity* entit
             PolygonGroup* pg = rb->GetPolygonGroup();
             if (pg)
             {
-                triangles += (pg->GetIndexCount() / 3);
+                triangles += pg->GetPrimitiveCount();
             }
         }
     }
@@ -595,7 +595,8 @@ void SceneInfo::OnCommmandExecuted(SceneEditor2* scene, const RECommandNotificat
     static const DAVA::Vector<DAVA::uint32> commandIDs =
     {
       CMDID_MATERIAL_CHANGE_CURRENT_CONFIG, CMDID_MATERIAL_CREATE_CONFIG,
-      CMDID_MATERIAL_REMOVE_TEXTURE, CMDID_INSP_MEMBER_MODIFY, CMDID_INSP_DYNAMIC_MODIFY
+      CMDID_MATERIAL_REMOVE_TEXTURE, CMDID_INSP_MEMBER_MODIFY, CMDID_INSP_DYNAMIC_MODIFY,
+      CMDID_REFLECTED_FIELD_MODIFY
     };
 
     if (commandNotification.MatchCommandIDs(commandIDs))

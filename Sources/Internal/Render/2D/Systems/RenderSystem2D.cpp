@@ -6,9 +6,10 @@
 
 #include "Render/Renderer.h"
 #include "Render/DynamicBufferAllocator.h"
-
 #include "Render/ShaderCache.h"
 #include "Render/VisibilityQueryResults.h"
+
+#include "Time/SystemTimer.h"
 
 #include "Debug/ProfilerGPU.h"
 #include "Debug/ProfilerMarkerNames.h"
@@ -104,7 +105,7 @@ void RenderSystem2D::Init()
     layout.AddElement(rhi::VS_COLOR, 0, rhi::VDT_UINT8N, 4);
     vertexLayouts2d[1] = rhi::VertexLayout::UniqueId(layout);
     VBO_STRIDE[1] = 3 * sizeof(float32) + 2 * sizeof(float32) + 4; //position, uv, color
-    for (uint32 i = 2; i <= MAX_TEXTURE_STREAMS_COUNT; ++i)
+    for (uint32 i = 2; i <= BatchDescriptor2D::MAX_TEXTURE_STREAMS_COUNT; ++i)
     {
         layout.AddElement(rhi::VS_TEXCOORD, i - 1, rhi::VDT_FLOAT, 2);
         vertexLayouts2d[i] = rhi::VertexLayout::UniqueId(layout);
@@ -122,7 +123,6 @@ void RenderSystem2D::Init()
     lastMaterial = nullptr;
     lastUsedCustomWorldMatrix = false;
     lastCustomWorldMatrix = Matrix4::IDENTITY;
-    lastCustomMatrixSematic = 1;
     lastClip = Rect(0, 0, -1, -1);
 
     currentVertexBuffer.reserve(MAX_VERTICES * VBO_STRIDE[1]);
@@ -184,6 +184,8 @@ void RenderSystem2D::BeginFrame()
     }
 
     Setup2DMatrices();
+
+    globalTime += SystemTimer::GetFrameDelta();
 }
 
 void RenderSystem2D::EndFrame()
@@ -304,11 +306,11 @@ void RenderSystem2D::Setup2DMatrices()
     if ((descr.colorAttachment != rhi::InvalidHandle) && (!rhi::DeviceCaps().isUpperLeftRTOrigin))
     {
         //invert projection
-        projMatrix.glOrtho(0.0f, targetSize.dx, 0.0f, targetSize.dy, -1.0f, 1.0f, rhi::DeviceCaps().isZeroBaseClipRange);
+        projMatrix.BuildOrtho(0.0f, targetSize.dx, 0.0f, targetSize.dy, -1.0f, 1.0f, rhi::DeviceCaps().isZeroBaseClipRange);
     }
     else
     {
-        projMatrix.glOrtho(0.0f, targetSize.dx, targetSize.dy, 0.0f, -1.0f, 1.0f, rhi::DeviceCaps().isZeroBaseClipRange);
+        projMatrix.BuildOrtho(0.0f, targetSize.dx, targetSize.dy, 0.0f, -1.0f, 1.0f, rhi::DeviceCaps().isZeroBaseClipRange);
     }
 
     if (rhi::DeviceCaps().isCenterPixelMapping)
@@ -349,15 +351,15 @@ void RenderSystem2D::AddPacket(rhi::Packet& packet)
 
 void RenderSystem2D::ScreenSizeChanged()
 {
-    Matrix4 glTranslate, glScale;
+    Matrix4 translateMx, scaleMx;
 
     Vector2 scale = UIControlSystem::Instance()->vcs->ConvertVirtualToPhysical(Vector2(1.f, 1.f));
     Vector2 realDrawOffset = UIControlSystem::Instance()->vcs->GetPhysicalDrawOffset();
 
-    glTranslate.glTranslate(realDrawOffset.x, realDrawOffset.y, 0.0f);
-    glScale.glScale(scale.x, scale.y, 1.0f);
+    translateMx.BuildTranslation(Vector3(realDrawOffset.x, realDrawOffset.y, 0.0f));
+    scaleMx.BuildScale(Vector3(scale.x, scale.y, 1.0f));
 
-    actualVirtualToPhysicalMatrix = glScale * glTranslate;
+    actualVirtualToPhysicalMatrix = scaleMx * translateMx;
     actualPhysicalToVirtualScale.x = UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualX(1.0f);
     actualPhysicalToVirtualScale.y = UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualY(1.0f);
     if (GetActiveTargetDescriptor().transformVirtualToPhysical)
@@ -391,10 +393,11 @@ void RenderSystem2D::IntersectClipRect(const Rect& rect)
 {
     if (currentClip.dx < 0 || currentClip.dy < 0)
     {
+        VirtualCoordinatesSystem* vcs = UIControlSystem::Instance()->vcs;
         const RenderTargetPassDescriptor& descr = GetActiveTargetDescriptor();
         Rect screen(0.0f, 0.0f,
-                    static_cast<float32>(descr.width == 0 ? UIControlSystem::Instance()->vcs->GetVirtualScreenSize().dx : descr.width),
-                    static_cast<float32>(descr.height == 0 ? UIControlSystem::Instance()->vcs->GetVirtualScreenSize().dy : descr.height));
+                    (descr.width == 0 ? vcs->GetVirtualScreenSize().dx : vcs->ConvertPhysicalToVirtualX(float32(descr.width))),
+                    (descr.height == 0 ? vcs->GetVirtualScreenSize().dy : vcs->ConvertPhysicalToVirtualY(float32(descr.height))));
         Rect res = screen.Intersection(rect);
         SetClip(res);
     }
@@ -445,6 +448,11 @@ Rect RenderSystem2D::TransformClipRect(const Rect& rect, const Matrix4& transfor
 void RenderSystem2D::SetSpriteClipping(bool clipping)
 {
     spriteClipping = clipping;
+}
+
+bool RenderSystem2D::GetSpriteClipping() const
+{
+    return spriteClipping;
 }
 
 bool RenderSystem2D::IsPreparedSpriteOnScreen(Sprite::DrawState* drawState)
@@ -535,7 +543,7 @@ void RenderSystem2D::DrawPacket(rhi::Packet& packet)
         AddPacket(packet);
 }
 
-void RenderSystem2D::PushBatch(const BatchDescriptor& batchDesc)
+void RenderSystem2D::PushBatch(const BatchDescriptor2D& batchDesc)
 {
     DVASSERT(batchDesc.vertexPointer != nullptr && batchDesc.vertexStride > 0 && batchDesc.vertexCount > 0, "Incorrect vertex position data");
     DVASSERT(batchDesc.indexPointer != nullptr && batchDesc.indexCount > 0, "Incorrect index data");
@@ -596,7 +604,6 @@ void RenderSystem2D::PushBatch(const BatchDescriptor& batchDesc)
         {
             needUpdateWorldMatrix = true;
             lastCustomWorldMatrix = *batchDesc.worldMatrix;
-            lastCustomMatrixSematic++;
         }
     }
     else // Not equal
@@ -605,7 +612,6 @@ void RenderSystem2D::PushBatch(const BatchDescriptor& batchDesc)
         if (useCustomWorldMatrix)
         {
             lastCustomWorldMatrix = *batchDesc.worldMatrix;
-            lastCustomMatrixSematic++;
         }
     }
     // End check world matrix
@@ -616,7 +622,7 @@ void RenderSystem2D::PushBatch(const BatchDescriptor& batchDesc)
         Flush();
         if (useCustomWorldMatrix)
         {
-            Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_WORLD, &lastCustomWorldMatrix, static_cast<pointer_size>(lastCustomMatrixSematic));
+            Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_WORLD, &lastCustomWorldMatrix, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
         }
         else
         {
@@ -624,6 +630,7 @@ void RenderSystem2D::PushBatch(const BatchDescriptor& batchDesc)
         }
         Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_PROJ, &projMatrix, static_cast<pointer_size>(projMatrixSemantic));
         Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_VIEW, &viewMatrix, static_cast<pointer_size>(viewMatrixSemantic));
+        Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_GLOBAL_TIME, &globalTime, reinterpret_cast<pointer_size>(&globalTime));
 
         if (currentClip.dx > 0.f && currentClip.dy > 0.f)
         {
@@ -687,7 +694,7 @@ void RenderSystem2D::PushBatch(const BatchDescriptor& batchDesc)
         Vector2 uv;
         uint32 color;
         //optional explicit params
-        Vector2 uv_ext[MAX_TEXTURE_STREAMS_COUNT - 1];
+        Vector2 uv_ext[BatchDescriptor2D::MAX_TEXTURE_STREAMS_COUNT - 1];
     };
 
     uint32 vertexStride = GetVBOStride(currentTexcoordStreamCount);
@@ -712,8 +719,8 @@ void RenderSystem2D::PushBatch(const BatchDescriptor& batchDesc)
         {
             DVASSERT(batchDesc.texCoordPointer[texStream] != nullptr);
             BatchVertex& v = *OffsetPointer<BatchVertex>(currentVertexBuffer.data(), vertexStride * (vertexIndex + i));
-            v.uv_ext[texStream - 1].x = batchDesc.texCoordPointer[texStream][i * 2];
-            v.uv_ext[texStream - 1].y = batchDesc.texCoordPointer[texStream][i * 2 + 1];
+            v.uv_ext[texStream - 1].x = batchDesc.texCoordPointer[texStream][i * texStride];
+            v.uv_ext[texStream - 1].y = batchDesc.texCoordPointer[texStream][i * texStride + 1];
         }
     }
 
@@ -1061,7 +1068,7 @@ void RenderSystem2D::Draw(Sprite* sprite, Sprite::DrawState* drawState, const Co
         }
     }
 
-    BatchDescriptor batch;
+    BatchDescriptor2D batch;
     batch.material = state->GetMaterial();
     batch.textureSetHandle = sprite->GetTexture(frame)->singleTextureSet;
     batch.samplerStateHandle = sprite->GetTexture(frame)->samplerStateHandle;
@@ -1163,9 +1170,10 @@ void RenderSystem2D::DrawStretched(Sprite* sprite, Sprite::DrawState* state, Vec
     }
 
     transformMatr = flipMatrix * transformMatr;
-    if (needGenerateData || sd.transformMatr != transformMatr)
+    if (needGenerateData || sd.transformMatr != transformMatr || sd.usePerPixelAccuracy != state->usePerPixelAccuracy)
     {
         sd.transformMatr = transformMatr;
+        sd.usePerPixelAccuracy = state->usePerPixelAccuracy;
         sd.GenerateTransformData();
     }
 
@@ -1174,7 +1182,7 @@ void RenderSystem2D::DrawStretched(Sprite* sprite, Sprite::DrawState* state, Vec
 
     if (spriteVertexCount > 0 && spriteIndexCount > 0) // Ignore incorrect streched data
     {
-        BatchDescriptor batch;
+        BatchDescriptor2D batch;
         batch.singleColor = color;
         batch.textureSetHandle = sprite->GetTexture(frame)->singleTextureSet;
         batch.samplerStateHandle = sprite->GetTexture(frame)->samplerStateHandle;
@@ -1271,7 +1279,7 @@ void RenderSystem2D::DrawTiled(Sprite* sprite, Sprite::DrawState* state, const V
     for (uint32 uIndex = 0; uIndex < uCount; ++uIndex)
     {
         TiledDrawData::Unit& unit = td.units[uIndex];
-        BatchDescriptor batch;
+        BatchDescriptor2D batch;
         batch.singleColor = color;
         batch.material = state->GetMaterial();
         batch.textureSetHandle = sprite->GetTexture(frame)->singleTextureSet;
@@ -1402,7 +1410,7 @@ void RenderSystem2D::DrawTiledMultylayer(Sprite* mask, Sprite* detail, Sprite* g
 
     if (td.transformedVertices.size() != 0)
     {
-        BatchDescriptor batch;
+        BatchDescriptor2D batch;
         batch.singleColor = color;
         batch.material = state->GetMaterial();
         batch.textureSetHandle = td.textureSet;
@@ -1445,7 +1453,7 @@ void RenderSystem2D::FillRect(const Rect& rect, const Color& color, NMaterial* m
     spriteTempVertices[6] = rect.x + rect.dx;
     spriteTempVertices[7] = rect.y + rect.dy;
 
-    BatchDescriptor batch;
+    BatchDescriptor2D batch;
     batch.singleColor = color;
     batch.material = material;
     batch.vertexCount = 4;
@@ -1482,7 +1490,7 @@ void RenderSystem2D::FillGradientRect(const Rect& rect, const Color& xy, const C
     spriteTempColors[2] = xh.GetRGBA();
     spriteTempColors[3] = wh.GetRGBA();
 
-    BatchDescriptor batch;
+    BatchDescriptor2D batch;
     batch.material = DEFAULT_2D_COLOR_MATERIAL;
     batch.vertexCount = 4;
     batch.colorStride = 1;
@@ -1507,7 +1515,7 @@ void RenderSystem2D::DrawRect(const Rect& rect, const Color& color)
     spriteTempVertices[6] = rect.x;
     spriteTempVertices[7] = rect.y + rect.dy;
 
-    BatchDescriptor batch;
+    BatchDescriptor2D batch;
     batch.singleColor = color;
     batch.material = DEFAULT_2D_COLOR_MATERIAL;
     batch.vertexCount = 4;
@@ -1553,7 +1561,7 @@ void RenderSystem2D::DrawGrid(const Rect& rect, const Vector2& gridSize, const C
         indices.push_back(i);
     }
 
-    BatchDescriptor batch;
+    BatchDescriptor2D batch;
     batch.singleColor = color;
     batch.material = DEFAULT_2D_COLOR_MATERIAL;
     batch.vertexCount = curVertexIndex / 2;
@@ -1574,7 +1582,7 @@ void RenderSystem2D::DrawLine(const Vector2& start, const Vector2& end, const Co
     spriteTempVertices[2] = end.x;
     spriteTempVertices[3] = end.y;
 
-    BatchDescriptor batch;
+    BatchDescriptor2D batch;
     batch.singleColor = color;
     batch.material = DEFAULT_2D_COLOR_MATERIAL;
     batch.vertexCount = 2;
@@ -1596,7 +1604,7 @@ void RenderSystem2D::DrawLine(const Vector2& start, const Vector2& end, float32 
     spriteTempVertices[2] = end.x;
     spriteTempVertices[3] = end.y;
 
-    BatchDescriptor batch;
+    BatchDescriptor2D batch;
     batch.singleColor = color;
     batch.material = DEFAULT_2D_COLOR_MATERIAL;
     batch.vertexCount = 2;
@@ -1624,7 +1632,7 @@ void RenderSystem2D::DrawLines(const Vector<float32>& linePoints, const Color& c
         indices.push_back(i);
     }
 
-    BatchDescriptor batch;
+    BatchDescriptor2D batch;
     batch.singleColor = color;
     batch.material = DEFAULT_2D_COLOR_MATERIAL;
     batch.vertexCount = static_cast<uint32>(ptCount);
@@ -1677,7 +1685,7 @@ void RenderSystem2D::DrawPolygon(const Polygon2& polygon, bool closed, const Col
         }
         auto pointsPtr = static_cast<const float32*>(static_cast<const void*>(polygon.GetPoints()));
 
-        BatchDescriptor batch;
+        BatchDescriptor2D batch;
         batch.singleColor = color;
         batch.material = DEFAULT_2D_COLOR_MATERIAL;
         batch.vertexCount = ptCount;
@@ -1705,7 +1713,7 @@ void RenderSystem2D::FillPolygon(const Polygon2& polygon, const Color& color)
         }
         auto pointsPtr = static_cast<const float32*>(static_cast<const void*>(polygon.GetPoints()));
 
-        BatchDescriptor batch;
+        BatchDescriptor2D batch;
         batch.singleColor = color;
         batch.material = DEFAULT_2D_COLOR_MATERIAL;
         batch.vertexCount = ptCount;
@@ -1741,7 +1749,7 @@ void RenderSystem2D::DrawTextureWithoutAdjustingRects(Texture* texture, NMateria
 
     static uint16 indices[6] = { 0, 1, 2, 1, 3, 2 };
 
-    BatchDescriptor batch;
+    BatchDescriptor2D batch;
     batch.singleColor = color;
     batch.textureSetHandle = texture->singleTextureSet;
     batch.samplerStateHandle = texture->samplerStateHandle;
@@ -1983,10 +1991,15 @@ uint32 StretchDrawData::GetVertexInTrianglesCount() const
 
 void StretchDrawData::GenerateTransformData()
 {
-    const uint32 size = uint32(vertices.size());
-    for (uint32 index = 0; index < size; ++index)
+    if (usePerPixelAccuracy)
     {
-        transformedVertices[index] = vertices[index] * transformMatr;
+        for (size_t i = 0, sz = vertices.size(); i < sz; ++i)
+            transformedVertices[i] = RenderSystem2D::Instance()->GetAlignedVertex(vertices[i] * transformMatr);
+    }
+    else
+    {
+        for (size_t i = 0, sz = vertices.size(); i < sz; ++i)
+            transformedVertices[i] = vertices[i] * transformMatr;
     }
 }
 

@@ -7,9 +7,10 @@
 #include "Utils/QtDavaConvertion.h"
 #include "PropertiesModel.h"
 
-ComboPropertyDelegate::ComboPropertyDelegate(PropertiesTreeItemDelegate* delegate, std::unique_ptr<CompletionsProvider> completionsProvider_)
+ComboPropertyDelegate::ComboPropertyDelegate(PropertiesTreeItemDelegate* delegate, std::unique_ptr<CompletionsProvider> completionsProvider_, bool isEditable)
     : BasePropertyDelegate(delegate)
     , completionsProvider(std::move(completionsProvider_))
+    , isEditable(isEditable)
 {
 }
 
@@ -21,7 +22,7 @@ QWidget* ComboPropertyDelegate::createEditor(QWidget* parent, const PropertiesCo
 {
     QComboBox* comboBox = new QComboBox(parent);
     comboBox->setObjectName("comboBox");
-    comboBox->setEditable(true);
+    comboBox->setEditable(isEditable);
     comboBox->installEventFilter(this);
 
     AbstractProperty* property = static_cast<AbstractProperty*>(index.internalPointer());
@@ -30,7 +31,6 @@ QWidget* ComboPropertyDelegate::createEditor(QWidget* parent, const PropertiesCo
     comboBox->addItem("");
     comboBox->addItems(completionsProvider->GetCompletions(property));
 
-    connect(comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnCurrentIndexChanged()));
     connect(comboBox, SIGNAL(activated(const QString&)), this, SLOT(OnActivated(const QString&)));
 
     return comboBox;

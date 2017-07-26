@@ -10,12 +10,7 @@ class Dispatcher;
 
 namespace PlatformApi
 {
-#if defined(__DAVAENGINE_IPHONE__)
-namespace Ios
-{
-struct UIApplicationDelegateListener;
-}
-#elif defined(__DAVAENGINE_WIN_UAP__)
+#if defined(__DAVAENGINE_WIN_UAP__)
 namespace Win10
 {
 struct XamlApplicationListener;
@@ -33,7 +28,7 @@ using UIDispatcher = Dispatcher<UIDispatcherEvent>;
 
 class EngineBackend;
 class PlatformCore;
-class WindowBackend;
+class WindowImpl;
 
 #if defined(__DAVAENGINE_QT__)
 
@@ -49,11 +44,9 @@ struct CoreNativeBridge;
 struct WindowNativeBridge;
 #elif defined(__DAVAENGINE_ANDROID__)
 struct AndroidBridge;
+#elif defined(__DAVAENGINE_LINUX__)
 #else
-#if defined(__DAVAENGINE_COREV2__)
-// Do not emit error when building with old core implementation 
 #error "Platform is not implemented"
-#endif
 #endif
 
 } // namespace Private

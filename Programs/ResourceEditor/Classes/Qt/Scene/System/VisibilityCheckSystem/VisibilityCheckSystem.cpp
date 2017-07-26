@@ -1,4 +1,5 @@
 #include "VisibilityCheckSystem.h"
+#include "VisibilityCheckRenderer.h"
 
 #include "Constants.h"
 #include "Scene3D/Scene.h"
@@ -11,9 +12,11 @@
 #include "Math/MathHelpers.h"
 #include "Utils/Random.h"
 
-#include "Render/Renderer.h"
-#include "Render/Highlevel/RenderSystem.h"
-#include "Render/Highlevel/Landscape.h"
+#include <Render/2D/Systems/RenderSystem2D.h>
+#include <Render/Highlevel/Landscape.h>
+#include <Render/Highlevel/RenderSystem.h>
+#include <Render/PixelFormatDescriptor.h>
+#include <Render/Renderer.h>
 
 namespace VCSInternal
 {
@@ -23,10 +26,13 @@ static DAVA::Array<DAVA::Texture*, CUBEMAPS_POOL_SIZE> cubemapPool;
 
 DAVA::Texture* CubemapRenderTargetAtIndex(DAVA::uint32 index)
 {
+    DVASSERT(index < CUBEMAPS_POOL_SIZE);
     if (cubemapPool[index] == nullptr)
     {
-        cubemapPool[index] = DAVA::Texture::CreateFBO(CUBEMAP_SIZE, CUBEMAP_SIZE,
-                                                      VisibilityCheckRenderer::TEXTURE_FORMAT, true, rhi::TEXTURE_TYPE_CUBE);
+        const DAVA::PixelFormatDescriptor& pfd = DAVA::PixelFormatDescriptor::GetPixelFormatDescriptor(VisibilityCheckRenderer::TEXTURE_FORMAT);
+        DVASSERT(rhi::TextureFormatSupported(pfd.format, rhi::PROG_FRAGMENT));
+        cubemapPool[index] = DAVA::Texture::CreateFBO(CUBEMAP_SIZE, CUBEMAP_SIZE, VisibilityCheckRenderer::TEXTURE_FORMAT, true, rhi::TEXTURE_TYPE_CUBE);
+        cubemapPool[index]->SetMinMagFilter(rhi::TextureFilter::TEXFILTER_LINEAR, rhi::TextureFilter::TEXFILTER_LINEAR, rhi::TextureMipFilter::TEXMIPFILTER_NONE);
     }
     return cubemapPool[index];
 }
@@ -34,8 +40,11 @@ DAVA::Texture* CubemapRenderTargetAtIndex(DAVA::uint32 index)
 
 VisibilityCheckSystem::VisibilityCheckSystem(DAVA::Scene* scene)
     : DAVA::SceneSystem(scene)
+    , debugMaterial(new DAVA::NMaterial())
 {
     renderer.SetDelegate(this);
+    debugMaterial->SetFXName(DAVA::FastName("~res:/ResourceEditor/LandscapeEditor/Materials/Distance.Debug2D.material"));
+    debugMaterial->PreBuildMaterial(DAVA::PASS_FORWARD);
 }
 
 VisibilityCheckSystem::~VisibilityCheckSystem() = default;
@@ -173,15 +182,21 @@ void VisibilityCheckSystem::Draw()
         return;
     }
 
+    bool enableDebug = false;
+
     bool shouldRenderOverlay = false;
-    auto rs = GetScene()->GetRenderSystem();
-    auto dbg = rs->GetDebugDrawer();
+    DAVA::RenderSystem* rs = GetScene()->GetRenderSystem();
+    DAVA::RenderHelper* dbg = rs->GetDebugDrawer();
     for (const auto& mapItem : entitiesWithVisibilityComponent)
     {
-        auto visibilityComponent = static_cast<DAVA::VisibilityCheckComponent*>(mapItem.first->GetComponent(DAVA::Component::VISIBILITY_CHECK_COMPONENT));
+        DAVA::VisibilityCheckComponent* visibilityComponent =
+        static_cast<DAVA::VisibilityCheckComponent*>(mapItem.first->GetComponent(DAVA::Component::VISIBILITY_CHECK_COMPONENT));
+
+        enableDebug |= visibilityComponent->GetDebugDrawEnabled();
+
         if (visibilityComponent->IsEnabled())
         {
-            auto worldTransform = mapItem.first->GetWorldTransform();
+            const DAVA::Matrix4& worldTransform = mapItem.first->GetWorldTransform();
             DAVA::Vector3 position = worldTransform.GetTranslationVector();
             DAVA::Vector3 direction = MultiplyVectorMat3x3(DAVA::Vector3(0.0f, 0.0f, 1.0f), worldTransform);
             dbg->DrawCircle(position, direction, visibilityComponent->GetRadius(), 36, DAVA::Color::White, DAVA::RenderHelper::DRAW_WIRE_DEPTH);
@@ -235,6 +250,22 @@ void VisibilityCheckSystem::Draw()
             float progress = static_cast<float>(currentPointIndex) / static_cast<float>(controlPoints.size());
             renderer.RenderProgress(progress, shouldFixFrame ? DAVA::Color(0.25f, 0.5f, 1.0f, 1.0f) : DAVA::Color::White);
         }
+    }
+
+    if (enableDebug)
+    {
+        DAVA::Texture* cubemap = VCSInternal::CubemapRenderTargetAtIndex(0);
+        if (cubemap)
+            DAVA::RenderSystem2D::Instance()->DrawTexture(cubemap, debugMaterial, DAVA::Color::White, DAVA::Rect(2.0f, 2.0f, DAVA::float32(stateCache.viewportSize.dx) - 4.f, 512.f));
+
+        if (renderer.renderTarget)
+            DAVA::RenderSystem2D::Instance()->DrawTexture(renderer.renderTarget, DAVA::RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL, DAVA::Color::White, DAVA::Rect(2.f, 516.f, 256.f, 256.f));
+
+        if (renderer.fixedFrame)
+            DAVA::RenderSystem2D::Instance()->DrawTexture(renderer.fixedFrame, DAVA::RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL, DAVA::Color::White, DAVA::Rect(260.f, 516.f, 256.f, 256.f));
+
+        if (renderer.reprojectionTexture)
+            DAVA::RenderSystem2D::Instance()->DrawTexture(renderer.reprojectionTexture, DAVA::RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL, DAVA::Color::White, DAVA::Rect(520.f, 516.f, 256.f, 256.f));
     }
 }
 
@@ -326,7 +357,7 @@ bool VisibilityCheckSystem::ShouldDrawRenderObject(DAVA::RenderObject* object)
         return true;
 
     if ((type == DAVA::RenderObject::TYPE_SPEED_TREE) || (type == DAVA::RenderObject::TYPE_SPRITE) ||
-        (type == DAVA::RenderObject::TYPE_VEGETATION) || (type == DAVA::RenderObject::TYPE_PARTICLE_EMTITTER))
+        (type == DAVA::RenderObject::TYPE_VEGETATION) || (type == DAVA::RenderObject::TYPE_PARTICLE_EMITTER))
     {
         return false;
     }

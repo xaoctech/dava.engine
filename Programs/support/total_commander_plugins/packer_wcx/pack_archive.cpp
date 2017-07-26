@@ -176,17 +176,22 @@ PackArchive::PackArchive(const std::string& archiveName)
     {
         l << "parse metadata block\n";
         uint64_t startMetaBlock = size - (sizeof(pack_file.footer) + pack_file.footer.info.files_table_size + footerBlock.meta_data_size);
+        l << "start metadata block pos: " << startMetaBlock << '\n';
         file.seekg(startMetaBlock, std::fstream::beg);
+        l << "seek to metadata block\n";
         std::vector<uint8_t> metaBlock(footerBlock.meta_data_size);
+        l << "allocate memory for metablock\n";
         if (!file)
         {
             throw std::runtime_error("can't seek meta");
         }
+        l << "seek to metablock done.\n";
         file.read(reinterpret_cast<char*>(&metaBlock[0]), metaBlock.size());
         if (!file)
         {
             throw std::runtime_error("can't read meta");
         }
+        l << "reset pack_meta_data from byte stream\n";
         pack_meta.reset(new pack_meta_data(&metaBlock[0], metaBlock.size()));
     }
 
@@ -324,25 +329,62 @@ std::string PackArchive::PrintMeta() const
                     });
 
         size_t max_filename = max_it->relativeFilePath.size();
+        size_t numbers_in_max_num = std::to_string(numFiles).size();
 
-        ss << "-FILES---------------------------------------------------------";
-        ss << '\n';
-        for (unsigned i = 0; i < numFiles; ++i)
+        stringstream table_header;
+
+        table_header
+        << setw(10) << "file-index"
+        << " | "
+        << setw(max_filename) << left << "file-name"
+        << " | "
+        << setw(10) << "pack-index"
+        << " | "
+        << setw(18) << "file-original-size"
+        << " | "
+        << setw(20) << "file-compressed-size"
+        << " | "
+        << setw(16) << "compressed-crc32"
+        << " | "
+        << setw(11) << "compression"
+        << " | "
+        << setw(14) << "original-crc32"
+        << " | "
+        << setw(14) << "start-position"
+        << " |";
+
+        string header = table_header.str();
+        ss << "FILES\n"
+           << header << '\n'
+           << string(header.length(), '-') << '\n';
+
+        const string compression_types[] = { "none", "lz4", "lz4hc", "deflate" };
+
+        for (unsigned indexOfFile = 0; indexOfFile < numFiles; ++indexOfFile)
         {
-            const auto& p = files_info.at(i).relativeFilePath;
-            const auto index = meta.get_pack_index_for_file(i);
+            const auto& file_info = files_info.at(indexOfFile);
+            const auto pack_index = meta.get_pack_index_for_file(indexOfFile);
+            const string& compression = compression_types[file_info.compressionType];
 
-            ss << left << setw(max_filename) << p
-               << "|" << setw(10) << index << '\n';
+            const auto& file_data = pack_file.files_table.data.files.at(indexOfFile);
+
+            ss << left << "f" << setw(9) << indexOfFile << " | "
+               << setw(max_filename) << file_info.relativeFilePath << " | "
+               << 'p' << setw(9) << pack_index << " | "
+               << setw(18) << file_info.originalSize << " | "
+               << setw(20) << file_info.compressedSize << " | "
+               << "0x" << setw(14) << hex << file_info.hash << " | "
+               << setw(11) << compression << " | "
+               << "0x" << setw(12) << hex << file_data.original_crc32 << " | "
+               << setw(14) << dec << file_data.start_position << '\n';
         }
-        ss << "-END-FILES-----------------------------------------------------";
-        ss << '\n';
-        ss << "-PACKS---------------------------------------------------------";
-        ss << '\n';
+        ss << string(header.length(), '-') << '\n'
+           << "END-FILES\n";
+
         size_t numPacks = meta.get_num_packs();
         string packName;
         string dependencies;
-        size_t max_pack_name = 0;
+        size_t max_pack_name = strlen("pack-name");
         size_t max_dep_name = 0;
         for (unsigned i = 0; i < numPacks; ++i)
         {
@@ -358,16 +400,59 @@ std::string PackArchive::PrintMeta() const
                 max_dep_name = dependencies.length();
             }
         }
-        for (unsigned i = 0; i < numPacks; ++i)
+
+        table_header = stringstream(); // clear prev string stream
+
+        table_header << setw(10) << left << "pack-index"
+                     << " | "
+                     << setw(max_pack_name) << left << "pack-name"
+                     << " | "
+                     << setw(max_dep_name) << left << "pack-dependency-indexes";
+
+        header = table_header.str();
+
+        ss << "PACKS\n"
+           << header << '\n'
+           << string(header.length(), '-') << '\n';
+
+        size_t numbers_in_max_pack = std::to_string(numPacks).size();
+        for (unsigned indexOfPack = 0; indexOfPack < numPacks; ++indexOfPack)
         {
-            const auto& info = meta.get_pack_info(i);
+            const auto& info = meta.get_pack_info(indexOfPack);
             const std::string& packName = std::get<0>(info);
             const std::string& dependencies = std::get<1>(info);
-            ss << left << setw(max_pack_name)
-               << packName << "|" << setw(max_dep_name)
+            ss << "p" << setw(9) << indexOfPack << " | "
+               << left << setw(max_pack_name)
+               << packName << " | " << setw(max_dep_name)
                << dependencies << '\n';
         }
-        ss << "-END-PACKS-----------------------------------------------------";
+        ss << string(header.length(), '-')
+           << "END-PACKS\n";
+
+        ss << "START-DEPENDENCY\n";
+
+        table_header = stringstream();
+        table_header << setw(10) << "pack-index"
+                     << " | "
+                     << "num-of-dependencies"
+                     << " | "
+                     << "all-dependency-indexes |";
+        header = table_header.str();
+        ss << header << '\n';
+        ss << string(header.length(), '-') << '\n';
+
+        for (unsigned indexOfPack = 0; indexOfPack < numPacks; ++indexOfPack)
+        {
+            const std::vector<uint32_t>& children = meta.get_children(indexOfPack);
+            ss << "p" << setw(9) << indexOfPack << " | ";
+            ss << setw(19) << children.size() << " | ";
+            for (uint32_t child_index : children)
+            {
+                ss << "p" << child_index << " ";
+            }
+            ss << '\n';
+        }
+        ss << "-END-DEPENDENCY------------------------------------------------";
         ss << '\n';
     }
 

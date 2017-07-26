@@ -9,7 +9,6 @@
 #include "Logger/Logger.h"
 using DAVA::Logger;
 
-#include "Core/Core.h"
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
 #include "Concurrency/Thread.h"
@@ -24,6 +23,10 @@ using DAVA::Logger;
 #include <vector>
 #include <atomic>
 #include <thread>
+
+#if defined(DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME)
+#define DAVA_DISABLE_CLEAR_ON_RESET 1
+#endif
 
 namespace rhi
 {
@@ -509,35 +512,50 @@ void CommandBufferDX9_t::Execute()
             if (isFirstInPass)
             {
                 _D3D9_Device->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
-
-                const RenderPassConfig::ColorBuffer& color0 = passCfg.colorBuffer[0];
-                if ((color0.texture != rhi::InvalidHandle) || passCfg.UsingMSAA())
+                _D3D9_TargetCount = 0;
+                for (unsigned i = 0; i != countof(passCfg.colorBuffer); ++i)
                 {
-                    DVASSERT(_D3D9_BackBuf == nullptr);
-                    _D3D9_Device->GetRenderTarget(0, &_D3D9_BackBuf);
-
-                    Handle targetTexture = color0.texture;
-                    if (passCfg.UsingMSAA())
+                    if (passCfg.colorBuffer[i].texture != rhi::InvalidHandle || passCfg.UsingMSAA())
                     {
-                        DVASSERT(color0.multisampleTexture != InvalidHandle);
-                        targetTexture = color0.multisampleTexture;
+                        if (i == 0)
+                        {
+                            DVASSERT(_D3D9_BackBuf == nullptr);
+                            _D3D9_Device->GetRenderTarget(0, &_D3D9_BackBuf);
+
+                            if (passCfg.UsingMSAA())
+                                TextureDX9::SetAsRenderTarget(passCfg.colorBuffer[i].multisampleTexture, i, passCfg.colorBuffer[i].textureFace);
+                        }
+
+                        if (!passCfg.UsingMSAA())
+                            TextureDX9::SetAsRenderTarget(passCfg.colorBuffer[i].texture, i, passCfg.colorBuffer[i].textureFace);
+                        ++_D3D9_TargetCount;
                     }
-                    TextureDX9::SetAsRenderTarget(targetTexture);
+
+                    if (passCfg.colorBuffer[i].texture == rhi::InvalidHandle && i == 0)
+                    {
+                        _D3D9_TargetCount = 1;
+                        break;
+                    }
                 }
 
-                bool renderToDepth = (passCfg.depthStencilBuffer.texture != rhi::InvalidHandle) && (passCfg.depthStencilBuffer.texture != DefaultDepthBuffer);
-                if (renderToDepth || passCfg.UsingMSAA())
-                {
-                    DVASSERT(_D3D9_DepthBuf == nullptr);
-                    _D3D9_Device->GetDepthStencilSurface(&_D3D9_DepthBuf);
+                _D3D9_Device->GetDepthStencilSurface(&_D3D9_DepthBuf);
 
-                    Handle targetDepthStencil = passCfg.depthStencilBuffer.texture;
-                    if (passCfg.UsingMSAA())
+                bool hasDepthBuf = true;
+                if (passCfg.UsingMSAA() && passCfg.depthStencilBuffer.multisampleTexture != rhi::InvalidHandle)
+                {
+                    TextureDX9::SetAsDepthStencil(passCfg.depthStencilBuffer.multisampleTexture);
+                }
+                else if (passCfg.depthStencilBuffer.texture != rhi::DefaultDepthBuffer)
+                {
+                    if (passCfg.depthStencilBuffer.texture != rhi::InvalidHandle)
                     {
-                        DVASSERT(passCfg.depthStencilBuffer.multisampleTexture != InvalidHandle);
-                        targetDepthStencil = passCfg.depthStencilBuffer.multisampleTexture;
+                        TextureDX9::SetAsDepthStencil(passCfg.depthStencilBuffer.texture);
                     }
-                    TextureDX9::SetAsDepthStencil(targetDepthStencil);
+                    else
+                    {
+                        DX9_CALL(_D3D9_Device->SetDepthStencilSurface(NULL), "SetDepthStencilSurface");
+                        hasDepthBuf = false;
+                    }
                 }
 
                 IDirect3DSurface9* rt = nullptr;
@@ -558,12 +576,15 @@ void CommandBufferDX9_t::Execute()
                 }
 
                 bool clear_color = passCfg.colorBuffer[0].loadAction == LOADACTION_CLEAR;
-                bool clear_depth = passCfg.depthStencilBuffer.loadAction == LOADACTION_CLEAR;
+                bool clear_depth = hasDepthBuf && (passCfg.depthStencilBuffer.loadAction == LOADACTION_CLEAR);
 
                 DX9_CALL(_D3D9_Device->BeginScene(), "BeginScene");
 
                 if (clear_color || clear_depth)
                 {
+                    _D3D9_Device->SetViewport(&def_viewport);
+                    _D3D9_Device->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
+
                     DWORD flags = 0;
                     int r = int(passCfg.colorBuffer[0].clearColor[0] * 255.0f);
                     int g = int(passCfg.colorBuffer[0].clearColor[1] * 255.0f);
@@ -596,14 +617,10 @@ void CommandBufferDX9_t::Execute()
 
                 DX9_CALL(_D3D9_Device->EndScene(), "EndScene");
 
-                if (passCfg.colorBuffer[0].storeAction == rhi::STOREACTION_RESOLVE)
+                for (unsigned t = 0; t != MAX_RENDER_TARGET_COUNT; ++t)
                 {
-                    TextureDX9::ResolveMultisampling(passCfg.colorBuffer[0].multisampleTexture, passCfg.colorBuffer[0].texture);
-                }
-
-                if (passCfg.colorBuffer[1].storeAction == rhi::STOREACTION_RESOLVE)
-                {
-                    TextureDX9::ResolveMultisampling(passCfg.colorBuffer[1].multisampleTexture, passCfg.colorBuffer[1].texture);
+                    if (passCfg.colorBuffer[t].storeAction == rhi::STOREACTION_RESOLVE)
+                        TextureDX9::ResolveMultisampling(passCfg.colorBuffer[t].multisampleTexture, passCfg.colorBuffer[t].texture);
                 }
 
                 if (_D3D9_BackBuf)
@@ -618,6 +635,10 @@ void CommandBufferDX9_t::Execute()
                     _D3D9_DepthBuf->Release();
                     _D3D9_DepthBuf = nullptr;
                 }
+
+                for (unsigned i = 1; i != _D3D9_TargetCount; ++i)
+                    _D3D9_Device->SetRenderTarget(i, NULL);
+                _D3D9_TargetCount = 1;
             }
         }
         break;
@@ -1114,7 +1135,7 @@ static void _DX9_ExecuteQueuedCommands(const CommonImpl::Frame& frame)
 bool _DX9_PresentBuffer()
 {
     bool result = true;
-    HRESULT hr = _D3D9_Device->Present(NULL, NULL, NULL, NULL);
+    HRESULT hr = _D3D9_Device->Present(_DX9_PresentRectPtr, _DX9_PresentRectPtr, NULL, NULL);
     if (FAILED(hr))
     {
         if (hr == D3DERR_DEVICELOST)
@@ -1171,9 +1192,11 @@ void _DX9_ResetBlock()
     }
 
     Logger::Info("[DX9 RESET] reset succeeded ...");
+#if !defined(DAVA_DISABLE_CLEAR_ON_RESET)
     //clear buffer
     DX9_CALL(_D3D9_Device->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_RGBA(0, 0, 0, 1), 1.0, 0), "Clear");
-    _D3D9_Device->Present(NULL, NULL, NULL, NULL);
+    _D3D9_Device->Present(_DX9_PresentRectPtr, _DX9_PresentRectPtr, NULL, NULL);
+#endif
 
     _DX9_FramesWithRestoreAttempt = 0;
 
@@ -1336,6 +1359,15 @@ static void _DX9_ExecImmediateCommand(CommonImpl::ImmediateCommand* command)
             IDirect3DTexture9* tex = *((IDirect3DTexture9**)(arg[0]));
             DVASSERT(*(IDirect3DSurface9**)(arg[2]) == nullptr);
             cmd->retval = tex->GetSurfaceLevel(UINT(arg[1]), (IDirect3DSurface9**)(arg[2]));
+            CHECK_HR(cmd->retval);
+        }
+        break;
+
+        case DX9Command::GET_CUBE_SURFACE_LEVEL:
+        {
+            IDirect3DCubeTexture9* tex = *((IDirect3DCubeTexture9**)(arg[0]));
+            DVASSERT(*(IDirect3DSurface9**)(arg[3]) == nullptr);
+            cmd->retval = tex->GetCubeMapSurface(D3DCUBEMAP_FACES(arg[1]), UINT(arg[2]), (IDirect3DSurface9**)(arg[3]));
             CHECK_HR(cmd->retval);
         }
         break;
@@ -1578,7 +1610,7 @@ static void _DX9_ExecImmediateCommand(CommonImpl::ImmediateCommand* command)
 
         case DX9Command::RELEASE:
         {
-            IUnknown* ptr = *(IUnknown**)(arg[0]);
+            IUnknown* ptr = *(reinterpret_cast<IUnknown**>(arg[0]));
             cmd->retval = ptr->Release();
         }
         break;

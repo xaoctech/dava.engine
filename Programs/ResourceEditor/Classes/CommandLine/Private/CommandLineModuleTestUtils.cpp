@@ -1,4 +1,5 @@
-﻿#include "CommandLine/Private/CommandLineModuleTestUtils.h"
+#include "CommandLine/Private/CommandLineModuleTestUtils.h"
+#include "Classes/Qt/Scene/System/BeastSystem.h"
 
 #include "Utils/TextureDescriptor/TextureDescriptorUtils.h"
 
@@ -359,7 +360,7 @@ Entity* CreateLightsEntity(const FilePath& scenePathname)
         archieve->SetFloat("editor.staticlight.shadowangle", 0.f);
         archieve->SetFloat("editor.staticlight.shadowradius", 0.f);
         archieve->SetInt32("editor.staticlight.shadowsamples", 1);
-        archieve->SetFloat("editor.staticlight.falloffcutoff", 1000.f);
+        archieve->SetFloat("editor.staticlight.falloffcutoff", BeastSystem::DEFAULT_FALLOFFCUTOFF_VALUE);
         archieve->SetFloat("editor.staticlight.falloffexponent", 1.f);
     };
 

@@ -23,9 +23,6 @@ class EngineBackend;
 class SystemTimer final
 {
     friend class Private::EngineBackend;
-#if !defined(__DAVAENGINE_COREV2__)
-    friend class Core;
-#endif
 
 public:
     /** Get monotonic clock value in milliseconds, including time spent in deep sleep. */
@@ -46,13 +43,6 @@ public:
         Frame timestamp is a result of `GetMs()` call at the beginning of a frame.
     */
     static int64 GetFrameTimestampMs();
-
-    /**
-        Get current frame timestamp in seconds.
-
-        Frame timestamp is a result of `GetMs()` call at the beginning of a frame divided by 1000.
-    */
-    static float32 GetFrameTimestamp();
 
     /**
         Get clamped time difference in seconds between current frame timestamp and previous frame timestamp.

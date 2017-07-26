@@ -7,8 +7,6 @@
 #include "TArc/Controls/QtBoxLayouts.h"
 #include "TArc/Utils/QtConnections.h"
 
-#include <QtTools/Utils/QtDelayedExecutor.h>
-
 #include <Base/Any.h>
 #include <Base/BaseTypes.h>
 #include <Base/FastName.h>
@@ -74,11 +72,11 @@ public:
         QtVBoxLayout* layout = new QtVBoxLayout(w);
 
         {
-            ControlDescriptorBuilder<ComboBoxCheckable::Fields> descriptor;
-            descriptor[ComboBoxCheckable::Fields::Value] = "value";
-            ComboBoxCheckable* comboBox = new ComboBoxCheckable(descriptor, GetAccessor(), reflectedModel);
+            ComboBoxCheckable::Params params(GetAccessor(), GetUI(), wndKey);
+            params.fields[ComboBoxCheckable::Fields::Value] = "value";
+            ComboBoxCheckable* comboBox = new ComboBoxCheckable(params, GetAccessor(), reflectedModel);
             comboBox->SetObjectName("ComboBoxCheckable");
-            layout->AddWidget(comboBox);
+            layout->AddControl(comboBox);
         }
 
         DAVA::TArc::PanelKey panelKey("ComboBoxCheckableTest", DAVA::TArc::CentralPanelInfo());

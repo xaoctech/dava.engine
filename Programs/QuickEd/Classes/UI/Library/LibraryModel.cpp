@@ -20,7 +20,9 @@
 
 #include "Utils/QtDavaConvertion.h"
 #include "UI/IconHelper.h"
-#include "QtTools/Utils/Themes/Themes.h"
+
+#include <TArc/Utils/Themes.h>
+#include <TArc/WindowSubSystem/UI.h>
 
 using namespace DAVA;
 
@@ -60,9 +62,9 @@ LibraryModel::LibraryModel(QObject* parent)
             else
                 defaultControls.push_back(ControlNode::CreateFromControl(control));
 
-            auto prop = defaultControls.back()->GetRootProperty()->FindPropertyByName("Size");
+            AbstractProperty* prop = defaultControls.back()->GetRootProperty()->FindPropertyByName("size");
 
-            prop->SetValue(VariantType(Vector2(32.0f, 32.0f)));
+            prop->SetValue(Vector2(32.0f, 32.0f));
         }
         else
         {
@@ -103,6 +105,11 @@ LibraryModel::~LibraryModel()
     libraryPackages.clear();
 }
 
+void LibraryModel::SetUI(DAVA::TArc::UI* ui_)
+{
+    ui = ui_;
+}
+
 void LibraryModel::SetProjectLibraries(const DAVA::Map<DAVA::String, DAVA::Set<DAVA::FastName>>& prototypes_, const DAVA::Vector<DAVA::FilePath>& libraryPackages_)
 {
     prototypes = prototypes_;
@@ -120,16 +127,29 @@ void LibraryModel::SetProjectLibraries(const DAVA::Map<DAVA::String, DAVA::Set<D
     }
     libraryPackages.clear();
 
+    const EngineContext* engineContext = GetEngineContext();
     int32 index = 0;
     for (const FilePath& path : libraryPackagePaths)
     {
-        QuickEdPackageBuilder builder;
+        QuickEdPackageBuilder builder(engineContext);
         PackageNode* package = nullptr;
         if (UIPackageLoader(prototypes).LoadPackage(path, &builder))
         {
             RefPtr<PackageNode> libraryPackage = builder.BuildPackage();
-            package = SafeRetain(libraryPackage.Get());
-            libraryPackages.push_back(package);
+            if (builder.GetResults().HasErrors())
+            {
+                using namespace TArc;
+                NotificationParams params;
+                params.title = "Can't load library package";
+                params.message.type = Result::RESULT_ERROR;
+                params.message.message = Format("Package '%s' has problems...", path.GetFilename().c_str());
+                ui->ShowNotification(DAVA::TArc::mainWindowKey, params);
+            }
+            else
+            {
+                package = SafeRetain(libraryPackage.Get());
+                libraryPackages.push_back(package);
+            }
         }
 
         if (package)
@@ -204,7 +224,7 @@ QMimeData* LibraryModel::mimeData(const QModelIndexList& indexes) const
 
                 YamlPackageSerializer serializer;
 
-                serializer.SerializePackageNodes(package, controls, styles);
+                serializer.SerializePackageNodes(package.Get(), controls, styles);
                 String str = serializer.WriteToString();
                 data->setText(QString::fromStdString(str));
 
@@ -325,7 +345,7 @@ void LibraryModel::ControlPropertyWasChanged(ControlNode* node, AbstractProperty
             auto item = itemFromIndex(index);
             if (nullptr != item)
             {
-                auto text = QString::fromStdString(property->GetValue().AsString());
+                auto text = QString::fromStdString(property->GetValue().Get<String>());
                 item->setText(text);
             }
         }

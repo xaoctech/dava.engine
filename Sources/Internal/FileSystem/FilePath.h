@@ -259,7 +259,9 @@ public:
     int32 Compare(const FilePath& right) const;
 
     static bool IsAbsolutePathname(const String& pathname);
-    static String AddPath(const FilePath& folder, const String& addition);
+
+    /** Return normalized concat of specified 'path' and 'addition', i.e. AddPath("abc", "def") => "abcdef" */
+    static String AddPath(const FilePath& path, const String& addition);
 
 private:
     void Initialize(const String& pathname);
@@ -303,13 +305,7 @@ inline FilePath::ePathType FilePath::GetType() const
 }
 
 template <>
-struct AnyCompare<FilePath>
-{
-    static bool IsEqual(const Any& v1, const Any& v2)
-    {
-        const FilePath& filePath1 = v1.Get<FilePath>();
-        const FilePath& filePath2 = v2.Get<FilePath>();
-        return filePath1 == filePath2;
-    }
-};
+bool AnyCompare<FilePath>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2);
+extern template struct AnyCompare<FilePath>;
+
 } // end namespace DAVA

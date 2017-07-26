@@ -2,7 +2,7 @@
 
 #include "Base/BaseTypes.h"
 
-#if defined(__DAVAENGINE_WIN32__)
+#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_LINUX__)
 
 #include "Notification/Private/LocalNotificationImpl.h"
 
@@ -50,6 +50,10 @@ LocalNotificationImpl* LocalNotificationImpl::Create(const String& _id)
     return new LocalNotificationStub(_id);
 }
 
+void LocalNotificationImpl::RequestPermissions()
+{
+}
+
 void LocalNotificationStub::PostDelayedNotification(const WideString& title, const WideString& text, int delaySeconds, bool useSound)
 {
 }
@@ -59,4 +63,4 @@ void LocalNotificationStub::RemoveAllDelayedNotifications()
 }
 } // namespace DAVA
 
-#endif // defined(__DAVAENGINE_WIN32__)
+#endif // defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_LINUX__)

@@ -1,5 +1,7 @@
 #include "Tests/UIMovieTest.h"
 #include "Engine/Engine.h"
+#include "UI/Update/UIUpdateComponent.h"
+#include "UI/Render/UIDebugRenderComponent.h"
 
 namespace
 {
@@ -9,6 +11,7 @@ FilePath path = "~res://TestData/MovieTest/bunny.m4v";
 UIMovieTest::UIMovieTest(TestBed& app)
     : BaseScreen(app, "UIMovieTest")
 {
+    GetOrCreateComponent<UIUpdateComponent>();
 }
 
 void UIMovieTest::LoadResources()
@@ -18,7 +21,7 @@ void UIMovieTest::LoadResources()
     movieView = new UIMovieView(Rect(10, 10, vsz.dx - 20, vsz.dy - 120));
     movieView->OpenMovie(path, OpenMovieParams());
 
-    movieView->SetDebugDraw(true);
+    movieView->GetOrCreateComponent<UIDebugRenderComponent>();
     AddControl(movieView);
 
     // Create the "player" buttons.
@@ -96,7 +99,7 @@ UIButton* UIMovieTest::CreateUIButton(Font* font, const Rect& rect, const String
     button->SetStateFont(0xFF, font);
     button->SetStateText(0xFF, UTF8Utils::EncodeToWideString(text));
     button->SetStateFontColor(0xFF, Color::White);
-    button->SetDebugDraw(true);
+    button->GetOrCreateComponent<UIDebugRenderComponent>();
     button->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, onClick));
     AddControl(button);
     return button;

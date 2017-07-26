@@ -2,7 +2,7 @@
 #include "Commands2/RECommandIDs.h"
 
 #include "DAVAEngine.h"
-#include "Qt/Settings/SettingsManager.h"
+#include "Classes/Settings/SettingsManager.h"
 #include "Deprecated/ParticlesEditorNodeNameHelper.h"
 
 #include "Main/QtUtils.h"
@@ -345,7 +345,7 @@ void CommandStartStopParticleEffect::Redo()
     if (effectEntity == nullptr)
         return;
 
-    ParticleEffectComponent* effectComponent = cast_if_equal<ParticleEffectComponent*>(effectEntity->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+    ParticleEffectComponent* effectComponent = CastIfEqual<ParticleEffectComponent*>(effectEntity->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
     DVASSERT(effectComponent);
 
     if (this->isStart)
@@ -376,7 +376,7 @@ void CommandRestartParticleEffect::Redo()
         return;
     }
 
-    ParticleEffectComponent* effectComponent = cast_if_equal<ParticleEffectComponent*>(effectEntity->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+    ParticleEffectComponent* effectComponent = CastIfEqual<ParticleEffectComponent*>(effectEntity->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
     DVASSERT(effectComponent);
     effectComponent->Restart();
 }

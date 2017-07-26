@@ -42,6 +42,11 @@ DAVA::FilePath ProjectManagerData::GetDataSourcePath() const
 
 DAVA::FilePath ProjectManagerData::GetDataSource3DPath() const
 {
+    return GetDataSource3DPath(projectPath);
+}
+
+DAVA::FilePath ProjectManagerData::GetDataSource3DPath(const DAVA::FilePath& projectPath)
+{
     return projectPath + ProjectManagerDataDetails::DATASOURCE_3D_PATH;
 }
 
@@ -62,6 +67,32 @@ DAVA::FilePath ProjectManagerData::CreateProjectPathFromPath(const DAVA::FilePat
     if (pos != DAVA::String::npos)
     {
         return fullPath.substr(0, pos + 1);
+    }
+
+    return DAVA::FilePath();
+}
+
+DAVA::FilePath ProjectManagerData::GetDataSourcePath(const DAVA::FilePath& pathname)
+{
+    DAVA::String etalon = DAVA::String("/DataSource");
+    DAVA::String fullPath = pathname.GetAbsolutePathname();
+    DAVA::String::size_type pos = fullPath.find(etalon);
+    if (pos != DAVA::String::npos)
+    {
+        return fullPath.substr(0, pos + etalon.size() + 1);
+    }
+
+    return DAVA::FilePath();
+}
+
+DAVA::FilePath ProjectManagerData::GetDataPath(const DAVA::FilePath& pathname)
+{
+    DAVA::String etalon = DAVA::String("/Data");
+    DAVA::String fullPath = pathname.GetAbsolutePathname();
+    DAVA::String::size_type pos = fullPath.find(etalon);
+    if (pos != DAVA::String::npos)
+    {
+        return fullPath.substr(0, pos + etalon.size() + 1);
     }
 
     return DAVA::FilePath();

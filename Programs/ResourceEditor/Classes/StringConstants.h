@@ -1,5 +1,8 @@
-#ifndef __STRING_CONSTANTS_H__
-#define __STRING_CONSTANTS_H__
+#pragma once
+
+#include <Base/FastName.h>
+
+#include <Base/FastName.h>
 
 namespace ResourceEditor
 {
@@ -41,6 +44,7 @@ static const DAVA::WideString CREATE_NODE_PARTICLE_EFFECT = L"Particle Effect";
 
 // Properties
 static const DAVA::String EDITOR_REFERENCE_TO_OWNER = "editor.referenceToOwner";
+static const DAVA::String EDITOR_CONST_REFERENCE = "editor.constReferent";
 static const DAVA::String EDITOR_IS_LOCKED = "editor.isLocked";
 static const DAVA::String EDITOR_DO_NOT_REMOVE = "editor.donotremove";
 static const DAVA::String EDITOR_DYNAMIC_LIGHT_ENABLE = "editor.dynamiclight.enable";
@@ -170,5 +174,3 @@ static const DAVA::String ADD_SWITCH_NODE_DIALOG_NO_RENDER_OBJECTS = "Error: ent
 static const DAVA::String ADD_SWITCH_NODE_DIALOG_DENY_SRC_SWITCH = "Error: entities should not contain switch components";
 static const DAVA::String SCENE_TREE_WRONG_REF_TO_OWNER = "Wrong reference(s) to owner: ";
 }
-
-#endif //#ifndef __STRING_CONSTANTS_H__

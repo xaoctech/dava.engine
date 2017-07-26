@@ -17,7 +17,6 @@
 #include "QtTools/Utils/RenderContextGuard.h"
 
 #include "Classes/Qt/Scene/System/GridSystem.h"
-#include "Classes/Qt/Scene/System/OwnersSignatureSystem.h"
 #include "Classes/Qt/Scene/System/CameraSystem.h"
 #include "Classes/Qt/Scene/System/CollisionSystem.h"
 #include "Classes/Qt/Scene/System/HoodSystem.h"
@@ -28,15 +27,17 @@
 #include "Classes/Qt/Scene/System/EditorSceneSystem.h"
 
 // framework
-#include "Debug/DVAssert.h"
-#include "Engine/Engine.h"
-#include "Scene3D/Entity.h"
-#include "Scene3D/SceneFileV2.h"
-#include "Scene3D/Systems/RenderUpdateSystem.h"
-#include "Scene3D/Systems/StaticOcclusionSystem.h"
-#include "Scene3D/Systems/Controller/SnapToLandscapeControllerSystem.h"
-#include "Render/Highlevel/RenderBatchArray.h"
-#include "Render/Highlevel/RenderPass.h"
+#include <Debug/DVAssert.h>
+#include <Engine/Engine.h>
+#include <Scene3D/Entity.h>
+#include <Scene3D/SceneFileV2.h>
+#include <Scene3D/Systems/RenderUpdateSystem.h>
+#include <Scene3D/Systems/StaticOcclusionSystem.h>
+#include <Scene3D/Systems/Controller/SnapToLandscapeControllerSystem.h>
+#include <Render/Highlevel/RenderBatchArray.h>
+#include <Render/Highlevel/RenderPass.h>
+#include <Reflection/ReflectionRegistrator.h>
+#include <Command/Command.h>
 
 #include <QShortcut>
 
@@ -135,7 +136,7 @@ SceneEditor2::SceneEditor2()
     AddSystem(textDrawSystem, 0, SCENE_SYSTEM_REQUIRE_PROCESS, renderUpdateSystem);
 
     editorLightSystem = new EditorLightSystem(this);
-    AddSystem(editorLightSystem, MAKE_COMPONENT_MASK(DAVA::Component::LIGHT_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS, renderUpdateSystem);
+    AddSystem(editorLightSystem, MAKE_COMPONENT_MASK(DAVA::Component::LIGHT_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS, transformSystem);
 
     debugDrawSystem = new DebugDrawSystem(this);
     AddSystem(debugDrawSystem, 0);
@@ -143,17 +144,14 @@ SceneEditor2::SceneEditor2()
     beastSystem = new BeastSystem(this);
     AddSystem(beastSystem, 0);
 
-    DAVA::SceneSystem* ownersSignatureSystem = new OwnersSignatureSystem(this);
-    AddSystem(ownersSignatureSystem, 0);
-
     staticOcclusionBuildSystem = new DAVA::StaticOcclusionBuildSystem(this);
     AddSystem(staticOcclusionBuildSystem, MAKE_COMPONENT_MASK(DAVA::Component::STATIC_OCCLUSION_COMPONENT) | MAKE_COMPONENT_MASK(DAVA::Component::TRANSFORM_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS, renderUpdateSystem);
 
     materialSystem = new EditorMaterialSystem(this);
     AddSystem(materialSystem, MAKE_COMPONENT_MASK(DAVA::Component::RENDER_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS, renderUpdateSystem);
 
-    wayEditSystem = new WayEditSystem(this, collisionSystem);
-    AddSystem(wayEditSystem, MAKE_COMPONENT_MASK(DAVA::Component::WAYPOINT_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS | SCENE_SYSTEM_REQUIRE_INPUT);
+    wayEditSystem = new WayEditSystem(this);
+    AddSystem(wayEditSystem, MAKE_COMPONENT_MASK(DAVA::Component::WAYPOINT_COMPONENT) | MAKE_COMPONENT_MASK(DAVA::Component::TRANSFORM_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS | SCENE_SYSTEM_REQUIRE_INPUT);
     structureSystem->AddDelegate(wayEditSystem);
 
     pathSystem = new PathSystem(this);
@@ -172,12 +170,6 @@ SceneEditor2::SceneEditor2()
 
     editorVegetationSystem = new EditorVegetationSystem(this);
     AddSystem(editorVegetationSystem, MAKE_COMPONENT_MASK(DAVA::Component::RENDER_COMPONENT), 0);
-
-    if (DAVA::Renderer::GetOptions()->IsOptionEnabled(DAVA::RenderOptions::DEBUG_DRAW_STATIC_OCCLUSION) && !staticOcclusionDebugDrawSystem)
-    {
-        staticOcclusionDebugDrawSystem = new DAVA::StaticOcclusionDebugDrawSystem(this);
-        AddSystem(staticOcclusionDebugDrawSystem, MAKE_COMPONENT_MASK(DAVA::Component::STATIC_OCCLUSION_COMPONENT), 0, renderUpdateSystem);
-    }
 
     SceneSignals::Instance()->EmitOpened(this);
 
@@ -234,6 +226,22 @@ DAVA::SceneFileV2::eError SceneEditor2::SaveScene(const DAVA::FilePath& path, bo
 
     ExtractEditorEntities();
 
+    DAVA::Vector<std::unique_ptr<DAVA::Command>> prepareForSaveCommands;
+    prepareForSaveCommands.reserve(editorSystems.size());
+    for (EditorSceneSystem* editorSceneSystem : editorSystems)
+    {
+        std::unique_ptr<DAVA::Command> cmd = editorSceneSystem->PrepareForSave(saveForGame);
+        if (cmd != nullptr)
+        {
+            prepareForSaveCommands.push_back(std::move(cmd));
+        }
+    }
+
+    std::for_each(prepareForSaveCommands.begin(), prepareForSaveCommands.end(), [](std::unique_ptr<DAVA::Command>& cmd)
+                  {
+                      cmd->Redo();
+                  });
+
     DAVA::ScopedPtr<DAVA::Texture> tilemaskTexture(nullptr);
     bool needToRestoreTilemask = false;
     if (landscapeEditorDrawSystem)
@@ -260,6 +268,11 @@ DAVA::SceneFileV2::eError SceneEditor2::SaveScene(const DAVA::FilePath& path, bo
         landscapeEditorDrawSystem->SetTileMaskTexture(tilemaskTexture);
     }
 
+    std::for_each(prepareForSaveCommands.rbegin(), prepareForSaveCommands.rend(), [](std::unique_ptr<DAVA::Command>& cmd)
+                  {
+                      cmd->Undo();
+                  });
+
     InjectEditorEntities();
 
     if (editorLightSystem != nullptr)
@@ -272,7 +285,7 @@ DAVA::SceneFileV2::eError SceneEditor2::SaveScene(const DAVA::FilePath& path, bo
     return err;
 }
 
-void SceneEditor2::AddSystem(DAVA::SceneSystem* sceneSystem, DAVA::uint64 componentFlags, DAVA::uint32 processFlags, DAVA::SceneSystem* insertBeforeSceneForProcess, DAVA::SceneSystem* insertBeforeSceneForInput)
+void SceneEditor2::AddSystem(DAVA::SceneSystem* sceneSystem, DAVA::uint64 componentFlags, DAVA::uint32 processFlags, DAVA::SceneSystem* insertBeforeSceneForProcess, DAVA::SceneSystem* insertBeforeSceneForInput, DAVA::SceneSystem* insertBeforeSceneForFixedProcess)
 {
     Scene::AddSystem(sceneSystem, componentFlags, processFlags, insertBeforeSceneForProcess, insertBeforeSceneForInput);
 
@@ -280,6 +293,10 @@ void SceneEditor2::AddSystem(DAVA::SceneSystem* sceneSystem, DAVA::uint64 compon
     if (editorSystem != nullptr)
     {
         editorSystems.push_back(editorSystem);
+        if (dynamic_cast<LandscapeEditorSystem*>(sceneSystem) != nullptr)
+        {
+            landscapeEditorSystems.push_back(editorSystem);
+        }
     }
 }
 
@@ -289,6 +306,10 @@ void SceneEditor2::RemoveSystem(DAVA::SceneSystem* sceneSystem)
     if (editorSystem != nullptr)
     {
         DAVA::FindAndRemoveExchangingWithLast(editorSystems, editorSystem);
+        if (dynamic_cast<LandscapeEditorSystem*>(sceneSystem) != nullptr)
+        {
+            DAVA::FindAndRemoveExchangingWithLast(landscapeEditorSystems, editorSystem);
+        }
     }
 
     Scene::RemoveSystem(sceneSystem);
@@ -338,12 +359,21 @@ bool SceneEditor2::Export(const SceneExporter::Params& exportingParams)
         exporter.SetExportingParams(exportingParams);
 
         const DAVA::FilePath& scenePathname = GetScenePath();
-        DAVA::FilePath newScenePathname = exportingParams.dataFolder + scenePathname.GetRelativePathname(exportingParams.dataSourceFolder);
+        DAVA::FilePath newScenePathname = exportingParams.outputs[0].dataFolder + scenePathname.GetRelativePathname(exportingParams.dataSourceFolder);
         DAVA::FileSystem::Instance()->CreateDirectory(newScenePathname.GetDirectory(), true);
 
-        SceneExporter::ExportedObjectCollection exportedObjects;
-        bool sceneExported = exporter.ExportScene(clonedScene, scenePathname, exportedObjects);
-        bool objectExported = exporter.ExportObjects(exportedObjects);
+        DAVA::Vector<SceneExporter::ExportedObjectCollection> exportedObjects;
+        exportedObjects.resize(SceneExporter::OBJECT_COUNT);
+        bool sceneExported = exporter.ExportScene(clonedScene, scenePathname, newScenePathname, exportedObjects);
+
+        bool objectExported = true;
+        for (const SceneExporter::ExportedObjectCollection& collection : exportedObjects)
+        {
+            if (collection.empty() == false)
+            {
+                objectExported = exporter.ExportObjects(collection) && objectExported;
+            }
+        }
 
         return (sceneExported && objectExported);
     }
@@ -538,6 +568,26 @@ void SceneEditor2::Draw()
             system->Draw();
         }
     }
+    else
+    {
+        for (EditorSceneSystem* system : landscapeEditorSystems)
+        {
+            system->Draw();
+        }
+    }
+}
+
+void SceneEditor2::AccumulateDependentCommands(REDependentCommandsHolder& holder)
+{
+    if (holder.GetMasterCommandInfo().IsEmpty())
+    {
+        return;
+    }
+
+    for (EditorSceneSystem* system : editorSystems)
+    {
+        system->AccumulateDependentCommands(holder);
+    }
 }
 
 void SceneEditor2::EditorCommandProcess(const RECommandNotificationObject& commandNotification)
@@ -568,6 +618,14 @@ void SceneEditor2::AddEditorEntity(Entity* editorEntity)
 SceneEditor2::EditorCommandNotify::EditorCommandNotify(SceneEditor2* _editor)
     : editor(_editor)
 {
+}
+
+void SceneEditor2::EditorCommandNotify::AccumulateDependentCommands(REDependentCommandsHolder& holder)
+{
+    if (nullptr != editor)
+    {
+        editor->AccumulateDependentCommands(holder);
+    }
 }
 
 void SceneEditor2::EditorCommandNotify::Notify(const RECommandNotificationObject& commandNotification)
@@ -916,4 +974,10 @@ void UnlockTransform(SceneEditor2* scene)
     {
         scene->modifSystem->LockTransform(Selection::GetSelection(), false);
     }
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(SceneEditor2)
+{
+    DAVA::ReflectionRegistrator<SceneEditor2>::Begin()
+    .End();
 }

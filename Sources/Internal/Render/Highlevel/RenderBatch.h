@@ -1,11 +1,10 @@
-#ifndef __DAVAENGINE_SCENE3D_RENDER_BATCH_H__
-#define __DAVAENGINE_SCENE3D_RENDER_BATCH_H__
-
+#pragma once
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
 #include "Base/FastName.h"
 #include "Render/RenderBase.h"
 #include "Base/BaseMath.h"
+#include "Reflection/Reflection.h"
 
 #include "Render/3D/PolygonGroup.h"
 #include "Render/Highlevel/RenderObject.h"
@@ -107,6 +106,8 @@ public:
                          MEMBER(material, "Material", I_VIEW | I_EDIT)
 
                          PROPERTY("sortingKey", "Key for the sorting inside render layer", GetSortingKey, SetSortingKey, I_SAVE | I_VIEW | I_EDIT));
+
+    DAVA_VIRTUAL_REFLECTION(RenderBatch, BaseObject);
 };
 
 inline PolygonGroup* RenderBatch::GetPolygonGroup()
@@ -156,9 +157,9 @@ inline void RenderBatch::BindGeometryData(rhi::Packet& packet)
         packet.vertexCount = dataSource->vertexCount;
         packet.indexBuffer = dataSource->indexBuffer;
         packet.primitiveType = dataSource->primitiveType;
-        packet.primitiveCount = GetPrimitiveCount(dataSource->indexCount, dataSource->primitiveType); //later move it into pg!
+        packet.primitiveCount = dataSource->primitiveCount;
         packet.vertexLayoutUID = dataSource->vertexLayoutId;
-        packet.startIndex = 0;
+        packet.startIndex = startIndex;
     }
     else
     {
@@ -170,12 +171,9 @@ inline void RenderBatch::BindGeometryData(rhi::Packet& packet)
         packet.vertexCount = vertexCount;
         packet.indexBuffer = indexBuffer;
         packet.primitiveType = primitiveType;
-        packet.primitiveCount = GetPrimitiveCount(indexCount, primitiveType);
+        packet.primitiveCount = CalculatePrimitiveCount(indexCount, primitiveType);
         packet.vertexLayoutUID = vertexLayoutId;
         packet.startIndex = startIndex;
     }
 }
-
-} //
-
-#endif /* __DAVAENGINE_SCENE3D_RENDER_BATCH_H__ */
+}

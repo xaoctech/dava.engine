@@ -73,47 +73,47 @@ public:
         QtVBoxLayout* layout = new QtVBoxLayout(w);
 
         {
-            DAVA::TArc::ControlDescriptorBuilder<DAVA::TArc::CheckBox::Fields> descrBool;
-            descrBool[CheckBox::Fields::Checked] = "bool";
-            CheckBox* checkBox = new DAVA::TArc::CheckBox(descrBool, GetAccessor(), reflectedModel);
+            CheckBox::Params params(GetAccessor(), GetUI(), CheckBoxTestDetails::wndKey);
+            params.fields[CheckBox::Fields::Checked] = "bool";
+            CheckBox* checkBox = new CheckBox(params, GetAccessor(), reflectedModel);
             checkBox->SetObjectName("CheckBox_bool");
-            layout->AddWidget(checkBox);
+            layout->AddControl(checkBox);
         }
 
         {
-            DAVA::TArc::ControlDescriptorBuilder<DAVA::TArc::CheckBox::Fields> descrState;
-            descrState[CheckBox::Fields::Checked] = "checkState";
-            DAVA::TArc::CheckBox* checkState = new DAVA::TArc::CheckBox(descrState, GetAccessor(), reflectedModel);
+            CheckBox::Params params(GetAccessor(), GetUI(), CheckBoxTestDetails::wndKey);
+            params.fields[CheckBox::Fields::Checked] = "checkState";
+            CheckBox* checkState = new CheckBox(params, GetAccessor(), reflectedModel);
             checkState->SetObjectName("CheckBox_state");
-            layout->AddWidget(checkState);
+            layout->AddControl(checkState);
         }
 
         DAVA::Reflection refModel = DAVA::Reflection::Create(&dataSource);
 
         {
-            DAVA::TArc::ControlDescriptorBuilder<DAVA::TArc::CheckBox::Fields> d;
-            d[CheckBox::Fields::Checked] = "value";
-            DAVA::TArc::CheckBox* checkBox = new DAVA::TArc::CheckBox(d, GetAccessor(), refModel);
+            CheckBox::Params params(GetAccessor(), GetUI(), CheckBoxTestDetails::wndKey);
+            params.fields[CheckBox::Fields::Checked] = "value";
+            CheckBox* checkBox = new CheckBox(params, GetAccessor(), refModel);
             checkBox->SetObjectName("CheckBox_ReadOnlyMeta");
-            layout->AddWidget(checkBox);
+            layout->AddControl(checkBox);
         }
 
         {
-            DAVA::TArc::ControlDescriptorBuilder<DAVA::TArc::CheckBox::Fields> d;
-            d[CheckBox::Fields::Checked] = "readOnlyValue";
-            DAVA::TArc::CheckBox* checkBox = new DAVA::TArc::CheckBox(d, GetAccessor(), refModel);
+            CheckBox::Params params(GetAccessor(), GetUI(), CheckBoxTestDetails::wndKey);
+            params.fields[CheckBox::Fields::Checked] = "readOnlyValue";
+            CheckBox* checkBox = new CheckBox(params, GetAccessor(), refModel);
             checkBox->SetObjectName("CheckBox_ReadOnly");
-            layout->AddWidget(checkBox);
+            layout->AddControl(checkBox);
         }
 
         {
-            DAVA::TArc::ControlDescriptorBuilder<DAVA::TArc::CheckBox::Fields> d;
-            d[CheckBox::Fields::Checked] = "writableValue";
-            d[CheckBox::Fields::IsReadOnly] = "isReadOnly";
-            d[CheckBox::Fields::TextHint] = "writableDescription";
-            DAVA::TArc::CheckBox* checkBox = new DAVA::TArc::CheckBox(d, GetAccessor(), refModel);
+            CheckBox::Params params(GetAccessor(), GetUI(), CheckBoxTestDetails::wndKey);
+            params.fields[CheckBox::Fields::Checked] = "writableValue";
+            params.fields[CheckBox::Fields::IsReadOnly] = "isReadOnly";
+            params.fields[CheckBox::Fields::TextHint] = "writableDescription";
+            CheckBox* checkBox = new CheckBox(params, GetAccessor(), refModel);
             checkBox->SetObjectName("CheckBox_writable");
-            layout->AddWidget(checkBox);
+            layout->AddControl(checkBox);
         }
 
         GetUI()->AddView(wndKey, DAVA::TArc::PanelKey("CheckBoxSandbox", DAVA::TArc::CentralPanelInfo()), w);
@@ -356,16 +356,17 @@ DAVA_TARC_TESTCLASS(CheckBoxTest)
 
     bool TestComplete(const DAVA::String& testName) const override
     {
+        bool testCompleted = true;
         if (testName == "WritableTest")
         {
             QList<QWidget*> widgets = LookupWidget(CheckBoxTestDetails::wndKey, QString("CheckBox_writable"));
             TEST_VERIFY(widgets.size() == 1);
             QWidget* w = widgets.front();
             QCheckBox* checkBox = qobject_cast<QCheckBox*>(w);
-            return checkBox->text() == QStringLiteral("Visible");
+            testCompleted = (checkBox->text() == QStringLiteral("Visible"));
         }
 
-        return TestClass::TestComplete(testName);
+        return testCompleted;
     }
 
     DAVA::int32 writableTestUpdateCount = 0;

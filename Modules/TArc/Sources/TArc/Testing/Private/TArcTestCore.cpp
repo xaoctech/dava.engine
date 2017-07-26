@@ -2,6 +2,7 @@
 #include "TArc/Testing/Private/DeadCodeTrick.h"
 
 #include "Engine/Engine.h"
+#include "Engine/PlatformApiQt.h"
 
 #include "UnitTests/TestCore.h"
 #include "Utils/StringFormat.h"
@@ -60,7 +61,7 @@ void TestCore::OnAppStarted()
     if (TArcTestCoreDetail::teamcityOutputEnabled)
     {
         teamCityOutput.SetCaptureStdoutFlag(TArcTestCoreDetail::teamcityCaptureStdout);
-        Logger::Instance()->AddCustomOutput(&teamCityOutput);
+        Logger::AddCustomOutput(&teamCityOutput);
     }
 
     UnitTests::TestCore::Instance()->Init(MakeFunction(this, &TestCore::OnTestClassStarted),
@@ -99,7 +100,7 @@ void TestCore::OnAppFinished()
 {
     if (TArcTestCoreDetail::teamcityOutputEnabled)
     {
-        DAVA::Logger::Instance()->RemoveCustomOutput(&teamCityOutput);
+        DAVA::Logger::RemoveCustomOutput(&teamCityOutput);
     }
 }
 

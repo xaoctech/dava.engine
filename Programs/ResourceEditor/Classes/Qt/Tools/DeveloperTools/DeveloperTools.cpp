@@ -44,7 +44,7 @@ void DeveloperTools::OnDebugFunctionsGridCopy()
             for (uint32 y = 0; y < 10; ++y)
             {
                 Matrix4 translation;
-                translation.CreateTranslation(Vector3(x * xshift, y * yshift, z * zshift));
+                translation.BuildTranslation(Vector3(x * xshift, y * yshift, z * zshift));
 
                 Matrix4 newMatrix = matrix * translation;
                 Entity* clonedEntity = entity->Clone();
@@ -98,6 +98,7 @@ void DeveloperTools::OnDebugCreateTestSkinnedObject()
     entity->AddComponent(component);
 
     ScopedPtr<PolygonGroup> polygonGroup(new PolygonGroup());
+    polygonGroup->SetPrimitiveType(rhi::PRIMITIVE_LINELIST);
     polygonGroup->AllocateData(EVF_VERTEX | EVF_JOINTINDEX | EVF_JOINTWEIGHT, boxesCount * 8, boxesCount * 24);
     for (int32 i = 0; i < boxesCount; i++)
     {
@@ -142,12 +143,12 @@ void DeveloperTools::OnDebugCreateTestSkinnedObject()
         polygonGroup->SetIndex(i * 24 + 23, i * 8 + 4);
     }
 
-    polygonGroup->SetPrimitiveType(rhi::PRIMITIVE_LINELIST);
+    polygonGroup->BuildBuffers();
 
     ScopedPtr<NMaterial> material(new NMaterial());
     material->SetMaterialName(FastName("DebugSkeleton"));
     material->SetFXName(NMaterialName::DECAL_OPAQUE);
-    material->SetFlag(NMaterialFlagName::FLAG_SKINNING, 1);
+    material->AddFlag(NMaterialFlagName::FLAG_SKINNING, 1);
 
     ScopedPtr<RenderBatch> renderBatch(new RenderBatch());
     renderBatch->SetMaterial(material);

@@ -4,13 +4,17 @@
 #include "Base/BaseTypes.h"
 
 #include "UI/Components/UIComponent.h"
+#include "Reflection/Reflection.h"
 
 namespace DAVA
 {
 class UIControl;
 
-class UIModalInputComponent : public UIBaseComponent<UIComponent::MODAL_INPUT_COMPONENT>
+class UIModalInputComponent : public UIComponent
 {
+    DAVA_VIRTUAL_REFLECTION(UIModalInputComponent, UIComponent);
+    IMPLEMENT_UI_COMPONENT(UIModalInputComponent);
+
 public:
     UIModalInputComponent();
     UIModalInputComponent(const UIModalInputComponent& src);
@@ -29,10 +33,6 @@ public:
 
 private:
     bool enabled = true;
-
-public:
-    INTROSPECTION_EXTEND(UIModalInputComponent, UIComponent,
-                         PROPERTY("enabled", "Enabled", IsEnabled, SetEnabled, I_SAVE | I_VIEW | I_EDIT));
 };
 }
 

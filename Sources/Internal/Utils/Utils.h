@@ -45,7 +45,7 @@ void Swap(T& v1, T& v2);
  \brief Function to compare strings case-insensitive
  \param[in] ext1 - first string
  \param[in] ext2 - second string
- \param[out] result of comparision
+ \param[out] result of comparison
  */
 int32 CompareCaseInsensitive(const String& str1, const String& str2);
 
@@ -140,12 +140,6 @@ public:
 protected:
     std::size_t currentIndex = 0;
 };
-
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-
-uint64 EglGetCurrentContext();
-
-#endif
 
 // Open the URL in external browser.
 void OpenURL(const String& url);

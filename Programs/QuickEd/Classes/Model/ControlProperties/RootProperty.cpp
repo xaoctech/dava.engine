@@ -13,9 +13,12 @@
 #include "ClassProperty.h"
 #include "CustomClassProperty.h"
 #include "VisibleValueProperty.h"
-
 #include "Model/PackageHierarchy/ControlNode.h"
-#include "UI/UIControl.h"
+
+#include <UI/UIControl.h>
+#include <Reflection/ReflectedTypeDB.h>
+#include <Entity/ComponentManager.h>
+#include <Engine/Engine.h>
 
 using namespace DAVA;
 
@@ -27,19 +30,23 @@ RootProperty::RootProperty(ControlNode* _node, const RootProperty* sourcePropert
     , nameProperty(nullptr)
 {
     AddBaseProperties(node->GetControl(), sourceProperties, cloneType);
-    MakeControlPropertiesSection(node->GetControl(), node->GetControl()->GetTypeInfo(), sourceProperties, cloneType);
+
+    UIControl* control = node->GetControl();
+    Reflection controlRef = Reflection::Create(&control);
+    Vector<Reflection::Field> fields = controlRef.GetFields();
+    MakeControlPropertiesSection(node->GetControl(), ReflectedTypeDB::GetByPointer(control)->GetType(), fields, sourceProperties, cloneType);
 
     if (sourceProperties)
     {
         for (ComponentPropertiesSection* section : sourceProperties->componentProperties)
         {
-            UIComponent::eType type = static_cast<UIComponent::eType>(section->GetComponent()->GetType());
+            const Type* type = section->GetComponent()->GetType();
             int32 index = section->GetComponentIndex();
             ScopedPtr<ComponentPropertiesSection> newSection(new ComponentPropertiesSection(node->GetControl(), type, index, section, cloneType));
             AddComponentPropertiesSection(newSection);
         }
     }
-    visibleProperty = DynamicTypeCheck<VisibleValueProperty*>(FindPropertyByName("Visible"));
+    visibleProperty = DynamicTypeCheck<VisibleValueProperty*>(FindPropertyByName("visible"));
 }
 
 RootProperty::~RootProperty()
@@ -120,7 +127,7 @@ ControlPropertiesSection* RootProperty::GetControlPropertiesSection(const DAVA::
     return nullptr;
 }
 
-bool RootProperty::CanAddComponent(DAVA::uint32 componentType) const
+bool RootProperty::CanAddComponent(const DAVA::Type* componentType) const
 {
     if (IsReadOnly())
         return false;
@@ -134,7 +141,7 @@ bool RootProperty::CanAddComponent(DAVA::uint32 componentType) const
     return false;
 }
 
-bool RootProperty::CanRemoveComponent(DAVA::uint32 componentType) const
+bool RootProperty::CanRemoveComponent(const DAVA::Type* componentType) const
 {
     return !IsReadOnly() && FindComponentPropertiesSection(componentType, 0) != nullptr; // TODO
 }
@@ -158,7 +165,7 @@ int32 RootProperty::GetIndexOfCompoentPropertiesSection(ComponentPropertiesSecti
     }
 }
 
-ComponentPropertiesSection* RootProperty::FindComponentPropertiesSection(DAVA::uint32 componentType, DAVA::uint32 componentIndex) const
+ComponentPropertiesSection* RootProperty::FindComponentPropertiesSection(const DAVA::Type* componentType, DAVA::uint32 componentIndex) const
 {
     int32 index = 0;
     for (ComponentPropertiesSection* section : componentProperties)
@@ -174,7 +181,7 @@ ComponentPropertiesSection* RootProperty::FindComponentPropertiesSection(DAVA::u
     return nullptr;
 }
 
-ComponentPropertiesSection* RootProperty::AddComponentPropertiesSection(DAVA::uint32 componentType)
+ComponentPropertiesSection* RootProperty::AddComponentPropertiesSection(const DAVA::Type* componentType)
 {
     uint32 index = 0;
 
@@ -184,14 +191,14 @@ ComponentPropertiesSection* RootProperty::AddComponentPropertiesSection(DAVA::ui
             index++;
     }
 
-    ScopedPtr<ComponentPropertiesSection> section(new ComponentPropertiesSection(node->GetControl(), static_cast<UIComponent::eType>(componentType), index, nullptr, CT_INHERIT));
+    ScopedPtr<ComponentPropertiesSection> section(new ComponentPropertiesSection(node->GetControl(), componentType, index, nullptr, CT_INHERIT));
     AddComponentPropertiesSection(section);
     return section;
 }
 
 void RootProperty::AddComponentPropertiesSection(ComponentPropertiesSection* section)
 {
-    uint32 componentType = section->GetComponentType();
+    const DAVA::Type* componentType = section->GetComponentType();
     if (UIComponent::IsMultiple(componentType) || FindComponentPropertiesSection(componentType, 0) == nullptr)
     {
         int32 index = GetComponentAbsIndex(componentType, section->GetComponentIndex());
@@ -216,7 +223,7 @@ void RootProperty::AddComponentPropertiesSection(ComponentPropertiesSection* sec
     }
 }
 
-void RootProperty::RemoveComponentPropertiesSection(DAVA::uint32 componentType, DAVA::uint32 componentIndex)
+void RootProperty::RemoveComponentPropertiesSection(const DAVA::Type* componentType, DAVA::uint32 componentIndex)
 {
     ComponentPropertiesSection* section = FindComponentPropertiesSection(componentType, componentIndex);
     if (section)
@@ -227,7 +234,7 @@ void RootProperty::RemoveComponentPropertiesSection(DAVA::uint32 componentType, 
 
 void RootProperty::RemoveComponentPropertiesSection(ComponentPropertiesSection* section)
 {
-    uint32 componentType = section->GetComponentType();
+    const DAVA::Type* componentType = section->GetComponentType();
 
     if (FindComponentPropertiesSection(componentType, section->GetComponentIndex()) == section)
     {
@@ -285,7 +292,7 @@ void RootProperty::RemoveListener(PropertyListener* listener)
     }
 }
 
-void RootProperty::SetProperty(AbstractProperty* property, const DAVA::VariantType& newValue)
+void RootProperty::SetProperty(AbstractProperty* property, const DAVA::Any& newValue)
 {
     property->SetValue(newValue);
 
@@ -293,7 +300,7 @@ void RootProperty::SetProperty(AbstractProperty* property, const DAVA::VariantTy
         listener->PropertyChanged(property);
 }
 
-void RootProperty::SetDefaultProperty(AbstractProperty* property, const DAVA::VariantType& newValue)
+void RootProperty::SetDefaultProperty(AbstractProperty* property, const DAVA::Any& newValue)
 {
     property->SetDefaultValue(newValue);
 
@@ -341,6 +348,11 @@ const DAVA::String& RootProperty::GetName() const
     return rootName;
 }
 
+const DAVA::Type* RootProperty::GetValueType() const
+{
+    return nullptr;
+}
+
 AbstractProperty::ePropertyType RootProperty::GetType() const
 {
     return TYPE_HEADER;
@@ -372,37 +384,57 @@ void RootProperty::AddBaseProperties(DAVA::UIControl* control, const RootPropert
         prop->SetParent(this);
 }
 
-void RootProperty::MakeControlPropertiesSection(DAVA::UIControl* control, const DAVA::InspInfo* typeInfo, const RootProperty* sourceProperties, eCloneType copyType)
+void RootProperty::MakeControlPropertiesSection(DAVA::UIControl* control, const DAVA::Type* type, const Vector<Reflection::Field>& fields, const RootProperty* sourceProperties, eCloneType copyType)
 {
-    const InspInfo* baseInfo = typeInfo->BaseInfo();
-    if (baseInfo)
-        MakeControlPropertiesSection(control, baseInfo, sourceProperties, copyType);
+    const TypeInheritance* inheritance = type->GetInheritance();
+    if (type != Type::Instance<UIControl>() && inheritance != nullptr)
+    {
+        const Vector<TypeInheritance::Info>& baseTypesInfo = inheritance->GetBaseTypes();
+        for (const TypeInheritance::Info& baseInfo : baseTypesInfo)
+        {
+            MakeControlPropertiesSection(control, baseInfo.type, fields, sourceProperties, copyType);
+        }
+    }
 
     bool hasProperties = false;
-    for (int i = 0; i < typeInfo->MembersCount(); i++)
+    for (const Reflection::Field& field : fields)
     {
-        const InspMember* member = typeInfo->Member(i);
-        if ((member->Flags() & I_EDIT) != 0)
+        if (field.inheritFrom->GetType() == type)
         {
             hasProperties = true;
             break;
         }
     }
+
     if (hasProperties)
     {
-        ControlPropertiesSection* sourceSection = sourceProperties == nullptr ? nullptr : sourceProperties->GetControlPropertiesSection(typeInfo->Name().c_str());
-        ControlPropertiesSection* section = new ControlPropertiesSection(control, typeInfo, sourceSection, copyType);
+        const ReflectedType* rt = ReflectedTypeDB::GetByType(type);
+        String sectionName = rt->GetPermanentName();
+        ControlPropertiesSection* sourceSection = sourceProperties == nullptr ? nullptr : sourceProperties->GetControlPropertiesSection(sectionName);
+
+        ControlPropertiesSection* section = new ControlPropertiesSection(sectionName, control, type, fields, sourceSection, copyType);
         section->SetParent(this);
         controlProperties.push_back(section);
     }
 }
 
-uint32 RootProperty::GetComponentAbsIndex(DAVA::uint32 componentType, DAVA::uint32 index) const
+uint32 RootProperty::GetComponentAbsIndex(const DAVA::Type* componentType, DAVA::uint32 index) const
 {
+    ComponentManager* cm = GetEngineContext()->componentManager;
+    int32 runtimeType = cm->GetRuntimeType(componentType);
     uint32 i = 0;
+
+    //sort sections in the same order as in ComponentManager
+    HashMap<const Type*, size_t> typeToIndex;
+    Vector<const Type*> sortedTypes = cm->GetRegisteredComponents();
+    for (size_t i = 0, size = sortedTypes.size(); i < size; ++i)
+    {
+        typeToIndex[sortedTypes[i]] = i;
+    }
+    size_t componentIndex = typeToIndex[componentType];
     for (ComponentPropertiesSection* section : componentProperties)
     {
-        if (section->GetComponentType() >= componentType)
+        if (typeToIndex[section->GetComponentType()] >= componentIndex)
         {
             return index + i;
         }

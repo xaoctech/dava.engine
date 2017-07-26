@@ -1,10 +1,20 @@
-#include "UIActionBindingComponent.h"
-
+#include "UI/Input/UIActionBindingComponent.h"
+#include "Reflection/ReflectionRegistrator.h"
 #include "Utils/Utils.h"
 #include "Utils/StringUtils.h"
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(UIActionBindingComponent)
+{
+    ReflectionRegistrator<UIActionBindingComponent>::Begin()
+    .ConstructorByPointer()
+    .DestructorByPointer([](UIActionBindingComponent* o) { o->Release(); })
+    .Field("actions", &UIActionBindingComponent::GetActionsAsString, &UIActionBindingComponent::SetActionsFromString)
+    .Field("blockOtherShortcuts", &UIActionBindingComponent::IsBlockOtherKeyboardShortcuts, &UIActionBindingComponent::SetBlockOtherKeyboardShortcuts)
+    .End();
+}
+
 UIActionBindingComponent::UIActionBindingComponent()
 {
 }

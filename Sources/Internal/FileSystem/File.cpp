@@ -6,6 +6,7 @@
 #include "FileSystem/FileAPIHelper.h"
 #include "FileSystem/FileSystem.h"
 #include "FileSystem/Private/PackFormatSpec.h"
+#include "FileSystem/Private/CheckIOError.h"
 #include "FileSystem/ResourceArchive.h"
 #include "Platform/TemplateAndroid/AssetsManagerAndroid.h"
 
@@ -13,13 +14,12 @@
 #include "Concurrency/LockGuard.h"
 #include "Concurrency/Mutex.h"
 #include "Concurrency/Thread.h"
-#include "Core/Core.h"
 #include "Logger/Logger.h"
 #include "Utils/StringFormat.h"
 
 #if defined(__DAVAENGINE_WINDOWS__)
 #include <io.h>
-#elif defined(__DAVAENGINE_ANDROID__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
+#elif defined(__DAVAENGINE_POSIX__)
 #include <unistd.h>
 #endif
 
@@ -28,6 +28,8 @@
 
 namespace DAVA
 {
+const String extDvpl(".dvpl");
+
 File::~File()
 {
     // Though File object is created through Create methods returning nullptr on error
@@ -35,17 +37,30 @@ File::~File()
     // which do not initialize file pointer (e.g. DynamicMemoryFile)
     if (file != nullptr)
     {
-        fclose(file);
+        int result = fclose(file);
+        if (result != 0)
+        {
+            const String& s = filename.GetStringValue();
+            Logger::Error("failed close file: %s", s.c_str());
+        }
         file = nullptr;
     }
+
+#ifdef __DAVAENGINE_DEBUG__
+    DebugFS::GenErrorOnCloseFailed();
+#endif
 }
 
 static uint64 GetFilePos(FILE* f)
 {
 #if defined(__DAVAENGINE_WINDOWS__)
-    return _ftelli64(f);
+    int64 result = _ftelli64(f);
+    DVASSERT(-1 != result);
+    return static_cast<uint64>(result);
 #else
-    return static_cast<uint64>(ftello(f));
+    off_t result = ftello(f);
+    DVASSERT(-1 != result);
+    return static_cast<uint64>(result);
 #endif
 }
 
@@ -58,9 +73,40 @@ static int SetFilePos(FILE* f, int64 position, int32 seekDirection)
 #endif
 }
 
-File* File::Create(const FilePath& filePath, uint32 attributes)
+File* File::Create(const FilePath& filename, uint32 attributes)
 {
-    File* result = CreateFromSystemPath(filePath, attributes);
+#ifdef __DAVAENGINE_DEBUG__
+    if (DebugFS::GenErrorOnOpenOrCreateFailed())
+    {
+        return nullptr;
+    }
+#endif
+
+    if (filename.IsDirectoryPathname())
+    {
+        return nullptr;
+    }
+
+    File* result = PureCreate(filename, attributes);
+    if (result != nullptr)
+    {
+        return result;
+    }
+
+    if (!(attributes & (WRITE | CREATE | APPEND)))
+    {
+        FilePath compressedFile = filename + extDvpl;
+        String fileName = compressedFile.GetAbsolutePathname();
+        if (FileAPI::IsRegularFile(fileName))
+        {
+            result = CompressedCreate(compressedFile, attributes);
+            if (result == nullptr)
+            {
+                // delete bad file (can't decompress)
+                FileAPI::RemoveFile(fileName);
+            }
+        }
+    }
     return result; // easy debug on android(can set breakpoint on nullptr value in eclipse do not remove it)
 }
 
@@ -100,6 +146,12 @@ bool File::IsFileInMountedArchive(const String& packName, const String& relative
 
 File* File::CompressedCreate(const FilePath& filename, uint32 attributes)
 {
+#ifdef __DAVAENGINE_DEBUG__
+    if (DebugFS::GenErrorOnOpenOrCreateFailed())
+    {
+        return nullptr;
+    }
+#endif
     ScopedPtr<File> f(PureCreate(filename, attributes));
 
     if (!f)
@@ -146,43 +198,28 @@ File* File::CompressedCreate(const FilePath& filename, uint32 attributes)
         return nullptr;
     }
 
-    if (footer.type != Compressor::Type::Lz4HC)
+    if (footer.type == Compressor::Type::Lz4HC || footer.type == Compressor::Type::Lz4)
     {
-        Logger::Error("incorrect compression type: %d file:", static_cast<int32>(footer.type), filename.GetAbsolutePathname().c_str());
-        return nullptr;
-    }
+        Vector<uint8> uncompressed(footer.sizeUncompressed);
 
-    Vector<uint8> uncompressed(footer.sizeUncompressed);
-
-    if (!LZ4HCCompressor().Decompress(compressed, uncompressed))
-    {
-        Logger::Error("decompress failed on file:", filename.GetAbsolutePathname().c_str());
-        return nullptr;
-    }
-
-    DynamicMemoryFile* file = DynamicMemoryFile::Create(std::move(uncompressed), attributes, filename);
-    return file;
-}
-
-File* File::CreateFromSystemPath(const FilePath& filename, uint32 attributes)
-{
-    if (filename.IsDirectoryPathname())
-    {
-        return nullptr;
-    }
-
-    File* result = PureCreate(filename, attributes);
-
-    if (!(attributes & (File::WRITE | File::CREATE | File::APPEND)))
-    {
-        FilePath compressedFile = filename + ".dvpl";
-        if (FileAPI::IsRegularFile(compressedFile.GetAbsolutePathname()))
+        if (!LZ4HCCompressor().Decompress(compressed, uncompressed))
         {
-            result = CompressedCreate(compressedFile, attributes);
+            Logger::Error("decompress failed on file: %s", filename.GetAbsolutePathname().c_str());
+            return nullptr;
         }
+
+        DynamicMemoryFile* file = DynamicMemoryFile::Create(std::move(uncompressed), attributes, filename);
+        return file;
     }
 
-    return result;
+    if (footer.type == Compressor::Type::None)
+    {
+        DynamicMemoryFile* file = DynamicMemoryFile::Create(std::move(compressed), attributes, filename);
+        return file;
+    }
+
+    Logger::Error("incorrect compression type: %d file:", static_cast<int32>(footer.type), filename.GetAbsolutePathname().c_str());
+    return nullptr;
 }
 
 #ifdef __DAVAENGINE_ANDROID__
@@ -281,13 +318,17 @@ File* File::PureCreate(const FilePath& filePath, uint32 attributes)
     {
         file = FileAPI::OpenFile(path, "wb");
         if (!file)
+        {
             return nullptr;
+        }
     }
     else if ((attributes & File::APPEND) && (attributes & File::WRITE))
     {
         file = FileAPI::OpenFile(path, "ab");
         if (!file)
+        {
             return nullptr;
+        }
         if (0 != SetFilePos(file, 0, SEEK_END))
         {
             Logger::Error("fseek set error");
@@ -313,6 +354,12 @@ const FilePath& File::GetFilename()
 
 uint32 File::Write(const void* pointerToData, uint32 dataSize)
 {
+#ifdef __DAVAENGINE_DEBUG__
+    if (DebugFS::GenErrorOnWriteFailed())
+    {
+        return 0;
+    }
+#endif
 #if defined(__DAVAENGINE_ANDROID__)
     uint32 posBeforeWrite = GetPos();
 #endif
@@ -332,6 +379,12 @@ uint32 File::Write(const void* pointerToData, uint32 dataSize)
 
 uint32 File::Read(void* pointerToData, uint32 dataSize)
 {
+#ifdef __DAVAENGINE_DEBUG__
+    if (DebugFS::GenErrorOnReadFailed())
+    {
+        return 0;
+    }
+#endif
     //! Do not change order (1, dataSize), cause fread return count of size(2nd param) items
     //! May be performance issues
     return static_cast<uint32>(fread(pointerToData, 1, static_cast<size_t>(dataSize), file));
@@ -470,6 +523,12 @@ bool File::GetNextChar(uint8* nextChar)
 
 uint64 File::GetPos() const
 {
+#ifdef __DAVAENGINE_DEBUG__
+    if (DebugFS::GenErrorOnSeekFailed())
+    {
+        return std::numeric_limits<uint64>::max();
+    }
+#endif
     return GetFilePos(file);
 }
 
@@ -480,6 +539,12 @@ uint64 File::GetSize() const
 
 bool File::Seek(int64 position, eFileSeek seekType)
 {
+#ifdef __DAVAENGINE_DEBUG__
+    if (DebugFS::GenErrorOnSeekFailed())
+    {
+        return false;
+    }
+#endif
     int realSeekType = 0;
     switch (seekType)
     {
@@ -502,6 +567,12 @@ bool File::Seek(int64 position, eFileSeek seekType)
 
 bool File::Flush()
 {
+#ifdef __DAVAENGINE_DEBUG__
+    if (DebugFS::GenErrorOnWriteFailed())
+    {
+        return false;
+    }
+#endif
     return 0 == fflush(file);
 }
 
@@ -512,9 +583,15 @@ bool File::IsEof() const
 
 bool File::Truncate(uint64 size)
 {
+#ifdef __DAVAENGINE_DEBUG__
+    if (DebugFS::GenErrorOnTruncateFailed())
+    {
+        return false;
+    }
+#endif
 #if defined(__DAVAENGINE_WINDOWS__)
     return (0 == _chsize(_fileno(file), static_cast<long>(size)));
-#elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+#elif defined(__DAVAENGINE_POSIX__)
     return (0 == ftruncate(fileno(file), size));
 #else
 #error No implementation for current platform
@@ -557,7 +634,7 @@ String File::GetModificationDate(const FilePath& filePathname)
     int32 ret = stat(realPathname.c_str(), &fileInfo);
     if (0 == ret)
     {
-#if defined(__DAVAENGINE_WINDOWS__)
+#if defined(__DAVAENGINE_WINDOWS__) || defined(__DAVAENGINE_LINUX__)
         tm* utcTime = gmtime(&fileInfo.st_mtime);
 #elif defined(__DAVAENGINE_ANDROID__)
         time_t st_mtime = static_cast<time_t>(fileInfo.st_mtime);

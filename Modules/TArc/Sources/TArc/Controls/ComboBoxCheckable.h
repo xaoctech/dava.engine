@@ -18,7 +18,7 @@ namespace TArc
 {
 QString CreateTextComboCheckable(const Any& value, const EnumMap* enumMap);
 
-class ComboBoxCheckable final : public ControlProxy<QComboBox>
+class ComboBoxCheckable final : public ControlProxyImpl<QComboBox>
 {
 public:
     enum class Fields : uint32
@@ -28,8 +28,9 @@ public:
         FieldCount
     };
 
-    ComboBoxCheckable(const ControlDescriptorBuilder<Fields>& fields, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent = nullptr);
-    ComboBoxCheckable(const ControlDescriptorBuilder<Fields>& fields, ContextAccessor* accessor, Reflection model, QWidget* parent = nullptr);
+    DECLARE_CONTROL_PARAMS(Fields);
+    ComboBoxCheckable(const Params& params, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent = nullptr);
+    ComboBoxCheckable(const Params& params, ContextAccessor* accessor, Reflection model, QWidget* parent = nullptr);
 
 private:
     bool eventFilter(QObject* obj, QEvent* e) override;

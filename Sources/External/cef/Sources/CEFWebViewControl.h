@@ -17,11 +17,7 @@ class CEFWebViewControl : public CefClient,
     IMPLEMENT_REFCOUNTING(CEFWebViewControl);
 
 public:
-#if defined(__DAVAENGINE_COREV2__)
     CEFWebViewControl(Window* w, UIWebView& uiWebView);
-#else
-    CEFWebViewControl(UIWebView& uiWebView);
-#endif
     ~CEFWebViewControl() = default;
 
     // Initialize the control.
@@ -99,12 +95,10 @@ private:
     void OnMouseWheel(UIEvent* input);
     void OnKey(UIEvent* input);
 
-#if defined(__DAVAENGINE_COREV2__)
     Window* window = nullptr;
     const float defaultDpi = 96.f;
     // scale is ratio between current display DPI and default DPI (96 on Windows)
     float32 scale = 1.f;
-#endif
     UIWebView& webView;
     Vector2 webViewPos;
     IUIWebViewDelegate* delegate = nullptr;
@@ -112,7 +106,6 @@ private:
     CefRefPtr<CEFWebPageRender> webPageRender;
     String requestedUrl;
     bool pageLoaded = false;
-    SigConnectionID onWindowSizeChangedId;
 };
 
 } // namespace DAVA

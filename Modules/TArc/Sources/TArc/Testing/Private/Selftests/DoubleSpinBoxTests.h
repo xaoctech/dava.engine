@@ -4,6 +4,7 @@
 
 #include "TArc/Controls/DoubleSpinBox.h"
 #include "TArc/Controls/QtBoxLayouts.h"
+#include "TArc/Controls/CommonStrings.h"
 #include "TArc/Core/ClientModule.h"
 #include "TArc/Testing/Private/TestModuleHolder.h"
 #include "TArc/Utils/QtConnections.h"
@@ -106,70 +107,70 @@ public:
         Reflection ref = Reflection::Create(&model);
 
         {
-            ControlDescriptorBuilder<DoubleSpinBox::Fields> descr;
-            descr[DoubleSpinBox::Fields::Value] = "value";
-            DoubleSpinBox* edit = new DoubleSpinBox(descr, GetAccessor(), ref);
+            DoubleSpinBox::Params params(GetAccessor(), GetUI(), wndKey);
+            params.fields[DoubleSpinBox::Fields::Value] = "value";
+            DoubleSpinBox* edit = new DoubleSpinBox(params, GetAccessor(), ref);
             edit->SetObjectName("SpinBox_value");
-            layout->AddWidget(edit);
+            layout->AddControl(edit);
         }
 
         {
-            ControlDescriptorBuilder<DoubleSpinBox::Fields> descr;
-            descr[DoubleSpinBox::Fields::Value] = "noRangeValue";
-            descr[DoubleSpinBox::Fields::Range] = "rangeMeta";
-            DoubleSpinBox* edit = new DoubleSpinBox(descr, GetAccessor(), ref);
+            DoubleSpinBox::Params params(GetAccessor(), GetUI(), wndKey);
+            params.fields[DoubleSpinBox::Fields::Value] = "noRangeValue";
+            params.fields[DoubleSpinBox::Fields::Range] = "rangeMeta";
+            DoubleSpinBox* edit = new DoubleSpinBox(params, GetAccessor(), ref);
             edit->SetObjectName("SpinBox_metaRangeValue");
-            layout->AddWidget(edit);
+            layout->AddControl(edit);
         }
 
         {
-            ControlDescriptorBuilder<DoubleSpinBox::Fields> descr;
-            descr[DoubleSpinBox::Fields::Value] = "readOnlyValue";
-            DoubleSpinBox* edit = new DoubleSpinBox(descr, GetAccessor(), ref);
+            DoubleSpinBox::Params params(GetAccessor(), GetUI(), wndKey);
+            params.fields[DoubleSpinBox::Fields::Value] = "readOnlyValue";
+            DoubleSpinBox* edit = new DoubleSpinBox(params, GetAccessor(), ref);
             edit->SetObjectName("SpinBox_readOnlyValue");
-            layout->AddWidget(edit);
+            layout->AddControl(edit);
         }
 
         {
-            ControlDescriptorBuilder<DoubleSpinBox::Fields> descr;
-            descr[DoubleSpinBox::Fields::Value] = "readOnlyMeta";
-            DoubleSpinBox* edit = new DoubleSpinBox(descr, GetAccessor(), ref);
+            DoubleSpinBox::Params params(GetAccessor(), GetUI(), wndKey);
+            params.fields[DoubleSpinBox::Fields::Value] = "readOnlyMeta";
+            DoubleSpinBox* edit = new DoubleSpinBox(params, GetAccessor(), ref);
             edit->SetObjectName("SpinBox_readOnlyMeta");
-            layout->AddWidget(edit);
+            layout->AddControl(edit);
         }
 
         {
-            ControlDescriptorBuilder<DoubleSpinBox::Fields> descr;
-            descr[DoubleSpinBox::Fields::Value] = "value";
-            descr[DoubleSpinBox::Fields::IsReadOnly] = "isReadOnly";
-            DoubleSpinBox* edit = new DoubleSpinBox(descr, GetAccessor(), ref);
+            DoubleSpinBox::Params params(GetAccessor(), GetUI(), wndKey);
+            params.fields[DoubleSpinBox::Fields::Value] = "value";
+            params.fields[DoubleSpinBox::Fields::IsReadOnly] = "isReadOnly";
+            DoubleSpinBox* edit = new DoubleSpinBox(params, GetAccessor(), ref);
             edit->SetObjectName("SpinBox_readOnlyField");
-            layout->AddWidget(edit);
+            layout->AddControl(edit);
         }
 
         {
-            ControlDescriptorBuilder<DoubleSpinBox::Fields> descr;
-            descr[DoubleSpinBox::Fields::Value] = "value";
-            descr[DoubleSpinBox::Fields::IsEnabled] = "isEnabled";
-            DoubleSpinBox* edit = new DoubleSpinBox(descr, GetAccessor(), ref);
+            DoubleSpinBox::Params params(GetAccessor(), GetUI(), wndKey);
+            params.fields[DoubleSpinBox::Fields::Value] = "value";
+            params.fields[DoubleSpinBox::Fields::IsEnabled] = "isEnabled";
+            DoubleSpinBox* edit = new DoubleSpinBox(params, GetAccessor(), ref);
             edit->SetObjectName("SpinBox_enable");
-            layout->AddWidget(edit);
+            layout->AddControl(edit);
         }
 
         {
-            ControlDescriptorBuilder<DoubleSpinBox::Fields> descr;
-            descr[DoubleSpinBox::Fields::Value] = "noValue";
-            DoubleSpinBox* edit = new DoubleSpinBox(descr, GetAccessor(), ref);
+            DoubleSpinBox::Params params(GetAccessor(), GetUI(), wndKey);
+            params.fields[DoubleSpinBox::Fields::Value] = "noValue";
+            DoubleSpinBox* edit = new DoubleSpinBox(params, GetAccessor(), ref);
             edit->SetObjectName("SpinBox_noValue");
-            layout->AddWidget(edit);
+            layout->AddControl(edit);
         }
 
         {
-            ControlDescriptorBuilder<DoubleSpinBox::Fields> descr;
-            descr[DoubleSpinBox::Fields::Value] = "noValueHint";
-            DoubleSpinBox* edit = new DoubleSpinBox(descr, GetAccessor(), ref);
+            DoubleSpinBox::Params params(GetAccessor(), GetUI(), wndKey);
+            params.fields[DoubleSpinBox::Fields::Value] = "noValueHint";
+            DoubleSpinBox* edit = new DoubleSpinBox(params, GetAccessor(), ref);
             edit->SetObjectName("SpinBox_noValuehint");
-            layout->AddWidget(edit);
+            layout->AddControl(edit);
         }
 
         GetUI()->AddView(wndKey, PanelKey("DoubleSpinBoxView", CentralPanelInfo()), w);
@@ -223,7 +224,7 @@ DAVA_TARC_TESTCLASS(DoubleSpinBoxTests)
         QDoubleSpinBox* box = LookupSingleWidget<QDoubleSpinBox>(wndKey, name);
         DoubleSpinBoxTestModule* module = Holder::moduleInstance;
         TEST_VERIFY(box->value() == module->model.value);
-        TEST_VERIFY(box->text() == QString::number(module->model.value, 'f', box->decimals()));
+        TEST_VERIFY(box->text() == QString::number(module->model.value, 'f'));
         TEST_VERIFY(box->minimum() == 3.0);
         TEST_VERIFY(box->maximum() == 30.0);
         TEST_VERIFY(box->singleStep() == 0.2);
@@ -235,14 +236,14 @@ DAVA_TARC_TESTCLASS(DoubleSpinBoxTests)
             ButtonClick(events, false, box);
         events.simulate(box);
         TEST_VERIFY(box->value() == 3.0); //  but lower bound is 3
-        TEST_VERIFY(QString::number(box->value(), 'f', box->decimals()) == QString::number(module->model.value, 'f', box->decimals()));
+        TEST_VERIFY(QString::number(box->value(), 'f') == QString::number(module->model.value, 'f'));
 
         events.clear();
         ButtonClick(events, true, box);
         events.simulate(box);
 
         TEST_VERIFY(box->value() == 3.2);
-        TEST_VERIFY(QString::number(box->value(), 'f', box->decimals()) == QString::number(module->model.value, 'f', box->decimals()));
+        TEST_VERIFY(QString::number(box->value(), 'f') == QString::number(module->model.value, 'f'));
 
         events.clear();
         events.addKeyClick(Qt::Key_Delete);
@@ -250,7 +251,7 @@ DAVA_TARC_TESTCLASS(DoubleSpinBoxTests)
         events.addKeyClick(Qt::Key_Return);
         events.simulate(box);
         TEST_VERIFY(box->value() == 8.0);
-        TEST_VERIFY(QString::number(box->value(), 'f', box->decimals()) == QString::number(module->model.value, 'f', box->decimals()));
+        TEST_VERIFY(QString::number(box->value(), 'f') == QString::number(module->model.value, 'f'));
 
         events.clear();
         events.addKeyClick(Qt::Key_Delete);
@@ -258,7 +259,7 @@ DAVA_TARC_TESTCLASS(DoubleSpinBoxTests)
         events.addKeyClick(Qt::Key_Return);
         events.simulate(box);
         TEST_VERIFY(box->value() == 24.5);
-        TEST_VERIFY(QString::number(box->value(), 'f', box->decimals()) == QString::number(module->model.value, 'f', box->decimals()));
+        TEST_VERIFY(QString::number(box->value(), 'f') == QString::number(module->model.value, 'f'));
 
         module->model.value = 10.0;
     }
@@ -374,7 +375,7 @@ DAVA_TARC_TESTCLASS(DoubleSpinBoxTests)
 
         TEST_VERIFY(box->value() == 18.0);
         TEST_VERIFY(box->value() == module->model.value);
-        TEST_VERIFY(box->text() == QString::number(module->model.value));
+        TEST_VERIFY(box->text() == QString::number(module->model.value, 'f'));
 
         events.clear();
         SetFocus(box);
@@ -382,14 +383,14 @@ DAVA_TARC_TESTCLASS(DoubleSpinBoxTests)
         events.simulate(box);
         TEST_VERIFY(box->value() == 17.0);
         TEST_VERIFY(box->value() == module->model.value);
-        TEST_VERIFY(box->text() == QString::number(module->model.value));
+        TEST_VERIFY(box->text() == QString::number(module->model.value, 'f'));
 
         module->model.value = 10.0;
     }
 
     DAVA_TEST (NoValueTest)
     {
-        NoValueTest("SpinBox_noValue", "SpinBox_value", "<multiple values>");
+        NoValueTest("SpinBox_noValue", "SpinBox_value", QString(DAVA::TArc::MultipleValuesString));
     }
 
     DAVA_TEST (NoValueHintTest)

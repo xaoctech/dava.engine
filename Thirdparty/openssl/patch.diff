@@ -1,5 +1,5 @@
---- ./openssl_source_original/Configurations/10-main.conf	2016-09-22 13:14:50.000000000 +0300
-+++ ./openssl_source/Configurations/10-main.conf	2016-09-23 11:20:20.000000000 +0300
+--- openssl_source_original/Configurations/10-main.conf	2016-09-22 13:14:50.000000000 +0300
++++ openssl_source/Configurations/10-main.conf	2016-09-23 11:20:20.000000000 +0300
 @@ -887,7 +887,7 @@
          # systems are perfectly capable of executing binaries targeting
          # Froyo. Keep in mind that in the nutshell Android builds are

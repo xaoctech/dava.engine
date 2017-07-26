@@ -52,4 +52,5 @@ public:
     DAVA::VariantType newVal;
 };
 
+
 #endif // __KEYEDARCHIVE_COMMAND_H__

@@ -12,7 +12,7 @@ namespace DAVA
 {
 namespace TArc
 {
-class ComboBox final : public ControlProxy<QComboBox>
+class ComboBox final : public ControlProxyImpl<QComboBox>
 {
 public:
     enum class Fields : uint32
@@ -23,8 +23,9 @@ public:
         FieldCount
     };
 
-    ComboBox(const ControlDescriptorBuilder<Fields>& fields, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent = nullptr);
-    ComboBox(const ControlDescriptorBuilder<Fields>& fields, ContextAccessor* accessor, Reflection model, QWidget* parent = nullptr);
+    DECLARE_CONTROL_PARAMS(Fields);
+    ComboBox(const Params& params, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent = nullptr);
+    ComboBox(const Params& params, ContextAccessor* accessor, Reflection model, QWidget* parent = nullptr);
 
 private:
     void CurrentIndexChanged(int newCurrentItem);

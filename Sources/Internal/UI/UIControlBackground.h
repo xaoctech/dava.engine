@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_UI_CONTROL_BACKGROUND_H__
-#define __DAVAENGINE_UI_CONTROL_BACKGROUND_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
@@ -16,6 +15,7 @@ class UIGeometricData;
 struct TiledDrawData;
 struct StretchDrawData;
 struct TiledMultilayerData;
+struct BatchDescriptor2D;
 class NMaterial;
 
 /**
@@ -26,15 +26,18 @@ class NMaterial;
         with the set of requested rules.
      */
 
-class UIControlBackground : public UIBaseComponent<UIComponent::BACKGROUND_COMPONENT>
+class UIControlBackground : public UIComponent
 {
+    DAVA_VIRTUAL_REFLECTION(UIControlBackground, UIComponent);
+    IMPLEMENT_UI_COMPONENT(UIControlBackground);
+
 public:
     /**
      \enum Control draw types.
      */
     enum eDrawType
     {
-        DRAW_ALIGNED = 0, //!<Align sprite inside ronctrol rect.
+        DRAW_ALIGNED = 0, //!<Align sprite inside control rect.
         DRAW_SCALE_TO_RECT, //!<Scale sprite along the all control rect.
         DRAW_SCALE_PROPORTIONAL, //!<Scale sprite to fit both width and height into the control rect but with keeping sprite proportions.
         DRAW_SCALE_PROPORTIONAL_ONE, //!<Scale sprite to fit width or height into control rect but with keeping sprite proportions.
@@ -43,11 +46,12 @@ public:
         DRAW_STRETCH_VERTICAL, //!<Stretch sprite vertically along the control rect.
         DRAW_STRETCH_BOTH, //!<Stretch sprite along the all control rect.
         DRAW_TILED, //!<Fill control with sprite tiles
-        DRAW_TILED_MULTILAYER //!uses for texture - tiled background (withot stretch caps!), stretch mask and contour using same stratch caps, and full back gradient overlay
+        DRAW_TILED_MULTILAYER, //!uses for texture - tiled background (withot stretch caps!), stretch mask and contour using same stratch caps, and full back gradient overlay
+        DRAW_BATCH //<! Draw few specified BatchDescriptor2D.
     };
 
     /**
-     \enum Type of the color inheritnce from the parent control.
+     \enum Type of the color inheritance from the parent control.
      */
     enum eColorInheritType
     {
@@ -72,45 +76,9 @@ public:
     /**
      \brief Constructor.
      */
-    struct UIMargins
-    {
-        UIMargins()
-            :
-            top(0.0f)
-            , right(0.0f)
-            , bottom(0.0f)
-            , left(0.0f)
-        {
-        }
-
-        UIMargins(const Vector4& value)
-        {
-            left = value.x;
-            top = value.y;
-            right = value.z;
-            bottom = value.w;
-        }
-
-        inline bool operator==(const UIMargins& value) const;
-        inline bool operator!=(const UIMargins& value) const;
-        inline bool empty() const;
-
-        inline Vector4 AsVector4() const;
-
-        float32 top;
-        float32 right;
-        float32 bottom;
-        float32 left;
-    };
-
-    /**
-     \brief Constructor.
-     */
     UIControlBackground();
 
     UIControlBackground(const UIControlBackground& src);
-
-    virtual bool IsEqualTo(const UIControlBackground* back) const;
 
     /**
      \brief Returns Sprite used for draw.
@@ -251,7 +219,7 @@ public:
     virtual void Draw(const UIGeometricData& geometricData);
 
     /**
-     \brief Creates the absoulutely identic copy of the background.
+     \brief Creates the absolutely identical copy of the background.
      \returns UIControlBackground copy
      */
     UIControlBackground* Clone() const override;
@@ -280,19 +248,14 @@ public:
     // WTF? Probably we should move it to protected to avoid problems in future?
     Color color; //!<Control color. By default is Color(1,1,1,1).
 
-    /**
-     \brief Sets the margins for drawing background. Positive values means inner
-     offset, negative ones - outer.
-     */
-    void SetMargins(const UIMargins* uiMargins);
-
-    /**
-     \brief Returns the margins for drawing background. Can be NULL.
-     */
-    inline const UIMargins* GetMargins() const;
-
     void SetMaterial(NMaterial* material);
     NMaterial* GetMaterial() const;
+
+    void SetRenderBatches(const Vector<BatchDescriptor2D>& batches);
+    void AppendRenderBatches(const Vector<BatchDescriptor2D>& batches);
+    void AddRenderBatch(const BatchDescriptor2D& batch);
+    void ClearBatches();
+    const Vector<BatchDescriptor2D>& GetRenderBatches() const;
 
 protected:
     RefPtr<Sprite> spr;
@@ -319,8 +282,6 @@ private:
     StretchDrawData* stretchData = nullptr;
     TiledMultilayerData* tiledMultulayerData = nullptr;
 
-    UIMargins* margins = nullptr;
-
 public:
     void ReleaseDrawData(); // Delete all spec draw data
 #if defined(LOCALIZATION_DEBUG)
@@ -331,6 +292,7 @@ protected:
     Color drawColor;
 
     NMaterial* material = nullptr;
+    Vector<BatchDescriptor2D> batchDescriptors;
 #if defined(LOCALIZATION_DEBUG)
     Sprite::DrawState lastDrawState;
 #endif
@@ -338,45 +300,23 @@ protected:
 public:
     // for introspection
 
-    int32 GetBgDrawType() const;
-    void SetBgDrawType(int32 type);
     FilePath GetBgSpritePath() const;
-    int32 GetBgColorInherit() const;
-    void SetBgColorInherit(int32 type);
-    int32 GetBgPerPixelAccuracy() const;
-    void SetBgPerPixelAccuracy(int32 type);
-    Vector4 GetMarginsAsVector4() const;
-    void SetMarginsAsVector4(const Vector4& margins);
 
     FilePath GetMaskSpritePath() const;
     void SetMaskSpriteFromPath(const FilePath& path);
+    void SetMaskSprite(Sprite* sprite);
     FilePath GetDetailSpritePath() const;
     void SetDetailSpriteFromPath(const FilePath& path);
+    void SetDetailSprite(Sprite* sprite);
     FilePath GetGradientSpritePath() const;
     void SetGradientSpriteFromPath(const FilePath& path);
+    void SetGradientSprite(Sprite* sprite);
     FilePath GetContourSpritePath() const;
     void SetContourSpriteFromPath(const FilePath& path);
+    void SetContourSprite(Sprite* sprite);
 
-    int32 GetGradientBlendMode() const;
-    void SetGradientBlendMode(int32 mode);
-
-    INTROSPECTION_EXTEND(UIControlBackground, BaseObject,
-                         PROPERTY("drawType", InspDesc("Draw Type", GlobalEnumMap<eDrawType>::Instance()), GetBgDrawType, SetBgDrawType, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("sprite", "Sprite", GetBgSpritePath, SetSprite, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("frame", "Sprite Frame", GetFrame, SetFrame, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("mask", "Mask", GetMaskSpritePath, SetMaskSpriteFromPath, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("detail", "Detail", GetDetailSpritePath, SetDetailSpriteFromPath, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("gradient", "Gradient", GetGradientSpritePath, SetGradientSpriteFromPath, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("contour", "Contour", GetContourSpritePath, SetContourSpriteFromPath, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("spriteModification", InspDesc("Sprite Modification", GlobalEnumMap<eSpriteModification>::Instance(), InspDesc::T_FLAGS), GetModification, SetModification, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("gradientMode", InspDesc("Gradient Mode", GlobalEnumMap<eGradientBlendMode>::Instance()), GetGradientBlendMode, SetGradientBlendMode, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("color", "Color", GetColor, SetColor, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("colorInherit", InspDesc("Color Inherit", GlobalEnumMap<eColorInheritType>::Instance()), GetBgColorInherit, SetBgColorInherit, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("perPixelAccuracy", InspDesc("Per Pixel Accuracy", GlobalEnumMap<ePerPixelAccuracyType>::Instance()), GetBgPerPixelAccuracy, SetBgPerPixelAccuracy, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("align", InspDesc("Align", GlobalEnumMap<eAlign>::Instance(), InspDesc::T_FLAGS), GetAlign, SetAlign, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("leftRightStretchCap", "Left-Right Stretch Cap", GetLeftRightStretchCap, SetLeftRightStretchCap, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("topBottomStretchCap", "Top-Bottom Stretch Cap", GetTopBottomStretchCap, SetTopBottomStretchCap, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("margins", "Margins", GetMarginsAsVector4, SetMarginsAsVector4, I_SAVE | I_VIEW | I_EDIT));
+    eGradientBlendMode GetGradientBlendMode() const;
+    void SetGradientBlendMode(eGradientBlendMode mode);
 };
 
 // Implementation
@@ -388,43 +328,6 @@ inline void UIControlBackground::SetColor(const Color& _color)
 inline const Color& UIControlBackground::GetColor() const
 {
     return color;
-}
-
-inline const UIControlBackground::UIMargins* UIControlBackground::GetMargins() const
-{
-    return margins;
-}
-
-inline bool UIControlBackground::UIMargins::operator==(const UIControlBackground::UIMargins& value) const
-{
-    return FLOAT_EQUAL(left, value.left) && FLOAT_EQUAL(top, value.top) &&
-    FLOAT_EQUAL(right, value.right) && FLOAT_EQUAL(bottom, value.bottom);
-}
-
-inline bool UIControlBackground::UIMargins::operator!=(const UIControlBackground::UIMargins& value) const
-{
-    return !UIControlBackground::UIMargins::operator==(value);
-}
-
-inline bool UIControlBackground::UIMargins::empty() const
-{
-    return FLOAT_EQUAL(left, 0.0f) && FLOAT_EQUAL(top, 0.0f) &&
-    FLOAT_EQUAL(right, 0.0f) && FLOAT_EQUAL(bottom, 0.0f);
-}
-
-inline Vector4 UIControlBackground::UIMargins::AsVector4() const
-{
-    return Vector4(left, top, right, bottom);
-}
-
-inline int32 UIControlBackground::GetBgDrawType() const
-{
-    return GetDrawType();
-}
-
-inline void UIControlBackground::SetBgDrawType(int32 type)
-{ // TODO: FIXME: type
-    SetDrawType(static_cast<UIControlBackground::eDrawType>(type));
 }
 
 inline FilePath UIControlBackground::GetBgSpritePath() const
@@ -443,6 +346,7 @@ inline FilePath UIControlBackground::GetMaskSpritePath() const
         return Sprite::GetPathString(mask.Get());
     return "";
 }
+
 inline void UIControlBackground::SetMaskSpriteFromPath(const FilePath& path)
 {
     if (path != "")
@@ -450,12 +354,19 @@ inline void UIControlBackground::SetMaskSpriteFromPath(const FilePath& path)
     else
         mask.Set(nullptr);
 }
+
+inline void UIControlBackground::SetMaskSprite(Sprite* sprite)
+{
+    mask = sprite;
+}
+
 inline FilePath UIControlBackground::GetDetailSpritePath() const
 {
     if ((detail != nullptr) && (detail->GetRelativePathname().GetType() != FilePath::PATH_IN_MEMORY))
         return Sprite::GetPathString(detail.Get());
     return "";
 }
+
 inline void UIControlBackground::SetDetailSpriteFromPath(const FilePath& path)
 {
     if (path != "")
@@ -463,12 +374,19 @@ inline void UIControlBackground::SetDetailSpriteFromPath(const FilePath& path)
     else
         detail.Set(nullptr);
 }
+
+inline void UIControlBackground::SetDetailSprite(Sprite* sprite)
+{
+    detail = sprite;
+}
+
 inline FilePath UIControlBackground::GetGradientSpritePath() const
 {
     if ((gradient != nullptr) && (gradient->GetRelativePathname().GetType() != FilePath::PATH_IN_MEMORY))
         return Sprite::GetPathString(gradient.Get());
     return "";
 }
+
 inline void UIControlBackground::SetGradientSpriteFromPath(const FilePath& path)
 {
     if (path != "")
@@ -476,12 +394,19 @@ inline void UIControlBackground::SetGradientSpriteFromPath(const FilePath& path)
     else
         gradient.Set(nullptr);
 }
+
+inline void UIControlBackground::SetGradientSprite(Sprite* sprite)
+{
+    gradient = sprite;
+}
+
 inline FilePath UIControlBackground::GetContourSpritePath() const
 {
     if ((contour != nullptr) && (contour->GetRelativePathname().GetType() != FilePath::PATH_IN_MEMORY))
         return Sprite::GetPathString(contour.Get());
     return "";
 }
+
 inline void UIControlBackground::SetContourSpriteFromPath(const FilePath& path)
 {
     if (path != "")
@@ -490,34 +415,18 @@ inline void UIControlBackground::SetContourSpriteFromPath(const FilePath& path)
         contour.Set(nullptr);
 }
 
-inline int32 UIControlBackground::GetGradientBlendMode() const
+inline void UIControlBackground::SetContourSprite(Sprite* sprite)
 {
-    return static_cast<int32>(gradientMode);
-}
-inline void UIControlBackground::SetGradientBlendMode(int32 mode)
-{
-    gradientMode = eGradientBlendMode(mode);
+    contour = sprite;
 }
 
-inline int32 UIControlBackground::GetBgColorInherit() const
+inline eGradientBlendMode UIControlBackground::GetGradientBlendMode() const
 {
-    return GetColorInheritType();
+    return gradientMode;
 }
 
-inline void UIControlBackground::SetBgColorInherit(int32 type)
+inline void UIControlBackground::SetGradientBlendMode(eGradientBlendMode mode)
 {
-    SetColorInheritType(static_cast<UIControlBackground::eColorInheritType>(type));
-}
-
-inline int32 UIControlBackground::GetBgPerPixelAccuracy() const
-{
-    return GetPerPixelAccuracyType();
-}
-
-inline void UIControlBackground::SetBgPerPixelAccuracy(int32 type)
-{
-    SetPerPixelAccuracyType(static_cast<UIControlBackground::ePerPixelAccuracyType>(type));
+    gradientMode = mode;
 }
 };
-
-#endif

@@ -1,4 +1,3 @@
-
 #include "TArc/Controls/ComboBox.h"
 #include "TArc/Utils/ScopedValueGuard.h"
 #include "TArc/DataProcessing/AnyQMetaType.h"
@@ -14,14 +13,14 @@ namespace DAVA
 {
 namespace TArc
 {
-ComboBox::ComboBox(const ControlDescriptorBuilder<Fields>& fields, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent)
-    : ControlProxy<QComboBox>(ControlDescriptor(fields), wrappersProcessor, model, parent)
+ComboBox::ComboBox(const Params& params, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent)
+    : ControlProxyImpl<QComboBox>(params, ControlDescriptor(params.fields), wrappersProcessor, model, parent)
 {
     SetupControl();
 }
 
-ComboBox::ComboBox(const ControlDescriptorBuilder<Fields>& fields, ContextAccessor* accessor, Reflection model, QWidget* parent)
-    : ControlProxy<QComboBox>(ControlDescriptor(fields), accessor, model, parent)
+ComboBox::ComboBox(const Params& params, ContextAccessor* accessor, Reflection model, QWidget* parent)
+    : ControlProxyImpl<QComboBox>(params, ControlDescriptor(params.fields), accessor, model, parent)
 {
     SetupControl();
 }
@@ -29,6 +28,7 @@ ComboBox::ComboBox(const ControlDescriptorBuilder<Fields>& fields, ContextAccess
 void ComboBox::SetupControl()
 {
     connections.AddConnection(this, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), MakeFunction(this, &ComboBox::CurrentIndexChanged));
+    setSizeAdjustPolicy(QComboBox::AdjustToContents);
 }
 
 void ComboBox::UpdateControl(const ControlDescriptor& changedFields)
@@ -59,8 +59,6 @@ void ComboBox::UpdateControl(const ControlDescriptor& changedFields)
     {
         CreateItems(fieldValue, fieldEnumerator);
     }
-
-    DVASSERT(count() != 0);
 
     int currentIndex = SelectCurrentItem(fieldValue, fieldEnumerator);
     setCurrentIndex(currentIndex);
@@ -124,6 +122,11 @@ int ComboBox::SelectCurrentItem(const Reflection& fieldValue, const Reflection& 
         {
             Any iAny = itemData(i).value<Any>();
             if (value == iAny)
+            {
+                return i;
+            }
+            else if (iAny.CanCast<int>() && value.CanCast<int>() &&
+                     iAny.Cast<int>() == value.Cast<int>())
             {
                 return i;
             }

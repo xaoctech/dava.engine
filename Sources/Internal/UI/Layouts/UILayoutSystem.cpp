@@ -1,30 +1,132 @@
 #include "UILayoutSystem.h"
 
-#include "UILinearLayoutComponent.h"
-#include "UIFlowLayoutComponent.h"
-#include "UIAnchorComponent.h"
-#include "UISizePolicyComponent.h"
-
-#include "SizeMeasuringAlgorithm.h"
-#include "LinearLayoutAlgorithm.h"
-#include "FlowLayoutAlgorithm.h"
-#include "AnchorLayoutAlgorithm.h"
-
-#include "UI/UIControl.h"
-#include "UI/Styles/UIStyleSheetPropertyDataBase.h"
-
 #include "Concurrency/Thread.h"
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
+#include "Entity/Component.h"
+#include "UI/Layouts/Private/Layouter.h"
+#include "UI/Layouts/UIAnchorComponent.h"
+#include "UI/Layouts/UIFlowLayoutComponent.h"
+#include "UI/Layouts/UISizePolicyComponent.h"
+#include "UI/Layouts/UILayoutSourceRectComponent.h"
+#include "UI/Layouts/UILayoutIsolationComponent.h"
+#include "UI/Layouts/UILinearLayoutComponent.h"
+#include "UI/Layouts/LayoutFormula.h"
+#include "UI/Layouts/UILayoutSystemListener.h"
+#include "UI/UIControl.h"
+#include "UI/UIScreen.h"
+#include "UI/UIScreenTransition.h"
 
 namespace DAVA
 {
 UILayoutSystem::UILayoutSystem()
+    : sharedLayouter(std::make_unique<Layouter>())
 {
+    sharedLayouter->SetRtl(isRtl);
+    sharedLayouter->onFormulaProcessed = [this](UIControl* control, Vector2::eAxis axis, const LayoutFormula* formula)
+    {
+        for (UILayoutSystemListener* listener : listeners)
+        {
+            listener->OnFormulaProcessed(control, axis, formula);
+        }
+    };
+
+    sharedLayouter->onFormulaRemoved = [this](UIControl* control, Vector2::eAxis axis, const LayoutFormula* formula)
+    {
+        for (UILayoutSystemListener* listener : listeners)
+        {
+            listener->OnFormulaRemoved(control, axis, formula);
+        }
+    };
 }
 
 UILayoutSystem::~UILayoutSystem()
 {
+    DVASSERT(listeners.empty());
+}
+
+void UILayoutSystem::Process(float32 elapsedTime)
+{
+    DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::UI_LAYOUT_SYSTEM);
+
+    DVASSERT(Thread::IsMainThread());
+
+    if (!IsAutoupdatesEnabled())
+        return;
+
+    CheckDirty();
+
+    if (!needUpdate)
+        return;
+
+    if (currentScreen.Valid())
+    {
+        ProcessControlHierarhy(currentScreen.Get());
+    }
+
+    if (popupContainer.Valid())
+    {
+        ProcessControlHierarhy(popupContainer.Get());
+    }
+}
+
+void UILayoutSystem::UnregisterControl(UIControl* control)
+{
+    UISizePolicyComponent* sizePolicyComponent = control->GetComponent<UISizePolicyComponent>();
+    if (sizePolicyComponent != nullptr)
+    {
+        for (int32 axis = Vector2::AXIS_X; axis < Vector2::AXIS_COUNT; axis++)
+        {
+            LayoutFormula* formula = sizePolicyComponent->GetFormula(axis);
+            if (formula != nullptr)
+            {
+                formula->MarkChanges();
+                for (UILayoutSystemListener* listener : listeners)
+                {
+                    listener->OnFormulaRemoved(control, static_cast<Vector2::eAxis>(axis), formula);
+                }
+            }
+        }
+    }
+}
+
+void UILayoutSystem::UnregisterComponent(UIControl* control, UIComponent* component)
+{
+    UISizePolicyComponent* sizePolicyComponent = CastIfEqual<UISizePolicyComponent*>(component);
+    if (sizePolicyComponent != nullptr)
+    {
+        for (int32 axis = Vector2::AXIS_X; axis < Vector2::AXIS_COUNT; axis++)
+        {
+            LayoutFormula* formula = sizePolicyComponent->GetFormula(axis);
+            if (formula != nullptr)
+            {
+                for (UILayoutSystemListener* listener : listeners)
+                {
+                    listener->OnFormulaRemoved(control, static_cast<Vector2::eAxis>(axis), formula);
+                }
+            }
+        }
+    }
+}
+
+void UILayoutSystem::ForceProcessControl(float32 elapsedTime, UIControl* control)
+{
+    DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::UI_LAYOUT_SYSTEM);
+
+    if (!needUpdate && !dirty)
+        return;
+
+    ProcessControlHierarhy(control);
+}
+
+void UILayoutSystem::SetCurrentScreen(const RefPtr<UIScreen>& screen)
+{
+    currentScreen = screen;
+}
+
+void UILayoutSystem::SetPopupContainer(const RefPtr<UIControl>& _popupContainer)
+{
+    popupContainer = _popupContainer;
 }
 
 bool UILayoutSystem::IsRtl() const
@@ -35,33 +137,45 @@ bool UILayoutSystem::IsRtl() const
 void UILayoutSystem::SetRtl(bool rtl)
 {
     isRtl = rtl;
+    sharedLayouter->SetRtl(isRtl);
 }
 
 void UILayoutSystem::ProcessControl(UIControl* control)
 {
-    if (!IsAutoupdatesEnabled())
-        return;
-
-    bool dirty = control->IsLayoutDirty();
+    bool layoutDirty = control->IsLayoutDirty();
     bool orderDirty = control->IsLayoutOrderDirty();
     bool positionDirty = control->IsLayoutPositionDirty();
     control->ResetLayoutDirty();
 
-    if (dirty || (orderDirty && HaveToLayoutAfterReorder(control)))
+    if (layoutDirty || (orderDirty && HaveToLayoutAfterReorder(control)) || (positionDirty && control->GetParent() && control->GetParent()->GetComponent(Type::Instance<UILayoutSourceRectComponent>())))
     {
         UIControl* container = FindNotDependentOnChildrenControl(control);
-        ApplyLayout(container);
+        sharedLayouter->ApplyLayout(container);
+
+        for (UILayoutSystemListener* listener : listeners)
+        {
+            listener->OnControlLayouted(container);
+        }
     }
     else if (positionDirty && HaveToLayoutAfterReposition(control))
     {
         UIControl* container = control->GetParent();
-        ApplyLayoutNonRecursive(container);
+        sharedLayouter->ApplyLayoutNonRecursive(container);
+
+        for (UILayoutSystemListener* listener : listeners)
+        {
+            listener->OnControlLayouted(container);
+        }
     }
 }
 
 void UILayoutSystem::ManualApplyLayout(UIControl* control)
 {
-    ApplyLayout(control);
+    DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::UI_LAYOUT_SYSTEM);
+
+    Layouter localLayouter;
+    localLayouter.SetRtl(isRtl);
+    localLayouter.ApplyLayout(control);
 }
 
 bool UILayoutSystem::IsAutoupdatesEnabled() const
@@ -74,45 +188,40 @@ void UILayoutSystem::SetAutoupdatesEnabled(bool enabled)
     autoupdatesEnabled = enabled;
 }
 
-void UILayoutSystem::ApplyLayout(UIControl* control)
+void UILayoutSystem::AddListener(UILayoutSystemListener* listener)
 {
-    DVASSERT(Thread::IsMainThread() || autoupdatesEnabled == false);
-
-    CollectControls(control, true);
-
-    DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::UI_LAYOUTING);
-
-    ProcessAxis(Vector2::AXIS_X);
-    ProcessAxis(Vector2::AXIS_Y);
-
-    ApplySizesAndPositions();
-
-    layoutData.clear();
+    auto it = std::find(listeners.begin(), listeners.end(), listener);
+    if (it == listeners.end())
+    {
+        listeners.push_back(listener);
+    }
+    else
+    {
+        DVASSERT(false);
+    }
 }
 
-void UILayoutSystem::ApplyLayoutNonRecursive(UIControl* control)
+void UILayoutSystem::RemoveListener(UILayoutSystemListener* listener)
 {
-    DVASSERT(Thread::IsMainThread() || autoupdatesEnabled == false);
-
-    CollectControls(control, false);
-
-    DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::UI_LAYOUTING);
-
-    ProcessAxis(Vector2::AXIS_X);
-    ProcessAxis(Vector2::AXIS_Y);
-
-    ApplyPositions();
-
-    layoutData.clear();
+    auto it = std::find(listeners.begin(), listeners.end(), listener);
+    if (it != listeners.end())
+    {
+        listeners.erase(it);
+    }
+    else
+    {
+        DVASSERT(false);
+    }
 }
 
 UIControl* UILayoutSystem::FindNotDependentOnChildrenControl(UIControl* control) const
 {
     UIControl* result = control;
-    while (result->GetParent() != nullptr)
+    while (result->GetParent() != nullptr && result->GetComponentCount<UILayoutIsolationComponent>() == 0)
     {
         UISizePolicyComponent* sizePolicy = result->GetParent()->GetComponent<UISizePolicyComponent>();
-        if (sizePolicy != nullptr && (sizePolicy->IsDependsOnChildren(Vector2::AXIS_X) || sizePolicy->IsDependsOnChildren(Vector2::AXIS_Y)))
+        if ((sizePolicy != nullptr && (sizePolicy->IsDependsOnChildren(Vector2::AXIS_X) || sizePolicy->IsDependsOnChildren(Vector2::AXIS_Y))) ||
+            result->GetParent()->GetComponent(Type::Instance<UILayoutSourceRectComponent>()) != nullptr)
         {
             result = result->GetParent();
         }
@@ -122,7 +231,7 @@ UIControl* UILayoutSystem::FindNotDependentOnChildrenControl(UIControl* control)
         }
     }
 
-    if (result->GetParent())
+    if (result->GetParent() != nullptr && result->GetComponentCount<UILayoutIsolationComponent>() == 0)
     {
         result = result->GetParent();
     }
@@ -132,8 +241,7 @@ UIControl* UILayoutSystem::FindNotDependentOnChildrenControl(UIControl* control)
 
 bool UILayoutSystem::HaveToLayoutAfterReorder(const UIControl* control) const
 {
-    static const uint64 sensitiveComponents = UIComponent::LINEAR_LAYOUT_COMPONENT | UIComponent::FLOW_LAYOUT_COMPONENT;
-    if ((control->GetAvailableComponentFlags() & sensitiveComponents) != 0)
+    if (control->GetComponentCount<UILinearLayoutComponent>() || control->GetComponentCount<UIFlowLayoutComponent>())
     {
         return true;
     }
@@ -155,13 +263,12 @@ bool UILayoutSystem::HaveToLayoutAfterReposition(const UIControl* control) const
         return false;
     }
 
-    if ((control->GetAvailableComponentFlags() & UIComponent::ANCHOR_COMPONENT) != 0)
+    if (control->GetComponentCount<UIAnchorComponent>())
     {
         return true;
     }
 
-    static const uint64 parentComponents = UIComponent::LINEAR_LAYOUT_COMPONENT | UIComponent::FLOW_LAYOUT_COMPONENT;
-    if ((parent->GetAvailableComponentFlags() & parentComponents) != 0)
+    if (parent->GetComponentCount<UILinearLayoutComponent>() || parent->GetComponentCount<UIFlowLayoutComponent>())
     {
         return true;
     }
@@ -169,104 +276,26 @@ bool UILayoutSystem::HaveToLayoutAfterReposition(const UIControl* control) const
     return false;
 }
 
-void UILayoutSystem::CollectControls(UIControl* control, bool recursive)
+void UILayoutSystem::ProcessControlHierarhy(UIControl* control)
 {
-    layoutData.clear();
-    layoutData.emplace_back(ControlLayoutData(control));
-    CollectControlChildren(control, 0, recursive);
-}
+    ProcessControl(control);
 
-void UILayoutSystem::CollectControlChildren(UIControl* control, int32 parentIndex, bool recursive)
-{
-    int32 index = static_cast<int32>(layoutData.size());
+    // TODO: For now game has many places where changes in layouts can
+    // change hierarchy of controls. In future client want fix this places,
+    // after that this code should be replaced by simple for-each.
     const List<UIControl*>& children = control->GetChildren();
-
-    layoutData[parentIndex].SetFirstChildIndex(index);
-    layoutData[parentIndex].SetLastChildIndex(index + static_cast<int32>(children.size() - 1));
-
-    for (UIControl* child : children)
+    auto it = children.begin();
+    auto endIt = children.end();
+    while (it != endIt)
     {
-        layoutData.emplace_back(ControlLayoutData(child));
-    }
-
-    if (recursive)
-    {
-        for (UIControl* child : children)
+        control->isIteratorCorrupted = false;
+        ProcessControlHierarhy(*it);
+        if (control->isIteratorCorrupted)
         {
-            CollectControlChildren(child, index, recursive);
-            index++;
+            it = children.begin();
+            continue;
         }
-    }
-}
-
-void UILayoutSystem::ProcessAxis(Vector2::eAxis axis)
-{
-    DoMeasurePhase(axis);
-    DoLayoutPhase(axis);
-}
-
-void UILayoutSystem::DoMeasurePhase(Vector2::eAxis axis)
-{
-    int32 lastIndex = static_cast<int32>(layoutData.size() - 1);
-    for (int32 index = lastIndex; index >= 0; index--)
-    {
-        SizeMeasuringAlgorithm(layoutData).Apply(layoutData[index], axis);
-    }
-}
-
-void UILayoutSystem::DoLayoutPhase(Vector2::eAxis axis)
-{
-    for (auto it = layoutData.begin(); it != layoutData.end(); ++it)
-    {
-        UIFlowLayoutComponent* flowLayoutComponent = it->GetControl()->GetComponent<UIFlowLayoutComponent>();
-        if (flowLayoutComponent && flowLayoutComponent->IsEnabled())
-        {
-            FlowLayoutAlgorithm(layoutData, isRtl).Apply(*it, axis);
-        }
-        else
-        {
-            UILinearLayoutComponent* linearLayoutComponent = it->GetControl()->GetComponent<UILinearLayoutComponent>();
-            if (linearLayoutComponent != nullptr && linearLayoutComponent->IsEnabled() && linearLayoutComponent->GetAxis() == axis)
-            {
-                LinearLayoutAlgorithm alg(layoutData, isRtl);
-
-                bool inverse = linearLayoutComponent->IsInverse();
-                if (isRtl && linearLayoutComponent->IsUseRtl() && linearLayoutComponent->GetAxis() == Vector2::AXIS_X)
-                {
-                    inverse = !inverse;
-                }
-                alg.SetInverse(inverse);
-                alg.SetSkipInvisible(linearLayoutComponent->IsSkipInvisibleControls());
-
-                alg.SetPadding(linearLayoutComponent->GetPadding());
-                alg.SetSpacing(linearLayoutComponent->GetSpacing());
-
-                alg.SetDynamicPadding(linearLayoutComponent->IsDynamicPadding());
-                alg.SetDynamicSpacing(linearLayoutComponent->IsDynamicSpacing());
-
-                alg.Apply(*it, axis);
-            }
-            else
-            {
-                AnchorLayoutAlgorithm(layoutData, isRtl).Apply(*it, axis, false);
-            }
-        }
-    }
-}
-
-void UILayoutSystem::ApplySizesAndPositions()
-{
-    for (ControlLayoutData& data : layoutData)
-    {
-        data.ApplyLayoutToControl();
-    }
-}
-
-void UILayoutSystem::ApplyPositions()
-{
-    for (ControlLayoutData& data : layoutData)
-    {
-        data.ApplyOnlyPositionLayoutToControl();
+        ++it;
     }
 }
 }

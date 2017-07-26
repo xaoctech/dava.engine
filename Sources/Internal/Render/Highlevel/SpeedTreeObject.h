@@ -1,8 +1,8 @@
-#ifndef __DAVAENGINE_SPEEDTREE_OBJECT_H__
-#define __DAVAENGINE_SPEEDTREE_OBJECT_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
+#include "Reflection/Reflection.h"
 #include "Render/Highlevel/Mesh.h"
 
 namespace DAVA
@@ -21,9 +21,8 @@ public:
     void Save(KeyedArchive* archive, SerializationContext* serializationContext) override;
     void Load(KeyedArchive* archive, SerializationContext* serializationContext) override;
 
-    static bool IsTreeLeafBatch(RenderBatch* batch);
-
     void BindDynamicParameters(Camera* camera) override;
+    void PrepareToRender(Camera* camera) override;
 
     void SetSphericalHarmonics(const DAVA::Array<float32, HARMONICS_BUFFER_CAPACITY>& coeffs);
     const DAVA::Array<float32, HARMONICS_BUFFER_CAPACITY>& GetSphericalHarmonics() const;
@@ -32,13 +31,21 @@ public:
     void SetLightSmoothing(const float32& smooth);
     const float32& GetLightSmoothing() const;
 
+    static PolygonGroup* CreateSortedPolygonGroup(PolygonGroup* pg);
+
 protected:
     static const FastName FLAG_WIND_ANIMATION;
+    static const uint32 SORTING_DIRECTION_COUNT = 8;
+
+    static Vector3 GetSortingDirection(uint32 directionIndex);
+    static uint32 SelectDirectionIndex(const Vector3& direction);
 
     AABBox3 CalcBBoxForSpeedTreeGeometry(RenderBatch* rb);
 
     void SetTreeAnimationParams(const Vector2& trunkOscillationParams, const Vector2& leafOscillationParams);
     void UpdateAnimationFlag(int32 maxAnimatedLod);
+
+    void SetInvWorldTransformPtr(const Matrix4* invWT);
 
     Vector2 trunkOscillation;
     Vector2 leafOscillation;
@@ -46,13 +53,20 @@ protected:
     DAVA::Array<float32, HARMONICS_BUFFER_CAPACITY> sphericalHarmonics;
     float32 lightSmoothing;
 
+    const Matrix4* invWorldTransform = nullptr;
+
 public:
     INTROSPECTION_EXTEND(SpeedTreeObject, RenderObject,
                          PROPERTY("lightSmoothing", "Light Smoothing", GetLightSmoothing, SetLightSmoothing, I_SAVE | I_EDIT | I_VIEW)
                          );
 
+    DAVA_VIRTUAL_REFLECTION(SpeedTreeObject, RenderObject);
+
     friend class SpeedTreeUpdateSystem;
 };
-};
 
-#endif // __DAVAENGINE_SPEEDTREE_OBJECT_H__
+inline void SpeedTreeObject::SetInvWorldTransformPtr(const Matrix4* invWT)
+{
+    invWorldTransform = invWT;
+}
+}

@@ -11,17 +11,32 @@ set          ( WARNINGS_AS_ERRORS true )
 set          ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/../../Sources/CMake/Modules/" )
 include      ( CMake-common  )
 
-# Now testbed is core v2 only
-set (DAVA_COREV2 1)
-dava_add_definitions(-D__DAVAENGINE_COREV2__)
+if (LINUX)
+    dava_add_definitions(-DDISABLE_NATIVE_MOVIEVIEW)
+    dava_add_definitions(-DDISABLE_NATIVE_TEXTFIELD)
+    dava_add_definitions(-DDISABLE_NATIVE_WEBVIEW)
+endif()
 
 # Uncomment to use local resources for android
 # dava_add_definitions(-DUSE_LOCAL_RESOURCES)
 
-set ( DAVA_COMPONENTS "ALL" "SampleModule" "DAVA_DISABLE_AUTOTESTS" )
+set ( DAVA_COMPONENTS "SampleModule" "DAVA_DISABLE_AUTOTESTS" )
+if (NOT LINUX)
+    list ( APPEND DAVA_COMPONENTS "Sound" "SpineModule" )
+endif()
 if ( WIN32 AND NOT WIN_UAP AND NOT DAVA_PLATFORM_QT)
     list ( APPEND DAVA_COMPONENTS "CEFWebview" )
 endif ()
+
+# add physics
+if(ANDROID AND ANDROID_ABI STREQUAL "x86" )
+    # we don't have physx for android x86, so skip this
+elseif (WINDOWS_UAP AND WINDOWS_UAP_PLATFORMS MATCHES "ARM")
+    # we don't have physx for win uap arm, so skip this
+else()
+    list ( APPEND DAVA_COMPONENTS "Physics" )
+    list ( APPEND DAVA_COMPONENTS "PhysicsDebug" )
+endif()
 
 if (DAVA_PLATFORM_QT)
     list(APPEND DAVA_COMPONENTS DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME )
@@ -38,12 +53,14 @@ endif()
 dava_add_definitions(-DLOCALIZATION_DEBUG)
 
 
-if( MACOS OR WIN32 )
-    add_plugin( SamplePlugin "${DAVA_MODULES_DIR}/SamplePlugin" COMPONENTS  ${DAVA_COMPONENTS} )
+if( NOT WINDOWS_UAP AND ( MACOS OR WIN32 ) )
+    #add_plugin( SamplePlugin "${DAVA_MODULES_DIR}/SamplePlugin" COMPONENTS  ${DAVA_COMPONENTS} )
 endif()
 
 
 find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS} )
+find_package( EmbeddedWebServer REQUIRED )
+
 
 include_directories   ( "Classes" )
 include_directories   ( "Classes/Infrastructure" )
@@ -63,7 +80,8 @@ file ( GLOB_RECURSE XIB_LIST "${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_SPECIFIC_FOLD
 
 define_source ( SOURCE    "Classes" )
 
-set( APP_DATA                   ${CMAKE_CURRENT_LIST_DIR}/Data )
+set( MIX_APP_DATA                 "Data = ${DAVA_ROOT_DIR}/Programs/Data" 
+                                  "Data = ${CMAKE_CURRENT_LIST_DIR}/Data" )
 
 if (MACOS OR WIN32)
     set( APP_DATA  ${APP_DATA} "scripts")

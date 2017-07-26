@@ -45,7 +45,9 @@ FastName optionsNames[RenderOptions::OPTIONS_COUNT] =
   FastName("Line Break Errors"),
 #endif
   FastName("Draw Nondef Glyph"),
-  FastName("Highlight Hard Controls")
+  FastName("Highlight Hard Controls"),
+  FastName("Debug Draw Rich Items"),
+  FastName("Debug Draw Particles")
 };
 
 RenderOptions::RenderOptions()
@@ -66,8 +68,11 @@ RenderOptions::RenderOptions()
 #endif
     options[DRAW_NONDEF_GLYPH] = false;
     options[HIGHLIGHT_HARD_CONTROLS] = false;
+    options[DEBUG_DRAW_RICH_ITEMS] = false;
 
     options[PREVIEW_METAL_ON_GL] = false;
+
+    options[DEBUG_DRAW_PARTICLES] = false;
 }
 
 bool RenderOptions::IsOptionEnabled(RenderOption option)

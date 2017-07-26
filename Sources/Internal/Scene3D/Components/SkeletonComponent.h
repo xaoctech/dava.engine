@@ -1,7 +1,8 @@
 #ifndef __DAVAENGINE_SKELETON_COMPONENT_H__
-#define __DAVAENGINE_SKELETON_COMPONENT_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
+#include "Reflection/Reflection.h"
 #include "Entity/Component.h"
 #include "Debug/DVAssert.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
@@ -46,6 +47,8 @@ public:
         float32 scale;
         AABBox3 bbox;
 
+        bool operator==(const JointConfig& other) const;
+
         INTROSPECTION(JointConfig,
                       MEMBER(name, "Name", I_SAVE | I_VIEW | I_EDIT)
                       MEMBER(position, "Position", I_SAVE | I_VIEW | I_EDIT)
@@ -53,6 +56,8 @@ public:
                       MEMBER(scale, "Scale", I_SAVE | I_VIEW | I_EDIT)
                       MEMBER(bbox, "Bounding box", I_SAVE | I_VIEW | I_EDIT)
                       );
+
+        DAVA_VIRTUAL_REFLECTION(JointConfig, InspBase);
     };
 
     void RebuildFromConfig();
@@ -66,6 +71,9 @@ public:
     inline void SetJointPosition(uint16 jointId, const Vector3& position);
     inline void SetJointOrientation(uint16 jointId, const Quaternion& orientation);
     inline void SetJointScale(uint16 jointId, float32 scale);
+
+    const FastName& GetJointName(uint16 jointId) const;
+    const JointTransform& GetObjectSpaceTransform(uint16 jointId) const;
 
     inline uint16 GetJointId(const FastName& name) const;
 
@@ -109,6 +117,8 @@ public:
     INTROSPECTION_EXTEND(SkeletonComponent, Component,
                          COLLECTION(configJoints, "Root Joints", I_SAVE | I_VIEW | I_EDIT)
                          );
+
+    DAVA_VIRTUAL_REFLECTION(SkeletonComponent, Component);
 };
 
 inline void SkeletonComponent::SetJointPosition(uint16 jointId, const Vector3& position)
@@ -171,6 +181,10 @@ inline SkeletonComponent::JointTransform SkeletonComponent::JointTransform::GetI
 
     return res;
 }
+
+template <>
+bool AnyCompare<SkeletonComponent::JointConfig>::IsEqual(const Any& v1, const Any& v2);
+extern template struct AnyCompare<SkeletonComponent::JointConfig>;
 
 } //ns
 

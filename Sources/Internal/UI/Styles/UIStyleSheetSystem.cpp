@@ -7,6 +7,11 @@
 #include "Animation/LinearPropertyAnimation.h"
 #include "Animation/AnimationManager.h"
 #include "Logger/Logger.h"
+#include "Render/Renderer.h"
+#include "UI/UIScreen.h"
+#include "UI/UIScreenTransition.h"
+#include "Debug/ProfilerCPU.h"
+#include "Debug/ProfilerMarkerNames.h"
 
 namespace DAVA
 {
@@ -17,20 +22,20 @@ const int32 PROPERTY_ANIMATION_GROUP_OFFSET = 100000;
 
 struct ImmediatePropertySetter
 {
-    void operator()(UIControl* control, void* targetObject, const InspMember* targetIntrospectionMember) const
+    void operator()(UIControl* control, const Reflection& ref) const
     {
         control->StopAnimations(PROPERTY_ANIMATION_GROUP_OFFSET + propertyIndex);
-        targetIntrospectionMember->SetValue(targetObject, value);
+        ref.SetValueWithCast(value);
     }
 
     uint32 propertyIndex;
-    const VariantType& value;
+    const Any& value;
 };
 
 struct AnimatedPropertySetter
 {
     template <typename T>
-    void Animate(UIControl* control, void* targetObject, const InspMember* targetIntrospectionMember, const T& startValue, const T& endValue) const
+    void Animate(UIControl* control, const Reflection& ref, const T& startValue, const T& endValue) const
     {
         const int32 track = PROPERTY_ANIMATION_GROUP_OFFSET + propertyIndex;
         LinearPropertyAnimation<T>* currentAnimation = DynamicTypeCheck<LinearPropertyAnimation<T>*>(AnimationManager::Instance()->FindPlayingAnimation(control, track));
@@ -40,39 +45,52 @@ struct AnimatedPropertySetter
             if (currentAnimation)
                 control->StopAnimations(track);
 
-            if (targetIntrospectionMember->Value(targetObject) != value)
+            if (ref.GetValue() != value)
             {
-                (new LinearPropertyAnimation<T>(control, targetObject, targetIntrospectionMember, startValue, endValue, time, transitionFunction))->Start(track);
+                (new LinearPropertyAnimation<T>(control, ref, startValue, endValue, time, transitionFunction))->Start(track);
             }
         }
     }
 
-    void operator()(UIControl* control, void* targetObject, const InspMember* targetIntrospectionMember) const
+    void operator()(UIControl* control, const Reflection& ref) const
     {
-        switch (value.GetType())
+        const Any& refValue = ref.GetValue();
+        const Type* valueType = value.GetType()->Decay();
+        if (valueType == refValue.GetType()->Decay())
         {
-        case VariantType::TYPE_VECTOR2:
-            Animate<Vector2>(control, targetObject, targetIntrospectionMember, targetIntrospectionMember->Value(targetObject).AsVector2(), value.AsVector2());
-            break;
-        case VariantType::TYPE_VECTOR3:
-            Animate<Vector3>(control, targetObject, targetIntrospectionMember, targetIntrospectionMember->Value(targetObject).AsVector3(), value.AsVector3());
-            break;
-        case VariantType::TYPE_VECTOR4:
-            Animate<Vector4>(control, targetObject, targetIntrospectionMember, targetIntrospectionMember->Value(targetObject).AsVector4(), value.AsVector4());
-            break;
-        case VariantType::TYPE_FLOAT:
-            Animate<float32>(control, targetObject, targetIntrospectionMember, targetIntrospectionMember->Value(targetObject).AsFloat(), value.AsFloat());
-            break;
-        case VariantType::TYPE_COLOR:
-            Animate<Color>(control, targetObject, targetIntrospectionMember, targetIntrospectionMember->Value(targetObject).AsColor(), value.AsColor());
-            break;
-        default:
-            DVASSERT(false, "Non-animatable property");
+            if (valueType == Type::Instance<Vector2>())
+            {
+                Animate<Vector2>(control, ref, refValue.Get<Vector2>(), value.Get<Vector2>());
+            }
+            else if (valueType == Type::Instance<Vector3>())
+            {
+                Animate<Vector3>(control, ref, refValue.Get<Vector3>(), value.Get<Vector3>());
+            }
+            else if (valueType == Type::Instance<Vector4>())
+            {
+                Animate<Vector4>(control, ref, refValue.Get<Vector4>(), value.Get<Vector4>());
+            }
+            else if (valueType == Type::Instance<float32>())
+            {
+                Animate<float32>(control, ref, refValue.Get<float32>(), value.Get<float32>());
+            }
+            else if (valueType == Type::Instance<Color>())
+            {
+                Animate<Color>(control, ref, refValue.Get<Color>(), value.Get<Color>());
+            }
+            else
+            {
+                DVASSERT(false, "Non-animatable property");
+            }
+        }
+        else
+        {
+            DVASSERT(false, "Different types");
         }
     }
 
     uint32 propertyIndex;
-    const VariantType& value;
+    const Any& value;
     Interpolation::FuncType transitionFunction;
     float32 time;
 };
@@ -85,12 +103,56 @@ UIStyleSheetSystem::~UIStyleSheetSystem()
 {
 }
 
+void UIStyleSheetSystem::Process(float32 elapsedTime)
+{
+    DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::UI_STYLE_SHEET_SYSTEM);
+
+    CheckDirty();
+
+    if (!needUpdate)
+        return;
+
+    if (currentScreen.Valid())
+    {
+        ProcessControlHierarhy(currentScreen.Get());
+    }
+
+    if (popupContainer.Valid())
+    {
+        ProcessControlHierarhy(popupContainer.Get());
+    }
+}
+
+void UIStyleSheetSystem::ForceProcessControl(float32 elapsedTime, UIControl* control)
+{
+    DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::UI_STYLE_SHEET_SYSTEM);
+    if (!needUpdate && !dirty)
+        return;
+
+    ProcessControlHierarhy(control);
+}
+
+void UIStyleSheetSystem::SetCurrentScreen(const RefPtr<UIScreen>& screen)
+{
+    currentScreen = screen;
+}
+
+void UIStyleSheetSystem::SetPopupContainer(const RefPtr<UIControl>& _popupContainer)
+{
+    popupContainer = _popupContainer;
+}
+
+void UIStyleSheetSystem::SetListener(UIStyleSheetSystemListener* listener_)
+{
+    listener = listener_;
+}
+
 void UIStyleSheetSystem::ProcessControl(UIControl* control, bool styleSheetListChanged /* = false*/)
 {
 #if STYLESHEET_STATS
     uint64 startTime = SystemTimer::GetUs();
 #endif
-    ProcessControl(control, 0, styleSheetListChanged, true, false, nullptr);
+    ProcessControlImpl(control, 0, styleSheetListChanged, true, false, nullptr);
 #if STYLESHEET_STATS
     statsTime += SystemTimer::GetUs() - startTime;
 #endif
@@ -98,10 +160,10 @@ void UIStyleSheetSystem::ProcessControl(UIControl* control, bool styleSheetListC
 
 void UIStyleSheetSystem::DebugControl(UIControl* control, UIStyleSheetProcessDebugData* debugData)
 {
-    ProcessControl(control, 0, true, false, true, debugData);
+    ProcessControlImpl(control, 0, true, false, true, debugData);
 }
 
-void UIStyleSheetSystem::ProcessControl(UIControl* control, int32 distanceFromDirty, bool styleSheetListChanged, bool recursively, bool dryRun, UIStyleSheetProcessDebugData* debugData)
+void UIStyleSheetSystem::ProcessControlImpl(UIControl* control, int32 distanceFromDirty, bool styleSheetListChanged, bool recursively, bool dryRun, UIStyleSheetProcessDebugData* debugData)
 {
     UIControlPackageContext* packageContext = control->GetPackageContext();
     const UIStyleSheetPropertyDataBase* propertyDB = UIStyleSheetPropertyDataBase::Instance();
@@ -189,17 +251,23 @@ void UIStyleSheetSystem::ProcessControl(UIControl* control, int32 distanceFromDi
             }
         }
 
-        control->SetStyledPropertySet(propertiesToApply);
+        if (!dryRun)
+        {
+            control->SetStyledPropertySet(propertiesToApply);
+        }
     }
 
-    control->ResetStyleSheetDirty();
-    control->SetStyleSheetInitialized();
+    if (!dryRun)
+    {
+        control->ResetStyleSheetDirty();
+        control->SetStyleSheetInitialized();
+    }
 
     if (recursively)
     {
         for (UIControl* child : control->GetChildren())
         {
-            ProcessControl(child, distanceFromDirty + 1, styleSheetListChanged, true, dryRun, debugData);
+            ProcessControlImpl(child, distanceFromDirty + 1, styleSheetListChanged, true, dryRun, debugData);
         }
     }
 }
@@ -257,6 +325,21 @@ void UIStyleSheetSystem::DumpStats()
     }
 }
 
+void UIStyleSheetSystem::ProcessControlHierarhy(UIControl* control)
+{
+    uint32 propIndex = UIStyleSheetPropertyDataBase::Instance()->GetStyleSheetVisiblePropertyIndex();
+    if ((control->IsVisible() || control->GetStyledPropertySet().test(propIndex))
+        && control->IsStyleSheetDirty())
+    {
+        ProcessControl(control);
+    }
+
+    for (UIControl* child : control->GetChildren())
+    {
+        ProcessControlHierarhy(child);
+    }
+}
+
 bool UIStyleSheetSystem::StyleSheetMatchesControl(const UIStyleSheet* styleSheet, const UIControl* control)
 {
 #if STYLESHEET_STATS
@@ -299,30 +382,43 @@ void UIStyleSheetSystem::DoForAllPropertyInstances(UIControl* control, uint32 pr
 
     const UIStyleSheetPropertyDescriptor& descr = propertyDB->GetStyleSheetPropertyByIndex(propertyIndex);
 
-    switch (descr.group->propertyOwner)
+    if (descr.group->componentType == nullptr)
     {
-    case ePropertyOwner::CONTROL:
-    {
-        const InspInfo* typeInfo = control->GetTypeInfo();
-        do
+        Reflection ref = Reflection::Create(ReflectedObject(control));
+        ref = ref.GetField(descr.field->name);
+        if (ref.IsValid())
         {
-            if (typeInfo == descr.group->typeInfo)
-            {
-                action(control, control, descr.memberInfo);
-                break;
-            }
-            typeInfo = typeInfo->BaseInfo();
-        } while (typeInfo);
+            action(control, ref);
 
-        break;
+            if (listener != nullptr)
+            {
+                listener->OnStylePropertyChanged(control, nullptr, propertyIndex);
+            }
+        }
     }
-    case ePropertyOwner::COMPONENT:
+    else
+    {
         if (UIComponent* component = control->GetComponent(descr.group->componentType))
-            action(control, component, descr.memberInfo);
-        break;
-    default:
-        DVASSERT(false);
-        break;
+        {
+            Reflection ref = Reflection::Create(ReflectedObject(component));
+            ref = ref.GetField(descr.field->name);
+            if (ref.IsValid())
+            {
+                action(control, ref);
+
+                if (listener != nullptr)
+                {
+                    listener->OnStylePropertyChanged(control, component, propertyIndex);
+                }
+            }
+        }
+        else
+        {
+            const ReflectedType* rt = ReflectedTypeDB::GetByType(descr.group->componentType);
+            const char* componentName = rt->GetPermanentName().c_str();
+            const char* controlName = control->GetName().c_str();
+            Logger::Error("Style sheet can not find component \'%s\' in control \'%s\'", componentName, controlName);
+        }
     }
 }
 }

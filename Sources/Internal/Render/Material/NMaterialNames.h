@@ -37,10 +37,13 @@ public:
     static const FastName SKYOBJECT;
     static const FastName VERTEXCOLOR_FRAMEBLEND_OPAQUE;
     static const FastName PIXELLIT_ALPHATEST;
-    static const FastName SPEEDTREE_LEAF;
-    static const FastName SPEEDTREE_LEAF_ALPHABLEND;
-    static const FastName SPHERICLIT_SPEEDTREE_LEAF;
-    static const FastName SPHERICLIT_SPEEDTREE_LEAF_ALPHABLEND;
+    static const FastName SPEEDTREE_ALPHATEST;
+    static const FastName SPEEDTREE_ALPHABLEND;
+    static const FastName SPEEDTREE_ALPHABLEND_ALPHATEST;
+    static const FastName SPEEDTREE_OPAQUE;
+    static const FastName SPHERICLIT_SPEEDTREE_ALPHATEST;
+    static const FastName SPHERICLIT_SPEEDTREE_ALPHABLEND;
+    static const FastName SPHERICLIT_SPEEDTREE_ALPHABLEND_ALPHATEST;
     static const FastName SPHERICLIT_TEXTURED_OPAQUE;
     static const FastName SPHERICLIT_TEXTURED_ALPHATEST;
     static const FastName SPHERICLIT_TEXTURED_ALPHABLEND;
@@ -65,6 +68,8 @@ public:
     static const FastName DEBUG_DRAW_OPAQUE;
     static const FastName DEBUG_DRAW_ALPHABLEND;
     static const FastName DEBUG_DRAW_WIREFRAME;
+    static const FastName DEBUG_DRAW_PARTICLES;
+    static const FastName DEBUG_DRAW_PARTICLES_NO_DEPTH;
 
     static const FastName WATER_ALL_QUALITIES;
 };
@@ -85,6 +90,9 @@ public:
 
     static const FastName TEXTURE_DYNAMIC_REFLECTION;
     static const FastName TEXTURE_DYNAMIC_REFRACTION;
+
+    static const FastName TEXTURE_PARTICLES_HEATMAP;
+    static const FastName TEXTURE_PARTICLES_RT;
 
     static bool IsRuntimeTexture(const FastName& texture);
 };
@@ -130,6 +138,7 @@ public:
     static const FastName DEPRECATED_SHADOW_COLOR_PARAM;
     static const FastName DEPRECATED_LANDSCAPE_TEXTURE_0_TILING;
     static const FastName PARAM_TREE_LEAF_COLOR_MUL;
+    static const FastName FORCED_SHADOW_DIRECTION_PARAM;
 };
 
 class NMaterialFlagName
@@ -151,11 +160,12 @@ public:
     static const FastName FLAG_TILED_DECAL_MASK;
     static const FastName FLAG_TILED_DECAL_ROTATION;
     static const FastName FLAG_FLATCOLOR;
+    static const FastName FLAG_FLATALBEDO;
     static const FastName FLAG_DISTANCEATTENUATION;
     static const FastName FLAG_SPECULAR;
     static const FastName FLAG_SEPARATE_NORMALMAPS;
 
-    static const FastName FLAG_SPEED_TREE_LEAF;
+    static const FastName FLAG_SPEED_TREE_OBJECT;
     static const FastName FLAG_SPHERICAL_LIT;
 
     static const FastName FLAG_TANGENT_SPACE_WATER_REFLECTIONS;
@@ -179,12 +189,13 @@ public:
     static const FastName FLAG_FRAME_BLEND;
     static const FastName FLAG_FORCE_2D_MODE;
 
+    static const FastName FLAG_ALPHATEST;
     static const FastName FLAG_ALPHATESTVALUE;
+    static const FastName FLAG_ALPHASTEPVALUE;
 
     static const FastName FLAG_LANDSCAPE_USE_INSTANCING;
     static const FastName FLAG_LANDSCAPE_LOD_MORPHING;
     static const FastName FLAG_LANDSCAPE_MORPHING_COLOR;
-    static const FastName FLAG_LANDSCAPE_SPECULAR;
 
     static const FastName FLAG_HEIGHTMAP_FLOAT_TEXTURE;
 
@@ -194,6 +205,10 @@ public:
     static const FastName FLAG_ILLUMINATION_SHADOW_RECEIVER;
 
     static const FastName FLAG_TEST_OCCLUSION;
+
+    static const FastName FLAG_PARTICLES_DEBUG_SHOW_HEATMAP;
+
+    static const FastName FLAG_FORCED_SHADOW_DIRECTION;
 
     static bool IsRuntimeFlag(const FastName& flag);
 };

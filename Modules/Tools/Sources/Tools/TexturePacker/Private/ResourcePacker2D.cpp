@@ -6,7 +6,6 @@
 #include <Engine/Engine.h>
 #include <FileSystem/FileSystem.h>
 #include <FileSystem/FileList.h>
-#include <Core/Core.h>
 #include <Utils/StringUtils.h>
 #include <Platform/DeviceInfo.h>
 #include <Time/DateTime.h>
@@ -21,7 +20,7 @@
 
 namespace DAVA
 {
-const String ResourcePacker2D::VERSION = "0.0.4";
+const String ResourcePacker2D::VERSION = "0.0.5";
 const String ResourcePacker2D::INTERNAL_LIBPSD_VERSION = "0.0.1";
 
 String ResourcePacker2D::GetProcessFolderName()
@@ -118,11 +117,7 @@ void ResourcePacker2D::PackResources(const Vector<eGPUFamily>& forGPUs)
 
     if (RecalculateDirMD5(outputGfxDirectory, processDirectoryPath + gfxDirName + ".md5", true))
     {
-#if defined(__DAVAENGINE_COREV2__)
         if (Engine::Instance()->IsConsoleMode())
-#else
-        if (Core::Instance()->IsConsoleMode())
-#endif
         {
             Logger::FrameworkDebug("[Gfx not available or changed - performing full repack]");
         }
@@ -422,6 +417,7 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath& inputPath, const FilePa
                 }
 
                 DefinitionFile::Collection definitionFileList;
+                Vector<FilePath> justCopyList;
                 definitionFileList.reserve(fileList->GetCount());
                 for (uint32 fi = 0; fi < fileList->GetCount() && running; ++fi)
                 {
@@ -439,7 +435,7 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath& inputPath, const FilePa
                         shouldAcceptFile = defFile->LoadPSD(fullname, processDir, maxTextureSize,
                                                             withAlpha, useLayerNames, verbose);
                     }
-                    else if (isLightmapsPacking && fullname.IsEqualToExtension(".png"))
+                    else if (fullname.IsEqualToExtension(".png"))
                     {
                         shouldAcceptFile = true;
                         defFile->LoadPNG(fullname, processDir);
@@ -447,6 +443,10 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath& inputPath, const FilePa
                     else if (fullname.IsEqualToExtension(".pngdef"))
                     {
                         shouldAcceptFile = defFile->LoadPNGDef(fullname, processDir);
+                    }
+                    else if (!IsFileIgnoredByName(ignoredFileNames, fullname.GetFilename()))
+                    {
+                        justCopyList.push_back(fullname);
                     }
 
                     if (shouldAcceptFile == false)
@@ -495,13 +495,19 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath& inputPath, const FilePa
                     }
                 }
 
+                for (FilePath& path : justCopyList)
+                {
+                    FilePath destPath(path);
+                    destPath.ReplaceDirectory(outputPath);
+                    if (!FileSystem::Instance()->CopyFile(path, destPath))
+                    {
+                        Logger::Error("Can't copy %s to %s", path.GetStringValue().c_str(), destPath.GetStringValue().c_str());
+                    }
+                }
+
                 packTime = SystemTimer::GetMs() - packTime;
 
-#if defined(__DAVAENGINE_COREV2__)
                 if (Engine::Instance()->IsConsoleMode())
-#else
-                if (Core::Instance()->IsConsoleMode())
-#endif
                 {
                     Logger::Info("[%u files packed with flags: %s]", static_cast<uint32>(definitionFileList.size()), mergedFlags.c_str());
                 }

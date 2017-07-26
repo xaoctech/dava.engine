@@ -3,20 +3,16 @@
 #include "../Common/FrameLoop.h"
 #include "../Common/dbg_StatSet.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #include "Engine/Engine.h"
 #include "DeviceManager/DeviceManager.h"
 #include "Platform/DeviceInfo.h"
-#else
-#include "Platform/DeviceInfo.h"
-#endif
 
 #if defined(__DAVAENGINE_WIN_UAP__)
 #include <wrl/client.h>
 #include <Windows.ui.xaml.media.dxinterop.h>
 #endif
 
-#define RHI_DX11_ALLOW_FEATURE_LEVEL_11 1
+#define RHI_DX11_FORCE_FEATURE_LEVEL_9 0
 #define RHI_DX11_ASSERT_ON_ERROR 1
 
 extern "C" {
@@ -42,9 +38,11 @@ static DAVA::Mutex resetParamsSync;
 static DWORD _DX11_RenderThreadId = 0;
 static D3D_FEATURE_LEVEL _DX11_SupportedFeatureLevels[] =
 {
-#if (RHI_DX11_ALLOW_FEATURE_LEVEL_11)
+#if (!RHI_DX11_FORCE_FEATURE_LEVEL_9)
   D3D_FEATURE_LEVEL_11_1,
   D3D_FEATURE_LEVEL_11_0,
+  D3D_FEATURE_LEVEL_10_1,
+  D3D_FEATURE_LEVEL_10_0,
 #endif
   D3D_FEATURE_LEVEL_9_3,
   D3D_FEATURE_LEVEL_9_2,
@@ -358,10 +356,14 @@ bool dx11_CreateDeviceWithAdapter(const InitParam& param, ComPtr<IDXGIAdapter> a
 
     if (!DX11Check(dx11.device.As(&dx11.dxgiDevice)))
     {
-        DAVA::Logger::Error("[RHI-DX11] Failed to retreive IDXGIDevice1 object from ID3D11Device");
+        DAVA::Logger::Error("[RHI-DX11] Failed to retrieve IDXGIDevice1 object from ID3D11Device");
         ReportError(param, RenderingError::FailedToInitialize);
         return false;
     }
+    uint32 featureLevel = static_cast<uint32>(dx11.usedFeatureLevel);
+    uint32 featureLevelMajor = ((featureLevel >> 8) & 0xf0) >> 4;
+    uint32 featureLevelMinor = (featureLevel >> 8) & 0x0f;
+    DAVA::Logger::Info("[RHI-DX11] Init with feature level: 0x%04x (%u.%u)", featureLevel, featureLevelMajor, featureLevelMinor);
 
     // device was created, but no adapter provided
     if (adapter.Get() == nullptr)
@@ -369,26 +371,22 @@ bool dx11_CreateDeviceWithAdapter(const InitParam& param, ComPtr<IDXGIAdapter> a
         DX11Check(dx11.dxgiDevice->GetAdapter(adapter.GetAddressOf()));
         if (adapter.Get() == nullptr)
         {
-            DAVA::Logger::Error("[RHI-DX11] Failed to retreive IDXGIAdapter object from IDXGIDevice1");
+            DAVA::Logger::Error("[RHI-DX11] Failed to retrieve IDXGIAdapter object from IDXGIDevice1");
             ReportError(param, RenderingError::FailedToInitialize);
             return false;
         }
 
         DXGI_ADAPTER_DESC desc = {};
         adapter->GetDesc(&desc);
-        uint32 featureLevel = static_cast<uint32>(dx11.usedFeatureLevel);
-        uint32 featureLevelMajor = ((featureLevel >> 8) & 0xf0) >> 4;
-        uint32 featureLevelMinor = (featureLevel >> 8) & 0x0f;
-        DAVA::Logger::Info("[RHI-DX11] Using retreived adapter `%S` (vendor: 0x%04X, subsystem: 0x%04X), feature level: 0x%04x (%u.%u)",
-                           desc.Description, desc.VendorId, desc.SubSysId, featureLevel, featureLevelMajor, featureLevelMinor);
+        DAVA::Logger::Info("[RHI-DX11] Using retrieved adapter `%S` (vendor: 0x%04X, subsystem: 0x%04X)", desc.Description, desc.VendorId, desc.SubSysId);
 
         if (dx11.factory.Get() == nullptr)
         {
-            DAVA::Logger::Info("[RHI-DX11] IDXGIFactory2 was not created, retreiving it from the adapter");
+            DAVA::Logger::Info("[RHI-DX11] IDXGIFactory2 was not created, retrieving it from the adapter");
             DX11Check(adapter->GetParent(IID_PPV_ARGS(dx11.factory.GetAddressOf())));
             if (dx11.factory.Get() == nullptr)
             {
-                DAVA::Logger::Info("[RHI-DX11] Failed to retreive IDXGIFactory2 from IDXGIAdapter");
+                DAVA::Logger::Info("[RHI-DX11] Failed to retrieve IDXGIFactory2 from IDXGIAdapter");
                 ReportError(param, RenderingError::FailedToInitialize);
                 return false;
             }
@@ -400,7 +398,7 @@ bool dx11_CreateDeviceWithAdapter(const InitParam& param, ComPtr<IDXGIAdapter> a
 
 bool dx11_CreateDevice(const InitParam& param)
 {
-    DAVA::Logger::Info("[RHI-DX11] Creting device...");
+    DAVA::Logger::Info("[RHI-DX11] Creating device...");
     ComPtr<IDXGIAdapter> adapter = dx11_SelectAdapter();
     return dx11_CreateDeviceWithAdapter(param, adapter);
 }
@@ -416,6 +414,26 @@ void dx11_DestroyDevice()
     dx11.deferredContext.Reset();
     dx11.context.Reset();
     dx11.device.Reset();
+}
+
+void dx11_SetSwapChain(const InitParam& param)
+{
+#if defined(__DAVAENGINE_WIN_UAP__)
+    using ::Windows::UI::Core::CoreDispatcherPriority;
+    using ::Windows::UI::Core::DispatchedHandler;
+    using ::Windows::UI::Xaml::Controls::SwapChainPanel;
+
+    SwapChainPanel ^ swapChainPanel = reinterpret_cast<SwapChainPanel ^>(param.window);
+    auto handler = [swapChainPanel, param]() // Capture param by value as calling function may create it on stack
+    {
+        ComPtr<ISwapChainPanelNative> panelNative;
+        if (DX11Check(reinterpret_cast<IUnknown*>(swapChainPanel)->QueryInterface(IID_PPV_ARGS(panelNative.GetAddressOf()))))
+            panelNative->SetSwapChain(dx11.swapChain.Get());
+        else
+            ReportError(param, RenderingError::FailedToInitialize);
+    };
+    swapChainPanel->Dispatcher->RunAsync(CoreDispatcherPriority::High, ref new DispatchedHandler(handler, Platform::CallbackContext::Any));
+#endif
 }
 
 bool dx11_CreateSwapChain(const InitParam& param)
@@ -453,22 +471,6 @@ bool dx11_CreateSwapChain(const InitParam& param)
 
     if (!DX11Check(result))
         return false;
-
-#if defined(__DAVAENGINE_WIN_UAP__)
-    using Windows::UI::Core::CoreDispatcherPriority;
-    using Windows::UI::Core::DispatchedHandler;
-    using namespace Windows::UI::Xaml::Controls;
-    SwapChainPanel ^ swapChainPanel = reinterpret_cast<SwapChainPanel ^>(param.window);
-    auto handler = [swapChainPanel, &param]()
-    {
-        ComPtr<ISwapChainPanelNative> panelNative;
-        if (DX11Check(reinterpret_cast<IUnknown*>(swapChainPanel)->QueryInterface(IID_PPV_ARGS(panelNative.GetAddressOf()))))
-            panelNative->SetSwapChain(dx11.swapChain.Get());
-        else
-            ReportError(param, RenderingError::FailedToInitialize);
-    };
-    swapChainPanel->Dispatcher->RunAsync(CoreDispatcherPriority::High, ref new DispatchedHandler(handler, Platform::CallbackContext::Any));
-#endif
 
     dx11.dxgiDevice->SetMaximumFrameLatency(1);
     return true;
@@ -542,14 +544,9 @@ void dx11_DetectUWPWorkaround(const InitParam& param)
 
     InitParam fullScreenParameters = param;
 
-#if defined(__DAVAENGINE_COREV2__)
     const DAVA::DisplayInfo& displayInfo = DAVA::GetEngineContext()->deviceManager->GetPrimaryDisplay();
     fullScreenParameters.width = static_cast<uint32>(displayInfo.rect.dx);
     fullScreenParameters.height = static_cast<uint32>(displayInfo.rect.dy);
-#else
-    fullScreenParameters.width = static_cast<uint32>(DAVA::DeviceInfo::GetScreenInfo().width);
-    fullScreenParameters.height = static_cast<uint32>(DAVA::DeviceInfo::GetScreenInfo().height);
-#endif
 
     DAVA::Logger::Info("[RHI-DX11] Detecting configuration by creating test device...");
     if (dx11_CreateDeviceWithAdapter(fullScreenParameters, adapter))
@@ -579,22 +576,13 @@ static bool dx11_NeedRestoreResources()
 
 static bool dx11_TextureFormatSupported(TextureFormat format, ProgType)
 {
-    bool supported = false;
-    switch (format)
-    {
-    case TEXTURE_FORMAT_R8G8B8A8:
-    case TEXTURE_FORMAT_R5G5B5A1:
-    case TEXTURE_FORMAT_R5G6B5:
-    case TEXTURE_FORMAT_R4G4B4A4:
-    case TEXTURE_FORMAT_R8:
-    case TEXTURE_FORMAT_R16:
-    case TEXTURE_FORMAT_DXT1:
-    case TEXTURE_FORMAT_DXT3:
-    case TEXTURE_FORMAT_DXT5:
-        supported = true;
-        break;
-    }
-    return supported;
+    UINT formatSupport = 0;
+    DXGI_FORMAT dxgiFormat = DX11_TextureFormat(format);
+
+    if (dxgiFormat != DXGI_FORMAT_UNKNOWN)
+        DX11DeviceCommand(DX11Command::CHECK_FORMAT_SUPPORT, dxgiFormat, &formatSupport);
+
+    return (formatSupport & D3D11_FORMAT_SUPPORT_TEXTURE2D) != 0;
 }
 
 static void dx11_Uninitialize()
@@ -681,6 +669,7 @@ static void dx11_InitContext()
         ReportError(dx11.initParameters, RenderingError::FailedToInitialize);
         return;
     }
+    dx11_SetSwapChain(dx11.initParameters);
 
     if (!dx11_ResizeSwapChain(dx11.initParameters.width, dx11.initParameters.height, dx11.initParameters.scaleX, dx11.initParameters.scaleY))
     {

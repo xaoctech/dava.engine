@@ -300,8 +300,7 @@ bool MongodbClient::FindObjectByKey(const String& key, MongodbObject* foundObjec
 {
     DVASSERT(foundObject);
 
-    MongodbObject* query = new MongodbObject();
-    DVASSERT(query);
+    ScopedPtr<MongodbObject> query(new MongodbObject());
 
     query->SetObjectName(key);
     query->Finish();
@@ -312,7 +311,6 @@ bool MongodbClient::FindObjectByKey(const String& key, MongodbObject* foundObjec
         return false;
     }
 
-    SafeRelease(query);
     return true;
 }
 
@@ -404,8 +402,8 @@ bool MongodbClient::KeyedArchiveToDBObject(KeyedArchive* archive, MongodbObject*
     if (!outObject->IsFinished())
     {
         //copy data from archive into db object
-        KeyedArchive::UnderlyingMap archiveData = archive->GetArchieveData();
-        for (KeyedArchive::UnderlyingMap::iterator it = archiveData.begin(); it != archiveData.end(); ++it)
+        const KeyedArchive::UnderlyingMap& archiveData = archive->GetArchieveData();
+        for (auto it = archiveData.begin(); it != archiveData.end(); ++it)
         {
             MongodbClient::WriteData(outObject, it->first, it->second);
         }

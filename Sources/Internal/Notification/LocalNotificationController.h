@@ -11,12 +11,10 @@ class LocalNotification;
 class LocalNotificationText;
 class LocalNotificationProgress;
 
-#if defined(__DAVAENGINE_COREV2__)
 namespace Private
 {
 struct LocalNotificationListener;
 }
-#endif
 
 class LocalNotificationController : public Singleton<LocalNotificationController>
 {
@@ -34,14 +32,14 @@ public:
     void Clear();
     void Update();
 
+    void RequestPermissions();
+
     LocalNotification* const GetNotificationById(const String& id);
     void OnNotificationPressed(const String& id);
 
 private:
     Mutex notificationsListMutex;
     List<LocalNotification*> notificationsList;
-#if defined(__DAVAENGINE_COREV2__)
     std::unique_ptr<Private::LocalNotificationListener> localListener;
-#endif
 };
 } // namespace DAVA

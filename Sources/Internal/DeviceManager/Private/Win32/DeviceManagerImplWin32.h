@@ -2,7 +2,6 @@
 
 #include "Base/BaseTypes.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_QT__)
 // TODO: plarform defines
 #elif defined(__DAVAENGINE_WIN32__)
@@ -27,6 +26,8 @@ struct DeviceManagerImpl final
 
     static BOOL CALLBACK DisplayEnumProc(HMONITOR hmonitor, HDC hdc, LPRECT rc, LPARAM lparam);
 
+    float32 GetCpuTemperature() const;
+
     DeviceManager* deviceManager = nullptr;
     Private::MainDispatcher* mainDispatcher = nullptr;
 };
@@ -35,4 +36,3 @@ struct DeviceManagerImpl final
 } // namespace DAVA
 
 #endif // __DAVAENGINE_WIN32__
-#endif // __DAVAENGINE_COREV2__

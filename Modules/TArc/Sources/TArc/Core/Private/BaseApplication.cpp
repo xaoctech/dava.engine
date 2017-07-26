@@ -3,6 +3,7 @@
 #include "TArc/Testing/TArcTestCore.h"
 #include "TArc/DataProcessing/TArcAnyCasts.h"
 #include "TArc/Utils/AssertGuard.h"
+#include "TArc/Utils/Themes.h"
 #include "QtHelpers/RunGuard.h"
 
 #include "Engine/Engine.h"
@@ -52,6 +53,7 @@ int BaseApplication::RunImpl()
         e.Init(eEngineRunMode::GUI_EMBEDDED, initInfo.modules, initInfo.options.Get());
         RegisterAnyCasts();
         RegisterEditorAnyCasts();
+        RegisterReflectionExtensions();
 
         const EngineContext* engineContext = e.GetContext();
         DVASSERT(engineContext);
@@ -66,6 +68,7 @@ int BaseApplication::RunImpl()
         e.Init(initInfo.runMode, initInfo.modules, initInfo.options.Get());
         RegisterAnyCasts();
         RegisterEditorAnyCasts();
+        RegisterReflectionExtensions();
 
         Core core(e);
         Init(&core);
@@ -76,6 +79,7 @@ int BaseApplication::RunImpl()
 
 void BaseApplication::Init(const EngineContext* /*engineContext*/)
 {
+    Themes::InitFromQApplication();
 }
 
 void BaseApplication::Init(Core* tarcCore)
@@ -85,6 +89,10 @@ void BaseApplication::Init(Core* tarcCore)
 }
 
 void BaseApplication::RegisterEditorAnyCasts()
+{
+}
+
+void BaseApplication::RegisterReflectionExtensions()
 {
 }
 

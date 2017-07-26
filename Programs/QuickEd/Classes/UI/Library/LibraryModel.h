@@ -13,6 +13,14 @@ class ControlNode;
 class ControlsContainerNode;
 class ImportedPackagesNode;
 
+namespace DAVA
+{
+namespace TArc
+{
+class UI;
+}
+}
+
 class LibraryModel : public QStandardItemModel, PackageListener
 {
     Q_OBJECT
@@ -26,6 +34,7 @@ public:
     LibraryModel(QObject* parent = nullptr);
     ~LibraryModel() override;
 
+    void SetUI(DAVA::TArc::UI* ui);
     void SetProjectLibraries(const DAVA::Map<DAVA::String, DAVA::Set<DAVA::FastName>>& prototypes, const DAVA::Vector<DAVA::FilePath>& libraryPackages);
 
     Qt::ItemFlags flags(const QModelIndex& index) const override;
@@ -49,7 +58,7 @@ private:
     void ControlWillBeRemoved(ControlNode* node, ControlsContainerNode* from) override;
     void ImportedPackageWasAdded(PackageNode* node, ImportedPackagesNode* to, int index) override;
     void ImportedPackageWillBeRemoved(PackageNode* node, ImportedPackagesNode* from) override;
-    PackageNode* package = nullptr;
+    DAVA::RefPtr<PackageNode> package;
 
     DAVA::Vector<PackageNode*> libraryPackages;
     DAVA::Vector<QStandardItem*> libraryRootItems;
@@ -61,6 +70,8 @@ private:
     DAVA::Vector<ControlNode*> defaultControls;
     DAVA::Vector<DAVA::FilePath> libraryPackagePaths;
     DAVA::Map<DAVA::String, DAVA::Set<DAVA::FastName>> prototypes;
+
+    DAVA::TArc::UI* ui = nullptr;
 };
 
 #endif // __UI_EDITOR_LIBRARY_MODEL_H__

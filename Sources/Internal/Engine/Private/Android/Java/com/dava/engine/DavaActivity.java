@@ -1,12 +1,14 @@
 package com.dava.engine;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.Application;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
@@ -17,7 +19,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.util.Log;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -73,6 +74,9 @@ public final class DavaActivity extends Activity
         public void onRestart();
         public void onStop();
         public void onDestroy();
+        public void onWindowFocusChanged(boolean hasWindowFocus);
+        public void onConfigurationChanged(Configuration newConfig);
+        public void onBackPressed();
         public void onSaveInstanceState(Bundle outState);
         public void onActivityResult(int requestCode, int resultCode, Intent data);
         public void onNewIntent(Intent intent);
@@ -92,6 +96,9 @@ public final class DavaActivity extends Activity
         public void onRestart() {}
         public void onStop() {}
         public void onDestroy() {}
+        public void onWindowFocusChanged(boolean hasWindowFocus) {}
+        public void onConfigurationChanged(Configuration newConfig) {}
+        public void onBackPressed() {}
         public void onSaveInstanceState(Bundle outState) {}
         public void onActivityResult(int requestCode, int resultCode, Intent data) {}
         public void onNewIntent(Intent intent) {}
@@ -122,10 +129,13 @@ public final class DavaActivity extends Activity
 
     private static DavaActivity activitySingleton;
     private static Thread nativeThread; // Thread where native C++ code is running
+    private static int nativeThreadId; // C++ native thread id
+    private static int uiThreadId; // UI thread id
 
     protected boolean isStopped = true; // Activity is stopped after onStop and before onStart
-    protected boolean isPaused = true; // Activity is paused after onPause and before onResume
+    protected boolean isPaused = false; // Activity is paused after onPause and before onResume
     protected boolean isFocused = false;
+    protected boolean isEngineRunning = false; // Engine has entered Run method in c++ thread and ready to pump MainDispatcher events
     
     protected String externalFilesDir;
     protected String internalFilesDir;
@@ -134,8 +144,9 @@ public final class DavaActivity extends Activity
     protected String cmdline;
 
     protected DavaCommandHandler commandHandler = new DavaCommandHandler();
-    protected DavaKeyboardState keyboardState = new DavaKeyboardState();
-    protected DavaGamepadManager gamepadManager = new DavaGamepadManager();
+    protected DavaKeyboardState keyboardState = null;
+    protected DavaGamepadManager gamepadManager = null;
+    protected DavaGlobalLayoutState globalLayoutState = null;
 
     // List of class instances created during bootstrap (using meta-tag in AndroidManifest)
     protected LinkedList<Object> bootstrapObjects = new LinkedList<Object>();
@@ -144,6 +155,7 @@ public final class DavaActivity extends Activity
     private DavaSplashView splashView;
     private ViewGroup layout;
     private ArrayList<ActivityListener> activityListeners = new ArrayList<ActivityListener>();
+    private ArrayList<ActivityResultArgs> savedActivityResultArgs = null; // Saved arguments coming from onActivityResult (possible multiple calls)
 
     private static final int ON_ACTIVITY_CREATE = 0;
     private static final int ON_ACTIVITY_START = 1;
@@ -156,6 +168,9 @@ public final class DavaActivity extends Activity
     private static final int ON_ACTIVITY_RESULT = 8;
     private static final int ON_ACTIVITY_NEW_INTENT = 9;
     private static final int ON_ACTIVITY_REQUEST_PERMISSION_RESULT = 10;
+    private static final int ON_ACTIVITY_WINDOW_FOCUS_CHANGED = 11;
+    private static final int ON_ACTIVITY_CONFIGURATION_CHANGED = 12;
+    private static final int ON_ACTIVITY_BACK_PRESSED = 13;
 
     public static native void nativeInitializeEngine(String externalFilesDir,
                                                      String internalFilesDir,
@@ -182,6 +197,18 @@ public final class DavaActivity extends Activity
     public static boolean isNativeThreadRunning()
     {
         return nativeThread != null;
+    }
+
+    /** Check whether current thread is UI thread */
+    public static boolean isUIThread()
+    {
+        return android.os.Process.myTid() == uiThreadId;
+    }
+
+    /** Check whether current thread is main native thread where C++ code lives */
+    public static boolean isNativeMainThread()
+    {
+        return android.os.Process.myTid() == nativeThreadId;
     }
 
     /**
@@ -217,12 +244,41 @@ public final class DavaActivity extends Activity
         return activitySingleton.gamepadManager;
     }
 
+    private void restart()
+    {
+        try {
+            Intent intent = new Intent(this, DavaActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            int pendingIntentId = 223344;
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, pendingIntentId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+            AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+            alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + 100, pendingIntent);
+            System.exit(0);
+        } catch (Exception e) {
+            DavaLog.e(LOG_TAG, String.format("DavaActivity.restart failed: %s", e.toString()));
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        Log.d(LOG_TAG, "DavaActivity.onCreate");
+        if (activitySingleton != null)
+        {
+            // dava.engine's is tightly bound to Activity lifecycle events. But in some cases on some devices Activity.onDestroy
+            // does not arrive when Activity is removed by system from memory while application with loaded shared libraries is
+            // still running. Later system may recreate Activity and Activity.onCreate handler tries to initialize again already
+            // running dava.engine and game which may lead to crash or unpredictable behaviour.
+            // Solution is to restart application.
+            DavaLog.e(LOG_TAG, "DavaActivity.onCreate: restarting");
+            activitySingleton = null;
+            restart();
+        }
+
+        DavaLog.i(LOG_TAG, "DavaActivity.onCreate");
 
         activitySingleton = this;
+        uiThreadId = android.os.Process.myTid();
         
         Application app = getApplication();
         externalFilesDir = app.getExternalFilesDir(null).getAbsolutePath() + "/";
@@ -244,12 +300,19 @@ public final class DavaActivity extends Activity
         Bitmap splashViewBitmap =  loadSplashViewBitmap();
         splashView = new DavaSplashView(this, splashViewBitmap);
 
+        // #1 create splash view
         layout = new FrameLayout(this);
         layout.addView(splashView);
         setContentView(layout);
 
-        // Load library modules and create class instances specified under meta-data tag in AndroidManifest.xml
+        // #2 Load library modules and create class instances specified under meta-data tag in AndroidManifest.xml
         bootstrap();
+
+        // #3 Initialize engine and run its onCreate method
+        nativeInitializeEngine(externalFilesDir, internalFilesDir, sourceDir, packageName, cmdline);
+        long nativePrimaryWindowImpl = nativeOnCreate(this);
+        // Create primary DavaSurfaceView in advance but add to view hierarchy later when DavaSplashView will do its work
+        primarySurfaceView = new DavaSurfaceView(getApplication(), nativePrimaryWindowImpl);
 
         notifyListeners(ON_ACTIVITY_CREATE, savedInstanceState);
 
@@ -274,49 +337,51 @@ public final class DavaActivity extends Activity
         }
         catch (Exception e)
         {
-            Log.e(LOG_TAG, String.format("DavaActivity: loading splash image failed: %s. Splash view will be empty", e.toString()));
+            DavaLog.e(LOG_TAG, String.format("DavaActivity: loading splash image failed: %s. Splash view will be empty", e.toString()));
         }
 
         return splashViewBitmap;
     }
     
-    private void startNativeInitialization() {
-        nativeInitializeEngine(externalFilesDir, internalFilesDir, sourceDir, packageName, cmdline);
-        
-        long primaryWindowBackendPointer = nativeOnCreate(this);
-        primarySurfaceView = new DavaSurfaceView(getApplication(), primaryWindowBackendPointer);
+    private void continueOnCreate()
+    {
+        // #4 add primary DavaSurfaceView to view hierarchy
         layout.addView(primarySurfaceView);
 
+        gamepadManager = new DavaGamepadManager();
         registerActivityListener(gamepadManager);
+
+        globalLayoutState = new DavaGlobalLayoutState();
+        registerActivityListener(globalLayoutState);
+
+        keyboardState = new DavaKeyboardState();
         registerActivityListener(keyboardState);
     }
-    
-    protected void onFinishCollectDeviceInfo()
+
+    protected void onSplashFinishedCollectingDeviceInfo()
     {
-        runOnUiThread(new Runnable(){
+        // On some devices step #1 can cause this callback
+        // to be synchronously invoked. In this case onCreate hasn't
+        // been finished yet. To ensure that we call `continueOnCreate`
+        // only when onCreate is finished we must put Runnable into commandHandler
+        // and it will be run on next java-message-queue processing step.
+        commandHandler.post(new Runnable(){
             @Override
             public void run() {
-                startNativeInitialization();
-                // now wait till SurfaceView will be created to continue
+                continueOnCreate();
             }
         });
     }
-    
+
     void onFinishCreatingMainWindowSurface()
     {
-        runOnUiThread(new Runnable(){
-            @Override
-            public void run() {
-                startNativeThreadIfNotRunning();
-                handleResume();
-            }
-        });
+        startNativeThreadIfNotRunning();
     }
 
     @Override
     protected void onStart()
     {
-        Log.d(LOG_TAG, "DavaActivity.onStart");
+        DavaLog.i(LOG_TAG, "DavaActivity.onStart");
         super.onStart();
 
         isStopped = false;
@@ -327,25 +392,27 @@ public final class DavaActivity extends Activity
     @Override
     protected void onResume()
     {
-        Log.d(LOG_TAG, "DavaActivity.onResume");
+        DavaLog.i(LOG_TAG, "DavaActivity.onResume");
         super.onResume();
 
         handleResume();
+        notifyListeners(ON_ACTIVITY_RESUME, null);
     }
 
     @Override
     protected void onPause()
     {
-        Log.d(LOG_TAG, "DavaActivity.onPause");
+        DavaLog.i(LOG_TAG, "DavaActivity.onPause");
         super.onPause();
 
         handlePause();
+        notifyListeners(ON_ACTIVITY_PAUSE, null);
     }
 
     @Override
     protected void onRestart()
     {
-        Log.d(LOG_TAG, "DavaActivity.onRestart");
+        DavaLog.i(LOG_TAG, "DavaActivity.onRestart");
         super.onRestart();
 
         notifyListeners(ON_ACTIVITY_RESTART, null);
@@ -354,7 +421,7 @@ public final class DavaActivity extends Activity
     @Override
     protected void onStop()
     {
-        Log.d(LOG_TAG, "DavaActivity.onStop");
+        DavaLog.i(LOG_TAG, "DavaActivity.onStop");
         super.onStop();
         
         isStopped = true;
@@ -365,26 +432,30 @@ public final class DavaActivity extends Activity
     @Override
     protected void onDestroy()
     {
-        Log.d(LOG_TAG, "DavaActivity.onDestroy");
+        DavaLog.i(LOG_TAG, "DavaActivity.onDestroy");
         super.onDestroy();
 
         notifyListeners(ON_ACTIVITY_DESTROY, null);
         activityListeners.clear();
 
-        Log.d(LOG_TAG, "DavaActivity.nativeOnDestroy");
-        nativeOnDestroy();
-        if (isNativeThreadRunning())
+        if (isEngineRunning)
         {
-            try {
-                Log.d(LOG_TAG, "Joining native thread");
-                nativeThread.join();
-            } catch (Exception e) {
-                Log.e(LOG_TAG, "DavaActivity.onDestroy: davaMainThread.join() failed " + e);
+            DavaLog.i(LOG_TAG, "DavaActivity.nativeOnDestroy");
+            nativeOnDestroy();
+            if (isNativeThreadRunning())
+            {
+                try {
+                    DavaLog.i(LOG_TAG, "Joining native thread");
+                    nativeThread.join();
+                } catch (Exception e) {
+                    DavaLog.e(LOG_TAG, "DavaActivity.onDestroy: davaMainThread.join() failed " + e);
+                }
+                nativeThread = null;
             }
-            nativeThread = null;
+            DavaLog.i(LOG_TAG, "DavaActivity.nativeShutdownEngine");
+            nativeShutdownEngine();
         }
-        Log.d(LOG_TAG, "DavaActivity.nativeShutdownEngine");
-        nativeShutdownEngine();
+
         bootstrapObjects.clear();
         activitySingleton = null;
 
@@ -394,14 +465,14 @@ public final class DavaActivity extends Activity
         //    but engine's shared library is not unloaded and all static variables preserve their
         //    values which leads to unpredictable behavior on next activity.onCreate call
         //  - same is applied to java classes
-        Log.i(LOG_TAG, "Quitting application...");
+        DavaLog.i(LOG_TAG, "Quitting application...");
         System.exit(0);
     }
     
     @Override
     public void onWindowFocusChanged(boolean hasWindowFocus)
     {
-        Log.d(LOG_TAG, String.format("DavaActivity.onWindowFocusChanged: focus=%b", hasWindowFocus));
+        DavaLog.i(LOG_TAG, String.format("DavaActivity.onWindowFocusChanged: focus=%b", hasWindowFocus));
 
         isFocused = hasWindowFocus;
         if (isFocused)
@@ -409,13 +480,17 @@ public final class DavaActivity extends Activity
             hideNavigationBar();
             handleResume();
         }
+
+        notifyListeners(ON_ACTIVITY_WINDOW_FOCUS_CHANGED, hasWindowFocus);
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig)
     {
-        Log.d(LOG_TAG, "DavaActivity.onConfigurationChanged");
+        DavaLog.i(LOG_TAG, "DavaActivity.onConfigurationChanged");
         super.onConfigurationChanged(newConfig);
+
+        notifyListeners(ON_ACTIVITY_CONFIGURATION_CHANGED, newConfig);
     }
 
     @Override
@@ -423,6 +498,8 @@ public final class DavaActivity extends Activity
     {
         // Do not call base class method to prevent finishing activity
         // and application on back pressed
+
+        notifyListeners(ON_ACTIVITY_BACK_PRESSED, null);
     }
 
     @Override
@@ -458,7 +535,24 @@ public final class DavaActivity extends Activity
         args.requestCode = requestCode;
         args.resultCode = resultCode;
         args.data = data;
-        notifyListeners(ON_ACTIVITY_RESULT, args);
+        if (isEngineRunning)
+        {
+            notifyListeners(ON_ACTIVITY_RESULT, args);
+        }
+        else
+        {
+            // Save arguments and notify listeners later when Engine will enter Run method.
+            // Reason: onActivityResult can be called before native thread has started, e.g.:
+            //  - application starts Google Services activity,
+            //  - user puts application into background (presses Home button),
+            //  - system silently kill application to free some memory,
+            //  - onActivityResult is invoked before c++ thread has started.
+            if (savedActivityResultArgs == null)
+            {
+                savedActivityResultArgs = new ArrayList<ActivityResultArgs>();
+            }
+            savedActivityResultArgs.add(args);
+        }
     }
 
     @Override
@@ -540,6 +634,28 @@ public final class DavaActivity extends Activity
 
     }
 
+    // Invoked from c++ thread and tells that Engine has entered Run method
+    private void notifyEngineRunning()
+    {
+        runOnUiThread(new Runnable()
+        {
+            @Override public void run()
+            {
+                isEngineRunning = true;
+
+                // Notify about onActivityResult if it has occured (see comments in onActivityResult method)
+                if (savedActivityResultArgs != null)
+                {
+                    for (ActivityResultArgs args : savedActivityResultArgs)
+                    {
+                        notifyListeners(ON_ACTIVITY_RESULT, args);
+                    }
+                    savedActivityResultArgs = null;
+                }
+            }
+        });
+    }
+
     public boolean isPaused()
     {
         return isPaused;
@@ -557,25 +673,26 @@ public final class DavaActivity extends Activity
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    private void handleResume()
+    void handleResume()
     {
-        if (primarySurfaceView != null && isNativeThreadRunning())
+        if (primarySurfaceView.isSurfaceReady() && isPaused && isFocused)
         {
-            if (isPaused && isFocused)
-            {
-                isPaused = false;
-                nativeOnResume();
-                notifyListeners(ON_ACTIVITY_RESUME, null);
-            }
+            DavaLog.i(LOG_TAG, "DavaActivity.handleResume");
+
+            isPaused = false;
+            nativeOnResume();
+            primarySurfaceView.onResume();
         }
     }
 
-    private void handlePause()
+    void handlePause()
     {
-        if (!isPaused)
+        if (primarySurfaceView.isSurfaceReady() && !isPaused)
         {
+            DavaLog.i(LOG_TAG, "DavaActivity.handlePause");
+
             isPaused = true;
-            notifyListeners(ON_ACTIVITY_PAUSE, null);
+            primarySurfaceView.onPause();
             nativeOnPause();
         }
     }
@@ -587,6 +704,7 @@ public final class DavaActivity extends Activity
             nativeThread = new Thread(new Runnable() {
                 @Override public void run()
                 {
+                    nativeThreadId = android.os.Process.myTid();
                     nativeGameThread();
                 }
             }, "DAVA main thread");
@@ -620,12 +738,12 @@ public final class DavaActivity extends Activity
             {
                 if (!m.isEmpty())
                 {
-                    Log.i(LOG_TAG, String.format("DavaActivity: loading bootstrap module '%s'", m));
+                    DavaLog.i(LOG_TAG, String.format("DavaActivity: loading bootstrap module '%s'", m));
                     try {
                         System.loadLibrary(m);
                         nloaded += 1;
                     } catch (Throwable e) {
-                        Log.e(DavaActivity.LOG_TAG, String.format("DavaActivity: module '%s' not loaded: %s", m, e.toString()));
+                        DavaLog.e(DavaActivity.LOG_TAG, String.format("DavaActivity: module '%s' not loaded: %s", m, e.toString()));
                     }
                 }
             }
@@ -634,7 +752,7 @@ public final class DavaActivity extends Activity
         {
             // Issue warning if no boot modules were loaded as usually all logic is contained
             // in shared libraries written in C/C++
-            Log.w(LOG_TAG, "DavaActivity: no bootstrap modules loaded!!! Maybe you forgot to add meta-data tag with module list to AndroidManifest.xml");
+            DavaLog.w(LOG_TAG, "DavaActivity: no bootstrap modules loaded!!! Maybe you forgot to add meta-data tag with module list to AndroidManifest.xml");
         }
 
         // Read and create instances of bootstrap classes
@@ -646,14 +764,14 @@ public final class DavaActivity extends Activity
             {
                 if (!c.isEmpty())
                 {
-                    Log.i(LOG_TAG, String.format("DavaActivity: instantiate bootstrap class '%s'", c));
+                    DavaLog.i(LOG_TAG, String.format("DavaActivity: instantiate bootstrap class '%s'", c));
                     try {
                         Class<?> clazz = Class.forName(c);
                         Constructor<?> ctor = clazz.getConstructor();
                         Object obj = ctor.newInstance();
                         bootstrapObjects.add(obj);
                     } catch (Throwable e) {
-                        Log.e(DavaActivity.LOG_TAG, String.format("DavaActivity: class '%s' not instantiated: %s", c, e.toString()));
+                        DavaLog.e(DavaActivity.LOG_TAG, String.format("DavaActivity: class '%s' not instantiated: %s", c, e.toString()));
                     }
                 }
             }
@@ -670,9 +788,28 @@ public final class DavaActivity extends Activity
                 return s.split(";");
             }
         } catch (Exception e) {
-            Log.e(LOG_TAG, String.format("DavaActivity: get metadata for '%s' failed: %s", key, e.toString()));
+            DavaLog.e(LOG_TAG, String.format("DavaActivity: get metadata for '%s' failed: %s", key, e.toString()));
         }
         return null;
+    }
+
+    void setScreenTimeoutEnabled(final boolean enabled)
+    {
+        runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run() 
+            {
+                if (enabled)
+                {
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                }
+                else
+                {
+                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                }
+            }
+        });
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -720,18 +857,29 @@ public final class DavaActivity extends Activity
                 l.onDestroy();
                 break;
             case ON_ACTIVITY_SAVE_INSTANCE_STATE:
-            	l.onSaveInstanceState((Bundle)arg);
-            	break;
+                l.onSaveInstanceState((Bundle)arg);
+                break;
             case ON_ACTIVITY_RESULT:
-            	ActivityResultArgs activityResultArgs = (ActivityResultArgs)arg;
-            	l.onActivityResult(activityResultArgs.requestCode, activityResultArgs.resultCode, activityResultArgs.data);
-            	break;
+                ActivityResultArgs activityResultArgs = (ActivityResultArgs)arg;
+                l.onActivityResult(activityResultArgs.requestCode, activityResultArgs.resultCode, activityResultArgs.data);
+                break;
             case ON_ACTIVITY_NEW_INTENT:
-            	l.onNewIntent((Intent)arg);
-            	break;
+                l.onNewIntent((Intent)arg);
+                break;
             case ON_ACTIVITY_REQUEST_PERMISSION_RESULT:
-            	RequestPermissionResultArgs requestResultArgs = (RequestPermissionResultArgs)arg;
-            	l.onRequestPermissionsResult(requestResultArgs.requestCode, requestResultArgs.permissions, requestResultArgs.grantResults);
+                RequestPermissionResultArgs requestResultArgs = (RequestPermissionResultArgs)arg;
+                l.onRequestPermissionsResult(requestResultArgs.requestCode, requestResultArgs.permissions, requestResultArgs.grantResults);
+                break;
+            case ON_ACTIVITY_WINDOW_FOCUS_CHANGED:
+                boolean hasWindowFocus = (Boolean)arg;
+                l.onWindowFocusChanged(hasWindowFocus);
+                break;
+            case ON_ACTIVITY_CONFIGURATION_CHANGED:
+                Configuration configuration = (Configuration)arg;
+                l.onConfigurationChanged(configuration);
+                break;
+            case ON_ACTIVITY_BACK_PRESSED:
+                l.onBackPressed();
                 break;
             }
         }

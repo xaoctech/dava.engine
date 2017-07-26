@@ -1,5 +1,5 @@
 #include "TArc/Controls/PropertyPanel/Private/ReflectedPropertyItem.h"
-#include "Tarc/Controls/PropertyPanel/Private/ReflectedPropertyModel.h"
+#include "TArc/Controls/PropertyPanel/Private/ReflectedPropertyModel.h"
 #include "TArc/Controls/PropertyPanel/BaseComponentValue.h"
 
 #include "Debug/DVAssert.h"
@@ -31,7 +31,7 @@ int32 ReflectedPropertyItem::GetPropertyNodesCount() const
     return value->GetPropertiesNodeCount();
 }
 
-std::shared_ptr<const PropertyNode> ReflectedPropertyItem::GetPropertyNode(int32 index) const
+std::shared_ptr<PropertyNode> ReflectedPropertyItem::GetPropertyNode(int32 index) const
 {
     return value->GetPropertyNode(index);
 }
@@ -41,13 +41,39 @@ QString ReflectedPropertyItem::GetPropertyName() const
     return value->GetPropertyName();
 }
 
-ReflectedPropertyItem* ReflectedPropertyItem::CreateChild(std::unique_ptr<BaseComponentValue>&& value, int32 childPosition)
+FastName ReflectedPropertyItem::GetID() const
+{
+    return value->GetID();
+}
+
+bool ReflectedPropertyItem::IsFavorite() const
+{
+    return isFavorite;
+}
+
+void ReflectedPropertyItem::SetFavorite(bool isFavorite_)
+{
+    isFavorite = isFavorite_;
+}
+
+bool ReflectedPropertyItem::IsFavorited() const
+{
+    return isFavorited;
+}
+
+void ReflectedPropertyItem::SetFavorited(bool isFavorited_)
+{
+    isFavorited = isFavorited_;
+}
+
+ReflectedPropertyItem* ReflectedPropertyItem::CreateChild(std::unique_ptr<BaseComponentValue>&& value, int32 childPosition, int32 sortKey)
 {
     int32 position = static_cast<int32>(children.size());
-    if (childPosition == position)
+    ReflectedPropertyItem* item = nullptr;
+    if (position < childPosition)
     {
         children.emplace_back(new ReflectedPropertyItem(model, this, position, std::move(value)));
-        return children.back().get();
+        item = children.back().get();
     }
     else
     {
@@ -58,8 +84,28 @@ ReflectedPropertyItem* ReflectedPropertyItem::CreateChild(std::unique_ptr<BaseCo
             (*tailIter)->position++;
         }
 
-        return iter->get();
+        item = iter->get();
     }
+
+    item->sortKey = sortKey;
+    return item;
+}
+
+int32 ReflectedPropertyItem::LookupChildPosition(int32 sortKey)
+{
+    DVASSERT(sortKey != PropertyNode::InvalidSortKey);
+    int32 childPosition = static_cast<int32>(children.size());
+    for (size_t i = 0; i < children.size(); ++i)
+    {
+        ReflectedPropertyItem* child = children[i].get();
+        if (sortKey < child->sortKey)
+        {
+            childPosition = static_cast<int32>(i);
+            break;
+        }
+    }
+
+    return childPosition;
 }
 
 int32 ReflectedPropertyItem::GetChildCount() const
@@ -69,8 +115,9 @@ int32 ReflectedPropertyItem::GetChildCount() const
 
 ReflectedPropertyItem* ReflectedPropertyItem::GetChild(int32 index) const
 {
-    DVASSERT(index < GetChildCount());
-    return children[index].get();
+    if (index < children.size())
+        return children[index].get();
+    return nullptr;
 }
 
 void ReflectedPropertyItem::RemoveChild(int32 index)
@@ -89,9 +136,9 @@ void ReflectedPropertyItem::RemoveChildren()
     children.clear();
 }
 
-void ReflectedPropertyItem::AddPropertyNode(const std::shared_ptr<PropertyNode>& node)
+void ReflectedPropertyItem::AddPropertyNode(const std::shared_ptr<PropertyNode>& node, const FastName& id)
 {
-    value->AddPropertyNode(node);
+    value->AddPropertyNode(node, id);
 }
 
 void ReflectedPropertyItem::RemovePropertyNode(const std::shared_ptr<PropertyNode>& node)

@@ -12,7 +12,7 @@ namespace DAVA
 {
 namespace TArc
 {
-class CheckBox final : public ControlProxy<QCheckBox>
+class CheckBox final : public ControlProxyImpl<QCheckBox>
 {
 public:
     enum class Fields : uint32
@@ -20,11 +20,13 @@ public:
         Checked,
         IsReadOnly,
         TextHint,
+        IsEnabled,
         FieldCount
     };
 
-    CheckBox(const ControlDescriptorBuilder<Fields>& fields, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent = nullptr);
-    CheckBox(const ControlDescriptorBuilder<Fields>& fields, ContextAccessor* accessor, Reflection model, QWidget* parent = nullptr);
+    DECLARE_CONTROL_PARAMS(Fields);
+    CheckBox(const Params& params, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent = nullptr);
+    CheckBox(const Params& params, ContextAccessor* accessor, Reflection model, QWidget* parent = nullptr);
 
 private:
     void UpdateControl(const ControlDescriptor& changedfields) override;

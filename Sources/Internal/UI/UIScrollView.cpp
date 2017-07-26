@@ -2,10 +2,22 @@
 #include "UI/UIScrollViewContainer.h"
 #include "UI/ScrollHelper.h"
 #include "UI/UIControlHelpers.h"
+#include "UI/Render/UIClipContentComponent.h"
+#include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
 {
 static const FastName UISCROLL_VIEW_CONTAINER_NAME("scrollContainerControl");
+
+DAVA_VIRTUAL_REFLECTION_IMPL(UIScrollView)
+{
+    ReflectionRegistrator<UIScrollView>::Begin()
+    .ConstructorByPointer()
+    .DestructorByPointer([](UIScrollView* o) { o->Release(); })
+    .Field("autoUpdate", &UIScrollView::IsAutoUpdate, &UIScrollView::SetAutoUpdate)
+    .Field("centerContent", &UIScrollView::IsCenterContent, &UIScrollView::SetCenterContent)
+    .End();
+}
 
 UIScrollView::UIScrollView(const Rect& rect)
     : UIControl(rect)
@@ -17,11 +29,12 @@ UIScrollView::UIScrollView(const Rect& rect)
 {
     SetInputEnabled(false, false);
     multiInput = true;
-    SetClipContents(true);
 
     scrollContainer->SetName(UISCROLL_VIEW_CONTAINER_NAME);
     // Scroll container is a child of ScrollView
     AddControl(scrollContainer);
+
+    GetOrCreateComponent<UIClipContentComponent>();
 }
 
 UIScrollView::~UIScrollView()

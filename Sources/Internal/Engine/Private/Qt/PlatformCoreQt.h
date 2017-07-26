@@ -1,5 +1,3 @@
-#if defined(__DAVAENGINE_COREV2__)
-
 #pragma once
 
 #include "Base/BaseTypes.h"
@@ -29,12 +27,14 @@ public:
     void PrepareToQuit();
     void Quit();
 
+    void SetScreenTimeoutEnabled(bool enabled);
+
     QApplication* GetApplication();
     RenderWidget* GetRenderWidget();
 
 private:
     EngineBackend& engineBackend;
-    WindowBackend* primaryWindowBackend = nullptr;
+    WindowImpl* primaryWindowImpl = nullptr;
 
     Signal<bool> applicationFocusChanged;
 };
@@ -43,4 +43,3 @@ private:
 } // namespace DAVA
 
 #endif // __DAVAENGINE_QT__
-#endif // __DAVAENGINE_COREV2__

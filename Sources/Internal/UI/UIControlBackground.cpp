@@ -1,18 +1,41 @@
 #include "UI/UIControlBackground.h"
 #include "Debug/DVAssert.h"
 #include "UI/UIControl.h"
-#include "Core/Core.h"
 #include "Render/RenderHelper.h"
 #include "UI/UIControlSystem.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
 #include "Render/RenderHelper.h"
 #include "Render/Renderer.h"
 #include "Utils/StringFormat.h"
+#include "Reflection/ReflectionRegistrator.h"
 
 #include <limits>
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(UIControlBackground)
+{
+    ReflectionRegistrator<UIControlBackground>::Begin()
+    .ConstructorByPointer()
+    .DestructorByPointer([](UIControlBackground* o) { o->Release(); })
+    .Field("drawType", &UIControlBackground::GetDrawType, &UIControlBackground::SetDrawType)[M::EnumT<eDrawType>()]
+    .Field<FilePath (UIControlBackground::*)() const, void (UIControlBackground::*)(const FilePath&)>("sprite", &UIControlBackground::GetBgSpritePath, &UIControlBackground::SetSprite)
+    .Field<int32 (UIControlBackground::*)() const, void (UIControlBackground::*)(int32)>("frame", &UIControlBackground::GetFrame, &UIControlBackground::SetFrame)
+    .Field("mask", &UIControlBackground::GetMaskSpritePath, &UIControlBackground::SetMaskSpriteFromPath)
+    .Field("detail", &UIControlBackground::GetDetailSpritePath, &UIControlBackground::SetDetailSpriteFromPath)
+    .Field("gradient", &UIControlBackground::GetGradientSpritePath, &UIControlBackground::SetGradientSpriteFromPath)
+    .Field("contour", &UIControlBackground::GetContourSpritePath, &UIControlBackground::SetContourSpriteFromPath)
+    .Field("spriteModification", &UIControlBackground::GetModification, &UIControlBackground::SetModification)[M::FlagsT<eSpriteModification>()]
+    .Field("gradientMode", &UIControlBackground::GetGradientBlendMode, &UIControlBackground::SetGradientBlendMode)[M::EnumT<eGradientBlendMode>()]
+    .Field("color", &UIControlBackground::GetColor, &UIControlBackground::SetColor)
+    .Field("colorInherit", &UIControlBackground::GetColorInheritType, &UIControlBackground::SetColorInheritType)[M::EnumT<eColorInheritType>()]
+    .Field("perPixelAccuracy", &UIControlBackground::GetPerPixelAccuracyType, &UIControlBackground::SetPerPixelAccuracyType)[M::EnumT<ePerPixelAccuracyType>()]
+    .Field("align", &UIControlBackground::GetAlign, &UIControlBackground::SetAlign)[M::FlagsT<eAlign>()]
+    .Field("leftRightStretchCap", &UIControlBackground::GetLeftRightStretchCap, &UIControlBackground::SetLeftRightStretchCap)
+    .Field("topBottomStretchCap", &UIControlBackground::GetTopBottomStretchCap, &UIControlBackground::SetTopBottomStretchCap)
+    .End();
+}
+
 UIControlBackground::UIControlBackground()
     : color(Color::White)
     , lastDrawPos(0, 0)
@@ -22,7 +45,7 @@ UIControlBackground::UIControlBackground()
 }
 
 UIControlBackground::UIControlBackground(const UIControlBackground& src)
-    : UIBaseComponent(src)
+    : UIComponent(src)
     , spr(src.spr)
     , align(src.align)
     , type(src.type)
@@ -42,7 +65,6 @@ UIControlBackground::UIControlBackground(const UIControlBackground& src)
     , drawColor(src.drawColor)
     , material(SafeRetain(src.material))
 {
-    SetMargins(src.GetMargins());
 }
 
 UIControlBackground* UIControlBackground::Clone() const
@@ -54,25 +76,7 @@ UIControlBackground::~UIControlBackground()
 {
     spr = nullptr;
     SafeRelease(material);
-    SafeDelete(margins);
     ReleaseDrawData();
-}
-
-bool UIControlBackground::IsEqualTo(const UIControlBackground* back) const
-{
-    if (GetDrawType() != back->GetDrawType() ||
-        Sprite::GetPathString(GetSprite()) != Sprite::GetPathString(back->GetSprite()) ||
-        GetFrame() != back->GetFrame() ||
-        GetAlign() != back->GetAlign() ||
-        GetColor() != back->GetColor() ||
-        GetColorInheritType() != back->GetColorInheritType() ||
-        GetModification() != back->GetModification() ||
-        GetLeftRightStretchCap() != back->GetLeftRightStretchCap() ||
-        GetTopBottomStretchCap() != back->GetTopBottomStretchCap() ||
-        GetPerPixelAccuracyType() != back->GetPerPixelAccuracyType() ||
-        GetMargins() != back->GetMargins())
-        return false;
-    return true;
 }
 
 Sprite* UIControlBackground::GetSprite() const
@@ -118,6 +122,11 @@ void UIControlBackground::SetSprite(Sprite* drawSprite, int32 drawFrame)
 void UIControlBackground::SetSprite(Sprite* drawSprite)
 {
     spr = drawSprite;
+
+    if (GetControl()) //workaround for standalone backgrounds
+    {
+        GetControl()->SetLayoutDirty();
+    }
 }
 
 void UIControlBackground::SetSprite(const FilePath& path)
@@ -149,11 +158,20 @@ void UIControlBackground::SetAlign(int32 drawAlign)
 {
     align = drawAlign;
 }
+
 void UIControlBackground::SetDrawType(UIControlBackground::eDrawType drawType)
 {
     if (type != drawType)
+    {
         ReleaseDrawData();
-    type = drawType;
+
+        type = drawType;
+
+        if (GetControl()) //workaround for standalone backgrounds
+        {
+            GetControl()->SetLayoutDirty();
+        }
+    }
 }
 
 void UIControlBackground::SetModification(int32 modification)
@@ -239,11 +257,6 @@ void UIControlBackground::Draw(const UIGeometricData& parentGeometricData)
 {
     UIGeometricData geometricData;
     geometricData.size = parentGeometricData.size;
-    if (margins)
-    {
-        geometricData.position = Vector2(margins->left, margins->top);
-        geometricData.size += Vector2(-(margins->right + margins->left), -(margins->bottom + margins->top));
-    }
 
     geometricData.AddGeometricData(parentGeometricData);
     Rect drawRect = geometricData.GetUnrotatedRect();
@@ -485,6 +498,8 @@ void UIControlBackground::Draw(const UIGeometricData& parentGeometricData)
     case DRAW_STRETCH_BOTH:
     case DRAW_STRETCH_HORIZONTAL:
     case DRAW_STRETCH_VERTICAL:
+        drawState.usePerPixelAccuracy = (perPixelAccuracyType == PER_PIXEL_ACCURACY_FORCED) || ((perPixelAccuracyType == PER_PIXEL_ACCURACY_ENABLED) && (lastDrawPos == geometricData.position));
+        lastDrawPos = geometricData.position;
         RenderSystem2D::Instance()->DrawStretched(spr.Get(), &drawState, Vector2(leftStretchCap, topStretchCap), type, geometricData, &stretchData, drawColor);
         break;
 
@@ -497,6 +512,19 @@ void UIControlBackground::Draw(const UIGeometricData& parentGeometricData)
         lastDrawPos = geometricData.position;
         RenderSystem2D::Instance()->DrawTiledMultylayer(mask.Get(), detail.Get(), gradient.Get(), contour.Get(), &drawState, Vector2(leftStretchCap, topStretchCap), geometricData, &tiledMultulayerData, drawColor);
         break;
+    case DRAW_BATCH:
+    {
+        Matrix3 matrix2d;
+        geometricData.BuildTransformMatrix(matrix2d);
+        Matrix4 worldMatrix = Convert2DTransformTo3DTransform(matrix2d);
+        for (BatchDescriptor2D& b : batchDescriptors)
+        {
+            b.worldMatrix = &worldMatrix;
+            RenderSystem2D::Instance()->PushBatch(b);
+        }
+        batchDescriptors.clear();
+        break;
+    }
     default:
         break;
     }
@@ -550,30 +578,28 @@ inline NMaterial* UIControlBackground::GetMaterial() const
     return material;
 }
 
-void UIControlBackground::SetMargins(const UIMargins* uiMargins)
+void UIControlBackground::SetRenderBatches(const Vector<BatchDescriptor2D>& batches)
 {
-    if (!uiMargins || uiMargins->empty())
-    {
-        SafeDelete(margins);
-        return;
-    }
-
-    if (!margins)
-    {
-        margins = new UIControlBackground::UIMargins();
-    }
-
-    *margins = *uiMargins;
+    batchDescriptors = batches;
 }
 
-Vector4 UIControlBackground::GetMarginsAsVector4() const
+void UIControlBackground::AppendRenderBatches(const Vector<BatchDescriptor2D>& batches)
 {
-    return (margins != nullptr) ? margins->AsVector4() : Vector4();
+    batchDescriptors.insert(batchDescriptors.end(), batches.begin(), batches.end());
 }
 
-void UIControlBackground::SetMarginsAsVector4(const Vector4& m)
+void UIControlBackground::AddRenderBatch(const BatchDescriptor2D& batch)
 {
-    UIControlBackground::UIMargins newMargins(m);
-    SetMargins(&newMargins);
+    batchDescriptors.push_back(batch);
+}
+
+void UIControlBackground::ClearBatches()
+{
+    batchDescriptors.clear();
+}
+
+const Vector<BatchDescriptor2D>& UIControlBackground::GetRenderBatches() const
+{
+    return batchDescriptors;
 }
 };

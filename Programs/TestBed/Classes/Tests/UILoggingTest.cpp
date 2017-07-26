@@ -1,22 +1,14 @@
 #include "Tests/UILoggingTest.h"
 #include "Analytics/Analytics.h"
 #include "Analytics/LoggingBackend.h"
-
-#if defined(__DAVAENGINE_COREV2__)
+#include "UI/Render/UIDebugRenderComponent.h"
 #include "Engine/Engine.h"
-#else
-#include "Core/Core.h"
-#endif
 
 using namespace DAVA;
 
 Analytics::Core& GetCore()
 {
-#if defined(__DAVAENGINE_COREV2__)
-    return *Engine::Instance()->GetContext()->analyticsCore;
-#else
-    return Core::Instance()->GetAnalyticsCore();
-#endif
+    return *GetEngineContext()->analyticsCore;
 }
 
 UILoggingTest::UILoggingTest(TestBed& app)
@@ -58,7 +50,7 @@ UIButton* UILoggingTest::CreateUIButton(Font* font, const Rect& rect,
 
     button->SetStateFont(0xFF, font);
     button->SetStateFontColor(0xFF, Color::White);
-    button->SetDebugDraw(true);
+    button->GetOrCreateComponent<UIDebugRenderComponent>();
     button->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, onClick));
 
     return button;

@@ -1,2 +1,17 @@
-font:
-    DefaultFontsPath: "~res:/UI/Fonts/fonts.yaml"
+Header:
+    version: "1"
+ProjectProperties:
+    ResourceDirectory: "./DataSource/"
+    AdditionalResourceDirectory: "./Data/"
+    IntermediateResourceDirectory: "./Data/"
+    UiDirectory: "./UI/"
+    FontsDirectory: "./Fonts/"
+    FontsConfigsDirectory: "./UI/Fonts/"
+    TextsDirectory: "./Strings/"
+    DefaultLanguage: "en"
+    GfxDirectories:
+    -   directory: "./Gfx/"
+        resolution: [1024, 768]
+    -   directory: "./Gfx2/"
+        resolution: [2048, 1536]
+    Library: []

@@ -4,8 +4,8 @@
 #include "Utils/StringFormat.h"
 #include "Time/SystemTimer.h"
 #include "FileSystem/File.h"
+#include "FileSystem/FilePath.h"
 #include "FileSystem/FileSystem.h"
-#include "Core/Core.h"
 #include "Render/Shader.h"
 #include "Render/RenderHelper.h"
 #include "FileSystem/LocalizationSystem.h"
@@ -94,7 +94,6 @@ Sprite* Sprite::PureCreate(const FilePath& spriteName, Sprite* forPointer)
 
     spr->resourceSizeIndex = resourceSizeIndex;
     spr->relativePathname = spriteName;
-    spr->relativePathname.TruncateExtension();
 
     spr->InitFromFile(spriteFile);
     SafeRelease(spriteFile);
@@ -112,10 +111,6 @@ Sprite* Sprite::GetSpriteFromMap(const FilePath& pathname)
     Sprite* ret = NULL;
 
     FilePath path = pathname;
-    if (!path.IsEmpty())
-    {
-        path.TruncateExtension();
-    }
 
     spriteMapMutex.Lock();
 
@@ -281,7 +276,18 @@ void Sprite::InitFromFile(File* file)
 
 Sprite* Sprite::Create(const FilePath& spriteName)
 {
-    Sprite* spr = PureCreate(spriteName, NULL);
+    String extension = spriteName.GetExtension();
+
+    Sprite* spr = nullptr;
+    if (!extension.empty() && TextureDescriptor::IsSourceTextureExtension(extension))
+    {
+        spr = CreateFromSourceFile(spriteName);
+    }
+    else
+    {
+        spr = PureCreate(spriteName, NULL);
+    }
+
     if (!spr)
     {
         Texture* pinkTexture = Texture::CreatePink();
@@ -373,7 +379,6 @@ String Sprite::GetPathString(const Sprite* sprite)
     String pathName;
     if (!path.IsEmpty())
     {
-        path.TruncateExtension();
         pathName = path.GetFrameworkPath();
     }
     return pathName;
@@ -497,7 +502,6 @@ void Sprite::InitFromTexture(Texture* fromTexture, int32 xOffset, int32 yOffset,
     if (relativePathname.IsEmpty())
     {
         relativePathname = spriteName.IsEmpty() ? Format("FBO sprite %d", fboCounter) : spriteName;
-        relativePathname.TruncateExtension();
     }
 
     spriteMapMutex.Lock();
@@ -884,7 +888,7 @@ File* Sprite::GetSpriteFile(const FilePath& spriteName, int32& resourceSizeIndex
         fp = LoadLocalizedFile(pathName, texturePath);
         if (!fp)
         {
-            Logger::Instance()->Warning("Failed to open sprite file: %s", pathName.GetAbsolutePathname().c_str());
+            Logger::Warning("Failed to open sprite file: %s", pathName.GetAbsolutePathname().c_str());
             return NULL;
         }
 
@@ -925,7 +929,6 @@ void Sprite::SetRelativePathname(const FilePath& path)
     spriteMapMutex.Lock();
     spriteMap.erase(FILEPATH_MAP_KEY(relativePathname));
     relativePathname = path;
-    relativePathname.TruncateExtension();
     spriteMap[FILEPATH_MAP_KEY(this->relativePathname)] = this;
     spriteMapMutex.Unlock();
     GetTexture()->SetPathname(path);

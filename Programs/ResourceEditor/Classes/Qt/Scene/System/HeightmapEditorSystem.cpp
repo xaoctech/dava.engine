@@ -16,7 +16,7 @@
 #include <QApplication>
 
 HeightmapEditorSystem::HeightmapEditorSystem(DAVA::Scene* scene)
-    : LandscapeEditorSystem(scene, "~res:/ResourceEditor/LandscapeEditor/Tools/cursor/cursor.png")
+    : LandscapeEditorSystem(scene, DefaultCursorPath())
     , copyPasteFrom(-1.f, -1.f)
     , copyPasteTo(-1.f, -1.f)
 {
@@ -187,7 +187,7 @@ void HeightmapEditorSystem::FinishEditing(bool applyModification)
             {
                 SceneEditor2* scene = dynamic_cast<SceneEditor2*>(GetScene());
                 DVASSERT(scene);
-                scene->Exec(std::unique_ptr<DAVA::Command>(new ModifyHeightmapCommand(drawSystem->GetHeightmapProxy(), originalHeightmap, GetHeightmapUpdatedRect())));
+                scene->Exec(std::unique_ptr<DAVA::Command>(new ModifyHeightmapCommand(drawSystem, originalHeightmap, GetHeightmapUpdatedRect())));
             }
             SafeRelease(originalHeightmap);
         }

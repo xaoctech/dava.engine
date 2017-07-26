@@ -1,6 +1,6 @@
-#ifndef __DAVAENGINE_UI_CONTROL_SYSTEM_H__
-#define __DAVAENGINE_UI_CONTROL_SYSTEM_H__
+#pragma once
 
+#include "Base/Any.h"
 #include "Base/BaseMath.h"
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
@@ -10,10 +10,7 @@
 
 #include "UI/UIControl.h"
 #include "UI/UIEvent.h"
-#if !defined(__DAVAENGINE_COREV2__)
-#include "UI/UIScreenTransition.h"
-#include "UI/UIPopup.h"
-#endif
+#include "UI/Components/UISingleComponent.h"
 
 #define FRAME_SKIP 5
 
@@ -29,10 +26,11 @@ class UIStyleSheetSystem;
 class UIFocusSystem;
 class UIInputSystem;
 class UIScreenshoter;
-#if defined(__DAVAENGINE_COREV2__)
+class UISoundSystem;
+class UIUpdateSystem;
+class UIRenderSystem;
 class UIScreenTransition;
 class UIPopup;
-#endif
 
 class ScreenSwitchListener
 {
@@ -65,20 +63,6 @@ protected:
     UIControlSystem();
 
 public:
-    /* 
-       Player + 6 ally bots. All visible on the screen
-    Old measures:
-    UIControlSystem::inputs: 309
-    UIControlSystem::updates: 310
-    UIControlSystem::draws: 310
-
-    New measures:
-    UIControlSystem::inputs: 42
-    */
-    int32 updateCounter;
-    int32 drawCounter;
-    int32 inputCounter;
-
     /**
 	 \brief Sets the requested screen as current.
 		Screen will be seted only on the next frame.
@@ -86,7 +70,7 @@ public:
 	 \param[in] Screen you want to set as current
 	 \param[in] Transition you want to use for the screen setting.
 	 */
-    void SetScreen(UIScreen* newMainControl, UIScreenTransition* transition = 0);
+    void SetScreen(UIScreen* newMainControl);
 
     /**
 	 \brief Sets the requested screen as current.
@@ -117,8 +101,6 @@ public:
 	 \returns popup container
 	 */
     UIControl* GetPopupContainer() const;
-
-    UIScreenTransition* GetScreenTransition() const;
 
     /**
 	 \brief Disabled all controls inputs.
@@ -172,10 +154,22 @@ public:
     void Update();
 
     /**
+     \brief Calls update logic for specific control. Used to make screenshoots.
+        Not recommended to use in common code.
+     */
+    void ForceUpdateControl(float32 timeElapsed, UIControl* control);
+
+    /**
 	 \brief Calls every frame by the system for draw.
 		Draws all controls hierarchy to the screen.
 	 */
     void Draw();
+
+    /**
+     \brief Calls draw logic for specific control. Used to make screenshoots.
+        Not recommended to use in common code.
+     */
+    void ForceDrawControl(UIControl* control);
 
     //	void SetTransitionType(int newTransitionType);
 
@@ -198,21 +192,6 @@ public:
 	 \returns exclusive input locker
 	 */
     UIControl* GetExclusiveInputLocker() const;
-
-    /**
-	 \brief Returns base geometric data seted in the system.
-		Base GeometricData is usually has parameters looks a like:
-		baseGeometricData.position = Vector2(0, 0);
-		baseGeometricData.size = Vector2(0, 0);
-		baseGeometricData.pivotPoint = Vector2(0, 0);
-		baseGeometricData.scale = Vector2(1.0f, 1.0f);
-		baseGeometricData.angle = 0;
-		But system can change this parameters for the 
-		specific device capabilities.
-	 
-	 \returns GeometricData uset for the base draw
-	 */
-    const UIGeometricData& GetBaseGeometricData() const;
 
     /**
 	 \brief Sets input with the requested ID to the required control.
@@ -252,6 +231,11 @@ public:
 	 \brief Returns currently focused control
 	 */
     UIControl* GetFocusedControl() const;
+
+    /*
+     \brief Called by the control himself
+     */
+    void ProcessControlEvent(int32 eventType, const UIEvent* uiEvent, UIControl* control);
 
     void AddScreenSwitchListener(ScreenSwitchListener* listener);
     void RemoveScreenSwitchListener(ScreenSwitchListener* listener);
@@ -304,21 +288,31 @@ public:
         return nullptr;
     }
 
+    void AddSingleComponent(std::unique_ptr<UISingleComponent> single);
+    std::unique_ptr<UISingleComponent> RemoveSingleComponent(const UISingleComponent* singleComponent);
+
+    template <typename T>
+    T* GetSingleComponent() const
+    {
+        for (auto& c : singleComponents)
+        {
+            if (IsPointerToExactClass<T>(c.get()))
+            {
+                return static_cast<T*>(c.get());
+            }
+        }
+        return nullptr;
+    }
+
     UILayoutSystem* GetLayoutSystem() const;
     UIInputSystem* GetInputSystem() const;
     UIFocusSystem* GetFocusSystem() const;
-
+    UISoundSystem* GetSoundSystem() const;
+    UIUpdateSystem* GetUpdateSystem() const;
     UIStyleSheetSystem* GetStyleSheetSystem() const;
-    UIScreenshoter* GetScreenshoter();
-
-    void SetClearColor(const Color& clearColor);
-    void SetUseClearPass(bool useClearPass);
+    UIRenderSystem* GetRenderSystem() const;
 
     void SetDoubleTapSettings(float32 time, float32 inch);
-
-    void UI3DViewAdded();
-    void UI3DViewRemoved();
-    int32 GetUI3DViewCount();
 
     VirtualCoordinatesSystem* vcs = nullptr; // TODO: Should be completely removed in favor of direct DAVA::Window methods
 
@@ -330,24 +324,21 @@ private:
     bool CheckTimeAndPosition(UIEvent* newEvent);
     int32 CalculatedTapCount(UIEvent* newEvent);
 
-#if defined(__DAVAENGINE_COREV2__)
     friend class Private::EngineBackend;
-#else
-    friend void Core::CreateSingletons();
-#endif
 
     Vector<std::unique_ptr<UISystem>> systems;
+    Vector<std::unique_ptr<UISingleComponent>> singleComponents;
     UILayoutSystem* layoutSystem = nullptr;
     UIStyleSheetSystem* styleSheetSystem = nullptr;
     UIInputSystem* inputSystem = nullptr;
-    UIScreenshoter* screenshoter = nullptr;
+    UISoundSystem* soundSystem = nullptr;
+    UIUpdateSystem* updateSystem = nullptr;
+    UIRenderSystem* renderSystem = nullptr;
 
     Vector<ScreenSwitchListener*> screenSwitchListeners;
 
     RefPtr<UIScreen> currentScreen;
     RefPtr<UIScreen> nextScreen;
-    RefPtr<UIScreenTransition> nextScreenTransition;
-    RefPtr<UIScreenTransition> currentScreenTransition;
     RefPtr<UIControl> popupContainer;
     Set<UIPopup*> popupsToRemove;
 
@@ -355,7 +346,6 @@ private:
     int32 screenLockCount = 0;
     int32 frameSkip = 0;
 
-    UIGeometricData baseGeometricData;
     Rect fullscreenRect;
 
     bool removeCurrentScreen = false;
@@ -363,14 +353,7 @@ private:
     uint32 resizePerFrame = 0; //used for logging some strange crahses on android
 
     float32 doubleClickTime = 0.f;
-#if !defined(__DAVAENGINE_COREV2__)
-    float32 doubleClickPhysSquare = 0.f;
-    float32 doubleClickRadiusSquared = 0.f;
-    float32 defaultDoubleClickRadiusSquared = 0.f;
-    float32 defaultDoubleClickTime = 0.5f;
-#else
     float32 doubleClickInchSquare = 0.f;
-#endif
     struct LastClickData
     {
         uint32 touchId = 0;
@@ -378,12 +361,8 @@ private:
         float64 timestamp = 0.0;
         int32 tapCount = 0;
         bool lastClickEnded = false;
+        RefPtr<UIControl> touchLocker; // last control has handled input
     };
     LastClickData lastClickData;
-
-    int32 ui3DViewCount = 0;
-    bool needClearMainPass = true;
 };
-};
-
-#endif
+}

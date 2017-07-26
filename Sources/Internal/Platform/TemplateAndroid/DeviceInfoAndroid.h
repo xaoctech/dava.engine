@@ -1,11 +1,10 @@
-#ifndef __FRAMEWORK__DEVICEINFOANDROID__
-#define __FRAMEWORK__DEVICEINFOANDROID__
+#pragma once
 
 #include "Base/Platform.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
 
-#include "Engine/Android/JNIBridge.h"
+#include "Engine/PlatformApiAndroid.h"
 #include "Base/BaseTypes.h"
 #include "Platform/DeviceInfoPrivateBase.h"
 
@@ -36,12 +35,6 @@ public:
     bool IsTouchPresented();
     String GetCarrierName();
 
-#if !defined(__DAVAENGINE_COREV2__)
-    DeviceInfo::ScreenInfo screenInfo;
-    DeviceInfo::ScreenInfo& GetScreenInfo();
-    void InitializeScreenInfo();
-#endif
-
 protected:
     DeviceInfo::StorageInfo StorageInfoFromJava(jobject object);
 
@@ -54,26 +47,24 @@ private:
     List<DeviceInfo::StorageInfo> GetSecondaryExternalStoragesList();
 
     JNI::JavaClass jniDeviceInfo;
-    Function<jstring()> getVersion;
-    Function<jstring()> getManufacturer;
-    Function<jstring()> getModel;
-    Function<jstring()> getLocale;
-    Function<jstring()> getRegion;
-    Function<jstring()> getTimeZone;
-    Function<jstring()> getUDID;
-    Function<jstring()> getName;
-    Function<jint()> getZBufferSize;
-    Function<jstring()> getHTTPProxyHost;
-    Function<jstring()> getHTTPNonProxyHosts;
-    Function<jint()> getHTTPProxyPort;
-    Function<jint()> getNetworkType;
-    Function<jint(jint)> getSignalStrength;
-    Function<jboolean()> isPrimaryExternalStoragePresent;
-    Function<jstring()> getCarrierName;
-    Function<jbyte()> getGpuFamily;
+    Function<jstring()> jgetVersion;
+    Function<jstring()> jgetManufacturer;
+    Function<jstring()> jgetModel;
+    Function<jstring()> jgetLocale;
+    Function<jstring()> jgetRegion;
+    Function<jstring()> jgetTimeZone;
+    Function<jstring()> jgetUDID;
+    Function<jstring()> jgetName;
+    Function<jint()> jgetZBufferSize;
+    Function<jstring()> jgetHTTPProxyHost;
+    Function<jstring()> jgetHTTPNonProxyHosts;
+    Function<jint()> jgetHTTPProxyPort;
+    Function<jint()> jgetNetworkType;
+    Function<jint(jint)> jgetSignalStrength;
+    Function<jboolean()> jisPrimaryExternalStoragePresent;
+    Function<jstring()> jgetCarrierName;
+    Function<jbyte()> jgetGpuFamily;
 };
 };
 
 #endif //defined(__DAVAENGINE_ANDROID__)
-
-#endif /* defined(__FRAMEWORK__DEVICEINFOANDROID__) */

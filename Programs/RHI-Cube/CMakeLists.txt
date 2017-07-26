@@ -1,10 +1,16 @@
 cmake_minimum_required (VERSION 3.0)
 project ( RHI-Cube )
 
+set          ( WARNINGS_AS_ERRORS true )
 set          ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/../../Sources/CMake/Modules/" ) 
 include      ( CMake-common )
 
-find_package( DavaFramework REQUIRED COMPONENTS ALL DAVA_DISABLE_AUTOTESTS )
+set ( DAVA_COREV2 1 )
+
+dava_add_definitions ( -D__DAVAENGINE_COREV2__ )
+
+find_package( DavaFramework REQUIRED COMPONENTS DAVA_DISABLE_AUTOTESTS )
+find_package( ScenePerformanceTests REQUIRED )
 
 include_directories   ( "Classes" )
 
@@ -15,7 +21,6 @@ elseif( IOS )
     set( PLATFORM_SPECIFIC_FOLDER "iOSSpecific" )
     
 elseif( WIN32 )
-    set( PLATFORM_SPECIFIC_FOLDER "Win32Specific" )
     set( EXECUTABLE_FLAG WIN32 )
 
 endif()

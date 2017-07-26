@@ -30,6 +30,7 @@ Vector<FastName> NMaterialStateDynamicFlagsInsp::MembersList(const DynamicData& 
         ret.emplace_back(NMaterialFlagName::FLAG_FOG_ATMOSPHERE);
 
         ret.emplace_back(NMaterialFlagName::FLAG_FLATCOLOR);
+        ret.emplace_back(NMaterialFlagName::FLAG_FLATALBEDO);
         ret.emplace_back(NMaterialFlagName::FLAG_TEXTURESHIFT);
         ret.emplace_back(NMaterialFlagName::FLAG_TEXTURE0_ANIMATION_SHIFT);
 
@@ -46,6 +47,8 @@ Vector<FastName> NMaterialStateDynamicFlagsInsp::MembersList(const DynamicData& 
         ret.emplace_back(NMaterialFlagName::FLAG_TILED_DECAL_MASK);
         ret.emplace_back(NMaterialFlagName::FLAG_TILED_DECAL_ROTATION);
         ret.emplace_back(NMaterialFlagName::FLAG_ALPHATESTVALUE);
+        ret.emplace_back(NMaterialFlagName::FLAG_ALPHASTEPVALUE);
+        ret.emplace_back(NMaterialFlagName::FLAG_FORCED_SHADOW_DIRECTION);
 
         ret.emplace_back(NMaterialFlagName::FLAG_ILLUMINATION_USED);
         ret.emplace_back(NMaterialFlagName::FLAG_ILLUMINATION_SHADOW_CASTER);

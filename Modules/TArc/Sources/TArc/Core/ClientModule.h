@@ -1,13 +1,14 @@
 #pragma once
 
 #include "TArc/Core/Private/CoreInterface.h"
-#include "Reflection/ReflectionRegistrator.h"
+#include "TArc/WindowSubSystem/UI.h"
+
+#include <Reflection/ReflectionRegistrator.h>
 
 namespace DAVA
 {
 namespace TArc
 {
-class UI;
 class DataContext;
 class ContextAccessor;
 class WindowKey;
@@ -15,9 +16,7 @@ class WindowKey;
 class ClientModule : public ReflectionBase
 {
 public:
-    virtual ~ClientModule()
-    {
-    }
+    virtual ~ClientModule() = default;
 
 protected:
     virtual void OnContextCreated(DataContext* context)
@@ -36,9 +35,20 @@ protected:
     {
     }
 
+    virtual void OnInterfaceRegistered(const Type* interfaceType)
+    {
+    }
+
+    virtual void OnBeforeInterfaceUnregistered(const Type* interfaceType)
+    {
+    }
+
     virtual void PostInit() = 0;
     ContextAccessor* GetAccessor();
+    const ContextAccessor* GetAccessor() const;
+
     UI* GetUI();
+    OperationInvoker* GetInvoker();
 
     template <typename Ret, typename Cls, typename... Args>
     void RegisterOperation(int operationID, Cls* object, Ret (Cls::*fn)(Args...) const);
@@ -49,15 +59,21 @@ protected:
     template <typename... Args>
     void InvokeOperation(int operationId, const Args&... args);
 
+    template <typename TInterface>
+    void RegisterInterface(TInterface* interface);
+
+    template <typename TInterface>
+    TInterface* QueryInterface() const;
+
 private:
-    void Init(CoreInterface* coreInterface, UI* ui);
+    void Init(CoreInterface* coreInterface, std::unique_ptr<UI>&& ui);
 
 private:
     friend class Core;
     friend class ControllerModule;
 
     CoreInterface* coreInterface = nullptr;
-    UI* ui = nullptr;
+    std::unique_ptr<UI> ui;
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(ClientModule)
     {
@@ -80,6 +96,19 @@ template <typename... Args>
 inline void ClientModule::InvokeOperation(int operationId, const Args&... args)
 {
     coreInterface->Invoke(operationId, args...);
+}
+
+template <typename TInterface>
+inline void ClientModule::RegisterInterface(TInterface* interface)
+{
+    coreInterface->RegisterInterface(this, Type::Instance<TInterface>(), interface);
+}
+
+template <typename TInterface>
+inline TInterface* ClientModule::QueryInterface() const
+{
+    Any result = coreInterface->QueryInterface(Type::Instance<TInterface>());
+    return result.Get<TInterface*>();
 }
 
 } // namespace TArc

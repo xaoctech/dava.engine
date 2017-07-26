@@ -1,5 +1,4 @@
 #include "../dbg_Draw.h"
-#include "../Common/PreProcess.h"
 #include "../rhi_ShaderSource.h"
 #include "../rhi_ShaderCache.h"
 #include "rhi_Utils.h"
@@ -8,12 +7,12 @@
 #include "Math/Vector.h"
 using DAVA::Vector3;
 
-#include "Render/RenderCallbacks.h"
+#include "Render/Renderer.h"
 
 #include <stdio.h>
 #include <stdarg.h>
 
-#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+#if defined(__DAVAENGINE_POSIX__)
 #define _vsnprintf vsnprintf
 #endif
 
@@ -1055,7 +1054,7 @@ void DbgDraw::_init()
 
     _permanent_text_small = true;
 
-    RenderCallbacks::RegisterResourceRestoreCallback(MakeFunction(this, &DbgDraw::_restore));
+    Renderer::GetSignals().needRestoreResources.Connect(this, &DbgDraw::_restore);
 }
 
 //------------------------------------------------------------------------------
@@ -1072,7 +1071,7 @@ void DbgDraw::_uninit()
         _tri2d_buf.destroy();
         _line2d_buf.destroy();
 
-        RenderCallbacks::UnRegisterResourceRestoreCallback(MakeFunction(this, &DbgDraw::_restore));
+        Renderer::GetSignals().needRestoreResources.Disconnect(this);
 
         _inited = false;
     }

@@ -158,18 +158,32 @@ void FilePath::InitializeBundleName()
     }
 #endif
 }
-#endif //#if defined(__DAVAENGINE_WINDOWS__)
-
-
-#if defined(__DAVAENGINE_ANDROID__)
+#elif defined(__DAVAENGINE_ANDROID__)
 void FilePath::InitializeBundleName()
 {
 #ifdef USE_LOCAL_RESOURCES
     SetBundleName(FilePath("/mnt/sdcard/DavaProject/Data/"));
 #endif
 }
+#elif defined(__DAVAENGINE_LINUX__)
+void FilePath::InitializeBundleName()
+{
+    // TODO: linux
+    FilePath execDirectory = FileSystem::Instance()->GetCurrentExecutableDirectory();
+    FilePath workingDirectory = FileSystem::Instance()->GetCurrentWorkingDirectory();
 
-#endif //#if defined(__DAVAENGINE_ANDROID__)
+    SetBundleName(execDirectory + "Data/");
+
+    if (workingDirectory != execDirectory)
+    {
+        FilePath dataDirPath(workingDirectory + "Data/");
+        if (FileSystem::Instance()->Exists(dataDirPath))
+        {
+            AddResourcesFolder(dataDirPath);
+        }
+    }
+}
+#endif
 
 FilePath FilePath::FilepathInDocuments(const char8* relativePathname)
 {
@@ -472,7 +486,7 @@ bool FilePath::operator==(const FilePath& path) const
 
 bool FilePath::operator!=(const FilePath& path) const
 {
-    return absolutePathname != path.absolutePathname;
+    return !(*this == path);
 }
 
 bool FilePath::IsDirectoryPathname() const
@@ -554,15 +568,19 @@ String FilePath::GetRelativePathname(const FilePath& forDirectory) const
 String FilePath::GetRelativePathname(const String& forDirectory) const
 {
     if (forDirectory.empty())
+    {
         return String();
+    }
 
     return GetRelativePathname(FilePath(forDirectory));
 }
 
 String FilePath::GetRelativePathname(const char8* forDirectory) const
 {
-    if (forDirectory == NULL)
+    if (forDirectory == nullptr)
+    {
         return String();
+    }
 
     return GetRelativePathname(FilePath(forDirectory));
 }
@@ -888,13 +906,13 @@ bool FilePath::IsAbsolutePathname(const String& pathname)
     return false;
 }
 
-String FilePath::AddPath(const FilePath& folder, const String& addition)
+String FilePath::AddPath(const FilePath& path, const String& addition)
 {
-    if (folder.IsEmpty())
+    if (path.IsEmpty())
         return NormalizePathname(addition);
 
-    String absPathname = folder.absolutePathname + addition;
-    if (folder.pathType == PATH_IN_RESOURCES && absPathname.find("~res:") == 0)
+    String absPathname = path.absolutePathname + addition;
+    if (path.pathType == PATH_IN_RESOURCES && absPathname.find("~res:") == 0)
     {
         const String frameworkPath = GetSystemPathname("~res:/", PATH_IN_RESOURCES) + "Data";
         absPathname = NormalizePathname(frameworkPath + absPathname.substr(5));
@@ -979,5 +997,11 @@ String FilePath::AsURL() const
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 
     return ("file://" + path);
+}
+
+template <>
+bool AnyCompare<FilePath>::IsEqual(const Any& v1, const Any& v2)
+{
+    return v1.Get<FilePath>() == v2.Get<FilePath>();
 }
 }

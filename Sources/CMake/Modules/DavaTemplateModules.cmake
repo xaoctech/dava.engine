@@ -46,6 +46,8 @@ CPP_FILES_RECURSE_IMPL
 CPP_FILES_RECURSE_STUB_${DAVA_PLATFORM_CURENT} 
 CPP_FILES_RECURSE_IMPL_${DAVA_PLATFORM_CURENT}
 #
+CPP_FILES_EXECUTE
+#
 ERASE_FILES                
 ERASE_FILES_${DAVA_PLATFORM_CURENT}     
 ERASE_FILES_NOT_${DAVA_PLATFORM_CURENT} 
@@ -71,6 +73,8 @@ STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_RELEASE
 STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_DEBUG     
 #
 DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURENT}           
+DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_RELEASE              
+DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_DEBUG                
 #
 FIND_SYSTEM_LIBRARY                   
 FIND_SYSTEM_LIBRARY_${DAVA_PLATFORM_CURENT}
@@ -90,7 +94,8 @@ BINARY_WIN64_DIR_RELEASE
 BINARY_WIN64_DIR_DEBUG
 BINARY_WIN64_DIR_RELWITHDEB
 #
-EXCLUDE_FROM_ALL
+JAR_FOLDERS_ANDROID
+JAVA_FOLDERS_ANDROID
 #
 PLUGIN_OUT_DIR
 PLUGIN_OUT_DIR_${DAVA_PLATFORM_CURENT}
@@ -98,7 +103,17 @@ PLUGIN_OUT_DIR_${DAVA_PLATFORM_CURENT}
 PLUGIN_RELATIVE_PATH_TO_FOLDER
 PLUGIN_COPY_ADD_FILES 
 #
+DEBUG_POSTFIX
+CHECKED_POSTFIX
+PROFILE_POSTFIX
+RELEASE_POSTFIX
 )
+
+macro(apply_default_value VAR DEFAULT_VALUE)
+    if (NOT ${VAR})
+       set(${VAR} ${DEFAULT_VALUE})
+    endif()
+endmacro()
 
 #
 set(  GLOBAL_PROPERTY_VALUES ${MAIN_MODULE_VALUES}  TARGET_MODULES_LIST 
@@ -146,7 +161,11 @@ macro( modules_tree_info_execute )
         set( CUSTOM_VALUE_2 -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE} )
     endif()
 
-    execute_process( COMMAND ${CMAKE_COMMAND} -G${CMAKE_GENERATOR} ${TMP_CMAKE_MODULE_INFO}  -DMODULES_TREE_INFO=true -D${DAVA_PLATFORM_CURENT}=true ${CUSTOM_VALUE} ${CUSTOM_VALUE_2}
+    if( QT_VERSION )
+        set( CUSTOM_VALUE_3 -DQT_VERSION=${QT_VERSION} )
+    endif()
+
+    execute_process( COMMAND ${CMAKE_COMMAND} -G${CMAKE_GENERATOR} ${TMP_CMAKE_MODULE_INFO} -DMODULES_TREE_INFO=true -D${DAVA_PLATFORM_CURENT}=true ${CUSTOM_VALUE} ${CUSTOM_VALUE_2} ${CUSTOM_VALUE_3}
                      WORKING_DIRECTORY ${TMP_CMAKE_MODULE_INFO_BUILD} )
 
     include( ${TMP_CMAKE_MODULE_INFO}/ModulesInfo.cmake )
@@ -154,7 +173,7 @@ macro( modules_tree_info_execute )
 endmacro()
 #
 macro( modules_tree_info )
-    if( NAME_MODULE )
+    if( NAME_MODULE AND ( NOT ${MODULE_TYPE} STREQUAL "PLUGIN" ) )
         append_property( LOADED_MODULES ${NAME_MODULE} )
     endif()
 
@@ -181,7 +200,7 @@ macro( modules_tree_info )
 
     set( EXTERNAL_MODULES ${EXTERNAL_MODULES} ${EXTERNAL_MODULES_${DAVA_PLATFORM_CURENT}} ${IMPL_MODULE} ) 
 
-    if( SRC_FOLDERS OR EXTERNAL_MODULES )
+    if( SRC_FOLDERS OR EXTERNAL_MODULES  )
 
         foreach( VALUE ${MAIN_MODULE_VALUES} )
             set( ${VALUE}_DIR_NAME ${${VALUE}} )
@@ -199,12 +218,17 @@ macro( modules_tree_info )
             set_project_files_properties( "${PROJECT_SOURCE_FILES_CPP}" )
             list( APPEND ALL_SRC  ${PROJECT_SOURCE_FILES} )
             list( APPEND ALL_SRC_HEADER_FILE_ONLY  ${PROJECT_HEADER_FILE_ONLY} )
-        endif()
+        endif()            
 
         foreach( VALUE ${MAIN_MODULE_VALUES} )
             set(  ${VALUE} ${${VALUE}_DIR_NAME} )
         endforeach()
     endif()
+
+    foreach( NAME ${FIND_PACKAGE} ${FIND_PACKAGE${DAVA_PLATFORM_CURENT}} )
+        find_package( ${NAME} COMPONENTS ${MODULE_COMPONENTS} )
+    endforeach()
+
 endmacro()
 #
 macro( generated_initialization_module_code )
@@ -222,7 +246,7 @@ macro( generated_initialization_module_code )
             string(REGEX REPLACE ";" "" IMODULE_INCLUDES ${IMODULE_INCLUDES} )
         endif()
 
-        list( APPEND INIT_POINTERS "struct ModuleManager::PointersToModules\n{\n" )
+        list( APPEND CTOR_CODE "    Vector<IModule*> modules\;\n")
         foreach( ITEM ${MODULES_INITIALIZATION} )
             set( NAMESPACE_PREFIX )
             if( MODULE_INITIALIZATION_NAMESPACE_${ITEM} )
@@ -231,24 +255,19 @@ macro( generated_initialization_module_code )
             endif()
 
             if( ${MODULE_TYPE_${ITEM}} STREQUAL "INLINE" OR ${MODULE_TYPE_${ITEM}} STREQUAL "STATIC" )
-                list( APPEND INIT_POINTERS "    ${NAMESPACE_PREFIX}${ITEM}* _${ITEM}\;\n" )
-				list( APPEND GET_MODULE_CODE "template <>\n${NAMESPACE_PREFIX}${ITEM}* ModuleManager::GetModule<${NAMESPACE_PREFIX}${ITEM}>() const\n" )
-				list( APPEND GET_MODULE_CODE "{\n    return pointersToModules->_${ITEM}\;\n}\n" )
-				list( APPEND CTOR_CODE "    pointersToModules->_${ITEM} = new ${NAMESPACE_PREFIX}${ITEM}(engine)\;\n" )
-				list( APPEND CTOR_CODE "    modules.emplace_back(pointersToModules->_${ITEM})\;\n" )   
+				list( APPEND CTOR_CODE "    modules.emplace_back(new ${NAMESPACE_PREFIX}${ITEM}(engine))\;\n" )
             elseif( ${MODULE_TYPE_${ITEM}} STREQUAL "PLUGIN" )
             endif()
-              
         endforeach()
-        list( APPEND INIT_POINTERS "}\;\n" )
+        list( APPEND CTOR_CODE "    return modules\;")
 
-        foreach( TYPE_VALUE  INIT_POINTERS GET_MODULE_CODE CTOR_CODE )
+        foreach( TYPE_VALUE CTOR_CODE )
             foreach( ITEM ${${TYPE_VALUE}} )
                 set( IMODULE_${TYPE_VALUE} "${IMODULE_${TYPE_VALUE}}${ITEM}")
             endforeach()
         endforeach() 
 
-        set( IMODULE_CPP ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${MODULE_MANAGER_TEMPLATE_NAME_WE}.cpp )
+        set( IMODULE_CPP ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${MODULE_MANAGER_TEMPLATE_NAME_WE}_generated.cpp)
         configure_file( ${MODULE_MANAGER_TEMPLATE}
                         ${IMODULE_CPP}  @ONLY ) 
         list( APPEND CPP_FILES ${IMODULE_CPP} )
@@ -369,19 +388,16 @@ macro( setup_main_module )
 
     if( MODULE_COMPONENTS_VALUE_NAME )
         get_property(  MODULE_COMPONENTS GLOBAL PROPERTY COMPONENTS_${MODULE_COMPONENTS_VALUE_NAME} )
-        list (FIND MODULE_COMPONENTS "ALL" _index)
-        if ( ${_index} GREATER -1 AND NOT EXCLUDE_FROM_ALL)
-            set( INIT true )
-        else()
-            if( ORIGINAL_NAME_MODULE )
-                list (FIND MODULE_COMPONENTS ${ORIGINAL_NAME_MODULE} _index)
-                if ( ${_index} GREATER -1)
-                    set( INIT true )
-                endif()
-            else()
+
+        if( ORIGINAL_NAME_MODULE )
+            list (FIND MODULE_COMPONENTS ${ORIGINAL_NAME_MODULE} _index)
+            if ( ${_index} GREATER -1)
                 set( INIT true )
             endif()
-        endif() 
+        else()
+            set( INIT true )
+        endif()
+
     else()
         set( INIT true )
     endif()
@@ -394,15 +410,15 @@ macro( setup_main_module )
 
         if( NOT MAIN_MODULES_FIND_FIRST_CALL_LIST )            
             modules_tree_info_execute()
+        endif()
+
+        if( MODULE_MANAGER_TEMPLATE )            
             generated_initialization_module_code()
-    		set( ROOT_NAME_MODULE ${NAME_MODULE} )
-            set( ROOT_MODULE_COMPONENTS ${MODULE_COMPONENTS} )
         endif()
 
         list( APPEND MAIN_MODULES_FIND_FIRST_CALL_LIST "call" )
         set_property(GLOBAL PROPERTY MAIN_MODULES_FIND_FIRST_CALL_LIST ${MAIN_MODULES_FIND_FIRST_CALL_LIST} ) 
     endif()
-
 
 
     if ( INIT AND NOT MODULES_TREE_INFO )
@@ -411,19 +427,35 @@ macro( setup_main_module )
         endif()
 
 #####
+        if (${MODULE_TYPE} STREQUAL "STATIC" OR ${MODULE_TYPE} STREQUAL "DYNAMIC" )
+            append_property(EXTERNAL_TEST_FOLDERS ${CMAKE_CURRENT_LIST_DIR})
+        endif()
+        
         if( ${MODULE_TYPE} STREQUAL "STATIC" )
+
+            if( CPP_FILES_EXECUTE )
+                get_filename_component( CPP_FILES_EXECUTE ${CPP_FILES_EXECUTE} ABSOLUTE )
+                save_property( PROPERTY_LIST DEFINITIONS CPP_FILES_EXECUTE )
+            endif()
 
             get_property( GLOBAL_DEFINITIONS_PROP GLOBAL PROPERTY GLOBAL_DEFINITIONS )
             get_property( DEFINITIONS_PROP GLOBAL PROPERTY DEFINITIONS )
             get_property( DEFINITIONS_PROP_${DAVA_PLATFORM_CURENT} GLOBAL PROPERTY DEFINITIONS_${DAVA_PLATFORM_CURENT} )
 
-            set( MODULE_CACHE   ${ORIGINAL_NAME_MODULE}
-                                #${MODULE_COMPONENTS} 
+            if( COVERAGE AND MACOS )
+                set( COVERAGE_STRING "COVERAGE" )
+            else()
+                set( COVERAGE_STRING  )                
+            endif()
+
+            set( MODULE_CACHE   "ROOT_${ORIGINAL_NAME_MODULE}"
+                                ${LOADED_MODULES} 
                                 ${DEFINITIONS} 
                                 ${DEFINITIONS_${DAVA_PLATFORM_CURENT}}  
                                 ${GLOBAL_DEFINITIONS_PROP}
                                 ${DEFINITIONS_PROP} 
-                                ${DEFINITIONS_PROP_${DAVA_PLATFORM_CURENT}} )
+                                ${DEFINITIONS_PROP_${DAVA_PLATFORM_CURENT}} 
+                                ${COVERAGE_STRING} )
 
             list( REMOVE_DUPLICATES MODULE_CACHE )
             list( SORT MODULE_CACHE )
@@ -480,10 +512,21 @@ macro( setup_main_module )
         endif()
         
         if( WIN )
-            list( APPEND STATIC_LIBRARIES_WIN         ${STATIC_LIBRARIES_WIN${DAVA_PROJECT_BIT}} )
-            list( APPEND STATIC_LIBRARIES_WIN_RELEASE ${STATIC_LIBRARIES_WIN${DAVA_PROJECT_BIT}_RELEASE} ) 
-            list( APPEND STATIC_LIBRARIES_WIN_DEBUG   ${STATIC_LIBRARIES_WIN${DAVA_PROJECT_BIT}_DEBUG} )
-            list( APPEND DYNAMIC_LIBRARIES_WIN        ${DYNAMIC_LIBRARIES_WIN${DAVA_PROJECT_BIT}} )
+            list( APPEND STATIC_LIBRARIES_WIN          ${STATIC_LIBRARIES_WIN${DAVA_PROJECT_BIT}} )
+            list( APPEND STATIC_LIBRARIES_WIN_RELEASE  ${STATIC_LIBRARIES_WIN${DAVA_PROJECT_BIT}_RELEASE} ) 
+            list( APPEND STATIC_LIBRARIES_WIN_DEBUG    ${STATIC_LIBRARIES_WIN${DAVA_PROJECT_BIT}_DEBUG} )
+            list( APPEND DYNAMIC_LIBRARIES_WIN         ${DYNAMIC_LIBRARIES_WIN${DAVA_PROJECT_BIT}} )
+            list( APPEND DYNAMIC_LIBRARIES_WIN_RELEASE ${DYNAMIC_LIBRARIES_WIN${DAVA_PROJECT_BIT}_RELEASE} )
+            list( APPEND DYNAMIC_LIBRARIES_WIN_DEBUG   ${DYNAMIC_LIBRARIES_WIN${DAVA_PROJECT_BIT}_DEBUG} )
+
+            foreach( CONFIGURE "_RELEASE" "_DEBUG" )
+                foreach( DYNAMIC_LIBRARY ${DYNAMIC_LIBRARIES_WIN${DAVA_PROJECT_BIT}${CONFIGURE}} )
+                    get_filename_component( DYNAMIC_LIBRARY ${DYNAMIC_LIBRARY} ABSOLUTE )
+                    get_filename_component( DYNAMIC_LIBRARY_DIR ${DYNAMIC_LIBRARY}  DIRECTORY )
+                    append_property( MODULE_DYNAMIC_LIBRARIES_DIR${CONFIGORE} ${DYNAMIC_LIBRARY_DIR} )  
+                endforeach()
+            endforeach()
+
         endif()      
        
         #"FIND LIBRARY"
@@ -502,7 +545,8 @@ macro( setup_main_module )
 
         #"FIND PACKAGE"
         foreach( NAME ${FIND_PACKAGE} ${FIND_PACKAGE${DAVA_PLATFORM_CURENT}} )
-            find_package( ${NAME} COMPONENTS ${ROOT_MODULE_COMPONENTS} )
+            find_package( ${NAME} COMPONENTS ${MODULE_COMPONENTS} )
+
             if (PACKAGE_${NAME}_INCLUDES)
                 foreach( PACKAGE_INCLUDE ${PACKAGE_${NAME}_INCLUDES} )
                     include_directories(${${PACKAGE_INCLUDE}})
@@ -567,10 +611,8 @@ macro( setup_main_module )
 
             foreach ( ITEM  HPP_FILES_RECURSE HPP_FILES
                             CPP_FILES_RECURSE CPP_FILES )
-
                 list( APPEND ${ITEM}   ${${ITEM}_${CONECTION_TYPE}} )
                 list( APPEND ${ITEM}_${DAVA_PLATFORM_CURENT} ${${ITEM}_${CONECTION_TYPE}_${DAVA_PLATFORM_CURENT}} )
-            
             endforeach ()
 
         endif()
@@ -604,17 +646,13 @@ macro( setup_main_module )
 
         set_project_files_properties( "${ALL_SRC}" )
 
-        if( COVERAGE AND TARGET_FOLDERS_${PROJECT_NAME} AND  NOT ( ${MODULE_TYPE} STREQUAL "INLINE" ) )
-            string(REPLACE ";" " " TARGET_FOLDERS_${PROJECT_NAME} "${TARGET_FOLDERS_${PROJECT_NAME}}" )
-            string(REPLACE "\"" "" TARGET_FOLDERS_${PROJECT_NAME} "${TARGET_FOLDERS_${PROJECT_NAME}}" )
-            list( APPEND DEFINITIONS -DTARGET_FOLDERS_${PROJECT_NAME}="${TARGET_FOLDERS_${PROJECT_NAME}}" )
-        endif()
-
         #"SAVE PROPERTY"
         save_property( PROPERTY_LIST 
                 DEFINITIONS
                 DEFINITIONS_${DAVA_PLATFORM_CURENT}
                 DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURENT}          
+                DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_RELEASE
+                DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_DEBUG
                 STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT} 
                 STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_RELEASE 
                 STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_DEBUG 
@@ -629,6 +667,8 @@ macro( setup_main_module )
                 BINARY_WIN64_DIR_RELEASE
                 BINARY_WIN64_DIR_DEBUG
                 BINARY_WIN64_DIR_RELWITHDEB
+                JAR_FOLDERS_ANDROID
+                JAVA_FOLDERS_ANDROID
                 )
 
         load_property( PROPERTY_LIST 
@@ -674,24 +714,16 @@ macro( setup_main_module )
             set( CREATE_NEW_MODULE true )
 
             if( ${MODULE_TYPE} STREQUAL "STATIC" )
-                
                 get_property( MODULE_CACHE_LIST GLOBAL PROPERTY MODULE_CACHE_LIST )
-
                 list (FIND MODULE_CACHE_LIST ${MODULE_CACHE} _index)
-
                 if ( ${_index} GREATER -1 )
                     set( CREATE_NEW_MODULE )
-
                     list(GET MODULE_CACHE_LIST ${_index}  MODULE_CACHE )
                     get_property( MODULE_CACHE_LOADED_NAME GLOBAL PROPERTY ${MODULE_CACHE} )
                     set_property( GLOBAL PROPERTY CACHE_LOG_${NAME_MODULE}_MODULE_UNIQUE  false )
-
                     append_property( CACHE_LOG_${MODULE_CACHE_LOADED_NAME}_MODULE_USES_LIST ${NAME_MODULE} )  
-
                     set( NAME_MODULE ${MODULE_CACHE_LOADED_NAME} )
-
                 endif()
-
             endif()
 
 ######
@@ -708,7 +740,6 @@ macro( setup_main_module )
                 if( CREATE_NEW_MODULE )
                     add_library( ${NAME_MODULE} STATIC  ${ALL_SRC} ${ALL_SRC_HEADER_FILE_ONLY} )
                 endif()
-
                 append_property( TARGET_MODULES_LIST ${NAME_MODULE} )  
 
             elseif( ${MODULE_TYPE} STREQUAL "PLUGIN" )
@@ -721,19 +752,32 @@ macro( setup_main_module )
 
                 if( WIN32 )
                     set_target_properties ( ${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELEASE "/DEBUG" )
+                    set_target_properties ( ${PROJECT_NAME} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:libcmt.lib /NODEFAULTLIB:libcmtd.lib /SAFESEH:NO" )
+
+                    # Generate debug info also in release builds
+                    set_target_properties ( ${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELEASE "/DEBUG /SUBSYSTEM:WINDOWS" )
+                    set_target_properties ( ${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELWITHDEBINFO "/DEBUG /SUBSYSTEM:WINDOWS" )
                 endif()
+
+                apply_default_value(DEBUG_POSTFIX "Debug")
+                apply_default_value(CHECKED_POSTFIX " ")
+                apply_default_value(PROFILE_POSTFIX " ")
+                apply_default_value(RELEASE_POSTFIX " ")
 
                 set_target_properties( ${NAME_MODULE} PROPERTIES
                                                                  DEBUG_OUTPUT_NAME "${NAME_MODULE}" 
-                                                                 DEBUG_POSTFIX "Debug")
+                                                                 DEBUG_POSTFIX ${DEBUG_POSTFIX}
+                                                                 CHECKED_POSTFIX ${CHECKED_POSTFIX}
+                                                                 PROFILE_POSTFIX ${PROFILE_POSTFIX}
+                                                                 RELEASE_POSTFIX ${RELEASE_POSTFIX})
 
                 if( WIN32 AND NOT DEPLOY )
-                    set( BINARY_WIN32_DIR_RELEASE    "${CMAKE_CURRENT_BINARY_DIR}/Release" )
-                    set( BINARY_WIN32_DIR_DEBUG      "${CMAKE_CURRENT_BINARY_DIR}/Debug" )
-                    set( BINARY_WIN32_DIR_RELWITHDEB "${CMAKE_CURRENT_BINARY_DIR}/RelWithDebinfo" )
-                    set( BINARY_WIN64_DIR_RELEASE    "${CMAKE_CURRENT_BINARY_DIR}/Release" )
-                    set( BINARY_WIN64_DIR_DEBUG      "${CMAKE_CURRENT_BINARY_DIR}/Debug" )
-                    set( BINARY_WIN64_DIR_RELWITHDEB "${CMAKE_CURRENT_BINARY_DIR}/RelWithDebinfo" )
+                    set( BINARY_WIN32_DIR_RELEASE    "${BINARY_WIN32_DIR_RELEASE}" "${CMAKE_CURRENT_BINARY_DIR}/Release" )
+                    set( BINARY_WIN32_DIR_DEBUG    "${BINARY_WIN32_DIR_DEBUG}"   "${CMAKE_CURRENT_BINARY_DIR}/Debug" )
+                    set( BINARY_WIN32_DIR_RELWITHDEB  "${BINARY_WIN32_DIR_RELWITHDEB}"  "${CMAKE_CURRENT_BINARY_DIR}/RelWithDebinfo" )
+                    set( BINARY_WIN64_DIR_RELEASE  "${BINARY_WIN64_DIR_RELEASE}"  "${CMAKE_CURRENT_BINARY_DIR}/Release" )
+                    set( BINARY_WIN64_DIR_DEBUG    "${BINARY_WIN64_DIR_DEBUG}"  "${CMAKE_CURRENT_BINARY_DIR}/Debug" )
+                    set( BINARY_WIN64_DIR_RELWITHDEB "${BINARY_WIN64_DIR_RELWITHDEB}" "${CMAKE_CURRENT_BINARY_DIR}/RelWithDebinfo" )
                     save_property( PROPERTY_LIST BINARY_WIN32_DIR_RELEASE 
                                                  BINARY_WIN32_DIR_DEBUG
                                                  BINARY_WIN32_DIR_RELWITHDEB
@@ -787,10 +831,11 @@ macro( setup_main_module )
                 include_directories( ${INCLUDES_PRIVATE} ) 
             endif() 
 
-            include_directories( . ) 
+            #include_directories( "Sources/" ) 
 
 
             if( CREATE_NEW_MODULE )
+
 
                 if( WIN32 )
                     grab_libs(LIST_SHARED_LIBRARIES_DEBUG   "${STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_DEBUG}"   EXCLUDE_LIBS ADDITIONAL_DEBUG_LIBS)
@@ -820,10 +865,22 @@ macro( setup_main_module )
                     link_with_qt5(${PROJECT_NAME})
                 endif()
 
-                if( MACOS AND COVERAGE AND NOT DAVA_MEGASOLUTION )
+                if( COVERAGE AND MACOS )
+
+                    string(REPLACE ";" " " TARGET_FOLDERS_${PROJECT_NAME} "${TARGET_FOLDERS_${PROJECT_NAME}}" )
+                    string(REPLACE "\"" "" TARGET_FOLDERS_${PROJECT_NAME} "${TARGET_FOLDERS_${PROJECT_NAME}}" )
+
                     add_definitions( -DTEST_COVERAGE )
                     add_definitions( -DDAVA_FOLDERS="${DAVA_FOLDERS}" )
                     add_definitions( -DDAVA_UNITY_FOLDER="${CMAKE_BINARY_DIR}/unity_pack" )
+
+                    list( APPEND EXECUTE_DEFINITIONS -DTARGET_FOLDERS_${ORIGINAL_NAME_MODULE}="${TARGET_FOLDERS_${PROJECT_NAME}}" )
+
+                    append_property( EXECUTE_DEFINITIONS_${NAME_MODULE} "${EXECUTE_DEFINITIONS}" )
+
+                    set_target_properties(${NAME_MODULE} PROPERTIES XCODE_ATTRIBUTE_GCC_GENERATE_TEST_COVERAGE_FILES YES )
+                    set_target_properties(${NAME_MODULE} PROPERTIES XCODE_ATTRIBUTE_GCC_INSTRUMENT_PROGRAM_FLOW_ARCS YES )
+
                 endif()   
 
                 if ( WINDOWS_UAP )

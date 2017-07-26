@@ -32,9 +32,13 @@ public:
     DAVA::FilePath GetParticlesGfxPath() const;
 
     static DAVA::FilePath CreateProjectPathFromPath(const DAVA::FilePath& pathname);
+    static DAVA::FilePath GetDataSourcePath(const DAVA::FilePath& pathname);
+    static DAVA::FilePath GetDataPath(const DAVA::FilePath& pathname);
     const EditorConfig* GetEditorConfig() const;
     const DAVA::Vector<MaterialTemplateInfo>* GetMaterialTemplatesInfo() const;
     DAVA_DEPRECATED(const SpritesPackerModule* GetSpritesModules() const);
+
+    static DAVA::FilePath GetDataSource3DPath(const DAVA::FilePath& projectPath);
 
 public:
     static const DAVA::String ProjectPathProperty;

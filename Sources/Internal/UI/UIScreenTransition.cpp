@@ -10,13 +10,24 @@
 #include "Scene3D/Scene.h"
 #include "UI/UIScreenshoter.h"
 #include "Logger/Logger.h"
+#include "Reflection/ReflectionRegistrator.h"
+#include "UI/Update/UIUpdateComponent.h"
+#include "UI/Render/UIRenderSystem.h"
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(UIScreenTransition)
+{
+    ReflectionRegistrator<UIScreenTransition>::Begin()
+    .ConstructorByPointer()
+    .DestructorByPointer([](UIScreenTransition* o) { o->Release(); })
+    .End();
+}
+
 UIScreenTransition::UIScreenTransition()
 {
     interpolationFunc = Interpolation::GetFunction(Interpolation::EASY_IN_EASY_OUT);
-    SetFillBorderOrder(UIScreen::FILL_BORDER_AFTER_DRAW);
+    GetOrCreateComponent<UIUpdateComponent>();
 }
 
 UIScreenTransition::~UIScreenTransition()
@@ -39,8 +50,8 @@ void UIScreenTransition::CreateRenderTargets()
     uint32 width = physicalTargetSize.dx;
     uint32 height = physicalTargetSize.dy;
 
-    Texture* tex1 = Texture::CreateFBO(width, height, FORMAT_RGB565, true);
-    Texture* tex2 = Texture::CreateFBO(width, height, FORMAT_RGB565, true);
+    Texture* tex1 = Texture::CreateFBO(width, height, rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R5G6B5) ? FORMAT_RGB565 : FORMAT_RGBA8888, true);
+    Texture* tex2 = Texture::CreateFBO(width, height, rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R5G6B5) ? FORMAT_RGB565 : FORMAT_RGBA8888, true);
 
     renderTargetPrevScreen = Sprite::CreateFromTexture(tex1, 0, 0, static_cast<float32>(width), static_cast<float32>(height), true);
     renderTargetNextScreen = Sprite::CreateFromTexture(tex2, 0, 0, static_cast<float32>(width), static_cast<float32>(height), true);
@@ -55,6 +66,16 @@ void UIScreenTransition::ReleaseRenderTargets()
     SafeRelease(renderTargetNextScreen);
 }
 
+void UIScreenTransition::SetSourceScreen(UIControl* prevScreen, bool updateScreen)
+{
+    SetSourceControl(prevScreen, updateScreen);
+}
+
+void UIScreenTransition::SetDestinationScreen(UIControl* nextScreen, bool updateScreen)
+{
+    SetDestinationControl(nextScreen, updateScreen);
+}
+
 void UIScreenTransition::StartTransition()
 {
     currentTime = 0.0f;
@@ -63,18 +84,20 @@ void UIScreenTransition::StartTransition()
     CreateRenderTargets();
 }
 
-void UIScreenTransition::SetSourceScreen(UIControl* prevScreen, bool updateScreen)
+void UIScreenTransition::SetSourceControl(UIControl* prevControl, bool updateControl)
 {
     DVASSERT(renderTargetPrevScreen && renderTargetNextScreen);
 
-    UIControlSystem::Instance()->GetScreenshoter()->MakeScreenshot(prevScreen, renderTargetPrevScreen->GetTexture(), false, updateScreen);
+    UIScreenshoter* screenshoter = UIControlSystem::Instance()->GetRenderSystem()->GetScreenshoter();
+    screenshoter->MakeScreenshot(prevControl, renderTargetPrevScreen->GetTexture(), true, updateControl);
 }
 
-void UIScreenTransition::SetDestinationScreen(UIControl* nextScreen, bool updateScreen)
+void UIScreenTransition::SetDestinationControl(UIControl* nextControl, bool updateControl /*= true*/)
 {
     DVASSERT(renderTargetPrevScreen && renderTargetNextScreen);
 
-    UIControlSystem::Instance()->GetScreenshoter()->MakeScreenshot(nextScreen, renderTargetNextScreen->GetTexture(), false, updateScreen);
+    UIScreenshoter* screenshoter = UIControlSystem::Instance()->GetRenderSystem()->GetScreenshoter();
+    screenshoter->MakeScreenshot(nextControl, renderTargetNextScreen->GetTexture(), true, updateControl);
 }
 
 void UIScreenTransition::EndTransition()
@@ -84,7 +107,7 @@ void UIScreenTransition::EndTransition()
 
 void UIScreenTransition::Update(float32 timeElapsed)
 {
-    UIScreen::Update(timeElapsed);
+    UIControl::Update(timeElapsed);
 
     currentTime += timeElapsed;
     normalizedTime = interpolationFunc(currentTime / duration);

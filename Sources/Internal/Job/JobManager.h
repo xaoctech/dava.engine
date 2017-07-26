@@ -1,20 +1,18 @@
-#ifndef __DAVAENGINE_JOB_MANAGER_H__
-#define __DAVAENGINE_JOB_MANAGER_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "Base/Singleton.h"
-#include "Base/Message.h"
-#include "Functional/Function.h"
-#include "Base/FastName.h"
 #include "Concurrency/Atomic.h"
 #include "Concurrency/Mutex.h"
+#include "Concurrency/Semaphore.h"
 #include "Concurrency/Thread.h"
-#include "JobQueue.h"
-#include "JobThread.h"
+#include "Functional/Function.h"
+#include "Job/JobQueue.h"
 
 namespace DAVA
 {
 class Engine;
+class JobThread;
 class JobManager : public Singleton<JobManager>
 {
 public:
@@ -27,26 +25,13 @@ public:
     };
 
 public:
-#if defined(__DAVAENGINE_COREV2__)
     JobManager(Engine* e);
-    Engine* engine = nullptr;
-    size_t sigUpdateId = 0;
-#else
-    JobManager();
-#endif
     virtual ~JobManager();
 
-#if defined(__DAVAENGINE_COREV2__)
     /*! This function should be called periodically from the main thread. All main-thread jobs added to the queue
         will be performed inside this function. 
     */
     void Update(float32 frameDelta = 0.0f);
-#else
-    /*! This function should be called periodically from the main thread. All main-thread jobs added to the queue
-        will be performed inside this function. 
-    */
-    void Update();
-#endif
 
     /*! Add function to execute in the main-thread.
 		\param [in] fn Function to execute.
@@ -103,6 +88,7 @@ protected:
         Function<void()> fn;
     };
 
+    Engine* engine = nullptr;
     Atomic<uint32> mainJobIDCounter;
     uint32 mainJobLastExecutedID;
 
@@ -117,5 +103,3 @@ protected:
     Vector<JobThread*> workerThreads;
 };
 }
-
-#endif //__DAVAENGINE_JOB_MANAGER_H__

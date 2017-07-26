@@ -6,6 +6,11 @@ namespace DAVA
 {
 namespace Metas
 {
+DisplayName::DisplayName(const String& displayName_)
+    : displayName(displayName_)
+{
+}
+
 Range::Range(const Any& minValue_, const Any& maxValue_, const Any& step_)
     : minValue(minValue_)
     , maxValue(maxValue_)
@@ -15,6 +20,11 @@ Range::Range(const Any& minValue_, const Any& maxValue_, const Any& step_)
 
 FloatNumberAccuracy::FloatNumberAccuracy(uint32 accuracy_)
     : accuracy(accuracy_)
+{
+}
+
+MaxLength::MaxLength(uint32 length_)
+    : length(length_)
 {
 }
 
@@ -29,15 +39,20 @@ ValidationResult Validator::Validate(const Any& value, const Any& prevValue) con
     return fn(value, prevValue);
 }
 
-File::File(bool shouldExists_, const String& filters_)
-    : shouldExists(shouldExists_)
-    , filters(filters_)
+File::File(const String& filters_, const String& dlgTitle_)
+    : filters(filters_)
+    , dlgTitle(dlgTitle_)
 {
 }
 
-Directory::Directory(bool shouldExists_)
-    : shouldExists(shouldExists_)
+String File::GetDefaultPath() const
 {
+    return "";
+}
+
+String File::GetRootDirectory() const
+{
+    return "";
 }
 
 Group::Group(const char* groupName_)
@@ -54,6 +69,11 @@ ValueDescription::ValueDescription(const TValueDescriptorFn& fn_)
 String ValueDescription::GetDescription(const Any& v) const
 {
     return fn(v);
+}
+
+Tooltip::Tooltip(const String& tooltipFieldName_)
+    : tooltipFieldName(tooltipFieldName_)
+{
 }
 
 } // namespace Metas

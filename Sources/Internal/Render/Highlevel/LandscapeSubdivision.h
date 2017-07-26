@@ -1,7 +1,8 @@
-#ifndef __DAVAENGINE_HEIGHTMAP_SUBDIVISION_H__
-#define __DAVAENGINE_HEIGHTMAP_SUBDIVISION_H__
+#pragma once
 
+#include <Base/Any.h>
 #include "Base/BaseTypes.h"
+#include "Reflection/Reflection.h"
 #include "Base/IntrospectionBase.h"
 #include "MemoryManager/MemoryProfiler.h"
 
@@ -53,6 +54,8 @@ public:
         float32 zoomMaxPatchRadiusError = 0.9f;
         float32 zoomMaxAbsoluteHeightError = 3.f;
 
+        bool operator==(const SubdivisionMetrics& other) const;
+
         INTROSPECTION(SubdivisionMetrics,
                       MEMBER(normalMaxHeightError, "normalMaxHeightError", I_VIEW | I_EDIT)
                       MEMBER(normalMaxPatchRadiusError, "normalMaxPatchRadiusError", I_VIEW | I_EDIT)
@@ -61,6 +64,8 @@ public:
                       MEMBER(zoomMaxPatchRadiusError, "zoomMaxPatchRadiusError", I_VIEW | I_EDIT)
                       MEMBER(zoomMaxAbsoluteHeightError, "zoomMaxAbsoluteHeightError", I_VIEW | I_EDIT)
                       );
+
+        DAVA_VIRTUAL_REFLECTION(SubdivisionMetrics, InspBase);
     };
 
     void BuildSubdivision(Heightmap* heightmap, const AABBox3& bbox, uint32 patchSizeQuads, uint32 minSubdivideLevel, bool calculateMorph);
@@ -127,6 +132,8 @@ public:
     INTROSPECTION(LandscapeSubdivision,
                   MEMBER(metrics, "metrics", I_VIEW | I_EDIT)
                   );
+
+    DAVA_VIRTUAL_REFLECTION(LandscapeSubdivision, InspBase);
 };
 
 inline const LandscapeSubdivision::SubdivisionLevelInfo& LandscapeSubdivision::GetLevelInfo(uint32 level) const
@@ -173,6 +180,8 @@ inline LandscapeSubdivision::SubdivisionMetrics& LandscapeSubdivision::GetMetric
 {
     return metrics;
 }
-};
 
-#endif //__DAVAENGINE_HEIGHTMAP_SUBDIVISION_H__
+template <>
+bool AnyCompare<LandscapeSubdivision::SubdivisionMetrics>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2);
+extern template struct AnyCompare<LandscapeSubdivision::SubdivisionMetrics>;
+}

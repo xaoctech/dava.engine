@@ -4,37 +4,80 @@
 #include "TArc/DataProcessing/DataListener.h"
 #include "TArc/DataProcessing/DataWrappersProcessor.h"
 #include "TArc/Controls/ControlDescriptor.h"
+#include "TArc/WindowSubSystem/QtTArcEvents.h"
+#include "TArc/WindowSubSystem/UI.h"
+#include "TArc/Utils/ScopedValueGuard.h"
 
 #include <QWidget>
 #include <QObject>
+#include <QCoreApplication>
+
+#define RETURN_IF_MODEL_LOST(x) \
+    if (this->wrapper.HasData() == false) \
+    {\
+        return (x);\
+    }
+
+#define DECLARE_CONTROL_PARAMS(Fields) \
+    struct Params : BaseParams\
+    { \
+        Params(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui, const DAVA::TArc::WindowKey& wndKey) \
+            : BaseParams(accessor, ui, wndKey){} \
+        DAVA::TArc::ControlDescriptorBuilder<Fields> fields; \
+    };
 
 namespace DAVA
 {
 namespace TArc
 {
-template <typename TBase>
-class ControlProxy : protected TBase, protected DataListener
+class ControlProxy
 {
 public:
-    ControlProxy(const ControlDescriptor& descriptor_, DataWrappersProcessor* wrappersProcessor, Reflection model_, QWidget* parent)
+    virtual ~ControlProxy() = default;
+
+    virtual void ForceUpdate() = 0;
+    virtual void TearDown() = 0;
+    virtual QWidget* ToWidgetCast() = 0;
+};
+
+template <typename TBase>
+class ControlProxyImpl : protected TBase, public ControlProxy, protected DataListener
+{
+public:
+    struct BaseParams
+    {
+        BaseParams(ContextAccessor* accessor_, UI* ui_, WindowKey wndKey_)
+            : accessor(accessor_)
+            , ui(ui_)
+            , wndKey(wndKey_)
+        {
+        }
+
+        ContextAccessor* accessor = nullptr;
+        UI* ui = nullptr;
+        WindowKey wndKey = WindowKey(FastName(""));
+    };
+    ControlProxyImpl(const BaseParams& params, const ControlDescriptor& descriptor_, DataWrappersProcessor* wrappersProcessor, Reflection model_, QWidget* parent)
         : TBase(parent)
+        , controlParams(params)
         , descriptor(descriptor_)
         , model(model_)
     {
         SetupControl(wrappersProcessor);
     }
 
-    ControlProxy(const ControlDescriptor& descriptor_, ContextAccessor* accessor, Reflection model_, QWidget* parent)
+    ControlProxyImpl(const BaseParams& params, const ControlDescriptor& descriptor_, ContextAccessor* accessor, Reflection model_, QWidget* parent)
         : TBase(parent)
+        , controlParams(params)
         , descriptor(descriptor_)
         , model(model_)
     {
         SetupControl(accessor);
     }
 
-    ~ControlProxy() override
+    ~ControlProxyImpl() override
     {
-        wrapper.SetListener(nullptr);
+        TearDown();
     }
 
     void SetObjectName(const QString& objName)
@@ -42,20 +85,27 @@ public:
         TBase::setObjectName(objName);
     }
 
-    QWidget* ToWidgetCast()
+    QWidget* ToWidgetCast() override
     {
         return this;
     }
 
-    void ForceUpdateControl()
+    void ForceUpdate() override
     {
         OnDataChanged(wrapper, Vector<Any>());
     }
 
+    void TearDown() override
+    {
+        wrapper.SetListener(nullptr);
+        wrapper = DataWrapper();
+    }
+
 protected:
     template <typename TPrivate>
-    ControlProxy(const ControlDescriptor& descriptor_, DataWrappersProcessor* wrappersProcessor, Reflection model_, TPrivate&& d, QWidget* parent)
+    ControlProxyImpl(const BaseParams& params, const ControlDescriptor& descriptor_, DataWrappersProcessor* wrappersProcessor, Reflection model_, TPrivate&& d, QWidget* parent)
         : TBase(std::move(d), parent)
+        , controlParams(params)
         , descriptor(descriptor_)
         , model(model_)
     {
@@ -63,8 +113,9 @@ protected:
     }
 
     template <typename TPrivate>
-    ControlProxy(const ControlDescriptor& descriptor_, ContextAccessor* accessor, Reflection model_, TPrivate&& d, QWidget* parent)
+    ControlProxyImpl(const BaseParams& params, const ControlDescriptor& descriptor_, ContextAccessor* accessor, Reflection model_, TPrivate&& d, QWidget* parent)
         : TBase(std::move(d), parent)
+        , controlParams(params)
         , descriptor(descriptor_)
         , model(model_)
     {
@@ -73,14 +124,35 @@ protected:
 
     void SetupControl(DataWrappersProcessor* wrappersProcessor)
     {
-        wrapper = wrappersProcessor->CreateWrapper(MakeFunction(this, &ControlProxy<TBase>::GetModel), nullptr);
+        wrapper = wrappersProcessor->CreateWrapper(MakeFunction(this, &ControlProxyImpl<TBase>::GetModel), nullptr);
         wrapper.SetListener(this);
     }
 
     void SetupControl(ContextAccessor* accessor)
     {
-        wrapper = accessor->CreateWrapper(MakeFunction(this, &ControlProxy<TBase>::GetModel));
+        wrapper = accessor->CreateWrapper(MakeFunction(this, &ControlProxyImpl<TBase>::GetModel));
         wrapper.SetListener(this);
+    }
+
+    bool event(QEvent* e) override
+    {
+        switch (e->type())
+        {
+        case QEvent::FocusIn:
+        case QEvent::FocusOut:
+        case QEvent::KeyPress:
+        case QEvent::KeyRelease:
+        case QEvent::MouseButtonPress:
+        case QEvent::MouseButtonRelease:
+        case QEvent::MouseMove:
+        case QEvent::MouseButtonDblClick:
+            RETURN_IF_MODEL_LOST(false);
+            break;
+        default:
+            break;
+        }
+
+        return TBase::event(e);
     }
 
 protected:
@@ -142,9 +214,10 @@ protected:
         DVASSERT(fieldValue.IsValid());
 
         bool readOnlyFieldValue = false;
-        if (descriptor.IsChanged(readOnlyRole))
+        FastName readOnlyFieldName = descriptor.GetName(readOnlyRole);
+        if (readOnlyFieldName.IsValid())
         {
-            DAVA::Reflection fieldReadOnly = model.GetField(descriptor.GetName(readOnlyRole));
+            DAVA::Reflection fieldReadOnly = model.GetField(readOnlyFieldName);
             if (fieldReadOnly.IsValid())
             {
                 readOnlyFieldValue = fieldReadOnly.GetValue().Cast<bool>();
@@ -175,6 +248,7 @@ protected:
 protected:
     Reflection model;
     DataWrapper wrapper;
+    BaseParams controlParams;
 
 private:
     ControlDescriptor descriptor;

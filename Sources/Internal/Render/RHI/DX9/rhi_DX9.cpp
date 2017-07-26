@@ -4,7 +4,7 @@
 
 #include "Debug/DVAssert.h"
 #include "Logger/Logger.h"
-#include "Core/Core.h"
+
 using DAVA::Logger;
 
 #include "_dx9.h"
@@ -64,6 +64,7 @@ dx9_TextureFormatSupported(TextureFormat format, ProgType progType)
     case TEXTURE_FORMAT_DXT3:
     case TEXTURE_FORMAT_DXT5:
     case TEXTURE_FORMAT_R32F:
+    case TEXTURE_FORMAT_RG32F:
     case TEXTURE_FORMAT_RGBA32F:
         supported = true;
         break;
@@ -127,20 +128,37 @@ static void dx9_Uninitialize()
 static void dx9_Reset(const ResetParam& param)
 {
     bool paramsChanged = false;
-    _DX9_ResetParamsMutex.Lock();
-    UINT interval = (param.vsyncEnabled) ? D3DPRESENT_INTERVAL_ONE : D3DPRESENT_INTERVAL_IMMEDIATE;
-    if (param.width != _DX9_PresentParam.BackBufferWidth
-        || param.height != _DX9_PresentParam.BackBufferHeight
-        || param.fullScreen != !_DX9_PresentParam.Windowed
-        || interval != _DX9_PresentParam.PresentationInterval
-        )
-    {
-        _DX9_PresentParam.BackBufferWidth = param.width;
-        _DX9_PresentParam.BackBufferHeight = param.height;
-        _DX9_PresentParam.Windowed = !param.fullScreen;
-        _DX9_PresentParam.PresentationInterval = interval;
 
-        paramsChanged = true;
+    _DX9_ResetParamsMutex.Lock();
+    if (_DX9_PresentRectPtr)
+    {
+        _DX9_PresentRectPtr->right = param.width;
+        _DX9_PresentRectPtr->bottom = param.height;
+
+        if (param.width > _DX9_PresentParam.BackBufferWidth || param.height > _DX9_PresentParam.BackBufferHeight)
+        {
+            _DX9_PresentParam.BackBufferWidth = DAVA::Max(UINT(param.width), _DX9_PresentParam.BackBufferWidth);
+            _DX9_PresentParam.BackBufferHeight = DAVA::Max(UINT(param.height), _DX9_PresentParam.BackBufferHeight);
+
+            paramsChanged = true;
+        }
+    }
+    else
+    {
+        UINT interval = (param.vsyncEnabled) ? D3DPRESENT_INTERVAL_ONE : D3DPRESENT_INTERVAL_IMMEDIATE;
+        if (param.width != _DX9_PresentParam.BackBufferWidth
+            || param.height != _DX9_PresentParam.BackBufferHeight
+            || param.fullScreen != !_DX9_PresentParam.Windowed
+            || interval != _DX9_PresentParam.PresentationInterval
+            )
+        {
+            _DX9_PresentParam.BackBufferWidth = param.width;
+            _DX9_PresentParam.BackBufferHeight = param.height;
+            _DX9_PresentParam.Windowed = !param.fullScreen;
+            _DX9_PresentParam.PresentationInterval = interval;
+
+            paramsChanged = true;
+        }
     }
     _DX9_ResetParamsMutex.Unlock();
 
@@ -171,7 +189,8 @@ static void dx9_SynchronizeCPUGPU(uint64* cpuTimestamp, uint64* gpuTimestamp)
 }
 
 //------------------------------------------------------------------------------
-void DX9CheckMultisampleSupport()
+
+void DX9CheckMultisampleSupport(UINT adapter)
 {
     const _D3DFORMAT formatsToCheck[] = { D3DFMT_A8R8G8B8, D3DFMT_D24S8 };
     const D3DMULTISAMPLE_TYPE samplesToCheck[] = { D3DMULTISAMPLE_2_SAMPLES, D3DMULTISAMPLE_4_SAMPLES, D3DMULTISAMPLE_8_SAMPLES };
@@ -183,7 +202,7 @@ void DX9CheckMultisampleSupport()
         DWORD qualityLevels = 0;
         for (uint32 f = 0; f < countof(formatsToCheck); ++f)
         {
-            HRESULT hr = _D3D9->CheckDeviceMultiSampleType(_D3D9_Adapter, D3DDEVTYPE_HAL, formatsToCheck[f], TRUE, samplesToCheck[s], &qualityLevels);
+            HRESULT hr = _D3D9->CheckDeviceMultiSampleType(adapter, D3DDEVTYPE_HAL, formatsToCheck[f], TRUE, samplesToCheck[s], &qualityLevels);
             if (FAILED(hr))
             {
                 break;
@@ -200,8 +219,19 @@ void DX9CheckMultisampleSupport()
     MutableDeviceCaps::Get().maxSamples = sampleCount / 2;
 }
 
-void dx9_InitCaps()
+struct AdapterInfo
 {
+    UINT index;
+    D3DCAPS9 caps;
+    D3DADAPTER_IDENTIFIER9 info;
+};
+
+void dx9_InitCaps(const AdapterInfo& adapterInfo)
+{
+    DVASSERT(_D3D9_Device);
+
+    Memcpy(MutableDeviceCaps::Get().deviceDescription, adapterInfo.info.Description, DAVA::Min(countof(MutableDeviceCaps::Get().deviceDescription), strlen(adapterInfo.info.Description) + 1));
+
     D3DCAPS9 caps = {};
     _D3D9_Device->GetDeviceCaps(&caps);
 
@@ -223,6 +253,11 @@ void dx9_InitCaps()
     MutableDeviceCaps::Get().isCenterPixelMapping = true;
     MutableDeviceCaps::Get().maxTextureSize = DAVA::Min(caps.MaxTextureWidth, caps.MaxTextureHeight);
 
+    if (adapterInfo.caps.RasterCaps & D3DPRASTERCAPS_ANISOTROPY)
+    {
+        MutableDeviceCaps::Get().maxAnisotropy = adapterInfo.caps.MaxAnisotropy;
+    }
+
     {
         IDirect3DQuery9* freqQuery = nullptr;
         _D3D9_Device->CreateQuery(D3DQUERYTYPE_TIMESTAMPFREQ, &freqQuery);
@@ -239,15 +274,18 @@ void dx9_InitCaps()
         }
     }
 
-    DX9CheckMultisampleSupport();
-}
+    if (adapterInfo.info.VendorId == 0x8086 && adapterInfo.info.DeviceId == 0x0046) //filter Intel HD Graphics on Pentium Chip
+    {
+        MutableDeviceCaps::Get().isVertexTextureUnitsSupported = false;
+    }
 
-struct AdapterInfo
-{
-    UINT index;
-    D3DCAPS9 caps;
-    D3DADAPTER_IDENTIFIER9 info;
-};
+    if (adapterInfo.info.VendorId == 0x10DE && (adapterInfo.info.DeviceId >> 4) == 0x014) //DeviceID from 0x0140 to 0x014F - NV43 chip from NVIDIA
+    {
+        MutableDeviceCaps::Get().isInstancingSupported = false;
+    }
+
+    DX9CheckMultisampleSupport(adapterInfo.index);
+}
 
 const char* dx9_AdapterInfo(const D3DADAPTER_IDENTIFIER9& info)
 {
@@ -281,6 +319,8 @@ void dx9_EnumerateAdapters(DAVA::Vector<AdapterInfo>& adapters)
             }
             else
             {
+                DAVA::Logger::Error("[RHI-D3D9] GetDeviceCaps with D3DDEVTYPE_HAL failed for %s with error: %s", dx9_AdapterInfo(adapter.info), D3D9ErrorText(hr));
+
                 hr = _D3D9->GetDeviceCaps(i, D3DDEVTYPE_REF, &adapter.caps);
                 if (SUCCEEDED(hr))
                 {
@@ -332,14 +372,12 @@ bool dx9_SelectAdapter(DAVA::Vector<AdapterInfo>& adapters, DWORD& vertex_proces
         {
             DAVA::Logger::Info("[RHI-D3D9] Selecting adapter %s with D3DCREATE_HARDWARE_VERTEXPROCESSING", dx9_AdapterInfo(adapter.info));
             vertex_processing = D3DCREATE_HARDWARE_VERTEXPROCESSING;
-            _D3D9_Adapter = adapter.index;
             return true;
         }
         else if (IsValidIntelCardDX9(adapter.info.VendorId, adapter.info.DeviceId))
         {
             DAVA::Logger::Info("[RHI-D3D9] Selecting valid Intel adapter %s with D3DCREATE_SOFTWARE_VERTEXPROCESSING", dx9_AdapterInfo(adapter.info));
             vertex_processing = D3DCREATE_SOFTWARE_VERTEXPROCESSING;
-            _D3D9_Adapter = adapter.index;
         }
         else
         {
@@ -384,24 +422,44 @@ void dx9_InitContext()
         _DX9_PresentParam.AutoDepthStencilFormat = D3DFMT_D24S8;
         _DX9_PresentParam.PresentationInterval = (_DX9_InitParam.vsyncEnabled) ? D3DPRESENT_INTERVAL_ONE : D3DPRESENT_INTERVAL_IMMEDIATE;
 
+        if (_DX9_InitParam.useBackBufferExtraSize)
+        {
+            DVASSERT(!_DX9_InitParam.fullScreen);
+
+            D3DDISPLAYMODE displayMode;
+            _D3D9->GetAdapterDisplayMode(adapter.index, &displayMode);
+
+            _DX9_PresentRect.left = 0;
+            _DX9_PresentRect.top = 0;
+            _DX9_PresentRect.right = _DX9_InitParam.width;
+            _DX9_PresentRect.bottom = _DX9_InitParam.height;
+            _DX9_PresentRectPtr = &_DX9_PresentRect;
+
+            _DX9_PresentParam.BackBufferWidth = displayMode.Width;
+            _DX9_PresentParam.BackBufferHeight = displayMode.Height;
+            _DX9_PresentParam.SwapEffect = D3DSWAPEFFECT_COPY;
+            _DX9_PresentParam.BackBufferCount = 1;
+            _DX9_PresentParam.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
+        }
+
         // TODO: check z-buf formats and create most suitable
 
-        HRESULT hr = _D3D9->CreateDevice(_D3D9_Adapter, D3DDEVTYPE_HAL, wnd, vertex_processing, &_DX9_PresentParam, &_D3D9_Device);
+        HRESULT hr = _D3D9->CreateDevice(adapter.index, D3DDEVTYPE_HAL, wnd, vertex_processing, &_DX9_PresentParam, &_D3D9_Device);
+        if (FAILED(hr))
+        {
+            //try second time, cause CreateDevice can change present params struct to valid values
+            hr = _D3D9->CreateDevice(adapter.index, D3DDEVTYPE_HAL, wnd, vertex_processing, &_DX9_PresentParam, &_D3D9_Device);
+        }
+
         if (SUCCEEDED(hr))
         {
-            Memcpy(MutableDeviceCaps::Get().deviceDescription, adapter.info.Description,
-                   DAVA::Min(countof(MutableDeviceCaps::Get().deviceDescription), strlen(adapter.info.Description) + 1));
+            dx9_InitCaps(adapter);
+
             DAVA::Logger::Info("[RHI-D3D9] Device created with adapter: %s", dx9_AdapterInfo(adapter.info));
         }
         else
         {
-            Logger::Error("[RHI-D3D9] Failed to create device with adapter %s, reported error: %s",
-                          dx9_AdapterInfo(adapter.info), D3D9ErrorText(hr));
-        }
-
-        if (adapter.caps.RasterCaps & D3DPRASTERCAPS_ANISOTROPY)
-        {
-            MutableDeviceCaps::Get().maxAnisotropy = adapter.caps.MaxAnisotropy;
+            Logger::Error("[RHI-D3D9] Failed to create device with adapter %s, reported error: %s", dx9_AdapterInfo(adapter.info), D3D9ErrorText(hr));
         }
     }
     else
@@ -412,11 +470,7 @@ void dx9_InitContext()
             DAVA::Logger::Error("[RHI-D3D9] %s", dx9_AdapterInfo(adapter.info));
     }
 
-    if (_D3D9_Device)
-    {
-        dx9_InitCaps();
-    }
-    else if (_DX9_InitParam.renderingErrorCallback)
+    if (_D3D9_Device == nullptr && _DX9_InitParam.renderingErrorCallback)
     {
         _DX9_InitParam.renderingErrorCallback(RenderingError::FailedToCreateDevice, _DX9_InitParam.renderingErrorCallbackContext);
     }

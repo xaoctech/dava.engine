@@ -31,10 +31,13 @@ const FastName NMaterialName::VERTEXCOLOR_FRAMEBLEND_ALPHABLEND = FastName("~res
 const FastName NMaterialName::SKYOBJECT = FastName("~res:/Materials/Skyobject.material");
 const FastName NMaterialName::VERTEXCOLOR_FRAMEBLEND_OPAQUE = FastName("~res:/Materials/VertexColor.FrameBlend.Opaque.material");
 const FastName NMaterialName::PIXELLIT_ALPHATEST = FastName("~res:/Materials/PixelLit.Alphatest.material");
-const FastName NMaterialName::SPEEDTREE_LEAF = FastName("~res:/Materials/SpeedTreeLeaf.material");
-const FastName NMaterialName::SPEEDTREE_LEAF_ALPHABLEND = FastName("~res:/Materials/SpeedTreeLeaf.Alphablend.material");
-const FastName NMaterialName::SPHERICLIT_SPEEDTREE_LEAF = FastName("~res:/Materials/SphericalLitAllQualities.SpeedTreeLeaf.material");
-const FastName NMaterialName::SPHERICLIT_SPEEDTREE_LEAF_ALPHABLEND = FastName("~res:/Materials/SphericalLitAllQualities.SpeedTreeLeaf.Alphablend.material");
+const FastName NMaterialName::SPEEDTREE_ALPHATEST = FastName("~res:/Materials/SpeedTreeLeaf.Alphatest.material");
+const FastName NMaterialName::SPEEDTREE_ALPHABLEND = FastName("~res:/Materials/SpeedTreeLeaf.Alphablend.material");
+const FastName NMaterialName::SPEEDTREE_ALPHABLEND_ALPHATEST = FastName("~res:/Materials/SpeedTreeLeaf.Alphablend.Alphatest.material");
+const FastName NMaterialName::SPEEDTREE_OPAQUE = FastName("~res:/Materials/SpeedTreeLeaf.Opaque.material");
+const FastName NMaterialName::SPHERICLIT_SPEEDTREE_ALPHATEST = FastName("~res:/Materials/SphericalLitAllQualities.SpeedTreeLeaf.Alphatest.material");
+const FastName NMaterialName::SPHERICLIT_SPEEDTREE_ALPHABLEND = FastName("~res:/Materials/SphericalLitAllQualities.SpeedTreeLeaf.Alphablend.material");
+const FastName NMaterialName::SPHERICLIT_SPEEDTREE_ALPHABLEND_ALPHATEST = FastName("~res:/Materials/SphericalLitAllQualities.SpeedTreeLeaf.Alphablend.Alphatest.material");
 const FastName NMaterialName::SPHERICLIT_TEXTURED_OPAQUE = FastName("~res:/Materials/SphericalLitAllQualities.Textured.Opaque.material");
 const FastName NMaterialName::SPHERICLIT_TEXTURED_ALPHATEST = FastName("~res:/Materials/SphericalLitAllQualities.Textured.Alphatest.material");
 const FastName NMaterialName::SPHERICLIT_TEXTURED_ALPHABLEND = FastName("~res:/Materials/SphericalLitAllQualities.Textured.Alphablend.material");
@@ -58,6 +61,8 @@ const FastName NMaterialName::PARTICLES = FastName("~res:/Materials/Particles/Pa
 const FastName NMaterialName::DEBUG_DRAW_OPAQUE = FastName("~res:/Materials/DebugDraw/Debug.Opaque.material");
 const FastName NMaterialName::DEBUG_DRAW_ALPHABLEND = FastName("~res:/Materials/DebugDraw/Debug.Alphablend.material");
 const FastName NMaterialName::DEBUG_DRAW_WIREFRAME = FastName("~res:/Materials/DebugDraw/Wireframe.material");
+const FastName NMaterialName::DEBUG_DRAW_PARTICLES = FastName("~res:/Materials/DebugDraw/Debug.Particles.material");
+const FastName NMaterialName::DEBUG_DRAW_PARTICLES_NO_DEPTH = FastName("~res:/Materials/DebugDraw/Debug.Particles.NoDepth.material");
 
 const FastName NMaterialName::WATER_ALL_QUALITIES = FastName("~res:/Materials/WaterAllQualities.material");
 
@@ -74,6 +79,9 @@ const FastName NMaterialTextureName::TEXTURE_DECALTEXTURE("decaltexture");
 
 const FastName NMaterialTextureName::TEXTURE_DYNAMIC_REFLECTION("dynamicReflection");
 const FastName NMaterialTextureName::TEXTURE_DYNAMIC_REFRACTION("dynamicRefraction");
+
+const FastName NMaterialTextureName::TEXTURE_PARTICLES_HEATMAP("heatMap");
+const FastName NMaterialTextureName::TEXTURE_PARTICLES_RT("particlesRT");
 
 //params
 
@@ -115,6 +123,7 @@ const FastName NMaterialParamName::WATER_CLEAR_COLOR("waterColor");
 const FastName NMaterialParamName::DEPRECATED_SHADOW_COLOR_PARAM("shadowColor");
 const FastName NMaterialParamName::DEPRECATED_LANDSCAPE_TEXTURE_0_TILING("texture0Tiling");
 const FastName NMaterialParamName::PARAM_TREE_LEAF_COLOR_MUL("treeLeafColorMul");
+const FastName NMaterialParamName::FORCED_SHADOW_DIRECTION_PARAM("forcedShadowDirection");
 
 //flags
 const FastName NMaterialFlagName::FLAG_BLENDING = FastName("BLENDING");
@@ -133,11 +142,13 @@ const FastName NMaterialFlagName::FLAG_FAST_NORMALIZATION = FastName("FAST_NORMA
 const FastName NMaterialFlagName::FLAG_TILED_DECAL_MASK = FastName("TILED_DECAL_MASK");
 const FastName NMaterialFlagName::FLAG_TILED_DECAL_ROTATION = FastName("TILE_DECAL_ROTATION");
 const FastName NMaterialFlagName::FLAG_FLATCOLOR = FastName("FLATCOLOR");
+const FastName NMaterialFlagName::FLAG_FLATALBEDO = FastName("FLATALBEDO");
+
 const FastName NMaterialFlagName::FLAG_DISTANCEATTENUATION = FastName("DISTANCE_ATTENUATION");
 const FastName NMaterialFlagName::FLAG_SPECULAR = FastName("SPECULAR");
 const FastName NMaterialFlagName::FLAG_SEPARATE_NORMALMAPS = FastName("SEPARATE_NORMALMAPS");
 
-const FastName NMaterialFlagName::FLAG_SPEED_TREE_LEAF = FastName("SPEED_TREE_LEAF");
+const FastName NMaterialFlagName::FLAG_SPEED_TREE_OBJECT = FastName("SPEED_TREE_OBJECT");
 const FastName NMaterialFlagName::FLAG_SPHERICAL_LIT = FastName("SPHERICAL_LIT");
 
 const FastName NMaterialFlagName::FLAG_TANGENT_SPACE_WATER_REFLECTIONS = FastName("TANGENT_SPACE_WATER_REFLECTIONS");
@@ -161,12 +172,13 @@ const FastName NMaterialFlagName::FLAG_VIEWSPECULAR = FastName("VIEW_SPECULAR");
 const FastName NMaterialFlagName::FLAG_FRAME_BLEND = FastName("FRAME_BLEND");
 const FastName NMaterialFlagName::FLAG_FORCE_2D_MODE = FastName("FORCE_2D_MODE");
 
+const FastName NMaterialFlagName::FLAG_ALPHATEST = FastName("ALPHATESTVALUE");
 const FastName NMaterialFlagName::FLAG_ALPHATESTVALUE = FastName("ALPHATESTVALUE");
+const FastName NMaterialFlagName::FLAG_ALPHASTEPVALUE = FastName("ALPHASTEPVALUE");
 
 const FastName NMaterialFlagName::FLAG_LANDSCAPE_USE_INSTANCING("LANDSCAPE_USE_INSTANCING");
 const FastName NMaterialFlagName::FLAG_LANDSCAPE_LOD_MORPHING("LANDSCAPE_LOD_MORPHING");
 const FastName NMaterialFlagName::FLAG_LANDSCAPE_MORPHING_COLOR("LANDSCAPE_MORPHING_COLOR");
-const FastName NMaterialFlagName::FLAG_LANDSCAPE_SPECULAR("LANDSCAPE_SPECULAR");
 
 const FastName NMaterialFlagName::FLAG_HEIGHTMAP_FLOAT_TEXTURE("HEIGHTMAP_FLOAT_TEXTURE");
 
@@ -175,6 +187,10 @@ const FastName NMaterialFlagName::FLAG_ILLUMINATION_SHADOW_CASTER = FastName("IL
 const FastName NMaterialFlagName::FLAG_ILLUMINATION_SHADOW_RECEIVER = FastName("ILLUMINATION_SHADOW_RECEIVER");
 
 const FastName NMaterialFlagName::FLAG_TEST_OCCLUSION = FastName("TEST_OCCLUSION");
+
+const FastName NMaterialFlagName::FLAG_FORCED_SHADOW_DIRECTION = FastName("FORCED_SHADOW_DIRECTION");
+
+const FastName NMaterialFlagName::FLAG_PARTICLES_DEBUG_SHOW_HEATMAP = FastName("HEATMAP");
 
 //quality
 const FastName NMaterialQualityName::QUALITY_FLAG_NAME = FastName("Quality");
@@ -199,7 +215,6 @@ Vector<FastName> RUNTIME_ONLY_FLAGS =
   NMaterialFlagName::FLAG_LANDSCAPE_USE_INSTANCING,
   NMaterialFlagName::FLAG_LANDSCAPE_LOD_MORPHING,
   NMaterialFlagName::FLAG_LANDSCAPE_MORPHING_COLOR,
-  NMaterialFlagName::FLAG_LANDSCAPE_SPECULAR,
 
   NMaterialFlagName::FLAG_HEIGHTMAP_FLOAT_TEXTURE,
 };

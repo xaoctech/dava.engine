@@ -3,10 +3,30 @@
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
+#include "Reflection/ReflectionRegistrator.h"
+#include "Reflection/ReflectedMeta.h"
 
 namespace DAVA
 {
 REGISTER_CLASS(SkeletonComponent)
+
+DAVA_VIRTUAL_REFLECTION_IMPL(SkeletonComponent::JointConfig)
+{
+    ReflectionRegistrator<SkeletonComponent::JointConfig>::Begin()
+    .Field("name", &SkeletonComponent::JointConfig::name)[M::DisplayName("Name")]
+    .Field("position", &SkeletonComponent::JointConfig::position)[M::DisplayName("Position")]
+    .Field("scale", &SkeletonComponent::JointConfig::scale)[M::DisplayName("Scale")]
+    .Field("bbox", &SkeletonComponent::JointConfig::bbox)[M::DisplayName("Bounding box")]
+    .End();
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(SkeletonComponent)
+{
+    ReflectionRegistrator<SkeletonComponent>::Begin()
+    .ConstructorByPointer()
+    .Field("configJoints", &SkeletonComponent::configJoints)[M::DisplayName("Root Joints")]
+    .End();
+}
 
 SkeletonComponent::SkeletonComponent()
 {
@@ -35,6 +55,17 @@ SkeletonComponent::JointConfig::JointConfig(int32 _parentIndex, int32 _targetId,
 {
 }
 
+bool SkeletonComponent::JointConfig::operator==(const JointConfig& other) const
+{
+    return parentIndex == other.parentIndex &&
+    targetId == other.targetId &&
+    name == other.name &&
+    orientation == other.orientation &&
+    position == other.position &&
+    scale == other.scale &&
+    bbox == other.bbox;
+}
+
 uint16 SkeletonComponent::GetConfigJointsCount()
 {
     return uint16(configJoints.size());
@@ -48,6 +79,18 @@ void SkeletonComponent::SetConfigJoints(const Vector<JointConfig>& config)
 void SkeletonComponent::RebuildFromConfig()
 {
     GlobalEventSystem::Instance()->Event(this, EventSystem::SKELETON_CONFIG_CHANGED);
+}
+
+const DAVA::FastName& SkeletonComponent::GetJointName(uint16 jointId) const
+{
+    DVASSERT(jointId < configJoints.size());
+    return configJoints[jointId].name;
+}
+
+const SkeletonComponent::JointTransform& SkeletonComponent::GetObjectSpaceTransform(uint16 jointId) const
+{
+    DVASSERT(jointId < objectSpaceTransforms.size());
+    return objectSpaceTransforms[jointId];
 }
 
 Component* SkeletonComponent::Clone(Entity* toEntity)
@@ -101,5 +144,11 @@ void SkeletonComponent::Deserialize(KeyedArchive* archive, SerializationContext*
         joint.bbox.min = jointArch->GetVector3("joint.bbox.min");
         joint.bbox.max = jointArch->GetVector3("joint.bbox.max");
     }
+}
+
+template <>
+bool AnyCompare<SkeletonComponent::JointConfig>::IsEqual(const Any& v1, const Any& v2)
+{
+    return v1.Get<SkeletonComponent::JointConfig>() == v2.Get<SkeletonComponent::JointConfig>();
 }
 }

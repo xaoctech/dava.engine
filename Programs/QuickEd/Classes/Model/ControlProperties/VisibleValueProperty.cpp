@@ -1,31 +1,20 @@
 #include "VisibleValueProperty.h"
 
+#include <UI/UIControl.h>
+
 using namespace DAVA;
 
-VisibleValueProperty::VisibleValueProperty(DAVA::BaseObject* object, const DAVA::InspMember* member, const IntrospectionProperty* sourceProperty, eCloneType copyType)
-    : IntrospectionProperty(object, member, sourceProperty, copyType)
+VisibleValueProperty::VisibleValueProperty(DAVA::BaseObject* object, const String& name, const Reflection& ref, const IntrospectionProperty* sourceProperty, eCloneType copyType)
+    : IntrospectionProperty(object, nullptr, name, ref, sourceProperty, copyType)
 {
-    ApplyValue(member->Value(object));
 }
 
 void VisibleValueProperty::SetVisibleInEditor(bool visible)
 {
-    visibleInEditor = visible;
-    member->SetValue(GetBaseObject(), VariantType(visibleInGame && visibleInEditor));
+    DynamicTypeCheck<UIControl*>(GetBaseObject())->SetHiddenForDebug(!visible);
 }
 
 bool VisibleValueProperty::GetVisibleInEditor() const
 {
-    return visibleInEditor;
-}
-
-VariantType VisibleValueProperty::GetValue() const
-{
-    return VariantType(visibleInGame);
-}
-
-void VisibleValueProperty::ApplyValue(const DAVA::VariantType& value)
-{
-    visibleInGame = value.AsBool();
-    member->SetValue(GetBaseObject(), VariantType(visibleInGame && visibleInEditor));
+    return !DynamicTypeCheck<UIControl*>(GetBaseObject())->IsHiddenForDebug();
 }

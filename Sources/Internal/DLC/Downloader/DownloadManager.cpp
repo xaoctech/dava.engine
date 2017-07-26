@@ -23,21 +23,17 @@ DownloadManager::CallbackData::CallbackData(uint32 _id, DownloadStatus _status)
 
 Mutex DownloadManager::currentTaskMutex;
 
-#if defined(__DAVAENGINE_COREV2__)
 DownloadManager::DownloadManager(Engine* e)
     : engine(e)
 {
-    sigUpdateId = engine->update.Connect(this, &DownloadManager::Update);
-    sigBackgroundUpdateId = engine->backgroundUpdate.Connect(this, &DownloadManager::Update);
+    engine->update.Connect(this, &DownloadManager::Update);
+    engine->backgroundUpdate.Connect(this, &DownloadManager::Update);
 }
-#endif
 
 DownloadManager::~DownloadManager()
 {
-#if defined(__DAVAENGINE_COREV2__)
-    engine->update.Disconnect(sigUpdateId);
-    engine->backgroundUpdate.Disconnect(sigBackgroundUpdateId);
-#endif
+    engine->update.Disconnect(this);
+    engine->backgroundUpdate.Disconnect(this);
 
     isThreadStarted = false;
 
@@ -92,11 +88,7 @@ void DownloadManager::StopProcessingThread()
     SafeRelease(thisThread);
 }
 
-#if defined(__DAVAENGINE_COREV2__)
 void DownloadManager::Update(float32 frameDelta)
-#else
-void DownloadManager::Update()
-#endif
 {
     if (!currentTask)
     {
@@ -123,7 +115,7 @@ void DownloadManager::Update()
                 StopProcessingThread();
 
             currentTaskMutex.Lock();
-            currentTask = NULL;
+            currentTask = nullptr;
             currentTaskMutex.Unlock();
         }
     }
@@ -238,7 +230,7 @@ void DownloadManager::Cancel(const uint32& taskId)
     }
     else
     {
-        DownloadTaskDescription* pendingTask = NULL;
+        DownloadTaskDescription* pendingTask = nullptr;
         pendingTask = ExtractFromQueue(pendingTaskQueue, taskId);
         if (pendingTask)
         {
@@ -330,7 +322,7 @@ void DownloadManager::ClearAll()
     ClearPending();
     ClearDone();
 
-    DownloadTaskDescription* currentTaskToClear = NULL;
+    DownloadTaskDescription* currentTaskToClear = nullptr;
 
     currentTaskToClear = currentTask;
 
@@ -558,7 +550,7 @@ void DownloadManager::ClearQueue(Deque<DownloadTaskDescription*>& queue)
 
 DownloadTaskDescription* DownloadManager::ExtractFromQueue(Deque<DownloadTaskDescription*>& queue, const uint32& taskId)
 {
-    DownloadTaskDescription* extractedTask = NULL;
+    DownloadTaskDescription* extractedTask = nullptr;
 
     if (!queue.empty())
     {
@@ -585,7 +577,7 @@ void DownloadManager::PlaceToQueue(Deque<DownloadTaskDescription*>& queue, Downl
 
 DownloadTaskDescription* DownloadManager::GetTaskForId(const uint32& taskId)
 {
-    DownloadTaskDescription* retPointer = NULL;
+    DownloadTaskDescription* retPointer = nullptr;
 
     if (currentTask && taskId == currentTask->id)
     {

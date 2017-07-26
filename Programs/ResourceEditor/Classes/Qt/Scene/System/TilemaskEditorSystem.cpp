@@ -2,15 +2,19 @@
 #include "CollisionSystem.h"
 #include "ModifSystem.h"
 #include "LandscapeEditorDrawSystem.h"
-#include "../SceneEditor2.h"
+#include "Classes/Qt/Scene/SceneEditor2.h"
 #include "LandscapeEditorDrawSystem/HeightmapProxy.h"
 #include "LandscapeEditorDrawSystem/LandscapeProxy.h"
 #include "Commands2/TilemaskEditorCommands.h"
+#include "Qt/Main/QtUtils.h"
 
 #include "Classes/Selection/Selection.h"
+#include "Classes/Qt/Main/QtUtils.h"
 
-#include "Render/Image/ImageConvert.h"
-#include "UI/UIEvent.h"
+#include <UI/UIEvent.h>
+#include <Render/Renderer.h>
+#include <Render/Image/ImageConvert.h>
+#include <Render/DynamicBufferAllocator.h>
 
 #include <QApplication>
 
@@ -26,7 +30,7 @@ static const DAVA::FastName TILEMASK_EDTIOR_TEXTURE_TOOL("toolTexture");
 static const DAVA::FastName TILEMASK_EDITOR_MATERIAL_PASS("2d");
 
 TilemaskEditorSystem::TilemaskEditorSystem(DAVA::Scene* scene)
-    : LandscapeEditorSystem(scene, "~res:/ResourceEditor/LandscapeEditor/Tools/cursor/cursor.png")
+    : LandscapeEditorSystem(scene, DefaultCursorPath())
     , curToolSize(0)
     , toolImageTexture(nullptr)
     , landscapeTilemaskTexture(nullptr)
@@ -52,19 +56,7 @@ TilemaskEditorSystem::TilemaskEditorSystem(DAVA::Scene* scene)
 
     editorMaterial->PreBuildMaterial(TILEMASK_EDITOR_MATERIAL_PASS);
 
-    std::array<DAVA::float32, 6 * (3 + 2)> buffer = // 6 vertecies by 5 floats: vec3 position, vec2 tex coord
-    { { -1.f, -1.f, 0.f, 0.f, 0.f,
-        -1.f, 1.f, 0.f, 0.f, 1.f,
-        1.f, 1.f, 0.f, 1.f, 1.f,
-        -1.f, -1.f, 0.f, 0.f, 0.f,
-        1.f, 1.f, 0.f, 1.f, 1.f,
-        1.f, -1.f, 0.f, 1.f, 0.f } };
-
-    quadBuffer = rhi::CreateVertexBuffer(static_cast<DAVA::uint32>(buffer.size() * sizeof(DAVA::float32)));
-    rhi::UpdateVertexBuffer(quadBuffer, buffer.data(), 0, static_cast<DAVA::uint32>(buffer.size() * sizeof(DAVA::float32)));
-
     quadPacket.vertexStreamCount = 1;
-    quadPacket.vertexStream[0] = quadBuffer;
     quadPacket.vertexCount = 6;
     quadPacket.primitiveType = rhi::PRIMITIVE_TRIANGLELIST;
     quadPacket.primitiveCount = 2;
@@ -83,8 +75,6 @@ TilemaskEditorSystem::TilemaskEditorSystem(DAVA::Scene* scene)
 
 TilemaskEditorSystem::~TilemaskEditorSystem()
 {
-    rhi::DeleteVertexBuffer(quadBuffer);
-
     SafeRelease(editorMaterial);
 
     SafeRelease(toolImageTexture);
@@ -328,6 +318,12 @@ void TilemaskEditorSystem::SetTileTexture(DAVA::uint32 tileTexture)
 
 void TilemaskEditorSystem::UpdateBrushTool()
 {
+    struct QuadVertex
+    {
+        DAVA::Vector3 position;
+        DAVA::Vector2 texCoord;
+    };
+
     if (drawingType == TILEMASK_DRAW_COPY_PASTE && (copyPasteFrom == DAVA::Vector2(-1.f, -1.f)))
         return;
 
@@ -346,6 +342,39 @@ void TilemaskEditorSystem::UpdateBrushTool()
 
     editorMaterial->PreBuildMaterial(TILEMASK_EDITOR_MATERIAL_PASS);
     editorMaterial->BindParams(quadPacket);
+
+    DAVA::DynamicBufferAllocator::AllocResultVB quadBuffer = DAVA::DynamicBufferAllocator::AllocateVertexBuffer(sizeof(QuadVertex), 4);
+    QuadVertex* quadVertices = reinterpret_cast<QuadVertex*>(quadBuffer.data);
+
+    quadVertices[0].position = DAVA::Vector3(-1.f, -1.f, .0f);
+    quadVertices[1].position = DAVA::Vector3(-1.f, 1.f, .0f);
+    quadVertices[2].position = DAVA::Vector3(1.f, -1.f, .0f);
+    quadVertices[3].position = DAVA::Vector3(1.f, 1.f, .0f);
+
+    if (rhi::DeviceCaps().isCenterPixelMapping)
+    {
+        const DAVA::float32 pixelOffset = 1.f / srcTexture->GetWidth();
+        for (DAVA::uint32 i = 0; i < 4; ++i)
+        {
+            quadVertices[i].position.x -= pixelOffset;
+            quadVertices[i].position.y -= pixelOffset;
+        }
+    }
+
+    if (rhi::DeviceCaps().isUpperLeftRTOrigin)
+    {
+        for (DAVA::uint32 i = 0; i < 4; ++i)
+            quadVertices[i].position.y = -quadVertices[i].position.y;
+    }
+
+    quadVertices[0].texCoord = DAVA::Vector2(0.f, 0.f);
+    quadVertices[1].texCoord = DAVA::Vector2(0.f, 1.f);
+    quadVertices[2].texCoord = DAVA::Vector2(1.f, 0.f);
+    quadVertices[3].texCoord = DAVA::Vector2(1.f, 1.f);
+
+    quadPacket.vertexStream[0] = quadBuffer.buffer;
+    quadPacket.baseVertex = quadBuffer.baseVertex;
+    quadPacket.indexBuffer = DAVA::DynamicBufferAllocator::AllocateQuadListIndexBuffer(1);
 
     rhi::HPacketList pList;
     rhi::HRenderPass pass = rhi::AllocateRenderPass(passConf, 1, &pList);
@@ -373,7 +402,7 @@ void TilemaskEditorSystem::UpdateToolImage()
         DVASSERT(images.size() == 1);
         DVASSERT(images[0]->GetPixelFormat() == DAVA::FORMAT_RGBA8888);
 
-        DAVA::Image* toolImage = DAVA::Image::Create(curToolSize, curToolSize, DAVA::FORMAT_RGBA8888);
+        DAVA::ScopedPtr<DAVA::Image> toolImage(DAVA::Image::Create(curToolSize, curToolSize, DAVA::FORMAT_RGBA8888));
         DAVA::ImageConvert::ResizeRGBA8Billinear(reinterpret_cast<DAVA::uint32*>(images[0]->data), images[0]->GetWidth(), images[0]->GetHeight(),
                                                  reinterpret_cast<DAVA::uint32*>(toolImage->data), curToolSize, curToolSize);
 

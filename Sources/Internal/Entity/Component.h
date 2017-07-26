@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_SCENE3D_COMPONENT_H__
-#define __DAVAENGINE_SCENE3D_COMPONENT_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "Base/Serializable.h"
@@ -7,6 +6,11 @@
 #include "Scene3D/SceneFile/SerializationContext.h"
 
 #include "MemoryManager/MemoryProfiler.h"
+#include "Reflection/Reflection.h"
+
+/**
+    \defgroup components Component
+*/
 
 namespace DAVA
 {
@@ -48,6 +52,12 @@ public:
         SNAP_TO_LANDSCAPE_CONTROLLER_COMPONENT,
         WASD_CONTROLLER_COMPONENT,
         VISIBILITY_CHECK_COMPONENT,
+        SLOT_COMPONENT,
+
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+        STATIC_BODY_COMPONENT,
+        DYNAMIC_BODY_COMPONENT,
+#endif
 
         //debug components - note that everything below won't be serialized
         DEBUG_COMPONENTS,
@@ -101,6 +111,8 @@ public:
     INTROSPECTION(Component,
                   MEMBER(entity, "entity", I_SAVE)
                   )
+
+    DAVA_VIRTUAL_REFLECTION(Component, InspBase);
 };
 
 inline Entity* Component::GetEntity() const
@@ -131,4 +143,3 @@ void Component::GetDataNodes(Container<T>& container)
     }
 }
 };
-#endif //__DAVAENGINE_SCENE3D_COMPONENT_H__

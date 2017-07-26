@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_KEYED_ARCHIVE_H__
-#define __DAVAENGINE_KEYED_ARCHIVE_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
@@ -13,6 +12,7 @@
 #include "Math/Matrix4.h"
 #include "Math/Math2D.h"
 #include "Math/Color.h"
+#include "Reflection/Reflection.h"
 
 namespace DAVA
 {
@@ -21,6 +21,8 @@ namespace DAVA
 	\brief this is a class that should be used for serialization & deserialization of the items
  */
 class YamlNode;
+
+VariantType PrepareValueForKeyedArchive(const Any& v, VariantType::eVariantType resultType);
 
 class KeyedArchive : public BaseObject
 {
@@ -288,8 +290,9 @@ public:
 		\param[in] value we want to set for this key
 	 */
     void SetVariant(const String& key, const VariantType& value);
+    void SetVariant(const String& key, VariantType&& value);
     /**
-        \brief Function to set another keyed archive as kye for this archive.
+        \brief Function to set another keyed archive as key for this archive.
         \param[in] key string key
         \param[in] value we want to set for this key
 	 */
@@ -465,11 +468,34 @@ public:
 
     static const char* GenKeyFromIndex(uint32 index);
 
+    /**
+     \brief Assignment operator
+     \returns Returns reference to this
+     */
+    KeyedArchive& operator=(const KeyedArchive& arc);
+
 private:
+    template <typename T, typename M>
+    void SetVariant(const String& key, const T& value, M setVariantMethod)
+    {
+        auto iter = objectMap.find(key);
+        if (iter != objectMap.end())
+        {
+            (iter->second->*setVariantMethod)(value);
+        }
+        else
+        {
+            objectMap[key] = new VariantType(value);
+        }
+    }
+
+    friend class KeyedArchiveStructureWrapper;
     UnderlyingMap objectMap;
 
 public:
-    INTROSPECTION_EXTEND(KeyedArchive, BaseObject, NULL)
+    INTROSPECTION_EXTEND(KeyedArchive, BaseObject, NULL);
+
+    DAVA_VIRTUAL_REFLECTION(KeyedArchive, BaseObject);
 };
 
 // Implementation
@@ -499,5 +525,3 @@ void KeyedArchive::SetByteArrayAsType(const String& key, const T& value)
     SetByteArray(key, reinterpret_cast<const uint8*>(&value), sizeof(T));
 }
 };
-
-#endif // __DAVAENGINE_KEYED_ARCHIVE_H__

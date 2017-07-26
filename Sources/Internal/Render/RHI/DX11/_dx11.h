@@ -2,6 +2,7 @@
 
 #include "Base/Platform.h"
 #include "Base/BaseObject.h"
+#include "Concurrency/Mutex.h"
 #include "../Common/rhi_RingBuffer.h"
 #include "../Common/rhi_Pool.h"
 #include "../Common/rhi_Private.h"
@@ -56,6 +57,8 @@ struct DX11Command
         CREATE_RENDER_TARGET_VIEW,
         CREATE_DEPTH_STENCIL_VIEW,
         CREATE_SHADER_RESOURCE_VIEW,
+
+        CHECK_FORMAT_SUPPORT,
 
         // service values for range checking
         DEVICE_LAST_COMMAND,

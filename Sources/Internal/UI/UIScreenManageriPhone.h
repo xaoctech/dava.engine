@@ -17,7 +17,7 @@ public:
     void SetGLControllerId(int glController);
 
     void SetFirst(int screenId);
-    void SetScreen(int screenId, UIScreenTransition* transition = 0);
+    void SetScreen(int screenId);
     void ResetScreen();
 
     UIScreen* GetScreen(int screenId);
@@ -33,14 +33,6 @@ public:
     // void SetScreen(int screen);
     void StopGLAnimation();
     void StartGLAnimation();
-
-    // Yuri Coder, 2013/02/06. Temporary method exist for iOS implementation only.
-    // It blocks drawing of the RenderView, introduced for displaying assert messages.
-    void BlockDrawing();
-    void UnblockDrawing();
-#if defined(__DAVAENGINE_COREV2__)
-    bool IsDrawBlocked();
-#endif // __DAVAENGINE_COREV2__
 
 private:
     void ActivateGLController();
@@ -66,9 +58,6 @@ private:
     int glControllerId;
     int activeControllerId;
     int activeScreenId;
-#if defined(__DAVAENGINE_COREV2__)
-    bool drawBlocked;
-#endif // __DAVAENGINE_COREV2__
 };
 };
 

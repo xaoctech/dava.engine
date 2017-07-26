@@ -12,6 +12,16 @@
     void Cls::Dava__ReflectionRegisterBases() { DAVA::ReflectionRegistratorDetail::BasesRegistrator<Cls, Cls::Cls__BaseTypes>::Register(); } \
     void Cls::Dava__ReflectionInitializerV()
 
+#define IMPL__DAVA_VIRTUAL_TEMPLATE_REFLECTION_IMPL(Cls) \
+    template <typename T> const DAVA::ReflectedType* Cls<T>::Dava__GetReflectedType() const { return DAVA::ReflectionRegistratorDetail::GetByThisPointer(this); } \
+    template <typename T> void Cls<T>::Dava__ReflectionRegisterBases() { DAVA::ReflectionRegistratorDetail::BasesRegistrator<Cls<T>, Cls<T>::Cls__BaseTypes>::Register(); } \
+    template <typename T> void Cls<T>::Dava__ReflectionInitializerV()
+
+#define IMPL__DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(Cls) \
+    template <> const DAVA::ReflectedType* Cls::Dava__GetReflectedType() const { return DAVA::ReflectionRegistratorDetail::GetByThisPointer(this); } \
+    template <> void Cls::Dava__ReflectionRegisterBases() { DAVA::ReflectionRegistratorDetail::BasesRegistrator<Cls, Cls::Cls__BaseTypes>::Register(); } \
+    template <> void Cls::Dava__ReflectionInitializerV()
+
 #define IMPL__DAVA_VIRTUAL_REFLECTION_IN_PLACE(Cls, ...) \
     template <typename FT__> \
     friend struct DAVA::ReflectionDetail::ReflectionInitializerRunner; \
@@ -121,8 +131,6 @@ struct RFCreatorLambda
         SetF setter = laSetter;
 
         f->valueWrapper.reset(new VwT(getter, setter));
-        f->reflectedType = ReflectedTypeDB::Get<RetT>();
-
         return f;
     }
 };
@@ -146,8 +154,6 @@ struct RFCreatorLambda<C, LaGetF, std::nullptr_t>
         GetF getter = laGetter;
 
         f->valueWrapper.reset(new VwT(getter, nullptr));
-        f->reflectedType = ReflectedTypeDB::Get<RetT>();
-
         return f;
     }
 };
@@ -182,8 +188,6 @@ struct RFCreator<C, GetT (*)(), std::nullptr_t>
         ReflectedStructure::Field* f = new ReflectedStructure::Field();
 
         f->valueWrapper.reset(new ValueWrapperStaticFnPtr<GetT, SetT>(getter, nullptr));
-        f->reflectedType = ReflectedTypeDB::Get<RetT>();
-
         return f;
     }
 };
@@ -204,8 +208,6 @@ struct RFCreator<C, GetT (*)(), void (*)(SetT)>
         ReflectedStructure::Field* f = new ReflectedStructure::Field();
 
         f->valueWrapper.reset(new ValueWrapperStaticFnPtr<GetT, SetT>(getter, setter));
-        f->reflectedType = ReflectedTypeDB::Get<RetT>();
-
         return f;
     }
 };
@@ -226,8 +228,6 @@ struct RFCreator<C, GetT (*)(C*), std::nullptr_t>
         ReflectedStructure::Field* f = new ReflectedStructure::Field();
 
         f->valueWrapper.reset(new ValueWrapperStaticFnPtrC<C, GetT, SetT>(getter, nullptr));
-        f->reflectedType = ReflectedTypeDB::Get<RetT>();
-
         return f;
     }
 };
@@ -248,8 +248,6 @@ struct RFCreator<C, GetT (*)(C*), void (*)(C*, SetT)>
         ReflectedStructure::Field* f = new ReflectedStructure::Field();
 
         f->valueWrapper.reset(new ValueWrapperStaticFnPtrC<C, GetT, SetT>(getter, setter));
-        f->reflectedType = ReflectedTypeDB::Get<RetT>();
-
         return f;
     }
 };
@@ -270,8 +268,6 @@ struct RFCreator<C, GetT (C::*)(), std::nullptr_t>
         ReflectedStructure::Field* f = new ReflectedStructure::Field();
 
         f->valueWrapper.reset(new ValueWrapperClassFnPtr<C, GetT, SetT>(getter, nullptr));
-        f->reflectedType = ReflectedTypeDB::Get<RetT>();
-
         return f;
     }
 };
@@ -292,8 +288,6 @@ struct RFCreator<C, GetT (C::*)(), void (C::*)(SetT)>
         ReflectedStructure::Field* f = new ReflectedStructure::Field();
 
         f->valueWrapper.reset(new ValueWrapperClassFnPtr<C, GetT, SetT>(getter, setter));
-        f->reflectedType = ReflectedTypeDB::Get<RetT>();
-
         return f;
     }
 };
@@ -314,8 +308,6 @@ struct RFCreator<C, GetT (C::*)() const, std::nullptr_t>
         ReflectedStructure::Field* f = new ReflectedStructure::Field();
 
         f->valueWrapper.reset(new ValueWrapperClassFnPtr<C, GetT, SetT>(reinterpret_cast<GetT (C::*)()>(getter), nullptr));
-        f->reflectedType = ReflectedTypeDB::Get<RetT>();
-
         return f;
     }
 };
@@ -336,8 +328,6 @@ struct RFCreator<C, GetT (C::*)() const, void (C::*)(SetT)>
         ReflectedStructure::Field* f = new ReflectedStructure::Field();
 
         f->valueWrapper.reset(new ValueWrapperClassFnPtr<C, GetT, SetT>(reinterpret_cast<GetT (C::*)()>(getter), setter));
-        f->reflectedType = ReflectedTypeDB::Get<RetT>();
-
         return f;
     }
 };
@@ -434,7 +424,7 @@ ReflectionRegistrator<C>& ReflectionRegistrator<C>::DestructorByPointer(void (*f
 template <typename C>
 ReflectionRegistrator<C>& ReflectionRegistrator<C>::AddField(const char* name, ReflectedStructure::Field* f)
 {
-    f->name = name;
+    f->name = ReflectedStructure::Key(name);
     lastMeta = &f->meta;
     structure->fields.emplace_back(f);
 
@@ -447,7 +437,6 @@ ReflectionRegistrator<C>& ReflectionRegistrator<C>::Field(const char* name, T* f
 {
     ReflectedStructure::Field* f = new ReflectedStructure::Field();
     f->valueWrapper.reset(new ValueWrapperStatic<T>(field));
-    f->reflectedType = ReflectedTypeDB::Get<T>();
 
     return AddField(name, f);
 }
@@ -458,7 +447,6 @@ ReflectionRegistrator<C>& ReflectionRegistrator<C>::Field(const char* name, T C:
 {
     ReflectedStructure::Field* f = new ReflectedStructure::Field();
     f->valueWrapper.reset(new ValueWrapperClass<C, T>(field));
-    f->reflectedType = ReflectedTypeDB::Get<T>();
 
     return AddField(name, f);
 }
@@ -468,7 +456,7 @@ template <typename GetF, typename SetF>
 ReflectionRegistrator<C>& ReflectionRegistrator<C>::Field(const char* name, GetF getter, SetF setter)
 {
     ReflectedStructure::Field* f = ReflectionRegistratorDetail::RFCreator<C, GetF, SetF>::Create(getter, setter);
-    f->name = name;
+    f->name = ReflectedStructure::Key(name);
 
     lastMeta = &f->meta;
     structure->fields.emplace_back(f);
@@ -481,7 +469,7 @@ template <typename F>
 ReflectionRegistrator<C>& ReflectionRegistrator<C>::Method(const char* name, const F& fn)
 {
     ReflectedStructure::Method* m = new ReflectedStructure::Method();
-    m->name = name;
+    m->name = ReflectedStructure::Key(name);
     m->fn = AnyFn(fn);
 
     lastMeta = &m->meta;

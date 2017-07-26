@@ -1,26 +1,22 @@
 #include "FileSystem/LocalizationSystem.h"
-#include "Utils/Utils.h"
-#include "Utils/StringFormat.h"
-#include "Logger/Logger.h"
-#include "yaml/yaml.h"
-#include "Utils/UTF8Utils.h"
+
 #include "Debug/DVAssert.h"
+#include "Engine/Engine.h"
 #include "FileSystem/FileSystem.h"
 #include "FileSystem/KeyedArchive.h"
-#include "FileSystem/YamlNode.h"
 #include "FileSystem/YamlEmitter.h"
-#include "Sound/SoundSystem.h"
+#include "FileSystem/YamlNode.h"
+#include "Logger/Logger.h"
 #include "Platform/DeviceInfo.h"
+#include "Sound/SoundSystem.h"
+#include "Utils/StringFormat.h"
+#include "Utils/UTF8Utils.h"
+#include "Utils/Utils.h"
 
-#if defined(__DAVAENGINE_COREV2__)
-#include "Engine/Engine.h"
-#else
-#include "Core/Core.h"
-#endif
+#include "yaml/yaml.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
-#include "Engine/Android/JNIBridge.h"
-#include "Platform/TemplateAndroid/ExternC/AndroidLayer.h"
+#include "Engine/PlatformApiAndroid.h"
 #endif
 
 namespace DAVA
@@ -43,11 +39,7 @@ const char* LocalizationSystem::DEFAULT_LOCALE = "en";
 
 const KeyedArchive* GetOptions()
 {
-#if defined(__DAVAENGINE_COREV2__)
     return Engine::Instance()->GetOptions();
-#else
-    return Core::Instance()->GetOptions();
-#endif
 }
 
 LocalizationSystem::LocalizationSystem()
@@ -111,9 +103,9 @@ String LocalizationSystem::GetDeviceLocale(void) const
     }
 
     JNI::JavaClass jniLocalisation("com/dava/framework/JNILocalization");
-    Function<jstring()> getLocale = jniLocalisation.GetStaticMethod<jstring>("GetLocale");
+    Function<jstring()> jgetLocale = jniLocalisation.GetStaticMethod<jstring>("GetLocale");
 
-    return JNI::ToString(getLocale());
+    return JNI::JavaStringToString(JNI::LocalRef<jstring>(jgetLocale()));
 }
 #endif
 
@@ -137,8 +129,10 @@ void LocalizationSystem::OverrideDeviceLocale(const String& langId)
     overridenLangId = langId;
 }
 
-void LocalizationSystem::SetCurrentLocale(const String& requestedLangId)
+bool LocalizationSystem::SetCurrentLocale(const String& requestedLangId)
 {
+    bool requestedLocaleFound = true;
+
     String actualLangId;
 
     FilePath localeFilePath(directoryPath + (requestedLangId + ".yaml"));
@@ -196,6 +190,8 @@ void LocalizationSystem::SetCurrentLocale(const String& requestedLangId)
 
     if (actualLangId.empty())
     {
+        requestedLocaleFound = false;
+
         localeFilePath = directoryPath + (String(DEFAULT_LOCALE) + ".yaml");
         if (FileSystem::Instance()->Exists(localeFilePath))
         {
@@ -204,7 +200,7 @@ void LocalizationSystem::SetCurrentLocale(const String& requestedLangId)
         else
         {
             Logger::Warning("LocalizationSystem requested locale %s is not supported, failed to set default lang, locale will not be changed", requestedLangId.c_str(), actualLangId.c_str());
-            return;
+            return requestedLocaleFound;
         }
     }
 
@@ -212,6 +208,7 @@ void LocalizationSystem::SetCurrentLocale(const String& requestedLangId)
     Logger::FrameworkDebug("LocalizationSystem requested locale: %s, set locale: %s", requestedLangId.c_str(), actualLangId.c_str());
     langId = actualLangId;
     SoundSystem::Instance()->SetCurrentLocale(langId);
+    return requestedLocaleFound;
 }
 
 LocalizationSystem::StringFile* LocalizationSystem::LoadFromYamlFile(const String& langID, const FilePath& pathName)

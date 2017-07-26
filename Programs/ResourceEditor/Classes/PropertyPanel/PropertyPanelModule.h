@@ -1,30 +1,21 @@
 #pragma once
 
-#include "Base/BaseTypes.h"
-#include "TArc/Core/ClientModule.h"
+#include "Classes/Interfaces/PropertyPanelInterface.h"
 
-#include "Reflection/Reflection.h"
+#include <TArc/Core/ClientModule.h>
 
-namespace DAVA
-{
-class Entity;
-namespace TArc
-{
-class FieldBinder;
-}
-}
+#include <Reflection/Reflection.h>
+#include <Base/BaseTypes.h>
 
-class PropertyPanelModule final : public DAVA::TArc::ClientModule
+class PropertyPanelModule final : public DAVA::TArc::ClientModule, private Interfaces::PropertyPanelInterface
 {
 public:
-    PropertyPanelModule() = default;
     void PostInit() override;
 
-private:
-    void SceneSelectionChanged(const DAVA::Any& newSelection);
+protected:
+    void RegisterExtension(const std::shared_ptr<DAVA::TArc::ExtensionChain>& extension) override;
+    void UnregisterExtension(const std::shared_ptr<DAVA::TArc::ExtensionChain>& extension) override;
 
 private:
-    std::unique_ptr<DAVA::TArc::FieldBinder> binder;
-
     DAVA_VIRTUAL_REFLECTION(PropertyPanelModule, DAVA::TArc::ClientModule);
 };

@@ -1,10 +1,12 @@
-#ifndef __QUICKED_PACKAGE_SERIALIZER_H__
-#define __QUICKED_PACKAGE_SERIALIZER_H__
+#pragma once
 
 #include "Base/BaseObject.h"
 
 #include "PackageHierarchy/PackageVisitor.h"
+#include "PackageHierarchy/PackageNode.h"
 #include "ControlProperties/PropertyVisitor.h"
+
+#include <Base/Result.h>
 
 class PackageBaseNode;
 class AbstractProperty;
@@ -19,11 +21,9 @@ public:
     void SerializePackage(PackageNode* package);
     void SerializePackageNodes(PackageNode* package, const DAVA::Vector<ControlNode*>& controls, const DAVA::Vector<StyleSheetNode*>& styles);
 
-    virtual void PutValue(const DAVA::String& name, const DAVA::VariantType& value) = 0;
-    virtual void PutValue(const DAVA::String& name, const DAVA::String& value) = 0;
+    virtual void PutValue(const DAVA::String& name, const DAVA::String& value, bool quotes) = 0;
     virtual void PutValue(const DAVA::String& name, const DAVA::Vector<DAVA::String>& value) = 0;
-    virtual void PutValue(const DAVA::VariantType& value) = 0;
-    virtual void PutValue(const DAVA::String& value) = 0;
+    virtual void PutValue(const DAVA::String& value, bool quotes) = 0;
 
     virtual void BeginMap(const DAVA::String& name, bool quotes = false) = 0;
     virtual void BeginMap() = 0;
@@ -32,6 +32,9 @@ public:
     virtual void BeginArray(const DAVA::String& name, bool flow = false) = 0;
     virtual void BeginArray() = 0;
     virtual void EndArray() = 0;
+
+    bool HasErrors() const;
+    const DAVA::ResultList& GetResults() const;
 
 private: // PackageVisitor
     void VisitPackage(PackageNode* node) override;
@@ -70,11 +73,15 @@ private:
     void AcceptChildren(AbstractProperty* property);
     void PutValueProperty(const DAVA::String& name, ValueProperty* property);
 
+    void PutCustomData(const PackageNode* node);
+    void PutGuides(const PackageNode* node);
+    void PutGuidesList(const PackageNode::AxisGuides& values);
+
 private:
     DAVA::Vector<PackageNode*> importedPackages;
     DAVA::Vector<ControlNode*> controls;
     DAVA::Vector<ControlNode*> prototypes;
     DAVA::Vector<StyleSheetNode*> styles;
-};
 
-#endif // __QUICKED_PACKAGE_SERIALIZER_H__
+    DAVA::ResultList results;
+};

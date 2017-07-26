@@ -1,10 +1,19 @@
-#ifndef __QUICKED_PACKAGE_MODEL_H__
-#define __QUICKED_PACKAGE_MODEL_H__
+#pragma once
+
+#include "EditorSystems/SelectionContainer.h"
+#include "Model/PackageHierarchy/PackageListener.h"
 
 #include <QAbstractItemModel>
 #include <QMimeData>
-#include "EditorSystems/SelectionContainer.h"
-#include "Model/PackageHierarchy/PackageListener.h"
+
+namespace DAVA
+{
+namespace TArc
+{
+class ContextAccessor;
+class UI;
+}
+}
 
 class AbstractProperty;
 class PackageNode;
@@ -14,7 +23,7 @@ class StyleSheetsNode;
 class PackageControlsNode;
 class ControlsContainerNode;
 class ImportedPackagesNode;
-class QtModelPackageCommandExecutor;
+class CommandExecutor;
 
 class PackageModel : public QAbstractItemModel, PackageListener
 {
@@ -22,7 +31,12 @@ class PackageModel : public QAbstractItemModel, PackageListener
 
 public:
     PackageModel(QObject* parent = nullptr);
-    void Reset(PackageNode* package, QtModelPackageCommandExecutor* executor);
+    ~PackageModel() override;
+
+    void SetAccessor(DAVA::TArc::ContextAccessor* accessor);
+    void SetUI(DAVA::TArc::UI* ui);
+
+    void Reset(PackageNode* package);
 
     QModelIndex indexByNode(PackageBaseNode* node) const;
 
@@ -71,8 +85,7 @@ private: // PackageListener
 
     int GetRowIndex(int row, const QModelIndex& parent) const;
 
-    PackageNode* package = nullptr;
-    QtModelPackageCommandExecutor* commandExecutor = nullptr;
+    DAVA::RefPtr<PackageNode> package;
+    DAVA::TArc::ContextAccessor* accessor = nullptr;
+    DAVA::TArc::UI* ui = nullptr;
 };
-
-#endif // __QUICKED_PACKAGE_MODEL_H__

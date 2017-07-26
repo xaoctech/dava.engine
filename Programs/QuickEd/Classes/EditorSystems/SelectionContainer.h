@@ -19,8 +19,6 @@ struct SelectionContainer
     template <typename ContainerOut>
     static void MergeSelectionToContainer(const SelectedNodes& selected, const SelectedNodes& deselected, ContainerOut& out);
 
-    bool IsSelected(SelectedNodes::value_type node) const;
-
     SelectedNodes selectedNodes;
 };
 
@@ -46,11 +44,6 @@ inline void SelectionContainer::MergeSelection(const SelectedNodes& selected, co
     }
 }
 
-inline bool SelectionContainer::IsSelected(SelectedNodes::value_type node) const
-{
-    return selectedNodes.find(node) != selectedNodes.end();
-}
-
 template <typename ContainerOut>
 inline void SelectionContainer::MergeSelectionToContainer(const SelectedNodes& selected, const SelectedNodes& deselected, ContainerOut& out)
 {
@@ -68,4 +61,18 @@ inline void SelectionContainer::MergeSelectionToContainer(const SelectedNodes& s
             out.insert(item);
         }
     }
+}
+
+namespace DAVA
+{
+template <>
+struct AnyCompare<SelectedNodes>
+{
+    static bool IsEqual(const Any& v1, const Any& v2)
+    {
+        const SelectedNodes& s1 = v1.Get<SelectedNodes>();
+        const SelectedNodes& s2 = v2.Get<SelectedNodes>();
+        return s1 == s2;
+    }
+};
 }

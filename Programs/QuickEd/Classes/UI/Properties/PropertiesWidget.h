@@ -1,31 +1,44 @@
-#ifndef __QUICKED_PROPERTIES_WIDGET_H__
-#define __QUICKED_PROPERTIES_WIDGET_H__
+#pragma once
+
+#include "ui_PropertiesWidget.h"
+
+#include <TArc/DataProcessing/DataWrapper.h>
+#include <TArc/DataProcessing/DataListener.h>
+
+#include <QtTools/Updaters/ContinuousUpdater.h>
+
+#include <Base/BaseTypes.h>
 
 #include <QDockWidget>
-#include "Base/BaseTypes.h"
-#include "ui_PropertiesWidget.h"
-#include "EditorSystems/SelectionContainer.h"
 
-class ControlNode;
-class Document;
-class PackageBaseNode;
+namespace DAVA
+{
+namespace TArc
+{
+class ContextAccessor;
+class UI;
+}
+}
+
 class Project;
+class PackageNode;
+class PackageBaseNode;
 class PropertiesModel;
 class PropertiesTreeItemDelegate;
-class QtModelPackageCommandExecutor;
-class StyleSheetNode;
 
-class PropertiesWidget : public QDockWidget, public Ui::PropertiesWidget
+class PropertiesWidget : public QDockWidget, public Ui::PropertiesWidget, private DAVA::TArc::DataListener
 {
     Q_OBJECT
 public:
     PropertiesWidget(QWidget* parent = nullptr);
+    ~PropertiesWidget();
 
-    void SetProject(const Project* project);
+    void SetAccessor(DAVA::TArc::ContextAccessor* accessor);
+    void SetUI(DAVA::TArc::UI* ui);
 
 public slots:
+    void SetProject(const Project* project);
     void UpdateModel(PackageBaseNode* node);
-    void OnDocumentChanged(Document* doc);
 
     void OnAddComponent(QAction* action);
     void OnAddStyleProperty(QAction* action);
@@ -48,9 +61,13 @@ private:
     QAction* CreateRemoveAction();
     QAction* CreateSeparator();
 
+    void UpdateModelInternal();
+
     void UpdateActions();
 
     void ApplyExpanding();
+
+    void OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;
 
     QAction* addComponentAction = nullptr;
     QAction* addStylePropertyAction = nullptr;
@@ -60,13 +77,15 @@ private:
     PropertiesModel* propertiesModel = nullptr;
     PropertiesTreeItemDelegate* propertiesItemsDelegate = nullptr;
 
+    ContinuousUpdater nodeUpdater;
+
     DAVA::Map<DAVA::String, bool> itemsState;
 
-    SelectionContainer selectionContainer;
-
     DAVA::String lastTopIndexPath;
-    QtModelPackageCommandExecutor* commandExecutor = nullptr;
     PackageBaseNode* selectedNode = nullptr; //node used to build model
-};
 
-#endif //__QUICKED_PROPERTIES_WIDGET_H__
+    DAVA::TArc::DataWrapper documentDataWrapper;
+
+    DAVA::TArc::ContextAccessor* accessor = nullptr;
+    DAVA::TArc::UI* ui = nullptr;
+};

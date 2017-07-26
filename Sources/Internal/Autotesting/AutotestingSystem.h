@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_AUTOTESTING_SYSTEM_H__
-#define __DAVAENGINE_AUTOTESTING_SYSTEM_H__
+#pragma once
 
 #include "DAVAConfig.h"
 
@@ -7,7 +6,6 @@
 
 #include "DAVAEngine.h"
 #include "Base/Singleton.h"
-#include "FileSystem/FileSystem.h"
 #include "Time/DateTime.h"
 
 #include "Autotesting/AutotestingSystemLua.h"
@@ -97,7 +95,42 @@ public:
     };
 
     bool ResolvePathToAutomation();
-    FilePath GetPathTo(const String& path);
+    FilePath GetPathTo(const String& path) const;
+
+    // Returns String at 'lineNumber'.
+    // If 'lineNumber' points to empy line next non-empty line is read and 'lineNumber' is adjusted.
+    // If 'lineNumber' points beyond file scope empty line is returned and 'lineNumber' is set to '-1'
+    String GetLuaString(int32& lineNumber) const;
+
+    void OnRecordClickControl(UIControl*);
+    void OnRecordDoubleClickControl(UIControl*);
+    void OnRecordFastSelectControl(UIControl*);
+
+    void OnRecordWaitControlBecomeVisible(UIControl*);
+    void OnRecordWaitControlBecomeEnabled(UIControl*);
+    void OnRecordWaitControlDissapeared(UIControl*);
+
+    void OnRecordSetText(UIControl*, const String&);
+    void OnRecordCheckText(UIControl*);
+
+    void OnRecordIsVisible(UIControl*);
+    void OnRecordIsDisabled(UIControl*);
+
+    void StartRecording();
+    void StopRecording();
+    bool IsRecording() const
+    {
+        return isRecording;
+    }
+
+    void SetTestFinishedCallback(const Function<void()> callback)
+    {
+        testFinishedCallback = callback;
+    }
+    void SetTestErrorCallback(const Function<void(const String&)> callback)
+    {
+        testErrorCallback = callback;
+    }
 
 protected:
     void DrawTouches();
@@ -110,12 +143,20 @@ protected:
     //DB
     void ExitApp();
 
+    //Recording
+    String GetControlHierarchy(UIControl*) const;
+    void WriteScriptLine(const String&);
+
 private:
     bool isScreenShotSaving = false;
     FilePath pathToAutomation;
 
+    Function<void()> testFinishedCallback;
+    Function<void(const String&)> testErrorCallback;
+
 public:
-    float32 startTime = 0.f;
+    static const String RecordScriptFileName;
+    int64 startTime = 0;
 
     bool isInit;
     bool isRunning;
@@ -166,6 +207,8 @@ public:
     bool screenshotRequested = false;
 
     TrackedObject localTrackedObject;
+
+    bool isRecording = false;
 };
 
 inline bool AutotestingSystem::GetIsScreenShotSaving() const
@@ -175,5 +218,3 @@ inline bool AutotestingSystem::GetIsScreenShotSaving() const
 };
 
 #endif //__DAVAENGINE_AUTOTESTING__
-
-#endif //__DAVAENGINE_AUTOTESTING_SYSTEM_H__

@@ -3,11 +3,6 @@
 
 #include "rhi_Type.h"
 
-namespace DAVA
-{
-class Mutex;
-}
-
 namespace rhi
 {
 ////////////////////////////////////////////////////////////////////////////////
@@ -15,63 +10,38 @@ namespace rhi
 
 struct InitParam
 {
-    uint32 width;
-    uint32 height;
-    float32 scaleX;
-    float32 scaleY;
-    void* window;
-    void* defaultFrameBuffer;
-    uint32 fullScreen : 1;
-    uint32 threadedRenderEnabled : 1;
-    uint32 vsyncEnabled : 1;
-    uint32 threadedRenderFrameCount;
+    uint32 width = 0;
+    uint32 height = 0;
+    float32 scaleX = 1.f;
+    float32 scaleY = 1.f;
+    void* window = nullptr;
+    void* defaultFrameBuffer = nullptr;
+    bool fullScreen = false;
+    bool threadedRenderEnabled = false;
+    bool vsyncEnabled = true;
+    bool useBackBufferExtraSize = false; //dx9
+    uint32 threadedRenderFrameCount = 0;
 
-    uint32 maxIndexBufferCount;
-    uint32 maxVertexBufferCount;
-    uint32 maxConstBufferCount;
-    uint32 maxTextureCount;
+    uint32 maxIndexBufferCount = 0;
+    uint32 maxVertexBufferCount = 0;
+    uint32 maxConstBufferCount = 0;
+    uint32 maxTextureCount = 0;
 
-    uint32 maxTextureSetCount; //+gl+
-    uint32 maxSamplerStateCount; //+gl+
-    uint32 maxPipelineStateCount; //+gl+
-    uint32 maxDepthStencilStateCount; // +gl+
-    uint32 maxRenderPassCount; //+gl+
-    uint32 maxCommandBuffer; //+gl
-    uint32 maxPacketListCount; //+gl
+    uint32 maxTextureSetCount = 0; //+gl+
+    uint32 maxSamplerStateCount = 0; //+gl+
+    uint32 maxPipelineStateCount = 0; //+gl+
+    uint32 maxDepthStencilStateCount = 0; // +gl+
+    uint32 maxRenderPassCount = 0; //+gl+
+    uint32 maxCommandBuffer = 0; //+gl
+    uint32 maxPacketListCount = 0; //+gl
 
-    uint32 shaderConstRingBufferSize;
+    uint32 shaderConstRingBufferSize = 0;
 
     void (*acquireContextFunc)() = nullptr;
     void (*releaseContextFunc)() = nullptr;
 
     void* renderingErrorCallbackContext = nullptr;
     void (*renderingErrorCallback)(RenderingError, void*) = nullptr;
-
-    InitParam()
-        : width(0)
-        , height(0)
-        , scaleX(1.f)
-        , scaleY(1.f)
-        , window(nullptr)
-        , defaultFrameBuffer(nullptr)
-        , fullScreen(false)
-        , threadedRenderEnabled(false)
-        , vsyncEnabled(true)
-        , threadedRenderFrameCount(2)
-        , maxIndexBufferCount(0)
-        , maxVertexBufferCount(0)
-        , maxConstBufferCount(0)
-        , maxTextureCount(0)
-        , maxTextureSetCount(0)
-        , maxSamplerStateCount(0)
-        , maxPipelineStateCount(0)
-        , maxDepthStencilStateCount(0)
-        , maxRenderPassCount(0)
-        , maxCommandBuffer(0)
-        , maxPacketListCount(0)
-        , shaderConstRingBufferSize(0)
-    {
-    }
 };
 
 struct ResetParam
@@ -274,7 +244,7 @@ void DeleteTexture(HTexture tex, bool scheduleDeletion = true);
 void* MapTexture(HTexture tex, uint32 level = 0);
 void UnmapTexture(HTexture tex);
 
-void UpdateTexture(HTexture tex, const void* data, uint32 level, TextureFace face = TEXTURE_FACE_NEGATIVE_X);
+void UpdateTexture(HTexture tex, const void* data, uint32 level, TextureFace face = TEXTURE_FACE_NONE);
 
 bool NeedRestoreTexture(HTexture tex);
 

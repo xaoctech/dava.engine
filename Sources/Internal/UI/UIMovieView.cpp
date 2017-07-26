@@ -1,4 +1,5 @@
 #include "UI/UIMovieView.h"
+#include "UI/UIControlSystem.h"
 
 #include "Engine/Engine.h"
 
@@ -8,13 +9,13 @@
 #include "Platform/MovieViewControlStub.h"
 #include "Render/RenderHelper.h"
 #elif defined(__DAVAENGINE_IPHONE__)
-#include "UI/Private/iOS/MovieViewControliOS.h"
+#include "UI/Private/Ios/MovieViewControlIos.h"
 #elif defined(__DAVAENGINE_MACOS__)
-#include "UI/Private/OSX/MovieViewControlMacOS.h"
+#include "UI/Private/Mac/MovieViewControlMac.h"
 #elif defined(__DAVAENGINE_ANDROID__)
 #include "UI/Private/Android/MovieViewControlAndroid.h"
 #elif defined(__DAVAENGINE_WIN_UAP__)
-#include "UI/Private/UWP/MovieViewControlUWP.h"
+#include "UI/Private/Win10/MovieViewControlWin10.h"
 #elif defined(__DAVAENGINE_WIN32__)
 #include "Platform/TemplateWin32/MovieViewControlWin32.h"
 #else
@@ -24,19 +25,26 @@
 #include "Render/RenderHelper.h"
 #endif
 #include "Render/2D/Systems/RenderSystem2D.h"
+#include "Reflection/ReflectionRegistrator.h"
+#include "UI/Update/UIUpdateComponent.h"
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(UIMovieView)
+{
+    ReflectionRegistrator<UIMovieView>::Begin()
+    .ConstructorByPointer()
+    .DestructorByPointer([](UIMovieView* o) { o->Release(); })
+    .End();
+}
+
 UIMovieView::UIMovieView(const Rect& rect)
     : UIControl(rect)
-#if defined(__DAVAENGINE_COREV2__)
     , movieViewControl(std::make_shared<MovieViewControl>(Engine::Instance()->PrimaryWindow()))
-#else
-    , movieViewControl(std::make_shared<MovieViewControl>())
-#endif
 {
     movieViewControl->Initialize(rect);
     UpdateControlRect();
+    GetOrCreateComponent<UIUpdateComponent>();
 }
 
 UIMovieView::~UIMovieView()
@@ -92,10 +100,10 @@ void UIMovieView::UpdateControlRect()
     movieViewControl->SetRect(rect);
 }
 
-void UIMovieView::SystemDraw(const UIGeometricData& geometricData)
+void UIMovieView::Draw(const UIGeometricData& parentGeometricData)
 {
-    UIControl::SystemDraw(geometricData);
-
+    UIControl::Draw(parentGeometricData);
+    movieViewControl->Draw(parentGeometricData);
 #if defined(DRAW_PLACEHOLDER_FOR_STUB_UIMOVIEVIEW)
     static Color drawColor(Color(1.0f, 0.4f, 0.8f, 1.0f));
 
@@ -107,12 +115,6 @@ void UIMovieView::SystemDraw(const UIGeometricData& geometricData)
     RenderSystem2D::Instance()->DrawCircle(absRect.GetCenter(), minRadius / 3, drawColor);
     RenderSystem2D::Instance()->DrawCircle(absRect.GetCenter(), minRadius / 4, drawColor);
 #endif
-}
-
-void UIMovieView::Draw(const UIGeometricData& parentGeometricData)
-{
-    UIControl::Draw(parentGeometricData);
-    movieViewControl->Draw(parentGeometricData);
 }
 
 void UIMovieView::Update(float32 timeElapsed)

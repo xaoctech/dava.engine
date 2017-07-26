@@ -2,6 +2,7 @@
 
 #include "TArc/Controls/ControlProxy.h"
 #include "TArc/Controls/Private/ValidationUtils.h"
+#include "TArc/Controls/CommonStrings.h"
 #include "TArc/Utils/QtConnections.h"
 
 #include <QDoubleSpinBox>
@@ -16,7 +17,7 @@ namespace DAVA
 namespace TArc
 {
 template <typename TBase, typename TEditableType>
-class BaseSpinBox : public ControlProxy<TBase>
+class BaseSpinBox : public ControlProxyImpl<TBase>
 {
 public:
     enum BaseFields : uint32
@@ -27,12 +28,15 @@ public:
         Range
     };
 
-    BaseSpinBox(const ControlDescriptor& descriptor, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent);
-    BaseSpinBox(const ControlDescriptor& descriptor, ContextAccessor* accessor, Reflection model, QWidget* parent);
+    using BaseParams = typename ControlProxyImpl<TBase>::BaseParams;
+    BaseSpinBox(const BaseParams& params, const ControlDescriptor& descriptor, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent);
+    BaseSpinBox(const BaseParams& params, const ControlDescriptor& descriptor, ContextAccessor* accessor, Reflection model, QWidget* parent);
 
 protected:
+    bool event(QEvent* e) override;
     void UpdateControl(const ControlDescriptor& changedFields) override;
     void SetupSpinBoxBase();
+    void UpdateRange();
 
     void ValueChanged(TEditableType val);
 
@@ -50,7 +54,7 @@ protected:
 
 protected:
     QtConnections connections;
-    QString noValueString = QStringLiteral("<multiple values>");
+    QString noValueString = QString(MultipleValuesString);
 
     enum class ControlState
     {
@@ -64,7 +68,6 @@ protected:
 private:
     QString textFromValue(TEditableType val) const override;
     TEditableType valueFromText(const QString& text) const override;
-    void keyPressEvent(QKeyEvent* event) override;
     void focusInEvent(QFocusEvent* event) override;
     void focusOutEvent(QFocusEvent* event) override;
 };

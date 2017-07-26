@@ -1,7 +1,18 @@
-#include "UIFocusComponent.h"
+#include "UI/Focus/UIFocusComponent.h"
+#include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(UIFocusComponent)
+{
+    ReflectionRegistrator<UIFocusComponent>::Begin()
+    .ConstructorByPointer()
+    .DestructorByPointer([](UIFocusComponent* o) { o->Release(); })
+    .Field("enabled", &UIFocusComponent::IsEnabled, &UIFocusComponent::SetEnabled)
+    .Field("requestFocus", &UIFocusComponent::IsRequestFocus, &UIFocusComponent::SetRequestFocus)
+    .End();
+}
+
 UIFocusComponent::UIFocusComponent()
 {
 }

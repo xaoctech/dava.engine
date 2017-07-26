@@ -3,6 +3,7 @@
 #include "Render/2D/Sprite.h"
 #include "UI/UIControlSystem.h"
 #include "UI/Focus/UIFocusComponent.h"
+#include "UI/Render/UIDebugRenderComponent.h"
 #include "Utils/Utils.h"
 
 namespace
@@ -41,6 +42,7 @@ L"  <body style='color: #d0e4fe'>"
 L"      <h1>This is a WebView</h1>"
 L"      <a href='http://www.turion.by'>click me</a><br/>"
 L"      <a href='https://wargaming.net'>click me</a><br/>"
+L"      <a href='wotblitz://come.here'>custom scheme</a><br/>"
 L"  </body>"
 L"</html>";
 
@@ -51,7 +53,9 @@ class MyWebViewDelegate : public IUIWebViewDelegate
 public:
     eAction URLChanged(UIWebView* webview, const String& newURL, bool isRedirectedByMouseClick) override
     {
-        Logger::Debug("MyWebViewDelegate::URLChanged: %s", newURL.c_str());
+        Logger::Debug("MyWebViewDelegate::URLChanged %s: %s", isRedirectedByMouseClick ? "by user" : "by code", newURL.c_str());
+        if (newURL.find("wotblitz://") == 0)
+            return eAction::NO_PROCESS;
         return eAction::PROCESS_IN_WEBVIEW;
     }
 
@@ -82,7 +86,7 @@ void StaticWebViewTest::LoadResources()
     webView1 = new UIWebView(Rect(5, 5, 400, 300));
     webView1->SetVisibilityFlag(true);
     webView1->SetRenderToTexture(true);
-    webView1->SetDebugDraw(true);
+    webView1->GetOrCreateComponent<UIDebugRenderComponent>();
     webView1->SetDelegate(webviewDelegate);
     webView1->OpenURL("http://en.cppreference.com/");
     webView1->GetOrCreateComponent<UIFocusComponent>();
@@ -90,7 +94,7 @@ void StaticWebViewTest::LoadResources()
 
     webView2 = new UIWebView(Rect(410, 50, 400, 300));
     webView2->SetVisibilityFlag(true);
-    webView2->SetDebugDraw(true);
+    webView2->GetOrCreateComponent<UIDebugRenderComponent>();
     webView2->OpenFromBuffer(htmlCuteCats, "~res:/TestData/TransparentWebViewTest/");
     webView2->GetOrCreateComponent<UIFocusComponent>();
     AddControl(webView2);
@@ -98,10 +102,10 @@ void StaticWebViewTest::LoadResources()
     webView3 = new UIWebView(Rect(820, 70, 400, 300));
     webView3->SetVisibilityFlag(true);
     webView3->SetRenderToTexture(true);
-    webView3->SetDebugDraw(true);
+    webView3->GetOrCreateComponent<UIDebugRenderComponent>();
+    webView3->SetDelegate(webviewDelegate);
     webView3->LoadHtmlString(htmlString);
     webView3->GetOrCreateComponent<UIFocusComponent>();
-
     AddControl(webView3);
 
     Font* font = FTFont::Create("~res:/Fonts/korinna.ttf");
@@ -113,8 +117,9 @@ void StaticWebViewTest::LoadResources()
     overlapedImage = new UIControl(Rect(500, 0, 300, 300));
     FilePath imgPath("~res:/TestData/UI/Rotation.png");
     ScopedPtr<Sprite> sprite(Sprite::CreateFromSourceFile(imgPath));
-    overlapedImage->SetSprite(sprite, 0);
-    overlapedImage->SetDebugDraw(true);
+    UIControlBackground* overlapedImageBg = overlapedImage->GetOrCreateComponent<UIControlBackground>();
+    overlapedImageBg->SetSprite(sprite, 0);
+    overlapedImage->GetOrCreateComponent<UIDebugRenderComponent>();
     AddControl(overlapedImage);
 
     FilePath srcDir("~res:/TestData/TransparentWebViewTest/");
@@ -179,8 +184,8 @@ void StaticWebViewTest::OnButtonSetNormal(BaseObject*, void*, void*)
 
 void StaticWebViewTest::OnButtonAdd10ToAlfa(BaseObject* obj, void* data, void* callerData)
 {
-    Sprite* spr = webView1->GetSprite();
-    UIControlBackground* back = webView1->GetBackground();
+    UIControlBackground* back = webView1->GetOrCreateComponent<UIControlBackground>();
+    Sprite* spr = back ? back->GetSprite() : nullptr;
     if (spr)
     {
         Color color = back->GetColor();
@@ -192,8 +197,8 @@ void StaticWebViewTest::OnButtonAdd10ToAlfa(BaseObject* obj, void* data, void* c
 
 void StaticWebViewTest::OnButtonMinus10FromAlfa(BaseObject* obj, void* data, void* callerData)
 {
-    Sprite* spr = webView1->GetSprite();
-    UIControlBackground* back = webView1->GetBackground();
+    UIControlBackground* back = webView1->GetOrCreateComponent<UIControlBackground>();
+    Sprite* spr = back ? back->GetSprite() : nullptr;
     if (spr)
     {
         Color color = back->GetColor();
@@ -224,7 +229,7 @@ UIButton* StaticWebViewTest::CreateUIButton(Font* font, const Rect& rect, const 
     button->SetStateFont(0xFF, font);
     button->SetStateText(0xFF, str);
     button->SetStateFontColor(0xFF, Color::White);
-    button->SetDebugDraw(true);
+    button->GetOrCreateComponent<UIDebugRenderComponent>();
     button->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, targetFunction));
     AddControl(button);
     return button;

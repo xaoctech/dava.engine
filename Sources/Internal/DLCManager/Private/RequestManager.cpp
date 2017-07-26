@@ -1,6 +1,8 @@
 #include "DLCManager/Private/RequestManager.h"
 #include "DLCManager/Private/DLCManagerImpl.h"
 #include "Debug/DVAssert.h"
+#include "Base/BaseTypes.h"
+#include <Time/SystemTimer.h>
 
 namespace DAVA
 {
@@ -21,19 +23,152 @@ void RequestManager::Stop()
     PackRequest* request = Top();
     if (request != nullptr)
     {
-        request->Start();
+        request->Stop();
     }
 }
 
-void RequestManager::Update()
+void RequestManager::FireStartLoadingWhileInactiveSignals()
 {
-    if (!Empty())
+    if (!requestStartedWhileInactive.empty())
     {
-        PackRequest* request = Top();
-        request->Update();
-        if (request->IsDownloaded())
+        for (const String& pack : requestStartedWhileInactive)
         {
-            Pop();
+            PackRequest* r = packManager.FindRequest(pack);
+            if (r)
+            {
+                packManager.requestStartLoading.Emit(*r);
+            }
+        }
+        requestStartedWhileInactive.clear();
+    }
+}
+
+void RequestManager::FireUpdateWhileInactiveSignals()
+{
+    if (!requestUpdatedWhileInactive.empty())
+    {
+        for (const String& pack : requestUpdatedWhileInactive)
+        {
+            PackRequest* r = packManager.FindRequest(pack);
+            if (r)
+            {
+                packManager.requestStartLoading.Emit(*r);
+            }
+        }
+        requestUpdatedWhileInactive.clear();
+    }
+}
+
+void RequestManager::FireStartLoadingSignal(PackRequest& request, bool inBackground)
+{
+    if (inBackground)
+    {
+        const String& packName = request.GetRequestedPackName();
+        requestStartedWhileInactive.push_back(packName);
+    }
+    else
+    {
+        packManager.requestStartLoading.Emit(request);
+    }
+}
+
+void RequestManager::FireUpdateSignal(PackRequest& request, bool inBackground)
+{
+    if (inBackground)
+    {
+        const String& packName = request.GetRequestedPackName();
+        auto it = find(begin(requestUpdatedWhileInactive), end(requestUpdatedWhileInactive), packName);
+        // add only once for update signal
+        if (it != end(requestUpdatedWhileInactive))
+        {
+            requestUpdatedWhileInactive.push_back(packName);
+        }
+    }
+    else
+    {
+        packManager.requestUpdated.Emit(request);
+    }
+}
+
+void RequestManager::OneUpdateIteration(bool inBackground)
+{
+    isQueueChanged = false;
+
+    Vector<PackRequest*> nextDependentPacks;
+
+    PackRequest* request = Top();
+    bool callSignal = request->Update();
+
+    if (request->IsDownloaded())
+    {
+        isQueueChanged = true;
+        if (callSignal == false && request->GetDownloadedSize() == 0)
+        {
+            // empty pack, so we need inform signal
+            FireStartLoadingSignal(*request, inBackground);
+        }
+        callSignal = true; // we need to inform on empty pack too
+        Pop();
+        if (!Empty())
+        {
+            PackRequest* next = Top();
+            while (next->IsDownloaded())
+            {
+                nextDependentPacks.push_back(next);
+                Pop();
+                if (!Empty() && Top()->IsDownloaded())
+                {
+                    next = Top();
+                }
+                else
+                {
+                    next = nullptr;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (callSignal)
+    {
+        // if error happened and no space on device, requesting
+        // may be already be disabled, so we need check it out
+        if (packManager.IsRequestingEnabled())
+        {
+            FireUpdateSignal(*request, inBackground);
+            for (PackRequest* r : nextDependentPacks)
+            {
+                FireUpdateSignal(*r, inBackground);
+            }
+        }
+    }
+}
+
+void RequestManager::Update(bool inBackground)
+{
+    if (!inBackground)
+    {
+        FireStartLoadingWhileInactiveSignals();
+        FireUpdateWhileInactiveSignals();
+    }
+
+    const int64 start = SystemTimer::GetMs();
+    const DLCManager::Hints& hints = packManager.GetHints();
+
+    while (!Empty())
+    {
+        OneUpdateIteration(inBackground);
+
+        int64 timeIter = SystemTimer::GetMs() - start;
+
+        if (timeIter >= hints.limitRequestUpdateIterationMs)
+        {
+            break;
+        }
+
+        if (!IsQueueOrderChangedDuringLastIteration())
+        {
+            break;
         }
     }
 }
@@ -81,10 +216,15 @@ void RequestManager::Push(PackRequest* request_)
     }
 
     requests.push_back(request_);
+
+    requestNames.insert(request_->GetRequestedPackName());
+
+    DVASSERT(requests.size() == requestNames.size());
 }
 
-void RequestManager::UpdateOrder(PackRequest* request, uint32 orderIndex)
+void RequestManager::SetPriorityToRequest(PackRequest* request)
 {
+    DVASSERT(Thread::IsMainThread());
     DVASSERT(request != nullptr);
 
     PackRequest* prevTop = Top();
@@ -96,15 +236,32 @@ void RequestManager::UpdateOrder(PackRequest* request, uint32 orderIndex)
     auto it = find(begin(requests), end(requests), request);
     if (it != end(requests))
     {
-        requests.erase(it);
-        if (orderIndex >= requests.size())
+        // 1. collect all requests that are not subrequests of request
+        Vector<PackRequest*> removeFromBeg;
+        for (PackRequest* r : requests)
         {
-            requests.push_back(request);
+            if (r == request)
+            {
+                break; // only check requests before
+            }
+            if (!request->IsSubRequest(r))
+            {
+                removeFromBeg.push_back(r);
+            }
         }
-        else
+        // 2. remove all NOT sub request from beginning queue
+        for (PackRequest* r : removeFromBeg)
         {
-            auto insertIt = begin(requests) + orderIndex;
-            requests.insert(insertIt, request);
+            requests.erase(find(begin(requests), end(requests), r));
+        }
+        // 3. find position after "request"
+        it = find(begin(requests), end(requests), request);
+        ++it;
+        // 4. insert all previously removed request after preserve order
+        for (PackRequest* r : removeFromBeg)
+        {
+            it = requests.insert(it, r);
+            ++it;
         }
     }
 
@@ -120,7 +277,13 @@ void RequestManager::Pop()
 {
     if (!requests.empty())
     {
-        requests.erase(begin(requests));
+        auto it = begin(requests);
+        auto nameIt = requestNames.find((*it)->GetRequestedPackName());
+
+        requestNames.erase(nameIt);
+        requests.erase(it);
+
+        DVASSERT(requests.size() == requestNames.size());
     }
 }
 
@@ -131,8 +294,28 @@ void RequestManager::Remove(PackRequest* request)
     auto it = find(begin(requests), end(requests), request);
     if (it != end(requests))
     {
+        auto nameIt = requestNames.find((*it)->GetRequestedPackName());
+
+        requestNames.erase(nameIt);
         requests.erase(it);
+
+        DVASSERT(requests.size() == requestNames.size());
     }
+}
+
+void RequestManager::SwapPointers(PackRequest* newPointer, PackRequest* oldInvalidPointer)
+{
+    DVASSERT(newPointer != nullptr);
+    DVASSERT(oldInvalidPointer != nullptr);
+    DVASSERT(newPointer != oldInvalidPointer);
+
+    auto it = find(begin(requests), end(requests), oldInvalidPointer);
+    DVASSERT(it != end(requests));
+    // update old pointer value in 'requests'
+    *it = newPointer;
+
+    auto nameIt = requestNames.find(newPointer->GetRequestedPackName());
+    DVASSERT(nameIt != end(requestNames));
 }
 
 } // end namespace DAVA

@@ -1,6 +1,6 @@
 #include "LandscapeThumbnails.h"
 #include "Concurrency/LockGuard.h"
-#include "Render/RenderCallbacks.h"
+#include "Render/Renderer.h"
 #include "Render/ShaderCache.h"
 #include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/RenderPassNames.h"
@@ -145,14 +145,13 @@ RequestID Create(DAVA::Landscape* landscape, LandscapeThumbnails::Callback handl
     Texture* texture = Texture::CreateFBO(TEXTURE_TILE_FULL_SIZE, TEXTURE_TILE_FULL_SIZE, FORMAT_RGBA8888);
     {
         DAVA::Vector<FastName> flagsToDisable{ NMaterialFlagName::FLAG_VERTEXFOG,
-                                               NMaterialFlagName::FLAG_LANDSCAPE_USE_INSTANCING,
-                                               NMaterialFlagName::FLAG_LANDSCAPE_SPECULAR
+                                               NMaterialFlagName::FLAG_LANDSCAPE_USE_INSTANCING
         };
 
         DAVA::LockGuard<DAVA::Mutex> lock(requests.mutex);
         requests.list.emplace_back(syncObject, landscape, thumbnailMaterial, flagsToDisable, texture, handler, requestID);
     }
-    RenderCallbacks::RegisterSyncCallback(syncObject, MakeFunction(&OnCreateLandscapeTextureCompleted));
+    Renderer::RegisterSyncCallback(syncObject, MakeFunction(&OnCreateLandscapeTextureCompleted));
 
     const auto identityMatrix = &Matrix4::IDENTITY;
     Vector3 nullVector(0.0f, 0.0f, 0.0f);
@@ -168,7 +167,7 @@ RequestID Create(DAVA::Landscape* landscape, LandscapeThumbnails::Callback handl
     packet.vertexCount = renderData->vertexCount;
     packet.indexBuffer = renderData->indexBuffer;
     packet.primitiveType = renderData->primitiveType;
-    packet.primitiveCount = GetPrimitiveCount(renderData->indexCount, renderData->primitiveType);
+    packet.primitiveCount = CalculatePrimitiveCount(renderData->indexCount, renderData->primitiveType);
     packet.vertexLayoutUID = renderData->vertexLayoutId;
 
     thumbnailMaterial->BindParams(packet);
@@ -178,6 +177,7 @@ RequestID Create(DAVA::Landscape* landscape, LandscapeThumbnails::Callback handl
     passDesc.priority = PRIORITY_SERVICE_3D;
     passDesc.viewport.width = TEXTURE_TILE_FULL_SIZE;
     passDesc.viewport.height = TEXTURE_TILE_FULL_SIZE;
+    passDesc.depthStencilBuffer.texture = rhi::InvalidHandle;
 
     rhi::HPacketList packetList = {};
     rhi::HRenderPass renderPass = rhi::AllocateRenderPass(passDesc, 1, &packetList);

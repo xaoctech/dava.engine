@@ -1,0 +1,10 @@
+BASIC INCLUDE TEST
+
+first
+#include "01-included.txt"  
+second
+#define SOMETHING 7 
+#define LIFE 42 
+third
+
+last

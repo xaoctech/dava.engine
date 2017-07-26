@@ -1,9 +1,8 @@
-#ifndef __DAVAENGINE_RENDERER_H__
-#define __DAVAENGINE_RENDERER_H__
+#pragma once
 
-#include "Core/Core.h"
 #include "RenderBase.h"
 #include "RenderOptions.h"
+#include "RestoreResourceSignal.h"
 #include "DynamicBindings.h"
 #include "RuntimeTextures.h"
 #include "RHI/rhi_Public.h"
@@ -13,6 +12,7 @@
 namespace DAVA
 {
 struct RenderStats;
+struct RenderSignals;
 
 namespace Renderer
 {
@@ -24,8 +24,6 @@ bool IsInitialized();
 void Reset(const rhi::ResetParam& params);
 
 rhi::Api GetAPI();
-
-bool IsDeviceLost();
 
 void SetDesiredFPS(int32 fps);
 int32 GetDesiredFPS();
@@ -52,7 +50,21 @@ RuntimeTextures& GetRuntimeTextures();
 
 //render stats
 RenderStats& GetRenderStats();
+
+//signals
+RenderSignals& GetSignals();
+
+//sync callback
+//can register same callback for multiple objects, callback is removed after sync callback
+Token RegisterSyncCallback(rhi::HSyncObject syncObject, Function<void(rhi::HSyncObject)> callback);
+void UnRegisterSyncCallback(Token token);
 }
+
+struct RenderSignals
+{
+    RestoreResourceSignal needRestoreResources;
+    RestoreResourceSignal restoreResoucesCompleted;
+};
 
 struct RenderStats
 {
@@ -86,5 +98,3 @@ struct RenderStats
     FastNameMap<uint32> visibilityQueryResults = FastNameMap<uint32>(16, 0U);
 };
 }
-
-#endif

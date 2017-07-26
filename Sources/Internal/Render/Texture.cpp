@@ -11,9 +11,8 @@
 #include "FileSystem/FileSystem.h"
 #include "Scene3D/Systems/QualitySettingsSystem.h"
 #include "Render/RenderHelper.h"
-#include "Render/RenderCallbacks.h"
 
-#if defined(__DAVAENGINE_IPHONE__) 
+#if defined(__DAVAENGINE_IPHONE__)
 #include <CoreGraphics/CoreGraphics.h>
 #include <CoreFoundation/CoreFoundation.h>
 #elif defined(__DAVAENGINE_MACOS__)
@@ -95,7 +94,7 @@ bool CheckAndFixImageFormat(Vector<Image*>* images)
         return true;
     }
 
-#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
+#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_WIN_UAP__)
     //we should decode all images for RE/QE
     if (ImageConvert::CanConvertFromTo(format, FORMAT_RGBA8888))
 #else
@@ -238,12 +237,12 @@ Texture::Texture()
     DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
 
     texDescriptor = new TextureDescriptor;
-    RenderCallbacks::RegisterResourceRestoreCallback(MakeFunction(this, &Texture::RestoreRenderResource));
+    Renderer::GetSignals().needRestoreResources.Connect(this, &Texture::RestoreRenderResource);
 }
 
 Texture::~Texture()
 {
-    RenderCallbacks::UnRegisterResourceRestoreCallback(MakeFunction(this, &Texture::RestoreRenderResource));
+    Renderer::GetSignals().needRestoreResources.Disconnect(this);
     ReleaseTextureData();
     SafeDelete(texDescriptor);
 }
@@ -395,7 +394,7 @@ void Texture::SetMinMagFilter(rhi::TextureFilter minFilter, rhi::TextureFilter m
 
 void Texture::GenerateMipmaps()
 {
-    DVASSERT("Mipmap generation on fly is not supported anymore!");
+    DVASSERT(0, "Mipmap generation on fly is not supported anymore!");
 }
 
 Texture* Texture::CreateFromImage(TextureDescriptor* descriptor, eGPUFamily gpu)
@@ -655,7 +654,7 @@ void Texture::FlushDataToRenderer(Vector<Image*>* images)
     {
         singleTextureSet = rhi::HTextureSet(rhi::InvalidHandle);
     }
-    
+
 #else
 
     handle = rhi::CreateTexture(descriptor);
@@ -899,6 +898,7 @@ Texture* Texture::CreateFBO(const Texture::FBODescriptor& fboDesc)
     {
         descriptor.isRenderTarget = false;
         descriptor.format = rhi::TEXTURE_FORMAT_D24S8;
+        descriptor.type = rhi::TEXTURE_TYPE_2D;
         tx->handleDepthStencil = rhi::CreateTexture(descriptor);
     }
 

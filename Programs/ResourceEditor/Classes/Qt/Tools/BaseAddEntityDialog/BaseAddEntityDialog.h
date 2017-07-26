@@ -4,12 +4,13 @@
 #include "DAVAEngine.h"
 #include "Scene3D/Entity.h"
 
+#include "Classes/Commands2/Base/RECommandNotificationObject.h"
 #include "Classes/Qt/Scene/SceneEditor2.h"
 #include "Classes/Qt/Scene/ActiveSceneHolder.h"
 #include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyEditor.h"
 #include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataMetaObject.h"
 
-#include <QDialog.h>
+#include <QDialog>
 #include <QDialogButtonBox>
 
 namespace Ui
@@ -41,7 +42,7 @@ public:
 
 protected slots:
     virtual void OnItemEdited(const QModelIndex&);
-    virtual void CommandExecuted(SceneEditor2* scene, const DAVA::Command* command, bool redo);
+    virtual void CommandExecuted(SceneEditor2* scene, const RECommandNotificationObject& commandNotification);
 
 protected:
     virtual void FillPropertyEditorWithContent() = 0;

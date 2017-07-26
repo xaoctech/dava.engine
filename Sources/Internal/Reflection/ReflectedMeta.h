@@ -20,6 +20,8 @@ struct Meta : public T
 class Type;
 class ReflectedMeta final
 {
+    friend class ReflectedTypeDB; // friend for stast calculation
+
 public:
     ReflectedMeta() = default;
 
@@ -32,10 +34,9 @@ public:
     ReflectedMeta(Meta<T, IndexT>&& meta);
 
     template <typename T>
-    bool HasMeta() const;
-
-    template <typename T>
     const T* GetMeta() const;
+
+    const void* GetMeta(const Type* metaType) const;
 
     template <typename T, typename IndexT>
     void Emplace(Meta<T, IndexT>&& meta);
@@ -61,6 +62,22 @@ namespace M
     Add hint that indicates ReadOnly policy for some Reflected Field
 */
 using ReadOnly = Meta<Metas::ReadOnly>;
+
+/**
+    \ingroup metas
+    Mark field as invisible in property panel
+*/
+using HiddenField = Meta<Metas::HiddenField>;
+/**
+    \ingroup metas
+    Mark field to be visible only in developer mode of property panel
+*/
+using DeveloperModeOnly = Meta<Metas::DeveloperModeOnly>;
+/**
+    \ingroup metas
+    Name of property that should be shown for user instead of field name
+*/
+using DisplayName = Meta<Metas::DisplayName>;
 /**
     \ingroup metas
     Add hint that indicates valid range of value
@@ -76,6 +93,14 @@ using Range = Meta<Metas::Range>;
     \arg \c accuracy has value of DAVA::uint32
 */
 using FloatNumberAccuracy = Meta<Metas::FloatNumberAccuracy>;
+
+/**
+ \ingroup metas
+ Specifies maximum count of characters in text for editing
+ \arg \c length has value of DAVA::uint32
+ */
+using MaxLength = Meta<Metas::MaxLength>;
+
 /**
     \ingroup metas
     Add value validation function to Reflected Field.
@@ -191,6 +216,36 @@ using Group = Meta<Metas::Group>;
     \endcode
 */
 using ValueDescription = Meta<Metas::ValueDescription>;
+
+/**
+    \ingroup metas
+    We think about some types like about base types: Vector2, Vector3, Vector4, Color, Rect etc
+    But in real this types are complex and have fields. For example Vector3 comprises the following fields: X, Y, Z
+    This meta mark field of "BaseType" as "field to edit". As a reaction there will be created separate sub-editor
+    for each field that marked by this meta
+*/
+using SubProperty = Meta<Metas::SubProperty>;
+
+/**
+    \ingroup metas
+    Says that value can be changed at some unpredictable moment and
+    Reflection's client should update value as often as possible
+*/
+using FrequentlyChangedValue = Meta<Metas::FrequentlyChangedValue>;
+
+/**
+    \ingroup metas
+    Type that derived from Component and marked by this Meta couldn't be created in PropertyPanel
+*/
+using CantBeCreatedManualyComponent = Meta<Metas::CantBeCreatedManualyComponent>;
+
+/**
+    \ingroup metas
+    Type that derived from Component and marked by this Meta couldn't be created in PropertyPanel
+*/
+using CantBeDeletedManualyComponent = Meta<Metas::CantBeDeletedManualyComponent>;
+
+using Tooltip = Meta<Metas::Tooltip>;
 }
 
 } // namespace DAVA

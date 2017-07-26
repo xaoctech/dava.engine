@@ -65,11 +65,13 @@ inline uint32 GetPossibleTexcoordSemantic(uint32 index)
     case 2:
         return EVF_TEXCOORD2; // | EVF_CUBETEXCOORD2;
     case 3:
-        return EVF_PIVOT; //    | EVF_TEXCOORD3 | EVF_CUBETEXCOORD3;
+        return EVF_TEXCOORD3; // | EVF_CUBETEXCOORD3;
     case 4:
-        return EVF_ANGLE_SIN_COS;
+        return EVF_PIVOT4;
     case 5:
         return EVF_FLEXIBILITY;
+    case 6:
+        return EVF_ANGLE_SIN_COS;
     }
 
     return 0;
@@ -114,3 +116,32 @@ uint32 GetVertexLayoutRequiredFormat(const rhi::VertexLayout& layout)
     return res;
 }
 };
+
+ENUM_DECLARE(DAVA::eVertexFormat)
+{
+    ENUM_ADD_DESCR(DAVA::EVF_VERTEX, "Vertex");
+    ENUM_ADD_DESCR(DAVA::EVF_NORMAL, "Normal");
+    ENUM_ADD_DESCR(DAVA::EVF_COLOR, "Color");
+    ENUM_ADD_DESCR(DAVA::EVF_TEXCOORD0, "TexCoord 0");
+    ENUM_ADD_DESCR(DAVA::EVF_TEXCOORD1, "TexCoord 1");
+    ENUM_ADD_DESCR(DAVA::EVF_TEXCOORD2, "TexCoord 2");
+    ENUM_ADD_DESCR(DAVA::EVF_TEXCOORD3, "TexCoord 3");
+    ENUM_ADD_DESCR(DAVA::EVF_TANGENT, "Tangent");
+    ENUM_ADD_DESCR(DAVA::EVF_BINORMAL, "Binormal");
+    ENUM_ADD_DESCR(DAVA::EVF_PIVOT4, "Pivot");
+    ENUM_ADD_DESCR(DAVA::EVF_PIVOT_DEPRECATED, "PivotDeprecated");
+    ENUM_ADD_DESCR(DAVA::EVF_FLEXIBILITY, "Flexibility");
+    ENUM_ADD_DESCR(DAVA::EVF_ANGLE_SIN_COS, "Angle sin cos");
+    ENUM_ADD_DESCR(DAVA::EVF_JOINTINDEX, "Joint index");
+    ENUM_ADD_DESCR(DAVA::EVF_JOINTWEIGHT, "Joint weight");
+    ENUM_ADD_DESCR(DAVA::EVF_CUBETEXCOORD0, "Cube TexCoord 0");
+    ENUM_ADD_DESCR(DAVA::EVF_CUBETEXCOORD1, "Cube TexCoord 1");
+    ENUM_ADD_DESCR(DAVA::EVF_CUBETEXCOORD2, "Cube TexCoord 2");
+    ENUM_ADD_DESCR(DAVA::EVF_CUBETEXCOORD3, "Cube TexCoord 3");
+}
+
+ENUM_DECLARE(DAVA::eIndexFormat)
+{
+    ENUM_ADD_DESCR(DAVA::EIF_16, "16 bit");
+    ENUM_ADD_DESCR(DAVA::EIF_32, "32 bit");
+}
