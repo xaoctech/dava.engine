@@ -140,8 +140,15 @@ reset_property ( MIX_APP_DATA )
     add_tool     ( ResourceArchiver )
     add_tool     ( ResourcePacker   )
     add_tool     ( ResourcePatcher  )
+
+if (NOT DEPLOY OR IMAGE_UNPACKER)    
     add_tool     ( ImageUnpacker    )
+endif ()
+
+if (NOT DEPLOY OR CACHE_CLIENT)    
     add_tool     ( AssetCacheClient )
+endif ()
+
     add_tool     ( AssetCacheServer )
     add_tool     ( Dep )
 
