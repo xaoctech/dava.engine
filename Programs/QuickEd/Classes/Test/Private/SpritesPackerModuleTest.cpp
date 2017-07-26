@@ -15,6 +15,8 @@
 #include <TArc/Testing/TArcTestClass.h>
 #include <TArc/Core/ContextManager.h>
 
+#include <FileSystem/FilePath.h>
+#include <FileSystem/FileSystem.h>
 #include <Render/Image/Image.h>
 #include <Render/Image/ImageSystem.h>
 
@@ -69,12 +71,14 @@ DAVA_TARC_TESTCLASS(SpritesPackerModuleTest)
 
         TestHelpers::CreateProjectFolder(projectPath);
 
-        String projectPathStr = projectPath.GetAbsolutePathname();
+        DAVA::String projectPathStr = projectPath.GetAbsolutePathname();
         InvokeOperation(ProjectModuleTesting::CreateProjectOperation.ID, QString::fromStdString(projectPathStr));
     }
 
-    void CreateImage(const FilePath& imagePath)
+    void CreateImage(const DAVA::FilePath& imagePath)
     {
+        using namespace DAVA;
+
         ScopedPtr<Image> image(Image::Create(256, 256, FORMAT_RGBA8888));
         image->MakePink(true);
         ImageSystem::Save(imagePath, image);
