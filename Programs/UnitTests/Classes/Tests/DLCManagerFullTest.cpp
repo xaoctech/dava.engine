@@ -27,6 +27,7 @@ static bool HasAccessToSystemFolder(DAVA::String dir)
         {
             return false;
         }
+        DAVA::GetEngineContext()->logger->Error("Strange error code: (%d) %s for opening file: %s", errno, strerror(errno), dir.c_str());
     }
 
     fclose(f);
