@@ -17,6 +17,23 @@
 DAVA::FilePath documentRootDir;
 const char* const localPort = "8282";
 
+static bool HasAccessToSystemFolder(DAVA::String dir)
+{
+    dir += "tmp.file";
+    FILE* f = fopen(dir.c_str(), "wb");
+    if (nullptr == f)
+    {
+        if (EACCES == errno)
+        {
+            return false;
+        }
+    }
+
+    fclose(f);
+    remove(dir.c_str());
+    return true;
+}
+
 struct FSMTest02
 {
     enum State
@@ -201,13 +218,18 @@ DAVA_TESTCLASS (DLCManagerFullTest)
 
         bool getException = false;
 
+#ifdef __DAVAENGINE_WINDOWS__
+        const char* cant_write_dir = "C:/Windows/"; // system dir
+#else
+        const char* cant_write_dir = "/"; // root dir
+#endif
+        if (HasAccessToSystemFolder(cant_write_dir))
+        {
+            return; // we run as root, just skip this test
+        }
+
         try
         {
-#ifdef __DAVAENGINE_WINDOWS__
-            const char* cant_write_dir = "C:/Windows/"; // system dir
-#else
-            const char* cant_write_dir = "/"; // root dir
-#endif
             char fullUrl[1024] = { 0 };
             sprintf(fullUrl, "http://127.0.0.1:%s/superpack_for_unittests.dvpk", localPort);
 
