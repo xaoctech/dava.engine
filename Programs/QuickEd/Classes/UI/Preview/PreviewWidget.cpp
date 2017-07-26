@@ -1,5 +1,7 @@
 #include "PreviewWidget.h"
 
+#include "Application/QEGlobal.h"
+
 #include "EditorSystems/EditorSystemsManager.h"
 
 #include "EditorSystems/EditorCanvas.h"
@@ -29,6 +31,7 @@
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/UI.h>
 #include <TArc/Core/ContextAccessor.h>
+#include <TArc/Core/OperationInvoker.h>
 #include <TArc/DataProcessing/DataContext.h>
 
 #include <QtTools/Updaters/ContinuousUpdater.h>
@@ -54,9 +57,10 @@
 
 using namespace DAVA;
 
-PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* ui_, DAVA::RenderWidget* renderWidget, EditorSystemsManager* systemsManager)
+PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::OperationInvoker* invoker_, DAVA::TArc::UI* ui_, DAVA::RenderWidget* renderWidget, EditorSystemsManager* systemsManager)
     : QFrame(nullptr)
     , accessor(accessor_)
+    , invoker(invoker_)
     , ui(ui_)
     , rulerController(new RulerController(accessor, this))
     , scaleComboBoxData(accessor)
@@ -245,6 +249,8 @@ void PreviewWidget::InitUI()
     DAVA::TArc::DataContext* ctx = accessor->GetGlobalContext();
     DAVA::TArc::SceneTabbar* tabBar = new DAVA::TArc::SceneTabbar(accessor, DAVA::Reflection::Create(&accessor), this);
     tabBar->closeTab.Connect(&requestCloseTab, &DAVA::Signal<DAVA::uint64>::Emit);
+    tabBar->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(tabBar, &QWidget::customContextMenuRequested, this, &PreviewWidget::OnTabBarContextMenuRequested);
 
     tabBar->setElideMode(Qt::ElideNone);
     tabBar->setTabsClosable(true);
@@ -592,4 +598,76 @@ void PreviewWidget::OnKeyPressed(QKeyEvent* event)
             }
         }
     }
+}
+
+void PreviewWidget::OnTabBarContextMenuRequested(const QPoint& pos)
+{
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    Vector<uint64> allIDs;
+    accessor->ForEachContext([&allIDs](const DataContext& context) {
+        allIDs.push_back(context.GetID());
+    });
+
+    //no tabs at all, do nothing
+    if (allIDs.empty())
+    {
+        return;
+    }
+
+    QTabBar* tabBar = findChild<QTabBar*>();
+    DVASSERT(tabBar != nullptr);
+
+    int index = tabBar->tabAt(pos);
+    if (index == -1)
+    {
+        return;
+    }
+
+    QVariant data = tabBar->tabData(index);
+    DVASSERT(data.canConvert<uint64>());
+    uint64 currentId = data.value<uint64>();
+
+    QMenu menu(this);
+    QAction* closeTabAction = new QAction(tr("Close tab"), &menu);
+    QAction* closeOtherTabsAction = new QAction(tr("Close other tabs"), &menu);
+    QAction* closeAllTabsAction = new QAction(tr("Close all tabs"), &menu);
+    QAction* selectInFileSystemAction = new QAction(tr("Select in File System"), &menu);
+
+    closeOtherTabsAction->setEnabled(allIDs.size() > 1);
+
+    menu.addAction(closeTabAction);
+    menu.addAction(closeOtherTabsAction);
+    menu.addAction(closeAllTabsAction);
+    menu.addSeparator();
+    menu.addAction(selectInFileSystemAction);
+
+    connect(closeAllTabsAction, &QAction::triggered, [this, allIDs]()
+            {
+                for (uint64 id : allIDs)
+                {
+                    requestCloseTab.Emit(id);
+                }
+            });
+
+    connect(closeTabAction, &QAction::triggered, std::bind(&Signal<uint64>::Emit, &requestCloseTab, currentId));
+
+    connect(closeOtherTabsAction, &QAction::triggered, [this, allIDs, currentId]()
+            {
+                for (uint64 id : allIDs)
+                {
+                    if (id != currentId)
+                    {
+                        requestCloseTab.Emit(id);
+                    }
+                }
+            });
+
+    connect(selectInFileSystemAction, &QAction::triggered, [this, currentId]() {
+        QString filePath = accessor->GetContext(currentId)->GetData<DocumentData>()->GetPackageAbsolutePath();
+        invoker->Invoke(QEGlobal::SelectFile.ID, filePath);
+    });
+
+    menu.exec(tabBar->mapToGlobal(pos));
 }
