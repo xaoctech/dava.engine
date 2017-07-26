@@ -22,6 +22,7 @@
 
 #include <UI/UIEvent.h>
 #include <UI/UIControl.h>
+#include <UI/UIScrollView.h>
 #include <UI/Layouts/UIAnchorComponent.h>
 #include <UI/Layouts/UILinearLayoutComponent.h>
 #include <UI/Layouts/UIFlowLayoutComponent.h>
