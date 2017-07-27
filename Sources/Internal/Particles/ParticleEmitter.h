@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_PARTICLE_EMITTER_H__
-#define __DAVAENGINE_PARTICLE_EMITTER_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
@@ -114,5 +113,3 @@ public:
     INTROSPECTION_EXTEND(ParticleEmitter, BaseObject, nullptr);
 };
 }
-
-#endif // __DAVAENGINE_PARTICLE_EMITTER_H__

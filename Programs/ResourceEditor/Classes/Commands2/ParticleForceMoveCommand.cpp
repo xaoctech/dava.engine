@@ -1,7 +1,7 @@
 #include "Commands2/ParticleForceMoveCommand.h"
 #include "Commands2/RECommandIDs.h"
 
-#include <Particles/ParticleDrag.h>
+#include <Particles/ParticleDragForce.h>
 
 ParticleForceMoveCommand::ParticleForceMoveCommand(DAVA::ParticleForce* _force, DAVA::ParticleLayer* _oldLayer, DAVA::ParticleLayer* _newLayer)
     : RECommand(CMDID_PARTICLE_FORCE_MOVE, "Move particle force")
@@ -49,7 +49,7 @@ void ParticleForceMoveCommand::Redo()
     }
 }
 
-ParticleDragForceMoveCommand::ParticleDragForceMoveCommand(DAVA::ParticleDrag* force, DAVA::ParticleLayer* oldLayer, DAVA::ParticleLayer* newLayer) : RECommand(CMDID_PARTICLE_DRAG_FORCE_MOVE, "Move particle drag force")
+ParticleDragForceMoveCommand::ParticleDragForceMoveCommand(DAVA::ParticleDragForce* force, DAVA::ParticleLayer* oldLayer, DAVA::ParticleLayer* newLayer) : RECommand(CMDID_PARTICLE_DRAG_FORCE_MOVE, "Move particle drag force")
     , force(force)
     , oldLayer(oldLayer)
     , newLayer(newLayer)

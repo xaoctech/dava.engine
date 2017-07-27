@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_PARTICLE_EMITTER_INSTANCE_H__
-#define __DAVAENGINE_PARTICLE_EMITTER_INSTANCE_H__
+#pragma once
 
 #include "Particles/ParticleEmitter.h"
 
@@ -82,4 +81,3 @@ inline void ParticleEmitterInstance::SetOwner(ParticleEffectComponent* owner_)
     owner = owner_;
 }
 }
-#endif // __DAVAENGINE_PARTICLE_EMITTER_INSTANCE_H__

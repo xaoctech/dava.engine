@@ -201,7 +201,7 @@ void StructureSystem::MoveForce(const DAVA::Vector<DAVA::ParticleForce*>& forces
     EmitChanged();
 }
 
-void StructureSystem::MoveDragForce(const DAVA::Vector<DAVA::ParticleDrag*>& forces, const DAVA::Vector<DAVA::ParticleLayer*>& oldLayers, DAVA::ParticleLayer* newLayer)
+void StructureSystem::MoveDragForce(const DAVA::Vector<DAVA::ParticleDragForce*>& forces, const DAVA::Vector<DAVA::ParticleLayer*>& oldLayers, DAVA::ParticleLayer* newLayer)
 {
     SceneEditor2* sceneEditor = (SceneEditor2*)GetScene();
     if (sceneEditor == nullptr)

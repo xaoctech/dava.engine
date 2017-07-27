@@ -2,7 +2,7 @@
 
 #include <DAVAEngine.h>
 
-#include <Particles/ParticleDrag.h>
+#include <Particles/ParticleDragForce.h>
 
 #include "Commands2/Base/RECommand.h"
 #include "Commands2/Base/CommandAction.h"
@@ -168,12 +168,12 @@ protected:
 class CommandRemoveParticleDrag : public CommandAction
 {
 public:
-    CommandRemoveParticleDrag(DAVA::ParticleLayer* layer, DAVA::ParticleDrag* drag);
+    CommandRemoveParticleDrag(DAVA::ParticleLayer* layer, DAVA::ParticleDragForce* drag);
     void Redo() override;
 
 protected:
     DAVA::ParticleLayer* selectedLayer = nullptr;
-    DAVA::ParticleDrag* selectedDrag = nullptr;
+    DAVA::ParticleDragForce* selectedDrag = nullptr;
 };
 
 class CommandUpdateEffect : public CommandAction

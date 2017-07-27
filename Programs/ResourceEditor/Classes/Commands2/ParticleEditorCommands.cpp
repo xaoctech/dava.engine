@@ -513,10 +513,10 @@ void CommandAddParticleDrag::Redo()
 {
     if (selectedLayer == nullptr)
         return;
-    selectedLayer->AddDrag(new ParticleDrag());
+    selectedLayer->AddDrag(new ParticleDragForce());
 }
 
-CommandRemoveParticleDrag::CommandRemoveParticleDrag(ParticleLayer* layer, ParticleDrag* drag)
+CommandRemoveParticleDrag::CommandRemoveParticleDrag(ParticleLayer* layer, ParticleDragForce* drag)
     : CommandAction(CMDID_PARTICLE_EMITTER_DRAG_REMOVE)
     , selectedLayer(layer)
     , selectedDrag(drag)

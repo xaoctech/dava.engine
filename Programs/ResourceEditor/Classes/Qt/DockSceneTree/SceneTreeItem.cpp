@@ -637,13 +637,13 @@ const QIcon& SceneTreeItemParticleForce::ItemIcon() const
 // Scene tree item particle drag force
 //////////////////////////////////////////////////////////////////////////
 
-SceneTreeItemParticleDragForce::SceneTreeItemParticleDragForce(DAVA::ParticleLayer* layer_, DAVA::ParticleDrag* drag)
+SceneTreeItemParticleDragForce::SceneTreeItemParticleDragForce(DAVA::ParticleLayer* layer_, DAVA::ParticleDragForce* drag)
     : SceneTreeItem(SceneTreeItem::EIT_DragForce, drag)
     , layer(layer_)
 {
 }
 
-DAVA::ParticleDrag* SceneTreeItemParticleDragForce::GetDragForce(SceneTreeItem* rootItem)
+DAVA::ParticleDragForce* SceneTreeItemParticleDragForce::GetDragForce(SceneTreeItem* rootItem)
 {
     if ((nullptr != rootItem) && (rootItem->ItemType() == SceneTreeItem::EIT_DragForce))
     {
@@ -654,9 +654,9 @@ DAVA::ParticleDrag* SceneTreeItemParticleDragForce::GetDragForce(SceneTreeItem* 
     return nullptr;
 }
 
-DAVA::ParticleDrag* SceneTreeItemParticleDragForce::GetDragForce() const
+DAVA::ParticleDragForce* SceneTreeItemParticleDragForce::GetDragForce() const
 {
-    return object.Cast<DAVA::ParticleDrag>();
+    return object.Cast<DAVA::ParticleDragForce>();
 }
 
 QString SceneTreeItemParticleDragForce::ItemName() const

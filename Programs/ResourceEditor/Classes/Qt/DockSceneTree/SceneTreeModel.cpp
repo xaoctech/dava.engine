@@ -250,11 +250,11 @@ QMimeData* SceneTreeModel::mimeData(const QModelIndexList& indexes) const
                 break;
                 case SceneTreeItem::EIT_DragForce:
                 {
-                    QVector<DAVA::ParticleDrag*> data;
+                    QVector<DAVA::ParticleDragForce*> data;
                     foreach(QModelIndex index, indexes)
                         data.push_back(SceneTreeItemParticleDragForce::GetDragForce(GetItem(index)));
 
-                    ret = MimeDataHelper2<DAVA::ParticleDrag>::EncodeMimeData(data);
+                    ret = MimeDataHelper2<DAVA::ParticleDragForce>::EncodeMimeData(data);
                 }
                 default:
                     break;
@@ -279,7 +279,7 @@ QStringList SceneTreeModel::mimeTypes() const
     types << MimeDataHelper2<DAVA::ParticleEmitterInstance>::GetMimeType();
     types << MimeDataHelper2<DAVA::ParticleLayer>::GetMimeType();
     types << MimeDataHelper2<DAVA::ParticleForce>::GetMimeType();
-    types << MimeDataHelper2<DAVA::ParticleDrag>::GetMimeType();
+    types << MimeDataHelper2<DAVA::ParticleDragForce>::GetMimeType();
 
     return types;
 }
@@ -410,10 +410,10 @@ bool SceneTreeModel::dropMimeData(const QMimeData* data, Qt::DropAction action, 
     {
         DAVA::ParticleLayer* newLayer = SceneTreeItemParticleLayer::GetLayer(parentItem);
 
-        QVector<DAVA::ParticleDrag*> dragForcesV = MimeDataHelper2<DAVA::ParticleDrag>::DecodeMimeData(data);
+        QVector<DAVA::ParticleDragForce*> dragForcesV = MimeDataHelper2<DAVA::ParticleDragForce>::DecodeMimeData(data);
         if (newLayer != nullptr && !dragForcesV.empty())
         {
-            DAVA::Vector<DAVA::ParticleDrag*> dragForcesGroup;
+            DAVA::Vector<DAVA::ParticleDragForce*> dragForcesGroup;
             dragForcesGroup.reserve(dragForcesV.size());
 
             DAVA::Vector<DAVA::ParticleLayer*> layersGroup;
@@ -421,10 +421,10 @@ bool SceneTreeModel::dropMimeData(const QMimeData* data, Qt::DropAction action, 
 
             for (int i = 0; i < dragForcesV.size(); ++i)
             {
-                QModelIndex forceIndex = GetIndex((DAVA::ParticleDrag*)dragForcesV[i]);
+                QModelIndex forceIndex = GetIndex((DAVA::ParticleDragForce*)dragForcesV[i]);
                 DAVA::ParticleLayer* oldLayer = SceneTreeItemParticleLayer::GetLayer(GetItem(forceIndex.parent()));
 
-                dragForcesGroup.push_back((DAVA::ParticleDrag*)dragForcesV[i]);
+                dragForcesGroup.push_back((DAVA::ParticleDragForce*)dragForcesV[i]);
                 layersGroup.push_back(oldLayer);
             }
 
@@ -761,7 +761,7 @@ int SceneTreeModel::GetDropType(const QMimeData* data) const
         {
             ret = DropingForce;
         }
-        else if (MimeDataHelper2<DAVA::ParticleDrag>::IsValid(data))
+        else if (MimeDataHelper2<DAVA::ParticleDragForce>::IsValid(data))
         {
             ret = DropingDragForce;
         }

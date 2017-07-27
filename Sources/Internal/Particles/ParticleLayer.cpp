@@ -1184,13 +1184,13 @@ void ParticleLayer::CleanupForces()
     this->forces.clear();
 }
 
-void ParticleLayer::AddDrag(ParticleDrag* drag)
+void ParticleLayer::AddDrag(ParticleDragForce* drag)
 {
     SafeRetain(drag);
     dragForces.push_back(drag);
 }
 
-void ParticleLayer::RemoveDrag(ParticleDrag* drag)
+void ParticleLayer::RemoveDrag(ParticleDragForce* drag)
 {
     auto iter = std::find(dragForces.begin(), dragForces.end(), drag);
     if (iter != dragForces.end())

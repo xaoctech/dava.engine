@@ -8,14 +8,14 @@
 #include "Particles/ParticleEmitter.h"
 #include "Particles/ParticleLayer.h"
 #include "Particles/ParticleForce.h"
-#include "Particles/ParticleDrag.h"
+#include "Particles/ParticleDragForce.h"
 
 #include "Classes/Selection/Selectable.h"
 
 Q_DECLARE_METATYPE(DAVA::Entity*);
 Q_DECLARE_METATYPE(DAVA::ParticleLayer*);
 Q_DECLARE_METATYPE(DAVA::ParticleForce*);
-Q_DECLARE_METATYPE(DAVA::ParticleDrag*);
+Q_DECLARE_METATYPE(DAVA::ParticleDragForce*);
 Q_DECLARE_METATYPE(DAVA::ParticleEmitterInstance*);
 
 class SceneTreeModel;
@@ -142,11 +142,11 @@ public:
 class SceneTreeItemParticleDragForce : public SceneTreeItem
 {
 public:
-    static DAVA::ParticleDrag* GetDragForce(SceneTreeItem* rootItem);
+    static DAVA::ParticleDragForce* GetDragForce(SceneTreeItem* rootItem);
 
 public:
-    SceneTreeItemParticleDragForce(DAVA::ParticleLayer* layer, DAVA::ParticleDrag* drag);
-    DAVA::ParticleDrag* GetDragForce() const;
+    SceneTreeItemParticleDragForce(DAVA::ParticleLayer* layer, DAVA::ParticleDragForce* drag);
+    DAVA::ParticleDragForce* GetDragForce() const;
 
     QString ItemName() const override;
     QVariant ItemData() const override;
