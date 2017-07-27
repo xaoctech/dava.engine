@@ -279,6 +279,7 @@ QStringList SceneTreeModel::mimeTypes() const
     types << MimeDataHelper2<DAVA::ParticleEmitterInstance>::GetMimeType();
     types << MimeDataHelper2<DAVA::ParticleLayer>::GetMimeType();
     types << MimeDataHelper2<DAVA::ParticleForce>::GetMimeType();
+    types << MimeDataHelper2<DAVA::ParticleDrag>::GetMimeType();
 
     return types;
 }
@@ -760,7 +761,7 @@ int SceneTreeModel::GetDropType(const QMimeData* data) const
         {
             ret = DropingForce;
         }
-        else if (MimeDataHelper2<DAVA::ParticleForce>::IsValid(data))
+        else if (MimeDataHelper2<DAVA::ParticleDrag>::IsValid(data))
         {
             ret = DropingDragForce;
         }
