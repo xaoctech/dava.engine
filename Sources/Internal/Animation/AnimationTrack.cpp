@@ -24,31 +24,28 @@ uint32 AnimationTrack::Bind(const uint8* _data)
     const uint8* dataptr = _data;
     if (dataptr && *reinterpret_cast<const uint32*>(dataptr) == ANIMATION_TRACK_DATA_SIGNATURE)
     {
-        if (_data != nullptr)
+        dataptr += 4; //skip signature
+
+        uint32 channelsCount = *reinterpret_cast<const uint32*>(dataptr);
+        dataptr += 4;
+
+        channels.resize(channelsCount);
+
+        for (uint32 c = 0; c < channelsCount; ++c)
         {
-            dataptr += 4; //skip signature
+            channels[c].target = eChannelTarget(*dataptr);
+            dataptr += 1;
 
-            uint32 channelsCount = *reinterpret_cast<const uint32*>(dataptr);
-            dataptr += 4;
+            dataptr += 3; //pad
 
-            channels.resize(channelsCount);
-
-            for (uint32 c = 0; c < channelsCount; ++c)
+            uint32 boundData = channels[c].channel.Bind(dataptr);
+            if (boundData == 0)
             {
-                channels[c].target = eChannelTarget(*dataptr);
-                dataptr += 1;
-
-                dataptr += 3; //pad
-
-                uint32 boundData = channels[c].channel.Bind(dataptr);
-                if (boundData == 0)
-                {
-                    channels.clear();
-                    return 0;
-                }
-
-                dataptr += boundData;
+                channels.clear();
+                return 0;
             }
+
+            dataptr += boundData;
         }
     }
 

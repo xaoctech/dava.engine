@@ -546,7 +546,7 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
                 SafeDeleteArray(animationKeysCopy);
             }
 
-            WriteToBuffer(animationData, &zeroU4); //TODO: *Skinning* events count
+            WriteToBuffer(animationData, &zeroU4); //TODO: *Skinning* marks count
 
             uint32 animationDataSize = uint32(animationData.size());
 

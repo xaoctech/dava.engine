@@ -46,13 +46,11 @@ void SkeletonAnimation::EvaluatePose(float32 time, Vector3* offset)
     {
         const AnimationTrack* track = boundTracks[t];
         AnimationTrack::State* state = &animationStates[t];
-        if (state)
-        {
-            track->Evaluate(time, state);
 
-            JointTransform transform = ConstructJointTransform(track, state);
-            skeletonPose.SetTransform(t, transform);
-        }
+        track->Evaluate(time, state);
+
+        JointTransform transform = ConstructJointTransform(track, state);
+        skeletonPose.SetTransform(t, transform);
     }
 }
 
