@@ -211,9 +211,9 @@ void ServerLogics::OnChunkRequestedFromCache(DAVA::Net::IChannel* clientChannel,
             {
                 DAVA::Logger::Debug("Requested data will be sent: %u chunks, %u bytes", task.chunksOverall, task.bytesOverall);
             }
-            DAVA::Logger::Debug("Sending chunk #%u: %u bytes", chunkNumber, chunk.size());
-            serverProxy->SendChunk(clientChannel, key, task.bytesOverall, task.chunksOverall, chunkNumber, chunk);
-            client.status = DataGetTask::READY;
+
+            SendChunkToClient(taskIter, clientChannel, chunkNumber, chunk);
+            RemoveTaskIfChunksAreSent(taskIter);
         }
         else // task hasn't such chunk yet
         {
@@ -465,6 +465,21 @@ void ServerLogics::RequestNextChunk(ServerLogics::DataGetMap::iterator it)
     task.dataStatus = DataGetTask::WAITING_NEXT_CHUNK;
 }
 
+void ServerLogics::SendChunkToClient(DataGetMap::iterator taskIt, DAVA::Net::IChannel* clientChannel, DAVA::uint32 chunkNumber, const DAVA::Vector<DAVA::uint8>& chunk)
+{
+    DataGetTask& task = taskIt->second;
+    DataGetTask::ClientStatus& client = task.clients[clientChannel];
+
+    DAVA::Logger::Debug("Sending chunk #%u: %u bytes", chunkNumber, chunk.size());
+    serverProxy->SendChunk(clientChannel, taskIt->first, task.bytesOverall, task.chunksOverall, chunkNumber, chunk);
+    client.status = DataGetTask::READY;
+
+    if (chunkNumber + 1 == task.chunksOverall)
+    {
+        client.lastChunkWasSent = true;
+    }
+}
+
 void ServerLogics::SendChunkToClients(ServerLogics::DataGetMap::iterator taskIt, DAVA::uint32 chunkNumber, const DAVA::Vector<DAVA::uint8>& chunk)
 {
     DVASSERT(taskIt != dataGetTasks.end());
@@ -476,10 +491,25 @@ void ServerLogics::SendChunkToClients(ServerLogics::DataGetMap::iterator taskIt,
     {
         if (client.second.status == DataGetTask::WAITING_NEXT_CHUNK && client.second.waitingChunk == chunkNumber)
         {
-            DAVA::Logger::Debug("Sending chunk #%u size %u to client", chunkNumber, chunk.size());
-            serverProxy->SendChunk(client.first, key, task.bytesOverall, task.chunksOverall, chunkNumber, chunk);
-            client.second.status = DataGetTask::READY;
+            SendChunkToClient(taskIt, client.first, chunkNumber, chunk);
         }
+    }
+
+    RemoveTaskIfChunksAreSent(taskIt);
+}
+
+void ServerLogics::RemoveTaskIfChunksAreSent(ServerLogics::DataGetMap::iterator taskIt)
+{
+    DataGetTask& task = taskIt->second;
+    bool allChunksAreSent = std::all_of(task.clients.begin(), task.clients.end(), [](std::pair<DAVA::Net::IChannel* const, DataGetTask::ClientStatus>& client)
+                                        {
+                                            return client.second.lastChunkWasSent == true;
+                                        });
+
+    if (allChunksAreSent)
+    {
+        DAVA::Logger::Debug("Removing get task for key %s", Brief(taskIt->first).c_str());
+        dataGetTasks.erase(taskIt);
     }
 }
 

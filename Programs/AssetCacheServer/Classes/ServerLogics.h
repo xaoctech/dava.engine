@@ -47,6 +47,7 @@ private:
             }
             DataRequestStatus status = DataRequestStatus::READY;
             DAVA::uint32 waitingChunk = 0;
+            bool lastChunkWasSent = false;
         };
 
         DAVA::UnorderedMap<DAVA::Net::IChannel*, ClientStatus> clients;
@@ -96,13 +97,14 @@ private:
     DAVA::List<DataAddTask>::iterator GetOrCreateAddTask(DAVA::Net::IChannel* channel, const DAVA::AssetCache::CacheItemKey& key);
     DataGetMap::iterator GetOrCreateGetTask(const DAVA::AssetCache::CacheItemKey& key);
     void RequestNextChunk(DataGetMap::iterator it);
-    void SendInfoToClients(DataGetMap::iterator taskIt);
+    void SendChunkToClient(DataGetMap::iterator taskIt, DAVA::Net::IChannel* clientChannel, DAVA::uint32 chunkNumber, const DAVA::Vector<DAVA::uint8>& chunk);
     void SendChunkToClients(DataGetMap::iterator taskIt, DAVA::uint32 chunkNumber, const DAVA::Vector<DAVA::uint8>& chunk);
     bool SendFirstChunkToRemote(DataRemoteAddMap::iterator taskIt);
     bool SendChunkToRemote(DataRemoteAddMap::iterator taskIt);
     void CancelGetTask(DataGetMap::iterator it);
     void CancelRemoteTasks();
     void RemoveClientFromTasks(DAVA::Net::IChannel* clientChannel);
+    void RemoveTaskIfChunksAreSent(ServerLogics::DataGetMap::iterator taskIt);
 
     void ProcessLazyTasks();
 
