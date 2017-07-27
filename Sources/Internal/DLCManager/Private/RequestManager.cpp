@@ -52,7 +52,7 @@ void RequestManager::FireUpdateWhileInactiveSignals()
             PackRequest* r = packManager.FindRequest(pack);
             if (r)
             {
-                packManager.requestStartLoading.Emit(*r);
+                packManager.requestUpdated.Emit(*r);
             }
         }
         requestUpdatedWhileInactive.clear();
