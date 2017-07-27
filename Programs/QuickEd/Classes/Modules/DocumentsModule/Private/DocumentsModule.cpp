@@ -37,6 +37,7 @@
 #include <Command/CommandStack.h>
 #include <UI/UIPackageLoader.h>
 #include <UI/UIStaticText.h>
+#include <UI/Render/UIRenderSystem.h>
 #include <Render/Renderer.h>
 #include <Render/DynamicBufferAllocator.h>
 #include <Particles/ParticleEmitter.h>
@@ -125,6 +126,7 @@ void DocumentsModule::PostInit()
     CreateDocumentsActions();
     CreateUndoRedoActions();
     CreateViewActions();
+    CreateFindActions();
 }
 
 void DocumentsModule::OnWindowClosed(const DAVA::TArc::WindowKey& key)
@@ -177,7 +179,7 @@ void DocumentsModule::InitCentralWidget()
 
     RenderWidget* renderWidget = GetContextManager()->GetRenderWidget();
 
-    previewWidget = new PreviewWidget(accessor, GetUI(), renderWidget, systemsManager.get());
+    previewWidget = new PreviewWidget(accessor, GetInvoker(), GetUI(), renderWidget, systemsManager.get());
     previewWidget->requestCloseTab.Connect(this, &DocumentsModule::CloseDocument);
     previewWidget->requestChangeTextInNode.Connect(this, &DocumentsModule::ChangeControlText);
     connections.AddConnection(previewWidget, &PreviewWidget::OpenPackageFile, MakeFunction(this, &DocumentsModule::OpenDocument));
@@ -497,6 +499,32 @@ void DocumentsModule::CreateViewActions()
 
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuView, { InsertionParams::eInsertionMethod::AfterItem, zoomOutActionName }));
+
+        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+    }
+}
+
+void DocumentsModule::CreateFindActions()
+{
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    ContextAccessor* accessor = GetAccessor();
+    UI* ui = GetUI();
+    {
+        QtAction* action = new QtAction(accessor, "Select Current Document in File System");
+
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
+        fieldDescr.fieldName = FastName(DocumentData::packagePropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any {
+            return fieldValue.CanCast<PackageNode*>() && fieldValue.Cast<PackageNode*>() != nullptr;
+        });
+
+        connections.AddConnection(action, &QAction::triggered, Bind(&DocumentsModule::OnSelectInFileSystem, this));
+
+        ActionPlacementInfo placementInfo;
+        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFind, { InsertionParams::eInsertionMethod::AfterItem }));
 
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     }
@@ -1098,6 +1126,18 @@ void DocumentsModule::ControlWasAdded(ControlNode* node, ControlsContainerNode* 
             documentData->SetDisplayedRootControls(displayedRootControls);
         }
     }
+}
+
+void DocumentsModule::OnSelectInFileSystem()
+{
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    DataContext* context = GetAccessor()->GetActiveContext();
+    DVASSERT(context != nullptr);
+    DocumentData* documentData = context->GetData<DocumentData>();
+    QString filePath = documentData->GetPackageAbsolutePath();
+    InvokeOperation(QEGlobal::SelectFile.ID, filePath);
 }
 
 DECL_GUI_MODULE(DocumentsModule);
