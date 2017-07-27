@@ -1,17 +1,19 @@
-#include "Render/RHI/Common/PreProcessor.h"
+﻿#include "Render/RHI/Common/PreProcessor.h"
 #include "Render/RHI/Common/Preprocessor/PreprocessorHelpers.h"
 #include "Logger/Logger.h"
 #include "FileSystem/File.h"
 
+namespace DAVA
+{
 namespace PreprocessorHelpers
 {
 struct DefaultFileCallback : public PreProc::FileCallback
 {
-    DAVA::ScopedPtr<DAVA::File> in;
+    ScopedPtr<File> in;
 
     bool Open(const char* file_name) override
     {
-        in.reset(DAVA::File::Create(file_name, DAVA::File::READ | DAVA::File::OPEN));
+        in.reset(File::Create(file_name, File::READ | File::OPEN));
         return (in.get() != nullptr);
     }
     void Close() override
@@ -19,11 +21,11 @@ struct DefaultFileCallback : public PreProc::FileCallback
         DVASSERT(in.get() != nullptr);
         in.reset(nullptr);
     }
-    uint32_t Size() const override
+    uint32 Size() const override
     {
-        return (in.get() != nullptr) ? static_cast<uint32_t>(in->GetSize()) : 0;
+        return (in.get() != nullptr) ? static_cast<uint32>(in->GetSize()) : 0;
     }
-    uint32_t Read(uint32_t max_sz, void* dst) override
+    uint32 Read(uint32 max_sz, void* dst) override
     {
         return (in.get() != nullptr) ? in->Read(dst, max_sz) : 0;
     }
@@ -53,7 +55,7 @@ bool PreProc::ProcessFile(const char* file_name, TextBuffer* output)
         Reset();
         curFileName = file_name;
 
-        uint32_t text_sz = fileCB->Size();
+        uint32 text_sz = fileCB->Size();
         char* text = AllocBuffer(text_sz + 1);
         fileCB->Read(text_sz, text);
         fileCB->Close();
@@ -62,7 +64,7 @@ bool PreProc::ProcessFile(const char* file_name, TextBuffer* output)
     }
     else
     {
-        DAVA::Logger::Error("Failed to open \"%s\"\n", file_name);
+        Logger::Error("Failed to open \"%s\"\n", file_name);
     }
 
     return success;
@@ -74,7 +76,7 @@ bool PreProc::Process(const char* src_text, TextBuffer* output)
 {
     Reset();
 
-    char* text = AllocBuffer(uint32_t(strlen(src_text)) + 1);
+    char* text = AllocBuffer(uint32(strlen(src_text)) + 1);
     strcpy(text, src_text);
 
     return ProcessInplaceInternal(text, output);
@@ -101,9 +103,9 @@ bool PreProc::AddDefine(const char* name, const char* value)
 void PreProc::Dump() const
 {
     /*
-    for (uint32_t i = 0; i != line.size(); ++i)
+    for (uint32 i = 0; i != line.size(); ++i)
     {
-        DAVA::Logger::Info("%04u | %s", line[i].line_n, line[i].text);
+        Logger::Info("%04u | %s", line[i].line_n, line[i].text);
     }
     */
 }
@@ -112,7 +114,7 @@ void PreProc::Dump() const
 
 void PreProc::Reset()
 {
-    for (uint32_t b = 0; b != buffer.size(); ++b)
+    for (uint32 b = 0; b != buffer.size(); ++b)
         ::free(buffer[b].mem);
     buffer.clear();
 
@@ -121,7 +123,7 @@ void PreProc::Reset()
 
 //------------------------------------------------------------------------------
 
-char* PreProc::AllocBuffer(uint32_t sz)
+char* PreProc::AllocBuffer(uint32 sz)
 {
     Buffer buf;
     buf.mem = ::calloc(1, sz);
@@ -133,56 +135,9 @@ char* PreProc::AllocBuffer(uint32_t sz)
 
 inline char* PreProc::GetExpression(char* txt, char** end) const
 {
-    char* e = txt;
-    char* s = txt;
-    bool cmt = false;
-
-    while (*s != NewLine && *s != CarriageReturn)
-    {
-        if (*s == 0)
-            return nullptr;
-
-        if (s[0] == '/')
-        {
-            if (s[1] == '/')
-            {
-                *s = Zero;
-            }
-            else if (s[1] == '*')
-            {
-                DVASSERT(!cmt);
-                cmt = true;
-            }
-        }
-        else if (s[0] == '*' && s[1] == '/')
-        {
-            DVASSERT(cmt);
-            cmt = false;
-            s[0] = Space;
-            s[1] = Space;
-        }
-
-        if (cmt)
-            *s = Space;
-        ++s;
-    }
-    DVASSERT(*s);
-    if (*s == CarriageReturn)
-    {
-        *s = Zero;
-        ++s;
-    }
-
-    while (*s != NewLine)
-    {
-        if (*s == 0)
-            return nullptr;
-
-        ++s;
-    }
-
-    *end = s;
-    return e;
+    *end = SeekToLineEnding(txt);
+    **end = 0;
+    return txt;
 }
 
 //------------------------------------------------------------------------------
@@ -191,26 +146,20 @@ char* PreProc::GetIdentifier(char* txt, char** end) const
 {
     char* t = txt;
     char* n = nullptr;
-    bool cmt = false;
 
-    while (!cmt && !PreprocessorHelpers::IsValidAlphaNumericChar(*t))
+    while (!IsValidAlphaNumericChar(*t))
     {
         if (*t == Zero)
             return nullptr;
-
-        if (t[0] == '/' && t[1] == '*')
-            cmt = true;
-        else if (t[0] == '*' && t[1] == '/')
-            cmt = false;
-
         ++t;
     }
+
     if (*t == Zero)
         return nullptr;
 
     n = t;
 
-    while (PreprocessorHelpers::IsValidAlphaNumericChar(*t))
+    while (IsValidAlphaNumericChar(*t))
         ++t;
 
     if (*t == Zero)
@@ -237,7 +186,7 @@ char* PreProc::GetIdentifier(char* txt, char** end) const
 
 //------------------------------------------------------------------------------
 
-int32_t PreProc::GetNameAndValue(char* txt, char** name, char** value, char** end) const
+int32 PreProc::GetNameAndValue(char* txt, char** name, char** value, char** end) const
 {
     // returns:
     // non-zero when name/value successfully retrieved
@@ -257,40 +206,24 @@ int32_t PreProc::GetNameAndValue(char* txt, char** name, char** value, char** en
         return 0;
 
     n0 = t;
-    while (*t && *t != Space && *t != Tab && *t != NewLine && *t != CarriageReturn)
-    {
-        if (t[0] == '/' && t[1] == '/')
-            return 0;
 
+    while (*t && *t != Space && *t != Tab && *t != NewLine)
         ++t;
-    }
 
     if (*t == Zero)
         return 0;
 
     n1 = t - 1;
     while (*t == Space || *t == Tab)
-    {
-        if (t[0] == '/' && t[1] == '/')
-            return 0;
-
         ++t;
-    }
 
     if (*t == Zero)
         return 0;
 
     v0 = t;
-    int32_t brace_lev = 0;
-    while (*t && (*t != Space || brace_lev > 0) && *t != Tab && *t != NewLine && *t != CarriageReturn)
+    int32 brace_lev = 0;
+    while (*t && (*t != Space || brace_lev > 0) && *t != Tab && *t != NewLine)
     {
-        if (t[0] == '/' && t[1] == '/')
-        {
-            t[0] = Zero;
-            ++t;
-            break;
-        }
-
         if (*t == '(')
             ++brace_lev;
         else if (*t == ')')
@@ -342,20 +275,20 @@ int32_t PreProc::GetNameAndValue(char* txt, char** name, char** value, char** en
 
 bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
 {
-    uint32_t inputTextLength = static_cast<uint32_t>(strlen(inputText));
+    uint32 inputTextLength = static_cast<uint32>(strlen(inputText));
     char* filteredText = AllocBuffer(inputTextLength + 1);
     char* filteredTextPtr = filteredText;
     for (char* s = inputText; *s != Zero; ++s)
     {
-        s = PreprocessorHelpers::SkipCommentBlock(s);
-        s = PreprocessorHelpers::SkipCommentLine(s);
+        s = SkipCommentBlock(s);
+        s = SkipCommentLine(s);
 
         char currentChar = *s;
         if (currentChar != CarriageReturn)
         {
             *filteredTextPtr++ = currentChar;
             if (currentChar == '#')
-                s = PreprocessorHelpers::SkipWhitespace(s + 1) - 1;
+                s = SkipWhitespace(s + 1) - 1;
         }
     }
 
@@ -363,8 +296,8 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
     char* ln = filteredText;
     bool ln_external = false;
     char* last_s = nullptr;
-    uint32_t line_n = 1;
-    uint32_t src_line_n = 1;
+    uint32 line_n = 1;
+    uint32 src_line_n = 1;
 
     struct condition_t
     {
@@ -381,9 +314,9 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
 
     for (char* s = filteredText; *s; ++s)
     {
-        int32_t skipping_line = false;
+        int32 skipping_line = false;
 
-        for (int32_t i = int(pending_elif.size()) - 1; i >= 0; --i)
+        for (int32 i = int(pending_elif.size()) - 1; i >= 0; --i)
         {
             if (pending_elif[i].do_skip_lines)
             {
@@ -447,7 +380,7 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
         }
         else if (dcheck_pending)
         {
-            char* ns1 = PreprocessorHelpers::SkipWhitespace(s);
+            char* ns1 = SkipWhitespace(s);
 
             if (*ns1 == Zero)
             {
@@ -503,13 +436,13 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
                 {
                     char* name = nullptr;
                     char* value = nullptr;
-                    int32_t nv = GetNameAndValue(s + 1 + 6, &name, &value, &s);
+                    int32 nv = GetNameAndValue(s + 1 + 6, &name, &value, &s);
 
                     if (nv)
                     {
                         if (value[0] == Zero)
                         {
-                            DAVA::Logger::Error("#define without value not allowed (%s)", name);
+                            Logger::Error("#define without value not allowed (%s)", name);
                             success = false;
                             break;
                         }
@@ -522,7 +455,7 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
 
                         if (nv != -1)
                         {
-                            *s = NewLine; // since it was null'ed in _get_name_and_value
+                            *s = NewLine; // since it was null'ed in GetNameAndValue
                             ln = s + 1;
                         }
                         else
@@ -540,13 +473,13 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
                 {
                     char* name = nullptr;
                     char* value = nullptr;
-                    int32_t nv = GetNameAndValue(s + 1 + 13, &name, &value, &s);
+                    int32 nv = GetNameAndValue(s + 1 + 13, &name, &value, &s);
 
                     if (nv)
                     {
                         if (value[0] == Zero)
                         {
-                            DAVA::Logger::Error("#define without value not allowed (%s)", name);
+                            Logger::Error("#define without value not allowed (%s)", name);
                             success = false;
                             break;
                         }
@@ -556,7 +489,7 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
 
                         if (nv != -1)
                         {
-                            *s = NewLine; // since it was null'ed in _get_name_and_value
+                            *s = NewLine; // since it was null'ed in GetNameAndValue
                             ln = s + 1;
                         }
                         else
@@ -578,7 +511,7 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
 
                     Undefine(name);
 
-                    *s = NewLine; // since it was null'ed in _get_identifier
+                    *s = NewLine; // since it was null'ed in GetIdentifier
                     ln = s + 1;
                 }
                 else if (strncmp(s + 1, "ifdef", 5) == 0)
@@ -594,7 +527,7 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
                     p.do_skip_lines = !condition;
                     pending_elif.push_back(p);
 
-                    *s = NewLine; // since it was null'ed in _get_identifier
+                    *s = NewLine; // since it was null'ed in GetIdentifier
                     ln = s + 1;
                 }
                 else if (strncmp(s + 1, "ifndef", 6) == 0)
@@ -610,7 +543,7 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
                     p.do_skip_lines = !condition;
                     pending_elif.push_back(p);
 
-                    *s = NewLine; // since it was null'ed in _get_identifier
+                    *s = NewLine; // since it was null'ed in GetIdentifier
                     ln = s + 1;
                 }
                 else if (strncmp(s + 1, "if", 2) == 0)
@@ -627,9 +560,10 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
                         return false;
                     }
 
+                    *s = NewLine; // since it was null'ed in GetExpression
                     ln = s + 1;
 
-                    bool condition = static_cast<int32_t>(v) != 0;
+                    bool condition = static_cast<int32>(v) != 0;
 
                     condition_t p;
                     p.original_condition = condition;
@@ -651,9 +585,10 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
                         return false;
                     }
 
+                    *s = NewLine; // since it was null'ed in GetExpression
                     ln = s + 1;
 
-                    bool condition = static_cast<int32_t>(v) != 0;
+                    bool condition = static_cast<int32>(v) != 0;
 
                     if (pending_elif.back().original_condition)
                         pending_elif.back().do_skip_lines = true;
@@ -701,7 +636,7 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
                 }
                 else if (!skipping_line)
                 {
-                    DAVA::Logger::Error("Unknown preprocessor directive \"%s\"", s + 1);
+                    Logger::Error("Unknown preprocessor directive \"%s\"", s + 1);
                     break;
                 }
 
@@ -723,66 +658,8 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
 
         if (expand_macros)
         {
-            char* ln_end = s;
-            bool macro_expanded = false;
-            bool restore_nl = false;
-
-            while (*ln_end && *ln_end != NewLine)
-                ++ln_end;
-
-            if (*ln_end == NewLine)
-            {
-                *ln_end = Zero;
-                restore_nl = true;
-            }
-
-            for (size_t m = 0; m != macro.size(); ++m)
-            {
-                char* t = strstr(s, macro[m].name);
-
-                if (t != nullptr)
-                {
-                    size_t sz = ln_end - ln;
-                    char* l = AllocBuffer(uint32_t(sz) + macro[m].value_len + 1);
-
-                    size_t l1 = t - ln;
-                    size_t l2 = l1 + macro[m].value_len + sz - (l1 + macro[m].name_len);
-
-                    strncpy(l, ln, l1);
-                    strncpy(l + l1, macro[m].value, macro[m].value_len);
-                    strncpy(l + l1 + macro[m].value_len, t + macro[m].name_len, sz - (l1 + macro[m].name_len));
-                    l[l2] = NewLine;
-                    l[l2 + 1] = Zero;
-                    ln = l;
-                    s = l + l1 + macro[m].value_len;
-
-                    if (*s == CarriageReturn)
-                    {
-                        if (s[1] == NewLine)
-                            *s++ = Zero;
-                        else
-                            *s = Space;
-                    }
-
-                    if (!ln_external)
-                    {
-                        last_s = ln_end;
-                        ln_external = true;
-                    }
-
-                    macro_expanded = true;
-                    --s;
-                    break;
-                }
-            }
-
-            if (restore_nl)
-                *ln_end = NewLine;
-
-            if (!macro_expanded && (minMacroLength != InvalidValue) && (s + minMacroLength < ln_end))
-            {
-                s += minMacroLength - 1;
-            }
+            ln = ExpandMacroInLine(s);
+            s = SeekToLineEnding(s) - 1; /* -1 added to compensate increment in loop ¯\_(ツ)_/¯ */
         }
     }
 
@@ -816,7 +693,7 @@ bool PreProc::ProcessInclude(const char* file_name, LineVector& line_)
 
     if (fileCB->Open(file_name))
     {
-        uint32_t text_sz = fileCB->Size();
+        uint32 text_sz = fileCB->Size();
         char* text = AllocBuffer(text_sz + 1);
         fileCB->Read(text_sz, text);
         fileCB->Close();
@@ -830,7 +707,7 @@ bool PreProc::ProcessInclude(const char* file_name, LineVector& line_)
     }
     else
     {
-        DAVA::Logger::Error("Failed to open \"%s\"\n", file_name);
+        Logger::Error("Failed to open \"%s\"\n", file_name);
     }
 
     return success;
@@ -840,11 +717,11 @@ bool PreProc::ProcessInclude(const char* file_name, LineVector& line_)
 
 bool PreProc::ProcessDefine(const char* name, const char* value)
 {
-    bool name_valid = PreprocessorHelpers::IsValidAlphaChar(name[0]);
+    bool name_valid = IsValidAlphaChar(name[0]);
 
     for (const char* n = name; *n; ++n)
     {
-        if (!PreprocessorHelpers::IsValidAlphaNumericChar(*n))
+        if (!IsValidAlphaNumericChar(*n))
         {
             name_valid = false;
             break;
@@ -853,7 +730,7 @@ bool PreProc::ProcessDefine(const char* name, const char* value)
 
     if (!name_valid)
     {
-        DAVA::Logger::Error("Invalid identifier \"%s\"", name);
+        Logger::Error("Invalid identifier \"%s\"", name);
         return false;
     }
 
@@ -877,7 +754,7 @@ bool PreProc::ProcessDefine(const char* name, const char* value)
     do
     {
         expanded = false;
-        for (uint32_t m = 0; m != macro.size(); ++m)
+        for (uint32 m = 0; m != macro.size(); ++m)
         {
             char* t = strstr(value2, macro[m].name);
 
@@ -899,12 +776,46 @@ bool PreProc::ProcessDefine(const char* name, const char* value)
     macro.resize(macro.size() + 1);
     strncpy(macro.back().name, name, countof(macro.back().name));
     strncpy(macro.back().value, value2, countof(macro.back().value));
-    macro.back().name_len = uint32_t(strlen(name));
-    macro.back().value_len = uint32_t(strlen(value2));
+    macro.back().name_len = uint32(strlen(name));
+    macro.back().value_len = uint32(strlen(value2));
     if (macro.back().value_len < minMacroLength)
         minMacroLength = macro.back().value_len;
 
     return true;
+}
+
+char* PreProc::ExpandMacroInLine(char* txt)
+{
+    char* lineEnding = SeekToLineEnding(txt);
+    ptrdiff_t sourceLength = lineEnding - txt;
+
+    char* result = txt;
+
+    bool expanded = false;
+    do
+    {
+        expanded = false;
+        for (const Macro& m : macro)
+        {
+            char* position = strstr(result, m.name);
+            if ((position != nullptr) && ((position - result) < sourceLength))
+            {
+                uint32 requiredLength = static_cast<uint32>(sourceLength + m.value_len + 1);
+                char* buffer = AllocBuffer(requiredLength);
+
+                size_t offset = position - result;
+                strncpy(buffer, result, offset);
+                strncpy(buffer + offset, m.value, m.value_len);
+                strncpy(buffer + offset + m.value_len, position + m.name_len, sourceLength - offset - m.name_len);
+
+                result = buffer;
+                sourceLength = requiredLength - 1;
+                expanded = true;
+            }
+        }
+    } while (expanded);
+
+    return result;
 }
 
 //------------------------------------------------------------------------------
@@ -926,18 +837,13 @@ void PreProc::Undefine(const char* name)
 
 void PreProc::GenerateOutput(TextBuffer* output, LineVector& lines)
 {
-    #if defined(__DAVAENGINE_ANDROID__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
-    static const char* endl = "\n";
-    static const int32_t endl_sz = 1;
-    #else
     static const char* endl = "\r\n";
-    static const int32_t endl_sz = 2;
-    #endif
+    static const int32 endl_sz = 2;
 
     output->clear();
     for (auto l = lines.begin(), l_end = lines.end(); l != l_end; ++l)
     {
-        uint32_t sz = uint32_t(strlen(l->text));
+        uint32 sz = uint32(strlen(l->text));
 
         output->insert(output->end(), l->text, l->text + sz);
         output->insert(output->end(), endl, endl + endl_sz);
@@ -946,9 +852,10 @@ void PreProc::GenerateOutput(TextBuffer* output, LineVector& lines)
 
 //------------------------------------------------------------------------------
 
-void PreProc::ReportExprEvalError(uint32_t line_n)
+void PreProc::ReportExprEvalError(uint32 line_n)
 {
     char err[256] = {};
     evaluator.GetLastError(err, countof(err));
-    DAVA::Logger::Error("%s  : %u  %s", curFileName, line_n, err);
+    Logger::Error("%s  : %u  %s", curFileName, line_n, err);
+}
 }

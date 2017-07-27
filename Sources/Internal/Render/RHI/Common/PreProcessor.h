@@ -2,6 +2,8 @@
 
 #include "ExpressionEvaluator.h"
 
+namespace DAVA
+{
 class PreProc
 {
 public:
@@ -10,8 +12,8 @@ public:
         virtual ~FileCallback() = default;
         virtual bool Open(const char* /*file_name*/) = 0;
         virtual void Close() = 0;
-        virtual uint32_t Size() const = 0;
-        virtual uint32_t Read(uint32_t /*max_sz*/, void* /*dst*/) = 0;
+        virtual uint32 Size() const = 0;
+        virtual uint32 Read(uint32 /*max_sz*/, void* /*dst*/) = 0;
     };
     using TextBuffer = std::vector<char>;
 
@@ -30,9 +32,9 @@ public:
 private:
     struct Line
     {
-        uint32_t line_n;
+        uint32 line_n;
         const char* text;
-        Line(const char* t, uint32_t n)
+        Line(const char* t, uint32 n)
             : text(t)
             , line_n(n)
         {
@@ -41,7 +43,7 @@ private:
     using LineVector = std::vector<Line>;
 
     void Reset();
-    char* AllocBuffer(uint32_t sz);
+    char* AllocBuffer(uint32 sz);
     bool ProcessInplaceInternal(char* src_text, TextBuffer* output);
     bool ProcessBuffer(char* text, LineVector& line);
     bool ProcessInclude(const char* file_name, LineVector& line);
@@ -51,8 +53,9 @@ private:
 
     char* GetExpression(char* txt, char** end) const;
     char* GetIdentifier(char* txt, char** end) const;
-    int32_t GetNameAndValue(char* txt, char** name, char** value, char** end) const;
-    void ReportExprEvalError(uint32_t line_n);
+    int32 GetNameAndValue(char* txt, char** name, char** value, char** end) const;
+    void ReportExprEvalError(uint32 line_n);
+    char* ExpandMacroInLine(char* txt);
 
 private:
     struct Buffer
@@ -63,20 +66,20 @@ private:
     struct Var
     {
         char name[64];
-        int32_t val;
+        int32 val;
     };
 
     struct Macro
     {
         char name[128];
         char value[128];
-        uint32_t name_len;
-        uint32_t value_len;
+        uint32 name_len;
+        uint32 value_len;
     };
 
-    enum : uint32_t
+    enum : uint32
     {
-        InvalidValue = static_cast<uint32_t>(-1)
+        InvalidValue = static_cast<uint32>(-1)
     };
 
     enum : char
@@ -89,11 +92,12 @@ private:
         CarriageReturn = '\r',
     };
 
-    std::vector<Buffer> buffer;
-    std::vector<Var> variable;
-    std::vector<Macro> macro;
+    Vector<Buffer> buffer;
+    Vector<Var> variable;
+    Vector<Macro> macro;
     ExpressionEvaluator evaluator;
     FileCallback* fileCB = nullptr;
     const char* curFileName = "<buffer>";
-    uint32_t minMacroLength = InvalidValue;
+    uint32 minMacroLength = InvalidValue;
 };
+}

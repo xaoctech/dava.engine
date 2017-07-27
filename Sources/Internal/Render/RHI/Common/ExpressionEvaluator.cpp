@@ -5,9 +5,8 @@
 #include "Base/Hash.h"
 #include "rhi_Utils.h"
 
-using DAVA::InvalidIndex;
-using DAVA::float32;
-
+namespace DAVA
+{
 const char OpFunctionCall = '\xFF';
 const char OpEqual = OpFunctionCall - 1;
 const char OpNotEqual = OpEqual - 1;
@@ -91,41 +90,33 @@ enum
 
 struct ExpressionEvaluator::SyntaxTreeNode
 {
-    float32 operand;
-
-    uint32 left_i;
-    uint32 right_i;
-
-    uint32 expr_index; // for error reporting
-
-    char operation;
+    float32 operand = 0.0f;
+    uint32 left_i = InvalidIndex;
+    uint32 right_i = InvalidIndex;
+    uint32 expr_index = 0; // for error reporting
+    char operation = 0;
     FuncImpl func = nullptr;
 
-    SyntaxTreeNode()
-        : operand(0.0f)
-        , left_i(InvalidIndex)
-        , right_i(InvalidIndex)
-        , expr_index(0)
-        , operation(0){};
+    SyntaxTreeNode() = default;
+
     SyntaxTreeNode(float32 number, uint32 index)
         : operand(number)
-        , left_i(InvalidIndex)
-        , right_i(InvalidIndex)
         , expr_index(index)
-        , operation(0){};
+    {
+    }
+
     SyntaxTreeNode(char op, uint32 index)
-        : operand(0.0f)
-        , left_i(InvalidIndex)
-        , right_i(InvalidIndex)
-        , expr_index(index)
-        , operation(op){};
-    SyntaxTreeNode(char op, FuncImpl f, uint32 index)
-        : operand(0.0f)
-        , left_i(InvalidIndex)
-        , right_i(InvalidIndex)
-        , expr_index(index)
+        : expr_index(index)
         , operation(op)
-        , func(f){};
+    {
+    }
+
+    SyntaxTreeNode(char op, FuncImpl f, uint32 index)
+        : expr_index(index)
+        , operation(op)
+        , func(f)
+    {
+    }
 };
 
 //------------------------------------------------------------------------------
@@ -313,7 +304,7 @@ static inline uint32 _GetOperand(const char* expression, float32* operand)
     uint32 ret = 0;
     const char* expr = expression;
 
-    while (*expr && (PreprocessorHelpers::IsValidDigitChar(*expr) || (*expr == '.')))
+    while (*expr && (IsValidDigitChar(*expr) || (*expr == '.')))
     {
         ++expr;
         ++ret;
@@ -332,7 +323,7 @@ static inline uint32 _GetVariable(const char* expression)
     uint32 ret = 0;
     const char* expr = expression;
 
-    while (*expr && PreprocessorHelpers::IsValidAlphaNumericChar(*expr))
+    while (*expr && IsValidAlphaNumericChar(*expr))
     {
         ++expr;
         ++ret;
@@ -464,13 +455,13 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
         uint32 offset = 0;
 
         // skip spaces
-        if (PreprocessorHelpers::IsSpaceChar(*expr))
+        if (IsSpaceChar(*expr))
         {
-            while (PreprocessorHelpers::IsSpaceChar(*(expr + offset)))
+            while (IsSpaceChar(*(expr + offset)))
                 ++offset;
         }
         // process operands
-        else if (PreprocessorHelpers::IsValidDigitChar(*expr))
+        else if (IsValidDigitChar(*expr))
         {
             SyntaxTreeNode node;
             offset = _GetOperand(expr, &node.operand);
@@ -489,14 +480,14 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
             invert_operand_value = false;
         }
         // process variables/functions
-        else if (PreprocessorHelpers::IsValidAlphaChar(*expr))
+        else if (IsValidAlphaChar(*expr))
         {
             offset = _GetVariable(expr);
 
             DVASSERT(offset < countof(var) - 1);
             strncpy(var, expr, offset);
             var[offset] = '\0';
-            uint32 vhash = DAVA::HashValue_N(var, offset);
+            uint32 vhash = HashValue_N(var, offset);
             std::unordered_map<uint32_t, FuncImpl>::iterator func = FuncImplMap.find(vhash);
 
             if (func != FuncImplMap.end())
@@ -693,7 +684,7 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
 bool ExpressionEvaluator::SetVariable(const char* var, float32 value)
 {
     bool success = false;
-    uint32 var_id = DAVA::HashValue_N(var, uint32(strlen(var)));
+    uint32 var_id = HashValue_N(var, uint32(strlen(var)));
 
     varMap[var_id] = value;
 
@@ -702,7 +693,7 @@ bool ExpressionEvaluator::SetVariable(const char* var, float32 value)
 
 void ExpressionEvaluator::RemoveVariable(const char* var)
 {
-    uint32 var_id = DAVA::HashValue_N(var, uint32(strlen(var)));
+    uint32 var_id = HashValue_N(var, uint32(strlen(var)));
 
     varMap.erase(var_id);
 }
@@ -710,7 +701,7 @@ void ExpressionEvaluator::RemoveVariable(const char* var)
 bool ExpressionEvaluator::HasVariable(const char* name) const
 {
     bool success = false;
-    uint32 var_id = DAVA::HashValue_N(name, uint32(strlen(name)));
+    uint32 var_id = HashValue_N(name, uint32(strlen(name)));
 
     return varMap.find(var_id) != varMap.end();
 }
@@ -729,7 +720,6 @@ bool ExpressionEvaluator::GetLastError(char* err_buffer, uint32 err_buffer_size)
         uint32 len = uint32(::strlen(expressionText));
         char buf[2048];
 
-        //        DVASSERT(lastErrorCode<countof(ExprEvalError))
         DVASSERT(len < countof(buf) - 1);
         ::memset(buf, ' ', len);
         buf[len] = '\0';
@@ -745,7 +735,7 @@ bool ExpressionEvaluator::GetLastError(char* err_buffer, uint32 err_buffer_size)
 bool ExpressionEvaluator::RegisterFunction(const char* name, FuncImpl impl)
 {
     bool success = false;
-    uint32 func_id = DAVA::HashValue_N(name, uint32(strlen(name)));
+    uint32 func_id = HashValue_N(name, uint32(strlen(name)));
 
     if (FuncImplMap.find(func_id) == FuncImplMap.end())
     {
@@ -758,15 +748,15 @@ bool ExpressionEvaluator::RegisterFunction(const char* name, FuncImpl impl)
 
 static float32 EV_Sin(float32 x)
 {
-    return ::sinf(x);
+    return std::sin(x);
 }
 static float32 EV_Cos(float32 x)
 {
-    return ::cosf(x);
+    return std::cos(x);
 }
 static float32 EV_Abs(float32 x)
 {
-    return ::fabs(x);
+    return std::abs(x);
 }
 void ExpressionEvaluator::RegisterCommonFunctions()
 {
@@ -775,4 +765,5 @@ void ExpressionEvaluator::RegisterCommonFunctions()
     ExpressionEvaluator::RegisterFunction("abs", &EV_Abs);
 }
 
-std::unordered_map<uint32, ExpressionEvaluator::FuncImpl> ExpressionEvaluator::FuncImplMap;
+UnorderedMap<uint32, ExpressionEvaluator::FuncImpl> ExpressionEvaluator::FuncImplMap;
+}

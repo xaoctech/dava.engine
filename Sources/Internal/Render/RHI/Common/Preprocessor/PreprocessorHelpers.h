@@ -1,6 +1,9 @@
 #pragma once
 
-namespace PreprocessorHelpers
+#include "Base/BaseTypes.h"
+#include "Debug/DVAssert.h"
+
+namespace DAVA
 {
 inline bool IsValidAlphaChar(char c)
 {
@@ -59,6 +62,14 @@ inline char* SkipCommentLine(char* s)
         while (s[0] != '\n')
             ++s;
     }
+    return s;
+}
+
+inline char* SeekToLineEnding(char* s)
+{
+    while ((*s != 0) && (*s != '\n'))
+        ++s;
+
     return s;
 }
 }

@@ -80,7 +80,7 @@ DAVA_TESTCLASS (PreprocessorTest)
 
     DAVA_TEST (TestExpressionEvaluator)
     {
-        ExpressionEvaluator ev;
+        DAVA::ExpressionEvaluator ev;
         struct
         {
             const char* expr;
@@ -132,10 +132,10 @@ DAVA_TESTCLASS (PreprocessorTest)
         ev.SetVariable("LIGHTING_ENABLED", 1);
         ev.SetVariable("DARKNESS_ENABLED", 0);
         ev.SetVariable("DARKNESS_DISABLED", 0);
-        ExpressionEvaluator::RegisterCommonFunctions();
-        ExpressionEvaluator::RegisterFunction("one_more", &EV_OneMore);
+        DAVA::ExpressionEvaluator::RegisterCommonFunctions();
+        DAVA::ExpressionEvaluator::RegisterFunction("one_more", &EV_OneMore);
 
-        for (uint32 i = 0; i != countof(data); ++i)
+        for (DAVA::uint32 i = 0; i != countof(data); ++i)
         {
             float res = 0;
             bool success = ev.Evaluate(data[i].expr, &res);
@@ -149,7 +149,7 @@ DAVA_TESTCLASS (PreprocessorTest)
           "BULLSHIT+2"
         };
 
-        for (uint32 i = 0; i != countof(err_expr); ++i)
+        for (DAVA::uint32 i = 0; i != countof(err_expr); ++i)
         {
             float res = 0;
             bool success = ev.Evaluate(err_expr[i], &res);
@@ -169,6 +169,7 @@ DAVA_TESTCLASS (PreprocessorTest)
             const char* resultFileName;
         } test[] =
         {
+          { "Multiple-Defines-input.preproc", "Multiple-Defines-output.preproc" },
           { "PurrfectTest-input.preproc", "PurrfectTest-output.preproc" },
           { "00-input.preproc", "00-output.preproc" },
           { "01-input.preproc", "01-output.preproc" },
@@ -196,7 +197,7 @@ DAVA_TESTCLASS (PreprocessorTest)
         };
         static const char* BaseDir = "~res:/TestData/PreProcessor";
 
-        class TestFileCallback : public PreProc::FileCallback
+        class TestFileCallback : public DAVA::PreProc::FileCallback
         {
         public:
             TestFileCallback(const char* base_dir)
@@ -220,12 +221,12 @@ DAVA_TESTCLASS (PreprocessorTest)
                 _in = nullptr;
             }
 
-            uint32 Size() const override
+            DAVA::uint32 Size() const override
             {
                 return (_in) ? unsigned(_in->GetSize()) : 0;
             }
 
-            uint32 Read(uint32 max_sz, void* dst) override
+            DAVA::uint32 Read(DAVA::uint32 max_sz, void* dst) override
             {
                 return (_in) ? _in->Read(dst, max_sz) : 0;
             }
@@ -240,7 +241,7 @@ DAVA_TESTCLASS (PreprocessorTest)
             DAVA::Logger::Info("pre-proc test %i  \"%s\"...", i, test[i].inputFileName);
 
             TestFileCallback fc(BaseDir);
-            PreProc pp(&fc);
+            DAVA::PreProc pp(&fc);
             std::vector<char> output;
             std::vector<char> expected;
             char fname[2048];
@@ -256,12 +257,6 @@ DAVA_TESTCLASS (PreprocessorTest)
             {
                 DAVA::Logger::Error("Preprocessor test failed:");
                 DumpAndCompareBytes(actual_data, output.size(), expected_data, expected.size());
-                /*
-                DAVA::Logger::Info("actual data (%u) :", unsigned(output.size()));
-                DumpBytes(actual_data, static_cast<unsigned>(output.size()));
-                DAVA::Logger::Info("expected data (%u) :", unsigned(expected.size()));
-                DumpBytes(expected_data, static_cast<unsigned>(expected.size()));
-                */
             }
             TEST_VERIFY(size_match);
             TEST_VERIFY(content_match);
@@ -282,7 +277,7 @@ DAVA_TESTCLASS (PreprocessorTest)
             DAVA::Logger::Info("pre-proc error-test %i  \"%s\"...", i, err_test[i]);
 
             TestFileCallback fc(BaseDir);
-            PreProc pp(&fc);
+            DAVA::PreProc pp(&fc);
             std::vector<char> output;
 
             TEST_VERIFY(pp.ProcessFile(err_test[i], &output) == false);

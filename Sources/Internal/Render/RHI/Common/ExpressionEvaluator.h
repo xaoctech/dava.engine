@@ -2,9 +2,8 @@
 
 #include "Render/RHI/Common/Preprocessor/PreprocessorHelpers.h"
 
-using DAVA::uint32;
-using DAVA::float32;
-
+namespace DAVA
+{
 class ExpressionEvaluator
 {
 public:
@@ -37,14 +36,14 @@ private:
     bool EvaluateInternal(const SyntaxTreeNode* node, float32* out, uint32* err_code, uint32* err_index);
 
     char* expressionText;
-    std::vector<SyntaxTreeNode> operatorStack;
-    std::vector<uint32> nodeStack;
-    std::vector<SyntaxTreeNode> nodeArray;
+    Vector<SyntaxTreeNode> operatorStack;
+    Vector<uint32> nodeStack;
+    Vector<SyntaxTreeNode> nodeArray;
+    UnorderedMap<uint32, float32> varMap;
 
-    std::unordered_map<uint32, float32> varMap;
-
-    static std::unordered_map<uint32, FuncImpl> FuncImplMap;
+    static UnorderedMap<uint32, FuncImpl> FuncImplMap;
 
     mutable uint32 lastErrorCode;
     mutable uint32 lastErrorIndex;
 };
+}
