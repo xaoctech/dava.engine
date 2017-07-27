@@ -594,6 +594,28 @@ bool SceneExporter::ExportTextureObject(const ExportedObject& object)
     return texturesExported;
 }
 
+bool SceneExporter::ExportSlotObject(const ExportedObject& object)
+{
+    using namespace DAVA;
+
+    bool slotExported = true;
+    slotExported = CopyObject(object) & slotExported;
+
+    SlotSystem::ItemsCache slotItemsCache;
+
+    FilePath fromPath = exportingParams.dataSourceFolder + object.relativePathname;
+
+    Vector<SlotSystem::ItemsCache::Item> slotItemsList = slotItemsCache.GetItems(fromPath);
+
+    for (SlotSystem::ItemsCache::Item& item : slotItemsList)
+    {
+        ExportedObject sceneObject(OBJECT_SCENE, item.scenePath.GetRelativePathname(exportingParams.dataSourceFolder));
+        slotExported = ExportSceneObject(sceneObject) & slotExported;
+    }
+
+    return slotExported;
+}
+
 bool SceneExporter::ExportDescriptor(DAVA::TextureDescriptor& descriptor, const Params::Output& output)
 {
     using namespace DAVA;
@@ -901,8 +923,8 @@ bool SceneExporter::ExportObjects(const ExportedObjectCollection& exportedObject
 
     Array<Function<bool(const ExportedObject&)>, OBJECT_COUNT> exporters =
     { { MakeFunction(this, &SceneExporter::ExportSceneObject),
+        MakeFunction(this, &SceneExporter::ExportSlotObject),
         MakeFunction(this, &SceneExporter::ExportTextureObject),
-        MakeFunction(this, &SceneExporter::CopyObject),
         MakeFunction(this, &SceneExporter::CopyObject),
         MakeFunction(this, &SceneExporter::CopyObject) } };
 
