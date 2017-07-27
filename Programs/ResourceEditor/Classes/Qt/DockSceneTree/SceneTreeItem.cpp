@@ -573,6 +573,13 @@ void SceneTreeItemParticleLayer::DoSync(QStandardItem* rootItem, DAVA::ParticleL
             rootItem->insertRows(0, items);
         }
 
+        size_t dragCount = layer->dragForces.size();
+        QList<QStandardItem*> dragItems;
+        for (size_t i = 0; i < dragCount; ++i)
+            dragItems.push_back(new SceneTreeItemParticleDragForce(layer, layer->dragForces[i]));
+        if (!dragItems.empty())
+            rootItem->insertRows(0, dragItems);
+
         if (!hadInnerEmmiter && (layer->type == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES))
         {
             rootItem->appendRow(new SceneTreeItemParticleInnerEmitter(rootLayerItem->effect, layer->innerEmitter, layer));
@@ -625,6 +632,49 @@ const QIcon& SceneTreeItemParticleForce::ItemIcon() const
 {
     return SharedIcon(":/QtIcons/force.png");
 }
+
+//////////////////////////////////////////////////////////////////////////
+// Scene tree item particle drag force
+//////////////////////////////////////////////////////////////////////////
+
+SceneTreeItemParticleDragForce::SceneTreeItemParticleDragForce(DAVA::ParticleLayer* layer_, DAVA::ParticleDrag* drag)
+    : SceneTreeItem(SceneTreeItem::EIT_DragForce, drag)
+    , layer(layer_)
+{
+}
+
+DAVA::ParticleDrag* SceneTreeItemParticleDragForce::GetDragForce(SceneTreeItem* rootItem)
+{
+    if ((nullptr != rootItem) && (rootItem->ItemType() == SceneTreeItem::EIT_DragForce))
+    {
+        SceneTreeItemParticleDragForce* itemForce = (SceneTreeItemParticleDragForce*)rootItem;
+        return itemForce->GetDragForce();
+    }
+
+    return nullptr;
+}
+
+DAVA::ParticleDrag* SceneTreeItemParticleDragForce::GetDragForce() const
+{
+    return object.Cast<DAVA::ParticleDrag>();
+}
+
+QString SceneTreeItemParticleDragForce::ItemName() const
+{
+    return "drag force";
+}
+
+QVariant SceneTreeItemParticleDragForce::ItemData() const
+{
+    return qVariantFromValue(GetDragForce());
+}
+
+const QIcon& SceneTreeItemParticleDragForce::ItemIcon() const
+{
+    return SharedIcon(":/QtIcons/turtle.png");
+}
+
+//////////////////////////////////////////////////////////////////////////
 
 SceneTreeItemParticleInnerEmitter::SceneTreeItemParticleInnerEmitter(DAVA::ParticleEffectComponent* effect_, DAVA::ParticleEmitter* emitter_,
                                                                      DAVA::ParticleLayer* parentLayer_)

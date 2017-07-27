@@ -639,6 +639,7 @@ protected:
         Connect(menu.addAction(SharedIcon(":/QtIcons/remove_layer.png"), removeLayerText), this, &ParticleLayerContextMenu::RemoveLayer);
         menu.addSeparator();
         Connect(menu.addAction(SharedIcon(":/QtIcons/force.png"), QStringLiteral("Add Force")), this, &ParticleLayerContextMenu::AddForce);
+        Connect(menu.addAction(SharedIcon(":/QtIcons/turtle.png"), QStringLiteral("Add Drag")), this, &ParticleLayerContextMenu::AddDrag);
     }
 
 private:
@@ -661,6 +662,12 @@ private:
     void AddForce()
     {
         GetScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandAddParticleEmitterForce(layerItem->GetLayer())));
+        MarkStructureChanged();
+    }
+
+    void AddDrag()
+    {
+        GetScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandAddParticleDrag(layerItem->GetLayer())));
         MarkStructureChanged();
     }
 
@@ -1064,6 +1071,8 @@ void SceneTree::CommandExecuted(SceneEditor2* scene, const RECommandNotification
     CMDID_PARTICLE_EMITTER_LAYER_CLONE,
     CMDID_PARTICLE_EMITTER_FORCE_ADD,
     CMDID_PARTICLE_EMITTER_FORCE_REMOVE,
+    CMDID_PARTICLE_EMITTER_DRAG_ADD,
+    CMDID_PARTICLE_EMITTER_DRAG_REMOVE,
     CMDID_PARTICLE_EFFECT_EMITTER_REMOVE,
     CMDID_REFLECTED_FIELD_MODIFY,
     } };

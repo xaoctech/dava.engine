@@ -502,6 +502,34 @@ void CommandRemoveParticleEmitterForce::Redo()
     selectedLayer->RemoveForce(selectedForce);
 }
 
+
+CommandAddParticleDrag::CommandAddParticleDrag(DAVA::ParticleLayer* layer)
+    : CommandAction(CMDID_PARTICLE_EMITTER_DRAG_ADD)
+    , selectedLayer(layer)
+{
+}
+
+void CommandAddParticleDrag::Redo()
+{
+    if (selectedLayer == nullptr)
+        return;
+    selectedLayer->AddDrag(new ParticleDrag());
+}
+
+CommandRemoveParticleDrag::CommandRemoveParticleDrag(ParticleLayer* layer, ParticleDrag* drag)
+    : CommandAction(CMDID_PARTICLE_EMITTER_DRAG_REMOVE)
+    , selectedLayer(layer)
+    , selectedDrag(drag)
+{
+}
+
+void CommandRemoveParticleDrag::Redo()
+{
+    if (selectedLayer == nullptr || selectedDrag == nullptr)
+        return;
+    selectedLayer->RemoveDrag(selectedDrag);
+}
+
 CommandLoadParticleEmitterFromYaml::CommandLoadParticleEmitterFromYaml(ParticleEffectComponent* effect, ParticleEmitterInstance* emitter, const FilePath& path)
     : CommandAction(CMDID_PARTICLE_EMITTER_LOAD_FROM_YAML)
     , selectedEffect(effect)

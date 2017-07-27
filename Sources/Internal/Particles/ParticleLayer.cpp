@@ -1184,6 +1184,41 @@ void ParticleLayer::CleanupForces()
     this->forces.clear();
 }
 
+void ParticleLayer::AddDrag(ParticleDrag* drag)
+{
+    SafeRetain(drag);
+    dragForces.push_back(drag);
+}
+
+void ParticleLayer::RemoveDrag(ParticleDrag* drag)
+{
+    auto iter = std::find(dragForces.begin(), dragForces.end(), drag);
+    if (iter != dragForces.end())
+    {
+        SafeRelease(*iter);
+        dragForces.erase(iter);
+    }
+}
+
+void ParticleLayer::RemoveDrag(int32 dragIndex)
+{
+    if (dragIndex <= static_cast<int32>(dragForces.size()))
+    {
+        SafeRelease(dragForces[dragIndex]);
+        dragForces.erase(dragForces.begin() + dragIndex);
+    }
+}
+
+void ParticleLayer::CleanupDrag()
+{
+    for (auto& force : dragForces)
+    {
+        SafeRelease(force);
+    }
+
+    dragForces.clear();
+}
+
 void ParticleLayer::FillSizeOverlifeXY(RefPtr<PropertyLine<float32>> sizeOverLife)
 {
     Vector<PropValue<float32>> wrappedPropertyValues = PropLineWrapper<float32>(sizeOverLife).GetProps();

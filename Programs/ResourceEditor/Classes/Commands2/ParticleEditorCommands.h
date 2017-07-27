@@ -1,7 +1,9 @@
-#ifndef __PARTICLE_EDITOR_COMMANDS_H__
-#define __PARTICLE_EDITOR_COMMANDS_H__
+#pragma once
 
 #include <DAVAEngine.h>
+
+#include <Particles/ParticleDrag.h>
+
 #include "Commands2/Base/RECommand.h"
 #include "Commands2/Base/CommandAction.h"
 
@@ -149,6 +151,29 @@ public:
 protected:
     DAVA::ParticleLayer* selectedLayer = nullptr;
     DAVA::ParticleForce* selectedForce = nullptr;
+};
+
+// Add drag
+class CommandAddParticleDrag : public CommandAction
+{
+public:
+    CommandAddParticleDrag(DAVA::ParticleLayer* layer);
+    void Redo() override;
+
+protected:
+    DAVA::ParticleLayer* selectedLayer = nullptr;
+};
+
+// Remove particle drag
+class CommandRemoveParticleDrag : public CommandAction
+{
+public:
+    CommandRemoveParticleDrag(DAVA::ParticleLayer* layer, DAVA::ParticleDrag* drag);
+    void Redo() override;
+
+protected:
+    DAVA::ParticleLayer* selectedLayer = nullptr;
+    DAVA::ParticleDrag* selectedDrag = nullptr;
 };
 
 class CommandUpdateEffect : public CommandAction
@@ -452,5 +477,3 @@ protected:
     DAVA::ParticleEmitterInstance* instance = nullptr;
     DAVA::FilePath filePath;
 };
-
-#endif //__PARTICLE_EDITOR_COMMANDS_H__

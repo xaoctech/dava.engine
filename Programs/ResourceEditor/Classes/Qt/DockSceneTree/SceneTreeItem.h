@@ -8,12 +8,14 @@
 #include "Particles/ParticleEmitter.h"
 #include "Particles/ParticleLayer.h"
 #include "Particles/ParticleForce.h"
+#include "Particles/ParticleDrag.h"
 
 #include "Classes/Selection/Selectable.h"
 
 Q_DECLARE_METATYPE(DAVA::Entity*);
 Q_DECLARE_METATYPE(DAVA::ParticleLayer*);
 Q_DECLARE_METATYPE(DAVA::ParticleForce*);
+Q_DECLARE_METATYPE(DAVA::ParticleDrag*);
 Q_DECLARE_METATYPE(DAVA::ParticleEmitterInstance*);
 
 class SceneTreeModel;
@@ -28,7 +30,8 @@ public:
         EIT_Emitter,
         EIT_Layer,
         EIT_Force,
-        EIT_InnerEmitter
+        EIT_InnerEmitter,
+        EIT_DragForce
     };
 
     enum eItemDataRole : DAVA::uint32
@@ -127,6 +130,23 @@ public:
     SceneTreeItemParticleForce(DAVA::ParticleLayer* layer, DAVA::ParticleForce* force);
 
     DAVA::ParticleForce* GetForce() const;
+
+    QString ItemName() const override;
+    QVariant ItemData() const override;
+    const QIcon& ItemIcon() const override;
+
+    DAVA::ParticleLayer* layer = nullptr;
+};
+
+//////////////////////////////////////////////////////////////////////////
+class SceneTreeItemParticleDragForce : public SceneTreeItem
+{
+public:
+    static DAVA::ParticleDrag* GetDragForce(SceneTreeItem* rootItem);
+
+public:
+    SceneTreeItemParticleDragForce(DAVA::ParticleLayer* layer, DAVA::ParticleDrag* drag);
+    DAVA::ParticleDrag* GetDragForce() const;
 
     QString ItemName() const override;
     QVariant ItemData() const override;

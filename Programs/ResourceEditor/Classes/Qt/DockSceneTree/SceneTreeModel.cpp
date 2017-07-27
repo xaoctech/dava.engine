@@ -248,6 +248,14 @@ QMimeData* SceneTreeModel::mimeData(const QModelIndexList& indexes) const
                     ret = MimeDataHelper2<DAVA::ParticleForce>::EncodeMimeData(data);
                 }
                 break;
+                case SceneTreeItem::EIT_DragForce:
+                {
+                    QVector<DAVA::ParticleDrag*> data;
+                    foreach(QModelIndex index, indexes)
+                        data.push_back(SceneTreeItemParticleDragForce::GetDragForce(GetItem(index)));
+
+                    ret = MimeDataHelper2<DAVA::ParticleDrag>::EncodeMimeData(data);
+                }
                 default:
                     break;
                 }
