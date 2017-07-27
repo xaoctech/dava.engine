@@ -23,7 +23,7 @@ static bool HasAccessToSystemFolder(DAVA::String dir)
     FILE* f = fopen(dir.c_str(), "wb");
     if (nullptr == f)
     {
-        if (EACCES == errno)
+        if (EACCES == errno || EROFS == errno)
         {
             return false;
         }
