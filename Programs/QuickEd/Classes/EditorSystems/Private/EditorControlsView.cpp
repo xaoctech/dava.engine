@@ -9,6 +9,7 @@
 #include "Model/ControlProperties/RootProperty.h"
 
 #include "Modules/DocumentsModule/DocumentData.h"
+#include "Modules/UpdateViewsSystemModule/UpdateViewsSystem.h"
 #include "UI/Preview/Data/CanvasData.h"
 
 #include <TArc/Core/FieldBinder.h>
