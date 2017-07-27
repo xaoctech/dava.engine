@@ -74,6 +74,7 @@ private:
     class EntityContextMenu;
     class ParticleLayerContextMenu;
     class ParticleForceContextMenu;
+    class ParticleDragForceContextMenu;
     class ParticleEmitterContextMenu;
     class ParticleInnerEmitterContextMenu;
 

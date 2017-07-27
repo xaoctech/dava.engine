@@ -688,7 +688,7 @@ public:
 protected:
     void FillActions(QMenu& menu) override
     {
-        QString removeForce = GetSelectedItemsCount() < 2 ? QStringLiteral("Remove Forces") : QStringLiteral("Remove Force");
+        QString removeForce = GetSelectedItemsCount() < 2 ? QStringLiteral("Remove Force") : QStringLiteral("Remove Forces");
         Connect(menu.addAction(SharedIcon(":/QtIcons/remove_force.png"), removeForce), this, &ParticleForceContextMenu::RemoveForce);
     }
 
@@ -701,6 +701,35 @@ private:
                                  DAVA::ParticleForce* force = forceItem->GetForce();
                                  return RemoveInfo(std::unique_ptr<DAVA::Command>(new CommandRemoveParticleEmitterForce(forceItem->layer, force)), force);
                              });
+    }
+};
+
+class SceneTree::ParticleDragForceContextMenu : public SceneTree::BaseContextMenu
+{
+    using TBase = BaseContextMenu;
+
+public:
+    ParticleDragForceContextMenu(SceneTree* treeWidget)
+        : TBase(treeWidget)
+    {
+    }
+
+protected:
+    void FillActions(QMenu& menu) override
+    {
+        QString removeDragForce = GetSelectedItemsCount() < 2 ? QStringLiteral("Remove Drag Force") : QStringLiteral("Remove Drag Forces");
+        Connect(menu.addAction(SharedIcon(":/QtIcons/remove_turtle.png"), removeDragForce), this, &ParticleDragForceContextMenu::RemoveDragForce);
+    }
+
+private:
+    void RemoveDragForce()
+    {
+        RemoveCommandsHelper("Remove drag forces", SceneTreeItem::EIT_DragForce, [](SceneTreeItem* item)
+        {
+            SceneTreeItemParticleDragForce* dragForceItem = static_cast<SceneTreeItemParticleDragForce*>(item);
+            DAVA::ParticleDrag* dragForce = dragForceItem->GetDragForce();
+            return RemoveInfo(std::unique_ptr<DAVA::Command>(new CommandRemoveParticleDrag(dragForceItem->layer, dragForce)), dragForce);
+        });
     }
 };
 
@@ -1180,6 +1209,9 @@ void SceneTree::ShowContextMenu(const QPoint& pos)
         break;
     case SceneTreeItem::EIT_InnerEmitter:
         showMenuFn(ParticleInnerEmitterContextMenu(static_cast<SceneTreeItemParticleInnerEmitter*>(item), this));
+        break;
+    case SceneTreeItem::EIT_DragForce:
+        showMenuFn(ParticleDragForceContextMenu(this));
         break;
     default:
         break;
