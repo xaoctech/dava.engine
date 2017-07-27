@@ -405,6 +405,32 @@ bool SceneTreeModel::dropMimeData(const QMimeData* data, Qt::DropAction action, 
         }
     }
     break;
+    case DropingDragForce:
+    {
+        DAVA::ParticleLayer* newLayer = SceneTreeItemParticleLayer::GetLayer(parentItem);
+
+        QVector<DAVA::ParticleDrag*> dragForcesV = MimeDataHelper2<DAVA::ParticleDrag>::DecodeMimeData(data);
+        if (newLayer != nullptr && !dragForcesV.empty())
+        {
+            DAVA::Vector<DAVA::ParticleDrag*> dragForcesGroup;
+            dragForcesGroup.reserve(dragForcesV.size());
+
+            DAVA::Vector<DAVA::ParticleLayer*> layersGroup;
+            layersGroup.reserve(dragForcesV.size());
+
+            for (int i = 0; i < dragForcesV.size(); ++i)
+            {
+                QModelIndex forceIndex = GetIndex((DAVA::ParticleDrag*)dragForcesV[i]);
+                DAVA::ParticleLayer* oldLayer = SceneTreeItemParticleLayer::GetLayer(GetItem(forceIndex.parent()));
+
+                dragForcesGroup.push_back((DAVA::ParticleDrag*)dragForcesV[i]);
+                layersGroup.push_back(oldLayer);
+            }
+
+            curScene->structureSystem->MoveDragForce(dragForcesGroup, layersGroup, newLayer);
+            ret = true;
+        }
+    }
 
     default:
         break;
@@ -528,6 +554,19 @@ bool SceneTreeModel::DropCanBeAccepted(const QMimeData* data, Qt::DropAction act
     }
     break;
     case DropingForce:
+    {
+        // accept force to be dropped only to particle layer
+        if (NULL != parentItem && parentItem->ItemType() == SceneTreeItem::EIT_Layer)
+        {
+            // accept only add (no insertion)
+            if (-1 == row && -1 == column)
+            {
+                ret = true;
+            }
+        }
+    }
+    break;
+    case DropingDragForce:
     {
         // accept force to be dropped only to particle layer
         if (NULL != parentItem && parentItem->ItemType() == SceneTreeItem::EIT_Layer)
@@ -720,6 +759,10 @@ int SceneTreeModel::GetDropType(const QMimeData* data) const
         else if (MimeDataHelper2<DAVA::ParticleForce>::IsValid(data))
         {
             ret = DropingForce;
+        }
+        else if (MimeDataHelper2<DAVA::ParticleForce>::IsValid(data))
+        {
+            ret = DropingDragForce;
         }
     }
 
