@@ -34,14 +34,39 @@ macro ( add_tool TARGET_NAME )
 
 endmacro ()
 
+macro ( generation_ToolList_json TARGET_LIST )
+
+    set( TOOL_LIST_FILE  ${CMAKE_BINARY_DIR}/Info.json )
+
+    file(WRITE  ${TOOL_LIST_FILE} "{\n" )
+    file(APPEND ${TOOL_LIST_FILE} "   \"Applications\": [\n" )
+
+    set( TARGET_LIST "${TARGET_LIST}")
+    list( LENGTH TARGET_LIST TARGET_LIST_COUNT )
+    math( EXPR TARGET_LIST_COUNT "${TARGET_LIST_COUNT} - 1" )
+
+    foreach ( index RANGE ${TARGET_LIST_COUNT} )
+        list ( GET TARGET_LIST ${index} ITEM )
+        file( APPEND ${TOOL_LIST_FILE} "      {\n" )
+        file( APPEND ${TOOL_LIST_FILE} "          \"name\": \"${ITEM}\"\n" )
+        if (${index} EQUAL ${TARGET_LIST_COUNT})
+            file( APPEND ${TOOL_LIST_FILE} "      }\n" )
+        else()
+            file( APPEND ${TOOL_LIST_FILE} "      },\n" )
+        endif()
+    endforeach()
+
+    file(APPEND ${TOOL_LIST_FILE} "   ]\n" )
+    file( APPEND ${TOOL_LIST_FILE} "}\n" )
+
+endmacro ()
+
 ############
 set( UNITY_BUILD_OLD_VALUE ${UNITY_BUILD} )
 
 set( JOIN_PROJECT_NAME 1 )
 set( DAVA_MEGASOLUTION      1 )
 set( IGNORE_FILE_TREE_CHECK 1 )
-
-dava_add_definitions (-D__DAVAENGINE_COREV2__)
 
 if( NOT DEPLOY_DIR )
     set( DEPLOY_DIR_MACOS             ${CMAKE_BINARY_DIR}/app )
@@ -73,8 +98,6 @@ reset_property ( MIX_APP_DATA )
         set( UNITY_BUILD ${UNITY_BUILD_OLD_VALUE} )
 
         add_tool     ( TestBed         ROOT_DIR "${DAVA_ROOT_DIR}/Programs/TestBed"         CUSTOM_DEPLOY_DIR ${DEPLOY_DIR} )
-        add_tool     ( SceneViewer     ROOT_DIR "${DAVA_ROOT_DIR}/Programs/SceneViewer"     CUSTOM_DEPLOY_DIR ${DEPLOY_DIR} )
-        add_tool     ( UIViewer     ROOT_DIR "${DAVA_ROOT_DIR}/Programs/UIViewer"     CUSTOM_DEPLOY_DIR ${DEPLOY_DIR} )
         add_tool     ( PerfomanceTests ROOT_DIR "${DAVA_ROOT_DIR}/Programs/PerfomanceTests" CUSTOM_DEPLOY_DIR ${DEPLOY_DIR} )
         add_tool     ( Launcher        CUSTOM_DEPLOY_DIR ${DEPLOY_DIR} DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
 
@@ -107,6 +130,8 @@ set( TOOL_TARGET_LIST             )
 
 
 reset_property ( MIX_APP_DATA )
+    add_tool     ( SceneViewer     DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
+    add_tool     ( UIViewer        DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
 
     add_tool     ( ResourceEditor  DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
     add_tool     ( QuickEd         DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
@@ -115,8 +140,15 @@ reset_property ( MIX_APP_DATA )
     add_tool     ( ResourceArchiver )
     add_tool     ( ResourcePacker   )
     add_tool     ( ResourcePatcher  )
+
+if (NOT DEPLOY OR IMAGE_UNPACKER)    
     add_tool     ( ImageUnpacker    )
+endif ()
+
+if (NOT DEPLOY OR CACHE_CLIENT)    
     add_tool     ( AssetCacheClient )
+endif ()
+
     add_tool     ( AssetCacheServer )
     add_tool     ( Dep )
 
@@ -124,6 +156,8 @@ reset_property ( MIX_APP_DATA )
     processing_mix_data_dependencies( "${TOOL_TARGET_LIST}" )
 
     dump_module_log()
+
+    generation_ToolList_json( "${TOOL_TARGET_LIST}" ) 
 
 ############
 

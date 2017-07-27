@@ -1,5 +1,4 @@
 #include "Render/2D/TextBlockRender.h"
-#include "Core/Core.h"
 
 namespace DAVA
 {

@@ -2,7 +2,6 @@
 
 #include "Base/BaseTypes.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_ANDROID__)
 
 #include "Functional/Function.h"
@@ -28,4 +27,3 @@ private:
 } // namespace DAVA
 
 #endif // defined(__DAVAENGINE_ANDROID__)
-#endif // defined(__DAVAENGINE_COREV2__)

@@ -12,6 +12,8 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
+#include "Scene3D/Components/SlotComponent.h"
+#include "Scene3D/Systems/SlotSystem.h"
 
 #include "Main/QtUtils.h"
 
@@ -19,12 +21,27 @@
 
 DAVA::Set<DAVA::FilePath> SceneDumper::DumpLinks(const DAVA::FilePath& scenePath, SceneDumper::eMode mode, const DAVA::Vector<DAVA::eGPUFamily>& compressedGPUs)
 {
+    DAVA::Set<DAVA::FilePath> dumpedLinks;
+    return DumpLinks(scenePath, mode, compressedGPUs, dumpedLinks);
+}
+
+DAVA::Set<DAVA::FilePath> SceneDumper::DumpLinks(const DAVA::FilePath& scenePath, SceneDumper::eMode mode, const DAVA::Vector<DAVA::eGPUFamily>& compressedGPUs, DAVA::Set<DAVA::FilePath>& dumpedLinks)
+{
     DAVA::Set<DAVA::FilePath> links;
     SceneDumper dumper(scenePath, mode, compressedGPUs);
 
+    DAVA::Set<DAVA::FilePath> redumpScenes;
     if (nullptr != dumper.scene)
     {
-        dumper.DumpLinksRecursive(dumper.scene, links);
+        dumper.DumpLinksRecursive(dumper.scene, links, redumpScenes);
+    }
+
+    dumpedLinks.insert(links.begin(), links.end());
+
+    for (const DAVA::FilePath& scenePath : redumpScenes)
+    {
+        DAVA::Set<DAVA::FilePath> result = SceneDumper::DumpLinks(scenePath, mode, compressedGPUs, dumpedLinks);
+        links.insert(result.begin(), result.end());
     }
 
     return links;
@@ -48,13 +65,13 @@ SceneDumper::~SceneDumper()
     SafeRelease(scene);
 }
 
-void SceneDumper::DumpLinksRecursive(DAVA::Entity* entity, DAVA::Set<DAVA::FilePath>& links) const
+void SceneDumper::DumpLinksRecursive(DAVA::Entity* entity, DAVA::Set<DAVA::FilePath>& links, DAVA::Set<DAVA::FilePath>& redumpScenes) const
 {
     //Recursiveness
     const DAVA::uint32 count = entity->GetChildrenCount();
     for (DAVA::uint32 ch = 0; ch < count; ++ch)
     {
-        DumpLinksRecursive(entity->GetChild(ch), links);
+        DumpLinksRecursive(entity->GetChild(ch), links, redumpScenes);
     }
 
     // Custom Property Links
@@ -65,6 +82,11 @@ void SceneDumper::DumpLinksRecursive(DAVA::Entity* entity, DAVA::Set<DAVA::FileP
 
     //Effects
     DumpEffect(GetEffectComponent(entity), links);
+
+    for (DAVA::uint32 i = 0; i < entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT); ++i)
+    {
+        DumpSlot(static_cast<DAVA::SlotComponent*>(entity->GetComponent(DAVA::Component::SLOT_COMPONENT, i)), links, redumpScenes);
+    }
 }
 
 void SceneDumper::DumpCustomProperties(DAVA::KeyedArchive* properties, DAVA::Set<DAVA::FilePath>& links) const
@@ -272,17 +294,36 @@ void SceneDumper::DumpEmitter(DAVA::ParticleEmitterInstance* instance, DAVA::Set
         }
         else
         {
-            Sprite* sprite = layer->sprite;
-            if (nullptr == sprite)
-            {
-                continue;
-            }
-
-            FilePath psdPath = ReplaceInString(sprite->GetRelativePathname().GetAbsolutePathname(), "/Data/", "/DataSource/");
-            psdPath.ReplaceExtension(".psd");
-            links.insert(psdPath);
-
-            gfxFolders.insert(psdPath.GetDirectory());
+            ProcessSprite(layer->sprite, links, gfxFolders);
+            ProcessSprite(layer->flowmap, links, gfxFolders);
+            ProcessSprite(layer->noise, links, gfxFolders);
+            ProcessSprite(layer->alphaRemapSprite, links, gfxFolders);
         }
+    }
+}
+
+void SceneDumper::ProcessSprite(DAVA::Sprite* sprite, DAVA::Set<DAVA::FilePath>& links, DAVA::Set<DAVA::FilePath>& gfxFolders) const
+{
+    using namespace DAVA;
+
+    if (sprite == nullptr)
+        return;
+
+    FilePath psdPath = ReplaceInString(sprite->GetRelativePathname().GetAbsolutePathname(), "/Data/", "/DataSource/");
+    psdPath.ReplaceExtension(".psd");
+    links.insert(psdPath);
+
+    gfxFolders.insert(psdPath.GetDirectory());
+}
+
+void SceneDumper::DumpSlot(DAVA::SlotComponent* slot, DAVA::Set<DAVA::FilePath>& links, DAVA::Set<DAVA::FilePath>& redumpScenes) const
+{
+    DAVA::FilePath configPath = slot->GetConfigFilePath();
+    links.insert(configPath.GetAbsolutePathname());
+    DAVA::Vector<DAVA::SlotSystem::ItemsCache::Item> items = scene->slotSystem->GetItems(configPath);
+    for (const DAVA::SlotSystem::ItemsCache::Item& item : items)
+    {
+        links.insert(item.scenePath.GetAbsolutePathname());
+        redumpScenes.insert(item.scenePath.GetAbsolutePathname());
     }
 }

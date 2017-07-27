@@ -1,6 +1,7 @@
 #include "UI/RichContent/UIRichContentSystem.h"
 
 #include "Debug/DVAssert.h"
+#include "Logger/Logger.h"
 #include "UI/RichContent/Private/RichLink.h"
 #include "UI/RichContent/Private/XMLRichContentBuilder.h"
 #include "UI/RichContent/UIRichAliasMap.h"
@@ -36,25 +37,31 @@ void UIRichContentSystem::RegisterComponent(UIControl* control, UIComponent* com
 {
     UISystem::RegisterComponent(control, component);
 
-    if (component->GetType() == UIRichContentComponent::C_TYPE)
+    UIRichContentComponent* richContent = CastIfEqual<UIRichContentComponent*>(component);
+    if (richContent != nullptr)
     {
-        AddLink(static_cast<UIRichContentComponent*>(component));
+        AddLink(richContent);
     }
-    else if (component->GetType() == UIRichContentAliasesComponent::C_TYPE)
+
+    UIRichContentAliasesComponent* richContentAliases = CastIfEqual<UIRichContentAliasesComponent*>(component);
+    if (richContentAliases != nullptr)
     {
-        AddAliases(control, static_cast<UIRichContentAliasesComponent*>(component));
+        AddAliases(control, richContentAliases);
     }
 }
 
 void UIRichContentSystem::UnregisterComponent(UIControl* control, UIComponent* component)
 {
-    if (component->GetType() == UIRichContentComponent::C_TYPE)
+    UIRichContentComponent* richContent = CastIfEqual<UIRichContentComponent*>(component);
+    if (richContent != nullptr)
     {
-        RemoveLink(static_cast<UIRichContentComponent*>(component));
+        RemoveLink(richContent);
     }
-    else if (component->GetType() == UIRichContentAliasesComponent::C_TYPE)
+
+    UIRichContentAliasesComponent* richContentAliases = CastIfEqual<UIRichContentAliasesComponent*>(component);
+    if (richContentAliases != nullptr)
     {
-        RemoveAliases(control, static_cast<UIRichContentAliasesComponent*>(component));
+        RemoveAliases(control, richContentAliases);
     }
 
     UISystem::UnregisterComponent(control, component);
@@ -103,6 +110,10 @@ void UIRichContentSystem::Process(float32 elapsedTime)
                         root->AddControl(ctrl.Get());
                         l->AddItem(ctrl);
                     }
+                }
+                else
+                {
+                    Logger::Warning("Syntax error in rich content text!");
                 }
             }
         }

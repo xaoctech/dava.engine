@@ -1,12 +1,14 @@
 #pragma once
 
-#include "Base/BaseTypes.h"
-#include "Math/Vector.h"
-#include "UI/UIControl.h"
-#include "Preferences/PreferencesRegistrator.h"
-#include "Input/KeyboardDevice.h"
 #include "EditorSystems/BaseEditorSystem.h"
 #include "EditorSystems/EditorSystemsManager.h"
+#include "EditorSystems/SelectionContainer.h"
+
+#include <Preferences/PreferencesRegistrator.h>
+#include <UI/UIControl.h>
+#include <Input/KeyboardDevice.h>
+#include <Base/BaseTypes.h>
+#include <Math/Vector.h>
 
 namespace DAVA
 {
@@ -65,6 +67,8 @@ private:
 
     void CorrectNodesToMove();
     void UpdateNeighboursToMove();
+    void SetNodesMoveRestrictions();
+    DAVA::Vector2 TruncateMouseDelta(DAVA::Vector2 mouseDelta, const EditorTransformSystem::MoveInfo* moveInfo);
 
     void ClampAngle();
     struct MagnetLine;
@@ -76,8 +80,7 @@ private:
     void ExtractMatchedLines(DAVA::Vector<MagnetLineInfo>& magnets, const DAVA::Vector<MagnetLine>& magnetLines, const DAVA::UIControl* control, DAVA::Vector2::eAxis axis);
     bool IsShiftPressed() const;
 
-    void ChangeProperty();
-    void Resize();
+    bool CanMagnet() const;
 
     HUDAreaInfo::eArea activeArea = HUDAreaInfo::NO_AREA;
     ControlNode* activeControlNode = nullptr;

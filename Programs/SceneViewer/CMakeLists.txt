@@ -5,10 +5,6 @@ set          ( WARNINGS_AS_ERRORS true )
 set          ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/../../Sources/CMake/Modules/" ) 
 include      ( CMake-common )
 
-set ( DAVA_COREV2 1 )
-
-dava_add_definitions ( -D__DAVAENGINE_COREV2__ )
-
 find_package( DavaFramework REQUIRED COMPONENTS DAVA_DISABLE_AUTOTESTS "Sound" )
 find_package( ScenePerformanceTests REQUIRED )
 
@@ -30,7 +26,7 @@ file ( GLOB_RECURSE XIB_LIST "${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_SPECIFIC_FOLD
 define_source ( SOURCE "Classes" ${PLATFORM_SPECIFIC_FOLDER} )
 
 set( MIX_APP_DATA                 "Data = ${DAVA_ROOT_DIR}/Programs/Data" 
-                                  "Data = ${CMAKE_CURRENT_LIST_DIR}/Data" )
+                                  "Data/${PROJECT_NAME} = ${CMAKE_CURRENT_LIST_DIR}/Data" )
 
 set( IOS_PLISTT                   ${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_SPECIFIC_FOLDER}/SceneVieweriPhone-Info.plist )
 

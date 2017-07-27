@@ -1,6 +1,5 @@
 #include "Engine/Private/Win32/PlatformCoreWin32.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_QT__)
 // TODO: plarform defines
 #elif defined(__DAVAENGINE_WIN32__)
@@ -11,7 +10,7 @@
 #include "Engine/Window.h"
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Win32/DllImportWin32.h"
-#include "Engine/Private/Win32/Window/WindowBackendWin32.h"
+#include "Engine/Private/Win32/WindowImplWin32.h"
 
 #include "Logger/Logger.h"
 #include "Time/SystemTimer.h"
@@ -84,8 +83,8 @@ void PlatformCore::Run()
 
     engineBackend.OnGameLoopStarted();
 
-    WindowBackend* primaryWindowBackend = EngineBackend::GetWindowBackend(engineBackend.GetPrimaryWindow());
-    primaryWindowBackend->Create(1024.0f, 768.0f);
+    WindowImpl* primaryWindowImpl = EngineBackend::GetWindowImpl(engineBackend.GetPrimaryWindow());
+    primaryWindowImpl->Create(1024.0f, 768.0f);
 
     for (;;)
     {
@@ -178,4 +177,3 @@ void PlatformCore::EnableHighResolutionTimer(bool enable)
 } // namespace DAVA
 
 #endif // __DAVAENGINE_WIN32__
-#endif // __DAVAENGINE_COREV2__

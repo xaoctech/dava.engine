@@ -64,7 +64,7 @@ HoodCollObject* HoodObject::CreateLine(const DAVA::Vector3& from, const DAVA::Ve
         rotateNormal.Normalize();
         rotateAngle = acosf(axisX.DotProduct(direction));
 
-        ret->baseRotate.CreateRotation(rotateNormal, -rotateAngle);
+        ret->baseRotate.BuildRotation(rotateNormal, -rotateAngle);
     }
 
     if (0 != rotateAngle)

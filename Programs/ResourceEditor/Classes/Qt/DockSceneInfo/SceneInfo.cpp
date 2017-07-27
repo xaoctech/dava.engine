@@ -360,22 +360,28 @@ void SceneInfo::CollectParticlesData()
             Vector<ParticleLayer*>& layers = effect->GetEmitterInstance(i)->GetEmitter()->layers;
             for (uint32 lay = 0; lay < layers.size(); ++lay)
             {
-                Sprite* spr = layers[lay]->sprite;
-                if (spr)
-                {
-                    sprites.insert(spr);
-
-                    for (int32 fr = 0; fr < spr->GetFrameCount(); ++fr)
-                    {
-                        Texture* tex = spr->GetTexture(fr);
-                        CollectTexture(particleTextures, tex->GetPathname(), tex);
-                    }
-                }
+                ProcessParticleSprite(layers[lay]->sprite, sprites);
+                ProcessParticleSprite(layers[lay]->flowmap, sprites);
+                ProcessParticleSprite(layers[lay]->noise, sprites);
+                ProcessParticleSprite(layers[lay]->alphaRemapSprite, sprites);
             }
         }
     }
 
     spritesCount = (uint32)sprites.size();
+}
+
+void SceneInfo::ProcessParticleSprite(DAVA::Sprite* sprite, DAVA::Set<DAVA::Sprite*>& sprites)
+{
+    if (sprite == nullptr)
+        return;
+    sprites.insert(sprite);
+
+    for (int32 fr = 0; fr < sprite->GetFrameCount(); ++fr)
+    {
+        Texture* tex = sprite->GetTexture(fr);
+        CollectTexture(particleTextures, tex->GetPathname(), tex);
+    }
 }
 
 DAVA::uint32 SceneInfo::GetTrianglesForNotLODEntityRecursive(DAVA::Entity* entity, bool onlyVisibleBatches)

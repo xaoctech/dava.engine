@@ -1,8 +1,7 @@
 #pragma once
 
-#include "EditorSystems/SelectionContainer.h"
-
 #include "Model/PackageHierarchy/PackageBaseNode.h"
+#include "Model/PackageHierarchy/ControlNode.h"
 
 #include <TArc/DataProcessing/DataWrapper.h>
 #include <TArc/DataProcessing/DataListener.h>
@@ -87,7 +86,7 @@ class EditorSystemsManager
 
 public:
     //we have situations, when one input can produce two different state. To resolve this conflict we declare that state priority is equal to it value
-    //as an example dragging control with pressed spacebar button will perform drag screen and transform at the same time
+    //as an example dragging control with pressed space bar button will perform drag screen and transform at the same time
     enum eDragState
     {
         //invalid state to request new state from baseEditorSystem
@@ -96,15 +95,15 @@ public:
         SelectByRect,
         //if cursor under selected control, pressed left mouse button and starts dragging
         Transform,
-        //all user input used only to drag canvas inide rednder widget
+        //all user input used only to drag canvas inside render widget
         DragScreen
     };
 
     enum eDisplayState
     {
-        //remove hud and throw all input to the DAVA frameworkx
+        //remove hud and throw all input to the DAVA framework
         Emulation,
-        //just display all root controls, no other iteraction enabled
+        //just display all root controls, no other interaction enabled
         Preview,
         //display one root control
         Edit
@@ -140,14 +139,14 @@ public:
 
     DAVA::UIControl* GetRootControl() const;
     DAVA::UIControl* GetScalableControl() const;
+    DAVA::UIControl* GetPixelGridControl() const;
+    DAVA::UIControl* GetHUDControl() const;
 
     DAVA::Signal<const HUDAreaInfo& /*areaInfo*/> activeAreaChanged;
     DAVA::Signal<const DAVA::Vector<MagnetLineInfo>& /*magnetLines*/> magnetLinesChanged;
-    DAVA::Signal<const ControlNode*> highlightNode;
+    DAVA::Signal<ControlNode*> highlightNode;
     DAVA::Signal<const DAVA::Rect& /*selectionRectControl*/> selectionRectChanged;
-    DAVA::Signal<const DAVA::Vector2&> contentSizeChanged;
     DAVA::Signal<ControlNode*, AbstractProperty*, const DAVA::Any&> propertyChanged;
-    DAVA::Signal<const DAVA::Vector2& /*new position*/> rootControlPositionChanged;
     DAVA::Signal<bool> emulationModeChanged;
     DAVA::Signal<eDragState /*currentState*/, eDragState /*previousState*/> dragStateChanged;
     DAVA::Signal<eDisplayState /*currentState*/, eDisplayState /*previousState*/> displayStateChanged;
@@ -167,6 +166,7 @@ private:
     template <class OutIt, class Predicate>
     void CollectControlNodesImpl(OutIt destination, Predicate predicate, StopPredicate stopPredicate, ControlNode* node) const;
 
+    void InitControls();
     void InitDAVAScreen();
 
     void OnDragStateChanged(eDragState currentState, eDragState previousState);
@@ -179,6 +179,8 @@ private:
     DAVA::RefPtr<DAVA::UIControl> rootControl;
     DAVA::RefPtr<DAVA::UIControl> inputLayerControl;
     DAVA::RefPtr<DAVA::UIControl> scalableControl;
+    DAVA::RefPtr<DAVA::UIControl> pixelGridControl;
+    DAVA::RefPtr<DAVA::UIControl> hudControl;
 
     DAVA::List<std::unique_ptr<BaseEditorSystem>> systems;
 

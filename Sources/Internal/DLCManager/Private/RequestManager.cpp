@@ -1,6 +1,8 @@
 #include "DLCManager/Private/RequestManager.h"
 #include "DLCManager/Private/DLCManagerImpl.h"
 #include "Debug/DVAssert.h"
+#include "Base/BaseTypes.h"
+#include <Time/SystemTimer.h>
 
 namespace DAVA
 {
@@ -25,51 +27,148 @@ void RequestManager::Stop()
     }
 }
 
-void RequestManager::Update()
+void RequestManager::FireStartLoadingWhileInactiveSignals()
 {
-    if (!Empty())
+    if (!requestStartedWhileInactive.empty())
     {
-        Vector<PackRequest*> nextDependentPacks;
-
-        PackRequest* request = Top();
-        bool callSignal = request->Update();
-
-        if (request->IsDownloaded())
+        for (const String& pack : requestStartedWhileInactive)
         {
-            callSignal = true; // we need to inform on empty pack too
-            Pop();
-            if (!Empty())
+            PackRequest* r = packManager.FindRequest(pack);
+            if (r)
             {
-                PackRequest* next = Top();
-                while (next->IsDownloaded())
+                packManager.requestStartLoading.Emit(*r);
+            }
+        }
+        requestStartedWhileInactive.clear();
+    }
+}
+
+void RequestManager::FireUpdateWhileInactiveSignals()
+{
+    if (!requestUpdatedWhileInactive.empty())
+    {
+        for (const String& pack : requestUpdatedWhileInactive)
+        {
+            PackRequest* r = packManager.FindRequest(pack);
+            if (r)
+            {
+                packManager.requestStartLoading.Emit(*r);
+            }
+        }
+        requestUpdatedWhileInactive.clear();
+    }
+}
+
+void RequestManager::FireStartLoadingSignal(PackRequest& request, bool inBackground)
+{
+    if (inBackground)
+    {
+        const String& packName = request.GetRequestedPackName();
+        requestStartedWhileInactive.push_back(packName);
+    }
+    else
+    {
+        packManager.requestStartLoading.Emit(request);
+    }
+}
+
+void RequestManager::FireUpdateSignal(PackRequest& request, bool inBackground)
+{
+    if (inBackground)
+    {
+        const String& packName = request.GetRequestedPackName();
+        auto it = find(begin(requestUpdatedWhileInactive), end(requestUpdatedWhileInactive), packName);
+        // add only once for update signal
+        if (it != end(requestUpdatedWhileInactive))
+        {
+            requestUpdatedWhileInactive.push_back(packName);
+        }
+    }
+    else
+    {
+        packManager.requestUpdated.Emit(request);
+    }
+}
+
+void RequestManager::OneUpdateIteration(bool inBackground)
+{
+    isQueueChanged = false;
+
+    Vector<PackRequest*> nextDependentPacks;
+
+    PackRequest* request = Top();
+    bool callSignal = request->Update();
+
+    if (request->IsDownloaded())
+    {
+        isQueueChanged = true;
+        if (callSignal == false && request->GetDownloadedSize() == 0)
+        {
+            // empty pack, so we need inform signal
+            FireStartLoadingSignal(*request, inBackground);
+        }
+        callSignal = true; // we need to inform on empty pack too
+        Pop();
+        if (!Empty())
+        {
+            PackRequest* next = Top();
+            while (next->IsDownloaded())
+            {
+                nextDependentPacks.push_back(next);
+                Pop();
+                if (!Empty() && Top()->IsDownloaded())
                 {
-                    nextDependentPacks.push_back(next);
-                    Pop();
-                    if (!Empty() && Top()->IsDownloaded())
-                    {
-                        next = Top();
-                    }
-                    else
-                    {
-                        next = nullptr;
-                        break;
-                    }
+                    next = Top();
+                }
+                else
+                {
+                    next = nullptr;
+                    break;
                 }
             }
         }
+    }
 
-        if (callSignal)
+    if (callSignal)
+    {
+        // if error happened and no space on device, requesting
+        // may be already be disabled, so we need check it out
+        if (packManager.IsRequestingEnabled())
         {
-            // if error happened and no space on device, requesting
-            // may be already be disabled, so we need check it out
-            if (packManager.IsRequestingEnabled())
+            FireUpdateSignal(*request, inBackground);
+            for (PackRequest* r : nextDependentPacks)
             {
-                packManager.requestUpdated.Emit(*request);
-                for (PackRequest* r : nextDependentPacks)
-                {
-                    packManager.requestUpdated.Emit(*r);
-                }
+                FireUpdateSignal(*r, inBackground);
             }
+        }
+    }
+}
+
+void RequestManager::Update(bool inBackground)
+{
+    if (!inBackground)
+    {
+        FireStartLoadingWhileInactiveSignals();
+        FireUpdateWhileInactiveSignals();
+    }
+
+    const int64 start = SystemTimer::GetMs();
+    const DLCManager::Hints& hints = packManager.GetHints();
+
+    while (!Empty())
+    {
+        OneUpdateIteration(inBackground);
+
+        int64 timeIter = SystemTimer::GetMs() - start;
+
+        if (timeIter >= hints.limitRequestUpdateIterationMs)
+        {
+            break;
+        }
+
+        if (!IsQueueOrderChangedDuringLastIteration())
+        {
+            break;
         }
     }
 }

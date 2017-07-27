@@ -21,7 +21,7 @@
 #include <Reflection/Reflection.h>
 #include <Reflection/ReflectedTypeDB.h>
 #include <Reflection/ReflectedMeta.h>
-#include <Engine/PlatformApi.h>
+#include <Engine/PlatformApiQt.h>
 #include <Functional/Function.h>
 #include <Base/Any.h>
 #include <Base/StaticSingleton.h>
@@ -251,7 +251,7 @@ void REModifyPropertyExtension::ProduceCommand(const std::shared_ptr<DAVA::TArc:
 
             DAVA::VariantType value = DAVA::PrepareValueForKeyedArchive(newValue, currentValue->GetType());
             DVASSERT(value.GetType() != DAVA::VariantType::TYPE_NONE);
-            GetScene()->Exec(std::make_unique<KeyedArchiveReplaceValueCommand>(archive, node->field.key.Cast<DAVA::String>(), value));
+            GetScene()->Exec(std::make_unique<KeyeadArchiveSetValueCommand>(archive, node->field.key.Cast<DAVA::String>(), value));
         }
     }
     else

@@ -1,5 +1,3 @@
-#ifdef ENABLE_FULL_DLC_MANAGER_TEST
-
 #include <fstream>
 
 #include <DLCManager/DLCManager.h>
@@ -9,11 +7,12 @@
 #include <Concurrency/Thread.h>
 #include <Logger/Logger.h>
 #include <Engine/Engine.h>
-#include <EmbeddedWebServer.h>
+#include <EmbeddedWebServer/EmbeddedWebServer.h>
 
 #include "UnitTests/UnitTests.h"
+#include <Platform/DeviceInfo.h>
 
-#ifndef __DAVAENGINE_WIN_UAP__
+#if !defined(__DAVAENGINE_WIN_UAP__) && !defined(__DAVAENGINE_IOS__)
 
 DAVA::FilePath documentRootDir;
 const char* const localPort = "8282";
@@ -28,8 +27,8 @@ struct FSMTest02
     };
     State state = WaitInitializationFinished;
     DAVA::float32 time = 0.0f;
-    DAVA::float32 waitSecondConnect = 3.0f;
-    const DAVA::float32 timeout = 60.f;
+    DAVA::float32 waitSecondConnect = 10.0f;
+    const DAVA::float32 timeout = 120.f;
     DAVA::DLCManager::Progress progressAfterInit;
 
     void Cleanup(DAVA::DLCManager& dlcManager)
@@ -57,7 +56,8 @@ struct FSMTest02
 
     bool Update(DAVA::float32 dt)
     {
-        DAVA::DLCManager& dlcManager = *DAVA::GetEngineContext()->dlcManager;
+        using namespace DAVA;
+        DLCManager& dlcManager = *GetEngineContext()->dlcManager;
 
         time += dt;
 
@@ -67,13 +67,18 @@ struct FSMTest02
         {
             if (dlcManager.IsInitialized())
             {
+                uint64 sizeOfPack = dlcManager.GetPackSize("8");
+
+                // size from superpack_for_unittests.dvpk without any meta
+                TEST_VERIFY(sizeOfPack == 29720253);
+
                 state = WaitSecondConnectAttempt;
-                DAVA::StopEmbeddedWebServer();
+                StopEmbeddedWebServer();
                 progressAfterInit = dlcManager.GetProgress();
-                const DAVA::DLCManager::IRequest* r3 = dlcManager.RequestPack("3");
-                const DAVA::DLCManager::IRequest* r2 = dlcManager.RequestPack("2");
-                const DAVA::DLCManager::IRequest* r1 = dlcManager.RequestPack("1");
-                const DAVA::DLCManager::IRequest* r0 = dlcManager.RequestPack("0");
+                const DLCManager::IRequest* r3 = dlcManager.RequestPack("3");
+                const DLCManager::IRequest* r2 = dlcManager.RequestPack("2");
+                const DLCManager::IRequest* r1 = dlcManager.RequestPack("1");
+                const DLCManager::IRequest* r0 = dlcManager.RequestPack("0");
                 TEST_VERIFY(r3 != nullptr);
                 TEST_VERIFY(r2 != nullptr);
                 TEST_VERIFY(r1 != nullptr);
@@ -85,7 +90,6 @@ struct FSMTest02
         break;
         case WaitSecondConnectAttempt:
         {
-            // TODO how to check second connect attempt?
             TEST_VERIFY(dlcManager.IsInitialized());
 
             TEST_VERIFY(dlcManager.IsRequestingEnabled());
@@ -97,7 +101,7 @@ struct FSMTest02
             waitSecondConnect -= dt;
             if (waitSecondConnect <= 0.f)
             {
-                if (!DAVA::StartEmbeddedWebServer(documentRootDir.GetAbsolutePathname().c_str(), localPort))
+                if (!StartEmbeddedWebServer(documentRootDir.GetAbsolutePathname().c_str(), localPort))
                 {
                     TEST_VERIFY(false && "can't start server");
                 }
@@ -136,24 +140,25 @@ struct FSMTest02
         {
             auto prog = dlcManager.GetProgress();
 
-            DAVA::Logger::Error("timeout: total: %llu in_queue: %llu downloaded: %lld", prog.total, prog.inQueue, prog.alreadyDownloaded);
+            Logger::Error("time > timeout (%f > %f)", time, timeout);
+            Logger::Error("timeout: total: %llu in_queue: %llu downloaded: %lld", prog.total, prog.inQueue, prog.alreadyDownloaded);
 
-            DAVA::FilePath logPath(DAVA::DLCManager::Hints().logFilePath);
-            DAVA::String path = logPath.GetAbsolutePathname();
+            FilePath logPath(DLCManager::Hints().logFilePath);
+            String path = logPath.GetAbsolutePathname();
             std::ifstream dlcLogFile(path.c_str());
 
             if (!dlcLogFile)
             {
-                DAVA::Logger::Error("can't open dlcManager.log file at: %s", path.c_str());
+                Logger::Error("can't open dlcManager.log file at: %s", path.c_str());
             }
             else
             {
-                DAVA::Logger::Error("begin-------dlcManager.log---------content");
-                for (DAVA::String str; getline(dlcLogFile, str);)
+                Logger::Error("begin-------dlcManager.log---------content");
+                for (String str; getline(dlcLogFile, str);)
                 {
-                    DAVA::Logger::Error("%s", str.c_str());
+                    Logger::Error("%s", str.c_str());
                 }
-                DAVA::Logger::Error("end-------dlcManager.log---------content");
+                Logger::Error("end-------dlcManager.log---------content");
             }
 
             Cleanup(dlcManager);
@@ -205,6 +210,7 @@ DAVA_TESTCLASS (DLCManagerFullTest)
 #endif
             char fullUrl[1024] = { 0 };
             sprintf(fullUrl, "http://127.0.0.1:%s/superpack_for_unittests.dvpk", localPort);
+
             dlcManager.Initialize(cant_write_dir, fullUrl, DLCManager::Hints());
         }
         catch (Exception& ex)
@@ -264,10 +270,35 @@ DAVA_TESTCLASS (DLCManagerFullTest)
         {
             char fullUrl[1024] = { 0 };
             sprintf(fullUrl, "http://127.0.0.1:%s/superpack_for_unittests.dvpk", localPort);
+
+            const String pack1("fakePack1");
+            const String pack2("secondFakePack2");
+
+            std::stringstream ss;
+            ss << pack1 << '\n' << pack2;
+
+            hints.preloadedPacks = ss.str();
+
             dlcManager.Initialize(packDir,
                                   fullUrl,
                                   hints);
+
             Logger::Info("Initialize called no exception");
+
+            TEST_VERIFY(true == dlcManager.IsRequestingEnabled());
+
+            TEST_VERIFY(true == dlcManager.IsPackDownloaded(pack1));
+            TEST_VERIFY(true == dlcManager.IsPackDownloaded(pack2));
+
+            const DLCManager::IRequest* request1 = dlcManager.RequestPack(pack1);
+            TEST_VERIFY(request1 != nullptr);
+            TEST_VERIFY(request1->GetRequestedPackName() == pack1);
+            TEST_VERIFY(request1->IsDownloaded());
+
+            const DLCManager::IRequest* request2 = dlcManager.RequestPack(pack2);
+            TEST_VERIFY(request2 != nullptr);
+            TEST_VERIFY(request2->GetRequestedPackName() == pack2);
+            TEST_VERIFY(request2->IsDownloaded());
         }
         catch (std::exception& ex)
         {
@@ -283,5 +314,3 @@ DAVA_TESTCLASS (DLCManagerFullTest)
 };
 
 #endif // __DAVAENGINE_WIN_UAP__
-
-#endif // ENABLE_FULL_DLC_MANAGER_TEST

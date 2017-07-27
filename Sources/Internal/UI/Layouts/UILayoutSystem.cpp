@@ -5,7 +5,12 @@
 #include "Debug/ProfilerMarkerNames.h"
 #include "Entity/Component.h"
 #include "UI/Layouts/Private/Layouter.h"
+#include "UI/Layouts/UIAnchorComponent.h"
+#include "UI/Layouts/UIFlowLayoutComponent.h"
 #include "UI/Layouts/UISizePolicyComponent.h"
+#include "UI/Layouts/UILayoutSourceRectComponent.h"
+#include "UI/Layouts/UILayoutIsolationComponent.h"
+#include "UI/Layouts/UILinearLayoutComponent.h"
 #include "UI/Layouts/LayoutFormula.h"
 #include "UI/Layouts/UILayoutSystemListener.h"
 #include "UI/UIControl.h"
@@ -54,11 +59,7 @@ void UILayoutSystem::Process(float32 elapsedTime)
     if (!needUpdate)
         return;
 
-    if (currentScreenTransition.Valid())
-    {
-        ProcessControlHierarhy(currentScreenTransition.Get());
-    }
-    else if (currentScreen.Valid())
+    if (currentScreen.Valid())
     {
         ProcessControlHierarhy(currentScreen.Get());
     }
@@ -91,9 +92,9 @@ void UILayoutSystem::UnregisterControl(UIControl* control)
 
 void UILayoutSystem::UnregisterComponent(UIControl* control, UIComponent* component)
 {
-    if (component->GetType() == UIComponent::SIZE_POLICY_COMPONENT)
+    UISizePolicyComponent* sizePolicyComponent = CastIfEqual<UISizePolicyComponent*>(component);
+    if (sizePolicyComponent != nullptr)
     {
-        UISizePolicyComponent* sizePolicyComponent = DynamicTypeCheck<UISizePolicyComponent*>(component);
         for (int32 axis = Vector2::AXIS_X; axis < Vector2::AXIS_COUNT; axis++)
         {
             LayoutFormula* formula = sizePolicyComponent->GetFormula(axis);
@@ -123,11 +124,6 @@ void UILayoutSystem::SetCurrentScreen(const RefPtr<UIScreen>& screen)
     currentScreen = screen;
 }
 
-void UILayoutSystem::SetCurrentScreenTransition(const RefPtr<UIScreenTransition>& screenTransition)
-{
-    currentScreenTransition = screenTransition;
-}
-
 void UILayoutSystem::SetPopupContainer(const RefPtr<UIControl>& _popupContainer)
 {
     popupContainer = _popupContainer;
@@ -151,7 +147,7 @@ void UILayoutSystem::ProcessControl(UIControl* control)
     bool positionDirty = control->IsLayoutPositionDirty();
     control->ResetLayoutDirty();
 
-    if (layoutDirty || (orderDirty && HaveToLayoutAfterReorder(control)) || (positionDirty && control->GetParent() && control->GetParent()->GetComponent(UIComponent::LAYOUT_SOURCE_RECT_COMPONENT)))
+    if (layoutDirty || (orderDirty && HaveToLayoutAfterReorder(control)) || (positionDirty && control->GetParent() && control->GetParent()->GetComponent(Type::Instance<UILayoutSourceRectComponent>())))
     {
         UIControl* container = FindNotDependentOnChildrenControl(control);
         sharedLayouter->ApplyLayout(container);
@@ -221,11 +217,11 @@ void UILayoutSystem::RemoveListener(UILayoutSystemListener* listener)
 UIControl* UILayoutSystem::FindNotDependentOnChildrenControl(UIControl* control) const
 {
     UIControl* result = control;
-    while (result->GetParent() != nullptr && result->GetComponentCount(UIComponent::LAYOUT_ISOLATION_COMPONENT) == 0)
+    while (result->GetParent() != nullptr && result->GetComponentCount<UILayoutIsolationComponent>() == 0)
     {
         UISizePolicyComponent* sizePolicy = result->GetParent()->GetComponent<UISizePolicyComponent>();
         if ((sizePolicy != nullptr && (sizePolicy->IsDependsOnChildren(Vector2::AXIS_X) || sizePolicy->IsDependsOnChildren(Vector2::AXIS_Y))) ||
-            result->GetParent()->GetComponent(UIComponent::LAYOUT_SOURCE_RECT_COMPONENT) != nullptr)
+            result->GetParent()->GetComponent(Type::Instance<UILayoutSourceRectComponent>()) != nullptr)
         {
             result = result->GetParent();
         }
@@ -235,7 +231,7 @@ UIControl* UILayoutSystem::FindNotDependentOnChildrenControl(UIControl* control)
         }
     }
 
-    if (result->GetParent() != nullptr && result->GetComponentCount(UIComponent::LAYOUT_ISOLATION_COMPONENT) == 0)
+    if (result->GetParent() != nullptr && result->GetComponentCount<UILayoutIsolationComponent>() == 0)
     {
         result = result->GetParent();
     }
@@ -245,9 +241,7 @@ UIControl* UILayoutSystem::FindNotDependentOnChildrenControl(UIControl* control)
 
 bool UILayoutSystem::HaveToLayoutAfterReorder(const UIControl* control) const
 {
-    static const uint64 sensitiveComponents = MAKE_COMPONENT_MASK(UIComponent::LINEAR_LAYOUT_COMPONENT) |
-    MAKE_COMPONENT_MASK(UIComponent::FLOW_LAYOUT_COMPONENT);
-    if ((control->GetAvailableComponentFlags() & sensitiveComponents) != 0)
+    if (control->GetComponentCount<UILinearLayoutComponent>() || control->GetComponentCount<UIFlowLayoutComponent>())
     {
         return true;
     }
@@ -269,14 +263,12 @@ bool UILayoutSystem::HaveToLayoutAfterReposition(const UIControl* control) const
         return false;
     }
 
-    if ((control->GetAvailableComponentFlags() & MAKE_COMPONENT_MASK(UIComponent::ANCHOR_COMPONENT)) != 0)
+    if (control->GetComponentCount<UIAnchorComponent>())
     {
         return true;
     }
 
-    static const uint64 parentComponents = MAKE_COMPONENT_MASK(UIComponent::LINEAR_LAYOUT_COMPONENT) |
-    MAKE_COMPONENT_MASK(UIComponent::FLOW_LAYOUT_COMPONENT);
-    if ((parent->GetAvailableComponentFlags() & parentComponents) != 0)
+    if (parent->GetComponentCount<UILinearLayoutComponent>() || parent->GetComponentCount<UIFlowLayoutComponent>())
     {
         return true;
     }

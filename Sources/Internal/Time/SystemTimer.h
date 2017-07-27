@@ -23,9 +23,6 @@ class EngineBackend;
 class SystemTimer final
 {
     friend class Private::EngineBackend;
-#if !defined(__DAVAENGINE_COREV2__)
-    friend class Core;
-#endif
 
 public:
     /** Get monotonic clock value in milliseconds, including time spent in deep sleep. */

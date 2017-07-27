@@ -1,55 +1,14 @@
+#include "Concurrency/Dispatcher.h"
 #include "Concurrency/ManualResetEvent.h"
 #include "Concurrency/Mutex.h"
+#include "Concurrency/SyncBarrier.h"
 #include "Concurrency/Thread.h"
 #include "Engine/Engine.h"
-#include "Engine/Dispatcher.h"
 #include "Functional/Function.h"
 #include "UnitTests/UnitTests.h"
 
 #include "Logger/Logger.h"
 using namespace DAVA;
-
-class SyncBarrier final
-{
-public:
-    SyncBarrier(uint32 totalThreads, uint32 spinCount = 2000)
-        : syncEvent(false)
-        , totalThreads(totalThreads)
-    {
-    }
-    ~SyncBarrier()
-    {
-        syncEvent.Signal();
-    }
-
-    void Enter()
-    {
-        mutex.Lock();
-        waitingThreads += 1;
-        bool rendezvous = waitingThreads == totalThreads;
-        if (rendezvous)
-        {
-            waitingThreads = 0;
-        }
-        mutex.Unlock();
-
-        if (rendezvous)
-        {
-            syncEvent.Signal();
-            syncEvent.Reset();
-        }
-        else
-        {
-            syncEvent.Wait();
-        }
-    }
-
-private:
-    Mutex mutex;
-    ManualResetEvent syncEvent;
-    uint32 totalThreads = 0;
-    uint32 waitingThreads = 0;
-};
 
 DAVA_TESTCLASS (DispatcherTest)
 {
@@ -84,7 +43,7 @@ DAVA_TESTCLASS (DispatcherTest)
 
     void TestThread()
     {
-        barrier.Enter();
+        barrier.Wait();
 
         // Post tasks to increment counter by 1
         for (int i = 0; i < 10; ++i)
@@ -111,7 +70,7 @@ DAVA_TESTCLASS (DispatcherTest)
             {
                 dispatcher->PostEvent([this]() { counter3 += 1; });
             }
-            dispatcher->PostEvent([this]() { barrier.Enter(); });
+            dispatcher->PostEvent([this]() { barrier.Wait(); });
 
             // Send out-of-band event which should be executed first as send is performed in dispatcher's thread
             int testMe = 0;
@@ -120,7 +79,7 @@ DAVA_TESTCLASS (DispatcherTest)
             TEST_VERIFY(counter3 == 0);
         });
 
-        barrier.Enter();
+        barrier.Wait();
         // This thread and dispatcher's thread should come here simultaneously
         // Dispatcher guarantees sequential order of event processing so counter3 should be 10
         TEST_VERIFY(counter3 == 10);
@@ -134,7 +93,7 @@ DAVA_TESTCLASS (DispatcherTest)
     {
         dispatcher = new MyDispatcher([](const Function<void()>& fn) { fn(); });
         dispatcher->LinkToCurrentThread();
-        barrier.Enter();
+        barrier.Wait();
 
         while (!byeDispatcherThread)
         {

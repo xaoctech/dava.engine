@@ -7,8 +7,12 @@
 
 #include <QShowEvent>
 
+#include <Base/Set.h>
+
 namespace DAVA
 {
+class Sprite;
+
 namespace TArc
 {
 class FieldBinder;
@@ -85,6 +89,7 @@ private:
 
     void CollectSceneData();
     void CollectParticlesData();
+    void ProcessParticleSprite(DAVA::Sprite* sprite, DAVA::Set<DAVA::Sprite*>& sprites);
     void CollectSelectedRenderObjects(const SelectableGroup* selected);
     void CollectSelectedRenderObjectsRecursivly(DAVA::Entity* entity);
 
