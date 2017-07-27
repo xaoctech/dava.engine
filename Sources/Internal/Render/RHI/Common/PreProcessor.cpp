@@ -564,7 +564,7 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
                     *s = NewLine; // since it was null'ed in GetExpression
                     ln = s + 1;
 
-                    bool condition = static_cast<int32>(v) != 0;
+                    bool condition = (v != 0.0f);
 
                     condition_t p;
                     p.original_condition = condition;
