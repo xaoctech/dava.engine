@@ -294,19 +294,26 @@ void SceneDumper::DumpEmitter(DAVA::ParticleEmitterInstance* instance, DAVA::Set
         }
         else
         {
-            Sprite* sprite = layer->sprite;
-            if (nullptr == sprite)
-            {
-                continue;
-            }
-
-            FilePath psdPath = ReplaceInString(sprite->GetRelativePathname().GetAbsolutePathname(), "/Data/", "/DataSource/");
-            psdPath.ReplaceExtension(".psd");
-            links.insert(psdPath);
-
-            gfxFolders.insert(psdPath.GetDirectory());
+            ProcessSprite(layer->sprite, links, gfxFolders);
+            ProcessSprite(layer->flowmap, links, gfxFolders);
+            ProcessSprite(layer->noise, links, gfxFolders);
+            ProcessSprite(layer->alphaRemapSprite, links, gfxFolders);
         }
     }
+}
+
+void SceneDumper::ProcessSprite(DAVA::Sprite* sprite, DAVA::Set<DAVA::FilePath>& links, DAVA::Set<DAVA::FilePath>& gfxFolders) const
+{
+    using namespace DAVA;
+
+    if (sprite == nullptr)
+        return;
+
+    FilePath psdPath = ReplaceInString(sprite->GetRelativePathname().GetAbsolutePathname(), "/Data/", "/DataSource/");
+    psdPath.ReplaceExtension(".psd");
+    links.insert(psdPath);
+
+    gfxFolders.insert(psdPath.GetDirectory());
 }
 
 void SceneDumper::DumpSlot(DAVA::SlotComponent* slot, DAVA::Set<DAVA::FilePath>& links, DAVA::Set<DAVA::FilePath>& redumpScenes) const
