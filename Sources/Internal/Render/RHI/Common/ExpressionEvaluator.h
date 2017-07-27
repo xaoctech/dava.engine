@@ -1,8 +1,6 @@
 #pragma once
 
-#include "base/BaseTypes.h"
-#include <vector>
-#include <unordered_map>
+#include "Render/RHI/Common/Preprocessor/PreprocessorHelpers.h"
 
 using DAVA::uint32;
 using DAVA::float32;
@@ -49,16 +47,4 @@ private:
 
     mutable uint32 lastErrorCode;
     mutable uint32 lastErrorIndex;
-
-    static uint32 OperationPriority(char operation);
-
-    static const char* Operators;
-    static const char OpEqual;
-    static const char OpNotEqual;
-    static const char OpLogicalAnd;
-    static const char OpLogicalOr;
-    static const char OpLogicalNot;
-    static const char OpFunctionCall;
-    static const char OpDefined;
-    static const char OpNotDefined;
 };

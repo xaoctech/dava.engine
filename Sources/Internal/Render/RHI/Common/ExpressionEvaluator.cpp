@@ -1,28 +1,78 @@
-#include "ExpressionEvaluator.h"
-#include "rhi_Utils.h"
-
+#include "Render/RHI/Common/ExpressionEvaluator.h"
+#include "Render/RHI/Common/Preprocessor/PreprocessorHelpers.h"
 #include "Debug/DVAssert.h"
 #include "Logger/Logger.h"
 #include "Base/Hash.h"
-
-#include <string.h>
-#include <string.h>
-#include <math.h>
+#include "rhi_Utils.h"
 
 using DAVA::InvalidIndex;
 using DAVA::float32;
 
-//------------------------------------------------------------------------------
+const char OpFunctionCall = '\xFF';
+const char OpEqual = OpFunctionCall - 1;
+const char OpNotEqual = OpEqual - 1;
+const char OpLogicalAnd = OpNotEqual - 1;
+const char OpLogicalOr = OpLogicalAnd - 1;
+const char OpLogicalNot = OpLogicalOr - 1;
+const char OpDefined = OpLogicalNot - 1;
+const char OpNotDefined = OpDefined - 1;
+const char OpGreaterOrEqual = OpNotDefined - 1;
+const char OpLessOrEqual = OpGreaterOrEqual - 1;
 
-const char* ExpressionEvaluator::Operators = "+-*/^!\x01\x02\x03\x04\x06\x07";
-const char ExpressionEvaluator::OpEqual = '\x01';
-const char ExpressionEvaluator::OpNotEqual = '\x02';
-const char ExpressionEvaluator::OpLogicalAnd = '\x03';
-const char ExpressionEvaluator::OpLogicalOr = '\x04';
-const char ExpressionEvaluator::OpLogicalNot = '\x08';
-const char ExpressionEvaluator::OpFunctionCall = '\x05';
-const char ExpressionEvaluator::OpDefined = '\x06';
-const char ExpressionEvaluator::OpNotDefined = '\x07';
+const char Operators[] = {
+    '+', '-', '*', '/', '^', '!', '>', '<',
+    OpEqual, OpNotEqual, OpLogicalAnd, OpLogicalOr, OpLogicalNot,
+    OpDefined, OpNotDefined,
+    OpGreaterOrEqual, OpLessOrEqual
+};
+
+uint32 OperationPriority(char operation)
+{
+    uint32 ret = 0;
+
+    switch (operation)
+    {
+    case '!':
+        ++ret;
+
+    case OpDefined:
+    case OpNotDefined:
+        ++ret;
+
+    case OpLogicalNot:
+        ++ret;
+
+    case '^':
+        ++ret;
+
+    case '*':
+    case '/':
+        ++ret;
+
+    case '+':
+    case '-':
+        ++ret;
+
+    case '>':
+    case '<':
+    case OpEqual:
+    case OpNotEqual:
+    case OpGreaterOrEqual:
+    case OpLessOrEqual:
+        ++ret;
+
+    case OpLogicalAnd:
+        ++ret;
+
+    case OpLogicalOr:
+        ++ret;
+
+    case OpFunctionCall:
+        ++ret;
+    }
+
+    return ret;
+}
 
 static const float32 Epsilon = 0.000001f;
 
@@ -190,29 +240,42 @@ bool ExpressionEvaluator::EvaluateInternal(const SyntaxTreeNode* node, float32* 
                         case '/':
                             *out = x / y;
                             break;
-
+                        case '>':
+                            *out = (x > y) ? 1.0f : 0.0f;
+                            break;
+                        case '<':
+                            *out = (x < y) ? 1.0f : 0.0f;
+                            break;
                         case '^':
-                            *out = pow(x, y);
+                            *out = std::pow(x, y);
+                            break;
+
+                        case OpGreaterOrEqual:
+                            *out = (x >= y) ? 1.0f : 0.0f;
+                            break;
+
+                        case OpLessOrEqual:
+                            *out = (x <= y) ? 1.0f : 0.0f;
                             break;
 
                         case OpEqual:
-                            *out = fabs(x - y) < Epsilon ? 1.0f : 0.0f;
+                            *out = std::abs(x - y) < Epsilon ? 1.0f : 0.0f;
                             break;
 
                         case OpNotEqual:
-                            *out = fabs(x - y) < Epsilon ? 0.0f : 1.0f;
+                            *out = std::abs(x - y) < Epsilon ? 0.0f : 1.0f;
                             break;
 
                         case OpLogicalAnd:
-                            *out = (fabs(x) > Epsilon && fabs(y) > Epsilon) ? 1.0f : 0.0f;
+                            *out = (std::abs(x) > Epsilon && std::abs(y) > Epsilon) ? 1.0f : 0.0f;
                             break;
 
                         case OpLogicalOr:
-                            *out = (fabs(x) > Epsilon || fabs(y) > Epsilon) ? 1.0f : 0.0f;
+                            *out = (std::abs(x) > Epsilon || std::abs(y) > Epsilon) ? 1.0f : 0.0f;
                             break;
 
                         case OpLogicalNot:
-                            *out = (fabs(y) > Epsilon) ? 0.0f : 1.0f;
+                            *out = (std::abs(y) > Epsilon) ? 0.0f : 1.0f;
                             break;
 
                         case OpFunctionCall:
@@ -250,7 +313,7 @@ static inline uint32 _GetOperand(const char* expression, float32* operand)
     uint32 ret = 0;
     const char* expr = expression;
 
-    while (*expr && (isdigit(*expr) || (*expr == '.')))
+    while (*expr && (PreprocessorHelpers::IsValidDigitChar(*expr) || (*expr == '.')))
     {
         ++expr;
         ++ret;
@@ -269,7 +332,7 @@ static inline uint32 _GetVariable(const char* expression)
     uint32 ret = 0;
     const char* expr = expression;
 
-    while (*expr && (isalnum(*expr) || *expr == '_'))
+    while (*expr && PreprocessorHelpers::IsValidAlphaNumericChar(*expr))
     {
         ++expr;
         ++ret;
@@ -278,40 +341,6 @@ static inline uint32 _GetVariable(const char* expression)
     return ret;
 }
 
-//------------------------------------------------------------------------------
-
-uint32 ExpressionEvaluator::OperationPriority(char operation)
-{
-    uint32 ret = 0;
-
-    switch (operation)
-    {
-    case '!':
-        ++ret;
-    case OpDefined:
-    case OpNotDefined:
-        ++ret;
-    case OpLogicalNot:
-        ++ret;
-    case '^':
-        ++ret;
-    case '*':
-    case '/':
-        ++ret;
-    case '+':
-    case '-':
-        ++ret;
-    case OpEqual:
-    case OpNotEqual:
-    case OpLogicalAnd:
-    case OpLogicalOr:
-        ++ret;
-    case OpFunctionCall:
-        ++ret;
-    }
-
-    return ret;
-}
 
 //------------------------------------------------------------------------------
 
@@ -337,6 +366,16 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
         else if (*s == '=' && *(s + 1) == '=')
         {
             *d++ = OpEqual;
+            s += 2;
+        }
+        else if (*s == '>' && *(s + 1) == '=')
+        {
+            *d++ = OpGreaterOrEqual;
+            s += 2;
+        }
+        else if (*s == '<' && *(s + 1) == '=')
+        {
+            *d++ = OpLessOrEqual;
             s += 2;
         }
         else if (*s == '!' && *(s + 1) == '=')
@@ -425,13 +464,13 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
         uint32 offset = 0;
 
         // skip spaces
-        if (isspace(*expr))
+        if (PreprocessorHelpers::IsSpaceChar(*expr))
         {
-            while (isspace(*(expr + offset)))
+            while (PreprocessorHelpers::IsSpaceChar(*(expr + offset)))
                 ++offset;
         }
         // process operands
-        else if (isdigit(*expr))
+        else if (PreprocessorHelpers::IsValidDigitChar(*expr))
         {
             SyntaxTreeNode node;
             offset = _GetOperand(expr, &node.operand);
@@ -450,7 +489,7 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
             invert_operand_value = false;
         }
         // process variables/functions
-        else if (isalpha(*expr))
+        else if (PreprocessorHelpers::IsValidAlphaChar(*expr))
         {
             offset = _GetVariable(expr);
 

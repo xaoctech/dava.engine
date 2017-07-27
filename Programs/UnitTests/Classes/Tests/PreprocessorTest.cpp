@@ -1,90 +1,76 @@
 #include "UnitTests/UnitTests.h"
+#include "FileSystem/File.h"
+#include "Logger/Logger.h"
 #include "Render/RHI/Common/PreProcessor.h"
 #include "Render/RHI/Common/rhi_Utils.h"
-#include "Logger/Logger.h"
-
-#include <stdlib.h>
 
 static float EV_OneMore(float x)
 {
     return x + 1.0f;
 }
 
-static void
-DumpBytes(const void* mem, unsigned count)
+void DumpAndCompareBytes(const char* ptr0, size_t size0, const char* ptr1, size_t size1)
 {
-    const uint8_t* byte = reinterpret_cast<const uint8_t*>(mem);
-    const uint8_t* end = byte + count;
-    static char hex[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
-
-    while (byte < end)
+    size_t maxSize = std::max(size0, size1);
+    size_t pos = 0;
+    while (pos < maxSize)
     {
-        unsigned byte_cnt = (end - byte < 8) ? static_cast<unsigned>(end - byte) : 8;
-        char line[64];
+        char line[256] = {};
+        size_t len = 8;
 
-        memset(line, ' ', countof(line));
-        for (unsigned b = 0; b < byte_cnt; ++b)
+        DAVA::int32 linePos = 6;
+        for (DAVA::uint32 i = 0; i < len; ++i)
         {
-            char* l1 = line + 3 * b + ((b < 4) ? 0 : 2);
-            char* l2 = line + 8 * 3 + 2 + 1 + 2 + b;
-
-            l1[0] = hex[(byte[b] >> 4) & 0x0F];
-            l1[1] = hex[byte[b] & 0x0F];
-            l1[2] = ' ';
-
-            l2[0] = (byte[b] > 0x20 && byte[b] < 0xAF) ? char(byte[b]) : '.';
-            l2[1] = '\0';
+            char c = (pos + i < size0) ? *(ptr0 + pos + i) : 0;
+            linePos += sprintf(line + linePos, "%02x ", c);
         }
-        line[8 * 3 + 2 + 1] = '|';
-        line[8 * 3 + 2 + 1 + 2 + 8] = '\0';
-        DAVA::Logger::Info("%s", line);
 
-        byte += byte_cnt;
+        linePos += sprintf(line + linePos, "| ");
+
+        for (DAVA::uint32 i = 0; i < len; ++i)
+        {
+            char c = (pos + i < size1) ? *(ptr1 + pos + i) : 0;
+            linePos += sprintf(line + linePos, "%02x ", c);
+        }
+
+        linePos += sprintf(line + linePos, ">>> ");
+
+        /*
+         * Text
+         */
+        for (DAVA::uint32 i = 0; i < len; ++i)
+        {
+            char c = (pos + i < size0) ? *(ptr0 + pos + i) : 0;
+            linePos += sprintf(line + linePos, "%c", ((c >= 0x20) && (c <= 0x7f)) ? c : '.');
+        }
+
+        linePos += sprintf(line + linePos, " | ");
+
+        for (DAVA::uint32 i = 0; i < len; ++i)
+        {
+            char c = (pos + i < size1) ? *(ptr1 + pos + i) : 0;
+            linePos += sprintf(line + linePos, "%c", ((c >= 0x20) && (c <= 0x7f)) ? c : '.');
+        }
+
+        bool same = memcmp(ptr0 + pos, ptr1 + pos, len) == 0;
+        sprintf(line, "%s", same ? "GOOD:" : "FAIL:");
+        line[5] = ' ';
+
+        DAVA::Logger::Error("%s", line);
+        pos += len;
     }
 }
 
-static bool
-ReadTextData(const char* fileName, std::vector<char>* data)
+static bool ReadTextData(const char* fileName, std::vector<char>* data)
 {
-    #if defined(__DAVAENGINE_ANDROID__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
-    static const char* endl = "\n";
-    static const int endl_sz = 1;
-    #else
-    static const char* endl = "\r\n";
-    static const int endl_sz = 2;
-    #endif
-
     bool success = false;
-    DAVA::File* file = DAVA::File::Create(fileName, DAVA::File::READ | DAVA::File::OPEN);
-
+    DAVA::ScopedPtr<DAVA::File> file(DAVA::File::Create(fileName, DAVA::File::READ | DAVA::File::OPEN));
     if (file)
     {
-        size_t sz = size_t(file->GetSize());
-        char buf[4 * 1024];
-
-        DVASSERT(sz <= sizeof(buf));
-        file->Read(buf, static_cast<uint32>(sz));
-        file->Release();
-
-        data->clear();
-        const char* ln = buf;
-        for (const char *s = buf, *s_end = buf + sz; s < s_end; ++s)
-        {
-            if (s[0] == '\n' || (s[0] == '\r' && s[1] == '\n'))
-            {
-                data->insert(data->end(), ln, s);
-                data->insert(data->end(), endl, endl + endl_sz);
-                ln = s + 1;
-                if (s[0] == '\r')
-                {
-                    ++ln;
-                    ++s;
-                }
-            }
-        }
+        data->resize(file->GetSize());
+        file->Read(data->data(), static_cast<DAVA::uint32>(file->GetSize()));
         success = true;
     }
-
     return success;
 }
 
@@ -101,7 +87,19 @@ DAVA_TESTCLASS (PreprocessorTest)
             const float result;
         } data[] =
         {
-#if 1
+          { "1 > 0", 1.0f },
+          { "1 < 0", 0.0f },
+          { "2 < 4", 1.0f },
+          { "2 > 4", 0.0f },
+
+          { "1 >= 0", 1.0f },
+          { "1 <= 0", 0.0f },
+          { "2 <= 4", 1.0f },
+          { "2 >= 4", 0.0f },
+
+          { "2 <= 2", 1.0f },
+          { "2 >= 2", 1.0f },
+
           { "2+2", 4.0f },
           { "bla+7", 20.0f },
           { "(5+3) / (3-1)", 4.0f },
@@ -124,9 +122,6 @@ DAVA_TESTCLASS (PreprocessorTest)
           { "abs(-7)", 7.0f },
           { "one_more(4)", 5.0f },
           { "one_more(one_more(4))", 6.0f }
-#else
-//          { "!(LIGHTING_ENABLED && DARKNESS_ENABLED)", 1.0f }
-#endif
         };
 
         ev.SetVariable("bla", 13);
@@ -140,7 +135,7 @@ DAVA_TESTCLASS (PreprocessorTest)
         ExpressionEvaluator::RegisterCommonFunctions();
         ExpressionEvaluator::RegisterFunction("one_more", &EV_OneMore);
 
-        for (unsigned i = 0; i != countof(data); ++i)
+        for (uint32 i = 0; i != countof(data); ++i)
         {
             float res = 0;
             bool success = ev.Evaluate(data[i].expr, &res);
@@ -154,7 +149,7 @@ DAVA_TESTCLASS (PreprocessorTest)
           "BULLSHIT+2"
         };
 
-        for (unsigned i = 0; i != countof(err_expr); ++i)
+        for (uint32 i = 0; i != countof(err_expr); ++i)
         {
             float res = 0;
             bool success = ev.Evaluate(err_expr[i], &res);
@@ -172,71 +167,65 @@ DAVA_TESTCLASS (PreprocessorTest)
         {
             const char* inputFileName;
             const char* resultFileName;
-        }
-        test[] =
+        } test[] =
         {
-#if 1
-          { "00-input.txt", "00-output.txt" },
-          { "01-input.txt", "01-output.txt" },
-          { "02-input.txt", "02-output.txt" },
-          { "03-input.txt", "03-output.txt" },
-          { "04-input.txt", "04-output.txt" },
-          { "05-input.txt", "05-output.txt" },
-          { "06-input.txt", "06-output.txt" },
-          { "07-input.txt", "07-output.txt" },
-          { "08-input.txt", "08-output.txt" },
-          { "09-input.txt", "09-output.txt" },
-          { "10-input.txt", "10-output.txt" },
-          { "11-input.txt", "11-output.txt" },
-          { "12-input.txt", "12-output.txt" },
-          { "CC01-input.txt", "CC01-output.txt" },
-          { "CC02-input.txt", "CC02-output.txt" },
-          { "CC03-input.txt", "CC03-output.txt" },
-          { "CC04-input.txt", "CC04-output.txt" },
-          { "CC05-input.txt", "CC05-output.txt" },
-          { "CC06-input.txt", "CC06-output.txt" },
-          { "CC07-input.txt", "CC07-output.txt" },
-          { "CC08-input.txt", "CC08-output.txt" },
-          { "CC09-input.txt", "CC09-output.txt" },
-          { "CC10-input.txt", "CC10-output.txt" }
-#else
-          { "CC10-input.txt", "CC10-output.txt" }
-#endif
+          { "PurrfectTest-input.preproc", "PurrfectTest-output.preproc" },
+          { "00-input.preproc", "00-output.preproc" },
+          { "01-input.preproc", "01-output.preproc" },
+          { "02-input.preproc", "02-output.preproc" },
+          { "03-input.preproc", "03-output.preproc" },
+          { "04-input.preproc", "04-output.preproc" },
+          { "05-input.preproc", "05-output.preproc" },
+          { "06-input.preproc", "06-output.preproc" },
+          { "07-input.preproc", "07-output.preproc" },
+          { "08-input.preproc", "08-output.preproc" },
+          { "09-input.preproc", "09-output.preproc" },
+          { "10-input.preproc", "10-output.preproc" },
+          { "11-input.preproc", "11-output.preproc" },
+          { "12-input.preproc", "12-output.preproc" },
+          { "CC01-input.preproc", "CC01-output.preproc" },
+          { "CC02-input.preproc", "CC02-output.preproc" },
+          { "CC03-input.preproc", "CC03-output.preproc" },
+          { "CC04-input.preproc", "CC04-output.preproc" },
+          { "CC05-input.preproc", "CC05-output.preproc" },
+          { "CC06-input.preproc", "CC06-output.preproc" },
+          { "CC07-input.preproc", "CC07-output.preproc" },
+          { "CC08-input.preproc", "CC08-output.preproc" },
+          { "CC09-input.preproc", "CC09-output.preproc" },
+          { "CC10-input.preproc", "CC10-output.preproc" }
         };
         static const char* BaseDir = "~res:/TestData/PreProcessor";
 
-        class
-        TestFileCallback
-        : public PreProc::FileCallback
+        class TestFileCallback : public PreProc::FileCallback
         {
         public:
             TestFileCallback(const char* base_dir)
                 : _base_dir(base_dir)
-                ,
-                _in(nullptr)
+                , _in(nullptr)
             {
             }
 
-            virtual bool Open(const char* file_name)
+            bool Open(const char* file_name) override
             {
                 char fname[2048];
-
                 Snprintf(fname, countof(fname), "%s/%s", _base_dir, file_name);
                 _in = DAVA::File::Create(fname, DAVA::File::READ | DAVA::File::OPEN);
-
-                return (_in) ? true : false;
+                return _in != nullptr;
             }
-            virtual void Close()
+
+            void Close() override
             {
-                DVASSERT(_in);
+                DVASSERT(_in != nullptr);
                 _in->Release();
                 _in = nullptr;
             }
-            virtual unsigned Size() const
+
+            uint32 Size() const override
             {
                 return (_in) ? unsigned(_in->GetSize()) : 0;
             }
-            virtual unsigned Read(unsigned max_sz, void* dst)
+
+            uint32 Read(uint32 max_sz, void* dst) override
             {
                 return (_in) ? _in->Read(dst, max_sz) : 0;
             }
@@ -259,29 +248,20 @@ DAVA_TESTCLASS (PreprocessorTest)
             TEST_VERIFY(ReadTextData(fname, &expected));
             TEST_VERIFY(pp.ProcessFile(test[i].inputFileName, &output));
 
-            #if 0
-            {
-                char aname[2048] = "~res:/Data/TestData/PreProcessor/";
-
-                strcat(aname, test[i].resultFileName);
-                strcat(aname, ".actual");
-                DAVA::File* out = DAVA::File::Create(aname, DAVA::File::CREATE | DAVA::File::WRITE);
-                out->Write(&output[0], uint32(output.size()));
-                out->Release();
-            }
-            #endif
-
-            const char* actual_data = &output[0];
-            const char* expected_data = &expected[0];
+            const char* actual_data = output.data();
+            const char* expected_data = expected.data();
             bool size_match = output.size() == expected.size();
             bool content_match = strncmp(expected_data, actual_data, output.size()) == 0;
             if (!size_match || !content_match)
             {
-                DAVA::Logger::Error("output-data mismatch");
+                DAVA::Logger::Error("Preprocessor test failed:");
+                DumpAndCompareBytes(actual_data, output.size(), expected_data, expected.size());
+                /*
                 DAVA::Logger::Info("actual data (%u) :", unsigned(output.size()));
                 DumpBytes(actual_data, static_cast<unsigned>(output.size()));
                 DAVA::Logger::Info("expected data (%u) :", unsigned(expected.size()));
                 DumpBytes(expected_data, static_cast<unsigned>(expected.size()));
+                */
             }
             TEST_VERIFY(size_match);
             TEST_VERIFY(content_match);
@@ -291,14 +271,10 @@ DAVA_TESTCLASS (PreprocessorTest)
 
         const char* err_test[] =
         {
-#if 1
-          "E01-input.txt",
-          "E02-input.txt",
-          "E03-input.txt",
-          "E04-input.txt"
-#else
-          "E04-input.txt"
-#endif
+          "E01-input.preproc",
+          "E02-input.preproc",
+          "E03-input.preproc",
+          "E04-input.preproc"
         };
 
         for (int i = 0; i != countof(err_test); ++i)
