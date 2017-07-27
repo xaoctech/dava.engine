@@ -85,8 +85,9 @@ void MotionSystem::Process(float32 timeElapsed)
         activeMotions.emplace_back(motionComponent);
     }
 
-    for (MotionComponent* motionComponent : activeMotions)
+    for (int32 i = int32(activeMotions.size()) - 1; i >= 0; --i)
     {
+        MotionComponent* motionComponent = activeMotions[i];
         MotionComponent::SimpleMotion* motion = motionComponent->simpleMotion;
         DVASSERT(motion->IsPlaying());
 
@@ -96,7 +97,7 @@ void MotionSystem::Process(float32 timeElapsed)
             motion->Stop();
             triggeredEvents.emplace_back(motionComponent, MotionComponent::EVENT_SINGLE_ANIMATION_ENDED);
 
-            FindAndRemoveExchangingWithLast(activeMotions, motionComponent);
+            RemoveExchangingWithLast(activeMotions, i);
         }
 
         SkeletonComponent* skeleton = GetSkeletonComponent(motionComponent->GetEntity());
