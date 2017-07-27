@@ -744,7 +744,7 @@ bool PreProc::ProcessDefine(const char* name, const char* value)
         evaluator.SetVariable(name, val);
     }
 
-    char value2[1024];
+    char value2[1024] = {};
     size_t value2_sz;
 
     strcpy(value2, value);
@@ -754,17 +754,15 @@ bool PreProc::ProcessDefine(const char* name, const char* value)
     do
     {
         expanded = false;
-        for (uint32 m = 0; m != macro.size(); ++m)
+        for (const Macro& m : macro)
         {
-            char* t = strstr(value2, macro[m].name);
-
+            char* t = strstr(value2, m.name);
             if (t)
             {
-                size_t name_l = macro[m].name_len;
-                size_t val_l = macro[m].value_len;
-
+                size_t name_l = m.name_len;
+                size_t val_l = m.value_len;
                 memmove(t + val_l, t + name_l, value2_sz - (t - value2) - name_l);
-                memcpy(t, macro[m].value, val_l);
+                memcpy(t, m.value, val_l);
                 value2_sz += val_l - name_l;
                 expanded = true;
                 break;
@@ -773,13 +771,10 @@ bool PreProc::ProcessDefine(const char* name, const char* value)
     }
     while (expanded);
 
-    macro.resize(macro.size() + 1);
-    strncpy(macro.back().name, name, countof(macro.back().name));
-    strncpy(macro.back().value, value2, countof(macro.back().value));
-    macro.back().name_len = uint32(strlen(name));
-    macro.back().value_len = uint32(strlen(value2));
-    if (macro.back().value_len < minMacroLength)
-        minMacroLength = macro.back().value_len;
+    uint32 name_len = static_cast<uint32>(strlen(name));
+    uint32 value_len = static_cast<uint32>(strlen(value2));
+    macro.emplace(name, name_len, value2, value_len);
+    minMacroLength = std::min(minMacroLength, value_len);
 
     return true;
 }

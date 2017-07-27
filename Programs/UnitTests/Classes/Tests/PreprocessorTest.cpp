@@ -169,6 +169,7 @@ DAVA_TESTCLASS (PreprocessorTest)
             const char* resultFileName;
         } test[] =
         {
+          { "DefineInDefine-input.preproc", "DefineInDefine-output.preproc" },
           { "Multiple-Defines-input.preproc", "Multiple-Defines-output.preproc" },
           { "PurrfectTest-input.preproc", "PurrfectTest-output.preproc" },
           { "00-input.preproc", "00-output.preproc" },
