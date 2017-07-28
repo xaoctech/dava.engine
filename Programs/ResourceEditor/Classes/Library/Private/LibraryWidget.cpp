@@ -135,6 +135,7 @@ void LibraryWidget::SetupFileTypes()
 
     LibraryWidgetDetail::FileType allFiles("All files");
     allFiles.filter << "*.dae";
+    allFiles.filter << "*.fbx";
     allFiles.filter << "*.sc2";
     allFiles.filter << sourceImagesList;
 
@@ -143,12 +144,14 @@ void LibraryWidget::SetupFileTypes()
     LibraryWidgetDetail::fileTypeValues.push_back(allFiles);
     QStringList models;
     models << "*.dae"
+           << "*.fbx"
            << "*.sc2";
     LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("Models", models));
 
     LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("Source Textures", sourceImagesList));
     LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("Compressed Textures", compressedImagesList));
 
+    LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("FBX", "*.fbx"));
     LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("DAE", "*.dae"));
     LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("SC2", "*.sc2"));
     LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("TEX", QString("*") + DAVA::TextureDescriptor::GetDescriptorExtension().c_str()));
@@ -316,6 +319,11 @@ void LibraryWidget::ShowContextMenu(const QPoint& point)
         QAction* actionConvert = contextMenu.addAction("Convert", this, SLOT(OnConvertDae()));
         actionConvert->setData(fileInfoAsVariant);
     }
+    else if (pathname.IsEqualToExtension(".fbx"))
+    {
+        QAction* actionConvert = contextMenu.addAction("Convert", this, SLOT(OnConvertFBX()));
+        actionConvert->setData(fileInfoAsVariant);
+    }
 
     contextMenu.addSeparator();
     QAction* actionRevealAt = contextMenu.addAction("Reveal at folder", this, SLOT(OnRevealAtFolder()));
@@ -357,6 +365,14 @@ void LibraryWidget::OnConvertDae()
     const QFileInfo fileInfo = indexAsVariant.value<QFileInfo>();
 
     emit DAEConvertionRequested(fileInfo.absoluteFilePath().toStdString());
+}
+
+void LibraryWidget::OnConvertFBX()
+{
+    QVariant indexAsVariant = ((QAction*)sender())->data();
+    const QFileInfo fileInfo = indexAsVariant.value<QFileInfo>();
+
+    emit FBXConvertionRequested(fileInfo.absoluteFilePath().toStdString());
 }
 
 void LibraryWidget::OnRevealAtFolder()

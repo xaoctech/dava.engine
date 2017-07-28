@@ -8,6 +8,8 @@
 #include "Classes/Settings/SettingsManager.h"
 #include "Classes/Settings/Settings.h"
 
+#include "Classes/FBX/FBXImporter.h"
+
 #include <TArc/Utils/ModuleCollection.h>
 #include <TArc/Core/FieldBinder.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
@@ -32,6 +34,7 @@ void LibraryModule::PostInit()
     connections.AddConnection(libraryWidget, &LibraryWidget::AddSceneRequested, DAVA::MakeFunction(this, &LibraryModule::OnAddSceneRequested));
     connections.AddConnection(libraryWidget, &LibraryWidget::EditSceneRequested, DAVA::MakeFunction(this, &LibraryModule::OnEditSceneRequested));
     connections.AddConnection(libraryWidget, &LibraryWidget::DAEConvertionRequested, DAVA::MakeFunction(this, &LibraryModule::OnDAEConvertionRequested));
+    connections.AddConnection(libraryWidget, &LibraryWidget::FBXConvertionRequested, DAVA::MakeFunction(this, &LibraryModule::OnFBXConvertionRequested));
     connections.AddConnection(libraryWidget, &LibraryWidget::DoubleClicked, DAVA::MakeFunction(this, &LibraryModule::OnDoubleClicked));
     connections.AddConnection(libraryWidget, &LibraryWidget::DragStarted, DAVA::MakeFunction(this, &LibraryModule::OnDragStarted));
 
@@ -110,6 +113,21 @@ void LibraryModule::OnDAEConvertionRequested(const DAVA::FilePath& daePathname)
         std::unique_ptr<DAVA::TArc::WaitHandle> waitHandle = ui->ShowWaitDialog(DAVA::TArc::mainWindowKey, waitDlgParams);
 
         DAEConverter::Convert(daePathname);
+    });
+}
+
+void LibraryModule::OnFBXConvertionRequested(const DAVA::FilePath& fbxPathname)
+{
+    HidePreview();
+
+    executor.DelayedExecute([this, fbxPathname]() {
+        DAVA::TArc::UI* ui = GetUI();
+        DAVA::TArc::WaitDialogParams waitDlgParams;
+        waitDlgParams.message = QString("FBX to SC2 conversion\n%1").arg(fbxPathname.GetAbsolutePathname().c_str());
+        waitDlgParams.needProgressBar = false;
+        std::unique_ptr<DAVA::TArc::WaitHandle> waitHandle = ui->ShowWaitDialog(DAVA::TArc::mainWindowKey, waitDlgParams);
+
+        DAVA::FBXImporter::ConvertToSC2(fbxPathname);
     });
 }
 

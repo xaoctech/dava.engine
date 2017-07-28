@@ -67,6 +67,7 @@ signals:
     void AddSceneRequested(const DAVA::FilePath& scenePathname);
     void EditSceneRequested(const DAVA::FilePath& scenePathname);
     void DAEConvertionRequested(const DAVA::FilePath& daePathname);
+    void FBXConvertionRequested(const DAVA::FilePath& fbxPathname);
     void DoubleClicked(const DAVA::FilePath& scenePathname);
     void DragStarted();
 
@@ -83,6 +84,7 @@ protected slots:
     void OnAddModel();
     void OnEditModel();
     void OnConvertDae();
+    void OnConvertFBX();
     void OnRevealAtFolder();
 
 private:
