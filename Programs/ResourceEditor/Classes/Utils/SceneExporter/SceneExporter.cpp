@@ -249,9 +249,20 @@ void PrepareSceneToExport(DAVA::Scene* scene, bool removeCustomProperties)
             DVASSERT(entity->GetParent() != nullptr);
             entity->GetParent()->RemoveNode(entity);
         }
-        else if (removeCustomProperties)
+        else
         {
-            RemoveEditorCustomProperties(entity);
+            if (removeCustomProperties)
+            {
+                RemoveEditorCustomProperties(entity);
+            }
+
+            for (uint32 ct = Component::NOT_EXPORTED_COMPONENTS; ct < Component::FIRST_USER_DEFINED_COMPONENT; ++ct)
+            { // remove RE specific components
+                while (entity->GetComponentCount(ct) > 0)
+                {
+                    entity->RemoveComponent(ct, 0);
+                }
+            }
         }
     }
 }
