@@ -198,12 +198,12 @@ void XMLRichContentBuilder::ProcessTagBegin(const String& tag, const Map<String,
         String src;
         if (GetAttribute(attributes, "src", src))
         {
-            UIControl* img = new UIControl();
-            PrepareControl(img, true, true);
+            RefPtr<UIControl> img(new UIControl());
+            PrepareControl(img.Get(), true, true);
             UIControlBackground* bg = img->GetOrCreateComponent<UIControlBackground>();
             bg->SetDrawType(UIControlBackground::DRAW_STRETCH_BOTH);
             bg->SetSprite(FilePath(src));
-            AppendControl(img);
+            AppendControl(img.Get());
         }
     }
     else if (tag == "object")
@@ -338,10 +338,10 @@ void XMLRichContentBuilder::ProcessText(const String& text)
                 direction = wordDirection;
             }
 
-            UIStaticText* ctrl = new UIStaticText();
-            PrepareControl(ctrl, true, first);
+            RefPtr<UIStaticText> ctrl(new UIStaticText());
+            PrepareControl(ctrl.Get(), true, first);
             ctrl->SetUtf8Text(token);
-            AppendControl(ctrl);
+            AppendControl(ctrl.Get());
         }
 
         first = false;
