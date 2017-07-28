@@ -13,6 +13,8 @@
 #include <FileSystem/FilePath.h>
 #include <Logger/Logger.h>
 #include <Reflection/ReflectionRegistrator.h>
+#include <Render/Material/NMaterialNames.h>
+#include <Render/Material/NMaterial.h>
 #include <Render/Highlevel/RenderObject.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/SceneFileV2.h>
@@ -34,7 +36,22 @@ DAVA::RenderObject* CreateRenderObject()
         scene->GetChildEntitiesWithComponent(entities, Component::RENDER_COMPONENT);
         if (entities.size() == 1)
         {
-            return SafeRetain(GetRenderObject(entities[0]));
+            RenderObject* ro = GetRenderObject(entities[0]);
+            if (ro != nullptr)
+            {
+                uint32 count = ro->GetRenderBatchCount();
+                for (uint32 i = 0; i < count; ++i)
+                {
+                    NMaterial* mat = ro->GetRenderBatch(i)->GetMaterial();
+                    if (mat != nullptr)
+                    {
+                        mat->AddFlag(NMaterialFlagName::FLAG_FLATCOLOR, 1);
+                        mat->AddProperty(NMaterialParamName::PARAM_FLAT_COLOR, Color().color, rhi::ShaderProp::TYPE_FLOAT4);
+                    }
+                }
+            }
+
+            return SafeRetain(ro);
         }
     }
 
@@ -93,7 +110,7 @@ void UserNodeModule::OnContextCreated(DAVA::TArc::DataContext* context)
 
     std::unique_ptr<UserNodeData> userData = std::make_unique<UserNodeData>();
     userData->system.reset(new UserNodeSystem(scene, spawnObject.get()));
-    userData->system->EnableSystem();
+    userData->system->DisableSystem();
     scene->AddSystem(userData->system.get(), MAKE_COMPONENT_MASK(DAVA::Component::USER_COMPONENT), DAVA::Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
 
     context->CreateData(std::move(userData));
