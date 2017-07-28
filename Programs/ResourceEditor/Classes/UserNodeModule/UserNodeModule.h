@@ -1,8 +1,9 @@
 #pragma once
 
 #include <TArc/Core/ClientModule.h>
-#include <Reflection/Reflection.h>
+#include <TArc/Utils/QtConnections.h>
 
+#include <Reflection/Reflection.h>
 #include <Base/ScopedPtr.h>
 
 namespace DAVA
@@ -18,7 +19,10 @@ protected:
     void OnContextDeleted(DAVA::TArc::DataContext* context) override;
 
 private:
+    void ChangeDrawingState();
+
     DAVA::ScopedPtr<DAVA::RenderObject> spawnObject;
+    DAVA::TArc::QtConnections connections;
 
     DAVA_VIRTUAL_REFLECTION(UserNodeModule, DAVA::TArc::ClientModule);
 };

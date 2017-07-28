@@ -6,15 +6,17 @@
 #include "Classes/Qt/Scene/SceneEditor2.h"
 
 #include <TArc/Utils/ModuleCollection.h>
+#include <TArc/WindowSubSystem/QtAction.h>
+#include <TArc/WindowSubSystem/UI.h>
+#include <TArc/WindowSubSystem/ActionUtils.h>
 
+#include <FileSystem/FilePath.h>
+#include <Logger/Logger.h>
 #include <Reflection/ReflectionRegistrator.h>
 #include <Render/Highlevel/RenderObject.h>
-
 #include <Scene3D/Scene.h>
 #include <Scene3D/SceneFileV2.h>
 #include <Scene3D/Components/ComponentHelpers.h>
-#include <FileSystem/FilePath.h>
-#include <Logger/Logger.h>
 
 namespace UserNodeModuleDetails
 {
@@ -43,6 +45,39 @@ DAVA::RenderObject* CreateRenderObject()
 
 void UserNodeModule::PostInit()
 {
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    QtAction* action = new QtAction(GetAccessor(), QIcon(":/QtIcons/user_object.png"), QString("Custom UserNode Drawing Enabled"));
+    { // checked-unchecked and text
+        FieldDescriptor fieldDescr;
+        fieldDescr.fieldName = DAVA::FastName(UserNodeData::drawingEnabledPropertyName);
+        fieldDescr.type = DAVA::ReflectedTypeDB::Get<UserNodeData>();
+        action->SetStateUpdationFunction(QtAction::Checked, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
+            return value.Get<bool>(false);
+        });
+        action->SetStateUpdationFunction(QtAction::Text, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
+            if (value.Get<bool>(false))
+                return DAVA::String("Custom UserNode Drawing Enabled");
+            return DAVA::String("Custom UserNode Drawing Disabled");
+        });
+    }
+
+    { // enabled/disabled state
+        FieldDescriptor fieldDescr;
+        fieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
+        fieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
+            return value.CanCast<SceneData::TSceneType>() && value.Cast<SceneData::TSceneType>().Get() != nullptr;
+        });
+    }
+
+    connections.AddConnection(action, &QAction::triggered, DAVA::Bind(&UserNodeModule::ChangeDrawingState, this));
+
+    ActionPlacementInfo placementInfo;
+    placementInfo.AddPlacementPoint(CreateStatusbarPoint(true, 0, { InsertionParams::eInsertionMethod::AfterItem, "actionShowStaticOcclusion" }));
+
+    GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
 }
 
 void UserNodeModule::OnContextCreated(DAVA::TArc::DataContext* context)
@@ -58,6 +93,7 @@ void UserNodeModule::OnContextCreated(DAVA::TArc::DataContext* context)
 
     std::unique_ptr<UserNodeData> userData = std::make_unique<UserNodeData>();
     userData->system.reset(new UserNodeSystem(scene, spawnObject.get()));
+    userData->system->EnableSystem();
     scene->AddSystem(userData->system.get(), MAKE_COMPONENT_MASK(DAVA::Component::USER_COMPONENT), DAVA::Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
 
     context->CreateData(std::move(userData));
@@ -72,6 +108,15 @@ void UserNodeModule::OnContextDeleted(DAVA::TArc::DataContext* context)
 
     UserNodeData* userData = context->GetData<UserNodeData>();
     scene->RemoveSystem(userData->system.get());
+}
+
+void UserNodeModule::ChangeDrawingState()
+{
+    DAVA::TArc::DataContext* context = GetAccessor()->GetActiveContext();
+    UserNodeData* moduleData = context->GetData<UserNodeData>();
+
+    bool enabled = moduleData->IsDrawingEnabled();
+    moduleData->SetDrawingEnabled(!enabled);
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(UserNodeModule)
