@@ -8,6 +8,8 @@
 #include "Physics/SphereShapeComponent.h"
 #include "Physics/PlaneShapeComponent.h"
 #include "Physics/PhysicsGeometryCache.h"
+#include "Physics/BoxCharacterControllerComponent.h"
+#include "Physics/CapsuleCharacterControllerComponent.h"
 #include "Physics/Private/PhysicsMath.h"
 
 #include <Scene3D/Entity.h>
@@ -28,6 +30,7 @@
 #include <FileSystem/KeyedArchive.h>
 #include <Utils/Utils.h>
 #include <Logger/Logger.h>
+#include <Scene3D/Components/CameraComponent.h>
 
 #include <physx/PxScene.h>
 #include <physx/PxRigidActor.h>
@@ -86,6 +89,11 @@ bool IsCollisionShapeType(uint32 componentType)
                        });
 }
 
+bool IsCharacterControllerType(uint32 componentType)
+{
+    return componentType == Component::BOX_CHARACTER_CONTROLLER_COMPONENT || componentType == Component::CAPSULE_CHARACTER_CONTROLLER_COMPONENT;
+}
+
 Vector3 AccumulateMeshInfo(Entity* e, Vector<PolygonGroup*>& groups)
 {
     RenderObject* ro = GetRenderObject(e);
@@ -138,6 +146,8 @@ PhysicsSystem::PhysicsSystem(Scene* scene)
     sceneConfig.threadCount = options->GetUInt32("physics.threadCount", 2);
     geometryCache = new PhysicsGeometryCache();
     physicsScene = physics->CreateScene(sceneConfig);
+
+    controllerManager = PxCreateControllerManager(*physicsScene);
 }
 
 PhysicsSystem::~PhysicsSystem()
@@ -148,6 +158,8 @@ PhysicsSystem::~PhysicsSystem()
     }
     DVASSERT(simulationBlock != nullptr);
     SafeDelete(geometryCache);
+
+    controllerManager->release();
 
     const EngineContext* ctx = GetEngineContext();
     PhysicsModule* physics = ctx->moduleManager->GetModule<PhysicsModule>();
@@ -172,6 +184,8 @@ void PhysicsSystem::RegisterEntity(Entity* entity)
     {
         processEntity(entity, type);
     }
+    processEntity(entity, Component::BOX_CHARACTER_CONTROLLER_COMPONENT);
+    processEntity(entity, Component::CAPSULE_CHARACTER_CONTROLLER_COMPONENT);
     processEntity(entity, Component::RENDER_COMPONENT);
 }
 
@@ -191,6 +205,8 @@ void PhysicsSystem::UnregisterEntity(Entity* entity)
     {
         processEntity(entity, type);
     }
+    processEntity(entity, Component::BOX_CHARACTER_CONTROLLER_COMPONENT);
+    processEntity(entity, Component::CAPSULE_CHARACTER_CONTROLLER_COMPONENT);
     processEntity(entity, Component::RENDER_COMPONENT);
 }
 
@@ -206,6 +222,11 @@ void PhysicsSystem::RegisterComponent(Entity* entity, Component* component)
     if (IsCollisionShapeType(componentType))
     {
         pendingAddCollisionComponents.push_back(static_cast<CollisionShapeComponent*>(component));
+    }
+
+    if (IsCharacterControllerType(componentType))
+    {
+        pendingAddCharacterControllerComponents.push_back(static_cast<CharacterControllerComponent*>(component));
     }
 
     if (componentType == Component::RENDER_COMPONENT)
@@ -262,6 +283,17 @@ void PhysicsSystem::UnregisterComponent(Entity* entity, Component* component)
         }
 
         ReleaseShape(collisionComponent);
+    }
+
+    if (IsCharacterControllerType(componentType))
+    {
+        CharacterControllerComponent* controllerComponent = static_cast<CharacterControllerComponent*>(component);
+        PhysicsSystemDetail::EraseComponent(controllerComponent, pendingAddCharacterControllerComponents, characterControllerComponents);
+
+        if (controllerComponent->controller != nullptr)
+        {
+            controllerComponent->controller->release();
+        }
     }
 
     if (componentType == Component::RENDER_COMPONENT)
@@ -364,15 +396,18 @@ bool PhysicsSystem::FetchResults(bool waitForFetchFinish)
         {
             physx::PxActor* actor = actors[i];
             PhysicsComponent* component = PhysicsComponent::GetComponent(actor);
-            Entity* entity = component->GetEntity();
+            if (component != nullptr)
+            {
+                Entity* entity = component->GetEntity();
 
-            physx::PxRigidActor* rigidActor = actor->is<physx::PxRigidActor>();
-            DVASSERT(rigidActor != nullptr);
+                physx::PxRigidActor* rigidActor = actor->is<physx::PxRigidActor>();
+                DVASSERT(rigidActor != nullptr);
 
-            Matrix4 scaleMatrix = Matrix4::MakeScale(component->currentScale);
+                Matrix4 scaleMatrix = Matrix4::MakeScale(component->currentScale);
 
-            entity->SetWorldTransform(scaleMatrix * PhysicsMath::PxMat44ToMatrix4(rigidActor->getGlobalPose()));
-            activeEntities.push_back(entity);
+                entity->SetWorldTransform(scaleMatrix * PhysicsMath::PxMat44ToMatrix4(rigidActor->getGlobalPose()));
+                activeEntities.push_back(entity);
+            }
         }
 
         Scene* scene = GetScene();
@@ -497,6 +532,46 @@ void PhysicsSystem::InitNewObjects()
         }
     }
     pendingAddCollisionComponents.clear();
+
+    for (CharacterControllerComponent* component : pendingAddCharacterControllerComponents)
+    {
+        const EngineContext* ctx = GetEngineContext();
+        PhysicsModule* physics = ctx->moduleManager->GetModule<PhysicsModule>();
+
+        physx::PxController* controller = nullptr;
+        if (component->GetType() == Component::BOX_CHARACTER_CONTROLLER_COMPONENT)
+        {
+            BoxCharacterControllerComponent* boxCharacterControllerComponent = static_cast<BoxCharacterControllerComponent*>(component);
+
+            physx::PxBoxControllerDesc desc;
+            desc.halfHeight = boxCharacterControllerComponent->GetHalfHeight();
+            desc.halfForwardExtent = boxCharacterControllerComponent->GetHalfForwardExtent();
+            desc.halfSideExtent = boxCharacterControllerComponent->GetHalfSideExtent();
+            desc.upDirection = PhysicsMath::Vector3ToPxVec3(component->GetUpDirection());
+            desc.material = physics->GetDefaultMaterial();
+            DVASSERT(desc.isValid());
+
+            controller = controllerManager->createController(desc);
+        }
+        else if (component->GetType() == Component::CAPSULE_CHARACTER_CONTROLLER_COMPONENT)
+        {
+            CapsuleCharacterControllerComponent* capsuleCharacterControllerComponent = static_cast<CapsuleCharacterControllerComponent*>(component);
+
+            physx::PxCapsuleControllerDesc desc;
+            desc.radius = capsuleCharacterControllerComponent->GetRadius();
+            desc.height = capsuleCharacterControllerComponent->GetHeight();
+            desc.material = physics->GetDefaultMaterial();
+            DVASSERT(desc.isValid());
+
+            controller = controllerManager->createController(desc);
+        }
+
+        DVASSERT(controller != nullptr);
+        component->controller = controller;
+
+        characterControllerComponents.push_back(component);
+    }
+    pendingAddCharacterControllerComponents.clear();
 }
 
 void PhysicsSystem::AttachShape(PhysicsComponent* bodyComponent, CollisionShapeComponent* shapeComponent, const Vector3& scale)
@@ -731,6 +806,11 @@ void PhysicsSystem::SheduleUpdate(CollisionShapeComponent* component)
     collisionComponentsUpdatePending.insert(component);
 }
 
+void PhysicsSystem::SheduleUpdate(CharacterControllerComponent* component)
+{
+    characterControllerComponentsUpdatePending.insert(component);
+}
+
 bool PhysicsSystem::Raycast(const Vector3& origin, const Vector3& direction, float32 distance, physx::PxRaycastCallback& callback)
 {
     using namespace physx;
@@ -782,8 +862,36 @@ void PhysicsSystem::UpdateComponents()
         }
     }
 
+    for (CharacterControllerComponent* controllerComponent : characterControllerComponentsUpdatePending)
+    {
+        physx::PxController* controller = controllerComponent->controller;
+        if (controller != nullptr)
+        {
+            controller->setUpDirection(PhysicsMath::Vector3ToPxVec3(controllerComponent->GetUpDirection()));
+
+            if (controllerComponent->GetType() == Component::BOX_CHARACTER_CONTROLLER_COMPONENT)
+            {
+                BoxCharacterControllerComponent* boxComponent = static_cast<BoxCharacterControllerComponent*>(controllerComponent);
+                physx::PxBoxController* boxController = static_cast<physx::PxBoxController*>(controller);
+
+                boxController->setHalfHeight(boxComponent->GetHalfHeight());
+                boxController->setHalfForwardExtent(boxComponent->GetHalfForwardExtent());
+                boxController->setHalfSideExtent(boxComponent->GetHalfSideExtent());
+            }
+            else if (controllerComponent->GetType() == Component::CAPSULE_CHARACTER_CONTROLLER_COMPONENT)
+            {
+                CapsuleCharacterControllerComponent* capsuleComponent = static_cast<CapsuleCharacterControllerComponent*>(controllerComponent);
+                physx::PxCapsuleController* capsuleController = static_cast<physx::PxCapsuleController*>(controller);
+
+                capsuleController->setRadius(capsuleComponent->GetRadius());
+                capsuleController->setHeight(capsuleComponent->GetHeight());
+            }
+        }
+    }
+
     collisionComponentsUpdatePending.clear();
     physicsComponensUpdatePending.clear();
+    characterControllerComponentsUpdatePending.clear();
 }
 
 } // namespace DAVA

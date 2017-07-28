@@ -10,6 +10,7 @@ namespace physx
 class PxScene;
 class PxRigidActor;
 class PxShape;
+class PxControllerManager;
 }
 
 namespace DAVA
@@ -19,6 +20,7 @@ class PhysicsModule;
 class PhysicsComponent;
 class CollisionShapeComponent;
 class PhysicsGeometryCache;
+class CharacterControllerComponent;
 
 class PhysicsSystem final : public SceneSystem
 {
@@ -42,6 +44,7 @@ public:
 
     void SheduleUpdate(PhysicsComponent* component);
     void SheduleUpdate(CollisionShapeComponent* component);
+    void SheduleUpdate(CharacterControllerComponent* component);
 
     bool Raycast(const Vector3& origin, const Vector3& direction, float32 distance, physx::PxRaycastCallback& callback);
 
@@ -70,6 +73,7 @@ private:
     bool isSimulationEnabled = true;
     bool isSimulationRunning = false;
     physx::PxScene* physicsScene = nullptr;
+    physx::PxControllerManager* controllerManager = nullptr;
     PhysicsGeometryCache* geometryCache;
 
     Vector<PhysicsComponent*> physicsComponents;
@@ -78,10 +82,14 @@ private:
     Vector<CollisionShapeComponent*> collisionComponents;
     Vector<CollisionShapeComponent*> pendingAddCollisionComponents;
 
+    Vector<CharacterControllerComponent*> characterControllerComponents;
+    Vector<CharacterControllerComponent*> pendingAddCharacterControllerComponents;
+
     UnorderedMap<Entity*, Vector<CollisionShapeComponent*>> waitRenderInfoComponents;
 
     Set<PhysicsComponent*> physicsComponensUpdatePending;
     Set<CollisionShapeComponent*> collisionComponentsUpdatePending;
+    Set<CharacterControllerComponent*> characterControllerComponentsUpdatePending;
 
     bool drawDebugInfo = false;
 };

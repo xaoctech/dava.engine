@@ -64,6 +64,8 @@ public:
         MESH_SHAPE_COMPONENT,
         CONVEX_HULL_SHAPE_COMPONENT,
         HEIGHT_FIELD_SHAPE_COMPONENT,
+        BOX_CHARACTER_CONTROLLER_COMPONENT,
+        CAPSULE_CHARACTER_CONTROLLER_COMPONENT,
 #endif
 
         //debug components - note that everything below won't be serialized

@@ -173,7 +173,7 @@ void SceneValidator::ValidateRenderComponent(DAVA::Entity* ownerNode)
     if (ro->GetType() == DAVA::RenderObject::TYPE_LANDSCAPE)
     {
         ownerNode->SetLocked(true);
-        FixIdentityTransform(ownerNode, DAVA::Format("Landscape had wrong transform. Please re-save scene: %s", sceneName.c_str()));
+        //FixIdentityTransform(ownerNode, DAVA::Format("Landscape had wrong transform. Please re-save scene: %s", sceneName.c_str()));
 
         DAVA::Landscape* landscape = static_cast<DAVA::Landscape*>(ro);
         ValidateLandscape(landscape);
