@@ -127,8 +127,11 @@ DAVA::Vector<DAVA::float32> ParseFloatList(const QString& str)
         {
             QString matchedStr = match.captured(0);
             bool ok;
-            result.push_back(matchedStr.toFloat(&ok));
-            DVASSERT(ok);
+            DAVA::float32 value = matchedStr.toFloat(&ok);
+            if (ok == true)
+            {
+                result.push_back(matchedStr.toFloat(&ok));
+            }
         }
     }
 
