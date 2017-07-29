@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Command/Command.h"
-#include "Commands2/Base/RECommandIDHandler.h"
+#include "Classes/Commands2/Base/RECommandIDHandler.h"
+
+#include <Command/Command.h>
 
 class RECommand : public DAVA::Command, public RECommandIDHandler
 {

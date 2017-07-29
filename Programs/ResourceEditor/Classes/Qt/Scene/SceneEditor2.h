@@ -1,38 +1,36 @@
 #pragma once
 
+
+#include "Classes/Qt/Scene/System/ModifSystem.h"
+#include "Classes/Qt/Scene/System/LandscapeEditorDrawSystem.h"
+#include "Classes/Qt/Scene/System/HeightmapEditorSystem.h"
+#include "Classes/Qt/Scene/System/TilemaskEditorSystem.h"
+#include "Classes/Qt/Scene/System/CustomColorsSystem.h"
+#include "Classes/Qt/Scene/System/RulerToolSystem.h"
+#include "Classes/Qt/Scene/System/StructureSystem.h"
+#include "Classes/Qt/Scene/System/EditorParticlesSystem.h"
+#include "Classes/Qt/Scene/System/EditorLightSystem.h"
+#include "Classes/Qt/Scene/System/TextDrawSystem.h"
+#include "Classes/Qt/Scene/System/DebugDrawSystem.h"
+#include "Classes/Qt/Scene/System/BeastSystem.h"
+#include "Classes/Qt/Scene/System/EditorMaterialSystem.h"
+#include "Classes/Qt/Scene/System/WayEditSystem.h"
+#include "Classes/Qt/Scene/System/PathSystem.h"
+
+#include "Classes/Utils/SceneExporter/SceneExporter.h"
+
+#include "Classes/Settings/SettingsManager.h"
+#include "Classes/Commands2/Base/RECommandNotificationObject.h"
+#include "Classes/Commands2/Base/CommandNotify.h"
+#include "Classes/Commands2/RECommandIDs.h"
+
+#include <Scene3D/Systems/StaticOcclusionBuildSystem.h>
+#include <Scene3D/Systems/Controller/RotationControllerSystem.h>
+#include <Scene3D/Systems/Controller/WASDControllerSystem.h>
+#include <Scene3D/Scene.h>
+
+#include <Command/Command.h>
 #include <QObject>
-#include <Classes/Commands2/Base/RECommandNotificationObject.h>
-#include "UI/UIEvent.h"
-#include "Scene3D/Scene.h"
-#include "Base/StaticSingleton.h"
-
-#include "Settings/SettingsManager.h"
-#include "Command/Command.h"
-
-#include "Scene/System/ModifSystem.h"
-#include "Scene/System/LandscapeEditorDrawSystem.h"
-#include "Scene/System/HeightmapEditorSystem.h"
-#include "Scene/System/TilemaskEditorSystem.h"
-#include "Scene/System/CustomColorsSystem.h"
-#include "Scene/System/RulerToolSystem.h"
-#include "Scene/System/StructureSystem.h"
-#include "Scene/System/EditorParticlesSystem.h"
-#include "Scene/System/EditorLightSystem.h"
-#include "Scene/System/TextDrawSystem.h"
-#include "Scene/System/DebugDrawSystem.h"
-#include "Scene/System/BeastSystem.h"
-#include "Scene/System/EditorMaterialSystem.h"
-#include "Scene/System/WayEditSystem.h"
-#include "Scene/System/PathSystem.h"
-
-#include "Scene3D/Systems/StaticOcclusionBuildSystem.h"
-#include "Scene3D/Systems/Controller/RotationControllerSystem.h"
-#include "Scene3D/Systems/Controller/WASDControllerSystem.h"
-
-#include "Utils/SceneExporter/SceneExporter.h"
-
-#include "Commands2/Base/CommandNotify.h"
-#include "Commands2/RECommandIDs.h"
 
 class RECommandNotificationObject;
 class SceneCameraSystem;

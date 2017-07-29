@@ -30,7 +30,7 @@ void PreferencesStorage::RegisterType(const DAVA::InspInfo* inspInfo, const Defa
     {
         DAVA::StringStream ss;
         ss << "introspection " << inspInfo->Name().c_str() << "already registered!";
-        DVASSERT(false, ss.str().c_str());
+        //DVASSERT(false, ss.str().c_str());
     }
 }
 

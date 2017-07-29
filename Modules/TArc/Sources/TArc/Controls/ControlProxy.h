@@ -55,7 +55,7 @@ public:
 
         ContextAccessor* accessor = nullptr;
         UI* ui = nullptr;
-        WindowKey wndKey = WindowKey(FastName(""));
+        WindowKey wndKey = WindowKey("");
     };
     ControlProxyImpl(const BaseParams& params, const ControlDescriptor& descriptor_, DataWrappersProcessor* wrappersProcessor, Reflection model_, QWidget* parent)
         : TBase(parent)

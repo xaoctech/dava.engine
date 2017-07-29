@@ -1,8 +1,7 @@
-#ifndef __META_OBJ_MODIFY_COMMAND_H__
-#define __META_OBJ_MODIFY_COMMAND_H__
+#pragma once
 
-#include "Commands2/Base/RECommand.h"
-#include "FileSystem/VariantType.h"
+#include "Classes/Commands2/Base/RECommand.h"
+#include <FileSystem/VariantType.h>
 
 namespace DAVA
 {
@@ -24,5 +23,3 @@ public:
     DAVA::VariantType oldValue;
     DAVA::VariantType newValue;
 };
-
-#endif // __META_OBJ_MODIFY_COMMAND_H__

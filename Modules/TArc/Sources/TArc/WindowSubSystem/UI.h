@@ -27,14 +27,14 @@ class QtReflectionBridge;
 class WindowKey
 {
 public:
-    WindowKey(const FastName& appID);
-    const FastName& GetAppID() const;
+    WindowKey(const String& appID);
+    const String& GetAppID() const;
 
     bool operator==(const WindowKey& other) const;
     bool operator!=(const WindowKey& other) const;
 
 private:
-    FastName appID;
+    String appID;
 };
 
 /** Token of TArc application's main window */
@@ -241,7 +241,7 @@ struct hash<DAVA::TArc::WindowKey>
 {
     std::size_t operator()(const DAVA::TArc::WindowKey& k) const
     {
-        std::hash<DAVA::FastName> hasher;
+        std::hash<DAVA::String> hasher;
         return hasher(k.GetAppID());
     }
 };

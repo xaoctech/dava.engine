@@ -13,6 +13,7 @@
 #include "TArc/Utils/QtMessageHandler.h"
 #include "TArc/DataProcessing/DataWrappersProcessor.h"
 #include "TArc/PluginsManager/TArcPluginsManager.h"
+#include "TArc/PluginsManager/TArcPlugin.h"
 
 #include "QtTools/Utils/QtDelayedExecutor.h"
 
@@ -89,6 +90,8 @@ public:
 
     virtual void OnLoopStopped()
     {
+        pluginsManager->UnloadPlugins();
+        pluginsManager.reset();
         wrappersProcessor.Shoutdown();
         for (DataContext* context : contexts)
         {
@@ -202,6 +205,8 @@ public:
     void InitPluginsManager(const String& applicationName, const String& pluginsFolder)
     {
         pluginsManager.reset(new TArcPluginManager(applicationName, pluginsFolder));
+        Vector<String> errors;
+        pluginsManager->LoadPlugins(errors);
     }
 
     template <typename T>
@@ -212,7 +217,7 @@ public:
             return;
         }
 
-        Vector<TArcPlugin*> plugins = pluginsManager->GetPluginsWithBaseType(Type::Instance<T*>());
+        Vector<TArcPlugin*> plugins = pluginsManager->GetPluginsWithBaseType(Type::Instance<T>());
         for (TArcPlugin* plugin : plugins)
         {
             AddModule(plugin->GetModuleType()->CreateObject(ReflectedType::CreatePolicy::ByPointer).Cast<T*>(nullptr));

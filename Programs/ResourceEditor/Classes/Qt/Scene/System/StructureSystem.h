@@ -1,19 +1,18 @@
 #pragma once
 
 #include "Classes/Selection/SelectableGroup.h"
-#include "StringConstants.h"
-#include "SystemDelegates.h"
+#include "Classes/StringConstants.h"
+#include "Classes/Qt/Scene/System/SystemDelegates.h"
 #include "Classes/Qt/Scene/System/EditorSceneSystem.h"
 
-// framework
-#include "Entity/SceneSystem.h"
-#include "Scene3D/Entity.h"
-#include "Particles/ParticleLayer.h"
-#include "Particles/ParticleEmitter.h"
-#include "Scene3D/Components/ParticleEffectComponent.h"
-#include "UI/UIEvent.h"
-#include "Render/Highlevel/Landscape.h"
-#include "Functional/Function.h"
+#include <Entity/SceneSystem.h>
+#include <Scene3D/Entity.h>
+#include <Particles/ParticleLayer.h>
+#include <Particles/ParticleEmitter.h>
+#include <Scene3D/Components/ParticleEffectComponent.h>
+#include <UI/UIEvent.h>
+#include <Render/Highlevel/Landscape.h>
+#include <Functional/Function.h>
 
 class RECommandNotificationObject;
 class StructureSystem : public DAVA::SceneSystem, public EditorSceneSystem

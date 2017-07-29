@@ -10,7 +10,7 @@ namespace PopupLineEditTestDetail
 {
 using namespace DAVA;
 
-DAVA::TArc::WindowKey wndKey = DAVA::FastName("LineEditTestWnd");
+DAVA::TArc::WindowKey wndKey("LineEditTestWnd");
 
 struct PopupLineEditDataSource
 {

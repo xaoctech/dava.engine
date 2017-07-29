@@ -1,8 +1,9 @@
 #pragma once
 
-#include "Base/BaseTypes.h"
-#include "Command/CommandBatch.h"
-#include "Commands2/Base/RECommandIDHandler.h"
+#include "Classes/Commands2/Base/RECommandIDHandler.h"
+
+#include <Command/CommandBatch.h>
+#include <Base/BaseTypes.h>
 
 class RECommand;
 class RECommandBatch final : public DAVA::CommandBatch, public RECommandIDHandler

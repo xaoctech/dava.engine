@@ -20,7 +20,7 @@ namespace PlainTextEditTestDetails
 {
 using namespace DAVA;
 
-DAVA::TArc::WindowKey wndKey = DAVA::FastName("PlainTextEditTestWnd");
+DAVA::TArc::WindowKey wndKey("PlainTextEditTestWnd");
 
 struct PlainTextEditDataSource
 {

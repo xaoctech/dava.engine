@@ -2,15 +2,15 @@
 
 #include "SystemDelegates.h"
 
-#include "Entity/SceneSystem.h"
-#include "Scene3D/Entity.h"
-#include "UI/UIEvent.h"
-
-#include "Scene/SceneTypes.h"
+#include "Classes/Qt/Scene/SceneTypes.h"
 #include "Classes/Selection/SelectableGroup.h"
-#include "Render/Highlevel/RenderObject.h"
 
-#include "Commands2/Base/RECommand.h"
+#include "Classes/Commands2/Base/RECommand.h"
+
+#include <Entity/SceneSystem.h>
+#include <Scene3D/Entity.h>
+#include <UI/UIEvent.h>
+#include <Render/Highlevel/RenderObject.h>
 
 class SceneCollisionSystem;
 class SceneCameraSystem;

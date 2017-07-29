@@ -524,7 +524,7 @@ struct UIManager::Impl : public QObject
         window->installEventFilter(this);
         if (window->objectName().isEmpty())
         {
-            FastName appId = windowKey.GetAppID();
+            String appId = windowKey.GetAppID();
             window->setObjectName(appId.c_str());
         }
     }

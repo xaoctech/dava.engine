@@ -1,7 +1,9 @@
 #pragma once
 
-#include <Base/BaseTypes.h>
 #include <PluginManager/Plugin.h>
+
+#include <Base/Type.h>
+#include <Base/BaseTypes.h>
 
 namespace DAVA
 {
@@ -26,7 +28,7 @@ private:
 
     struct PluginNode
     {
-        TArcPlugin* pluginInstance = nullptr;
+        Vector<TArcPlugin*> pluginInstances;
         PluginHandle handle;
         String libraryPath;
     };

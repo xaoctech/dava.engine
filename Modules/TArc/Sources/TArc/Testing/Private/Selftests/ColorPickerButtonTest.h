@@ -26,7 +26,7 @@
 
 namespace ColorPickerButtonTestDetails
 {
-DAVA::TArc::WindowKey wndKey = DAVA::FastName("ColorPickerButtonTestWnd");
+DAVA::TArc::WindowKey wndKey("ColorPickerButtonTestWnd");
 
 struct ColorPickerButtonDataSource
 {

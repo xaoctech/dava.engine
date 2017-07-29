@@ -23,7 +23,7 @@ namespace IntSpinBoxTestDetails
 using namespace DAVA;
 using namespace DAVA::TArc;
 
-WindowKey wndKey = FastName("IntSpinBoxWindow");
+WindowKey wndKey("IntSpinBoxWindow");
 
 class IntSpinBoxData : public ReflectionBase
 {

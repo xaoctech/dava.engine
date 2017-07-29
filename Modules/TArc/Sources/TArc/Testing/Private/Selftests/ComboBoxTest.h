@@ -24,7 +24,7 @@
 
 namespace ComboBoxTestDetails
 {
-DAVA::TArc::WindowKey wndKey = DAVA::FastName("ComboBoxTestWnd");
+DAVA::TArc::WindowKey wndKey("ComboBoxTestWnd");
 
 class ComboBoxTestModule : public DAVA::TArc::ClientModule
 {

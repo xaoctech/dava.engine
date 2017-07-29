@@ -27,7 +27,7 @@ namespace FilePathEditTestDetails
 using namespace DAVA;
 using namespace DAVA::TArc;
 
-WindowKey wndKey = FastName("FilePathEditWnd");
+WindowKey wndKey("FilePathEditWnd");
 
 class TestData : public ReflectionBase
 {

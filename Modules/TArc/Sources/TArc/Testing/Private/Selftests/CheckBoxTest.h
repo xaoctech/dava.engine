@@ -19,7 +19,7 @@
 
 namespace CheckBoxTestDetails
 {
-DAVA::TArc::WindowKey wndKey = DAVA::FastName("CheckBoxTestWnd");
+DAVA::TArc::WindowKey wndKey("CheckBoxTestWnd");
 
 struct CheckBoxDataSource
 {

@@ -23,7 +23,7 @@ namespace LabelTestDetails
 {
 using namespace DAVA;
 
-DAVA::TArc::WindowKey wndKey = DAVA::FastName("LabelTestWnd");
+DAVA::TArc::WindowKey wndKey("LabelTestWnd");
 
 String M2ToString(const Matrix2& matrix)
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Settings/Settings.h"
+#include "Classes/Settings/Settings.h"
 
 #include <Base/Singleton.h>
 #include <Base/IntrospectionBase.h>

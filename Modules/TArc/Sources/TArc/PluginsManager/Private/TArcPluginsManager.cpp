@@ -1,12 +1,15 @@
 #include "TArc/PluginsManager/TArcPluginsManager.h"
+#include "TArc/PluginsManager/TArcPlugin.h"
 
+#include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
 #include <PluginManager/PluginManager.h>
 
 #include <FileSystem/FileList.h>
 #include <Debug/DVAssert.h>
 
-#define PLUGIN_MANAGER_STR_VALUE(name) #name
+#define PLUGIN_MANAGER_STR_VALUE_IMPL(name) #name
+#define PLUGIN_MANAGER_STR_VALUE(name) PLUGIN_MANAGER_STR_VALUE_IMPL(name)
 
 namespace DAVA
 {
@@ -42,15 +45,26 @@ void TArcPluginManager::LoadPlugins(Vector<String>& errors)
             REPORT_LOADING_ERROR(Format("Couldn't load dynamic library %s", absPath.c_str()));
         }
 
-        TCreatePluginFn createFn = LoadFunction<TCreatePluginFn>(handle, PLUGIN_MANAGER_STR_VALUE(CREATE_PLUGIN_FUNCTION_NAME));
+        TCreatePluginFn createFn = LoadFunction<TCreatePluginFn>(handle, PLUGIN_MANAGER_STR_VALUE(CREATE_PLUGINS_ARRAY_FUNCTION_NAME));
         if (createFn == nullptr)
         {
             REPORT_LOADING_ERROR(Format("Dynamic library %s doesn't contains TArcPlugin", absPath.c_str()));
         }
 
-        Vector<TArcPlugin*> plugins = createFn(ctx);
-        for (TArcPlugin* pluginInstance : plugins)
+        TDestroyPluginsArray destroyArray = LoadFunction<TDestroyPluginsArray>(handle, PLUGIN_MANAGER_STR_VALUE(DELETE_PLUGINS_ARRAY));
+
+        TArcPlugin** plugins = createFn(ctx);
+        int32 index = 0;
+
+        pluginsCollection.push_back(PluginNode());
+        PluginNode& node = pluginsCollection.back();
+        node.handle = handle;
+        node.libraryPath = absPath;
+
+        while (plugins[index] != nullptr)
         {
+            TArcPlugin* pluginInstance = plugins[index];
+            ++index;
             if (pluginInstance == nullptr)
             {
                 REPORT_LOADING_ERROR(Format("Dynamic librray %s can't create plugin", absPath.c_str()));
@@ -68,17 +82,14 @@ void TArcPluginManager::LoadPlugins(Vector<String>& errors)
             {
                 String path = pluginsCollection[iter->second].libraryPath;
                 REPORT_LOADING_ERROR(Format("Plugin's name conflict. Libraries %s and %s contains plugin with same name %s. The last one will be ignored",
-                                            path.c_str(), absPath.c_str(), descriptor.pluginName));
+                                            path.c_str(), absPath.c_str(), descriptor.pluginName.c_str()));
             }
 
-            PluginNode node;
-            node.handle = handle;
-            node.pluginInstance = pluginInstance;
-            node.libraryPath = absPath;
-            pluginsCollection.push_back(node);
-
+            node.pluginInstances.push_back(pluginInstance);
             pluginsMap.emplace(descriptor.pluginName, pluginsCollection.size());
         }
+
+        destroyArray(plugins);
     }
 
 #undef REPORT_LOADING_ERROR
@@ -88,6 +99,11 @@ void TArcPluginManager::UnloadPlugins()
 {
     for (PluginNode& node : pluginsCollection)
     {
+        TDestroyPluginFn destroyFn = LoadFunction<TDestroyPluginFn>(node.handle, PLUGIN_MANAGER_STR_VALUE(DESTROY_PLUGIN_FUNCTION_NAME));
+        for (TArcPlugin* instance : node.pluginInstances)
+        {
+            destroyFn(instance);
+        }
         ClosePlugin(node.handle);
     }
 
@@ -98,9 +114,12 @@ TArcPlugin* TArcPluginManager::GetPlugin(const String& pluginName) const
 {
     for (const PluginNode& node : pluginsCollection)
     {
-        if (node.pluginInstance->GetDescription().pluginName == pluginName)
+        for (TArcPlugin* instance : node.pluginInstances)
         {
-            return node.pluginInstance;
+            if (instance->GetDescription().pluginName == pluginName)
+            {
+                return instance;
+            }
         }
     }
 
@@ -113,11 +132,14 @@ DAVA::Vector<TArcPlugin*> TArcPluginManager::GetPluginsWithBaseType(const Type* 
     result.reserve(pluginsCollection.size());
     for (const PluginNode& node : pluginsCollection)
     {
-        const ReflectedType* moduleType = node.pluginInstance->GetModuleType();
-        const Type* type = moduleType->GetType();
-        if (TypeInheritance::CanDownCast(type, t))
+        for (TArcPlugin* instance : node.pluginInstances)
         {
-            result.push_back(node.pluginInstance);
+            const ReflectedType* moduleType = instance->GetModuleType();
+            const Type* type = moduleType->GetType();
+            if (TypeInheritance::CanDownCast(type, t))
+            {
+                result.push_back(instance);
+            }
         }
     }
 

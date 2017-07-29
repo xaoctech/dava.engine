@@ -70,7 +70,7 @@ DAVA_REFLECTION_IMPL(RootNode)
     .End();
 }
 
-WindowKey wnd = WindowKey(FastName("PropertiesViewTests"));
+WindowKey wnd = WindowKey("PropertiesViewTests");
 
 class SelectionData : public DAVA::TArc::DataNode
 {

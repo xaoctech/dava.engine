@@ -1,6 +1,8 @@
 #pragma once
 
 #include <PluginManager/Plugin.h>
+#include <Reflection/ReflectedType.h>
+#include <Reflection/ReflectedTypeDB.h>
 #include <Base/BaseTypes.h>
 
 namespace DAVA
@@ -13,6 +15,17 @@ class TArcPlugin
 public:
     struct PluginDescriptor
     {
+        PluginDescriptor(const String& appName, const String& plugName, const String& shortDescr,
+                         const String& fullDescr, int32 majorVer, int32 minorVer)
+            : applicationName(appName)
+            , pluginName(plugName)
+            , shortDescription(shortDescr)
+            , fullDescription(fullDescr)
+            , majorVersion(majorVer)
+            , minorVersion(minorVer)
+        {
+        }
+
         String applicationName;
         String pluginName;
         String shortDescription;
@@ -32,7 +45,7 @@ template <typename T>
 class TypedTArcPlugin : public TArcPlugin
 {
 public:
-    TypedTArcPlugin(const EngineContext* context, const TArcPlugin& descriptor)
+    TypedTArcPlugin(const EngineContext* context, const TArcPlugin::PluginDescriptor& descriptor)
         : TArcPlugin(context)
         , descr(descriptor)
     {
@@ -54,33 +67,36 @@ private:
 } // namespace TArc
 } // namespace DAVA
 
-#define CREATE_PLUGIN_FUNCTION_NAME CreatePlugin
+#define CREATE_PLUGINS_ARRAY_FUNCTION_NAME CreatePluginsArray
+#define DELETE_PLUGINS_ARRAY DeletePluginArray
 #define DESTROY_PLUGIN_FUNCTION_NAME DestroyPlugin
 
-using TCreatePluginFn = DAVA::Vector<DAVA::TArc::TArcPlugin*> (*)(const DAVA::EngineContext* context);
+using TCreatePluginFn = DAVA::TArc::TArcPlugin** (*)(const DAVA::EngineContext* context);
+using TDestroyPluginsArray = void (*)(DAVA::TArc::TArcPlugin** pluginsArray);
 using TDestroyPluginFn = void (*)(DAVA::TArc::TArcPlugin* plugin);
 
 #define START_PLUGINS_DECLARATION()\
+extern "C" { \
     PLUGIN_FUNCTION_EXPORT void DESTROY_PLUGIN_FUNCTION_NAME(DAVA::TArc::TArcPlugin* plugin) \
     { \
         delete plugin; \
-    }\
-    PLUGIN_FUNCTION_EXPORT DAVA::Vector<DAVA::TArc::TArcPlugin*> CREATE_PLUGIN_FUNCTION_NAME(const DAVA::EngineContext* context) \
+    } \
+    PLUGIN_FUNCTION_EXPORT void DELETE_PLUGINS_ARRAY(DAVA::TArc::TArcPlugin** pluginsArray) \
     { \
-        DAVA::Vector<DAVA::TArc::TArcPlugin*> plugins;
+        delete[] pluginsArray; \
+    } \
+    PLUGIN_FUNCTION_EXPORT DAVA::TArc::TArcPlugin** CREATE_PLUGINS_ARRAY_FUNCTION_NAME(const DAVA::EngineContext* context) \
+    { \
+        DAVA::TArc::TArcPlugin** plugins = new DAVA::TArc::TArcPlugin*[32]; \
+        memset(plugins, 0, 32 * sizeof(DAVA::TArc::TArcPlugin*)); \
+        DAVA::int32 counter = 0
 
-#define DECLARE_PLUGIN(moduleType, appName, pluginName, shortDescr, fullDescr, majorVersion, minorVersion)\
+#define DECLARE_PLUGIN(moduleType, descr)\
     { \
-        DAVA::TArc::TArcPlugin::PluginDescriptor descr; \
-        descr.applicationName = appName; \
-        descr.pluginName = pluginName; \
-        descr.shortDescription = shortDescr; \
-        descr.fullDescription = fullDescr; \
-        descr.majorVersion = majorVersion; \
-        descr.minorVersion = minorVersion; \
-        plugins.push_back(new DAVA::TArc::TypedTArcPlugin<moduleType>(context, descr)); \
+        plugins[counter++] = new DAVA::TArc::TypedTArcPlugin<moduleType>(context, descr); \
     }
 
 #define END_PLUGINS_DECLARATION()\
         return plugins; \
-    }
+    } \
+}

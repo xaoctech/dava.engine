@@ -1,23 +1,18 @@
 #pragma once
 
 #include "Classes/Selection/SelectableGroup.h"
-#include "Scene/SceneTypes.h"
+#include "Classes/Qt/Scene/SceneTypes.h"
 #include "Classes/Qt/Scene/System/EditorSceneSystem.h"
 
-#include "SystemDelegates.h"
+#include "Classes/Qt/Scene/System/SystemDelegates.h"
+#include "Classes/Qt/Scene/System/CollisionSystem.h"
+#include "Classes/Qt/Scene/System/StructureSystem.h"
+#include "Classes/Qt/Scene/System/ModifSystem.h"
 
-// framework
-#include "UI/UIEvent.h"
-#include "Entity/SceneSystem.h"
-#include "Render/RenderHelper.h"
-#include "Scene3D/Components/Waypoint/EdgeComponent.h"
-
-// editor systems
-#include "Scene/System/CollisionSystem.h"
-
-// delegate
-#include "Scene/System/StructureSystem.h"
-#include "Scene/System/ModifSystem.h"
+#include <UI/UIEvent.h>
+#include <Entity/SceneSystem.h>
+#include <Render/RenderHelper.h>
+#include <Scene3D/Components/Waypoint/EdgeComponent.h>
 
 class RECommandNotificationObject;
 class SceneEditor2;

@@ -24,7 +24,7 @@
 
 namespace ReflectedButtonTestDetails
 {
-DAVA::TArc::WindowKey wndKey = DAVA::FastName("ReflectedButtonTestWnd");
+DAVA::TArc::WindowKey wndKey("ReflectedButtonTestWnd");
 
 struct ReflectedButtonDataSource
 {
