@@ -275,7 +275,8 @@ int PreProc::GetNameAndValue(char* txt, char** name, char** value, char** end) c
     if (*t == '\0')
         return 0;
     v0 = t;
-    while (*t && *t != ' ' && *t != '\t' && *t != '\n' && *t != '\r')
+    int brace_lev = 0;
+    while (*t && (*t != ' ' || brace_lev > 0) && *t != '\t' && *t != '\n' && *t != '\r')
     {
         if (t[0] == '/' && t[1] == '/')
         {
@@ -283,6 +284,11 @@ int PreProc::GetNameAndValue(char* txt, char** name, char** value, char** end) c
             ++t;
             break;
         }
+
+        if (*t == '(')
+            ++brace_lev;
+        else if (*t == ')')
+            --brace_lev;
 
         ++t;
     }
@@ -422,6 +428,8 @@ bool PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
                 dcheck_pending = true;
             }
         }
+
+        bool expand_macros = false;
 
         if (*s == '\n')
         {
@@ -723,11 +731,17 @@ bool PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
                     s = ns1 - 1;
 
                 dcheck_pending = false;
+                expand_macros = (*ns1 != '\n') && (!skipping_line);
             }
         }
         else
         {
             // expand macros, if any
+            expand_macros = true;
+        }
+
+        if (expand_macros)
+        {
             char* ln_end = s;
             bool macro_expanded = false;
             bool restore_nl = false;
@@ -751,15 +765,23 @@ bool PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
                     char* l = AllocBuffer(unsigned(sz) + macro[m].value_len + 1);
 
                     size_t l1 = t - ln;
+                    size_t l2 = l1 + macro[m].value_len + sz - (l1 + macro[m].name_len);
 
                     strncpy(l, ln, l1);
                     strncpy(l + l1, macro[m].value, macro[m].value_len);
                     strncpy(l + l1 + macro[m].value_len, t + macro[m].name_len, sz - (l1 + macro[m].name_len));
-                    l[l1 + macro[m].value_len + sz - (l1 + macro[m].name_len)] = '\n';
-                    l[l1 + macro[m].value_len + sz - (l1 + macro[m].name_len) + 1] = '\0';
-
+                    l[l2] = '\n';
+                    l[l2 + 1] = '\0';
                     ln = l;
                     s = l + l1 + macro[m].value_len;
+
+                    if (*s == '\r')
+                    {
+                        if (s[1] == '\n')
+                            *s++ = 0;
+                        else
+                            *s = ' ';
+                    }
 
                     if (!ln_external)
                     {
@@ -768,6 +790,7 @@ bool PreProc::ProcessBuffer(char* text, std::vector<Line>* line_)
                     }
 
                     macro_expanded = true;
+                    --s;
                     break;
                 }
             }
@@ -874,11 +897,40 @@ bool PreProc::ProcessDefine(const char* name, const char* value)
         //        _report_expr_eval_error(0);
     }
 
+    char value2[1024];
+    size_t value2_sz;
+
+    strcpy(value2, value);
+    value2_sz = strlen(value2) + 1;
+
+    bool expanded = false;
+    do
+    {
+        expanded = false;
+        for (unsigned m = 0; m != macro.size(); ++m)
+        {
+            char* t = strstr(value2, macro[m].name);
+
+            if (t)
+            {
+                size_t name_l = macro[m].name_len;
+                size_t val_l = macro[m].value_len;
+
+                memmove(t + val_l, t + name_l, value2_sz - (t - value2) - name_l);
+                memcpy(t, macro[m].value, val_l);
+                value2_sz += val_l - name_l;
+                expanded = true;
+                break;
+            }
+        }
+    }
+    while (expanded);
+
     macro.resize(macro.size() + 1);
     strncpy(macro.back().name, name, countof(macro.back().name));
-    strncpy(macro.back().value, value, countof(macro.back().value));
+    strncpy(macro.back().value, value2, countof(macro.back().value));
     macro.back().name_len = unsigned(strlen(name));
-    macro.back().value_len = unsigned(strlen(value));
+    macro.back().value_len = unsigned(strlen(value2));
     if (macro.back().value_len < minMacroLength)
         minMacroLength = macro.back().value_len;
 

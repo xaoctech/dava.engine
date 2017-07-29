@@ -45,13 +45,17 @@ private:
     void ProcessTagEnd(const String& tag);
     /** Process text content. */
     void ProcessText(const String& text);
+    /** Process concatenated text. */
+    void FlushText();
 
 private:
+    bool debugDraw = false;
     bool needLineBreak = false;
     bool needSpace = false;
     bool isEditorMode = false;
     bool classesInheritance = false;
     BiDiHelper::Direction direction = BiDiHelper::Direction::NEUTRAL;
+    String fullText;
     String defaultClasses;
     Vector<String> classesStack;
     Vector<RefPtr<UIControl>> controls;
