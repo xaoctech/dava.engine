@@ -15,6 +15,7 @@
 #include "DLCManager/Private/PackRequest.h"
 
 #include <iomanip>
+#include <algorithm>
 
 namespace DAVA
 {
@@ -70,6 +71,30 @@ DLCDownloader& DLCManagerImpl::GetDownloader() const
         DAVA_THROW(Exception, "downloader in nullptr");
     }
     return *downloader;
+}
+
+static const std::array<int32, 8> errorForExternalHandle = { ENAMETOOLONG,
+                                                             ENOSPC, ENODEV, EROFS, ENFILE, EMFILE };
+
+bool DLCManagerImpl::CountError(int32 errCode)
+{
+    if (errCode != prevErrorCode)
+    {
+        errorCounter = 0;
+        prevErrorCode = errCode;
+    }
+
+    size_t yota = 1;
+
+    auto it = std::find(begin(errorForExternalHandle), end(errorForExternalHandle), errCode);
+    if (it != end(errorForExternalHandle))
+    {
+        yota = hints.maxSameErrorCounter;
+    }
+
+    errorCounter += yota;
+
+    return errorCounter >= hints.maxSameErrorCounter;
 }
 
 DLCManagerImpl::DLCManagerImpl(Engine* engine_)
@@ -1344,6 +1369,23 @@ DLCManager::Progress DLCManagerImpl::GetProgress() const
     lastProgress.isRequestingEnabled = progress.isRequestingEnabled;
 
     return progress;
+}
+
+DLCManager::Info DLCManager::GetInfo() const
+{
+    return Info{};
+}
+
+DLCManager::Info DLCManagerImpl::GetInfo() const
+{
+    Info info;
+    if (IsInitialized())
+    {
+        info.infoCrc32 = initFooterOnServer.infoCrc32;
+        info.metaCrc32 = initFooterOnServer.metaDataCrc32;
+        info.totalFiles = static_cast<uint32>(meta->GetFileCount());
+    }
+    return info;
 }
 
 bool DLCManagerImpl::IsRequestingEnabled() const

@@ -144,6 +144,8 @@ public:
 
     Progress GetProgress() const override;
 
+    Info GetInfo() const override;
+
     const FilePath& GetLocalPacksDirectory() const;
 
     const String& GetSuperPackUrl() const;
@@ -170,6 +172,8 @@ public:
     std::ostream& GetLog() const;
 
     DLCDownloader& GetDownloader() const;
+
+    bool CountError(int32 errCode);
 
 private:
     // initialization state functions
@@ -292,6 +296,11 @@ private:
     uint32 retryCount = 0; // count every initialization error during session
 
     std::unique_ptr<DLCDownloader> downloader;
+
+    // collect errno codes and count it, also remember last error code
+    size_t errorCounter = 0;
+    int32 prevErrorCode = 0;
+
     bool prevNetworkState = false;
     bool firstTimeNetworkState = false;
 };

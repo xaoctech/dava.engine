@@ -1,9 +1,10 @@
 #include "Input/InputSystem.h"
 #include "Input/KeyboardDevice.h"
 
+#include "UI/Preview/Data/CanvasData.h"
+
 #include "EditorSystems/EditorTransformSystem.h"
 #include "EditorSystems/EditorSystemsManager.h"
-#include "EditorSystems/KeyboardProxy.h"
 
 #include "Model/PackageHierarchy/PackageNode.h"
 #include "Model/PackageHierarchy/ControlNode.h"
@@ -16,10 +17,16 @@
 #include "QECommands/ResizeCommand.h"
 #include "QECommands/ChangePivotCommand.h"
 
+#include <TArc/Utils/KeyboardProxy.h>
 #include <TArc/Core/ContextAccessor.h>
 
 #include <UI/UIEvent.h>
 #include <UI/UIControl.h>
+#include <UI/UIScrollView.h>
+#include <UI/Layouts/UIAnchorComponent.h>
+#include <UI/Layouts/UILinearLayoutComponent.h>
+#include <UI/Layouts/UIFlowLayoutComponent.h>
+#include <UI/Layouts/UIIgnoreLayoutComponent.h>
 #include <Preferences/PreferencesRegistrator.h>
 #include <Preferences/PreferencesStorage.h>
 
@@ -63,6 +70,8 @@ struct EditorTransformSystem::MoveInfo
     {
     }
     ControlNode* node = nullptr;
+    bool restrictOnAxisX = false;
+    bool restrictOnAxisY = false;
     AbstractProperty* positionProperty = nullptr;
     const UIGeometricData* parentGD = nullptr;
 };
@@ -284,6 +293,7 @@ void EditorTransformSystem::ProcessInput(UIEvent* currentInput)
     switch (currentInput->phase)
     {
     case UIEvent::Phase::KEY_DOWN:
+    case UIEvent::Phase::KEY_DOWN_REPEAT:
         ProcessKey(currentInput->key);
         break;
 
@@ -374,6 +384,7 @@ void EditorTransformSystem::PrepareDrag()
         nodesToMoveInfos.emplace_back(new MoveInfo(selectedControl, nullptr, nullptr));
     }
     CorrectNodesToMove();
+    SetNodesMoveRestrictions();
     UpdateNeighboursToMove();
 }
 
@@ -383,7 +394,7 @@ void EditorTransformSystem::ProcessDrag(const Vector2& pos)
     switch (activeArea)
     {
     case HUDAreaInfo::FRAME_AREA:
-        MoveAllSelectedControlsByMouse(delta, canMagnet);
+        MoveAllSelectedControlsByMouse(delta, CanMagnet());
         break;
     case HUDAreaInfo::TOP_LEFT_AREA:
     case HUDAreaInfo::TOP_CENTER_AREA:
@@ -394,8 +405,8 @@ void EditorTransformSystem::ProcessDrag(const Vector2& pos)
     case HUDAreaInfo::BOTTOM_CENTER_AREA:
     case HUDAreaInfo::BOTTOM_RIGHT_AREA:
     {
-        bool withPivot = IsKeyPressed(KeyboardProxy::KEY_ALT);
-        bool rateably = IsKeyPressed(KeyboardProxy::KEY_CTRL);
+        bool withPivot = Utils::IsKeyPressed(eModifierKeys::ALT);
+        bool rateably = Utils::IsKeyPressed(eModifierKeys::CONTROL);
         ResizeControl(delta, withPivot, rateably);
         break;
     }
@@ -426,12 +437,14 @@ void EditorTransformSystem::MoveAllSelectedControlsByKeyboard(Vector2 delta)
     for (auto& nodeToMove : nodesToMoveInfos)
     {
         ControlNode* node = nodeToMove->node;
+        Vector2 deltaForCurrentNode = TruncateMouseDelta(delta, nodeToMove.get());
+
         const UIGeometricData* gd = nodeToMove->parentGD;
         float32 angle = gd->angle;
         AbstractProperty* property = nodeToMove->positionProperty;
         Vector2 originalPosition = property->GetValue().Cast<Vector2>();
 
-        Vector2 deltaPosition = EditorTransformSystemDetail::RotateVectorForMove(delta, angle);
+        Vector2 deltaPosition = EditorTransformSystemDetail::RotateVectorForMove(deltaForCurrentNode, angle);
         Vector2 finalPosition(originalPosition + deltaPosition);
         propertiesToChange.emplace_back(node, property, Any(finalPosition));
     }
@@ -477,6 +490,7 @@ void EditorTransformSystem::MoveAllSelectedControlsByMouse(Vector2 mouseDelta, b
         }
 
         const MoveInfo* nodeInfo = iter->get();
+        mouseDelta = TruncateMouseDelta(mouseDelta, nodeInfo);
 
         auto deltaPositionBehavior = [this, nodeInfo](Vector2& deltaPosition) {
             ControlNode* node = nodeInfo->node;
@@ -504,6 +518,8 @@ void EditorTransformSystem::MoveAllSelectedControlsByMouse(Vector2 mouseDelta, b
     }
     for (auto& nodeToMove : nodesToMoveInfos)
     {
+        Vector2 mouseDeltaForCurrentNode = TruncateMouseDelta(mouseDelta, nodeToMove.get());
+
         ControlNode* node = nodeToMove->node;
         if (canAdjust && node == activeControlNode)
         {
@@ -513,7 +529,7 @@ void EditorTransformSystem::MoveAllSelectedControlsByMouse(Vector2 mouseDelta, b
         AbstractProperty* positionProperty = nodeToMove->positionProperty;
         Vector2 originalPosition = positionProperty->GetValue().Cast<Vector2>();
         const UIGeometricData* gd = nodeToMove->parentGD;
-        Vector2 finalPosition = EditorTransformSystemDetail::CreateFinalPosition(gd, originalPosition, mouseDelta, activeExtraDelta);
+        Vector2 finalPosition = EditorTransformSystemDetail::CreateFinalPosition(gd, originalPosition, mouseDeltaForCurrentNode, activeExtraDelta);
 
         propertiesToChange.emplace_back(node, positionProperty, Any(finalPosition));
     }
@@ -665,6 +681,11 @@ Vector2 EditorTransformSystem::AdjustMoveToNearestBorder(Vector2 delta, Vector<M
     for (int32 axisInt = Vector2::AXIS_X; axisInt < Vector2::AXIS_COUNT; ++axisInt)
     {
         Vector2::eAxis axis = static_cast<Vector2::eAxis>(axisInt);
+        if (delta[axis] == 0.f)
+        {
+            continue;
+        }
+
         magnetLines[axis] = CreateMagnetLines(box, parentGD, neighbours, axis);
 
         //get nearest magnet line
@@ -690,6 +711,11 @@ Vector2 EditorTransformSystem::AdjustMoveToNearestBorder(Vector2 delta, Vector<M
     for (int32 axisInt = Vector2::AXIS_X; axisInt < Vector2::AXIS_COUNT; ++axisInt)
     {
         Vector2::eAxis axis = static_cast<Vector2::eAxis>(axisInt);
+        if (delta[axis] == 0.f)
+        {
+            continue;
+        }
+
         //adjust all lines to transformed state to get matched lines
         for (MagnetLine& line : magnetLines[axis])
         {
@@ -830,7 +856,16 @@ void EditorTransformSystem::ResizeControl(Vector2 delta, bool withPivot, bool ra
 
 Vector2 EditorTransformSystem::AdjustResizeToMinimumSize(Vector2 deltaSize)
 {
-    const Vector2 scaledMinimum(GetMinimumSize() / controlGeometricData.scale);
+    Vector2 scaledMinimum(GetMinimumSize() / controlGeometricData.scale);
+    for (int32 axisInt = Vector2::AXIS_X; axisInt < Vector2::AXIS_COUNT; ++axisInt)
+    {
+        Vector2::eAxis axis = static_cast<Vector2::eAxis>(axisInt);
+        if (scaledMinimum[axis] < 1.0f)
+        {
+            scaledMinimum[axis] = 1.0f;
+        }
+    }
+
     Vector2 origSize = sizeProperty->GetValue().Cast<Vector2>();
 
     Vector2 finalSize(origSize + deltaSize);
@@ -866,7 +901,7 @@ Vector2 EditorTransformSystem::AdjustResizeToBorderAndToMinimum(Vector2 deltaSiz
 {
     Vector<MagnetLineInfo> magnets;
 
-    bool canAdjustResize = canMagnet && activeControlNode->GetControl()->GetAngle() == 0.0f && activeControlNode->GetParent()->GetControl() != nullptr;
+    bool canAdjustResize = CanMagnet() && activeControlNode->GetControl()->GetAngle() == 0.0f && activeControlNode->GetParent()->GetControl() != nullptr;
     Vector2 adjustedDeltaToBorder(deltaSize);
     if (canAdjustResize)
     {
@@ -1206,6 +1241,84 @@ void EditorTransformSystem::UpdateNeighboursToMove()
     }
 }
 
+void EditorTransformSystem::SetNodesMoveRestrictions()
+{
+    for (std::unique_ptr<MoveInfo>& moveInfo : nodesToMoveInfos)
+    {
+        UIControl* control = moveInfo->node->GetControl();
+        UIControl* parentControl = control->GetParent();
+
+        UIAnchorComponent* anchor = control->GetComponent<UIAnchorComponent>();
+        if (anchor != nullptr && anchor->IsEnabled())
+        {
+            moveInfo->restrictOnAxisX = anchor->IsLeftAnchorEnabled() || anchor->IsRightAnchorEnabled() || anchor->IsHCenterAnchorEnabled();
+            moveInfo->restrictOnAxisY = anchor->IsTopAnchorEnabled() || anchor->IsBottomAnchorEnabled() || anchor->IsVCenterAnchorEnabled();
+        }
+
+        if (moveInfo->restrictOnAxisX && moveInfo->restrictOnAxisY)
+        {
+            continue;
+        }
+
+        UIIgnoreLayoutComponent* ignoreLayout = control->GetComponent<UIIgnoreLayoutComponent>();
+        if (ignoreLayout == nullptr || ignoreLayout->IsEnabled() == false)
+        {
+            UILinearLayoutComponent* linearLayout = parentControl->GetComponent<UILinearLayoutComponent>();
+            if (linearLayout != nullptr && linearLayout->IsEnabled())
+            {
+                switch (linearLayout->GetOrientation())
+                {
+                case UILinearLayoutComponent::eOrientation::LEFT_TO_RIGHT:
+                case UILinearLayoutComponent::eOrientation::RIGHT_TO_LEFT:
+                    moveInfo->restrictOnAxisX = true;
+                    break;
+                case UILinearLayoutComponent::eOrientation::BOTTOM_UP:
+                case UILinearLayoutComponent::eOrientation::TOP_DOWN:
+                    moveInfo->restrictOnAxisY = true;
+                    break;
+                default:
+                    DVASSERT(false, Format("Unknown orienation: %u", linearLayout->GetOrientation()).c_str());
+                    break;
+                }
+            }
+
+            if (moveInfo->restrictOnAxisX && moveInfo->restrictOnAxisY)
+            {
+                continue;
+            }
+
+            UIFlowLayoutComponent* flowLayout = parentControl->GetComponent<UIFlowLayoutComponent>();
+            if (flowLayout != nullptr && flowLayout->IsEnabled())
+            {
+                moveInfo->restrictOnAxisX = true;
+                moveInfo->restrictOnAxisY = true;
+                continue;
+            }
+        }
+
+        UIScrollView* parentScrollView = dynamic_cast<UIScrollView*>(parentControl);
+        if (parentScrollView != nullptr)
+        {
+            moveInfo->restrictOnAxisX = true;
+            moveInfo->restrictOnAxisY = true;
+            continue;
+        }
+    }
+}
+
+Vector2 EditorTransformSystem::TruncateMouseDelta(Vector2 mouseDelta, const MoveInfo* moveInfo)
+{
+    if (moveInfo->restrictOnAxisX == true)
+    {
+        mouseDelta.x = 0;
+    }
+    if (moveInfo->restrictOnAxisY == true)
+    {
+        mouseDelta.y = 0;
+    }
+    return mouseDelta;
+};
+
 void EditorTransformSystem::ClampAngle()
 {
     float32 angle = angleProperty->GetValue().Cast<float32>();
@@ -1225,5 +1338,14 @@ void EditorTransformSystem::ClampAngle()
 
 bool EditorTransformSystem::IsShiftPressed() const
 {
-    return IsKeyPressed(KeyboardProxy::KEY_SHIFT) ^ (shiftInverted);
+    return Utils::IsKeyPressed(eModifierKeys::SHIFT) ^ (shiftInverted);
+}
+
+bool EditorTransformSystem::CanMagnet() const
+{
+    float32 scaleToMagnet = 8.0f;
+    DAVA::TArc::DataContext* activeContext = accessor->GetActiveContext();
+    DVASSERT(activeContext != nullptr);
+    CanvasData* data = activeContext->GetData<CanvasData>();
+    return canMagnet && data->GetScale() <= scaleToMagnet;
 }

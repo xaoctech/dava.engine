@@ -16,7 +16,6 @@
 #include "Scene/System/CustomColorsSystem.h"
 #include "Scene/System/RulerToolSystem.h"
 #include "Scene/System/StructureSystem.h"
-#include "Scene/System/EditorParticlesSystem.h"
 #include "Scene/System/EditorLightSystem.h"
 #include "Scene/System/TextDrawSystem.h"
 #include "Scene/System/DebugDrawSystem.h"
@@ -41,6 +40,7 @@ class HoodSystem;
 class EditorLODSystem;
 class EditorStatisticsSystem;
 class EditorVegetationSystem;
+class EditorParticlesSystem;
 class FogSettingsChangedReceiver;
 class VisibilityCheckSystem;
 class RECommandStack;
@@ -216,6 +216,8 @@ private:
     private:
         SceneEditor2* editor = nullptr;
     };
+
+    DAVA_VIRTUAL_REFLECTION(SceneEditor2, DAVA::Scene);
 };
 
 template <typename T>

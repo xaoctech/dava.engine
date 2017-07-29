@@ -14,15 +14,8 @@ import common_tool
 def __parser_args():
     arg_parser = argparse.ArgumentParser()
 
-    arg_parser.add_argument( '--stash_api_version', default = '1.0' )
-    arg_parser.add_argument( '--stash_project', default = 'DF' )
-    arg_parser.add_argument( '--stash_repo_name', default = 'dava.framework' )
-
-    arg_parser.add_argument( '--stash_url', required = True )
-    arg_parser.add_argument( '--teamcity_url', required = True )
-
-    arg_parser.add_argument( '--login', required = True )
-    arg_parser.add_argument( '--password', required = True )
+    stash_api.argparse_add_argument( arg_parser )
+    team_city_api.argparse_add_argument( arg_parser )
 ##
     arg_parser.add_argument( '--convert_to_merge_requests', default = 'false', choices=[ 'true', 'false' ] )
     arg_parser.add_argument( '--framework_branch', required = True )
@@ -60,6 +53,8 @@ def __run_build( args, triggering_options = [] ):
         properties = {'config.client_branch': client_branch}
 
     run_build_result = teamcity.run_build( args.configuration_name, framework_branch, properties, triggering_options  )
+
+    common_tool.flush_print_teamcity_set_parameter('env.run_build_id', run_build_result['id'] )
 
     return run_build_result
 
@@ -139,20 +134,8 @@ def main():
 
     args = __parser_args()
 
-    stash_api.init(     args.stash_url,
-                        args.stash_api_version,
-                        args.stash_project,
-                        args.stash_repo_name,
-                        args.login,
-                        args.password )
-
-    team_city_api.init( args.teamcity_url,
-                        args.login,
-                        args.password )
-
-    stash    = stash_api.ptr()
-
-    teamcity = team_city_api.ptr()
+    stash = stash_api.init_args(args)
+    teamcity = team_city_api.init_args(args)
 
     request_configuration_id = args.request_configuration_id
 
