@@ -15,7 +15,7 @@ def set_url(url):
     if url.lower().startswith("https://"):
         url = url[len("https://"):]
     global URL
-    URL = url
+    URL = url.rstrip("/")
     __update_rq_url()
     __update_ws_url()
 

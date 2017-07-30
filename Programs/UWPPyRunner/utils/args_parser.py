@@ -136,6 +136,12 @@ parser.add_argument("-value",\
                     default = None,\
                     help = "Value for stop/start/uninstall options.")
 
+parser.add_argument("-to_file",\
+                    dest = "to_file",\
+                    nargs = "?", \
+                    default = None,\
+                    help = "Path to file to log in.")
+
 parser.add_argument("-verbose",\
                     dest = "verbose",\
                     action = "store_true",\

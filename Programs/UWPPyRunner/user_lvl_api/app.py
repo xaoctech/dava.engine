@@ -9,9 +9,6 @@ from datetime import datetime
 sys.path.append("../")
 from dp_api import app_deploy, task_manager, performance_data
 
-#default_provider_name = "Microsoft-Windows-Diagnostics-LoggingChannel"
-#default_provider_guid = "4bd2826e-54a1-4ba9-bf63-92b73ea1ac4a"
-
 
 cache = {}
 

@@ -1,6 +1,6 @@
 #system
 from threading import Lock
-from sys import stdout
+import sys
 
 #local
 from dp_api import options
@@ -10,6 +10,7 @@ from user_lvl_api import app
 from user_lvl_api.etw_session import ETWSession
 from user_lvl_api.app_monitor import AppMonitor
 
+from utils.logger import Logger
 from utils.args_parser import parser
 from utils.package import Package
 from utils.log_parser import LogParser
@@ -63,8 +64,8 @@ def uninstall(key, value):
     if app.is_installed(key, value):
         return app.uninstall(key, value)
     else:
-        print "Failed to uninstall the app. App is not installed."
-        return False
+        print "App is not installed, skipping uninstall step."
+        return True
 
 
 def start(key, value):
@@ -118,11 +119,12 @@ def args_prepare(args):
 
 def main():
     args = parser.parse_args()
-    options.set_url(args.url)
-    options.set_timeout(args.timeout)
-    
     args_prepare(args)    
     args_check(args)
+
+    options.set_url(args.url)
+    options.set_timeout(args.timeout)
+    sys.stdout = Logger(args.to_file)
         
     key = None
     value = None
@@ -169,7 +171,7 @@ def main():
             exit()
         fine = app.deploy(app_package, deps_packages, args.cer_path)
         status_msg = "\rChecking installation result: "
-        stdout.write(status_msg + "...")
+        sys.stdout.write(status_msg + "...")
         if fine and not (app.is_installed(family_name_tag, app_package.identity_name, cached = False) and \
                          app.get_version(family_name_tag, app_package.identity_name) == app_package.version):
             print status_msg + "Failed."
