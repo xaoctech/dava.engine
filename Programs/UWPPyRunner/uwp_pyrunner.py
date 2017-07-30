@@ -5,7 +5,7 @@ from sys import stdout
 #local
 from dp_api import options
 
-import user_lvl_api.app as app
+from user_lvl_api import app
 
 from user_lvl_api.etw_session import ETWSession
 from user_lvl_api.app_monitor import AppMonitor
@@ -108,9 +108,9 @@ def args_check(args):
 def args_prepare(args):
     args.log_levels = [int(level) for level in args.log_levels]
 
-    if args.dr:
+    if args.ds:
         args.deploy = True
-        args.run = True
+        args.start = True
 
     if args.verbose:
         print_args_values(args)
@@ -119,17 +119,13 @@ def args_prepare(args):
 def main():
     args = parser.parse_args()
     options.set_url(args.url)
+    options.set_timeout(args.timeout)
     
-    args_check(args)
-
     args_prepare(args)    
+    args_check(args)
         
     key = None
     value = None
-
-    if args.key is not None and args.value is not None:
-        key = args.key
-        value = args.value
 
     app_package = None
     deps_packages = []
@@ -146,12 +142,16 @@ def main():
             if args.verbose:
                 print_package_values(package)
 
-        if args.force:
+        key = family_name_tag
+        value = app_package.identity_name
+
+        if args.force and not app.is_installed(key, value):
             key = name_tag
             value = app_package.get_display_name()
-        else:
-            key = family_name_tag
-            value = app_package.identity_name
+
+    if args.key is not None and args.value is not None:
+        key = args.key
+        value = args.value
 
     fine = True
 

@@ -10,6 +10,10 @@ TIMEOUT = 10.0 # seconds
     
 
 def set_url(url):
+    if url.lower().startswith("http://"):
+        url = url[len("http://"):]
+    if url.lower().startswith("https://"):
+        url = url[len("https://"):]
     global URL
     URL = url
     __update_rq_url()

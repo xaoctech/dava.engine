@@ -14,23 +14,17 @@ class ParseDeps(argparse.Action):
     def __call__(self, parser, args, values, option_string = None):
         res = []
         list = values.split(",")
-        # Check if single deps dir is provided
-        if len(list) == 1 and os.path.isdir(list[0]):
-            list = [os.path.join(list[0], file_path) for file_path in os.listdir(list[0]) \
-                            if os.path.isfile(os.path.join(list[0], file_path))]
         for value in list:
-            res.append(value.strip())
+            value.strip()
+            if os.path.isdir(value):
+                for f in os.listdir(value):
+                    p = os.path.join(value, f)
+                    if os.path.isfile(p):
+                        res.append(p)
+            else:
+                res.append(value)
         setattr(args, self.dest, res)
 
-
-class ParseUrl(argparse.Action):
-    def __call__(self, parser, args, values, option_string = None):
-        url = values.strip()
-        if url.lower().startswith("http://"):
-            url = url[len("http://"):]
-        if url.lower().startswith("https://"):
-            url = url[len("https://"):]
-        setattr(args, self.dest, url)
 
 parser = argparse.ArgumentParser(description="UWP pyrunner")
 parser.add_argument("-app_path",\
@@ -55,7 +49,6 @@ parser.add_argument("-cer_path",\
 parser.add_argument("-url",\
                     nargs = "?",\
                     dest = "url",\
-                    action = ParseUrl,\
                     default = "127.0.0.1:10080",\
                     help = "Target device url \
                             (default is usb: \"127.0.0.1:10080\").")
@@ -121,8 +114,8 @@ parser.add_argument("-stop",\
                     action = "store_true",\
                     help = "Stop the app.")
 
-parser.add_argument("-dr",\
-                    dest = "dr",\
+parser.add_argument("-ds",\
+                    dest = "ds",\
                     action = "store_true",\
                     help = "Deploy and start operations combined.")
 
