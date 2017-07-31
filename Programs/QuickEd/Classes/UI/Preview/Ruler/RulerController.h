@@ -1,27 +1,38 @@
-#ifndef __RULERCONTROLLER__H__
-#define __RULERCONTROLLER__H__
+#pragma once
 
-#include "RulerSettings.h"
+#include "UI/Preview/Ruler/RulerSettings.h"
+
+#include "UI/Preview/Data/CanvasDataAdapter.h"
+
+#include <TArc/DataProcessing/DataWrapper.h>
+#include <TArc/DataProcessing/DataListener.h>
 
 #include <QObject>
 #include <QPoint>
 
-class RulerController : public QObject
+#include <memory>
+
+namespace DAVA
+{
+class Any;
+namespace TArc
+{
+class ContextAccessor;
+}
+}
+
+class RulerController : public QObject, DAVA::TArc::DataListener
 {
     Q_OBJECT
 
 public:
     // Construction/destruction.
-    RulerController(QObject* parent = nullptr);
-    ~RulerController() = default;
-
-    // Set the screen view pos and scale.
-    void SetScale(float scale);
+    RulerController(DAVA::TArc::ContextAccessor* accessor, QObject* parent = nullptr);
+    ~RulerController() override;
 
 public slots:
     // Update the ruler markers with the mouse position.
     void UpdateRulerMarkers(QPoint curMousePos);
-    void SetViewPos(QPoint pos);
 
 signals:
     // Horizontal/Vertical ruler settings are changed.
@@ -42,6 +53,11 @@ protected:
     void RecalculateRulerSettings();
 
 private:
+    void OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;
+
+    void OnStartValueChanged(const DAVA::Any& startValue);
+    void OnScaleChanged(const DAVA::Any& scaleValue);
+
     // Screen view pos and scale.
     QPoint viewPos;
     float screenScale = 1.0f;
@@ -49,6 +65,9 @@ private:
     // Ruler settings.
     RulerSettings horisontalRulerSettings;
     RulerSettings verticalRulerSettings;
-};
 
-#endif /* defined(__RULERCONTROLLER__H__) */
+    CanvasDataAdapter canvasDataAdapter;
+
+    DAVA::TArc::DataWrapper canvasDataAdapterWrapper;
+    DAVA::TArc::ContextAccessor* accessor = nullptr;
+};

@@ -27,8 +27,7 @@
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/DataProcessing/DataContext.h>
 #include <TArc/WindowSubSystem/UI.h>
-
-#include <QtTools/Utils/Themes/Themes.h>
+#include <TArc/Utils/Themes.h>
 
 #include <Base/ObjectFactory.h>
 #include <UI/UIControl.h>
@@ -355,6 +354,7 @@ bool PackageModel::setData(const QModelIndex& index, const QVariant& value, int 
     {
         auto prop = controlNode->GetRootProperty()->GetVisibleProperty();
         prop->SetVisibleInEditor(value.toBool());
+        package->RefreshProperty(controlNode, prop);
         return true;
     }
     if (role == Qt::EditRole)
