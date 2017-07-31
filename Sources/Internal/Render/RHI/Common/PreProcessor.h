@@ -56,6 +56,7 @@ private:
     int32 GetNameAndValue(char* txt, char** name, char** value, char** end) const;
     void ReportExprEvalError(uint32 line_n);
     char* ExpandMacroInLine(char* txt);
+    char* GetToken(char* str, ptrdiff_t strSize, const char* m, ptrdiff_t tokenSize);
 
 private:
     struct Buffer

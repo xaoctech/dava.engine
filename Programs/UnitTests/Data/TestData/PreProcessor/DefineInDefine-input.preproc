@@ -1,7 +1,7 @@
+#define SILON silon
 #define EPSILON 0.00001
 #define XUEPSILON 0.1
 #define TEST XUEPSILON
-#define SILON silon
 #define FEEE EPSILON
 #define BLA FEEE
 
@@ -15,3 +15,5 @@ b = BLA;
 #if (BLA)
 expected
 #endif
+
+XUEPSILON_EPSILON(TEST)

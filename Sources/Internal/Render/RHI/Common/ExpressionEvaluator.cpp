@@ -332,7 +332,6 @@ static inline uint32 _GetVariable(const char* expression)
     return ret;
 }
 
-
 //------------------------------------------------------------------------------
 
 bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)

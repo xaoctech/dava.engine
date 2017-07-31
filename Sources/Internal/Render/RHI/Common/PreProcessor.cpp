@@ -281,7 +281,17 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
     char* filteredTextPtr = filteredText;
     for (char* s = inputText; *s != Zero; ++s)
     {
-        s = SkipCommentBlock(s);
+        char* begin = s;
+
+        bool unterminatedComment = false;
+        s = SkipCommentBlock(s, unterminatedComment);
+
+        if (unterminatedComment)
+        {
+            Logger::Error("Unterminated comment, starting at:\n%s", begin);
+            return false;
+        }
+
         s = SkipCommentLine(s);
 
         char currentChar = *s;
@@ -780,6 +790,32 @@ bool PreProc::ProcessDefine(const char* name, const char* value)
     return true;
 }
 
+char* PreProc::GetToken(char* str, ptrdiff_t strSize, const char* m, ptrdiff_t tokenSize)
+{
+    char* result = nullptr;
+    char* position = strstr(str, m);
+    if ((position != nullptr) && ((position - str) < strSize))
+    {
+        char* l = position;
+        char* r = position;
+
+        while ((l > str) && IsValidAlphaNumericChar(*(l - 1)))
+            --l;
+
+        while ((r - str < strSize) && IsValidAlphaNumericChar(*r))
+            ++r;
+
+        char ending = *r;
+
+        *r = 0;
+        if ((l >= str) && ((r - l) == tokenSize) && (strcmp(m, l) == 0))
+            result = l;
+
+        *r = ending;
+    }
+    return result;
+}
+
 char* PreProc::ExpandMacroInLine(char* txt)
 {
     char* lineEnding = SeekToLineEnding(txt);
@@ -793,8 +829,8 @@ char* PreProc::ExpandMacroInLine(char* txt)
         expanded = false;
         for (const Macro& m : macro)
         {
-            char* position = strstr(result, m.name);
-            if ((position != nullptr) && ((position - result) < sourceLength))
+            char* position = GetToken(result, sourceLength, m.name, m.name_len);
+            if (position != nullptr)
             {
                 uint32 requiredLength = static_cast<uint32>(sourceLength + m.value_len + 1);
                 char* buffer = AllocBuffer(requiredLength);

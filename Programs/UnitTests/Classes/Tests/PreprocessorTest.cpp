@@ -35,9 +35,6 @@ void DumpAndCompareBytes(const char* ptr0, size_t size0, const char* ptr1, size_
 
         linePos += sprintf(line + linePos, ">>> ");
 
-        /*
-         * Text
-         */
         for (DAVA::uint32 i = 0; i < len; ++i)
         {
             char c = (pos + i < size0) ? *(ptr0 + pos + i) : 0;
@@ -67,7 +64,7 @@ static bool ReadTextData(const char* fileName, std::vector<char>* data)
     DAVA::ScopedPtr<DAVA::File> file(DAVA::File::Create(fileName, DAVA::File::READ | DAVA::File::OPEN));
     if (file)
     {
-        data->resize(file->GetSize());
+        data->resize(static_cast<size_t>(file->GetSize()));
         file->Read(data->data(), static_cast<DAVA::uint32>(file->GetSize()));
         success = true;
     }
@@ -267,6 +264,7 @@ DAVA_TESTCLASS (PreprocessorTest)
 
         const char* err_test[] =
         {
+          "UnterminatedComment-input.preproc",
           "E01-input.preproc",
           "E02-input.preproc",
           "E03-input.preproc",

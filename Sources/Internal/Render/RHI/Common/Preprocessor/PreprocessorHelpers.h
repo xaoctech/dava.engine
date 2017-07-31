@@ -35,7 +35,7 @@ inline char* SkipWhitespace(char* s)
     return s;
 }
 
-inline char* SkipCommentBlock(char* s)
+inline char* SkipCommentBlock(char* s, bool& unterminatedComment)
 {
     DVASSERT(s != nullptr);
 
@@ -49,6 +49,8 @@ inline char* SkipCommentBlock(char* s)
 
         if (blockEndReached)
             s += 2;
+
+        unterminatedComment = (s[0] == 0) && !blockEndReached;
     }
     return s;
 }

@@ -7,3 +7,5 @@ a = 0.00001;
 b = 0.00001;
 
 expected
+
+XUEPSILON_EPSILON(0.1)
