@@ -347,7 +347,7 @@ void GeoDecalManager::GetStaticMeshGeometry(const DecalBuildInfo& info, Vector<u
 
     for (uint16 triangleIndex : triangles)
     {
-        int16 idx[3];
+        uint16 idx[3];
         info.polygonGroup->GetTriangleIndices(3 * triangleIndex, idx);
         info.polygonGroup->GetCoord(idx[0], points[0].originalPoint);
         info.polygonGroup->GetCoord(idx[1], points[1].originalPoint);
@@ -413,7 +413,7 @@ void GeoDecalManager::GetSkinnedMeshGeometry(const DecalBuildInfo& info, Vector<
     uint32 triangleCount = static_cast<uint32>(info.polygonGroup->GetIndexCount() / 3);
     for (uint32 triangleIndex = 0; triangleIndex < triangleCount; ++triangleIndex)
     {
-        int16 idx[3];
+        uint16 idx[3];
         info.polygonGroup->GetTriangleIndices(3 * triangleIndex, idx);
         for (int32 j = 0; j < 3; ++j)
         {
